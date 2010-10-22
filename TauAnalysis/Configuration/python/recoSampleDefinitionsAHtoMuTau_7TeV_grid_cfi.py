@@ -52,17 +52,43 @@ _millibarns = 1.0e9
 _picobarns = 1.0
 _nanobarns = 1000.0
 _microbarns = 1.0e6
+_millibarns = 1.0e3
 
 # Integrated luminosity to normalize 
 #TARGET_LUMI = (4924.3 + 61275 + 115786 + 808979)/_microbarns
 #TARGET_LUMI = (4652+60315.532+107818+630241.996)/_microbarns
 TARGET_LUMI = (4203+58971+89050+1048863)/_microbarns
 
+#--------------------------------------------------------------------------------
+# NOTE:
+#   (1) cross-sections for W and Z production are scaled to next-to-leading order values
+#       documented on the wiki
+#        http://alcaraz.web.cern.ch/alcaraz/CROSS_SECTIONS.txt
+#   (2) cross-sections and branching ratios for Higgs production and decay
+#       are obtained with FeynHiggs (version 2.7.4) for "maximal mixing scenario" (cf. CMS AN-09-143),
+#       using the following configuration parameters settings:
+#
+#         MT 173.3
+#         TB 30
+#         MA0 120
+#         Abs(MUE) 200
+#         Arg(MUE) 0
+#         MSusy 1000
+#         Abs(Xt) 2449.5
+#         Arg(Xt) 0
+#         Abs(M_2) 200
+#         Arg(M_2) 0
+#         Abs(M_3) 800.0
+#         Arg(M_3) 0
+#         prodSqrts 7
+#
+#--------------------------------------------------------------------------------
+
 RECO_SAMPLES = {
     'data_Mu_132440-145761_Sep17ReReco' : {
         'datasetpath' : '/Mu/Run2010A-Sep17ReReco_v2/RECO',
         'dbs_url' :  "http://cmsdbsprod.cern.ch/cms_dbs_prod_global/servlet/DBSServlet",
-        'lumi_mask' : "/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions10/7TeV/StreamExpress/Cert_132440-147454_7TeV_StreamExpress_Collisions10_JSON.txt",
+        'lumi_mask' : "/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions10/7TeV/StreamExpress/Cert_132440-147454_7TeV_StreamEqxpress_Collisions10_JSON.txt",
         'runselection' : "132440 - 145761",
         'conditions' : 'GR_R_38X_V13A::All',
         'events_processed' : -1,
@@ -89,9 +115,9 @@ RECO_SAMPLES = {
         'skim_eff' : 1.0,
         # Configuration/GenProduction/python/PYTHIA6_Tauola_gg_H120_tautau_7TeV_cff.py
         'x_sec' : (
-            51947.8*_femtobarns*0.122789 + # (gg -> A0)*(A0->tautau)
-            39445.6*_femtobarns*0.123462 + # (gg -> h0)*(h0->tautau)
-            20753.1*_femtobarns*0.125908   # (gg -> H0)*(H0->tautau)
+              48110.*_femtobarns*0.122789 # (gg -> A0)*(A0->tautau)
+           +  36542.*_femtobarns*0.123462 # (gg -> h0)*(h0->tautau)
+           +  20247.*_femtobarns*0.125908 # (gg -> H0)*(H0->tautau)
         ),
         # Feynhiggs v2.7.1 input to calculate xsec*br -  mhmax, 7TeV
         'legendEntry' : 'ggA(120) #rightarrow #tau^{+} #tau^{-}',
@@ -106,9 +132,9 @@ RECO_SAMPLES = {
         'events_processed' : 99470,
         'skim_eff' : 1.0,
         'x_sec' : (
-            64468.1*_femtobarns*0.122789 + # (bb -> A0)*(A0->tautau)
-            60252.8*_femtobarns*0.123462 + # (bb -> h0)*(h0->tautau)
-            5133.30*_femtobarns*0.125908   # (bb -> H0)*(H0->tautau)
+             133125.*_femtobarns*0.122789 # (bb -> A0)*(A0->tautau)
+           + 126929.*_femtobarns*0.123462 # (bb -> h0)*(h0->tautau)
+           +   5801.*_femtobarns*0.125908 # (bb -> H0)*(H0->tautau)
         ),
         'legendEntry' : 'bbA(120) #rightarrow #tau^{+} #tau^{-}',
         'type' : 'bsmMC',
@@ -124,9 +150,9 @@ RECO_SAMPLES = {
         'skim_eff' : 1.0,
         # Configuration/GenProduction/python/PYTHIA6_Tauola_gg_H130_tautau_7TeV_cff.py
         'x_sec' : (
-            35094.3*_femtobarns*0.124340 + # (gg -> A0)*(A0->tautau)
-            12089.4*_femtobarns*0.124263 + # (gg -> h0)*(h0->tautau)
-            30851.8*_femtobarns*0.125984   # (gg -> H0)*(H0->tautau)
+              32421.*_femtobarns*0.124340 # (gg -> A0)*(A0->tautau)
+           +   6595.*_femtobarns*0.124263 # (gg -> h0)*(h0->tautau)
+           +  33870.*_femtobarns*0.125984 # (gg -> H0)*(H0->tautau)
         ),
         # Feynhiggs v2.7.1 input to calculate xsec*br -  mhmax, 7TeV
         'legendEntry' : 'ggA(130) #rightarrow #tau^{+} #tau^{-}',
@@ -142,9 +168,9 @@ RECO_SAMPLES = {
         'events_processed' : 101900,
         'skim_eff' : 1.0,
         'x_sec' : (
-            104316*_femtobarns*0.124340 + # (bb -> A0)*(A0->tautau)
-            65638.3*_femtobarns*0.124263 + # (bb -> h0)*(h0->tautau)
-            39203.8*_femtobarns*0.125984   # (bb -> H0)*(H0->tautau)
+             102366.*_femtobarns*0.124340 # (bb -> A0)*(A0->tautau)
+           +  37150.*_femtobarns*0.124263 # (bb -> h0)*(h0->tautau)
+           +  65807.*_femtobarns*0.125984 # (bb -> H0)*(H0->tautau)
         ),
         # Feynhiggs v2.7.1 input to calculate xsec*br -  mhmax, 7TeV
         'legendEntry' : 'bbA(130) #rightarrow #tau^{+} #tau^{-}',
@@ -161,9 +187,9 @@ RECO_SAMPLES = {
         'skim_eff' : 1.0,
         # Configuration/GenProduction/python/PYTHIA6_Tauola_gg_H200_tautau_7TeV_cff.py
         'x_sec' : (
-            3482.30*_femtobarns*0.131356 + # (gg -> A0)*(A0->tautau)
-            #12232.9*_femtobarns*9.501279E-02 + # (gg -> h0)*(h0->tautau)
-            3902.27*_femtobarns*0.132576   # (gg -> H0)*(H0->tautau)
+               # CV, EK: (gg -> h0)*(h0->tautau) cross-section not included, as h0 mass is very different from mA
+               3318.*_femtobarns*0.131356 # (gg -> A0)*(A0->tautau)
+           +   3665.*_femtobarns*0.132576 # (gg -> H0)*(H0->tautau)
         ),
         'legendEntry' : 'ggA(200) #rightarrow #tau^{+} #tau^{-}',
         'type' : 'bsmMC',
@@ -179,9 +205,9 @@ RECO_SAMPLES = {
         'skim_eff' : 1.0,
         # Configuration/GenProduction/python/PYTHIA6_Tauola_gg_H200_tautau_7TeV_cff.py
         'x_sec' : (
-            21620.8*_femtobarns*0.131356 + # (bb -> A0)*(A0->tautau)
-            #556.482*_femtobarns*9.501279E-02 + # (bb -> h0)*(h0->tautau)
-            21467.6*_femtobarns*0.132576   # (bb -> HH)*(HH->tautau)
+              # CV, EK: (bb -> h0)*(h0->tautau) cross-section not included, as h0 mass is very different from mA
+              21202.*_femtobarns*0.131356 # (bb -> A0)*(A0->tautau)
+           +  21128.*_femtobarns*0.132576 # (bb -> HH)*(H0->tautau)
         ), 
         'legendEntry' : 'bbA(200) #rightarrow #tau^{+} #tau^{-}',
         'type' : 'bsmMC',
@@ -203,8 +229,8 @@ RECO_SAMPLES = {
         'type' : plotter.process_Ztautau.config_dqmHistPlotter.type.value(),
         'drawOption' : styles.drawOption_Ztautau,
         'enableSysUncertainties' : True,
-        'hlt' : cms.InputTag("TriggerResults", "", "REDIGI38X"),
-        #'enableSysUncertainties' : False
+        #'enableSysUncertainties' : False,
+        'hlt' : cms.InputTag("TriggerResults", "", "REDIGI38X")
     },
     # Using the unskimmed dataset
     'Zmumu' : {
