@@ -14,10 +14,10 @@ PLOT_FILES_PREFIX = 'plots'
 
 SAMPLE_LIST_OVERRIDE = [
     # modify in case you want to submit crab jobs for some samples only...
-    'data_Mu_132440-145761_Sep17ReReco',
 ]
 
-ENABLE_SYSTEMATICS = False
+ENABLE_SYSTEMATICS = True
+#ENABLE_SYSTEMATICS = False
 
 JOB_OPTIONS_DEFAULTS = [
     ('maxEvents', -1),
