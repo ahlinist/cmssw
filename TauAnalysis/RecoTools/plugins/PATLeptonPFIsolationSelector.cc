@@ -17,7 +17,9 @@ PATLeptonPFIsolationSelector<T>::PATLeptonPFIsolationSelector(const edm::Paramet
 
   edm::ParameterSet cfgPhotonIso = cfg.getParameter<edm::ParameterSet>("photonIso");
   pfPhotonIso_ = new pfIsoConfigType(reco::PFCandidate::gamma, cfgPhotonIso);
-
+  
+  sumPtMin_ = cfg.exists("sumPtMin") ? 
+    cfg.getParameter<double>("sumPtMin") : -1.;
   sumPtMax_ = cfg.getParameter<double>("sumPtMax");
 
   if ( cfg.exists("sumPtMethod") ) {
@@ -44,7 +46,7 @@ PATLeptonPFIsolationSelector<T>::~PATLeptonPFIsolationSelector()
 
 template <class T>
 void PATLeptonPFIsolationSelector<T>::select(const edm::Handle<collection>& patLeptons, 
-					    const edm::Event& evt, const edm::EventSetup& es)
+					     const edm::Event& evt, const edm::EventSetup& es)
 {
   selected_.clear();
   
@@ -63,9 +65,11 @@ void PATLeptonPFIsolationSelector<T>::select(const edm::Handle<collection>& patL
     sumPt += pfPhotonIso_->compSumPt(*pfCandidates, patLepton->p4());
 
     if ( sumPtMethod_ == kAbsoluteIso ) {
+      if ( sumPtMin_ > 0. && sumPt < sumPtMin_ ) continue;
       if ( sumPtMax_ > 0. && sumPt > sumPtMax_ ) continue;
     } else if ( sumPtMethod_ == kRelativeIso ) {
       double relIso = ( patLepton->pt() > 1. ) ? (sumPt/patLepton->pt()) : sumPt;
+      if ( sumPtMin_ > 0. && relIso < sumPtMin_ ) continue;
       if ( sumPtMax_ > 0. && relIso > sumPtMax_ ) continue;
     }
 
