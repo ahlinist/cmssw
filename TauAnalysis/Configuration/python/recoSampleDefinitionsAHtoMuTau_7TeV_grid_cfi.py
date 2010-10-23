@@ -290,8 +290,8 @@ RECO_SAMPLES = {
     },
     # Using the unskimmed dataset
     'PPmuXptGt20Mu15' : {
-        'datasetpath' : "/InclusiveMu15/Spring10-START3X_V26_S09-v1/GEN-SIM-RECO",
-        'events_processed' : 4377187,
+        'datasetpath' : "/InclusiveMu15/Summer10-START36_V9_S09-v1/GEN-SIM-RECO",
+        'events_processed' : 5120334,
         'skim_eff' : 1.0,
         'x_sec' : 0.2969*_millibarns*2.684e-4,
         'legendEntry' : plotter.process_PPmuXptGt20.config_dqmHistPlotter.legendEntry.value(),
