@@ -64,7 +64,7 @@ void GetRatio_Data::Loop(Int_t AntiFlag, Float_t AntiUEE, Float_t AntiLEE, Float
       if (IsVtxGood ==0 ) continue;
       if (IsTracksGood ==0 ) continue;
 
-      if (HLT[HLTIndex[1]]==0 && HLT[HLTIndex[0]]==0 && HLT[HLTIndex[2]]==0) continue;
+      if (HLT[HLTIndex[1]]==0 && HLT[HLTIndex[0]]==0 && HLT[HLTIndex[2]]==0 && HLT[HLTIndex[3]]==0 && HLT[HLTIndex[4]]==0) continue;
 
       //Jet selection
       jet_index=-1;
@@ -91,7 +91,7 @@ void GetRatio_Data::Loop(Int_t AntiFlag, Float_t AntiUEE, Float_t AntiLEE, Float
             if (sqrt(pow(dEta,2)+pow(dPhi,2)) < 0.15) jet_Overlap = 1;
          }
          if (jet_Overlap==1) continue;
-         if (jetTrg[iJet][0]!=1 && jetTrg[iJet][1]!=1 && jetTrg[iJet][2]!=1) continue;
+         if (jetTrg[iJet][0]!=1 && jetTrg[iJet][1]!=1 && jetTrg[iJet][2]!=1 && jetTrg[iJet][3]!=1 && jetTrg[iJet][4]!=1) continue;
 
          if (jetPt[iJet] > LJetPt) {
             LJetPt=jetPt[iJet];
@@ -109,12 +109,21 @@ void GetRatio_Data::Loop(Int_t AntiFlag, Float_t AntiUEE, Float_t AntiLEE, Float
 
          //Check HLT for different pt range
          if (phoEt[iPho] > PhoEtCut && phoEt[iPho]<40) {
-           if (HLT[HLTIndex[0]]!=1) continue;
+           if (HLT[HLTIndex[0]]!=1)     continue;
+           if (jetTrg[jet_index][0]!=1) continue;
          } else if (phoEt[iPho]>=40 && phoEt[iPho]<60) {
-           if (HLT[HLTIndex[1]]!=1) continue;
-         } else if (phoEt[iPho]>=60) {
-           if (HLT[HLTIndex[2]]!=1) continue;
-         } 
+           if (HLT[HLTIndex[1]]!=1)     continue;
+           if (jetTrg[jet_index][1]!=1) continue;
+         } else if (phoEt[iPho]>=60 && phoEt[iPho]<80) {
+           if (HLT[HLTIndex[2]]!=1)     continue;
+           if (jetTrg[jet_index][2]!=1) continue;
+         } else if (phoEt[iPho]>=80 && phoEt[iPho]<110) {
+           if (HLT[HLTIndex[3]]!=1)     continue;
+           if (jetTrg[jet_index][3]!=1) continue;
+         } else if (phoEt[iPho]>=110){
+           if (HLT[HLTIndex[4]]!=1)     continue;
+           if (jetTrg[jet_index][4]!=1) continue;
+         }
 
          if (phoOverlap[iPho] == 1) continue;
          if (phohasPixelSeed[iPho] == 1) continue;
@@ -122,8 +131,7 @@ void GetRatio_Data::Loop(Int_t AntiFlag, Float_t AntiUEE, Float_t AntiLEE, Float
          if (fabs(phoSCEta[iPho]) > 1.4442 && fabs(phoSCEta[iPho]) < 1.566) continue;
          if (phoHoverE[iPho] > HoverECut) continue;
 
-         if (fabs(phoSCEta[iPho]) < 1.4442 && phoRecoFlag[iPho] == 2) continue;
-         if (fabs(phoSCEta[iPho]) < 1.4442 && (phoSeverity[iPho] == 3 || phoSeverity[iPho] == 4)) continue;
+         if (fabs(phoSCEta[iPho]) < 1.4442 && phoSigmaIEtaIEta[iPho]<0.002) continue;
 
          //dR(Leading jet, pho) > 0.7
          dEta = phoEta[iPho] - jetEta[jet_index];
