@@ -4,7 +4,7 @@ import FWCore.ParameterSet.Config as cms
 # skim Z --> mu+ mu- candidate events passing "golden" VTBF selection
 #--------------------------------------------------------------------------------
 
-process = cms.Process("reskimGoldenZmumu")
+process = cms.Process("skimGoldenZmumu")
 
 process.load('Configuration/StandardSequences/Services_cff')
 process.load('FWCore/MessageService/MessageLogger_cfi')
