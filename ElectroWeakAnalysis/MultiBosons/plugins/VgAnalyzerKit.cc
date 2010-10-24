@@ -1033,8 +1033,6 @@ fabs(ip->pdgId())<=14) || ip->pdgId()==22))) {
       phoOverlap_[nPho_] = (int) iPho->hasOverlaps("electrons");
       phohasPixelSeed_[nPho_] = (int) iPho->hasPixelSeed();
       
-      cout<<" Pho = "<<nPho_<<"     "<<phohasPixelSeed_[nPho_]<<"     "<<phoEt_[nPho_]<<"     "<<phoTrkIsoHollowDR04_[nPho_]<<endl;
-
       // where is photon ? (0: EB, 1: EE, 2: EBGap, 3: EEGap, 4: EBEEGap)
       phoPos_[nPho_] = -1;
       if (iPho->isEB() == true) phoPos_[nPho_] = 0;
