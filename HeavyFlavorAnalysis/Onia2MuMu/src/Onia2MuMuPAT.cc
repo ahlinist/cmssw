@@ -138,7 +138,7 @@ Onia2MuMuPAT::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
 	    pvs = revertex.makeVertices(muonLess, *pvbeamspot, iSetup) ;
 	    if (!pvs.empty()) {
 	      Vertex muonLessPV = Vertex(pvs.front());
-	      myCand.addUserData("muonlessPV",muonLessPV);
+	      // myCand.addUserData("muonlessPV",muonLessPV);
               thePrimaryV = muonLessPV;
 	    }
 	  }
