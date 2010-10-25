@@ -28,8 +28,8 @@ SAMPLES_TO_PLOT = [
     'A120Sum',
     'A130Sum',
     'A200Sum',
-    #'qcdSum',
-    'PPmuXptGt20Mu15',
+    'qcdSum',
+    #'PPmuXptGt20Mu15',
     'WplusJets',
     'TTplusJets',
     'Zmumu',
@@ -52,11 +52,10 @@ SAMPLE_DEFAULTS = {
 
 # Conversions to pico barns
 _femtobarns = 1.0e-3
-_millibarns = 1.0e9
 _picobarns = 1.0
 _nanobarns = 1000.0
 _microbarns = 1.0e6
-_millibarns = 1.0e3
+_millibarns = 1.0e9
 
 # Integrated luminosity to normalize
 #TARGET_LUMI = (4924.3 + 61275 + 115786 + 808979)/_microbarns
@@ -68,7 +67,7 @@ _millibarns = 1.0e3
 #Finding lumi for crab/crabdir_runAHtoMuTau_AHtoMuTau_data_Mu_145762_147454_Prompt_Run10
 #Dir: crab/crabdir_runAHtoMuTau_AHtoMuTau_data_Mu_145762_147454_Prompt_Run10    LUMI:  4692057.60607
 #TOTAL INTEGRATED LUMINOSITY:  7631194.02434  MICROBARNS
-TARGET_LUMI = (7631194.02434)/_microbarns
+TARGET_LUMI = (15.00)/_picobarns
 
 #--------------------------------------------------------------------------------
 # NOTE:
@@ -360,21 +359,21 @@ MERGE_SAMPLES = {
         'type' : 'bsmMC',
         'drawOption' : RECO_SAMPLES['A200']['drawOption'],
     },
-    'smBgSum' : {
-        'samples' : [
-            'Ztautau',
-            'Zmumu',
-            'qcdSum',
+    #'smBgSum' : {
+        #'samples' : [
+            #'Ztautau',
+            #'Zmumu',
+            #'qcdSum',
             #'InclusivePPmuX',
             #'PPmuXptGt20Mu10',
             #'PPmuXptGt20Mu15',
-            'WplusJets',
-            'TTplusJets'
-        ],
-        'legendEntry' : 'SM',
-        'type' : 'smSumMC',
-        'drawOption' : styles.drawOption_QCD,
-    }
+            #'WplusJets',
+            #'TTplusJets'
+        #],
+        #'legendEntry' : 'SM',
+        #'type' : 'smSumMC',
+        #'drawOption' : styles.drawOption_QCD,
+    #}
 }
 
 # List of all subsamples used in any plot job.  i.e. if qcdSum is included in
