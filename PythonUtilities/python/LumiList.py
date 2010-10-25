@@ -287,7 +287,13 @@ class LumiList(object):
             # the run isn't there, so no need to look any further
             return False
         for lumiRange in lumiRangeList:
-            if lumiRange[0] <= lumiSection and lumiSection <= lumiRange[1]:
+            # we want to make this as found if either the lumiSection
+            # is inside the range OR if the lumi section is greater
+            # than or equal to the lower bound of the lumi range and
+            # the upper bound is 0 (which means extends to the end of
+            # the run)
+            if lumiRange[0] <= lumiSection and \
+               0 == lumiRange[1] or lumiSection <= lumiRange[1]:
                 # got it
                 return True
         return False
