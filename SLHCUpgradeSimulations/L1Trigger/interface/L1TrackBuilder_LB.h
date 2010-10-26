@@ -703,7 +703,7 @@ L1TrackBuilderLB< T >::makeL1Track( const edm::EventSetup& iSetup,
                       cmsUpgrades::L1Track< T > abcde( fghij, dSidx, mMagneticFieldStrength, vertexBeamSpot.x(), vertexBeamSpot.y(), prob ) ;
                       abcde.SetBeamSpot00( seed->isBeamSpot00() );
                       abcde.fitL1Track();
-
+                      //std::cerr<<"LEN"<<abcde.numberStubs()<<std::endl;
                       output.push_back(abcde);
                     }
                   }
