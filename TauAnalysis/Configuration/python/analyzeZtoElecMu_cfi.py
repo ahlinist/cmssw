@@ -319,7 +319,7 @@ elecMuEventDump = cms.PSet(
     hltPathsToPrint = cms.vstring('HLT_Ele15_SW_EleId_L1R','HLT_Mu9'),
         
     genParticleSource = cms.InputTag('genParticles'),
-    genJetSource = cms.InputTag('iterativeCone5GenJets'),
+    genJetSource = cms.InputTag('ak5GenJets'),
     genTauJetSource = cms.InputTag('tauGenJets'),
     genEventInfoSource = cms.InputTag('generator'),
     

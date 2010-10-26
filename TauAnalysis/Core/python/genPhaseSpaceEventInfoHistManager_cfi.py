@@ -7,7 +7,7 @@ genPhaseSpaceEventInfoHistManager = cms.PSet(
   generatorInfoSource = cms.InputTag('generator'),
   genPhaseSpaceEventInfoSource = cms.InputTag('genPhaseSpaceEventInfo'),
 
-  genJetSource = cms.InputTag('iterativeCone5GenJets'),
+  genJetSource = cms.InputTag('ak5GenJets'),
   genJetPtMin = cms.double(20.),
   #genJetEtaMin = cms.double(-2.5),
   #genJetEtaMax = cms.double(+2.5),
