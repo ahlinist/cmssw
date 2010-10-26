@@ -60,17 +60,13 @@ process.saveZtoElecMuPlots = cms.EDAnalyzer("DQMSimpleFileSaver",
 )
 
 process.maxEvents = cms.untracked.PSet(            
-    input = cms.untracked.int32(1000)    
+    input = cms.untracked.int32(100)    
 )
 
 process.source = cms.Source("PoolSource",
     fileNames = cms.untracked.vstring(
-        #'/store/relval/CMSSW_3_6_1/RelValZTT/GEN-SIM-RECO/START36_V7-v1/0021/F405BC9A-525D-DF11-AB96-002618943811.root',
-        #'/store/relval/CMSSW_3_6_1/RelValZTT/GEN-SIM-RECO/START36_V7-v1/0020/EE3E8F74-365D-DF11-AE3D-002618FDA211.root'
-        #'rfio:/castor/cern.ch/user/l/lusito/SkimOctober09/ZtautauSkimMT314_3/muTauSkim_1.root',
-        #'rfio:/castor/cern.ch/user/l/lusito/SkimOctober09/ZtautauSkimMT314_3/muTauSkim_2.root'
-        'rfio:/castor/cern.ch/user/c/cerati/TauAnalysisTest/tauAnalysisElecMu_newskim_Ztautau_4.root' #this is a 35X sample, redo btagging!
-        #'rfio:/castor/cern.ch/user/c/cerati/TauAnalysisTest/tauAnalysisElecMu_newskim_DataMuPrompt_Bp1_1_1.root'
+        #'rfio:/castor/cern.ch/user/c/cerati/SkimDataZtautau/tauAnalysisElecMu_skim_QCDMuPt15_1_1.root'
+        'rfio:/castor/cern.ch/user/c/cerati/SkimDataZtautau/tauAnalysisElecMu_skim_TTbar_1_1.root'
     )
     #skipBadFiles = cms.untracked.bool(True)                        
 )
@@ -186,6 +182,15 @@ from TauAnalysis.Configuration.tools.sysUncertaintyTools import disableSysUncert
 if not hasattr(process, "isBatchMode"):
     disableSysUncertainties_runZtoElecMu(process)
     #enableSysUncertainties_runZtoElecMu(process)
+#--------------------------------------------------------------------------------
+
+#--------------------------------------------------------------------------------
+# fixes for Fall10 MC samples
+## process.Trigger.selectors[0].src = cms.InputTag("TriggerResults","","REDIGI38X")
+## process.cfgTrigger.src = cms.InputTag("TriggerResults","","REDIGI38X")
+## process.elecMuEventDump.hltResultsSource = cms.InputTag("TriggerResults","","REDIGI38X")
+## process.triggerHistManager.hltResultsSource = cms.InputTag("TriggerResults","","REDIGI38X")
+## process.triggerHistManagerForElecMu.hltResultsSource = cms.InputTag("TriggerResults","","REDIGI38X")
 #--------------------------------------------------------------------------------
 
 #--------------------------------------------------------------------------------
