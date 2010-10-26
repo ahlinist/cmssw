@@ -21,8 +21,8 @@ process.maxEvents = cms.untracked.PSet(
 
 process.source = cms.Source("PoolSource",
                             fileNames = cms.untracked.vstring(        
-"rfio:/castor/cern.ch/cms/store/relval/CMSSW_3_6_1/RelValZMM/GEN-SIM-RECO/START36_V7-v1/0020/566083FA-005D-DF11-B5E5-003048679030.root"
-#"rfio:/castor/cern.ch/cms/store/relval/CMSSW_3_6_1/RelValWM/GEN-SIM-RECO/START36_V7-v1/0020/5426D78D-055D-DF11-AE6B-003048678F84.root"
+#          'file:/ciet3b/data4/MUSKIM2010/MUSKIM_143958-144114_6.root'
+            "file:/ciet3b/data4/MUSKIM2010B/MUAODRED_SKIM_147117-148058_5.root"
     )
 )
 
