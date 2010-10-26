@@ -14,6 +14,9 @@ namespace LHAPDF {
 #include <TLegend.h>
 #include <TPaveText.h>
 
+#include <iostream>
+#include <iomanip>
+
 // global defaults
 const int defaultCanvasSizeX = 800;
 const int defaultCanvasSizeY = 600;
@@ -82,50 +85,76 @@ TGraph* PartonLuminosityAnalyzer::makeGraph(int flavor1, int flavor2)
   return makeGraph(flavors1, flavors2);
 }
 
-double compTau(double mass, double sqrtS)
+double compPartonLuminosity(double sqrtS, double mass, 
+			    ROOT::Math::Integrator* integrator, PartonLuminosityIntegrand* integrand,
+			    const std::vector<int>& flavors1, const std::vector<int>& flavors2)
 {
+  assert(flavors1.size() == flavors2.size());
+
+  integrand->SetParameterSqrtS(sqrtS);
+  integrand->SetParameterQ(mass);
   double sqrtTau = mass/sqrtS;
-  return sqrtTau*sqrtTau;
+  double tau = sqrtTau*sqrtTau;
+  integrand->SetParameterTau(tau);
+
+  double partonLuminosity = 0.;
+
+  size_t numFlavors = flavors1.size();
+  for ( size_t iFlavor = 0; iFlavor < numFlavors; ++iFlavor ) {
+    integrand->SetParameterFlavor1(flavors1[iFlavor]);
+    integrand->SetParameterFlavor2(flavors2[iFlavor]);
+    integrator->SetFunction(*integrand);
+    partonLuminosity += integrator->Integral(tau, 1.); 
+  }
+
+  return partonLuminosity;
 }
 
 TGraph* PartonLuminosityAnalyzer::makeGraph(const std::vector<int>& flavors1, const std::vector<int>& flavors2)
 {
   assert(flavors1.size() == flavors2.size());
 
-  size_t numFlavors = flavors1.size();
+//--- add charge conjugate flavors
+//    and in TeVatron case, flip sign of one flavor 
+//   (TeVatron is ppbar collider, so need to use parton distribution function 
+//    for anti-flavor: pdf(quark|proton) = pdf(anti-quark|anti-proton))
+  std::vector<int> flavors1_TeVatron;
+  std::vector<int> flavors2_TeVatron;
+  std::vector<int> flavors1_LHC;
+  std::vector<int> flavors2_LHC;
+  for ( size_t iFlavor = 0; iFlavor < flavors1.size(); ++iFlavor ) {
+    if ( flavors1[iFlavor] == LHAPDF::GLUON && flavors2[iFlavor] == LHAPDF::GLUON ) {
+      flavors1_TeVatron.push_back(LHAPDF::GLUON);
+      flavors2_TeVatron.push_back(LHAPDF::GLUON);
+      
+      flavors1_LHC.push_back(LHAPDF::GLUON);
+      flavors2_LHC.push_back(LHAPDF::GLUON);
+    } else {
+      flavors1_TeVatron.push_back(+flavors1[iFlavor]);
+      flavors2_TeVatron.push_back(-flavors2[iFlavor]);
+      flavors1_TeVatron.push_back(-flavors1[iFlavor]);
+      flavors2_TeVatron.push_back(+flavors2[iFlavor]);
+      
+      flavors1_LHC.push_back(+flavors1[iFlavor]);
+      flavors2_LHC.push_back(+flavors2[iFlavor]);
+      flavors1_LHC.push_back(-flavors1[iFlavor]);
+      flavors2_LHC.push_back(-flavors2[iFlavor]);
+    }
+  }
 
+  assert(flavors1_LHC.size() == flavors1_TeVatron.size());
+  assert(flavors2_LHC.size() == flavors2_TeVatron.size());
+  
   TGraph* graph = new TGraph();
-
+  
   unsigned iPoint = 0;
   for ( double mass = massMin_; mass <= massMax_; mass += massStepSize ) {
-    integrand_->SetParameterSqrtS(sqrtS_TeVatron_);
-    integrand_->SetParameterQ(mass);
-    double tau_TeVatron = compTau(mass, sqrtS_TeVatron_);
-    integrand_->SetParameterTau(tau_TeVatron);
-    double partonLuminosity_TeVatron = 0.;
-    for ( size_t iFlavor = 0; iFlavor < numFlavors; ++iFlavor ) {
-      integrand_->SetParameterFlavor1(+flavors1[iFlavor]);
-      if ( LHAPDF::GLUON )
-	integrand_->SetParameterFlavor2(+flavors2[iFlavor]);
-      else
-	integrand_->SetParameterFlavor2(-flavors2[iFlavor]); // TeVatron is ppbar collider, so need to use parton distribution function 
-                                                             // for anti-flavor, since pdf(quark|proton) = pdf(anti-quark|anti-proton)
-      integrator_->SetFunction(*integrand_);
-      partonLuminosity_TeVatron += integrator_->Integral(tau_TeVatron, 1.); 
-    }
+    double partonLuminosity_TeVatron = 
+      compPartonLuminosity(sqrtS_TeVatron_, mass, integrator_, integrand_, flavors1_TeVatron, flavors2_TeVatron);
     std::cout << " TeVatron(m = " << mass << ") = " << partonLuminosity_TeVatron << std::endl;
 
-    integrand_->SetParameterSqrtS(sqrtS_LHC_);
-    integrand_->SetParameterQ(mass);
-    double tau_LHC = compTau(mass, sqrtS_LHC_);
-    integrand_->SetParameterTau(tau_LHC);
-    double partonLuminosity_LHC = 0.;
-    for ( size_t iFlavor = 0; iFlavor < numFlavors; ++iFlavor ) {
-      integrand_->SetParameterFlavor1(+flavors1[iFlavor]);
-      integrand_->SetParameterFlavor2(+flavors2[iFlavor]);
-      integrator_->SetFunction(*integrand_);
-      partonLuminosity_LHC += integrator_->Integral(tau_LHC, 1.); 
-    }
+    double partonLuminosity_LHC = 
+      compPartonLuminosity(sqrtS_LHC_, mass, integrator_, integrand_, flavors1_LHC, flavors2_LHC);
     std::cout << " LHC(m = " << mass << ") = " << partonLuminosity_LHC << std::endl;
 
     graph->SetPoint(iPoint, mass, partonLuminosity_LHC/partonLuminosity_TeVatron);
@@ -158,7 +187,9 @@ void PartonLuminosityAnalyzer::endJob()
   if ( yMax == undefinedYmax ) yMax = ( canvas->GetLogy() ) ? defaultYmax_log : defaultYmax_linear;
 
   TH1* dummyHistogram = new TH1F("dummyHistogram", "dummyHistogram", TMath::Nint((massMax_ - massMin_)/10.), massMin_, massMax_); 
-  dummyHistogram->SetTitle("Parton Luminosity LHC @ 7 TeV vs. TeVatron");
+  std::ostringstream dummyHistogramTitle;
+  dummyHistogramTitle << "Parton Luminosity LHC @ " << std::fixed << std::setprecision(1) << sqrtS_LHC_/1000. << " TeV vs. TeVatron";
+  dummyHistogram->SetTitle(dummyHistogramTitle.str().data());
   dummyHistogram->SetStats(false);
   dummyHistogram->SetMinimum(yMin);
   dummyHistogram->SetMaximum(yMax);
@@ -188,7 +219,7 @@ void PartonLuminosityAnalyzer::endJob()
   graphUUbarDDbar->SetLineWidth(2);
   graphUUbarDDbar->Draw("C");
 
-  TLegend* legend = new TLegend(0.14, 0.71, 0.39, 0.89, "", "brNDC"); 
+  TLegend* legend = new TLegend(0.14, 0.73, 0.39, 0.89, "", "brNDC"); 
   legend->SetBorderSize(0);
   legend->SetFillColor(0);
   legend->AddEntry(graphGluonGluon, "gg", "l");
@@ -202,7 +233,7 @@ void PartonLuminosityAnalyzer::endJob()
   else 
     pdfSetLabel_pos0  = 0;
   size_t pdfSetLabel_pos1 = pdfSet_.find_last_of(".");
-  TPaveText* pdfSetLabel = new TPaveText(0.71, 0.14, 0.89, 0.21, "brNDC"); 
+  TPaveText* pdfSetLabel = new TPaveText(0.71, 0.12, 0.89, 0.19, "brNDC"); 
   pdfSetLabel->SetBorderSize(0);
   pdfSetLabel->SetFillColor(0);
   pdfSetLabel->AddText(std::string(pdfSet_, pdfSetLabel_pos0, pdfSetLabel_pos1 - pdfSetLabel_pos0).data());
