@@ -8,9 +8,9 @@
  *
  * \author Christian Veelken, UC Davis
  *
- * \version $Revision: 1.1 $
+ * \version $Revision: 1.2 $
  *
- * $Id: DQMExportAnalysisResults.h,v 1.1 2010/10/17 14:01:02 veelken Exp $
+ * $Id: DQMExportAnalysisResults.h,v 1.2 2010/10/22 11:55:02 veelken Exp $
  *
  */
 
@@ -47,7 +47,6 @@ class DQMExportAnalysisResults : public edm::EDAnalyzer
 	dqmDirectory_(cfg.getParameter<std::string>("dqmDirectory")),
         outputFilePath_(cfg.getParameter<std::string>("outputFilePath")),
 	outputFileName_(cfg.getParameter<std::string>("outputFileName")),
-        numEvents_(cfg.getParameter<double>("numEvents")),
 	hasSysUncertainties_(cfg.getParameter<bool>("hasSysUncertainties"))
     {}
     ~processEntryType() {}
@@ -55,7 +54,6 @@ class DQMExportAnalysisResults : public edm::EDAnalyzer
     std::string dqmDirectory_;	
     std::string outputFilePath_;
     std::string outputFileName_;
-    double numEvents_;
     bool hasSysUncertainties_;
   };
 
@@ -66,13 +64,19 @@ class DQMExportAnalysisResults : public edm::EDAnalyzer
     channelEntryType(const std::string& name, unsigned index, const edm::ParameterSet& cfg)
       : name_(name),
 	index_(index),
-	meName_(cfg.getParameter<std::string>("meName")),
+	meNameTemplate_(cfg.getParameter<std::string>("template")),
 	outputFileName_(cfg.getParameter<std::string>("outputFileName"))
-    {}
+    {
+      edm::ParameterSet cfgNormalization = cfg.getParameter<edm::ParameterSet>("normalization");
+      meNameNumEventsProcessed_ = cfgNormalization.getParameter<std::string>("numEventsProcessed");
+      meNameNumEventsPassed_ = cfgNormalization.getParameter<std::string>("numEventsPassed");
+    }
     ~channelEntryType() {}
     std::string name_;	
     unsigned index_;
-    std::string meName_;	
+    std::string meNameTemplate_;	
+    std::string meNameNumEventsProcessed_;
+    std::string meNameNumEventsPassed_;
     std::string outputFileName_;
   };
 
