@@ -134,6 +134,7 @@ RECO_SAMPLES = {
         'datasetpath' : "/Atautau_M120/Spring10-START3X_V26_S09-v1/GEN-SIM-RECO",
         'dbs_url' :  "http://cmsdbsprod.cern.ch/cms_dbs_prod_global/servlet/DBSServlet",
         'events_processed' : 110670,
+        'number_of_jobs' : 25,
         'skim_eff' : 1.0,
         # Configuration/GenProduction/python/PYTHIA6_Tauola_gg_H120_tautau_7TeV_cff.py
         'x_sec' : (
@@ -152,6 +153,7 @@ RECO_SAMPLES = {
         'datasetpath' : "/bbAtautau_M120/Spring10-START3X_V26_S09-v1/GEN-SIM-RECO",
         'dbs_url' :  "http://cmsdbsprod.cern.ch/cms_dbs_prod_global/servlet/DBSServlet",
         'events_processed' : 99470,
+        'number_of_jobs' : 25,
         'skim_eff' : 1.0,
         'x_sec' : (
              133125.*_femtobarns*0.122789 # (bb -> A0)*(A0->tautau)
@@ -169,6 +171,7 @@ RECO_SAMPLES = {
         'datasetpath' : "/Atautau_M130/Spring10-START3X_V26_S09-v1/GEN-SIM-RECO",
         'dbs_url' :  "http://cmsdbsprod.cern.ch/cms_dbs_prod_global/servlet/DBSServlet",
         'events_processed' : 115290,
+        'number_of_jobs' : 25,
         'skim_eff' : 1.0,
         # Configuration/GenProduction/python/PYTHIA6_Tauola_gg_H130_tautau_7TeV_cff.py
         'x_sec' : (
@@ -188,6 +191,7 @@ RECO_SAMPLES = {
         'datasetpath' : "/bbAtautau_M130/Spring10-START3X_V26_S09-v1/GEN-SIM-RECO",
         'dbs_url' :  "http://cmsdbsprod.cern.ch/cms_dbs_prod_global/servlet/DBSServlet",
         'events_processed' : 101900,
+        'number_of_jobs' : 25,
         'skim_eff' : 1.0,
         'x_sec' : (
              102366.*_femtobarns*0.124340 # (bb -> A0)*(A0->tautau)
@@ -206,6 +210,7 @@ RECO_SAMPLES = {
         'datasetpath' : "/Atautau_M200/Spring10-START3X_V26_S09-v1/GEN-SIM-RECO",
         'dbs_url' :  "http://cmsdbsprod.cern.ch/cms_dbs_prod_global/servlet/DBSServlet",
         'events_processed' : 111100,
+        'number_of_jobs' : 25,
         'skim_eff' : 1.0,
         # Configuration/GenProduction/python/PYTHIA6_Tauola_gg_H200_tautau_7TeV_cff.py
         'x_sec' : (
@@ -224,6 +229,7 @@ RECO_SAMPLES = {
         'datasetpath' : "/bbAtautau_M200/Spring10-START3X_V26_S09-v1/GEN-SIM-RECO",
         'dbs_url' :  "http://cmsdbsprod.cern.ch/cms_dbs_prod_global/servlet/DBSServlet",
         'events_processed' : 101360,
+        'number_of_jobs' : 25,
         'skim_eff' : 1.0,
         # Configuration/GenProduction/python/PYTHIA6_Tauola_gg_H200_tautau_7TeV_cff.py
         'x_sec' : (
@@ -245,6 +251,7 @@ RECO_SAMPLES = {
         'datasetpath' : "/DYToTauTau_M-20_TuneZ2_7TeV-pythia6-tauola/Fall10-START38_V12-v1/GEN-SIM-RECO",
         'dbs_url' : "http://cmsdbsprod.cern.ch/cms_dbs_prod_global/servlet/DBSServlet",
         'events_processed' : 2057446,
+        'number_of_jobs' : 500,
         'skim_eff' : 1.0,
         'x_sec' : 1.28*1300*_picobarns, # Z + jets correction factor for NLO/LO cross-sections = 1.28
         'legendEntry' : plotter.process_Ztautau.config_dqmHistPlotter.legendEntry.value(),
