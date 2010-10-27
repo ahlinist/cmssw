@@ -23,10 +23,17 @@ inputFilePath = "rfio:" + outputFilePath
 
 # 7TeV samples
 
-# harvest data
+# harvest 2010A data
 for i in range(9):
 	submitToBatch(configFile = "harvestZtoElecTauPlots_cfg.py", channel = "ZtoElecTau", 
 							sample = "Data_7TeV" + "_part%(i)02d" % {"i" : (i + 1)},
+              replFunction = makeReplacementsHarvesting, replacements = "inputFilePath = " + inputFilePath,
+              job = "harvesting", queue = "8nh", outputFilePath = outputFilePath, type = "data")
+
+# harvest 2010B data
+for i in range(7):
+	submitToBatch(configFile = "harvestZtoElecTauPlots_cfg.py", channel = "ZtoElecTau", 
+							sample = "Data2010B" + "_part%(i)02d" % {"i" : (i + 1)},
               replFunction = makeReplacementsHarvesting, replacements = "inputFilePath = " + inputFilePath,
               job = "harvesting", queue = "8nh", outputFilePath = outputFilePath, type = "data")
 
@@ -41,6 +48,11 @@ for i in range(2):
 		sample = "Zee_7TeV" + "_part%(i)02d" % {"i" : (i + 1)},
     replFunction = makeReplacementsHarvesting, replacements = "inputFilePath = " + inputFilePath,
     job = "harvesting", queue = "1nh", outputFilePath = outputFilePath, type = "mc")
+
+# harvest gamma + jets - PT30 inclus
+submitToBatch(configFile = "harvestZtoElecTauPlots_cfg.py", channel = "ZtoElecTau", sample = "gammaPlusJets_Pt30",
+              replFunction = makeReplacementsHarvesting, replacements = "inputFilePath = " + inputFilePath,
+              job = "harvesting", queue = "1nh", outputFilePath = outputFilePath, type = "mc")
 
 # harvest QCD_BCtoE 
 for i in range(3):

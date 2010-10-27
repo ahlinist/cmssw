@@ -689,6 +689,21 @@ def enableFactorization_makeZtoElecTauPlots(process):
 		dqmDirectoryOut = 'harvested/gammaPlusJets_Pt80to120_factorized/zElecTauAnalyzer/'
 	)
 
+	# configure sequence for applying factorization to "PhotonJets_Pt30" process
+	process.scaleZtoElecTau_gammaPlusJets_Pt30 = composeFactorizationSequence(
+		process = process,
+		processName = "gammaPlusJets_Pt30",
+		dqmDirectoryIn_factorizedTightEvtSel = \
+                         'harvested/gammaPlusJets_Pt30/zElecTauAnalyzer_factorizedWithElectronIsolation/',
+		evtSel_factorizedTight = evtSelZtoElecTau_factorizedTight,
+		dqmDirectoryIn_factorizedLooseEvtSel = \
+                         'harvested/gammaPlusJets_Pt30/zElecTauAnalyzer_factorizedWithoutElectronIsolation/',
+		evtSel_factorizedLoose = evtSelZtoElecTau_factorizedLoose,
+		meName_numerator = meNameZtoElecTau_numerator,
+		meName_denominator = meNameZtoElecTau_denominator,
+		dqmDirectoryOut = 'harvested/gammaPlusJets_Pt30_factorized/zElecTauAnalyzer/'
+	)
+
 	# compute gamma+jets background sum using factorized histograms and FilterStatistics objects
 	process.addZtoElecTau_gammaPlusJetsSum.gammaPlusJetsSum.dqmDirectories_input = cms.vstring(
 		'harvested/gammaPlusJets_Pt15to20_factorized',
@@ -724,15 +739,16 @@ def enableFactorization_makeZtoElecTauPlots(process):
 		+ process.scaleZtoElecTau_QCD_BCtoE_Pt20to30
 		+ process.scaleZtoElecTau_QCD_BCtoE_Pt30to80
 		+ process.scaleZtoElecTau_QCD_BCtoE_Pt80to170
-		+ process.scaleZtoElecTau_gammaPlusJets_Pt15to20
-		+ process.scaleZtoElecTau_gammaPlusJets_Pt20to30
-		+ process.scaleZtoElecTau_gammaPlusJets_Pt30to50
-		+ process.scaleZtoElecTau_gammaPlusJets_Pt50to80
-		+ process.scaleZtoElecTau_gammaPlusJets_Pt80to120
+		#+ process.scaleZtoElecTau_gammaPlusJets_Pt15to20
+		#+ process.scaleZtoElecTau_gammaPlusJets_Pt20to30
+		#+ process.scaleZtoElecTau_gammaPlusJets_Pt30to50
+		#+ process.scaleZtoElecTau_gammaPlusJets_Pt50to80
+		#+ process.scaleZtoElecTau_gammaPlusJets_Pt80to120
+		+ process.scaleZtoElecTau_gammaPlusJets_Pt30
 		#			+ process.addZtoElecTau_qcdSum 
 		+ process.addZtoElecTau_qcdBCtoESum 
 		+ process.addZtoElecTau_qcdEMenrichedSum 
-		+ process.addZtoElecTau_gammaPlusJetsSum 
+		#+ process.addZtoElecTau_gammaPlusJetsSum 
 		#			+ process.addZtoElecTau_smSum
 	)
 

@@ -135,7 +135,7 @@ submitToGrid(configFile = "producePatTuple_cfg.py", channel = "ZtoElecTau",
 
 submitToGrid(configFile = "producePatTuple_cfg.py", channel = "ZtoElecTau",
 		sample = "PhotonPlusJets_Pt20to30_7TeV", job = "0",
-		dbs_name = "/PhotonJet_Pt20to30/akalinow-SkimTauTau_356_pass1-0a3d3891f015a95324f94837322fb8aa-elecMuSkim/USER",
+		dbs_name = "/PhotonJet_Pt20to30/akalinow-SkimTauTau_356_pass1-0a3d3891f015a95324f94837322fb8aa-elecTauSkim/USER",
 		dbs_url = "http://cmsdbsprod.cern.ch/cms_dbs_ph_analysis_02/servlet/DBSServlet",             
 		replFunction = makeReplacementsCrab, replacements =
 		"maxEvents = -1; eventsPerJob = 20000; applyFactorization = true; estimateSysUncertainties = false; globalTag = START3X_V26::All",
@@ -144,7 +144,7 @@ submitToGrid(configFile = "producePatTuple_cfg.py", channel = "ZtoElecTau",
 
 submitToGrid(configFile = "producePatTuple_cfg.py", channel = "ZtoElecTau",
 		sample = "PhotonPlusJets_Pt30to50_7TeV", job = "0",
-		dbs_name = "/PhotonJet_Pt30to50/akalinow-SkimTauTau_356_pass1-0a3d3891f015a95324f94837322fb8aa-elecMuSkim/USER",
+		dbs_name = "/PhotonJet_Pt30to50/akalinow-SkimTauTau_356_pass1-0a3d3891f015a95324f94837322fb8aa-elecTauSkim/USER",
 		dbs_url = "http://cmsdbsprod.cern.ch/cms_dbs_ph_analysis_02/servlet/DBSServlet",             
 		replFunction = makeReplacementsCrab, replacements =
 		"maxEvents = -1; eventsPerJob = 20000; applyFactorization = true; estimateSysUncertainties = false; globalTag = START3X_V26::All",
@@ -153,7 +153,7 @@ submitToGrid(configFile = "producePatTuple_cfg.py", channel = "ZtoElecTau",
 
 submitToGrid(configFile = "producePatTuple_cfg.py", channel = "ZtoElecTau",
 		sample = "PhotonPlusJets_Pt50to80_7TeV", job = "0",
-		dbs_name = "/PhotonJet_Pt50to80/akalinow-SkimTauTau_356_pass1-0a3d3891f015a95324f94837322fb8aa-elecMuSkim/USER",
+		dbs_name = "/PhotonJet_Pt50to80/akalinow-SkimTauTau_356_pass1-0a3d3891f015a95324f94837322fb8aa-elecTauSkim/USER",
 		dbs_url = "http://cmsdbsprod.cern.ch/cms_dbs_ph_analysis_02/servlet/DBSServlet",             
 		replFunction = makeReplacementsCrab, replacements =
 		"maxEvents = -1; eventsPerJob = 20000; applyFactorization = true; estimateSysUncertainties = false; globalTag = START3X_V26::All",
@@ -162,7 +162,7 @@ submitToGrid(configFile = "producePatTuple_cfg.py", channel = "ZtoElecTau",
 
 submitToGrid(configFile = "producePatTuple_cfg.py", channel = "ZtoElecTau",
 		sample = "PhotonPlusJets_Pt80to120_7TeV", job = "0",
-		dbs_name = "/PhotonJet_Pt80to120/akalinow-SkimTauTau_356_pass1-0a3d3891f015a95324f94837322fb8aa-elecMuSkim/USER",
+		dbs_name = "/PhotonJet_Pt80to120/akalinow-SkimTauTau_356_pass1-0a3d3891f015a95324f94837322fb8aa-elecTauSkim/USER",
 		dbs_url = "http://cmsdbsprod.cern.ch/cms_dbs_ph_analysis_02/servlet/DBSServlet",             
 		replFunction = makeReplacementsCrab, replacements =
 		"maxEvents = -1; eventsPerJob = 20000; applyFactorization = true; estimateSysUncertainties = false; globalTag = START3X_V26::All",
