@@ -38,7 +38,6 @@ produceGenObjects = cms.Sequence(
    + produceGenPhaseSpaceEventInfo
    + produceTauGenJets
    + selectGenZtautauDecayModes + selectGenAHtautauDecayModes 
-   + produceSysErrGenEventReweights
 )
 
 produceRecObjects = cms.Sequence(
