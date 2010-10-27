@@ -322,9 +322,9 @@ const reco::Candidate* getDistPion(const pat::Tau& recTauJet)
       << " Unsupported rec. tau decay mode = " << recTauDecayMode << " --> returning NULL pointer !!";
     return 0;
   }
-
-  edm::LogWarning ("getDistPion")
-    << " Failed to identify 'distinguishable' rec. pion --> returning NULL pointer !!";
+  
+  //edm::LogWarning ("getDistPion")
+  //  << " Failed to identify 'distinguishable' rec. pion --> returning NULL pointer !!";
   return 0;
 }
 
@@ -361,7 +361,6 @@ const reco::Candidate* getDistPion(const reco::GenJet& genTauJet)
       << " Unsupported gen. tau decay mode = " << genTauDecayMode << " --> returning NULL pointer !!";
     return 0;
   }
-
   edm::LogWarning ("getDistPion")
     << " Failed to identify 'distinguishable' gen. pion --> returning NULL pointer !!";
   return 0;
