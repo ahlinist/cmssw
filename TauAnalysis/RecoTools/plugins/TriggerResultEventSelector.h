@@ -8,9 +8,9 @@
  * 
  * \author Christian Veelken, UC Davis
  *
- * \version $Revision: 1.3 $
+ * \version $Revision: 1.4 $
  *
- * $Id: TriggerResultEventSelector.h,v 1.3 2010/04/28 14:51:15 jkolb Exp $
+ * $Id: TriggerResultEventSelector.h,v 1.4 2010/09/28 11:23:37 jkolb Exp $
  *
  */
 
@@ -22,19 +22,29 @@
 
 class TriggerResultEventSelector : public EventSelectorBase
 {
- public:
-  // constructor 
-  explicit TriggerResultEventSelector(const edm::ParameterSet&);
-  
-  bool operator()(edm::Event&, const edm::EventSetup&);
- 
- private:
-  // source collection label
-  edm::InputTag src_;
- 
-  // list of HLT trigger path to be checked
-  typedef std::vector<std::string> vstring;
-  vstring triggerPaths_;
+	public:
+		// constructor 
+		explicit TriggerResultEventSelector(const edm::ParameterSet&);
+
+		bool operator()(edm::Event&, const edm::EventSetup&);
+
+	private:
+		// source collection label
+		edm::InputTag src_;
+
+		// list of HLT trigger path to be checked
+		typedef std::vector<std::string> vstring;
+		vstring triggerPaths_;
+
+		// trigger configuration for specific run ranges
+		struct TriggerConfig {
+			int first;
+			int last;
+			edm::InputTag;
+			vstring paths;
+		}
+		std::vector<TriggerConfig> triggerRunConfig_;
+
 };
 
 #endif
