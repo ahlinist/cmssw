@@ -68,7 +68,7 @@ jetSystematics = {
 }
 
 theorySystematics = {
-    "sysPdfWeights(41)"     : cms.InputTag('pdfWeights:cteq65'),
+    ##"sysPdfWeights(41)"     : cms.InputTag('pdfWeights:cteq65'),
     "sysIsrWeight"          : cms.InputTag('isrWeight'),
     "sysFsrWeight"          : cms.InputTag('fsrWeight')
 }
