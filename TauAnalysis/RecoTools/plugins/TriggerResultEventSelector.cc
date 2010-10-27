@@ -20,17 +20,20 @@ TriggerResultEventSelector::TriggerResultEventSelector(const edm::ParameterSet& 
 		vParameterSet conf = cfg.getParameter<vParameterSet>("triggerRunConfig");
 		for(vParameterSet::const_iterator it = conf.begin(); it != conf.end(); it++ ){
 			TriggerConfig trg;
-			trg.first = it->getParameter<uint32>("firstRun");
-			trg.last = it->getParameter<uint32>("lastRun");
+			trg.first = it->getParameter<int>("firstRun");
+			trg.last = it->getParameter<int>("lastRun");
 			if( it->exists("src") )
 				trg.src = it->getParameter<edm::InputTag>("src");
 			else
 				trg.src = src_;
-			trg.paths = it->getParameter<vstring>;
-			triggerRunConfig_.push(trg);
+			if( it->exists("triggerPaths") )
+				trg.paths = it->getParameter<vstring>("triggerPaths");
+			else
+				trg.paths = triggerPaths_;
+			triggerRunConfig_.push_back(trg);
 		}
 		std::cout << "Trigger configurations" << std::endl;
-		for( std::vector<vParameterSet>::const_iterator it = triggerRunConfig_.begin()
+		for( std::vector<TriggerConfig>::const_iterator it = triggerRunConfig_.begin();
 				it != triggerRunConfig_.end(); it++) {
 			std::cout << "Runs " << it->first << "-" << it->last << std::endl;
 			std::cout << "\tcollection = " << it->src << std::endl;
@@ -44,9 +47,9 @@ TriggerResultEventSelector::TriggerResultEventSelector(const edm::ParameterSet& 
 bool TriggerResultEventSelector::operator()(edm::Event& evt, const edm::EventSetup&)
 {
 	if( triggerRunConfig_.size() > 0 ) {
-		for( std::vector<TriggerConfig>::const_iterator it = triggerRunConfig_.begin()
+		for( std::vector<TriggerConfig>::const_iterator it = triggerRunConfig_.begin();
 				it != triggerRunConfig_.end(); it++) {
-			if( (evt.run <= it->last) && (evt.run >= it->first) ) {
+			if( ((int)evt.run() <= it->last) && ((int)evt.run() >= it->first) ) {
 				src_ = it->src;
 				triggerPaths_ = it->paths;
 			}
