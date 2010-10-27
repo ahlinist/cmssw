@@ -3751,125 +3751,125 @@ genPhaseSpaceCutZtoElecTau_QCD_BCtoE_Pt80to170_7TeV = cms.PSet(
 #  skimmed = 108091
 
 fileNamesZtoElecTau_PhotonPlusJets_Pt30_part01 = cms.untracked.vstring(
-	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/fall10/PhotonPlusJets_Pt30/skimElecTau_100_1_TaI.root',
-	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/fall10/PhotonPlusJets_Pt30/skimElecTau_101_1_2HO.root',
-	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/fall10/PhotonPlusJets_Pt30/skimElecTau_10_1_XwH.root',
-	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/fall10/PhotonPlusJets_Pt30/skimElecTau_11_1_aqF.root',
-	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/fall10/PhotonPlusJets_Pt30/skimElecTau_12_1_C1K.root',
-	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/fall10/PhotonPlusJets_Pt30/skimElecTau_13_1_51Y.root',
-	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/fall10/PhotonPlusJets_Pt30/skimElecTau_14_1_343.root',
-	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/fall10/PhotonPlusJets_Pt30/skimElecTau_15_1_YkR.root',
-	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/fall10/PhotonPlusJets_Pt30/skimElecTau_16_1_1Z1.root',
-	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/fall10/PhotonPlusJets_Pt30/skimElecTau_17_1_THC.root'
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/summer10/PhotonPlusJets_Pt30/skimElecTau_100_1_TaI.root',
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/summer10/PhotonPlusJets_Pt30/skimElecTau_101_1_2HO.root',
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/summer10/PhotonPlusJets_Pt30/skimElecTau_10_1_XwH.root',
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/summer10/PhotonPlusJets_Pt30/skimElecTau_11_1_aqF.root',
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/summer10/PhotonPlusJets_Pt30/skimElecTau_12_1_C1K.root',
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/summer10/PhotonPlusJets_Pt30/skimElecTau_13_1_51Y.root',
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/summer10/PhotonPlusJets_Pt30/skimElecTau_14_1_343.root',
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/summer10/PhotonPlusJets_Pt30/skimElecTau_15_1_YkR.root',
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/summer10/PhotonPlusJets_Pt30/skimElecTau_16_1_1Z1.root',
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/summer10/PhotonPlusJets_Pt30/skimElecTau_17_1_THC.root'
 )
 fileNamesZtoElecTau_PhotonPlusJets_Pt30_part02 = cms.untracked.vstring(
-	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/fall10/PhotonPlusJets_Pt30/skimElecTau_18_1_L2Z.root',
-	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/fall10/PhotonPlusJets_Pt30/skimElecTau_19_1_Zk1.root',
-	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/fall10/PhotonPlusJets_Pt30/skimElecTau_1_1_fsd.root',
-	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/fall10/PhotonPlusJets_Pt30/skimElecTau_20_1_huc.root',
-	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/fall10/PhotonPlusJets_Pt30/skimElecTau_21_1_rJJ.root',
-	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/fall10/PhotonPlusJets_Pt30/skimElecTau_22_1_xE0.root',
-	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/fall10/PhotonPlusJets_Pt30/skimElecTau_23_1_r1O.root',
-	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/fall10/PhotonPlusJets_Pt30/skimElecTau_24_1_2Vd.root',
-	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/fall10/PhotonPlusJets_Pt30/skimElecTau_25_1_Rkd.root',
-	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/fall10/PhotonPlusJets_Pt30/skimElecTau_26_1_DZK.root'
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/summer10/PhotonPlusJets_Pt30/skimElecTau_18_1_L2Z.root',
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/summer10/PhotonPlusJets_Pt30/skimElecTau_19_1_Zk1.root',
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/summer10/PhotonPlusJets_Pt30/skimElecTau_1_1_fsd.root',
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/summer10/PhotonPlusJets_Pt30/skimElecTau_20_1_huc.root',
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/summer10/PhotonPlusJets_Pt30/skimElecTau_21_1_rJJ.root',
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/summer10/PhotonPlusJets_Pt30/skimElecTau_22_1_xE0.root',
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/summer10/PhotonPlusJets_Pt30/skimElecTau_23_1_r1O.root',
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/summer10/PhotonPlusJets_Pt30/skimElecTau_24_1_2Vd.root',
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/summer10/PhotonPlusJets_Pt30/skimElecTau_25_1_Rkd.root',
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/summer10/PhotonPlusJets_Pt30/skimElecTau_26_1_DZK.root'
 )
 fileNamesZtoElecTau_PhotonPlusJets_Pt30_part03 = cms.untracked.vstring(
-	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/fall10/PhotonPlusJets_Pt30/skimElecTau_27_1_KEN.root',
-	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/fall10/PhotonPlusJets_Pt30/skimElecTau_28_1_Wg0.root',
-	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/fall10/PhotonPlusJets_Pt30/skimElecTau_29_1_sVx.root',
-	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/fall10/PhotonPlusJets_Pt30/skimElecTau_2_1_6pN.root',
-	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/fall10/PhotonPlusJets_Pt30/skimElecTau_30_1_cGu.root',
-	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/fall10/PhotonPlusJets_Pt30/skimElecTau_31_1_bwp.root',
-	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/fall10/PhotonPlusJets_Pt30/skimElecTau_32_1_jlH.root',
-	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/fall10/PhotonPlusJets_Pt30/skimElecTau_33_1_6Ry.root',
-	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/fall10/PhotonPlusJets_Pt30/skimElecTau_34_1_mWc.root',
-	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/fall10/PhotonPlusJets_Pt30/skimElecTau_35_1_9lM.root'
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/summer10/PhotonPlusJets_Pt30/skimElecTau_27_1_KEN.root',
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/summer10/PhotonPlusJets_Pt30/skimElecTau_28_1_Wg0.root',
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/summer10/PhotonPlusJets_Pt30/skimElecTau_29_1_sVx.root',
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/summer10/PhotonPlusJets_Pt30/skimElecTau_2_1_6pN.root',
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/summer10/PhotonPlusJets_Pt30/skimElecTau_30_1_cGu.root',
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/summer10/PhotonPlusJets_Pt30/skimElecTau_31_1_bwp.root',
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/summer10/PhotonPlusJets_Pt30/skimElecTau_32_1_jlH.root',
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/summer10/PhotonPlusJets_Pt30/skimElecTau_33_1_6Ry.root',
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/summer10/PhotonPlusJets_Pt30/skimElecTau_34_1_mWc.root',
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/summer10/PhotonPlusJets_Pt30/skimElecTau_35_1_9lM.root'
 )
 fileNamesZtoElecTau_PhotonPlusJets_Pt30_part04 = cms.untracked.vstring(
-	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/fall10/PhotonPlusJets_Pt30/skimElecTau_36_1_wWs.root',
-	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/fall10/PhotonPlusJets_Pt30/skimElecTau_37_1_wKX.root',
-	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/fall10/PhotonPlusJets_Pt30/skimElecTau_38_1_UyS.root',
-	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/fall10/PhotonPlusJets_Pt30/skimElecTau_39_1_qCD.root',
-	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/fall10/PhotonPlusJets_Pt30/skimElecTau_3_1_Wlz.root',
-	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/fall10/PhotonPlusJets_Pt30/skimElecTau_40_1_g2t.root',
-	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/fall10/PhotonPlusJets_Pt30/skimElecTau_41_1_DpO.root',
-	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/fall10/PhotonPlusJets_Pt30/skimElecTau_42_1_wUW.root',
-	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/fall10/PhotonPlusJets_Pt30/skimElecTau_43_1_5jY.root',
-	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/fall10/PhotonPlusJets_Pt30/skimElecTau_44_1_0qO.root'
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/summer10/PhotonPlusJets_Pt30/skimElecTau_36_1_wWs.root',
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/summer10/PhotonPlusJets_Pt30/skimElecTau_37_1_wKX.root',
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/summer10/PhotonPlusJets_Pt30/skimElecTau_38_1_UyS.root',
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/summer10/PhotonPlusJets_Pt30/skimElecTau_39_1_qCD.root',
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/summer10/PhotonPlusJets_Pt30/skimElecTau_3_1_Wlz.root',
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/summer10/PhotonPlusJets_Pt30/skimElecTau_40_1_g2t.root',
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/summer10/PhotonPlusJets_Pt30/skimElecTau_41_1_DpO.root',
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/summer10/PhotonPlusJets_Pt30/skimElecTau_42_1_wUW.root',
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/summer10/PhotonPlusJets_Pt30/skimElecTau_43_1_5jY.root',
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/summer10/PhotonPlusJets_Pt30/skimElecTau_44_1_0qO.root'
 )
 fileNamesZtoElecTau_PhotonPlusJets_Pt30_part05 = cms.untracked.vstring(
-	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/fall10/PhotonPlusJets_Pt30/skimElecTau_45_1_tEf.root',
-	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/fall10/PhotonPlusJets_Pt30/skimElecTau_46_1_AEC.root',
-	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/fall10/PhotonPlusJets_Pt30/skimElecTau_47_1_K6E.root',
-	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/fall10/PhotonPlusJets_Pt30/skimElecTau_48_1_t8t.root',
-	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/fall10/PhotonPlusJets_Pt30/skimElecTau_49_1_YkK.root',
-	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/fall10/PhotonPlusJets_Pt30/skimElecTau_4_1_gOA.root',
-	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/fall10/PhotonPlusJets_Pt30/skimElecTau_50_1_6R3.root',
-	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/fall10/PhotonPlusJets_Pt30/skimElecTau_51_1_Zaz.root',
-	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/fall10/PhotonPlusJets_Pt30/skimElecTau_52_1_sLA.root',
-	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/fall10/PhotonPlusJets_Pt30/skimElecTau_53_1_JVx.root'
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/summer10/PhotonPlusJets_Pt30/skimElecTau_45_1_tEf.root',
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/summer10/PhotonPlusJets_Pt30/skimElecTau_46_1_AEC.root',
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/summer10/PhotonPlusJets_Pt30/skimElecTau_47_1_K6E.root',
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/summer10/PhotonPlusJets_Pt30/skimElecTau_48_1_t8t.root',
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/summer10/PhotonPlusJets_Pt30/skimElecTau_49_1_YkK.root',
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/summer10/PhotonPlusJets_Pt30/skimElecTau_4_1_gOA.root',
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/summer10/PhotonPlusJets_Pt30/skimElecTau_50_1_6R3.root',
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/summer10/PhotonPlusJets_Pt30/skimElecTau_51_1_Zaz.root',
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/summer10/PhotonPlusJets_Pt30/skimElecTau_52_1_sLA.root',
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/summer10/PhotonPlusJets_Pt30/skimElecTau_53_1_JVx.root'
 )
 fileNamesZtoElecTau_PhotonPlusJets_Pt30_part06 = cms.untracked.vstring(
-	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/fall10/PhotonPlusJets_Pt30/skimElecTau_54_1_n4L.root',
-	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/fall10/PhotonPlusJets_Pt30/skimElecTau_55_1_4Aa.root',
-	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/fall10/PhotonPlusJets_Pt30/skimElecTau_56_1_Lpf.root',
-	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/fall10/PhotonPlusJets_Pt30/skimElecTau_57_1_gNV.root',
-	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/fall10/PhotonPlusJets_Pt30/skimElecTau_58_1_iWZ.root',
-	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/fall10/PhotonPlusJets_Pt30/skimElecTau_59_1_jkZ.root',
-	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/fall10/PhotonPlusJets_Pt30/skimElecTau_5_1_lSJ.root',
-	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/fall10/PhotonPlusJets_Pt30/skimElecTau_60_1_HpH.root',
-	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/fall10/PhotonPlusJets_Pt30/skimElecTau_61_1_yzF.root',
-	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/fall10/PhotonPlusJets_Pt30/skimElecTau_62_1_Wn4.root'
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/summer10/PhotonPlusJets_Pt30/skimElecTau_54_1_n4L.root',
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/summer10/PhotonPlusJets_Pt30/skimElecTau_55_1_4Aa.root',
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/summer10/PhotonPlusJets_Pt30/skimElecTau_56_1_Lpf.root',
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/summer10/PhotonPlusJets_Pt30/skimElecTau_57_1_gNV.root',
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/summer10/PhotonPlusJets_Pt30/skimElecTau_58_1_iWZ.root',
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/summer10/PhotonPlusJets_Pt30/skimElecTau_59_1_jkZ.root',
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/summer10/PhotonPlusJets_Pt30/skimElecTau_5_1_lSJ.root',
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/summer10/PhotonPlusJets_Pt30/skimElecTau_60_1_HpH.root',
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/summer10/PhotonPlusJets_Pt30/skimElecTau_61_1_yzF.root',
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/summer10/PhotonPlusJets_Pt30/skimElecTau_62_1_Wn4.root'
 )
 fileNamesZtoElecTau_PhotonPlusJets_Pt30_part07 = cms.untracked.vstring(
-	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/fall10/PhotonPlusJets_Pt30/skimElecTau_63_1_PXa.root',
-	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/fall10/PhotonPlusJets_Pt30/skimElecTau_64_1_qBu.root',
-	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/fall10/PhotonPlusJets_Pt30/skimElecTau_65_1_YIf.root',
-	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/fall10/PhotonPlusJets_Pt30/skimElecTau_66_1_dt2.root',
-	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/fall10/PhotonPlusJets_Pt30/skimElecTau_67_1_2AC.root',
-	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/fall10/PhotonPlusJets_Pt30/skimElecTau_68_1_7yZ.root',
-	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/fall10/PhotonPlusJets_Pt30/skimElecTau_69_1_BIN.root',
-	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/fall10/PhotonPlusJets_Pt30/skimElecTau_6_1_3XP.root',
-	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/fall10/PhotonPlusJets_Pt30/skimElecTau_70_1_U6U.root',
-	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/fall10/PhotonPlusJets_Pt30/skimElecTau_71_1_uAL.root'
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/summer10/PhotonPlusJets_Pt30/skimElecTau_63_1_PXa.root',
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/summer10/PhotonPlusJets_Pt30/skimElecTau_64_1_qBu.root',
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/summer10/PhotonPlusJets_Pt30/skimElecTau_65_1_YIf.root',
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/summer10/PhotonPlusJets_Pt30/skimElecTau_66_1_dt2.root',
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/summer10/PhotonPlusJets_Pt30/skimElecTau_67_1_2AC.root',
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/summer10/PhotonPlusJets_Pt30/skimElecTau_68_1_7yZ.root',
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/summer10/PhotonPlusJets_Pt30/skimElecTau_69_1_BIN.root',
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/summer10/PhotonPlusJets_Pt30/skimElecTau_6_1_3XP.root',
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/summer10/PhotonPlusJets_Pt30/skimElecTau_70_1_U6U.root',
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/summer10/PhotonPlusJets_Pt30/skimElecTau_71_1_uAL.root'
 )
 fileNamesZtoElecTau_PhotonPlusJets_Pt30_part08 = cms.untracked.vstring(
-	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/fall10/PhotonPlusJets_Pt30/skimElecTau_72_1_oF5.root',
-	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/fall10/PhotonPlusJets_Pt30/skimElecTau_73_1_417.root',
-	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/fall10/PhotonPlusJets_Pt30/skimElecTau_74_1_rUf.root',
-	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/fall10/PhotonPlusJets_Pt30/skimElecTau_75_1_4di.root',
-	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/fall10/PhotonPlusJets_Pt30/skimElecTau_76_1_XLx.root',
-	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/fall10/PhotonPlusJets_Pt30/skimElecTau_77_1_2qt.root',
-	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/fall10/PhotonPlusJets_Pt30/skimElecTau_78_1_GkY.root',
-	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/fall10/PhotonPlusJets_Pt30/skimElecTau_79_1_62N.root',
-	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/fall10/PhotonPlusJets_Pt30/skimElecTau_7_1_eDg.root',
-	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/fall10/PhotonPlusJets_Pt30/skimElecTau_80_1_bEj.root'
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/summer10/PhotonPlusJets_Pt30/skimElecTau_72_1_oF5.root',
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/summer10/PhotonPlusJets_Pt30/skimElecTau_73_1_417.root',
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/summer10/PhotonPlusJets_Pt30/skimElecTau_74_1_rUf.root',
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/summer10/PhotonPlusJets_Pt30/skimElecTau_75_1_4di.root',
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/summer10/PhotonPlusJets_Pt30/skimElecTau_76_1_XLx.root',
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/summer10/PhotonPlusJets_Pt30/skimElecTau_77_1_2qt.root',
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/summer10/PhotonPlusJets_Pt30/skimElecTau_78_1_GkY.root',
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/summer10/PhotonPlusJets_Pt30/skimElecTau_79_1_62N.root',
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/summer10/PhotonPlusJets_Pt30/skimElecTau_7_1_eDg.root',
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/summer10/PhotonPlusJets_Pt30/skimElecTau_80_1_bEj.root'
 )
 fileNamesZtoElecTau_PhotonPlusJets_Pt30_part09 = cms.untracked.vstring(
-	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/fall10/PhotonPlusJets_Pt30/skimElecTau_81_1_gr4.root',
-	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/fall10/PhotonPlusJets_Pt30/skimElecTau_82_1_sY1.root',
-	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/fall10/PhotonPlusJets_Pt30/skimElecTau_83_1_H6G.root',
-	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/fall10/PhotonPlusJets_Pt30/skimElecTau_84_1_5jz.root',
-	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/fall10/PhotonPlusJets_Pt30/skimElecTau_85_1_5Ec.root',
-	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/fall10/PhotonPlusJets_Pt30/skimElecTau_86_1_sVO.root',
-	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/fall10/PhotonPlusJets_Pt30/skimElecTau_87_1_GRU.root',
-	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/fall10/PhotonPlusJets_Pt30/skimElecTau_88_1_npv.root',
-	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/fall10/PhotonPlusJets_Pt30/skimElecTau_89_1_q2P.root',
-	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/fall10/PhotonPlusJets_Pt30/skimElecTau_8_1_RCU.root'
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/summer10/PhotonPlusJets_Pt30/skimElecTau_81_1_gr4.root',
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/summer10/PhotonPlusJets_Pt30/skimElecTau_82_1_sY1.root',
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/summer10/PhotonPlusJets_Pt30/skimElecTau_83_1_H6G.root',
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/summer10/PhotonPlusJets_Pt30/skimElecTau_84_1_5jz.root',
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/summer10/PhotonPlusJets_Pt30/skimElecTau_85_1_5Ec.root',
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/summer10/PhotonPlusJets_Pt30/skimElecTau_86_1_sVO.root',
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/summer10/PhotonPlusJets_Pt30/skimElecTau_87_1_GRU.root',
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/summer10/PhotonPlusJets_Pt30/skimElecTau_88_1_npv.root',
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/summer10/PhotonPlusJets_Pt30/skimElecTau_89_1_q2P.root',
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/summer10/PhotonPlusJets_Pt30/skimElecTau_8_1_RCU.root'
 )
 fileNamesZtoElecTau_PhotonPlusJets_Pt30_part10 = cms.untracked.vstring(
-	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/fall10/PhotonPlusJets_Pt30/skimElecTau_90_1_NoA.root',
-	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/fall10/PhotonPlusJets_Pt30/skimElecTau_91_1_ZRI.root',
-	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/fall10/PhotonPlusJets_Pt30/skimElecTau_92_1_E7H.root',
-	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/fall10/PhotonPlusJets_Pt30/skimElecTau_93_1_sVV.root',
-	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/fall10/PhotonPlusJets_Pt30/skimElecTau_94_1_t16.root',
-	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/fall10/PhotonPlusJets_Pt30/skimElecTau_95_1_jCJ.root',
-	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/fall10/PhotonPlusJets_Pt30/skimElecTau_96_1_3Uh.root',
-	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/fall10/PhotonPlusJets_Pt30/skimElecTau_97_1_zjW.root',
-	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/fall10/PhotonPlusJets_Pt30/skimElecTau_98_1_D89.root',
-	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/fall10/PhotonPlusJets_Pt30/skimElecTau_99_1_8Hv.root',
-	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/fall10/PhotonPlusJets_Pt30/skimElecTau_9_1_PLm.root'
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/summer10/PhotonPlusJets_Pt30/skimElecTau_90_1_NoA.root',
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/summer10/PhotonPlusJets_Pt30/skimElecTau_91_1_ZRI.root',
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/summer10/PhotonPlusJets_Pt30/skimElecTau_92_1_E7H.root',
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/summer10/PhotonPlusJets_Pt30/skimElecTau_93_1_sVV.root',
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/summer10/PhotonPlusJets_Pt30/skimElecTau_94_1_t16.root',
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/summer10/PhotonPlusJets_Pt30/skimElecTau_95_1_jCJ.root',
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/summer10/PhotonPlusJets_Pt30/skimElecTau_96_1_3Uh.root',
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/summer10/PhotonPlusJets_Pt30/skimElecTau_97_1_zjW.root',
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/summer10/PhotonPlusJets_Pt30/skimElecTau_98_1_D89.root',
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/summer10/PhotonPlusJets_Pt30/skimElecTau_99_1_8Hv.root',
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/summer10/PhotonPlusJets_Pt30/skimElecTau_9_1_PLm.root'
 )
 
 #--------------------------------------------------------------------------------
