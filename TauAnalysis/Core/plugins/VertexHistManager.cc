@@ -40,6 +40,23 @@ void VertexHistManager::bookHistogramsImp()
   hVertexNumTracks_ = book1D("VertexNumTracks", "VertexNumTracks", 101, -0.5, 100.5);
   
   hVertexChi2Prob_ = book1D("VertexChi2Prob", "VertexChi2Prob", 102, -0.01, 1.01);
+
+  hNumVertices_ = book1D("NumVertices", "NumVertices", 10, -0.5, 9.5);
+  hNumVerticesPtGt5_ = book1D("NumVerticesPtGt5", "NumVerticesPtGt5", 10, -0.5, 9.5);
+  hNumVerticesPtGt10_ = book1D("NumVerticesPtGt10", "NumVerticesPtGt10", 10, -0.5, 9.5);
+  hNumVerticesPtGt15_ = book1D("NumVerticesPtGt15", "NumVerticesPtGt15", 10, -0.5, 9.5);
+  hNumVerticesPtGt20_ = book1D("NumVerticesPtGt20", "NumVerticesPtGt20", 10, -0.5, 9.5);
+}
+
+size_t getNumVerticesPtGtThreshold(const std::vector<double>& trackPtSums, double ptThreshold)
+{
+  size_t numVertices = 0;
+  for ( std::vector<double>::const_iterator trackPtSum = trackPtSums.begin();
+	trackPtSum != trackPtSums.end(); ++trackPtSum ) {
+    if ( (*trackPtSum) > ptThreshold ) ++numVertices;
+  }
+  
+  return numVertices;
 }
 
 void VertexHistManager::fillHistogramsImp(const edm::Event& evt, const edm::EventSetup& es, double evtWeight)
@@ -64,6 +81,26 @@ void VertexHistManager::fillHistogramsImp(const edm::Event& evt, const edm::Even
 
     hVertexChi2Prob_->Fill(TMath::Prob(thePrimaryEventVertex.chi2(), TMath::Nint(thePrimaryEventVertex.ndof())), evtWeight);
   }
+
+  size_t numVertices = recoVertices->size();
+  std::vector<double> trackPtSums(numVertices);
+  for ( size_t iVertex = 0; iVertex < numVertices; ++iVertex ) {
+    const reco::Vertex& vertex = recoVertices->at(iVertex);
+
+    double trackPtSum = 0.;
+    for ( reco::Vertex::trackRef_iterator track = vertex.tracks_begin();
+	  track != vertex.tracks_end(); ++track ) {
+      trackPtSum += (*track)->pt();
+    }
+
+    trackPtSums[iVertex] = trackPtSum;
+  }
+
+  hNumVertices_->Fill(numVertices, evtWeight);
+  hNumVerticesPtGt5_->Fill(getNumVerticesPtGtThreshold(trackPtSums, 5.0), evtWeight);
+  hNumVerticesPtGt10_->Fill(getNumVerticesPtGtThreshold(trackPtSums, 10.0), evtWeight);
+  hNumVerticesPtGt15_->Fill(getNumVerticesPtGtThreshold(trackPtSums, 15.0), evtWeight);
+  hNumVerticesPtGt20_->Fill(getNumVerticesPtGtThreshold(trackPtSums, 20.0), evtWeight);
 }
 
 #include "FWCore/Framework/interface/MakerMacros.h"
