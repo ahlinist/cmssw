@@ -579,8 +579,8 @@ void GenericEventDump::printMissingEtInfo(const edm::Event& evt) const
   
   if ( doGenInfo_ ) {
     
-    printJetMatchingInfo_i(evt, edm::InputTag("iterativeCone5PFJets"), genJetSource_, *outputStream_, "PFJet");
-    printJetMatchingInfo_i(evt, edm::InputTag("ak5GenJets"), genJetSource_, *outputStream_, "CaloJet");
+    printJetMatchingInfo_i(evt, edm::InputTag("ak5PFJets"), genJetSource_, *outputStream_, "PFJet");
+    printJetMatchingInfo_i(evt, edm::InputTag("ak5CaloJets"), genJetSource_, *outputStream_, "CaloJet");
     
     edm::Handle<edm::View<reco::GenParticle> > genParticleCollection;
     evt.getByLabel(genParticleSource_, genParticleCollection);

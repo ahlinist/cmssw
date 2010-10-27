@@ -13,8 +13,8 @@ elecTauPairZeeHypotheses = cms.EDProducer("ZllHypothesisElecTauProducer",
 
     genLeptonsFromZsSource = cms.InputTag('genElectronsFromZs'),
                                           
-    caloJetSource = cms.InputTag('iterativeCone5CaloJets'),
-    pfJetSource = cms.InputTag('iterativeCone5PFJets'),                                       
+	caloJetSource = cms.InputTag('ak5CaloJets'),
+	pfJetSource = cms.InputTag('ak5PFJets'),                                       
     trackSource = cms.InputTag('generalTracks'),
     gsfElectronSource = cms.InputTag('gsfElectrons'),
     gsfTrackSource = cms.InputTag('electronGsfTracks'),
