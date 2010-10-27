@@ -24,6 +24,7 @@ process.load("TauAnalysis.Configuration.producePatTupleZtoDiTauSpecific_cff")
 
 # import sequence for event selection
 process.load("TauAnalysis.Configuration.selectZtoDiTau_cff")
+process.load("TauAnalysis.RecoTools.filterDataQuality_cfi")
 
 # import sequence for filling of histograms, cut-flow table
 # and of run + event number pairs for events passing event selection
@@ -83,6 +84,7 @@ process.source = cms.Source("PoolSource",
 #__process.analyzeZtoDiTauEvents.filters[0] = copy.deepcopy(#genPhaseSpaceCut#)
 #__process.saveZtoDiTauPlots.outputFileName = #plotsOutputFileName#
 #__#isBatchMode#
+#__process.GlobalTag.globaltag = '#globalTag#'
 #
 #--------------------------------------------------------------------------------
 
@@ -131,6 +133,19 @@ process.load("TauAnalysis.CandidateTools.diTauPairProductionAllKinds_cff")
 replaceMETforDiTaus(process, cms.InputTag('patMETs'), cms.InputTag('patPFMETs'))
 #--------------------------------------------------------------------------------
 
+#--------------------------------------------------------------------------------
+# import utility function for changing cut values
+from TauAnalysis.Configuration.tools.changeCut import changeCut
+
+# disable cuts on tau id. discriminators for Track && ECAL isolation (for both taus)
+changeCut(process, "selectedPatTausForDiTau1stTrkIso", "tauID('trackIsolation') > -1.")
+changeCut(process, "selectedPatTausForDiTau2ndTrkIso", "tauID('trackIsolation') > -1.")
+changeCut(process, "selectedPatTausForDiTau2ndTrkIsoLoose", "tauID('trackIsolation') > -1.")
+changeCut(process, "selectedPatTausForDiTau1stEcalIso", "tauID('ecalIsolation') > -1.")
+changeCut(process, "selectedPatTausForDiTau2ndEcalIso", "tauID('ecalIsolation') > -1.")
+changeCut(process, "selectedPatTausForDiTau2ndEcalIsoLoose", "tauID('ecalIsolation') > -1.")
+#--------------------------------------------------------------------------------
+
 process.p = cms.Path(
     process.producePatTupleZtoDiTauSpecific
 # + process.printGenParticleList # uncomment to enable print-out of generator level particles
@@ -139,6 +154,10 @@ process.p = cms.Path(
   + process.analyzeZtoDiTauEvents
   + process.saveZtoDiTauPlots 
 )
+
+process.q = cms.Path(process.dataQualityFilters)
+
+process.schedule = cms.Schedule(process.q, process.p)
 
 #--------------------------------------------------------------------------------
 # import utility function for factorization
@@ -149,23 +168,6 @@ from TauAnalysis.Configuration.tools.factorizationTools import enableFactorizati
 # (needs to be done after process.p has been defined)
 #__#factorization#
 ##enableFactorization_runZtoDiTau(process)
-#--------------------------------------------------------------------------------
-
-#--------------------------------------------------------------------------------
-# import utility function for disabling estimation of systematic uncertainties
-#
-# NOTE: per default, estimation of systematic uncertainties is **enabled** per default
-#
-from TauAnalysis.Configuration.tools.sysUncertaintyTools import disableSysUncertainties_runZtoDiTau
-#from TauAnalysis.Configuration.tools.sysUncertaintyTools import enableSysUncertainties_runZtoDiTau
-#
-# define "hook" for keeping enabled/disabling estimation of systematic uncertainties
-# in case running jobs on the CERN batch system
-# (needs to be done after process.p has been defined)
-#__#systematics#
-if not hasattr(process, "isBatchMode"):
-    disableSysUncertainties_runZtoDiTau(process)
-    #enableSysUncertainties_runZtoDiTau(process)
 #--------------------------------------------------------------------------------
 
 #--------------------------------------------------------------------------------
