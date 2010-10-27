@@ -8,9 +8,9 @@
  * 
  * \author Christian Veelken, UC Davis
  *
- * \version $Revision: 1.4 $
+ * \version $Revision: 1.5 $
  *
- * $Id: TriggerResultEventSelector.h,v 1.4 2010/09/28 11:23:37 jkolb Exp $
+ * $Id: TriggerResultEventSelector.h,v 1.5 2010/10/27 09:38:38 jkolb Exp $
  *
  */
 
@@ -40,9 +40,9 @@ class TriggerResultEventSelector : public EventSelectorBase
 		struct TriggerConfig {
 			int first;
 			int last;
-			edm::InputTag;
+			edm::InputTag src;
 			vstring paths;
-		}
+		};
 		std::vector<TriggerConfig> triggerRunConfig_;
 
 };
