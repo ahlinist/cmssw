@@ -36,7 +36,7 @@ patJetSelConfigurator = objSelConfigurator(
     [ selectedPatJetsEta21,
       selectedPatJetsEt20,
       selectedPatJetsAntiOverlapWithLeptonsVeto ],
-    src = "cleanPatJets",
+    src = "patJets",
     pyModuleName = __name__,
     doSelIndividual = False
 )
