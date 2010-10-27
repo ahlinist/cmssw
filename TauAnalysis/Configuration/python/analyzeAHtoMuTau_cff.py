@@ -124,7 +124,6 @@ analyzeAHtoMuTauEvents_woBtag = cms.EDAnalyzer("GenericAnalyzer",
    
     analysisSequence = muTauAnalysisSequence_woBtag,
 
-    #estimateSysUncertainties = cms.bool(True),                                       
     estimateSysUncertainties = cms.bool(False), 
     systematics = cms.vstring(
         getSysUncertaintyNames(
