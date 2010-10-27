@@ -138,6 +138,20 @@ process.load("TauAnalysis.CandidateTools.diTauPairProductionAllKinds_cff")
 replaceMETforDiTaus(process, cms.InputTag('patMETs'), cms.InputTag('patPFMETs'))
 #--------------------------------------------------------------------------------
 
+#--------------------------------------------------------------------------------
+# import utility function for changing cut values
+from TauAnalysis.Configuration.tools.changeCut import changeCut
+
+# disable cut on muon calo. + segment compatibility
+# (check that muon calo. compatibility is not affected by pile-up before re-enabling this cut)
+changeCut(process, "selectedPatMuonsPionVeto", -100., attribute = "AntiPionCut")
+changeCut(process, "selectedPatMuonsPionVetoLooseIsolation", -100., attribute = "AntiPionCut")
+
+# disable cuts on tau id. discriminators for Track && ECAL isolation
+changeCut(process, "selectedPatTausTrkIso", "tauID('trackIsolation') > -1.")
+changeCut(process, "selectedPatTausEcalIso", "tauID('ecalIsolation') > -1.")
+#--------------------------------------------------------------------------------
+
 process.p = cms.Path(
    process.producePatTupleZtoMuTauSpecific
 # + process.printGenParticleList # uncomment to enable print-out of generator level particles
@@ -173,19 +187,13 @@ from TauAnalysis.Configuration.tools.factorizationTools import enableFactorizati
 
 #--------------------------------------------------------------------------------
 # import utility function for disabling estimation of systematic uncertainties
-#
-# NOTE: per default, estimation of systematic uncertainties is **enabled** per default
-#
-from TauAnalysis.Configuration.tools.sysUncertaintyTools import disableSysUncertainties_runZtoMuTau
 from TauAnalysis.Configuration.tools.sysUncertaintyTools import enableSysUncertainties_runZtoMuTau
 #
 # define "hook" for keeping enabled/disabling estimation of systematic uncertainties
 # in case running jobs on the CERN batch system
 # (needs to be done after process.p has been defined)
 #__#systematics#
-if not hasattr(process, "isBatchMode"):
-    disableSysUncertainties_runZtoMuTau(process)
-    #enableSysUncertainties_runZtoMuTau(process)
+enableSysUncertainties_runZtoMuTau(process)
 #--------------------------------------------------------------------------------
 
 #--------------------------------------------------------------------------------
