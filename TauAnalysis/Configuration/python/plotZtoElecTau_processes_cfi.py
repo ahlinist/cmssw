@@ -8,7 +8,6 @@ from TauAnalysis.Configuration.recoSampleDefinitionsZtoElecTau_cfi import *
 # define for Z --> e + tau-jet analysis names of .root files containing histograms
 #--------------------------------------------------------------------------------
 
-#scaleFactor = float(float(7638)/float(6143))
 scaleFactor = float(1.)
 
 processZtoElecTau_Data_7TeV_part01 = copy.deepcopy(process_Data)
@@ -454,38 +453,6 @@ processZtoElecTau_Data_7TeV_part09.config_dqmFileLoader.inputFileNames = cms.vst
 	'plotsZtoElecTau_Data_7TeV_part415.root',
 	'plotsZtoElecTau_Data_7TeV_part416.root',
 	'plotsZtoElecTau_Data_7TeV_part417.root'
-	#'plotsZtoElecTau_Data_7TeV_part418.root',
-	#'plotsZtoElecTau_Data_7TeV_part419.root',
-	#'plotsZtoElecTau_Data_7TeV_part420.root',
-	#'plotsZtoElecTau_Data_7TeV_part421.root',
-	#'plotsZtoElecTau_Data_7TeV_part422.root',
-	#'plotsZtoElecTau_Data_7TeV_part423.root',
-	#'plotsZtoElecTau_Data_7TeV_part424.root',
-	#'plotsZtoElecTau_Data_7TeV_part425.root',
-	#'plotsZtoElecTau_Data_7TeV_part426.root',
-	#'plotsZtoElecTau_Data_7TeV_part427.root',
-	#'plotsZtoElecTau_Data_7TeV_part428.root',
-	#'plotsZtoElecTau_Data_7TeV_part429.root',
-	#'plotsZtoElecTau_Data_7TeV_part430.root',
-	#'plotsZtoElecTau_Data_7TeV_part431.root',
-	#'plotsZtoElecTau_Data_7TeV_part432.root',
-	#'plotsZtoElecTau_Data_7TeV_part433.root',
-	#'plotsZtoElecTau_Data_7TeV_part434.root',
-	#'plotsZtoElecTau_Data_7TeV_part435.root',
-	#'plotsZtoElecTau_Data_7TeV_part436.root',
-	#'plotsZtoElecTau_Data_7TeV_part437.root',
-	#'plotsZtoElecTau_Data_7TeV_part438.root',
-	#'plotsZtoElecTau_Data_7TeV_part439.root',
-	#'plotsZtoElecTau_Data_7TeV_part440.root',
-	#'plotsZtoElecTau_Data_7TeV_part441.root',
-	#'plotsZtoElecTau_Data_7TeV_part442.root',
-	#'plotsZtoElecTau_Data_7TeV_part443.root',
-	#'plotsZtoElecTau_Data_7TeV_part444.root',
-	#'plotsZtoElecTau_Data_7TeV_part445.root',
-	#'plotsZtoElecTau_Data_7TeV_part446.root',
-	#'plotsZtoElecTau_Data_7TeV_part447.root',
-	#'plotsZtoElecTau_Data_7TeV_part448.root',
-	#'plotsZtoElecTau_Data_7TeV_part449.root'
 )
 
 processZtoElecTau_Data_7TeV_Sum = copy.deepcopy(process_Data)
@@ -498,10 +465,551 @@ processZtoElecTau_Data_7TeV_Sum.config_dqmFileLoader.inputFileNames = cms.vstrin
     'plotsZtoElecTau_Data_7TeV_part06Sum.root',
     'plotsZtoElecTau_Data_7TeV_part07Sum.root',
     'plotsZtoElecTau_Data_7TeV_part08Sum.root',
-    'plotsZtoElecTau_Data_7TeV_part09Sum.root'
+    'plotsZtoElecTau_Data_7TeV_part09Sum.root',
+    'plotsZtoElecTau_Data2010B_part01Sum.root',
+    'plotsZtoElecTau_Data2010B_part02Sum.root',
+    'plotsZtoElecTau_Data2010B_part03Sum.root',
+    'plotsZtoElecTau_Data2010B_part04Sum.root',
+    'plotsZtoElecTau_Data2010B_part05Sum.root',
+    'plotsZtoElecTau_Data2010B_part06Sum.root',
+    'plotsZtoElecTau_Data2010B_part07Sum.root',
+    'plotsZtoElecTau_Data2010B_part08Sum.root',
+    'plotsZtoElecTau_Data2010B_part09Sum.root',
+    'plotsZtoElecTau_Data2010B_part10Sum.root'
 )
 processZtoElecTau_Data_7TeV_Sum.config_dqmFileLoader.dqmDirectory_store = cms.string('harvested')
 processZtoElecTau_Data_7TeV_Sum.config_dqmFileLoader.scaleFactor = cms.double(1.)
+
+#--------------------------------------------------------------------------------
+
+processZtoElecTau_Data2010B_part01 = copy.deepcopy(process_Data)
+processZtoElecTau_Data2010B_part02 = copy.deepcopy(process_Data)
+processZtoElecTau_Data2010B_part03 = copy.deepcopy(process_Data)
+processZtoElecTau_Data2010B_part04 = copy.deepcopy(process_Data)
+processZtoElecTau_Data2010B_part05 = copy.deepcopy(process_Data)
+processZtoElecTau_Data2010B_part06 = copy.deepcopy(process_Data)
+processZtoElecTau_Data2010B_part07 = copy.deepcopy(process_Data)
+processZtoElecTau_Data2010B_part08 = copy.deepcopy(process_Data)
+processZtoElecTau_Data2010B_part09 = copy.deepcopy(process_Data)
+processZtoElecTau_Data2010B_part10 = copy.deepcopy(process_Data)
+processZtoElecTau_Data2010B_part01.config_dqmFileLoader.inputFileNames = cms.vstring(
+	'plotsZtoElecTau_Data2010B_part418.root',
+	'plotsZtoElecTau_Data2010B_part419.root',
+	'plotsZtoElecTau_Data2010B_part420.root',
+	'plotsZtoElecTau_Data2010B_part421.root',
+	'plotsZtoElecTau_Data2010B_part422.root',
+	'plotsZtoElecTau_Data2010B_part423.root',
+	'plotsZtoElecTau_Data2010B_part424.root',
+	'plotsZtoElecTau_Data2010B_part425.root',
+	'plotsZtoElecTau_Data2010B_part426.root',
+	'plotsZtoElecTau_Data2010B_part427.root',
+	'plotsZtoElecTau_Data2010B_part428.root',
+	'plotsZtoElecTau_Data2010B_part429.root',
+	'plotsZtoElecTau_Data2010B_part430.root',
+	'plotsZtoElecTau_Data2010B_part431.root',
+	'plotsZtoElecTau_Data2010B_part432.root',
+	'plotsZtoElecTau_Data2010B_part433.root',
+	'plotsZtoElecTau_Data2010B_part434.root',
+	'plotsZtoElecTau_Data2010B_part435.root',
+	'plotsZtoElecTau_Data2010B_part436.root',
+	'plotsZtoElecTau_Data2010B_part437.root',
+	'plotsZtoElecTau_Data2010B_part438.root',
+	'plotsZtoElecTau_Data2010B_part439.root',
+	'plotsZtoElecTau_Data2010B_part440.root',
+	'plotsZtoElecTau_Data2010B_part441.root',
+	'plotsZtoElecTau_Data2010B_part442.root',
+	'plotsZtoElecTau_Data2010B_part443.root',
+	'plotsZtoElecTau_Data2010B_part444.root',
+	'plotsZtoElecTau_Data2010B_part445.root',
+	'plotsZtoElecTau_Data2010B_part446.root',
+	'plotsZtoElecTau_Data2010B_part447.root',
+	'plotsZtoElecTau_Data2010B_part448.root',
+	'plotsZtoElecTau_Data2010B_part449.root'
+)
+processZtoElecTau_Data2010B_part02.config_dqmFileLoader.inputFileNames = cms.vstring(
+	'plotsZtoElecTau_Data2010B_part450.root',
+	'plotsZtoElecTau_Data2010B_part451.root',
+	'plotsZtoElecTau_Data2010B_part452.root',
+	'plotsZtoElecTau_Data2010B_part453.root',
+	'plotsZtoElecTau_Data2010B_part454.root',
+	'plotsZtoElecTau_Data2010B_part455.root',
+	'plotsZtoElecTau_Data2010B_part456.root',
+	'plotsZtoElecTau_Data2010B_part457.root',
+	'plotsZtoElecTau_Data2010B_part458.root',
+	'plotsZtoElecTau_Data2010B_part459.root',
+	'plotsZtoElecTau_Data2010B_part460.root',
+	'plotsZtoElecTau_Data2010B_part461.root',
+	'plotsZtoElecTau_Data2010B_part462.root',
+	'plotsZtoElecTau_Data2010B_part463.root',
+	'plotsZtoElecTau_Data2010B_part464.root',
+	'plotsZtoElecTau_Data2010B_part465.root',
+	'plotsZtoElecTau_Data2010B_part466.root',
+	'plotsZtoElecTau_Data2010B_part467.root',
+	'plotsZtoElecTau_Data2010B_part468.root',
+	'plotsZtoElecTau_Data2010B_part469.root',
+	'plotsZtoElecTau_Data2010B_part470.root',
+	'plotsZtoElecTau_Data2010B_part471.root',
+	'plotsZtoElecTau_Data2010B_part472.root',
+	'plotsZtoElecTau_Data2010B_part473.root',
+	'plotsZtoElecTau_Data2010B_part474.root',
+	'plotsZtoElecTau_Data2010B_part475.root',
+	'plotsZtoElecTau_Data2010B_part476.root',
+	'plotsZtoElecTau_Data2010B_part477.root',
+	'plotsZtoElecTau_Data2010B_part478.root',
+	'plotsZtoElecTau_Data2010B_part479.root',
+	'plotsZtoElecTau_Data2010B_part480.root',
+	'plotsZtoElecTau_Data2010B_part481.root',
+	'plotsZtoElecTau_Data2010B_part482.root',
+	'plotsZtoElecTau_Data2010B_part483.root',
+	'plotsZtoElecTau_Data2010B_part484.root',
+	'plotsZtoElecTau_Data2010B_part485.root',
+	'plotsZtoElecTau_Data2010B_part486.root',
+	'plotsZtoElecTau_Data2010B_part487.root',
+	'plotsZtoElecTau_Data2010B_part488.root',
+	'plotsZtoElecTau_Data2010B_part489.root',
+	'plotsZtoElecTau_Data2010B_part490.root',
+	'plotsZtoElecTau_Data2010B_part491.root',
+	'plotsZtoElecTau_Data2010B_part492.root',
+	'plotsZtoElecTau_Data2010B_part493.root',
+	'plotsZtoElecTau_Data2010B_part494.root',
+	'plotsZtoElecTau_Data2010B_part495.root',
+	'plotsZtoElecTau_Data2010B_part496.root',
+	'plotsZtoElecTau_Data2010B_part497.root',
+	'plotsZtoElecTau_Data2010B_part498.root',
+	'plotsZtoElecTau_Data2010B_part499.root'
+)
+processZtoElecTau_Data2010B_part03.config_dqmFileLoader.inputFileNames = cms.vstring(
+	'plotsZtoElecTau_Data2010B_part500.root',
+	'plotsZtoElecTau_Data2010B_part501.root',
+	'plotsZtoElecTau_Data2010B_part502.root',
+	'plotsZtoElecTau_Data2010B_part503.root',
+	'plotsZtoElecTau_Data2010B_part504.root',
+	'plotsZtoElecTau_Data2010B_part505.root',
+	'plotsZtoElecTau_Data2010B_part506.root',
+	'plotsZtoElecTau_Data2010B_part507.root',
+	'plotsZtoElecTau_Data2010B_part508.root',
+	'plotsZtoElecTau_Data2010B_part509.root',
+	'plotsZtoElecTau_Data2010B_part510.root',
+	'plotsZtoElecTau_Data2010B_part511.root',
+	'plotsZtoElecTau_Data2010B_part512.root',
+	'plotsZtoElecTau_Data2010B_part513.root',
+	'plotsZtoElecTau_Data2010B_part514.root',
+	'plotsZtoElecTau_Data2010B_part515.root',
+	'plotsZtoElecTau_Data2010B_part516.root',
+	'plotsZtoElecTau_Data2010B_part517.root',
+	'plotsZtoElecTau_Data2010B_part518.root',
+	'plotsZtoElecTau_Data2010B_part519.root',
+	'plotsZtoElecTau_Data2010B_part520.root',
+	'plotsZtoElecTau_Data2010B_part521.root',
+	'plotsZtoElecTau_Data2010B_part522.root',
+	'plotsZtoElecTau_Data2010B_part523.root',
+	'plotsZtoElecTau_Data2010B_part524.root',
+	'plotsZtoElecTau_Data2010B_part525.root',
+	'plotsZtoElecTau_Data2010B_part526.root',
+	'plotsZtoElecTau_Data2010B_part527.root',
+	'plotsZtoElecTau_Data2010B_part528.root',
+	'plotsZtoElecTau_Data2010B_part529.root',
+	'plotsZtoElecTau_Data2010B_part530.root',
+	'plotsZtoElecTau_Data2010B_part531.root',
+	'plotsZtoElecTau_Data2010B_part532.root',
+	'plotsZtoElecTau_Data2010B_part533.root',
+	'plotsZtoElecTau_Data2010B_part534.root',
+	'plotsZtoElecTau_Data2010B_part535.root',
+	'plotsZtoElecTau_Data2010B_part536.root',
+	'plotsZtoElecTau_Data2010B_part537.root',
+	'plotsZtoElecTau_Data2010B_part538.root',
+	'plotsZtoElecTau_Data2010B_part539.root',
+	'plotsZtoElecTau_Data2010B_part540.root',
+	'plotsZtoElecTau_Data2010B_part541.root',
+	'plotsZtoElecTau_Data2010B_part542.root',
+	'plotsZtoElecTau_Data2010B_part543.root',
+	'plotsZtoElecTau_Data2010B_part544.root',
+	'plotsZtoElecTau_Data2010B_part545.root',
+	'plotsZtoElecTau_Data2010B_part546.root',
+	'plotsZtoElecTau_Data2010B_part547.root',
+	'plotsZtoElecTau_Data2010B_part548.root',
+	'plotsZtoElecTau_Data2010B_part549.root'
+)
+processZtoElecTau_Data2010B_part04.config_dqmFileLoader.inputFileNames = cms.vstring(
+	'plotsZtoElecTau_Data2010B_part550.root',
+	'plotsZtoElecTau_Data2010B_part551.root',
+	'plotsZtoElecTau_Data2010B_part552.root',
+	'plotsZtoElecTau_Data2010B_part553.root',
+	'plotsZtoElecTau_Data2010B_part554.root',
+	'plotsZtoElecTau_Data2010B_part555.root',
+	'plotsZtoElecTau_Data2010B_part556.root',
+	'plotsZtoElecTau_Data2010B_part557.root',
+	'plotsZtoElecTau_Data2010B_part558.root',
+	'plotsZtoElecTau_Data2010B_part559.root',
+	'plotsZtoElecTau_Data2010B_part560.root',
+	'plotsZtoElecTau_Data2010B_part561.root',
+	'plotsZtoElecTau_Data2010B_part562.root',
+	'plotsZtoElecTau_Data2010B_part563.root',
+	'plotsZtoElecTau_Data2010B_part564.root',
+	'plotsZtoElecTau_Data2010B_part565.root',
+	'plotsZtoElecTau_Data2010B_part566.root',
+	'plotsZtoElecTau_Data2010B_part567.root',
+	'plotsZtoElecTau_Data2010B_part568.root',
+	'plotsZtoElecTau_Data2010B_part569.root',
+	'plotsZtoElecTau_Data2010B_part570.root',
+	'plotsZtoElecTau_Data2010B_part571.root',
+	'plotsZtoElecTau_Data2010B_part572.root',
+	'plotsZtoElecTau_Data2010B_part573.root',
+	'plotsZtoElecTau_Data2010B_part574.root',
+	'plotsZtoElecTau_Data2010B_part575.root',
+	'plotsZtoElecTau_Data2010B_part576.root',
+	'plotsZtoElecTau_Data2010B_part577.root',
+	'plotsZtoElecTau_Data2010B_part578.root',
+	'plotsZtoElecTau_Data2010B_part579.root',
+	'plotsZtoElecTau_Data2010B_part580.root',
+	'plotsZtoElecTau_Data2010B_part581.root',
+	'plotsZtoElecTau_Data2010B_part582.root',
+	'plotsZtoElecTau_Data2010B_part583.root',
+	'plotsZtoElecTau_Data2010B_part584.root',
+	'plotsZtoElecTau_Data2010B_part585.root',
+	'plotsZtoElecTau_Data2010B_part586.root',
+	'plotsZtoElecTau_Data2010B_part587.root',
+	'plotsZtoElecTau_Data2010B_part588.root',
+	'plotsZtoElecTau_Data2010B_part589.root',
+	'plotsZtoElecTau_Data2010B_part590.root',
+	'plotsZtoElecTau_Data2010B_part591.root',
+	'plotsZtoElecTau_Data2010B_part592.root',
+	'plotsZtoElecTau_Data2010B_part593.root',
+	'plotsZtoElecTau_Data2010B_part594.root',
+	'plotsZtoElecTau_Data2010B_part595.root',
+	'plotsZtoElecTau_Data2010B_part596.root',
+	'plotsZtoElecTau_Data2010B_part597.root',
+	'plotsZtoElecTau_Data2010B_part598.root',
+	'plotsZtoElecTau_Data2010B_part599.root'
+)
+processZtoElecTau_Data2010B_part05.config_dqmFileLoader.inputFileNames = cms.vstring(
+	'plotsZtoElecTau_Data2010B_part600.root',
+	'plotsZtoElecTau_Data2010B_part601.root',
+	'plotsZtoElecTau_Data2010B_part602.root',
+	'plotsZtoElecTau_Data2010B_part603.root',
+	'plotsZtoElecTau_Data2010B_part604.root',
+	'plotsZtoElecTau_Data2010B_part605.root',
+	'plotsZtoElecTau_Data2010B_part606.root',
+	'plotsZtoElecTau_Data2010B_part607.root',
+	'plotsZtoElecTau_Data2010B_part608.root',
+	'plotsZtoElecTau_Data2010B_part609.root',
+	'plotsZtoElecTau_Data2010B_part610.root',
+	'plotsZtoElecTau_Data2010B_part611.root',
+	'plotsZtoElecTau_Data2010B_part612.root',
+	'plotsZtoElecTau_Data2010B_part613.root',
+	'plotsZtoElecTau_Data2010B_part614.root',
+	'plotsZtoElecTau_Data2010B_part615.root',
+	'plotsZtoElecTau_Data2010B_part616.root',
+	'plotsZtoElecTau_Data2010B_part617.root',
+	'plotsZtoElecTau_Data2010B_part618.root',
+	'plotsZtoElecTau_Data2010B_part619.root',
+	'plotsZtoElecTau_Data2010B_part620.root',
+	'plotsZtoElecTau_Data2010B_part621.root',
+	'plotsZtoElecTau_Data2010B_part622.root',
+	'plotsZtoElecTau_Data2010B_part623.root',
+	'plotsZtoElecTau_Data2010B_part624.root',
+	'plotsZtoElecTau_Data2010B_part625.root',
+	'plotsZtoElecTau_Data2010B_part626.root',
+	'plotsZtoElecTau_Data2010B_part627.root',
+	'plotsZtoElecTau_Data2010B_part628.root',
+	'plotsZtoElecTau_Data2010B_part629.root',
+	'plotsZtoElecTau_Data2010B_part630.root',
+	'plotsZtoElecTau_Data2010B_part631.root',
+	'plotsZtoElecTau_Data2010B_part632.root',
+	'plotsZtoElecTau_Data2010B_part633.root',
+	'plotsZtoElecTau_Data2010B_part634.root',
+	'plotsZtoElecTau_Data2010B_part635.root',
+	'plotsZtoElecTau_Data2010B_part636.root',
+	'plotsZtoElecTau_Data2010B_part637.root',
+	'plotsZtoElecTau_Data2010B_part638.root',
+	'plotsZtoElecTau_Data2010B_part639.root',
+	'plotsZtoElecTau_Data2010B_part640.root',
+	'plotsZtoElecTau_Data2010B_part641.root',
+	'plotsZtoElecTau_Data2010B_part642.root',
+	'plotsZtoElecTau_Data2010B_part643.root',
+	'plotsZtoElecTau_Data2010B_part644.root',
+	'plotsZtoElecTau_Data2010B_part645.root',
+	'plotsZtoElecTau_Data2010B_part646.root',
+	'plotsZtoElecTau_Data2010B_part647.root',
+	'plotsZtoElecTau_Data2010B_part648.root',
+	'plotsZtoElecTau_Data2010B_part649.root'
+)
+processZtoElecTau_Data2010B_part06.config_dqmFileLoader.inputFileNames = cms.vstring(
+	'plotsZtoElecTau_Data2010B_part650.root',
+	'plotsZtoElecTau_Data2010B_part651.root',
+	'plotsZtoElecTau_Data2010B_part652.root',
+	'plotsZtoElecTau_Data2010B_part653.root',
+	'plotsZtoElecTau_Data2010B_part654.root',
+	'plotsZtoElecTau_Data2010B_part655.root',
+	'plotsZtoElecTau_Data2010B_part656.root',
+	'plotsZtoElecTau_Data2010B_part657.root',
+	'plotsZtoElecTau_Data2010B_part658.root',
+	'plotsZtoElecTau_Data2010B_part659.root',
+	'plotsZtoElecTau_Data2010B_part660.root',
+	'plotsZtoElecTau_Data2010B_part661.root',
+	'plotsZtoElecTau_Data2010B_part662.root',
+	'plotsZtoElecTau_Data2010B_part663.root',
+	'plotsZtoElecTau_Data2010B_part664.root',
+	'plotsZtoElecTau_Data2010B_part665.root',
+	'plotsZtoElecTau_Data2010B_part666.root',
+	'plotsZtoElecTau_Data2010B_part667.root',
+	'plotsZtoElecTau_Data2010B_part668.root',
+	'plotsZtoElecTau_Data2010B_part669.root',
+	'plotsZtoElecTau_Data2010B_part670.root',
+	'plotsZtoElecTau_Data2010B_part671.root',
+	'plotsZtoElecTau_Data2010B_part672.root',
+	'plotsZtoElecTau_Data2010B_part673.root',
+	'plotsZtoElecTau_Data2010B_part674.root',
+	'plotsZtoElecTau_Data2010B_part675.root',
+	'plotsZtoElecTau_Data2010B_part676.root',
+	'plotsZtoElecTau_Data2010B_part677.root',
+	'plotsZtoElecTau_Data2010B_part678.root',
+	'plotsZtoElecTau_Data2010B_part679.root',
+	'plotsZtoElecTau_Data2010B_part680.root',
+	'plotsZtoElecTau_Data2010B_part681.root',
+	'plotsZtoElecTau_Data2010B_part682.root',
+	'plotsZtoElecTau_Data2010B_part683.root',
+	'plotsZtoElecTau_Data2010B_part684.root',
+	'plotsZtoElecTau_Data2010B_part685.root',
+	'plotsZtoElecTau_Data2010B_part686.root',
+	'plotsZtoElecTau_Data2010B_part687.root',
+	'plotsZtoElecTau_Data2010B_part688.root',
+	'plotsZtoElecTau_Data2010B_part689.root',
+	'plotsZtoElecTau_Data2010B_part690.root',
+	'plotsZtoElecTau_Data2010B_part691.root',
+	'plotsZtoElecTau_Data2010B_part692.root',
+	'plotsZtoElecTau_Data2010B_part693.root',
+	'plotsZtoElecTau_Data2010B_part694.root',
+	'plotsZtoElecTau_Data2010B_part695.root',
+	'plotsZtoElecTau_Data2010B_part696.root',
+	'plotsZtoElecTau_Data2010B_part697.root',
+	'plotsZtoElecTau_Data2010B_part698.root',
+	'plotsZtoElecTau_Data2010B_part699.root'
+)
+processZtoElecTau_Data2010B_part07.config_dqmFileLoader.inputFileNames = cms.vstring(
+	'plotsZtoElecTau_Data2010B_part700.root',
+	'plotsZtoElecTau_Data2010B_part701.root',
+	'plotsZtoElecTau_Data2010B_part702.root',
+	'plotsZtoElecTau_Data2010B_part703.root',
+	'plotsZtoElecTau_Data2010B_part704.root',
+	'plotsZtoElecTau_Data2010B_part705.root',
+	'plotsZtoElecTau_Data2010B_part706.root',
+	'plotsZtoElecTau_Data2010B_part707.root',
+	'plotsZtoElecTau_Data2010B_part708.root',
+	'plotsZtoElecTau_Data2010B_part709.root',
+	'plotsZtoElecTau_Data2010B_part710.root',
+	'plotsZtoElecTau_Data2010B_part711.root',
+	'plotsZtoElecTau_Data2010B_part712.root',
+	'plotsZtoElecTau_Data2010B_part713.root',
+	'plotsZtoElecTau_Data2010B_part714.root',
+	'plotsZtoElecTau_Data2010B_part715.root',
+	'plotsZtoElecTau_Data2010B_part716.root',
+	'plotsZtoElecTau_Data2010B_part717.root',
+	'plotsZtoElecTau_Data2010B_part718.root',
+	'plotsZtoElecTau_Data2010B_part719.root',
+	'plotsZtoElecTau_Data2010B_part720.root',
+	'plotsZtoElecTau_Data2010B_part721.root',
+	'plotsZtoElecTau_Data2010B_part722.root',
+	'plotsZtoElecTau_Data2010B_part723.root',
+	'plotsZtoElecTau_Data2010B_part724.root',
+	'plotsZtoElecTau_Data2010B_part725.root',
+	'plotsZtoElecTau_Data2010B_part726.root',
+	'plotsZtoElecTau_Data2010B_part727.root',
+	'plotsZtoElecTau_Data2010B_part728.root',
+	'plotsZtoElecTau_Data2010B_part729.root',
+	'plotsZtoElecTau_Data2010B_part730.root',
+	'plotsZtoElecTau_Data2010B_part731.root',
+	'plotsZtoElecTau_Data2010B_part732.root',
+	'plotsZtoElecTau_Data2010B_part733.root',
+	'plotsZtoElecTau_Data2010B_part734.root',
+	'plotsZtoElecTau_Data2010B_part735.root',
+	'plotsZtoElecTau_Data2010B_part736.root',
+	'plotsZtoElecTau_Data2010B_part737.root',
+	'plotsZtoElecTau_Data2010B_part738.root',
+	'plotsZtoElecTau_Data2010B_part739.root',
+	'plotsZtoElecTau_Data2010B_part740.root',
+	'plotsZtoElecTau_Data2010B_part741.root',
+	'plotsZtoElecTau_Data2010B_part742.root',
+	'plotsZtoElecTau_Data2010B_part743.root',
+	'plotsZtoElecTau_Data2010B_part744.root',
+	'plotsZtoElecTau_Data2010B_part745.root',
+	'plotsZtoElecTau_Data2010B_part746.root',
+	'plotsZtoElecTau_Data2010B_part747.root',
+	'plotsZtoElecTau_Data2010B_part748.root',
+	'plotsZtoElecTau_Data2010B_part749.root'
+)
+processZtoElecTau_Data2010B_part08.config_dqmFileLoader.inputFileNames = cms.vstring(
+	'plotsZtoElecTau_Data2010B_part750.root',
+	'plotsZtoElecTau_Data2010B_part751.root',
+	'plotsZtoElecTau_Data2010B_part752.root',
+	'plotsZtoElecTau_Data2010B_part753.root',
+	'plotsZtoElecTau_Data2010B_part754.root',
+	'plotsZtoElecTau_Data2010B_part755.root',
+	'plotsZtoElecTau_Data2010B_part756.root',
+	'plotsZtoElecTau_Data2010B_part757.root',
+	'plotsZtoElecTau_Data2010B_part758.root',
+	'plotsZtoElecTau_Data2010B_part759.root',
+	'plotsZtoElecTau_Data2010B_part760.root',
+	'plotsZtoElecTau_Data2010B_part761.root',
+	'plotsZtoElecTau_Data2010B_part762.root',
+	'plotsZtoElecTau_Data2010B_part763.root',
+	'plotsZtoElecTau_Data2010B_part764.root',
+	'plotsZtoElecTau_Data2010B_part765.root',
+	'plotsZtoElecTau_Data2010B_part766.root',
+	'plotsZtoElecTau_Data2010B_part767.root',
+	'plotsZtoElecTau_Data2010B_part768.root',
+	'plotsZtoElecTau_Data2010B_part769.root',
+	'plotsZtoElecTau_Data2010B_part770.root',
+	'plotsZtoElecTau_Data2010B_part771.root',
+	'plotsZtoElecTau_Data2010B_part772.root',
+	'plotsZtoElecTau_Data2010B_part773.root',
+	'plotsZtoElecTau_Data2010B_part774.root',
+	'plotsZtoElecTau_Data2010B_part775.root',
+	'plotsZtoElecTau_Data2010B_part776.root',
+	'plotsZtoElecTau_Data2010B_part777.root',
+	'plotsZtoElecTau_Data2010B_part778.root',
+	'plotsZtoElecTau_Data2010B_part779.root',
+	'plotsZtoElecTau_Data2010B_part780.root',
+	'plotsZtoElecTau_Data2010B_part781.root',
+	'plotsZtoElecTau_Data2010B_part782.root',
+	'plotsZtoElecTau_Data2010B_part783.root',
+	'plotsZtoElecTau_Data2010B_part784.root',
+	'plotsZtoElecTau_Data2010B_part785.root',
+	'plotsZtoElecTau_Data2010B_part786.root',
+	'plotsZtoElecTau_Data2010B_part787.root',
+	'plotsZtoElecTau_Data2010B_part788.root',
+	'plotsZtoElecTau_Data2010B_part789.root',
+	'plotsZtoElecTau_Data2010B_part790.root',
+	'plotsZtoElecTau_Data2010B_part791.root',
+	'plotsZtoElecTau_Data2010B_part792.root',
+	'plotsZtoElecTau_Data2010B_part793.root',
+	'plotsZtoElecTau_Data2010B_part794.root',
+	'plotsZtoElecTau_Data2010B_part795.root',
+	'plotsZtoElecTau_Data2010B_part796.root',
+	'plotsZtoElecTau_Data2010B_part797.root',
+	'plotsZtoElecTau_Data2010B_part798.root',
+	'plotsZtoElecTau_Data2010B_part799.root'
+)
+processZtoElecTau_Data2010B_part09.config_dqmFileLoader.inputFileNames = cms.vstring(
+	'plotsZtoElecTau_Data2010B_part800.root',
+	'plotsZtoElecTau_Data2010B_part801.root',
+	'plotsZtoElecTau_Data2010B_part802.root',
+	'plotsZtoElecTau_Data2010B_part803.root',
+	'plotsZtoElecTau_Data2010B_part804.root',
+	'plotsZtoElecTau_Data2010B_part805.root',
+	'plotsZtoElecTau_Data2010B_part806.root',
+	'plotsZtoElecTau_Data2010B_part807.root',
+	'plotsZtoElecTau_Data2010B_part808.root',
+	'plotsZtoElecTau_Data2010B_part809.root',
+	'plotsZtoElecTau_Data2010B_part810.root',
+	'plotsZtoElecTau_Data2010B_part811.root',
+	'plotsZtoElecTau_Data2010B_part812.root',
+	'plotsZtoElecTau_Data2010B_part813.root',
+	'plotsZtoElecTau_Data2010B_part814.root',
+	'plotsZtoElecTau_Data2010B_part815.root',
+	'plotsZtoElecTau_Data2010B_part816.root',
+	'plotsZtoElecTau_Data2010B_part817.root',
+	'plotsZtoElecTau_Data2010B_part818.root',
+	'plotsZtoElecTau_Data2010B_part819.root',
+	'plotsZtoElecTau_Data2010B_part820.root',
+	'plotsZtoElecTau_Data2010B_part821.root',
+	'plotsZtoElecTau_Data2010B_part822.root',
+	'plotsZtoElecTau_Data2010B_part823.root',
+	'plotsZtoElecTau_Data2010B_part824.root',
+	'plotsZtoElecTau_Data2010B_part825.root',
+	'plotsZtoElecTau_Data2010B_part826.root',
+	'plotsZtoElecTau_Data2010B_part827.root',
+	'plotsZtoElecTau_Data2010B_part828.root',
+	'plotsZtoElecTau_Data2010B_part829.root',
+	'plotsZtoElecTau_Data2010B_part830.root',
+	'plotsZtoElecTau_Data2010B_part831.root',
+	'plotsZtoElecTau_Data2010B_part832.root',
+	'plotsZtoElecTau_Data2010B_part833.root',
+	'plotsZtoElecTau_Data2010B_part834.root',
+	'plotsZtoElecTau_Data2010B_part835.root',
+	'plotsZtoElecTau_Data2010B_part836.root',
+	'plotsZtoElecTau_Data2010B_part837.root',
+	'plotsZtoElecTau_Data2010B_part838.root',
+	'plotsZtoElecTau_Data2010B_part839.root',
+	'plotsZtoElecTau_Data2010B_part840.root',
+	'plotsZtoElecTau_Data2010B_part841.root',
+	'plotsZtoElecTau_Data2010B_part842.root',
+	'plotsZtoElecTau_Data2010B_part843.root',
+	'plotsZtoElecTau_Data2010B_part844.root',
+	'plotsZtoElecTau_Data2010B_part845.root',
+	'plotsZtoElecTau_Data2010B_part846.root',
+	'plotsZtoElecTau_Data2010B_part847.root',
+	'plotsZtoElecTau_Data2010B_part848.root',
+	'plotsZtoElecTau_Data2010B_part849.root'
+)
+processZtoElecTau_Data2010B_part10.config_dqmFileLoader.inputFileNames = cms.vstring(
+	'plotsZtoElecTau_Data2010B_part850.root',
+	'plotsZtoElecTau_Data2010B_part851.root',
+	'plotsZtoElecTau_Data2010B_part852.root',
+	'plotsZtoElecTau_Data2010B_part853.root',
+	'plotsZtoElecTau_Data2010B_part854.root',
+	'plotsZtoElecTau_Data2010B_part855.root',
+	'plotsZtoElecTau_Data2010B_part856.root',
+	'plotsZtoElecTau_Data2010B_part857.root',
+	'plotsZtoElecTau_Data2010B_part858.root',
+	'plotsZtoElecTau_Data2010B_part859.root',
+	'plotsZtoElecTau_Data2010B_part860.root',
+	'plotsZtoElecTau_Data2010B_part861.root',
+	'plotsZtoElecTau_Data2010B_part862.root',
+	'plotsZtoElecTau_Data2010B_part863.root',
+	'plotsZtoElecTau_Data2010B_part864.root',
+	'plotsZtoElecTau_Data2010B_part865.root',
+	'plotsZtoElecTau_Data2010B_part866.root',
+	'plotsZtoElecTau_Data2010B_part867.root',
+	'plotsZtoElecTau_Data2010B_part868.root',
+	'plotsZtoElecTau_Data2010B_part869.root',
+	'plotsZtoElecTau_Data2010B_part870.root',
+	'plotsZtoElecTau_Data2010B_part871.root',
+	'plotsZtoElecTau_Data2010B_part872.root',
+	'plotsZtoElecTau_Data2010B_part873.root',
+	'plotsZtoElecTau_Data2010B_part874.root',
+	'plotsZtoElecTau_Data2010B_part875.root',
+	'plotsZtoElecTau_Data2010B_part876.root',
+	'plotsZtoElecTau_Data2010B_part877.root',
+	'plotsZtoElecTau_Data2010B_part878.root',
+	'plotsZtoElecTau_Data2010B_part879.root',
+	'plotsZtoElecTau_Data2010B_part880.root',
+	'plotsZtoElecTau_Data2010B_part881.root',
+	'plotsZtoElecTau_Data2010B_part882.root',
+	'plotsZtoElecTau_Data2010B_part883.root',
+	'plotsZtoElecTau_Data2010B_part884.root',
+	'plotsZtoElecTau_Data2010B_part885.root'
+	#'plotsZtoElecTau_Data2010B_part886.root',
+	#'plotsZtoElecTau_Data2010B_part887.root',
+	#'plotsZtoElecTau_Data2010B_part888.root',
+	#'plotsZtoElecTau_Data2010B_part889.root',
+	#'plotsZtoElecTau_Data2010B_part890.root',
+	#'plotsZtoElecTau_Data2010B_part891.root',
+	#'plotsZtoElecTau_Data2010B_part892.root',
+	#'plotsZtoElecTau_Data2010B_part893.root',
+	#'plotsZtoElecTau_Data2010B_part894.root',
+	#'plotsZtoElecTau_Data2010B_part895.root',
+	#'plotsZtoElecTau_Data2010B_part896.root',
+	#'plotsZtoElecTau_Data2010B_part897.root',
+	#'plotsZtoElecTau_Data2010B_part898.root',
+	#'plotsZtoElecTau_Data2010B_part899.root'
+)
+
+processZtoElecTau_Data2010B_Sum = copy.deepcopy(process_Data)
+processZtoElecTau_Data2010B_Sum.config_dqmFileLoader.inputFileNames = cms.vstring(
+    'plotsZtoElecTau_Data2010B_part01Sum.root',
+    'plotsZtoElecTau_Data2010B_part02Sum.root',
+    'plotsZtoElecTau_Data2010B_part03Sum.root',
+    'plotsZtoElecTau_Data2010B_part04Sum.root',
+    'plotsZtoElecTau_Data2010B_part05Sum.root',
+    'plotsZtoElecTau_Data2010B_part06Sum.root',
+    'plotsZtoElecTau_Data2010B_part07Sum.root',
+    'plotsZtoElecTau_Data2010B_part08Sum.root',
+    'plotsZtoElecTau_Data2010B_part09Sum.root',
+    'plotsZtoElecTau_Data2010B_part10Sum.root'
+)
+processZtoElecTau_Data2010B_Sum.config_dqmFileLoader.dqmDirectory_store = cms.string('harvested')
+processZtoElecTau_Data2010B_Sum.config_dqmFileLoader.scaleFactor = cms.double(1.)
 
 #--------------------------------------------------------------------------------
 
@@ -639,40 +1147,62 @@ processZtoElecTau_Zee_7TeV_Sum.config_dqmFileLoader.scaleFactor = cms.double(cor
 
 #--------------------------------------------------------------------------------
 
-processZtoElecTau_gammaPlusJets_Pt15to20_7TeV = copy.deepcopy(process_gammaPlusJets)
-processZtoElecTau_gammaPlusJets_Pt15to20_7TeV.config_dqmFileLoader.inputFileNames = cms.vstring(
-    'plotsZtoElecTau_PhotonPlusJets_Pt15to20_7TeV.root'
+processZtoElecTau_gammaPlusJets_Pt15to20 = copy.deepcopy(process_gammaPlusJets)
+processZtoElecTau_gammaPlusJets_Pt15to20.config_dqmFileLoader.inputFileNames = cms.vstring(
+    'plotsZtoElecTau_PhotonPlusJets_Pt15to20.root'
 )
-processZtoElecTau_gammaPlusJets_Pt15to20_7TeV.config_dqmFileLoader.dqmDirectory_store = cms.string('harvested/gammaPlusJets_Pt15to20')
-processZtoElecTau_gammaPlusJets_Pt15to20_7TeV.config_dqmFileLoader.scaleFactor = cms.double(corrFactorZtoElecTau_PhotonPlusJets_Pt15to20_7TeV*intLumiZtoElecTau_Data/intLumiZtoElecTau_PhotonPlusJets_Pt15to20_7TeV*scaleFactor)
+processZtoElecTau_gammaPlusJets_Pt15to20.config_dqmFileLoader.dqmDirectory_store = cms.string('harvested/gammaPlusJets_Pt15to20')
+processZtoElecTau_gammaPlusJets_Pt15to20.config_dqmFileLoader.scaleFactor = cms.double(corrFactorZtoElecTau_PhotonPlusJets_Pt15to20*intLumiZtoElecTau_Data/intLumiZtoElecTau_PhotonPlusJets_Pt15to20*scaleFactor)
 
-processZtoElecTau_gammaPlusJets_Pt20to30_7TeV = copy.deepcopy(process_gammaPlusJets)
-processZtoElecTau_gammaPlusJets_Pt20to30_7TeV.config_dqmFileLoader.inputFileNames = cms.vstring(
-    'plotsZtoElecTau_PhotonPlusJets_Pt20to30_7TeV.root'
+processZtoElecTau_gammaPlusJets_Pt20to30 = copy.deepcopy(process_gammaPlusJets)
+processZtoElecTau_gammaPlusJets_Pt20to30.config_dqmFileLoader.inputFileNames = cms.vstring(
+    'plotsZtoElecTau_PhotonPlusJets_Pt20to30.root'
 )
-processZtoElecTau_gammaPlusJets_Pt20to30_7TeV.config_dqmFileLoader.dqmDirectory_store = cms.string('harvested/gammaPlusJets_Pt20to30')
-processZtoElecTau_gammaPlusJets_Pt20to30_7TeV.config_dqmFileLoader.scaleFactor = cms.double(corrFactorZtoElecTau_PhotonPlusJets_Pt20to30_7TeV*intLumiZtoElecTau_Data/intLumiZtoElecTau_PhotonPlusJets_Pt20to30_7TeV*scaleFactor)
+processZtoElecTau_gammaPlusJets_Pt20to30.config_dqmFileLoader.dqmDirectory_store = cms.string('harvested/gammaPlusJets_Pt20to30')
+processZtoElecTau_gammaPlusJets_Pt20to30.config_dqmFileLoader.scaleFactor = cms.double(corrFactorZtoElecTau_PhotonPlusJets_Pt20to30*intLumiZtoElecTau_Data/intLumiZtoElecTau_PhotonPlusJets_Pt20to30*scaleFactor)
 
-processZtoElecTau_gammaPlusJets_Pt30to50_7TeV = copy.deepcopy(process_gammaPlusJets)
-processZtoElecTau_gammaPlusJets_Pt30to50_7TeV.config_dqmFileLoader.inputFileNames = cms.vstring(
-    'plotsZtoElecTau_PhotonPlusJets_Pt30to50_7TeV.root'
+processZtoElecTau_gammaPlusJets_Pt30to50 = copy.deepcopy(process_gammaPlusJets)
+processZtoElecTau_gammaPlusJets_Pt30to50.config_dqmFileLoader.inputFileNames = cms.vstring(
+    'plotsZtoElecTau_PhotonPlusJets_Pt30to50.root'
 )
-processZtoElecTau_gammaPlusJets_Pt30to50_7TeV.config_dqmFileLoader.dqmDirectory_store = cms.string('harvested/gammaPlusJets_Pt30to50')
-processZtoElecTau_gammaPlusJets_Pt30to50_7TeV.config_dqmFileLoader.scaleFactor = cms.double(corrFactorZtoElecTau_PhotonPlusJets_Pt30to50_7TeV*intLumiZtoElecTau_Data/intLumiZtoElecTau_PhotonPlusJets_Pt30to50_7TeV*scaleFactor)
+processZtoElecTau_gammaPlusJets_Pt30to50.config_dqmFileLoader.dqmDirectory_store = cms.string('harvested/gammaPlusJets_Pt30to50')
+processZtoElecTau_gammaPlusJets_Pt30to50.config_dqmFileLoader.scaleFactor = cms.double(corrFactorZtoElecTau_PhotonPlusJets_Pt30to50*intLumiZtoElecTau_Data/intLumiZtoElecTau_PhotonPlusJets_Pt30to50*scaleFactor)
 
-processZtoElecTau_gammaPlusJets_Pt50to80_7TeV = copy.deepcopy(process_gammaPlusJets)
-processZtoElecTau_gammaPlusJets_Pt50to80_7TeV.config_dqmFileLoader.inputFileNames = cms.vstring(
-    'plotsZtoElecTau_PhotonPlusJets_Pt50to80_7TeV.root'
+processZtoElecTau_gammaPlusJets_Pt50to80 = copy.deepcopy(process_gammaPlusJets)
+processZtoElecTau_gammaPlusJets_Pt50to80.config_dqmFileLoader.inputFileNames = cms.vstring(
+    'plotsZtoElecTau_PhotonPlusJets_Pt50to80.root'
 )
-processZtoElecTau_gammaPlusJets_Pt50to80_7TeV.config_dqmFileLoader.dqmDirectory_store = cms.string('harvested/gammaPlusJets_Pt50to80')
-processZtoElecTau_gammaPlusJets_Pt50to80_7TeV.config_dqmFileLoader.scaleFactor = cms.double(corrFactorZtoElecTau_PhotonPlusJets_Pt50to80_7TeV*intLumiZtoElecTau_Data/intLumiZtoElecTau_PhotonPlusJets_Pt50to80_7TeV*scaleFactor)
+processZtoElecTau_gammaPlusJets_Pt50to80.config_dqmFileLoader.dqmDirectory_store = cms.string('harvested/gammaPlusJets_Pt50to80')
+processZtoElecTau_gammaPlusJets_Pt50to80.config_dqmFileLoader.scaleFactor = cms.double(corrFactorZtoElecTau_PhotonPlusJets_Pt50to80*intLumiZtoElecTau_Data/intLumiZtoElecTau_PhotonPlusJets_Pt50to80*scaleFactor)
 
-processZtoElecTau_gammaPlusJets_Pt80to120_7TeV = copy.deepcopy(process_gammaPlusJets)
-processZtoElecTau_gammaPlusJets_Pt80to120_7TeV.config_dqmFileLoader.inputFileNames = cms.vstring(
-    'plotsZtoElecTau_PhotonPlusJets_Pt80to120_7TeV.root'
+processZtoElecTau_gammaPlusJets_Pt80to120 = copy.deepcopy(process_gammaPlusJets)
+processZtoElecTau_gammaPlusJets_Pt80to120.config_dqmFileLoader.inputFileNames = cms.vstring(
+    'plotsZtoElecTau_PhotonPlusJets_Pt80to120.root'
 )
-processZtoElecTau_gammaPlusJets_Pt80to120_7TeV.config_dqmFileLoader.dqmDirectory_store = cms.string('harvested/gammaPlusJets_Pt80to120')
-processZtoElecTau_gammaPlusJets_Pt80to120_7TeV.config_dqmFileLoader.scaleFactor = cms.double(corrFactorZtoElecTau_PhotonPlusJets_Pt80to120_7TeV*intLumiZtoElecTau_Data/intLumiZtoElecTau_PhotonPlusJets_Pt80to120_7TeV*scaleFactor)
+processZtoElecTau_gammaPlusJets_Pt80to120.config_dqmFileLoader.dqmDirectory_store = cms.string('harvested/gammaPlusJets_Pt80to120')
+processZtoElecTau_gammaPlusJets_Pt80to120.config_dqmFileLoader.scaleFactor = cms.double(corrFactorZtoElecTau_PhotonPlusJets_Pt80to120*intLumiZtoElecTau_Data/intLumiZtoElecTau_PhotonPlusJets_Pt80to120*scaleFactor)
+
+processZtoElecTau_gammaPlusJets_Pt30 = copy.deepcopy(process_gammaPlusJets)
+processZtoElecTau_gammaPlusJets_Pt30.config_dqmFileLoader.inputFileNames = cms.vstring(
+    'plotsZtoElecTau_PhotonPlusJets_Pt30_part01.root',
+    'plotsZtoElecTau_PhotonPlusJets_Pt30_part02.root',
+    'plotsZtoElecTau_PhotonPlusJets_Pt30_part03.root',
+    'plotsZtoElecTau_PhotonPlusJets_Pt30_part04.root',
+    'plotsZtoElecTau_PhotonPlusJets_Pt30_part05.root',
+    'plotsZtoElecTau_PhotonPlusJets_Pt30_part06.root',
+    'plotsZtoElecTau_PhotonPlusJets_Pt30_part07.root',
+    'plotsZtoElecTau_PhotonPlusJets_Pt30_part08.root',
+    'plotsZtoElecTau_PhotonPlusJets_Pt30_part09.root',
+    'plotsZtoElecTau_PhotonPlusJets_Pt30_part10.root'
+)
+
+processZtoElecTau_gammaPlusJets_Pt30_Sum = copy.deepcopy(process_gammaPlusJets)
+processZtoElecTau_gammaPlusJets_Pt30_Sum.config_dqmFileLoader.inputFileNames = cms.vstring(
+	'plotsZtoElecTau_gammaPlusJets_Pt30Sum.root'
+)
+#  DQMStore hierarchy already has 'harvested' prepended
+processZtoElecTau_gammaPlusJets_Pt30_Sum.config_dqmFileLoader.dqmDirectory_store = cms.string('')
+processZtoElecTau_gammaPlusJets_Pt30_Sum.config_dqmFileLoader.scaleFactor = cms.double(corrFactorZtoElecTau_gammaPlusJets_Pt30*intLumiZtoElecTau_Data/intLumiZtoElecTau_gammaPlusJets_Pt30*scaleFactor)
 
 #--------------------------------------------------------------------------------
 

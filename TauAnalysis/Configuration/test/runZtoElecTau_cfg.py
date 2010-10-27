@@ -99,16 +99,25 @@ process.source = cms.Source("PoolSource",
 
 #--------------------------------------------------------------------------------
 # set trigger
-process.Trigger.selectors[0].triggerPaths = cms.vstring('HLT_Ele10_SW_EleId_L1R','HLT_Ele10_LW_EleId_L1R','HLT_Ele10_LW_L1R','HLT_Ele10_SW_L1R')
-process.analyzeZtoElecTauEvents.eventDumps[0].hltPathsToPrint = cms.vstring('HLT_Ele10_SW_EleId_L1R','HLT_Ele10_LW_EleId_L1R','HLT_Ele10_LW_L1R','HLT_Ele10_SW_L1R')
-process.triggerHistManagerForElecTau.hltPaths = cms.vstring('HLT_Ele10_SW_EleId_L1R','HLT_Ele10_LW_EleId_L1R','HLT_Ele10_LW_L1R','HLT_Ele10_SW_L1R')
+
+triggerString = cms.vstring('HLT_Ele10_SW_EleId_L1R','HLT_Ele10_LW_EleId_L1R','HLT_Ele10_LW_L1R','HLT_Ele10_SW_L1R','HLT_Ele12_SW_TightEleIdIsol_L1R','HLT_Ele17_SW_TighterEleIdIsol_L1R')
+triggerCollection = cms.InputTag('TriggerResults::HLT')
+
+process.Trigger.selectors[0].src = triggerCollection
+process.Trigger.selectors[0].triggerPaths = triggerString
+
+process.analyzeZtoElecTauEvents.eventDumps[0].hltPathsToPrint = triggerString
+process.analyzeZtoElecTauEvents.eventDumps[0].hltResultsSource = triggerCollection
+
+process.triggerHistManagerForElecTau.hltPaths = triggerString
+process.triggerHistManagerForElecTau.hltResultsSource = triggerCollection
 #--------------------------------------------------------------------------------
 
 #--------------------------------------------------------------------------------
 # add patElectronIsolation, which was removed from standard pat sequence in CMSSW_3_4
 # only necessary if producing PAT-tuples
-from TauAnalysis.Configuration.tools.patElectronTools import *
-producePatElectronIsolation(process)
+#from TauAnalysis.Configuration.tools.patElectronTools import *
+#producePatElectronIsolation(process)
 #--------------------------------------------------------------------------------
 
 #--------------------------------------------------------------------------------
