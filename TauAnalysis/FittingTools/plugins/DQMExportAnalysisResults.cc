@@ -27,6 +27,8 @@ const std::string outputFileNameSeparator = "/";
 
 mode_t mkdirAccessPermissions = (S_IRWXU | S_IRWXG | S_IRWXO);
 
+const double epsilon = 1.e-2;
+
 typedef std::vector<std::string> vstring;
 
 DQMExportAnalysisResults::DQMExportAnalysisResults(const edm::ParameterSet& cfg)
@@ -56,13 +58,15 @@ DQMExportAnalysisResults::DQMExportAnalysisResults(const edm::ParameterSet& cfg)
     ++channelIndex;
   }
 
-  edm::ParameterSet cfgSystematics = cfg.getParameter<edm::ParameterSet>("systematics");
-  vstring systematicNames = cfgSystematics.getParameterNamesForType<edm::ParameterSet>();
-  for ( vstring::const_iterator systematicName = systematicNames.begin();
-	systematicName != systematicNames.end(); ++systematicName ) {
-    edm::ParameterSet cfgSystematic = cfgSystematics.getParameter<edm::ParameterSet>(*systematicName);
-    systematicEntryType* systematicEntry = new systematicEntryType(*systematicName, cfgSystematic);
-    systematics_.push_back(systematicEntry);
+  if ( cfg.exists("systematics") ) {
+    edm::ParameterSet cfgSystematics = cfg.getParameter<edm::ParameterSet>("systematics");
+    vstring systematicNames = cfgSystematics.getParameterNamesForType<edm::ParameterSet>();
+    for ( vstring::const_iterator systematicName = systematicNames.begin();
+	  systematicName != systematicNames.end(); ++systematicName ) {
+      edm::ParameterSet cfgSystematic = cfgSystematics.getParameter<edm::ParameterSet>(*systematicName);
+      systematicEntryType* systematicEntry = new systematicEntryType(*systematicName, cfgSystematic);
+      systematics_.push_back(systematicEntry);
+    }
   }
 }
 
@@ -191,19 +195,21 @@ double getSumBinErrors2(TH1* histogram, int firstBinX, int lastBinX, int firstBi
 }
 
 void exportAnalysisResults(
-       DQMStore& dqmStore, const std::string& meName, double numEventsTotal, unsigned numChannels, unsigned channelIndex,
+       DQMStore& dqmStore, const std::string& meNameTemplate, 
+       const std::string& meNameNumEventsProcessed, const std::string& meNameNumEventsPassed, 
+       unsigned numChannels, unsigned channelIndex,
        const std::string& outputFileName, bool failSilent = false)
 {
   std::cout << "<exportAnalysisResults>:" << std::endl;
-  std::cout << " meName = " << meName << std::endl;
+  std::cout << " meNameTemplate = " << meNameTemplate << std::endl;
   std::cout << " outputFileName = " << outputFileName << std::endl;
  
-  MonitorElement* me = dqmStore.get(meName);
+  MonitorElement* me = dqmStore.get(meNameTemplate);
   TH1* histogram = ( me ) ? me->getTH1() : NULL;
   if ( histogram == NULL ) {
     if ( !failSilent ) 
       edm::LogError ("exportAnalysisResults") 
-	<< " Failed to access dqmMonitorElement = " << meName << " --> analysis results will NOT be exported !!";
+	<< " Failed to access dqmMonitorElement = " << meNameTemplate << " --> analysis results will NOT be exported !!";
     return;
   }
 
@@ -266,7 +272,23 @@ void exportAnalysisResults(
     }
   }
 
-  numEventsTotal *= scaleFactor;
+  bool error = false;
+  double numEventsProcessed = getValue(dqmStore, meNameNumEventsProcessed, error);
+  double numEventsPassed = getValue(dqmStore, meNameNumEventsPassed, error);
+  assert(!error);
+
+  numEventsProcessed *= scaleFactor;
+  numEventsPassed *= scaleFactor;
+
+  double consistencyCheckNumerator = TMath::Abs(numEventsPassed - sumBinContents*scaleFactor);
+  double consistencyCheckDenominator = 0.5*(TMath::Abs(numEventsPassed) + TMath::Abs(sumBinContents*scaleFactor));
+  if ( consistencyCheckDenominator != 0. && (consistencyCheckNumerator/consistencyCheckDenominator) > epsilon ) {
+    edm::LogWarning ("exportAnalysisResults")
+      << " Mismatch between number of events passing cuts and sum of entries in histogram !!";
+    std::cout << "(num. events passed (meName = " << meNameNumEventsPassed << "): " << numEventsPassed << ","
+	      << " sum of entries in histogram (meName = " << meNameTemplate << "): " << sumBinContents*scaleFactor << ")" 
+	      << std::endl;
+  }
 
   int errorFlag = 0;
   createSubDirectories(outputFileName, errorFlag);
@@ -284,8 +306,9 @@ void exportAnalysisResults(
 
   (*outputFile) << std::setw(width) << std::setfill(' ') << numChannels;
   (*outputFile) << std::setw(width) << std::setfill(' ') << numBins;
-  (*outputFile) << std::setw(width) << std::setfill(' ') << TMath::Nint(numEventsTotal);
-  (*outputFile) << std::setw(width) << std::setfill(' ') << TMath::Nint(sumBinContents*scaleFactor);
+  (*outputFile) << std::setw(width) << std::setfill(' ') << TMath::Nint(numEventsProcessed);
+  //(*outputFile) << std::setw(width) << std::setfill(' ') << TMath::Nint(sumBinContents*scaleFactor);
+  (*outputFile) << std::setw(width) << std::setfill(' ') << TMath::Nint(numEventsPassed);
   (*outputFile) << std::endl;
 
   for ( unsigned iBin = 0; iBin < (numChannels*numBins); ++iBin ) {
@@ -294,6 +317,16 @@ void exportAnalysisResults(
   }
 
   delete outputFile;
+}
+
+std::string getMEname_full(const std::string& dqmDirectory_process, const std::string& meName_channel, 
+			   const std::string& systematic)
+{
+  int errorFlag = 0;
+  std::string meName_full = dqmDirectoryName(dqmDirectory_process).append(meName_channel);
+  meName_full = replace_string(meName_full, systematicsDirKeyword, systematic, 0, 1, errorFlag);
+  meName_full = replace_string(meName_full, "//", "/", 0, 1000, errorFlag);
+  return meName_full;
 }
 
 void DQMExportAnalysisResults::endJob()
@@ -311,15 +344,18 @@ void DQMExportAnalysisResults::endJob()
   for ( std::vector<processEntryType*>::iterator process = processes_.begin();
 	process != processes_.end(); ++process ) {
     int errorFlag = 0;
-    std::string dqmDirectory_process = replace_string(dqmDirectory_, processDirKeyword, (*process)->name_, 0, 1, errorFlag);
+    std::string dqmDirectory_process = replace_string(dqmDirectory_, processDirKeyword, (*process)->dqmDirectory_, 0, 1, errorFlag);
     std::cout << " dqmDirectory_process = " << dqmDirectory_process << std::endl;
 
     for ( std::vector<channelEntryType*>::iterator channel = channels_.begin();
 	  channel != channels_.end(); ++channel ) {
-      std::string meName_channel = dqmDirectoryName(dqmDirectory_process).append((*channel)->meName_);
-      meName_channel = replace_string(meName_channel, systematicsDirKeyword, "", 0, 1, errorFlag);
-      meName_channel = replace_string(meName_channel, "//", "/", 0, 1000, errorFlag);
-      std::cout << " meName_channel = " << meName_channel << std::endl;
+      std::string meNameTemplate_channel = getMEname_full(dqmDirectory_process, (*channel)->meNameTemplate_, "");
+      std::cout << " meNameTemplate_channel = " << meNameTemplate_channel << std::endl;
+
+      std::string meNameNumEventsProcessed_channel = getMEname_full(dqmDirectory_process, (*channel)->meNameNumEventsProcessed_, "");
+      std::cout << " meNameNumEventsProcessed_channel = " << meNameNumEventsProcessed_channel << std::endl;
+      std::string meNameNumEventsPassed_channel = getMEname_full(dqmDirectory_process, (*channel)->meNameNumEventsPassed_, "");
+      std::cout << " meNameNumEventsPassed_channel = " << meNameNumEventsPassed_channel << std::endl;
       
       std::string outputFileName_channel = std::string(outputFilePath_).append("/");
       outputFileName_channel.append((*process)->outputFilePath_).append("/");
@@ -331,17 +367,24 @@ void DQMExportAnalysisResults::endJob()
       
 //--- export "central values" 
 //   (analysis results with no systematic shifts applied)
-      exportAnalysisResults(dqmStore, meName_channel, (*process)->numEvents_, channels_.size(), (*channel)->index_, 
-			    outputFileName_channel, false);
+      exportAnalysisResults(dqmStore, meNameTemplate_channel, 
+			    meNameNumEventsProcessed_channel, meNameNumEventsPassed_channel, 
+			    channels_.size(), (*channel)->index_, outputFileName_channel, false);
 
 //--- export systematic uncertainties
       if ( (*process)->hasSysUncertainties_ ) {
 	for ( std::vector<systematicEntryType*>::iterator systematic = systematics_.begin();
 	      systematic != systematics_.end(); ++systematic ) {
-	  std::string meName_systematic = dqmDirectoryName(dqmDirectory_process).append((*channel)->meName_);
-	  meName_systematic = replace_string(meName_systematic, systematicsDirKeyword, (*systematic)->dqmDirectory_, 0, 1, errorFlag);
-	  meName_systematic = replace_string(meName_systematic, "//", "/", 0, 1000, errorFlag);
-	  std::cout << " meName_systematic = " << meName_systematic << std::endl;
+	  std::string meNameTemplate_systematic = 
+	    getMEname_full(dqmDirectory_process, (*channel)->meNameTemplate_, (*systematic)->dqmDirectory_);
+	  std::cout << " meNameTemplate_systematic = " << meNameTemplate_systematic << std::endl;
+	  
+	  std::string meNameNumEventsProcessed_systematic = 
+	    getMEname_full(dqmDirectory_process, (*channel)->meNameNumEventsProcessed_, (*systematic)->dqmDirectory_);
+	  std::cout << " meNameNumEventsProcessed_systematic = " << meNameNumEventsProcessed_systematic << std::endl;
+	  std::string meNameNumEventsPassed_systematic = 
+	    getMEname_full(dqmDirectory_process, (*channel)->meNameNumEventsPassed_, (*systematic)->dqmDirectory_);
+	  std::cout << " meNameNumEventsPassed_systematic = " << meNameNumEventsPassed_systematic << std::endl;
 	  
 	  std::string outputFileName_systematic = std::string(outputFilePath_).append("/");
 	  outputFileName_systematic.append((*process)->outputFilePath_).append("/");
@@ -352,8 +395,9 @@ void DQMExportAnalysisResults::endJob()
 	  outputFileName_systematic = replace_string(outputFileName_systematic, "//", "/", 0, 1000, errorFlag);
 	  std::cout << " outputFileName_systematic = " << outputFileName_systematic << std::endl;
 	  
-	  exportAnalysisResults(dqmStore, meName_systematic, (*process)->numEvents_, channels_.size(), (*channel)->index_, 
-				outputFileName_systematic, false); // true
+	  exportAnalysisResults(dqmStore, meNameTemplate_systematic, 
+				meNameNumEventsProcessed_systematic, meNameNumEventsPassed_systematic, 
+				channels_.size(), (*channel)->index_, outputFileName_systematic, false); // true
 	}
       }
     }
