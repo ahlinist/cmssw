@@ -12,6 +12,7 @@ MyMHTEventSelector::MyMHTEventSelector(const edm::ParameterSet& pset) :
   jetTag_(pset.getParameter<edm::InputTag> ("jetTag")),
   minMHT_(pset.getParameter<double> ("minMHT")),
   maxMHT_(pset.getParameter<double> ("maxMHT")),
+  maxMHTsig_(pset.getParameter<double> ("maxMHTsig")),
   minPt_(pset.getParameter<double> ("minPt")),
   maxEta_(pset.getParameter<double> ("maxEta")),
   minFem_(pset.getParameter<double> ("minEMFraction")),
@@ -22,12 +23,14 @@ MyMHTEventSelector::MyMHTEventSelector(const edm::ParameterSet& pset) :
 
    // Store computed HT
    defineVariable("MHT");
+   defineVariable("myMHTsignificance");
 }
 
 //__________________________________________________________________________________________________
 bool MyMHTEventSelector::select(const edm::Event& event) const {
    // reset cached variables
-   math::XYZTLorentzVector HT;
+   math::XYZTLorentzVector MHT;
+   double HT = 0;
 
    resetVariables();
 
@@ -88,7 +91,8 @@ bool MyMHTEventSelector::select(const edm::Event& event) const {
          }
          if (iJet->pt() > minPt_ && fabs(iJet->eta()) < maxEta_) {
             math::XYZTLorentzVector p4(iJet->px(), iJet->py(), iJet->pz(), iJet->energy());//   iJet->correctedP4("abs");
-            HT += p4;
+            MHT += p4;
+            HT += p4.pt();
          }
          ++iJet;
       }
@@ -111,7 +115,8 @@ bool MyMHTEventSelector::select(const edm::Event& event) const {
 //          }
 //          if (jet->pt() > minPt_ && fabs(jet->eta()) < maxEta_) {
 //             math::XYZTLorentzVector p4(jet->px(), jet->py(), jet->pz(), jet->energy());//   jet->correctedP4("abs");
-//             HT += p4;
+//             MHT += p4;
+//             HT += p4.pt();
 //          }
 //          ++iJet;
 //       }
@@ -125,28 +130,35 @@ bool MyMHTEventSelector::select(const edm::Event& event) const {
 //          //                  << std::endl;
 //          if (iJet->pt() > minPt_ && fabs(iJet->eta()) < maxEta_) {
 //             math::XYZTLorentzVector p4(iJet->px(), iJet->py(), iJet->pz(), iJet->energy());//   iJet->correctedP4("abs");
-//             HT += p4;
+//             MHT += p4;
+//             HT += p4.pt();
 //          }
 //          ++iJet;
 //       }
 
 //    }
 
-   float myMHT = HT.pt();
+   float myMHT = MHT.pt();
    //std::cout << myMHT << std::endl;
+   float myMHTsignificance = MHT.pt() / sqrt(HT);
+   //std::cout << "MHT = " << myMHT << ", HT = " << HT << ", MHT sig = " << myMHTsignificance << std::endl;
 
    setVariable("MHT", myMHT);
+   setVariable("myMHTsignificance", myMHTsignificance);
 
    //
    // apply cut
    //
+   bool result_maxsig = true;
+   if (maxMHTsig_ > 0)
+      result_maxsig = (myMHTsignificance < maxMHTsig_);
    bool result_max = true;
    if (maxMHT_ > 0)
       result_max = (myMHT < maxMHT_);
    bool result_min = true;
    if (minMHT_ > 0)
       result_min = (myMHT > minMHT_);
-   return (result_min && result_max);
+   return (result_min && result_max && result_maxsig);
 
 }
 
