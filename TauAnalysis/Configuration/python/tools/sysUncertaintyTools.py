@@ -17,12 +17,12 @@ from TauAnalysis.RecoTools.patJetSelectionForAHtoMuTau_cff import *
 from TauAnalysis.CandidateTools.sysErrDefinitions_cfi import *
 from TauAnalysis.GenSimTools.sysErrGenEventReweights_cfi import *
 
-from TauAnalysis.Configuration.selectZtoMuTau_factorized_cff import *
 from TauAnalysis.Configuration.selectZtoMuTau_cff import *
+from TauAnalysis.Configuration.selectZtoMuTau_factorized_cff import *
 from TauAnalysis.Configuration.selectZtoDiTau_cff import *
-from TauAnalysis.Configuration.selectZtoDiTau_cff import *
+from TauAnalysis.Configuration.selectZtoDiTau_factorized_cff import *
 from TauAnalysis.Configuration.selectAHtoMuTau_cff import *
-from TauAnalysis.Configuration.selectAHtoMuTau_cff import *
+from TauAnalysis.Configuration.selectAHtoMuTau_factorized_cff import *
 
 #--------------------------------------------------------------------------------
 # generic utility functions for factorization
@@ -107,9 +107,9 @@ def enableSysUncertainties_runZtoMuTau(process):
     process.producePatTupleZtoMuTauSpecific._seq = process.prodSmearedTaus * process.producePatTupleZtoMuTauSpecific._seq
     process.producePatTupleZtoMuTauSpecific._seq = process.prodSmearedJets * process.producePatTupleZtoMuTauSpecific._seq
 
-    process.selectZtoMuTauEvents = \
+    process.produceEventSelFlagsZtoMuTau = \
       zToMuTauEventSelConfigurator.configure(process = process, estimateSysUncertainties = True)
-    process.selectZtoMuTauEventsLooseMuonIsolation = \
+    process.produceEventSelFlagsZtoMuTauLooseMuonIsolation = \
       zToMuTauEventSelConfiguratorLooseMuonIsolation.configure(process = process, estimateSysUncertainties = True)
 
     setattr(patMuonSelConfigurator, "systematics", muonSystematics)
@@ -348,9 +348,9 @@ def enableSysUncertainties_runAHtoMuTau(process):
 
     enableSysUncertainties_runZtoMuTau(process)
 
-    process.selectAHtoMuTauEvents = \
+    process.produceEventSelFlagsAHtoMuTau = \
       ahToMuTauEventSelConfigurator.configure(process = process, estimateSysUncertainties = True)
-    process.selectAHtoMuTauEventsLooseMuonIsolation = \
+    process.produceEventSelFlagsAHtoMuTauLooseMuonIsolation = \
       ahToMuTauEventSelConfiguratorLooseMuonIsolation.configure(process = process, estimateSysUncertainties = True)
 
     setattr(patMuTauPairSelConfiguratorForAHtoMuTau, "systematics", muTauPairSystematics)

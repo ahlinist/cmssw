@@ -70,4 +70,7 @@ ahToMuTauEventSelConfiguratorLooseMuonIsolation = eventSelFlagProdConfigurator(
     pyModuleName = __name__
 )
 
-selectAHtoMuTauEventsLooseMuonIsolation = ahToMuTauEventSelConfiguratorLooseMuonIsolation.configure()
+produceEventSelFlagsAHtoMuTauLooseMuonIsolation = ahToMuTauEventSelConfiguratorLooseMuonIsolation.configure()
+
+selectAHtoMuTauEventsLooseMuonIsolation = cms.Sequence(produceEventSelFlagsAHtoMuTauLooseMuonIsolation)
+    

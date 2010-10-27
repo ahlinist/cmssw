@@ -76,4 +76,7 @@ zToMuTauEventSelConfiguratorLooseMuonIsolation = eventSelFlagProdConfigurator(
     pyModuleName = __name__
 )
 
-selectZtoMuTauEventsLooseMuonIsolation = zToMuTauEventSelConfiguratorLooseMuonIsolation.configure()
+produceEventSelFlagsZtoMuTauLooseMuonIsolation = zToMuTauEventSelConfiguratorLooseMuonIsolation.configure()
+
+selectZtoMuTauEventsLooseMuonIsolation = cms.Sequence(produceEventSelFlagsZtoMuTauLooseMuonIsolation)
+    
