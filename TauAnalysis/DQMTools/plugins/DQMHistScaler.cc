@@ -311,7 +311,10 @@ void DQMHistScaler::endJob()
     if ( cfgScaleJob->scaleFactor_ != -1. ) {
       scaleFactor = cfgScaleJob->scaleFactor_;
       scaleFactorErr = cfgScaleJob->scaleFactorErr_;
-    } else if ( cfgScaleJob->meName_scaleFactor_ != "" ) { 
+
+      std::cout << " scaleFactor = " << scaleFactor << " +/- " << scaleFactorErr << std::endl;
+    
+	} else if ( cfgScaleJob->meName_scaleFactor_ != "" ) { 
       int errorFlag = 0;
       scaleFactor = getMonitorElementNorm(dqmStore, cfgScaleJob->meName_scaleFactor_, cfgScaleJob->meType_, scaleFactorErr, errorFlag);
       if ( cfgScaleJob->meName_scaleFactorErr_ != "" ) {
