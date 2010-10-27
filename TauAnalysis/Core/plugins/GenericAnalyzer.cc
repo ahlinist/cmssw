@@ -308,6 +308,12 @@ void GenericAnalyzer::addAnalyzers(const vstring& analyzerNames,
     std::map<std::string, edm::ParameterSet>::const_iterator it = cfgAnalyzers_.find(*analyzerName);
     if ( it != cfgAnalyzers_.end() ) {
       edm::ParameterSet cfgAnalyzer = it->second;
+
+      bool supportsSystematics = cfgAnalyzer.getParameter<bool>("supportsSystematics");
+      if ( supportsSystematics && (!estimateSysUncertainties_) ) {
+	std::cout << "analyzer = " << (*analyzerName) << " supports systematics," 
+		  << " but estimateSysUncertainties = false --> skipping...";
+      }
       
       for ( vstring::const_iterator replaceCommand = replaceCommands.begin();
 	    replaceCommand != replaceCommands.end(); ++replaceCommand ) {
@@ -437,7 +443,7 @@ GenericAnalyzer::GenericAnalyzer(const edm::ParameterSet& cfg)
     }
   }
 
-  if ( estimateSysUncertainties_ && cfg.exists("analyzers_systematic") ) {
+  if ( cfg.exists("analyzers_systematic") ) {
     vParameterSet cfgAnalyzers_systematic = cfg.getParameter<vParameterSet>("analyzers_systematic");
     for ( vParameterSet::iterator cfgAnalyzer_systematic = cfgAnalyzers_systematic.begin(); 
 	  cfgAnalyzer_systematic != cfgAnalyzers_systematic.end(); ++cfgAnalyzer_systematic ) {
