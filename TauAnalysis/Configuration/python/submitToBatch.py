@@ -118,7 +118,7 @@ def submitToBatch(configFile = None, channel = None, sample = None,
 	else:    
 		configFile_base = submissionDirectory + configFile
 	configFile_mod = configFile_base.replace("_cfg.py", "_" + part + "@Batch_cfg.py")		
-	#print configFile_mod
+	#print("configFile_mod = " + configFile_mod)
 
 	if replFunction is not None:
 		replacements = replFunction(channel = channel, sample = sample, type = type, replacements = replacements)
@@ -137,6 +137,7 @@ def submitToBatch(configFile = None, channel = None, sample = None,
 	scriptFile = scriptFile.replace("cfg","csh")
 	if os.path.exists(scriptFile):
 		os.remove(scriptFile)
+	#print("scriptFile = " + scriptFile)	
 
 	# create shell script for submission of cmsRun job to the CERN batch system
 	# (copy all .root files produced by the cmsRun job to directory specified
@@ -185,11 +186,14 @@ end
 	if submit == "yes":
 		logFile = configFile_base.replace("_cfg.py", "_" + sample + "@Batch.out")
 		logFile = logFile.replace("cfg","log")
+		#print("logFile = " + logFile)
 		jobName = job + channel + "_" + sample
 		bsubCommand = 'bsub -q ' + queue + ' -J ' + jobName + ' -L /bin/csh -eo ' + logFile + ' -oo ' + logFile
 		if resourceRequest != None:
-			bsubCommand += ' -R \"' + resourceRequest + '\" '
+			bsubCommand += ' -R \"' + resourceRequest + '\" '			
 		bsubCommand += ' < ' + scriptFile
+		#print("bsubCommand:")
+		#print(bsubCommand)
 		subprocess.call(bsubCommand, shell = True)
 
     # wait for 10 seconds, in order not to generate too many castor requests in too short a time
