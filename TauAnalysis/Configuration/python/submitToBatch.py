@@ -194,5 +194,5 @@ end
 
     # wait for 10 seconds, in order not to generate too many castor requests in too short a time
     # (maximum number of permissible requests = 900 in 180 seconds; cmsRun jobs will abort in case this limit is excdeeded)
-	time.sleep(10)
+	time.sleep(1)
     
