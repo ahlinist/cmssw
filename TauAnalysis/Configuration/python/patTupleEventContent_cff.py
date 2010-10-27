@@ -154,5 +154,6 @@ patTupleEventContent.outputCommands.extend(
 
 patTupleEventContent.outputCommands.extend(
     [ 'keep *_caloEventShapeVars_*_*',
-      'keep *_pfEventShapeVars_*_*' ]
+      'keep *_pfEventShapeVars_*_*',
+	  'keep *_pfNoPileUp_*_*']
 )
