@@ -24,8 +24,8 @@ patTupleEventContent.outputCommands.extend(
 # required for Z->ee hypothesis; to be removed
 #--------------------------------------------------------------------------------
 patTupleEventContent.outputCommands.extend(
-     [ 'keep *_iterativeCone5CaloJets_*_*',
-       'keep *_iterativeCone5PFJets_*_*',
+     [ 'keep *_ak5CaloJets_*_*',
+       'keep *_ak5PFJets_*_*',
        'keep *_generalTracks_*_*', 
        'keep *_genElectronsFromZs_*_*' ]
 )
@@ -85,7 +85,7 @@ patTupleEventContent.outputCommands.extend(
 # required by genPhaseSpaceEventInfoHistManager
 #--------------------------------------------------------------------------------
 patTupleEventContent.outputCommands.extend(
-    [ 'keep *_iterativeCone5GenJets_*_*', 
+    [ 'keep *_ak5GenJets_*_*', 
       'keep *_genParticlesFromZs_*_*' ]
 )
 
