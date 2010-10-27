@@ -127,7 +127,7 @@ process.exportAnalysisResults_woBtag = cms.EDAnalyzer("DQMExportAnalysisResults"
 	    outputFilePath = cms.string(""),
 	    outputFileName = cms.string("data_#CHANNEL_OUTPUTFILENAME#.hst"),
             hasSysUncertainties = cms.bool(False)
-        ),
+        )
     ),
 
     channels = cms.PSet(
@@ -150,12 +150,28 @@ process.exportAnalysisResults_woBtag = cms.EDAnalyzer("DQMExportAnalysisResults"
     ##systematics = cms.PSet(
     ##	  tauJetEnUp = cms.PSet(
     ##	      dqmDirectory = cms.string('sysUncertaintyHistManagerResults/sysTauJetEnUp'),
-    ## 	      outputFilePath = cms.string("tes+1")
+    ## 	      outputFilePath = cms.string("tau_es+1")
     ##    ),
     ##	  tauJetEnDown = cms.PSet(
     ##	      dqmDirectory = cms.string('sysUncertaintyHistManagerResults/sysTauJetEnDown'),
-    ##	      outputFilePath = cms.string("tes-1")
-    ##    ) 
+    ##	      outputFilePath = cms.string("tau_es-1")
+    ##    ),
+    ##	  muonPtUp = cms.PSet(
+    ##	      dqmDirectory = cms.string('sysUncertaintyHistManagerResults/sysTauJetEnUp'),
+    ## 	      outputFilePath = cms.string("mu_pt+1")
+    ##    ),
+    ##	  muonPtDown = cms.PSet(
+    ##	      dqmDirectory = cms.string('sysUncertaintyHistManagerResults/sysTauJetEnDown'),
+    ##	      outputFilePath = cms.string("mu_pt-1")
+    ##    ),
+    ##	  jetEnUp = cms.PSet(
+    ##	      dqmDirectory = cms.string('sysUncertaintyHistManagerResults/sysTauJetEnUp'),
+    ## 	      outputFilePath = cms.string("jet_es+1")
+    ##    ),
+    ##	  jetEnDown = cms.PSet(
+    ##	      dqmDirectory = cms.string('sysUncertaintyHistManagerResults/sysTauJetEnDown'),
+    ##	      outputFilePath = cms.string("jet_es-1")
+    ##    ),                                                  
     ##)
 )
  
