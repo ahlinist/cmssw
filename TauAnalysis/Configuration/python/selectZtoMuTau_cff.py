@@ -290,7 +290,7 @@ zToMuTauEventSelConfigurator = eventSelFlagProdConfigurator(
     pyModuleName = __name__
 )
 
-selectZtoMuTauEvents = zToMuTauEventSelConfigurator.configure()
+produceEventSelFlagsZtoMuTau = zToMuTauEventSelConfigurator.configure()
 
 isRecZtoMuTau = cms.EDProducer("BoolEventSelFlagProducer",
     pluginName = cms.string('isRecZtoMuTau'),
@@ -306,5 +306,8 @@ isRecZtoMuTau = cms.EDProducer("BoolEventSelFlagProducer",
     )
 )
 
-selectZtoMuTauEvents._seq = selectZtoMuTauEvents._seq * isRecZtoMuTau
+selectZtoMuTauEvents = cms.Sequence(
+    produceEventSelFlagsZtoMuTau
+   * isRecZtoMuTau
+)
 

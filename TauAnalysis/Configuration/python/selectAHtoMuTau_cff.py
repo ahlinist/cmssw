@@ -94,7 +94,7 @@ ahToMuTauEventSelConfigurator = eventSelFlagProdConfigurator(
     pyModuleName = __name__
 )
 
-selectAHtoMuTauEvents = ahToMuTauEventSelConfigurator.configure()
+produceEventSelFlagsAHtoMuTau = ahToMuTauEventSelConfigurator.configure()
 
 isRecAHtoMuTauCentralJetVeto = cms.EDProducer("BoolEventSelFlagProducer",
     pluginName = cms.string('isRecAHtoMuTauCentralJetVeto'),
@@ -111,8 +111,6 @@ isRecAHtoMuTauCentralJetVeto = cms.EDProducer("BoolEventSelFlagProducer",
     )
 )
 
-selectAHtoMuTauEvents._seq = selectAHtoMuTauEvents._seq * isRecAHtoMuTauCentralJetVeto
-
 isRecAHtoMuTauCentralJetBtag = cms.EDProducer("BoolEventSelFlagProducer",
     pluginName = cms.string('isRecAHtoMuTauCentralJetBtag'),
     pluginType = cms.string('MultiBoolEventSelFlagSelector'),
@@ -128,4 +126,7 @@ isRecAHtoMuTauCentralJetBtag = cms.EDProducer("BoolEventSelFlagProducer",
     )
 )
 
-selectAHtoMuTauEvents._seq = selectAHtoMuTauEvents._seq * isRecAHtoMuTauCentralJetBtag
+selectAHtoMuTauEvents = cms.Sequence(
+    produceEventSelFlagsAHtoMuTau
+   * isRecAHtoMuTauCentralJetVeto * isRecAHtoMuTauCentralJetBtag
+)
