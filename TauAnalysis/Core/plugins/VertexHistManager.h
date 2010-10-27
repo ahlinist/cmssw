@@ -41,6 +41,12 @@ class VertexHistManager : public HistManagerBase
   MonitorElement* hVertexNumTracks_;
 
   MonitorElement* hVertexChi2Prob_;
+
+  MonitorElement* hNumVertices_;
+  MonitorElement* hNumVerticesPtGt5_;
+  MonitorElement* hNumVerticesPtGt10_;
+  MonitorElement* hNumVerticesPtGt15_;
+  MonitorElement* hNumVerticesPtGt20_;
 };
 
 #endif  
