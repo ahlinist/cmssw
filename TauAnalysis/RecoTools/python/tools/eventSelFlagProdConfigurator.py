@@ -81,7 +81,7 @@ class eventSelFlagProdConfigurator(cms._ParameterTypeBase):
         else:
             self.sequence *= module
 
-    def configure(self, process = None):
+    def configure(self, process = None, estimateSysUncertainties = False):
         # configure 'BoolEventSelFlagProducer' modules
         # storing results of event selection as boolean flags in the event
 
@@ -119,7 +119,7 @@ class eventSelFlagProdConfigurator(cms._ParameterTypeBase):
                         self._addModule(objSelItem, [ [ src, "" ] ], sysName, process = process)
             if src_cumulative is not None and src_individual is not None:
                 self._addModule(objSelItem, [ [ src_cumulative, "cumulative" ], [ src_individual, "individual" ] ], process = process)
-                if systematics is not None:
+                if estimateSysUncertainties and systematics is not None:
                     for sysName in systematics:
                         self._addModule(objSelItem, [ [ src_cumulative, "cumulative" ], ], sysName, process = process)
 
