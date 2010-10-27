@@ -193,7 +193,7 @@ from TauAnalysis.Configuration.tools.sysUncertaintyTools import enableSysUncerta
 # in case running jobs on the CERN batch system
 # (needs to be done after process.p has been defined)
 #__#systematics#
-enableSysUncertainties_runZtoMuTau(process)
+##enableSysUncertainties_runZtoMuTau(process)
 #--------------------------------------------------------------------------------
 
 #--------------------------------------------------------------------------------
