@@ -120,7 +120,6 @@ analyzeZtoMuTauEvents = cms.EDAnalyzer("GenericAnalyzer",
    
     analysisSequence = muTauAnalysisSequence,
 
-    #estimateSysUncertainties = cms.bool(True),                                       
     estimateSysUncertainties = cms.bool(False), 
     systematics = cms.vstring(
         getSysUncertaintyNames(

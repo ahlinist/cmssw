@@ -97,7 +97,6 @@ analyzeZtoDiTauEvents = cms.EDAnalyzer("GenericAnalyzer",
    
     analysisSequence = diTauAnalysisSequence,
 
-    #estimateSysUncertainties = cms.bool(True),                                       
     estimateSysUncertainties = cms.bool(False), 
     systematics = cms.vstring(
         getSysUncertaintyNames(
