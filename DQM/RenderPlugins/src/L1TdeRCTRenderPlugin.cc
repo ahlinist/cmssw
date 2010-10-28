@@ -1,11 +1,11 @@
-// $Id: L1TdeRCTRenderPlugin.cc,v 1.16 2009/10/31 23:18:54 lat Exp $
+// $Id: L1TdeRCTRenderPlugin.cc,v 1.17 2009/11/18 10:26:24 asavin Exp $
 
 /*!
   \file L1TdeRCTRenderPlugin
   \brief Display Plugin for Quality Histograms
   \author A.Savin
-  \version $Revision: 1.16 $
-  \date $Date: 2009/10/31 23:18:54 $
+  \version $Revision: 1.17 $
+  \date $Date: 2009/11/18 10:26:24 $
 */
 
 #include "VisMonitoring/DQMServer/interface/DQMRenderPlugin.h"
@@ -621,6 +621,20 @@ private:
         return;
       }
 
+      if( name.find( "rctFedVectorMonitorLS" ) != std::string::npos )
+      {
+        gStyle->SetPalette(1);
+        obj->SetOption("colz");
+        return;
+      }
+
+      if( name.find( "rctFedVectorMonitorRUN" ) != std::string::npos )
+      {
+        gStyle->SetPalette(1);
+        obj->SetOption("colz");
+        return;
+      }
+
       if( name.find( "rctBitOverFlowEff2D" ) != std::string::npos )
       {
         gStyle->SetPalette(paletteSize, pEff);
@@ -779,7 +793,7 @@ private:
      
       std::string name = o.name.substr(o.name.rfind("/")+1);
 
-      obj->GetXaxis()->SetTitle("Channnel number");
+      obj->GetXaxis()->SetTitle("Channel number");
       gStyle->SetOptStat(11);
 
       if( name.find( "gtTriggerAlgoNumbers" ) != std::string::npos )
@@ -791,6 +805,18 @@ private:
       if( name.find( "rctInputTPGHcalSample" ) != std::string::npos )
       {
         obj->GetXaxis()->SetTitle("HCAL sample");
+        return;
+      }
+
+      if( name.find( "rctInputTPGEcalRank" ) != std::string::npos )
+      {
+        obj->GetXaxis()->SetTitle("ECAL rank");
+        return;
+      }
+
+      if( name.find( "rctInputTPGHcalRank" ) != std::string::npos )
+      {
+        obj->GetXaxis()->SetTitle("HCAL rank");
         return;
       }
 
