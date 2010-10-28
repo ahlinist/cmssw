@@ -2,6 +2,9 @@
 
 UFAV::UFAV(TString ProjectName)
 {
+  gROOT->SetStyle("Plain");
+  gErrorIgnoreLevel=2001;
+
   //Display Version of UFAV
   DisplayVersion();
   
@@ -1102,9 +1105,9 @@ void UFAV::MakePlots(unsigned int f_, TDirectory *dir)
 	      for(unsigned int f = 1 ; f < vHistogramCollection.size(); f++ )
 		{
 		  FormatHistogram1D(*vHistogramCollection[f], f);
-		  y2ndc = vStats.back()->GetY1NDC() - dyNDC;
+		  y2ndc = vStats.back()->GetY1NDC() - dyNDC -0.005;
 		  y1ndc = y2ndc - ( vStats.back()->GetY2NDC() - vStats.back()->GetY1NDC() ) ;
-		  vStats.push_back(new TPaveStats(x1ndc, y1ndc, x2ndc,  y2ndc, "NDCbrlt"));
+		  vStats.push_back(new TPaveStats(x1ndc, y1ndc, x2ndc,  y2ndc, "NDC"));
 		  vStats.back()->SetX1NDC(x1ndc);
 		  vStats.back()->SetX2NDC(x2ndc);
 		  vStats.back()->SetY1NDC(y1ndc);
@@ -1440,14 +1443,19 @@ Int_t UFAV::GetRebin(const TH1& histo)
   Int_t rebinning = 1;
   if ((dX * dNdX)>0) 
     rebinning = (Int_t)(double(Nbins) / (dX * dNdX));
-
-  while(rebinning > 1)  // To assure rebinning divides number of bins evenly and isn't greater than RebinMax
-    {
-      if( (Int_t)Nbins %  rebinning == 0 && rebinning <= RebinMax_  ) break;
-      //if( rebinning <= RebinMax_  ) break;
-      else rebinning--;
-    }  
   
+  /* 
+     //RCR:  Disabling this block of code which tries to enforce that the rebinning factor is
+     // a divisor of the number of bins in the histogram.  Many histograms in DQM seem to have odd numbers of bins....
+
+     while(rebinning > 1)  // To assure rebinning divides number of bins evenly and isn't greater than RebinMax
+     {
+     if( (Int_t)Nbins %  rebinning == 0 && rebinning <= RebinMax_  ) break;
+     //if( rebinning <= RebinMax_  ) break;
+     else rebinning--;
+     }  
+  */
+
   return rebinning; 
 }
 
