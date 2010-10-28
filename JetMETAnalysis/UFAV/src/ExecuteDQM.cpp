@@ -48,8 +48,8 @@ int main(int argc, char* argv[])
   TH1Format format1;
   format1.markercolor = kBlack;
   format1.linecolor   = kBlack;
-  format1.markerstyle = 21;
-  format1.drawoption  = "pe1";
+  //format1.markerstyle = 21;
+  format1.drawoption  = "e";
 
   TH1Format format2;  
   format2.linecolor = kRed+1;
@@ -114,7 +114,7 @@ int main(int argc, char* argv[])
   
   AnalysisViewer->SetMode(2) ;             //Treat all rootfiles separately (Mode_ = 1) or compare up to 7 rootfiles (Mode_ = 2)
   AnalysisViewer->SetRebin(1);             //Rebin all 1D histograms (uses mean and rms to find optimal rebinning factor if one exists)
-  AnalysisViewer->SetRebinMax(4);          //Set maximum rebinning value allowed (only necessary if SetRebin(1) is invoked)
+  AnalysisViewer->SetRebinMax(5);          //Set maximum rebinning value allowed (only necessary if SetRebin(1) is invoked)
   AnalysisViewer->SetCaptureTails(0);      //Zoom in on x-axis so that it captures the max and min occupied bin (overrules ZoomX())
   AnalysisViewer->SetZoomX(20) ;           //Zoom in on x-axis so that it captures at most "n" rms's of the distribution.
   AnalysisViewer->SetZoomY(1.3,12.);       //Zoom in on y-axis so that it captures n multiples of ymax (arg1 for linear plots, arg2 for log)
