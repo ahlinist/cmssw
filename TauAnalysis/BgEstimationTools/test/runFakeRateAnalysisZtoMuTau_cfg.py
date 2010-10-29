@@ -8,12 +8,15 @@ process = cms.Process('runFakeRateAnalysisZtoMuTau')
 process.load('Configuration/StandardSequences/Services_cff')
 process.load('FWCore/MessageService/MessageLogger_cfi')
 process.MessageLogger.cerr.FwkReport.reportEvery = 100
+#process.MessageLogger.cerr.FwkReport.reportEvery = 1
 #process.MessageLogger.cerr.threshold = cms.untracked.string('INFO')
+#process.MessageLogger.suppressInfo = cms.untracked.vstring()
+process.MessageLogger.suppressWarning = cms.untracked.vstring("PATTriggerProducer",)
 process.load('Configuration/StandardSequences/GeometryIdeal_cff')
 process.load('Configuration/StandardSequences/MagneticField_cff')
 process.load('Configuration/StandardSequences/Reconstruction_cff')
 process.load('Configuration/StandardSequences/FrontierConditions_GlobalTag_cff')
-process.GlobalTag.globaltag = cms.string('MC_36Y_V7A::All')
+process.GlobalTag.globaltag = cms.string('START38_V12::All')
 
 # import particle data table
 # needed for print-out of generator level information
@@ -26,6 +29,7 @@ process.load("TauAnalysis.Configuration.producePatTupleZtoMuTauSpecific_cff")
 
 # import sequence for event selection
 process.load("TauAnalysis.Configuration.selectZtoMuTau_cff")
+process.load("TauAnalysis.RecoTools.filterDataQuality_cfi")
 
 # import sequence for filling of histograms, cut-flow table
 # and of run + event number pairs for events passing event selection
@@ -69,10 +73,9 @@ process.maxEvents = cms.untracked.PSet(
 
 process.source = cms.Source("PoolSource",
     fileNames = cms.untracked.vstring(
-        '/store/relval/CMSSW_3_6_1/RelValZTT/GEN-SIM-RECO/START36_V7-v1/0021/F405BC9A-525D-DF11-AB96-002618943811.root',
-        '/store/relval/CMSSW_3_6_1/RelValZTT/GEN-SIM-RECO/START36_V7-v1/0020/EE3E8F74-365D-DF11-AE3D-002618FDA211.root'
-        #'rfio:/castor/cern.ch/user/l/lusito/SkimOctober09/ZtautauSkimMT314_3/muTauSkim_1.root',
-        #'rfio:/castor/cern.ch/user/l/lusito/SkimOctober09/ZtautauSkimMT314_3/muTauSkim_2.root'
+        #'/store/relval/CMSSW_3_6_1/RelValZTT/GEN-SIM-RECO/START36_V7-v1/0021/F405BC9A-525D-DF11-AB96-002618943811.root',
+        #'/store/relval/CMSSW_3_6_1/RelValZTT/GEN-SIM-RECO/START36_V7-v1/0020/EE3E8F74-365D-DF11-AE3D-002618FDA211.root'
+        'file:/data1/veelken/CMSSW_3_6_x/skims/Ztautau_1_1_sXK.root'
     )
     #skipBadFiles = cms.untracked.bool(True) 
 )
@@ -102,6 +105,14 @@ from PhysicsTools.PatAlgos.tools.tauTools import *
 # as input for pat::Tau production
 switchToPFTauShrinkingCone(process)
 #switchToPFTauFixedCone(process)
+
+# disable preselection on of pat::Taus
+# (disabled also in TauAnalysis/RecoTools/python/patPFTauConfig_cfi.py ,
+#  but re-enabled after switching tau collection)
+process.cleanPatTaus.preselection = cms.string('')
+
+# add "ewkTauId" flag
+setattr(process.patTaus.tauIDSources, "ewkTauId", cms.InputTag('ewkTauId'))
 #--------------------------------------------------------------------------------
 
 #--------------------------------------------------------------------------------
@@ -109,7 +120,10 @@ switchToPFTauShrinkingCone(process)
 from PhysicsTools.PatAlgos.tools.jetTools import *
 
 # uncomment to replace caloJets by pfJets
-switchJetCollection(process, jetCollection = cms.InputTag("ak5PFJets"))
+##switchJetCollection(process, jetCollection = cms.InputTag("ak5PFJets"))
+##runBTagging(process, cms.InputTag("ak5CaloJets"), 'AOD')
+process.patJets.addDiscriminators = False
+process.patJets.addTagInfos = False
 #--------------------------------------------------------------------------------
 
 #--------------------------------------------------------------------------------
@@ -135,6 +149,10 @@ process.p = cms.Path(
    + process.saveZtoMuTauPlots 
 )
 
+process.q = cms.Path(process.dataQualityFilters)
+
+process.schedule = cms.Schedule(process.q, process.p)
+
 #--------------------------------------------------------------------------------
 # import utility function for factorization
 from TauAnalysis.Configuration.tools.factorizationTools import enableFactorization_runZtoMuTau
@@ -143,13 +161,6 @@ from TauAnalysis.Configuration.tools.factorizationTools import enableFactorizati
 # in case running jobs on the CERN batch system
 # (needs to be done after process.p has been defined)
 #__#factorization#
-#--------------------------------------------------------------------------------
-
-#--------------------------------------------------------------------------------
-# disable estimation of systematic uncertainties
-from TauAnalysis.Configuration.tools.sysUncertaintyTools import disableSysUncertainties_runZtoMuTau
-#
-disableSysUncertainties_runZtoMuTau(process)
 #--------------------------------------------------------------------------------
 
 #--------------------------------------------------------------------------------

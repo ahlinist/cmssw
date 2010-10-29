@@ -56,7 +56,8 @@ process.muTauPairsZtoMuTauNtuple = allMuTauPairs.clone(
     srcLeg2 = cms.InputTag('selectedPatTausForMuTauLeadTrkPtCumulative'),
     dRmin12 = cms.double(0.7),
     srcMET = cms.InputTag('patMETs'),
-    recoMode = cms.string("")
+    recoMode = cms.string(""),
+    doSVreco = cms.bool(False)
 )
 
 process.muTauPairsZtoMuTauNtupleBackToBack = cms.EDFilter("PATMuTauPairSelector",
