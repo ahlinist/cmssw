@@ -254,6 +254,7 @@ void exportAnalysisResults(
 //    corresponding to number of events needed to reach same level of statistical precision
 //    in case all events would have unit weight
   double scaleFactor = sumBinContents/sumBinErrors2;
+  std::cout << " scaleFactor = " << scaleFactor << std::endl;
 
   for ( int iBinX = firstBinX; iBinX <= lastBinX; ++iBinX ) {
     for ( int iBinY = firstBinY; iBinY <= lastBinY; ++iBinY ) {
@@ -274,7 +275,9 @@ void exportAnalysisResults(
 
   bool error = false;
   double numEventsProcessed = getValue(dqmStore, meNameNumEventsProcessed, error);
+  std::cout << " numEventsProcessed = " << numEventsProcessed << std::endl;
   double numEventsPassed = getValue(dqmStore, meNameNumEventsPassed, error);
+  std::cout << " numEventsPassed = " << numEventsPassed << std::endl;
   assert(!error);
 
   numEventsProcessed *= scaleFactor;
@@ -304,17 +307,23 @@ void exportAnalysisResults(
   unsigned width = 8;           // 8 characters per number, right justified
   unsigned numbersPerLine = 10; // max. 10 numbers per line
 
-  (*outputFile) << std::setw(width) << std::setfill(' ') << numChannels;
-  (*outputFile) << std::setw(width) << std::setfill(' ') << numBins;
-  (*outputFile) << std::setw(width) << std::setfill(' ') << TMath::Nint(numEventsProcessed);
-  //(*outputFile) << std::setw(width) << std::setfill(' ') << TMath::Nint(sumBinContents*scaleFactor);
-  (*outputFile) << std::setw(width) << std::setfill(' ') << TMath::Nint(numEventsPassed);
+  (*outputFile) << " " << std::setw(width) << std::setfill(' ') << numChannels;
+  (*outputFile) << " " << std::setw(width) << std::setfill(' ') << numBins;
+  (*outputFile) << " " << std::setw(width) << std::setfill(' ') << TMath::Nint(numEventsProcessed);
+  (*outputFile) << " " << std::setw(width) << std::setfill(' ') << TMath::Nint(numEventsPassed);
   (*outputFile) << std::endl;
 
+  bool isEndLineTerminated = true;
   for ( unsigned iBin = 0; iBin < (numChannels*numBins); ++iBin ) {
-    (*outputFile) << std::setw(width) << std::setfill(' ') << binContents[iBin];
-    if ( ((iBin + 1) % numbersPerLine) == 0 ) (*outputFile) << std::endl;
+    (*outputFile) << " " << std::setw(width) << std::setfill(' ') << binContents[iBin];
+    isEndLineTerminated = false;
+    if ( ((iBin + 1) % numbersPerLine) == 0 ) {
+      (*outputFile) << std::endl;
+      isEndLineTerminated = true;
+    }
   }
+
+  if ( !isEndLineTerminated ) (*outputFile) << std::endl;
 
   delete outputFile;
 }
