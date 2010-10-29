@@ -7,9 +7,8 @@ import FWCore.ParameterSet.Config as cms
 genPhaseSpaceFilter = cms.EDFilter("EventSelPluginFilter",
     selector = cms.PSet(
         pluginName = cms.string('genPhaseSpaceCut'),
-        pluginType = cms.string('GenPhaseSpaceEventInfoSelector'),
-        src = cms.InputTag('genPhaseSpaceEventInfo'),
-        cut = cms.string('')
+        pluginType = cms.string('BoolEventSelector'),
+        src = cms.InputTag('genPhaseSpaceCut')
     )
 )
 

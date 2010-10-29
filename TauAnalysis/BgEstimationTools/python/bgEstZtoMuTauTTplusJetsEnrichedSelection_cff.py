@@ -18,6 +18,9 @@ muonsBgEstTTplusJetsEnrichedPFRelIso = copy.deepcopy(selectedPatMuonsPFRelIso)
 muonsBgEstTTplusJetsEnrichedPFRelIso.sumPtMax = cms.double(0.10)
 
 muonsBgEstTTplusJetsEnrichedPionVeto = copy.deepcopy(selectedPatMuonsPionVeto)
+# disable cut on muon calo. + segment compatibility
+# (check that muon calo. compatibility is not affected by pile-up before re-enabling this cut)
+muonsBgEstTTplusJetsEnrichedPionVeto.AntiPionCut = cms.double(-1000.) 
 
 muonSelConfiguratorBgEstTTplusJetsEnriched = objSelConfigurator(
     [ muonsBgEstTTplusJetsEnrichedPFRelIso,
@@ -165,7 +168,7 @@ from TauAnalysis.Configuration.analyzeZtoMuTau_cfi import *
 
 muonHistManagerBgEstTTplusJetsEnriched = copy.deepcopy(muonHistManager)
 muonHistManagerBgEstTTplusJetsEnriched.pluginName = cms.string('muonHistManagerBgEstTTplusJetsEnriched')
-muonHistManagerBgEstTTplusJetsEnriched.muonSource = cms.InputTag('muonsBgEstTTplusJetsEnrichedCombIsoCumulative')
+muonHistManagerBgEstTTplusJetsEnriched.muonSource = cms.InputTag('muonsBgEstTTplusJetsEnrichedPionVetoCumulative')
 
 tauHistManagerBgEstTTplusJetsEnriched = copy.deepcopy(tauHistManager)
 tauHistManagerBgEstTTplusJetsEnriched.pluginName = cms.string('tauHistManagerBgEstTTplusJetsEnriched')
@@ -183,7 +186,7 @@ jetHistManagerBgEstTTplusJetsEnriched.jetSource = cms.InputTag('jetsBgEstTTplusJ
 from TauAnalysis.BgEstimationTools.tauIdEffZtoMuTauHistManager_cfi import *
 tauIdEffHistManagerBgEstTTplusJetsEnriched = copy.deepcopy(tauIdEffZtoMuTauHistManager)
 tauIdEffHistManagerBgEstTTplusJetsEnriched.pluginName = cms.string('tauIdEffHistManagerBgEstTTplusJetsEnriched')
-tauIdEffHistManagerBgEstTTplusJetsEnriched.muonSource = cms.InputTag('muonsBgEstTTplusJetsEnrichedCombIsoCumulative')
+tauIdEffHistManagerBgEstTTplusJetsEnriched.muonSource = cms.InputTag('muonsBgEstTTplusJetsEnrichedPionVetoCumulative')
 tauIdEffHistManagerBgEstTTplusJetsEnriched.tauSource = cms.InputTag('selectedPatTausForMuTauMuonVetoCumulative')
 tauIdEffHistManagerBgEstTTplusJetsEnriched.diTauSource = cms.InputTag('muTauPairsBgEstTTplusJetsEnrichedZeroCharge')
 tauIdEffHistManagerBgEstTTplusJetsEnriched.diTauChargeSignExtractor.src = tauIdEffHistManagerBgEstTTplusJetsEnriched.diTauSource
@@ -196,7 +199,7 @@ analyzeEventsBgEstTTplusJetsEnriched = cms.EDAnalyzer("GenericAnalyzer",
     name = cms.string('BgEstTemplateAnalyzer_TTplusJetsEnriched'), 
                             
     filters = cms.VPSet(
-        genPhaseSpaceCut,
+        evtSelGenPhaseSpace,
         evtSelTrigger,
         evtSelPrimaryEventVertex,
         evtSelPrimaryEventVertexQuality,
@@ -276,7 +279,7 @@ analyzeEventsBgEstTTplusJetsEnriched = cms.EDAnalyzer("GenericAnalyzer",
         ),
         cms.PSet(
             filter = cms.string('evtSelTrigger'),
-            title = cms.string('mu15 || isoMu11 Trigger')
+            title = cms.string('Muon Trigger')
         ),
         cms.PSet(
             filter = cms.string('evtSelPrimaryEventVertex'),

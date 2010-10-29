@@ -27,9 +27,15 @@ muonsBgEstWplusJetsEnrichedPt.cut = cms.string('pt > 10.')
 muonsBgEstWplusJetsEnrichedPFRelIso = copy.deepcopy(selectedPatMuonsPFRelIso)
 muonsBgEstWplusJetsEnrichedPFRelIso.sumPtMax = cms.double(0.06)
 
+muonsBgEstWplusJetsEnrichedPionVeto = copy.deepcopy(selectedPatMuonsPionVeto)
+# disable cut on muon calo. + segment compatibility
+# (check that muon calo. compatibility is not affected by pile-up before re-enabling this cut)
+muonsBgEstWplusJetsEnrichedPionVeto.AntiPionCut = cms.double(-1000.) 
+
 muonSelConfiguratorBgEstWplusJetsEnriched = objSelConfigurator(
     [ muonsBgEstWplusJetsEnrichedPt,
-      muonsBgEstWplusJetsEnrichedPFRelIso ],
+      muonsBgEstWplusJetsEnrichedPFRelIso,
+      muonsBgEstWplusJetsEnrichedPionVeto ],
     src = "selectedPatMuonsEta21Cumulative",
     pyModuleName = __name__,
     doSelIndividual = False
@@ -76,7 +82,7 @@ selectTausBgEstWplusJetsEnriched = tauSelConfiguratorBgEstWplusJetsEnriched.conf
 
 muTauPairsBgEstWplusJetsEnriched = cms.EDProducer("PATMuTauPairProducer",
     useLeadingTausOnly = cms.bool(False),
-    srcLeg1 = cms.InputTag('muonsBgEstWplusJetsEnrichedCombIsoCumulative'),
+    srcLeg1 = cms.InputTag('muonsBgEstWplusJetsEnrichedPionVetoCumulative'),
     srcLeg2 = cms.InputTag('tausBgEstWplusJetsEnrichedMuonVetoCumulative'),
     dRmin12 = cms.double(0.7),
     srcMET = cms.InputTag('patMETs'),
@@ -102,7 +108,7 @@ jetsBgEstWplusJetsEnrichedAntiOverlapWithLeptonsVeto = cms.EDFilter("PATJetAntiO
     src = cms.InputTag("selectedPatJetsEt20Cumulative"),                                                                  
     srcNotToBeFiltered = cms.VInputTag(
         "selectedPatElectronsTrkIPcumulative",
-        "muonsBgEstWplusJetsEnrichedCombIsoCumulative",
+        "muonsBgEstWplusJetsEnrichedPionVetoCumulative",
         "tausBgEstWplusJetsEnrichedMuonVetoCumulative"
     ),
     dRmin = cms.double(0.7),
@@ -134,6 +140,11 @@ cfgMuonPFRelIsoCutBgEstWplusJetsEnriched = copy.deepcopy(cfgMuonPFRelIsoCut)
 cfgMuonPFRelIsoCutBgEstWplusJetsEnriched.pluginName = cms.string('muonPFRelIsoCutBgEstWplusJetsEnriched')
 cfgMuonPFRelIsoCutBgEstWplusJetsEnriched.src_cumulative = cms.InputTag('muonsBgEstWplusJetsEnrichedPFRelIsoCumulative')
 cfgMuonPFRelIsoCutBgEstWplusJetsEnriched.systematics = cms.vstring()
+
+cfgMuonAntiPionCutBgEstWplusJetsEnriched = copy.deepcopy(cfgMuonAntiPionCut)
+cfgMuonAntiPionCutBgEstWplusJetsEnriched.pluginName = cms.string('muonAntiPionCutBgEstWplusJetsEnriched')
+cfgMuonAntiPionCutBgEstWplusJetsEnriched.src_cumulative = cms.InputTag('muonsBgEstWplusJetsEnrichedPionVetoCumulative')
+cfgMuonAntiPionCutBgEstWplusJetsEnriched.systematics = cms.vstring()
 
 cfgTauTrkIsoCutBgEstWplusJetsEnriched = copy.deepcopy(cfgTauTrkIsoCut)
 cfgTauTrkIsoCutBgEstWplusJetsEnriched.pluginName = cms.string('tauTrkIsoCutBgEstWplusJetsEnriched')
@@ -181,6 +192,7 @@ cfgDiMuonVetoBgEstWplusJetsEnriched = cms.PSet(
 evtSelConfiguratorBgEstWplusJetsEnriched = eventSelFlagProdConfigurator(
     [ cfgMuonPtCutBgEstWplusJetsEnriched,
       cfgMuonPFRelIsoCutBgEstWplusJetsEnriched,
+      cfgMuonAntiPionCutBgEstWplusJetsEnriched,
       cfgTauTrkIsoCutBgEstWplusJetsEnriched,
       cfgTauEcalIsoCutBgEstWplusJetsEnriched,
       cfgTauMuonVetoBgEstWplusJetsEnriched,
@@ -202,7 +214,7 @@ from TauAnalysis.Configuration.analyzeZtoMuTau_cfi import *
 
 muonHistManagerBgEstWplusJetsEnriched = copy.deepcopy(muonHistManager)
 muonHistManagerBgEstWplusJetsEnriched.pluginName = cms.string('muonHistManagerBgEstWplusJetsEnriched')
-muonHistManagerBgEstWplusJetsEnriched.muonSource = cms.InputTag('muonsBgEstWplusJetsEnrichedCombIsoCumulative')
+muonHistManagerBgEstWplusJetsEnriched.muonSource = cms.InputTag('muonsBgEstWplusJetsEnrichedPionVetoCumulative')
 
 tauHistManagerBgEstWplusJetsEnriched = copy.deepcopy(tauHistManager)
 tauHistManagerBgEstWplusJetsEnriched.pluginName = cms.string('tauHistManagerBgEstWplusJetsEnriched')
@@ -220,7 +232,7 @@ jetHistManagerBgEstWplusJetsEnriched.jetSource = cms.InputTag('jetsBgEstWplusJet
 from TauAnalysis.BgEstimationTools.tauIdEffZtoMuTauHistManager_cfi import *
 tauIdEffHistManagerBgEstWplusJetsEnriched = copy.deepcopy(tauIdEffZtoMuTauHistManager)
 tauIdEffHistManagerBgEstWplusJetsEnriched.pluginName = cms.string('tauIdEffHistManagerBgEstWplusJetsEnriched')
-tauIdEffHistManagerBgEstWplusJetsEnriched.muonSource = cms.InputTag('muonsBgEstWplusJetsEnrichedCombIsoCumulative')
+tauIdEffHistManagerBgEstWplusJetsEnriched.muonSource = cms.InputTag('muonsBgEstWplusJetsEnrichedPionVetoCumulative')
 tauIdEffHistManagerBgEstWplusJetsEnriched.tauSource = cms.InputTag('tausBgEstWplusJetsEnrichedMuonVetoCumulative')
 tauIdEffHistManagerBgEstWplusJetsEnriched.diTauSource = cms.InputTag('muTauPairsBgEstWplusJetsEnrichedMt1MET')
 tauIdEffHistManagerBgEstWplusJetsEnriched.diTauChargeSignExtractor.src = tauIdEffHistManagerBgEstWplusJetsEnriched.diTauSource
@@ -233,7 +245,7 @@ analyzeEventsBgEstWplusJetsEnriched = cms.EDAnalyzer("GenericAnalyzer",
     name = cms.string('BgEstTemplateAnalyzer_WplusJetsEnriched'), 
                             
     filters = cms.VPSet(
-        genPhaseSpaceCut,
+        evtSelGenPhaseSpace,
         evtSelTrigger,
         evtSelPrimaryEventVertex,
         evtSelPrimaryEventVertexQuality,
@@ -249,6 +261,11 @@ analyzeEventsBgEstWplusJetsEnriched = cms.EDAnalyzer("GenericAnalyzer",
             pluginName = cms.string('muonPFRelIsoCutBgEstWplusJetsEnriched'),
             pluginType = cms.string('BoolEventSelector'),
             src = cms.InputTag('muonPFRelIsoCutBgEstWplusJetsEnriched', 'cumulative')
+        ),
+        cms.PSet(
+            pluginName = cms.string('muonAntiPionCutBgEstWplusJetsEnriched'),
+            pluginType = cms.string('BoolEventSelector'),
+            src = cms.InputTag('muonAntiPionCutBgEstWplusJetsEnriched', 'cumulative'),
         ),
         evtSelTauAntiOverlapWithMuonsVeto,
         evtSelTauEta,
@@ -317,7 +334,7 @@ analyzeEventsBgEstWplusJetsEnriched = cms.EDAnalyzer("GenericAnalyzer",
         ),
         cms.PSet(
             filter = cms.string('evtSelTrigger'),
-            title = cms.string('mu15 || isoMu11 Trigger')
+            title = cms.string('Muon Trigger')
         ),
         cms.PSet(
             filter = cms.string('evtSelPrimaryEventVertex'),
@@ -358,6 +375,10 @@ analyzeEventsBgEstWplusJetsEnriched = cms.EDAnalyzer("GenericAnalyzer",
         cms.PSet(
             filter = cms.string('muonPFRelIsoCutBgEstWplusJetsEnriched'),
             title = cms.string('Muon iso.')
+        ),
+        cms.PSet(
+            filter = cms.string('muonAntiPionCutBgEstWplusJetsEnriched'),
+            title = cms.string('Muon pi-Veto')
         ),
         cms.PSet(
             filter = cms.string('evtSelTauLeadTrk'),

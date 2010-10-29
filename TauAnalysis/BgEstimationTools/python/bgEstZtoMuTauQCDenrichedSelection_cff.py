@@ -19,6 +19,9 @@ muonsBgEstQCDenrichedPFRelIso.sumPtMin = cms.double(0.10)
 muonsBgEstQCDenrichedPFRelIso.sumPtMax = cms.double(0.25)
 
 muonsBgEstQCDenrichedPionVeto = copy.deepcopy(selectedPatMuonsPionVeto)
+# disable cut on muon calo. + segment compatibility
+# (check that muon calo. compatibility is not affected by pile-up before re-enabling this cut)
+muonsBgEstQCDenrichedPionVeto.AntiPionCut = cms.double(-1000.) 
 
 muonSelConfiguratorBgEstQCDenriched = objSelConfigurator(
     [ muonsBgEstQCDenrichedPFRelIso,
@@ -143,7 +146,7 @@ from TauAnalysis.Configuration.analyzeZtoMuTau_cfi import *
 
 muonHistManagerBgEstQCDenriched = copy.deepcopy(muonHistManager)
 muonHistManagerBgEstQCDenriched.pluginName = cms.string('muonHistManagerBgEstQCDenriched')
-muonHistManagerBgEstQCDenriched.muonSource = cms.InputTag('muonsBgEstQCDenrichedEcalIsoCumulative')
+muonHistManagerBgEstQCDenriched.muonSource = cms.InputTag('muonsBgEstQCDenrichedPionVetoCumulative')
 
 tauHistManagerBgEstQCDenriched = copy.deepcopy(tauHistManager)
 tauHistManagerBgEstQCDenriched.pluginName = cms.string('tauHistManagerBgEstQCDenriched')
@@ -157,7 +160,7 @@ diTauCandidateHistManagerBgEstQCDenriched.visMassHypothesisSource = cms.InputTag
 from TauAnalysis.BgEstimationTools.tauIdEffZtoMuTauHistManager_cfi import *
 tauIdEffHistManagerBgEstQCDenriched = copy.deepcopy(tauIdEffZtoMuTauHistManager)
 tauIdEffHistManagerBgEstQCDenriched.pluginName = cms.string('tauIdEffHistManagerBgEstQCDenriched')
-tauIdEffHistManagerBgEstQCDenriched.muonSource = cms.InputTag('muonsBgEstQCDenrichedEcalIsoCumulative')
+tauIdEffHistManagerBgEstQCDenriched.muonSource = cms.InputTag('muonsBgEstQCDenrichedPionVetoCumulative')
 tauIdEffHistManagerBgEstQCDenriched.tauSource = cms.InputTag('tausBgEstQCDenrichedMuonVetoCumulative')
 tauIdEffHistManagerBgEstQCDenriched.diTauSource = cms.InputTag('muTauPairsBgEstQCDenriched')
 tauIdEffHistManagerBgEstQCDenriched.diTauChargeSignExtractor.src = tauIdEffHistManagerBgEstQCDenriched.diTauSource
@@ -170,7 +173,7 @@ analyzeEventsBgEstQCDenriched = cms.EDAnalyzer("GenericAnalyzer",
     name = cms.string('BgEstTemplateAnalyzer_QCDenriched'), 
                             
     filters = cms.VPSet(
-        genPhaseSpaceCut,
+        evtSelGenPhaseSpace,
         evtSelTrigger,
         evtSelPrimaryEventVertex,
         evtSelPrimaryEventVertexQuality,
@@ -239,7 +242,7 @@ analyzeEventsBgEstQCDenriched = cms.EDAnalyzer("GenericAnalyzer",
         ),
         cms.PSet(
             filter = cms.string('evtSelTrigger'),
-            title = cms.string('mu15 || isoMu11 Trigger')
+            title = cms.string('Muon Trigger')
         ),
         cms.PSet(
             filter = cms.string('evtSelPrimaryEventVertex'),

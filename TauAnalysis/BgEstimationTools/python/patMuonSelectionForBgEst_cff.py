@@ -11,6 +11,9 @@ muonsPionVetoLooseIsolationForBgEst = cms.EDFilter("PATMuonAntiPionSelector",
     AntiPionCut = cms.double(1.0),
     filter = cms.bool(False)
 )
+# disable cut on muon calo. + segment compatibility
+# (check that muon calo. compatibility is not affected by pile-up before re-enabling this cut)
+muonsPionVetoLooseIsolationForBgEst.AntiPionCut = cms.double(-1000.)
 
 muonsTrkLooseIsolationForBgEst = cms.EDFilter("PATMuonSelector",
     src = cms.InputTag('muonsPionVetoLooseIsolationForBgEst'),                                        
@@ -21,12 +24,15 @@ muonsTrkLooseIsolationForBgEst = cms.EDFilter("PATMuonSelector",
 #--------------------------------------------------------------------------------
 
 muonsPionVetoNoIsolationForBgEst = cms.EDFilter("PATMuonAntiPionSelector",
-    src = cms.InputTag('selectedPatMuonsPt15Cumulative'),                                  
+    src = cms.InputTag('selectedPatMuonsPt10Cumulative'),                                  
     CaloCompCoefficient = cms.double(0.8),
     SegmCompCoefficient = cms.double(1.2),
     AntiPionCut = cms.double(1.0),
     filter = cms.bool(False)
 )
+# disable cut on muon calo. + segment compatibility
+# (check that muon calo. compatibility is not affected by pile-up before re-enabling this cut)
+muonsPionVetoNoIsolationForBgEst.AntiPionCut = cms.double(-1000.)
 
 muonsTrkNoIsolationForBgEst = cms.EDFilter("PATMuonSelector",
     src = cms.InputTag('muonsPionVetoNoIsolationForBgEst'),                                        
@@ -37,7 +43,7 @@ muonsTrkNoIsolationForBgEst = cms.EDFilter("PATMuonSelector",
 #--------------------------------------------------------------------------------
 
 muonsTrkIsoForBgEst = cms.EDFilter("PATMuonIsoDepositSelector",
-    src = cms.InputTag('selectedPatMuonsPt15Cumulative'),                                
+    src = cms.InputTag('selectedPatMuonsPt10Cumulative'),                                
     type = cms.string('tracker'),
     #vetos = cms.vstring("0.01", "Threshold(0.9)"),
     vetos = cms.vstring("0.01"),                          
@@ -60,6 +66,9 @@ muonsPionVetoTightIsolationForBgEst = cms.EDFilter("PATMuonAntiPionSelector",
     AntiPionCut = cms.double(1.0),
     filter = cms.bool(False)
 )
+# disable cut on muon calo. + segment compatibility
+# (check that muon calo. compatibility is not affected by pile-up before re-enabling this cut)
+muonsPionVetoTightIsolationForBgEst.AntiPionCut = cms.double(-1000.)
 
 muonsTrkTightIsolationForBgEst = cms.EDFilter("PATMuonSelector",
     src = cms.InputTag('muonsPionVetoTightIsolationForBgEst'),                                        
