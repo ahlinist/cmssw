@@ -18,11 +18,11 @@ muonSystematics = {
 
 tauSystematics = {   
     "sysTauJetEnUp"         : cms.InputTag('smearedTausEnScaleUp'),
-    "sysTauJetEnDown"       : cms.InputTag('smearedTausEnScaleDown'),
-    "sysTauJetThetaUp"      : cms.InputTag('smearedTausEtaShiftUp'),
-    "sysTauJetThetaDown"    : cms.InputTag('smearedTausEtaShiftDown'),
-    "sysTauJetPhiUp"        : cms.InputTag('smearedTausPhiShiftUp'),
-    "sysTauJetPhiDown"      : cms.InputTag('smearedTausPhiShiftDown')
+    "sysTauJetEnDown"       : cms.InputTag('smearedTausEnScaleDown')
+    ##"sysTauJetThetaUp"      : cms.InputTag('smearedTausEtaShiftUp'),
+    ##"sysTauJetThetaDown"    : cms.InputTag('smearedTausEtaShiftDown'),
+    ##"sysTauJetPhiUp"        : cms.InputTag('smearedTausPhiShiftUp'),
+    ##"sysTauJetPhiDown"      : cms.InputTag('smearedTausPhiShiftDown')
 }
 
 muTauPairSystematics = {
@@ -30,10 +30,10 @@ muTauPairSystematics = {
     "sysMuonPtDown"         : cms.InputTag('allMuTauPairsSysMuonPtDown'),
     "sysTauJetEnUp"         : cms.InputTag('allMuTauPairsSysTauJetEnUp'),
     "sysTauJetEnDown"       : cms.InputTag('allMuTauPairsSysTauJetEnDown'),
-    "sysTauJetThetaUp"      : cms.InputTag('allMuTauPairsSysTauJetThetaUp'),
-    "sysTauJetThetaDown"    : cms.InputTag('allMuTauPairsSysTauJetThetaDown'),
-    "sysTauJetPhiUp"        : cms.InputTag('allMuTauPairsSysTauJetPhiUp'),
-    "sysTauJetPhiDown"      : cms.InputTag('allMuTauPairsSysTauJetPhiDown'),
+    ##"sysTauJetThetaUp"      : cms.InputTag('allMuTauPairsSysTauJetThetaUp'),
+    ##"sysTauJetThetaDown"    : cms.InputTag('allMuTauPairsSysTauJetThetaDown'),
+    ##"sysTauJetPhiUp"        : cms.InputTag('allMuTauPairsSysTauJetPhiUp'),
+    ##"sysTauJetPhiDown"      : cms.InputTag('allMuTauPairsSysTauJetPhiDown'),
     "sysJetEnUp"            : cms.InputTag('allMuTauPairsSysJetEnUp'),
     "sysJetEnDown"          : cms.InputTag('allMuTauPairsSysJetEnDown')
 }
@@ -43,10 +43,10 @@ metSystematicsForZtoMuTau = {
     "sysMuonPtDown"         : cms.InputTag('patMETsSysMuonPtDown'),
     "sysTauJetEnUp"         : cms.InputTag('patMETsSysTauJetEnUp'),
     "sysTauJetEnDown"       : cms.InputTag('patMETsSysTauJetEnDown'),
-    "sysTauJetThetaUp"      : cms.InputTag('patMETsSysTauJetThetaUp'),
-    "sysTauJetThetaDown"    : cms.InputTag('patMETsSysTauJetThetaDown'),
-    "sysTauJetPhiUp"        : cms.InputTag('patMETsSysTauJetPhiUp'),
-    "sysTauJetPhiDown"      : cms.InputTag('patMETsSysTauJetPhiDown')
+    ##"sysTauJetThetaUp"      : cms.InputTag('patMETsSysTauJetThetaUp'),
+    ##"sysTauJetThetaDown"    : cms.InputTag('patMETsSysTauJetThetaDown'),
+    ##"sysTauJetPhiUp"        : cms.InputTag('patMETsSysTauJetPhiUp'),
+    ##"sysTauJetPhiDown"      : cms.InputTag('patMETsSysTauJetPhiDown')
 }
 
 metSystematicsForAHtoMuTau = {
@@ -54,10 +54,10 @@ metSystematicsForAHtoMuTau = {
     "sysMuonPtDown"         : cms.InputTag('patMETsSysMuonPtDown'),
     "sysTauJetEnUp"         : cms.InputTag('patMETsSysTauJetEnUp'),
     "sysTauJetEnDown"       : cms.InputTag('patMETsSysTauJetEnDown'),
-    "sysTauJetThetaUp"      : cms.InputTag('patMETsSysTauJetThetaUp'),
-    "sysTauJetThetaDown"    : cms.InputTag('patMETsSysTauJetThetaDown'),
-    "sysTauJetPhiUp"        : cms.InputTag('patMETsSysTauJetPhiUp'),
-    "sysTauJetPhiDown"      : cms.InputTag('patMETsSysTauJetPhiDown'),
+    ##"sysTauJetThetaUp"      : cms.InputTag('patMETsSysTauJetThetaUp'),
+    ##"sysTauJetThetaDown"    : cms.InputTag('patMETsSysTauJetThetaDown'),
+    ##"sysTauJetPhiUp"        : cms.InputTag('patMETsSysTauJetPhiUp'),
+    ##"sysTauJetPhiDown"      : cms.InputTag('patMETsSysTauJetPhiDown'),
     "sysJetEnUp"            : cms.InputTag('patMETsSysJetEnUp'),
     "sysJetEnDown"          : cms.InputTag('patMETsSysJetEnDown')
 }
@@ -69,8 +69,8 @@ jetSystematics = {
 
 theorySystematics = {
     ##"sysPdfWeights(41)"     : cms.InputTag('pdfWeights:cteq65'),
-    "sysIsrWeight"          : cms.InputTag('isrWeight'),
-    "sysFsrWeight"          : cms.InputTag('fsrWeight')
+    ##"sysIsrWeight"          : cms.InputTag('isrWeight'),
+    ##"sysFsrWeight"          : cms.InputTag('fsrWeight')
 }
 
 def getSysUncertaintyNames(sysUncertaintyMaps):
