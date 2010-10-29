@@ -38,7 +38,7 @@ goodVertex = cms.EDFilter("VertexSelector",
 goodMuons = cms.EDFilter("PATMuonSelector",
   src = cms.InputTag("patMuons"),
     cut = cms.string(
-      'pt > 20 & abs(eta) < 2.1 & isGlobalMuon & isTrackerMuon' \
+      'pt > 20 & abs(eta) < 2.1 & isGlobalMuon' \
      + ' & innerTrack.hitPattern.numberOfValidTrackerHits > 9 & innerTrack.hitPattern.numberOfValidPixelHits > 0' \
      + ' & abs(dB) < 0.2 & globalTrack.normalizedChi2 < 10' \
      + ' & globalTrack.hitPattern.numberOfValidMuonHits > 0 & numberOfMatches > 1' 
@@ -55,6 +55,9 @@ goodIsoMuons = cms.EDFilter("PATMuonPFIsolationSelector",
     src = cms.InputTag("goodMuons"),                          
     filter = cms.bool(True)
 )
+goodIsoMuons.chargedHadronIso.dRisoCone = cms.double(0.6)
+goodIsoMuons.neutralHadronIso.dRisoCone = cms.double(0.6)
+goodIsoMuons.photonIso.dRisoCone = cms.double(0.6)
 
 # Produce combinations of good
 #  o muon+ + muon-
