@@ -27,6 +27,7 @@
 <use name=CommonTools/Statistics>
 <use name=CommonTools/Utils>
 <use name=CommonTools/UtilAlgos>
+<use name=CommonTools/RecoAlgos>
 <use name=clhep>
 <use name=boost>
 <use name = hepmc>
@@ -49,6 +50,7 @@
    <use name=CommonTools/Statistics>
    <use name=CommonTools/Utils>
    <use name=CommonTools/UtilAlgos>
+   <use name=CommonTools/RecoAlgos>
    <use name=clhep>
    <use name=boost>
    <use name=SimDataFormats/Track>
