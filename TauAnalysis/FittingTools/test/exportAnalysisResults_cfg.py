@@ -97,12 +97,12 @@ process.exportAnalysisResults_woBtag = cms.EDAnalyzer("DQMExportAnalysisResults"
         ),
         Zmumu = cms.PSet(
             dqmDirectory = cms.string('Zmumu'),
-	    outputFilePath = cms.string(""),
+            outputFilePath = cms.string(""),
 	    outputFileName = cms.string("zmm_#CHANNEL_OUTPUTFILENAME#.hst"),
             hasSysUncertainties = cms.bool(False)
         ),
         QCD = cms.PSet(
-            dqmDirectory = cms.string('Zmumu'),
+            dqmDirectory = cms.string('qcdSum'),
 	    outputFilePath = cms.string(""),
 	    outputFileName = cms.string("qcd_#CHANNEL_OUTPUTFILENAME#.hst"),
             hasSysUncertainties = cms.bool(False)
