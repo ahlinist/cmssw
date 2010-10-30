@@ -147,7 +147,6 @@ RECO_SAMPLES = {
         'type' : 'bsmMC',
         'drawOption' : styles.drawOption_darkBlue_separate,
         'enableSysUncertainties' : True
-        #'enableSysUncertainties' : False
     },
     'bbA120' : {
         'datasetpath' : "/bbAtautau_M120/Spring10-START3X_V26_S09-v1/GEN-SIM-RECO",
@@ -164,7 +163,6 @@ RECO_SAMPLES = {
         'type' : 'bsmMC',
         'drawOption' : styles.drawOption_darkBlue_separate,
         'enableSysUncertainties' : True
-        #'enableSysUncertainties' : False
     },
     'A130' : {
         # Not skimmed
@@ -184,7 +182,6 @@ RECO_SAMPLES = {
         'type' : 'bsmMC',
         'drawOption' : styles.drawOption_green_separate,
         'enableSysUncertainties' : True
-        #'enableSysUncertainties' : False
     },
     'bbA130' : {
         # Not skimmed
@@ -203,7 +200,6 @@ RECO_SAMPLES = {
         'type' : 'bsmMC',
         'drawOption' : styles.drawOption_green_separate,
         'enableSysUncertainties' : True
-        #'enableSysUncertainties' : False
     },
     'A200' : {
         # Not skimmed
@@ -222,7 +218,6 @@ RECO_SAMPLES = {
         'type' : 'bsmMC',
         'drawOption' : styles.drawOption_darkGray_separate,
         'enableSysUncertainties' : True
-        #'enableSysUncertainties' : False
     },
     'bbA200' : {
         # Not skimmed
@@ -241,7 +236,6 @@ RECO_SAMPLES = {
         'type' : 'bsmMC',
         'drawOption' : styles.drawOption_darkGray_separate,
         'enableSysUncertainties' : True
-        #'enableSysUncertainties' : False
     },
     # Using the unskimmed dataset
     'Ztautau' : {
@@ -258,13 +252,13 @@ RECO_SAMPLES = {
         'type' : plotter.process_Ztautau.config_dqmHistPlotter.type.value(),
         'drawOption' : styles.drawOption_Ztautau,
         'enableSysUncertainties' : True,
-        #'enableSysUncertainties' : False,
         'hlt' : cms.InputTag("TriggerResults", "", "REDIGI38X")
     },
     # Using the unskimmed dataset
     'Zmumu' : {
         'datasetpath' : "/Zmumu/Spring10-START3X_V26_S09-v1/GEN-SIM-RECO",
         'events_processed' : 2111268,
+        'number_of_jobs' : 500,
         'skim_eff' : 1.0,
         'x_sec' : 1.28*1300*_picobarns, # Z + jets correction factor for NLO/LO cross-sections = 1.28
         'legendEntry' : plotter.process_Zmumu.config_dqmHistPlotter.legendEntry.value(),
@@ -274,54 +268,64 @@ RECO_SAMPLES = {
     'InclusivePPmuX' : {
         'datasetpath' : "/ppMuX/akalinow-SkimTauTau_356_pass1-0a3d3891f015a95324f94837322fb8aa-muTauSkim/USER",
         'events_processed' : 9878911,
+        'number_of_jobs' : 50,
         'skim_eff' : 0.017,
         'x_sec' : 48.44*_millibarns*0.00176, # 48.44 mb * gen filter efficiency
         'genPhaseSpaceCut' : 'ptHat < 20. | leadingGenMuon.pt < 10.',
         'legendEntry' : plotter.process_InclusivePPmuX.config_dqmHistPlotter.legendEntry.value(),
         'type' : plotter.process_InclusivePPmuX.config_dqmHistPlotter.type.value(),
         'drawOption' : styles.drawOption_QCD,
+        'enableSysUncertainties' : True,
         'factorize' : True
     },
     # Using the unskimmed dataset
     'PPmuXptGt20Mu10' : {
         'datasetpath' : "/QCD_Pt-20_MuEnrichedPt10_7TeV-pythia6/Spring10-START3X_V26-v1/GEN-SIM-RECO",
         'events_processed' : 6342864,
+        'number_of_jobs' : 25,
         'skim_eff' : 1.0,
         'x_sec' : 296500000*_picobarns*0.00116, # xsec (pb) * gen filter efficiency
         'genPhaseSpaceCut' : 'leadingGenMuon.pt < 15.',
         'legendEntry' : plotter.process_PPmuXptGt20.config_dqmHistPlotter.legendEntry.value(),
         'type' : plotter.process_PPmuXptGt20.config_dqmHistPlotter.type.value(),
         'drawOption' : styles.drawOption_QCD,
+        'enableSysUncertainties' : True,
         'factorize' : True
     },
     # Using the unskimmed dataset
     'PPmuXptGt20Mu15' : {
         'datasetpath' : "/InclusiveMu15/Summer10-START36_V9_S09-v1/GEN-SIM-RECO",
         'events_processed' : 5120334,
+        'number_of_jobs' : 1000,
         'skim_eff' : 1.0,
         'x_sec' : 0.2969*_millibarns*2.684e-4,
         'legendEntry' : plotter.process_PPmuXptGt20.config_dqmHistPlotter.legendEntry.value(),
         'type' : plotter.process_PPmuXptGt20.config_dqmHistPlotter.type.value(),
         'drawOption' : styles.drawOption_QCD,
+        'enableSysUncertainties' : True,
         'factorize' : True
     },
     'WplusJets' : {
         'datasetpath' : "/WJets-madgraph/akalinow-SkimTauTau_356_pass1-0a3d3891f015a95324f94837322fb8aa-muTauSkim/USER",
         'events_processed' : 9008895,
+        'number_of_jobs' : 500,
         'skim_eff' : 0.260,
         'x_sec' : 1.28*24170*_picobarns, # W + jets correction factor for NLO/LO cross-sections = 1.28
         'legendEntry' : plotter.process_WplusJets.config_dqmHistPlotter.legendEntry.value(),
         'type' : plotter.process_WplusJets.config_dqmHistPlotter.type.value(),
-        'drawOption' : styles.drawOption_WplusJets
+        'drawOption' : styles.drawOption_WplusJets,
+        'enableSysUncertainties' : True
     },
     'TTplusJets' : {
         'datasetpath' : "/TTbarJets_Tauola-madgraph/akalinow-SkimTauTau_356_pass1-0a3d3891f015a95324f94837322fb8aa-muTauSkim/USER",
         'events_processed' : 1412199,
+        'number_of_jobs' : 125,
         'skim_eff' : 0.399,
         'x_sec' : 95*_picobarns, # Again, same message as above.  Gives matching eff. as 0.35
         'legendEntry' : plotter.process_TTplusJets.config_dqmHistPlotter.legendEntry.value(),
         'type' : plotter.process_TTplusJets.config_dqmHistPlotter.type.value(),
-        'drawOption' : styles.drawOption_TTplusJets
+        'drawOption' : styles.drawOption_TTplusJets,
+        'enableSysUncertainties' : True
     }
 }
 
@@ -405,3 +409,14 @@ for sample in RECO_SAMPLES.keys():
     ALL_SAMPLES.update(MERGE_SAMPLES)
     ALL_SAMPLES.update(RECO_SAMPLES)
 
+recoSampleDefinitionsAHtoMuTau_7TeV = {
+    'SAMPLES_TO_ANALYZE' : SAMPLES_TO_ANALYZE,
+    'SAMPLES_TO_PLOT' : SAMPLES_TO_PLOT,
+    'SAMPLES_TO_PRINT' : SAMPLES_TO_PRINT,
+    'SAMPLE_DEFAULTS' : SAMPLE_DEFAULTS,
+    'TARGET_LUMI' : TARGET_LUMI,
+    'RECO_SAMPLES' : RECO_SAMPLES,
+    'MERGE_SAMPLES' : MERGE_SAMPLES,
+    'FLATTENED_SAMPLES_TO_PLOT' : FLATTENED_SAMPLES_TO_PLOT,
+    'ALL_SAMPLES' : ALL_SAMPLES
+}
