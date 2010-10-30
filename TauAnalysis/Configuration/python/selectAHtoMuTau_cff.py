@@ -58,7 +58,8 @@ cfgCentralJetEt20bTagCut = cms.PSet(
 )
 
 ahToMuTauEventSelConfigurator = eventSelFlagProdConfigurator(
-    [ cfgTrigger,
+    [ cfgGenPhaseSpaceCut,
+      cfgTrigger,
       cfgPrimaryEventVertex,
       cfgPrimaryEventVertexQuality,
       cfgPrimaryEventVertexPosition,

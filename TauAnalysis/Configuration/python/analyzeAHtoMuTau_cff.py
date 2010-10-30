@@ -35,7 +35,7 @@ analyzeAHtoMuTauEvents_woBtag = cms.EDAnalyzer("GenericAnalyzer",
                             
     filters = cms.VPSet(
         # generator level phase-space selection
-        genPhaseSpaceCut,
+        evtSelGenPhaseSpace,
 
         # trigger selection
         evtSelTrigger,
@@ -146,4 +146,6 @@ analyzeAHtoMuTauEvents_wBtag = analyzeAHtoMuTauEvents_woBtag.clone(
     analysisSequence = muTauAnalysisSequence_wBtag
 )
 
-analyzeAHtoMuTauEvents = cms.Sequence(analyzeAHtoMuTauEvents_woBtag * analyzeAHtoMuTauEvents_wBtag)
+# disable b-Tag channel for now
+#analyzeAHtoMuTauEvents = cms.Sequence(analyzeAHtoMuTauEvents_woBtag * analyzeAHtoMuTauEvents_wBtag)
+analyzeAHtoMuTauEvents = cms.Sequence(analyzeAHtoMuTauEvents_woBtag)
