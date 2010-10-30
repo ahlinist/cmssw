@@ -1,28 +1,23 @@
 #!/usr/bin/env python
 
-import os
-
-import TauAnalysis.Configuration.recoSampleDefinitionsZtoMuTau_7TeV_grid_cfi as samples
+from TauAnalysis.Configuration.recoSampleDefinitionsZtoMuTau_7TeV_grid_cfi import recoSampleDefinitionsZtoMuTau_7TeV
 from TauAnalysis.Configuration.submitAnalysisToGrid import submitAnalysisToGrid
+from TauAnalysis.Configuration.userRegistry import getAnalysisFilePath, getJobId
 
-USER_PREFERENCES = {
-    'veelken': {
-        'OUTPUT_FILE_PATH' : "/user/v/veelken/CMSSW_3_8_x/plots/ZtoMuTau_bgEstTemplate/",
-        'JOB_ID' : "7TeV"
-    }
-}
+channel = 'ZtoMuTau_bgEstTemplate'
+configFile = 'runBgEstTemplateProductionZtoMuTau_cfg.py'
+outputFilePath = getOutputFilePath(channel)
+jobId = getJobId(channel)
 
-# Get the current users specifications
-USER_CONFIG = USER_PREFERENCES[os.environ['LOGNAME']]
-
-CONFIG_FILE = 'prodBgEstTemplatesZtoMuTau_cfg.py'
-OUTPUT_FILE_PATH = USER_CONFIG['OUTPUT_FILE_PATH']
-JOB_ID = USER_CONFIG['JOB_ID']
-
-SAMPLE_LIST_OVERRIDE = [
+samplesToAnalyze = [
     # modify in case you want to submit crab jobs for some of the samples only...
 ]
 
-submitAnalysisToGrid(configFile = CONFIG_FILE, channel = 'ZtoMuTau',
-                     samples = recoSampleDefinitionsZtoMuTau_7TeV, outputFilePath = OUTPUT_FILE_PATH, jobId = JOB_ID,
-                     samplesToAnalyze = SAMPLE_LIST_OVERRIDE, disableSysUncertainties = TRUE)
+# Submit analysis jobs to the grid;
+# disable estimation of systematic uncertainties for all samples except Ztautau
+submitAnalysisToGrid(configFile = configFile, channel = channel,
+                     samples = recoSampleDefinitionsZtoMuTau_7TeV, outputFilePath = outputFilePath, jobId = jobId,
+                     samplesToAnalyze = samplesToAnalyze, samplesToSkip = ['Ztautau'], disableSysUncertainties = True)
+submitAnalysisToGrid(configFile = configFile, channel = channel,
+                     samples = recoSampleDefinitionsZtoMuTau_7TeV, outputFilePath = outputFilePath, jobId = jobId,
+                     samplesToAnalyze = ['Ztautau'], samplesToSkip = None, disableSysUncertainties = False)
