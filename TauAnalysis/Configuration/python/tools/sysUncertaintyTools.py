@@ -151,22 +151,22 @@ def enableSysUncertainties_runZtoMuTau(process):
                 "smearedParticles.srcOriginal" : cms.InputTag('selectedPatTausForMuTauMuonVetoCumulative'),
                 "smearedParticles.srcSmeared"  : cms.InputTag('selectedPatTausForMuTauMuonVetoSysTauJetEnDownCumulative')
             }, 
-            "sysTauJetThetaUp" : {
-                "smearedParticles.srcOriginal" : cms.InputTag('selectedPatTausForMuTauMuonVetoCumulative'),
-                "smearedParticles.srcSmeared"  : cms.InputTag('selectedPatTausForMuTauMuonVetoSysTauJetThetaUpCumulative')
-            }, 
-            "sysTauJetThetaDown" : {
-                "smearedParticles.srcOriginal" : cms.InputTag('selectedPatTausForMuTauMuonVetoCumulative'),
-                "smearedParticles.srcSmeared"  : cms.InputTag('selectedPatTausForMuTauMuonVetoSysTauJetThetaDownCumulative')
-            }, 
-            "sysTauJetPhiUp" : {
-                "smearedParticles.srcOriginal" : cms.InputTag('selectedPatTausForMuTauMuonVetoCumulative'),
-                "smearedParticles.srcSmeared"  : cms.InputTag('selectedPatTausForMuTauMuonVetoSysTauJetPhiUpCumulative')
-            }, 
-            "sysTauJetPhiDown" : {
-                "smearedParticles.srcOriginal" : cms.InputTag('selectedPatTausForMuTauMuonVetoCumulative'),
-                "smearedParticles.srcSmeared"  : cms.InputTag('selectedPatTausForMuTauMuonVetoSysTauJetPhiDownCumulative')
-            },
+            ##"sysTauJetThetaUp" : {
+            ##    "smearedParticles.srcOriginal" : cms.InputTag('selectedPatTausForMuTauMuonVetoCumulative'),
+            ##    "smearedParticles.srcSmeared"  : cms.InputTag('selectedPatTausForMuTauMuonVetoSysTauJetThetaUpCumulative')
+            ##}, 
+            ##"sysTauJetThetaDown" : {
+            ##    "smearedParticles.srcOriginal" : cms.InputTag('selectedPatTausForMuTauMuonVetoCumulative'),
+            ##    "smearedParticles.srcSmeared"  : cms.InputTag('selectedPatTausForMuTauMuonVetoSysTauJetThetaDownCumulative')
+            ##}, 
+            ##"sysTauJetPhiUp" : {
+            ##    "smearedParticles.srcOriginal" : cms.InputTag('selectedPatTausForMuTauMuonVetoCumulative'),
+            ##    "smearedParticles.srcSmeared"  : cms.InputTag('selectedPatTausForMuTauMuonVetoSysTauJetPhiUpCumulative')
+            ##}, 
+            ##"sysTauJetPhiDown" : {
+            ##    "smearedParticles.srcOriginal" : cms.InputTag('selectedPatTausForMuTauMuonVetoCumulative'),
+            ##    "smearedParticles.srcSmeared"  : cms.InputTag('selectedPatTausForMuTauMuonVetoSysTauJetPhiDownCumulative')
+            ##},
             "sysJetEnUp" : {
                 "smearedParticles.srcOriginal" : cms.InputTag('selectedPatJetsAntiOverlapWithLeptonsVetoCumulative'),
                 "smearedParticles.srcSmeared"  : cms.InputTag('selectedPatJetsAntiOverlapWithLeptonsVetoSysJetEnUpCumulative')
@@ -196,22 +196,22 @@ def enableSysUncertainties_runZtoMuTau(process):
             "srcLeg2" : cms.InputTag('selectedPatTausForMuTauMuonVetoSysTauJetEnDownCumulative'),
             "srcMET"  : cms.InputTag('smearedMETsysTauJetEnDown')
         }, 
-        "sysTauJetThetaUp" : {
-            "srcLeg2" : cms.InputTag('selectedPatTausForMuTauMuonVetoSysTauJetThetaUpCumulative'),
-            "srcMET"  : cms.InputTag('smearedMETsysTauJetThetaUp')
-        }, 
-        "sysTauJetThetaDown" : {
-            "srcLeg2" : cms.InputTag('selectedPatTausForMuTauMuonVetoSysTauJetThetaDownCumulative'),
-            "srcMET"  : cms.InputTag('smearedMETsysTauJetThetaDown')
-        }, 
-        "sysTauJetPhiUp" : {
-            "srcLeg2" : cms.InputTag('selectedPatTausForMuTauMuonVetoSysTauJetPhiUpCumulative'),
-            "srcMET"  : cms.InputTag('smearedMETsysTauJetPhiUp')
-        }, 
-        "sysTauJetPhiDown" : {
-            "srcLeg2" : cms.InputTag('selectedPatTausForMuTauMuonVetoSysTauJetPhiDownCumulative'),
-            "srcMET"  : cms.InputTag('smearedMETsysTauJetPhiDown')                        
-        },
+        ##"sysTauJetThetaUp" : {
+        ##    "srcLeg2" : cms.InputTag('selectedPatTausForMuTauMuonVetoSysTauJetThetaUpCumulative'),
+        ##    "srcMET"  : cms.InputTag('smearedMETsysTauJetThetaUp')
+        ##}, 
+        ##"sysTauJetThetaDown" : {
+        ##    "srcLeg2" : cms.InputTag('selectedPatTausForMuTauMuonVetoSysTauJetThetaDownCumulative'),
+        ##    "srcMET"  : cms.InputTag('smearedMETsysTauJetThetaDown')
+        ##}, 
+        ##"sysTauJetPhiUp" : {
+        ##    "srcLeg2" : cms.InputTag('selectedPatTausForMuTauMuonVetoSysTauJetPhiUpCumulative'),
+        ##    "srcMET"  : cms.InputTag('smearedMETsysTauJetPhiUp')
+        ##}, 
+        ##"sysTauJetPhiDown" : {
+        ##    "srcLeg2" : cms.InputTag('selectedPatTausForMuTauMuonVetoSysTauJetPhiDownCumulative'),
+        ##    "srcMET"  : cms.InputTag('smearedMETsysTauJetPhiDown')                        
+        ##},
         "sysJetEnUp" : {
             "srcMET"  : cms.InputTag('smearedMETsysJetEnUp')
         },
@@ -239,23 +239,22 @@ def enableSysUncertainties_runZtoMuTau(process):
             "srcLeg2" : cms.InputTag('selectedPatTausForMuTauMuonVetoSysTauJetEnDownCumulative'),
             "srcMET"  : cms.InputTag('smearedMETsysTauJetEnDown')
         }, 
-        "sysTauJetThetaUp" : {
-            "srcLeg2" : cms.InputTag('selectedPatTausForMuTauMuonVetoSysTauJetThetaUpCumulative'),
-            "srcMET"  : cms.InputTag('smearedMETsysTauJetThetaUp')
-        }, 
-        "sysTauJetThetaDown" : {
-            "srcLeg2" : cms.InputTag('selectedPatTausForMuTauMuonVetoSysTauJetThetaDownCumulative'),
-            "srcMET"  : cms.InputTag('smearedMETsysTauJetThetaDown')
-        }, 
-        "sysTauJetPhiUp" : {
-            "srcLeg2" : cms.InputTag('selectedPatTausForMuTauMuonVetoSysTauJetPhiUpCumulative'),
-            "srcMET"  : cms.InputTag('smearedMETsysTauJetPhiUp')
-        }, 
-        "sysTauJetPhiDown" : {
-            "srcLeg2" : cms.InputTag('selectedPatTausForMuTauMuonVetoSysTauJetPhiDownCumulative'),
-            "srcMET"  : cms.InputTag('smearedMETsysTauJetPhiDown')            
-            
-        },
+        ##"sysTauJetThetaUp" : {
+        ##    "srcLeg2" : cms.InputTag('selectedPatTausForMuTauMuonVetoSysTauJetThetaUpCumulative'),
+        ##    "srcMET"  : cms.InputTag('smearedMETsysTauJetThetaUp')
+        ##}, 
+        ##"sysTauJetThetaDown" : {
+        ##    "srcLeg2" : cms.InputTag('selectedPatTausForMuTauMuonVetoSysTauJetThetaDownCumulative'),
+        ##    "srcMET"  : cms.InputTag('smearedMETsysTauJetThetaDown')
+        ##}, 
+        ##"sysTauJetPhiUp" : {
+        ##    "srcLeg2" : cms.InputTag('selectedPatTausForMuTauMuonVetoSysTauJetPhiUpCumulative'),
+        ##    "srcMET"  : cms.InputTag('smearedMETsysTauJetPhiUp')
+        ##}, 
+        ##"sysTauJetPhiDown" : {
+        ##    "srcLeg2" : cms.InputTag('selectedPatTausForMuTauMuonVetoSysTauJetPhiDownCumulative'),
+        ##    "srcMET"  : cms.InputTag('smearedMETsysTauJetPhiDown')            
+        ##},
         "sysJetEnUp" : {
             "srcMET"  : cms.InputTag('smearedMETsysJetEnUp')
         },
