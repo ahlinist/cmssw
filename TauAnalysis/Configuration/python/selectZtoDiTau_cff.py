@@ -6,6 +6,16 @@ from TauAnalysis.RecoTools.tools.eventSelFlagProdConfigurator import *
 # define event selection criteria for Z --> tau-jet + tau-jet channel
 #--------------------------------------------------------------------------------
 
+# generator level phase-space selection
+# (NOTE: to be used in case of Monte Carlo samples
+#        overlapping in simulated phase-space only !!)
+cfgGenPhaseSpaceCut = cms.PSet(
+    pluginName = cms.string('genPhaseSpaceCut'),
+    pluginType = cms.string('GenPhaseSpaceEventInfoSelector'),
+    src = cms.InputTag('genPhaseSpaceEventInfo'),
+    cut = cms.string('')
+)
+
 # trigger selection
 #cfgTrigger = cms.PSet(
 #    pluginName = cms.string('Trigger'),
@@ -231,7 +241,8 @@ cfgDiTauCandidateForDiTauPzetaDiffCut = cms.PSet(
 #)
 
 zToDiTauEventSelConfigurator = eventSelFlagProdConfigurator(
-    [ #cfgTrigger,
+    [ cfgGenPhaseSpaceCut,
+      #cfgTrigger,
       cfgPrimaryEventVertex,
       cfgPrimaryEventVertexQuality,
       cfgPrimaryEventVertexPosition,

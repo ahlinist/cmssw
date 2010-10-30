@@ -30,7 +30,7 @@ analyzeZtoMuTauEvents = cms.EDAnalyzer("GenericAnalyzer",
                             
     filters = cms.VPSet(
         # generator level phase-space selection
-        genPhaseSpaceCut,
+        evtSelGenPhaseSpace,
     
         # generator level selection of Z --> mu + tau-jet events
         # passing basic acceptance and kinematic cuts
