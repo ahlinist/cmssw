@@ -312,7 +312,8 @@ void GenericAnalyzer::addAnalyzers(const vstring& analyzerNames,
       bool supportsSystematics = cfgAnalyzer.getParameter<bool>("supportsSystematics");
       if ( supportsSystematics && (!estimateSysUncertainties_) ) {
 	std::cout << "analyzer = " << (*analyzerName) << " supports systematics," 
-		  << " but estimateSysUncertainties = false --> skipping...";
+		  << " but estimateSysUncertainties = false --> skipping..." << std::endl;
+	continue;
       }
       
       for ( vstring::const_iterator replaceCommand = replaceCommands.begin();
