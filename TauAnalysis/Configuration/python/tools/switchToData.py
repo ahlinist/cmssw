@@ -130,8 +130,9 @@ def switchToData(process):
 		removeAnalyzer(process.analyzeZtoMuTauEvents.analysisSequence, "modelBinnerForMuTauWrtGenTauLeptonPairAcc")
 		process.analyzeZtoMuTauEvents.analyzers_systematic = cms.VPSet()
 		removeAnalyzer(process.analyzeZtoMuTauEvents.analysisSequence, "sysUncertaintyBinnerForMuTau")
-		process.analyzeZtoMuTauEvents.eventDumps[0].doGenInfo = cms.bool(False)
-		process.analyzeZtoMuTauEvents.eventDumps[0].genParticleSource = cms.InputTag('')
+                for eventDump in process.analyzeZtoMuTauEvents.eventDumps:
+                    eventDump.doGenInfo = cms.bool(False)
+		    eventDump.genParticleSource = cms.InputTag('')
 		process.muonHistManager.genParticleSource = cms.InputTag('')
 		process.tauHistManager.genParticleSource = cms.InputTag('')
 		process.jetHistManager.genParticleSource = cms.InputTag('')
