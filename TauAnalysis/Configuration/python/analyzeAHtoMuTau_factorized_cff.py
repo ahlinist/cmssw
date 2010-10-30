@@ -34,10 +34,12 @@ if len(analyzeAHtoMuTauEvents_woBtag_factorizedWithMuonIsolation.eventDumps):
 if len(analyzeAHtoMuTauEvents_wBtag_factorizedWithMuonIsolation.eventDumps):
     analyzeAHtoMuTauEvents_wBtag_factorizedWithMuonIsolation.eventDumps[0] = muTauEventDump_factorizedWithMuonIsolation
 
-analyzeAHtoMuTauEvents_factorizedWithMuonIsolation = cms.Sequence(
-    analyzeAHtoMuTauEvents_woBtag_factorizedWithMuonIsolation
-   * analyzeAHtoMuTauEvents_wBtag_factorizedWithMuonIsolation
-)    
+# disable b-Tag channel for now
+#analyzeAHtoMuTauEvents_factorizedWithMuonIsolation = cms.Sequence(
+#    analyzeAHtoMuTauEvents_woBtag_factorizedWithMuonIsolation
+#   * analyzeAHtoMuTauEvents_wBtag_factorizedWithMuonIsolation
+#)
+analyzeAHtoMuTauEvents_factorizedWithMuonIsolation = cms.Sequence(analyzeAHtoMuTauEvents_woBtag_factorizedWithMuonIsolation)
 
 #--------------------------------------------------------------------------------
 # define A/H --> mu + tau-jet analysis modules
@@ -83,7 +85,9 @@ replaceEventSelections(analyzeAHtoMuTauEvents_wBtag_factorizedWithoutMuonIsolati
 analyzeAHtoMuTauEvents_wBtag_factorizedWithoutMuonIsolation.analysisSequence = \
   muTauAnalysisSequence_wBtag_factorizedWithoutMuonIsolation
 
-analyzeAHtoMuTauEvents_factorizedWithoutMuonIsolation = cms.Sequence(
-    analyzeAHtoMuTauEvents_woBtag_factorizedWithoutMuonIsolation
-   * analyzeAHtoMuTauEvents_wBtag_factorizedWithoutMuonIsolation
-)    
+# disable b-Tag channel for now
+#analyzeAHtoMuTauEvents_factorizedWithoutMuonIsolation = cms.Sequence(
+#    analyzeAHtoMuTauEvents_woBtag_factorizedWithoutMuonIsolation
+#   * analyzeAHtoMuTauEvents_wBtag_factorizedWithoutMuonIsolation
+#)
+analyzeAHtoMuTauEvents_factorizedWithoutMuonIsolation = cms.Sequence(analyzeAHtoMuTauEvents_woBtag_factorizedWithoutMuonIsolation)
