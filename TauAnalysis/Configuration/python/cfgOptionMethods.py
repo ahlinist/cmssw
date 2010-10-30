@@ -33,17 +33,11 @@ def _setGlobalTag(process, tag, **kwargs):
 @_requires(args=['channel'])
 def _setGenPhaseSpaceCut(process, value, **kwargs):
     " Set the generator level phase space cut "
-    analyzer_name = "analyze%sEvents" % kwargs['channel']
-    if 'suffix' in kwargs:
-        analyzer_name += "_"
-        analyzer_name += kwargs['suffix']
-    module = getattr(process, analyzer_name)
-    module.filters[0] = cms.PSet(
-        pluginName = cms.string('genPhaseSpaceCut'),
-        pluginType = cms.string('GenPhaseSpaceEventInfoSelector'),
-        src = cms.InputTag('genPhaseSpaceEventInfo'),
-        cut = cms.string(value)
-    )
+    if hasattr(process, "genPhaseSpaceCut"):
+        genPhaseSpaceCut = getattr(process, "genPhaseSpaceCut")
+        setattr(genPhaseSpaceCut, "cut", cms.string(value))
+    else:
+        raise ValueError("Process object has no attribute 'genPhaseSpaceCut' !!")
 
 @_requires(inputs=[True, False])
 def _setIsBatchMode(process, set, **kwargs):
@@ -96,9 +90,7 @@ def _setEnableSystematics(process, enable, **kwargs):
         enabler = getattr(sysUncertaintyTools, "enableSysUncertainties_run%s" % channel)
         enabler(process)
     else:
-        print "Disabling systematics"
-        disabler = getattr(sysUncertaintyTools, "disableSysUncertainties_run%s" % channel)
-        disabler(process)
+        print "Keeping systematics disabled"
 
 @_requires(args=['channel'], inputs=['RECO/AOD', 'PATTuple'])
 def _setInputFileType(process, filetype, **kwargs):
@@ -113,17 +105,13 @@ def _setIsData(process, type, **kwargs):
     if type.lower().find('mc') == -1:
         switchToData.switchToData(process)
 
-@_requires(args=['channel'])
 def _setTriggerProcess(process, triggerTag, **kwargs):
     # Set the input tag for the HLT
-    channel = kwargs['channel']
-    sequences_to_modify = [ seq % channel for seq in [
-        'producePatTuple%sSpecific', 'select%sEvents', 'analyze%sEvents'] ]
-    for sequence_name in sequences_to_modify:
-        print "o Resetting HLT input tag for sequence:", sequence_name
-        sequence = getattr(process, sequence_name)
-        patutils.massSearchReplaceAnyInputTag(
-            sequence, cms.InputTag("TriggerResults", "", "HLT"), triggerTag)
+    for processAttrName in dir(process):
+        processAttr = getattr(process, processAttrName)
+        if isinstance(processAttr, cms.Sequence):
+            print "o Resetting HLT input tag for sequence:", processAttrName
+            patutils.massSearchReplaceAnyInputTag(processAttr, cms.InputTag("TriggerResults", "", "HLT"), triggerTag)
     process.patTrigger.processName = triggerTag.getProcessName()
     process.patTriggerEvent.processName = triggerTag.getProcessName()
 
