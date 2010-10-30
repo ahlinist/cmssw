@@ -3,6 +3,8 @@
 #include "FWCore/MessageLogger/interface/MessageLogger.h"
 #include "FWCore/ServiceRegistry/interface/Service.h"
 #include "DataFormats/PatCandidates/interface/MET.h"
+#include "DataFormats/VertexReco/interface/Vertex.h"
+#include "DataFormats/VertexReco/interface/VertexFwd.h"
 #include "DataFormats/Candidate/interface/Candidate.h"
 #include "DataFormats/Candidate/interface/CandidateFwd.h"
 #include "DataFormats/Common/interface/View.h"
@@ -28,6 +30,9 @@ MEtHistManager::MEtHistManager(const edm::ParameterSet& cfg)
   //std::cout << " leg1Src = " << leg1Src_ << std::endl;
   if ( cfg.exists("leg2Source") ) leg2Src_ = cfg.getParameter<edm::InputTag>("leg2Source");
   //std::cout << " leg2Src = " << leg2Src_ << std::endl;
+
+  vertexSrc_ = cfg.getParameter<edm::InputTag>("vertexSource");
+  //std::cout << " vertexSrc = " << vertexSrc_ << std::endl;
 }
 
 MEtHistManager::~MEtHistManager()
@@ -44,6 +49,16 @@ void MEtHistManager::bookHistogramsImp()
   hMEtPx_ = book1D("MEtPx", "MEtPx", 150, -150., 150.);
   hMEtPy_ = book1D("MEtPy", "MEtPy", 150, -150., 150.);
   
+  for ( vdouble::const_iterator vertexPtThreshold = vertexPtThresholds_.begin();
+	vertexPtThreshold != vertexPtThresholds_.end(); ++vertexPtThreshold ) {
+    std::ostringstream meName_ostringstream;
+    meName_ostringstream << "MEtPtVsNumVerticesPtGt" << std::fixed << std::setprecision(1) << (*vertexPtThreshold);
+    int errorFlag = 0;
+    std::string meName_string = replace_string(meName_ostringstream.str(), ".", "_", 0, 1, errorFlag);
+    MonitorElement* me = book2D(meName_string.data(), meName_string.data(), 50, 0., 250., 10, -0.5, 9.5);
+    hMEtPtVsNumVertices_.push_back(me);
+  }
+
   hMEtSignificance_ = book1D("MEtSignificance", "MEtSignificance", 101, -0.5, 100.05);
   
   hGenMEtPt_ = book1D("GenMEt_Pt", "GenMEt_Pt", 75, 0., 150.);
@@ -131,6 +146,9 @@ void MEtHistManager::fillHistogramsImp(const edm::Event& evt, const edm::EventSe
   edm::Handle<reco::CandidateView> leg2Particles;
   if ( leg2Src_.label() != "" ) evt.getByLabel(leg2Src_, leg2Particles);
 
+  edm::Handle<reco::VertexCollection> recoVertices;
+  evt.getByLabel(vertexSrc_, recoVertices);
+
   if ( patMETs->size() == 1 ) {
     const pat::MET& theEventMET = (*patMETs->begin());
 
@@ -139,6 +157,14 @@ void MEtHistManager::fillHistogramsImp(const edm::Event& evt, const edm::EventSe
     hMEtPx_->Fill(theEventMET.px(), evtWeight);
     hMEtPy_->Fill(theEventMET.py(), evtWeight);
 
+    std::vector<double> trackPtSums = compTrackPtSums(*recoVertices);
+    assert(vertexPtThresholds_.size() == hMEtPtVsNumVertices_.size());
+    size_t numVertexPtThresholds = vertexPtThresholds_.size();
+    for ( size_t iVertexPtThreshold = 0; iVertexPtThreshold < numVertexPtThresholds; ++iVertexPtThreshold ) {
+      size_t numVertices = getNumVerticesPtGtThreshold(trackPtSums, vertexPtThresholds_[iVertexPtThreshold]);
+      hMEtPtVsNumVertices_[iVertexPtThreshold]->Fill(theEventMET.pt(), numVertices, evtWeight);
+    }
+    
     hMEtSignificance_->Fill(metSignificance, evtWeight);
 
     if ( theEventMET.genMET() ) {
