@@ -1,74 +1,24 @@
 import FWCore.ParameterSet.Config as cms
 
-INPUT_FILES_DIR = '/data1/friis/Run10_v2'
-sample_mapper = lambda sample : "harvested_AHtoMuTau_%s_Run10.root" % sample
-
-process = cms.Process('makeAHtoMuTauPlots')
-
-import TauAnalysis.Configuration.recoSampleDefinitionsAHtoMuTau_7TeV_grid_cfi as samples
-
-process.load("TauAnalysis.Configuration.dumpAHtoMuTau_grid_cff")
-process.load("TauAnalysis.Configuration.plotAHtoMuTau_grid_cff")
-
-process.DQMStore = cms.Service("DQMStore")
-
-process.maxEvents = cms.untracked.PSet(            
-    input = cms.untracked.int32(0)         
-)
-
-process.source = cms.Source("EmptySource")
-
-# define directory from which .root files containing histograms 
-# for individual processes get loaded
-process.loadAHtoMuTauSamples.inputFilePath = cms.string(INPUT_FILES_DIR)
-
-# Update our input files
-for sample in samples.FLATTENED_SAMPLES_TO_PLOT:
-    getattr(process.loadAHtoMuTauSamples, sample).inputFileNames = cms.vstring(
-        sample_mapper(sample)
-    )
+from TauAnalysis.Configuration.recoSampleDefinitionsAHtoMuTau_7TeV_grid_cfi import recoSampleDefinitionsAHtoMuTau_7TeV
+from TauAnalysis.Configuration.makePlots_grid import makePlots
+from TauAnalysis.Configuration.userRegistry import getHarvestingFilePath, getJobId
 
 # import utility function to enable factorization
 from TauAnalysis.Configuration.tools.factorizationTools import enableFactorization_makeAHtoMuTauPlots_grid
 
-samplesToFactorize = [sample for sample in samples.FLATTENED_SAMPLES_TO_PLOT 
-                      if samples.ALL_SAMPLES[sample].get('factorize', False)]
+process = cms.Process('makeAHtoMuTauPlots')
 
-relevantMergedSamples = [sample for sample, sample_info in samples.MERGE_SAMPLES.iteritems() if 
-                         [subsample for subsample in sample_info['samples'] 
-                          if subsample in samplesToFactorize]]
+process.load("TauAnalysis.Configuration.dumpAHtoMuTau_grid_cff")
+process.load("TauAnalysis.Configuration.plotAHtoMuTau_grid_cff")
 
-print "Factorizing", samplesToFactorize
-print "Updating", relevantMergedSamples
+channel = 'AHtoMuTau'
+inputFilePath = getHarvestingFilePath(channel)
+jobId = getJobId(channel)
 
-enableFactorization_makeAHtoMuTauPlots_grid(
-    process,
-    samplesToFactorize = samplesToFactorize,
-    relevantMergedSamples = relevantMergedSamples,
-    mergedToRecoSampleDict = samples.MERGE_SAMPLES,
-)
-
-process.plotAHtoMuTau.labels.mcNormScale.text = cms.vstring(
-    '%0.1fpb^{-1}' % samples.TARGET_LUMI,
-    '#sqrt{s}=7TeV'
-)
-
-process.dumpDQMStore = cms.EDAnalyzer("DQMStoreDump")
-
-# define name and directory in which .root file containing all histograms gets saved
-process.saveAHtoMuTau.outputFileName = cms.string(
-    "/data1/friis/Run7/plotsAHtoMuTau_all.root"
-)
-
-process.makeAHtoMuTauPlots = cms.Sequence(
-    process.loadAHtoMuTau
-   #+ process.dumpDQMStore
-   + process.saveAHtoMuTau
-   + process.dumpAHtoMuTau
-   + process.plotAHtoMuTau
-)
-
-process.p = cms.Path(process.makeAHtoMuTauPlots)
+makePlots(process, channel = channel, samples = recoSampleDefinitionsAHtoMuTau_7TeV,
+          inputFilePath = inputFilePath, jobId = jobId,
+          enableFactorizationFunction = enableFactorization_makeAHtoMuTauPlots_grid, dumpDQMStore = False)
 
 # print-out all python configuration parameter information
 #print process.dumpPython()
