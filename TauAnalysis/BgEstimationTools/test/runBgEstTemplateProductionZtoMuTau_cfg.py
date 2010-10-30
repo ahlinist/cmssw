@@ -35,7 +35,7 @@ from TauAnalysis.Configuration.recoSampleDefinitionsZtoMuTau_10TeV_cfi import *
 
 process.DQMStore = cms.Service("DQMStore")
 
-process.saveTemplatesZtoMuTau = cms.EDAnalyzer("DQMSimpleFileSaver",
+process.saveZtoMuTauPlots = cms.EDAnalyzer("DQMSimpleFileSaver",
     outputFileName = cms.string('bgEstTemplatesZtoMuTau.root')
 )
 
@@ -60,7 +60,7 @@ process.source = cms.Source("PoolSource",
 #__process.source.fileNames = #inputFileNames#
 #__process.maxEvents.input = cms.untracked.int32(#maxEvents#)
 #__setattr(process, "genPhaseSpaceCut", copy.deepcopy(#genPhaseSpaceCut#))
-#__process.saveTemplatesZtoMuTau.outputFileName = #plotsOutputFileName#
+#__process.saveZtoMuTauPlots.outputFileName = #plotsOutputFileName#
 #__#isBatchMode#
 #
 #--------------------------------------------------------------------------------
@@ -113,19 +113,6 @@ process.load("TauAnalysis.CandidateTools.diTauPairProductionAllKinds_cff")
 replaceMETforDiTaus(process, cms.InputTag('patMETs'), cms.InputTag('patPFMETs'))
 #--------------------------------------------------------------------------------
 
-#--------------------------------------------------------------------------------
-# import utility function for managing pat::METs
-from TauAnalysis.Configuration.tools.metTools import *
-
-# uncomment to add pfMET
-# set Boolean swich to true in order to apply type-1 corrections
-addPFMet(process, correct = False)
-
-# uncomment to replace caloMET by pfMET in all di-tau objects
-process.load("TauAnalysis.CandidateTools.diTauPairProductionAllKinds_cff")
-replaceMETforDiTaus(process, cms.InputTag('patMETs'), cms.InputTag('patPFMETs'))
-#--------------------------------------------------------------------------------
-
 process.load("TauAnalysis.Configuration.analyzeZtoMuTau_cff")
 from TauAnalysis.Configuration.tools.analysisSequenceTools import addAnalyzer, addSysAnalyzer, removeAnalyzer
 from TauAnalysis.CandidateTools.sysErrDefinitions_cfi import *
@@ -140,8 +127,11 @@ removeAnalyzer(process.analyzeZtoMuTauEvents.analysisSequence, 'diTauCandidateHi
 removeAnalyzer(process.analyzeZtoMuTauEvents.analysisSequence, 'diTauCandidateCollinearApproxHistManagerForMuTau')
 removeAnalyzer(process.analyzeZtoMuTauEvents.analysisSequence, 'diTauCandidateCollinearApproxHistManagerBinnedForMuTau')
 removeAnalyzer(process.analyzeZtoMuTauEvents.analysisSequence, 'diTauCandidateCollinearApproxBinnerForMuTau')
+removeAnalyzer(process.analyzeZtoMuTauEvents.analysisSequence, 'diTauCandidateSVfitHistManagerForMuTau')
+removeAnalyzer(process.analyzeZtoMuTauEvents.analysisSequence, 'diTauCandidateEventActivityHistManagerForMuTau')
 removeAnalyzer(process.analyzeZtoMuTauEvents.analysisSequence, 'diTauCandidateZmumuHypothesisHistManagerForMuTau')
-removeAnalyzer(process.analyzeZtoMuTauEvents.analysisSequence, 'muPairHistManager')
+removeAnalyzer(process.analyzeZtoMuTauEvents.analysisSequence, 'muPairHistManagerByMass')
+removeAnalyzer(process.analyzeZtoMuTauEvents.analysisSequence, 'muPairHistManagerByLooseIsolationAndCharge')
 removeAnalyzer(process.analyzeZtoMuTauEvents.analysisSequence, 'jetHistManager')
 removeAnalyzer(process.analyzeZtoMuTauEvents.analysisSequence, 'caloMEtHistManager')
 removeAnalyzer(process.analyzeZtoMuTauEvents.analysisSequence, 'pfMEtHistManager')
@@ -152,6 +142,18 @@ removeAnalyzer(process.analyzeZtoMuTauEvents.analysisSequence, 'dataBinner')
 process.diTauCandidateHistManagerForMuTau.diTauCandidateSource = cms.InputTag('selectedMuTauPairsPzetaDiffCumulative')
 process.diTauCandidateHistManagerForMuTau.visMassHypothesisSource = cms.InputTag('')
 addAnalyzer(process.analyzeZtoMuTauEvents, process.diTauCandidateHistManagerForMuTau, 'evtSelDiMuPairZmumuHypothesisVeto')
+process.diTauCandidateSVfitHistManager.diTauCandidateSource = cms.InputTag('selectedMuTauPairsPzetaDiffCumulative')
+process.diTauCandidateSVfitHistManager. SVfitAlgorithms = cms.VPSet(
+    cms.PSet(
+        name = cms.string("psKine")
+    ),
+    cms.PSet(
+        name = cms.string("psKine_MEt")
+    ),
+    cms.PSet(
+        name = cms.string("psKine_MEt_ptBalance")
+    )
+)
 
 process.sysUncertaintyHistManager = cms.PSet(
     pluginName = cms.string('sysUncertaintyHistManager'),
@@ -179,70 +181,70 @@ process.load('TauAnalysis.BgEstimationTools.bgEstZtoMuTauQCDenrichedSelection_cf
 # of visible invariant muon + tau-jet mass distribution
 # caused by Mt(muon + tau-jet) transverse mass cut
 # and cut on CDF (Pzeta - 1.5*PzetaVis) variable
-process.kineEventReweightBgEstTemplateWplusJets = cms.EDProducer("ObjValProducer",
-    config = cms.PSet(
-        pluginType = cms.string("KineEventReweightExtractor"),
-        weightLookupTable = cms.PSet(
-            fileName = cms.string(
-                'rfio:/castor/cern.ch/user/v/veelken/CMSSW_3_3_x/kineEventReweights/bgEstKineEventReweightsZtoMuTau.root'
-            ),
-            meName = cms.string('DQMData/bgEstTemplateKineEventReweights/WplusJets/diTauMvis')
-        ),
-        variables = cms.PSet(
-            pluginType = cms.string("PATMuTauPairValExtractor"),
-            src = cms.InputTag('muTauPairsBgEstWplusJetsEnriched'),
-            value = cms.string("p4Vis.mass"),
-            indices = cms.vuint32(0)
-        )
-    )
-)
+##process.kineEventReweightBgEstTemplateWplusJets = cms.EDProducer("ObjValProducer",
+##    config = cms.PSet(
+##        pluginType = cms.string("KineEventReweightExtractor"),
+##        weightLookupTable = cms.PSet(
+##            fileName = cms.string(
+##                'rfio:/castor/cern.ch/user/v/veelken/CMSSW_3_3_x/kineEventReweights/bgEstKineEventReweightsZtoMuTau.root'
+##            ),
+##            meName = cms.string('DQMData/bgEstTemplateKineEventReweights/WplusJets/diTauMvis')
+##        ),
+##        variables = cms.PSet(
+##            pluginType = cms.string("PATMuTauPairValExtractor"),
+##            src = cms.InputTag('muTauPairsBgEstWplusJetsEnriched'),
+##            value = cms.string("p4Vis.mass"),
+##            indices = cms.vuint32(0)
+##        )
+##    )
+##)
 
 # add another analysis sequence for producing W + jets templates
 # in which the events are reweighted in order to correct for "bias" of muon + tau-jet visible invariant mass distribution
 # caused by cuts on muon + MEt transverse cut and CDF PzetaDiff variable
-process.analyzeEventsBgEstWplusJetsEnriched_reweighted = copy.deepcopy(process.analyzeEventsBgEstWplusJetsEnriched)
-process.analyzeEventsBgEstWplusJetsEnriched_reweighted.name = cms.string('BgEstTemplateAnalyzer_WplusJetsEnriched_reweighted')
-setattr(process.analyzeEventsBgEstWplusJetsEnriched_reweighted, "eventWeightSource", cms.VInputTag("kineEventReweightBgEstTemplateWplusJets"))
+##process.analyzeEventsBgEstWplusJetsEnriched_reweighted = copy.deepcopy(process.analyzeEventsBgEstWplusJetsEnriched)
+##process.analyzeEventsBgEstWplusJetsEnriched_reweighted.name = cms.string('BgEstTemplateAnalyzer_WplusJetsEnriched_reweighted')
+##setattr(process.analyzeEventsBgEstWplusJetsEnriched_reweighted, "eventWeightSource", cms.VInputTag("kineEventReweightBgEstTemplateWplusJets"))
 
 # produce event weight variable for correcting "bias"
 # of visible invariant muon + tau-jet mass distribution
 # caused by M(muon + muon) invariant mass veto
-process.kineEventReweightBgEstTemplateZmumuJetMisId = cms.EDProducer("ObjValProducer",
-    config = cms.PSet(
-        pluginType = cms.string("KineEventReweightExtractor"),
-        weightLookupTable = cms.PSet(
-            fileName = cms.string(
-                'rfio:/castor/cern.ch/user/v/veelken/CMSSW_3_3_x/kineEventReweights/bgEstKineEventReweightsZtoMuTau.root'
-            ),
-            meName = cms.string('DQMData/bgEstTemplateKineEventReweights/ZmumuJetMisId/diTauMvis')
-        ),
-        variables = cms.PSet(
-            pluginType = cms.string("PATMuTauPairValExtractor"),
-            src = cms.InputTag('muTauPairsBgEstZmumuJetMisIdEnriched'),
-            value = cms.string("p4Vis.mass"),
-            indices = cms.vuint32(0)
-        )
-    )
-)
+##process.kineEventReweightBgEstTemplateZmumuJetMisId = cms.EDProducer("ObjValProducer",
+##    config = cms.PSet(
+##        pluginType = cms.string("KineEventReweightExtractor"),
+##        weightLookupTable = cms.PSet(
+##            fileName = cms.string(
+##                'rfio:/castor/cern.ch/user/v/veelken/CMSSW_3_3_x/kineEventReweights/bgEstKineEventReweightsZtoMuTau.root'
+##            ),
+##            meName = cms.string('DQMData/bgEstTemplateKineEventReweights/ZmumuJetMisId/diTauMvis')
+##        ),
+##        variables = cms.PSet(
+##            pluginType = cms.string("PATMuTauPairValExtractor"),
+##            src = cms.InputTag('muTauPairsBgEstZmumuJetMisIdEnriched'),
+##            value = cms.string("p4Vis.mass"),
+##            indices = cms.vuint32(0)
+##        )
+##    )
+##)
 
 # add another analysis sequence for producing W + jets templates
 # in which the events are reweighted in order to correct for "bias" of muon + tau-jet visible invariant mass distribution
 # caused by cuts on muon + MEt transverse cut and CDF PzetaDiff variable
-process.analyzeEventsBgEstZmumuJetMisIdEnriched_reweighted = copy.deepcopy(process.analyzeEventsBgEstZmumuJetMisIdEnriched)
-process.analyzeEventsBgEstZmumuJetMisIdEnriched_reweighted.name = cms.string('BgEstTemplateAnalyzer_ZmumuJetMisIdEnriched_reweighted')
-setattr(process.analyzeEventsBgEstZmumuJetMisIdEnriched_reweighted, "eventWeightSource", cms.VInputTag("kineEventReweightBgEstTemplateZmumuJetMisId"))
+##process.analyzeEventsBgEstZmumuJetMisIdEnriched_reweighted = copy.deepcopy(process.analyzeEventsBgEstZmumuJetMisIdEnriched)
+##process.analyzeEventsBgEstZmumuJetMisIdEnriched_reweighted.name = cms.string('BgEstTemplateAnalyzer_ZmumuJetMisIdEnriched_reweighted')
+##setattr(process.analyzeEventsBgEstZmumuJetMisIdEnriched_reweighted, "eventWeightSource", cms.VInputTag("kineEventReweightBgEstTemplateZmumuJetMisId"))
 
 process.p = cms.Path(
    process.producePatTupleZtoMuTauSpecific
   + process.selectZtoMuTauEvents
   + process.analyzeZtoMuTauEvents
   + process.bgEstWplusJetsEnrichedAnalysisSequence
-  + process.kineEventReweightBgEstTemplateWplusJets + process.analyzeEventsBgEstWplusJetsEnriched_reweighted
+  ##+ process.kineEventReweightBgEstTemplateWplusJets + process.analyzeEventsBgEstWplusJetsEnriched_reweighted
   + process.bgEstTTplusJetsEnrichedAnalysisSequence
   + process.bgEstZmumuEnrichedAnalysisSequence
-  + process.kineEventReweightBgEstTemplateZmumuJetMisId + process.analyzeEventsBgEstZmumuJetMisIdEnriched_reweighted 
+  ##+ process.kineEventReweightBgEstTemplateZmumuJetMisId + process.analyzeEventsBgEstZmumuJetMisIdEnriched_reweighted 
   + process.bgEstQCDenrichedAnalysisSequence 
-  + process.saveTemplatesZtoMuTau
+  + process.saveZtoMuTauPlots
 )
 
 process.q = cms.Path(process.dataQualityFilters)
