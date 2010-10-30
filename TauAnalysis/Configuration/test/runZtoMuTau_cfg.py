@@ -144,8 +144,8 @@ from TauAnalysis.Configuration.tools.changeCut import changeCut
 
 # disable cut on muon calo. + segment compatibility
 # (check that muon calo. compatibility is not affected by pile-up before re-enabling this cut)
-changeCut(process, "selectedPatMuonsPionVeto", -100., attribute = "AntiPionCut")
-changeCut(process, "selectedPatMuonsPionVetoLooseIsolation", -100., attribute = "AntiPionCut")
+changeCut(process, "selectedPatMuonsPionVeto", -1000., attribute = "AntiPionCut")
+changeCut(process, "selectedPatMuonsPionVetoLooseIsolation", -1000., attribute = "AntiPionCut")
 
 # disable cuts on tau id. discriminators for Track && ECAL isolation
 changeCut(process, "selectedPatTausTrkIso", "tauID('trackIsolation') > -1.")
