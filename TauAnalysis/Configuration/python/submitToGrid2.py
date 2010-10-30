@@ -46,7 +46,7 @@ _CRAB_DEFAULTS = {
     'runselection' : '',
 }
 
-def submitToGrid(configFile, jobInfo, jobOptions, crabOptions, submit=True):
+def submitToGrid(configFile, jobInfo, jobOptions, crabOptions, create = True, submit = True):
     workingDirectory = os.getcwd()
     submissionDirectory = os.path.join(workingDirectory, 'crab')
     configFilePath = os.path.join(workingDirectory, configFile)
@@ -55,7 +55,7 @@ def submitToGrid(configFile, jobInfo, jobOptions, crabOptions, submit=True):
                          configFile)
     # Strip off _cfg.py and add sample info
     configFileName = configFile.replace(
-        '_cfg.py', '_%s_%s_%s' % (jobInfo['channel'], jobInfo['sample'], jobInfo['id']))
+        '_cfg.py', '_%s_%s' % (jobInfo['sample'], jobInfo['id']))
     # New name of config file
     newConfigFile =  configFileName + '@Grid_cfg.py' 
     newConfigFilePath = os.path.join(submissionDirectory, newConfigFile)
@@ -87,12 +87,13 @@ def submitToGrid(configFile, jobInfo, jobOptions, crabOptions, submit=True):
     crabFile.write(_CRAB_TEMPLATE.substitute(fullCrabOptions))
     crabFile.close()
 
-    crabCreateCommand = "crab -create -cfg " + crabFilePath
-    print crabCreateCommand
-    subprocess.call(crabCreateCommand, shell = True)
+    if create:
+        crabCreateCommand = "crab -create -cfg " + crabFilePath
+        print crabCreateCommand
+        subprocess.call(crabCreateCommand, shell = True)
     if submit:
-        crabSubmitCommand = "crab -submit -c "+ ui_working_dir
+        crabSubmitCommand = "crab -submit -c " + ui_working_dir
         subprocess.call(crabSubmitCommand, shell = True)
-        crabStatusCommand = "crab -status -c "+ ui_working_dir
+        crabStatusCommand = "crab -status -c " + ui_working_dir
         subprocess.call(crabStatusCommand, shell = True)
 
