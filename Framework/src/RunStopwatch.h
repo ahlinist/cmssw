@@ -23,11 +23,15 @@ namespace edm {
     typedef boost::shared_ptr<CPUTimer> StopwatchPointer;
 
     RunStopwatch(const StopwatchPointer& ptr): stopwatch_(ptr) {
-      stopwatch_->start();
+      if(stopwatch_) {
+        stopwatch_->start();
+      }
     }
 
     ~RunStopwatch(){
-      stopwatch_->stop();
+      if(stopwatch_) {
+        stopwatch_->stop();
+      }
     }
 
   private:
@@ -35,5 +39,28 @@ namespace edm {
 
   };
 
+  class RunDualStopwatches {
+    
+  public:
+    typedef boost::shared_ptr<CPUTimer> StopwatchPointer;
+    
+    RunDualStopwatches(const StopwatchPointer& ptr1, CPUTimer* const ptr2): stopwatch1_(ptr1),stopwatch2_(ptr2) {
+      if(stopwatch1_ && 0 != stopwatch2_) {
+        stopwatch1_->start();
+      }
+    }
+    
+    ~RunDualStopwatches(){
+      if (stopwatch1_ && 0 != stopwatch2_) {
+        stopwatch2_->add(stopwatch1_->stop());
+      }
+    }
+    
+  private:
+    StopwatchPointer stopwatch1_;
+    CPUTimer* const stopwatch2_;
+    
+  };
+  
 }
 #endif
