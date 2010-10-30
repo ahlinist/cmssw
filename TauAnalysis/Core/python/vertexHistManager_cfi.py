@@ -8,5 +8,7 @@ vertexHistManager = cms.PSet(
 
   dqmDirectory_store = cms.string('VertexQuantities'),
 
+  vertexPtThresholds = cms.vdouble(0., 5., 10., 15., 20.),
+
   makeVertexXvsYhistogram = cms.bool(False)
 )

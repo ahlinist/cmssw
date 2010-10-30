@@ -2,8 +2,11 @@
 
 #include "FWCore/MessageLogger/interface/MessageLogger.h"
 #include "FWCore/ServiceRegistry/interface/Service.h"
-#include "DataFormats/VertexReco/interface/Vertex.h"
 
+#include "DataFormats/VertexReco/interface/Vertex.h"
+#include "DataFormats/VertexReco/interface/VertexFwd.h"
+
+#include "TauAnalysis/DQMTools/interface/generalAuxFunctions.h"
 #include "TauAnalysis/Core/interface/histManagerAuxFunctions.h"
 
 #include <TMath.h>
@@ -15,6 +18,8 @@ VertexHistManager::VertexHistManager(const edm::ParameterSet& cfg)
 
   vertexSrc_ = cfg.getParameter<edm::InputTag>("vertexSource");
   //std::cout << " vertexSrc = " << vertexSrc_ << std::endl;
+
+  vertexPtThresholds_ = cfg.getParameter<vdouble>("vertexPtThresholds");
 
   makeVertexXvsYhistogram_ = ( cfg.exists("makeVertexXvsYhistogram") ) ? 
     cfg.getParameter<bool>("makeVertexXvsYhistogram") : false;
@@ -41,30 +46,25 @@ void VertexHistManager::bookHistogramsImp()
   
   hVertexChi2Prob_ = book1D("VertexChi2Prob", "VertexChi2Prob", 102, -0.01, 1.01);
 
-  hNumVertices_ = book1D("NumVertices", "NumVertices", 10, -0.5, 9.5);
-  hNumVerticesPtGt5_ = book1D("NumVerticesPtGt5", "NumVerticesPtGt5", 10, -0.5, 9.5);
-  hNumVerticesPtGt10_ = book1D("NumVerticesPtGt10", "NumVerticesPtGt10", 10, -0.5, 9.5);
-  hNumVerticesPtGt15_ = book1D("NumVerticesPtGt15", "NumVerticesPtGt15", 10, -0.5, 9.5);
-  hNumVerticesPtGt20_ = book1D("NumVerticesPtGt20", "NumVerticesPtGt20", 10, -0.5, 9.5);
+  for ( vdouble::const_iterator vertexPtThreshold = vertexPtThresholds_.begin();
+	vertexPtThreshold != vertexPtThresholds_.end(); ++vertexPtThreshold ) {
+    std::ostringstream meName_ostringstream;
+    meName_ostringstream << "NumVerticesPtGt" << std::fixed << std::setprecision(1) << (*vertexPtThreshold);
+    int errorFlag = 0;
+    std::string meName_string = replace_string(meName_ostringstream.str(), ".", "_", 0, 1, errorFlag);
+    MonitorElement* me = book1D(meName_string.data(), meName_string.data(), 10, -0.5, 9.5);
+    hNumVertices_.push_back(me);
+  }
 }
 
-size_t getNumVerticesPtGtThreshold(const std::vector<double>& trackPtSums, double ptThreshold)
-{
-  size_t numVertices = 0;
-  for ( std::vector<double>::const_iterator trackPtSum = trackPtSums.begin();
-	trackPtSum != trackPtSums.end(); ++trackPtSum ) {
-    if ( (*trackPtSum) > ptThreshold ) ++numVertices;
-  }
-  
-  return numVertices;
-}
+
 
 void VertexHistManager::fillHistogramsImp(const edm::Event& evt, const edm::EventSetup& es, double evtWeight)
 
 {  
   //std::cout << "<VertexHistManager::fillHistogramsImp>:" << std::endl; 
 
-  edm::Handle<std::vector<reco::Vertex> > recoVertices;
+  edm::Handle<reco::VertexCollection> recoVertices;
   evt.getByLabel(vertexSrc_, recoVertices);
   if ( recoVertices->size() >= 1 ) {
     const reco::Vertex& thePrimaryEventVertex = (*recoVertices->begin());
@@ -82,25 +82,13 @@ void VertexHistManager::fillHistogramsImp(const edm::Event& evt, const edm::Even
     hVertexChi2Prob_->Fill(TMath::Prob(thePrimaryEventVertex.chi2(), TMath::Nint(thePrimaryEventVertex.ndof())), evtWeight);
   }
 
-  size_t numVertices = recoVertices->size();
-  std::vector<double> trackPtSums(numVertices);
-  for ( size_t iVertex = 0; iVertex < numVertices; ++iVertex ) {
-    const reco::Vertex& vertex = recoVertices->at(iVertex);
-
-    double trackPtSum = 0.;
-    for ( reco::Vertex::trackRef_iterator track = vertex.tracks_begin();
-	  track != vertex.tracks_end(); ++track ) {
-      trackPtSum += (*track)->pt();
-    }
-
-    trackPtSums[iVertex] = trackPtSum;
+  std::vector<double> trackPtSums = compTrackPtSums(*recoVertices);
+  assert(vertexPtThresholds_.size() == hNumVertices_.size());
+  size_t numVertexPtThresholds = vertexPtThresholds_.size();
+  for ( size_t iVertexPtThreshold = 0; iVertexPtThreshold < numVertexPtThresholds; ++iVertexPtThreshold ) {
+    size_t numVertices = getNumVerticesPtGtThreshold(trackPtSums, vertexPtThresholds_[iVertexPtThreshold]);
+    hNumVertices_[iVertexPtThreshold]->Fill(numVertices, evtWeight);
   }
-
-  hNumVertices_->Fill(numVertices, evtWeight);
-  hNumVerticesPtGt5_->Fill(getNumVerticesPtGtThreshold(trackPtSums, 5.0), evtWeight);
-  hNumVerticesPtGt10_->Fill(getNumVerticesPtGtThreshold(trackPtSums, 10.0), evtWeight);
-  hNumVerticesPtGt15_->Fill(getNumVerticesPtGtThreshold(trackPtSums, 15.0), evtWeight);
-  hNumVerticesPtGt20_->Fill(getNumVerticesPtGtThreshold(trackPtSums, 20.0), evtWeight);
 }
 
 #include "FWCore/Framework/interface/MakerMacros.h"

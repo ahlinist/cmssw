@@ -6,7 +6,6 @@
 #include "FWCore/Utilities/interface/InputTag.h"
 #include "FWCore/ParameterSet/interface/ParameterSet.h"
 #include "DQMServices/Core/interface/MonitorElement.h"
-#include "DataFormats/VertexReco/interface/Vertex.h"
 
 #include "TauAnalysis/Core/interface/HistManagerBase.h"
 
@@ -42,11 +41,10 @@ class VertexHistManager : public HistManagerBase
 
   MonitorElement* hVertexChi2Prob_;
 
-  MonitorElement* hNumVertices_;
-  MonitorElement* hNumVerticesPtGt5_;
-  MonitorElement* hNumVerticesPtGt10_;
-  MonitorElement* hNumVerticesPtGt15_;
-  MonitorElement* hNumVerticesPtGt20_;
+  typedef std::vector<MonitorElement*> vMonitorElement;
+  vMonitorElement hNumVertices_;
+  typedef std::vector<double> vdouble;
+  vdouble vertexPtThresholds_;
 };
 
 #endif  
