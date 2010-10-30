@@ -33,12 +33,17 @@ class MEtHistManager : public HistManagerBase
   edm::InputTag metSignificanceSrc_;
   edm::InputTag leg1Src_;
   edm::InputTag leg2Src_;
+  edm::InputTag vertexSrc_;
 
 //--- histograms
   MonitorElement* hMEtPt_;
   MonitorElement* hMEtPhi_;
   MonitorElement* hMEtPx_;
   MonitorElement* hMEtPy_;
+
+  std::vector<MonitorElement*> hMEtPtVsNumVertices_;
+  typedef std::vector<double> vdouble;
+  vdouble vertexPtThresholds_;
 
   MonitorElement* hMEtSignificance_;
 
