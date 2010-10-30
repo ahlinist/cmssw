@@ -237,7 +237,7 @@ def enableFactorization_makeZtoMuTauPlots_grid(
     # of the analysis, **before** applying factorization of muon track + ECAL
     # isolation efficiencies
     evtSelZtoMuTau_factorizedTight = [
-        process.genPhaseSpaceCut,
+        process.evtSelGenPhaseSpace,
         process.evtSelTrigger,
         process.evtSelDataQuality,
         process.evtSelPrimaryEventVertex,
@@ -794,7 +794,7 @@ def enableFactorization_makeZtoDiTauPlots_grid(
     # of the analysis, **before** applying factorization of
     # lead. track Pt, track isolation and ECAL isolation efficiencies
     evtSelZtoDiTau_factorizedTight = [
-        process.genPhaseSpaceCut,
+        process.evtSelGenPhaseSpace,
         #process.evtSelTrigger,
         process.evtSelDataQuality,
         process.evtSelPrimaryEventVertex,
@@ -1018,7 +1018,7 @@ def enableFactorization_makeAHtoMuTauPlots_grid(
     # of the analysis, **before** applying factorization of muon track + ECAL
     # isolation efficiencies
     evtSelAHtoMuTau_factorizedTight = [
-        process.genPhaseSpaceCut,
+        process.evtSelGenPhaseSpace,
         process.evtSelTrigger,
         process.evtSelDataQuality,
         process.evtSelPrimaryEventVertex,
