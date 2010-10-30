@@ -67,7 +67,8 @@ def buildMergeTree(files, output_filename, intermediate_dir, merge_per_job=3, ve
 
         # Make sure we have some files to merge
         if not new_layer:
-            print "WARNING: Output file %s has no input files!" % output_filename
+            if not len(leftover_files):
+                print "WARNING: Output file %s has no input files!" % output_filename
             done = True
             continue
         # Add this layer to our set of jobs
@@ -78,12 +79,11 @@ def buildMergeTree(files, output_filename, intermediate_dir, merge_per_job=3, ve
         if len(new_layer) == 1 and not len(leftover_files):
             done = True
 
-
-
     if verbose:
         for i, layer in enumerate(layers):
             for job, (output, inputs) in enumerate(layer):
                 print i, job, output, inputs
+                
     return layers
 
 def writeMakefileLocalCopy(castor_file, working_dir, makefile):
