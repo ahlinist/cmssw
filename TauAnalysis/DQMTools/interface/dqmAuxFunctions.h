@@ -19,6 +19,8 @@ enum { kKeep, kDrop };
 
 typedef std::pair<int, TPRegexp> outputCommandEntry;
 
+float* getBinning(const TAxis*);
+
 TH1* getHistogram(DQMStore&, const std::string&, bool&);
 std::vector<TH1*> getHistograms(DQMStore&, const std::vector<std::string>&, bool&);
 
