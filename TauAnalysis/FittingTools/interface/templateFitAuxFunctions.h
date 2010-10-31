@@ -28,7 +28,7 @@ double getSampledPull(double, double, double);
 void sampleHistogram_stat(const TH1*, TH1*, double = -1.);
 void sampleHistogram_sys(TH1*, const TH1*, double, double, double, int);
 
-TArrayD getBinning(const TAxis*, const TemplateFitAdapterBase::fitRangeEntryType* = 0);
+TArrayD getBinningInRange(const TAxis*, const TemplateFitAdapterBase::fitRangeEntryType* = 0);
 
 double getIntegral(const TH1*, const std::vector<TemplateFitAdapterBase::fitRangeEntryType>* = 0);
 
