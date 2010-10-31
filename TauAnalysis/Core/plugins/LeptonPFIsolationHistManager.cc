@@ -148,7 +148,8 @@ void LeptonPFIsolationHistManager<T>::pfIsoHistogramEntryType::fillHistograms(
 
 template<typename T>
 LeptonPFIsolationHistManager<T>::LeptonPFIsolationHistManager(const edm::ParameterSet& cfg)
-  : HistManagerBase(cfg)
+  : HistManagerBase(cfg),
+    genLeptonMatch_(0)
 {
   //std::cout << "<LeptonPFIsolationHistManager>:" << std::endl;
 
@@ -181,24 +182,30 @@ LeptonPFIsolationHistManager<T>::LeptonPFIsolationHistManager(const edm::Paramet
   std::string normalization_string = cfg.getParameter<std::string>("normalization");
   normMethod_ = getNormMethod(normalization_string, "leptons");
   
-  edm::ParameterSet cfgGenLeptonMatch = cfg.getParameter<edm::ParameterSet>("genLeptonMatch");
-  genLeptonMatch_ = new PATLeptonGenMatcher<T>(cfgGenLeptonMatch);
+  if ( cfg.exists("genLeptonMatch") ) {
+    edm::ParameterSet cfgGenLeptonMatch = cfg.getParameter<edm::ParameterSet>("genLeptonMatch");
+    genLeptonMatch_ = new PATLeptonGenMatcher<T>(cfgGenLeptonMatch);
+  }
 
-  pfIsoHistogramsPtThreshold0_5GeVmatched_   = new pfIsoHistogramEntryType(dRisoCone_);
   pfIsoHistogramsPtThreshold0_5GeVunmatched_ = new pfIsoHistogramEntryType(dRisoCone_);
-  pfIsoHistogramsPtThreshold1_0GeVmatched_   = new pfIsoHistogramEntryType(dRisoCone_);
   pfIsoHistogramsPtThreshold1_0GeVunmatched_ = new pfIsoHistogramEntryType(dRisoCone_);
-  pfIsoHistogramsPtThreshold1_5GeVmatched_   = new pfIsoHistogramEntryType(dRisoCone_);
   pfIsoHistogramsPtThreshold1_5GeVunmatched_ = new pfIsoHistogramEntryType(dRisoCone_);
-  pfIsoHistogramsPtThreshold2_0GeVmatched_   = new pfIsoHistogramEntryType(dRisoCone_);
   pfIsoHistogramsPtThreshold2_0GeVunmatched_ = new pfIsoHistogramEntryType(dRisoCone_);
-  pfIsoHistogramsPtThreshold2_5GeVmatched_   = new pfIsoHistogramEntryType(dRisoCone_);
   pfIsoHistogramsPtThreshold2_5GeVunmatched_ = new pfIsoHistogramEntryType(dRisoCone_);
-  pfIsoHistogramsPtThreshold3_0GeVmatched_   = new pfIsoHistogramEntryType(dRisoCone_);
   pfIsoHistogramsPtThreshold3_0GeVunmatched_ = new pfIsoHistogramEntryType(dRisoCone_);
 
-  pfIsoHistogramsPFChargedHadronPt1_0PFGammaPt1_5GeVmatched_   = new pfIsoHistogramEntryType(dRisoCone_);
   pfIsoHistogramsPFChargedHadronPt1_0PFGammaPt1_5GeVunmatched_ = new pfIsoHistogramEntryType(dRisoCone_);
+
+  if ( genLeptonMatch_ ) {
+    pfIsoHistogramsPtThreshold0_5GeVmatched_ = new pfIsoHistogramEntryType(dRisoCone_);
+    pfIsoHistogramsPtThreshold1_0GeVmatched_ = new pfIsoHistogramEntryType(dRisoCone_);
+    pfIsoHistogramsPtThreshold1_5GeVmatched_ = new pfIsoHistogramEntryType(dRisoCone_);
+    pfIsoHistogramsPtThreshold2_0GeVmatched_ = new pfIsoHistogramEntryType(dRisoCone_);
+    pfIsoHistogramsPtThreshold2_5GeVmatched_ = new pfIsoHistogramEntryType(dRisoCone_);
+    pfIsoHistogramsPtThreshold3_0GeVmatched_ = new pfIsoHistogramEntryType(dRisoCone_);
+
+    pfIsoHistogramsPFChargedHadronPt1_0PFGammaPt1_5GeVmatched_ = new pfIsoHistogramEntryType(dRisoCone_);
+  }
 }
 
 template<typename T>
@@ -208,42 +215,30 @@ LeptonPFIsolationHistManager<T>::~LeptonPFIsolationHistManager()
 	it != leptonWeightExtractors_.end(); ++it ) {
     delete (*it);
   }
-
-  delete pfIsoHistogramsPtThreshold0_5GeVmatched_;
-  delete pfIsoHistogramsPtThreshold0_5GeVunmatched_;
-  delete pfIsoHistogramsPtThreshold1_0GeVmatched_;
-  delete pfIsoHistogramsPtThreshold1_0GeVunmatched_;
-  delete pfIsoHistogramsPtThreshold1_5GeVmatched_;
-  delete pfIsoHistogramsPtThreshold1_5GeVunmatched_;
-  delete pfIsoHistogramsPtThreshold2_0GeVmatched_;
-  delete pfIsoHistogramsPtThreshold2_0GeVunmatched_;
-  delete pfIsoHistogramsPtThreshold2_5GeVmatched_;
-  delete pfIsoHistogramsPtThreshold2_5GeVunmatched_;
-  delete pfIsoHistogramsPtThreshold3_0GeVmatched_;
-  delete pfIsoHistogramsPtThreshold3_0GeVunmatched_;
-
-  delete pfIsoHistogramsPFChargedHadronPt1_0PFGammaPt1_5GeVmatched_;
-  delete pfIsoHistogramsPFChargedHadronPt1_0PFGammaPt1_5GeVunmatched_;
 }
 
 template<typename T>
 void LeptonPFIsolationHistManager<T>::bookHistogramsImp()
 {
-  pfIsoHistogramsPtThreshold0_5GeVmatched_->bookHistograms(*dqmStore_, dqmDirectory_store_, 0.5, "matched");
   pfIsoHistogramsPtThreshold0_5GeVunmatched_->bookHistograms(*dqmStore_, dqmDirectory_store_, 0.5, "unmatched");
-  pfIsoHistogramsPtThreshold1_0GeVmatched_->bookHistograms(*dqmStore_, dqmDirectory_store_, 1.0, "matched");
   pfIsoHistogramsPtThreshold1_0GeVunmatched_->bookHistograms(*dqmStore_, dqmDirectory_store_, 1.0, "unmatched");
-  pfIsoHistogramsPtThreshold1_5GeVmatched_->bookHistograms(*dqmStore_, dqmDirectory_store_, 1.5, "matched");
   pfIsoHistogramsPtThreshold1_5GeVunmatched_->bookHistograms(*dqmStore_, dqmDirectory_store_, 1.5, "unmatched");
-  pfIsoHistogramsPtThreshold2_0GeVmatched_->bookHistograms(*dqmStore_, dqmDirectory_store_, 2.0, "matched");
   pfIsoHistogramsPtThreshold2_0GeVunmatched_->bookHistograms(*dqmStore_, dqmDirectory_store_, 2.0, "unmatched");
-  pfIsoHistogramsPtThreshold2_5GeVmatched_->bookHistograms(*dqmStore_, dqmDirectory_store_, 2.5, "matched");
   pfIsoHistogramsPtThreshold2_5GeVunmatched_->bookHistograms(*dqmStore_, dqmDirectory_store_, 2.5, "unmatched");
-  pfIsoHistogramsPtThreshold3_0GeVmatched_->bookHistograms(*dqmStore_, dqmDirectory_store_, 3.0, "matched");
   pfIsoHistogramsPtThreshold3_0GeVunmatched_->bookHistograms(*dqmStore_, dqmDirectory_store_, 3.0, "unmatched");
 
-  pfIsoHistogramsPFChargedHadronPt1_0PFGammaPt1_5GeVmatched_->bookHistograms(*dqmStore_, dqmDirectory_store_, 1.00, 1.50, "matched");
   pfIsoHistogramsPFChargedHadronPt1_0PFGammaPt1_5GeVunmatched_->bookHistograms(*dqmStore_, dqmDirectory_store_, 1.00, 1.50, "unmatched");
+
+  if ( genLeptonMatch_ ) {
+    pfIsoHistogramsPtThreshold0_5GeVmatched_->bookHistograms(*dqmStore_, dqmDirectory_store_, 0.5, "matched");
+    pfIsoHistogramsPtThreshold1_0GeVmatched_->bookHistograms(*dqmStore_, dqmDirectory_store_, 1.0, "matched");
+    pfIsoHistogramsPtThreshold1_5GeVmatched_->bookHistograms(*dqmStore_, dqmDirectory_store_, 1.5, "matched");
+    pfIsoHistogramsPtThreshold2_0GeVmatched_->bookHistograms(*dqmStore_, dqmDirectory_store_, 2.0, "matched");
+    pfIsoHistogramsPtThreshold2_5GeVmatched_->bookHistograms(*dqmStore_, dqmDirectory_store_, 2.5, "matched");
+    pfIsoHistogramsPtThreshold3_0GeVmatched_->bookHistograms(*dqmStore_, dqmDirectory_store_, 3.0, "matched");
+    
+    pfIsoHistogramsPFChargedHadronPt1_0PFGammaPt1_5GeVmatched_->bookHistograms(*dqmStore_, dqmDirectory_store_, 1.00, 1.50, "matched");
+  }
 
   bookWeightHistograms(*dqmStore_, "LeptonWeight", "Lepton Weight", 
 		       hLeptonWeightPosLog_, hLeptonWeightNegLog_, hLeptonWeightZero_,
@@ -313,7 +308,7 @@ void LeptonPFIsolationHistManager<T>::fillHistogramsImp(const edm::Event& evt, c
 
     if ( leptonP4.pt()  > leptonPtMin_  && leptonP4.pt()  < leptonPtMax_ &&
 	 leptonP4.eta() > leptonEtaMin_ && leptonP4.eta() < leptonEtaMax_ ) {
-      bool isGenMatched = (*genLeptonMatch_)(evt, *lepton);
+      bool isGenMatched = ( genLeptonMatch_ != 0 ) ? (*genLeptonMatch_)(evt, *lepton) : false;
       //std::cout << " isGenMatched = " << isGenMatched << std::endl;
 
       std::vector<const reco::PFCandidate*> pfCandidates0_5GeV = filterPFCandidates(*pfCandidates, 0.5);
