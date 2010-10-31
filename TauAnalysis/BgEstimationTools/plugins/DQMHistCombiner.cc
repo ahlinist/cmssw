@@ -65,21 +65,6 @@ void DQMHistCombiner::analyze(const edm::Event&, const edm::EventSetup&)
 //--- nothing to be done yet
 }
 
-float* getBinning(const TAxis* axis)
-{
-  unsigned numBins = axis->GetNbins();
-
-  float* binEdges_float = new float[numBins + 1];
-
-  for ( unsigned iBin = 0; iBin < numBins; ++iBin ) {
-    binEdges_float[iBin] = axis->GetBinLowEdge(iBin + 1);
-  }
-
-  binEdges_float[numBins] = axis->GetBinUpEdge(numBins);
-
-  return binEdges_float;
-}
-
 void getBinContentErr2(DQMStore& dqmStore, const std::string& meName_shape, unsigned iBinX, unsigned iBinY,
 		       double& binContent, double& binError2)
 {
