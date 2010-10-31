@@ -30,6 +30,12 @@ userSettings = {
             'tmpFilePath' : "/tmp/veelken/",
             'jobId' : "7TeV"
          },
+         'ZtoMuTau_tauIdEff' : {
+            'analysisFilePath' : "/user/v/veelken/CMSSW_3_8_x/plots/ZtoMuTau_tauIdEff/",
+            'harvestingFilePath' : "/data1/veelken/CMSSW_3_8_x/plots/ZtoMuTau_tauIdEff/",
+            'tmpFilePath' : "/tmp/veelken/",
+            'jobId' : "2010Nov01"
+         },
          'ZtoDiTau' : {
             'analysisFilePath' : "/user/v/veelken/CMSSW_3_8_x/plots/ZtoDiTau/",
             'harvestingFilePath' : "/data1/veelken/CMSSW_3_8_x/plots/ZtoDiTau/",
