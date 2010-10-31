@@ -18,8 +18,9 @@ from TauAnalysis.Configuration.tools.factorizationTools import replaceEventSelec
 analyzeZtoMuTauEvents_factorizedWithMuonIsolation = analyzeZtoMuTauEvents.clone(
     name = cms.string('zMuTauAnalyzer_factorizedWithMuonIsolation'),
     analysisSequence = muTauAnalysisSequence_factorizedWithMuonIsolation
-)    
-analyzeZtoMuTauEvents_factorizedWithMuonIsolation.eventDumps[0] = muTauEventDump_factorizedWithMuonIsolation
+)
+if len(analyzeZtoMuTauEvents_factorizedWithMuonIsolation.eventDumps) > 0:
+    analyzeZtoMuTauEvents_factorizedWithMuonIsolation.eventDumps[0] = muTauEventDump_factorizedWithMuonIsolation
 
 #--------------------------------------------------------------------------------
 # define Z --> mu + tau-jet analysis module
@@ -36,7 +37,8 @@ analyzeZtoMuTauEvents_factorizedWithMuonIsolation.eventDumps[0] = muTauEventDump
 analyzeZtoMuTauEvents_factorizedWithoutMuonIsolation = analyzeZtoMuTauEvents.clone(
     name = cms.string('zMuTauAnalyzer_factorizedWithoutMuonIsolation')
 )
-analyzeZtoMuTauEvents_factorizedWithoutMuonIsolation.eventDumps[0] = muTauEventDump_factorizedWithoutMuonIsolation
+if len(analyzeZtoMuTauEvents_factorizedWithoutMuonIsolation.eventDumps) > 0:
+    analyzeZtoMuTauEvents_factorizedWithoutMuonIsolation.eventDumps[0] = muTauEventDump_factorizedWithoutMuonIsolation
 replaceEventSelections(analyzeZtoMuTauEvents_factorizedWithoutMuonIsolation, 
     [ [ evtSelMuonPFRelIso, evtSelMuonPFRelIsoLooseIsolation ],
       [ evtSelMuonAntiPion, evtSelMuonAntiPionLooseIsolation ],
