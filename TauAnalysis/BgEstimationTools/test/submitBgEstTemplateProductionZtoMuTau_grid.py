@@ -6,11 +6,14 @@ from TauAnalysis.Configuration.userRegistry import getAnalysisFilePath, getJobId
 
 channel = 'ZtoMuTau_bgEstTemplate'
 configFile = 'runBgEstTemplateProductionZtoMuTau_cfg.py'
-outputFilePath = getOutputFilePath(channel)
+outputFilePath = getAnalysisFilePath(channel)
 jobId = getJobId(channel)
 
 samplesToAnalyze = [
     # modify in case you want to submit crab jobs for some of the samples only...
+    'InclusivePPmuX', 
+    'PPmuXptGt20Mu10', 
+    'PPmuXptGt20Mu15'
 ]
 
 # Submit analysis jobs to the grid;
@@ -18,6 +21,7 @@ samplesToAnalyze = [
 submitAnalysisToGrid(configFile = configFile, channel = channel,
                      samples = recoSampleDefinitionsZtoMuTau_7TeV, outputFilePath = outputFilePath, jobId = jobId,
                      samplesToAnalyze = samplesToAnalyze, samplesToSkip = ['Ztautau'], disableSysUncertainties = True)
-submitAnalysisToGrid(configFile = configFile, channel = channel,
-                     samples = recoSampleDefinitionsZtoMuTau_7TeV, outputFilePath = outputFilePath, jobId = jobId,
-                     samplesToAnalyze = ['Ztautau'], samplesToSkip = None, disableSysUncertainties = False)
+if samplesToAnalyze.count('Ztautau') > 0 or len(samplesToAnalyze) == 0:
+    submitAnalysisToGrid(configFile = configFile, channel = channel,
+                         samples = recoSampleDefinitionsZtoMuTau_7TeV, outputFilePath = outputFilePath, jobId = jobId,
+                         samplesToAnalyze = ['Ztautau'], samplesToSkip = None, disableSysUncertainties = False)
