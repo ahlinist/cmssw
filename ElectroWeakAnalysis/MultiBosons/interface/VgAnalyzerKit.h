@@ -260,6 +260,7 @@ protected:
   int    muType_[maxP];
   bool   muID_[maxP][6];
   float  muD0_[maxP];
+  float  muDz_[maxP];
   int    muNumberOfValidTrkHits_[maxP];
   int    muNumberOfValidPixelHits_[maxP];
   int    muNumberOfValidMuonHits_[maxP];
