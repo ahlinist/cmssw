@@ -154,11 +154,9 @@ def switchToData(process):
 		removeAnalyzer(process.analyzeZtoDiTauEvents.analysisSequence, "genPhaseSpaceEventInfoHistManager")
 
 		# Remove genParticles/genTauJets
-		process.analyzeZtoDiTauEvents.eventDumps[0].doGenInfo = cms.bool(False)
-		process.analyzeZtoDiTauEvents.eventDumps[0].genParticleSource = cms.InputTag('')
-		#process.analyzeZtoDiTauEvents.eventDumps[0].genJetSource = cms.InputTag('')
-		#process.analyzeZtoDiTauEvents.eventDumps[0].genTauJetSource = cms.InputTag('')
-		#process.analyzeZtoDiTauEvents.eventDumps[0].genEventInfoSource = cms.InputTag('')
+		for eventDump in process.analyzeZtoDiTauEvents.eventDumps:
+			eventDump.doGenInfo = cms.bool(False)
+			eventDump.genParticleSource = cms.InputTag('')
 		process.tauHistManager1.genParticleSource = cms.InputTag('')
 		process.tauHistManager2.genParticleSource = cms.InputTag('')
 		process.jetHistManager.genParticleSource = cms.InputTag('')
@@ -195,8 +193,10 @@ def switchToData(process):
 							histManager.genParticleSource = cms.InputTag('')
 
 			removeAnalyzer(module.analysisSequence, "genPhaseSpaceEventInfoHistManager")
-			module.eventDumps[0].doGenInfo = cms.bool(False)
-			module.eventDumps[0].genParticleSource = cms.InputTag('')
+			
+			for eventDump in module.eventDumps:
+				eventDump.doGenInfo = cms.bool(False)
+				eventDump.genParticleSource = cms.InputTag('')
 
 			if process.modelBinnerForMuTauGenTauLeptonPairAcc in module.analyzers:
 				module.analyzers.remove(process.modelBinnerForMuTauGenTauLeptonPairAcc)
