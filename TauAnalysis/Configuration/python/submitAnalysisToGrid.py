@@ -38,7 +38,7 @@ def _number_of_jobs(sample_info, preferred=10000, max_jobs=300):
     return int(output)
 
 def submitAnalysisToGrid(configFile = None, channel = None, samples = None, outputFilePath = None, jobId = None,
-                         samplesToAnalyze = None, samplesToSkip = None, disableSysUncertainties = False):
+                         samplesToAnalyze = None, samplesToSkip = None, disableFactorization = False, disableSysUncertainties = False):
     """
     Submit analysis job (event selection, filling of histogram)
     via crab
@@ -92,12 +92,13 @@ def submitAnalysisToGrid(configFile = None, channel = None, samples = None, outp
         # Update our HLT selection
         jobOptions.append(('hlt_paths', sample_info['hlt_paths']))
 
-        # Enable factorization if necessary
-        jobOptions.append(('enableFactorization', sample_info['factorize']))
-
         # Get the appropriate GlobalTag
         jobOptions.append(('globalTag', _get_conditions(sample_info['conditions'])))
 
+        # Enable factorization if necessary
+        if not disableFactorization:
+            jobOptions.append(('enableFactorization', sample_info['factorize']))
+            
         # This must be done after the factorization step ?
         jobOptions.append(('enableSysUncertainties', sample_info['enableSysUncertainties'] and not disableSysUncertainties))
     
@@ -115,7 +116,7 @@ def submitAnalysisToGrid(configFile = None, channel = None, samples = None, outp
             'lumi_mask' : sample_info['lumi_mask'],
             'runselection' : sample_info['runselection'],
         }
-
+        
         submitToGrid(configFile, jobInfo, jobOptions, crabOptions, create=True, submit=True)
         ##submitToGrid(configFile, jobInfo, jobOptions, crabOptions, create=False, submit=False) # CV: only for testing
 
