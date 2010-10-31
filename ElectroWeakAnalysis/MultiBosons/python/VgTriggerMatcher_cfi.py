@@ -320,15 +320,15 @@ photonTriggerMatchHLTPhoton30CleanedL1R   = cms.EDProducer( "PATTriggerMatcherDR
                                                            resolveByMatchQuality = cms.bool( True )
                                                            )
 
-# matches to HLT_Photon50_Cleaned_L1R
-photonTriggerMatchHLTPhoton50CleanedL1R   = cms.EDProducer( "PATTriggerMatcherDRDPtLessByR",
+# matches to HLT_Photon50_Cleaned_L1R_v1
+photonTriggerMatchHLTPhoton50CleanedL1Rv1   = cms.EDProducer( "PATTriggerMatcherDRDPtLessByR",
                                                            src     = cms.InputTag( "cleanPatPhotons" ),
                                                            matched = cms.InputTag( "patTrigger" ),
                                                            andOr          = cms.bool( False ),
                                                            filterIdsEnum  = cms.vstring( '*' ),
                                                            filterIds      = cms.vint32( 0 ),
                                                            filterLabels   = cms.vstring( '*' ),
-                                                           pathNames      = cms.vstring( 'HLT_Photon50_Cleaned_L1R' ),
+                                                           pathNames      = cms.vstring( 'HLT_Photon50_Cleaned_L1R_v1' ),
                                                            collectionTags = cms.vstring( '*' ),
                                                            maxDPtRel = cms.double( 0.5 ),
                                                            maxDeltaR = cms.double( 0.3 ),
@@ -336,15 +336,15 @@ photonTriggerMatchHLTPhoton50CleanedL1R   = cms.EDProducer( "PATTriggerMatcherDR
                                                            resolveByMatchQuality = cms.bool( True )
                                                            )
 
-# matches to HLT_Photon70_Cleaned_L1R
-photonTriggerMatchHLTPhoton70CleanedL1R   = cms.EDProducer( "PATTriggerMatcherDRDPtLessByR",
+# matches to HLT_Photon70_Cleaned_L1R_v1
+photonTriggerMatchHLTPhoton70CleanedL1Rv1   = cms.EDProducer( "PATTriggerMatcherDRDPtLessByR",
                                                            src     = cms.InputTag( "cleanPatPhotons" ),
                                                            matched = cms.InputTag( "patTrigger" ),
                                                            andOr          = cms.bool( False ),
                                                            filterIdsEnum  = cms.vstring( '*' ),
                                                            filterIds      = cms.vint32( 0 ),
                                                            filterLabels   = cms.vstring( '*' ),
-                                                           pathNames      = cms.vstring( 'HLT_Photon70_Cleaned_L1R' ),
+                                                           pathNames      = cms.vstring( 'HLT_Photon70_Cleaned_L1R_v1' ),
                                                            collectionTags = cms.vstring( '*' ),
                                                            maxDPtRel = cms.double( 0.5 ),
                                                            maxDeltaR = cms.double( 0.3 ),
@@ -480,6 +480,102 @@ jetTriggerMatchHLTJet140Uv1   = cms.EDProducer( "PATTriggerMatcherDRDPtLessByR",
                                                            resolveByMatchQuality = cms.bool( True )
                                                            )
 
+# matches to HLT_Jet15U_v3
+jetTriggerMatchHLTJet15Uv3   = cms.EDProducer( "PATTriggerMatcherDRDPtLessByR",
+                                                           src     = cms.InputTag( "cleanPatJets" ),
+                                                           matched = cms.InputTag( "patTrigger" ),
+                                                           andOr          = cms.bool( False ),
+                                                           filterIdsEnum  = cms.vstring( '*' ),
+                                                           filterIds      = cms.vint32( 0 ),
+                                                           filterLabels   = cms.vstring( '*' ),
+                                                           pathNames      = cms.vstring( 'HLT_Jet15U_v3' ),
+                                                           collectionTags = cms.vstring( '*' ),
+                                                           maxDPtRel = cms.double( 0.5 ),
+                                                           maxDeltaR = cms.double( 0.3 ),
+                                                           resolveAmbiguities    = cms.bool( True ),
+                                                           resolveByMatchQuality = cms.bool( True )
+                                                           )
+
+# matches to HLT_Jet30U_v3
+jetTriggerMatchHLTJet30Uv3   = cms.EDProducer( "PATTriggerMatcherDRDPtLessByR",
+                                                           src     = cms.InputTag( "cleanPatJets" ),
+                                                           matched = cms.InputTag( "patTrigger" ),
+                                                           andOr          = cms.bool( False ),
+                                                           filterIdsEnum  = cms.vstring( '*' ),
+                                                           filterIds      = cms.vint32( 0 ),
+                                                           filterLabels   = cms.vstring( '*' ),
+                                                           pathNames      = cms.vstring( 'HLT_Jet30U_v3' ),
+                                                           collectionTags = cms.vstring( '*' ),
+                                                           maxDPtRel = cms.double( 0.5 ),
+                                                           maxDeltaR = cms.double( 0.3 ),
+                                                           resolveAmbiguities    = cms.bool( True ),
+                                                           resolveByMatchQuality = cms.bool( True )
+                                                           )
+
+# matches to HLT_Jet50U_v3
+jetTriggerMatchHLTJet50Uv3   = cms.EDProducer( "PATTriggerMatcherDRDPtLessByR",
+                                                           src     = cms.InputTag( "cleanPatJets" ),
+                                                           matched = cms.InputTag( "patTrigger" ),
+                                                           andOr          = cms.bool( False ),
+                                                           filterIdsEnum  = cms.vstring( '*' ),
+                                                           filterIds      = cms.vint32( 0 ),
+                                                           filterLabels   = cms.vstring( '*' ),
+                                                           pathNames      = cms.vstring( 'HLT_Jet50U_v3' ),
+                                                           collectionTags = cms.vstring( '*' ),
+                                                           maxDPtRel = cms.double( 0.5 ),
+                                                           maxDeltaR = cms.double( 0.3 ),
+                                                           resolveAmbiguities    = cms.bool( True ),
+                                                           resolveByMatchQuality = cms.bool( True )
+                                                           )
+
+# matches to HLT_Jet70U_v3
+jetTriggerMatchHLTJet70Uv3   = cms.EDProducer( "PATTriggerMatcherDRDPtLessByR",
+                                                           src     = cms.InputTag( "cleanPatJets" ),
+                                                           matched = cms.InputTag( "patTrigger" ),
+                                                           andOr          = cms.bool( False ),
+                                                           filterIdsEnum  = cms.vstring( '*' ),
+                                                           filterIds      = cms.vint32( 0 ),
+                                                           filterLabels   = cms.vstring( '*' ),
+                                                           pathNames      = cms.vstring( 'HLT_Jet70U_v3' ),
+                                                           collectionTags = cms.vstring( '*' ),
+                                                           maxDPtRel = cms.double( 0.5 ),
+                                                           maxDeltaR = cms.double( 0.3 ),
+                                                           resolveAmbiguities    = cms.bool( True ),
+                                                           resolveByMatchQuality = cms.bool( True )
+                                                           )
+
+# matches to HLT_Jet100U_v3
+jetTriggerMatchHLTJet100Uv3   = cms.EDProducer( "PATTriggerMatcherDRDPtLessByR",
+                                                           src     = cms.InputTag( "cleanPatJets" ),
+                                                           matched = cms.InputTag( "patTrigger" ),
+                                                           andOr          = cms.bool( False ),
+                                                           filterIdsEnum  = cms.vstring( '*' ),
+                                                           filterIds      = cms.vint32( 0 ),
+                                                           filterLabels   = cms.vstring( '*' ),
+                                                           pathNames      = cms.vstring( 'HLT_Jet100U_v3' ),
+                                                           collectionTags = cms.vstring( '*' ),
+                                                           maxDPtRel = cms.double( 0.5 ),
+                                                           maxDeltaR = cms.double( 0.3 ),
+                                                           resolveAmbiguities    = cms.bool( True ),
+                                                           resolveByMatchQuality = cms.bool( True )
+                                                           )
+
+# matches to HLT_Jet140U_v3
+jetTriggerMatchHLTJet140Uv3   = cms.EDProducer( "PATTriggerMatcherDRDPtLessByR",
+                                                           src     = cms.InputTag( "cleanPatJets" ),
+                                                           matched = cms.InputTag( "patTrigger" ),
+                                                           andOr          = cms.bool( False ),
+                                                           filterIdsEnum  = cms.vstring( '*' ),
+                                                           filterIds      = cms.vint32( 0 ),
+                                                           filterLabels   = cms.vstring( '*' ),
+                                                           pathNames      = cms.vstring( 'HLT_Jet140U_v3' ),
+                                                           collectionTags = cms.vstring( '*' ),
+                                                           maxDPtRel = cms.double( 0.5 ),
+                                                           maxDeltaR = cms.double( 0.3 ),
+                                                           resolveAmbiguities    = cms.bool( True ),
+                                                           resolveByMatchQuality = cms.bool( True )
+                                                           )
+
 vgTriggerMatcherElectron = cms.Sequence(
         electronTriggerMatchHLTEle15LWL1R +
         electronTriggerMatchHLTEle15SWL1R +
@@ -498,8 +594,8 @@ vgTriggerMatcherPhoton = cms.Sequence(
 	photonTriggerMatchHLTPhoton15CleanedL1R +
 	photonTriggerMatchHLTPhoton20CleanedL1R +
 	photonTriggerMatchHLTPhoton30CleanedL1R +
-	photonTriggerMatchHLTPhoton50CleanedL1R +
-	photonTriggerMatchHLTPhoton70CleanedL1R
+	photonTriggerMatchHLTPhoton50CleanedL1Rv1 +
+	photonTriggerMatchHLTPhoton70CleanedL1Rv1
 	)
 
 vgTriggerMatcherMuon = cms.Sequence(
@@ -519,7 +615,13 @@ vgTriggerMatcherJet = cms.Sequence(
 	jetTriggerMatchHLTJet70Uv2 +
 	jetTriggerMatchHLTJet100U +
 	jetTriggerMatchHLTJet100Uv2 +
-	jetTriggerMatchHLTJet140Uv1
+	jetTriggerMatchHLTJet140Uv1 +
+	jetTriggerMatchHLTJet15Uv3 +
+	jetTriggerMatchHLTJet30Uv3 +
+	jetTriggerMatchHLTJet50Uv3 +
+	jetTriggerMatchHLTJet70Uv3 +
+	jetTriggerMatchHLTJet100Uv3 +
+	jetTriggerMatchHLTJet140Uv3
 	)
 
 vgTriggerMatcher = cms.Sequence(
