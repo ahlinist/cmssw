@@ -122,7 +122,7 @@ void sampleHistogram_sys(TH1* fluctHistogram, const TH1* sysHistogram,
 //-----------------------------------------------------------------------------------------------------------------------
 //
 
-TArrayD getBinning(const TAxis* axis, const TemplateFitAdapterBase::fitRangeEntryType* fitRange)
+TArrayD getBinningInRange(const TAxis* axis, const TemplateFitAdapterBase::fitRangeEntryType* fitRange)
 {
   double fitRangeMin = ( fitRange ) ? fitRange->min_ : axis->GetXmin() - 0.5;
   double fitRangeMax = ( fitRange ) ? fitRange->max_ : axis->GetXmax() + 0.5;
@@ -289,7 +289,7 @@ TH1* makeSubrangeHistogram(const TH1* histogram, const fitRangeEntryCollection* 
   TH1* subrangeHistogram = 0;
 
   if ( histogram->GetDimension() == 1 ) {
-    TArrayD binEdges = getBinning(histogram->GetXaxis(), &fitRanges->at(0));
+    TArrayD binEdges = getBinningInRange(histogram->GetXaxis(), &fitRanges->at(0));
     
     subrangeHistogram = new TH1F(subrangeHistogramName.data(), subrangeHistogramName.data(), 
 				 binEdges.GetSize() - 1, binEdges.GetArray());
@@ -315,8 +315,8 @@ TH1* makeSubrangeHistogram(const TH1* histogram, const fitRangeEntryCollection* 
       }
     }
   } else if ( histogram->GetDimension() == 2 ) {
-    TArrayD binEdgesX = getBinning(histogram->GetXaxis(), &fitRanges->at(0));
-    TArrayD binEdgesY = getBinning(histogram->GetYaxis(), &fitRanges->at(1));
+    TArrayD binEdgesX = getBinningInRange(histogram->GetXaxis(), &fitRanges->at(0));
+    TArrayD binEdgesY = getBinningInRange(histogram->GetYaxis(), &fitRanges->at(1));
     
     subrangeHistogram = new TH2F(subrangeHistogramName.data(), subrangeHistogramName.data(), 
 				 binEdgesX.GetSize() - 1, binEdgesX.GetArray(),
@@ -356,9 +356,9 @@ TH1* makeSubrangeHistogram(const TH1* histogram, const fitRangeEntryCollection* 
       }
     }
   } else if ( histogram->GetDimension() == 3 ) {
-    TArrayD binEdgesX = getBinning(histogram->GetXaxis(), &fitRanges->at(0));
-    TArrayD binEdgesY = getBinning(histogram->GetYaxis(), &fitRanges->at(1));
-    TArrayD binEdgesZ = getBinning(histogram->GetZaxis(), &fitRanges->at(2));
+    TArrayD binEdgesX = getBinningInRange(histogram->GetXaxis(), &fitRanges->at(0));
+    TArrayD binEdgesY = getBinningInRange(histogram->GetYaxis(), &fitRanges->at(1));
+    TArrayD binEdgesZ = getBinningInRange(histogram->GetZaxis(), &fitRanges->at(2));
     
     subrangeHistogram = new TH3F(subrangeHistogramName.data(), subrangeHistogramName.data(), 
 				 binEdgesX.GetSize() - 1, binEdgesX.GetArray(),
