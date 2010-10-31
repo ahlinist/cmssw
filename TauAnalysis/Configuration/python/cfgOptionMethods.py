@@ -61,10 +61,12 @@ def _setPlotsOutputFileName(process, filename, **kwargs):
 
     Plots will be suffixed with _channel_sample_id.root
     '''
-    module_name = "save%sPlots" % kwargs['channel']
-    filename += "_%s_%s_%s.root" % (
-        kwargs['channel'], kwargs['sample'], kwargs['id'])
-    getattr(process, module_name).outputFileName = filename
+    moduleName = "save%s" % kwargs['channel']
+    if moduleName.find('_') != -1:
+        moduleName = moduleName[:moduleName.find('_')]
+    moduleName += "Plots"
+    filename += "_%s_%s_%s.root" % (kwargs['channel'], kwargs['sample'], kwargs['id'])
+    getattr(process, moduleName).outputFileName = filename
 
 @_requires(inputs=[True, False])
 def _setEventDump(process, enable, **kwargs):
@@ -78,9 +80,12 @@ def _setEventDump(process, enable, **kwargs):
 def _setEnableFactorization(process, enable, **kwargs):
     channel = kwargs['channel']
     if enable:
-        print "Enabling factorization for %s" % channel
-        enabler = getattr(factorizationTools, "enableFactorization_run%s" % channel)
-        enabler(process)
+        channelAbbr = channel
+        if channelAbbr.find('_') != -1:
+            channelAbbr = channelAbbr[:channelAbbr.find('_')]
+        enableFactorizationFunction = getattr(factorizationTools, "enableFactorization_run%s" % channelAbbr)
+        print "Enabling factorization for %s" % channelAbbr
+        enableFactorizationFunction(process)
 
 @_requires(args=['channel'])
 def _setEnableSystematics(process, enable, **kwargs):
@@ -96,9 +101,12 @@ def _setEnableSystematics(process, enable, **kwargs):
 def _setInputFileType(process, filetype, **kwargs):
     # when running over RECO samples, produce PAT-tuple
     if filetype == 'RECO/AOD':
-        patTupleProducerSpecific = getattr(
-            process, "producePatTuple%sSpecific" % kwargs['channel'])
-        process.p.replace(patTupleProducerSpecific, process.producePatTupleAll)
+        patTupleProductionSequenceName = "producePatTuple%s" % kwargs['channel']
+        if patTupleProductionSequenceName.find('_') != -1:
+            patTupleProductionSequenceName = patTupleProductionSequenceName[:patTupleProductionSequenceName.find('_')]
+        patTupleProductionSequenceName += "Specific"
+        patTupleProductionSequence = getattr(process, patTupleProductionSequenceName)
+        process.p.replace(patTupleProductionSequence, process.producePatTupleAll)
 
 @_requires(inputs=['Data', 'smMC', 'smSumMC', 'bsmMC',])
 def _setIsData(process, type, **kwargs):
