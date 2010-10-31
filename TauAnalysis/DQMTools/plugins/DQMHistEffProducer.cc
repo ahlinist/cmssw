@@ -181,21 +181,6 @@ TH1* computeHistogramProd(const std::vector<TH1*>& histograms, bool& isOwned)
   }
 }
 
-float* getBinning(const TAxis* axis)
-{
-  unsigned numBins = axis->GetNbins();
-
-  float* binEdges_float = new float[numBins + 1];
-
-  for ( unsigned iBin = 0; iBin < numBins; ++iBin ) {
-    binEdges_float[iBin] = axis->GetBinLowEdge(iBin + 1);
-  }
-
-  binEdges_float[numBins] = axis->GetBinUpEdge(numBins);
-
-  return binEdges_float;
-}
-
 void DQMHistEffProducer::endJob()
 {
   //std::cout << "<DQMHistEffProducer::endJob>:" << std::endl;
