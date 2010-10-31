@@ -19,7 +19,8 @@ analyzeZtoDiTauEvents_factorizedTight2ndTau = analyzeZtoDiTauEvents.clone(
     name = cms.string('zDiTauAnalyzer_factorizedTight2ndTau'),
     analysisSequence = diTauAnalysisSequence_factorizedTight2ndTau
 )
-analyzeZtoDiTauEvents_factorizedTight2ndTau.eventDumps[0] = diTauEventDump_factorizedTight2ndTau
+if len(analyzeZtoDiTauEvents_factorizedTight2ndTau.eventDumps) > 0:
+    analyzeZtoDiTauEvents_factorizedTight2ndTau.eventDumps[0] = diTauEventDump_factorizedTight2ndTau
 
 #--------------------------------------------------------------------------------
 # define Z --> tau-jet + tau-jet analysis module
@@ -62,7 +63,8 @@ diTauCandidateSVfitHistManagerForDiTau_factorizedLoose2ndTau = diTauCandidateSVf
 analyzeZtoDiTauEvents_factorizedLoose2ndTau = analyzeZtoDiTauEvents.clone(
     name = cms.string('zDiTauAnalyzer_factorizedLoose2ndTau')
 )
-analyzeZtoDiTauEvents_factorizedLoose2ndTau.eventDumps[0] = diTauEventDump_factorizedLoose2ndTau
+if len(analyzeZtoDiTauEvents_factorizedLoose2ndTau.eventDumps) > 0:
+    analyzeZtoDiTauEvents_factorizedLoose2ndTau.eventDumps[0] = diTauEventDump_factorizedLoose2ndTau
 replaceEventSelections(analyzeZtoDiTauEvents_factorizedLoose2ndTau, 
     [ [ evtSelSecondTauLeadTrkPt, evtSelSecondTauLeadTrkPtLoose ],
       [ evtSelSecondTauTaNCdiscr, evtSelSecondTauTaNCdiscrLoose ],
