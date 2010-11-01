@@ -56,19 +56,15 @@ process.goldenZmumuSkimPath = cms.Path(
    + process.goldenZmumuSelectionSequence
 )
 
-goldenZmumuEventSelection = cms.untracked.PSet(
-    SelectEvents = cms.untracked.PSet(
-        SelectEvents = cms.vstring('goldenZmumuSkimPath')
-    )
-)
-
 #--------------------------------------------------------------------------------
 # save events passing "golden" VTBF Z --> mu+ mu- selection
 #--------------------------------------------------------------------------------
 
 process.goldenZmumuSkimOutputModule = cms.OutputModule("PoolOutputModule",                                 
     goldenZmumuEventContent,
-    goldenZmumuEventSelection,
+    SelectEvents = cms.untracked.PSet(
+        SelectEvents = cms.vstring('goldenZmumuSkimPath')
+    ),
     fileName = cms.untracked.string('goldenZmumuEvents_runs132440to144114_RAW_RECO.root')
 )
 
