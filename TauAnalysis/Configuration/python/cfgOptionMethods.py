@@ -118,7 +118,7 @@ def _setTriggerProcess(process, triggerTag, **kwargs):
     for processAttrName in dir(process):
         processAttr = getattr(process, processAttrName)
         if isinstance(processAttr, cms.Sequence):
-            print "o Resetting HLT input tag for sequence:", processAttrName
+            print "--> Resetting HLT input tag for sequence:", processAttrName
             patutils.massSearchReplaceAnyInputTag(processAttr, cms.InputTag("TriggerResults", "", "HLT"), triggerTag)
     process.patTrigger.processName = triggerTag.getProcessName()
     process.patTriggerEvent.processName = triggerTag.getProcessName()
