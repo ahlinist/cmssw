@@ -12,9 +12,9 @@
  * 
  * \author Christian Veelken, UC Davis
  *
- * \version $Revision: 1.2 $
+ * \version $Revision: 1.1 $
  *
- * $Id: ParticlePFIsolationSelector.h,v 1.2 2010/10/22 11:51:17 veelken Exp $
+ * $Id: ParticlePFIsolationSelector.h,v 1.1 2010/11/01 10:25:37 veelken Exp $
  *
  */
 
@@ -143,7 +143,7 @@ class ParticlePFIsolationSelector
     {
       if ( pfCandidate.particleId() != pfParticleType_ ) return false;
 
-      if ( pfCandidate.pt() < ptMin_ ) return false;
+      if ( TMath::IsNaN(pfCandidate.pt()) || pfCandidate.pt() < ptMin_ ) return false;
 
       double dR = deltaR(pfCandidate.p4(), isoParticleCandidateP4);
       if ( dR < dRvetoCone_ || dR > dRisoCone_ ) return false;
@@ -159,26 +159,23 @@ class ParticlePFIsolationSelector
       double sumPt = 0.;
 
       if ( vetoNumHighestPtObjects_ > 0 ) {
-	size_t numPFCandidates = pfCandidates.size();
- 
 	std::vector<double> pfCandidatePt;
-	//pfCandidatePt.reserve(numPFCandidates);
 
-	for ( size_t iPFCandidate = 0; iPFCandidate < numPFCandidates; ++iPFCandidate ) {
-	  const reco::PFCandidate& pfCandidate = pfCandidates[iPFCandidate];
+	for ( reco::PFCandidateCollection::const_iterator pfCandidate = pfCandidates.begin();
+	      pfCandidate != pfCandidates.end(); ++pfCandidate ) {
+	  if ( !passesVeto(*pfCandidate, isoParticleCandidateP4) ) continue;
 	  
-	  if ( !passesVeto(pfCandidate, isoParticleCandidateP4) ) continue;
-	  
-	  pfCandidatePt.push_back(pfCandidate.pt());
+	  pfCandidatePt.push_back(pfCandidate->pt());
 	}
 
 	// sort transverse momenta of particle-flow candidates
 	// ( lowest/highest Pt value will be stored in pfCandidatePt[0]/pfCandidatePt[numPFCandidates - 1];
 	//  cf. http://www.cplusplus.com/reference/algorithm/sort/ )
 	std::sort(pfCandidatePt.begin(), pfCandidatePt.end());
-	
-	for ( size_t iPFCandidate = 0; iPFCandidate < (numPFCandidates - vetoNumHighestPtObjects_); ++iPFCandidate ) {
-	  sumPt += pfCandidatePt[iPFCandidate];
+
+        int numPt = pfCandidatePt.size();
+        for ( int iPt = 0; iPt < (numPt - (int)vetoNumHighestPtObjects_); ++iPt ) {
+	  sumPt += pfCandidatePt[iPt];
 	}
       } else {
 	for ( reco::PFCandidateCollection::const_iterator pfCandidate = pfCandidates.begin();
