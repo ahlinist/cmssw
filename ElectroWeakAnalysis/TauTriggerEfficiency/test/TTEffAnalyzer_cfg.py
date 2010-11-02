@@ -36,7 +36,9 @@ process.load('Configuration/StandardSequences/GeometryPilot2_cff')
 if(isData):
     process.source = cms.Source("PoolSource",
 	fileNames = cms.untracked.vstring(
-	   '/store/user/eluiggi/MinimumBias/MinBiasRun2010A_CSTauSkim371Run2/5b16de9afc6d7bc42a5712a35e6482fe/CSTauSkim_1_1_FFp.root'
+#	   '/store/user/eluiggi/MinimumBias/MinBiasRun2010A_CSTauSkim371Run2/5b16de9afc6d7bc42a5712a35e6482fe/CSTauSkim_1_1_FFp.root'
+	"rfio:/castor/cern.ch/user/s/slehti/TauTriggerEfficiencyMeasurementData/pickevents_Ztautau_MikeOct2010_Mu_Run2010B-v1_RAW_CSTauSkim.root"
+#"file:pickevents_Ztautau_MikeOct2010_Mu_Run2010B-v1_RAW_CSTauSkim.root"
 	)
     )
 else:
@@ -52,11 +54,13 @@ else:
     
 #process.load("ElectroWeakAnalysis.TauTriggerEfficiency.ztt2FileTest_cff")
 process.load("RecoJets.JetAssociationProducers.ic5PFJetTracksAssociatorAtVertex_cfi")
+process.ak5PFJetTracksAssociatorAtVertex = process.ic5PFJetTracksAssociatorAtVertex.clone()
+process.ak5PFJetTracksAssociatorAtVertex.jets = cms.InputTag("ak5PFJets")
 from RecoTauTag.RecoTau.PFRecoTauTagInfoProducer_cfi import *
 process.myPFTauTagInfoProducer = copy.deepcopy(pfRecoTauTagInfoProducer)
 process.myPFTauTagInfoProducer.tkminPt = cms.double(0.5)
 process.myPFTauTagInfoProducer.ChargedHadrCand_tkminPt = cms.double(0.5)
-
+process.myPFTauTagInfoProducer.PFJetTracksAssociatorProducer = cms.InputTag("ak5PFJetTracksAssociatorAtVertex")
 
 from RecoTauTag.Configuration.FixedConePFTaus_cfi import *
 process.myConeProducer = copy.deepcopy(fixedConePFTauProducer)
@@ -195,9 +199,10 @@ if(isData):
     process.runEDAna = cms.Path(
 #    	process.hltPhysicsDeclared*
 #	process.myHLTL25ConeIsolation+
-	process.ic5PFJetTracksAssociatorAtVertex*
-	process.myPFTauTagInfoProducer*
-	process.myConeProducer*
+#	process.ic5PFJetTracksAssociatorAtVertex*
+	process.ak5PFJetTracksAssociatorAtVertex *
+	process.myPFTauTagInfoProducer *
+	process.myConeProducer *
     	process.thisPFTauDiscriminationByLeadingPionPtCut *
     	process.PFTausSelected *
     	process.thisPFTauDiscriminationByLeadingTrackFinding *
@@ -212,7 +217,8 @@ else:
     process.runEDAna = cms.Path(
         process.hltPhysicsDeclared+
 #	process.myHLTL25ConeIsolation+
-	process.ic5PFJetTracksAssociatorAtVertex+
+#	process.ic5PFJetTracksAssociatorAtVertex+
+	process.ak5PFJetTracksAssociatorAtVertex *
 	process.myPFTauTagInfoProducer+
 	process.myConeProducer+
 #	process.TauMCProducer*
