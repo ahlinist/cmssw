@@ -62,27 +62,31 @@ bool JetEventSelector::select(const edm::Event& event) const {
    JetIDSelectionFunctor jetIDLoose( JetIDSelectionFunctor::PURE09, JetIDSelectionFunctor::LOOSE );
    pat::strbitset ret = jetIDLoose.getBitTemplate();
 
-   for (unsigned int i = 0; i < minPt_.size(); ++i) {
+   //   for (unsigned int i = 0; i < minPt_.size(); ++i) {
+
+   for (unsigned int i = 0; i < jetHandle->size(); ++i) {
 
       ret.set(false);
       bool loose = jetIDLoose((*jetHandle)[i], ret);
 
+      if(useJetID_ && !(loose)) {
+	badJet = true;
+	continue;
+      } 
+
+ 
+      if(i >= minPt_.size() ) continue;
+
+
       setVariable(2* numPassed + 1, (*jetHandle)[i].pt());
       setVariable(2* numPassed + 2, (*jetHandle)[i].eta());
 
-      if ((*jetHandle)[i].pt() > minPt_[numPassed] && fabs((*jetHandle)[i].eta()) < maxEta_[numPassed]){
-         if (useJetID_ && !(loose)) {
-            badJet = true;
-            continue;
-         } else {
-            ++numPassed;
-         }
-      }
 
-      if (numPassed == minPt_.size()) {
-         result = true;
-         break;
-      }
+      if ((*jetHandle)[i].pt() > minPt_[numPassed] && fabs((*jetHandle)[i].eta()) < maxEta_[numPassed])
+	++numPassed;
+              
+
+      if (numPassed == minPt_.size()) result = true;
 
    }
 
