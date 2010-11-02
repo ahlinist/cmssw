@@ -6,16 +6,11 @@
 
 //________________________________________________________________________________________
 JetEventSelector::JetEventSelector(const edm::ParameterSet& pset) :
-  SusyEventSelector(pset), 
-  jetTag_(pset.getParameter<edm::InputTag> ("jetTag")),
-  minPt_(pset.getParameter<std::vector<double> > ("minPt")),
-  maxEta_(pset.getParameter<std::vector<double> > ("maxEta")),
-  minFem_(pset.getParameter<std::vector<double> > ("minEMFraction")),
-  maxFem_(pset.getParameter<std::vector<double> > ("maxEMFraction")),
-  minN90_(pset.getParameter<int> ("minTowersN90")),
-  maxfHPD_(pset.getParameter<double> ("maxfHPD")),
-  useJetID_(pset.getParameter<bool> ("useJetID"))
- {
+   SusyEventSelector(pset), jetTag_(pset.getParameter<edm::InputTag> ("jetTag")),
+   minPt_(pset.getParameter<std::vector<double> > ("minPt")),
+   maxEta_(pset.getParameter<std::vector<double> > ("maxEta")),
+   useJetID_(pset.getParameter<bool> ("useJetID")),
+   rejectEvtJetID_(pset.getParameter<bool> ("rejectEvtJetID")){
 
    /// definition of variables to be cached
    defineVariable("NumberOfJets");
@@ -26,13 +21,10 @@ JetEventSelector::JetEventSelector(const edm::ParameterSet& pset) :
       std::ostringstream strEta;
       strEta << "Jet" << i << "Eta";
       defineVariable(strEta.str());
-      std::ostringstream strFem;
-      strFem << "Jet" << i << "EMfraction";
-      defineVariable(strFem.str());
    }
 
    edm::LogInfo("JetEventSelector") << "constructed with \n" << "  jetTag    = " << jetTag_ << "\n" << "  min #jets = "
-            << minPt_.size();
+         << minPt_.size();
 }
 
 //________________________________________________________________________________________
@@ -41,7 +33,7 @@ bool JetEventSelector::select(const edm::Event& event) const {
    resetVariables();
 
    //FIXME: what about checking at construction time?
-   if (minPt_.size() != maxEta_.size() || maxFem_.size() != maxEta_.size()) {
+   if (minPt_.size() != maxEta_.size()) {
       edm::LogError("JetEventSelector") << "Inconsistent length of vector of cut values";
       return false;
    }
@@ -65,32 +57,27 @@ bool JetEventSelector::select(const edm::Event& event) const {
    bool result(false);
    unsigned int numPassed = 0;
 
+   //// To be set true if one jet is found failing jetID
+   bool badJet = false;
+   JetIDSelectionFunctor jetIDLoose( JetIDSelectionFunctor::PURE09, JetIDSelectionFunctor::LOOSE );
+   pat::strbitset ret = jetIDLoose.getBitTemplate();
+
    for (unsigned int i = 0; i < minPt_.size(); ++i) {
 
-      //not re-sorted at the moment!
-      float EMFRAC = 0;
-      if ((*jetHandle)[i].isCaloJet())
-         EMFRAC = (*jetHandle)[i].emEnergyFraction();
-      if ((*jetHandle)[i].isPFJet())
-         EMFRAC = (*jetHandle)[i].neutralEmEnergyFraction() + (*jetHandle)[i].chargedEmEnergyFraction();
+      ret.set(false);
+      bool loose = jetIDLoose((*jetHandle)[i], ret);
 
-      setVariable(3* numPassed + 1, (*jetHandle)[i].pt());
-      setVariable(3* numPassed + 2, (*jetHandle)[i].eta());
-      setVariable(3* numPassed + 3, EMFRAC);
-      if ((*jetHandle)[i].pt() < minPt_[numPassed])
-	continue;
-      if (fabs((*jetHandle)[i].eta()) > maxEta_[numPassed])
-	continue;
-      if(EMFRAC > maxFem_[i] && fabs((*jetHandle)[i].eta()) < 2.6 && useJetID_)
-	continue;
-      if(EMFRAC < minFem_[i] && fabs((*jetHandle)[i].eta()) < 2.6 && useJetID_)
-	continue;
-      if ((*jetHandle)[i].jetID().n90Hits <= minN90_ && useJetID_)
-         continue;
-      if ((*jetHandle)[i].jetID().fHPD >= maxfHPD_ && useJetID_)
-         continue;
+      setVariable(2* numPassed + 1, (*jetHandle)[i].pt());
+      setVariable(2* numPassed + 2, (*jetHandle)[i].eta());
 
-      ++numPassed;
+      if ((*jetHandle)[i].pt() > minPt_[numPassed] && fabs((*jetHandle)[i].eta()) < maxEta_[numPassed]){
+         if (useJetID_ && !(loose)) {
+            badJet = true;
+            continue;
+         } else {
+            ++numPassed;
+         }
+      }
 
       if (numPassed == minPt_.size()) {
          result = true;
@@ -99,12 +86,11 @@ bool JetEventSelector::select(const edm::Event& event) const {
 
    }
 
-
    if (result)
       LogTrace("JetEventSelector") << "JetEventSelector: all jets passed";
    else
       LogTrace("JetEventSelector") << "JetEventSelector: failed";
-   return result;
+   return (result  && (rejectEvtJetID_ && !(badJet)));
 }
 
 //________________________________________________________________________________________
@@ -114,27 +100,3 @@ bool JetEventSelector::select(const edm::Event& event) const {
 #include "SusyAnalysis/EventSelector/interface/EventSelectorFactory.h"
 DEFINE_EDM_PLUGIN(EventSelectorFactory, JetEventSelector, "JetEventSelector");
 
-//// Example how to check if reco::Jet is pat::Jet
-//   edm::Handle<edm::View<reco::Jet> > jetHandle;
-//   event.getByLabel(jetTag_, jetHandle);
-//   if (!jetHandle.isValid()) {
-//      edm::LogWarning("JetEventSelector") << "No Jet results for InputTag " << jetTag_;
-//      return false;
-//   }
-//   bool patjet = false;
-//   try {
-//      const pat::Jet testjet = dynamic_cast<const pat::Jet &> (*(jetHandle->begin()));
-//      patjet = true;
-//   } catch (...) {
-//   }
-//
-//   for (size_t i = 0; i < jetHandle->size(); ++i) {
-//      float pt = 0;
-//      if (patjet) {
-//         const pat::Jet *jet = dynamic_cast<const pat::Jet *> (&((*jetHandle)[i]));
-//         pt = jet->pt();
-//      } else {
-//         const reco::Jet& jet = (*jetHandle)[i];
-//         pt = jet.pt();
-//      }
-//   }

@@ -6,15 +6,13 @@
 
 //__________________________________________________________________________________________________
 HTEventSelector::HTEventSelector(const edm::ParameterSet& pset) :
-  SusyEventSelector(pset), jetTag_(pset.getParameter<edm::InputTag> ("jetTag")),
-  minHT_(pset.getParameter<double> ("minHT")),
-  minPt_(pset.getParameter<double> ("minPt")),
-  maxEta_(pset.getParameter<double> ("maxEta")),
-  minFem_(pset.getParameter<double> ("minEMFraction")),
-  maxFem_(pset.getParameter<double> ("maxEMFraction")),
-  minN90_(pset.getParameter<int> ("minTowersN90")),
-  maxfHPD_(pset.getParameter<double> ("maxfHPD")),
-  useJetID_(pset.getParameter<bool> ("useJetID")) {
+   SusyEventSelector(pset),
+   jetTag_(pset.getParameter<edm::InputTag> ("jetTag")),
+   minHT_(pset.getParameter<double> ("minHT")),
+   minPt_(pset.getParameter<double> ("minPt")),
+   maxEta_(pset.getParameter<double> ("maxEta")),
+   useJetID_(pset.getParameter<bool> ("useJetID")),
+   rejectEvtJetID_(pset.getParameter<bool> ("rejectEvtJetID")) {
 
    // Store computed HT
    defineVariable("HT");
@@ -33,23 +31,19 @@ bool HTEventSelector::select(const edm::Event& event) const {
       return false;
    }
 
+   //// To be set true if one jet is found failing jetID
+   bool badJet = false;
+   JetIDSelectionFunctor jetIDLoose( JetIDSelectionFunctor::PURE09, JetIDSelectionFunctor::LOOSE );
+   pat::strbitset ret = jetIDLoose.getBitTemplate();
+
    // Sum over jet Ets (with cut on min. pt)
    float myHT = 0.0;
    edm::View<pat::Jet>::const_iterator iJet = jetHandle->begin();
    while (iJet != jetHandle->end()) {
-      if (iJet->emEnergyFraction() <= minFem_ && fabs(iJet->eta()) < 2.6 && useJetID_) {
-         ++iJet;
-         continue;
-      }
-      if (iJet->emEnergyFraction() >= maxFem_ && fabs(iJet->eta()) < 2.6 && useJetID_) {
-         ++iJet;
-         continue;
-      }
-      if (iJet->jetID().n90Hits <= minN90_ && useJetID_) {
-         ++iJet;
-         continue;
-      }
-      if (iJet->jetID().fHPD >= maxfHPD_ && useJetID_) {
+      ret.set(false);
+      bool loose = jetIDLoose(*iJet, ret);
+      if (useJetID_ && !(loose)) {
+         badJet = true;
          ++iJet;
          continue;
       }
@@ -60,7 +54,7 @@ bool HTEventSelector::select(const edm::Event& event) const {
    //std::cout << myHT << std::endl;
    setVariable("HT", myHT);
 
-   return myHT > minHT_;
+   return (myHT > minHT_ && (rejectEvtJetID_ && !(badJet)));
 
 }
 

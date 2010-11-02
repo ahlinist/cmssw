@@ -6,7 +6,7 @@
 ///
 /// Original author: W. Adam, 10/4/08
 ///
-/// $Id: JetEventSelector.h,v 1.9 2010/06/01 17:36:08 tschum Exp $
+/// $Id: JetEventSelector.h,v 1.10 2010/08/31 09:51:27 thomsen Exp $
 
 // system include files
 #include <memory>
@@ -21,50 +21,48 @@
 
 #include "DataFormats/PatCandidates/interface/Jet.h"
 #include "DataFormats/JetReco/interface/Jet.h"
+#include "PhysicsTools/SelectorUtils/interface/JetIDSelectionFunctor.h"
 
 #include <vector>
 #include <string>
 
 class JetEventSelector: public SusyEventSelector {
-public:
-   JetEventSelector(const edm::ParameterSet&);
-   virtual bool select(const edm::Event&) const;
-   virtual ~JetEventSelector() {
-   }
-private:
-   edm::InputTag jetTag_; ///< tag for input collection
-   std::string corrStep_; ///< jet correction step (see pat::Jet)
-   std::string corrFlavour_; ///< jet correction flavour (ditto)
-   std::vector<double> minPt_; ///< lower Et cuts (also defines min. #jets)
-   std::vector<double> maxEta_; ///< upper |eta| cuts (also defines min. #jets)
-   std::vector<double> minFem_; ///< lower cut on EM fraction
-   std::vector<double> maxFem_; ///< upper cut on EM fraction
-   int minN90_;
-   double maxfHPD_;
-   bool useJetID_;
+   public:
+      JetEventSelector(const edm::ParameterSet&);
+      virtual bool select(const edm::Event&) const;
+      virtual ~JetEventSelector() {
+      }
+   private:
+      edm::InputTag jetTag_; ///< tag for input collection
+      std::string corrStep_; ///< jet correction step (see pat::Jet)
+      std::string corrFlavour_; ///< jet correction flavour (ditto)
+      std::vector<double> minPt_; ///< lower Et cuts (also defines min. #jets)
+      std::vector<double> maxEta_; ///< upper |eta| cuts (also defines min. #jets)
+      bool useJetID_;
+      bool rejectEvtJetID_;
 
-   template<class C>
-   struct IndexSorter {
-      IndexSorter(const C& values, bool decreasing = true) :
-         values_(values), decrease_(decreasing) {
-      }
-      std::vector<size_t> operator()() const {
-         std::vector<size_t> result;
-         result.reserve(values_.size());
-         for (size_t i = 0; i < values_.size(); ++i)
-            result.push_back(i);
-         sort(result.begin(), result.end(), *this);
-         return result;
-      }
-      bool operator()(size_t a, size_t b) {
-         if (decrease_)
-            return values_[a] > values_[b];
-         else
-            return values_[a] < values_[b];
-      }
-      const C& values_;
-      bool decrease_;
-   };
+      template<class C>
+      struct IndexSorter {
+            IndexSorter(const C& values, bool decreasing = true) :
+               values_(values), decrease_(decreasing) {
+            }
+            std::vector<size_t> operator()() const {
+               std::vector<size_t> result;
+               result.reserve(values_.size());
+               for (size_t i = 0; i < values_.size(); ++i)
+                  result.push_back(i);
+               sort(result.begin(), result.end(), *this);
+               return result;
+            }
+            bool operator()(size_t a, size_t b) {
+               if (decrease_)
+                  return values_[a] > values_[b];
+               else
+                  return values_[a] < values_[b];
+            }
+            const C& values_;
+            bool decrease_;
+      };
 
 };
 #endif
