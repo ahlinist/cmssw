@@ -24,12 +24,14 @@ RctValidation::RctValidation( const edm::ParameterSet& iConfig ) :
   binsEta_(iConfig.getUntrackedParameter<int>("binsEta",32)),
   binsPhi_(iConfig.getUntrackedParameter<int>("binsPhi",36)),
   matchDR_(iConfig.getUntrackedParameter<double>("matchDeltaR",0.5)),
+
   egammaThreshold_(iConfig.getUntrackedParameter<double>("gammaThreshold",5.)),
   tpgSumWindow_(iConfig.getUntrackedParameter<double>("tpgSumWindow",0.4)),
   thresholdForEtaPhi_(iConfig.getUntrackedParameter<double>("thresholdForEtaPhi",4.)),
   barrelBoundry_(iConfig.getUntrackedParameter<double>("barrelBarrelBoundry",1.442)),
   endcapBoundry_(iConfig.getUntrackedParameter<double>("endcapBoundry",1.566)),
   matchL1Objects_(iConfig.getUntrackedParameter<bool>("matchL1Objects",true))
+
 
 {
   geo = new TriggerTowerGeometry();
@@ -39,6 +41,7 @@ RctValidation::RctValidation( const edm::ParameterSet& iConfig ) :
 	{
     	cout << "RCT Validation histograms will be saved to " << outfile_.c_str() << endl;
   	}
+
   
   //Get General Monitoring Parameters
   store = &*edm::Service<DQMStore>();
@@ -46,7 +49,6 @@ RctValidation::RctValidation( const edm::ParameterSet& iConfig ) :
     {
 
       store->setCurrentFolder(directory_);
-      //      store->set
 
       TPG_Resolution    = store->book1D("TPG_Resolution"," e/#gamma ET-ref e/#gamma E_[T}/Ref e/#gamma E_{T} ",100,-1.,1.);
       RCT_Resolution    = store->book1D("RCT_Resolution"," e/#gamma ET-ref e/#gamma E_[T}/Ref e/#gamma E_{T} ",100,-1.,1.);
@@ -59,6 +61,7 @@ RctValidation::RctValidation( const edm::ParameterSet& iConfig ) :
       RCT_EtaResolution = store->book1D("RCT_EtaResolution"," e/#gamma #eta-ref e/#gamma #eta", 100, -2,2);
       RCT_PhiResolution = store->book1D("RCT_PhiResolution"," e/#gamma #phi-ref e/#gamma #phi", 100, -2,2);
 
+
       refPt     = store->book1D("refPt" ,"ref e/#gamma P_{T}",binsEt_,0.,maxEt_);
       //		refPt->setResetMe(false );
       refPtBarrel     = store->book1D("refPtBarrel" ,"ref e/#gamma P_{T}",binsEt_,0.,maxEt_);
@@ -67,6 +70,7 @@ RctValidation::RctValidation( const edm::ParameterSet& iConfig ) :
       refEta    = store->book1D("refEta","ref e/#gamma E_{T}",binsEta_,-3,3);
       refPhi    = store->book1D("refPhi","ref e/#gamma E_{T}",binsPhi_,-3.145,3.145);
       refEtaPhi = store->book2D("refEtaPhi","ref e/#gamma #eta #phi",binsEta_,-3,3,binsPhi_,-3.145,3.145);
+
 
       refPt->getTH1F()->Sumw2();
       refPtEndcap->getTH1F()->Sumw2();
@@ -84,6 +88,7 @@ RctValidation::RctValidation( const edm::ParameterSet& iConfig ) :
       tpgEffPhi    = store->book1D("tpgEffPhi","tpg e/#gamma E_{T}",binsPhi_,-3.145,3.145);
       tpgEffEtaPhi = store->book2D("tpgEffEtaPhi","tpg e/#gamma #eta #phi",binsEta_,-3,3,binsPhi_,-3.145,3.145);
 
+
       tpgEffPt->getTH1F()->Sumw2();
       tpgEffPtBarrel->getTH1F()->Sumw2();		
       tpgEffPtEndcap->getTH1F()->Sumw2();
@@ -97,13 +102,15 @@ RctValidation::RctValidation( const edm::ParameterSet& iConfig ) :
       //      tpgEffEtaPhi->getTH1F()->Sumw2();
 
 
+
 		rctEffPt     = store->book1D("rctEffPt" ,"rct e/#gamma P_{T}",binsEt_,0.,maxEt_);
 		rctEffPtBarrel     = store->book1D("rctEffPtBarrel" ,"rct e/#gamma P_{T}",binsEt_,0.,maxEt_);
 		rctEffPtEndcap     = store->book1D("rctEffPtEndcap" ,"rct e/#gamma P_{T}",binsEt_,0.,maxEt_);
 		rctEffEt     = store->book1D("rctEffEt" ,"rct e/#gamma E_{T}",binsEt_,0.,maxEt_);
       rctEffEta    = store->book1D("rctEffEta","rct e/#gamma E_{T}",binsEta_,-3,3);
       rctEffPhi    = store->book1D("rctEffPhi","rct e/#gamma E_{T}",binsPhi_,-3.145,3.145);
-      rctEffEtaPhi = store->book2D("rctEffEtaPhi","rct e/#gamma #eta #phi",binsEta_,-3,3,binsPhi_,-4.145,3.145);
+      rctEffEtaPhi = store->book2D("rctEffEtaPhi","rct e/#gamma #eta #phi",binsEta_,-3,3,binsPhi_,-3.145,3.145);
+
       
       rctEffPtHighest = store->book1D("rctEffPtHighest" ,"rct e/#gamma E_{T}",binsEt_,0.,maxEt_);
 
@@ -116,6 +123,7 @@ RctValidation::RctValidation( const edm::ParameterSet& iConfig ) :
       rctEffPtHighest->getTH1F()->Sumw2();
       //      rctEffEtaPhi->getTH1F()->Sumw2();
 
+
 		rctIsoEffPt     = store->book1D("rctIsoEffPt" ,"rctIso e/#gamma P_{T}",binsEt_,0.,maxEt_);
 		rctIsoEffPtBarrel     = store->book1D("rctIsoEffPtBarrel" ,"rctIso e/#gamma P_{T}",binsEt_,0.,maxEt_);
 		rctIsoEffPtEndcap     = store->book1D("rctIsoEffPtEndcap" ,"rctIso e/#gamma P_{T}",binsEt_,0.,maxEt_);
@@ -123,6 +131,7 @@ RctValidation::RctValidation( const edm::ParameterSet& iConfig ) :
       rctIsoEffEta    = store->book1D("rctIsoEffEta","rctIso e/#gamma E_{T}",binsEta_,-3,3);
       rctIsoEffPhi    = store->book1D("rctIsoEffPhi","rctIso e/#gamma E_{T}",binsPhi_,-3.1458,3.1459);
       rctIsoEffEtaPhi = store->book2D("rctIsoEffEtaPhi","rctIso e/#gamma #eta #phi",binsEta_,-3,3,binsPhi_,-3.1459,3.1459);
+
 
       rctIsoEffPtHighest = store->book1D("rctIsoEffPtHighest" ,"rct e/#gamma E_{T}",binsEt_,0.,maxEt_);
       
@@ -142,6 +151,7 @@ RctValidation::RctValidation( const edm::ParameterSet& iConfig ) :
       gctEffPhi    = store->book1D("gctEffPhi","gct e/#gamma E_{T}",binsPhi_,-3.1459,3.1459);
       gctEffEtaPhi = store->book2D("gctEffEtaPhi","gct e/#gamma #eta #phi",binsEta_,-3,3,binsPhi_,-3.1459,3.1459);
 
+
 		gctEffPt->getTH1F()->Sumw2();
 		gctEffEt->getTH1F()->Sumw2();
       gctEffEta->getTH1F()->Sumw2();
@@ -154,6 +164,7 @@ RctValidation::RctValidation( const edm::ParameterSet& iConfig ) :
       gctIsoEffPhi    = store->book1D("gctIsoEffPhi","gctIso e/#gamma E_{T}",binsPhi_,-3.1459,3.1459);
       gctIsoEffEtaPhi = store->book2D("gctIsoEffEtaPhi","gctIso e/#gamma #eta #phi",binsEta_,-3,3,binsPhi_,-3.1459,3.1459);
 
+
 		gctIsoEffPt->getTH1F()->Sumw2();
 
 		gctIsoEffEt->getTH1F()->Sumw2();
@@ -161,6 +172,7 @@ RctValidation::RctValidation( const edm::ParameterSet& iConfig ) :
       gctIsoEffPhi->getTH1F()->Sumw2();
 
       rctEtaCorr = store->bookProfile("rctEtaCorr", "RCT #eta corrections", binsEta_,-3,3, 50, 0, 2); 
+
       rctEtaCorrIEta = store->bookProfile("rctEtaCorrIEta", "RCT #eta corrections", 65, -32.5, 32.5, 50, 0, 2);
       rctEtaCorrAbsIEta = store->bookProfile("rctEtaCorrAbsIEta", "RCT |#eta| corrections", 32, 0.5, 32.5, 50, 0, 2);
 
@@ -211,18 +223,18 @@ RctValidation::RctValidation( const edm::ParameterSet& iConfig ) :
 		
 		regionHE->getTH1F()->Sumw2();
 
-		tpgECALsecondtower  = store->book1D("tpgECALsecondtower" ,"tpg e/#gamma E_{T} of neighboring tower in object",binsEt_,0.,maxEt_);
+		tpgECALsecondtower  = store->book1D("tpgECALsecondtower" ,"tpg e/#gamma E_{T} of neighboring tower in object",80,0.,20);
 
-		tpgHCALSurronding  = store->book1D("tpgHCALSurronding" ,"tpg e/#gamma E_{T} sum of HCAL  of surronding towers )",binsEt_,0.,maxEt_);
-		tpgECALSurronding  = store->book1D("tpgECALSurronding" ,"tpg e/#gamma E_{T} sum of HCAL region towers (minus neighbor)",binsEt_,0.,maxEt_);
+		tpgHCALSurronding  = store->book1D("tpgHCALSurronding" ,"tpg e/#gamma E_{T} sum of HCAL  of surronding towers )",80,0.,20);
+		tpgECALSurronding  = store->book1D("tpgECALSurronding" ,"tpg e/#gamma E_{T} sum of HCAL region towers (minus neighbor)",80,0.,20);
 
 		dirHCALclosest = store->book2D("dirHCALclosest","direction of a HCAL tower with energy in ieta/iphi space",3,-1.5,1.5,3,-1.5,1.5);
 		dirHCALclosestWeighted = store->book2D("dirHCALclosestWeighted","direction of a HCAL tower with energy in ieta/iphi space*energy",3,-1.5,1.5,3,-1.5,1.5);
-		sumECAL  = store->book1D("sumECAL" ,"tpg e/#gamma E_{T} sum of ECAL 3x3 region towers",binsEt_,0.,maxEt_);
-		sumHCAL  = store->book1D("sumHCAL" ,"tpg e/#gamma E_{T} sum of HCAL 3x3 region towers",binsEt_,0.,maxEt_);
-		regionSum =	    store->book1D("regionSum" ,"tpg e/#gamma E_{T} sum of 3x3 region towers",binsEt_,0.,maxEt_);
-		diffSumEgamma = store->book1D("diffSumEgamma", "energy of other towers",binsEt_,0.,maxEt_);
-		minLSum = store->book1D("minLSum", "Smallest L Sum of surronding towers",binsEt_,0.,maxEt_);
+		sumECAL  = store->book1D("sumECAL" ,"tpg e/#gamma E_{T} sum of ECAL 3x3 region towers",80,0.,40);
+		sumHCAL  = store->book1D("sumHCAL" ,"tpg e/#gamma E_{T} sum of HCAL 3x3 region towers",80,0.,40);
+		regionSum =	    store->book1D("regionSum" ,"tpg e/#gamma E_{T} sum of 3x3 region towers",80,0.,40);
+		diffSumEgamma = store->book1D("diffSumEgamma", "energy of other towers",40,0.,10);
+		minLSum = store->book1D("minLSum", "Smallest L Sum of surronding towers",40,0.,10);
 		
 		tpgECALsecondtower->getTH1F()->Sumw2();
 		tpgHCALSurronding->getTH1F()->Sumw2();
@@ -235,6 +247,7 @@ RctValidation::RctValidation( const edm::ParameterSet& iConfig ) :
 		minLSum->getTH1F()->Sumw2();
 
 		store->setVerbose(1);
+
     }
 }
 
@@ -332,6 +345,7 @@ RctValidation::analyze(const Event& iEvent, const EventSetup& iSetup )
       
       if ( rctEGamma.isolated() )
         highestEGiso = max(highestEGiso, emS->et(rctEGamma.rank()));
+
       if( emS->et(rctEGamma.rank() > egammaThreshold_)){
 	  EcalTrigPrimDigiCollection* l1TrigTowers = new EcalTrigPrimDigiCollection();
 	  
@@ -394,6 +408,8 @@ RctValidation::analyze(const Event& iEvent, const EventSetup& iSetup )
 	    if(tempELsum < minELsum)
 	      minELsum = tempELsum;
 	  }
+	  if(i==4)
+	    highestEtTTHCAL = hcalTTEt;
 	}
 
 
