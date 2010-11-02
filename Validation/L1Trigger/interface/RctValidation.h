@@ -31,6 +31,7 @@ bachtis@hep.wisc.edu
 #include "DataFormats/L1CaloTrigger/interface/L1CaloCollections.h"
 #include "DataFormats/HepMCCandidate/interface/GenParticle.h"
 #include "DataFormats/HepMCCandidate/interface/GenParticleFwd.h"
+#include "CondFormats/L1TObjects/interface/L1RCTParameters.h"
 
 
 #include "CondFormats/L1TObjects/interface/L1CaloGeometry.h"
@@ -41,6 +42,9 @@ bachtis@hep.wisc.edu
 
 #include "CondFormats/L1TObjects/interface/L1CaloEcalScale.h"
 #include "CondFormats/DataRecord/interface/L1CaloEcalScaleRcd.h"
+#include "CondFormats/L1TObjects/interface/L1CaloHcalScale.h"
+#include "CondFormats/DataRecord/interface/L1CaloHcalScaleRcd.h"
+
 
 #include "DataFormats/EcalDigi/interface/EcalDigiCollections.h"
 #include "DataFormats/HcalDigi/interface/HcalDigiCollections.h"
@@ -76,13 +80,22 @@ protected:
 
 private:
   DQMStore* dbe_;  
+  DQMStore* store;
   edm::InputTag ecalTPGs_;
+  edm::InputTag hcalTPGs_;
   edm::InputTag rctEGammas_; 
   std::vector<edm::InputTag> gctEGammas_; 
   edm::InputTag gtEGammas_; 
   edm::InputTag refEGammas_;
-
+	const L1CaloGeometry* caloGeom;
+	const L1CaloEtScale* emS ;
+	const L1CaloEcalScale* eS ;
+	const L1CaloHcalScale* hS ;
   std::string directory_;
+  std::string outfile_;
+  bool matchL1Objects_;
+	
+	L1RCTParameters*	rctGeo;
 
   double maxEt_;
   int    binsEt_; 
@@ -92,44 +105,75 @@ private:
   double egammaThreshold_;
   double tpgSumWindow_;
   double thresholdForEtaPhi_;
+	double barrelBoundry_;
+	double endcapBoundry_;
  
   //MEs
 
 
   MonitorElement* TPG_Resolution;
   MonitorElement* RCT_Resolution;
-
-  MonitorElement* refPt;
+	MonitorElement* RCT_IetaResolution[28];
+	MonitorElement* RCT_EtaResolution;
+	MonitorElement* RCT_PhiResolution;
+	
+	
+	MonitorElement* refPt;
+	MonitorElement* refEt;
+	MonitorElement* refPtBarrel;
+	MonitorElement* refPtEndcap;
+	
   MonitorElement* refEta;
   MonitorElement* refPhi;
   MonitorElement* refEtaPhi;
 
-  MonitorElement* tpgEffPt;
+	MonitorElement* tpgEffEt;
+	MonitorElement* tpgEffPt;
+	MonitorElement* tpgEffPtBarrel;
+	MonitorElement* tpgEffPtEndcap;
   MonitorElement* tpgEffEta;
   MonitorElement* tpgEffPhi;
   MonitorElement* tpgEffEtaPhi;
 
+  MonitorElement* HCALtpgPt;
 
-  MonitorElement* rctEffPt;
-  MonitorElement* rctEffPtHighest;
+	MonitorElement* rctEffPt;
+	MonitorElement* rctEffPtBarrel;
+	MonitorElement* rctEffPtEndcap;
+	MonitorElement* rctEffEt;
+	MonitorElement* rctEffPtHighest;
+	MonitorElement* rctEffEtHighest;
   MonitorElement* rctEffEta;
   MonitorElement* rctEffPhi;
   MonitorElement* rctEffEtaPhi;
 
+	
+	MonitorElement* regionEGtowers;
+	MonitorElement* regionEGtowersRatio;
+	MonitorElement* regionEG2towersRatio;
+	MonitorElement* regionEGHighTowerEt;
+	
 
-  MonitorElement* rctIsoEffPt;
-  MonitorElement* rctIsoEffPtHighest;
+
+	MonitorElement* rctIsoEffPt;
+	MonitorElement* rctIsoEffPtBarrel;
+	MonitorElement* rctIsoEffPtEndcap;
+	MonitorElement* rctIsoEffEt;
+	MonitorElement* rctIsoEffPtHighest;
+	MonitorElement* rctIsoEffEtHighest;
   MonitorElement* rctIsoEffEta;
   MonitorElement* rctIsoEffPhi;
   MonitorElement* rctIsoEffEtaPhi;
 
-  MonitorElement* gctEffPt;
+	MonitorElement* gctEffPt;
+	MonitorElement* gctEffEt;
   MonitorElement* gctEffEta;
   MonitorElement* gctEffPhi;
   MonitorElement* gctEffEtaPhi;
 
 
-  MonitorElement* gctIsoEffPt;
+	MonitorElement* gctIsoEffPt;
+	MonitorElement* gctIsoEffEt;
   MonitorElement* gctIsoEffEta;
   MonitorElement* gctIsoEffPhi;
   MonitorElement* gctIsoEffEtaPhi;
@@ -138,12 +182,56 @@ private:
   MonitorElement* rctEtaCorr;
   MonitorElement* rctEtaCorrIEta;
   MonitorElement* rctEtaCorrAbsIEta;
- 
 
-  math::PtEtaPhiMLorentzVector rctLorentzVector(const L1GctEmCand&,const L1CaloGeometry* ,const  L1CaloEtScale *);
+	MonitorElement* rctEtaCorrEt;
+	MonitorElement* rctEtaCorrIEtaEt;
+	MonitorElement* rctEtaCorrAbsIEtaEt;
+	
+	MonitorElement* rctEtaCorr1Tower;
+	MonitorElement* rctEtaCorrIEta1Tower;
+	MonitorElement* rctEtaCorrAbsIEta1Tower;
+	
+	MonitorElement* rctEtaCorr1TowerEt;
+	MonitorElement* rctEtaCorrIEta1TowerEt;
+	MonitorElement* rctEtaCorrAbsIEta1TowerEt;
+	
+	MonitorElement* rctEtaCorr12Tower;
+	MonitorElement* rctEtaCorrIEta12Tower;
+	MonitorElement* rctEtaCorrAbsIEta12Tower;
+	
+	MonitorElement* rctHEvL1Et;
+	MonitorElement* rctHEvEt;
+	MonitorElement* rctHEvECALEt;
+	MonitorElement* rctHEvHCALEt;
+	MonitorElement* rctHE;
 
-  double tpgSum(const math::XYZVector& direction,const EcalTrigPrimDigiCollection& ecalDigis,const L1CaloGeometry* geom ,const  L1CaloEcalScale* scale,double deltaR);
+	MonitorElement* refRxtal;
 
+	MonitorElement* rctEtaCorr12TowerEt;
+	MonitorElement* rctEtaCorrIEta12TowerEt;
+	MonitorElement* rctEtaCorrAbsIEta12TowerEt;
+
+	MonitorElement* tpgECALsecondtower;
+	MonitorElement* tpgHCALSurronding;
+	MonitorElement* tpgECALSurronding;
+	MonitorElement* dirHCALclosest;
+	MonitorElement* dirHCALclosestWeighted;
+	MonitorElement* sumECAL;
+	MonitorElement* sumHCAL;
+	MonitorElement* regionSum;
+	MonitorElement* regionHE;
+	MonitorElement* diffSumEgamma;
+	MonitorElement* minLSum;
+
+	math::PtEtaPhiMLorentzVector rctLorentzVector(const L1GctEmCand&);//,const L1CaloGeometry* ,const  L1CaloEtScale *);
+
+	double tpgSum(const math::XYZVector& direction,const EcalTrigPrimDigiCollection& ecalDigis,double deltaR);//const L1CaloGeometry* geom ,const  L1CaloEcalScale* scale,double deltaR);
+	
+	//	EcalTrigPrimDigiCollection
+	  //	findRegionTowers(const L1GctEmCand& cand,const EcalTrigPrimDigiCollection& ecalDigis);//,const L1CaloGeometry* geom ,const  L1CaloEcalScale* scale);
+	void
+	  findRegionTowers(const L1GctEmCand& cand,const EcalTrigPrimDigiCollection& ecalDigis, EcalTrigPrimDigiCollection* l1region);//,const L1CaloGeometry* geom ,const  L1CaloEcalScale* scale);
+	std::vector<double> find3x3Towers(int etaCentral, int phiCentral ,const EcalTrigPrimDigiCollection& ecalDigis,const HcalTrigPrimDigiCollection& hcalDigis);//, std::vector<double> tpgs3x3);
 
   class RCTEmSorter {
   public:
@@ -157,6 +245,22 @@ private:
 
   };
 
+	class RCTEmEnergySorter{
+	public:
+		RCTEmEnergySorter( const reco::Candidate& cand , const L1CaloEtScale* scale ) : b(cand), emS(scale){}
+		~RCTEmEnergySorter(){}
+		const	reco::Candidate& b;
+		const	L1CaloEtScale* emS ;
+		bool operator()(L1GctEmCand a1, L1GctEmCand a2)
+		{
+			double energyComp = b.pt();
+			
+			return abs(emS->et(a1.rank()) -energyComp) < abs(emS->et(a2.rank())-energyComp);
+		}
+		
+	};
+	
+	
 
 
   class  TriggerTowerGeometry
