@@ -2,11 +2,13 @@
 
 #include "DataFormats/EcalDigi/interface/EcalDigiCollections.h"
 #include "DataFormats/Common/interface/Handle.h"
+#include "DataFormats/EcalRecHit/interface/EcalRecHitCollections.h"
 
 #include "FWCore/MessageLogger/interface/MessageLogger.h"
 
-#include "DataFormats/EcalRecHit/interface/EcalRecHitCollections.h"
 #include "CondFormats/DataRecord/interface/EcalTimeCalibConstantsRcd.h"
+#include "CondTools/Ecal/interface/EcalTimeCalibConstantsXMLTranslator.h"
+#include "CondTools/Ecal/interface/EcalCondHeader.h"
 
 #include "DataFormats/EcalDetId/interface/EBDetId.h"
 #include "DataFormats/EcalDetId/interface/EEDetId.h"
@@ -14,6 +16,7 @@
 EcalTimeCalibrationValidator::EcalTimeCalibrationValidator(const edm::ParameterSet& ps) :
   inputTreeFileName_ (ps.getParameter<std::string>("InputTreeFileName")),
   outputTreeFileName_ (ps.getParameter<std::string>("OutputTreeFileName")),
+  calibConstantFileName_ (ps.getParameter<std::string>("CalibConstantXMLFileName")),
   maxEntries_ (ps.getUntrackedParameter<int>("MaxTreeEntriesToProcess",-1)),
   startingEntry_ (ps.getUntrackedParameter<int>("StartingTreeEntry",0))
 {
@@ -30,8 +33,8 @@ EcalTimeCalibrationValidator::EcalTimeCalibrationValidator(const edm::ParameterS
   myOutputTree_ = 0;
   outputTreeFile_ = TFile::Open(outputTreeFileName_.c_str(),"recreate");
   outputTreeFile_->cd();
-  myOutputTree_ = new TTree("EcalTimeAnalysis_Validator","EcalTimeAnalysis_Validator");
-  //myOutputTree_->SetDirectory(0);
+  myOutputTree_ = new TTree("EcalTimeAnalysis","EcalTimeAnalysis");
+  myOutputTree_->SetDirectory(0);
   if(!myOutputTree_)
   {
     edm::LogError("EcalTimeCalibrationValidator") << "Couldn't make output tree";
@@ -60,8 +63,16 @@ EcalTimeCalibrationValidator::analyze(edm::Event const& evt, edm::EventSetup con
   // Set branches for output tree
   setBranches(myOutputTree_,ttreeMembersOutput);
 
-  es.get<EcalTimeCalibConstantsRcd>().get(itime_);
-  const EcalTimeCalibConstantMap & itimeMap = itime_->getMap();  
+  //es.get<EcalTimeCalibConstantsRcd>().get(itime_);
+  EcalCondHeader calibFileHeader;
+  EcalTimeCalibConstants calibConstants;
+  int ret = EcalTimeCalibConstantsXMLTranslator::readXML(calibConstantFileName_,calibFileHeader,calibConstants);
+  if(ret)
+  {
+    edm::LogError("EcalTimeCalibrationValidator") << "Problem reading calibration XML file.  Quitting.";
+    return;
+  }
+  const EcalTimeCalibConstantMap itimeMap = calibConstants;
 
   // Loop over the TTree
   int nEntries = myInputTree_->GetEntries();
