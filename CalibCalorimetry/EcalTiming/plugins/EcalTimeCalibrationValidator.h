@@ -31,6 +31,7 @@ class EcalTimeCalibrationValidator : public edm::EDAnalyzer {
 
                 std::string inputTreeFileName_; // file name of input ttree
                 std::string outputTreeFileName_; // file name of output ttree
+                std::string calibConstantFileName_; // file name of XML calib constants
                 TFile* inputTreeFile_;
                 TFile* outputTreeFile_;
                 TTree* myInputTree_;
@@ -38,7 +39,6 @@ class EcalTimeCalibrationValidator : public edm::EDAnalyzer {
                 bool produce_;
                 int maxEntries_;
                 int startingEntry_;
-                edm::ESHandle<EcalTimeCalibConstants> itime_;
                 EcalTimeTreeContent ttreeMembersInput_;
 
 };
