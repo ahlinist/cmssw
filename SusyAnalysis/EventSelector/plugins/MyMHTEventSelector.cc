@@ -5,138 +5,66 @@
 #include "DataFormats/PatCandidates/interface/MET.h"
 #include "DataFormats/PatCandidates/interface/JetCorrFactors.h"
 #include "DataFormats/JetReco/interface/CaloJet.h"
+#include "PhysicsTools/SelectorUtils/interface/JetIDSelectionFunctor.h"
 
 //__________________________________________________________________________________________________
 MyMHTEventSelector::MyMHTEventSelector(const edm::ParameterSet& pset) :
-  SusyEventSelector(pset),
-  jetTag_(pset.getParameter<edm::InputTag> ("jetTag")),
-  minMHT_(pset.getParameter<double> ("minMHT")),
-  maxMHT_(pset.getParameter<double> ("maxMHT")),
-  maxMHTsig_(pset.getParameter<double> ("maxMHTsig")),
-  minPt_(pset.getParameter<double> ("minPt")),
-  maxEta_(pset.getParameter<double> ("maxEta")),
-  minFem_(pset.getParameter<double> ("minEMFraction")),
-  maxFem_(pset.getParameter<double> ("maxEMFraction")),
-  minN90_(pset.getParameter<int> ("minTowersN90")),
-  maxfHPD_(pset.getParameter<double> ("maxfHPD")),
-  useJetID_(pset.getParameter<bool> ("useJetID"))  {
+   SusyEventSelector(pset),
+   jetTag_(pset.getParameter<edm::InputTag> ("jetTag")),
+   minMHT_(pset.getParameter<double> ("minMHT")),
+   maxMHT_(pset.getParameter<double> ("maxMHT")),
+   maxMHTsig_(pset.getParameter<double> ("maxMHTsig")),
+   minPt_(pset.getParameter<double> ("minPt")),
+   maxEta_(pset.getParameter<double> ("maxEta")),
+   useJetID_(pset.getParameter<bool> ("useJetID")),
+   rejectEvtJetID_(pset.getParameter<bool> ("rejectEvtJetID")){
 
-   // Store computed HT
+   //// Store computed HT
    defineVariable("MHT");
    defineVariable("myMHTsignificance");
 }
 
 //__________________________________________________________________________________________________
 bool MyMHTEventSelector::select(const edm::Event& event) const {
-   // reset cached variables
+   //// reset cached variables
    math::XYZTLorentzVector MHT;
    double HT = 0;
 
    resetVariables();
 
-   //   Get the jets
-     edm::Handle<edm::View<pat::Jet> > jetHandle;
-     event.getByLabel(jetTag_, jetHandle);
-     if (!jetHandle.isValid()) {
-        edm::LogWarning("MyMHTEventSelector") << "No Jet results for InputTag " << jetTag_;
-        return false;
-     }
-//    edm::Handle<edm::View<reco::Jet> > jetHandle;
-//    event.getByLabel(jetTag_, jetHandle);
-//    if (!jetHandle.isValid()) {
-//       edm::LogWarning("MyMHTEventSelector") << "No Jet results for InputTag " << jetTag_;
-//       return false;
-//    }
+   //// Get the jets
+   edm::Handle<edm::View<pat::Jet> > jetHandle;
+   event.getByLabel(jetTag_, jetHandle);
+   if (!jetHandle.isValid()) {
+      edm::LogWarning("MyMHTEventSelector") << "No Jet results for InputTag " << jetTag_;
+      return false;
+   }
 
-//    bool patjet = false;
-//    bool calojet = false;
-//    try {
-//       const pat::Jet testjet = dynamic_cast<const pat::Jet &> (*(jetHandle->begin()));
-//       patjet = true;
-//       //std::cout << "Is pat::Jet" << std::endl;
-//    } catch (...) {
-//       try {
-//          const reco::CaloJet testjet = dynamic_cast<const reco::CaloJet &> (*(jetHandle->begin()));
-//          calojet = true;
-//          //std::cout << "Is reco::CaloJet" << std::endl;
-//       } catch (...) {
-//       }
-//    }
+   //// To be set true if one jet is found failing jetID
+   bool badJet = false;
+   JetIDSelectionFunctor jetIDLoose( JetIDSelectionFunctor::PURE09, JetIDSelectionFunctor::LOOSE );
+   pat::strbitset ret = jetIDLoose.getBitTemplate();
 
-//   if (patjet) {
-
-      // Sum over jet Ets (with cut on min. pt)
-     //      edm::View<reco::Jet>::const_iterator iJet = jetHandle->begin();
-      edm::View<pat::Jet>::const_iterator iJet = jetHandle->begin();
-      while (iJet != jetHandle->end()) {
-	//         const pat::Jet *jet = dynamic_cast<const pat::Jet *> (&(*iJet));
-         //         std::cout << "pat::Jet (pt, eta, phi, emf, n90, fHPD): " << jet->pt() << ", " << jet->eta() << ", "
-         //                  << jet->phi() << ", " << jet->emEnergyFraction() << ", " << jet->jetID().n90Hits << ", "
-         //                  << jet->jetID().fHPD << std::endl;
-         if (iJet->emEnergyFraction() <= minFem_ && fabs(iJet->eta()) < 2.6 && useJetID_) {
+   //// Sum over jet Ets (with cut on min. pt)
+   edm::View<pat::Jet>::const_iterator iJet = jetHandle->begin();
+   while (iJet != jetHandle->end()) {
+      if (iJet->pt() > minPt_ && fabs(iJet->eta()) < maxEta_) {
+         ret.set(false);
+         bool loose = jetIDLoose(*iJet, ret);
+         if (useJetID_ && !(loose)) {
+//            std::cout << "Failed JetID: " << iJet->pt() << ", " << iJet->eta() << ", " << iJet->phi() << ", "
+//                                          << iJet->emEnergyFraction() << ", " << iJet->jetID().n90Hits << ", "
+//                                          << iJet->jetID().fHPD << std::endl;
+            badJet = true;
             ++iJet;
             continue;
          }
-         if (iJet->emEnergyFraction() >= maxFem_ && fabs(iJet->eta()) < 2.6 && useJetID_) {
-            ++iJet;
-            continue;
-         }
-         if (iJet->jetID().n90Hits <= minN90_ && useJetID_) {
-            ++iJet;
-            continue;
-         }
-         if (iJet->jetID().fHPD >= maxfHPD_ && useJetID_) {
-            ++iJet;
-            continue;
-         }
-         if (iJet->pt() > minPt_ && fabs(iJet->eta()) < maxEta_) {
-            math::XYZTLorentzVector p4(iJet->px(), iJet->py(), iJet->pz(), iJet->energy());//   iJet->correctedP4("abs");
-            MHT += p4;
-            HT += p4.pt();
-         }
-         ++iJet;
+         math::XYZTLorentzVector p4(iJet->px(), iJet->py(), iJet->pz(), iJet->energy());//   iJet->correctedP4("abs");
+         MHT += p4;
+         HT += p4.pt();
       }
-
-//    } else if (calojet) {
-
-//       // Sum over jet Ets (with cut on min. pt)
-//       edm::View<reco::Jet>::const_iterator iJet = jetHandle->begin();
-//       while (iJet != jetHandle->end()) {
-//          const reco::CaloJet *jet = dynamic_cast<const reco::CaloJet *> (&(*iJet));
-//          //         std::cout << "reco::CaloJet (pt, eta, phi, emf): " << jet->pt() << ", " << jet->eta() << ", " << jet->phi()
-//          //                  << ", " << jet->emEnergyFraction() << std::endl;
-//          if (jet->emEnergyFraction() <= minFem_ && fabs(jet->eta()) < 2.6) {
-//             ++iJet;
-//             continue;
-//          }
-//          if (jet->emEnergyFraction() >= maxFem_ && fabs(jet->eta()) < 2.6) {
-//             ++iJet;
-//             continue;
-//          }
-//          if (jet->pt() > minPt_ && fabs(jet->eta()) < maxEta_) {
-//             math::XYZTLorentzVector p4(jet->px(), jet->py(), jet->pz(), jet->energy());//   jet->correctedP4("abs");
-//             MHT += p4;
-//             HT += p4.pt();
-//          }
-//          ++iJet;
-//       }
-
-//    } else {
-
-//       // Sum over jet Ets (with cut on min. pt)
-//       edm::View<reco::Jet>::const_iterator iJet = jetHandle->begin();
-//       while (iJet != jetHandle->end()) {
-//          //         std::cout << "reco::Jet (pt, eta, phi): " << iJet->pt() << ", " << iJet->eta() << ", " << iJet->phi()
-//          //                  << std::endl;
-//          if (iJet->pt() > minPt_ && fabs(iJet->eta()) < maxEta_) {
-//             math::XYZTLorentzVector p4(iJet->px(), iJet->py(), iJet->pz(), iJet->energy());//   iJet->correctedP4("abs");
-//             MHT += p4;
-//             HT += p4.pt();
-//          }
-//          ++iJet;
-//       }
-
-//    }
+      ++iJet;
+   }
 
    float myMHT = MHT.pt();
    //std::cout << myMHT << std::endl;
@@ -158,7 +86,7 @@ bool MyMHTEventSelector::select(const edm::Event& event) const {
    bool result_min = true;
    if (minMHT_ > 0)
       result_min = (myMHT > minMHT_);
-   return (result_min && result_max && result_maxsig);
+   return (result_min && result_max && result_maxsig && (rejectEvtJetID_ && !(badJet)));
 
 }
 

@@ -6,7 +6,7 @@
 ///   and cuts on it. HT is defined as scalar sum of the
 ///   the transverse jet energies.
 ///
-/// $Id: MyMHTEventSelector.h,v 1.5 2010/08/31 09:51:27 thomsen Exp $
+/// $Id: MyMHTEventSelector.h,v 1.6 2010/10/27 17:57:31 csander Exp $
 
 // system include files
 #include <memory>
@@ -17,26 +17,23 @@
 #include "FWCore/Framework/interface/Event.h"
 #include "FWCore/ParameterSet/interface/ParameterSet.h"
 #include "FWCore/Utilities/interface/InputTag.h"
-//#include "FWCore/ParameterSet/interface/InputTag.h"
 
 class MyMHTEventSelector: public SusyEventSelector {
-public:
-   MyMHTEventSelector(const edm::ParameterSet&);
-   virtual bool select(const edm::Event&) const;
-   virtual ~MyMHTEventSelector() {
-   }
+   public:
+      MyMHTEventSelector(const edm::ParameterSet&);
+      virtual bool select(const edm::Event&) const;
+      virtual ~MyMHTEventSelector() {
+      }
 
-private:
-   edm::InputTag jetTag_; ///< tag for input collection
-   float minMHT_; ///< lower MHT cut
-   float maxMHT_; ///< upper MHT cut
-   float maxMHTsig_; ///< upper MHT significance cut
-   float minPt_; ///< minimum Pt of jets taken into account
-   float maxEta_; ///< maximum Eta of jets taken into account
-   double minFem_;
-   double maxFem_;
-   int minN90_;
-   double maxfHPD_;
-   bool useJetID_;
+   private:
+      edm::InputTag jetTag_; ///< tag for input collection
+      float minMHT_; ///< lower MHT cut
+      float maxMHT_; ///< upper MHT cut
+      float maxMHTsig_; ///< upper MHT significance cut
+      float minPt_; ///< minimum Pt of jets taken into account
+      float maxEta_; ///< maximum Eta of jets taken into account
+      bool useJetID_;
+      bool rejectEvtJetID_;
+
 };
 #endif

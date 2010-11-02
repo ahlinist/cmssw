@@ -14,20 +14,17 @@
 
 //________________________________________________________________________________________
 MHTJetEventSelector::MHTJetEventSelector(const edm::ParameterSet& pset) :
-  SusyEventSelector(pset),
-  jetTag_(pset.getParameter<edm::InputTag> ("jetTag")),
-  mhtDphiMin_(pset.getParameter<double> ("mhtDPhiMin")),
-  dPhiJet2MHTMin_(pset.getParameter<double> ("dPhiJet2MHTMin")),
-  dPhiJet1MHTMin_(pset.getParameter<double> ("dPhiJet1MHTMin")),
-  rDistJetsMin_(pset.getParameter<double> ("rDistJetsMin")),
-  nJetsMHTIso_(pset.getParameter<unsigned int> ("NJets_mhtIso")),
-  minPt_(pset.getParameter<double> ("minPt")),
-  maxEta_(pset.getParameter<double> ("maxEta")),
-  minFem_(pset.getParameter<double> ("minEMFraction")),
-  maxFem_(pset.getParameter<double> ("maxEMFraction")),
-  minN90_(pset.getParameter<int> ("minTowersN90")),
-  maxfHPD_(pset.getParameter<double> ("maxfHPD")),
-  useJetID_(pset.getParameter<bool> ("useJetID")) {
+   SusyEventSelector(pset),
+   jetTag_(pset.getParameter<edm::InputTag> ("jetTag")),
+   mhtDphiMin_(pset.getParameter<double> ("mhtDPhiMin")),
+   dPhiJet1MHTMin_(pset.getParameter<double> ("dPhiJet1MHTMin")),
+   dPhiJet2MHTMin_(pset.getParameter<double> ("dPhiJet2MHTMin")),
+   rDistJetsMin_(pset.getParameter<double> ("rDistJetsMin")),
+   nJetsMHTIso_(pset.getParameter<unsigned int> ("NJets_mhtIso")),
+   minPt_(pset.getParameter<double> ("minPt")),
+   maxEta_(pset.getParameter<double> ("maxEta")),
+   useJetID_(pset.getParameter<bool> ("useJetID")),
+   rejectEvtJetID_(pset.getParameter<bool> ("rejectEvtJetID")) {
 
    // Define all variables we want to cache (and eventually plot...)
    defineVariable("mhtDphi");
@@ -54,6 +51,11 @@ bool MHTJetEventSelector::select(const edm::Event& event) const {
       return false;
    }
 
+   //// To be set true if one jet is found failing jetID
+   bool badJet = false;
+   JetIDSelectionFunctor jetIDLoose( JetIDSelectionFunctor::PURE09, JetIDSelectionFunctor::LOOSE );
+   pat::strbitset ret = jetIDLoose.getBitTemplate();
+
    //
    // Preselection: number of jets (need at least 3(?) to make sense out of these variables)
    //
@@ -67,19 +69,10 @@ bool MHTJetEventSelector::select(const edm::Event& event) const {
 
    edm::View<pat::Jet>::const_iterator iJet = jets->begin();
    while (iJet != jets->end()) {
-      if (iJet->emEnergyFraction() <= minFem_ && fabs(iJet->eta()) < 2.6 && useJetID_) {
-         ++iJet;
-         continue;
-      }
-      if (iJet->emEnergyFraction() >= maxFem_ && fabs(iJet->eta()) < 2.6 && useJetID_) {
-         ++iJet;
-         continue;
-      }
-      if (iJet->jetID().n90Hits <= minN90_ && useJetID_) {
-         ++iJet;
-         continue;
-      }
-      if (iJet->jetID().fHPD >= maxfHPD_ && useJetID_) {
+      ret.set(false);
+      bool loose = jetIDLoose(*iJet, ret);
+      if (useJetID_ && !(loose)) {
+         badJet = true;
          ++iJet;
          continue;
       }
@@ -89,27 +82,22 @@ bool MHTJetEventSelector::select(const edm::Event& event) const {
       }
       ++iJet;
    }
-   double metPhi = HT.Phi();
-   if (metPhi > 0)
-      metPhi -= TMath::Pi();
-   else
-      metPhi += TMath::Pi();
 
    // MET "isolation" (calculated on at most nJetsMetIso_ jets)
    float metIso = 100.;
    for (unsigned int iJet = 0; iJet < nJetsMHTIso_ && iJet < jets->size(); ++iJet) {
-      double deltaPhiAbs = fabs(reco::deltaPhi((*jets)[iJet].phi(), metPhi));
+      double deltaPhiAbs = fabs(reco::deltaPhi((*jets)[iJet].phi(), HT.Phi()));
       if (metIso > deltaPhiAbs)
          metIso = deltaPhiAbs;
    }
    setVariable("mhtDphi", metIso);
 
    // MET and leading jets deltaPhi
-   double dPhiJet1Met = fabs(reco::deltaPhi((*jets)[0].phi(), metPhi));
+   double dPhiJet1Met = fabs(reco::deltaPhi((*jets)[0].phi(), HT.Phi()));
    setVariable("dPhiJet1MHT", dPhiJet1Met);
-   double dPhiJet2Met = fabs(reco::deltaPhi((*jets)[1].phi(), metPhi));
+   double dPhiJet2Met = fabs(reco::deltaPhi((*jets)[1].phi(), HT.Phi()));
    setVariable("dPhiJet2MHT", dPhiJet2Met);
-   double dPhiJet3Met = fabs(reco::deltaPhi((*jets)[2].phi(), metPhi));
+   double dPhiJet3Met = fabs(reco::deltaPhi((*jets)[2].phi(), HT.Phi()));
    setVariable("dPhiJet3MHT", dPhiJet3Met);
 
    // R1 & R2
@@ -132,7 +120,7 @@ bool MHTJetEventSelector::select(const edm::Event& event) const {
    if (R2 < rDistJetsMin_)
       return false;
 
-   return true;
+   return (rejectEvtJetID_ && !(badJet));
 
 }
 

@@ -6,7 +6,7 @@
 ///   and cuts on it. HT is defined as scalar sum of the
 ///   the transverse jet energies.
 ///
-/// $Id: HTEventSelector.h,v 1.7 2010/06/01 17:36:08 tschum Exp $
+/// $Id: HTEventSelector.h,v 1.8 2010/08/31 09:51:27 thomsen Exp $
 
 // system include files
 #include <memory>
@@ -18,23 +18,21 @@
 #include "FWCore/ParameterSet/interface/ParameterSet.h"
 //#include "FWCore/ParameterSet/interface/InputTag.h"
 #include "FWCore/Utilities/interface/InputTag.h"
+#include "PhysicsTools/SelectorUtils/interface/JetIDSelectionFunctor.h"
 
 class HTEventSelector: public SusyEventSelector {
-public:
-   HTEventSelector(const edm::ParameterSet&);
-   virtual bool select(const edm::Event&) const;
-   virtual ~HTEventSelector() {
-   }
+   public:
+      HTEventSelector(const edm::ParameterSet&);
+      virtual bool select(const edm::Event&) const;
+      virtual ~HTEventSelector() {
+      }
 
-private:
-   edm::InputTag jetTag_; ///< tag for input collection
-   float minHT_; ///< lower HT cut
-   float minPt_; ///< minimum Pt of jets taken into account
-   float maxEta_; ///< maximum Eta of jets taken into account
-   double minFem_;
-   double maxFem_;
-   int minN90_;
-   double maxfHPD_;
-   bool useJetID_;
+   private:
+      edm::InputTag jetTag_; ///< tag for input collection
+      float minHT_; ///< lower HT cut
+      float minPt_; ///< minimum Pt of jets taken into account
+      float maxEta_; ///< maximum Eta of jets taken into account
+      bool useJetID_;
+      bool rejectEvtJetID_;
 };
 #endif
