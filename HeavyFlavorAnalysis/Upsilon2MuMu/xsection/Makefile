@@ -80,12 +80,13 @@ lib/libAna.so: $(addprefix obj/,$(ANACLASSES) $(ANACLASSES_DICT)) lib/libAna00.s
 
 lib/libAna00.so:
 	cd lib && ln -s $(RELLIBPATH)/libAna00.so libAna00.so && cd -
+	cd lib && ln -s $(RELLIBPATH)/libUtil.so libUtil.so && cd -
 
 bin/runXSReaders: lib/libAnaClasses.so obj/runXSReaders.o lib/libAna00.so
-	$(LD) $(LDFLAGS) -o bin/runXSReaders $(GLIBS) obj/runXSReaders.o lib/libAnaClasses.so lib/libAna00.so
+	$(LD) $(LDFLAGS) -o bin/runXSReaders $(GLIBS) obj/runXSReaders.o lib/libAnaClasses.so lib/libAna00.so lib/libUtil.so
 
 clean:
-	rm -f obj/*.o *Dict.* lib/libAna00.so
+	rm -f obj/*.o *Dict.* lib/libAna00.so lib/libUtil.so
 
 cleanall: clean
 	rm -f bin/runXSReaders
