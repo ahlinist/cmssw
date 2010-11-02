@@ -27,9 +27,14 @@
 
 #include "CreateEcalTimingCalibs.h"
 
+#define ADCtoGeVEB   0.039
+#define ADCtoGeVEE   0.063
+
 // Globals
 EcalTimeTreeContent treeVars_;
 std::vector<std::string> listOfFiles_;
+const float sigmaNoiseEE = 2.10;  // ADC ; using total single-sample noise
+TF1* timeCorrectionEE_;
 
 // ****************************************************************
 std::string intToString(int num)
@@ -50,6 +55,10 @@ int main(int argc, char* argv[])
   //
 
   using namespace std;
+  // Ao dependent timing corrections
+  timeCorrectionEE_ = new TF1("timeCorrectionEE_","pol4(0)",0,1.2);
+  //coefficients obtained in the interval (0, 1.5) from Low eta region < 2.2, run 144011
+  timeCorrectionEE_->SetParameters(-0.461192,0.0876435,-0.234752,0.143774,-0.051990);
 
   // For selection cuts
   string inBxs, inOrbits, inTrig, inTTrig, inLumi, inRuns;
@@ -192,10 +201,21 @@ int main(int argc, char* argv[])
   //TH2F* calibMapEtaAvgEE = new TH2F("calibMapEtaAvgEE","time calibs raw eta avg map EE",360,1,361,170,-86,86);
   //TH1F* calibHistEtaAvgEE = new TH1F("timingCalibsEtaAvgEE","EtaAvgTimingCalibs EE [ns]",2000,-100,100);
 
+  TH2F* hitsPerCryMapEEM = new TH2F("hitsPerCryMapEEM","Hits per cry EEM;ix;iy",100,1,101,100,1,101);
+  TH2F* hitsPerCryMapEEP = new TH2F("hitsPerCryMapEEP","Hits per cry EEP;ix;iy",100,1,101,100,1,101);
+  TH1F* hitsPerCryHistEEM = new TH1F("hitsPerCryHistEEM","Hits per cry EEM;hashedIndex",14648,0,14648);
+  TH1F* hitsPerCryHistEEP = new TH1F("hitsPerCryHistEEP","Hits per cry EEP;hashedIndex",14648,0,14648);
+  //TH1C* eventsEEMHist = new TH1C("numEventsEEM","Number of events, EEM",100,0,100);
+  //TH1C* eventsEEPHist = new TH1C("numEventsEEP","Number of events, EEP",100,0,100);
+  TProfile* ampProfileEEM = new TProfile("ampProfileEEM","Amp. profile EEM;hashedIndex",14648,0,14648);
+  TProfile* ampProfileEEP = new TProfile("ampProfileEEP","Amp. profile EEP;hashedIndex",14648,0,14648);
+  TProfile2D* ampProfileMapEEP = new TProfile2D("ampProfileMapEEP","Amp. profile EEP;ix;iy",100,1,101,100,1,101);
+  TProfile2D* ampProfileMapEEM = new TProfile2D("ampProfileMapEEM","Amp. profile EEM;ix;iy",100,1,101,100,1,101);
+
   //TH1F* eventsEEHist = new TH1F("numEventsEE","Number of events, EE",100,0,100);
   //TH1F* calibSigmaHist = new TH1F("timingSpreadEE","Crystal timing spread [ns]",1000,-5,5);
 
-  //TH2F* avgAmpVsSigmaTHist = new TH2F("avgAmpVsSigmaT","Avg. amp. vs. #sigma_{t}",500,0,5,1000,0,1000);
+  TH1F* sigmaHistEE = new TH1F("sigmaCalibsEE"," Sigma of calib distributions EE [ns]",100,0,10);
 
   //TH1F* chiSquaredEachEventHist = new TH1F("chi2eachEvent","Chi2 of each event",500,0,500);
   //TH2F* chiSquaredVsAmpEachEventHist = new TH2F("chi2VsAmpEachEvent","Chi2 vs. amplitude of each event",500,0,500,750,0,750);
@@ -231,16 +251,8 @@ int main(int argc, char* argv[])
   calibMapEEM->Sumw2();
   calibMapEEP->Sumw2();
 
-  TProfile* ampProfileEEM = new TProfile("ampProfileEEM","Amp. profile EEM;hashedIndex",14648,0,14648);
-  TProfile* ampProfileEEP = new TProfile("ampProfileEEP","Amp. profile EEP;hashedIndex",14648,0,14648);
-  TProfile2D* ampProfileMapEEP = new TProfile2D("ampProfileMapEEP","Amp. profile EEP;ix;iy",100,1,101,100,1,101);
-  TProfile2D* ampProfileMapEEM = new TProfile2D("ampProfileMapEEM","Amp. profile EEM;ix;iy",100,1,101,100,1,101);
-  TH2F* hitsPerCryMapEEM = new TH2F("hitsPerCryMapEEM","Hits per cry EEM;ix;iy",100,1,101,100,1,101);
-  TH2F* hitsPerCryMapEEP = new TH2F("hitsPerCryMapEEP","Hits per cry EEP;ix;iy",100,1,101,100,1,101);
-  TH1F* hitsPerCryHistEEM = new TH1F("hitsPerCryHistEEM","Hits per cry EEM;hashedIndex",14648,0,14648);
-  TH1F* hitsPerCryHistEEP = new TH1F("hitsPerCryHistEEP","Hits per cry EEP;hashedIndex",14648,0,14648);
-  //TH1C* eventsEEMHist = new TH1C("numEventsEEM","Number of events, EEM",100,0,100);
-  //TH1C* eventsEEPHist = new TH1C("numEventsEEP","Number of events, EEP",100,0,100);
+  TH2F* sigmaMapEEM = new TH2F("sigmaMapEEM","Sigma of time calib map EEM [ns];ix;iy",100,1.,101.,100,1,101);
+  TH2F* sigmaMapEEP = new TH2F("sigmaMapEEP","Sigma of time calib map EEP [ns];ix;iy",100,1.,101.,100,1,101);
 
   TDirectory* cryDirEEP = gDirectory->mkdir("crystalTimingHistsEEP");
   cryDirEEP->cd();
@@ -344,6 +356,8 @@ int main(int argc, char* argv[])
         float cryTime = treeVars_.xtalInBCTime[bCluster][cryInBC];
         float cryTimeError = treeVars_.xtalInBCTimeErr[bCluster][cryInBC];
         float cryAmp = treeVars_.xtalInBCAmplitudeADC[bCluster][cryInBC];
+	float Ao = cryAmp/sigmaNoiseEE;
+	float AoLog = log10(Ao/25);
 
         EEDetId det = EEDetId::unhashIndex(hashedIndex);
         if(det==EEDetId()) // make sure DetId is valid
@@ -355,13 +369,20 @@ int main(int argc, char* argv[])
         //XXX: RecHit cuts
         bool keepHit = cryAmp >= minAmpEE
           && cryTime > minHitTimeEE
-          && cryTime < maxHitTimeEE;
+          && cryTime < maxHitTimeEE
+	  && AoLog > 0
+          && AoLog < 1.2;
         if(!keepHit)
           continue;
 
         //cout << "STUPID DEBUG: " << hashedIndex << " cryTime: " << cryTime << " cryTimeError: " << cryTimeError << " cryAmp: " << cryAmp << endl;
 
-        eeCryCalibs[hashedIndex]->insertEvent(cryAmp,cryTime,cryTimeError,false);
+	// Timing correction to take out the energy dependence if log10(ampliOverSigOfThis/25)
+        // is between 0 and 1.2 (about 1 and 13 GeV)
+	// amplitude dependent timing corrections
+        float timing = cryTime - timeCorrectionEE_->Eval(AoLog);
+        eeCryCalibs[hashedIndex]->insertEvent(cryAmp,timing,cryTimeError,false);
+
         //SIC Use when we don't have time_error available
         //eeCryCalibs[hashedIndex]->insertEvent(cryAmp,cryTime,35/(cryAmp/1.2),false);
         if(det.zside() < 0)
@@ -465,7 +486,7 @@ int main(int argc, char* argv[])
     
     // Make timing calibs
     double p1 = cryCalib.mean;
-    double p1err = cryCalib.sigma;
+    double p1err = cryCalib.sigma/sqrt(cryCalib.timingEvents.size());
     //cout << "cry ieta: " << ieta << " cry iphi: " << iphi << " p1: " << p1 << " p1err: " << p1err << endl;
     if(cryCalib.timingEvents.size() < 10)
     {
@@ -512,15 +533,18 @@ int main(int argc, char* argv[])
         << "\t Calib: " << p1 << "\t Error: " << p1err << std::endl;
     }
 
+    sigmaHistEE->Fill(cryCalib.sigma);
     if(det.zside() < 0)
     {
       //calibsVsErrorsEEM->Fill(p1err, p1 > 0 ? p1 : -1*p1);
       calibErrorHistEEM->Fill(p1err);
+      sigmaMapEEM->Fill(x,y,cryCalib.sigma);
     }
     else
     {
       //calibsVsErrorsEEP->Fill(p1err, p1 > 0 ? p1 : -1*p1);
       calibErrorHistEEP->Fill(p1err);
+      sigmaMapEEP->Fill(x,y,cryCalib.sigma);
     }
   }
   
@@ -562,6 +586,9 @@ int main(int argc, char* argv[])
   calibErrorHistEEP->Write();
   calibErrorHistEEM->SetXTitle("uncertainty on mean [ns]");
   calibErrorHistEEM->Write();
+  sigmaHistEE->Write();
+  sigmaMapEEM->Write();
+  sigmaMapEEP->Write();
 
   //can->Print("calibs1D.png");
   //cout << "Writing calibVsErrors" << endl;
