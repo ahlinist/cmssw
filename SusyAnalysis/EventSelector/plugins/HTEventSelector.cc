@@ -48,7 +48,7 @@ bool HTEventSelector::select(const edm::Event& event) const {
          continue;
       }
       if (iJet->pt() > minPt_ && fabs(iJet->eta()) < maxEta_)
-         myHT += iJet->et();
+         myHT += iJet->pt();
       ++iJet;
    }
    //std::cout << myHT << std::endl;
