@@ -78,7 +78,7 @@ bool MHTJetEventSelector::select(const edm::Event& event) const {
       }
       if (iJet->pt() > minPt_ && fabs(iJet->eta()) < maxEta_) {
          math::XYZTLorentzVector p4(iJet->px(), iJet->py(), iJet->pz(), iJet->energy()); //iJet->correctedP4("abs");
-         HT += p4;
+         HT -= p4;
       }
       ++iJet;
    }
