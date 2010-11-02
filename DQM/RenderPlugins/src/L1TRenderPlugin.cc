@@ -271,95 +271,6 @@ private:
       }
 
 
-      if(REMATCH("Packed Charge *", o.name))
-      {
-        obj->GetXaxis()->SetTitle("charge");
-        obj->GetXaxis()->SetNdivisions(2);
-        return;
-      }
-      if(REMATCH("Packed Phi *", o.name))
-      {
-        obj->GetXaxis()->SetTitle("phi");
-        return;
-      }
-      else if(REMATCH("Packed Eta *", o.name))
-      {
-        obj->GetXaxis()->SetTitle("eta");
-        return;
-      }
-      else if(REMATCH("Packed Quality *", o.name))
-      {
-        obj->GetXaxis()->SetTitle("quality");
-        obj->GetXaxis()->SetNdivisions(8);
-        return;
-      }
-      else if(REMATCH("Packed PT *", o.name))
-      {
-        obj->GetXaxis()->SetTitle("pt");
-        return;
-      }
-      else if(REMATCH("Integrated Packed Pt *", o.name))
-      {
-        obj->GetXaxis()->SetTitle("pt");
-        return;
-      }
-      else if(REMATCH("Integrated Packed Charge", o.name))
-      {
-        obj->GetXaxis()->SetTitle("charge");
-        obj->GetXaxis()->SetNdivisions(2);
-        return;
-      }
-      else if(REMATCH("Number of Tracks", o.name))
-      {
-        obj->GetXaxis()->SetNdivisions(12);
-        return;
-      }
-      else if((o.name.find("BX_diff") != std::string::npos)){
-        obj->GetXaxis()->SetTitle("#Delta bx");
-        obj->GetXaxis()->SetNdivisions(9);
-	obj->GetXaxis()->CenterLabels();
-	return;
-      }
-      else if(REMATCH("BX *", o.name))
-      {
-        obj->GetXaxis()->SetTitle("bx");
-        obj->GetXaxis()->SetNdivisions(3);
-        return;
-      }
-      else if(REMATCH("2nd Tracks", o.name))
-      {
-        obj->GetXaxis()->SetTitle("sector");
-        obj->GetXaxis()->SetNdivisions(12);
-        return;
-      }
-      else if(REMATCH("Num Tracks Per Event bx*", o.name))
-      {
-        obj->GetXaxis()->SetNdivisions(2);
-        return;
-      }
-      else if(REMATCH("Num Tracks Per Event", o.name))
-      {
-        obj->GetXaxis()->SetNdivisions(11);
-        return;
-      }
-      //   else if(REMATCH("Wheel * - BX*", o.name)) {
-      //     obj->GetXaxis()->SetTitle("bx");
-      //     obj->GetXaxis()->SetNdivisions(3);
-      //     return;
-      //   }
-      else if(REMATCH("Integrated Num Tracks", o.name))
-      {
-        obj->GetXaxis()->CenterLabels();
-        obj->GetYaxis()->CenterLabels();
-        obj->GetXaxis()->SetTitle("wheel");
-        obj->GetXaxis()->SetBinLabel(1,"N2");
-        obj->GetXaxis()->SetBinLabel(2,"N1");
-        obj->GetXaxis()->SetBinLabel(3,"N0");
-        obj->GetXaxis()->SetBinLabel(4,"P0");
-        obj->GetXaxis()->SetBinLabel(5,"P1");
-        obj->GetXaxis()->SetBinLabel(6,"P2");
-        return;
-      }
       // rate histograms
       if ( (o.name.find("rate_algobit") != std::string::npos ||
 	    o.name.find("rate_ttbit") != std::string::npos ||
@@ -457,36 +368,42 @@ private:
 
       /// DTTF section
       if ( o.name.find("dttf_") != std::string::npos ) {
-
+	// dqm::utils::reportSummaryMapPalette(obj);
+	// obj->SetOption("colz");
 	obj->GetYaxis()->SetRangeUser(0,
 				      obj->GetBinContent(obj->GetMaximumBin() ) * 1.1 );
 
-	if ( o.name.find("bx") != std::string::npos ) {
 
+	if ( o.name.find("bx") != std::string::npos ) {
+	  
 	  obj->GetXaxis()->SetNdivisions(3);
 	  return;
-
-	} else if ( o.name.find("_q_") != std::string::npos ) {
+	  
+	} else if ( o.name.find("charge" ) != std::string::npos ) {
 
 	  obj->GetXaxis()->SetNdivisions(2);
 	  return;
 
+	} else if ( o.name.find("se" ) != std::string::npos ) {
 
-	} else if ( ( o.name.find("nTracks_wh" ) != std::string::npos ) ||
-		    ( o.name.find("eta" ) != std::string::npos ) ) {
-	  obj->GetXaxis()->SetNdivisions(12, true);
-	  obj->GetXaxis()->CenterLabels();
+	  if ( ( o.name.find("etaFine" ) != std::string::npos ) ||
+	       ( o.name.find("nTracks" ) != std::string::npos ) ) {
+	    obj->GetXaxis()->SetNdivisions(2);
+	  }
 	  return;
+
+	} else if ( ( o.name.find("etaFine_fraction_wh") != std::string::npos )
+		    || ( o.name.find("nTracks_wh" ) != std::string::npos )
+		    || ( o.name.find("eta" ) != std::string::npos ) ) {
+
+	  obj->GetXaxis()->CenterLabels();
+	  obj->GetXaxis()->SetNdivisions(12);
+	  return;
+
 	}
 
-	//  if( o.name.find( "dttf_p_q_" )  != std::string::npos) {
-	//     //dqm::utils::reportSummaryMapPalette(obj);
-	//     //obj->SetOption("colz");
-	//     //obj->SetTitle("L1T Report Summary Map");
+	return;
 
-	//     obj->GetXaxis()->SetNdivisions(1);
-	//     return;
-	//   }
       }
 
 
@@ -665,22 +582,18 @@ private:
 
 	} else if ( o.name.find("gmt") != std::string::npos ) {
 
-	  gStyle->SetOptStat(110010);
-	  if (  o.name.find("missing") != std::string::npos ) {
-	    obj->GetYaxis()->SetNdivisions(12);
-	    obj->GetYaxis()->CenterLabels();
-	  }
-
+	  // gStyle->SetOptStat(110010);
+	  obj->GetYaxis()->SetNdivisions(12);
+	  obj->GetYaxis()->CenterLabels();
 	  return;
 
-	} else if ( o.name.find("phi_eta") != std::string::npos ) {
+	} else if ( o.name.find("phi_vs_eta") != std::string::npos ) {
 
+	  // if ( o.name.find("wh") != std::string::npos ) {
+	  //   gStyle->SetOptStat(110010);
+	  // }
 	  obj->GetYaxis()->SetNdivisions(12, false);
-
-	  if ( o.name.find("wh") != std::string::npos ) {
-	    gStyle->SetOptStat(110010);
-	    return;
-	  }
+	  return;
 
 	  //obj->GetXaxis()->SetNdivisions(8, false);
 
@@ -689,18 +602,24 @@ private:
 	  obj->GetYaxis()->SetNdivisions(12, true);
  	  obj->GetZaxis()->SetRangeUser(0, 1);
 	  obj->GetYaxis()->CenterLabels();
+	  return;
 
-	} else if ( o.name.find("tracks_distr_s" ) != std::string::npos ) {
+	} else if ( o.name.find("occupancy" ) != std::string::npos ) {
 
 	  obj->GetYaxis()->SetNdivisions(12, true);
 	  obj->GetYaxis()->CenterLabels();
-	  obj->GetZaxis()->SetRangeUser(0, 0.03);
+	  if ( o.name.find("tracks_occupancy_summary" ) != std::string::npos )
+	    obj->GetZaxis()->SetRangeUser(0, 0.03);
+	  return;
 
 	} else if  ( o.name.find("quality" ) != std::string::npos ) {
+
   	  obj->GetYaxis()->SetNdivisions(8, true);
  	  obj->GetXaxis()->SetNdivisions(12, false);
  	  obj->GetXaxis()->CenterLabels();
 	  obj->GetYaxis()->CenterLabels();
+	  return;
+
 	}
 
 	//  } else if  ( o.name.find("Summary" ) != std::string::npos ) {
@@ -721,7 +640,9 @@ private:
 	    
         //  gStyle->SetPalette(6, cpal);
 	//  }
+
 	return;
+
       }
 
 
