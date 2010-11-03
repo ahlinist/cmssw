@@ -19,6 +19,28 @@ def main(options):
 
     ws.Print("v")
 
+
+    setupWorkspace(dataTree,mcTree,ws,options)
+
+    theNLL = ROOT.RooNLLVar('aTGCNLL','The -log(likelihood) for the dataset',
+                            ws.function('corePoisson'),ws.data('aTGCData'))
+
+
+    theProfileLL = ROOT.RooProfileLL('ProfileLLaTGC','The Profile Loglikelihood',
+                                     theNLL,ROOT.RooArgSet(*ws.var(options.couplingType+'_h3'),
+                                                           *ws.var(options.couplingType+'_h4')))
+    
+    theLHInterval = ROOT.RooStats.LikelihoodInterval('aTGCLikelihoodInterval',theProfileLL,
+                                                     ROOT.RooArgSet(*ws.var(options.couplingType+'_h3'),
+                                                                    *ws.var(options.couplingType+'_h4')))
+    
+    theLHplot = ROOT.RooStats.LikelihoodIntervalPlot(theLHInterval)
+
+    getattr(ws,'import')(theNLL)
+    getattr(ws,'import')(theProfileLL)
+    getattr(ws,'import')(theLHInterval)
+    
+
     print "HelloWorld"
     
 
@@ -59,7 +81,9 @@ def setupWorkspace(dataTree,mcTree,ws,options):
     
     aRow = ROOT.RooArgSet(pho_et) #a row is the observed photon eT spectrum and the background fraction (from data driven or MC)
     
-    aTGCUnbinnedData = ROOT.RooDataSet('aTGCData','Anomalous Triple Gauge Coupling Data',dataTree,aRow)
+    aTGCUnbinnedData = ROOT.RooDataSet('aTGCUnbinnedData','Anomalous Triple Gauge Coupling Data, Unbinned',dataTree,aRow)
+
+    aTGCData = ROOT.RooDataHist('aTGCData','Anomalous Triple Gauge Coupling Data',ROOT.RooDataSet(pho_et),aTGCUnbinnedData)
 
     getattr(ws,'import')(pho_et)
     getattr(ws,'import')(h3)
@@ -88,7 +112,7 @@ def fitATGCExpectedYield(mcTree,options):
     #create the variables for the 3x3 grid
     h3_3x3 = ROOT.RooRealVar('h3_3x3','temp h3 to extrapolate grid',-options.h3Max,options.h3Max)
     h3_3x3.setBins(3)
-    h4_4x4 = ROOT.RooRealVar('h4_3x3','temp h4 to extrapolate grid',-options.h4Max,options.h4Max)
+    h4_3x3 = ROOT.RooRealVar('h4_3x3','temp h4 to extrapolate grid',-options.h4Max,options.h4Max)
     h4_3x3.setBins(3)
         
     print 'test'
@@ -98,27 +122,24 @@ def makeATGCExpectationPdf(ws):
     if not isinstance(ws,ROOT.RooWorkspace):
         print "You didn't pass a RooWorkspace!"
         exit(1)
-        
-    x_gs = ROOT.RooRealVar('err_x_gs','Integration Range for Selection Error',-ROOT.RooNumber.infinity(),ROOT.RooNumber.infinity())
-    x_gb = ROOT.RooRealVar('err_x_gb','Integration Range for Background Error',-ROOT.RooNumber.infinity(),ROOT.RooNumber.infinity())
-    x_gl = ROOT.RooRealVar('err_x_gl','Integration Range for Lumi Error',-ROOT.RooNumber.infinity(),ROOT.RooNumber.infinity())
+
+    #nuisance parameters
+    x_gs = ROOT.RooRealVar('err_x_gs','Integration Range for Selection Error',0,-ROOT.RooNumber.infinity(),ROOT.RooNumber.infinity())
+    x_gb = ROOT.RooRealVar('err_x_gb','Integration Range for Background Error',0,-ROOT.RooNumber.infinity(),ROOT.RooNumber.infinity())
+    x_gl = ROOT.RooRealVar('err_x_gl','Integration Range for Lumi Error',0,-ROOT.RooNumber.infinity(),ROOT.RooNumber.infinity())
     
     getattr(ws,'import')(x_gs)
     getattr(ws,'import')(x_gb)
     getattr(ws,'import')(x_gl)
     
-    #define the Gaussians to convolute with the poisson
+    #define the Gaussians for the errors
     ws.factory("RooGaussian::selectionErr(err_x_gs,1,eventSelectionError)")
     ws.factory("RooGaussian::backgroundErr(err_x_gb,1,backgroundError)")
     ws.factory("RooGaussian::lumiErr(err_x_gl,1,luminosityError)")
     
-    #now we create the core poisson pdf
-    ws.factory("RooPoisson::corePoisson(nObserved,nExpectedSignal*err_x_gs*err_xg+nExpectedBackground*err_x_gb)")
-    
-    #now we do the three convolutions to create the final pdf
-    ws.factory("RooNumConvPdf::bkgConvPdf(err_x_gb,corePoisson,backgroundErr)")
-    ws.factory("RooNumConvPdf::selConvPdf(err_x_gs,bkgConvPdf,selectionErr)")
-    ws.factory("RooNumConvPdf::smearedPoisson(err_x_gl,selConvPdf,lumiErr)")
+    #now we create the core poisson pdf with errors left as floating, to be integrated out later
+    ws.factory("RooPoisson::corePoisson(pho_et,nExpectedSignal(pT)*err_x_gs*err_x_gl+nExpectedBackground*err_x_gb)")
+      
 
 def makePlots():
     print "not done yet"
