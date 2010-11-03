@@ -346,7 +346,13 @@ void InclusiveMuonPlots::analyze(const edm::Event & event, const edm::EventSetup
             plots["phiSta"]->Fill(mu.outerTrack()->phi());
 
             plots["muonHits"]->Fill(mu.outerTrack()->numberOfValidHits());
-            plots["muonBadHits"]->Fill(mu.outerTrack()->recHitsSize() - mu.outerTrack()->numberOfValidHits());
+            if (old36Xdata_) {
+                if (mu.outerTrack()->extra().isAvailable()) {
+                    plots["muonBadHits"]->Fill(mu.outerTrack()->recHitsSize() - mu.outerTrack()->numberOfValidHits());
+                }
+            } else {
+                plots["muonBadHits"]->Fill(mu.outerTrack()->hitPattern().numberOfBadMuonHits());
+            }
             plots["muonChi2n"]->Fill(mu.outerTrack()->normalizedChi2());
 
             if (mu.innerTrack().isNonnull()) {
@@ -375,6 +381,16 @@ void InclusiveMuonPlots::analyze(const edm::Event & event, const edm::EventSetup
                 }
             } else {
                 const reco::HitPattern &hp = mu.outerTrack()->hitPattern();
+                /*
+                if (plots["nMuons"]->GetEntries() < 100) {
+                    std::cout << "Pt " << mu.pt() << ", eta " << mu.eta() << std::endl;
+                    std::cout << "Mu  Valid/Any " << hp.muonStationsWithValidHits() << "/" << hp.muonStationsWithAnyHits() << std::endl;
+                    std::cout << "DT  Valid/Any " << hp.dtStationsWithValidHits()   << "/" << hp.dtStationsWithAnyHits()   << std::endl;
+                    std::cout << "CSC Valid/Any " << hp.cscStationsWithValidHits()  << "/" << hp.cscStationsWithAnyHits()  << std::endl;
+                    std::cout << "RPC Valid/Any " << hp.rpcStationsWithValidHits()  << "/" << hp.rpcStationsWithAnyHits()  << std::endl;
+                    hp.print(std::cout);
+                }
+                */
                 plots["muonStationsValid"]->Fill(hp.muonStationsWithValidHits());
                 plots["muonStationsAny"  ]->Fill(hp.muonStationsWithAnyHits());
                 float abseta = std::abs(mu.outerTrack()->eta());
