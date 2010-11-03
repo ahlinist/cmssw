@@ -49,4 +49,6 @@ std::string getTauDecayModeName(int);
 const reco::Candidate* getDistPion(const pat::Tau&);
 const reco::Candidate* getDistPion(const reco::GenJet&);
 
+std::pair<double, double> compMEtProjU(const reco::Candidate::LorentzVector&, double, double, int&);
+
 #endif

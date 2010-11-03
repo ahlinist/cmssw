@@ -366,3 +366,30 @@ const reco::Candidate* getDistPion(const reco::GenJet& genTauJet)
   return 0;
 }
 
+//
+//-------------------------------------------------------------------------------
+//
+
+std::pair<double, double> compMEtProjU(const reco::Candidate::LorentzVector& zP4, double metPx, double metPy, int& errorFlag)
+{
+  if ( zP4.pt() == 0. ) {
+    edm::LogWarning ("compMEtProjU")
+      << " Failed to compute projection, because Z0 candidate has zero Pt --> returning dummy solution !!";
+    errorFlag = 1;
+    return std::pair<double, double>(0., 0.);
+  }
+  
+  double qX = zP4.px();
+  double qY = zP4.py();
+  double qT = TMath::Sqrt(qX*qX + qY*qY);
+  
+  double uX = -(qX + metPx);
+  double uY = -(qY + metPy);
+  
+  double u1 = (uX*qX + uY*qY)/qT;
+  double u2 = (uX*qY - uY*qX)/qT;
+  
+  return std::pair<double, double>(u1, u2);
+}
+
+
