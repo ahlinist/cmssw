@@ -194,7 +194,7 @@ int main(int argc, char* argv[])
   outfile->cd();
 
   TH1F* calibHistEB = new TH1F("timingCalibsEB","timingCalibs EB [ns]",2000,-100,100);
-  TH1F* calibErrorHistEB = new TH1F("timingCalibErrorEB","timingCalibError EB [ns]",500,0,5);
+  TH1F* calibErrorHistEB = new TH1F("calibErrorEB","timingCalibError EB [ns]",500,0,5);
   calibHistEB->Sumw2();
   calibErrorHistEB->Sumw2();
 
@@ -214,7 +214,7 @@ int main(int argc, char* argv[])
   TProfile2D* ampProfileMapEB = new TProfile2D("ampProfileMapEB","amp profile map [ADC];i#phi;i#eta",360,1.,361.,172,-86,86);
   TProfile* ampProfileEB = new TProfile("ampProfileEB","Average amplitude in cry [ADC];hashedIndex",61200,0,61200);
 
-  TH1F* sigmaHistEB = new TH1F("sigmaCalibsEB"," Sigma of calib distributions EB [ns]",100,0,10);
+  TH1F* sigmaHistEB = new TH1F("sigmaCalibsEB"," Sigma (RMS) of calib distributions EB [ns]",100,0,1);
 
   //=============Special Bins for TT and Modules borders=============================
   double ttEtaBins[36] = {-85, -80, -75, -70, -65, -60, -55, -50, -45, -40, -35, -30, -25, -20, -15, -10, -5, 0, 1, 6, 11, 16, 21, 26, 31, 36, 41, 46, 51, 56, 61, 66, 71, 76, 81, 86 };
@@ -242,7 +242,8 @@ int main(int argc, char* argv[])
   } 
   TH2F* calibMapEB = new TH2F("calibMapEB","time calib map EB [ns];i#phi;i#eta",360,1.,361.,172,-86,86);
   calibMapEB->Sumw2();
-  TH2F* sigmaMapEB = new TH2F("sigmaMapEB","Sigma of time calib map EB [ns];i#phi;i#eta",360,1.,361.,172,-86,86);
+  TH2F* sigmaMapEB = new TH2F("sigmaMapEB","Sigma (RMS) of time calib map EB [ns];i#phi;i#eta",360,1.,361.,172,-86,86);
+  TH2F* calibErrorMapEB = new TH2F("calibErrorMapEB","Error of time calib map EB [ns];i#phi;i#eta",360,1.,361.,172,-86,86);
   TProfile2D* calibTTMapEB = new TProfile2D("calibTTMapEB","time calib map EB (TT) [ns];i#phi;i#eta",360/5,ttPhiBins,35, ttEtaBins);
 
   TDirectory* cryDirEB = gDirectory->mkdir("crystalTimingHistsEB");
@@ -268,8 +269,8 @@ int main(int argc, char* argv[])
   CrystalCalibration* ebCryCalibs[61200];
   //XXX: Making calibs with weighted/unweighted mean
   for(int i=0; i < 61200; ++i)
-    ebCryCalibs[i] = new CrystalCalibration(); //use weighted mean!
-    //ebCryCalibs[i] = new CrystalCalibration(false); //don't use weighted mean!
+    //ebCryCalibs[i] = new CrystalCalibration(); //use weighted mean!
+    ebCryCalibs[i] = new CrystalCalibration(false); //don't use weighted mean!
 
   // Loop over the TTree
   int numEventsUsed = 0;
@@ -388,10 +389,12 @@ int main(int argc, char* argv[])
   // Create calibration container objects
   EcalTimeCalibConstants timeCalibConstants;
   EcalTimeCalibErrors timeCalibErrors;
-  bool writeXMLs = false;
 
   cout << "Using " << numEventsUsed << " out of " << nEntries << " in the tree." << endl;
   cout << "Creating calibs..." << endl;
+  float cryCalibAvg = 0;
+  int numCrysCalibrated = 0;
+  vector<int> hashesToCalibrateToAvg;
   //Loop over all the crys
   for(int hashedIndex=0; hashedIndex < 61200; ++hashedIndex)
   {
@@ -406,7 +409,7 @@ int main(int argc, char* argv[])
     //expectedStatPresHistEB->Fill(sqrt(1/expectedPresSumEB));
     //expectedStatPresVsObservedMeanErrHistEB->Fill(sigmaM,sqrt(1/expectedPresSumEB));
 
-    //XXX: Filter events at default 0.5*sigma threshold
+    //XXX: Filter events at default 0.5*meanE threshold
     cryCalib.filterOutliers();
     
     //numPointsErasedHist->Fill(numPointsErased);
@@ -416,8 +419,8 @@ int main(int argc, char* argv[])
     for(vector<TimingEvent>::const_iterator timeItr = times.begin();
         timeItr != times.end(); ++timeItr)
     {
-      cryTimingHistsEB[hashedIndex]->Fill(timeItr->time);
-      cryTimingHistsEB[hashedIndex]->SetBinError(cryTimingHistsEB[hashedIndex]->FindBin(timeItr->time),timeItr->sigmaTime);
+      float weight = 1/((timeItr->sigmaTime)*(timeItr->sigmaTime));
+      cryTimingHistsEB[hashedIndex]->Fill(timeItr->time,weight);
     }
     cryDirEB->cd();
     cryTimingHistsEB[hashedIndex]->Write();
@@ -427,13 +430,14 @@ int main(int argc, char* argv[])
     
     // Make timing calibs
     double p1 = cryCalib.mean;
-    double p1err = cryCalib.sigma/sqrt(cryCalib.timingEvents.size());
+    double p1err = cryCalib.meanE;
     //cout << "cry ieta: " << ieta << " cry iphi: " << iphi << " p1: " << p1 << " p1err: " << p1err << endl;
     if(cryCalib.timingEvents.size() < 10)
     {
-      fileStreamProb << "Cry (only " << cryCalib.timingEvents.size() << " events): " << ieta <<", " << iphi << ", hash: "
+      fileStreamProb << "Cry (only " << cryCalib.timingEvents.size() << " events) was calibrated to avg: " << ieta <<", " << iphi << ", hash: "
                                                                         << hashedIndex
-                                                                          << "\t Calib: " << p1 << "\t Error: " << p1err << std::endl;
+                                                                        << "\t Calib: " << p1 << "\t Error: " << p1err << std::endl;
+      hashesToCalibrateToAvg.push_back(hashedIndex);
       continue;
     }
     // Make it so we can add calib to reco time
@@ -447,6 +451,8 @@ int main(int argc, char* argv[])
       calibTTMapEB->Fill(iphi,ieta,p1);
       //calibMapEEMPhase->Fill(x+1,y-85,p1/25-floor(p1/25));
       //errorOnMeanVsNumEvtsHist->Fill(times.size(),p1err);
+      cryCalibAvg+=p1;
+      ++numCrysCalibrated;
       
       //Store in timeCalibration container
       EcalTimeCalibConstant tcConstant = p1;
@@ -454,25 +460,42 @@ int main(int argc, char* argv[])
       uint32_t rawId = EBDetId::unhashIndex(hashedIndex);
       timeCalibConstants[rawId] = tcConstant;
       timeCalibErrors[rawId] = tcError;
-      writeXMLs = true;
     }
     else
     {
       //std::cout << "Cry: " << ieta <<", " << iphi << ", hash: " << itr->first
       //  << "\t Calib: " << p1 << "\t Error: " << p1err << std::endl;
-      fileStreamProb << "Cry: " << ieta <<", " << iphi << ", hash: " << hashedIndex
+      fileStreamProb << "Cry was calibrated to avg: " << ieta <<", " << iphi << ", hash: " << hashedIndex
         << "\t Calib: " << p1 << "\t Error: " << p1err << std::endl;
+      hashesToCalibrateToAvg.push_back(hashedIndex);
     }
     //calibsVsErrorsEB->Fill(p1err, p1 > 0 ? p1 : -1*p1);
     calibErrorHistEB->Fill(p1err);
-    sigmaHistEB->Fill(cryCalib.sigma);
-    sigmaMapEB->Fill(iphi,ieta,cryCalib.sigma);
+    calibErrorMapEB->Fill(iphi,ieta,p1err);
+    sigmaHistEB->Fill(cryCalib.rms);
+    sigmaMapEB->Fill(iphi,ieta,cryCalib.rms);
   }
   
   fileStream.close();
   fileStreamProb.close();
+  // Calc average
+  if(numCrysCalibrated > 0)
+    cryCalibAvg/=numCrysCalibrated;
+  cryCalibAvg-= 2.0833; // Global phase shift
+  // calibrate uncalibratable crys
+  for(vector<int>::const_iterator hashItr = hashesToCalibrateToAvg.begin();
+      hashItr != hashesToCalibrateToAvg.end(); ++hashItr)
+  {
+    //Store in timeCalibration container
+    EcalTimeCalibConstant tcConstant = cryCalibAvg;
+    EcalTimeCalibError tcError = 999;
+    uint32_t rawId = EBDetId::unhashIndex(*hashItr);
+    timeCalibConstants[rawId] = tcConstant;
+    timeCalibErrors[rawId] = tcError;
+  }
 
   //Write XML files
+  cout << "Writing XML files." << endl;
   EcalCondHeader header;
   header.method_="testmethod";
   header.version_="testversion";
@@ -482,22 +505,17 @@ int main(int argc, char* argv[])
   header.date_="Mar 24 1973";
   string timeCalibFile = "EcalTimeCalibsEB.xml";
   string timeCalibErrFile = "EcalTimeCalibErrorsEB.xml";
-  if(writeXMLs)
-  {
-    cout << "Writing XML files." << endl;
-    // Hack to prevent seg fault
-      EcalTimeCalibConstant tcConstant = 0;
-      EcalTimeCalibError tcError = 0;
-      uint32_t rawId = EEDetId::unhashIndex(0);
-      timeCalibConstants[rawId] = tcConstant;
-      timeCalibErrors[rawId] = tcError;
-    // End hack
+  // Hack to prevent seg fault
+  EcalTimeCalibConstant tcConstant = 0;
+  EcalTimeCalibError tcError = 0;
+  uint32_t rawId = EEDetId::unhashIndex(0);
+  timeCalibConstants[rawId] = tcConstant;
+  timeCalibErrors[rawId] = tcError;
+  // End hack
+  EcalTimeCalibConstantsXMLTranslator::writeXML(timeCalibFile,header,timeCalibConstants);
+  EcalTimeCalibErrorsXMLTranslator::writeXML(timeCalibErrFile,header,timeCalibErrors);
 
-    EcalTimeCalibConstantsXMLTranslator::writeXML(timeCalibFile,header,timeCalibConstants);
-    EcalTimeCalibErrorsXMLTranslator::writeXML(timeCalibErrFile,header,timeCalibErrors);
-  }
   cout << "Writing histograms." << endl;
-
   outfile->cd();
   calibHistEB->SetXTitle("timingCalib [ns]");
   calibHistEB->Write();
@@ -518,6 +536,7 @@ int main(int argc, char* argv[])
   //cout << "Writing calib maps" << endl;
   sigmaMapEB->Write();
   calibMapEB->Write();
+  calibErrorMapEB->Write();
   calibTTMapEB->Write();
   //calibMapEBFlip->SetXTitle("ieta");
   //calibMapEBFlip->SetYTitle("iphi");
