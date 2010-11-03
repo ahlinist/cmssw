@@ -303,7 +303,8 @@ RECO_SAMPLES = {
         'type' : plotter.process_PPmuXptGt20.config_dqmHistPlotter.type.value(),
         'drawOption' : styles.drawOption_QCD,
         'enableSysUncertainties' : True,
-        'factorize' : True
+        'factorize' : True,
+        'hlt' : cms.InputTag("TriggerResults", "", "REDIGI36X")
     },
     'WplusJets' : {
         'datasetpath' : "/WJets-madgraph/akalinow-SkimTauTau_356_pass1-0a3d3891f015a95324f94837322fb8aa-muTauSkim/USER",
