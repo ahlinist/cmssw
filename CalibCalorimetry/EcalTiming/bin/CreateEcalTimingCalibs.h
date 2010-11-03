@@ -44,14 +44,16 @@ class CrystalCalibration
 {
   public:
     float mean;
-    float sigma;
+    float meanE; // error on the mean
+    float rms; // meaning, the RMS
     float totalChi2;
     std::vector<TimingEvent> timingEvents;
     std::vector<TimingEvent>::iterator maxChi2Itr;
 
     CrystalCalibration() :
       mean(-1),
-      sigma(-1),
+      meanE(-1),
+      rms(-1),
       totalChi2(-1),
       useWeightedMean(true)
     {
@@ -59,23 +61,26 @@ class CrystalCalibration
     
     CrystalCalibration(bool weightMean) :
       mean(-1),
-      sigma(-1),
+      meanE(-1),
+      rms(-1),
       totalChi2(-1),
       useWeightedMean(weightMean)
     {
     }
       
-    CrystalCalibration(float m, float s, float tc, std::vector<TimingEvent> te) :
+    CrystalCalibration(float m, float me, float r, float tc, std::vector<TimingEvent> te) :
       mean(m),
-      sigma(s),
+      meanE(me),
+      rms(r),
       totalChi2(tc)
     {
       timingEvents = te;
     }
 
-    CrystalCalibration(float m, float s, float tc, std::vector<TimingEvent> te, bool wm) :
+    CrystalCalibration(float m, float me, float r, float tc, std::vector<TimingEvent> te, bool wm) :
       mean(m),
-      sigma(s),
+      meanE(me),
+      rms(r),
       totalChi2(tc),
       useWeightedMean(wm)
     {
@@ -120,7 +125,7 @@ class CrystalCalibration
         updateChi2();
         //Compare to old mean and break if |(newMean-oldMean)| < newSigma
         //TODO: study acceptance threshold
-        if(fabs(mean-oldMean) < threshold*sigma)
+        if(fabs(mean-oldMean) < threshold*meanE)
         {
           insertEvent(toRemove);
           break;
@@ -181,35 +186,35 @@ class CrystalCalibration
     void updateMeanWeighted()
     {
       float meanTmp = 0;
+      float mean2Tmp = 0;
       float sigmaTmp = 0;
       for(std::vector<TimingEvent>::const_iterator itr = timingEvents.begin();
           itr != timingEvents.end(); ++itr)
       {
         float sigmaT2 = itr->sigmaTime;
         sigmaT2*=sigmaT2;
-        meanTmp+=(itr->time)/(sigmaT2);
         sigmaTmp+=1/(sigmaT2);
+        meanTmp+=(itr->time)/(sigmaT2);
+        mean2Tmp+=((itr->time)*(itr->time))/(sigmaT2);
       }
+      meanE = sqrt(1/sigmaTmp);
       mean = meanTmp/sigmaTmp;
-      sigma = sqrt(1/sigmaTmp);
+      rms = sqrt(mean2Tmp/sigmaTmp);
     }
 
     void updateMeanUnweighted()
     {
       float meanTmp = 0;
+      float mean2Tmp = 0;
       for(std::vector<TimingEvent>::const_iterator itr = timingEvents.begin();
           itr != timingEvents.end(); ++itr)
       {
         meanTmp+=itr->time;
+        mean2Tmp+=(itr->time)*(itr->time);
       }
       mean = meanTmp/timingEvents.size();
-      float sigmaTmp = 0;
-      for(std::vector<TimingEvent>::const_iterator itr = timingEvents.begin();
-          itr != timingEvents.end(); ++itr)
-      {
-        sigmaTmp+=(itr->time-mean)*(itr->time-mean);
-      }
-      sigma = sqrt(sigmaTmp/timingEvents.size());
+      rms = sqrt(mean2Tmp/timingEvents.size());
+      meanE = sqrt(rms*rms-mean*mean)/timingEvents.size(); // stdDev/sqrt(n)
     }
     
 };
