@@ -17,9 +17,9 @@ process.goodCaloJets = selectedPatJets.clone(src='cleanPatJets', cut='pt>30 & ab
 ## monitor jet collections
 from PhysicsTools.PatExamples.PatJetAnalyzer_cfi import analyzePatJets
 ## modules for jet response
-process.rawJets     = analyzePatJets.clone(corrLevel='raw')
-process.relJets     = analyzePatJets.clone(corrLevel='rel')
-process.absJets     = analyzePatJets.clone(corrLevel='abs')
+process.rawJets     = analyzePatJets.clone(corrLevel='Uncorrected')
+process.relJets     = analyzePatJets.clone(corrLevel='L2Relative')
+process.absJets     = analyzePatJets.clone(corrLevel='L3Absolute')
 ## modules to compare calo and pflow jets
 process.caloJets    = analyzePatJets.clone(src='goodCaloJets')
 process.pflowJets   = analyzePatJets.clone(src='goodCaloJets')
