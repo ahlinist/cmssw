@@ -1500,6 +1500,8 @@ fabs(ip->pdgId())<=14) || ip->pdgId()==22))) {
     if ( jetHandle_.isValid() )
       for (View<pat::Jet>::const_iterator iJet = jetHandle_->begin(); iJet != jetHandle_->end(); ++iJet) {
 
+        if ( iJet->pt() < 15 ) continue;
+
 	edm::RefToBase<pat::Jet> jetRef = jetHandle_->refAt(nJet_);
 	reco::CandidateBaseRef jetBaseRef(jetRef);
 	const TriggerObjectRef jetTrigRef1( matchHelper.triggerMatchObject( jetBaseRef, jetTriggerMatch1, e, *triggerEvent ) );
@@ -1530,8 +1532,6 @@ fabs(ip->pdgId())<=14) || ip->pdgId()==22))) {
 	jetTrg_[nJet_][11] = (jetTrigRef12.isAvailable()) ? 1 : -99;
 	jetTrg_[nJet_][12] = (jetTrigRef13.isAvailable()) ? 1 : -99;
 	jetTrg_[nJet_][13] = (jetTrigRef14.isAvailable()) ? 1 : -99;
-
-        if ( iJet->pt() < 15 ) continue;
 
 	jetEn_[nJet_]     = iJet->energy();
 	jetPt_[nJet_]     = iJet->pt();
