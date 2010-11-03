@@ -17,6 +17,8 @@
 #include "DataFormats/Common/interface/View.h"
 #include "DataFormats/MuonReco/interface/Muon.h"
 #include "DataFormats/PatCandidates/interface/Muon.h"
+#include "DataFormats/JetReco/interface/Jet.h"
+#include "DataFormats/METReco/interface/MET.h"
 #include "DataFormats/TrackReco/interface/Track.h"
 #include "DataFormats/VertexReco/interface/Vertex.h"
 #include "MuonAnalysis/Examples/interface/muonStations.h"
@@ -79,8 +81,14 @@ class InclusiveMuonPlots: public edm::EDAnalyzer {
         StringCutObjectSelector<pat::Muon> selector_;
         bool onlyLeadingMuon_;
 
+        bool old36Xdata_;
+
         edm::InputTag primaryVertices_;
         edm::InputTag normalization_;
+
+        bool extraPlots_;
+        edm::InputTag jets_;
+        edm::InputTag met_;
 
         // we don't care too much about performance
         std::map<std::string, TH1*>      plots;
@@ -106,7 +114,11 @@ InclusiveMuonPlots::InclusiveMuonPlots(const edm::ParameterSet& pset):
     muons_(pset.getParameter<edm::InputTag>("muons")),
     selector_(pset.getParameter<std::string>("selection")),
     onlyLeadingMuon_(pset.getParameter<bool>("onlyLeadingMuon")),
+    old36Xdata_(pset.existsAs<bool>("old36Xdata") ? pset.getParameter<bool>("old36Xdata") : true),
     primaryVertices_(pset.getParameter<edm::InputTag>("primaryVertices")),
+    extraPlots_(pset.existsAs<bool>("extraPlots") ? pset.getParameter<bool>("extraPlots") : false),
+    jets_(extraPlots_ ? pset.getParameter<edm::InputTag>("jets") : edm::InputTag("NONE")),
+    met_(extraPlots_ ? pset.getParameter<edm::InputTag>("met") : edm::InputTag("NONE")),
     luminosity(0) // by default, we don't have luminosity info
 {
 
@@ -127,10 +139,14 @@ InclusiveMuonPlots::InclusiveMuonPlots(const edm::ParameterSet& pset):
     book(*fs, pset, "qp"); 
     book(*fs, pset, "qpt"); 
 
+    book(*fs, pset, "ptErrorOverPt"); 
+
     book(*fs, pset, "pSta",   "p"); 
     book(*fs, pset, "ptSta",  "pt"); 
     book(*fs, pset, "etaSta", "eta"); 
     book(*fs, pset, "phiSta", "phi"); 
+
+    book(*fs, pset, "ptStaOverPt");
 
     book(*fs, pset, "dxyCoarse");
     book(*fs, pset, "dxyFine");
@@ -161,8 +177,12 @@ InclusiveMuonPlots::InclusiveMuonPlots(const edm::ParameterSet& pset):
     book(*fs, pset, "trackIso03", "isolation");
     book(*fs, pset, "ecalIso03",  "isolation");
     book(*fs, pset, "hcalIso03",  "isolation");
-    book(*fs, pset, "combRelIso03", "relIso");
-    book(*fs, pset, "combRelIso05", "relIso");
+    book(*fs, pset, "trackIsoVeto", "isolation");
+    book(*fs, pset, "ecalIsoVeto",  "isolation");
+    book(*fs, pset, "hcalIsoVeto",  "isolation");
+    book(*fs, pset, "combRelIso03",   "relIso");
+    book(*fs, pset, "combRelIso05",   "relIso");
+    book(*fs, pset, "combRelIsoVeto", "relIso");
 
     book(*fs, pset, "muonStationsValid",    "muonStations");
     book(*fs, pset, "muonStationsAny",      "muonStations");
@@ -192,6 +212,25 @@ InclusiveMuonPlots::InclusiveMuonPlots(const edm::ParameterSet& pset):
         normalization_ = pset.getParameter<edm::InputTag>("normalization");
         luminosity = fs->make<TH1D>("normalization", "normalization", 1, 0, 1);
         luminosity->Sumw2();
+    }
+
+    if (extraPlots_) {
+        book(*fs, pset, "stip",     "stip");
+        book(*fs, pset, "stipSig",  "stipSig");
+        book(*fs, pset, "sip3d",    "sip3d");
+        book(*fs, pset, "sip3dSig", "sip3dSig");
+        book(*fs, pset, "sdl3d",    "sdl3d");
+        book(*fs, pset, "sdl3dSig", "sdl3dSig");
+
+        book(*fs, pset, "met");
+        book(*fs, pset, "projMetSame", "met");
+        book(*fs, pset, "projMetAny",  "met");
+        book(*fs, pset, "mt");
+
+        book(*fs, pset, "ptRel");
+
+        book(*fs, pset, "jetMuonPtRatio");
+        book(*fs, pset, "oppoJetMuonPtRatio");
     }
 }
 
@@ -245,6 +284,13 @@ void InclusiveMuonPlots::analyze(const edm::Event & event, const edm::EventSetup
     Handle<vector<reco::Vertex> > vertices;
     event.getByLabel(primaryVertices_, vertices);
 
+    Handle<View<reco::Jet> > jets;
+    Handle<View<reco::MET> > met;
+    if (extraPlots_) {
+        event.getByLabel(jets_, jets);
+        event.getByLabel(met_, met);
+    }
+
     size_t nmu = 0;
     foreach (const reco::Muon &recomu, *muons) {
         // we want to make a pat::Muon so that we can access directly muonID in the cuts
@@ -269,6 +315,8 @@ void InclusiveMuonPlots::analyze(const edm::Event & event, const edm::EventSetup
             plots["trackerLostHitsInner"]->Fill(mu.innerTrack()->trackerExpectedHitsInner().numberOfLostHits());
             plots["trackerLostHitsOuter"]->Fill(mu.innerTrack()->trackerExpectedHitsOuter().numberOfLostHits());
             plots["trackerChi2n"]->Fill(mu.innerTrack()->normalizedChi2());
+
+            plots["ptErrorOverPt"]->Fill(mu.innerTrack()->ptError()/mu.innerTrack()->pt());
 
             if (!vertices->empty() && !vertices->front().isFake()) {
                 const reco::Vertex &vtx = vertices->front();
@@ -301,23 +349,46 @@ void InclusiveMuonPlots::analyze(const edm::Event & event, const edm::EventSetup
             plots["muonBadHits"]->Fill(mu.outerTrack()->recHitsSize() - mu.outerTrack()->numberOfValidHits());
             plots["muonChi2n"]->Fill(mu.outerTrack()->normalizedChi2());
 
-            if ( ( mu.outerTrack()->extra().isAvailable()   ) && 
-                 ( mu.outerTrack()->recHitsSize() > 0       ) &&
-                 ( mu.outerTrack()->recHit(0).isAvailable() )     ) {
-                plots["muonStationsValid"]->Fill(muon::muonStations(mu.outerTrack(), 0, true));
-                plots["muonStationsAny"  ]->Fill(muon::muonStations(mu.outerTrack(), 0, false));
+            if (mu.innerTrack().isNonnull()) {
+                 plots["ptStaOverPt"]->Fill(mu.outerTrack()->pt()/mu.innerTrack()->pt());
+            }
+
+            if (old36Xdata_) {
+                if ( ( mu.outerTrack()->extra().isAvailable()   ) && 
+                     ( mu.outerTrack()->recHitsSize() > 0       ) &&
+                     ( mu.outerTrack()->recHit(0).isAvailable() )     ) {
+                    plots["muonStationsValid"]->Fill(muon::muonStations(mu.outerTrack(), 0, true));
+                    plots["muonStationsAny"  ]->Fill(muon::muonStations(mu.outerTrack(), 0, false));
+                    float abseta = std::abs(mu.outerTrack()->eta());
+                    if (abseta <= 1.2) {
+                        plots["muonStationsDTValid"]->Fill(muon::muonStations(mu.outerTrack(),MuonSubdetId::DT, true));
+                        plots["muonStationsDTAny"  ]->Fill(muon::muonStations(mu.outerTrack(),MuonSubdetId::DT, false));
+                    } 
+                    if (abseta <= 1.6) {
+                        plots["muonStationsRPCValid"]->Fill(muon::muonStations(mu.outerTrack(),MuonSubdetId::RPC, true));
+                        plots["muonStationsRPCAny"  ]->Fill(muon::muonStations(mu.outerTrack(),MuonSubdetId::RPC, false));
+                    } 
+                    if (abseta >= 0.8) {
+                        plots["muonStationsCSCValid"]->Fill(muon::muonStations(mu.outerTrack(),MuonSubdetId::CSC, true));
+                        plots["muonStationsCSCAny"  ]->Fill(muon::muonStations(mu.outerTrack(),MuonSubdetId::CSC, false));
+                    }
+                }
+            } else {
+                const reco::HitPattern &hp = mu.outerTrack()->hitPattern();
+                plots["muonStationsValid"]->Fill(hp.muonStationsWithValidHits());
+                plots["muonStationsAny"  ]->Fill(hp.muonStationsWithAnyHits());
                 float abseta = std::abs(mu.outerTrack()->eta());
                 if (abseta <= 1.2) {
-                    plots["muonStationsDTValid"]->Fill(muon::muonStations(mu.outerTrack(),MuonSubdetId::DT, true));
-                    plots["muonStationsDTAny"  ]->Fill(muon::muonStations(mu.outerTrack(),MuonSubdetId::DT, false));
+                    plots["muonStationsValid"]->Fill(hp.dtStationsWithValidHits());
+                    plots["muonStationsAny"  ]->Fill(hp.dtStationsWithAnyHits());
                 } 
                 if (abseta <= 1.6) {
-                    plots["muonStationsRPCValid"]->Fill(muon::muonStations(mu.outerTrack(),MuonSubdetId::RPC, true));
-                    plots["muonStationsRPCAny"  ]->Fill(muon::muonStations(mu.outerTrack(),MuonSubdetId::RPC, false));
+                    plots["muonStationsValid"]->Fill(hp.rpcStationsWithValidHits());
+                    plots["muonStationsAny"  ]->Fill(hp.rpcStationsWithAnyHits());
                 } 
                 if (abseta >= 0.8) {
-                    plots["muonStationsCSCValid"]->Fill(muon::muonStations(mu.outerTrack(),MuonSubdetId::CSC, true));
-                    plots["muonStationsCSCAny"  ]->Fill(muon::muonStations(mu.outerTrack(),MuonSubdetId::CSC, false));
+                    plots["muonStationsValid"]->Fill(hp.cscStationsWithValidHits());
+                    plots["muonStationsAny"  ]->Fill(hp.cscStationsWithAnyHits());
                 }
             }
         }
@@ -334,8 +405,12 @@ void InclusiveMuonPlots::analyze(const edm::Event & event, const edm::EventSetup
             plots["trackIso03"]->Fill(mu.isolationR03().sumPt);
             plots[ "ecalIso03"]->Fill(mu.isolationR03().emEt);
             plots[ "hcalIso03"]->Fill(mu.isolationR03().hadEt);
+            plots["trackIsoVeto"]->Fill(mu.isolationR03().trackerVetoPt - mu.pt());
+            plots[ "ecalIsoVeto"]->Fill(mu.isolationR03().emVetoEt);
+            plots[ "hcalIsoVeto"]->Fill(mu.isolationR03().hadVetoEt);
             plots[ "combRelIso03"]->Fill( (mu.isolationR03().sumPt + mu.isolationR03().emEt + mu.isolationR03().hadEt) / mu.pt() );
             plots[ "combRelIso05"]->Fill( (mu.isolationR05().sumPt + mu.isolationR05().emEt + mu.isolationR05().hadEt) / mu.pt() );
+            plots[ "combRelIsoVeto"]->Fill( (mu.isolationR03().trackerVetoPt - mu.pt() + mu.isolationR03().emVetoEt + mu.isolationR03().hadVetoEt - 3.) / mu.pt() );
         }
         
         if (mu.isMatchesValid()) {
@@ -418,6 +493,53 @@ void InclusiveMuonPlots::analyze(const edm::Event & event, const edm::EventSetup
         }
         // end Andy's stuff
 
+        if (extraPlots_) {
+            double drMin = 999., oppoPtMin = 0; 
+            const reco::Jet *match = 0;
+            foreach(const reco::Jet &jet, *jets) {
+                double dr = deltaR2(jet,mu);
+                if (dr < drMin) { drMin = dr; match = &jet; }
+                if (jet.pt() > oppoPtMin && std::abs(deltaPhi(jet,mu)) > 0.5*M_PI) {
+                    oppoPtMin =  jet.pt(); 
+                }
+            }
+            if (match != 0) {
+                math::XYZVector jetDirection = match->momentum().Unit();
+
+                plots["ptRel"]->Fill(jetDirection.Cross(mu.momentum()).R());
+                plots["jetMuonPtRatio"]->Fill(match->pt()/mu.pt());
+
+                if (mu.innerTrack().isNonnull() && !vertices->empty() && !vertices->front().isFake()) {
+                    GlobalVector jetDirectionGV(jetDirection.X(), jetDirection.Y(), jetDirection.Z()); // stupid dataformats
+                    const reco::Vertex &vtx = vertices->front();
+                    reco::TransientTrack ttk = theTTBuilder->build(mu.innerTrack());
+                    std::pair<bool,Measurement1D> tip  = IPTools::signedTransverseImpactParameter(ttk, jetDirectionGV, vtx);
+                    if (tip.first ) { 
+                        plots["stip"]->Fill(tip.second.value());
+                        plots["stipSig"]->Fill(tip.second.significance());
+                    }
+                    std::pair<bool,Measurement1D> ip3d = IPTools::signedImpactParameter3D(ttk, jetDirectionGV, vtx);
+                    if (ip3d.first ) { 
+                        plots["sip3d"]->Fill(ip3d.second.value());
+                        plots["sip3dSig"]->Fill(ip3d.second.significance());
+                    }
+                    std::pair<bool,Measurement1D> dl3d = IPTools::signedDecayLength3D(ttk, jetDirectionGV, vtx);
+                    if (dl3d.first ) { 
+                        plots["sdl3d"]->Fill(dl3d.second.value());
+                        plots["sdl3dSig"]->Fill(dl3d.second.significance());
+                    }
+                }
+
+            }
+            plots["oppoJetMuonPtRatio"]->Fill(oppoPtMin/mu.pt());
+
+            const reco::MET & m = met->front();
+            double dphi = std::abs(deltaPhi(mu.phi(), m.phi()));
+            plots["met"]->Fill(m.pt());
+            plots["projMetSame"]->Fill(dphi < 0.5*M_PI? m.pt()*sin(dphi) : m.pt());
+            plots["projMetAny" ]->Fill(m.pt()*sin(dphi));
+            plots["mt"]->Fill( std::sqrt(2*mu.pt()*m.pt()*(1-cos(dphi))) );
+        }
     }
     plots["nMuons"]->Fill(nmu);
 }
