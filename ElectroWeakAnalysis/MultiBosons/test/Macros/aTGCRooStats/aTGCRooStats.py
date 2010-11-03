@@ -69,59 +69,60 @@ def setupWorkspace(dataTree,mcTree,ws,options):
     nExpectedBackground = ROOT.RooRealVar('nExpectedBackground','The expected number of background events in this h3,h4,pT cell')
     evSelErr = ROOT.RooRealVar('eventSelectionError','Fractional Error on the MC event selection')
     bkgErr = ROOT.RooRealVar('backgroundError','Fractional Error on the expected number of background events')
-    lumiErr = ROOT.RooRealVar('luminosityError','Fractional Error on the luminosity')
-    
-    polyC=[]
-    polyP_0=[]
-    polyP_1=[]
-    polyP_2=[]
-    polyP_3=[]
-    polyP_4=[]
-    nExpectedSignal=[]
-
-    #this needs a little care
-    for i in range(options.nEtBins):
-        polyC.append(ROOT.RooRealVar('polyC_'+i,'Constant Term for aTGC polynomial description in '+i+'th pt bin'))
-        polyP_0.append(ROOT.RooRealVar('polyP_0_'+i,'Linear h_3 Term for aTGC polynomial description'+i+'th pt bin'))
-        polyP_1.append(ROOT.RooRealVar('polyP_1_'+i,'Linear h_4 Term for aTGC polynomial description'+i+'th pt bin'))
-        polyP_2.append(ROOT.RooRealVar('polyP_2_'+i,'h_3*h_4 Term for aTGC polynomial description'+i+'th pt bin'))
-        polyP_3.append(ROOT.RooRealVar('polyP_3_'+i,'Quadratic h_3 Term for aTGC polynomial description'+i+'th pt bin'))
-        polyP_4.append(ROOT.RooRealVar('polyP_4_'+i,'Quadratic h_4 Term for aTGC polynomial description'+i+'th pt bin'))
-        nExpectedSignal.append(ROOT.RooFormulaVar('nExpectedSignal_'+i,'The expected number of signal events in (h3,h4) in'+i+'th pt bin',
-                                                  '@2 + @3*@0 + @4*@1 + @5*@0*@1 + @6*@0*@0 + @7*@1*@1',
-                                                  RooArgList(h3,h4,polyC[i],polyP_0[i],polyP_1[i],polyP_2[i],polyP_3[i],polyP_4[i])))
-        getattr(ws,'import')(polyC[i])
-        getattr(ws,'import')(polyP_0[i])
-        getattr(ws,'import')(polyP_1[i])
-        getattr(ws,'import')(polyP_2[i])
-        getattr(ws,'import')(polyP_3[i])
-        getattr(ws,'import')(polyP_4[i])
-        getattr(ws,'import')(nExpectedSignal[i])
-    #we're not done with this yet, but we're going to put it in the workspace
+    lumiErr = ROOT.RooRealVar('luminosityError','Fractional Error on the luminosity')    
 
     
     aRow = ROOT.RooArgSet(pho_et) #a row is the observed photon eT spectrum and the background fraction (from data driven or MC)
     
     aTGCUnbinnedData = ROOT.RooDataSet('aTGCUnbinnedData','Anomalous Triple Gauge Coupling Data, Unbinned',dataTree,aRow)
 
-    aTGCData = ROOT.RooDataHist('aTGCData','Anomalous Triple Gauge Coupling Data',ROOT.RooDataSet(pho_et),aTGCUnbinnedData)
+    aTGCData = ROOT.RooDataHist('aTGCData','Anomalous Triple Gauge Coupling Data',ROOT.RooArgSet(pho_et),aTGCUnbinnedData)
 
     getattr(ws,'import')(pho_et)
     getattr(ws,'import')(h3)
     getattr(ws,'import')(h4)
     getattr(ws,'import')(acc)
-    getattr(ws,'import')(acc_err)
-    
+    getattr(ws,'import')(acc_err)    
     getattr(ws,'import')(nExpectedBackground)
     getattr(ws,'import')(evSelErr)
     getattr(ws,'import')(bkgErr)
     getattr(ws,'import')(lumiErr)
     getattr(ws,'import')(aRow)
 
-    aTGCGrid = createATGCGrid(mcTree,options)
+    #get the fitted polynomial coefficients from the 3x3 grid info
+    (c,p_0,p_1,p_2,p_3,p_4) = fitATGCExpectedYields(ws,mcTree,options) #returns roodatahist describing polynomial terms in bins of pT :-D
 
+    getattr(ws,'import')(c)
+    getattr(ws,'import')(p_0)
+    getattr(ws,'import')(p_1)
+    getattr(ws,'import')(p_2)
+    getattr(ws,'import')(p_3)
+    getattr(ws,'import')(p_4)
+
+    #set up the signal expectation description
+    #this needs a little care, they *are* nuisance parameters but I don't yet have a way of saving this info
+    #since I use RooHistFunc.... hmmm
+    polyC = ROOT.RooHistFunc('polyC','Constant Term for aTGC polynomial description',ROOT.RooArgSet(pho_et),c)
+    polyP_0 = ROOT.RooHistFunc('polyP_0','Linear h_3 Term for aTGC polynomial description',ROOT.RooArgSet(pho_et),p_0)
+    polyP_1 = ROOT.RooHistFunc('polyP_1','Linear h_4 Term for aTGC polynomial description',ROOT.RooArgSet(pho_et),p_1)
+    polyP_2 = ROOT.RooHistFunc('polyP_2','h_3*h_4 Term for aTGC polynomial description',ROOT.RooArgSet(pho_et),p_2)
+    polyP_3 = ROOT.RooHistFunc('polyP_3','Quadratic h_3 Term for aTGC polynomial description',ROOT.RooArgSet(pho_et),p_3)
+    polyP_4 = ROOT.RooHistFunc('polyP_4','Quadratic h_4 Term for aTGC polynomial description',ROOT.RooArgSet(pho_et),p_4)
+    nExpectedSignal = ROOT.RooFormulaVar('nExpectedSignal','The expected number of signal events in (h3,h4)',
+                                         '@3(@0) + @4(@0)*@1 + @5(@0)*@2 + @6(@0)*@1*@2 + @7(@0)*@1*@1 + @8(@0)*@2*@2',
+                                         RooArgList(pho_et,h3,h4,polyC,polyP_0,polyP_1,polyP_2,polyP_3,polyP_4))
+    getattr(ws,'import')(polyC)
+    getattr(ws,'import')(polyP_0)
+    getattr(ws,'import')(polyP_1)
+    getattr(ws,'import')(polyP_2)
+    getattr(ws,'import')(polyP_3)
+    getattr(ws,'import')(polyP_4)
+    getattr(ws,'import')(nExpectedSignal)
+
+    #build nExpectedBackground RooHistFunc
+    
         
-def fitATGCExpectedYield(mcTree,options):
+def fitATGCExpectedYields(ws,mcTree,options):
     #create the variables for the 3x3 grid
     h3_3x3 = ROOT.RooRealVar('h3_3x3','temp h3 to extrapolate grid',-options.h3Max,options.h3Max)
     h3_3x3.setBins(3)
@@ -137,9 +138,9 @@ def makeATGCExpectationPdf(ws):
         exit(1)
 
     #nuisance parameters
-    x_gs = ROOT.RooRealVar('err_x_gs','Integration Range for Selection Error',0,-ROOT.RooNumber.infinity(),ROOT.RooNumber.infinity())
-    x_gb = ROOT.RooRealVar('err_x_gb','Integration Range for Background Error',0,-ROOT.RooNumber.infinity(),ROOT.RooNumber.infinity())
-    x_gl = ROOT.RooRealVar('err_x_gl','Integration Range for Lumi Error',0,-ROOT.RooNumber.infinity(),ROOT.RooNumber.infinity())
+    x_gs = ROOT.RooRealVar('err_x_gs','Integration Range for Selection Error',1,-ROOT.RooNumber.infinity(),ROOT.RooNumber.infinity())
+    x_gb = ROOT.RooRealVar('err_x_gb','Integration Range for Background Error',1,-ROOT.RooNumber.infinity(),ROOT.RooNumber.infinity())
+    x_gl = ROOT.RooRealVar('err_x_gl','Integration Range for Lumi Error',1,-ROOT.RooNumber.infinity(),ROOT.RooNumber.infinity())
     
     getattr(ws,'import')(x_gs)
     getattr(ws,'import')(x_gb)
@@ -151,7 +152,7 @@ def makeATGCExpectationPdf(ws):
     ws.factory("RooGaussian::lumiErr(err_x_gl,1,luminosityError)")
     
     #now we create the core poisson pdf with errors left as floating, to be integrated out later
-    ws.factory("RooPoisson::corePoisson(pho_et,nExpectedSignal(pT)*err_x_gs*err_x_gl+nExpectedBackground*err_x_gb)")
+    ws.factory("RooPoisson::corePoisson(pho_et,nExpectedSignal*err_x_gs*err_x_gl+nExpectedBackground*err_x_gb)")
       
 
 def makePlots(LLInterval,options):
