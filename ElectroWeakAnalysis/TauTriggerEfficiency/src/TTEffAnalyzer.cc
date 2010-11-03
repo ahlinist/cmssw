@@ -13,7 +13,7 @@
 //
 // Original Author:  Chi Nhan Nguyen
 //         Created:  Wed Oct  1 13:04:54 CEST 2008
-// $Id: TTEffAnalyzer.cc,v 1.46 2010/04/28 11:55:30 mkortela Exp $
+// $Id: TTEffAnalyzer.cc,v 1.47 2010/09/09 18:25:02 eluiggi Exp $
 //
 //
 
@@ -25,16 +25,20 @@
 #include "DataFormats/ParticleFlowReco/interface/PFCluster.h"
 #include "DataFormats/Common/interface/View.h"
 
+#include "DataFormats/Common/interface/TriggerResults.h"
+
 using namespace std;
 
 TTEffAnalyzer::TTEffAnalyzer(const edm::ParameterSet& iConfig):
   DoMCTauEfficiency_(iConfig.getParameter<bool>("DoMCTauEfficiency")),
+  HLTResultsSource(iConfig.getParameter<edm::InputTag>("HltResults")),
   PFTaus_(iConfig.getParameter<edm::InputTag>("LoopingOver")),
   PFTauIso_(iConfig.getParameter<edm::InputTag>("PFTauIsoCollection")),
   MCTaus_(iConfig.getParameter<edm::InputTag>("MCTauCollection")),
   MCParticles_(iConfig.getParameter<edm::InputTag>("GenParticleCollection")),
   PFTauMuonRej_(iConfig.getParameter<edm::InputTag>("PFTauMuonRejectionCollection")),
   rootFile_(iConfig.getParameter<std::string>("outputFileName")),
+  _hltFlag(new bool[512]),
   MCMatchingCone(iConfig.getParameter<double>("MCMatchingCone"))
 {
   // File setup
@@ -69,6 +73,8 @@ TTEffAnalyzer::TTEffAnalyzer(const edm::ParameterSet& iConfig):
   MCTauE = -1.;
   MCTauEta = -999.;
   MCTauPhi = -999.;
+
+  _HltEvtCnt = 0;
 
   pfJetChargedEmEnergy = 0.;
   pfJetChargedEmEnergyFraction = 0.;
@@ -126,10 +132,10 @@ TTEffAnalyzer::TTEffAnalyzer(const edm::ParameterSet& iConfig):
 
 TTEffAnalyzer::~TTEffAnalyzer()
 {
- 
+
    // do anything here that needs to be done at desctruction time
    // (e.g. close files, deallocate resources etc.)
-
+   delete[] _hltFlag;
 }
 
 
@@ -191,6 +197,7 @@ void TTEffAnalyzer::loop(const edm::Event& iEvent,const edm::EventSetup& iSetup,
     // Fill common variables
     unsigned int i = particle - collection.begin();
     fill(*particle,i);
+    fillHLTinfo(iEvent);
 
     // Call individual analyzers
     _L1analyzer.fill(iEvent,iSetup, *particle);
@@ -199,6 +206,44 @@ void TTEffAnalyzer::loop(const edm::Event& iEvent,const edm::EventSetup& iSetup,
 
     // Finally, fill the entry to tree
     _TTEffTree->Fill();
+  }
+}
+
+void TTEffAnalyzer::fillHLTinfo(const edm::Event& iEvent){
+
+  // Store HLT trigger bits
+  edm::Handle<edm::TriggerResults> hltresults;
+  iEvent.getByLabel(HLTResultsSource,hltresults);
+  if(!hltresults.isValid()) {
+    edm::LogWarning("TTEffAnalyzer") << "%L1TauEffAnalyzer -- No HltResults found! " << std::endl;
+    return;
+  }
+  else {
+    int ntrigs = hltresults->size();
+    //_triggerNames.init(* hltresults);
+    _triggerNames = iEvent.triggerNames(*hltresults);
+
+    // 1st event : Book as many branches as trigger paths provided in the input...
+    if (_HltEvtCnt==0){
+      edm::TriggerResults tr = *hltresults;
+      //bool fromPSetRegistry;
+      //Service<service::TriggerNamesService> tns;
+      //tns->getTrigPaths(tr, _triggerNames, fromPSetRegistry);
+      for (int itrig = 0; itrig != ntrigs; ++itrig) {
+        TString trigName = _triggerNames.triggerName(itrig);
+        //TString trigName = _triggerNames[itrig];
+        _TTEffTree->Branch(trigName, _hltFlag+itrig);
+      }
+      _HltEvtCnt++;
+    }
+    // ...Fill the corresponding accepts in branch-variables
+    for (int itrig = 0; itrig != ntrigs; ++itrig){
+      string trigName=_triggerNames.triggerName(itrig);
+      //string trigName=_triggerNames[itrig];
+      bool accept = hltresults->accept(itrig);
+
+      _hltFlag[itrig] = accept;
+    }
   }
 }
 

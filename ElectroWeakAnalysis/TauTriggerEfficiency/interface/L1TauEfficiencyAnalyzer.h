@@ -14,7 +14,6 @@
 #include "FWCore/Framework/interface/Frameworkfwd.h"
 #include "FWCore/Framework/interface/EDAnalyzer.h"
 //#include "FWCore/Framework/interface/TriggerNames.h"
-#include "FWCore/Common/interface/TriggerNames.h"
 
 #include "DataFormats/Math/interface/LorentzVector.h"
 
@@ -51,7 +50,6 @@ class L1TauEfficiencyAnalyzer {
 
         edm::InputTag L1GtReadoutRecordSource;
         edm::InputTag L1GtObjectMapRecordSource;
-        edm::InputTag HLTResultsSource;
 
         edm::InputTag L1TauTriggerSource;
 
@@ -75,13 +73,8 @@ class L1TauEfficiencyAnalyzer {
 	float mht;
 
 	int _L1EvtCnt;
-	int _HltEvtCnt;
 	bool *_l1Flag;
-	bool *_hltFlag;
 
         bool selectNearest;
-
-	edm::TriggerNames _triggerNames;
-	//std::vector<std::string> _triggerNames;
 };
 #endif

@@ -13,7 +13,7 @@
 //
 // Original Author:  Chi Nhan Nguyen
 //         Created:  Wed Oct  1 13:04:54 CEST 2008
-// $Id: TTEffAnalyzer.h,v 1.37 2010/04/19 08:29:41 slehti Exp $
+// $Id: TTEffAnalyzer.h,v 1.38 2010/09/27 08:49:57 slehti Exp $
 //
 //
 
@@ -34,6 +34,8 @@
 #include "DataFormats/Math/interface/LorentzVector.h"
 #include "DataFormats/Math/interface/LorentzVectorFwd.h"
 #include "DataFormats/TauReco/interface/PFTauDiscriminator.h"
+
+#include "FWCore/Common/interface/TriggerNames.h"
 
 #include "ElectroWeakAnalysis/TauTriggerEfficiency/interface/L1TauEfficiencyAnalyzer.h"
 #include "ElectroWeakAnalysis/TauTriggerEfficiency/interface/L25and3TauEfficiencyAnalyzer.h"
@@ -64,6 +66,8 @@ class TTEffAnalyzer : public edm::EDAnalyzer {
       virtual void fill(const reco::PFTau&,unsigned int i = 0); 
       virtual void fill(const LorentzVector&,unsigned int i = 0); // this one is for the loop per MCtau
       virtual void fill(const reco::Candidate&,unsigned int i = 0);
+      virtual void fillHLTinfo(const edm::Event&);
+
 
       //Helper function :RMS of the PF Candidates
       std::vector<double> clusterSeparation(const reco::PFCandidateRefVector& ,const reco::PFCandidateRefVector& );
@@ -75,8 +79,13 @@ class TTEffAnalyzer : public edm::EDAnalyzer {
 
       // ----------member data ---------------------------
       bool DoMCTauEfficiency_;
+      edm::InputTag HLTResultsSource;
+      edm::TriggerNames _triggerNames;
       edm::InputTag  PFTaus_,PFTauIso_,MCTaus_,MCParticles_,PFTauMuonRej_; //Path to analyze
       std::string rootFile_;
+
+      int _HltEvtCnt;
+      bool *_hltFlag;
 
       edm::Handle<PFTauCollection> PFTaus;
       edm::Handle<PFTauDiscriminator> thePFTauDiscriminatorByIsolation;
