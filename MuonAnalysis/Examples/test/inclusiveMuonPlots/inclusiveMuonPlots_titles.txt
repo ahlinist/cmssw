@@ -10,12 +10,14 @@ phi: #phi: Azimuthal angle
 charge: charge: Charge
 qp: q #times p (GeV/c): Momentum times charge
 qpt: q #times p_{T} (GeV/c): Transverse momentum times charge
+ptErrorOverPt: #sigma(p_{T})/p_{T}: Estimated relative uncertainty on p_{T}
 
 [kinSta: Kinematical variables (Standalone fit)]
 pSta: standalone p (GeV/c): Momentum (Standalone fit)
 ptSta: standalone p_{T} (GeV/c): Transverse momentum  (Standalone fit)
 etaSta: standalone #eta: Pseudorapidity  (Standalone fit)
 phiSta: standalone #phi: Azimuthal angle  (Standalone fit)
+ptStaOverPt: standalone p_{T}/tracker p_{T}: Ratio between standalone and tracker p_{T}
 
 [trk: Inner track variables]
 dxyCoarse: d_{xy} to primary vertex (cm): Transverse impact parameter
@@ -26,6 +28,12 @@ tip: transverse i.p. (cm): Transverse impact parameter
 tipSig: transverse i.p. signif. : Significance of transverse impact parameter
 ip3d: 3D impact parameter (cm): 3D impact parameter
 ip3dSig: 3D i.p. signif. : Significance of 3D impact parameter
+stip: signed transverse i.p. (cm): Lifetime-signed transverse impact parameter
+stipSig: signed transverse i.p. signif. : Lifetime-signed significance of transverse impact parameter
+sip3d: signed 3D impact parameter (cm): Lifetime-signed 3D impact parameter
+sip3dSig: signed 3D i.p. signif. :  Lifetime-signed significance of 3D impact parameter
+sdl3d: signed 3D decay length (cm): Lifetime-signed 3D decay length
+sdl3dSig: signed 3D i.p. signif. : Lifetime-signed significance of 3D decay length
 pixelHits: pixel hits: Pixel hits
 pixelLayers: pixel layers: Pixel layers
 trackerHits: silicon track hits: Silicon track hits
@@ -61,6 +69,10 @@ hcalIso03: #Sigma HCal E_{T} (GeV): Isolation #Sigma HCal E_{T} (#DeltaR < 0.3)
 hcalIso05: #Sigma HCal E_{T} (GeV): Isolation #Sigma HCal E_{T} (#DeltaR < 0.5)
 combRelIso03: #Sigma E_{T} all/p_{T}(#mu): Rel isolation #Sigma E_{T} all/p_{T}(#mu) (#DeltaR < 0.3)
 combRelIso05: #Sigma E_{T} all/p_{T}(#mu): Rel isolation #Sigma E_{T} all/p_{T}(#mu) (#DeltaR < 0.5)
+trackIsoVeto: #Sigma track p_{T} - #mu p_{T} (GeV/c): #Sigma track p_{T} in veto cone
+ecalIsoVeto: #Sigma ECal E_{T} (GeV): Footprint #Sigma ECal E_{T} 
+hcalIsoVeto: #Sigma HCal E_{T} (GeV): Footprint #Sigma HCal E_{T} 
+combRelIsoVeto: (#Sigma E_{T} all - p_{T}(#mu) - 3)/p_{T}(#mu): Rel. excess in footprint
 
 [muid: Muon ID variables]
 segmentMatchesArb: matched segments: Matched segments (arbitrated)
@@ -80,3 +92,14 @@ trkPhi_at_mME1_1: #phi (radians): TRK Phi (ME -1/1) at Det. Surface
 trkPhi_at_pME1_23: #phi (radians): TRK Phi (ME +1/2, +1/3) at Det. Surface
 trkPhi_at_mME1_23: #phi (radians): TRK Phi (ME -1/2, -1/3) at Det. Surface
 trkPhi_at_MB1: #phi (radians): TRK Phi (MB 1) at Det. Surface
+
+[jetmet: Jet/MET variables]
+met: missing E_{T} (GeV): Missing transverse energy
+projMetSame: proj. missing E_{T} (GeV): Projected missing transverse energy (if #Delta#Phi < #pi/2)
+projMetAny: proj. missing E_{T} (GeV): Projected missing transverse energy (any #Delta#Phi)
+mt: - E_{T}^{miss} M_{T} (GeV): Transverse mass of muon and missing energy
+ptRel: p_{T} relative to jet axis
+jetMuonPtRatio: jet p_{T} ratio: Ratio between jet p_{T} and muon p_{T}
+oppoJetMuonPtRatio: oppo. jet p_{T} ratio: Ratio between opposite jet p_{T} and muon p_{T}
+
+
