@@ -13,6 +13,8 @@
 #
 #--------------------------------------------------------------------------------
 
+print("<mergeEDMfiles>:")
+
 cfgFileName = "mergeEDMfiles_cfg.py"
 
 import sys
@@ -57,9 +59,14 @@ process.o = cms.EndPath(process.outputModule)
 """
 
 print("reading input files...")
+#print("inputFilePath:")
+#print(inputFilePath)
 inputFileNames = castor.nsls(inputFilePath)
 #print("inputFileNames:")
 #print(inputFileNames)
+
+if len(inputFileNames) == 0:
+    raise ValueError("No files found in inputFilePath = %s !!" % inputFilePath)
 
 isFirst = True
 for inputFileName in inputFileNames:
