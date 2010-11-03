@@ -81,13 +81,13 @@ def setupWorkspace(dataTree,mcTree,ws,options):
 
     #this needs a little care
     for i in range(options.nEtBins):
-        polyC.append(ROOT.RooRealVar('polyC'+i,'Constant Term for aTGC polynomial description in '+i+'th pt bin'))
-        polyP_0.append(ROOT.RooRealVar('polyP_0'+i,'Linear h_3 Term for aTGC polynomial description'+i+'th pt bin'))
-        polyP_1.append(ROOT.RooRealVar('polyP_1'+i,'Linear h_4 Term for aTGC polynomial description'+i+'th pt bin'))
-        polyP_2.append(ROOT.RooRealVar('polyP_2'+i,'h_3*h_4 Term for aTGC polynomial description'+i+'th pt bin'))
-        polyP_3.append(ROOT.RooRealVar('polyP_3'+i,'Quadratic h_3 Term for aTGC polynomial description'+i+'th pt bin'))
-        polyP_4.append(ROOT.RooRealVar('polyP_4'+i,'Quadratic h_4 Term for aTGC polynomial description'+i+'th pt bin'))
-        nExpectedSignal.append(ROOT.RooFormulaVar('nExpectedSignal','The expected number of signal events in (h3,h4) in'+i+'th pt bin',
+        polyC.append(ROOT.RooRealVar('polyC_'+i,'Constant Term for aTGC polynomial description in '+i+'th pt bin'))
+        polyP_0.append(ROOT.RooRealVar('polyP_0_'+i,'Linear h_3 Term for aTGC polynomial description'+i+'th pt bin'))
+        polyP_1.append(ROOT.RooRealVar('polyP_1_'+i,'Linear h_4 Term for aTGC polynomial description'+i+'th pt bin'))
+        polyP_2.append(ROOT.RooRealVar('polyP_2_'+i,'h_3*h_4 Term for aTGC polynomial description'+i+'th pt bin'))
+        polyP_3.append(ROOT.RooRealVar('polyP_3_'+i,'Quadratic h_3 Term for aTGC polynomial description'+i+'th pt bin'))
+        polyP_4.append(ROOT.RooRealVar('polyP_4_'+i,'Quadratic h_4 Term for aTGC polynomial description'+i+'th pt bin'))
+        nExpectedSignal.append(ROOT.RooFormulaVar('nExpectedSignal_'+i,'The expected number of signal events in (h3,h4) in'+i+'th pt bin',
                                                   '@2 + @3*@0 + @4*@1 + @5*@0*@1 + @6*@0*@0 + @7*@1*@1',
                                                   RooArgList(h3,h4,polyC[i],polyP_0[i],polyP_1[i],polyP_2[i],polyP_3[i],polyP_4[i])))
         getattr(ws,'import')(polyC[i])
