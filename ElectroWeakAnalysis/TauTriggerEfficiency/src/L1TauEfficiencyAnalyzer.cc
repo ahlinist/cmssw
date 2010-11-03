@@ -364,24 +364,25 @@ void L1TauEfficiencyAnalyzer::fill(const edm::Event& iEvent, const edm::EventSet
   else {
     int ntrigs = hltresults->size();
     //_triggerNames.init(* hltresults);
+    _triggerNames = iEvent.triggerNames(*hltresults);
 
     // 1st event : Book as many branches as trigger paths provided in the input...
     if (_HltEvtCnt==0){
       edm::TriggerResults tr = *hltresults;
-      bool fromPSetRegistry;
-      Service<service::TriggerNamesService> tns;
-      tns->getTrigPaths(tr, _triggerNames, fromPSetRegistry);
+      //bool fromPSetRegistry;
+      //Service<service::TriggerNamesService> tns;
+      //tns->getTrigPaths(tr, _triggerNames, fromPSetRegistry);
       for (int itrig = 0; itrig != ntrigs; ++itrig) {
-        //TString trigName = _triggerNames.triggerName(itrig);
-	TString trigName = _triggerNames[itrig];
+        TString trigName = _triggerNames.triggerName(itrig);
+	//TString trigName = _triggerNames[itrig];
         l1tree->Branch(trigName, _hltFlag+itrig);
       }
       _HltEvtCnt++;
     }
     // ...Fill the corresponding accepts in branch-variables
     for (int itrig = 0; itrig != ntrigs; ++itrig){
-      //string trigName=_triggerNames.triggerName(itrig);
-      string trigName=_triggerNames[itrig];
+      string trigName=_triggerNames.triggerName(itrig);
+      //string trigName=_triggerNames[itrig];
       bool accept = hltresults->accept(itrig);
 
       _hltFlag[itrig] = accept;

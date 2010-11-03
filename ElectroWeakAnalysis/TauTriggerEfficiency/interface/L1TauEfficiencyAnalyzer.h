@@ -81,7 +81,7 @@ class L1TauEfficiencyAnalyzer {
 
         bool selectNearest;
 
-	//edm::TriggerNames _triggerNames;
-	std::vector<std::string> _triggerNames;
+	edm::TriggerNames _triggerNames;
+	//std::vector<std::string> _triggerNames;
 };
 #endif
