@@ -16,7 +16,6 @@ inputCard = open(sys.argv[1],"r")
 for l in inputCard:
     if l.startswith("#"): continue
     fields = l.split();
-    print len(fields), fields
     if len(fields) == 2:
         if output != None: raise RuntimeError, "You can have only one line formatted as <output-file> <target-lumi>"
         output = ROOT.TFile(fields[0], "UPDATE")
@@ -42,6 +41,7 @@ for dir in dirs:
         outSubs[s] = output.mkdir(dir+s)
     # now proceed with outputs
     for (infile, inlumi, insub, outsub) in inputs:
+        if insub == "-": insub = ""
         print "Reading from file %s, sub %s -> %s" % (infile.GetName(), insub, outsub)
         indir  = infile.Get(dir+insub)
         outsubdir  = outSubs[outsub]
