@@ -641,8 +641,8 @@ public :
   
   //TTEffTree(TTree * /*tree*/ =0): mc(0), tauCut(14), cenCut(30) { }
   TTEffTree(const std::string& selection): fSelectionString(selection), fSelection(0),
-                                           tauCut(14), cenCut(30),
-                                           //tauCut(20), cenCut(30),
+                                           //tauCut(14), cenCut(30),
+                                           tauCut(20), cenCut(30),
                                            allEntries(0), selectedEntries(0),
                                            selectedL1JetEntries(0), selectedL1JetEtEntries(0)
   {}
@@ -2000,8 +2000,8 @@ void plotL1Efficiency() {
   inputList->Add(new Data(histo_phi, "phi", "PF-#tau #phi"));
 
   //TString path("/home/mjkortel/data/tautrigger/");
-  TString path("/castor/cern.ch/user/s/slehti/TauTriggerEfficiencyMeasurementData/");
-  //TString path("/tmp/mkortela/");
+  //TString path("/castor/cern.ch/user/s/slehti/TauTriggerEfficiencyMeasurementData/");
+  TString path("/tmp/mkortela/");
 
   std::string lumi = "";
 
@@ -2021,19 +2021,24 @@ void plotL1Efficiency() {
   //chain->Add(path + "tteffAnalysis-pftau_cstau.root"); std::string label("CS_Tau (V00-06-10)"); lumi = "L_{int}=6.91 nb^{-1}";
   //chain->Add(path + "test-pftau.root"); std::string label("Test");
 
-  chain->Add(path + "tteffAnalysis-pftau_JetMETTau_Run2010A-CS_Tau-v2_RAW-RECO_tagV00-06-08.root");     std::string label("JetMET (Jun 7)");
+  //chain->Add(path + "tteffAnalysis-pftau_JetMETTau_Run2010A-CS_Tau-v2_RAW-RECO_tagV00-06-08.root");     std::string label("JetMET (Jun 7)");
   //chain->Add(path + "tteffAnalysis-pftau_cstau.root"); std::string label("JetMET (Jun 22)"); lumi = "L_{int}=6.91 nb^{-1}";
   //chain->Add(path + "tteffAnalysis-pftau.root"); std::string label("MinBias (Jun 28)"); lumi = "L_{int}=10.1 nb^{-1}";
+  chain->Add(path + "minBiasRun2010TTEffAnalysis-pftau.root"); std::string label("MinBias (Sep 13)"); lumi = "L_{int}=169.85 nb^{-1}";
 
   //std::string pfTauSelection("PFTauEt > 15 && abs(PFTauEta) < 2.4 && PFTauIsoSum < 1. && (PFTauProng == 1 || PFTauProng == 3) && PFTauInvPt < 1/5. && PFMuonMatch == 1");
   std::string pfTauSelection("PFTauIso==1 && PFTauEt>15 && abs(PFTauEta)<2.4  && (PFTauProng == 1 || PFTauProng == 3) && PFTauInvPt < 1./5. && PFMuonMatch==1 && PFTauIsoSum<1.");
   std::string runSelection("run >= 132658");
 
+
+  //lumi = "L_{int}=10.1 nb^{-1}";
+  lumi = "";
+
   bool prev=false;
-  //prev=true;
+  prev=true;
 
   bool mc=false;
-  //mc=true;
+  mc=true;
 
   bool mc2=false;
   //mc2=true;
@@ -2096,9 +2101,11 @@ void plotL1Efficiency() {
 
     TChain *chain = new TChain("TTEffTree");
     //chain->Add(path + "tteffAnalysis-pftau_MinimumBias_Commissioning10_GOODCOLL_v8_RAW_RECO_runs_132717-133511_tagV00-06-04.root");     std::string prevLabel("V00-06-04");
-    chain->Add(path + "tteffAnalysis-pftau_MinimumBias_Commissioning10_GOODCOLL_v8_RAW_RECO_runs_132440-135175_tagV00-06-07.root");     std::string prevLabel("MinBias (V00-06-07)");
+    //chain->Add(path + "tteffAnalysis-pftau_MinimumBias_Commissioning10_GOODCOLL_v8_RAW_RECO_runs_132440-135175_tagV00-06-07.root");     std::string prevLabel("MinBias (V00-06-07)");
     //chain->Add(path + "tteffAnalysis-pftau_MinimumBias_Commissioning10_GOODCOLL_v8_RAW_RECO_runs_132440-135175_tagV00-06-08.root"); std::string prevLabel("MinBias (V00-06-08");
     //chain->Add(path + "tteffAnalysis-pftau_JetMETTau_Run2010A-CS_Tau-v2_RAW-RECO_tagV00-06-08.root");     std::string prevLabel("CS_Tau (V00-06-08)");
+    chain->Add(path + "tteffAnalysis-pftau.root"); std::string prevLabel("MinBias (Jun 28)");
+
 
     //list = analyse("", chain, inputList, -1, SetCuts(22, 40));
     list = analyse(runSelection + "&&" + pfTauSelection, chain, inputList);
@@ -2107,13 +2114,23 @@ void plotL1Efficiency() {
     Data *prev_phi = dynamic_cast<Data *>(list->FindObject("data_phi"));
     DistData *prev_dist = dynamic_cast<DistData *>(list->FindObject("dist"));
 
-    PlotLegendHeightWidth modify(0.14, 0.3);
+    PlotLegendHeightWidth modify(0.14, 0.2);
 
     Efficiency eff_prev_pt(draw, prev_pt, lumi);
     eff_prev_pt.takeConf(eff_pt);
     eff_prev_pt.forEach(modify);
+    eff_prev_pt.L1Jet.setMetaPos(0.4, 0.5);
+    eff_prev_pt.L1Jet_TauVeto.setMetaDir(Metadata::kRight).setMetaPos(0.2, 0.89);
+    eff_prev_pt.L1Jet_TauVeto_Isolation2.setMetaDir(Metadata::kRight).setMetaPos(0.2, 0.89);
+    eff_prev_pt.L1Jet_Cen_EtCut2.setLegendPos(0.2, 0.6);
+    eff_prev_pt.L1Jet_Overall.setLegendPos(0.55, 0.18).setMetaPos(0.55, 0.45);
+    eff_prev_pt.L1Jet_Overall2.takeConf(eff_prev_pt.L1Jet_Overall);
+
     //eff_prev_pt.drawL1Jet_TauVeto_plus_Isolation("prev_PFTauPt", modify(pm_Isolation).addLegendWidth(0.05));
+    eff_prev_pt.drawL1Jet_TauCen_EtCut("prev_PFTauPt");
     eff_pt.drawCmp("data_prev_PFTauPt", eff_prev_pt, label, prevLabel);
+
+    draw_DistData("data_prev", draw, data_dist, prev_dist, label, prevLabel, lumi);
 
     if(ploteta) {
       Efficiency eff_prev_eta(draw, prev_eta, lumi);
@@ -2136,7 +2153,7 @@ void plotL1Efficiency() {
     inputList->Add(new Data(histo_eta, "eta", "PF-#tau #eta"));
     inputList->Add(new Data(histo_phi, "phi", "PF-#tau #phi"));
 
-    path = "/castor/cern.ch/user/e/eluiggi/ttEff/";
+    //path = "/castor/cern.ch/user/e/eluiggi/ttEff/";
 
     std::string dataLabel("Data "); dataLabel += label;
     //std::string dataLabel = label; leg_width += 0.1;
