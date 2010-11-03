@@ -17,7 +17,6 @@
 #include "DataFormats/L1GlobalTrigger/interface/L1GlobalTriggerObjectMapFwd.h"
 #include "DataFormats/L1GlobalTrigger/interface/L1GlobalTriggerObjectMap.h"
 
-#include "DataFormats/Common/interface/TriggerResults.h"
 
 #include "DataFormats/HLTReco/interface/TriggerFilterObjectWithRefs.h"
 
@@ -91,13 +90,11 @@ using namespace std;
 L1TauEfficiencyAnalyzer::L1TauEfficiencyAnalyzer():
   l1tree(0),
   l1CaloRegions(9, -1),
-  _l1Flag(new bool[128]),
-  _hltFlag(new bool[512])
+  _l1Flag(new bool[128])
 {}
 
 
 L1TauEfficiencyAnalyzer::~L1TauEfficiencyAnalyzer(){
-  delete[] _hltFlag;
   delete[] _l1Flag;
   /*
 	cout << endl;
@@ -116,7 +113,6 @@ void L1TauEfficiencyAnalyzer::Setup(const edm::ParameterSet& iConfig,TTree *trig
 
   L1GtReadoutRecordSource = iConfig.getParameter<edm::InputTag>("L1GtReadoutRecord");
   L1GtObjectMapRecordSource = iConfig.getParameter<edm::InputTag>("L1GtObjectMapRecord");
-  HLTResultsSource = iConfig.getParameter<edm::InputTag>("HltResults");
   
   L1TauTriggerSource = iConfig.getParameter<edm::InputTag>("L1TauTriggerSource");
 
@@ -164,7 +160,6 @@ void L1TauEfficiencyAnalyzer::Setup(const edm::ParameterSet& iConfig,TTree *trig
 
 
   _L1EvtCnt = 0;
-  _HltEvtCnt = 0;
 }
 
 void L1TauEfficiencyAnalyzer::fill(const edm::Event& iEvent, const edm::EventSetup& iSetup, const reco::Candidate& tau) {
@@ -350,42 +345,6 @@ void L1TauEfficiencyAnalyzer::fill(const edm::Event& iEvent, const edm::EventSet
       // ...Fill the corresponding accepts in branch-variables
       _l1Flag[iBit] = (bool)gtDecisionWord[iBit];
       //std::cout << "L1 TD: "<<iBit<<" "<<algoBitToName[iBit]<<" "<<gtDecisionWord[iBit]<< std::endl;
-    }
-  }
-
-
-  // Store HLT trigger bits
-  edm::Handle<edm::TriggerResults> hltresults;
-  iEvent.getByLabel(HLTResultsSource,hltresults);
-  if(!hltresults.isValid()) {
-    edm::LogWarning("TTEffAnalyzer") << "%L1TauEffAnalyzer -- No HltResults found! " << std::endl;
-    return;
-  }
-  else {
-    int ntrigs = hltresults->size();
-    //_triggerNames.init(* hltresults);
-    _triggerNames = iEvent.triggerNames(*hltresults);
-
-    // 1st event : Book as many branches as trigger paths provided in the input...
-    if (_HltEvtCnt==0){
-      edm::TriggerResults tr = *hltresults;
-      //bool fromPSetRegistry;
-      //Service<service::TriggerNamesService> tns;
-      //tns->getTrigPaths(tr, _triggerNames, fromPSetRegistry);
-      for (int itrig = 0; itrig != ntrigs; ++itrig) {
-        TString trigName = _triggerNames.triggerName(itrig);
-	//TString trigName = _triggerNames[itrig];
-        l1tree->Branch(trigName, _hltFlag+itrig);
-      }
-      _HltEvtCnt++;
-    }
-    // ...Fill the corresponding accepts in branch-variables
-    for (int itrig = 0; itrig != ntrigs; ++itrig){
-      string trigName=_triggerNames.triggerName(itrig);
-      //string trigName=_triggerNames[itrig];
-      bool accept = hltresults->accept(itrig);
-
-      _hltFlag[itrig] = accept;
     }
   }
 
