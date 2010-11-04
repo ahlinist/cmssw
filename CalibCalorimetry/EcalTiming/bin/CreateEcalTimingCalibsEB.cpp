@@ -214,7 +214,7 @@ int main(int argc, char* argv[])
   TProfile2D* ampProfileMapEB = new TProfile2D("ampProfileMapEB","amp profile map [ADC];i#phi;i#eta",360,1.,361.,172,-86,86);
   TProfile* ampProfileEB = new TProfile("ampProfileEB","Average amplitude in cry [ADC];hashedIndex",61200,0,61200);
 
-  TH1F* sigmaHistEB = new TH1F("sigmaCalibsEB"," Sigma (RMS) of calib distributions EB [ns]",100,0,1);
+  TH1F* sigmaHistEB = new TH1F("sigmaCalibsEB"," Sigma of calib distributions EB [ns]",100,0,1);
 
   //=============Special Bins for TT and Modules borders=============================
   double ttEtaBins[36] = {-85, -80, -75, -70, -65, -60, -55, -50, -45, -40, -35, -30, -25, -20, -15, -10, -5, 0, 1, 6, 11, 16, 21, 26, 31, 36, 41, 46, 51, 56, 61, 66, 71, 76, 81, 86 };
@@ -242,7 +242,7 @@ int main(int argc, char* argv[])
   } 
   TH2F* calibMapEB = new TH2F("calibMapEB","time calib map EB [ns];i#phi;i#eta",360,1.,361.,172,-86,86);
   calibMapEB->Sumw2();
-  TH2F* sigmaMapEB = new TH2F("sigmaMapEB","Sigma (RMS) of time calib map EB [ns];i#phi;i#eta",360,1.,361.,172,-86,86);
+  TH2F* sigmaMapEB = new TH2F("sigmaMapEB","Sigma of time calib map EB [ns];i#phi;i#eta",360,1.,361.,172,-86,86);
   TH2F* calibErrorMapEB = new TH2F("calibErrorMapEB","Error of time calib map EB [ns];i#phi;i#eta",360,1.,361.,172,-86,86);
   TProfile2D* calibTTMapEB = new TProfile2D("calibTTMapEB","time calib map EB (TT) [ns];i#phi;i#eta",360/5,ttPhiBins,35, ttEtaBins);
 
@@ -269,8 +269,8 @@ int main(int argc, char* argv[])
   CrystalCalibration* ebCryCalibs[61200];
   //XXX: Making calibs with weighted/unweighted mean
   for(int i=0; i < 61200; ++i)
-    //ebCryCalibs[i] = new CrystalCalibration(); //use weighted mean!
-    ebCryCalibs[i] = new CrystalCalibration(false); //don't use weighted mean!
+    ebCryCalibs[i] = new CrystalCalibration(); //use weighted mean!
+    //ebCryCalibs[i] = new CrystalCalibration(false); //don't use weighted mean!
 
   // Loop over the TTree
   int numEventsUsed = 0;
@@ -356,6 +356,8 @@ int main(int argc, char* argv[])
         // is between 0 and 1.2 (about 1 and 13 GeV)
 	// amplitude dependent timing corrections
         float timing = cryTime - timeCorrectionEB_->Eval(AoLog);
+        //FIXME
+        cryTimeError = 1;
         ebCryCalibs[hashedIndex]->insertEvent(cryAmp,timing,cryTimeError,false);
         //SIC Use when we don't have time_error available
         //ebCryCalibs[hashedIndex]->insertEvent(cryAmp,cryTime,35/(cryAmp/1.2),false);
@@ -472,8 +474,8 @@ int main(int argc, char* argv[])
     //calibsVsErrorsEB->Fill(p1err, p1 > 0 ? p1 : -1*p1);
     calibErrorHistEB->Fill(p1err);
     calibErrorMapEB->Fill(iphi,ieta,p1err);
-    sigmaHistEB->Fill(cryCalib.rms);
-    sigmaMapEB->Fill(iphi,ieta,cryCalib.rms);
+    sigmaHistEB->Fill(cryCalib.stdDev);
+    sigmaMapEB->Fill(iphi,ieta,cryCalib.stdDev);
   }
   
   fileStream.close();

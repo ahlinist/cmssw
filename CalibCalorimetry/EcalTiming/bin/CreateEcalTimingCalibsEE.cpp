@@ -251,8 +251,8 @@ int main(int argc, char* argv[])
   calibMapEEM->Sumw2();
   calibMapEEP->Sumw2();
 
-  TH2F* sigmaMapEEM = new TH2F("sigmaMapEEM","Sigma (RMS) of time calib map EEM [ns];ix;iy",100,1.,101.,100,1,101);
-  TH2F* sigmaMapEEP = new TH2F("sigmaMapEEP","Sigma (RMS) of time calib map EEP [ns];ix;iy",100,1.,101.,100,1,101);
+  TH2F* sigmaMapEEM = new TH2F("sigmaMapEEM","Sigma of time calib map EEM [ns];ix;iy",100,1.,101.,100,1,101);
+  TH2F* sigmaMapEEP = new TH2F("sigmaMapEEP","Sigma of time calib map EEP [ns];ix;iy",100,1.,101.,100,1,101);
   TH2F* calibErrorMapEEM = new TH2F("calibErrorMapEEM","Error of time calib map EEM [ns];ix;iy",100,1.,101.,100,1,101);
   TH2F* calibErrorMapEEP = new TH2F("calibErrorMapEEP","Error of time calib map EEP [ns];ix;iy",100,1.,101.,100,1,101);
 
@@ -298,8 +298,8 @@ int main(int argc, char* argv[])
   CrystalCalibration* eeCryCalibs[14648];
   //XXX: Making calibs with weighted/unweighted mean
   for(int i=0; i < 14648; ++i)
-    //eeCryCalibs[i] = new CrystalCalibration(); //use weighted mean!
-    eeCryCalibs[i] = new CrystalCalibration(false); //don't use weighted mean!
+    eeCryCalibs[i] = new CrystalCalibration(); //use weighted mean!
+    //eeCryCalibs[i] = new CrystalCalibration(false); //don't use weighted mean!
 
   cout << "Looping over TTree...";
 
@@ -382,6 +382,8 @@ int main(int argc, char* argv[])
         // is between 0 and 1.2 (about 1 and 13 GeV)
 	// amplitude dependent timing corrections
         float timing = cryTime - timeCorrectionEE_->Eval(AoLog);
+        //FIXME
+        cryTimeError = 1;
         eeCryCalibs[hashedIndex]->insertEvent(cryAmp,timing,cryTimeError,false);
 
         //SIC Use when we don't have time_error available
@@ -537,20 +539,20 @@ int main(int argc, char* argv[])
         << "\t Calib: " << p1 << "\t Error: " << p1err << std::endl;
     }
 
-    sigmaHistEE->Fill(cryCalib.rms);
+    sigmaHistEE->Fill(cryCalib.stdDev);
     if(det.zside() < 0)
     {
       //calibsVsErrorsEEM->Fill(p1err, p1 > 0 ? p1 : -1*p1);
       calibErrorHistEEM->Fill(p1err);
       calibErrorMapEEM->Fill(x,y,p1err);
-      sigmaMapEEM->Fill(x,y,cryCalib.rms);
+      sigmaMapEEM->Fill(x,y,cryCalib.stdDev);
     }
     else
     {
       //calibsVsErrorsEEP->Fill(p1err, p1 > 0 ? p1 : -1*p1);
       calibErrorHistEEP->Fill(p1err);
       calibErrorMapEEP->Fill(x,y,p1err);
-      sigmaMapEEP->Fill(x,y,cryCalib.rms);
+      sigmaMapEEP->Fill(x,y,cryCalib.stdDev);
     }
   }
   
