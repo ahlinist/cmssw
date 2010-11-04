@@ -45,7 +45,8 @@ class CrystalCalibration
   public:
     float mean;
     float meanE; // error on the mean
-    float rms; // meaning, the RMS
+    float rms;
+    float stdDev;
     float totalChi2;
     std::vector<TimingEvent> timingEvents;
     std::vector<TimingEvent>::iterator maxChi2Itr;
@@ -200,6 +201,7 @@ class CrystalCalibration
       meanE = sqrt(1/sigmaTmp);
       mean = meanTmp/sigmaTmp;
       rms = sqrt(mean2Tmp/sigmaTmp);
+      stdDev = sqrt(rms*rms-mean*mean);
     }
 
     void updateMeanUnweighted()
@@ -214,7 +216,8 @@ class CrystalCalibration
       }
       mean = meanTmp/timingEvents.size();
       rms = sqrt(mean2Tmp/timingEvents.size());
-      meanE = sqrt(rms*rms-mean*mean)/timingEvents.size(); // stdDev/sqrt(n)
+      stdDev = sqrt(rms*rms-mean*mean);
+      meanE = stdDev/sqrt(timingEvents.size()); // stdDev/sqrt(n)
     }
     
 };
