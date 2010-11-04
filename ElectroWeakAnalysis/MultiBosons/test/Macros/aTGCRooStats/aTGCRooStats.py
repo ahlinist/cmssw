@@ -14,6 +14,8 @@ def main(options):
     mcChain = ROOT.TChain(str(options.treeName))
     for mcFile in str(options.inputMC).split(','):
         mcChain.Add(mcFile)
+
+    output = ROOT.TFile.Open(str(options.workspaceName)+'.root','RECREATE')
     
     ws = ROOT.RooWorkspace(str(options.workspaceName))
 
@@ -29,19 +31,19 @@ def main(options):
     #create profile likelihood, set POI's
     theProfileLL = ROOT.RooProfileLL(options.couplingType+'_ProfileLLaTGC',
                                      'The Profile Log-Likelihood',
-                                     theNLL,ROOT.RooArgSet(ws.var(options.couplingType+'_h3'),
+                                     theNLL,ROOT.RooArgSet(ws.var(options.couplingType+'_h3'),#POI's
                                                            ws.var(options.couplingType+'_h4')))
 
     #calculate the .95 confidence interval
     theLHInterval = ROOT.RooStats.LikelihoodInterval(options.couplingType+'_aTGCLikelihoodInterval',
                                                      theProfileLL,
-                                                     ROOT.RooArgSet(ws.var(options.couplingType+'_h3'),
+                                                     ROOT.RooArgSet(ws.var(options.couplingType+'_h3'),#POI's
                                                                     ws.var(options.couplingType+'_h4')))
     theLHInterval.SetConfidenceLevel(.95) # .95 confidence interval
 
     #create the interval plotter, set POI's, ranges
     theLHplot = ROOT.RooStats.LikelihoodIntervalPlot(theLHInterval)
-    theLHplot.SetPlotParameters(ROOT.RooArgSet(ws.var(options.couplingType+'_h3'),
+    theLHplot.SetPlotParameters(ROOT.RooArgSet(ws.var(options.couplingType+'_h3'),#POI's
                                                ws.var(options.couplingType+'_h4')))
     theLHplot.SetRange(-options.h3Max,-options.h4Max,
                        options.h3Max,options.h4Max)
@@ -51,6 +53,8 @@ def main(options):
     getattr(ws,'import')(theProfileLL)
     getattr(ws,'import')(theLHInterval)
 
+    makePlots(theLHplot)
+    
     #really, that's all I had to do??
 
 
@@ -65,8 +69,7 @@ def setupWorkspace(dataTree,mcTree,ws,options):
     h3 = ROOT.RooRealVar(options.couplingType+'_h3','The h3 coupling strength',0,-options.h3Max,options.h3Max) #parameter
     h4 = ROOT.RooRealVar(options.couplingType+'_h4','The h4 coupling strength',0,-options.h4Max,options.h4Max) #parameter
     acc = ROOT.RooReaVar('acceptance','The acceptance in this pT bin')
-    acc_err = ROOT.RooRealVar('acceptance_error','The error on the accpetance in the pT bin')    
-
+    acc_err = ROOT.RooRealVar('acceptance_error','The error on the accpetance in the pT bin') 
 
     evSelErr = ROOT.RooRealVar('eventSelectionError','Fractional Error on the MC event selection') #need to calculate this *per* aTGC point... 
     bkgErr = ROOT.RooRealVar('backgroundError','Fractional Error on the expected number of background events',.1) # fix background error to be 10% for now
@@ -120,7 +123,8 @@ def setupWorkspace(dataTree,mcTree,ws,options):
 
     #build nExpectedBackground RooHistFunc
     bkg = loadBackgroundHist(ws,options)    
-    nExpectedBackground = ROOT.RooHistFunc('nExpectedBackground','Number of expected background in bins of pT',ROOT.RooArgSet(pho_et),bkg)
+    nExpectedBackground = ROOT.RooHistFunc('nExpectedBackground','Number of expected background in bins of pT',
+                                           ROOT.RooArgSet(pho_et),bkg)
     getattr(ws,'import')(nExpectedBackground)
 
     #finally make the pdf
@@ -136,7 +140,8 @@ def fitATGCExpectedYields(ws,mcTree,options):
     h4_3x3 = ROOT.RooRealVar('h4_3x3','temp h4 to extrapolate grid',-.0006,.0006) # same
     h4_3x3.setBins(3)
 
-    raw_mc_3x3_data = ROOT.RooDataSet('mc_3x3_data','MC Data in 9 (h3,h4) bins',mcTree,ROOT.RooArgSet(pho_et_mc,h3_3x3,h4_3x3))
+    raw_mc_3x3_data = ROOT.RooDataSet('mc_3x3_data','MC Data in 9 (h3,h4) bins',mcTree,
+                                      ROOT.RooArgSet(pho_et_mc,h3_3x3,h4_3x3))
 
     binSize = (options.phoEtMax-options.phoEtMin)/options.nEtBins
 
@@ -162,9 +167,13 @@ def fitATGCExpectedYields(ws,mcTree,options):
         binMin = options.phoEtMin+i*binSize
         binMax = binMin + binSize
         
-        theBin = raw_mc_3x3_data.reduce(ROOT.RooFit.Cut(pho_et_mc.name() + ' > ' + binMin + ' && ' + pho_et_mc.name() + ' < ' + binMax))
+        theBin = raw_mc_3x3_data.reduce(ROOT.RooFit.Cut(pho_et_mc.name() +
+                                                        ' > ' + binMin +
+                                                        ' && ' + pho_et_mc.name() +
+                                                        ' < ' + binMax))
 
-        binnedData = ROOT.RooDataHist('binnedData_'+i,'h3,h4 data in pT bin '+i,ROOT.RooArgSet(h3_3x3,h4_3x3),theBin)
+        binnedData = ROOT.RooDataHist('binnedData_'+i,'h3,h4 data in pT bin '+i,
+                                      ROOT.RooArgSet(h3_3x3,h4_3x3),theBin)
 
         fcn.chi2FitTo(binnedData)
 
@@ -182,20 +191,49 @@ def fitATGCExpectedYields(ws,mcTree,options):
         hp4.SetBinError(bin+1,polyP_4.getError())
 
     #note that here we change the variable of the histogram to the main photon eT!!
-    c = ROOT.RooDataHist('c_bin_pt','Constant Term for Each pT Bin',ROOT.RooArgList(ws.getVar(options.phoEtVar)),hc)
-    p0 = ROOT.RooDataHist('p0_bin_pt','h3 Linear Term for Each pT Bin',ROOT.RooArgList(ws.getVar(options.phoEtVar)),hp0)
-    p1 = ROOT.RooDataHist('p1_bin_pt','h4 Linear Term for Each pT Bin',ROOT.RooArgList(ws.getVar(options.phoEtVar)),hp1)
-    p2 = ROOT.RooDataHist('p2_bin_pt','h3h4 Cross Term for Each pT Bin',ROOT.RooArgList(ws.getVar(options.phoEtVar)),hp2)
-    p3 = ROOT.RooDataHist('p3_bin_pt','h3 Quadratic Term for Each pT Bin',ROOT.RooArgList(ws.getVar(options.phoEtVar)),hp3)
-    p4 = ROOT.RooDataHist('p4_bin_pt','h4 Quadratic Term for Each pT Bin',ROOT.RooArgList(ws.getVar(options.phoEtVar)),hp4)
+    c = ROOT.RooDataHist('c_bin_pt','Constant Term for Each pT Bin',
+                         ROOT.RooArgList(ws.getVar(options.phoEtVar)),hc)
+    p0 = ROOT.RooDataHist('p0_bin_pt','h3 Linear Term for Each pT Bin',
+                          ROOT.RooArgList(ws.getVar(options.phoEtVar)),hp0)
+    p1 = ROOT.RooDataHist('p1_bin_pt','h4 Linear Term for Each pT Bin',
+                          ROOT.RooArgList(ws.getVar(options.phoEtVar)),hp1)
+    p2 = ROOT.RooDataHist('p2_bin_pt','h3h4 Cross Term for Each pT Bin',
+                          ROOT.RooArgList(ws.getVar(options.phoEtVar)),hp2)
+    p3 = ROOT.RooDataHist('p3_bin_pt','h3 Quadratic Term for Each pT Bin',
+                          ROOT.RooArgList(ws.getVar(options.phoEtVar)),hp3)
+    p4 = ROOT.RooDataHist('p4_bin_pt','h4 Quadratic Term for Each pT Bin',
+                          ROOT.RooArgList(ws.getVar(options.phoEtVar)),hp4)
         
     return c,p0,p1,p2,p3,p4
 
 def loadBackgroundHist(ws,options):
     bkgFile = ROOT.TFile.Open(options.bkgFile)
-    bkgFile = ROOT.TH1F(bkgFile.Get('estBackground'))
+    bkgData = None 
+
+    if isinstance(bkgData,ROOT.TH1F):
+        bkgHist = ROOT.TH1F(bkgFile.Get('estBackground'))
+
+        if bkgHist.GetNBins() != options.nEtBins:
+            print 'Number of bins in background file is not correct!'
+            exit(1)
+
+        bkgData = ROOT.RooDataHist('bkgShape','The shape of the background in photon eT',
+                                   ROOT.RooArgList(ws.getVar(options.phoEtVar),bkgHist))
+                                   
+        
+    elif isinstance(bkgData,ROOT.TTree):
+        temp = ROOT.TTree(bkgFile.Get(options.treeName))        
+        tempData = ROOT.RooDataSet('tempData','temporary holder for background info',
+                                   temp,ROOT.RooArgList(ws.getVar(options.phoEtVar)))
+
+        bkgData = ROOT.RooDataHist('bkgShape','The shape of the background in photon eT',
+                                   ROOT.RooArgList(ws.getVar(options.phoEtVar),bkgHist))                                  
+        
+    else:
+        print 'Data given in invalid format! Aborting!'
+        exit(1)
     
-    
+    return bkgData
 
 #define the PDF that defines the likelihood
 def makeATGCExpectationPdf(ws):
