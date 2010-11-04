@@ -18,7 +18,6 @@ class CASTORRenderPlugin : public DQMRenderPlugin
 {
 
 
- 
 
  public:
 
@@ -29,13 +28,13 @@ class CASTORRenderPlugin : public DQMRenderPlugin
      ////---- determine whether the object is a CASTOR object
     if( (o.name.find( "Castor/EventInfo/reportSummaryMap" ) != std::string::npos) ||
         (o.name.find( "CASTOR Digi ChannelSummaryMap" ) != std::string::npos) ||
+        (o.name.find( "CASTOR Digi SaturationSummaryMap" ) != std::string::npos) ||
         (o.name.find( "RecHitEnergyBasedSummaryMap" ) != std::string::npos) ||
         (o.name.find( "CASTOR Digi Occupancy Map" ) != std::string::npos) ||
         (o.name.find( "CastorRecHit 2D Energy Map- above threshold" ) != std::string::npos) ||
-        (o.name.find( "Castor Pulse Shape for sector=0 (in all 14 modules)") != std::string::npos) || 
-        ( o.name.find("Castor Pulse Shape for sector=1 (in all 14 modules)") != std::string::npos) ||
-	( o.name.find("Castor Pulse Shape for sector=2 (in all 14 modules)") != std::string::npos) ||
-        ( o.name.find("Castor Pulse Shape for sector=3 (in all 14 modules)") != std::string::npos) ||
+        (o.name.find( "Castor Pulse Shape for sector=1 (in all 14 modules)") != std::string::npos) || 
+        ( o.name.find("Castor Pulse Shape for sector=2 (in all 14 modules)") != std::string::npos) ||
+	( o.name.find("Castor Pulse Shape for sector=3 (in all 14 modules)") != std::string::npos) ||
         ( o.name.find("Castor Pulse Shape for sector=4 (in all 14 modules)") != std::string::npos) ||
         ( o.name.find("Castor Pulse Shape for sector=5 (in all 14 modules)") != std::string::npos) ||
         ( o.name.find("Castor Pulse Shape for sector=6 (in all 14 modules)") != std::string::npos) ||
@@ -48,6 +47,7 @@ class CASTORRenderPlugin : public DQMRenderPlugin
         ( o.name.find("Castor Pulse Shape for sector=13 (in all 14 modules)") != std::string::npos) ||
         ( o.name.find("Castor Pulse Shape for sector=14 (in all 14 modules)") != std::string::npos) ||
         ( o.name.find("Castor Pulse Shape for sector=15 (in all 14 modules)") != std::string::npos) ||
+        ( o.name.find("Castor Pulse Shape for sector=16 (in all 14 modules)") != std::string::npos) ||
         ( o.name.find("CastorRecHit Energy in modules- above threshold") != std::string::npos)      ||         
         ( o.name.find("CastorRecHit Energy in sectors- above threshold") != std::string::npos)      ||
         ( o.name.find("CASTOR 3D hits- cumulative") != std::string::npos)                           ||
@@ -288,7 +288,7 @@ private:
         obj->SetMaximum(+1.0);
 	int colorError1[4];
         colorError1[0] = 632; // kRed
-	colorError1[1] = 400; // kYellow
+	colorError1[1] = 800; // kOrange
         colorError1[2] = 432; // kCyan 
 	colorError1[3] = 416; // kGreen
         gStyle->SetPalette(4, colorError1);
@@ -297,6 +297,65 @@ private:
 
         return;
       }
+
+
+    if(o.name.find("SaturationSummaryMap") != std::string::npos)
+      {
+        obj->GetXaxis()->SetNdivisions(15,true);
+        obj->GetYaxis()->SetNdivisions(17,true);
+        obj->GetXaxis()->SetLabelSize(0.07);
+        obj->GetYaxis()->SetLabelSize(0.07);
+
+        obj->GetXaxis()->SetBinLabel(1,"1");
+        obj->GetXaxis()->SetBinLabel(2,"2");
+        obj->GetXaxis()->SetBinLabel(3,"3");
+        obj->GetXaxis()->SetBinLabel(4,"4");
+        obj->GetXaxis()->SetBinLabel(5,"5");
+        obj->GetXaxis()->SetBinLabel(6,"6");
+        obj->GetXaxis()->SetBinLabel(7,"7");
+        obj->GetXaxis()->SetBinLabel(8,"8");
+        obj->GetXaxis()->SetBinLabel(9,"9");
+        obj->GetXaxis()->SetBinLabel(10,"10");
+        obj->GetXaxis()->SetBinLabel(11,"11");
+        obj->GetXaxis()->SetBinLabel(12,"12");
+        obj->GetXaxis()->SetBinLabel(13,"13");
+        obj->GetXaxis()->SetBinLabel(14,"14");
+  
+        obj->GetYaxis()->SetBinLabel(1,"1");
+        obj->GetYaxis()->SetBinLabel(2,"2");
+        obj->GetYaxis()->SetBinLabel(3,"3");
+        obj->GetYaxis()->SetBinLabel(4,"4");
+        obj->GetYaxis()->SetBinLabel(5,"5");
+        obj->GetYaxis()->SetBinLabel(6,"6");
+        obj->GetYaxis()->SetBinLabel(7,"7");
+        obj->GetYaxis()->SetBinLabel(8,"8");
+        obj->GetYaxis()->SetBinLabel(9,"9");
+        obj->GetYaxis()->SetBinLabel(10,"10");
+        obj->GetYaxis()->SetBinLabel(11,"11");
+        obj->GetYaxis()->SetBinLabel(12,"12");
+        obj->GetYaxis()->SetBinLabel(13,"13");
+        obj->GetYaxis()->SetBinLabel(14,"14");
+        obj->GetYaxis()->SetBinLabel(15,"15");
+        obj->GetYaxis()->SetBinLabel(16,"16");
+
+        obj->GetXaxis()->CenterLabels();
+        obj->GetYaxis()->CenterLabels();
+        c->SetGrid(1,1);
+        //dqm::utils::reportSummaryMapPalette(obj);
+	obj->SetMinimum(-1.0);
+        obj->SetMaximum(+1.0);
+	int colorError1[3];
+	colorError1[0] = 800; // kOrange  
+        colorError1[1] = 400; // kYellow
+	colorError1[2] = 416; // kGreen
+        gStyle->SetPalette(3, colorError1);
+        gStyle->SetPaintTextFormat("+g");
+
+        return;
+      }
+
+
+
 
      if(o.name.find("RecHitEnergyBasedSummaryMap") != std::string::npos)
       {
@@ -466,24 +525,44 @@ private:
 	
 	TBox* b_box_g = new TBox();
 	TBox* b_box_c = new TBox();
-	TBox* b_box_y = new TBox();
+	TBox* b_box_o = new TBox();
 	TBox* b_box_r = new TBox();
 
 	b_box_g->SetFillColor(416);
 	b_box_c->SetFillColor(432);
-	b_box_y->SetFillColor(400);
+	b_box_o->SetFillColor(800);
 	b_box_r->SetFillColor(632);
 
 	TLegend* leg = new TLegend(0.1,0.75,0.9,0.9); //(0.16, 0.11, 0.44, 0.38);
 	leg->AddEntry(b_box_g,"Good (signal)",   "f");
 	leg->AddEntry(b_box_c,"Good (pedestal)","f");
-	leg->AddEntry(b_box_y,"Hot Channel",  "f");
+	leg->AddEntry(b_box_o,"Saturated Channel (in >5% of events)",  "f");
 	leg->AddEntry(b_box_r,"Dead Channel", "f");
 	leg->Draw();
 	
 	// TLine* my_line = new TLine();
 	// my_line->DrawLine(0,18.07,14,18.07);
       }
+
+     if(o.name.find("SaturationSummaryMap") != std::string::npos)
+      {
+	
+	TBox* b_box_g = new TBox();
+	TBox* b_box_y = new TBox();
+	TBox* b_box_o = new TBox();
+
+	b_box_g->SetFillColor(416);
+	b_box_y->SetFillColor(400);
+	b_box_o->SetFillColor(800);
+
+	TLegend* leg = new TLegend(0.1,0.75,0.9,0.9); //(0.16, 0.11, 0.44, 0.38);
+	leg->AddEntry(b_box_g,"No saturation",   "f");
+	leg->AddEntry(b_box_y,"Saturation in <5% of events","f");
+	leg->AddEntry(b_box_o,"Saturation in >5% of events", "f");
+	leg->Draw();
+	
+      }
+
 
 
       if(o.name.find("testOccupancy") != std::string::npos)
@@ -526,8 +605,7 @@ private:
       //obj->GetXaxis()->SetLabelSize(0.05);
       //obj->GetYaxis()->SetLabelSize(0.05);
 
-     if( o.name.find("Castor Pulse Shape for sector=0 (in all 14 modules)") != std::string::npos || 
-         o.name.find("Castor Pulse Shape for sector=1 (in all 14 modules)") != std::string::npos ||
+     if( o.name.find("Castor Pulse Shape for sector=1 (in all 14 modules)") != std::string::npos || 
          o.name.find("Castor Pulse Shape for sector=2 (in all 14 modules)") != std::string::npos ||
          o.name.find("Castor Pulse Shape for sector=3 (in all 14 modules)") != std::string::npos ||
          o.name.find("Castor Pulse Shape for sector=4 (in all 14 modules)") != std::string::npos ||
@@ -541,7 +619,8 @@ private:
          o.name.find("Castor Pulse Shape for sector=12 (in all 14 modules)") != std::string::npos ||
          o.name.find("Castor Pulse Shape for sector=13 (in all 14 modules)") != std::string::npos ||
          o.name.find("Castor Pulse Shape for sector=14 (in all 14 modules)") != std::string::npos ||
-         o.name.find("Castor Pulse Shape for sector=15 (in all 14 modules)") != std::string::npos  ) 
+         o.name.find("Castor Pulse Shape for sector=15 (in all 14 modules)") != std::string::npos ||
+         o.name.find("Castor Pulse Shape for sector=16 (in all 14 modules)") != std::string::npos  ) 
         {
         obj->SetStats( kFALSE );
         obj->GetXaxis()->SetLabelSize(0.04);
