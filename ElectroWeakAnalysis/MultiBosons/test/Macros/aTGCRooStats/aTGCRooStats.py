@@ -71,7 +71,7 @@ def setupWorkspace(dataTree,mcTree,ws,options):
     acc = ROOT.RooReaVar('acceptance','The acceptance in this pT bin')
     acc_err = ROOT.RooRealVar('acceptance_error','The error on the accpetance in the pT bin') 
 
-    evSelErr = ROOT.RooRealVar('eventSelectionError','Fractional Error on the MC event selection') #need to calculate this *per* aTGC point... 
+    evSelErr = ROOT.RooRealVar('eventSelectionError','Fractional Error on the MC event selection',sqrt(.02*.02 + 0.2*0.2 + .15*.15)) #acceptance error + XS err + 15%
     bkgErr = ROOT.RooRealVar('backgroundError','Fractional Error on the expected number of background events',.1) # fix background error to be 10% for now
     lumiErr = ROOT.RooRealVar('luminosityError','Fractional Error on the luminosity',.1) #fix lumi error to 10%    
     
