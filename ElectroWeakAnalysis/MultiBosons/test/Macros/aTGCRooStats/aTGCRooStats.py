@@ -132,7 +132,7 @@ def setupWorkspace(dataTree,mcTree,ws,options):
         
 def fitATGCExpectedYields(ws,mcTree,options):
     #create the variables for the 3x3 grid, doesn't go in the workspace
-    pho_et_mc = ROOT.RooRealVar(ws.getVar(options.phoEtVar))
+    pho_et_mc = ROOT.RooRealVar(ws.var(options.phoEtVar))
     #h3_3x3 and h4_3x3 do not go in the workspace
     #figure out how to determine binning on the fly.... can probably do by finding max h3,h4 in tree + info that we have 9 bins
     h3_3x3 = ROOT.RooRealVar('h3_3x3','temp h3 to extrapolate grid',-.18,.18) #hardcoded to to have current aTGC samples in bin centers :-)
@@ -192,17 +192,17 @@ def fitATGCExpectedYields(ws,mcTree,options):
 
     #note that here we change the variable of the histogram to the main photon eT!!
     c = ROOT.RooDataHist('c_bin_pt','Constant Term for Each pT Bin',
-                         ROOT.RooArgList(ws.getVar(options.phoEtVar)),hc)
+                         ROOT.RooArgList(ws.var(options.phoEtVar)),hc)
     p0 = ROOT.RooDataHist('p0_bin_pt','h3 Linear Term for Each pT Bin',
-                          ROOT.RooArgList(ws.getVar(options.phoEtVar)),hp0)
+                          ROOT.RooArgList(ws.var(options.phoEtVar)),hp0)
     p1 = ROOT.RooDataHist('p1_bin_pt','h4 Linear Term for Each pT Bin',
-                          ROOT.RooArgList(ws.getVar(options.phoEtVar)),hp1)
+                          ROOT.RooArgList(ws.var(options.phoEtVar)),hp1)
     p2 = ROOT.RooDataHist('p2_bin_pt','h3h4 Cross Term for Each pT Bin',
-                          ROOT.RooArgList(ws.getVar(options.phoEtVar)),hp2)
+                          ROOT.RooArgList(ws.var(options.phoEtVar)),hp2)
     p3 = ROOT.RooDataHist('p3_bin_pt','h3 Quadratic Term for Each pT Bin',
-                          ROOT.RooArgList(ws.getVar(options.phoEtVar)),hp3)
+                          ROOT.RooArgList(ws.var(options.phoEtVar)),hp3)
     p4 = ROOT.RooDataHist('p4_bin_pt','h4 Quadratic Term for Each pT Bin',
-                          ROOT.RooArgList(ws.getVar(options.phoEtVar)),hp4)
+                          ROOT.RooArgList(ws.var(options.phoEtVar)),hp4)
         
     return c,p0,p1,p2,p3,p4
 
@@ -218,16 +218,16 @@ def loadBackgroundHist(ws,options):
             exit(1)
 
         bkgData = ROOT.RooDataHist('bkgShape','The shape of the background in photon eT',
-                                   ROOT.RooArgList(ws.getVar(options.phoEtVar),bkgHist))
+                                   ROOT.RooArgList(ws.var(options.phoEtVar),bkgHist))
                                    
         
     elif isinstance(bkgData,ROOT.TTree):
         temp = ROOT.TTree(bkgFile.Get(options.treeName))        
         tempData = ROOT.RooDataSet('tempData','temporary holder for background info',
-                                   temp,ROOT.RooArgList(ws.getVar(options.phoEtVar)))
+                                   temp,ROOT.RooArgList(ws.var(options.phoEtVar)))
 
         bkgData = ROOT.RooDataHist('bkgShape','The shape of the background in photon eT',
-                                   ROOT.RooArgList(ws.getVar(options.phoEtVar),bkgHist))                                  
+                                   ROOT.RooArgList(ws.var(options.phoEtVar),bkgHist))                                  
         
     else:
         print 'Data given in invalid format! Aborting!'
