@@ -119,7 +119,7 @@ def setupWorkspace(dataTree,mcTree,ws,options):
     getattr(ws,'import')(nExpectedSignal)
 
     #build nExpectedBackground RooHistFunc
-    bkg = createBackgroundHist(ws,dataTree,options)    
+    bkg = loadBackgroundHist(ws,options)    
     nExpectedBackground = ROOT.RooHistFunc('nExpectedBackground','Number of expected background in bins of pT',ROOT.RooArgSet(pho_et),bkg)
     getattr(ws,'import')(nExpectedBackground)
 
@@ -130,9 +130,10 @@ def fitATGCExpectedYields(ws,mcTree,options):
     #create the variables for the 3x3 grid, doesn't go in the workspace
     pho_et_mc = ROOT.RooRealVar(ws.getVar(options.phoEtVar))
     #h3_3x3 and h4_3x3 do not go in the workspace
-    h3_3x3 = ROOT.RooRealVar('h3_3x3','temp h3 to extrapolate grid',-options.h3Max,options.h3Max)
+    #figure out how to determine binning on the fly.... can probably do by finding max h3,h4 in tree + info that we have 9 bins
+    h3_3x3 = ROOT.RooRealVar('h3_3x3','temp h3 to extrapolate grid',-.18,.18) #hardcoded to to have current aTGC samples in bin centers :-)
     h3_3x3.setBins(3)
-    h4_3x3 = ROOT.RooRealVar('h4_3x3','temp h4 to extrapolate grid',-options.h4Max,options.h4Max)
+    h4_3x3 = ROOT.RooRealVar('h4_3x3','temp h4 to extrapolate grid',-.0006,.0006) # same
     h4_3x3.setBins(3)
 
     raw_mc_3x3_data = ROOT.RooDataSet('mc_3x3_data','MC Data in 9 (h3,h4) bins',mcTree,ROOT.RooArgSet(pho_et_mc,h3_3x3,h4_3x3))
@@ -150,12 +151,12 @@ def fitATGCExpectedYields(ws,mcTree,options):
                              '@2 + @3*@0 + @4*@1 + @5*@0*@1 + @6*@0*@0 + @7*@1*@1',
                              RooArgList(h3_3x3,h4_3x3,polyC,polyP_0,polyP_1,polyP_2,polyP_3,polyP_4))
 
-    hc = ROOT.TH1F('hc','const term in pT bins')
-    hp_0 = ROOT.TH1F('hp0','')
-    hp_1 = ROOT.TH1F('hp1','')
-    hp_2 = ROOT.TH1F('hp2','')
-    hp_3 = ROOT.TH1F('hp3','')
-    hp_4 = ROOT.TH1F('hp4','')
+    hc = ROOT.TH1F('hc','const term in pT bins',options.nEtBins,options.phoEtMin,options.phoEtMax)
+    hp_0 = ROOT.TH1F('hp0','h3 linear term',options.nEtBins,options.phoEtMin,options.phoEtMax)
+    hp_1 = ROOT.TH1F('hp1','h4 linear term',options.nEtBins,options.phoEtMin,options.phoEtMax)
+    hp_2 = ROOT.TH1F('hp2','h3h4 cross term',options.nEtBins,options.phoEtMin,options.phoEtMax)
+    hp_3 = ROOT.TH1F('hp3','h3 quadratic term',options.nEtBins,options.phoEtMin,options.phoEtMax)
+    hp_4 = ROOT.TH1F('hp4','h4 quadratic term',options.nEtBins,options.phoEtMin,options.phoEtMax)
 
     for i in range(options.nEtBins):
         binMin = options.phoEtMin+i*binSize
@@ -165,12 +166,36 @@ def fitATGCExpectedYields(ws,mcTree,options):
 
         binnedData = ROOT.RooDataHist('binnedData_'+i,'h3,h4 data in pT bin '+i,ROOT.RooArgSet(h3_3x3,h4_3x3),theBin)
 
-        
-        
-    print 'test'
+        fcn.chi2FitTo(binnedData)
 
-def createBackgroundHist(ws,dataTree,options):
-    print 'test'
+        hc.SetBinContent(bin+1,polyC.getVal())
+        hc.SetBinError(bin+1,polyC.getError())
+        hp0.SetBinContent(bin+1,polyP_0.getVal())
+        hp0.SetBinError(bin+1,polyP_0.getError())
+        hp1.SetBinContent(bin+1,polyP_1.getVal())
+        hp1.SetBinError(bin+1,polyP_1.getError())
+        hp2.SetBinContent(bin+1,polyP_2.getVal())
+        hp2.SetBinError(bin+1,polyP_2.getError())
+        hp3.SetBinContent(bin+1,polyP_3.getVal())
+        hp3.SetBinError(bin+1,polyP_3.getError())
+        hp4.SetBinContent(bin+1,polyP_4.getVal())
+        hp4.SetBinError(bin+1,polyP_4.getError())
+
+    #note that here we change the variable of the histogram to the main photon eT!!
+    c = ROOT.RooDataHist('c_bin_pt','Constant Term for Each pT Bin',ROOT.RooArgList(ws.getVar(options.phoEtVar)),hc)
+    p0 = ROOT.RooDataHist('p0_bin_pt','h3 Linear Term for Each pT Bin',ROOT.RooArgList(ws.getVar(options.phoEtVar)),hp0)
+    p1 = ROOT.RooDataHist('p1_bin_pt','h4 Linear Term for Each pT Bin',ROOT.RooArgList(ws.getVar(options.phoEtVar)),hp1)
+    p2 = ROOT.RooDataHist('p2_bin_pt','h3h4 Cross Term for Each pT Bin',ROOT.RooArgList(ws.getVar(options.phoEtVar)),hp2)
+    p3 = ROOT.RooDataHist('p3_bin_pt','h3 Quadratic Term for Each pT Bin',ROOT.RooArgList(ws.getVar(options.phoEtVar)),hp3)
+    p4 = ROOT.RooDataHist('p4_bin_pt','h4 Quadratic Term for Each pT Bin',ROOT.RooArgList(ws.getVar(options.phoEtVar)),hp4)
+        
+    return c,p0,p1,p2,p3,p4
+
+def loadBackgroundHist(ws,options):
+    bkgFile = ROOT.TFile.Open(options.bkgFile)
+    bkgFile = ROOT.TH1F(bkgFile.Get('estBackground'))
+    
+    
 
 #define the PDF that defines the likelihood
 def makeATGCExpectationPdf(ws):
@@ -207,6 +232,7 @@ if __name__ == "__main__":
     parser = OptionParser(description="aTGCRooStats: A RooStats Implementation of Anomalous Triple Gauge Coupling Analysis.",
                           usage="aTGCRooStats --intLumi=TheLumi --lumiErr=Err")
     parser.add_option("--workspaceName",dest="workspaceName",help="The name of your RooWorkspace")
+    parser.add_option("--backgroundFile",dest="bkgFile",help="The path to the file containing the estimated background in each bin.")
     parser.add_option("--intLumi",dest="intLumi",help="Integrated luminosity of input data.")
     parser.add_option("--lumiErr",dest="lumiErr",help="Integrated luminosity fractional error.")
     parser.add_option("--phoEtVar",dest="phoEtVar",help="Name of the photon eT variable in the input trees")
@@ -227,6 +253,9 @@ if __name__ == "__main__":
 
     if options.workspaceName is None:
         print 'Need to specify --workspaceName'
+        miss_options=True
+    if options.bkgFile is None:
+        print 'Need to specify --backgroundFile'
         miss_options=True
     if options.inputData is None:
         print 'Need to specify --inputData'
