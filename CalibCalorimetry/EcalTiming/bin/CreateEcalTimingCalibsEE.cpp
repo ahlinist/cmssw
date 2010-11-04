@@ -364,8 +364,8 @@ int main(int argc, char* argv[])
         if(det==EEDetId()) // make sure DetId is valid
           continue;
 
-        int ieta = det.ix();
-        int iphi = det.iy();
+        int ix = det.ix();
+        int iy = det.iy();
 
         //XXX: RecHit cuts
         bool keepHit = cryAmp >= minAmpEE
@@ -389,12 +389,12 @@ int main(int argc, char* argv[])
         if(det.zside() < 0)
         {
           ampProfileEEM->Fill(hashedIndex,cryAmp);
-          ampProfileMapEEM->Fill(iphi,ieta,cryAmp);
+          ampProfileMapEEM->Fill(ix,iy,cryAmp);
         }
         else
         {
           ampProfileEEP->Fill(hashedIndex,cryAmp);
-          ampProfileMapEEP->Fill(iphi,ieta,cryAmp);
+          ampProfileMapEEP->Fill(ix,iy,cryAmp);
         }
       }
     }
