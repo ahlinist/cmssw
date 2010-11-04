@@ -1274,6 +1274,7 @@ fabs(ip->pdgId())<=14) || ip->pdgId()==22))) {
 	  ZeeLeg2Index_[nZee_] = leg2Index;
 
 	  nZee_++;
+          leg2Index++;
 	//}
       }
 
