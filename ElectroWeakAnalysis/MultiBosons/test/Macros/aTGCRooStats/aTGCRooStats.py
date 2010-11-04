@@ -24,7 +24,7 @@ def main(options):
     #create -log(likelihood)
     theNLL = ROOT.RooNLLVar(options.couplingType+'_aTGCNLL',
                             'The -log(likelihood) for the dataset',
-                            ws.function('corePoisson'),ws.data('aTGCData'))
+                            ws.function('TopLevelPdf'),ws.data('aTGCData'))
 
     #create profile likelihood, set POI's
     theProfileLL = ROOT.RooProfileLL(options.couplingType+'_ProfileLLaTGC',
@@ -66,13 +66,13 @@ def setupWorkspace(dataTree,mcTree,ws,options):
     h4 = ROOT.RooRealVar(options.couplingType+'_h4','The h4 coupling strength',0,-options.h4Max,options.h4Max) #parameter
     acc = ROOT.RooReaVar('acceptance','The acceptance in this pT bin')
     acc_err = ROOT.RooRealVar('acceptance_error','The error on the accpetance in the pT bin')    
-    nExpectedBackground = ROOT.RooRealVar('nExpectedBackground','The expected number of background events in this h3,h4,pT cell')
-    evSelErr = ROOT.RooRealVar('eventSelectionError','Fractional Error on the MC event selection')
-    bkgErr = ROOT.RooRealVar('backgroundError','Fractional Error on the expected number of background events')
-    lumiErr = ROOT.RooRealVar('luminosityError','Fractional Error on the luminosity')    
 
+
+    evSelErr = ROOT.RooRealVar('eventSelectionError','Fractional Error on the MC event selection') #need to calculate this *per* aTGC point... 
+    bkgErr = ROOT.RooRealVar('backgroundError','Fractional Error on the expected number of background events',.1) # fix background error to be 10% for now
+    lumiErr = ROOT.RooRealVar('luminosityError','Fractional Error on the luminosity',.1) #fix lumi error to 10%    
     
-    aRow = ROOT.RooArgSet(pho_et) #a row is the observed photon eT spectrum and the background fraction (from data driven or MC)
+    aRow = ROOT.RooArgSet(pho_et) #a row is the observed photon eT spectrum
     
     aTGCUnbinnedData = ROOT.RooDataSet('aTGCUnbinnedData','Anomalous Triple Gauge Coupling Data, Unbinned',dataTree,aRow)
 
@@ -83,7 +83,6 @@ def setupWorkspace(dataTree,mcTree,ws,options):
     getattr(ws,'import')(h4)
     getattr(ws,'import')(acc)
     getattr(ws,'import')(acc_err)    
-    getattr(ws,'import')(nExpectedBackground)
     getattr(ws,'import')(evSelErr)
     getattr(ws,'import')(bkgErr)
     getattr(ws,'import')(lumiErr)
@@ -108,7 +107,7 @@ def setupWorkspace(dataTree,mcTree,ws,options):
     polyP_2 = ROOT.RooHistFunc('polyP_2','h_3*h_4 Term for aTGC polynomial description',ROOT.RooArgSet(pho_et),p_2)
     polyP_3 = ROOT.RooHistFunc('polyP_3','Quadratic h_3 Term for aTGC polynomial description',ROOT.RooArgSet(pho_et),p_3)
     polyP_4 = ROOT.RooHistFunc('polyP_4','Quadratic h_4 Term for aTGC polynomial description',ROOT.RooArgSet(pho_et),p_4)
-    nExpectedSignal = ROOT.RooFormulaVar('nExpectedSignal','The expected number of signal events in (h3,h4)',
+    nExpectedSignal = ROOT.RooFormulaVar('nExpectedSignal','The expected number of signal events in (h3,h4) in bins of pT',
                                          '@3(@0) + @4(@0)*@1 + @5(@0)*@2 + @6(@0)*@1*@2 + @7(@0)*@1*@1 + @8(@0)*@2*@2',
                                          RooArgList(pho_et,h3,h4,polyC,polyP_0,polyP_1,polyP_2,polyP_3,polyP_4))
     getattr(ws,'import')(polyC)
@@ -120,15 +119,57 @@ def setupWorkspace(dataTree,mcTree,ws,options):
     getattr(ws,'import')(nExpectedSignal)
 
     #build nExpectedBackground RooHistFunc
-    
+    bkg = createBackgroundHist(ws,dataTree,options)    
+    nExpectedBackground = ROOT.RooHistFunc('nExpectedBackground','Number of expected background in bins of pT',ROOT.RooArgSet(pho_et),bkg)
+    getattr(ws,'import')(nExpectedBackground)
+
+    #finally make the pdf
+    makeATGCExpectationPdf(ws)
         
 def fitATGCExpectedYields(ws,mcTree,options):
-    #create the variables for the 3x3 grid
+    #create the variables for the 3x3 grid, doesn't go in the workspace
+    pho_et_mc = ROOT.RooRealVar(ws.getVar(options.phoEtVar))
+    #h3_3x3 and h4_3x3 do not go in the workspace
     h3_3x3 = ROOT.RooRealVar('h3_3x3','temp h3 to extrapolate grid',-options.h3Max,options.h3Max)
     h3_3x3.setBins(3)
     h4_3x3 = ROOT.RooRealVar('h4_3x3','temp h4 to extrapolate grid',-options.h4Max,options.h4Max)
     h4_3x3.setBins(3)
+
+    raw_mc_3x3_data = ROOT.RooDataSet('mc_3x3_data','MC Data in 9 (h3,h4) bins',mcTree,ROOT.RooArgSet(pho_et_mc,h3_3x3,h4_3x3))
+
+    binSize = (options.phoEtMax-options.phoEtMin)/options.nEtBins
+
+    polyC = ROOT.RooRealVar('c','',-ROOT.RooNumber.infinity(),ROOT.RooNumber.infinity())
+    polyP_0 = ROOT.RooRealVar('p0','',-ROOT.RooNumber.infinity(),ROOT.RooNumber.infinity())
+    polyP_1 = ROOT.RooRealVar('p1','',-ROOT.RooNumber.infinity(),ROOT.RooNumber.infinity())
+    polyP_2 = ROOT.RooRealVar('p2','',-ROOT.RooNumber.infinity(),ROOT.RooNumber.infinity())
+    polyP_3 = ROOT.RooRealVar('p3','',-ROOT.RooNumber.infinity(),ROOT.RooNumber.infinity())
+    polyP_4 = ROOT.RooRealVar('p4','',-ROOT.RooNumber.infinity(),ROOT.RooNumber.infinity())
+
+    fcn = ROOT.RooFormulaVar('fcn','The expected number of signal events in (h3,h4) in bins of pT',
+                             '@2 + @3*@0 + @4*@1 + @5*@0*@1 + @6*@0*@0 + @7*@1*@1',
+                             RooArgList(h3_3x3,h4_3x3,polyC,polyP_0,polyP_1,polyP_2,polyP_3,polyP_4))
+
+    hc = ROOT.TH1F('hc','const term in pT bins')
+    hp_0 = ROOT.TH1F('hp0','')
+    hp_1 = ROOT.TH1F('hp1','')
+    hp_2 = ROOT.TH1F('hp2','')
+    hp_3 = ROOT.TH1F('hp3','')
+    hp_4 = ROOT.TH1F('hp4','')
+
+    for i in range(options.nEtBins):
+        binMin = options.phoEtMin+i*binSize
+        binMax = binMin + binSize
         
+        theBin = raw_mc_3x3_data.reduce(ROOT.RooFit.Cut(pho_et_mc.name() + ' > ' + binMin + ' && ' + pho_et_mc.name() + ' < ' + binMax))
+
+        binnedData = ROOT.RooDataHist('binnedData_'+i,'h3,h4 data in pT bin '+i,ROOT.RooArgSet(h3_3x3,h4_3x3),theBin)
+
+        
+        
+    print 'test'
+
+def createBackgroundHist(ws,dataTree,options):
     print 'test'
 
 #define the PDF that defines the likelihood
@@ -138,22 +179,24 @@ def makeATGCExpectationPdf(ws):
         exit(1)
 
     #nuisance parameters
-    x_gs = ROOT.RooRealVar('err_x_gs','Integration Range for Selection Error',1,-ROOT.RooNumber.infinity(),ROOT.RooNumber.infinity())
-    x_gb = ROOT.RooRealVar('err_x_gb','Integration Range for Background Error',1,-ROOT.RooNumber.infinity(),ROOT.RooNumber.infinity())
-    x_gl = ROOT.RooRealVar('err_x_gl','Integration Range for Lumi Error',1,-ROOT.RooNumber.infinity(),ROOT.RooNumber.infinity())
+    x_gs = ROOT.RooRealVar('err_x_gs','Range for Selection Error',1,-ROOT.RooNumber.infinity(),ROOT.RooNumber.infinity())
+    x_gb = ROOT.RooRealVar('err_x_gb','Range for Background Error',1,-ROOT.RooNumber.infinity(),ROOT.RooNumber.infinity())
+    x_gl = ROOT.RooRealVar('err_x_gl','Range for Lumi Error',1,-ROOT.RooNumber.infinity(),ROOT.RooNumber.infinity())
     
     getattr(ws,'import')(x_gs)
     getattr(ws,'import')(x_gb)
     getattr(ws,'import')(x_gl)
     
     #define the Gaussians for the errors
-    ws.factory("RooGaussian::selectionErr(err_x_gs,1,eventSelectionError)")
-    ws.factory("RooGaussian::backgroundErr(err_x_gb,1,backgroundError)")
-    ws.factory("RooGaussian::lumiErr(err_x_gl,1,luminosityError)")
+    #switch 1 and the err_x variable if you want to marginalize instead of profile
+    ws.factory("RooGaussian::selectionErr(1,err_x_gs,eventSelectionError)")
+    ws.factory("RooGaussian::backgroundErr(1,err_x_gb,backgroundError)")
+    ws.factory("RooGaussian::lumiErr(1,err_x_gl,luminosityError)")
     
-    #now we create the core poisson pdf with errors left as floating, to be integrated out later
-    ws.factory("RooPoisson::corePoisson(pho_et,nExpectedSignal*err_x_gs*err_x_gl+nExpectedBackground*err_x_gb)")
-      
+    #now we create the core poisson pdf with errors left as floating
+    ws.factory("RooPoisson::corePoisson(pho_et,sum::expected(nExpectedSignal*err_x_gs*err_x_gl,nExpectedBackground*err_x_gb))")
+    #now we create the top level pdf, which will be evaluated at each pT bin to create the likelihood.
+    ws.factory("PROD::TopLevelPdf(corePoisson,lumiErr,backgroundErr,selectionErr)")
 
 def makePlots(LLInterval,options):
     print "not done yet"
