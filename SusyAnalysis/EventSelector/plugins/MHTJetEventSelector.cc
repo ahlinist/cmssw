@@ -71,6 +71,9 @@ bool MHTJetEventSelector::select(const edm::Event& event) const {
 
    for( edm::View<pat::Jet>::const_iterator iJet = jets->begin(); iJet != jets->end(); ++iJet ){
 
+
+     if (iJet->pt() < minPt_ || fabs(iJet->eta()) > maxEta_) continue;
+ 
      bool loose = false;
 
      if( iJet->isCaloJet() || iJet->isJPTJet() ){
@@ -84,16 +87,14 @@ bool MHTJetEventSelector::select(const edm::Event& event) const {
        loose = jetIDLoosePF( *iJet, ret );
      }
 
-      if (useJetID_ && !(loose)) {
-         badJet = true;
-         //++iJet;
-         continue;
-      }
-      if (iJet->pt() > minPt_ && fabs(iJet->eta()) < maxEta_) {
-         math::XYZTLorentzVector p4(iJet->px(), iJet->py(), iJet->pz(), iJet->energy()); //iJet->correctedP4("abs");
-         HT -= p4;
-      }
-      //++iJet;
+     if (useJetID_ && !(loose)) {
+       badJet = true;
+       continue;
+     }
+
+     math::XYZTLorentzVector p4(iJet->px(), iJet->py(), iJet->pz(), iJet->energy()); //iJet->correctedP4("abs");
+     HT -= p4;
+
    }
 
    // MET "isolation" (calculated on at most nJetsMetIso_ jets)

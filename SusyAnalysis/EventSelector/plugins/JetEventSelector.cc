@@ -90,8 +90,10 @@ bool JetEventSelector::select(const edm::Event& event) const {
 
    for (unsigned int i = 0; i < jetHandle->size(); ++i) {
 
-     bool loose = false;
 
+     if( (*jetHandle)[i].pt() < 30. || fabs((*jetHandle)[i].eta()) > 5.0 ) continue;
+
+     bool loose = false;
      if( (*jetHandle)[i].isCaloJet() || (*jetHandle)[i].isJPTJet() ){
        pat::strbitset ret = jetIDLooseCalo.getBitTemplate();
        ret.set(false);
@@ -103,28 +105,25 @@ bool JetEventSelector::select(const edm::Event& event) const {
        loose = jetIDLoosePF((*jetHandle)[i], ret);
      }
 
-      //bool loose = jetIDLoose((*jetHandle)[i], ret);
+     if(useJetID_ && !(loose)) {
+       badJet = true;
+       continue;
+     } 
 
-     //bool loose = jetIDLoose( (*jetHandle)[i] );
+     
 
-      if(useJetID_ && !(loose)) {
-	badJet = true;
-	continue;
-      } 
-
- 
-      if(i >= minPt_.size() ) continue;
+     if(i >= minPt_.size() ) continue;
 
 
-      setVariable(2* numPassed + 1, (*jetHandle)[i].pt());
-      setVariable(2* numPassed + 2, (*jetHandle)[i].eta());
+     setVariable(2* numPassed + 1, (*jetHandle)[i].pt());
+     setVariable(2* numPassed + 2, (*jetHandle)[i].eta());
 
 
-      if ((*jetHandle)[i].pt() > minPt_[numPassed] && fabs((*jetHandle)[i].eta()) < maxEta_[numPassed])
-	++numPassed;
+     if ((*jetHandle)[i].pt() > minPt_[numPassed] && fabs((*jetHandle)[i].eta()) < maxEta_[numPassed])
+       ++numPassed;
               
 
-      if (numPassed == minPt_.size()) result = true;
+     if (numPassed == minPt_.size()) result = true;
 
    }
 
