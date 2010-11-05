@@ -27,6 +27,10 @@ JetEventSelector::JetEventSelector(const edm::ParameterSet& pset) :
          << minPt_.size();
 }
 
+
+
+
+
 //________________________________________________________________________________________
 bool JetEventSelector::select(const edm::Event& event) const {
    // reset cached variables
@@ -59,15 +63,49 @@ bool JetEventSelector::select(const edm::Event& event) const {
 
    //// To be set true if one jet is found failing jetID
    bool badJet = false;
-   JetIDSelectionFunctor jetIDLoose( JetIDSelectionFunctor::PURE09, JetIDSelectionFunctor::LOOSE );
-   pat::strbitset ret = jetIDLoose.getBitTemplate();
+   
+   //JetIDLoose jetIDLoose;
+   JetIDSelectionFunctor jetIDLooseCalo( JetIDSelectionFunctor::PURE09, JetIDSelectionFunctor::LOOSE );
+   PFJetIDSelectionFunctor jetIDLoosePF( PFJetIDSelectionFunctor::FIRSTDATA, PFJetIDSelectionFunctor::LOOSE );
+   
+
+   /*
+   Selector<pat::Jet> * jetIDLoose ;
+   
+   if( jetHandle->size() > 0 && jetHandle->at(0).isCaloJet() ){
+     dynamic_cast<JetIDSelectionFunctor>( *jetIDLoose )
+     jetIDLoose->initialize( JetIDSelectionFunctor::PURE09, JetIDSelectionFunctor::LOOSE );
+   }
+   else if ( jetHandle->size() > 0 && jetHandle->at(0).isPFJet() ){
+     PFJetIDSelectionFunctor looseID( PFJetIDSelectionFunctor::FIRSTDATA, PFJetIDSelectionFunctor::LOOSE );
+     dynamic_cast<PFJetIDSelectionFunctor> *jetIDLoose;
+     &jetIDLoose = looseID;
+   }
+   */
+   
+   //JetIDSelectionFunctor jetIDLoose( JetIDSelectionFunctor::PURE09, JetIDSelectionFunctor::LOOSE );
+   //pat::strbitset ret = jetIDLoose.getBitTemplate();
 
    //   for (unsigned int i = 0; i < minPt_.size(); ++i) {
 
    for (unsigned int i = 0; i < jetHandle->size(); ++i) {
 
-      ret.set(false);
-      bool loose = jetIDLoose((*jetHandle)[i], ret);
+     bool loose = false;
+
+     if( (*jetHandle)[i].isCaloJet() || (*jetHandle)[i].isJPTJet() ){
+       pat::strbitset ret = jetIDLooseCalo.getBitTemplate();
+       ret.set(false);
+       loose = jetIDLooseCalo((*jetHandle)[i], ret);
+     }
+     else if ( (*jetHandle)[i].isPFJet() ){
+       pat::strbitset ret = jetIDLoosePF.getBitTemplate();
+       ret.set(false);
+       loose = jetIDLoosePF((*jetHandle)[i], ret);
+     }
+
+      //bool loose = jetIDLoose((*jetHandle)[i], ret);
+
+     //bool loose = jetIDLoose( (*jetHandle)[i] );
 
       if(useJetID_ && !(loose)) {
 	badJet = true;

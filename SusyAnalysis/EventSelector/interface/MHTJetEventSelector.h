@@ -22,6 +22,7 @@
 #include "FWCore/Utilities/interface/InputTag.h"
 //#include "FWCore/ParameterSet/interface/InputTag.h"
 #include "PhysicsTools/SelectorUtils/interface/JetIDSelectionFunctor.h"
+#include "PhysicsTools/SelectorUtils/interface/PFJetIDSelectionFunctor.h"
 
 
 class MHTJetEventSelector: public SusyEventSelector {
