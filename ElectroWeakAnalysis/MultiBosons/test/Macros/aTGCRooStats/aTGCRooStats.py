@@ -5,7 +5,7 @@ from optparse import OptionParser
 import ROOT
 
 #where the magic happens
-def main(options):
+def main(options,args):
 
     dataChain = ROOT.TChain(str(options.treeName))
     for dFile in str(options.inputData).split(','):
@@ -22,6 +22,8 @@ def main(options):
     ws.Print("v")
     
     setupWorkspace(dataTree,mcTree,ws,options)
+
+    ws.Print("v")
 
     #create -log(likelihood)
     theNLL = ROOT.RooNLLVar(options.couplingType+'_aTGCNLL',
@@ -40,6 +42,8 @@ def main(options):
                                                      ROOT.RooArgSet(ws.var(options.couplingType+'_h3'),#POI's
                                                                     ws.var(options.couplingType+'_h4')))
     theLHInterval.SetConfidenceLevel(.95) # .95 confidence interval
+
+    ws.Print("v")
 
     #create the interval plotter, set POI's, ranges
     theLHplot = ROOT.RooStats.LikelihoodIntervalPlot(theLHInterval)
@@ -267,7 +271,7 @@ def makePlots(LLInterval,options):
     
 
 if __name__ == "__main__":
-    parser = OptionParser(description="aTGCRooStats: A RooStats Implementation of Anomalous Triple Gauge Coupling Analysis.",
+    parser = OptionParser(description="%prog : A RooStats Implementation of Anomalous Triple Gauge Coupling Analysis.",
                           usage="aTGCRooStats --intLumi=TheLumi --lumiErr=Err")
     parser.add_option("--workspaceName",dest="workspaceName",help="The name of your RooWorkspace")
     parser.add_option("--backgroundFile",dest="bkgFile",help="The path to the file containing the estimated background in each bin.")
@@ -338,4 +342,4 @@ if __name__ == "__main__":
     if miss_options:
         exit(1)
 
-    main(options)
+    main(options,args)
