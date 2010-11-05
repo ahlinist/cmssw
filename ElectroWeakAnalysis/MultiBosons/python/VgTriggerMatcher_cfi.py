@@ -221,6 +221,40 @@ electronTriggerMatchHLTEle17SWTightEleIdL1R   = cms.EDProducer( "PATTriggerMatch
                                                            resolveByMatchQuality = cms.bool( True )
                                                            )
 
+# matches to HLT_Ele17_SW_TightCaloEleId_Ele8HE_L1R_v1
+#electronTriggerMatchHLTEle17SWTightCaloEleIdEle8HEL1Rv1   = cms.EDProducer( "PATTriggerMatcherDRDPtLessByR",
+electronTriggerMatchHLTEle17SWTightCaloEleIdEle8HEL1Rv1   = cms.EDProducer( "PATTriggerMatcherDRLessByR",
+                                                           src     = cms.InputTag( "cleanPatElectrons" ),
+                                                           matched = cms.InputTag( "patTrigger" ),
+                                                           andOr          = cms.bool( False ),
+                                                           filterIdsEnum  = cms.vstring( '*' ),
+                                                           filterIds      = cms.vint32( 0 ),
+                                                           filterLabels   = cms.vstring( '*' ),
+                                                           pathNames      = cms.vstring( 'HLT_Ele17_SW_TightCaloEleId_Ele8HE_L1R_v1' ),
+                                                           collectionTags = cms.vstring( '*' ),
+                                                           maxDPtRel = cms.double( 0.5 ),
+                                                           maxDeltaR = cms.double( 0.3 ),
+                                                           resolveAmbiguities    = cms.bool( True ),
+                                                           resolveByMatchQuality = cms.bool( True )
+                                                           )
+
+# matches to HLT_Ele17_SW_TightCaloEleId_Ele8HE_L1R_v2
+#electronTriggerMatchHLTEle17SWTightCaloEleIdEle8HEL1Rv2   = cms.EDProducer( "PATTriggerMatcherDRDPtLessByR",
+electronTriggerMatchHLTEle17SWTightCaloEleIdEle8HEL1Rv2   = cms.EDProducer( "PATTriggerMatcherDRLessByR",
+                                                           src     = cms.InputTag( "cleanPatElectrons" ),
+                                                           matched = cms.InputTag( "patTrigger" ),
+                                                           andOr          = cms.bool( False ),
+                                                           filterIdsEnum  = cms.vstring( '*' ),
+                                                           filterIds      = cms.vint32( 0 ),
+                                                           filterLabels   = cms.vstring( '*' ),
+                                                           pathNames      = cms.vstring( 'HLT_Ele17_SW_TightCaloEleId_Ele8HE_L1R_v2' ),
+                                                           collectionTags = cms.vstring( '*' ),
+                                                           maxDPtRel = cms.double( 0.5 ),
+                                                           maxDeltaR = cms.double( 0.3 ),
+                                                           resolveAmbiguities    = cms.bool( True ),
+                                                           resolveByMatchQuality = cms.bool( True )
+                                                           )
+
 # matches to HLT_Ele17_SW_TighterEleIdIsol_L1R 
 #electronTriggerMatchHLTEle17SWTighterEleIdIsolL1R    = cms.EDProducer( "PATTriggerMatcherDRDPtLessByR",
 electronTriggerMatchHLTEle17SWTighterEleIdIsolL1R    = cms.EDProducer( "PATTriggerMatcherDRLessByR",
@@ -248,6 +282,23 @@ electronTriggerMatchHLTEle17SWTighterEleIdIsolL1Rv2    = cms.EDProducer( "PATTri
                                                            filterIds      = cms.vint32( 0 ),
                                                            filterLabels   = cms.vstring( '*' ),
                                                            pathNames      = cms.vstring( 'HLT_Ele17_SW_TighterEleIdIsol_L1R_v2' ),
+                                                           collectionTags = cms.vstring( '*' ),
+                                                           maxDPtRel = cms.double( 0.5 ),
+                                                           maxDeltaR = cms.double( 0.3 ),
+                                                           resolveAmbiguities    = cms.bool( True ),
+                                                           resolveByMatchQuality = cms.bool( True )
+                                                           )
+
+# matches to HLT_Ele17_SW_TighterEleIdIsol_L1R_v3
+#electronTriggerMatchHLTEle17SWTighterEleIdIsolL1Rv3    = cms.EDProducer( "PATTriggerMatcherDRDPtLessByR",
+electronTriggerMatchHLTEle17SWTighterEleIdIsolL1Rv3    = cms.EDProducer( "PATTriggerMatcherDRLessByR",
+                                                           src     = cms.InputTag( "cleanPatElectrons" ),
+                                                           matched = cms.InputTag( "patTrigger" ),
+                                                           andOr          = cms.bool( False ),
+                                                           filterIdsEnum  = cms.vstring( '*' ),
+                                                           filterIds      = cms.vint32( 0 ),
+                                                           filterLabels   = cms.vstring( '*' ),
+                                                           pathNames      = cms.vstring( 'HLT_Ele17_SW_TighterEleIdIsol_L1R_v3' ),
                                                            collectionTags = cms.vstring( '*' ),
                                                            maxDPtRel = cms.double( 0.5 ),
                                                            maxDeltaR = cms.double( 0.3 ),
