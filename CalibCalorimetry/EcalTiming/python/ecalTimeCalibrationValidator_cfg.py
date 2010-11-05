@@ -10,10 +10,12 @@ process.MessageLogger = cms.Service("MessageLogger",
 )
 
 process.expressValidator = cms.EDAnalyzer("EcalTimeCalibrationValidator",
-  #InputTreeFileName = cms.string("file:/data2/scooper/data/OutOfTimeBuckets_August2010/cafJobs/fill1089/EcalTimePi0Tree_135149_30_1_la6.root"),
-  InputTreeFileName = cms.string("file:EcalTimeTree_147114_9_1_uaG.root"),
-  OutputTreeFileName = cms.string("file:test.tree.root"),
-  CalibConstantXMLFileName = cms.string("EcalTimeCalibConstants-134520-134663.xml"),
+  InputFileNames = cms.vstring("file:/data2/kubota/TimingCalibrationOct384/src/CalibCalorimetry/EcalTiming/test/input_files/ecaltime-run-143953-144114/2ndhalf1.root",
+                              "file:/data2/kubota/TimingCalibrationOct384/src/CalibCalorimetry/EcalTiming/test/input_files/ecaltime-run-143953-144114/EcalTimeTree_999999_170_1_f5s.root"
+    ),
+  #InputFileNames = cms.vstring("file:EcalTimeTree_147114_9_1_uaG.root"),
+  OutputFileName = cms.string("file:converted1.root"),
+  CalibConstantXMLFileName = cms.string("myCalibBoth.xml"),
   MaxTreeEntriesToProcess = cms.untracked.int32(100000000)
 )
 

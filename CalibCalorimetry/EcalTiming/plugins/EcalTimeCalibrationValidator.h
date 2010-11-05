@@ -15,6 +15,9 @@
 
 #include "TTree.h"
 #include "TFile.h"
+#include "TChain.h"
+
+#include <vector>
 
 class EcalTimeCalibrationValidator : public edm::EDAnalyzer {
 
@@ -29,12 +32,11 @@ class EcalTimeCalibrationValidator : public edm::EDAnalyzer {
 
         private:
 
-                std::string inputTreeFileName_; // file name of input ttree
+                std::vector<std::string> inputFiles_;
                 std::string outputTreeFileName_; // file name of output ttree
                 std::string calibConstantFileName_; // file name of XML calib constants
-                TFile* inputTreeFile_;
                 TFile* outputTreeFile_;
-                TTree* myInputTree_;
+                TChain* myInputTree_;
                 TTree* myOutputTree_;
                 bool produce_;
                 int maxEntries_;
