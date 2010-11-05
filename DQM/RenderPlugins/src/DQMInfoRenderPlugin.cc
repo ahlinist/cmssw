@@ -85,13 +85,14 @@ public:
         if (tltable.back().empty()) tltable.pop_back();
         int numRows = (int) tltable.size();
         float rowHight = 1.0 / numRows;
+        if (rowHight >= 0.2) rowHight = 0.08;
         TText tt;
         tt.SetTextSize(rowHight);
         tt.SetTextFont(102);
         tt.SetTextAlign(13);
         for (int i = 0; i < (int) tltable.size(); i++ ){
           int cpos = tltable[i].find(':');
-          for (int j=0;j < max-cpos; j++)
+          for (int j=0;j < max-cpos && cpos!=(int)std::string::npos; j++)
             tltable[i].insert(cpos+j,1,' ');
           tt.DrawText(0.01,1.0-(rowHight*i),tltable[i].c_str());
         }
