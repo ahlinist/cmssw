@@ -18,6 +18,13 @@ process.load('Configuration/StandardSequences/Reconstruction_cff')
 process.load('Configuration/StandardSequences/FrontierConditions_GlobalTag_cff')
 process.GlobalTag.globaltag = cms.string('START38_V12::All')
 
+# First, update the pat tau config before anyone else can deep copy it
+from TauAnalysis.RecoTools.patPFTauConfig_cfi import patTaus
+
+# The will modifty the pat taus and setup the sequence "tauFakeRates" in process
+from TauAnalysis.BgEstimationTools.fakeRateConfiguration_cfi import setupFakeRates
+setupFakeRates(process, patTaus)
+
 # import particle data table
 # needed for print-out of generator level information
 process.load("SimGeneral.HepPDTESSource.pythiapdt_cfi")
@@ -53,7 +60,7 @@ process.printGenParticleList = cms.EDAnalyzer("ParticleListDrawer",
     maxEventsToPrint = cms.untracked.int32(10)
 )
 
-# print event content 
+# print event content
 process.printEventContent = cms.EDAnalyzer("EventContentAnalyzer")
 
 # print debug information whenever plugins get loaded dynamically from libraries
@@ -67,8 +74,8 @@ process.saveZtoMuTauPlots = cms.EDAnalyzer("DQMSimpleFileSaver",
     outputFileName = cms.string('plotsZtoMuTau_bgEstFakeRate.root')
 )
 
-process.maxEvents = cms.untracked.PSet(            
-    input = cms.untracked.int32(-1)    
+process.maxEvents = cms.untracked.PSet(
+    input = cms.untracked.int32(-1)
 )
 
 process.source = cms.Source("PoolSource",
@@ -77,7 +84,7 @@ process.source = cms.Source("PoolSource",
         #'/store/relval/CMSSW_3_6_1/RelValZTT/GEN-SIM-RECO/START36_V7-v1/0020/EE3E8F74-365D-DF11-AE3D-002618FDA211.root'
         'file:/data1/veelken/CMSSW_3_6_x/skims/Ztautau_1_1_sXK.root'
     )
-    #skipBadFiles = cms.untracked.bool(True) 
+    #skipBadFiles = cms.untracked.bool(True)
 )
 
 #--------------------------------------------------------------------------------
@@ -94,7 +101,7 @@ process.source = cms.Source("PoolSource",
 #--------------------------------------------------------------------------------
 # import utility function for switching pat::Tau input
 # to different reco::Tau collection stored on AOD
-from PhysicsTools.PatAlgos.tools.tauTools import * 
+from PhysicsTools.PatAlgos.tools.tauTools import *
 
 # comment-out to take reco::CaloTaus instead of reco::PFTaus
 # as input for pat::Tau production
@@ -140,13 +147,14 @@ replaceMETforDiTaus(process, cms.InputTag('patMETs'), cms.InputTag('patPFMETs'))
 #--------------------------------------------------------------------------------
 
 process.p = cms.Path(
-    process.producePatTuple
+    process.tauFakeRates
+   +process.producePatTuple
    + process.producePatTupleZtoMuTauSpecific
   #+ process.printGenParticleList # uncomment to enable print-out of generator level particles
   #+ process.printEventContent    # uncomment to enable dump of event content after PAT-tuple production
-   + process.selectZtoMuTauEvents 
+   + process.selectZtoMuTauEvents
    + process.analyzeZtoMuTauEvents
-   + process.saveZtoMuTauPlots 
+   + process.saveZtoMuTauPlots
 )
 
 process.q = cms.Path(process.dataQualityFilters)
