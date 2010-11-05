@@ -43,6 +43,8 @@ bool HTEventSelector::select(const edm::Event& event) const {
    //while (iJet != jetHandle->end()) {
    for( edm::View<pat::Jet>::const_iterator iJet = jetHandle->begin(); iJet != jetHandle->end(); ++iJet ){
 
+     if (iJet->pt() < minPt_ || fabs(iJet->eta()) > maxEta_) continue;
+ 
      bool loose = false;
 
      if( iJet->isCaloJet() || iJet->isJPTJet() ){
@@ -56,16 +58,16 @@ bool HTEventSelector::select(const edm::Event& event) const {
        loose = jetIDLoosePF(*iJet, ret);
      }
 
+     
+     if (useJetID_ && !(loose)) {
+       badJet = true;
+       continue;
+     }    
 
-      if (useJetID_ && !(loose)) {
-         badJet = true;
-         //++iJet;
-         continue;
-      }
-      if (iJet->pt() > minPt_ && fabs(iJet->eta()) < maxEta_)
-         myHT += iJet->pt();
-      //++iJet;
+
+     myHT += iJet->pt();
    }
+
    //std::cout << myHT << std::endl;
    setVariable("HT", myHT);
 
