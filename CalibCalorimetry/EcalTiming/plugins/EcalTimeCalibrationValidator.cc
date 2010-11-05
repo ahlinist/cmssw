@@ -34,7 +34,6 @@ EcalTimeCalibrationValidator::EcalTimeCalibrationValidator(const edm::ParameterS
   outputTreeFile_ = TFile::Open(outputTreeFileName_.c_str(),"recreate");
   outputTreeFile_->cd();
   myOutputTree_ = new TTree("EcalTimeAnalysis","EcalTimeAnalysis");
-  myOutputTree_->SetDirectory(0);
   if(!myOutputTree_)
   {
     edm::LogError("EcalTimeCalibrationValidator") << "Couldn't make output tree";
