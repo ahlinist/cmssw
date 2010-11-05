@@ -8,24 +8,43 @@ def main(options,args):
 
     out = ROOT.TFile.Open(options.output,'RECREATE')
 
-    photon_et=0.0
-    h3=0.0
-    h4=0.0
-    
+    ROOT.gROOT.ProcessLine(
+        "struct TreeContents {\
+             float photonEt;\
+             float h3_3x3;\
+             float h4_3x3;\
+        }")
+
+    treecontents = ROOT.TreeContents()
+
+    inTreeContents = ROOT.TreeContents()
+        
     outTree = ROOT.TTree(options.treeName,'The Merged Tree')
-    outTree.Branch('photonEt',photon_et,'photonEt/F')
-    outTree.Branch('h3_3x3',h3,'h3_3x3/F')
-    outTree.Branch('h4_3x3',h4,'h4_3x3/F')
+    outTree.Branch('photonEt',ROOT.AddressOf(treecontents,'photonEt'),'photonEt/F')
+    outTree.Branch('h3_3x3',ROOT.AddressOf(treecontents,'h3_3x3'),'h3_3x3/F')
+    outTree.Branch('h4_3x3',ROOT.AddressOf(treecontents,'h4_3x3'),'h4_3x3/F')
 
     for f in args:
         coup1= f.split(".root")[0].split("h3_")[-1].split("_")[0]
         coup2= f.split(".root")[0].split("h4_")[-1].split("_")[0]
-        print f,' ',coup1,' ',coup2
+        print f,'\t',coup1,'\t',coup2
+        currentFile = ROOT.TFile.Open(f)
+        currentTree = currentFile.Get(options.treeName)
+        currentTree.SetBranchAddress('photonEt',ROOT.AddressOf(inTreeContents,'photonEt'))
+        treecontents.h3_3x3 = float(coup1)
+        treecontents.h4_3x3 = float(coup2)
 
+        for i in range(currentTree.GetEntries()):
+            currentTree.GetEntry(i)
+            treecontents.photonEt = inTreeContents.photonEt
+            outTree.Fill()
 
-    outTree.Write()
-    outFile.Write()
-    outFile.Close()
+        currentFile.Close()
+
+    out.cd()
+
+    outTree.Write()    
+    out.Close()
     
 
 if __name__ == "__main__":
