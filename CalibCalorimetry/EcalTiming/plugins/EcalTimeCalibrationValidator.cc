@@ -14,15 +14,18 @@
 #include "DataFormats/EcalDetId/interface/EEDetId.h"
 
 EcalTimeCalibrationValidator::EcalTimeCalibrationValidator(const edm::ParameterSet& ps) :
-  inputTreeFileName_ (ps.getParameter<std::string>("InputTreeFileName")),
-  outputTreeFileName_ (ps.getParameter<std::string>("OutputTreeFileName")),
+  inputFiles_ (ps.getParameter<std::vector<std::string> >("InputFileNames")),
+  outputTreeFileName_ (ps.getParameter<std::string>("OutputFileName")),
   calibConstantFileName_ (ps.getParameter<std::string>("CalibConstantXMLFileName")),
   maxEntries_ (ps.getUntrackedParameter<int>("MaxTreeEntriesToProcess",-1)),
   startingEntry_ (ps.getUntrackedParameter<int>("StartingTreeEntry",0))
 {
-  myInputTree_ = 0;
-  inputTreeFile_ = TFile::Open(inputTreeFileName_.c_str());
-  myInputTree_ = (TTree*)inputTreeFile_->Get("EcalTimeAnalysis");
+  // Tree construction
+  myInputTree_ = new TChain ("EcalTimeAnalysis") ;
+  std::vector<std::string>::const_iterator file_itr;
+  for(file_itr=inputFiles_.begin(); file_itr!=inputFiles_.end(); file_itr++)
+    myInputTree_->Add( (*file_itr).c_str() );
+
   if(!myInputTree_)
   {
     edm::LogError("EcalTimeCalibrationValidator") << "Couldn't find tree EcalTimeAnalysis";
@@ -76,7 +79,7 @@ EcalTimeCalibrationValidator::analyze(edm::Event const& evt, edm::EventSetup con
   // Loop over the TTree
   int nEntries = myInputTree_->GetEntries();
   edm::LogInfo("EcalTimeCalibrationValidator") << "Begin loop over TTree";
-  inputTreeFile_->cd();
+  //inputTreeFile_->cd();
   
   // Check starting entry
   if(startingEntry_ < 0 || startingEntry_ > nEntries)
@@ -156,7 +159,6 @@ void EcalTimeCalibrationValidator::beginJob()
 
 void EcalTimeCalibrationValidator::endJob()
 {
-  inputTreeFile_->Close();
   outputTreeFile_->cd();
   myOutputTree_->Write();
   outputTreeFile_->Close();
