@@ -53,9 +53,8 @@ bool MHTJetEventSelector::select(const edm::Event& event) const {
 
    //// To be set true if one jet is found failing jetID
    bool badJet = false;
-   JetIDSelectionFunctor jetIDLoose( JetIDSelectionFunctor::PURE09, JetIDSelectionFunctor::LOOSE );
-   pat::strbitset ret = jetIDLoose.getBitTemplate();
-
+   JetIDSelectionFunctor jetIDLooseCalo( JetIDSelectionFunctor::PURE09, JetIDSelectionFunctor::LOOSE );
+   PFJetIDSelectionFunctor jetIDLoosePF( PFJetIDSelectionFunctor::FIRSTDATA, PFJetIDSelectionFunctor::LOOSE );
    //
    // Preselection: number of jets (need at least 3(?) to make sense out of these variables)
    //
@@ -67,20 +66,34 @@ bool MHTJetEventSelector::select(const edm::Event& event) const {
    // Compute variables
    //
 
-   edm::View<pat::Jet>::const_iterator iJet = jets->begin();
-   while (iJet != jets->end()) {
-      ret.set(false);
-      bool loose = jetIDLoose(*iJet, ret);
+   //edm::View<pat::Jet>::const_iterator iJet = jets->begin();
+   //while (iJet != jets->end()) {
+
+   for( edm::View<pat::Jet>::const_iterator iJet = jets->begin(); iJet != jets->end(); ++iJet ){
+
+     bool loose = false;
+
+     if( iJet->isCaloJet() || iJet->isJPTJet() ){
+       pat::strbitset ret = jetIDLooseCalo.getBitTemplate();
+       ret.set(false);
+       loose = jetIDLooseCalo( *iJet, ret );
+     }
+     else if ( iJet->isPFJet() ){
+       pat::strbitset ret = jetIDLoosePF.getBitTemplate();
+       ret.set(false);
+       loose = jetIDLoosePF( *iJet, ret );
+     }
+
       if (useJetID_ && !(loose)) {
          badJet = true;
-         ++iJet;
+         //++iJet;
          continue;
       }
       if (iJet->pt() > minPt_ && fabs(iJet->eta()) < maxEta_) {
          math::XYZTLorentzVector p4(iJet->px(), iJet->py(), iJet->pz(), iJet->energy()); //iJet->correctedP4("abs");
          HT -= p4;
       }
-      ++iJet;
+      //++iJet;
    }
 
    // MET "isolation" (calculated on at most nJetsMetIso_ jets)

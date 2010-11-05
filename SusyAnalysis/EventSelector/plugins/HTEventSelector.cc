@@ -33,23 +33,38 @@ bool HTEventSelector::select(const edm::Event& event) const {
 
    //// To be set true if one jet is found failing jetID
    bool badJet = false;
-   JetIDSelectionFunctor jetIDLoose( JetIDSelectionFunctor::PURE09, JetIDSelectionFunctor::LOOSE );
-   pat::strbitset ret = jetIDLoose.getBitTemplate();
+
+   JetIDSelectionFunctor jetIDLooseCalo( JetIDSelectionFunctor::PURE09, JetIDSelectionFunctor::LOOSE );
+   PFJetIDSelectionFunctor jetIDLoosePF( PFJetIDSelectionFunctor::FIRSTDATA, PFJetIDSelectionFunctor::LOOSE );
 
    // Sum over jet Ets (with cut on min. pt)
    float myHT = 0.0;
-   edm::View<pat::Jet>::const_iterator iJet = jetHandle->begin();
-   while (iJet != jetHandle->end()) {
-      ret.set(false);
-      bool loose = jetIDLoose(*iJet, ret);
+   //edm::View<pat::Jet>::const_iterator iJet = jetHandle->begin();
+   //while (iJet != jetHandle->end()) {
+   for( edm::View<pat::Jet>::const_iterator iJet = jetHandle->begin(); iJet != jetHandle->end(); ++iJet ){
+
+     bool loose = false;
+
+     if( iJet->isCaloJet() || iJet->isJPTJet() ){
+       pat::strbitset ret = jetIDLooseCalo.getBitTemplate();
+       ret.set(false);
+       loose = jetIDLooseCalo(*iJet, ret);
+     }
+     else if ( iJet->isPFJet() ){
+       pat::strbitset ret = jetIDLoosePF.getBitTemplate();
+       ret.set(false);
+       loose = jetIDLoosePF(*iJet, ret);
+     }
+
+
       if (useJetID_ && !(loose)) {
          badJet = true;
-         ++iJet;
+         //++iJet;
          continue;
       }
       if (iJet->pt() > minPt_ && fabs(iJet->eta()) < maxEta_)
          myHT += iJet->pt();
-      ++iJet;
+      //++iJet;
    }
    //std::cout << myHT << std::endl;
    setVariable("HT", myHT);

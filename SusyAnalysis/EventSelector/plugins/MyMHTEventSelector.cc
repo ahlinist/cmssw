@@ -5,7 +5,7 @@
 #include "DataFormats/PatCandidates/interface/MET.h"
 #include "DataFormats/PatCandidates/interface/JetCorrFactors.h"
 #include "DataFormats/JetReco/interface/CaloJet.h"
-#include "PhysicsTools/SelectorUtils/interface/JetIDSelectionFunctor.h"
+
 
 //__________________________________________________________________________________________________
 MyMHTEventSelector::MyMHTEventSelector(const edm::ParameterSet& pset) :
@@ -42,28 +42,42 @@ bool MyMHTEventSelector::select(const edm::Event& event) const {
 
    //// To be set true if one jet is found failing jetID
    bool badJet = false;
-   JetIDSelectionFunctor jetIDLoose( JetIDSelectionFunctor::PURE09, JetIDSelectionFunctor::LOOSE );
-   pat::strbitset ret = jetIDLoose.getBitTemplate();
+   JetIDSelectionFunctor jetIDLooseCalo( JetIDSelectionFunctor::PURE09, JetIDSelectionFunctor::LOOSE );
+   PFJetIDSelectionFunctor jetIDLoosePF( PFJetIDSelectionFunctor::FIRSTDATA, PFJetIDSelectionFunctor::LOOSE );
 
    //// Sum over jet Ets (with cut on min. pt)
-   edm::View<pat::Jet>::const_iterator iJet = jetHandle->begin();
-   while (iJet != jetHandle->end()) {
+   //edm::View<pat::Jet>::const_iterator iJet = jetHandle->begin();
+   //while (iJet != jetHandle->end()) {
+   for( edm::View<pat::Jet>::const_iterator iJet = jetHandle->begin(); iJet != jetHandle->end(); ++iJet ){
+
       if (iJet->pt() > minPt_ && fabs(iJet->eta()) < maxEta_) {
-         ret.set(false);
-         bool loose = jetIDLoose(*iJet, ret);
+	
+	bool loose = false;
+
+	if( iJet->isCaloJet() || iJet->isJPTJet() ){
+	  pat::strbitset ret = jetIDLooseCalo.getBitTemplate();
+	  ret.set(false);
+	  loose = jetIDLooseCalo( *iJet, ret );
+	}
+	else if ( iJet->isPFJet() ){
+	  pat::strbitset ret = jetIDLoosePF.getBitTemplate();
+	  ret.set(false);
+	  loose = jetIDLoosePF( *iJet, ret );
+	}
+
          if (useJetID_ && !(loose)) {
 //            std::cout << "Failed JetID: " << iJet->pt() << ", " << iJet->eta() << ", " << iJet->phi() << ", "
 //                                          << iJet->emEnergyFraction() << ", " << iJet->jetID().n90Hits << ", "
 //                                          << iJet->jetID().fHPD << std::endl;
             badJet = true;
-            ++iJet;
+            //++iJet;
             continue;
          }
          math::XYZTLorentzVector p4(iJet->px(), iJet->py(), iJet->pz(), iJet->energy());//   iJet->correctedP4("abs");
          MHT += p4;
          HT += p4.pt();
       }
-      ++iJet;
+      //++iJet;
    }
 
    float myMHT = MHT.pt();

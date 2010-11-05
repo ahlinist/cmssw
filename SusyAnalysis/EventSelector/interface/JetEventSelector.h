@@ -6,7 +6,7 @@
 ///
 /// Original author: W. Adam, 10/4/08
 ///
-/// $Id: JetEventSelector.h,v 1.10 2010/08/31 09:51:27 thomsen Exp $
+/// $Id: JetEventSelector.h,v 1.11 2010/11/02 09:36:01 csander Exp $
 
 // system include files
 #include <memory>
@@ -22,6 +22,7 @@
 #include "DataFormats/PatCandidates/interface/Jet.h"
 #include "DataFormats/JetReco/interface/Jet.h"
 #include "PhysicsTools/SelectorUtils/interface/JetIDSelectionFunctor.h"
+#include "PhysicsTools/SelectorUtils/interface/PFJetIDSelectionFunctor.h"
 
 #include <vector>
 #include <string>

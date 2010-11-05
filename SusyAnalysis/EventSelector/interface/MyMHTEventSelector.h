@@ -6,7 +6,7 @@
 ///   and cuts on it. HT is defined as scalar sum of the
 ///   the transverse jet energies.
 ///
-/// $Id: MyMHTEventSelector.h,v 1.6 2010/10/27 17:57:31 csander Exp $
+/// $Id: MyMHTEventSelector.h,v 1.7 2010/11/02 09:36:01 csander Exp $
 
 // system include files
 #include <memory>
@@ -17,6 +17,9 @@
 #include "FWCore/Framework/interface/Event.h"
 #include "FWCore/ParameterSet/interface/ParameterSet.h"
 #include "FWCore/Utilities/interface/InputTag.h"
+
+#include "PhysicsTools/SelectorUtils/interface/JetIDSelectionFunctor.h"
+#include "PhysicsTools/SelectorUtils/interface/PFJetIDSelectionFunctor.h"
 
 class MyMHTEventSelector: public SusyEventSelector {
    public:
