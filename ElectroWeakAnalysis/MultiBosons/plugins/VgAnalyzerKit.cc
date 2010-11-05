@@ -82,7 +82,7 @@ VgAnalyzerKit::VgAnalyzerKit(const edm::ParameterSet& ps) : verbosity_(0), helpe
   tree_->Branch("ttbit0", &ttbit0_, "ttbit0/I");
   tree_->Branch("nHLT", &nHLT_, "nHLT/I");
   tree_->Branch("HLT", HLT_, "HLT[nHLT]/I");
-  tree_->Branch("HLTIndex", HLTIndex_, "HLTIndex[44]/I");
+  tree_->Branch("HLTIndex", HLTIndex_, "HLTIndex[48]/I");
   tree_->Branch("nHFTowersP", &nHFTowersP_, "nHFTowersP/I");
   tree_->Branch("nHFTowersN", &nHFTowersN_, "nHFTowersN/I");
   tree_->Branch("nVtx", &nVtx_, "nVtx/I");
