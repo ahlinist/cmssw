@@ -673,7 +673,10 @@ vgTriggerMatcherElectron = cms.Sequence(
         electronTriggerMatchHLTEle17SWTightEleIdL1R +
 	electronTriggerMatchHLTEle17SWTighterEleIdIsolL1R +
 	electronTriggerMatchHLTEle17SWTighterEleIdIsolL1Rv2 +
-	electronTriggerMatchHLTEle22SWTighterEleIdL1Rv2
+	electronTriggerMatchHLTEle22SWTighterEleIdL1Rv2 +
+	electronTriggerMatchHLTEle17SWTightCaloEleIdEle8HEL1Rv1 +
+	electronTriggerMatchHLTEle17SWTightCaloEleIdEle8HEL1Rv2 +
+	electronTriggerMatchHLTEle17SWTighterEleIdIsolL1Rv3
         )
 
 vgTriggerMatcherPhoton = cms.Sequence(
