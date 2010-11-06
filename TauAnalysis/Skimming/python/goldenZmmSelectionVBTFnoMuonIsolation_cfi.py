@@ -53,7 +53,7 @@ goodIsoMuons = cms.EDFilter("PATMuonPFIsolationSelector",
         sumPtMax = cms.double(0.06),
     ),
     src = cms.InputTag("goodMuons"),                          
-    filter = cms.bool(True)
+    filter = cms.bool(False)
 )
 goodIsoMuons.chargedHadronIso.dRisoCone = cms.double(0.6)
 goodIsoMuons.neutralHadronIso.dRisoCone = cms.double(0.6)
