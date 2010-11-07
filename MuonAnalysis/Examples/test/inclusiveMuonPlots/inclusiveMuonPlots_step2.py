@@ -429,13 +429,13 @@ def ratio(histo, refs):
         line.DrawLine(histo.GetXaxis().GetXmin(),1,histo.GetXaxis().GetXmax(),1);
         histo.Draw("E SAME");
 
-def getrefs(hdata, name):
+def getrefs(hdata, name, doNormalize=True):
     if dirRef != None:
         hist = dirRef.Get(name)
         if hist == None: raise RuntimeError, "Reference plot %s not found in reference file %s, dir %s" % (name, options.ref, options.refdir)
         if hist != None:
             scale = 1
-            if options.norm != None: scale = normalize(hist,hdata)
+            if doNormalize and options.norm != None: scale = normalize(hist,hdata)
             hup = hist.Clone(name+"_up")
             hdn = hist.Clone(name+"_dn")
             for b in range(1, hist.GetNbinsX()+1):
@@ -472,7 +472,7 @@ def printStats(name, histo):
     global info;
     ndata = histo.GetEntries();
     info += [ "Muons: %.0f +/- %.0f" % (histo.GetEntries(), sqrt(histo.GetEntries())) ]
-    refs = getrefs(histo,name)
+    refs = getrefs(histo,name,doNormalize=False)
     if refs != None and options.norm != "integral":
         scale = 1
         if options.norm == "external":
@@ -485,7 +485,8 @@ def printStats(name, histo):
         elif options.norm.startswith("manual,"):
             scale = options.norm_value
             info += [ "Scale: %.4f (by hand)" % scale ]
-        nmc = refs[1].GetEntries();
+        ## Note: when we get here, the histogram has already been normalized (it happens when it's drawn), so we scale it back up
+        nmc = refs[1].Integral(0,refs[1].GetNbinsX()+1) / scale;
         try:
             ratio  = ndata/(scale*nmc);
             dratio = ratio * sqrt(1.0/ndata + 1.0/nmc);
@@ -531,6 +532,11 @@ def readTitles():
 
 def readLegend():
     global legend
+    if options.legend == "-":
+        legend = [ "Data", "Sim." ]
+        for (compName, compDir, compRooCol, compHtmlCol) in reversed(composite):
+            legend.append(compName)
+        return
     file = open(options.legend, "r")
     if not file: raise RuntimeError, "Can't read legend from '%s'" % options.legend
     legend = []; mlegend = {}
