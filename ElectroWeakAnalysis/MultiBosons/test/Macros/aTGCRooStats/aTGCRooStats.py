@@ -35,6 +35,13 @@ def main(options,args):
                             ws.pdf('TopLevelPdf'),ws.data('aTGCData'))
     getattr(ws,'import')(theNLL)
 
+    #theProjectedNLL = theNLL.createIntegral(ROOT.RooArgSet(ws.var('err_x_gs'),
+    #                                                       ws.var('err_x_gb'),
+    #                                                       ws.var('err_x_gl')))
+    #                                        #ROOT.RooArgSet(ws.var('err_x_gs'),
+    #                                        #               ws.var('err_x_gb'),
+    #                                        #               ws.var('err_x_gl')))
+                                            
     minuit = ROOT.RooMinuit(theNLL)
 
     minuit.setStrategy(2)
@@ -383,7 +390,6 @@ def makeATGCExpectationPdf(ws,options):
 
     TopLevelPdf = ws.pdf('RawTopLevelPdf').createProjection(ROOT.RooArgSet(ws.var('err_x_gs'),ws.var('err_x_gb'),ws.var('err_x_gl')))
     TopLevelPdf.SetName('TopLevelPdf')
-
     getattr(ws,'import')(TopLevelPdf)
     
 
