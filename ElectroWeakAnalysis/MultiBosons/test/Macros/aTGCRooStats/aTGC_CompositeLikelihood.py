@@ -23,26 +23,26 @@ def main(options,args):
     sumNLL = ROOT.RooAddition('sumNLL','The Sum of the NLL Variables',NLLs)
 
     #create profile likelihood, set POI's
-    theProfileLL = ROOT.RooProfileLL(options.couplingType+'_ProfileLLaTGC',
-                                     'The Profile Log-Likelihood',
-                                     sumNLL,
-                                     ROOT.RooArgSet(h3,h4)) #POI's
+    #theProfileLL = ROOT.RooProfileLL(options.couplingType+'_ProfileLLaTGC',
+    #                                 'The Profile Log-Likelihood',
+    #                                 sumNLL,
+    #                                 ROOT.RooArgSet(h3,h4)) #POI's
     
     #calculate the .95 confidence interval
-    theLHInterval = ROOT.RooStats.LikelihoodInterval(options.couplingType+'_aTGCLikelihoodInterval',
-                                                     theProfileLL,
-                                                     ROOT.RooArgSet(h3,h4)) #POI's    
-    theLHInterval.SetConfidenceLevel(.95) # .95 confidence interval
+    #theLHInterval = ROOT.RooStats.LikelihoodInterval(options.couplingType+'_aTGCLikelihoodInterval',
+    #                                                 theProfileLL,
+    #                                                 ROOT.RooArgSet(h3,h4)) #POI's    
+    #theLHInterval.SetConfidenceLevel(.95) # .95 confidence interval
 
-    ws.Print("v")
+    #ws.Print("v")
 
     #create the interval plotter, set POI's, ranges
-    theLHplot = ROOT.RooStats.LikelihoodIntervalPlot(theLHInterval)
-    theLHplot.SetPlotParameters(ROOT.RooArgSet(h3,h4))
-    theLHplot.SetRange(-options.h3Max,-options.h4Max,
-                       options.h3Max,options.h4Max)
+    #theLHplot = ROOT.RooStats.LikelihoodIntervalPlot(theLHInterval)
+    #theLHplot.SetPlotParameters(ROOT.RooArgSet(h3,h4))
+    #theLHplot.SetRange(-options.h3Max,-options.h4Max,
+    #                   options.h3Max,options.h4Max)
 
-    makePlots(theLHplot)    
+    #makePlots(theLHplot)    
     #really, that's all I had to do??
         
 def makePlots(LLInterval,options):
