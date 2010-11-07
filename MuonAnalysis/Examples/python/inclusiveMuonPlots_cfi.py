@@ -1,6 +1,6 @@
 import FWCore.ParameterSet.Config as cms
 
-from math import pi
+from math import pi, sqrt
 
 ## Define some utilities to declare bins easily
 ##--- n bins spaced evenly in range [min, max[
@@ -28,7 +28,7 @@ def makeInclusiveMuonPlots(rebinFactor=1,ptScale=1):
         qptBins = _evenBins( -30*ptScale, 30*ptScale, 0.25 * rebinFactor * ptScale),
         qpBins  = _evenBins( -50*ptScale, 50*ptScale, 0.5  * rebinFactor * ptScale),
         ptErrorOverPtBins = _nBins(20*rebinFactor, 0, 0.2),
-        ptStaOverPtBins   = _nBins(40*rebinFactor, 0, 2.0),
+        ptStaOverPtBins   = _nBins(50*rebinFactor, 0, 2.5),
         # ---- Vertex ----
         dxyFineBins = _evenBins(-0.2, 0.2, 0.005), #  50um
         dzFineBins  = _evenBins(-0.5, 0.5, 0.010), # 100um
@@ -70,11 +70,11 @@ def makeInclusiveMuonPlots(rebinFactor=1,ptScale=1):
         # ---- Phi at MB/ME 1 Surface ----
         trkPhiAtSurfaceBins = _nBins(37,-3.23,3.23),
         # ---- Extra kinematics ---
-        ptRelBins = _evenBins( 0, 10*ptScale, 0.1 * rebinFactor * ptScale),
-        mtBins  = _evenBins( 0, 140, 5 * rebinFactor),
-        metBins = _evenBins( 0, 140, 5 * rebinFactor),
-        jetMuonPtRatioBins     = _nBins(20/rebinFactor, 0, 2.0),
-        oppoJetMuonPtRatioBins = _nBins(20/rebinFactor, 0, 5.0),
+        ptRelBins = _evenBins( 0, 6*sqrt(ptScale), 0.1 * rebinFactor * sqrt(ptScale)),
+        mtBins  = _evenBins( 0, 160, 2.5 * rebinFactor),
+        metBins = _evenBins( 0, 160, 2.5 * rebinFactor),
+        jetMuonPtRatioBins     = _nBins(40/rebinFactor, 0, 2.0),
+        oppoJetMuonPtRatioBins = _nBins(40/rebinFactor, 0, 5.0),
     )
 
 inclusiveMuonPlots = cms.EDAnalyzer("InclusiveMuonPlots",
