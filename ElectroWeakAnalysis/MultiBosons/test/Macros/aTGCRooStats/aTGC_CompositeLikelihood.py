@@ -27,11 +27,11 @@ def main(options,args):
                                      'The Profile Log-Likelihood',
                                      sumNLL,
                                      ROOT.RooArgSet(h3,h4)) #POI's
-
+    
     #calculate the .95 confidence interval
     theLHInterval = ROOT.RooStats.LikelihoodInterval(options.couplingType+'_aTGCLikelihoodInterval',
                                                      theProfileLL,
-                                                     ROOT.RooArgSet(h3,h4)) #POI's
+                                                     ROOT.RooArgSet(h3,h4)) #POI's    
     theLHInterval.SetConfidenceLevel(.95) # .95 confidence interval
 
     ws.Print("v")

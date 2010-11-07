@@ -10,9 +10,10 @@ def main(options,args):
 
     ROOT.gROOT.ProcessLine(
         "struct TreeContents {\
-             float photonEt;\
-             float h3_3x3;\
-             float h4_3x3;\
+        Float_t photonEt;\
+        Float_t h3_3x3;\
+        Float_t h4_3x3;\
+        Double_t weight;\
         }")
 
     treecontents = ROOT.TreeContents()
@@ -23,6 +24,7 @@ def main(options,args):
     outTree.Branch('photonEt',ROOT.AddressOf(treecontents,'photonEt'),'photonEt/F')
     outTree.Branch('h3_3x3',ROOT.AddressOf(treecontents,'h3_3x3'),'h3_3x3/F')
     outTree.Branch('h4_3x3',ROOT.AddressOf(treecontents,'h4_3x3'),'h4_3x3/F')
+    outTree.Branch('weight',ROOT.AddressOf(treecontents,'weight'),'weight/D')
 
     for f in args:
         coup1= f.split(".root")[0].split("h3_")[-1].split("_")[0]
@@ -33,6 +35,7 @@ def main(options,args):
         currentTree.SetBranchAddress('photonEt',ROOT.AddressOf(inTreeContents,'photonEt'))
         treecontents.h3_3x3 = float(coup1)
         treecontents.h4_3x3 = float(coup2)
+        treecontents.weight = currentTree.GetWeight()*float(options.intLumi)/15.0
 
         for i in range(currentTree.GetEntries()):
             currentTree.GetEntry(i)
@@ -42,7 +45,6 @@ def main(options,args):
         currentFile.Close()
 
     out.cd()
-
     outTree.Write()    
     out.Close()
     
@@ -52,6 +54,7 @@ if __name__ == "__main__":
                           usage="%prog file1.root file2.root ... --output=<file> --treeName=<name>")
     parser.add_option("--output",dest="output",help="The name of your output file.")
     parser.add_option("--treeName",dest="treeName",help="The name of input TTrees.")
+    parser.add_option("--intLumi",dest="intLumi",help="Integrated luminosity to scale to.")
 
     (options,args) = parser.parse_args()
 
@@ -62,6 +65,9 @@ if __name__ == "__main__":
         miss_options=True
     if options.treeName is None:
         print 'Need to specify --treeName'
+        miss_options=True
+    if options.intLumi is None:
+        print 'Need to specify --intLumi'
         miss_options=True
     if len(args) == 0:
         print 'You need to pass at least one root file!'

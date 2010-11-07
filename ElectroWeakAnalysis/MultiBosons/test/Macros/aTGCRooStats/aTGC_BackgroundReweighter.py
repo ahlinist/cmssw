@@ -27,7 +27,7 @@ def main(options,args):
         currentFile = ROOT.TFile.Open(f)
         currentTree = currentFile.Get(options.treeName)
         currentTree.SetBranchAddress('photonEt',ROOT.AddressOf(inTreeContents,'photonEt'))        
-        treecontents.weight = currentTree.GetWeight()*float(options.intLumi)/100.0
+        treecontents.weight = currentTree.GetWeight()*float(options.intLumi)/15.0
 
         for i in range(currentTree.GetEntries()):
             currentTree.GetEntry(i)
