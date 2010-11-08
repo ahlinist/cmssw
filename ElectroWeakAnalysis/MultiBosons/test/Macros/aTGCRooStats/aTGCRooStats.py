@@ -36,14 +36,21 @@ def main(options,args):
     #getattr(ws,'import')(theNLL)
 
     theLikelihood = ROOT.RooFormulaVar('theLikelihood','The likelihood','exp(-@0)',ROOT.RooArgList(theNLL))
-    
+    #getattr(ws,'import')(theLikelihood)
 
-    theProjectedLikelihood = theLikelihood.createIntegral(ROOT.RooArgSet(ws.var('err_x_gs'),
-                                                                         ws.var('err_x_gb'),
-                                                                         ws.var('err_x_gl')),
-                                                          ROOT.RooArgSet(ws.var('err_x_gs'),
-                                                                         ws.var('err_x_gb'),
-                                                                         ws.var('err_x_gl')))
+    theSmearedLikelihood = ROOT.RooProduct('theSmearedLikelihood','The Smeared Likelihood',
+                                           ROOT.RooArgSet(theLikelihood,
+                                                          ws.pdf('selectionErr'),
+                                                          ws.pdf('backgroundErr'),
+                                                          ws.pdf('lumiErr'))
+                                           )
+
+    theProjectedLikelihood = theSmearedLikelihood.createIntegral(ROOT.RooArgSet(ws.var('err_x_gs'),
+                                                                                ws.var('err_x_gb'),
+                                                                                ws.var('err_x_gl')),
+                                                                 ROOT.RooArgSet(ws.var('err_x_gs'),
+                                                                                ws.var('err_x_gb'),
+                                                                                ws.var('err_x_gl')))
 
     theProjectedNLL = ROOT.RooFormulaVar('theProjectedNLL','The Projected NLL','log(@0)',ROOT.RooArgList(theProjectedLikelihood))
     getattr(ws,'import')(theProjectedNLL)
@@ -61,10 +68,11 @@ def main(options,args):
 
     thePlot = minuit.contour(ws.var(options.couplingType+'_h3'),
                              ws.var(options.couplingType+'_h4'),
-                             1,3)
+                             1,2,3)
 
-    theCanvas = ROOT.TCanvas('contours','',700,500)
+    theCanvas = ROOT.TCanvas('contours','',500,500)
 
+    thePlot.SetTitle("1,2 & 3 #sigma Errors on the Best Fit Values of h3 and h4")
     thePlot.Draw()
 
     theCanvas.Print('contour.root')
@@ -120,8 +128,8 @@ def setupWorkspace(dataTree,mcTree,ws,output,options):
 
     pho_et = ROOT.RooRealVar(options.phoEtVar,'Photon E_{T}',phoEtMin,phoEtMax) #observable
     pho_et.setBins(int(options.nEtBins))
-    h3 = ROOT.RooRealVar(options.couplingType+'_h3','The h3 coupling strength',-float(options.h3Max),float(options.h3Max)) #parameter
-    h4 = ROOT.RooRealVar(options.couplingType+'_h4','The h4 coupling strength',-float(options.h4Max),float(options.h4Max)) #parameter
+    h3 = ROOT.RooRealVar(options.couplingType+'_h3','h3_{'+options.couplingType+'}',-float(options.h3Max),float(options.h3Max)) #parameter
+    h4 = ROOT.RooRealVar(options.couplingType+'_h4','h4_{'+options.couplingType+'}',-float(options.h4Max),float(options.h4Max)) #parameter
     #acc = ROOT.RooRealVar('acceptance','The acceptance in this pT bin',0)
     #acc_err = ROOT.RooRealVar('acceptance_error','The error on the accpetance in the pT bin',0) 
 
@@ -409,7 +417,7 @@ def makeATGCExpectationPdf(ws,options):
     #now we create the core poisson pdf with errors left as floating
     ws.factory("RooPoisson::corePoisson("+options.phoEtVar+",expected)")    
     #now we create the top level pdf, which will be evaluated at each pT bin to create the likelihood.
-    ws.factory("PROD::TopLevelPdf(corePoisson,lumiErr,selectionErr,backgroundErr)")  #
+    ws.factory("PROD::TopLevelPdf(corePoisson)")  #,lumiErr,selectionErr,backgroundErr
 
 #    TopLevelPdf = ws.pdf('RawTopLevelPdf').createProjection(ROOT.RooArgSet(ws.var('err_x_gs'),ws.var('err_x_gb'),ws.var('err_x_gl')))
 #    TopLevelPdf.SetName('TopLevelPdf')
@@ -439,7 +447,7 @@ if __name__ == "__main__":
     parser.add_option("--treeName",dest="treeName",help="Name of the TTree, assumed to be the same between all input samples.")
     parser.add_option("--inputData",dest="inputData",help="Name of input data file. Multiple files given in comma separated list.")
     parser.add_option("--inputMC",dest="inputMC",help="Name of input MC file used to extract quadratic dependence of shapes. Multiple files in comma separated list.")
-    parser.add_option("--couplingType",dest="couplingType",help="ZgZ or Zgg couplings?")
+    parser.add_option("--couplingType",dest="couplingType",help="ZZg or Zgg couplings?")
     parser.add_option("--MCbackground",dest="MCbackground",help="Is background from MC?",action="store_true")
     (options,args) = parser.parse_args()
 
@@ -458,7 +466,7 @@ if __name__ == "__main__":
         print 'Need to specify --inputMC'
         miss_options=True
     if options.couplingType is None:
-        print 'Need to specify --couplingType (ZgZ or Zgg)'
+        print 'Need to specify --couplingType (ZZg or Zgg)'
         miss_options=True
     if options.phoEtVar is None:
         print 'Need to specify --phoEtVar'
