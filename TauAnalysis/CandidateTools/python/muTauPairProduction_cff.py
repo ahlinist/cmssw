@@ -37,18 +37,18 @@ svFitLikelihoodMuTauPairZprod.process = cms.string("Z0")
 allMuTauPairs = cms.EDProducer("PATMuTauPairProducer",
     useLeadingTausOnly = cms.bool(False),
     srcLeg1 = cms.InputTag('selectedPatMuonsTrkIPcumulative'),
-    srcLeg2 = cms.InputTag('selectedPatTausForMuTauElectronVetoCumulative'),                               
+    srcLeg2 = cms.InputTag('selectedPatTausForMuTauElectronVetoCumulative'),
     dRmin12 = cms.double(0.3),
     srcMET = cms.InputTag('patMETs'),
     srcPrimaryVertex = cms.InputTag("offlinePrimaryVerticesWithBS"),
     srcBeamSpot = cms.InputTag("offlineBeamSpot"),
-    srcGenParticles = cms.InputTag('genParticles'),                  
+    srcGenParticles = cms.InputTag('genParticles'),
     recoMode = cms.string(""),
-    doSVreco = cms.bool(True),                          
+    doSVreco = cms.bool(True),
     svFit = cms.PSet(
         psKine = cms.PSet(
             likelihoodFunctions = cms.VPSet(
-                svFitLikelihoodMuTauPairKinematicsPhaseSpace         
+                svFitLikelihoodMuTauPairKinematicsPhaseSpace
             ),
             estUncertainties = cms.PSet(
                 numSamplings = cms.int32(-1)
@@ -74,33 +74,33 @@ allMuTauPairs = cms.EDProducer("PATMuTauPairProducer",
                 numSamplings = cms.int32(-1)
             )
         ),
-        polKine = cms.PSet(
-            likelihoodFunctions = cms.VPSet(
-                svFitLikelihoodMuTauPairKinematicsPolarized        
-            ),
-            estUncertainties = cms.PSet(
-                numSamplings = cms.int32(-1)
-            )
-        ),
-        polKine_MEt = cms.PSet(
-            likelihoodFunctions = cms.VPSet(
-                svFitLikelihoodMuTauPairKinematicsPolarized,
-                svFitLikelihoodMuTauPairMEt
-            ),
-            estUncertainties = cms.PSet(
-                numSamplings = cms.int32(-1)
-            )
-        ),
-        polKine_MEt_ptBalance = cms.PSet(
-            likelihoodFunctions = cms.VPSet(
-                svFitLikelihoodMuTauPairKinematicsPolarized,
-                svFitLikelihoodMuTauPairMEt,
-                svFitLikelihoodMuTauPairPtBalance
-            ),
-            estUncertainties = cms.PSet(
-                #numSamplings = cms.int32(1000)
-                numSamplings = cms.int32(-1)
-            )
+        #polKine = cms.PSet(
+            #likelihoodFunctions = cms.VPSet(
+                #svFitLikelihoodMuTauPairKinematicsPolarized
+            #),
+            #estUncertainties = cms.PSet(
+                #numSamplings = cms.int32(-1)
+            #)
+        #),
+        #polKine_MEt = cms.PSet(
+            #likelihoodFunctions = cms.VPSet(
+                #svFitLikelihoodMuTauPairKinematicsPolarized,
+                #svFitLikelihoodMuTauPairMEt
+            #),
+            #estUncertainties = cms.PSet(
+                #numSamplings = cms.int32(-1)
+            #)
+        #),
+        #polKine_MEt_ptBalance = cms.PSet(
+            #likelihoodFunctions = cms.VPSet(
+                #svFitLikelihoodMuTauPairKinematicsPolarized,
+                #svFitLikelihoodMuTauPairMEt,
+                #svFitLikelihoodMuTauPairPtBalance
+            #),
+            #estUncertainties = cms.PSet(
+                ##numSamplings = cms.int32(1000)
+                #numSamplings = cms.int32(-1)
+            #)
         ##),
         ##polKine_MEt_ptBalance_Zprod = cms.PSet(
         ##    likelihoodFunctions = cms.VPSet(
@@ -115,7 +115,7 @@ allMuTauPairs = cms.EDProducer("PATMuTauPairProducer",
         ##    )
         )
     ),
-    scaleFuncImprovedCollinearApprox = cms.string('1'),                           
+    scaleFuncImprovedCollinearApprox = cms.string('1'),
     verbosity = cms.untracked.int32(0)
 )
 
