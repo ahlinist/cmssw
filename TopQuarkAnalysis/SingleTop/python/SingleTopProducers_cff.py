@@ -43,7 +43,7 @@ topJets = cms.EDProducer("SingleTopJetsProducer",
 )
 
 topJetsPF = topJets.clone(
-      src = cms.InputTag("selectedPatJetsPFlow"),
+      src = cms.InputTag("patJetsAK5PF"),
       isJPT = cms.untracked.bool(False),
       isPF = cms.untracked.bool(True),
       )
@@ -135,6 +135,15 @@ recoTops = cms.EDProducer("TopProducer",
 #                                  METsSource = cms.InputTag("patMETsPFlow"),
                                 )
 
+
+recoTopsPF = cms.EDProducer("TopProducer",
+                                  electronsSource = cms.InputTag("topElectrons"),
+                                  muonsSource = cms.InputTag("topMuons"),
+                                  jetsSource = cms.InputTag("bJetsPF"),
+                                 METsSource = cms.InputTag("patMETsPF"),
+#                                  METsSource = cms.InputTag("patMETsPFlow"),
+                                )
+
 boostedTops = cms.EDProducer(
     'NamedCompositeCandidateBooster',
     src = cms.InputTag('recoTops'),
@@ -145,6 +154,19 @@ boostedForwardJets = cms.EDProducer(
     'PATJetBooster',
     src = cms.InputTag('forwardJets'),
     boostSrc = cms.InputTag('recoTops')
+    )
+
+### PF
+boostedTopsPF = cms.EDProducer(
+    'NamedCompositeCandidateBooster',
+    src = cms.InputTag('recoTopsPF'),
+    boostSrc = cms.InputTag('recoTopsPF')
+    )
+
+boostedForwardJetsPF = cms.EDProducer(
+    'PATJetBooster',
+    src = cms.InputTag('forwardJetsPF'),
+    boostSrc = cms.InputTag('recoTopsPF')
     )
 
 #Part of MC Truth particles production
@@ -165,6 +187,12 @@ preselectedElectronsAntiIso = topElectrons.clone()
 
 topJetsAntiIso = topJets.clone(muSrc = cms.InputTag('topMuonsAntiIso'),eleSrc = cms.InputTag('topElectronsAntiIso') )
 
+topJetsAntiIsoPF = topJetsPF.clone(muSrc = cms.InputTag('topMuonsAntiIso'),eleSrc = cms.InputTag('topElectronsAntiIso') )
+
 bJetsAntiIso = bJets.clone(src=cms.InputTag('topJetsAntiIso'))
 antiBJetsAntiIso = antiBJets.clone(src=cms.InputTag('topJetsAntiIso'))
 forwardJetsAntiIso = forwardJets.clone(src=cms.InputTag('topJetsAntiIso'))
+
+bJetsAntiIsoPF = bJetsPF.clone(src=cms.InputTag('topJetsAntiIsoPF'))
+#antiBJetsAntiIsoPF = antiBJetsPF.clone(src=cms.InputTag('topJetsAntiIsoPF'))
+forwardJetsAntiIsoPF = forwardJetsPF.clone(src=cms.InputTag('topJetsAntiIsoPF'))
