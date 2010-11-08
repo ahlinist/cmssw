@@ -7,7 +7,7 @@
 #include "DataFormats/VertexReco/interface/VertexFwd.h"
 
 #include "TauAnalysis/DQMTools/interface/generalAuxFunctions.h"
-#include "TauAnalysis/Core/interface/histManagerAuxFunctions.h"
+#include "TauAnalysis/CandidateTools/interface/candidateAuxFunctions.h"
 
 #include <TMath.h>
 
