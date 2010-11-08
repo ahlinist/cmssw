@@ -45,7 +45,7 @@ def main(options,args):
                                                                          ws.var('err_x_gb'),
                                                                          ws.var('err_x_gl')))
 
-    theProjectedNLL = ROOT.RooFormulaVar('theProjectedNLL','The Projected NLL','-log(@0)',ROOT.RooArgList(theProjectedLikelihood))
+    theProjectedNLL = ROOT.RooFormulaVar('theProjectedNLL','The Projected NLL','log(@0)',ROOT.RooArgList(theProjectedLikelihood))
     getattr(ws,'import')(theProjectedNLL)
 
                                             
@@ -56,6 +56,21 @@ def main(options,args):
     minuit.hesse()
     minuit.migrad()
     minuit.minos()
+
+    theFitResult = minuit.save(options.couplingType+'_fitResult')
+
+    thePlot = minuit.contour(ws.var(options.couplingType+'_h3'),
+                             ws.var(options.couplingType+'_h4'),
+                             1,3)
+
+    theCanvas = ROOT.TCanvas('contours','',700,500)
+
+    thePlot.Draw()
+
+    theCanvas.Print('contour.root')
+    
+                                  
+                                         
     
     #create profile likelihood, set POI's
     #theProfileLL = ROOT.RooStats.ProfileLikelihoodCalculator(ws.data('aTGCData'),
