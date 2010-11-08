@@ -33,17 +33,25 @@ def main(options,args):
     theNLL = ROOT.RooNLLVar(options.couplingType+'_aTGCNLL',
                             'The -log(likelihood) for the dataset',
                             ws.pdf('TopLevelPdf'),ws.data('aTGCData'))
-    getattr(ws,'import')(theNLL)
+    #getattr(ws,'import')(theNLL)
 
-    #theProjectedNLL = theNLL.createIntegral(ROOT.RooArgSet(ws.var('err_x_gs'),
-    #                                                       ws.var('err_x_gb'),
-    #                                                       ws.var('err_x_gl')))
-    #                                        #ROOT.RooArgSet(ws.var('err_x_gs'),
-    #                                        #               ws.var('err_x_gb'),
-    #                                        #               ws.var('err_x_gl')))
+    theLikelihood = ROOT.RooFormulaVar('theLikelihood','The likelihood','exp(-@0)',ROOT.RooArgList(theNLL))
+    
+
+    theProjectedLikelihood = theLikelihood.createIntegral(ROOT.RooArgSet(ws.var('err_x_gs'),
+                                                                         ws.var('err_x_gb'),
+                                                                         ws.var('err_x_gl')),
+                                                          ROOT.RooArgSet(ws.var('err_x_gs'),
+                                                                         ws.var('err_x_gb'),
+                                                                         ws.var('err_x_gl')))
+
+    theProjectedNLL = ROOT.RooFormulaVar('theProjectedNLL','The Projected NLL','-log(@0)',ROOT.RooArgList(theProjectedLikelihood))
+    getattr(ws,'import')(theProjectedNLL)
+
                                             
-    minuit = ROOT.RooMinuit(theNLL)
+    minuit = ROOT.RooMinuit(theProjectedNLL)
 
+    minuit.setErrorLevel(0.5) #force to .5 because we know this is really a NLL fit...
     minuit.setStrategy(2)
     minuit.hesse()
     minuit.migrad()
@@ -386,11 +394,11 @@ def makeATGCExpectationPdf(ws,options):
     #now we create the core poisson pdf with errors left as floating
     ws.factory("RooPoisson::corePoisson("+options.phoEtVar+",expected)")    
     #now we create the top level pdf, which will be evaluated at each pT bin to create the likelihood.
-    ws.factory("PROD::RawTopLevelPdf(corePoisson,lumiErr,selectionErr,backgroundErr)")  #
+    ws.factory("PROD::TopLevelPdf(corePoisson,lumiErr,selectionErr,backgroundErr)")  #
 
-    TopLevelPdf = ws.pdf('RawTopLevelPdf').createProjection(ROOT.RooArgSet(ws.var('err_x_gs'),ws.var('err_x_gb'),ws.var('err_x_gl')))
-    TopLevelPdf.SetName('TopLevelPdf')
-    getattr(ws,'import')(TopLevelPdf)
+#    TopLevelPdf = ws.pdf('RawTopLevelPdf').createProjection(ROOT.RooArgSet(ws.var('err_x_gs'),ws.var('err_x_gb'),ws.var('err_x_gl')))
+#    TopLevelPdf.SetName('TopLevelPdf')
+#    getattr(ws,'import')(TopLevelPdf)
     
 
 def makePlots(LLplot,options):
@@ -411,13 +419,11 @@ if __name__ == "__main__":
     parser.add_option("--nEtBins",dest="nEtBins",help="Number of uniform photon eT bins.")
     parser.add_option("--phoEtMin",dest="phoEtMin",help="Minimum photon Et.")
     parser.add_option("--phoEtMax",dest="phoEtMax",help="Maximum photon Et.")
-#    parser.add_option("--nCouplingBins",dest="nCouplingBins",help="Number of uniform bins along each of h3 and h4.")
     parser.add_option("--h3Max",dest="h3Max",help="Bound on |h3|")
     parser.add_option("--h4Max",dest="h4Max",help="Bound on |h4|")
     parser.add_option("--treeName",dest="treeName",help="Name of the TTree, assumed to be the same between all input samples.")
     parser.add_option("--inputData",dest="inputData",help="Name of input data file. Multiple files given in comma separated list.")
     parser.add_option("--inputMC",dest="inputMC",help="Name of input MC file used to extract quadratic dependence of shapes. Multiple files in comma separated list.")
-    parser.add_option("--unbinned",dest="unbinned",help="Do unbinned fit (not implemented yet).")
     parser.add_option("--couplingType",dest="couplingType",help="ZgZ or Zgg couplings?")
     parser.add_option("--MCbackground",dest="MCbackground",help="Is background from MC?",action="store_true")
     (options,args) = parser.parse_args()
@@ -451,9 +457,6 @@ if __name__ == "__main__":
     if options.nEtBins is None:
         print 'Need to specify --nEtBins'
         miss_options=True
-#    if options.nCouplingBins is None:
-#        print 'Need to specify --nCouplingBins'
-#        miss_options=True
     if options.h3Max is None:
         print 'Need to specify --h3Max'
         miss_options=True
