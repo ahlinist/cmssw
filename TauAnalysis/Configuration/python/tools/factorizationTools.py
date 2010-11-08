@@ -1125,9 +1125,10 @@ def enableFactorization_makeAHtoMuTauPlots_grid(
     # Update the plot sources in the plot jobs.  Note that we don't need to do
     # this for the merged samples, since we have replaced the HistAdder sources
     for plotterModuleName in ['plotAHtoMuTau_woBtag', 'plotAHtoMuTau_wBtag']:
-        plotterModuleProcesses = getattr(process, plotterModuleName).processes
-        for sample in samplesToFactorize:
-            if hasattr(plotterModuleProcesses, sample):
-                getattr(plotterModuleProcesses, sample).dqmDirectory = \
-                        cms.string("/harvested/%s_factorized" % sample)
+        if hasattr(process, plotterModuleName):
+            plotterModuleProcesses = getattr(process, plotterModuleName).processes
+            for sample in samplesToFactorize:
+                if hasattr(plotterModuleProcesses, sample):
+                    getattr(plotterModuleProcesses, sample).dqmDirectory = \
+                      cms.string("/harvested/%s_factorized" % sample)
 
