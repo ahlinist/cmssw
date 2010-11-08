@@ -115,6 +115,8 @@ def submitAnalysisToGrid(configFile = None, channel = None, samples = None, outp
             'split_type' : (sample_info['type'] == 'Data') and 'lumis' or 'events',
             'lumi_mask' : sample_info['lumi_mask'],
             'runselection' : sample_info['runselection'],
+            'SE_white_list' : sample_info['SE_white_list'],
+            'SE_black_list' : sample_info['SE_black_list']
         }
         
         submitToGrid(configFile, jobInfo, jobOptions, crabOptions, create=True, submit=True)
