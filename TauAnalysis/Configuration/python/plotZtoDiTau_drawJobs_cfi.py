@@ -403,7 +403,7 @@ drawJobConfigurator_ZtoDiTau.add(
     beforeCut = evtSelDiTauCandidateForDiTauZeroCharge,
     plot = drawJobConfigEntry(
         meName = 'DiTauCandidateQuantities/DiTauCandidateCharge',
-        title = "Charge(Muon + Tau) (after diTau anti-Overlap Veto)",
+        title = "Charge(Tau_{1} + Tau+{2}) (after diTau anti-Overlap Veto)",
         xAxis = 'unlabeled',
         name = "cutFlowControlPlots_diTauCharge_afterAntiOverlapVeto"
     )
@@ -607,13 +607,13 @@ drawJobConfigurator_ZtoDiTau.add(
         ),
         drawJobConfigEntry(
             meName = 'DiTauCandidateSVfitQuantities/psKine_MEt_ptBalance/Mass',
-            title = "M(Muon + Tau), SVfit method (final Event sample)",
+            title = "M(Tau_{1} + Tau_{2}), SVfit method (final Event sample)",
             xAxis = 'Mass',
             name = "finalSamplePlots_mSVmethod"
         ),
         drawJobConfigEntry(
             meName = 'DiTauCandidateQuantities/Ht12MET',
-            title = "#Sigma H_{T}(Muon + Tau + MET) (final Event sample)",
+            title = "#Sigma H_{T}(Tau_{1} + Tau_{2} + MET) (final Event sample)",
             xAxis = 'Mass',
             name = "finalSamplePlots_ht"
         ),
