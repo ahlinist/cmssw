@@ -1,13 +1,14 @@
 #ifndef TauAnalysis_CandidateTools_candidateAuxFunctions_h
 #define TauAnalysis_CandidateTools_candidateAuxFunctions_h
 
+#include "DataFormats/Candidate/interface/Candidate.h" 
+
 #include "DataFormats/HepMCCandidate/interface/GenParticleFwd.h"
 #include "DataFormats/HepMCCandidate/interface/GenParticle.h"
-
 #include "DataFormats/ParticleFlowCandidate/interface/PFCandidate.h"
 #include "DataFormats/ParticleFlowCandidate/interface/PFCandidateFwd.h"
-
-#include "DataFormats/Candidate/interface/Candidate.h" 
+#include "DataFormats/VertexReco/interface/Vertex.h"
+#include "DataFormats/VertexReco/interface/VertexFwd.h"
 
 #include "AnalysisDataFormats/TauAnalysis/interface/CompositePtrCandidateT1T2MEt.h"
 
@@ -50,5 +51,8 @@ const reco::Candidate* getDistPion(const pat::Tau&);
 const reco::Candidate* getDistPion(const reco::GenJet&);
 
 std::pair<double, double> compMEtProjU(const reco::Candidate::LorentzVector&, double, double, int&);
+
+std::vector<double> compTrackPtSums(const reco::VertexCollection&);
+size_t getNumVerticesPtGtThreshold(const std::vector<double>&, double);
 
 #endif

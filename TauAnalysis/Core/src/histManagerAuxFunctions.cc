@@ -113,37 +113,3 @@ double compDecayEigenTime(double tauLeptonDecayDistance,  double tauLeptonEnergy
   return tauLeptonDecayDistance/(speedOfLight*gamma);
 }
 
-//
-//-----------------------------------------------------------------------------------------------------------------------
-//
-
-std::vector<double> compTrackPtSums(const reco::VertexCollection& vertices)
-{
-  size_t numVertices = vertices.size();
-  std::vector<double> trackPtSums(numVertices);
-  for ( size_t iVertex = 0; iVertex < numVertices; ++iVertex ) {
-    const reco::Vertex& vertex = vertices[iVertex];
-
-    double trackPtSum = 0.;
-    for ( reco::Vertex::trackRef_iterator track = vertex.tracks_begin();
-	  track != vertex.tracks_end(); ++track ) {
-      trackPtSum += (*track)->pt();
-    }
-    
-    trackPtSums[iVertex] = trackPtSum;
-  }
-
-  return trackPtSums;
-}
-
-size_t getNumVerticesPtGtThreshold(const std::vector<double>& trackPtSums, double ptThreshold)
-{
-  size_t numVertices = 0;
-  for ( std::vector<double>::const_iterator trackPtSum = trackPtSums.begin();
-	trackPtSum != trackPtSums.end(); ++trackPtSum ) {
-    if ( (*trackPtSum) > ptThreshold ) ++numVertices;
-  }
-  
-  return numVertices;
-}
-

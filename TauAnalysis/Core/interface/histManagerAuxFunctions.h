@@ -11,8 +11,6 @@
 #include "DataFormats/HepMCCandidate/interface/GenParticleFwd.h"
 #include "DataFormats/PatCandidates/interface/Jet.h"
 #include "DataFormats/PatCandidates/interface/Isolation.h"
-#include "DataFormats/VertexReco/interface/Vertex.h"
-#include "DataFormats/VertexReco/interface/VertexFwd.h"
 
 #include "TauAnalysis/Core/interface/FakeRateJetWeightExtractor.h"
 
@@ -56,8 +54,5 @@ double getTauJetWeight(const T& patTau, const std::vector<FakeRateJetWeightExtra
 
 double compDecayEigenTime(const reco::Candidate::Point&, const reco::Candidate::Point&, double);
 double compDecayEigenTime(double, double);
-
-std::vector<double> compTrackPtSums(const reco::VertexCollection&);
-size_t getNumVerticesPtGtThreshold(const std::vector<double>&, double);
 
 #endif
