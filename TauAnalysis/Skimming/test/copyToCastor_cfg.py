@@ -33,7 +33,7 @@ dummyEventSelection = cms.untracked.PSet(
 )
 
 process.copyToCastorOutputModule = cms.OutputModule("PoolOutputModule",                                              
-    fileName = cms.untracked.string('AH120tautau.root')
+    fileName = cms.untracked.string('test_copy.root')
 )
 
 process.options = cms.untracked.PSet(
