@@ -12,23 +12,23 @@
 #include "AnalysisDataFormats/TauAnalysis/interface/SVfitDiTauSolution.h"
 #include "AnalysisDataFormats/TauAnalysis/interface/SVfitLegSolution.h"
 
-namespace SVfit_namespace 
+namespace SVfit_namespace
 {
   //-----------------------------------------------------------------------------
   // define masses, widths and lifetimes of particles
   // relevant for computing values of likelihood functions in SVfit algorithm
   //
   // NOTE: the values are taken from
-  //        K. Nakamura et al. (Particle Data Group), 
+  //        K. Nakamura et al. (Particle Data Group),
   //        J. Phys. G 37, 075021 (2010)
   //
   const double chargedPionMass = 0.13957; // GeV
   const double chargedPionMass2 = chargedPionMass*chargedPionMass;
- 
+
   const double rhoMesonMass = 0.77549; // GeV
   const double rhoMesonMass2 = rhoMesonMass*rhoMesonMass;
   const double rhoMesonWidth = 0.1491; // GeV
- 
+
   const double a1MesonMass = 1.230; // GeV
   const double a1MesonMass2 = a1MesonMass*a1MesonMass;
   const double a1MesonWidth = 0.600; // GeV (upper limit of range quoted for width of a1 meson resonance in PDG summary tables)
@@ -58,24 +58,24 @@ namespace SVfit_namespace
 
   inline double square(double x)
   {
-    return x*x;	
+    return x*x;
   }
 
   inline double cube(double x)
   {
-    return x*x*x;	
+    return x*x*x;
   }
 
   inline double fourth(double x)
   {
-    return x*x*x*x;	
+    return x*x*x*x;
   }
 
   /// Boost a lorentz vector into the COM system of another lorentz vector.
   reco::Candidate::LorentzVector boostToCOM(
       const reco::Candidate::LorentzVector &comSystem,
-      const reco::Candidate::LorentzVector &p4ToBoost 
-  );   
+      const reco::Candidate::LorentzVector &p4ToBoost
+  );
 
   /// Determine visible tau rest frame energy given visible mass and neutrino mass
   double pVisRestFrame(double, double);
@@ -86,9 +86,9 @@ namespace SVfit_namespace
   /// Determine the tau momentum in the lab frame given the rest frame assumptions
   double tauMomentumLabFrame(double, double, double, double);
 
-  /// Determine the tau direction given our parameterization 
+  /// Determine the tau direction given our parameterization
   reco::Candidate::Vector tauDirection(const reco::Candidate::Vector&, double, double);
-   
+
   /// Compute the tau four vector given the tau direction and momentum
   reco::Candidate::LorentzVector tauP4(const reco::Candidate::Vector&, double);
 
@@ -96,25 +96,25 @@ namespace SVfit_namespace
   /// in case only one neutrino is produced, the resulting neutrino system is massless,
   /// while a neutrino system of in general non-zero invariant mass is produced in the two neutrino case
   template <typename T>
-  inline bool isMasslessNuSystem() 
+  inline bool isMasslessNuSystem()
   {
     // massless neutrino system produced in hadronic tau --> X + nu decays;
-    // use this implementation for the generic particle Candidate case 
-    return true; 
+    // use this implementation for the generic particle Candidate case
+    return true;
   }
 
   template <>
   inline bool isMasslessNuSystem<pat::Electron>()
   {
     // neutrino system of in general non-zero mass produced in tau --> electron nu nu decays
-    return false; 
+    return false;
   }
 
   template <>
   inline bool isMasslessNuSystem<pat::Muon>()
   {
     // neutrino system of in general non-zero mass produced in tau --> muon nu nu decays
-    return false; 
+    return false;
   }
 
   /// Compute logarithm of Gaussion probability density function
@@ -141,15 +141,15 @@ namespace SVfit_namespace
 	<< " does not match dimension = " << numDimensions << " of residual vector !!";
       return std::numeric_limits<float>::min();
     }
-    
+
     double det = 0.;
     cov.Det2(det);
     if ( det == 0. ) {
       edm::LogError ("logGaussianNd")
 	<< " Cannot invert " << numDimensions << "x" << numDimensions << " covariance matrix, det = " << det << " !!";
       return std::numeric_limits<float>::min();
-    } 
-    
+    }
+
     T2 covInverse(cov);
     bool flag = covInverse.Invert();
     if ( flag == false ) {
@@ -157,7 +157,7 @@ namespace SVfit_namespace
 	<< " Failed to invert covariance matrix, error flag = " << flag << " !!";
       return std::numeric_limits<float>::min();
     }
-    
+
     //std::cout << "covInverse:" << std::endl;
     //covInverse.Print(std::cout);
     //std::cout << std::endl;
@@ -167,7 +167,7 @@ namespace SVfit_namespace
     return -0.5*numDimensions*TMath::Log(2*TMath::Pi()) - 0.5*det - 0.5*(ROOT::Math::Dot(residual, covInverse*residual));
   }
 
-  /// Determine sign of tau lepton polarization 
+  /// Determine sign of tau lepton polarization
   /// (depending on handedness and charge, i.e. whether the tau lepton is a tau+ or a tau-)
   double getTauLeptonPolarization(SVfitLegSolution::polarizationHypothesisType, double);
 }
