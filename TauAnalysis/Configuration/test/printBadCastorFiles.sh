@@ -2,19 +2,19 @@
 
 # Simple script to loop over a CASTOR directory and print the bad files to
 # stdout.  Some progress info is printed to stderr.
-# You can pipe the output to "xargs -n 1 rmrf" to directly delete the
+# You can pipe the output to "xargs -n 1 rfrm" to directly delete the
 # files.  The safe option is to write it to a temporary file that you can check.
 #
 # Author: Evan K. Friis (UC Davis)
 # 
 # Examples:
 # 
-# ./printBadCastorFiles.sh | xargs -n 1 rmrf
+# ./printBadCastorFiles.sh | xargs -n 1 rfrm
 #
 # Safer:
 # ./printBadCastorFiles.sh > badfiles.list 
 # after checking badfiles.list is okay,
-# cat badfiles.list | xargs -n 1 rmrf
+# cat badfiles.list | xargs -n 1 rfrm
 
 
 function checker {
