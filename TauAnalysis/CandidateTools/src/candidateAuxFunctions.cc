@@ -293,12 +293,11 @@ std::string getTauDecayModeName(int tauDecayMode)
 const reco::Candidate* getDistPion(const pat::Tau& recTauJet)
 {
   if ( !recTauJet.isPFTau() ) {
-    edm::LogWarning ("getDistPion")
-      << " Cannot identify 'distinguishable' pion for CaloTaus/TCTaus --> returning NULL pointer !!";
+    //edm::LogWarning ("getDistPion")
+    //  << " Cannot identify 'distinguishable' pion for CaloTaus/TCTaus --> returning NULL pointer !!";
     return 0;
   }
 
-  int recTauDecayMode = recTauJet.decayMode();
   const reco::PFCandidateRefVector& recTauJetChargedConstituents = recTauJet.signalPFChargedHadrCands();
 
   if ( recTauJetChargedConstituents.size() == 1 ) {
@@ -318,8 +317,8 @@ const reco::Candidate* getDistPion(const pat::Tau& recTauJet)
       }
     }
   } else {
-    edm::LogWarning ("getDistPion")
-      << " Unsupported rec. tau decay mode = " << recTauDecayMode << " --> returning NULL pointer !!";
+    //edm::LogWarning ("getDistPion")
+    //  << " Unsupported rec. tau decay mode = " << recTauJet.decayMode() << " --> returning NULL pointer !!";
     return 0;
   }
   
@@ -357,12 +356,12 @@ const reco::Candidate* getDistPion(const reco::GenJet& genTauJet)
       }
     }
   } else {
-    edm::LogWarning ("getDistPion")
-      << " Unsupported gen. tau decay mode = " << genTauDecayMode << " --> returning NULL pointer !!";
+    //edm::LogWarning ("getDistPion")
+    //  << " Unsupported gen. tau decay mode = " << genTauDecayMode << " --> returning NULL pointer !!";
     return 0;
   }
-  edm::LogWarning ("getDistPion")
-    << " Failed to identify 'distinguishable' gen. pion --> returning NULL pointer !!";
+  //edm::LogWarning ("getDistPion")
+  //  << " Failed to identify 'distinguishable' gen. pion --> returning NULL pointer !!";
   return 0;
 }
 
@@ -390,6 +389,40 @@ std::pair<double, double> compMEtProjU(const reco::Candidate::LorentzVector& zP4
   double u2 = (uX*qY - uY*qX)/qT;
   
   return std::pair<double, double>(u1, u2);
+}
+
+//
+//-----------------------------------------------------------------------------------------------------------------------
+//
+
+std::vector<double> compTrackPtSums(const reco::VertexCollection& vertices)
+{
+  size_t numVertices = vertices.size();
+  std::vector<double> trackPtSums(numVertices);
+  for ( size_t iVertex = 0; iVertex < numVertices; ++iVertex ) {
+    const reco::Vertex& vertex = vertices[iVertex];
+
+    double trackPtSum = 0.;
+    for ( reco::Vertex::trackRef_iterator track = vertex.tracks_begin();
+	  track != vertex.tracks_end(); ++track ) {
+      trackPtSum += (*track)->pt();
+    }
+    
+    trackPtSums[iVertex] = trackPtSum;
+  }
+
+  return trackPtSums;
+}
+
+size_t getNumVerticesPtGtThreshold(const std::vector<double>& trackPtSums, double ptThreshold)
+{
+  size_t numVertices = 0;
+  for ( std::vector<double>::const_iterator trackPtSum = trackPtSums.begin();
+	trackPtSum != trackPtSums.end(); ++trackPtSum ) {
+    if ( (*trackPtSum) > ptThreshold ) ++numVertices;
+  }
+  
+  return numVertices;
 }
 
 
