@@ -74,9 +74,11 @@ void CompositePtrCandidateT1T2MEtIpSelector<T1,T2>::select(const edm::Handle<col
 #include "CommonTools/UtilAlgos/interface/ObjectSelector.h"
 
 typedef ObjectSelector<CompositePtrCandidateT1T2MEtIpSelector<pat::Electron, pat::Tau> > PATElecTauPairIpSelector;
-typedef ObjectSelector<CompositePtrCandidateT1T2MEtIpSelector<pat::Muon, pat::Muon> > PATMuTauPairIpSelector;
+typedef ObjectSelector<CompositePtrCandidateT1T2MEtIpSelector<pat::Muon, pat::Tau> > PATMuTauPairIpSelector;
 typedef ObjectSelector<CompositePtrCandidateT1T2MEtIpSelector<pat::Tau, pat::Tau> > PATDiTauPairIpSelector;
 typedef ObjectSelector<CompositePtrCandidateT1T2MEtIpSelector<pat::Electron, pat::Muon> > PATElecMuPairIpSelector;
+typedef ObjectSelector<CompositePtrCandidateT1T2MEtIpSelector<pat::Electron, pat::Electron> > PATDiElecPairIpSelector;
+typedef ObjectSelector<CompositePtrCandidateT1T2MEtIpSelector<pat::Muon, pat::Muon> > PATDiMuPairIpSelector;
 
 #include "FWCore/Framework/interface/MakerMacros.h"
 
