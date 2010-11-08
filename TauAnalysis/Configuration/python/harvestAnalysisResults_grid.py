@@ -1,6 +1,7 @@
 import FWCore.ParameterSet.Config as cms
 
 import os
+import subprocess
 
 import TauAnalysis.Configuration.tools.castor as castor
 from TauAnalysis.Configuration.tools.harvestingMakefile import buildMakefile
@@ -52,13 +53,10 @@ def harvestAnalysisResults(channel = None, samples = None, inputFilePath = None,
 
     for sample in samples['SAMPLES_TO_ANALYZE']:
         print "Finding input files for", sample
-        channelAbbr = channel
-        if channelAbbr.find('_') != -1:
-            channelAbbr = channelAbbr[:channelAbbr.find('_')]
-        output_file = "harvested_%s_%s_%s.root" % (channelAbbr, sample, jobId)
+        output_file = "harvested_%s_%s_%s.root" % (channel, sample, jobId)
         output_path = os.path.join(outputFilePath, output_file)
         files_to_merge = list('rfio:%s' % file for time, file in files_and_times 
-                          if file.find('_%s_%s_%s_' % (channelAbbr, sample, jobId)) != -1)
+                          if file.find('_%s_%s_%s_' % (channel, sample, jobId)) != -1)
 
         harvest_jobs.append( (sample, output_path, files_to_merge) )
 
@@ -68,5 +66,5 @@ def harvestAnalysisResults(channel = None, samples = None, inputFilePath = None,
 
     print "Starting harvesting..."
     makeCommand = "make -f %s -j 8 -k" % MakefileName
-    ##subprocess.call(makeCommand, shell = True)
+    subprocess.call(makeCommand, shell = True)
 
