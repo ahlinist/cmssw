@@ -8,10 +8,18 @@ import TauAnalysis.DQMTools.plotterStyleDefinitions_cfi as styles
 SAMPLES_TO_ANALYZE = [
     'data_Mu_132440-145761_Sep17ReReco',
     'data_Mu_145762_147116_Prompt',
-    'data_Mu_147117_148058_Prompt',
+    'data_Mu_147117_149442_Prompt',
+    'A90',  'bbA90',
+    'A100', 'bbA100',
     'A120', 'bbA120',
     'A130', 'bbA130',
+    'A140', 'bbA140',
+    'A160', 'bbA160',
+    'A180', 'bbA180',
     'A200', 'bbA200',
+    'A250', 'bbA250',
+    'A300', 'bbA300',
+    'A350', 'bbA350',
     'Ztautau',
     'Zmumu',
     'InclusivePPmuX',
@@ -25,9 +33,10 @@ SAMPLES_TO_ANALYZE = [
 # from the MERGE_SAMPLES defined at the bottom.
 SAMPLES_TO_PLOT = [
     'data',
-    'A120Sum',
     'A130Sum',
+    'A160Sum',
     'A200Sum',
+    'A300Sum',
     'qcdSum',
     #'PPmuXptGt20Mu15',
     'WplusJets',
@@ -37,6 +46,13 @@ SAMPLES_TO_PLOT = [
 ]
 
 SAMPLES_TO_PRINT = copy.copy(SAMPLES_TO_PLOT)
+SAMPLES_TO_PRINT.append('A90Sum')
+SAMPLES_TO_PRINT.append('A100Sum')
+SAMPLES_TO_PRINT.append('A120Sum')
+SAMPLES_TO_PRINT.append('A140Sum')
+SAMPLES_TO_PRINT.append('A180Sum')
+SAMPLES_TO_PRINT.append('A250Sum')
+SAMPLES_TO_PRINT.append('A350Sum')
 #SAMPLES_TO_PRINT.append('smBgSum')
 
 SAMPLE_DEFAULTS = {
@@ -47,7 +63,9 @@ SAMPLE_DEFAULTS = {
     'enableSysUncertainties' : False,
     'lumi_mask' : '',
     'runselection' : '',
-    'hlt_paths' : [ 'HLT_Mu9' ]
+    'hlt_paths' : [ 'HLT_Mu9' ],
+    'SE_white_list' : '',
+    'SE_black_list' : ''
 }
 
 # Conversions to pico barns
@@ -67,7 +85,7 @@ _millibarns = 1.0e9
 #Finding lumi for crab/crabdir_runAHtoMuTau_AHtoMuTau_data_Mu_145762_147454_Prompt_Run10
 #Dir: crab/crabdir_runAHtoMuTau_AHtoMuTau_data_Mu_145762_147454_Prompt_Run10    LUMI:  4692057.60607
 #TOTAL INTEGRATED LUMINOSITY:  7631194.02434  MICROBARNS
-TARGET_LUMI = (15.00)/_picobarns
+TARGET_LUMI = (34.85)/_picobarns
 
 #--------------------------------------------------------------------------------
 # NOTE:
@@ -98,7 +116,7 @@ RECO_SAMPLES = {
     'data_Mu_132440-145761_Sep17ReReco' : {
         'datasetpath' : '/Mu/Run2010A-Sep17ReReco_v2/RECO',
         'dbs_url' :  "http://cmsdbsprod.cern.ch/cms_dbs_prod_global/servlet/DBSServlet",
-        'lumi_mask' : "/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions10/7TeV/StreamExpress/Cert_132440-148058_7TeV_StreamExpress_Collisions10_JSON.txt",
+        'lumi_mask' : "/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions10/7TeV/StreamExpress/Cert_132440-149442_7TeV_StreamExpress_Collisions10_JSON.txt",
         'runselection' : "132440 - 145761",
         'conditions' : 'GR_R_38X_V13A::All',
         'events_processed' : -1,
@@ -109,7 +127,7 @@ RECO_SAMPLES = {
     'data_Mu_145762_147116_Prompt' : {
         'datasetpath' : '/Mu/Run2010B-PromptReco-v2/RECO',
         'dbs_url' :  "http://cmsdbsprod.cern.ch/cms_dbs_prod_global/servlet/DBSServlet",
-        'lumi_mask' : "/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions10/7TeV/StreamExpress/Cert_132440-148058_7TeV_StreamExpress_Collisions10_JSON.txt",
+        'lumi_mask' : "/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions10/7TeV/StreamExpress/Cert_132440-149442_7TeV_StreamExpress_Collisions10_JSON.txt",
         'runselection' : '145762 - 147116',
         'conditions' : 'GR_R_38X_V13::All',
         'events_processed' : -1,
@@ -117,30 +135,97 @@ RECO_SAMPLES = {
         'type' : 'Data',
         'drawOption' : styles.drawOption_Data,
     },
-    'data_Mu_147117_148058_Prompt' : {
+    'data_Mu_147117_149442_Prompt' : {
         'datasetpath' : '/Mu/Run2010B-PromptReco-v2/RECO',
         'dbs_url' :  "http://cmsdbsprod.cern.ch/cms_dbs_prod_global/servlet/DBSServlet",
-        'lumi_mask' : "/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions10/7TeV/StreamExpress/Cert_132440-148058_7TeV_StreamExpress_Collisions10_JSON.txt",
-        'runselection' : '147117 - 148058',
+        'lumi_mask' : "/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions10/7TeV/StreamExpress/Cert_132440-149442_7TeV_StreamExpress_Collisions10_JSON.txt",
+        'runselection' : '147117 - 149442',
         'conditions' : 'GR_R_38X_V13::All',
         'events_processed' : -1,
         'skim_eff' : 1.0,
         'type' : 'Data',
         'drawOption' : styles.drawOption_Data,
-        'hlt_paths' : [ 'HLT_Mu11', 'HLT_IsoMu9' ],
+        'hlt_paths' : [ 'HLT_Mu11', 'HLT_Mu15', 'HLT_IsoMu9' ],
+    },
+    'A90' : {
+        # Not skimmed
+        'datasetpath' : "/SUSYGluGluToHToTauTau_M-90_7TeV-pythia6-tauola/Fall10-START38_V12-v1/GEN-SIM-RECO",
+        'dbs_url' :  "http://cmsdbsprod.cern.ch/cms_dbs_prod_global/servlet/DBSServlet",
+        'events_processed' : 110000,
+        'number_of_jobs' : 25,
+        'skim_eff' : 1.0,
+        'x_sec' : (
+             174296.*_femtobarns*0.120567 # (gg -> h0)*(h0->tautau)
+           + 191745.*_femtobarns*0.119765 # (gg -> A0)*(A0->tautau)
+        ),
+        # Feynhiggs v2.7.1 input to calculate xsec*br -  mhmax, 7TeV
+        'legendEntry' : 'ggA(90) #rightarrow #tau^{+} #tau^{-}',
+        'type' : 'bsmMC',
+        'drawOption' : styles.drawOption_darkBlue_separate,
+        'enableSysUncertainties' : True
+    },
+    'bbA90' : {
+        # Not skimmed
+        'datasetpath' : "/SUSYBBHToTauTau_M-90_7TeV-pythia6-tauola/Fall10-START38_V12-v1/GEN-SIM-RECO",
+        'dbs_url' :  "http://cmsdbsprod.cern.ch/cms_dbs_prod_global/servlet/DBSServlet",
+        'events_processed' : 110000,
+        'number_of_jobs' : 25,
+        'skim_eff' : 1.0,
+        'x_sec' : (
+             319247.*_femtobarns*0.120567 # (bb -> h0)*(h0->tautau)
+           + 320295.*_femtobarns*0.119765 # (bb -> A0)*(A0->tautau)
+        ),
+        # Feynhiggs v2.7.1 input to calculate xsec*br -  mhmax, 7TeV
+        'legendEntry' : 'bbA(90) #rightarrow #tau^{+} #tau^{-}',
+        'type' : 'bsmMC',
+        'drawOption' : styles.drawOption_darkBlue_separate,
+        'enableSysUncertainties' : True
+    },
+    'A100' : {
+        # Not skimmed
+        'datasetpath' : "/SUSYGluGluToHToTauTau_M-100_7TeV-pythia6-tauola/Fall10-START38_V12-v1/GEN-SIM-RECO",
+        'dbs_url' :  "http://cmsdbsprod.cern.ch/cms_dbs_prod_global/servlet/DBSServlet",
+        'events_processed' : 110000,
+        'number_of_jobs' : 25,
+        'skim_eff' : 1.0,
+        'x_sec' : (
+             102490.*_femtobarns*0.122705 # (gg -> h0)*(h0->tautau)
+           + 113695.*_femtobarns*0.121864 # (gg -> A0)*(A0->tautau)
+        ),
+        # Feynhiggs v2.7.1 input to calculate xsec*br -  mhmax, 7TeV
+        'legendEntry' : 'ggA(100) #rightarrow #tau^{+} #tau^{-}',
+        'type' : 'bsmMC',
+        'drawOption' : styles.drawOption_darkBlue_separate,
+        'enableSysUncertainties' : True
+    },
+    'bbA100' : {
+        # Not skimmed
+        'datasetpath' : "/SUSYBBHToTauTau_M-100_7TeV-pythia6-tauola/Fall10-START38_V12-v1/GEN-SIM-RECO",
+        'dbs_url' :  "http://cmsdbsprod.cern.ch/cms_dbs_prod_global/servlet/DBSServlet",
+        'events_processed' : 110000,
+        'number_of_jobs' : 25,
+        'skim_eff' : 1.0,
+        'x_sec' : (
+             234065.*_femtobarns*0.122705 # (bb -> h0)*(h0->tautau)
+           + 235007.*_femtobarns*0.121864 # (bb -> A0)*(A0->tautau)
+        ),
+        # Feynhiggs v2.7.1 input to calculate xsec*br -  mhmax, 7TeV
+        'legendEntry' : 'bbA(100) #rightarrow #tau^{+} #tau^{-}',
+        'type' : 'bsmMC',
+        'drawOption' : styles.drawOption_darkBlue_separate,
+        'enableSysUncertainties' : True
     },
     'A120' : {
         # Not skimmed
-        'datasetpath' : "/Atautau_M120/Spring10-START3X_V26_S09-v1/GEN-SIM-RECO",
+        'datasetpath' : "/SUSYGluGluToHToTauTau_M-120_7TeV-pythia6-tauola/Fall10-START38_V12-v1/GEN-SIM-RECO",
         'dbs_url' :  "http://cmsdbsprod.cern.ch/cms_dbs_prod_global/servlet/DBSServlet",
-        'events_processed' : 110670,
+        'events_processed' : 110000,
         'number_of_jobs' : 25,
         'skim_eff' : 1.0,
-        # Configuration/GenProduction/python/PYTHIA6_Tauola_gg_H120_tautau_7TeV_cff.py
         'x_sec' : (
-              48110.*_femtobarns*0.122789 # (gg -> A0)*(A0->tautau)
-           +  36542.*_femtobarns*0.123462 # (gg -> h0)*(h0->tautau)
-           +  20247.*_femtobarns*0.125908 # (gg -> H0)*(H0->tautau)
+              36542.*_femtobarns*0.126386 # (gg -> h0)*(h0->tautau)
+           +  48111.*_femtobarns*0.125494 # (gg -> A0)*(A0->tautau)
+           +  20248.*_femtobarns*0.128313 # (gg -> H0)*(H0->tautau)
         ),
         # Feynhiggs v2.7.1 input to calculate xsec*br -  mhmax, 7TeV
         'legendEntry' : 'ggA(120) #rightarrow #tau^{+} #tau^{-}',
@@ -149,16 +234,18 @@ RECO_SAMPLES = {
         'enableSysUncertainties' : True
     },
     'bbA120' : {
-        'datasetpath' : "/bbAtautau_M120/Spring10-START3X_V26_S09-v1/GEN-SIM-RECO",
+        # Not skimmed
+        'datasetpath' : "/SUSYBBHToTauTau_M-120_7TeV-pythia6-tauola/Fall10-START38_V12-v1/GEN-SIM-RECO",
         'dbs_url' :  "http://cmsdbsprod.cern.ch/cms_dbs_prod_global/servlet/DBSServlet",
-        'events_processed' : 99470,
+        'events_processed' : 110000,
         'number_of_jobs' : 25,
         'skim_eff' : 1.0,
         'x_sec' : (
-             133125.*_femtobarns*0.122789 # (bb -> A0)*(A0->tautau)
-           + 126929.*_femtobarns*0.123462 # (bb -> h0)*(h0->tautau)
-           +   5801.*_femtobarns*0.125908 # (bb -> H0)*(H0->tautau)
+             126929.*_femtobarns*0.126386 # (bb -> h0)*(h0->tautau)
+           + 133125.*_femtobarns*0.125494 # (bb -> A0)*(A0->tautau)
+           +   5801.*_femtobarns*0.129316 # (bb -> H0)*(H0->tautau)
         ),
+        # Feynhiggs v2.7.1 input to calculate xsec*br -  mhmax, 7TeV
         'legendEntry' : 'bbA(120) #rightarrow #tau^{+} #tau^{-}',
         'type' : 'bsmMC',
         'drawOption' : styles.drawOption_darkBlue_separate,
@@ -166,75 +253,278 @@ RECO_SAMPLES = {
     },
     'A130' : {
         # Not skimmed
-        'datasetpath' : "/Atautau_M130/Spring10-START3X_V26_S09-v1/GEN-SIM-RECO",
+        'datasetpath' : "/SUSYGluGluToHToTauTau_M-130_7TeV-pythia6-tauola/Fall10-START38_V12-v1/GEN-SIM-RECO",
         'dbs_url' :  "http://cmsdbsprod.cern.ch/cms_dbs_prod_global/servlet/DBSServlet",
-        'events_processed' : 115290,
+        'events_processed' : 110000,
         'number_of_jobs' : 25,
         'skim_eff' : 1.0,
-        # Configuration/GenProduction/python/PYTHIA6_Tauola_gg_H130_tautau_7TeV_cff.py
         'x_sec' : (
-              32421.*_femtobarns*0.124340 # (gg -> A0)*(A0->tautau)
-           +   6595.*_femtobarns*0.124263 # (gg -> h0)*(h0->tautau)
-           +  33870.*_femtobarns*0.125984 # (gg -> H0)*(H0->tautau)
+               6595.*_femtobarns*0.126317 # (gg -> h0)*(h0->tautau)
+           +  32421.*_femtobarns*0.127088 # (gg -> A0)*(A0->tautau)
+           +  33870.*_femtobarns*0.128313 # (gg -> H0)*(H0->tautau)  
         ),
         # Feynhiggs v2.7.1 input to calculate xsec*br -  mhmax, 7TeV
         'legendEntry' : 'ggA(130) #rightarrow #tau^{+} #tau^{-}',
         'type' : 'bsmMC',
-        'drawOption' : styles.drawOption_green_separate,
+        'drawOption' : styles.drawOption_darkBlue_separate,
         'enableSysUncertainties' : True
     },
     'bbA130' : {
         # Not skimmed
-        'datasetpath' : "/bbAtautau_M130/Spring10-START3X_V26_S09-v1/GEN-SIM-RECO",
+        'datasetpath' : "/SUSYBBHToTauTau_M-130_7TeV-pythia6-tauola/Fall10-START38_V12-v1/GEN-SIM-RECO",
         'dbs_url' :  "http://cmsdbsprod.cern.ch/cms_dbs_prod_global/servlet/DBSServlet",
-        'events_processed' : 101900,
+        'events_processed' : 110000,
         'number_of_jobs' : 25,
         'skim_eff' : 1.0,
         'x_sec' : (
-             102366.*_femtobarns*0.124340 # (bb -> A0)*(A0->tautau)
-           +  37150.*_femtobarns*0.124263 # (bb -> h0)*(h0->tautau)
-           +  65807.*_femtobarns*0.125984 # (bb -> H0)*(H0->tautau)
+              37150.*_femtobarns*0.126317 # (bb -> h0)*(h0->tautau)
+           + 102366.*_femtobarns*0.127088 # (bb -> A0)*(A0->tautau)
+           +  65807.*_femtobarns*0.128313 # (bb -> H0)*(H0->tautau)
         ),
         # Feynhiggs v2.7.1 input to calculate xsec*br -  mhmax, 7TeV
         'legendEntry' : 'bbA(130) #rightarrow #tau^{+} #tau^{-}',
         'type' : 'bsmMC',
-        'drawOption' : styles.drawOption_green_separate,
+        'drawOption' : styles.drawOption_darkBlue_separate,
+        'enableSysUncertainties' : True
+    },
+    'A140' : {
+        # Not skimmed
+        'datasetpath' : "/SUSYGluGluToHToTauTau_M-1400_7TeV-pythia6-tauola/Fall10-START38_V12-v1/GEN-SIM-RECO",
+        'dbs_url' :  "http://cmsdbsprod.cern.ch/cms_dbs_prod_global/servlet/DBSServlet",
+        'events_processed' : 110000,
+        'number_of_jobs' : 25,
+        'skim_eff' : 1.0,
+        'x_sec' : (
+               8877.*_femtobarns*0.121431 # (gg -> h0)*(h0->tautau)
+           +  22263.*_femtobarns*0.128566 # (gg -> A0)*(A0->tautau)
+           +  24328.*_femtobarns*0.129151 # (gg -> H0)*(H0->tautau)
+        ),
+        # Feynhiggs v2.7.1 input to calculate xsec*br -  mhmax, 7TeV
+        'legendEntry' : 'ggA(140) #rightarrow #tau^{+} #tau^{-}',
+        'type' : 'bsmMC',
+        'drawOption' : styles.drawOption_darkBlue_separate,
+        'enableSysUncertainties' : True
+    },
+    'bbA140' : {
+        # Not skimmed
+        'datasetpath' : "/SUSYBBHToTauTau_M-140_7TeV-pythia6-tauola/Fall10-START38_V12-v1/GEN-SIM-RECO",
+        'dbs_url' :  "http://cmsdbsprod.cern.ch/cms_dbs_prod_global/servlet/DBSServlet",
+        'events_processed' : 110000,
+        'number_of_jobs' : 25,
+        'skim_eff' : 1.0,
+        'x_sec' : (
+               4948.*_femtobarns*0.121432 # (bb -> h0)*(h0->tautau)
+           +  79702.*_femtobarns*0.128566 # (bb -> A0)*(A0->tautau)
+           +  75246.*_femtobarns*0.129151 # (bb -> H0)*(H0->tautau)
+        ),
+        # Feynhiggs v2.7.1 input to calculate xsec*br -  mhmax, 7TeV
+        'legendEntry' : 'bbA(140) #rightarrow #tau^{+} #tau^{-}',
+        'type' : 'bsmMC',
+        'drawOption' : styles.drawOption_darkBlue_separate,
+        'enableSysUncertainties' : True
+    },
+    'A160' : {
+        # Not skimmed
+        'datasetpath' : "/SUSYGluGluToHToTauTau_M-160_7TeV-pythia6-tauola/Fall10-START38_V12-v1/GEN-SIM-RECO",
+        'dbs_url' :  "http://cmsdbsprod.cern.ch/cms_dbs_prod_global/servlet/DBSServlet",
+        'events_processed' : 110000,
+        'number_of_jobs' : 25,
+        'skim_eff' : 1.0,
+        'x_sec' : (
+              11094.*_femtobarns*0.131234 # (gg -> A0)*(A0->tautau)
+           +  11977.*_femtobarns*0.131575 # (gg -> H0)*(H0->tautau)  
+        ),
+        # Feynhiggs v2.7.1 input to calculate xsec*br -  mhmax, 7TeV
+        'legendEntry' : 'ggA(160) #rightarrow #tau^{+} #tau^{-}',
+        'type' : 'bsmMC',
+        'drawOption' : styles.drawOption_darkBlue_separate,
+        'enableSysUncertainties' : True
+    },
+    'bbA160' : {
+        # Not skimmed
+        'datasetpath' : "/SUSYBBHToTauTau_M-160_7TeV-pythia6-tauola/Fall10-START38_V12-v1/GEN-SIM-RECO",
+        'dbs_url' :  "http://cmsdbsprod.cern.ch/cms_dbs_prod_global/servlet/DBSServlet",
+        'events_processed' : 110000,
+        'number_of_jobs' : 25,
+        'skim_eff' : 1.0,
+        'x_sec' : (
+               1118.*_femtobarns*0.131234 # (bb -> A0)*(A0->tautau)
+           +  50997.*_femtobarns*0.131575 # (bb -> H0)*(H0->tautau) 
+        ),
+        # Feynhiggs v2.7.1 input to calculate xsec*br -  mhmax, 7TeV
+        'legendEntry' : 'bbA(160) #rightarrow #tau^{+} #tau^{-}',
+        'type' : 'bsmMC',
+        'drawOption' : styles.drawOption_darkBlue_separate,
+        'enableSysUncertainties' : True
+    },
+    'A180' : {
+        # Not skimmed
+        'datasetpath' : "/SUSYGluGluToHToTauTau_M-180_7TeV-pythia6-tauola/Fall10-START38_V12-v1/GEN-SIM-RECO",
+        'dbs_url' :  "http://cmsdbsprod.cern.ch/cms_dbs_prod_global/servlet/DBSServlet",
+        'events_processed' : 110000,
+        'number_of_jobs' : 25,
+        'skim_eff' : 1.0,
+        'x_sec' : (
+               5907.*_femtobarns*0.133061 # (gg -> A0)*(A0->tautau)
+           +   6388.*_femtobarns*0.133826 # (gg -> H0)*(H0->tautau)  
+        ),
+        # Feynhiggs v2.7.1 input to calculate xsec*br -  mhmax, 7TeV
+        'legendEntry' : 'ggA(180) #rightarrow #tau^{+} #tau^{-}',
+        'type' : 'bsmMC',
+        'drawOption' : styles.drawOption_darkBlue_separate,
+        'enableSysUncertainties' : True
+    },
+    'bbA180' : {
+        # Not skimmed
+        'datasetpath' : "/SUSYBBHToTauTau_M-180_7TeV-pythia6-tauola/Fall10-START38_V12-v1/GEN-SIM-RECO",
+        'dbs_url' :  "http://cmsdbsprod.cern.ch/cms_dbs_prod_global/servlet/DBSServlet",
+        'events_processed' : 110000,
+        'number_of_jobs' : 25,
+        'skim_eff' : 1.0,
+        'x_sec' : (
+              32261.*_femtobarns*0.133061 # (bb -> A0)*(A0->tautau)
+           +  32063.*_femtobarns*0.133826 # (bb -> H0)*(H0->tautau)  
+        ),
+        # Feynhiggs v2.7.1 input to calculate xsec*br -  mhmax, 7TeV
+        'legendEntry' : 'bbA(180) #rightarrow #tau^{+} #tau^{-}',
+        'type' : 'bsmMC',
+        'drawOption' : styles.drawOption_darkBlue_separate,
         'enableSysUncertainties' : True
     },
     'A200' : {
         # Not skimmed
-        'datasetpath' : "/Atautau_M200/Spring10-START3X_V26_S09-v1/GEN-SIM-RECO",
+        'datasetpath' : "/SUSYGluGluToHToTauTau_M-200_7TeV-pythia6-tauola/Fall10-START38_V12-v1/GEN-SIM-RECO",
         'dbs_url' :  "http://cmsdbsprod.cern.ch/cms_dbs_prod_global/servlet/DBSServlet",
-        'events_processed' : 111100,
+        'events_processed' : 110000,
         'number_of_jobs' : 25,
         'skim_eff' : 1.0,
-        # Configuration/GenProduction/python/PYTHIA6_Tauola_gg_H200_tautau_7TeV_cff.py
         'x_sec' : (
-               # CV, EK: (gg -> h0)*(h0->tautau) cross-section not included, as h0 mass is very different from mA
-               3318.*_femtobarns*0.131356 # (gg -> A0)*(A0->tautau)
-           +   3665.*_femtobarns*0.132576 # (gg -> H0)*(H0->tautau)
+               3318.*_femtobarns*0.134295 # (gg -> A0)*(A0->tautau)
+           +   3665.*_femtobarns*0.135591 # (gg -> H0)*(H0->tautau)  
         ),
+        # Feynhiggs v2.7.1 input to calculate xsec*br -  mhmax, 7TeV
         'legendEntry' : 'ggA(200) #rightarrow #tau^{+} #tau^{-}',
         'type' : 'bsmMC',
-        'drawOption' : styles.drawOption_darkGray_separate,
+        'drawOption' : styles.drawOption_darkBlue_separate,
         'enableSysUncertainties' : True
     },
     'bbA200' : {
         # Not skimmed
-        'datasetpath' : "/bbAtautau_M200/Spring10-START3X_V26_S09-v1/GEN-SIM-RECO",
+        'datasetpath' : "/SUSYBBHToTauTau_M-200_7TeV-pythia6-tauola/Fall10-START38_V12-v1/GEN-SIM-RECO",
         'dbs_url' :  "http://cmsdbsprod.cern.ch/cms_dbs_prod_global/servlet/DBSServlet",
-        'events_processed' : 101360,
+        'events_processed' : 110000,
         'number_of_jobs' : 25,
         'skim_eff' : 1.0,
-        # Configuration/GenProduction/python/PYTHIA6_Tauola_gg_H200_tautau_7TeV_cff.py
         'x_sec' : (
-              # CV, EK: (bb -> h0)*(h0->tautau) cross-section not included, as h0 mass is very different from mA
-              21202.*_femtobarns*0.131356 # (bb -> A0)*(A0->tautau)
-           +  21128.*_femtobarns*0.132576 # (bb -> HH)*(H0->tautau)
+              21202.*_femtobarns*0.134295 # (bb -> A0)*(A0->tautau)
+           +  21128.*_femtobarns*0.135591 # (bb -> H0)*(H0->tautau)  
         ),
+        # Feynhiggs v2.7.1 input to calculate xsec*br -  mhmax, 7TeV
         'legendEntry' : 'bbA(200) #rightarrow #tau^{+} #tau^{-}',
         'type' : 'bsmMC',
-        'drawOption' : styles.drawOption_darkGray_separate,
+        'drawOption' : styles.drawOption_darkBlue_separate,
+        'enableSysUncertainties' : True
+    },
+    'A250' : {
+        # Not skimmed
+        'datasetpath' : "/SUSYGluGluToHToTauTau_M-250_7TeV-pythia6-tauola/Fall10-START38_V12-v1/GEN-SIM-RECO",
+        'dbs_url' :  "http://cmsdbsprod.cern.ch/cms_dbs_prod_global/servlet/DBSServlet",
+        'events_processed' : 110000,
+        'number_of_jobs' : 25,
+        'skim_eff' : 1.0,
+        'x_sec' : (
+                923.*_femtobarns*0.135441 # (gg -> A0)*(A0->tautau)
+           +   1101.*_femtobarns*0.139024 # (gg -> H0)*(H0->tautau)  
+        ),
+        # Feynhiggs v2.7.1 input to calculate xsec*br -  mhmax, 7TeV
+        'legendEntry' : 'ggA(250) #rightarrow #tau^{+} #tau^{-}',
+        'type' : 'bsmMC',
+        'drawOption' : styles.drawOption_darkBlue_separate,
+        'enableSysUncertainties' : True
+    },
+    'bbA250' : {
+        # Not skimmed
+        'datasetpath' : "/SUSYBBHToTauTau_M-250_7TeV-pythia6-tauola/Fall10-START38_V12-v1/GEN-SIM-RECO",
+        'dbs_url' :  "http://cmsdbsprod.cern.ch/cms_dbs_prod_global/servlet/DBSServlet",
+        'events_processed' : 110000,
+        'number_of_jobs' : 25,
+        'skim_eff' : 1.0,
+        'x_sec' : (
+               8432.*_femtobarns*0.135441 # (bb -> A0)*(A0->tautau)
+           +   8414.*_femtobarns*0.139024 # (bb -> H0)*(H0->tautau)  
+        ),
+        # Feynhiggs v2.7.1 input to calculate xsec*br -  mhmax, 7TeV
+        'legendEntry' : 'bbA(250) #rightarrow #tau^{+} #tau^{-}',
+        'type' : 'bsmMC',
+        'drawOption' : styles.drawOption_darkBlue_separate,
+        'enableSysUncertainties' : True
+    },
+    'A300' : {
+        # Not skimmed
+        'datasetpath' : "/SUSYGluGluToHToTauTau_M-300_7TeV-pythia6-tauola/Fall10-START38_V12-v1/GEN-SIM-RECO",
+        'dbs_url' :  "http://cmsdbsprod.cern.ch/cms_dbs_prod_global/servlet/DBSServlet",
+        'events_processed' : 110000,
+        'number_of_jobs' : 25,
+        'skim_eff' : 1.0,
+        'x_sec' : (
+                286.*_femtobarns*0.131076 # (gg -> A0)*(A0->tautau)
+           +    387.*_femtobarns*0.139620 # (gg -> H0)*(H0->tautau)  
+        ),
+        # Feynhiggs v2.7.1 input to calculate xsec*br -  mhmax, 7TeV
+        'legendEntry' : 'ggA(300) #rightarrow #tau^{+} #tau^{-}',
+        'type' : 'bsmMC',
+        'drawOption' : styles.drawOption_darkBlue_separate,
+        'enableSysUncertainties' : True
+    },
+    'bbA300' : {
+        # Not skimmed
+        'datasetpath' : "/SUSYBBHToTauTau_M-300_7TeV-pythia6-tauola/Fall10-START38_V12-v1/GEN-SIM-RECO",
+        'dbs_url' :  "http://cmsdbsprod.cern.ch/cms_dbs_prod_global/servlet/DBSServlet",
+        'events_processed' : 110000,
+        'number_of_jobs' : 25,
+        'skim_eff' : 1.0,
+        'x_sec' : (
+               3752.*_femtobarns*0.131076 # (bb -> A0)*(A0->tautau)
+           +   3736.*_femtobarns*0.139620 # (bb -> H0)*(H0->tautau)  
+        ),
+        # Feynhiggs v2.7.1 input to calculate xsec*br -  mhmax, 7TeV
+        'legendEntry' : 'bbA(300) #rightarrow #tau^{+} #tau^{-}',
+        'type' : 'bsmMC',
+        'drawOption' : styles.drawOption_darkBlue_separate,
+        'enableSysUncertainties' : True
+    },
+    'A350' : {
+        # Not skimmed
+        'datasetpath' : "/SUSYGluGluToHToTauTau_M-350_7TeV-pythia6-tauola/Fall10-START38_V12-v1/GEN-SIM-RECO",
+        'dbs_url' :  "http://cmsdbsprod.cern.ch/cms_dbs_prod_global/servlet/DBSServlet",
+        'events_processed' : 110000,
+        'number_of_jobs' : 25,
+        'skim_eff' : 1.0,
+        'x_sec' : (
+                 84.*_femtobarns*0.117009 # (gg -> A0)*(A0->tautau)
+           +    121.*_femtobarns*0.133089 # (gg -> H0)*(H0->tautau)  
+        ),
+        # Feynhiggs v2.7.1 input to calculate xsec*br -  mhmax, 7TeV
+        'legendEntry' : 'ggA(350) #rightarrow #tau^{+} #tau^{-}',
+        'type' : 'bsmMC',
+        'drawOption' : styles.drawOption_darkBlue_separate,
+        'enableSysUncertainties' : True
+    },
+    'bbA350' : {
+        # Not skimmed
+        'datasetpath' : "/SUSYBBHToTauTau_M-350_7TeV-pythia6-tauola/Fall10-START38_V12-v1/GEN-SIM-RECO",
+        'dbs_url' :  "http://cmsdbsprod.cern.ch/cms_dbs_prod_global/servlet/DBSServlet",
+        'events_processed' : 110000,
+        'number_of_jobs' : 25,
+        'skim_eff' : 1.0,
+        'x_sec' : (
+               1830.*_femtobarns*0.117009 # (bb -> A0)*(A0->tautau)
+           +   1829.*_femtobarns*0.133089 # (bb -> H0)*(H0->tautau)  
+        ),
+        # Feynhiggs v2.7.1 input to calculate xsec*br -  mhmax, 7TeV
+        'legendEntry' : 'bbA(350) #rightarrow #tau^{+} #tau^{-}',
+        'type' : 'bsmMC',
+        'drawOption' : styles.drawOption_darkBlue_separate,
         'enableSysUncertainties' : True
     },
     # Using the unskimmed dataset
@@ -336,7 +626,7 @@ MERGE_SAMPLES = {
         'samples' : [
             'data_Mu_132440-145761_Sep17ReReco',
             'data_Mu_145762_147116_Prompt',
-            'data_Mu_147117_148058_Prompt'
+            'data_Mu_147117_149442_Prompt'
         ],
         'legendEntry' : 'DATA',
         'type' : 'Data',
@@ -353,6 +643,18 @@ MERGE_SAMPLES = {
         'type' : 'smMC',
         'drawOption' : styles.drawOption_QCD,
     },
+    'A90Sum' : {
+        'samples' : [ 'A90', 'bbA90' ],
+        'legendEntry' : 'A(90) #rightarrow #tau^{+} #tau^{-}',
+        'type' : 'bsmMC',
+        'drawOption' : RECO_SAMPLES['A90']['drawOption'],
+    },
+    'A100Sum' : {
+        'samples' : [ 'A100', 'bbA100' ],
+        'legendEntry' : 'A(100) #rightarrow #tau^{+} #tau^{-}',
+        'type' : 'bsmMC',
+        'drawOption' : RECO_SAMPLES['A100']['drawOption'],
+    },
     'A120Sum' : {
         'samples' : [ 'A120', 'bbA120' ],
         'legendEntry' : 'A(120) #rightarrow #tau^{+} #tau^{-}',
@@ -365,11 +667,47 @@ MERGE_SAMPLES = {
         'type' : 'bsmMC',
         'drawOption' : RECO_SAMPLES['A130']['drawOption'],
     },
+    'A140Sum' : {
+        'samples' : [ 'A140', 'bbA140' ],
+        'legendEntry' : 'A(140) #rightarrow #tau^{+} #tau^{-}',
+        'type' : 'bsmMC',
+        'drawOption' : RECO_SAMPLES['A140']['drawOption'],
+    },
+    'A160Sum' : {
+        'samples' : [ 'A160', 'bbA160' ],
+        'legendEntry' : 'A(160) #rightarrow #tau^{+} #tau^{-}',
+        'type' : 'bsmMC',
+        'drawOption' : RECO_SAMPLES['A160']['drawOption'],
+    },
+    'A180Sum' : {
+        'samples' : [ 'A180', 'bbA180' ],
+        'legendEntry' : 'A(180) #rightarrow #tau^{+} #tau^{-}',
+        'type' : 'bsmMC',
+        'drawOption' : RECO_SAMPLES['A180']['drawOption'],
+    },
     'A200Sum' : {
         'samples' : [ 'A200', 'bbA200' ],
         'legendEntry' : 'A(200) #rightarrow #tau^{+} #tau^{-}',
         'type' : 'bsmMC',
         'drawOption' : RECO_SAMPLES['A200']['drawOption'],
+    },
+    'A250Sum' : {
+        'samples' : [ 'A250', 'bbA250' ],
+        'legendEntry' : 'A(250) #rightarrow #tau^{+} #tau^{-}',
+        'type' : 'bsmMC',
+        'drawOption' : RECO_SAMPLES['A250']['drawOption'],
+    },
+    'A300Sum' : {
+        'samples' : [ 'A300', 'bbA300' ],
+        'legendEntry' : 'A(300) #rightarrow #tau^{+} #tau^{-}',
+        'type' : 'bsmMC',
+        'drawOption' : RECO_SAMPLES['A300']['drawOption'],
+    },
+    'A350Sum' : {
+        'samples' : [ 'A350', 'bbA350' ],
+        'legendEntry' : 'A(350) #rightarrow #tau^{+} #tau^{-}',
+        'type' : 'bsmMC',
+        'drawOption' : RECO_SAMPLES['A350']['drawOption'],
     },
     #'smBgSum' : {
         #'samples' : [
