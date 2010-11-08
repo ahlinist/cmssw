@@ -31,7 +31,8 @@ user_remote_dir = $user_remote_dir
 publish_data = $publish_data
 
 [GRID]
-# todo
+$SE_white_list
+$SE_black_list
 ''')
 
 _CRAB_DEFAULTS = {
@@ -43,7 +44,7 @@ _CRAB_DEFAULTS = {
     'storage_path' : '/srm/managerv2?SFN=/castor/cern.ch',
     'publish_data' : 0,
     'lumi_mask' : '',
-    'runselection' : '',
+    'runselection' : ''
 }
 
 def submitToGrid(configFile, jobInfo, jobOptions, crabOptions, create = True, submit = True):
@@ -79,6 +80,14 @@ def submitToGrid(configFile, jobInfo, jobOptions, crabOptions, create = True, su
     if fullCrabOptions['runselection']:
         fullCrabOptions['runselection'] = (
             'runselection = '+fullCrabOptions['runselection'])
+
+    # Add SE_white_list/SE_back_list commands if specified
+    if fullCrabOptions['SE_white_list'] and fullCrabOptions['SE_white_list'] != '':
+        fullCrabOptions['SE_white_list'] = (
+            'SE_white_list = '+fullCrabOptions['SE_white_list'])
+    elif fullCrabOptions['SE_black_list'] and fullCrabOptions['SE_black_list']  != '':
+        fullCrabOptions['SE_black_list'] = (
+            'SE_black_list = '+fullCrabOptions['SE_black_list'])
 
     # Create the crab file
     crabFileName = "crab_" + configFileName + ".cfg"
