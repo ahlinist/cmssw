@@ -8,6 +8,7 @@ import FWCore.ParameterSet.Config as cms
 ### HLT filter ###
 import HLTrigger.HLTfilters.hltHighLevel_cfi
 hltFilter = HLTrigger.HLTfilters.hltHighLevel_cfi.hltHighLevel.clone()
+hltFilter.TriggerResultsTag = cms.InputTag("TriggerResults","","REDIGI")
 hltFilter.HLTPaths = ['HLT_Mu9']#,'HLT_Ele15_LW_L1R']
 
 #import HLTrigger.HLTfilters.hltHighLevelDev_cfi
@@ -198,6 +199,15 @@ countJetsNonTTBarAntiIso = countJets.clone(
     src = cms.InputTag('topJetsAntiIso')
     )
 
+countJetsNonTTBarPF = countJets.clone(
+    src = cms.InputTag('topJets')
+    )
+
+
+countJetsNonTTBarAntiIsoPF = countJets.clone(
+    src = cms.InputTag('topJetsAntiIso')
+    )
+
 countJetsTTBarAntiIso = countJets.clone(
     src = cms.InputTag('topJetsAntiIso')
     )
@@ -205,18 +215,36 @@ countJetsTTBarAntiIso = countJets.clone(
 vetoBJets = countBTags.clone()
 
 
+countJetsAntiIsoPF= countJets.clone(
+    src = cms.InputTag('topJetsAntiIsoPF')
+    )
+
+countBTagsAntiIsoPF = countJets.clone(
+    src = cms.InputTag('bJetsAntiIsoPF')
+    )
+
+countForwardJetsAntiIsoPF = countJets.clone(
+    src = cms.InputTag('forwardJetsAntiIsoPF')
+    )
+
+countJetsNonTTBarAntiIsoPF = countJets.clone(
+    src = cms.InputTag('topJetsAntiIsoPF')
+    )
 
 
 
-electronIDIso = cms.EDFilter('SingleTopElectronFilter',
-                          src = cms.InputTag("topElectrons"),
-                          isData = cms.untracked.bool(False),   
-                          )
 
-electronIDAntiIso = cms.EDFilter('SingleTopElectronFilter',
-                          src = cms.InputTag("topElectronsAntiIso"),
-                          isData = cms.untracked.bool(False),   
-                          )
+
+#electronIDIso = cms.EDFilter('SingleTopElectronFilter',
+#                          src = cms.InputTag("topElectrons"),
+#                          isData = cms.untracked.bool(False),   
+#                          )
+
+#electronIDAntiIso = cms.EDFilter('SingleTopElectronFilter',
+#                          src = cms.InputTag("topElectronsAntiIso"),
+#                          isData = cms.untracked.bool(False),   
+#                          )
+
 from CommonTools.RecoAlgos.HBHENoiseFilter_cfi import * 
 
 

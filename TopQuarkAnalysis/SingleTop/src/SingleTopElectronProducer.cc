@@ -2,7 +2,7 @@
  *\Author: A. Orso M. Iorio 
  *
  *
- *\version  $Id: SingleTopElectronProducer.cc,v 1.3 2010/09/10 10:16:08 oiorio Exp $ 
+ *\version  $Id: SingleTopElectronProducer.cc,v 1.4 2010/09/15 14:59:25 oiorio Exp $ 
  */
 
 // Single Top producer: produces a top candidate made out of a Lepton, a B jet and a MET
@@ -107,7 +107,7 @@ void SingleTopElectronProducer::produce(edm::Event & iEvent, const edm::EventSet
   bool bit0 = true;
 
   for(size_t i = 0; i < electrons->size(); ++i){
-  
+    
     if(id_==std::string("cIso70")){
       SimpleCutBasedElectronIDSelectionFunctor patSele(SimpleCutBasedElectronIDSelectionFunctor::cIso70,bfield,ctfTracks);
     bit0 = bool(patSele(electrons->at(i)));
@@ -115,6 +115,13 @@ void SingleTopElectronProducer::produce(edm::Event & iEvent, const edm::EventSet
     else if(id_ == std::string("cIso95")){
     SimpleCutBasedElectronIDSelectionFunctor patSele(SimpleCutBasedElectronIDSelectionFunctor::cIso95,bfield,ctfTracks);
     bit0 = bool(patSele(electrons->at(i)));
+  }else if(id_ == std::string("antiIso")){
+    SimpleCutBasedElectronIDSelectionFunctor patSele(SimpleCutBasedElectronIDSelectionFunctor::cIso95,bfield,ctfTracks);
+    //    std::cout << "is anti iso"  <<std::endl;
+    patSele.set("cIso_EB",100000.);
+    patSele.set("cIso_EE",100000.);
+    bit0 = bool(patSele(electrons->at(i)));
+
   }
     ConversionFinder conv;
     ConversionInfo convInfo= conv.getConversionInfo(electrons->at(i),ctfTracks,bfield);

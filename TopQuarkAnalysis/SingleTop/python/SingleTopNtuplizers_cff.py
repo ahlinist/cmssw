@@ -1,6 +1,43 @@
 import FWCore.ParameterSet.Config as cms
 
 
+nTupleTopJetsPF = cms.EDProducer(
+    "CandViewNtpProducer",
+    src = cms.InputTag("topJetsPF"),
+    lazyParser = cms.untracked.bool(True),
+    prefix = cms.untracked.string("topJetsPF"),
+    variables = cms.VPSet(
+
+    cms.PSet(
+    tag = cms.untracked.string("TrackCountingHighPur"),
+    quantity = cms.untracked.string("bDiscriminator('trackCountingHighPurBJetTags')")
+    ),
+    cms.PSet(
+    tag = cms.untracked.string("TrackCountingHighEff"),
+    quantity = cms.untracked.string("bDiscriminator('trackCountingHighEffBJetTags')")
+    ),
+    cms.PSet(
+    tag = cms.untracked.string("Pt"),
+    quantity = cms.untracked.string("pt")
+    ),
+    cms.PSet(
+    tag = cms.untracked.string("Eta"),
+    quantity = cms.untracked.string("eta")
+    ),
+    )
+)
+
+nTupleBJetsPF= nTupleTopJetsPF.clone(
+    src = cms.InputTag("bJetsPF"),
+    prefix = cms.untracked.string("bJetsPF"),
+    )
+
+nTupleForwardJetsPF= nTupleTopJetsPF.clone(
+    src = cms.InputTag("forwardJetsPF"),
+    prefix = cms.untracked.string("forwardJetsPF"),
+    )
+
+
 
 singleTopPreselectedJets = cms.EDProducer(
     "CandViewNtpProducer",
