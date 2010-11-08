@@ -59,6 +59,14 @@ class CompositePtrCandidateT1T2MEtAlgorithm
     /// computed in the improved collinear approximation;
     /// NO re-scaling of the p4 is made at this stage.
     scaleFunc_ = new TF1("scaleFunc_", scaleFuncImprovedCollinearApprox_.c_str(), 10, 300);
+    
+    if ( cfg.exists("genParticleMatchPdgId") ) {
+      genParticleMatchPdgId_ = cfg.getParameter<vint>("genParticleMatchPdgId");
+    } else {
+      // per default, match to gen. tau leptons
+      genParticleMatchPdgId_.push_back(+15);
+      genParticleMatchPdgId_.push_back(-15);
+    }
   }
 
   ~CompositePtrCandidateT1T2MEtAlgorithm() 
@@ -187,11 +195,8 @@ class CompositePtrCandidateT1T2MEtAlgorithm
   
   void compGenQuantities(CompositePtrCandidateT1T2MEt<T1,T2>& compositePtrCandidate, const reco::GenParticleCollection* genParticles)
   {
-    vector<int> preferTaus(2);
-    preferTaus[0] = 15;
-    preferTaus[1] = -15;
-
-    const reco::GenParticle* genLeg1 = findGenParticle(compositePtrCandidate.leg1()->p4(), *genParticles, 0.5, -1, &preferTaus, false);
+    const reco::GenParticle* genLeg1 = findGenParticle(compositePtrCandidate.leg1()->p4(), *genParticles, 0.5, -1, 
+						       &genParticleMatchPdgId_, false);
     if ( genLeg1 ) {
       compositePtrCandidate.setPrimaryVertexPosGen(genLeg1->vertex());
       compositePtrCandidate.setDecayVertexPosLeg1gen(getDecayVertex(genLeg1));
@@ -199,7 +204,8 @@ class CompositePtrCandidateT1T2MEtAlgorithm
       compositePtrCandidate.setP4VisLeg1gen(getVisMomentum(genLeg1, genParticles));
     }
     
-    const reco::GenParticle* genLeg2 = findGenParticle(compositePtrCandidate.leg2()->p4(), *genParticles, 0.5, -1, &preferTaus, false);
+    const reco::GenParticle* genLeg2 = findGenParticle(compositePtrCandidate.leg2()->p4(), *genParticles, 0.5, -1, 
+						       &genParticleMatchPdgId_, false);
     if ( genLeg2 ) {
       compositePtrCandidate.setDecayVertexPosLeg2gen(getDecayVertex(genLeg2));
       compositePtrCandidate.setP4Leg2gen(genLeg2->p4());
@@ -406,6 +412,8 @@ class CompositePtrCandidateT1T2MEtAlgorithm
   std::string scaleFuncImprovedCollinearApprox_;
   TF1* scaleFunc_;
   std::map<std::string, SVfitAlgorithm<T1,T2>*> svFitAlgorithms_;
+  typedef std::vector<int> vint;
+  vint genParticleMatchPdgId_;
 };
 
 #endif 
