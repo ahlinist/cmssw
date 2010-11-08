@@ -41,7 +41,9 @@ SAMPLE_DEFAULTS = {
     'factorize' : False,
     'enableSysUncertainties' : False,
     'lumi_mask' : '',
-    'runselection' : ''
+    'runselection' : '',
+    'SE_white_list' : '',
+    'SE_black_list' : ''
 }
 
 # Conversions to pico barns
