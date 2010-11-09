@@ -9,7 +9,7 @@
  * \Author A. Orso M. Iorio
  * 
  *
- *\version  $Id: TopCosThetaStarDumper.h,v 1.1 2010/07/07 10:19:16 oiorio Exp $
+ *\version  $Id: TopCosThetaStarDumper.h,v 1.2 2010/09/07 14:32:43 oiorio Exp $
  *
  *
 */
@@ -74,7 +74,7 @@
     //       static void fillDescriptions(edm::ConfigurationDescriptions & descriptions);
     private:
     
-    edm::InputTag topsSrc_,jetsSrc_;
+    edm::InputTag topsSrc_,jetsSrc_,tChanSrc_;
     
   };
 //}

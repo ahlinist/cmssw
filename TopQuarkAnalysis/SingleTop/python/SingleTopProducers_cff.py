@@ -135,6 +135,14 @@ recoTops = cms.EDProducer("TopProducer",
 #                                  METsSource = cms.InputTag("patMETsPFlow"),
                                 )
 
+recoTChanEvents = cms.EDProducer("SingleTopTChanProducer",
+                                 topsSource = cms.InputTag("recoTops"),
+                                 lightJetsSource = cms.InputTag("forwardJets"),
+                                 )
+recoTChanEventsPF = cms.EDProducer("SingleTopTChanProducer",
+                                 topsSource = cms.InputTag("recoTopsPF"),
+                                 lightJetsSource = cms.InputTag("forwardJetsPF"),
+                                 )
 
 recoTopsPF = cms.EDProducer("TopProducer",
                                   electronsSource = cms.InputTag("topElectrons"),
@@ -143,6 +151,20 @@ recoTopsPF = cms.EDProducer("TopProducer",
                                  METsSource = cms.InputTag("patMETsPF"),
 #                                  METsSource = cms.InputTag("patMETsPFlow"),
                                 )
+
+boostedEvents = cms.EDProducer(
+    'NamedCompositeCandidateBooster',
+    src = cms.InputTag('recoTChanEvents'),
+    boostSrc = cms.InputTag('recoTops')
+    )
+
+
+boostedEventsPF = cms.EDProducer(
+    'NamedCompositeCandidateBooster',
+    src = cms.InputTag('recoTChanEventsPF'),
+    boostSrc = cms.InputTag('recoTopsPF')
+    )
+
 
 boostedTops = cms.EDProducer(
     'NamedCompositeCandidateBooster',
