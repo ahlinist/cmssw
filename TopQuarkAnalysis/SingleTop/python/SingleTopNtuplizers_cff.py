@@ -1,5 +1,50 @@
 import FWCore.ParameterSet.Config as cms
 
+nTupleEventsPF = cms.EDProducer(
+    "CandViewNtpProducer",
+    src = cms.InputTag("recoTChanEventsPF"),
+    lazyParser = cms.untracked.bool(True),
+    prefix = cms.untracked.string("tChanCandidate"),
+    variables = cms.VPSet(
+
+    cms.PSet(
+    tag = cms.untracked.string("topMass"),
+    quantity = cms.untracked.string("daughter('Top').mass()")
+    ),
+
+    cms.PSet(
+    tag = cms.untracked.string("bJetTrackCountingHighPur"),
+    quantity = cms.untracked.string("daughter('Top').daughter('BJet').bDiscriminator('trackCountingHighPurBJetTags')")
+    ),
+    cms.PSet(
+    tag = cms.untracked.string("forwardJetTrackCountingHighEff"),
+    quantity = cms.untracked.string("daughter('LightJet').bDiscriminator('trackCountingHighEffBJetTags')")
+    ),
+
+    cms.PSet(
+    tag = cms.untracked.string("forwardJetEta"),
+    quantity = cms.untracked.string("daughter('LightJet').eta()")
+    ),
+
+
+    cms.PSet(
+    tag = cms.untracked.string("bJetPt"),
+    quantity = cms.untracked.string("daughter('Top').daughter('BJet').pt()")
+    ),
+    cms.PSet(
+    tag = cms.untracked.string("forwardJetPt"),
+    quantity = cms.untracked.string("daughter('LightJet').pt()")
+    ),
+    
+
+    )
+    )
+
+nTupleEventsAntiIsoPF = nTupleEventsPF.clone(
+    src = cms.InputTag("recoTChanEventsAntiIsoPF"),
+    lazyParser = cms.untracked.bool(True),
+    prefix = cms.untracked.string("tChanCandidateAntiIso"),
+    )
 
 nTupleTopJetsPF = cms.EDProducer(
     "CandViewNtpProducer",
@@ -27,17 +72,40 @@ nTupleTopJetsPF = cms.EDProducer(
     )
 )
 
-nTupleBJetsPF= nTupleTopJetsPF.clone(
-    src = cms.InputTag("bJetsPF"),
-    prefix = cms.untracked.string("bJetsPF"),
-    )
-
+nTupleTopJetsAntiIsoPF = nTupleTopJetsPF.clone(
+    src = cms.InputTag("topJetsAntiIsoPF"),
+    lazyParser = cms.untracked.bool(True),
+    prefix = cms.untracked.string("topJetsAntiIsoPF"),
+)
 nTupleForwardJetsPF= nTupleTopJetsPF.clone(
     src = cms.InputTag("forwardJetsPF"),
     prefix = cms.untracked.string("forwardJetsPF"),
     )
 
+nTupleBJetsPF= nTupleTopJetsPF.clone(
+    src = cms.InputTag("bJetsPF"),
+    prefix = cms.untracked.string("bJetsPF"),
+    )
 
+nTuplePatMETsPF = cms.EDProducer(
+    "CandViewNtpProducer",
+    src = cms.InputTag("patMETsPF"),
+    lazyParser = cms.untracked.bool(True),
+    prefix = cms.untracked.string("patMETsPF"),
+    variables = cms.VPSet(
+
+    cms.PSet(
+    tag = cms.untracked.string("Pt"),
+    quantity = cms.untracked.string("pt")
+    ),
+
+    cms.PSet(
+    tag = cms.untracked.string("Phi"),
+    quantity = cms.untracked.string("phi")
+    ),
+
+    )
+    )
 
 singleTopPreselectedJets = cms.EDProducer(
     "CandViewNtpProducer",
@@ -357,5 +425,53 @@ singleTopPreselectedMETs = cms.EDProducer(
     quantity = cms.untracked.string("theta")
     ),
     )
+    
+    )
+
+
+
+nTuples = cms.Sequence(
+    nTupleTopJetsPF *
+    #nTupleBJetsPF *
+    #nTupleForwardJetsPF *
+    nTuplePatMETsPF *
+    nTupleEventsPF 
+    )
+
+nTuplesAntiIso = cms.Sequence(
+    nTupleTopJetsAntiIsoPF *
+    #nTupleBJetsAntiIsoPF *
+    #nTupleForwardJetsAntiIsoPF *
+    nTuplePatMETsPF *
+    nTupleEventsAntiIsoPF 
+    )
+
+saveNTuples = cms.untracked.vstring(
+    'drop *',
+
+    'keep *_cFlavorHistoryProducer_*_*',
+    'keep *_bFlavorHistoryProducer_*_*',
+
+
+    'keep *_singleTopObservablesTSamplePF_*_*',    
+    'keep floats_nTupleEventsPF_*_*',
+    'keep floats_nTuplePatMETsPF_*_*',
+    'keep floats_nTupleTopJetsPF_*_*',
+
+    
+    )
+
+saveNTuplesAntiIso = cms.untracked.vstring(
+    'drop *',
+    
+    'keep *_cFlavorHistoryProducer_*_*',
+    'keep *_bFlavorHistoryProducer_*_*',
+
+
+    'keep *_singleTopObservablesAntiIsoPF_*_*',
+    'keep floats_nTupleEventsAntiIsoPF_*_*',
+    'keep floats_nTuplePatMETsPF_*_*',
+    'keep floats_nTupleTopJetsPF_*_*',
+
     
     )

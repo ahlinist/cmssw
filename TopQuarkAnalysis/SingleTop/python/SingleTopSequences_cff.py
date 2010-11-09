@@ -258,24 +258,33 @@ PathElectronsAntiIso = cms.Sequence(
 ###Tops Sequences
 allTops= cms.Sequence(
     recoTops *
-    boostedTops *
-    boostedForwardJets 
+    recoTChanEvents# *
+  #  boostedTops *
+  #  boostedForwardJets * 
+  #  boostedEvents
     )
 
 allTopsPF = cms.Sequence(
     recoTopsPF *
-    boostedTopsPF *
-    boostedForwardJetsPF
+    recoTChanEventsPF #*
+#    boostedTopsPF *
+#    boostedForwardJetsPF *
+#    boostedEventsPF
     )
 
 allAntiIsoTops= cms.Sequence(
     recoTopsAntiIso *
-    boostedTopsAntiIsoTops *
-    boostedForwardJetsAntiIsoTops
+    recoTChanEventsAntiIso #*
+#    boostedTopsAntiIsoTops *
+#    boostedForwardJetsAntiIsoTops *
+#    boostedEventsAntiIso
     )
 
 allAntiIsoTopsPF= cms.Sequence(
-    recoTopsAntiIsoPF    #*
+    recoTopsAntiIsoPF *
+    recoTChanEventsAntiIsoPF #*
+#    boostedEventsAntiIsoPF
+    #*
 #    boostedTopsAntiIsoTops *
 #    boostedForwardJetsAntiIsoTops
     )

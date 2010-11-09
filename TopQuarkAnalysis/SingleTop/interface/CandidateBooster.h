@@ -11,7 +11,7 @@
  *
  *Produces a candidate collection boosted in the center of mass given by another collection 
  *
- *\version  $Id: CandidateBooster.h,v 1.1 2010/04/02 22:37:38 oiorio Exp $
+ *\version  $Id: CandidateBooster.h,v 1.2 2010/09/07 14:32:43 oiorio Exp $
  *
  *
 */
@@ -97,13 +97,14 @@ void CandidateBooster<T>::produce(edm::Event & iEvent, const edm::EventSetup & i
   for(size_t i = 0;i< src->size();++i){
     reco::CandidateBaseRef candToBoostRef(edm::Ref<T>(src,i));
     //reco::Candidate * candToBoost = src->at(i).clone();
-    if(boost->size()==1){
-      CenterOfMassBooster booster(boost->at(0));
+    //    if(boost->size()==1){
+    for(size_t s = 0;s< boost->size();++s){
+    CenterOfMassBooster booster(boost->at(s));
       reco::Candidate * candToBoost = candToBoostRef->clone();
       booster.set(*candToBoost);
       boostedCollection->push_back(candToBoost->clone());
     }
-    else if( boost->size()>1 )std::cout << " warning: input collection for the boost doesn't  have exactly element! It has "<< boost->size() << " elements! Empty boosted collection produced. "<<std::endl;
+    //    else if( boost->size()>1 )std::cout << " warning: input collection for the boost doesn't  have exactly element! It has "<< boost->size() << " elements! Empty boosted collection produced. "<<std::endl;
   }
   iEvent.put(boostedCollection);
 }
