@@ -6,72 +6,68 @@
 
 //__________________________________________________________________________________________________
 HTEventSelector::HTEventSelector(const edm::ParameterSet& pset) :
-   SusyEventSelector(pset),
-   jetTag_(pset.getParameter<edm::InputTag> ("jetTag")),
-   minHT_(pset.getParameter<double> ("minHT")),
-   minPt_(pset.getParameter<double> ("minPt")),
-   maxEta_(pset.getParameter<double> ("maxEta")),
-   useJetID_(pset.getParameter<bool> ("useJetID")),
-   rejectEvtJetID_(pset.getParameter<bool> ("rejectEvtJetID")) {
+        SusyEventSelector(pset),
+        jetTag_(pset.getParameter<edm::InputTag> ("jetTag")),
+        minHT_(pset.getParameter<double> ("minHT")),
+        minPt_(pset.getParameter<double> ("minPt")),
+        maxEta_(pset.getParameter<double> ("maxEta")),
+        useJetID_(pset.getParameter<bool> ("useJetID")),
+        rejectEvtJetID_(pset.getParameter<bool> ("rejectEvtJetID")) {
 
-   // Store computed HT
-   defineVariable("HT");
+    // Store computed HT
+    defineVariable("HT");
 
 }
 
 //__________________________________________________________________________________________________
 bool HTEventSelector::select(const edm::Event& event) const {
-   // reset cached variables
-   resetVariables();
-   // Get the jets
-   edm::Handle<edm::View<pat::Jet> > jetHandle;
-   event.getByLabel(jetTag_, jetHandle);
-   if (!jetHandle.isValid()) {
-      edm::LogWarning("HTEventSelector") << "No Jet results for InputTag " << jetTag_;
-      return false;
-   }
+    // reset cached variables
+    resetVariables();
+    // Get the jets
+    edm::Handle<edm::View<pat::Jet> > jetHandle;
+    event.getByLabel(jetTag_, jetHandle);
+    if (!jetHandle.isValid()) {
+        edm::LogWarning("HTEventSelector") << "No Jet results for InputTag " << jetTag_;
+        return false;
+    }
 
-   //// To be set true if one jet is found failing jetID
-   bool badJet = false;
+    //// To be set true if one jet is found failing jetID
+    bool badJet = false;
 
-   JetIDSelectionFunctor jetIDLooseCalo( JetIDSelectionFunctor::PURE09, JetIDSelectionFunctor::LOOSE );
-   PFJetIDSelectionFunctor jetIDLoosePF( PFJetIDSelectionFunctor::FIRSTDATA, PFJetIDSelectionFunctor::LOOSE );
+    JetIDSelectionFunctor jetIDLooseCalo( JetIDSelectionFunctor::PURE09, JetIDSelectionFunctor::LOOSE );
+    PFJetIDSelectionFunctor jetIDLoosePF( PFJetIDSelectionFunctor::FIRSTDATA, PFJetIDSelectionFunctor::LOOSE );
 
-   // Sum over jet Ets (with cut on min. pt)
-   float myHT = 0.0;
-   //edm::View<pat::Jet>::const_iterator iJet = jetHandle->begin();
-   //while (iJet != jetHandle->end()) {
-   for( edm::View<pat::Jet>::const_iterator iJet = jetHandle->begin(); iJet != jetHandle->end(); ++iJet ){
+    // Sum over jet Ets (with cut on min. pt)
+    float myHT = 0.0;
+    for( edm::View<pat::Jet>::const_iterator iJet = jetHandle->begin(); iJet != jetHandle->end(); ++iJet ){
 
-     if (iJet->pt() < minPt_ || fabs(iJet->eta()) > maxEta_) continue;
- 
-     bool loose = false;
+        if (iJet->pt() < minPt_ || fabs(iJet->eta()) > maxEta_) continue;
 
-     if( iJet->isCaloJet() || iJet->isJPTJet() ){
-       pat::strbitset ret = jetIDLooseCalo.getBitTemplate();
-       ret.set(false);
-       loose = jetIDLooseCalo(*iJet, ret);
-     }
-     else if ( iJet->isPFJet() ){
-       pat::strbitset ret = jetIDLoosePF.getBitTemplate();
-       ret.set(false);
-       loose = jetIDLoosePF(*iJet, ret);
-     }
+        bool loose = false;
 
-     
-     if (useJetID_ && !(loose)) {
-       badJet = true;
-       continue;
-     }    
+        if( iJet->isCaloJet() || iJet->isJPTJet() ){
+            pat::strbitset ret = jetIDLooseCalo.getBitTemplate();
+            ret.set(false);
+            loose = jetIDLooseCalo(*iJet, ret);
+        }
+        else if ( iJet->isPFJet() ){
+            pat::strbitset ret = jetIDLoosePF.getBitTemplate();
+            ret.set(false);
+            loose = jetIDLoosePF(*iJet, ret);
+        }
 
+        if (useJetID_ && !(loose)) {
+            badJet = true;
+            continue;
+        }
 
-     myHT += iJet->pt();
-   }
+        myHT += iJet->pt();
+    }
 
-   //std::cout << myHT << std::endl;
-   setVariable("HT", myHT);
+    //std::cout << myHT << std::endl;
+    setVariable("HT", myHT);
 
-   return (myHT > minHT_ && (rejectEvtJetID_ && !(badJet)));
+    return (myHT > minHT_ && !(rejectEvtJetID_ && badJet));
 
 }
 
