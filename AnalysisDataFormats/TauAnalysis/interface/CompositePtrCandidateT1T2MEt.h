@@ -12,9 +12,9 @@
  *          Michal Bluj,
  *          Christian Veelken
  *
- * \version $Revision: 1.20 $
+ * \version $Revision: 1.21 $
  *
- * $Id: CompositePtrCandidateT1T2MEt.h,v 1.20 2010/10/13 16:18:51 veelken Exp $
+ * $Id: CompositePtrCandidateT1T2MEt.h,v 1.21 2010/10/16 13:48:48 veelken Exp $
  *
  */
 
@@ -58,6 +58,10 @@ class CompositePtrCandidateT1T2MEt : public reco::LeafCandidate
   const T1Ptr leg1() const { return leg1_; }
   const T2Ptr leg2() const { return leg2_; }
   
+  /// access to flag indicating which algorithm was used 
+  /// to compute four-momentum of diTau candidate
+  const std::string& getRecoMode() const { return recoMode_; }
+
   /// access to gen. momenta
   reco::Candidate::LorentzVector p4gen() const { return p4Leg1gen() + p4Leg2gen(); }
   reco::Candidate::LorentzVector p4VisGen() const { return p4VisLeg1gen() + p4VisLeg2gen(); }
@@ -176,6 +180,7 @@ class CompositePtrCandidateT1T2MEt : public reco::LeafCandidate
     return out;
   }
 
+  bool hasSVFitSolutions() const { return (svFitSolutionMap_.begin() != svFitSolutionMap_.end()); }
   const SVfitDiTauSolution* svFitSolution(const std::string& algorithm, 
 					  const std::string& polarizationHypothesisName = "", int* errorFlag = 0) const
   {
@@ -286,6 +291,10 @@ class CompositePtrCandidateT1T2MEt : public reco::LeafCandidate
   T1Ptr leg1_;
   T2Ptr leg2_;
   MEtPtr met_;
+
+  /// flag indicating which algorithm was used 
+  /// to compute four-momentum of diTau candidate
+  std::string recoMode_;
 
   /// gen. four-momenta
   reco::Candidate::LorentzVector p4Leg1gen_;
