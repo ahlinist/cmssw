@@ -5,12 +5,17 @@
   <class name="edm::Wrapper<CompositePtrCandidateT1T2MEt<reco::Candidate, reco::Candidate>>"/>
   <class name="edm::Wrapper<std::vector<CompositePtrCandidateT1T2MEt<reco::Candidate, reco::Candidate> > >"/>
 
-  <!-- create dictionaries for edm::Ptr<pat::Electron>, edm::Ptr<pat::Muon>, edm::Ptr<pat::Tau> and edm::Ptr<pat::Jet>
+  <!-- create dictionaries for edm::Ptr<pat::Electron>, edm::Ptr<pat::Muon>, edm::Ptr<pat::Tau>, edm::Ptr<pat::Jet> and edm::Ptr<pat::MET>
        as these dictionaries are not yet created in DataFormats/PatCandidates/src/classes.h -->
   <class name="edm::Ptr<pat::Electron>"/>
   <class name="edm::Ptr<pat::Muon>"/>
   <class name="edm::Ptr<pat::Tau>"/>
   <class name="edm::Ptr<pat::Jet>"/>
+  <class name="edm::Ptr<pat::MET>"/>
+
+  <!-- create dictionaries for std::vector<edm::Ptr<reco::MET> >
+       as these dictionaries are not yet created in DataFormats/METReco/src/classes.h -->
+  <class name="std::vector<edm::Ptr<reco::MET> >"/>
 
   <!-- create dictionaries for edm::Ptr<reco::CaloJet> and edm::Ptr<reco::PFJet>
        as these dictionaries are not yet created in DataFormats/JetReco/src/classes.h -->
@@ -41,12 +46,19 @@
   <class name="std::vector<CompositePtrCandidateT1T2MEt<pat::Electron, pat::Electron> >"/>
   <class name="edm::Wrapper<CompositePtrCandidateT1T2MEt<pat::Electron, pat::Electron> >"/>
   <class name="edm::Wrapper<std::vector<CompositePtrCandidateT1T2MEt<pat::Electron, pat::Electron> > >"/>
+  <class name="edm::Ref<PATDiElecPairCollection,PATDiElecPair,edm::refhelper::FindUsingAdvance<PATDiElecPairCollection,PATDiElecPair> >"/>
+  <class name="edm::RefVector<PATDiElecPairCollection,PATDiElecPair,edm::refhelper::FindUsingAdvance<PATDiElecPairCollection,PATDiElecPair> >"/>
+  <class name="edm::RefProd<PATDiElecPairCollection>"/>
+  <class name="edm::Ptr<CompositePtrCandidateT1T2MEt<pat::Electron, pat::Electron> >"/>
 
   <!-- create dictionaries for PATMuPair objects -->
   <class name="CompositePtrCandidateT1T2MEt<pat::Muon, pat::Muon>"/>
   <class name="std::vector<CompositePtrCandidateT1T2MEt<pat::Muon, pat::Muon> >"/>
   <class name="edm::Wrapper<CompositePtrCandidateT1T2MEt<pat::Muon, pat::Muon> >"/>
   <class name="edm::Wrapper<std::vector<CompositePtrCandidateT1T2MEt<pat::Muon, pat::Muon> > >"/>
+  <class name="edm::RefVector<PATDiMuPairCollection,PATDiMuPair,edm::refhelper::FindUsingAdvance<PATDiMuPairCollection,PATDiMuPair> >"/>
+  <class name="edm::RefProd<PATDiMuPairCollection>"/>
+  <class name="edm::Ptr<CompositePtrCandidateT1T2MEt<pat::Muon, pat::Muon> >"/>
 
   <!-- create dictionaries for PATElecTauPair objects -->
   <class name="CompositePtrCandidateT1T2MEt<pat::Electron, pat::Tau>"/>

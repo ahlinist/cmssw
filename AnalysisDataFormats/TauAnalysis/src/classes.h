@@ -18,11 +18,16 @@
 #include "AnalysisDataFormats/TauAnalysis/interface/MEtTopology.h"
 #include "AnalysisDataFormats/TauAnalysis/interface/MEtTopologyFwd.h"
 
+#include "DataFormats/Common/interface/AssociationVector.h"
+#include "DataFormats/Common/interface/RefProd.h"
+#include "DataFormats/Common/interface/Ref.h"
+#include "DataFormats/Common/interface/Ptr.h"
 #include "DataFormats/Common/interface/Wrapper.h"
 
 #include "DataFormats/PatCandidates/interface/Electron.h"
 #include "DataFormats/PatCandidates/interface/Muon.h"
 #include "DataFormats/PatCandidates/interface/Tau.h"
+#include "DataFormats/PatCandidates/interface/MET.h"
 
 namespace {
   struct AnalysisDataFormats_TauAnalysis_dictionary {
@@ -37,11 +42,18 @@ namespace {
     ///  o edm::Ptr<pat::Muon> 
     ///  o edm::Ptr<pat::Tau>
     ///  o edm::Ptr<pat::Jet>
+    ///  o edm::Ptr<pat::MET>
     /// as these dictionaries are not yet created in DataFormats/PatCandidates/src/classes.h
     edm::Ptr<pat::Electron> dummyPATElectronPtr;
     edm::Ptr<pat::Muon> dummyPATMuonPtr;
     edm::Ptr<pat::Tau> dummyPATTauPtr;
     edm::Ptr<pat::Jet> dummyPATJetPtr;
+    edm::Ptr<pat::MET> dummyPATMEtPtr;
+
+    /// create dictionaries for 
+    ///  o std::vector<edm::Ptr<reco::MET> >
+    /// as these dictionaries are not yet created in DataFormats/METReco/src/classes.h
+    std::vector<edm::Ptr<reco::MET> > dummyMEtPtrCollection;
 
     /// create dictionaries for 
     ///  o edm::Ptr<reco::CaloJet>
@@ -61,7 +73,7 @@ namespace {
     /// as these dictionaries are not yet created in DataFormats/TrackReco/src/classes.h (DataFormats/GsfTrackReco/src/classes.h)
     edm::Ptr<reco::Track> dummyTrackPtr;
     edm::Ptr<reco::GsfTrack> dummyGsfTrackPtr;
-
+    
     /// create dictionaries for SVfit solution objects
     SVfitDiTauSolution dummySVfitDiTauSolution;
     std::vector<SVfitDiTauSolution> dummySVfitDiTauSolutionCollection;
@@ -76,12 +88,24 @@ namespace {
     edm::Wrapper<PATDiElecPair> dummyPATDiElecPairWrapper;
     PATDiElecPairCollection dummyPATDiElecPairCollection;
     edm::Wrapper<PATDiElecPairCollection> dummyPATDiElecPairCollectionWrapper;
+    edm::Ref<PATDiElecPairCollection> dummyPATDiElecPairRef;
+    edm::RefVector<PATDiElecPairCollection> dummyPATDiElecPairRefVector;
+    edm::RefProd<PATDiElecPairCollection> dummyPATDiElecPairRefProd;
+    edm::Ptr<PATDiElecPair> dummyPATDiElecPairPtr;
+    edm::AssociationVector<edm::RefProd<PATDiElecPairCollection>, std::vector<edm::Ptr<pat::MET> > > dummyPATDiElecPairToMEtAssociation;
+    edm::Wrapper<edm::AssociationVector<edm::RefProd<PATDiElecPairCollection>, std::vector<edm::Ptr<reco::MET> > > > dummyPATDiElecPairToMEtAssociationWrapper;
 
     /// create dictionaries for PATDiMuPair objects
     PATDiMuPair dummyPATDiMuPair;
     edm::Wrapper<PATDiMuPair> dummyPATDiMuPairWrapper;
     PATDiMuPairCollection dummyPATDiMuPairCollection;
     edm::Wrapper<PATDiMuPairCollection> dummyPATDiMuPairCollectionWrapper;
+    edm::Ref<PATDiMuPairCollection> dummyPATDiMuPairRef;
+    edm::RefVector<PATDiMuPairCollection> dummyPATDiMuPairRefVector;
+    edm::RefProd<PATDiMuPairCollection> dummyPATDiMuPairRefProd;
+    edm::Ptr<PATDiMuPair> dummyPATDiMuPairPtr;
+    edm::AssociationVector<edm::RefProd<PATDiMuPairCollection>, std::vector<edm::Ptr<reco::MET> > > dummyPATDiMuPairToMEtAssociation;
+    edm::Wrapper<edm::AssociationVector<edm::RefProd<PATDiMuPairCollection>, std::vector<edm::Ptr<reco::MET> > > > dummyPATDiMuPairToMEtAssociationWrapper;
 
     /// create dictionaries for PATElecTauPair objects
     PATElecTauPair dummyPATElecTauPair;
@@ -92,6 +116,8 @@ namespace {
     edm::RefVector<PATElecTauPairCollection> dummyPATElecTauPairRefVector;
     edm::RefProd<PATElecTauPairCollection> dummyPATElecTauPairRefProd;
     edm::Ptr<PATElecTauPair> dummyPATElecTauPairPtr;
+    edm::AssociationVector<edm::RefProd<PATElecTauPairCollection>, std::vector<edm::Ptr<reco::MET> > > dummyPATElecTauPairToMEtAssociation;
+    edm::Wrapper<edm::AssociationVector<edm::RefProd<PATElecTauPairCollection>, std::vector<edm::Ptr<reco::MET> > > > dummyPATElecTauPairToMEtAssociationWrapper;
 
     /// create dictionaries for ZllHypothesisElecTau objects
     ZllHypothesisElecTau dummyZllHypothesisElecTau;
@@ -112,7 +138,9 @@ namespace {
     edm::RefVector<PATMuTauPairCollection> dummyPATMuTauPairRefVector;
     edm::RefProd<PATMuTauPairCollection> dummyPATMuTauPairRefProd;
     edm::Ptr<PATMuTauPair> dummyPATMuTauPairPtr;
-
+    edm::AssociationVector<edm::RefProd<PATMuTauPairCollection>, std::vector<edm::Ptr<reco::MET> > > dummyPATMuTauPairToMEtAssociation;
+    edm::Wrapper<edm::AssociationVector<edm::RefProd<PATMuTauPairCollection>, std::vector<edm::Ptr<reco::MET> > > > dummyPATMuTauPairToMEtAssociationWrapper;
+    
     /// create dictionaries for ZllHypothesisMuTau objects
     ZllHypothesisMuTau dummyZllHypothesisMuTau;
     edm::Wrapper<ZllHypothesisMuTau> dummyZllHypothesisMuTauWrapper;
@@ -132,7 +160,9 @@ namespace {
     edm::RefVector<PATDiTauPairCollection> dummyPATDiTauPairRefVector;
     edm::RefProd<PATDiTauPairCollection> dummyPATDiTauPairRefProd;
     edm::Ptr<PATDiTauPair> dummyPATDiTauPairPtr;
-    
+    edm::AssociationVector<edm::RefProd<PATDiTauPairCollection>, std::vector<edm::Ptr<reco::MET> > > dummyPATDiTauPairToMEtAssociation;
+    edm::Wrapper<edm::AssociationVector<edm::RefProd<PATDiTauPairCollection>, std::vector<edm::Ptr<reco::MET> > > > dummyPATDiTauPairToMEtAssociationWrapper;
+       
     /// create dictionaries for ZllHypothesisDiTau objects
     ZllHypothesisDiTau dummyZllHypothesisDiTau;
     edm::Wrapper<ZllHypothesisDiTau> dummyZllHypothesisDiTauWrapper;
@@ -152,6 +182,8 @@ namespace {
     edm::RefVector<PATElecMuPairCollection> dummyPATElecMuPairRefVector;
     edm::RefProd<PATElecMuPairCollection> dummyPATElecMuPairRefProd;
     edm::Ptr<PATElecMuPair> dummyPATElecMuPairPtr;
+    edm::AssociationVector<edm::RefProd<PATElecMuPairCollection>, std::vector<edm::Ptr<reco::MET> > > dummyPATElecMuPairToMEtAssociation;
+    edm::Wrapper<edm::AssociationVector<edm::RefProd<PATElecMuPairCollection>, std::vector<edm::Ptr<reco::MET> > > > dummyPATElecMuPairToMEtAssociationWrapper;
 
     /// create dictionaries for ZllHypothesisElecMu objects
     ZllHypothesisElecMu dummyZllHypothesisElecMu;
