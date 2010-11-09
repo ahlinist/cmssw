@@ -33,7 +33,8 @@ def main(options,args):
     theNLL = ROOT.RooNLLVar(options.couplingType+'_aTGCNLL',
                             'The -log(likelihood) for the dataset',
                             ws.pdf('TopLevelPdf'),ws.data('aTGCData'),
-                            ROOT.RooFit.NumCPU(2))
+                            ROOT.RooFit.NumCPU(2),
+                            ROOT.RooFit.Timer(True))
     #getattr(ws,'import')(theNLL)
 
     theLikelihood = ROOT.RooFormulaVar('theLikelihood','The likelihood','exp(-@0)',ROOT.RooArgList(theNLL))
@@ -58,7 +59,7 @@ def main(options,args):
     getattr(ws,'import')(theProjectedNLL)
 
                                             
-    minuit = ROOT.RooMinuit(theProjectedNLL)
+    minuit = ROOT.RooMinuit(theNLL)
 
     minuit.setErrorLevel(0.5) #force to .5,one sigma errors, because we know this is really a NLL fit...
     minuit.setStrategy(2)
@@ -68,16 +69,16 @@ def main(options,args):
 
     theFitResult = minuit.save(options.couplingType+'_fitResult')
 
-    #thePlot = minuit.contour(ws.var(options.couplingType+'_h3'),
-    #                         ws.var(options.couplingType+'_h4'),
-    #                         1,sqrt(6))
+    thePlot = minuit.contour(ws.var(options.couplingType+'_h3'),
+                             ws.var(options.couplingType+'_h4'),
+                             1,sqrt(6))
 
-    #theCanvas = ROOT.TCanvas('contours','',500,500)
+    theCanvas = ROOT.TCanvas('contours','',500,500)
 
-    #thePlot.SetTitle("1 #sigma Error & 95% CL on the Best Fit Values of h3 and h4")
-    #thePlot.Draw()
+    thePlot.SetTitle("1 #sigma Error & 95% CL on the Best Fit Values of h3 and h4")
+    thePlot.Draw()
 
-    #theCanvas.Print('contour.root')
+    theCanvas.Print('contour.root')
         
     #create profile likelihood, set POI's
     #theProfileLL = ROOT.RooStats.ProfileLikelihoodCalculator(ws.data('aTGCData'),
@@ -102,9 +103,6 @@ def main(options,args):
     
 
     #makePlots(theLHplot,options)
-
-    print theNLL.getVal()
-
 
     #ws.Print("v")
 
@@ -184,10 +182,14 @@ def setupWorkspace(dataTree,mcTree,ws,output,options):
     getattr(ws,'import')(p_3)
     getattr(ws,'import')(p_4)
 
+    ws.var(options.phoEtVar).setVal(1.5*(phoEtMax-phoEtMin)/nEtBins)
+
     #set up functiont the returns number of observed signal
     nObserved = ROOT.RooHistFunc('nObserved','Number of Observed Events in Data',
                                  ROOT.RooArgSet(pho_et),ws.data('aTGCData'))
     getattr(ws,'import')(nObserved)
+
+    ws.function('nObserved').Print()
 
     #set up the signal expectation description
     #this needs a little care, they *are* nuisance parameters but I don't yet have a way of saving this info
@@ -201,15 +203,15 @@ def setupWorkspace(dataTree,mcTree,ws,output,options):
     nExpectedSignal = ROOT.RooFormulaVar('nExpectedSignal','The expected number of signal events in (h3,h4) in bins of pT',
                                          '(@3(@0) + @4(@0)*@1 + @5(@0)*@2 + @6(@0)*@1*@2 + @7(@0)*@1*@1 + @8(@0)*@2*@2)',
                                          ROOT.RooArgList(pho_et,h3,h4,polyC,polyP_0,polyP_1,polyP_2,polyP_3,polyP_4))
-    nExpectedSignal.Print()
-    
     #getattr(ws,'import')(polyC)
     #getattr(ws,'import')(polyP_0)
     #getattr(ws,'import')(polyP_1)
     #getattr(ws,'import')(polyP_2)
     #getattr(ws,'import')(polyP_3)
     #getattr(ws,'import')(polyP_4)
-    getattr(ws,'import')(nExpectedSignal)
+    getattr(ws,'import')(nExpectedSignal)    
+
+    ws.function('nExpectedSignal').Print()
 
     #build nExpectedBackground RooHistFunc
     bkg = loadBackgroundHist(ws,output,options)
@@ -218,10 +220,9 @@ def setupWorkspace(dataTree,mcTree,ws,output,options):
     
     nExpectedBackground = ROOT.RooHistFunc('nExpectedBackground','Number of expected background in bins of pT',
                                            ROOT.RooArgSet(ws.var(options.phoEtVar)),ws.data('bkgShape'))
-    nExpectedBackground.Print()
-    
-    
     getattr(ws,'import')(nExpectedBackground)
+
+    ws.function('nExpectedBackground').Print()
 
     #finally make the pdf
     makeATGCExpectationPdf(ws,options)
@@ -420,12 +421,6 @@ def makeATGCExpectationPdf(ws,options):
     ws.factory("RooPoisson::corePoisson(nObserved,expected)")    
     #now we create the top level pdf, which will be evaluated at each pT bin to create the likelihood.
     ws.factory("PROD::TopLevelPdf(corePoisson)")  #,lumiErr,selectionErr,backgroundErr    
-
-
-#    TopLevelPdf = ws.pdf('RawTopLevelPdf').createProjection(ROOT.RooArgSet(ws.var('err_x_gs'),ws.var('err_x_gb'),ws.var('err_x_gl')))
-#    TopLevelPdf.SetName('TopLevelPdf')
-#    getattr(ws,'import')(TopLevelPdf)
-    
 
 def makePlots(LLplot,options):
     print "not done yet"
