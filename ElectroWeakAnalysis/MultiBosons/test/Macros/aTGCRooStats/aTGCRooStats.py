@@ -32,13 +32,15 @@ def main(options,args):
     #create -log(likelihood)
     theNLL = ROOT.RooNLLVar(options.couplingType+'_aTGCNLL',
                             'The -log(likelihood) for the dataset',
-                            ws.pdf('TopLevelPdf'),ws.data('aTGCData'))
+                            ws.pdf('TopLevelPdf'),ws.data('aTGCData'),
+                            ROOT.RooFit.NumCPU(2))
     #getattr(ws,'import')(theNLL)
 
     theLikelihood = ROOT.RooFormulaVar('theLikelihood','The likelihood','exp(-@0)',ROOT.RooArgList(theNLL))
     #getattr(ws,'import')(theLikelihood)
 
-    theSmearedLikelihood = ROOT.RooProduct('theSmearedLikelihood','The Smeared Likelihood',
+    theSmearedLikelihood = ROOT.RooProduct('theSmearedLikelihood',
+                                           'The Likelihood Smeared by Errors',
                                            ROOT.RooArgSet(theLikelihood,
                                                           ws.pdf('selectionErr'),
                                                           ws.pdf('backgroundErr'),
@@ -52,13 +54,13 @@ def main(options,args):
                                                                                 ws.var('err_x_gb'),
                                                                                 ws.var('err_x_gl')))
 
-    theProjectedNLL = ROOT.RooFormulaVar('theProjectedNLL','The Projected NLL','log(@0)',ROOT.RooArgList(theProjectedLikelihood))
+    theProjectedNLL = ROOT.RooFormulaVar('theProjectedNLL','The Projected NLL','-log(@0)',ROOT.RooArgList(theProjectedLikelihood))
     getattr(ws,'import')(theProjectedNLL)
 
                                             
     minuit = ROOT.RooMinuit(theProjectedNLL)
 
-    minuit.setErrorLevel(0.5) #force to .5 because we know this is really a NLL fit...
+    minuit.setErrorLevel(0.5) #force to .5,one sigma errors, because we know this is really a NLL fit...
     minuit.setStrategy(2)
     minuit.hesse()
     minuit.migrad()
@@ -66,20 +68,17 @@ def main(options,args):
 
     theFitResult = minuit.save(options.couplingType+'_fitResult')
 
-    thePlot = minuit.contour(ws.var(options.couplingType+'_h3'),
-                             ws.var(options.couplingType+'_h4'),
-                             1,2,3)
+    #thePlot = minuit.contour(ws.var(options.couplingType+'_h3'),
+    #                         ws.var(options.couplingType+'_h4'),
+    #                         1,sqrt(6))
 
-    theCanvas = ROOT.TCanvas('contours','',500,500)
+    #theCanvas = ROOT.TCanvas('contours','',500,500)
 
-    thePlot.SetTitle("1,2 & 3 #sigma Errors on the Best Fit Values of h3 and h4")
-    thePlot.Draw()
+    #thePlot.SetTitle("1 #sigma Error & 95% CL on the Best Fit Values of h3 and h4")
+    #thePlot.Draw()
 
-    theCanvas.Print('contour.root')
-    
-                                  
-                                         
-    
+    #theCanvas.Print('contour.root')
+        
     #create profile likelihood, set POI's
     #theProfileLL = ROOT.RooStats.ProfileLikelihoodCalculator(ws.data('aTGCData'),
     #                                                         ws.function('TopLevelPdf'),
@@ -130,6 +129,7 @@ def setupWorkspace(dataTree,mcTree,ws,output,options):
     pho_et.setBins(int(options.nEtBins))
     h3 = ROOT.RooRealVar(options.couplingType+'_h3','h3_{'+options.couplingType+'}',-float(options.h3Max),float(options.h3Max)) #parameter
     h4 = ROOT.RooRealVar(options.couplingType+'_h4','h4_{'+options.couplingType+'}',-float(options.h4Max),float(options.h4Max)) #parameter
+    nObserved = ROOT.RooRealVar('nObserved','Number of Events Observed in Data',0,ROOT.RooNumber.infinity())
     #acc = ROOT.RooRealVar('acceptance','The acceptance in this pT bin',0)
     #acc_err = ROOT.RooRealVar('acceptance_error','The error on the accpetance in the pT bin',0) 
 
@@ -137,8 +137,6 @@ def setupWorkspace(dataTree,mcTree,ws,output,options):
     bkgErr = ROOT.RooRealVar('backgroundError','Fractional Error on the expected number of background events',.1) # fix background error to be 10% for now
     lumiErr = ROOT.RooRealVar('luminosityError','Fractional Error on the luminosity',.1) #fix lumi error to 10%    
     
-    aRow = ROOT.RooArgSet(pho_et) #a row is the observed photon eT spectrum
-
     #start hack to always make last bin include overflow
     aTGCEtHist = ROOT.TH1F('aTGCEtHist',
                            'Histogram Containing the pt Spectrum',
@@ -164,10 +162,9 @@ def setupWorkspace(dataTree,mcTree,ws,output,options):
                                 ROOT.RooArgList(pho_et),aTGCEtHist)
 
     aTGCData.createHistogram('dataHist',pho_et).Write()
-    
+        
     getattr(ws,'import')(aTGCData)
-
-    getattr(ws,'import')(pho_et)
+    getattr(ws,'import')(pho_et)    
     getattr(ws,'import')(h3)
     getattr(ws,'import')(h4)
     #getattr(ws,'import')(acc)
@@ -186,6 +183,11 @@ def setupWorkspace(dataTree,mcTree,ws,output,options):
     getattr(ws,'import')(p_2)
     getattr(ws,'import')(p_3)
     getattr(ws,'import')(p_4)
+
+    #set up functiont the returns number of observed signal
+    nObserved = ROOT.RooHistFunc('nObserved','Number of Observed Events in Data',
+                                 ROOT.RooArgSet(pho_et),ws.data('aTGCData'))
+    getattr(ws,'import')(nObserved)
 
     #set up the signal expectation description
     #this needs a little care, they *are* nuisance parameters but I don't yet have a way of saving this info
@@ -415,9 +417,10 @@ def makeATGCExpectationPdf(ws,options):
     ws.factory('sum::expected(sigExp,bkgExp)')
     
     #now we create the core poisson pdf with errors left as floating
-    ws.factory("RooPoisson::corePoisson("+options.phoEtVar+",expected)")    
+    ws.factory("RooPoisson::corePoisson(nObserved,expected)")    
     #now we create the top level pdf, which will be evaluated at each pT bin to create the likelihood.
-    ws.factory("PROD::TopLevelPdf(corePoisson)")  #,lumiErr,selectionErr,backgroundErr
+    ws.factory("PROD::TopLevelPdf(corePoisson)")  #,lumiErr,selectionErr,backgroundErr    
+
 
 #    TopLevelPdf = ws.pdf('RawTopLevelPdf').createProjection(ROOT.RooArgSet(ws.var('err_x_gs'),ws.var('err_x_gb'),ws.var('err_x_gl')))
 #    TopLevelPdf.SetName('TopLevelPdf')
