@@ -30,45 +30,32 @@ def main(options,args):
     setupWorkspace(dataChain,mcChain,ws,output,options)        
 
     #create -log(likelihood)
-    theNLL = ROOT.RooNLLVar(options.couplingType+'_aTGCNLL',
-                            'The -log(likelihood) for the dataset',
-                            ws.pdf('TopLevelPdf'),ws.data('aTGCData'),
-                            ROOT.RooFit.NumCPU(2),
-                            ROOT.RooFit.Timer(True))
-    #getattr(ws,'import')(theNLL)
-
-    theLikelihood = ROOT.RooFormulaVar('theLikelihood','The likelihood','exp(-@0)',ROOT.RooArgList(theNLL))
-    #getattr(ws,'import')(theLikelihood)
-
-    theSmearedLikelihood = ROOT.RooProduct('theSmearedLikelihood',
-                                           'The Likelihood Smeared by Errors',
-                                           ROOT.RooArgSet(theLikelihood,
-                                                          ws.pdf('selectionErr'),
-                                                          ws.pdf('backgroundErr'),
-                                                          ws.pdf('lumiErr'))
-                                           )
-
-    theProjectedLikelihood = theSmearedLikelihood.createIntegral(ROOT.RooArgSet(ws.var('err_x_gs'),
-                                                                                ws.var('err_x_gb'),
-                                                                                ws.var('err_x_gl')),
-                                                                 ROOT.RooArgSet(ws.var('err_x_gs'),
-                                                                                ws.var('err_x_gb'),
-                                                                                ws.var('err_x_gl')))
-
-    theProjectedNLL = ROOT.RooFormulaVar('theProjectedNLL','The Projected NLL','-log(@0)',ROOT.RooArgList(theProjectedLikelihood))
-    getattr(ws,'import')(theProjectedNLL)
-
+    theNLL = ws.pdf('TopLevelPdf').createNLL(ws.data('aTGCDataUnitWeight'),
+                                             ROOT.RooFit.NumCPU(2),
+                                             ROOT.RooFit.ExternalConstraints(ROOT.RooArgSet(ws.pdf('lumiErr'),
+                                                                                            ws.pdf('selectionErr'),
+                                                                                            ws.pdf('backgroundErr')))
+                                             )
+    getattr(ws,'import')(theNLL)
                                             
     minuit = ROOT.RooMinuit(theNLL)
-
-    minuit.setErrorLevel(0.5) #force to .5,one sigma errors, because we know this is really a NLL fit...
+        
+    #find the values of the errors that minimize the likelihood
     minuit.setStrategy(2)
     minuit.hesse()
-    minuit.migrad()
+    minuit.migrad()    
+
+    ws.var('err_x_gl').setConstant(True)
+    ws.var('err_x_gs').setConstant(True)
+    ws.var('err_x_gb').setConstant(True)
+
+    #find the best fit values of h3,h4
+    #minuit.hesse()
+    #minuit.migrad()
     minuit.minos()
 
     theFitResult = minuit.save(options.couplingType+'_fitResult')
-
+    
     thePlot = minuit.contour(ws.var(options.couplingType+'_h3'),
                              ws.var(options.couplingType+'_h4'),
                              1,sqrt(6))
@@ -159,9 +146,22 @@ def setupWorkspace(dataTree,mcTree,ws,output,options):
     aTGCData = ROOT.RooDataHist('aTGCData','Photon E_{T} Spectrum from Data',
                                 ROOT.RooArgList(pho_et),aTGCEtHist)
 
+    #Ok, this does look a little insane but what we want as our actual dataset
+    #is each pT bin with unit weight and a poisson assigned to it
+    #with some expectation... We do this to fake out RooFit.
+
+    aTGCDataUnitWeight = ROOT.RooDataHist(aTGCData,'aTGCDataUnitWeight')
+
+    aTGCDataUnitWeight.reset()
+
+    for i in range(nEtBins):
+        aTGCDataUnitWeight.get(i)
+        aTGCDataUnitWeight.set(1.0)
+
     aTGCData.createHistogram('dataHist',pho_et).Write()
-        
+    
     getattr(ws,'import')(aTGCData)
+    getattr(ws,'import')(aTGCDataUnitWeight)
     getattr(ws,'import')(pho_et)    
     getattr(ws,'import')(h3)
     getattr(ws,'import')(h4)
@@ -420,7 +420,8 @@ def makeATGCExpectationPdf(ws,options):
     #now we create the core poisson pdf with errors left as floating
     ws.factory("RooPoisson::corePoisson(nObserved,expected)")    
     #now we create the top level pdf, which will be evaluated at each pT bin to create the likelihood.
-    ws.factory("PROD::TopLevelPdf(corePoisson)")  #,lumiErr,selectionErr,backgroundErr    
+    ws.factory("PROD::TopLevelPdf(corePoisson)")  #
+    
 
 def makePlots(LLplot,options):
     print "not done yet"
