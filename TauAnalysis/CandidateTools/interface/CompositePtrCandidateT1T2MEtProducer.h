@@ -12,9 +12,9 @@
  *          Michal Bluj,
  *          Christian Veelken
  *
- * \version $Revision: 1.17 $
+ * \version $Revision: 1.18 $
  *
- * $Id: CompositePtrCandidateT1T2MEtProducer.h,v 1.17 2010/09/28 11:23:28 jkolb Exp $
+ * $Id: CompositePtrCandidateT1T2MEtProducer.h,v 1.18 2010/11/10 08:31:29 veelken Exp $
  *
  */
 
@@ -84,7 +84,10 @@ class CompositePtrCandidateT1T2MEtProducer : public edm::EDProducer
     srcPV_ = ( cfg.exists("srcPrimaryVertex") ) ? cfg.getParameter<edm::InputTag>("srcPrimaryVertex") : edm::InputTag();
     srcBeamSpot_ = ( cfg.exists("srcBeamSpot") ) ? cfg.getParameter<edm::InputTag>("srcBeamSpot") : edm::InputTag();
     recoMode_ = cfg.getParameter<std::string>("recoMode");
-    srcReReco_ = ( cfg.exists("srcReReco") ) ? cfg.getParameter<edm::InputTag>("srcReReco") : edm::InputTag();
+    if ( cfg.exists("srcReRecoDiTauObjects") ) {
+      srcReRecoDiTauObjects_ = cfg.getParameter<edm::InputTag>("srcReRecoDiTauObjects");
+      srcReRecoDiTauToMEtAssociations_ = cfg.getParameter<edm::InputTag>("srcReRecoDiTauToMEtAssociations");
+    }
     verbosity_ = cfg.getUntrackedParameter<int>("verbosity", 0);
 
     //std::cout << " srcLeg1 = " << srcLeg1_.label() << std::endl;
@@ -93,7 +96,8 @@ class CompositePtrCandidateT1T2MEtProducer : public edm::EDProducer
     //std::cout << " srcPV_ = " << srcPV_.label() << std::endl;
     //std::cout << " srcBeamSpot = " << srcBeamSpot_.label() << std::endl;
     //std::cout << " recoMode = " << recoMode_ << std::endl;
-    //std::cout << " srcReReco_ = " << srcReReco_.label() << std::endl;
+    //std::cout << " srcReRecoDiTauObjects = " << srcReRecoDiTauObjects_.label() << std::endl;
+    //std::cout << " srcReRecoDiTauToMEtAssociations = " << srcReRecoDiTauToMEtAssociations_.label() << std::endl;
 
 //--- check that InputTag for MET collection has been defined,
 //    in case it is needed for the reconstruction mode 
@@ -129,6 +133,8 @@ class CompositePtrCandidateT1T2MEtProducer : public edm::EDProducer
 
   void produce(edm::Event& evt, const edm::EventSetup& es)
   {
+    //std::cout << "<CompositePtrCandidateT1T2MEtProducer::produce>:" << std::endl;
+
 //--- print-out an error message and add an empty collection to the event 
 //    in case of erroneous configuration parameters
     if ( cfgError_ ) {
@@ -183,31 +189,42 @@ class CompositePtrCandidateT1T2MEtProducer : public edm::EDProducer
 
 //--- check if diTau objects are to be re-reconstructed from collection reconstructed previously
 //   (CV: special mode for MEt correction by Z recoil momentum)
-    if ( srcReReco_.label() != "" ) {
-std::cout << "break-point A.1 reached" << std::endl;
+    if ( srcReRecoDiTauObjects_.label() != "" ) {
       edm::Handle<CompositePtrCandidateCollection> diTauCandidateCollection;
-std::cout << "break-point A.2 reached" << std::endl;
-      pf::fetchCollection(diTauCandidateCollection, srcReReco_, evt);
-std::cout << "break-point A.3 reached" << std::endl;
-      typedef edm::AssociationVector<edm::RefProd<CompositePtrCandidateCollection>, std::vector<MEtPtr> > diTauToMEtAssociation;
-std::cout << "break-point A.4 reached" << std::endl;
-      edm::Handle<diTauToMEtAssociation> MEtAssociation;
-std::cout << "break-point A.5 reached" << std::endl;
-      pf::fetchCollection(MEtAssociation, srcMET_, evt);
-std::cout << "break-point A.6 reached" << std::endl;
+      pf::fetchCollection(diTauCandidateCollection, srcReRecoDiTauObjects_, evt);
+
+      typedef edm::AssociationVector<edm::RefProd<CompositePtrCandidateCollection>, std::vector<int> > diTauToMEtAssociation;
+      edm::Handle<diTauToMEtAssociation> correctedMEtAssociation;
+      pf::fetchCollection(correctedMEtAssociation, srcReRecoDiTauToMEtAssociations_, evt);
+
+      typedef edm::View<reco::MET> MEtView;
+      edm::Handle<MEtView> correctedMEtCollection;
+      pf::fetchCollection(correctedMEtCollection, srcMET_, evt);
+
       size_t numDiTauCandidates = diTauCandidateCollection->size();
       for ( size_t iDiTauCandidate = 0; iDiTauCandidate < numDiTauCandidates; ++iDiTauCandidate ) {
-std::cout << "break-point A.7 reached" << std::endl;
 	edm::Ref<CompositePtrCandidateCollection> diTauCandidateRef(diTauCandidateCollection, iDiTauCandidate);
-std::cout << "break-point A.8 reached" << std::endl;	
-	MEtPtr metPtr = (*MEtAssociation)[diTauCandidateRef];
-std::cout << "break-point A.9 reached" << std::endl;
+
+	int correctedMEt_index = (*correctedMEtAssociation)[diTauCandidateRef];
+
+	if ( (int)correctedMEtCollection->size() < correctedMEt_index ) {
+	  edm::LogError ("produce") 
+	    << " DiTauToMEtAssociation index = " << correctedMEt_index << "," 
+	    << " but found only " << correctedMEtCollection->size() << " MET objects in collection = " << srcMET_ 
+	    << " --> skipping !!";
+	  continue;
+	}
+	
+	MEtPtr correctedMEtPtr = correctedMEtCollection->ptrAt(correctedMEt_index);
+
 	CompositePtrCandidateT1T2MEt<T1,T2> compositePtrCandidate = 
-	  algorithm_.buildCompositePtrCandidate(diTauCandidateRef->leg1(), diTauCandidateRef->leg2(), metPtr, genParticles, 
+	  algorithm_.buildCompositePtrCandidate(diTauCandidateRef->leg1(), diTauCandidateRef->leg2(), correctedMEtPtr, genParticles, 
 						pv, beamSpot, trackBuilder, recoMode_, doSVreco_);
-std::cout << "break-point A.10 reached" << std::endl;
+
+	//std::cout << "mass(SVfit) **after** Z-recoil correction = " 
+	//	    << compositePtrCandidate.svFitSolution("psKine_MEt_ptBalance")->mass() << std::endl;
+
 	compositePtrCandidateCollection->push_back(compositePtrCandidate);
-std::cout << "break-point A.11 reached" << std::endl;
       }
     } else {
 //--- "regular" creation of diTau objects from leg1, leg2, met input collections
@@ -339,7 +356,8 @@ std::cout << "break-point A.11 reached" << std::endl;
   edm::InputTag srcBeamSpot_;
   std::string recoMode_;
   bool doSVreco_;
-  edm::InputTag srcReReco_;
+  edm::InputTag srcReRecoDiTauObjects_;
+  edm::InputTag srcReRecoDiTauToMEtAssociations_;
   int verbosity_;
 
   int cfgError_;
