@@ -98,6 +98,9 @@ def submitAnalysisToGrid(configFile = None, channel = None, samples = None, outp
         # Enable factorization if necessary
         if not disableFactorization:
             jobOptions.append(('enableFactorization', sample_info['factorize']))
+
+        # Apply Z-recoil correction to MEt if requested
+        jobOptions.append(('applyZrecoilCorrection', sample_info['applyZrecoilCorrection']))
             
         # This must be done after the factorization step ?
         jobOptions.append(('enableSysUncertainties', sample_info['enableSysUncertainties'] and not disableSysUncertainties))
