@@ -22,9 +22,6 @@ patTaus.embedLeadTrack = cms.bool(True)
 patTaus.embedSignalTracks = cms.bool(True)
 patTaus.embedIsolationTracks = cms.bool(True)
 
-# add reconstructed tau decay mode
-patTaus.addDecayMode = cms.bool(True)
-
 # add tau id. efficiencies & fake-rates
 patTaus.efficiencies = cms.PSet()
 build_pat_efficiency_loader(shrinkingConeZTTEffSimAssociator, None, patTaus.efficiencies)
