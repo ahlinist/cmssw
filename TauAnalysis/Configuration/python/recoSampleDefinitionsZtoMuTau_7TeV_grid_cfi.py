@@ -38,6 +38,7 @@ SAMPLE_DEFAULTS = {
     'conditions' : 'startup',
     'genPhaseSpaceCut' : '',
     'factorize' : False,
+    'applyZrecoilCorrection' : False,
     'enableSysUncertainties' : False,
     'lumi_mask' : '',
     'runselection' : '',
@@ -103,7 +104,8 @@ RECO_SAMPLES = {
         'x_sec' : 1.28*1300*_picobarns, # Z + jets correction factor for NLO/LO cross-sections = 1.28
         'legendEntry' : plotter.process_Ztautau.config_dqmHistPlotter.legendEntry.value(),
         'type' : plotter.process_Ztautau.config_dqmHistPlotter.type.value(),
-        'drawOption' : styles.drawOption_Ztautau
+        'drawOption' : styles.drawOption_Ztautau,
+        'applyZrecoilCorrection' : True
     },
     # Using the unskimmed dataset
     'Zmumu' : {
