@@ -130,3 +130,5 @@ analyzeZtoMuTauEvents = cms.EDAnalyzer("GenericAnalyzer",
         )
     )                                   
 )
+
+analyzeZtoMuTauSequence = cms.Sequence(analyzeZtoMuTauEvents)
