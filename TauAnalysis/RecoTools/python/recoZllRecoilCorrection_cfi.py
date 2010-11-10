@@ -22,15 +22,5 @@ recoZllRecoilCorrectionParameter = cms.PSet(
             b2 = cms.double(-1.05838e-2),
             c2 = cms.double(+2.51923e-5)
         )
-    ),
-
-    # flag indicating whether to correct MEt only 
-    # or to recreate diTau candidates using new MEt too
-    recreateDiTauCandidates = cms.bool(True),
-
-    # configuration parameters needed for recreation of diTau objects
-    srcPrimaryVertex = cms.InputTag("offlinePrimaryVerticesWithBS"),
-    srcBeamSpot = cms.InputTag("offlineBeamSpot"),
-    srcGenParticles = cms.InputTag('genParticles'),
-    svFit = cms.PSet()
+    )
 )    
