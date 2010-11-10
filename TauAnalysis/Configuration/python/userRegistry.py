@@ -49,7 +49,8 @@ def getAnalysisFilePath(channel):
     return userSettings[os.environ['LOGNAME']][channel]['analysisFilePath']
 
 def getHarvestingFilePath(channel):
-    return userSettings[os.environ['LOGNAME']][channel]['harvestingFilePath']
+    return userSettings[os.environ['LOGNAME']][channel]['harvestingFilePath'] \
+          + '/' + userSettings[os.environ['LOGNAME']][channel]['jobId']
 
 def getTmpFilePath(channel):
     return userSettings[os.environ['LOGNAME']][channel]['tmpFilePath']
