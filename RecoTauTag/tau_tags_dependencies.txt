@@ -3,5 +3,4 @@ JetMETCorrections/Type1MET
 PhysicsTools/IsolationAlgos 
 PhysicsTools/PFCandProducer 
 PhysicsTools/PatAlgos 
-PhysicsTools/PatExamples 
 PhysicsTools/PatUtils 
