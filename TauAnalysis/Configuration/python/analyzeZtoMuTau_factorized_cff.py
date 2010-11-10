@@ -22,6 +22,8 @@ analyzeZtoMuTauEvents_factorizedWithMuonIsolation = analyzeZtoMuTauEvents.clone(
 if len(analyzeZtoMuTauEvents_factorizedWithMuonIsolation.eventDumps) > 0:
     analyzeZtoMuTauEvents_factorizedWithMuonIsolation.eventDumps[0] = muTauEventDump_factorizedWithMuonIsolation
 
+analyzeZtoMuTauSequence_factorizedWithMuonIsolation = cms.Sequence(analyzeZtoMuTauEvents_factorizedWithMuonIsolation)
+
 #--------------------------------------------------------------------------------
 # define Z --> mu + tau-jet analysis module
 # for the path with "loose" muon isolation criteria applied
@@ -50,4 +52,7 @@ replaceEventSelections(analyzeZtoMuTauEvents_factorizedWithoutMuonIsolation,
       [ evtSelDiTauCandidateForMuTauPzetaDiff, evtSelDiTauCandidateForMuTauPzetaDiffLooseMuonIsolation ] ]
 )                       
 analyzeZtoMuTauEvents_factorizedWithoutMuonIsolation.analysisSequence = muTauAnalysisSequence_factorizedWithoutMuonIsolation
+
+analyzeZtoMuTauSequence_factorizedWithoutMuonIsolation = cms.Sequence(analyzeZtoMuTauEvents_factorizedWithoutMuonIsolation)
+
 
