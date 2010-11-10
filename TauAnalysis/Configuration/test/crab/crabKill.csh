@@ -14,10 +14,6 @@
 #
 #--------------------------------------------------------------------------------
 
-source /afs/cern.ch/cms/LCG/LCG-2/UI/cms_ui_env.csh
-#source /afs/cern.ch/cms/ccs/wm/scripts/Crab/crab.csh
-source /data1/crab_soft/CRAB_2_7_4/crab.csh
-
 set crabDirectories=(`ls | grep crabdir | grep $1`)
 foreach crabDirectory (${crabDirectories})
     echo "crab -kill all -c ${crabDirectory}"
