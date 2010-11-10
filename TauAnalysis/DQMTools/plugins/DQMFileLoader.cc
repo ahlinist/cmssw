@@ -98,24 +98,22 @@ DQMFileLoader::cfgEntryFileSet::cfgEntryFileSet(const std::string& name, const e
   // Determine if we want to automagically calculate the scaling factor
   autoscale_ = ( cfg.exists("autoscale") ) ? cfg.getParameter<bool>("autoscale") : false;
 
-  if(autoscale_)
-  {
-     totalExpectedEventsBeforeSkim_ = cfg.getParameter<unsigned>("totalExpectedEventsBeforeSkim");
-     skimEfficiency_ = cfg.getParameter<double>("skimEfficiency");
-     xSection_ = cfg.getParameter<double>("xSection");
-     targetIntLumi_ = cfg.getParameter<double>("targetIntLumi");
-     filterStatisticsLocation_ = cfg.getParameter<std::string>("filterStatisticsLocation");
-     filterToUse_ = cfg.getParameter<std::string>("filterToUse");
-     scaleFactor_ = -1;
-     // Warn if old scale factor is hanging around
-     if( cfg.exists("scaleFactor") )
-     {
-        edm::LogWarning("DQMFileLoader::cfgEntryFileSet") 
-           << "Both the <autoscale> and <scaleFactor> options are set. The <scaleFactor> specified "
-           << " in the parameter set will be ignored and the autoscale value will be used!"; 
-     }
+  if ( autoscale_ ) {
+    totalExpectedEventsBeforeSkim_ = cfg.getParameter<unsigned>("totalExpectedEventsBeforeSkim");
+    skimEfficiency_ = cfg.getParameter<double>("skimEfficiency");
+    xSection_ = cfg.getParameter<double>("xSection");
+    targetIntLumi_ = cfg.getParameter<double>("targetIntLumi");
+    filterStatisticsLocation_ = dqmDirectoryName(cfg.getParameter<std::string>("filterStatisticsLocation"));
+    filterToUse_ = cfg.getParameter<std::string>("filterToUse");
+    scaleFactor_ = -1;
+    // Warn if old scale factor is hanging around
+    if( cfg.exists("scaleFactor") ) {
+      edm::LogWarning("DQMFileLoader::cfgEntryFileSet") 
+	<< "Both the <autoscale> and <scaleFactor> options are set. The <scaleFactor> specified "
+	<< " in the parameter set will be ignored and the autoscale value will be used!"; 
+    }
   } else {
-     scaleFactor_ = ( cfg.exists("scaleFactor") ) ? cfg.getParameter<double>("scaleFactor") : defaultScaleFactor;
+    scaleFactor_ = ( cfg.exists("scaleFactor") ) ? cfg.getParameter<double>("scaleFactor") : defaultScaleFactor;
   }
 
   //std::cout << " scaleFactor = " << scaleFactor_ << std::endl;
