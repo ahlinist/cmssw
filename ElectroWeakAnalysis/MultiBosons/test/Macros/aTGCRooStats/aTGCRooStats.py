@@ -45,45 +45,64 @@ def main(options,args):
     minuit.hesse()
     minuit.migrad()    
 
+    #ws.var('err_x_gl').setConstant(True)
+    #ws.var('err_x_gs').setConstant(True)
+    #ws.var('err_x_gb').setConstant(True)
+
+    ws.defineSet('POI',
+                 ROOT.RooArgSet(ws.var(options.couplingType+'_h3'),
+                                ws.var(options.couplingType+'_h4')))
+
+    h3_best = ROOT.RooRealVar(ws.var(options.couplingType+'_h3'),options.couplingType+'_h3')
+    h4_best = ROOT.RooRealVar(ws.var(options.couplingType+'_h4'),options.couplingType+'_h4')
+    ROOT.RooArgSet(ROOT.RooArgSet(h3_best,h4_best))
+    
+    nll_fit_result = minuit.save(options.couplingType+'_NLL_fitResult')
+        
+    #create profile likelihood    
+    profileLL = theNLL.createProfile(ws.set('POI'))
+    profileLL.getVal() # to cache the values of the constrained params
+
+    level_68 = ROOT.TMath.ChisquareQuantile(.68,2)/2.0 # delta NLL for 68% confidence level for -log(LR)
+    level_95 = ROOT.TMath.ChisquareQuantile(.95,2)/2.0 # delta NLL for 95% confidence level for -log(LR)
+
+    print '68% CL Delta-NLL=',level_68
+    print '95% CL Delta-NLL=',level_95
+
+    profMinuit = profileLL.minuit()
+    profMinuit.setPrintLevel(1)
+
+    profMinuit.migrad()
     ws.var('err_x_gl').setConstant(True)
     ws.var('err_x_gs').setConstant(True)
-    ws.var('err_x_gb').setConstant(True)
+    ws.var('err_x_gb').setConstant(True)    
+    profMinuit.minos()
 
-    #find the best fit values of h3,h4
-    #minuit.hesse()
-    #minuit.migrad()
-    minuit.minos()
-
-    theFitResult = minuit.save(options.couplingType+'_fitResult')
     
-    thePlot = minuit.contour(ws.var(options.couplingType+'_h3'),
-                             ws.var(options.couplingType+'_h4'),
-                             1,sqrt(6))
+
+    thePlot = profMinuit.contour(ws.var(options.couplingType+'_h3'),
+                                 ws.var(options.couplingType+'_h4'),
+                                 sqrt(2*level_68),sqrt(2*level_95))
 
     theCanvas = ROOT.TCanvas('contours','',500,500)
-
-    thePlot.SetTitle("1 #sigma Error & 95% CL on the Best Fit Values of h3 and h4")
+    
+    thePlot.SetTitle("68% & 95% CL on the Best Fit Values of h3 and h4")
     thePlot.Draw()
 
     theCanvas.Print('contour.root')
-        
-    #create profile likelihood, set POI's
-    #theProfileLL = ROOT.RooStats.ProfileLikelihoodCalculator(ws.data('aTGCData'),
-    #                                                         ws.function('TopLevelPdf'),
-    #                                                         ROOT.RooArgSet(ws.var(options.couplingType+'_h3'),#POI's
-    #                                                                        ws.var(options.couplingType+'_h4')))
-    #theProfileLL.SetConfidenceLevel(.95) # .95 confidence interval
-    #getattr(ws,'import')(theProfileLL) #!! profile LL is not persistable !!
-
-    #calculate the .95 confidence interval
-    #theLHInterval = theProfileLL.GetInterval()    
+    
+    #theLHInterval = ROOT.RooStats.LikelihoodInterval('profLikelihoodInterval',
+    #                                                 profileLL,
+    #                                                 ws.set('POI'),
+    #                                                 ws.set('POI_snapshot'))
+    #theLHInterval.SetConfidenceLevel(.05) #95% confidence interval, 1-alpha, alpha is passed
+    
     #getattr(ws,'import')(theLHInterval) !! likelihood interval not persistable !!
     
 
     #create the interval plotter, set POI's, ranges
     #theLHplot = ROOT.RooStats.LikelihoodIntervalPlot(theLHInterval)
-    #theLHplot.SetPlotParameters(ROOT.RooArgSet(ws.var(options.couplingType+'_h3'),#POI's
-    #                                           ws.var(options.couplingType+'_h4')))
+    #theLHplot.SetPlotParameters(ws.set('POI'))
     #theLHplot.SetRange(-h3Max,-h4Max,
     #                   h3Max,h4Max)
     #LikelihoodPlot isn't persistable either....
@@ -408,7 +427,6 @@ def makeATGCExpectationPdf(ws,options):
     getattr(ws,'import')(x_gl)
     
     #define the Gaussians for the errors
-    #switch 1 and the err_x variable if you want to marginalize instead of profile?
     ws.factory("RooGaussian::selectionErr(err_x_gs,1,eventSelectionError)")
     ws.factory("RooGaussian::backgroundErr(err_x_gb,1,backgroundError)")
     ws.factory("RooGaussian::lumiErr(err_x_gl,1,luminosityError)")
@@ -426,8 +444,8 @@ def makeATGCExpectationPdf(ws,options):
 def makePlots(LLplot,options):
     print "not done yet"
     theCanvas = ROOT.TCanvas("Likelihood Plot")
-    LLplot.Draw("")
-    theCanvas.Print("test.png")
+    LLplot.Draw("tf1")
+    theCanvas.Print("contour.root")
     
 
 if __name__ == "__main__":
