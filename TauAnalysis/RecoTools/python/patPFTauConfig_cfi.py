@@ -1,12 +1,12 @@
 import FWCore.ParameterSet.Config as cms
 
 from PhysicsTools.PatAlgos.producersLayer1.tauProducer_cfi import *
-from PhysicsTools.PatAlgos.cleaningLayer1.tauCleaner_cfi import * 
+from PhysicsTools.PatAlgos.cleaningLayer1.tauCleaner_cfi import *
 
 # import helper function to build the pat efficiency PSet
 from RecoTauTag.TauAnalysisTools.PFTauEfficiencyAssociator_cfi import *
 
-#--------------------------------------------------------------------------------  
+#--------------------------------------------------------------------------------
 # PAT layer 1 (particle flow)tau-jet configuration parameters
 #--------------------------------------------------------------------------------
 
@@ -22,14 +22,17 @@ patTaus.embedLeadTrack = cms.bool(True)
 patTaus.embedSignalTracks = cms.bool(True)
 patTaus.embedIsolationTracks = cms.bool(True)
 
+# add reconstructed tau decay mode
+patTaus.addDecayMode = cms.bool(False)
+
 # add tau id. efficiencies & fake-rates
-patTaus.efficiencies = cms.PSet()
-build_pat_efficiency_loader(shrinkingConeZTTEffSimAssociator, None, patTaus.efficiencies)
-build_pat_efficiency_loader(shrinkingConeWJets, None, patTaus.efficiencies)
-build_pat_efficiency_loader(shrinkingConeMuEnrichedQCDAssociator, None, patTaus.efficiencies)
-build_pat_efficiency_loader(shrinkingConeDiJetHighPt, None, patTaus.efficiencies)
-build_pat_efficiency_loader(shrinkingConeDiJetSecondPt, None, patTaus.efficiencies)
-patTaus.addEfficiencies = cms.bool(False)
+#patTaus.efficiencies = cms.PSet()
+#build_pat_efficiency_loader(shrinkingConeZTTEffSimAssociator, None, patTaus.efficiencies)
+#build_pat_efficiency_loader(shrinkingConeWJets, None, patTaus.efficiencies)
+#build_pat_efficiency_loader(shrinkingConeMuEnrichedQCDAssociator, None, patTaus.efficiencies)
+#build_pat_efficiency_loader(shrinkingConeDiJetHighPt, None, patTaus.efficiencies)
+#build_pat_efficiency_loader(shrinkingConeDiJetSecondPt, None, patTaus.efficiencies)
+#patTaus.addEfficiencies = cms.bool(False)
 
 # do not remove tau-jets failing discriminatorByIsolation
 # (instead, leave this removal to the subsequent selector stage)
