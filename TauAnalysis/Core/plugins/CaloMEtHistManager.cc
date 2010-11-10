@@ -231,8 +231,6 @@ void CaloMEtHistManager::fillHistogramsImp(const edm::Event& evt, const edm::Eve
       hGenMEtDeltaRAWplusJESMEt_Phi_->Fill(RAWplusJES_MEtPhi - theEventMET.genMET()->phi(), evtWeight);
       hGenMEtDeltaRAWMEt_Phi_->Fill(RAW_MEtPhi - theEventMET.genMET()->phi(), evtWeight);
     }
-  } else {
-    edm::LogError ("CaloMEtHistManager::fillHistograms") << " Exactly one MET object expected per event --> skipping !!";
   }
 }
 

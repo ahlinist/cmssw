@@ -30,6 +30,7 @@ class MEtHistManager : public HistManagerBase
 
 //--- configuration parameters
   edm::InputTag metSrc_;
+  bool expectUniqueMEt_;
   edm::InputTag metSignificanceSrc_;
   edm::InputTag leg1Src_;
   edm::InputTag leg2Src_;
