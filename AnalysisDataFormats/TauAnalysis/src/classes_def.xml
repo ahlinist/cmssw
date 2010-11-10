@@ -11,11 +11,6 @@
   <class name="edm::Ptr<pat::Muon>"/>
   <class name="edm::Ptr<pat::Tau>"/>
   <class name="edm::Ptr<pat::Jet>"/>
-  <class name="edm::Ptr<pat::MET>"/>
-
-  <!-- create dictionaries for std::vector<edm::Ptr<reco::MET> >
-       as these dictionaries are not yet created in DataFormats/METReco/src/classes.h -->
-  <class name="std::vector<edm::Ptr<reco::MET> >"/>
 
   <!-- create dictionaries for edm::Ptr<reco::CaloJet> and edm::Ptr<reco::PFJet>
        as these dictionaries are not yet created in DataFormats/JetReco/src/classes.h -->
