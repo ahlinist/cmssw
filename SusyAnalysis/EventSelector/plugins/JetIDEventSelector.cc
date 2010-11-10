@@ -1,7 +1,7 @@
 #include "SusyAnalysis/EventSelector/interface/SusyEventSelector.h"
 #include "FWCore/MessageLogger/interface/MessageLogger.h"
 
-#include "/afs/desy.de/user/c/csander/Code/EventSelector/interface/JetIDEventSelector.h"
+#include "SusyAnalysis/EventSelector/interface/JetIDEventSelector.h"
 
 //________________________________________________________________________________________
 JetIDEventSelector::JetIDEventSelector (const edm::ParameterSet& pset ) :
