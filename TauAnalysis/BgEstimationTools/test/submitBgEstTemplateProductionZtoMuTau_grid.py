@@ -11,17 +11,16 @@ jobId = getJobId(channel)
 
 samplesToAnalyze = [
     # modify in case you want to submit crab jobs for some of the samples only...
-    'InclusivePPmuX', 
-    'PPmuXptGt20Mu10', 
-    'PPmuXptGt20Mu15'
 ]
 
 # Submit analysis jobs to the grid;
 # disable estimation of systematic uncertainties for all samples except Ztautau
 submitAnalysisToGrid(configFile = configFile, channel = channel,
                      samples = recoSampleDefinitionsZtoMuTau_7TeV, outputFilePath = outputFilePath, jobId = jobId,
-                     samplesToAnalyze = samplesToAnalyze, samplesToSkip = ['Ztautau'], disableSysUncertainties = True)
+                     samplesToAnalyze = samplesToAnalyze, samplesToSkip = ['Ztautau'],
+                     disableFactorization = True, disableSysUncertainties = True)
 if samplesToAnalyze.count('Ztautau') > 0 or len(samplesToAnalyze) == 0:
     submitAnalysisToGrid(configFile = configFile, channel = channel,
                          samples = recoSampleDefinitionsZtoMuTau_7TeV, outputFilePath = outputFilePath, jobId = jobId,
                          samplesToAnalyze = ['Ztautau'], samplesToSkip = None, disableSysUncertainties = False)
+    
