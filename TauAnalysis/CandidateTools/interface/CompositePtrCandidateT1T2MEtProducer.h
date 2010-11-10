@@ -12,9 +12,9 @@
  *          Michal Bluj,
  *          Christian Veelken
  *
- * \version $Revision: 1.16 $
+ * \version $Revision: 1.17 $
  *
- * $Id: CompositePtrCandidateT1T2MEtProducer.h,v 1.16 2010/09/21 08:58:40 veelken Exp $
+ * $Id: CompositePtrCandidateT1T2MEtProducer.h,v 1.17 2010/09/28 11:23:28 jkolb Exp $
  *
  */
 
@@ -27,8 +27,16 @@
 
 #include "FWCore/ParameterSet/interface/ParameterSet.h"
 #include "FWCore/Utilities/interface/InputTag.h"
+#include "FWCore/Framework/interface/ESHandle.h"
 
+#include "TrackingTools/TransientTrack/interface/TransientTrackBuilder.h"
+#include "TrackingTools/Records/interface/TransientTrackRecord.h"
+
+#include "DataFormats/Common/interface/Handle.h"
 #include "DataFormats/Common/interface/View.h"
+#include "DataFormats/Common/interface/AssociationVector.h"
+#include "DataFormats/Common/interface/RefProd.h"
+#include "DataFormats/Common/interface/Ptr.h"
 
 #include "DataFormats/Math/interface/deltaR.h"
 
@@ -76,6 +84,7 @@ class CompositePtrCandidateT1T2MEtProducer : public edm::EDProducer
     srcPV_ = ( cfg.exists("srcPrimaryVertex") ) ? cfg.getParameter<edm::InputTag>("srcPrimaryVertex") : edm::InputTag();
     srcBeamSpot_ = ( cfg.exists("srcBeamSpot") ) ? cfg.getParameter<edm::InputTag>("srcBeamSpot") : edm::InputTag();
     recoMode_ = cfg.getParameter<std::string>("recoMode");
+    srcReReco_ = ( cfg.exists("srcReReco") ) ? cfg.getParameter<edm::InputTag>("srcReReco") : edm::InputTag();
     verbosity_ = cfg.getUntrackedParameter<int>("verbosity", 0);
 
     //std::cout << " srcLeg1 = " << srcLeg1_.label() << std::endl;
@@ -84,6 +93,7 @@ class CompositePtrCandidateT1T2MEtProducer : public edm::EDProducer
     //std::cout << " srcPV_ = " << srcPV_.label() << std::endl;
     //std::cout << " srcBeamSpot = " << srcBeamSpot_.label() << std::endl;
     //std::cout << " recoMode = " << recoMode_ << std::endl;
+    //std::cout << " srcReReco_ = " << srcReReco_.label() << std::endl;
 
 //--- check that InputTag for MET collection has been defined,
 //    in case it is needed for the reconstruction mode 
@@ -129,34 +139,8 @@ class CompositePtrCandidateT1T2MEtProducer : public edm::EDProducer
       evt.put(emptyCompositePtrCandidateCollection);
       return;
     }
-
-    typedef edm::View<T1> T1View;
-    edm::Handle<T1View> leg1Collection;
-    pf::fetchCollection(leg1Collection, srcLeg1_, evt);
-    typedef edm::View<T2> T2View;
-    edm::Handle<T2View> leg2Collection;
-    pf::fetchCollection(leg2Collection, srcLeg2_, evt);
-
-    MEtPtr metPtr;
-    if ( srcMET_.label() != "" ) {
-      typedef edm::View<reco::MET> MEtView;
-      edm::Handle<MEtView> metCollection;
-      pf::fetchCollection(metCollection, srcMET_, evt);
-      
-//--- check that there is exactly one MET object in the event
-//    (missing transverse momentum is an **event level** quantity)
-      if ( metCollection->size() == 1 ) {
-	metPtr = metCollection->ptrAt(0);
-      } else {
-	edm::LogError ("produce") 
-	  << " Found " << metCollection->size() << " MET objects in collection = " << srcMET_ << ","
-	  << " --> CompositePtrCandidateT1T2MEt collection will NOT be produced !!";
-	std::auto_ptr<CompositePtrCandidateCollection> emptyCompositePtrCandidateCollection(new CompositePtrCandidateCollection());
-	evt.put(emptyCompositePtrCandidateCollection);
-	return;
-      }
-    } 
-
+    
+    // Get gen. particles
     const reco::GenParticleCollection* genParticles = 0;
     if ( srcGenParticles_.label() != "" ) {
       edm::Handle<reco::GenParticleCollection> genParticleCollection;
@@ -195,84 +179,144 @@ class CompositePtrCandidateT1T2MEtProducer : public edm::EDProducer
 //     and to retrieve BeamSpot and genParticle collection from the event)
     algorithm_.beginEvent(evt, es);
 
-//--- check if only one combination of tau decay products 
-//    (the combination of highest Pt object in leg1 collection + highest Pt object in leg2 collection)
-//    shall be produced, or all possible combinations of leg1 and leg2 objects
     std::auto_ptr<CompositePtrCandidateCollection> compositePtrCandidateCollection(new CompositePtrCandidateCollection());
-    if ( useLeadingTausOnly_ ) {
 
-//--- find highest Pt particles in leg1 and leg2 collections
-      int idxLeadingLeg1 = -1;
-      double leg1PtMax = 0.;
-      for ( unsigned idxLeg1 = 0, numLeg1 = leg1Collection->size(); 
-	    idxLeg1 < numLeg1; ++idxLeg1 ) {
-	T1Ptr leg1Ptr = leg1Collection->ptrAt(idxLeg1);
-	if ( idxLeadingLeg1 == -1 || leg1Ptr->pt() > leg1PtMax ) {
-	  idxLeadingLeg1 = idxLeg1;
-	leg1PtMax = leg1Ptr->pt();
-	}
-      }
-      
-      int idxLeadingLeg2 = -1;
-      double leg2PtMax = 0.;
-      for ( unsigned idxLeg2 = 0, numLeg2 = leg2Collection->size(); 
-	    idxLeg2 < numLeg2; ++idxLeg2 ) {
-	T2Ptr leg2Ptr = leg2Collection->ptrAt(idxLeg2);
-
-//--- do not create CompositePtrCandidateT1T2MEt object 
-//    for combination of particle with itself
-	if ( idxLeadingLeg1 != -1 ) {
-	  T1Ptr leadingLeg1Ptr = leg1Collection->ptrAt(idxLeadingLeg1);
-	  double dR = reco::deltaR(leadingLeg1Ptr->p4(), leg2Ptr->p4());
-	  if ( dR < dRmin12_ ) continue;
-	}
-	
-	if ( idxLeadingLeg2 == -1 || leg2Ptr->pt() > leg2PtMax ) {
-	  idxLeadingLeg2 = idxLeg2;
-	  leg2PtMax = leg2Ptr->pt();
-	}
-      }
-      
-      if ( idxLeadingLeg1 != -1 &&
-	   idxLeadingLeg2 != -1 ) {
-	T1Ptr leadingLeg1Ptr = leg1Collection->ptrAt(idxLeadingLeg1);
-	T2Ptr leadingLeg2Ptr = leg2Collection->ptrAt(idxLeadingLeg2);
-	
+//--- check if diTau objects are to be re-reconstructed from collection reconstructed previously
+//   (CV: special mode for MEt correction by Z recoil momentum)
+    if ( srcReReco_.label() != "" ) {
+std::cout << "break-point A.1 reached" << std::endl;
+      edm::Handle<CompositePtrCandidateCollection> diTauCandidateCollection;
+std::cout << "break-point A.2 reached" << std::endl;
+      pf::fetchCollection(diTauCandidateCollection, srcReReco_, evt);
+std::cout << "break-point A.3 reached" << std::endl;
+      typedef edm::AssociationVector<edm::RefProd<CompositePtrCandidateCollection>, std::vector<MEtPtr> > diTauToMEtAssociation;
+std::cout << "break-point A.4 reached" << std::endl;
+      edm::Handle<diTauToMEtAssociation> MEtAssociation;
+std::cout << "break-point A.5 reached" << std::endl;
+      pf::fetchCollection(MEtAssociation, srcMET_, evt);
+std::cout << "break-point A.6 reached" << std::endl;
+      size_t numDiTauCandidates = diTauCandidateCollection->size();
+      for ( size_t iDiTauCandidate = 0; iDiTauCandidate < numDiTauCandidates; ++iDiTauCandidate ) {
+std::cout << "break-point A.7 reached" << std::endl;
+	edm::Ref<CompositePtrCandidateCollection> diTauCandidateRef(diTauCandidateCollection, iDiTauCandidate);
+std::cout << "break-point A.8 reached" << std::endl;	
+	MEtPtr metPtr = (*MEtAssociation)[diTauCandidateRef];
+std::cout << "break-point A.9 reached" << std::endl;
 	CompositePtrCandidateT1T2MEt<T1,T2> compositePtrCandidate = 
-	  algorithm_.buildCompositePtrCandidate(leadingLeg1Ptr, leadingLeg2Ptr, metPtr, genParticles, 
-						pv, beamSpot, trackBuilder, doSVreco_);
+	  algorithm_.buildCompositePtrCandidate(diTauCandidateRef->leg1(), diTauCandidateRef->leg2(), metPtr, genParticles, 
+						pv, beamSpot, trackBuilder, recoMode_, doSVreco_);
+std::cout << "break-point A.10 reached" << std::endl;
 	compositePtrCandidateCollection->push_back(compositePtrCandidate);
-      } else {
-	if ( verbosity_ >= 1 ) {
-	  edm::LogInfo ("produce") 
-	    << " Found no combination of particles in Collections" 
-	    << " leg1 = " << srcLeg1_ << " and leg2 = " << srcLeg2_ << ".";
-	}
+std::cout << "break-point A.11 reached" << std::endl;
       }
     } else {
+//--- "regular" creation of diTau objects from leg1, leg2, met input collections
+
+      typedef edm::View<T1> T1View;
+      edm::Handle<T1View> leg1Collection;
+      pf::fetchCollection(leg1Collection, srcLeg1_, evt);
+      typedef edm::View<T2> T2View;
+      edm::Handle<T2View> leg2Collection;
+      pf::fetchCollection(leg2Collection, srcLeg2_, evt);
+
+      MEtPtr metPtr;
+      if ( srcMET_.label() != "" ) {
+	typedef edm::View<reco::MET> MEtView;
+	edm::Handle<MEtView> metCollection;
+	pf::fetchCollection(metCollection, srcMET_, evt);
+	
+//--- check that there is exactly one MET object in the event
+//    (missing transverse momentum is an **event level** quantity)
+	if ( metCollection->size() == 1 ) {
+	  metPtr = metCollection->ptrAt(0);
+	} else {
+	  edm::LogError ("produce") 
+	    << " Found " << metCollection->size() << " MET objects in collection = " << srcMET_ << ","
+	    << " --> CompositePtrCandidateT1T2MEt collection will NOT be produced !!";
+	  std::auto_ptr<CompositePtrCandidateCollection> emptyCompositePtrCandidateCollection(new CompositePtrCandidateCollection());
+	  evt.put(emptyCompositePtrCandidateCollection);
+	  return;
+	}
+      } 
+
+//--- check if only one combination of tau decay products 
+//    (the combination of highest Pt object in leg1 collection + highest Pt object in leg2 collection)
+//    shall be produced, or all possible combinations of leg1 and leg2 objects   
+      if ( useLeadingTausOnly_ ) {
+
+//--- find highest Pt particles in leg1 and leg2 collections
+	int idxLeadingLeg1 = -1;
+	double leg1PtMax = 0.;
+	for ( unsigned idxLeg1 = 0, numLeg1 = leg1Collection->size(); 
+	      idxLeg1 < numLeg1; ++idxLeg1 ) {
+	  T1Ptr leg1Ptr = leg1Collection->ptrAt(idxLeg1);
+	  if ( idxLeadingLeg1 == -1 || leg1Ptr->pt() > leg1PtMax ) {
+	    idxLeadingLeg1 = idxLeg1;
+	    leg1PtMax = leg1Ptr->pt();
+	  }
+	}
+	
+	int idxLeadingLeg2 = -1;
+	double leg2PtMax = 0.;
+	for ( unsigned idxLeg2 = 0, numLeg2 = leg2Collection->size(); 
+	      idxLeg2 < numLeg2; ++idxLeg2 ) {
+	  T2Ptr leg2Ptr = leg2Collection->ptrAt(idxLeg2);
+	  
+//--- do not create CompositePtrCandidateT1T2MEt object 
+//    for combination of particle with itself
+	  if ( idxLeadingLeg1 != -1 ) {
+	    T1Ptr leadingLeg1Ptr = leg1Collection->ptrAt(idxLeadingLeg1);
+	    double dR = reco::deltaR(leadingLeg1Ptr->p4(), leg2Ptr->p4());
+	    if ( dR < dRmin12_ ) continue;
+	  }
+	  
+	  if ( idxLeadingLeg2 == -1 || leg2Ptr->pt() > leg2PtMax ) {
+	    idxLeadingLeg2 = idxLeg2;
+	    leg2PtMax = leg2Ptr->pt();
+	  }
+	}
+	
+	if ( idxLeadingLeg1 != -1 &&
+	     idxLeadingLeg2 != -1 ) {
+	  T1Ptr leadingLeg1Ptr = leg1Collection->ptrAt(idxLeadingLeg1);
+	  T2Ptr leadingLeg2Ptr = leg2Collection->ptrAt(idxLeadingLeg2);
+	  
+	  CompositePtrCandidateT1T2MEt<T1,T2> compositePtrCandidate = 
+	    algorithm_.buildCompositePtrCandidate(leadingLeg1Ptr, leadingLeg2Ptr, metPtr, genParticles, 
+						  pv, beamSpot, trackBuilder, recoMode_, doSVreco_);
+	  compositePtrCandidateCollection->push_back(compositePtrCandidate);
+	} else {
+	  if ( verbosity_ >= 1 ) {
+	    edm::LogInfo ("produce") 
+	      << " Found no combination of particles in Collections" 
+	      << " leg1 = " << srcLeg1_ << " and leg2 = " << srcLeg2_ << ".";
+	  }
+	}
+      } else {
 //--- check if the same collection is used on both legs;
 //    if so, skip diTau(j,i), j > i combination in order to avoid two diTau objects being produced
 //    for combinations (i,j) and (j,i) of the same pair of particles in leg1 and leg2 collections
-      bool sameCollection = (leg1Collection.id () == leg2Collection.id());
+	bool sameCollection = (leg1Collection.id () == leg2Collection.id());
    
-      for ( unsigned idxLeg1 = 0, numLeg1 = leg1Collection->size(); 
-	    idxLeg1 < numLeg1; ++idxLeg1 ) {
-	T1Ptr leg1Ptr = leg1Collection->ptrAt(idxLeg1);
-	
-	unsigned idxLeg2_first = ( sameCollection ) ? (idxLeg1 + 1) : 0;
-	for ( unsigned idxLeg2 = idxLeg2_first, numLeg2 = leg2Collection->size(); 
-	      idxLeg2 < numLeg2; ++idxLeg2 ) {
-	  T2Ptr leg2Ptr = leg2Collection->ptrAt(idxLeg2);
+	for ( unsigned idxLeg1 = 0, numLeg1 = leg1Collection->size(); 
+	      idxLeg1 < numLeg1; ++idxLeg1 ) {
+	  T1Ptr leg1Ptr = leg1Collection->ptrAt(idxLeg1);
+	  
+	  unsigned idxLeg2_first = ( sameCollection ) ? (idxLeg1 + 1) : 0;
+	  for ( unsigned idxLeg2 = idxLeg2_first, numLeg2 = leg2Collection->size(); 
+		idxLeg2 < numLeg2; ++idxLeg2 ) {
+	    T2Ptr leg2Ptr = leg2Collection->ptrAt(idxLeg2);
 
 //--- do not create CompositePtrCandidateT1T2MEt object 
 //    for combination of particle with itself
-	  double dR = reco::deltaR(leg1Ptr->p4(), leg2Ptr->p4());
-	  if ( dR < dRmin12_ ) continue;
+	    double dR = reco::deltaR(leg1Ptr->p4(), leg2Ptr->p4());
+	    if ( dR < dRmin12_ ) continue;
 	  
-	  CompositePtrCandidateT1T2MEt<T1,T2> compositePtrCandidate = 
-	    algorithm_.buildCompositePtrCandidate(leg1Ptr, leg2Ptr, metPtr, genParticles, 
-						  pv, beamSpot, trackBuilder, doSVreco_);
-	  compositePtrCandidateCollection->push_back(compositePtrCandidate);
+	    CompositePtrCandidateT1T2MEt<T1,T2> compositePtrCandidate = 
+	      algorithm_.buildCompositePtrCandidate(leg1Ptr, leg2Ptr, metPtr, genParticles, 
+						    pv, beamSpot, trackBuilder, recoMode_, doSVreco_);
+	    compositePtrCandidateCollection->push_back(compositePtrCandidate);
+	  }
 	}
       }
     }
@@ -295,6 +339,7 @@ class CompositePtrCandidateT1T2MEtProducer : public edm::EDProducer
   edm::InputTag srcBeamSpot_;
   std::string recoMode_;
   bool doSVreco_;
+  edm::InputTag srcReReco_;
   int verbosity_;
 
   int cfgError_;

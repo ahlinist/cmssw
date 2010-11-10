@@ -38,7 +38,6 @@ class CompositePtrCandidateT1T2MEtAlgorithm
   {
     //std::cout << "<CompositePtrCandidateT1T2MEtAlgorithm::CompositePtrCandidateT1T2MEtAlgorithm>:" << std::endl;
 
-    recoMode_ = cfg.getParameter<std::string>("recoMode");
     verbosity_ = cfg.getUntrackedParameter<int>("verbosity", 0);
     if ( cfg.exists("svFit") ) {
       edm::ParameterSet cfgSVfit = cfg.getParameter<edm::ParameterSet>("svFit");	
@@ -54,7 +53,8 @@ class CompositePtrCandidateT1T2MEtAlgorithm
 	//std::cout << "--> adding SVfit algorithm: name = " << (*svFitAlgorithmName) << std::endl;
       }
     }
-    scaleFuncImprovedCollinearApprox_ = cfg.getParameter<std::string>("scaleFuncImprovedCollinearApprox");
+    scaleFuncImprovedCollinearApprox_ = cfg.exists("scaleFuncImprovedCollinearApprox") ?
+      cfg.getParameter<std::string>("scaleFuncImprovedCollinearApprox") : "1";
     /// compute the scale factor to weight the diTau mass
     /// computed in the improved collinear approximation;
     /// NO re-scaling of the p4 is made at this stage.
@@ -100,7 +100,8 @@ class CompositePtrCandidateT1T2MEtAlgorithm
 								 const reco::GenParticleCollection* genParticles,
                                                                  const reco::Vertex* pv,
                                                                  const reco::BeamSpot* beamSpot,
-                                                                 const TransientTrackBuilder* trackBuilder, 
+                                                                 const TransientTrackBuilder* trackBuilder,
+								 const std::string& recoMode, 
 								 bool doSVreco)
   {
     CompositePtrCandidateT1T2MEt<T1,T2> compositePtrCandidate(leg1, leg2, met);
@@ -156,37 +157,39 @@ class CompositePtrCandidateT1T2MEtAlgorithm
 
 //--- set compositePtr four-momentum
 //    (depending on recoMode configuration parameter)
-    if ( recoMode_ == "collinearApprox" ) {
+    if ( recoMode == "collinearApprox" ) {
       if ( met.isNonnull() ) {
         compositePtrCandidate.setP4(compositePtrCandidate.p4CollinearApprox());
       } else {
         edm::LogError ("buildCompositePtrCandidate")
 	  << " Failed to set four-momentum:"
-	  << " recoMode = " << recoMode_ << " requires MET pointer to be valid !!";
+	  << " recoMode = " << recoMode << " requires MET pointer to be valid !!";
       }
-    } else if ( recoMode_ == "ImprovedCollinearApprox" ) {
+    } else if ( recoMode == "ImprovedCollinearApprox" ) {
       if ( met.isNonnull() ) {
 	compositePtrCandidate.setP4(compositePtrCandidate.p4ImprovedCollinearApprox());
       } else {
 	edm::LogError ("buildCompositePtrCandidate") 
 	  << " Failed to set four-momentum:"
-	  << " recoMode = " << recoMode_ << " requires MET pointer to be valid !!";
+	  << " recoMode = " << recoMode << " requires MET pointer to be valid !!";
       } 
-    }  else if ( recoMode_ == "cdfMethod" ) {
+    }  else if ( recoMode == "cdfMethod" ) {
       if ( met.isNonnull() ) {
 	compositePtrCandidate.setP4(compositePtrCandidate.p4CDFmethod());
       } else {
 	edm::LogError ("buildCompositePtrCandidate") 
 	  << " Failed to set four-momentum:"
-	  << " recoMode = " << recoMode_ << " requires MET pointer to be valid !!";
+	  << " recoMode = " << recoMode << " requires MET pointer to be valid !!";
       }
-    } else if ( recoMode_ == "" ) {
+    } else if ( recoMode == "" ) {
       compositePtrCandidate.setP4(compositePtrCandidate.p4Vis());
     } else {
       edm::LogError ("buildCompositePtrCandidate") 
 	<< " Failed to set four-momentum:"
-	<< " recoMode = " << recoMode_ << " undefined !!";
+	<< " recoMode = " << recoMode << " undefined !!";
     }  
+
+    compositePtrCandidate.recoMode_ = recoMode;
     
     return compositePtrCandidate;
   }
@@ -407,7 +410,6 @@ class CompositePtrCandidateT1T2MEtAlgorithm
     return TMath::Sqrt(mt2);
   }
 
-  std::string recoMode_;
   int verbosity_;
   std::string scaleFuncImprovedCollinearApprox_;
   TF1* scaleFunc_;
