@@ -128,7 +128,7 @@ def enableSysUncertainties_runZtoMuTau(process):
     process.selectPatJets = patJetSelConfigurator.configure(process = process)
 
     process.smearedMET = cms.EDProducer("SmearedMETProducer",
-        src = cms.InputTag('patMETs'),
+        src = cms.InputTag('patPFMETs'),
         smearedParticles = cms.PSet()
     )
     smearedMETconfigurator = objProdConfigurator(
