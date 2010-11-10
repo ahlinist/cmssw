@@ -65,7 +65,9 @@ def makePlots(process, channel = None, samples = None, inputFilePath = None, job
     if analyzer_drawJobConfigurator_indOutputFileName_sets is None:       
         raise ValueError("Undefined analyzer_drawJobConfigurator_indOutputFileName_sets Parameter !!")
     if drawJobTemplate is None:
-        raise ValueError("Undefined drawJobTemplate Parameter !!")
+        for analyzer_drawJobConfigurator_indOutputFileName_set in analyzer_drawJobConfigurator_indOutputFileName_sets:
+            if len(analyzer_drawJobConfigurator_indOutputFileName_set) > 1:
+                raise ValueError("Undefined drawJobTemplate Parameter !!")
     if dqmDirectoryFilterStatistics is None:
         raise ValueError("Undefined dqmDirectoryFilterStatistics Parameter !!")
     
@@ -183,50 +185,54 @@ def makePlots(process, channel = None, samples = None, inputFilePath = None, job
         for sampleName in samples['SAMPLES_TO_PLOT'])
 
     # Define draw job configurator for our smaples
-    drawJobTemplate = copy.deepcopy(drawJobTemplate)
-    drawJobTemplate.plots.processes = cms.vstring(samples['SAMPLES_TO_PLOT'])
-    # Stack all non-BSM sample
-    drawJobTemplate.stack = cms.vstring([
-        sample for sample in samples['SAMPLES_TO_PLOT']
-        if samples['ALL_SAMPLES'][sample]['type'].find('bsm') == -1 and
-        samples['ALL_SAMPLES'][sample]['type'].find('Data') == -1
-    ])
-    drawJobTemplate.yAxis = cms.string('numEntries_log')
+    if drawJobTemplate is not None:
+        drawJobTemplate = copy.deepcopy(drawJobTemplate)
+        drawJobTemplate.plots.processes = cms.vstring(samples['SAMPLES_TO_PLOT'])
+        # Stack all non-BSM sample
+        drawJobTemplate.stack = cms.vstring([
+            sample for sample in samples['SAMPLES_TO_PLOT']
+            if samples['ALL_SAMPLES'][sample]['type'].find('bsm') == -1 and
+            samples['ALL_SAMPLES'][sample]['type'].find('Data') == -1
+        ])
+        drawJobTemplate.yAxis = cms.string('numEntries_log')
 
     dqmHistPlotterSequenceName = "plot%s" % channel
     dqmHistPlotterSequence = None
 
     # configure DQMHistPlotter modules
     for analyzer_drawJobConfigurator_indOutputFileName_set in analyzer_drawJobConfigurator_indOutputFileName_sets:
-        analyzer = analyzer_drawJobConfigurator_indOutputFileName_set[0]
+        if len(analyzer_drawJobConfigurator_indOutputFileName_set) == 3:
+            print("configuring DQMHistPlotter...")
+            analyzer = analyzer_drawJobConfigurator_indOutputFileName_set[0]
         
-        drawJobConfigurator = analyzer_drawJobConfigurator_indOutputFileName_set[1]
-        drawJobConfigurator.setTemplate(drawJobTemplate)
+            drawJobConfigurator = analyzer_drawJobConfigurator_indOutputFileName_set[1]
+            drawJobConfigurator.setTemplate(drawJobTemplate)
 
-        dqmHistPlotterModuleName = None
-        if analyzer.find("_") != -1:
-            dqmHistPlotterModuleName = "plot%s%s" % (channel, analyzer[analyzer.rfind("_"):])
-        else:
-            dqmHistPlotterModuleName = "plot%s" % channel
-        print("--> configuring DQMHistPlotter: " + dqmHistPlotterModuleName)
-        dqmHistPlotterModule = dqmHistPlotter_template.clone(
-            processes = cms.PSet(**processesForPlots),
-            drawJobs = drawJobConfigurator.configure(),
-            indOutputFileName = cms.string(analyzer_drawJobConfigurator_indOutputFileName_set[2])
-        )
-        setattr(process, dqmHistPlotterModuleName, dqmHistPlotterModule)
+            dqmHistPlotterModuleName = None
+            if analyzer.find("_") != -1:
+                dqmHistPlotterModuleName = "plot%s%s" % (channel, analyzer[analyzer.rfind("_"):])
+            else:
+                dqmHistPlotterModuleName = "plot%s" % channel
+            print("--> configuring DQMHistPlotter: " + dqmHistPlotterModuleName)
+            dqmHistPlotterModule = dqmHistPlotter_template.clone(
+                processes = cms.PSet(**processesForPlots),
+                drawJobs = drawJobConfigurator.configure(),
+                indOutputFileName = cms.string(analyzer_drawJobConfigurator_indOutputFileName_set[2])
+            )
+            setattr(process, dqmHistPlotterModuleName, dqmHistPlotterModule)
 
-        dqmHistPlotterModule.labels.mcNormScale.text = cms.vstring(
-            '%0.1fpb^{-1}' % samples['TARGET_LUMI'],
-            '#sqrt{s}=7TeV'
-        )
+            dqmHistPlotterModule.labels.mcNormScale.text = cms.vstring(
+                '%0.1fpb^{-1}' % samples['TARGET_LUMI'],
+                '#sqrt{s}=7TeV'
+            )
 
-        if dqmHistPlotterSequence is None:
-            dqmHistPlotterSequence = cms.Sequence(dqmHistPlotterModule)
-        else:
-            dqmHistPlotterSequence._seq = dqmHistPlotterSequence._seq * dqmHistPlotterModule
+            if dqmHistPlotterSequence is None:
+                dqmHistPlotterSequence = cms.Sequence(dqmHistPlotterModule)
+            else:
+                dqmHistPlotterSequence._seq = dqmHistPlotterSequence._seq * dqmHistPlotterModule
 
-    setattr(process, dqmHistPlotterSequenceName, dqmHistPlotterSequence)
+    if dqmHistPlotterSequence is not None:
+        setattr(process, dqmHistPlotterSequenceName, dqmHistPlotterSequence)
 
     # apply factorization
     samplesToFactorize = [sample for sample in samples['FLATTENED_SAMPLES_TO_PLOT']
@@ -254,17 +260,18 @@ def makePlots(process, channel = None, samples = None, inputFilePath = None, job
     )
     setattr(process, dqmSimpleFileSaverModuleName, dqmSimpleFileSaverModule)
 
-    dqmDumpFilterStatisticsModuleName = "dump%s" % channel
-    dqmDumpFilterStatisticsModule = getattr(process, dqmDumpFilterStatisticsModuleName)
-
     makePlotSequenceName = "make%sPlots" % channel
-    makePlotSequence = cms.Sequence(dqmFileLoaderModule)
+    makePlotSequence = cms.Sequence(dqmLoadFactorizeAndMergeSequence)    
     if dumpDQMStore:
         process.dumpDQMStore = cms.EDAnalyzer("DQMStoreDump")
         makePlotSequence._seq = makePlotSequence._seq * process.dumpDQMStore
     makePlotSequence._seq = makePlotSequence._seq * dqmSimpleFileSaverModule
-    makePlotSequence._seq = makePlotSequence._seq * dqmDumpFilterStatisticsModule
-    makePlotSequence._seq = makePlotSequence._seq * getattr(process, dqmHistPlotterSequenceName)
+    dqmDumpFilterStatisticsModuleName = "dump%s" % channel
+    if hasattr(process, dqmDumpFilterStatisticsModuleName):
+        dqmDumpFilterStatisticsModule = getattr(process, dqmDumpFilterStatisticsModuleName)
+        makePlotSequence._seq = makePlotSequence._seq * dqmDumpFilterStatisticsModule
+    if dqmHistPlotterSequence is not None:
+        makePlotSequence._seq = makePlotSequence._seq * dqmHistPlotterSequence
     setattr(process, makePlotSequenceName, makePlotSequence)
 
     process.p = cms.Path(makePlotSequence)
