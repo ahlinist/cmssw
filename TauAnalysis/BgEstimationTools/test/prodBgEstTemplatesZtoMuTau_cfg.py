@@ -40,7 +40,7 @@ def configureDQMDumpFilterStatisticsTable(dqmDirectoriesProcess, dqmDirectoryFil
     )
 
     for processName, dqmDirectoryProcess in dqmDirectoriesProcess.items():
-        dqmDirectory_full = 'harvested' + '/' + dqmDirectoryProcess + '/' + dqmDirectoryFilterStatisticsTable + '/'
+        dqmDirectory_full = '/harvested' + '/' + dqmDirectoryProcess + '/' + dqmDirectoryFilterStatisticsTable + '/'
         setattr(module.dqmDirectories, processName, cms.string(dqmDirectory_full))
 
     return module
