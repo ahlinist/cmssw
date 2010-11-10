@@ -39,6 +39,7 @@ SAMPLE_DEFAULTS = {
     'conditions' : 'startup',
     'genPhaseSpaceCut' : '',
     'factorize' : False,
+    'applyZrecoilCorrection' : False,
     'enableSysUncertainties' : False,
     'lumi_mask' : '',
     'runselection' : '',

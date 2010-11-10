@@ -60,6 +60,7 @@ SAMPLE_DEFAULTS = {
     'conditions' : 'startup',
     'genPhaseSpaceCut' : '',
     'factorize' : False,
+    'applyZrecoilCorrection' : False,
     'enableSysUncertainties' : False,
     'lumi_mask' : '',
     'runselection' : '',
@@ -162,7 +163,8 @@ RECO_SAMPLES = {
         'legendEntry' : 'ggA(90) #rightarrow #tau^{+} #tau^{-}',
         'type' : 'bsmMC',
         'drawOption' : styles.drawOption_darkBlue_separate,
-        'enableSysUncertainties' : True
+        'enableSysUncertainties' : True,
+        'applyZrecoilCorrection' : True
     },
     'bbA90' : {
         # Not skimmed
@@ -179,7 +181,8 @@ RECO_SAMPLES = {
         'legendEntry' : 'bbA(90) #rightarrow #tau^{+} #tau^{-}',
         'type' : 'bsmMC',
         'drawOption' : styles.drawOption_darkBlue_separate,
-        'enableSysUncertainties' : True
+        'enableSysUncertainties' : True,
+        'applyZrecoilCorrection' : True
     },
     'A100' : {
         # Not skimmed
@@ -196,7 +199,8 @@ RECO_SAMPLES = {
         'legendEntry' : 'ggA(100) #rightarrow #tau^{+} #tau^{-}',
         'type' : 'bsmMC',
         'drawOption' : styles.drawOption_darkBlue_separate,
-        'enableSysUncertainties' : True
+        'enableSysUncertainties' : True,
+        'applyZrecoilCorrection' : True
     },
     'bbA100' : {
         # Not skimmed
@@ -213,7 +217,8 @@ RECO_SAMPLES = {
         'legendEntry' : 'bbA(100) #rightarrow #tau^{+} #tau^{-}',
         'type' : 'bsmMC',
         'drawOption' : styles.drawOption_darkBlue_separate,
-        'enableSysUncertainties' : True
+        'enableSysUncertainties' : True,
+        'applyZrecoilCorrection' : True
     },
     'A120' : {
         # Not skimmed
@@ -231,7 +236,8 @@ RECO_SAMPLES = {
         'legendEntry' : 'ggA(120) #rightarrow #tau^{+} #tau^{-}',
         'type' : 'bsmMC',
         'drawOption' : styles.drawOption_darkBlue_separate,
-        'enableSysUncertainties' : True
+        'enableSysUncertainties' : True,
+        'applyZrecoilCorrection' : True
     },
     'bbA120' : {
         # Not skimmed
@@ -249,7 +255,8 @@ RECO_SAMPLES = {
         'legendEntry' : 'bbA(120) #rightarrow #tau^{+} #tau^{-}',
         'type' : 'bsmMC',
         'drawOption' : styles.drawOption_darkBlue_separate,
-        'enableSysUncertainties' : True
+        'enableSysUncertainties' : True,
+        'applyZrecoilCorrection' : True
     },
     'A130' : {
         # Not skimmed
@@ -267,7 +274,8 @@ RECO_SAMPLES = {
         'legendEntry' : 'ggA(130) #rightarrow #tau^{+} #tau^{-}',
         'type' : 'bsmMC',
         'drawOption' : styles.drawOption_darkBlue_separate,
-        'enableSysUncertainties' : True
+        'enableSysUncertainties' : True,
+        'applyZrecoilCorrection' : True
     },
     'bbA130' : {
         # Not skimmed
@@ -285,7 +293,8 @@ RECO_SAMPLES = {
         'legendEntry' : 'bbA(130) #rightarrow #tau^{+} #tau^{-}',
         'type' : 'bsmMC',
         'drawOption' : styles.drawOption_darkBlue_separate,
-        'enableSysUncertainties' : True
+        'enableSysUncertainties' : True,
+        'applyZrecoilCorrection' : True
     },
     'A140' : {
         # Not skimmed
@@ -303,7 +312,8 @@ RECO_SAMPLES = {
         'legendEntry' : 'ggA(140) #rightarrow #tau^{+} #tau^{-}',
         'type' : 'bsmMC',
         'drawOption' : styles.drawOption_darkBlue_separate,
-        'enableSysUncertainties' : True
+        'enableSysUncertainties' : True,
+        'applyZrecoilCorrection' : True
     },
     'bbA140' : {
         # Not skimmed
@@ -321,7 +331,8 @@ RECO_SAMPLES = {
         'legendEntry' : 'bbA(140) #rightarrow #tau^{+} #tau^{-}',
         'type' : 'bsmMC',
         'drawOption' : styles.drawOption_darkBlue_separate,
-        'enableSysUncertainties' : True
+        'enableSysUncertainties' : True,
+        'applyZrecoilCorrection' : True
     },
     'A160' : {
         # Not skimmed
@@ -338,7 +349,8 @@ RECO_SAMPLES = {
         'legendEntry' : 'ggA(160) #rightarrow #tau^{+} #tau^{-}',
         'type' : 'bsmMC',
         'drawOption' : styles.drawOption_darkBlue_separate,
-        'enableSysUncertainties' : True
+        'enableSysUncertainties' : True,
+        'applyZrecoilCorrection' : True
     },
     'bbA160' : {
         # Not skimmed
@@ -355,7 +367,8 @@ RECO_SAMPLES = {
         'legendEntry' : 'bbA(160) #rightarrow #tau^{+} #tau^{-}',
         'type' : 'bsmMC',
         'drawOption' : styles.drawOption_darkBlue_separate,
-        'enableSysUncertainties' : True
+        'enableSysUncertainties' : True,
+        'applyZrecoilCorrection' : True
     },
     'A180' : {
         # Not skimmed
@@ -372,7 +385,8 @@ RECO_SAMPLES = {
         'legendEntry' : 'ggA(180) #rightarrow #tau^{+} #tau^{-}',
         'type' : 'bsmMC',
         'drawOption' : styles.drawOption_darkBlue_separate,
-        'enableSysUncertainties' : True
+        'enableSysUncertainties' : True,
+        'applyZrecoilCorrection' : True
     },
     'bbA180' : {
         # Not skimmed
@@ -389,7 +403,8 @@ RECO_SAMPLES = {
         'legendEntry' : 'bbA(180) #rightarrow #tau^{+} #tau^{-}',
         'type' : 'bsmMC',
         'drawOption' : styles.drawOption_darkBlue_separate,
-        'enableSysUncertainties' : True
+        'enableSysUncertainties' : True,
+        'applyZrecoilCorrection' : True
     },
     'A200' : {
         # Not skimmed
@@ -406,7 +421,8 @@ RECO_SAMPLES = {
         'legendEntry' : 'ggA(200) #rightarrow #tau^{+} #tau^{-}',
         'type' : 'bsmMC',
         'drawOption' : styles.drawOption_darkBlue_separate,
-        'enableSysUncertainties' : True
+        'enableSysUncertainties' : True,
+        'applyZrecoilCorrection' : True
     },
     'bbA200' : {
         # Not skimmed
@@ -423,7 +439,8 @@ RECO_SAMPLES = {
         'legendEntry' : 'bbA(200) #rightarrow #tau^{+} #tau^{-}',
         'type' : 'bsmMC',
         'drawOption' : styles.drawOption_darkBlue_separate,
-        'enableSysUncertainties' : True
+        'enableSysUncertainties' : True,
+        'applyZrecoilCorrection' : True
     },
     'A250' : {
         # Not skimmed
@@ -440,7 +457,8 @@ RECO_SAMPLES = {
         'legendEntry' : 'ggA(250) #rightarrow #tau^{+} #tau^{-}',
         'type' : 'bsmMC',
         'drawOption' : styles.drawOption_darkBlue_separate,
-        'enableSysUncertainties' : True
+        'enableSysUncertainties' : True,
+        'applyZrecoilCorrection' : True
     },
     'bbA250' : {
         # Not skimmed
@@ -457,7 +475,8 @@ RECO_SAMPLES = {
         'legendEntry' : 'bbA(250) #rightarrow #tau^{+} #tau^{-}',
         'type' : 'bsmMC',
         'drawOption' : styles.drawOption_darkBlue_separate,
-        'enableSysUncertainties' : True
+        'enableSysUncertainties' : True,
+        'applyZrecoilCorrection' : True
     },
     'A300' : {
         # Not skimmed
@@ -474,7 +493,8 @@ RECO_SAMPLES = {
         'legendEntry' : 'ggA(300) #rightarrow #tau^{+} #tau^{-}',
         'type' : 'bsmMC',
         'drawOption' : styles.drawOption_darkBlue_separate,
-        'enableSysUncertainties' : True
+        'enableSysUncertainties' : True,
+        'applyZrecoilCorrection' : True
     },
     'bbA300' : {
         # Not skimmed
@@ -491,7 +511,8 @@ RECO_SAMPLES = {
         'legendEntry' : 'bbA(300) #rightarrow #tau^{+} #tau^{-}',
         'type' : 'bsmMC',
         'drawOption' : styles.drawOption_darkBlue_separate,
-        'enableSysUncertainties' : True
+        'enableSysUncertainties' : True,
+        'applyZrecoilCorrection' : True
     },
     'A350' : {
         # Not skimmed
@@ -508,7 +529,8 @@ RECO_SAMPLES = {
         'legendEntry' : 'ggA(350) #rightarrow #tau^{+} #tau^{-}',
         'type' : 'bsmMC',
         'drawOption' : styles.drawOption_darkBlue_separate,
-        'enableSysUncertainties' : True
+        'enableSysUncertainties' : True,
+        'applyZrecoilCorrection' : True
     },
     'bbA350' : {
         # Not skimmed
@@ -525,7 +547,8 @@ RECO_SAMPLES = {
         'legendEntry' : 'bbA(350) #rightarrow #tau^{+} #tau^{-}',
         'type' : 'bsmMC',
         'drawOption' : styles.drawOption_darkBlue_separate,
-        'enableSysUncertainties' : True
+        'enableSysUncertainties' : True,
+        'applyZrecoilCorrection' : True
     },
     # Using the unskimmed dataset
     'Ztautau' : {
@@ -542,6 +565,7 @@ RECO_SAMPLES = {
         'type' : plotter.process_Ztautau.config_dqmHistPlotter.type.value(),
         'drawOption' : styles.drawOption_Ztautau,
         'enableSysUncertainties' : True,
+        'applyZrecoilCorrection' : True,
         'hlt' : cms.InputTag("TriggerResults", "", "REDIGI38X")
     },
     # Using the unskimmed dataset
