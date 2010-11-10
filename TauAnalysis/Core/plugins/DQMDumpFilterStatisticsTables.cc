@@ -110,7 +110,7 @@ void printSummaryTable(std::ostream& stream, unsigned widthNameColumn, unsigned 
 
 void DQMDumpFilterStatisticsTables::endJob()
 {
-  //std::cout << "<DQMDumpFilterStatisticsTables::endJob>:" << std::endl;
+  std::cout << "<DQMDumpFilterStatisticsTables::endJob>:" << std::endl;
 
 //--- check that configuration parameters contain no errors
   if ( cfgError_ ) {
