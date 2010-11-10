@@ -38,6 +38,7 @@ def buildMergeTree(files, output_filename, intermediate_dir, merge_per_job=3, ve
     Build a dependency tree of cascading merge jobs.  Each merge job will
     attempt to merge three files.
     '''
+
     layers = []
     # We don't mess around with the path for this one
     input_files = (file for file in files)
@@ -84,7 +85,7 @@ def buildMergeTree(files, output_filename, intermediate_dir, merge_per_job=3, ve
         for i, layer in enumerate(layers):
             for job, (output, inputs) in enumerate(layer):
                 print i, job, output, inputs
-                
+
     return layers
 
 def writeMakefileLocalCopy(castor_file, working_dir, makefile):
@@ -142,6 +143,15 @@ def buildMakefile(merge_jobs, working_dir, makefilename,
     files.  [makefilename] specifies the name of the output
     Makefile
     '''
+
+    # Check if intermediate working directory exists and create it if not.
+    if not os.path.exists(working_dir):
+        print "Creating working directory:", working_dir
+        os.makedirs(working_dir)
+    # Make sure it isn't an existing file
+    if not os.path.isdir(working_dir):
+        print "Can't access (or create) the working directory:",\
+                working_dir, " Please fix!"
 
     # Setup makefile
     makefile = open(makefilename, 'w')
