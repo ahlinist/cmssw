@@ -4,6 +4,7 @@ import string
 import pickle
 
 import TauAnalysis.Configuration.tools.factorizationTools as factorizationTools
+import TauAnalysis.Configuration.tools.mcToDataCorrectionTools as mcToDataCorrectionTools
 import TauAnalysis.Configuration.tools.sysUncertaintyTools as sysUncertaintyTools
 import TauAnalysis.Configuration.tools.switchToData as switchToData
 
@@ -88,6 +89,14 @@ def _setEnableFactorization(process, enable, **kwargs):
         enableFactorizationFunction(process)
 
 @_requires(args=['channel'])
+def _setApplyZrecoilCorrection(process, enable, **kwargs):
+    channel = kwargs['channel']
+    if enable:
+        print "Applying Z-recoil corrections to MEt"
+        enabler = getattr(mcToDataCorrectionTools, "applyZrecoilCorrection_run%s" % channel)
+        enabler(process)
+
+@_requires(args=['channel'])
 def _setEnableSystematics(process, enable, **kwargs):
     channel = kwargs['channel']
     if enable:
@@ -138,6 +147,7 @@ _METHOD_MAP = {
     'plotsOutputFileName' : _setPlotsOutputFileName,
     'eventDump' : _setEventDump,
     'enableFactorization' : _setEnableFactorization,
+    'applyZrecoilCorrection' : _setApplyZrecoilCorrection,
     'enableSysUncertainties' : _setEnableSystematics,
     'inputFileType' : _setInputFileType,
     'type' : _setIsData,
