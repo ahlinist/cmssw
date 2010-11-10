@@ -150,7 +150,7 @@ sysUncertaintyNames.extend(
           jetSystematics,
           theorySystematics ]
     )
-)  
+)
 sysUncertaintyBinnerForMuTauAcc = sysUncertaintyBinner.clone(
     pluginName = cms.string('sysUncertaintyBinnerForMuTauAcc'),
     binnerPlugins = cms.VPSet(
@@ -420,7 +420,7 @@ muTauEventDump = cms.PSet(
     l1GtReadoutRecordSource = cms.InputTag(''),
     l1GtObjectMapRecordSource = cms.InputTag(''),
     l1BitsToPrint = cms.vstring('L1_SingleMu3', 'L1_SingleMu5', 'L1_SingleMu7', 'L1_SingleMu10', 'L1_SingleMu14'),
-    
+
     hltResultsSource = cms.InputTag('TriggerResults::HLT'),
     hltPathsToPrint = cms.vstring('HLT_Mu9', 'HLT_IsoMu9', 'HLT_Mu11', 'HLT_Mu15'),
 
@@ -429,7 +429,7 @@ muTauEventDump = cms.PSet(
     genJetSource = cms.InputTag('ak5GenJets'),
     genTauJetSource = cms.InputTag('tauGenJets'),
     genEventInfoSource = cms.InputTag('generator'),
-    
+
     electronSource = cms.InputTag('cleanPatElectrons'),
     muonSource = cms.InputTag('cleanPatMuons'),
     tauSource = cms.InputTag('selectedPatTausPt20Cumulative'),
@@ -439,14 +439,14 @@ muTauEventDump = cms.PSet(
         cms.PSet(
             name = cms.string("psKine_MEt_ptBalance")
         ),
-        cms.PSet(
-            name = cms.string("polKine_MEt_ptBalance"),
-            polarizationHypotheses = cms.vstring("LL", "LR", "RL", "RR")
+        #cms.PSet(
+            #name = cms.string("polKine_MEt_ptBalance"),
+            #polarizationHypotheses = cms.vstring("LL", "LR", "RL", "RR")
         ##),
         ##cms.PSet(
         ##    name = cms.string("polKine_MEt_ptBalance_Zprod"),
-        ##    polarizationHypotheses = cms.vstring("LL", "LR", "RL", "RR")    
-        )
+        ##    polarizationHypotheses = cms.vstring("LL", "LR", "RL", "RR")
+        ##),
     ),
     muTauZmumuHypothesisSource = cms.InputTag('muTauPairZmumuHypotheses'),
     diMuZmumuHypothesisSource = cms.InputTag('allDiMuPairZmumuHypothesesByMass'),
@@ -454,7 +454,7 @@ muTauEventDump = cms.PSet(
     caloMEtSource = cms.InputTag('patMETs'),
     pfMEtSource = cms.InputTag('patPFMETs'),
     genMEtSource = cms.InputTag('genMetTrue'),
-    
+
     #output = cms.string("muTauEventDump.txt"),
     output = cms.string("std::cout"),
 
@@ -511,7 +511,7 @@ muTauAnalysisSequence = cms.VPSet(
             'sysUncertaintyBinnerForMuTauAcc'
         )
     ),
-    
+
     # trigger selection
     cms.PSet(
         filter = cms.string('evtSelTrigger'),
@@ -692,7 +692,7 @@ muTauAnalysisSequence = cms.VPSet(
             'tauHistManager.tauSource = selectedPatTausForMuTauPt20Cumulative'
         )
     ),
-    
+
     # selection of muon candidate (isolation & id.)
     # produced in muonic tau decay
     cms.PSet(
@@ -744,7 +744,7 @@ muTauAnalysisSequence = cms.VPSet(
         ),
         replace = cms.vstring('muonHistManager.muonSource = selectedPatMuonsTrkIPcumulative')
     ),
-    
+
     # selection of tau-jet candidate (id.)
     # produced in hadronic tau decay
     cms.PSet(
@@ -851,7 +851,7 @@ muTauAnalysisSequence = cms.VPSet(
             'muonHistManager.muonSource = selectedPatMuonsTrkIPcumulative',
             'tauHistManager.tauSource = selectedPatTausForMuTauChargeCumulative'
         )
-    ),    
+    ),
     cms.PSet(
         filter = cms.string('evtSelTauMuonVeto'),
         title = cms.string('Tau mu-Veto'),
@@ -866,7 +866,7 @@ muTauAnalysisSequence = cms.VPSet(
             'muonHistManager.muonSource = selectedPatMuonsTrkIPcumulative',
             'tauHistManager.tauSource = selectedPatTausForMuTauMuonVetoCumulative'
         )
-    ),  
+    ),
     cms.PSet(
         filter = cms.string('evtSelTauElectronVeto'),
         title = cms.string('Tau e-Veto'),
