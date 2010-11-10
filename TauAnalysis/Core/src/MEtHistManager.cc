@@ -22,6 +22,9 @@ MEtHistManager::MEtHistManager(const edm::ParameterSet& cfg)
   metSrc_ = cfg.getParameter<edm::InputTag>("metSource");
   //std::cout << " metSrc = " << metSrc_ << std::endl;
   
+  expectUniqueMEt_ = cfg.exists("expectUniqueMEt") ?
+    cfg.getParameter<bool>("expectUniqueMEt") : true;
+
   metSignificanceSrc_ = ( cfg.exists("metSignificanceSource") ) ? 
     cfg.getParameter<edm::InputTag>("metSignificanceSource") : edm::InputTag();
   //std::cout << " metSignificanceSrc = " << metSignificanceSrc_ << std::endl;
@@ -252,9 +255,10 @@ void MEtHistManager::fillHistogramsImp(const edm::Event& evt, const edm::EventSe
       }
     }
   } else {
-    edm::LogError ("MEtHistManager::fillHistograms") 
-      << " Exactly one MET object expected per event" 
-      << " (found " << patMETs->size() << " objects in collection = " << metSrc_.label() << ")" 
-      << " --> skipping !!";
+    if ( expectUniqueMEt_ )
+      edm::LogError ("MEtHistManager::fillHistograms") 
+	<< " Exactly one MET object expected per event" 
+	<< " (found " << patMETs->size() << " objects in collection = " << metSrc_.label() << ")" 
+	<< " --> skipping !!";
   }
 }
