@@ -8,7 +8,22 @@ import PhysicsTools.PatAlgos.tools.helpers as patutils
 # NOTE: implementations specific to different analysis channels
 #--------------------------------------------------------------------------------
 
+def restoreZllRecoilCorrectionInputTags(process):
+    if hasattr(process, "patPFMETsZllRecoilCorrected"):
+        process.patPFMETsZllRecoilCorrected.src = cms.InputTag('allMuTauPairs')
+    if hasattr(process, "allMuTauPairsPFMETsZllRecoilCorrected"):
+        process.allMuTauPairsPFMETsZllRecoilCorrected.srcReRecoDiTauObjects = \
+          cms.InputTag('allMuTauPairs')
+    if hasattr(process, "patPFMETsZllRecoilCorrectedLooseMuonIsolation"):
+        process.patPFMETsZllRecoilCorrectedLooseMuonIsolation.src = cms.InputTag('allMuTauPairsLooseMuonIsolation')
+    if hasattr(process, "allMuTauPairsPFMETsZllRecoilCorrectedLooseMuonIsolation"):
+        process.allMuTauPairsPFMETsZllRecoilCorrectedLooseMuonIsolation.srcReRecoDiTauObjects = \
+          cms.InputTag('allMuTauPairsLooseMuonIsolation')
+
 def applyZrecoilCorrection_runZtoMuTau(process):
+
+    #print("<applyZrecoilCorrection_runZtoMuTau>:")
+    #print(" --> applying Z-recoil correction to MET !!")
 
     process.load("TauAnalysis.RecoTools.recoZllRecoilCorrection_cfi")
 
@@ -17,11 +32,19 @@ def applyZrecoilCorrection_runZtoMuTau(process):
             process.recoZllRecoilCorrectionParameter,                                         
             src = cms.InputTag('allMuTauPairs')
         )
-        process.patPFMETsZllRecoilCorrected.svFit = process.allMuTauPairs.svFit
+
+        process.allMuTauPairsPFMETsZllRecoilCorrected = process.allMuTauPairs.clone()
+        process.allMuTauPairsPFMETsZllRecoilCorrected.srcMET = \
+           cms.InputTag('patPFMETsZllRecoilCorrected', 'met')
+        process.allMuTauPairsPFMETsZllRecoilCorrected.srcReRecoDiTauObjects = \
+           cms.InputTag('allMuTauPairs')
+        process.allMuTauPairsPFMETsZllRecoilCorrected.srcReRecoDiTauToMEtAssociations = \
+           cms.InputTag('patPFMETsZllRecoilCorrected', 'diTauToMEtAssociations')
 
         process.patPFMETsZllRecoilCorrectionSequence = cms.Sequence(
             process.allMuTauPairs
            * process.patPFMETsZllRecoilCorrected
+           * process.allMuTauPairsPFMETsZllRecoilCorrected
         )
 
         process.produceMuTauPairs.replace(process.allMuTauPairs,
@@ -33,9 +56,18 @@ def applyZrecoilCorrection_runZtoMuTau(process):
         )
         process.patPFMETsZllRecoilCorrectedLooseMuonIsolation.svFit = process.allMuTauPairsLooseMuonIsolation.svFit
 
+        process.allMuTauPairsPFMETsZllRecoilCorrectedLooseMuonIsolation = process.allMuTauPairsLooseMuonIsolation.clone()
+        process.allMuTauPairsPFMETsZllRecoilCorrectedLooseMuonIsolation.srcMET = \
+           cms.InputTag('patPFMETsZllRecoilCorrectedLooseMuonIsolation', 'met')
+        process.allMuTauPairsPFMETsZllRecoilCorrectedLooseMuonIsolation.srcReRecoDiTauObjects = \
+           cms.InputTag('allMuTauPairsLooseMuonIsolation')
+        process.allMuTauPairsPFMETsZllRecoilCorrectedLooseMuonIsolation.srcReRecoDiTauToMEtAssociations = \
+           cms.InputTag('patPFMETsZllRecoilCorrectedLooseMuonIsolation', 'diTauToMEtAssociations')
+
         process.patPFMETsZllRecoilCorrectionSequenceLooseMuonIsolation = cms.Sequence(
             process.allMuTauPairsLooseMuonIsolation
            * process.patPFMETsZllRecoilCorrectedLooseMuonIsolation
+           * process.allMuTauPairsPFMETsZllRecoilCorrectedLooseMuonIsolation
         )
 
         process.produceMuTauPairsLooseMuonIsolation.replace(process.allMuTauPairsLooseMuonIsolation,
@@ -51,10 +83,10 @@ def applyZrecoilCorrection_runZtoMuTau(process):
             print "--> Replacing InputTags in sequence:", processAttrName
             if processAttrName.find("LooseMuonIsolation") != -1:
                 patutils.massSearchReplaceAnyInputTag(processAttr, cms.InputTag('allMuTauPairsLooseMuonIsolation'),
-                  cms.InputTag('patPFMETsZllRecoilCorrectedLooseMuonIsolation', 'diTauCandidates'))
+                  cms.InputTag('allMuTauPairsPFMETsZllRecoilCorrectedLooseMuonIsolation'))
             else:
                 patutils.massSearchReplaceAnyInputTag(processAttr, cms.InputTag('allMuTauPairs'), 
-                  cms.InputTag('patPFMETsZllRecoilCorrected', 'diTauCandidates'))
+                  cms.InputTag('allMuTauPairsPFMETsZllRecoilCorrected'))
 
     # check if process object has GenericAnalyzer modules specific to ZtoMuTau channel attached to it.
     # If it has, replace in "regular" analysis sequence:
@@ -79,12 +111,12 @@ def applyZrecoilCorrection_runZtoMuTau(process):
         process.pfMEtHistManager.expectUniqueMEt = cms.bool(False)
 
     # restore InputTag of ZllRecoilCorrection modules
-    if hasattr(process, "patPFMETsZllRecoilCorrected"):
-        process.patPFMETsZllRecoilCorrected.src = cms.InputTag('allMuTauPairs')
-    if hasattr(process, "patPFMETsZllRecoilCorrectedLooseMuonIsolation"):
-        process.patPFMETsZllRecoilCorrectedLooseMuonIsolation.src = cms.InputTag('allMuTauPairs')    
+    restoreZllRecoilCorrectionInputTags(process)
 
 def applyZrecoilCorrection_runAHtoMuTau(process):
+
+    #print("<applyZrecoilCorrection_runAHtoMuTau>:")
+    #print(" --> applying Z/A/H-recoil correction to MET !!")
 
     applyZrecoilCorrection_runZtoMuTau(process)
     
@@ -104,7 +136,4 @@ def applyZrecoilCorrection_runAHtoMuTau(process):
           cms.InputTag('patPFMETsZllRecoilCorrectedLooseMuonIsolation', 'met'))
 
     # restore InputTag of ZllRecoilCorrection modules
-    if hasattr(process, "patPFMETsZllRecoilCorrected"):
-        process.patPFMETsZllRecoilCorrected.src = cms.InputTag('allMuTauPairs')
-    if hasattr(process, "patPFMETsZllRecoilCorrectedLooseMuonIsolation"):
-        process.patPFMETsZllRecoilCorrectedLooseMuonIsolation.src = cms.InputTag('allMuTauPairs')  
+    restoreZllRecoilCorrectionInputTags(process)
