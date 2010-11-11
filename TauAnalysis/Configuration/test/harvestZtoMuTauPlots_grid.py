@@ -2,7 +2,7 @@
 
 from TauAnalysis.Configuration.recoSampleDefinitionsZtoMuTau_7TeV_grid_cfi import recoSampleDefinitionsZtoMuTau_7TeV
 from TauAnalysis.Configuration.harvestAnalysisResults_grid import harvestAnalysisResults
-from TauAnalysis.Configuration.userRegistry import import getAnalysisFilePath, getHarvestingFilePath, getJobId, getTmpFilePath
+from TauAnalysis.Configuration.userRegistry import getAnalysisFilePath, getHarvestingFilePath, getJobId, getTmpFilePath
 
 channel = 'ZtoMuTau'
 analysisFilePath = getAnalysisFilePath(channel)
