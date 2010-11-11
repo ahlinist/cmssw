@@ -38,8 +38,9 @@ FilterStatisticsElement* loadFilterStatisticsElement(DQMStore& dqmStore, const s
   std::string meName_num = dqmDirectoryName(dqmDirectory).append(elementName).append(meNameSuffixNum);
   MonitorElement* meNum = dqmStore.get(meName_num);
   if ( !meNum ) {
-    edm::LogError ("loadFilterStatisticsElement") << " Failed to load meName_num = " << meName_num 
-						  << " from dqmDirectory = " << dqmDirectory << " --> skipping !!";
+    edm::LogError ("loadFilterStatisticsElement") 
+      << " Failed to load meName_num = " << meName_num 
+      << " from dqmDirectory = " << dqmDirectory << " --> skipping !!";
     return 0;
   }
   int64_t num = meNum->getIntValue();
@@ -47,8 +48,9 @@ FilterStatisticsElement* loadFilterStatisticsElement(DQMStore& dqmStore, const s
   std::string meName_numWeighted = dqmDirectoryName(dqmDirectory).append(elementName).append(meNameSuffixNumWeighted);
   MonitorElement* meNumWeighted = dqmStore.get(meName_numWeighted);
   if ( !meNumWeighted ) {
-    edm::LogError ("loadFilterStatisticsElement") << " Failed to load meName_numWeighted = " << meName_numWeighted 
-						  << " from dqmDirectory = " << dqmDirectory << " --> skipping !!";
+    edm::LogError ("loadFilterStatisticsElement") 
+      << " Failed to load meName_numWeighted = " << meName_numWeighted 
+      << " from dqmDirectory = " << dqmDirectory << " --> skipping !!";
     return 0;
   }
   double numWeighted = meNumWeighted->getFloatValue();
@@ -63,10 +65,13 @@ bool operator<(const std::pair<std::string, FilterStatisticsRow*>& row_1, const 
 
 FilterStatisticsTable* FilterStatisticsService::loadFilterStatisticsTable(const std::string& dqmDirectory) const
 {
+  //std::cout << "<FilterStatisticsService::loadFilterStatisticsTable>:" << std::endl;
+
 //--- check if DQMStore is available;
 //    print an error message and return if not
   if ( !edm::Service<DQMStore>().isAvailable() ) {
-    edm::LogError ("FilterStatisticsService::loadFilterStatisticsTable") << " Failed to access dqmStore !!";
+    edm::LogError ("FilterStatisticsService::loadFilterStatisticsTable") 
+      << " Failed to access dqmStore !!";
     return 0;
   }
 
@@ -75,16 +80,21 @@ FilterStatisticsTable* FilterStatisticsService::loadFilterStatisticsTable(const 
   FilterStatisticsTable* filterStatisticsTable = new FilterStatisticsTable();
 
 //--- load MonitorElement holding name of FilterStatisticsTable
+  //std::cout << " dqmDirectory = " << dqmDirectory << std::endl; 
   dqmStore.setCurrentFolder(dqmDirectory);
 
   MonitorElement* meFilterStatisticsTableName = dqmStore.get(dqmDirectoryName(dqmDirectory).append("name"));
+  //std::cout << " meFilterStatisticsTableName = " << meFilterStatisticsTableName << std::endl;
   filterStatisticsTable->name_ = ( meFilterStatisticsTableName ) ? meFilterStatisticsTableName->getStringValue() : "undefined";
+  //std::cout << "--> name = " << filterStatisticsTable->name_ << std::endl;
 
 //--- check for DQM subdirectories
 //    and iteratively load all MonitorElements stored in them
   std::vector<std::string> dirNames = dqmStore.getSubdirs();
+  //std::cout << "dirNames.size = " << dirNames.size() << std::endl;
   for ( std::vector<std::string>::const_iterator dirName = dirNames.begin();
 	dirName != dirNames.end(); ++dirName ) {
+    //std::cout << "dirName = " << (*dirName) << std::endl;
     std::string subDirName = dqmSubDirectoryName(dqmDirectory, *dirName);
     std::string dqmDirectory_row = dqmDirectoryName(dqmDirectory).append(subDirName);
     dqmStore.setCurrentFolder(dqmDirectory_row);
@@ -116,8 +126,9 @@ FilterStatisticsTable* FilterStatisticsService::loadFilterStatisticsTable(const 
   }
 
   if ( !filterStatisticsTable->rows_.size() ) {
-    edm::LogError ("FilterStatisticsService::loadFilterStatisticsTable") << " Failed to load any FilterStatisticsRows"
-									 << " --> skipping !!";
+    edm::LogError ("FilterStatisticsService::loadFilterStatisticsTable") 
+      << " Failed to load any FilterStatisticsRows"
+      << " --> skipping !!";
     return 0;
   }
 
@@ -146,14 +157,16 @@ void FilterStatisticsService::saveFilterStatisticsTable(const std::string& dqmDi
 {
 //--- check that FilterStatisticsService objects holds a FilterStatisticsTable
   if ( !filterStatisticsTable ) {
-    edm::LogError ("FilterStatisticsService::saveFilterStatisticsTable") << " FilterStatisticsTable not initialized !!";
+    edm::LogError ("FilterStatisticsService::saveFilterStatisticsTable") 
+      << " FilterStatisticsTable not initialized !!";
     return;
   }
 
 //--- check if DQMStore is available;
 //    print an error message and return if not
   if ( !edm::Service<DQMStore>().isAvailable() ) {
-    edm::LogError ("FilterStatisticsService::saveFilterStatisticsTable") << " Failed to access dqmStore !!";
+    edm::LogError ("FilterStatisticsService::saveFilterStatisticsTable") 
+      << " Failed to access dqmStore !!";
     return;
   }
 
