@@ -38,6 +38,12 @@
 /// option which is supposed to be the   ///
 /// "true" one.                          ///
 /// Find Axis and VTX by TRUE helix fit  ///
+///                                      ///
+/// Changed by:                          ///
+/// Nicola Pozzobon                      ///
+/// UNIPD                                ///
+/// 2010, November                       ///
+/// Get rid of Cramer, keeping helix     ///
 /// ////////////////////////////////////////
 
 #ifndef TRACKLET_BUILDER_H
@@ -249,35 +255,22 @@ class TrackletBuilder : public edm::EDProducer {
 
                       double projected_z22X = outer.z() - ( outerPointRadius * (outer.z()-inner.z()) / deltaRadius );
                       tempShortTracklet.addVertex22X( GlobalPoint(xv,yv,projected_z22X ));
+                      
+                      /// Here the VERY NEW Fit begins
+                      double phidiff = outer.phi() - inner.phi();
+                      double r1 = inner.perp();
+                      double r2 = outer.perp();
+                      double x2 = r1*r1 + r2*r2 - 2*r1*r2*cos(phidiff);
+                      double radius = 0.5*sqrt(x2)/sin(fabs(phidiff));
+                      double phioi = acos(1 - x2/(2*radius*radius));
+                      double phiiv = acos(1 - r1*r1/(2*radius*radius));
 
-                      /// Here NEW Fit begins
-                      /// Find circumference center using Cramer!
-                      double xo = outer.x();
-                      double yo = outer.y();
-                      double xi = inner.x();
-                      double yi = inner.y();
-
-                      double ro2 = outer.perp2();
-                      double ri2 = inner.perp2();
-                      double rv2 = xv*xv+yv*yv;
-                      double D = (xo-xi)*(yi-yv)-(yo-yi)*(xi-xv);
-                      if (D==0) continue;
-                      double Dx = 0.5*(ro2-ri2)*(yi-yv)-0.5*(ri2-rv2)*(yo-yi);
-                      double Dy = 0.5*(ri2-rv2)*(xo-xi)-0.5*(ro2-ri2)*(xi-xv);
-                      double xc = Dx/D;
-                      double yc = Dy/D;
-                      /// Find angles wrt center
-                      double phio = atan2( yo-yc, xo-xc );
-                      double phii = atan2( yi-yc, xi-xc );
-                      double phiv = atan2( yv-yc, xv-xc );
                       /// Find advancement!
                       double pigreco = 4.0*atan(1.0);
-                      double phioi = phio - phii;
                       if ( fabs(phioi) >= pigreco) {
                         if ( phioi>0 ) phioi = phioi - 2*pigreco;
                         else phioi = 2*pigreco - fabs(phioi);
                       }
-                      double phiiv = phii - phiv;
                       if ( fabs(phiiv) >= pigreco) {
                         if ( phiiv>0 ) phiiv = phiiv - 2*pigreco;
                         else phiiv = 2*pigreco - fabs(phiiv);
@@ -287,7 +280,7 @@ class TrackletBuilder : public edm::EDProducer {
 
                       /// Set Results of the New Fit
                       tempShortTracklet.addVertex( GlobalPoint(xv,yv,projected_z ));
-                      tempShortTracklet.addAxis( GlobalPoint(xc,yc,0 ));
+                      //tempShortTracklet.addAxis( GlobalPoint(xc,yc,0 ));
 
                       if ( IdetID.iPhi() != OdetID.iPhi() )    tempShortTracklet.setHermetic(false);
                       else  tempShortTracklet.setHermetic(true);
@@ -335,44 +328,37 @@ class TrackletBuilder : public edm::EDProducer {
                       double projectedBS_z22X = outerBeamSpot.z() - ( outerPointRadius * (outerBeamSpot.z()-innerBeamSpot.z()) / deltaRadius );
                       tempShortTracklet.addVertex22X( GlobalPoint(xv,yv,projectedBS_z22X ));
 
-                      /// Here NEW Fit begins
-                      /// Find circumference center using Cramer!
-                      double xo = outer.x();
-                      double yo = outer.y();
-                      double xi = inner.x();
-                      double yi = inner.y();
+                      /// Here the VERY NEW Fit begins
+                      double phidiff = outerBeamSpot.phi() - innerBeamSpot.phi();
+                      double r1 = innerBeamSpot.perp();
+                      double r2 = outerBeamSpot.perp();
+                      double x2 = r1*r1 + r2*r2 - 2*r1*r2*cos(phidiff);
+                      double radius = 0.5*sqrt(x2)/sin(fabs(phidiff));
+                      double phioi = acos(1 - x2/(2*radius*radius));
+                      double phiiv = acos(1 - r1*r1/(2*radius*radius));
 
-                      double ro2 = outer.perp2();
-                      double ri2 = inner.perp2();
-                      double rv2 = xv*xv+yv*yv;
-                      double D = (xo-xi)*(yi-yv)-(yo-yi)*(xi-xv);
-                      if (D==0) continue;
-                      double Dx = 0.5*(ro2-ri2)*(yi-yv)-0.5*(ri2-rv2)*(yo-yi);
-                      double Dy = 0.5*(ri2-rv2)*(xo-xi)-0.5*(ro2-ri2)*(xi-xv);
-                      double xc = Dx/D;
-                      double yc = Dy/D;
-                      /// Find angles wrt center
-                      double phio = atan2( yo-yc, xo-xc );
-                      double phii = atan2( yi-yc, xi-xc );
-                      double phiv = atan2( yv-yc, xv-xc );
                       /// Find advancement!
                       double pigreco = 4.0*atan(1.0);
-                      double phioi = phio - phii;
                       if ( fabs(phioi) >= pigreco) {
                         if ( phioi>0 ) phioi = phioi - 2*pigreco;
                         else phioi = 2*pigreco - fabs(phioi);
                       }
-                      double phiiv = phii - phiv;
                       if ( fabs(phiiv) >= pigreco) {
                         if ( phiiv>0 ) phiiv = phiiv - 2*pigreco;
                         else phiiv = 2*pigreco - fabs(phiiv);
                       }
                       if (phioi==0) continue;
-                      double projectedBS_z = inner.z() - (outer.z()-inner.z())*phiiv/phioi;
+                      double projectedBS_z = inner.z() - (outer.z()-inner.z())*phiiv/phioi; /// This is fine enough
+                                                                                            /// as using innerBeamSpot
+                                                                                            /// or outerBeamSpot and then
+                                                                                            /// recorrecting back to the
+                                                                                            /// CMS coordinate frame
+                                                                                            /// would bring to the same
+                                                                                            /// result
 
                       /// Set Results of the New Fit
                       tempShortTracklet.addVertex( GlobalPoint(xv,yv,projectedBS_z ));
-                      tempShortTracklet.addAxis( GlobalPoint(xc,yc,0 ));
+                      //tempShortTracklet.addAxis( GlobalPoint(xc,yc,0 ));
 
                       if ( IdetID.iPhi() != OdetID.iPhi() )    tempShortTracklet.setHermetic(false);
                       else  tempShortTracklet.setHermetic(true);
@@ -456,32 +442,6 @@ template<>
     else {
           int innerSimTrackId = innerStub->trackID(); // = -1;
           int outerSimTrackId = outerStub->trackID(); // = -1;
-          /*
-          cmsUpgrades::StackedTrackerDetId innerId = (*innerStub).Id();
-          cmsUpgrades::StackedTrackerDetId outerId = (*outerStub).Id();
-          const DetId innerId0 = theStackedTracker->idToDet(innerId,0)->geographicalId();
-          const DetId outerId0 = theStackedTracker->idToDet(outerId,0)->geographicalId();
-          const std::vector<cmsUpgrades::Ref_PixelDigi_> innerHits0 = (*innerStub).localStub()->hit(0);
-          const std::vector<cmsUpgrades::Ref_PixelDigi_> outerHits0 = (*outerStub).localStub()->hit(0);
-          edm::DetSet<PixelDigiSimLink> innerDigiSimLink0 = (*thePixelDigiSimLink)[innerId0.rawId()];
-          edm::DetSet<PixelDigiSimLink> outerDigiSimLink0 = (*thePixelDigiSimLink)[outerId0.rawId()];
-          std::vector<cmsUpgrades::Ref_PixelDigi_>::const_iterator innerIt0 = innerHits0.begin();
-          std::vector<cmsUpgrades::Ref_PixelDigi_>::const_iterator outerIt0 = outerHits0.begin();
-          const cmsUpgrades::Ref_PixelDigi_ &hit_inner0 = *innerIt0;
-          const cmsUpgrades::Ref_PixelDigi_ &hit_outer0 = *outerIt0;
-          edm::DetSet<PixelDigiSimLink>::const_iterator innerIterSimLink;
-          for(innerIterSimLink = innerDigiSimLink0.data.begin(); innerIterSimLink != innerDigiSimLink0.data.end(); innerIterSimLink++){
-            if((unsigned int)innerIterSimLink->channel()==(unsigned int)hit_inner0->channel()){
-              innerSimTrackId = innerIterSimLink->SimTrackId();
-            }
-          }
-          edm::DetSet<PixelDigiSimLink>::const_iterator outerIterSimLink;
-          for(outerIterSimLink = outerDigiSimLink0.data.begin(); outerIterSimLink != outerDigiSimLink0.data.end(); outerIterSimLink++){
-            if((unsigned int)outerIterSimLink->channel()==(unsigned int)hit_outer0->channel()){
-              outerSimTrackId = outerIterSimLink->SimTrackId();
-            }
-          }
-          */
 
           if (!(innerSimTrackId!=-1 && innerSimTrackId!=-1 && innerSimTrackId==outerSimTrackId)) {
             abc.second = 2;
