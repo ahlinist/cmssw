@@ -2,8 +2,8 @@
   \file HcalRenderPlugin.cc
   \brief Display Plugin for Hcal DQM Histograms
   \author J. Temple
-  \version $Revision: 1.9 $
-  \date $Date: 2010/04/12 09:12:41 $
+  \version $Revision: 1.10 $
+  \date $Date: 2010/07/27 21:23:24 $
   \\
   \\ Code shamelessly borrowed from S. Dutta's SiStripRenderPlugin.cc code,
   \\ G. Della Ricca and B. Gobbo's EBRenderPlugin.cc, and other existing
@@ -141,13 +141,14 @@ public:
       }
 
 
-  // repeat for hcal error colors.  Assign color positions starting at 2201
-    NRGBs_hcalError = 8; // specify number of RGB boundaries for hcalError
+    // repeat for hcal error colors.  Assign color positions starting at 1501
+    NRGBs_hcalError = 9; // specify number of RGB boundaries for hcalError
     NCont_hcalError = 105; // specify number of contours for hcalError
-    Double_t stops_hcalError[] = { 0.00, 0.05/1.05, 0.40/1.05, 0.75/1.05, 0.95/1.05, 1.00/1.05,  1.01/1.05,1.05/1.05};
-    Double_t red_hcalError[]   = { 0.00, 1.00, 1.00, 1.00, 1.00, 1.00, 1.00, 0.0};
-    Double_t green_hcalError[] = { 0.80, 1.00, 0.67, 0.33, 0.00, 0.00, 0.00, 0.0};
-    Double_t blue_hcalError[]  = { 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.0};
+    // Update on 1 October 10:  Switch 'black' color to 'white' for known bad channels
+    Double_t stops_hcalError[] = { 0.00, 0.05/1.05, 0.40/1.05, 0.75/1.05, 0.95/1.05, 1.00/1.05, 1.01/1.05,1.02/1.05, 1.05/1.05};
+    Double_t red_hcalError[]   = { 0.00, 1.00, 1.00, 1.00, 1.00, 1.00, 1.00, 1.0, 1.0};
+    Double_t green_hcalError[] = { 0.80, 1.00, 0.67, 0.33, 0.00, 0.00, 0.00, 1.0, 1.0};
+    Double_t blue_hcalError[]  = { 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 1.0, 1.0};
     nColorsGradient=0;
     highestIndex=0;
     for (int g=1;g<NRGBs_hcalError;++g)
@@ -155,11 +156,11 @@ public:
         nColorsGradient = (Int_t) (floor(NCont_hcalError*stops_hcalError[g]) - floor(NCont_hcalError*stops_hcalError[g-1])); // specify number of gradients between stops (g-1) and (g)
         for (int c = 0; c < nColorsGradient; c++)
 	  {
-	    hcalErrorColors[highestIndex]=2201+highestIndex;
-	    TColor* color = gROOT->GetColor(2201+highestIndex);
+	    hcalErrorColors[highestIndex]=1501+highestIndex;
+	    TColor* color = gROOT->GetColor(1501+highestIndex);
 	    // Make new color only if old color does not exist
 	    if (!color)
-	      color = new TColor(2201+highestIndex,
+	      color = new TColor(1501+highestIndex,
 				 red_hcalError[g-1] + c * (red_hcalError[g] - red_hcalError[g-1])/ nColorsGradient,
 				 green_hcalError[g-1] + c * (green_hcalError[g] - green_hcalError[g-1])/ nColorsGradient,
 				 blue_hcalError[g-1] + c * (blue_hcalError[g] - blue_hcalError[g-1])/ nColorsGradient,
@@ -168,7 +169,6 @@ public:
 	    highestIndex++;
 	  }
       }
-
   }
 
   virtual bool applies(const VisDQMObject &o, const VisDQMImgInfo &)
