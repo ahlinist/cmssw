@@ -38,13 +38,39 @@ TH1* getHistogram(DQMStore& dqmStore, const std::string& meName, bool& dqmError)
   std::string histogramName, histogramDirectory;
   separateMonitorElementFromDirectoryName(meName, histogramName, histogramDirectory);
 
+  TH1* histogram = 0;
+
   MonitorElement* me = dqmStore.get(std::string(histogramDirectory).append(dqmSeparator).append(histogramName));
+  if ( me ) {
+    int meType = me->kind();
+    if ( meType == MonitorElement::DQM_KIND_TH1F      ||
+	 meType == MonitorElement::DQM_KIND_TH1S      ||
+	 meType == MonitorElement::DQM_KIND_TH2F      ||
+	 meType == MonitorElement::DQM_KIND_TH2S      ||
+	 meType == MonitorElement::DQM_KIND_TH3F      ||
+	 meType == MonitorElement::DQM_KIND_TPROFILE  ||
+	 meType == MonitorElement::DQM_KIND_TPROFILE2D ) {
+      TH1* histogram = 0;
+      try {
+	histogram = me->getTH1();
+      } catch ( cms::Exception& ex ) {
+	edm::LogError ("getHistogram") 
+	  << " Exception triggered when trying to access histogram associated to meName = " << meName << ","
+	  << " MonitorElement type = " << meType << ":" << ex.what() << " !!";
+	return histogram;
+      } 
+      if ( !histogram ) {
+        edm::LogError ("getHistogram") 
+  	  << " Failed to access histogram associated to meName = " << meName << " in DQMStore" << " --> skipping !!";
+        return histogram;
+      }
 
-  TH1* histogram = ( me != NULL ) ? me->getTH1() : NULL;
-  //std::cout << "meName = " << meName << ": integral = " << histogram->Integral() << std::endl;
-
-  if ( histogram ) {
-    if ( !histogram->GetSumw2N() ) histogram->Sumw2();
+      //std::cout << "meName = " << meName << ": integral = " << histogram->Integral() << std::endl;
+      
+      if ( !histogram->GetSumw2N() ) histogram->Sumw2();
+    } else {
+      edm::LogError("getHistogram") << " MonitorElement name = " << meName << " is not of type histogram !!";
+    }
   } else {
     edm::LogError("getHistogram") << " Failed to retrieve MonitorElement = " << meName << " !!";
     dqmError = true;
@@ -73,8 +99,9 @@ double getValue(DQMStore& dqmStore, const std::string& meName_full, bool& error)
   separateMonitorElementFromDirectoryName(meName_full, meName, dqmDirectory);
   MonitorElement* me = dqmStore.get(std::string(dqmDirectory).append(dqmSeparator).append(meName));
   if ( me ) {
-    if ( me->kind() == MonitorElement::DQM_KIND_REAL ) return me->getFloatValue();
-    else if ( me->kind() == MonitorElement::DQM_KIND_INT  ) return me->getIntValue();
+    int meType = me->kind();
+    if ( meType == MonitorElement::DQM_KIND_REAL ) return me->getFloatValue();
+    else if ( meType == MonitorElement::DQM_KIND_INT  ) return me->getIntValue();
     else {
       edm::LogError ("getValue") << " MonitorElement = " << meName_full << " is of invalid Type !!";
       error = true;
@@ -261,21 +288,30 @@ void dqmCopyMonitorElement(DQMStore& dqmStore, const std::string& inputDirectory
 //--- skip "invalid" MonitorElements
   if ( meInput->kind() == MonitorElement::DQM_KIND_INVALID ) {
     edm::LogWarning ("dqmCopyMonitorElement") 
-      << " MonitorElement meName = " << meName_input << " marked as invalid" << " --> skipping !!";
+      << " MonitorElement meName = " << meName_full << " marked as invalid" << " --> skipping !!";
     return;
   }
   
-  if ( meInput->kind() == MonitorElement::DQM_KIND_TH1F      ||
-       meInput->kind() == MonitorElement::DQM_KIND_TH1S      ||
-       meInput->kind() == MonitorElement::DQM_KIND_TH2F      ||
-       meInput->kind() == MonitorElement::DQM_KIND_TH2S      ||
-       meInput->kind() == MonitorElement::DQM_KIND_TH3F      ||
-       meInput->kind() == MonitorElement::DQM_KIND_TPROFILE  ||
-       meInput->kind() == MonitorElement::DQM_KIND_TPROFILE2D ) {
-    TH1* histogram = meInput->getTH1();
+  int meType = meInput->kind();
+  if ( meType == MonitorElement::DQM_KIND_TH1F      ||
+       meType == MonitorElement::DQM_KIND_TH1S      ||
+       meType == MonitorElement::DQM_KIND_TH2F      ||
+       meType == MonitorElement::DQM_KIND_TH2S      ||
+       meType == MonitorElement::DQM_KIND_TH3F      ||
+       meType == MonitorElement::DQM_KIND_TPROFILE  ||
+       meType == MonitorElement::DQM_KIND_TPROFILE2D ) {
+    TH1* histogram = 0;
+    try {
+      histogram = meInput->getTH1();
+    } catch ( cms::Exception& ex ) {
+      edm::LogError ("dqmCopyMonitorElement") 
+	<< " Exception triggered when trying to access histogram associated to meName = " << meName_full << ","
+	<< " MonitorElement type = " << meType << ":" << ex.what() << " !!";
+      return;
+    }
     if ( !histogram ) {
       edm::LogError ("dqmCopyMonitorElement") 
-	<< " Failed to access histogram associated to meName = " << meName_input << " in DQMStore" << " --> skipping !!";
+	<< " Failed to access histogram associated to meName = " << meName_full << " in DQMStore" << " --> skipping !!";
       return;
     }
 	
@@ -284,8 +320,8 @@ void dqmCopyMonitorElement(DQMStore& dqmStore, const std::string& inputDirectory
 //--- do not scale profile histograms
 //    (as their y-axis represents average values of observables,
 //     **not** number of events)
-    if ( !(meInput->kind() == MonitorElement::DQM_KIND_TPROFILE   ||
-	   meInput->kind() == MonitorElement::DQM_KIND_TPROFILE2D) ) {
+    if ( !(meType == MonitorElement::DQM_KIND_TPROFILE   ||
+	   meType == MonitorElement::DQM_KIND_TPROFILE2D) ) {
       if ( scaleFactorErr > 0. ) {
 	unsigned numBinsX = clone->GetNbinsX();
 	for ( unsigned iBinX = 1; iBinX <= numBinsX; ++iBinX ) {
@@ -319,13 +355,20 @@ void dqmCopyMonitorElement(DQMStore& dqmStore, const std::string& inputDirectory
     if ( meOutput ) {
 //--- add histogram to outputHistogram
       //std::cout << "--> adding to existing histogram." << std::endl;
-      meOutput->getTH1()->Add(clone.get());
+      try {
+        meOutput->getTH1()->Add(clone.get());
+      } catch ( cms::Exception& ex ) {
+        edm::LogError ("dqmCopyMonitorElement") 
+	  << " Exception triggered when trying to add histogram associated to meName = " << meName_full
+          << " to existing histogram associated to meName = " << meNameOutput_full << ":" << ex.what() << " !!";
+	return;
+      }
     } else {
 //--- create new outputHistogram
       //std::cout << "--> registering as new histogram." << std::endl;
       dqmRegisterHistogram(dqmStore, clone.release(), meNameOutput_full);
     }
-  } else if ( meInput->kind() == MonitorElement::DQM_KIND_INT ) {
+  } else if ( meType == MonitorElement::DQM_KIND_INT ) {
     int intValue = meInput->getIntValue();
     
     dqmStore.setCurrentFolder(outputDirectory);
@@ -343,7 +386,7 @@ void dqmCopyMonitorElement(DQMStore& dqmStore, const std::string& inputDirectory
       meOutput = dqmStore.bookInt(meName_output);
       meOutput->Fill(intValue);
     }
-  } else if ( meInput->kind() == MonitorElement::DQM_KIND_REAL ) {
+  } else if ( meType == MonitorElement::DQM_KIND_REAL ) {
     double realValue = meInput->getFloatValue();
     //std::cout << "realValue = " << realValue << std::endl;
     double power_scale = getPower_scale(meName_input);
@@ -368,7 +411,7 @@ void dqmCopyMonitorElement(DQMStore& dqmStore, const std::string& inputDirectory
       meOutput = dqmStore.bookFloat(meName_output);
       meOutput->Fill(realValue);
     }
-  } else if ( meInput->kind() == MonitorElement::DQM_KIND_STRING ) {
+  } else if ( meType == MonitorElement::DQM_KIND_STRING ) {
     std::string stringValue = meInput->getStringValue();
     
     dqmStore.setCurrentFolder(outputDirectory);
@@ -494,7 +537,20 @@ void dqmDumpMonitorElement(DQMStore& dqmStore, const std::string& meName, const 
        meType == MonitorElement::DQM_KIND_TH3F      ||
        meType == MonitorElement::DQM_KIND_TPROFILE  ||
        meType == MonitorElement::DQM_KIND_TPROFILE2D ) {
-    TH1* histogram = me->getTH1();
+    TH1* histogram = 0;
+    try {
+      histogram = me->getTH1();
+    } catch ( cms::Exception& ex ) {
+      edm::LogError ("dqmDumpMonitorElement") 
+	<< " Exception triggered when trying to access histogram associated to meName = " << meName << ","
+	<< " MonitorElement type = " << meType << ":" << ex.what() << " !!";
+      return;
+    }
+    if ( !histogram ) {
+      edm::LogError ("dqmDumpMonitorElement") 
+	<< " Failed to access histogram associated to meName = " << meName << " in DQMStore" << " --> skipping !!";
+      return;
+    }
 
     stream << " " << label << ":" << std::endl;
 
