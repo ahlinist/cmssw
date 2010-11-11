@@ -124,6 +124,8 @@
 #include "SLHCUpgradeSimulations/L1Trigger/interface/LineFit.h"
 #include "SimDataFormats/SLHC/interface/L1Track.h"
 
+#include "SimDataFormats/SLHC/interface/L1TrackFit.h"
+
 ///////////////
 // ROOT HEADERS
 #include <TROOT.h>
@@ -576,8 +578,9 @@ void TestL1Track::analyze(const edm::Event& e, const edm::EventSetup& es)
           if ( iterL1Track->isFake() != 0 ) continue;
 
           /// Select only Tracks matching VTX
-          if ( fabs(iterL1Track->fitVertex().z()) >= 20.0 ) continue;
-
+          ///if ( fabs(iterL1Track->fitVertex().z()) >= 20.0 ) continue;
+          // comment because of new L1Track class version, but you can keep the option
+          // just by putting the fit here above
           if ( iterL1Track->simTrkId() == iterSimTracks->trackId() )
             anymatched = true;
       
@@ -768,8 +771,10 @@ void TestL1Track::analyze(const edm::Event& e, const edm::EventSetup& es)
       /// Select only L1Tracks with chosen seed
       if ( iterL1Track->whichSeed() != seedsuperlayer ) continue;
 
+      L1TrackFit iterL1TrackFit = iterL1Track->fitL1Track(true);
+
       /// Select only Tracks matching VTX
-      if ( fabs(iterL1Track->fitVertex().z()) >= 20.0 ) continue;
+      if ( fabs(iterL1TrackFit.getVertex().z()) >= 20.0 ) continue;
 
       /// Select only good L1Tracks
       bool isFakeL1Track = false;
@@ -826,15 +831,18 @@ void TestL1Track::analyze(const edm::Event& e, const edm::EventSetup& es)
           //if (iterL1Track->trkCharge() > 0 ) continue;
           
           if ( iterL1Track->simTrkId() == iterSimTracks->trackId() ) {
-            hL1Trk_e_ST_e->Fill( iterSimTracks->momentum().eta(), iterL1Track->fitEta() );
-            hL1Trk_p_ST_p->Fill( iterSimTracks->momentum().phi(), iterL1Track->fitPhi() );
-            hL1Trk_Pt_ST_Pt->Fill( iterSimTracks->momentum().pt(), iterL1Track->Pt() );
-            hL1Trk_xvtx_ST_xvtx->Fill( theSimVertex.position().x(), iterL1Track->fitVertex().x() );
-            hL1Trk_yvtx_ST_yvtx->Fill( theSimVertex.position().y(), iterL1Track->fitVertex().y() );
-            hL1Trk_zvtx_ST_zvtx->Fill( theSimVertex.position().z(), iterL1Track->fitVertex().z() );
-            hL1Trk_q_ST_q->Fill( iterSimTracks->charge(), iterL1Track->trkCharge() );
-            hL1Trk_chi2rphi_n->Fill( iterL1Track->numberStubs(), iterL1Track->fitChi2RPhi() );
-            hL1Trk_chi2rz_n->Fill( iterL1Track->numberStubs(), iterL1Track->fitChi2ZPhi() );
+
+
+            hL1Trk_e_ST_e->Fill( iterSimTracks->momentum().eta(), iterL1TrackFit.getMomentum().eta() );
+            hL1Trk_p_ST_p->Fill( iterSimTracks->momentum().phi(), iterL1TrackFit.getMomentum().phi() );
+            hL1Trk_Pt_ST_Pt->Fill( iterSimTracks->momentum().pt(), iterL1TrackFit.getMomentum().perp() );
+            hL1Trk_xvtx_ST_xvtx->Fill( theSimVertex.position().x(), iterL1TrackFit.getVertex().x() );
+            hL1Trk_yvtx_ST_yvtx->Fill( theSimVertex.position().y(), iterL1TrackFit.getVertex().y() );
+            hL1Trk_zvtx_ST_zvtx->Fill( theSimVertex.position().z(), iterL1TrackFit.getVertex().z() );
+            hL1Trk_q_ST_q->Fill( iterSimTracks->charge(), iterL1TrackFit.getCharge() );
+            //hL1Trk_chi2rphi_n->Fill( abcde->numberStubs(), abcde->fitChi2RPhi() );
+            //hL1Trk_chi2rz_n->Fill( abcde->numberStubs(), abcde->fitChi2ZPhi() );
+
             continue;
           } /// End of association to SimTrack
         } /// End of loop on SimTracks

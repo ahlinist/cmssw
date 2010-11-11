@@ -3,7 +3,9 @@
 /// Written by:                          ///
 /// Nicola Pozzobon                      ///
 /// UNIPD                                ///
-/// 2010, September                      ///
+/// 2010, November                       ///
+/// Modified fr the new L1Track class    ///
+/// structure                            ///
 /// ////////////////////////////////////////
 
 #ifndef L1TRACK_BUILDER_LB_H
@@ -129,21 +131,16 @@ class L1TrackBuilderLB : public edm::EDProducer {
    
     virtual void beginJob(const edm::EventSetup& iSetup)
     {
-
       iSetup.get<cmsUpgrades::StackedTrackerGeometryRecord>().get(StackedTrackerGeomHandle);
       theStackedGeometry = StackedTrackerGeomHandle.product();
 
       iSetup.get<IdealMagneticFieldRecord>().get(magnet);
       magnet_ = magnet.product();
       mMagneticFieldStrength = magnet_->inTesla(GlobalPoint(0,0,0)).z();
-
     }
-
-
 
     virtual void produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
     {
-
       /// /////////////////////
       /// GET MAGNETIC FIELD //
       /// /////////////////////
@@ -209,14 +206,9 @@ class L1TrackBuilderLB : public edm::EDProducer {
         if (layer%2==0) superlayer = layer/2;
         else superlayer = (layer-1)/2;
         for (unsigned int q=0; q< max_superlayer+1; q++) {
-
           if (superlayer != q) BrickStubs[ q ].push_back( GlobalStubPtrType( GlobalStubHandle , i ) );
         }
       }
-
-      ////////////////////////////////////////////////////////////////////////////////////////////
-      //First get the global stubs and form short tracklets...
-      ////////////////////////////////////////////////////////////////////////////////////////////
 
       std::auto_ptr< L1TrackCollectionType > L1TracksOutput(new L1TrackCollectionType );
 
@@ -281,31 +273,24 @@ class L1TrackBuilderLB : public edm::EDProducer {
             L1TracksOutput->push_back( candidates.at(h) );
           } /// End of loop on candidates
 
-
-
-
-
-
-
         } /// End of loop on seeds
       } /// End of loop on Superlayers
 
-
+      /// Store
       iEvent.put(L1TracksOutput, "L1Tracks");
-          
+
+      /// Free some memory
       GlobalStubs.clear();
     }
 
     virtual void endJob(){
     }
       
-
 //
 // The class members
 //
     edm::ESHandle<cmsUpgrades::StackedTrackerGeometry> StackedTrackerGeomHandle;
     const cmsUpgrades::StackedTrackerGeometry *theStackedGeometry;
-    //cmsUpgrades::StackedTrackerGeometry::StackContainerIterator StackedTrackerIterator;
 
     edm::InputTag GlobalStubsInputTag;
     edm::InputTag TrackletsInputTag;
@@ -337,7 +322,6 @@ L1TrackBuilderLB< T >::makeL1Track( const edm::EventSetup& iSetup,
                             TrackletPtrType seed, double prob,
                             std::vector< GlobalStubPtrType > bricks,
                             bool erase_nulls ) {
-  //std::vector< std::pair< int, std::vector< GlobalStub<Ref_PixelDigi_> > > > output;
   std::vector< cmsUpgrades::L1Track< T > > output;
   output.clear();
 
@@ -378,8 +362,6 @@ L1TrackBuilderLB< T >::makeL1Track( const edm::EventSetup& iSetup,
     scaleFactor = (ptSeed - aPtRef.at(whichOne)) / (aPtRef.at(whichOne+1) - aPtRef.at(whichOne));
   }
   
-  //std::cerr<< "open window\t" << ptSeed << "\t" << whichOne << "\t" << scaleFactor << std::endl;
-  
   /// Build names.
   std::ostringstream phiBiasName;
   std::ostringstream phiWinName;
@@ -388,7 +370,6 @@ L1TrackBuilderLB< T >::makeL1Track( const edm::EventSetup& iSetup,
   phiBiasName << "a" << "phibias";
   phiWinName << "a" << probLabel << "phiwin";
   zWinName << "a" << probLabel << "zwin";
-
 
   /// Step 0; constraints
   /// from superlayer [5] to layer [10]
@@ -466,7 +447,7 @@ L1TrackBuilderLB< T >::makeL1Track( const edm::EventSetup& iSetup,
   /// Pz = Pt / tan theta
   double DELTAR = (outerStub->position() - seed->vertex()).perp() - (innerStub->position() - seed->vertex()).perp();
   double DELTAZ = outerStub->position().z() - innerStub->position().z();
-  mom[3] = seed->twoPointPz();//t() * DELTAZ / DELTAR;
+  mom[3] = seed->twoPointPz();//t() * DELTAZ / DELTAR; // this comes from old fit
   mom[2] = seed->twoPointPt() * trkDirection.y()/trkDirection.perp();
   mom[1] = seed->twoPointPt() * trkDirection.x()/trkDirection.perp();
   mom[0] = sqrt( 0.1*0.1 + mom[1]*mom[1] + mom[2]*mom[2] + mom[3]*mom[3] );
@@ -545,7 +526,6 @@ L1TrackBuilderLB< T >::makeL1Track( const edm::EventSetup& iSetup,
     GlobalStubPtrType tobematched = bricks.at(j);
 
     /// Skip same SL bricks
-    //if (tobematched->Id().layer()==normLayerInner || tobematched->Id().layer()==normLayerOuter) continue;
     if ( tobematched->Id().layer()==2*dSidx || tobematched->Id().layer()==2*dSidx+1 ) continue;
     /// Get success
     bool accepted = false;
@@ -602,7 +582,7 @@ L1TrackBuilderLB< T >::makeL1Track( const edm::EventSetup& iSetup,
 
       /// makeHit acceptance
       if (hitProp.first > 0) { /// Go on only if the first member of the pair
-                              /// is strictly positive
+                               /// is strictly positive
         /// Get the BRICK corresponding stub position
         GlobalPoint stubTBMglobalPosition_hits;
         if ( k > 2*dSidx ) /// Forward
@@ -634,14 +614,14 @@ L1TrackBuilderLB< T >::makeL1Track( const edm::EventSetup& iSetup,
         /// Correct for beamspot position
         vertexBeamSpot = GlobalPoint(seed->vertex().x(), seed->vertex().y(), (double)0.0 );          
         curHitglobalPosition = GlobalPoint(curHitglobalPosition.x() - vertexBeamSpot.x(),
-                                          curHitglobalPosition.y() - vertexBeamSpot.y(),
-                                          curHitglobalPosition.z() - vertexBeamSpot.z());
+                                           curHitglobalPosition.y() - vertexBeamSpot.y(),
+                                           curHitglobalPosition.z() - vertexBeamSpot.z());
         stubTBMglobalPosition_hits = GlobalPoint(stubTBMglobalPosition_hits.x() - vertexBeamSpot.x(),
-                                                stubTBMglobalPosition_hits.y() - vertexBeamSpot.y(),
-                                                stubTBMglobalPosition_hits.z() - vertexBeamSpot.z());
+                                                 stubTBMglobalPosition_hits.y() - vertexBeamSpot.y(),
+                                                 stubTBMglobalPosition_hits.z() - vertexBeamSpot.z());
         curHitglobalPositionDigi = GlobalPoint(curHitglobalPositionDigi.x() - vertexBeamSpot.x(),
-                                              curHitglobalPositionDigi.y() - vertexBeamSpot.y(),
-                                              curHitglobalPositionDigi.z() - vertexBeamSpot.z());   
+                                               curHitglobalPositionDigi.y() - vertexBeamSpot.y(),
+                                               curHitglobalPositionDigi.z() - vertexBeamSpot.z());   
         /// LOAD CONSTRAINTS FROM A TABLE TO BE WRITTEN
         double dZ = fabs( curHitglobalPositionDigi.z() - stubTBMglobalPosition_hits.z() );
         double dPhi = deltaPhiNP( stubTBMglobalPosition_hits.phi() , curHitglobalPositionDigi.phi() );
@@ -700,10 +680,8 @@ L1TrackBuilderLB< T >::makeL1Track( const edm::EventSetup& iSetup,
                         if (stub0[8].at(r8).Id() !=nullDet) fghij.push_back( stub0[8].at(r8) );
                         if (stub0[9].at(r9).Id() !=nullDet) fghij.push_back( stub0[9].at(r9) );                      
                       }
-                      cmsUpgrades::L1Track< T > abcde( fghij, dSidx, mMagneticFieldStrength, vertexBeamSpot.x(), vertexBeamSpot.y(), prob ) ;
-                      abcde.SetBeamSpot00( seed->isBeamSpot00() );
-                      abcde.fitL1Track();
-                      //std::cerr<<"LEN"<<abcde.numberStubs()<<std::endl;
+                      /// Here the Track constructor
+                      cmsUpgrades::L1Track< T > abcde( fghij, *seed, mMagneticFieldStrength, prob );
                       output.push_back(abcde);
                     }
                   }
