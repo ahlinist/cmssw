@@ -224,7 +224,6 @@ void CompositePtrCandidateT1T2MEtCollinearApproxHistManager<T1,T2>::fillHistogra
 
     if ( diTauCandidate->p4Leg1gen().energy() > epsilon && 
 	 diTauCandidate->p4Leg2gen().energy() > epsilon ) {
-
       hGenX1_->Fill(diTauCandidate->x1gen(), weight);
       hGenX2_->Fill(diTauCandidate->x2gen(), weight);
 
@@ -239,19 +238,22 @@ void CompositePtrCandidateT1T2MEtCollinearApproxHistManager<T1,T2>::fillHistogra
 	hX2vsGenX2_->Fill(diTauCandidate->x2gen(), diTauCandidate->x2CollinearApprox(), weight);
 	hX2vsGenX2Profile_->getTProfile()->Fill(diTauCandidate->x2gen(), diTauCandidate->x2CollinearApprox(), weight);
       }
-      
+
       if ( diTauCandidate->met()->pt() > 0. && dynamic_cast<const pat::MET*>(diTauCandidate->met().get()) ) {
 	const pat::MET* recoMEt = dynamic_cast<const pat::MET*>(diTauCandidate->met().get());
+        if ( recoMEt->genMET() ) {
+	  double genMEtPt = recoMEt->genMET()->pt();
+	  double genMEtPx = recoMEt->genMET()->px();
+	  double genMEtPy = recoMEt->genMET()->py();
 
-	double genMEtPt = recoMEt->genMET()->pt();
-	double genMEtPx = recoMEt->genMET()->px();
-	double genMEtPy = recoMEt->genMET()->py();
-	
-	double genLeg1ProjGenMEt = (diTauCandidate->p4VisLeg1gen().px()*genMEtPx + diTauCandidate->p4VisLeg1gen().py()*genMEtPy)/genMEtPt;
-	double genLeg2ProjGenMEt = (diTauCandidate->p4VisLeg2gen().px()*genMEtPx + diTauCandidate->p4VisLeg2gen().py()*genMEtPy)/genMEtPt;
-	
-	hGenLeg1ProjGenMEt_->Fill(genLeg1ProjGenMEt, weight);
-	hGenLeg2ProjGenMEt_->Fill(genLeg2ProjGenMEt, weight);
+	  double genLeg1ProjGenMEt = (diTauCandidate->p4VisLeg1gen().px()*genMEtPx 
+                                    + diTauCandidate->p4VisLeg1gen().py()*genMEtPy)/genMEtPt;
+	  double genLeg2ProjGenMEt = (diTauCandidate->p4VisLeg2gen().px()*genMEtPx 
+                                    + diTauCandidate->p4VisLeg2gen().py()*genMEtPy)/genMEtPt;
+
+	  hGenLeg1ProjGenMEt_->Fill(genLeg1ProjGenMEt, weight);
+	  hGenLeg2ProjGenMEt_->Fill(genLeg2ProjGenMEt, weight);
+	}
       }
     }
 
@@ -288,7 +290,7 @@ void CompositePtrCandidateT1T2MEtCollinearApproxHistManager<T1,T2>::fillHistogra
       if ( iMEtPtBin >= 0 && iMEtPtBin < (int)hCollinearApproxMassMEtPtDep_.size() )
 	hCollinearApproxMassMEtPtDep_[iMEtPtBin]->Fill(recMass, weight);
     }
-    
+
     fillMEtHistograms(evt, *diTauCandidate, weight);
   }
 }
