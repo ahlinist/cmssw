@@ -1,10 +1,15 @@
 TYPE	 1313
+MODE        1  # 1 - MC , 2 - DATA
 MUTYPE1	    6	
 MUTYPE2     4
-PT1	  2.5
-PT2	  2.5
-CHI2      1.0
+PTLO      4.0
+PTHI     20.0
+ETALO    -2.4
+ETAHI     2.4
+CHI2      4.0
 RESTYPE   553
 BIN        50
 MASSLO    8.7
 MASSHI   11.2
+UPSTYPE     1
+HLTPATH     3  HLT_DoubleMu3
