@@ -58,7 +58,7 @@ dqmDirectoriesProcess = {
 process.dumpZtoMuTau_bgEstZmumuJetMisIdEnriched = configureDQMDumpFilterStatisticsTable(dqmDirectoriesProcess,
     'BgEstTemplateAnalyzer_ZmumuJetMisIdEnriched/FilterStatistics')
 process.dumpZtoMuTau_bgEstZmumuMuonMisIdEnriched = configureDQMDumpFilterStatisticsTable(dqmDirectoriesProcess,
-    'BgEstTemplateAnalyzer_ZmumuMuonMisIdEnriched/FilterStatistics/')
+    'BgEstTemplateAnalyzer_ZmumuMuonMisIdEnriched/FilterStatistics')
 process.dumpZtoMuTau_bgEstWplusJetsEnriched = configureDQMDumpFilterStatisticsTable(dqmDirectoriesProcess,
     'BgEstTemplateAnalyzer_WplusJetsEnriched/FilterStatistics')
 process.dumpZtoMuTau_bgEstTTplusJetsEnriched = configureDQMDumpFilterStatisticsTable(dqmDirectoriesProcess,
