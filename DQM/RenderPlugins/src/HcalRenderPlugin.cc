@@ -2,8 +2,8 @@
   \file HcalRenderPlugin.cc
   \brief Display Plugin for Hcal DQM Histograms
   \author J. Temple
-  \version $Revision: 1.46 $
-  \date $Date: 2010/10/01 15:14:13 $
+  \version $Revision: 1.47 $
+  \date $Date: 2010/10/08 12:55:55 $
   \\
   \\ Code shamelessly borrowed from S. Dutta's SiStripRenderPlugin.cc code,
   \\ G. Della Ricca and B. Gobbo's EBRenderPlugin.cc, and other existing
@@ -295,7 +295,7 @@ public:
     if( dynamic_cast<TProfile2D*>( o.object ) )
       {      }
     else if( dynamic_cast<TProfile*>( o.object ) )
-      {      }
+      {   postDrawTProfile( c, o );   }
     // object is TH2 histogram
     else if( dynamic_cast<TH2*>( o.object ) )
       {
@@ -1018,8 +1018,8 @@ private:
 	if ( (o.name.find("DeadCellMonitor_Hcal/dead_digi_often_missing")!=std::string::npos) ||
 	     (o.name.find("DeadCellMonitor_Hcal/dead_digi_never_present")!=std::string::npos) ||
 	     (o.name.find("DeadCellMonitor_Hcal/problem_deadcells")      !=std::string::npos) ||
-	     (o.name.find("DeadCellMonitor_Hcal/ ProblemDeadCells")      !=std::string::npos) ||
-	     (o.name.find("DeadCellMonitor_Hcal/TotalDeadCells_HCAL_vs_LS") !=std::string::npos)
+	     (o.name.find("DeadCellMonitor_Hcal/ ProblemDeadCells")      !=std::string::npos) //||
+	     // (o.name.find("DeadCellMonitor_Hcal/TotalDeadCells_HCAL_vs_LS") !=std::string::npos)
 	     )
 	  {
 	    TText t;
@@ -1030,6 +1030,48 @@ private:
     //drawEtaPhiLines(obj);
     
   }
+
+  ////////////
+  void postDrawTProfile( TCanvas *c, const VisDQMObject &o )
+  {
+    TProfile* obj = dynamic_cast<TProfile*>( o.object );
+    assert( obj );
+
+    std::string name = o.name.substr(o.name.rfind("/")+1);
+
+    bool foundfirst=false;
+    int firstnonzerobin=1;
+    int lastnonzerobin=1;
+
+    if(o.name.find("DeadCellMonitor_Hcal/TotalDeadCells_HCAL_vs_LS") !=std::string::npos)
+      {
+	//Search for the last deadcell count
+	for (int i=1;i<=obj->GetNbinsX();++i)
+	  {
+	    if (foundfirst==false && obj->GetBinContent(i)!=0)
+	      {
+		foundfirst=true;
+		firstnonzerobin=i;
+	      }
+	    if (obj->GetBinContent(i)!=0)
+	      lastnonzerobin=i+1;
+	  }
+	
+        if (obj->GetBinContent(lastnonzerobin-1) > 50.0)
+	  {
+	    c->SetFillColor(2);
+	    TText t;  
+	    t.SetTextSize(0.07);  
+	    t.SetTextColor(2);
+	    t.DrawTextNDC(0.2,0.5,"WARNING: # of dead channels is above 50");
+	  }
+        return;
+      }
+  }
+
+  /////////////
+
+
 
 void setRainbowColor(TH2* obj)
   {
