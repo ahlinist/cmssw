@@ -9,12 +9,11 @@ SAMPLES_TO_ANALYZE = [
     'data_Mu_132440-145761_Sep17ReReco',
     'data_Mu_145762_147116_Prompt',
     'data_Mu_147117_149442_Prompt',
-    'Ztautau', 
+    'Ztautau', 'ZtautauPU156bx',
     'Zmumu',
-    'InclusivePPmuX', 
-    'PPmuXptGt20Mu10', 
-    'PPmuXptGt20Mu15', 
+    'InclusivePPmuX', 'PPmuXptGt20Mu10', 'PPmuXptGt20Mu15', 
     'WplusJets',
+    'WWtoAnything',
     'TTplusJets'
 ] 
 
@@ -22,8 +21,9 @@ SAMPLES_TO_ANALYZE = [
 # from the MERGE_SAMPLES defined at the bottom.
 SAMPLES_TO_PLOT = [
     'data', 
-    #'qcdSum', 
+    'qcdSum', 
     'WplusJets',
+    'WWtoAnything',
     'TTplusJets',
     'Zmumu',
     'Ztautau'
@@ -32,9 +32,10 @@ SAMPLES_TO_PLOT = [
 SAMPLES_TO_PRINT = copy.copy(SAMPLES_TO_PLOT)
 SAMPLES_TO_PRINT.append('smBgSum')
 SAMPLES_TO_PRINT.append('smSum')
-SAMPLES_TO_PRINT.append('data_Mu_132440-145761_Sep17ReReco')
-SAMPLES_TO_PRINT.append('data_Mu_145762_147116_Prompt')
-SAMPLES_TO_PRINT.append('data_Mu_147117_149442_Prompt')
+#SAMPLES_TO_PRINT.append('data_Mu_132440-145761_Sep17ReReco')
+#SAMPLES_TO_PRINT.append('data_Mu_145762_147116_Prompt')
+#SAMPLES_TO_PRINT.append('data_Mu_147117_149442_Prompt')
+SAMPLES_TO_PRINT.append('ZtautauPU156bx')
 
 SAMPLE_DEFAULTS = {
     'dbs_url' : "http://cmsdbsprod.cern.ch/cms_dbs_ph_analysis_02/servlet/DBSServlet",
@@ -51,19 +52,26 @@ SAMPLE_DEFAULTS = {
 }
 
 # Conversions to pico barns
+_millibarns = 1.0e+9
+_microbarns = 1.0e+6
+_nanobarns  = 1.0e+3
+_picobarns =  1.0
 _femtobarns = 1.0e-3
-_millibarns = 1.0e9
-_picobarns = 1.0
-_nanobarns = 1000.0
-_microbarns = 1.0e6
 
 # Integrated luminosity to normalize
 ##TARGET_LUMI = (200.0)/_picobarns
 #TARGET_LUMI = (
-#     2.90 # data_Mu_132440_145761_Sep17ReReco
-#   + 3.88 # data_Mu_145762_147116_Prompt
+#      2.90 # data_Mu_132440_145761_Sep17ReReco
+#   +  3.88 # data_Mu_145762_147116_Prompt
+#   + 26.27 # data_Mu_147117_149442_Prompt
 #)/_picobarns
 TARGET_LUMI = (34.85)/_picobarns
+
+#--------------------------------------------------------------------------------
+# NOTE: cross-sections for W and Z production are scaled to next-to-leading order values
+#       documented on the wiki
+#        http://alcaraz.web.cern.ch/alcaraz/CROSS_SECTIONS.txt
+#--------------------------------------------------------------------------------
 
 RECO_SAMPLES = {
     'data_Mu_132440-145761_Sep17ReReco' : {
@@ -101,19 +109,28 @@ RECO_SAMPLES = {
         'hlt_paths' : [ 'HLT_Mu11', 'HLT_Mu15', 'HLT_IsoMu9' ],
     },
     'Ztautau' : {
-        'datasetpath' : "/Ztautau/akalinow-SkimTauTau_356_pass1-0a3d3891f015a95324f94837322fb8aa-muTauSkim/USER",
-        'events_processed' : 2195255,
-        'skim_eff' : 0.100,
+        'datasetpath' : "/DYToTauTau_M-20_TuneZ2_7TeV-pythia6-tauola/Fall10-START38_V12-v1/GEN-SIM-RECO",
+        'events_processed' : 2057446,
+        'skim_eff' : 1.0,
         'x_sec' : 1.28*1300*_picobarns, # Z + jets correction factor for NLO/LO cross-sections = 1.28
         'legendEntry' : plotter.process_Ztautau.config_dqmHistPlotter.legendEntry.value(),
         'type' : plotter.process_Ztautau.config_dqmHistPlotter.type.value(),
         'drawOption' : styles.drawOption_Ztautau,
         'applyZrecoilCorrection' : True
     },
-    # Using the unskimmed dataset
+    'ZtautauPU156bx' : {
+        'datasetpath' : "/DYToTauTau_M-20_TuneZ2_7TeV-pythia6-tauola/Fall10-E7TeV_ProbDist_2010Data_BX156_START38_V12-v1/GEN-SIM-RECO",
+        'events_processed' : 2011186,
+        'skim_eff' : 1.0,
+        'x_sec' : 1.28*1300*_picobarns, # Z + jets correction factor for NLO/LO cross-sections = 1.28
+        'legendEntry' : plotter.process_Ztautau.config_dqmHistPlotter.legendEntry.value(),
+        'type' : plotter.process_Ztautau.config_dqmHistPlotter.type.value(),
+        'drawOption' : styles.drawOption_Ztautau,
+        'applyZrecoilCorrection' : True
+    },
     'Zmumu' : {
-        'datasetpath' : "/Zmumu/Spring10-START3X_V26_S09-v1/GEN-SIM-RECO",
-        'events_processed' : 2111268,
+        'datasetpath' : "/DYToMuMu_M-20_TuneZ2_7TeV-pythia6/Fall10-START38_V12-v1/GEN-SIM-RECO",
+        'events_processed' : 2289913,
         'skim_eff' : 1.0,
         'x_sec' : 1.28*1300*_picobarns, # Z + jets correction factor for NLO/LO cross-sections = 1.28
         'legendEntry' : plotter.process_Zmumu.config_dqmHistPlotter.legendEntry.value(),
@@ -131,24 +148,22 @@ RECO_SAMPLES = {
         'drawOption' : styles.drawOption_QCD,
         'factorize' : True
     },
-    # Using the unskimmed dataset
     'PPmuXptGt20Mu10' : {
-        'datasetpath' : "/QCD_Pt-20_MuEnrichedPt10_7TeV-pythia6/Spring10-START3X_V26-v1/GEN-SIM-RECO",
-        'events_processed' : 6342864, 
+        'datasetpath' : "/QCD_Pt-20_MuEnrichedPt-10_TuneZ2_7TeV-pythia6/Fall10-START38_V12-v1/GEN-SIM-RECO",
+        'events_processed' : 8063288, 
         'skim_eff' : 1.0,
-        'x_sec' : 296500000*_picobarns*0.00116, # xsec (pb) * gen filter efficiency
+        'x_sec' : 0.2966*_millibarns*1.18e-3, # x-sec * gen filter efficiency
         'genPhaseSpaceCut' : 'leadingGenMuon.pt < 15.',
         'legendEntry' : plotter.process_PPmuXptGt20.config_dqmHistPlotter.legendEntry.value(),
         'type' : plotter.process_PPmuXptGt20.config_dqmHistPlotter.type.value(),
         'drawOption' : styles.drawOption_QCD,
         'factorize' : True
     },
-    # Using the unskimmed dataset
     'PPmuXptGt20Mu15' : {
-        'datasetpath' : "/InclusiveMu15/Summer10-START36_V9_S09-v1/GEN-SIM-RECO",
-        'events_processed' : 5120334,
+        'datasetpath' : "/QCD_Pt-20_MuEnrichedPt-15_TuneZ2_7TeV-pythia6/Fall10-START38_V12-v1/GEN-SIM-RECO",
+        'events_processed' : 29504866,
         'skim_eff' : 1.0,
-        'x_sec' : 0.2969*_millibarns*2.684e-4,
+        'x_sec' : 0.2966*_millibarns*2.855e-4, # x-sec * gen filter efficiency
         'legendEntry' : plotter.process_PPmuXptGt20.config_dqmHistPlotter.legendEntry.value(),
         'type' : plotter.process_PPmuXptGt20.config_dqmHistPlotter.type.value(),
         'drawOption' : styles.drawOption_QCD,
@@ -156,6 +171,7 @@ RECO_SAMPLES = {
         'hlt' : cms.InputTag("TriggerResults", "", "REDIGI36X"),
         'SE_white_list' : 'T2_IT_Pisa'
     },
+    # CV: /WJetsToLNu_TuneZ2_7TeV-madgraph-tauola/Fall10-START38_V12-v1/GEN-SIM-RECO (32500000) events not ready yet
     'WplusJets' : {
         'datasetpath' : "/WJets-madgraph/akalinow-SkimTauTau_356_pass1-0a3d3891f015a95324f94837322fb8aa-muTauSkim/USER",
         'events_processed' : 9008895,
@@ -165,11 +181,20 @@ RECO_SAMPLES = {
         'type' : plotter.process_WplusJets.config_dqmHistPlotter.type.value(),
         'drawOption' : styles.drawOption_WplusJets
     },
+    'WWtoAnything' : {
+        'datasetpath' : "/WWtoAnything_TuneZ2_7TeV-pythia6-tauola/Fall10-START38_V12-v1/GEN-SIM-RECO",
+        'events_processed' : 2061760,
+        'skim_eff' : 1.0,
+        'x_sec' : 27.79*_picobarns,
+        'legendEntry' : plotter.process_WplusJets.config_dqmHistPlotter.legendEntry.value(),
+        'type' : plotter.process_WplusJets.config_dqmHistPlotter.type.value(),
+        'drawOption' : styles.drawOption_WplusJets
+    },
     'TTplusJets' : {
-        'datasetpath' : "/TTbarJets_Tauola-madgraph/akalinow-SkimTauTau_356_pass1-0a3d3891f015a95324f94837322fb8aa-muTauSkim/USER",
-        'events_processed' : 1412199,
-        'skim_eff' : 0.399,
-        'x_sec' : 95*_picobarns, # Again, same message as above.  Gives matching eff. as 0.35
+        'datasetpath' : "/TTJets_TuneZ2_7TeV-madgraph-tauola/Fall10-START38_V12-v2/GEN-SIM-RECO",
+        'events_processed' : 1164732,
+        'skim_eff' : 1.0,
+        'x_sec' : 121*_picobarns,
         'legendEntry' : plotter.process_TTplusJets.config_dqmHistPlotter.legendEntry.value(),
         'type' : plotter.process_TTplusJets.config_dqmHistPlotter.type.value(),
         'drawOption' : styles.drawOption_TTplusJets
@@ -220,10 +245,10 @@ MERGE_SAMPLES = {
     }
 }
 
-# List of all subsamples used in any plot job.  i.e. if qcdSum is included in
-# samples to plot it will be expanded to the inclusive/exclusive ppMux samples
+# List of all subsamples used in any plot job.
+# i.e. if qcdSum is included in samples to plot
+#      it will be expanded to the inclusive/exclusive ppMux samples
 FLATTENED_SAMPLES_TO_PLOT = []
-
 for sample in SAMPLES_TO_PLOT:
     if sample in MERGE_SAMPLES:
         for subsample in MERGE_SAMPLES[sample]['samples']:
