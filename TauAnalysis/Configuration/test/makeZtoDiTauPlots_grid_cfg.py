@@ -26,7 +26,7 @@ makePlots(process, channel = channel, samples = recoSampleDefinitionsZtoDiTau_7T
           enableFactorizationFunction = enableFactorization_makeZtoDiTauPlots_grid,
           dqmDirectoryFilterStatistics = {
               'factorizationDisabled' : 'zDiTauAnalyzer/FilterStatistics',
-              'factorizationEnabled' : 'zDiTauAnalyzer_factorizedWithMuonIsolation/FilterStatistics'
+              'factorizationEnabled' : 'zDiTauAnalyzer_factorizedTight2ndTau/FilterStatistics'
           },
           dumpDQMStore = False)
 
