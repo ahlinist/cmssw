@@ -5,10 +5,10 @@ import os
 userSettings = {
     'friis' : {
         'AHtoMuTau' : {
-            'analysisFilePath' : '/user/f/friis/AHtoMuTau/',
-            'harvestingFilePath' : "/data1/friis/",            
+            'analysisFilePath' : '/user/f/friis/AHtoMuTauOutput/',
+            'harvestingFilePath' : "/data1/friis/",
             'tmpFilePath' : "/tmp/friis/",
-            'jobId' : 'Run10'
+            'jobId' : 'Run16'
         },
         'global' : {
             'drawOptions' : {
