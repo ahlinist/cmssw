@@ -208,7 +208,7 @@ def enableFactorization_runZtoMuTau(process):
     )
     process.p.replace(process.selectZtoMuTauEvents, process.selectZtoMuTauEvents_factorized)    
     process.load("TauAnalysis.Configuration.analyzeZtoMuTau_factorized_cff")
-    analyzeZtoMuTauSequence_factorized = cms.Sequence(
+    process.analyzeZtoMuTauSequence_factorized = cms.Sequence(
         process.analyzeZtoMuTauSequence_factorizedWithoutMuonIsolation
        * process.analyzeZtoMuTauSequence_factorizedWithMuonIsolation
     )
