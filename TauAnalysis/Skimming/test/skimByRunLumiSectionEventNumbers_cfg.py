@@ -120,13 +120,12 @@ process.source = cms.Source("PoolSource",
 )
 
 process.selectEventsByRunLumiSectionEventNumber = cms.EDFilter("RunLumiSectionEventNumberFilter",
-    ##runLumiSectionEventNumberFileName = cms.string('/afs/cern.ch/user/v/veelken/public/goldenZmumuEvents_officialICHEP.txt')
     runLumiSectionEventNumberFileName = cms.string(
-        '/afs/cern.ch/user/v/veelken/public/selEvents_AHtoMuTau_woBtag_runs145762to147454.txt'
-    )
+        '/afs/cern.ch/user/v/veelken/public/selEvents_AHtoMuTau_woBtag_runs132440to145761.txt'
+    ),
+    separator = cms.string(':')
 )
 
-##process.skimPath = cms.Path( !process.selectEventsByRunLumiSectionEventNumber )
 process.skimPath = cms.Path( process.selectEventsByRunLumiSectionEventNumber )
 
 eventSelection = cms.untracked.PSet(
@@ -137,8 +136,7 @@ eventSelection = cms.untracked.PSet(
 
 process.skimOutputModule = cms.OutputModule("PoolOutputModule",
     eventSelection,                                 
-    ##fileName = cms.untracked.string('selEvents.root')
-    fileName = cms.untracked.string('selEvents_AHtoMuTau_woBtag_runs145762to147454_RECO.root')                         
+    fileName = cms.untracked.string('selEvents_AHtoMuTau_woBtag_runs132440to145761_RECO.root')
 )
 
 process.options = cms.untracked.PSet(

@@ -7,7 +7,7 @@
  *  (format = three columns of numbers separated by white-space character (space or tab);
  *            with the run#/luminosity section#/event# specified in the first/second/third column)
  *
- *  $Date: 2009/03/04 12:14:19 $
+ *  $Date: 2010/10/22 12:21:27 $
  *  $Revision: 1.1 $
  *  \author Christian Veelken, UC Davis
  */
@@ -34,6 +34,8 @@ private:
   vstring dqmDirectories_;
 
   std::string runLumiSectionEventNumberFileName_;
+
+  std::string separator_;
 
   int cfgError_;
 };

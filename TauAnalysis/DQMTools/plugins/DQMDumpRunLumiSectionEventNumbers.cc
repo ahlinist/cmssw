@@ -42,6 +42,9 @@ DQMDumpRunLumiSectionEventNumbers::DQMDumpRunLumiSectionEventNumbers(const edm::
       << " invalid --> skipping !!";
     cfgError_ = 1;
   }
+
+  separator_ = cfg.exists("separator") ? 
+    cfg.getParameter<std::string>("separator") : " ";
 }
 
 DQMDumpRunLumiSectionEventNumbers::~DQMDumpRunLumiSectionEventNumbers() 
@@ -72,10 +75,8 @@ void DQMDumpRunLumiSectionEventNumbers::endJob()
     return;
   }
 
-  TPRegexp regexpParser_triplet("r[[:digit:]]+ev[[:digit:]]+ls[[:digit:]]+");   // "old" version
-  TPRegexp regexpParser_number("r([[:digit:]]+)ev([[:digit:]]+)ls([[:digit:]]+)");
-  //TPRegexp regexpParser_triplet("r[[:digit:]]+ls[[:digit:]]+ev[[:digit:]]+"); // "new" version
-  //TPRegexp regexpParser_number("r([[:digit:]]+)ls([[:digit:]]+)ev([[:digit:]]+)");
+  TPRegexp regexpParser_triplet("r[[:digit:]]+ls[[:digit:]]+ev[[:digit:]]+");
+  TPRegexp regexpParser_number("r([[:digit:]]+)ls([[:digit:]]+)ev([[:digit:]]+)");
 
   typedef std::set<edm::EventNumber_t> eventNumberSet;
   typedef std::map<edm::LuminosityBlockNumber_t, eventNumberSet> lumiSectionEventNumberMap;
@@ -109,21 +110,10 @@ void DQMDumpRunLumiSectionEventNumbers::endJob()
 	  //std::cout << ((TObjString*)subStrings->At(2))->GetString() << std::endl;
 	  //std::cout << ((TObjString*)subStrings->At(3))->GetString() << std::endl;
 
-/*
-  "old" version
- */
-	  edm::RunNumber_t runNumber = ((TObjString*)subStrings->At(1))->GetString().Atoll();
-	  edm::EventNumber_t eventNumber = ((TObjString*)subStrings->At(2))->GetString().Atoll();
-	  edm::LuminosityBlockNumber_t lumiSectionNumber = ((TObjString*)subStrings->At(3))->GetString().Atoll();
-
-/*
-  "new" version
-
 	  edm::RunNumber_t runNumber = ((TObjString*)subStrings->At(1))->GetString().Atoll();
 	  edm::LuminosityBlockNumber_t lumiSectionNumber = ((TObjString*)subStrings->At(2))->GetString().Atoll();
 	  edm::EventNumber_t eventNumber = ((TObjString*)subStrings->At(3))->GetString().Atoll();
- */
-	  
+
 	  std::cout << "--> adding Run# = " << runNumber << "," 
 		    << " Luminosity Section# " << lumiSectionNumber << "," 
 		    << " Event# " << eventNumber << std::endl;
@@ -152,7 +142,7 @@ void DQMDumpRunLumiSectionEventNumbers::endJob()
       for ( eventNumberSet::const_iterator event = lumiSection->second.begin();
 	    event != lumiSection->second.end(); ++event ) {
 	runLumiSectionEventNumbersFile << std::setw(12) << std::setiosflags(std::ios::left) 
-				       << run->first << " " << lumiSection->first << " " << (*event) << std::endl;
+				       << run->first << separator_ << lumiSection->first << separator_ << (*event) << std::endl;
 	++numRunLumiSectionEventNumbersWritten;
       }
     }
