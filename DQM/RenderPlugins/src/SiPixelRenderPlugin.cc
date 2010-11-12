@@ -2,8 +2,8 @@
   \file SiPixelRenderPlugin
   \brief Display Plugin for Pixel DQM Histograms
   \author P.Merkel
-  \version $Revision: 1.41 $
-  \date $Date: 2010/08/18 09:05:48 $
+  \version $Revision: 1.42 $
+  \date $Date: 2010/11/04 15:13:16 $
 */
 
 #include "VisMonitoring/DQMServer/interface/DQMRenderPlugin.h"
@@ -347,10 +347,10 @@ void preDrawTH2( TCanvas *, const VisDQMObject &o )
       //if( o.name.find( "SUMCLU_charge_Endcap" ) != std::string::npos ){obj->SetMaximum(50.); }
       //if( o.name.find( "SUMCLU_nclusters_Endcap" ) != std::string::npos ){obj->SetMaximum(1.6); }
       //if( o.name.find( "SUMCLU_size_Endcap" ) != std::string::npos ){obj->SetMaximum(3.5); }
-      //if( o.name.find( "SUMOFF_adc_Barrel" ) != std::string::npos ){ obj->SetMinimum(70.); obj->SetMaximum(110.); }
-      //if( o.name.find( "SUMOFF_ndigis_Barrel" ) != std::string::npos ){ obj->SetMinimum(2.); obj->SetMaximum(14.); }
-      //if( o.name.find( "SUMOFF_adc_Endcap" ) != std::string::npos ){ obj->SetMinimum(90.); obj->SetMaximum(140.); }
-      //if( o.name.find( "SUMOFF_ndigis_Endcap" ) != std::string::npos ){ obj->SetMinimum(1.); obj->SetMaximum(6.); }
+      if( o.name.find( "SUMOFF_adc_Barrel" ) != std::string::npos ){ obj->SetMinimum(70.); obj->SetMaximum(110.); } // change for pp
+      if( o.name.find( "SUMOFF_ndigis_Barrel" ) != std::string::npos ){ obj->SetMinimum(0.); obj->SetMaximum(220.); } // change for pp
+      if( o.name.find( "SUMOFF_adc_Endcap" ) != std::string::npos ){ obj->SetMinimum(90.); obj->SetMaximum(130.); } // change for pp
+      if( o.name.find( "SUMOFF_ndigis_Endcap" ) != std::string::npos ){ obj->SetMinimum(10.); obj->SetMaximum(24.); } // change for pp
       
    
      // prettify for shifters:
