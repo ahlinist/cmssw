@@ -112,6 +112,56 @@ addPFMet(process, correct = False)
 # uncomment to replace caloMET by pfMET in all di-tau objects
 process.load("TauAnalysis.CandidateTools.diTauPairProductionAllKinds_cff")
 replaceMETforDiTaus(process, cms.InputTag('patMETs'), cms.InputTag('patPFMETs'))
+process.muTauPairsBgEstQCDenriched.srcMET = cms.InputTag('patPFMETs')
+process.muTauPairsBgEstWplusJetsEnriched.srcMET = cms.InputTag('patPFMETs')
+process.muTauPairsBgEstTTplusJetsEnriched.srcMET = cms.InputTag('patPFMETs')
+process.muTauPairsBgEstZmumuJetMisIdEnriched.srcMET = cms.InputTag('patPFMETs')
+process.muTauPairsBgEstZmumuMuonMisIdEnriched.srcMET = cms.InputTag('patPFMETs')
+#--------------------------------------------------------------------------------
+
+#--------------------------------------------------------------------------------
+# import utility function for changing cut values
+from TauAnalysis.Configuration.tools.changeCut import changeCut
+
+# change muon Pt threshold to 15 GeV
+changeCut(process, "selectedPatMuonsPt10", "pt > 15.")
+changeCut(process, "muonsBgEstWplusJetsEnrichedPt", "pt > 15.")
+
+# disable cut on muon calo. + segment compatibility
+# (check that muon calo. compatibility is not affected by pile-up before re-enabling this cut)
+changeCut(process, "selectedPatMuonsPionVeto", -1000., attribute = "AntiPionCut")
+changeCut(process, "selectedPatMuonsPionVetoLooseIsolation", -1000., attribute = "AntiPionCut")
+
+# change upper limit on tranverse impact parameter of muon track to 2mm
+changeCut(process, "selectedPatMuonsTrkIP", 0.2, attribute = "IpMax")
+changeCut(process, "muonsBgEstZmumuEnrichedTrkIP", 0.2, attribute = "IpMax")
+
+# change eta acceptance for tau-jets to |eta| < 2.3
+changeCut(process, "selectedPatTausForMuTauEta21", "abs(eta) < 2.3")
+
+# disable cuts on tau id. discriminators for Track && ECAL isolation
+changeCut(process, "selectedPatTausTrkIso", "tauID('trackIsolation') > -1.")
+changeCut(process, "selectedPatTausEcalIso", "tauID('ecalIsolation') > -1.")
+
+# change lower limit on separation required between muon and tau-jet to dR > 0.5
+changeCut(process, "selectedMuTauPairsAntiOverlapVeto", "dR12 > 0.5")
+changeCut(process, "selectedMuTauPairsAntiOverlapVetoLooseMuonIsolation", "dR12 > 0.5")
+changeCut(process, "muTauPairsBgEstQCDenriched", "dR12 > 0.5")
+changeCut(process, "muTauPairsBgEstWplusJetsEnriched", "dR12 > 0.5")
+changeCut(process, "muTauPairsBgEstTTplusJetsEnriched", "dR12 > 0.5")
+changeCut(process, "muTauPairsBgEstZmumuJetMisIdEnriched", "dR12 > 0.5")
+changeCut(process, "muTauPairsBgEstZmumuMuonMisIdEnriched", "dR12 > 0.5")
+
+# change upper limit on muon + MET transverse mass to 40 GeV
+changeCut(process, "selectedMuTauPairsMt1MET", "mt1MET < 40.")
+changeCut(process, "selectedMuTauPairsMt1METlooseMuonIsolation", "mt1MET < 40.")
+
+# disable cut on Pzeta variable
+changeCut(process, "selectedMuTauPairsPzetaDiff", "(pZeta - 1.5*pZetaVis) > -1000.")
+changeCut(process, "selectedMuTauPairsPzetaDiffLooseMuonIsolation", "(pZeta - 1.5*pZetaVis) > -1000.")
+
+# disable b-tagging for now
+changeCut(process, "jetsBgEstTTplusJetsEnrichedEt40bTag", "bDiscriminator('trackCountingHighEffBJetTags') > -1000.")
 #--------------------------------------------------------------------------------
 
 process.load("TauAnalysis.Configuration.analyzeZtoMuTau_cff")
@@ -144,7 +194,7 @@ process.diTauCandidateHistManagerForMuTau.diTauCandidateSource = cms.InputTag('s
 process.diTauCandidateHistManagerForMuTau.visMassHypothesisSource = cms.InputTag('')
 addAnalyzer(process.analyzeZtoMuTauEvents, process.diTauCandidateHistManagerForMuTau, 'evtSelDiMuPairZmumuHypothesisVeto')
 process.diTauCandidateSVfitHistManager.diTauCandidateSource = cms.InputTag('selectedMuTauPairsPzetaDiffCumulative')
-process.diTauCandidateSVfitHistManager. SVfitAlgorithms = cms.VPSet(
+process.diTauCandidateSVfitHistManager.SVfitAlgorithms = cms.VPSet(
     cms.PSet(
         name = cms.string("psKine")
     ),
@@ -178,72 +228,13 @@ process.load('TauAnalysis.BgEstimationTools.bgEstZtoMuTauTTplusJetsEnrichedSelec
 process.load('TauAnalysis.BgEstimationTools.bgEstZtoMuTauZmumuEnrichedSelection_cff')
 process.load('TauAnalysis.BgEstimationTools.bgEstZtoMuTauQCDenrichedSelection_cff')
 
-# produce event weight variable for correcting "bias"
-# of visible invariant muon + tau-jet mass distribution
-# caused by Mt(muon + tau-jet) transverse mass cut
-# and cut on CDF (Pzeta - 1.5*PzetaVis) variable
-##process.kineEventReweightBgEstTemplateWplusJets = cms.EDProducer("ObjValProducer",
-##    config = cms.PSet(
-##        pluginType = cms.string("KineEventReweightExtractor"),
-##        weightLookupTable = cms.PSet(
-##            fileName = cms.string(
-##                'rfio:/castor/cern.ch/user/v/veelken/CMSSW_3_3_x/kineEventReweights/bgEstKineEventReweightsZtoMuTau.root'
-##            ),
-##            meName = cms.string('DQMData/bgEstTemplateKineEventReweights/WplusJets/diTauMvis')
-##        ),
-##        variables = cms.PSet(
-##            pluginType = cms.string("PATMuTauPairValExtractor"),
-##            src = cms.InputTag('muTauPairsBgEstWplusJetsEnriched'),
-##            value = cms.string("p4Vis.mass"),
-##            indices = cms.vuint32(0)
-##        )
-##    )
-##)
-
-# add another analysis sequence for producing W + jets templates
-# in which the events are reweighted in order to correct for "bias" of muon + tau-jet visible invariant mass distribution
-# caused by cuts on muon + MEt transverse cut and CDF PzetaDiff variable
-##process.analyzeEventsBgEstWplusJetsEnriched_reweighted = copy.deepcopy(process.analyzeEventsBgEstWplusJetsEnriched)
-##process.analyzeEventsBgEstWplusJetsEnriched_reweighted.name = cms.string('BgEstTemplateAnalyzer_WplusJetsEnriched_reweighted')
-##setattr(process.analyzeEventsBgEstWplusJetsEnriched_reweighted, "eventWeightSource", cms.VInputTag("kineEventReweightBgEstTemplateWplusJets"))
-
-# produce event weight variable for correcting "bias"
-# of visible invariant muon + tau-jet mass distribution
-# caused by M(muon + muon) invariant mass veto
-##process.kineEventReweightBgEstTemplateZmumuJetMisId = cms.EDProducer("ObjValProducer",
-##    config = cms.PSet(
-##        pluginType = cms.string("KineEventReweightExtractor"),
-##        weightLookupTable = cms.PSet(
-##            fileName = cms.string(
-##                'rfio:/castor/cern.ch/user/v/veelken/CMSSW_3_3_x/kineEventReweights/bgEstKineEventReweightsZtoMuTau.root'
-##            ),
-##            meName = cms.string('DQMData/bgEstTemplateKineEventReweights/ZmumuJetMisId/diTauMvis')
-##        ),
-##        variables = cms.PSet(
-##            pluginType = cms.string("PATMuTauPairValExtractor"),
-##            src = cms.InputTag('muTauPairsBgEstZmumuJetMisIdEnriched'),
-##            value = cms.string("p4Vis.mass"),
-##            indices = cms.vuint32(0)
-##        )
-##    )
-##)
-
-# add another analysis sequence for producing W + jets templates
-# in which the events are reweighted in order to correct for "bias" of muon + tau-jet visible invariant mass distribution
-# caused by cuts on muon + MEt transverse cut and CDF PzetaDiff variable
-##process.analyzeEventsBgEstZmumuJetMisIdEnriched_reweighted = copy.deepcopy(process.analyzeEventsBgEstZmumuJetMisIdEnriched)
-##process.analyzeEventsBgEstZmumuJetMisIdEnriched_reweighted.name = cms.string('BgEstTemplateAnalyzer_ZmumuJetMisIdEnriched_reweighted')
-##setattr(process.analyzeEventsBgEstZmumuJetMisIdEnriched_reweighted, "eventWeightSource", cms.VInputTag("kineEventReweightBgEstTemplateZmumuJetMisId"))
-
 process.p = cms.Path(
    process.producePatTupleZtoMuTauSpecific
   + process.selectZtoMuTauEvents
   + process.analyzeZtoMuTauEvents
   + process.bgEstWplusJetsEnrichedAnalysisSequence
-  ##+ process.kineEventReweightBgEstTemplateWplusJets + process.analyzeEventsBgEstWplusJetsEnriched_reweighted
   + process.bgEstTTplusJetsEnrichedAnalysisSequence
   + process.bgEstZmumuEnrichedAnalysisSequence
-  ##+ process.kineEventReweightBgEstTemplateZmumuJetMisId + process.analyzeEventsBgEstZmumuJetMisIdEnriched_reweighted 
   + process.bgEstQCDenrichedAnalysisSequence 
   + process.saveZtoMuTauPlots
 )
@@ -251,6 +242,12 @@ process.p = cms.Path(
 process.q = cms.Path(process.dataQualityFilters)
 
 process.schedule = cms.Schedule(process.q, process.p)
+
+#--------------------------------------------------------------------------------
+# import utility function for applyting Z-recoil corrections to MET
+from TauAnalysis.Configuration.tools.mcToDataCorrectionTools import applyZrecoilCorrection_runZtoMuTau
+##applyZrecoilCorrection_runZtoMuTau(process)
+#--------------------------------------------------------------------------------
 
 #--------------------------------------------------------------------------------
 # disable accessing generator level information

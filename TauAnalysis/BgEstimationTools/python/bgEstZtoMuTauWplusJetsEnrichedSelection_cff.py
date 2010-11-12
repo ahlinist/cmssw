@@ -56,17 +56,22 @@ from TauAnalysis.RecoTools.patPFTauSelectionForMuTau_cfi import *
 #       For this reason, either need to apply tau track and ECAL isolation criteria in selection of W + jets background enriched sample
 #       or correct for template shape distortion by reweighting
 #      (would gain a factor of about 2.5 in event statistics; reweighting of tauPt distribution not implemented yet, however)
-#   
+#
+tausBgEstWplusJetsEnrichedTaNCdiscr = copy.deepcopy(selectedPatTausTaNCdiscr)
+#tausBgEstWplusJetsEnrichedTaNCdiscr.cut = cms.string('tauID("byTaNCfrOnePercent") > -1.e+3')
+tausBgEstWplusJetsEnrichedTaNCdiscr.cut = cms.string('tauID("byTaNCfrOnePercent") > 0.5')
+
 tausBgEstWplusJetsEnrichedTrkIso = copy.deepcopy(selectedPatTausTrkIso)
-tausBgEstWplusJetsEnrichedTrkIso.cut = cms.string('tauID("trackIsolation") > 0.5')
+tausBgEstWplusJetsEnrichedTrkIso.cut = cms.string('tauID("trackIsolation") > -1.')
 
 tausBgEstWplusJetsEnrichedEcalIso = copy.deepcopy(selectedPatTausEcalIso)
-tausBgEstWplusJetsEnrichedEcalIso.cut = cms.string('tauID("ecalIsolation") > 0.5')
+tausBgEstWplusJetsEnrichedEcalIso.cut = cms.string('tauID("ecalIsolation") > -1.')
 
 tausBgEstWplusJetsEnrichedMuonVeto = copy.deepcopy(selectedPatTausMuonVeto)
 
 tauSelConfiguratorBgEstWplusJetsEnriched = objSelConfigurator(
-    [ tausBgEstWplusJetsEnrichedTrkIso,
+    [ tausBgEstWplusJetsEnrichedTaNCdiscr,
+      tausBgEstWplusJetsEnrichedTrkIso,
       tausBgEstWplusJetsEnrichedEcalIso,
       tausBgEstWplusJetsEnrichedMuonVeto ],
     src = "selectedPatTausForMuTauLeadTrkPtCumulative",
@@ -146,6 +151,11 @@ cfgMuonAntiPionCutBgEstWplusJetsEnriched.pluginName = cms.string('muonAntiPionCu
 cfgMuonAntiPionCutBgEstWplusJetsEnriched.src_cumulative = cms.InputTag('muonsBgEstWplusJetsEnrichedPionVetoCumulative')
 cfgMuonAntiPionCutBgEstWplusJetsEnriched.systematics = cms.vstring()
 
+cfgTauTaNCdiscrCutBgEstWplusJetsEnriched = copy.deepcopy(cfgTauTaNCdiscrCut)
+cfgTauTaNCdiscrCutBgEstWplusJetsEnriched.pluginName = cms.string('tauTaNCdiscrCutBgEstWplusJetsEnriched')
+cfgTauTaNCdiscrCutBgEstWplusJetsEnriched.src_cumulative = cms.InputTag('tausBgEstWplusJetsEnrichedTaNCdiscrCumulative')
+cfgTauTaNCdiscrCutBgEstWplusJetsEnriched.systematics = cms.vstring()
+
 cfgTauTrkIsoCutBgEstWplusJetsEnriched = copy.deepcopy(cfgTauTrkIsoCut)
 cfgTauTrkIsoCutBgEstWplusJetsEnriched.pluginName = cms.string('tauTrkIsoCutBgEstWplusJetsEnriched')
 cfgTauTrkIsoCutBgEstWplusJetsEnriched.src_cumulative = cms.InputTag('tausBgEstWplusJetsEnrichedTrkIsoCumulative')
@@ -193,6 +203,7 @@ evtSelConfiguratorBgEstWplusJetsEnriched = eventSelFlagProdConfigurator(
     [ cfgMuonPtCutBgEstWplusJetsEnriched,
       cfgMuonPFRelIsoCutBgEstWplusJetsEnriched,
       cfgMuonAntiPionCutBgEstWplusJetsEnriched,
+      cfgTauTaNCdiscrCutBgEstWplusJetsEnriched,
       cfgTauTrkIsoCutBgEstWplusJetsEnriched,
       cfgTauEcalIsoCutBgEstWplusJetsEnriched,
       cfgTauMuonVetoBgEstWplusJetsEnriched,
@@ -225,6 +236,10 @@ diTauCandidateHistManagerBgEstWplusJetsEnriched.pluginName = cms.string('diTauCa
 diTauCandidateHistManagerBgEstWplusJetsEnriched.diTauCandidateSource = cms.InputTag('muTauPairsBgEstWplusJetsEnrichedMt1MET')
 diTauCandidateHistManagerBgEstWplusJetsEnriched.visMassHypothesisSource = cms.InputTag('')
 
+diTauCandidateSVfitHistManagerBgEstWplusJetsEnriched = copy.deepcopy(diTauCandidateSVfitHistManagerForMuTau)
+diTauCandidateSVfitHistManagerBgEstWplusJetsEnriched.pluginName = cms.string('diTauCandidateSVfitHistManagerBgEstWplusJetsEnriched')
+diTauCandidateSVfitHistManagerBgEstWplusJetsEnriched.diTauCandidateSource = cms.InputTag('muTauPairsBgEstWplusJetsEnrichedMt1MET')
+
 jetHistManagerBgEstWplusJetsEnriched = copy.deepcopy(jetHistManager)
 jetHistManagerBgEstWplusJetsEnriched.pluginName = cms.string('jetHistManagerBgEstWplusJetsEnriched')
 jetHistManagerBgEstWplusJetsEnriched.jetSource = cms.InputTag('jetsBgEstWplusJetsEnrichedAntiOverlapWithLeptonsVeto')
@@ -247,6 +262,7 @@ analyzeEventsBgEstWplusJetsEnriched = cms.EDAnalyzer("GenericAnalyzer",
     filters = cms.VPSet(
         evtSelGenPhaseSpace,
         evtSelTrigger,
+        evtSelDataQuality,
         evtSelPrimaryEventVertex,
         evtSelPrimaryEventVertexQuality,
         evtSelPrimaryEventVertexPosition,
@@ -272,6 +288,11 @@ analyzeEventsBgEstWplusJetsEnriched = cms.EDAnalyzer("GenericAnalyzer",
         evtSelTauPt,
         evtSelTauLeadTrk,
         evtSelTauLeadTrkPt,
+        cms.PSet(
+            pluginName = cms.string('tauTaNCdiscrCutBgEstWplusJetsEnriched'),
+            pluginType = cms.string('BoolEventSelector'),
+            src = cms.InputTag('tauTaNCdiscrCutBgEstWplusJetsEnriched', 'cumulative')
+        ),
         cms.PSet(
             pluginName = cms.string('tauTrkIsoCutBgEstWplusJetsEnriched'),
             pluginType = cms.string('BoolEventSelector'),
@@ -313,6 +334,7 @@ analyzeEventsBgEstWplusJetsEnriched = cms.EDAnalyzer("GenericAnalyzer",
         muonHistManagerBgEstWplusJetsEnriched,
         tauHistManagerBgEstWplusJetsEnriched,
         diTauCandidateHistManagerBgEstWplusJetsEnriched,
+        diTauCandidateSVfitHistManagerBgEstWplusJetsEnriched,
         jetHistManagerBgEstWplusJetsEnriched,
         tauIdEffHistManagerBgEstWplusJetsEnriched,
         dataBinnerBgEstWplusJetsEnriched
@@ -335,6 +357,10 @@ analyzeEventsBgEstWplusJetsEnriched = cms.EDAnalyzer("GenericAnalyzer",
         cms.PSet(
             filter = cms.string('evtSelTrigger'),
             title = cms.string('Muon Trigger')
+        ),
+        cms.PSet(
+            filter = cms.string('evtSelDataQuality'),
+            title = cms.string('Data quality')
         ),
         cms.PSet(
             filter = cms.string('evtSelPrimaryEventVertex'),
@@ -389,6 +415,10 @@ analyzeEventsBgEstWplusJetsEnriched = cms.EDAnalyzer("GenericAnalyzer",
             title = cms.string('Tau lead. Track Pt'),
         ),
         cms.PSet(
+            filter = cms.string('tauTaNCdiscrCutBgEstWplusJetsEnriched'),
+            title = cms.string('Tau TaNC discr.')
+        ),
+        cms.PSet(
             filter = cms.string('tauTrkIsoCutBgEstWplusJetsEnriched'),
             title = cms.string('Tau Track iso.')
         ),
@@ -408,10 +438,12 @@ analyzeEventsBgEstWplusJetsEnriched = cms.EDAnalyzer("GenericAnalyzer",
             analyzers = cms.vstring(
                 'muonHistManagerBgEstWplusJetsEnriched',
                 'tauHistManagerBgEstWplusJetsEnriched',
-                'diTauCandidateHistManagerBgEstWplusJetsEnriched'
+                'diTauCandidateHistManagerBgEstWplusJetsEnriched',
+                'diTauCandidateSVfitHistManagerBgEstWplusJetsEnriched'
             ),
             replace = cms.vstring(
-                'diTauCandidateHistManagerBgEstWplusJetsEnriched.diTauCandidateSource = muTauPairsBgEstWplusJetsEnriched'
+                'diTauCandidateHistManagerBgEstWplusJetsEnriched.diTauCandidateSource = muTauPairsBgEstWplusJetsEnriched',
+                'diTauCandidateSVfitHistManagerBgEstWplusJetsEnriched.diTauCandidateSource = muTauPairsBgEstWplusJetsEnriched'
             )
         ),
         cms.PSet(
@@ -422,7 +454,8 @@ analyzeEventsBgEstWplusJetsEnriched = cms.EDAnalyzer("GenericAnalyzer",
             analyzers = cms.vstring(
                 'muonHistManagerBgEstWplusJetsEnriched',
                 'tauHistManagerBgEstWplusJetsEnriched',
-                'diTauCandidateHistManagerBgEstWplusJetsEnriched'
+                'diTauCandidateHistManagerBgEstWplusJetsEnriched',
+                'diTauCandidateSVfitHistManagerBgEstWplusJetsEnriched'
             )
         ),
         cms.PSet(
@@ -445,6 +478,7 @@ analyzeEventsBgEstWplusJetsEnriched = cms.EDAnalyzer("GenericAnalyzer",
                 'muonHistManagerBgEstWplusJetsEnriched',
                 'tauHistManagerBgEstWplusJetsEnriched',
                 'diTauCandidateHistManagerBgEstWplusJetsEnriched',
+                'diTauCandidateSVfitHistManagerBgEstWplusJetsEnriched',
                 'jetHistManagerBgEstWplusJetsEnriched',
                 'tauIdEffHistManagerBgEstWplusJetsEnriched',
                 'dataBinnerBgEstWplusJetsEnriched'
