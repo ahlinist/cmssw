@@ -22,7 +22,7 @@ SAMPLES_TO_ANALYZE = [
 # from the MERGE_SAMPLES defined at the bottom.
 SAMPLES_TO_PLOT = [
     'data', 
-    'qcdSum', 
+    #'qcdSum', 
     'WplusJets',
     'TTplusJets',
     'Zmumu',
@@ -32,6 +32,9 @@ SAMPLES_TO_PLOT = [
 SAMPLES_TO_PRINT = copy.copy(SAMPLES_TO_PLOT)
 SAMPLES_TO_PRINT.append('smBgSum')
 SAMPLES_TO_PRINT.append('smSum')
+SAMPLES_TO_PRINT.append('data_Mu_132440-145761_Sep17ReReco')
+SAMPLES_TO_PRINT.append('data_Mu_145762_147116_Prompt')
+SAMPLES_TO_PRINT.append('data_Mu_147117_149442_Prompt')
 
 SAMPLE_DEFAULTS = {
     'dbs_url' : "http://cmsdbsprod.cern.ch/cms_dbs_ph_analysis_02/servlet/DBSServlet",
