@@ -191,6 +191,12 @@ from TauAnalysis.Configuration.tools.factorizationTools import enableFactorizati
 #--------------------------------------------------------------------------------
 
 #--------------------------------------------------------------------------------
+# import utility function for applyting Z-recoil corrections to MET
+from TauAnalysis.Configuration.tools.mcToDataCorrectionTools import applyZrecoilCorrection_runAHtoMuTau
+##applyZrecoilCorrection_runAHtoMuTau(process)
+#--------------------------------------------------------------------------------
+
+#--------------------------------------------------------------------------------
 # import utility function for disabling estimation of systematic uncertainties
 from TauAnalysis.Configuration.tools.sysUncertaintyTools import enableSysUncertainties_runAHtoMuTau
 #
