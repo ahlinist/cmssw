@@ -13,7 +13,7 @@ def replaceEventSelections(analyzer, evtSel_replacements):
     # "tight" by "loose" cuts for factorization purposes
 
     for evtSel_replacement in evtSel_replacements:
-        
+
         # check that all entries in evtSel_replacements list contain exactly two entries
         # (one for the "tight" cut to be replaced and one for the "loose" cut used as replacement)
         if len(evtSel_replacement) != 2:
@@ -37,7 +37,7 @@ def replaceAnalyzerModules(analyzer, analyzerModule_replacements):
     # in configuration of GenericAnalyzer
 
     for analyzerModule_replacement in analyzerModule_replacements:
-        
+
         # check that all entries in analyzerModule_replacements list contain exactly two entries
         # (one for the "old" module to be replaced and one for the "new" module used as replacement)
         if len(analyzerModule_replacement) != 2:
@@ -63,7 +63,7 @@ def replaceAnalyzerModules(analyzer, analyzerModule_replacements):
 def composeDirectoryName(dqmDirectory, factorizationLabel):
     if dqmDirectory.rfind("_") == -1:
         return dqmDirectory + '_' + factorizationLabel + '/'
-    else:        
+    else:
         return dqmDirectory[:dqmDirectory.rindex("_")] + '_' + factorizationLabel + dqmDirectory[dqmDirectory.rindex("_"):] + '/'
 
 def composeSubDirectoryNames_plots(evtSelList):
@@ -74,7 +74,7 @@ def composeSubDirectoryNames_plots(evtSelList):
     for iEvtSel in range(len(evtSelList) - 1):
         afterCut = evtSelList[iEvtSel]
         beforeCut = evtSelList[iEvtSel + 1]
-        
+
         dqmSubDirectoryNames.append(composeSubDirectoryName(afterCut = afterCut, beforeCut = beforeCut))
 
     return dqmSubDirectoryNames
@@ -87,18 +87,18 @@ def composeSubDirectoryNames_filterStatistics(evtSelList):
     for evtSel in evtSelList:
         dqmSubDirectoryNames.append(getattr(evtSel, "pluginName").value())
 
-    return dqmSubDirectoryNames    
+    return dqmSubDirectoryNames
 
 def composeFactorizationSequence(process,
                                  processName,
-                                 dqmDirectoryIn_factorizedTightEvtSel, evtSel_factorizedTight, 
+                                 dqmDirectoryIn_factorizedTightEvtSel, evtSel_factorizedTight,
                                  dqmDirectoryIn_factorizedLooseEvtSel, evtSel_factorizedLoose,
                                  meName_numerator, meName_denominator,
                                  dqmDirectoryOut,
                                  dropInputDirectories = True):
     # compose sequence applying factorization
     # to histograms and FilterStatistics objects
-    
+
     # configure EDAnalyzer that copies histograms filled **before**
     # cuts used for factorization are applied
     dqmHistScaler_plotsTightEvtSel = cms.EDAnalyzer("DQMHistScaler",
@@ -146,7 +146,7 @@ def composeFactorizationSequence(process,
     # need to get scaled and added
     #
     # NOTE: definitions of meOptionsSeparator and meOptionsNumWeighted
-    #       need to match those in TauAnalysis/Core/src/FilterStatisticsService.cc 
+    #       need to match those in TauAnalysis/Core/src/FilterStatisticsService.cc
     #
     meOptionsSeparator = "#"
     meOptionsNumWeighted = "".join([meOptionsSeparator, "a1", meOptionsSeparator, "s1"])
@@ -155,13 +155,13 @@ def composeFactorizationSequence(process,
         dqmDirectory_factorizedLooseSel = cms.string(dqmDirectoryIn_factorizedLooseEvtSel + "FilterStatistics" + "/")
         dqmDirectory_factorizedTightSel = cms.string(dqmDirectoryIn_factorizedTightEvtSel + "FilterStatistics" + "/")
         meType = cms.string("real")
-        
+
         setattr(dqmHistScaler_plotsLooseEvtSel, "meName_numerator", cms.string("".join([meName_numerator, meOptionsNumWeighted])))
         setattr(dqmHistScaler_plotsLooseEvtSel, "meName_denominator", cms.string("".join([meName_denominator, meOptionsNumWeighted])))
         setattr(dqmHistScaler_plotsLooseEvtSel, "dqmDirectory_factorizedLooseSel", dqmDirectory_factorizedLooseSel)
         setattr(dqmHistScaler_plotsLooseEvtSel, "dqmDirectory_factorizedTightSel", dqmDirectory_factorizedTightSel)
         setattr(dqmHistScaler_plotsLooseEvtSel, "meType", meType)
-        
+
         setattr(dqmHistScaler_filterStatLooseEvtSel, "meName_numerator", cms.string("".join([meName_numerator, meOptionsNumWeighted])))
         setattr(dqmHistScaler_filterStatLooseEvtSel, "meName_denominator", cms.string("".join([meName_denominator, meOptionsNumWeighted])))
         setattr(dqmHistScaler_filterStatLooseEvtSel, "dqmDirectory_factorizedLooseSel", dqmDirectory_factorizedLooseSel)
@@ -169,7 +169,7 @@ def composeFactorizationSequence(process,
         setattr(dqmHistScaler_filterStatLooseEvtSel, "meType", meType)
     else:
         setattr(dqmHistScaler_plotsLooseEvtSel, "scaleFactor", cms.double(1.))
-        
+
         setattr(dqmHistScaler_filterStatLooseEvtSel, "scaleFactor", cms.double(1.))
 
     # delete original histograms and FilterStatistics objects
@@ -206,7 +206,7 @@ def enableFactorization_runZtoMuTau(process):
         process.selectZtoMuTauEvents
        * process.selectZtoMuTauEventsLooseMuonIsolation
     )
-    process.p.replace(process.selectZtoMuTauEvents, process.selectZtoMuTauEvents_factorized)    
+    process.p.replace(process.selectZtoMuTauEvents, process.selectZtoMuTauEvents_factorized)
     process.load("TauAnalysis.Configuration.analyzeZtoMuTau_factorized_cff")
     process.analyzeZtoMuTauSequence_factorized = cms.Sequence(
         process.analyzeZtoMuTauSequence_factorizedWithoutMuonIsolation
@@ -221,13 +221,13 @@ def enableFactorization_makeZtoMuTauPlots_grid(
     relevantMergedSamples = [ 'qcdSum', ],
     mergedToRecoSampleDict = {},
     mergedSampleAdderModule = lambda sample: 'addZtoMuTau_%s' % (sample),
-    dqmDirectoryOut = 
+    dqmDirectoryOut =
     lambda sample:'/harvested/%s_factorized/zMuTauAnalyzer/'% (sample),
-    dqmDirectoryOutUnfactorized = 
+    dqmDirectoryOutUnfactorized =
     lambda sample:'/harvested/%s/zMuTauAnalyzer/'% (sample),
-    dqmDirectoryTight = 
+    dqmDirectoryTight =
     lambda sample:'/harvested/%s/zMuTauAnalyzer_factorizedWithMuonIsolation/' % (sample),
-    dqmDirectoryLoose = 
+    dqmDirectoryLoose =
     lambda sample:'/harvested/%s/zMuTauAnalyzer_factorizedWithoutMuonIsolation/' % (sample),
     pyObjectLabel = ""):
 
@@ -281,7 +281,7 @@ def enableFactorization_makeZtoMuTauPlots_grid(
     # to compute factorization scale-factor
     meNameZtoMuTau_numerator = "evtSelMuonPFRelIso/passed_cumulative_numWeighted"
     meNameZtoMuTau_denominator = "evtSelMuonPFRelIso/processed_cumulative_numWeighted"
-    
+
     # Loop over the samples and create sequences
     # for each of the factorization jobs and add them to the factorization
     # sequence
@@ -308,7 +308,7 @@ def enableFactorization_makeZtoMuTauPlots_grid(
         # Get the module that is doing the merging, if it exists
         if not hasattr(process.mergeSamplesZtoMuTau, "merge_%s"%(mergedSample)): continue
         merger = getattr(process.mergeSamplesZtoMuTau, "merge_%s" % (mergedSample))
-        
+
         # Get the subsamples associated with this merged sample
         subsamples = mergedToRecoSampleDict[mergedSample]['samples']
         # Set the adder to use our new factorized inputs
@@ -318,9 +318,9 @@ def enableFactorization_makeZtoMuTauPlots_grid(
                     yield dqmDirectoryOut(sample)
                 else:
                     yield dqmDirectoryOutUnfactorized(sample)
-                    
+
         merger.dqmDirectories_input = cms.vstring(list(merge_directories(subsamples)))
-    
+
     # Update the plot sources in the plot jobs.  Note that we don't need to do
     # this for the merged samples, since we have replaced the HistAdder sources
     for plotterModuleName in [ 'plotZtoMuTau', ]:
@@ -353,13 +353,13 @@ def enableFactorization_makeZtoElecMuPlots(process,
         dqmDirectoryIn_InclusivePPmuX = '/harvested/InclusivePPmuX/zElecMuAnalyzer',
         dqmDirectoryOut_InclusivePPmuX = '/harvested/InclusivePPmuX_factorized/zElecMuAnalyzer',
         dqmDirectoryIn_PPmuXptGt20 = '/harvested/PPmuXptGt20/zElecMuAnalyzer',
-        dqmDirectoryOut_PPmuXptGt20 = '/harvested/PPmuXptGt20_factorized/zElecMuAnalyzer',                                  
+        dqmDirectoryOut_PPmuXptGt20 = '/harvested/PPmuXptGt20_factorized/zElecMuAnalyzer',
         modName_addZtoElecMu_qcdSum = "addZtoElecMu_qcdSum",
-        modName_addZtoElecMu_smSum = "addZtoElecMu_smSum",                                
+        modName_addZtoElecMu_smSum = "addZtoElecMu_smSum",
         seqName_addZtoElecMu = "addZtoElecMu",
         pyObjectLabel = ""):
     process.load("TauAnalysis.Configuration.analyzeZtoElecMu_cfi")
-    
+
     # define list of event selection criteria on "tight" muon isolation branch of the analysis,
     # **before** applying factorization of muon track + ECAL isolation efficiencies
     evtSelZtoElecMu_factorizedTight = [
@@ -745,10 +745,10 @@ def enableFactorization_makeZtoElecTauPlots(process):
 		#+ process.scaleZtoElecTau_gammaPlusJets_Pt50to80
 		#+ process.scaleZtoElecTau_gammaPlusJets_Pt80to120
 		+ process.scaleZtoElecTau_gammaPlusJets_Pt30
-		#			+ process.addZtoElecTau_qcdSum 
-		+ process.addZtoElecTau_qcdBCtoESum 
-		+ process.addZtoElecTau_qcdEMenrichedSum 
-		#+ process.addZtoElecTau_gammaPlusJetsSum 
+		#			+ process.addZtoElecTau_qcdSum
+		+ process.addZtoElecTau_qcdBCtoESum
+		+ process.addZtoElecTau_qcdEMenrichedSum
+		#+ process.addZtoElecTau_gammaPlusJetsSum
 		#			+ process.addZtoElecTau_smSum
 	)
 
@@ -778,13 +778,13 @@ def enableFactorization_makeZtoDiTauPlots_grid(
     relevantMergedSamples = [ 'qcdSum', ],
     mergedToRecoSampleDict = {},
     mergedSampleAdderModule = lambda sample: 'addZtoDiTau_%s' % (sample),
-    dqmDirectoryOut = 
+    dqmDirectoryOut =
     lambda sample:'/harvested/%s_factorized/zDiTauAnalyzer/'% (sample),
-    dqmDirectoryOutUnfactorized = 
+    dqmDirectoryOutUnfactorized =
     lambda sample:'/harvested/%s/zDiTauAnalyzer/'% (sample),
-    dqmDirectoryTight = 
+    dqmDirectoryTight =
     lambda sample:'/harvested/%s/zDiTauAnalyzer_factorizedTight2ndTau/' % (sample),
-    dqmDirectoryLoose = 
+    dqmDirectoryLoose =
     lambda sample:'/harvested/%s/zDiTauAnalyzer_factorizedLoose2ndTau/' % (sample),
     pyObjectLabel = ""):
 
@@ -866,7 +866,7 @@ def enableFactorization_makeZtoDiTauPlots_grid(
         # Get the module that is doing the merging, if it exists
         if not hasattr(process.mergeSamplesZtoDiTau, "merge_%s"%(mergedSample)): continue
         merger = getattr(process.mergeSamplesZtoDiTau, "merge_%s" % (mergedSample))
-        
+
         # Get the subsamples associated with this merged sample
         subsamples = mergedToRecoSampleDict[mergedSample]['samples']
         # Set the adder to use our new factorized inputs
@@ -876,9 +876,9 @@ def enableFactorization_makeZtoDiTauPlots_grid(
                     yield dqmDirectoryOut(sample)
                 else:
                     yield dqmDirectoryOutUnfactorized(sample)
-                    
+
         merger.dqmDirectories_input = cms.vstring(list(merge_directories(subsamples)))
-    
+
     # Update the plot sources in the plot jobs.  Note that we don't need to do
     # this for the merged samples, since we have replaced the HistAdder sources
     for plotterModuleName in [ 'plotZtoDiTau', ]:
@@ -973,7 +973,7 @@ def enableFactorization_makeWtoTauNuPlots(process,
 #    if hasattr(process, modName_addWtoTauNu_smSum):
 #        addWtoTauNu._seq = addWtoTauNu._seq * getattr(process,modName_addWtoTauNu_smSum)
     setattr(process,seqName_addWtoTauNu, addWtoTauNu)
-  
+
     process.plotWtoTauNu.processes.qcd_W.dqmDirectory = cms.string('/harvested/qcd_W_factorized')
 
 #--------------------------------------------------------------------------------
@@ -1002,13 +1002,13 @@ def enableFactorization_makeAHtoMuTauPlots_grid(
     relevantMergedSamples = [ 'qcdSum', ],
     mergedToRecoSampleDict = {},
     mergedSampleAdderModule = lambda sample, btag: 'addAHtoMuTau_%s_%s' % (btag, sample),
-    dqmDirectoryOut = 
+    dqmDirectoryOut =
     lambda sample, btag:'/harvested/%s_factorized/ahMuTauAnalyzer_%s/'% (sample, btag),
-    dqmDirectoryOutUnfactorized = 
+    dqmDirectoryOutUnfactorized =
     lambda sample, btag:'/harvested/%s/ahMuTauAnalyzer_%s/'% (sample, btag),
-    dqmDirectoryTight = 
+    dqmDirectoryTight =
     lambda sample, btag:'/harvested/%s/ahMuTauAnalyzer_%s_factorizedWithMuonIsolation/' % (sample, btag),
-    dqmDirectoryLoose = 
+    dqmDirectoryLoose =
     lambda sample, btag:'/harvested/%s/ahMuTauAnalyzer_%s_factorizedWithoutMuonIsolation/' % (sample, btag),
     pyObjectLabel = ""):
 
@@ -1078,8 +1078,8 @@ def enableFactorization_makeAHtoMuTauPlots_grid(
     # for each of the factorization jobs and add them to the factorization
     # sequence
     factorizationSequence = getattr(process, factorizationSequenceName)
-    for sample, bTagOption in [(sample, bTagOption) 
-                               for bTagOption in ['woBtag', 'wBtag'] 
+    for sample, bTagOption in [(sample, bTagOption)
+                               for bTagOption in ['woBtag', 'wBtag']
                                for sample in samplesToFactorize]:
         new_factorization_sequence = composeFactorizationSequence(
             process = process,
@@ -1104,11 +1104,12 @@ def enableFactorization_makeAHtoMuTauPlots_grid(
     for btag in ['woBtag', 'wBtag']:
         for mergedSample in relevantMergedSamples:
             # Get the module that is doing the merging, if it exists
-            if not hasattr(process.mergeSamplesAHtoMuTau, 
-                           "merge_%s_%s"%(mergedSample,btag)):
+            merger_name = "merge_%s_%s" % (mergedSample, btag)
+            if not hasattr(process.mergeSamplesAHtoMuTau, merger_name):
+                print "factorizationTools: Expected to update ",\
+                        merger_name, "but it's not in the process! skipping.."
                 continue
-            merger = getattr(process.mergeSamplesAHtoMuTau, 
-                                    "merge_%s_%s" % (mergedSample, btag))
+            merger = getattr(process.mergeSamplesAHtoMuTau, merger_name)
 
             # Get the subsamples associated with this merged sample
             subsamples = mergedToRecoSampleDict[mergedSample]['samples']
@@ -1121,7 +1122,7 @@ def enableFactorization_makeAHtoMuTauPlots_grid(
                         yield dqmDirectoryOutUnfactorized(sample, btag)
 
             merger.dqmDirectories_input = cms.vstring(list(merge_directories(subsamples)))
-    
+
     # Update the plot sources in the plot jobs.  Note that we don't need to do
     # this for the merged samples, since we have replaced the HistAdder sources
     for plotterModuleName in ['plotAHtoMuTau_woBtag', 'plotAHtoMuTau_wBtag']:
