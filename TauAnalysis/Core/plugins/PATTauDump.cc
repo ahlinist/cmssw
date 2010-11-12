@@ -72,7 +72,6 @@ void PATTauDump::print(const edm::Event& evt, const edm::EventSetup& es) const
     printTrackInfo(patTau->leadTrack(), patTau->vertex(), true, false, outputStream_);
     *outputStream_ << " #signal Tracks = " << patTau->signalTracks().size() << std::endl;
     *outputStream_ << "(#signal PFChargedHadrons = " << patTau->signalPFChargedHadrCands().size() << ")" << std::endl;
-    if ( patTau->signalTracks().size() != patTau->signalPFChargedHadrCands().size() ) *outputStream_ << "--> CHECK !!!" << std::endl;
     *outputStream_ << " tauId" << std::endl;
     *outputStream_ << "  leadingTrackFinding = " << patTau->tauID("leadingTrackFinding") << std::endl;
     *outputStream_ << "  leadingTrackPtCut = " << patTau->tauID("leadingTrackPtCut") << std::endl;
