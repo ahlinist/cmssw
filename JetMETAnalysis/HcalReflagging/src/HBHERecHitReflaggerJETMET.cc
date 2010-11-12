@@ -13,7 +13,7 @@
 //
 // Original Author:  Dinko Ferencek,8 R-004,+41227676479,  Jeff Temple, 6-1-027
 //         Created:  Thu Mar 11 13:42:11 CET 2010
-// $Id: HBHERecHitReflaggerJETMET.cc,v 1.8 2010/07/17 00:59:22 temple Exp $
+// $Id: HBHERecHitReflaggerJETMET.cc,v 1.9 2010/08/19 15:22:55 temple Exp $
 //
 //
 
@@ -38,6 +38,7 @@
 #include "CalibFormats/HcalObjects/interface/HcalDbService.h"
 #include "CalibFormats/HcalObjects/interface/HcalDbRecord.h"
 #include "RecoLocalCalo/HcalRecAlgos/interface/HcalCaloFlagLabels.h"
+#include "RecoLocalCalo/HcalRecAlgos/interface/HBHETimingShapedFlag.h"
 #include "Geometry/HcalTowerAlgo/src/HcalHardcodeGeometryData.h" // for eta bounds
 
 #include "CondFormats/HcalObjects/interface/HcalChannelStatus.h"
@@ -107,11 +108,8 @@ private:
 
 
   // Variables for Phil's timing algorithm
-  std::vector<std::pair<double,double> > tfilterEnvelope_;
-  bool ignorelowest_;
-  bool ignorehighest_;
-  double win_offset_;
-  double win_gain_;
+  bool doTimingReflagging_;
+  HBHETimingShapedFlagSetter* hbheTimingShapedFlagSetter_;
   int hbheTimingFlagBit_;
 
   // event counter
@@ -131,7 +129,6 @@ private:
 //
 HBHERecHitReflaggerJETMET::HBHERecHitReflaggerJETMET(const edm::ParameterSet& ps)
 {
-
    //register your products
    produces<HBHERecHitCollection>();
    debug_              = ps.getUntrackedParameter<int>("debug",0);
@@ -141,27 +138,21 @@ HBHERecHitReflaggerJETMET::HBHERecHitReflaggerJETMET(const edm::ParameterSet& ps
    Ethresh_            = ps.getUntrackedParameter<double>("Ethresh",0.5);
    RBXflag_            = ps.getUntrackedParameter<bool>("RBXflag",false); // if specified, flag on number of hits within an RBX, rather than within an HPD
 
-   // Phil's timing algorithm
-   const edm::ParameterSet& psTshaped = ps.getParameter<edm::ParameterSet>("timingshapedcutsParamet\
-ers");
-   std::vector<double> dummy= psTshaped.getParameter<std::vector<double> >("tfilterEnvelope");
-   // His 'tfilterEnvelope' is a set of (energy,time) pairs.
-   // We need to convert the vector of doubles (as read in from the cfg) to a vector of pairs
-   for (unsigned int i=0;i<dummy.size();i+=2)
-     {
-       if (i+1<dummy.size())
-	 {
-	   std::pair<double,double> temp(dummy[i],dummy[i+1]);
-	   tfilterEnvelope_.push_back(temp);
-	 }
-     }
-   // All other variables come directly from cfg file
-   ignorelowest_    = psTshaped.getParameter<bool>("ignorelowest");
-   ignorehighest_   = psTshaped.getParameter<bool>("ignorehighest");
-   win_offset_      = psTshaped.getParameter<double>("win_offset");
-   win_gain_        = psTshaped.getParameter<double>("win_gain");
+   const edm::ParameterSet& psTshaped = ps.getParameter<edm::ParameterSet>("timingshapedcutsParameters");
+   std::vector<double> userEnvelope = psTshaped.getParameter<std::vector<double> >("tfilterEnvelope");
+
+   doTimingReflagging_ = (userEnvelope.size()>0);
+
+   hbheTimingShapedFlagSetter_ =
+     new HBHETimingShapedFlagSetter(userEnvelope,
+				    psTshaped.getParameter<bool>("ignorelowest"),
+				    psTshaped.getParameter<bool>("ignorehighest"),
+				    psTshaped.getParameter<double>("win_offset"),
+				    psTshaped.getParameter<double>("win_gain"));
+
    // Use hbheTimingFlagBit to set the appropriate flag position
-   hbheTimingFlagBit_   = psTshaped.getUntrackedParameter<int>("hbheTimingFlagBit",HcalCaloFlagLabels::HBHETimingShapedCutsBits); 
+   hbheTimingFlagBit_  = psTshaped.getUntrackedParameter<int>("hbheTimingFlagBit",
+							      HcalCaloFlagLabels::HBHETimingShapedCutsBits); 
    evtcount_=0;
 }  //HBHERecHitReflaggerJETMET::HBHERecHitReflaggerJETMET()
 
@@ -255,7 +246,8 @@ HBHERecHitReflaggerJETMET::produce(edm::Event& iEvent, const edm::EventSetup& iS
        if (debug_>5) cout <<"HBHE Noise Flag Bit for "<<newhit.id()<<"  = "<<newhit.flagField(hbheFlagBit_)<<endl;
 
        // Set Phil's timing bit
-       SetTimingShapedFlags(newhit);
+       if (doTimingReflagging_)
+	 SetTimingShapedFlags(newhit);
        
        pOut->push_back(newhit);
      }
@@ -289,7 +281,7 @@ HBHERecHitReflaggerJETMET::endJob() {
 void HBHERecHitReflaggerJETMET::dumpInfo()
 {
   // Dump out all the parameters used in the reflagger
-  if (debug_==0) return;
+  //if (debug_==0) return;
 
   cout <<"  Dumping out all parameters!"<<endl;
   cout <<" HPD Hit Multiplicity flag bit set to : "<<hbheFlagBit_<<endl;
@@ -297,91 +289,19 @@ void HBHERecHitReflaggerJETMET::dumpInfo()
   cout <<"  If this is condition is met, ALL channels in the HPD are flagged as noisy."<<endl;
   
   cout <<"\n\nHBHE Timing Flag will be written to flag bit "<<hbheTimingFlagBit_<<endl;
-  cout <<"Timing Energy/Time parameters are:"<<endl;
-  for (unsigned int i=0;i<tfilterEnvelope_.size();++i)
-    cout <<"\t"<<tfilterEnvelope_[i].first<<"\t"<<tfilterEnvelope_[i].second<<endl;
-  cout <<"ignorelowest  = "<<ignorelowest_<<endl;
-  cout <<"ignorehighest = "<<ignorehighest_<<endl;
-  cout <<"win_offset    = "<<win_offset_<<endl;
-  cout <<"win_gain      = "<<win_gain_<<endl;
+
+  hbheTimingShapedFlagSetter_->dumpInfo();
+
 }// dumpInfo()
 
 
 void HBHERecHitReflaggerJETMET::SetTimingShapedFlags(HBHERecHit& hbhe)
 {
-  // This is Phil's algorithm, taken almost directly from RecoLocalCalo/HcalRecAlgos/src/HBHETimingShapedFlag.cc 
-  // Only difference is that status is treated as a single bit, instead of a set of 3 bits
-  // (only one bit is currently used in HBHETimingShapedFlag.cc, though, so there's effectively no difference)
+  int status=hbheTimingShapedFlagSetter_->timingStatus(hbhe);
+  hbhe.setFlagField(status,hbheTimingFlagBit_);
 
-  int status=0;  // treat as single bit, although three bits are allowed in the actual rechit flag (within RecoLocalCalo/HcalRecAlgos)
-
-  // tfilterEnvelope stores doubles of energy and time; 
-  //make sure we're checking over an even number of values
-  // energies are also assumed to appear in increasing order
-
-  // need at least two values to make comparison, and must
-  // always have energy, time pair; otherwise, assume "in time" and don't set bits
-  if (tfilterEnvelope_.size()==0)
-    return;
-
-  double twinmin, twinmax;  // min, max 'good' time; values outside this range have flag set
-  double rhtime=hbhe.time();
-  double energy=hbhe.energy();
-  unsigned int i=0; // index to track envelope index
-
-  if (energy<tfilterEnvelope_[0].first) // less than lowest energy threshold
-    {
-      // Can skip timing test on cells below lowest threshold if so desired
-      if (ignorelowest_) 
-	return;
-      else
-	twinmax=tfilterEnvelope_[0].second;
-    }
-  else
-    {
-      // Loop over energies in tfilterEnvelope
-      for (i=0;i<tfilterEnvelope_.size();++i)
-	{
-	  // Identify tfilterEnvelope index for this rechit energy
-	  if (tfilterEnvelope_[i].first>energy)
-	    break;
-	}
-
-      if (i==tfilterEnvelope_.size())
-	{
-	  // Skip timing test on cells above highest threshold if so desired
-	  if (ignorehighest_)
-	    return;
-	  else
-	    twinmax=tfilterEnvelope_[i-1].second;
-	}
-      else
-	{
-	  // Perform linear interpolation between energy boundaries
-
-	  double energy1  = tfilterEnvelope_[i-1].first;
-	  double lim1     = tfilterEnvelope_[i-1].second;
-	  double energy2  = tfilterEnvelope_[i].first;
-	  double lim2     = tfilterEnvelope_[i].second;
-	
-	  twinmax=lim1+((lim2-lim1)*(energy-energy1)/(energy2-energy1));
-	}
-    }
-  // Apply offset, gain
-  twinmin=win_offset_-twinmax*win_gain_;
-  twinmax=win_offset_+twinmax*win_gain_;  
-  
-  // Set status high if time outside expected range
-  if (rhtime<=twinmin || rhtime >= twinmax)
-    status=1; // set status to 1
-  if (status>0 && debug_>0)
-    cout <<"HBHE Timing Flag Bit for "<<hbhe.id()<<"   is set; \tEnergy  = "<<hbhe.energy()<<"  time = "<<hbhe.time()<<endl;
-    
-  if (status>0)
-    hbhe.setFlagField(1,hbheTimingFlagBit_);
-  else
-    hbhe.setFlagField(0,hbheTimingFlagBit_);
   return;
+
 } //SetTimingShapedFlags(HBHERecHit& hbhe)
 
 
