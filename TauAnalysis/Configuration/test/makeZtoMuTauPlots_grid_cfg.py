@@ -11,7 +11,6 @@ from TauAnalysis.Configuration.tools.factorizationTools import enableFactorizati
 process = cms.Process('makeZtoMuTauPlots')
 
 process.load("TauAnalysis.Configuration.dumpZtoMuTau_grid_cff")
-##process.load("TauAnalysis.Configuration.plotZtoMuTau_grid_cff")
 
 channel = 'ZtoMuTau'
 inputFilePath = getHarvestingFilePath(channel)
@@ -25,8 +24,8 @@ makePlots(process, channel = channel, samples = recoSampleDefinitionsZtoMuTau_7T
           drawJobTemplate = plots_ZtoMuTau,
           enableFactorizationFunction = enableFactorization_makeZtoMuTauPlots_grid,
           dqmDirectoryFilterStatistics = {
-              'factorizationDisabled' : 'zDiTauAnalyzer/FilterStatistics',
-              'factorizationEnabled' : 'zDiTauAnalyzer_factorizedTight2ndTau/FilterStatistics'
+              'factorizationDisabled' : 'zMuTauAnalyzer/FilterStatistics',
+              'factorizationEnabled' : 'zMuTauAnalyzer_factorizedWithMuonIsolation/FilterStatistics'
           },
           dumpDQMStore = False)
 
