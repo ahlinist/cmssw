@@ -8,9 +8,9 @@
  * 
  * \author Christian Veelken, UC Davis
  *
- * \version $Revision: 1.4 $
+ * \version $Revision: 1.1 $
  *
- * $Id: RunLumiSectionEventNumberFilter.h,v 1.4 2009/04/24 13:47:17 veelken Exp $
+ * $Id: RunLumiSectionEventNumberFilter.h,v 1.1 2010/10/22 12:23:02 veelken Exp $
  *
  */
 
@@ -38,6 +38,8 @@ class RunLumiSectionEventNumberFilter : public edm::EDFilter
   void readRunLumiSectionEventNumberFile();
   
   std::string runLumiSectionEventNumberFileName_;
+
+  std::string separator_;
 
   typedef std::set<edm::EventNumber_t> eventNumberSet;
   typedef std::map<edm::LuminosityBlockNumber_t, eventNumberSet> lumiSectionEventNumberMap;

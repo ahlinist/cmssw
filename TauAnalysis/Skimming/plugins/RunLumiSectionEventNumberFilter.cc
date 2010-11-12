@@ -28,6 +28,9 @@ RunLumiSectionEventNumberFilter::RunLumiSectionEventNumberFilter(const edm::Para
     cfgError_ = 1;
   }
 
+  separator_ = cfg.exists("separator") ? 
+    cfg.getParameter<std::string>("separator") : "[[:space:]]+";
+
   numEventsProcessed_ = 0;
   numEventsSelected_ = 0;
 }
@@ -90,8 +93,12 @@ void RunLumiSectionEventNumberFilter::readRunLumiSectionEventNumberFile()
 {
 //--- read run + luminosity section + event number pairs from ASCII file
 
-  TPRegexp regexpParser_threeColumnLine("[[:digit:]]+[[:space:]]+[[:digit:]]+[[:space:]]+[[:digit:]]+");
-  TPRegexp regexpParser_threeColumnNumber("([[:digit:]]+)[[:space:]]+([[:digit:]]+)[[:space:]]+([[:digit:]]+)");
+  std::string regexpParser_threeColumnLine_string = std::string("[[:digit:]]+");
+  regexpParser_threeColumnLine_string.append(separator_).append("[[:digit:]]+").append(separator_).append("[[:digit:]]+");
+  TPRegexp regexpParser_threeColumnLine(regexpParser_threeColumnLine_string.data());
+  std::string regexpParser_threeColumnNumber_string = std::string("([[:digit:]]+)");
+  regexpParser_threeColumnNumber_string.append(separator_).append("([[:digit:]]+)").append(separator_).append("([[:digit:]]+)");
+  TPRegexp regexpParser_threeColumnNumber(regexpParser_threeColumnNumber_string.data());
 
   ifstream runLumiSectionEventNumberFile(runLumiSectionEventNumberFileName_.data());
   int iLine = 0;
