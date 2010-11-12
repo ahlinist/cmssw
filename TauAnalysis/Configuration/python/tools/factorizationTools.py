@@ -1081,6 +1081,11 @@ def enableFactorization_makeAHtoMuTauPlots_grid(
     for sample, bTagOption in [(sample, bTagOption)
                                for bTagOption in ['woBtag', 'wBtag']
                                for sample in samplesToFactorize]:
+        if bTagOption == 'wBtag':
+            print "BTag analysis chain disabled - not modifying factorization"\
+                    " sequence for", sample
+        print "Adding sample:", sample, " to factorization:", \
+                factorizationSequenceName
         new_factorization_sequence = composeFactorizationSequence(
             process = process,
             processName = sample + "_" + bTagOption + "_" + pyObjectLabel,
