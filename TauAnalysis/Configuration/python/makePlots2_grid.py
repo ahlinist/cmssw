@@ -26,7 +26,7 @@ dqmHistPlotter_template = cms.EDAnalyzer("DQMHistPlotter",
         unlabeled = copy.deepcopy(styles.xAxis_unlabeled)
     ),
 
-    yAxes = cms.PSet(                         
+    yAxes = cms.PSet(
         numEntries_linear = copy.deepcopy(styles.yAxis_numEntries_linear),
         numEntries_log = copy.deepcopy(styles.yAxis_numEntries_log)
     ),
@@ -44,14 +44,14 @@ dqmHistPlotter_template = cms.EDAnalyzer("DQMHistPlotter",
     drawJobs = cms.PSet(),
 
     canvasSizeX = cms.int32(userSettings[os.environ['LOGNAME']]['global']['drawOptions']['canvasSizeX']),
-    canvasSizeY = cms.int32(userSettings[os.environ['LOGNAME']]['global']['drawOptions']['canvasSizeY']),                         
+    canvasSizeY = cms.int32(userSettings[os.environ['LOGNAME']]['global']['drawOptions']['canvasSizeY']),
 
     outputFilePath = cms.string('./plots/')
 )
 
 def makePlots(process, channel = None, samples = None, inputFilePath = None, jobId = None,
               analyzer_drawJobConfigurator_indOutputFileName_sets = None,
-              drawJobTemplate = None, 
+              drawJobTemplate = None,
               enableFactorizationFunction = None,
               dqmDirectoryFilterStatistics = None, dumpDQMStore = False):
 
@@ -65,7 +65,7 @@ def makePlots(process, channel = None, samples = None, inputFilePath = None, job
         raise ValueError("Undefined inputFilePath Parameter !!")
     if jobId is None:
         raise ValueError("Undefined jobId Parameter !!")
-    if analyzer_drawJobConfigurator_indOutputFileName_sets is None:       
+    if analyzer_drawJobConfigurator_indOutputFileName_sets is None:
         raise ValueError("Undefined analyzer_drawJobConfigurator_indOutputFileName_sets Parameter !!")
     if drawJobTemplate is None:
         for analyzer_drawJobConfigurator_indOutputFileName_set in analyzer_drawJobConfigurator_indOutputFileName_sets:
@@ -73,22 +73,22 @@ def makePlots(process, channel = None, samples = None, inputFilePath = None, job
                 raise ValueError("Undefined drawJobTemplate Parameter !!")
     if dqmDirectoryFilterStatistics is None:
         raise ValueError("Undefined dqmDirectoryFilterStatistics Parameter !!")
-    
+
     print(" inputFilePath = " + inputFilePath)
 
     outputFilePath = inputFilePath
     outputFilePath = outputFilePath.replace('//', '/')
     print(" outputFilePath = " + outputFilePath)
 
-    if not os.path.exists(outputFilePath):        
+    if not os.path.exists(outputFilePath):
         os.mkdir(outputFilePath)
 
     sample_mapper = lambda sample : "harvested_%s_%s_%s.root" % (channel, sample, jobId)
 
     process.DQMStore = cms.Service("DQMStore")
 
-    process.maxEvents = cms.untracked.PSet(            
-        input = cms.untracked.int32(0)         
+    process.maxEvents = cms.untracked.PSet(
+        input = cms.untracked.int32(0)
     )
 
     process.source = cms.Source("EmptySource")
@@ -129,13 +129,13 @@ def makePlots(process, channel = None, samples = None, inputFilePath = None, job
     dqmFileLoaderModule = cms.EDAnalyzer("DQMFileLoader",
         **dqmFileLoaderJobs)
     dqmFileLoaderModule.inputFilePath = cms.string(inputFilePath)
-    for sample in samples['FLATTENED_SAMPLES_TO_PLOT']:            
+    for sample in samples['FLATTENED_SAMPLES_TO_PLOT']:
         getattr(dqmFileLoaderModule, sample).inputFileNames = cms.vstring(
             sample_mapper(sample)
         )
-    setattr(process, dqmFileLoaderModuleName, dqmFileLoaderModule)    
+    setattr(process, dqmFileLoaderModuleName, dqmFileLoaderModule)
 
-    # Loop over the different merged samples we have defined and 
+    # Loop over the different merged samples we have defined and
     # merge them using the HistAdder
     dqmHistAdderJobs = {}
     for merge_name in samples['MERGE_SAMPLES'].keys():
@@ -170,7 +170,8 @@ def makePlots(process, channel = None, samples = None, inputFilePath = None, job
     setattr(process, dqmLoadAndFactorizeSequenceName, dqmLoadAndFactorizeSequence)
 
     dqmLoadFactorizeAndMergeSequenceName = "load%s" % channel
-    dqmLoadFactorizeAndMergeSequence = cms.Sequence(dqmFileLoaderModule * dqmHistAdderModule)
+    dqmLoadFactorizeAndMergeSequence = cms.Sequence(
+        dqmLoadAndFactorizeSequence * dqmHistAdderModule)
     setattr(process, dqmLoadFactorizeAndMergeSequenceName, dqmLoadFactorizeAndMergeSequence)
 
     # Define plot processes and styles for each sample
@@ -261,7 +262,7 @@ def makePlots(process, channel = None, samples = None, inputFilePath = None, job
                 dqmHistPlotterSequence = cms.Sequence(dqmHistPlotterModule_log)
             else:
                 dqmHistPlotterSequence._seq = dqmHistPlotterSequence._seq * dqmHistPlotterModule_log
-            dqmHistPlotterSequence._seq = dqmHistPlotterSequence._seq * dqmHistPlotterModule_linear    
+            dqmHistPlotterSequence._seq = dqmHistPlotterSequence._seq * dqmHistPlotterModule_linear
 
     if dqmHistPlotterSequence is not None:
         setattr(process, dqmHistPlotterSequenceName, dqmHistPlotterSequence)
@@ -270,8 +271,8 @@ def makePlots(process, channel = None, samples = None, inputFilePath = None, job
     samplesToFactorize = [sample for sample in samples['FLATTENED_SAMPLES_TO_PLOT']
                           if samples['ALL_SAMPLES'][sample].get('factorize', False)]
 
-    relevantMergedSamples = [sample for sample, sample_info in samples['MERGE_SAMPLES'].iteritems() if 
-                             [subsample for subsample in sample_info['samples'] 
+    relevantMergedSamples = [sample for sample, sample_info in samples['MERGE_SAMPLES'].iteritems() if
+                             [subsample for subsample in sample_info['samples']
                               if subsample in samplesToFactorize]]
 
     print "Factorizing", samplesToFactorize
@@ -293,7 +294,7 @@ def makePlots(process, channel = None, samples = None, inputFilePath = None, job
     setattr(process, dqmSimpleFileSaverModuleName, dqmSimpleFileSaverModule)
 
     makePlotSequenceName = "make%sPlots" % channel
-    makePlotSequence = cms.Sequence(dqmLoadFactorizeAndMergeSequence)    
+    makePlotSequence = cms.Sequence(dqmLoadFactorizeAndMergeSequence)
     if dumpDQMStore:
         process.dumpDQMStore = cms.EDAnalyzer("DQMStoreDump")
         makePlotSequence._seq = makePlotSequence._seq * process.dumpDQMStore
