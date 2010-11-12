@@ -38,10 +38,14 @@ dqmHistPlotter_template = cms.EDAnalyzer("DQMHistPlotter",
         mcNormScale = copy.deepcopy(styles.label_mcNormScale)
     ),
 
-    #canvasSizeX = cms.int32(800),
-    #canvasSizeY = cms.int32(640),                         
-    canvasSizeX = cms.int32(640),
-    canvasSizeY = cms.int32(800),                         
+    drawOptionSets = cms.PSet(),
+
+    drawJobs = cms.PSet(),
+
+    canvasSizeX = cms.int32(800),
+    canvasSizeY = cms.int32(640),                         
+    #canvasSizeX = cms.int32(640),
+    #canvasSizeY = cms.int32(800),                         
 
     outputFilePath = cms.string('./plots/')
 )
@@ -73,7 +77,7 @@ def makePlots(process, channel = None, samples = None, inputFilePath = None, job
     
     print(" inputFilePath = " + inputFilePath)
 
-    outputFilePath = inputFilePath + '/' + jobId
+    outputFilePath = inputFilePath
     outputFilePath = outputFilePath.replace('//', '/')
     print(" outputFilePath = " + outputFilePath)
 
@@ -194,9 +198,10 @@ def makePlots(process, channel = None, samples = None, inputFilePath = None, job
             if samples['ALL_SAMPLES'][sample]['type'].find('bsm') == -1 and
             samples['ALL_SAMPLES'][sample]['type'].find('Data') == -1
         ])
-        drawJobTemplate.yAxis = cms.string('numEntries_log')
+        #drawJobTemplate.yAxis = cms.string('numEntries_log')
+        drawJobTemplate.yAxis = cms.string('numEntries_linear')
 
-    dqmHistPlotterSequenceName = "plot%s" % channel
+    dqmHistPlotterSequenceName = "plot%sSequence" % channel
     dqmHistPlotterSequence = None
 
     # configure DQMHistPlotter modules
@@ -216,6 +221,10 @@ def makePlots(process, channel = None, samples = None, inputFilePath = None, job
             print("--> configuring DQMHistPlotter: " + dqmHistPlotterModuleName)
             dqmHistPlotterModule = dqmHistPlotter_template.clone(
                 processes = cms.PSet(**processesForPlots),
+                drawOptionSets = cms.PSet(
+                    default = cms.PSet(**dict((sampleName, samples['ALL_SAMPLES'][sampleName]['drawOption'])
+                                              for sampleName in samples['SAMPLES_TO_PLOT']))
+                ),
                 drawJobs = drawJobConfigurator.configure(),
                 indOutputFileName = cms.string(analyzer_drawJobConfigurator_indOutputFileName_set[2])
             )
