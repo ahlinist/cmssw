@@ -54,17 +54,17 @@ diTauCandidateZmumuHypothesisHistManagerForMuTau.ZllHypothesisSource = cms.Input
 diTauCandidateZmumuHypothesisHistManagerForMuTau.dqmDirectory_store = cms.string('DiTauCandidateZmumuHypothesisQuantities')
 
 # import config for Zmumu veto histogram manager
+muPairHistManagerByLooseIsolation = diTauCandidateHistManager.clone(
+    pluginName = cms.string('muPairHistManagerByLooseIsolation'),
+    pluginType = cms.string('PATDiMuPairHistManager'),
+    diTauCandidateSource = cms.InputTag('allDiMuPairZmumuHypothesesByLooseIsolation'),
+    dqmDirectory_store = cms.string('DiMuZmumuHypothesisByLooseIsolationQuantities')
+)
 muPairHistManagerByMass = diTauCandidateHistManager.clone(
     pluginName = cms.string('muPairHistManagerByMass'),
     pluginType = cms.string('PATDiMuPairHistManager'),
     diTauCandidateSource = cms.InputTag('allDiMuPairZmumuHypothesesByMass'),
     dqmDirectory_store = cms.string('DiMuZmumuHypothesisByMassQuantities')
-)
-muPairHistManagerByLooseIsolationAndCharge = diTauCandidateHistManager.clone(
-    pluginName = cms.string('muPairHistManagerByLooseIsolationAndCharge'),
-    pluginType = cms.string('PATDiMuPairHistManager'),
-    diTauCandidateSource = cms.InputTag('allDiMuPairZmumuHypothesesByLooseIsolationAndCharge'),
-    dqmDirectory_store = cms.string('DiMuZmumuHypothesisByLooseIsolationAndChargeQuantities')
 )
 
 # import config for central jet veto histogram manager
@@ -375,7 +375,7 @@ muTauAnalysisSequence_woBtag = cms.VPSet(
     ),
     cms.PSet(
         filter = cms.string('evtSelPrimaryEventVertexQuality'),
-        title = cms.string('p(chi2Vertex) > 0.01'),
+        title = cms.string('Vertex quality'),
         saveRunLumiSectionEventNumbers = cms.vstring('')
     ),
     cms.PSet(
@@ -390,7 +390,7 @@ muTauAnalysisSequence_woBtag = cms.VPSet(
     ),
     cms.PSet(
         filter = cms.string('evtSelPrimaryEventVertexPosition'),
-        title = cms.string('-25 < zVertex < +25 cm'),
+        title = cms.string('-24 < zVertex < +24 cm'),
         saveRunLumiSectionEventNumbers = cms.vstring('')
     ),
     cms.PSet(
@@ -771,7 +771,7 @@ muTauAnalysisSequence_woBtag = cms.VPSet(
             'diTauCandidateHistManagerForMuTau',
             'diTauCandidateCollinearApproxHistManagerForMuTau',
             'diTauCandidateSVfitHistManagerForMuTau',
-            'muPairHistManagerByMass'
+            'muPairHistManagerByLooseIsolation'
         ),
         replace = cms.vstring(
             'muonHistManager.muonSource = selectedPatMuonsTrkIPcumulative',
@@ -779,13 +779,33 @@ muTauAnalysisSequence_woBtag = cms.VPSet(
             'diTauCandidateHistManagerForMuTau.diTauCandidateSource = selectedMuTauPairsForAHtoMuTauPzetaDiffCumulative',
             'diTauCandidateCollinearApproxHistManagerForMuTau.diTauCandidateSource = selectedMuTauPairsForAHtoMuTauPzetaDiffCumulative',
             'diTauCandidateSVfitHistManagerForMuTau.diTauCandidateSource = selectedMuTauPairsForAHtoMuTauPzetaDiffCumulative',
-            'muPairHistManagerByMass.diTauCandidateSource = allDiMuPairZmumuHypothesesByMass'
+            'muPairHistManagerByLooseIsolation.diTauCandidateSource = allDiMuPairZmumuHypothesesByLooseIsolation'
         )
     ),
 
     # veto events compatible with Z --> mu+ mu- hypothesis
-    # (based on either reconstructed (visible) invariant mass of muon + muon pairs
-    #  or presence of two (loosely) isolated muons of Pt > 10 GeV and opposite charge)
+    cms.PSet(
+        filter = cms.string('evtSelDiMuPairZmumuHypothesisVetoByLooseIsolation'),
+        title = cms.string('not Charge(isoMuon+isoMuon) = 0'),
+        saveRunLumiSectionEventNumbers = cms.vstring('')
+    ),
+    cms.PSet(
+        analyzers = cms.vstring(
+            'muonHistManager',
+            'tauHistManager',
+            'diTauCandidateHistManagerForMuTau',
+            'diTauCandidateZmumuHypothesisHistManagerForMuTau',
+            'muPairHistManagerByLooseIsolation',
+            'muPairHistManagerByMass'
+        ),
+        replace = cms.vstring(
+            'muonHistManager.muonSource = selectedPatMuonsTrkIPcumulative',
+            'tauHistManager.tauSource = selectedPatTausForMuTauElectronVetoCumulative',
+            'diTauCandidateHistManagerForMuTau.diTauCandidateSource = selectedMuTauPairsPzetaDiffCumulative',
+            'muPairHistManagerByLooseIsolation.diTauCandidateSource = selectedDiMuPairZmumuHypothesesByLooseIsolation',
+            'muPairHistManagerByMass.diTauCandidateSource = allDiMuPairZmumuHypothesesByMass'
+        )
+    ),
     cms.PSet(
         filter = cms.string('evtSelDiMuPairZmumuHypothesisVetoByMass'),
         title = cms.string('not 80 < M(Muon-Muon) < 100 GeV'),
@@ -796,32 +816,10 @@ muTauAnalysisSequence_woBtag = cms.VPSet(
             'muonHistManager',
             'tauHistManager',
             'diTauCandidateHistManagerForMuTau',
-            'diTauCandidateZmumuHypothesisHistManagerForMuTau',
-            'muPairHistManagerByMass',
-            'muPairHistManagerByLooseIsolationAndCharge'
-        ),
-        replace = cms.vstring(
-            'muonHistManager.muonSource = selectedPatMuonsTrkIPcumulative',
-            'tauHistManager.tauSource = selectedPatTausForMuTauElectronVetoCumulative',
-            'diTauCandidateHistManagerForMuTau.diTauCandidateSource = selectedMuTauPairsPzetaDiffCumulative',
-            'muPairHistManagerByMass.diTauCandidateSource = selectedDiMuPairZmumuHypothesesByLooseIsolationAndCharge',
-            'muPairHistManagerByLooseIsolationAndCharge.diTauCandidateSource = allDiMuPairZmumuHypothesesByLooseIsolationAndCharge'
-        )
-    ),
-    cms.PSet(
-        filter = cms.string('evtSelDiMuPairZmumuHypothesisVetoByLooseIsolationAndCharge'),
-        title = cms.string('not Charge(isoMuon+isoMuon) = 0'),
-        saveRunLumiSectionEventNumbers = cms.vstring('')
-    ),
-    cms.PSet(
-        analyzers = cms.vstring(
-            'muonHistManager',
-            'tauHistManager',
-            'diTauCandidateHistManagerForMuTau',
             'diTauCandidateCollinearApproxHistManagerForMuTau',
             'diTauCandidateSVfitHistManagerForMuTau',
             'diTauCandidateZmumuHypothesisHistManagerForMuTau',
-            'muPairHistManagerByLooseIsolationAndCharge',
+            'muPairHistManagerByMass',
             'jetHistManager',
         ),
         replace = cms.vstring(
@@ -830,7 +828,7 @@ muTauAnalysisSequence_woBtag = cms.VPSet(
             'diTauCandidateHistManagerForMuTau.diTauCandidateSource = selectedMuTauPairsForAHtoMuTauPzetaDiffCumulative',
             'diTauCandidateCollinearApproxHistManagerForMuTau.diTauCandidateSource = selectedMuTauPairsForAHtoMuTauPzetaDiffCumulative',
             'diTauCandidateSVfitHistManagerForMuTau.diTauCandidateSource = selectedMuTauPairsForAHtoMuTauPzetaDiffCumulative',
-            'muPairHistManagerByLooseIsolationAndCharge.diTauCandidateSource = selectedDiMuPairZmumuHypothesesByLooseIsolationAndCharge',
+            'muPairHistManagerByMass.diTauCandidateSource = selectedDiMuPairZmumuHypothesesByMass',
             'jetHistManager.jetSource = selectedPatJetsForAHtoMuTauAntiOverlapWithLeptonsVetoCumulative'
         )
     ),
@@ -968,7 +966,7 @@ muTauAnalysisSequence_wBtag = cms.VPSet(
     ),
     cms.PSet(
         filter = cms.string('evtSelPrimaryEventVertexQuality'),
-        title = cms.string('p(chi2Vertex) > 0.01'),
+        title = cms.string('Vertex quality'),
         saveRunLumiSectionEventNumbers = cms.vstring('')
     ),
     cms.PSet(
@@ -983,7 +981,7 @@ muTauAnalysisSequence_wBtag = cms.VPSet(
     ),
     cms.PSet(
         filter = cms.string('evtSelPrimaryEventVertexPosition'),
-        title = cms.string('-25 < zVertex < +25 cm'),
+        title = cms.string('-24 < zVertex < +24 cm'),
         saveRunLumiSectionEventNumbers = cms.vstring('')
     ),
     cms.PSet(
@@ -1364,7 +1362,7 @@ muTauAnalysisSequence_wBtag = cms.VPSet(
             'diTauCandidateHistManagerForMuTau',
             'diTauCandidateCollinearApproxHistManagerForMuTau',
             'diTauCandidateSVfitHistManagerForMuTau',
-            'muPairHistManagerByMass'
+            'muPairHistManagerByLooseIsolation'
         ),
         replace = cms.vstring(
             'muonHistManager.muonSource = selectedPatMuonsTrkIPcumulative',
@@ -1372,13 +1370,16 @@ muTauAnalysisSequence_wBtag = cms.VPSet(
             'diTauCandidateHistManagerForMuTau.diTauCandidateSource = selectedMuTauPairsForAHtoMuTauPzetaDiffCumulative',
             'diTauCandidateCollinearApproxHistManagerForMuTau.diTauCandidateSource = selectedMuTauPairsForAHtoMuTauPzetaDiffCumulative',
             'diTauCandidateSVfitHistManagerForMuTau.diTauCandidateSource = selectedMuTauPairsForAHtoMuTauPzetaDiffCumulative',
-            'muPairHistManagerByMass.diTauCandidateSource = allDiMuPairZmumuHypothesesByMass'
+            'muPairHistManagerByLooseIsolation.diTauCandidateSource = allDiMuPairZmumuHypothesesByLooseIsolation'
         )
     ),
 
     # veto events compatible with Z --> mu+ mu- hypothesis
-    # (based on either reconstructed (visible) invariant mass of muon + muon pairs
-    #  or presence of two (loosely) isolated muons of Pt > 10 GeV and opposite charge)
+    cms.PSet(
+        filter = cms.string('evtSelDiMuPairZmumuHypothesisVetoByLooseIsolation'),
+        title = cms.string('not Charge(isoMuon+isoMuon) = 0'),
+        saveRunLumiSectionEventNumbers = cms.vstring('')
+    ),
     cms.PSet(
         filter = cms.string('evtSelDiMuPairZmumuHypothesisVetoByMass'),
         title = cms.string('not 80 < M(Muon-Muon) < 100 GeV'),
@@ -1390,20 +1391,20 @@ muTauAnalysisSequence_wBtag = cms.VPSet(
             'tauHistManager',
             'diTauCandidateHistManagerForMuTau',
             'diTauCandidateZmumuHypothesisHistManagerForMuTau',
-            'muPairHistManagerByMass',
-            'muPairHistManagerByLooseIsolationAndCharge'
+            'muPairHistManagerByLooseIsolation',
+            'muPairHistManagerByMass'
         ),
         replace = cms.vstring(
             'muonHistManager.muonSource = selectedPatMuonsTrkIPcumulative',
             'tauHistManager.tauSource = selectedPatTausForMuTauElectronVetoCumulative',
             'diTauCandidateHistManagerForMuTau.diTauCandidateSource = selectedMuTauPairsPzetaDiffCumulative',
-            'muPairHistManagerByMass.diTauCandidateSource = selectedDiMuPairZmumuHypothesesByLooseIsolationAndCharge',
-            'muPairHistManagerByLooseIsolationAndCharge.diTauCandidateSource = allDiMuPairZmumuHypothesesByLooseIsolationAndCharge'
+            'muPairHistManagerByLooseIsolation.diTauCandidateSource = selectedDiMuPairZmumuHypothesesByLooseIsolation',
+            'muPairHistManagerByMass.diTauCandidateSource = allDiMuPairZmumuHypothesesByMass'
         )
     ),
     cms.PSet(
-        filter = cms.string('evtSelDiMuPairZmumuHypothesisVetoByLooseIsolationAndCharge'),
-        title = cms.string('not Charge(isoMuon+isoMuon) = 0'),
+        filter = cms.string('evtSelDiMuPairZmumuHypothesisVetoByMass'),
+        title = cms.string('not 80 < M(Muon-Muon) < 100 GeV'),
         saveRunLumiSectionEventNumbers = cms.vstring('')
     ),
     cms.PSet(
@@ -1414,7 +1415,7 @@ muTauAnalysisSequence_wBtag = cms.VPSet(
             'diTauCandidateCollinearApproxHistManagerForMuTau',
             'diTauCandidateSVfitHistManagerForMuTau',
             'diTauCandidateZmumuHypothesisHistManagerForMuTau',
-            'muPairHistManagerByLooseIsolationAndCharge',
+            'muPairHistManagerByMass',
             'jetHistManager',
         ),
         replace = cms.vstring(
@@ -1423,7 +1424,7 @@ muTauAnalysisSequence_wBtag = cms.VPSet(
             'diTauCandidateHistManagerForMuTau.diTauCandidateSource = selectedMuTauPairsForAHtoMuTauPzetaDiffCumulative',
             'diTauCandidateCollinearApproxHistManagerForMuTau.diTauCandidateSource = selectedMuTauPairsForAHtoMuTauPzetaDiffCumulative',
             'diTauCandidateSVfitHistManagerForMuTau.diTauCandidateSource = selectedMuTauPairsForAHtoMuTauPzetaDiffCumulative',
-            'muPairHistManagerByLooseIsolationAndCharge.diTauCandidateSource = selectedDiMuPairZmumuHypothesesByLooseIsolationAndCharge',
+            'muPairHistManagerByMass.diTauCandidateSource = selectedDiMuPairZmumuHypothesesByMass',
             'jetHistManager.jetSource = selectedPatJetsForAHtoMuTauAntiOverlapWithLeptonsVetoCumulative'
         )
     ),
