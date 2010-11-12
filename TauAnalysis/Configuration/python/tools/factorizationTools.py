@@ -1104,7 +1104,7 @@ def enableFactorization_makeAHtoMuTauPlots_grid(
     for btag in ['woBtag', 'wBtag']:
         for mergedSample in relevantMergedSamples:
             # Get the module that is doing the merging, if it exists
-            merger_name = "merge_%s_%s" % (mergedSample, btag)
+            merger_name = "merge_%s_ahMuTauAnalyzer_%s" % (mergedSample, btag)
             if not hasattr(process.mergeSamplesAHtoMuTau, merger_name):
                 print "factorizationTools: Expected to update ",\
                         merger_name, "but it's not in the process! skipping.."
