@@ -76,10 +76,10 @@ def submitToGrid(configFile, jobInfo, jobOptions, crabOptions, create = True, su
     # For these cases we need some additional processing
     if fullCrabOptions['lumi_mask']:
         fullCrabOptions['lumi_mask'] = (
-            'lumi_mask = '+fullCrabOptions['lumi_mask'])
+            'lumi_mask = ' + fullCrabOptions['lumi_mask'])
     if fullCrabOptions['runselection']:
         fullCrabOptions['runselection'] = (
-            'runselection = '+fullCrabOptions['runselection'])
+            'runselection = ' + fullCrabOptions['runselection'])
 
     # Add SE_white_list/SE_back_list commands if specified
     if fullCrabOptions['SE_white_list'] and fullCrabOptions['SE_white_list'] != '':
