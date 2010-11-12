@@ -273,13 +273,13 @@ def enableFactorization_makeZtoMuTauPlots_grid(
         process.evtSelDiTauCandidateForMuTauAcoplanarity12,
         process.evtSelDiTauCandidateForMuTauMt1MET,
         process.evtSelDiTauCandidateForMuTauPzetaDiff,
-        process.evtSelDiMuPairZmumuHypothesisVetoByMass,
-        process.evtSelDiMuPairZmumuHypothesisVetoByLooseIsolationAndCharge
+        process.evtSelDiMuPairZmumuHypothesisVetoByLooseIsolation,
+        process.evtSelDiMuPairZmumuHypothesisVetoByMass
     ]
 
     # defines names of MonitorElements used as numerator and denominator
     # to compute factorization scale-factor
-    meNameZtoMuTau_numerator = "evtSelMuonPFRelIso/passed_cumulative_numWeighted"
+    meNameZtoMuTau_numerator = "evtSelDiMuPairZmumuHypothesisVetoByMass/passed_cumulative_numWeighted"
     meNameZtoMuTau_denominator = "evtSelMuonPFRelIso/processed_cumulative_numWeighted"
 
     # Loop over the samples and create sequences
@@ -306,8 +306,8 @@ def enableFactorization_makeZtoMuTauPlots_grid(
     # Now update any of the relevant mergers
     for mergedSample in relevantMergedSamples:
         # Get the module that is doing the merging, if it exists
-        if not hasattr(process.mergeSamplesZtoMuTau, "merge_%s"%(mergedSample)): continue
-        merger = getattr(process.mergeSamplesZtoMuTau, "merge_%s" % (mergedSample))
+        if not hasattr(process.mergeSamplesZtoMuTau, "merge_%s_zMuTauAnalyzer" % (mergedSample)): continue
+        merger = getattr(process.mergeSamplesZtoMuTau, "merge_%s_zMuTauAnalyzer" % (mergedSample))
 
         # Get the subsamples associated with this merged sample
         subsamples = mergedToRecoSampleDict[mergedSample]['samples']
@@ -323,7 +323,7 @@ def enableFactorization_makeZtoMuTauPlots_grid(
 
     # Update the plot sources in the plot jobs.  Note that we don't need to do
     # this for the merged samples, since we have replaced the HistAdder sources
-    for plotterModuleName in [ 'plotZtoMuTau', ]:
+    for plotterModuleName in [ 'plotZtoMuTau_log', 'plotZtoMuTau_linear' ]:
         plotterModuleProcesses = getattr(process, plotterModuleName).processes
         for sample in samplesToFactorize:
             if hasattr(plotterModuleProcesses, sample):
@@ -1053,8 +1053,8 @@ def enableFactorization_makeAHtoMuTauPlots_grid(
         process.evtSelDiTauCandidateForAHtoMuTauZeroCharge,
         process.evtSelDiTauCandidateForAHtoMuTauMt1MET,
         process.evtSelDiTauCandidateForAHtoMuTauPzetaDiff,
-        process.evtSelDiMuPairZmumuHypothesisVetoByMass,
-        process.evtSelDiMuPairZmumuHypothesisVetoByLooseIsolationAndCharge
+        process.evtSelDiMuPairZmumuHypothesisVetoByLooseIsolation,
+        process.evtSelDiMuPairZmumuHypothesisVetoByMass
     ]
 
     # Make specialized cases for the w/ w/o btag cases
@@ -1071,7 +1071,7 @@ def enableFactorization_makeAHtoMuTauPlots_grid(
 
     # defines names of MonitorElements used as numerator and denominator
     # to compute factorization scale-factor
-    meNameAHtoMuTau_numerator = "evtSelMuonPFRelIso/passed_cumulative_numWeighted"
+    meNameAHtoMuTau_numerator = "evtSelDiMuPairZmumuHypothesisVetoByMass/passed_cumulative_numWeighted"
     meNameAHtoMuTau_denominator = "evtSelMuonPFRelIso/processed_cumulative_numWeighted"
 
     # Loop over the samples and btag options and create sequences
@@ -1125,7 +1125,8 @@ def enableFactorization_makeAHtoMuTauPlots_grid(
 
     # Update the plot sources in the plot jobs.  Note that we don't need to do
     # this for the merged samples, since we have replaced the HistAdder sources
-    for plotterModuleName in ['plotAHtoMuTau_woBtag', 'plotAHtoMuTau_wBtag']:
+    for plotterModuleName in [ 'plotAHtoMuTau_woBtag_log', 'plotAHtoMuTau_woBtag_linear',
+                               'plotAHtoMuTau_wBtag_log',  'plotAHtoMuTau_wBtag_linear' ]:
         if hasattr(process, plotterModuleName):
             plotterModuleProcesses = getattr(process, plotterModuleName).processes
             for sample in samplesToFactorize:
