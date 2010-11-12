@@ -143,14 +143,35 @@ replaceMETforDiTaus(process, cms.InputTag('patMETs'), cms.InputTag('patPFMETs'))
 # import utility function for changing cut values
 from TauAnalysis.Configuration.tools.changeCut import changeCut
 
+# change muon Pt threshold to 15 GeV
+changeCut(process, "selectedPatMuonsPt10", "pt > 15.")
+
 # disable cut on muon calo. + segment compatibility
 # (check that muon calo. compatibility is not affected by pile-up before re-enabling this cut)
 changeCut(process, "selectedPatMuonsPionVeto", -1000., attribute = "AntiPionCut")
 changeCut(process, "selectedPatMuonsPionVetoLooseIsolation", -1000., attribute = "AntiPionCut")
 
+# change upper limit on tranverse impact parameter of muon track to 2mm
+changeCut(process, "selectedPatMuonsTrkIP", 0.2, attribute = "IpMax")
+
+# change eta acceptance for tau-jets to |eta| < 2.3
+changeCut(process, "selectedPatTausForMuTauEta21", "abs(eta) < 2.3")
+
 # disable cuts on tau id. discriminators for Track && ECAL isolation
 changeCut(process, "selectedPatTausTrkIso", "tauID('trackIsolation') > -1.")
 changeCut(process, "selectedPatTausEcalIso", "tauID('ecalIsolation') > -1.")
+
+# change lower limit on separation required between muon and tau-jet to dR > 0.5
+changeCut(process, "selectedMuTauPairsAntiOverlapVeto", "dR12 > 0.5")
+changeCut(process, "selectedMuTauPairsAntiOverlapVetoLooseMuonIsolation", "dR12 > 0.5")
+
+# change upper limit on muon + MET transverse mass to 40 GeV
+changeCut(process, "selectedMuTauPairsMt1MET", "mt1MET < 40.")
+changeCut(process, "selectedMuTauPairsMt1METlooseMuonIsolation", "mt1MET < 40.")
+
+# disable cut on Pzeta variable
+changeCut(process, "selectedMuTauPairsPzetaDiff", "(pZeta - 1.5*pZetaVis) > -1000.")
+changeCut(process, "selectedMuTauPairsPzetaDiffLooseMuonIsolation", "(pZeta - 1.5*pZetaVis) > -1000.")
 #--------------------------------------------------------------------------------
 
 process.p = cms.Path(
@@ -158,7 +179,7 @@ process.p = cms.Path(
 # + process.printGenParticleList # uncomment to enable print-out of generator level particles
 # + process.printEventContent    # uncomment to enable dump of event content after PAT-tuple production
   + process.selectZtoMuTauEvents
-  + process.analyzeZtoMuTauEvents
+  + process.analyzeZtoMuTauSequence
   + process.saveZtoMuTauPlots
 )
 
@@ -184,6 +205,12 @@ from TauAnalysis.Configuration.tools.factorizationTools import enableFactorizati
 # (needs to be done after process.p has been defined)
 #__#factorization#
 ##enableFactorization_runZtoMuTau(process)
+#--------------------------------------------------------------------------------
+
+#--------------------------------------------------------------------------------
+# import utility function for applyting Z-recoil corrections to MET
+from TauAnalysis.Configuration.tools.mcToDataCorrectionTools import applyZrecoilCorrection_runZtoMuTau
+##applyZrecoilCorrection_runZtoMuTau(process)
 #--------------------------------------------------------------------------------
 
 #--------------------------------------------------------------------------------
