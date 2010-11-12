@@ -467,8 +467,9 @@ void TauHistManager::fillHistogramsImp(const edm::Event& evt, const edm::EventSe
 	  else if ( genTauDecayMode == "oneProng2Pi0"   ) hDistPionEnResOneProngTwoPi0s_->Fill(distPionPtRes, weight);
 	  else if ( genTauDecayMode == "threeProng0Pi0" ) hDistPionEnResThreeProngNoPi0s_->Fill(distPionPtRes, weight);
 	} else {
-	  edm::LogWarning("TauHistManager::fillHistogramsImp") 
-	    << " Failed to identify 'distinguishable' pion !!";
+	  // CV: disable warning for now...
+	  //edm::LogWarning("TauHistManager::fillHistogramsImp") 
+	  //  << " Failed to identify 'distinguishable' pion !!";
 	}
       }
     }
