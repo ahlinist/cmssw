@@ -9,6 +9,12 @@ userSettings = {
             'harvestingFilePath' : "/data1/friis/",            
             'tmpFilePath' : "/tmp/friis/",
             'jobId' : 'Run10'
+        },
+        'global' : {
+            'drawOptions' : {
+                'canvasSizeX' : 640,
+                'canvasSizeY' : 800
+            }
         }
     },
     'veelken': {
@@ -17,31 +23,37 @@ userSettings = {
             'harvestingFilePath' : "/data1/veelken/CMSSW_3_8_x/plots/AHtoMuTau/",
             'tmpFilePath' : "/tmp/veelken/",
             'jobId' : "7TeV"
-         },
-         'ZtoMuTau' : {
+        },
+        'ZtoMuTau' : {
             'analysisFilePath' : "/user/v/veelken/CMSSW_3_8_x/plots/ZtoMuTau/",
             'harvestingFilePath' : "/data1/veelken/CMSSW_3_8_x/plots/ZtoMuTau/",
             'tmpFilePath' : "/tmp/veelken/",
             'jobId' : "2010Nov10"
-         },
-         'ZtoMuTau_bgEstTemplate' : {
+        },
+        'ZtoMuTau_bgEstTemplate' : {
             'analysisFilePath' : "/user/v/veelken/CMSSW_3_8_x/plots/ZtoMuTau_bgEstTemplate/",
             'harvestingFilePath' : "/data1/veelken/CMSSW_3_8_x/plots/ZtoMuTau_bgEstTemplate/",
             'tmpFilePath' : "/tmp/veelken/",
             'jobId' : "7TeV"
-         },
-         'ZtoMuTau_tauIdEff' : {
+        },
+        'ZtoMuTau_tauIdEff' : {
             'analysisFilePath' : "/user/v/veelken/CMSSW_3_8_x/plots/ZtoMuTau_tauIdEff/",
             'harvestingFilePath' : "/data1/veelken/CMSSW_3_8_x/plots/ZtoMuTau_tauIdEff/",
             'tmpFilePath' : "/tmp/veelken/",
             'jobId' : "2010Nov01"
-         },
-         'ZtoDiTau' : {
+        },
+        'ZtoDiTau' : {
             'analysisFilePath' : "/user/v/veelken/CMSSW_3_8_x/plots/ZtoDiTau/",
             'harvestingFilePath' : "/data1/veelken/CMSSW_3_8_x/plots/ZtoDiTau/",
             'tmpFilePath' : "/tmp/veelken/",
             'jobId' : "2010Nov01"
-         }
+        },
+        'global' : {
+            'drawOptions' : {
+                'canvasSizeX' : 640,
+                'canvasSizeY' : 800
+            }
+        }
     }
 }
 
