@@ -473,23 +473,23 @@ drawJobConfigurator_ZtoMuTau.add(
 
 drawJobConfigurator_ZtoMuTau.add(
     afterCut = evtSelDiTauCandidateForMuTauPzetaDiff,
-    beforeCut = evtSelDiMuPairZmumuHypothesisVetoByMass,
+    beforeCut = evtSelDiMuPairZmumuHypothesisVetoByLooseIsolation,
     plot = drawJobConfigEntry(
-	meName = 'DiMuZmumuHypothesisByMassQuantities/VisMass',
-        title = "M(Muon + Muon, Z #rightarrow #mu^{+} #mu^{-} Mass hypothesis) (after P_{#zeta} Cut)",
-        xAxis = 'Mass',
-        name = "cutFlowControlPlots_mZmumuHypothesis_afterPzetaDiff"
+	meName = 'DiMuZmumuHypothesisByLooseIsolationQuantities/DiTauCandidateCharge',
+        title = "Charge(iso. Muon + iso. Muon) (after P_{#zeta} Cut)",
+        xAxis = 'unlabeled',
+        name = "cutFlowControlPlots_diMuonCharge_afterPzetaDiff"
     )
 )
 
 drawJobConfigurator_ZtoMuTau.add(
-    afterCut = evtSelDiMuPairZmumuHypothesisVetoByMass,
-    beforeCut = evtSelDiMuPairZmumuHypothesisVetoByLooseIsolationAndCharge,
+    afterCut = evtSelDiMuPairZmumuHypothesisVetoByLooseIsolation,
+    beforeCut = evtSelDiMuPairZmumuHypothesisVetoByMass,
     plot = drawJobConfigEntry(
-	meName = 'DiMuZmumuHypothesisByLooseIsolationAndChargeQuantities/DiTauCandidateCharge',
-        title = "Charge(iso. Muon + iso. Muon) (after 80 < M(Muon-Muon) < 100 GeV Veto)",
-        xAxis = 'unlabeled',
-        name = "cutFlowControlPlots_diMuonCharge_afterZmumuHypothesisVetoByMass"
+        meName = 'DiMuZmumuHypothesisByMassQuantities/VisMass',
+        title = "M(Muon + Muon, Z #rightarrow #mu^{+} #mu^{-} Mass hypothesis) (after Charge(iso. Muon + iso. Muon) = 0 Cut)",
+        xAxis = 'Mass',
+        name = "cutFlowControlPlots_mZmumuHypothesis_afterZmumuHypothesisVetoByLooseIsolation"
     )
 )
 
@@ -499,7 +499,7 @@ drawJobConfigurator_ZtoMuTau.add(
 #--------------------------------------------------------------------------------
 
 drawJobConfigurator_ZtoMuTau.add(
-    afterCut = evtSelDiMuPairZmumuHypothesisVetoByLooseIsolationAndCharge,
+    afterCut = evtSelDiMuPairZmumuHypothesisVetoByMass,
     plots = [
         drawJobConfigEntry(
             meName = 'MuonQuantities/Muon#PAR#',
@@ -606,7 +606,7 @@ drawJobConfigurator_ZtoMuTau.add(
             name = "finalSamplePlots_mVisibleZllCombinedHypothesis"
         ),
         drawJobConfigEntry(
-            meName = 'DiMuZmumuHypothesisQuantities/VisMass',
+            meName = 'DiMuZmumuHypothesisByMassQuantities/VisMass',
             title = "M(Muon + Muon, Z #rightarrow #mu^{+} #mu^{-} Mass hypothesis) (final Event sample)",
             xAxis = 'Mass',
             name = "finalSamplePlots_mZmumuHypothesis"

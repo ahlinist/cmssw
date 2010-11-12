@@ -78,8 +78,8 @@ analyzeAHtoMuTauEvents_woBtag = cms.EDAnalyzer("GenericAnalyzer",
         evtSelDiTauCandidateForAHtoMuTauPzetaDiff,
 
         # Z --> mu+ mu- hypothesis veto (based on combinations of muon pairs)
+        evtSelDiMuPairZmumuHypothesisVetoByLooseIsolation,
         evtSelDiMuPairZmumuHypothesisVetoByMass,
-        evtSelDiMuPairZmumuHypothesisVetoByLooseIsolationAndCharge,
 
         # central jet veto/b-jet candidate selection
         evtSelNonCentralJetEt20bTag,
@@ -97,8 +97,8 @@ analyzeAHtoMuTauEvents_woBtag = cms.EDAnalyzer("GenericAnalyzer",
         diTauCandidateSVfitHistManagerForMuTau,
         diTauCandidateZmumuHypothesisHistManagerForMuTau,
         diTauLeg1ChargeBinGridHistManager,
+        muPairHistManagerByLooseIsolation,
         muPairHistManagerByMass,
-        muPairHistManagerByLooseIsolationAndCharge,
         jetHistManager,
         caloMEtHistManager,
         pfMEtHistManager,

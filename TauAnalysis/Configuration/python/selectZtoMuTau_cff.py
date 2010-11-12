@@ -248,19 +248,20 @@ cfgDiTauCandidateForMuTauPzetaDiffCut = cms.PSet(
 )
 
 # veto events compatible with Z --> mu+ mu- hypothesis
-# (based on either reconstructed (visible) invariant mass of muon + muon pairs
-#  or presence of two (loosely) isolated muons of Pt > 10 GeV and opposite charge)
+# (two paths:two
+#   o two (loosely) isolated global muons of Pt > 10 GeV and opposite charge
+#   o two global muons of Pt > 10 GeV and opposite charge and invariant mass 80 < M(mu + mu) < 100 GeV)
+cfgDiMuPairZmumuHypothesisVetoByLooseIsolation = cms.PSet(
+    pluginName = cms.string('diMuPairZmumuHypothesisVetoByLooseIsolation'),
+    pluginType = cms.string('PATCandViewMaxEventSelector'),
+    src = cms.InputTag('selectedDiMuPairZmumuHypothesesByLooseIsolation'),
+    #systematics = cms.vstring(muonSystematics.keys()),
+    maxNumber = cms.uint32(0)
+)
 cfgDiMuPairZmumuHypothesisVetoByMass = cms.PSet(
     pluginName = cms.string('diMuPairZmumuHypothesisVetoByMass'),
     pluginType = cms.string('PATCandViewMaxEventSelector'),
     src = cms.InputTag('selectedDiMuPairZmumuHypothesesByMass'),
-    #systematics = cms.vstring(muonSystematics.keys()),
-    maxNumber = cms.uint32(0)
-)
-cfgDiMuPairZmumuHypothesisVetoByLooseIsolationAndCharge = cms.PSet(
-    pluginName = cms.string('diMuPairZmumuHypothesisVetoByLooseIsolationAndCharge'),
-    pluginType = cms.string('PATCandViewMaxEventSelector'),
-    src = cms.InputTag('selectedDiMuPairZmumuHypothesesByLooseIsolationAndCharge'),
     #systematics = cms.vstring(muonSystematics.keys()),
     maxNumber = cms.uint32(0)
 )
@@ -295,8 +296,8 @@ zToMuTauEventSelConfigurator = eventSelFlagProdConfigurator(
       cfgDiTauCandidateForMuTauAcoplanarity12Cut,
       cfgDiTauCandidateForMuTauMt1METcut,
       cfgDiTauCandidateForMuTauPzetaDiffCut,
-      cfgDiMuPairZmumuHypothesisVetoByMass,
-      cfgDiMuPairZmumuHypothesisVetoByLooseIsolationAndCharge ],
+      cfgDiMuPairZmumuHypothesisVetoByLooseIsolation,
+      cfgDiMuPairZmumuHypothesisVetoByMass ],
     boolEventSelFlagProducer = "BoolEventSelFlagProducer",
     pyModuleName = __name__
 )
@@ -312,8 +313,8 @@ isRecZtoMuTau = cms.EDProducer("BoolEventSelFlagProducer",
         cms.InputTag('muonTrkIPcut', 'cumulative'),
         cms.InputTag('tauElectronVeto', 'cumulative'),
         cms.InputTag('diTauCandidateForMuTauPzetaDiffCut', 'cumulative'),
-        cms.InputTag('diMuPairZmumuHypothesisVetoByMass'), 
-        cms.InputTag('diMuPairZmumuHypothesisVetoByLooseIsolationAndCharge')      
+        cms.InputTag('diMuPairZmumuHypothesisVetoByLooseIsolation'),
+        cms.InputTag('diMuPairZmumuHypothesisVetoByMass')
     )
 )
 

@@ -467,23 +467,23 @@ drawJobConfigurator_AHtoMuTau.add(
 
 drawJobConfigurator_AHtoMuTau.add(
     afterCut = evtSelDiTauCandidateForAHtoMuTauPzetaDiff,
-    beforeCut = evtSelDiMuPairZmumuHypothesisVetoByMass,
+    beforeCut = evtSelDiMuPairZmumuHypothesisVetoByLooseIsolation,
     plot = drawJobConfigEntry(
-	meName = 'DiMuZmumuHypothesisByMassQuantities/VisMass',
-        title = "M(Muon + Muon, Z #rightarrow #mu^{+} #mu^{-} Mass hypothesis) (after P_{#zeta} Cut)",
-        xAxis = 'Mass',
-        name = "cutFlowControlPlots_mZmumuHypothesis_afterPzetaDiff"
+	meName = 'DiMuZmumuHypothesisByLooseIsolationQuantities/DiTauCandidateCharge',
+        title = "Charge(iso. Muon + iso. Muon) (after P_{#zeta} Cut)",
+        xAxis = 'unlabeled',
+        name = "cutFlowControlPlots_diMuonCharge_afterPzetaDiff"
     )
 )
 
 drawJobConfigurator_AHtoMuTau.add(
-    afterCut = evtSelDiMuPairZmumuHypothesisVetoByMass,
-    beforeCut = evtSelDiMuPairZmumuHypothesisVetoByLooseIsolationAndCharge,
+    afterCut = evtSelDiMuPairZmumuHypothesisVetoByLooseIsolation,
+    beforeCut = evtSelDiMuPairZmumuHypothesisVetoByMass,
     plot = drawJobConfigEntry(
-	meName = 'DiMuZmumuHypothesisByLooseIsolationAndChargeQuantities/DiTauCandidateCharge',
-        title = "Charge(iso. Muon + iso. Muon) (after 80 < M(Muon-Muon) < 100 GeV Veto)",
-        xAxis = 'unlabeled',
-        name = "cutFlowControlPlots_diMuonCharge_afterZmumuHypothesisVetoByMass"
+        meName = 'DiMuZmumuHypothesisByMassQuantities/VisMass',
+        title = "M(Muon + Muon, Z #rightarrow #mu^{+} #mu^{-} Mass hypothesis) (after Charge(iso. Muon + iso. Muon) = 0 Cut)",
+        xAxis = 'Mass',
+        name = "cutFlowControlPlots_mZmumuHypothesis_afterZmumuHypothesisVetoByLooseIsolation"
     )
 )
 
@@ -495,7 +495,7 @@ drawJobConfigurator_AHtoMuTau_woBtag = copy.deepcopy(drawJobConfigurator_AHtoMuT
 drawJobConfigurator_AHtoMuTau_woBtag.setDQMdirectory('#PROCESSDIR#/ahMuTauAnalyzer_woBtag/')
 
 drawJobConfigurator_AHtoMuTau_woBtag.add(
-    afterCut = evtSelDiMuPairZmumuHypothesisVetoByLooseIsolationAndCharge,
+    afterCut = evtSelDiMuPairZmumuHypothesisVetoByMass,
     beforeCut = evtSelNonCentralJetEt20bTag,
     plot = drawJobConfigEntry(
 	meName = 'JetQuantities/Jet#PAR#',
@@ -514,7 +514,7 @@ drawJobConfigurator_AHtoMuTau_wBtag = copy.deepcopy(drawJobConfigurator_AHtoMuTa
 drawJobConfigurator_AHtoMuTau_wBtag.setDQMdirectory('#PROCESSDIR#/ahMuTauAnalyzer_wBtag/')
 
 drawJobConfigurator_AHtoMuTau_wBtag.add(
-    afterCut = evtSelDiMuPairZmumuHypothesisVetoByLooseIsolationAndCharge,
+    afterCut = evtSelDiMuPairZmumuHypothesisVetoByMass,
     beforeCut = evtSelCentralJetEt20,
     plot = drawJobConfigEntry(
 	meName = 'JetQuantities/Jet#PAR#',
@@ -668,7 +668,7 @@ finalSamplePlots = [
         name = "finalSamplePlots_mVisibleZllCombinedHypothesis"
     ),
     drawJobConfigEntry(
-        meName = 'DiMuZmumuHypothesisQuantities/VisMass',
+        meName = 'DiMuZmumuHypothesisByMassQuantities/VisMass',
         title = "M(Muon + Muon, Z #rightarrow #mu^{+} #mu^{-} Mass hypothesis) (final Event sample)",
         xAxis = 'Mass',
         name = "finalSamplePlots_mZmumuHypothesis"
