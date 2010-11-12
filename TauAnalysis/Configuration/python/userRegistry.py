@@ -22,7 +22,7 @@ userSettings = {
             'analysisFilePath' : "/user/v/veelken/CMSSW_3_8_x/plots/ZtoMuTau/",
             'harvestingFilePath' : "/data1/veelken/CMSSW_3_8_x/plots/ZtoMuTau/",
             'tmpFilePath' : "/tmp/veelken/",
-            'jobId' : "2010Nov01"
+            'jobId' : "2010Nov10"
          },
          'ZtoMuTau_bgEstTemplate' : {
             'analysisFilePath' : "/user/v/veelken/CMSSW_3_8_x/plots/ZtoMuTau_bgEstTemplate/",
@@ -49,8 +49,10 @@ def getAnalysisFilePath(channel):
     return userSettings[os.environ['LOGNAME']][channel]['analysisFilePath']
 
 def getHarvestingFilePath(channel):
-    return userSettings[os.environ['LOGNAME']][channel]['harvestingFilePath'] \
-          + '/' + userSettings[os.environ['LOGNAME']][channel]['jobId']
+    harvestingFilePath = userSettings[os.environ['LOGNAME']][channel]['harvestingFilePath'] \
+                        + '/' + userSettings[os.environ['LOGNAME']][channel]['jobId']
+    harvestingFilePath.replace('//', '/')
+    return harvestingFilePath
 
 def getTmpFilePath(channel):
     return userSettings[os.environ['LOGNAME']][channel]['tmpFilePath']
