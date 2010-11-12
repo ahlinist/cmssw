@@ -4,6 +4,7 @@ import copy
 import os
 
 import TauAnalysis.DQMTools.plotterStyleDefinitions_cfi as styles
+from TauAnalysis.Configuration.userRegistry import userSettings
 
 dqmHistPlotter_template = cms.EDAnalyzer("DQMHistPlotter",
     xAxes = cms.PSet(
@@ -42,10 +43,8 @@ dqmHistPlotter_template = cms.EDAnalyzer("DQMHistPlotter",
 
     drawJobs = cms.PSet(),
 
-    canvasSizeX = cms.int32(800),
-    canvasSizeY = cms.int32(640),                         
-    #canvasSizeX = cms.int32(640),
-    #canvasSizeY = cms.int32(800),                         
+    canvasSizeX = cms.int32(userSettings[os.environ['LOGNAME']]['global']['drawOptions']['canvasSizeX']),
+    canvasSizeY = cms.int32(userSettings[os.environ['LOGNAME']]['global']['drawOptions']['canvasSizeY']),                         
 
     outputFilePath = cms.string('./plots/')
 )
@@ -198,8 +197,6 @@ def makePlots(process, channel = None, samples = None, inputFilePath = None, job
             if samples['ALL_SAMPLES'][sample]['type'].find('bsm') == -1 and
             samples['ALL_SAMPLES'][sample]['type'].find('Data') == -1
         ])
-        #drawJobTemplate.yAxis = cms.string('numEntries_log')
-        drawJobTemplate.yAxis = cms.string('numEntries_linear')
 
     dqmHistPlotterSequenceName = "plot%sSequence" % channel
     dqmHistPlotterSequence = None
@@ -209,9 +206,16 @@ def makePlots(process, channel = None, samples = None, inputFilePath = None, job
         if len(analyzer_drawJobConfigurator_indOutputFileName_set) == 3:
             print("configuring DQMHistPlotter...")
             analyzer = analyzer_drawJobConfigurator_indOutputFileName_set[0]
-        
-            drawJobConfigurator = analyzer_drawJobConfigurator_indOutputFileName_set[1]
-            drawJobConfigurator.setTemplate(drawJobTemplate)
+
+            drawJobTemplate_log = copy.deepcopy(drawJobTemplate)
+            drawJobTemplate_log.yAxis = cms.string('numEntries_linear')
+            drawJobConfigurator_log = copy.deepcopy(analyzer_drawJobConfigurator_indOutputFileName_set[1])
+            drawJobConfigurator_log.setTemplate(drawJobTemplate_log)
+
+            drawJobTemplate_linear = copy.deepcopy(drawJobTemplate)
+            drawJobTemplate_linear.yAxis = cms.string('numEntries_linear')
+            drawJobConfigurator_linear = copy.deepcopy(analyzer_drawJobConfigurator_indOutputFileName_set[1])
+            drawJobConfigurator_linear.setTemplate(drawJobTemplate_linear)
 
             dqmHistPlotterModuleName = None
             if analyzer.find("_") != -1:
@@ -224,21 +228,40 @@ def makePlots(process, channel = None, samples = None, inputFilePath = None, job
                 drawOptionSets = cms.PSet(
                     default = cms.PSet(**dict((sampleName, samples['ALL_SAMPLES'][sampleName]['drawOption'])
                                               for sampleName in samples['SAMPLES_TO_PLOT']))
-                ),
-                drawJobs = drawJobConfigurator.configure(),
-                indOutputFileName = cms.string(analyzer_drawJobConfigurator_indOutputFileName_set[2])
+                )
             )
-            setattr(process, dqmHistPlotterModuleName, dqmHistPlotterModule)
 
             dqmHistPlotterModule.labels.mcNormScale.text = cms.vstring(
                 '%0.1fpb^{-1}' % samples['TARGET_LUMI'],
                 '#sqrt{s}=7TeV'
             )
 
-            if dqmHistPlotterSequence is None:
-                dqmHistPlotterSequence = cms.Sequence(dqmHistPlotterModule)
+            indOutputFileName_log = analyzer_drawJobConfigurator_indOutputFileName_set[2]
+            posSeparator = indOutputFileName_log.rfind(".")
+            if posSeparator != -1:
+                indOutputFileName_log  = indOutputFileName_log[:posSeparator:] + "_log" + indOutputFileName_log[posSeparator::]
             else:
-                dqmHistPlotterSequence._seq = dqmHistPlotterSequence._seq * dqmHistPlotterModule
+                # if no graphics format is specified explicitely,
+                # save all plots in PDF format
+                indOutputFileName_log += "_log.pdf"
+            dqmHistPlotterModule_log = dqmHistPlotterModule.clone(
+                drawJobs = drawJobConfigurator_log.configure(),
+                indOutputFileName = cms.string(indOutputFileName_log)
+            )
+            setattr(process, dqmHistPlotterModuleName + "_log", dqmHistPlotterModule_log)
+
+            indOutputFileName_linear = indOutputFileName_log.replace("_log.", "_linear.")
+            dqmHistPlotterModule_linear = dqmHistPlotterModule.clone(
+                drawJobs = drawJobConfigurator_linear.configure(),
+                indOutputFileName = cms.string(indOutputFileName_linear)
+            )
+            setattr(process, dqmHistPlotterModuleName + "_linear", dqmHistPlotterModule_linear)
+
+            if dqmHistPlotterSequence is None:
+                dqmHistPlotterSequence = cms.Sequence(dqmHistPlotterModule_log)
+            else:
+                dqmHistPlotterSequence._seq = dqmHistPlotterSequence._seq * dqmHistPlotterModule_log
+            dqmHistPlotterSequence._seq = dqmHistPlotterSequence._seq * dqmHistPlotterModule_linear    
 
     if dqmHistPlotterSequence is not None:
         setattr(process, dqmHistPlotterSequenceName, dqmHistPlotterSequence)
