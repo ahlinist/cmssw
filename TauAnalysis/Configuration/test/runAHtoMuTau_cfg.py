@@ -143,14 +143,27 @@ replaceMETforDiTaus(process, cms.InputTag('patMETs'), cms.InputTag('patPFMETs'))
 # import utility function for changing cut values
 from TauAnalysis.Configuration.tools.changeCut import changeCut
 
+# change muon Pt threshold to 15 GeV
+changeCut(process, "selectedPatMuonsPt10", "pt > 15.")
+
 # disable cut on muon calo. + segment compatibility
 # (check that muon calo. compatibility is not affected by pile-up before re-enabling this cut)
-changeCut(process, "selectedPatMuonsPionVeto", -100., attribute = "AntiPionCut")
-changeCut(process, "selectedPatMuonsPionVetoLooseIsolation", -100., attribute = "AntiPionCut")
+changeCut(process, "selectedPatMuonsPionVeto", -1000., attribute = "AntiPionCut")
+changeCut(process, "selectedPatMuonsPionVetoLooseIsolation", -1000., attribute = "AntiPionCut")
+
+# change upper limit on tranverse impact parameter of muon track to 2mm
+changeCut(process, "selectedPatMuonsTrkIP", 0.2, attribute = "IpMax")
+
+# change eta acceptance for tau-jets to |eta| < 2.3
+changeCut(process, "selectedPatTausForMuTauEta21", "abs(eta) < 2.3")
 
 # disable cuts on tau id. discriminators for Track && ECAL isolation
 changeCut(process, "selectedPatTausTrkIso", "tauID('trackIsolation') > -1.")
 changeCut(process, "selectedPatTausEcalIso", "tauID('ecalIsolation') > -1.")
+
+# change lower limit on separation required between muon and tau-jet to dR > 0.5
+changeCut(process, "selectedMuTauPairsAntiOverlapVeto", "dR12 > 0.5")
+changeCut(process, "selectedMuTauPairsAntiOverlapVetoLooseMuonIsolation", "dR12 > 0.5")
 
 # disable b-tagging for now
 # (--> all events will pass CentralJetVeto/fail CentralJetBtag selection)
