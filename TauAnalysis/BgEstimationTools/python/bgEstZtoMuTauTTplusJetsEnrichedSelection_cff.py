@@ -43,7 +43,6 @@ muTauPairsBgEstTTplusJetsEnriched = cms.EDProducer("PATMuTauPairProducer",
     dRmin12 = cms.double(0.7),
     srcMET = cms.InputTag('patMETs'),
     recoMode = cms.string(""),
-    scaleFuncImprovedCollinearApprox = cms.string('1'),                                               
     verbosity = cms.untracked.int32(0)
 )
 
@@ -179,6 +178,10 @@ diTauCandidateHistManagerBgEstTTplusJetsEnriched.pluginName = cms.string('diTauC
 diTauCandidateHistManagerBgEstTTplusJetsEnriched.diTauCandidateSource = cms.InputTag('muTauPairsBgEstTTplusJetsEnrichedZeroCharge')
 diTauCandidateHistManagerBgEstTTplusJetsEnriched.visMassHypothesisSource = cms.InputTag('')
 
+diTauCandidateSVfitHistManagerBgEstTTplusJetsEnriched = copy.deepcopy(diTauCandidateSVfitHistManagerForMuTau)
+diTauCandidateSVfitHistManagerBgEstTTplusJetsEnriched.pluginName = cms.string('diTauCandidateSVfitHistManagerBgEstTTplusJetsEnriched')
+diTauCandidateSVfitHistManagerBgEstTTplusJetsEnriched.diTauCandidateSource = cms.InputTag('muTauPairsBgEstTTplusJetsEnrichedZeroCharge')
+
 jetHistManagerBgEstTTplusJetsEnriched = copy.deepcopy(jetHistManager)
 jetHistManagerBgEstTTplusJetsEnriched.pluginName = cms.string('jetHistManagerBgEstTTplusJetsEnriched')
 jetHistManagerBgEstTTplusJetsEnriched.jetSource = cms.InputTag('jetsBgEstTTplusJetsEnrichedEt40')
@@ -201,6 +204,7 @@ analyzeEventsBgEstTTplusJetsEnriched = cms.EDAnalyzer("GenericAnalyzer",
     filters = cms.VPSet(
         evtSelGenPhaseSpace,
         evtSelTrigger,
+        evtSelDataQuality,
         evtSelPrimaryEventVertex,
         evtSelPrimaryEventVertexQuality,
         evtSelPrimaryEventVertexPosition,
@@ -222,6 +226,7 @@ analyzeEventsBgEstTTplusJetsEnriched = cms.EDAnalyzer("GenericAnalyzer",
         evtSelTauPt,
         evtSelTauLeadTrk,
         evtSelTauLeadTrkPt,
+        evtSelTauTaNCdiscr,
         evtSelTauTrkIso,
         evtSelTauEcalIso,        
         evtSelTauProng,
@@ -258,6 +263,7 @@ analyzeEventsBgEstTTplusJetsEnriched = cms.EDAnalyzer("GenericAnalyzer",
         muonHistManagerBgEstTTplusJetsEnriched,
         tauHistManagerBgEstTTplusJetsEnriched,
         diTauCandidateHistManagerBgEstTTplusJetsEnriched,
+        diTauCandidateSVfitHistManagerBgEstTTplusJetsEnriched,
         jetHistManagerBgEstTTplusJetsEnriched,
         tauIdEffHistManagerBgEstTTplusJetsEnriched,
         dataBinnerBgEstTTplusJetsEnriched
@@ -282,16 +288,20 @@ analyzeEventsBgEstTTplusJetsEnriched = cms.EDAnalyzer("GenericAnalyzer",
             title = cms.string('Muon Trigger')
         ),
         cms.PSet(
+            filter = cms.string('evtSelDataQuality'),
+            title = cms.string('Data quality')
+        ),
+        cms.PSet(
             filter = cms.string('evtSelPrimaryEventVertex'),
             title = cms.string('Vertex')
         ),
         cms.PSet(
             filter = cms.string('evtSelPrimaryEventVertexQuality'),
-            title = cms.string('p(chi2Vertex) > 0.01')
+            title = cms.string('Vertex quality')
         ),
         cms.PSet(
             filter = cms.string('evtSelPrimaryEventVertexPosition'),
-            title = cms.string('-25 < zVertex < +25 cm')
+            title = cms.string('Vertex position')
         ),
         cms.PSet(
             filter = cms.string('evtSelGlobalMuon'),
@@ -332,6 +342,10 @@ analyzeEventsBgEstTTplusJetsEnriched = cms.EDAnalyzer("GenericAnalyzer",
         cms.PSet(
             filter = cms.string('evtSelTauLeadTrkPt'),
             title = cms.string('Tau lead. Track Pt'),
+        ),
+        cms.PSet(
+            filter = cms.string('evtSelTauTaNCdiscr'),
+            title = cms.string('Tau TaNC discr.')
         ),
         cms.PSet(
             filter = cms.string('evtSelTauTrkIso'),
@@ -378,6 +392,7 @@ analyzeEventsBgEstTTplusJetsEnriched = cms.EDAnalyzer("GenericAnalyzer",
                 'muonHistManagerBgEstTTplusJetsEnriched',
                 'tauHistManagerBgEstTTplusJetsEnriched',
                 'diTauCandidateHistManagerBgEstTTplusJetsEnriched',
+                'diTauCandidateSVfitHistManagerBgEstTTplusJetsEnriched',
                 'jetHistManagerBgEstTTplusJetsEnriched',
                 'tauIdEffHistManagerBgEstTTplusJetsEnriched',
                 'dataBinnerBgEstTTplusJetsEnriched'
