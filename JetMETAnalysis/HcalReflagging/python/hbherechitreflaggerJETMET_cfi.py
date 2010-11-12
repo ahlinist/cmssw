@@ -20,19 +20,22 @@ hbherechitreflaggerJETMET = cms.EDProducer(
     # These must be ordered by increasing energy!
     timingshapedcutsParameters = cms.PSet(
     hbheTimingFlagBit = cms.untracked.int32(30), #UserDefinedBit1
-    tfilterEnvelope=cms.vdouble(4.00,12.04,
-                                13.00,10.56,
-                                23.50,8.82,
-                                37.00,7.38,
-                                56.00,6.30,
-                                81.00,5.64,
-                                114.50,5.44,
-                                175.50,5.38,
-                                350.50,5.14),
+    tfilterEnvelope=cms.vdouble( 48.66, -2.08, 4.28,
+                                 52.67, -1.95, 4.06,
+                                 56.69, -1.87, 3.86,
+                                 60.70, -1.81, 3.56,
+                                 65.71, -1.76, 3.25,
+                                 71.73, -1.79, 3.10,
+                                 78.75, -1.70, 2.97,
+                                 87.78, -1.72, 2.79,
+                                 99.81, -1.74, 2.59,
+                                 117.8, -1.73, 2.45,
+                                 149.0, -1.75, 2.23,
+                                 500.0, -1.83, 2.01),
     ignorelowest  = cms.bool(True), # ignores hits with energies below lowest envelope threshold
     ignorehighest = cms.bool(False), # ignores hits with energies above highest envelope threshold
     win_offset    = cms.double(0.),
-    win_gain      = cms.double(1.))
-    
+    win_gain      = cms.double(1.)
+    )
     
 )
