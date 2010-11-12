@@ -15,7 +15,7 @@ _JOB_OPTIONS_DEFAULTS = [
 ]
 
 def _get_conditions(globalTag):
-    """ Retrieve appropriate conditions 
+    """ Retrieve appropriate conditions
 
     Conditions can be automatically retrieved using the autoCond
     utility if the input is in [mc, startup, com10, craft09, etc]
@@ -30,6 +30,10 @@ def _number_of_jobs(sample_info, preferred=10000, max_jobs=300):
     Try to run on <preferred> events per job, unless it would
     create to many jobs.
     """
+    # Check if explicitly specified
+    if 'number_of_jobs' in sample_info:
+        return sample_info['number_of_jobs']
+    # Otherwise try and run 10k events per job, with a max of 300 jobs
     to_process = sample_info['events_processed']*sample_info['skim_eff']
     desired_njobs = to_process/preferred
     if desired_njobs < 0:
@@ -43,7 +47,7 @@ def submitAnalysisToGrid(configFile = None, channel = None, samples = None, outp
     Submit analysis job (event selection, filling of histogram)
     via crab
     """
-    
+
     # check that configFile, channel, samples, outputFilePath and jobId
     # parameters are defined and non-empty
     if configFile is None:
@@ -69,7 +73,7 @@ def submitAnalysisToGrid(configFile = None, channel = None, samples = None, outp
         if samplesToSkip:
             if sample in samplesToSkip:
                 print "Skipping", sample
-                continue    
+                continue
         print "Submitting ", sample
 
         sample_info = samples['RECO_SAMPLES'][sample]
@@ -101,10 +105,10 @@ def submitAnalysisToGrid(configFile = None, channel = None, samples = None, outp
 
         # Apply Z-recoil correction to MEt if requested
         jobOptions.append(('applyZrecoilCorrection', sample_info['applyZrecoilCorrection']))
-            
+
         # This must be done after the factorization step ?
         jobOptions.append(('enableSysUncertainties', sample_info['enableSysUncertainties'] and not disableSysUncertainties))
-    
+
         # Build crab options
         crabOptions = {
             'number_of_jobs' : _number_of_jobs(sample_info),
@@ -121,7 +125,7 @@ def submitAnalysisToGrid(configFile = None, channel = None, samples = None, outp
             'SE_white_list' : sample_info['SE_white_list'],
             'SE_black_list' : sample_info['SE_black_list']
         }
-        
+
         submitToGrid(configFile, jobInfo, jobOptions, crabOptions, create=True, submit=True)
         ##submitToGrid(configFile, jobInfo, jobOptions, crabOptions, create=False, submit=False) # CV: only for testing
 
