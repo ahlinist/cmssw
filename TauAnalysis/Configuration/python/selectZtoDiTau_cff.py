@@ -17,12 +17,12 @@ cfgGenPhaseSpaceCut = cms.PSet(
 )
 
 # trigger selection
-#cfgTrigger = cms.PSet(
-#    pluginName = cms.string('Trigger'),
-#    pluginType = cms.string('TriggerResultEventSelector'),
-#    src = cms.InputTag('TriggerResults::HLT'),
-#    triggerPaths = cms.vstring('HLT_IsoTau_MET65_Trk20', 'HLT_IsoTau_MET35_Trk15_L1MET', 'HLT_DoubleIsoTau_Trk3')
-#)
+cfgTrigger = cms.PSet(
+    pluginName = cms.string('Trigger'),
+    pluginType = cms.string('PATTriggerEventSelector'),
+    src = cms.InputTag('patTriggerEvent'),
+    hltAcceptPaths = cms.vstring('*') # do not reject any events
+)
 
 # primary event vertex selection
 cfgPrimaryEventVertex = cms.PSet(
@@ -242,7 +242,7 @@ cfgDiTauCandidateForDiTauPzetaDiffCut = cms.PSet(
 
 zToDiTauEventSelConfigurator = eventSelFlagProdConfigurator(
     [ cfgGenPhaseSpaceCut,
-      #cfgTrigger,
+      cfgTrigger,
       cfgPrimaryEventVertex,
       cfgPrimaryEventVertexQuality,
       cfgPrimaryEventVertexPosition,

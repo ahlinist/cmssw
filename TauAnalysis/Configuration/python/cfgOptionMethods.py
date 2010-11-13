@@ -133,10 +133,34 @@ def _setTriggerProcess(process, triggerTag, **kwargs):
     process.patTriggerEvent.processName = triggerTag.getProcessName()
 
 def _setTriggerBits(process, triggerSelect, **kwargs):
-    old_select = process.Trigger.selectors[0].triggerPaths
-    process.Trigger.selectors[0].triggerPaths = cms.vstring(
-        triggerSelect)
-    print "Changed HLT selection from %s --> %s" % (old_select, triggerSelect)
+    old_select = process.Trigger.selectors[0].hltAcceptPaths
+    if isinstance(triggerSelect, dict):
+        # run-range dependent configuration for data
+        config = []
+        for hltAcceptPath, runrange in triggerSelect.items():
+            pset = cms.PSet()
+            setattr(pset, "hltAcceptPath", cms.string(hltAcceptPath))
+            setattr(pset, "runrange", cms.EventRange(runrange))
+            config.append(pset)
+        setattr(process.Trigger.selectors[0], "config", cms.VPSet(config))
+        delattr(process.Trigger.selectors[0], "hltAcceptPaths")
+        print("Changed HLT selection from %s --> ")
+        for pset in config:
+            print(" hltAcceptPath = %s: runrange = %s" % (getattr(pset, "hltAcceptPath"), getattr(pset, "runrange")))
+    elif isinstance(triggerSelect, list):
+        process.Trigger.selectors[0].hltAcceptPaths = cms.vstring(triggerSelect)
+        triggerSelect_string = "{ "
+        for iHLTacceptPath, hltAcceptPath in enumerate(triggerSelect):
+            triggerSelect_string += hltAcceptPath
+            if iHLTacceptPath < (len(triggerSelect) - 1):
+                triggerSelect_string += ", "
+        triggerSelect_string += " }"
+        print "Changed HLT selection from %s --> %s" % (old_select, triggerSelect_string)            
+    elif isinstance(triggerSelect, str):
+        process.Trigger.selectors[0].hltAcceptPaths = cms.vstring(triggerSelect)
+        print "Changed HLT selection from %s --> %s" % (old_select, triggerSelect)        
+    else:
+        raise ValueError("Parameter 'triggerSelect' is of invalid Type = %s !!" % type(triggerSelect))
 
 # Map the above methods to user-friendly names
 _METHOD_MAP = {
