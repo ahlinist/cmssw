@@ -18,14 +18,8 @@ muonsBgEstQCDenrichedPFRelIso = copy.deepcopy(selectedPatMuonsPFRelIso)
 muonsBgEstQCDenrichedPFRelIso.sumPtMin = cms.double(0.10)
 muonsBgEstQCDenrichedPFRelIso.sumPtMax = cms.double(0.30)
 
-muonsBgEstQCDenrichedPionVeto = copy.deepcopy(selectedPatMuonsPionVeto)
-# disable cut on muon calo. + segment compatibility
-# (check that muon calo. compatibility is not affected by pile-up before re-enabling this cut)
-muonsBgEstQCDenrichedPionVeto.AntiPionCut = cms.double(-1000.) 
-
 muonSelConfiguratorBgEstQCDenriched = objSelConfigurator(
-    [ muonsBgEstQCDenrichedPFRelIso,
-      muonsBgEstQCDenrichedPionVeto ],
+    [ muonsBgEstQCDenrichedPFRelIso ],
     src = "selectedPatMuonsPt10Cumulative",
     pyModuleName = __name__,
     doSelIndividual = False
@@ -79,7 +73,7 @@ selectTausBgEstQCDenriched = tauSelConfiguratorBgEstQCDenriched.configure(pyName
 
 muTauPairsBgEstQCDenriched = cms.EDProducer("PATMuTauPairProducer",
     useLeadingTausOnly = cms.bool(False),
-    srcLeg1 = cms.InputTag('muonsBgEstQCDenrichedPionVetoCumulative'),
+    srcLeg1 = cms.InputTag('muonsBgEstQCDenrichedPFRelIsoCumulative'),
     srcLeg2 = cms.InputTag('tausBgEstQCDenrichedMuonVetoCumulative'),
     dRmin12 = cms.double(0.7),
     srcMET = cms.InputTag('patMETs'),
@@ -156,7 +150,7 @@ from TauAnalysis.Configuration.analyzeZtoMuTau_cfi import *
 
 muonHistManagerBgEstQCDenriched = copy.deepcopy(muonHistManager)
 muonHistManagerBgEstQCDenriched.pluginName = cms.string('muonHistManagerBgEstQCDenriched')
-muonHistManagerBgEstQCDenriched.muonSource = cms.InputTag('muonsBgEstQCDenrichedPionVetoCumulative')
+muonHistManagerBgEstQCDenriched.muonSource = cms.InputTag('muonsBgEstQCDenrichedPFRelIsoCumulative')
 
 tauHistManagerBgEstQCDenriched = copy.deepcopy(tauHistManager)
 tauHistManagerBgEstQCDenriched.pluginName = cms.string('tauHistManagerBgEstQCDenriched')
@@ -174,7 +168,7 @@ diTauCandidateSVfitHistManagerBgEstQCDenriched.diTauCandidateSource = cms.InputT
 from TauAnalysis.BgEstimationTools.tauIdEffZtoMuTauHistManager_cfi import *
 tauIdEffHistManagerBgEstQCDenriched = copy.deepcopy(tauIdEffZtoMuTauHistManager)
 tauIdEffHistManagerBgEstQCDenriched.pluginName = cms.string('tauIdEffHistManagerBgEstQCDenriched')
-tauIdEffHistManagerBgEstQCDenriched.muonSource = cms.InputTag('muonsBgEstQCDenrichedPionVetoCumulative')
+tauIdEffHistManagerBgEstQCDenriched.muonSource = cms.InputTag('muonsBgEstQCDenrichedPFRelIsoCumulative')
 tauIdEffHistManagerBgEstQCDenriched.tauSource = cms.InputTag('tausBgEstQCDenrichedMuonVetoCumulative')
 tauIdEffHistManagerBgEstQCDenriched.diTauSource = cms.InputTag('muTauPairsBgEstQCDenriched')
 tauIdEffHistManagerBgEstQCDenriched.diTauChargeSignExtractor.src = tauIdEffHistManagerBgEstQCDenriched.diTauSource
@@ -307,7 +301,7 @@ analyzeEventsBgEstQCDenriched = cms.EDAnalyzer("GenericAnalyzer",
         ),
         cms.PSet(
             filter = cms.string('muonPFRelIsoCutBgEstQCDenriched'),
-            title = cms.string('Muon iso.')
+            title = cms.string('Muon loose iso.')
         ),
         cms.PSet(
             filter = cms.string('evtSelTauLeadTrk'),
