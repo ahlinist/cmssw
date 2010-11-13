@@ -12,12 +12,12 @@
 #include "FWCore/Framework/interface/MakerMacros.h"
 #include "FWCore/ParameterSet/interface/ParameterSet.h"
 #include "FWCore/ServiceRegistry/interface/Service.h"
-
 #include "CommonTools/UtilAlgos/interface/TFileService.h"
 #include "CommonTools/Utils/interface/TFileDirectory.h"
-
 #include "DataFormats/Candidate/interface/Candidate.h"
 #include "DataFormats/Common/interface/View.h"
+#include "DataFormats/DetId/interface/DetId.h"
+#include "DataFormats/EcalRecHit/interface/EcalRecHitCollections.h"
 
 #include "TTree.h"
 #include "TH1F.h"
@@ -44,6 +44,11 @@ protected:
   double eT(double pt1, double pt2) const;
   double massT(double pt1, double pt2, double wpx, double wpy) const;
   double acop(double phi1, double phi2) const;
+  float E2overE9(const DetId id, const EcalRecHitCollection &, float recHitEtThreshold = 10.0 , 
+		 float recHitEtThreshold2 = 1.0 , bool avoidIeta85=false, bool KillSecondHit=true);
+  float recHitApproxEt( const DetId id, const EcalRecHitCollection &recHits );
+  float recHitE( const DetId id, const EcalRecHitCollection &recHits );
+  float recHitE( const DetId id, const EcalRecHitCollection & recHits, int di, int dj );
 
   bool saveHistograms_;
   bool saveHLTInfo_;
@@ -170,6 +175,7 @@ protected:
   float  eledPhiAtVtx_[maxP];
   float  eleSigmaEtaEta_[maxP];
   float  eleSigmaIEtaIEta_[maxP];
+  float  eleE2overE9_[maxP];
   float  eleE3x3_[maxP];
   float  eleSeedTime_[maxP];
   int    eleRecoFlag_[maxP];
@@ -219,6 +225,7 @@ protected:
   float  phoHoverE_[maxP];
   float  phoSigmaEtaEta_[maxP];
   float  phoSigmaIEtaIEta_[maxP];
+  float  phoE2overE9_[maxP];
   float  phoE3x3_[maxP];
   float  phoSeedTime_[maxP];
   int    phoRecoFlag_[maxP];
