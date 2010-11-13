@@ -38,13 +38,9 @@ bool PATTriggerEventSelector::hltAcceptPathType::isInRange(const edm::Event& evt
   edm::EventNumber_t eventNumber = evt.id().event();
   
   if ( (runNumber > hltAcceptEventRange_->startRun() || 
-	(runNumber == hltAcceptEventRange_->startRun() && 
-	 // CV: edm::EventRange->startEvent = 1 means that startEvent parameter has been set to 'MIN'
-	 (eventNumber >= hltAcceptEventRange_->startEvent() || hltAcceptEventRange_->startEvent() == 1))) &&
+	(runNumber == hltAcceptEventRange_->startRun() && eventNumber >= hltAcceptEventRange_->startEvent())) &&
        (runNumber < hltAcceptEventRange_->endRun() ||
-	(runNumber == hltAcceptEventRange_->endRun() && 
-	 // CV: edm::EventRange->endEvent = 0 means that endEvent parameter has been set to 'MAX'
-	 (eventNumber <= hltAcceptEventRange_->endEvent() || hltAcceptEventRange_->endEvent() == 0))) ) return true;
+	(runNumber == hltAcceptEventRange_->endRun() && eventNumber <= hltAcceptEventRange_->endEvent())) ) return true;
   return false;
 }
 
