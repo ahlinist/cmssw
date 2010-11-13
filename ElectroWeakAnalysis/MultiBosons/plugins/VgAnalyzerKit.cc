@@ -537,7 +537,7 @@ fabs(ip->pdgId())<=14) || ip->pdgId()==22))) {
 	if (!p->mother()) continue;
 
 	if (fabs(p->pdgId())==4 && fabs(p->mother()->pdgId())!=7) continue;
-	if ((genIndex-1)>20 && ip->pdgId()==22) continue;
+	if ((genIndex-1)>60 && ip->pdgId()==22) continue;
 	if (fabs(p->pdgId())==12 && fabs(p->mother()->pdgId())>100) continue;
 	if (fabs(p->pdgId())==14 && fabs(p->mother()->pdgId())>100) continue;
 
@@ -977,6 +977,8 @@ fabs(ip->pdgId())<=14) || ip->pdgId()==22))) {
       eleSeverity_[nEle_] = -999.;
       DetId eleSeedDetId = lazyTool.getMaximum(*eleSeed).first;
 
+      eleE2overE9_[nEle_] = E2overE9(eleSeedDetId, (*EBRecHits));
+
       if ( iEle->isEB() && EBReducedRecHits.isValid() ) {
         EcalRecHitCollection::const_iterator eleebrhit = EBReducedRecHits->find(eleSeedDetId);
         if ( eleebrhit != EBReducedRecHits->end() ) { 
@@ -984,7 +986,6 @@ fabs(ip->pdgId())<=14) || ip->pdgId()==22))) {
            eleRecoFlag_[nEle_] = eleebrhit->recoFlag();
            eleSeverity_[nEle_] = EcalSeverityLevelAlgo::severityLevel( eleSeedDetId, (*EBReducedRecHits), *chStatus );
 	}
-	eleE2overE9_[nEle_] = E2overE9(eleSeedDetId, (*EBRecHits));
       } else if ( EEReducedRecHits.isValid() ) {
         EcalRecHitCollection::const_iterator eleeerhit = EEReducedRecHits->find(eleSeedDetId);
         if ( eleeerhit != EEReducedRecHits->end() ) { 
@@ -992,7 +993,6 @@ fabs(ip->pdgId())<=14) || ip->pdgId()==22))) {
            eleRecoFlag_[nEle_] = eleeerhit->recoFlag();
            eleSeverity_[nEle_] = EcalSeverityLevelAlgo::severityLevel( eleSeedDetId, (*EEReducedRecHits), *chStatus );
 	}
-	eleE2overE9_[nEle_] = 0;
       }
 
       nEle_++;
@@ -1084,6 +1084,7 @@ fabs(ip->pdgId())<=14) || ip->pdgId()==22))) {
       phoSeverity_[nPho_] = -999.;
       const reco::CaloClusterPtr phoSeed = (*iPho).superCluster()->seed();
       DetId phoSeedDetId = lazyTool.getMaximum(*phoSeed).first;
+      phoE2overE9_[nPho_] = E2overE9(phoSeedDetId, (*EBRecHits));
 
       if ( iPho->isEB() && EBReducedRecHits.isValid() ) {
         EcalRecHitCollection::const_iterator ebrhit = EBReducedRecHits->find(phoSeedDetId);
@@ -1103,15 +1104,13 @@ fabs(ip->pdgId())<=14) || ip->pdgId()==22))) {
 
       phoE3x3_[nPho_] = lazyTool.e3x3(*phoSeed);
 
-      if(iPho->isEB()==true && EBRecHits.isValid()){
+      if (iPho->isEB()==true && EBRecHits.isValid()) {
 	std::vector<float> RoundAndAngle = EcalClusterTools::roundnessBarrelSuperClusters(*(iPho->superCluster()),*EBRecHits,0);
 	phoRoundness_[nPho_] = RoundAndAngle[0];
 	phoAngle_[nPho_] = RoundAndAngle[1];
-	phoE2overE9_[nPho_] = E2overE9(phoSeedDetId, (*EBRecHits));
       } else {
 	phoRoundness_[nPho_] = -999;
 	phoAngle_[nPho_] = -999;
-	phoE2overE9_[nPho_] = 0;
       }
       
       // Gen Particle
