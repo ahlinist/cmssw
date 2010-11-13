@@ -174,6 +174,7 @@ VgAnalyzerKit::VgAnalyzerKit(const edm::ParameterSet& ps) : verbosity_(0), helpe
   tree_->Branch("eledPhiAtVtx", eledPhiAtVtx_, "eledPhiAtVtx[nEle]/F");
   tree_->Branch("eleSigmaEtaEta", eleSigmaEtaEta_, "eleSigmaEtaEta[nEle]/F");
   tree_->Branch("eleSigmaIEtaIEta", eleSigmaIEtaIEta_, "eleSigmaIEtaIEta[nEle]/F");
+  tree_->Branch("eleE2overE9", eleE2overE9_, "eleE2overE9[nEle]/F");
   tree_->Branch("eleE3x3", eleE3x3_, "eleE3x3[nEle]/F");
   tree_->Branch("eleSeedTime", eleSeedTime_, "eleSeedTime[nEle]/F");
   // If Flag == 2, it means that rechit is out of time
@@ -218,6 +219,7 @@ VgAnalyzerKit::VgAnalyzerKit(const edm::ParameterSet& ps) : verbosity_(0), helpe
   tree_->Branch("phoHoverE", phoHoverE_, "phoHoverE[nPho]/F");
   tree_->Branch("phoSigmaEtaEta", phoSigmaEtaEta_, "phoSigmaEtaEta[nPho]/F");
   tree_->Branch("phoSigmaIEtaIEta", phoSigmaIEtaIEta_, "phoSigmaIEtaIEta[nPho]/F");
+  tree_->Branch("phoE2overE9", phoE2overE9_, "phoE2overE9[nPho]/F");
   tree_->Branch("phoE3x3", phoE3x3_, "phoE3x3[nPho]/F");
   tree_->Branch("phoSeedTime", phoSeedTime_, "phoSeedTime[nPho]/F");
   // If Flag == 2, it means that rechit is out of time
@@ -980,6 +982,7 @@ fabs(ip->pdgId())<=14) || ip->pdgId()==22))) {
            eleRecoFlag_[nEle_] = eleebrhit->recoFlag();
            eleSeverity_[nEle_] = EcalSeverityLevelAlgo::severityLevel( eleSeedDetId, (*EBReducedRecHits), *chStatus );
 	}
+	eleE2overE9_[nEle_] = E2overE9(eleSeedDetId, (*EBRecHits));
       } else if ( EEReducedRecHits.isValid() ) {
         EcalRecHitCollection::const_iterator eleeerhit = EEReducedRecHits->find(eleSeedDetId);
         if ( eleeerhit != EEReducedRecHits->end() ) { 
@@ -987,6 +990,7 @@ fabs(ip->pdgId())<=14) || ip->pdgId()==22))) {
            eleRecoFlag_[nEle_] = eleeerhit->recoFlag();
            eleSeverity_[nEle_] = EcalSeverityLevelAlgo::severityLevel( eleSeedDetId, (*EEReducedRecHits), *chStatus );
 	}
+	eleE2overE9_[nEle_] = 0;
       }
 
       nEle_++;
@@ -1005,7 +1009,6 @@ fabs(ip->pdgId())<=14) || ip->pdgId()==22))) {
   const Candidate *phomom = 0;
   int nPhoPassCut = 0;
   nPho_ = 0;
-
 
   const TriggerObjectMatch *phoTriggerMatch1(triggerEvent->triggerObjectMatchResult("photonTriggerMatchHLTPhoton10CleanedL1R"));
   const TriggerObjectMatch *phoTriggerMatch2(triggerEvent->triggerObjectMatchResult("photonTriggerMatchHLTPhoton15CleanedL1R"));
@@ -1096,14 +1099,16 @@ fabs(ip->pdgId())<=14) || ip->pdgId()==22))) {
       phoE3x3_[nPho_] = lazyTool.e3x3(*phoSeed);
 
       if(iPho->isEB()==true && EBRecHits.isValid()){
-            std::vector<float> RoundAndAngle = EcalClusterTools::roundnessBarrelSuperClusters(*(iPho->superCluster()),*EBRecHits,0);
-            phoRoundness_[nPho_] = RoundAndAngle[0];
-            phoAngle_[nPho_] = RoundAndAngle[1];
-      } else{
-            phoRoundness_[nPho_] = -999;
-            phoAngle_[nPho_] = -999;
+	std::vector<float> RoundAndAngle = EcalClusterTools::roundnessBarrelSuperClusters(*(iPho->superCluster()),*EBRecHits,0);
+	phoRoundness_[nPho_] = RoundAndAngle[0];
+	phoAngle_[nPho_] = RoundAndAngle[1];
+	phoE2overE9_[nPho_] = E2overE9(phoSeedDetId, (*EBRecHits));
+      } else {
+	phoRoundness_[nPho_] = -999;
+	phoAngle_[nPho_] = -999;
+	phoE2overE9_[nPho_] = 0;
       }
-
+      
       // Gen Particle
       // cout << "VgAnalyzerKit: produce: photon " << nPho_ << " gen match ..." << endl;
       phoGenIndex_[nPho_]  = -999;
@@ -1626,6 +1631,182 @@ double VgAnalyzerKit::acop(double phi1, double phi2) const {
   if (acop<0) acop = - acop;
   acop = M_PI - acop;
   return acop;
+}
+
+float VgAnalyzerKit::E2overE9( const DetId id, const EcalRecHitCollection & recHits, 
+			       float recHitEtThreshold, float recHitEtThreshold2 , 
+			       bool avoidIeta85, bool KillSecondHit) {
+  
+  if ( id.subdetId() == EcalBarrel ) {
+    
+    EBDetId ebId( id );
+    
+    // avoid recHits at |eta|=85 where one side of the neighbours is missing
+    if ( abs(ebId.ieta())==85 && avoidIeta85) return 0;
+    
+    // select recHits with Et above recHitEtThreshold
+    float e1 = recHitE( id, recHits );
+    float ete1=recHitApproxEt( id, recHits );
+
+    // check that rechit E_t is above threshold
+    if (ete1 < std::min(recHitEtThreshold,recHitEtThreshold2) ) return 0;
+    
+    if (ete1 < recHitEtThreshold && !KillSecondHit ) return 0;
+
+    float e2=-1;
+    float ete2=0;
+    float s9 = 0;
+
+    // coordinates of 2nd hit relative to central hit
+    int e2eta=0;
+    int e2phi=0;
+
+    // LOOP OVER 3x3 ARRAY CENTERED AROUND HIT 1
+    for ( int deta = -1; deta <= +1; ++deta ) {
+      for ( int dphi = -1; dphi <= +1; ++dphi ) {
+	
+	// compute 3x3 energy
+	
+	float etmp=recHitE( id, recHits, deta, dphi );
+	s9 += etmp;
+	
+	EBDetId idtmp=EBDetId::offsetBy(id,deta,dphi);
+	float eapproxet=recHitApproxEt( idtmp, recHits );
+	
+	// remember 2nd highest energy deposit (above threshold) in 3x3 array 
+	if (etmp>e2 && eapproxet>recHitEtThreshold2 && !(deta==0 && dphi==0)) {
+	  
+	  e2=etmp;
+	  ete2=eapproxet;
+	  e2eta=deta;
+	  e2phi=dphi;
+	  
+	}
+	
+      }
+    }
+    
+    if ( e1 == 0 )  return 0;
+    
+    // return 0 if 2nd hit is below threshold
+    if ( e2 == -1 ) return 0;
+    
+    // compute e2/e9 centered around 1st hit
+    
+    float e2nd=e1+e2;
+    float e2e9=0;
+    
+    if (s9!=0) e2e9=e2nd/s9;
+    
+    // if central hit has higher energy than 2nd hit
+    //  return e2/e9 if 1st hit is above E_t threshold
+    
+    if (e1 > e2 && ete1>recHitEtThreshold) return e2e9;
+
+    // if second hit has higher energy than 1st hit
+    
+    if ( e2 > e1 ) { 
+      
+      
+      // return 0 if user does not want to flag 2nd hit, or
+      // hits are below E_t thresholds - note here we
+      // now assume the 2nd hit to be the leading hit.
+      
+      if (!KillSecondHit || ete2<recHitEtThreshold || ete1<recHitEtThreshold2) {
+	
+	return 0;
+	
+      }
+      
+      
+      else {
+	
+	// LOOP OVER 3x3 ARRAY CENTERED AROUND HIT 2
+	
+	float s92nd=0;
+        
+	float e2nd_prime=0;
+	int e2prime_eta=0;
+	int e2prime_phi=0;
+	
+	EBDetId secondid=EBDetId::offsetBy(id,e2eta,e2phi);
+	
+	
+	for ( int deta = -1; deta <= +1; ++deta ) {
+	  for ( int dphi = -1; dphi <= +1; ++dphi ) {
+	    
+	    // compute 3x3 energy
+	    
+	    float etmp=recHitE( secondid, recHits, deta, dphi );
+	    s92nd += etmp;
+	    
+	    if (etmp>e2nd_prime && !(deta==0 && dphi==0)) {
+	      e2nd_prime=etmp;
+	      e2prime_eta=deta;
+	      e2prime_phi=dphi;
+	    }
+	    
+	  }
+	}
+	
+	// if highest energy hit around E2 is not the same as the input hit, return 0;
+	
+	if (!(e2prime_eta==-e2eta && e2prime_phi==-e2phi)) 
+	  { 
+	    return 0;
+	  }
+	
+	
+	// compute E2/E9 around second hit 
+	float e2e9_2=0;
+	if (s92nd!=0) e2e9_2=e2nd/s92nd;
+        
+	//   return the value of E2/E9 calculated around 2nd hit
+        
+	return e2e9_2;
+	
+	
+      }
+      
+    }
+    
+    
+  } else if ( id.subdetId() == EcalEndcap ) {
+    // only used for EB at the moment
+    return 0;
+  }
+  return 0;
+}
+
+float VgAnalyzerKit::recHitApproxEt( const DetId id, const EcalRecHitCollection &recHits ) {
+  // for the time being works only for the barrel
+  if ( id.subdetId() == EcalBarrel ) {
+    return recHitE( id, recHits ) / cosh( EBDetId::approxEta( id ) );
+  }
+  return 0;
+}
+
+float VgAnalyzerKit::recHitE( const DetId id, const EcalRecHitCollection &recHits )
+{
+  if ( id == DetId(0) ) {
+    return 0;
+  } else {
+    EcalRecHitCollection::const_iterator it = recHits.find( id );
+    if ( it != recHits.end() ) return (*it).energy();
+  }
+  return 0;
+}
+
+float VgAnalyzerKit::recHitE( const DetId id, const EcalRecHitCollection & recHits, int di, int dj )
+{
+  // in the barrel:   di = dEta   dj = dPhi
+  // in the endcap:   di = dX     dj = dY
+  
+  DetId nid;
+  if( id.subdetId() == EcalBarrel) nid = EBDetId::offsetBy( id, di, dj );
+  else if( id.subdetId() == EcalEndcap) nid = EEDetId::offsetBy( id, di, dj );
+
+  return ( nid == DetId(0) ? 0 : recHitE( nid, recHits ) );
 }
 
 DEFINE_FWK_MODULE(VgAnalyzerKit);
