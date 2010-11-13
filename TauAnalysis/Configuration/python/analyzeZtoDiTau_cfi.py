@@ -103,11 +103,11 @@ evtSelGenPhaseSpace = cms.PSet(
 )
 
 # trigger selection
-#evtSelTrigger = cms.PSet(
-#    pluginName = cms.string('evtSelTrigger'),
-#    pluginType = cms.string('BoolEventSelector'),
-#    src = cms.InputTag('Trigger')
-#)
+evtSelTrigger = cms.PSet(
+    pluginName = cms.string('evtSelTrigger'),
+    pluginType = cms.string('BoolEventSelector'),
+    src = cms.InputTag('Trigger')
+)
 
 # data-quality selection
 evtSelDataQuality = cms.PSet(
@@ -348,10 +348,6 @@ diTauEventDump = cms.PSet(
     svFitAlgorithms = cms.VPSet(
         cms.PSet(
             name = cms.string("psKine_MEt_ptBalance")
-        ),
-        cms.PSet(
-            name = cms.string("polKine_MEt_ptBalance"),
-            polarizationHypotheses = cms.vstring("LL", "LR", "RL", "RR")
         )
     ),
     jetSource = cms.InputTag('selectedPatJetsForZtoDiTauAntiOverlapWithLeptonsVetoCumulative'),
@@ -405,22 +401,22 @@ diTauAnalysisSequence = cms.VPSet(
     ),
     
     # trigger selection
-    #cms.PSet(
-    #    filter = cms.string('evtSelTrigger'),
-    #    title = cms.string('Trigger'),
-    #    saveRunLumiSectionEventNumbers = cms.vstring('')
-    #),
-    #cms.PSet(
-    #    analyzers = cms.vstring(
-    #        'genPhaseSpaceEventInfoHistManager',
-    #        'tauHistManager1',
-    #        'tauHistManager2',
-    #        'caloMEtHistManager',
-    #        'pfMEtHistManager',
-    #        'vertexHistManager',
-    #        'triggerHistManagerForDiTau'
-    #    )
-    #),
+    cms.PSet(
+        filter = cms.string('evtSelTrigger'),
+        title = cms.string('Trigger'),
+        saveRunLumiSectionEventNumbers = cms.vstring('')
+    ),
+    cms.PSet(
+        analyzers = cms.vstring(
+            'genPhaseSpaceEventInfoHistManager',
+            'tauHistManager1',
+            'tauHistManager2',
+            'caloMEtHistManager',
+            'pfMEtHistManager',
+            'vertexHistManager',
+            'triggerHistManagerForDiTau'
+        )
+    ),
 
     # data-quality selection
     cms.PSet(
@@ -456,7 +452,7 @@ diTauAnalysisSequence = cms.VPSet(
     ),
     cms.PSet(
         filter = cms.string('evtSelPrimaryEventVertexQuality'),
-        title = cms.string('p(chi2Vertex) > 0.01'),
+        title = cms.string('Vertex quality'),
         saveRunLumiSectionEventNumbers = cms.vstring('')
     ),
     cms.PSet(
@@ -470,7 +466,7 @@ diTauAnalysisSequence = cms.VPSet(
     ),
     cms.PSet(
         filter = cms.string('evtSelPrimaryEventVertexPosition'),
-        title = cms.string('-25 < zVertex < +25 cm'),
+        title = cms.string('Vertex position'),
         saveRunLumiSectionEventNumbers = cms.vstring('')
     ),
     cms.PSet(

@@ -436,15 +436,7 @@ muTauEventDump = cms.PSet(
     svFitAlgorithms = cms.VPSet(
         cms.PSet(
             name = cms.string("psKine_MEt_ptBalance")
-        ),
-        #cms.PSet(
-            #name = cms.string("polKine_MEt_ptBalance"),
-            #polarizationHypotheses = cms.vstring("LL", "LR", "RL", "RR")
-        ##),
-        ##cms.PSet(
-        ##    name = cms.string("polKine_MEt_ptBalance_Zprod"),
-        ##    polarizationHypotheses = cms.vstring("LL", "LR", "RL", "RR")
-        ##),
+        )
     ),
     muTauZmumuHypothesisSource = cms.InputTag('muTauPairZmumuHypotheses'),
     diMuZmumuHypothesisSource = cms.InputTag('allDiMuPairZmumuHypothesesByMass'),
