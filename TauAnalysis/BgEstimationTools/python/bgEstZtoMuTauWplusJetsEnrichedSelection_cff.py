@@ -88,14 +88,11 @@ selectTausBgEstWplusJetsEnriched = tauSelConfiguratorBgEstWplusJetsEnriched.conf
 # produce collection of muon + tau-jet combinations
 #--------------------------------------------------------------------------------
 
-muTauPairsBgEstWplusJetsEnriched = cms.EDProducer("PATMuTauPairProducer",
-    useLeadingTausOnly = cms.bool(False),
+from TauAnalysis.CandidateTools.muTauPairProduction_cff import *
+
+muTauPairsBgEstWplusJetsEnriched = allMuTauPairs.clone(
     srcLeg1 = cms.InputTag('muonsBgEstWplusJetsEnrichedPionVetoCumulative'),
     srcLeg2 = cms.InputTag('tausBgEstWplusJetsEnrichedMuonVetoCumulative'),
-    dRmin12 = cms.double(0.7),
-    srcMET = cms.InputTag('patMETs'),
-    recoMode = cms.string(""),
-    scaleFuncImprovedCollinearApprox = cms.string('1'),                                              
     verbosity = cms.untracked.int32(0)
 )
 

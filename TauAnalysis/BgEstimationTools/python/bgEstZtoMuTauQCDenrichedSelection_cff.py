@@ -71,13 +71,11 @@ selectTausBgEstQCDenriched = tauSelConfiguratorBgEstQCDenriched.configure(pyName
 # produce collection of muon + tau-jet combinations
 #--------------------------------------------------------------------------------
 
-muTauPairsBgEstQCDenriched = cms.EDProducer("PATMuTauPairProducer",
-    useLeadingTausOnly = cms.bool(False),
+from TauAnalysis.CandidateTools.muTauPairProduction_cff import *
+
+muTauPairsBgEstQCDenriched = allMuTauPairs.clone(
     srcLeg1 = cms.InputTag('muonsBgEstQCDenrichedPFRelIsoCumulative'),
     srcLeg2 = cms.InputTag('tausBgEstQCDenrichedMuonVetoCumulative'),
-    dRmin12 = cms.double(0.7),
-    srcMET = cms.InputTag('patMETs'),
-    recoMode = cms.string(""),
     verbosity = cms.untracked.int32(0)
 )
 
