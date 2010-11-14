@@ -179,6 +179,12 @@ from TauAnalysis.Configuration.tools.factorizationTools import enableFactorizati
 #--------------------------------------------------------------------------------
 
 #--------------------------------------------------------------------------------
+# import utility function for applyting Z-recoil corrections to MET
+from TauAnalysis.Configuration.tools.mcToDataCorrectionTools import applyZrecoilCorrection_runZtoDiTau
+##applyZrecoilCorrection_runZtoDiTau(process)
+#--------------------------------------------------------------------------------
+
+#--------------------------------------------------------------------------------
 # disable accessing generator level information
 # if running on data
 #from TauAnalysis.Configuration.tools.switchToData import switchToData
