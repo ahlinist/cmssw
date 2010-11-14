@@ -20,14 +20,9 @@ analyzeZtoDiTauEvents = cms.EDAnalyzer("GenericAnalyzer",
     filters = cms.VPSet(
         # generator level phase-space selection
         evtSelGenPhaseSpace,
-    
-        # generator level selection of pure hadronic Z --> tau-jet + tau-jet events
-        # passing basic acceptance and kinematic cuts
-        # (NOTE: to be used for efficiency studies only !!)
-        #genDiTauCut,
-      
+          
         # trigger selection
-        #evtSelTrigger,
+        evtSelTrigger,
 
         # data-quality selection
         evtSelDataQuality,
@@ -105,3 +100,5 @@ analyzeZtoDiTauEvents = cms.EDAnalyzer("GenericAnalyzer",
         )
     )                                       
 )
+
+analyzeZtoDiTauSequence = cms.Sequence(analyzeZtoDiTauEvents)
