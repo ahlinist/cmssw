@@ -22,6 +22,8 @@ analyzeZtoDiTauEvents_factorizedTight2ndTau = analyzeZtoDiTauEvents.clone(
 if len(analyzeZtoDiTauEvents_factorizedTight2ndTau.eventDumps) > 0:
     analyzeZtoDiTauEvents_factorizedTight2ndTau.eventDumps[0] = diTauEventDump_factorizedTight2ndTau
 
+analyzeZtoDiTauSequence_factorizedTight2ndTau = cms.Sequence(analyzeZtoDiTauEvents_factorizedTight2ndTau)
+
 #--------------------------------------------------------------------------------
 # define Z --> tau-jet + tau-jet analysis module
 # for the path with "loose" tau id. criteria applied
@@ -84,3 +86,5 @@ analyzeZtoDiTauEvents_factorizedLoose2ndTau.analysisSequence = diTauAnalysisSequ
 replaceAnalyzerModules(analyzeZtoDiTauEvents_factorizedLoose2ndTau,
     [ [ diTauCandidateSVfitHistManagerForDiTau, diTauCandidateSVfitHistManagerForDiTau_factorizedLoose2ndTau ], ]
 )                       
+
+analyzeZtoDiTauSequence_factorizedLoose2ndTau = cms.Sequence(analyzeZtoDiTauEvents_factorizedLoose2ndTau)
