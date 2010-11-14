@@ -13,8 +13,8 @@ samplesToAnalyze = [
     # modify in case you want to submit crab jobs for some of the samples only...
 ]
 
-enableSystematics = True
-#enableSystematics = False
+#enableSystematics = True
+enableSystematics = False
 
 submitAnalysisToGrid(configFile = configFile, channel = 'ZtoMuTau',
                      samples = recoSampleDefinitionsZtoMuTau_7TeV, outputFilePath = analysisFilePath, jobId = jobId,
