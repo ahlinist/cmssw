@@ -31,6 +31,10 @@ def _setGlobalTag(process, tag, **kwargs):
     " Set conditions global tag "
     process.GlobalTag.globaltag = tag
 
+def _setattr_ifexists(obj, attrName, attrValue):
+	if hasattr(obj, attrName):
+		setattr(obj, attrName, attrValue)    
+
 @_requires(args=['channel'])
 def _setGenPhaseSpaceCut(process, value, **kwargs):
     " Set the generator level phase space cut "
@@ -124,13 +128,29 @@ def _setIsData(process, type, **kwargs):
 
 def _setTriggerProcess(process, triggerTag, **kwargs):
     # Set the input tag for the HLT
+
+    # update InputTag for all modules in sequence
     for processAttrName in dir(process):
         processAttr = getattr(process, processAttrName)
         if isinstance(processAttr, cms.Sequence):
             print "--> Resetting HLT input tag for sequence:", processAttrName
             patutils.massSearchReplaceAnyInputTag(processAttr, cms.InputTag("TriggerResults", "", "HLT"), triggerTag)
+            patutils.massSearchReplaceAnyInputTag(processAttr, cms.InputTag("TriggerResults::HLT"), triggerTag)
+
+    # update InputTag for PAT trigger tools             
     process.patTrigger.processName = triggerTag.getProcessName()
     process.patTriggerEvent.processName = triggerTag.getProcessName()
+
+    # update InputTag for all histogram managers,
+    # binner and event-dump plugins of GenericAnalyzer module
+    for processAttrName in dir(process):
+        processAttr = getattr(process, processAttrName)
+        if isinstance(processAttr, cms.EDAnalyzer):
+            if processAttr.type_() == "GenericAnalyzer":
+                if hasattr(processAttr, "analyzers"):
+                    analyzerPlugins = getattr(processAttr, "analyzers")
+                    for analyzerPlugin in analyzerPlugins:
+                        _setattr_ifexists(analyzerPlugin, "hltResultsSource", triggerTag)
 
 def _setTriggerBits(process, triggerSelect, **kwargs):
     old_select = process.Trigger.selectors[0].hltAcceptPaths
