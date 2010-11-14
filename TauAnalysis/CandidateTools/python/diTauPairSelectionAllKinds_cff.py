@@ -183,7 +183,7 @@ selectDiTauPairs = patDiTauPairSelConfigurator.configure(pyNameSpace = locals())
 #        in order to avoid problems with limited Monte Carlo statistics)
 
 selectedDiTauPairsAntiOverlapVetoLoose2ndTau.cut = cms.string('dR12 > 0.7')
-selectedDiTauPairsZeroChargeLoose2ndTau.cut = cms.string('(leg1.charge + leg2.leadTrack.charge) = 0')
+selectedDiTauPairsZeroChargeLoose2ndTau.cut = cms.string('(leg1.charge + leg2.leadPFChargedHadrCand.charge) = 0')
 #selectedDiTauPairsAcoplanarityLoose2ndTau.cut = cms.string('(dPhi1MET < 2.4) | (dPhi2MET < 2.4)')
 selectedDiTauPairsAcoplanarityLoose2ndTau.cut = cms.string('(dPhi1MET < 3.2) | (dPhi2MET < 3.2)') # CV: cut disabled for now...
 selectedDiTauPairsPzetaDiffLoose2ndTau.cut = cms.string('(pZeta - 1.5*pZetaVis) > -20.')
