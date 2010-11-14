@@ -17,7 +17,8 @@ selectedDiTauPairsAntiOverlapVeto = cms.EDFilter("PATDiTauPairSelector",
 # require muon and tau to form a zero-charge pair
 selectedDiTauPairsZeroCharge = cms.EDFilter("PATDiTauPairSelector",
     cut = cms.string('charge = 0'),
-    #cut = cms.string('(leg1.leadTrack.charge + leg2.leadTrack.charge) = 0'), # NOTE: to be used for background studies only !!
+    # CV: the following definition of the zero-charge cut is to be used for background studies only !!
+    #cut = cms.string('(leg1.leadPFChargedHadrCand.charge + leg2.leadPFChargedHadrCand.charge) = 0'),
     filter = cms.bool(False)
 )
 
@@ -44,7 +45,7 @@ selectedDiTauPairsPzetaDiff = cms.EDFilter("PATDiTauPairSelector",
 selectedDiTauPairsAntiOverlapVetoLoose2ndTau = copy.deepcopy(selectedDiTauPairsAntiOverlapVeto)
 
 selectedDiTauPairsZeroChargeLoose2ndTau = selectedDiTauPairsZeroCharge.clone(
-    cut = cms.string('(leg1.charge + leg2.leadTrack.charge) = 0')
+    cut = cms.string('(leg1.charge + leg2.leadPFChargedHadrCand.charge) = 0')
 )    
 
 selectedDiTauPairsAcoplanarityLoose2ndTau = copy.deepcopy(selectedDiTauPairsAcoplanarity)
