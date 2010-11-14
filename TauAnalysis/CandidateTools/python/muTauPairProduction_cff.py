@@ -73,7 +73,7 @@ allMuTauPairs = cms.EDProducer("PATMuTauPairProducer",
                 #numSamplings = cms.int32(1000)
                 numSamplings = cms.int32(-1)
             )
-        ),
+        #),
         #psKine_MEt_Track_ptBalance = cms.PSet(
             #likelihoodFunctions = cms.VPSet(
                 #svFitLikelihoodMuTauPairKinematicsPhaseSpace,
@@ -85,47 +85,7 @@ allMuTauPairs = cms.EDProducer("PATMuTauPairProducer",
                 ##numSamplings = cms.int32(1000)
                 #numSamplings = cms.int32(-1)
             #)
-        #),
-        #polKine = cms.PSet(
-            #likelihoodFunctions = cms.VPSet(
-                #svFitLikelihoodMuTauPairKinematicsPolarized
-            #),
-            #estUncertainties = cms.PSet(
-                #numSamplings = cms.int32(-1)
-            #)
-        #),
-        #polKine_MEt = cms.PSet(
-            #likelihoodFunctions = cms.VPSet(
-                #svFitLikelihoodMuTauPairKinematicsPolarized,
-                #svFitLikelihoodMuTauPairMEt
-            #),
-            #estUncertainties = cms.PSet(
-                #numSamplings = cms.int32(-1)
-            #)
-        #),
-        #polKine_MEt_ptBalance = cms.PSet(
-            #likelihoodFunctions = cms.VPSet(
-                #svFitLikelihoodMuTauPairKinematicsPolarized,
-                #svFitLikelihoodMuTauPairMEt,
-                #svFitLikelihoodMuTauPairPtBalance
-            #),
-            #estUncertainties = cms.PSet(
-                ##numSamplings = cms.int32(1000)
-                #numSamplings = cms.int32(-1)
-            #)
-        ##),
-        ##polKine_MEt_ptBalance_Zprod = cms.PSet(
-        ##    likelihoodFunctions = cms.VPSet(
-        ##        svFitLikelihoodMuTauPairKinematicsPolarized,
-        ##        svFitLikelihoodMuTauPairMEt,
-        ##        svFitLikelihoodMuTauPairPtBalance,
-        ##        svFitLikelihoodMuTauPairZprod
-        ##    ),
-        ##    estUncertainties = cms.PSet(
-        ##        #numSamplings = cms.int32(1000)
-        ##        numSamplings = cms.int32(-1)
-        ##    )
-        ##),
+        )
     ),
     scaleFuncImprovedCollinearApprox = cms.string('1'),
     verbosity = cms.untracked.int32(0)
