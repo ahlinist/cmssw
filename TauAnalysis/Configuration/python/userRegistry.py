@@ -28,7 +28,7 @@ userSettings = {
             'analysisFilePath' : "/user/v/veelken/CMSSW_3_8_x/plots/ZtoMuTau/",
             'harvestingFilePath' : "/data1/veelken/CMSSW_3_8_x/plots/ZtoMuTau/",
             'tmpFilePath' : "/tmp/veelken/",
-            'jobId' : "2010Nov10"
+            'jobId' : "2010Nov13"
         },
         'ZtoMuTau_bgEstTemplate' : {
             'analysisFilePath' : "/user/v/veelken/CMSSW_3_8_x/plots/ZtoMuTau_bgEstTemplate/",
@@ -46,7 +46,7 @@ userSettings = {
             'analysisFilePath' : "/user/v/veelken/CMSSW_3_8_x/plots/ZtoDiTau/",
             'harvestingFilePath' : "/data1/veelken/CMSSW_3_8_x/plots/ZtoDiTau/",
             'tmpFilePath' : "/tmp/veelken/",
-            'jobId' : "2010Nov01"
+            'jobId' : "2010Nov13"
         },
         'global' : {
             'drawOptions' : {
