@@ -95,16 +95,18 @@ triggerHistManagerForMuTau.pluginName = cms.string('triggerHistManagerForMuTau')
 triggerHistManagerForMuTau.l1Bits = cms.vstring(
     'L1_SingleMu3',
     'L1_SingleMu5',
-    'L1_SingleMu7',
-    'L1_SingleMu10',
-    'L1_SingleMu14'
+    'L1_SingleMu7'
 )
 
 triggerHistManagerForMuTau.hltPaths = cms.vstring(
     'HLT_Mu9',
     'HLT_IsoMu9',
     'HLT_Mu11',
-    'HLT_Mu15'
+    'HLT_IsoMu13_v3',
+    'HLT_IsoMu13_v4',
+    'HLT_Mu15_v1',
+    'HLT_Mu11_PFTau15_v2',
+    'HLT_Mu11_PFTau15_v2'
 )
 
 # import config for event weight histogram manager
