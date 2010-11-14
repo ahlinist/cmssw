@@ -795,7 +795,7 @@ def enableFactorization_makeZtoDiTauPlots_grid(
     # lead. track Pt, track isolation and ECAL isolation efficiencies
     evtSelZtoDiTau_factorizedTight = [
         process.evtSelGenPhaseSpace,
-        #process.evtSelTrigger,
+        process.evtSelTrigger,
         process.evtSelDataQuality,
         process.evtSelPrimaryEventVertex,
         process.evtSelPrimaryEventVertexQuality,
