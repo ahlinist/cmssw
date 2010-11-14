@@ -99,7 +99,8 @@ process.goldenZmumuSkimPath = cms.Path(
 #--------------------------------------------------------------------------------
 
 process.looseZmumuSkimOutputModule = cms.OutputModule("PoolOutputModule",                                 
-    FEVTEventContent,
+    #FEVTEventContent,
+    FEVTSIMEventContent,                                                  
     SelectEvents = cms.untracked.PSet(
         SelectEvents = cms.vstring(
             'goldenZmumuSkimPath',
