@@ -24,7 +24,7 @@ patMuons.usePV = cms.bool(False) # compute transverse impact parameter wrt. beam
 import HLTrigger.HLTfilters.hltHighLevel_cfi
 zmmHLTFilter = HLTrigger.HLTfilters.hltHighLevel_cfi.hltHighLevel.clone()
 zmmHLTFilter.TriggerResultsTag = cms.InputTag("TriggerResults", "", "HLT")
-zmmHLTFilter.HLTPaths = [ "HLT_Mu9", "HLT_IsoMu9", "HLT_Mu11", "HLT_Mu15_v1" ]
+zmmHLTFilter.HLTPaths = [ "HLT_Mu9", "HLT_IsoMu9", "HLT_Mu11", "HLT_IsoMu13_v3", "HLT_IsoMu13_v4", "HLT_Mu15_v1" ]
 zmmHLTFilter.throw = cms.bool(False)
 
 # Vertex selection
