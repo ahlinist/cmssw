@@ -292,46 +292,6 @@ selectedDiTauPairs2ndTauElectronVetoCumulative = selectedDiTauPairs1stTauElectro
                 #numSamplings = cms.int32(1000)
                 numSamplings = cms.int32(-1)
             )
-        ),
-        polKine = cms.PSet(
-            likelihoodFunctions = cms.VPSet(
-                svFitLikelihoodDiTauPairKinematicsPolarized        
-            ),
-            estUncertainties = cms.PSet(
-                numSamplings = cms.int32(-1)
-            )
-        ),
-        polKine_MEt = cms.PSet(
-            likelihoodFunctions = cms.VPSet(
-                svFitLikelihoodDiTauPairKinematicsPolarized,
-                svFitLikelihoodDiTauPairMEt
-            ),
-            estUncertainties = cms.PSet(
-                numSamplings = cms.int32(-1)
-            )
-        ),
-        polKine_MEt_ptBalance = cms.PSet(
-            likelihoodFunctions = cms.VPSet(
-                svFitLikelihoodDiTauPairKinematicsPolarized,
-                svFitLikelihoodDiTauPairMEt,
-                svFitLikelihoodDiTauPairPtBalance
-            ),
-            estUncertainties = cms.PSet(
-                #numSamplings = cms.int32(1000)
-                numSamplings = cms.int32(-1)
-            )
-        ##),
-        ##polKine_MEt_ptBalance_Zprod = cms.PSet(
-        ##    likelihoodFunctions = cms.VPSet(
-        ##        svFitLikelihoodDiTauPairKinematicsPolarized,
-        ##        svFitLikelihoodDiTauPairMEt,
-        ##        svFitLikelihoodDiTauPairPtBalance,
-        ##        svFitLikelihoodDiTauPairZprod
-        ##    ),
-        ##    estUncertainties = cms.PSet(
-        ##        #numSamplings = cms.int32(1000)
-        ##        numSamplings = cms.int32(-1)
-        ##    )
         )
     )
 )
