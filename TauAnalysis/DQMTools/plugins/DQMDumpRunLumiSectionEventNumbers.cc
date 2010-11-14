@@ -141,8 +141,7 @@ void DQMDumpRunLumiSectionEventNumbers::endJob()
 	  lumiSection != run->second.end(); ++lumiSection ) {
       for ( eventNumberSet::const_iterator event = lumiSection->second.begin();
 	    event != lumiSection->second.end(); ++event ) {
-	runLumiSectionEventNumbersFile << std::setw(12) << std::setiosflags(std::ios::left) 
-				       << run->first << separator_ << lumiSection->first << separator_ << (*event) << std::endl;
+	runLumiSectionEventNumbersFile << run->first << separator_ << lumiSection->first << separator_ << (*event) << std::endl;
 	++numRunLumiSectionEventNumbersWritten;
       }
     }
