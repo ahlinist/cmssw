@@ -67,6 +67,13 @@ process.source = cms.Source("PoolSource",
 #--------------------------------------------------------------------------------
 
 #--------------------------------------------------------------------------------
+# import utility function for configuring PAT trigger matching
+from PhysicsTools.PatAlgos.tools.trigTools import switchOnTrigger
+switchOnTrigger(process, hltProcess = 'HLT', outputModule = '')
+process.patTrigger.addL1Algos = cms.bool(True)
+#--------------------------------------------------------------------------------
+
+#--------------------------------------------------------------------------------
 # import utility function for switching pat::Tau input
 # to different reco::Tau collection stored on AOD
 from PhysicsTools.PatAlgos.tools.tauTools import * 
@@ -112,58 +119,10 @@ addPFMet(process, correct = False)
 # uncomment to replace caloMET by pfMET in all di-tau objects
 process.load("TauAnalysis.CandidateTools.diTauPairProductionAllKinds_cff")
 replaceMETforDiTaus(process, cms.InputTag('patMETs'), cms.InputTag('patPFMETs'))
-process.muTauPairsBgEstQCDenriched.srcMET = cms.InputTag('patPFMETs')
-process.muTauPairsBgEstWplusJetsEnriched.srcMET = cms.InputTag('patPFMETs')
-process.muTauPairsBgEstTTplusJetsEnriched.srcMET = cms.InputTag('patPFMETs')
-process.muTauPairsBgEstZmumuJetMisIdEnriched.srcMET = cms.InputTag('patPFMETs')
-process.muTauPairsBgEstZmumuMuonMisIdEnriched.srcMET = cms.InputTag('patPFMETs')
 #--------------------------------------------------------------------------------
 
 #--------------------------------------------------------------------------------
-# import utility function for changing cut values
-from TauAnalysis.Configuration.tools.changeCut import changeCut
-
-# change muon Pt threshold to 15 GeV
-changeCut(process, "selectedPatMuonsPt10", "pt > 15.")
-changeCut(process, "muonsBgEstWplusJetsEnrichedPt", "pt > 15.")
-
-# disable cut on muon calo. + segment compatibility
-# (check that muon calo. compatibility is not affected by pile-up before re-enabling this cut)
-changeCut(process, "selectedPatMuonsPionVeto", -1000., attribute = "AntiPionCut")
-changeCut(process, "selectedPatMuonsPionVetoLooseIsolation", -1000., attribute = "AntiPionCut")
-
-# change upper limit on tranverse impact parameter of muon track to 2mm
-changeCut(process, "selectedPatMuonsTrkIP", 0.2, attribute = "IpMax")
-changeCut(process, "muonsBgEstZmumuEnrichedTrkIP", 0.2, attribute = "IpMax")
-
-# change eta acceptance for tau-jets to |eta| < 2.3
-changeCut(process, "selectedPatTausForMuTauEta21", "abs(eta) < 2.3")
-
-# disable cuts on tau id. discriminators for Track && ECAL isolation
-changeCut(process, "selectedPatTausTrkIso", "tauID('trackIsolation') > -1.")
-changeCut(process, "selectedPatTausEcalIso", "tauID('ecalIsolation') > -1.")
-
-# change lower limit on separation required between muon and tau-jet to dR > 0.5
-changeCut(process, "selectedMuTauPairsAntiOverlapVeto", "dR12 > 0.5")
-changeCut(process, "selectedMuTauPairsAntiOverlapVetoLooseMuonIsolation", "dR12 > 0.5")
-changeCut(process, "muTauPairsBgEstQCDenriched", "dR12 > 0.5")
-changeCut(process, "muTauPairsBgEstWplusJetsEnriched", "dR12 > 0.5")
-changeCut(process, "muTauPairsBgEstTTplusJetsEnriched", "dR12 > 0.5")
-changeCut(process, "muTauPairsBgEstZmumuJetMisIdEnriched", "dR12 > 0.5")
-changeCut(process, "muTauPairsBgEstZmumuMuonMisIdEnriched", "dR12 > 0.5")
-
-# change upper limit on muon + MET transverse mass to 40 GeV
-changeCut(process, "selectedMuTauPairsMt1MET", "mt1MET < 40.")
-changeCut(process, "selectedMuTauPairsMt1METlooseMuonIsolation", "mt1MET < 40.")
-
-# disable cut on Pzeta variable
-changeCut(process, "selectedMuTauPairsPzetaDiff", "(pZeta - 1.5*pZetaVis) > -1000.")
-changeCut(process, "selectedMuTauPairsPzetaDiffLooseMuonIsolation", "(pZeta - 1.5*pZetaVis) > -1000.")
-
-# disable b-tagging for now
-changeCut(process, "jetsBgEstTTplusJetsEnrichedEt40bTag", "bDiscriminator('trackCountingHighEffBJetTags') > -1000.")
-#--------------------------------------------------------------------------------
-
+# define analysis sequences for background enriched selections
 process.load("TauAnalysis.Configuration.analyzeZtoMuTau_cff")
 from TauAnalysis.Configuration.tools.analysisSequenceTools import addAnalyzer, addSysAnalyzer, removeAnalyzer
 from TauAnalysis.CandidateTools.sysErrDefinitions_cfi import *
@@ -227,6 +186,61 @@ process.load('TauAnalysis.BgEstimationTools.bgEstZtoMuTauWplusJetsEnrichedSelect
 process.load('TauAnalysis.BgEstimationTools.bgEstZtoMuTauTTplusJetsEnrichedSelection_cff')
 process.load('TauAnalysis.BgEstimationTools.bgEstZtoMuTauZmumuEnrichedSelection_cff')
 process.load('TauAnalysis.BgEstimationTools.bgEstZtoMuTauQCDenrichedSelection_cff')
+#--------------------------------------------------------------------------------
+
+#--------------------------------------------------------------------------------
+# switch to pfMET in all analysis sequences 
+if hasattr(process, "patPFMETs"):
+    process.muTauPairsBgEstQCDenriched.srcMET = cms.InputTag('patPFMETs')
+    process.muTauPairsBgEstWplusJetsEnriched.srcMET = cms.InputTag('patPFMETs')
+    process.muTauPairsBgEstTTplusJetsEnriched.srcMET = cms.InputTag('patPFMETs')
+    process.muTauPairsBgEstZmumuJetMisIdEnriched.srcMET = cms.InputTag('patPFMETs')
+    process.muTauPairsBgEstZmumuMuonMisIdEnriched.srcMET = cms.InputTag('patPFMETs')
+#--------------------------------------------------------------------------------
+
+#--------------------------------------------------------------------------------
+# import utility function for changing cut values
+from TauAnalysis.Configuration.tools.changeCut import changeCut
+
+# change muon Pt threshold to 15 GeV
+changeCut(process, "selectedPatMuonsPt10", "pt > 15.")
+changeCut(process, "muonsBgEstWplusJetsEnrichedPt", "pt > 15.")
+
+# disable cut on muon calo. + segment compatibility
+# (check that muon calo. compatibility is not affected by pile-up before re-enabling this cut)
+changeCut(process, "selectedPatMuonsPionVeto", -1000., attribute = "AntiPionCut")
+changeCut(process, "selectedPatMuonsPionVetoLooseIsolation", -1000., attribute = "AntiPionCut")
+
+# change upper limit on tranverse impact parameter of muon track to 2mm
+changeCut(process, "selectedPatMuonsTrkIP", 0.2, attribute = "IpMax")
+
+# change eta acceptance for tau-jets to |eta| < 2.3
+changeCut(process, "selectedPatTausForMuTauEta21", "abs(eta) < 2.3")
+
+# disable cuts on tau id. discriminators for Track && ECAL isolation
+changeCut(process, "selectedPatTausTrkIso", "tauID('trackIsolation') > -1.")
+changeCut(process, "selectedPatTausEcalIso", "tauID('ecalIsolation') > -1.")
+
+# change lower limit on separation required between muon and tau-jet to dR > 0.5
+changeCut(process, "selectedMuTauPairsAntiOverlapVeto", "dR12 > 0.5")
+changeCut(process, "selectedMuTauPairsAntiOverlapVetoLooseMuonIsolation", "dR12 > 0.5")
+changeCut(process, "muTauPairsBgEstQCDenriched", 0.5, attribute = "dRmin12")
+changeCut(process, "muTauPairsBgEstWplusJetsEnriched", 0.5, attribute = "dRmin12")
+changeCut(process, "muTauPairsBgEstTTplusJetsEnriched", 0.5, attribute = "dRmin12") 
+changeCut(process, "muTauPairsBgEstZmumuJetMisIdEnriched", 0.5, attribute = "dRmin12") 
+changeCut(process, "muTauPairsBgEstZmumuMuonMisIdEnriched", 0.5, attribute = "dRmin12") 
+
+# change upper limit on muon + MET transverse mass to 40 GeV
+changeCut(process, "selectedMuTauPairsMt1MET", "mt1MET < 40.")
+changeCut(process, "selectedMuTauPairsMt1METlooseMuonIsolation", "mt1MET < 40.")
+
+# disable cut on Pzeta variable
+changeCut(process, "selectedMuTauPairsPzetaDiff", "(pZeta - 1.5*pZetaVis) > -1000.")
+changeCut(process, "selectedMuTauPairsPzetaDiffLooseMuonIsolation", "(pZeta - 1.5*pZetaVis) > -1000.")
+
+# disable b-tagging for now
+changeCut(process, "jetsBgEstTTplusJetsEnrichedEt40bTag", "bDiscriminator('trackCountingHighEffBJetTags') > -1000.")
+#--------------------------------------------------------------------------------
 
 process.p = cms.Path(
    process.producePatTupleZtoMuTauSpecific
@@ -245,8 +259,8 @@ process.schedule = cms.Schedule(process.q, process.p)
 
 #--------------------------------------------------------------------------------
 # import utility function for applyting Z-recoil corrections to MET
-from TauAnalysis.Configuration.tools.mcToDataCorrectionTools import applyZrecoilCorrection_runZtoMuTau
-##applyZrecoilCorrection_runZtoMuTau(process)
+from TauAnalysis.Configuration.tools.mcToDataCorrectionTools import applyZrecoilCorrection_runZtoMuTau_bgEstTemplate
+##applyZrecoilCorrection_runZtoMuTau_bgEstTemplate(process)
 #--------------------------------------------------------------------------------
 
 #--------------------------------------------------------------------------------

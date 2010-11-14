@@ -99,6 +99,13 @@ process.source = cms.Source("PoolSource",
 #--------------------------------------------------------------------------------
 
 #--------------------------------------------------------------------------------
+# import utility function for configuring PAT trigger matching
+from PhysicsTools.PatAlgos.tools.trigTools import switchOnTrigger
+switchOnTrigger(process, hltProcess = 'HLT', outputModule = '')
+process.patTrigger.addL1Algos = cms.bool(True)
+#--------------------------------------------------------------------------------
+
+#--------------------------------------------------------------------------------
 # import utility function for switching pat::Tau input
 # to different reco::Tau collection stored on AOD
 from PhysicsTools.PatAlgos.tools.tauTools import *
