@@ -57,36 +57,14 @@ from TauAnalysis.Core.triggerHistManager_cfi import *
 triggerHistManagerForDiTau = copy.deepcopy(triggerHistManager)
 triggerHistManagerForDiTau.pluginName = cms.string('triggerHistManagerForDiTau')
 triggerHistManagerForDiTau.l1Bits = cms.vstring(
-    'L1_SingleEG10',
-    'L1_SingleEG12',
-    'L1_SingleEG15',
-    'L1_SingleEG20',
-    'L1_SingleEG25',
-    'L1_SingleTauJet20',
-    'L1_SingleTauJet30',
-    'L1_SingleTauJet40',
-    'L1_SingleTauJet60',  
-    'L1_DoubleTauJet20',
-    'L1_DoubleTauJet30',
-    'L1_DoubleTauJet35',
-    'L1_DoubleTauJet40',
-    'L1_TauJet30_ETM30',
-    'L1_TauJet30_ETM40',
-    'L1_ETM20',
-    'L1_ETM30',
-    'L1_ETM40',
-    'L1_ETM50',
-    'L1_ETM60'
+    'L1_DoubleTauJet14U',
+    'L1_DoubleJet30U'
 )
 triggerHistManagerForDiTau.hltPaths = cms.vstring(
-    ##'HLT_IsoTau_MET65_Trk20',
-    ##'HLT_IsoTau_MET35_Trk15_L1MET',
-    ##'HLT_DoubleIsoTau_Trk3',
-    'HLT_MET25',
-    'HLT_MET35',
-    'HLT_MET50',
-    'HLT_MET65',
-    'HLT_MET75'
+    'HLT_DoubleIsoTau15_OneLeg_Trk5',
+    'HLT_DoubleIsoTau15_Trk5',
+    'HLT_DoubleIsoTau15_Trk5_v3',
+    'HLT_DoubleIsoTau15_Trk5_v4'
 )
 
 #--------------------------------------------------------------------------------
