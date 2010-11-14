@@ -46,18 +46,15 @@ from TauAnalysis.Configuration.recoSampleDefinitionsZtoMuTau_10TeV_cfi import *
 #process.SimpleMemoryCheck = cms.Service("SimpleMemoryCheck",
 #    ignoreTotal = cms.untracked.int32(1) # default is one
 #)
-
-process.printGenParticleList = cms.EDAnalyzer("ParticleListDrawer",
-    src = cms.InputTag("genParticles"),
-    maxEventsToPrint = cms.untracked.int32(100)
-)
-
-# print event content 
-process.printEventContent = cms.EDAnalyzer("EventContentAnalyzer")
-
+#
+#process.printGenParticleList = cms.EDAnalyzer("ParticleListDrawer",
+#    src = cms.InputTag("genParticles"),
+#    maxEventsToPrint = cms.untracked.int32(100)
+#)
+#
 # print debug information whenever plugins get loaded dynamically from libraries
 # (for debugging problems with plugin related dynamic library loading)
-#process.add_( cms.Service("PrintLoadingPlugins") )
+#process.add_(cms.Service("PrintLoadingPlugins"))
 #--------------------------------------------------------------------------------
 
 process.DQMStore = cms.Service("DQMStore")
@@ -182,6 +179,14 @@ changeCut(process, "selectedMuTauPairsPzetaDiff", "(pZeta - 1.5*pZetaVis) > -100
 changeCut(process, "selectedMuTauPairsPzetaDiffLooseMuonIsolation", "(pZeta - 1.5*pZetaVis) > -1000.")
 #--------------------------------------------------------------------------------
 
+# before starting to process 1st event, print event content
+process.printEventContent = cms.EDAnalyzer("EventContentAnalyzer")
+process.filterFirstEvent = cms.EDFilter("EventCountFilter",
+    numEvents = cms.int32(1)
+)                                        
+
+process.o = cms.Path(process.filterFirstEvent + process.printEventContent)
+
 process.p = cms.Path(
    process.producePatTupleZtoMuTauSpecific
 # + process.printGenParticleList # uncomment to enable print-out of generator level particles
@@ -193,7 +198,7 @@ process.p = cms.Path(
 
 process.q = cms.Path(process.dataQualityFilters)
 
-process.schedule = cms.Schedule(process.q, process.p)
+process.schedule = cms.Schedule(process.o, process.q, process.p)
 
 #--------------------------------------------------------------------------------
 # import utility function for switching HLT InputTags when processing
