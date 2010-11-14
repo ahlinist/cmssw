@@ -117,6 +117,13 @@ def applyZrecoilCorrection_runZtoMuTau(process):
     # restore InputTag of ZllRecoilCorrection modules
     restoreZllRecoilCorrectionInputTags_ZtoMuTau(process)
 
+def applyZrecoilCorrection_runZtoMuTau_bgEstTemplate(process):
+
+    #print("<applyZrecoilCorrection_runZtoMuTau_bgEstTemplate>:")
+    #print(" --> applying Z-recoil correction to MET !!")
+
+    applyZrecoilCorrection_runZtoMuTau(process)
+
 def applyZrecoilCorrection_runAHtoMuTau(process):
 
     #print("<applyZrecoilCorrection_runAHtoMuTau>:")
