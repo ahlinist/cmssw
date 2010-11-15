@@ -10,20 +10,21 @@ def main(options,args):
 
     h3Max = float(options.h3Max)
     h4Max = float(options.h4Max)
+    
 
-    dataChain = ROOT.TChain(str(options.treeName))
+    dataChain = ROOT.TChain(options.treeName)
     for dFile in str(options.inputData).split(','):
         print 'Adding: ',dFile
         dataChain.Add(dFile)
 
-    mcChain = ROOT.TChain(str(options.treeName))
+    mcChain = ROOT.TChain(options.treeName)
     for mcFile in str(options.inputMC).split(','):
         print 'Adding: ', mcFile
         mcChain.Add(mcFile)
 
-    output = ROOT.TFile.Open(str(options.workspaceName)+'.root','RECREATE')
+    output = ROOT.TFile.Open(options.workspaceName+'.root','RECREATE')
     
-    ws = ROOT.RooWorkspace(str(options.workspaceName))    
+    ws = ROOT.RooWorkspace(options.workspaceName)    
 
     #ws.Print("v")
     
@@ -73,12 +74,8 @@ def main(options,args):
     profMinuit.setPrintLevel(1)
 
     profMinuit.migrad()
-    ws.var('err_x_gl').setConstant(True)
-    ws.var('err_x_gs').setConstant(True)
-    ws.var('err_x_gb').setConstant(True)    
-    profMinuit.minos()
-
-    
+    profMinuit.minos(ROOT.RooArgSet(ws.var(options.couplingType+'_h3'),
+                                    ws.var(options.couplingType+'_h4')))
 
     thePlot = profMinuit.contour(ws.var(options.couplingType+'_h3'),
                                  ws.var(options.couplingType+'_h4'),
@@ -124,7 +121,7 @@ def setupWorkspace(dataTree,mcTree,ws,output,options):
     nEtBins = int(options.nEtBins)
     phoEtMin = float(options.phoEtMin)
     phoEtMax = float(options.phoEtMax)
-    
+        
     if not isinstance(ws,ROOT.RooWorkspace):
         print "You didn't pass a RooWorkspace!"
         exit(1)
@@ -133,13 +130,18 @@ def setupWorkspace(dataTree,mcTree,ws,output,options):
     pho_et.setBins(int(options.nEtBins))
     h3 = ROOT.RooRealVar(options.couplingType+'_h3','h3_{'+options.couplingType+'}',-float(options.h3Max),float(options.h3Max)) #parameter
     h4 = ROOT.RooRealVar(options.couplingType+'_h4','h4_{'+options.couplingType+'}',-float(options.h4Max),float(options.h4Max)) #parameter
-    nObserved = ROOT.RooRealVar('nObserved','Number of Events Observed in Data',0,ROOT.RooNumber.infinity())
     #acc = ROOT.RooRealVar('acceptance','The acceptance in this pT bin',0)
     #acc_err = ROOT.RooRealVar('acceptance_error','The error on the accpetance in the pT bin',0) 
 
-    evSelErr = ROOT.RooRealVar('eventSelectionError','Fractional Error on the MC event selection',sqrt(.02*.02 + .02*.02 + .15*.15)) #acceptance error + XS err + 15%
-    bkgErr = ROOT.RooRealVar('backgroundError','Fractional Error on the expected number of background events',.1) # fix background error to be 10% for now
-    lumiErr = ROOT.RooRealVar('luminosityError','Fractional Error on the luminosity',.1) #fix lumi error to 10%    
+    evSelErr = ROOT.RooRealVar('eventSelectionError',
+                               'Fractional Error on the MC event selection',
+                               sqrt(.02*.02 + .02*.02 + .15*.15)) #acceptance error + XS err + 15%
+    bkgErr = ROOT.RooRealVar('backgroundError',
+                             'Fractional Error on the expected number of background events',
+                             .1) # fix background error to be 10% for now
+    lumiErr = ROOT.RooRealVar('luminosityError',
+                              'Fractional Error on the luminosity',
+                              .1) #fix lumi error to 10%    
     
     #start hack to always make last bin include overflow
     aTGCEtHist = ROOT.TH1F('aTGCEtHist',
@@ -147,7 +149,7 @@ def setupWorkspace(dataTree,mcTree,ws,output,options):
                            nEtBins,
                            phoEtMin,phoEtMax) # because including overflow bins in roofit sucks, alot...
     
-    dataTree.Draw('photonEt >> aTGCEtHist','','goff')
+    dataTree.Draw(options.phoEtVar+' >> aTGCEtHist','','goff')
 
     lastBin = aTGCEtHist.GetBinContent(nEtBins) + aTGCEtHist.GetBinContent(nEtBins+1)
     lastBinError = sqrt(aTGCEtHist.GetBinError(nEtBins)*aTGCEtHist.GetBinError(nEtBins) +
@@ -162,7 +164,8 @@ def setupWorkspace(dataTree,mcTree,ws,output,options):
     aTGCEtHist.Write()
     #end hack to make last bin include overflow
 
-    aTGCData = ROOT.RooDataHist('aTGCData','Photon E_{T} Spectrum from Data',
+    aTGCData = ROOT.RooDataHist('aTGCData',
+                                'Photon E_{T} Spectrum from Data',
                                 ROOT.RooArgList(pho_et),aTGCEtHist)
 
     #Ok, this does look a little insane but what we want as our actual dataset
@@ -213,12 +216,24 @@ def setupWorkspace(dataTree,mcTree,ws,output,options):
     #set up the signal expectation description
     #this needs a little care, they *are* nuisance parameters but I don't yet have a way of saving this info
     #since I use RooHistFunc.... hmmm
-    polyC = ROOT.RooHistFunc('polyC','Constant Term for aTGC polynomial description',ROOT.RooArgSet(pho_et),ws.data('c_bin_pt'))
-    polyP_0 = ROOT.RooHistFunc('polyP_0','Linear h_3 Term for aTGC polynomial description',ROOT.RooArgSet(pho_et),ws.data('p0_bin_pt'))
-    polyP_1 = ROOT.RooHistFunc('polyP_1','Linear h_4 Term for aTGC polynomial description',ROOT.RooArgSet(pho_et),ws.data('p1_bin_pt'))
-    polyP_2 = ROOT.RooHistFunc('polyP_2','h_3*h_4 Term for aTGC polynomial description',ROOT.RooArgSet(pho_et),ws.data('p2_bin_pt'))
-    polyP_3 = ROOT.RooHistFunc('polyP_3','Quadratic h_3 Term for aTGC polynomial description',ROOT.RooArgSet(pho_et),ws.data('p3_bin_pt'))
-    polyP_4 = ROOT.RooHistFunc('polyP_4','Quadratic h_4 Term for aTGC polynomial description',ROOT.RooArgSet(pho_et),ws.data('p4_bin_pt'))
+    polyC = ROOT.RooHistFunc('polyC',
+                             'Constant Term for aTGC polynomial description',
+                             ROOT.RooArgSet(pho_et),ws.data('c_bin_pt'))
+    polyP_0 = ROOT.RooHistFunc('polyP_0',
+                               'Linear h_3 Term for aTGC polynomial description',
+                               ROOT.RooArgSet(pho_et),ws.data('p0_bin_pt'))
+    polyP_1 = ROOT.RooHistFunc('polyP_1',
+                               'Linear h_4 Term for aTGC polynomial description',
+                               ROOT.RooArgSet(pho_et),ws.data('p1_bin_pt'))
+    polyP_2 = ROOT.RooHistFunc('polyP_2',
+                               'h_3*h_4 Term for aTGC polynomial description',
+                               ROOT.RooArgSet(pho_et),ws.data('p2_bin_pt'))
+    polyP_3 = ROOT.RooHistFunc('polyP_3',
+                               'Quadratic h_3 Term for aTGC polynomial description',
+                               ROOT.RooArgSet(pho_et),ws.data('p3_bin_pt'))
+    polyP_4 = ROOT.RooHistFunc('polyP_4',
+                               'Quadratic h_4 Term for aTGC polynomial description',
+                               ROOT.RooArgSet(pho_et),ws.data('p4_bin_pt'))
     nExpectedSignal = ROOT.RooFormulaVar('nExpectedSignal','The expected number of signal events in (h3,h4) in bins of pT',
                                          '(@3(@0) + @4(@0)*@1 + @5(@0)*@2 + @6(@0)*@1*@2 + @7(@0)*@1*@1 + @8(@0)*@2*@2)',
                                          ROOT.RooArgList(pho_et,h3,h4,polyC,polyP_0,polyP_1,polyP_2,polyP_3,polyP_4))
@@ -234,11 +249,10 @@ def setupWorkspace(dataTree,mcTree,ws,output,options):
 
     #build nExpectedBackground RooHistFunc
     bkg = loadBackgroundHist(ws,output,options)
-
     getattr(ws,'import')(bkg)
     
     nExpectedBackground = ROOT.RooHistFunc('nExpectedBackground','Number of expected background in bins of pT',
-                                           ROOT.RooArgSet(ws.var(options.phoEtVar)),ws.data('bkgShape'))
+                                           ROOT.RooArgSet(pho_et),ws.data('bkgShape'))
     getattr(ws,'import')(nExpectedBackground)
 
     ws.function('nExpectedBackground').Print()
@@ -253,7 +267,7 @@ def fitATGCExpectedYields(ws,mcChain,options):
     phoEtMax = float(options.phoEtMax)
     
     #create the variables for the 3x3 grid, doesn't go in the workspace
-    pho_et_mc = ROOT.RooRealVar(ws.var(options.phoEtVar))
+    pho_et_mc = ROOT.RooRealVar(ws.var(options.phoEtVar),options.phoEtVar)
     #h3_3x3 and h4_3x3 do not go in the workspace
     #figure out how to determine binning on the fly.... can probably do by finding max h3,h4 in tree + info that we have 9 bins
     h3_3x3 = ROOT.RooRealVar('h3_3x3','temp h3 to extrapolate grid',-.18,.18) #hardcoded to to have current aTGC samples in bin centers :-)
@@ -361,7 +375,7 @@ def loadBackgroundHist(ws,output,options):
     if isinstance(bkgFile.Get(options.treeName),ROOT.TH1F):
         print 'Background Data Given as TH1F!'
         bkgHist = bkgFile.Get(options.treeName)
-        
+                
         if bkgHist.GetNBins() != nEtBins:
             print 'Number of bins in background file is not correct!'
             exit(1)
@@ -371,7 +385,8 @@ def loadBackgroundHist(ws,output,options):
         getattr(ws,'import')(bkgHist)
 
         bkgData = ROOT.RooDataHist('bkgShape','The shape of the background in photon eT',
-                                   ROOT.RooArgList(ws.var(options.phoEtVar),bkgHist))
+                                   ROOT.RooArgList(ws.var(options.phoEtVar)),
+                                   bkgHist)
                                    
         
     elif isinstance(bkgFile.Get(options.treeName),ROOT.TTree):
@@ -399,7 +414,8 @@ def loadBackgroundHist(ws,output,options):
         getattr(ws,'import')(bkgHist)
 
         bkgData = ROOT.RooDataHist('bkgShape','The shape of the background in photon eT',
-                                   ROOT.RooArgList(ws.var(options.phoEtVar)),bkgHist)
+                                   ROOT.RooArgList(ws.var(options.phoEtVar)),
+                                   bkgHist)
 
         bkgData.Print()
         
@@ -418,9 +434,15 @@ def makeATGCExpectationPdf(ws,options):
         exit(1)
 
     #nuisance parameters
-    x_gs = ROOT.RooRealVar('err_x_gs','Range for Selection Error',1,1-4*ws.var('eventSelectionError').getVal(),1+4*ws.var('eventSelectionError').getVal())
-    x_gb = ROOT.RooRealVar('err_x_gb','Range for Background Error',1,1-4*ws.var('backgroundError').getVal(),1+4*ws.var('backgroundError').getVal())
-    x_gl = ROOT.RooRealVar('err_x_gl','Range for Lumi Error',1,1-4*ws.var('luminosityError').getVal(),1+4*ws.var('luminosityError').getVal())
+    x_gs = ROOT.RooRealVar('err_x_gs','Range for Selection Error',1,
+                           1-4*ws.var('eventSelectionError').getVal(),
+                           1+4*ws.var('eventSelectionError').getVal())
+    x_gb = ROOT.RooRealVar('err_x_gb','Range for Background Error',1,
+                           1-4*ws.var('backgroundError').getVal(),
+                           1+4*ws.var('backgroundError').getVal())
+    x_gl = ROOT.RooRealVar('err_x_gl','Range for Lumi Error',1,
+                           1-4*ws.var('luminosityError').getVal(),
+                           1+4*ws.var('luminosityError').getVal())
     
     getattr(ws,'import')(x_gs)
     getattr(ws,'import')(x_gb)
@@ -438,7 +460,7 @@ def makeATGCExpectationPdf(ws,options):
     #now we create the core poisson pdf with errors left as floating
     ws.factory("RooPoisson::corePoisson(nObserved,expected)")    
     #now we create the top level pdf, which will be evaluated at each pT bin to create the likelihood.
-    ws.factory("PROD::TopLevelPdf(corePoisson)")  #
+    ws.factory('PROD::TopLevelPdf(corePoisson)')  #
     
 
 def makePlots(LLplot,options):
