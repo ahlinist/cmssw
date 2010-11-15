@@ -27,7 +27,7 @@ options = copy.deepcopy(defaultOptions)
 ## Define default options specific to this configuration file
 #options.jobType = "testSummer10"
 #options.jobType = "testPOWHEG"
-options.jobType = "testRealData"
+#options.jobType = "testRealData"
 #options.jobType = "testJetRealData"
 #options.jobType = "testMC"
 
