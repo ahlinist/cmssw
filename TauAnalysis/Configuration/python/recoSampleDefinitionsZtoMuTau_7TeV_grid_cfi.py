@@ -199,7 +199,7 @@ RECO_SAMPLES = {
         'legendEntry' : plotter.process_TTplusJets.config_dqmHistPlotter.legendEntry.value(),
         'type' : plotter.process_TTplusJets.config_dqmHistPlotter.type.value(),
         'drawOption' : styles.drawOption_TTplusJets,
-        'hlt' : cms.InputTag("TriggerResults", "", "REDIGI38X")
+        'hlt' : cms.InputTag("TriggerResults", "", "HLT")
     }
 }
 
