@@ -301,16 +301,16 @@ diTauEventDump = cms.PSet(
     l1GtReadoutRecordSource = cms.InputTag(''),
     l1GtObjectMapRecordSource = cms.InputTag(''),
     l1BitsToPrint = cms.vstring(
-        'L1_SingleTauJet40', 'L1_SingleTauJet60',  
-        'L1_DoubleTauJet20', 'L1_DoubleTauJet30', 'L1_DoubleTauJet40',
-        'L1_TauJet30_ETM30', 'L1_TauJet30_ETM40'
+        'L1_DoubleTauJet14U',
+        'L1_DoubleJet30U'
     ),
     
     hltResultsSource = cms.InputTag('TriggerResults::HLT'),
     hltPathsToPrint = cms.vstring(
-        ##'HLT_IsoTau_MET65_Trk20',
-        ##'HLT_IsoTau_MET35_Trk15_L1MET',
-        ##'HLT_DoubleIsoTau_Trk3'
+        'HLT_DoubleIsoTau15_OneLeg_Trk5',
+        'HLT_DoubleIsoTau15_Trk5',
+        'HLT_DoubleIsoTau15_Trk5_v3',
+        'HLT_DoubleIsoTau15_Trk5_v4'
     ),
 
     doGenInfo = cms.bool(True),
