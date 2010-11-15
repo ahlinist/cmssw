@@ -442,6 +442,23 @@ photonTriggerMatchHLTDoublePhoton17L1R = cms.EDProducer( "PATTriggerMatcherDRLes
                                                          resolveByMatchQuality = cms.bool( True )
                                                          )
 
+# matches to HLT_Photon10_L1R
+#photonTriggerMatchHLTPhoton10L1R   = cms.EDProducer( "PATTriggerMatcherDRDPtLessByR",
+photonTriggerMatchHLTPhoton10L1R   = cms.EDProducer( "PATTriggerMatcherDRLessByR",
+                                                           src     = cms.InputTag( "cleanPatPhotons" ),
+                                                           matched = cms.InputTag( "patTrigger" ),
+                                                           andOr          = cms.bool( False ),
+                                                           filterIdsEnum  = cms.vstring( '*' ),
+                                                           filterIds      = cms.vint32( 0 ),
+                                                           filterLabels   = cms.vstring( '*' ),
+                                                           pathNames      = cms.vstring( 'HLT_Photon10_L1R' ),
+                                                           collectionTags = cms.vstring( '*' ),
+                                                           maxDPtRel = cms.double( 0.5 ),
+                                                           maxDeltaR = cms.double( 0.3 ),
+                                                           resolveAmbiguities    = cms.bool( True ),
+                                                           resolveByMatchQuality = cms.bool( True )
+                                                           )
+
 # matches to HLT_Jet15U
 #jetTriggerMatchHLTJet15U   = cms.EDProducer( "PATTriggerMatcherDRDPtLessByR",
 jetTriggerMatchHLTJet15U   = cms.EDProducer( "PATTriggerMatcherDRLessByR",
@@ -703,7 +720,8 @@ vgTriggerMatcherPhoton = cms.Sequence(
 	photonTriggerMatchHLTPhoton30CleanedL1R +
 	photonTriggerMatchHLTPhoton50CleanedL1Rv1 +
 	photonTriggerMatchHLTPhoton70CleanedL1Rv1 +
-        photonTriggerMatchHLTDoublePhoton17L1R
+        photonTriggerMatchHLTDoublePhoton17L1R +
+	photonTriggerMatchHLTPhoton10L1R
 	)
 
 vgTriggerMatcherMuon = cms.Sequence(
