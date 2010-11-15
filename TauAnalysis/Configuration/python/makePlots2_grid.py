@@ -209,7 +209,7 @@ def makePlots(process, channel = None, samples = None, inputFilePath = None, job
             analyzer = analyzer_drawJobConfigurator_indOutputFileName_set[0]
 
             drawJobTemplate_log = copy.deepcopy(drawJobTemplate)
-            drawJobTemplate_log.yAxis = cms.string('numEntries_linear')
+            drawJobTemplate_log.yAxis = cms.string('numEntries_log')
             drawJobConfigurator_log = copy.deepcopy(analyzer_drawJobConfigurator_indOutputFileName_set[1])
             drawJobConfigurator_log.setTemplate(drawJobTemplate_log)
 
