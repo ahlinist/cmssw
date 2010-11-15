@@ -74,8 +74,7 @@ def main(options,args):
     profMinuit.setPrintLevel(1)
 
     profMinuit.migrad()
-    profMinuit.minos(ROOT.RooArgSet(ws.var(options.couplingType+'_h3'),
-                                    ws.var(options.couplingType+'_h4')))
+    profMinuit.minos(ws.set('POI'))
 
     thePlot = profMinuit.contour(ws.var(options.couplingType+'_h3'),
                                  ws.var(options.couplingType+'_h4'),
