@@ -7,7 +7,7 @@ from TauAnalysis.DQMTools.tools.drawJobConfigurator import *
 # define template for all kinds of plots
 # (specific to MSSM Higgs A/H --> mu + tau-jet analysis)
 plots_AHtoMuTau = cms.PSet(
-    plots = cms.PSet(  
+    plots = cms.PSet(
         dqmMonitorElements = cms.vstring(''),
         processes = cms.vstring(
             'Zmumu',
@@ -24,7 +24,7 @@ plots_AHtoMuTau = cms.PSet(
     #yAxis = cms.string('numEntries_linear'),
     yAxis = cms.string('numEntries_log'),
     legend = cms.string('regular'),
-    labels = cms.vstring('mcNormScale'),                   
+    labels = cms.vstring('mcNormScale'),
     drawOptionSet = cms.string('default'),
     stack = cms.vstring(
         'Zmumu',
@@ -80,7 +80,7 @@ drawJobConfigurator_AHtoMuTau.add(
         xAxis = '#PAR#',
         name = "cutFlowControlPlots_muon_afterPrimaryEventVertexPosition"
     )
-)    
+)
 
 drawJobConfigurator_AHtoMuTau.add(
     afterCut = evtSelGlobalMuon,
@@ -104,7 +104,7 @@ drawJobConfigurator_AHtoMuTau.add(
         xAxis = '#PAR#',
         name = "cutFlowControlPlots_muon_afterMuonEta"
     )
-)    
+)
 
 drawJobConfigurator_AHtoMuTau.add(
     afterCut = evtSelMuonPt,
@@ -549,7 +549,7 @@ drawJobConfigurator_AHtoMuTau_wBtag.add(
             name = "cutFlowControlPlots_numBtagJets_afterJetPtAndEta"
         )
     ]
-    
+
 )
 
 #--------------------------------------------------------------------------------
@@ -667,12 +667,12 @@ finalSamplePlots = [
         xAxis = 'Mass',
         name = "finalSamplePlots_mVisibleZllCombinedHypothesis"
     ),
-    drawJobConfigEntry(
-        meName = 'DiMuZmumuHypothesisByMassQuantities/VisMass',
-        title = "M(Muon + Muon, Z #rightarrow #mu^{+} #mu^{-} Mass hypothesis) (final Event sample)",
-        xAxis = 'Mass',
-        name = "finalSamplePlots_mZmumuHypothesis"
-    ),
+    #drawJobConfigEntry(
+        #meName = 'DiMuZmumuHypothesisByMassQuantities/VisMass',
+        #title = "M(Muon + Muon, Z #rightarrow #mu^{+} #mu^{-} Mass hypothesis) (final Event sample)",
+        #xAxis = 'Mass',
+        #name = "finalSamplePlots_mZmumuHypothesis"
+    #),
     drawJobConfigEntry(
         meName = 'DiTauCandidateQuantities/CDFmethodMass',
         title = "M(Muon + Tau + MET), CDF method (final Event sample)",
