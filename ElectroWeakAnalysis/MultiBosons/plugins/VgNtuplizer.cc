@@ -173,6 +173,7 @@ VgNtuplizer::VgNtuplizer(const edm::ParameterSet& ps) : verbosity_(0), helper_(p
   tree_->Branch("eledPhiAtVtx", eledPhiAtVtx_, "eledPhiAtVtx[nEle]/F");
   tree_->Branch("eleSigmaEtaEta", eleSigmaEtaEta_, "eleSigmaEtaEta[nEle]/F");
   tree_->Branch("eleSigmaIEtaIEta", eleSigmaIEtaIEta_, "eleSigmaIEtaIEta[nEle]/F");
+  tree_->Branch("eleE2overE9", eleE2overE9_, "eleE2overE9[nEle]/F");
   tree_->Branch("eleE3x3", eleE3x3_, "eleE3x3[nEle]/F");
   tree_->Branch("eleSeedTime", eleSeedTime_, "eleSeedTime[nEle]/F");
   // If Flag == 2, it means that rechit is out of time
@@ -180,6 +181,7 @@ VgNtuplizer::VgNtuplizer(const edm::ParameterSet& ps) : verbosity_(0), helper_(p
   tree_->Branch("eleRecoFlag", eleRecoFlag_, "eleRecoFlag[nEle]/I");
   // If Severity == 3, it is spike. If Severity == 4, it is bad, not sutiable to be used in reconstruction.
   tree_->Branch("eleSeverity", eleSeverity_, "eleSeverity[nEle]/I");
+  
   if (doGenParticles_) {
     tree_->Branch("eleGenIndex", eleGenIndex_, "eleGenIndex[nEle]/I");
     tree_->Branch("eleGenGMomPID", eleGenGMomPID_, "eleGenGMomPID[nEle]/I");
@@ -216,12 +218,13 @@ VgNtuplizer::VgNtuplizer(const edm::ParameterSet& ps) : verbosity_(0), helper_(p
   tree_->Branch("phoHoverE", phoHoverE_, "phoHoverE[nPho]/F");
   tree_->Branch("phoSigmaEtaEta", phoSigmaEtaEta_, "phoSigmaEtaEta[nPho]/F");
   tree_->Branch("phoSigmaIEtaIEta", phoSigmaIEtaIEta_, "phoSigmaIEtaIEta[nPho]/F");
+  tree_->Branch("phoE2overE9", phoE2overE9_, "phoE2overE9[nPho]/F");
   tree_->Branch("phoE3x3", phoE3x3_, "phoE3x3[nPho]/F");
   tree_->Branch("phoSeedTime", phoSeedTime_, "phoSeedTime[nPho]/F");
   // If Flag == 2, it means that rechit is out of time
   tree_->Branch("phoRecoFlag", phoRecoFlag_, "phoRecoFlag[nPho]/I");
   // If Severity == 3, it is spike. If Severity == 4, it is bad, not sutiable to be used in reconstruction.
-  tree_->Branch("phoSeverity", phoSeverity_, "phoSeverity[nPho]/I");
+  tree_->Branch("phoSeverity", phoSeverity_, "phoSeverity[nPho]/I");  
   tree_->Branch("phoPos", phoPos_, "phoPos[nPho]/I");
   tree_->Branch("phoRoundness", phoRoundness_, "phoRoundness[nPho]/F");
   tree_->Branch("phoAngle", phoAngle_, "phoAngle[nPho]/F");
@@ -406,33 +409,58 @@ void VgNtuplizer::produce(edm::Event & e, const edm::EventSetup & es) {
 
   // Indicate the index of interesting HLT bits. Even CMS has different HLT table for different runs, we can still use the correct HLT bit
   std::map<unsigned, std::string> HLTIndexPath;
-  HLTIndexPath[ 0] = "HLT_Jet15U";
-  HLTIndexPath[ 1] = "HLT_Jet30U";
-  HLTIndexPath[ 2] = "HLT_Jet50U";
-  HLTIndexPath[ 3] = "HLT_Jet70U";
-  HLTIndexPath[ 4] = "HLT_Jet100U";
-  HLTIndexPath[ 5] = "HLT_Mu9";
-  HLTIndexPath[ 6] = "HLT_DoubleMu3";
-  HLTIndexPath[ 7] = "HLT_Ele15_LW_L1R";
-  HLTIndexPath[ 8] = "HLT_Ele20_LW_L1R";
-  HLTIndexPath[ 9] = "HLT_Ele15_SW_L1R";
-  HLTIndexPath[10] = "HLT_Ele20_SW_L1R";
-  HLTIndexPath[11] = "HLT_Ele25_SW_L1R";
-  HLTIndexPath[12] = "HLT_Ele30_SW_L1R";
-  HLTIndexPath[13] = "HLT_Ele10_SW_EleIdIsol_L1R";
-  HLTIndexPath[14] = "HLT_Ele15_SW_EleId_L1R";
-  HLTIndexPath[15] = "HLT_Ele20_SW_EleId_L1R";
-  HLTIndexPath[16] = "HLT_Ele15_SW_CaloEleId_L1R";
-  HLTIndexPath[17] = "HLT_Ele20_SW_CaloEleId_L1R";
-  HLTIndexPath[18] = "HLT_Ele25_SW_CaloEleId_L1R";
-  HLTIndexPath[19] = "HLT_DoubleEle5_SW_L1R";
-  HLTIndexPath[20] = "HLT_DoubleEle10_SW_L1R";
-  HLTIndexPath[21] = "HLT_Photon15_Cleaned_L1R";
-  HLTIndexPath[22] = "HLT_Photon20_Cleaned_L1R";
-  HLTIndexPath[23] = "HLT_Photon25_Cleaned_L1R";
-  HLTIndexPath[24] = "HLT_Photon30_Cleaned_L1R";
+  HLTIndexPath[0] = "HLT_Jet15U";
+  HLTIndexPath[1] = "HLT_Jet30U";
+  HLTIndexPath[2] = "HLT_Jet50U";
+  HLTIndexPath[3] = "HLT_Jet70U";
+  HLTIndexPath[4] = "HLT_Jet70U_v2";
+  HLTIndexPath[5] = "HLT_Jet100U";
+  HLTIndexPath[6] = "HLT_Jet100U_v2";
+  HLTIndexPath[7] = "HLT_Jet140U_v1";
+  HLTIndexPath[8] = "HLT_Mu9";
+  HLTIndexPath[9] = "HLT_Mu11";
+  HLTIndexPath[10] = "HLT_Mu13";
+  HLTIndexPath[11] = "HLT_Mu13_v1";
+  HLTIndexPath[12] = "HLT_Mu15";
+  HLTIndexPath[13] = "HLT_Mu15_v1";
+  HLTIndexPath[14] = "HLT_DoubleMu3";
+  HLTIndexPath[15] = "HLT_DoubleMu3_v2";
+  HLTIndexPath[16] = "HLT_DoubleMu5_v1";
+  HLTIndexPath[17] = "HLT_Ele15_LW_L1R";
+  HLTIndexPath[18] = "HLT_Ele20_LW_L1R"; 
+  HLTIndexPath[19] = "HLT_Ele15_SW_L1R";
+  HLTIndexPath[20] = "HLT_Ele20_SW_L1R";
+  HLTIndexPath[21] = "HLT_Ele15_SW_EleId_L1R";
+  HLTIndexPath[22] = "HLT_Ele20_SW_EleId_L1R";
+  HLTIndexPath[23] = "HLT_Ele15_SW_CaloEleId_L1R";
+  HLTIndexPath[24] = "HLT_Ele20_SW_CaloEleId_L1R"; 
+  HLTIndexPath[25] = "HLT_Ele17_SW_CaloEleId_L1R"; 
+  HLTIndexPath[26] = "HLT_Ele17_SW_TightEleId_L1R";
+  HLTIndexPath[27] = "HLT_Ele17_SW_TighterEleIdIsol_L1R";
+  HLTIndexPath[28] = "HLT_Ele17_SW_TighterEleIdIsol_L1R_v2";
+  HLTIndexPath[29] = "HLT_Ele22_SW_TighterEleId_L1R_v2";
+  HLTIndexPath[30] = "HLT_DoubleEle10_SW_L1R";
+  HLTIndexPath[31] = "HLT_DoubleEle17_SW_L1R_v1";
+  HLTIndexPath[32] = "HLT_Photon10_Cleaned_L1R";
+  HLTIndexPath[33] = "HLT_Photon15_Cleaned_L1R";
+  HLTIndexPath[34] = "HLT_Photon20_Cleaned_L1R";
+  HLTIndexPath[35] = "HLT_Photon30_Cleaned_L1R";
+  HLTIndexPath[36] = "HLT_Photon50_Cleaned_L1R_v1";
+  HLTIndexPath[37] = "HLT_Photon70_Cleaned_L1R_v1";
+  HLTIndexPath[38] = "HLT_Jet15U_v3";
+  HLTIndexPath[39] = "HLT_Jet30U_v3";
+  HLTIndexPath[40] = "HLT_Jet50U_v3";
+  HLTIndexPath[41] = "HLT_Jet70U_v3";
+  HLTIndexPath[42] = "HLT_Jet100U_v3";
+  HLTIndexPath[43] = "HLT_Jet140U_v3";
+  HLTIndexPath[44] = "HLT_Ele17_SW_TightCaloEleId_Ele8HE_L1R_v1";
+  HLTIndexPath[45] = "HLT_Ele17_SW_TightCaloEleId_Ele8HE_L1R_v2";
+  HLTIndexPath[46] = "HLT_Ele17_SW_TighterEleIdIsol_L1R_v3";
+  HLTIndexPath[47] = "HLT_DoubleEle15_SW_L1R_v1";
+  HLTIndexPath[48] = "HLT_DoublePhoton17_L1R";
+  HLTIndexPath[49] = "HLT_Photon10_L1R";
 
-  for (int a=0; a<25; a++)
+  for (int a=0; a<50; a++)
     HLTIndex_[a] = -1;
 
   nHLT_ = 0;
@@ -677,11 +705,21 @@ fabs(ip->pdgId())<=14) || ip->pdgId()==22))) {
       if (iEle->pt() > leadingElePtCut_) nElePassCut++;
 
       // cout << "Get Electron Trigger" << std::endl;
-      eleTrg_[nEle_][0] = (iEle->triggerObjectMatchesByPath("HLT_Ele15_LW_L1R").size()) ? 1 : -99;
-      eleTrg_[nEle_][1] = (iEle->triggerObjectMatchesByPath("HLT_Ele15_SW_L1R").size()) ? 1 : -99;
-      eleTrg_[nEle_][2] = (iEle->triggerObjectMatchesByPath("HLT_Ele20_SW_L1R").size()) ? 1 : -99;
-      eleTrg_[nEle_][3] = (iEle->triggerObjectMatchesByPath("HLT_Ele15_SW_EleId_L1R").size()) ? 1 : -99;
+      eleTrg_[nEle_][0] = (iEle->triggerObjectMatchesByPath("HLT_Photon10_L1R").size()) ? 1 : -99;
+      eleTrg_[nEle_][1] = (iEle->triggerObjectMatchesByPath("HLT_Photon15_Cleaned_L1R").size()) ? 1 : -99;
+      eleTrg_[nEle_][2] = (iEle->triggerObjectMatchesByPath("HLT_Ele15_LW_L1R").size()) ? 1 : -99;
+      eleTrg_[nEle_][3] = (iEle->triggerObjectMatchesByPath("HLT_Ele15_SW_L1R").size()) ? 1 : -99;
       eleTrg_[nEle_][4] = (iEle->triggerObjectMatchesByPath("HLT_Ele15_SW_CaloEleId_L1R").size()) ? 1 : -99;
+      eleTrg_[nEle_][5] = (iEle->triggerObjectMatchesByPath("HLT_Ele17_SW_CaloEleId_L1R").size()) ? 1 : -99;
+      eleTrg_[nEle_][6] = (iEle->triggerObjectMatchesByPath("HLT_Ele17_SW_TightEleId_L1R").size()) ? 1 : -99;
+      eleTrg_[nEle_][7] = (iEle->triggerObjectMatchesByPath("HLT_Ele17_SW_TighterEleId_L1R_v2").size()) ? 1 : -99;
+      eleTrg_[nEle_][8] = (iEle->triggerObjectMatchesByPath("HLT_Ele17_SW_TighterEleId_L1R_v3").size()) ? 1 : -99;
+      eleTrg_[nEle_][9] = (iEle->triggerObjectMatchesByPath("HLT_DoubleEle10_SW_L1R").size()) ? 1 : -99;
+      eleTrg_[nEle_][10] = (iEle->triggerObjectMatchesByPath("HLT_DoubleEle15_SW_L1R_v1").size()) ? 1 : -99;
+      eleTrg_[nEle_][11] = (iEle->triggerObjectMatchesByPath("HLT_DoubleEle17_SW_L1R").size()) ? 1 : -99;
+      eleTrg_[nEle_][12] = (iEle->triggerObjectMatchesByPath("HLT_DoubleEle17_SW_L1R_v1").size()) ? 1 : -99;
+      
+
       // cout << "Got Electron Trigger" << std::endl;
 
       //        new eID with correct isolations and conversion rejection, see https://twiki.cern.ch/twiki/bin/viewauth/CMS/SimpleCutBasedEleID
@@ -815,6 +853,8 @@ fabs(ip->pdgId())<=14) || ip->pdgId()==22))) {
 
       eleE3x3_[nEle_] = iEle->userFloat("e3x3");
 
+      eleE2overE9_[nEle_] = iEle->userFloat("seedE2overE9");
+
       eleSeedTime_[nEle_] = iEle->userFloat("seedTime");
       eleRecoFlag_[nEle_] = iEle->userInt("seedRecoFlag");
       eleSeverity_[nEle_] = iEle->userInt("seedSeverityLevel");
@@ -873,6 +913,8 @@ fabs(ip->pdgId())<=14) || ip->pdgId()==22))) {
       phoSeverity_[nPho_] = iPho->userInt("seedSeverityLevel");
 
       phoE3x3_[nPho_] = iPho->userFloat("e3x3");
+
+      phoE2overE9_[nPho_] = iPho->userFloat("seedE2overE9");
 
       phoRoundness_[nPho_] = iPho->userFloat("scRoundness");
       phoAngle_[nPho_] = iPho->userFloat("scAngle");
@@ -934,7 +976,12 @@ fabs(ip->pdgId())<=14) || ip->pdgId()==22))) {
 
       if (iMu->pt() > leadingMuPtCut_) nMuPassCut++;
 
-      muTrg_[nMu_] = (iMu->triggerObjectMatchesByPath("HLT_Mu9").size()) ? 1 : -99;
+      muTrg_[nMu_][0] = (iMu->triggerObjectMatchesByPath("HLT_Mu9").size()) ? 1 : -99;
+      muTrg_[nMu_][1] = (iMu->triggerObjectMatchesByPath("HLT_Mu11").size()) ? 1 : -99;
+      muTrg_[nMu_][2] = (iMu->triggerObjectMatchesByPath("HLT_Mu13").size()) ? 1 : -99;
+      muTrg_[nMu_][3] = (iMu->triggerObjectMatchesByPath("HLT_Mu13_v1").size()) ? 1 : -99;
+      muTrg_[nMu_][4] = (iMu->triggerObjectMatchesByPath("HLT_Mu15").size()) ? 1 : -99;
+      muTrg_[nMu_][5] = (iMu->triggerObjectMatchesByPath("HLT_Mu15_v1").size()) ? 1 : -99;
 
       //       if (!iMu->isGlobalMuon()) continue;
       //       if (!iMu->isTrackerMuon()) continue;
