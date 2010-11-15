@@ -30,7 +30,7 @@ def embedTriggerMatches(process, hltPaths):
   """
 
   # Template trigger match producer
-  triggerMatchTemplate = cms.EDProducer( "PATTriggerMatcherDRDPtLessByR",
+  triggerMatchTemplate = cms.EDProducer( "PATTriggerMatcherDRLessByR",
     src     = cms.InputTag( "dummySource" ),
     matched = cms.InputTag( "patTrigger" ),
     andOr          = cms.bool( False ),
@@ -39,8 +39,8 @@ def embedTriggerMatches(process, hltPaths):
     filterLabels   = cms.vstring( "*" ),
     pathNames      = cms.vstring( "dummyPathName" ),
     collectionTags = cms.vstring( "*" ),
-    maxDPtRel = cms.double( 0.5 ),
-    maxDeltaR = cms.double( 0.5 ),
+    #maxDPtRel = cms.double( 0.5 ),
+    maxDeltaR = cms.double( 0.3 ),
     resolveAmbiguities    = cms.bool( True ),
     resolveByMatchQuality = cms.bool( True )
     )
