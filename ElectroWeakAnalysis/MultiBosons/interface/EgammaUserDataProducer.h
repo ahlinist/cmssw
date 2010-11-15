@@ -141,6 +141,8 @@ namespace vgamma {
     produces<edm::ValueMap<float> > ("sMin");
     produces<edm::ValueMap<float> > ("sMaj");
     produces<edm::ValueMap<float> > ("alphaSMinMaj");
+
+    produces<edm::ValueMap<float> > ("E2overE9");
   }
 
   template <typename EgammaType>
@@ -224,6 +226,8 @@ namespace vgamma {
     vector<float> sMaj;
     vector<float> alphaSMinMaj;
 
+    vector<float> seedE2overE9;
+
     typename View<EgammaType>::const_iterator egamma;
     for(egamma = egammas->begin(); egamma < egammas->end(); ++egamma) {
       const reco::CaloCluster &cluster = *( egamma->superCluster()->seed() );
@@ -277,6 +281,7 @@ namespace vgamma {
       float swissCross    = -999.;
       float E1OverE9      = -999.;
       int   severityLevel = -999;
+      float E2overE9      = -999.;
 
       DetId id = lazyTools.getMaximum(cluster).first;
       const EcalRecHitCollection & recHits = ( egamma->isEB() ?
@@ -293,6 +298,7 @@ namespace vgamma {
                                                              *channelStatus);
         swissCross    = EcalSeverityLevelAlgo::swissCross(id, recHits);
         E1OverE9      = EcalSeverityLevelAlgo::E1OverE9(id, recHits);
+	E2overE9      = EcalSeverityLevelAlgo::E2overE9(id, recHits);
       } else {
         LogWarning("SpikeCleaningVariables") << "Didn't find seed rechit!" << endl;
       }
@@ -304,6 +310,7 @@ namespace vgamma {
       seedSeverityLevel.push_back(severityLevel);
       seedSwissCross   .push_back(swissCross);
       seedE1OverE9     .push_back(E1OverE9);
+      seedE2overE9     .push_back(E2overE9);
 
       float roundness = -999.;
       float angle = -999.;
@@ -393,6 +400,8 @@ namespace vgamma {
     putMap<float>(iEvent,egammas,sMin,"sMin");
     putMap<float>(iEvent,egammas,sMaj,"sMaj");
     putMap<float>(iEvent,egammas,alphaSMinMaj,"alphaSMinMaj");
+
+    putMap<float>(iEvent,egammas,seedE2overE9,"seedE2overE9");
 
   } // EgammaUserDataProducer<EgammaType>::produce
 
