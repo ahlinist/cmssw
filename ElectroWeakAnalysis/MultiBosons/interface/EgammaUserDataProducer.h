@@ -142,7 +142,7 @@ namespace vgamma {
     produces<edm::ValueMap<float> > ("sMaj");
     produces<edm::ValueMap<float> > ("alphaSMinMaj");
 
-    produces<edm::ValueMap<float> > ("E2overE9");
+    produces<edm::ValueMap<float> > ("seedE2overE9");
   }
 
   template <typename EgammaType>
