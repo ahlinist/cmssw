@@ -156,7 +156,8 @@ process.load("PhysicsTools.PatAlgos.triggerLayer1.triggerProducer_cff")
 switchOnTrigger(process)
 process.patTrigger.processName = options.hltProcessName
 process.patTriggerEvent.processName = options.hltProcessName
-embedTriggerMatches(process, matchHltPaths)
+
+
 
 ## Drop matched target collections from the event content to only keep the trigger matched versions
 for collection in matchHltPaths.keys():
@@ -171,17 +172,25 @@ process.hltFilter.TriggerResultsTag = \
 process.skimFilterSequence = cms.Sequence(process.hltFilter) # Extend below
 process.skimFilterPath = cms.Path(process.skimFilterSequence)
 
+objectsHLTToMatch = ""
+
 if options.skimType == "MuonPhoton":
+    objectsToHLTMatch="cleanPatMuons"
     process.hltFilter.HLTPaths += ["HLT_Mu9",
                                    "HLT_Mu11",
                                    "HLT_Mu15",
-                                   "HLT_Mu15_v1"]
+                                   "HLT_Mu15_v1",
+                                   "HLT_Mu15_v2"]
     process.load(basePath + "muonPhotonSkimFilterSequence_cff")
     process.skimFilterSequence += process.muonPhotonSkimFilterSequence
 
 elif options.skimType == "ElectronPhoton":
+    objectsToHLTMatch="cleanPatElectrons"
     process.hltFilter.HLTPaths += ["HLT_Ele15_LW_L1R",
                                    "HLT_Ele15_SW_L1R",
+                                   "HLT_Ele15_SW_EleId_L1R",
+                                   "HLT_Ele17_SW_CaloEleId_L1R",
+                                   "HLT_Ele17_SW_TightEleId_L1R",
                                    "HLT_Ele17_SW_TighterEleIdIsol_L1R_v2",
                                    "HLT_Ele22_SW_TighterEleId_L1R_v2",
                                    "HLT_DoubleEle17_SW_L1R"]
@@ -189,10 +198,11 @@ elif options.skimType == "ElectronPhoton":
     process.skimFilterSequence += process.electronPhotonSkimFilterSequence
 
 elif options.skimType == "Dimuon":
+    objectsToHLTMatch="cleanPatMuons"
     process.hltFilter.HLTPaths += ["HLT_Mu9",
                                    "HLT_Mu11",
                                    "HLT_Mu15",
-                                   "HLT_Mu15_v1",
+                                   "HLT_Mu15_v2",
                                    "HLT_DoubleMu3"]
     process.load(basePath + "dimuonSkimFilterSequence_cff")
     process.skimFilterSequence += process.dimuonSkimFilterSequence
@@ -210,6 +220,8 @@ elif options.skimType == "Jet":
                                         process.photonSequence*
                                         process.photonIDSequence)
 
+    objectsToHLTMatch="cleanPatJets"
+
     process.hltFilter.HLTPaths += ["HLT_Jet100U","HLT_Jet70U","HLT_Jet50U","HLT_Jet30U","HLT_Jet15U"]
     process.load(basePath + "jetSkimFilterSequence_cff")
     process.skimFilterSequence += process.jetSkimFilterSequence
@@ -224,6 +236,12 @@ elif options.skimType == "Jet":
 
 else:
     raise RuntimeError, "Illegal skimType option: %s" % options.skimType
+
+for key in matchHltPaths.keys():
+    if key != objectsToHLTMatch and objectsToHLTMatch != "":
+        matchHltPaths[key] = []
+
+embedTriggerMatches(process, matchHltPaths)
 
 process.load(basePath + "VGammaSkimSequences_cff")
 

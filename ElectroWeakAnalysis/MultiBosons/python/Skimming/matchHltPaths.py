@@ -25,6 +25,11 @@ matchHltPaths = {
                             HLT_Photon20_Cleaned_L1R
                             HLT_Photon25_Cleaned_L1R
                             HLT_Photon30_Cleaned_L1R
+                            HLT_Ele17_SW_TighterEleIdIsol_L1R_v1
+                            HLT_Ele17_SW_TighterEleIdIsol_L1R_v2
+                            HLT_Ele22_SW_TighterEleId_L1R_v1
+                            HLT_Ele22_SW_TighterEleId_L1R_v2
+                            HLT_DoubleEle17_SW_L1R
                             """.split(),
     
     "cleanPatMuons"   :     """
@@ -37,6 +42,9 @@ matchHltPaths = {
                             HLT_Mu5
                             HLT_Mu9
                             HLT_Mu11
+                            HLT_Mu15
+                            HLT_Mu15_v1
+                            HLT_Mu15_v2
                             HLT_L2Mu9
                             HLT_L2Mu11
                             HLT_L1Mu30

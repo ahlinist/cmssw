@@ -30,7 +30,7 @@ def applyJobOptions(options):
     jobOptions.isRealData = False
     jobOptions.use35XInput = True
     jobOptions.wantSummary = False
-    jobOptions.skimType = "Muon"
+    jobOptions.skimType = "MuonPhoton"
 
   elif options.jobType == "testPOWHEG":
     jobOptions.maxEvents = -1
@@ -48,6 +48,7 @@ def applyJobOptions(options):
     jobOptions.use35XInput = False
     jobOptions.wantSummary = False
     jobOptions.hltProcessName = "REDIGI36X"
+    jobOptions.skimType = "MuonPhoton"
 
   # end of testMC options <-------------------------------------
 
@@ -79,7 +80,7 @@ def applyJobOptions(options):
     jobOptions.isRealData = True
     jobOptions.use35XInput = False
     jobOptions.wantSummary = False
-    jobOptions.skimType = "Muon"
+    jobOptions.skimType = "MuonPhoton"
     
   # end of testRealData options <-----------------------------------
 

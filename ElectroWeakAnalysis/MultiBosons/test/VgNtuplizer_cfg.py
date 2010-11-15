@@ -1,4 +1,5 @@
 import FWCore.ParameterSet.Config as cms
+from FWCore.PythonUtilities.LumiList import LumiList
 
 process = cms.Process("VgKit")
 
@@ -13,11 +14,17 @@ process.maxEvents = cms.untracked.PSet(
     input = cms.untracked.int32(100)
     )
 
+thelist = LumiList(filename="/path/to/json.txt")
+
 process.source = cms.Source("PoolSource",
                             fileNames = cms.untracked.vstring('file:Skimming/VGammaSkim_testSummer10_numEvent10.root'),
                             noEventSort = cms.untracked.bool(True),
                             duplicateCheckMode = cms.untracked.string('noDuplicateCheck')
+                            lumisToProcess = cms.untracked.VLuminosityBlockRange()
                             )
+
+process.source.lumisToProcess = [ str(a) for a in thelist.getCMSSWString().split(',') ] 
+
 
 process.load("ElectroWeakAnalysis.MultiBosons.VgNtuplizer_cfi")
 #process.VgAnalyzerKit.saveHLTInfo = cms.untracked.bool(False);
