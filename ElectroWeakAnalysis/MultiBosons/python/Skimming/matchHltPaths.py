@@ -12,6 +12,7 @@ matchHltPaths = {
                             HLT_Ele12_SW_EleIdIsol_L1R
                             HLT_Ele15_LW_L1R
                             HLT_Ele15_SW_EleId_L1R
+                            HLT_Ele15_SW_CaloEleId_L1R
                             HLT_Ele15_SW_L1R
                             HLT_Ele15_SW_LooseTrackIso_L1R
                             HLT_Ele17_SW_CaloEleId_L1R
@@ -27,9 +28,15 @@ matchHltPaths = {
                             HLT_Photon30_Cleaned_L1R
                             HLT_Ele17_SW_TighterEleIdIsol_L1R_v1
                             HLT_Ele17_SW_TighterEleIdIsol_L1R_v2
+                            HLT_Ele17_SW_TighterEleIdIsol_L1R_v3
+                            HLT_Ele17_SW_TighterEleId_L1R_v2
+                            HLT_Ele17_SW_TighterEleId_L1R_v3
                             HLT_Ele22_SW_TighterEleId_L1R_v1
                             HLT_Ele22_SW_TighterEleId_L1R_v2
+                            HLT_DoubleEle10_SW_L1R
+                            HLT_DoubleEle15_SW_L1R_v1                            
                             HLT_DoubleEle17_SW_L1R
+                            HLT_DoubleEle17_SW_L1R_v1
                             """.split(),
     
     "cleanPatMuons"   :     """

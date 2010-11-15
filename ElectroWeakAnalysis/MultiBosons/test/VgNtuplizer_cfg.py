@@ -11,15 +11,15 @@ process.GlobalTag.globaltag = cms.string('START38_V10::All')
 process.load("Configuration.StandardSequences.MagneticField_cff")
 
 process.maxEvents = cms.untracked.PSet(
-    input = cms.untracked.int32(100)
+    input = cms.untracked.int32(-1)
     )
 
-thelist = LumiList(filename="/path/to/json.txt")
+thelist = LumiList(filename="/scratch/lgray/vgamma_skims/data/Cert_132440-149442_7TeV_StreamExpress_Collisions10_JSON.txt")
 
 process.source = cms.Source("PoolSource",
-                            fileNames = cms.untracked.vstring('file:Skimming/VGammaSkim_testSummer10_numEvent10.root'),
+                            fileNames = cms.untracked.vstring('file:Skimming/VGammaPAT_MuonPhotonSkim_testRealData.root'),
                             noEventSort = cms.untracked.bool(True),
-                            duplicateCheckMode = cms.untracked.string('noDuplicateCheck')
+                            duplicateCheckMode = cms.untracked.string('noDuplicateCheck'),
                             lumisToProcess = cms.untracked.VLuminosityBlockRange()
                             )
 

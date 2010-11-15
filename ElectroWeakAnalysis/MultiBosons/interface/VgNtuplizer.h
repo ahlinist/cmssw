@@ -142,7 +142,7 @@ protected:
   float  pfMETSig_;
   // Electron
   int    nEle_;
-  int    eleTrg_[maxP][5];
+  int    eleTrg_[maxP][13];
   int    eleID_[maxP][12];
   int    eleClass_[maxP];
   int    eleCharge_[maxP];
@@ -170,6 +170,7 @@ protected:
   float  eledPhiAtVtx_[maxP];
   float  eleSigmaEtaEta_[maxP];
   float  eleSigmaIEtaIEta_[maxP];
+  float  eleE2overE9_[maxP];
   float  eleE3x3_[maxP];
   float  eleSeedTime_[maxP];
   int    eleRecoFlag_[maxP];
@@ -218,6 +219,7 @@ protected:
   float  phoHoverE_[maxP];
   float  phoSigmaEtaEta_[maxP];
   float  phoSigmaIEtaIEta_[maxP];
+  float  phoE2overE9_[maxP];
   float  phoE3x3_[maxP];
   float  phoSeedTime_[maxP];
   int    phoRecoFlag_[maxP];
@@ -242,7 +244,7 @@ protected:
 
   // Muon
   int    nMu_;
-  int    muTrg_[maxP];
+  int    muTrg_[maxP][6];
   float  muEta_[maxP];
   float  muPhi_[maxP];
   int    muCharge_[maxP];
