@@ -103,3 +103,19 @@ def embedTriggerMatches(process, hltPaths):
     process.patTriggerMatchEmbedder
   )
 # def embedTriggerMatches(process, hltPaths): <---------------------------------------
+
+def addPhotonReReco(process):
+    process.load('Configuration.StandardSequences.Services_cff')
+    process.load('Configuration.StandardSequences.MagneticField_38T_cff')
+    process.load('Configuration.StandardSequences.Geometry_cff')
+    process.load('Configuration.StandardSequences.Reconstruction_cff')
+    process.load('Configuration.StandardSequences.FrontierConditions_GlobalTag_cff')
+    process.load("SimGeneral.HepPDTESSource.pythiapdt_cfi")
+    
+    process.photonReReco = cms.Sequence(process.conversionSequence*
+                                        process.trackerOnlyConversionSequence*
+                                        process.photonSequence*
+                                        process.photonIDSequence)
+    #edit the pat sequence to do the rereco
+    process.patDefaultSequence = cms.Sequence(process.photonReReco*process.patDefaultSequence)
+# def addPhotonReReco(process): <-----------------------------------------------------

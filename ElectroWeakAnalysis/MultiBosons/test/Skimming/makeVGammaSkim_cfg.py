@@ -15,7 +15,7 @@ from ElectroWeakAnalysis.MultiBosons.Skimming.egammaUserDataProducts_cff import 
 from ElectroWeakAnalysis.MultiBosons.Skimming.jobOptions import *
 from ElectroWeakAnalysis.MultiBosons.Skimming.matchHltPaths import matchHltPaths
 from ElectroWeakAnalysis.MultiBosons.Skimming.options import options as defaultOptions
-from ElectroWeakAnalysis.MultiBosons.tools.skimmingTools import embedTriggerMatches
+from ElectroWeakAnalysis.MultiBosons.tools.skimmingTools import *
 
 ## See link below for the definition of the selection
 ## https://twiki.cern.ch/twiki/bin/view/CMS/VGammaFirstPaper#Vgamma_Group_skims
@@ -162,6 +162,9 @@ process.patTriggerEvent.processName = options.hltProcessName
 ## Drop matched target collections from the event content to only keep the trigger matched versions
 for collection in matchHltPaths.keys():
     vgEventContent.extraSkimEventContent.append("drop *_%s_*_*" % collection)
+## Drop default patTriggerObjectsedmAssociation
+vgEventContent.extraSkimEventContent.append("drop patTriggerObjectsedmAssociation_patTriggerEvent_*_*")
+
 
 ## HLT trigger
 process.load(basePath + "hltFilter_cfi")
@@ -206,6 +209,13 @@ elif options.skimType == "Dimuon":
                                    "HLT_DoubleMu3"]
     process.load(basePath + "dimuonSkimFilterSequence_cff")
     process.skimFilterSequence += process.dimuonSkimFilterSequence
+    addPhotonReReco(process)
+    # now change the photon reco to much looser settings
+    process.photonCore.minSCEt = 1.0
+    process.photons.minSCEtBarrel = 1.0
+    process.photons.minSCEtEndcap = 1.0
+    process.photons.maxHoverEBarrel = 10.0
+    process.photons.maxHoverEEndcap = 10.0
 
 elif options.skimType == "Jet":
     process.load('Configuration.StandardSequences.Services_cff')
@@ -384,6 +394,10 @@ if not options.isRealData:
         )
 
 process.options.wantSummary = options.wantSummary
+
+## Turn off dimuon filter for testing
+if False and hasattr(process, "goodDimuonsFilter"):
+    process.goodDimuonsFilter.minNumber = 0
 
 ## Add tab completion + history during inspection
 if __name__ == "__main__": import user

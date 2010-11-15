@@ -1,8 +1,6 @@
 import FWCore.ParameterSet.Config as cms
 
-# isElectron = "abs(pdgId)=11"
 isMuon     = "abs(pdgId)=13"
-# isTau      = "abs(pdgId)=15"
 isPhoton   = "pdgId=22"
 isPrompt   = "mother(0).mother(0).status=3"
 isStable   = "status=1"
@@ -28,7 +26,7 @@ dimuons = cms.EDProducer("CandViewShallowCloneCombiner",
     decay = cms.string("looseMuons@+ tightMuons@-"),
     checkCharge = cms.bool(True),
     roles = cms.vstring("lepton1", "lepton2"),
-    cut = cms.string("mass > 20"),
+    cut = cms.string("mass > 50"),
 )
 
 dimuonsFilter = cms.EDFilter("CandViewCountFilter",
