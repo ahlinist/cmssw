@@ -25,6 +25,7 @@ void TAnaCand::clear() {
   fIndex = -99; 
   fVar1  = fVar2 = fVar3 = -99.;
   fVtx.clear();
+  fNstTracks.clear();
 }
 
 
