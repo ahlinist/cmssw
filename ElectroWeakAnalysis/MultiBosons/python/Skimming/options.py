@@ -42,7 +42,7 @@ options.register("hltProcessName",
     VarParsing.varType.string,         # bool, string, int, or float
     "Name of the Process that produced the HLT information.")
 options.register("skimType",
-    "Muon", # default value
+    "MuonPhoton", # default value
     VarParsing.multiplicity.singleton, # singleton or list
     VarParsing.varType.string,         # bool, string, int, or float
     "What is the type of this skim, e.g. MuonPhoton?")
