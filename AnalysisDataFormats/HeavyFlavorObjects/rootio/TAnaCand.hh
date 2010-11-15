@@ -7,6 +7,9 @@
 
 #include "TAnaVertex.hh"
 
+#include <vector>
+#include <utility>
+
 class TAnaCand: public TObject {
 
 public:
@@ -30,12 +33,15 @@ public:
   TVector3    fPlab;
 
   // -- point of closest approach and related quantities
-  double      fMinDoca, fMaxDoca; 
+  double      fMinDoca, fMaxDoca;
   TVector3    fPoca;
 
   // -- information on the associated primary vertex
   int         fPvIdx; 
-  double      fPvLip, fPvLipE, fPvTip, fPvTipE; 
+  double      fPvLip, fPvLipE, fPvTip, fPvTipE;
+
+  // information on tracks near this candidate
+  std::vector<std::pair<int,std::pair<float,float> > > fNstTracks; // usage: (trackIx,doca(value,error))
 
   // -- reserve
   double      fVar1;
