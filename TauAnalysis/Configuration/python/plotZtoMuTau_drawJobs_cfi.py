@@ -509,6 +509,18 @@ drawJobConfigurator_ZtoMuTau.add(
             name = "finalSamplePlots_muon"
         ),
         drawJobConfigEntry(
+            meName = 'MuonQuantities/MuonCaloCompatibility',
+            title = "Muon Calo. Compatibility (final Event sample)",
+            xAxis = 'unlabeled',
+            name = "finalSamplePlots_muonCaloCompatibility"
+        ),
+        drawJobConfigEntry(
+            meName = 'MuonQuantities/MuonSegmentCompatibility',
+            title = "Muon Segment Compatibility (final Event sample)",
+            xAxis = 'unlabeled',
+            name = "finalSamplePlots_muonSegmentCompatibility"
+        ),
+        drawJobConfigEntry(
             meName = 'MuonQuantities/MuonMatchingGenParticlePdgId',
             title = "PdgId of gen. Particle matching Muon (final Event sample)",
             xAxis = 'PdgId',
