@@ -52,6 +52,8 @@ def egammaUserDataFloats(moduleName):
     cms.InputTag(moduleName, "sMin"),
     cms.InputTag(moduleName, "sMaj"),
     cms.InputTag(moduleName, "alphaSMinMaj")
+
+    cms.InputTag(moduleName, "E2overE9")
   ]
 # egammaUserDataFloats(moduleName) <------------------------------------------
 
