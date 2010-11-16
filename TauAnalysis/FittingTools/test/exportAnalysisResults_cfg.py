@@ -21,7 +21,7 @@ process.loadAnalysisResults = cms.EDAnalyzer("DQMFileLoader",
     all = cms.PSet(
         inputFileNames = cms.vstring(
             ##'/data1/veelken/CMSSW_3_8_x/plots/AHtoMuTau/plotsAHtoMuTau_all.root'
-            '/data1/friis/Run11.bak/Run11/plots_all.root'
+            '/data1/friis/Run17/plotsAHtoMuTau_all.root'
         ),
         dqmDirectory_store = cms.string('')
     )
@@ -35,57 +35,39 @@ process.exportAnalysisResults_woBtag = cms.EDAnalyzer("DQMExportAnalysisResults"
     outputFilePath = cms.string("/data1/veelken/CMSSW_3_8_x/plots/AHtoMuTau/export"),                 
 
     processes = cms.PSet(
-	##A120 = cms.PSet(
-        ##    dqmDirectory = cms.string('A120'),
-	##    outputFilePath = cms.string("m120"),
-	##    outputFileName = cms.string("ggA_#CHANNEL_OUTPUTFILENAME#.hst"),
-        ##    hasSysUncertainties = cms.bool(True)
-        ##),
-        ##bbA120 = cms.PSet(
-        ##    dqmDirectory = cms.string('bbA120'),
-	##    outputFilePath = cms.string("m120"),
-	##    outputFileName = cms.string("bbA_#CHANNEL_OUTPUTFILENAME#.hst"),
-        ##    hasSysUncertainties = cms.bool(True)
-        ##),
-        A120 = cms.PSet(
-            dqmDirectory = cms.string('A120Sum'),
-	    outputFilePath = cms.string("m120"),
+        A100 = cms.PSet(
+            dqmDirectory = cms.string('A100Sum'),
+	    outputFilePath = cms.string("m100"),
 	    outputFileName = cms.string("A_#CHANNEL_OUTPUTFILENAME#.hst"),
             hasSysUncertainties = cms.bool(True)
         ),
-        ##A130 = cms.PSet(
-        ##    dqmDirectory = cms.string('A130'),
-	##    outputFilePath = cms.string("m130"),
-	##    outputFileName = cms.string("ggA_#CHANNEL_OUTPUTFILENAME#.hst"),
-        ##    hasSysUncertainties = cms.bool(True)
-        ##),
-        ##bbA130 = cms.PSet(
-        ##    dqmDirectory = cms.string('bbA130'),
-	##    outputFilePath = cms.string("m130"),
-	##    outputFileName = cms.string("bbA_#CHANNEL_OUTPUTFILENAME#.hst"),
-        ##    hasSysUncertainties = cms.bool(True)
-        ##),
         A130 = cms.PSet(
             dqmDirectory = cms.string('A130Sum'),
 	    outputFilePath = cms.string("m130"),
 	    outputFileName = cms.string("A_#CHANNEL_OUTPUTFILENAME#.hst"),
             hasSysUncertainties = cms.bool(True)
         ),
-        ##A200 = cms.PSet(
-        ##    dqmDirectory = cms.string('A200'),
-	##    outputFilePath = cms.string("m200"),
-	##    outputFileName = cms.string("ggA_#CHANNEL_OUTPUTFILENAME#.hst"),
-        ##    hasSysUncertainties = cms.bool(True)
-        ##),
-        ##bbA200 = cms.PSet(
-        ##    dqmDirectory = cms.string('bbA200'),
-	##    outputFilePath = cms.string("m200"),
-	##    outputFileName = cms.string("bbA_#CHANNEL_OUTPUTFILENAME#.hst"),
-        ##    hasSysUncertainties = cms.bool(True)
-        ##),
+        A160 = cms.PSet(
+            dqmDirectory = cms.string('A160Sum'),
+	    outputFilePath = cms.string("m160"),
+	    outputFileName = cms.string("A_#CHANNEL_OUTPUTFILENAME#.hst"),
+            hasSysUncertainties = cms.bool(True)
+        ),
+        A180 = cms.PSet(
+            dqmDirectory = cms.string('A180Sum'),
+	    outputFilePath = cms.string("m180"),
+	    outputFileName = cms.string("A_#CHANNEL_OUTPUTFILENAME#.hst"),
+            hasSysUncertainties = cms.bool(True)
+        ),
         A200 = cms.PSet(
             dqmDirectory = cms.string('A200Sum'),
 	    outputFilePath = cms.string("m200"),
+	    outputFileName = cms.string("A_#CHANNEL_OUTPUTFILENAME#.hst"),
+            hasSysUncertainties = cms.bool(True)
+        ),
+        A300 = cms.PSet(
+            dqmDirectory = cms.string('A300Sum'),
+	    outputFilePath = cms.string("m300"),
 	    outputFileName = cms.string("A_#CHANNEL_OUTPUTFILENAME#.hst"),
             hasSysUncertainties = cms.bool(True)
         ),
@@ -117,9 +99,6 @@ process.exportAnalysisResults_woBtag = cms.EDAnalyzer("DQMExportAnalysisResults"
             dqmDirectory = cms.string('TTplusJets'),
 	    outputFilePath = cms.string(""),
 	    outputFileName = cms.string("ttbar_#CHANNEL_OUTPUTFILENAME#.hst"),
-	    numEvents = cms.double(
-                TARGET_LUMI*RECO_SAMPLES['TTplusJets']['x_sec']
-            ),
             hasSysUncertainties = cms.bool(False)
         ),
         data = cms.PSet(
