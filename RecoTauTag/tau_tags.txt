@@ -1,4 +1,4 @@
 V01-00-14 RecoTauTag/RecoTau
 V01-00-03 RecoTauTag/TauTagTools
-V01-00-08 RecoTauTag/Configuration
+V01-00-09 RecoTauTag/Configuration
 V01-00-01 DataFormats/TauReco
