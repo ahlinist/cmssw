@@ -14,7 +14,6 @@ def sample_dqm_name(sample):
     else:
         return sample
 
-
 dumpZtoMuTau = cms.EDAnalyzer("DQMDumpFilterStatisticsTables",
     dqmDirectories = cms.PSet(
         **dict(
