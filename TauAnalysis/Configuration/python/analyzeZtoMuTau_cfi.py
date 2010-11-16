@@ -43,6 +43,20 @@ diTauCandidateSVfitHistManagerForMuTau = copy.deepcopy(diTauCandidateSVfitHistMa
 diTauCandidateSVfitHistManagerForMuTau.pluginName = cms.string('diTauCandidateSVfitHistManagerForMuTau')
 diTauCandidateSVfitHistManagerForMuTau.pluginType = cms.string('PATMuTauPairSVfitHistManager')
 diTauCandidateSVfitHistManagerForMuTau.diTauCandidateSource = cms.InputTag('selectedMuTauPairsPzetaDiffCumulative')
+diTauCandidateSVfitHistManagerForMuTau.SVfitAlgorithms = cms.VPSet(
+    cms.PSet(
+        name = cms.string("psKine")
+    ),
+    cms.PSet(
+        name = cms.string("psKine_MEt")
+    ),
+    cms.PSet(
+        name = cms.string("psKine_MEt_ptBalance")
+    ##),
+    ##cms.PSet(
+    ##    name = cms.string("psKine_MEt_Track_ptBalance")
+    )
+)
 
 from TauAnalysis.Core.diTauCandidateEventActivityHistManager_cfi import *
 diTauCandidateEventActivityHistManagerForMuTau = copy.deepcopy(diTauCandidateEventActivityHistManager)
@@ -105,7 +119,7 @@ triggerHistManagerForMuTau.hltPaths = cms.vstring(
     'HLT_IsoMu13_v3',
     'HLT_IsoMu13_v4',
     'HLT_Mu15_v1',
-    'HLT_Mu11_PFTau15_v2',
+    'HLT_IsoMu9_PFTau15_v2',
     'HLT_Mu11_PFTau15_v2'
 )
 
@@ -419,10 +433,23 @@ muTauEventDump = cms.PSet(
     #l1GtObjectMapRecordSource = cms.InputTag('hltL1GtObjectMap::HLT'),
     l1GtReadoutRecordSource = cms.InputTag(''),
     l1GtObjectMapRecordSource = cms.InputTag(''),
-    l1BitsToPrint = cms.vstring('L1_SingleMu3', 'L1_SingleMu5', 'L1_SingleMu7', 'L1_SingleMu10', 'L1_SingleMu14'),
+    l1BitsToPrint = cms.vstring(
+        'L1_SingleMu3',
+        'L1_SingleMu5',
+        'L1_SingleMu7'
+    ),
 
     hltResultsSource = cms.InputTag('TriggerResults::HLT'),
-    hltPathsToPrint = cms.vstring('HLT_Mu9', 'HLT_IsoMu9', 'HLT_Mu11', 'HLT_Mu15'),
+    hltPathsToPrint = cms.vstring(
+        'HLT_Mu9',
+        'HLT_IsoMu9',
+        'HLT_Mu11',
+        'HLT_IsoMu13_v3',
+        'HLT_IsoMu13_v4',
+        'HLT_Mu15_v1',
+        'HLT_IsoMu9_PFTau15_v2',
+        'HLT_Mu11_PFTau15_v2'
+    ),
 
     doGenInfo = cms.bool(True),
     genParticleSource = cms.InputTag('genParticles'),
@@ -437,7 +464,13 @@ muTauEventDump = cms.PSet(
     diTauCandidateSource = cms.InputTag('allMuTauPairs'),
     svFitAlgorithms = cms.VPSet(
         cms.PSet(
+            name = cms.string("psKine_MEt")
+        ),
+        cms.PSet(
             name = cms.string("psKine_MEt_ptBalance")
+        ##),
+        ##cms.PSet(
+        ##    name = cms.string("psKine_MEt_Track_ptBalance")
         )
     ),
     muTauZmumuHypothesisSource = cms.InputTag('muTauPairZmumuHypotheses'),
