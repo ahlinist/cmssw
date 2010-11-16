@@ -6,7 +6,7 @@ from PhysicsTools.PatAlgos.patTemplate_cfg import *
 from PhysicsTools.PatAlgos.tools.coreTools import *
 
 ## global tag for data
-process.GlobalTag.globaltag = cms.string('GR_R_38X_V7::All')
+process.GlobalTag.globaltag = cms.string('GR_R_38X_V14::All')
 
 # add pf met
 from PhysicsTools.PatAlgos.tools.metTools import *
@@ -14,17 +14,13 @@ removeMCMatching(process, ['All'])
 addPfMET(process, 'PF')
 
 
-
-# get the 900 GeV jet corrections
+# add PF jets
 from PhysicsTools.PatAlgos.tools.jetTools import *
-switchJECSet( process, "Spring10")
-
-# Add PF jets
 addJetCollection(process,cms.InputTag('ak5PFJets'),
                  'AK5', 'PF',
                  doJTA        = True,
                  doBTagging   = True,
-                 jetCorrLabel = ('AK5','PF'),
+                 jetCorrLabel = ('AK5PF', cms.vstring(['L2Relative', 'L3Absolute', 'L2L3Residual'])),
                  doType1MET   = False,
                  doL1Cleaning = False,                 
                  doL1Counters = False,
@@ -66,46 +62,6 @@ readFiles = cms.untracked.vstring()
 secFiles = cms.untracked.vstring()
 
 readFiles.extend( [
-'/store/data/Run2010A/JetMETTau/RECO/Jul23ReReco_PreProd_v1/0160/B249DC90-2798-DF11-96D3-001A92811728.root',
-'/store/data/Run2010A/JetMETTau/RECO/Jul23ReReco_PreProd_v1/0157/FACE6E6F-B297-DF11-8C03-002618FDA21D.root',
-'/store/data/Run2010A/JetMETTau/RECO/Jul23ReReco_PreProd_v1/0157/FABF5E30-E897-DF11-8249-002618943836.root',
-'/store/data/Run2010A/JetMETTau/RECO/Jul23ReReco_PreProd_v1/0157/FA906A3C-AA97-DF11-B010-002618943946.root',
-'/store/data/Run2010A/JetMETTau/RECO/Jul23ReReco_PreProd_v1/0157/F650EB46-D697-DF11-A374-00261894396E.root',
-'/store/data/Run2010A/JetMETTau/RECO/Jul23ReReco_PreProd_v1/0157/ECE61B70-B497-DF11-953A-002618943949.root',
-'/store/data/Run2010A/JetMETTau/RECO/Jul23ReReco_PreProd_v1/0157/EA5216EA-AD97-DF11-B7D2-002618943860.root',
-'/store/data/Run2010A/JetMETTau/RECO/Jul23ReReco_PreProd_v1/0157/E86D8349-A597-DF11-92FE-002618943946.root',
-'/store/data/Run2010A/JetMETTau/RECO/Jul23ReReco_PreProd_v1/0157/E868BC6C-E497-DF11-B07C-002618943967.root',
-'/store/data/Run2010A/JetMETTau/RECO/Jul23ReReco_PreProd_v1/0157/E6D0EE42-A897-DF11-AB1E-002618943946.root',
-'/store/data/Run2010A/JetMETTau/RECO/Jul23ReReco_PreProd_v1/0157/E2F27541-AA97-DF11-AFD3-00304867BFB0.root',
-'/store/data/Run2010A/JetMETTau/RECO/Jul23ReReco_PreProd_v1/0157/E2EBD86E-B297-DF11-9C98-0026189438D4.root',
-'/store/data/Run2010A/JetMETTau/RECO/Jul23ReReco_PreProd_v1/0157/E081EC45-E397-DF11-86D9-00261894396E.root',
-'/store/data/Run2010A/JetMETTau/RECO/Jul23ReReco_PreProd_v1/0157/DAB2CB4A-B197-DF11-AAB6-003048678B14.root',
-'/store/data/Run2010A/JetMETTau/RECO/Jul23ReReco_PreProd_v1/0157/D869396E-A797-DF11-802D-0026189438B5.root',
-'/store/data/Run2010A/JetMETTau/RECO/Jul23ReReco_PreProd_v1/0157/D682A16A-A997-DF11-9489-0026189438B5.root',
-'/store/data/Run2010A/JetMETTau/RECO/Jul23ReReco_PreProd_v1/0157/D4A0101E-E397-DF11-AED9-002618943967.root',
-'/store/data/Run2010A/JetMETTau/RECO/Jul23ReReco_PreProd_v1/0157/D2522E3F-E597-DF11-82A1-00261894393A.root',
-'/store/data/Run2010A/JetMETTau/RECO/Jul23ReReco_PreProd_v1/0157/D0822148-BB97-DF11-854E-002618943949.root',
-'/store/data/Run2010A/JetMETTau/RECO/Jul23ReReco_PreProd_v1/0157/CCE8FCB2-A497-DF11-9B16-00248C55CC40.root',
-'/store/data/Run2010A/JetMETTau/RECO/Jul23ReReco_PreProd_v1/0157/CC81C150-E097-DF11-B71A-00261894393A.root',
-'/store/data/Run2010A/JetMETTau/RECO/Jul23ReReco_PreProd_v1/0157/CC30DDBF-D397-DF11-94CB-00261894396E.root',
-'/store/data/Run2010A/JetMETTau/RECO/Jul23ReReco_PreProd_v1/0157/C89C8342-AC97-DF11-AF82-002618943949.root',
-'/store/data/Run2010A/JetMETTau/RECO/Jul23ReReco_PreProd_v1/0157/C8011413-AF97-DF11-BDAD-002618FDA21D.root',
-'/store/data/Run2010A/JetMETTau/RECO/Jul23ReReco_PreProd_v1/0157/C6FDD670-BC97-DF11-A97C-002618943964.root',
-'/store/data/Run2010A/JetMETTau/RECO/Jul23ReReco_PreProd_v1/0157/C27D3737-E797-DF11-BB5A-00261894393A.root',
-'/store/data/Run2010A/JetMETTau/RECO/Jul23ReReco_PreProd_v1/0157/C2390E14-AF97-DF11-9260-002618943946.root',
-'/store/data/Run2010A/JetMETTau/RECO/Jul23ReReco_PreProd_v1/0157/C0312FB1-A597-DF11-896C-0026189438D4.root',
-'/store/data/Run2010A/JetMETTau/RECO/Jul23ReReco_PreProd_v1/0157/BEEE5E52-E297-DF11-B51D-002618943926.root',
-'/store/data/Run2010A/JetMETTau/RECO/Jul23ReReco_PreProd_v1/0157/B040AB56-A897-DF11-9DAD-0030486792DE.root',
-'/store/data/Run2010A/JetMETTau/RECO/Jul23ReReco_PreProd_v1/0157/AED0FC67-AD97-DF11-B124-002618FDA21D.root',
-'/store/data/Run2010A/JetMETTau/RECO/Jul23ReReco_PreProd_v1/0157/AC7C5944-AC97-DF11-A45C-003048678A78.root',
-'/store/data/Run2010A/JetMETTau/RECO/Jul23ReReco_PreProd_v1/0157/AA737E0B-DA97-DF11-9A6B-0026189438A0.root',
-'/store/data/Run2010A/JetMETTau/RECO/Jul23ReReco_PreProd_v1/0157/A2412344-B497-DF11-930E-002618FDA21D.root',
-'/store/data/Run2010A/JetMETTau/RECO/Jul23ReReco_PreProd_v1/0157/9E0A1470-B997-DF11-B673-002618943949.root',
-'/store/data/Run2010A/JetMETTau/RECO/Jul23ReReco_PreProd_v1/0157/9C71293C-DC97-DF11-AE96-002618FDA287.root',
-'/store/data/Run2010A/JetMETTau/RECO/Jul23ReReco_PreProd_v1/0157/9A69592A-E197-DF11-8A70-002618FDA287.root',
-'/store/data/Run2010A/JetMETTau/RECO/Jul23ReReco_PreProd_v1/0157/98DBC699-A897-DF11-AF4A-003048678B08.root',
-'/store/data/Run2010A/JetMETTau/RECO/Jul23ReReco_PreProd_v1/0157/98254051-E297-DF11-BB55-002618FDA208.root',
-'/store/data/Run2010A/JetMETTau/RECO/Jul23ReReco_PreProd_v1/0157/967C255F-DB97-DF11-8FDF-002618FDA262.root',
 '/store/data/Run2010A/JetMETTau/RECO/Jul23ReReco_PreProd_v1/0157/940B070B-DA97-DF11-8617-002618943926.root',
 '/store/data/Run2010A/JetMETTau/RECO/Jul23ReReco_PreProd_v1/0157/9281D65A-DD97-DF11-A291-002618FDA265.root',
 '/store/data/Run2010A/JetMETTau/RECO/Jul23ReReco_PreProd_v1/0157/88DA882B-DE97-DF11-BC66-00248C55CC97.root',

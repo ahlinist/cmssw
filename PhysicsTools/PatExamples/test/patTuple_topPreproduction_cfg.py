@@ -18,8 +18,6 @@ removeCleaning(process)
 ## ---
 ## adjust content
 ## ---
-process.patJetCorrFactors.corrSample = "Spring10"
-process.patJetCorrFactors.sampleType = "ttbar"
 process.patMuons.usePV      = False
 process.patMuons.embedTrack = True
 

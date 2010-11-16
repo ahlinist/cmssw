@@ -8,16 +8,14 @@ from PhysicsTools.PatAlgos.patTemplate_cfg import *
 #            event content
 # ----------------------------------------------------
 #from PhysicsTools.PatAlgos.tools.jetTools import *
-#switchJetCollection(process, 
-#                    cms.InputTag('sisCone5CaloJets'),   
-#                    doJTA            = True,            
-#                    doBTagging       = True,            
-#                    jetCorrLabel     = ('SC5','Calo'),  
-#                    doType1MET       = True,            
-#                    genJetCollection = cms.InputTag("sisCone5GenJets"),
-#                    doJetID          = True,
-#                    jetIdLabel       = "sc5"
-#                    ) 
+#switchJetCollection(process,cms.InputTag('ak5PFJets'),
+#                 doJTA        = True,
+#                 doBTagging   = True,
+#                 jetCorrLabel = ('AK5PF', cms.vstring(['L2Relative', 'L3Absolute', 'L2L3Residual'])),
+#                 doType1MET   = True,
+#                 genJetCollection=cms.InputTag("ak5GenJets"),
+#                 doJetID      = True
+#                 )
 
 # ----------------------------------------------------
 # EXAMPLE 2: add more jet collections to the pat
@@ -28,23 +26,23 @@ from PhysicsTools.PatAlgos.patTemplate_cfg import *
 #                 'AK7', 'Calo',
 #                 doJTA        = True,
 #                 doBTagging   = False,
-#                 jetCorrLabel = None,
-#                 doType1MET   = False,
+#                 jetCorrLabel = ('AK7Calo', cms.vstring(['L2Relative', 'L3Absolute'])),
+#                 doType1MET   = True,
 #                 doL1Cleaning = True,                 
 #                 doL1Counters = False,
 #                 genJetCollection=cms.InputTag("ak7GenJets"),
 #                 doJetID      = True,
 #                 jetIdLabel   = "ak7"
 #                 )
-#addJetCollection(process,cms.InputTag('iterativeCone5CaloJets'),
+#addJetCollection(process,cms.InputTag('ic5CaloJets'),
 #                 'IC5', 'Calo',
 #                 doJTA        = True,
 #                 doBTagging   = True,
-#                 jetCorrLabel = ('IC5', 'Calo'),
+#                 jetCorrLabel = ('IC5Calo', cms.vstring(['L2Relative', 'L3Absolute'])),
 #                 doType1MET   = True,
 #                 doL1Cleaning = True,                 
 #                 doL1Counters = False,
-#                 genJetCollection=cms.InputTag("iterativeCone5GenJets"),
+#                 genJetCollection=cms.InputTag("ic5GenJets"),
 #                 doJetID      = False
 #                 )
 

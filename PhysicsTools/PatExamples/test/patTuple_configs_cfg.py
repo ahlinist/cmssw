@@ -14,7 +14,7 @@ from PhysicsTools.PatAlgos.patTemplate_cfg import *
 #            sequences
 # ----------------------------------------------------
 #from PhysicsTools.PatAlgos.tools.coreTools import *
-#removeMCMatching(process, 'All')
+#removeMCMatching(process, ['All'])
 
 # ----------------------------------------------------
 # EXAMPLE 3: remove certain object collections from

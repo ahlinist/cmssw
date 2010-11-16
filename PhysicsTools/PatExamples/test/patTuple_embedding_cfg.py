@@ -9,7 +9,7 @@ from PhysicsTools.PatAlgos.patTemplate_cfg import *
 
 from PhysicsTools.PatAlgos.tools.coreTools import *
 #restrictInputToAOD(process)
-#removeMCMatching(process, 'Muons')
+#removeMCMatching(process, ['Muons'])
 #removeAllPATObjectsBut(process, ['Muons'])
 #removeSpecificPATObjects(process, ['Electrons', 'Muons', 'Taus'])
 
