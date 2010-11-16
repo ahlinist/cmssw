@@ -33,13 +33,13 @@ userSettings = {
         'ZtoMuTau_bgEstTemplate' : {
             'analysisFilePath' : "/user/v/veelken/CMSSW_3_8_x/plots/ZtoMuTau_bgEstTemplate/",
             'harvestingFilePath' : "/data1/veelken/CMSSW_3_8_x/plots/ZtoMuTau_bgEstTemplate/",
-            'tmpFilePath' : "/tmp/veelken/",
-            'jobId' : "7TeV"
+            'tmpFilePath' : "/tmp/veelken/ZtoMuTau_bgEstTemplate/",
+            'jobId' : "2010Nov14"
         },
         'ZtoMuTau_tauIdEff' : {
             'analysisFilePath' : "/user/v/veelken/CMSSW_3_8_x/plots/ZtoMuTau_tauIdEff/",
             'harvestingFilePath' : "/data1/veelken/CMSSW_3_8_x/plots/ZtoMuTau_tauIdEff/",
-            'tmpFilePath' : "/tmp/veelken/",
+            'tmpFilePath' : "/tmp/veelken/ZtoMuTau_tauIdEff/",
             'jobId' : "2010Nov01"
         },
         'ZtoDiTau' : {
@@ -50,8 +50,8 @@ userSettings = {
         },
         'global' : {
             'drawOptions' : {
-                'canvasSizeX' : 640,
-                'canvasSizeY' : 800
+                'canvasSizeX' : 800,
+                'canvasSizeY' : 640
             }
         }
     }
