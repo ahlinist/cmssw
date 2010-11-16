@@ -95,7 +95,12 @@ def makePlots(process, channel = None, samples = None, inputFilePath = None, job
 
     # Define the file loader jobs for each of our analyzed jobs
     dqmFileLoaderJobs = {}
-    for sample in samples['FLATTENED_SAMPLES_TO_PLOT']:
+    samplesToLoad = []
+    samplesToLoad.extend(samples['FLATTENED_SAMPLES_TO_PLOT'])
+    for sample in samples['SAMPLES_TO_PRINT']:
+        if not sample in samplesToLoad and not sample in samples['MERGE_SAMPLES']:
+            samplesToLoad.append(sample)
+    for sample in samplesToLoad:
         sample_info = samples['RECO_SAMPLES'][sample]
         # Build DQMFileLoader PSet for this sample
         sample_pset = cms.PSet(
