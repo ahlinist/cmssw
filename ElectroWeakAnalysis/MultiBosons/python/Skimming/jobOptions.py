@@ -115,13 +115,29 @@ def applyJobOptions(options):
     jobOptions.inputFiles = [
         "rfio:/castor/cern.ch/user/z/zkliu/TestRECO/36x_ZJet_Madgraph_tauola_TestRECO.root"
         ]
-    jobOptions.skimType = "Electron"
+    jobOptions.skimType = "ElectronPhoton"
     jobOptions.globalTag = "START38_V10::All"
     jobOptions.reportEvery = 1
     jobOptions.isRealData = False
     jobOptions.use35XInput = False
     jobOptions.wantSummary = True
     jobOptions.hltProcessName = "REDIGI36X"
+
+  elif options.jobType == "testFall10":
+    jobOptions.inputFiles = """
+        /store/mc/Fall10/DYJetsToLL_TuneZ2_M-50_7TeV-madgraph-tauola/GEN-SIM-RECO/START38_V12-v2/0006/E2250407-B3E4-DF11-941F-E0CB4E29C4C6.root
+        /store/mc/Fall10/DYJetsToLL_TuneZ2_M-50_7TeV-madgraph-tauola/GEN-SIM-RECO/START38_V12-v2/0006/6E58848F-87E4-DF11-81C0-001F2965D25E.root
+        /store/mc/Fall10/DYJetsToLL_TuneZ2_M-50_7TeV-madgraph-tauola/GEN-SIM-RECO/START38_V12-v2/0005/CCE7C256-03E4-DF11-BD14-00261834B5BA.root
+        /store/mc/Fall10/DYJetsToLL_TuneZ2_M-50_7TeV-madgraph-tauola/GEN-SIM-RECO/START38_V12-v2/0005/C8C7A3EB-ACE3-DF11-8D6D-00D0680B8852.root
+        /store/mc/Fall10/DYJetsToLL_TuneZ2_M-50_7TeV-madgraph-tauola/GEN-SIM-RECO/START38_V12-v2/0005/A8CA5933-BDE3-DF11-961D-A4BADB3CEBCE.root
+        /store/mc/Fall10/DYJetsToLL_TuneZ2_M-50_7TeV-madgraph-tauola/GEN-SIM-RECO/START38_V12-v2/0005/90E09BA7-AEE3-DF11-A22D-001EC9EAFEBE.root
+        """.split()
+    jobOptions.skimType = "ElectronPhoton"
+    jobOptions.globalTag = "START38_V13::All"
+    jobOptions.reportEvery = 1
+    jobOptions.isRealData = False
+    jobOptions.wantSummary = True
+    jobOptions.hltProcessName = "HLT"
 
   elif options.jobType == "MUPHPromptReco36X":
     jobOptions.globalTag = "GR10_P_V7::All"
