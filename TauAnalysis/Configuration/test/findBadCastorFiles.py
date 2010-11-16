@@ -113,7 +113,9 @@ files = retval.stdout.read().split('\n')
 for file in files:
     fileName = castorFilePath + '/' + file
     fileName = fileName.replace('//', '/')
-    work_queue.put(fileName)
+    # skip entry referring to castorFilePath directory 
+    if len(fileName) > (len(castorFilePath) + 1):
+        work_queue.put(fileName)
 
 work_queue.join()
 results_queue.join()
