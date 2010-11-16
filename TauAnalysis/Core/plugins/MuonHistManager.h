@@ -10,6 +10,8 @@
 
 #include "TauAnalysis/Core/interface/HistManagerBase.h"
 
+#include "TauAnalysis/RecoTools/interface/ParticlePFIsolationExtractor.h"
+
 #include <vector>
 #include <string>
 
@@ -32,7 +34,7 @@ class MuonHistManager : public HistManagerBase
   double getMuonWeight(const pat::Muon&);
 
   void fillMuonHistograms(const pat::Muon&, MonitorElement*, MonitorElement*, MonitorElement*, double);
-  void fillMuonIsoHistograms(const pat::Muon&, double);
+  void fillMuonIsoHistograms(const pat::Muon&, const reco::PFCandidateCollection&, double);
   void fillMuonIsoConeSizeDepHistograms(const pat::Muon&, double);
 
 //--- configuration parameters
@@ -40,12 +42,15 @@ class MuonHistManager : public HistManagerBase
   edm::InputTag vertexSrc_;
   edm::InputTag beamSpotSrc_;
   edm::InputTag jetSrc_;
+  edm::InputTag pfCandidateSrc_;
   edm::InputTag genParticleSrc_;
 
   bool requireGenMuonMatch_;
 
   typedef std::vector<int> vint;
   vint skipPdgIdsGenParticleMatch_;
+
+  PATMuonPFIsolationExtractor* pfCombIsoExtractor_;
 
   bool makeIsoPtCtrlHistograms_;
   bool makeIsoPtConeSizeDepHistograms_;
@@ -151,6 +156,9 @@ class MuonHistManager : public HistManagerBase
   MonitorElement* hMuonPFNeutralHadronIsoPtRel_;
   MonitorElement* hMuonPFGammaIsoPt_;
   MonitorElement* hMuonPFGammaIsoPtRel_;
+
+  MonitorElement* hMuonPFCombIsoPt_; 
+  MonitorElement* hMuonPFCombIsoPtRel_;  
 
   MonitorElement* hMuonPFChargedHadronIsoPtCtrl_;
   MonitorElement* hMuonPFGammaIsoPtCtrl_;

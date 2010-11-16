@@ -8,6 +8,8 @@
 #include "DataFormats/VertexReco/interface/Vertex.h"
 #include "DataFormats/PatCandidates/interface/Muon.h"
 #include "DataFormats/PatCandidates/interface/Jet.h"
+#include "DataFormats/ParticleFlowCandidate/interface/PFCandidate.h"
+#include "DataFormats/ParticleFlowCandidate/interface/PFCandidateFwd.h"
 #include "DataFormats/HepMCCandidate/interface/GenParticle.h"
 #include "DataFormats/HepMCCandidate/interface/GenParticleFwd.h"
 #include "DataFormats/BeamSpot/interface/BeamSpot.h"
@@ -43,7 +45,8 @@ bool matchesGenMuon(const pat::Muon& patMuon)
 //
 
 MuonHistManager::MuonHistManager(const edm::ParameterSet& cfg)
-  : HistManagerBase(cfg)
+  : HistManagerBase(cfg),
+    pfCombIsoExtractor_(0)
 {
   //std::cout << "<MuonHistManager::MuonHistManager>:" << std::endl;
 
@@ -64,6 +67,9 @@ MuonHistManager::MuonHistManager(const edm::ParameterSet& cfg)
   jetSrc_ = cfg.getParameter<edm::InputTag>("jetSource");
   //std::cout << " jetSrc = " << jetSrc_ << std::endl;
 
+  pfCandidateSrc_ = cfg.getParameter<edm::InputTag>("pfCandidateSource");
+  //std::cout << " pfCandidateSrc = " << pfCandidateSrc_ << std::endl;
+
   genParticleSrc_ = ( cfg.exists("genParticleSource") ) ? cfg.getParameter<edm::InputTag>("genParticleSource") : edm::InputTag();
   //std::cout << " genParticleSrc = " << genParticleSrc_ << std::endl;
 
@@ -71,6 +77,11 @@ MuonHistManager::MuonHistManager(const edm::ParameterSet& cfg)
   //std::cout << " requireGenMuonMatch = " << requireGenMuonMatch_ << std::endl;
 
   skipPdgIdsGenParticleMatch_ = cfg.getParameter<vint>("skipPdgIdsGenParticleMatch");
+
+  if ( cfg.exists("pfCombIsoExtractor") ) {
+    edm::ParameterSet cfgPFCompIsoExtractor = cfg.getParameter<edm::ParameterSet>("pfCombIsoExtractor");
+    pfCombIsoExtractor_ = new PATMuonPFIsolationExtractor(cfgPFCompIsoExtractor);
+  }
 
   std::string normalization_string = cfg.getParameter<std::string>("normalization");
   normMethod_ = getNormMethod(normalization_string, "muons");
@@ -107,6 +118,8 @@ MuonHistManager::~MuonHistManager()
   clearIsoParam(muonEcalIsoParam_);
   clearIsoParam(muonHcalIsoParam_);
   clearIsoParam(muonParticleFlowIsoParam_);
+
+  delete pfCombIsoExtractor_;
 }
 
 void MuonHistManager::bookHistogramsImp()
@@ -189,6 +202,9 @@ void MuonHistManager::bookHistogramsImp()
   hMuonPFGammaIsoPt_ = book1D("MuonPFGammaIsoPt", "MuonPFGammaIsoPt", 101, -0.05, 10.05); 
   hMuonPFGammaIsoPtRel_ = book1D("MuonPFGammaIsoPtRel", "MuonPFGammaIsoPtRel", 101, -0.005, 1.005); 
   
+  hMuonPFCombIsoPt_ = book1D("MuonPFCombIsoPt", "MuonPFCombIsoPt", 101, -0.05, 10.05);
+  hMuonPFCombIsoPtRel_ = book1D("MuonPFCombIsoPtRel", "MuonPFCombIsoPtRel", 101, -0.005, 1.005); 
+
 //--- book "control" histograms to check agreement between muon isolation variables
 //    computed by PAT-level IsoDeposits based on particle flow 
 //    with values computed on AOD level, based on ECAL recHits/CaloTowers and reco::Tracks
@@ -229,6 +245,9 @@ void MuonHistManager::fillHistogramsImp(const edm::Event& evt, const edm::EventS
 
   edm::Handle<pat::JetCollection> patJets;
   getCollection(evt, jetSrc_, patJets);
+
+  edm::Handle<reco::PFCandidateCollection> pfCandidates;
+  evt.getByLabel(pfCandidateSrc_, pfCandidates);
 
   edm::Handle<reco::GenParticleCollection> genParticles;
   if ( genParticleSrc_.label() != "" ) evt.getByLabel(genParticleSrc_, genParticles);
@@ -330,7 +349,7 @@ void MuonHistManager::fillHistogramsImp(const edm::Event& evt, const edm::EventS
     double segmentCompatibility = muon::segmentCompatibility(*patMuon);
     hMuonSegmentCompatibility_->Fill(segmentCompatibility, weight);
 
-    fillMuonIsoHistograms(*patMuon, weight);
+    fillMuonIsoHistograms(*patMuon, *pfCandidates, weight);
     hMuonDeltaRnearestJet_->Fill(getDeltaRnearestJet(patMuon->p4(), patJets), weight);
     if ( makeIsoPtConeSizeDepHistograms_ ) fillMuonIsoConeSizeDepHistograms(*patMuon, weight);
   }
@@ -409,7 +428,7 @@ void MuonHistManager::fillMuonHistograms(const pat::Muon& patMuon,
   hMuonPhi->Fill(patMuon.phi(), weight);
 }
 
-void MuonHistManager::fillMuonIsoHistograms(const pat::Muon& patMuon, double weight)
+void MuonHistManager::fillMuonIsoHistograms(const pat::Muon& patMuon, const reco::PFCandidateCollection& pfCandidates, double weight)
 {
   //std::cout << "<MuonHistManager::fillMuonIsoHistograms>:" << std::endl;
 
@@ -447,6 +466,12 @@ void MuonHistManager::fillMuonIsoHistograms(const pat::Muon& patMuon, double wei
   hMuonPFNeutralHadronIsoPt_->Fill(patMuon.neutralHadronIso()/patMuon.pt(), weight);
   hMuonPFGammaIsoPt_->Fill(patMuon.photonIso(), weight);
   hMuonPFGammaIsoPt_->Fill(patMuon.photonIso()/patMuon.pt(), weight);
+
+  if ( pfCombIsoExtractor_ ) {
+    double pfCombIso = (*pfCombIsoExtractor_)(patMuon, pfCandidates);
+    hMuonPFCombIsoPt_->Fill(pfCombIso, weight);
+    hMuonPFCombIsoPtRel_->Fill(pfCombIso/patMuon.pt(), weight);
+  }
   
   if ( makeIsoPtCtrlHistograms_ ) {
     hMuonPFChargedHadronIsoPtCtrl_->Fill(muonTrackIso, patMuon.chargedHadronIso(), weight);
