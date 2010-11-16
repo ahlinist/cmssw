@@ -33,14 +33,17 @@ def _setGlobalTag(process, tag, **kwargs):
 
 def _setattr_ifexists(obj, attrName, attrValue):
 	if hasattr(obj, attrName):
-		setattr(obj, attrName, attrValue)    
+		setattr(obj, attrName, attrValue)
 
 @_requires(args=['channel'])
 def _setGenPhaseSpaceCut(process, value, **kwargs):
     " Set the generator level phase space cut "
     if hasattr(process, "genPhaseSpaceCut"):
         genPhaseSpaceCut = getattr(process, "genPhaseSpaceCut")
-        setattr(genPhaseSpaceCut, "cut", cms.string(value))
+        if len(genPhaseSpaceCut.selectors) > 1:
+            print "Gen phase space cut has more than one selector, I don't"\
+                    " know what to do! Only setting the first one."
+        setattr(genPhaseSpaceCut.selectors[0], "cut", cms.string(value))
     else:
         raise ValueError("Process object has no attribute 'genPhaseSpaceCut' !!")
 
@@ -137,7 +140,7 @@ def _setTriggerProcess(process, triggerTag, **kwargs):
             patutils.massSearchReplaceAnyInputTag(processAttr, cms.InputTag("TriggerResults", "", "HLT"), triggerTag)
             patutils.massSearchReplaceAnyInputTag(processAttr, cms.InputTag("TriggerResults::HLT"), triggerTag)
 
-    # update InputTag for PAT trigger tools             
+    # update InputTag for PAT trigger tools
     process.patTrigger.processName = triggerTag.getProcessName()
     process.patTriggerEvent.processName = triggerTag.getProcessName()
 
@@ -175,10 +178,10 @@ def _setTriggerBits(process, triggerSelect, **kwargs):
             if iHLTacceptPath < (len(triggerSelect) - 1):
                 triggerSelect_string += ", "
         triggerSelect_string += " }"
-        print "Changed HLT selection from %s --> %s" % (old_select, triggerSelect_string)            
+        print "Changed HLT selection from %s --> %s" % (old_select, triggerSelect_string)
     elif isinstance(triggerSelect, str):
         process.Trigger.selectors[0].hltAcceptPaths = cms.vstring(triggerSelect)
-        print "Changed HLT selection from %s --> %s" % (old_select, triggerSelect)        
+        print "Changed HLT selection from %s --> %s" % (old_select, triggerSelect)
     else:
         raise ValueError("Parameter 'triggerSelect' is of invalid Type = %s !!" % type(triggerSelect))
 
