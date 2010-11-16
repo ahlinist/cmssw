@@ -1,6 +1,6 @@
 import FWCore.ParameterSet.Config as cms
 
-goodElectrons = cms.EDFilter("CandViewRefSelector",
+goodElectrons = cms.EDFilter("GsfElectronSelector",
     src = cms.InputTag("gsfElectrons"),
     cut = cms.string("pt > 15"),
     filter = cms.bool(True)

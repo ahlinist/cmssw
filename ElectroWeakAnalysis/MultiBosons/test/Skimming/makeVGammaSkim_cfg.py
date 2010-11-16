@@ -37,9 +37,11 @@ applyJobOptions(options)
 ## Input
 process.source.fileNames = options.inputFiles
 
+process.maxEvents.input = -1
 if options.outEvents >= 0:
     process.maxEvents.output = cms.untracked.int32(options.outEvents)
-else:
+    #process.maxEvents = cms.untracked.PSet( output = cms.untracked.int32(options.outEvents) )
+if options.maxEvents >= 0:
     process.maxEvents.input = options.maxEvents
 
 ## Global tag
