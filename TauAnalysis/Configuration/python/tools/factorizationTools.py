@@ -218,7 +218,7 @@ def enableFactorization_makeZtoMuTauPlots_grid(
     process,
     factorizationSequenceName = "loadAndFactorizeZtoMuTauSamples",
     samplesToFactorize = [ 'InclusivePPmuX', 'PPmuXptGt20Mu10', 'PPmuXptGt20Mu15' ],
-    relevantMergedSamples = [ 'qcdSum', ],
+    relevantMergedSamples = [ 'qcdSum' ],
     mergedToRecoSampleDict = {},
     mergedSampleAdderModule = lambda sample: 'addZtoMuTau_%s' % (sample),
     dqmDirectoryOut =
@@ -774,8 +774,8 @@ def enableFactorization_runZtoDiTau(process):
 def enableFactorization_makeZtoDiTauPlots_grid(
     process,
     factorizationSequenceName = "loadAndFactorizeZtoDiTauSamples",
-    samplesToFactorize = [ 'qcdDiJet', ],
-    relevantMergedSamples = [ 'qcdSum', ],
+    samplesToFactorize = [ 'qcdDiJet' ],
+    relevantMergedSamples = [ 'qcdSum' ],
     mergedToRecoSampleDict = {},
     mergedSampleAdderModule = lambda sample: 'addZtoDiTau_%s' % (sample),
     dqmDirectoryOut =
@@ -837,7 +837,7 @@ def enableFactorization_makeZtoDiTauPlots_grid(
 
     # defines names of MonitorElements used as numerator and denominator
     # to compute factorization scale-factor
-    meNameZtoDiTau_numerator = "evtSelSecondTauCharge/passed_cumulative_numWeighted"
+    meNameZtoDiTau_numerator = "evtSelDiTauCandidateForDiTauPzetaDiff/passed_cumulative_numWeighted"
     meNameZtoDiTau_denominator = "evtSelSecondTauLeadTrkPt/processed_cumulative_numWeighted"
 
     # Loop over the samples and create sequences
@@ -864,8 +864,8 @@ def enableFactorization_makeZtoDiTauPlots_grid(
     # Now update any of the relevant mergers
     for mergedSample in relevantMergedSamples:
         # Get the module that is doing the merging, if it exists
-        if not hasattr(process.mergeSamplesZtoDiTau, "merge_%s"%(mergedSample)): continue
-        merger = getattr(process.mergeSamplesZtoDiTau, "merge_%s" % (mergedSample))
+        if not hasattr(process.mergeSamplesZtoDiTau, "merge_%s_zDiTauAnalyzer" % (mergedSample)): continue
+        merger = getattr(process.mergeSamplesZtoDiTau, "merge_%s_zDiTauAnalyzer" % (mergedSample))
 
         # Get the subsamples associated with this merged sample
         subsamples = mergedToRecoSampleDict[mergedSample]['samples']
@@ -881,7 +881,7 @@ def enableFactorization_makeZtoDiTauPlots_grid(
 
     # Update the plot sources in the plot jobs.  Note that we don't need to do
     # this for the merged samples, since we have replaced the HistAdder sources
-    for plotterModuleName in [ 'plotZtoDiTau', ]:
+    for plotterModuleName in [ 'plotZtoDiTau_log', 'plotZtoDiTau_linear' ]:
         plotterModuleProcesses = getattr(process, plotterModuleName).processes
         for sample in samplesToFactorize:
             if hasattr(plotterModuleProcesses, sample):
