@@ -6,23 +6,20 @@ from PhysicsTools.PatAlgos.patTemplate_cfg import *
 from PhysicsTools.PatAlgos.tools.coreTools import *
 
 ## global tag for data
-process.GlobalTag.globaltag = 'GR_R_38X_V13::All'
+process.GlobalTag.globaltag = 'GR_R_38X_V14::All'
 
 # add pf met
 from PhysicsTools.PatAlgos.tools.metTools import *
 removeMCMatching(process, ['All'])
 addPfMET(process, 'PF')
 
-# get the 900 GeV jet corrections
-from PhysicsTools.PatAlgos.tools.jetTools import *
-switchJECSet( process, "Spring10")
-
 # Add PF jets
+from PhysicsTools.PatAlgos.tools.jetTools import *
 addJetCollection(process,cms.InputTag('ak5PFJets'),
                  'AK5', 'PF',
                  doJTA        = False,
                  doBTagging   = False,
-                 jetCorrLabel = ('AK5','PF'),
+                 jetCorrLabel = ('AK5PF', cms.vstring(['L2Relative', 'L3Absolute', 'L2L3Residual'])),
                  doType1MET   = False,
                  doL1Cleaning = False,
                  doL1Counters = False,
