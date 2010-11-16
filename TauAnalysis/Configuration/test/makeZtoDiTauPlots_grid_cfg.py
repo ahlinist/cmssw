@@ -11,7 +11,6 @@ from TauAnalysis.Configuration.tools.factorizationTools import enableFactorizati
 process = cms.Process('makeZtoDiTauPlots')
 
 process.load("TauAnalysis.Configuration.dumpZtoDiTau_grid_cff")
-##process.load("TauAnalysis.Configuration.plotZtoDiTau_grid_cff")
 
 channel = 'ZtoDiTau'
 inputFilePath = getHarvestingFilePath(channel)
