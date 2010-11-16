@@ -1,10 +1,14 @@
 import FWCore.ParameterSet.Config as cms
 import copy
+import itertools
 
 import TauAnalysis.Configuration.plotterProcessDefinitions_cfi as plotter
 import TauAnalysis.DQMTools.plotterStyleDefinitions_cfi as styles
 
 import TauAnalysis.Configuration.recoSampleDefinitionsZtoMuTau_7TeV_grid_cfi as ZtoMuTau
+
+_USE_BARI_XSEC = True
+TAN_BETA = 30
 
 # List of samples to run in the analysis
 SAMPLES_TO_ANALYZE = copy.deepcopy(ZtoMuTau.SAMPLES_TO_ANALYZE)
@@ -30,21 +34,22 @@ SAMPLES_TO_PLOT = [
     'A160Sum',
     'A200Sum',
     'A300Sum',
-    'qcdSum',
+    #'qcdSum',
+    'PPmuXptGt20Mu15',
     'WplusJets',
-    'TTplusJets',
+    #'TTplusJets',
     'Zmumu',
     'Ztautau'
 ]
 
 SAMPLES_TO_PRINT = copy.copy(SAMPLES_TO_PLOT)
-SAMPLES_TO_PRINT.append('A90Sum')
+#SAMPLES_TO_PRINT.append('A90Sum')
 SAMPLES_TO_PRINT.append('A100Sum')
-SAMPLES_TO_PRINT.append('A120Sum')
-SAMPLES_TO_PRINT.append('A140Sum')
+#SAMPLES_TO_PRINT.append('A120Sum')
+#SAMPLES_TO_PRINT.append('A140Sum')
 SAMPLES_TO_PRINT.append('A180Sum')
-SAMPLES_TO_PRINT.append('A250Sum')
-SAMPLES_TO_PRINT.append('A350Sum')
+#SAMPLES_TO_PRINT.append('A250Sum')
+#SAMPLES_TO_PRINT.append('A350Sum')
 #SAMPLES_TO_PRINT.append('smBgSum')
 
 SAMPLE_DEFAULTS = ZtoMuTau.SAMPLE_DEFAULTS
@@ -194,7 +199,7 @@ AHtoMuTauSpecific_RECO_SAMPLES = {
         'x_sec' : (
                6595.*_femtobarns*0.126317 # (gg -> h0)*(h0->tautau)
            +  32421.*_femtobarns*0.127088 # (gg -> A0)*(A0->tautau)
-           +  33870.*_femtobarns*0.128313 # (gg -> H0)*(H0->tautau)  
+           +  33870.*_femtobarns*0.128313 # (gg -> H0)*(H0->tautau)
         ),
         # Feynhiggs v2.7.1 input to calculate xsec*br -  mhmax, 7TeV
         'legendEntry' : 'ggA(130) #rightarrow #tau^{+} #tau^{-}',
@@ -269,7 +274,7 @@ AHtoMuTauSpecific_RECO_SAMPLES = {
         'skim_eff' : 1.0,
         'x_sec' : (
               11094.*_femtobarns*0.131234 # (gg -> A0)*(A0->tautau)
-           +  11977.*_femtobarns*0.131575 # (gg -> H0)*(H0->tautau)  
+           +  11977.*_femtobarns*0.131575 # (gg -> H0)*(H0->tautau)
         ),
         # Feynhiggs v2.7.1 input to calculate xsec*br -  mhmax, 7TeV
         'legendEntry' : 'ggA(160) #rightarrow #tau^{+} #tau^{-}',
@@ -287,7 +292,7 @@ AHtoMuTauSpecific_RECO_SAMPLES = {
         'skim_eff' : 1.0,
         'x_sec' : (
                1118.*_femtobarns*0.131234 # (bb -> A0)*(A0->tautau)
-           +  50997.*_femtobarns*0.131575 # (bb -> H0)*(H0->tautau) 
+           +  50997.*_femtobarns*0.131575 # (bb -> H0)*(H0->tautau)
         ),
         # Feynhiggs v2.7.1 input to calculate xsec*br -  mhmax, 7TeV
         'legendEntry' : 'bbA(160) #rightarrow #tau^{+} #tau^{-}',
@@ -305,7 +310,7 @@ AHtoMuTauSpecific_RECO_SAMPLES = {
         'skim_eff' : 1.0,
         'x_sec' : (
                5907.*_femtobarns*0.133061 # (gg -> A0)*(A0->tautau)
-           +   6388.*_femtobarns*0.133826 # (gg -> H0)*(H0->tautau)  
+           +   6388.*_femtobarns*0.133826 # (gg -> H0)*(H0->tautau)
         ),
         # Feynhiggs v2.7.1 input to calculate xsec*br -  mhmax, 7TeV
         'legendEntry' : 'ggA(180) #rightarrow #tau^{+} #tau^{-}',
@@ -323,7 +328,7 @@ AHtoMuTauSpecific_RECO_SAMPLES = {
         'skim_eff' : 1.0,
         'x_sec' : (
               32261.*_femtobarns*0.133061 # (bb -> A0)*(A0->tautau)
-           +  32063.*_femtobarns*0.133826 # (bb -> H0)*(H0->tautau)  
+           +  32063.*_femtobarns*0.133826 # (bb -> H0)*(H0->tautau)
         ),
         # Feynhiggs v2.7.1 input to calculate xsec*br -  mhmax, 7TeV
         'legendEntry' : 'bbA(180) #rightarrow #tau^{+} #tau^{-}',
@@ -341,7 +346,7 @@ AHtoMuTauSpecific_RECO_SAMPLES = {
         'skim_eff' : 1.0,
         'x_sec' : (
                3318.*_femtobarns*0.134295 # (gg -> A0)*(A0->tautau)
-           +   3665.*_femtobarns*0.135591 # (gg -> H0)*(H0->tautau)  
+           +   3665.*_femtobarns*0.135591 # (gg -> H0)*(H0->tautau)
         ),
         # Feynhiggs v2.7.1 input to calculate xsec*br -  mhmax, 7TeV
         'legendEntry' : 'ggA(200) #rightarrow #tau^{+} #tau^{-}',
@@ -359,7 +364,7 @@ AHtoMuTauSpecific_RECO_SAMPLES = {
         'skim_eff' : 1.0,
         'x_sec' : (
               21202.*_femtobarns*0.134295 # (bb -> A0)*(A0->tautau)
-           +  21128.*_femtobarns*0.135591 # (bb -> H0)*(H0->tautau)  
+           +  21128.*_femtobarns*0.135591 # (bb -> H0)*(H0->tautau)
         ),
         # Feynhiggs v2.7.1 input to calculate xsec*br -  mhmax, 7TeV
         'legendEntry' : 'bbA(200) #rightarrow #tau^{+} #tau^{-}',
@@ -377,7 +382,7 @@ AHtoMuTauSpecific_RECO_SAMPLES = {
         'skim_eff' : 1.0,
         'x_sec' : (
                 923.*_femtobarns*0.135441 # (gg -> A0)*(A0->tautau)
-           +   1101.*_femtobarns*0.139024 # (gg -> H0)*(H0->tautau)  
+           +   1101.*_femtobarns*0.139024 # (gg -> H0)*(H0->tautau)
         ),
         # Feynhiggs v2.7.1 input to calculate xsec*br -  mhmax, 7TeV
         'legendEntry' : 'ggA(250) #rightarrow #tau^{+} #tau^{-}',
@@ -395,7 +400,7 @@ AHtoMuTauSpecific_RECO_SAMPLES = {
         'skim_eff' : 1.0,
         'x_sec' : (
                8432.*_femtobarns*0.135441 # (bb -> A0)*(A0->tautau)
-           +   8414.*_femtobarns*0.139024 # (bb -> H0)*(H0->tautau)  
+           +   8414.*_femtobarns*0.139024 # (bb -> H0)*(H0->tautau)
         ),
         # Feynhiggs v2.7.1 input to calculate xsec*br -  mhmax, 7TeV
         'legendEntry' : 'bbA(250) #rightarrow #tau^{+} #tau^{-}',
@@ -413,7 +418,7 @@ AHtoMuTauSpecific_RECO_SAMPLES = {
         'skim_eff' : 1.0,
         'x_sec' : (
                 286.*_femtobarns*0.131076 # (gg -> A0)*(A0->tautau)
-           +    387.*_femtobarns*0.139620 # (gg -> H0)*(H0->tautau)  
+           +    387.*_femtobarns*0.139620 # (gg -> H0)*(H0->tautau)
         ),
         # Feynhiggs v2.7.1 input to calculate xsec*br -  mhmax, 7TeV
         'legendEntry' : 'ggA(300) #rightarrow #tau^{+} #tau^{-}',
@@ -431,7 +436,7 @@ AHtoMuTauSpecific_RECO_SAMPLES = {
         'skim_eff' : 1.0,
         'x_sec' : (
                3752.*_femtobarns*0.131076 # (bb -> A0)*(A0->tautau)
-           +   3736.*_femtobarns*0.139620 # (bb -> H0)*(H0->tautau)  
+           +   3736.*_femtobarns*0.139620 # (bb -> H0)*(H0->tautau)
         ),
         # Feynhiggs v2.7.1 input to calculate xsec*br -  mhmax, 7TeV
         'legendEntry' : 'bbA(300) #rightarrow #tau^{+} #tau^{-}',
@@ -449,7 +454,7 @@ AHtoMuTauSpecific_RECO_SAMPLES = {
         'skim_eff' : 1.0,
         'x_sec' : (
                  84.*_femtobarns*0.117009 # (gg -> A0)*(A0->tautau)
-           +    121.*_femtobarns*0.133089 # (gg -> H0)*(H0->tautau)  
+           +    121.*_femtobarns*0.133089 # (gg -> H0)*(H0->tautau)
         ),
         # Feynhiggs v2.7.1 input to calculate xsec*br -  mhmax, 7TeV
         'legendEntry' : 'ggA(350) #rightarrow #tau^{+} #tau^{-}',
@@ -467,7 +472,7 @@ AHtoMuTauSpecific_RECO_SAMPLES = {
         'skim_eff' : 1.0,
         'x_sec' : (
                1830.*_femtobarns*0.117009 # (bb -> A0)*(A0->tautau)
-           +   1829.*_femtobarns*0.133089 # (bb -> H0)*(H0->tautau)  
+           +   1829.*_femtobarns*0.133089 # (bb -> H0)*(H0->tautau)
         ),
         # Feynhiggs v2.7.1 input to calculate xsec*br -  mhmax, 7TeV
         'legendEntry' : 'bbA(350) #rightarrow #tau^{+} #tau^{-}',
@@ -550,16 +555,60 @@ AHtoMutauSpecific_MERGE_SAMPLES = {
 }
 MERGE_SAMPLES.update(AHtoMutauSpecific_MERGE_SAMPLES)
 
+# Functions that determine whether or not a Higgs (h, H, A) is non-negligble
+_inclusion_ranges = {
+    'A' : lambda massA: True,
+    'H' : lambda massA: massA > 120,
+    'h' : lambda massA: massA < 140,
+}
+
+# Update higgs sample cross sections
+if _USE_BARI_XSEC:
+    print "Updating samples to use Bari xsections"
+    import re
+    import TauAnalysis.Configuration.tools.mssm_xsec as mssm_xsec
+    matcher = re.compile(r"(?P<isBB>bb)*A(?P<massA>\d*)")
+    higgs_samples = [ sample for sample in SAMPLES_TO_ANALYZE if
+                     matcher.match(sample) ]
+    higgs_lookups = {}
+    for sample in higgs_samples:
+        match = matcher.match(sample)
+        mass = int(match.group('massA'))
+        print "Updating cross section for sample %s - mA: %i" % (
+            sample, mass)
+        # Lookup the XSec etc, if we haven't already
+        mssm_info = higgs_lookups.setdefault(
+            (mass, TAN_BETA), mssm_xsec.query(mass, TAN_BETA))
+        # Determine if samples is bb or glu-glu
+        production_mechanism = (match.group('isBB') and 'bbH' or 'ggF')
+        # Compute the total cross section, using multiple higgs if necessary
+        total_eff_xsec = 0.0
+        for higgs_type in ['H', 'A', 'h']:
+            # Determine if we care about this higgs for this mA
+            if _inclusion_ranges[higgs_type](mass):
+                higgs_dict = mssm_info['higgses'][higgs_type]
+                br = higgs_dict['BR']
+                # Get the cross section in picobarns
+                xsec = (higgs_dict['xsec'][production_mechanism]
+                        /mssm_xsec.picobarns)
+                print "--- %s contributes (BR*xsec) %0.2f * %0.2fpb = %0.2f" % (
+                    higgs_type, br, xsec, br*xsec)
+                total_eff_xsec += xsec*br
+        print "--- Total effective xsec: %0.2f pb" % total_eff_xsec
+        # Convert to the local units (should not matter, but lets be safe)
+        total_eff_xsec *= ZtoMuTau._picobarns
+        RECO_SAMPLES[sample]['xsec'] = total_eff_xsec
+
 # List of all subsamples used in any plot job.  i.e. if qcdSum is included in
 # samples to plot it will be expanded to the inclusive/exclusive ppMux samples
-FLATTENED_SAMPLES_TO_PLOT = []
+FLATTENED_SAMPLES_TO_PLOT = set([])
 
-for sample in SAMPLES_TO_PLOT:
+for sample in itertools.chain(SAMPLES_TO_PLOT, SAMPLES_TO_PRINT):
     if sample in MERGE_SAMPLES:
         for subsample in MERGE_SAMPLES[sample]['samples']:
-            FLATTENED_SAMPLES_TO_PLOT.append(subsample)
+            FLATTENED_SAMPLES_TO_PLOT.add(subsample)
     else:
-        FLATTENED_SAMPLES_TO_PLOT.append(sample)
+        FLATTENED_SAMPLES_TO_PLOT.add(sample)
 
 ALL_SAMPLES = {}
 # Update to use the defaults if necessary
@@ -577,7 +626,9 @@ recoSampleDefinitionsAHtoMuTau_7TeV = {
     'SAMPLES_TO_PLOT' : SAMPLES_TO_PLOT,
     'SAMPLES_TO_PRINT' : SAMPLES_TO_PRINT,
     'SAMPLE_DEFAULTS' : SAMPLE_DEFAULTS,
-    'TARGET_LUMI' : ZtoMuTau.TARGET_LUMI,
+    #'TARGET_LUMI' : ZtoMuTau.TARGET_LUMI,
+    'TARGET_LUMI' : (3061964.0/ZtoMuTau._microbarns +
+                     32264363.944/ZtoMuTau._microbarns),
     'RECO_SAMPLES' : RECO_SAMPLES,
     'MERGE_SAMPLES' : MERGE_SAMPLES,
     'FLATTENED_SAMPLES_TO_PLOT' : FLATTENED_SAMPLES_TO_PLOT,
