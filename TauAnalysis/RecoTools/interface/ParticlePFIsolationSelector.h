@@ -12,9 +12,9 @@
  * 
  * \author Christian Veelken, UC Davis
  *
- * \version $Revision: 1.1 $
+ * \version $Revision: 1.2 $
  *
- * $Id: ParticlePFIsolationSelector.h,v 1.1 2010/11/01 10:25:37 veelken Exp $
+ * $Id: ParticlePFIsolationSelector.h,v 1.2 2010/11/01 16:06:14 veelken Exp $
  *
  */
 
@@ -30,6 +30,8 @@
 #include "DataFormats/ParticleFlowCandidate/interface/PFCandidateFwd.h"
 #include "DataFormats/Math/interface/deltaR.h"
 
+#include "TauAnalysis/RecoTools/interface/ParticlePFIsolationExtractor.h"
+
 #include <TMath.h>
 
 #include <vector>
@@ -43,19 +45,11 @@ class ParticlePFIsolationSelector
   typedef std::vector<T> collection;
 
   explicit ParticlePFIsolationSelector(const edm::ParameterSet& cfg)
-    : sumPtMethod_(kAbsoluteIso),
+    : extractor_(cfg),
+      sumPtMethod_(kAbsoluteIso),
       cfgError_(0)
   {
     pfCandidateSrc_ = cfg.getParameter<edm::InputTag>("pfCandidateSource");
-
-    edm::ParameterSet cfgChargedHadronIso = cfg.getParameter<edm::ParameterSet>("chargedHadronIso");
-    pfChargedHadronIso_ = new pfIsoConfigType(reco::PFCandidate::h, cfgChargedHadronIso);
-
-    edm::ParameterSet cfgNeutralHadronIso = cfg.getParameter<edm::ParameterSet>("neutralHadronIso");
-    pfNeutralHadronIso_ = new pfIsoConfigType(reco::PFCandidate::h0, cfgNeutralHadronIso);
-
-    edm::ParameterSet cfgPhotonIso = cfg.getParameter<edm::ParameterSet>("photonIso");
-    pfPhotonIso_ = new pfIsoConfigType(reco::PFCandidate::gamma, cfgPhotonIso);
   
     sumPtMin_ = cfg.exists("sumPtMin") ? 
       cfg.getParameter<double>("sumPtMin") : -1.;
@@ -74,12 +68,7 @@ class ParticlePFIsolationSelector
       }
     }
   }
-  ~ParticlePFIsolationSelector()
-  {
-    delete pfChargedHadronIso_;
-    delete pfNeutralHadronIso_;
-    delete pfPhotonIso_;
-  }
+  ~ParticlePFIsolationSelector() {}
 
   typename std::vector<const T*>::const_iterator begin() const { return selected_.begin(); }
   typename std::vector<const T*>::const_iterator end() const { return selected_.end(); }
@@ -99,9 +88,7 @@ class ParticlePFIsolationSelector
 
     for ( typename collection::const_iterator isoParticleCandidate = isoParticleCandidates->begin();
 	  isoParticleCandidate != isoParticleCandidates->end(); ++isoParticleCandidate ) {
-      double sumPt = pfChargedHadronIso_->compSumPt(*pfCandidates, isoParticleCandidate->p4());
-      sumPt += pfNeutralHadronIso_->compSumPt(*pfCandidates, isoParticleCandidate->p4());
-      sumPt += pfPhotonIso_->compSumPt(*pfCandidates, isoParticleCandidate->p4());
+      double sumPt = extractor_(*isoParticleCandidate, *pfCandidates);
       
       if ( sumPtMethod_ == kAbsoluteIso ) {
 	if ( sumPtMin_ > 0. && sumPt < sumPtMin_ ) continue;
@@ -121,92 +108,9 @@ class ParticlePFIsolationSelector
  private:
   std::vector<const T*> selected_;
 
-  struct pfIsoConfigType
-  {
-    pfIsoConfigType(reco::PFCandidate::ParticleType pfParticleType, const edm::ParameterSet& cfg)
-      : pfParticleType_(pfParticleType),
-	ptMin_(cfg.getParameter<double>("ptMin")),
-	dRvetoCone_(cfg.getParameter<double>("dRvetoCone")),
-	dRisoCone_(cfg.getParameter<double>("dRisoCone"))
-    {
-      dEtaVeto_ = cfg.exists("dEtaVeto") ? 
-	cfg.getParameter<double>("dEtaVeto") : -1.;
-      dPhiVeto_ = cfg.exists("dPhiVeto") ? 
-	cfg.getParameter<double>("dPhiVeto") : -1.;
-
-      vetoNumHighestPtObjects_ = cfg.exists("vetoNumHighestPtObjects") ? 
-	cfg.getParameter<unsigned>("vetoNumHighestPtObjects") : 0;
-    }
-    ~pfIsoConfigType() {}
-
-    bool passesVeto(const reco::PFCandidate& pfCandidate, const reco::Particle::LorentzVector& isoParticleCandidateP4)
-    {
-      if ( pfCandidate.particleId() != pfParticleType_ ) return false;
-
-      if ( TMath::IsNaN(pfCandidate.pt()) || pfCandidate.pt() < ptMin_ ) return false;
-
-      double dR = deltaR(pfCandidate.p4(), isoParticleCandidateP4);
-      if ( dR < dRvetoCone_ || dR > dRisoCone_ ) return false;
-
-      if ( TMath::Abs(pfCandidate.eta() - isoParticleCandidateP4.eta()) < dEtaVeto_ ) return false;
-      if ( TMath::Abs(pfCandidate.phi() - isoParticleCandidateP4.phi()) < dPhiVeto_ ) return false;
-
-      return true;
-    }
-
-    double compSumPt(const reco::PFCandidateCollection& pfCandidates, const reco::Particle::LorentzVector& isoParticleCandidateP4)
-    {
-      double sumPt = 0.;
-
-      if ( vetoNumHighestPtObjects_ > 0 ) {
-	std::vector<double> pfCandidatePt;
-
-	for ( reco::PFCandidateCollection::const_iterator pfCandidate = pfCandidates.begin();
-	      pfCandidate != pfCandidates.end(); ++pfCandidate ) {
-	  if ( !passesVeto(*pfCandidate, isoParticleCandidateP4) ) continue;
-	  
-	  pfCandidatePt.push_back(pfCandidate->pt());
-	}
-
-	// sort transverse momenta of particle-flow candidates
-	// ( lowest/highest Pt value will be stored in pfCandidatePt[0]/pfCandidatePt[numPFCandidates - 1];
-	//  cf. http://www.cplusplus.com/reference/algorithm/sort/ )
-	std::sort(pfCandidatePt.begin(), pfCandidatePt.end());
-
-        int numPt = pfCandidatePt.size();
-        for ( int iPt = 0; iPt < (numPt - (int)vetoNumHighestPtObjects_); ++iPt ) {
-	  sumPt += pfCandidatePt[iPt];
-	}
-      } else {
-	for ( reco::PFCandidateCollection::const_iterator pfCandidate = pfCandidates.begin();
-	      pfCandidate != pfCandidates.end(); ++pfCandidate ) {
-	  if ( !passesVeto(*pfCandidate, isoParticleCandidateP4) ) continue;
-
-	  sumPt += pfCandidate->pt();
-	}   
-      } 
-
-      return sumPt;
-    }
-
-    reco::PFCandidate::ParticleType pfParticleType_;
-
-    double ptMin_;
-
-    double dRvetoCone_;
-    double dRisoCone_;
-
-    double dEtaVeto_;
-    double dPhiVeto_;
-
-    unsigned vetoNumHighestPtObjects_;
-  };
-
   edm::InputTag pfCandidateSrc_;
 
-  pfIsoConfigType* pfChargedHadronIso_;
-  pfIsoConfigType* pfNeutralHadronIso_;
-  pfIsoConfigType* pfPhotonIso_;
+  ParticlePFIsolationExtractor<T> extractor_;
 
   double sumPtMin_;
   double sumPtMax_;
