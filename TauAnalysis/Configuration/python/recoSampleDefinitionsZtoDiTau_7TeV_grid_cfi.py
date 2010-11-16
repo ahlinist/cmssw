@@ -29,9 +29,9 @@ SAMPLES_TO_PLOT = [
 ]
 
 SAMPLES_TO_PRINT = copy.copy(SAMPLES_TO_PLOT)
-SAMPLES_TO_PRINT.append('smBgSum')
-SAMPLES_TO_PRINT.append('smSum')
-SAMPLES_TO_PRINT.append('ZtautauPU156bx')
+#SAMPLES_TO_PRINT.append('smBgSum')
+#SAMPLES_TO_PRINT.append('smSum')
+#SAMPLES_TO_PRINT.append('ZtautauPU156bx')
 
 SAMPLE_DEFAULTS = {
     'dbs_url' : "http://cmsdbsprod.cern.ch/cms_dbs_ph_analysis_02/servlet/DBSServlet",
