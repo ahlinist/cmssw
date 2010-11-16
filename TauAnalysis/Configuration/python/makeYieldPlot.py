@@ -84,9 +84,12 @@ def makeYieldPlot(inputFileName = None, dqmDirectory = None, outputFileName = No
     httpAddress = "http://cmssw.cvs.cern.ch/cgi-bin/cmssw.cgi/CMSSW/FWCore/PythonUtilities/scripts/generateEDF.py?revision=1.9"
     commandLine = 'wget "%s" -O generateEDF.py' % httpAddress
     _runCommand(commandLine)
+    commandLine = 'chmod +x generateEDF.py'
+    _runCommand(commandLine)
 
     commandLine = './generateEDF.py %s %s %s' % (lumiCalcFileName, selEventsFileName, outputFileName)
     _runCommand(commandLine)
 
     #subprocess.call("rm %s" % lumiCalcFileName, shell = True)
     #subprocess.call("rm %s" % selEventsFileName, shell = True)
+    subprocess.call("rm %s" % cfgFileName, shell = True)
