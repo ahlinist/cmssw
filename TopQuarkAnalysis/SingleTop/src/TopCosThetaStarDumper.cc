@@ -2,7 +2,7 @@
  *\Author: A. Orso M. Iorio 
  *
  *
- *\version  $Id: TopCosThetaStarDumper.cc,v 1.2 2010/11/09 14:38:29 oiorio Exp $ 
+ *\version  $Id: TopCosThetaStarDumper.cc,v 1.3 2010/11/17 09:24:42 oiorio Exp $ 
  */
 
 // Single Top producer: produces a top candidate made out of a Lepton, a B jet and a MET
@@ -96,16 +96,20 @@ iEvent.getByLabel(tChanSrc_,tChan);
      bJetPt->push_back(bJetPtTmp);
 
      leptonJetDeltaR->push_back(leptonJetDeltaRTmp);
-     
+
      reco::Candidate * candToBoost = it_tChan->clone();
+
+     const reco::Candidate * Lepton1 = candToBoost->daughter("Top")->daughter("Lepton"); 
+     const reco::Candidate * MET1    = candToBoost->daughter("Top")->daughter("MET");          
+     topWTransverseMassTmp = sqrt(pow(Lepton1->et()+MET1->pt(),2) - pow(Lepton1->px()+MET1->px(),2) - pow(Lepton1->py()+MET1->py(),2) );
+     
      booster.set(*candToBoost);
      
      const reco::Candidate * Lepton = candToBoost->daughter("Top")->daughter("Lepton"); 
      const reco::Candidate * BJet = candToBoost->daughter("Top")->daughter("BJet"); 
      const reco::Candidate * MET    = candToBoost->daughter("Top")->daughter("MET");          
      
-     topWTransverseMassTmp = sqrt(pow(Lepton->et()+MET->pt(),2) - pow(Lepton->px()+MET->px(),2) - pow(Lepton->py()+MET->py(),2) );
-
+     
      topWTransverseMass->push_back(topWTransverseMassTmp);
      
      //   for( edm::View<reco::Candidate>::const_iterator it_jets = jets->begin();it_jets != jets->end();++it_jets){
