@@ -134,7 +134,7 @@ def makePlots(process, channel = None, samples = None, inputFilePath = None, job
     dqmFileLoaderModule = cms.EDAnalyzer("DQMFileLoader",
         **dqmFileLoaderJobs)
     dqmFileLoaderModule.inputFilePath = cms.string(inputFilePath)
-    for sample in samples['FLATTENED_SAMPLES_TO_PLOT']:
+    for sample in samplesToLoad:
         getattr(dqmFileLoaderModule, sample).inputFileNames = cms.vstring(
             sample_mapper(sample)
         )
