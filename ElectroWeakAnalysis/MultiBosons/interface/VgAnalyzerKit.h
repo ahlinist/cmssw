@@ -54,6 +54,7 @@ protected:
   bool saveHLTInfo_;
   bool doGenParticles_;
   bool doStoreJets_;
+  bool doSkim_;
 
   InputTag vtxlabel_;
   InputTag gtdigilabel_;

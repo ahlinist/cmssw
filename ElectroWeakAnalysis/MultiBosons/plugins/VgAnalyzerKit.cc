@@ -49,7 +49,8 @@ VgAnalyzerKit::VgAnalyzerKit(const edm::ParameterSet& ps) : verbosity_(0), helpe
   trgResults_     = ps.getParameter<InputTag>("triggerResults");
   trgEvent_       = ps.getParameter<InputTag>("triggerEvent"); 
   doGenParticles_ = ps.getParameter<bool>("doGenParticles");
-  doStoreJets_     = ps.getParameter<bool>("doStoreJets");
+  doStoreJets_    = ps.getParameter<bool>("doStoreJets");
+  doSkim_         = ps.getParameter<bool>("doSkim");
   gtdigilabel_    = ps.getParameter<InputTag>("GTDigiLabel");
   vtxlabel_       = ps.getParameter<InputTag>("VtxLabel");
   caloTowerlabel_ = ps.getParameter<InputTag>("CaloTowerLabel");
@@ -1606,11 +1607,16 @@ fabs(ip->pdgId())<=14) || ip->pdgId()==22))) {
   }
 
   //if (doStoreJets_ == false && (nElePassCut > 0 || nMuPassCut > 0) && nPhoPassCut > 0) {
-  if (doStoreJets_ == false && (nElePassCut > 0 || nMuPassCut > 0)) {
-    hEvents_->Fill(1.5);
-    tree_->Fill();
-  }
-  if (doStoreJets_ == true && nPhoPassCut > 0) {
+  if (doSkim_ == true) {
+    if (doStoreJets_ == false && (nElePassCut > 0 || nMuPassCut > 0)) {
+      hEvents_->Fill(1.5);
+      tree_->Fill();
+    }
+    if (doStoreJets_ == true && nPhoPassCut > 0) {
+      hEvents_->Fill(1.5);
+      tree_->Fill();
+    }
+  } else {
     hEvents_->Fill(1.5);
     tree_->Fill();
   }
