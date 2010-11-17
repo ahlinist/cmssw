@@ -20,8 +20,7 @@ process.source = cms.Source("EmptySource")
 process.loadAnalysisResults = cms.EDAnalyzer("DQMFileLoader",
     all = cms.PSet(
         inputFileNames = cms.vstring(
-            ##'/data1/veelken/CMSSW_3_8_x/plots/AHtoMuTau/plotsAHtoMuTau_all.root'
-            '/data1/friis/Run17/plotsAHtoMuTau_all.root'
+            '/data1/veelken/CMSSW_3_8_x/plots/MSSM_Higgs_combined/plotsAHtoMuTau_all.root'
         ),
         dqmDirectory_store = cms.string('')
     )
@@ -153,9 +152,30 @@ process.exportAnalysisResults_woBtag = cms.EDAnalyzer("DQMExportAnalysisResults"
     ##    ),                                                  
     ##)
 )
- 
+
+process.compDQMEffXsec = cms.EDAnalyzer("DQMEffXsecCalculator",
+    dataIntLumi = cms.double(ZtoMuTau.TARGET_LUMI),
+    channels = cms.PSet(
+        QCD = cms.PSet(
+            efficiency = cms.PSet(
+                numerator = cms.string(
+                    'FilterStatistics/evtSelNonCentralJetEt20bTag/passed_cumulative_numWeighted#a1#s1'
+                ),
+                denominator = cms.string(
+                    'FilterStatistics/genPhaseSpaceCut/passed_cumulative_numWeighted#a1#s1'
+                )
+            ),
+            numEventsPassed = cms.string(
+                'FilterStatistics/evtSelNonCentralJetEt20bTag/passed_cumulative_numWeighted#a1#s1'
+            ),
+            dqmDirectory = cms.string('harvested/qcdSum/ahMuTauAnalyzer_woBtag')
+        )
+    )
+)
+
 process.p = cms.Path(
     process.loadAnalysisResults
   #+ process.dumpDQMStore 
    + process.exportAnalysisResults_woBtag
+   + process.compDQMEffXsec
 )
