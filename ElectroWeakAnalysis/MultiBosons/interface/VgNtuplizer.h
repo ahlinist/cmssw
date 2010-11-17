@@ -49,13 +49,12 @@ protected:
   bool saveHLTInfo_;
   bool doGenParticles_;
   bool doStoreJets_;
+  bool doSkim_;
 
   InputTag vtxlabel_;
   InputTag gtdigilabel_;
-  InputTag tracklabel_;
   InputTag trgResults_;
   InputTag trgEvent_;
-  InputTag caloTowerlabel_;
   InputTag tcMETlabel_;
   InputTag pfMETlabel_;
   InputTag ebReducedRecHitCollection_;
@@ -85,17 +84,11 @@ protected:
   int    nHLT_;
   int    HLT_[maxP];
   int    HLTIndex_[100];
-  int    nHFTowersP_;
-  int    nHFTowersN_;
   int    nVtx_;
   float  vtx_[50][3];
   int    vtxNTrk_[50];
   int    vtxNDF_[50];
   float  vtxD0_[50];
-  int    IsVtxGood_;
-  int    nTrk_;
-  int    nGoodTrk_;
-  int    IsTracksGood_;
   // genParticle
   int    nMC_;
   int    mcPID[maxP];
