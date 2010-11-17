@@ -9,7 +9,7 @@
  * \Author A. Orso M. Iorio
  * 
  *
- *\version  $Id: TopProducer.h,v 1.6 2010/03/30 15:07:11 oiorio Exp $
+ *\version  $Id: SingleTopJetsProducer.h,v 1.1 2010/09/07 14:32:43 oiorio Exp $
  *
  *
 */
@@ -78,6 +78,7 @@
     bool isJPT;
     bool isCalo;
     bool isPF;
+    double ptCut_;
     //typedef pat::helper::OverlapTest OverlapTest;
     //boost::ptr_vector<OverlapTest> overlaps;
     

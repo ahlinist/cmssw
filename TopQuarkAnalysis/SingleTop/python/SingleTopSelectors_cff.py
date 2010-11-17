@@ -18,6 +18,8 @@ hltFilter.HLTPaths = ['HLT_Mu9']#,'HLT_Ele15_LW_L1R']
 #hltFilterDev.HLTPaths = ('HLT_Mu9','HLT_Mu9')
 #hltFilterDev.HLTPathsPrescales = cms.vuint32(1,1)
 
+
+
 hltFilterEle = cms.EDFilter("HLTSummaryFilter",
                             summary = cms.InputTag("hltTriggerSummaryAOD","","HLT"),
                             member = cms.InputTag("hltL1NonIsoHLTNonIsoSinglePhotonEt10HcalIsolFilter","","HLT"),
@@ -29,9 +31,9 @@ hltFilterEle = cms.EDFilter("HLTSummaryFilter",
 PVFilter = cms.EDFilter(
     'VertexSelector',
     src = cms.InputTag("offlinePrimaryVertices"),
-    cut = cms.string('!isFake & position().Rho() < 2.0 & abs(z) < 15 & ndof < 4.')
+    cut = cms.string('!isFake & position().Rho() < 2.0 & abs(z) < 24 & ndof > 4.'),
+    filter = cms.bool(True)
     )
-
 
 
 ######### Part of selection: Particle counting ##########
@@ -213,7 +215,6 @@ countJetsTTBarAntiIso = countJets.clone(
     )
 
 vetoBJets = countBTags.clone()
-
 
 countJetsAntiIsoPF= countJets.clone(
     src = cms.InputTag('topJetsAntiIsoPF')
