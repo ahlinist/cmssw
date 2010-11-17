@@ -558,12 +558,14 @@ void TauHistManager::fillHistogramsImp(const edm::Event& evt, const edm::EventSe
 
     static std::map<std::string, bool> discrAvailability_hasBeenChecked;
 
-    fillTauDiscriminatorHistogram(hTauDiscriminatorByIsolation_, *patTau, "byIsolation",
-				  discrAvailability_hasBeenChecked, weight);
-    fillTauDiscriminatorHistogram(hTauDiscriminatorByTrackIsolation_, *patTau, "trackIsolation",
-				  discrAvailability_hasBeenChecked, weight);
-    fillTauDiscriminatorHistogram(hTauDiscriminatorByEcalIsolation_, *patTau, "ecalIsolation",
-				  discrAvailability_hasBeenChecked, weight);
+    if ( !useHPSpTaNCalgorithm_ ) {
+      fillTauDiscriminatorHistogram(hTauDiscriminatorByIsolation_, *patTau, "byIsolation",
+				    discrAvailability_hasBeenChecked, weight);
+      fillTauDiscriminatorHistogram(hTauDiscriminatorByTrackIsolation_, *patTau, "trackIsolation",
+				    discrAvailability_hasBeenChecked, weight);
+      fillTauDiscriminatorHistogram(hTauDiscriminatorByEcalIsolation_, *patTau, "ecalIsolation",
+				    discrAvailability_hasBeenChecked, weight);
+    }
 
     hTauDiscriminatorAgainstElectrons_->Fill(patTau->tauID("againstElectron"), weight);
     hTauEmFraction_->Fill(patTau->emFraction(), weight);
