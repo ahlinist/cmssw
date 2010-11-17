@@ -1,4 +1,5 @@
 import FWCore.ParameterSet.Config as cms
+import os
 from FWCore.PythonUtilities.LumiList import LumiList
 
 process = cms.Process("VgKit")
@@ -16,12 +17,16 @@ process.maxEvents = cms.untracked.PSet(
 
 thelist = LumiList(filename="/scratch/lgray/vgamma_skims/data/Cert_132440-149442_7TeV_StreamExpress_Collisions10_JSON.txt")
 
+prefix="/scratch/lgray/vgamma_skims/data/PromptRecov2/"
+
 process.source = cms.Source("PoolSource",
-                            fileNames = cms.untracked.vstring('file:Skimming/VGammaPAT_MuonPhotonSkim_testRealData.root'),
+                            fileNames = cms.untracked.vstring(),
                             noEventSort = cms.untracked.bool(True),
                             duplicateCheckMode = cms.untracked.string('noDuplicateCheck'),
                             lumisToProcess = cms.untracked.VLuminosityBlockRange()
                             )
+
+process.source.fileNames.extend( ['file:'+os.path.join(prefix,file) for file in os.listdir(prefix)] )
 
 process.source.lumisToProcess = [ str(a) for a in thelist.getCMSSWString().split(',') ] 
 

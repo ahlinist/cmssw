@@ -76,18 +76,35 @@ matchHltPaths = {
                             HLT_Ele20_SW_L1R
                             HLT_Photon10_L1R
                             HLT_Photon15_L1R
+                            HLT_Photon10_Cleaned_L1R
                             HLT_Photon15_Cleaned_L1R
                             HLT_Photon20_Cleaned_L1R
                             HLT_Photon25_Cleaned_L1R
                             HLT_Photon30_Cleaned_L1R
+                            HLT_Photon50_Cleaned_L1R
+                            HLT_Photon70_Cleaned_L1R
+                            HLT_DoublePhoton17_L1R
                             """.split(),
     
     "cleanPatJets"     :    """
                             HLT_Jet15U
+                            HLT_Jet15U_v2
+                            HLT_Jet15U_v3
                             HLT_Jet30U
+                            HLT_Jet30U_v2
+                            HLT_Jet30U_v3
                             HLT_Jet50U
+                            HLT_Jet50U_v2
+                            HLT_Jet50U_v3
                             HLT_Jet70U
+                            HLT_Jet70U_v2
+                            HLT_Jet70U_v3
                             HLT_Jet100U
+                            HLT_Jet100U_v2
+                            HLT_Jet100U_v3
+                            HLT_Jet140U_v1
+                            HLT_Jet140U_v2
+                            HLT_Jet140U_v3
                             """.split(),
     
     "patMETs"          :    metTriggerMatchPaths,
