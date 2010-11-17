@@ -12,6 +12,7 @@ from TauAnalysis.Core.muonHistManager_cfi import *
 
 # import config for tau-jet histogram manager
 from TauAnalysis.Core.pftauHistManager_cfi import *
+tauHistManager.useHPSpTaNCalgorithm = cms.bool(True)
 
 # import config for di-tau histogram manager
 from TauAnalysis.Core.diTauCandidateHistManager_cfi import *
