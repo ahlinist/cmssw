@@ -20,7 +20,6 @@ from TauAnalysis.RecoTools.recoPFTauIdentification_cfi import *
 # and dR = 5.0/Et shrinking signal cone taus using latest tags;
 # produce tau id. discriminators (including TaNC = "Tau Neural Classifiers")
 from RecoTauTag.Configuration.RecoPFTauTag_cff import *
-#from RecoTauTag.TauTagTools.TancCVTransform_cfi import *
 
 # produce tau id. efficiencies & fake-rates
 from RecoTauTag.TauAnalysisTools.PFTauEfficiencyAssociator_cfi import *
