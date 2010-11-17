@@ -37,6 +37,7 @@ def write_fileNames(results_queue, outputFile):
     while True:
         try:
             fileName = results_queue.get()
+            print("--> found 'bad' file: %s" % fileName)
             outputFile.write(fileName + '\n')
         finally:
             results_queue.task_done()
@@ -69,13 +70,13 @@ class Worker(threading.Thread):
 
             if len(items) > 5:
                 fileSize = items[4]        
-                if fileSize == 0:
+                if fileSize == 0:                    
                     self.results_queue.put(fileName)
 
         time.sleep(1)            
 
         commandLine = 'edmFileUtil rfio:%s' % fileName
-        print("--> calling %s" % commandLine)
+        print("calling %s..." % commandLine)
         args = shlex.split(commandLine)
         retval = subprocess.Popen(args, stdout = subprocess.PIPE)
         retval.wait()
