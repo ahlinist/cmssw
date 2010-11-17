@@ -46,18 +46,6 @@ diTauCandidateSVfitHistManagerForDiTau_factorizedLoose2ndTau = diTauCandidateSVf
         ),
         cms.PSet(
             name = cms.string("psKine_MEt_ptBalance")
-        ),        
-        cms.PSet(
-            name = cms.string("polKine")
-        ),
-        cms.PSet(
-            name = cms.string("polKine_MEt")
-        ),
-        cms.PSet(
-            name = cms.string("polKine_MEt_ptBalance")
-        ##),
-        ##cms.PSet(
-        ##    name = cms.string("polKine_MEt_ptBalance_Zprod")
         )
     )
 )    

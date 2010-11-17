@@ -379,22 +379,22 @@ diTauAnalysisSequence = cms.VPSet(
     ),
     
     # trigger selection
-    cms.PSet(
-        filter = cms.string('evtSelTrigger'),
-        title = cms.string('Trigger'),
-        saveRunLumiSectionEventNumbers = cms.vstring('')
-    ),
-    cms.PSet(
-        analyzers = cms.vstring(
-            'genPhaseSpaceEventInfoHistManager',
-            'tauHistManager1',
-            'tauHistManager2',
-            'caloMEtHistManager',
-            'pfMEtHistManager',
-            'vertexHistManager',
-            'triggerHistManagerForDiTau'
-        )
-    ),
+    ##cms.PSet(
+    ##    filter = cms.string('evtSelTrigger'),
+    ##    title = cms.string('Trigger'),
+    ##    saveRunLumiSectionEventNumbers = cms.vstring('')
+    ##),
+    ##cms.PSet(
+    ##    analyzers = cms.vstring(
+    ##        'genPhaseSpaceEventInfoHistManager',
+    ##        'tauHistManager1',
+    ##        'tauHistManager2',
+    ##        'caloMEtHistManager',
+    ##        'pfMEtHistManager',
+    ##        'vertexHistManager',
+    ##        'triggerHistManagerForDiTau'
+    ##    )
+    ##),
 
     # data-quality selection
     cms.PSet(
@@ -888,7 +888,7 @@ diTauAnalysisSequence = cms.VPSet(
             'diTauCandidateSVfitHistManagerForDiTau.diTauCandidateSource = selectedDiTauPairsPzetaDiffCumulative',
             'jetHistManagerForDiTau.jetSource = selectedPatJetsForZtoDiTauAntiOverlapWithLeptonsVetoCumulative'
         )
-    )
+    ),
     
     # veto events containing additional central jets with Et > 20 GeV
     #cms.PSet(
@@ -917,4 +917,35 @@ diTauAnalysisSequence = cms.VPSet(
     #        'diTauCandidateHistManagerForDiTau.diTauCandidateSource = selectedDiTauPairsAcoplanarityCumulative'
     #    )
     #)
+
+    # trigger selection (moved to the end of the event selection sequence, in order to determine trigger efficiencies) 
+    cms.PSet(
+        filter = cms.string('evtSelTrigger'),
+        title = cms.string('Trigger'),
+        saveRunLumiSectionEventNumbers = cms.vstring('')
+    ),
+     cms.PSet(
+        analyzers = cms.vstring(
+            'genPhaseSpaceEventInfoHistManager',
+            'eventWeightHistManager',
+            'tauHistManager1',
+            'tauHistManager2',
+            'diTauCandidateHistManagerForDiTau',
+            'diTauCandidateCollinearApproxHistManagerForDiTau',
+            'diTauCandidateSVfitHistManagerForDiTau',
+            'jetHistManagerForDiTau',
+            'caloMEtHistManager',
+            'pfMEtHistManager',
+            'vertexHistManager',
+            'triggerHistManagerForDiTau'
+        ),
+        replace = cms.vstring(
+            'tauHistManager1.tauSource = selectedPatTausForDiTau1stElectronVetoCumulative',
+            'tauHistManager2.tauSource = selectedPatTausForDiTau2ndElectronVetoCumulative',
+            'diTauCandidateHistManagerForDiTau.diTauCandidateSource = selectedDiTauPairsPzetaDiffCumulative',
+            'diTauCandidateCollinearApproxHistManagerForDiTau.diTauCandidateSource = selectedDiTauPairsPzetaDiffCumulative',
+            'diTauCandidateSVfitHistManagerForDiTau.diTauCandidateSource = selectedDiTauPairsPzetaDiffCumulative',
+            'jetHistManagerForDiTau.jetSource = selectedPatJetsForZtoDiTauAntiOverlapWithLeptonsVetoCumulative'
+        )
+    )
 )
