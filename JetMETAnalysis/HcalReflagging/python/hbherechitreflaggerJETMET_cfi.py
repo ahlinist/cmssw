@@ -20,22 +20,31 @@ hbherechitreflaggerJETMET = cms.EDProducer(
     # These must be ordered by increasing energy!
     timingshapedcutsParameters = cms.PSet(
     hbheTimingFlagBit = cms.untracked.int32(30), #UserDefinedBit1
-    tfilterEnvelope=cms.vdouble( 48.66, -2.08, 4.28,
-                                 52.67, -1.95, 4.06,
-                                 56.69, -1.87, 3.86,
-                                 60.70, -1.81, 3.56,
-                                 65.71, -1.76, 3.25,
-                                 71.73, -1.79, 3.10,
-                                 78.75, -1.70, 2.97,
-                                 87.78, -1.72, 2.79,
-                                 99.81, -1.74, 2.59,
-                                 117.8, -1.73, 2.45,
-                                 149.0, -1.75, 2.23,
-                                 500.0, -1.83, 2.01),
+    tfilterEnvelope=cms.vdouble(  50.0,  -2.0,  4.25,
+                                  52.0,  -2.0,  4.09,
+                                  54.0,  -2.0,  3.95,
+                                  56.0,  -2.0,  3.82,
+                                  58.0,  -2.0,  3.71,
+                                  60.0,  -2.0,  3.60,
+                                  63.0,  -2.0,  3.46,
+                                  66.0,  -2.0,  3.33,
+                                  69.0,  -2.0,  3.22,
+                                  73.0,  -2.0,  3.10,
+                                  77.0,  -2.0,  2.99,
+                                  82.0,  -2.0,  2.87,
+                                  88.0,  -2.0,  2.75,
+                                  95.0,  -2.0,  2.64,
+                                  103.0, -2.0,  2.54,
+                                  113.0, -2.0,  2.44,
+                                  127.0, -2.0,  2.33,
+                                  146.0, -2.0,  2.23,
+                                  176.0, -2.0,  2.13,
+                                  250.0, -2.0,  2.00),
+
     ignorelowest  = cms.bool(True), # ignores hits with energies below lowest envelope threshold
     ignorehighest = cms.bool(False), # ignores hits with energies above highest envelope threshold
     win_offset    = cms.double(0.),
-    win_gain      = cms.double(1.)
+    win_gain      = cms.double(3.)
     )
     
 )
