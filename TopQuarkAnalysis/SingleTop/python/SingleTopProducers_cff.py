@@ -36,8 +36,8 @@ preselectedJets = cms.EDFilter("PATJetSelector",
 
 topJets = cms.EDProducer("SingleTopJetsProducer",
                          src = cms.InputTag("preselectedJets"),
-                         eleSrc = cms.InputTag("topElectrons"),
-                         muSrc = cms.InputTag("topMuons"),
+                         eleSrc = cms.InputTag("topElectronsForJets"),
+                         muSrc = cms.InputTag("topMuonsForJets"),
                          isJPT = cms.untracked.bool(True),
                          isPF = cms.untracked.bool(False),
 )
@@ -49,11 +49,20 @@ topJetsPF = topJets.clone(
       )
 
 
-topMuons = cms.EDFilter("PATMuonSelector",
+topMuons = cms.EDProducer("SingleTopMuonProducer",
                         src = cms.InputTag("preselectedMuons"),
-                        filter = cms.bool(False),
+                        jetsSrc = cms.InputTag("topJetsPF"),
+                        useJetVeto = cms.untracked.bool(True),
                         cut = cms.string("pt > 0")
                         )
+
+topMuonsForJets = cms.EDProducer("SingleTopMuonProducer",
+                        src = cms.InputTag("preselectedMuons"),
+                        jetsSrc = cms.InputTag("preselectedJets"),
+                        useJetVeto = cms.untracked.bool(False),
+                        cut = cms.string("pt > 0")
+                           )
+
 #Met skim part
 preselectedMETs = cms.EDFilter("PATMETSelector",
   src = cms.InputTag("patMETs"),
@@ -66,7 +75,7 @@ allTopJets = cms.EDProducer("SingleTopJetsProducer",
                             jetsSource = cms.InputTag("preselectedJets"),
                             )
 
-topMuonsPF =  topMuons.clone(jetSrc = cms.InputTag("topJetsPF")) 
+topMuonsPF = topMuons.clone(jetSrc = cms.InputTag("topJetsPF")) 
 
 topElectrons = cms.EDProducer("SingleTopElectronProducer",
                             src = cms.InputTag("preselectedElectrons"),
@@ -76,6 +85,17 @@ topElectrons = cms.EDProducer("SingleTopElectronProducer",
                             useConversionVeto = cms.untracked.bool(True),
                             )
 
+topElectronsForJets = cms.EDProducer("SingleTopElectronProducer",
+                            src = cms.InputTag("preselectedElectrons"),
+                            filter = cms.bool(False),
+                            id = cms.string("cIso70"), 
+                            cut = cms.string("et>0"),
+                            useConversionVeto = cms.untracked.bool(False),
+                            )
+
+
+topElectronsForJetsAntiIso = topElectronsForJets.clone(src = cms.InputTag("cleanPatElectrons"))
+#topMuonsForJetsAntiIso =
 
 bJets = cms.EDFilter("PATJetSelector",
                      src = cms.InputTag("topJets"),
@@ -146,7 +166,7 @@ recoTChanEventsPF = cms.EDProducer("SingleTopTChanProducer",
 
 recoTopsPF = cms.EDProducer("TopProducer",
                                   electronsSource = cms.InputTag("topElectrons"),
-                                  muonsSource = cms.InputTag("topMuons"),
+                                 muonsSource = cms.InputTag("topMuons"),
                                   jetsSource = cms.InputTag("bJetsPF"),
                                  METsSource = cms.InputTag("patMETsPF"),
 #                                  METsSource = cms.InputTag("patMETsPFlow"),
@@ -200,17 +220,16 @@ MCTruthParticles = cms.EDProducer("SingleTopTChannelMCProducer",
 #Part for control samples:
 
 #AntiIso cut for QCD: 
-topMuonsAntiIso = topMuons.clone(src = cms.InputTag("cleanPatMuons"))
+topMuonsAntiIso = topMuons.clone(src = cms.InputTag("cleanPatMuons"),useJetVeto = cms.untracked.bool(False))
 topElectronsAntiIso = topElectrons.clone(src = cms.InputTag("cleanPatElectrons"))
-
 
 preselectedMuonsAntiIso = topMuons.clone()
 preselectedElectronsAntiIso = topElectrons.clone()
 
-topJetsAntiIso = topJets.clone(muSrc = cms.InputTag('topMuonsAntiIso'),eleSrc = cms.InputTag('topElectronsAntiIso') )
+topJetsAntiIso = topJets.clone(muSrc = cms.InputTag('topMuonsAntiIso'),eleSrc = cms.InputTag('topElectronsForJetsAntiIso') )
 
-topJetsAntiIsoPF = topJetsPF.clone(muSrc = cms.InputTag('topMuonsAntiIso'),eleSrc = cms.InputTag('topElectronsAntiIso') )
-
+topJetsAntiIsoPF = topJetsPF.clone(muSrc = cms.InputTag('topMuonsAntiIso'),eleSrc = cms.InputTag('topElectronsForJetsAntiIso') )
+                    
 bJetsAntiIso = bJets.clone(src=cms.InputTag('topJetsAntiIso'))
 antiBJetsAntiIso = antiBJets.clone(src=cms.InputTag('topJetsAntiIso'))
 forwardJetsAntiIso = forwardJets.clone(src=cms.InputTag('topJetsAntiIso'))

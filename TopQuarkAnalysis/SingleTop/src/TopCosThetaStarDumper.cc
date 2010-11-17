@@ -2,7 +2,7 @@
  *\Author: A. Orso M. Iorio 
  *
  *
- *\version  $Id: TopCosThetaStarDumper.cc,v 1.1 2010/07/07 10:19:16 oiorio Exp $ 
+ *\version  $Id: TopCosThetaStarDumper.cc,v 1.2 2010/11/09 14:38:29 oiorio Exp $ 
  */
 
 // Single Top producer: produces a top candidate made out of a Lepton, a B jet and a MET
@@ -65,7 +65,8 @@ tChanSrc_ = iConfig.getParameter<edm::InputTag>( "tChanSource" );
 produces<std::vector<double> >("cosThetaLJ");
 produces<std::vector<double> >("cosThetaStar");
 produces<std::vector<double> >("cosThetaBJ");
-produces<std::vector<double> >("sumPtBJ");
+produces<std::vector<double> >("leptonJetDeltaR");
+produces<std::vector<double> >("bJetPt");
 produces<std::vector<double> >("topWTransverseMass");
 }
 void TopCosThetaStarDumper::produce(edm::Event & iEvent, const edm::EventSetup & iEventSetup){
@@ -81,16 +82,20 @@ edm::Handle<edm::View<reco::Candidate> > tChan;
 iEvent.getByLabel(tChanSrc_,tChan);
 
 
- std::vector<double> *cosThetaLJ = new std::vector<double>(), *cosThetaStar = new std::vector<double>(), *topWTransverseMass = new std::vector<double>(), *cosThetaBJ = new std::vector<double>(), *sumPtBJ = new std::vector<double>();
+ std::vector<double> *cosThetaLJ = new std::vector<double>(), *cosThetaStar = new std::vector<double>(), *topWTransverseMass = new std::vector<double>(), *cosThetaBJ = new std::vector<double>(), *leptonJetDeltaR = new std::vector<double>(), *bJetPt = new std::vector<double>();
 
- double cosThetaLJTmp(0), cosThetaStarTmp(0),topWTransverseMassTmp(0),cosThetaBJTmp(0),sumPtBJTmp(0);
+ double cosThetaLJTmp(0), cosThetaStarTmp(0),topWTransverseMassTmp(0),cosThetaBJTmp(0),leptonJetDeltaRTmp(0),bJetPtTmp(0);
 
 
    for( edm::View<reco::Candidate>::const_iterator it_tChan = tChan->begin();it_tChan != tChan->end();++it_tChan){
      
      CenterOfMassBooster booster(*it_tChan->daughter("Top"));
      //reco::CandidateBaseRef candToBoostRef(edm::Ref<reco::Candidate>(,));
-     sumPtBJ->push_back(it_tChan->daughter("Top")->daughter("BJet")->pt()+it_tChan->daughter("LightJet")->pt());
+     leptonJetDeltaRTmp = (double)deltaR(*it_tChan->daughter("Top")->daughter("BJet"),*it_tChan->daughter("Top")->daughter("Lepton"));
+     bJetPtTmp = (double)(it_tChan->daughter("Top")->daughter("BJet")->pt());
+     bJetPt->push_back(bJetPtTmp);
+
+     leptonJetDeltaR->push_back(leptonJetDeltaRTmp);
      
      reco::Candidate * candToBoost = it_tChan->clone();
      booster.set(*candToBoost);
@@ -121,15 +126,18 @@ iEvent.getByLabel(tChanSrc_,tChan);
 
    }
 
-
-   std::auto_ptr< std::vector< double > > cosThetaLJPoi(cosThetaLJ), cosThetaStarPoi(cosThetaStar),topWTransverseMassPoi(topWTransverseMass), cosThetaBJPoi(cosThetaBJ), sumPtBJPoi(sumPtBJ);
-
+   
+   std::auto_ptr< std::vector< double > > cosThetaLJPoi(cosThetaLJ), cosThetaStarPoi(cosThetaStar),topWTransverseMassPoi(topWTransverseMass), cosThetaBJPoi(cosThetaBJ), leptonJetDeltaRPoi(leptonJetDeltaR), bJetPtPoi(bJetPt);
+   
    iEvent.put(cosThetaLJPoi,"cosThetaLJ");
    iEvent.put(cosThetaStarPoi,"cosThetaStar");
    iEvent.put(topWTransverseMassPoi,"topWTransverseMass");
    iEvent.put(cosThetaBJPoi,"cosThetaBJ");
-   iEvent.put(sumPtBJPoi,"sumPtBJ");
-   
+   iEvent.put(leptonJetDeltaRPoi,"leptonJetDeltaR");
+   iEvent.put(bJetPtPoi,"bJetPt")
+
+;
+ 
 }
 
 TopCosThetaStarDumper::~TopCosThetaStarDumper(){;}

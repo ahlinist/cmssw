@@ -107,6 +107,49 @@ nTuplePatMETsPF = cms.EDProducer(
     )
     )
 
+nTupleElectrons = cms.EDProducer(
+    "CandViewNtpProducer",
+    src = cms.InputTag("topElectrons"),
+    lazyParser = cms.untracked.bool(True),
+    prefix = cms.untracked.string("topElectrons"),
+    variables = cms.VPSet(
+
+    cms.PSet(
+    tag = cms.untracked.string("Pt"),
+    quantity = cms.untracked.string("pt")
+    ),
+
+    cms.PSet(
+    tag = cms.untracked.string("Eta"),
+    quantity = cms.untracked.string("eta")
+    ),
+
+    cms.PSet(
+    tag = cms.untracked.string("Phi"),
+    quantity = cms.untracked.string("phi")
+    ),
+
+    )
+    )
+
+nTupleMuons = nTupleElectrons.clone(
+    src = cms.InputTag("topMuons"),
+    lazyParser = cms.untracked.bool(True),
+    prefix = cms.untracked.string("topMuons"),
+    )
+
+nTupleMuonsAntiIso = nTupleMuons.clone(
+    src = cms.InputTag("topMuonsAntiIso"),
+    lazyParser = cms.untracked.bool(True),
+    prefix = cms.untracked.string("topMuonsAntiIso"),
+    )
+
+nTupleElectronsAntiIso = nTupleMuons.clone(
+    src = cms.InputTag("topElectronsAntiIso"),
+    lazyParser = cms.untracked.bool(True),
+    prefix = cms.untracked.string("topElectronsAntiIso"),
+    )
+
 singleTopPreselectedJets = cms.EDProducer(
     "CandViewNtpProducer",
     src = cms.InputTag("preselectedJets"),
@@ -435,7 +478,9 @@ nTuples = cms.Sequence(
     #nTupleBJetsPF *
     #nTupleForwardJetsPF *
     nTuplePatMETsPF *
-    nTupleEventsPF 
+    nTupleEventsPF *
+    nTupleElectrons *
+    nTupleMuons
     )
 
 nTuplesAntiIso = cms.Sequence(
@@ -443,7 +488,9 @@ nTuplesAntiIso = cms.Sequence(
     #nTupleBJetsAntiIsoPF *
     #nTupleForwardJetsAntiIsoPF *
     nTuplePatMETsPF *
-    nTupleEventsAntiIsoPF 
+    nTupleEventsAntiIsoPF *
+    nTupleElectronsAntiIso *
+    nTupleMuonsAntiIso
     )
 
 saveNTuples = cms.untracked.vstring(
@@ -471,7 +518,20 @@ saveNTuplesAntiIso = cms.untracked.vstring(
     'keep *_singleTopObservablesAntiIsoPF_*_*',
     'keep floats_nTupleEventsAntiIsoPF_*_*',
     'keep floats_nTuplePatMETsPF_*_*',
-    'keep floats_nTupleTopJetsPF_*_*',
+    'keep floats_nTupleTopJetsAntiIsoPF_*_*',
 
     
     )
+
+
+saveNTuplesMu = saveNTuples
+saveNTuplesEle = saveNTuples
+
+saveNTuplesMuAntiIso = saveNTuplesAntiIso
+saveNTuplesEleAntiIso = saveNTuples
+
+saveNTuplesMu.extend(['keep floats_nTupleMuons_*_*'])
+saveNTuplesEle.extend(['keep floats_nTupleElectrons_*_*'])
+
+saveNTuplesMuAntiIso.extend(['keep floats_nTupleMuonsAntiIso_*_*'])
+saveNTuplesEleAntiIso.extend(['keep floats_nTupleElectronsAntiIso_*_*'])

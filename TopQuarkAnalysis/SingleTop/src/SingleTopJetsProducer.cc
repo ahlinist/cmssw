@@ -2,7 +2,7 @@
  *\Author: A. Orso M. Iorio 
  *
  *
- *\version  $Id: SingleTopJetsProducer.cc,v 1.2 2010/09/08 16:49:12 oiorio Exp $ 
+ *\version  $Id: SingleTopJetsProducer.cc,v 1.3 2010/09/09 13:57:36 oiorio Exp $ 
  */
 
 // Single Top producer: produces a top candidate made out of a Lepton, a B jet and a MET
@@ -61,6 +61,7 @@ SingleTopJetsProducer::SingleTopJetsProducer(const edm::ParameterSet& iConfig)
   eleSrc_                = iConfig.getParameter<edm::InputTag>	      ( "eleSrc" );
   muSrc_                = iConfig.getParameter<edm::InputTag>	      ( "muSrc" );
 
+  ptCut_ = iConfig.getUntrackedParameter<double> ("ptCut",30);
 
   isJPT = iConfig.getUntrackedParameter<bool> ("isJPT",true);
   isPF = iConfig.getUntrackedParameter<bool> ("isPF",false);
@@ -117,21 +118,21 @@ for(size_t i = 0; i < jets->size(); ++i){
 
       const reco::JPTJet * jptJet = dynamic_cast<const reco::JPTJet *>(jets->at(i).originalObject()); 
       reco::CaloJet const * myCalo = dynamic_cast<reco::CaloJet const *>( &* jptJet->getCaloJetRef());
-
+      condition = jptJet->pt()>ptCut_ && fabs(jptJet->eta())<5;
       //     std::cout <<  "jet fHPD "<< jets->at(i).jetID().fHPD<<" n90Hits  " << jets->at(i).jetID().n90Hits<< " calon90Hits "<< (*jetIDs)[jptJet->getCaloJetRef()].n90Hits<< " calofHPD " << (*jetIDs)[jptJet->getCaloJetRef()].fHPD <<std::endl;
 
       double fHPD = (*jetIDs)[jptJet->getCaloJetRef()].fHPD;
       double n90Hits = (*jetIDs)[jptJet->getCaloJetRef()].n90Hits;
 
-      condition =  myCalo->emEnergyFraction()>0.01 &&  (fabs(myCalo->eta()) > 2.4 || ( n90Hits > 1 && fHPD < 0.98));// jetID().fHPD()< 0.98;
+      condition =  condition && (myCalo->emEnergyFraction()>0.01 &&  (fabs(myCalo->eta()) > 2.4 || ( n90Hits > 1 && fHPD < 0.98)) ) ;// jetID().fHPD()< 0.98;
        //std::cout <<"size"<<jets->size()<<" emenfrac " <<myCalo->emEnergyFraction()<<std::endl;
     }
     else if(isPF){
       
-      condition = (jets->at(i).numberOfDaughters()>1 && jets->at(i).neutralHadronEnergyFraction() < 1 && jets->at(i).neutralEmEnergyFraction() < 1 && ((fabs(jets->at(i).eta())>2.4) || ( jets->at(i).chargedHadronEnergyFraction() > 0 && jets->at(i).chargedMultiplicity()>0)) && jets->at(i).pt()> 30 && fabs(jets->at(i).eta())<5)  ;
+      condition = (jets->at(i).numberOfDaughters()>1 && jets->at(i).neutralHadronEnergyFraction() < 1 && jets->at(i).neutralEmEnergyFraction() < 1 && ((fabs(jets->at(i).eta())>2.4) || ( jets->at(i).chargedHadronEnergyFraction() > 0 && jets->at(i).chargedMultiplicity()>0)) && jets->at(i).pt()> ptCut_ && fabs(jets->at(i).eta())<5)  ;
       //      std::cout << " ndau " << jets->at(i).numberOfDaughters() << " neuHadEn "<< jets->at(i).neutralHadronEnergyFraction() << " EmFrac " <<jets->at(i).neutralEmEnergyFraction() << " eta " << fabs(jets->at(i).eta())<< " HadEnFrac " << jets->at(i).chargedHadronEnergyFraction() << " CharMul "<< jets->at(i).chargedMultiplicity() << " pt "<<jets->at(i).pt()<<" passes ? " << condition<<std::endl; 
     }
-    if(!(condition))continue; 
+    if(!(condition) )continue; 
     
     //std::cout << "mark 2"<< std::endl;
 
@@ -147,7 +148,7 @@ for(size_t i = 0; i < jets->size(); ++i){
 
     for(size_t j = 0; j < mus->size(); ++j){
       
-      if(deltaR(jets->at(i),mus->at(j))<0.3) {
+      if(deltaR(jets->at(i),mus->at(j))<0.1) {
 	isIsolated = false;
 	break;
       }
