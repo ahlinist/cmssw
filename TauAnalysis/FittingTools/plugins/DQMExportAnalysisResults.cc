@@ -8,6 +8,7 @@
 
 #include "TauAnalysis/DQMTools/interface/dqmAuxFunctions.h"
 #include "TauAnalysis/DQMTools/interface/generalAuxFunctions.h"
+#include "TauAnalysis/DQMTools/interface/histogramAuxFunctions.h"
 
 #include <TMath.h>
 #include <TH1.h>
@@ -30,12 +31,21 @@ mode_t mkdirAccessPermissions = (S_IRWXU | S_IRWXG | S_IRWXO);
 const double epsilon = 1.e-2;
 
 typedef std::vector<std::string> vstring;
+typedef std::vector<edm::ParameterSet> vParameterSet;
 
 DQMExportAnalysisResults::DQMExportAnalysisResults(const edm::ParameterSet& cfg)
 {
   std::cout << "<DQMExportAnalysisResults::DQMExportAnalysisResults>:" << std::endl;
 
-  dqmDirectory_ = cfg.getParameter<std::string>("dqmDirectory");
+  vParameterSet cfgChannels = cfg.getParameter<vParameterSet>("channels");
+  unsigned channelIndex = 0;
+  for ( vParameterSet::const_iterator cfgChannel = cfgChannels.begin();
+	cfgChannel != cfgChannels.end(); ++cfgChannel ) {
+    channelEntryType* channelEntry = new channelEntryType(channelIndex, *cfgChannel);
+    channels_.push_back(channelEntry);
+    ++channelIndex;
+  }
+
   outputFilePath_ = cfg.getParameter<std::string>("outputFilePath");
 
   edm::ParameterSet cfgProcesses = cfg.getParameter<edm::ParameterSet>("processes");
@@ -47,23 +57,12 @@ DQMExportAnalysisResults::DQMExportAnalysisResults(const edm::ParameterSet& cfg)
     processes_.push_back(processEntry);
   }
 
-  edm::ParameterSet cfgChannels = cfg.getParameter<edm::ParameterSet>("channels");
-  vstring channelNames = cfgChannels.getParameterNamesForType<edm::ParameterSet>();
-  unsigned channelIndex = 0;
-  for ( vstring::const_iterator channelName = channelNames.begin();
-	channelName != channelNames.end(); ++channelName ) {
-    edm::ParameterSet cfgChannel = cfgChannels.getParameter<edm::ParameterSet>(*channelName);
-    channelEntryType* channelEntry = new channelEntryType(*channelName, channelIndex, cfgChannel);
-    channels_.push_back(channelEntry);
-    ++channelIndex;
-  }
-
   if ( cfg.exists("systematics") ) {
     edm::ParameterSet cfgSystematics = cfg.getParameter<edm::ParameterSet>("systematics");
     vstring systematicNames = cfgSystematics.getParameterNamesForType<edm::ParameterSet>();
     for ( vstring::const_iterator systematicName = systematicNames.begin();
 	  systematicName != systematicNames.end(); ++systematicName ) {
-      edm::ParameterSet cfgSystematic = cfgSystematics.getParameter<edm::ParameterSet>(*systematicName);
+      edm::ParameterSet cfgSystematic = cfgSystematics.getParameter<edm::ParameterSet>(*systematicName);      
       systematicEntryType* systematicEntry = new systematicEntryType(*systematicName, cfgSystematic);
       systematics_.push_back(systematicEntry);
     }
@@ -72,13 +71,13 @@ DQMExportAnalysisResults::DQMExportAnalysisResults(const edm::ParameterSet& cfg)
 
 DQMExportAnalysisResults::~DQMExportAnalysisResults()
 {
-  for ( std::vector<processEntryType*>::iterator it = processes_.begin();
-	it != processes_.end(); ++it ) {
+  for ( std::vector<channelEntryType*>::iterator it = channels_.begin();
+	it != channels_.end(); ++it ) {
     delete (*it);
   }
 
-  for ( std::vector<channelEntryType*>::iterator it = channels_.begin();
-	it != channels_.end(); ++it ) {
+  for ( std::vector<processEntryType*>::iterator it = processes_.begin();
+	it != processes_.end(); ++it ) {
     delete (*it);
   }
 
@@ -154,6 +153,14 @@ int getNumBins(TH1* histogram, const std::string& axis)
   return (getLastBin(histogram, axis) - getFirstBin(histogram, axis)) + 1;
 }
 
+int getNumBins(TH1* histogram)
+{
+  int numBins = getNumBins(histogram, "X");
+  if ( histogram->GetDimension() >= 2 ) numBins *= getNumBins(histogram, "Y");
+  if ( histogram->GetDimension() >= 3 ) numBins *= getNumBins(histogram, "Z");
+  return numBins;
+}
+
 double getSumBinContents(TH1* histogram, int firstBinX, int lastBinX, int firstBinY, int lastBinY, int firstBinZ, int lastBinZ)
 {
   double sumBinContents = 0.;
@@ -195,110 +202,113 @@ double getSumBinErrors2(TH1* histogram, int firstBinX, int lastBinX, int firstBi
 }
 
 void exportAnalysisResults(
-       DQMStore& dqmStore, const std::string& meNameTemplate, 
-       const std::string& meNameNumEventsProcessed, const std::string& meNameNumEventsPassed, 
-       unsigned numChannels, unsigned channelIndex,
+       DQMStore& dqmStore, 
+       const std::string& meNameTemplate, const std::string& meNameNumEventsProcessed, const std::string& meNameNumEventsPassed, 
+       unsigned numChannels, unsigned binOffset, unsigned numBinsTotal,
        const std::string& outputFileName, bool failSilent = false)
 {
   std::cout << "<exportAnalysisResults>:" << std::endl;
   std::cout << " meNameTemplate = " << meNameTemplate << std::endl;
   std::cout << " outputFileName = " << outputFileName << std::endl;
  
-  MonitorElement* me = dqmStore.get(meNameTemplate);
-  TH1* histogram = ( me ) ? me->getTH1() : NULL;
-  if ( histogram == NULL ) {
-    if ( !failSilent ) 
-      edm::LogError ("exportAnalysisResults") 
-	<< " Failed to access dqmMonitorElement = " << meNameTemplate << " --> analysis results will NOT be exported !!";
-    return;
-  }
+  std::vector<int> binContents(numBinsTotal);
 
-  int numBins = getNumBins(histogram, "X");
-  int firstBinX = getFirstBin(histogram, "X");
-  int lastBinX = getLastBin(histogram, "X");
-
-  int firstBinY, lastBinY;
-  if ( histogram->GetDimension() >= 2 ) {
-    numBins *= getNumBins(histogram, "Y");
-    firstBinX = getFirstBin(histogram, "Y");
-    lastBinY = getLastBin(histogram, "Y");
+  double numEventsProcessed, numEventsPassed;
+  if ( meNameTemplate == "" && meNameNumEventsProcessed == "" && meNameNumEventsPassed == "" ) { // create "empty" (dummy) file
+    numEventsProcessed = 1000.;
+    numEventsPassed = 0.;
   } else {
-    firstBinY = 1;
-    lastBinY = 1;
-  }
+    MonitorElement* me = dqmStore.get(meNameTemplate);
+    TH1* histogram = ( me ) ? me->getTH1() : NULL;
+    if ( histogram == NULL ) {
+      if ( !failSilent ) 
+	edm::LogError ("exportAnalysisResults") 
+	  << " Failed to access dqmMonitorElement = " << meNameTemplate 
+	  << " --> analysis results will NOT be exported !!";
+      return;
+    }
 
-  int firstBinZ, lastBinZ;
-  if ( histogram->GetDimension() >= 3 ) {
-    numBins *= getNumBins(histogram, "Z");
-    firstBinZ = getFirstBin(histogram, "Z");
-    lastBinZ = getLastBin(histogram, "Z");
-  } else {
-    firstBinZ = 1;
-    lastBinZ = 1;
-  }
+    int firstBinX = getFirstBin(histogram, "X");
+    int lastBinX = getLastBin(histogram, "X");
 
-  std::vector<int> binContents(numChannels*numBins);
+    int firstBinY, lastBinY;
+    if ( histogram->GetDimension() >= 2 ) {
+      firstBinX = getFirstBin(histogram, "Y");
+      lastBinY = getLastBin(histogram, "Y");
+    } else {
+      firstBinY = 1;
+      lastBinY = 1;
+    }
+    
+    int firstBinZ, lastBinZ;
+    if ( histogram->GetDimension() >= 3 ) {
+      firstBinZ = getFirstBin(histogram, "Z");
+      lastBinZ = getLastBin(histogram, "Z");
+    } else {
+      firstBinZ = 1;
+      lastBinZ = 1;
+    }
 
-  int binIndex = 0;
-  int binOffset = channelIndex*numBins;
+    double sumBinContents = getSumBinContents(histogram, firstBinX, lastBinX, firstBinY, lastBinY, firstBinZ, lastBinZ);
+    std::cout << " sumBinContents = " << sumBinContents << std::endl;
 
-  double sumBinContents = getSumBinContents(histogram, firstBinX, lastBinX, firstBinY, lastBinY, firstBinZ, lastBinZ);
-  std::cout << " sumBinContents = " << sumBinContents << std::endl;
-
-  double sumBinErrors2 = getSumBinErrors2(histogram, firstBinX, lastBinX, firstBinY, lastBinY, firstBinZ, lastBinZ);
-  std::cout << " sumBinErrors2 = " << sumBinErrors2 << std::endl;
+    double sumBinErrors2 = getSumBinErrors2(histogram, firstBinX, lastBinX, firstBinY, lastBinY, firstBinZ, lastBinZ);
+    std::cout << " sumBinErrors2 = " << sumBinErrors2 << std::endl;
 
 //--- scale (weighted) number of events expected for luminosity of analyzed dataset
 //    to "effective" number of events Neff for which 
 //      sumBinContents/sqrt(sumBinErrors2) = sqrt(Neff)
 //    corresponding to number of events needed to reach same level of statistical precision
 //    in case all events would have unit weight
-  double scaleFactor = sumBinContents/sumBinErrors2;
-  std::cout << " scaleFactor = " << scaleFactor << std::endl;
+    double scaleFactor = sumBinContents/sumBinErrors2;
+    std::cout << " scaleFactor = " << scaleFactor << std::endl;
 
-  for ( int iBinX = firstBinX; iBinX <= lastBinX; ++iBinX ) {
-    for ( int iBinY = firstBinY; iBinY <= lastBinY; ++iBinY ) {
-      for ( int iBinZ = firstBinZ; iBinZ <= lastBinZ; ++iBinZ ) {
-	double binContent = 0.;
-	if      ( histogram->GetDimension() == 1 ) binContent = histogram->GetBinContent(iBinX);
-	else if ( histogram->GetDimension() == 2 ) binContent = histogram->GetBinContent(iBinX, iBinY);
-	else if ( histogram->GetDimension() == 3 ) binContent = histogram->GetBinContent(iBinX, iBinY, iBinZ);
-	else assert(0);
-
-	binContent *= scaleFactor;
-	
-	binContents[binIndex + binOffset] = TMath::Nint(binContent);
-	++binIndex;
+    int binIndex = 0;
+    for ( int iBinX = firstBinX; iBinX <= lastBinX; ++iBinX ) {
+      for ( int iBinY = firstBinY; iBinY <= lastBinY; ++iBinY ) {
+	for ( int iBinZ = firstBinZ; iBinZ <= lastBinZ; ++iBinZ ) {
+	  double binContent = 0.;
+	  if      ( histogram->GetDimension() == 1 ) binContent = histogram->GetBinContent(iBinX);
+	  else if ( histogram->GetDimension() == 2 ) binContent = histogram->GetBinContent(iBinX, iBinY);
+	  else if ( histogram->GetDimension() == 3 ) binContent = histogram->GetBinContent(iBinX, iBinY, iBinZ);
+	  else assert(0);
+	  
+	  binContent *= scaleFactor;
+	  
+	  binContents[binIndex + binOffset] = TMath::Nint(binContent);
+	  ++binIndex;
+	}
       }
     }
-  }
 
-  bool error = false;
-  double numEventsProcessed = getValue(dqmStore, meNameNumEventsProcessed, error);
-  std::cout << " numEventsProcessed = " << numEventsProcessed << std::endl;
-  double numEventsPassed = getValue(dqmStore, meNameNumEventsPassed, error);
-  std::cout << " numEventsPassed = " << numEventsPassed << std::endl;
-  assert(!error);
+    bool error = false;
+    numEventsProcessed = getValue(dqmStore, meNameNumEventsProcessed, error);
+    std::cout << " numEventsProcessed = " << numEventsProcessed << std::endl;
+    numEventsPassed = getValue(dqmStore, meNameNumEventsPassed, error);
+    std::cout << " numEventsPassed = " << numEventsPassed << std::endl;
+    assert(!error);
 
-  numEventsProcessed *= scaleFactor;
-  numEventsPassed *= scaleFactor;
+    numEventsProcessed *= scaleFactor;
+    numEventsPassed *= scaleFactor;
 
-  double consistencyCheckNumerator = TMath::Abs(numEventsPassed - sumBinContents*scaleFactor);
-  double consistencyCheckDenominator = 0.5*(TMath::Abs(numEventsPassed) + TMath::Abs(sumBinContents*scaleFactor));
-  if ( consistencyCheckDenominator != 0. && (consistencyCheckNumerator/consistencyCheckDenominator) > epsilon ) {
-    edm::LogWarning ("exportAnalysisResults")
-      << " Mismatch between number of events passing cuts and sum of entries in histogram !!";
-    std::cout << "(num. events passed (meName = " << meNameNumEventsPassed << "): " << numEventsPassed << ","
-	      << " sum of entries in histogram (meName = " << meNameTemplate << "): " << sumBinContents*scaleFactor << ")" 
-	      << std::endl;
-  }
+    double consistencyCheckNumerator = TMath::Abs(numEventsPassed - sumBinContents*scaleFactor);
+    double consistencyCheckDenominator = 0.5*(TMath::Abs(numEventsPassed) + TMath::Abs(sumBinContents*scaleFactor));
+    if ( consistencyCheckDenominator != 0. && (consistencyCheckNumerator/consistencyCheckDenominator) > epsilon ) {
+      edm::LogWarning ("exportAnalysisResults")
+	<< " Mismatch between number of events passing cuts and sum of entries in histogram !!";
+      std::cout << "(num. events passed (meName = " << meNameNumEventsPassed << "): " << numEventsPassed << ","
+		<< " sum of entries in histogram (meName = " << meNameTemplate << "): " << sumBinContents*scaleFactor << ")" 
+		<< std::endl;
+    }
+  } 
 
   int errorFlag = 0;
   createSubDirectories(outputFileName, errorFlag);
   if ( errorFlag ) {
     if ( !failSilent )
       edm::LogError ("exportAnalysisResults") 
-	<< " Failed to create directory structure --> analysis results will NOT be exported !!";
+	<< " Failed to create directory structure" 
+	<< " --> analysis results will NOT be exported !!";
     return;
   }
 
@@ -308,13 +318,13 @@ void exportAnalysisResults(
   unsigned numbersPerLine = 10; // max. 10 numbers per line
 
   (*outputFile) << " " << std::setw(width) << std::setfill(' ') << numChannels;
-  (*outputFile) << " " << std::setw(width) << std::setfill(' ') << numBins;
+  (*outputFile) << " " << std::setw(width) << std::setfill(' ') << (numBinsTotal / numChannels);
   (*outputFile) << " " << std::setw(width) << std::setfill(' ') << TMath::Nint(numEventsProcessed);
   (*outputFile) << " " << std::setw(width) << std::setfill(' ') << TMath::Nint(numEventsPassed);
   (*outputFile) << std::endl;
 
   bool isEndLineTerminated = true;
-  for ( unsigned iBin = 0; iBin < (numChannels*numBins); ++iBin ) {
+  for ( unsigned iBin = 0; iBin < numBinsTotal; ++iBin ) {
     (*outputFile) << " " << std::setw(width) << std::setfill(' ') << binContents[iBin];
     isEndLineTerminated = false;
     if ( ((iBin + 1) % numbersPerLine) == 0 ) {
@@ -328,11 +338,10 @@ void exportAnalysisResults(
   delete outputFile;
 }
 
-std::string getMEname_full(const std::string& dqmDirectory_process, const std::string& meName_channel, 
-			   const std::string& systematic)
+std::string getMEname_full(const std::string& meName_channel, const std::string& systematic)
 {
+  std::string meName_full = meName_channel;
   int errorFlag = 0;
-  std::string meName_full = dqmDirectoryName(dqmDirectory_process).append(meName_channel);
   meName_full = replace_string(meName_full, systematicsDirKeyword, systematic, 0, 1, errorFlag);
   meName_full = replace_string(meName_full, "//", "/", 0, 1000, errorFlag);
   return meName_full;
@@ -344,69 +353,117 @@ void DQMExportAnalysisResults::endJob()
 
 //--- check that DQMStore service is available
   if ( !edm::Service<DQMStore>().isAvailable() ) {
-    edm::LogError ("endJob") << " Failed to access dqmStore --> histograms will NOT be plotted !!";
+    edm::LogError ("endJob") 
+      << " Failed to access dqmStore" 
+      << " --> histograms will NOT be exported !!";
     return;
   }
 
   DQMStore& dqmStore = (*edm::Service<DQMStore>());  
 
+  numChannels_ = channels_.size();
+
+//--- check that binning is compatible for all channels
+  TH1* refHistogramBinning = 0;
+  for ( std::vector<channelEntryType*>::const_iterator channel = channels_.begin();
+	channel != channels_.end(); ++channel ) {
+    bool dqmError;
+    (*channel)->histogramBinning_ = getHistogram(dqmStore, (*channel)->meNameBinning_, dqmError);
+    if ( dqmError ) {
+      edm::LogError ("endJob") 
+	<< " Failed to access MonitorElement name = " << (*channel)->meNameBinning_
+	<< " --> histograms will NOT be exported !!";
+      return;
+    }
+
+    if ( !refHistogramBinning ) {
+      refHistogramBinning = (*channel)->histogramBinning_;
+    } else {
+      if ( !isCompatibleBinning(refHistogramBinning, (*channel)->histogramBinning_) ) {
+	edm::LogError ("endJob")
+	  << " Template histograms for different channels have incompatible binning" 
+	  << " --> histograms will NOT be exported !!";
+      }
+    }
+
+    unsigned numBins_channel = getNumBins((*channel)->histogramBinning_);
+    binOffsets_[(*channel)->index_] = numBinsTotal_;
+    numBinsTotal_ += numBins_channel;
+  }
+
   for ( std::vector<processEntryType*>::iterator process = processes_.begin();
 	process != processes_.end(); ++process ) {
-    int errorFlag = 0;
-    std::string dqmDirectory_process = replace_string(dqmDirectory_, processDirKeyword, (*process)->dqmDirectory_, 0, 1, errorFlag);
-    std::cout << " dqmDirectory_process = " << dqmDirectory_process << std::endl;
-
     for ( std::vector<channelEntryType*>::iterator channel = channels_.begin();
 	  channel != channels_.end(); ++channel ) {
-      std::string meNameTemplate_channel = getMEname_full(dqmDirectory_process, (*channel)->meNameTemplate_, "");
-      std::cout << " meNameTemplate_channel = " << meNameTemplate_channel << std::endl;
 
-      std::string meNameNumEventsProcessed_channel = getMEname_full(dqmDirectory_process, (*channel)->meNameNumEventsProcessed_, "");
-      std::cout << " meNameNumEventsProcessed_channel = " << meNameNumEventsProcessed_channel << std::endl;
-      std::string meNameNumEventsPassed_channel = getMEname_full(dqmDirectory_process, (*channel)->meNameNumEventsPassed_, "");
-      std::cout << " meNameNumEventsPassed_channel = " << meNameNumEventsPassed_channel << std::endl;
-      
+      int errorFlag = 0;
+
+//--- export "central values" 
+//   (analysis results with no systematic shifts applied)
       std::string outputFileName_channel = std::string(outputFilePath_).append("/");
       outputFileName_channel.append((*process)->outputFilePath_).append("/");
       outputFileName_channel.append((*process)->outputFileName_);
       outputFileName_channel = 
-	replace_string(outputFileName_channel, channelOutputFileNameKeyword, (*channel)->outputFileName_, 0, 1, errorFlag);
+	replace_string(outputFileName_channel, channelOutputFileNameKeyword, (*channel)->shortName_, 0, 1, errorFlag);
       outputFileName_channel = replace_string(outputFileName_channel, "//", "/", 0, 1000, errorFlag);
       std::cout << " outputFileName_channel = " << outputFileName_channel << std::endl;
-      
-//--- export "central values" 
-//   (analysis results with no systematic shifts applied)
-      exportAnalysisResults(dqmStore, meNameTemplate_channel, 
-			    meNameNumEventsProcessed_channel, meNameNumEventsPassed_channel, 
-			    channels_.size(), (*channel)->index_, outputFileName_channel, false);
+
+//--- check if process is signal/background for channel:
+//    if it is, export distribution; else create "empty" (dummy) file
+      distributionEntryType* distribution = 0;
+      if ( (*process)->distributions_.find((*channel)->name_) != (*process)->distributions_.end() ) {
+	distribution = (*process)->distributions_.find((*channel)->name_)->second;
+
+	std::string meNameTemplate_channel = getMEname_full(distribution->meNameTemplate_, "");
+	std::cout << " meNameTemplate_channel = " << meNameTemplate_channel << std::endl;
+
+	std::string meNameNumEventsProcessed_channel = getMEname_full(distribution->meNameNumEventsProcessed_, "");
+	std::cout << " meNameNumEventsProcessed_channel = " << meNameNumEventsProcessed_channel << std::endl;
+	std::string meNameNumEventsPassed_channel = getMEname_full(distribution->meNameNumEventsPassed_, "");
+	std::cout << " meNameNumEventsPassed_channel = " << meNameNumEventsPassed_channel << std::endl;
+
+	exportAnalysisResults(dqmStore, 
+			      meNameTemplate_channel, meNameNumEventsProcessed_channel, meNameNumEventsPassed_channel, 
+			      numChannels_, binOffsets_[(*channel)->index_], numBinsTotal_, outputFileName_channel, false);
+      } else {
+	exportAnalysisResults(dqmStore, 
+			      "", "", "", 
+			      numChannels_, binOffsets_[(*channel)->index_], numBinsTotal_, outputFileName_channel, false);
+      }
 
 //--- export systematic uncertainties
-      if ( (*process)->hasSysUncertainties_ ) {
-	for ( std::vector<systematicEntryType*>::iterator systematic = systematics_.begin();
-	      systematic != systematics_.end(); ++systematic ) {
+      for ( std::vector<systematicEntryType*>::iterator systematic = systematics_.begin();
+	    systematic != systematics_.end(); ++systematic ) {
+	
+	std::string outputFileName_systematic = std::string(outputFilePath_).append("/");
+	outputFileName_systematic.append((*process)->outputFilePath_).append("/");
+	outputFileName_systematic.append((*systematic)->outputFilePath_).append("/");
+	outputFileName_systematic.append((*process)->outputFileName_);
+	outputFileName_systematic = 
+	  replace_string(outputFileName_systematic, channelOutputFileNameKeyword, (*channel)->shortName_, 0, 1, errorFlag);
+	outputFileName_systematic = replace_string(outputFileName_systematic, "//", "/", 0, 1000, errorFlag);
+	std::cout << " outputFileName_systematic = " << outputFileName_systematic << std::endl;
+	
+	if ( distribution && distribution->systematics_.find((*systematic)->name_) != distribution->systematics_.end() ) {
+
 	  std::string meNameTemplate_systematic = 
-	    getMEname_full(dqmDirectory_process, (*channel)->meNameTemplate_, (*systematic)->dqmDirectory_);
+	    getMEname_full(distribution->meNameTemplate_, (*systematic)->dqmDirectory_);
 	  std::cout << " meNameTemplate_systematic = " << meNameTemplate_systematic << std::endl;
 	  
 	  std::string meNameNumEventsProcessed_systematic = 
-	    getMEname_full(dqmDirectory_process, (*channel)->meNameNumEventsProcessed_, (*systematic)->dqmDirectory_);
+	    getMEname_full(distribution->meNameNumEventsProcessed_, (*systematic)->dqmDirectory_);
 	  std::cout << " meNameNumEventsProcessed_systematic = " << meNameNumEventsProcessed_systematic << std::endl;
 	  std::string meNameNumEventsPassed_systematic = 
-	    getMEname_full(dqmDirectory_process, (*channel)->meNameNumEventsPassed_, (*systematic)->dqmDirectory_);
+	    getMEname_full(distribution->meNameNumEventsPassed_, (*systematic)->dqmDirectory_);
 	  std::cout << " meNameNumEventsPassed_systematic = " << meNameNumEventsPassed_systematic << std::endl;
-	  
-	  std::string outputFileName_systematic = std::string(outputFilePath_).append("/");
-	  outputFileName_systematic.append((*process)->outputFilePath_).append("/");
-	  outputFileName_systematic.append((*systematic)->outputFilePath_).append("/");
-	  outputFileName_systematic.append((*process)->outputFileName_);
-	  outputFileName_systematic = 
-	    replace_string(outputFileName_systematic, channelOutputFileNameKeyword, (*channel)->outputFileName_, 0, 1, errorFlag);
-	  outputFileName_systematic = replace_string(outputFileName_systematic, "//", "/", 0, 1000, errorFlag);
-	  std::cout << " outputFileName_systematic = " << outputFileName_systematic << std::endl;
-	  
+	  	  
 	  exportAnalysisResults(dqmStore, meNameTemplate_systematic, 
 				meNameNumEventsProcessed_systematic, meNameNumEventsPassed_systematic, 
-				channels_.size(), (*channel)->index_, outputFileName_systematic, false); // true
+				numChannels_, binOffsets_[(*channel)->index_], numBinsTotal_, outputFileName_systematic, false);
+	} else {
+	  exportAnalysisResults(dqmStore, 
+				"", "", "", 
+				numChannels_, binOffsets_[(*channel)->index_], numBinsTotal_, outputFileName_systematic, false);
 	}
       }
     }
