@@ -17,6 +17,8 @@ tauHistManager = cms.PSet(
     requireGenTauMatch = cms.bool(False),
 
     skipPdgIdsGenParticleMatch = cms.vint32( 12, 14, 16 ),
+
+    useHPSpTaNCalgorithm = cms.bool(False),
     
     #normalization = cms.string("taus"),
     normalization = cms.string("events"),
