@@ -51,7 +51,7 @@ VgNtuplizer::VgNtuplizer(const edm::ParameterSet& ps) : verbosity_(0), helper_(p
   saveHLTInfo_    = ps.getUntrackedParameter<bool>("saveHLTInfo", true);
   trgEvent_       = ps.getParameter<InputTag>("triggerEvent");
   doGenParticles_ = ps.getParameter<bool>("doGenParticles");
-  doStoreJets_     = ps.getParameter<bool>("doStoreJets");
+  doStoreJets_    = ps.getParameter<bool>("doStoreJets");
 
   vtxlabel_       = ps.getParameter<InputTag>("VtxLabel");
   caloTowerlabel_ = ps.getParameter<InputTag>("CaloTowerLabel");
@@ -81,7 +81,7 @@ VgNtuplizer::VgNtuplizer(const edm::ParameterSet& ps) : verbosity_(0), helper_(p
   tree_->Branch("ttbit0", &ttbit0_, "ttbit0/I");
   tree_->Branch("nHLT", &nHLT_, "nHLT/I");
   tree_->Branch("HLT", HLT_, "HLT[nHLT]/I");
-  tree_->Branch("HLTIndex", HLTIndex_, "HLTIndex[25]/I");
+  tree_->Branch("HLTIndex", HLTIndex_, "HLTIndex[100]/I");
   tree_->Branch("nHFTowersP", &nHFTowersP_, "nHFTowersP/I");
   tree_->Branch("nHFTowersN", &nHFTowersN_, "nHFTowersN/I");
   tree_->Branch("nVtx", &nVtx_, "nVtx/I");
@@ -145,7 +145,7 @@ VgNtuplizer::VgNtuplizer(const edm::ParameterSet& ps) : verbosity_(0), helper_(p
   tree_->Branch("pfMETSig", &pfMETSig_, "pfMETSig/F");
   // Electron
   tree_->Branch("nEle", &nEle_, "nEle/I");
-  tree_->Branch("eleTrg", eleTrg_, "eleTrg[nEle][5]/I");
+  tree_->Branch("eleTrg", eleTrg_, "eleTrg[nEle][50]/I");
   tree_->Branch("eleID", eleID_, "eleID[nEle][12]/I");
   tree_->Branch("eleClass", eleClass_, "eleClass[nEle]/I");
   tree_->Branch("eleCharge", eleCharge_, "eleCharge[nEle]/I");
@@ -196,6 +196,7 @@ VgNtuplizer::VgNtuplizer(const edm::ParameterSet& ps) : verbosity_(0), helper_(p
   tree_->Branch("eleIsoHcalDR04", eleIsoHcalDR04_, "eleIsoHcalDR04[nEle]/F");
   // Photon
   tree_->Branch("nPho", &nPho_, "nPho/I");
+  tree_->Branch("phoTrg", &phoTrg_, "phoTrg[nPho][50]/I");
   tree_->Branch("phoIsPhoton", phoIsPhoton_, "phoIsPhoton[nPho]/O");
   tree_->Branch("phoE", phoE_, "phoE[nPho]/F");
   tree_->Branch("phoEt", phoEt_, "phoEt[nPho]/F");
@@ -246,7 +247,7 @@ VgNtuplizer::VgNtuplizer(const edm::ParameterSet& ps) : verbosity_(0), helper_(p
   tree_->Branch("phoPi0Disc",phoPi0Disc_ , "phoPi0Disc[nPho]/F");
   // Muon
   tree_->Branch("nMu", &nMu_, "nMu/I");
-  tree_->Branch("muTrg", &muTrg_, "muTrg/I");
+  tree_->Branch("muTrg", &muTrg_, "muTrg[nMu][50]/I");
   tree_->Branch("muEta", muEta_, "muEta[nMu]/F");
   tree_->Branch("muPhi", muPhi_, "muPhi[nMu]/F");
   tree_->Branch("muCharge", muCharge_, "muCharge[nMu]/I");
@@ -265,6 +266,7 @@ VgNtuplizer::VgNtuplizer(const edm::ParameterSet& ps) : verbosity_(0), helper_(p
   tree_->Branch("muID", muID_, "muID[nMu][6]/O");
   // [0]: AllArbitrated, [1]: GlobalMuonPromptTight, [2]: TMLSLoose, [3]: TMLSTight, [4]: TM2DCompatLoose, [5]: TM2DCompatTight
   tree_->Branch("muD0", muD0_, "muD0[nMu]/F");
+  tree_->Branch("muDz", muDz_, "muDz[nMu]/F");
   tree_->Branch("muNumberOfValidTrkHits", muNumberOfValidTrkHits_, "muNumberOfValidTrkHits[nMu]/I");
   tree_->Branch("muNumberOfValidPixelHits", muNumberOfValidPixelHits_, "muNumberOfValidPixelHits[nMu]/I");
   tree_->Branch("muNumberOfValidMuonHits", muNumberOfValidMuonHits_, "muNumberOfValidMuonHits[nMu]/I");
@@ -273,6 +275,7 @@ VgNtuplizer::VgNtuplizer(const edm::ParameterSet& ps) : verbosity_(0), helper_(p
   // Jet
   if (doStoreJets_) {
     tree_->Branch("nJet", &nJet_, "nJet/I");
+    tree_->Branch("jetTrg", &jetTrg_, "jetTrg[nJet][50]");
     tree_->Branch("jetEn", jetEn_, "jetEn[nJet]/F");
     tree_->Branch("jetPt", jetPt_, "jetPt[nJet]/F");
     tree_->Branch("jetEta", jetEta_, "jetEta[nJet]/F");
@@ -572,7 +575,7 @@ fabs(ip->pdgId())<=14) || ip->pdgId()==22))) {
 	if (!p->mother()) continue;
 
 	if (fabs(p->pdgId())==4 && fabs(p->mother()->pdgId())!=7) continue;
-	if ((genIndex-1)>20 && ip->pdgId()==22) continue;
+	if ((genIndex-1)>60 && ip->pdgId()==22) continue;
 	if (fabs(p->pdgId())==12 && fabs(p->mother()->pdgId())>100) continue;
 	if (fabs(p->pdgId())==14 && fabs(p->mother()->pdgId())>100) continue;
 
@@ -706,7 +709,7 @@ fabs(ip->pdgId())<=14) || ip->pdgId()==22))) {
 
       // cout << "Get Electron Trigger" << std::endl;
       eleTrg_[nEle_][0] = (iEle->triggerObjectMatchesByPath("HLT_Photon10_L1R").size()) ? 1 : -99;
-      eleTrg_[nEle_][1] = (iEle->triggerObjectMatchesByPath("HLT_Photon15_Cleaned_L1R").size()) ? 1 : -99;
+      eleTrg_[nEle_][1] = (iEle->triggerObjectMatchesByPath("HLT_Photon15_Cleaned_L1R").size()) ? 1 : -99;      
       eleTrg_[nEle_][2] = (iEle->triggerObjectMatchesByPath("HLT_Ele15_LW_L1R").size()) ? 1 : -99;
       eleTrg_[nEle_][3] = (iEle->triggerObjectMatchesByPath("HLT_Ele15_SW_L1R").size()) ? 1 : -99;
       eleTrg_[nEle_][4] = (iEle->triggerObjectMatchesByPath("HLT_Ele15_SW_CaloEleId_L1R").size()) ? 1 : -99;
@@ -871,6 +874,17 @@ fabs(ip->pdgId())<=14) || ip->pdgId()==22))) {
 
       if (iPho->pt() > leadingPhoPtCut_) nPhoPassCut++;
 
+      // cout << "Get Electron Trigger" << std::endl;
+      
+      phoTrg_[nPho_][0] = (iPho->triggerObjectMatchesByPath("HLT_Photon10_Cleaned_L1R").size()) ? 1 : -99;
+      phoTrg_[nPho_][1] = (iPho->triggerObjectMatchesByPath("HLT_Photon15_Cleaned_L1R").size()) ? 1 : -99;
+      phoTrg_[nPho_][2] = (iPho->triggerObjectMatchesByPath("HLT_Photon20_Cleaned_L1R").size()) ? 1 : -99;
+      phoTrg_[nPho_][3] = (iPho->triggerObjectMatchesByPath("HLT_Photon30_Cleaned_L1R").size()) ? 1 : -99;
+      phoTrg_[nPho_][4] = (iPho->triggerObjectMatchesByPath("HLT_Photon50_Cleaned_L1R").size()) ? 1 : -99;
+      phoTrg_[nPho_][5] = (iPho->triggerObjectMatchesByPath("HLT_Photon70_Cleaned_L1R").size()) ? 1 : -99;
+      phoTrg_[nPho_][6] = (iPho->triggerObjectMatchesByPath("HLT_DoublePhoton17_L1R").size()) ? 1 : -99;
+      phoTrg_[nPho_][7] = (iPho->triggerObjectMatchesByPath("HLT_Photon10_L1R").size()) ? 1 : -99;
+
       phoIsPhoton_[nPho_] = iPho->isPhoton();
       phoE_[nPho_]   = iPho->energy();
       phoEt_[nPho_]  = iPho->et();
@@ -1005,6 +1019,7 @@ fabs(ip->pdgId())<=14) || ip->pdgId()==22))) {
 		muChi2NDF_[nMu_] = -99;
 	  } else {
         muD0_[nMu_] = trkr->dxy(beamSpotHandle->position());
+	muDz_[nMu_] = trkr->dz(beamSpotHandle->position());
         muNumberOfValidTrkHits_[nMu_] = trkr->hitPattern().numberOfValidTrackerHits();
         muNumberOfValidPixelHits_[nMu_] = trkr->hitPattern().numberOfValidPixelHits();
         muNumberOfValidMuonHits_[nMu_] = trkr->hitPattern().numberOfValidMuonHits();
@@ -1080,6 +1095,7 @@ fabs(ip->pdgId())<=14) || ip->pdgId()==22))) {
 	  ZeeLeg2Index_[nZee_] = leg2Index;
 
 	  nZee_++;
+	  leg2Index++;
 	//}
       }
 
@@ -1293,6 +1309,22 @@ fabs(ip->pdgId())<=14) || ip->pdgId()==22))) {
 
         if ( iJet->pt() < 15 ) continue;
 
+	jetTrg_[nJet_][0] = (iJet->triggerObjectMatchesByPath("HLT_Jet15U").size()) ? 1 : -99;
+	jetTrg_[nJet_][1] = (iJet->triggerObjectMatchesByPath("HLT_Jet30U").size()) ? 1 : -99;
+	jetTrg_[nJet_][2] = (iJet->triggerObjectMatchesByPath("HLT_Jet50U").size()) ? 1 : -99;
+	jetTrg_[nJet_][3] = (iJet->triggerObjectMatchesByPath("HLT_Jet70U").size()) ? 1 : -99;
+	jetTrg_[nJet_][4] = (iJet->triggerObjectMatchesByPath("HLT_Jet70U_v2").size()) ? 1 : -99;
+	jetTrg_[nJet_][5] = (iJet->triggerObjectMatchesByPath("HLT_Jet100U").size()) ? 1 : -99;
+	jetTrg_[nJet_][6] = (iJet->triggerObjectMatchesByPath("HLT_Jet100U_v2").size()) ? 1 : -99;
+	jetTrg_[nJet_][7] = (iJet->triggerObjectMatchesByPath("HLT_Jet140U_v1").size()) ? 1 : -99;
+	jetTrg_[nJet_][8] = (iJet->triggerObjectMatchesByPath("HLT_Jet15U_v3").size()) ? 1 : -99;
+	jetTrg_[nJet_][9] = (iJet->triggerObjectMatchesByPath("HLT_Jet30U_v3").size()) ? 1 : -99;
+	jetTrg_[nJet_][10] = (iJet->triggerObjectMatchesByPath("HLT_Jet50U_v3").size()) ? 1 : -99;
+	jetTrg_[nJet_][11] = (iJet->triggerObjectMatchesByPath("HLT_Jet70U_v3").size()) ? 1 : -99;
+	jetTrg_[nJet_][12] = (iJet->triggerObjectMatchesByPath("HLT_Jet100U_v3").size()) ? 1 : -99;
+	jetTrg_[nJet_][13] = (iJet->triggerObjectMatchesByPath("HLT_Jet140U_v3").size()) ? 1 : -99;
+	
+	
 	jetEn_[nJet_]     = iJet->energy();
 	jetPt_[nJet_]     = iJet->pt();
 	jetEta_[nJet_]    = iJet->eta();

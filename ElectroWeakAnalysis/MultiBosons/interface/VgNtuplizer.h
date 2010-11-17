@@ -84,7 +84,7 @@ protected:
   float  processID_;
   int    nHLT_;
   int    HLT_[maxP];
-  int    HLTIndex_[25];
+  int    HLTIndex_[100];
   int    nHFTowersP_;
   int    nHFTowersN_;
   int    nVtx_;
@@ -142,7 +142,7 @@ protected:
   float  pfMETSig_;
   // Electron
   int    nEle_;
-  int    eleTrg_[maxP][13];
+  int    eleTrg_[maxP][50];
   int    eleID_[maxP][12];
   int    eleClass_[maxP];
   int    eleCharge_[maxP];
@@ -197,6 +197,7 @@ protected:
 
   // Photon
   int    nPho_;
+  int    phoTrg_[maxP][50];
   bool   phoIsPhoton_[maxP];
   float  phoE_[maxP];
   float  phoEt_[maxP];
@@ -244,7 +245,7 @@ protected:
 
   // Muon
   int    nMu_;
-  int    muTrg_[maxP][6];
+  int    muTrg_[maxP][50];
   float  muEta_[maxP];
   float  muPhi_[maxP];
   int    muCharge_[maxP];
@@ -261,6 +262,7 @@ protected:
   int    muType_[maxP];
   bool   muID_[maxP][6];
   float  muD0_[maxP];
+  float  muDz_[maxP];
   int    muNumberOfValidTrkHits_[maxP];
   int    muNumberOfValidPixelHits_[maxP];
   int    muNumberOfValidMuonHits_[maxP];
@@ -269,6 +271,7 @@ protected:
 
   // Jet
   int    nJet_;
+  int    jetTrg_[maxP][50];
   int    jetAlgo_[maxP];
   float  jetEn_[maxP];
   float  jetPt_[maxP];
