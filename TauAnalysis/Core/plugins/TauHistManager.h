@@ -49,6 +49,8 @@ class TauHistManager : public HistManagerBase
 
   bool requireGenTauMatch_;
 
+  bool useHPSpTaNCalgorithm_;
+
   bool makeIsoPtCtrlHistograms_;
   bool makeIsoPtConeSizeDepHistograms_;
 
@@ -152,6 +154,10 @@ class TauHistManager : public HistManagerBase
   MonitorElement* hTauDiscriminatorTaNCfrHalfPercent_;
   MonitorElement* hTauDiscriminatorTaNCfrQuarterPercent_;
   MonitorElement* hTauDiscriminatorTaNCfrTenthPercent_;
+
+  MonitorElement* hTauDiscriminatorTaNCloose_;
+  MonitorElement* hTauDiscriminatorTaNCmedium_;
+  MonitorElement* hTauDiscriminatorTaNCtight_;
 
   MonitorElement* hTauTrkIsoPt_;
   MonitorElement* hTauEcalIsoPt_;

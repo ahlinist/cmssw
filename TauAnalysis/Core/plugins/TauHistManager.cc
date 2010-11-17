@@ -90,6 +90,8 @@ TauHistManager::TauHistManager(const edm::ParameterSet& cfg)
 
   skipPdgIdsGenParticleMatch_ = cfg.getParameter<vint>("skipPdgIdsGenParticleMatch");
 
+  useHPSpTaNCalgorithm_ = cfg.getParameter<bool>("useHPSpTaNCalgorithm");
+
   std::string normalization_string = cfg.getParameter<std::string>("normalization");
   normMethod_ = getNormMethod(normalization_string, "taus");
 
@@ -285,6 +287,13 @@ void TauHistManager::bookHistogramsImp()
   hTauDiscriminatorTaNCfrTenthPercent_ = book1D("TauDiscriminatorTaNCfrTenthPercent",
 						"TauDiscriminatorTaNCfrTenthPercent", 2, -0.5, 1.5);
   
+  hTauDiscriminatorTaNCloose_ = book1D("TauDiscriminatorTaNCloose",
+				       "TauDiscriminatorTaNCloose", 2, -0.5, 1.5);
+  hTauDiscriminatorTaNCmedium_ = book1D("TauDiscriminatorTaNCmedium",
+					"TauDiscriminatorTaNCmedium", 2, -0.5, 1.5);
+  hTauDiscriminatorTaNCtight_ = book1D("TauDiscriminatorTaNCtight",
+				       "TauDiscriminatorTaNCtight", 2, -0.5, 1.5);
+
   hTauTrkIsoPt_ = book1D("TauTrkIsoPt", "Track Isolation P_{T}", 100, 0., 10.);    
   hTauEcalIsoPt_ = book1D("TauEcalIsoPt", "ECAL Isolation P_{T}", 100, 0., 10.);
   hTauHcalIsoPt_ = book1D("TauHcalIsoPt", "HCAL Isolation P_{T}", 100, 0., 10.);
@@ -547,9 +556,14 @@ void TauHistManager::fillHistogramsImp(const edm::Event& evt, const edm::EventSe
       hTauLeadTrkNumStripHits_->Fill(hitPattern.numberOfValidStripHits(), weight);
     }
 
-    hTauDiscriminatorByIsolation_->Fill(patTau->tauID("byIsolation"), weight);
-    hTauDiscriminatorByTrackIsolation_->Fill(patTau->tauID("trackIsolation"), weight);
-    hTauDiscriminatorByEcalIsolation_->Fill(patTau->tauID("ecalIsolation"), weight);
+    static std::map<std::string, bool> discrAvailability_hasBeenChecked;
+
+    fillTauDiscriminatorHistogram(hTauDiscriminatorByIsolation_, *patTau, "byIsolation",
+				  discrAvailability_hasBeenChecked, weight);
+    fillTauDiscriminatorHistogram(hTauDiscriminatorByTrackIsolation_, *patTau, "trackIsolation",
+				  discrAvailability_hasBeenChecked, weight);
+    fillTauDiscriminatorHistogram(hTauDiscriminatorByEcalIsolation_, *patTau, "ecalIsolation",
+				  discrAvailability_hasBeenChecked, weight);
 
     hTauDiscriminatorAgainstElectrons_->Fill(patTau->tauID("againstElectron"), weight);
     hTauEmFraction_->Fill(patTau->emFraction(), weight);
@@ -569,15 +583,26 @@ void TauHistManager::fillHistogramsImp(const edm::Event& evt, const edm::EventSe
       tauRecVsGenDecayMode_th2->Fill(genTauDecayMode.data(), recTauDecayMode, weight);
     }
     
-    static std::map<std::string, bool> discrAvailability_hasBeenChecked;
-    fillTauDiscriminatorHistogram(hTauDiscriminatorTaNCfrOnePercent_, *patTau, "byTaNCfrOnePercent", 
-				  discrAvailability_hasBeenChecked, weight);
-    fillTauDiscriminatorHistogram(hTauDiscriminatorTaNCfrHalfPercent_, *patTau, "byTaNCfrHalfPercent",
-				  discrAvailability_hasBeenChecked, weight);
-    fillTauDiscriminatorHistogram(hTauDiscriminatorTaNCfrQuarterPercent_, *patTau, "byTaNCfrQuarterPercent",
-				  discrAvailability_hasBeenChecked, weight);
-    fillTauDiscriminatorHistogram(hTauDiscriminatorTaNCfrTenthPercent_, *patTau, "byTaNCfrTenthPercent",
-				  discrAvailability_hasBeenChecked, weight);
+    if ( useHPSpTaNCalgorithm_ ) {
+      fillTauDiscriminatorHistogram(hTauTaNCoutputTransform_, *patTau, "byTaNCtransform",
+				    discrAvailability_hasBeenChecked, weight);
+
+      fillTauDiscriminatorHistogram(hTauDiscriminatorTaNCloose_, *patTau, "byTaNCloose", 
+				    discrAvailability_hasBeenChecked, weight);
+      fillTauDiscriminatorHistogram(hTauDiscriminatorTaNCmedium_, *patTau, "byTaNCmedium", 
+				    discrAvailability_hasBeenChecked, weight);
+      fillTauDiscriminatorHistogram(hTauDiscriminatorTaNCtight_, *patTau, "byTaNCtight", 
+				    discrAvailability_hasBeenChecked, weight);
+    } else {
+      fillTauDiscriminatorHistogram(hTauDiscriminatorTaNCfrOnePercent_, *patTau, "byTaNCfrOnePercent", 
+				    discrAvailability_hasBeenChecked, weight);
+      fillTauDiscriminatorHistogram(hTauDiscriminatorTaNCfrHalfPercent_, *patTau, "byTaNCfrHalfPercent",
+				    discrAvailability_hasBeenChecked, weight);
+      fillTauDiscriminatorHistogram(hTauDiscriminatorTaNCfrQuarterPercent_, *patTau, "byTaNCfrQuarterPercent",
+				    discrAvailability_hasBeenChecked, weight);
+      fillTauDiscriminatorHistogram(hTauDiscriminatorTaNCfrTenthPercent_, *patTau, "byTaNCfrTenthPercent",
+				    discrAvailability_hasBeenChecked, weight);
+    }
 
     MonitorElement* hTauTaNCoutput = 0;
     if ( recTauDecayMode == reco::PFTauDecayMode::tauDecay1ChargedPion0PiZero ) {
@@ -595,10 +620,7 @@ void TauHistManager::fillHistogramsImp(const edm::Event& evt, const edm::EventSe
       fillTauDiscriminatorHistogram(hTauTaNCoutput, *patTau, "byTaNC", 
 				    discrAvailability_hasBeenChecked, weight);
     }
-
-    fillTauDiscriminatorHistogram(hTauTaNCoutputTransform_, *patTau, "byTaNCtransform",
-				  discrAvailability_hasBeenChecked, weight);
- 
+    
     fillTauIsoHistograms(*patTau, weight);
     hTauDeltaRnearestJet_->Fill(getDeltaRnearestJet(patTau->p4(), patJets), weight);
     if ( makeIsoPtConeSizeDepHistograms_ ) fillTauIsoConeSizeDepHistograms(*patTau, weight);
