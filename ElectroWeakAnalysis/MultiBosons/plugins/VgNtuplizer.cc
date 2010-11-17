@@ -52,9 +52,9 @@ VgNtuplizer::VgNtuplizer(const edm::ParameterSet& ps) : verbosity_(0), helper_(p
   trgEvent_       = ps.getParameter<InputTag>("triggerEvent");
   doGenParticles_ = ps.getParameter<bool>("doGenParticles");
   doStoreJets_    = ps.getParameter<bool>("doStoreJets");
+  doSkim_         = ps.getParameter<bool>("doSkim");
 
   vtxlabel_       = ps.getParameter<InputTag>("VtxLabel");
-  caloTowerlabel_ = ps.getParameter<InputTag>("CaloTowerLabel");
   tcMETlabel_     = ps.getParameter<InputTag>("tcMETLabel");
   pfMETlabel_     = ps.getParameter<InputTag>("pfMETLabel");
 
@@ -62,7 +62,7 @@ VgNtuplizer::VgNtuplizer(const edm::ParameterSet& ps) : verbosity_(0), helper_(p
   leadingMuPtCut_  = ps.getParameter<double>("LeadingMuPtCut");
   leadingPhoPtCut_ = ps.getParameter<double>("LeadingPhoPtCut");
 
-  beamSpotCollection_        = ps.getParameter<InputTag>("BeamSpotCollection");
+  beamSpotCollection_ = ps.getParameter<InputTag>("BeamSpotCollection");
 
   if (saveHistograms_) helper_.bookHistos(this);
 
@@ -82,17 +82,11 @@ VgNtuplizer::VgNtuplizer(const edm::ParameterSet& ps) : verbosity_(0), helper_(p
   tree_->Branch("nHLT", &nHLT_, "nHLT/I");
   tree_->Branch("HLT", HLT_, "HLT[nHLT]/I");
   tree_->Branch("HLTIndex", HLTIndex_, "HLTIndex[100]/I");
-  tree_->Branch("nHFTowersP", &nHFTowersP_, "nHFTowersP/I");
-  tree_->Branch("nHFTowersN", &nHFTowersN_, "nHFTowersN/I");
   tree_->Branch("nVtx", &nVtx_, "nVtx/I");
   tree_->Branch("vtx", vtx_, "vtx[nVtx][3]/F");
   tree_->Branch("vtxNTrk", vtxNTrk_, "vtxNTrk[nVtx]/I");
   tree_->Branch("vtxNDF", vtxNDF_, "vtxNDF[nVtx]/I");
   tree_->Branch("vtxD0", vtxD0_, "vtxD0[nVtx]/F");
-  tree_->Branch("IsVtxGood", &IsVtxGood_, "IsVtxGood/I");
-  tree_->Branch("nTrk", &nTrk_, "nTrk/I");
-  tree_->Branch("nGoodTrk", &nGoodTrk_, "nGoodTrk/I");
-  tree_->Branch("IsTracksGood", &IsTracksGood_, "IsTracksGood/I");
   if (doGenParticles_) {
     tree_->Branch("pdf", pdf_, "pdf[7]/F");
     tree_->Branch("pthat", &pthat_, "pthat/F");
@@ -346,7 +340,6 @@ VgNtuplizer::VgNtuplizer(const edm::ParameterSet& ps) : verbosity_(0), helper_(p
 
   nHLT_   = 0;
   nVtx_   = 0;
-  nTrk_   = 0;
   nMC_    = 0;
   nEle_   = 0;
   nPho_   = 0;
@@ -463,9 +456,8 @@ void VgNtuplizer::produce(edm::Event & e, const edm::EventSetup & es) {
   HLTIndexPath[48] = "HLT_DoublePhoton17_L1R";
   HLTIndexPath[49] = "HLT_Photon10_L1R";
 
-  for (int a=0; a<50; a++)
-    HLTIndex_[a] = -1;
-
+  for (int i=0; i<50; ++i) HLTIndex_[i] = -1;
+  
   nHLT_ = 0;
   if (saveHLTInfo_) {
     const TriggerPathCollection &trgPaths = *triggerEvent->paths();
@@ -473,7 +465,7 @@ void VgNtuplizer::produce(edm::Event & e, const edm::EventSetup & es) {
     for (size_t i=0; i<trgPaths.size(); ++i) {
       HLT_[i] = trgPaths[i].wasAccept() == true ? 1 : 0;
     }
-
+    
     for (size_t i=0; i<HLTIndexPath.size(); ++i) {
       if ( HLTIndexPath.find(i) == HLTIndexPath.end() ) {
         throw cms::Exception("HLTIndex") << "Illegal index of "
@@ -485,41 +477,12 @@ void VgNtuplizer::produce(edm::Event & e, const edm::EventSetup & es) {
       }
     } // for (size_t i=0; i<HLTIndexPath.size(); ++i)
   } // if (saveHLTInfo_)
-
-  // Get CaloTower information
-  edm::Handle<CaloTowerCollection> pCaloTower;
-  if ( e.getByLabel(caloTowerlabel_, pCaloTower) ) {
-
-    const CaloTowerCollection* CaloTowers = pCaloTower.product();
-
-    nHFTowersP_ = 0;
-    nHFTowersN_ = 0;
-    for (CaloTowerCollection::const_iterator aCalo = CaloTowers->begin(); aCalo != CaloTowers->end(); aCalo++) {
-      // cout << "trying to ntuplize calotowers." << std::endl;
-
-      if (aCalo->energy() > 3) {
-        for (size_t i = 0; i < aCalo->constituentsSize(); ++i) {
-          const DetId caloId = aCalo->constituent(i);
-
-          if (caloId.det() != DetId::Hcal) continue;
-
-          HcalSubdetector hcalsubdet = (HcalSubdetector(caloId.subdetId()));
-
-          if (hcalsubdet != HcalForward) continue;
-          if (aCalo->eta() < 3) nHFTowersP_++;
-          if (aCalo->eta() > -3) nHFTowersN_++;
-        }
-      }
-    }
-  } // pCalotower.isValid()
-
+  
   // vertex
   nVtx_ = 0;
-  IsVtxGood_ = 0;
-  Int_t nGoodVtx = 0;
   Handle<VertexCollection> recVtxs;
   if (e.getByLabel(vtxlabel_, recVtxs)) {
-
+    
     for (size_t i=0; i<recVtxs->size(); ++i)
       if (!((*recVtxs)[i].isFake())) {
 	vtx_[nVtx_][0] = (*recVtxs)[i].x();
@@ -528,13 +491,11 @@ void VgNtuplizer::produce(edm::Event & e, const edm::EventSetup & es) {
 	vtxNTrk_[nVtx_] = (*recVtxs)[i].tracksSize();
 	vtxNDF_[nVtx_] = (*recVtxs)[i].ndof();
 	vtxD0_[nVtx_] = (*recVtxs)[i].position().rho();
-
-	if (vtxNDF_[nVtx_] > 4 && fabs(vtx_[nVtx_][2]) <= 15 && vtxD0_[nVtx_] <= 2) nGoodVtx++;
+	
 	nVtx_++;
       }
   }
-  if (nGoodVtx > 0) IsVtxGood_ = 1;
-
+  
   // PDF information
   // cout << "VgNtuplizer: produce: PDF information..." << endl;
   if (!isData_) {
@@ -554,31 +515,30 @@ void VgNtuplizer::produce(edm::Event & e, const edm::EventSetup & es) {
       // cout << "Got pThat info..." << endl;
     }
   }
-
+  
   // GenParticle
   // cout << "VgNtuplizer: produce: GenParticle... " << endl;
   if (!isData_ && genParticlesHandle_.isValid() ) {
-
+    
     nMC_ = 0;
     int genIndex = 0;
     const Candidate *mom = 0;
-
+    
     for (vector<GenParticle>::const_iterator ip = genParticlesHandle_->begin(); ip != genParticlesHandle_->end(); ++ip) {
-
+      
       genIndex++;
-
-      if ((ip->status()==3 && (ip->pdgId()==23 || fabs(ip->pdgId())==24)) || (ip->status()==1 && ((fabs(ip->pdgId())>=11 &&
-fabs(ip->pdgId())<=14) || ip->pdgId()==22))) {
-
+      
+      if ((ip->status()==3 && (ip->pdgId()==23 || fabs(ip->pdgId())==24)) || (ip->status()==1 && ((fabs(ip->pdgId())>=11 && fabs(ip->pdgId())<=14) || ip->pdgId()==22))) {
+	
 	const Candidate *p = (const Candidate*)&(*ip);
-
+	
 	if (!p->mother()) continue;
-
+	
 	if (fabs(p->pdgId())==4 && fabs(p->mother()->pdgId())!=7) continue;
-	if ((genIndex-1)>60 && ip->pdgId()==22) continue;
+	if ((genIndex-1)>70 && ip->pdgId()==22) continue;
 	if (fabs(p->pdgId())==12 && fabs(p->mother()->pdgId())>100) continue;
 	if (fabs(p->pdgId())==14 && fabs(p->mother()->pdgId())>100) continue;
-
+	
 	mcPID[nMC_] = p->pdgId();
 	mcPt[nMC_] = p->pt();
 	mcMass[nMC_] = p->mass();
@@ -812,41 +772,39 @@ fabs(ip->pdgId())<=14) || ip->pdgId()==22))) {
       eleCaloPos_[nEle_][2] = iEle->trackPositionAtCalo().z();
       // cout << "Get Electron TK Stuff 1" << std::endl;
 
-
-
       // Gen Particle
       eleGenIndex_[nEle_] = -1;
       int EleGenIndex = 0;
       if (!isData_) {
 	// cout << "Trying to get electron gen info!" << std::endl;
         if ((*iEle).genLepton() && genParticlesHandle_.isValid() ) {
-
+	  
           for (vector<GenParticle>::const_iterator iGen = genParticlesHandle_->begin(); iGen != genParticlesHandle_->end(); ++iGen) {
-
+	    
             if (iGen->p4() == (*iEle).genLepton()->p4() && iGen->pdgId() == (*iEle).genLepton()->pdgId() && iGen->status() == (*iEle).genLepton()->status()) {
-
-                eleGenIndex_[nEle_] = EleGenIndex;
-
-                const Candidate *elep = (const Candidate*)&(*iGen);
-
-                for (size_t j=0; j<elep->numberOfMothers(); ++j) {
-
-                  elemom = elep->mother(j);
-                  eleGenMomPID_[nEle_] = elemom->pdgId();
-                  eleGenMomPt_[nEle_] = elemom->pt();
-                  if (elemom->mother()) eleGenGMomPID_[nEle_] = elemom->mother()->pdgId();
-                }
+	      
+	      eleGenIndex_[nEle_] = EleGenIndex;
+	      
+	      const Candidate *elep = (const Candidate*)&(*iGen);
+	      
+	      for (size_t j=0; j<elep->numberOfMothers(); ++j) {
+		
+		elemom = elep->mother(j);
+		eleGenMomPID_[nEle_] = elemom->pdgId();
+		eleGenMomPt_[nEle_] = elemom->pt();
+		if (elemom->mother()) eleGenGMomPID_[nEle_] = elemom->mother()->pdgId();
+	      }
             }
             EleGenIndex++;
           }
         }
 	// cout << "Got electron gen info!" << std::endl;
       }
-
+      
       eleIsoTrkDR03_[nEle_]  = iEle->dr03TkSumPt();
       eleIsoEcalDR03_[nEle_] = iEle->dr03EcalRecHitSumEt();
       eleIsoHcalDR03_[nEle_] = iEle->dr03HcalTowerSumEt();
-
+      
       eleIsoTrkDR04_[nEle_]  = iEle->dr04TkSumPt();
       eleIsoEcalDR04_[nEle_] = iEle->dr04EcalRecHitSumEt();
       eleIsoHcalDR04_[nEle_] = iEle->dr04HcalTowerSumEt();
@@ -944,15 +902,15 @@ fabs(ip->pdgId())<=14) || ip->pdgId()==22))) {
         if ((*iPho).genPhoton()) {
           for (vector<GenParticle>::const_iterator iGen = genParticlesHandle_->begin();
 	       iGen != genParticlesHandle_->end(); ++iGen) {
-
+	    
             if (iGen->p4() == (*iPho).genPhoton()->p4() &&
 		iGen->pdgId() == (*iPho).genPhoton()->pdgId() &&
 		iGen->status() == (*iPho).genPhoton()->status()) {
-
+	      
               phoGenIndex_[nPho_] = phoGenIndex;
-
+	      
               const Candidate *phop = (const Candidate*)&(*iGen);
-
+	      
               for (size_t j=0; j<phop->numberOfMothers(); ++j) {
                 phomom = phop->mother(j);
                 phoGenMomPID[nPho_] = phomom->pdgId();
@@ -960,12 +918,12 @@ fabs(ip->pdgId())<=14) || ip->pdgId()==22))) {
                 if (phomom->mother()) phoGenGMomPID[nPho_] = phomom->mother()->pdgId();
               }
             }
-
+	    
             phoGenIndex++;
           }
         }
       }
-
+      
       // Super Cluster
       phoSCE_[nPho_]   = iPho->superCluster()->energy();
       phoSCEta_[nPho_] = iPho->superCluster()->eta();
@@ -1366,11 +1324,16 @@ fabs(ip->pdgId())<=14) || ip->pdgId()==22))) {
   }
 
   //if (doStoreJets_ == false && (nElePassCut > 0 || nMuPassCut > 0) && nPhoPassCut > 0) {
-  if (doStoreJets_ == false && (nElePassCut > 0 || nMuPassCut > 0)) {
-    hEvents_->Fill(1.5);
-    tree_->Fill();
-  }
-  if (doStoreJets_ == true && nPhoPassCut > 0) {
+  if (doSkim_ == true) {
+    if (doStoreJets_ == false && (nElePassCut > 0 || nMuPassCut > 0)) {
+      hEvents_->Fill(1.5);
+      tree_->Fill();
+    }
+    if (doStoreJets_ == true && nPhoPassCut > 0) {
+      hEvents_->Fill(1.5);
+      tree_->Fill();
+    }
+  } else {
     hEvents_->Fill(1.5);
     tree_->Fill();
   }
