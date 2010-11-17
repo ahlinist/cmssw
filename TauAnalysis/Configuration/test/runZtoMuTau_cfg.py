@@ -111,8 +111,11 @@ from PhysicsTools.PatAlgos.tools.tauTools import *
 # comment-out to take shrinking dR = 5.0/Et(PFTau) signal cone
 # instead of fixed dR = 0.07 signal cone reco::PFTaus
 # as input for pat::Tau production
-switchToPFTauShrinkingCone(process)
+#switchToPFTauShrinkingCone(process)
 #switchToPFTauFixedCone(process)
+
+# comment-out to take new HPS + TaNC combined tau id. algorithm
+switchToPFTauHPSpTaNC(process)
 
 # disable preselection on of pat::Taus
 # (disabled also in TauAnalysis/RecoTools/python/patPFTauConfig_cfi.py ,
@@ -163,8 +166,12 @@ changeCut(process, "selectedPatMuonsTrkIP", 0.2, attribute = "IpMax")
 changeCut(process, "selectedPatTausForMuTauEta21", "abs(eta) < 2.3")
 
 # disable cuts on tau id. discriminators for Track && ECAL isolation
-changeCut(process, "selectedPatTausTrkIso", "tauID('trackIsolation') > -1.")
-changeCut(process, "selectedPatTausEcalIso", "tauID('ecalIsolation') > -1.")
+changeCut(process, "selectedPatTausForMuTauTrkIso", "tauID('trackIsolation') > -1.")
+changeCut(process, "selectedPatTausForMuTauEcalIso", "tauID('ecalIsolation') > -1.")
+
+# change cut on TaNC output in case using new HPS + TaNC combined tau id. algorithm
+changeCut(process, "selectedPatTausTaNCdiscr", "tauID('byTaNCtight') > 0.5")
+changeCut(process, "selectedPatTausForMuTauTaNCdiscr", "tauID('byTaNCtight') > 0.5")
 
 # change lower limit on separation required between muon and tau-jet to dR > 0.5
 changeCut(process, "selectedMuTauPairsAntiOverlapVeto", "dR12 > 0.5")
