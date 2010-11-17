@@ -8,9 +8,9 @@
  *
  * \author Christian Veelken, UC Davis
  *
- * \version $Revision: 1.3 $
+ * \version $Revision: 1.1 $
  *
- * $Id: DQMEffXsecCalculator.h,v 1.3 2010/10/27 15:49:52 veelken Exp $
+ * $Id: DQMEffXsecCalculator.h,v 1.1 2010/11/17 10:53:03 veelken Exp $
  *
  */
 
@@ -83,7 +83,16 @@ class DQMEffXsecCalculator : public edm::EDAnalyzer
       
       double efficiency = ( denominator != 0. ) ? (numerator/denominator) : 0.5;
 
-      return numEventsPassed/(dataIntLumi_*efficiency);
+      double effXsec = numEventsPassed/(dataIntLumi_*efficiency);
+
+      std::cout << "<getEffXsec>:" << std::endl;
+      std::cout << " name = " << name_ << std::endl;
+      std::cout << " numerator = " << numerator << std::endl;
+      std::cout << " denominator = " << denominator << std::endl;
+      std::cout << " efficiency = " << efficiency << std::endl;
+      std::cout << "--> effXsec = " << effXsec << std::endl;
+      
+      return effXsec;
     }
     std::string name_;	
     double dataIntLumi_;
