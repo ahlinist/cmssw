@@ -30,10 +30,12 @@ private:
    double minPtEle_; ///< minimum pt for electrons to be checked
    double maxEtaEle_; ///< max abs(eta)
    double eleIso_; ///< limit on relative electron isolation (trackIso+ecalIso+hcalIso)/pt
+   double eleIsoPF_; ///< limit on relative electron particle based isolation (trackIso+ecalIso+hcalIso)/pt
    double eleDxy_; ///< max dxy from beamSpot position
    double minPtMuon_; ///< minimum pt for muons
    double maxEtaMuon_; ///< max abs(eta
    double muonIso_; ///< limit on relative muon isolation (trackIso+ecalIso+hcalIso)/pt
+   double muonIsoPF_; ///< limit on relative muon  particle based isolation (trackIso+ecalIso+hcalIso)/pt  for Particle Flow
    unsigned int muonHits_; ///< min number of hits
    double muonDxy_; ///< max dxy from beamSpot position
    bool invertVeto_  ;        ///< if lepton veto inverted
