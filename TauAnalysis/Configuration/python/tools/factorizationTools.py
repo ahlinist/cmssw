@@ -795,7 +795,7 @@ def enableFactorization_makeZtoDiTauPlots_grid(
     # lead. track Pt, track isolation and ECAL isolation efficiencies
     evtSelZtoDiTau_factorizedTight = [
         process.evtSelGenPhaseSpace,
-        process.evtSelTrigger,
+        ##process.evtSelTrigger,
         process.evtSelDataQuality,
         process.evtSelPrimaryEventVertex,
         process.evtSelPrimaryEventVertexQuality,
@@ -831,8 +831,9 @@ def enableFactorization_makeZtoDiTauPlots_grid(
         process.evtSelDiTauCandidateForDiTauAntiOverlapVeto,
         process.evtSelDiTauCandidateForDiTauZeroCharge,
         process.evtSelDiTauCandidateForDiTauAcoplanarity,
-        process.evtSelDiTauCandidateForDiTauPzetaDiff
-        #process.evtSelCentralJetVeto
+        process.evtSelDiTauCandidateForDiTauPzetaDiff,
+        #process.evtSelCentralJetVeto,
+        process.evtSelTrigger
     ]
 
     # defines names of MonitorElements used as numerator and denominator
