@@ -41,8 +41,15 @@ def _number_of_jobs(sample_info, preferred=10000, max_jobs=300):
     output = (desired_njobs > max_jobs) and max_jobs or desired_njobs
     return int(output)
 
-def submitAnalysisToGrid(configFile = None, channel = None, samples = None, outputFilePath = None, jobId = None,
-                         samplesToAnalyze = None, samplesToSkip = None, disableFactorization = False, disableSysUncertainties = False):
+def submitAnalysisToGrid(configFile = None, channel = None, samples = None,
+                         outputFilePath = None, jobId = None,
+                         samplesToAnalyze = None, samplesToSkip = None,
+                         disableFactorization = False,
+                         disableSysUncertainties = False,
+                         create=True, submit=True,
+                         cfgdir='crab', inputFileMap=None,
+                         outputFileMap=None,
+                         saveFinalEvents=False):
     """
     Submit analysis job (event selection, filling of histogram)
     via crab
@@ -64,7 +71,8 @@ def submitAnalysisToGrid(configFile = None, channel = None, samples = None, outp
     # Loop over the samples to be analyzed
     for sample in samples['SAMPLES_TO_ANALYZE']:
         # Skip submitting crab job in case
-        #  o list of samples for which crab jobs are to be submitted has been explicitely specified
+        #  o list of samples for which crab jobs are to be submitted has been
+        #    explicitely specified
         #  o sample has explicitely been requested to be skipped
         if samplesToAnalyze:
             if sample not in samplesToAnalyze:
@@ -84,6 +92,25 @@ def submitAnalysisToGrid(configFile = None, channel = None, samples = None, outp
             'id' : jobId
         }
         jobOptions = copy.copy(_JOB_OPTIONS_DEFAULTS)
+
+        # Check if we want to use a special file for the produced cfg file
+        # File map is a function that takes a sample name and returns a list of
+        # files corresponding to that file.  If files is None, no change will be
+        # made.
+        if inputFileMap is not None:
+            input_files = inputFileMap(sample)
+            if input_files is None:
+                print "Warning: No special input files specified for sample"\
+                        "%s, using default" % sample
+            else:
+                jobOptions.append(('files', input_files))
+
+        if outputFileMap is not None:
+            output_file = outputFileMap(sample)
+            jobOptions.append(('outputFile', output_file))
+
+        jobOptions.append(('saveFinalEvents', saveFinalEvents))
+
         # Get the type and genPhase space cut
         jobOptions.append(('type', sample_info['type']))
         # For the genphase space cut, we need to do it for the two different
@@ -97,17 +124,22 @@ def submitAnalysisToGrid(configFile = None, channel = None, samples = None, outp
         jobOptions.append(('hlt_paths', sample_info['hlt_paths']))
 
         # Get the appropriate GlobalTag
-        jobOptions.append(('globalTag', _get_conditions(sample_info['conditions'])))
+        jobOptions.append(('globalTag',
+                           _get_conditions(sample_info['conditions'])))
 
         # Enable factorization if necessary
         if not disableFactorization:
-            jobOptions.append(('enableFactorization', sample_info['factorize']))
+            jobOptions.append(('enableFactorization',
+                               sample_info['factorize']))
 
         # Apply Z-recoil correction to MEt if requested
-        jobOptions.append(('applyZrecoilCorrection', sample_info['applyZrecoilCorrection']))
+        jobOptions.append(('applyZrecoilCorrection',
+                           sample_info['applyZrecoilCorrection']))
 
         # This must be done after the factorization step ?
-        jobOptions.append(('enableSysUncertainties', sample_info['enableSysUncertainties'] and not disableSysUncertainties))
+        jobOptions.append(('enableSysUncertainties',
+                           sample_info['enableSysUncertainties']
+                           and not disableSysUncertainties))
 
         # Build crab options
         crabOptions = {
@@ -126,6 +158,7 @@ def submitAnalysisToGrid(configFile = None, channel = None, samples = None, outp
             'SE_black_list' : sample_info['SE_black_list']
         }
 
-        submitToGrid(configFile, jobInfo, jobOptions, crabOptions, create=True, submit=True)
+        submitToGrid(configFile, jobInfo, jobOptions, crabOptions,
+                     create=create, submit=submit, directory=cfgdir)
         ##submitToGrid(configFile, jobInfo, jobOptions, crabOptions, create=False, submit=False) # CV: only for testing
 
