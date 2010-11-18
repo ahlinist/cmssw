@@ -200,6 +200,13 @@ changeCut(process, "selectedPatTausForMuTauTaNCdiscr", 'tauID("byTaNCtight") > -
 # disable charge cut to create reduced data sample
 changeCut(process, "selectedMuTauPairsZeroCharge", 'charge > -10000')
 
+# Absolute muon isolation
+process.selectedPatMuonsPFRelIso.chargedHadronIso.ptMin = 1.0
+process.selectedPatMuonsPFRelIso.neutralHadronIso.ptMin = 2000.
+process.selectedPatMuonsPFRelIso.photonIso.ptMin = 1.5
+process.selectedPatMuonsPFRelIso.sumPtMax = 1.0
+process.selectedPatMuonsPFRelIso.sumPtMethod = "absolute"
+
 process.p = cms.Path(
    process.producePatTupleAHtoMuTauSpecific
 # + process.printGenParticleList # uncomment to enable print-out of generator level particles
@@ -272,6 +279,10 @@ from TauAnalysis.Configuration.tools.sysUncertaintyTools import enableSysUncerta
 if hasattr(process, "disableEventDump"):
     process.analyzeAHtoMuTauEvents_woBtag.eventDumps = cms.VPSet()
     process.analyzeAHtoMuTauEvents_wBtag.eventDumps = cms.VPSet()
+
+process.eventDumps = [process.analyzeAHtoMuTauEvents_woBtag,
+                      process.analyzeAHtoMuTauEvents_wBtag]
+# Make it easy for the cfg option setter
 #--------------------------------------------------------------------------------
 
 #--------------------------------------------------------------------------------
