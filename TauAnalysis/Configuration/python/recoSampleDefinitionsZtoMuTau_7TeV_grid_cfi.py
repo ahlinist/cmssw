@@ -10,17 +10,17 @@ SAMPLES_TO_ANALYZE = [
     'data_Mu_Run2010B_Prompt',
     'Ztautau', 'ZtautauPU156bx',
     'Zmumu',
-    'InclusivePPmuX', 'PPmuXptGt20Mu10', 'PPmuXptGt20Mu15', 
+    'InclusivePPmuX', 'PPmuXptGt20Mu10', 'PPmuXptGt20Mu15',
     'WplusJets',
     'WWtoAnything',
     'TTplusJets'
-] 
+]
 
 # List of samples to include in the final level plots.  May include selections
 # from the MERGE_SAMPLES defined at the bottom.
 SAMPLES_TO_PLOT = [
-    'data', 
-    'qcdSum', 
+    'data',
+    'qcdSum',
     'WplusJets',
     'WWtoAnything',
     'TTplusJets',
@@ -116,7 +116,7 @@ RECO_SAMPLES = {
     },
     'ZtautauPU156bx' : {
         'datasetpath' : "/DYToTauTau_M-20_TuneZ2_7TeV-pythia6-tauola/Fall10-E7TeV_ProbDist_2010Data_BX156_START38_V12-v1/GEN-SIM-RECO",
-        'dbs_url' :  "http://cmsdbsprod.cern.ch/cms_dbs_prod_global/servlet/DBSServlet",  
+        'dbs_url' :  "http://cmsdbsprod.cern.ch/cms_dbs_prod_global/servlet/DBSServlet",
         'events_processed' : 2011186,
         'skim_eff' : 1.0,
         'x_sec' : 1.28*1300*_picobarns, # Z + jets correction factor for NLO/LO cross-sections = 1.28
@@ -150,8 +150,8 @@ RECO_SAMPLES = {
     },
     'PPmuXptGt20Mu10' : {
         'datasetpath' : "/QCD_Pt-20_MuEnrichedPt-10_TuneZ2_7TeV-pythia6/Fall10-START38_V12-v1/GEN-SIM-RECO",
-        'dbs_url' :  "http://cmsdbsprod.cern.ch/cms_dbs_prod_global/servlet/DBSServlet", 
-        'events_processed' : 8063288, 
+        'dbs_url' :  "http://cmsdbsprod.cern.ch/cms_dbs_prod_global/servlet/DBSServlet",
+        'events_processed' : 8063288,
         'skim_eff' : 1.0,
         'x_sec' : 0.2966*_millibarns*1.18e-3, # x-sec * gen filter efficiency
         'genPhaseSpaceCut' : 'leadingGenMuon.pt < 15.',
@@ -163,7 +163,7 @@ RECO_SAMPLES = {
     },
     'PPmuXptGt20Mu15' : {
         'datasetpath' : "/QCD_Pt-20_MuEnrichedPt-15_TuneZ2_7TeV-pythia6/Fall10-START38_V12-v1/GEN-SIM-RECO",
-        'dbs_url' :  "http://cmsdbsprod.cern.ch/cms_dbs_prod_global/servlet/DBSServlet", 
+        'dbs_url' :  "http://cmsdbsprod.cern.ch/cms_dbs_prod_global/servlet/DBSServlet",
         'events_processed' : 29504866,
         'number_of_jobs' : 600,
         'skim_eff' : 1.0,
@@ -220,11 +220,11 @@ MERGE_SAMPLES = {
     'qcdSum' : {
         'samples' : [
             'InclusivePPmuX',
-            ##'PPmuXptGt20Mu10',
+            'PPmuXptGt20Mu10',
             'PPmuXptGt20Mu15'
         ],
         'legendEntry' : 'QCD',
-        'type' : 'smMC', 
+        'type' : 'smMC',
         'drawOption' : styles.drawOption_QCD,
     },
     'smBgSum' : {
@@ -267,7 +267,7 @@ for sample in RECO_SAMPLES.keys():
     defaults.update(RECO_SAMPLES[sample])
     RECO_SAMPLES[sample] = defaults
     # Combine MERGE and RECO samples in ALL samples
-    # for simple access 
+    # for simple access
     ALL_SAMPLES.update(MERGE_SAMPLES)
     ALL_SAMPLES.update(RECO_SAMPLES)
 
