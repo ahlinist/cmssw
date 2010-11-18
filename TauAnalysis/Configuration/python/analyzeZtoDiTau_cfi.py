@@ -15,10 +15,12 @@ tauHistManager1 = copy.deepcopy(tauHistManager)
 tauHistManager1.pluginName = cms.string('tauHistManager1')
 tauHistManager1.tauIndicesToPlot = cms.string('0')
 tauHistManager1.dqmDirectory_store = cms.string('TauQuantities1')
+tauHistManager1.useHPSpTaNCalgorithm = cms.bool(True)
 tauHistManager2 = copy.deepcopy(tauHistManager)
 tauHistManager2.pluginName = cms.string('tauHistManager2')
 tauHistManager2.tauIndicesToPlot = cms.string('1')
 tauHistManager2.dqmDirectory_store = cms.string('TauQuantities2')
+tauHistManager2.useHPSpTaNCalgorithm = cms.bool(True)
 
 # import config for di-tau histogram manager
 from TauAnalysis.Core.diTauCandidateHistManager_cfi import *
