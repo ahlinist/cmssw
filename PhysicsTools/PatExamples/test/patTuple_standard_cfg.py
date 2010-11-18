@@ -1,32 +1,78 @@
-# This is an example PAT configuration showing the usage of PAT on full sim samples
-
-# Starting with a skeleton process which gets imported with the following line
+## import skeleton process
 from PhysicsTools.PatAlgos.patTemplate_cfg import *
 
-# note that you can use a bunch of core tools of PAT 
-# to taylor your PAT configuration; for a few examples
-# uncomment the following lines
+## ------------------------------------------------------
+#  NOTE: you can use a bunch of core tools of PAT to
+#  taylor your PAT configuration; for a few examples
+#  uncomment the lines below
+## ------------------------------------------------------
+#from PhysicsTools.PatAlgos.tools.coreTools import *
 
-from PhysicsTools.PatAlgos.tools.coreTools import *
-#removeMCMatching(process, 'Muons')
-#removeAllPATObjectsBut(process, ['Muons'])
-#removeSpecificPATObjects(process, ['Electrons', 'Muons', 'Taus'])
+## remove MC matching from the default sequence
+# removeMCMatching(process, ['Muons'])
+
+## remove certain objects from the default sequence
+# removeAllPATObjectsBut(process, ['Muons'])
+# removeSpecificPATObjects(process, ['Electrons', 'Muons', 'Taus'])
+
+## ------------------------------------------------------
+#  NOTE: you can still run PAT in the 36X version on
+#  input files produced within the 35X series. This
+#  implies some reconfigurations, example are given
+#  below.
+## ------------------------------------------------------
+#from PhysicsTools.PatAlgos.tools.cmsswVersionTools import *
+
+## uncomment this line to run on an 35X input sample
+#run36xOn35xInput(process)
+
+## uncomment the following lines to add jets from a
+## 35X input sample
+#addJetCollection35X(process,cms.InputTag('ak7CaloJets'),
+#                 'AK7', 'Calo',
+#                 doJTA        = True,
+#                 doBTagging   = False,
+#                 jetCorrLabel = ('AK7', 'Calo'),
+#                 doType1MET   = True,
+#                 doL1Cleaning = True,                 
+#                 doL1Counters = False,
+#                 genJetCollection=cms.InputTag("ak7GenJets"),
+#                 doJetID      = True,
+#                 jetIdLabel   = "ak7"
+#                 )
+
+## uncomment the following lines to switch the jet
+## collection from a 35X input sample
+#switchJetCollection35X(process,cms.InputTag('ak5PFJets'),
+#                 doJTA        = True,
+#                 doBTagging   = True,
+#                 jetCorrLabel = None,
+#                 doType1MET   = True,
+#                 genJetCollection=cms.InputTag("ak5GenJets"),
+#                 doJetID      = True
+#                 )
 
 
-# let it run
+## let it run
 process.p = cms.Path(
     process.patDefaultSequence
     )
 
-# ----------------------------------------------------
-# You might want to change some of these default
-# parameters
-# ----------------------------------------------------
-#process.GlobalTag.globaltag =  ...    ##  (according to https://twiki.cern.ch/twiki/bin/view/CMS/SWGuideFrontierConditions)
-#process.source.fileNames = [
-#'/store/relval/CMSSW_3_1_1/RelValCosmics/GEN-SIM-RECO/STARTUP31X_V1-v2/0002/7625DA7D-E36B-DE11-865A-000423D174FE.root'
-#                            ]         ##  (e.g. 'file:AOD.root')
-#process.maxEvents.input = -1          ##  (e.g. -1 to run on all events)
-#process.out.outputCommands = [ ... ]  ##  (e.g. taken from PhysicsTools/PatAlgos/python/patEventContent_cff.py)
-#process.out.fileName = ...            ##  (e.g. 'myTuple.root')
-process.options.wantSummary = True     ##  (to suppress the long output at the end of the job)    
+## ------------------------------------------------------
+#  In addition you usually want to change the following
+#  parameters:
+## ------------------------------------------------------
+#
+#   process.GlobalTag.globaltag =  ...    ##  (according to https://twiki.cern.ch/twiki/bin/view/CMS/SWGuideFrontierConditions)
+#                                         ##
+#   process.source.fileNames = [          ##
+#    '/store/relval/CMSSW_3_8_6/RelValTTbar/GEN-SIM-RECO/START38_V13-v1/0065/F438C4C4-BCE7-DF11-BC6B-002618943885.root'
+#   ]                                     ##  (e.g. 'file:AOD.root')
+#                                         ##
+#   process.maxEvents.input = ...         ##  (e.g. -1 to run on all events)
+#                                         ##
+#   process.out.outputCommands = [ ... ]  ##  (e.g. taken from PhysicsTools/PatAlgos/python/patEventContent_cff.py)
+#                                         ##
+#   process.out.fileName = ...            ##  (e.g. 'myTuple.root')
+#                                         ##
+process.options.wantSummary = True        ##  (to suppress the long output at the end of the job)    
