@@ -31,8 +31,8 @@ SAMPLES_TO_PLOT = [
 SAMPLES_TO_PRINT = copy.copy(SAMPLES_TO_PLOT)
 SAMPLES_TO_PRINT.append('smBgSum')
 SAMPLES_TO_PRINT.append('smSum')
-#SAMPLES_TO_PRINT.append('data_Mu_Run2010A_Sep17ReReco')
-#SAMPLES_TO_PRINT.append('data_Mu_Run2010B_Prompt')
+SAMPLES_TO_PRINT.append('data_Mu_Run2010A_Sep17ReReco')
+SAMPLES_TO_PRINT.append('data_Mu_Run2010B_Prompt')
 SAMPLES_TO_PRINT.append('ZtautauPU156bx')
 
 SAMPLE_DEFAULTS = {
@@ -57,8 +57,8 @@ _picobarns =  1.0
 _femtobarns = 1.0e-3
 
 # Integrated luminosity to normalize
-##TARGET_LUMI = (200.0)/_picobarns
-TARGET_LUMI = (35.39)/_picobarns # for runs 132440 - 149442
+##TARGET_LUMI = 200.0/_picobarns
+TARGET_LUMI = 35.39/_picobarns # for runs 132440 - 149442
 
 #--------------------------------------------------------------------------------
 # NOTE: cross-sections for W and Z production are scaled to next-to-leading order values
@@ -91,14 +91,16 @@ RECO_SAMPLES = {
         'type' : 'Data',
         'drawOption' : styles.drawOption_Data,
         'hlt_paths' : {
-            'HLT_Mu9'             : '132440:MIN-147116:MAX',
-            'HLT_IsoMu9'          : '147196:MIN-148058:MAX',
-            'HLT_Mu11'            : '147196:MIN-148058:MAX',
-            'HLT_IsoMu13_v3'      : '148822:MIN-149182:MAX',
-            'HLT_IsoMu13_v4'      : '147196:MIN-149442:MAX',
-            'HLT_Mu15_v1'         : '147196:MIN-149442:MAX',
-            'HLT_Mu11_PFTau15_v2' : '149291:MIN-149442:MAX',
-            'HLT_Mu11_PFTau15_v2' : '149291:MIN-149442:MAX'
+            'HLT_Mu9'               : '132440:MIN-147116:MAX',
+            'HLT_IsoMu9'            : '147196:MIN-148058:MAX',
+            'HLT_Mu11'              : '147196:MIN-148058:MAX',
+            'HLT_IsoMu13_v3'        : '148822:MIN-149182:MAX',
+            'HLT_IsoMu13_v4'        : '147196:MIN-149442:MAX',
+            'HLT_Mu15_v1'           : '147196:MIN-149442:MAX',
+            'HLT_IsoMu9_PFTau15_v1' : '148822:MIN-149182:MAX',
+            'HLT_IsoMu9_PFTau15_v2' : '149291:MIN-149442:MAX',
+            'HLT_Mu11_PFTau15_v1'   : '148822:MIN-149182:MAX',
+            'HLT_Mu11_PFTau15_v2'   : '149291:MIN-149442:MAX'
         }
     },
     'Ztautau' : {
@@ -217,7 +219,7 @@ MERGE_SAMPLES = {
     'qcdSum' : {
         'samples' : [
             'InclusivePPmuX',
-            'PPmuXptGt20Mu10',
+            ##'PPmuXptGt20Mu10',
             'PPmuXptGt20Mu15'
         ],
         'legendEntry' : 'QCD',
