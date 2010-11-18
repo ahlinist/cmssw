@@ -29,25 +29,33 @@ SAMPLES_TO_ANALYZE.extend([
 # List of samples to include in the final level plots.  May include selections
 # from the MERGE_SAMPLES defined at the bottom.
 SAMPLES_TO_PLOT = [
-    'data',
-    'A130Sum',
-    'A160Sum',
-    'A200Sum',
-    'A300Sum',
+    #'data',
+    ##'A90Sum',
+    #'A100Sum',
+    ##'A120Sum',
+    #'A130Sum',
+    ##'A140Sum',
+    ##'A160Sum',
+    #'A180Sum',
+    ##'A200Sum',
+    ##'A300Sum',
     #'qcdSum',
-    'PPmuXptGt20Mu15',
-    'WplusJets',
-    #'TTplusJets',
-    'Zmumu',
-    'Ztautau'
+    #'WplusJets',
+    ##'TTplusJets',
+    #'Zmumu',
+    ##'Ztautau'
+    #'ZtautauPU156bx',
 ]
 
 SAMPLES_TO_PRINT = copy.copy(SAMPLES_TO_PLOT)
 #SAMPLES_TO_PRINT.append('A90Sum')
-SAMPLES_TO_PRINT.append('A100Sum')
+#SAMPLES_TO_PRINT.append('A100Sum')
 #SAMPLES_TO_PRINT.append('A120Sum')
 #SAMPLES_TO_PRINT.append('A140Sum')
-SAMPLES_TO_PRINT.append('A180Sum')
+#SAMPLES_TO_PRINT.append('A160Sum')
+#SAMPLES_TO_PRINT.append('A180Sum')
+SAMPLES_TO_PRINT.append('A200Sum')
+SAMPLES_TO_PRINT.append('A250Sum')
 #SAMPLES_TO_PRINT.append('A250Sum')
 #SAMPLES_TO_PRINT.append('A350Sum')
 #SAMPLES_TO_PRINT.append('smBgSum')
@@ -204,7 +212,7 @@ AHtoMuTauSpecific_RECO_SAMPLES = {
         # Feynhiggs v2.7.1 input to calculate xsec*br -  mhmax, 7TeV
         'legendEntry' : 'ggA(130) #rightarrow #tau^{+} #tau^{-}',
         'type' : 'bsmMC',
-        'drawOption' : styles.drawOption_darkBlue_separate,
+        'drawOption' : styles.drawOption_lightBlue_separate,
         'enableSysUncertainties' : True,
         'applyZrecoilCorrection' : True
     },
@@ -315,7 +323,7 @@ AHtoMuTauSpecific_RECO_SAMPLES = {
         # Feynhiggs v2.7.1 input to calculate xsec*br -  mhmax, 7TeV
         'legendEntry' : 'ggA(180) #rightarrow #tau^{+} #tau^{-}',
         'type' : 'bsmMC',
-        'drawOption' : styles.drawOption_darkBlue_separate,
+        'drawOption' : styles.drawOption_violett_separate,
         'enableSysUncertainties' : True,
         'applyZrecoilCorrection' : True
     },
@@ -564,7 +572,8 @@ _inclusion_ranges = {
 
 # Update higgs sample cross sections
 if _USE_BARI_XSEC:
-    print "Updating samples to use Bari xsections"
+    verbose = False
+    if verbose: print "Updating samples to use Bari xsections"
     import re
     import TauAnalysis.Configuration.tools.mssm_xsec as mssm_xsec
     matcher = re.compile(r"(?P<isBB>bb)*A(?P<massA>\d*)")
@@ -574,8 +583,9 @@ if _USE_BARI_XSEC:
     for sample in higgs_samples:
         match = matcher.match(sample)
         mass = int(match.group('massA'))
-        print "Updating cross section for sample %s - mA: %i" % (
-            sample, mass)
+        if verbose:
+            print "Updating cross section for sample %s - mA: %i" % (
+                sample, mass)
         # Lookup the XSec etc, if we haven't already
         mssm_info = higgs_lookups.setdefault(
             (mass, TAN_BETA), mssm_xsec.query(mass, TAN_BETA))
@@ -591,13 +601,15 @@ if _USE_BARI_XSEC:
                 # Get the cross section in picobarns
                 xsec = (higgs_dict['xsec'][production_mechanism]
                         /mssm_xsec.picobarns)
-                print "--- %s contributes (BR*xsec) %0.2f * %0.2fpb = %0.2f" % (
-                    higgs_type, br, xsec, br*xsec)
+                if verbose:
+                    print "--- %s contributes (BR*xsec) %0.2f * %0.2fpb = %0.2f" % (
+                        higgs_type, br, xsec, br*xsec)
                 total_eff_xsec += xsec*br
-        print "--- Total effective xsec: %0.2f pb" % total_eff_xsec
+        if verbose:
+            print "--- Total effective xsec: %0.2f pb" % total_eff_xsec
         # Convert to the local units (should not matter, but lets be safe)
         total_eff_xsec *= ZtoMuTau._picobarns
-        RECO_SAMPLES[sample]['xsec'] = total_eff_xsec
+        RECO_SAMPLES[sample]['x_sec'] = total_eff_xsec
 
 # List of all subsamples used in any plot job.  i.e. if qcdSum is included in
 # samples to plot it will be expanded to the inclusive/exclusive ppMux samples
