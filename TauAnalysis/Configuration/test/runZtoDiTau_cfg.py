@@ -152,6 +152,15 @@ changeCut(process, "selectedPatTausForDiTau2ndTrkIsoLoose", "tauID('trackIsolati
 changeCut(process, "selectedPatTausForDiTau1stEcalIso", "tauID('ecalIsolation') > -1.")
 changeCut(process, "selectedPatTausForDiTau2ndEcalIso", "tauID('ecalIsolation') > -1.")
 changeCut(process, "selectedPatTausForDiTau2ndEcalIsoLoose", "tauID('ecalIsolation') > -1.")
+
+# change cut on TaNC output in case using new HPS + TaNC combined tau id. algorithm
+changeCut(process, "selectedPatTausTaNCdiscr", "tauID('byTaNCtight') > 0.5")
+changeCut(process, "selectedPatTausForDiTau1stTaNCdiscr", "tauID('byTaNCtight') > 0.5")
+changeCut(process, "selectedPatTausForDiTau2ndTaNCdiscr", "tauID('byTaNCtight') > 0.5")
+changeCut(process, "selectedPatTausForDiTau2ndTaNCdiscrLoose", "tauID('byTaNCtight') > 0.5")
+#--------------------------------------------------------------------------------
+
+
 #--------------------------------------------------------------------------------
 
 process.p = cms.Path(
