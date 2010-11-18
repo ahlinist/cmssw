@@ -10,7 +10,7 @@ def main(options,args):
     h3Max = float(options.h3Max)
     h4Max = float(options.h4Max)
 
-    output = ROOT.TFile.Open(options.workspaceName+".root")
+    output = ROOT.TFile.Open(options.workspaceName+".root","RECREATE")
 
     combinedWorkspace = ROOT.RooWorkspace(options.workspaceName)
     
