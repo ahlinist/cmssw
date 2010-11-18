@@ -85,8 +85,15 @@ def _setPlotsOutputFileName(process, filename, **kwargs):
 def _setEventDump(process, enable, **kwargs):
     " Enable/disable event dump "
     if not enable:
+        print "--> disabling event dumps"
+        if hasattr(process, "eventDumps"):
+            for dump in process.eventDumps:
+                dump.eventDumps = cms.VPSet()
+        else:
+            print "Couldn't disable event dumps! eventDumps is not defined in the process"
         setattr(process, 'disableEventDump', cms.PSet())
     else:
+        print "--> enabling event dumps - i.e. doing nothing"
         del process.disableEventDump
 
 @_requires(args=['channel'])
