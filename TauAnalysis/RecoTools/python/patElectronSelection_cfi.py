@@ -68,7 +68,7 @@ selectedPatElectronsTrk = cms.EDFilter("PATElectronSelector",
 # require track of electron candidate to have small transverse impact parameter
 # (in order to veto electrons resulting from b-quark decays)
 selectedPatElectronsTrkIP = cms.EDFilter("PATElectronIpSelector",
-    vertexSource = cms.InputTag("selectedPrimaryVertexPosition"),
+    vertexSource = cms.InputTag("selectedPrimaryVertexHighestPtTrackSum"),
     IpMax = cms.double(0.05),
     filter = cms.bool(False)                                               
 )
