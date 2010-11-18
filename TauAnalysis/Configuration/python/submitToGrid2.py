@@ -18,7 +18,7 @@ pset = $pset
 total_number_of_$split_type = $total_number
 number_of_jobs = $number_of_jobs
 output_file = $output_file
-$lumi_mask                                 
+$lumi_mask
 $runselection
 
 [USER]
@@ -47,9 +47,10 @@ _CRAB_DEFAULTS = {
     'runselection' : ''
 }
 
-def submitToGrid(configFile, jobInfo, jobOptions, crabOptions, create = True, submit = True):
+def submitToGrid(configFile, jobInfo, jobOptions, crabOptions,
+                 create = True, submit = True, directory='crab'):
     workingDirectory = os.getcwd()
-    submissionDirectory = os.path.join(workingDirectory, 'crab')
+    submissionDirectory = os.path.join(workingDirectory, directory)
     configFilePath = os.path.join(workingDirectory, configFile)
     if not os.path.exists(configFilePath):
         raise ValueError("Can't find config file %s in current direcotry!" %
@@ -58,7 +59,7 @@ def submitToGrid(configFile, jobInfo, jobOptions, crabOptions, create = True, su
     configFileName = configFile.replace(
         '_cfg.py', '_%s_%s' % (jobInfo['sample'], jobInfo['id']))
     # New name of config file
-    newConfigFile =  configFileName + '@Grid_cfg.py' 
+    newConfigFile =  configFileName + '@Grid_cfg.py'
     newConfigFilePath = os.path.join(submissionDirectory, newConfigFile)
 
     # Copy the config file and add our specialization options

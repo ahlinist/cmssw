@@ -10,6 +10,11 @@ import TauAnalysis.Configuration.tools.switchToData as switchToData
 
 import PhysicsTools.PatAlgos.tools.helpers as patutils
 
+from TauAnalysis.Skimming.EventContent_cff import tauAnalysisEventContent
+from TauAnalysis.Configuration.patTupleEventContent_cff import patTupleEventContent
+_allEventContent = copy.deepcopy(tauAnalysisEventContent)
+_allEventContent.outputCommands.extend(patTupleEventContent.outputCommands)
+
 def _requires(args=[], inputs=[]):
     def decorator(func):
         " Decorator to enforce required arguments and allowed input types "
@@ -185,6 +190,46 @@ def _setTriggerBits(process, triggerSelect, **kwargs):
     else:
         raise ValueError("Parameter 'triggerSelect' is of invalid Type = %s !!" % type(triggerSelect))
 
+def _setInputFiles(process, files, **kwargs):
+    ''' Set the files used in the input source of the cfg file '''
+    print "--> setting input files to:", files
+    process.source.fileNames = cms.untracked.vstring(files)
+
+@_requires(args=['channel'])
+def _setOutputFile(process, file, **kwargs):
+    ''' Set the output file of the plots '''
+    saver_name = "save%sPlots" % kwargs['channel']
+    print "--> setting %s output file to %s" % (saver_name, file)
+    saver = getattr(process, saver_name)
+    saver.outputFileName = file
+
+@_requires(args=['sample'])
+def _saveFinalEvents(process, save, **kwargs):
+    ''' Save the final passing events in an edm root file.
+    Your process must have a "filterFinalEvents" module that provides an
+    EDFilter that selects the final events that is defined in the EndPath
+    'endtasks'.  See runAHtoMuTau_cfg.py for an example.
+    '''
+    if save:
+        print "--> Saving final selected events in a EDM file"
+        output_module = cms.OutputModule(
+            "PoolOutputModule",
+            _allEventContent,
+            SelectEvents = cms.untracked.PSet(
+                SelectEvents = cms.vstring('selectFinalEvents')
+            ),
+            fileName = cms.untracked.string(
+                'final_events_%s.root' % kwargs['sample'])
+        )
+        setattr(process, "saveFinalEvents", output_module)
+        process.endtasks += process.saveFinalEvents
+    else:
+        # This function can't disable, only enable.
+        if hasattr(process, "saveFinalEvents"):
+            print "WARNING: The pool output module already exists in the"\
+                    " process, and it can't be disabled.  You need to remove"\
+                    " it from the config"
+
 # Map the above methods to user-friendly names
 _METHOD_MAP = {
     'globalTag' : _setGlobalTag,
@@ -200,6 +245,9 @@ _METHOD_MAP = {
     'type' : _setIsData,
     'hlt' : _setTriggerProcess,
     'hlt_paths' : _setTriggerBits,
+    'files' : _setInputFiles,
+    'outputFile' : _setOutputFile,
+    'saveFinalEvents' : _saveFinalEvents,
 }
 
 def applyProcessOptions(process, jobInfo, options):
