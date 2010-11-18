@@ -14,7 +14,7 @@ process.MessageLogger.cerr.FwkReport.reportEvery = 100
 process.MessageLogger.suppressWarning = cms.untracked.vstring("PATTriggerProducer",)
 process.load('Configuration/StandardSequences/GeometryIdeal_cff')
 process.load('Configuration/StandardSequences/MagneticField_cff')
-process.load('Configuration/StandardSequences/Reconstruction_cff')
+#process.load('Configuration/StandardSequences/Reconstruction_cff')
 process.load('Configuration/StandardSequences/FrontierConditions_GlobalTag_cff')
 process.GlobalTag.globaltag = cms.string('START38_V12::All')
 
@@ -52,7 +52,7 @@ process.printGenParticleList = cms.EDAnalyzer("ParticleListDrawer",
     maxEventsToPrint = cms.untracked.int32(100)
 )
 
-# print event content 
+# print event content
 process.printEventContent = cms.EDAnalyzer("EventContentAnalyzer")
 
 # print debug information whenever plugins get loaded dynamically from libraries
@@ -66,7 +66,7 @@ process.saveAHtoMuTauPlots = cms.EDAnalyzer("DQMSimpleFileSaver",
     outputFileName = cms.string('plotsAHtoMuTau.root')
 )
 
-process.maxEvents = cms.untracked.PSet(            
+process.maxEvents = cms.untracked.PSet(
     input = cms.untracked.int32(-1)
 )
 
@@ -77,7 +77,7 @@ process.source = cms.Source(
         #'/store/relval/CMSSW_3_6_1/RelValZTT/GEN-SIM-RECO/START36_V7-v1/0020/EE3E8F74-365D-DF11-AE3D-002618FDA211.root'
         'file:/data1/veelken/CMSSW_3_6_x/skims/Ztautau_1_1_sXK.root'
     )
-    #skipBadFiles = cms.untracked.bool(True) 
+    #skipBadFiles = cms.untracked.bool(True)
 )
 
 #--------------------------------------------------------------------------------
@@ -105,7 +105,7 @@ process.patTrigger.addL1Algos = cms.bool(True)
 #--------------------------------------------------------------------------------
 # import utility function for switching pat::Tau input
 # to different reco::Tau collection stored on AOD
-from PhysicsTools.PatAlgos.tools.tauTools import * 
+from PhysicsTools.PatAlgos.tools.tauTools import *
 
 # comment-out to take reco::CaloTaus instead of reco::PFTaus
 # as input for pat::Tau production
@@ -194,6 +194,12 @@ changeCut(process, "selectedMuTauPairsMt1METlooseMuonIsolation", "mt1MET < 40.")
 changeCut(process, "selectedPatJetsForAHtoMuTauBtag", "bDiscriminator('trackCountingHighEffBJetTags') < -1000.")
 #--------------------------------------------------------------------------------
 
+# disable tau-ID to create reduced data sample
+changeCut(process, "selectedPatTausForMuTauTaNCdiscr", 'tauID("byTaNCtight") > -1.e3')
+
+# disable charge cut to create reduced data sample
+changeCut(process, "selectedMuTauPairsZeroCharge", 'charge > -10000')
+
 process.p = cms.Path(
    process.producePatTupleAHtoMuTauSpecific
 # + process.printGenParticleList # uncomment to enable print-out of generator level particles
@@ -205,7 +211,22 @@ process.p = cms.Path(
 
 process.q = cms.Path(process.dataQualityFilters)
 
-process.schedule = cms.Schedule(process.q, process.p)
+# Define a generic end path that filters the final events that a pool
+# output module can be hooked into if desired.
+process.filterFinalEvents = cms.EDFilter(
+    "BoolEventFilter",
+    src = cms.InputTag("isRecAHtoMuTauCentralJetBtag"),
+)
+# Path that will pass/fail depending on if the event passed.
+process.selectFinalEvents = cms.Path(process.isRecAHtoMuTauCentralJetBtag
+                                     *process.filterFinalEvents)
+# Dummy do-nothing module to allow an empty path
+process.dummy = cms.EDProducer("DummyModule")
+# Path that option output modules can be hooked into
+process.endtasks = cms.EndPath(process.dummy)
+
+process.schedule = cms.Schedule(process.q, process.p, process.selectFinalEvents,
+                                process.endtasks)
 
 #--------------------------------------------------------------------------------
 # import utility function for switching HLT InputTags when processing
@@ -215,7 +236,7 @@ from TauAnalysis.MCEmbeddingTools.tools.switchInputTags import switchInputTags
 # comment-out to switch HLT InputTags
 #switchInputTags(process)
 #--------------------------------------------------------------------------------
- 
+
 #--------------------------------------------------------------------------------
 # import utility function for factorization
 from TauAnalysis.Configuration.tools.factorizationTools import enableFactorization_runAHtoMuTau
