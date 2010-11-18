@@ -41,7 +41,7 @@ SAMPLE_DEFAULTS = {
     'genPhaseSpaceCut' : '',
     'factorize' : False,
     'applyZrecoilCorrection' : False,
-    'enableSysUncertainties' : False,
+    'enableSysUncertainties' : True,
     'lumi_mask' : '',
     'runselection' : '',
     'hlt_paths' : [ 'HLT_Mu9' ],
@@ -77,7 +77,8 @@ RECO_SAMPLES = {
         'events_processed' : -1,
         'skim_eff' : 1.0,
         'type' : 'Data',
-        'drawOption' : styles.drawOption_Data
+        'drawOption' : styles.drawOption_Data,
+        'enableSysUncertainties' : False,
     },
     'data_Mu_Run2010B_Prompt' : {
         'datasetpath' : '/Mu/Run2010B-PromptReco-v2/RECO',
@@ -101,7 +102,8 @@ RECO_SAMPLES = {
             'HLT_IsoMu9_PFTau15_v2' : '149291:MIN-149442:MAX',
             'HLT_Mu11_PFTau15_v1'   : '148822:MIN-149182:MAX',
             'HLT_Mu11_PFTau15_v2'   : '149291:MIN-149442:MAX'
-        }
+        },
+        'enableSysUncertainties' : False,
     },
     'Ztautau' : {
         'datasetpath' : "/DYToTauTau_M-20_TuneZ2_7TeV-pythia6-tauola/Fall10-START38_V12-v1/GEN-SIM-RECO",
