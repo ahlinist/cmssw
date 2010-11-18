@@ -5,7 +5,7 @@ electronHistManager = cms.PSet(
     pluginType = cms.string('ElectronHistManager'),
       
     electronSource = cms.InputTag('cleanPatElectrons'),
-    vertexSource = cms.InputTag('selectedPrimaryVertexPosition'),
+    vertexSource = cms.InputTag('selectedPrimaryVertexHighestPtTrackSum'),
     jetSource = cms.InputTag('selectedPatJetsEt20Cumulative'),
     genParticleSource = cms.InputTag('genParticles'),
 

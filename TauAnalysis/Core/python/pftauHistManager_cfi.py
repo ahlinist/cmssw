@@ -5,7 +5,7 @@ tauHistManager = cms.PSet(
     pluginType = cms.string('TauHistManager'),
       
     tauSource = cms.InputTag('cleanPatTaus'),
-    vertexSource = cms.InputTag('selectedPrimaryVertexPosition'),
+    vertexSource = cms.InputTag('selectedPrimaryVertexHighestPtTrackSum'),
     jetSource = cms.InputTag('selectedPatJetsEt20Cumulative'),
     genParticleSource = cms.InputTag('genParticles'),
   

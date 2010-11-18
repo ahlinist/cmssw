@@ -29,7 +29,7 @@ cfgTrigger = cms.PSet(
 cfgPrimaryEventVertex = cms.PSet(
     pluginName = cms.string('primaryEventVertex'),
     pluginType = cms.string('VertexMinEventSelector'),
-    src = cms.InputTag('selectedPrimaryVertexHighestPtTrackSum'),
+    src = cms.InputTag('offlinePrimaryVerticesWithBS'),
     minNumber = cms.uint32(1)
 )
 cfgPrimaryEventVertexQuality = cms.PSet(

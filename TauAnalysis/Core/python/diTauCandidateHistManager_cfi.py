@@ -6,7 +6,7 @@ diTauCandidateHistManager = cms.PSet(
       
     diTauCandidateSource = cms.InputTag(''),
 
-    vertexSource = cms.InputTag('selectedPrimaryVertexPosition'),
+    vertexSource = cms.InputTag('selectedPrimaryVertexHighestPtTrackSum'),
     genParticleSource = cms.InputTag('genParticles'),
     pfCandidateSource = cms.InputTag('particleFlow'),
 

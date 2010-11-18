@@ -8,7 +8,7 @@ jetTauCandidateHistManager = cms.PSet(
 
   #dqmDirectory_store = cms.string('JetTauCandidateQuantities'),
 
-  vertexSource = cms.InputTag('selectedPrimaryVertexPosition'),
+  vertexSource = cms.InputTag('selectedPrimaryVertexHighestPtTrackSum'),
 
   dqmDirectory_store = cms.string('DiTauCandidateQuantities'),
 
