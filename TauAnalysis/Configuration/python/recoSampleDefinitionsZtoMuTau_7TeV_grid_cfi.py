@@ -165,6 +165,7 @@ RECO_SAMPLES = {
         'datasetpath' : "/QCD_Pt-20_MuEnrichedPt-15_TuneZ2_7TeV-pythia6/Fall10-START38_V12-v1/GEN-SIM-RECO",
         'dbs_url' :  "http://cmsdbsprod.cern.ch/cms_dbs_prod_global/servlet/DBSServlet", 
         'events_processed' : 29504866,
+        'number_of_jobs' : 600,
         'skim_eff' : 1.0,
         'x_sec' : 0.2966*_millibarns*2.855e-4, # x-sec * gen filter efficiency
         'legendEntry' : plotter.process_PPmuXptGt20.config_dqmHistPlotter.legendEntry.value(),
