@@ -13,10 +13,13 @@ samplesToAnalyze = [
     # modify in case you want to submit crab jobs for some of the samples only...
 ]
 
-#enableSystematics = True
-enableSystematics = False
+enableSystematics = True
+#enableSystematics = False
 
 submitAnalysisToGrid(configFile = configFile, channel = 'AHtoMuTau',
-                     samples = recoSampleDefinitionsAHtoMuTau_7TeV, outputFilePath = analysisFilePath, jobId = jobId,
-                     samplesToAnalyze = samplesToAnalyze, disableSysUncertainties = not enableSystematics)
+                     samples = recoSampleDefinitionsAHtoMuTau_7TeV,
+                     outputFilePath = analysisFilePath, jobId = jobId,
+                     samplesToAnalyze = samplesToAnalyze,
+                     disableSysUncertainties = not enableSystematics,
+                     submit = False, saveFinalEvents=True)
 
