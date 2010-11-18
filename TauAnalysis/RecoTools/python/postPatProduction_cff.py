@@ -17,7 +17,7 @@ from TauAnalysis.GenSimTools.genPhaseSpaceEventInfoProducer_cff import *
 from TauAnalysis.GenSimTools.tauGenJetProducer_cff import *
 
 # import sequence for selection of primary event vertex candidates
-from TauAnalysis.RecoTools.eventVertexSelector_cfi import *
+from TauAnalysis.RecoTools.recoVertexSelection_cff import *
 
 # import sequence for production of data-formats providing information 
 # about distribution of energy deposits in the event 

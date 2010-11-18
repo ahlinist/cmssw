@@ -68,7 +68,7 @@ selectedPatMuonsTrk = cms.EDFilter("PATMuonSelector",
 # require track of muon candidate to have small transverse impact parameter
 # (in order to veto muons resulting from b-quark decays)
 selectedPatMuonsTrkIP = cms.EDFilter("PATMuonIpSelector",
-    vertexSource = cms.InputTag("selectedPrimaryVertexPosition"),
+    vertexSource = cms.InputTag("selectedPrimaryVertexHighestPtTrackSum"),
     IpMax = cms.double(0.05),
     filter = cms.bool(False)                                               
 )

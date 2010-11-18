@@ -25,7 +25,7 @@ selectedPatElectronsPt15.cut = cms.string('pt > 15.')
 selectedPatElectronsTrkIso.cut = cms.string('userIsolation("pat::TrackIso") < 1.')
 selectedPatElectronsEcalIso.cut = cms.string('(abs(superCluster.eta) < 1.479 & userIsolation("pat::EcalIso") < 2.5) | (abs(superCluster.eta) > 1.479 & userIsolation("pat::EcalIso") < 3.5)')
 selectedPatElectronsTrk.cut = cms.string('gsfTrack.isNonnull')
-selectedPatElectronsTrkIP.vertexSource = cms.InputTag("selectedPrimaryVertexPosition")
+selectedPatElectronsTrkIP.vertexSource = cms.InputTag("selectedPrimaryVertexHighestPtTrackSum")
 selectedPatElectronsTrkIP.IpMax = cms.double(0.05)
 
 patElectronSelConfigurator = objSelConfigurator(
@@ -77,7 +77,7 @@ selectedPatElectronsForElecTauEta21.cut = cms.string('abs(eta) < 2.1')
 selectedPatElectronsForElecTauPt15.cut = cms.string('pt > 15.')
 selectedPatElectronsForElecTauTrkIso.cut = cms.string('(abs(superCluster.eta) < 1.479 & dr03TkSumPt/p4.Pt < 0.12) | (abs(superCluster.eta) > 1.479 & dr03TkSumPt/p4.Pt < 0.05) ')
 selectedPatElectronsForElecTauEcalIso.cut = cms.string('(abs(superCluster.eta) < 1.479 & dr03EcalRecHitSumEt/p4.Pt < 0.09) | (abs(superCluster.eta) > 1.479 & dr03EcalRecHitSumEt/p4.Pt < 0.06)')
-selectedPatElectronsForElecTauTrkIP.vertexSource = cms.InputTag("selectedPrimaryVertexPosition")
+selectedPatElectronsForElecTauTrkIP.vertexSource = selectedPatElectronsTrkIP.vertexSource
 selectedPatElectronsForElecTauTrkIP.IpMax = cms.double(0.05)
 selectedPatElectronsForElecTauConversionVeto.cotThetaCut = cms.double(0.05)
 selectedPatElectronsForElecTauConversionVeto.docaElecTrack = cms.double(0)
@@ -206,7 +206,7 @@ selectedPatMuonsPionVeto.CaloCompCoefficient = cms.double(0.8)
 selectedPatMuonsPionVeto.SegmCompCoefficient = cms.double(1.2)
 selectedPatMuonsPionVeto.AntiPionCut = cms.double(1.0)
 selectedPatMuonsTrk.cut = cms.string('innerTrack.isNonnull')
-selectedPatMuonsTrkIP.vertexSource = cms.InputTag("selectedPrimaryVertexPosition")
+selectedPatMuonsTrkIP.vertexSource = cms.InputTag("selectedPrimaryVertexHighestPtTrackSum")
 selectedPatMuonsTrkIP.IpMax = cms.double(0.05)
 
 patMuonSelConfigurator = objSelConfigurator(
