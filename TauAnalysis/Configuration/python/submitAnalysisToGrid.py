@@ -49,6 +49,7 @@ def submitAnalysisToGrid(configFile = None, channel = None, samples = None,
                          create=True, submit=True,
                          cfgdir='crab', inputFileMap=None,
                          outputFileMap=None,
+                         enableEventDumps=False,
                          saveFinalEvents=False):
     """
     Submit analysis job (event selection, filling of histogram)
@@ -140,6 +141,8 @@ def submitAnalysisToGrid(configFile = None, channel = None, samples = None,
         jobOptions.append(('enableSysUncertainties',
                            sample_info['enableSysUncertainties']
                            and not disableSysUncertainties))
+
+        jobOptions.append(('eventDump', enableEventDumps))
 
         # Build crab options
         crabOptions = {
