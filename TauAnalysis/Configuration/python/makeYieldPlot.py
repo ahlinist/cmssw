@@ -19,8 +19,8 @@ process = cms.Process('dumpRunLumiSectionEventNumbers')
 
 process.DQMStore = cms.Service("DQMStore")
 
-process.maxEvents = cms.untracked.PSet(            
-    input = cms.untracked.int32(0)         
+process.maxEvents = cms.untracked.PSet(
+    input = cms.untracked.int32(0)
 )
 
 process.source = cms.Source("EmptySource")
@@ -35,9 +35,9 @@ process.loadFilterStatistics = cms.EDAnalyzer("DQMFileLoader",
 process.dumpRunLumiSectionEventNumbers = cms.EDAnalyzer("DQMDumpRunLumiSectionEventNumbers",
     dqmDirectories = cms.vstring(),
     runLumiSectionEventNumberFileName = cms.string(''),
-    separator = cms.string(':')                                                        
+    separator = cms.string(':')
 )
- 
+
 process.p = cms.Path(
     process.loadFilterStatistics
    + process.dumpRunLumiSectionEventNumbers
@@ -45,7 +45,7 @@ process.p = cms.Path(
 """
 
 def _runCommand(commandLine):
-    
+
     print(commandLine)
     args = shlex.split(commandLine)
     retval = subprocess.Popen(args, stdout = subprocess.PIPE)
@@ -62,7 +62,7 @@ def makeYieldPlot(inputFileName = None, dqmDirectory = None, outputFileName = No
         raise ValueError("Undefined outputFileName Parameter !!")
 
     selEventsFileName = "selEvents_tmp.txt"
-    
+
     cfgFileName = "makeYieldPlot_cfg.py"
     cfgFile = open(cfgFileName, "w")
     cfgFile.write(cfg)
