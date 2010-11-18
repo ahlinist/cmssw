@@ -6,7 +6,7 @@ pfMEtHistManager = cms.PSet(
       
     metSource = cms.InputTag('patPFMETs'),
     metSignificanceSource = cms.InputTag(''),
-    vertexSource = cms.InputTag('selectedPrimaryVertexPosition'),
+    vertexSource = cms.InputTag('selectedPrimaryVertexHighestPtTrackSum'),
 
     vertexPtThresholds = cms.vdouble(5., 10., 15., 20.),
     

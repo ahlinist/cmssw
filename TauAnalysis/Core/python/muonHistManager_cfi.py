@@ -7,7 +7,7 @@ muonHistManager = cms.PSet(
     pluginType = cms.string('MuonHistManager'),
       
     muonSource = cms.InputTag('cleanPatMuons'),
-    vertexSource = cms.InputTag('selectedPrimaryVertexPosition'),
+    vertexSource = cms.InputTag('selectedPrimaryVertexHighestPtTrackSum'),
     beamSpotSource = cms.InputTag('offlineBeamSpot'),    
     jetSource = cms.InputTag('selectedPatJetsEt20Cumulative'),
     genParticleSource = cms.InputTag('genParticles'),

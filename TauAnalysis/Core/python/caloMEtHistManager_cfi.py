@@ -7,7 +7,7 @@ caloMEtHistManager = cms.PSet(
     metSource = cms.InputTag('patMETs'),
     #metSignificanceSource = cms.InputTag('met'),
     metSignificanceSource = cms.InputTag('metsignificance'),
-    vertexSource = cms.InputTag('selectedPrimaryVertexPosition'),
+    vertexSource = cms.InputTag('selectedPrimaryVertexHighestPtTrackSum'),
 
     vertexPtThresholds = cms.vdouble(5., 10., 15., 20.),
     
