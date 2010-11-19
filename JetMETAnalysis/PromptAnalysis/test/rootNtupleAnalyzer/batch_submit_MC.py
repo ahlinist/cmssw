@@ -13,7 +13,7 @@ output = "MC7TeV_MinBias-START3X_V25B"
 inputlist = "inputMC7TeV_MinBias-START3X_V25B-v1_short.txt"
 
 settingfile = "config/cutTable_METNoteOnDec09Data.txt"
-# choose among cmst3 8nm 1nh 8nh 1nd 1nw 
+# choose among cmst3 8nm 1nh 8nh 1nd 1nw
 queue = "1nh"
 ijobmax = 25
 
@@ -51,7 +51,9 @@ if ijobmax > numfiles:
 filesperjob = int(numfiles/ijobmax)
 if numfiles%ijobmax!=0:
     filesperjob = filesperjob+1
-    ijobmax = int(numfiles/filesperjob)+1
+    ijobmax = int(numfiles/filesperjob)
+    if numfiles%filesperjob!=0:
+        ijobmax = ijobmax+1
 #################################################
 input = open(inputlist)
 #################################################
