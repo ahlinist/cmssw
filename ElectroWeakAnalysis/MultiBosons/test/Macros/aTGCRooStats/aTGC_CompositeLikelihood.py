@@ -75,7 +75,8 @@ def main(options,args):
 
     fArgs = combinedWorkspace.function('combinedNLL').getParameters(ROOT.RooArgSet())
     
-    profMinuit = profileLL.minuit()
+    profMinuit = profileLL.minuit()    
+    profMinuit.setStrategy(2)
     profMinuit.setErrorLevel(.5) # force to likelihood error def.
     profMinuit.setPrintLevel(1)
                              
@@ -97,7 +98,7 @@ def main(options,args):
     thePlot.SetTitle("68% & 95% CL on the Best Fit Values of h3 and h4")
     thePlot.Draw()
     
-    theCanvas.Print('contour_combined.root')
+    theCanvas.Print(options.workspaceName+'contour.root')
 
     output.cd()
     combinedWorkspace.Write()

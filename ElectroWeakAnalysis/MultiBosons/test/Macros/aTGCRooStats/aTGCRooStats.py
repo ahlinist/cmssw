@@ -8,8 +8,8 @@ import ROOT
 #where the magic happens
 def main(options,args):
 
-    h3Max = float(options.h3Max)
-    h4Max = float(options.h4Max)
+    obsMax = float(options.obsMax)
+    obsMax = float(options.obsMax)
     
 
     dataChain = ROOT.TChain(options.treeName)
@@ -51,11 +51,11 @@ def main(options,args):
     #ws.var('err_x_gb').setConstant(True)
 
     ws.defineSet('POI',
-                 ROOT.RooArgSet(ws.var(options.couplingType+'_h3'),
-                                ws.var(options.couplingType+'_h4')))
+                 ROOT.RooArgSet(ws.var(options.couplingType+'_'+options.par1Name),
+                                ws.var(options.couplingType+'_'+options.par2Name)))
 
-    h3_best = ROOT.RooRealVar(ws.var(options.couplingType+'_h3'),options.couplingType+'_h3')
-    h4_best = ROOT.RooRealVar(ws.var(options.couplingType+'_h4'),options.couplingType+'_h4')
+    h3_best = ROOT.RooRealVar(ws.var(options.couplingType+'_'+options.par1Name),options.couplingType+' '+options.par1Name)
+    h4_best = ROOT.RooRealVar(ws.var(options.couplingType+'_'+options.par2Name),options.couplingType+'_'+options.par2Name)
     ROOT.RooArgSet(ROOT.RooArgSet(h3_best,h4_best))
     
     nll_fit_result = minuit.save(options.couplingType+'_NLL_fitResult')
@@ -71,13 +71,14 @@ def main(options,args):
     print '95% CL Delta-NLL=',level_95
 
     profMinuit = profileLL.minuit()
+    profMinuit.setStrategy(2)
     profMinuit.setPrintLevel(1)
 
     profMinuit.migrad()
     profMinuit.minos(ws.set('POI'))
 
-    thePlot = profMinuit.contour(ws.var(options.couplingType+'_h3'),
-                                 ws.var(options.couplingType+'_h4'),
+    thePlot = profMinuit.contour(ws.var(options.couplingType+'_'+options.par1Name),
+                                 ws.var(options.couplingType+'_'+options.par2Name),
                                  sqrt(2*level_68),sqrt(2*level_95))
 
     theCanvas = ROOT.TCanvas('contours','',500,500)
@@ -85,7 +86,7 @@ def main(options,args):
     thePlot.SetTitle("68% & 95% CL on the Best Fit Values of h3 and h4")
     thePlot.Draw()
 
-    theCanvas.Print('contour.root')
+    theCanvas.Print(options.workspaceName+'contour.root')
     
     #theLHInterval = ROOT.RooStats.LikelihoodInterval('profLikelihoodInterval',
     #                                                 profileLL,
@@ -117,18 +118,25 @@ def main(options,args):
 def setupWorkspace(dataTree,mcTree,ws,output,options):
     # explanation forthcoming...
 
-    nEtBins = int(options.nEtBins)
-    phoEtMin = float(options.phoEtMin)
-    phoEtMax = float(options.phoEtMax)
+    nObsBins = int(options.nObsBins)
+    obsMin = float(options.obsMin)
+    obsMax = float(options.obsMax)
         
     if not isinstance(ws,ROOT.RooWorkspace):
         print "You didn't pass a RooWorkspace!"
         exit(1)
 
-    pho_et = ROOT.RooRealVar(options.phoEtVar,'Photon E_{T}',phoEtMin,phoEtMax) #observable
-    pho_et.setBins(int(options.nEtBins))
-    h3 = ROOT.RooRealVar(options.couplingType+'_h3','h3_{'+options.couplingType+'}',-float(options.h3Max),float(options.h3Max)) #parameter
-    h4 = ROOT.RooRealVar(options.couplingType+'_h4','h4_{'+options.couplingType+'}',-float(options.h4Max),float(options.h4Max)) #parameter
+    obs = ROOT.RooRealVar(options.obsVar,'The Observable',obsMin,obsMax) #observable
+    obs.setBins(int(options.nObsBins))
+    par1 = ROOT.RooRealVar(options.couplingType+'_'+options.par1Name,
+                         options.par1Name+'_{'+options.couplingType+'}',
+                         -float(options.par1Max),
+                         float(options.par1Max)) #parameter
+    
+    par2 = ROOT.RooRealVar(options.couplingType+'_'+options.par2Name,
+                         options.par2Name+'_{'+options.couplingType+'}',
+                         -float(options.par2Max),
+                         float(options.par2Max)) #parameter
     #acc = ROOT.RooRealVar('acceptance','The acceptance in this pT bin',0)
     #acc_err = ROOT.RooRealVar('acceptance_error','The error on the accpetance in the pT bin',0) 
 
@@ -143,29 +151,29 @@ def setupWorkspace(dataTree,mcTree,ws,output,options):
                               .1) #fix lumi error to 10%    
     
     #start hack to always make last bin include overflow
-    aTGCEtHist = ROOT.TH1F('aTGCEtHist',
-                           'Histogram Containing the pt Spectrum',
-                           nEtBins,
-                           phoEtMin,phoEtMax) # because including overflow bins in roofit sucks, alot...
+    aTGCObsHist = ROOT.TH1F('aTGCObsHist',
+                            'Histogram Containing the pt Spectrum',
+                            nObsBins,
+                            obsMin,obsMax) # because including overflow bins in roofit sucks, alot...
     
-    dataTree.Draw(options.phoEtVar+' >> aTGCEtHist','','goff')
+    dataTree.Draw(options.obsVar+' >> aTGCObsHist','','goff')
 
-    lastBin = aTGCEtHist.GetBinContent(nEtBins) + aTGCEtHist.GetBinContent(nEtBins+1)
-    lastBinError = sqrt(aTGCEtHist.GetBinError(nEtBins)*aTGCEtHist.GetBinError(nEtBins) +
-                        aTGCEtHist.GetBinError(nEtBins+1)*aTGCEtHist.GetBinError(nEtBins+1))
+    lastBin = aTGCObsHist.GetBinContent(nObsBins) + aTGCObsHist.GetBinContent(nObsBins+1)
+    lastBinError = sqrt(aTGCObsHist.GetBinError(nObsBins)*aTGCObsHist.GetBinError(nObsBins) +
+                        aTGCObsHist.GetBinError(nObsBins+1)*aTGCObsHist.GetBinError(nObsBins+1))
 
-    for i in range(nEtBins-1):
-        aTGCEtHist.SetBinError(i+1,sqrt(aTGCEtHist.GetBinContent(i+1)))
+    for i in range(nObsBins-1):
+        aTGCObsHist.SetBinError(i+1,sqrt(aTGCObsHist.GetBinContent(i+1)))
 
-    aTGCEtHist.SetBinContent(nEtBins,lastBin)
-    aTGCEtHist.SetBinError(nEtBins,lastBinError)
+    aTGCObsHist.SetBinContent(nObsBins,lastBin)
+    aTGCObsHist.SetBinError(nObsBins,lastBinError)
 
-    aTGCEtHist.Write()
+    aTGCObsHist.Write()
     #end hack to make last bin include overflow
 
     aTGCData = ROOT.RooDataHist('aTGCData',
                                 'Photon E_{T} Spectrum from Data',
-                                ROOT.RooArgList(pho_et),aTGCEtHist)
+                                ROOT.RooArgList(obs),aTGCObsHist)
 
     #Ok, this does look a little insane but what we want as our actual dataset
     #is each pT bin with unit weight and a poisson assigned to it
@@ -175,17 +183,17 @@ def setupWorkspace(dataTree,mcTree,ws,output,options):
 
     aTGCDataUnitWeight.reset()
 
-    for i in range(nEtBins):
+    for i in range(nObsBins):
         aTGCDataUnitWeight.get(i)
         aTGCDataUnitWeight.set(1.0)
 
-    aTGCData.createHistogram('dataHist',pho_et).Write()
+    aTGCData.createHistogram('dataHist',obs).Write()
     
     getattr(ws,'import')(aTGCData)
     getattr(ws,'import')(aTGCDataUnitWeight)
-    getattr(ws,'import')(pho_et)    
-    getattr(ws,'import')(h3)
-    getattr(ws,'import')(h4)
+    getattr(ws,'import')(obs)    
+    getattr(ws,'import')(par1)
+    getattr(ws,'import')(par2)
     #getattr(ws,'import')(acc)
     #getattr(ws,'import')(acc_err)    
     getattr(ws,'import')(evSelErr)
@@ -203,11 +211,11 @@ def setupWorkspace(dataTree,mcTree,ws,output,options):
     getattr(ws,'import')(p_3)
     getattr(ws,'import')(p_4)
 
-    ws.var(options.phoEtVar).setVal(1.5*(phoEtMax-phoEtMin)/nEtBins)
+    ws.var(options.obsVar).setVal(1.5*(obsMax-obsMin)/nObsBins)
 
     #set up functiont the returns number of observed signal
     nObserved = ROOT.RooHistFunc('nObserved','Number of Observed Events in Data',
-                                 ROOT.RooArgSet(pho_et),ws.data('aTGCData'))
+                                 ROOT.RooArgSet(obs),ws.data('aTGCData'))
     getattr(ws,'import')(nObserved)
 
     ws.function('nObserved').Print()
@@ -217,25 +225,25 @@ def setupWorkspace(dataTree,mcTree,ws,output,options):
     #since I use RooHistFunc.... hmmm
     polyC = ROOT.RooHistFunc('polyC',
                              'Constant Term for aTGC polynomial description',
-                             ROOT.RooArgSet(pho_et),ws.data('c_bin_pt'))
+                             ROOT.RooArgSet(obs),ws.data('c_bin_pt'))
     polyP_0 = ROOT.RooHistFunc('polyP_0',
-                               'Linear h_3 Term for aTGC polynomial description',
-                               ROOT.RooArgSet(pho_et),ws.data('p0_bin_pt'))
+                               'Linear par1 Term for aTGC polynomial description',
+                               ROOT.RooArgSet(obs),ws.data('p0_bin_pt'))
     polyP_1 = ROOT.RooHistFunc('polyP_1',
-                               'Linear h_4 Term for aTGC polynomial description',
-                               ROOT.RooArgSet(pho_et),ws.data('p1_bin_pt'))
+                               'Linear par2 Term for aTGC polynomial description',
+                               ROOT.RooArgSet(obs),ws.data('p1_bin_pt'))
     polyP_2 = ROOT.RooHistFunc('polyP_2',
-                               'h_3*h_4 Term for aTGC polynomial description',
-                               ROOT.RooArgSet(pho_et),ws.data('p2_bin_pt'))
+                               'par1*par2 Term for aTGC polynomial description',
+                               ROOT.RooArgSet(obs),ws.data('p2_bin_pt'))
     polyP_3 = ROOT.RooHistFunc('polyP_3',
-                               'Quadratic h_3 Term for aTGC polynomial description',
-                               ROOT.RooArgSet(pho_et),ws.data('p3_bin_pt'))
+                               'Quadratic par1 Term for aTGC polynomial description',
+                               ROOT.RooArgSet(obs),ws.data('p3_bin_pt'))
     polyP_4 = ROOT.RooHistFunc('polyP_4',
-                               'Quadratic h_4 Term for aTGC polynomial description',
-                               ROOT.RooArgSet(pho_et),ws.data('p4_bin_pt'))
-    nExpectedSignal = ROOT.RooFormulaVar('nExpectedSignal','The expected number of signal events in (h3,h4) in bins of pT',
+                               'Quadratic par2 Term for aTGC polynomial description',
+                               ROOT.RooArgSet(obs),ws.data('p4_bin_pt'))
+    nExpectedSignal = ROOT.RooFormulaVar('nExpectedSignal','The expected number of signal events in (h3,h4) in bins',
                                          '(@3(@0) + @4(@0)*@1 + @5(@0)*@2 + @6(@0)*@1*@2 + @7(@0)*@1*@1 + @8(@0)*@2*@2)',
-                                         ROOT.RooArgList(pho_et,h3,h4,polyC,polyP_0,polyP_1,polyP_2,polyP_3,polyP_4))
+                                         ROOT.RooArgList(obs,par1,par2,polyC,polyP_0,polyP_1,polyP_2,polyP_3,polyP_4))
     #getattr(ws,'import')(polyC)
     #getattr(ws,'import')(polyP_0)
     #getattr(ws,'import')(polyP_1)
@@ -251,7 +259,7 @@ def setupWorkspace(dataTree,mcTree,ws,output,options):
     getattr(ws,'import')(bkg)
     
     nExpectedBackground = ROOT.RooHistFunc('nExpectedBackground','Number of expected background in bins of pT',
-                                           ROOT.RooArgSet(pho_et),ws.data('bkgShape'))
+                                           ROOT.RooArgSet(obs),ws.data('bkgShape'))
     getattr(ws,'import')(nExpectedBackground)
 
     ws.function('nExpectedBackground').Print()
@@ -261,55 +269,72 @@ def setupWorkspace(dataTree,mcTree,ws,output,options):
         
 def fitATGCExpectedYields(ws,mcChain,options):
 
-    nEtBins = int(options.nEtBins)
-    phoEtMin = float(options.phoEtMin)
-    phoEtMax = float(options.phoEtMax)
+    nObsBins = int(options.nObsBins)
+    obsMin = float(options.obsMin)
+    obsMax = float(options.obsMax)
+    nGridParBins = int(options.nGridParBins)
+    par1GridMax = float(options.par1GridMax)
+    par2GridMax = float(options.par2GridMax)
+    par1PadSize = 2*par1GridMax/(nGridParBins+1)
+    par2PadSize = 2*par2GridMax/(nGridParBins+1)
+    par1GridMax = par1GridMax + par1PadSize #add padding to put values at bin centers, assuming evently spaced points
+    par2GridMax = par2GridMax + par2PadSize
     
-    #create the variables for the 3x3 grid, doesn't go in the workspace
-    pho_et_mc = ROOT.RooRealVar(ws.var(options.phoEtVar),options.phoEtVar)
+    #create the variables for the nxn grid, doesn't go in the workspace
+    obs_mc = ROOT.RooRealVar(ws.var(options.obsVar),options.obsVar)
     #h3_3x3 and h4_3x3 do not go in the workspace
     #figure out how to determine binning on the fly.... can probably do by finding max h3,h4 in tree + info that we have 9 bins
-    h3_3x3 = ROOT.RooRealVar('h3_3x3','temp h3 to extrapolate grid',-.18,.18) #hardcoded to to have current aTGC samples in bin centers :-)
-    h3_3x3.setBins(3)
-    h4_3x3 = ROOT.RooRealVar('h4_3x3','temp h4 to extrapolate grid',-.006,.006) # same
-    h4_3x3.setBins(3)
+    par1_grid = ROOT.RooRealVar(options.par1Name+'_grid',
+                               'temp par1 to extrapolate grid',
+                               -par1GridMax,
+                               par1GridMax) #above calulation should put grid values in bin centers
+    par1_grid.setBins(nGridParBins)
+    par2_grid = ROOT.RooRealVar(options.par2Name+'_grid',
+                               'temp par2 to extrapolate grid',
+                               -par2GridMax,
+                               par2GridMax) # same
+    par2_grid.setBins(nGridParBins)
     weight = ROOT.RooRealVar('weight','the weight of the data',0,1000)
 
-    binSize = (phoEtMax-phoEtMin)/nEtBins
+    binSize = (obsMax-obsMin)/nObsBins
 
-    hc = ROOT.TH1F('hc','const term in pT bins',nEtBins,phoEtMin,phoEtMax)
-    hp0 = ROOT.TH1F('hp0','h3 linear term',nEtBins,phoEtMin,phoEtMax)
-    hp1 = ROOT.TH1F('hp1','h4 linear term',nEtBins,phoEtMin,phoEtMax)
-    hp2 = ROOT.TH1F('hp2','h3h4 cross term',nEtBins,phoEtMin,phoEtMax)
-    hp3 = ROOT.TH1F('hp3','h3 quadratic term',nEtBins,phoEtMin,phoEtMax)
-    hp4 = ROOT.TH1F('hp4','h4 quadratic term',nEtBins,phoEtMin,phoEtMax)
+    hc = ROOT.TH1F('hc','const term',nObsBins,obsMin,obsMax)
+    hp0 = ROOT.TH1F('hp0','h3 linear term',nObsBins,obsMin,obsMax)
+    hp1 = ROOT.TH1F('hp1','h4 linear term',nObsBins,obsMin,obsMax)
+    hp2 = ROOT.TH1F('hp2','h3h4 cross term',nObsBins,obsMin,obsMax)
+    hp3 = ROOT.TH1F('hp3','h3 quadratic term',nObsBins,obsMin,obsMax)
+    hp4 = ROOT.TH1F('hp4','h4 quadratic term',nObsBins,obsMin,obsMax)
 
-    for i in range(nEtBins):
-        binMin = phoEtMin+i*binSize
+    for i in range(nObsBins):
+        binMin = obsMin+i*binSize
         binMax = binMin + binSize
 
-        theBaseData = ROOT.TH2F('theBaseData_'+str(i),'Base Histogram for RooDataHist',3,-.18,.18,3,-.006,.006)
+        theBaseData = ROOT.TH2F('theBaseData_'+str(i),'Base Histogram for RooDataHist',
+                                3,par1_grid.getMin(),par1_grid.getMax(),
+                                3,par2_grid.getMin(),par2_grid.getMax())
                 
-        if i == (nEtBins - 1):
-            print pho_et_mc.GetName(),' > ',str(binMin)
-            mcChain.Draw('h4_3x3:h3_3x3 >> theBaseData_'+str(i),
-                         'weight*('+pho_et_mc.GetName() +
+        if i == (nObsBins - 1):
+            print obs_mc.GetName(),' > ',str(binMin)
+            mcChain.Draw(options.par2Name+'_grid:'+options.par1Name+'_grid >> theBaseData_'+str(i),
+                         'weight*('+obs_mc.GetName() +
                          ' > ' + str(binMin)+')','goff')
         else:
-            print pho_et_mc.GetName(),' > ',str(binMin),' && ',pho_et_mc.GetName(),' < ',str(binMax)
-            mcChain.Draw('h4_3x3:h3_3x3 >> theBaseData_'+str(i),
-                         'weight*('+pho_et_mc.GetName() +
+            print obs_mc.GetName(),' > ',str(binMin),' && ',obs_mc.GetName(),' < ',str(binMax)
+            mcChain.Draw(options.par2Name+'_grid:'+options.par1Name+'_grid >> theBaseData_'+str(i),
+                         'weight*('+obs_mc.GetName() +
                          ' > ' + str(binMin) +
-                         ' && ' + pho_et_mc.GetName() +
+                         ' && ' + obs_mc.GetName() +
                          ' < ' + str(binMax)+')','goff')
 
         
 
-        #for k in range(1,nEtBins):
-        #    for j in range(1,nEtBins):
+        #for k in range(1,nObsBins):
+        #    for j in range(1,nObsBins):
         #        theBaseData.SetBinError(k,j,.3e-3)        
 
-        func = ROOT.TF2('fittingFunction'+str(i),'[0] + [1]*x + [2]*y + [3]*x*y + [4]*x*x + [5]*y*y',-.18,.18,-.006,.006)
+        func = ROOT.TF2('fittingFunction'+str(i),'[0] + [1]*x + [2]*y + [3]*x*y + [4]*x*x + [5]*y*y',
+                        par1_grid.getMin(),par1_grid.getMax(),
+                        par2_grid.getMin(),par2_grid.getMax())
 
         theBaseData.Fit(func,'R','NODRAW')
 
@@ -347,26 +372,26 @@ def fitATGCExpectedYields(ws,mcChain,options):
     getattr(ws,'import')(hp4)
 
     #note that here we change the variable of the histogram to the main photon eT!!
-    c = ROOT.RooDataHist('c_bin_pt','Constant Term for Each pT Bin',
-                         ROOT.RooArgList(ws.var(options.phoEtVar)),hc)
-    p0 = ROOT.RooDataHist('p0_bin_pt','h3 Linear Term for Each pT Bin',
-                          ROOT.RooArgList(ws.var(options.phoEtVar)),hp0)
-    p1 = ROOT.RooDataHist('p1_bin_pt','h4 Linear Term for Each pT Bin',
-                          ROOT.RooArgList(ws.var(options.phoEtVar)),hp1)
-    p2 = ROOT.RooDataHist('p2_bin_pt','h3h4 Cross Term for Each pT Bin',
-                          ROOT.RooArgList(ws.var(options.phoEtVar)),hp2)
-    p3 = ROOT.RooDataHist('p3_bin_pt','h3 Quadratic Term for Each pT Bin',
-                          ROOT.RooArgList(ws.var(options.phoEtVar)),hp3)
-    p4 = ROOT.RooDataHist('p4_bin_pt','h4 Quadratic Term for Each pT Bin',
-                          ROOT.RooArgList(ws.var(options.phoEtVar)),hp4)
+    c = ROOT.RooDataHist('c_bin_pt','Constant Term for Each Bin',
+                         ROOT.RooArgList(ws.var(options.obsVar)),hc)
+    p0 = ROOT.RooDataHist('p0_bin_pt','h3 Linear Term for Each Bin',
+                          ROOT.RooArgList(ws.var(options.obsVar)),hp0)
+    p1 = ROOT.RooDataHist('p1_bin_pt','h4 Linear Term for Each Bin',
+                          ROOT.RooArgList(ws.var(options.obsVar)),hp1)
+    p2 = ROOT.RooDataHist('p2_bin_pt','h3h4 Cross Term for Each Bin',
+                          ROOT.RooArgList(ws.var(options.obsVar)),hp2)
+    p3 = ROOT.RooDataHist('p3_bin_pt','h3 Quadratic Term for Each Bin',
+                          ROOT.RooArgList(ws.var(options.obsVar)),hp3)
+    p4 = ROOT.RooDataHist('p4_bin_pt','h4 Quadratic Term for Each Bin',
+                          ROOT.RooArgList(ws.var(options.obsVar)),hp4)
     
     return c,p0,p1,p2,p3,p4
 
 def loadBackgroundHist(ws,output,options):
 
-    nEtBins = int(options.nEtBins)
-    phoEtMin = float(options.phoEtMin)
-    phoEtMax = float(options.phoEtMax)
+    nObsBins = int(options.nObsBins)
+    obsMin = float(options.obsMin)
+    obsMax = float(options.obsMax)
     
     bkgFile = ROOT.TFile.Open(options.bkgFile)
     bkgData = None 
@@ -375,7 +400,7 @@ def loadBackgroundHist(ws,output,options):
         print 'Background Data Given as TH1F!'
         bkgHist = bkgFile.Get(options.treeName)
                 
-        if bkgHist.GetNBins() != nEtBins:
+        if bkgHist.GetNBins() != nObsBins:
             print 'Number of bins in background file is not correct!'
             exit(1)
 
@@ -384,7 +409,7 @@ def loadBackgroundHist(ws,output,options):
         getattr(ws,'import')(bkgHist)
 
         bkgData = ROOT.RooDataHist('bkgShape','The shape of the background in photon eT',
-                                   ROOT.RooArgList(ws.var(options.phoEtVar)),
+                                   ROOT.RooArgList(ws.var(options.obsVar)),
                                    bkgHist)
                                    
         
@@ -392,28 +417,28 @@ def loadBackgroundHist(ws,output,options):
         print 'Background Data Given as TTree!'
         temp = bkgFile.Get(options.treeName)       
 
-        bkgHist = ROOT.TH1F('bkgHist','Background Shape',nEtBins,phoEtMin,phoEtMax)
+        bkgHist = ROOT.TH1F('bkgHist','Background Shape',nObsBins,obsMin,obsMax)
 
         if(options.MCbackground):
-            temp.Draw(options.phoEtVar+' >> bkgHist','weight','goff')
+            temp.Draw(options.obsVar+' >> bkgHist','weight','goff')
         else:
-            temp.Draw(options.phoEtVar+' >> bkgHist','','goff')
+            temp.Draw(options.obsVar+' >> bkgHist','','goff')
 
         output.cd()
 
-        lastBin = bkgHist.GetBinContent(nEtBins) + bkgHist.GetBinContent(nEtBins+1)
-        lastBinError = sqrt(bkgHist.GetBinError(nEtBins)*bkgHist.GetBinError(nEtBins) +
-                            bkgHist.GetBinError(nEtBins+1)*bkgHist.GetBinError(nEtBins+1))
+        lastBin = bkgHist.GetBinContent(nObsBins) + bkgHist.GetBinContent(nObsBins+1)
+        lastBinError = sqrt(bkgHist.GetBinError(nObsBins)*bkgHist.GetBinError(nObsBins) +
+                            bkgHist.GetBinError(nObsBins+1)*bkgHist.GetBinError(nObsBins+1))
         
-        bkgHist.SetBinContent(nEtBins,lastBin)
-        bkgHist.SetBinError(nEtBins,lastBinError)
+        bkgHist.SetBinContent(nObsBins,lastBin)
+        bkgHist.SetBinError(nObsBins,lastBinError)
 
         bkgHist.Write()
 
         getattr(ws,'import')(bkgHist)
 
         bkgData = ROOT.RooDataHist('bkgShape','The shape of the background in photon eT',
-                                   ROOT.RooArgList(ws.var(options.phoEtVar)),
+                                   ROOT.RooArgList(ws.var(options.obsVar)),
                                    bkgHist)
 
         bkgData.Print()
@@ -474,18 +499,30 @@ if __name__ == "__main__":
                           usage="aTGCRooStats --intLumi=TheLumi --lumiErr=Err")
     parser.add_option("--workspaceName",dest="workspaceName",help="The name of your RooWorkspace")
     parser.add_option("--backgroundFile",dest="bkgFile",help="The path to the file containing the estimated background in each bin.")
-    parser.add_option("--intLumi",dest="intLumi",help="Integrated luminosity of input data.")
+    parser.add_option("--intLumi",dest="intLumi",help="Integrated luminosity.")
     parser.add_option("--lumiErr",dest="lumiErr",help="Integrated luminosity fractional error.")
-    parser.add_option("--phoEtVar",dest="phoEtVar",help="Name of the photon eT variable in the input trees")
-    parser.add_option("--nEtBins",dest="nEtBins",help="Number of uniform photon eT bins.")
-    parser.add_option("--phoEtMin",dest="phoEtMin",help="Minimum photon Et.")
-    parser.add_option("--phoEtMax",dest="phoEtMax",help="Maximum photon Et.")
-    parser.add_option("--h3Max",dest="h3Max",help="Bound on |h3|")
-    parser.add_option("--h4Max",dest="h4Max",help="Bound on |h4|")
+
+    #parameters of the observable
+    parser.add_option("--obsVar",dest="obsVar",help="Name of the observable variable in the input trees.")
+    parser.add_option("--nObsBins",dest="nObsBins",help="Number of uniform bins in the observable.")
+    parser.add_option("--obsMin",dest="obsMin",help="Minimum of the observable.")
+    parser.add_option("--obsMax",dest="obsMax",help="Maximum of the observable (last bin contains overflow).")
+
+    #parameters of the aTGCs
+    parser.add_option("--par1Name",dest="par1Name",help="Name of aTGC Parameter 1")
+    parser.add_option("--par2Name",dest="par2Name",help="Name of aTGC Parameter 2")
+    parser.add_option("--par1Max",dest="par1Max",help="Bound on |aTGC 1|")
+    parser.add_option("--par2Max",dest="par2Max",help="Bound on |aTGC 2|")
+
+    #definitions for MC grid of aTGCs (assumed to be a fully populated square grid, that is symmetric about zero)
+    parser.add_option("--nGridParBins",dest="nGridParBins",help="Number of Bins of one side of the input parameter grid.")
+    parser.add_option("--par1GridMax",dest="par1GridMax",help="Max of |par1| in the input grid.")
+    parser.add_option("--par2GridMax",dest="par2GridMax",help="Max of |par2| in the input grid.")
+    
     parser.add_option("--treeName",dest="treeName",help="Name of the TTree, assumed to be the same between all input samples.")
     parser.add_option("--inputData",dest="inputData",help="Name of input data file. Multiple files given in comma separated list.")
     parser.add_option("--inputMC",dest="inputMC",help="Name of input MC file used to extract quadratic dependence of shapes. Multiple files in comma separated list.")
-    parser.add_option("--couplingType",dest="couplingType",help="ZZg or Zgg couplings?")
+    parser.add_option("--couplingType",dest="couplingType",help="Name of the coupling (i.e. ZZg, Zgg, WWg, etc.")
     parser.add_option("--MCbackground",dest="MCbackground",help="Is background from MC?",action="store_true")
     (options,args) = parser.parse_args()
 
@@ -504,26 +541,45 @@ if __name__ == "__main__":
         print 'Need to specify --inputMC'
         miss_options=True
     if options.couplingType is None:
-        print 'Need to specify --couplingType (ZZg or Zgg)'
+        print 'Need to specify --couplingType (ZZg, Zgg, WWg, etc..)'
         miss_options=True
-    if options.phoEtVar is None:
-        print 'Need to specify --phoEtVar'
+        
+    if options.obsVar is None:
+        print 'Need to specify --obsVar'
         miss_options=True
-    if options.phoEtMin is None:
-        print 'Need to specify --phoEtMin'
+    if options.obsMin is None:
+        print 'Need to specify --obsMin'
         miss_options=True
-    if options.phoEtMax is None:
-        print 'Need to specify --phoEtMax'
+    if options.obsMax is None:
+        print 'Need to specify --obsMax'
         miss_options=True
-    if options.nEtBins is None:
-        print 'Need to specify --nEtBins'
+    if options.nObsBins is None:
+        print 'Need to specify --nObsBins'
         miss_options=True
-    if options.h3Max is None:
-        print 'Need to specify --h3Max'
+
+    if options.par1Name is None:
+        print 'Need to specify --par1Name'
         miss_options=True
-    if options.h4Max is None:
-        print 'Need to specify --h4Max'
+    if options.par2Name is None:
+        print 'Need to specify --par2Name'
         miss_options=True
+    if options.par1Max is None:
+        print 'Need to specify --par1Max'
+        miss_options=True
+    if options.par2Max is None:
+        print 'Need to specify --par2Max'
+        miss_options=True
+
+    if options.nGridParBins is None:
+        print 'Need to specify --nGridParBins'
+        miss_options=True
+    if options.par1GridMax is None:
+        print 'Need to specify --par1GridMax'
+        miss_options=True
+    if options.par2GridMax is None:
+        print 'Need to specify --par2GridMax'
+        miss_options=True
+        
     if options.treeName is None:
         print 'Need to specify --treeName'
         miss_options=True
