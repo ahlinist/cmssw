@@ -1,6 +1,6 @@
 #!/bin/csh -f
 if( $#argv < 3 || $#argv > 5) then
-	echo " usage: makeRecoSampleDefs.csh <castor path> <sample name> <starting number> [<reco files per pat-tuple>]"
+	echo " usage: makeRecoSampleDefs.csh <crab dir> <sample> <starting number> [<reco files per pat-tuple>]"
 	echo "   default: one reco file per pat-tuple"
 	exit (1)
 endif
@@ -10,5 +10,5 @@ if( $#argv == 4 ) then
 	@ step = $4
 endif
 
-rfdir $1 | awk -v path="$1" -v sample="$2" -v x="$3" -v stp="${step}" 'BEGIN {y=x} { if(x%stp == 0) {printf ")\nfileNamesZtoElecTau_"sample"_part%02d = cms.untracked.vstring(\n\t'\''rfio:"path"/"$9"'\'',\n",y; x+=1;y+=1} else { printf "\t'\''rfio:"path"/"$9"'\''\n";x+=1}}'
-
+grep 'FrameworkJobReport Status="Success"' $1/res/crab_fjr_*.xml | awk -F: '{print $1}' | xargs grep skimElecTau | grep srm | awk -F= -v sample="$2" -v x="$3" -v stp="${step}" 'BEGIN {y=x} { if((x-1)%stp == 0) {printf "fileNamesZtoElecTau_"sample"_part%02d = cms.untracked.vstring(\n",y;y+=1}; printf "\t'\''rfio:"$2"'\''"; if(x%stp == 0) {printf "\n)\n"} else {printf ",\n"}; x+=1 }'
+echo ")"
