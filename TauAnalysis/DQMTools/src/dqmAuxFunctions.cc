@@ -50,7 +50,6 @@ TH1* getHistogram(DQMStore& dqmStore, const std::string& meName, bool& dqmError)
 	 meType == MonitorElement::DQM_KIND_TH3F      ||
 	 meType == MonitorElement::DQM_KIND_TPROFILE  ||
 	 meType == MonitorElement::DQM_KIND_TPROFILE2D ) {
-      TH1* histogram = 0;
       try {
 	histogram = me->getTH1();
       } catch ( cms::Exception& ex ) {
