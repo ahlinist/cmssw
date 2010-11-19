@@ -210,7 +210,7 @@ void exportAnalysisResults(
   std::cout << "<exportAnalysisResults>:" << std::endl;
   std::cout << " meNameTemplate = " << meNameTemplate << std::endl;
   std::cout << " outputFileName = " << outputFileName << std::endl;
- 
+
   std::vector<int> binContents(numBinsTotal);
 
   double numEventsProcessed, numEventsPassed;
@@ -239,7 +239,7 @@ void exportAnalysisResults(
       firstBinY = 1;
       lastBinY = 1;
     }
-    
+
     int firstBinZ, lastBinZ;
     if ( histogram->GetDimension() >= 3 ) {
       firstBinZ = getFirstBin(histogram, "Z");
@@ -367,7 +367,7 @@ void DQMExportAnalysisResults::endJob()
   TH1* refHistogramBinning = 0;
   for ( std::vector<channelEntryType*>::const_iterator channel = channels_.begin();
 	channel != channels_.end(); ++channel ) {
-    bool dqmError;
+    bool dqmError = false;
     (*channel)->histogramBinning_ = getHistogram(dqmStore, (*channel)->meNameBinning_, dqmError);
     if ( dqmError ) {
       edm::LogError ("endJob") 
@@ -387,7 +387,8 @@ void DQMExportAnalysisResults::endJob()
     }
 
     unsigned numBins_channel = getNumBins((*channel)->histogramBinning_);
-    binOffsets_[(*channel)->index_] = numBinsTotal_;
+
+    binOffsets_.insert(std::pair<unsigned, unsigned>((*channel)->index_, numBinsTotal_));
     numBinsTotal_ += numBins_channel;
   }
 
@@ -395,7 +396,6 @@ void DQMExportAnalysisResults::endJob()
 	process != processes_.end(); ++process ) {
     for ( std::vector<channelEntryType*>::iterator channel = channels_.begin();
 	  channel != channels_.end(); ++channel ) {
-
       int errorFlag = 0;
 
 //--- export "central values" 
@@ -434,7 +434,7 @@ void DQMExportAnalysisResults::endJob()
 //--- export systematic uncertainties
       for ( std::vector<systematicEntryType*>::iterator systematic = systematics_.begin();
 	    systematic != systematics_.end(); ++systematic ) {
-	
+
 	std::string outputFileName_systematic = std::string(outputFilePath_).append("/");
 	outputFileName_systematic.append((*process)->outputFilePath_).append("/");
 	outputFileName_systematic.append((*systematic)->outputFilePath_).append("/");
@@ -443,20 +443,20 @@ void DQMExportAnalysisResults::endJob()
 	  replace_string(outputFileName_systematic, channelOutputFileNameKeyword, (*channel)->shortName_, 0, 1, errorFlag);
 	outputFileName_systematic = replace_string(outputFileName_systematic, "//", "/", 0, 1000, errorFlag);
 	std::cout << " outputFileName_systematic = " << outputFileName_systematic << std::endl;
-	
+
 	if ( distribution && distribution->systematics_.find((*systematic)->name_) != distribution->systematics_.end() ) {
 
 	  std::string meNameTemplate_systematic = 
 	    getMEname_full(distribution->meNameTemplate_, (*systematic)->dqmDirectory_);
 	  std::cout << " meNameTemplate_systematic = " << meNameTemplate_systematic << std::endl;
-	  
+
 	  std::string meNameNumEventsProcessed_systematic = 
 	    getMEname_full(distribution->meNameNumEventsProcessed_, (*systematic)->dqmDirectory_);
 	  std::cout << " meNameNumEventsProcessed_systematic = " << meNameNumEventsProcessed_systematic << std::endl;
 	  std::string meNameNumEventsPassed_systematic = 
 	    getMEname_full(distribution->meNameNumEventsPassed_, (*systematic)->dqmDirectory_);
 	  std::cout << " meNameNumEventsPassed_systematic = " << meNameNumEventsPassed_systematic << std::endl;
-	  	  
+
 	  exportAnalysisResults(dqmStore, meNameTemplate_systematic, 
 				meNameNumEventsProcessed_systematic, meNameNumEventsPassed_systematic, 
 				numChannels_, binOffsets_[(*channel)->index_], numBinsTotal_, outputFileName_systematic, false);
