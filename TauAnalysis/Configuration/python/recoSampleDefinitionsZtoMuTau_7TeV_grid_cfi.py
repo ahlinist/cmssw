@@ -8,11 +8,10 @@ import TauAnalysis.DQMTools.plotterStyleDefinitions_cfi as styles
 SAMPLES_TO_ANALYZE = [
     'data_Mu_Run2010A_Sep17ReReco',
     'data_Mu_Run2010B_Prompt',
-    'Ztautau', 'ZtautauPU156bx',
+    'Ztautau', 'ZtautauPU156bx', 'qqZtautau',
     'Zmumu',
     'InclusivePPmuX', 'PPmuXptGt20Mu10', 'PPmuXptGt20Mu15',
     'WplusJets',
-    'WWtoAnything',
     'TTplusJets'
 ]
 
@@ -22,18 +21,16 @@ SAMPLES_TO_PLOT = [
     'data',
     'qcdSum',
     'WplusJets',
-    'WWtoAnything',
     'TTplusJets',
     'Zmumu',
-    'Ztautau'
+    'ZtautauSum'
 ]
 
 SAMPLES_TO_PRINT = copy.copy(SAMPLES_TO_PLOT)
-SAMPLES_TO_PRINT.append('smBgSum')
+#SAMPLES_TO_PRINT.append('smBgSum')
 SAMPLES_TO_PRINT.append('smSum')
-SAMPLES_TO_PRINT.append('data_Mu_Run2010A_Sep17ReReco')
-SAMPLES_TO_PRINT.append('data_Mu_Run2010B_Prompt')
-SAMPLES_TO_PRINT.append('ZtautauPU156bx')
+#SAMPLES_TO_PRINT.append('data_Mu_Run2010A_Sep17ReReco')
+#SAMPLES_TO_PRINT.append('data_Mu_Run2010B_Prompt')
 
 SAMPLE_DEFAULTS = {
     'dbs_url' : "http://cmsdbsprod.cern.ch/cms_dbs_ph_analysis_02/servlet/DBSServlet",
@@ -128,6 +125,18 @@ RECO_SAMPLES = {
         'applyZrecoilCorrection' : True,
         'hlt' : cms.InputTag("TriggerResults", "", "REDIGI38XPU")
     },
+    'qqZtautau' : {
+        'datasetpath' : "/VQQJetsToLL_TuneD6T_7TeV-madgraph-tauola/Fall10-START38_V12-v2/GEN-SIM-RECO",
+        'dbs_url' :  "http://cmsdbsprod.cern.ch/cms_dbs_prod_global/servlet/DBSServlet",
+        'events_processed' : 737157,
+        'skim_eff' : 1.0,
+        'x_sec' : 36.*_picobarns,
+        'legendEntry' : plotter.process_Ztautau.config_dqmHistPlotter.legendEntry.value(),
+        'type' : plotter.process_Ztautau.config_dqmHistPlotter.type.value(),
+        'drawOption' : styles.drawOption_Ztautau,
+        'applyZrecoilCorrection' : True,
+        'hlt' : cms.InputTag("TriggerResults", "", "REDIGI38X")
+    },    
     'Zmumu' : {
         'datasetpath' : "/DYToMuMu_M-20_TuneZ2_7TeV-pythia6/Fall10-START38_V12-v1/GEN-SIM-RECO",
         'events_processed' : 2289913,
@@ -186,16 +195,6 @@ RECO_SAMPLES = {
         'type' : plotter.process_WplusJets.config_dqmHistPlotter.type.value(),
         'drawOption' : styles.drawOption_WplusJets
     },
-    'WWtoAnything' : {
-        'datasetpath' : "/WWtoAnything_TuneZ2_7TeV-pythia6-tauola/Fall10-START38_V12-v1/GEN-SIM-RECO",
-        'events_processed' : 2061760,
-        'skim_eff' : 1.0,
-        'x_sec' : 27.79*_picobarns,
-        'legendEntry' : plotter.process_WplusJets.config_dqmHistPlotter.legendEntry.value(),
-        'type' : plotter.process_WplusJets.config_dqmHistPlotter.type.value(),
-        'drawOption' : styles.drawOption_WplusJets,
-        'hlt' : cms.InputTag("TriggerResults", "", "REDIGI38X")
-    },
     'TTplusJets' : {
         'datasetpath' : "/TTJets_TuneZ2_7TeV-madgraph-tauola/Fall10-START38_V12-v2/GEN-SIM-RECO",
         'events_processed' : 1164732,
@@ -213,11 +212,21 @@ MERGE_SAMPLES = {
     'data' : {
         'samples' : [
             'data_Mu_Run2010A_Sep17ReReco',
-            'data_Mu_Run2010B_Prompt',
+            'data_Mu_Run2010B_Prompt'
         ],
         'legendEntry' : 'DATA',
         'type' : 'Data',
         'drawOption' : styles.drawOption_Data
+    },
+    'ZtautauSum' : {
+        'samples' : [
+            ##'Ztautau',
+            'ZtautauPU156bx',
+            'qqZtautau'
+        ],
+        'legendEntry' : plotter.process_Ztautau.config_dqmHistPlotter.legendEntry.value(),
+        'type' : plotter.process_Ztautau.config_dqmHistPlotter.type.value(),
+        'drawOption' : styles.drawOption_Ztautau
     },
     'qcdSum' : {
         'samples' : [
@@ -242,7 +251,7 @@ MERGE_SAMPLES = {
     },
     'smSum' : {
         'samples' : [
-            'Ztautau',
+            'ZtautauSum',
             'smBgSum'
         ],
         'legendEntry' : 'SM',

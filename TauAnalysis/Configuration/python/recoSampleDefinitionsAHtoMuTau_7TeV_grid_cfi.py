@@ -13,6 +13,7 @@ TAN_BETA = 30
 # List of samples to run in the analysis
 SAMPLES_TO_ANALYZE = copy.deepcopy(ZtoMuTau.SAMPLES_TO_ANALYZE)
 SAMPLES_TO_ANALYZE.extend([
+    'qqZtautau',
     'A90',  'bbA90',
     'A100', 'bbA100',
     'A120', 'bbA120',
@@ -48,6 +49,7 @@ SAMPLES_TO_PLOT = [
 ]
 
 SAMPLES_TO_PRINT = copy.copy(SAMPLES_TO_PLOT)
+#SAMPLES_TO_PRINT.append('qqZtautau')
 #SAMPLES_TO_PRINT.append('A90Sum')
 #SAMPLES_TO_PRINT.append('A100Sum')
 #SAMPLES_TO_PRINT.append('A120Sum')
@@ -83,10 +85,11 @@ SAMPLE_DEFAULTS = ZtoMuTau.SAMPLE_DEFAULTS
 #
 #--------------------------------------------------------------------------------
 
+# Conversions to pico barns
 _femtobarns = 1.0e-3
 
 RECO_SAMPLES = copy.deepcopy(ZtoMuTau.RECO_SAMPLES)
-AHtoMuTauSpecific_RECO_SAMPLES = {
+AHtoMuTauSpecific_RECO_SAMPLES = {    
     'A90' : {
         # Not skimmed
         'datasetpath' : "/SUSYGluGluToHToTauTau_M-90_7TeV-pythia6-tauola/Fall10-START38_V12-v1/GEN-SIM-RECO",
