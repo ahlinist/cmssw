@@ -10,7 +10,7 @@
  *
  * \version $Revision: 1.1 $
  *
- * $Id: EventCountAnalyzer.h,v 1.1 2009/01/22 16:30:02 veelken Exp $
+ * $Id: EventCountAnalyzer.h,v 1.1 2009/01/28 15:59:22 veelken Exp $
  *
  */
 
@@ -29,7 +29,7 @@ class EventCountAnalyzer : public edm::EDAnalyzer
   virtual ~EventCountAnalyzer();
     
  private:
-  void beginJob(const edm::EventSetup&);
+  void beginJob();
   void analyze(const edm::Event&, const edm::EventSetup&);
   void endJob();
   
