@@ -21,6 +21,7 @@ def switchToData(process):
 
 	# remove MC matching from standard PAT sequences
 	removeMCMatching(process, ["All"])
+	process.patDefaultSequence.remove(process.patJetPartonMatch)
 
 	# add data-quality cuts which work on "real" data only
 	if hasattr(process, "dataQualityFilters"):
