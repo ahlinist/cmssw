@@ -43,7 +43,8 @@ SAMPLE_DEFAULTS = {
     'runselection' : '',
     'hlt_paths' : [ 'HLT_Mu9' ],
     'SE_white_list' : '',
-    'SE_black_list' : ''
+    'SE_black_list' : '',
+    'disableDuplicateCheck' : False,
 }
 
 # Conversions to pico barns
@@ -89,14 +90,14 @@ RECO_SAMPLES = {
         'type' : 'Data',
         'drawOption' : styles.drawOption_Data,
         'hlt_paths' : {
-            'HLT_Mu9'               : '132440:MIN-147116:MAX',
-            'HLT_IsoMu9'            : '147196:MIN-148058:MAX',
-            'HLT_Mu11'              : '147196:MIN-148058:MAX',
-            'HLT_IsoMu13_v3'        : '148822:MIN-149182:MAX',
-            'HLT_IsoMu13_v4'        : '147196:MIN-149442:MAX',
-            'HLT_Mu15_v1'           : '147196:MIN-149442:MAX',
-            'HLT_IsoMu9_PFTau15_v1' : '148822:MIN-149182:MAX',
-            'HLT_IsoMu9_PFTau15_v2' : '149291:MIN-149442:MAX',
+            'HLT_Mu9'               : '132440:MIN-147116:MAX',  # period A
+            'HLT_IsoMu9'            : '147196:MIN-148058:MAX',  # period B
+            'HLT_Mu11'              : '147196:MIN-148058:MAX',  # period B
+            'HLT_IsoMu13_v3'        : '148822:MIN-149182:MAX',  # period C
+            'HLT_IsoMu13_v4'        : '147196:MIN-149442:MAX',  # period B
+            'HLT_Mu15_v1'           : '147196:MIN-149442:MAX',  # period B
+            'HLT_IsoMu9_PFTau15_v1' : '148822:MIN-149182:MAX',  # period C
+            'HLT_IsoMu9_PFTau15_v2' : '149291:MIN-149442:MAX',  # period C
             'HLT_Mu11_PFTau15_v1'   : '148822:MIN-149182:MAX',
             'HLT_Mu11_PFTau15_v2'   : '149291:MIN-149442:MAX'
         },
@@ -112,6 +113,18 @@ RECO_SAMPLES = {
         'drawOption' : styles.drawOption_Ztautau,
         'applyZrecoilCorrection' : True,
         'hlt' : cms.InputTag("TriggerResults", "", "REDIGI38X")
+    },
+    'ZtautauEmbedded' : {
+        'datasetpath' : "/Mu/fruboes-20101106_Zmumu_embed_fullRECO_runB_V2-64a622680cdd3df1201520286eed3637/USER",
+        'dbs_url' : "http://cmsdbsprod.cern.ch/cms_dbs_ph_analysis_01/servlet/DBSServlet",
+        'events_processed' : 132731,
+        'skim_eff' : 1.0,
+        'x_sec' : 1.28*1300*_picobarns, # Z + jets correction factor for NLO/LO cross-sections = 1.28
+        'legendEntry' : plotter.process_Ztautau.config_dqmHistPlotter.legendEntry.value(),
+        'type' : 'Data',
+        'drawOption' : styles.drawOption_Ztautau,
+        'disableDuplicateCheck' : True,
+        'applyZrecoilCorrection' : False,
     },
     'ZtautauPU156bx' : {
         'datasetpath' : "/DYToTauTau_M-20_TuneZ2_7TeV-pythia6-tauola/Fall10-E7TeV_ProbDist_2010Data_BX156_START38_V12-v1/GEN-SIM-RECO",
@@ -136,7 +149,7 @@ RECO_SAMPLES = {
         'drawOption' : styles.drawOption_Ztautau,
         'applyZrecoilCorrection' : True,
         'hlt' : cms.InputTag("TriggerResults", "", "REDIGI38X")
-    },    
+    },
     'Zmumu' : {
         'datasetpath' : "/DYToMuMu_M-20_TuneZ2_7TeV-pythia6/Fall10-START38_V12-v1/GEN-SIM-RECO",
         'events_processed' : 2289913,
