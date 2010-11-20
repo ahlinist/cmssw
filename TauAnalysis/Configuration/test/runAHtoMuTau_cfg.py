@@ -245,7 +245,7 @@ changeCut(process, "selectedMuTauPairsAntiOverlapVetoLooseMuonIsolation", "dR12 
 # output module can be hooked into if desired.
 process.filterFinalEvents = cms.EDFilter(
     "BoolEventFilter",
-    src = cms.InputTag("isRecAHtoMuTauCentralJetVeto"),
+    src = cms.InputTag("isRecAHtoMuTau"),
 )
 process.p = cms.Path(
    process.producePatTupleAHtoMuTauSpecific
@@ -254,7 +254,7 @@ process.p = cms.Path(
   + process.selectAHtoMuTauEvents
   + process.analyzeAHtoMuTauEvents
   + process.saveAHtoMuTauPlots
-  + process.isRecAHtoMuTauCentralJetVeto
+  + process.isRecAHtoMuTau
   + process.filterFinalEvents
 )
 

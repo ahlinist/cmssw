@@ -65,7 +65,7 @@ ahToMuTauEventSelConfigurator = eventSelFlagProdConfigurator(
       cfgPrimaryEventVertexPosition,
       cfgGlobalMuonCut,
       cfgMuonEtaCut,
-      cfgMuonPtCut,      
+      cfgMuonPtCut,
       cfgTauAntiOverlapWithMuonsVeto,
       cfgTauEtaCut,
       cfgTauPtCut,
@@ -124,7 +124,22 @@ isRecAHtoMuTauCentralJetBtag = cms.EDProducer("BoolEventSelFlagProducer",
     )
 )
 
+isRecAHtoMuTau = cms.EDProducer("BoolEventSelFlagProducer",
+    pluginName = cms.string('isRecAHtoMuTauCentralJetBtag'),
+    pluginType = cms.string('MultiBoolEventSelFlagSelector'),
+    flags = cms.VInputTag(
+        cms.InputTag('Trigger'),
+        cms.InputTag('primaryEventVertexPosition'),
+        cms.InputTag('muonTrkIPcut', 'cumulative'),
+        cms.InputTag('tauMuonVeto', 'cumulative'),
+        cms.InputTag('diTauCandidateForAHtoMuTauPzetaDiffCut', 'cumulative'),
+        cms.InputTag('diMuPairZmumuHypothesisVetoByLooseIsolation'),
+    )
+)
+
 selectAHtoMuTauEvents = cms.Sequence(
     produceEventSelFlagsAHtoMuTau
-   * isRecAHtoMuTauCentralJetVeto * isRecAHtoMuTauCentralJetBtag
+    * isRecAHtoMuTauCentralJetVeto
+    * isRecAHtoMuTauCentralJetBtag
+    * isRecAHtoMuTau
 )
