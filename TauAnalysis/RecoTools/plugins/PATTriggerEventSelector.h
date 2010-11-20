@@ -1,4 +1,4 @@
-#ifndef TauAnalysis_TauIdEfficiency_PATTriggerEventSelector_h  
+#ifndef TauAnalysis_TauIdEfficiency_PATTriggerEventSelector_h
 #define TauAnalysis_TauIdEfficiency_PATTriggerEventSelector_h
 
 /** \class PATTriggerEventSelector
@@ -8,7 +8,7 @@
  *
  * \author Christian, UC Davis
  *
- * \version $Revision: 1.2 $
+ * \version $Revision: 1.1 $
  */
 
 #include "FWCore/Framework/interface/Event.h"
@@ -26,16 +26,6 @@
 class PATTriggerEventSelector : public EventSelectorBase
 {
  public:
-  
-  explicit PATTriggerEventSelector(const edm::ParameterSet&);
-  ~PATTriggerEventSelector();
- 
-  bool operator()(edm::Event&, const edm::EventSetup&);
-
- private:
-//--- configuration parameters
-  edm::InputTag src_;
-
   struct hltAcceptPathType
   {
     hltAcceptPathType(const edm::ParameterSet&);
@@ -47,12 +37,21 @@ class PATTriggerEventSelector : public EventSelectorBase
     edm::EventRange* hltAcceptEventRange_;
   };
 
+  explicit PATTriggerEventSelector(const edm::ParameterSet&);
+  ~PATTriggerEventSelector();
+
+  bool operator()(edm::Event&, const edm::EventSetup&);
+
+ private:
+//--- configuration parameters
+  edm::InputTag src_;
+
   std::vector<hltAcceptPathType*> hltAcceptPaths_;
 
   int maxWarnings_;
   mutable std::map<std::string, int> numWarnings_;
 };
 
-#endif  
+#endif
 
 
