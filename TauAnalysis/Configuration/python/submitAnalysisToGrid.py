@@ -94,6 +94,11 @@ def submitAnalysisToGrid(configFile = None, channel = None, samples = None,
         }
         jobOptions = copy.copy(_JOB_OPTIONS_DEFAULTS)
 
+        # Check if we want to disable the duplicate check mode for events.
+        # This is needed for the embedded Ztautau sample.
+        jobOptions.append(('disableDuplicateCheck',
+                           sample_info['disableDuplicateCheck']))
+
         # Check if we want to use a special file for the produced cfg file
         # File map is a function that takes a sample name and returns a list of
         # files corresponding to that file.  If files is None, no change will be
@@ -109,8 +114,6 @@ def submitAnalysisToGrid(configFile = None, channel = None, samples = None,
         if outputFileMap is not None:
             output_file = outputFileMap(sample)
             jobOptions.append(('outputFile', output_file))
-
-        jobOptions.append(('saveFinalEvents', saveFinalEvents))
 
         # Get the type and genPhase space cut
         jobOptions.append(('type', sample_info['type']))
@@ -144,15 +147,25 @@ def submitAnalysisToGrid(configFile = None, channel = None, samples = None,
 
         jobOptions.append(('eventDump', enableEventDumps))
 
+        jobOptions.append(('saveFinalEvents', saveFinalEvents))
+
+        # Always include the plot files
+        output_files = ["%s_%s_%s_%s.root" % (
+            _PLOT_FILES_PREFIX, jobInfo['channel'],
+            jobInfo['sample'], jobInfo['id'])]
+
+        # Add our final event skim as well
+        if saveFinalEvents:
+            output_files.append("final_events_%s_%s_%s.root" % (
+             jobInfo['channel'], jobInfo['sample'], jobInfo['id']))
+
         # Build crab options
         crabOptions = {
             'number_of_jobs' : _number_of_jobs(sample_info),
             'datasetpath' : sample_info['datasetpath'],
             'dbs_url' : sample_info['dbs_url'],
             'user_remote_dir' : outputFilePath,
-            'output_file' : "%s_%s_%s_%s.root" % (
-                _PLOT_FILES_PREFIX, jobInfo['channel'],
-                jobInfo['sample'], jobInfo['id']),
+            'output_file' : ", ".join(output_files),
             # Default MC info
             'split_type' : (sample_info['type'] == 'Data') and 'lumis' or 'events',
             'lumi_mask' : sample_info['lumi_mask'],
