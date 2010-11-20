@@ -15,7 +15,7 @@ EventCountAnalyzer::~EventCountAnalyzer()
   //std::cout << " Number of Events processed: >>> " << numEventsProcessed_ << " <<<" << std::endl;
 }
 
-void EventCountAnalyzer::beginJob(const edm::EventSetup& es)
+void EventCountAnalyzer::beginJob()
 {
 // nothing to be done yet...
 }
