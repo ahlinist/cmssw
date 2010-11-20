@@ -16,8 +16,13 @@ def lfns(crab_dir):
                      glob.glob(os.path.join(crab_dir, 'res', '*.xml'))]
     job_xml_files.sort()
     count = 0
+    skipped_files = 0
     for mtime, job_xml in job_xml_files:
-        job_report = minidom.parse(job_xml)
+        #print "parsing", job_xml
+        try:
+            job_report = minidom.parse(job_xml)
+        except:
+            print "Couldn't parse xml file %s, skipping!!!" % job_xml
         framework_report = job_report.firstChild
 
         # Check to make sure the job completed successfully
@@ -34,15 +39,34 @@ def lfns(crab_dir):
         if not isOk:
             continue
 
+        edmFiles = framework_report.getElementsByTagName("File")
         outputFiles = framework_report.getElementsByTagName("AnalysisFile")
-        file_lfn = outputFiles[0].getElementsByTagName("LFN")[0]
-        file = file_lfn.getAttribute("Value")
-        yield file
+        files = []
+        if outputFiles:
+            file_name = outputFiles[0].getElementsByTagName("LFN")[0].\
+                getAttribute("Value")
+            #print "Adding %s plot file" % (file_name)
+            files.append(file_name)
+        if edmFiles:
+            edmFile = edmFiles[0].getElementsByTagName("LFN")[0].firstChild.data.strip()
+            edmEvents = int(edmFiles[0].getElementsByTagName(
+                "TotalEvents")[0].firstChild.data)
+            if edmEvents:
+                #print "Adding %s - %i events" % (edmFile, edmEvents)
+                files.append(edmFile)
+            else:
+                skipped_files += 1
+                #print "EDM file %s has no events, skipping" % edmFile
+        # Yield all files
+        for file in files:
+            yield file
         if count > 2:
             # For debugging
             pass
             #break
         count += 1
+    print "Parsed %i files in %s, and skipped %i since they had no events." % (
+        count, crab_dir, skipped_files)
 
 def map_lfn_to_castor(lfn):
     return '/castor/cern.ch' + lfn
@@ -56,7 +80,7 @@ if __name__ == "__main__":
         '/afs/cern.ch/user/f/friis/scratch0/',
         'HiggsAnalysis38/src/TauAnalysis/Configuration/test',
         'crab',
-        'crabdir_runAHtoMuTau_AHtoMuTau_Zmumu_Run10')
+        'crabdir_runAHtoMuTau_A100_Run23')
     for lfn in map_lfns_to_castor(lfns(path)):
         print lfn
 
