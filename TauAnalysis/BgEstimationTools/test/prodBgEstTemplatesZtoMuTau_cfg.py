@@ -46,7 +46,7 @@ def configureDQMDumpFilterStatisticsTable(dqmDirectoriesProcess, dqmDirectoryFil
     return module
 
 dqmDirectoriesProcess = {
-    'Ztautau' : 'Ztautau',
+    'Ztautau' : 'ZtautauSum',
     'Zmumu' : 'Zmumu',
     'WplusJets' : 'WplusJets',
     'QCD' : 'qcdSum',
@@ -82,4 +82,4 @@ process.q = cms.Path(process.dumpZtoMuTauBgEstTemplates)
 process.schedule = cms.Schedule(process.p, process.q)
 
 # print-out all python configuration parameter information
-print process.dumpPython()
+#print process.dumpPython()
