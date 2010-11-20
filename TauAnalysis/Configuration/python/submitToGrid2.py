@@ -18,7 +18,6 @@ pset = $pset
 total_number_of_$split_type = $total_number
 number_of_jobs = $number_of_jobs
 output_file = $output_file
-get_edm_output = 1
 $lumi_mask
 $runselection
 
