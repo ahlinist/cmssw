@@ -33,22 +33,6 @@ selectedPatMuonsForZmumuHypotheses = cms.Sequence(
    * selectedPatMuonsForZmumuHypothesesLoosePFRelIso
 )    
 
-allDiMuPairZmumuHypothesesByMass = cms.EDProducer("PATDiMuPairProducer",
-    useLeadingTausOnly = cms.bool(False),
-    srcLeg1 = cms.InputTag('selectedPatMuonsTrkIPcumulative'),
-    srcLeg2 = cms.InputTag('selectedPatMuonsForZmumuHypothesesPt10'),
-    dRmin12 = cms.double(0.5),
-    srcMET = cms.InputTag(''),
-    recoMode = cms.string(""),
-    verbosity = cms.untracked.int32(0)
-)
-
-selectedDiMuPairZmumuHypothesesByMass = cms.EDFilter("PATDiMuPairSelector",
-    src = cms.InputTag("allDiMuPairZmumuHypothesesByMass"),                                   
-    cut = cms.string('charge = 0 & p4Vis.mass > 80. & p4Vis.mass < 100.'),
-    filter = cms.bool(False)
-)
-
 allDiMuPairZmumuHypothesesByLooseIsolation = cms.EDProducer("PATDiMuPairProducer",
     useLeadingTausOnly = cms.bool(False),
     srcLeg1 = cms.InputTag('selectedPatMuonsTrkIPcumulative'),
@@ -67,6 +51,5 @@ selectedDiMuPairZmumuHypothesesByLooseIsolation = cms.EDFilter("PATDiMuPairSelec
 
 produceDiMuPairs = cms.Sequence(
     selectedPatMuonsForZmumuHypotheses
-   * allDiMuPairZmumuHypothesesByMass * selectedDiMuPairZmumuHypothesesByMass
    * allDiMuPairZmumuHypothesesByLooseIsolation * selectedDiMuPairZmumuHypothesesByLooseIsolation
 )
