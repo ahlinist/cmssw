@@ -9,9 +9,9 @@
  * 
  * \author Christian Veelken, UC Davis
  *
- * \version $Revision: 1.2 $
+ * \version $Revision: 1.3 $
  *
- * $Id: PATLeptonTrackExtractor.h,v 1.2 2009/05/26 12:36:29 veelken Exp $
+ * $Id: PATLeptonTrackExtractor.h,v 1.3 2010/09/02 11:30:07 veelken Exp $
  *
  */
 
@@ -57,7 +57,11 @@ class PATLeptonTrackExtractor<pat::Tau>
   const reco::Track* operator()(const pat::Tau& tau) const
   {
     //std::cout << "<PATLeptonTrackExtractor<pat::Tau>::operator()>:" << std::endl;
-    return tau.leadTrack().get();
+    if ( tau.isPFTau() ) {
+      return tau.leadPFChargedHadrCand()->trackRef().get();
+    } else {
+      return tau.leadTrack().get();
+    }
   }
 };
 
