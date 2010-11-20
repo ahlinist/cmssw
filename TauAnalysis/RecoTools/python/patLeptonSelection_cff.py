@@ -345,6 +345,7 @@ selectedPatTausForMuTauEcalIso.cut = selectedPatTausEcalIso.cut
 selectedPatTausForMuTauProng.cut = selectedPatTausProng.cut
 selectedPatTausForMuTauCharge.cut = selectedPatTausCharge.cut
 selectedPatTausForMuTauMuonVeto.cut = selectedPatTausMuonVeto.cut
+selectedPatTausForMuTauCaloMuonVeto.cut = cms.string('tauID("againstCaloMuon") > 0.5')
 selectedPatTausForMuTauElectronVeto.cut = selectedPatTausElectronVeto.cut
 
 patTauSelConfiguratorForMuTau = objSelConfigurator(
@@ -359,6 +360,7 @@ patTauSelConfiguratorForMuTau = objSelConfigurator(
       selectedPatTausForMuTauProng,
       selectedPatTausForMuTauCharge,
       selectedPatTausForMuTauMuonVeto,
+      selectedPatTausForMuTauCaloMuonVeto,
       selectedPatTausForMuTauElectronVeto ],
     src = "cleanPatTaus",
     pyModuleName = __name__,
@@ -495,7 +497,6 @@ selectedPatTausForWTauNuChargeLooseIsolation.cut = selectedPatTausForWTauNuTrkIs
 selectedPatTausForWTauNuMuonVetoLooseIsolation.cut = selectedPatTausForWTauNuTrkIsoLooseIsolation.cut
 selectedPatTausForWTauNuElectronVetoLooseIsolation.cut = selectedPatTausForWTauNuTrkIsoLooseIsolation.cut
 selectedPatTausForWTauNuEcalCrackVetoLooseIsolation.cut = selectedPatTausForWTauNuTrkIsoLooseIsolation.cut
-
 
 patTauSelConfiguratorForWTauNuLooseIsolation = objSelConfigurator(
     [ selectedPatTausForWTauNuEta21,

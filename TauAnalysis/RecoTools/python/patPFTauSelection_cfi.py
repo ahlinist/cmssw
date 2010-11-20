@@ -84,3 +84,4 @@ selectedPatTausMuonVeto = cms.EDFilter("PATTauSelector",
     cut = cms.string('tauID("againstMuon") > 0.5'),
     filter = cms.bool(False)                                 
 )
+
