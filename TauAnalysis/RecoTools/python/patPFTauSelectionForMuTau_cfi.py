@@ -45,5 +45,11 @@ selectedPatTausForMuTauCharge = selectedPatTausCharge.clone()
 # require tau candidate to pass muon veto
 selectedPatTausForMuTauMuonVeto = selectedPatTausMuonVeto.clone()
 
+# require tau candidate to pass veto against calorimeter muon/MIP signature
+selectedPatTausForMuTauCaloMuonVeto = cms.EDFilter("PATTauSelector",
+    cut = cms.string('tauID("againstCaloMuon") > 0.5'),
+    filter = cms.bool(False)                                 
+)
+
 # require tau candidate to pass electron veto
 selectedPatTausForMuTauElectronVeto = selectedPatTausElectronVeto.clone()
