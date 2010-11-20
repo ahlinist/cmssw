@@ -49,6 +49,23 @@ dqmHistPlotter_template = cms.EDAnalyzer("DQMHistPlotter",
     outputFilePath = cms.string('./plots/')
 )
 
+def _getInputSamples(mergeSampleDict, samples):
+    # recursively expand name of samples to be merged
+    # CV: a recursive implementation of this function is neccessary,
+    #     as samples used as input for merging job might be defined
+    #     in terms of other merged samples
+    #    (e.g. smSum --> smBgSum --> qcdSum)
+
+    retVal = []
+
+    for sample in samples:
+        if mergeSampleDict.get(sample) is not None:
+            retVal.extend(_getInputSamples(mergeSampleDict, mergeSampleDict[sample]['samples']))
+        else:
+            retVal.append(sample)
+
+    return retVal
+
 def makePlots(process, channel = None, samples = None, inputFilePath = None, jobId = None,
               analyzer_drawJobConfigurator_indOutputFileName_sets = None,
               drawJobTemplate = None,
@@ -149,13 +166,14 @@ def makePlots(process, channel = None, samples = None, inputFilePath = None, job
             if merge_name not in samples['SAMPLES_TO_PRINT']:
                 continue
         merge_info = samples['MERGE_SAMPLES'][merge_name]
+        input_samples = _getInputSamples(samples['MERGE_SAMPLES'], merge_info['samples'])
         for analyzer_drawJobConfigurator_indOutputFileName_set in analyzer_drawJobConfigurator_indOutputFileName_sets:
             analyzer = analyzer_drawJobConfigurator_indOutputFileName_set[0]
             # Build the new PSet
             new_pset = cms.PSet(
                 dqmDirectories_input = cms.vstring([
                     '/harvested/%s/%s' % (sample, analyzer)
-                    for sample in merge_info['samples']
+                    for sample in input_samples
                 ]),
                 dqmDirectory_output = cms.string(
                     '/harvested/%s/%s'%(merge_name, analyzer)),
