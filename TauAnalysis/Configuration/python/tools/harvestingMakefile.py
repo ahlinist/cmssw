@@ -131,7 +131,8 @@ def writeMakefileCommands(mergeTree, outputFile, makefile):
 
 def buildMakefile(merge_jobs, working_dir, makefilename,
                   copy_first=True, merge_per_job=3, ana_defs=None,
-                  plot_defs=None, plotters=None,):
+                  plot_defs=None, plotters=None,
+                  harvest_tool = 'genericHarvester.py'):
     ''' Build a Makefile to merge DQM histograms
 
     [merge_jobs] is a list of tuples of the form
@@ -142,6 +143,10 @@ def buildMakefile(merge_jobs, working_dir, makefilename,
     [working_dir] is a local directory to store the temporary
     files.  [makefilename] specifies the name of the output
     Makefile
+
+    [harvest_tool] is the name of the script in
+    TauAnalysis/Configuration/python/tools/
+    that can merge the desired type of files.
     '''
 
     # Check if intermediate working directory exists and create it if not.
@@ -157,7 +162,7 @@ def buildMakefile(merge_jobs, working_dir, makefilename,
     makefile = open(makefilename, 'w')
     path_to_harvester_script = os.path.join(
         os.environ['CMSSW_BASE'], 'src', 'TauAnalysis/Configuration/',
-        'python/tools', 'genericHarvester.py')
+        'python/tools', harvest_tool)
     makefile.write("# Path to harvester script\n")
     makefile.write("HARVEST = %s\n\n" % path_to_harvester_script)
 
