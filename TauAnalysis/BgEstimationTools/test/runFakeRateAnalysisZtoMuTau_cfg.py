@@ -108,7 +108,7 @@ process.patTrigger.addL1Algos = cms.bool(True)
 #--------------------------------------------------------------------------------
 # import utility function for switching pat::Tau input
 # to different reco::Tau collection stored on AOD
-from PhysicsTools.PatAlgos.tools.tauTools import *
+from PhysicsTools.PatAlgos.tools.tauTools import * 
 
 # comment-out to take reco::CaloTaus instead of reco::PFTaus
 # as input for pat::Tau production
@@ -117,16 +117,16 @@ from PhysicsTools.PatAlgos.tools.tauTools import *
 # comment-out to take shrinking dR = 5.0/Et(PFTau) signal cone
 # instead of fixed dR = 0.07 signal cone reco::PFTaus
 # as input for pat::Tau production
-switchToPFTauShrinkingCone(process)
+#switchToPFTauShrinkingCone(process)
 #switchToPFTauFixedCone(process)
+
+# comment-out to take new HPS + TaNC combined tau id. algorithm
+switchToPFTauHPSpTaNC(process)
 
 # disable preselection on of pat::Taus
 # (disabled also in TauAnalysis/RecoTools/python/patPFTauConfig_cfi.py ,
 #  but re-enabled after switching tau collection)
 process.cleanPatTaus.preselection = cms.string('')
-
-# add "ewkTauId" flag
-setattr(process.patTaus.tauIDSources, "ewkTauId", cms.InputTag('ewkTauId'))
 #--------------------------------------------------------------------------------
 
 #--------------------------------------------------------------------------------
@@ -134,10 +134,7 @@ setattr(process.patTaus.tauIDSources, "ewkTauId", cms.InputTag('ewkTauId'))
 from PhysicsTools.PatAlgos.tools.jetTools import *
 
 # uncomment to replace caloJets by pfJets
-##switchJetCollection(process, jetCollection = cms.InputTag("ak5PFJets"))
-##runBTagging(process, cms.InputTag("ak5CaloJets"), 'AOD')
-process.patJets.addDiscriminators = False
-process.patJets.addTagInfos = False
+switchJetCollection(process, jetCollection = cms.InputTag("ak5PFJets"), doBTagging = True, outputModule = '')
 #--------------------------------------------------------------------------------
 
 #--------------------------------------------------------------------------------
