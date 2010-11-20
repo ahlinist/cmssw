@@ -223,10 +223,12 @@ def _saveFinalEvents(process, save, **kwargs):
             "PoolOutputModule",
             _allEventContent,
             SelectEvents = cms.untracked.PSet(
-                SelectEvents = cms.vstring('selectFinalEvents')
+                SelectEvents = cms.vstring('p')
             ),
             fileName = cms.untracked.string(
-                'final_events_%s.root' % kwargs['sample'])
+                'final_events_%s_%s_%s.root' % (
+                    kwargs['channel'], kwargs['sample'],
+                    kwargs['id']))
         )
         setattr(process, "saveFinalEvents", output_module)
         process.endtasks += process.saveFinalEvents
@@ -236,6 +238,12 @@ def _saveFinalEvents(process, save, **kwargs):
             print "WARNING: The pool output module already exists in the"\
                     " process, and it can't be disabled.  You need to remove"\
                     " it from the config"
+
+def _disableDuplicateEvents(process, disable, **kwargs):
+    if disable:
+        print "--> Disabling duplicate check in PoolSource"
+        process.source.duplicateCheckMode = cms.untracked.string(
+            'noDuplicateCheck')
 
 # Map the above methods to user-friendly names
 _METHOD_MAP = {
@@ -255,6 +263,7 @@ _METHOD_MAP = {
     'files' : _setInputFiles,
     'outputFile' : _setOutputFile,
     'saveFinalEvents' : _saveFinalEvents,
+    'disableDuplicateCheck' : _disableDuplicateEvents,
 }
 
 def applyProcessOptions(process, jobInfo, options):
