@@ -119,13 +119,13 @@ modelBinnerForMuTauCentralJetVetoWrtGenTauLeptonPairAcc = modelBinner.clone(
     srcGenFlag = cms.InputTag("isGenAHtoMuTauWithinAcceptance"),
     srcRecFlag = cms.InputTag("isRecAHtoMuTauCentralJetVeto"),
     dqmDirectory_store = cms.string('modelBinnerForMuTauCentralJetVetoWrtGenTauLeptonPairAcc')
-)    
+)
 modelBinnerForMuTauCentralJetBtagWrtGenTauLeptonPairAcc = modelBinner.clone(
     pluginName = cms.string('modelBinnerForMuTauCentralJetBtagWrtGenTauLeptonPairAcc'),
     srcGenFlag = cms.InputTag("isGenAHtoMuTauWithinAcceptance"),
     srcRecFlag = cms.InputTag("isRecAHtoMuTauCentralJetBtag"),
     dqmDirectory_store = cms.string('modelBinnerForMuTauCentralJetBtagWrtGenTauLeptonPairAcc')
-)    
+)
 
 # import config for binning results
 # used to estimate systematic uncertainties
@@ -186,7 +186,7 @@ diTauLeg1ChargeBinGridHistManager = cms.PSet(
     binning = cms.PSet(
         name = cms.string("diTauLeg1ChargeBinning"),
         config = cms.VPSet(
-            cms.PSet( 
+            cms.PSet(
                 extractor = cms.PSet(
                     pluginType = cms.string("PATMuTauPairValExtractor"),
                     src = cms.InputTag('selectedMuTauPairsForAHtoMuTauPzetaDiffCumulative'),
@@ -321,7 +321,7 @@ muTauAnalysisSequence_woBtag = cms.VPSet(
             'sysUncertaintyBinnerForMuTauAccCentralJetVeto'
         )
     ),
-    
+
     # trigger selection
     cms.PSet(
         filter = cms.string('evtSelTrigger'),
@@ -353,7 +353,7 @@ muTauAnalysisSequence_woBtag = cms.VPSet(
             'caloMEtHistManager',
             'pfMEtHistManager',
             'vertexHistManager',
-            'triggerHistManagerForMuTau'   
+            'triggerHistManagerForMuTau'
         )
     ),
 
@@ -502,7 +502,7 @@ muTauAnalysisSequence_woBtag = cms.VPSet(
             'tauHistManager.tauSource = selectedPatTausForMuTauPt20Cumulative'
         )
     ),
-    
+
     # selection of muon candidate (isolation & id.)
     # produced in muonic tau decay
     cms.PSet(
@@ -554,7 +554,7 @@ muTauAnalysisSequence_woBtag = cms.VPSet(
         ),
         replace = cms.vstring('muonHistManager.muonSource = selectedPatMuonsTrkIPcumulative')
     ),
-    
+
     # selection of tau-jet candidate (id.)
     # produced in hadronic tau decay
     cms.PSet(
@@ -661,7 +661,7 @@ muTauAnalysisSequence_woBtag = cms.VPSet(
             'muonHistManager.muonSource = selectedPatMuonsTrkIPcumulative',
             'tauHistManager.tauSource = selectedPatTausForMuTauChargeCumulative'
         )
-    ),    
+    ),
     cms.PSet(
         filter = cms.string('evtSelTauMuonVeto'),
         title = cms.string('Tau mu-Veto'),
@@ -676,7 +676,7 @@ muTauAnalysisSequence_woBtag = cms.VPSet(
             'muonHistManager.muonSource = selectedPatMuonsTrkIPcumulative',
             'tauHistManager.tauSource = selectedPatTausForMuTauChargeCumulative'
         )
-    ),  
+    ),
     cms.PSet(
         filter = cms.string('evtSelTauElectronVeto'),
         title = cms.string('Tau e-Veto'),
@@ -890,7 +890,7 @@ muTauAnalysisSequence_wBtag = cms.VPSet(
             'sysUncertaintyBinnerForMuTauAccCentralJetBtag'
         )
     ),
-    
+
     # trigger selection
     cms.PSet(
         filter = cms.string('evtSelTrigger'),
@@ -922,7 +922,7 @@ muTauAnalysisSequence_wBtag = cms.VPSet(
             'caloMEtHistManager',
             'pfMEtHistManager',
             'vertexHistManager',
-            'triggerHistManagerForMuTau'   
+            'triggerHistManagerForMuTau'
         )
     ),
 
@@ -1123,7 +1123,7 @@ muTauAnalysisSequence_wBtag = cms.VPSet(
         ),
         replace = cms.vstring('muonHistManager.muonSource = selectedPatMuonsTrkIPcumulative')
     ),
-    
+
     # selection of tau-jet candidate (id.)
     # produced in hadronic tau decay
     cms.PSet(
@@ -1230,7 +1230,7 @@ muTauAnalysisSequence_wBtag = cms.VPSet(
             'muonHistManager.muonSource = selectedPatMuonsTrkIPcumulative',
             'tauHistManager.tauSource = selectedPatTausForMuTauChargeCumulative'
         )
-    ),    
+    ),
     cms.PSet(
         filter = cms.string('evtSelTauMuonVeto'),
         title = cms.string('Tau mu-Veto'),
@@ -1245,7 +1245,7 @@ muTauAnalysisSequence_wBtag = cms.VPSet(
             'muonHistManager.muonSource = selectedPatMuonsTrkIPcumulative',
             'tauHistManager.tauSource = selectedPatTausForMuTauMuonVetoCumulative'
         )
-    ),  
+    ),
     cms.PSet(
         filter = cms.string('evtSelTauElectronVeto'),
         title = cms.string('Tau e-Veto'),
@@ -1266,7 +1266,7 @@ muTauAnalysisSequence_wBtag = cms.VPSet(
             'tauHistManager.tauSource = selectedPatTausForMuTauElectronVetoCumulative'
         )
     ),
-    
+
     # selection of muon + tau-jet combinations
     cms.PSet(
         filter = cms.string('evtSelDiTauCandidateForAHtoMuTauAntiOverlapVeto'),
@@ -1370,7 +1370,7 @@ muTauAnalysisSequence_wBtag = cms.VPSet(
             'diTauCandidateHistManagerForMuTau.diTauCandidateSource = selectedMuTauPairsPzetaDiffCumulative',
             'diTauCandidateHistManagerForMuTau.diTauCandidateSource = selectedMuTauPairsForAHtoMuTauPzetaDiffCumulative',
             'diTauCandidateCollinearApproxHistManagerForMuTau.diTauCandidateSource = selectedMuTauPairsForAHtoMuTauPzetaDiffCumulative',
-            'diTauCandidateSVfitHistManagerForMuTau.diTauCandidateSource = selectedMuTauPairsForAHtoMuTauPzetaDiffCumulative',            
+            'diTauCandidateSVfitHistManagerForMuTau.diTauCandidateSource = selectedMuTauPairsForAHtoMuTauPzetaDiffCumulative',
             'muPairHistManagerByLooseIsolation.diTauCandidateSource = selectedDiMuPairZmumuHypothesesByLooseIsolation',
             'jetHistManager.jetSource = selectedPatJetsForAHtoMuTauAntiOverlapWithLeptonsVetoCumulative'
         )
