@@ -87,7 +87,6 @@ ahToMuTauEventSelConfigurator = eventSelFlagProdConfigurator(
       cfgDiTauCandidateForAHtoMuTauMt1METcut,
       cfgDiTauCandidateForAHtoMuTauPzetaDiffCut,
       cfgDiMuPairZmumuHypothesisVetoByLooseIsolation,
-      cfgDiMuPairZmumuHypothesisVetoByMass,
       cfgCentralJetEt20bTagVeto,
       cfgCentralJetEt20Cut,
       cfgCentralJetEt20bTagCut ],
@@ -107,7 +106,6 @@ isRecAHtoMuTauCentralJetVeto = cms.EDProducer("BoolEventSelFlagProducer",
         cms.InputTag('tauMuonVeto', 'cumulative'),
         cms.InputTag('diTauCandidateForAHtoMuTauPzetaDiffCut', 'cumulative'),
         cms.InputTag('diMuPairZmumuHypothesisVetoByLooseIsolation'),
-        cms.InputTag('diMuPairZmumuHypothesisVetoByMass'),
         cms.InputTag('centralJetEt20bTagVeto', 'cumulative')
     )
 )
@@ -122,7 +120,6 @@ isRecAHtoMuTauCentralJetBtag = cms.EDProducer("BoolEventSelFlagProducer",
         cms.InputTag('tauMuonVeto', 'cumulative'),
         cms.InputTag('diTauCandidateForAHtoMuTauPzetaDiffCut', 'cumulative'),
         cms.InputTag('diMuPairZmumuHypothesisVetoByLooseIsolation'),
-        cms.InputTag('diMuPairZmumuHypothesisVetoByMass'),
         cms.InputTag('centralJetEt20bTagCut', 'cumulative')
     )
 )

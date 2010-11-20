@@ -476,17 +476,6 @@ drawJobConfigurator_AHtoMuTau.add(
     )
 )
 
-drawJobConfigurator_AHtoMuTau.add(
-    afterCut = evtSelDiMuPairZmumuHypothesisVetoByLooseIsolation,
-    beforeCut = evtSelDiMuPairZmumuHypothesisVetoByMass,
-    plot = drawJobConfigEntry(
-        meName = 'DiMuZmumuHypothesisByMassQuantities/VisMass',
-        title = "M(Muon + Muon, Z #rightarrow #mu^{+} #mu^{-} Mass hypothesis) (after Charge(iso. Muon + iso. Muon) = 0 Cut)",
-        xAxis = 'Mass',
-        name = "cutFlowControlPlots_mZmumuHypothesis_afterZmumuHypothesisVetoByLooseIsolation"
-    )
-)
-
 #--------------------------------------------------------------------------------
 # define cut-flow control plots specific to "non-b-tag" analysis path
 #--------------------------------------------------------------------------------
@@ -495,14 +484,14 @@ drawJobConfigurator_AHtoMuTau_woBtag = copy.deepcopy(drawJobConfigurator_AHtoMuT
 drawJobConfigurator_AHtoMuTau_woBtag.setDQMdirectory('#PROCESSDIR#/ahMuTauAnalyzer_woBtag/')
 
 drawJobConfigurator_AHtoMuTau_woBtag.add(
-    afterCut = evtSelDiMuPairZmumuHypothesisVetoByMass,
+    afterCut = evtSelDiMuPairZmumuHypothesisVetoByLooseIsolation,
     beforeCut = evtSelNonCentralJetEt20bTag,
     plot = drawJobConfigEntry(
 	meName = 'JetQuantities/Jet#PAR#',
         PAR = [ 'Pt', 'Eta', 'Phi' ],
-        title = "Jet (after Z #rightarrow #mu^{+} #mu^{-} Mass hypothesis Veto)",
+        title = "Jet (after Z #rightarrow #mu^{+} #mu^{-} hypothesis Veto)",
         xAxis = '#PAR#',
-        name = "cutFlowControlPlots_jet_afterZmumuMassHypothesisVeto"
+        name = "cutFlowControlPlots_jet_afterZmumuHypothesisVeto"
     )
 )
 
@@ -514,14 +503,14 @@ drawJobConfigurator_AHtoMuTau_wBtag = copy.deepcopy(drawJobConfigurator_AHtoMuTa
 drawJobConfigurator_AHtoMuTau_wBtag.setDQMdirectory('#PROCESSDIR#/ahMuTauAnalyzer_wBtag/')
 
 drawJobConfigurator_AHtoMuTau_wBtag.add(
-    afterCut = evtSelDiMuPairZmumuHypothesisVetoByMass,
+    afterCut = evtSelDiMuPairZmumuHypothesisVetoByLooseIsolation,
     beforeCut = evtSelCentralJetEt20,
     plot = drawJobConfigEntry(
 	meName = 'JetQuantities/Jet#PAR#',
         PAR = [ 'Pt', 'Eta', 'Phi' ],
-        title = "Jet (after Z #rightarrow #mu^{+} #mu^{-} Mass hypothesis Veto)",
+        title = "Jet (after Z #rightarrow #mu^{+} #mu^{-} hypothesis Veto)",
         xAxis = '#PAR#',
-        name = "cutFlowControlPlots_jet_afterZmumuMassHypothesisVeto"
+        name = "cutFlowControlPlots_jet_afterZmumuHypothesisVeto"
     )
 )
 
@@ -667,12 +656,6 @@ finalSamplePlots = [
         xAxis = 'Mass',
         name = "finalSamplePlots_mVisibleZllCombinedHypothesis"
     ),
-    #drawJobConfigEntry(
-        #meName = 'DiMuZmumuHypothesisByMassQuantities/VisMass',
-        #title = "M(Muon + Muon, Z #rightarrow #mu^{+} #mu^{-} Mass hypothesis) (final Event sample)",
-        #xAxis = 'Mass',
-        #name = "finalSamplePlots_mZmumuHypothesis"
-    #),
     drawJobConfigEntry(
         meName = 'DiTauCandidateQuantities/CDFmethodMass',
         title = "M(Muon + Tau + MET), CDF method (final Event sample)",

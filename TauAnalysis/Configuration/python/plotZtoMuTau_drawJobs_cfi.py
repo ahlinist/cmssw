@@ -482,24 +482,13 @@ drawJobConfigurator_ZtoMuTau.add(
     )
 )
 
-drawJobConfigurator_ZtoMuTau.add(
-    afterCut = evtSelDiMuPairZmumuHypothesisVetoByLooseIsolation,
-    beforeCut = evtSelDiMuPairZmumuHypothesisVetoByMass,
-    plot = drawJobConfigEntry(
-        meName = 'DiMuZmumuHypothesisByMassQuantities/VisMass',
-        title = "M(Muon + Muon, Z #rightarrow #mu^{+} #mu^{-} Mass hypothesis) (after Charge(iso. Muon + iso. Muon) = 0 Cut)",
-        xAxis = 'Mass',
-        name = "cutFlowControlPlots_mZmumuHypothesis_afterZmumuHypothesisVetoByLooseIsolation"
-    )
-)
-
 #--------------------------------------------------------------------------------
 # define distributions to be plotted
 # for events passing all event selection criteria
 #--------------------------------------------------------------------------------
 
 drawJobConfigurator_ZtoMuTau.add(
-    afterCut = evtSelDiMuPairZmumuHypothesisVetoByMass,
+    afterCut = evtSelDiMuPairZmumuHypothesisVetoByLooseIsolation,
     plots = [
         drawJobConfigEntry(
             meName = 'MuonQuantities/Muon#PAR#',
@@ -616,12 +605,6 @@ drawJobConfigurator_ZtoMuTau.add(
             title = "M_{vis}(Muon + Tau), Z #rightarrow #ell^{+} #ell^{-} combined Hypothesis (final Event sample)",
             xAxis = 'Mass',
             name = "finalSamplePlots_mVisibleZllCombinedHypothesis"
-        ),
-        drawJobConfigEntry(
-            meName = 'DiMuZmumuHypothesisByMassQuantities/VisMass',
-            title = "M(Muon + Muon, Z #rightarrow #mu^{+} #mu^{-} Mass hypothesis) (final Event sample)",
-            xAxis = 'Mass',
-            name = "finalSamplePlots_mZmumuHypothesis"
         ),
         drawJobConfigEntry(
             meName = 'DiTauCandidateQuantities/CDFmethodMass',

@@ -79,7 +79,6 @@ analyzeAHtoMuTauEvents_woBtag = cms.EDAnalyzer("GenericAnalyzer",
 
         # Z --> mu+ mu- hypothesis veto (based on combinations of muon pairs)
         evtSelDiMuPairZmumuHypothesisVetoByLooseIsolation,
-        evtSelDiMuPairZmumuHypothesisVetoByMass,
 
         # central jet veto/b-jet candidate selection
         evtSelNonCentralJetEt20bTag,
@@ -98,7 +97,6 @@ analyzeAHtoMuTauEvents_woBtag = cms.EDAnalyzer("GenericAnalyzer",
         diTauCandidateZmumuHypothesisHistManagerForMuTau,
         diTauLeg1ChargeBinGridHistManager,
         muPairHistManagerByLooseIsolation,
-        muPairHistManagerByMass,
         jetHistManager,
         caloMEtHistManager,
         pfMEtHistManager,
@@ -146,6 +144,7 @@ analyzeAHtoMuTauEvents_wBtag = analyzeAHtoMuTauEvents_woBtag.clone(
     analysisSequence = muTauAnalysisSequence_wBtag
 )
 
+# split analysis into b-Tag and no-b-Tag channels
+analyzeAHtoMuTauEvents = cms.Sequence(analyzeAHtoMuTauEvents_woBtag * analyzeAHtoMuTauEvents_wBtag)
 # disable b-Tag channel for now
-#analyzeAHtoMuTauEvents = cms.Sequence(analyzeAHtoMuTauEvents_woBtag * analyzeAHtoMuTauEvents_wBtag)
-analyzeAHtoMuTauEvents = cms.Sequence(analyzeAHtoMuTauEvents_woBtag)
+#analyzeAHtoMuTauEvents = cms.Sequence(analyzeAHtoMuTauEvents_woBtag)
