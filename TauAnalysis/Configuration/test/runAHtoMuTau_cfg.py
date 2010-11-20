@@ -149,11 +149,63 @@ replaceMETforDiTaus(process, cms.InputTag('patMETs'), cms.InputTag('patPFMETs'))
 #--------------------------------------------------------------------------------
 
 #--------------------------------------------------------------------------------
+
+cut_values = {
+    'normal' : {
+        'muon_pt' : 15,
+        'muon_eta' : 2.1,
+        'mt1MET' : 40.,
+        'tau_pt' : 20,
+        'tau_eta' : 2.3,
+        'pzeta' : -20.,
+        'tanc' : 0.5,
+        'charge' : 'charge = 0',
+    },
+    'loose' : {
+        'muon_pt' : 13.5,
+        'muon_eta' : 2.3,
+        'mt1MET' : 50.,
+        'tau_pt' : 15,
+        'tau_eta' : 2.5,
+        'pzeta' : -25.,
+        'tanc' : -1000,
+        'charge' : 'charge > -1000',
+    }
+}
+
+# Loose cuts
+cuts = cut_values['loose']
+# Normal cuts
+#cuts = cut_values['normal']
+
 # import utility function for changing cut values
 from TauAnalysis.Configuration.tools.changeCut import changeCut
 
 # change muon Pt threshold to 15 GeV
-changeCut(process, "selectedPatMuonsPt10", "pt > 15.")
+changeCut(process, "selectedPatMuonsPt10", "pt > %0.2f" % cuts['muon_pt'])
+# change eta acceptance for tau-jets to |eta| < 2.3
+changeCut(process, "selectedPatTausForMuTauEta21",
+          "abs(eta) < %0.2f" % cuts['muon_eta'])
+
+# Use absolute muon isolation
+process.selectedPatMuonsPFRelIso.chargedHadronIso.ptMin = 1.0
+process.selectedPatMuonsPFRelIso.neutralHadronIso.ptMin = 2000.
+process.selectedPatMuonsPFRelIso.photonIso.ptMin = 1.5
+process.selectedPatMuonsPFRelIso.sumPtMax = 1.0
+process.selectedPatMuonsPFRelIso.sumPtMethod = "absolute"
+
+# change upper limit on muon + MET transverse mass to 40 GeV
+changeCut(process, "selectedMuTauPairsMt1MET",
+          "mt1MET < %0.2f" % cuts['mt1MET'])
+changeCut(process, "selectedMuTauPairsMt1METlooseMuonIsolation",
+          "mt1MET < %0.2f" % cuts['mt1MET'])
+changeCut(process, "selectedMuTauPairsPzetaDiff",
+          '(pZeta - 1.5*pZetaVis) > %0.2f' % cuts['pzeta'])
+changeCut(process, "selectedMuTauPairsPzetaDiffLooseMuonIsolation",
+          '(pZeta - 1.5*pZetaVis) > %0.2f' % cuts['pzeta'])
+
+# Set chage requirement - can be turned of to keep SS ditaus
+changeCut(process, "selectedMuTauPairsZeroCharge", cuts['charge'])
 
 # disable cut on muon calo. + segment compatibility
 # (check that muon calo. compatibility is not affected by pile-up before re-enabling this cut)
@@ -162,9 +214,6 @@ changeCut(process, "selectedPatMuonsPionVetoLooseIsolation", -1000., attribute =
 
 # change upper limit on tranverse impact parameter of muon track to 2mm
 changeCut(process, "selectedPatMuonsTrkIP", 0.2, attribute = "IpMax")
-
-# change eta acceptance for tau-jets to |eta| < 2.3
-changeCut(process, "selectedPatTausForMuTauEta21", "abs(eta) < 2.3")
 
 # disable cuts on tau id. discriminators for Track && ECAL isolation
 changeCut(process, "selectedPatTausForMuTauTrkIso", "tauID('trackIsolation') > -1.")
@@ -177,35 +226,27 @@ changeCut(process, "selectedPatTausTrkIso", "tauID('byTaNCtight') > -1.")
 changeCut(process, "selectedPatTausForMuTauTrkIso", "tauID('byTaNCtight') > -1.")
 changeCut(process, "selectedPatTausEcalIso", "tauID('byTaNCtight') > -1.")
 changeCut(process, "selectedPatTausForMuTauEcalIso", "tauID('byTaNCtight') > -1.")
-changeCut(process, "selectedPatTausTaNCdiscr", "tauID('byTaNCtight') > 0.5")
-changeCut(process, "selectedPatTausForMuTauTaNCdiscr", "tauID('byTaNCtight') > 0.5")
+
+changeCut(process, "selectedPatTausTaNCdiscr",
+          "tauID('byTaNCtight') > %0.2f" % cuts['tanc'])
+changeCut(process, "selectedPatTausForMuTauTaNCdiscr",
+          "tauID('byTaNCtight') > %0.2f" % cuts['tanc'])
 
 # change lower limit on separation required between muon and tau-jet to dR > 0.5
 changeCut(process, "selectedMuTauPairsAntiOverlapVeto", "dR12 > 0.5")
 changeCut(process, "selectedMuTauPairsAntiOverlapVetoLooseMuonIsolation", "dR12 > 0.5")
-
-# change upper limit on muon + MET transverse mass to 40 GeV
-changeCut(process, "selectedMuTauPairsMt1MET", "mt1MET < 40.")
-changeCut(process, "selectedMuTauPairsMt1METlooseMuonIsolation", "mt1MET < 40.")
 
 # disable b-tagging for now
 # (--> all events will pass CentralJetVeto/fail CentralJetBtag selection)
 #changeCut(process, "selectedPatJetsForAHtoMuTauBtag", "bDiscriminator('trackCountingHighEffBJetTags') < -1000.")
 #--------------------------------------------------------------------------------
 
-# disable tau-ID to create reduced data sample
-changeCut(process, "selectedPatTausForMuTauTaNCdiscr", 'tauID("byTaNCtight") > -1.e3')
-
-# disable charge cut to create reduced data sample
-changeCut(process, "selectedMuTauPairsZeroCharge", 'charge > -10000')
-
-# Absolute muon isolation
-process.selectedPatMuonsPFRelIso.chargedHadronIso.ptMin = 1.0
-process.selectedPatMuonsPFRelIso.neutralHadronIso.ptMin = 2000.
-process.selectedPatMuonsPFRelIso.photonIso.ptMin = 1.5
-process.selectedPatMuonsPFRelIso.sumPtMax = 1.0
-process.selectedPatMuonsPFRelIso.sumPtMethod = "absolute"
-
+# Define a generic end path that filters the final events that a pool
+# output module can be hooked into if desired.
+process.filterFinalEvents = cms.EDFilter(
+    "BoolEventFilter",
+    src = cms.InputTag("isRecAHtoMuTauCentralJetVeto"),
+)
 process.p = cms.Path(
    process.producePatTupleAHtoMuTauSpecific
 # + process.printGenParticleList # uncomment to enable print-out of generator level particles
@@ -213,25 +254,18 @@ process.p = cms.Path(
   + process.selectAHtoMuTauEvents
   + process.analyzeAHtoMuTauEvents
   + process.saveAHtoMuTauPlots
+  + process.isRecAHtoMuTauCentralJetVeto
+  + process.filterFinalEvents
 )
 
 process.q = cms.Path(process.dataQualityFilters)
 
-# Define a generic end path that filters the final events that a pool
-# output module can be hooked into if desired.
-process.filterFinalEvents = cms.EDFilter(
-    "BoolEventFilter",
-    src = cms.InputTag("isRecAHtoMuTauCentralJetBtag"),
-)
-# Path that will pass/fail depending on if the event passed.
-process.selectFinalEvents = cms.Path(process.isRecAHtoMuTauCentralJetBtag
-                                     *process.filterFinalEvents)
 # Dummy do-nothing module to allow an empty path
 process.dummy = cms.EDProducer("DummyModule")
 # Path that option output modules can be hooked into
 process.endtasks = cms.EndPath(process.dummy)
 
-process.schedule = cms.Schedule(process.q, process.p, process.selectFinalEvents,
+process.schedule = cms.Schedule(process.q, process.p,
                                 process.endtasks)
 
 #--------------------------------------------------------------------------------
@@ -274,7 +308,7 @@ from TauAnalysis.Configuration.tools.sysUncertaintyTools import enableSysUncerta
 #--------------------------------------------------------------------------------
 # disable event-dump output
 # in order to reduce size of log-files
-##process.disableEventDump = cms.PSet()
+process.disableEventDump = cms.PSet()
 if hasattr(process, "disableEventDump"):
     process.analyzeAHtoMuTauEvents_woBtag.eventDumps = cms.VPSet()
     process.analyzeAHtoMuTauEvents_wBtag.eventDumps = cms.VPSet()
