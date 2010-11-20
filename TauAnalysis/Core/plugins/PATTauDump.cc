@@ -41,13 +41,15 @@ void printTauEfficiency(std::ostream& outputStream, const pat::Tau& patTau,
 	       << std::endl;
 }
 
+namespace {
 void printTauId(std::ostream& stream, const pat::Tau& patTau, const std::string& name)
 {
   stream << "  " << name << " = ";
-  if ( patTau.isTauIDAvailable(name) ) 
+  if ( patTau.isTauIDAvailable(name) )
     stream << patTau.tauID(name);
   else
     stream << "UNAVAILABLE";
+}
 }
 
 void PATTauDump::print(const edm::Event& evt, const edm::EventSetup& es) const
@@ -80,12 +82,20 @@ void PATTauDump::print(const edm::Event& evt, const edm::EventSetup& es) const
     *outputStream_ << " leading Track" << std::endl;
     printTrackInfo(patTau->leadTrack(), patTau->vertex(), true, false, outputStream_);
     *outputStream_ << " #signal Tracks = " << patTau->signalTracks().size() << std::endl;
-    *outputStream_ << "(#signal PFChargedHadrons = " << patTau->signalPFChargedHadrCands().size() << ")" << std::endl;
+    *outputStream_ << " (#signal PFChargedHadrons = " << patTau->signalPFChargedHadrCands().size() << ")" << std::endl;
     *outputStream_ << " tauId" << std::endl;
+
     printTauId(*outputStream_, *patTau, "leadingTrackFinding");
     printTauId(*outputStream_, *patTau, "leadingTrackPtCut");
+    printTauId(*outputStream_, *patTau, "leadingPionPtCut");
+    printTauId(*outputStream_, *patTau, "byTaNCraw");
+    printTauId(*outputStream_, *patTau, "byTaNC");
+    printTauId(*outputStream_, *patTau, "byTaNCloose");
+    printTauId(*outputStream_, *patTau, "byTaNCmedium");
+    printTauId(*outputStream_, *patTau, "byTaNCtight");
     printTauId(*outputStream_, *patTau, "trackIsolation");
     printTauId(*outputStream_, *patTau, "ecalIsolation");
+
     *outputStream_ << "  pfCandidateIsolation: Pt = " << patTau->particleIso() << ", "
 		   << " #particles = " << patTau->isolationPFCands().size() << std::endl;
     *outputStream_ << "  pfChargedHadronIsolation: Pt = " << patTau->chargedHadronIso() << ","
