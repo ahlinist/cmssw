@@ -14,7 +14,6 @@ process.MessageLogger.cerr.FwkReport.reportEvery = 100
 process.MessageLogger.suppressWarning = cms.untracked.vstring("PATTriggerProducer",)
 process.load('Configuration/StandardSequences/GeometryIdeal_cff')
 process.load('Configuration/StandardSequences/MagneticField_cff')
-#process.load('Configuration/StandardSequences/Reconstruction_cff')
 process.load('Configuration/StandardSequences/FrontierConditions_GlobalTag_cff')
 process.GlobalTag.globaltag = cms.string('START38_V12::All')
 
@@ -75,8 +74,8 @@ process.source = cms.Source(
     fileNames = cms.untracked.vstring(
         #'/store/relval/CMSSW_3_6_1/RelValZTT/GEN-SIM-RECO/START36_V7-v1/0021/F405BC9A-525D-DF11-AB96-002618943811.root',
         #'/store/relval/CMSSW_3_6_1/RelValZTT/GEN-SIM-RECO/START36_V7-v1/0020/EE3E8F74-365D-DF11-AE3D-002618FDA211.root'
-        #'file:/data1/veelken/CMSSW_3_6_x/skims/Ztautau_1_1_sXK.root'
-        'file:/data1/friis/Run17/get_events/data_Mu_Run2010A_Sep17ReReco_pickevents/final_events.root'
+        'file:/data1/veelken/CMSSW_3_6_x/skims/Ztautau_1_1_sXK.root'
+        #'file:/data1/friis/Run17/get_events/data_Mu_Run2010A_Sep17ReReco_pickevents/final_events.root'
     )
     #skipBadFiles = cms.untracked.bool(True)
 )
