@@ -926,7 +926,7 @@ diTauAnalysisSequence = cms.VPSet(
         title = cms.string('Trigger'),
         saveRunLumiSectionEventNumbers = cms.vstring('')
     ),
-     cms.PSet(
+    cms.PSet(
         analyzers = cms.vstring(
             'genPhaseSpaceEventInfoHistManager',
             'eventWeightHistManager',
