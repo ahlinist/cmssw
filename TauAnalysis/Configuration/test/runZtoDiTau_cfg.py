@@ -108,8 +108,11 @@ from PhysicsTools.PatAlgos.tools.tauTools import *
 # comment-out to take shrinking dR = 5.0/Et(PFTau) signal cone
 # instead of fixed dR = 0.07 signal cone reco::PFTaus
 # as input for pat::Tau production
-switchToPFTauShrinkingCone(process)
+#switchToPFTauShrinkingCone(process)
 #switchToPFTauFixedCone(process)
+
+# comment-out to take new HPS + TaNC combined tau id. algorithm
+switchToPFTauHPSpTaNC(process)
 
 # disable preselection on of pat::Taus
 # (disabled also in TauAnalysis/RecoTools/python/patPFTauConfig_cfi.py ,
@@ -154,6 +157,16 @@ changeCut(process, "selectedPatTausForDiTau2ndEcalIso", "tauID('ecalIsolation') 
 changeCut(process, "selectedPatTausForDiTau2ndEcalIsoLoose", "tauID('ecalIsolation') > -1.")
 
 # change cut on TaNC output in case using new HPS + TaNC combined tau id. algorithm
+# CV: discriminators by Track/ECAL isolation do not exist for the combined tau id. algorithm
+#     and need to be replaced by dummy cuts, in order to avoid run-time exceptions
+changeCut(process, "selectedPatTausTrkIso", "tauID('byTaNCtight') > -1.")
+changeCut(process, "selectedPatTausForDiTau1stTrkIso", "tauID('byTaNCtight') > -1.")
+changeCut(process, "selectedPatTausForDiTau2ndTrkIso", "tauID('byTaNCtight') > -1.")
+changeCut(process, "selectedPatTausForDiTau2ndTrkIsoLoose", "tauID('byTaNCtight') > -1.")
+changeCut(process, "selectedPatTausEcalIso", "tauID('byTaNCtight') > -1.")
+changeCut(process, "selectedPatTausForDiTau1stEcalIso", "tauID('byTaNCtight') > -1.")
+changeCut(process, "selectedPatTausForDiTau2ndEcalIso", "tauID('byTaNCtight') > -1.")
+changeCut(process, "selectedPatTausForDiTau2ndEcalIsoLoose", "tauID('byTaNCtight') > -1.")
 changeCut(process, "selectedPatTausTaNCdiscr", "tauID('byTaNCtight') > 0.5")
 changeCut(process, "selectedPatTausForDiTau1stTaNCdiscr", "tauID('byTaNCtight') > 0.5")
 changeCut(process, "selectedPatTausForDiTau2ndTaNCdiscr", "tauID('byTaNCtight') > 0.5")

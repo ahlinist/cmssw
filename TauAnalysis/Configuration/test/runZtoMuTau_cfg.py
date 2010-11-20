@@ -128,10 +128,8 @@ process.cleanPatTaus.preselection = cms.string('')
 from PhysicsTools.PatAlgos.tools.jetTools import *
 
 # uncomment to replace caloJets by pfJets
-##switchJetCollection(process, jetCollection = cms.InputTag("ak5PFJets"))
-##runBTagging(process, cms.InputTag("ak5CaloJets"), 'AOD')
-process.patJets.addDiscriminators = False
-process.patJets.addTagInfos = False
+switchJetCollection(process, jetCollection = cms.InputTag("ak5PFJets"), outputModule = '')
+runBTagging(process, cms.InputTag("ak5PFJets", 'AOD')
 #--------------------------------------------------------------------------------
 
 #--------------------------------------------------------------------------------
@@ -170,6 +168,12 @@ changeCut(process, "selectedPatTausForMuTauTrkIso", "tauID('trackIsolation') > -
 changeCut(process, "selectedPatTausForMuTauEcalIso", "tauID('ecalIsolation') > -1.")
 
 # change cut on TaNC output in case using new HPS + TaNC combined tau id. algorithm
+# CV: discriminators by Track/ECAL isolation do not exist for the combined tau id. algorithm
+#     and need to be replaced by dummy cuts, in order to avoid run-time exceptions
+changeCut(process, "selectedPatTausTrkIso", "tauID('byTaNCtight') > -1.")
+changeCut(process, "selectedPatTausForMuTauTrkIso", "tauID('byTaNCtight') > -1.")
+changeCut(process, "selectedPatTausEcalIso", "tauID('byTaNCtight') > -1.")
+changeCut(process, "selectedPatTausForMuTauEcalIso", "tauID('byTaNCtight') > -1.")
 changeCut(process, "selectedPatTausTaNCdiscr", "tauID('byTaNCtight') > 0.5")
 changeCut(process, "selectedPatTausForMuTauTaNCdiscr", "tauID('byTaNCtight') > 0.5")
 

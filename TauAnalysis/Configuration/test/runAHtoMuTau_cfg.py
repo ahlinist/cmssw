@@ -75,7 +75,8 @@ process.source = cms.Source(
     fileNames = cms.untracked.vstring(
         #'/store/relval/CMSSW_3_6_1/RelValZTT/GEN-SIM-RECO/START36_V7-v1/0021/F405BC9A-525D-DF11-AB96-002618943811.root',
         #'/store/relval/CMSSW_3_6_1/RelValZTT/GEN-SIM-RECO/START36_V7-v1/0020/EE3E8F74-365D-DF11-AE3D-002618FDA211.root'
-        'file:/data1/veelken/CMSSW_3_6_x/skims/Ztautau_1_1_sXK.root'
+        #'file:/data1/veelken/CMSSW_3_6_x/skims/Ztautau_1_1_sXK.root'
+        'file:/data1/friis/Run17/get_events/data_Mu_Run2010A_Sep17ReReco_pickevents/final_events.root'
     )
     #skipBadFiles = cms.untracked.bool(True)
 )
@@ -131,9 +132,7 @@ process.cleanPatTaus.preselection = cms.string('')
 from PhysicsTools.PatAlgos.tools.jetTools import *
 
 # uncomment to replace caloJets by pfJets
-##switchJetCollection(process, jetCollection = cms.InputTag("ak5PFJets"))
-process.patJets.addDiscriminators = False
-process.patJets.addTagInfos = False
+switchJetCollection(process, jetCollection = cms.InputTag("ak5PFJets"), doBTagging = True, outputModule = '')
 #--------------------------------------------------------------------------------
 
 #--------------------------------------------------------------------------------
@@ -191,7 +190,7 @@ changeCut(process, "selectedMuTauPairsMt1METlooseMuonIsolation", "mt1MET < 40.")
 
 # disable b-tagging for now
 # (--> all events will pass CentralJetVeto/fail CentralJetBtag selection)
-changeCut(process, "selectedPatJetsForAHtoMuTauBtag", "bDiscriminator('trackCountingHighEffBJetTags') < -1000.")
+#changeCut(process, "selectedPatJetsForAHtoMuTauBtag", "bDiscriminator('trackCountingHighEffBJetTags') < -1000.")
 #--------------------------------------------------------------------------------
 
 # disable tau-ID to create reduced data sample
@@ -279,10 +278,6 @@ from TauAnalysis.Configuration.tools.sysUncertaintyTools import enableSysUncerta
 if hasattr(process, "disableEventDump"):
     process.analyzeAHtoMuTauEvents_woBtag.eventDumps = cms.VPSet()
     process.analyzeAHtoMuTauEvents_wBtag.eventDumps = cms.VPSet()
-
-process.eventDumps = [process.analyzeAHtoMuTauEvents_woBtag,
-                      process.analyzeAHtoMuTauEvents_wBtag]
-# Make it easy for the cfg option setter
 #--------------------------------------------------------------------------------
 
 #--------------------------------------------------------------------------------
