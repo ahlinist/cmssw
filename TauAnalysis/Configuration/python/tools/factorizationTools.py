@@ -273,13 +273,12 @@ def enableFactorization_makeZtoMuTauPlots_grid(
         process.evtSelDiTauCandidateForMuTauAcoplanarity12,
         process.evtSelDiTauCandidateForMuTauMt1MET,
         process.evtSelDiTauCandidateForMuTauPzetaDiff,
-        process.evtSelDiMuPairZmumuHypothesisVetoByLooseIsolation,
-        process.evtSelDiMuPairZmumuHypothesisVetoByMass
+        process.evtSelDiMuPairZmumuHypothesisVetoByLooseIsolation
     ]
 
     # defines names of MonitorElements used as numerator and denominator
     # to compute factorization scale-factor
-    meNameZtoMuTau_numerator = "evtSelDiMuPairZmumuHypothesisVetoByMass/passed_cumulative_numWeighted"
+    meNameZtoMuTau_numerator = "evtSelDiMuPairZmumuHypothesisVetoByLooseIsolation/passed_cumulative_numWeighted"
     meNameZtoMuTau_denominator = "evtSelMuonPFRelIso/processed_cumulative_numWeighted"
 
     # Loop over the samples and create sequences
@@ -1054,8 +1053,7 @@ def enableFactorization_makeAHtoMuTauPlots_grid(
         process.evtSelDiTauCandidateForAHtoMuTauZeroCharge,
         process.evtSelDiTauCandidateForAHtoMuTauMt1MET,
         process.evtSelDiTauCandidateForAHtoMuTauPzetaDiff,
-        process.evtSelDiMuPairZmumuHypothesisVetoByLooseIsolation,
-        process.evtSelDiMuPairZmumuHypothesisVetoByMass
+        process.evtSelDiMuPairZmumuHypothesisVetoByLooseIsolation
     ]
 
     # Make specialized cases for the w/ w/o btag cases
@@ -1072,7 +1070,7 @@ def enableFactorization_makeAHtoMuTauPlots_grid(
 
     # defines names of MonitorElements used as numerator and denominator
     # to compute factorization scale-factor
-    meNameAHtoMuTau_numerator = "evtSelDiMuPairZmumuHypothesisVetoByMass/passed_cumulative_numWeighted"
+    meNameAHtoMuTau_numerator = "evtSelDiMuPairZmumuHypothesisVetoByLooseIsolation/passed_cumulative_numWeighted"
     meNameAHtoMuTau_denominator = "evtSelMuonPFRelIso/processed_cumulative_numWeighted"
 
     # Loop over the samples and btag options and create sequences

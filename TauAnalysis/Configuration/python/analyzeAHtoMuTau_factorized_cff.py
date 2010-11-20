@@ -27,19 +27,18 @@ analyzeAHtoMuTauEvents_wBtag_factorizedWithMuonIsolation = analyzeAHtoMuTauEvent
 )
 
 # Add in the event dumps, if they exist
-
 if len(analyzeAHtoMuTauEvents_woBtag_factorizedWithMuonIsolation.eventDumps):
     analyzeAHtoMuTauEvents_woBtag_factorizedWithMuonIsolation.eventDumps[0] = muTauEventDump_factorizedWithMuonIsolation
-
 if len(analyzeAHtoMuTauEvents_wBtag_factorizedWithMuonIsolation.eventDumps):
     analyzeAHtoMuTauEvents_wBtag_factorizedWithMuonIsolation.eventDumps[0] = muTauEventDump_factorizedWithMuonIsolation
 
+# split analysis into b-Tag and no-b-Tag channels
+analyzeAHtoMuTauEvents_factorizedWithMuonIsolation = cms.Sequence(
+    analyzeAHtoMuTauEvents_woBtag_factorizedWithMuonIsolation
+   * analyzeAHtoMuTauEvents_wBtag_factorizedWithMuonIsolation
+)
 # disable b-Tag channel for now
-#analyzeAHtoMuTauEvents_factorizedWithMuonIsolation = cms.Sequence(
-#    analyzeAHtoMuTauEvents_woBtag_factorizedWithMuonIsolation
-#   * analyzeAHtoMuTauEvents_wBtag_factorizedWithMuonIsolation
-#)
-analyzeAHtoMuTauEvents_factorizedWithMuonIsolation = cms.Sequence(analyzeAHtoMuTauEvents_woBtag_factorizedWithMuonIsolation)
+#analyzeAHtoMuTauEvents_factorizedWithMuonIsolation = cms.Sequence(analyzeAHtoMuTauEvents_woBtag_factorizedWithMuonIsolation)
 
 #--------------------------------------------------------------------------------
 # define A/H --> mu + tau-jet analysis modules
@@ -85,9 +84,10 @@ replaceEventSelections(analyzeAHtoMuTauEvents_wBtag_factorizedWithoutMuonIsolati
 analyzeAHtoMuTauEvents_wBtag_factorizedWithoutMuonIsolation.analysisSequence = \
   muTauAnalysisSequence_wBtag_factorizedWithoutMuonIsolation
 
+# split analysis into b-Tag and no-b-Tag channels
+analyzeAHtoMuTauEvents_factorizedWithoutMuonIsolation = cms.Sequence(
+    analyzeAHtoMuTauEvents_woBtag_factorizedWithoutMuonIsolation
+   * analyzeAHtoMuTauEvents_wBtag_factorizedWithoutMuonIsolation
+)
 # disable b-Tag channel for now
-#analyzeAHtoMuTauEvents_factorizedWithoutMuonIsolation = cms.Sequence(
-#    analyzeAHtoMuTauEvents_woBtag_factorizedWithoutMuonIsolation
-#   * analyzeAHtoMuTauEvents_wBtag_factorizedWithoutMuonIsolation
-#)
-analyzeAHtoMuTauEvents_factorizedWithoutMuonIsolation = cms.Sequence(analyzeAHtoMuTauEvents_woBtag_factorizedWithoutMuonIsolation)
+#analyzeAHtoMuTauEvents_factorizedWithoutMuonIsolation = cms.Sequence(analyzeAHtoMuTauEvents_woBtag_factorizedWithoutMuonIsolation)

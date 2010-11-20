@@ -79,12 +79,6 @@ muPairHistManagerByLooseIsolation = diTauCandidateHistManager.clone(
     diTauCandidateSource = cms.InputTag('allDiMuPairZmumuHypothesesByLooseIsolation'),
     dqmDirectory_store = cms.string('DiMuZmumuHypothesisByLooseIsolationQuantities')
 )
-muPairHistManagerByMass = diTauCandidateHistManager.clone(
-    pluginName = cms.string('muPairHistManagerByMass'),
-    pluginType = cms.string('PATDiMuPairHistManager'),
-    diTauCandidateSource = cms.InputTag('allDiMuPairZmumuHypothesesByMass'),
-    dqmDirectory_store = cms.string('DiMuZmumuHypothesisByMassQuantities')
-)
 
 # import config for central jet veto histogram manager
 from TauAnalysis.Core.jetHistManager_cfi import *
@@ -413,11 +407,6 @@ evtSelDiMuPairZmumuHypothesisVetoByLooseIsolation = cms.PSet(
     pluginType = cms.string('BoolEventSelector'),
     src = cms.InputTag('diMuPairZmumuHypothesisVetoByLooseIsolation')
 )
-evtSelDiMuPairZmumuHypothesisVetoByMass = cms.PSet(
-    pluginName = cms.string('evtSelDiMuPairZmumuHypothesisVetoByMass'),
-    pluginType = cms.string('BoolEventSelector'),
-    src = cms.InputTag('diMuPairZmumuHypothesisVetoByMass')
-)
 
 #--------------------------------------------------------------------------------
 # define event print-out
@@ -475,7 +464,7 @@ muTauEventDump = cms.PSet(
         )
     ),
     muTauZmumuHypothesisSource = cms.InputTag('muTauPairZmumuHypotheses'),
-    diMuZmumuHypothesisSource = cms.InputTag('allDiMuPairZmumuHypothesesByMass'),
+    diMuZmumuHypothesisSource = cms.InputTag('allDiMuPairZmumuHypothesesByLooseIsolation'),
     jetSource = cms.InputTag('patJets'),
     caloMEtSource = cms.InputTag('patMETs'),
     pfMEtSource = cms.InputTag('patPFMETs'),
@@ -1016,28 +1005,6 @@ muTauAnalysisSequence = cms.VPSet(
     ),
     cms.PSet(
         analyzers = cms.vstring(
-            'muonHistManager',
-            'tauHistManager',
-            'diTauCandidateHistManagerForMuTau',
-            'diTauCandidateZmumuHypothesisHistManagerForMuTau',
-            'muPairHistManagerByLooseIsolation',
-            'muPairHistManagerByMass'
-        ),
-        replace = cms.vstring(
-            'muonHistManager.muonSource = selectedPatMuonsTrkIPcumulative',
-            'tauHistManager.tauSource = selectedPatTausForMuTauElectronVetoCumulative',
-            'diTauCandidateHistManagerForMuTau.diTauCandidateSource = selectedMuTauPairsPzetaDiffCumulative',
-            'muPairHistManagerByLooseIsolation.diTauCandidateSource = selectedDiMuPairZmumuHypothesesByLooseIsolation',
-            'muPairHistManagerByMass.diTauCandidateSource = allDiMuPairZmumuHypothesesByMass'
-        )
-    ),
-    cms.PSet(
-        filter = cms.string('evtSelDiMuPairZmumuHypothesisVetoByMass'),
-        title = cms.string('not 80 < M(Muon-Muon) < 100 GeV'),
-        saveRunLumiSectionEventNumbers = cms.vstring('passed_cumulative')
-    ),
-    cms.PSet(
-        analyzers = cms.vstring(
             'genPhaseSpaceEventInfoHistManager',
             'eventWeightHistManager',
             'muonHistManager',
@@ -1049,7 +1016,7 @@ muTauAnalysisSequence = cms.VPSet(
             'diTauCandidateSVfitHistManagerForMuTau',
             'diTauCandidateEventActivityHistManagerForMuTau',
             'diTauCandidateZmumuHypothesisHistManagerForMuTau',
-            'muPairHistManagerByMass',
+            'muPairHistManagerByLooseIsolation',
             'jetHistManager',
             'caloMEtHistManager',
             'pfMEtHistManager',
@@ -1068,7 +1035,7 @@ muTauAnalysisSequence = cms.VPSet(
             'diTauCandidateSVfitHistManagerForMuTau.diTauCandidateSource = selectedMuTauPairsPzetaDiffCumulative',
             'diTauCandidateEventActivityHistManagerForMuTau.diTauCandidateSource = selectedMuTauPairsPzetaDiffCumulative',
             'diTauCandidateZmumuHypothesisHistManagerForMuTau.ZllHypothesisSource = muTauPairZmumuHypotheses',
-            'muPairHistManagerByMass.diTauCandidateSource = selectedDiMuPairZmumuHypothesesByMass'
+            'muPairHistManagerByLooseIsolation.diTauCandidateSource = selectedDiMuPairZmumuHypothesesByLooseIsolation'
         )
     )
 )

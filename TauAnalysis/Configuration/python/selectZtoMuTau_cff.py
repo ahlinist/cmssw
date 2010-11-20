@@ -254,13 +254,6 @@ cfgDiMuPairZmumuHypothesisVetoByLooseIsolation = cms.PSet(
     #systematics = cms.vstring(muonSystematics.keys()),
     maxNumber = cms.uint32(0)
 )
-cfgDiMuPairZmumuHypothesisVetoByMass = cms.PSet(
-    pluginName = cms.string('diMuPairZmumuHypothesisVetoByMass'),
-    pluginType = cms.string('PATCandViewMaxEventSelector'),
-    src = cms.InputTag('selectedDiMuPairZmumuHypothesesByMass'),
-    #systematics = cms.vstring(muonSystematics.keys()),
-    maxNumber = cms.uint32(0)
-)
 
 zToMuTauEventSelConfigurator = eventSelFlagProdConfigurator(
     [ cfgGenPhaseSpaceCut,
@@ -292,8 +285,7 @@ zToMuTauEventSelConfigurator = eventSelFlagProdConfigurator(
       cfgDiTauCandidateForMuTauAcoplanarity12Cut,
       cfgDiTauCandidateForMuTauMt1METcut,
       cfgDiTauCandidateForMuTauPzetaDiffCut,
-      cfgDiMuPairZmumuHypothesisVetoByLooseIsolation,
-      cfgDiMuPairZmumuHypothesisVetoByMass ],
+      cfgDiMuPairZmumuHypothesisVetoByLooseIsolation ],
     boolEventSelFlagProducer = "BoolEventSelFlagProducer",
     pyModuleName = __name__
 )
@@ -309,8 +301,7 @@ isRecZtoMuTau = cms.EDProducer("BoolEventSelFlagProducer",
         cms.InputTag('muonTrkIPcut', 'cumulative'),
         cms.InputTag('tauElectronVeto', 'cumulative'),
         cms.InputTag('diTauCandidateForMuTauPzetaDiffCut', 'cumulative'),
-        cms.InputTag('diMuPairZmumuHypothesisVetoByLooseIsolation'),
-        cms.InputTag('diMuPairZmumuHypothesisVetoByMass')
+        cms.InputTag('diMuPairZmumuHypothesisVetoByLooseIsolation')
     )
 )
 
