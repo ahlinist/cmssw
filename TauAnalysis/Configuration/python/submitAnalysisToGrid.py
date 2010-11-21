@@ -50,6 +50,7 @@ def submitAnalysisToGrid(configFile = None, channel = None, samples = None,
                          cfgdir='crab', inputFileMap=None,
                          outputFileMap=None,
                          enableEventDumps=False,
+                         processName = None,
                          saveFinalEvents=False):
     """
     Submit analysis job (event selection, filling of histogram)
@@ -93,6 +94,9 @@ def submitAnalysisToGrid(configFile = None, channel = None, samples = None,
             'id' : jobId
         }
         jobOptions = copy.copy(_JOB_OPTIONS_DEFAULTS)
+
+        # Change the process name if desired.  Used for local running
+        jobOptions.append(('processName', processName))
 
         # Check if we want to disable the duplicate check mode for events.
         # This is needed for the embedded Ztautau sample.

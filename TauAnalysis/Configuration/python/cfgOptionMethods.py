@@ -10,10 +10,7 @@ import TauAnalysis.Configuration.tools.switchToData as switchToData
 
 import PhysicsTools.PatAlgos.tools.helpers as patutils
 
-from TauAnalysis.Skimming.EventContent_cff import tauAnalysisEventContent
-from TauAnalysis.Configuration.patTupleEventContent_cff import patTupleEventContent
-_allEventContent = copy.deepcopy(tauAnalysisEventContent)
-_allEventContent.outputCommands.extend(patTupleEventContent.outputCommands)
+from Configuration.EventContent.EventContent_cff import RECOSIMEventContent
 
 def _requires(args=[], inputs=[]):
     def decorator(func):
@@ -221,7 +218,7 @@ def _saveFinalEvents(process, save, **kwargs):
         print "--> Saving final selected events in a EDM file"
         output_module = cms.OutputModule(
             "PoolOutputModule",
-            _allEventContent,
+            RECOSIMEventContent,
             SelectEvents = cms.untracked.PSet(
                 SelectEvents = cms.vstring('p')
             ),
@@ -245,6 +242,11 @@ def _disableDuplicateEvents(process, disable, **kwargs):
         process.source.duplicateCheckMode = cms.untracked.string(
             'noDuplicateCheck')
 
+def _changeProcessName(process, name, **kwargs):
+    if name is not None:
+        print "--> Changing process name to", name
+        process._Process__name = name
+
 # Map the above methods to user-friendly names
 _METHOD_MAP = {
     'globalTag' : _setGlobalTag,
@@ -264,6 +266,7 @@ _METHOD_MAP = {
     'outputFile' : _setOutputFile,
     'saveFinalEvents' : _saveFinalEvents,
     'disableDuplicateCheck' : _disableDuplicateEvents,
+    'processName' : _changeProcessName,
 }
 
 def applyProcessOptions(process, jobInfo, options):
