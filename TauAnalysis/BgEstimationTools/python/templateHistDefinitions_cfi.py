@@ -50,31 +50,64 @@ prodTemplateHist = cms.EDAnalyzer("TemplateHistProducer",
 # in background enriched sample/event sample passing final selection criteria of the analysis
 # --------------------------------------------------------------------------------
 
+plotBgEstData = cms.PSet(
+    dqmMonitorElements = cms.vstring(''),
+    process = cms.string('bgEstData'),
+    drawOptionEntry = cms.string('bgEstData'),
+    legendEntry = cms.string('Bg. enriched Data')
+)
+plotBgEstMC_pure = cms.PSet(
+    dqmMonitorElements = cms.vstring(''),
+    process = cms.string('bgEstMC_pure'),
+    drawOptionEntry = cms.string('bgEstMC_pure'),
+    legendEntry = cms.string('pure Bg. MC')
+)
+plotBgEstMC_smSum = cms.PSet(
+    dqmMonitorElements = cms.vstring(''),
+    process = cms.string('bgEstMC_smSum'),
+    drawOptionEntry = cms.string('bgEstMC_smSum'),
+    legendEntry = cms.string('Bg. enriched MC')
+)
+plotAnalysisMC_pure = cms.PSet(
+    dqmMonitorElements = cms.vstring(''),
+    process = cms.string('analysis'),
+    drawOptionEntry = cms.string('analysis'),
+    legendEntry = cms.string('Z #rightarrow #mu + #tau-jet Analysis')
+)
+
 drawJobTemplateHist = cms.PSet(
     plots = cms.VPSet(
-        cms.PSet(
-            dqmMonitorElements = cms.vstring(''),
-            process = cms.string('bgEstData'),
-            drawOptionEntry = cms.string('bgEstData'),
-            legendEntry = cms.string('Bg. enriched Data')
-        ),
-        cms.PSet(
-            dqmMonitorElements = cms.vstring(''),
-            process = cms.string('bgEstPure'),
-            drawOptionEntry = cms.string('bgEstPure'),
-            legendEntry = cms.string('pure Bg.')
-        ),
-        cms.PSet(
-            dqmMonitorElements = cms.vstring(''),
-            process = cms.string('finalEvtSel'),
-            drawOptionEntry = cms.string('finalEvtSel'),
-            legendEntry = cms.string('final Evt. Sel.')
-        )
+        plotBgEstMC_smSum,
+        plotBgEstMC_pure,
+        plotBgEstData
     ),
     norm = cms.double(1.),
-    title = cms.string('M_{vis} (Muon + Tau)'),
-    xAxis = cms.string('M'),
+    title = cms.string(''),
+    xAxis = cms.string('Mass'),
     yAxis = cms.string('numEntries_linear'),
     legend = cms.string('regular')
 )
 
+drawJobAnalysisHistData = cms.PSet(
+    plots = cms.VPSet(
+        plotBgEstData,
+        plotAnalysisMC_pure
+    ),
+    norm = cms.double(1.),
+    title = cms.string(''),
+    xAxis = cms.string('Mass'),
+    yAxis = cms.string('numEntries_linear'),
+    legend = cms.string('regular')
+)
+
+drawJobAnalysisHistMC = cms.PSet(
+    plots = cms.VPSet(
+        plotBgEstMC_smSum,
+        plotAnalysisMC_pure
+    ),
+    norm = cms.double(1.),
+    title = cms.string(''),
+    xAxis = cms.string('Mass'),
+    yAxis = cms.string('numEntries_linear'),
+    legend = cms.string('regular')
+)
