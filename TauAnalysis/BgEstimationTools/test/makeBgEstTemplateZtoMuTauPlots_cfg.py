@@ -105,44 +105,40 @@ jobsHistNormalization = []
 
 for processName, dqmDirectoryProcess in dqmDirectoriesProcess.items():
     for bgEnrichedSelectionName, dqmDirectoryBgEnrichedSelection in dqmDirectoriesBgEnrichedSelections.items():
-        jobTemplateHistNormalization_visMass = cms.PSet(
+        jobsHistNormalization.append(cms.PSet(
             meName_input = cms.string(
                 '/template/harvested/' + dqmDirectoryProcess + '/' + dqmDirectoryBgEnrichedSelection + meName_visMass
             ),
             meName_output = cms.string(
                 '/template/harvested/' + dqmDirectoryProcess + '/' + dqmDirectoryBgEnrichedSelection + meName_visMass_norm
             )
-        )
-        jobsHistNormalization.append(jobTemplateHistNormalization_visMass)
-        jobTemplateHistNormalization_SVfitMass = cms.PSet(
+        ))
+        jobsHistNormalization.append(cms.PSet(
             meName_input = cms.string(
                 '/template/harvested/' + dqmDirectoryProcess + '/' + dqmDirectoryBgEnrichedSelection + meName_SVfitMass
             ),
             meName_output = cms.string(
                 '/template/harvested/' + dqmDirectoryProcess + '/' + dqmDirectoryBgEnrichedSelection + meName_SVfitMass_norm
             )
-        )
-        jobsHistNormalization.append(jobTemplateHistNormalization_SVfitMass)
+        ))
 
-    jobAnalysisHistNormalization_visMass = cms.PSet(
+    jobsHistNormalization.append(cms.PSet(
         meName_input = cms.string(
             '/analysis/harvested/' + dqmDirectoryProcess + '/' + dqmDirectoryAnalysis + meName_visMass
         ),
         meName_output = cms.string(
-            '/analysis/harvested/' + dqmDirectoryProcess + '/' + dqmDirectoryBgEnrichedSelection + meName_visMass_norm
+            '/analysis/harvested/' + dqmDirectoryProcess + '/' + dqmDirectoryAnalysis + meName_visMass_norm
         )
-    )
-    jobsHistNormalization.append(jobAnalysisHistNormalization_visMass)
-    jobAnalysisHistNormalization_SVfitMass = cms.PSet(
+    ))
+    jobsHistNormalization.append(cms.PSet(
         meName_input = cms.string(
             '/analysis/harvested/' + dqmDirectoryProcess + '/' + dqmDirectoryAnalysis + meName_SVfitMass
         ),
         meName_output = cms.string(
-            '/analysis/harvested/' + dqmDirectoryProcess + '/' + dqmDirectoryBgEnrichedSelection + meName_SVfitMass_norm
+            '/analysis/harvested/' + dqmDirectoryProcess + '/' + dqmDirectoryAnalysis + meName_SVfitMass_norm
         )
-    )
-    jobsHistNormalization.append(jobAnalysisHistNormalization_SVfitMass)
-
+    ))
+    
 process.normalizeHistZtoMuTau = cms.EDAnalyzer("DQMHistNormalizer",
     config = cms.VPSet(jobsHistNormalization),
     norm = cms.double(1.)
