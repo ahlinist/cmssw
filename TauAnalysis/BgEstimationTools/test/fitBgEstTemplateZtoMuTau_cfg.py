@@ -136,7 +136,7 @@ for processName, dqmDirectoryProcess in dqmDirectoriesProcess.items():
             '/analysis/harvested/' + dqmDirectoryProcess + '/' + dqmDirectoryAnalysis + meName_visMass
         ),
         meName_output = cms.string(
-            '/analysis/harvested/' + dqmDirectoryProcess + '/' + dqmDirectoryBgEnrichedSelection + meName_visMass_norm
+            '/analysis/harvested/' + dqmDirectoryProcess + '/' + dqmDirectoryAnalysis + meName_visMass_norm
         )
     ))
     jobsHistNormalization.append(cms.PSet(                                 
@@ -144,7 +144,7 @@ for processName, dqmDirectoryProcess in dqmDirectoriesProcess.items():
             '/analysis/harvested/' + dqmDirectoryProcess + '/' + dqmDirectoryAnalysis + meName_SVfitMass
         ),
         meName_output = cms.string(
-            '/analysis/harvested/' + dqmDirectoryProcess + '/' + dqmDirectoryBgEnrichedSelection + meName_SVfitMass_norm
+            '/analysis/harvested/' + dqmDirectoryProcess + '/' + dqmDirectoryAnalysis + meName_SVfitMass_norm
         )
     ))
 
