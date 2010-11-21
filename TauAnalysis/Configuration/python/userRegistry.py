@@ -5,12 +5,12 @@ import os
 userSettings = {
     'friis' : {
         'AHtoMuTau' : {
-            'analysisFilePath' : '/user/f/friis/AHtoMuTauNov20/',
+            'analysisFilePath' : '/user/f/friis/AHtoMuTauNov21/',
             'harvestingFilePath' : "/data1/friis/",
             'tmpFilePath' : "/tmp/friis/",
-            'jobId' : 'Run23',
+            'jobId' : 'Run24',
             # Directory containing selected events
-            'pickevents' : '/data1/friis/Run17/get_events',
+            'pickevents' : '/data1/friis/Run24/',
         },
         'global' : {
             'drawOptions' : {
