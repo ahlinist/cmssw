@@ -113,7 +113,7 @@ def writeMakefileCommands(mergeTree, outputFile, makefile):
             target_line = '%s: %s\n' % (
                 output_file, ' '.join(input_files_no_castor))
             makefile.write(target_line)
-            run_line = '\t${HARVEST} %s %s\n' % (
+            run_line = '\tnice ${HARVEST} %s %s\n' % (
                  output_file, ' '.join(input_files))
             makefile.write(run_line)
             if input_files_no_castor:
@@ -362,7 +362,7 @@ def buildMakefile(merge_jobs, working_dir, makefilename,
                                   "plots_all.root")
         makefile.write(
             final_file + ": " + " ".join(final_files_to_merge) + "\n")
-        makefile.write("\t${HARVEST} %s %s\n\n" %
+        makefile.write("\tnice ${HARVEST} %s %s\n\n" %
                        (final_file, " ".join(final_files_to_merge)))
 
         # Make our analysis target
