@@ -16,11 +16,14 @@ rejectEvtJetID_(pset.getParameter<bool> ("rejectEvtJetID")){
     defineVariable("NumberOfJets");
     for (size_t i = 0; i < minPt_.size(); ++i) {
         std::ostringstream strPt;
-        strPt << "Jet" << i << "Pt";
+        strPt << "Jet" << i+1 << "Pt";
         defineVariable(strPt.str());
         std::ostringstream strEta;
-        strEta << "Jet" << i << "Eta";
+        strEta << "Jet" << i+1 << "Eta";
         defineVariable(strEta.str());
+        std::ostringstream strPhi;
+        strPhi << "Jet" << i+1 << "Phi";
+        defineVariable(strPhi.str());
     }
 
     edm::LogInfo("JetEventSelector") << "constructed with \n" << "  jetTag    = " << jetTag_ << "\n" << "  min #jets = "
@@ -79,8 +82,9 @@ bool JetEventSelector::select(const edm::Event& event) const {
         }
 
         if (loose && numPassed < minPt_.size()) {
-            setVariable(2* numPassed + 1, (*jetHandle)[i].pt());
-            setVariable(2* numPassed + 2, (*jetHandle)[i].eta());
+            setVariable(3* numPassed + 1, (*jetHandle)[i].pt());
+            setVariable(3* numPassed + 2, (*jetHandle)[i].eta());
+            setVariable(3* numPassed + 3, (*jetHandle)[i].phi());
         }
 
         if ((*jetHandle)[i].pt() > minPt_[numPassed] && fabs((*jetHandle)[i].eta()) < maxEta_[numPassed]){
