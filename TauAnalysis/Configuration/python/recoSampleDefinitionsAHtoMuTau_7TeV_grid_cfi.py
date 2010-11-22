@@ -101,12 +101,12 @@ AHtoMuTauSpecific_RECO_SAMPLES = {
              174296.*_femtobarns*0.120567 # (gg -> h0)*(h0->tautau)
            + 191745.*_femtobarns*0.119765 # (gg -> A0)*(A0->tautau)
         ),
-        # Feynhiggs v2.7.1 input to calculate xsec*br -  mhmax, 7TeV
         'legendEntry' : 'ggA(90) #rightarrow #tau^{+} #tau^{-}',
         'type' : 'bsmMC',
         'drawOption' : styles.drawOption_darkBlue_separate,
-        'enableSysUncertainties' : True,
-        'applyZrecoilCorrection' : True
+        'applyZrecoilCorrection' : True,
+        'applyMuonTriggerEfficiencyCorrection' : True,
+        'enableSysUncertainties' : True
     },
     'bbA90' : {
         # Not skimmed
@@ -119,12 +119,12 @@ AHtoMuTauSpecific_RECO_SAMPLES = {
              319247.*_femtobarns*0.120567 # (bb -> h0)*(h0->tautau)
            + 320295.*_femtobarns*0.119765 # (bb -> A0)*(A0->tautau)
         ),
-        # Feynhiggs v2.7.1 input to calculate xsec*br -  mhmax, 7TeV
         'legendEntry' : 'bbA(90) #rightarrow #tau^{+} #tau^{-}',
         'type' : 'bsmMC',
         'drawOption' : styles.drawOption_darkBlue_separate,
-        'enableSysUncertainties' : True,
-        'applyZrecoilCorrection' : True
+        'applyZrecoilCorrection' : True,
+        'applyMuonTriggerEfficiencyCorrection' : True,
+        'enableSysUncertainties' : True
     },
     'A100' : {
         # Not skimmed
@@ -137,12 +137,12 @@ AHtoMuTauSpecific_RECO_SAMPLES = {
              102490.*_femtobarns*0.122705 # (gg -> h0)*(h0->tautau)
            + 113695.*_femtobarns*0.121864 # (gg -> A0)*(A0->tautau)
         ),
-        # Feynhiggs v2.7.1 input to calculate xsec*br -  mhmax, 7TeV
         'legendEntry' : 'ggA(100) #rightarrow #tau^{+} #tau^{-}',
         'type' : 'bsmMC',
         'drawOption' : styles.drawOption_darkBlue_separate,
-        'enableSysUncertainties' : True,
-        'applyZrecoilCorrection' : True
+        'applyZrecoilCorrection' : True,
+        'applyMuonTriggerEfficiencyCorrection' : True,
+        'enableSysUncertainties' : True
     },
     'bbA100' : {
         # Not skimmed
@@ -155,12 +155,12 @@ AHtoMuTauSpecific_RECO_SAMPLES = {
              234065.*_femtobarns*0.122705 # (bb -> h0)*(h0->tautau)
            + 235007.*_femtobarns*0.121864 # (bb -> A0)*(A0->tautau)
         ),
-        # Feynhiggs v2.7.1 input to calculate xsec*br -  mhmax, 7TeV
         'legendEntry' : 'bbA(100) #rightarrow #tau^{+} #tau^{-}',
         'type' : 'bsmMC',
         'drawOption' : styles.drawOption_darkBlue_separate,
-        'enableSysUncertainties' : True,
-        'applyZrecoilCorrection' : True
+        'applyZrecoilCorrection' : True,
+        'applyMuonTriggerEfficiencyCorrection' : True,
+        'enableSysUncertainties' : True
     },
     'A120' : {
         # Not skimmed
@@ -174,12 +174,12 @@ AHtoMuTauSpecific_RECO_SAMPLES = {
            +  48111.*_femtobarns*0.125494 # (gg -> A0)*(A0->tautau)
            +  20248.*_femtobarns*0.128313 # (gg -> H0)*(H0->tautau)
         ),
-        # Feynhiggs v2.7.1 input to calculate xsec*br -  mhmax, 7TeV
         'legendEntry' : 'ggA(120) #rightarrow #tau^{+} #tau^{-}',
         'type' : 'bsmMC',
         'drawOption' : styles.drawOption_darkBlue_separate,
-        'enableSysUncertainties' : True,
-        'applyZrecoilCorrection' : True
+        'applyZrecoilCorrection' : True,
+        'applyMuonTriggerEfficiencyCorrection' : True,
+        'enableSysUncertainties' : True
     },
     'bbA120' : {
         # Not skimmed
@@ -193,12 +193,12 @@ AHtoMuTauSpecific_RECO_SAMPLES = {
            + 133125.*_femtobarns*0.125494 # (bb -> A0)*(A0->tautau)
            +   5801.*_femtobarns*0.129316 # (bb -> H0)*(H0->tautau)
         ),
-        # Feynhiggs v2.7.1 input to calculate xsec*br -  mhmax, 7TeV
         'legendEntry' : 'bbA(120) #rightarrow #tau^{+} #tau^{-}',
         'type' : 'bsmMC',
         'drawOption' : styles.drawOption_darkBlue_separate,
-        'enableSysUncertainties' : True,
-        'applyZrecoilCorrection' : True
+        'applyZrecoilCorrection' : True,
+        'applyMuonTriggerEfficiencyCorrection' : True,
+        'enableSysUncertainties' : True
     },
     'A130' : {
         # Not skimmed
@@ -212,12 +212,12 @@ AHtoMuTauSpecific_RECO_SAMPLES = {
            +  32421.*_femtobarns*0.127088 # (gg -> A0)*(A0->tautau)
            +  33870.*_femtobarns*0.128313 # (gg -> H0)*(H0->tautau)
         ),
-        # Feynhiggs v2.7.1 input to calculate xsec*br -  mhmax, 7TeV
         'legendEntry' : 'ggA(130) #rightarrow #tau^{+} #tau^{-}',
         'type' : 'bsmMC',
         'drawOption' : styles.drawOption_lightBlue_separate,
-        'enableSysUncertainties' : True,
-        'applyZrecoilCorrection' : True
+        'applyZrecoilCorrection' : True,
+        'applyMuonTriggerEfficiencyCorrection' : True,
+        'enableSysUncertainties' : True
     },
     'bbA130' : {
         # Not skimmed
@@ -231,12 +231,12 @@ AHtoMuTauSpecific_RECO_SAMPLES = {
            + 102366.*_femtobarns*0.127088 # (bb -> A0)*(A0->tautau)
            +  65807.*_femtobarns*0.128313 # (bb -> H0)*(H0->tautau)
         ),
-        # Feynhiggs v2.7.1 input to calculate xsec*br -  mhmax, 7TeV
         'legendEntry' : 'bbA(130) #rightarrow #tau^{+} #tau^{-}',
         'type' : 'bsmMC',
         'drawOption' : styles.drawOption_darkBlue_separate,
-        'enableSysUncertainties' : True,
-        'applyZrecoilCorrection' : True
+        'applyZrecoilCorrection' : True,
+        'applyMuonTriggerEfficiencyCorrection' : True,
+        'enableSysUncertainties' : True
     },
     'A140' : {
         # Not skimmed
@@ -250,12 +250,12 @@ AHtoMuTauSpecific_RECO_SAMPLES = {
            +  22263.*_femtobarns*0.128566 # (gg -> A0)*(A0->tautau)
            +  24328.*_femtobarns*0.129151 # (gg -> H0)*(H0->tautau)
         ),
-        # Feynhiggs v2.7.1 input to calculate xsec*br -  mhmax, 7TeV
         'legendEntry' : 'ggA(140) #rightarrow #tau^{+} #tau^{-}',
         'type' : 'bsmMC',
         'drawOption' : styles.drawOption_darkBlue_separate,
-        'enableSysUncertainties' : True,
-        'applyZrecoilCorrection' : True
+        'applyZrecoilCorrection' : True,
+        'applyMuonTriggerEfficiencyCorrection' : True,
+        'enableSysUncertainties' : True
     },
     'bbA140' : {
         # Not skimmed
@@ -269,12 +269,12 @@ AHtoMuTauSpecific_RECO_SAMPLES = {
            +  79702.*_femtobarns*0.128566 # (bb -> A0)*(A0->tautau)
            +  75246.*_femtobarns*0.129151 # (bb -> H0)*(H0->tautau)
         ),
-        # Feynhiggs v2.7.1 input to calculate xsec*br -  mhmax, 7TeV
         'legendEntry' : 'bbA(140) #rightarrow #tau^{+} #tau^{-}',
         'type' : 'bsmMC',
         'drawOption' : styles.drawOption_darkBlue_separate,
-        'enableSysUncertainties' : True,
-        'applyZrecoilCorrection' : True
+        'applyZrecoilCorrection' : True,
+        'applyMuonTriggerEfficiencyCorrection' : True,
+        'enableSysUncertainties' : True
     },
     'A160' : {
         # Not skimmed
@@ -287,12 +287,12 @@ AHtoMuTauSpecific_RECO_SAMPLES = {
               11094.*_femtobarns*0.131234 # (gg -> A0)*(A0->tautau)
            +  11977.*_femtobarns*0.131575 # (gg -> H0)*(H0->tautau)
         ),
-        # Feynhiggs v2.7.1 input to calculate xsec*br -  mhmax, 7TeV
         'legendEntry' : 'ggA(160) #rightarrow #tau^{+} #tau^{-}',
         'type' : 'bsmMC',
         'drawOption' : styles.drawOption_darkBlue_separate,
-        'enableSysUncertainties' : True,
-        'applyZrecoilCorrection' : True
+        'applyZrecoilCorrection' : True,
+        'applyMuonTriggerEfficiencyCorrection' : True,
+        'enableSysUncertainties' : True
     },
     'bbA160' : {
         # Not skimmed
@@ -305,12 +305,12 @@ AHtoMuTauSpecific_RECO_SAMPLES = {
                1118.*_femtobarns*0.131234 # (bb -> A0)*(A0->tautau)
            +  50997.*_femtobarns*0.131575 # (bb -> H0)*(H0->tautau)
         ),
-        # Feynhiggs v2.7.1 input to calculate xsec*br -  mhmax, 7TeV
         'legendEntry' : 'bbA(160) #rightarrow #tau^{+} #tau^{-}',
         'type' : 'bsmMC',
         'drawOption' : styles.drawOption_darkBlue_separate,
-        'enableSysUncertainties' : True,
-        'applyZrecoilCorrection' : True
+        'applyZrecoilCorrection' : True,
+        'applyMuonTriggerEfficiencyCorrection' : True,
+        'enableSysUncertainties' : True
     },
     'A180' : {
         # Not skimmed
@@ -323,12 +323,12 @@ AHtoMuTauSpecific_RECO_SAMPLES = {
                5907.*_femtobarns*0.133061 # (gg -> A0)*(A0->tautau)
            +   6388.*_femtobarns*0.133826 # (gg -> H0)*(H0->tautau)
         ),
-        # Feynhiggs v2.7.1 input to calculate xsec*br -  mhmax, 7TeV
         'legendEntry' : 'ggA(180) #rightarrow #tau^{+} #tau^{-}',
         'type' : 'bsmMC',
         'drawOption' : styles.drawOption_violett_separate,
-        'enableSysUncertainties' : True,
-        'applyZrecoilCorrection' : True
+        'applyZrecoilCorrection' : True,
+        'applyMuonTriggerEfficiencyCorrection' : True,
+        'enableSysUncertainties' : True
     },
     'bbA180' : {
         # Not skimmed
@@ -341,12 +341,12 @@ AHtoMuTauSpecific_RECO_SAMPLES = {
               32261.*_femtobarns*0.133061 # (bb -> A0)*(A0->tautau)
            +  32063.*_femtobarns*0.133826 # (bb -> H0)*(H0->tautau)
         ),
-        # Feynhiggs v2.7.1 input to calculate xsec*br -  mhmax, 7TeV
         'legendEntry' : 'bbA(180) #rightarrow #tau^{+} #tau^{-}',
         'type' : 'bsmMC',
         'drawOption' : styles.drawOption_darkBlue_separate,
-        'enableSysUncertainties' : True,
-        'applyZrecoilCorrection' : True
+        'applyZrecoilCorrection' : True,
+        'applyMuonTriggerEfficiencyCorrection' : True,
+        'enableSysUncertainties' : True
     },
     'A200' : {
         # Not skimmed
@@ -359,12 +359,12 @@ AHtoMuTauSpecific_RECO_SAMPLES = {
                3318.*_femtobarns*0.134295 # (gg -> A0)*(A0->tautau)
            +   3665.*_femtobarns*0.135591 # (gg -> H0)*(H0->tautau)
         ),
-        # Feynhiggs v2.7.1 input to calculate xsec*br -  mhmax, 7TeV
         'legendEntry' : 'ggA(200) #rightarrow #tau^{+} #tau^{-}',
         'type' : 'bsmMC',
         'drawOption' : styles.drawOption_darkBlue_separate,
-        'enableSysUncertainties' : True,
-        'applyZrecoilCorrection' : True
+        'applyZrecoilCorrection' : True,
+        'applyMuonTriggerEfficiencyCorrection' : True,
+        'enableSysUncertainties' : True
     },
     'bbA200' : {
         # Not skimmed
@@ -377,12 +377,12 @@ AHtoMuTauSpecific_RECO_SAMPLES = {
               21202.*_femtobarns*0.134295 # (bb -> A0)*(A0->tautau)
            +  21128.*_femtobarns*0.135591 # (bb -> H0)*(H0->tautau)
         ),
-        # Feynhiggs v2.7.1 input to calculate xsec*br -  mhmax, 7TeV
         'legendEntry' : 'bbA(200) #rightarrow #tau^{+} #tau^{-}',
         'type' : 'bsmMC',
         'drawOption' : styles.drawOption_darkBlue_separate,
-        'enableSysUncertainties' : True,
-        'applyZrecoilCorrection' : True
+        'applyZrecoilCorrection' : True,
+        'applyMuonTriggerEfficiencyCorrection' : True,
+        'enableSysUncertainties' : True
     },
     'A250' : {
         # Not skimmed
@@ -395,12 +395,12 @@ AHtoMuTauSpecific_RECO_SAMPLES = {
                 923.*_femtobarns*0.135441 # (gg -> A0)*(A0->tautau)
            +   1101.*_femtobarns*0.139024 # (gg -> H0)*(H0->tautau)
         ),
-        # Feynhiggs v2.7.1 input to calculate xsec*br -  mhmax, 7TeV
         'legendEntry' : 'ggA(250) #rightarrow #tau^{+} #tau^{-}',
         'type' : 'bsmMC',
         'drawOption' : styles.drawOption_darkBlue_separate,
-        'enableSysUncertainties' : True,
-        'applyZrecoilCorrection' : True
+        'applyZrecoilCorrection' : True,
+        'applyMuonTriggerEfficiencyCorrection' : True,
+        'enableSysUncertainties' : True
     },
     'bbA250' : {
         # Not skimmed
@@ -413,12 +413,12 @@ AHtoMuTauSpecific_RECO_SAMPLES = {
                8432.*_femtobarns*0.135441 # (bb -> A0)*(A0->tautau)
            +   8414.*_femtobarns*0.139024 # (bb -> H0)*(H0->tautau)
         ),
-        # Feynhiggs v2.7.1 input to calculate xsec*br -  mhmax, 7TeV
         'legendEntry' : 'bbA(250) #rightarrow #tau^{+} #tau^{-}',
         'type' : 'bsmMC',
         'drawOption' : styles.drawOption_darkBlue_separate,
-        'enableSysUncertainties' : True,
-        'applyZrecoilCorrection' : True
+        'applyZrecoilCorrection' : True,
+        'applyMuonTriggerEfficiencyCorrection' : True,
+        'enableSysUncertainties' : True
     },
     'A300' : {
         # Not skimmed
@@ -431,12 +431,12 @@ AHtoMuTauSpecific_RECO_SAMPLES = {
                 286.*_femtobarns*0.131076 # (gg -> A0)*(A0->tautau)
            +    387.*_femtobarns*0.139620 # (gg -> H0)*(H0->tautau)
         ),
-        # Feynhiggs v2.7.1 input to calculate xsec*br -  mhmax, 7TeV
         'legendEntry' : 'ggA(300) #rightarrow #tau^{+} #tau^{-}',
         'type' : 'bsmMC',
         'drawOption' : styles.drawOption_darkBlue_separate,
-        'enableSysUncertainties' : True,
-        'applyZrecoilCorrection' : True
+        'applyZrecoilCorrection' : True,
+        'applyMuonTriggerEfficiencyCorrection' : True,
+        'enableSysUncertainties' : True
     },
     'bbA300' : {
         # Not skimmed
@@ -449,12 +449,12 @@ AHtoMuTauSpecific_RECO_SAMPLES = {
                3752.*_femtobarns*0.131076 # (bb -> A0)*(A0->tautau)
            +   3736.*_femtobarns*0.139620 # (bb -> H0)*(H0->tautau)
         ),
-        # Feynhiggs v2.7.1 input to calculate xsec*br -  mhmax, 7TeV
         'legendEntry' : 'bbA(300) #rightarrow #tau^{+} #tau^{-}',
         'type' : 'bsmMC',
         'drawOption' : styles.drawOption_darkBlue_separate,
-        'enableSysUncertainties' : True,
-        'applyZrecoilCorrection' : True
+        'applyZrecoilCorrection' : True,
+        'applyMuonTriggerEfficiencyCorrection' : True,
+        'enableSysUncertainties' : True
     },
     'A350' : {
         # Not skimmed
@@ -467,12 +467,12 @@ AHtoMuTauSpecific_RECO_SAMPLES = {
                  84.*_femtobarns*0.117009 # (gg -> A0)*(A0->tautau)
            +    121.*_femtobarns*0.133089 # (gg -> H0)*(H0->tautau)
         ),
-        # Feynhiggs v2.7.1 input to calculate xsec*br -  mhmax, 7TeV
         'legendEntry' : 'ggA(350) #rightarrow #tau^{+} #tau^{-}',
         'type' : 'bsmMC',
         'drawOption' : styles.drawOption_darkBlue_separate,
-        'enableSysUncertainties' : True,
-        'applyZrecoilCorrection' : True
+        'applyZrecoilCorrection' : True,
+        'applyMuonTriggerEfficiencyCorrection' : True,
+        'enableSysUncertainties' : True
     },
     'bbA350' : {
         # Not skimmed
@@ -485,12 +485,12 @@ AHtoMuTauSpecific_RECO_SAMPLES = {
                1830.*_femtobarns*0.117009 # (bb -> A0)*(A0->tautau)
            +   1829.*_femtobarns*0.133089 # (bb -> H0)*(H0->tautau)
         ),
-        # Feynhiggs v2.7.1 input to calculate xsec*br -  mhmax, 7TeV
         'legendEntry' : 'bbA(350) #rightarrow #tau^{+} #tau^{-}',
         'type' : 'bsmMC',
         'drawOption' : styles.drawOption_darkBlue_separate,
-        'enableSysUncertainties' : True,
-        'applyZrecoilCorrection' : True
+        'applyZrecoilCorrection' : True,
+        'applyMuonTriggerEfficiencyCorrection' : True,
+        'enableSysUncertainties' : True
     }
 }
 RECO_SAMPLES.update(AHtoMuTauSpecific_RECO_SAMPLES)

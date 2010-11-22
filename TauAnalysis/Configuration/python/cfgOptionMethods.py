@@ -108,9 +108,25 @@ def _setEnableFactorization(process, enable, **kwargs):
 def _setApplyZrecoilCorrection(process, enable, **kwargs):
     channel = kwargs['channel']
     if enable:
-        print "Applying Z-recoil corrections to MEt"
+        print "Applying Z-recoil correction to MEt"
         enabler = getattr(mcToDataCorrectionTools, "applyZrecoilCorrection_run%s" % channel)
         enabler(process)
+
+@_requires(args=['channel'])
+def _setApplyMuonTriggerEfficiencyCorrection(process, enable, **kwargs):
+    channel = kwargs['channel']
+    if enable:
+        print "Applying Muon Trigger efficiency correction"
+        enabler = getattr(mcToDataCorrectionTools, "applyMuonTriggerEfficiencyCorrection_run%s" % channel)
+        enabler(process)
+
+@_requires(args=['channel'])
+def _setApplyVertexMultiplicityReweighting(process, enable, **kwargs):
+    channel = kwargs['channel']
+    if enable:
+        print "Applying Vertex multiplicity reweighting"
+        enabler = getattr(mcToDataCorrectionTools, "applyVertexMultiplicityReweighting_run%s" % channel)
+        enabler(process)        
 
 @_requires(args=['channel'])
 def _setEnableSystematics(process, enable, **kwargs):
@@ -257,6 +273,8 @@ _METHOD_MAP = {
     'eventDump' : _setEventDump,
     'enableFactorization' : _setEnableFactorization,
     'applyZrecoilCorrection' : _setApplyZrecoilCorrection,
+    'applyMuonTriggerEfficiencyCorrection' : _setApplyMuonTriggerEfficiencyCorrection,
+    'applyVertexMultiplicityReweighting' : _setApplyVertexMultiplicityReweighting,
     'enableSysUncertainties' : _setEnableSystematics,
     'inputFileType' : _setInputFileType,
     'type' : _setIsData,

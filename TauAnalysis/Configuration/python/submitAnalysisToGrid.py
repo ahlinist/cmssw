@@ -144,6 +144,14 @@ def submitAnalysisToGrid(configFile = None, channel = None, samples = None,
         jobOptions.append(('applyZrecoilCorrection',
                            sample_info['applyZrecoilCorrection']))
 
+        # Apply muon trigger efficiency correction if requested
+        jobOptions.append(('applyMuonTriggerEfficiencyCorrection',
+                           sample_info['applyMuonTriggerEfficiencyCorrection']))
+
+        # Apply vertex multiplicity reweighting if requested
+        jobOptions.append(('applyVertexMultiplicityReweighting',
+                           sample_info['applyVertexMultiplicityReweighting']))
+
         # This must be done after the factorization step ?
         jobOptions.append(('enableSysUncertainties',
                            sample_info['enableSysUncertainties']
@@ -178,7 +186,7 @@ def submitAnalysisToGrid(configFile = None, channel = None, samples = None,
             'SE_black_list' : sample_info['SE_black_list']
         }
 
-        submitToGrid(configFile, jobInfo, jobOptions, crabOptions,
-                     create=create, submit=submit, directory=cfgdir)
-        ##submitToGrid(configFile, jobInfo, jobOptions, crabOptions, create=False, submit=False) # CV: only for testing
+        ##submitToGrid(configFile, jobInfo, jobOptions, crabOptions,
+        ##             create=create, submit=submit, directory=cfgdir)
+        submitToGrid(configFile, jobInfo, jobOptions, crabOptions, create=False, submit=False) # CV: only for testing
 

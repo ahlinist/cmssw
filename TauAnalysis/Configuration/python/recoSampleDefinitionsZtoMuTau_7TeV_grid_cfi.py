@@ -38,6 +38,8 @@ SAMPLE_DEFAULTS = {
     'genPhaseSpaceCut' : '',
     'factorize' : False,
     'applyZrecoilCorrection' : False,
+    'applyMuonTriggerEfficiencyCorrection' : False, # to be used for MC only
+    'applyVertexMultiplicityReweighting' : False,   # to be used for MC with pile-up only
     'enableSysUncertainties' : True,
     'lumi_mask' : '',
     'runselection' : '',
@@ -76,7 +78,7 @@ RECO_SAMPLES = {
         'skim_eff' : 1.0,
         'type' : 'Data',
         'drawOption' : styles.drawOption_Data,
-        'enableSysUncertainties' : False,
+        'enableSysUncertainties' : False        
     },
     'data_Mu_Run2010B_Prompt' : {
         'datasetpath' : '/Mu/Run2010B-PromptReco-v2/RECO',
@@ -112,6 +114,7 @@ RECO_SAMPLES = {
         'type' : plotter.process_Ztautau.config_dqmHistPlotter.type.value(),
         'drawOption' : styles.drawOption_Ztautau,
         'applyZrecoilCorrection' : True,
+        'applyMuonTriggerEfficiencyCorrection' : True,
         'hlt' : cms.InputTag("TriggerResults", "", "REDIGI38X")
     },
     'ZtautauEmbedded' : {
@@ -125,6 +128,7 @@ RECO_SAMPLES = {
         'drawOption' : styles.drawOption_Ztautau,
         'disableDuplicateCheck' : True,
         'applyZrecoilCorrection' : False,
+        'applyMuonTriggerEfficiencyCorrection' : True
     },
     'ZtautauPU156bx' : {
         'datasetpath' : "/DYToTauTau_M-20_TuneZ2_7TeV-pythia6-tauola/Fall10-E7TeV_ProbDist_2010Data_BX156_START38_V12-v1/GEN-SIM-RECO",
@@ -136,6 +140,8 @@ RECO_SAMPLES = {
         'type' : plotter.process_Ztautau.config_dqmHistPlotter.type.value(),
         'drawOption' : styles.drawOption_Ztautau,
         'applyZrecoilCorrection' : True,
+        'applyMuonTriggerEfficiencyCorrection' : True,
+        'applyVertexMultiplicityReweighting' : True,
         'hlt' : cms.InputTag("TriggerResults", "", "REDIGI38XPU")
     },
     'qqZtautau' : {
@@ -148,6 +154,7 @@ RECO_SAMPLES = {
         'type' : plotter.process_Ztautau.config_dqmHistPlotter.type.value(),
         'drawOption' : styles.drawOption_Ztautau,
         'applyZrecoilCorrection' : True,
+        'applyMuonTriggerEfficiencyCorrection' : True,
         'hlt' : cms.InputTag("TriggerResults", "", "REDIGI38X")
     },
     'Zmumu' : {
@@ -159,6 +166,7 @@ RECO_SAMPLES = {
         'type' : plotter.process_Zmumu.config_dqmHistPlotter.type.value(),
         'drawOption' : styles.drawOption_Zmumu,
         'applyZrecoilCorrection' : True,
+        'applyMuonTriggerEfficiencyCorrection' : True,
         'hlt' : cms.InputTag("TriggerResults", "", "REDIGI38X")
     },
     'InclusivePPmuX' : {
@@ -170,6 +178,7 @@ RECO_SAMPLES = {
         'legendEntry' : plotter.process_InclusivePPmuX.config_dqmHistPlotter.legendEntry.value(),
         'type' : plotter.process_InclusivePPmuX.config_dqmHistPlotter.type.value(),
         'drawOption' : styles.drawOption_QCD,
+        'applyMuonTriggerEfficiencyCorrection' : True,
         'factorize' : True
     },
     'PPmuXptGt20Mu10' : {
@@ -182,7 +191,8 @@ RECO_SAMPLES = {
         'legendEntry' : plotter.process_PPmuXptGt20.config_dqmHistPlotter.legendEntry.value(),
         'type' : plotter.process_PPmuXptGt20.config_dqmHistPlotter.type.value(),
         'drawOption' : styles.drawOption_QCD,
-        'factorize' : True,
+        'applyMuonTriggerEfficiencyCorrection' : True,
+        'factorize' : True,        
         'hlt' : cms.InputTag("TriggerResults", "", "REDIGI38X")
     },
     'PPmuXptGt20Mu15' : {
@@ -195,6 +205,7 @@ RECO_SAMPLES = {
         'legendEntry' : plotter.process_PPmuXptGt20.config_dqmHistPlotter.legendEntry.value(),
         'type' : plotter.process_PPmuXptGt20.config_dqmHistPlotter.type.value(),
         'drawOption' : styles.drawOption_QCD,
+        'applyMuonTriggerEfficiencyCorrection' : True,
         'factorize' : True,
         'hlt' : cms.InputTag("TriggerResults", "", "REDIGI38X")
     },
@@ -206,7 +217,8 @@ RECO_SAMPLES = {
         'x_sec' : 1.28*24170*_picobarns, # W + jets correction factor for NLO/LO cross-sections = 1.28
         'legendEntry' : plotter.process_WplusJets.config_dqmHistPlotter.legendEntry.value(),
         'type' : plotter.process_WplusJets.config_dqmHistPlotter.type.value(),
-        'drawOption' : styles.drawOption_WplusJets
+        'drawOption' : styles.drawOption_WplusJets,
+        'applyMuonTriggerEfficiencyCorrection' : True
     },
     'TTplusJets' : {
         'datasetpath' : "/TTJets_TuneZ2_7TeV-madgraph-tauola/Fall10-START38_V12-v2/GEN-SIM-RECO",
@@ -216,6 +228,7 @@ RECO_SAMPLES = {
         'legendEntry' : plotter.process_TTplusJets.config_dqmHistPlotter.legendEntry.value(),
         'type' : plotter.process_TTplusJets.config_dqmHistPlotter.type.value(),
         'drawOption' : styles.drawOption_TTplusJets,
+        'applyMuonTriggerEfficiencyCorrection' : True,
         'hlt' : cms.InputTag("TriggerResults", "", "HLT")
     }
 }
@@ -235,7 +248,7 @@ MERGE_SAMPLES = {
         'samples' : [
             ##'Ztautau',
             'ZtautauPU156bx',
-            'qqZtautau'
+            ##'qqZtautau'
         ],
         'legendEntry' : plotter.process_Ztautau.config_dqmHistPlotter.legendEntry.value(),
         'type' : plotter.process_Ztautau.config_dqmHistPlotter.type.value(),
@@ -243,7 +256,7 @@ MERGE_SAMPLES = {
     },
     'qcdSum' : {
         'samples' : [
-            'InclusivePPmuX',
+            #'InclusivePPmuX',
             'PPmuXptGt20Mu10',
             'PPmuXptGt20Mu15'
         ],
