@@ -36,6 +36,7 @@ process.maxEvents = cms.untracked.PSet(
 
 thelist = LumiList(filename="merged_JsonReRecoSep17_JsonStreamExpressV2.txt")
 
+
 process.source = cms.Source("PoolSource",
                             fileNames = cms.untracked.vstring(options.inputFiles),
                             noEventSort = cms.untracked.bool(True),
@@ -47,7 +48,7 @@ process.source.lumisToProcess = [ str(a) for a in thelist.getCMSSWString().split
 
 process.load("ElectroWeakAnalysis.MultiBosons.VgNtuplizer_cfi")
 #process.VgAnalyzerKit.saveHLTInfo = cms.untracked.bool(False);
-process.VgNtuplizer.doStoreJets = cms.bool(True);
+#process.VgNtuplizer.doStoreJets = cms.bool(True);
 
 process.TFileService = cms.Service("TFileService", fileName = cms.string(options.outputFile))
 
