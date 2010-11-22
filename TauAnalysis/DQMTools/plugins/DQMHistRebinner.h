@@ -8,8 +8,8 @@
  *  the only requirement is that all bin-boundaries of the new histogram 
  *  match a bin-boundary (any one) of the old histogram
  *
- *  $Date: 2009/11/27 18:32:52 $
- *  $Revision: 1.2 $
+ *  $Date: 2009/11/28 14:28:32 $
+ *  $Revision: 1.3 $
  *  \author Christian Veelken, UC Davis
  */
 
@@ -27,6 +27,7 @@ class DQMHistRebinner : public edm::EDAnalyzer
   struct plotEntryType
   {
     explicit plotEntryType(const edm::ParameterSet&);
+    void print() const;
     std::string meName_original_;
     std::string meName_rebinned_;
   };
@@ -34,6 +35,7 @@ class DQMHistRebinner : public edm::EDAnalyzer
   struct axisEntryType
   {
     explicit axisEntryType(const edm::ParameterSet&);
+    void print() const;
     unsigned combineBins_;
     unsigned numBins_;
     std::vector<double> binEdges_;
