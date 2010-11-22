@@ -31,7 +31,7 @@ if len(sys.argv) != 3:
 channel = sys.argv[1]
 outputFileName = sys.argv[2]
 
-numThreads = 50
+numThreads = 100
 
 def write_fileNames(results_queue, outputFile):
     while True:
