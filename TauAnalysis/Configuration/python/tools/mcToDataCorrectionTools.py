@@ -9,6 +9,15 @@ import copy
 
 import PhysicsTools.PatAlgos.tools.helpers as patutils
 
+def _addEventWeight(process, genAnalyzerModuleNames, srcEventWeight):
+    for genAnalyzerModuleName in genAnalyzerModuleNames:
+        if hasattr(process, genAnalyzerModuleName):
+            genAnalyzerModule = getattr(process, genAnalyzerModuleName)    
+            if hasattr(genAnalyzerModule, "eventWeightSource"):
+                getattr(genAnalyzerModule, "eventWeightSource").append(cms.InputTag(srcEventWeight))
+            else:
+                setattr(genAnalyzerModule, "eventWeightSource", cms.VInputTag(cms.InputTag(srcEventWeight)))
+
 #--------------------------------------------------------------------------------
 # Z --> muon + tau-jet, A/H --> muon + tau-jet channels
 #--------------------------------------------------------------------------------
@@ -119,15 +128,9 @@ def applyZrecoilCorrection_runZtoMuTau(process):
 
 def applyZrecoilCorrection_runZtoMuTau_bgEstTemplate(process):
 
-    #print("<applyZrecoilCorrection_runZtoMuTau_bgEstTemplate>:")
-    #print(" --> applying Z-recoil correction to MET !!")
-
     applyZrecoilCorrection_runZtoMuTau(process)
 
 def applyZrecoilCorrection_runAHtoMuTau(process):
-
-    #print("<applyZrecoilCorrection_runAHtoMuTau>:")
-    #print(" --> applying Z/A/H-recoil correction to MET !!")
 
     applyZrecoilCorrection_runZtoMuTau(process)
     
@@ -148,6 +151,75 @@ def applyZrecoilCorrection_runAHtoMuTau(process):
 
     # restore InputTag of ZllRecoilCorrection modules
     restoreZllRecoilCorrectionInputTags_ZtoMuTau(process)
+
+def _addEventWeightZtoMuTau(process, srcEventWeight):
+    
+    _addEventWeight(process,
+                    [ "analyzeZtoMuTauEvents",
+                      "analyzeZtoMuTauEvents_factorizedWithMuonIsolation",
+                      "analyzeZtoMuTauSequence_factorizedWithoutMuonIsolation" ],
+                    srcEventWeight)
+    
+def applyMuonTriggerEfficiencyCorrection_runZtoMuTau(process):
+
+    process.load("TauAnalysis.RecoTools.muonTriggerEfficiencyCorrection_cfi")
+    process.producePatTupleZtoMuTauSpecific._seq = process.producePatTupleZtoMuTauSpecific._seq \
+      * process.muonTriggerEfficiencyCorrection
+
+    _addEventWeightZtoMuTau(process, "muonTriggerEfficiencyCorrection")
+
+def applyVertexMultiplicityReweighting_runZtoMuTau(process):
+
+    process.load("TauAnalysis.RecoTools.vertexMultiplicityReweight_cfi")
+    process.producePatTupleZtoMuTauSpecific._seq = process.producePatTupleZtoMuTauSpecific._seq \
+      * cms.Sequence(process.selectedPrimaryVerticesTrackPtSumGt10 * process.vertexMultiplicityReweight)
+
+    _addEventWeightZtoMuTau(process, "vertexMultiplicityReweight")
+
+def _addEventWeightZtoMuTau_bgEstTemplate(process, srcEventWeight):
+
+    _addEventWeight(process,
+                    [ "analyzeEventsBgEstQCDenriched",
+                      "analyzeEventsBgEstTTplusJetsEnriched",
+                      "analyzeEventsBgEstWplusJetsEnriched",
+                      "analyzeEventsBgEstZmumuJetMisIdEnriched",
+                      "analyzeEventsBgEstZmumuMuonMisIdEnriched" ],
+                    srcEventWeight)
+
+def applyMuonTriggerEfficiencyCorrection_runZtoMuTau_bgEstTemplate(process):
+
+    applyMuonTriggerEfficiencyCorrection_runZtoMuTau(process)
+
+    _addEventWeightZtoMuTau_bgEstTemplate(process, "muonTriggerEfficiencyCorrection")
+
+def applyVertexMultiplicityReweighting_runZtoMuTau_bgEstTemplate(process):
+
+    applyVertexMultiplicityReweighting_runZtoMuTau(process)
+
+    _addEventWeightZtoMuTau_bgEstTemplate(process, "vertexMultiplicityReweight")
+
+def _addEventWeighAHtoMuTau(process, srcEventWeight):
+
+    _addEventWeight(process,
+                    [ "analyzeAHtoMuTauEvents_woBtag",
+                      "analyzeAHtoMuTauEvents_wBtag",
+                      "analyzeAHtoMuTauEvents_woBtag_factorizedWithMuonIsolation",
+                      "analyzeAHtoMuTauEvents_wBtag_factorizedWithMuonIsolation",
+                      "analyzeAHtoMuTauEvents_woBtag_factorizedWithoutMuonIsolation",
+                      "analyzeAHtoMuTauEvents_wBtag_factorizedWithoutMuonIsolation" ],
+                    srcEventWeight)    
+                    
+def applyMuonTriggerEfficiencyCorrection_runAHtoMuTau(process):
+
+    applyMuonTriggerEfficiencyCorrection_runZtoMuTau(process)
+
+    _addEventWeighAHtoMuTau(process, "muonTriggerEfficiencyCorrection")
+
+def applyVertexMultiplicityReweighting_runAHtoMuTau(process):
+
+    applyVertexMultiplicityReweighting_runZtoMuTau(process)
+
+    _addEventWeighAHtoMuTau(process, "vertexMultiplicityReweight")
 
 #--------------------------------------------------------------------------------
 # Z --> tau-jet + tau-jet channel
