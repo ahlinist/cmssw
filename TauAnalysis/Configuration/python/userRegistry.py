@@ -56,6 +56,26 @@ userSettings = {
                 'canvasSizeY' : 640
             }
         }
+    },
+    'jkolb': {
+        'AHtoElecTau' : {
+            'analysisFilePath' : "/castor/cern.ch/user/j/jkolb/elecTauAnalysis/fall10/HtoElecTau/",
+            'harvestingFilePath' : "/castor/cern.ch/user/j/jkolb/elecTauAnalysis/fall10/HtoElecTau/",
+            'tmpFilePath' : "/tmp/jkolb/",
+            'jobId' : "7TeV"
+        },
+        'ZtoElecTau' : {
+            'analysisFilePath' : "/castor/cern.ch/user/j/jkolb/elecTauAnalysis/stdCuts/",
+            'harvestingFilePath' : "/castor/cern.ch/user/j/jkolb/elecTauAnalysis/stdCuts/",
+            'tmpFilePath' : "/tmp/jkolb/",
+            'jobId' : "2010Nov13"
+        },
+        'global' : {
+            'drawOptions' : {
+                'canvasSizeX' : 800,
+                'canvasSizeY' : 640
+            }
+        }
     }
 }
 
