@@ -182,9 +182,18 @@ from TauAnalysis.Configuration.tools.changeCut import changeCut
 
 # change muon Pt threshold to 15 GeV
 changeCut(process, "selectedPatMuonsPt10", "pt > %0.2f" % cuts['muon_pt'])
+
+# change muon eta acceptance
+changeCut(process, "selectedPatMuonsEta21", "abs(eta) < %0.2f"
+          % cuts['muon_eta'])
+
+# change tau pt threshold
+changeCut(process, "selectedPatTausForMuTauPt20", "pt > %0.2f"
+          % cuts['tau_pt'])
+
 # change eta acceptance for tau-jets to |eta| < 2.3
 changeCut(process, "selectedPatTausForMuTauEta21",
-          "abs(eta) < %0.2f" % cuts['muon_eta'])
+          "abs(eta) < %0.2f" % cuts['tau_eta'])
 
 # Use absolute muon isolation
 process.selectedPatMuonsPFRelIso.chargedHadronIso.ptMin = 1.0
@@ -198,13 +207,26 @@ changeCut(process, "selectedMuTauPairsMt1MET",
           "mt1MET < %0.2f" % cuts['mt1MET'])
 changeCut(process, "selectedMuTauPairsMt1METlooseMuonIsolation",
           "mt1MET < %0.2f" % cuts['mt1MET'])
+
+# change upper limit on muon + MET transverse mass to 40 GeV
+changeCut(process, "selectedMuTauPairsForAHtoMuTauMt1MET",
+          "mt1MET < %0.2f" % cuts['mt1MET'])
+changeCut(process, "selectedMuTauPairsForAHtoMuTauMt1METlooseMuonIsolation",
+          "mt1MET < %0.2f" % cuts['mt1MET'])
+
 changeCut(process, "selectedMuTauPairsPzetaDiff",
           '(pZeta - 1.5*pZetaVis) > %0.2f' % cuts['pzeta'])
 changeCut(process, "selectedMuTauPairsPzetaDiffLooseMuonIsolation",
           '(pZeta - 1.5*pZetaVis) > %0.2f' % cuts['pzeta'])
 
+changeCut(process, "selectedMuTauPairsForAHtoMuTauPzetaDiff",
+          '(pZeta - 1.5*pZetaVis) > %0.2f' % cuts['pzeta'])
+changeCut(process, "selectedMuTauPairsForAHtoMuTauPzetaDiffLooseMuonIsolation",
+          '(pZeta - 1.5*pZetaVis) > %0.2f' % cuts['pzeta'])
+
 # Set chage requirement - can be turned of to keep SS ditaus
 changeCut(process, "selectedMuTauPairsZeroCharge", cuts['charge'])
+changeCut(process, "selectedMuTauPairsForAHtoMuTauZeroCharge", cuts['charge'])
 
 # disable cut on muon calo. + segment compatibility
 # (check that muon calo. compatibility is not affected by pile-up before re-enabling this cut)
@@ -215,9 +237,6 @@ changeCut(process, "selectedPatMuonsPionVetoLooseIsolation", -1000., attribute =
 changeCut(process, "selectedPatMuonsTrkIP", 0.2, attribute = "IpMax")
 
 # disable cuts on tau id. discriminators for Track && ECAL isolation
-changeCut(process, "selectedPatTausForMuTauTrkIso", "tauID('trackIsolation') > -1.")
-changeCut(process, "selectedPatTausForMuTauEcalIso", "tauID('ecalIsolation') > -1.")
-
 # change cut on TaNC output in case using new HPS + TaNC combined tau id. algorithm
 # CV: discriminators by Track/ECAL isolation do not exist for the combined tau id. algorithm
 #     and need to be replaced by dummy cuts, in order to avoid run-time exceptions
