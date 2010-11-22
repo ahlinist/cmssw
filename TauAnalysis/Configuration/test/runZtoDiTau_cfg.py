@@ -124,10 +124,7 @@ process.cleanPatTaus.preselection = cms.string('')
 from PhysicsTools.PatAlgos.tools.jetTools import *
 
 # uncomment to replace caloJets by pfJets
-##switchJetCollection(process, jetCollection = cms.InputTag("ak5PFJets"))
-##runBTagging(process, jetCollection = cms.InputTag("ak5CaloJets"), 'AOD')
-process.patJets.addDiscriminators = False
-process.patJets.addTagInfos = False
+switchJetCollection(process, jetCollection = cms.InputTag("ak5PFJets"), outputModule = '')
 #--------------------------------------------------------------------------------
 
 #--------------------------------------------------------------------------------
