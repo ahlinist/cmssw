@@ -21,7 +21,7 @@ MyMHTEventSelector::MyMHTEventSelector(const edm::ParameterSet& pset) :
 
     //// Store computed HT
     defineVariable("MHT");
-    defineVariable("myMHTsignificance");
+    defineVariable("MHTsignificance");
 }
 
 //__________________________________________________________________________________________________
@@ -84,7 +84,7 @@ bool MyMHTEventSelector::select(const edm::Event& event) const {
     //std::cout << "MHT = " << myMHT << ", HT = " << HT << ", MHT sig = " << myMHTsignificance << std::endl;
 
     setVariable("MHT", myMHT);
-    setVariable("myMHTsignificance", myMHTsignificance);
+    setVariable("MHTsignificance", myMHTsignificance);
 
     //
     // apply cut
