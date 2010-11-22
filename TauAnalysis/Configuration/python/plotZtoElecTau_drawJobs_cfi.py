@@ -11,16 +11,13 @@ plots_ZtoElecTau = cms.PSet(
         dqmMonitorElements = cms.vstring(''),
         processes = cms.vstring(
 			'Data',
-			#'MinBias',
 			'Zee',
-			#'ZeePlusJets',
-			'WplusJets',
-			'TTplusJets',
+			'wPlusJetsSum',
+			#'TTplusJets',
 			'qcdBCtoESum',
 			'qcdEMenrichedSum',
 			'gammaPlusJetsSum',
 			'Ztautau'
-			#'ZtautauPlusJets'
         )
     ),
     xAxis = cms.string('unlabeled'),
@@ -30,15 +27,13 @@ plots_ZtoElecTau = cms.PSet(
     labels = cms.vstring('mcNormScale'),                   
     drawOptionSet = cms.string('default'),
     stack = cms.vstring(
-         'Zee',
-		 #'ZeePlusJets',
-		 'WplusJets',
-		 'TTplusJets',
-		 'qcdBCtoESum',
-		 'qcdEMenrichedSum',
-		 'gammaPlusJetsSum',
-		 'Ztautau'
-		 #'ZtautauPlusJets' 
+		'Zee',
+		'wPlusJetsSum',
+		 #'TTplusJets',
+		'qcdBCtoESum',
+		'qcdEMenrichedSum',
+		'gammaPlusJetsSum',
+		'Ztautau'
     )
 )
 
@@ -78,39 +73,13 @@ drawJobConfigurator_ZtoElecTau.add(
 drawJobConfigurator_ZtoElecTau.add(
     afterCut = evtSelPrimaryEventVertexPosition,
     beforeCut = evtSelElectronId,
-    plots = [
-		drawJobConfigEntry(
-        	meName = 'ElectronQuantities/Electron#PAR#',
-        	PAR = [ 'Pt', 'Eta', 'Phi' ],
-        	title = "Electron (after primary Event Vertex position Cut)",
-        	xAxis = '#PAR#',
-        	name = "cutFlowControlPlots_electron_afterPrimaryEventVertexPosition"
-		),
-		drawJobConfigEntry(
-        	meName = 'ElectronQuantities/ElectronSuperclShapeSigmaIetaIeta',
-        	title = "Electron #sigma_{i#eta i#eta} (after primary Event Vertex position Cut)",
-        	xAxis = 'unlabeled',
-        	name = "cutFlowControlPlots_electronSigmaIetaIeta_afterPrimaryEventVertexPosition"
-		),
-		drawJobConfigEntry(
-        	meName = 'ElectronQuantities/ElectronHadEnOverEmEn',
-        	title = "Electron H/E (after primary Event Vertex position Cut)",
-        	xAxis = 'unlabeled',
-        	name = "cutFlowControlPlots_electronHadronicOverE_afterPrimaryEventVertexPosition"
-		),
-		drawJobConfigEntry(
-        	meName = 'ElectronQuantities/ElectronDeltaPhiSuperclToExtrapolTrack',
-        	title = "Electron #Delta#phi_{in}^{sc} (after primary Event Vertex position Cut)",
-        	xAxis = 'dPhi',
-        	name = "cutFlowControlPlots_electronDeltaPhiSuperClusterTrkAtVertex_afterPrimaryEventVertexPosition"
-		),
-		drawJobConfigEntry(
-        	meName = 'ElectronQuantities/ElectronDeltaEtaSuperclToExtrapolTrack',
-        	title = "Electron #Delta#eta_{in}^{sc} (after primary Event Vertex position Cut)",
-        	xAxis = 'unlabeled',
-        	name = "cutFlowControlPlots_electronDeltaEtaSuperClusterTrkAtVertex_afterPrimaryEventVertexPosition"
-		)
-	]
+    plot = drawJobConfigEntry(
+        meName = 'ElectronQuantities/Electron#PAR#',
+        PAR = [ 'Pt', 'Eta', 'Phi' ],
+        title = "Electron (after primary Event Vertex position Cut)",
+        xAxis = '#PAR#',
+        name = "cutFlowControlPlots_electron_afterPrimaryEventVertexPosition"
+	)
 )    
 
 drawJobConfigurator_ZtoElecTau.add(
@@ -703,12 +672,12 @@ drawJobConfigurator_ZtoElecTau.add(
             xAxis = 'Mass',
             name = "finalSamplePlots_mCollApprox"
         ),
-		#drawJobConfigEntry(
-		#    meName = 'DiTauCandidateSVfitQuantities/psKine_MEt_ptBalance/Mass',
-		#    title = "M(Electron + Tau), SVfit method (final Event sample)",
-		#    xAxis = 'Mass',
-		#    name = "finalSamplePlots_mSVmethod"
-		#),
+		drawJobConfigEntry(
+		    meName = 'DiTauCandidateSVfitQuantities/psKine_MEt_ptBalance/Mass',
+		    title = "M(Electron + Tau), SVfit method (final Event sample)",
+		    xAxis = 'Mass',
+		    name = "finalSamplePlots_mSVmethod"
+		),
         drawJobConfigEntry(
             meName = 'DiTauCandidateQuantities/Ht12MET',
             title = "#Sigma H_{T}(Electron + Tau + MET) (final Event sample)",
