@@ -49,8 +49,7 @@ VgAnalyzerKit::VgAnalyzerKit(const edm::ParameterSet& ps) : verbosity_(0), helpe
   trgResults_     = ps.getParameter<InputTag>("triggerResults");
   trgEvent_       = ps.getParameter<InputTag>("triggerEvent"); 
   doGenParticles_ = ps.getParameter<bool>("doGenParticles");
-  doStoreJets_    = ps.getParameter<bool>("doStoreJets");
-  doSkim_         = ps.getParameter<bool>("doSkim");
+  doStoreJets_     = ps.getParameter<bool>("doStoreJets");
   gtdigilabel_    = ps.getParameter<InputTag>("GTDigiLabel");
   vtxlabel_       = ps.getParameter<InputTag>("VtxLabel");
   caloTowerlabel_ = ps.getParameter<InputTag>("CaloTowerLabel");
@@ -83,7 +82,7 @@ VgAnalyzerKit::VgAnalyzerKit(const edm::ParameterSet& ps) : verbosity_(0), helpe
   tree_->Branch("ttbit0", &ttbit0_, "ttbit0/I");
   tree_->Branch("nHLT", &nHLT_, "nHLT/I");
   tree_->Branch("HLT", HLT_, "HLT[nHLT]/I");
-  tree_->Branch("HLTIndex", HLTIndex_, "HLTIndex[100]/I");
+  tree_->Branch("HLTIndex", HLTIndex_, "HLTIndex[50]/I");
   tree_->Branch("nHFTowersP", &nHFTowersP_, "nHFTowersP/I");
   tree_->Branch("nHFTowersN", &nHFTowersN_, "nHFTowersN/I");
   tree_->Branch("nVtx", &nVtx_, "nVtx/I");
@@ -114,6 +113,10 @@ VgAnalyzerKit::VgAnalyzerKit(const edm::ParameterSet& ps) : verbosity_(0), helpe
     tree_->Branch("mcMomPhi", mcMomPhi, "mcMomPhi[nMC]/F");
     tree_->Branch("mcIndex", mcIndex, "mcIndex[nMC]/I");
     tree_->Branch("mcDecayType", mcDecayType, "mcDecayType[nMC]/I"); //-999:non W or Z, 1:hardronic, 2:e, 3:mu, 4:tau
+    tree_->Branch("mcCalIsoDR03", mcCalIsoDR03, "mcCalIsoDR03[nMC]/F");
+    tree_->Branch("mcTrkIsoDR03", mcTrkIsoDR03, "mcTrkIsoDR03[nMC]/F");
+    tree_->Branch("mcCalIsoDR04", mcCalIsoDR04, "mcCalIsoDR04[nMC]/F");
+    tree_->Branch("mcTrkIsoDR04", mcTrkIsoDR04, "mcTrkIsoDR04[nMC]/F");
     // Gen MET
     tree_->Branch("genMET", &genMET_, "genMET/F");
     tree_->Branch("genMETx", &genMETx_, "genMETx/F");
@@ -274,7 +277,6 @@ VgAnalyzerKit::VgAnalyzerKit(const edm::ParameterSet& ps) : verbosity_(0), helpe
   tree_->Branch("muStations", muStations_, "muStations[nMu]/I");
   tree_->Branch("muChambers", muChambers_, "muChambers[nMu]/I");
   // Jet
-  std::cout << "doStoreJets: " << doStoreJets_ << std::endl;
   if (doStoreJets_) {
     tree_->Branch("nJet", &nJet_, "nJet/I");
     tree_->Branch("jetTrg", jetTrg_, "jetTrg[nJet][14]/I");
@@ -399,10 +401,7 @@ void VgAnalyzerKit::produce(edm::Event & e, const edm::EventSetup & es) {
 
   const TriggerMatchHelper matchHelper;
 
-  //Handle<int> genProcessID;
-  //e.getByLabel("genEventProcID", genProcessID);
-  //processID_ = *genProcessID;
-  // cout << "VgAnalyzerKit: produce: event info ..." << endl;
+  //cout << "VgAnalyzerKit: produce: event info ..." << endl;
 
   run_    = e.id().run();
   event_  = e.id().event();
@@ -517,10 +516,15 @@ void VgAnalyzerKit::produce(edm::Event & e, const edm::EventSetup & es) {
     if (genEventScale->hasBinningValues() ) {
        pthat_ = genEventScale->binningValues()[0];
     }
+
+    processID_ = genEventScale->signalProcessID();
   }
 
   // GenParticle
   // cout << "VgAnalyzerKit: produce: GenParticle... " << endl;
+  edm::Handle<reco::GenParticleCollection> genParticles;
+  e.getByLabel( "generator", genParticles);
+
   if (!isData_ && genParticlesHandle_.isValid() ) {
 
     nMC_ = 0;
@@ -584,6 +588,14 @@ fabs(ip->pdgId())<=14) || ip->pdgId()==22))) {
 
 	  }
 	}
+        mcCalIsoDR03[nMC_] = 0;
+        mcTrkIsoDR03[nMC_] = 0;
+        mcCalIsoDR04[nMC_] = 0;
+        mcTrkIsoDR04[nMC_] = 0;
+        mcCalIsoDR03[nMC_] = getGenCalIso(genParticlesHandle_, ip, 0.3, false, false);
+        mcTrkIsoDR03[nMC_] = getGenTrkIso(genParticlesHandle_, ip, 0.3);
+        mcCalIsoDR04[nMC_] = getGenCalIso(genParticlesHandle_, ip, 0.4, false, false);
+        mcTrkIsoDR04[nMC_] = getGenTrkIso(genParticlesHandle_, ip, 0.4);
 
 	nMC_++;
       }
@@ -805,19 +817,16 @@ fabs(ip->pdgId())<=14) || ip->pdgId()==22))) {
   }
   // cout<< "BField:"<< evt_bField <<endl;
   //=====
-  const TriggerObjectMatch *eleTriggerMatch1(triggerEvent->triggerObjectMatchResult("electronTriggerMatchHLTEle15LWL1R"));
-  const TriggerObjectMatch *eleTriggerMatch2(triggerEvent->triggerObjectMatchResult("electronTriggerMatchHLTEle15SWL1R"));
-  const TriggerObjectMatch *eleTriggerMatch3(triggerEvent->triggerObjectMatchResult("electronTriggerMatchHLTEle20SWL1R"));
-  const TriggerObjectMatch *eleTriggerMatch4(triggerEvent->triggerObjectMatchResult("electronTriggerMatchHLTEle15SWEleIdL1R"));
+  const TriggerObjectMatch *eleTriggerMatch1(triggerEvent->triggerObjectMatchResult("photonTriggerMatchHLTPhoton10L1R"));
+  const TriggerObjectMatch *eleTriggerMatch2(triggerEvent->triggerObjectMatchResult("photonTriggerMatchHLTPhoton15CleanedL1R"));
+  const TriggerObjectMatch *eleTriggerMatch3(triggerEvent->triggerObjectMatchResult("electronTriggerMatchHLTEle15LWL1R"));
+  const TriggerObjectMatch *eleTriggerMatch4(triggerEvent->triggerObjectMatchResult("electronTriggerMatchHLTEle15SWL1R"));
   const TriggerObjectMatch *eleTriggerMatch5(triggerEvent->triggerObjectMatchResult("electronTriggerMatchHLTEle15SWCaloEleIdL1R"));
   const TriggerObjectMatch *eleTriggerMatch6(triggerEvent->triggerObjectMatchResult("electronTriggerMatchHLTEle17SWCaloEleIdL1R"));
   const TriggerObjectMatch *eleTriggerMatch7(triggerEvent->triggerObjectMatchResult("electronTriggerMatchHLTEle17SWTightEleIdL1R"));
   const TriggerObjectMatch *eleTriggerMatch8(triggerEvent->triggerObjectMatchResult("electronTriggerMatchHLTEle17SWTighterEleIdIsolL1R"));
   const TriggerObjectMatch *eleTriggerMatch9(triggerEvent->triggerObjectMatchResult("electronTriggerMatchHLTEle17SWTighterEleIdIsolL1Rv2"));
-  const TriggerObjectMatch *eleTriggerMatch10(triggerEvent->triggerObjectMatchResult("electronTriggerMatchHLTEle22SWTighterEleIdL1Rv2"));
-  const TriggerObjectMatch *eleTriggerMatch11(triggerEvent->triggerObjectMatchResult("electronTriggerMatchHLTEle17SWTightCaloEleIdEle8HEL1Rv1"));
-  const TriggerObjectMatch *eleTriggerMatch12(triggerEvent->triggerObjectMatchResult("electronTriggerMatchHLTEle17SWTightCaloEleIdEle8HEL1Rv2"));
-  const TriggerObjectMatch *eleTriggerMatch13(triggerEvent->triggerObjectMatchResult("electronTriggerMatchHLTEle17SWTighterEleIdIsolL1Rv3"));
+  const TriggerObjectMatch *eleTriggerMatch10(triggerEvent->triggerObjectMatchResult("electronTriggerMatchHLTEle17SWTighterEleIdIsolL1Rv3"));
 
   int nElePassCut = 0;
   nEle_ = 0;
@@ -839,9 +848,6 @@ fabs(ip->pdgId())<=14) || ip->pdgId()==22))) {
       const TriggerObjectRef eleTrigRef8( matchHelper.triggerMatchObject( eleBaseRef, eleTriggerMatch8, e, *triggerEvent ) );
       const TriggerObjectRef eleTrigRef9( matchHelper.triggerMatchObject( eleBaseRef, eleTriggerMatch9, e, *triggerEvent ) );
       const TriggerObjectRef eleTrigRef10( matchHelper.triggerMatchObject( eleBaseRef, eleTriggerMatch10, e, *triggerEvent ) );
-      const TriggerObjectRef eleTrigRef11( matchHelper.triggerMatchObject( eleBaseRef, eleTriggerMatch11, e, *triggerEvent ) );
-      const TriggerObjectRef eleTrigRef12( matchHelper.triggerMatchObject( eleBaseRef, eleTriggerMatch12, e, *triggerEvent ) );
-      const TriggerObjectRef eleTrigRef13( matchHelper.triggerMatchObject( eleBaseRef, eleTriggerMatch13, e, *triggerEvent ) );
       eleTrg_[nEle_][0]  = (eleTrigRef1.isAvailable())  ? 1 : -99;
       eleTrg_[nEle_][1]  = (eleTrigRef2.isAvailable())  ? 1 : -99;
       eleTrg_[nEle_][2]  = (eleTrigRef3.isAvailable())  ? 1 : -99;
@@ -852,9 +858,6 @@ fabs(ip->pdgId())<=14) || ip->pdgId()==22))) {
       eleTrg_[nEle_][7]  = (eleTrigRef8.isAvailable())  ? 1 : -99;
       eleTrg_[nEle_][8]  = (eleTrigRef9.isAvailable())  ? 1 : -99;
       eleTrg_[nEle_][9]  = (eleTrigRef10.isAvailable()) ? 1 : -99;
-      eleTrg_[nEle_][10] = (eleTrigRef11.isAvailable()) ? 1 : -99;
-      eleTrg_[nEle_][11] = (eleTrigRef12.isAvailable()) ? 1 : -99;
-      eleTrg_[nEle_][12] = (eleTrigRef13.isAvailable()) ? 1 : -99;
 
       //        new eID with correct isolations and conversion rejection, see https://twiki.cern.ch/twiki/bin/viewauth/CMS/SimpleCutBasedEleID
       //        The value map returns a double with the following meaning:
@@ -1607,20 +1610,18 @@ fabs(ip->pdgId())<=14) || ip->pdgId()==22))) {
       }
   }
 
+/*
   //if (doStoreJets_ == false && (nElePassCut > 0 || nMuPassCut > 0) && nPhoPassCut > 0) {
-  if (doSkim_ == true) {
-    if (doStoreJets_ == false && (nElePassCut > 0 || nMuPassCut > 0)) {
-      hEvents_->Fill(1.5);
-      tree_->Fill();
-    }
-    if (doStoreJets_ == true && nPhoPassCut > 0) {
-      hEvents_->Fill(1.5);
-      tree_->Fill();
-    }
-  } else {
+  if (doStoreJets_ == false && (nElePassCut > 0 || nMuPassCut > 0)) {
     hEvents_->Fill(1.5);
     tree_->Fill();
   }
+  if (doStoreJets_ == true && nPhoPassCut > 0) {
+    hEvents_->Fill(1.5);
+    tree_->Fill();
+  }
+*/
+    tree_->Fill();
 
 }
 
@@ -1734,7 +1735,6 @@ float VgAnalyzerKit::E2overE9( const DetId id, const EcalRecHitCollection & recH
 	
       }
       
-      
       else {
 	
 	// LOOP OVER 3x3 ARRAY CENTERED AROUND HIT 2
@@ -1772,7 +1772,6 @@ float VgAnalyzerKit::E2overE9( const DetId id, const EcalRecHitCollection & recH
 	    return 0;
 	  }
 	
-	
 	// compute E2/E9 around second hit 
 	float e2e9_2=0;
 	if (s92nd!=0) e2e9_2=e2nd/s92nd;
@@ -1781,11 +1780,9 @@ float VgAnalyzerKit::E2overE9( const DetId id, const EcalRecHitCollection & recH
         
 	return e2e9_2;
 	
-	
       }
       
     }
-    
     
   } else if ( id.subdetId() == EcalEndcap ) {
     // only used for EB at the moment
@@ -1823,6 +1820,64 @@ float VgAnalyzerKit::recHitE( const DetId id, const EcalRecHitCollection & recHi
   else if( id.subdetId() == EcalEndcap) nid = EEDetId::offsetBy( id, di, dj );
 
   return ( nid == DetId(0) ? 0 : recHitE( nid, recHits ) );
+}
+
+float VgAnalyzerKit::getGenCalIso(edm::Handle<reco::GenParticleCollection> handle, reco::GenParticleCollection::const_iterator thisPho,
+					 const Float_t dRMax, bool removeMu, bool removeNu)
+{
+  const Float_t etMin = 0.0;
+  Float_t genCalIsoSum = 0.0;
+  if(!doGenParticles_)return genCalIsoSum;
+  if(!handle.isValid())return genCalIsoSum;
+
+  for (reco::GenParticleCollection::const_iterator it_gen=handle->begin(); it_gen!=handle->end(); it_gen++){
+
+    if(it_gen == thisPho)continue;      // can't be the original photon
+    if(it_gen->status()!=1)continue;    // need to be a stable particle
+    if (thisPho->collisionId() != it_gen->collisionId()) continue; // has to come from the same collision
+   
+    Int_t pdgCode = abs(it_gen->pdgId());
+    // we should not count neutrinos, muons
+    if( removeMu && pdgCode == 13 ) continue;
+    if( removeNu && ( pdgCode == 12 || pdgCode == 14 || pdgCode == 16 ) ) continue;
+
+    Float_t et = it_gen->et();
+    if(et < etMin) continue; // pass a minimum et threshold, default 0
+
+    Float_t dR = reco::deltaR(thisPho->momentum(), it_gen->momentum());
+    if(dR > dRMax) continue; // within deltaR cone
+    genCalIsoSum += et;
+    
+  }// end of loop over gen particles
+
+  return genCalIsoSum;
+}
+
+float VgAnalyzerKit::getGenTrkIso(edm::Handle<reco::GenParticleCollection> handle, reco::GenParticleCollection::const_iterator thisPho, const Float_t dRMax)
+{
+  const Float_t ptMin = 0.0;
+  Float_t genTrkIsoSum = 0.0;
+  if(!doGenParticles_)return genTrkIsoSum;
+  if(!handle.isValid())return genTrkIsoSum;
+
+  for (reco::GenParticleCollection::const_iterator it_gen=handle->begin(); it_gen!=handle->end(); it_gen++){
+
+    if(it_gen == thisPho)continue;      // can't be the original photon
+    if(it_gen->status()!=1)continue;    // need to be a stable particle
+    if (thisPho->collisionId() != it_gen->collisionId()) continue; // has to come from the same collision
+   
+    if(it_gen->charge()==0)continue;    // we should not count neutral particles
+   
+    Float_t pt = it_gen->pt();
+    if(pt < ptMin) continue; // pass a minimum pt threshold, default 0
+
+    Float_t dR = reco::deltaR(thisPho->momentum(), it_gen->momentum());
+    if(dR > dRMax) continue; // within deltaR cone
+    genTrkIsoSum += pt;
+    
+  }// end of loop over gen particles
+
+  return genTrkIsoSum;
 }
 
 DEFINE_FWK_MODULE(VgAnalyzerKit);

@@ -49,12 +49,14 @@ protected:
   float recHitApproxEt( const DetId id, const EcalRecHitCollection &recHits );
   float recHitE( const DetId id, const EcalRecHitCollection &recHits );
   float recHitE( const DetId id, const EcalRecHitCollection & recHits, int di, int dj );
+  float getGenCalIso(edm::Handle<reco::GenParticleCollection> handle, reco::GenParticleCollection::const_iterator thisPho, 
+		     const Float_t dRMax=0.4, bool removeMu=true, bool removeNu=false);
+  float getGenTrkIso(edm::Handle<reco::GenParticleCollection> handle, reco::GenParticleCollection::const_iterator thisPho, const Float_t dRMax=0.4);
 
   bool saveHistograms_;
   bool saveHLTInfo_;
   bool doGenParticles_;
   bool doStoreJets_;
-  bool doSkim_;
 
   InputTag vtxlabel_;
   InputTag gtdigilabel_;
@@ -117,6 +119,10 @@ protected:
   float  mcMomPhi[maxP];
   int    mcIndex[maxP];
   int    mcDecayType[maxP];
+  float  mcCalIsoDR03[maxP];
+  float  mcTrkIsoDR03[maxP];
+  float  mcCalIsoDR04[maxP];
+  float  mcTrkIsoDR04[maxP];
   // Gen & Reco MET
   float  genMET_;
   float  genMETx_;
