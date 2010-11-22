@@ -83,7 +83,7 @@ VgAnalyzerKit::VgAnalyzerKit(const edm::ParameterSet& ps) : verbosity_(0), helpe
   tree_->Branch("ttbit0", &ttbit0_, "ttbit0/I");
   tree_->Branch("nHLT", &nHLT_, "nHLT/I");
   tree_->Branch("HLT", HLT_, "HLT[nHLT]/I");
-  tree_->Branch("HLTIndex", HLTIndex_, "HLTIndex[50]/I");
+  tree_->Branch("HLTIndex", HLTIndex_, "HLTIndex[100]/I");
   tree_->Branch("nHFTowersP", &nHFTowersP_, "nHFTowersP/I");
   tree_->Branch("nHFTowersN", &nHFTowersN_, "nHFTowersN/I");
   tree_->Branch("nVtx", &nVtx_, "nVtx/I");
@@ -274,6 +274,7 @@ VgAnalyzerKit::VgAnalyzerKit(const edm::ParameterSet& ps) : verbosity_(0), helpe
   tree_->Branch("muStations", muStations_, "muStations[nMu]/I");
   tree_->Branch("muChambers", muChambers_, "muChambers[nMu]/I");
   // Jet
+  std::cout << "doStoreJets: " << doStoreJets_ << std::endl;
   if (doStoreJets_) {
     tree_->Branch("nJet", &nJet_, "nJet/I");
     tree_->Branch("jetTrg", jetTrg_, "jetTrg[nJet][14]/I");

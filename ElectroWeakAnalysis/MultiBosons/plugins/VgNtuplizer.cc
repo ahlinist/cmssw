@@ -190,7 +190,7 @@ VgNtuplizer::VgNtuplizer(const edm::ParameterSet& ps) : verbosity_(0), helper_(p
   tree_->Branch("eleIsoHcalDR04", eleIsoHcalDR04_, "eleIsoHcalDR04[nEle]/F");
   // Photon
   tree_->Branch("nPho", &nPho_, "nPho/I");
-  tree_->Branch("phoTrg", &phoTrg_, "phoTrg[nPho][50]/I");
+  tree_->Branch("phoTrg", phoTrg_, "phoTrg[nPho][50]/I");
   tree_->Branch("phoIsPhoton", phoIsPhoton_, "phoIsPhoton[nPho]/O");
   tree_->Branch("phoE", phoE_, "phoE[nPho]/F");
   tree_->Branch("phoEt", phoEt_, "phoEt[nPho]/F");
@@ -241,7 +241,7 @@ VgNtuplizer::VgNtuplizer(const edm::ParameterSet& ps) : verbosity_(0), helper_(p
   tree_->Branch("phoPi0Disc",phoPi0Disc_ , "phoPi0Disc[nPho]/F");
   // Muon
   tree_->Branch("nMu", &nMu_, "nMu/I");
-  tree_->Branch("muTrg", &muTrg_, "muTrg[nMu][50]/I");
+  tree_->Branch("muTrg", muTrg_, "muTrg[nMu][50]/I");
   tree_->Branch("muEta", muEta_, "muEta[nMu]/F");
   tree_->Branch("muPhi", muPhi_, "muPhi[nMu]/F");
   tree_->Branch("muCharge", muCharge_, "muCharge[nMu]/I");
@@ -269,7 +269,7 @@ VgNtuplizer::VgNtuplizer(const edm::ParameterSet& ps) : verbosity_(0), helper_(p
   // Jet
   if (doStoreJets_) {
     tree_->Branch("nJet", &nJet_, "nJet/I");
-    tree_->Branch("jetTrg", &jetTrg_, "jetTrg[nJet][50]");
+    tree_->Branch("jetTrg", jetTrg_, "jetTrg[nJet][50]");
     tree_->Branch("jetEn", jetEn_, "jetEn[nJet]/F");
     tree_->Branch("jetPt", jetPt_, "jetPt[nJet]/F");
     tree_->Branch("jetEta", jetEta_, "jetEta[nJet]/F");
@@ -356,6 +356,18 @@ VgNtuplizer::~VgNtuplizer() {
 }
 
 void VgNtuplizer::produce(edm::Event & e, const edm::EventSetup & es) {
+
+  nHLT_   = 0;
+  nVtx_   = 0;
+  nMC_    = 0;
+  nEle_   = 0;
+  nPho_   = 0;
+  nMu_    = 0;
+  nJet_   = 0;
+  nZee_   = 0;
+  nZmumu_ = 0;
+  nWenu_  = 0;
+  nWmunu_ = 0;
 
   hEvents_->Fill(0.5);
 
@@ -871,7 +883,7 @@ void VgNtuplizer::produce(edm::Event & e, const edm::EventSetup & es) {
 
       phoOverlap_[nPho_] = (int) iPho->hasOverlaps("electrons");
       phohasPixelSeed_[nPho_] = (int) iPho->hasPixelSeed();
-
+ 
       // where is photon ? (0: EB, 1: EE, 2: EBGap, 3: EEGap, 4: EBEEGap)
       phoPos_[nPho_] = -1;
       if (iPho->isEB() == true) phoPos_[nPho_] = 0;
@@ -1265,6 +1277,19 @@ void VgNtuplizer::produce(edm::Event & e, const edm::EventSetup & es) {
     if ( jetHandle_.isValid() )
       for (View<pat::Jet>::const_iterator iJet = jetHandle_->begin(); iJet != jetHandle_->end(); ++iJet) {
 
+	std::cout << iJet->hasCorrFactors() << std::endl;
+
+	
+	/*
+	if(iJet->hasCorrFactors())
+	  for( std::vector<std::string>::const_iterator ilbl = iJet->corrFactorSetLabels().begin();
+	       ilbl != iJet->corrFactorSetLabels().end();
+	       ++ilbl ) {
+	    std::cout << "Correction Factor: " << ilbl - iJet->corrFactorSetLabels().begin() << std::endl;
+	    std::cout << *ilbl << std::endl;
+	  }
+	*/
+
         if ( iJet->pt() < 15 ) continue;
 
 	jetTrg_[nJet_][0] = (iJet->triggerObjectMatchesByPath("HLT_Jet15U").size()) ? 1 : -99;
@@ -1290,6 +1315,9 @@ void VgNtuplizer::produce(edm::Event & e, const edm::EventSetup & es) {
 	jetMass_[nJet_]   = iJet->mass();
 	jetCharge_[nJet_] = iJet->jetCharge();
 	jetEt_[nJet_]     = iJet->et();
+	
+	//std::cout << iJet->correctedJet("RAW").pt() << ' ' << iJet->correctedJet("RAW").energy() << std::endl;
+	
 	jetRawPt_[nJet_]  = (*iJet).correctedJet("RAW").pt();
 	jetRawEn_[nJet_]  = (*iJet).correctedJet("RAW").energy();
 	jetpartonFlavour_[nJet_] = iJet->partonFlavour();
