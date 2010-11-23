@@ -11,7 +11,7 @@ outputFilePath = "/castor/cern.ch/user/j/jkolb/elecTauAnalysis/fall10/current/"
 #inputFileType = "RECO/AOD"
 inputFileType = "PATTuple"
 
-inputFilePath = "/castor/cern.ch/user/j/jkolb/elecTauPatTuples/spring10/current/"
+inputFilePath = "/castor/cern.ch/user/j/jkolb/elecTauPatTuples/fall10/current/"
 
 # small cmsRun job for testing purposes...
 #submitToBatch(configFile = "runZtoElecTau_cfg.py", channel = "ZtoElecTau",
@@ -43,7 +43,7 @@ for i in range(417):
 		job = "analysis", queue = "8nh", outputFilePath = outputFilePath, type = "data",
 		resourceRequest = None, submit = "yes")
 
-for i in range(417,885):
+for i in range(417,1097):
 	submitToBatch(configFile = "runZtoElecTau_cfg.py", channel = "ZtoElecTau",
 		sample = "Data2010B_part%(i)02d" % {"i" : (i + 1)},
 		replFunction = makeReplacementsAnalysis, replacements =
@@ -58,122 +58,102 @@ for i in range(417,885):
 # Z --> tau tau jobs
 for i in range(21):
 	submitToBatch(configFile = "runZtoElecTau_cfg.py", channel = "ZtoElecTau",
-		sample = "Ztautau_7TeV_part%(i)02d" % {"i" : (i + 1)},
+		sample = "Ztautau_part%(i)02d" % {"i" : (i + 1)},
 		replFunction = makeReplacementsAnalysis, replacements =
-		"maxEvents = -1; globalTag = START3X_V27::All; inputFileType = " + inputFileType + "; inputFilePath = " + inputFilePath + "; applyFactorization = false; estimateSysUncertainties = false",
+		"maxEvents = -1; globalTag = START38_V12::All; inputFileType = " + inputFileType + "; inputFilePath = " + inputFilePath + "; applyFactorization = false; estimateSysUncertainties = false",
 		job = "analysis", queue = "8nh", outputFilePath = outputFilePath, type = "mc")
 
 	# Z --> e e jobs
-for i in range(84):
+for i in range(81):
 	submitToBatch(configFile = "runZtoElecTau_cfg.py", channel = "ZtoElecTau",
-		sample = "Zee_7TeV_part%(i)02d" % {"i" : (i + 1)},
+		sample = "Zee_part%(i)02d" % {"i" : (i + 1)},
 		replFunction = makeReplacementsAnalysis, replacements =
-		"maxEvents = -1; globalTag = START3X_V27::All; inputFileType = " + inputFileType + "; inputFilePath = " + inputFilePath + "; applyFactorization = false; estimateSysUncertainties = false",
+		"maxEvents = -1; globalTag = START38_V12::All; inputFileType = " + inputFileType + "; inputFilePath = " + inputFilePath + "; applyFactorization = false; estimateSysUncertainties = false",
 		job = "analysis", queue = "8nh", outputFilePath = outputFilePath, type = "mc")
 
 	# Photon + jets jobs
-submitToBatch(configFile = "runZtoElecTau_cfg.py", channel = "ZtoElecTau",
-		sample = "PhotonPlusJets_Pt15to20_part01",
-		replFunction = makeReplacementsAnalysis, replacements =
-		"maxEvents = -1; globalTag = START38_V12::All; inputFileType = " + inputFileType + "; inputFilePath = " + inputFilePath + "; applyFactorization = true; estimateSysUncertainties = false",
-		job = "analysis", queue = "8nh", outputFilePath = outputFilePath, type = "mc")
-submitToBatch(configFile = "runZtoElecTau_cfg.py", channel = "ZtoElecTau",
-		sample = "PhotonPlusJets_Pt20to30_part01",
-		replFunction = makeReplacementsAnalysis, replacements =
-		"maxEvents = -1; globalTag = START38_V12::All; inputFileType = " + inputFileType + "; inputFilePath = " + inputFilePath + "; applyFactorization = true; estimateSysUncertainties = false",
-		job = "analysis", queue = "8nh", outputFilePath = outputFilePath, type = "mc")
-submitToBatch(configFile = "runZtoElecTau_cfg.py", channel = "ZtoElecTau",
-		sample = "PhotonPlusJets_Pt30to50_part01",
-		replFunction = makeReplacementsAnalysis, replacements =
-		"maxEvents = -1; globalTag = START38_V12::All; inputFileType = " + inputFileType + "; inputFilePath = " + inputFilePath + "; applyFactorization = true; estimateSysUncertainties = false",
-		job = "analysis", queue = "8nh", outputFilePath = outputFilePath, type = "mc")
-submitToBatch(configFile = "runZtoElecTau_cfg.py", channel = "ZtoElecTau",
-		sample = "PhotonPlusJets_Pt50to80_part01",
-		replFunction = makeReplacementsAnalysis, replacements =
-		"maxEvents = -1; globalTag = START38_V12::All; inputFileType = " + inputFileType + "; inputFilePath = " + inputFilePath + "; applyFactorization = true; estimateSysUncertainties = false",
-		job = "analysis", queue = "8nh", outputFilePath = outputFilePath, type = "mc")
-submitToBatch(configFile = "runZtoElecTau_cfg.py", channel = "ZtoElecTau",
-		sample = "PhotonPlusJets_Pt80to120_part01",
-		replFunction = makeReplacementsAnalysis, replacements =
-		"maxEvents = -1; globalTag = START38_V12::All; inputFileType = " + inputFileType + "; inputFilePath = " + inputFilePath + "; applyFactorization = true; estimateSysUncertainties = false",
-		job = "analysis", queue = "8nh", outputFilePath = outputFilePath, type = "mc")
-for i in range(10):
+for i in range(3):
 	submitToBatch(configFile = "runZtoElecTau_cfg.py", channel = "ZtoElecTau",
-		sample = "PhotonPlusJets_Pt30_part%(i)02d" % {"i" : (i + 1)},
+		sample = "PhotonPlusJets_Pt15to30_part%(i)02d" % {"i" : (i + 1)},
 		replFunction = makeReplacementsAnalysis, replacements =
 		"maxEvents = -1; globalTag = START38_V12::All; inputFileType = " + inputFileType + "; inputFilePath = " + inputFilePath + "; applyFactorization = true; estimateSysUncertainties = false",
 		job = "analysis", queue = "8nh", outputFilePath = outputFilePath, type = "mc")
-
+for i in range(4):
+	submitToBatch(configFile = "runZtoElecTau_cfg.py", channel = "ZtoElecTau",
+		sample = "PhotonPlusJets_Pt30to50_part%(i)02d" % {"i" : (i + 1)},
+		replFunction = makeReplacementsAnalysis, replacements =
+		"maxEvents = -1; globalTag = START38_V12::All; inputFileType = " + inputFileType + "; inputFilePath = " + inputFilePath + "; applyFactorization = true; estimateSysUncertainties = false",
+		job = "analysis", queue = "8nh", outputFilePath = outputFilePath, type = "mc")
+for i in range(4):
+	submitToBatch(configFile = "runZtoElecTau_cfg.py", channel = "ZtoElecTau",
+		sample = "PhotonPlusJets_Pt50to80_part%(i)02d" % {"i" : (i + 1)},
+		replFunction = makeReplacementsAnalysis, replacements =
+		"maxEvents = -1; globalTag = START38_V12::All; inputFileType = " + inputFileType + "; inputFilePath = " + inputFilePath + "; applyFactorization = true; estimateSysUncertainties = false",
+		job = "analysis", queue = "8nh", outputFilePath = outputFilePath, type = "mc")
 
 # QCD_BCtoE jobs
-for i in range(195):
+for i in range(101):
 	submitToBatch(configFile = "runZtoElecTau_cfg.py", channel = "ZtoElecTau",
-		sample = "QCD_BCtoE_Pt20to30_7TeV_part%(i)02d" % {"i" : (i + 1)},
+		sample = "QCD_BCtoE_Pt20to30_part%(i)02d" % {"i" : (i + 1)},
 		replFunction = makeReplacementsAnalysis, replacements =
-		"maxEvents = -1; globalTag = START3X_V27::All; inputFileType = " + inputFileType + "; inputFilePath = " + inputFilePath + "; applyFactorization = true; estimateSysUncertainties = false",
+		"maxEvents = -1; globalTag = START38_V12::All; inputFileType = " + inputFileType + "; inputFilePath = " + inputFilePath + "; applyFactorization = true; estimateSysUncertainties = false",
 		job = "analysis", queue = "8nh", outputFilePath = outputFilePath, type = "mc")
 
-for i in range(167):
+for i in range(201):
 	submitToBatch(configFile = "runZtoElecTau_cfg.py", channel = "ZtoElecTau",
-		sample = "QCD_BCtoE_Pt30to80_7TeV_part%(i)02d" % {"i" : (i + 1)},
+		sample = "QCD_BCtoE_Pt30to80_part%(i)02d" % {"i" : (i + 1)},
 		replFunction = makeReplacementsAnalysis, replacements =
-		"maxEvents = -1; globalTag = START3X_V27::All; inputFileType = " + inputFileType + "; inputFilePath = " + inputFilePath + "; applyFactorization = true; estimateSysUncertainties = false",
+		"maxEvents = -1; globalTag = START38_V12::All; inputFileType = " + inputFileType + "; inputFilePath = " + inputFilePath + "; applyFactorization = true; estimateSysUncertainties = false",
 		job = "analysis", queue = "8nh", outputFilePath = outputFilePath, type = "mc")
 
-for i in range(84):
+for i in range(206):
 	submitToBatch(configFile = "runZtoElecTau_cfg.py", channel = "ZtoElecTau",
-		sample = "QCD_BCtoE_Pt80to170_7TeV_part%(i)02d" % {"i" : (i + 1)},
+		sample = "QCD_BCtoE_Pt80to170_part%(i)02d" % {"i" : (i + 1)},
 		replFunction = makeReplacementsAnalysis, replacements =
-		"maxEvents = -1; globalTag = START3X_V27::All; inputFileType = " + inputFileType + "; inputFilePath = " + inputFilePath + "; applyFactorization = true; estimateSysUncertainties = false",
+		"maxEvents = -1; globalTag = START38_V12::All; inputFileType = " + inputFileType + "; inputFilePath = " + inputFilePath + "; applyFactorization = true; estimateSysUncertainties = false",
 		job = "analysis", queue = "8nh", outputFilePath = outputFilePath, type = "mc")    
 
-# QCD_EMenriched jobs
-for i in range(184):
+# QCD_EM jobs
+for i in range(226):
 	submitToBatch(configFile = "runZtoElecTau_cfg.py", channel = "ZtoElecTau",
-		sample = "QCD_EMenriched_Pt20to30_7TeV_part%(i)02d" % {"i" : (i + 1)},
+		sample = "QCD_EM_Pt20to30_part%(i)02d" % {"i" : (i + 1)},
 		replFunction = makeReplacementsAnalysis, replacements =
-		"maxEvents = -1; globalTag = START3X_V27::All; inputFileType = " + inputFileType + "; inputFilePath = " + inputFilePath + "; applyFactorization = true; estimateSysUncertainties = false",
+		"maxEvents = -1; globalTag = START38_V12::All; inputFileType = " + inputFileType + "; inputFilePath = " + inputFilePath + "; applyFactorization = true; estimateSysUncertainties = false",
 		job = "analysis", queue = "1nd", outputFilePath = outputFilePath, type = "mc")
 
-for i in range(1350):    
+for i in range(1019):    
 	submitToBatch(configFile = "runZtoElecTau_cfg.py", channel = "ZtoElecTau",
-		sample = "QCD_EMenriched_Pt30to80_7TeV_part%(i)02d" % {"i" : (i + 1)},
+		sample = "QCD_EM_Pt30to80_part%(i)02d" % {"i" : (i + 1)},
 		replFunction = makeReplacementsAnalysis, replacements =
-		"maxEvents = -1; globalTag = START3X_V27::All; inputFileType = " + inputFileType + "; inputFilePath = " + inputFilePath + "; applyFactorization = true; estimateSysUncertainties = false",
+		"maxEvents = -1; globalTag = START38_V12::All; inputFileType = " + inputFileType + "; inputFilePath = " + inputFilePath + "; applyFactorization = true; estimateSysUncertainties = false",
 		job = "analysis", queue = "1nd", outputFilePath = outputFilePath, type = "mc")
 
-for i in range(248):    
+for i in range(201):    
 	submitToBatch(configFile = "runZtoElecTau_cfg.py", channel = "ZtoElecTau",
-		sample = "QCD_EMenriched_Pt80to170_7TeV_part%(i)02d" % {"i" : (i + 1)},
+		sample = "QCD_EM_Pt80to170_part%(i)02d" % {"i" : (i + 1)},
 		replFunction = makeReplacementsAnalysis, replacements =
-		"maxEvents = -1; globalTag = START3X_V27::All; inputFileType = " + inputFileType + "; inputFilePath = " + inputFilePath + "; applyFactorization = true; estimateSysUncertainties = false",
+		"maxEvents = -1; globalTag = START38_V12::All; inputFileType = " + inputFileType + "; inputFilePath = " + inputFilePath + "; applyFactorization = true; estimateSysUncertainties = false",
 		job = "analysis", queue = "1nd", outputFilePath = outputFilePath, type = "mc")    
 
-# W/Z + jets jobs
-for i in range(82):
+# W jobs
+for i in range(80):
 	submitToBatch(configFile = "runZtoElecTau_cfg.py", channel = "ZtoElecTau", 
-		sample = "WplusJets_7TeV_part%(i)02d" % {"i" : (i + 1)},
+		sample = "WtoENu_part%(i)02d" % {"i" : (i + 1)},
 		replFunction = makeReplacementsAnalysis, replacements =
-		"maxEvents = -1; globalTag = START3X_V27::All; inputFileType = " + inputFileType + "; inputFilePath = " + inputFilePath + "; applyFactorization = false; estimateSysUncertainties = false; estimateSysUncertainties = false",
+		"maxEvents = -1; globalTag = START38_V12::All; inputFileType = " + inputFileType + "; inputFilePath = " + inputFilePath + "; applyFactorization = false; estimateSysUncertainties = false; estimateSysUncertainties = false",
 		job = "analysis", queue = "1nd", outputFilePath = outputFilePath, type = "mc")
-
-for i in range(14):
+for i in range(32):
 	submitToBatch(configFile = "runZtoElecTau_cfg.py", channel = "ZtoElecTau", 
-		sample = "ZeePlusJets_7TeV_part%(i)02d" % {"i" : (i + 1)},
+		sample = "WtoTauNu_part%(i)02d" % {"i" : (i + 1)},
 		replFunction = makeReplacementsAnalysis, replacements =
-		"maxEvents = -1; globalTag = START3X_V27::All; inputFileType = " + inputFileType + "; inputFilePath = " + inputFilePath + "; applyFactorization = false; estimateSysUncertainties = false; estimateSysUncertainties = false",
-		job = "analysis", queue = "1nd", outputFilePath = outputFilePath, type = "mc")
-	submitToBatch(configFile = "runZtoElecTau_cfg.py", channel = "ZtoElecTau", 
-		sample = "ZtautauPlusJets_7TeV_part%(i)02d" % {"i" : (i + 1)},
-		replFunction = makeReplacementsAnalysis, replacements =
-		"maxEvents = -1; globalTag = START3X_V27::All; inputFileType = " + inputFileType + "; inputFilePath = " + inputFilePath + "; applyFactorization = false; estimateSysUncertainties = false; estimateSysUncertainties = false",
+		"maxEvents = -1; globalTag = START38_V12::All; inputFileType = " + inputFileType + "; inputFilePath = " + inputFilePath + "; applyFactorization = false; estimateSysUncertainties = false; estimateSysUncertainties = false",
 		job = "analysis", queue = "1nd", outputFilePath = outputFilePath, type = "mc")
 
 # TT + jets jobs
-for i in range(52):
-	submitToBatch(configFile = "runZtoElecTau_cfg.py", channel = "ZtoElecTau",
-		sample = "TTplusJets_7TeV_part%(i)02d" % {"i" : (i + 1)},
-		replFunction = makeReplacementsAnalysis, replacements =
-		"maxEvents = -1; globalTag = START3X_V27::All; inputFileType = " + inputFileType + "; inputFilePath = " + inputFilePath + "; applyFactorization = false; estimateSysUncertainties = false; estimateSysUncertainties = false",
-		job = "analysis", queue = "1nd", outputFilePath = outputFilePath, type = "mc")
+#for i in range(52):
+#	submitToBatch(configFile = "runZtoElecTau_cfg.py", channel = "ZtoElecTau",
+#		sample = "TTplusJets_part%(i)02d" % {"i" : (i + 1)},
+#		replFunction = makeReplacementsAnalysis, replacements =
+#		"maxEvents = -1; globalTag = START38_V12::All; inputFileType = " + inputFileType + "; inputFilePath = " + inputFilePath + "; applyFactorization = false; estimateSysUncertainties = false; estimateSysUncertainties = false",
+#		job = "analysis", queue = "1nd", outputFilePath = outputFilePath, type = "mc")
 
