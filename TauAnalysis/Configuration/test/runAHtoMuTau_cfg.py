@@ -53,6 +53,10 @@ process.printGenParticleList = cms.EDAnalyzer("ParticleListDrawer",
 
 # print event content
 process.printEventContent = cms.EDAnalyzer("EventContentAnalyzer")
+process.filterFirstEvent = cms.EDFilter("EventCountFilter",
+    numEvents = cms.int32(1)
+)
+process.o = cms.Path(process.filterFirstEvent + process.printEventContent)
 
 # print debug information whenever plugins get loaded dynamically from libraries
 # (for debugging problems with plugin related dynamic library loading)
@@ -173,7 +177,7 @@ cut_values = {
 }
 
 # Loose cuts
-cuts = cut_values['loose']
+cuts = cut_values['normal']
 # Normal cuts
 #cuts = cut_values['normal']
 
@@ -246,9 +250,9 @@ changeCut(process, "selectedPatTausEcalIso", "tauID('byTaNCtight') > -1.")
 changeCut(process, "selectedPatTausForMuTauEcalIso", "tauID('byTaNCtight') > -1.")
 
 changeCut(process, "selectedPatTausTaNCdiscr",
-          "tauID('byTaNCtight') > %0.2f" % cuts['tanc'])
+          "tauID('byTaNCmedium') > %0.2f" % cuts['tanc'])
 changeCut(process, "selectedPatTausForMuTauTaNCdiscr",
-          "tauID('byTaNCtight') > %0.2f" % cuts['tanc'])
+          "tauID('byTaNCmedium') > %0.2f" % cuts['tanc'])
 
 # change lower limit on separation required between muon and tau-jet to dR > 0.5
 changeCut(process, "selectedMuTauPairsAntiOverlapVeto", "dR12 > 0.5")
@@ -267,6 +271,7 @@ process.filterFinalEvents = cms.EDFilter(
 )
 process.p = cms.Path(
    process.producePatTupleAHtoMuTauSpecific
+  #+ process.printEventContent
 # + process.printGenParticleList # uncomment to enable print-out of generator level particles
 # + process.printEventContent    # uncomment to enable dump of event content after PAT-tuple production
   + process.selectAHtoMuTauEvents
@@ -283,8 +288,11 @@ process.dummy = cms.EDProducer("DummyModule")
 # Path that option output modules can be hooked into
 process.endtasks = cms.EndPath(process.dummy)
 
-process.schedule = cms.Schedule(process.q, process.p,
-                                process.endtasks)
+process.schedule = cms.Schedule(
+    process.q,
+    process.p,
+    process.endtasks
+)
 
 #--------------------------------------------------------------------------------
 # import utility function for switching HLT InputTags when processing
