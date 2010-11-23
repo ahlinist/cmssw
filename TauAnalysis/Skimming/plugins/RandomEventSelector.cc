@@ -2,13 +2,13 @@
  *
  * Randomly throw away events according to a given weight.  Takes as input a
  * double from the event, and throws a random number between 0 and [max].  If
- * the double from the event is less than the thrwo, the event is thrown away.
+ * the double from the event is less than the throw, the event is thrown away.
  *
  * \author Evan Friis, Christian Veelken, UC Davis
  *
- * \version $Revision: 1.2 $
+ * \version $Revision: 1.1 $
  *
- * $Id: $
+ * $Id: RandomEventSelector.cc,v 1.1 2010/11/23 19:06:49 friis Exp $
  */
 
 #include "FWCore/Framework/interface/EDFilter.h"
@@ -23,7 +23,7 @@ class RandomEventSelector : public edm::EDFilter {
   // constructor
   explicit RandomEventSelector(const edm::ParameterSet&);
   // destructor
-  virtual ~RandomEventSelector();
+  virtual ~RandomEventSelector() {}
   bool filter(edm::Event&, const edm::EventSetup&);
  private:
   edm::InputTag src_;
@@ -33,10 +33,10 @@ class RandomEventSelector : public edm::EDFilter {
 
 RandomEventSelector::RandomEventSelector(const edm::ParameterSet& pset) {
   src_ = pset.getParameter<edm::InputTag>("src");
-  max_ = pset.getParameter<edm::InputTag>("max");
+  max_ = pset.getParameter<double>("max");
 }
 
-bool filter(edm::Event& evt, const edm::EventSetup& es) {
+bool RandomEventSelector::filter(edm::Event& evt, const edm::EventSetup& es) {
   edm::Handle<double> weight;
   evt.getByLabel(src_, weight);
   return *weight > randy_.Rndm()*max_;
