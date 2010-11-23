@@ -13,7 +13,7 @@
 //
 // Original Author:  Chi Nhan Nguyen
 //         Created:  Wed Oct  1 13:04:54 CEST 2008
-// $Id: TTEffAnalyzer.h,v 1.38 2010/09/27 08:49:57 slehti Exp $
+// $Id: TTEffAnalyzer.h,v 1.39 2010/11/03 10:11:34 slehti Exp $
 //
 //
 
@@ -40,6 +40,8 @@
 #include "ElectroWeakAnalysis/TauTriggerEfficiency/interface/L1TauEfficiencyAnalyzer.h"
 #include "ElectroWeakAnalysis/TauTriggerEfficiency/interface/L25and3TauEfficiencyAnalyzer.h"
 #include "ElectroWeakAnalysis/TauTriggerEfficiency/interface/L2TauEfficiencyAnalyzer.h"
+#include "ElectroWeakAnalysis/TauTriggerEfficiency/interface/METEfficiencyAnalyzer.h"
+
 
 #include "DataFormats/HepMCCandidate/interface/GenParticle.h"
 
@@ -106,6 +108,7 @@ class TTEffAnalyzer : public edm::EDAnalyzer {
       L1TauEfficiencyAnalyzer _L1analyzer;
       L2TauEfficiencyAnalyzer _L2analyzer;
       L25and3TauEfficiencyAnalyzer _L25and3analyzer;
+      METEfficiencyAnalyzer _METanalyzer;
 
 };
 
