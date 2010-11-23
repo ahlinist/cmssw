@@ -55,9 +55,15 @@ def onia2MuMuPAT(process, GlobalTag, MC=False, HLT='HLT', Filter=True):
         process.muonMatch.resolveByMatchQuality = True
         process.muonMatch.matched = "genMuons"
     changeRecoMuonInput(process, "mergedMuons")
-    useL1MatchingWindowForSinglets(process)
     changeTriggerProcessName(process, HLT)
     switchOffAmbiguityResolution(process) # Switch off ambiguity resolution: allow multiple reco muons to match to the same trigger muon
+    #useL1MatchingWindowForSinglets(process)
+    process.muonL1Info.maxDeltaR     =0.3 
+    process.muonL1Info.fallbackToME1 = True
+    process.muonMatchHLTL1.maxDeltaR     = 0.3
+    process.muonMatchHLTL1.fallbackToME1 = True
+    process.muonMatchHLTL2.maxDeltaR = 0.3
+    process.muonMatchHLTL2.maxDPtRel = 10.0
     process.muonMatchHLTL3.maxDeltaR = 0.1
     process.muonMatchHLTL3.maxDPtRel = 10.0
     process.muonMatchHLTCtfTrack.maxDeltaR = 0.1
