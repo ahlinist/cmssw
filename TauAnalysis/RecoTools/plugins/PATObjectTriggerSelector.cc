@@ -71,7 +71,7 @@ void PATTriggerRangeInfoProducer<T>::produce(edm::Event& evt,
   edm::Handle<edm::View<T> > inputObjects;
   evt.getByLabel(src_, inputObjects);
 
-  std::auto_ptr<std::vector<T> > output;
+  std::auto_ptr<std::vector<T> > output(new std::vector<T>() );
   output->reserve(inputObjects->size());
 
   for (size_t i = 0; i < inputObjects->size(); ++i) {
@@ -84,8 +84,9 @@ void PATTriggerRangeInfoProducer<T>::produce(edm::Event& evt,
       // Check to see if this trigger is valid for the current run range
       if (path.isInRange(evt)) {
         // Check if this pat tau is matched to this trigger object
-        if (!outputObject.triggerObjectMatchesByFilter(
+        if (!outputObject.triggerObjectMatchesByPath(
                 path.hltPathName_).empty()) {
+          // std::cout << "matches!" << std::endl;
           passesTrigger = true;
           break;
         }
