@@ -15,7 +15,8 @@ process.load('Configuration/StandardSequences/GeometryIdeal_cff')
 process.load('Configuration/StandardSequences/MagneticField_cff')
 process.load('Configuration/StandardSequences/Reconstruction_cff')
 process.load('Configuration/StandardSequences/FrontierConditions_GlobalTag_cff')
-process.GlobalTag.globaltag = cms.string('GR_R_38X_V13A::All')
+#process.GlobalTag.globaltag = cms.string('GR_R_38X_V13A::All')
+process.GlobalTag.globaltag = cms.string('GR_R_38X_V13::All')
 
 # load definition of loose Z --> mu+ mu- event selection
 process.load("TauAnalysis.Skimming.looseZmmSelection_cfi")
@@ -32,7 +33,8 @@ process.maxEvents = cms.untracked.PSet(
 
 process.source = cms.Source("PoolSource",
     fileNames = cms.untracked.vstring(
-        'rfio:/castor/cern.ch/user/s/smaruyam/ZmmSkim/smaruyam/Mu/CMSSW_3_8_5_ZmmSkimV4/88174dd9b4b05e756497e260fa3e4f76/goldenZmumuEvents_RAW_RECO_1_1_adj.root',
+        'file:/data1/friis/Run24/skim_AHtoMuTau_data_Mu_Run2010B_Prompt_Run24.root'
+        #'rfio:/castor/cern.ch/user/s/smaruyam/ZmmSkim/smaruyam/Mu/CMSSW_3_8_5_ZmmSkimV4/88174dd9b4b05e756497e260fa3e4f76/goldenZmumuEvents_RAW_RECO_1_1_adj.root',
 	##'rfio:/castor/cern.ch/user/s/smaruyam/ZmmSkim/smaruyam/Mu/CMSSW_3_8_5_ZmmSkimV4/88174dd9b4b05e756497e260fa3e4f76/goldenZmumuEvents_RAW_RECO_2_1_3uZ.root',
 	##'rfio:/castor/cern.ch/user/s/smaruyam/ZmmSkim/smaruyam/Mu/CMSSW_3_8_5_ZmmSkimV4/88174dd9b4b05e756497e260fa3e4f76/goldenZmumuEvents_RAW_RECO_3_1_PXh.root',
 	##'rfio:/castor/cern.ch/user/s/smaruyam/ZmmSkim/smaruyam/Mu/CMSSW_3_8_5_ZmmSkimV4/88174dd9b4b05e756497e260fa3e4f76/goldenZmumuEvents_RAW_RECO_4_1_yHg.root',
@@ -50,47 +52,47 @@ process.source = cms.Source("PoolSource",
 #--------------------------------------------------------------------------------
 
 process.selZmumuSkimPathForMuonInnerTrackRecoEff = cms.Path(
-    process.dataQualityFilters 
+    process.dataQualityFilters
    + process.looseZmumuProductionSequence
    + process.selZmumuFilterForMuonInnerTrackRecoEff
 )
 
 process.selZmumuSkimPathForMuonStandAloneTrackRecoEff = cms.Path(
-    process.dataQualityFilters 
+    process.dataQualityFilters
    + process.looseZmumuProductionSequence
    + process.selZmumuFilterForMuonStandAloneTrackRecoEff
-)    
+)
 
 process.selZmumuSkimPathForMuonGlobalTrackRecoEff = cms.Path(
-    process.dataQualityFilters 
+    process.dataQualityFilters
    + process.looseZmumuProductionSequence
    + process.selZmumuFilterForMuonGlobalTrackRecoEff
-)    
+)
 
 process.selZmumuSkimPathForMuonIdEff = cms.Path(
-    process.dataQualityFilters 
+    process.dataQualityFilters
    + process.looseZmumuProductionSequence
    + process.selZmumuFilterForMuonIdEff
-)    
+)
 
 process.selZmumuSkimPathForMuonIsoEff = cms.Path(
-    process.dataQualityFilters 
+    process.dataQualityFilters
    + process.looseZmumuProductionSequence
    + process.selZmumuFilterForMuonIsoEff
-)    
+)
 
 process.selZmumuSkimPathForMuonTriggerEff = cms.Path(
-    process.dataQualityFilters 
-   + process.looseZmumuProductionSequence  
+    process.dataQualityFilters
+   + process.looseZmumuProductionSequence
    + process.selZmumuFilterForMuonTriggerEff
-)    
+)
 
 #--------------------------------------------------------------------------------
 # select events passing "golden" VTBF Z --> mu+ mu- selection
 #--------------------------------------------------------------------------------
 
 process.goldenZmumuSkimPath = cms.Path(
-    process.dataQualityFilters 
+    process.dataQualityFilters
    + process.goldenZmumuSelectionSequence
 )
 
@@ -98,9 +100,9 @@ process.goldenZmumuSkimPath = cms.Path(
 # save events passing loose Z --> mu+ mu- selection
 #--------------------------------------------------------------------------------
 
-process.looseZmumuSkimOutputModule = cms.OutputModule("PoolOutputModule",                                 
+process.looseZmumuSkimOutputModule = cms.OutputModule("PoolOutputModule",
     #FEVTEventContent,
-    FEVTSIMEventContent,                                                  
+    FEVTSIMEventContent,
     SelectEvents = cms.untracked.PSet(
         SelectEvents = cms.vstring(
             'goldenZmumuSkimPath',
@@ -112,7 +114,7 @@ process.looseZmumuSkimOutputModule = cms.OutputModule("PoolOutputModule",
             'selZmumuSkimPathForMuonTriggerEff'
         )
     ),
-    fileName = cms.untracked.string('looseZmumuEvents_runs132440to144114_RAW_RECO.root')
+    fileName = cms.untracked.string('looseZmumuSkim.root')
 )
 
 process.options = cms.untracked.PSet(
