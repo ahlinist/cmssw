@@ -8,8 +8,9 @@
 #include <iomanip>
 
 DQMEffXsecCalculator::DQMEffXsecCalculator(const edm::ParameterSet& cfg)
+  : moduleLabel_(cfg.getParameter<std::string>("@module_label"))
 {
-  std::cout << "<DQMEffXsecCalculator::DQMEffXsecCalculator>:" << std::endl;
+  //std::cout << "<DQMEffXsecCalculator::DQMEffXsecCalculator>:" << std::endl;
 
   dataIntLumi_ = cfg.getParameter<double>("dataIntLumi");
 
@@ -40,6 +41,7 @@ DQMEffXsecCalculator::~DQMEffXsecCalculator()
 void DQMEffXsecCalculator::endJob()
 {
   std::cout << "<DQMEffXsecCalculator::endJob>:" << std::endl;
+  std::cout << " moduleLabel = " << moduleLabel_ << std::endl;
 
 //--- check that DQMStore service is available
   if ( !edm::Service<DQMStore>().isAvailable() ) {

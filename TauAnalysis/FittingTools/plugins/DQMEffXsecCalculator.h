@@ -8,9 +8,9 @@
  *
  * \author Christian Veelken, UC Davis
  *
- * \version $Revision: 1.1 $
+ * \version $Revision: 1.2 $
  *
- * $Id: DQMEffXsecCalculator.h,v 1.1 2010/11/17 10:53:03 veelken Exp $
+ * $Id: DQMEffXsecCalculator.h,v 1.2 2010/11/17 19:23:29 veelken Exp $
  *
  */
 
@@ -42,6 +42,8 @@ class DQMEffXsecCalculator : public edm::EDAnalyzer
 
 //--- configuration parameters
   double dataIntLumi_;
+
+  std::string moduleLabel_;
 
   struct channelEntryType
   { 
@@ -85,12 +87,12 @@ class DQMEffXsecCalculator : public edm::EDAnalyzer
 
       double effXsec = numEventsPassed/(dataIntLumi_*efficiency);
 
-      std::cout << "<getEffXsec>:" << std::endl;
-      std::cout << " name = " << name_ << std::endl;
-      std::cout << " numerator = " << numerator << std::endl;
-      std::cout << " denominator = " << denominator << std::endl;
-      std::cout << " efficiency = " << efficiency << std::endl;
-      std::cout << "--> effXsec = " << effXsec << std::endl;
+      //std::cout << "<getEffXsec>:" << std::endl;
+      //std::cout << " name = " << name_ << std::endl;
+      //std::cout << " numerator = " << numerator << std::endl;
+      //std::cout << " denominator = " << denominator << std::endl;
+      //std::cout << " efficiency = " << efficiency << std::endl;
+      //std::cout << "--> effXsec = " << effXsec << std::endl;
       
       return effXsec;
     }
