@@ -7,7 +7,8 @@ import TauAnalysis.DQMTools.plotterStyleDefinitions_cfi as styles
 # List of samples to run in the analysis
 SAMPLES_TO_ANALYZE = [
     'data_Mu_Run2010A_Sep17ReReco',
-    'data_Mu_Run2010B_Prompt',
+    'data_Mu_Run2010A_Nov4ReReco',
+    'data_Mu_Run2010B_Nov4ReReco',
     ##'Ztautau', 'qqZtautau',
     'ZtautauPU156bx', 'qqZtautauPU156bx',
     'Zmumu',
@@ -75,10 +76,10 @@ RECO_SAMPLES = {
     'data_Mu_Run2010A_Sep17ReReco' : {
         'datasetpath' : '/Mu/Run2010A-Sep17ReReco_v2/RECO',
         'dbs_url' :  "http://cmsdbsprod.cern.ch/cms_dbs_prod_global/servlet/DBSServlet",
-        'lumi_mask' : "/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions10/7TeV/StreamExpress/Cert_132440-149442_7TeV_StreamExpress_Collisions10_JSON_v2.txt",
-        'runselection' : "132440 - 145761",
+        'lumi_mask' : "/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions10/7TeV/Reprocessing/Cert_132440-144114_7TeV_Sep17ReReco_Collisions10_JSON_v2.txt",
+        'runselection' : "132440-135735",
         'number_of_jobs' : 500,
-        'conditions' : 'GR_R_38X_V13A::All',
+        'conditions' : 'GR_R_38X_V14::All',
         'events_processed' : -1,
         'skim_eff' : 1.0,
         'type' : 'Data',
@@ -86,13 +87,27 @@ RECO_SAMPLES = {
         'enableSysUncertainties' : False,
         'enableFakeRates' : True,
     },
-    'data_Mu_Run2010B_Prompt' : {
-        'datasetpath' : '/Mu/Run2010B-PromptReco-v2/RECO',
+    'data_Mu_Run2010A_Nov4ReReco' : {
+        'datasetpath' : '/Mu/Run2010A-Nov4ReReco_v1/RECO',
         'dbs_url' :  "http://cmsdbsprod.cern.ch/cms_dbs_prod_global/servlet/DBSServlet",
-        'lumi_mask' : "/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions10/7TeV/StreamExpress/Cert_132440-149442_7TeV_StreamExpress_Collisions10_JSON_v2.txt",
-        'runselection' : '145762 - 149442',
+        'lumi_mask' : "/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions10/7TeV/Reprocessing/Cert_136033-149442_7TeV_Nov4ReReco_Collisions10_JSON.txt",
+        'runselection' : "136033-144114",
+        'number_of_jobs' : 500,
+        'conditions' : 'GR_R_38X_V14::All',
+        'events_processed' : -1,
+        'skim_eff' : 1.0,
+        'type' : 'Data',
+        'drawOption' : styles.drawOption_Data,
+        'enableSysUncertainties' : False,
+        'enableFakeRates' : True,
+    },
+    'data_Mu_Run2010B_Nov4ReReco' : {
+        'datasetpath' : '/Mu/Run2010B-Nov4ReReco_v1/RECO',
+        'dbs_url' :  "http://cmsdbsprod.cern.ch/cms_dbs_prod_global/servlet/DBSServlet",
+        'lumi_mask' : "/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions10/7TeV/Reprocessing/Cert_136033-149442_7TeV_Nov4ReReco_Collisions10_JSON.txt",
+        'runselection' : '146428-149442',
         'number_of_jobs' : 1000,
-        'conditions' : 'GR_R_38X_V13::All',
+        'conditions' : 'GR_R_38X_V14::All',
         'events_processed' : -1,
         'skim_eff' : 1.0,
         'type' : 'Data',
@@ -304,7 +319,8 @@ MERGE_SAMPLES = {
     'data' : {
         'samples' : [
             'data_Mu_Run2010A_Sep17ReReco',
-            'data_Mu_Run2010B_Prompt'
+            'data_Mu_Run2010A_Nov4ReReco',
+            'data_Mu_Run2010B_Nov4ReReco'
         ],
         'legendEntry' : 'DATA',
         'type' : 'Data',
