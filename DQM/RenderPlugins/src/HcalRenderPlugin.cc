@@ -2,8 +2,8 @@
   \file HcalRenderPlugin.cc
   \brief Display Plugin for Hcal DQM Histograms
   \author J. Temple
-  \version $Revision: 1.47 $
-  \date $Date: 2010/10/08 12:55:55 $
+  \version $Revision: 1.48 $
+  \date $Date: 2010/11/11 07:03:55 $
   \\
   \\ Code shamelessly borrowed from S. Dutta's SiStripRenderPlugin.cc code,
   \\ G. Della Ricca and B. Gobbo's EBRenderPlugin.cc, and other existing
@@ -1043,7 +1043,10 @@ private:
     int firstnonzerobin=1;
     int lastnonzerobin=1;
 
-    if(o.name.find("DeadCellMonitor_Hcal/TotalDeadCells_HCAL_vs_LS") !=std::string::npos)
+    if( (o.name.find("DeadCellMonitor_Hcal/TotalDeadCells_HCAL_vs_LS") !=std::string::npos) ||
+	(o.name.find("DeadCellMonitor_Hcal/TotalDeadCells_HO_vs_LS") !=std::string::npos) ||
+	(o.name.find("DeadCellMonitor_Hcal/TotalDeadCells_HBHEHF_vs_LS") !=std::string::npos) 
+	)
       {
 	//Search for the last deadcell count
 	for (int i=1;i<=obj->GetNbinsX();++i)
