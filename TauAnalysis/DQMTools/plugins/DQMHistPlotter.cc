@@ -1031,7 +1031,7 @@ void DQMHistPlotter::endJob()
     for ( plotDefList::const_iterator plot = drawJob->plots_.begin();
 	  plot != drawJob->plots_.end(); ++plot ) {
 
-      std::string dqmMonitorElementName_full = dqmDirectoryName(std::string(dqmRootDirectory)).append(plot->dqmMonitorElement_);
+      std::string dqmMonitorElementName_full = plot->dqmMonitorElement_;
       //std::cout << " dqmMonitorElementName_full = " << dqmMonitorElementName_full << std::endl;
       MonitorElement* dqmMonitorElement = dqmStore.get(dqmMonitorElementName_full);
 
