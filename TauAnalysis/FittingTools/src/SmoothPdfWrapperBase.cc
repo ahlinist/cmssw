@@ -92,8 +92,8 @@ RooRealVar* SmoothPdfWrapperBase::makeRooRealVar(const std::string& name, const 
   }
 
   double initial = cfg.getParameter<double>("initial");
-  double min = ( cfg.exists("min") ) ? cfg.getParameter<double>("min") : -RooNumber::infinity();
-  double max = ( cfg.exists("max") ) ? cfg.getParameter<double>("max") : +RooNumber::infinity();
+  double min = cfg.getParameter<double>("min");
+  double max = cfg.getParameter<double>("max");
   double uncertainty = ( cfg.exists("uncertainty") ) ? cfg.getParameter<double>("uncertainty") : -1.;
 
 //--- create new parameter  
