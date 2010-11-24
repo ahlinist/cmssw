@@ -6,12 +6,22 @@ from TauAnalysis.RecoTools.tools.eventSelFlagProdConfigurator import *
 # define event selection criteria for Z --> e + tau-jet channel
 #--------------------------------------------------------------------------------
 
+# 
+cfgGenPhaseSpaceCut = cms.PSet(
+    pluginName = cms.string('genPhaseSpaceCut'),
+    pluginType = cms.string('GenPhaseSpaceEventInfoSelector'),
+    src = cms.InputTag('genPhaseSpaceEventInfo'),
+    cut = cms.string('')
+)
+
 # trigger selection
 cfgTrigger = cms.PSet(
     pluginName = cms.string('Trigger'),
-    pluginType = cms.string('TriggerResultEventSelector'),
-    src = cms.InputTag('TriggerResults::HLT'),
-	triggerPaths = cms.vstring('HLT_Ele15_SW_EleId_L1R', 'HLT_Ele15_SW_LooseTrackIso_L1R')
+	#pluginType = cms.string('TriggerResultEventSelector'),
+    pluginType = cms.string('PATTriggerEventSelector'),
+	#src = cms.InputTag('TriggerResults::HLT'),
+    src = cms.InputTag('patTriggerEvent'),
+	hltAcceptPaths = cms.vstring('HLT_Ele15_SW_EleId_L1R', 'HLT_Ele15_SW_LooseTrackIso_L1R')
 )
 
 # primary event vertex selection
@@ -233,7 +243,8 @@ cfgElecTauPairZeeHypothesisVeto = cms.PSet(
 )
 
 zToElecTauEventSelConfigurator = eventSelFlagProdConfigurator(
-    [ cfgTrigger,
+    [ cfgGenPhaseSpaceCut,
+	  cfgTrigger,
       cfgPrimaryEventVertex,
       cfgPrimaryEventVertexQuality,
       cfgPrimaryEventVertexPosition,
