@@ -278,8 +278,7 @@ double getRatio(DQMStore& dqmStore, const std::string& dqmDirectory,
 
 std::string dqmDirectoryName_full(const std::string& dqmDirectory, const std::string& dqmSubDirectory)
 {
-  std::string dqmDirectoryName_full = dqmDirectoryName(std::string(dqmRootDirectory)).append(dqmDirectory);
-  dqmDirectoryName_full = dqmDirectoryName(dqmDirectoryName_full).append(dqmSubDirectory);
+  std::string dqmDirectoryName_full = dqmDirectoryName(dqmDirectory).append(dqmSubDirectory);
   return dqmDirectoryName_full;
 }
 
