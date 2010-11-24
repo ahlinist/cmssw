@@ -39,11 +39,14 @@ SAMPLE_DEFAULTS = {
     'genPhaseSpaceCut' : '',
     'factorize' : False,
     'applyZrecoilCorrection' : False,
+    'applyMuonTriggerEfficiencyCorrection' : False, # to be used for MC only
+    'applyVertexMultiplicityReweighting' : False,   # to be used for MC with pile-up only
     'enableSysUncertainties' : False,
     'lumi_mask' : '',
     'runselection' : '',
     'SE_white_list' : '',
-    'SE_black_list' : ''
+    'SE_black_list' : '',
+    'disableDuplicateCheck' : False
 }
 
 # Conversions to pico barns
@@ -98,6 +101,7 @@ RECO_SAMPLES = {
         'type' : plotter.process_Ztautau.config_dqmHistPlotter.type.value(),
         'drawOption' : styles.drawOption_Ztautau,
         'applyZrecoilCorrection' : True,
+        'applyVertexMultiplicityReweighting' : True,
         'hlt' : cms.InputTag("TriggerResults", "", "REDIGI38XPU"),
         'hlt_paths' : [ 'HLT_DoubleIsoTau15_Trk5' ]
     },
@@ -135,7 +139,8 @@ RECO_SAMPLES = {
         'drawOption' : styles.drawOption_QCD,
         'factorize' : True,
         'hlt' : cms.InputTag("TriggerResults", "", "HLT"),
-        'hlt_paths' : [ 'HLT_DoubleLooseIsoTau15_Trk5' ]
+        'hlt_paths' : [ 'HLT_DoubleLooseIsoTau15_Trk5' ],
+        'SE_black_list' : 'T2_FR_CCIN2P3'
     },
     'WplusJets' : {
         'datasetpath' : "/WJets-madgraph/akalinow-SkimTauTau_356_pass1-0a3d3891f015a95324f94837322fb8aa-diTauSkim/USER",
