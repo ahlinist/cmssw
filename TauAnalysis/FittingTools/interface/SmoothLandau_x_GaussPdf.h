@@ -9,7 +9,7 @@
  *
  * \version $Revision: 1.1 $
  *
- * $Id: SmoothLandau_x_GaussPdf.h,v 1.1 2009/11/27 15:46:33 veelken Exp $
+ * $Id: SmoothLandau_x_GaussPdf.h,v 1.1 2010/05/26 15:00:26 veelken Exp $
  *
  */
 
@@ -41,7 +41,6 @@ class SmoothLandau_x_GaussPdf : public RooAbsPdf
   RooRealProxy area_;
   RooRealProxy gsigma_;
 };
-
 
 #endif  
 
