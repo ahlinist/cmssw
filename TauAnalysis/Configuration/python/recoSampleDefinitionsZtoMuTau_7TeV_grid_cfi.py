@@ -301,10 +301,10 @@ RECO_SAMPLES = {
         'applyVertexMultiplicityReweighting' : True
     },
     'TTplusJets' : {
-        'datasetpath' : "/TTJets_TuneZ2_7TeV-madgraph-tauola/Fall10-E7TeV_ProbDist_2010Data_BX156_START38_V12-v1/GEN-SIM-RECO",
-        'events_processed' : 1164732,
+        'datasetpath' : "/TT_TuneZ2_7TeV-pythia6-tauola/Fall10-E7TeV_ProbDist_2010Data_BX156_START38_V12-v1/GEN-SIM-RECO",
+        'events_processed' : 1095950,
         'skim_eff' : 1.0,
-        'x_sec' : 121*_picobarns,
+        'x_sec' : 165*_picobarns, # NNLO cross-section from https://twiki.cern.ch/twiki/bin/viewauth/CMS/StandardModelCrossSections
         'legendEntry' : plotter.process_TTplusJets.config_dqmHistPlotter.legendEntry.value(),
         'type' : plotter.process_TTplusJets.config_dqmHistPlotter.type.value(),
         'drawOption' : styles.drawOption_TTplusJets,
@@ -343,9 +343,9 @@ MERGE_SAMPLES = {
             'PPmuXptGt20Mu10',
             'PPmuXptGt20Mu15'
         ],
-        'legendEntry' : 'QCD',
-        'type' : 'smMC',
-        'drawOption' : styles.drawOption_QCD,
+        'legendEntry' : plotter.process_PPmuXptGt20.config_dqmHistPlotter.legendEntry.value(),
+        'type' : plotter.process_PPmuXptGt20.config_dqmHistPlotter.type.value(),
+        'drawOption' : styles.drawOption_QCD
     },
     'WplusJets' : {
         'samples' : [
