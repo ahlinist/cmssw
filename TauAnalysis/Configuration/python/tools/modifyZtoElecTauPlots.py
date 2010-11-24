@@ -4,10 +4,10 @@ import copy
 def modifyPlots(process):
 	TZtZeWGQ = cms.vstring(
 		'Data',
-		'TTplusJets', 
+		#'TTplusJets', 
 		'Ztautau',
 		'Zee', 
-		'WplusJets', 
+		'wPlusJetsSum', 
 		'gammaPlusJetsSum',
 		'qcdEMenrichedSum',
 		'qcdBCtoESum'
@@ -15,18 +15,18 @@ def modifyPlots(process):
 	ZtTZeWGQ = cms.vstring(
 		'Data',
 		'Ztautau',
-		'TTplusJets', 
+		#'TTplusJets', 
 		'Zee', 
-		'WplusJets', 
+		'wPlusJetsSum', 
 		'gammaPlusJetsSum',
 		'qcdEMenrichedSum',
 		'qcdBCtoESum'
 	)
 	TZtWGQZe = cms.vstring(
 		'Data',
-		'TTplusJets', 
+		#'TTplusJets', 
 		'Ztautau',
-		'WplusJets', 
+		'wPlusJetsSum', 
 		'gammaPlusJetsSum',
 		'qcdEMenrichedSum',
 		'qcdBCtoESum',
@@ -35,8 +35,8 @@ def modifyPlots(process):
 	ZtTWGQZe = cms.vstring(
 		'Data',
 		'Ztautau',
-		'TTplusJets', 
-		'WplusJets', 
+		#'TTplusJets', 
+		'wPlusJetsSum', 
 		'gammaPlusJetsSum',
 		'qcdEMenrichedSum',
 		'qcdBCtoESum',
@@ -44,41 +44,51 @@ def modifyPlots(process):
 	)
 	TZtGWZeQ = cms.vstring(
 		'Data',
-		'TTplusJets', 
+		#'TTplusJets', 
 		'Ztautau',
 		'gammaPlusJetsSum',
-		'WplusJets', 
+		'wPlusJetsSum', 
 		'Zee', 
 		'qcdEMenrichedSum',
 		'qcdBCtoESum'
 	)
 	TGQZtWZe = cms.vstring(
 		'Data',
-		'TTplusJets', 
+		#'TTplusJets', 
 		'gammaPlusJetsSum',
 		'qcdEMenrichedSum',
 		'qcdBCtoESum',
 		'Ztautau',
-		'WplusJets', 
+		'wPlusJetsSum', 
 		'Zee'
 	)
 	ZtTQGZeW = cms.vstring(
 		'Data',
 		'Ztautau',
-		'TTplusJets', 
+		#'TTplusJets', 
 		'qcdEMenrichedSum',
 		'qcdBCtoESum',
 		'gammaPlusJetsSum',
 		'Zee',
-		'WplusJets'
+		'wPlusJetsSum'
 	)
 	ZtTGWZeQ = cms.vstring(
 		'Data',
 		'Ztautau',
-		'TTplusJets', 
+		#'TTplusJets', 
 		'gammaPlusJetsSum',
-		'WplusJets',
+		'wPlusJetsSum',
 		'Zee',
+		'qcdEMenrichedSum',
+		'qcdBCtoESum'
+	)
+	ZeWZtTGQ = cms.vstring(
+		'Data',
+		'Zee',
+		'wPlusJetsSum',
+		'Ztautau',
+		#'TTplusJets', 
+		'gammaPlusJetsSum',
 		'qcdEMenrichedSum',
 		'qcdBCtoESum'
 	)
@@ -141,4 +151,14 @@ def modifyPlots(process):
 
 	process.plotZtoElecTau.drawJobs.cutFlowControlPlots_vertexZ_afterPrimaryEventVertexQuality.yAxis = cms.string('numEntries_log')
 	process.plotZtoElecTau.drawJobs.cutFlowControlPlots_vertexZ_afterPrimaryEventVertexQuality.plots.processes = ZtTZeWGQ
+
+	process.plotZtoElecTau.drawJobs.finalSamplePlots_mSVmethod.plots.processes = ZeWZtTGQ
+	process.plotZtoElecTau.drawJobs.finalSamplePlots_mVisible.plots.processes = ZeWZtTGQ
+	process.plotZtoElecTau.drawJobs.finalSamplePlots_mtTauMET.plots.processes = ZeWZtTGQ
+	process.plotZtoElecTau.drawJobs.finalSamplePlots_mCollApprox.plots.processes = ZeWZtTGQ
+	process.plotZtoElecTau.drawJobs.finalSamplePlots_ht.plots.processes = ZeWZtTGQ
+	process.plotZtoElecTau.drawJobs.finalSamplePlots_mtElectronTauMET.plots.processes = ZeWZtTGQ
+	process.plotZtoElecTau.drawJobs.finalSamplePlots_mtElectronMET.plots.processes = ZeWZtTGQ
+	process.plotZtoElecTau.drawJobs.finalSamplePlots_met.plots.processes = ZeWZtTGQ
+	process.plotZtoElecTau.drawJobs.finalSamplePlots_tauJetRadius.plots.processes = ZeWZtTGQ
 
