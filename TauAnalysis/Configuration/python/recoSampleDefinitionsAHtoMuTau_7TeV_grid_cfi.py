@@ -92,7 +92,7 @@ RECO_SAMPLES = copy.deepcopy(ZtoMuTau.RECO_SAMPLES)
 AHtoMuTauSpecific_RECO_SAMPLES = {    
     'A90' : {
         # Not skimmed
-        'datasetpath' : "/SUSYGluGluToHToTauTau_M-90_7TeV-pythia6-tauola/Fall10-START38_V12-v1/GEN-SIM-RECO",
+        'datasetpath' : "/SUSYGluGluToHToTauTau_M-90_7TeV-pythia6-tauola/Fall10-E7TeV_ProbDist_2010Data_BX156_START38_V12-v1/GEN-SIM-RECO",
         'dbs_url' :  "http://cmsdbsprod.cern.ch/cms_dbs_prod_global/servlet/DBSServlet",
         'events_processed' : 110000,
         'number_of_jobs' : 25,
@@ -106,11 +106,12 @@ AHtoMuTauSpecific_RECO_SAMPLES = {
         'drawOption' : styles.drawOption_darkBlue_separate,
         'applyZrecoilCorrection' : True,
         'applyMuonTriggerEfficiencyCorrection' : True,
+        'applyVertexMultiplicityReweighting' : True,
         'enableSysUncertainties' : True
     },
     'bbA90' : {
         # Not skimmed
-        'datasetpath' : "/SUSYBBHToTauTau_M-90_7TeV-pythia6-tauola/Fall10-START38_V12-v1/GEN-SIM-RECO",
+        'datasetpath' : "/SUSYBBHToTauTau_M-90_7TeV-pythia6-tauola/Fall10-E7TeV_ProbDist_2010Data_BX156_START38_V12-v1/GEN-SIM-RECO",
         'dbs_url' :  "http://cmsdbsprod.cern.ch/cms_dbs_prod_global/servlet/DBSServlet",
         'events_processed' : 110000,
         'number_of_jobs' : 25,
@@ -124,11 +125,12 @@ AHtoMuTauSpecific_RECO_SAMPLES = {
         'drawOption' : styles.drawOption_darkBlue_separate,
         'applyZrecoilCorrection' : True,
         'applyMuonTriggerEfficiencyCorrection' : True,
+        'applyVertexMultiplicityReweighting' : True,
         'enableSysUncertainties' : True
     },
     'A100' : {
         # Not skimmed
-        'datasetpath' : "/SUSYGluGluToHToTauTau_M-100_7TeV-pythia6-tauola/Fall10-START38_V12-v1/GEN-SIM-RECO",
+        'datasetpath' : "/SUSYGluGluToHToTauTau_M-100_7TeV-pythia6-tauola/Fall10-E7TeV_ProbDist_2010Data_BX156_START38_V12-v1/GEN-SIM-RECO",
         'dbs_url' :  "http://cmsdbsprod.cern.ch/cms_dbs_prod_global/servlet/DBSServlet",
         'events_processed' : 110000,
         'number_of_jobs' : 25,
@@ -142,11 +144,12 @@ AHtoMuTauSpecific_RECO_SAMPLES = {
         'drawOption' : styles.drawOption_darkBlue_separate,
         'applyZrecoilCorrection' : True,
         'applyMuonTriggerEfficiencyCorrection' : True,
+        'applyVertexMultiplicityReweighting' : True,
         'enableSysUncertainties' : True
     },
     'bbA100' : {
         # Not skimmed
-        'datasetpath' : "/SUSYBBHToTauTau_M-100_7TeV-pythia6-tauola/Fall10-START38_V12-v1/GEN-SIM-RECO",
+        'datasetpath' : "/SUSYBBHToTauTau_M-100_7TeV-pythia6-tauola/Fall10-E7TeV_ProbDist_2010Data_BX156_START38_V12-v1/GEN-SIM-RECO",
         'dbs_url' :  "http://cmsdbsprod.cern.ch/cms_dbs_prod_global/servlet/DBSServlet",
         'events_processed' : 110000,
         'number_of_jobs' : 25,
@@ -160,11 +163,12 @@ AHtoMuTauSpecific_RECO_SAMPLES = {
         'drawOption' : styles.drawOption_darkBlue_separate,
         'applyZrecoilCorrection' : True,
         'applyMuonTriggerEfficiencyCorrection' : True,
+        'applyVertexMultiplicityReweighting' : True,
         'enableSysUncertainties' : True
     },
     'A120' : {
         # Not skimmed
-        'datasetpath' : "/SUSYGluGluToHToTauTau_M-120_7TeV-pythia6-tauola/Fall10-START38_V12-v1/GEN-SIM-RECO",
+        'datasetpath' : "/SUSYGluGluToHToTauTau_M-120_7TeV-pythia6-tauola/Fall10-E7TeV_ProbDist_2010Data_BX156_START38_V12-v1/GEN-SIM-RECO",
         'dbs_url' :  "http://cmsdbsprod.cern.ch/cms_dbs_prod_global/servlet/DBSServlet",
         'events_processed' : 110000,
         'number_of_jobs' : 25,
@@ -179,11 +183,12 @@ AHtoMuTauSpecific_RECO_SAMPLES = {
         'drawOption' : styles.drawOption_darkBlue_separate,
         'applyZrecoilCorrection' : True,
         'applyMuonTriggerEfficiencyCorrection' : True,
+        'applyVertexMultiplicityReweighting' : True,
         'enableSysUncertainties' : True
     },
     'bbA120' : {
         # Not skimmed
-        'datasetpath' : "/SUSYBBHToTauTau_M-120_7TeV-pythia6-tauola/Fall10-START38_V12-v1/GEN-SIM-RECO",
+        'datasetpath' : "/SUSYBBHToTauTau_M-120_7TeV-pythia6-tauola/Fall10-E7TeV_ProbDist_2010Data_BX156_START38_V12-v1/GEN-SIM-RECO",
         'dbs_url' :  "http://cmsdbsprod.cern.ch/cms_dbs_prod_global/servlet/DBSServlet",
         'events_processed' : 110000,
         'number_of_jobs' : 25,
@@ -198,11 +203,12 @@ AHtoMuTauSpecific_RECO_SAMPLES = {
         'drawOption' : styles.drawOption_darkBlue_separate,
         'applyZrecoilCorrection' : True,
         'applyMuonTriggerEfficiencyCorrection' : True,
+        'applyVertexMultiplicityReweighting' : True,
         'enableSysUncertainties' : True
     },
     'A130' : {
         # Not skimmed
-        'datasetpath' : "/SUSYGluGluToHToTauTau_M-130_7TeV-pythia6-tauola/Fall10-START38_V12-v1/GEN-SIM-RECO",
+        'datasetpath' : "/SUSYGluGluToHToTauTau_M-130_7TeV-pythia6-tauola/Fall10-E7TeV_ProbDist_2010Data_BX156_START38_V12-v1/GEN-SIM-RECO",
         'dbs_url' :  "http://cmsdbsprod.cern.ch/cms_dbs_prod_global/servlet/DBSServlet",
         'events_processed' : 110000,
         'number_of_jobs' : 25,
@@ -217,11 +223,12 @@ AHtoMuTauSpecific_RECO_SAMPLES = {
         'drawOption' : styles.drawOption_lightBlue_separate,
         'applyZrecoilCorrection' : True,
         'applyMuonTriggerEfficiencyCorrection' : True,
+        'applyVertexMultiplicityReweighting' : True,
         'enableSysUncertainties' : True
     },
     'bbA130' : {
         # Not skimmed
-        'datasetpath' : "/SUSYBBHToTauTau_M-130_7TeV-pythia6-tauola/Fall10-START38_V12-v1/GEN-SIM-RECO",
+        'datasetpath' : "/SUSYBBHToTauTau_M-130_7TeV-pythia6-tauola/Fall10-E7TeV_ProbDist_2010Data_BX156_START38_V12-v1/GEN-SIM-RECO",
         'dbs_url' :  "http://cmsdbsprod.cern.ch/cms_dbs_prod_global/servlet/DBSServlet",
         'events_processed' : 110000,
         'number_of_jobs' : 25,
@@ -236,11 +243,12 @@ AHtoMuTauSpecific_RECO_SAMPLES = {
         'drawOption' : styles.drawOption_darkBlue_separate,
         'applyZrecoilCorrection' : True,
         'applyMuonTriggerEfficiencyCorrection' : True,
+        'applyVertexMultiplicityReweighting' : True,
         'enableSysUncertainties' : True
     },
     'A140' : {
         # Not skimmed
-        'datasetpath' : "/SUSYGluGluToHToTauTau_M-1400_7TeV-pythia6-tauola/Fall10-START38_V12-v1/GEN-SIM-RECO",
+        'datasetpath' : "/SUSYGluGluToHToTauTau_M-1400_7TeV-pythia6-tauola/Fall10-E7TeV_ProbDist_2010Data_BX156_START38_V12-v1/GEN-SIM-RECO",
         'dbs_url' :  "http://cmsdbsprod.cern.ch/cms_dbs_prod_global/servlet/DBSServlet",
         'events_processed' : 110000,
         'number_of_jobs' : 25,
@@ -255,11 +263,12 @@ AHtoMuTauSpecific_RECO_SAMPLES = {
         'drawOption' : styles.drawOption_darkBlue_separate,
         'applyZrecoilCorrection' : True,
         'applyMuonTriggerEfficiencyCorrection' : True,
+        'applyVertexMultiplicityReweighting' : True,
         'enableSysUncertainties' : True
     },
     'bbA140' : {
         # Not skimmed
-        'datasetpath' : "/SUSYBBHToTauTau_M-140_7TeV-pythia6-tauola/Fall10-START38_V12-v1/GEN-SIM-RECO",
+        'datasetpath' : "/SUSYBBHToTauTau_M-140_7TeV-pythia6-tauola/Fall10-E7TeV_ProbDist_2010Data_BX156_START38_V12-v1/GEN-SIM-RECO",
         'dbs_url' :  "http://cmsdbsprod.cern.ch/cms_dbs_prod_global/servlet/DBSServlet",
         'events_processed' : 110000,
         'number_of_jobs' : 25,
@@ -274,11 +283,12 @@ AHtoMuTauSpecific_RECO_SAMPLES = {
         'drawOption' : styles.drawOption_darkBlue_separate,
         'applyZrecoilCorrection' : True,
         'applyMuonTriggerEfficiencyCorrection' : True,
+        'applyVertexMultiplicityReweighting' : True,
         'enableSysUncertainties' : True
     },
     'A160' : {
         # Not skimmed
-        'datasetpath' : "/SUSYGluGluToHToTauTau_M-160_7TeV-pythia6-tauola/Fall10-START38_V12-v1/GEN-SIM-RECO",
+        'datasetpath' : "/SUSYGluGluToHToTauTau_M-160_7TeV-pythia6-tauola/Fall10-E7TeV_ProbDist_2010Data_BX156_START38_V12-v1/GEN-SIM-RECO",
         'dbs_url' :  "http://cmsdbsprod.cern.ch/cms_dbs_prod_global/servlet/DBSServlet",
         'events_processed' : 110000,
         'number_of_jobs' : 25,
@@ -292,11 +302,12 @@ AHtoMuTauSpecific_RECO_SAMPLES = {
         'drawOption' : styles.drawOption_darkBlue_separate,
         'applyZrecoilCorrection' : True,
         'applyMuonTriggerEfficiencyCorrection' : True,
+        'applyVertexMultiplicityReweighting' : True,
         'enableSysUncertainties' : True
     },
     'bbA160' : {
         # Not skimmed
-        'datasetpath' : "/SUSYBBHToTauTau_M-160_7TeV-pythia6-tauola/Fall10-START38_V12-v1/GEN-SIM-RECO",
+        'datasetpath' : "/SUSYBBHToTauTau_M-160_7TeV-pythia6-tauola/Fall10-E7TeV_ProbDist_2010Data_BX156_START38_V12-v1/GEN-SIM-RECO",
         'dbs_url' :  "http://cmsdbsprod.cern.ch/cms_dbs_prod_global/servlet/DBSServlet",
         'events_processed' : 110000,
         'number_of_jobs' : 25,
@@ -310,11 +321,12 @@ AHtoMuTauSpecific_RECO_SAMPLES = {
         'drawOption' : styles.drawOption_darkBlue_separate,
         'applyZrecoilCorrection' : True,
         'applyMuonTriggerEfficiencyCorrection' : True,
+        'applyVertexMultiplicityReweighting' : True,
         'enableSysUncertainties' : True
     },
     'A180' : {
         # Not skimmed
-        'datasetpath' : "/SUSYGluGluToHToTauTau_M-180_7TeV-pythia6-tauola/Fall10-START38_V12-v1/GEN-SIM-RECO",
+        'datasetpath' : "/SUSYGluGluToHToTauTau_M-180_7TeV-pythia6-tauola/Fall10-E7TeV_ProbDist_2010Data_BX156_START38_V12-v1/GEN-SIM-RECO",
         'dbs_url' :  "http://cmsdbsprod.cern.ch/cms_dbs_prod_global/servlet/DBSServlet",
         'events_processed' : 110000,
         'number_of_jobs' : 25,
@@ -328,11 +340,12 @@ AHtoMuTauSpecific_RECO_SAMPLES = {
         'drawOption' : styles.drawOption_violett_separate,
         'applyZrecoilCorrection' : True,
         'applyMuonTriggerEfficiencyCorrection' : True,
+        'applyVertexMultiplicityReweighting' : True,
         'enableSysUncertainties' : True
     },
     'bbA180' : {
         # Not skimmed
-        'datasetpath' : "/SUSYBBHToTauTau_M-180_7TeV-pythia6-tauola/Fall10-START38_V12-v1/GEN-SIM-RECO",
+        'datasetpath' : "/SUSYBBHToTauTau_M-180_7TeV-pythia6-tauola/Fall10-E7TeV_ProbDist_2010Data_BX156_START38_V12-v1/GEN-SIM-RECO",
         'dbs_url' :  "http://cmsdbsprod.cern.ch/cms_dbs_prod_global/servlet/DBSServlet",
         'events_processed' : 110000,
         'number_of_jobs' : 25,
@@ -346,11 +359,12 @@ AHtoMuTauSpecific_RECO_SAMPLES = {
         'drawOption' : styles.drawOption_darkBlue_separate,
         'applyZrecoilCorrection' : True,
         'applyMuonTriggerEfficiencyCorrection' : True,
+        'applyVertexMultiplicityReweighting' : True,
         'enableSysUncertainties' : True
     },
     'A200' : {
         # Not skimmed
-        'datasetpath' : "/SUSYGluGluToHToTauTau_M-200_7TeV-pythia6-tauola/Fall10-START38_V12-v1/GEN-SIM-RECO",
+        'datasetpath' : "/SUSYGluGluToHToTauTau_M-200_7TeV-pythia6-tauola/Fall10-E7TeV_ProbDist_2010Data_BX156_START38_V12-v1/GEN-SIM-RECO",
         'dbs_url' :  "http://cmsdbsprod.cern.ch/cms_dbs_prod_global/servlet/DBSServlet",
         'events_processed' : 110000,
         'number_of_jobs' : 25,
@@ -364,11 +378,12 @@ AHtoMuTauSpecific_RECO_SAMPLES = {
         'drawOption' : styles.drawOption_darkBlue_separate,
         'applyZrecoilCorrection' : True,
         'applyMuonTriggerEfficiencyCorrection' : True,
+        'applyVertexMultiplicityReweighting' : True,
         'enableSysUncertainties' : True
     },
     'bbA200' : {
         # Not skimmed
-        'datasetpath' : "/SUSYBBHToTauTau_M-200_7TeV-pythia6-tauola/Fall10-START38_V12-v1/GEN-SIM-RECO",
+        'datasetpath' : "/SUSYBBHToTauTau_M-200_7TeV-pythia6-tauola/Fall10-E7TeV_ProbDist_2010Data_BX156_START38_V12-v1/GEN-SIM-RECO",
         'dbs_url' :  "http://cmsdbsprod.cern.ch/cms_dbs_prod_global/servlet/DBSServlet",
         'events_processed' : 110000,
         'number_of_jobs' : 25,
@@ -382,11 +397,12 @@ AHtoMuTauSpecific_RECO_SAMPLES = {
         'drawOption' : styles.drawOption_darkBlue_separate,
         'applyZrecoilCorrection' : True,
         'applyMuonTriggerEfficiencyCorrection' : True,
+        'applyVertexMultiplicityReweighting' : True,
         'enableSysUncertainties' : True
     },
     'A250' : {
         # Not skimmed
-        'datasetpath' : "/SUSYGluGluToHToTauTau_M-250_7TeV-pythia6-tauola/Fall10-START38_V12-v1/GEN-SIM-RECO",
+        'datasetpath' : "/SUSYGluGluToHToTauTau_M-250_7TeV-pythia6-tauola/Fall10-E7TeV_ProbDist_2010Data_BX156_START38_V12-v1/GEN-SIM-RECO",
         'dbs_url' :  "http://cmsdbsprod.cern.ch/cms_dbs_prod_global/servlet/DBSServlet",
         'events_processed' : 110000,
         'number_of_jobs' : 25,
@@ -400,11 +416,12 @@ AHtoMuTauSpecific_RECO_SAMPLES = {
         'drawOption' : styles.drawOption_darkBlue_separate,
         'applyZrecoilCorrection' : True,
         'applyMuonTriggerEfficiencyCorrection' : True,
+        'applyVertexMultiplicityReweighting' : True,
         'enableSysUncertainties' : True
     },
     'bbA250' : {
         # Not skimmed
-        'datasetpath' : "/SUSYBBHToTauTau_M-250_7TeV-pythia6-tauola/Fall10-START38_V12-v1/GEN-SIM-RECO",
+        'datasetpath' : "/SUSYBBHToTauTau_M-250_7TeV-pythia6-tauola/Fall10-E7TeV_ProbDist_2010Data_BX156_START38_V12-v1/GEN-SIM-RECO",
         'dbs_url' :  "http://cmsdbsprod.cern.ch/cms_dbs_prod_global/servlet/DBSServlet",
         'events_processed' : 110000,
         'number_of_jobs' : 25,
@@ -418,11 +435,12 @@ AHtoMuTauSpecific_RECO_SAMPLES = {
         'drawOption' : styles.drawOption_darkBlue_separate,
         'applyZrecoilCorrection' : True,
         'applyMuonTriggerEfficiencyCorrection' : True,
+        'applyVertexMultiplicityReweighting' : True,
         'enableSysUncertainties' : True
     },
     'A300' : {
         # Not skimmed
-        'datasetpath' : "/SUSYGluGluToHToTauTau_M-300_7TeV-pythia6-tauola/Fall10-START38_V12-v1/GEN-SIM-RECO",
+        'datasetpath' : "/SUSYGluGluToHToTauTau_M-300_7TeV-pythia6-tauola/Fall10-E7TeV_ProbDist_2010Data_BX156_START38_V12-v1/GEN-SIM-RECO",
         'dbs_url' :  "http://cmsdbsprod.cern.ch/cms_dbs_prod_global/servlet/DBSServlet",
         'events_processed' : 110000,
         'number_of_jobs' : 25,
@@ -436,11 +454,12 @@ AHtoMuTauSpecific_RECO_SAMPLES = {
         'drawOption' : styles.drawOption_darkBlue_separate,
         'applyZrecoilCorrection' : True,
         'applyMuonTriggerEfficiencyCorrection' : True,
+        'applyVertexMultiplicityReweighting' : True,
         'enableSysUncertainties' : True
     },
     'bbA300' : {
         # Not skimmed
-        'datasetpath' : "/SUSYBBHToTauTau_M-300_7TeV-pythia6-tauola/Fall10-START38_V12-v1/GEN-SIM-RECO",
+        'datasetpath' : "/SUSYBBHToTauTau_M-300_7TeV-pythia6-tauola/Fall10-E7TeV_ProbDist_2010Data_BX156_START38_V12-v1/GEN-SIM-RECO",
         'dbs_url' :  "http://cmsdbsprod.cern.ch/cms_dbs_prod_global/servlet/DBSServlet",
         'events_processed' : 110000,
         'number_of_jobs' : 25,
@@ -454,11 +473,12 @@ AHtoMuTauSpecific_RECO_SAMPLES = {
         'drawOption' : styles.drawOption_darkBlue_separate,
         'applyZrecoilCorrection' : True,
         'applyMuonTriggerEfficiencyCorrection' : True,
+        'applyVertexMultiplicityReweighting' : True,
         'enableSysUncertainties' : True
     },
     'A350' : {
         # Not skimmed
-        'datasetpath' : "/SUSYGluGluToHToTauTau_M-350_7TeV-pythia6-tauola/Fall10-START38_V12-v1/GEN-SIM-RECO",
+        'datasetpath' : "/SUSYGluGluToHToTauTau_M-350_7TeV-pythia6-tauola/Fall10-E7TeV_ProbDist_2010Data_BX156_START38_V12-v1/GEN-SIM-RECO",
         'dbs_url' :  "http://cmsdbsprod.cern.ch/cms_dbs_prod_global/servlet/DBSServlet",
         'events_processed' : 110000,
         'number_of_jobs' : 25,
@@ -472,11 +492,12 @@ AHtoMuTauSpecific_RECO_SAMPLES = {
         'drawOption' : styles.drawOption_darkBlue_separate,
         'applyZrecoilCorrection' : True,
         'applyMuonTriggerEfficiencyCorrection' : True,
+        'applyVertexMultiplicityReweighting' : True,
         'enableSysUncertainties' : True
     },
     'bbA350' : {
         # Not skimmed
-        'datasetpath' : "/SUSYBBHToTauTau_M-350_7TeV-pythia6-tauola/Fall10-START38_V12-v1/GEN-SIM-RECO",
+        'datasetpath' : "/SUSYBBHToTauTau_M-350_7TeV-pythia6-tauola/Fall10-E7TeV_ProbDist_2010Data_BX156_START38_V12-v1/GEN-SIM-RECO",
         'dbs_url' :  "http://cmsdbsprod.cern.ch/cms_dbs_prod_global/servlet/DBSServlet",
         'events_processed' : 110000,
         'number_of_jobs' : 25,
@@ -490,6 +511,7 @@ AHtoMuTauSpecific_RECO_SAMPLES = {
         'drawOption' : styles.drawOption_darkBlue_separate,
         'applyZrecoilCorrection' : True,
         'applyMuonTriggerEfficiencyCorrection' : True,
+        'applyVertexMultiplicityReweighting' : True,
         'enableSysUncertainties' : True
     }
 }
