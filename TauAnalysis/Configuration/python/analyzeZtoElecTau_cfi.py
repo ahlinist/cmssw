@@ -83,11 +83,10 @@ from TauAnalysis.Core.eventWeightHistManager_cfi import *
 # generator level phase-space selection
 # (NOTE: to be used in case of Monte Carlo samples
 #        overlapping in simulated phase-space only !!)
-genPhaseSpaceCut = cms.PSet(
+evtSelGenPhaseSpace = cms.PSet(
     pluginName = cms.string('genPhaseSpaceCut'),
-    pluginType = cms.string('GenPhaseSpaceEventInfoSelector'),
-    src = cms.InputTag('genPhaseSpaceEventInfo'),
-    cut = cms.string('')
+    pluginType = cms.string('BoolEventSelector'),
+    src = cms.InputTag('genPhaseSpaceCut')
 )
 
 # generator level selection of Z --> e + tau-jet events
