@@ -20,9 +20,9 @@ process.source = cms.Source("EmptySource")
 process.loadAnalysisResults = cms.EDAnalyzer("DQMFileLoader",
     all = cms.PSet(
         inputFileNames = cms.vstring(
-            '/data1/veelken/CMSSW_3_8_x/plots/MSSM_Higgs_combined/plotsZtoElecTau_all.root'
+            '/data1/veelken/CMSSW_3_8_x/plots/MSSM_Higgs_combined/plotsZtoElecTau_all_2010Nov22.root'
         ),
-        dqmDirectory_store = cms.string('/')
+        dqmDirectory_store = cms.string('')
     )
 )
 
@@ -31,28 +31,30 @@ process.dumpDQMStore = cms.EDAnalyzer("DQMStoreDump")
 process.saveAnalysisResults = cms.EDAnalyzer("DQMSimpleFileSaver",
     outputFileName = cms.string('/data1/veelken/CMSSW_3_8_x/plots/MSSM_Higgs_combined/plotsZtoElecTau_skimmed.root'),
     outputCommands = cms.vstring(
-        'drop /summed/harvested/*',
-        'keep /summed/harvested/Ztautau/zElecTauAnalyzer/afterEvtSelElecTauPairZeeHypothesisVeto/*',
-        'keep /summed/harvested/Ztautau/zElecTauAnalyzer/FilterStatistics/*',
-        'keep /summed/harvested/Zee/zElecTauAnalyzer/afterEvtSelElecTauPairZeeHypothesisVeto/*',
-        'keep /summed/harvested/Zee/zElecTauAnalyzer/FilterStatistics/*',        
-        'keep /summed/harvested/qcdBCtoESum/zElecTauAnalyzer/afterEvtSelElecTauPairZeeHypothesisVeto/*',
-        'keep /summed/harvested/qcdBCtoESum/zElecTauAnalyzer/FilterStatistics/*',
-        'keep /summed/harvested/qcdEMenrichedSum/zElecTauAnalyzer/afterEvtSelElecTauPairZeeHypothesisVeto/*',
-        'keep /summed/harvested/qcdEMenrichedSum/zElecTauAnalyzer/FilterStatistics/*',
-        'keep /summed/harvested/WtoENu/zElecTauAnalyzer/afterEvtSelElecTauPairZeeHypothesisVeto/*',
-        'keep /summed/harvested/WtoENu/zElecTauAnalyzer/FilterStatistics/*',
-        'keep /summed/harvested/WtoTauNu/zElecTauAnalyzer/afterEvtSelElecTauPairZeeHypothesisVeto/*',
-        'keep /summed/harvested/WtoTauNu/zElecTauAnalyzer/FilterStatistics/*',
-        'keep /summed/harvested/TTplusJets/zElecTauAnalyzer/afterEvtSelElecTauPairZeeHypothesisVeto/*',
-        'keep /summed/harvested/TTplusJets/zElecTauAnalyzer/FilterStatistics/*',
-        'keep /summed/harvested/gammaPlusJetsSum/zElecTauAnalyzer/afterEvtSelElecTauPairZeeHypothesisVeto/*',
-        'keep /summed/harvested/gammaPlusJetsSum/zElecTauAnalyzer/FilterStatistics/*'
+        'drop summed/harvested/*',
+        'keep summed/harvested/Ztautau/zElecTauAnalyzer/afterEvtSelElecTauPairZeeHypothesisVeto/*',
+        'keep summed/harvested/Ztautau/zElecTauAnalyzer/FilterStatistics/*',
+        'keep summed/harvested/Zee/zElecTauAnalyzer/afterEvtSelElecTauPairZeeHypothesisVeto/*',
+        'keep summed/harvested/Zee/zElecTauAnalyzer/FilterStatistics/*',        
+        'keep summed/harvested/qcdBCtoESum/zElecTauAnalyzer/afterEvtSelElecTauPairZeeHypothesisVeto/*',
+        'keep summed/harvested/qcdBCtoESum/zElecTauAnalyzer/FilterStatistics/*',
+        'keep summed/harvested/qcdEMenrichedSum/zElecTauAnalyzer/afterEvtSelElecTauPairZeeHypothesisVeto/*',
+        'keep summed/harvested/qcdEMenrichedSum/zElecTauAnalyzer/FilterStatistics/*',
+        'keep summed/harvested/WtoENu/zElecTauAnalyzer/afterEvtSelElecTauPairZeeHypothesisVeto/*',
+        'keep summed/harvested/WtoENu/zElecTauAnalyzer/FilterStatistics/*',
+        'keep summed/harvested/WtoTauNu/zElecTauAnalyzer/afterEvtSelElecTauPairZeeHypothesisVeto/*',
+        'keep summed/harvested/WtoTauNu/zElecTauAnalyzer/FilterStatistics/*',
+        'keep summed/harvested/TTplusJets/zElecTauAnalyzer/afterEvtSelElecTauPairZeeHypothesisVeto/*',
+        'keep summed/harvested/TTplusJets/zElecTauAnalyzer/FilterStatistics/*',
+        'keep summed/harvested/gammaPlusJetsSum/zElecTauAnalyzer/afterEvtSelElecTauPairZeeHypothesisVeto/*',
+        'keep summed/harvested/gammaPlusJetsSum/zElecTauAnalyzer/FilterStatistics/*',
+        'keep summed/harvested/Data/zElecTauAnalyzer/afterEvtSelElecTauPairZeeHypothesisVeto/*',
+        'keep summed/harvested/Data/zElecTauAnalyzer/FilterStatistics/*'
     )                                   
 )
 
 process.p = cms.Path(
     process.loadAnalysisResults
-  #+ process.dumpDQMStore 
+   + process.dumpDQMStore 
    + process.saveAnalysisResults
 )
