@@ -15,6 +15,23 @@ bgEstFakeRateJetWeights = cms.EDProducer(
 
     dRmatch = cms.double(0.1),
 
+    # Not used by cmsRun - just a convenient place to put this so that
+    # fakeRateTools.py can enable ZTT eff only fake rates in case the simple
+    # method is used.
+    frTypesExtras = cms.PSet(
+        tauIdEfficiency = cms.PSet(
+            tauJetDiscriminators = cms.VPSet(
+                cms.PSet(
+                    tauJetIdEffSource = cms.InputTag(config.frproducer_name(
+                        config.PRODUCER, 'ZTTsim')),
+                    qcdJetFakeRateSource = cms.InputTag(config.frproducer_name(
+                        config.PRODUCER, 'ZTTsim')),
+                    tauJetDiscrSource = cms.InputTag("ewkTauId")
+                )
+            )
+        )
+    ),
+
     frTypes = cms.PSet(
         qcdMuEnriched = cms.PSet(
             tauJetDiscriminators = cms.VPSet(
@@ -80,4 +97,4 @@ bgEstFakeRateJetWeights = cms.EDProducer(
     maxJetPt = cms.double(+1.e+6),
     minJetEta = cms.double(-1.e+6),
     maxJetEta = cms.double(+1.e+6)
-)
+    )
