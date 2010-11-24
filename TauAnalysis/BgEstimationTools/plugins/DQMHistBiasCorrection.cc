@@ -154,7 +154,7 @@ void DQMHistBiasCorrection::endJob()
       TH1* histCorrected = meCorrected->getTH1();
       for ( unsigned iBin = 1; iBin <= numBins; ++iBin ) {
 	std::pair<double, double> binContentErrCorrected = 
-	  compCorrBinContentErr(histUncorr->GetBinContent(iBin), histUncorr->GetBinContent(iBin), 
+	  compCorrBinContentErr(histUncorr->GetBinContent(iBin), histUncorr->GetBinError(iBin), 
 				histCorrNum->GetBinContent(iBin), histCorrNum->GetBinError(iBin), 
 				histCorrDenom->GetBinContent(iBin), histCorrDenom->GetBinError(iBin));
 	
@@ -180,7 +180,7 @@ void DQMHistBiasCorrection::endJob()
       for ( unsigned iBinX = 1; iBinX <= numBinsX; ++iBinX ) {
 	for ( unsigned iBinY = 1; iBinY <= numBinsY; ++iBinY ) {
 	  std::pair<double, double> binContentErrCorrected = 
-	    compCorrBinContentErr(histUncorr->GetBinContent(iBinX, iBinY), histUncorr->GetBinContent(iBinX, iBinY), 
+	    compCorrBinContentErr(histUncorr->GetBinContent(iBinX, iBinY), histUncorr->GetBinError(iBinX, iBinY), 
 				  histCorrNum->GetBinContent(iBinX, iBinY), histCorrNum->GetBinError(iBinX, iBinY), 
 				  histCorrDenom->GetBinContent(iBinX, iBinY), histCorrDenom->GetBinError(iBinX, iBinY));
 	
