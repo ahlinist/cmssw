@@ -321,13 +321,13 @@ def makePlots(process, channel = None, samples = None, inputFilePath = None, job
     if dumpDQMStore:
         process.dumpDQMStore = cms.EDAnalyzer("DQMStoreDump")
         makePlotSequence._seq = makePlotSequence._seq * process.dumpDQMStore
-    makePlotSequence._seq = makePlotSequence._seq * dqmSimpleFileSaverModule
     dqmDumpFilterStatisticsModuleName = "dump%s" % channel
     if hasattr(process, dqmDumpFilterStatisticsModuleName):
         dqmDumpFilterStatisticsModule = getattr(process, dqmDumpFilterStatisticsModuleName)
         makePlotSequence._seq = makePlotSequence._seq * dqmDumpFilterStatisticsModule
     if dqmHistPlotterSequence is not None:
         makePlotSequence._seq = makePlotSequence._seq * dqmHistPlotterSequence
+    makePlotSequence._seq = makePlotSequence._seq * dqmSimpleFileSaverModule
     setattr(process, makePlotSequenceName, makePlotSequence)
 
     process.p = cms.Path(makePlotSequence)
