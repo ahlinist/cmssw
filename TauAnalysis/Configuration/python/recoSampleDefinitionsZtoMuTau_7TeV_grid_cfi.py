@@ -13,7 +13,8 @@ SAMPLES_TO_ANALYZE = [
     'Zmumu',
     #'InclusivePPmuX',
     'PPmuXptGt20Mu10', 'PPmuXptGt20Mu15',
-    'WplusJets',
+    ##'WplusJets',
+    'Wenu', 'Wmunu', 'Wtaunu',
     'TTplusJets'
 ]
 
@@ -229,16 +230,49 @@ RECO_SAMPLES = {
         'hlt' : cms.InputTag("TriggerResults", "", "REDIGI38X")
     },
     # CV: /WJetsToLNu_TuneZ2_7TeV-madgraph-tauola/Fall10-START38_V12-v1/GEN-SIM-RECO (32500000) events not ready yet
-    'WplusJets' : {
-        'datasetpath' : "/WJets-madgraph/akalinow-SkimTauTau_356_pass1-0a3d3891f015a95324f94837322fb8aa-muTauSkim/USER",
-        'events_processed' : 9008895,
-        'skim_eff' : 0.260,
-        'x_sec' : 1.28*24170*_picobarns, # W + jets correction factor for NLO/LO cross-sections = 1.28
+    ##'WplusJets' : {
+    ##    'datasetpath' : "/WJets-madgraph/akalinow-SkimTauTau_356_pass1-0a3d3891f015a95324f94837322fb8aa-muTauSkim/USER",
+    ##    'events_processed' : 9008895,
+    ##    'skim_eff' : 0.260,
+    ##    'x_sec' : 1.28*24170*_picobarns, # W + jets correction factor for NLO/LO cross-sections = 1.28
+    ##    'legendEntry' : plotter.process_WplusJets.config_dqmHistPlotter.legendEntry.value(),
+    ##    'type' : plotter.process_WplusJets.config_dqmHistPlotter.type.value(),
+    ##    'drawOption' : styles.drawOption_WplusJets,
+    ##    'applyMuonTriggerEfficiencyCorrection' : True
+    ##},
+    'Wenu' : {
+        'datasetpath' : "/WToENu_TuneZ2_7TeV-pythia6/Fall10-E7TeV_ProbDist_2010Data_BX156_START38_V12-v1/GEN-SIM-RECO",
+        'events_processed' : 5021834,
+        'skim_eff' : 1.0,
+        'x_sec' : 1.32*7899*_picobarns, # W --> e nucorrection factor for NLO/LO cross-sections = 1.32
         'legendEntry' : plotter.process_WplusJets.config_dqmHistPlotter.legendEntry.value(),
         'type' : plotter.process_WplusJets.config_dqmHistPlotter.type.value(),
         'drawOption' : styles.drawOption_WplusJets,
-        'applyMuonTriggerEfficiencyCorrection' : True
+        'applyMuonTriggerEfficiencyCorrection' : True,
+        'applyVertexMultiplicityReweighting' : True
     },
+    'Wmunu' : {
+        'datasetpath' : "/WToMuNu_TuneZ2_7TeV-pythia6/Fall10-E7TeV_ProbDist_2010Data_BX156_START38_V12-v1/GEN-SIM-RECO",
+        'events_processed' : 5283540,
+        'skim_eff' : 1.0,
+        'x_sec' : 1.32*7899*_picobarns, # W --> mu nu correction factor for NLO/LO cross-sections = 1.32
+        'legendEntry' : plotter.process_WplusJets.config_dqmHistPlotter.legendEntry.value(),
+        'type' : plotter.process_WplusJets.config_dqmHistPlotter.type.value(),
+        'drawOption' : styles.drawOption_WplusJets,
+        'applyMuonTriggerEfficiencyCorrection' : True,
+        'applyVertexMultiplicityReweighting' : True
+    },    
+    'Wtaunu' : {
+        'datasetpath' : "/WToTauNu_TuneZ2_7TeV-pythia6-tauola/Fall10-E7TeV_ProbDist_2010Data_BX156_START38_V12-v1/GEN-SIM-RECO",
+        'events_processed' : 5193750,
+        'skim_eff' : 1.0,
+        'x_sec' : 1.32*7899*_picobarns, # W --> tau nu correction factor for NLO/LO cross-sections = 1.32
+        'legendEntry' : plotter.process_WplusJets.config_dqmHistPlotter.legendEntry.value(),
+        'type' : plotter.process_WplusJets.config_dqmHistPlotter.type.value(),
+        'drawOption' : styles.drawOption_WplusJets,
+        'applyMuonTriggerEfficiencyCorrection' : True,
+        'applyVertexMultiplicityReweighting' : True
+    },    
     'TTplusJets' : {
         'datasetpath' : "/TTJets_TuneZ2_7TeV-madgraph-tauola/Fall10-E7TeV_ProbDist_2010Data_BX156_START38_V12-v1/GEN-SIM-RECO",
         'events_processed' : 1164732,
@@ -284,6 +318,16 @@ MERGE_SAMPLES = {
         'legendEntry' : 'QCD',
         'type' : 'smMC',
         'drawOption' : styles.drawOption_QCD,
+    },
+    'WplusJets' : {
+        'samples' : [
+            'Wenu',
+            'Wmunu',
+            'Wtaunu' 
+        ],
+        'legendEntry' : plotter.process_WplusJets.config_dqmHistPlotter.legendEntry.value(),
+        'type' : plotter.process_WplusJets.config_dqmHistPlotter.type.value(),
+        'drawOption' : styles.drawOption_WplusJets,
     },
     'smBgSum' : {
         'samples' : [
