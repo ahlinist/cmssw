@@ -210,6 +210,7 @@ void exportAnalysisResults(
   std::cout << "<exportAnalysisResults>:" << std::endl;
   std::cout << " meNameTemplate = " << meNameTemplate << std::endl;
   std::cout << " outputFileName = " << outputFileName << std::endl;
+  std::cout << " binOffset = " << binOffset << std::endl;
 
   std::vector<int> binContents(numBinsTotal);
 
@@ -250,10 +251,10 @@ void exportAnalysisResults(
     }
 
     double sumBinContents = getSumBinContents(histogram, firstBinX, lastBinX, firstBinY, lastBinY, firstBinZ, lastBinZ);
-    std::cout << " sumBinContents = " << sumBinContents << std::endl;
+    //std::cout << " sumBinContents = " << sumBinContents << std::endl;
 
     double sumBinErrors2 = getSumBinErrors2(histogram, firstBinX, lastBinX, firstBinY, lastBinY, firstBinZ, lastBinZ);
-    std::cout << " sumBinErrors2 = " << sumBinErrors2 << std::endl;
+    //std::cout << " sumBinErrors2 = " << sumBinErrors2 << std::endl;
 
 //--- scale (weighted) number of events expected for luminosity of analyzed dataset
 //    to "effective" number of events Neff for which 
@@ -281,11 +282,13 @@ void exportAnalysisResults(
       }
     }
 
+    std::cout << " binContents = " << format_vint(binContents) << std::endl;
+
     bool error = false;
     numEventsProcessed = getValue(dqmStore, meNameNumEventsProcessed, error);
-    std::cout << " numEventsProcessed = " << numEventsProcessed << std::endl;
+    //std::cout << " numEventsProcessed = " << numEventsProcessed << std::endl;
     numEventsPassed = getValue(dqmStore, meNameNumEventsPassed, error);
-    std::cout << " numEventsPassed = " << numEventsPassed << std::endl;
+    //std::cout << " numEventsPassed = " << numEventsPassed << std::endl;
     assert(!error);
 
     numEventsProcessed *= scaleFactor;
@@ -299,6 +302,10 @@ void exportAnalysisResults(
       std::cout << "(num. events passed (meName = " << meNameNumEventsPassed << "): " << numEventsPassed << ","
 		<< " sum of entries in histogram (meName = " << meNameTemplate << "): " << sumBinContents*scaleFactor << ")" 
 		<< std::endl;
+      std::cout << "--> assuming that histograms were summed by 'hadd' instead of harvested properly using DQM tools !!" << std::endl;
+      std::cout << "--> scaling numbers to match integral of histogram.";
+      numEventsProcessed*= (sumBinContents*scaleFactor/numEventsPassed);
+      numEventsPassed *= (sumBinContents*scaleFactor/numEventsPassed);
     }
   } 
 
@@ -317,24 +324,31 @@ void exportAnalysisResults(
   unsigned width = 8;           // 8 characters per number, right justified
   unsigned numbersPerLine = 10; // max. 10 numbers per line
 
+  unsigned numBinsPerChannel = (numBinsTotal / numChannels);
+
   (*outputFile) << " " << std::setw(width) << std::setfill(' ') << numChannels;
-  (*outputFile) << " " << std::setw(width) << std::setfill(' ') << (numBinsTotal / numChannels);
+  (*outputFile) << " " << std::setw(width) << std::setfill(' ') << numBinsPerChannel;
   (*outputFile) << " " << std::setw(width) << std::setfill(' ') << TMath::Nint(numEventsProcessed);
   (*outputFile) << " " << std::setw(width) << std::setfill(' ') << TMath::Nint(numEventsPassed);
   (*outputFile) << std::endl;
 
   bool isEndLineTerminated = true;
-  for ( unsigned iBin = 0; iBin < numBinsTotal; ++iBin ) {
-    (*outputFile) << " " << std::setw(width) << std::setfill(' ') << binContents[iBin];
-    isEndLineTerminated = false;
-    if ( ((iBin + 1) % numbersPerLine) == 0 ) {
+  for ( unsigned iChannel = 0; iChannel < numChannels; ++iChannel ) {
+    for ( unsigned iBin = 0; iBin < numBinsPerChannel; ++iBin ) {
+      (*outputFile) << " " << std::setw(width) << std::setfill(' ') << binContents[iChannel*numBinsPerChannel + iBin];
+      isEndLineTerminated = false;
+      if ( ((iBin + 1) % numbersPerLine) == 0 ) {
+	(*outputFile) << std::endl;
+	isEndLineTerminated = true;
+      }
+    }
+    
+    if ( !isEndLineTerminated ) {
       (*outputFile) << std::endl;
       isEndLineTerminated = true;
     }
   }
-
-  if ( !isEndLineTerminated ) (*outputFile) << std::endl;
-
+  
   delete outputFile;
 }
 
@@ -362,6 +376,7 @@ void DQMExportAnalysisResults::endJob()
   DQMStore& dqmStore = (*edm::Service<DQMStore>());  
 
   numChannels_ = channels_.size();
+  std::cout << " numChannels = " << numChannels_ << std::endl;
 
 //--- check that binning is compatible for all channels
   TH1* refHistogramBinning = 0;
@@ -392,6 +407,14 @@ void DQMExportAnalysisResults::endJob()
     numBinsTotal_ += numBins_channel;
   }
 
+  std::cout << " binOffsets = " << "{";
+  for ( std::map<unsigned, unsigned>::const_iterator binOffset = binOffsets_.begin();
+	binOffset != binOffsets_.end(); ++binOffset ) {
+    if ( binOffset != binOffsets_.begin() ) std::cout << ",";
+    std::cout << " " << binOffset->first << ":" << binOffset->second;
+  }
+  std::cout << " }" << std::endl;
+  
   for ( std::vector<processEntryType*>::iterator process = processes_.begin();
 	process != processes_.end(); ++process ) {
     for ( std::vector<channelEntryType*>::iterator channel = channels_.begin();
