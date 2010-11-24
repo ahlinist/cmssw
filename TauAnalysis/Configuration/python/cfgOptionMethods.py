@@ -155,30 +155,34 @@ def _setIsData(process, type, **kwargs):
         switchToData.switchToData(process)
 
 def _setTriggerProcess(process, triggerTag, **kwargs):
-    # Set the input tag for the HLT
+	# Set the input tag for the HLT
 
-    # update InputTag for all modules in sequence
-    for processAttrName in dir(process):
-        processAttr = getattr(process, processAttrName)
-        if isinstance(processAttr, cms.Sequence):
-            print "--> Resetting HLT input tag for sequence:", processAttrName
-            patutils.massSearchReplaceAnyInputTag(processAttr, cms.InputTag("TriggerResults", "", "HLT"), triggerTag)
-            patutils.massSearchReplaceAnyInputTag(processAttr, cms.InputTag("TriggerResults::HLT"), triggerTag)
+	# update InputTag for all modules in sequence
+	for processAttrName in dir(process):
+		processAttr = getattr(process, processAttrName)
+		if isinstance(processAttr, cms.Sequence):
+			print "--> Resetting HLT input tag for sequence:", processAttrName
+			patutils.massSearchReplaceAnyInputTag(processAttr, cms.InputTag("TriggerResults", "", "HLT"), triggerTag)
+			patutils.massSearchReplaceAnyInputTag(processAttr, cms.InputTag("TriggerResults::HLT"), triggerTag)
 
-    # update InputTag for PAT trigger tools
-    process.patTrigger.processName = triggerTag.getProcessName()
-    process.patTriggerEvent.processName = triggerTag.getProcessName()
+	# update InputTag for PAT trigger tools
+	process.patTrigger.processName = triggerTag.getProcessName()
+	process.patTriggerEvent.processName = triggerTag.getProcessName()
 
-    # update InputTag for all histogram managers,
-    # binner and event-dump plugins of GenericAnalyzer module
-    for processAttrName in dir(process):
-        processAttr = getattr(process, processAttrName)
-        if isinstance(processAttr, cms.EDAnalyzer):
-            if processAttr.type_() == "GenericAnalyzer":
-                if hasattr(processAttr, "analyzers"):
-                    analyzerPlugins = getattr(processAttr, "analyzers")
-                    for analyzerPlugin in analyzerPlugins:
-                        _setattr_ifexists(analyzerPlugin, "hltResultsSource", triggerTag)
+	# update InputTag for all histogram managers,
+	# binner and event-dump plugins of GenericAnalyzer module
+	for processAttrName in dir(process):
+		processAttr = getattr(process, processAttrName)
+		if isinstance(processAttr, cms.EDAnalyzer):
+			if processAttr.type_() == "GenericAnalyzer":
+				if hasattr(processAttr, "analyzers"):
+					analyzerPlugins = getattr(processAttr, "analyzers")
+					for analyzerPlugin in analyzerPlugins:
+						_setattr_ifexists(analyzerPlugin, "hltResultsSource", triggerTag)
+				if hasattr(processAttr, "eventDumps"):
+					eventDumps = getattr(processAttr, "eventDumps")
+					for eventDump in eventDumps:
+						_setattr_ifexists(eventDump, "hltResultsSource", triggerTag)
 
 def _setTriggerBits(process, triggerSelect, **kwargs):
     old_select = process.Trigger.selectors[0].hltAcceptPaths
