@@ -435,9 +435,9 @@ void dqmCopyRecursively(DQMStore& dqmStore, const std::string& inputDirectory, c
 			double scaleFactor, double scaleFactorErr, int mode, 
 			bool rmInputDirectory, std::vector<outputCommandEntry>* outputCommands)
 {
-  //std::cout << "<dqmCopyRecursively>:" << std::endl;
-  //std::cout << " inputDirectory = " << inputDirectory << std::endl;
-  //std::cout << " outputDirectory = " << outputDirectory << std::endl;
+  std::cout << "<dqmCopyRecursively>:" << std::endl;
+  std::cout << " inputDirectory = " << inputDirectory << std::endl;
+  std::cout << " outputDirectory = " << outputDirectory << std::endl;
   //std::cout << " scaleFactor = " << scaleFactor << std::endl;
   //std::cout << " scaleFactorErr = " << scaleFactorErr << std::endl;
   //std::cout << " rmInputDirectory = " << rmInputDirectory << std::endl;
@@ -602,7 +602,7 @@ void separateMonitorElementFromDirectoryName(const std::string& meName_full, std
   if ( dqmRootDirectoryPos != std::string::npos ) {  
     tempName.replace(dqmRootDirectoryPos, dqmRootDirectory.size(), "");  
   }  
-
+ 
 //--- extract directory from histogram name
   std::string::size_type lastPos;
   std::string::size_type nextPos = tempName.find(dqmSeparator);  
