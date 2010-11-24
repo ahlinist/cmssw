@@ -547,15 +547,15 @@ process.p = cms.Path(
    + process.rebinHistZtoMuTau
    + process.correctTemplateHistZtoMuTau
    + process.normalizeHistZtoMuTau
-   + process.dumpDQMStore 
-   + process.saveBgEstTemplateHistZtoMuTau
+   ##+ process.dumpDQMStore 
    + process.plotTemplateHistZtoMuTau
    + process.plotAnalysisHistZtoMuTauData
-   + process.plotAnalysisHistZtoMuTauMC   
+   + process.plotAnalysisHistZtoMuTauMC
+   + process.saveBgEstTemplateHistZtoMuTau 
 )
 
 # print-out all python configuration parameter information
-#print process.dumpPython()
+print process.dumpPython()
 
 
   
