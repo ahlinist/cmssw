@@ -302,8 +302,9 @@ void exportAnalysisResults(
       std::cout << "(num. events passed (meName = " << meNameNumEventsPassed << "): " << numEventsPassed << ","
 		<< " sum of entries in histogram (meName = " << meNameTemplate << "): " << sumBinContents*scaleFactor << ")" 
 		<< std::endl;
-      std::cout << "--> assuming that histograms were summed by 'hadd' instead of harvested properly using DQM tools !!" << std::endl;
-      std::cout << "--> scaling numbers to match integral of histogram.";
+      edm::LogInfo ("exportAnalysisResults")
+	<< " Assuming that histograms were summed by 'hadd' instead of harvested properly using DQM tools"
+        << " --> scaling numbers to match integral of histogram !!";
       numEventsProcessed*= (sumBinContents*scaleFactor/numEventsPassed);
       numEventsPassed *= (sumBinContents*scaleFactor/numEventsPassed);
     }
