@@ -14,6 +14,18 @@
 
 #include <iostream>
 
+std::string terminate_dqmDirectory(const std::string& dqmDirectory)
+{
+  std::string dqmDirectory_terminated = dqmDirectory;
+
+//--- add tailing '/'
+  if ( dqmDirectory_terminated != "" && 
+       dqmDirectory_terminated.find_last_of(dqmSeparator) != (dqmDirectory_terminated.length() - 1) ) 
+    dqmDirectory_terminated.append(dqmSeparator);
+
+  return dqmDirectory_terminated;
+}
+
 float* getBinning(const TAxis* axis)
 {
   unsigned numBins = axis->GetNbins();
@@ -40,7 +52,7 @@ TH1* getHistogram(DQMStore& dqmStore, const std::string& meName, bool& dqmError)
 
   TH1* histogram = 0;
 
-  MonitorElement* me = dqmStore.get(std::string(histogramDirectory).append(dqmSeparator).append(histogramName));
+  MonitorElement* me = dqmStore.get(terminate_dqmDirectory(histogramDirectory).append(histogramName));
   if ( me ) {
     int meType = me->kind();
     if ( meType == MonitorElement::DQM_KIND_TH1F      ||
@@ -96,7 +108,7 @@ double getValue(DQMStore& dqmStore, const std::string& meName_full, bool& error)
 {
   std::string meName, dqmDirectory;
   separateMonitorElementFromDirectoryName(meName_full, meName, dqmDirectory);
-  MonitorElement* me = dqmStore.get(std::string(dqmDirectory).append(dqmSeparator).append(meName));
+  MonitorElement* me = dqmStore.get(terminate_dqmDirectory(dqmDirectory).append(meName));
   if ( me ) {
     int meType = me->kind();
     if ( meType == MonitorElement::DQM_KIND_REAL ) return me->getFloatValue();
@@ -119,15 +131,28 @@ double getValue(DQMStore& dqmStore, const std::string& meName_full, bool& error)
 
 std::string dqmDirectoryName(const std::string& directory)
 {
-  std::string dirName = directory;
+//--- add leading '/'
+  std::string dirName = dqmRootDirectory;
+
+  dirName += directory;
 
 //--- add tailing '/'
-  if ( dirName != "" && dirName.find_last_of(dqmSeparator) != (dirName.length() - 1) ) dirName.append(dqmSeparator);
+  dirName = terminate_dqmDirectory(dirName);
 
 //--- replace all instances of '//' by '/'
   while ( dirName.find(dqmSeparator2) != std::string::npos ) {
     dirName.replace(dirName.find(dqmSeparator2), dqmSeparator2.length(), dqmSeparator);
   }
+
+  return dirName;
+}
+
+std::string dqmDirectoryName_dqmRootDirectoryOmitted(const std::string& directory)
+{
+  std::string dirName = dqmDirectoryName(directory);
+  
+  if ( dqmRootDirectory != "" && dirName.find(dqmRootDirectory) == 0 ) 
+    dirName = std::string(dirName, dqmRootDirectory.length());
 
   return dirName;
 }
@@ -259,8 +284,11 @@ void dqmCopyMonitorElement(DQMStore& dqmStore, const std::string& inputDirectory
 
   std::string meName_full = dqmDirectoryName(inputDirectory).append(meName_input);
   //std::cout << " meName_full = " <<  meName_full << std::endl;
+  std::string meName_full_dqmRootDirectoryOmitted = dqmDirectoryName_dqmRootDirectoryOmitted(inputDirectory).append(meName_input);
+  //std::cout << " meName_full_dqmRootDirectoryOmitted = " <<  meName_full_dqmRootDirectoryOmitted << std::endl;
 
   MonitorElement* meInput = dqmStore.get(meName_full);
+  if ( !meInput ) meInput = dqmStore.get(meName_full_dqmRootDirectoryOmitted);
   //std::cout << " meInput = " << meInput << std::endl;
   if ( !meInput ) {
     edm::LogError ("dqmCopyMonitorElement") 
@@ -487,7 +515,7 @@ void dqmCopyRecursively(DQMStore& dqmStore, const std::string& inputDirectory, c
 	dirName != dirNames.end(); ++dirName ) {
     std::string subDirName = dqmSubDirectoryName(inputDirectory, *dirName);
 
-    std::string inputDirName_full = dqmDirectoryName(inputDirectory).append(subDirName);
+    std::string inputDirName_full = terminate_dqmDirectory(inputDirectory).append(subDirName);
     std::string outputDirName_full = dqmDirectoryName(outputDirectory).append(subDirName);
 
     dqmCopyRecursively(dqmStore, inputDirName_full, outputDirName_full, 
@@ -612,6 +640,7 @@ void separateMonitorElementFromDirectoryName(const std::string& meName_full, std
   } while ( nextPos != std::string::npos );
 
   meName = ( lastPos != std::string::npos ) ? std::string(tempName, lastPos + 1, tempName.length()) : tempName;
-  dqmDirectoryName = ( lastPos != std::string::npos ) ? std::string(tempName, 0, lastPos) : "";
+  dqmDirectoryName = dqmRootDirectory;
+  if ( lastPos != std::string::npos ) dqmDirectoryName += std::string(tempName, 0, lastPos);
 }
 
