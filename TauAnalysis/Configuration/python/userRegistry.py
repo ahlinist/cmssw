@@ -59,16 +59,22 @@ userSettings = {
     },
     'jkolb': {
         'AHtoElecTau' : {
-            'analysisFilePath' : "/castor/cern.ch/user/j/jkolb/elecTauAnalysis/fall10/HtoElecTau/",
-            'harvestingFilePath' : "/castor/cern.ch/user/j/jkolb/elecTauAnalysis/fall10/HtoElecTau/",
+            'analysisFilePath' : "/user/j/jkolb/elecTauAnalysis/fall10/HtoElecTau/",
+            'harvestingFilePath' : "/user/j/jkolb/elecTauAnalysis/fall10/HtoElecTau/",
             'tmpFilePath' : "/tmp/jkolb/",
             'jobId' : "7TeV"
         },
         'ZtoElecTau' : {
-            'analysisFilePath' : "/castor/cern.ch/user/j/jkolb/elecTauAnalysis/stdCuts/",
-            'harvestingFilePath' : "/castor/cern.ch/user/j/jkolb/elecTauAnalysis/stdCuts/",
+            'analysisFilePath' : "/user/j/jkolb/elecTauAnalysis/fall10/current/",
+            'harvestingFilePath' : "/user/j/jkolb/elecTauAnalysis/fall10/current/",
             'tmpFilePath' : "/tmp/jkolb/",
             'jobId' : "2010Nov13"
+        },
+        'ZtoElecTau_stdCuts' : {
+            'analysisFilePath' : "/user/j/jkolb/elecTauAnalysis/fall10/stdCuts/",
+            'harvestingFilePath' : "/user/j/jkolb/elecTauAnalysis/fall10/stdCuts/",
+            'tmpFilePath' : "/tmp/jkolb/",
+            'jobId' : "2010Nov24"
         },
         'global' : {
             'drawOptions' : {
@@ -104,5 +110,8 @@ def getTmpFilePath(channel):
 
 def getJobId(channel):
     return userSettings[os.environ['LOGNAME']][channel]['jobId']
+
+def getConfigFileName(channel):
+    return userSettings[os.environ['LOGNAME']][channel]['configFileName']
 
 
