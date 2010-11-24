@@ -13,19 +13,25 @@
 //
 // Original Author: Roberto Covarelli 
 //         Created:  Fri Oct  9 04:59:40 PDT 2009
-// $Id: JPsiAnalyzerPAT.cc,v 1.38 2010/08/17 09:46:11 covarell Exp $
+// $Id: JPsiAnalyzerPAT.cc,v 1.8.2.2 2010/11/23 17:30:20 fat Exp $
 //
-//
+// based on: Onia2MuMu package V00-11-00
+// changes done by: FT
 
 // system include files
 #include <memory>
 #include <fstream>
+#include <ostream>
+#include <math.h>
 
 // ROOT/Roofit include files
 #include <TStyle.h>
+#include <TTree.h>
 #include <TFile.h>
 #include <TCanvas.h>
 #include <TH1.h>
+#include <TLorentzVector.h>
+#include <TVector3.h>
 
 #include "RooFit.h"
 #include "RooGlobalFunc.h"
@@ -73,7 +79,7 @@ class JPsiAnalyzerPAT : public edm::EDAnalyzer {
       virtual void endJob() ;
       void makeCuts(int sign) ;
       pair< unsigned int, const pat::CompositeCandidate* > theBestQQ(int sign);
-      void fillHistosAndDS(unsigned int theCat, const pat::CompositeCandidate* aCand, const edm::Event&);
+      void fillTreeAndDS(unsigned int theCat, const pat::CompositeCandidate* aCand, const edm::Event&);
       bool isMuonInAccept(const pat::Muon* aMuon);
       bool selGlobalMuon(const pat::Muon* aMuon);
       bool selTrackerMuon(const pat::Muon* aMuon);
@@ -81,167 +87,69 @@ class JPsiAnalyzerPAT : public edm::EDAnalyzer {
       int getJpsiVarType(const double jpsivar, vector<double> vectbin);
       double CorrectMass(const reco::Muon& mu1,const reco::Muon& mu2, int mode);
 
-      // histos
-      TH1F *QQMass2Glob_passmu3;
-      TH1F *QQMass1Glob1Trk_passmu3;
-      TH1F *QQMass1Glob1Cal_passmu3;
-      TH1F *QQMass2GlobPT6_passmu3;
-      TH1F *QQMass1Glob1TrkPT6_passmu3;
-      TH1F *QQMass1Glob1CalPT6_passmu3;
-  // TH1F *WSMass2Glob_passmu3;
-  // TH1F *WSMass1Glob1Trk_passmu3;
-  // TH1F *WSMass1Glob1Cal_passmu3;
-      TH1F *QQMass2Glob_passmu5;
-      TH1F *QQMass1Glob1Trk_passmu5;
-      TH1F *QQMass1Glob1Cal_passmu5;
-      TH1F *QQMass2Glob_passOniaTrack;
-      TH1F *QQMass1Glob1Trk_passOniaTrack;
-      TH1F *QQMass1Glob1Cal_passOniaTrack;
-      TH1F *QQMass2GlobPT6_passmu5;
-      TH1F *QQMass1Glob1TrkPT6_passmu5;
-      TH1F *QQMass1Glob1CalPT6_passmu5;
-      TH1F *QQMass2Glob_pass2muOpen;
-      TH1F *QQMass1Glob1Trk_pass2muOpen;
-      TH1F *QQMass1Glob1Cal_pass2muOpen;
-  // TH1F *WSMass2Glob_pass2muOpen;
-  // TH1F *WSMass1Glob1Trk_pass2muOpen;
-  // TH1F *WSMass1Glob1Cal_pass2muOpen;
-      TH1F *QQMass2Glob_passOniaL1Mu;             
-      TH1F *QQMass1Glob1Trk_passOniaL1Mu; 
-      TH1F *QQMass1Glob1Cal_passOniaL1Mu;
-      
-      TH1F *hMcRecoGlobMuDeltaR;        
-      TH1F *hMcRecoTrkMuDeltaR;  
-      TH1F *hMcRecoCalMuDeltaR;  
-      
-      TH1F *hMcRightMunPixHits; 
-      TH1F *hMcWrongMunPixHits; 
-      TH1F *hMcRightMud0;       
-      TH1F *hMcWrongMud0;       
-      TH1F *hMcRightMudz;       
-      TH1F *hMcWrongMudz;       
-      TH1F *hMcRightGlbMuGlobalchi2;
-      TH1F *hMcWrongGlbMuGlobalchi2;
-      TH1F *hMcRightGlbMunMuHits;
-      TH1F *hMcWrongGlbMunMuHits;
+      // additional functions by f
+      void resetDSVariables();
+      void analyzeGenerator(const edm::Handle<reco::GenParticleCollection>& genParticles);
+      void calcPol(TLorentzVector&, TLorentzVector&, std::vector< float >&, std::vector< float >& );
+      void beginRun(const edm::Run &, const edm::EventSetup &);
+      void hltReport(const edm::Event &iEvent ,const edm::EventSetup& iSetup);
+      void matchMuonToHlt(const pat::Muon*, const pat::Muon*);
 
-      TH1F *hMcRightGlbGlbMuLife;              
-      TH1F *hMcWrongGlbGlbMuLife;
-      TH1F *hMcRightGlbGlbMuMass;              
-      TH1F *hMcWrongGlbGlbMuMass;
-      TH1F *hMcPPGlbGlbMuMass;
-      TH1F *hMcMMGlbGlbMuMass;
-      TH1F *hMcSqrtGlbGlbMuMass;
-      TH1F *hMcRightGlbGlbMuPt;              
-      TH1F *hMcWrongGlbGlbMuPt;
-      TH1F *hMcRightGlbGlbMuEta;              
-      TH1F *hMcWrongGlbGlbMuEta; 
-      TH1F *hMcRightGlbGlbMuVtxProb;
-      TH1F *hMcWrongGlbGlbMuVtxProb;
+      // ROOT tree 
+      TTree* tree_;//data; //*recoData;
+      TFile* fOut_;
 
-      TH1F *hMcRightMuPt;
-      TH1F *hMcWrongMuPt;
-      TH1F *hMcRightMuP;
-      TH1F *hMcWrongMuP;
-      TH1F *hMcRightTrkBit4;
-      TH1F *hMcWrongTrkBit4;
-      TH1F *hMcRightTrkBit5;
-      TH1F *hMcWrongTrkBit5;
-      TH1F *hMcRightTrkBit8;
-      TH1F *hMcWrongTrkBit8;
-      TH1F *hMcRightTrkBit9;
-      TH1F *hMcWrongTrkBit9;
-      TH1F *hMcRightTrkBitNew;
-      TH1F *hMcWrongTrkBitNew;
-      TH1F *hMcRightTrkMuChi2;   
-      TH1F *hMcWrongTrkMuChi2; 
-      TH1F *hMcRightMuNhits;
-      TH1F *hMcWrongMuNhits;
-      TH1F *hMcRightTrkMuCaloComp;         
-      TH1F *hMcWrongTrkMuCaloComp;
-
-      TH1F *hMcRightGlbTrkMuLife;              
-      TH1F *hMcWrongGlbTrkMuLife;
-      TH1F *hMcRightGlbTrkMuMass;              
-      TH1F *hMcWrongGlbTrkMuMass;
-      TH1F *hMcPPGlbTrkMuMass;
-      TH1F *hMcMMGlbTrkMuMass;
-      TH1F *hMcSqrtGlbTrkMuMass;
-      TH1F *hMcRightGlbTrkMuPt;              
-      TH1F *hMcWrongGlbTrkMuPt;
-      TH1F *hMcRightGlbTrkMuEta;              
-      TH1F *hMcWrongGlbTrkMuEta;
-      TH1F *hMcRightGlbTrkMuVtxProb;  
-      TH1F *hMcWrongGlbTrkMuVtxProb;
-
-      TH1F *hMcRightTrkTrkMuLife;              
-      TH1F *hMcWrongTrkTrkMuLife;
-      TH1F *hMcRightTrkTrkMuMass;              
-      TH1F *hMcWrongTrkTrkMuMass;
-      TH1F *hMcPPTrkTrkMuMass;
-      TH1F *hMcMMTrkTrkMuMass;
-      TH1F *hMcSqrtTrkTrkMuMass;
-      TH1F *hMcRightTrkTrkMuPt;              
-      TH1F *hMcWrongTrkTrkMuPt;
-      TH1F *hMcRightTrkTrkMuEta;              
-      TH1F *hMcWrongTrkTrkMuEta;
-      TH1F *hMcRightTrkTrkMuVtxProb;  
-      TH1F *hMcWrongTrkTrkMuVtxProb;
-      
-      TH1F *hMcRightCalMuChi2; 
-      TH1F *hMcWrongCalMuChi2; 
-      TH1F *hMcRightCalMuNhits;
-      TH1F *hMcWrongCalMuNhits;
-      TH1F *hMcRightCalMuCaloComp;         
-      TH1F *hMcWrongCalMuCaloComp;      
-      TH1F *hMcRightCalMuPt;            
-      TH1F *hMcWrongCalMuPt;   
- 
-      TH1F *hMcRightCalGlbMuDeltaR;        
-      TH1F *hMcWrongCalGlbMuDeltaR;     
-      TH1F *hMcRightCalGlbMuMass;              
-      TH1F *hMcWrongCalGlbMuMass;
-      TH1F *hMcRightCalGlbMuVtxChi2; 
-      TH1F *hMcWrongCalGlbMuVtxChi2; 
-      TH1F *hMcRightCalGlbMuS; 
-      TH1F *hMcWrongCalGlbMuS;
-      TH1F *hMcRightCalGlbMucosAlpha; 
-      TH1F *hMcWrongCalGlbMucosAlpha;
-          
-      TH1F *hMcRightAllMuIso;
-      
-      TH1F* gammaFactor_GGnonprompt;
-      TH1F* gammaFactor_GTnonprompt;
-      
-      TH2F *heffTrk;
-      TH2F *heffMuGlb;
-      TH2F *heffMuTrk;
-      TH2F *heffMuHLT;
-
-      // dataset and RooRealVars
+      // SMALL dataset and RooRealVars
+      TFile* fOut2_;
       RooDataSet* data;
-      RooRealVar* JpsiMass;      
-      RooRealVar* JpsiPt;
-      RooRealVar* JpsiEta; 
-      RooRealVar* Jpsict;
-      RooRealVar* JpsictErr;
-      RooRealVar* JpsictTrue;
-      RooRealVar* TNPeff;
-      RooRealVar* TNPefferr;       			
-      RooCategory* JpsiType;
-      RooCategory* JpsiPtType;
-      RooCategory* JpsiEtaType;
-      RooCategory* matchType;
-      RooCategory* triggerMu;
-      RooCategory* triggerMuPre;
-      RooCategory* triggerDMu;
-      RooCategory* triggerOniaTrack;
-      RooCategory* triggerOniaL1Mu;
-      RooCategory* JpsiSign;   
+      RooRealVar* Jpsi_Mass;      
+      RooRealVar* Jpsi_Pt;
+      RooRealVar* Jpsi_Rap; 
+      RooRealVar* Jpsi_ct;
+      RooRealVar* Jpsi_ctErr;
+      RooRealVar* Jpsi_ctTrue;      			
+      RooCategory* Jpsi_Type;
+      RooCategory* Jpsi_PtType;
+      RooCategory* Jpsi_RapType;
+      RooCategory* Jpsi_MatchType;
+      RooCategory* Jpsi_Sign;   
 
-      // handles
-      // Handle<pat::CompositeCandidateCollection > collGG;
-      // Handle<pat::CompositeCandidateCollection > collGT;
+      //1.) J/psi variables RECO
+      // double JpsiMass, JpsiPt, JpsiRap;
+      // double JpsiPx, JpsiPy, JpsiPz;
+      TLorentzVector* JpsiP;
+      double Jpsict, JpsictErr, JpsiVprob;
+      int JpsiType,  JpsiCharge, MCType; //GG, GT and TT
+
+      //2.) muon variables RECO
+      // double muPosPx, muPosPy, muPosPz;
+      TLorentzVector* muPosP;
+      // double muNegPx, muNegPy, muNegPz;
+      TLorentzVector* muNegP;
+
+      //3.) J/psi variables GEN
+      // double JpsiMass_Gen, JpsiPt_Gen, JpsiRap_Gen;
+      // double JpsiPx_Gen,   JpsiPy_Gen, JpsiPz_Gen;
+      TLorentzVector* JpsiP_Gen;
+      double Jpsict_Gen;
+
+      //4.)muon variables GEN
+      // double muPosPx_Gen, muPosPy_Gen, muPosPz_Gen;
+      TLorentzVector* muPosP_Gen;
+      // double muNegPx_Gen, muNegPy_Gen, muNegPz_Gen;
+      TLorentzVector* muNegP_Gen;
+
+      //5.) Event related variables
+      unsigned int eventNb, runNb, lumiBlock, nPriVtx;
+
+      //6.) POL variables
+      std::vector<std::string> polVarNames_;
+      std::vector<std::string> polVarNamesGen_;
+      std::map<std::string, double> mapPolVarsToValue_;
+      std::map<std::string, double> mapPolVarsToValueGen_;
+
+      //7.) TriggerNames Map
+      std::map<std::string, int> mapTriggerNameToIntFired_;
 
       Handle<pat::CompositeCandidateCollection > collAll;
       Handle<pat::CompositeCandidateCollection > collCalo;
@@ -250,44 +158,51 @@ class JPsiAnalyzerPAT : public edm::EDAnalyzer {
       // data members
       InputTag       _patJpsi;
       InputTag       _patJpsiWithCalo;
-      string         _histfilename;      
+      bool           _writeTree;
+      string         _treefilename; 
+      bool           _writeDataSet; 
       string         _datasetname;
+      string         _triggerForDataset;
+      double         _massMin;
+      double         _massMax;
       vector<double> _ptbinranges;
       vector<double> _etabinranges;
       bool           _onlythebest;
       bool           _applycuts;
-      bool           _storeefficiency;
       bool           _useBS;
-      bool           _useRapidity;
       bool           _useCalo;
       bool           _removeSignal;
       bool           _removeMuons;
       bool           _storeWs;
       bool           _writeOutCands;
-      bool           _inclPsiP;
       int            _MassCorr;
-      bool           _JSON;
-      // InputTag       _triggerresults;
+      // bool           _JSON;
+      int            _oniaPDG;
+      InputTag       _genParticles;
+      bool           _isMC;
+      bool           _isPromptMC;
+
+      InputTag      _triggerresults;
       vector<unsigned int>                     _thePassedCats[3];
       vector<const pat::CompositeCandidate*>   _thePassedCands[3];
 
       // number of events
       unsigned int nEvents;
-      unsigned int passedCandidates;
-      unsigned int matchCandidates;
-      unsigned int matchNewCandidates;
+      unsigned int passedTriggerResults_;
+      unsigned int passedMuonSelectionCuts_;
+      unsigned int passedTriggerMatch_;
+      unsigned int passedTriggerResultsAnalyzer_;
+
 
       // limits 
       float JpsiMassMin;
       float JpsiMassMax;
-      float JpsiMassMinSide;
-      float JpsiMassMaxSide;
       float JpsiCtMin;
       float JpsiCtMax;
       float JpsiPtMin;           // SET BY 
       float JpsiPtMax;           // DEFINITION
-      float JpsiEtaMin;          // OF BIN
-      float JpsiEtaMax;          // LIMITS 
+      float JpsiRapMin;          // OF BIN
+      float JpsiRapMax;          // LIMITS
 
       math::XYZPoint RefVtx;
       ofstream* theTextFile;
@@ -296,14 +211,17 @@ class JPsiAnalyzerPAT : public edm::EDAnalyzer {
       int runtmp,lumitmp,count;
       int runmax,runmin;
 
+      // Trigger Filter Studies
+      edm::Handle< edm::TriggerResults> handleTriggerResults_;
+      edm::InputTag tagTriggerResults_;
+      HLTConfigProvider hltConfig_;
+      bool hltConfigInit_;
+      std::vector<std::string> HLTbitNames_;
+      std::map< std::string, std::string> mapTriggerToLastFilter_;
 };    
       
-//    
 // constants, enums and typedefs
-//
-
-//
-// static data member definitions
+enum {CS, HX, PHX, sGJ, GJ1, GJ2};
 //
 
 //
@@ -312,144 +230,341 @@ class JPsiAnalyzerPAT : public edm::EDAnalyzer {
 JPsiAnalyzerPAT::JPsiAnalyzerPAT(const edm::ParameterSet& iConfig):
   _patJpsi(iConfig.getParameter<InputTag>("src")),
   _patJpsiWithCalo(iConfig.getParameter<InputTag>("srcWithCaloMuons")),
-  _histfilename(iConfig.getParameter<string>("histFileName")),		
-  _datasetname(iConfig.getParameter<string>("dataSetName")),		
+  _writeTree(iConfig.getParameter<bool>("writeTree")),
+  _treefilename(iConfig.getParameter<string>("treeFileName")),	
+  _writeDataSet(iConfig.getParameter<bool>("writeDataSet")),
+  _datasetname(iConfig.getParameter<string>("dataSetName")),
+  _triggerForDataset(iConfig.getParameter<string>("triggerForDataset")),
+  _massMin(iConfig.getParameter<double>("massMin")),
+  _massMax(iConfig.getParameter<double>("massMax")),
   _ptbinranges(iConfig.getParameter< vector<double> >("pTBinRanges")),	
   _etabinranges(iConfig.getParameter< vector<double> >("etaBinRanges")),
   _onlythebest(iConfig.getParameter<bool>("onlyTheBest")),		
   _applycuts(iConfig.getParameter<bool>("applyCuts")),			
-  _storeefficiency(iConfig.getParameter<bool>("storeEfficiency")),	
   _useBS(iConfig.getParameter<bool>("useBeamSpot")),
-  _useRapidity(iConfig.getParameter<bool>("useRapidity")),
   _useCalo(iConfig.getUntrackedParameter<bool>("useCaloMuons",false)),
   _removeSignal(iConfig.getUntrackedParameter<bool>("removeSignalEvents",false)),
   _removeMuons(iConfig.getUntrackedParameter<bool>("removeTrueMuons",false)),
   _storeWs(iConfig.getUntrackedParameter<bool>("storeWrongSign",false)),
   _writeOutCands(iConfig.getUntrackedParameter<bool>("writeOutCandidates",false)),
-  _inclPsiP(iConfig.getUntrackedParameter<bool>("includePsiPrime",false)),
   _MassCorr(iConfig.getParameter<int>("massCorrectionMode")),
-  _JSON(iConfig.getUntrackedParameter<bool>("makeJSON",false))
-  // _triggerresults(iConfig.getParameter<InputTag>("TriggerResultsLabel"))
+  _oniaPDG(iConfig.getParameter<int>("oniaPDG")),
+  _genParticles(iConfig.getParameter<InputTag>("genParticles")),
+  _isMC(iConfig.getUntrackedParameter<bool>("isMC",false)),
+  _isPromptMC(iConfig.getUntrackedParameter<bool>("isPromptMC",false) ),
+  tagTriggerResults_(iConfig.getParameter<InputTag>("TriggerResultsLabel"))
 {
    //now do what ever initialization is needed
-  nEvents = 0;
-  passedCandidates = 0;
-  matchCandidates = 0;
-  matchNewCandidates = 0;
-  
-  count=0;
+  nEvents = 0; 
+  // passedTriggerResults_=0;
+  passedMuonSelectionCuts_=0;
+  passedTriggerMatch_=0;
+  // passedTriggerResultsAnalyzer_=0;
+
+  /* count=0;
   runtmp=0;
   lumitmp=11111111;
   runmax=0;
-  runmin=100000000;
+  runmin=100000000;*/
 
-  JpsiMassMin = 2.6;
-  JpsiMassMax = 3.5;
-  if (_inclPsiP) JpsiMassMax = 4.2;
-  JpsiMassMinSide = 0.;
-  JpsiMassMaxSide = 12.0;
-  JpsiCtMin = -2.0;
+  JpsiMassMin = _massMin;
+  JpsiMassMax = _massMax;
+  JpsiCtMin = -1.0;
   JpsiCtMax = 3.5;
 
-  JpsiPtType = new RooCategory("JpsiPtType","Category of Pt");
-  JpsiEtaType = new RooCategory("JpsiEtaType","Category of Eta");
-
-  JpsiPtMin = _ptbinranges[0];  cout << "Pt min = " << JpsiPtMin << endl;
-  JpsiPtMax = _ptbinranges[_ptbinranges.size()-1];  cout << "Pt max = " << JpsiPtMax << endl;
-
-  for(unsigned int i=0;i<_ptbinranges.size()-1;i++){
-    char catname[100];
-    sprintf(catname,"P%d",i+1);
-    JpsiPtType->defineType(catname,i+1); 
-    cout << "Pt bin " << i+1 << ": Min = " << _ptbinranges[i] << " Max = " << _ptbinranges[i+1] << endl;   
-  }
-
-  JpsiEtaMin = _etabinranges[0];  cout << "Eta min = " << JpsiEtaMin << endl;
-  JpsiEtaMax = _etabinranges[_etabinranges.size()-1];  cout << "Eta max = " << JpsiEtaMax << endl;
-
-  for(unsigned int i=0;i<_etabinranges.size()-1;i++){
-    char catname[100];
-    sprintf(catname,"E%d",i+1);
-    JpsiEtaType->defineType(catname,i+1); 
-    cout << "Eta bin " << i+1 << ": Min = " << _etabinranges[i] << " Max = " << _etabinranges[i+1] << endl;   
-  }
-
-  JpsiType = new RooCategory("JpsiType","Category of Jpsi");
-  matchType = new RooCategory("matchType","Category of matching");
-
-  JpsiType->defineType("GG",0);
-  JpsiType->defineType("GT",1);
-  JpsiType->defineType("TT",2);
-  if (_useCalo) {
-    JpsiType->defineType("GC",3);  
-    JpsiType->defineType("TC",4);  
-    JpsiType->defineType("CC",5);  
-  }
-
-  matchType->defineType("unmatched",0);
-  matchType->defineType("matched",1);
-
-  triggerMu = new RooCategory("triggerMu","Match with single mu trigger bit");
-  triggerMuPre = new RooCategory("triggerMuPre","Match with single mu prescaled trigger bit");
-  triggerDMu = new RooCategory("triggerDMu","Match with double mu trigger bit");
-  triggerOniaTrack = new RooCategory("triggerOniaTrack","Match with onia-track trigger bit");
-  triggerOniaL1Mu = new RooCategory("triggerOniaL1Mu","Match with onia-L1Mu trigger bit");
-
-  triggerMu->defineType("unmatched",0);
-  triggerMu->defineType("matched",1);
-  triggerMuPre->defineType("unmatched",0);
-  triggerMuPre->defineType("matched",1);
-  triggerDMu->defineType("unmatched",0);
-  triggerDMu->defineType("matched",1);
-  triggerOniaTrack->defineType("unmatched",0);
-  triggerOniaTrack->defineType("matched",1);
-  triggerOniaL1Mu->defineType("unmatched",0);
-  triggerOniaL1Mu->defineType("matched",1);
-
-  JpsiSign = new RooCategory("JpsiSign","Sign of Jpsi dimuons");
-  
-  JpsiSign->defineType("OS",0);
-  JpsiSign->defineType("SSP",1);
-  JpsiSign->defineType("SSM",2);
-
-  JpsiMass = new RooRealVar("JpsiMass","J/psi mass",JpsiMassMin,JpsiMassMax,"GeV/c^{2}");
-  JpsiPt = new RooRealVar("JpsiPt","J/psi pt",JpsiPtMin,JpsiPtMax,"GeV/c");
-  JpsiEta = new RooRealVar("JpsiEta","J/psi eta",-JpsiEtaMax,JpsiEtaMax);
-  Jpsict = new RooRealVar("Jpsict","J/psi ctau",JpsiCtMin,JpsiCtMax,"mm");
-  JpsictErr = new RooRealVar("JpsictErr","J/psi ctau error",-1.,1.,"mm");
-  JpsictTrue = new RooRealVar("JpsictTrue","J/psi ctau true",-100.,JpsiCtMax,"mm");
-  TNPeff = new RooRealVar("TNPeff","Tag and probe efficiency",0.,1.);
-  TNPefferr = new RooRealVar("TNPefferr","Tag and probe efficiency uncertainty",0.,1.);  		
-
-  RooArgList varlist(*JpsiMass,*Jpsict,*JpsiPt,*JpsiEta,*TNPeff,*TNPefferr,*JpsiType,*matchType);
-  varlist.add(*JpsictTrue);   varlist.add(*JpsiPtType);
-  varlist.add(*JpsiEtaType);  varlist.add(*JpsictErr);
-  varlist.add(*triggerMu);    varlist.add(*triggerMuPre);
-  varlist.add(*triggerDMu);   varlist.add(*triggerOniaTrack);
-  varlist.add(*triggerOniaL1Mu);      varlist.add(*JpsiSign);
-
-  data = new RooDataSet("data","A sample",varlist);
   if (_writeOutCands) theTextFile = new ofstream("passedCandidates.txt");
   
   /* if (_JSON){
     JSON = new ofstream("PseudoJSON.txt");
     *JSON << "{";
     }*/
+
+  // Add the Names of your Polarization variables here
+  // Pol. Variables RECO
+  polVarNames_.push_back("costh_CS");
+  polVarNames_.push_back("costh_HX");
+  polVarNames_.push_back("costh_GJ1");
+  polVarNames_.push_back("costh_GJ2");
+  polVarNames_.push_back("costh_sGJ");
+  polVarNames_.push_back("costh_PHX");
+  polVarNames_.push_back("phi_CS");
+  polVarNames_.push_back("phi_HX");
+  polVarNames_.push_back("phi_GJ1");
+  polVarNames_.push_back("phi_GJ2");
+  polVarNames_.push_back("phi_sGJ");
+  polVarNames_.push_back("phi_PHX");
+  for(std::vector<std::string>::iterator it = polVarNames_.begin(); it != polVarNames_.end(); ++it){
+      mapPolVarsToValue_[*it] = -9999;
+  }
+
+  // Pol. Variables GEN
+  polVarNamesGen_.push_back("costh_CS_Gen");
+  polVarNamesGen_.push_back("costh_HX_Gen");
+  polVarNamesGen_.push_back("costh_GJ1_Gen");
+  polVarNamesGen_.push_back("costh_GJ2_Gen");
+  polVarNamesGen_.push_back("costh_sGJ_Gen");
+  polVarNamesGen_.push_back("costh_PHX_Gen");
+  polVarNamesGen_.push_back("phi_CS_Gen");
+  polVarNamesGen_.push_back("phi_HX_Gen");
+  polVarNamesGen_.push_back("phi_GJ1_Gen");
+  polVarNamesGen_.push_back("phi_GJ2_Gen");
+  polVarNamesGen_.push_back("phi_sGJ_Gen");
+  polVarNamesGen_.push_back("phi_PHX_Gen");
+  for(std::vector<std::string>::iterator it = polVarNamesGen_.begin(); it != polVarNamesGen_.end(); ++it){
+      mapPolVarsToValueGen_[*it] = -9999;
+  }
+
+  // Add the Trigger you want to choose into HLTbitNames_
+  // Mu + Track Trigger
+  HLTbitNames_.push_back( "HLT_Mu0_Track0_Jpsi" );
+  HLTbitNames_.push_back( "HLT_Mu3_Track0_Jpsi" );
+  HLTbitNames_.push_back( "HLT_Mu5_Track0_Jpsi" );
+  //
+  HLTbitNames_.push_back( "HLT_Mu0_TkMu0_Jpsi" );
+  HLTbitNames_.push_back( "HLT_Mu3_TkMu0_Jpsi" );
+  HLTbitNames_.push_back( "HLT_Mu5_TkMu0_Jpsi" );
+  //
+  HLTbitNames_.push_back( "HLT_Mu0_TkMu0_OST_Jpsi" );
+  HLTbitNames_.push_back( "HLT_Mu3_TkMu0_OST_Jpsi" );
+  HLTbitNames_.push_back( "HLT_Mu5_TkMu0_OST_Jpsi" );
+  //
+  HLTbitNames_.push_back( "HLT_Mu0_TkMu0_OST_Jpsi_Tight_v1" );
+  HLTbitNames_.push_back( "HLT_Mu3_TkMu0_OST_Jpsi_Tight_v1" );
+  HLTbitNames_.push_back( "HLT_Mu5_TkMu0_OST_Jpsi_Tight_v1" );
+  //
+  HLTbitNames_.push_back( "HLT_Mu0_TkMu0_OST_Jpsi_Tight_v2" );
+  HLTbitNames_.push_back( "HLT_Mu3_TkMu0_OST_Jpsi_Tight_v2" );
+  HLTbitNames_.push_back( "HLT_Mu5_TkMu0_OST_Jpsi_Tight_v2" );
+  //
+  HLTbitNames_.push_back( "HLT_Mu0_TkMu0_OST_Jpsi_Tight_v3" );
+  HLTbitNames_.push_back( "HLT_Mu3_TkMu0_OST_Jpsi_Tight_v3" );
+  HLTbitNames_.push_back( "HLT_Mu5_TkMu0_OST_Jpsi_Tight_v3" );
+  //Mixed MuX + Track Trigger
+  HLTbitNames_.push_back( "HLT_Mu3_Track3_Jpsi" );
+  HLTbitNames_.push_back( "HLT_Mu3_Track3_Jpsi_v2" );
+  HLTbitNames_.push_back( "HLT_Mu3_Track5_Jpsi_v1" );
+  HLTbitNames_.push_back( "HLT_Mu3_Track5_Jpsi_v2" );
+  // Double Muon Trigger
+  HLTbitNames_.push_back( "HLT_DoubleMu0" );
+  HLTbitNames_.push_back( "HLT_DoubleMu0_Quarkonium_v1" );
+  HLTbitNames_.push_back( "HLT_DoubleMu0_Quarkonium_LS_v1" );
+  HLTbitNames_.push_back( "HLT_L1DoubleMuOpen" );
+  HLTbitNames_.push_back( "HLT_L1DoubleMuOpen_Tight" );
+  HLTbitNames_.push_back( "HLT_DoubleMu3" );
+  // Single Muon Trigger
+  HLTbitNames_.push_back( "HLT_Mu3" );
+  HLTbitNames_.push_back( "HLT_Mu5" );
+  HLTbitNames_.push_back( "HLT_Mu7" );
+  HLTbitNames_.push_back( "HLT_Mu9" );
+  HLTbitNames_.push_back( "HLT_Mu11" );
+  for(std::vector<std::string>::iterator it = HLTbitNames_.begin(); it != HLTbitNames_.end(); ++it){
+      mapTriggerNameToIntFired_[*it] = -9999;
+  }
+
+// MAP your Trigger TO the last Filter used in the path
+// MuX + Track Trigger
+  mapTriggerToLastFilter_["HLT_Mu0_Track0_Jpsi"]="hltMu0TrackJpsiTrackMassFiltered";
+  mapTriggerToLastFilter_["HLT_Mu3_Track0_Jpsi"]="hltMu3TrackJpsiTrackMassFiltered";
+  mapTriggerToLastFilter_["HLT_Mu5_Track0_Jpsi"]="hltMu5TrackJpsiTrackMassFiltered";
+//
+  mapTriggerToLastFilter_["HLT_Mu0_TkMu0_Jpsi"] = "hltMu0TkMuJpsiTkMuMassFiltered";
+  mapTriggerToLastFilter_["HLT_Mu3_TkMu0_Jpsi"] = "hltMu3TkMuJpsiTkMuMassFiltered";
+  mapTriggerToLastFilter_["HLT_Mu5_TkMu0_Jpsi"] = "hltMu5TkMuJpsiTkMuMassFiltered";
+//
+  mapTriggerToLastFilter_["HLT_Mu0_TkMu0_OST_Jpsi"] = "hltMu0TkMuJpsiTkMuMassFiltered";
+  mapTriggerToLastFilter_["HLT_Mu3_TkMu0_OST_Jpsi"] = "hltMu3TkMuJpsiTkMuMassFiltered";
+  mapTriggerToLastFilter_["HLT_Mu5_TkMu0_OST_Jpsi"] = "hltMu5TkMuJpsiTkMuMassFiltered";
+//
+  mapTriggerToLastFilter_["HLT_Mu0_TkMu0_OST_Jpsi_Tight_v1"] = "hltMu0TkMuJpsiTkMuMassFilteredTight";
+  mapTriggerToLastFilter_["HLT_Mu3_TkMu0_OST_Jpsi_Tight_v1"] = "hltMu3TkMuJpsiTkMuMassFilteredTight";
+  mapTriggerToLastFilter_["HLT_Mu5_TkMu0_OST_Jpsi_Tight_v1"] = "hltMu5TkMuJpsiTkMuMassFilteredTight";
+//
+  mapTriggerToLastFilter_["HLT_Mu0_TkMu0_OST_Jpsi_Tight_v2"] = "hltMu0TkMuJpsiTkMuMassFilteredTight";
+  mapTriggerToLastFilter_["HLT_Mu3_TkMu0_OST_Jpsi_Tight_v2"] = "hltMu3TkMuJpsiTkMuMassFilteredTight";
+  mapTriggerToLastFilter_["HLT_Mu5_TkMu0_OST_Jpsi_Tight_v2"] = "hltMu5TkMuJpsiTkMuMassFilteredTight";
+//
+  mapTriggerToLastFilter_["HLT_Mu0_TkMu0_OST_Jpsi_Tight_v3"] = "hltMu0TkMuJpsiTkMuMassFilteredTight";
+  mapTriggerToLastFilter_["HLT_Mu3_TkMu0_OST_Jpsi_Tight_v3"] = "hltMu3TkMuJpsiTkMuMassFilteredTight";
+  mapTriggerToLastFilter_["HLT_Mu5_TkMu0_OST_Jpsi_Tight_v3"] = "hltMu5TkMuJpsiTkMuMassFilteredTight";
+//
+  mapTriggerToLastFilter_["HLT_Mu3_Track3_Jpsi"]    = "hltMu3Track3JpsiTrackMassFiltered";
+  mapTriggerToLastFilter_["HLT_Mu3_Track3_Jpsi_v2"] = "hltMu3Track3JpsiTrackMassFiltered";
+  mapTriggerToLastFilter_["HLT_Mu3_Track5_Jpsi_v1"] = "hltMu3Track5JpsiTrackMassFiltered";
+  mapTriggerToLastFilter_["HLT_Mu3_Track5_Jpsi_v2"] = "hltMu3Track5JpsiTrackMassFiltered";
+// Double Muon Trigger
+  mapTriggerToLastFilter_["HLT_DoubleMu0"]                  = "hltDiMuonL3PreFiltered0";
+  mapTriggerToLastFilter_["HLT_DoubleMu0_Quarkonium_v1"]    = "hltDoubleMu0QuarkoniumL3PreFiltered";
+  mapTriggerToLastFilter_["HLT_DoubleMu0_Quarkonium_LS_v1"] = "hltDoubleMu0QuarkoniumLSL3PreFiltered";
+  mapTriggerToLastFilter_["HLT_L1DoubleMuOpen"]             = "hltDoubleMuLevel1PathL1OpenFiltered";
+  mapTriggerToLastFilter_["HLT_L1DoubleMuOpen_Tight"]       = "hltL1DoubleMuOpenTightL1Filtered";
+  mapTriggerToLastFilter_["HLT_DoubleMu3"]                  = "hltDiMuonL3PreFiltered";
+// Single Muon Trigger
+  mapTriggerToLastFilter_["HLT_Mu3"]            = "hltSingleMu3L3Filtered3";
+  mapTriggerToLastFilter_["HLT_Mu5"]            = "hltSingleMu5L3Filtered5";
+  mapTriggerToLastFilter_["HLT_Mu7"]            = "hltSingleMu7L3Filtered7";
+  mapTriggerToLastFilter_["HLT_Mu9"]            = "hltSingleMu9L3Filtered9";
+  mapTriggerToLastFilter_["HLT_Mu11"]           = "hltSingleMu11L3Filtered11";
 }
 
 
 JPsiAnalyzerPAT::~JPsiAnalyzerPAT()
 {
- 
    // do anything here that needs to be done at desctruction time
    // (e.g. close files, deallocate resources etc.)
   if (_writeOutCands) theTextFile->close();
 }
 
+// ------------ method called once each job just before starting event loop  ------------
+void
+JPsiAnalyzerPAT::beginJob()
+{
+    //std::cout << "[JPsiAnalyzerPAT] --- beginJob " << std::endl;
+  if (_writeTree) {
+    fOut_ = new TFile(_treefilename.c_str(), "RECREATE");
+    fOut_->cd();
 
-//
-// member functions
-//
+    // TTree
+    //load Branches
+    tree_ = new TTree ("data", "CMSSW Quarkonia J/psi Polarization+Trigger Tree");
+
+    JpsiP = new TLorentzVector();
+    muPosP = new TLorentzVector();
+    muNegP = new TLorentzVector();
+    JpsiP_Gen = new TLorentzVector();
+    muPosP_Gen = new TLorentzVector();
+    muNegP_Gen = new TLorentzVector();
+
+    // Event variables
+    tree_->Branch("eventNb",             &eventNb,             "eventNb/I");
+    tree_->Branch("runNb",               &runNb,               "runNb/I");
+    tree_->Branch("lumiBlock",           &lumiBlock,           "lumiBlock/I");
+    tree_->Branch("nPriVtx",             &nPriVtx,             "nPriVtx/I");
+
+    // Jpsi Variables
+    tree_->Branch("JpsiType",   &JpsiType,  "JpsiType/I");
+    tree_->Branch("JpsiP",  "TLorentzVector", &JpsiP);
+    // tree_->Branch("JpsiMass",   &JpsiMass,  "JpsiMass/D");
+    // tree_->Branch("JpsiPt",     &JpsiPt,    "JpsiPt/D");
+    // tree_->Branch("JpsiRap",    &JpsiRap,   "JpsiRap/D");
+    tree_->Branch("JpsiCharge", &JpsiCharge,"JpsiCharge/I");
+    // tree_->Branch("JpsiPx",     &JpsiPx,    "JpsiPx/D");
+    // tree_->Branch("JpsiPy",     &JpsiPy,    "JpsiPy/D");
+    // tree_->Branch("JpsiPz",     &JpsiPz,    "JpsiPz/D");
+    tree_->Branch("Jpsict",     &Jpsict,    "Jpsict/D");
+    tree_->Branch("JpsictErr",  &JpsictErr, "JpsictErr/D");
+    tree_->Branch("JpsiVprob",  &JpsiVprob, "JpsiVprob/D");
+    tree_->Branch("muPosP", "TLorentzVector", &muPosP);
+    tree_->Branch("muNegP", "TLorentzVector", &muNegP);
+    // tree_->Branch("muPosPx",    &muPosPx,   "muPosPx/D");
+    // tree_->Branch("muPosPy",    &muPosPy,   "muPosPy/D");
+    // tree_->Branch("muPosPz",    &muPosPz,   "muPosPz/D");
+    // tree_->Branch("muNegPx",    &muNegPx,   "muNegPx/D");
+    // tree_->Branch("muNegPy",    &muNegPy,   "muNegPy/D");
+    // tree_->Branch("muNegPz",    &muNegPz,   "muNegPz/D");
+
+    //add HLT Variables to TTree
+    for(std::vector< std::string >:: iterator it = HLTbitNames_.begin(); it != HLTbitNames_.end(); ++it){
+        std::string hlt_name= *it;
+        tree_->Branch(hlt_name.c_str(), &(mapTriggerNameToIntFired_[*it]), (hlt_name + "/I").c_str());
+    }
+
+    //add Polarization Variables to TTree
+    for(std::vector< std::string >:: iterator it = polVarNames_.begin(); it != polVarNames_.end(); ++it){
+        std::string pol_var_name= *it;
+        tree_->Branch(pol_var_name.c_str(), &(mapPolVarsToValue_[*it]), (pol_var_name + "/D").c_str());
+    }
+
+    //add Generator Information
+    if(_isMC){
+        for(std::vector< std::string >:: iterator it = polVarNamesGen_.begin(); it != polVarNamesGen_.end(); ++it){
+            std::string pol_var_name= *it;
+            tree_->Branch(pol_var_name.c_str(), &(mapPolVarsToValueGen_[*it]), (pol_var_name + "/D").c_str());
+        }
+        tree_->Branch("MCType",         &MCType,        "MCType/I");
+	tree_->Branch("JpsiP_Gen",  "TLorentzVector", &JpsiP_Gen);
+        // tree_->Branch("JpsiMass_Gen",   &JpsiMass_Gen,  "JpsiMass_Gen/D");
+        // tree_->Branch("JpsiPt_Gen",     &JpsiPt_Gen,    "JpsiPt_Gen/D");
+        // tree_->Branch("JpsiRap_Gen",    &JpsiRap_Gen,   "JpsiRap_Gen/D");
+        // tree_->Branch("JpsiPx_Gen",     &JpsiPx_Gen,    "JpsiPx_Gen/D");
+        // tree_->Branch("JpsiPy_Gen",     &JpsiPy_Gen,    "JpsiPy_Gen/D");
+        // tree_->Branch("JpsiPz_Gen",     &JpsiPz_Gen,    "JpsiPz_Gen/D");
+        tree_->Branch("Jpsict_Gen",     &Jpsict_Gen,    "Jpsict_Gen/D");
+        tree_->Branch("muPosP_Gen",  "TLorentzVector", &muPosP_Gen);
+        tree_->Branch("muNegP_Gen",  "TLorentzVector", &muNegP_Gen);
+        // tree_->Branch("muPosPx_Gen",    &muPosPx_Gen,   "muPosPx_Gen/D");
+        // tree_->Branch("muPosPy_Gen",    &muPosPy_Gen,   "muPosPy_Gen/D");
+        // tree_->Branch("muPosPz_Gen",    &muPosPz_Gen,   "muPosPz_Gen/D");
+        // tree_->Branch("muNegPx_Gen",    &muNegPx_Gen,   "muNegPx_Gen/D");
+        // tree_->Branch("muNegPy_Gen",    &muNegPy_Gen,   "muNegPy_Gen/D");
+        // tree_->Branch("muNegPz_Gen",    &muNegPz_Gen,   "muNegPz_Gen/D");
+    }
+  }
+  if (_writeDataSet) {
+    
+     fOut2_ = new TFile(_datasetname.c_str(), "RECREATE");
+     fOut2_->cd();
+
+     Jpsi_PtType = new RooCategory("Jpsi_PtType","Category of Pt");
+     Jpsi_RapType = new RooCategory("Jpsi_RapType","Category of Rap");
+
+     JpsiPtMin = _ptbinranges[0];  cout << "Pt min = " << JpsiPtMin << endl;
+     JpsiPtMax = _ptbinranges[_ptbinranges.size()-1];  cout << "Pt max = " << JpsiPtMax << endl;
+     
+     for(unsigned int i=0;i<_ptbinranges.size()-1;i++){
+       char catname[100];
+       sprintf(catname,"P%d",i+1);
+       Jpsi_PtType->defineType(catname,i+1); 
+       cout << "Pt bin " << i+1 << ": Min = " << _ptbinranges[i] << " Max = " << _ptbinranges[i+1] << endl;   
+     }
+     
+     JpsiRapMin = _etabinranges[0];  cout << "Rap min = " << JpsiRapMin << endl;
+     JpsiRapMax = _etabinranges[_etabinranges.size()-1];  cout << "Rap max = " << JpsiRapMax << endl;
+     
+     for(unsigned int i=0;i<_etabinranges.size()-1;i++){
+       char catname[100];
+       sprintf(catname,"E%d",i+1);
+       Jpsi_RapType->defineType(catname,i+1); 
+       cout << "Rap bin " << i+1 << ": Min = " << _etabinranges[i] << " Max = " << _etabinranges[i+1] << endl;   
+     }
+     
+     Jpsi_Type = new RooCategory("Jpsi_Type","Category of Jpsi");
+     Jpsi_MatchType = new RooCategory("Jpsi_MatchType","Category of matching");
+     
+     Jpsi_Type->defineType("GG",0);
+     Jpsi_Type->defineType("GT",1);
+     Jpsi_Type->defineType("TT",2);
+     if (_useCalo) {
+       Jpsi_Type->defineType("GC",3);  
+       Jpsi_Type->defineType("TC",4);  
+       Jpsi_Type->defineType("CC",5);  
+     }
+     
+     Jpsi_MatchType->defineType("unmatched",0);
+     Jpsi_MatchType->defineType("matched",1);
+     
+     Jpsi_Sign = new RooCategory("Jpsi_Sign","Sign of Jpsi dimuons");
+     
+     Jpsi_Sign->defineType("OS",0);
+     Jpsi_Sign->defineType("SSP",1);
+     Jpsi_Sign->defineType("SSM",2);
+
+     Jpsi_Mass = new RooRealVar("Jpsi_Mass","J/psi mass",JpsiMassMin,JpsiMassMax,"GeV/c^{2}");
+     Jpsi_Pt = new RooRealVar("Jpsi_Pt","J/psi pt",JpsiPtMin,JpsiPtMax,"GeV/c");
+     Jpsi_Rap = new RooRealVar("Jpsi_Rap","J/psi eta",-JpsiRapMax,JpsiRapMax);
+     Jpsi_ct = new RooRealVar("Jpsi_ct","J/psi ctau",JpsiCtMin,JpsiCtMax,"mm");
+     Jpsi_ctErr = new RooRealVar("Jpsi_ctErr","J/psi ctau error",-1.,1.,"mm");
+     Jpsi_ctTrue = new RooRealVar("Jpsi_ctTrue","J/psi ctau true",-100.,JpsiCtMax,"mm"); 		
+
+     RooArgList varlist(*Jpsi_Mass,*Jpsi_ct,*Jpsi_Pt,*Jpsi_Rap,*Jpsi_Type,*Jpsi_MatchType);
+     varlist.add(*Jpsi_ctTrue);   varlist.add(*Jpsi_PtType);
+     varlist.add(*Jpsi_RapType);  varlist.add(*Jpsi_ctErr);
+     varlist.add(*Jpsi_Sign);
+
+     data = new RooDataSet("data","A sample",varlist);
+  }
+}
+
+
 double JPsiAnalyzerPAT::CorrectMass(const reco::Muon& mu1,const reco::Muon& mu2, int mode){  
   double CMass=0;
   const double mumass=0.105658;
@@ -467,13 +582,25 @@ double JPsiAnalyzerPAT::CorrectMass(const reco::Muon& mu1,const reco::Muon& mu2,
     k2=1.0019-0.0004*pt2; // pt dependent correction
   }
   if (mode==3){
-    double a0=1.002;
-    double a1=-0.002;
-    double a2=0.001;
-    double a3=-0.0001;
-    k1=a0+a1*fabs(eta1)+a2*eta1*eta1+a3*pt1;
-    k2=a0+a1*fabs(eta2)+a2*eta2*eta2+a3*pt2;// pt and eta dependent 
+      double a0=0.00038; //3.8 * pow(10,-4);
+      double a1=0.0;
+      double a2=0.0003; //3.0 * pow(10,-4);
+      double a3=0.0;
+
+      k1=1+a0+a1*fabs(eta1)+a2*eta1*eta1+a3*pt1;
+      k2=1+a0+a1*fabs(eta2)+a2*eta2*eta2+a3*pt2;// pt and eta dependent
   }
+
+  if (mode == 4){
+      double a0=1.002;
+      double a1=-0.002;
+      double a2=0.001;
+      double a3=-0.0001;
+
+      k1=a0+a1*fabs(eta1)+a2*eta1*eta1+a3*pt1;
+      k2=a0+a1*fabs(eta2)+a2*eta2*eta2+a3*pt2;// pt and eta dependent
+  }
+
   math::XYZVector mom1=mu1.innerTrack()->momentum();
   math::XYZVector mom2=mu2.innerTrack()->momentum();
   mom1=k1*mom1; 
@@ -484,11 +611,24 @@ double JPsiAnalyzerPAT::CorrectMass(const reco::Muon& mu1,const reco::Muon& mu2,
   CMass=sqrt((E1+E2)*(E1+E2)-momtot.mag2());
   return CMass;
 }
+
 // ------------ method called to for each event  ------------
 void
 JPsiAnalyzerPAT::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
 {
+   
    nEvents++;
+
+   // reset TTree Variables
+   if (_writeTree) this->resetDSVariables();
+
+   // check HLT TriggerReuslts
+   this->hltReport(iEvent, iSetup);
+
+   // Event related infos
+   eventNb= iEvent.id().event() ;
+   runNb=iEvent.id().run() ;
+   lumiBlock= iEvent.luminosityBlock() ;
 
    /* int Nrun=iEvent.id().run();
    int lumi=iEvent.luminosityBlock();
@@ -508,26 +648,11 @@ JPsiAnalyzerPAT::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup
        }
        lumitmp=lumi;
      }
-     }   */
- 
-   // iEvent.getByLabel(_triggerresults,trigger);
-
-   // try {iEvent.getByLabel("onia2MuMuPatGlbGlb",collGG);} 
-   // catch (...) {cout << "Global-global J/psi not present in event!" << endl;}
-   
-   // try {iEvent.getByLabel("onia2MuMuPatGlbTrk",collGT);}
-   // catch (...) {cout << "Global-tracker J/psi not present in event!" << endl;}
-   
-   // edm::Handle<reco::BeamSpot> recoBeamSpotHandle;
-   // iEvent.getByLabel("offlineBeamSpot",recoBeamSpotHandle);
-   // reco::BeamSpot bs = *recoBeamSpotHandle;
-
-   // if (_useBS) {
-   //  RefVtx = bs.position();
-   // } else {
+     }*/
 
    Handle<reco::VertexCollection> privtxs;
    iEvent.getByLabel("offlinePrimaryVertices", privtxs);
+   nPriVtx = privtxs->size();
    VertexCollection::const_iterator privtx;
 
    if ( privtxs->begin() != privtxs->end() ) {
@@ -560,174 +685,51 @@ JPsiAnalyzerPAT::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup
    }
 
    // BEST J/PSI? 
-
    if (_onlythebest) {  // yes, fill simply the best (possibly wrong-sign)
 
      for (int iSign = 0; iSign <= lastSign; iSign++) {
        pair< unsigned int, const pat::CompositeCandidate* > theBest = theBestQQ(iSign);
-       if (theBest.first < 10) fillHistosAndDS(theBest.first, theBest.second, iEvent);
+       if (theBest.first < 10) {
+           fillTreeAndDS(theBest.first, theBest.second, iEvent);
+           passedMuonSelectionCuts_++;
+
+           //! FILL GENERATOR COLLECTION
+	   Handle<reco::GenParticleCollection> genParticles;
+	   iEvent.getByLabel( _genParticles, genParticles );
+	   if ( genParticles.isValid() )
+	     {
+	       //std::cout << "------ analyze GENERATED JPsis:" << std::endl;
+	       this->analyzeGenerator( genParticles );
+	     }
+	   
+	   // Write all Branches to the Tree ONLY 
+	   // - for the best candidate
+	   // - for the opposite sign
+	   if (iSign == 0 && _writeTree) tree_->Fill();
+       }
      }
 
    } else {   // no, fill all candidates passing cuts (possibly wrong-sign)
 
      for (int iSign = 0; iSign <= lastSign; iSign++) {
        for( unsigned int count = 0; count < _thePassedCands[iSign].size(); count++) { 
-	 fillHistosAndDS(_thePassedCats[iSign].at(count), _thePassedCands[iSign].at(count),iEvent); 
+	 fillTreeAndDS(_thePassedCats[iSign].at(count), _thePassedCands[iSign].at(count),iEvent); 
        }
      }
 
    }
 }
 
+void
+JPsiAnalyzerPAT::beginRun(const edm::Run& iRun, const edm::EventSetup& iSetup){
 
-// ------------ method called once each job just before starting event loop  ------------
-void 
-JPsiAnalyzerPAT::beginJob()
-{
-  // book histos
+    //init HLTConfigProvider
+    const std::string pro = tagTriggerResults_.process();
+    bool changed = true;
 
-  // trigger passed 
-  QQMass2Glob_passmu3              = new TH1F("QQMass2Glob_passmu3",  "Invariant mass (2 global muons)", 120, JpsiMassMinSide,JpsiMassMaxSide);
-  QQMass1Glob1Trk_passmu3          = new TH1F("QQMass1Glob1Trk_passmu3",  "Invariant mass (1 global + 1 tracker muon)", 120, JpsiMassMinSide,JpsiMassMaxSide);
-  QQMass1Glob1Cal_passmu3          = new TH1F("QQMass1Glob1Cal_passmu3",  "Invariant mass (1 global + 1 calo muon)", 120, JpsiMassMinSide,JpsiMassMaxSide);
-  QQMass2GlobPT6_passmu3           = new TH1F("QQMass2GlobPT6_passmu3",  "Invariant mass (2 global muons)", 120, 0.,15.);
-  QQMass1Glob1TrkPT6_passmu3       = new TH1F("QQMass1Glob1TrkPT6_passmu3",  "Invariant mass (1 global + 1 tracker muon)", 120, 0.,15.);
-  QQMass1Glob1CalPT6_passmu3       = new TH1F("QQMass1Glob1CalPT6_passmu3",  "Invariant mass (1 global + 1 calo muon)", 120, 0.,15.);
-  // WSMass2Glob_passmu3              = new TH1F("WSMass2Glob_passmu3",  "Invariant mass (2 global muons)", 120, 0.,15.);
-  // WSMass1Glob1Trk_passmu3          = new TH1F("WSMass1Glob1Trk_passmu3",  "Invariant mass (1 global + 1 tracker muon)", 120, 0.,15.);
-  // WSMass1Glob1Cal_passmu3          = new TH1F("WSMass1Glob1Cal_passmu3",  "Invariant mass (1 global + 1 calo muon)", 120, 0.,15.);
-  QQMass2Glob_passmu5              = new TH1F("QQMass2Glob_passmu5",  "Invariant mass (2 global muons)", 120, 0.,15.);
-  QQMass1Glob1Trk_passmu5          = new TH1F("QQMass1Glob1Trk_passmu5",  "Invariant mass (1 global + 1 tracker muon)", 120, 0.,15.);
-  QQMass1Glob1Cal_passmu5          = new TH1F("QQMass1Glob1Cal_passmu5",  "Invariant mass (1 global + 1 calo muon)", 120, 0.,15.); 
-  QQMass2Glob_passOniaTrack              = new TH1F("QQMass2Glob_passOniaTrack",  "Invariant mass (2 global muons)", 120, 0.,15.);
-  QQMass1Glob1Trk_passOniaTrack          = new TH1F("QQMass1Glob1Trk_passOniaTrack",  "Invariant mass (1 global + 1 tracker muon)", 120, 0.,15.);
-  QQMass1Glob1Cal_passOniaTrack          = new TH1F("QQMass1Glob1Cal_passOniaTrack",  "Invariant mass (1 global + 1 calo muon)", 120, 0.,15.);
-  QQMass2GlobPT6_passmu5           = new TH1F("QQMass2GlobPT6_passmu5",  "Invariant mass (2 global muons)", 120, 0.,15.);
-  QQMass1Glob1TrkPT6_passmu5       = new TH1F("QQMass1Glob1TrkPT6_passmu5",  "Invariant mass (1 global + 1 tracker muon)", 120, 0.,15.);
-  QQMass1Glob1CalPT6_passmu5       = new TH1F("QQMass1Glob1CalPT6_passmu5",  "Invariant mass (1 global + 1 calo muon)", 120, 0.,15.);
-  QQMass2Glob_pass2muOpen              = new TH1F("QQMass2Glob_pass2muOpen",  "Invariant mass (2 global muons)", 120, 0.,15.);
-  QQMass1Glob1Trk_pass2muOpen          = new TH1F("QQMass1Glob1Trk_pass2muOpen",  "Invariant mass (1 global + 1 tracker muon)", 120, 0.,15.);
-  QQMass1Glob1Cal_pass2muOpen          = new TH1F("QQMass1Glob1Cal_pass2muOpen",  "Invariant mass (1 global + 1 calo muon)", 120, 0.,15.);
-  // WSMass2Glob_pass2muOpen              = new TH1F("WSMass2Glob_pass2muOpen",  "Invariant mass (2 global muons)", 120, 0.,15.);
-  // WSMass1Glob1Trk_pass2muOpen          = new TH1F("WSMass1Glob1Trk_pass2muOpen",  "Invariant mass (1 global + 1 tracker muon)", 120, 0.,15.);
-  // WSMass1Glob1Cal_pass2muOpen          = new TH1F("WSMass1Glob1Cal_pass2muOpen",  "Invariant mass (1 global + 1 calo muon)", 120, 0.,15.);
-  QQMass2Glob_passOniaL1Mu              = new TH1F("QQMass2Glob_passOniaL1Mu",  "Invariant mass (2 global muons)", 120, 0.,15.);
-  QQMass1Glob1Trk_passOniaL1Mu          = new TH1F("QQMass1Glob1Trk_passOniaL1Mu",  "Invariant mass (1 global + 1 tracker muon)", 120, 0.,15.);
-  QQMass1Glob1Cal_passOniaL1Mu          = new TH1F("QQMass1Glob1Cal_passOniaL1Mu",  "Invariant mass (1 global + 1 calo muon)", 120, 0.,15.);
-  			       
-  // deltaR		       
-  hMcRecoGlobMuDeltaR               = new TH1F("hMcRecoGlobMuDeltaR",  "MC-reco matching #Delta R (global muons)", 100, 0.,0.5);
-  hMcRecoTrkMuDeltaR                = new TH1F("hMcRecoTrkMuDeltaR",  "MC-reco matching #Delta R (tracker muons)", 100, 0.,0.5);
-  hMcRecoCalMuDeltaR                = new TH1F("hMcRecoCalMuDeltaR",  "MC-reco matching #Delta R (calo muons)", 100, 0.,0.5);
-  			       
-  // mc-truth matching (global)
-  hMcRightMunPixHits            = new TH1F("hMcRightMunPixHits",  "number of pixel hits - MC matched (muons)", 6, -0.5, 5.5);
-  hMcWrongMunPixHits            = new TH1F("hMcWrongMunPixHits",  "number of pixel hits - MC unmatched (muons)", 6, -0.5, 5.5);
-  hMcRightMud0                  = new TH1F("hMcRightMud0",  "d0 - MC matched (muons)", 100, 0., 10.);
-  hMcWrongMud0                  = new TH1F("hMcWrongMud0",  "d0 - MC unmatched (muons)", 100, 0., 10.);
-  hMcRightMudz                  = new TH1F("hMcRightMudz",  "dz - MC matched (muons)", 100, 0., 50.);
-  hMcWrongMudz                  = new TH1F("hMcWrongMudz",  "dz - MC unmatched (muons)", 100, 0., 50.);
-  hMcRightGlbMuGlobalchi2          = new TH1F("hMcRightGlbMuGlobalchi2",  "global chi2 - MC matched (global muons)", 100, -0.5, 30.);
-  hMcWrongGlbMuGlobalchi2          = new TH1F("hMcWrongGlbMuGlobalchi2",  "global chi2 - MC unmatched (global muons)", 100, -0.5, 30.);
-  hMcRightGlbMunMuHits          = new TH1F("hMcRightGlbMunMuHits",  "number of muon hits - MC matched (global muons)", 100, -0.5, 99.5);
-  hMcWrongGlbMunMuHits          = new TH1F("hMcWrongGlbMunMuHits",  "number of muon hits - MC matched (global muons)", 100, -0.5, 99.5);
-
-  // mc truth matching - global + global
-  hMcRightGlbGlbMuMass             = new TH1F("hMcRightGlbGlbMuMass",  "Inv. mass - MC matched (global+global muons)", 120, JpsiMassMinSide,JpsiMassMaxSide);
-  hMcWrongGlbGlbMuMass             = new TH1F("hMcWrongGlbGlbMuMass",  "Inv. mass - MC unmatched (global+global muons)", 120, JpsiMassMinSide,JpsiMassMaxSide);
-  hMcPPGlbGlbMuMass                = new TH1F("hMcPPGlbGlbMuMass",  "Inv. mass - plus-plus (global+global muons)", 120, JpsiMassMinSide,JpsiMassMaxSide);
-  hMcMMGlbGlbMuMass                = new TH1F("hMcMMGlbGlbMuMass",  "Inv. mass - minus-minus (global+global muons)", 120, JpsiMassMinSide,JpsiMassMaxSide);
-  hMcSqrtGlbGlbMuMass              = new TH1F("hMcSqrtGlbGlbMuMass",  "Inv. mass - combintion of wrong sign (global+global muons)", 120, JpsiMassMinSide,JpsiMassMaxSide);
-  hMcRightGlbGlbMuLife             = new TH1F("hMcRightGlbGlbMuLife",  "c #tau - MC matched (global+global muons)", 90, -1.0,3.5);
-  hMcWrongGlbGlbMuLife             = new TH1F("hMcWrongGlbGlbMuLife",  "c #tau - MC unmatched (global+global muons)", 90, -1.0,3.5);
-  hMcRightGlbGlbMuPt               = new TH1F("hMcRightGlbGlbMuPt",  "P_{T} - MC matched (global+global muons)", 60, 0.,60.);
-  hMcWrongGlbGlbMuPt               = new TH1F("hMcWrongGlbGlbMuPt",  "P_{T} - MC unmatched (global+global muons)", 60, 0.,60.);
-  hMcRightGlbGlbMuEta              = new TH1F("hMcRightGlbGlbMuEta",  "#eta - MC matched (global+global muons)", 60, -2.5,2.5);
-  hMcWrongGlbGlbMuEta              = new TH1F("hMcWrongGlbGlbMuEta",  "#eta - MC unmatched (global+global muons)", 60, -2.5,2.5);
-  hMcRightGlbGlbMuVtxProb          = new TH1F("hMcRightGlbGlbMuVtxProb",  "Vertex probability - MC matched (global+global muons)", 1000, 0.0,1.0);
-  hMcWrongGlbGlbMuVtxProb          = new TH1F("hMcWrongGlbGlbMuVtxProb",  "Vertex probability - MC unmatched (global+global muons)", 1000, 0.0,1.0);
-  			       
-  // mc truth matching - trk   
-  hMcRightMuPt                  = new TH1F("hMcRightMuPt",  "pT  - MC matched (muons)", 50, 0.,10.);
-  hMcWrongMuPt                  = new TH1F("hMcWrongMuPt",  "pT - MC unmatched (muons)", 50, 0.,10.);
-  hMcRightMuP                  = new TH1F("hMcRightMuP",  "p  - MC matched (muons)", 100, 0.,20.);
-  hMcWrongMuP                  = new TH1F("hMcWrongMuP",  "p - MC unmatched (muons)", 100, 0.,20.);
-  hMcRightTrkMuCaloComp            = new TH1F("hMcRightTrkMuCaloComp",  "calo compatibility - MC matched (tracker muons)", 60, 0.5,1.1);
-  hMcWrongTrkMuCaloComp            = new TH1F("hMcWrongTrkMuCaloComp",  "calo compatibility - MC unmatched (tracker muons)", 60, 0.5,1.1);
-  hMcRightTrkMuChi2                = new TH1F("hMcRightTrkMuChi2",  "chi2  - MC matched (tracker muons)", 50, -0.5, 6.5);
-  hMcWrongTrkMuChi2                = new TH1F("hMcWrongTrkMuChi2",  "chi2 - MC unmatched (tracker muons)", 50, -0.5,6.5);
-  hMcRightMuNhits               = new TH1F("hMcRightMuNhits",  "chi2  - MC matched (tracker muons)", 30, 0.5, 30.5);
-  hMcWrongMuNhits               = new TH1F("hMcWrongMuNhits",  "chi2 - MC unmatched (tracker muons)", 30, 0.5,30.5);
-  hMcRightTrkBit4                  = new TH1F("hMcRightTrkBit4",  "2DCompatibilityLoose bit - MC matched (tracker muons)", 4, -1.5,2.5);
-  hMcWrongTrkBit4                  = new TH1F("hMcWrongTrkBit4",  "2DCompatibilityLoose bit - MC unmatched (tracker muons)", 4, -1.5,2.5);
-  hMcRightTrkBit5                  = new TH1F("hMcRightTrkBit5",  "2DCompatibilityTight bit - MC matched (tracker muons)", 4, -1.5,2.5);
-  hMcWrongTrkBit5                  = new TH1F("hMcWrongTrkBit5",  "2DCompatibilityTight bit - MC unmatched (tracker muons)", 4, -1.5,2.5);
-  hMcRightTrkBit8                  = new TH1F("hMcRightTrkBit8",  "StationOptimizedLowPtLoose bit - MC matched (tracker muons)", 4, -1.5,2.5);
-  hMcWrongTrkBit8                  = new TH1F("hMcWrongTrkBit8",  "StationOptimizedLowPtLoose bit - MC unmatched (tracker muons)", 4, -1.5,2.5);
-  hMcRightTrkBit9                  = new TH1F("hMcRightTrkBit9",  "StationOptimizedLowPtTight bit - MC matched (tracker muons)", 4, -1.5,2.5);
-  hMcWrongTrkBit9                  = new TH1F("hMcWrongTrkBit9",  "StationOptimizedLowPtTight bit - MC unmatched (tracker muons)", 4, -1.5,2.5);
-  hMcRightTrkBitNew                = new TH1F("hMcRightTrkBitNew",  "TMLastStationAngTight bit - MC matched (tracker muons)", 4, -1.5,2.5);
-  hMcWrongTrkBitNew                = new TH1F("hMcWrongTrkBitNew",  "TMLastStationAngTight - MC unmatched (tracker muons)", 4, -1.5,2.5);
-  			       
-  // mc truth matching - global + trk
-  hMcRightGlbTrkMuMass            = new TH1F("hMcRightGlbTrkMuMass",  "Inv. mass - MC matched (global+tracker muons)", 120, JpsiMassMinSide,JpsiMassMaxSide);
-  hMcWrongGlbTrkMuMass            = new TH1F("hMcWrongGlbTrkMuMass",  "Inv. mass - MC unmatched (global+tracker muons)", 120, JpsiMassMinSide,JpsiMassMaxSide);
-  hMcPPGlbTrkMuMass                = new TH1F("hMcPPGlbTrkMuMass",  "Inv. mass - plus-plus (global+global muons)", 120, JpsiMassMinSide,JpsiMassMaxSide);
-  hMcMMGlbTrkMuMass                = new TH1F("hMcMMGlbTrkMuMass",  "Inv. mass - minus-minus (global+global muons)", 120, JpsiMassMinSide,JpsiMassMaxSide);
-  hMcSqrtGlbTrkMuMass              = new TH1F("hMcSqrtGlbTrkMuMass",  "Inv. mass - combintion of wrong sign (global+global muons)", 120, JpsiMassMinSide,JpsiMassMaxSide);
-  hMcRightGlbTrkMuLife            = new TH1F("hMcRightGlbTrkMuLife",  "c #tau - MC matched (global+tracker muons)", 90, -1.0,3.5);
-  hMcWrongGlbTrkMuLife            = new TH1F("hMcWrongGlbTrkMuLife",  "c #tau - MC unmatched (global+tracker muons)", 90, -1.0,3.5);
-  hMcRightGlbTrkMuPt               = new TH1F("hMcRightGlbTrkMuPt",  "P_{T} - MC matched (global+tracker muons)", 60, 0.,60.);
-  hMcWrongGlbTrkMuPt               = new TH1F("hMcWrongGlbTrkMuPt",  "P_{T} - MC unmatched (global+tracker muons)", 60, 0.,60.);
-  hMcRightGlbTrkMuEta              = new TH1F("hMcRightGlbTrkMuEta",  "#eta - MC matched (global+tracker muons)", 60, -2.5,2.5);
-  hMcWrongGlbTrkMuEta              = new TH1F("hMcWrongGlbTrkMuEta",  "#eta - MC unmatched (global+tracker muons)", 60, -2.5,2.5);
-  hMcRightGlbTrkMuVtxProb          = new TH1F("hMcRightGlbTrkMuVtxProb",  "Vertex probability - MC matched (global+tracker muons)", 1000, 0.0,1.0);
-  hMcWrongGlbTrkMuVtxProb          = new TH1F("hMcWrongGlbTrkMuVtxProb",  "Vertex probability - MC unmatched (global+tracker muons)", 1000, 0.0,1.0);
-  			       
-  // mc truth matching - trk + trk
-  hMcRightTrkTrkMuMass            = new TH1F("hMcRightTrkTrkMuMass",  "Inv. mass - MC matched (tracker+tracker muons)", 120, JpsiMassMinSide,JpsiMassMaxSide);
-  hMcWrongTrkTrkMuMass            = new TH1F("hMcWrongTrkTrkMuMass",  "Inv. mass - MC unmatched (tracker+tracker muons)", 120, JpsiMassMinSide,JpsiMassMaxSide);
-  hMcPPTrkTrkMuMass                = new TH1F("hMcPPTrkTrkMuMass",  "Inv. mass - plus-plus (global+global muons)", 120, JpsiMassMinSide,JpsiMassMaxSide);
-  hMcMMTrkTrkMuMass                = new TH1F("hMcMMTrkTrkMuMass",  "Inv. mass - minus-minus (global+global muons)", 120, JpsiMassMinSide,JpsiMassMaxSide);
-  hMcSqrtTrkTrkMuMass              = new TH1F("hMcSqrtTrkTrkMuMass",  "Inv. mass - combintion of wrong sign (global+global muons)", 120, JpsiMassMinSide,JpsiMassMaxSide);
-  hMcRightTrkTrkMuLife            = new TH1F("hMcRightTrkTrkMuLife",  "c #tau - MC matched (tracker+tracker muons)", 90, -1.0,3.5);
-  hMcWrongTrkTrkMuLife            = new TH1F("hMcWrongTrkTrkMuLife",  "c #tau - MC unmatched (tracker+tracker muons)", 90, -1.0,3.5);
-  hMcRightTrkTrkMuPt               = new TH1F("hMcRightTrkTrkMuPt",  "P_{T} - MC matched (tracker+tracker muons)", 60, 0.,60.);
-  hMcWrongTrkTrkMuPt               = new TH1F("hMcWrongTrkTrkMuPt",  "P_{T} - MC unmatched (tracker+tracker muons)", 60, 0.,60.);
-  hMcRightTrkTrkMuEta              = new TH1F("hMcRightTrkTrkMuEta",  "#eta - MC matched (tracker+tracker muons)", 60, -2.5,2.5);
-  hMcWrongTrkTrkMuEta              = new TH1F("hMcWrongTrkTrkMuEta",  "#eta - MC unmatched (tracker+tracker muons)", 60, -2.5,2.5);
-  hMcRightTrkTrkMuVtxProb          = new TH1F("hMcRightTrkTrkMuVtxProb",  "Vertex probability - MC matched (tracker+tracker muons)", 1000, 0.0,1.0);
-  hMcWrongTrkTrkMuVtxProb          = new TH1F("hMcWrongTrkTrkMuVtxProb",  "Vertex probability - MC unmatched (tracker+tracker muons)", 1000, 0.0,1.0);
-
-  // mc truth matching - calo  
-  hMcRightCalMuPt                  = new TH1F("hMcRightCalMuPt",  "pT  - MC matched (calo muons)", 50, 0.,5.0);
-  hMcWrongCalMuPt                  = new TH1F("hMcWrongCalMuPt",  "pT - MC unmatched (calo muons)", 50, 0.,5.0);
-  hMcRightCalMuCaloComp            = new TH1F("hMcRightCalMuCaloComp",  "pT  - MC matched (calo muons)", 60, 0.5,1.1);
-  hMcWrongCalMuCaloComp            = new TH1F("hMcWrongCalMuCaloComp",  "pT - MC unmatched (calo muons)", 60, 0.5,1.1);
-  hMcRightCalMuChi2                = new TH1F("hMcRightCalMuChi2",  "chi2  - MC matched (calo muons)", 50, -0.5, 6.5);
-  hMcWrongCalMuChi2                = new TH1F("hMcWrongCalMuChi2",  "chi2 - MC unmatched (calo muons)", 50, -0.5,6.5);
-  hMcRightCalMuNhits               = new TH1F("hMcRightCalMuNhits",  "chi2  - MC matched (calo muons)", 30, 0.5, 30.5);
-  hMcWrongCalMuNhits               = new TH1F("hMcWrongCalMuNhits",  "chi2 - MC unmatched (calo muons)", 30, 0.5,30.5);
-  			       
-  // mc truth matching - global + calo
-  hMcRightCalGlbMuDeltaR           = new TH1F("hMcRightCalGlbMuDeltaR",  " DeltaR - MC matched (calo+global muons)", 80, 0.,5.0);
-  hMcWrongCalGlbMuDeltaR           = new TH1F("hMcWrongCalGlbMuDeltaR",  " DeltaR - MC unmatched (calo+global muons)", 80, 0.,5.0);
-  hMcRightCalGlbMuMass             = new TH1F("hMcRightCalGlbMuMass",  "Inv. mass - MC matched (calo+global muons)", 80, 1.0,5.2);
-  hMcWrongCalGlbMuMass             = new TH1F("hMcWrongCalGlbMuMass",  "Inv. Mass - MC unmatched (calo+global muons)", 80, 1.0,5.2);
-  hMcRightCalGlbMuVtxChi2          = new TH1F("hMcRightCalGlbMuVtxChi2",  "Vertex norm. #chi^{2} - MC matched (calo+global muons)", 80, 0.0,10.0);
-  hMcWrongCalGlbMuVtxChi2          = new TH1F("hMcWrongCalGlbMuVtxChi2",  "Vertex norm. #chi^{2} - MC unmatched (calo+global muons)", 80, 0.0,10.0);
-  hMcRightCalGlbMuS                = new TH1F("hMcRightCalGlbMuS",  "Significance of muon IPs - MC matched (calo+global muons)", 80, 0.0,100.0);
-  hMcWrongCalGlbMuS                = new TH1F("hMcWrongCalGlbMuS",  "Significance of muon IPs - MC unmatched (calo+global muons)", 80, 0.0,100.0);
-  hMcRightCalGlbMucosAlpha         = new TH1F("hMcRightCalGlbMucosAlpha",  "cos #alpha - MC matched (calo+global muons)", 100, -1.0,1.0);
-  hMcWrongCalGlbMucosAlpha         = new TH1F("hMcWrongCalGlbMucosAlpha",  "cos #alpha - MC unmatched (calo+global muons)", 100, -1.0,1.0);
-  			       
-  // all		       
-  hMcRightAllMuIso                 = new TH1F("hMcRightAllMuIso",  "Isolation - MC matched (all muons)", 50, -1.0,15.0);
-  			       
-  // correction factors	       
-  gammaFactor_GGnonprompt          = new TH1F("gammaFactorGG_nonprompt",  "MC correction for non-prompt decays", 100, 0.,3.);
-  gammaFactor_GTnonprompt          = new TH1F("gammaFactorGT_nonprompt",  "MC correction for non-prompt decays", 100, 0.,3.);
-
+    //bool init(const edm::Run& iRun, const edm::EventSetup& iSetup, const std::string& processName, bool& changed);
+    hltConfigInit_ = false;
+    if( hltConfig_.init(iRun, iSetup, pro, changed) ) hltConfigInit_ = true;
 }
 
 // ------------ method called once each job just after ending the event loop  ------------
@@ -735,194 +737,63 @@ void
 JPsiAnalyzerPAT::endJob() {
   
   cout << "Total number of events = " << nEvents << endl;
-  cout << "Total number of passed candidates = " << passedCandidates << endl;
-  cout << "Total number of DoubleMuOpen-matched candidates = " << matchCandidates << endl;
-  cout << "Analyzed runs from  " << runmin << "  to  " << runmax << endl; 
+  // cout << "Analyzed runs from  " << runmin << "  to  " << runmax << endl; 
+  cout << "============================================================" << endl;
+  // cout << "Total number of passed candidates TRIGGER RESULTS ANALYZER   = " << passedTriggerResultsAnalyzer_ << endl;
+  cout << "Total number of passed candidates MUON SELECTION CUTS        = " << passedMuonSelectionCuts_ << endl;
+  cout << "Total number of passed candidates TRIGGER MATCH              = " << passedTriggerMatch_ << endl;
+
   /* if (_JSON){
     cout << "JSON file produced" << endl;
     *JSON << lumitmp <<"]]}";
     JSON->close();
     }*/
- // cout << "DoubleMuOpen-matched candidates: new way = " << matchNewCandidates << endl;
 
-  TFile fOut(_histfilename.c_str(), "RECREATE");
-  fOut.cd();
-  
-  QQMass2Glob_passmu3           -> Write();        
-  QQMass1Glob1Trk_passmu3       -> Write(); 
-  QQMass1Glob1Cal_passmu3       -> Write();
-  QQMass2GlobPT6_passmu3        -> Write();        
-  QQMass1Glob1TrkPT6_passmu3    -> Write(); 
-  QQMass1Glob1CalPT6_passmu3    -> Write();
-  // WSMass2Glob_passmu3           -> Write();        
-  // WSMass1Glob1Trk_passmu3       -> Write(); 
-  // WSMass1Glob1Cal_passmu3       -> Write();
-  QQMass2Glob_passmu5           -> Write();
-  QQMass1Glob1Trk_passmu5       -> Write();
-  QQMass1Glob1Cal_passmu5       -> Write();
-  QQMass2GlobPT6_passmu5        -> Write();
-  QQMass1Glob1TrkPT6_passmu5    -> Write();
-  QQMass1Glob1CalPT6_passmu5    -> Write();
-  QQMass2Glob_passOniaTrack        -> Write();
-  QQMass1Glob1Trk_passOniaTrack    -> Write();
-  QQMass1Glob1Cal_passOniaTrack    -> Write();
-  QQMass2Glob_pass2muOpen          -> Write();
-  QQMass1Glob1Trk_pass2muOpen      -> Write();
-  QQMass1Glob1Cal_pass2muOpen      -> Write();
-  // WSMass2Glob_pass2muOpen          -> Write();
-  // WSMass1Glob1Trk_pass2muOpen      -> Write();
-  // WSMass1Glob1Cal_pass2muOpen      -> Write();
-  QQMass2Glob_passOniaL1Mu          -> Write();  
-  QQMass1Glob1Trk_passOniaL1Mu      -> Write();  
-  QQMass1Glob1Cal_passOniaL1Mu      -> Write();  
-  			     
-  hMcRecoGlobMuDeltaR           -> Write();   
-  hMcRecoTrkMuDeltaR            -> Write();   
-  hMcRecoCalMuDeltaR            -> Write();
-  			     
-  hMcRightMunPixHits         -> Write(); 
-  hMcWrongMunPixHits         -> Write(); 
-  hMcRightMud0               -> Write(); 
-  hMcWrongMud0               -> Write(); 
-  hMcRightMudz               -> Write(); 
-  hMcWrongMudz               -> Write(); 
-  hMcRightGlbMuGlobalchi2       -> Write(); 
-  hMcWrongGlbMuGlobalchi2       -> Write();
-  hMcRightGlbMunMuHits          -> Write(); 
-  hMcWrongGlbMunMuHits          -> Write();
-  			     
-  hMcRightGlbGlbMuMass          -> Write(); 
-  hMcWrongGlbGlbMuMass          -> Write(); 
-  hMcPPGlbGlbMuMass             -> Write();
-  hMcMMGlbGlbMuMass             -> Write();
-  hMcRightGlbGlbMuLife          -> Write(); 
-  hMcWrongGlbGlbMuLife          -> Write();
-  hMcRightGlbGlbMuPt            -> Write(); 
-  hMcWrongGlbGlbMuPt            -> Write(); 
-  hMcRightGlbGlbMuEta           -> Write(); 
-  hMcWrongGlbGlbMuEta           -> Write();
-  hMcRightGlbGlbMuVtxProb       -> Write(); 
-  hMcWrongGlbGlbMuVtxProb       -> Write(); 
-  			     
-  hMcRightMuPt               -> Write(); 
-  hMcWrongMuPt               -> Write(); 
-  hMcRightMuP               -> Write(); 
-  hMcWrongMuP               -> Write(); 
-  hMcRightTrkBit4               -> Write(); 
-  hMcWrongTrkBit4               -> Write(); 
-  hMcRightTrkBit5               -> Write(); 
-  hMcWrongTrkBit5               -> Write(); 
-  hMcRightTrkBit8               -> Write(); 
-  hMcWrongTrkBit8               -> Write(); 
-  hMcRightTrkBit9               -> Write(); 
-  hMcWrongTrkBit9               -> Write();
-  hMcRightTrkBitNew             -> Write(); 
-  hMcWrongTrkBitNew             -> Write();
-  hMcRightTrkMuChi2             -> Write();   
-  hMcWrongTrkMuChi2             -> Write(); 
-  hMcRightMuNhits            -> Write(); 
-  hMcWrongMuNhits            -> Write();
-  hMcRightTrkMuCaloComp         -> Write();   
-  hMcWrongTrkMuCaloComp         -> Write(); 
-
-  hMcRightGlbTrkMuMass          -> Write();
-  hMcWrongGlbTrkMuMass        	-> Write();
-  hMcPPGlbTrkMuMass             -> Write();
-  hMcMMGlbTrkMuMass             -> Write();
-  hMcRightGlbTrkMuLife        	-> Write();
-  hMcWrongGlbTrkMuLife        	-> Write();
-  hMcRightGlbTrkMuPt            -> Write(); 
-  hMcWrongGlbTrkMuPt            -> Write(); 
-  hMcRightGlbTrkMuEta           -> Write(); 
-  hMcWrongGlbTrkMuEta           -> Write();
-  hMcRightGlbTrkMuVtxProb       -> Write();   
-  hMcWrongGlbTrkMuVtxProb       -> Write(); 
-
-  hMcRightTrkTrkMuMass          -> Write();
-  hMcWrongTrkTrkMuMass        	-> Write();
-  hMcPPTrkTrkMuMass             -> Write();
-  hMcMMTrkTrkMuMass             -> Write();
-  hMcRightTrkTrkMuLife        	-> Write();
-  hMcWrongTrkTrkMuLife        	-> Write();
-  hMcRightTrkTrkMuPt            -> Write(); 
-  hMcWrongTrkTrkMuPt            -> Write(); 
-  hMcRightTrkTrkMuEta           -> Write(); 
-  hMcWrongTrkTrkMuEta           -> Write();
-  hMcRightTrkTrkMuVtxProb       -> Write();   
-  hMcWrongTrkTrkMuVtxProb       -> Write(); 
-  			     
-  hMcRightCalMuChi2             -> Write(); 
-  hMcWrongCalMuChi2             -> Write(); 
-  hMcRightCalMuNhits            -> Write(); 
-  hMcWrongCalMuNhits            -> Write(); 
-  hMcRightCalMuCaloComp         -> Write();   
-  hMcWrongCalMuCaloComp         -> Write(); 
-  hMcRightCalMuPt               -> Write(); 
-  hMcWrongCalMuPt               -> Write();
-  hMcRightAllMuIso              -> Write();
-  hMcRightCalGlbMuDeltaR        -> Write();   
-  hMcWrongCalGlbMuDeltaR        -> Write();   
-  hMcRightCalGlbMuMass          -> Write();   
-  hMcWrongCalGlbMuMass          -> Write(); 
-  hMcRightCalGlbMuVtxChi2       -> Write(); 
-  hMcWrongCalGlbMuVtxChi2       -> Write();
-  hMcRightCalGlbMuS             -> Write(); 
-  hMcWrongCalGlbMuS             -> Write();
-  hMcRightCalGlbMucosAlpha      -> Write(); 
-  hMcWrongCalGlbMucosAlpha      -> Write();
-   
-  // find correct combination of ++ and -- candidates
-  for (int iBin = 0; iBin <= hMcPPGlbGlbMuMass->GetNbinsX(); iBin++) {
-    float pp = hMcPPGlbGlbMuMass->GetBinContent(iBin);
-    float mm = hMcMMGlbGlbMuMass->GetBinContent(iBin);
-    hMcSqrtGlbGlbMuMass->SetBinContent(iBin,2*sqrt(pp*mm));
-    hMcSqrtGlbGlbMuMass->SetBinError(iBin,sqrt(pp + mm));  // do the calculation, if you don't believe it
+  // Write TTree to File
+  if (_writeTree) {
+    fOut_->cd();
+    tree_->Write();
+    fOut_->Close();
   }
-  for (int iBin = 0; iBin <= hMcPPGlbTrkMuMass->GetNbinsX(); iBin++) {
-    float pp = hMcPPGlbTrkMuMass->GetBinContent(iBin);
-    float mm = hMcMMGlbTrkMuMass->GetBinContent(iBin);
-    hMcSqrtGlbTrkMuMass->SetBinContent(iBin,2*sqrt(pp*mm));
-    hMcSqrtGlbTrkMuMass->SetBinError(iBin,sqrt(pp + mm));  // do the calculation, if you don't believe it
+  if (_writeDataSet) {
+    fOut2_->cd();
+    data->Write();
+    fOut2_->Close();
   }
-  for (int iBin = 0; iBin <= hMcPPTrkTrkMuMass->GetNbinsX(); iBin++) {
-    float pp = hMcPPTrkTrkMuMass->GetBinContent(iBin);
-    float mm = hMcMMTrkTrkMuMass->GetBinContent(iBin);
-    hMcSqrtTrkTrkMuMass->SetBinContent(iBin,2*sqrt(pp*mm));
-    hMcSqrtTrkTrkMuMass->SetBinError(iBin,sqrt(pp + mm));  // do the calculation, if you don't believe it
-  }
-
-  hMcSqrtGlbGlbMuMass           -> Write();
-  hMcSqrtGlbTrkMuMass           -> Write();
-  hMcSqrtTrkTrkMuMass           -> Write();
-
-  fOut.Close();
-
-  TFile fOut2(_datasetname.c_str(), "RECREATE");
-  fOut2.cd();
-  data->Write();
-  fOut2.Close();
-
 }
 
+//! Fill the TTree with all RECO variables
 void 
-JPsiAnalyzerPAT::fillHistosAndDS(unsigned int theCat, const pat::CompositeCandidate* aCand, const edm::Event& iEvent){
+JPsiAnalyzerPAT::fillTreeAndDS(unsigned int theCat, const pat::CompositeCandidate* aCand, const edm::Event& iEvent){
   
   const pat::Muon* muon1 = dynamic_cast<const pat::Muon*>(aCand->daughter("muon1"));
   const pat::Muon* muon2 = dynamic_cast<const pat::Muon*>(aCand->daughter("muon2"));
   
+  //1.) continue only if we have opposite sign muons <- REMOVED
+  //
+  if (muon1->charge()*muon2->charge() >= 0) {
+    if(muon1->charge() == 0) {
+      printf("pat::Muon with zero charge!\n");   return;
+    }
+    if(muon2->charge() == 0) {
+      printf("pat::Muon with zero charge!\n");   return;
+    }
+    // return;
+  }
+
+  const pat::Muon *muonPos = 0, *muonNeg = 0;
+  if(muon1->charge() > 0){ muonPos = muon1; muonNeg = muon2;}
+  else if(muon1->charge() < 0){ muonPos = muon2; muonNeg = muon1;}
+
+  //
   float theMass = aCand->mass();
   if (_MassCorr!=0){
-    double CMass=CorrectMass(*muon1,*muon2,_MassCorr);
-    if (CMass!=0) theMass=CMass;
+    double CMass = CorrectMass(*muon1,*muon2,_MassCorr);
+    if (CMass!=0.0) theMass = CMass;
   }
-  // Only sidebands
-  /* if (aCand->mass() < 2.3 || aCand->mass() > 6.5  ||
-      (aCand->mass() < 3.3 && aCand->mass() > 2.9) ||
-      (aCand->mass() < 3.9 && aCand->mass() > 3.5)) 
-      return;*/
 
   float theRapidity = aCand->rapidity();
-  if (!_useRapidity) theRapidity = theRapidity;
+  // if (!_useRapidity) theRapidity = theRapidity;
 
   float theCtau; 
   if (_useBS) {theCtau = 10.*aCand->userFloat("ppdlBS");}
@@ -932,9 +803,17 @@ JPsiAnalyzerPAT::fillHistosAndDS(unsigned int theCat, const pat::CompositeCandid
   if (_useBS) {theCtauErr = 10.*aCand->userFloat("ppdlErrBS");}
   else {theCtauErr = 10.*aCand->userFloat("ppdlErrPV");}
 
+  float theCharge = aCand->charge();
+
   // MC matching
   reco::GenParticleRef genJpsi = aCand->genParticleRef();
-  bool isMatched = (genJpsi.isAvailable() && genJpsi->pdgId() == 443);
+  bool isMatched = (genJpsi.isAvailable() && genJpsi->pdgId() == _oniaPDG);
+
+  // Input DataSet Type: P, NP, BG J/psi
+  if (isMatched && _isPromptMC) MCType= 0;
+  if (isMatched && _isPromptMC == false) MCType=1;
+  if (!isMatched && _isMC) MCType=2;
+
   if (isMatched && _removeSignal) return;
 
   reco::GenParticleRef genMu1 = muon1->genParticleRef();
@@ -944,334 +823,114 @@ JPsiAnalyzerPAT::fillHistosAndDS(unsigned int theCat, const pat::CompositeCandid
 		      genMu1->momentum().rho() > 2.5 && genMu2->momentum().rho() > 2.5);
   if (isMuMatched && _removeMuons) return;
 
-  // PAT trigger matches (new way)
-  
-   // PUT HERE THE *LAST FILTERS* OF THE BITS YOU LIKE
-  static const unsigned int NTRIGGERS = 5;
-  
-  bool isTriggerMatched[NTRIGGERS];
-  // MC AND FIRST DATA 
-  string HLTLastFilters[NTRIGGERS+1] = {"hltDoubleMuLevel1PathL1OpenFiltered",   // BIT HLT_L1DoubleMuOpen 
-					"hltSingleMu3L3Filtered3",               // BIT HLT_Mu3  
-					"hltSingleMu5L3Filtered5",               // BIT HLT_Mu5  
-                                        "hltMu0TrackJpsiTrackMassFiltered",      // BIT Mu0_Track0_Jpsi
-                                        "hltMu0L1MuOpenL3Filtered0",             // BIT Mu0_L1MuOpen (Mu0 part)
-                                        "hltDoubleMuLevel1PathL1OpenFiltered"};  // BIT Mu0_L1MuOpen (L1MuOpen part)
+  // PAT trigger match, 2 muons to the last filter used in the HLT path (new way)
+  this->matchMuonToHlt(muon1, muon2);
 
-  string HLTLastCollections[2] = {"hltL3MuonCandidates::HLT","hltMuTrackJpsiCtfTrackCands::HLT"};   // BIT Mu0_Track0_Jpsi 
-
-  // SECOND DATA
-  /* string HLTLastFilters[NTRIGGERS] =    {"hltL1DoubleMuOpenTightL1Filtered",        // BIT HLT_L1DoubleMuOpen_Tight
-					"hltSingleMu5L3Filtered5",                  // BIT HLT_Mu5  
-                                        "hltSingleMu7L3Filtered7",                  // BIT HLT_Mu7  
-                                        "hltMu3TrackJpsiTrackMassFiltered",         // BIT Mu3_Track0_Jpsi
-                                        "hltMu0TkMuJpsiTkMuMassFilteredNoCharge"};  // BIT Mu0_TkMu0_Jpsi_NoCharge
-
-  string HLTLastCollections[4] = {"hltL3MuonCandidates::HLT","hltMuTrackJpsiCtfTrackCands::HLT",           // BIT Mu3_Track0_Jpsi 
-                                  "hltL3MuonCandidates::HLT","hltMuTkMuJpsiTrackerMuonCands::HLT"};        // BIT Mu0_TkMu0_Jpsi_NoCharge 
-  */
-
-  // Trigger passed (normal)
-
-  for (unsigned int iTr = 0; iTr < 3; iTr++ ) {
-    const pat::TriggerObjectStandAloneCollection mu1HLTMatches = muon1->triggerObjectMatchesByFilter( HLTLastFilters[iTr] ); 
-    const pat::TriggerObjectStandAloneCollection mu2HLTMatches = muon2->triggerObjectMatchesByFilter( HLTLastFilters[iTr] );
-    bool pass1 = mu1HLTMatches.size() > 0;
-    bool pass2 = mu2HLTMatches.size() > 0;
-    if (iTr == 1 || iTr == 2) {  // single triggers here
-      isTriggerMatched[iTr] = pass1 || pass2;
-    } else {                     // double triggers here
-      isTriggerMatched[iTr] = pass1 && pass2;
-    }
-  }
-
-  // Trigger passed (onia track & co.)
-
-  // for (unsigned int iTr = 3; iTr < 5; iTr++ ) {
-  for (unsigned int iTr = 3; iTr < 4; iTr++ ) {
-    bool matchedMu1 = false, matchedTrack1 = false;
-    bool matchedMu2 = false, matchedTrack2 = false;
-    const pat::TriggerObjectStandAloneCollection mu1tkMatch = muon1->triggerObjectMatchesByFilter( HLTLastFilters[iTr] );
-    for (unsigned k = 0; k < mu1tkMatch.size(); ++k) {
-      if (mu1tkMatch[k].collection() == HLTLastCollections[2*(iTr-3)]) matchedMu1 = true;
-      if (mu1tkMatch[k].collection() == HLTLastCollections[2*(iTr-3)+1]) matchedTrack1 = true;
-    }
-    const pat::TriggerObjectStandAloneCollection mu2tkMatch = muon2->triggerObjectMatchesByFilter( HLTLastFilters[iTr] );
-    for (unsigned k = 0; k < mu2tkMatch.size(); ++k) {
-      if (mu2tkMatch[k].collection() == HLTLastCollections[2*(iTr-3)]) matchedMu2 = true;
-      if (mu2tkMatch[k].collection() == HLTLastCollections[2*(iTr-3)+1]) matchedTrack2 = true;
-    }
-    isTriggerMatched[iTr] = (matchedMu1 && matchedTrack2) || (matchedMu2 && matchedTrack1);
-  }
-  
-  // Trigger passed (onia L1Mu)
-  /* const pat::TriggerObjectStandAloneCollection mu1L1Matches = muon1->triggerObjectMatchesByFilter( HLTLastFilters[NTRIGGERS] ); 
-  const pat::TriggerObjectStandAloneCollection mu2L1Matches = muon2->triggerObjectMatchesByFilter( HLTLastFilters[NTRIGGERS] );
-  const pat::TriggerObjectStandAloneCollection mu1MuMatches = muon1->triggerObjectMatchesByFilter( HLTLastFilters[NTRIGGERS-1] ); 
-  const pat::TriggerObjectStandAloneCollection mu2MuMatches = muon2->triggerObjectMatchesByFilter( HLTLastFilters[NTRIGGERS-1] );
-  bool pass1l1 = mu1L1Matches.size() > 0;
-  bool pass2l1 = mu2L1Matches.size() > 0;
-  bool pass1mu = mu1MuMatches.size() > 0;
-  bool pass2mu = mu2MuMatches.size() > 0;
-  isTriggerMatched[NTRIGGERS-1] = pass1l1 && pass2l1 && (pass1mu || pass2mu);
-  */
-
-  if (isTriggerMatched[1]) { // pass Bit 1
-    if (muon1->charge()*muon2->charge() < 0) {
-      if (theCat == 0) QQMass2Glob_passmu3->Fill(theMass);          
-      if (theCat == 1) QQMass1Glob1Trk_passmu3->Fill(theMass);
-      if (theCat == 3) QQMass1Glob1Cal_passmu3->Fill(theMass);    
-      if (theCat == 0 && aCand->pt() < 6.0) QQMass2GlobPT6_passmu3->Fill(theMass);     
-      if (theCat == 1 && aCand->pt() < 6.0) QQMass1Glob1TrkPT6_passmu3->Fill(theMass);
-      if (theCat == 3 && aCand->pt() < 6.0) QQMass1Glob1CalPT6_passmu3->Fill(theMass);
-      // } else {
-      // if (theCat == 0) WSMass2Glob_passmu3->Fill(theMass);          
-      // if (theCat == 1) WSMass1Glob1Trk_passmu3->Fill(theMass);
-      // if (theCat == 3) WSMass1Glob1Cal_passmu3->Fill(theMass);       
-    }
-  }
-  if (isTriggerMatched[2]) { // pass Bit 2
-    if (muon1->charge()*muon2->charge() < 0) {
-      if (theCat == 0) QQMass2Glob_passmu5->Fill(theMass);          
-      if (theCat == 1) QQMass1Glob1Trk_passmu5->Fill(theMass);
-      if (theCat == 3) QQMass1Glob1Cal_passmu5->Fill(theMass);    
-      if (theCat == 0 && aCand->pt() < 6.0) QQMass2GlobPT6_passmu5->Fill(theMass);     
-      if (theCat == 1 && aCand->pt() < 6.0) QQMass1Glob1TrkPT6_passmu5->Fill(theMass);
-      if (theCat == 3 && aCand->pt() < 6.0) QQMass1Glob1CalPT6_passmu5->Fill(theMass);
-    } 
-  }
-  if (isTriggerMatched[0]) { // pass Bit 0
-    if (muon1->charge()*muon2->charge() < 0) {
-      if (theCat == 0) QQMass2Glob_pass2muOpen->Fill(theMass);          
-      if (theCat == 1) QQMass1Glob1Trk_pass2muOpen->Fill(theMass);
-      if (theCat == 3) QQMass1Glob1Cal_pass2muOpen->Fill(theMass);    
-      // } else {
-      // if (theCat == 0) WSMass2Glob_pass2muOpen->Fill(theMass);          
-      // if (theCat == 1) WSMass1Glob1Trk_pass2muOpen->Fill(theMass);
-      // if (theCat == 3) WSMass1Glob1Cal_pass2muOpen->Fill(theMass);       
-    }
-  }
-  if (isTriggerMatched[4]) { // pass Bit 4
-    if (muon1->charge()*muon2->charge() < 0) {
-      if (theCat == 0) QQMass2Glob_passOniaL1Mu->Fill(theMass);          
-      if (theCat == 1) QQMass1Glob1Trk_passOniaL1Mu->Fill(theMass);
-      if (theCat == 3) QQMass1Glob1Cal_passOniaL1Mu->Fill(theMass);    
-    }
-  } 
-  if (isTriggerMatched[3]) { // pass Bit 3
-    if (muon1->charge()*muon2->charge() < 0) {
-      if (theCat == 0) QQMass2Glob_passOniaTrack->Fill(theMass);          
-      if (theCat == 1) QQMass1Glob1Trk_passOniaTrack->Fill(theMass);
-      if (theCat == 3) QQMass1Glob1Cal_passOniaTrack->Fill(theMass);    
-    }
-  }  
-  
-  // Signal / background J/psi 	
-  if (muon1->charge()*muon2->charge() < 0) { 
-    if (isMatched) {
-      if (theCat == 0) {
-	hMcRightGlbGlbMuMass->Fill(theMass);       
-	hMcRightGlbGlbMuLife->Fill(theCtau);
-        hMcRightGlbGlbMuPt->Fill(aCand->pt());
-        hMcRightGlbGlbMuEta->Fill(theRapidity);             
-	hMcRightGlbGlbMuVtxProb->Fill(aCand->userFloat("vProb")); 
-      } else if (theCat == 1) {
-        hMcRightGlbTrkMuMass->Fill(theMass);       
-	hMcRightGlbTrkMuLife->Fill(theCtau);
-	hMcRightGlbTrkMuPt->Fill(aCand->pt());
-        hMcRightGlbTrkMuEta->Fill(theRapidity);
-	hMcRightGlbTrkMuVtxProb->Fill(aCand->userFloat("vProb")); 
-      } else if (theCat == 2) {
-        hMcRightTrkTrkMuMass->Fill(theMass);       
-	hMcRightTrkTrkMuLife->Fill(theCtau);
-	hMcRightTrkTrkMuPt->Fill(aCand->pt());
-        hMcRightTrkTrkMuEta->Fill(theRapidity);
-	hMcRightTrkTrkMuVtxProb->Fill(aCand->userFloat("vProb"));    
-      } else if (theCat == 3) {
-        hMcRightCalGlbMuDeltaR->Fill(deltaR(muon1->eta(),muon1->phi(),muon2->eta(),muon2->phi()));     
-	hMcRightCalGlbMuMass->Fill(theMass);           
-	hMcRightCalGlbMuVtxChi2->Fill(aCand->userFloat("vNChi2"));  
-	hMcRightCalGlbMuS->Fill(sqrt(pow(muon1->track()->dxy(RefVtx)/muon1->track()->d0Error(),2) + pow(muon2->track()->dxy(RefVtx)/muon2->track()->d0Error(),2)));
-	hMcRightCalGlbMucosAlpha->Fill(aCand->userFloat("cosAlpha"));
-      }   
-
-    } else {
+  // some counter
+  passedTriggerMatch_++;
     
-      if (theCat == 0) {
-	hMcWrongGlbGlbMuMass->Fill(theMass);       
-	hMcWrongGlbGlbMuLife->Fill(theCtau);
-        hMcWrongGlbGlbMuPt->Fill(aCand->pt());
-        hMcWrongGlbGlbMuEta->Fill(theRapidity);             
-	hMcWrongGlbGlbMuVtxProb->Fill(aCand->userFloat("vProb")); 
-      } else if (theCat == 1) {
-        hMcWrongGlbTrkMuMass->Fill(theMass);       
-	hMcWrongGlbTrkMuLife->Fill(theCtau);
-	hMcWrongGlbTrkMuPt->Fill(aCand->pt());
-        hMcWrongGlbTrkMuEta->Fill(theRapidity);
-	hMcWrongGlbTrkMuVtxProb->Fill(aCand->userFloat("vProb")); 
-      } else if (theCat == 2) {
-        hMcWrongTrkTrkMuMass->Fill(theMass);       
-	hMcWrongTrkTrkMuLife->Fill(theCtau);
-	hMcWrongTrkTrkMuPt->Fill(aCand->pt());
-        hMcWrongTrkTrkMuEta->Fill(theRapidity);
-	hMcWrongTrkTrkMuVtxProb->Fill(aCand->userFloat("vProb"));    
-      } else if (theCat == 3) {    
-	hMcWrongCalGlbMuMass->Fill(theMass);           
-	hMcWrongCalGlbMuVtxChi2->Fill(aCand->userFloat("vNChi2"));  
-	hMcWrongCalGlbMuS->Fill(sqrt(pow(muon1->track()->dxy(RefVtx)/muon1->track()->d0Error(),2) + pow(muon2->track()->dxy(RefVtx)/muon2->track()->d0Error(),2)));
-	hMcWrongCalGlbMucosAlpha->Fill(aCand->userFloat("cosAlpha"));
-      }   
+  // JpsiMass=theMass;
 
-    }
+  if (_writeOutCands) *theTextFile << iEvent.id().run() << "\t" << iEvent.luminosityBlock() << "\t" << iEvent.id().event() << "\t" << theMass << "\n";
+
+  // write out JPsi RECO information
+  // JpsiPt=aCand->pt();
+  // JpsiRap=theRapidity;
+  JpsiCharge=theCharge;
+  // std::cout << "[JPsiAnalyzerPAT::fillTreeAndDS] ----- JpsiCharge: " << theCharge << std::endl;
+  // JpsiPx=aCand->px();
+  // JpsiPy=aCand->py();
+  // JpsiPz=aCand->pz();
+  JpsiP->SetPxPyPzE(aCand->px(),aCand->py(),aCand->pz(),aCand->energy());
+  Jpsict=theCtau;
+  JpsictErr=theCtauErr;
+  Jpsict_Gen=10.*aCand->userFloat("ppdlTrue");
+  JpsiType=theCat;
+  JpsiVprob=aCand->userFloat("vProb");
   
-    // Signal / background muons
-    char whichMuon[6];
-    for(unsigned int i = 1; i<=2; i++) {
+  // write out Muon RECO information
+  float f_muPosPx, f_muPosPy, f_muPosPz;
+  float f_muNegPx, f_muNegPy, f_muNegPz;
+  f_muPosPx = muonPos->px();
+  f_muPosPy = muonPos->py();
+  f_muPosPz = muonPos->pz();
+  f_muNegPx = muonNeg->px();
+  f_muNegPy = muonNeg->py();
+  f_muNegPz = muonNeg->pz();
+  // muPosPx= f_muPosPx ;
+  // muPosPy= f_muPosPy ;
+  // muPosPz= f_muPosPz ;
+  // muNegPx= f_muNegPx ;
+  // muNegPy= f_muNegPy ;
+  // muNegPz= f_muNegPz ;
+  
+  //write out Calculated Polarization variables
+  Double_t muMass = 0.105658;
+  
+  Double_t enMuPos = sqrt(f_muPosPx*f_muPosPx + f_muPosPy*f_muPosPy + f_muPosPz*f_muPosPz + muMass*muMass);
+  // TLorentzVector *muPosP = new TLorentzVector();
+  muPosP->SetPxPyPzE(f_muPosPx, f_muPosPy, f_muPosPz, enMuPos);
+  
+  Double_t enMuNeg = sqrt(f_muNegPx*f_muNegPx + f_muNegPy*f_muNegPy + f_muNegPz*f_muNegPz + muMass*muMass);
+  // TLorentzVector *muNegP = new TLorentzVector();
+  muNegP->SetPxPyPzE(f_muNegPx, f_muNegPy, f_muNegPz, enMuNeg);
+  
+  //! Fill Polarization Variables;
+  std::vector< float > thisCosTh, thisPhi;
+  thisCosTh.resize(6); thisPhi.resize(6);
+  this->calcPol(*muPosP, *muNegP, thisCosTh, thisPhi);
+  
+  mapPolVarsToValue_["costh_CS"]   = thisCosTh[CS];
+  mapPolVarsToValue_["costh_HX"]   = thisCosTh[HX];
+  mapPolVarsToValue_["costh_GJ1"]  = thisCosTh[GJ1];
+  mapPolVarsToValue_["costh_GJ2"]  = thisCosTh[GJ2];
+  mapPolVarsToValue_["costh_sGJ"]  = thisCosTh[sGJ];
+  mapPolVarsToValue_["costh_PHX"]  = thisCosTh[PHX];
+  
+  mapPolVarsToValue_["phi_CS"]     = thisPhi[CS];
+  mapPolVarsToValue_["phi_HX"]     = thisPhi[HX];
+  mapPolVarsToValue_["phi_GJ1"]    = thisPhi[GJ1];
+  mapPolVarsToValue_["phi_GJ2"]    = thisPhi[GJ2];
+  mapPolVarsToValue_["phi_sGJ"]    = thisPhi[sGJ];
+  mapPolVarsToValue_["phi_PHX"]    = thisPhi[PHX];
+
+  if (_writeDataSet) {
+
+    if (theMass > JpsiMassMin && theMass < JpsiMassMax && 
+	theCtau > JpsiCtMin && theCtau < JpsiCtMax && 
+	aCand->pt() > JpsiPtMin && aCand->pt() < JpsiPtMax && 
+	fabs(theRapidity) > JpsiRapMin && fabs(theRapidity) < JpsiRapMax &&
+	isMuonInAccept(muon1) && isMuonInAccept(muon2) &&
+	mapTriggerNameToIntFired_[_triggerForDataset] == 1) {
       
-      sprintf(whichMuon,"muon%d",i);
-      const pat::Muon* thisMuon = dynamic_cast<const pat::Muon*>(aCand->daughter(whichMuon));
 
-      reco::GenParticleRef genMu = thisMuon->genParticleRef();
-      TrackRef iTrack = thisMuon->innerTrack();
-      const reco::HitPattern& p = iTrack->hitPattern();
+      int ss=999;
+      if (muon1->charge() + muon2->charge() == 0) ss=0;
+      if (muon1->charge() + muon2->charge() == 2) ss=1;
+      if (muon1->charge() + muon2->charge() == -2) ss=2;
 
-      if (isMatched) {
-	hMcRightMunPixHits->Fill(p.pixelLayersWithMeasurement());
-	hMcRightMud0->Fill(fabs(iTrack->dxy(RefVtx)));
-	hMcRightMudz->Fill(fabs(iTrack->dz(RefVtx)));
-	hMcRightMuNhits->Fill(iTrack->found());
-	hMcRightMuPt->Fill(thisMuon->pt());
-        hMcRightMuP->Fill(thisMuon->p());
-	if (thisMuon->isGlobalMuon()) { 
-          TrackRef gTrack = thisMuon->globalTrack();
-          const reco::HitPattern& q = gTrack->hitPattern();
-	  if (genMu.isNonnull()) hMcRecoGlobMuDeltaR->Fill(deltaR(thisMuon->eta(),thisMuon->phi(),genMu->eta(),genMu->phi()));
-	  hMcRightGlbMuGlobalchi2->Fill(gTrack->chi2()/gTrack->ndof());
-          hMcRightGlbMunMuHits->Fill(q.numberOfValidMuonHits());
-	} else if (thisMuon->isTrackerMuon()) {     // notice exclusiveness!  
-	  if (genMu.isNonnull()) hMcRecoTrkMuDeltaR->Fill(deltaR(thisMuon->eta(),thisMuon->phi(),genMu->eta(),genMu->phi()));
-          hMcRightMunPixHits->Fill(p.pixelLayersWithMeasurement());
-          hMcRightTrkBit4->Fill(int(thisMuon->muonID("TM2DCompatibilityLoose")));
-          hMcRightTrkBit5->Fill(int(thisMuon->muonID("TM2DCompatibilityTight")));
-	  hMcRightTrkBit8->Fill(int(thisMuon->muonID("TMLastStationOptimizedLowPtLoose")));
-	  hMcRightTrkBit9->Fill(int(thisMuon->muonID("TMLastStationOptimizedLowPtTight")));
-          hMcRightTrkBitNew->Fill(int(thisMuon->muonID("TMLastStationAngTight")));
-          hMcRightTrkMuChi2->Fill(iTrack->chi2()/iTrack->ndof());
-	  hMcRightTrkMuCaloComp->Fill(thisMuon->caloCompatibility()); 
-	} else if (thisMuon->isCaloMuon()) {
-	  if (genMu.isNonnull()) hMcRecoCalMuDeltaR->Fill(deltaR(thisMuon->eta(),thisMuon->phi(),genMu->eta(),genMu->phi()));
-	  hMcRightCalMuPt->Fill(thisMuon->pt());
-          hMcRightCalMuChi2->Fill(iTrack->chi2()/iTrack->ndof());
-          hMcRightCalMuNhits->Fill(iTrack->found());    
-	  hMcRightCalMuCaloComp->Fill(thisMuon->caloCompatibility());   
-	}
-      } else {
-	hMcWrongMunPixHits->Fill(p.pixelLayersWithMeasurement());
-        hMcWrongMud0->Fill(fabs(iTrack->dxy(RefVtx)));
-	hMcWrongMudz->Fill(fabs(iTrack->dz(RefVtx)));
-        hMcWrongMuNhits->Fill(iTrack->found());
-        hMcWrongMuPt->Fill(thisMuon->pt());
-	hMcWrongMuP->Fill(thisMuon->p());
-	if (thisMuon->isGlobalMuon()) {
-	  TrackRef gTrack = thisMuon->globalTrack();
-          const reco::HitPattern& q = gTrack->hitPattern();
-	  hMcWrongGlbMuGlobalchi2->Fill(gTrack->chi2()/gTrack->ndof());
-          hMcWrongGlbMunMuHits->Fill(q.numberOfValidMuonHits());
-	} else if (thisMuon->isTrackerMuon()) {     // notice exclusiveness!
-          hMcWrongTrkBit4->Fill((int)thisMuon->muonID("TM2DCompatibilityLoose"));
-          hMcWrongTrkBit5->Fill((int)thisMuon->muonID("TM2DCompatibilityTight"));
-	  hMcWrongTrkBit8->Fill((int)thisMuon->muonID("TMLastStationOptimizedLowPtLoose"));
-	  hMcWrongTrkBit9->Fill((int)thisMuon->muonID("TMLastStationOptimizedLowPtTight"));
-	  hMcWrongTrkBitNew->Fill(int(thisMuon->muonID("TMLastStationAngTight")));
-          hMcWrongTrkMuChi2->Fill(iTrack->chi2()/iTrack->ndof());
-	  hMcWrongTrkMuCaloComp->Fill(thisMuon->caloCompatibility());
-	} else if (thisMuon->isCaloMuon()) {
-	  hMcWrongCalMuPt->Fill(thisMuon->pt());
-          hMcWrongCalMuChi2->Fill(iTrack->chi2()/iTrack->ndof());
-          hMcWrongCalMuNhits->Fill(iTrack->found());    
-	  hMcWrongCalMuCaloComp->Fill(thisMuon->caloCompatibility());                    
-	}
-      }
+      Jpsi_Sign->setIndex(ss,kTRUE);
+      
+      Jpsi_Pt->setVal(aCand->pt()); 
+      Jpsi_Rap->setVal(theRapidity); 
+      Jpsi_Mass->setVal(theMass);
+      Jpsi_ct->setVal(theCtau);
+      Jpsi_ctErr->setVal(theCtauErr);
+      // cout << "Type = " << theCat << " pt = " << aCand->pt() << " eta = " << theRapidity << endl;
+      // cout << " PPDL = " << theCtau << " Mother = " << aCand->userInt("momPDGId") << " PPDL true = " << 10.*aCand->userFloat("ppdlTrue") << endl;
+      Jpsi_Type->setIndex(theCat,kTRUE);
+      Jpsi_MatchType->setIndex((int)isMatched,kTRUE);
+      Jpsi_ctTrue->setVal(10.*aCand->userFloat("ppdlTrue"));
+    
+      Jpsi_PtType->setIndex(getJpsiVarType(aCand->pt(),_ptbinranges),kTRUE);
+      Jpsi_RapType->setIndex(getJpsiVarType(fabs(theRapidity),_etabinranges),kTRUE);
+      // Fill RooDataSet
+      RooArgSet varlist_tmp(*Jpsi_Mass,*Jpsi_ct,*Jpsi_Pt,*Jpsi_Rap,*Jpsi_Type,*Jpsi_MatchType);   // temporarily remove tag-and-probe weights
+      varlist_tmp.add(*Jpsi_ctTrue);   varlist_tmp.add(*Jpsi_PtType);
+      varlist_tmp.add(*Jpsi_RapType);  varlist_tmp.add(*Jpsi_ctErr);
+      varlist_tmp.add(*Jpsi_Sign);
+      data->add(varlist_tmp);
     }
-  // wrong-sign J/psi's
-  } else if (muon1->charge() + muon2->charge() == 2) {   
-
-    if (theCat == 0) hMcPPGlbGlbMuMass->Fill(theMass);
-    if (theCat == 1) hMcPPGlbTrkMuMass->Fill(theMass);
-    if (theCat == 2) hMcPPTrkTrkMuMass->Fill(theMass);
-
-  } else if (muon1->charge() + muon2->charge() == -2) {
-    
-    if (theCat == 0) hMcMMGlbGlbMuMass->Fill(theMass);
-    if (theCat == 1) hMcMMGlbTrkMuMass->Fill(theMass);
-    if (theCat == 2) hMcMMTrkTrkMuMass->Fill(theMass);
-     
-  } 
-
-  // Now the RooDataSet
-
-  float tnpeff = 0.;
-  float tnpefferr = 0.;
-
-  if (_storeefficiency) {
-    // to be done
-  }
-
-  if (theMass > JpsiMassMin && theMass < JpsiMassMax && 
-      theCtau > JpsiCtMin && theCtau < JpsiCtMax && 
-      aCand->pt() > JpsiPtMin && aCand->pt() < JpsiPtMax && 
-      fabs(theRapidity) > JpsiEtaMin && fabs(theRapidity) < JpsiEtaMax) {
-	
-    passedCandidates++;
-    if (isTriggerMatched[0]) matchCandidates++;
-    // if (isTriggerMatchedNew) matchNewCandidates++;
-    
-    if (_writeOutCands) *theTextFile << iEvent.id().run() << "\t" << iEvent.luminosityBlock() << "\t" << iEvent.id().event() << "\t" << theMass << "\n";
-
-    int ss=999;
-    if (muon1->charge() + muon2->charge() == 0) ss=0;
-    if (muon1->charge() + muon2->charge() == 2) ss=1;
-    if (muon1->charge() + muon2->charge() == -2) ss=2;
-
-    JpsiSign->setIndex(ss,kTRUE);
-
-    JpsiPt->setVal(aCand->pt()); 
-    JpsiEta->setVal(theRapidity); 
-    JpsiMass->setVal(theMass);
-    Jpsict->setVal(theCtau);
-    JpsictErr->setVal(theCtauErr);
-    // cout << "Type = " << theCat << " pt = " << aCand->pt() << " eta = " << theRapidity << endl;
-    // cout << " PPDL = " << theCtau << " Mother = " << aCand->userInt("momPDGId") << " PPDL true = " << 10.*aCand->userFloat("ppdlTrue") << endl;
-    JpsiType->setIndex(theCat,kTRUE);
-    matchType->setIndex((int)isMatched,kTRUE);
-    triggerDMu->setIndex((int)isTriggerMatched[0],kTRUE);
-    triggerMuPre->setIndex((int)isTriggerMatched[1],kTRUE);
-    triggerMu->setIndex((int)isTriggerMatched[2],kTRUE);
-    triggerOniaTrack->setIndex((int)isTriggerMatched[3],kTRUE);
-    triggerOniaL1Mu->setIndex((int)isTriggerMatched[4],kTRUE);
-    JpsictTrue->setVal(10.*aCand->userFloat("ppdlTrue"));
-     
-    if (_storeefficiency) {
-      // to be done
-    }
-
-    TNPeff->setVal(tnpeff);
-    TNPefferr->setVal(tnpefferr);
-    
-    JpsiPtType->setIndex(getJpsiVarType(aCand->pt(),_ptbinranges),kTRUE);
-    JpsiEtaType->setIndex(getJpsiVarType(fabs(theRapidity),_etabinranges),kTRUE);
-    // cout << "JpsiPtType = " << getJpsiVarType(aCand->pt(),_ptbinranges) << " JpsiEtaType = " << getJpsiVarType(fabs(theRapidity),_etabinranges) << endl;
-    
-    // Fill RooDataSet
-    //  RooArgSet varlist_tmp(*JpsiMass,*Jpsict,*JpsiPt,*JpsiEta,*TNPeff,*TNPefferr,*JpsiType,*matchType);
-    RooArgSet varlist_tmp(*JpsiMass,*Jpsict,*JpsiPt,*JpsiEta,*JpsiType,*matchType);   // temporarily remove tag-and-probe weights
-    varlist_tmp.add(*JpsictTrue);   varlist_tmp.add(*JpsiPtType);
-    varlist_tmp.add(*JpsiEtaType);  varlist_tmp.add(*JpsictErr);
-    varlist_tmp.add(*triggerMu);    varlist_tmp.add(*triggerMuPre);
-    varlist_tmp.add(*triggerDMu);   varlist_tmp.add(*triggerOniaTrack);
-    varlist_tmp.add(*triggerOniaL1Mu);      varlist_tmp.add(*JpsiSign);
-    data->add(varlist_tmp);
-    
   }
 }
         
@@ -1294,7 +953,8 @@ void JPsiAnalyzerPAT::makeCuts(int sign) {
       if (thisSign) {	  
 	  
         // global + global?
-	if (muon1->isGlobalMuon() && muon2->isGlobalMuon() ) {
+	if (muon1->isGlobalMuon() && muon2->isGlobalMuon() &&
+	    muon1->isTrackerMuon() && muon2->isTrackerMuon()   ) {
 	  if (!_applycuts || (selGlobalMuon(muon1) &&
 			      selGlobalMuon(muon2) &&
 			      cand->userFloat("vProb") > 0.001 )) {
@@ -1304,7 +964,8 @@ void JPsiAnalyzerPAT::makeCuts(int sign) {
 	}
 	
         // global + tracker? (x2)    
-	if (muon1->isGlobalMuon() && muon2->isTrackerMuon() ) {
+	if (muon1->isGlobalMuon() && muon2->isTrackerMuon() &&
+	    muon1->isTrackerMuon()    ) {
 	  if (!_applycuts || (selGlobalMuon(muon1) &&
 			      selTrackerMuon(muon2) &&
 			      cand->userFloat("vProb") > 0.001 )) {
@@ -1313,7 +974,8 @@ void JPsiAnalyzerPAT::makeCuts(int sign) {
 	  }
 	}
 
-        if (muon2->isGlobalMuon() && muon1->isTrackerMuon() ) {
+        if (muon2->isGlobalMuon() && muon1->isTrackerMuon() &&
+            muon2->isTrackerMuon() ) {
 	  if (!_applycuts || (selGlobalMuon(muon2) &&
 			      selTrackerMuon(muon1) &&
 			      cand->userFloat("vProb") > 0.001 )) {
@@ -1344,11 +1006,8 @@ void JPsiAnalyzerPAT::makeCuts(int sign) {
       
       const pat::Muon* muon1 = dynamic_cast<const pat::Muon*>(cand->daughter("muon1"));
       const pat::Muon* muon2 = dynamic_cast<const pat::Muon*>(cand->daughter("muon2"));
-      
-      // Remove non-quarkonia region
-      // if (cand->mass() < 1.5 && cand->mass() > 15.) continue;
 
-       bool thisSign = (sign == 0 && muon1->charge() + muon2->charge() == 0) || 
+      bool thisSign = (sign == 0 && muon1->charge() + muon2->charge() == 0) || 
 	(sign == 1 && muon1->charge() + muon2->charge() == 2) || 
 	(sign == 2 && muon1->charge() + muon2->charge() == -2);
 
@@ -1428,11 +1087,15 @@ JPsiAnalyzerPAT::theBestQQ(int sign) {
 
 bool
 JPsiAnalyzerPAT::isMuonInAccept(const pat::Muon* aMuon) {
-  
-  return (fabs(aMuon->eta()) < 2.4 &&
-	  ((fabs(aMuon->eta()) < 1.3 && aMuon->pt() > 3.3) ||
-	   (fabs(aMuon->eta()) > 1.3 && fabs(aMuon->eta()) < 2.2 && aMuon->p() > 2.9) ||
-	   (fabs(aMuon->eta()) > 2.2 && aMuon->pt() > 0.8)));
+   // *USE* muon kinematical cuts (eta dependent momentum / pT cuts )
+   return (fabs(aMuon->eta()) < 2.4 &&
+           ((fabs(aMuon->eta()) < 1.3 && aMuon->pt() > 3.3) ||
+           (fabs(aMuon->eta()) > 1.3 && fabs(aMuon->eta()) < 2.2 && aMuon->p() > 2.9) ||
+           (fabs(aMuon->eta()) > 2.2 && aMuon->pt() > 0.8)));
+
+   // *REMOVE* muon kinematical cuts (eta dependent momentum / pT cuts )
+   // by just returning TRUE
+   //  return true;
 }
 
 bool
@@ -1444,15 +1107,13 @@ JPsiAnalyzerPAT::selGlobalMuon(const pat::Muon* aMuon) {
   TrackRef gTrack = aMuon->globalTrack();
   const reco::HitPattern& q = gTrack->hitPattern();
 
-  return (isMuonInAccept(aMuon) &&
+  return (// isMuonInAccept(aMuon) &&
 	  iTrack->found() > 11 &&
 	  gTrack->chi2()/gTrack->ndof() < 20.0 &&
           q.numberOfValidMuonHits() > 0 &&
-	  // (p.numberOfValidPixelHits() > 2 || 
-	  // (p.numberOfValidPixelHits() > 1 && p.getLayer(p.getHitPattern(0)) == 1)) &&
           iTrack->chi2()/iTrack->ndof() < 4.0 &&
 	  aMuon->muonID("TrackerMuonArbitrated") &&
-	  aMuon->muonID("TMLastStationAngTight") &&
+	  aMuon->muonID("TMOneStationTight") &&
           p.pixelLayersWithMeasurement() > 1 &&
 	  fabs(iTrack->dxy(RefVtx)) < 3.0 &&
           fabs(iTrack->dz(RefVtx)) < 15.0 );
@@ -1464,15 +1125,11 @@ JPsiAnalyzerPAT::selTrackerMuon(const pat::Muon* aMuon) {
   TrackRef iTrack = aMuon->innerTrack();
   const reco::HitPattern& p = iTrack->hitPattern();
 
-  return (isMuonInAccept(aMuon) &&
+  return (// isMuonInAccept(aMuon) &&
 	  iTrack->found() > 11 &&
 	  iTrack->chi2()/iTrack->ndof() < 4.0 &&
 	  aMuon->muonID("TrackerMuonArbitrated") &&
-	  aMuon->muonID("TMLastStationAngTight") &&
-          // aMuon->muonID("TM2DCompatibilityTight") &&
-          // aMuon->muonID("TMLastStationOptimizedLowPtTight") &&
-	  // (p.numberOfValidPixelHits() > 2 || 
-	  // (p.numberOfValidPixelHits() > 1 && p.getLayer(p.getHitPattern(0)) == 1)) &&
+	  aMuon->muonID("TMOneStationTight") &&
           p.pixelLayersWithMeasurement() > 1 &&
 	  fabs(iTrack->dxy(RefVtx)) < 3.0 &&
           fabs(iTrack->dz(RefVtx)) < 15.0 );
@@ -1484,12 +1141,10 @@ JPsiAnalyzerPAT::selCaloMuon(const pat::Muon* aMuon) {
   TrackRef iTrack = aMuon->innerTrack();
   const reco::HitPattern& p = iTrack->hitPattern();
 
-  return (isMuonInAccept(aMuon) &&
+  return (// isMuonInAccept(aMuon) &&
 	  aMuon->caloCompatibility() > 0.89 &&
 	  iTrack->found() > 11 &&
 	  iTrack->chi2()/iTrack->ndof() < 4.0 &&
-	  // (p.numberOfValidPixelHits() > 2 || 
-	  // (p.numberOfValidPixelHits() > 1 && p.getLayer(p.getHitPattern(0)) == 1)) &&
           p.pixelLayersWithMeasurement() > 1 &&
 	  fabs(iTrack->dxy(RefVtx)) < 3.0 &&
           fabs(iTrack->dz(RefVtx)) < 15.0 );
@@ -1503,6 +1158,534 @@ JPsiAnalyzerPAT::getJpsiVarType(const double jpsivar, vector<double> vectbin) {
   }
 
   return -999;
+}
+
+// reset the global DataSet variables
+void
+JPsiAnalyzerPAT::resetDSVariables(){
+
+    //reset J/psi RECO variables
+    // JpsiMass=-9999.;
+    // JpsiPt=-9999.;
+    // JpsiRap=-9999.;
+    JpsiCharge=-9999;
+    // JpsiPx=-9999.;
+    // JpsiPy=-9999.;
+    // JpsiPz=-9999.;
+    Jpsict=-9999.;
+    JpsictErr=-9999.;
+    Jpsict_Gen=-9999.;
+    JpsiVprob=-9999.;
+
+    JpsiType=-1;
+
+    //reset MUON RECO variables
+    /* muPosPx=-9999.;
+    muPosPy=-9999.;
+    muPosPz=-9999.;
+    muNegPx=-9999.;
+    muNegPy=-9999.;
+    muNegPz=-9999.;*/
+    if(_isMC){
+        MCType=-1;
+
+        //reset J/psi GEN variables
+        /* JpsiMass_Gen=-9999.;
+        JpsiPt_Gen=-9999.;
+        JpsiRap_Gen=-9999.;
+        JpsiPx_Gen=-9999.;
+        JpsiPy_Gen=-9999.;
+        JpsiPz_Gen=-9999.; */
+
+        //reset MUON GEN variables
+        /* muPosPx_Gen=-9999.;
+        muPosPy_Gen=-9999.;
+        muPosPz_Gen=-9999.;
+        muNegPx_Gen=-9999.;
+        muNegPy_Gen=-9999.;
+        muNegPz_Gen=-9999.; */
+
+        //reset GEN pol vars
+        for(std::map< std::string, double >::iterator clearIt= mapPolVarsToValueGen_.begin(); clearIt != mapPolVarsToValueGen_.end(); clearIt++){
+            clearIt->second=-9999.;
+        }
+    }
+
+    //reset EVENT information
+    eventNb= 0 ;
+    runNb= 0 ;
+    nPriVtx= 0 ;
+    lumiBlock= 0 ;
+
+    //reset RECO pol vars
+    for(std::map< std::string, double >::iterator clearIt= mapPolVarsToValue_.begin(); clearIt != mapPolVarsToValue_.end(); clearIt++){
+        clearIt->second=-9999.;
+    }
+
+    //reset Trigger Variables
+    for(std::map< std::string, int >::iterator clearIt= mapTriggerNameToIntFired_.begin(); clearIt != mapTriggerNameToIntFired_.end(); clearIt++){
+        clearIt->second=0;
+    }
+}
+
+//! fill Generator Information
+void
+JPsiAnalyzerPAT::analyzeGenerator(const edm::Handle<reco::GenParticleCollection>& genParticles)
+{
+    using namespace trigger;
+
+    std::vector < const reco::Candidate* > genMuons;
+    //bool genjpsi= false;
+    reco::Candidate::size_type nrD;
+
+    //int count= 0;
+    for( size_t i = 0; i < genParticles->size(); ++ i )
+    {
+        // std::cout << "analyzeGenerator: " << i << std::endl;
+        const reco::Candidate & cand = (*genParticles)[ i ];
+        int Mc_particleID = cand.pdgId();
+        if (abs(Mc_particleID) == _oniaPDG && cand.status()==2 )//&& cand.pt() >= 1)
+        {
+//          std::cout << "------::analyzeGenerator:: gen JPsi's: pt=" << cand.pt() << "; eta=" << cand.eta() << "; phi=" << cand.phi() << std::endl;
+
+            //Fill global TTree variables
+            // JpsiMass_Gen=cand.mass();
+            // JpsiPt_Gen=cand.pt();
+            // JpsiRap_Gen=cand.rapidity();
+            // JpsiPx_Gen=cand.px();
+            // JpsiPy_Gen=cand.py();
+            // JpsiPz_Gen=cand.pz();
+          Double_t enGen = sqrt(cand.px()*cand.px() + cand.py()*cand.py() + cand.pz()*cand.pz() + cand.mass()*cand.mass());
+	  JpsiP_Gen->SetPxPyPzE(cand.px(),cand.py(),cand.pz(),enGen);
+
+            //Jpsict_Gen=10.*cand.userFloat("ppdlTrue"));
+
+            nrD= cand.numberOfDaughters();
+            int count_muon=0;
+            for(reco::Candidate::size_type t=0; t < nrD; t++){
+                const reco::Candidate* muon= cand.daughter(t);
+                int pID = muon->pdgId();
+//              std::cout << "------::analyzeGenerator:: gen JPsi's daughter pdgId: " << pID << std::endl;
+
+                if (abs(pID) == 13 && cand.daughter(t)->status()==1)
+                {
+                    genMuons.push_back(muon);
+//                  std::cout << "------::analyzeGenerator:: gen JPsi's daughter #: " << count_muon << std::endl;
+//                  std::cout << " muon" << count_muon << " pt=     " << muon->pt() << std::endl;
+//                  std::cout << " muon" << count_muon << " eta=     " << muon->eta() << std::endl;
+//                  std::cout << " moun" << count_muon << " phi=     " << muon->phi() << std::endl;
+                    count_muon++;
+                }
+            }
+
+
+            if ( genMuons.empty() ) break;
+
+            const reco::Candidate* muon1= genMuons.front();
+            const reco::Candidate* muon2= genMuons.back();
+
+            // look for opposite charge gen muon pair
+            if (muon1->charge()*muon2->charge() <= 0){
+                const reco::Candidate *muonPos = 0, *muonNeg = 0;
+
+                if(muon1->charge() > 0){ muonPos = muon1; muonNeg = muon2;}
+                else if(muon1->charge() < 0){ muonPos = muon2; muonNeg = muon1;}
+
+                float f_muPosPx, f_muPosPy, f_muPosPz;
+                float f_muNegPx, f_muNegPy, f_muNegPz;
+
+                f_muPosPx = muonPos->px();
+                f_muPosPy = muonPos->py();
+                f_muPosPz = muonPos->pz();
+
+                f_muNegPx = muonNeg->px();
+                f_muNegPy = muonNeg->py();
+                f_muNegPz = muonNeg->pz();
+
+                // fill global TTree variables - gen muon
+                // muPosPx_Gen=muonPos->px();
+                // muPosPy_Gen=muonPos->py();
+                // muPosPz_Gen=muonPos->pz();
+
+                // muNegPx_Gen=muonNeg->px();
+                // muNegPy_Gen=muonNeg->py();
+                // muNegPz_Gen=muonNeg->pz();
+
+                // fill Polarization variables - gen muons
+                Double_t muMass = 0.105658;
+
+                Double_t enMuPos = sqrt(f_muPosPx*f_muPosPx + f_muPosPy*f_muPosPy + f_muPosPz*f_muPosPz + muMass*muMass);
+                // TLorentzVector *muPos = new TLorentzVector();
+                muPosP_Gen->SetPxPyPzE(f_muPosPx, f_muPosPy, f_muPosPz, enMuPos);
+
+                Double_t enMuNeg = sqrt(f_muNegPx*f_muNegPx + f_muNegPy*f_muNegPy + f_muNegPz*f_muNegPz + muMass*muMass);
+                // TLorentzVector *muNeg = new TLorentzVector();
+                muNegP_Gen->SetPxPyPzE(f_muNegPx, f_muNegPy, f_muNegPz, enMuNeg);
+
+                //! Fill Polarization Variables;
+                std::vector< float > thisCosTh, thisPhi;
+                thisCosTh.resize(6); thisPhi.resize(6);
+                this->calcPol(*muPosP_Gen, *muNegP_Gen, thisCosTh, thisPhi);
+                mapPolVarsToValueGen_["costh_CS_Gen"]   = thisCosTh[CS];
+                mapPolVarsToValueGen_["costh_HX_Gen"]   = thisCosTh[HX];
+                mapPolVarsToValueGen_["costh_GJ1_Gen"]  = thisCosTh[GJ1];
+                mapPolVarsToValueGen_["costh_GJ2_Gen"]  = thisCosTh[GJ2];
+                mapPolVarsToValueGen_["costh_sGJ_Gen"]  = thisCosTh[sGJ];
+                mapPolVarsToValueGen_["costh_PHX_Gen"]  = thisCosTh[PHX];
+
+                mapPolVarsToValueGen_["phi_CS_Gen"]     = thisPhi[CS];
+                mapPolVarsToValueGen_["phi_HX_Gen"]     = thisPhi[HX];
+                mapPolVarsToValueGen_["phi_GJ1_Gen"]    = thisPhi[GJ1];
+                mapPolVarsToValueGen_["phi_GJ2_Gen"]    = thisPhi[GJ2];
+                mapPolVarsToValueGen_["phi_sGJ_Gen"]    = thisPhi[sGJ];
+                mapPolVarsToValueGen_["phi_PHX_Gen"]    = thisPhi[PHX];
+            }
+        } // end loop over genParticles
+    }
+}
+
+void
+JPsiAnalyzerPAT::hltReport(const edm::Event &iEvent ,const edm::EventSetup& iSetup)
+{
+
+    std::map<std::string, bool> mapTriggernameToTriggerFired;
+    std::map<std::string, unsigned int> mapTriggernameToHLTbit;
+    std::map<std::string, unsigned int> mapTriggerNameToPrescaleFac;
+
+    for(std::vector<std::string>::const_iterator it= HLTbitNames_.begin(); it !=HLTbitNames_.end(); ++it){
+        mapTriggernameToTriggerFired[*it]=false;
+        mapTriggernameToHLTbit[*it]=1000;
+        mapTriggerNameToPrescaleFac[*it]=0;
+    }
+
+    // HLTConfigProvider
+    if ( hltConfigInit_ ) {
+        
+        //! Use HLTConfigProvider
+      const unsigned int n= hltConfig_.size();
+      for (std::map<std::string, unsigned int>::iterator it = mapTriggernameToHLTbit.begin(); it != mapTriggernameToHLTbit.end(); it++) {
+	unsigned int triggerIndex= hltConfig_.triggerIndex( it->first );
+	if (triggerIndex >= n) {
+	  //std::cout << "[JPsiAnalyzerPAT::hltReport] --- TriggerName " << it->first << " not available in config!" << std::endl;
+            }
+	else {
+	  it->second= triggerIndex;
+                //std::cout << "[JPsiAnalyzerPAT::hltReport] --- TriggerName " << it->first << " available in config!" << std::endl;
+	}
+      }
+    }
+
+    // Get Trigger Results
+    try {
+    iEvent.getByLabel( tagTriggerResults_, handleTriggerResults_ );
+    //cout << "[JPsiAnalyzerPAT::hltReport] --- J/psi TriggerResult is present in current event" << endl;
+    }
+    catch(...) {
+    //cout << "[JPsiAnalyzerPAT::hltReport] --- J/psi TriggerResults NOT present in current event" << endl;
+    }
+    if ( handleTriggerResults_.isValid() ){
+    //cout << "[JPsiAnalyzerPAT::hltReport] --- J/psi TriggerResults IS valid in current event" << endl;
+
+    // loop over Trigger Results to check if paths was fired
+    for(std::vector< std::string >::iterator itHLTNames= HLTbitNames_.begin(); itHLTNames != HLTbitNames_.end(); itHLTNames++){
+      const std::string triggerPathName =  *itHLTNames;
+      //std::cout << "[FloJPsiAnalyzer::hltReport] --- TriggerName --- TriggerName LOOP" << std::endl;
+
+      if ( mapTriggernameToHLTbit[triggerPathName] < 1000 && handleTriggerResults_->accept( mapTriggernameToHLTbit[triggerPathName] ) ){
+          //std::cout << "[FloJPsiAnalyzer::hltReport] --- TriggerName " << triggerPathName << " fired!" << std::endl;
+          mapTriggerNameToIntFired_[triggerPathName] = 2;
+      }
+    }
+    }
+    else cout << "[JPsiAnalyzerPAT::hltReport] --- TriggerResults NOT valid in current event" << endl;
+}
+
+void
+JPsiAnalyzerPAT::matchMuonToHlt(const pat::Muon* muon1, const pat::Muon* muon2)
+{
+    //! Loop over Trigger Paths and match muons to last Filter/collection
+    for ( std::map<std::string, int>::iterator it = mapTriggerNameToIntFired_.begin(); it != mapTriggerNameToIntFired_.end(); it ++ ) {
+
+        std::string triggerName = it->first;
+
+        //! just use Triggers which are in TriggerResults; value == 2
+        if ( it->second != 2 ) continue;
+
+        std::string hltLastFilterName = mapTriggerToLastFilter_[triggerName];
+
+        const pat::TriggerObjectStandAloneCollection mu1HLTMatches = muon1->triggerObjectMatchesByFilter( hltLastFilterName );
+        const pat::TriggerObjectStandAloneCollection mu2HLTMatches = muon2->triggerObjectMatchesByFilter( hltLastFilterName );
+        bool pass1 = mu1HLTMatches.size() > 0;
+        bool pass2 = mu2HLTMatches.size() > 0;
+
+        // treat "MuX_TrackX" Trigger separately: Match by Tracker collection: hltMuTrackJpsiCtfTrackCands
+        if (    triggerName == "HLT_Mu0_Track0_Jpsi" ||
+                triggerName == "HLT_Mu3_Track0_Jpsi" ||
+                triggerName == "HLT_Mu5_Track0_Jpsi" ||
+
+                triggerName == "HLT_Mu3_Track3_Jpsi"    ||
+                triggerName == "HLT_Mu3_Track3_Jpsi_v2" ||
+                triggerName == "HLT_Mu3_Track5_Jpsi_v1" ||
+                triggerName == "HLT_Mu3_Track5_Jpsi_v2"     )
+        {
+                bool matchedMu3[2] = {false, false}, matchedTrack[2] = {false, false};
+                for (unsigned k = 0; k < mu1HLTMatches.size(); ++k) {
+                    if (mu1HLTMatches[k].collection() == "hltL3MuonCandidates::HLT") matchedMu3[0] = true;
+                    if (mu1HLTMatches[k].collection() == "hltMuTrackJpsiCtfTrackCands::HLT" ) matchedTrack[0] = true;
+                }
+                for (unsigned k = 0; k < mu2HLTMatches.size(); ++k) {
+                    if (mu2HLTMatches[k].collection() == "hltL3MuonCandidates::HLT") matchedMu3[1] = true;
+                    if (mu2HLTMatches[k].collection() == "hltMuTrackJpsiCtfTrackCands::HLT") matchedTrack[1] = true;
+                }
+                if( (matchedMu3[0] && matchedTrack[1]) || (matchedMu3[1] && matchedTrack[0]) ) {
+                    mapTriggerNameToIntFired_[triggerName] = 1;
+                    //std::cout << "[JPsiAnalyzerPAT::matchMuonToHlt] ---- ---- \"MuX + Track\" Trigger: " << triggerName << " FIRED and MATCHED" << std::endl;
+                }
+        }
+
+        // treat "MuX_TkMuX" Trigger separately: Match by Tracker collection:hltMuTkMuJpsiTrackerMuonCands
+        if (    triggerName == "HLT_Mu0_TkMu0_Jpsi" ||
+                triggerName == "HLT_Mu3_TkMu0_Jpsi" ||
+                triggerName == "HLT_Mu5_TkMu0_Jpsi" ||
+             //
+                triggerName == "HLT_Mu0_TkMu0_OST_Jpsi" ||
+                triggerName == "HLT_Mu3_TkMu0_OST_Jpsi" ||
+                triggerName == "HLT_Mu5_TkMu0_OST_Jpsi" ||
+             //
+                triggerName == "HLT_Mu0_TkMu0_OST_Jpsi_Tight_v1" ||
+                triggerName == "HLT_Mu3_TkMu0_OST_Jpsi_Tight_v1" ||
+                triggerName == "HLT_Mu5_TkMu0_OST_Jpsi_Tight_v1" ||
+//
+                triggerName == "HLT_Mu0_TkMu0_OST_Jpsi_Tight_v2" ||
+                triggerName == "HLT_Mu3_TkMu0_OST_Jpsi_Tight_v2" ||
+                triggerName == "HLT_Mu5_TkMu0_OST_Jpsi_Tight_v2" ||
+//
+                triggerName == "HLT_Mu0_TkMu0_OST_Jpsi_Tight_v3" ||
+                triggerName == "HLT_Mu3_TkMu0_OST_Jpsi_Tight_v3" ||
+                triggerName == "HLT_Mu5_TkMu0_OST_Jpsi_Tight_v3" )
+        {
+                bool matchedMu3[2] = {false, false}, matchedTrack[2] = {false, false};
+                for (unsigned k = 0; k < mu1HLTMatches.size(); ++k) {
+                    if (mu1HLTMatches[k].collection() == "hltL3MuonCandidates::HLT") matchedMu3[0] = true;
+                    if (mu1HLTMatches[k].collection() == "hltMuTkMuJpsiTrackerMuonCands::HLT") matchedTrack[0] = true;
+                }
+                for (unsigned k = 0; k < mu2HLTMatches.size(); ++k) {
+                    if (mu2HLTMatches[k].collection() == "hltL3MuonCandidates::HLT") matchedMu3[1] = true;
+                    if (mu2HLTMatches[k].collection() == "hltMuTkMuJpsiTrackerMuonCands::HLT") matchedTrack[1] = true;
+                }
+                if( (matchedMu3[0] && matchedTrack[1]) || (matchedMu3[1] && matchedTrack[0]) ) {
+                    mapTriggerNameToIntFired_[triggerName] = 1;
+                    //std::cout << "[JPsiAnalyzerPAT::matchMuonToHlt] ---- ---- \"MuX + Track\" Trigger: " << triggerName << " FIRED and MATCHED" << std::endl;
+                }
+        }
+
+        // All the other Paths match by last filter:
+        // double muon trigger:
+        if ( triggerName == "HLT_DoubleMu0"                     && pass1 == true && pass2 == true ) mapTriggerNameToIntFired_[triggerName] = 1;
+        if ( triggerName == "HLT_DoubleMu0_Quarkonium_v1"       && pass1 == true && pass2 == true ) mapTriggerNameToIntFired_[triggerName] = 1;
+        if ( triggerName == "HLT_DoubleMu0_Quarkonium_LS_v1"    && pass1 == true && pass2 == true ) mapTriggerNameToIntFired_[triggerName] = 1;
+        if ( triggerName == "HLT_L1DoubleMuOpen"                && pass1 == true && pass2 == true ) mapTriggerNameToIntFired_[triggerName] = 1;
+        if ( triggerName == "HLT_L1DoubleMuOpen_Tight"          && pass1 == true && pass2 == true ) mapTriggerNameToIntFired_[triggerName] = 1;
+        if ( triggerName == "HLT_DoubleMu3"                     && pass1 == true && pass2 == true ) mapTriggerNameToIntFired_[triggerName] = 1;
+
+        // single muon trigger:
+        if ( triggerName == "HLT_Mu3" && (pass1  == true || pass2 == true) ) mapTriggerNameToIntFired_[triggerName] = 1;
+        if ( triggerName == "HLT_Mu5" && (pass1  == true || pass2 == true) ) mapTriggerNameToIntFired_[triggerName] = 1;
+        if ( triggerName == "HLT_Mu7" && (pass1  == true || pass2 == true) ) mapTriggerNameToIntFired_[triggerName] = 1;
+        if ( triggerName == "HLT_Mu9" && (pass1  == true || pass2 == true) ) mapTriggerNameToIntFired_[triggerName] = 1;
+        if ( triggerName == "HLT_Mu11"&& (pass1  == true || pass2 == true) ) mapTriggerNameToIntFired_[triggerName] = 1;
+    }
+}
+
+//=========================================
+// calculation of decay angular parameters
+//=========================================
+void
+JPsiAnalyzerPAT::calcPol(TLorentzVector& muplus_LAB,
+         TLorentzVector& muminus_LAB,
+         std::vector< float >& thisCosTh,
+         std::vector< float >& thisPhi)
+{
+
+    //std::cout << "[JPsiAnalyzerPAT::calcPol] ---- begin calcPol" << std::endl;
+
+    // beam energy in GeV
+    const double pbeam = 3500.;
+    // masses
+    const double Mprot = 0.9382720;
+    const double Ebeam = sqrt( pbeam*pbeam + Mprot*Mprot );
+    const TLorentzVector beam1_LAB( 0., 0., pbeam, Ebeam );
+    const TLorentzVector beam2_LAB( 0., 0., -pbeam, Ebeam );
+
+    TLorentzVector qqbar_LAB = muplus_LAB + muminus_LAB;
+    Double_t rapidity = qqbar_LAB.Rapidity();
+
+    // boost beams and positive muon into the q-qbar rest frame:
+    TVector3 LAB_to_QQBAR = -qqbar_LAB.BoostVector();
+
+    TLorentzVector beam1_QQBAR = beam1_LAB;
+    beam1_QQBAR.Boost( LAB_to_QQBAR );
+
+    TLorentzVector beam2_QQBAR = beam2_LAB;
+    beam2_QQBAR.Boost( LAB_to_QQBAR );
+
+    TLorentzVector muplus_QQBAR = muplus_LAB;
+    muplus_QQBAR.Boost( LAB_to_QQBAR );
+
+    // reference directions in the Jpsi rest frame:
+
+    TVector3 beam1_direction     = beam1_QQBAR.Vect().Unit();
+    TVector3 beam2_direction     = beam2_QQBAR.Vect().Unit();
+    TVector3 qqbar_direction     = qqbar_LAB.Vect().Unit();
+    TVector3 beam1_beam2_bisect  = ( beam1_direction - beam2_direction ).Unit();
+
+    // all polarization frames have the same Y axis = the normal to the plane formed by
+    // the directions of the colliding hadrons
+    TVector3 Yaxis = ( beam1_direction.Cross( beam2_direction ) ).Unit();
+
+    /////////////////////////////////////////////////////////////////////
+    // CS frame
+    //std::cout << "[JPsiAnalyzerPAT::calcPol] ----  // CS frame" << std::endl;
+
+    TVector3 newZaxis = beam1_beam2_bisect;
+    TVector3 newYaxis = Yaxis;
+    TVector3 newXaxis = newYaxis.Cross( newZaxis );
+
+    TRotation rotation;
+    rotation.RotateAxes( newXaxis, newYaxis, newZaxis );
+    rotation.Invert();   // transforms coordinates from the "xyz" system
+    // to the "new" (rotated) system having the polarization axis
+    // as z axis
+
+    TVector3 muplus_QQBAR_rotated(muplus_QQBAR.Vect());
+
+    muplus_QQBAR_rotated.Transform( rotation );
+
+    thisCosTh[CS] = muplus_QQBAR_rotated.CosTheta();
+
+    //thisPhi_rad[CS] = muplus_QQBAR_rotated.Phi();
+    thisPhi[CS] = muplus_QQBAR_rotated.Phi() * 180. / TMath::Pi();
+    //if ( thisPhi[CS] < 0. ) thisPhi[CS]= 360. + thisPhi[CS];      // phi defined in degrees from 0 to 360
+    thisPhi[CS] += 180.;
+
+    /////////////////////////////////////////////////////////////////////
+    // HELICITY frame
+    //std::cout << "[JPsiAnalyzerPAT::calcPol] ----  // HX frame" << std::endl;
+
+    newZaxis = qqbar_direction;
+    newYaxis = Yaxis;
+    newXaxis = newYaxis.Cross( newZaxis );
+
+    rotation.SetToIdentity();
+    rotation.RotateAxes( newXaxis, newYaxis, newZaxis );
+    rotation.Invert();
+
+    muplus_QQBAR_rotated = muplus_QQBAR.Vect();
+
+    muplus_QQBAR_rotated.Transform( rotation );
+
+    thisCosTh[HX] = muplus_QQBAR_rotated.CosTheta();
+
+    //thisPhi_rad[HX] = muplus_QQBAR_rotated.Phi();
+    thisPhi[HX] = muplus_QQBAR_rotated.Phi() * 180. / TMath::Pi();
+    //if ( thisPhi[HX] < 0. ) thisPhi[HX] = 360. + thisPhi[HX]; // phi defined in degrees from 0 to 360
+    thisPhi[HX] += 180.;
+
+    /////////////////////////////////////////////////////////////////////
+    // GJ1 frame
+
+    //std::cout << "[JPsiAnalyzerPAT::calcPol] ----  // GJ1 frame" << std::endl;
+    newZaxis = beam1_direction;
+    newYaxis = Yaxis;
+    newXaxis = newYaxis.Cross( newZaxis );
+
+    rotation.SetToIdentity();
+    rotation.RotateAxes( newXaxis, newYaxis, newZaxis );
+    rotation.Invert();
+
+    muplus_QQBAR_rotated = muplus_QQBAR.Vect();
+
+    muplus_QQBAR_rotated.Transform( rotation );
+
+    thisCosTh[GJ1] = muplus_QQBAR_rotated.CosTheta();
+
+    //thisPhi_rad[GJ1] = muplus_QQBAR_rotated.Phi();
+    thisPhi[GJ1] = muplus_QQBAR_rotated.Phi() * 180. / TMath::Pi();
+    //if ( thisPhi[GJ1] < 0. ) thisPhi[GJ1] = 360. + thisPhi[GJ1]; // phi defined in degrees from 0 to 360
+    thisPhi[GJ1] += 180.;
+
+    /////////////////////////////////////////////////////////////////////
+    // GJ2 frame
+    //std::cout << "[JPsiAnalyzerPAT::calcPol] ----  // GJ2 frame" << std::endl;
+    newZaxis = beam2_direction;
+    newYaxis = Yaxis;
+    newXaxis = newYaxis.Cross( newZaxis );
+
+    rotation.SetToIdentity();
+    rotation.RotateAxes( newXaxis, newYaxis, newZaxis );
+    rotation.Invert();
+
+    muplus_QQBAR_rotated = muplus_QQBAR.Vect();
+
+    muplus_QQBAR_rotated.Transform( rotation );
+
+    thisCosTh[GJ2] = muplus_QQBAR_rotated.CosTheta();
+
+    //thisPhi_rad[GJ2] = muplus_QQBAR_rotated.Phi();
+    thisPhi[GJ2] = muplus_QQBAR_rotated.Phi() * 180. / TMath::Pi();
+    //if ( thisPhi[GJ2] < 0. ) thisPhi[GJ2] = 360. + thisPhi[GJ2]; // phi defined in degrees from 0 to 360
+    thisPhi[GJ2] += 180.;
+
+    /////////////////////////////////////////////////////////////////////
+    // sGJ frame (symmetrized GJ)
+    //std::cout << "[JPsiAnalyzerPAT::calcPol] ----  // sGJ frame" << std::endl;
+    newZaxis = beam1_direction; if( rapidity < 0. ) newZaxis = beam2_direction;
+    newYaxis = Yaxis;
+
+    // try to swith the following line on or off
+    //if( rapidity < 0. ) newYaxis = -Yaxis;
+
+    newXaxis = newYaxis.Cross( newZaxis );
+
+    rotation.SetToIdentity();
+    rotation.RotateAxes( newXaxis, newYaxis, newZaxis );
+    rotation.Invert();
+
+    muplus_QQBAR_rotated = muplus_QQBAR.Vect();
+
+    muplus_QQBAR_rotated.Transform( rotation );
+
+    thisCosTh[sGJ] = muplus_QQBAR_rotated.CosTheta();
+
+    //thisPhi_rad[sGJ] = muplus_QQBAR_rotated.Phi();
+    thisPhi[sGJ] = muplus_QQBAR_rotated.Phi() * 180. / TMath::Pi();
+    //if ( thisPhi[sGJ] < 0. ) thisPhi[sGJ] = 360. + thisPhi[sGJ]; // phi defined in degrees from 0 to 360
+    thisPhi[sGJ] += 180.;
+
+    /////////////////////////////////////////////////////////////////////
+    // PHX frame ("perpendicular helicity frame" - z axis perpendicular
+    // to the CS axis)
+    //std::cout << "[JPsiAnalyzerPAT::calcPol] ----  // PHX frame" << std::endl;
+    newZaxis = newZaxis = ( beam1_beam2_bisect.Cross( Yaxis ) ).Unit();
+    newYaxis = Yaxis;
+    newXaxis = newYaxis.Cross( newZaxis );
+
+    rotation.SetToIdentity();
+    rotation.RotateAxes( newXaxis, newYaxis, newZaxis );
+    rotation.Invert();
+
+    muplus_QQBAR_rotated = muplus_QQBAR.Vect();
+
+    muplus_QQBAR_rotated.Transform( rotation );
+
+    thisCosTh[PHX] = muplus_QQBAR_rotated.CosTheta();
+
+    //thisPhi_rad[PHX] = muplus_QQBAR_rotated.Phi();
+    thisPhi[PHX] = muplus_QQBAR_rotated.Phi() * 180. / TMath::Pi();
+    //if ( thisPhi[PHX] < 0. ) thisPhi[PHX] = 360. + thisPhi[PHX]; // phi defined in degrees from 0 to 360
+    thisPhi[PHX] += 180.;
+
+    //std::cout << "[JPsiAnalyzerPAT::calcPol] ---- leave calcPol" << std::endl;
 }
 
 //define this as a plug-in
