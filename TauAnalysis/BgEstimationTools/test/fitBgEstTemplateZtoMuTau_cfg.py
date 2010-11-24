@@ -61,96 +61,18 @@ meName_SVfitMass = "DiTauCandidateSVfitQuantities/psKine_MEt_ptBalance/Mass"
 meName_SVfitMass_norm = "DiTauCandidateSVfitQuantities/psKine_MEt_ptBalance/MassShape"
 
 #--------------------------------------------------------------------------------
-# load template histogram for Z --> tau+ tau- signal events,
-# produced from by MCEmbeddingTools from Z --> mu+ mu- events selected in (pseudo)data
+# load template histogram for Z --> tau+ tau- signal and different types of background events,
+# and distributions observed in (pseudo)data in events passing final analysis selection criteria
 #--------------------------------------------------------------------------------
 
-process.loadTemplateHistZtoMuTau_Ztautau = cms.EDAnalyzer("DQMFileLoader",
+process.loadAnalysisResultsZtoMuTau = cms.EDAnalyzer("DQMFileLoader",
     Ztautau = cms.PSet(
         inputFileNames = cms.vstring(
-            'file:/data1/veelken/bgEstTemplates/ZtoMuTau_from_selZmumu.root'
+            getHarvestingFilePath('ZtoMuTau_bgEstTemplate') + '/' + 'bgEstTemplateHistZtoMuTau.root'
         ),
         scaleFactor = cms.double(1.),
-        dqmDirectory_store = cms.string('/template/ZtoMuTau_from_selZmumu')
+        dqmDirectory_store = cms.string('/')
     )
-)
-
-#--------------------------------------------------------------------------------
-# load template histogram of for different types of background events,
-# obtained from background enriched control samples
-#--------------------------------------------------------------------------------
-
-process.loadTemplateHistZtoMuTau = cms.EDAnalyzer("DQMFileLoader",
-    Ztautau = cms.PSet(
-        inputFileNames = cms.vstring(
-            getHarvestingFilePath('ZtoMuTau_bgEstTemplate') + '/' + 'plotsZtoMuTau_bgEstTemplate_all.root'
-        ),
-        scaleFactor = cms.double(1.),
-        dqmDirectory_store = cms.string('/template')
-    )
-)
-
-#--------------------------------------------------------------------------------
-# load distributions expected for different signal/background processes
-# and observed in (pseudo)data in events passing final analysis selection criteria
-#--------------------------------------------------------------------------------
-
-process.loadAnalysisHistZtoMuTau = cms.EDAnalyzer("DQMFileLoader",
-    data = cms.PSet(
-        inputFileNames = cms.vstring(
-            getHarvestingFilePath('ZtoMuTau') + '/' + 'plotsZtoMuTau_all.root'
-        ),
-        scaleFactor = cms.double(1.),
-        dqmDirectory_store = cms.string('/analysis')
-    )
-)
-
-#--------------------------------------------------------------------------------
-# normalize to unit area distribution of visible muon + tau-jet mass for Z --> tau+ tau- signal
-# and different types of background events
-#--------------------------------------------------------------------------------
-
-jobsHistNormalization = []
-
-for processName, dqmDirectoryProcess in dqmDirectoriesProcess.items():
-    for bgEnrichedSelectionName, dqmDirectoryBgEnrichedSelection in dqmDirectoriesBgEnrichedSelections.items():
-        jobsHistNormalization.append(cms.PSet(
-            meName_input = cms.string(
-                '/template/harvested/' + dqmDirectoryProcess + '/' + dqmDirectoryBgEnrichedSelection + meName_visMass
-            ),
-            meName_output = cms.string(
-                '/template/harvested/' + dqmDirectoryProcess + '/' + dqmDirectoryBgEnrichedSelection + meName_visMass_norm
-            )
-        ))
-        jobsHistNormalization.append(cms.PSet(
-            meName_input = cms.string(
-                '/template/harvested/' + dqmDirectoryProcess + '/' + dqmDirectoryBgEnrichedSelection + meName_SVfitMass
-            ),
-            meName_output = cms.string(
-                '/template/harvested/' + dqmDirectoryProcess + '/' + dqmDirectoryBgEnrichedSelection + meName_SVfitMass_norm
-            )
-        ))
-
-    jobsHistNormalization.append(cms.PSet(
-        meName_input = cms.string(
-            '/analysis/harvested/' + dqmDirectoryProcess + '/' + dqmDirectoryAnalysis + meName_visMass
-        ),
-        meName_output = cms.string(
-            '/analysis/harvested/' + dqmDirectoryProcess + '/' + dqmDirectoryAnalysis + meName_visMass_norm
-        )
-    ))
-    jobsHistNormalization.append(cms.PSet(                                 
-        meName_input = cms.string(
-            '/analysis/harvested/' + dqmDirectoryProcess + '/' + dqmDirectoryAnalysis + meName_SVfitMass
-        ),
-        meName_output = cms.string(
-            '/analysis/harvested/' + dqmDirectoryProcess + '/' + dqmDirectoryAnalysis + meName_SVfitMass_norm
-        )
-    ))
-
-process.normalizeHistZtoMuTau = cms.EDAnalyzer("DQMHistNormalizer",
-    config = cms.VPSet(jobsHistNormalization),
-    norm = cms.double(1.)
 )
 
 #--------------------------------------------------------------------------------
@@ -409,6 +331,11 @@ visMass_smoothing = cms.PSet(
     )
 )
 
+#--------------------------------------------------------------------------------
+# WARNING: must **always** specify initial, min and max parameters for every smoothing/fit parameter !!
+#         (otherwise RooFit will not fit the parameter properly)
+#--------------------------------------------------------------------------------
+
 process.fitZtoMuTau = cms.EDAnalyzer("TemplateHistFitter",                                          
     processes = cms.PSet(
         Ztautau = cms.PSet(
@@ -422,8 +349,10 @@ process.fitZtoMuTau = cms.EDAnalyzer("TemplateHistFitter",
                         pluginName = cms.string("visMassSmoothingZtautau"),
                         pluginType = cms.string("SmoothGenericPdfWrapper"),
                         # fit Z --> tau+ tau- peak with sum of log-normal and skewed Gaussian distribution
-                        formula = cms.string("par1*::ROOT::Math::lognormal_pdf(@x, TMath::Log(par4), par2, par3)"
-                                             "+ (1 - par1)*TMath::Gaus(@x, par5, par6)*(1 + TMath::Erf(par7*@x))"),
+                        formula = cms.string(
+                            "par1*TMath::LogNormal(@x, par4, par2, par3)" \
+                           + " + (1 - par1)*TMath::Gaus(@x, par5, par6)*(1 + TMath::Erf(par7*@x))"
+                        ),
                         xMin = cms.double(20.),
                         xMax = cms.double(120.),
                         parameter = cms.PSet(
@@ -448,7 +377,9 @@ process.fitZtoMuTau = cms.EDAnalyzer("TemplateHistFitter",
                                 max = cms.double(100.)
                             ),
                             par5 = cms.PSet(
-                                initial = cms.double(55.)
+                                initial = cms.double(55.),
+                                min = cms.double(0.),
+                                max = cms.double(100.)
                             ),
                             par6 = cms.PSet(
                                 initial = cms.double(10.),
@@ -456,7 +387,9 @@ process.fitZtoMuTau = cms.EDAnalyzer("TemplateHistFitter",
                                 max = cms.double(100.)
                             ),
                             par7 = cms.PSet(
-                                initial = cms.double(0.0001)
+                                initial = cms.double(0.0001),
+                                min = cms.double(0.),
+                                max = cms.double(1.)
                             )
                         )
                     )
@@ -479,10 +412,22 @@ process.fitZtoMuTau = cms.EDAnalyzer("TemplateHistFitter",
                         '/template/harvested/' + dqmDirectoriesProcess['Data'] + '/' \
                        + dqmDirectoriesBgEnrichedSelections['ZmumuJetMisIdEnriched'] + meName_visMass_norm
                     ),
-                    fitSimultaneously = cms.bool(True),                                    
+                    fitSimultaneously = cms.bool(False),                                    
                     smoothing = visMass_smoothing.clone(
                         pluginName = cms.string("visMassSmoothingZmumuJetMisId"),
-                        excludeBinsX = cms.vdouble(82.5, 87.5, 92.5, 97.5)
+                        ##excludeBinsX = cms.vdouble(82.5, 87.5, 92.5, 97.5), # bins to exclude in case no rebinning is used
+                        excludeBinsX = cms.vdouble(85., 95.),                 # bins to exclude in case two bins are combined into one
+                        parameter = visMass_smoothing.parameter.clone(
+                            width = visMass_smoothing.parameter.width.clone(
+                                initial = cms.double(20.)
+                            ),
+                            mp = visMass_smoothing.parameter.mp.clone(
+                                initial = cms.double(65.)
+                            ),
+                            gsigma = visMass_smoothing.parameter.gsigma.clone(
+                                initial = cms.double(5.)
+                            )
+                        )
                     )
                 ),
                 SVfitMass = cms.PSet(
@@ -504,7 +449,7 @@ process.fitZtoMuTau = cms.EDAnalyzer("TemplateHistFitter",
                         '/template/harvested/' + dqmDirectoriesProcess['Data'] + '/' \
                        + dqmDirectoriesBgEnrichedSelections['ZmumuMuonMisIdEnriched'] + meName_visMass_norm
                     ),
-                    fitSimultaneously = cms.bool(True),                                   
+                    fitSimultaneously = cms.bool(False),                                   
                     smoothing = cms.PSet(
                         pluginName = cms.string("visMassSmoothingZmumuMuonMisId"),
                         pluginType = cms.string("SmoothGenericPdfWrapper"),
@@ -515,13 +460,19 @@ process.fitZtoMuTau = cms.EDAnalyzer("TemplateHistFitter",
                         xMax = cms.double(100.),                        
                         parameter = cms.PSet(
                             x0 = cms.PSet(
-                                initial = cms.double(90.)
+                                initial = cms.double(90.),
+                                min = cms.double(80.),
+                                max = cms.double(100.)
                             ),
                             gsigma = cms.PSet(
-                                initial = cms.double(0.1)
+                                initial = cms.double(2.5),
+                                min = cms.double(0.),
+                                max = cms.double(10.)
                             ),
                             gamma = cms.PSet(
-                                initial = cms.double(2.5)
+                                initial = cms.double(2.5),
+                                min = cms.double(0.),
+                                max = cms.double(10.)
                             )
                         )
                     )
@@ -544,7 +495,7 @@ process.fitZtoMuTau = cms.EDAnalyzer("TemplateHistFitter",
                     meName = cms.string(
                         '/analysis/harvested/' + dqmDirectoriesProcess['WplusJets'] + '/' + dqmDirectoryAnalysis + meName_visMass_norm
                     ),
-                    fitSimultaneously = cms.bool(True),                                   
+                    fitSimultaneously = cms.bool(False),                                   
                     smoothing = visMass_smoothing.clone(
                         pluginName = cms.string("visMassSmoothingWplusJets")
                     )
@@ -566,7 +517,7 @@ process.fitZtoMuTau = cms.EDAnalyzer("TemplateHistFitter",
                     meName = cms.string(
                         '/analysis/harvested/' + dqmDirectoriesProcess['TTplusJets'] + '/' + dqmDirectoryAnalysis + meName_visMass_norm
                     ),
-                    fitSimultaneously = cms.bool(True),                                   
+                    fitSimultaneously = cms.bool(False),                                   
                     smoothing = visMass_smoothing.clone(
                         pluginName = cms.string("visMassSmoothingTTplusJets")
                     )
@@ -589,7 +540,7 @@ process.fitZtoMuTau = cms.EDAnalyzer("TemplateHistFitter",
                         '/template/harvested/' + dqmDirectoriesProcess['Data'] + '/' \
                        + dqmDirectoriesBgEnrichedSelections['QCDenriched'] + meName_visMass_norm
                     ),
-                    fitSimultaneously = cms.bool(True),                                    
+                    fitSimultaneously = cms.bool(False),                                    
                     smoothing = visMass_smoothing.clone(
                         pluginName = cms.string("visMassSmoothingQCD"),
                         xMax = cms.double(150.)
@@ -648,38 +599,38 @@ process.fitZtoMuTau = cms.EDAnalyzer("TemplateHistFitter",
         # constrain normalization of W + jets, ttbar + jets and QCD backgrounds
         # to Monte Carlo expectation multiplied by "k-factors" determined
         # in background enriched samples
-        ##constraints = cms.PSet(
-        ##    ZmumuJetMisId = cms.PSet(
-        ##        norm = cms.PSet(
-        ##            value = cms.double(1.*5.),
-        ##            uncertainty = cms.double(5.)
-        ##        )
-        ##    ),
-        ##    ZmumuMuonMisId = cms.PSet(
-        ##        norm = cms.PSet(
-        ##            value = cms.double(1.*5.),
-        ##            uncertainty = cms.double(5.)
-        ##        )
-        ##    ),
-        ##    WplusJets = cms.PSet(
-        ##        norm = cms.PSet(
-        ##            value = cms.double(1.*25.),
-        ##            uncertainty = cms.double(25.)
-        ##        )
-        ##    ),
-        ##    TTplusJets = cms.PSet(
-        ##        norm = cms.PSet(
-        ##            value = cms.double(1.*5.),
-        ##            uncertainty = cms.double(5.)
-        ##        )
-        ##    ),
-        ##    QCD = cms.PSet(
-        ##        norm = cms.PSet(
-        ##            value = cms.double(1.*75.),
-        ##            uncertainty = cms.double(75.)
-        ##        )
-        ##    )
-        ##),
+        constraints = cms.PSet(
+            ##ZmumuJetMisId = cms.PSet(
+            ##    norm = cms.PSet(
+            ##        value = cms.double(1.*1.),
+            ##        uncertainty = cms.double(5.)
+            ##    )
+            ##),
+            ##ZmumuMuonMisId = cms.PSet(
+            ##    norm = cms.PSet(
+            ##        value = cms.double(1.*2.5),
+            ##        uncertainty = cms.double(5.)
+            ##    )
+            ##),
+            ##WplusJets = cms.PSet(
+            ##    norm = cms.PSet(
+            ##        value = cms.double(1.*25.),
+            ##        uncertainty = cms.double(25.)
+            ##    )
+            ##),
+            ##TTplusJets = cms.PSet(
+            ##    norm = cms.PSet(
+            ##        value = cms.double(1.*2.5),
+            ##        uncertainty = cms.double(5.)
+            ##    )
+            ##),
+            ##QCD = cms.PSet(
+            ##    norm = cms.PSet(
+            ##        value = cms.double(1.*75.),
+            ##        uncertainty = cms.double(37.5)
+            ##    )
+            ##)
+        ),
         cutUnfittedRegion = cms.bool(False),
         #cutUnfittedRegion = cms.bool(True),
         verbosity = cms.PSet(
@@ -774,10 +725,10 @@ process.fitZtoMuTau = cms.EDAnalyzer("TemplateHistFitter",
 
     output = cms.PSet(
         controlPlots = cms.PSet(
-            fileName = cms.string("./plots/fitBgEstTemplateZtoMuTau_#PLOT#.eps")
+            fileName = cms.string("./plots/fitBgEstTemplateZtoMuTau_#PLOT#.png")
         ),
         fitResults = cms.PSet(
-            dqmDirectory = cms.string(processName + '/' + 'fitResults')
+            dqmDirectory = cms.string('/fitResults')
         )
     )                                      
 )                          
@@ -786,31 +737,29 @@ process.fitZtoMuTau = cms.EDAnalyzer("TemplateHistFitter",
 ##process.fitZtoMuTauSysTauEnUp.processes.Ztautau.templates.visMass.meName = \
 ##  cms.string(dqmDirectory_Ztautau_templateSysTauEnUp + '/' + meName_visMass)
 ##process.fitZtoMuTauSysTauEnUp.output.controlPlots.fileName = \
-##  cms.string("./plots/fitBgEstTemplateZtoMuTau_#PLOT#_sysTauEnUp.eps")
+##  cms.string("./plots/fitBgEstTemplateZtoMuTau_#PLOT#_sysTauEnUp.png")
 
 ##process.fitZtoMuTauSysTauEnDown = copy.deepcopy(process.fitZtoMuTau)
 ##process.fitZtoMuTauSysTauEnDown.processes.Ztautau.templates.visMass.meName = \
 ##  cms.string(dqmDirectory_Ztautau_templateSysTauEnDown + '/' + meName_visMass)
 ##process.fitZtoMuTauSysTauEnDown.output.controlPlots.fileName = \
-##  cms.string("./plots/fitBgEstTemplateZtoMuTau_#PLOT#_sysTauEnDown.eps")
+##  cms.string("./plots/fitBgEstTemplateZtoMuTau_#PLOT#_sysTauEnDown.png")
 
 process.saveFitResultsZtoMuTau = cms.EDAnalyzer("DQMSimpleFileSaver",
     outputFileName = cms.string('fitBgEstTemplateZtoMuTau_results.root'),
     outputCommands = cms.vstring(
-        'drop harvested/*',
-        'keep template/*',
-        'keep analysis/*/zMuTauAnalyzer/afterEvtSelDiMuPairZmumuHypothesisVetoByMass/*'
+        'drop /harvested/*',
+        'keep /template/*',
+        'keep /analysis/*/zMuTauAnalyzer/afterEvtSelDiMuPairZmumuHypothesisVetoByMass/*',
+        'keep /fitResults/*'
     )
 )
 
 process.dumpDQMStore = cms.EDAnalyzer("DQMStoreDump")
 
 process.p = cms.Path(
-    #process.loadTemplateHistZtoMuTau_Ztautau
-    process.loadTemplateHistZtoMuTau
-   + process.loadAnalysisHistZtoMuTau
-   + process.dumpDQMStore 
-   + process.normalizeHistZtoMuTau
+    process.loadAnalysisResultsZtoMuTau
+   ##+ process.dumpDQMStore 
    #+ process.prodSysBiasHistZtoMuTau
    #+ process.prodSysBgEnrichedSamplePurityHistZtoMuTau
    #+ process.scaleSysHistZtoMuTau
@@ -821,7 +770,7 @@ process.p = cms.Path(
 )
 
 # print-out all python configuration parameter information
-#print process.dumpPython()
+print process.dumpPython()
 
 
   
