@@ -170,8 +170,8 @@ void TemplateFitAdapter_RooFit::model1dTypeRooFitSpecific::buildPdf()
 	    excludedBinX != excludedBinsX.end(); ++excludedBinX ) {
 	int binIndex = auxSmoothHist_->FindBin(*excludedBinX);
 	if ( binIndex > 0 && binIndex <= numBins ) {
-	  //std::cout << "--> excluding bin " << binIndex << ":" 
-	  //	      << " xCenter = " << auxSmoothHist_->GetBinCenter(binIndex) << " from fit." << std::endl;
+	  std::cout << "--> excluding bin " << binIndex << ":" 
+		    << " xCenter = " << auxSmoothHist_->GetBinCenter(binIndex) << " from fit." << std::endl;
 	  auxSmoothHist_->SetBinContent(binIndex, 0.);
 	  auxSmoothHist_->SetBinError(binIndex, 1.e+6);
 	}
