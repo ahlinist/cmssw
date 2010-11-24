@@ -17,7 +17,9 @@ HistManagerBase::HistManagerBase(const edm::ParameterSet& cfg)
 {
   //std::cout << "<HistManagerBase::HistManagerBase>:" << std::endl;
 
-  dqmDirectory_store_ = cfg.getParameter<std::string>("dqmDirectory_store");
+  dqmDirectory_store_  = dqmRootDirectory;
+  dqmDirectory_store_ += cfg.getParameter<std::string>("dqmDirectory_store");
+  dqmDirectory_store_  = dqmDirectoryName(dqmDirectory_store_);
   //std::cout << " dqmDirectory_store = " << dqmDirectory_store_ << std::endl;
 
 //--- per default, compute bin-errors for one-dimensional, but not for two-dimensional histograms 
