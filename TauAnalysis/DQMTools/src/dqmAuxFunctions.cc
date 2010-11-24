@@ -435,9 +435,9 @@ void dqmCopyRecursively(DQMStore& dqmStore, const std::string& inputDirectory, c
 			double scaleFactor, double scaleFactorErr, int mode, 
 			bool rmInputDirectory, std::vector<outputCommandEntry>* outputCommands)
 {
-  std::cout << "<dqmCopyRecursively>:" << std::endl;
-  std::cout << " inputDirectory = " << inputDirectory << std::endl;
-  std::cout << " outputDirectory = " << outputDirectory << std::endl;
+  //std::cout << "<dqmCopyRecursively>:" << std::endl;
+  //std::cout << " inputDirectory = " << inputDirectory << std::endl;
+  //std::cout << " outputDirectory = " << outputDirectory << std::endl;
   //std::cout << " scaleFactor = " << scaleFactor << std::endl;
   //std::cout << " scaleFactorErr = " << scaleFactorErr << std::endl;
   //std::cout << " rmInputDirectory = " << rmInputDirectory << std::endl;
