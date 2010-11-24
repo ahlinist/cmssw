@@ -223,7 +223,8 @@ void DQMFileLoader::endJob()
  
       TObject* obj = inputFile->Get(dqmRootDirectory_inTFile.data());
       if ( TDirectory* directory = dynamic_cast<TDirectory*>(obj) ) {
-	mapSubDirectoryStructure(directory, dqmRootDirectory, subDirectoryMap_[inputFileName_full]);
+	//mapSubDirectoryStructure(directory, dqmRootDirectory, subDirectoryMap_[inputFileName_full]); // CV: temporarily commented-out 11/24/2010
+	mapSubDirectoryStructure(directory, "", subDirectoryMap_[inputFileName_full]);
       } else {
 	edm::LogError ("endJob") 
 	  << " Failed to access " << dqmRootDirectory_inTFile << " in inputFile = " << inputFileName_full
@@ -240,8 +241,7 @@ void DQMFileLoader::endJob()
   //std::cout << "--> loading histograms from file..." << std::endl;
   DQMStore& dqmStore = (*edm::Service<DQMStore>());
   for ( std::map<std::string, cfgEntryFileSet>::iterator fileSet = fileSets_.begin();
-	fileSet != fileSets_.end(); ++fileSet ) 
-  {
+	fileSet != fileSets_.end(); ++fileSet ) {
     cfgEntryFileSet& cfgFileSet = fileSet->second;
     if ( cfgFileSet.autoscale_ ) {
       std::cout << "************************** Autoscaler *****************************************" << std::endl;
@@ -308,7 +308,8 @@ void DQMFileLoader::endJob()
 //    (if the histograms are not moved, the histograms get overwritten,
 //     the next time DQMStore::open is called)
       if ( fileSet->second.dqmDirectory_store_ != "" ) {
-	std::string inputDirectory = dqmRootDirectory;
+	//std::string inputDirectory = dqmRootDirectory; // CV: temporarily commented-out 11/24/2010
+	std::string inputDirectory = "";
 	//std::cout << "inputDirectory = " << inputDirectory << std::endl;
 	std::string outputDirectory = dqmDirectoryName(std::string(inputDirectory)).append(fileSet->second.dqmDirectory_store_);
 	//std::cout << "outputDirectory = " << outputDirectory << std::endl;
@@ -318,12 +319,14 @@ void DQMFileLoader::endJob()
 	for ( std::vector<std::string>::const_iterator dirName = dirNames.begin();
 	      dirName != dirNames.end(); ++dirName ) {
 	  std::string subDirName = dqmSubDirectoryName(inputDirectory, *dirName);
-	  //std::cout << " subDirName = " << subDirName << std::endl;
+	  std::cout << " subDirName = " << subDirName << std::endl;
 	  
 	  const sstring& subDirectories = subDirectoryMap_[inputFileName_full];
 	  if ( subDirectories.find(subDirName) != subDirectories.end() ) {
 	    std::string inputDirName_full = dqmDirectoryName(inputDirectory).append(subDirName);	    
+	    std::cout << " inputDirName_full = " << inputDirName_full << std::endl;
 	    std::string outputDirName_full = dqmDirectoryName(outputDirectory).append(subDirName);
+	    std::cout << " outputDirName_full = " << outputDirName_full << std::endl;
 
 //--- load histograms contained in inputFile into inputDirectory;
 //    when processing first inputFile, check that histograms in outputDirectory do not yet exist;
