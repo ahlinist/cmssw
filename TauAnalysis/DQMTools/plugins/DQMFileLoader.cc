@@ -26,18 +26,29 @@ const double defaultScaleFactor = 1.;
 
 const int verbosity = 0;
 
+//-----------------------------------------------------------------------------------------------------------------------
+// WARNING: Leading '/' = name of dqmRootDirectory gets truncated when histograms are written to file.
+//          This feature of the DQM framework is accounted for when loading DQM MonitorElements from file into memory
+//          when determining the names of DQM **input** directories by calling 
+//          dqmDirectoryName_dqmRootDirectoryOmitted (and not dqmDirectoryName)in the functions 
+//           o mapSubDirectoryStructure
+//           o cfgEntryFileSet::cfgEntryFileSet
+//           o DQMFileLoader::endJob
+//         (names of DQM **output** directories still need to start with '/' = name of dqmRootDirectory)
+//-----------------------------------------------------------------------------------------------------------------------
+
 void mapSubDirectoryStructure(TDirectory* directory, std::string directoryName, std::set<std::string>& subDirectories)
 {
   TList* subDirectoryNames = directory->GetListOfKeys();
   if ( !subDirectoryNames ) return;
-
+  
   TIter next(subDirectoryNames);
   while ( TKey* key = dynamic_cast<TKey*>(next()) ) {
     TObject* obj = directory->Get(key->GetName());
 
     if ( TDirectory* subDirectory = dynamic_cast<TDirectory*>(obj) ) {
-      std::string subDirectoryName = dqmDirectoryName(directoryName).append(key->GetName());
-    
+      std::string subDirectoryName = dqmDirectoryName_dqmRootDirectoryOmitted(directoryName).append(key->GetName());
+      
       subDirectories.insert(subDirectoryName);
     
       mapSubDirectoryStructure(subDirectory, subDirectoryName, subDirectories); 
@@ -103,7 +114,7 @@ DQMFileLoader::cfgEntryFileSet::cfgEntryFileSet(const std::string& name, const e
     skimEfficiency_ = cfg.getParameter<double>("skimEfficiency");
     xSection_ = cfg.getParameter<double>("xSection");
     targetIntLumi_ = cfg.getParameter<double>("targetIntLumi");
-    filterStatisticsLocation_ = dqmDirectoryName(cfg.getParameter<std::string>("filterStatisticsLocation"));
+    filterStatisticsLocation_ = dqmDirectoryName_dqmRootDirectoryOmitted(cfg.getParameter<std::string>("filterStatisticsLocation"));
     filterToUse_ = cfg.getParameter<std::string>("filterToUse");
     scaleFactor_ = -1;
     // Warn if old scale factor is hanging around
@@ -302,37 +313,34 @@ void DQMFileLoader::endJob()
       
       if ( verbosity ) dqmStore.showDirStructure();
       
-//--- if dqmDirectory_store specified in configuration parameters,
-//    move histograms from dqmRootDirectory to dqmDirectory_store
+//--- move histograms from dqmRootDirectory to dqmDirectory_store
 //    (if the histograms are not moved, the histograms get overwritten,
 //     the next time DQMStore::open is called)
-      if ( fileSet->second.dqmDirectory_store_ != "" ) {
-	std::string inputDirectory = "";
-	//std::cout << "inputDirectory = " << inputDirectory << std::endl;
-	std::string outputDirectory = dqmDirectoryName(std::string(inputDirectory)).append(fileSet->second.dqmDirectory_store_);
-	//std::cout << "outputDirectory = " << outputDirectory << std::endl;
+      std::string inputDirectory = "";
+      //std::cout << "inputDirectory = " << inputDirectory << std::endl;
+      std::string outputDirectory = dqmDirectoryName(std::string(inputDirectory)).append(fileSet->second.dqmDirectory_store_);
+      //std::cout << "outputDirectory = " << outputDirectory << std::endl;
 
-	dqmStore.setCurrentFolder(inputDirectory);
-	std::vector<std::string> dirNames = dqmStore.getSubdirs();
-	for ( std::vector<std::string>::const_iterator dirName = dirNames.begin();
-	      dirName != dirNames.end(); ++dirName ) {
-	  std::string subDirName = dqmSubDirectoryName(inputDirectory, *dirName);
-	  //std::cout << " subDirName = " << subDirName << std::endl;
-	  
-	  const sstring& subDirectories = subDirectoryMap_[inputFileName_full];
-	  if ( subDirectories.find(subDirName) != subDirectories.end() ) {
-	    std::string inputDirName_full = dqmDirectoryName(inputDirectory).append(subDirName);	    
-	    //std::cout << " inputDirName_full = " << inputDirName_full << std::endl;
-	    std::string outputDirName_full = dqmDirectoryName(outputDirectory).append(subDirName);
-	    //std::cout << " outputDirName_full = " << outputDirName_full << std::endl;
+      dqmStore.setCurrentFolder(inputDirectory);
+      std::vector<std::string> dirNames = dqmStore.getSubdirs();
+      for ( std::vector<std::string>::const_iterator dirName = dirNames.begin();
+	    dirName != dirNames.end(); ++dirName ) {
+	std::string subDirName = dqmSubDirectoryName(inputDirectory, *dirName);
+	std::cout << " subDirName = " << subDirName << std::endl;
+	
+	const sstring& subDirectories = subDirectoryMap_[inputFileName_full];
+	if ( subDirectories.find(subDirName) != subDirectories.end() ) {
+	  std::string inputDirName_full = dqmDirectoryName_dqmRootDirectoryOmitted(inputDirectory).append(subDirName);	    
+	  std::cout << " inputDirName_full = " << inputDirName_full << std::endl;
+	  std::string outputDirName_full = dqmDirectoryName(outputDirectory).append(subDirName);
+	  std::cout << " outputDirName_full = " << outputDirName_full << std::endl;
 
 //--- load histograms contained in inputFile into inputDirectory;
 //    when processing first inputFile, check that histograms in outputDirectory do not yet exist;
 //    add histograms in inputFile to those in outputDirectory afterwards;
 //    clear inputDirectory once finished processing all inputFiles.
-	    int mode = ( inputFileName == fileSet->second.inputFileNames_.begin() ) ? 1 : 2;
-	    dqmCopyRecursively(dqmStore, inputDirName_full, outputDirName_full, fileSet->second.scaleFactor_, 0., mode, true);
-	  }
+	  int mode = ( inputFileName == fileSet->second.inputFileNames_.begin() ) ? 1 : 2;
+	  dqmCopyRecursively(dqmStore, inputDirName_full, outputDirName_full, fileSet->second.scaleFactor_, 0., mode, true);
 	}
       }
     }

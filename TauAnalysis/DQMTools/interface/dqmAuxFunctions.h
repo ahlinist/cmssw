@@ -27,6 +27,7 @@ std::vector<TH1*> getHistograms(DQMStore&, const std::vector<std::string>&, bool
 double getValue(DQMStore&, const std::string&, bool&);
 
 std::string dqmDirectoryName(const std::string&);
+std::string dqmDirectoryName_dqmRootDirectoryOmitted(const std::string&);
 std::string dqmSubDirectoryName(const std::string&, const std::string&);
 
 void dqmCheckExistence(DQMStore&, const std::string&, const std::string&, int, int&);
