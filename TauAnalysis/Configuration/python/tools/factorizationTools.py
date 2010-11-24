@@ -523,14 +523,14 @@ def enableFactorization_makeZtoElecTauPlots(process):
 		process = process,
 		processName = "QCD_BCtoE_Pt20to30",
 		dqmDirectoryIn_factorizedTightEvtSel = \
-                         '/harvested/QCD_BCtoE_Pt20to30/zElecTauAnalyzer_factorizedWithElectronIsolation/',
+                         'summed/harvested/QCD_BCtoE_Pt20to30/zElecTauAnalyzer_factorizedWithElectronIsolation/',
 		evtSel_factorizedTight = evtSelZtoElecTau_factorizedTight,
 		dqmDirectoryIn_factorizedLooseEvtSel = \
-                         '/harvested/QCD_BCtoE_Pt20to30/zElecTauAnalyzer_factorizedWithoutElectronIsolation/',
+                         'summed/harvested/QCD_BCtoE_Pt20to30/zElecTauAnalyzer_factorizedWithoutElectronIsolation/',
 		evtSel_factorizedLoose = evtSelZtoElecTau_factorizedLoose,
 		meName_numerator = meNameZtoElecTau_numerator,
 		meName_denominator = meNameZtoElecTau_denominator,
-		dqmDirectoryOut = '/harvested/QCD_BCtoE_Pt20to30_factorized/zElecTauAnalyzer/'
+		dqmDirectoryOut = 'summed/harvested/QCD_BCtoE_Pt20to30_factorized/zElecTauAnalyzer/'
 	)
 
 	# configure sequence for applying factorization to "QCD_BCtoE_PT30to80" process
@@ -539,14 +539,14 @@ def enableFactorization_makeZtoElecTauPlots(process):
 		process = process,
 		processName = "QCD_BCtoE_Pt30to80",
 		dqmDirectoryIn_factorizedTightEvtSel = \
-                         '/harvested/QCD_BCtoE_Pt30to80/zElecTauAnalyzer_factorizedWithElectronIsolation/',
+                         'summed/harvested/QCD_BCtoE_Pt30to80/zElecTauAnalyzer_factorizedWithElectronIsolation/',
 		evtSel_factorizedTight = evtSelZtoElecTau_factorizedTight,
 		dqmDirectoryIn_factorizedLooseEvtSel = \
-                         '/harvested/QCD_BCtoE_Pt30to80/zElecTauAnalyzer_factorizedWithoutElectronIsolation/',
+                         'summed/harvested/QCD_BCtoE_Pt30to80/zElecTauAnalyzer_factorizedWithoutElectronIsolation/',
 		evtSel_factorizedLoose = evtSelZtoElecTau_factorizedLoose,
 		meName_numerator = meNameZtoElecTau_numerator,
 		meName_denominator = meNameZtoElecTau_denominator,
-		dqmDirectoryOut = '/harvested/QCD_BCtoE_Pt30to80_factorized/zElecTauAnalyzer/'
+		dqmDirectoryOut = 'summed/harvested/QCD_BCtoE_Pt30to80_factorized/zElecTauAnalyzer/'
 	)
 
 	# configure sequence for applying factorization to "QCD_BCtoE_PT80to170" process
@@ -555,14 +555,14 @@ def enableFactorization_makeZtoElecTauPlots(process):
 		process = process,
 		processName = "QCD_BCtoE_Pt80to170",
 		dqmDirectoryIn_factorizedTightEvtSel = \
-                         '/harvested/QCD_BCtoE_Pt80to170/zElecTauAnalyzer_factorizedWithElectronIsolation/',
+                         'summed/harvested/QCD_BCtoE_Pt80to170/zElecTauAnalyzer_factorizedWithElectronIsolation/',
 		evtSel_factorizedTight = evtSelZtoElecTau_factorizedTight,
 		dqmDirectoryIn_factorizedLooseEvtSel = \
-                         '/harvested/QCD_BCtoE_Pt80to170/zElecTauAnalyzer_factorizedWithoutElectronIsolation/',
+                         'summed/harvested/QCD_BCtoE_Pt80to170/zElecTauAnalyzer_factorizedWithoutElectronIsolation/',
 		evtSel_factorizedLoose = evtSelZtoElecTau_factorizedLoose,
 		meName_numerator = meNameZtoElecTau_numerator,
 		meName_denominator = meNameZtoElecTau_denominator,
-		dqmDirectoryOut = '/harvested/QCD_BCtoE_Pt80to170_factorized/zElecTauAnalyzer/'
+		dqmDirectoryOut = 'summed/harvested/QCD_BCtoE_Pt80to170_factorized/zElecTauAnalyzer/'
 	)
 
 	# configure sequence for applying factorization to "QCD_EMenriched_PT20to30" process
@@ -571,14 +571,14 @@ def enableFactorization_makeZtoElecTauPlots(process):
 		process = process,
 		processName = "QCD_EMenriched_Pt20to30",
 		dqmDirectoryIn_factorizedTightEvtSel = \
-                         '/harvested/QCD_EMenriched_Pt20to30/zElecTauAnalyzer_factorizedWithElectronIsolation/',
+                         'summed/harvested/QCD_EMenriched_Pt20to30/zElecTauAnalyzer_factorizedWithElectronIsolation/',
 		evtSel_factorizedTight = evtSelZtoElecTau_factorizedTight,
 		dqmDirectoryIn_factorizedLooseEvtSel = \
-                         '/harvested/QCD_EMenriched_Pt20to30/zElecTauAnalyzer_factorizedWithoutElectronIsolation/',
+                         'summed/harvested/QCD_EMenriched_Pt20to30/zElecTauAnalyzer_factorizedWithoutElectronIsolation/',
 		evtSel_factorizedLoose = evtSelZtoElecTau_factorizedLoose,
 		meName_numerator = meNameZtoElecTau_numerator,
 		meName_denominator = meNameZtoElecTau_denominator,
-		dqmDirectoryOut = '/harvested/QCD_EMenriched_Pt20to30_factorized/zElecTauAnalyzer/'
+		dqmDirectoryOut = 'summed/harvested/QCD_EMenriched_Pt20to30_factorized/zElecTauAnalyzer/'
 	)
 
 	# configure sequence for applying factorization to "QCD_EMenriched_PT30to80" process
@@ -587,14 +587,14 @@ def enableFactorization_makeZtoElecTauPlots(process):
 		process = process,
 		processName = "QCD_EMenriched_Pt30to80",
 		dqmDirectoryIn_factorizedTightEvtSel = \
-                         '/harvested/QCD_EMenriched_Pt30to80/zElecTauAnalyzer_factorizedWithElectronIsolation/',
+                         'summed/harvested/QCD_EMenriched_Pt30to80/zElecTauAnalyzer_factorizedWithElectronIsolation/',
 		evtSel_factorizedTight = evtSelZtoElecTau_factorizedTight,
 		dqmDirectoryIn_factorizedLooseEvtSel = \
-                         '/harvested/QCD_EMenriched_Pt30to80/zElecTauAnalyzer_factorizedWithoutElectronIsolation/',
+                         'summed/harvested/QCD_EMenriched_Pt30to80/zElecTauAnalyzer_factorizedWithoutElectronIsolation/',
 		evtSel_factorizedLoose = evtSelZtoElecTau_factorizedLoose,
 		meName_numerator = meNameZtoElecTau_numerator,
 		meName_denominator = meNameZtoElecTau_denominator,
-		dqmDirectoryOut = '/harvested/QCD_EMenriched_Pt30to80_factorized/zElecTauAnalyzer/'
+		dqmDirectoryOut = 'summed/harvested/QCD_EMenriched_Pt30to80_factorized/zElecTauAnalyzer/'
 	)
 
 	# configure sequence for applying factorization to "QCD_EMenriched_PT80to170" process
@@ -603,44 +603,29 @@ def enableFactorization_makeZtoElecTauPlots(process):
 		process = process,
 		processName = "QCD_EMenriched_Pt80to170",
 		dqmDirectoryIn_factorizedTightEvtSel = \
-                         '/harvested/QCD_EMenriched_Pt80to170/zElecTauAnalyzer_factorizedWithElectronIsolation/',
+                         'summed/harvested/QCD_EMenriched_Pt80to170/zElecTauAnalyzer_factorizedWithElectronIsolation/',
 		evtSel_factorizedTight = evtSelZtoElecTau_factorizedTight,
 		dqmDirectoryIn_factorizedLooseEvtSel = \
-                         '/harvested/QCD_EMenriched_Pt80to170/zElecTauAnalyzer_factorizedWithoutElectronIsolation/',
+                         'summed/harvested/QCD_EMenriched_Pt80to170/zElecTauAnalyzer_factorizedWithoutElectronIsolation/',
 		evtSel_factorizedLoose = evtSelZtoElecTau_factorizedLoose,
 		meName_numerator = meNameZtoElecTau_numerator,
 		meName_denominator = meNameZtoElecTau_denominator,
-		dqmDirectoryOut = '/harvested/QCD_EMenriched_Pt80to170_factorized/zElecTauAnalyzer/'
+		dqmDirectoryOut = 'summed/harvested/QCD_EMenriched_Pt80to170_factorized/zElecTauAnalyzer/'
 	)
 
-	# configure sequence for applying factorization to "PhotonJets_Pt15to20" process
-	process.scaleZtoElecTau_gammaPlusJets_Pt15to20 = composeFactorizationSequence(
+	# configure sequence for applying factorization to "PhotonJets_Pt15to30" process
+	process.scaleZtoElecTau_gammaPlusJets_Pt15to30 = composeFactorizationSequence(
 		process = process,
-		processName = "gammaPlusJets_Pt15to20",
+		processName = "gammaPlusJets_Pt15to30",
 		dqmDirectoryIn_factorizedTightEvtSel = \
-                         '/harvested/gammaPlusJets_Pt15to20/zElecTauAnalyzer_factorizedWithElectronIsolation/',
+                         'summed/harvested/gammaPlusJets_Pt15to30/zElecTauAnalyzer_factorizedWithElectronIsolation/',
 		evtSel_factorizedTight = evtSelZtoElecTau_factorizedTight,
 		dqmDirectoryIn_factorizedLooseEvtSel = \
-                         '/harvested/gammaPlusJets_Pt15to20/zElecTauAnalyzer_factorizedWithoutElectronIsolation/',
+                         'summed/harvested/gammaPlusJets_Pt15to30/zElecTauAnalyzer_factorizedWithoutElectronIsolation/',
 		evtSel_factorizedLoose = evtSelZtoElecTau_factorizedLoose,
 		meName_numerator = meNameZtoElecTau_numerator,
 		meName_denominator = meNameZtoElecTau_denominator,
-		dqmDirectoryOut = '/harvested/gammaPlusJets_Pt15to20_factorized/zElecTauAnalyzer/'
-	)
-
-	# configure sequence for applying factorization to "PhotonJets_Pt20to30" process
-	process.scaleZtoElecTau_gammaPlusJets_Pt20to30 = composeFactorizationSequence(
-		process = process,
-		processName = "gammaPlusJets_Pt20to30",
-		dqmDirectoryIn_factorizedTightEvtSel = \
-                         '/harvested/gammaPlusJets_Pt20to30/zElecTauAnalyzer_factorizedWithElectronIsolation/',
-		evtSel_factorizedTight = evtSelZtoElecTau_factorizedTight,
-		dqmDirectoryIn_factorizedLooseEvtSel = \
-                         '/harvested/gammaPlusJets_Pt20to30/zElecTauAnalyzer_factorizedWithoutElectronIsolation/',
-		evtSel_factorizedLoose = evtSelZtoElecTau_factorizedLoose,
-		meName_numerator = meNameZtoElecTau_numerator,
-		meName_denominator = meNameZtoElecTau_denominator,
-		dqmDirectoryOut = '/harvested/gammaPlusJets_Pt20to30_factorized/zElecTauAnalyzer/'
+		dqmDirectoryOut = 'summed/harvested/gammaPlusJets_Pt15to30_factorized/zElecTauAnalyzer/'
 	)
 
 	# configure sequence for applying factorization to "PhotonJets_Pt30to50" process
@@ -648,14 +633,14 @@ def enableFactorization_makeZtoElecTauPlots(process):
 		process = process,
 		processName = "gammaPlusJets_Pt30to50",
 		dqmDirectoryIn_factorizedTightEvtSel = \
-                         '/harvested/gammaPlusJets_Pt30to50/zElecTauAnalyzer_factorizedWithElectronIsolation/',
+                         'summed/harvested/gammaPlusJets_Pt30to50/zElecTauAnalyzer_factorizedWithElectronIsolation/',
 		evtSel_factorizedTight = evtSelZtoElecTau_factorizedTight,
 		dqmDirectoryIn_factorizedLooseEvtSel = \
-                         '/harvested/gammaPlusJets_Pt30to50/zElecTauAnalyzer_factorizedWithoutElectronIsolation/',
+                         'summed/harvested/gammaPlusJets_Pt30to50/zElecTauAnalyzer_factorizedWithoutElectronIsolation/',
 		evtSel_factorizedLoose = evtSelZtoElecTau_factorizedLoose,
 		meName_numerator = meNameZtoElecTau_numerator,
 		meName_denominator = meNameZtoElecTau_denominator,
-		dqmDirectoryOut = '/harvested/gammaPlusJets_Pt30to50_factorized/zElecTauAnalyzer/'
+		dqmDirectoryOut = 'summed/harvested/gammaPlusJets_Pt30to50_factorized/zElecTauAnalyzer/'
 	)
 
 	# configure sequence for applying factorization to "PhotonJets_Pt50to80" process
@@ -663,14 +648,14 @@ def enableFactorization_makeZtoElecTauPlots(process):
 		process = process,
 		processName = "gammaPlusJets_Pt50to80",
 		dqmDirectoryIn_factorizedTightEvtSel = \
-                         '/harvested/gammaPlusJets_Pt50to80/zElecTauAnalyzer_factorizedWithElectronIsolation/',
+                         'summed/harvested/gammaPlusJets_Pt50to80/zElecTauAnalyzer_factorizedWithElectronIsolation/',
 		evtSel_factorizedTight = evtSelZtoElecTau_factorizedTight,
 		dqmDirectoryIn_factorizedLooseEvtSel = \
-                         '/harvested/gammaPlusJets_Pt50to80/zElecTauAnalyzer_factorizedWithoutElectronIsolation/',
+                         'summed/harvested/gammaPlusJets_Pt50to80/zElecTauAnalyzer_factorizedWithoutElectronIsolation/',
 		evtSel_factorizedLoose = evtSelZtoElecTau_factorizedLoose,
 		meName_numerator = meNameZtoElecTau_numerator,
 		meName_denominator = meNameZtoElecTau_denominator,
-		dqmDirectoryOut = '/harvested/gammaPlusJets_Pt50to80_factorized/zElecTauAnalyzer/'
+		dqmDirectoryOut = 'summed/harvested/gammaPlusJets_Pt50to80_factorized/zElecTauAnalyzer/'
 	)
 
 	# configure sequence for applying factorization to "PhotonJets_Pt80to120" process
@@ -678,14 +663,14 @@ def enableFactorization_makeZtoElecTauPlots(process):
 		process = process,
 		processName = "gammaPlusJets_Pt80to120",
 		dqmDirectoryIn_factorizedTightEvtSel = \
-                         '/harvested/gammaPlusJets_Pt80to120/zElecTauAnalyzer_factorizedWithElectronIsolation/',
+                         'summed/harvested/gammaPlusJets_Pt80to120/zElecTauAnalyzer_factorizedWithElectronIsolation/',
 		evtSel_factorizedTight = evtSelZtoElecTau_factorizedTight,
 		dqmDirectoryIn_factorizedLooseEvtSel = \
-                         '/harvested/gammaPlusJets_Pt80to120/zElecTauAnalyzer_factorizedWithoutElectronIsolation/',
+                         'summed/harvested/gammaPlusJets_Pt80to120/zElecTauAnalyzer_factorizedWithoutElectronIsolation/',
 		evtSel_factorizedLoose = evtSelZtoElecTau_factorizedLoose,
 		meName_numerator = meNameZtoElecTau_numerator,
 		meName_denominator = meNameZtoElecTau_denominator,
-		dqmDirectoryOut = '/harvested/gammaPlusJets_Pt80to120_factorized/zElecTauAnalyzer/'
+		dqmDirectoryOut = 'summed/harvested/gammaPlusJets_Pt80to120_factorized/zElecTauAnalyzer/'
 	)
 
 	# configure sequence for applying factorization to "PhotonJets_Pt30" process
@@ -693,43 +678,41 @@ def enableFactorization_makeZtoElecTauPlots(process):
 		process = process,
 		processName = "gammaPlusJets_Pt30",
 		dqmDirectoryIn_factorizedTightEvtSel = \
-                         '/harvested/gammaPlusJets_Pt30/zElecTauAnalyzer_factorizedWithElectronIsolation/',
+                         'summed/harvested/gammaPlusJets/zElecTauAnalyzer_factorizedWithElectronIsolation/',
 		evtSel_factorizedTight = evtSelZtoElecTau_factorizedTight,
 		dqmDirectoryIn_factorizedLooseEvtSel = \
-                         '/harvested/gammaPlusJets_Pt30/zElecTauAnalyzer_factorizedWithoutElectronIsolation/',
+                         'summed/harvested/gammaPlusJets/zElecTauAnalyzer_factorizedWithoutElectronIsolation/',
 		evtSel_factorizedLoose = evtSelZtoElecTau_factorizedLoose,
 		meName_numerator = meNameZtoElecTau_numerator,
 		meName_denominator = meNameZtoElecTau_denominator,
-		dqmDirectoryOut = '/harvested/gammaPlusJets_Pt30_factorized/zElecTauAnalyzer/'
+		dqmDirectoryOut = 'summed/harvested/gammaPlusJets_Pt30_factorized/zElecTauAnalyzer/'
 	)
 
 	# compute gamma+jets background sum using factorized histograms and FilterStatistics objects
 	process.addZtoElecTau_gammaPlusJetsSum.gammaPlusJetsSum.dqmDirectories_input = cms.vstring(
-		'/harvested/gammaPlusJets_Pt15to20_factorized',
-		'/harvested/gammaPlusJets_Pt20to30_factorized',
-		'/harvested/gammaPlusJets_Pt30to50_factorized',
-		'/harvested/gammaPlusJets_Pt50to80_factorized',
-		'/harvested/gammaPlusJets_Pt80to120_factorized'
+		'summed/harvested/gammaPlusJets_Pt15to30_factorized',
+		'summed/harvested/gammaPlusJets_Pt30to50_factorized',
+		'summed/harvested/gammaPlusJets_Pt50to80_factorized'
     )
 
 	# compute QCD background sum using factorized histograms and FilterStatistics objects
 	process.addZtoElecTau_qcdSum.qcdSum.dqmDirectories_input = cms.vstring(
-		'/harvested/QCD_BCtoE_Pt20to30_factorized',
-		'/harvested/QCD_BCtoE_Pt30to80_factorized',
-		'/harvested/QCD_BCtoE_Pt80to170_factorized',
-		'/harvested/QCD_EMenriched_Pt20to30_factorized',
-		'/harvested/QCD_EMenriched_Pt30to80_factorized',
-		'/harvested/QCD_EMenriched_Pt80to170_factorized'
+		'summed/harvested/QCD_BCtoE_Pt20to30_factorized',
+		'summed/harvested/QCD_BCtoE_Pt30to80_factorized',
+		'summed/harvested/QCD_BCtoE_Pt80to170_factorized',
+		'summed/harvested/QCD_EMenriched_Pt20to30_factorized',
+		'summed/harvested/QCD_EMenriched_Pt30to80_factorized',
+		'summed/harvested/QCD_EMenriched_Pt80to170_factorized'
 	)
 	process.addZtoElecTau_qcdEMenrichedSum.qcdEMenrichedSum.dqmDirectories_input = cms.vstring(
-		'/harvested/QCD_EMenriched_Pt20to30_factorized',
-		'/harvested/QCD_EMenriched_Pt30to80_factorized',
-		'/harvested/QCD_EMenriched_Pt80to170_factorized'
+		'summed/harvested/QCD_EMenriched_Pt20to30_factorized',
+		'summed/harvested/QCD_EMenriched_Pt30to80_factorized',
+		'summed/harvested/QCD_EMenriched_Pt80to170_factorized'
 	)
 	process.addZtoElecTau_qcdBCtoESum.qcdBCtoESum.dqmDirectories_input = cms.vstring(
-		'/harvested/QCD_BCtoE_Pt20to30_factorized',
-		'/harvested/QCD_BCtoE_Pt30to80_factorized',
-		'/harvested/QCD_BCtoE_Pt80to170_factorized'
+		'summed/harvested/QCD_BCtoE_Pt20to30_factorized',
+		'summed/harvested/QCD_BCtoE_Pt30to80_factorized',
+		'summed/harvested/QCD_BCtoE_Pt80to170_factorized'
 	)
 	process.addZtoElecTau = cms.Sequence(
 		process.scaleZtoElecTau_QCD_EMenriched_Pt20to30
@@ -738,17 +721,16 @@ def enableFactorization_makeZtoElecTauPlots(process):
 		+ process.scaleZtoElecTau_QCD_BCtoE_Pt20to30
 		+ process.scaleZtoElecTau_QCD_BCtoE_Pt30to80
 		+ process.scaleZtoElecTau_QCD_BCtoE_Pt80to170
-		#+ process.scaleZtoElecTau_gammaPlusJets_Pt15to20
-		#+ process.scaleZtoElecTau_gammaPlusJets_Pt20to30
-		#+ process.scaleZtoElecTau_gammaPlusJets_Pt30to50
-		#+ process.scaleZtoElecTau_gammaPlusJets_Pt50to80
-		#+ process.scaleZtoElecTau_gammaPlusJets_Pt80to120
-		+ process.scaleZtoElecTau_gammaPlusJets_Pt30
-		#			+ process.addZtoElecTau_qcdSum
-		+ process.addZtoElecTau_qcdBCtoESum
-		+ process.addZtoElecTau_qcdEMenrichedSum
-		#+ process.addZtoElecTau_gammaPlusJetsSum
+		+ process.scaleZtoElecTau_gammaPlusJets_Pt15to30
+		+ process.scaleZtoElecTau_gammaPlusJets_Pt30to50
+		+ process.scaleZtoElecTau_gammaPlusJets_Pt50to80
+		#			+ process.addZtoElecTau_qcdSum 
+		+ process.addZtoElecTau_qcdBCtoESum 
+		+ process.addZtoElecTau_qcdEMenrichedSum 
+		+ process.addZtoElecTau_gammaPlusJetsSum 
 		#			+ process.addZtoElecTau_smSum
+		+ process.addZtoElecTau_wPlusJetsSum
+		#+ process.addZtoElecTau_dataSum
 	)
 
 #--------------------------------------------------------------------------------
