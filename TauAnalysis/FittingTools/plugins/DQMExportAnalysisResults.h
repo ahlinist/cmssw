@@ -8,9 +8,9 @@
  *
  * \author Christian Veelken, UC Davis
  *
- * \version $Revision: 1.3 $
+ * \version $Revision: 1.4 $
  *
- * $Id: DQMExportAnalysisResults.h,v 1.3 2010/10/27 15:49:52 veelken Exp $
+ * $Id: DQMExportAnalysisResults.h,v 1.4 2010/11/17 19:23:52 veelken Exp $
  *
  */
 
@@ -48,6 +48,7 @@ class DQMExportAnalysisResults : public edm::EDAnalyzer
   { 
     channelEntryType(unsigned index, const edm::ParameterSet& cfg)
       : name_(cfg.getParameter<std::string>("name")),
+        index_(index),
 	shortName_(cfg.getParameter<std::string>("shortName")),
 	meNameBinning_(cfg.getParameter<std::string>("binning")),
 	histogramBinning_(0)
