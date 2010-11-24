@@ -68,7 +68,7 @@ meName_SVfitMass_norm = "DiTauCandidateSVfitQuantities/psKine_MEt_ptBalance/Mass
 process.loadAnalysisResultsZtoMuTau = cms.EDAnalyzer("DQMFileLoader",
     Ztautau = cms.PSet(
         inputFileNames = cms.vstring(
-            getHarvestingFilePath('ZtoMuTau_bgEstTemplate') + '/' + 'bgEstTemplateHistZtoMuTau.root'
+            getHarvestingFilePath('ZtoMuTau_bgEstTemplate') + '/' + 'bgEstTemplateHistZtoMuTau_skimmed.root'
         ),
         scaleFactor = cms.double(1.),
         dqmDirectory_store = cms.string('/')
