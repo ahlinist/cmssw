@@ -62,7 +62,7 @@ process.saveZtoMuTauPlots = cms.EDAnalyzer("DQMSimpleFileSaver",
     outputFileName = cms.string('plotsZtoMuTau.root')
 )
 
-process.maxEvents = cms.untracked.PSet(            
+process.maxEvents = cms.untracked.PSet(
     input = cms.untracked.int32(-1)
 )
 
@@ -70,11 +70,11 @@ process.source = cms.Source("PoolSource",
     fileNames = cms.untracked.vstring(
         #'/store/relval/CMSSW_3_6_1/RelValZTT/GEN-SIM-RECO/START36_V7-v1/0021/F405BC9A-525D-DF11-AB96-002618943811.root',
         #'/store/relval/CMSSW_3_6_1/RelValZTT/GEN-SIM-RECO/START36_V7-v1/0020/EE3E8F74-365D-DF11-AE3D-002618FDA211.root'
-        #'file:/data1/veelken/CMSSW_3_6_x/skims/Ztautau_1_1_sXK.root'        
+        #'file:/data1/veelken/CMSSW_3_6_x/skims/Ztautau_1_1_sXK.root'
         #'file:/data1/veelken/CMSSW_3_8_x/skims/AHtoMuTau/selEvents_AHtoMuTau_woBtag_runs145762to148058_RECO.root'
         'file:/data1/veelken/CMSSW_3_8_x/skims/test/mcDYttPU156bx_GEN_SIM_RECO_1_1_1VV.root'
     )
-    #skipBadFiles = cms.untracked.bool(True) 
+    #skipBadFiles = cms.untracked.bool(True)
 )
 
 #--------------------------------------------------------------------------------
@@ -101,7 +101,7 @@ process.patTrigger.addL1Algos = cms.bool(True)
 #--------------------------------------------------------------------------------
 # import utility function for switching pat::Tau input
 # to different reco::Tau collection stored on AOD
-from PhysicsTools.PatAlgos.tools.tauTools import * 
+from PhysicsTools.PatAlgos.tools.tauTools import *
 
 # comment-out to take reco::CaloTaus instead of reco::PFTaus
 # as input for pat::Tau production
@@ -172,8 +172,8 @@ changeCut(process, "selectedPatTausTrkIso", "tauID('byTaNCtight') > -1.")
 changeCut(process, "selectedPatTausForMuTauTrkIso", "tauID('byTaNCtight') > -1.")
 changeCut(process, "selectedPatTausEcalIso", "tauID('byTaNCtight') > -1.")
 changeCut(process, "selectedPatTausForMuTauEcalIso", "tauID('byTaNCtight') > -1.")
-changeCut(process, "selectedPatTausTaNCdiscr", "tauID('byTaNCtight') > 0.5")
-changeCut(process, "selectedPatTausForMuTauTaNCdiscr", "tauID('byTaNCtight') > 0.5")
+changeCut(process, "selectedPatTausTaNCdiscr", "tauID('byTaNCmedium') > 0.5")
+changeCut(process, "selectedPatTausForMuTauTaNCdiscr", "tauID('byTaNCmedium') > 0.5")
 
 # change lower limit on separation required between muon and tau-jet to dR > 0.5
 changeCut(process, "selectedMuTauPairsAntiOverlapVeto", "dR12 > 0.5")
@@ -192,7 +192,7 @@ changeCut(process, "selectedMuTauPairsPzetaDiffLooseMuonIsolation", "(pZeta - 1.
 process.printEventContent = cms.EDAnalyzer("EventContentAnalyzer")
 process.filterFirstEvent = cms.EDFilter("EventCountFilter",
     numEvents = cms.int32(1)
-)                                        
+)
 
 process.o = cms.Path(process.filterFirstEvent + process.printEventContent)
 
@@ -217,7 +217,7 @@ from TauAnalysis.MCEmbeddingTools.tools.switchInputTags import switchInputTags
 # comment-out to switch HLT InputTags
 #switchInputTags(process)
 #--------------------------------------------------------------------------------
- 
+
 #--------------------------------------------------------------------------------
 # import utility function for factorization
 from TauAnalysis.Configuration.tools.factorizationTools import enableFactorization_runZtoMuTau
