@@ -2,6 +2,8 @@ import FWCore.ParameterSet.Config as cms
 
 import copy
 import os
+import ROOT
+import re
 
 import TauAnalysis.DQMTools.plotterStyleDefinitions_cfi as styles
 from TauAnalysis.Configuration.userRegistry import userSettings
@@ -70,7 +72,8 @@ def makePlots(process, channel = None, samples = None, inputFilePath = None, job
               analyzer_drawJobConfigurator_indOutputFileName_sets = None,
               drawJobTemplate = None,
               enableFactorizationFunction = None,
-              dqmDirectoryFilterStatistics = None, dumpDQMStore = False):
+              dqmDirectoryFilterStatistics = None, dumpDQMStore = False,
+              skimStatFileMapper = None, skimFilterStatistic=None):
 
     # check that channel, samples, inputFilePath and jobId
     # parameters are defined and non-empty
@@ -119,6 +122,55 @@ def makePlots(process, channel = None, samples = None, inputFilePath = None, job
             samplesToLoad.append(sample)
     for sample in samplesToLoad:
         sample_info = samples['RECO_SAMPLES'][sample]
+
+        # If this was run on a local skim, make sure we update the skim eff to
+        # include the factor from the skim
+        if skimStatFileMapper is not None:
+            skim_file_name = skimStatFileMapper(sample)
+            print "Loading level 2 skim info from file: %s" % skim_file_name
+            skim_file = ROOT.TFile(skim_file_name, "READ")
+            # Get the filter statistics folder
+            filter_stat_base_dir = dqmDirectoryFilterStatistics[
+                sample_info['factorize'] and 'factorizationEnabled' or
+                'factorizationDisabled' ]
+            filter_stat_dir = os.path.join(
+                'DQMData', filter_stat_base_dir, skimFilterStatistic)
+            filter_stats = skim_file.Get(filter_stat_dir)
+            # Find the key corresponding to processed and passed
+            passed_matcher = re.compile(
+                r'<passed_cumulative_numWeighted#a1#s1>f=(?P<passed>[0-9\.]*)</passed_cumulative_numWeighted#a1#s1>')
+            processed_matcher = re.compile(
+                r'<processed_numWeighted#a1#s1>f=(?P<processed>[0-9\.]*)</processed_numWeighted#a1#s1>')
+            passed = None
+            processed = None
+
+            # Find the number of passed
+            for key in filter_stats.GetListOfKeys():
+                passed_match = passed_matcher.match(key.GetName())
+                if passed_match:
+                    passed_value = float(passed_match.group('passed'))
+                    print "Got passed entries: %0.2f" % (passed_value)
+                    if passed is not None:
+                        print "Fatal: Multiple filter statistics identified as passed!"
+                    passed = passed_value
+
+            # Find the number of processed
+            for key in filter_stats.GetListOfKeys():
+                proc_match = processed_matcher.match(key.GetName())
+                if proc_match:
+                    proc_value = float(proc_match.group('processed'))
+                    print "Got processed entries: %0.2f" % (proc_value)
+                    if processed is not None:
+                        print "Fatal: Multiple filter statistics identified as processed!"
+                    processed = proc_value
+
+            local_skim_eff = passed/processed
+            # Update sample skim efficiency
+            sample_info['skim_eff'] *= local_skim_eff
+            print ("Got local skim eff: %0.2f%% for sample %s, "
+                   "giving an overall skim eff of %0.2f%%" %
+                   (100*local_skim_eff, sample, 100*sample_info['skim_eff']))
+
         # Build DQMFileLoader PSet for this sample
         sample_pset = cms.PSet(
             inputFileNames = cms.vstring(''),
