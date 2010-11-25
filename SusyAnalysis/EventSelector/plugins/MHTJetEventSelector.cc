@@ -34,6 +34,16 @@ rejectEvtJetID_(pset.getParameter<bool> ("rejectEvtJetID")) {
     defineVariable("dPhiJet3MHT");
     defineVariable("R1");
     defineVariable("R2");
+    defineVariable("minDphiJet112");
+    defineVariable("minDphiJet1123");
+    defineVariable("dPhiJet12");
+    defineVariable("dPhiJet13");
+    defineVariable("dPhiJet23");
+    defineVariable("dRJet12");
+    defineVariable("dRJet13");
+    defineVariable("dRJet23");
+
+    edm::LogInfo("MHTJetEventSelector") << "constructed with \n" << "  jetTag    = " << jetTag_;
 
 }
 
@@ -74,14 +84,14 @@ bool MHTJetEventSelector::select(const edm::Event& event) const {
 
         if (iJet->pt() < minPt_ || fabs(iJet->eta()) > maxEta_) continue;
 
-        bool loose = false;
+        bool loose = true;
 
-        if( iJet->isCaloJet() || iJet->isJPTJet() ){
+        if( useJetID_ && (iJet->isCaloJet() || iJet->isJPTJet()) ){
             pat::strbitset ret = jetIDLooseCalo.getBitTemplate();
             ret.set(false);
             loose = jetIDLooseCalo( *iJet, ret );
         }
-        else if ( iJet->isPFJet() ){
+        else if ( useJetID_ && iJet->isPFJet() ){
             pat::strbitset ret = jetIDLoosePF.getBitTemplate();
             ret.set(false);
             loose = jetIDLoosePF( *iJet, ret );
@@ -120,7 +130,22 @@ bool MHTJetEventSelector::select(const edm::Event& event) const {
     setVariable("R1", R1);
     setVariable("R2", R2);
 
-    //
+    float _minDphiJet112 = dPhiJet1Met;
+    if(dPhiJet2Met < _minDphiJet112) _minDphiJet112 = dPhiJet2Met;
+    if( (TMath::Pi()-dPhiJet1Met) < _minDphiJet112) _minDphiJet112 = TMath::Pi()-dPhiJet1Met;
+
+    float _minDphiJet1123 = _minDphiJet112;
+   if(dPhiJet3Met < _minDphiJet1123) _minDphiJet1123 = dPhiJet3Met;
+
+    setVariable("minDphiJet112", _minDphiJet112);
+    setVariable("minDphiJet1123", _minDphiJet1123);
+    setVariable("dPhiJet12", reco::deltaPhi((*jets)[0].phi(), (*jets)[1].phi()));
+    setVariable("dPhiJet13", reco::deltaPhi((*jets)[0].phi(), (*jets)[2].phi()));
+    setVariable("dPhiJet23", reco::deltaPhi((*jets)[1].phi(), (*jets)[2].phi()));
+    setVariable("dRJet12", reco::deltaR((*jets)[0].eta(),(*jets)[0].phi(), (*jets)[1].eta(), (*jets)[1].phi()));
+    setVariable("dRJet13", reco::deltaR((*jets)[0].eta(),(*jets)[0].phi(), (*jets)[2].eta(), (*jets)[2].phi()));
+    setVariable("dRJet23", reco::deltaR((*jets)[1].eta(),(*jets)[1].phi(), (*jets)[2].eta(), (*jets)[2].phi()));
+    // 
     // Perform final selection
     //
     if (metIso < mhtDphiMin_)
