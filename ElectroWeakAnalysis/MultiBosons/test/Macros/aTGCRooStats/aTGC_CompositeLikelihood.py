@@ -7,8 +7,8 @@ import ROOT
 
 def main(options,args):
 
-    h3Max = float(options.h3Max)
-    h4Max = float(options.h4Max)
+    par1Max = float(options.par1Max)
+    par2Max = float(options.par2Max)
 
     output = ROOT.TFile.Open(options.workspaceName+".root","RECREATE")
 
@@ -17,8 +17,8 @@ def main(options,args):
     workspaces=[]
     NLLs = []
 
-    h3 = ROOT.RooRealVar(options.couplingType+'_h3','h3',0,-h3Max,h3Max)
-    h4 = ROOT.RooRealVar(options.couplingType+'_h4','h4',0,-h4Max,h4Max)
+    par1 = ROOT.RooRealVar(options.couplingType+'_'+options.par1Name,options.par1Name,0,-par1Max,par1Max)
+    par2 = ROOT.RooRealVar(options.couplingType+'_'+options.par2Name,options.par2Name,0,-par2Max,par2Max)
     
     for arg in args:
         thefile = ROOT.TFile.Open(arg)
@@ -30,11 +30,11 @@ def main(options,args):
         #ws.var('err_x_gl').setConstant(False)
         #ws.var('err_x_gb').setConstant(False)
 
-        #change workspace h3,h4 to point at the ones here
+        #change workspace par1,par2 to point at the ones here
         getattr(combinedWorkspace,'import')(ws.function('nll_TopLevelPdf_aTGCDataUnitWeight_with_constr'),
                                             ROOT.RooFit.RenameAllNodes(ws.GetName()),
                                             ROOT.RooFit.RenameAllVariablesExcept(ws.GetName(),
-                                                                                 h3.GetName()+','+h4.GetName())
+                                                                                 par1.GetName()+','+par2.GetName())
                                             )
         
         NLLs.append('nll_TopLevelPdf_aTGCDataUnitWeight_with_constr_'+ws.GetName())
@@ -64,7 +64,7 @@ def main(options,args):
     minuit.migrad()
     minuit.hesse()
 
-    profileLL = combinedWorkspace.function('combinedNLL').createProfile(ROOT.RooArgSet(h3,h4))
+    profileLL = combinedWorkspace.function('combinedNLL').createProfile(ROOT.RooArgSet(par1,par2))
     profileLL.getVal() # to cache the values of the constrained params
     
     level_68 = ROOT.TMath.ChisquareQuantile(.68,2)/2.0 # delta NLL for 68% confidence level for -log(LR)
@@ -86,16 +86,16 @@ def main(options,args):
     #    combinedWorkspace.var('err_x_gl_'+ws.GetName()).setConstant(True)
     #    combinedWorkspace.var('err_x_gs_'+ws.GetName()).setConstant(True)
     #    combinedWorkspace.var('err_x_gb_'+ws.GetName()).setConstant(True)    
-    profMinuit.minos(ROOT.RooArgSet(fArgs.find(h3.GetName()),
-                                    fArgs.find(h4.GetName())))    
+    profMinuit.minos(ROOT.RooArgSet(fArgs.find(par1.GetName()),
+                                    fArgs.find(par2.GetName())))    
     
-    thePlot = profMinuit.contour(fArgs.find(h3.GetName()),
-                                 fArgs.find(h4.GetName()),
+    thePlot = profMinuit.contour(fArgs.find(par1.GetName()),
+                                 fArgs.find(par2.GetName()),
                                  sqrt(2*level_68),sqrt(2*level_95))
     
     theCanvas = ROOT.TCanvas('contours','',500,500)
     
-    thePlot.SetTitle("68% & 95% CL on the Best Fit Values of h3 and h4")
+    thePlot.SetTitle('68% & 95% CL on the Best Fit Values of '+options.par1Name+' and '+options.par2Name)
     thePlot.Draw()
     
     theCanvas.Print(options.workspaceName+'contour.root')
@@ -113,12 +113,14 @@ def makePlots(LLInterval,options):
 
 if __name__ == "__main__":
     parser = OptionParser(description="%prog : Calculates the composite likelihood of various aTGC measurements.",
-                          usage="%prog <workspace1>.root <workspace2>.root ...  --couplingType=... --h3Max=# --h4Max=#")
+                          usage="%prog <workspace1>.root <workspace2>.root ...  --couplingType=... --par1Max=# --par2Max=#")
     #    parser.add_option("--POI",dest="POIlist",help="The names of the parameters of interest")
     parser.add_option("--workspaceName",dest="workspaceName",help="name of the combined workspace")
     parser.add_option("--couplingType",dest="couplingType",help="ZZg or Zgg couplings?")
-    parser.add_option("--h3Max",dest="h3Max",help="Bound on |h3|")
-    parser.add_option("--h4Max",dest="h4Max",help="Bound on |h4|")
+    parser.add_option("--par1Name",dest="par1Name",help="Name of parameter 1")
+    parser.add_option("--par1Max",dest="par1Max",help="Bound on |par1|")
+    parser.add_option("--par2Name",dest="par2Name",help="Name of parameter 2")
+    parser.add_option("--par2Max",dest="par2Max",help="Bound on |par2|")
    
     (options,args) = parser.parse_args()
 
@@ -133,11 +135,17 @@ if __name__ == "__main__":
     if options.couplingType is None:
         print 'Need to specify --couplingType (ZZg or Zgg)'
         miss_options=True
-    if options.h3Max is None:
-        print 'Need to specify --h3Max'
+    if options.par1Max is None:
+        print 'Need to specify --par1Max'
         miss_options=True
-    if options.h4Max is None:
-        print 'Need to specify --h4Max'
+    if options.par2Max is None:
+        print 'Need to specify --par2Max'
+        miss_options=True
+    if options.par1Name is None:
+        print 'Need to specify --par1Name'
+        miss_options=True
+    if options.par2Name is None:
+        print 'Need to specify --par2Name'
         miss_options=True
 
     if len(args) == 0:
