@@ -135,7 +135,8 @@ process.cleanPatTaus.preselection = cms.string('')
 from PhysicsTools.PatAlgos.tools.jetTools import *
 
 # uncomment to replace caloJets by pfJets
-switchJetCollection(process, jetCollection = cms.InputTag("ak5PFJets"), doBTagging = True, outputModule = '')
+switchJetCollection(process, jetCollection = cms.InputTag("ak5PFJets"),
+                    doBTagging = True, outputModule = '')
 #--------------------------------------------------------------------------------
 
 #--------------------------------------------------------------------------------
@@ -176,8 +177,11 @@ cut_values = {
     }
 }
 
+cut_values['loose_tauID'] = copy.deepcopy(cut_values['normal'])
+cut_values['loose_tauID']['tanc'] = cut_values['loose']['tanc']
+
 # Loose cuts
-cuts = cut_values['normal']
+cuts = cut_values['loose_tauID']
 # Normal cuts
 #cuts = cut_values['normal']
 
