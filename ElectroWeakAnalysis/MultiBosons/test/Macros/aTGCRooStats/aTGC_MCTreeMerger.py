@@ -8,13 +8,10 @@ def main(options,args):
 
     out = ROOT.TFile.Open(options.output,'RECREATE')
 
-    ROOT.gROOT.ProcessLine(
-        'struct TreeContents {\
-        Float_t '+options.obsVar+';\
-        Float_t '+options.par1Name+'_grid;\
-        Float_t '+options.par2Name+'_grid;\
-        Double_t weight;\
-        }')
+    ROOT.gROOT.ProcessLine('struct TreeContents { Float_t '+
+                           options.obsVar+'; Float_t '+
+                           options.par1Name+'_grid; Float_t '+
+                           options.par2Name+'_grid; Double_t weight;}')
 
     treecontents = ROOT.TreeContents()
 

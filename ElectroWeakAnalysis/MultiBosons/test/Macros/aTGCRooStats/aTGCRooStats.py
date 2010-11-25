@@ -83,10 +83,10 @@ def main(options,args):
 
     theCanvas = ROOT.TCanvas('contours','',500,500)
     
-    thePlot.SetTitle("68% & 95% CL on the Best Fit Values of h3 and h4")
+    thePlot.SetTitle('68% & 95% CL on the Best Fit Values of '+options.par1Name+' and '+options.par2Name)
     thePlot.Draw()
 
-    theCanvas.Print(options.workspaceName+'contour.root')
+    theCanvas.Print(options.workspaceName+'_contour.root')
     
     #theLHInterval = ROOT.RooStats.LikelihoodInterval('profLikelihoodInterval',
     #                                                 profileLL,
@@ -392,19 +392,36 @@ def loadBackgroundHist(ws,output,options):
     nObsBins = int(options.nObsBins)
     obsMin = float(options.obsMin)
     obsMax = float(options.obsMax)
+    binSize = (obsMax-obsMin)/nObsBins
     
     bkgFile = ROOT.TFile.Open(options.bkgFile)
     bkgData = None 
 
     if isinstance(bkgFile.Get(options.treeName),ROOT.TH1F):
         print 'Background Data Given as TH1F!'
-        bkgHist = bkgFile.Get(options.treeName)
-                
-        if bkgHist.GetNBins() != nObsBins:
-            print 'Number of bins in background file is not correct!'
-            exit(1)
+        inpHist = bkgFile.Get(options.treeName)
 
         output.cd()
+        
+        bkgHist = ROOT.TH1F('bkgHist','Background Shape',nObsBins,obsMin,obsMax)
+
+        for bin in range(inpHist.GetNbinsX()):
+            if bkgHist.GetBinWidth(bin+1) != binSize:
+                print 'Bin sizes not the same!!'
+                exit(1)
+            
+            if not bin+1 > inpHist.GetNbinsX():
+                bkgHist.SetBinContent(bin+1,inpHist.GetBinContent(bin+1))
+                bkgHist.SetBinError(bin+1,inpHist.GetBinError(bin+1))
+            else:
+                total = bkgHist.GetBinContent(bkgHist.GetNbinsX()) + inpHist.GetBinContent(bin+1)
+                tot_err = sqrt(bkgHist.GetBinError(bkgHist.GetNbinsX())**2 + inpHist.GetBinError(bin+1)**2)
+                bkgHist.SetBinContent(bkgHist.GetNbinsX(),total)
+                bkgHist.SetBinError(bkgHist.GetNbinsX(),tot_err)
+        
+        
+
+        bkgHist.Write()
 
         getattr(ws,'import')(bkgHist)
 
