@@ -9,7 +9,7 @@
 #include "DataFormats/TauReco/interface/CaloTau.h"
 #include "DataFormats/TauReco/interface/PFTau.h"
 
-#include "DataFormats/Common/interface/ValueMap.h" 
+#include "DataFormats/Common/interface/ValueMap.h"
 #include "DataFormats/PatCandidates/interface/LookupTableRecord.h"
 
 typedef edm::ValueMap<pat::LookupTableRecord> LookupTableMap;
@@ -28,8 +28,8 @@ FakeRateJetWeightProducer::~FakeRateJetWeightProducer()
 //--- nothing to be done yet...
 }
 
-void FakeRateJetWeightProducer::produce(edm::Event& evt, const edm::EventSetup&) 
-{ 
+void FakeRateJetWeightProducer::produce(edm::Event& evt, const edm::EventSetup&)
+{
   if ( gVerbosity_ ) std::cout << "<FakeRateJetWeightProducer::produce>:" << std::endl;
 
   if ( cfgError_ ) return;
@@ -52,24 +52,25 @@ void FakeRateJetWeightProducer::produce(edm::Event& evt, const edm::EventSetup&)
 
       double tauJetIdEff = 1.;
       double qcdJetFakeRate = 1.;
-    
+
       bool tauJetDiscr_passed = true;
-    
+
       getTauJetProperties(evt, tauJetRef, iTauJet, preselTauJets, frTypeEntry->second, tauJetIdEff, qcdJetFakeRate, tauJetDiscr_passed);
-    
+
       double fakeRateJetWeight = getFakeRateJetWeight(tauJetIdEff, qcdJetFakeRate, tauJetDiscr_passed, tauJetRef.get());
-      if ( gVerbosity_ ) 
-	std::cout << " Pt = " << tauJetRef->pt() << ", eta = " << tauJetRef->eta() << ", phi = " << tauJetRef->phi() << ","
-		  << " jet-radius = " << getJetRadius(*tauJetRef) << ":" << " jet weight = " << fakeRateJetWeight << std::endl;
-      
+
+      if ( gVerbosity_ )
+        std::cout << " Pt = " << tauJetRef->pt() << ", eta = " << tauJetRef->eta() << ", phi = " << tauJetRef->phi() << ","
+            << " jet-radius = " << getJetRadius(*tauJetRef) << ":" << " jet weight = " << fakeRateJetWeight << std::endl;
+
       fakeRateJetWeights.push_back(pat::LookupTableRecord(fakeRateJetWeight));
     }
-    
+
     std::auto_ptr<LookupTableMap> fakeRateJetWeightMap(new LookupTableMap());
     LookupTableMap::Filler valueMapFiller(*fakeRateJetWeightMap);
     valueMapFiller.insert(allTauJets, fakeRateJetWeights.begin(), fakeRateJetWeights.end());
     valueMapFiller.fill();
-  
+
     evt.put(fakeRateJetWeightMap, frTypeEntry->first);
   }
 }
