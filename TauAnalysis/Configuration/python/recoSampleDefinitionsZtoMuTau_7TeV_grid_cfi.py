@@ -14,7 +14,7 @@ SAMPLES_TO_ANALYZE = [
     'Zmumu',
     #'InclusivePPmuX',
     'PPmuXptGt20Mu10', 'PPmuXptGt20Mu15',
-    ##'WplusJets',
+    'WplusJets',
     'Wenu', 'Wmunu', 'Wtaunu',
     'TTplusJets'
 ]
@@ -256,16 +256,16 @@ RECO_SAMPLES = {
         'enableFakeRates' : True,
     },
     # CV: /WJetsToLNu_TuneZ2_7TeV-madgraph-tauola/Fall10-START38_V12-v1/GEN-SIM-RECO (32500000) events not ready yet
-    ##'WplusJets' : {
-    ##    'datasetpath' : "/WJets-madgraph/akalinow-SkimTauTau_356_pass1-0a3d3891f015a95324f94837322fb8aa-muTauSkim/USER",
-    ##    'events_processed' : 9008895,
-    ##    'skim_eff' : 0.260,
-    ##    'x_sec' : 1.28*24170*_picobarns, # W + jets correction factor for NLO/LO cross-sections = 1.28
-    ##    'legendEntry' : plotter.process_WplusJets.config_dqmHistPlotter.legendEntry.value(),
-    ##    'type' : plotter.process_WplusJets.config_dqmHistPlotter.type.value(),
-    ##    'drawOption' : styles.drawOption_WplusJets,
-    ##    'applyMuonTriggerEfficiencyCorrection' : True
-    ##},
+    'WplusJets' : {
+       'datasetpath' : "/WJets-madgraph/akalinow-SkimTauTau_356_pass1-0a3d3891f015a95324f94837322fb8aa-muTauSkim/USER",
+       'events_processed' : 9008895,
+       'skim_eff' : 0.260,
+       'x_sec' : 1.28*24170*_picobarns, # W + jets correction factor for NLO/LO cross-sections = 1.28
+       'legendEntry' : plotter.process_WplusJets.config_dqmHistPlotter.legendEntry.value(),
+       'type' : plotter.process_WplusJets.config_dqmHistPlotter.type.value(),
+       'drawOption' : styles.drawOption_WplusJets,
+       'applyMuonTriggerEfficiencyCorrection' : True
+    },
     'Wenu' : {
         'datasetpath' : "/WToENu_TuneZ2_7TeV-pythia6/Fall10-E7TeV_ProbDist_2010Data_BX156_START38_V12-v1/GEN-SIM-RECO",
         'events_processed' : 5021834,
@@ -347,7 +347,7 @@ MERGE_SAMPLES = {
         'type' : plotter.process_PPmuXptGt20.config_dqmHistPlotter.type.value(),
         'drawOption' : styles.drawOption_QCD
     },
-    'WplusJets' : {
+    'WplusJetsSum' : {
         'samples' : [
             'Wenu',
             'Wmunu',
