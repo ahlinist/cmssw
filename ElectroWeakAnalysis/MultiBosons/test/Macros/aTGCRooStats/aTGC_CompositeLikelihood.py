@@ -98,7 +98,7 @@ def main(options,args):
     thePlot.SetTitle('68% & 95% CL on the Best Fit Values of '+options.par1Name+' and '+options.par2Name)
     thePlot.Draw()
     
-    theCanvas.Print(options.workspaceName+'contour.root')
+    theCanvas.Print(options.workspaceName+'_contour.root')
 
     output.cd()
     combinedWorkspace.Write()
