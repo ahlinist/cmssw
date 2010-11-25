@@ -30,22 +30,22 @@ SAMPLES_TO_ANALYZE.extend([
 # List of samples to include in the final level plots.  May include selections
 # from the MERGE_SAMPLES defined at the bottom.
 SAMPLES_TO_PLOT = [
-    #'data',
+    'data',
     ##'A90Sum',
     #'A100Sum',
-    ##'A120Sum',
+    'A120Sum',
     #'A130Sum',
     ##'A140Sum',
     ##'A160Sum',
-    #'A180Sum',
+    'A180Sum',
     ##'A200Sum',
     ##'A300Sum',
-    #'qcdSum',
-    #'WplusJets',
-    ##'TTplusJets',
-    #'Zmumu',
-    ##'Ztautau'
-    #'ZtautauPU156bx',
+    'qcdSum',
+    'WplusJets',
+    #'TTplusJets',
+    'Zmumu',
+    #'Ztautau'
+    'ZtautauPU156bx',
 ]
 
 SAMPLES_TO_PRINT = copy.copy(SAMPLES_TO_PLOT)
@@ -56,8 +56,8 @@ SAMPLES_TO_PRINT = copy.copy(SAMPLES_TO_PLOT)
 #SAMPLES_TO_PRINT.append('A140Sum')
 #SAMPLES_TO_PRINT.append('A160Sum')
 #SAMPLES_TO_PRINT.append('A180Sum')
-SAMPLES_TO_PRINT.append('A200Sum')
-SAMPLES_TO_PRINT.append('A250Sum')
+#SAMPLES_TO_PRINT.append('A200Sum')
+#SAMPLES_TO_PRINT.append('A250Sum')
 #SAMPLES_TO_PRINT.append('A250Sum')
 #SAMPLES_TO_PRINT.append('A350Sum')
 #SAMPLES_TO_PRINT.append('smBgSum')
@@ -89,7 +89,7 @@ SAMPLE_DEFAULTS = ZtoMuTau.SAMPLE_DEFAULTS
 _femtobarns = 1.0e-3
 
 RECO_SAMPLES = copy.deepcopy(ZtoMuTau.RECO_SAMPLES)
-AHtoMuTauSpecific_RECO_SAMPLES = {    
+AHtoMuTauSpecific_RECO_SAMPLES = {
     'A90' : {
         # Not skimmed
         'datasetpath' : "/SUSYGluGluToHToTauTau_M-90_7TeV-pythia6-tauola/Fall10-E7TeV_ProbDist_2010Data_BX156_START38_V12-v1/GEN-SIM-RECO",
