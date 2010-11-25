@@ -107,7 +107,9 @@ AHtoMuTauSpecific_RECO_SAMPLES = {
         'applyZrecoilCorrection' : True,
         'applyMuonTriggerEfficiencyCorrection' : True,
         'applyVertexMultiplicityReweighting' : True,
-        'enableSysUncertainties' : True
+        'enableSysUncertainties' : True,
+        'hlt' : cms.InputTag("TriggerResults", "", "REDIGI38XPU")
+
     },
     'bbA90' : {
         # Not skimmed
@@ -126,7 +128,8 @@ AHtoMuTauSpecific_RECO_SAMPLES = {
         'applyZrecoilCorrection' : True,
         'applyMuonTriggerEfficiencyCorrection' : True,
         'applyVertexMultiplicityReweighting' : True,
-        'enableSysUncertainties' : True
+        'enableSysUncertainties' : True,
+        'hlt' : cms.InputTag("TriggerResults", "", "REDIGI38XPU")
     },
     'A100' : {
         # Not skimmed
@@ -145,7 +148,8 @@ AHtoMuTauSpecific_RECO_SAMPLES = {
         'applyZrecoilCorrection' : True,
         'applyMuonTriggerEfficiencyCorrection' : True,
         'applyVertexMultiplicityReweighting' : True,
-        'enableSysUncertainties' : True
+        'enableSysUncertainties' : True,
+        'hlt' : cms.InputTag("TriggerResults", "", "REDIGI38XPU")
     },
     'bbA100' : {
         # Not skimmed
@@ -164,7 +168,8 @@ AHtoMuTauSpecific_RECO_SAMPLES = {
         'applyZrecoilCorrection' : True,
         'applyMuonTriggerEfficiencyCorrection' : True,
         'applyVertexMultiplicityReweighting' : True,
-        'enableSysUncertainties' : True
+        'enableSysUncertainties' : True,
+        'hlt' : cms.InputTag("TriggerResults", "", "REDIGI38XPU")
     },
     'A120' : {
         # Not skimmed
@@ -184,7 +189,8 @@ AHtoMuTauSpecific_RECO_SAMPLES = {
         'applyZrecoilCorrection' : True,
         'applyMuonTriggerEfficiencyCorrection' : True,
         'applyVertexMultiplicityReweighting' : True,
-        'enableSysUncertainties' : True
+        'enableSysUncertainties' : True,
+        'hlt' : cms.InputTag("TriggerResults", "", "REDIGI38XPU")
     },
     'bbA120' : {
         # Not skimmed
@@ -204,7 +210,8 @@ AHtoMuTauSpecific_RECO_SAMPLES = {
         'applyZrecoilCorrection' : True,
         'applyMuonTriggerEfficiencyCorrection' : True,
         'applyVertexMultiplicityReweighting' : True,
-        'enableSysUncertainties' : True
+        'enableSysUncertainties' : True,
+        'hlt' : cms.InputTag("TriggerResults", "", "REDIGI38XPU")
     },
     'A130' : {
         # Not skimmed
@@ -224,7 +231,8 @@ AHtoMuTauSpecific_RECO_SAMPLES = {
         'applyZrecoilCorrection' : True,
         'applyMuonTriggerEfficiencyCorrection' : True,
         'applyVertexMultiplicityReweighting' : True,
-        'enableSysUncertainties' : True
+        'enableSysUncertainties' : True,
+        'hlt' : cms.InputTag("TriggerResults", "", "REDIGI38XPU")
     },
     'bbA130' : {
         # Not skimmed
@@ -244,7 +252,8 @@ AHtoMuTauSpecific_RECO_SAMPLES = {
         'applyZrecoilCorrection' : True,
         'applyMuonTriggerEfficiencyCorrection' : True,
         'applyVertexMultiplicityReweighting' : True,
-        'enableSysUncertainties' : True
+        'enableSysUncertainties' : True,
+        'hlt' : cms.InputTag("TriggerResults", "", "REDIGI38XPU")
     },
     'A140' : {
         # Not skimmed
@@ -264,7 +273,8 @@ AHtoMuTauSpecific_RECO_SAMPLES = {
         'applyZrecoilCorrection' : True,
         'applyMuonTriggerEfficiencyCorrection' : True,
         'applyVertexMultiplicityReweighting' : True,
-        'enableSysUncertainties' : True
+        'enableSysUncertainties' : True,
+        'hlt' : cms.InputTag("TriggerResults", "", "REDIGI38XPU")
     },
     'bbA140' : {
         # Not skimmed
@@ -284,7 +294,8 @@ AHtoMuTauSpecific_RECO_SAMPLES = {
         'applyZrecoilCorrection' : True,
         'applyMuonTriggerEfficiencyCorrection' : True,
         'applyVertexMultiplicityReweighting' : True,
-        'enableSysUncertainties' : True
+        'enableSysUncertainties' : True,
+        'hlt' : cms.InputTag("TriggerResults", "", "REDIGI38XPU")
     },
     'A160' : {
         # Not skimmed
@@ -303,7 +314,8 @@ AHtoMuTauSpecific_RECO_SAMPLES = {
         'applyZrecoilCorrection' : True,
         'applyMuonTriggerEfficiencyCorrection' : True,
         'applyVertexMultiplicityReweighting' : True,
-        'enableSysUncertainties' : True
+        'enableSysUncertainties' : True,
+        'hlt' : cms.InputTag("TriggerResults", "", "REDIGI38XPU")
     },
     'bbA160' : {
         # Not skimmed
@@ -322,7 +334,8 @@ AHtoMuTauSpecific_RECO_SAMPLES = {
         'applyZrecoilCorrection' : True,
         'applyMuonTriggerEfficiencyCorrection' : True,
         'applyVertexMultiplicityReweighting' : True,
-        'enableSysUncertainties' : True
+        'enableSysUncertainties' : True,
+        'hlt' : cms.InputTag("TriggerResults", "", "REDIGI38XPU")
     },
     'A180' : {
         # Not skimmed
@@ -341,7 +354,8 @@ AHtoMuTauSpecific_RECO_SAMPLES = {
         'applyZrecoilCorrection' : True,
         'applyMuonTriggerEfficiencyCorrection' : True,
         'applyVertexMultiplicityReweighting' : True,
-        'enableSysUncertainties' : True
+        'enableSysUncertainties' : True,
+        'hlt' : cms.InputTag("TriggerResults", "", "REDIGI38XPU")
     },
     'bbA180' : {
         # Not skimmed
@@ -360,7 +374,8 @@ AHtoMuTauSpecific_RECO_SAMPLES = {
         'applyZrecoilCorrection' : True,
         'applyMuonTriggerEfficiencyCorrection' : True,
         'applyVertexMultiplicityReweighting' : True,
-        'enableSysUncertainties' : True
+        'enableSysUncertainties' : True,
+        'hlt' : cms.InputTag("TriggerResults", "", "REDIGI38XPU")
     },
     'A200' : {
         # Not skimmed
@@ -379,7 +394,8 @@ AHtoMuTauSpecific_RECO_SAMPLES = {
         'applyZrecoilCorrection' : True,
         'applyMuonTriggerEfficiencyCorrection' : True,
         'applyVertexMultiplicityReweighting' : True,
-        'enableSysUncertainties' : True
+        'enableSysUncertainties' : True,
+        'hlt' : cms.InputTag("TriggerResults", "", "REDIGI38XPU")
     },
     'bbA200' : {
         # Not skimmed
@@ -398,7 +414,8 @@ AHtoMuTauSpecific_RECO_SAMPLES = {
         'applyZrecoilCorrection' : True,
         'applyMuonTriggerEfficiencyCorrection' : True,
         'applyVertexMultiplicityReweighting' : True,
-        'enableSysUncertainties' : True
+        'enableSysUncertainties' : True,
+        'hlt' : cms.InputTag("TriggerResults", "", "REDIGI38XPU")
     },
     'A250' : {
         # Not skimmed
@@ -417,7 +434,8 @@ AHtoMuTauSpecific_RECO_SAMPLES = {
         'applyZrecoilCorrection' : True,
         'applyMuonTriggerEfficiencyCorrection' : True,
         'applyVertexMultiplicityReweighting' : True,
-        'enableSysUncertainties' : True
+        'enableSysUncertainties' : True,
+        'hlt' : cms.InputTag("TriggerResults", "", "REDIGI38XPU")
     },
     'bbA250' : {
         # Not skimmed
@@ -436,7 +454,8 @@ AHtoMuTauSpecific_RECO_SAMPLES = {
         'applyZrecoilCorrection' : True,
         'applyMuonTriggerEfficiencyCorrection' : True,
         'applyVertexMultiplicityReweighting' : True,
-        'enableSysUncertainties' : True
+        'enableSysUncertainties' : True,
+        'hlt' : cms.InputTag("TriggerResults", "", "REDIGI38XPU")
     },
     'A300' : {
         # Not skimmed
@@ -455,7 +474,8 @@ AHtoMuTauSpecific_RECO_SAMPLES = {
         'applyZrecoilCorrection' : True,
         'applyMuonTriggerEfficiencyCorrection' : True,
         'applyVertexMultiplicityReweighting' : True,
-        'enableSysUncertainties' : True
+        'enableSysUncertainties' : True,
+        'hlt' : cms.InputTag("TriggerResults", "", "REDIGI38XPU")
     },
     'bbA300' : {
         # Not skimmed
@@ -474,7 +494,8 @@ AHtoMuTauSpecific_RECO_SAMPLES = {
         'applyZrecoilCorrection' : True,
         'applyMuonTriggerEfficiencyCorrection' : True,
         'applyVertexMultiplicityReweighting' : True,
-        'enableSysUncertainties' : True
+        'enableSysUncertainties' : True,
+        'hlt' : cms.InputTag("TriggerResults", "", "REDIGI38XPU")
     },
     'A350' : {
         # Not skimmed
@@ -493,7 +514,8 @@ AHtoMuTauSpecific_RECO_SAMPLES = {
         'applyZrecoilCorrection' : True,
         'applyMuonTriggerEfficiencyCorrection' : True,
         'applyVertexMultiplicityReweighting' : True,
-        'enableSysUncertainties' : True
+        'enableSysUncertainties' : True,
+        'hlt' : cms.InputTag("TriggerResults", "", "REDIGI38XPU")
     },
     'bbA350' : {
         # Not skimmed
@@ -512,7 +534,8 @@ AHtoMuTauSpecific_RECO_SAMPLES = {
         'applyZrecoilCorrection' : True,
         'applyMuonTriggerEfficiencyCorrection' : True,
         'applyVertexMultiplicityReweighting' : True,
-        'enableSysUncertainties' : True
+        'enableSysUncertainties' : True,
+        'hlt' : cms.InputTag("TriggerResults", "", "REDIGI38XPU")
     }
 }
 RECO_SAMPLES.update(AHtoMuTauSpecific_RECO_SAMPLES)
