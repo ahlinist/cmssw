@@ -35,6 +35,9 @@ LeptonVetoSelector::LeptonVetoSelector(const edm::ParameterSet& pset) :
    defineVariable("nElectrons");
    defineVariable("nMuons");
    //  defineVariable("nTaus");
+   defineVariable("bestIsoElec");
+   defineVariable("bestIsoMuon");
+
 
 }
 
@@ -62,6 +65,10 @@ bool LeptonVetoSelector::select(const edm::Event& event) const {
   resetVariables();
 
   int nElectrons = 0, nMuons = 0, nTaus = 0; // Counters
+
+  double currIso = 0.;
+  double bestIsoElec = 10.;
+  double bestIsoMuon = 10.;
 
   //
   // electrons
@@ -92,40 +99,41 @@ bool LeptonVetoSelector::select(const edm::Event& event) const {
     if (abs(ie->vz() - myPosition.z()) > 1)     
       continue;
 
-
+ 
     //PF only:
     if(ie->pfCandidateRef().isNonnull() )
       {
-	double Iso = 0;
 
 	for(int i =4; i<7; ++i)
 	  {
 	    const pat::IsoDeposit* Idep = ie->isoDeposit((pat::IsolationKeys)(i));   //only 4,5 and 6 filled
 	    if(Idep)                                                                 //charged,neutral and Photon candidates
-	      Iso += Idep->depositWithin(0.3)/ie->pt();
+	      currIso += Idep->depositWithin(0.3)/ie->pt();
 	    else{
 	      std::cout<<"Isolation Key: "<<i<<" not found"<<std::endl;
 	      continue;
 	    }
 	  }
-	if(Iso > eleIsoPF_) continue;
+	if(currIso > eleIsoPF_) continue;
 
+      } else {
 
-	LogDebug("LeptonVetoSelector") << "Isolated electron found";
-	++nElectrons;
-	continue;
-      }
-    
-    //reco only:
+      //reco only:
+      if( ie->isEB() ) currIso = ( ie->dr03TkSumPt() + std::max(0., ie->dr03EcalRecHitSumEt() - 1.) + ie->dr03HcalTowerSumEt() ) / ie->p4().Pt();
+      else             currIso = ( ie->dr03TkSumPt() + ie->dr03EcalRecHitSumEt() + ie->dr03HcalTowerSumEt() ) / ie->p4().Pt();
 
-    if((ie->isEB() &&(( ie->dr03TkSumPt() + std::max(0., ie->dr03EcalRecHitSumEt() - 1.) + ie->dr03HcalTowerSumEt() ) / ie->p4().Pt() > eleIso_)) || ( ! ie->isEB() && ( ie->dr03TkSumPt() + ie->dr03EcalRecHitSumEt() + ie->dr03HcalTowerSumEt() ) / ie->p4().Pt() > eleIso_))   
-      continue;
+      if(currIso < bestIsoElec) bestIsoElec = currIso;
+
+      if( currIso > eleIso_ ) continue;
+    }
+  
 
     LogDebug("LeptonVetoSelector") << "Isolated electron found";
     ++nElectrons;
   }
       
   setVariable("nElectrons", nElectrons);
+  setVariable("bestIsoElec", bestIsoElec);
 
   //
   // muons
@@ -159,69 +167,36 @@ bool LeptonVetoSelector::select(const edm::Event& event) const {
     //only PF
     if(im->pfCandidateRef().isNonnull())
       {
-	double Iso = 0;
 
 	for(int i =4; i<7; ++i)
 	  {
 	    const pat::IsoDeposit* Idep = im->isoDeposit((pat::IsolationKeys)(i));
 	    if(Idep)
-	      Iso += Idep->depositWithin(0.3)/im->pt();
+	      currIso += Idep->depositWithin(0.3)/im->pt();
 	    else
 	      {
 		std::cout<<"Isolation Key: "<<i<<" not found"<<std::endl;
 		continue;
 	      }
 	  }
-	if(Iso > muonIsoPF_) continue;
+	if(currIso > muonIsoPF_) continue;
 
-	LogDebug("LeptonVetoSelector") << "Isolated muon found";
-	++nMuons;
+      } else {
+      //only Reco:
+      currIso = (im->trackIso() + im->ecalIso() + im->hcalIso()) / im->pt();
+      if(currIso < bestIsoMuon) bestIsoMuon = currIso;
 
+      if (currIso > muonIso_)
 	continue;
-      }
-    
-    //only Reco:
-    if ((im->trackIso() + im->ecalIso() + im->hcalIso()) / im->pt() > muonIso_)
-      continue;
-
-
-    //       std::cout << "PAT muon"<<std::endl;
-    //       std::cout << "eta: "<<      im->eta()<<std::endl;
-    //       std::cout << "pt: "<< im->pt()<<std::endl;
-    //       std::cout << "GlobalMuonPromptTight? " << im->isGood(reco::Muon::GlobalMuonPromptTight) <<std::endl;
-    //       std::cout << "GlobalMuon? " << im->isGlobalMuon() <<std::endl;
-    //       std::cout << "Chi2: "<< im->combinedMuon()->normalizedChi2()<<std::endl;
-    //       std::cout <<"dxy: "<<im->innerTrack()->dxy()<<std::endl;
-    //       std::cout <<"hits: "<<	 im->innerTrack()->numberOfValidHits()<<std::endl;
-    //       std::cout << "trackIso: "<<im->trackIso()<<std::endl;
-    //       std::cout << "ecalIso: "<<	im->ecalIso()<<std::endl;
-    //       std::cout << "hcalIso: "<<	im->hcalIso()<<std::endl;
-    //       std::cout << "relIso: "<<(im->trackIso()+im->ecalIso()+im->hcalIso())/im->pt()<<std::endl;
-    //       std::cout << "-----------muon end"<<std::endl;
-
+    }
 
     LogDebug("LeptonVetoSelector") << "Isolated muon found";
     ++nMuons;
 
   }
   setVariable("nMuons", nMuons);
-
-  //  //
-  //  // taus
-  //  //
-  //  if ( tauHandle.isValid() )
-  //    for ( std::vector<pat::Tau>::const_iterator it=(*tauHandle).begin();
-  //	  it!=(*tauHandle).end(); ++it ) {
-  //      // Only taus above Et cut
-  //      if ( it->et() > minEtTau_
-  //           && (it->trackIso()+it->et())/it->et() < tauIso_ ) {
-  //        LogDebug("LeptonVetoSelector") << "Isolated tau found";
-  //        ++nTaus;
-  //      }
-  //    }
-  //  setVariable("nTaus",nTaus);
-  //  if((nElectrons +  nMuons + nTaus) > 0)
-  //  std::cout<<"nMuons: "<<nMuons<<"  nElecs: "<<nElectrons<<std::endl;
+  setVariable("bestIsoMuon", bestIsoMuon);
+  
 
   // Selection
   if (!invertVeto_){
