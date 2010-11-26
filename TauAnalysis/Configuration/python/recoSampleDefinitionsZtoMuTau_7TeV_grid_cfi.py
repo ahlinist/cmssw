@@ -277,6 +277,7 @@ RECO_SAMPLES = {
         'drawOption' : styles.drawOption_WplusJets,
         'applyMuonTriggerEfficiencyCorrection' : True,
         'applyVertexMultiplicityReweighting' : True,
+        'SE_black_list' : ['T2_TW_Taiwan'],
         'hlt' : cms.InputTag("TriggerResults", "", "REDIGI38XPU")
     },
     'Wmunu' : {
@@ -289,7 +290,8 @@ RECO_SAMPLES = {
         'drawOption' : styles.drawOption_WplusJets,
         'applyMuonTriggerEfficiencyCorrection' : True,
         'applyVertexMultiplicityReweighting' : True,
-        'hlt' : cms.InputTag("TriggerResults", "", "REDIGI38XPU")
+        'SE_black_list' : ['T2_TW_Taiwan'],
+        'hlt' : cms.InputTag("TriggerResults", "", "REDIGI38XPU"),
     },
     'Wtaunu' : {
         'datasetpath' : "/WToTauNu_TuneZ2_7TeV-pythia6-tauola/Fall10-E7TeV_ProbDist_2010Data_BX156_START38_V12-v1/GEN-SIM-RECO",
@@ -301,7 +303,8 @@ RECO_SAMPLES = {
         'drawOption' : styles.drawOption_WplusJets,
         'applyMuonTriggerEfficiencyCorrection' : True,
         'applyVertexMultiplicityReweighting' : True,
-        'hlt' : cms.InputTag("TriggerResults", "", "REDIGI38XPU")
+        'hlt' : cms.InputTag("TriggerResults", "", "REDIGI38XPU"),
+        'SE_black_list' : ['T2_TW_Taiwan'],
     },
     'TTplusJets' : {
         'datasetpath' : "/TT_TuneZ2_7TeV-pythia6-tauola/Fall10-E7TeV_ProbDist_2010Data_BX156_START38_V12-v1/GEN-SIM-RECO",
