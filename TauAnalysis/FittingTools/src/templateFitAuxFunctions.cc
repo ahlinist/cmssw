@@ -581,6 +581,39 @@ void saveFitParameter(DQMStore& dqmStore, const std::string& dqmDirectory, const
 //-----------------------------------------------------------------------------------------------------------------------
 //
 
+void addHistogram(TH1* histoSum, TH1* histo)
+{
+//--- add histograms with (possibly) different binnings
+//   (resulting e.g. from rebinning one of the histograms, but not the other)
+
+  if ( !(histo->GetDimension() == 1 && histo->GetDimension() == 1) ) {
+    edm::LogError ("addHistogram")
+      << " Only 1d histograms supported so far --> histograms will NOT be added !!";
+    return;
+  }
+  
+  int histoNumBinsX = histo->GetNbinsX();
+  for ( int iBinX = 1; iBinX <= histoNumBinsX; ++iBinX ) {
+    double histoBinContent = histo->GetBinContent(iBinX);
+    double histoBinError = histo->GetBinError(iBinX);
+
+    double binCenterX = histo->GetBinCenter(iBinX);
+
+    int iBinSumX = histoSum->FindBin(binCenterX);
+
+    if ( iBinSumX >= 1 && iBinSumX <= histoSum->GetNbinsX() ) {
+      double histoSumBinContent = histoSum->GetBinContent(iBinSumX);
+      double histoSumBinError = histoSum->GetBinError(iBinSumX);
+
+      histoSumBinContent += histoBinContent;
+      double histoSumBinError2 = (histoSumBinError*histoSumBinError + histoBinError*histoBinError);
+
+      histoSum->SetBinContent(iBinSumX, histoSumBinContent);
+      histoSum->SetBinError(iBinSumX, TMath::Sqrt(histoSumBinError2));
+    }
+  }
+}
+
 void makeControlPlot1dObsDistribution(const std::vector<std::string>& processNames, 
 				      const histogramPtrCollection& fittedTemplateHistograms, 
 				      const std::vector<double>& normalizations, 
@@ -631,7 +664,7 @@ void makeControlPlot1dObsDistribution(const std::vector<std::string>& processNam
       fittedTemplateHistogram_sum->SetLineStyle(1); // solid
       fittedTemplateHistogram_sum->SetLineWidth(fittedTemplateHistogram_cloned->GetLineWidth());
     } else {
-      fittedTemplateHistogram_sum->Add(fittedTemplateHistogram_cloned);
+      addHistogram(fittedTemplateHistogram_sum, fittedTemplateHistogram_cloned);
     }
   }
 
@@ -1013,19 +1046,11 @@ void drawErrorEllipse(double x0, double y0, double errX0, double errY0, double S
   }
 
   TEllipse oneSigmaErrorEllipse(errX0, errY0, sigmaX_transformed*1., sigmaY_transformed*1., 0., 360., alpha*180./TMath::Pi()); 
-  oneSigmaErrorEllipse.SetFillColor(5);
+  oneSigmaErrorEllipse.SetFillColor(396);
   oneSigmaErrorEllipse.SetLineColor(44);
   oneSigmaErrorEllipse.SetLineWidth(1);
   TEllipse twoSigmaErrorEllipse(errX0, errY0, sigmaX_transformed*2., sigmaY_transformed*2., 0., 360., alpha*180./TMath::Pi()); 
-  TSeqCollection* colors = gROOT->GetListOfColors();
-  if ( colors && colors->At(42) ) {
-    TColor* orange = (TColor*)colors->At(42);
-    orange->SetRGB(1.00,0.80,0.00);
-  } else {
-    edm::LogWarning ("drawErrorEllipse") 
-      << " Failed to access list of Colors from gROOT object" << " --> skipping definition of Color 'orange' !!";
-  }
-  twoSigmaErrorEllipse.SetFillColor(42);
+  twoSigmaErrorEllipse.SetFillColor(797);
   twoSigmaErrorEllipse.SetLineColor(44);
   twoSigmaErrorEllipse.SetLineWidth(1);
 
