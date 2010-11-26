@@ -63,6 +63,12 @@ SmoothPdfWrapperBase::SmoothPdfWrapperBase(const edm::ParameterSet& cfg)
   title_ = cfg.getParameter<std::string>("title");
   std::cout << " title = " << title_ << std::endl;
 
+  xMin_ = cfg.getParameter<double>("xMin");
+  std::cout << " xMin = " << xMin_ << std::endl;
+  xMax_ = cfg.getParameter<double>("xMax");
+  std::cout << " xMax = " << xMax_ << std::endl;
+
+  fitOptions_.Add(new RooCmdArg(RooFit::Range(xMin_, xMax_)));
   fitOptions_.Add(new RooCmdArg(RooFit::PrintLevel(-1)));
   fitOptions_.Add(new RooCmdArg(RooFit::PrintEvalErrors(false)));
   fitOptions_.Add(new RooCmdArg(RooFit::Warnings(false)));
@@ -74,8 +80,7 @@ SmoothPdfWrapperBase::SmoothPdfWrapperBase(const edm::ParameterSet& cfg)
 
 SmoothPdfWrapperBase::~SmoothPdfWrapperBase()
 {
-  delete pdf_;
-  
+  //delete pdf_; CV: attempt to delete PDF object causes segmentation violation ?!
   delete externalConstraints_;
 }
 
@@ -119,7 +124,7 @@ void SmoothPdfWrapperBase::fit()
     edm::LogError ("fit") << " Uninitialized PDF --> skipping !!";
     return;
   }
-
+  
   pdf_->fitTo(*templateHist_, fitOptions_);
 
   if ( !fitSimultaneously_ ) {

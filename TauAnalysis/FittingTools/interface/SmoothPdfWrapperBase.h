@@ -7,9 +7,9 @@
  * 
  * \author Christian Veelken, UC Davis
  *
- * \version $Revision: 1.3 $
+ * \version $Revision: 1.4 $
  *
- * $Id: SmoothPdfWrapperBase.h,v 1.3 2010/05/27 12:41:20 veelken Exp $
+ * $Id: SmoothPdfWrapperBase.h,v 1.4 2010/06/11 08:56:06 veelken Exp $
  *
  */
 
@@ -101,6 +101,10 @@ class SmoothPdfWrapperBase
 
   // pointer to RooRealVar for "dependent" variable x
   RooRealVar* x_;
+
+  // range of "dependent" variable x for which smoothing fit is performed
+  double xMin_;
+  double xMax_;
 
   // pointer to RooAbsPdf object
   RooAbsPdf* pdf_;
