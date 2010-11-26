@@ -3,15 +3,17 @@
 #include "FWCore/MessageLogger/interface/MessageLogger.h"
 
 SmoothLandau_x_GaussPdfWrapper::SmoothLandau_x_GaussPdfWrapper(const edm::ParameterSet& cfg)
-  : SmoothPdfWrapperBase(cfg)
+  : SmoothPdfWrapperBase(cfg),
+    width_(0),
+    mp_(0),
+    area_(0),
+    gsigma_(0)
 {
   cfgParameter_ = cfg.getParameter<edm::ParameterSet>("parameter");
 }
   
 SmoothLandau_x_GaussPdfWrapper::~SmoothLandau_x_GaussPdfWrapper()
 {
-  delete pdf_;
-
   delete width_;
   delete mp_;
   delete area_;
