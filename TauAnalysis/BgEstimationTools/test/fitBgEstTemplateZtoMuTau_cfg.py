@@ -55,9 +55,9 @@ pureProcessBgEnrichedSelections = {
     'QCDenriched' : 'QCD',
 }
 
-meName_visMass = "DiTauCandidateQuantities/VisMass"
+meName_visMass = "DiTauCandidateQuantities/VisMassRebinned"
 meName_visMass_norm = "DiTauCandidateQuantities/VisMassShape"
-meName_SVfitMass = "DiTauCandidateSVfitQuantities/psKine_MEt_ptBalance/Mass"
+meName_SVfitMass = "DiTauCandidateSVfitQuantities/psKine_MEt_ptBalance/MassRebinned"
 meName_SVfitMass_norm = "DiTauCandidateSVfitQuantities/psKine_MEt_ptBalance/MassShape"
 
 #--------------------------------------------------------------------------------
@@ -68,7 +68,8 @@ meName_SVfitMass_norm = "DiTauCandidateSVfitQuantities/psKine_MEt_ptBalance/Mass
 process.loadAnalysisResultsZtoMuTau = cms.EDAnalyzer("DQMFileLoader",
     Ztautau = cms.PSet(
         inputFileNames = cms.vstring(
-            getHarvestingFilePath('ZtoMuTau_bgEstTemplate') + '/' + 'bgEstTemplateHistZtoMuTau_skimmed.root'
+            ##getHarvestingFilePath('ZtoMuTau_bgEstTemplate') + '/' + 'bgEstTemplateHistZtoMuTau_skimmed.root'
+            '/data1/veelken/CMSSW_3_8_x/plots/ZtoMuTau_bgEstTemplate/2010Nov14/bgEstTemplateHistZtoMuTau_skimmed.root'
         ),
         scaleFactor = cms.double(1.),
         dqmDirectory_store = cms.string('/')
@@ -456,8 +457,8 @@ process.fitZtoMuTau = cms.EDAnalyzer("TemplateHistFitter",
                         # fit Z --> mu+ mu- peak with Voigt function,
                         # the convolution of a Breit-Wigner profile with a Gaussian (smearing)
                         formula = cms.string("TMath::Voigt(@x - x0, gsigma, gamma)"),
-                        xMin = cms.double(80.),
-                        xMax = cms.double(100.),                        
+                        xMin = cms.double(70.),
+                        xMax = cms.double(110.),                        
                         parameter = cms.PSet(
                             x0 = cms.PSet(
                                 initial = cms.double(90.),
@@ -465,14 +466,14 @@ process.fitZtoMuTau = cms.EDAnalyzer("TemplateHistFitter",
                                 max = cms.double(100.)
                             ),
                             gsigma = cms.PSet(
-                                initial = cms.double(2.5),
+                                initial = cms.double(0.1),
                                 min = cms.double(0.),
-                                max = cms.double(10.)
+                                max = cms.double(5.)
                             ),
                             gamma = cms.PSet(
                                 initial = cms.double(2.5),
                                 min = cms.double(0.),
-                                max = cms.double(10.)
+                                max = cms.double(5.)
                             )
                         )
                     )
@@ -600,36 +601,36 @@ process.fitZtoMuTau = cms.EDAnalyzer("TemplateHistFitter",
         # to Monte Carlo expectation multiplied by "k-factors" determined
         # in background enriched samples
         constraints = cms.PSet(
-            ##ZmumuJetMisId = cms.PSet(
-            ##    norm = cms.PSet(
-            ##        value = cms.double(1.*1.),
-            ##        uncertainty = cms.double(5.)
-            ##    )
-            ##),
-            ##ZmumuMuonMisId = cms.PSet(
-            ##    norm = cms.PSet(
-            ##        value = cms.double(1.*2.5),
-            ##        uncertainty = cms.double(5.)
-            ##    )
-            ##),
-            ##WplusJets = cms.PSet(
-            ##    norm = cms.PSet(
-            ##        value = cms.double(1.*25.),
-            ##        uncertainty = cms.double(25.)
-            ##    )
-            ##),
-            ##TTplusJets = cms.PSet(
-            ##    norm = cms.PSet(
-            ##        value = cms.double(1.*2.5),
-            ##        uncertainty = cms.double(5.)
-            ##    )
-            ##),
-            ##QCD = cms.PSet(
-            ##    norm = cms.PSet(
-            ##        value = cms.double(1.*75.),
-            ##        uncertainty = cms.double(37.5)
-            ##    )
-            ##)
+            ZmumuJetMisId = cms.PSet(
+                norm = cms.PSet(
+                    value = cms.double(1.*1.),
+                    uncertainty = cms.double(1.)
+                )
+            ),
+            ZmumuMuonMisId = cms.PSet(
+                norm = cms.PSet(
+                    value = cms.double(1.*2.5),
+                    uncertainty = cms.double(5.)
+                )
+            ),
+            WplusJets = cms.PSet(
+                norm = cms.PSet(
+                    value = cms.double(1.*20.),
+                    uncertainty = cms.double(10.)
+                )
+            ),
+            TTplusJets = cms.PSet(
+                norm = cms.PSet(
+                    value = cms.double(1.*2.5),
+                    uncertainty = cms.double(2.5)
+                )
+            ),
+            QCD = cms.PSet(
+                norm = cms.PSet(
+                    value = cms.double(1.*30.),
+                    uncertainty = cms.double(15.)
+                )
+            )
         ),
         cutUnfittedRegion = cms.bool(False),
         #cutUnfittedRegion = cms.bool(True),
@@ -770,7 +771,7 @@ process.p = cms.Path(
 )
 
 # print-out all python configuration parameter information
-print process.dumpPython()
+#print process.dumpPython()
 
 
   
