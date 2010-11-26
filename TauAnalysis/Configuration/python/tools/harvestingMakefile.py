@@ -97,10 +97,14 @@ def writeMakefileLocalCopy(castor_file, working_dir, makefile):
     makefile.write(rfcp_line)
     return local_path
 
-def copyLocalAndWrite(castor_files, working_dir, makefile):
-    for castor_file in castor_files:
-        castor_file = castor_file.replace('rfio:', '')
-        yield writeMakefileLocalCopy(castor_file, working_dir, makefile)
+def copyLocalAndWrite(files, working_dir, makefile):
+    for file in files:
+        if file.find('rfio') != -1:
+            castor_file = file.replace('rfio:', '')
+            yield writeMakefileLocalCopy(castor_file, working_dir, makefile)
+        else:
+            # It's already local, don't copy it
+            yield file
 
 def writeMakefileCommands(mergeTree, outputFile, makefile):
     for level, layer in enumerate(mergeTree):
@@ -109,7 +113,7 @@ def writeMakefileCommands(mergeTree, outputFile, makefile):
             output_file = job[0]
             input_files = [file for file in job[1]]
             input_files_no_castor = [
-                file for file in input_files if not file.find('castor')!=-1]
+                file for file in input_files if not file.find('castor/cern.ch')!=-1]
             target_line = '%s: %s\n' % (
                 output_file, ' '.join(input_files_no_castor))
             makefile.write(target_line)
