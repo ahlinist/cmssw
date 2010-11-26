@@ -58,12 +58,12 @@ meName_SVfitMass_norm = "DiTauCandidateSVfitQuantities/psKine_MEt_ptBalance/Mass
 
 rebinningBgEnrichedSelections = {
     'ZmumuJetMisIdEnriched' : {
-        'visMass' : 2,
-        'SVfitMass' : 2
-    },
-    'ZmumuMuonMisIdEnriched' : {
         'visMass' : 4,
         'SVfitMass' : 5
+    },
+    'ZmumuMuonMisIdEnriched' : {
+        'visMass' : 1,
+        'SVfitMass' : 1
     },
     'WplusJetsEnriched' : {
         'visMass' : 2,
@@ -102,7 +102,8 @@ process.loadTemplateHistZtoMuTau_Ztautau = cms.EDAnalyzer("DQMFileLoader",
 process.loadTemplateHistZtoMuTau = cms.EDAnalyzer("DQMFileLoader",
     Ztautau = cms.PSet(
         inputFileNames = cms.vstring(
-            getHarvestingFilePath('ZtoMuTau_bgEstTemplate') + '/' + 'plotsZtoMuTau_bgEstTemplate_all.root'
+            ##getHarvestingFilePath('ZtoMuTau_bgEstTemplate') + '/' + 'plotsZtoMuTau_bgEstTemplate_all.root'
+            '/data1/veelken/CMSSW_3_8_x/plots/ZtoMuTau_bgEstTemplate/2010Nov14/plotsZtoMuTau_bgEstTemplate_all.root'
         ),
         scaleFactor = cms.double(1.),
         dqmDirectory_store = cms.string('/template')
@@ -118,7 +119,8 @@ process.loadAnalysisHistZtoMuTau = cms.EDAnalyzer("DQMFileLoader",
     data = cms.PSet(
         inputFileNames = cms.vstring(
             #getHarvestingFilePath('ZtoMuTau') + '/' + 'plotsZtoMuTau_all.root'
-            getHarvestingFilePath('ZtoMuTau_bgEstTemplate') + '/' + 'plotsZtoMuTau_all.root'
+            ##getHarvestingFilePath('ZtoMuTau_bgEstTemplate') + '/' + 'plotsZtoMuTau_all.root'
+            '/data1/veelken/CMSSW_3_8_x/plots/ZtoMuTau_bgEstTemplate/2010Nov14/plotsZtoMuTau_all.root'
         ),
         scaleFactor = cms.double(1.),
         dqmDirectory_store = cms.string('/analysis')
@@ -517,7 +519,8 @@ process.plotAnalysisHistZtoMuTauMC = plotHistZtoMuTau.clone(
 
 process.saveBgEstTemplateHistZtoMuTau = cms.EDAnalyzer("DQMSimpleFileSaver",
     outputFileName = cms.string(
-        getHarvestingFilePath('ZtoMuTau_bgEstTemplate') + '/' + 'bgEstTemplateHistZtoMuTau_skimmed.root'
+        ##getHarvestingFilePath('ZtoMuTau_bgEstTemplate') + '/' + 'bgEstTemplateHistZtoMuTau_skimmed.root'
+        '/data1/veelken/CMSSW_3_8_x/plots/ZtoMuTau_bgEstTemplate/2010Nov14/bgEstTemplateHistZtoMuTau_skimmed.root'
     ),
     outputCommands = cms.vstring(
         'drop *',
@@ -543,7 +546,7 @@ process.p = cms.Path(
     #process.loadTemplateHistZtoMuTau_Ztautau
     process.loadTemplateHistZtoMuTau
    + process.loadAnalysisHistZtoMuTau
-   ##+ process.dumpDQMStore
+   + process.dumpDQMStore
    + process.rebinHistZtoMuTau
    + process.correctTemplateHistZtoMuTau
    + process.normalizeHistZtoMuTau
@@ -555,7 +558,7 @@ process.p = cms.Path(
 )
 
 # print-out all python configuration parameter information
-print process.dumpPython()
+#print process.dumpPython()
 
 
   
