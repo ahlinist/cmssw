@@ -5,12 +5,12 @@ import os
 userSettings = {
     'friis' : {
         'AHtoMuTau' : {
-            'analysisFilePath' : '/user/f/friis/AHtoMuTauNov21/',
+            'analysisFilePath' : '/user/f/friis/AHtoMuTauNov25noTauID/',
             'harvestingFilePath' : "/data1/friis/",
-            'tmpFilePath' : "/tmp/friis/",
-            'jobId' : 'Run24',
+            'tmpFilePath' : "/data2/friis/tmp/",
+            'jobId' : 'Run28',
             # Directory containing selected events
-            'pickevents' : '/data1/friis/Run24/',
+            'pickevents' : '/data1/friis/Run26',
         },
         'global' : {
             'drawOptions' : {
@@ -104,6 +104,9 @@ def getHarvestingFilePath(channel):
     if not os.path.isdir(harvestingFilePath):
         print "WARNING: Harvesting file path %s is not a directory!"
     return harvestingFilePath
+
+def getLocalHarvestingFilePath(channel):
+    return os.path.join(getHarvestingFilePath(channel), 'local')
 
 def getTmpFilePath(channel):
     return userSettings[os.environ['LOGNAME']][channel]['tmpFilePath']
