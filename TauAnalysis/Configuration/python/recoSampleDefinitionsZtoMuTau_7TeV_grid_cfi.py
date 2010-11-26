@@ -10,7 +10,9 @@ SAMPLES_TO_ANALYZE = [
     'data_Mu_Run2010A_Nov4ReReco',
     'data_Mu_Run2010B_Nov4ReReco',
     ##'Ztautau', 'qqZtautau',
-    'ZtautauPU156bx', 'qqZtautauPU156bx',
+    'ZtautauPU156bx',
+    'qqZtautau',
+    ##'qqZtautauPU156bx',
     'Zmumu',
     #'InclusivePPmuX',
     'PPmuXptGt20Mu10', 'PPmuXptGt20Mu15',
@@ -199,6 +201,7 @@ RECO_SAMPLES = {
     },
     'Zmumu' : {
         'datasetpath' : "/DYToMuMu_M-20_TuneZ2_7TeV-pythia6/Fall10-E7TeV_ProbDist_2010Data_BX156_START38_V12-v1/GEN-SIM-RECO",
+        'dbs_url' :  "http://cmsdbsprod.cern.ch/cms_dbs_prod_global/servlet/DBSServlet",
         'events_processed' : 2289913,
         'skim_eff' : 1.0,
         'x_sec' : 1.28*1300*_picobarns, # Z + jets correction factor for NLO/LO cross-sections = 1.28
