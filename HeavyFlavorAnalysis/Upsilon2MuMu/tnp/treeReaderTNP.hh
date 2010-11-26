@@ -56,7 +56,8 @@ protected:
   TAna01Event*fpEvt; 
 
   // -- Variables
-  int        fRun; 
+  int        fRun;
+  int        fLS;
 
 
   // -- Histogram pointers 

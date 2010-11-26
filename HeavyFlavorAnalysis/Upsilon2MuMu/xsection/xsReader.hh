@@ -43,6 +43,7 @@ public:
   void        fillCandHist();
   void        MCstudy();
   void        acceptance();
+  void        PathStudy();
   bool        isPathPreScaled(TString path);
   bool        isPathFired(TString path);
   void        getBinCenters(TGenCand *gCand, double &pt, double &rapidity);
@@ -51,6 +52,8 @@ public:
   void        readCuts(TString filename, int dump = 1);
   void        candidateSelection(int mode);
   bool        isMatchedToTrig(TAnaTrack *pTag, TString Label);
+  void        x_btest();
+  void        x_brestframe();
   
   // -- Cut values
   int TYPE;
@@ -68,6 +71,9 @@ public:
   double MASSHI;
   int UPSTYPE;
   TString HLTPATH;
+  TString HLTPATH1;
+  TString HLTPATH2;
+  TString HLTPATH3;
   
   // -- Variables
   TAnaCand    *fpCand; 
@@ -85,6 +91,11 @@ public:
   double      fPTbin[fNpt+1], fYbin[fNy+1];
   int fBin;
   double fMassLow, fMassHigh;
+  
+  float um, uP, ue, up, gE, gP, ge, gp, dR, xbm;
+  float m_um, m_uP, m_ue, m_up, m_gE, m_gP, m_ge, m_gp, m_dR, m_xbm;
+  int m_xbid;
+  float mbg_um, mbg_uP, mbg_ue, mbg_up, mbg_gE, mbg_gP, mbg_ge, mbg_gp, mbg_dR, mbg_xbm;
   
   JSON   *fpJSON;
 };

@@ -62,7 +62,7 @@ protected:
   // -- Histogram pointers 
   TTree *fTree;
   TTree *fTree1;
-
+  TTree *fTree2;
 
   // -- Cut values
   double 
