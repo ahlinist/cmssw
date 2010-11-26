@@ -351,7 +351,7 @@ RECO_SAMPLES = {
         'applyMuonTriggerEfficiencyCorrection' : True,
         'applyVertexMultiplicityReweighting' : True,
         ##'hlt' : cms.InputTag("TriggerResults", "", "REDIGI38XPU")
-        'hlt' : cms.InputTag("TriggerResults", "", "REDIGI38X")
+        'hlt' : cms.InputTag("TriggerResults", "", "HLT")
     }
     }
 
