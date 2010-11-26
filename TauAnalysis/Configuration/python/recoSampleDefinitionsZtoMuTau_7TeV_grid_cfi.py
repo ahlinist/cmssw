@@ -306,10 +306,12 @@ RECO_SAMPLES = {
         'hlt' : cms.InputTag("TriggerResults", "", "REDIGI38XPU"),
         'SE_black_list' : ['T2_TW_Taiwan'],
     },
+    # CV: /TT_TuneZ2_7TeV-pythia6-tauola/Fall10-E7TeV_ProbDist_2010Data_BX156_START38_V12-v1/GEN-SIM-RECO (1095950) events not ready yet
     'TTplusJets' : {
-        'datasetpath' : "/TT_TuneZ2_7TeV-pythia6-tauola/Fall10-E7TeV_ProbDist_2010Data_BX156_START38_V12-v1/GEN-SIM-RECO",
+        ##'datasetpath' : "/TT_TuneZ2_7TeV-pythia6-tauola/Fall10-E7TeV_ProbDist_2010Data_BX156_START38_V12-v1/GEN-SIM-RECO",
+        'datasetpath' : "/TT_TuneZ2_7TeV-pythia6-tauola/Fall10-START38_V12-v1/GEN-SIM-RECO",
 	'dbs_url' :  "http://cmsdbsprod.cern.ch/cms_dbs_prod_global/servlet/DBSServlet",
-        'events_processed' : 1095950,
+        'events_processed' : 1099550,
         'skim_eff' : 1.0,
         'x_sec' : 165*_picobarns, # NNLO cross-section from https://twiki.cern.ch/twiki/bin/viewauth/CMS/StandardModelCrossSections
         'legendEntry' : plotter.process_TTplusJets.config_dqmHistPlotter.legendEntry.value(),
@@ -317,7 +319,8 @@ RECO_SAMPLES = {
         'drawOption' : styles.drawOption_TTplusJets,
         'applyMuonTriggerEfficiencyCorrection' : True,
         'applyVertexMultiplicityReweighting' : True,
-        'hlt' : cms.InputTag("TriggerResults", "", "REDIGI38XPU")
+        ##'hlt' : cms.InputTag("TriggerResults", "", "REDIGI38XPU")
+        'hlt' : cms.InputTag("TriggerResults", "", "REDIGI38X")
     }
 }
 
