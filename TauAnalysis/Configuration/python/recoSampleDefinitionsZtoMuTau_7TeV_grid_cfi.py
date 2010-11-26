@@ -280,7 +280,7 @@ RECO_SAMPLES = {
         'drawOption' : styles.drawOption_WplusJets,
         'applyMuonTriggerEfficiencyCorrection' : True,
         'applyVertexMultiplicityReweighting' : True,
-        'SE_black_list' : ['T2_TW_Taiwan'],
+        'SE_black_list' : 'T2_TW_Taiwan',
         'hlt' : cms.InputTag("TriggerResults", "", "REDIGI38XPU")
     },
     'Wmunu' : {
@@ -293,7 +293,7 @@ RECO_SAMPLES = {
         'drawOption' : styles.drawOption_WplusJets,
         'applyMuonTriggerEfficiencyCorrection' : True,
         'applyVertexMultiplicityReweighting' : True,
-        'SE_black_list' : ['T2_TW_Taiwan'],
+        'SE_black_list' : 'T2_TW_Taiwan',
         'hlt' : cms.InputTag("TriggerResults", "", "REDIGI38XPU"),
     },
     'Wtaunu' : {
@@ -307,7 +307,7 @@ RECO_SAMPLES = {
         'applyMuonTriggerEfficiencyCorrection' : True,
         'applyVertexMultiplicityReweighting' : True,
         'hlt' : cms.InputTag("TriggerResults", "", "REDIGI38XPU"),
-        'SE_black_list' : ['T2_TW_Taiwan'],
+        'SE_black_list' : 'T2_TW_Taiwan',
     },
     # CV: /TT_TuneZ2_7TeV-pythia6-tauola/Fall10-E7TeV_ProbDist_2010Data_BX156_START38_V12-v1/GEN-SIM-RECO (1095950) events not ready yet
     'TTplusJets' : {
