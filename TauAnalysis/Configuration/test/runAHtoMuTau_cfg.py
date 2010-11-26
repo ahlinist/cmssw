@@ -180,8 +180,8 @@ cut_values = {
 cut_values['loose_tauID'] = copy.deepcopy(cut_values['normal'])
 cut_values['loose_tauID']['tanc'] = cut_values['loose']['tanc']
 
-# Loose cuts
-cuts = cut_values['loose_tauID']
+# Loose tauid cuts
+cuts = cut_values['normal']
 # Normal cuts
 #cuts = cut_values['normal']
 
@@ -209,6 +209,12 @@ process.selectedPatMuonsPFRelIso.neutralHadronIso.ptMin = 2000.
 process.selectedPatMuonsPFRelIso.photonIso.ptMin = 1.5
 process.selectedPatMuonsPFRelIso.sumPtMax = 1.0
 process.selectedPatMuonsPFRelIso.sumPtMethod = "absolute"
+
+process.selectedPatMuonsPFRelIsoLooseIsolation.chargedHadronIso.ptMin = 1.0
+process.selectedPatMuonsPFRelIsoLooseIsolation.neutralHadronIso.ptMin = 2000.
+process.selectedPatMuonsPFRelIsoLooseIsolation.photonIso.ptMin = 1.5
+process.selectedPatMuonsPFRelIsoLooseIsolation.sumPtMax = 8.0
+process.selectedPatMuonsPFRelIsoLooseIsolation.sumPtMethod = "absolute"
 
 # change upper limit on muon + MET transverse mass to 40 GeV
 changeCut(process, "selectedMuTauPairsMt1MET",
