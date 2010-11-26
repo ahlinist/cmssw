@@ -13,7 +13,7 @@
 //
 // Original Author: Roberto Covarelli 
 //         Created:  Fri Oct  9 04:59:40 PDT 2009
-// $Id: JPsiAnalyzerPAT.cc,v 1.8.2.2 2010/11/23 17:30:20 fat Exp $
+// $Id: JPsiAnalyzerPAT.cc,v 1.40 2010/11/24 18:48:31 covarell Exp $
 //
 // based on: Onia2MuMu package V00-11-00
 // changes done by: FT
@@ -90,7 +90,7 @@ class JPsiAnalyzerPAT : public edm::EDAnalyzer {
       // additional functions by f
       void resetDSVariables();
       void analyzeGenerator(const edm::Handle<reco::GenParticleCollection>& genParticles);
-      void calcPol(TLorentzVector&, TLorentzVector&, std::vector< float >&, std::vector< float >& );
+      // void calcPol(TLorentzVector&, TLorentzVector&, std::vector< float >&, std::vector< float >& );
       void beginRun(const edm::Run &, const edm::EventSetup &);
       void hltReport(const edm::Event &iEvent ,const edm::EventSetup& iSetup);
       void matchMuonToHlt(const pat::Muon*, const pat::Muon*);
@@ -143,10 +143,10 @@ class JPsiAnalyzerPAT : public edm::EDAnalyzer {
       unsigned int eventNb, runNb, lumiBlock, nPriVtx;
 
       //6.) POL variables
-      std::vector<std::string> polVarNames_;
-      std::vector<std::string> polVarNamesGen_;
-      std::map<std::string, double> mapPolVarsToValue_;
-      std::map<std::string, double> mapPolVarsToValueGen_;
+      // std::vector<std::string> polVarNames_;
+      // std::vector<std::string> polVarNamesGen_;
+      // std::map<std::string, double> mapPolVarsToValue_;
+      // std::map<std::string, double> mapPolVarsToValueGen_;
 
       //7.) TriggerNames Map
       std::map<std::string, int> mapTriggerNameToIntFired_;
@@ -278,41 +278,6 @@ JPsiAnalyzerPAT::JPsiAnalyzerPAT(const edm::ParameterSet& iConfig):
     JSON = new ofstream("PseudoJSON.txt");
     *JSON << "{";
     }*/
-
-  // Add the Names of your Polarization variables here
-  // Pol. Variables RECO
-  polVarNames_.push_back("costh_CS");
-  polVarNames_.push_back("costh_HX");
-  polVarNames_.push_back("costh_GJ1");
-  polVarNames_.push_back("costh_GJ2");
-  polVarNames_.push_back("costh_sGJ");
-  polVarNames_.push_back("costh_PHX");
-  polVarNames_.push_back("phi_CS");
-  polVarNames_.push_back("phi_HX");
-  polVarNames_.push_back("phi_GJ1");
-  polVarNames_.push_back("phi_GJ2");
-  polVarNames_.push_back("phi_sGJ");
-  polVarNames_.push_back("phi_PHX");
-  for(std::vector<std::string>::iterator it = polVarNames_.begin(); it != polVarNames_.end(); ++it){
-      mapPolVarsToValue_[*it] = -9999;
-  }
-
-  // Pol. Variables GEN
-  polVarNamesGen_.push_back("costh_CS_Gen");
-  polVarNamesGen_.push_back("costh_HX_Gen");
-  polVarNamesGen_.push_back("costh_GJ1_Gen");
-  polVarNamesGen_.push_back("costh_GJ2_Gen");
-  polVarNamesGen_.push_back("costh_sGJ_Gen");
-  polVarNamesGen_.push_back("costh_PHX_Gen");
-  polVarNamesGen_.push_back("phi_CS_Gen");
-  polVarNamesGen_.push_back("phi_HX_Gen");
-  polVarNamesGen_.push_back("phi_GJ1_Gen");
-  polVarNamesGen_.push_back("phi_GJ2_Gen");
-  polVarNamesGen_.push_back("phi_sGJ_Gen");
-  polVarNamesGen_.push_back("phi_PHX_Gen");
-  for(std::vector<std::string>::iterator it = polVarNamesGen_.begin(); it != polVarNamesGen_.end(); ++it){
-      mapPolVarsToValueGen_[*it] = -9999;
-  }
 
   // Add the Trigger you want to choose into HLTbitNames_
   // Mu + Track Trigger
@@ -468,18 +433,8 @@ JPsiAnalyzerPAT::beginJob()
         tree_->Branch(hlt_name.c_str(), &(mapTriggerNameToIntFired_[*it]), (hlt_name + "/I").c_str());
     }
 
-    //add Polarization Variables to TTree
-    for(std::vector< std::string >:: iterator it = polVarNames_.begin(); it != polVarNames_.end(); ++it){
-        std::string pol_var_name= *it;
-        tree_->Branch(pol_var_name.c_str(), &(mapPolVarsToValue_[*it]), (pol_var_name + "/D").c_str());
-    }
-
     //add Generator Information
     if(_isMC){
-        for(std::vector< std::string >:: iterator it = polVarNamesGen_.begin(); it != polVarNamesGen_.end(); ++it){
-            std::string pol_var_name= *it;
-            tree_->Branch(pol_var_name.c_str(), &(mapPolVarsToValueGen_[*it]), (pol_var_name + "/D").c_str());
-        }
         tree_->Branch("MCType",         &MCType,        "MCType/I");
 	tree_->Branch("JpsiP_Gen",  "TLorentzVector", &JpsiP_Gen);
         // tree_->Branch("JpsiMass_Gen",   &JpsiMass_Gen,  "JpsiMass_Gen/D");
@@ -876,23 +831,9 @@ JPsiAnalyzerPAT::fillTreeAndDS(unsigned int theCat, const pat::CompositeCandidat
   muNegP->SetPxPyPzE(f_muNegPx, f_muNegPy, f_muNegPz, enMuNeg);
   
   //! Fill Polarization Variables;
-  std::vector< float > thisCosTh, thisPhi;
-  thisCosTh.resize(6); thisPhi.resize(6);
-  this->calcPol(*muPosP, *muNegP, thisCosTh, thisPhi);
-  
-  mapPolVarsToValue_["costh_CS"]   = thisCosTh[CS];
-  mapPolVarsToValue_["costh_HX"]   = thisCosTh[HX];
-  mapPolVarsToValue_["costh_GJ1"]  = thisCosTh[GJ1];
-  mapPolVarsToValue_["costh_GJ2"]  = thisCosTh[GJ2];
-  mapPolVarsToValue_["costh_sGJ"]  = thisCosTh[sGJ];
-  mapPolVarsToValue_["costh_PHX"]  = thisCosTh[PHX];
-  
-  mapPolVarsToValue_["phi_CS"]     = thisPhi[CS];
-  mapPolVarsToValue_["phi_HX"]     = thisPhi[HX];
-  mapPolVarsToValue_["phi_GJ1"]    = thisPhi[GJ1];
-  mapPolVarsToValue_["phi_GJ2"]    = thisPhi[GJ2];
-  mapPolVarsToValue_["phi_sGJ"]    = thisPhi[sGJ];
-  mapPolVarsToValue_["phi_PHX"]    = thisPhi[PHX];
+  // std::vector< float > thisCosTh, thisPhi;
+  // thisCosTh.resize(6); thisPhi.resize(6);
+  // this->calcPol(*muPosP, *muNegP, thisCosTh, thisPhi);
 
   if (_writeDataSet) {
 
@@ -1204,11 +1145,6 @@ JPsiAnalyzerPAT::resetDSVariables(){
         muNegPx_Gen=-9999.;
         muNegPy_Gen=-9999.;
         muNegPz_Gen=-9999.; */
-
-        //reset GEN pol vars
-        for(std::map< std::string, double >::iterator clearIt= mapPolVarsToValueGen_.begin(); clearIt != mapPolVarsToValueGen_.end(); clearIt++){
-            clearIt->second=-9999.;
-        }
     }
 
     //reset EVENT information
@@ -1216,11 +1152,6 @@ JPsiAnalyzerPAT::resetDSVariables(){
     runNb= 0 ;
     nPriVtx= 0 ;
     lumiBlock= 0 ;
-
-    //reset RECO pol vars
-    for(std::map< std::string, double >::iterator clearIt= mapPolVarsToValue_.begin(); clearIt != mapPolVarsToValue_.end(); clearIt++){
-        clearIt->second=-9999.;
-    }
 
     //reset Trigger Variables
     for(std::map< std::string, int >::iterator clearIt= mapTriggerNameToIntFired_.begin(); clearIt != mapTriggerNameToIntFired_.end(); clearIt++){
@@ -1323,22 +1254,10 @@ JPsiAnalyzerPAT::analyzeGenerator(const edm::Handle<reco::GenParticleCollection>
                 muNegP_Gen->SetPxPyPzE(f_muNegPx, f_muNegPy, f_muNegPz, enMuNeg);
 
                 //! Fill Polarization Variables;
-                std::vector< float > thisCosTh, thisPhi;
-                thisCosTh.resize(6); thisPhi.resize(6);
-                this->calcPol(*muPosP_Gen, *muNegP_Gen, thisCosTh, thisPhi);
-                mapPolVarsToValueGen_["costh_CS_Gen"]   = thisCosTh[CS];
-                mapPolVarsToValueGen_["costh_HX_Gen"]   = thisCosTh[HX];
-                mapPolVarsToValueGen_["costh_GJ1_Gen"]  = thisCosTh[GJ1];
-                mapPolVarsToValueGen_["costh_GJ2_Gen"]  = thisCosTh[GJ2];
-                mapPolVarsToValueGen_["costh_sGJ_Gen"]  = thisCosTh[sGJ];
-                mapPolVarsToValueGen_["costh_PHX_Gen"]  = thisCosTh[PHX];
-
-                mapPolVarsToValueGen_["phi_CS_Gen"]     = thisPhi[CS];
-                mapPolVarsToValueGen_["phi_HX_Gen"]     = thisPhi[HX];
-                mapPolVarsToValueGen_["phi_GJ1_Gen"]    = thisPhi[GJ1];
-                mapPolVarsToValueGen_["phi_GJ2_Gen"]    = thisPhi[GJ2];
-                mapPolVarsToValueGen_["phi_sGJ_Gen"]    = thisPhi[sGJ];
-                mapPolVarsToValueGen_["phi_PHX_Gen"]    = thisPhi[PHX];
+                // std::vector< float > thisCosTh, thisPhi;
+                // thisCosTh.resize(6); thisPhi.resize(6);
+                // this->calcPol(*muPosP_Gen, *muNegP_Gen, thisCosTh, thisPhi);
+     
             }
         } // end loop over genParticles
     }
@@ -1495,197 +1414,6 @@ JPsiAnalyzerPAT::matchMuonToHlt(const pat::Muon* muon1, const pat::Muon* muon2)
         if ( triggerName == "HLT_Mu9" && (pass1  == true || pass2 == true) ) mapTriggerNameToIntFired_[triggerName] = 1;
         if ( triggerName == "HLT_Mu11"&& (pass1  == true || pass2 == true) ) mapTriggerNameToIntFired_[triggerName] = 1;
     }
-}
-
-//=========================================
-// calculation of decay angular parameters
-//=========================================
-void
-JPsiAnalyzerPAT::calcPol(TLorentzVector& muplus_LAB,
-         TLorentzVector& muminus_LAB,
-         std::vector< float >& thisCosTh,
-         std::vector< float >& thisPhi)
-{
-
-    //std::cout << "[JPsiAnalyzerPAT::calcPol] ---- begin calcPol" << std::endl;
-
-    // beam energy in GeV
-    const double pbeam = 3500.;
-    // masses
-    const double Mprot = 0.9382720;
-    const double Ebeam = sqrt( pbeam*pbeam + Mprot*Mprot );
-    const TLorentzVector beam1_LAB( 0., 0., pbeam, Ebeam );
-    const TLorentzVector beam2_LAB( 0., 0., -pbeam, Ebeam );
-
-    TLorentzVector qqbar_LAB = muplus_LAB + muminus_LAB;
-    Double_t rapidity = qqbar_LAB.Rapidity();
-
-    // boost beams and positive muon into the q-qbar rest frame:
-    TVector3 LAB_to_QQBAR = -qqbar_LAB.BoostVector();
-
-    TLorentzVector beam1_QQBAR = beam1_LAB;
-    beam1_QQBAR.Boost( LAB_to_QQBAR );
-
-    TLorentzVector beam2_QQBAR = beam2_LAB;
-    beam2_QQBAR.Boost( LAB_to_QQBAR );
-
-    TLorentzVector muplus_QQBAR = muplus_LAB;
-    muplus_QQBAR.Boost( LAB_to_QQBAR );
-
-    // reference directions in the Jpsi rest frame:
-
-    TVector3 beam1_direction     = beam1_QQBAR.Vect().Unit();
-    TVector3 beam2_direction     = beam2_QQBAR.Vect().Unit();
-    TVector3 qqbar_direction     = qqbar_LAB.Vect().Unit();
-    TVector3 beam1_beam2_bisect  = ( beam1_direction - beam2_direction ).Unit();
-
-    // all polarization frames have the same Y axis = the normal to the plane formed by
-    // the directions of the colliding hadrons
-    TVector3 Yaxis = ( beam1_direction.Cross( beam2_direction ) ).Unit();
-
-    /////////////////////////////////////////////////////////////////////
-    // CS frame
-    //std::cout << "[JPsiAnalyzerPAT::calcPol] ----  // CS frame" << std::endl;
-
-    TVector3 newZaxis = beam1_beam2_bisect;
-    TVector3 newYaxis = Yaxis;
-    TVector3 newXaxis = newYaxis.Cross( newZaxis );
-
-    TRotation rotation;
-    rotation.RotateAxes( newXaxis, newYaxis, newZaxis );
-    rotation.Invert();   // transforms coordinates from the "xyz" system
-    // to the "new" (rotated) system having the polarization axis
-    // as z axis
-
-    TVector3 muplus_QQBAR_rotated(muplus_QQBAR.Vect());
-
-    muplus_QQBAR_rotated.Transform( rotation );
-
-    thisCosTh[CS] = muplus_QQBAR_rotated.CosTheta();
-
-    //thisPhi_rad[CS] = muplus_QQBAR_rotated.Phi();
-    thisPhi[CS] = muplus_QQBAR_rotated.Phi() * 180. / TMath::Pi();
-    //if ( thisPhi[CS] < 0. ) thisPhi[CS]= 360. + thisPhi[CS];      // phi defined in degrees from 0 to 360
-    thisPhi[CS] += 180.;
-
-    /////////////////////////////////////////////////////////////////////
-    // HELICITY frame
-    //std::cout << "[JPsiAnalyzerPAT::calcPol] ----  // HX frame" << std::endl;
-
-    newZaxis = qqbar_direction;
-    newYaxis = Yaxis;
-    newXaxis = newYaxis.Cross( newZaxis );
-
-    rotation.SetToIdentity();
-    rotation.RotateAxes( newXaxis, newYaxis, newZaxis );
-    rotation.Invert();
-
-    muplus_QQBAR_rotated = muplus_QQBAR.Vect();
-
-    muplus_QQBAR_rotated.Transform( rotation );
-
-    thisCosTh[HX] = muplus_QQBAR_rotated.CosTheta();
-
-    //thisPhi_rad[HX] = muplus_QQBAR_rotated.Phi();
-    thisPhi[HX] = muplus_QQBAR_rotated.Phi() * 180. / TMath::Pi();
-    //if ( thisPhi[HX] < 0. ) thisPhi[HX] = 360. + thisPhi[HX]; // phi defined in degrees from 0 to 360
-    thisPhi[HX] += 180.;
-
-    /////////////////////////////////////////////////////////////////////
-    // GJ1 frame
-
-    //std::cout << "[JPsiAnalyzerPAT::calcPol] ----  // GJ1 frame" << std::endl;
-    newZaxis = beam1_direction;
-    newYaxis = Yaxis;
-    newXaxis = newYaxis.Cross( newZaxis );
-
-    rotation.SetToIdentity();
-    rotation.RotateAxes( newXaxis, newYaxis, newZaxis );
-    rotation.Invert();
-
-    muplus_QQBAR_rotated = muplus_QQBAR.Vect();
-
-    muplus_QQBAR_rotated.Transform( rotation );
-
-    thisCosTh[GJ1] = muplus_QQBAR_rotated.CosTheta();
-
-    //thisPhi_rad[GJ1] = muplus_QQBAR_rotated.Phi();
-    thisPhi[GJ1] = muplus_QQBAR_rotated.Phi() * 180. / TMath::Pi();
-    //if ( thisPhi[GJ1] < 0. ) thisPhi[GJ1] = 360. + thisPhi[GJ1]; // phi defined in degrees from 0 to 360
-    thisPhi[GJ1] += 180.;
-
-    /////////////////////////////////////////////////////////////////////
-    // GJ2 frame
-    //std::cout << "[JPsiAnalyzerPAT::calcPol] ----  // GJ2 frame" << std::endl;
-    newZaxis = beam2_direction;
-    newYaxis = Yaxis;
-    newXaxis = newYaxis.Cross( newZaxis );
-
-    rotation.SetToIdentity();
-    rotation.RotateAxes( newXaxis, newYaxis, newZaxis );
-    rotation.Invert();
-
-    muplus_QQBAR_rotated = muplus_QQBAR.Vect();
-
-    muplus_QQBAR_rotated.Transform( rotation );
-
-    thisCosTh[GJ2] = muplus_QQBAR_rotated.CosTheta();
-
-    //thisPhi_rad[GJ2] = muplus_QQBAR_rotated.Phi();
-    thisPhi[GJ2] = muplus_QQBAR_rotated.Phi() * 180. / TMath::Pi();
-    //if ( thisPhi[GJ2] < 0. ) thisPhi[GJ2] = 360. + thisPhi[GJ2]; // phi defined in degrees from 0 to 360
-    thisPhi[GJ2] += 180.;
-
-    /////////////////////////////////////////////////////////////////////
-    // sGJ frame (symmetrized GJ)
-    //std::cout << "[JPsiAnalyzerPAT::calcPol] ----  // sGJ frame" << std::endl;
-    newZaxis = beam1_direction; if( rapidity < 0. ) newZaxis = beam2_direction;
-    newYaxis = Yaxis;
-
-    // try to swith the following line on or off
-    //if( rapidity < 0. ) newYaxis = -Yaxis;
-
-    newXaxis = newYaxis.Cross( newZaxis );
-
-    rotation.SetToIdentity();
-    rotation.RotateAxes( newXaxis, newYaxis, newZaxis );
-    rotation.Invert();
-
-    muplus_QQBAR_rotated = muplus_QQBAR.Vect();
-
-    muplus_QQBAR_rotated.Transform( rotation );
-
-    thisCosTh[sGJ] = muplus_QQBAR_rotated.CosTheta();
-
-    //thisPhi_rad[sGJ] = muplus_QQBAR_rotated.Phi();
-    thisPhi[sGJ] = muplus_QQBAR_rotated.Phi() * 180. / TMath::Pi();
-    //if ( thisPhi[sGJ] < 0. ) thisPhi[sGJ] = 360. + thisPhi[sGJ]; // phi defined in degrees from 0 to 360
-    thisPhi[sGJ] += 180.;
-
-    /////////////////////////////////////////////////////////////////////
-    // PHX frame ("perpendicular helicity frame" - z axis perpendicular
-    // to the CS axis)
-    //std::cout << "[JPsiAnalyzerPAT::calcPol] ----  // PHX frame" << std::endl;
-    newZaxis = newZaxis = ( beam1_beam2_bisect.Cross( Yaxis ) ).Unit();
-    newYaxis = Yaxis;
-    newXaxis = newYaxis.Cross( newZaxis );
-
-    rotation.SetToIdentity();
-    rotation.RotateAxes( newXaxis, newYaxis, newZaxis );
-    rotation.Invert();
-
-    muplus_QQBAR_rotated = muplus_QQBAR.Vect();
-
-    muplus_QQBAR_rotated.Transform( rotation );
-
-    thisCosTh[PHX] = muplus_QQBAR_rotated.CosTheta();
-
-    //thisPhi_rad[PHX] = muplus_QQBAR_rotated.Phi();
-    thisPhi[PHX] = muplus_QQBAR_rotated.Phi() * 180. / TMath::Pi();
-    //if ( thisPhi[PHX] < 0. ) thisPhi[PHX] = 360. + thisPhi[PHX]; // phi defined in degrees from 0 to 360
-    thisPhi[PHX] += 180.;
-
-    //std::cout << "[JPsiAnalyzerPAT::calcPol] ---- leave calcPol" << std::endl;
 }
 
 //define this as a plug-in
