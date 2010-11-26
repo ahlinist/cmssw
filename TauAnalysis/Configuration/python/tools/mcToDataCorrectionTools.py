@@ -157,7 +157,7 @@ def _addEventWeightZtoMuTau(process, srcEventWeight):
     _addEventWeight(process,
                     [ "analyzeZtoMuTauEvents",
                       "analyzeZtoMuTauEvents_factorizedWithMuonIsolation",
-                      "analyzeZtoMuTauSequence_factorizedWithoutMuonIsolation" ],
+                      "analyzeZtoMuTauEvents_factorizedWithoutMuonIsolation" ],
                     srcEventWeight)
     
 def applyMuonTriggerEfficiencyCorrection_runZtoMuTau(process):
