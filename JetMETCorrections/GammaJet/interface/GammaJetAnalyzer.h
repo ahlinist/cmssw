@@ -13,7 +13,7 @@
 #include "FWCore/ServiceRegistry/interface/Service.h"
 //#include <CommonTools/UtilAlgos/interface/TFileService.h>
 
-#include "RecoJets/JetAlgorithms/interface/JetIDHelper.h"
+#include "RecoJets/JetProducers/interface/JetIDHelper.h"
 
 #include "TH1.h"
 #include "TFile.h"

@@ -13,7 +13,7 @@
 //
 // Original Author:  Daniele del Re
 //         Created:  Thu Sep 13 16:00:15 CEST 2007
-// $Id: GammaJetAnalyzer.cc,v 1.38 2010/10/19 14:11:23 pandolf Exp $
+// $Id: GammaJetAnalyzer.cc,v 1.39 2010/11/16 10:43:45 delre Exp $
 //
 //
 
@@ -1327,11 +1327,11 @@ GammaJetAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
        jetID_->calculate(iEvent, *it);
        ptJet_akt5[nJet_akt5] = it->pt();	 
 
-//     // Jet Energy Scale Corrections on-the-fly     
-//     CaloJet  correctedJet = *it;
-//     double scale = corrector_akt5->correction(it->p4());
-//     correctedJet.scaleEnergy(scale);
-//     ptCorrJet_akt5[nJet_akt5] = correctedJet.pt();
+       // Jet Energy Scale Corrections on-the-fly     
+       CaloJet  correctedJet = *it;
+       double scale = corrector_akt5->correction(it->p4());
+       correctedJet.scaleEnergy(scale);
+       ptCorrJet_akt5[nJet_akt5] = correctedJet.pt();
 
        eJet_akt5[nJet_akt5] = it->energy();	 
        etaJet_akt5[nJet_akt5] = it->eta();	 

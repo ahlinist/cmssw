@@ -68,15 +68,10 @@ process.load('Configuration/StandardSequences/FrontierConditions_GlobalTag_cff')
 #process.load('Configuration/EventContent/EventContent_cff')
 #process.load('TrackingTools/Configuration/TrackingTools_cff')
 
-process.GlobalTag.globaltag = cms.string('GR_R_36X_V12::All')
+process.GlobalTag.globaltag = cms.string('GR_R_38X_V14::All')
 #process.GlobalTag.globaltag = cms.string('GR_R_35X_V8::All')
 #process.GlobalTag.globaltag = cms.string('START36_V10::All')
 
-
-#process.load('EGamma/EGammaSkims/promptRecoTrackCorrections_cff')
-process.load('EGamma/EGammaSkims/cleanReRecoSequence_cff')
-
-process.ecalCleanClustering = cms.Sequence(process.cleanedEcalClusters*process.cleanedEgammaSkimReco)
 
 ###########  EB SPIKE CLEANING END   #####################
 
@@ -91,7 +86,7 @@ process.load("JetMETCorrections.Type1MET.MetType1Corrections_cff")
 
 process.metMuonJESCorAK5 = process.metJESCorAK5CaloJet.clone()
 process.metMuonJESCorAK5.inputUncorJetsLabel = "ak5CaloJets"
-process.metMuonJESCorAK5.corrector = "ak5CaloL2L3"
+process.metMuonJESCorAK5.corrector = "ak5CaloL2L3Residual"
 process.metMuonJESCorAK5.inputUncorMetLabel = "corMetGlobalMuons"
 #process.metMuonJESCorAK5.hasMuonsCorr = True
 #process.metMuonJESCorAK5.useTypeII = True
@@ -108,10 +103,10 @@ process.myanalysis = cms.EDAnalyzer("GammaJetAnalyzer",
     tracks = cms.untracked.InputTag("generalTracks"),
     Photonsrc = cms.untracked.InputTag("photons"),
     recoCollection = cms.string('EcalRecHitsEB'),
-    JetCorrectionService_akt5 = cms.string('ak5CaloL2L3'),
-    JetCorrectionService_akt7 = cms.string('ak7CaloL2L3'),
-    JetCorrectionService_pfakt5 = cms.string('ak5PFL2L3'),
-    JetCorrectionService_pfakt7 = cms.string('ak7PFL2L3'),
+    JetCorrectionService_akt5 = cms.string('ak5CaloL2L3Residual'),
+    JetCorrectionService_akt7 = cms.string('ak7CaloL2L3Residual'),
+    JetCorrectionService_pfakt5 = cms.string('ak5PFL2L3Residual'),
+    JetCorrectionService_pfakt7 = cms.string('ak7PFL2L3Residual'),
     jetskt4 = cms.untracked.InputTag("kt4CaloJets"),
     jetskt6 = cms.untracked.InputTag("kt6CaloJets"),
     jetsakt5 = cms.untracked.InputTag("ak5CaloJets"),
@@ -140,7 +135,7 @@ process.myanalysis = cms.EDAnalyzer("GammaJetAnalyzer",
 )
 
 
-process.p = cms.Path(process.monster*process.metCorSequence*process.myanalysis)
+process.p = cms.Path(process.monster*process.ak5PFJetsL2L3Residual*process.metCorSequence*process.myanalysis)
 #process.p = cms.Path(process.monster*process.myanalysis)
 #process.p = cms.Path(process.ecalCleanClustering*process.recoJPTJets*process.myanalysis)
 #process.p = cms.Path(process.myanalysis)
