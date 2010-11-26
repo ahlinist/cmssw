@@ -27,7 +27,7 @@ muonsBgEstWplusJetsEnrichedPt.cut = cms.string('pt > 10.')
 muonsBgEstWplusJetsEnrichedVbTfId = copy.deepcopy(selectedPatMuonsVbTfId)
 
 muonsBgEstWplusJetsEnrichedPFRelIso = copy.deepcopy(selectedPatMuonsPFRelIso)
-muonsBgEstWplusJetsEnrichedPFRelIso.sumPtMax = cms.double(0.06)
+muonsBgEstWplusJetsEnrichedPFRelIso.sumPtMax = cms.double(0.10)
 
 muonsBgEstWplusJetsEnrichedPionVeto = copy.deepcopy(selectedPatMuonsPionVeto)
 # disable cut on muon calo. + segment compatibility
@@ -244,7 +244,7 @@ diTauCandidateHistManagerBgEstWplusJetsEnriched.visMassHypothesisSource = cms.In
 
 diTauCandidateSVfitHistManagerBgEstWplusJetsEnriched = copy.deepcopy(diTauCandidateSVfitHistManagerForMuTau)
 diTauCandidateSVfitHistManagerBgEstWplusJetsEnriched.pluginName = cms.string('diTauCandidateSVfitHistManagerBgEstWplusJetsEnriched')
-diTauCandidateSVfitHistManagerBgEstWplusJetsEnriched.diTauCandidateSource = cms.InputTag('muTauPairsBgEstWplusJetsEnrichedMt1MET')
+diTauCandidateSVfitHistManagerBgEstWplusJetsEnriched.diTauCandidateSource = diTauCandidateHistManagerBgEstWplusJetsEnriched.diTauCandidateSource
 
 jetHistManagerBgEstWplusJetsEnriched = copy.deepcopy(jetHistManager)
 jetHistManagerBgEstWplusJetsEnriched.pluginName = cms.string('jetHistManagerBgEstWplusJetsEnriched')
@@ -253,9 +253,9 @@ jetHistManagerBgEstWplusJetsEnriched.jetSource = cms.InputTag('jetsBgEstWplusJet
 from TauAnalysis.BgEstimationTools.tauIdEffZtoMuTauHistManager_cfi import *
 tauIdEffHistManagerBgEstWplusJetsEnriched = copy.deepcopy(tauIdEffZtoMuTauHistManager)
 tauIdEffHistManagerBgEstWplusJetsEnriched.pluginName = cms.string('tauIdEffHistManagerBgEstWplusJetsEnriched')
-tauIdEffHistManagerBgEstWplusJetsEnriched.muonSource = cms.InputTag('muonsBgEstWplusJetsEnrichedPionVetoCumulative')
-tauIdEffHistManagerBgEstWplusJetsEnriched.tauSource = cms.InputTag('tausBgEstWplusJetsEnrichedMuonVetoCumulative')
-tauIdEffHistManagerBgEstWplusJetsEnriched.diTauSource = cms.InputTag('muTauPairsBgEstWplusJetsEnrichedMt1MET')
+tauIdEffHistManagerBgEstWplusJetsEnriched.muonSource = muonHistManagerBgEstWplusJetsEnriched.muonSource
+tauIdEffHistManagerBgEstWplusJetsEnriched.tauSource = tauHistManagerBgEstWplusJetsEnriched.tauSource
+tauIdEffHistManagerBgEstWplusJetsEnriched.diTauSource = diTauCandidateHistManagerBgEstWplusJetsEnriched.diTauCandidateSource
 tauIdEffHistManagerBgEstWplusJetsEnriched.diTauChargeSignExtractor.src = tauIdEffHistManagerBgEstWplusJetsEnriched.diTauSource
 
 dataBinnerBgEstWplusJetsEnriched = copy.deepcopy(dataBinner)
