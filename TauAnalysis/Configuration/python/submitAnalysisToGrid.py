@@ -50,6 +50,7 @@ def submitAnalysisToGrid(configFile = None, channel = None, samples = None,
                          cfgdir='crab', inputFileMap=None,
                          outputFileMap=None,
                          enableEventDumps=False,
+                         enableFakeRates=False,
                          processName = None,
                          saveFinalEvents=False):
     """
@@ -135,10 +136,15 @@ def submitAnalysisToGrid(configFile = None, channel = None, samples = None,
         jobOptions.append(('globalTag',
                            _get_conditions(sample_info['conditions'])))
 
+
         # Enable factorization if necessary
         if not disableFactorization:
             jobOptions.append(('enableFactorization',
                                sample_info['factorize']))
+
+        # Enable fake rates if desired - this must be done AFTER factorization
+        if 'enableFakeRates' in sample_info and enableFakeRates:
+            jobOptions.append(('enableFakeRates', sample_info['enableFakeRates']))
 
         # Apply Z-recoil correction to MEt if requested
         jobOptions.append(('applyZrecoilCorrection',
@@ -189,4 +195,3 @@ def submitAnalysisToGrid(configFile = None, channel = None, samples = None,
         submitToGrid(configFile, jobInfo, jobOptions, crabOptions,
                      create=create, submit=submit, directory=cfgdir)
         ##submitToGrid(configFile, jobInfo, jobOptions, crabOptions, create=False, submit=False) # CV: only for testing
-
