@@ -14,7 +14,7 @@ const int  xsReader::fNy;
 // ----------------------------------------------------------------------
 xsReader::xsReader(TChain *tree, TString evtClassName): treeReaderXS(tree, evtClassName) {
   cout << "--> xsReader> This is the start ..." << endl;
-  fpJSON = new JSON("/shome/ursl/json/1.json");
+  fpJSON = new JSON("/shome/bora/root/json/json_147196_149442");
   fPTbin[0] = 0.; fPTbin[1] = 2.; fPTbin[2] = 3.; fPTbin[3] = 5.; fPTbin[4] = 8.; fPTbin[5] =12.; fPTbin[6] = 20.;
   fYbin[0] = -2.; fYbin[1] = -1.; fYbin[2] = 0.; fYbin[3] = 1.; fYbin[4] = 2.;
   //fPidTableMuIDPos = new PidTable("../tnp/PidTables/MC/Upsilon/MuID/PtTnpPos-upsilon.dat");
@@ -22,10 +22,10 @@ xsReader::xsReader(TChain *tree, TString evtClassName): treeReaderXS(tree, evtCl
   //fPidTableTrigPos = new PidTable("../tnp/PidTables/MC/Upsilon/Trig/PtTnpPos-upsilon.dat");   // MC 
   //fPidTableTrigNeg = new PidTable("../tnp/PidTables/MC/Upsilon/Trig/PtTnpNeg-upsilon.dat"); 
   
-  fPidTableMuIDPos = new PidTable("../tnp/PidTables/DATA/Jpsi/MuID/PtMmbPos-jpsi.dat");
-  fPidTableMuIDNeg = new PidTable("../tnp/PidTables/DATA/Jpsi/MuID/PtMmbNeg-jpsi.dat");
-  fPidTableTrigPos = new PidTable("../tnp/PidTables/DATA/Jpsi/Trig/PtMmbPos-jpsi.dat");     // DATA
-  fPidTableTrigNeg = new PidTable("../tnp/PidTables/DATA/Jpsi/Trig/PtMmbNeg-jpsi.dat"); 
+  //fPidTableMuIDPos = new PidTable("../tnp/PidTables/DATA/Jpsi/MuID/PtMmbPos-jpsi.dat");
+  //fPidTableMuIDNeg = new PidTable("../tnp/PidTables/DATA/Jpsi/MuID/PtMmbNeg-jpsi.dat");
+  //fPidTableTrigPos = new PidTable("../tnp/PidTables/DATA/Jpsi/Trig/PtMmbPos-jpsi.dat");     // DATA
+  //fPidTableTrigNeg = new PidTable("../tnp/PidTables/DATA/Jpsi/Trig/PtMmbNeg-jpsi.dat"); 
   
 }
 // ----------------------------------------------------------------------
@@ -41,22 +41,359 @@ void xsReader::startAnalysis() {
 
 void xsReader::eventProcessing() {
   
-  cout << fRun << " " << fLS << ": " << fpJSON->good(fRun, fLS) << endl;
+  //cout << fRun << " " << fLS << ": " << fpJSON->good(fRun, fLS) << endl;
   
   //if ( MODE == 1  ) acceptance();  // FOR MC only
   //if ( isPathPreScaled(HLTPATH) ) goto end;
   //if ( !isPathFired(HLTPATH) ) goto end;
+  PathStudy();
   //candidateSelection(2); 
   //if ( 0 != fpCand  ){
   //calculateWeights(0); 
   //fillCandHist(); 
   //if ( 0 != fgCand && MODE == 1 ) MCstudy(); // FOr MC only
+    ////x_btest();
+    //// x_brestframe();
   //}
 	   
   //fpHistFile->cd();
   
- end:
-  fillHist();
+  //end:
+  //fillHist();
+}
+
+void xsReader::x_brestframe(){
+  
+  TGenCand *gCand(0);
+  TGenCand *gDau1(0);
+  TGenCand *gDau2(0);
+  TVector3 xb;
+  TLorentzVector genCand;
+  TLorentzVector upsCand;
+  TLorentzVector gammaCand;
+  double GenAngle(-99.), SgMatchedAngle(-99.), BgMatchedAngle(-99.), NoMatchedAngle(-99.);
+  cout << " NEW EVENT " << endl;
+  
+  for (int iG = 0; iG < fpEvt->nGenCands(); ++iG) {
+    gCand = fpEvt->getGenCand(iG);
+    
+    if ( (gCand->fID == 20553 || gCand->fID == 10551 || gCand->fID == 555) && gCand->fStatus == 2 ){
+      genCand.SetPtEtaPhiE(gCand->fP.Perp(),gCand->fP.Eta(),gCand->fP.Phi(),gCand->fP.Energy());
+      xb = genCand.BoostVector();
+      xb*=-1.;
+      //cout << "Boost Momentum = "  << xb.Mag()  << endl;
+      //cout << "Momentum = "  << genCand.P()  << endl;
+      genCand.Boost(xb);
+      //cout << "Boosted Momentum = "  << genCand.P()  << endl;
+      
+      gDau1 = fpEvt->getGenCand(gCand->fDau1);
+      gDau2 = fpEvt->getGenCand(gCand->fDau2);
+      
+      if ( gDau1->fID == 553 ){
+	//cout << " Dau1  "  << endl;
+	upsCand.SetPtEtaPhiE(gDau1->fP.Perp(),gDau1->fP.Eta(),gDau1->fP.Phi(),gDau1->fP.Energy());  
+	upsCand.Boost(xb);
+	//cout << "upsCand = " << upsCand.P() << endl;
+	if ( gDau2->fID == 22 ){
+	  gammaCand.SetPtEtaPhiE(gDau2->fP.Perp(),gDau2->fP.Eta(),gDau2->fP.Phi(),gDau2->fP.Energy());
+	  gammaCand.Boost(xb);
+	  //cout << "gammaCand = " << gammaCand.P() << endl;
+	  GenAngle = upsCand.Angle(gammaCand.Vect());
+	  //cout << " GenAngle "  << GenAngle  << endl;
+	  ((TH1D*)fpHistFile->Get("hGenAngle"))->Fill(GenAngle);
+	}
+      } 
+	
+      if ( gDau1->fID == 22 ){
+	//cout << " Dau2  "  << endl;
+	gammaCand.SetPtEtaPhiE(gDau1->fP.Perp(),gDau1->fP.Eta(),gDau1->fP.Phi(),gDau1->fP.Energy());
+	gammaCand.Boost(xb);
+	//cout << "gammaCand = " << gammaCand.P() << endl;
+	if ( gDau2->fID == 553 ){
+	  upsCand.SetPtEtaPhiE(gDau2->fP.Perp(),gDau2->fP.Eta(),gDau2->fP.Phi(),gDau2->fP.Energy());  
+	  upsCand.Boost(xb);
+	  //cout << "upsCand = " << upsCand.P() << endl; 
+	  GenAngle = upsCand.Angle(gammaCand.Vect());
+	  //cout << " GenAngle "  << GenAngle << endl;
+	  ((TH1D*)fpHistFile->Get("hGenAngle"))->Fill(GenAngle);
+	}
+      }   
+    }
+    
+  }
+
+  TAnaTrack *pTrack(0);
+  TLorentzVector Cand, Gamma, gamma, x_b;
+  TVector3 xB;
+  int n(-1);
+  
+  Cand.SetPtEtaPhiM(fpCand->fPlab.Perp(),fpCand->fPlab.Eta(),fpCand->fPlab.Phi(),fpCand->fMass);
+  for (int iG = 0; iG < fpEvt->nRecTracks(); ++iG) {
+    pTrack = fpEvt->getRecTrack(iG);
+    if ( pTrack->fMCID == 22 && pTrack->fQ == 0  ){
+      ++n;
+      TGenCand  *gGamma = fpEvt->getGenCand(pTrack->fGenIndex);
+      TGenCand  *geCand = fpEvt->getGenCand(gGamma->fMom1);
+      if ( geCand->fID == 555 || geCand->fID == 20553 || geCand->fID == 10551 ) {
+	Gamma.SetPtEtaPhiM(pTrack->fPlab.Perp(),pTrack->fPlab.Eta(),pTrack->fPlab.Phi(), 0.);
+	TAnaTrack *pl1 = fpEvt->getSigTrack(fpCand->fSig1); 
+	TAnaTrack *pl2 = fpEvt->getSigTrack(fpCand->fSig2);
+	if ( (pl1->fGenIndex > -1) && (pl2->fGenIndex > -1) && (pl1->fGenIndex != pl2->fGenIndex) ){
+	  TGenCand  *gl1 = fpEvt->getGenCand(pl1->fGenIndex);
+	  TGenCand  *gl2 = fpEvt->getGenCand(pl2->fGenIndex);
+	  if ( gl1->fMom1 == gl2->fMom1 ) {
+	    TGenCand  *GenCand = fpEvt->getGenCand(gl1->fMom1);
+	    if ( GenCand->fID == RESTYPE ) {
+	      x_b = Cand + Gamma;
+	      xB = x_b.BoostVector();
+	      xB*=-1.;
+	      Cand.Boost(xB);
+	      Gamma.Boost(xB);
+	      SgMatchedAngle = Cand.Angle(Gamma.Vect());
+	      ((TH1D*)fpHistFile->Get("hSgMatchedAngle"))->Fill(SgMatchedAngle);
+	    }
+	  }
+	}
+      } 
+      
+      if ( !(geCand->fID == 555 || geCand->fID == 20553 || geCand->fID == 10551) ){
+	gamma.SetPtEtaPhiM(pTrack->fPlab.Perp(),pTrack->fPlab.Eta(),pTrack->fPlab.Phi(), 0.);
+	x_b = Cand + Gamma;
+	xB = x_b.BoostVector();
+	xB*=-1.;
+	Cand.Boost(xB);
+	gamma.Boost(xB);
+	BgMatchedAngle = Cand.Angle(gamma.Vect());
+	((TH1D*)fpHistFile->Get("hBgMatchedAngle"))->Fill(BgMatchedAngle);
+      }
+    }
+  }
+
+  TLorentzVector g, X_b;
+  TVector3 XB;
+  for (int iG = 0; iG < fpEvt->nRecTracks(); ++iG) {
+    pTrack = fpEvt->getRecTrack(iG);
+    if ( pTrack->fQ == 0  ){  
+      g.SetPtEtaPhiM(pTrack->fPlab.Perp(),pTrack->fPlab.Eta(),pTrack->fPlab.Phi(), 0.);
+      X_b = Cand + Gamma;
+      XB = X_b.BoostVector();
+      XB*=-1.;
+      Cand.Boost(XB);
+      g.Boost(XB);
+      NoMatchedAngle = Cand.Angle(g.Vect());
+      ((TH1D*)fpHistFile->Get("hAngle"))->Fill(NoMatchedAngle);
+    }
+  }
+  
+   
+  
+}
+
+
+
+void xsReader::x_btest(){
+  TGenCand *gCand(0);
+  TGenCand *gDau1(0);
+  TGenCand *gDau2(0);
+  TLorentzVector genCand;
+  int u1(0); int xb0(0); int xb1(0); int xb2(0);
+  
+  ((TH1D*)fpHistFile->Get("h"))->GetXaxis()->SetBinLabel(2, Form("Upsilon1S"));
+  ((TH1D*)fpHistFile->Get("h"))->GetXaxis()->SetBinLabel(4, Form("xb_0")); 
+  ((TH1D*)fpHistFile->Get("h"))->GetXaxis()->SetBinLabel(6, Form("xb_1"));
+  ((TH1D*)fpHistFile->Get("h"))->GetXaxis()->SetBinLabel(8, Form("xb_2"));
+  
+  for (int iG = 0; iG < fpEvt->nGenCands(); ++iG) {
+    gCand = fpEvt->getGenCand(iG);
+    
+    if ( gCand->fID == 553 && gCand->fStatus == 2 ){
+      u1++;
+      genCand.SetPtEtaPhiE(gCand->fP.Perp(),gCand->fP.Eta(),gCand->fP.Phi(),gCand->fP.Energy());
+      ((TH1D*)fpHistFile->Get("h0"))->Fill(genCand.M());
+    }
+    
+    if ( gCand->fID == 10551 && gCand->fStatus == 2 ){
+      xb0++;
+      genCand.SetPtEtaPhiE(gCand->fP.Perp(),gCand->fP.Eta(),gCand->fP.Phi(),gCand->fP.Energy());
+      ((TH1D*)fpHistFile->Get("h0"))->Fill(genCand.M());
+      gDau1 = fpEvt->getGenCand(gCand->fDau1);
+      gDau2 = fpEvt->getGenCand(gCand->fDau2);
+      if ( gDau1->fID == 22 && gDau2->fID == 553 ) {
+	((TH1D*)fpHistFile->Get("h1"))->Fill(gDau1->fP.Energy());
+      }
+      if ( gDau2->fID == 22 && gDau1->fID == 553 ) {
+	((TH1D*)fpHistFile->Get("h1"))->Fill(gDau2->fP.Energy());
+      }
+    
+    }
+    
+    if ( gCand->fID == 20553 && gCand->fStatus == 2 ){
+      xb1++;
+      genCand.SetPtEtaPhiE(gCand->fP.Perp(),gCand->fP.Eta(),gCand->fP.Phi(),gCand->fP.Energy());
+      ((TH1D*)fpHistFile->Get("h0"))->Fill(genCand.M());
+      gDau1 = fpEvt->getGenCand(gCand->fDau1);
+      gDau2 = fpEvt->getGenCand(gCand->fDau2);
+      if ( gDau1->fID == 22 && gDau2->fID == 553 ) {
+	((TH1D*)fpHistFile->Get("h1"))->Fill(gDau1->fP.Energy());
+      }
+      if ( gDau2->fID == 22 && gDau1->fID == 553 ) {
+	((TH1D*)fpHistFile->Get("h1"))->Fill(gDau2->fP.Energy());
+      }
+      
+    }     
+    if ( gCand->fID == 555 && gCand->fStatus == 2 ){
+      xb2++;
+      genCand.SetPtEtaPhiE(gCand->fP.Perp(),gCand->fP.Eta(),gCand->fP.Phi(),gCand->fP.Energy());
+      ((TH1D*)fpHistFile->Get("h0"))->Fill(genCand.M());
+      gDau1 = fpEvt->getGenCand(gCand->fDau1);
+      gDau2 = fpEvt->getGenCand(gCand->fDau2);
+      if ( gDau1->fID == 22 && gDau2->fID == 553 ) {
+	((TH1D*)fpHistFile->Get("h1"))->Fill(gDau1->fP.Energy());
+      }
+      if ( gDau2->fID == 22 && gDau1->fID == 553 ) {
+	((TH1D*)fpHistFile->Get("h1"))->Fill(gDau2->fP.Energy());
+      }
+    }     
+  }
+  
+    
+  ((TH1D*)fpHistFile->Get("h"))->AddBinContent(2, u1);
+  ((TH1D*)fpHistFile->Get("h"))->AddBinContent(4, xb0); 
+  ((TH1D*)fpHistFile->Get("h"))->AddBinContent(6, xb1);
+  ((TH1D*)fpHistFile->Get("h"))->AddBinContent(8, xb2);
+  
+  TAnaCand *pCand(0);
+  TAnaTrack *pTrack(0);
+  TLorentzVector Cand, Gamma, photon, x_b, xbg_b;
+  int n(-1);
+  Cand.SetPtEtaPhiM(fpCand->fPlab.Perp(),fpCand->fPlab.Eta(),fpCand->fPlab.Phi(),fpCand->fMass);
+  for (int iG = 0; iG < fpEvt->nRecTracks(); ++iG) {
+    pTrack = fpEvt->getRecTrack(iG);
+    if ( pTrack->fMCID == 22 && pTrack->fQ == 0  ){
+      ++n;
+      TGenCand  *gGamma = fpEvt->getGenCand(pTrack->fGenIndex);
+      TGenCand  *genCand = fpEvt->getGenCand(gGamma->fMom1);
+      if ( genCand->fID == 555 || genCand->fID == 20553 || genCand->fID == 10551 ) {
+	Gamma.SetPtEtaPhiM(pTrack->fPlab.Perp(),pTrack->fPlab.Eta(),pTrack->fPlab.Phi(), 0.);
+	TAnaTrack *pl1 = fpEvt->getSigTrack(fpCand->fSig1); 
+	TAnaTrack *pl2 = fpEvt->getSigTrack(fpCand->fSig2);
+	if ( (pl1->fGenIndex > -1) && (pl2->fGenIndex > -1) && (pl1->fGenIndex != pl2->fGenIndex) ){
+	  TGenCand  *gl1 = fpEvt->getGenCand(pl1->fGenIndex);
+	  TGenCand  *gl2 = fpEvt->getGenCand(pl2->fGenIndex);
+	  if ( gl1->fMom1 == gl2->fMom1 ) {
+	    TGenCand  *GenCand = fpEvt->getGenCand(gl1->fMom1);
+	    if ( GenCand->fID == RESTYPE ) {
+	      m_ge = pTrack->fPlab.Eta();
+	      m_gp = pTrack->fPlab.Phi();
+	      m_gP = pTrack->fPlab.Perp();
+	      m_gE = Gamma.E();
+	      m_ue = fpCand->fPlab.Eta();
+	      m_up = fpCand->fPlab.Phi();
+	      m_uP = fpCand->fPlab.Perp();
+	      m_um = Cand.M();
+	      double deltaR = Gamma.DeltaR(Cand);
+	      m_dR = deltaR;
+	      x_b = Cand + Gamma;
+	      m_xbm = x_b.M();
+	      m_xbid = genCand->fID;
+	      fTree->Fill();
+	      ((TH1D*)fpHistFile->Get("h2"))->Fill(x_b.M()-Cand.M());
+	      if ( genCand->fID == 555 ) ((TH1D*)fpHistFile->Get("h3"))->Fill(x_b.M()-Cand.M());
+	      if ( genCand->fID == 10551 ) ((TH1D*)fpHistFile->Get("h4"))->Fill(x_b.M()-Cand.M());
+	      if ( genCand->fID == 20553 ) ((TH1D*)fpHistFile->Get("h5"))->Fill(x_b.M()-Cand.M());
+	      
+	    }
+	  }
+	  
+	}
+      }
+      
+      if ( !(genCand->fID == 555 || genCand->fID == 20553 || genCand->fID == 10551) ) {
+	photon.SetPtEtaPhiM(pTrack->fPlab.Perp(),pTrack->fPlab.Eta(),pTrack->fPlab.Phi(), 0.);
+	mbg_ge = pTrack->fPlab.Eta();
+	mbg_gp = pTrack->fPlab.Phi();
+	mbg_gP = pTrack->fPlab.Perp();
+	mbg_gE = photon.E();
+	mbg_ue = fpCand->fPlab.Eta();
+	mbg_up = fpCand->fPlab.Phi();
+	mbg_uP = fpCand->fPlab.Perp();
+	mbg_um = Cand.M();
+	double dltaR = photon.DeltaR(Cand);
+	mbg_dR = dltaR;
+	xbg_b = Cand + photon;
+	mbg_xbm = xbg_b.M();
+	fTree2->Fill();
+      }
+    }
+  }
+  
+  
+  ((TH1D*)fpHistFile->Get("h6"))->Fill(fpCand->fMass);
+  ((TH1D*)fpHistFile->Get("n"))->Fill(n);
+  TAnaTrack *pTrack1(0);
+  TLorentzVector gamma, x_B;
+  for (int iG = 0; iG < fpEvt->nRecTracks(); ++iG) {
+    pTrack1 = fpEvt->getRecTrack(iG);
+    //if ( pTrack1->fMCID == 22 && pTrack1->fQ == 0  ){
+    if ( pTrack1->fQ == 0  ){  
+      gamma.SetPtEtaPhiM(pTrack1->fPlab.Perp(),pTrack1->fPlab.Eta(),pTrack1->fPlab.Phi(), 0.);
+      ge = pTrack->fPlab.Eta();
+      gp = pTrack->fPlab.Phi();
+      gP = pTrack->fPlab.Perp();
+      gE = gamma.E();
+      double deltar = gamma.DeltaR(Cand);
+      dR = deltar;
+      x_B = Cand + gamma;
+      xbm = x_B.M();
+      ue = fpCand->fPlab.Eta();
+      up = fpCand->fPlab.Phi();
+      uP = fpCand->fPlab.Perp();
+      um = Cand.M();
+      fTree1->Fill();
+    }
+  }
+  
+}
+
+void xsReader::PathStudy(){
+  
+  int n(0), m15(0), m13(0), m11(0);
+  int v1(0), v2(0), v3(0);
+  for (int a = 0; a < NHLT ; ++a) {
+    if ( fpEvt->fHLTNames[a] ==  HLTPATH  && fpEvt->fHLTResult[a] == 1 ) {
+      n++;
+      //cout << " Fired !!!   "   << fpEvt->fHLTNames[a] << endl;
+      
+      // for (int c = 0; c < NHLT ; ++c) {
+      //if ( fpEvt->fHLTResult[c] == 1 ) cout  << fpEvt->fHLTNames[c] << endl;
+      //}
+      
+      for (int b = 0; b < NHLT ; ++b) {
+	if (  fpEvt->fHLTNames[b] ==  HLTPATH1  &&  fpEvt->fHLTResult[b] == 1 ) m15++;
+	if (  fpEvt->fHLTNames[b] ==  HLTPATH2  &&  fpEvt->fHLTResult[b] == 1 ) m13++;
+	if (  fpEvt->fHLTNames[b] ==  HLTPATH3  &&  fpEvt->fHLTResult[b] == 1 ) m11++;
+	if (  fpEvt->fHLTNames[b] == "HLT_HT160U_v1" &&  fpEvt->fHLTResult[b] == 1 ) v1++;
+	if (  fpEvt->fHLTNames[b] == "HLT_HT160U_v2" &&  fpEvt->fHLTResult[b] == 1 ) v2++;
+	if (  fpEvt->fHLTNames[b] == "HLT_HT160U_v3" &&  fpEvt->fHLTResult[b] == 1 ) v3++;
+      }
+    }
+  }
+  
+  ((TH1D*)fpHistFile->Get("hTriggerStudy"))->GetXaxis()->SetBinLabel(2, Form("HLT_DoubleMu0_Quarkonium_v1"));
+  ((TH1D*)fpHistFile->Get("hTriggerStudy"))->GetXaxis()->SetBinLabel(4, Form("HLT_Mu15_v1"));
+  ((TH1D*)fpHistFile->Get("hTriggerStudy"))->GetXaxis()->SetBinLabel(6, Form("HLT_Mu13_v1"));
+  ((TH1D*)fpHistFile->Get("hTriggerStudy"))->GetXaxis()->SetBinLabel(8, Form("HLT_Mu11"));
+  ((TH1D*)fpHistFile->Get("hTriggerStudy"))->GetXaxis()->SetBinLabel(10, Form("HLT_HT160U_v1"));
+  ((TH1D*)fpHistFile->Get("hTriggerStudy"))->GetXaxis()->SetBinLabel(12, Form("HLT_HT160U_v2"));
+  ((TH1D*)fpHistFile->Get("hTriggerStudy"))->GetXaxis()->SetBinLabel(14, Form("HLT_HT160U_v3"));
+  ((TH1D*)fpHistFile->Get("hTriggerStudy"))->AddBinContent(2, n);
+  ((TH1D*)fpHistFile->Get("hTriggerStudy"))->AddBinContent(4, m15);  
+  ((TH1D*)fpHistFile->Get("hTriggerStudy"))->AddBinContent(6, m13); 
+  ((TH1D*)fpHistFile->Get("hTriggerStudy"))->AddBinContent(8, m11);
+  ((TH1D*)fpHistFile->Get("hTriggerStudy"))->AddBinContent(10, v1);  
+  ((TH1D*)fpHistFile->Get("hTriggerStudy"))->AddBinContent(12, v2); 
+  ((TH1D*)fpHistFile->Get("hTriggerStudy"))->AddBinContent(14, v3);  
+  
 }
 
 void xsReader::acceptance(){
@@ -186,13 +523,12 @@ void xsReader::candidateSelection(int mode){
     //if ( (pl1->fPlab.Perp() > PTHI) || (pl1->fPlab.Perp() < PTLO) ) continue;
     if ( (pl1->fPlab.Eta() > ETAHI) || (pl1->fPlab.Eta() < ETALO) ) continue;
     lCands_CT_M1T_M2T_Pt1.push_back(iC);
-    if ( (pl2->fPlab.Perp() > PTHI) || ( (fabs(pl2->fPlab.Eta()) < 1.2) && (pl2->fPlab.Perp() < PTLO) ) || (  (fabs(pl2->fPlab.Eta()) > 1.2) && (pl2->fPlab.Perp() < 3.) ) ) continue;   
+    if ( (pl2->fPlab.Perp() > PTHI) || ( (fabs(pl2->fPlab.Eta()) < 1.2) && (pl2->fPlab.Perp() < PTLO) ) || (  (fabs(pl2->fPlab.Eta()) > 1.2) && (pl2->fPlab.Perp() < 3.) ) ) continue;
     //if ( (pl2->fPlab.Perp() > PTHI) || (pl2->fPlab.Perp() < PTLO) ) continue;
     if ( (pl2->fPlab.Eta() > ETAHI) || (pl2->fPlab.Eta() < ETALO) ) continue;
     lCands_CT_M1T_M2T_Pt1_Pt2.push_back(iC);
     if ( pCand->fVtx.fChi2 > CHI2 ) continue;
     lCands_CT_M1T_M2T_Pt1_Pt2_CHI2.push_back(iC);
-    
   }
   
     
@@ -504,6 +840,7 @@ void xsReader::bookHist() {
   h = new TH1D("n2_CandType_MuType1&2_Pt1&2_Chi2", "ncand_CandType_MuType1&2_Pt1&2_Chi2", 20, 0, 20.);
   h = new TH1D("TruthCand", "TruthCand", 10, 550., 560.);
   
+  
   // MuID Efficiency Histograms
   for ( int iy = 0; iy < fNy; ++iy ){
     for ( int ipt = 0; ipt < fNpt; ++ipt ){
@@ -569,7 +906,67 @@ void xsReader::bookHist() {
   h = new TH1D("DeltaPtoverPt_Muon", "DeltaPtoverPt_Muon", 50, -0.1, 0.1);
   h = new TH1D("DeltaEtaoverEta_Muon", "DeltaEtaoverEta_Muon", 50, -0.05, 0.05); 
   h = new TH1D("MaxDoca_Cand", "MaxDoca_Cand", 60, 0., 0.03); 
+  
+  
+  ///////////////////////////////////////////// ---- Reduced Tree
+  fTree = new TTree("m", "m");
+  fTree->Branch("m_um",  &m_um ,"m_um/F");
+  fTree->Branch("m_uP",  &m_uP ,"m_uP/F");
+  fTree->Branch("m_ue",  &m_ue ,"m_ue/F");
+  fTree->Branch("m_up",  &m_up ,"m_up/F");
+  fTree->Branch("m_gE",  &m_gE ,"m_gE/F");
+  fTree->Branch("m_gP",  &m_gP ,"m_gP/F");
+  fTree->Branch("m_ge",  &m_ge ,"m_ge/F");
+  fTree->Branch("m_gp",  &m_gp ,"m_gp/F");
+  fTree->Branch("m_xbm",  &m_xbm ,"m_xbm/F");
+  fTree->Branch("m_xbid",  &m_xbid ,"m_xbid/I");
+  fTree->Branch("m_dR",  &m_dR ,"m_dR/F");
+  
+  fTree1 = new TTree("nm", "nm");
+  fTree1->Branch("um",  &um ,"um/F");
+  fTree1->Branch("uP",  &uP ,"uP/F");
+  fTree1->Branch("ue",  &ue ,"ue/F");
+  fTree1->Branch("up",  &up ,"up/F");  
+  fTree1->Branch("gE",  &gE ,"gE/F");
+  fTree1->Branch("gP",  &gP ,"gP/F");
+  fTree1->Branch("ge",  &ge ,"ge/F");
+  fTree1->Branch("gp",  &gp ,"gp/F");
+  fTree1->Branch("dR",  &dR ,"dR/F");
+  fTree1->Branch("xbm",  &xbm ,"xbm/F");
+  
+  fTree2 = new TTree("mbg", "mbg");
+  fTree2->Branch("mbg_um",  &mbg_um ,"mbg_um/F");
+  fTree2->Branch("mbg_uP",  &mbg_uP ,"mbg_uP/F");
+  fTree2->Branch("mbg_ue",  &mbg_ue ,"mbg_ue/F");
+  fTree2->Branch("mbg_up",  &mbg_up ,"mbg_up/F");
+  fTree2->Branch("mbg_gE",  &mbg_gE ,"mbg_gE/F");
+  fTree2->Branch("mbg_gP",  &mbg_gP ,"mbg_gP/F");
+  fTree2->Branch("mbg_ge",  &mbg_ge ,"mbg_ge/F");
+  fTree2->Branch("mbg_gp",  &mbg_gp ,"mbg_gp/F");
+  fTree2->Branch("mbg_xbm", &mbg_xbm ,"mbg_xbm/F");
+  fTree2->Branch("mbg_dR",  &mbg_dR ,"mbg_dR/F");
+    
+  
+
+  // x_b histos
+  h = new TH1D("h","Histo", 10, 0., 10.);
+  h = new TH1D("n","Number of Photons per Event", 100, 0., 100.);
+  h = new TH1D("h0","Mass", 100, 9., 10.);
+  h = new TH1D("h1","Photon Energy", 100, 0., 5.);
+  h = new TH1D("h2","Mass_mumugamma", 40, 0.2, 0.6);
+  h = new TH1D("h3","Mass_mumugamma x_b2", 40, 0.2, 0.6);
+  h = new TH1D("h4","Mass_mumugamma x_b0", 40, 0.2, 0.6);
+  h = new TH1D("h5","Mass_mumugamma x_b1", 40, 0.2, 0.6);
+  h = new TH1D("h6","DiMuon Mass", 50, 8.7, 11.2);
+  h = new TH1D("hGenAngle","hGenAngle", 1000, 0., 10.);
+  h = new TH1D("hSgMatchedAngle","hSgMatchedAngle", 1000, 0., 10.);
+  h = new TH1D("hBgMatchedAngle","hBgMatchedAngle", 1000, 0., 10.);
+  h = new TH1D("hAngle","hAngle", 1000, 0., 10.);
+  
  
+  // trigger study
+  h = new TH1D("hTriggerStudy","Trigger Study", 20, 0., 20.);
+  
 }
 
 
@@ -658,6 +1055,21 @@ void xsReader::readCuts(TString filename, int dump) {
       if (dump) cout << "HLTPATH:   " << HLTPATH  << endl;
     } 
     
+    if (!strcmp(CutName, "HLTPATH1")) {
+      HLTPATH1 = SetName; ok = 1;
+      if (dump) cout << "HLTPATH1:   " << HLTPATH1  << endl;
+    }   
+    
+    if (!strcmp(CutName, "HLTPATH2")) {
+      HLTPATH2 = SetName; ok = 1;
+      if (dump) cout << "HLTPATH2:   " << HLTPATH2  << endl;
+    }
+     
+     if (!strcmp(CutName, "HLTPATH3")) {
+       HLTPATH3 = SetName; ok = 1;
+       if (dump) cout << "HLTPATH3:   " << HLTPATH3  << endl;
+    }   
+
     if (!strcmp(CutName, "PTLO")) {
       PTLO = CutValue; ok = 1;
       if (dump) cout << "PTLO:           " << PTLO << " GeV" << endl;

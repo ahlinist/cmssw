@@ -19,6 +19,7 @@
 #include "../../../AnalysisDataFormats/HeavyFlavorObjects/rootio/TAnaTrack.hh"
 #include "../../../AnalysisDataFormats/HeavyFlavorObjects/rootio/TAnaJet.hh"
 #include "../../../AnalysisDataFormats/HeavyFlavorObjects/rootio/TAnaVertex.hh"
+#include "../../../AnalysisDataFormats/HeavyFlavorObjects/rootio/JSON.hh"
 
 #include "treeReaderTNP.hh"
 
@@ -51,11 +52,15 @@ public:
   bool        isMatchedToTrig(TAnaCand *pCand, TString Label, int mode);
   bool        isRecTrackMatchedToTrig(TAnaTrack *pTrack, TString Label);
   bool        isPathFired(TString path);
+  
+  bool        isMatchedToDoubleTrig(TAnaCand *pCand, TString Label, int mode);
+  
   int         pq, tq;
   float	      pp, pf, pe, pm, pP, tp, tP, tf, te, dR; 
   float	      up, uf, ue, um;
   float	      posmuoneta, posmuonpt, negmuoneta, negmuonpt;
   int  	      fRes;
+  int         Trigger;
     
   // Cut values
   int SAMPLE;
@@ -84,19 +89,22 @@ public:
     // -- Variables
   vector<TAnaCand*> fCand;
   vector<TAnaCand*> fCandTT;
+  vector<TAnaCand*> fCandTT2;
   vector<TAnaCand*> fCandPS;
   vector<TAnaCand*> fCandTP;
   vector<TAnaCand*> fCandnotTP;
   vector<TAnaCand*> fCandGP;
   vector<TAnaCand*> fCandnotGP;  
   
-  static const int  fNpt = 3;
-  static const int  fNeta = 3;
+  static const int  fNpt = 4;
+  static const int  fNeta = 5;
   static const int  fNq = 1;
   double      fPTbin[fNpt+1], fEtabin[fNeta+1];
   int fQ[fNq+1];
   int fBin;
   double fMassLow, fMassHigh;
+
+  JSON   *fpJSON;
 };
 
 #endif

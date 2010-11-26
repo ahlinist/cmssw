@@ -145,8 +145,11 @@ int treeReaderTNP::loop(int nevents, int start) {
 
     fEvent = jEvent; 
     fpEvt->Clear();                        
-    nb += fpChain->GetEvent(jEvent);          
-
+    nb += fpChain->GetEvent(jEvent);     
+     
+    fRun = fpEvt->fRunNumber;
+    fLS  = fpEvt->fLumiSection;
+     
     eventProcessing(); 
   }
   return 0;
