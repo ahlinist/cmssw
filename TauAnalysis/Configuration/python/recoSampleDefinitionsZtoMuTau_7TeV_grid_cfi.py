@@ -9,6 +9,7 @@ SAMPLES_TO_ANALYZE = [
     'data_Mu_Run2010A_Sep17ReReco',
     'data_Mu_Run2010A_Nov4ReReco',
     'data_Mu_Run2010B_Nov4ReReco',
+    'data_Mu_Run2010B_Prompt',
     ##'Ztautau', 'qqZtautau',
     'ZtautauPU156bx',
     'qqZtautau',
@@ -128,6 +129,33 @@ RECO_SAMPLES = {
         },
         'enableSysUncertainties' : False,
         'enableFakeRates' : True
+    },
+    # Keep this here temporarily as the Nov4th is swamped
+    'data_Mu_Run2010B_Prompt' : {
+        'datasetpath' : '/Mu/Run2010B-PromptReco-v2/RECO',
+        'dbs_url' :  "http://cmsdbsprod.cern.ch/cms_dbs_prod_global/servlet/DBSServlet",
+        'lumi_mask' : "/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions10/7TeV/StreamExpress/Cert_132440-149442_7TeV_StreamExpress_Collisions10_JSON_v2.txt",
+        'runselection' : '145762 - 149442',
+        'number_of_jobs' : 1000,
+        'conditions' : 'GR_R_38X_V13::All',
+        'events_processed' : -1,
+        'skim_eff' : 1.0,
+        'type' : 'Data',
+        'drawOption' : styles.drawOption_Data,
+        'hlt_paths' : {
+            'HLT_Mu9'               : '132440:MIN-147116:MAX',  # period A
+            'HLT_IsoMu9'            : '147196:MIN-148058:MAX',  # period B
+            'HLT_Mu11'              : '147196:MIN-148058:MAX',  # period B
+            'HLT_IsoMu13_v3'        : '148822:MIN-149182:MAX',  # period C
+            'HLT_IsoMu13_v4'        : '147196:MIN-149442:MAX',  # period B
+            'HLT_Mu15_v1'           : '147196:MIN-149442:MAX',  # period B
+            'HLT_IsoMu9_PFTau15_v1' : '148822:MIN-149182:MAX',  # period C
+            'HLT_IsoMu9_PFTau15_v2' : '149291:MIN-149442:MAX',  # period C
+            'HLT_Mu11_PFTau15_v1'   : '148822:MIN-149182:MAX',
+            'HLT_Mu11_PFTau15_v2'   : '149291:MIN-149442:MAX'
+        },
+        'enableSysUncertainties' : False,
+        'enableFakeRates' : True,
     },
     'Ztautau' : {
         'datasetpath' : "/DYToTauTau_M-20_TuneZ2_7TeV-pythia6-tauola/Fall10-START38_V12-v1/GEN-SIM-RECO",
@@ -313,7 +341,7 @@ RECO_SAMPLES = {
     'TTplusJets' : {
         ##'datasetpath' : "/TT_TuneZ2_7TeV-pythia6-tauola/Fall10-E7TeV_ProbDist_2010Data_BX156_START38_V12-v1/GEN-SIM-RECO",
         'datasetpath' : "/TT_TuneZ2_7TeV-pythia6-tauola/Fall10-START38_V12-v1/GEN-SIM-RECO",
-	'dbs_url' :  "http://cmsdbsprod.cern.ch/cms_dbs_prod_global/servlet/DBSServlet",
+        'dbs_url' :  "http://cmsdbsprod.cern.ch/cms_dbs_prod_global/servlet/DBSServlet",
         'events_processed' : 1099550,
         'skim_eff' : 1.0,
         'x_sec' : 165*_picobarns, # NNLO cross-section from https://twiki.cern.ch/twiki/bin/viewauth/CMS/StandardModelCrossSections
@@ -325,7 +353,7 @@ RECO_SAMPLES = {
         ##'hlt' : cms.InputTag("TriggerResults", "", "REDIGI38XPU")
         'hlt' : cms.InputTag("TriggerResults", "", "REDIGI38X")
     }
-}
+    }
 
 # Define samples that get merged together
 MERGE_SAMPLES = {
