@@ -2,11 +2,11 @@
 #define TauAnalysis_DQMTools_DQMHistPlotter_h
 
 /** \class EWKTauEffHistogramPlotter
- *  
+ *
  *  Class to plot histograms and create a postscript file
  *
- *  $Date: 2009/11/12 15:39:12 $
- *  $Revision: 1.4 $
+ *  $Date: 2009/11/20 15:27:32 $
+ *  $Revision: 1.5 $
  *  \author Christian Veelken, UC Davis
  */
 
@@ -30,7 +30,7 @@ class DQMHistPlotter : public edm::EDAnalyzer
 {
   typedef std::vector<std::string> vstring;
 
-  struct cfgEntryProcess 
+  struct cfgEntryProcess
   {
     cfgEntryProcess(const std::string&, const edm::ParameterSet&);
     void print() const;
@@ -46,12 +46,14 @@ class DQMHistPlotter : public edm::EDAnalyzer
     explicit cfgEntryAxisX(const std::string&, const edm::ParameterSet&);
     void print() const;
     void applyTo(TH1*) const;
+    void rebin(TH1*) const;
     std::string name_;
     double minX_;
     double maxX_;
     std::string xAxisTitle_;
     double xAxisTitleOffset_;
     double xAxisTitleSize_;
+    int rebin_;
   };
 
   struct cfgEntryAxisY
@@ -114,7 +116,7 @@ class DQMHistPlotter : public edm::EDAnalyzer
     vstring text_;
   };
 
-  struct cfgEntryDrawOption 
+  struct cfgEntryDrawOption
   {
     cfgEntryDrawOption(const std::string&, const edm::ParameterSet&);
     cfgEntryDrawOption(const std::string&, const cfgEntryDrawOption&);
@@ -146,12 +148,12 @@ class DQMHistPlotter : public edm::EDAnalyzer
     bool doStack_;
     bool isErrorBand_;
   };
-  
+
   typedef std::vector<plotDefEntry> plotDefList;
 
-  struct cfgEntryDrawJob 
+  struct cfgEntryDrawJob
   {
-    cfgEntryDrawJob(const std::string&, const std::string&, 
+    cfgEntryDrawJob(const std::string&, const std::string&,
 		    const plotDefList&, double,
 		    const std::string&, const std::string&, const std::string&, const std::string&, const vstring&);
     void print() const;
@@ -170,7 +172,7 @@ class DQMHistPlotter : public edm::EDAnalyzer
   explicit DQMHistPlotter(const edm::ParameterSet&);
   virtual ~DQMHistPlotter();
   virtual void analyze(const edm::Event&, const edm::EventSetup&);
-  virtual void endJob();  
+  virtual void endJob();
 
 private:
   std::map<std::string, cfgEntryProcess> processes_;
