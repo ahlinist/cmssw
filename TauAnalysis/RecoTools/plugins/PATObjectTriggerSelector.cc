@@ -5,7 +5,7 @@
  *
  * \author Christian, UC Davis
  *
- * \version $Revision: 1.1 $
+ * \version $Revision: 1.2 $
  */
 
 #include <boost/shared_ptr.hpp>
@@ -84,7 +84,8 @@ void PATTriggerRangeInfoProducer<T>::produce(edm::Event& evt,
       // Check to see if this trigger is valid for the current run range
       if (path.isInRange(evt)) {
         // Check if this pat tau is matched to this trigger object
-        if (!outputObject.triggerObjectMatchesByPath(
+        if (path.hltPathName_ == "*" ||
+            !outputObject.triggerObjectMatchesByPath(
                 path.hltPathName_).empty()) {
           // std::cout << "matches!" << std::endl;
           passesTrigger = true;
