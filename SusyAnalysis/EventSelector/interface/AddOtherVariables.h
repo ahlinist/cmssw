@@ -49,7 +49,7 @@ private:
    edm::InputTag vertex_;///< tag for vertex
    //   edm::InputTag tauTag_;      ///< tag for tau      input collection
  
-   double weight_, jetptmin_, jetetamax_;
+   double weight_, jetptmin_, jetetamaxHT_, jetetamaxMHT_;
    bool   useJetID_, rejectEvtJetID_;
 };
 #endif

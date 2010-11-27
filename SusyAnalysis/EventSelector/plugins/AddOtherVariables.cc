@@ -30,7 +30,8 @@ AddOtherVariables::AddOtherVariables(const edm::ParameterSet& pset) :
    vertex_(pset.getParameter<edm::InputTag> ("vertex")),
 
    jetptmin_(pset.getParameter<double> ("JetPtMin")), 
-   jetetamax_(pset.getParameter<double> ("JetEtaMax")), 
+   jetetamaxHT_(pset.getParameter<double> ("JetEtaMaxHT")), 
+   jetetamaxMHT_(pset.getParameter<double> ("JetEtaMaxMHT")), 
    useJetID_(pset.getParameter<bool> ("useJetID")),
    rejectEvtJetID_(pset.getParameter<bool> ("rejectEvtJetID"))
 //  tauTag_    ( pset.getParameter<edm::InputTag>("tau")       ),
@@ -46,6 +47,41 @@ AddOtherVariables::AddOtherVariables(const edm::ParameterSet& pset) :
    defineVariable("dPhiMin");
    defineVariable("dPhiBiased");
    defineVariable("JetMult");
+
+   defineVariable("MHTphi");
+   defineVariable("METphi");
+
+   defineVariable("dPhiMin2");
+   defineVariable("dPhiMin3");
+   defineVariable("dPhiMin4");
+   defineVariable("dPhiMinPt60");
+   defineVariable("dPhiMinPt80");
+   defineVariable("dPhiMinPt100");
+
+   defineVariable("dPhiDual2");
+   defineVariable("dPhiDual3");
+   defineVariable("dPhiDual4");
+   defineVariable("dPhiDualPt60");
+   defineVariable("dPhiDualPt80");
+   defineVariable("dPhiDualPt100");
+
+   defineVariable("dPhiBiased2");
+   defineVariable("dPhiBiased3");
+   defineVariable("dPhiBiased4");
+   defineVariable("dPhiBiasedPt60");
+   defineVariable("dPhiBiasedPt80");
+   defineVariable("dPhiBiasedPt100");
+
+   defineVariable("deltaPhiJet12");
+   defineVariable("deltaPhiJet13");
+   defineVariable("deltaPhiJet23");
+   defineVariable("dRJet12");
+   defineVariable("dRJet13");
+   defineVariable("dRJet23");
+   defineVariable("deltaPhiJet1MHT");
+   defineVariable("deltaPhiJet2MHT");
+   defineVariable("deltaPhiJet3MHT");
+ 
    //.... other variables we don't cut on and are not produced in other selectors
 
 
@@ -62,7 +98,7 @@ double AddOtherVariables::dPhiBiased(const edm::View<reco::Candidate> * jets,
          const edm::View<reco::Candidate>::const_iterator excljet) const {
    math::PtEtaPhiMLorentzVector mhtvec(0.0, 0.0, 0.0, 0.0);
    for (edm::View<reco::Candidate>::const_iterator jet = jets->begin(); jet != jets->end(); ++jet) {
-      if (fabs(jet->eta()) > jetetamax_)
+      if (fabs(jet->eta()) > jetetamaxMHT_)
          continue;
       if (jet->pt() < jetptmin_)
          continue;
@@ -126,75 +162,214 @@ bool AddOtherVariables::isLoose(const pat::Jet* jet) const {
 //__________________________________________________________________________________________________
 bool AddOtherVariables::select(const edm::Event& event) const {
 
-   // Input collections
-   edm::Handle<std::vector<pat::Electron> > eleHandle;
-   event.getByLabel(electronTag_, eleHandle);
-   edm::Handle<std::vector<pat::Muon> > muonHandle;
-   event.getByLabel(muonTag_, muonHandle);
-   reco::Vertex myBeamSpot;
-   edm::Handle <edm::View<reco::Vertex> >vertices;
-   event.getByLabel(vertex_, vertices); 
-   if(!vertices->empty() && !vertices->front().isFake() )
-     myBeamSpot = vertices->front();
-   //const math::XYZPointD & myPosition = myBeamSpot.position();
-   //  edm::Handle< std::vector<pat::Tau> > tauHandle;
-   //  event.getByLabel(tauTag_, tauHandle);
+  // Input collections
+  edm::Handle<std::vector<pat::Electron> > eleHandle;
+  event.getByLabel(electronTag_, eleHandle);
+  edm::Handle<std::vector<pat::Muon> > muonHandle;
+  event.getByLabel(muonTag_, muonHandle);
+  reco::Vertex myBeamSpot;
+  edm::Handle <edm::View<reco::Vertex> >vertices;
+  event.getByLabel(vertex_, vertices); 
+  if(!vertices->empty() && !vertices->front().isFake() )
+    myBeamSpot = vertices->front();
+  //const math::XYZPointD & myPosition = myBeamSpot.position();
+  //  edm::Handle< std::vector<pat::Tau> > tauHandle;
+  //  event.getByLabel(tauTag_, tauHandle);
 
-   //jet collection - can be either reco::jet or pat::jet
-   edm::Handle<edm::View<reco::Candidate> > jet_hnd;
-   event.getByLabel(jetTag_, jet_hnd);
+  //jet collection - can be either reco::jet or pat::jet
+  edm::Handle<edm::View<reco::Candidate> > jet_hnd;
+  event.getByLabel(jetTag_, jet_hnd);
 
-   //MET collection - can be either reco::jet or pat::jet
-   edm::Handle<edm::View<reco::MET> > met_hnd;
-   event.getByLabel(metTag_, met_hnd);
+  //MET collection - can be either reco::jet or pat::jet
+  edm::Handle<edm::View<reco::MET> > met_hnd;
+  event.getByLabel(metTag_, met_hnd);
 
+  double ht = 0.0, SEt=0;
+  double _dPhiMin2 = 999.;
+  double _dPhiMin3 = 999.;
+  double _dPhiMin4 = 999.;
+  double _dPhiMinPt60 = 999.;
+  double _dPhiMinPt80 = 999.;
+  double _dPhiMinPt100 = 999.;
+  double _dPhiDual2 = 999.;
+  double _dPhiDual3 = 999.;
+  double _dPhiDual4 = 999.;
+  double _dPhiDualPt60 = 999.;
+  double _dPhiDualPt80 = 999.;
+  double _dPhiDualPt100 = 999.;
+  double _dPhiBiased2 = 999.;
+  double _dPhiBiased3 = 999.;
+  double _dPhiBiased4 = 999.;
+  double _dPhiBiasedPt60 = 999.;
+  double _dPhiBiasedPt80 = 999.;
+  double _dPhiBiasedPt100 = 999.;
+  double _deltaPhiJet12 = 999.;
+  double _deltaPhiJet13 = 999.;
+  double _deltaPhiJet23 = 999.;
+  double _dRJet12 = 999.;
+  double _dRJet13 = 999.;
+  double _dRJet23 = 999.;
+  double _deltaPhiJet1MHT = 999.;
+  double _deltaPhiJet2MHT = 999.;
+  double _deltaPhiJet3MHT = 999.;
 
-   double ht = 0.0, dphimin = 999., dphibiased = 999., SEt=0;
-   int jetmult = 0;
-   math::PtEtaPhiMLorentzVector mhtvec(0.0, 0.0, 0.0, 0.0);
-   std::vector<LorentzV> goodJets;
+  int jetmult = 0;
+  math::PtEtaPhiMLorentzVector mhtvec(0.0, 0.0, 0.0, 0.0);
+  std::vector<LorentzV> goodJets;
 
-   //loop over all jets - use only those fulfilling the cuts defined in cfg file
-   for (edm::View<reco::Candidate>::const_iterator jet = jet_hnd->begin(); jet != jet_hnd->end(); ++jet) {
-      const pat::Jet * patjet = static_cast<const pat::Jet*>( &(*jet) );
-      if (!isLoose(patjet)) continue;       //jet ID
+  //loop over all jets - use only those fulfilling the cuts defined in cfg file
+  for (edm::View<reco::Candidate>::const_iterator jet = jet_hnd->begin(); jet != jet_hnd->end(); ++jet) {
+    const pat::Jet * patjet = static_cast<const pat::Jet*>( &(*jet) );
+    if (!isLoose(patjet)) continue;       //jet ID
 
-      SEt += patjet->correctedJet(pat::JetCorrFactors::Raw).pt();
+    SEt += patjet->correctedJet(pat::JetCorrFactors::Raw).pt();
 
-      if (fabs(jet->eta()) > jetetamax_) continue;
-      if (jet->pt() < jetptmin_) continue;
+    if (jet->pt() < jetptmin_) continue;
+    if (fabs(jet->eta()) <= jetetamaxHT_) ht += jet->pt();
+    if (fabs(jet->eta()) > jetetamaxMHT_) continue;
 
-      goodJets.push_back(jet->p4());
-      mhtvec -= jet->p4();
-      ht += jet->pt();
-      ++jetmult;
-   }
+    goodJets.push_back(jet->p4());
+    mhtvec -= jet->p4();
 
-   math::PtEtaPhiMLorentzVector bias_mhtvec(0.0, 0.0, 0.0, 0.0);
-   for (unsigned i = 0; i < goodJets.size(); i++) {
-     if(i >= 3 ) break;
+    ++jetmult;
+  }
 
-     if ( fabs(deltaPhi(goodJets[i], mhtvec)) < dphimin )
-       dphimin = fabs(deltaPhi(goodJets[i], mhtvec));
+  math::PtEtaPhiMLorentzVector bias_mhtvec(0.0, 0.0, 0.0, 0.0);
+  for (unsigned i = 0; i < goodJets.size(); i++) {
 
-     bias_mhtvec = mhtvec + goodJets[i];
-     if ( fabs(deltaPhi(goodJets[i], bias_mhtvec)) < dphibiased )
-       dphibiased = fabs(deltaPhi(goodJets[i], bias_mhtvec));
-   }
+    bias_mhtvec = mhtvec + goodJets[i];
 
-   resetVariables();
-   setVariable("HT",  ht); 
-   setVariable("MHT", mhtvec.pt());
-   if (ht) setVariable("MHTsig",mhtvec.pt() / sqrt(ht));
-   setVariable("JetMult",jetmult);
-   setVariable("alphaT", alphaT(goodJets));
-   setVariable("dPhiMin",dphimin);
-   setVariable("dPhiBiased",dphibiased);
-   setVariable("SET", SEt); 
-   setVariable("MET", met_hnd->front().et());
-   if (SEt) setVariable("METsig",met_hnd->front().et() / sqrt(SEt));
+    if(i < 4 ) {
+      if ( fabs(deltaPhi(goodJets[i], mhtvec)) < _dPhiMin4 )
+	_dPhiMin4 = fabs(deltaPhi(goodJets[i], mhtvec));
+      if ( fabs(deltaPhi(goodJets[i], mhtvec)) < _dPhiDual4 )
+	_dPhiDual4 = fabs(deltaPhi(goodJets[i], mhtvec));
+      if ( TMath::Pi() - fabs(deltaPhi(goodJets[i], mhtvec)) < _dPhiDual4 )
+	_dPhiDual4 = TMath::Pi() - fabs(deltaPhi(goodJets[i], mhtvec));
+      if ( fabs(deltaPhi(goodJets[i], bias_mhtvec)) < _dPhiBiased4 )
+	_dPhiBiased4 = fabs(deltaPhi(goodJets[i], bias_mhtvec));
+    }
 
-   return true;
+    if(i < 3 ) {
+      if ( fabs(deltaPhi(goodJets[i], mhtvec)) < _dPhiMin3 )
+	_dPhiMin3 = fabs(deltaPhi(goodJets[i], mhtvec));
+      if ( fabs(deltaPhi(goodJets[i], mhtvec)) < _dPhiDual3 )
+	_dPhiDual3 = fabs(deltaPhi(goodJets[i], mhtvec));
+      if ( TMath::Pi() - fabs(deltaPhi(goodJets[i], mhtvec)) < _dPhiDual3 )
+	_dPhiDual3 = TMath::Pi() - fabs(deltaPhi(goodJets[i], mhtvec));
+      if ( fabs(deltaPhi(goodJets[i], bias_mhtvec)) < _dPhiBiased3 )
+	_dPhiBiased3 = fabs(deltaPhi(goodJets[i], bias_mhtvec));
+    }
+
+    if(i < 2 ) {
+      if ( fabs(deltaPhi(goodJets[i], mhtvec)) < _dPhiMin2 )
+	_dPhiMin2 = fabs(deltaPhi(goodJets[i], mhtvec));
+      if ( fabs(deltaPhi(goodJets[i], mhtvec)) < _dPhiDual2 )
+	_dPhiDual2 = fabs(deltaPhi(goodJets[i], mhtvec));
+      if ( TMath::Pi() - fabs(deltaPhi(goodJets[i], mhtvec)) < _dPhiDual2 )
+	_dPhiDual2 = TMath::Pi() - fabs(deltaPhi(goodJets[i], mhtvec));
+      if ( fabs(deltaPhi(goodJets[i], bias_mhtvec)) < _dPhiBiased2 )
+	_dPhiBiased2 = fabs(deltaPhi(goodJets[i], bias_mhtvec));
+    }
+
+    if( goodJets[i].Pt() > 60 ) {
+      if ( fabs(deltaPhi(goodJets[i], mhtvec)) < _dPhiMinPt60 )
+	_dPhiMinPt60 = fabs(deltaPhi(goodJets[i], mhtvec));
+      if ( fabs(deltaPhi(goodJets[i], mhtvec)) < _dPhiDualPt60 )
+	_dPhiDualPt60 = fabs(deltaPhi(goodJets[i], mhtvec));
+      if ( TMath::Pi() - fabs(deltaPhi(goodJets[i], mhtvec)) < _dPhiDualPt60 )
+	_dPhiDualPt60 = TMath::Pi() - fabs(deltaPhi(goodJets[i], mhtvec));
+      if ( fabs(deltaPhi(goodJets[i], bias_mhtvec)) < _dPhiBiasedPt60 )
+	_dPhiBiasedPt60 = fabs(deltaPhi(goodJets[i], bias_mhtvec));
+    }
+
+    if( goodJets[i].Pt() > 80 ) {
+      if ( fabs(deltaPhi(goodJets[i], mhtvec)) < _dPhiMinPt80 )
+	_dPhiMinPt80 = fabs(deltaPhi(goodJets[i], mhtvec));
+      if ( fabs(deltaPhi(goodJets[i], mhtvec)) < _dPhiDualPt80 )
+	_dPhiDualPt80 = fabs(deltaPhi(goodJets[i], mhtvec));
+      if ( TMath::Pi() - fabs(deltaPhi(goodJets[i], mhtvec)) < _dPhiDualPt80 )
+	_dPhiDualPt80 = TMath::Pi() - fabs(deltaPhi(goodJets[i], mhtvec));
+      if ( fabs(deltaPhi(goodJets[i], bias_mhtvec)) < _dPhiBiasedPt80 )
+	_dPhiBiasedPt80 = fabs(deltaPhi(goodJets[i], bias_mhtvec));
+    }
+
+    if( goodJets[i].Pt() > 100 ) {
+      if ( fabs(deltaPhi(goodJets[i], mhtvec)) < _dPhiMinPt100 )
+	_dPhiMinPt100 = fabs(deltaPhi(goodJets[i], mhtvec));
+      if ( fabs(deltaPhi(goodJets[i], mhtvec)) < _dPhiDualPt100 )
+	_dPhiDualPt100 = fabs(deltaPhi(goodJets[i], mhtvec));
+      if ( TMath::Pi() - fabs(deltaPhi(goodJets[i], mhtvec)) < _dPhiDualPt100 )
+	_dPhiDualPt100 = TMath::Pi() - fabs(deltaPhi(goodJets[i], mhtvec));
+      if ( fabs(deltaPhi(goodJets[i], bias_mhtvec)) < _dPhiBiasedPt100 )
+	_dPhiBiasedPt100 = fabs(deltaPhi(goodJets[i], bias_mhtvec));
+    }
+
+  }
+
+  if( goodJets.size() >= 1 ) {
+    _deltaPhiJet1MHT = deltaPhi(goodJets[0], mhtvec);
+  }
+  if( goodJets.size() >= 2 ) {
+    _deltaPhiJet2MHT = deltaPhi(goodJets[1], mhtvec);
+    _deltaPhiJet12 = deltaPhi(goodJets[0].Phi(), goodJets[1].Phi());
+    _dRJet12 = deltaR(goodJets[0], goodJets[1]);
+  }
+  if( goodJets.size() >= 3 ) {
+    _deltaPhiJet3MHT = deltaPhi(goodJets[2], mhtvec);
+    _deltaPhiJet13 = deltaPhi(goodJets[0].Phi(), goodJets[2].Phi());
+    _dRJet13 = deltaR(goodJets[0], goodJets[2]);
+    _deltaPhiJet23 = deltaPhi(goodJets[1].Phi(), goodJets[2].Phi());
+    _dRJet23 = deltaR(goodJets[1], goodJets[2]);
+  }
+
+  resetVariables();
+  setVariable("HT",  ht); 
+  setVariable("MHT", mhtvec.pt());
+  if (ht) setVariable("MHTsig",mhtvec.pt() / sqrt(ht));
+  setVariable("JetMult",jetmult);
+  setVariable("alphaT", alphaT(goodJets));
+  setVariable("dPhiMin", _dPhiMin3);
+  setVariable("dPhiBiased", _dPhiBiased3);
+  setVariable("SET", SEt); 
+  setVariable("MET", met_hnd->front().et());
+  if (SEt) setVariable("METsig",met_hnd->front().et() / sqrt(SEt));
+
+  setVariable("MHTphi", mhtvec.phi());
+  setVariable("METphi", met_hnd->front().phi());
+
+  setVariable("dPhiMin2", _dPhiMin2 );
+  setVariable("dPhiMin3", _dPhiMin3 );
+  setVariable("dPhiMin4", _dPhiMin4 );
+  setVariable("dPhiMinPt60", _dPhiMinPt60 );
+  setVariable("dPhiMinPt80", _dPhiMinPt80 );
+  setVariable("dPhiMinPt100", _dPhiMinPt100 );
+
+  setVariable("dPhiDual2", _dPhiDual2 );
+  setVariable("dPhiDual3", _dPhiDual3 );
+  setVariable("dPhiDual4", _dPhiDual4 );
+  setVariable("dPhiDualPt60", _dPhiDualPt60 );
+  setVariable("dPhiDualPt80", _dPhiDualPt80 );
+  setVariable("dPhiDualPt100", _dPhiDualPt100 );
+
+  setVariable("dPhiBiased2", _dPhiBiased2 );
+  setVariable("dPhiBiased3", _dPhiBiased3 );
+  setVariable("dPhiBiased4", _dPhiBiased4 );
+  setVariable("dPhiBiasedPt60", _dPhiBiasedPt60 );
+  setVariable("dPhiBiasedPt80", _dPhiBiasedPt80 );
+  setVariable("dPhiBiasedPt100", _dPhiBiasedPt100 );
+
+  setVariable("deltaPhiJet12", _deltaPhiJet12 );
+  setVariable("deltaPhiJet13", _deltaPhiJet13 );
+  setVariable("deltaPhiJet23", _deltaPhiJet23 );
+  setVariable("dRJet12", _dRJet12 );
+  setVariable("dRJet13", _dRJet13 );
+  setVariable("dRJet23", _dRJet23 );
+  setVariable("deltaPhiJet1MHT", _deltaPhiJet1MHT );
+  setVariable("deltaPhiJet2MHT", _deltaPhiJet2MHT );
+  setVariable("deltaPhiJet3MHT", _deltaPhiJet3MHT );
+
+  return true;
 }
 //__________________________________________________________________________________________________
 #include "FWCore/PluginManager/interface/ModuleDef.h"

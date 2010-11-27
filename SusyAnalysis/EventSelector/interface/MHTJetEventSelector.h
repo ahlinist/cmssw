@@ -26,23 +26,27 @@
 
 
 class MHTJetEventSelector: public SusyEventSelector {
-   public:
-      MHTJetEventSelector(const edm::ParameterSet&);
-      virtual bool select(const edm::Event&) const;
-      virtual ~MHTJetEventSelector() {
-      }
-   private:
-      edm::InputTag metTag_; ///< tag for input collection
-      edm::InputTag jetTag_; ///< tag for input collection
+ public:
+  MHTJetEventSelector(const edm::ParameterSet&);
+  virtual bool select(const edm::Event&) const;
+  virtual ~MHTJetEventSelector() {
+  }
 
-      float mhtDphiMin_; ///< Minimum angle between MET and any leading jet
-      float dPhiJet1MHTMin_; ///< Minimum angle between MET and 1nd leading jet
-      float dPhiJet2MHTMin_; ///< Minimum angle between MET and 2nd leading jet
-      float rDistJetsMin_; ///< Minimum R1 and R2
-      unsigned int nJetsMHTIso_; ///<  Nr. of jets for MET isolation
-      float minPt_; ///< minimum Pt of jets taken into account
-      float maxEta_; ///< maximum Eta of jets taken into account
-      bool useJetID_;
-      bool rejectEvtJetID_;
+ protected:
+  typedef ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > LorentzV;
+
+ private:
+  edm::InputTag metTag_; ///< tag for input collection
+  edm::InputTag jetTag_; ///< tag for input collection
+
+  float mhtDphiMin_; ///< Minimum angle between MET and any leading jet
+  float dPhiJet1MHTMin_; ///< Minimum angle between MET and 1nd leading jet
+  float dPhiJet2MHTMin_; ///< Minimum angle between MET and 2nd leading jet
+  float rDistJetsMin_; ///< Minimum R1 and R2
+  unsigned int nJetsMHTIso_; ///<  Nr. of jets for MET isolation
+  float minPt_; ///< minimum Pt of jets taken into account
+  float maxEta_; ///< maximum Eta of jets taken into account
+  bool useJetID_;
+  bool rejectEvtJetID_;
 };
 #endif
