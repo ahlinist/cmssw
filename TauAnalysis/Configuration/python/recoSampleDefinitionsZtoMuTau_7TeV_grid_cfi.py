@@ -81,14 +81,13 @@ RECO_SAMPLES = {
         'dbs_url' :  "http://cmsdbsprod.cern.ch/cms_dbs_prod_global/servlet/DBSServlet",
         'lumi_mask' : "/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions10/7TeV/Reprocessing/Cert_132440-144114_7TeV_Sep17ReReco_Collisions10_JSON_v2.txt",
         'runselection' : "132440-135735",
-        'number_of_jobs' : 500,
         'conditions' : 'GR_R_38X_V14::All',
         'events_processed' : -1,
         'skim_eff' : 1.0,
         'type' : 'Data',
         'drawOption' : styles.drawOption_Data,
         'enableSysUncertainties' : False,
-        'enableFakeRates' : True,
+        'enableFakeRates' : True
     },
     'data_Mu_Run2010A_Nov4ReReco' : {
         'datasetpath' : '/Mu/Run2010A-Nov4ReReco_v1/RECO',
@@ -155,7 +154,7 @@ RECO_SAMPLES = {
             'HLT_Mu11_PFTau15_v2'   : '149291:MIN-149442:MAX'
         },
         'enableSysUncertainties' : False,
-        'enableFakeRates' : True,
+        'enableFakeRates' : True
     },
     'Ztautau' : {
         'datasetpath' : "/DYToTauTau_M-20_TuneZ2_7TeV-pythia6-tauola/Fall10-START38_V12-v1/GEN-SIM-RECO",
@@ -299,6 +298,7 @@ RECO_SAMPLES = {
     },
     'Wenu' : {
         'datasetpath' : "/WToENu_TuneZ2_7TeV-pythia6/Fall10-E7TeV_ProbDist_2010Data_BX156_START38_V12-v1/GEN-SIM-RECO",
+        'dbs_url' :  "http://cmsdbsprod.cern.ch/cms_dbs_prod_global/servlet/DBSServlet",
         'events_processed' : 5021834,
         'skim_eff' : 1.0,
         'x_sec' : 1.32*7899*_picobarns, # W --> e nucorrection factor for NLO/LO cross-sections = 1.32
@@ -308,11 +308,12 @@ RECO_SAMPLES = {
         'drawOption' : styles.drawOption_WplusJets,
         'applyMuonTriggerEfficiencyCorrection' : True,
         'applyVertexMultiplicityReweighting' : True,
-        'SE_black_list' : 'T2_TW_Taiwan',
-        'hlt' : cms.InputTag("TriggerResults", "", "REDIGI38XPU")
+        'hlt' : cms.InputTag("TriggerResults", "", "REDIGI38XPU"),
+        'SE_black_list' : 'T2_TW_Taiwan'
     },
     'Wmunu' : {
         'datasetpath' : "/WToMuNu_TuneZ2_7TeV-pythia6/Fall10-E7TeV_ProbDist_2010Data_BX156_START38_V12-v1/GEN-SIM-RECO",
+        'dbs_url' :  "http://cmsdbsprod.cern.ch/cms_dbs_prod_global/servlet/DBSServlet",
         'events_processed' : 5283540,
         'skim_eff' : 1.0,
         'x_sec' : 1.32*7899*_picobarns, # W --> mu nu correction factor for NLO/LO cross-sections = 1.32
@@ -321,11 +322,12 @@ RECO_SAMPLES = {
         'drawOption' : styles.drawOption_WplusJets,
         'applyMuonTriggerEfficiencyCorrection' : True,
         'applyVertexMultiplicityReweighting' : True,
-        'SE_black_list' : 'T2_TW_Taiwan',
         'hlt' : cms.InputTag("TriggerResults", "", "REDIGI38XPU"),
+        'SE_black_list' : 'T2_TW_Taiwan'
     },
     'Wtaunu' : {
         'datasetpath' : "/WToTauNu_TuneZ2_7TeV-pythia6-tauola/Fall10-E7TeV_ProbDist_2010Data_BX156_START38_V12-v1/GEN-SIM-RECO",
+        'dbs_url' :  "http://cmsdbsprod.cern.ch/cms_dbs_prod_global/servlet/DBSServlet",
         'events_processed' : 5193750,
         'skim_eff' : 1.0,
         'x_sec' : 1.32*7899*_picobarns, # W --> tau nu correction factor for NLO/LO cross-sections = 1.32
