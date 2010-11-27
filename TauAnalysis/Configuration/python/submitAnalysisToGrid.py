@@ -2,30 +2,12 @@ import FWCore.ParameterSet.Config as cms
 
 import copy
 
-from Configuration.PyReleaseValidation.autoCond import autoCond
+from TauAnalysis.Configuration.prepareConfigFile2 import prepareConfigFile2
 from TauAnalysis.Configuration.submitToGrid2 import submitToGrid
 
 _PLOT_FILES_PREFIX = 'plots'
 
-_JOB_OPTIONS_DEFAULTS = [
-    ('maxEvents', -1),
-    ('inputFileType', 'RECO/AOD'),
-    ('isBatchMode', True),
-    ('plotsOutputFileName', _PLOT_FILES_PREFIX)
-]
-
-def _get_conditions(globalTag):
-    """ Retrieve appropriate conditions
-
-    Conditions can be automatically retrieved using the autoCond
-    utility if the input is in [mc, startup, com10, craft09, etc]
-    """
-    if globalTag in autoCond:
-        return autoCond[globalTag]
-    else:
-        return globalTag
-
-def _number_of_jobs(sample_info, preferred=10000, max_jobs=300):
+def _number_of_jobs(sample_info, preferred = 10000, max_jobs = 300):
     """
     Try to run on <preferred> events per job, unless it would
     create to many jobs.
@@ -46,13 +28,13 @@ def submitAnalysisToGrid(configFile = None, channel = None, samples = None,
                          samplesToAnalyze = None, samplesToSkip = None,
                          disableFactorization = False,
                          disableSysUncertainties = False,
-                         create=True, submit=True,
-                         cfgdir='crab', inputFileMap=None,
-                         outputFileMap=None,
-                         enableEventDumps=False,
-                         enableFakeRates=False,
+                         create = True, submit = True,
+                         cfgdir = 'crab', inputFileMap = None,
+                         outputFileMap = None,
+                         enableEventDumps = False,
+                         enableFakeRates = False,
                          processName = None,
-                         saveFinalEvents=False):
+                         saveFinalEvents = False):
     """
     Submit analysis job (event selection, filling of histogram)
     via crab
@@ -87,6 +69,17 @@ def submitAnalysisToGrid(configFile = None, channel = None, samples = None,
                 continue
         print "Submitting ", sample
 
+        newConfigFile = prepareConfigFile2(
+          configFile = configFile, channel = channel, sample_infos = samples, sample = sample,
+          outputFilePath = outputFilePath, jobId = jobId,
+          disableFactorization = disableFactorization,
+          disableSysUncertainties = disableSysUncertainties,
+          cfgdir = 'crab',
+          inputFileMap = inputFileMap, outputFileMap = outputFileMap,
+          enableEventDumps = enableEventDumps, enableFakeRates = enableFakeRates,
+          processName = processName,
+          saveFinalEvents = saveFinalEvents)
+
         sample_info = samples['RECO_SAMPLES'][sample]
         # Make job info
         jobInfo = {
@@ -94,78 +87,6 @@ def submitAnalysisToGrid(configFile = None, channel = None, samples = None,
             'sample' : sample,
             'id' : jobId
         }
-        jobOptions = copy.copy(_JOB_OPTIONS_DEFAULTS)
-
-        # Change the process name if desired.  Used for local running
-        jobOptions.append(('processName', processName))
-
-        # Check if we want to disable the duplicate check mode for events.
-        # This is needed for the embedded Ztautau sample.
-        jobOptions.append(('disableDuplicateCheck',
-                           sample_info['disableDuplicateCheck']))
-
-        # Check if we want to use a special file for the produced cfg file
-        # File map is a function that takes a sample name and returns a list of
-        # files corresponding to that file.  If files is None, no change will be
-        # made.
-        if inputFileMap is not None:
-            input_files = inputFileMap(sample)
-            if input_files is None:
-                print "Warning: No special input files specified for sample"\
-                        "%s, using default" % sample
-            else:
-                jobOptions.append(('files', input_files))
-
-        if outputFileMap is not None:
-            output_file = outputFileMap(sample)
-            jobOptions.append(('outputFile', output_file))
-
-        # Get the type and genPhase space cut
-        jobOptions.append(('type', sample_info['type']))
-        # For the genphase space cut, we need to do it for the two different
-        jobOptions.append(('genPhaseSpaceCut', sample_info['genPhaseSpaceCut']))
-
-        # Check if we need to change the HLT tag
-        if 'hlt' in sample_info:
-            jobOptions.append(('hlt', sample_info['hlt']))
-
-        # Update our HLT selection
-        jobOptions.append(('hlt_paths', sample_info['hlt_paths']))
-
-        # Get the appropriate GlobalTag
-        jobOptions.append(('globalTag',
-                           _get_conditions(sample_info['conditions'])))
-
-
-        # Enable factorization if necessary
-        if not disableFactorization:
-            jobOptions.append(('enableFactorization',
-                               sample_info['factorize']))
-
-        # Enable fake rates if desired - this must be done AFTER factorization
-        if 'enableFakeRates' in sample_info and enableFakeRates:
-            jobOptions.append(('enableFakeRates', sample_info['enableFakeRates']))
-
-        # Apply Z-recoil correction to MEt if requested
-        jobOptions.append(('applyZrecoilCorrection',
-                           sample_info['applyZrecoilCorrection']))
-
-        # Apply muon trigger efficiency correction if requested
-        jobOptions.append(('applyMuonTriggerEfficiencyCorrection',
-                           sample_info['applyMuonTriggerEfficiencyCorrection']))
-
-        # Apply vertex multiplicity reweighting if requested
-        jobOptions.append(('applyVertexMultiplicityReweighting',
-                           sample_info['applyVertexMultiplicityReweighting']))
-
-        # This must be done after the factorization step ?
-        jobOptions.append(('enableSysUncertainties',
-                           sample_info['enableSysUncertainties']
-                           and not disableSysUncertainties))
-
-        jobOptions.append(('eventDump', enableEventDumps))
-
-        jobOptions.append(('saveFinalEvents', saveFinalEvents))
 
         # Always include the plot files
         output_files = ["%s_%s_%s_%s.root" % (
@@ -192,6 +113,6 @@ def submitAnalysisToGrid(configFile = None, channel = None, samples = None,
             'SE_black_list' : sample_info['SE_black_list']
         }
 
-        submitToGrid(configFile, jobInfo, jobOptions, crabOptions,
-                     create=create, submit=submit, directory=cfgdir)
-        ##submitToGrid(configFile, jobInfo, jobOptions, crabOptions, create=False, submit=False) # CV: only for testing
+        submitToGrid(newConfigFile, jobInfo, jobOptions, crabOptions,
+                     create=create, submit=submit, cfgdir=cfgdir)
+        ##submitToGrid(newConfigFile, jobInfo, crabOptions, create=False, submit=False, cfgdir=cfgdir) # CV: only for testing
