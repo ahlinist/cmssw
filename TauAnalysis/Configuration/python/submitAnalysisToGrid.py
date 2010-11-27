@@ -2,10 +2,8 @@ import FWCore.ParameterSet.Config as cms
 
 import copy
 
-from TauAnalysis.Configuration.prepareConfigFile2 import prepareConfigFile2
+from TauAnalysis.Configuration.prepareConfigFile2 import getNewConfigFileName, prepareConfigFile2, PLOT_FILES_PREFIX
 from TauAnalysis.Configuration.submitToGrid2 import submitToGrid
-
-_PLOT_FILES_PREFIX = 'plots'
 
 def _number_of_jobs(sample_info, preferred = 10000, max_jobs = 300):
     """
@@ -69,18 +67,8 @@ def submitAnalysisToGrid(configFile = None, channel = None, samples = None,
                 continue
         print "Submitting ", sample
 
-        newConfigFile = prepareConfigFile2(
-          configFile = configFile, channel = channel, sample_infos = samples, sample = sample,
-          outputFilePath = outputFilePath, jobId = jobId,
-          disableFactorization = disableFactorization,
-          disableSysUncertainties = disableSysUncertainties,
-          cfgdir = 'crab',
-          inputFileMap = inputFileMap, outputFileMap = outputFileMap,
-          enableEventDumps = enableEventDumps, enableFakeRates = enableFakeRates,
-          processName = processName,
-          saveFinalEvents = saveFinalEvents)
-
         sample_info = samples['RECO_SAMPLES'][sample]
+        
         # Make job info
         jobInfo = {
             'channel' : channel,
@@ -88,9 +76,34 @@ def submitAnalysisToGrid(configFile = None, channel = None, samples = None,
             'id' : jobId
         }
 
+        newConfigFile = getNewConfigFileName(configFile, cfgdir, sample, jobId)
+
+        # Check if we want to use a special file for the produced cfg file
+        # File map is a function that takes a sample name and returns a list of
+        # files corresponding to that file.  If files is None, no change will be
+        # made.
+        input_files = None
+        if inputFileMap is not None:
+            input_files = inputFileMap(sample)
+            if input_files is None:
+                print "Warning: No special input files specified for sample%s, using default." % sample
+        output_file = None        
+        if outputFileMap is not None:
+            output_file = outputFileMap(sample)
+            
+        prepareConfigFile2(
+          configFile = configFile, jobInfo = jobInfo, newConfigFile = newConfigFile,
+          sample_infos = samples,
+          disableFactorization = disableFactorization,
+          disableSysUncertainties = disableSysUncertainties,
+          input_files = input_files, output_file = output_file,
+          enableEventDumps = enableEventDumps, enableFakeRates = enableFakeRates,
+          processName = processName,
+          saveFinalEvents = saveFinalEvents)
+
         # Always include the plot files
         output_files = ["%s_%s_%s_%s.root" % (
-            _PLOT_FILES_PREFIX, jobInfo['channel'],
+            PLOT_FILES_PREFIX, jobInfo['channel'],
             jobInfo['sample'], jobInfo['id'])]
 
         # Add our final event skim as well
@@ -113,6 +126,6 @@ def submitAnalysisToGrid(configFile = None, channel = None, samples = None,
             'SE_black_list' : sample_info['SE_black_list']
         }
 
-        submitToGrid(newConfigFile, jobInfo, jobOptions, crabOptions,
-                     create=create, submit=submit, cfgdir=cfgdir)
-        ##submitToGrid(newConfigFile, jobInfo, crabOptions, create=False, submit=False, cfgdir=cfgdir) # CV: only for testing
+        ##submitToGrid(newConfigFile, jobInfo, jobOptions, crabOptions,
+        ##             create=create, submit=submit, cfgdir=cfgdir)
+        submitToGrid(newConfigFile, jobInfo, crabOptions, create=False, submit=False, cfgdir=cfgdir) # CV: only for testing
