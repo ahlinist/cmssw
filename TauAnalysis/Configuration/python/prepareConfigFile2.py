@@ -7,13 +7,36 @@ from Configuration.PyReleaseValidation.autoCond import autoCond
 
 from TauAnalysis.Configuration.cfgOptionMethods import copyCfgFileAndApplyOptions
 
-_PLOT_FILES_PREFIX = 'plots'
+PLOT_FILES_PREFIX = 'plots'
+
+def getNewConfigFileName(configFile = None, cfgdir = None, sample = None, jobId = None):
+    # check that configFile, cfgdir, sample and jobId
+    # parameters are defined and non-empty
+    if configFile is None:
+        raise ValueError("Undefined 'configFile' Parameter !!")
+    if cfgdir is None:
+        raise ValueError("Undefined 'cfgdir' Parameter !!")
+    if sample is None:
+        raise ValueError("Undefined 'sample' Parameter !!")
+    if jobId is None:
+        raise ValueError("Undefined 'jobId' Parameter !!")
+
+    workingDirectory = os.getcwd()
+    submissionDirectory = os.path.join(workingDirectory, cfgdir)
+
+    # Strip off _cfg.py and add sample info
+    newConfigFile = configFile.replace('_cfg.py', '_%s_%s@Grid_cfg.py' % (sample, jobId))
+
+    newConfigFilePath = os.path.join(submissionDirectory, newConfigFile)
+
+    return newConfigFilePath
 
 _JOB_OPTIONS_DEFAULTS = [
     ('maxEvents', -1),
+    ('skipEvents', 0),
     ('inputFileType', 'RECO/AOD'),
     ('isBatchMode', True),
-    ('plotsOutputFileName', _PLOT_FILES_PREFIX)
+    ('plotsOutputFileName', PLOT_FILES_PREFIX)
 ]
 
 def _get_conditions(globalTag):
@@ -27,11 +50,10 @@ def _get_conditions(globalTag):
     else:
         return globalTag
 
-def prepareConfigFile2(configFile = None, channel = None, sample_infos = None, sample = None,
-                       outputFilePath = None, jobId = None,
+def prepareConfigFile2(configFile = None, jobInfo = None, newConfigFile = None,
+                       sample_infos = None,
                        disableFactorization = False, disableSysUncertainties = False,
-                       cfgdir = 'crab',
-                       inputFileMap = None, outputFileMap = None,
+                       input_files = None, output_file = None,
                        enableEventDumps = False, enableFakeRates = False,
                        processName = None,
                        saveFinalEvents = False):
@@ -39,28 +61,17 @@ def prepareConfigFile2(configFile = None, channel = None, sample_infos = None, s
     Create cfg.py file used as input for cmsRun analysis job
     """
 
-    # check that configFile, channel, samples, outputFilePath and jobId
+    # check that configFile, channel, sample and sample_infos
     # parameters are defined and non-empty
     if configFile is None:
-        raise ValueError("Undefined configFile Parameter !!")
-    if channel is None:
-        raise ValueError("Undefined channel Parameter !!")
+        raise ValueError("Undefined 'configFile' Parameter !!")
+    if jobInfo is None:
+        raise ValueError("Undefined 'jobInfo' Parameter !!")
     if sample_infos is None:
-        raise ValueError("Undefined sample_infos Parameter !!")
-    if sample is None:
-        raise ValueError("Undefined sample Parameter !!")
-    if outputFilePath is None:
-        raise ValueError("Undefined outputFilePath Parameter !!")
-    if jobId is None:
-        raise ValueError("Undefined jobId Parameter !!")
+        raise ValueError("Undefined 'sample_infos' Parameter !!")
 
-    sample_info = sample_infos['RECO_SAMPLES'][sample]
-    # Make job info
-    jobInfo = {
-        'channel' : channel,
-        'sample' : sample,
-        'id' : jobId
-    }
+    sample_info = sample_infos['RECO_SAMPLES'][jobInfo['sample']]
+
     jobOptions = copy.copy(_JOB_OPTIONS_DEFAULTS)
 
     # Change the process name if desired.  Used for local running
@@ -70,20 +81,12 @@ def prepareConfigFile2(configFile = None, channel = None, sample_infos = None, s
     # This is needed for the embedded Ztautau sample.
     jobOptions.append(('disableDuplicateCheck', sample_info['disableDuplicateCheck']))
 
-    # Check if we want to use a special file for the produced cfg file
-    # File map is a function that takes a sample name and returns a list of
-    # files corresponding to that file.  If files is None, no change will be
-    # made.
-    if inputFileMap is not None:
-        input_files = inputFileMap(sample)
-        if input_files is None:
-            print "Warning: No special input files specified for sample"\
-                  "%s, using default" % sample
-        else:
-            jobOptions.append(('files', input_files))
-            
-    if outputFileMap is not None:
-        output_file = outputFileMap(sample)
+    # Check if we want to set specific input_files and output_files in the produced cfg file
+    # or let crab decide which samples to run on, based on the DBS names defined
+    # in the recoSampleDefinitions file
+    if input_files is not None:
+        jobOptions.append(('files', input_files))            
+    if output_file is not None:
         jobOptions.append(('outputFile', output_file))
 
     # Get the type and genPhaseSpace cut
@@ -99,7 +102,6 @@ def prepareConfigFile2(configFile = None, channel = None, sample_infos = None, s
 
     # Get the appropriate GlobalTag
     jobOptions.append(('globalTag', _get_conditions(sample_info['conditions'])))
-
 
     # Enable factorization if necessary
     if not disableFactorization:
@@ -133,32 +135,16 @@ def prepareConfigFile2(configFile = None, channel = None, sample_infos = None, s
     jobOptions.append(('saveFinalEvents', saveFinalEvents))
 
     # Always include the plot files
-    output_files = ["%s_%s_%s_%s.root" % (
-        _PLOT_FILES_PREFIX, jobInfo['channel'],
-        jobInfo['sample'], jobInfo['id'])]
+    output_files = [ "%s_%s_%s_%s.root" % (PLOT_FILES_PREFIX, jobInfo['channel'], jobInfo['sample'], jobInfo['id']) ]
 
     # Add our final event skim as well
     if saveFinalEvents:
-        output_files.append("final_events_%s_%s_%s.root" % (
-            jobInfo['channel'], jobInfo['sample'], jobInfo['id']))
+        output_files.append("final_events_%s_%s_%s.root" % (jobInfo['channel'], jobInfo['sample'], jobInfo['id']))
 
-    # Create config file
+    # Create new config file with specialization options added
     workingDirectory = os.getcwd()
-    submissionDirectory = os.path.join(workingDirectory, cfgdir)
     configFilePath = os.path.join(workingDirectory, configFile)
     if not os.path.exists(configFilePath):
-        raise ValueError("Can't find config file %s in current directory !!" % configFile)
-
-    # Strip off _cfg.py and add sample info
-    configFileName = configFile.replace('_cfg.py', '_%s_%s' % (jobInfo['sample'], jobInfo['id']))
-
-    # New name of config file
-    newConfigFile =  configFileName + '@Grid_cfg.py'
-    newConfigFilePath = os.path.join(submissionDirectory, newConfigFile)
-        
-    # Copy the config file and add our specialization options
-    copyCfgFileAndApplyOptions(configFilePath, newConfigFilePath, jobInfo, jobOptions)
-
-    # Return name of config file
-    return newConfigFilePath
+        raise ValueError("Failed to find config file %s in current directory !!" % configFile)
+    copyCfgFileAndApplyOptions(configFilePath, newConfigFile, jobInfo, jobOptions)
         
