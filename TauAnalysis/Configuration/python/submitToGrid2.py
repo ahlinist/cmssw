@@ -3,8 +3,6 @@ import subprocess
 import copy
 import string
 
-from TauAnalysis.Configuration.cfgOptionMethods import copyCfgFileAndApplyOptions
-
 _CRAB_TEMPLATE = string.Template('''
 [CRAB]
 jobtype = cmssw
@@ -47,30 +45,22 @@ _CRAB_DEFAULTS = {
     'runselection' : ''
 }
 
-def submitToGrid(configFile, jobInfo, jobOptions, crabOptions,
-                 create = True, submit = True, directory='crab'):
-    workingDirectory = os.getcwd()
-    submissionDirectory = os.path.join(workingDirectory, directory)
-    configFilePath = os.path.join(workingDirectory, configFile)
-    if not os.path.exists(configFilePath):
-        raise ValueError("Can't find config file %s in current direcotry!" %
-                         configFile)
-    # Strip off _cfg.py and add sample info
-    configFileName = configFile.replace(
-        '_cfg.py', '_%s_%s' % (jobInfo['sample'], jobInfo['id']))
-    # New name of config file
-    newConfigFile =  configFileName + '@Grid_cfg.py'
-    newConfigFilePath = os.path.join(submissionDirectory, newConfigFile)
+def submitToGrid(configFile, jobInfo, crabOptions,
+                 create = True, submit = True, cfgdir='crab'):
 
-    # Copy the config file and add our specialization options
-    copyCfgFileAndApplyOptions(configFilePath, newConfigFilePath,
-                               jobInfo, jobOptions)
     # Update the default crab options with our options
     fullCrabOptions = copy.copy(_CRAB_DEFAULTS)
     # Point crab to our PSET
-    fullCrabOptions['pset'] = newConfigFilePath
+    fullCrabOptions['pset'] = configFile
+    workingDirectory = os.getcwd()
+    submissionDirectory = os.path.join(workingDirectory, cfgdir)
+    jobName = configFile
+    if jobName.rfind('/') != -1:
+        jobName = jobName[jobName.rfind('/') + 1:]
+    jobName = jobName.replace('@Grid_cfg.py', '')
+    #print("jobName = %s" % jobName)
     ui_working_dir = os.path.join(
-        submissionDirectory, 'crabdir_%s' % configFileName)
+        submissionDirectory, 'crabdir_%s' % jobName)
     fullCrabOptions['ui_working_dir'] = ui_working_dir
     fullCrabOptions.update(crabOptions)
 
@@ -85,13 +75,13 @@ def submitToGrid(configFile, jobInfo, jobOptions, crabOptions,
     # Add SE_white_list/SE_back_list commands if specified
     if fullCrabOptions['SE_white_list'] and fullCrabOptions['SE_white_list'] != '':
         fullCrabOptions['SE_white_list'] = (
-            'SE_white_list = '+fullCrabOptions['SE_white_list'])
-    elif fullCrabOptions['SE_black_list'] and fullCrabOptions['SE_black_list']  != '':
+            'SE_white_list = ' + fullCrabOptions['SE_white_list'])
+    elif fullCrabOptions['SE_black_list'] and fullCrabOptions['SE_black_list'] != '':
         fullCrabOptions['SE_black_list'] = (
-            'SE_black_list = '+fullCrabOptions['SE_black_list'])
+            'SE_black_list = ' + fullCrabOptions['SE_black_list'])
 
     # Create the crab file
-    crabFileName = "crab_" + configFileName + ".cfg"
+    crabFileName = "crab_" + jobName + ".cfg"
     crabFilePath = os.path.join( submissionDirectory, crabFileName)
     crabFile = open(crabFilePath, 'w')
     crabFile.write(_CRAB_TEMPLATE.substitute(fullCrabOptions))
