@@ -1,5 +1,10 @@
 #include <cstdio>
 
+TString filename="rfio:/castor/cern.ch/user/s/slehti/TauTriggerEfficiencyMeasurementData/tteffAnalysis-pftau_TTToHplusBWB_M-90_7TeV-pythia6-tauola_cmssw384_BeamSpotProblem.root";
+//TString filename="rfio:/castor/cern.ch/user/s/slehti/TauTriggerEfficiencyMeasurementData/tteffAnalysis-pftau_TTToHplusBWB_M-160_7TeV-pythia6-tauola_cmssw384_BeamSpotProblem.root";
+//TString filename="rfio:/castor/cern.ch/user/s/slehti/TauTriggerEfficiencyMeasurementData/tteffAnalysis-pftau_TTToHplusBWB_M-90_7TeV-pythia6-tauola_cmssw384_BeamSpotProblemFixed.root";
+//TString filename="rfio:/castor/cern.ch/user/s/slehti/TauTriggerEfficiencyMeasurementData/tteffAnalysis-pftau_TTToHplusBWB_M-160_7TeV-pythia6-tauola_cmssw384_BeamSpotProblemFixed.root";
+
 struct TriggerCuts {
 	TriggerCuts(TString n,double t, double l, double M){
 		name = n;
@@ -39,9 +44,11 @@ void plot(TriggerCuts triggerCuts){
 
 	TCut pfTauSelection = "PFTauEt > 15 && abs(PFTauEta) < 2.4 && (PFTauProng == 1 || PFTauProng == 3) && PFTauInvPt < 1/5. && PFMuonMatch == 1 && PFTauIsoSum < 1. && PFTauIso > 0.5";
 	TCut l1Selection  = "((L1TauVeto==0 && L1IsolationRegions_2GeV>=7 && L1JetEt>20) || (!(L1TauVeto==0 && L1IsolationRegions_2GeV>=7) && L1JetEt > 30)) && hasMatchedL1Jet";
-	TCut l2Selection  = "hasMatchedL2Jet==1&&L2JetEt>" + triggerCuts.tauPtCut() + "&&L2ECALIsolationEt<5";
-	TCut l25Selection = "l25Depth>2";
-	TCut l3Selection  = "l25Depth>3";
+//	TCut l2Selection  = "hasMatchedL2Jet==1&&L2JetEt>" + triggerCuts.tauPtCut() + "&&L2ECALIsolationEt<5";
+	TCut l2Selection  = "hasMatchedL2Jet==1&&L2JetEt>" + triggerCuts.tauPtCut() + "&&L2ECALIsolationEt<5+0.025*L2JetEt+0.00075*L2JetEt*L2JetEt";
+	TCut l25Selection = "l25Depth>1&&l25Pt>" + triggerCuts.lTrkCut(); //found lead track&&lead Trk min pt
+	TCut l3Selection  = "l25IsoPtSum < 1.0"; //L3 Iso
+//	TCut l3Selection  = "l25DefDisc_Trk5_IsoPtMin1_5_Ntrk0 > 0";
 	TCut metSelection = "HLTMET>" + triggerCuts.METCut();
 
 	TCut L1Cut	= pfTauSelection + l1Selection;
@@ -67,7 +74,7 @@ void plot(TriggerCuts triggerCuts){
 	TString sysCommand = "mkdir " + plotDir;
 	if(gSystem->Exec(sysCommand) > 0) exit(0);
 
-	Plotter* plotter = new Plotter();
+	Plotter* plotter = new Plotter(filename);
 
 // As a function of tau pt
 
