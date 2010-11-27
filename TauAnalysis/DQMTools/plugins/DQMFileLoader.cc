@@ -173,13 +173,13 @@ DQMFileLoader::DQMFileLoader(const edm::ParameterSet& cfg)
   //--- check that dqmDirectory_store configuration parameters are specified and non-empty for all fileSets,
   //    unless there is only one file to be loaded in the fileSet for which dqmDirectory_store has not been are specified
   //    (otherwise histograms contained in previous file get overwritten once histograms are loaded from the next files)
-//  for ( std::map<std::string, cfgEntryFileSet>::const_iterator fileSet = fileSets_.begin();
-//       fileSet != fileSets_.end(); ++fileSet ) {
-//    if ( fileSet->second.dqmDirectory_store_ == "" && fileSet->second.inputFileNames_.size() > 1 ) {
-//      edm::LogError ("DQMFileLoader") << " dqmDirectory_store undefined for fileSet = " << fileSet->second.name_ << " !!";
-//      cfgError_ = 1;
-//    }
-//  }
+  for ( std::map<std::string, cfgEntryFileSet>::const_iterator fileSet = fileSets_.begin();
+       fileSet != fileSets_.end(); ++fileSet ) {
+    if ( fileSet->second.dqmDirectory_store_ == "" && fileSet->second.inputFileNames_.size() > 1 ) {
+      edm::LogError ("DQMFileLoader") << " dqmDirectory_store undefined for fileSet = " << fileSet->second.name_ << " !!";
+      cfgError_ = 1;
+    }
+  }
 
   //std::cout << "done." << std::endl;
 }
