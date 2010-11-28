@@ -12,7 +12,7 @@ HTEventSelector::HTEventSelector(const edm::ParameterSet& pset) :
         minPt_(pset.getParameter<double> ("minPt")),
         maxEta_(pset.getParameter<double> ("maxEta")),
         useJetID_(pset.getParameter<bool> ("useJetID")),
-        rejectEvtJetID_(pset.getParameter<bool> ("rejectEvtJetID")) {
+rejectEvtJetID_(pset.getParameter<bool> ("rejectEvtJetID")) {
 
     // Store computed HT
     defineVariable("HT");
@@ -45,18 +45,20 @@ bool HTEventSelector::select(const edm::Event& event) const {
 
         bool loose = false;
 
-        if( iJet->isCaloJet() || iJet->isJPTJet() ){
-            pat::strbitset ret = jetIDLooseCalo.getBitTemplate();
-            ret.set(false);
-            loose = jetIDLooseCalo(*iJet, ret);
-        }
-        else if ( iJet->isPFJet() ){
-            pat::strbitset ret = jetIDLoosePF.getBitTemplate();
-            ret.set(false);
-            loose = jetIDLoosePF(*iJet, ret);
+        if (useJetID_){
+            if( iJet->isCaloJet() || iJet->isJPTJet() ){
+                pat::strbitset ret = jetIDLooseCalo.getBitTemplate();
+                ret.set(false);
+                loose = jetIDLooseCalo(*iJet, ret);
+            }
+            else if ( iJet->isPFJet() ){
+                pat::strbitset ret = jetIDLoosePF.getBitTemplate();
+                ret.set(false);
+                loose = jetIDLoosePF(*iJet, ret);
+            }
         }
 
-        if (useJetID_ && !(loose)) {
+        if (!loose) {
             badJet = true;
             continue;
         }

@@ -68,17 +68,18 @@ bool JetEventSelector::select(const edm::Event& event) const {
     PFJetIDSelectionFunctor jetIDLoosePF( PFJetIDSelectionFunctor::FIRSTDATA, PFJetIDSelectionFunctor::LOOSE );
 
     for (unsigned int i = 0; i < jetHandle->size(); ++i) {
-
-        bool loose = false;
-        if( (*jetHandle)[i].isCaloJet() || (*jetHandle)[i].isJPTJet() ){
-            pat::strbitset ret = jetIDLooseCalo.getBitTemplate();
-            ret.set(false);
-            loose = jetIDLooseCalo((*jetHandle)[i], ret);
-        }
-        else if ( (*jetHandle)[i].isPFJet() ){
-            pat::strbitset ret = jetIDLoosePF.getBitTemplate();
-            ret.set(false);
-            loose = jetIDLoosePF((*jetHandle)[i], ret);
+        bool loose = true;
+        if (useJetID_){
+            if( (*jetHandle)[i].isCaloJet() || (*jetHandle)[i].isJPTJet() ){
+                pat::strbitset ret = jetIDLooseCalo.getBitTemplate();
+                ret.set(false);
+                loose = jetIDLooseCalo((*jetHandle)[i], ret);
+            }
+            else if ( (*jetHandle)[i].isPFJet() ){
+                pat::strbitset ret = jetIDLoosePF.getBitTemplate();
+                ret.set(false);
+                loose = jetIDLoosePF((*jetHandle)[i], ret);
+            }
         }
 
         if (loose && numPassed < minPt_.size()) {
