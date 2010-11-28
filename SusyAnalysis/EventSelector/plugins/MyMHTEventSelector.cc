@@ -17,7 +17,7 @@ MyMHTEventSelector::MyMHTEventSelector(const edm::ParameterSet& pset) :
         minPt_(pset.getParameter<double> ("minPt")),
         maxEta_(pset.getParameter<double> ("maxEta")),
         useJetID_(pset.getParameter<bool> ("useJetID")),
-        rejectEvtJetID_(pset.getParameter<bool> ("rejectEvtJetID")){
+rejectEvtJetID_(pset.getParameter<bool> ("rejectEvtJetID")){
 
     //// Store computed HT
     defineVariable("MHT");
@@ -50,27 +50,29 @@ bool MyMHTEventSelector::select(const edm::Event& event) const {
 
         if (iJet->pt() > minPt_ && fabs(iJet->eta()) < maxEta_) {
 
-            bool loose = false;
+            bool loose = true;
 
-            if( iJet->isCaloJet() || iJet->isJPTJet() ){
-                pat::strbitset ret = jetIDLooseCalo.getBitTemplate();
-                ret.set(false);
-                loose = jetIDLooseCalo( *iJet, ret );
-            }
-            else if ( iJet->isPFJet() ){
-                pat::strbitset ret = jetIDLoosePF.getBitTemplate();
-                ret.set(false);
-                loose = jetIDLoosePF( *iJet, ret );
+            if (useJetID_){
+                if( iJet->isCaloJet() || iJet->isJPTJet() ){
+                    pat::strbitset ret = jetIDLooseCalo.getBitTemplate();
+                    ret.set(false);
+                    loose = jetIDLooseCalo( *iJet, ret );
+                }
+                else if ( iJet->isPFJet() ){
+                    pat::strbitset ret = jetIDLoosePF.getBitTemplate();
+                    ret.set(false);
+                    loose = jetIDLoosePF( *iJet, ret );
+                }
             }
 
-            if (useJetID_ && !(loose)) {
+            if (!loose) {
                 //std::cout << "Failed JetID: " << iJet->pt() << ", " << iJet->eta() << ", " << iJet->phi() << ", "
                 //                              << iJet->emEnergyFraction() << ", " << iJet->jetID().n90Hits << ", "
                 //                              << iJet->jetID().fHPD << std::endl;
                 badJet = true;
                 continue;
             }
-            
+
             math::XYZTLorentzVector p4(iJet->px(), iJet->py(), iJet->pz(), iJet->energy());//   iJet->correctedP4("abs");
             MHT += p4;
             HT += p4.pt();

@@ -222,7 +222,8 @@ bool AddOtherVariables::select(const edm::Event& event) const {
         const pat::Jet * patjet = static_cast<const pat::Jet*>( &(*jet) );
         if (!isLoose(patjet)) continue;       //jet ID
 
-        SEt += patjet->correctedJet(pat::JetCorrFactors::Raw).pt();
+        if (patjet->hasCorrFactors())
+            SEt += patjet->correctedJet(pat::JetCorrFactors::Raw).pt();
 
         if (jet->pt() < jetptmin_) continue;
         if (fabs(jet->eta()) <= jetetamaxHT_) ht += jet->pt();
