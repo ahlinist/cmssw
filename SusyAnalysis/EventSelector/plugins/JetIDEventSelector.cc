@@ -44,13 +44,13 @@ JetIDEventSelector::select (const edm::Event& event) const
 
         bool loose = true;
         if( (*jetHandle)[i].isCaloJet() || (*jetHandle)[i].isJPTJet() ){
-            std::cout<<"Is Calo!"<<std::endl;
+            //std::cout<<"Is Calo!"<<std::endl;
             pat::strbitset ret = jetIDLooseCalo.getBitTemplate();
             ret.set(false);
             loose = jetIDLooseCalo((*jetHandle)[i], ret);
         }
         else if ( (*jetHandle)[i].isPFJet() ){
-            std::cout<<"Is PF!"<<std::endl;
+            //std::cout<<"Is PF!"<<std::endl;
             pat::strbitset ret = jetIDLoosePF.getBitTemplate();
             ret.set(false);
             loose = jetIDLoosePF((*jetHandle)[i], ret);
