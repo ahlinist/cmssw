@@ -62,6 +62,10 @@ def _setMaxEvents(process, max_events, **kwargs):
     " Set max events to process "
     process.maxEvents.input = cms.untracked.int32(max_events)
 
+def _setSkipEvents(process, skip_events, **kwargs):
+    " Set events to skip in PoolSoruce "
+    process.source.skipEvents = cms.untracked.uint32(skip_events)
+
 def _setSourceFiles(process, fileNames, **kwargs):
     " Set source files to analyze "
     process.source.fileNames = fileNames
@@ -127,7 +131,7 @@ def _setApplyVertexMultiplicityReweighting(process, enable, **kwargs):
     if enable:
         print "Applying Vertex multiplicity reweighting"
         enabler = getattr(mcToDataCorrectionTools, "applyVertexMultiplicityReweighting_run%s" % channel)
-        enabler(process)        
+        enabler(process)
 
 @_requires(args=['channel'])
 def _setEnableSystematics(process, enable, **kwargs):
@@ -281,6 +285,7 @@ _METHOD_MAP = {
     'genPhaseSpaceCut' : _setGenPhaseSpaceCut,
     'isBatchMode' : _setIsBatchMode,
     'maxEvents' : _setMaxEvents,
+    'skipEvents' : _setSkipEvents,
     'plotsOutputFileName' : _setPlotsOutputFileName,
     'eventDump' : _setEventDump,
     'enableFactorization' : _setEnableFactorization,
