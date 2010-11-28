@@ -43,7 +43,7 @@ bool HTEventSelector::select(const edm::Event& event) const {
 
         if (iJet->pt() < minPt_ || fabs(iJet->eta()) > maxEta_) continue;
 
-        bool loose = false;
+        bool loose = true;
 
         if (useJetID_){
             if( iJet->isCaloJet() || iJet->isJPTJet() ){
