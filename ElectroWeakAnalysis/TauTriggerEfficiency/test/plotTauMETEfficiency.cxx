@@ -5,6 +5,10 @@ TString filename="rfio:/castor/cern.ch/user/s/slehti/TauTriggerEfficiencyMeasure
 //TString filename="rfio:/castor/cern.ch/user/s/slehti/TauTriggerEfficiencyMeasurementData/tteffAnalysis-pftau_TTToHplusBWB_M-90_7TeV-pythia6-tauola_cmssw384_BeamSpotProblemFixed.root";
 //TString filename="rfio:/castor/cern.ch/user/s/slehti/TauTriggerEfficiencyMeasurementData/tteffAnalysis-pftau_TTToHplusBWB_M-160_7TeV-pythia6-tauola_cmssw384_BeamSpotProblemFixed.root";
 
+TString pickEvents = "";
+//TString pickEvents = "pickEvents_90.txt";
+//TString pickEvents = "pickEvents_160.txt";
+
 struct TriggerCuts {
 	TriggerCuts(TString n,double t, double l, double M){
 		name = n;
@@ -74,7 +78,7 @@ void plot(TriggerCuts triggerCuts){
 	TString sysCommand = "mkdir " + plotDir;
 	if(gSystem->Exec(sysCommand) > 0) exit(0);
 
-	Plotter* plotter = new Plotter(filename);
+	Plotter* plotter = new Plotter(filename,"TTEffTree",pickEvents);
 
 // As a function of tau pt
 

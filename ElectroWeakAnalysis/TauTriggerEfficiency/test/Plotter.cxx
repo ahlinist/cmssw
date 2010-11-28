@@ -12,7 +12,7 @@
 #include <string>
 class Plotter {
 public:
-  Plotter(TString filename="tteffAnalysis.root", TString treename="TTEffTree"){
+  Plotter(TString filename="tteffAnalysis.root", TString treename="TTEffTree", TString pickEventsFile = ""){
 
     //gROOT->LoadMacro("./tdrstyle.cxx");
     setTDRStyle();
@@ -21,6 +21,8 @@ public:
     //inFile = TFile::Open("tteffAnalysis.root");
     //inFile = TFile::Open("tteffAnalysis-merged.root");
     tree = (TTree *) (inFile->Get(treename));
+
+    if(pickEventsFile.Sizeof() > 0) tree = pickEvents(pickEventsFile,tree);
 
     plotXtitle = 0;
     plotYtitle = 0;
@@ -42,6 +44,8 @@ public:
   void SetSave(bool s) {save = s;}
 
 private:
+  TTree* pickEvents(TString,TTree*);
+
   TFile* inFile;
   TTree* tree;
   const char* plotXtitle;
@@ -162,4 +166,30 @@ TH1 *Plotter::DrawDistribution(const char* varexp, const TCut& selection){
       gPad->SaveAs(plotFileName);
   }
   return hnum;
+}
+
+TTree* Plotter::pickEvents(TString fPickEvents,TTree* intree){
+	TList* treeList = new TList();
+
+	string line;
+
+	ifstream fIN(fPickEvents.Data(),ios::in);
+	while(!fIN.eof()){
+		getline (fIN,line);
+		size_t col1 = line.find_first_of(':');
+		size_t col2 = line.find_last_of(':');
+		string s_run   = line.substr(0,col1);
+		string s_lumi  = line.substr(col1+1,col2-col1-1);
+		string s_event = line.substr(col2+1,line.length() - col2 - 1);
+		if(s_event.length() > 0){
+		  cout << "picking run:lumi:event " << line << endl;
+		  string selection = "run == " + s_run + " && lumi == " + s_lumi + " && event == " + s_event;
+		  TTree* pickEventTree = intree->CopyTree(selection.c_str());
+		  treeList->Add(pickEventTree);
+		}
+	}
+
+	TTree* tree = TTree::MergeTrees(treeList);
+	cout << "picked events tree size " << tree->GetEntries() << endl;
+	return tree;
 }
