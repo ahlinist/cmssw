@@ -1,5 +1,6 @@
 #include "TauAnalysis/Core/interface/histManagerAuxFunctions.h"
 
+#include "TauAnalysis/CandidateTools/interface/candidateAuxFunctions.h"
 #include "TauAnalysis/CandidateTools/interface/svFitAuxFunctions.h"
 
 #include <TMath.h>
@@ -113,3 +114,13 @@ double compDecayEigenTime(double tauLeptonDecayDistance,  double tauLeptonEnergy
   return tauLeptonDecayDistance/(speedOfLight*gamma);
 }
 
+//
+//-----------------------------------------------------------------------------------------------------------------------
+//
+
+void fillHistogramGenMatch(MonitorElement* histo, double value, const reco::Candidate::LorentzVector& p4MatchDirection,
+			   const reco::GenParticleCollection& genParticles, const std::vector<int>& pdgIds, 
+			   double weight)
+{
+  if ( findGenParticle(p4MatchDirection, genParticles, 0.5, -1, &pdgIds) ) histo->Fill(value, weight);
+}
