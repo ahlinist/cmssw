@@ -38,20 +38,20 @@ evtSelDiTauCandidateForAHtoMuTauPzetaDiffLooseMuonIsolation = evtSelDiTauCandida
 evtSelNonCentralJetEt20bTagLooseMuonIsolation = cms.PSet(
     pluginName = cms.string('evtSelNonCentralJetEt20bTag'),
     pluginType = cms.string('BoolEventSelector'),
-    src_cumulative = cms.InputTag('centralJetEt20bTagVeto', 'cumulative'),
-    src_individual = cms.InputTag('centralJetEt20bTagVeto', 'individual')
+    src_cumulative = cms.InputTag('centralJetEt20bTagVetoLooseMuonIsolation', 'cumulative'),
+    src_individual = cms.InputTag('centralJetEt20bTagVetoLooseMuonIsolation', 'individual')
 )
 evtSelCentralJetEt20LooseMuonIsolation = cms.PSet(
     pluginName = cms.string('evtSelCentralJetEt20'),
     pluginType = cms.string('BoolEventSelector'),
-    src_cumulative = cms.InputTag('centralJetEt20Cut', 'cumulative'),
-    src_individual = cms.InputTag('centralJetEt20Cut', 'individual')
+    src_cumulative = cms.InputTag('centralJetEt20CutLooseMuonIsolation', 'cumulative'),
+    src_individual = cms.InputTag('centralJetEt20CutLooseMuonIsolation', 'individual')
 )
 evtSelCentralJetEt20bTagLooseMuonIsolation = cms.PSet(
     pluginName = cms.string('evtSelCentralJetEt20bTag'),
     pluginType = cms.string('BoolEventSelector'),
-    src_cumulative = cms.InputTag('centralJetEt20bTagCut', 'cumulative'),
-    src_individual = cms.InputTag('centralJetEt20bTagCut', 'individual')
+    src_cumulative = cms.InputTag('centralJetEt20bTagCutLooseMuonIsolation', 'cumulative'),
+    src_individual = cms.InputTag('centralJetEt20bTagCutLooseMuonIsolation', 'individual')
 )
 
 #--------------------------------------------------------------------------------
@@ -95,7 +95,7 @@ inputTagReplacements = \
       "muTauPairVisMassHypothesesForAHtoMuTauLooseMuonIsolation" ],
     [ "selectedPatJetsForAHtoMuTauAntiOverlapWithLeptonsVetoCumulative",
       "selectedPatJetsForAHtoMuTauAntiOverlapWithLeptonsVetoLooseMuonIsolationCumulative" ],
-    [ "selectedPatJetsForAHtoMuTauBtagCumulative", "selectedPatJetsForAHtoMuTauBtagCumulative" ] ]
+    [ "selectedPatJetsForAHtoMuTauBtagCumulative", "selectedPatJetsForAHtoMuTauBtagLooseMuonIsolationCumulative" ] ]
 
 
 muTauAnalysisSequence_woBtag_factorizedWithoutMuonIsolation = copy.deepcopy(muTauAnalysisSequence_woBtag)
