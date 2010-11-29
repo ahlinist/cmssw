@@ -125,4 +125,4 @@ for cfg_file in cfg_files:
 script_file = open('run_local.sh', 'w')
 script_file.write(script)
 
-print "Build run_local.sh script"
+print "Built run_local.sh script"
