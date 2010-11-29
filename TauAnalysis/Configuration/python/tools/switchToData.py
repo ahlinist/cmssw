@@ -32,11 +32,13 @@ def switchToData(process):
 		process.patPFMETs.addGenMET = cms.bool(False)
 
 	# remove modules from pre-PAT production running on genParticles
-	process.producePrePat.remove(genParticlesForJets)
-	process.producePrePat.remove(ak5GenJets)
+	if hasattr(process, "producePrePat"):
+		process.producePrePat.remove(genParticlesForJets)
+		process.producePrePat.remove(ak5GenJets)
 
 	# remove modules from post-PAT production running on genParticles
-	process.producePostPat.remove(produceGenObjects)
+	if hasattr(process, "producePostPat"):
+		process.producePostPat.remove(produceGenObjects)
 
 	# iterate over all sequences attached to process object and
 	# recursively disable gen. matching for all modules in sequence

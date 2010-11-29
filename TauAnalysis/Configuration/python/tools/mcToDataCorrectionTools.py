@@ -163,16 +163,18 @@ def _addEventWeightZtoMuTau(process, srcEventWeight):
 def applyMuonTriggerEfficiencyCorrection_runZtoMuTau(process):
 
     process.load("TauAnalysis.RecoTools.muonTriggerEfficiencyCorrection_cfi")
-    process.producePatTupleZtoMuTauSpecific._seq = process.producePatTupleZtoMuTauSpecific._seq \
-      * process.muonTriggerEfficiencyCorrection
+    if hasattr(process, "producePatTupleZtoMuTauSpecific"):
+        process.producePatTupleZtoMuTauSpecific._seq = process.producePatTupleZtoMuTauSpecific._seq \
+          * process.muonTriggerEfficiencyCorrection
 
     _addEventWeightZtoMuTau(process, "muonTriggerEfficiencyCorrection")
 
 def applyVertexMultiplicityReweighting_runZtoMuTau(process):
 
     process.load("TauAnalysis.RecoTools.vertexMultiplicityReweight_cfi")
-    process.producePatTupleZtoMuTauSpecific._seq = process.producePatTupleZtoMuTauSpecific._seq \
-      * cms.Sequence(process.selectedPrimaryVerticesTrackPtSumGt10 * process.vertexMultiplicityReweight)
+    if hasattr(process, "producePatTupleZtoMuTauSpecific"):
+        process.producePatTupleZtoMuTauSpecific._seq = process.producePatTupleZtoMuTauSpecific._seq \
+          * cms.Sequence(process.selectedPrimaryVerticesTrackPtSumGt10 * process.vertexMultiplicityReweight)
 
     _addEventWeightZtoMuTau(process, "vertexMultiplicityReweight")
 
