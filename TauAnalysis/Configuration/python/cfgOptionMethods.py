@@ -48,7 +48,7 @@ def _setGenPhaseSpaceCut(process, value, **kwargs):
                     " know what to do! Only setting the first one."
         setattr(genPhaseSpaceCut.selectors[0], "cut", cms.string(value))
     else:
-        raise ValueError("Process object has no attribute 'genPhaseSpaceCut' !!")
+        print("Process object has no attribute 'genPhaseSpaceCut' !!")
 
 @_requires(inputs=[True, False])
 def _setIsBatchMode(process, set, **kwargs):
@@ -63,8 +63,12 @@ def _setMaxEvents(process, max_events, **kwargs):
     process.maxEvents.input = cms.untracked.int32(max_events)
 
 def _setSkipEvents(process, skip_events, **kwargs):
-    " Set events to skip in PoolSoruce "
-    process.source.skipEvents = cms.untracked.uint32(skip_events)
+    " Set number of events to skip before starting to process first event "
+    if skip_events > 0:
+        if hasattr(process, "source"):
+            process.source.skipEvents = cms.untracked.uint32(skip_events)
+        else:
+            raise ValueError("Process object has no attribute 'source' !!")
 
 def _setSourceFiles(process, fileNames, **kwargs):
     " Set source files to analyze "
@@ -81,7 +85,8 @@ def _setPlotsOutputFileName(process, filename, **kwargs):
         moduleName = moduleName[:moduleName.find('_')]
     moduleName += "Plots"
     filename += "_%s_%s_%s.root" % (kwargs['channel'], kwargs['sample'], kwargs['id'])
-    getattr(process, moduleName).outputFileName = filename
+    if hasattr(process, moduleName):
+        getattr(process, moduleName).outputFileName = filename
 
 @_requires(inputs=[True, False])
 def _setEventDump(process, enable, **kwargs):
@@ -151,8 +156,9 @@ def _setInputFileType(process, filetype, **kwargs):
         if patTupleProductionSequenceName.find('_') != -1:
             patTupleProductionSequenceName = patTupleProductionSequenceName[:patTupleProductionSequenceName.find('_')]
         patTupleProductionSequenceName += "Specific"
-        patTupleProductionSequence = getattr(process, patTupleProductionSequenceName)
-        process.p.replace(patTupleProductionSequence, process.producePatTupleAll)
+        if hasattr(process, patTupleProductionSequenceName):
+            patTupleProductionSequence = getattr(process, patTupleProductionSequenceName)
+            process.p.replace(patTupleProductionSequence, process.producePatTupleAll)
 
 @_requires(inputs=['Data', 'smMC', 'smSumMC', 'bsmMC',])
 def _setIsData(process, type, **kwargs):
@@ -190,34 +196,35 @@ def _setTriggerProcess(process, triggerTag, **kwargs):
 						_setattr_ifexists(eventDump, "hltResultsSource", triggerTag)
 
 def _setTriggerBits(process, triggerSelect, **kwargs):
-    old_select = process.Trigger.selectors[0].hltAcceptPaths
-    if isinstance(triggerSelect, dict):
-        # run-range dependent configuration for data
-        config = []
-        for hltAcceptPath, runrange in triggerSelect.items():
-            pset = cms.PSet()
-            setattr(pset, "hltAcceptPath", cms.string(hltAcceptPath))
-            setattr(pset, "runrange", cms.EventRange(runrange))
-            config.append(pset)
-        setattr(process.Trigger.selectors[0], "config", cms.VPSet(config))
-        delattr(process.Trigger.selectors[0], "hltAcceptPaths")
-        print("Changed HLT selection from %s --> ")
-        for pset in config:
-            print(" hltAcceptPath = %s: runrange = %s" % (getattr(pset, "hltAcceptPath"), getattr(pset, "runrange")))
-    elif isinstance(triggerSelect, list):
-        process.Trigger.selectors[0].hltAcceptPaths = cms.vstring(triggerSelect)
-        triggerSelect_string = "{ "
-        for iHLTacceptPath, hltAcceptPath in enumerate(triggerSelect):
-            triggerSelect_string += hltAcceptPath
-            if iHLTacceptPath < (len(triggerSelect) - 1):
-                triggerSelect_string += ", "
-        triggerSelect_string += " }"
-        print "Changed HLT selection from %s --> %s" % (old_select, triggerSelect_string)
-    elif isinstance(triggerSelect, str):
-        process.Trigger.selectors[0].hltAcceptPaths = cms.vstring(triggerSelect)
-        print "Changed HLT selection from %s --> %s" % (old_select, triggerSelect)
-    else:
-        raise ValueError("Parameter 'triggerSelect' is of invalid Type = %s !!" % type(triggerSelect))
+    if hasattr(process, "Trigger"):
+        old_select = process.Trigger.selectors[0].hltAcceptPaths
+        if isinstance(triggerSelect, dict):
+            # run-range dependent configuration for data
+            config = []
+            for hltAcceptPath, runrange in triggerSelect.items():
+                pset = cms.PSet()
+                setattr(pset, "hltAcceptPath", cms.string(hltAcceptPath))
+                setattr(pset, "runrange", cms.EventRange(runrange))
+                config.append(pset)
+            setattr(process.Trigger.selectors[0], "config", cms.VPSet(config))
+            delattr(process.Trigger.selectors[0], "hltAcceptPaths")
+            print("Changed HLT selection from %s --> ")
+            for pset in config:
+                print(" hltAcceptPath = %s: runrange = %s" % (getattr(pset, "hltAcceptPath"), getattr(pset, "runrange")))
+        elif isinstance(triggerSelect, list):
+            process.Trigger.selectors[0].hltAcceptPaths = cms.vstring(triggerSelect)
+            triggerSelect_string = "{ "
+            for iHLTacceptPath, hltAcceptPath in enumerate(triggerSelect):
+                triggerSelect_string += hltAcceptPath
+                if iHLTacceptPath < (len(triggerSelect) - 1):
+                    triggerSelect_string += ", "
+            triggerSelect_string += " }"
+            print "Changed HLT selection from %s --> %s" % (old_select, triggerSelect_string)
+        elif isinstance(triggerSelect, str):
+            process.Trigger.selectors[0].hltAcceptPaths = cms.vstring(triggerSelect)
+            print "Changed HLT selection from %s --> %s" % (old_select, triggerSelect)
+        else:
+            raise ValueError("Parameter 'triggerSelect' is of invalid Type = %s !!" % type(triggerSelect))
 
 def _setInputFiles(process, files, **kwargs):
     ''' Set the files used in the input source of the cfg file '''
@@ -229,8 +236,9 @@ def _setOutputFile(process, file, **kwargs):
     ''' Set the output file of the plots '''
     saver_name = "save%sPlots" % kwargs['channel']
     print "--> setting %s output file to %s" % (saver_name, file)
-    saver = getattr(process, saver_name)
-    saver.outputFileName = file
+    if hasattr(process, saver_name):
+        saver = getattr(process, saver_name)
+        saver.outputFileName = file
 
 @_requires(args=['sample'])
 def _saveFinalEvents(process, save, **kwargs):
@@ -342,7 +350,7 @@ def applyProcessOptions(process, jobInfo, options):
             option, value, extra_options)
         _METHOD_MAP[option](process, value, **optionsForMethod)
 
-def copyCfgFileAndApplyOptions(inputFile, outputFile, jobInfo, jobOptions):
+def copyCfgFileAndApplyOptions(inputFile, outputFile, jobInfo, jobOptions, customizations = []):
     # Convert the option objects to pickle strings
     substitutions = {
         'jobInfoPickle' : pickle.dumps(jobInfo),
@@ -362,8 +370,16 @@ applyProcessOptions(process, _JOB_INFO, _JOB_OPTIONS)
 
     # Copy the input file to the output file
     output.write(input.read())
+    
     # Add our modifiers at the end
     output.write(appendage)
+    output.write("\n")
+
+    # Add customization options (if any)
+    for customization in customizations:
+        output.write("%s\n" % customization)
+
+    # Close files
     input.close()
     output.close()
 
