@@ -65,6 +65,17 @@ CompositePtrCandidateT1T2MEtHistManager<T1,T2>::CompositePtrCandidateT1T2MEtHist
   requireGenMatch_ = cfg.getParameter<bool>("requireGenMatch");
   //std::cout << " requireGenMatch = " << requireGenMatch_ << std::endl;
 
+  pdgIdsElectron_.push_back(+11);
+  pdgIdsElectron_.push_back(-11);
+  pdgIdsMuon_.push_back(+13);
+  pdgIdsMuon_.push_back(-13);
+  pdgIdsPhoton_.push_back(22);
+  for ( int iQuarkType = 1; iQuarkType <= 6; ++iQuarkType ) {
+    pdgIdsJet_.push_back(+iQuarkType);
+    pdgIdsJet_.push_back(-iQuarkType);
+  }
+  pdgIdsJet_.push_back(21);
+
   std::string normalization_string = cfg.getParameter<std::string>("normalization");
   normMethod_ = getNormMethod(normalization_string, "diTauCandidates");
 }
@@ -154,7 +165,11 @@ void CompositePtrCandidateT1T2MEtHistManager<T1,T2>::bookHistogramsImp()
   
   hVisPt_ = book1D("VisPt", "Visible P_{T}", 50, 0., 100.);
   hVisPhi_ = book1D("VisPhi", "Visible #phi", 36, -TMath::Pi(), +TMath::Pi());
-  hVisMass_ = book1D("VisMass", "Visible Mass", 40, 0., 200.);
+  hVisMass_ = book1D("VisMass", "Visible Mass", 50, 0., 250.);
+  hVisMassGenLeg2Electron_ = book1D("VisMassGenLeg2Electron", "Visible Mass (rec. Tau matching gen. Electron)", 50, 0., 250.);
+  hVisMassGenLeg2Muon_ = book1D("VisMassGenLeg2Muon", "Visible Mass (rec. Tau matching gen. Muon)", 50, 0., 250.);
+  hVisMassGenLeg2Photon_ = book1D("VisMassGenLeg2Photon", "Visible Mass (rec. Tau matching gen. Photon)", 50, 0., 250.);
+  hVisMassGenLeg2Jet_ = book1D("VisMassGenLeg2Jet", "Visible Mass (rec. Tau matching gen. quark/gluon Jet)", 50, 0., 250.);
   hVisMassZllCombinedHypothesis_ = ( visMassHypothesisSrc_.label() != "" ) ?
     book1D("VisMassZllCombinedHypothesis", "Visible Mass (combined Value of different Event Hypotheses)", 40, 0., 200.) : 0;
   
@@ -479,10 +494,12 @@ void CompositePtrCandidateT1T2MEtHistManager<T1,T2>::fillHistogramsImp(const edm
 
     hLeg1PtVsLeg2Pt_->Fill(diTauCandidate->leg1()->pt(), diTauCandidate->leg2()->pt(), weight);
     hLeg1EtaVsLeg2Eta_->Fill(diTauCandidate->leg1()->eta(), diTauCandidate->leg2()->eta(), weight);
-    double isoLeg1 = (diTauCandidate->leg1().get()->userIsolation(pat::TrackIso)+diTauCandidate->leg1().get()->userIsolation(pat::EcalIso)+
-		      diTauCandidate->leg1().get()->userIsolation(pat::HcalIso))/diTauCandidate->leg1()->pt();
-    double isoLeg2 = (diTauCandidate->leg2().get()->userIsolation(pat::TrackIso)+diTauCandidate->leg2().get()->userIsolation(pat::EcalIso)+
-		      diTauCandidate->leg2().get()->userIsolation(pat::HcalIso))/diTauCandidate->leg2()->pt();
+    double isoLeg1 = (diTauCandidate->leg1().get()->userIsolation(pat::TrackIso)
+                     + diTauCandidate->leg1().get()->userIsolation(pat::EcalIso)
+                     + diTauCandidate->leg1().get()->userIsolation(pat::HcalIso))/diTauCandidate->leg1()->pt();
+    double isoLeg2 = (diTauCandidate->leg2().get()->userIsolation(pat::TrackIso)
+                     + diTauCandidate->leg2().get()->userIsolation(pat::EcalIso)
+		     + diTauCandidate->leg2().get()->userIsolation(pat::HcalIso))/diTauCandidate->leg2()->pt();
     hLeg1IsoVsLeg2Iso_->Fill(isoLeg1, isoLeg2, weight);
 
     fillWeightHistograms(hDiTauCandidateWeightPosLog_, hDiTauCandidateWeightNegLog_, hDiTauCandidateWeightZero_, 
@@ -503,6 +520,11 @@ void CompositePtrCandidateT1T2MEtHistManager<T1,T2>::fillHistogramsImp(const edm
     hVisPt_->Fill(diTauCandidate->p4Vis().pt(), weight);
     hVisPhi_->Fill(diTauCandidate->p4Vis().phi(), weight);
     hVisMass_->Fill(diTauCandidate->p4Vis().mass(), weight);
+    double visMass = diTauCandidate->p4Vis().mass();    
+    fillHistogramGenMatch(hVisMassGenLeg2Electron_, visMass, diTauCandidate->leg2()->p4(), *genParticles, pdgIdsElectron_, weight);
+    fillHistogramGenMatch(hVisMassGenLeg2Muon_, visMass, diTauCandidate->leg2()->p4(), *genParticles, pdgIdsMuon_, weight);
+    fillHistogramGenMatch(hVisMassGenLeg2Photon_, visMass, diTauCandidate->leg2()->p4(), *genParticles, pdgIdsPhoton_, weight);
+    fillHistogramGenMatch(hVisMassGenLeg2Jet_, visMass, diTauCandidate->leg2()->p4(), *genParticles, pdgIdsJet_, weight);
     if ( visMassHypothesisSrc_.label() != "" ) {
       typedef edm::RefProd<CompositePtrCandidateCollection> CompositePtrCandidateRefProd;
       typedef std::vector<float> vfloat;

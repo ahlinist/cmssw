@@ -42,6 +42,12 @@ class CompositePtrCandidateT1T2MEtHistManager : public HistManagerBase
 
   bool requireGenMatch_;
 
+  typedef std::vector<int> vint;
+  vint pdgIdsElectron_;
+  vint pdgIdsMuon_;
+  vint pdgIdsPhoton_;
+  vint pdgIdsJet_;
+
   bool makeMEtProjResolutionHistograms_;
 
 //--- "helper" class for accessing weight values
@@ -119,6 +125,10 @@ class CompositePtrCandidateT1T2MEtHistManager : public HistManagerBase
   MonitorElement* hVisPt_;
   MonitorElement* hVisPhi_;
   MonitorElement* hVisMass_;
+  MonitorElement* hVisMassGenLeg2Electron_;
+  MonitorElement* hVisMassGenLeg2Muon_;
+  MonitorElement* hVisMassGenLeg2Photon_;
+  MonitorElement* hVisMassGenLeg2Jet_;
   MonitorElement* hVisMassZllCombinedHypothesis_;
 
   MonitorElement* hCollinearApproxEta_;

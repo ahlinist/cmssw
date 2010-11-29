@@ -55,4 +55,7 @@ double getTauJetWeight(const T& patTau, const std::vector<FakeRateJetWeightExtra
 double compDecayEigenTime(const reco::Candidate::Point&, const reco::Candidate::Point&, double);
 double compDecayEigenTime(double, double);
 
+void fillHistogramGenMatch(MonitorElement*, double, const reco::Candidate::LorentzVector&, 
+			   const reco::GenParticleCollection&, const std::vector<int>&, double);
+
 #endif
