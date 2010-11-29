@@ -10,7 +10,7 @@
 
 const reco::GenParticle* findGenParticle(const reco::Candidate::LorentzVector& direction,
 					 const reco::GenParticleCollection& genParticles, double dRmax, int status,
-					 std::vector<int>* pdgIds, bool pdgIdStrict)
+					 const std::vector<int>* pdgIds, bool pdgIdStrict)
 {
   bool bestMatchMatchesPdgId = false;
   const reco::GenParticle* bestMatch = 0;

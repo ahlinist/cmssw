@@ -23,7 +23,7 @@
 const reco::GenParticle* findGenParticle(const reco::Candidate::LorentzVector& toMatch, 
 					 const reco::GenParticleCollection& genParticles, 
                                          double dRMax = 0.5, int status = -1,
-					 std::vector<int>* pdgIds = 0, bool pdgIdStrict = true);
+					 const std::vector<int>* pdgIds = 0, bool pdgIdStrict = true);
 
 void findDaughters(const reco::GenParticle*, std::vector<const reco::GenParticle*>&, int = -1);
 
