@@ -28,6 +28,7 @@ class GenPhaseSpaceEventInfoHistManager : public HistManagerBase
   edm::InputTag genPhaseSpaceEventInfoSource_;
   edm::InputTag genJetSource_;
   edm::InputTag genParticlesFromZsSource_;
+  edm::InputTag genParticlesFromHsSource_;
 
   double genJetPtMin_;
   double genJetPtMax_;
@@ -64,6 +65,14 @@ class GenPhaseSpaceEventInfoHistManager : public HistManagerBase
   MonitorElement* hGenParticlesFromZsPt_;
   MonitorElement* hGenParticlesFromZsEta_;
   MonitorElement* hGenParticlesFromZsPdgId_;
+
+  MonitorElement* hGenHsPt_;
+  MonitorElement* hGenHsEta_;
+  MonitorElement* hGenHsMass_;
+
+  MonitorElement* hGenParticlesFromHsPt_;
+  MonitorElement* hGenParticlesFromHsEta_;
+  MonitorElement* hGenParticlesFromHsPdgId_;
 };
 
 #endif  

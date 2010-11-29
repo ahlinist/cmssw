@@ -38,6 +38,9 @@ GenPhaseSpaceEventInfoHistManager::GenPhaseSpaceEventInfoHistManager(const edm::
   genParticlesFromZsSource_ = cfg.getParameter<edm::InputTag>("genParticlesFromZsSource");
   //std::cout << " genParticlesFromZsSource = " << genParticlesFromZsSource_ << std::endl;
 
+  genParticlesFromHsSource_ = cfg.getParameter<edm::InputTag>("genParticlesFromHsSource");
+  //std::cout << " genParticlesFromZsSource = " << genParticlesFromHsSource_ << std::endl;
+
   makeBjorkenXratioHistogram_ = ( cfg.exists("makeBjorkenXratioHistogram") ) ? 
     cfg.getParameter<bool>("makeBjorkenXratioHistogram") : false;
 
@@ -85,6 +88,44 @@ void GenPhaseSpaceEventInfoHistManager::bookHistogramsImp()
   hGenParticlesFromZsPt_ = book1D("GenParticlesFromZsPt", "GenParticlesFromZsPt", 101, -0.5, +100.5);
   hGenParticlesFromZsEta_ = book1D("GenParticlesFromZsEta", "GenParticlesFromZsEta", 200, -10., +10.);
   hGenParticlesFromZsPdgId_ = book1D("GenParticlesFromZsPdgId", "GenParticlesFromZsPdgId", 49, -24.5, +24.5);
+
+  hGenHsPt_ = book1D("GenHsPt", "GenHsPt", 101, -0.5, +100.5);
+  hGenHsEta_ = book1D("GenHsEta", "GenHsEta", 200, -10., +10.);
+  hGenHsMass_ = book1D("GenHsMass", "GenHsMass", 501, -0.5, +500.5);
+  
+  hGenParticlesFromHsPt_ = book1D("GenParticlesFromHsPt", "GenParticlesFromHsPt", 501, -0.5, +500.5);
+  hGenParticlesFromHsEta_ = book1D("GenParticlesFromHsEta", "GenParticlesFromHsEta", 200, -10., +10.);
+  hGenParticlesFromHsPdgId_ = book1D("GenParticlesFromHsPdgId", "GenParticlesFromHsPdgId", 49, -24.5, +24.5);
+}
+
+void fillGenParticleHistograms(
+       const reco::GenParticleCollection& genParticlesFromDecays,
+       MonitorElement* histoGenMotherPt, MonitorElement* histoGenMotherEta, MonitorElement* histoGenMotherMass,  
+       MonitorElement* histoGenDaughterPt, MonitorElement* histoGenDaughterEta, MonitorElement* histoGenDaughterPdgId,
+       double evtWeight)
+{
+  if ( genParticlesFromDecays.size() == 2 ) {
+    reco::Particle::LorentzVector genMother(0,0,0,0);
+    for ( reco::GenParticleCollection::const_iterator genParticle = genParticlesFromDecays.begin();
+	  genParticle != genParticlesFromDecays.end(); ++genParticle ) {
+      genMother += genParticle->p4();
+      
+      histoGenDaughterPt->Fill(genParticle->pt(), evtWeight);
+      histoGenDaughterEta->Fill(genParticle->eta(), evtWeight);
+
+      int pdgId = genParticle->pdgId();
+      if ( pdgId >= -22 && pdgId <= +22 )
+	histoGenDaughterPdgId->Fill(pdgId, evtWeight);
+      else if ( pdgId < -22 )
+	histoGenDaughterPdgId->Fill(-24, evtWeight);
+      else if ( pdgId > +22 )
+	histoGenDaughterPdgId->Fill(+24, evtWeight);
+    }
+    
+    histoGenMotherPt->Fill(genMother.pt(), evtWeight);
+    histoGenMotherEta->Fill(genMother.eta(), evtWeight);
+    histoGenMotherMass->Fill(genMother.mass(), evtWeight);
+  }
 }
 
 void GenPhaseSpaceEventInfoHistManager::fillHistogramsImp(const edm::Event& evt, const edm::EventSetup& es, double evtWeight)
@@ -142,28 +183,18 @@ void GenPhaseSpaceEventInfoHistManager::fillHistogramsImp(const edm::Event& evt,
   edm::Handle<reco::GenParticleCollection> genParticlesFromZs;
   evt.getByLabel(genParticlesFromZsSource_, genParticlesFromZs);
 
-  if ( genParticlesFromZs->size() == 2 ) {
-    reco::Particle::LorentzVector genZ(0,0,0,0);
-    for ( reco::GenParticleCollection::const_iterator genParticle = genParticlesFromZs->begin();
-	  genParticle != genParticlesFromZs->end(); ++genParticle ) {
-      genZ += genParticle->p4();
-      
-      hGenParticlesFromZsPt_->Fill(genParticle->pt(), evtWeight);
-      hGenParticlesFromZsEta_->Fill(genParticle->eta(), evtWeight);
+  fillGenParticleHistograms(*genParticlesFromZs, 
+			    hGenZsPt_, hGenZsEta_, hGenZsMass_,
+			    hGenParticlesFromZsPt_, hGenParticlesFromZsEta_, hGenParticlesFromZsPdgId_,
+			    evtWeight);
 
-      int pdgId = genParticle->pdgId();
-      if ( pdgId >= -22 && pdgId <= +22 )
-	hGenParticlesFromZsPdgId_->Fill(pdgId, evtWeight);
-      else if ( pdgId < -22 )
-	hGenParticlesFromZsPdgId_->Fill(-24, evtWeight);
-      else if ( pdgId > +22 )
-	hGenParticlesFromZsPdgId_->Fill(+24, evtWeight);
-    }
-
-    hGenZsPt_->Fill(genZ.pt(), evtWeight);
-    hGenZsEta_->Fill(genZ.eta(), evtWeight);
-    hGenZsMass_->Fill(genZ.mass(), evtWeight);
-  }
+  edm::Handle<reco::GenParticleCollection> genParticlesFromHs;
+  evt.getByLabel(genParticlesFromHsSource_, genParticlesFromHs);
+  
+  fillGenParticleHistograms(*genParticlesFromHs, 
+			    hGenHsPt_, hGenHsEta_, hGenHsMass_,
+			    hGenParticlesFromHsPt_, hGenParticlesFromHsEta_, hGenParticlesFromHsPdgId_,
+			    evtWeight);
 }
 
 #include "FWCore/Framework/interface/MakerMacros.h"
