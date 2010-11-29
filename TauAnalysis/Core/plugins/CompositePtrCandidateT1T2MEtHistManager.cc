@@ -166,6 +166,7 @@ void CompositePtrCandidateT1T2MEtHistManager<T1,T2>::bookHistogramsImp()
   hVisPt_ = book1D("VisPt", "Visible P_{T}", 50, 0., 100.);
   hVisPhi_ = book1D("VisPhi", "Visible #phi", 36, -TMath::Pi(), +TMath::Pi());
   hVisMass_ = book1D("VisMass", "Visible Mass", 50, 0., 250.);
+  hVisMassL_ = book1D("VisMassL", "Visible Mass", 100, 0., 500.);
   hVisMassXL_ = book1D("VisMassXL", "Visible Mass", 150, 0., 750.);
   hVisMassGenLeg2Electron_ = book1D("VisMassGenLeg2Electron", "Visible Mass (rec. Tau matching gen. Electron)", 50, 0., 250.);
   hVisMassGenLeg2Muon_ = book1D("VisMassGenLeg2Muon", "Visible Mass (rec. Tau matching gen. Muon)", 50, 0., 250.);
@@ -520,9 +521,10 @@ void CompositePtrCandidateT1T2MEtHistManager<T1,T2>::fillHistogramsImp(const edm
 
     hVisPt_->Fill(diTauCandidate->p4Vis().pt(), weight);
     hVisPhi_->Fill(diTauCandidate->p4Vis().phi(), weight);
-    hVisMass_->Fill(diTauCandidate->p4Vis().mass(), weight);
-    hVisMassXL_->Fill(diTauCandidate->p4Vis().mass(), weight);
-    double visMass = diTauCandidate->p4Vis().mass();    
+    double visMass = diTauCandidate->p4Vis().mass();   
+    hVisMass_->Fill(visMass, weight);
+    hVisMassL_->Fill(visMass, weight);
+    hVisMassXL_->Fill(visMass, weight);
     fillHistogramGenMatch(hVisMassGenLeg2Electron_, visMass, diTauCandidate->leg2()->p4(), *genParticles, pdgIdsElectron_, weight);
     fillHistogramGenMatch(hVisMassGenLeg2Muon_, visMass, diTauCandidate->leg2()->p4(), *genParticles, pdgIdsMuon_, weight);
     fillHistogramGenMatch(hVisMassGenLeg2Photon_, visMass, diTauCandidate->leg2()->p4(), *genParticles, pdgIdsPhoton_, weight);

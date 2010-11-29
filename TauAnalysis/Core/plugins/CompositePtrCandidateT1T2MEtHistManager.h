@@ -125,6 +125,7 @@ class CompositePtrCandidateT1T2MEtHistManager : public HistManagerBase
   MonitorElement* hVisPt_;
   MonitorElement* hVisPhi_;
   MonitorElement* hVisMass_;
+  MonitorElement* hVisMassL_;
   MonitorElement* hVisMassXL_;
   MonitorElement* hVisMassGenLeg2Electron_;
   MonitorElement* hVisMassGenLeg2Muon_;
