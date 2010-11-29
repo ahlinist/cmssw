@@ -10,7 +10,7 @@ userSettings = {
             'tmpFilePath' : "/data2/friis/tmp/",
             'jobId' : 'Run29',
             # Directory containing selected events
-            'pickevents' : '/data1/friis/Run26',
+            'pickevents' : '/data1/friis/Run26'
         },
         'global' : {
             'drawOptions' : {
@@ -24,19 +24,21 @@ userSettings = {
             'analysisFilePath' : "/user/v/veelken/CMSSW_3_8_x/plots/AHtoMuTau/",
             'harvestingFilePath' : "/data1/veelken/CMSSW_3_8_x/plots/AHtoMuTau/",
             'tmpFilePath' : "/tmp/veelken/",
-            'jobId' : "7TeV"
+            'jobId' : "2010Nov22",
+            # Directory containing selected events
+            'pickevents' : '/data1/friis/Run26'
         },
         'ZtoMuTau' : {
             'analysisFilePath' : "/user/v/veelken/CMSSW_3_8_x/plots/ZtoMuTau/",
             'harvestingFilePath' : "/data1/veelken/CMSSW_3_8_x/plots/ZtoMuTau/",
             'tmpFilePath' : "/tmp/veelken/",
-            'jobId' : "2010Nov13"
+            'jobId' : "2010Nov26ii"
         },
         'ZtoMuTau_bgEstTemplate' : {
             'analysisFilePath' : "/user/v/veelken/CMSSW_3_8_x/plots/ZtoMuTau_bgEstTemplate/",
             'harvestingFilePath' : "/data1/veelken/CMSSW_3_8_x/plots/ZtoMuTau_bgEstTemplate/",
             'tmpFilePath' : "/tmp/veelken/ZtoMuTau_bgEstTemplate/",
-            'jobId' : "2010Nov14"
+            'jobId' : "2010Nov26ii"
         },
         'ZtoMuTau_tauIdEff' : {
             'analysisFilePath' : "/user/v/veelken/CMSSW_3_8_x/plots/ZtoMuTau_tauIdEff/",
@@ -48,7 +50,7 @@ userSettings = {
             'analysisFilePath' : "/user/v/veelken/CMSSW_3_8_x/plots/ZtoDiTau/",
             'harvestingFilePath' : "/data1/veelken/CMSSW_3_8_x/plots/ZtoDiTau/",
             'tmpFilePath' : "/tmp/veelken/",
-            'jobId' : "2010Nov13"
+            'jobId' : "2010Nov19"
         },
         'global' : {
             'drawOptions' : {
