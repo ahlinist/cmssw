@@ -281,15 +281,7 @@ void dqmCopyMonitorElement(DQMStore& dqmStore, const std::string& inputDirectory
   //std::cout << " meName_output = " << meName_output << std::endl;
   //std::cout << " scaleFactor = " << scaleFactor << std::endl;
   //std::cout << " scaleFactorErr = " << scaleFactorErr << std::endl;
-/*
-  std::string meName_full = dqmDirectoryName(inputDirectory).append(meName_input);
-  //std::cout << " meName_full = " <<  meName_full << std::endl;
-  std::string meName_full_dqmRootDirectoryOmitted = dqmDirectoryName_dqmRootDirectoryOmitted(inputDirectory).append(meName_input);
-  //std::cout << " meName_full_dqmRootDirectoryOmitted = " <<  meName_full_dqmRootDirectoryOmitted << std::endl;
 
-  MonitorElement* meInput = dqmStore.get(meName_full);
-  if ( !meInput ) meInput = dqmStore.get(meName_full_dqmRootDirectoryOmitted);
- */
   std::string meName_full = terminate_dqmDirectory(inputDirectory).append(meName_input);
 
   MonitorElement* meInput = dqmStore.get(meName_full);
