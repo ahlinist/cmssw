@@ -1052,7 +1052,10 @@ def enableFactorization_makeAHtoMuTauPlots_grid(
 
     # defines names of MonitorElements used as numerator and denominator
     # to compute factorization scale-factor
-    meNameAHtoMuTau_numerator = "evtSelDiMuPairZmumuHypothesisVetoByLooseIsolation/passed_cumulative_numWeighted"
+    meNameAHtoMuTau_numerator = {
+        'woBtag' : "evtSelNonCentralJetEt20bTag/passed_cumulative_numWeighted",
+        'wBtag' : "evtSelCentralJetEt20bTag/passed_cumulative_numWeighted"
+    }
     meNameAHtoMuTau_denominator = "evtSelMuonPFRelIso/processed_cumulative_numWeighted"
 
     # Loop over the samples and btag options and create sequences
@@ -1062,9 +1065,9 @@ def enableFactorization_makeAHtoMuTauPlots_grid(
     for sample, bTagOption in [(sample, bTagOption)
                                for bTagOption in ['woBtag', 'wBtag']
                                for sample in samplesToFactorize]:
-        if bTagOption == 'wBtag':
-            print "BTag analysis chain disabled - not modifying factorization"\
-                    " sequence for", sample
+        ##if bTagOption == 'wBtag':
+        ##    print "BTag analysis chain disabled - not modifying factorization"\
+        ##            " sequence for", sample
         print "Adding sample:", sample, " to factorization:", \
                 factorizationSequenceName
         new_factorization_sequence = composeFactorizationSequence(
@@ -1076,7 +1079,7 @@ def enableFactorization_makeAHtoMuTauPlots_grid(
             dqmDirectoryIn_factorizedLooseEvtSel = dqmDirectoryLoose(
                 sample, bTagOption),
             evtSel_factorizedLoose = evtSelAHtoMuTau_factorizedLoose_specialized[bTagOption],
-            meName_numerator = meNameAHtoMuTau_numerator,
+            meName_numerator = meNameAHtoMuTau_numerator[bTagOption],
             meName_denominator = meNameAHtoMuTau_denominator,
             dqmDirectoryOut = dqmDirectoryOut(sample, bTagOption),
             dropInputDirectories = False
