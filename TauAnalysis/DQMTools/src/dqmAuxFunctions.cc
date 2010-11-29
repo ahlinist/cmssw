@@ -281,7 +281,7 @@ void dqmCopyMonitorElement(DQMStore& dqmStore, const std::string& inputDirectory
   //std::cout << " meName_output = " << meName_output << std::endl;
   //std::cout << " scaleFactor = " << scaleFactor << std::endl;
   //std::cout << " scaleFactorErr = " << scaleFactorErr << std::endl;
-
+/*
   std::string meName_full = dqmDirectoryName(inputDirectory).append(meName_input);
   //std::cout << " meName_full = " <<  meName_full << std::endl;
   std::string meName_full_dqmRootDirectoryOmitted = dqmDirectoryName_dqmRootDirectoryOmitted(inputDirectory).append(meName_input);
@@ -289,6 +289,10 @@ void dqmCopyMonitorElement(DQMStore& dqmStore, const std::string& inputDirectory
 
   MonitorElement* meInput = dqmStore.get(meName_full);
   if ( !meInput ) meInput = dqmStore.get(meName_full_dqmRootDirectoryOmitted);
+ */
+  std::string meName_full = terminate_dqmDirectory(inputDirectory).append(meName_input);
+
+  MonitorElement* meInput = dqmStore.get(meName_full);
   //std::cout << " meInput = " << meInput << std::endl;
   if ( !meInput ) {
     edm::LogError ("dqmCopyMonitorElement") 
@@ -525,6 +529,7 @@ void dqmCopyRecursively(DQMStore& dqmStore, const std::string& inputDirectory, c
 //--- delete inputDirectory 
 //    (if requested to do so and inputDirectory is **not empty**;
 //     otherwise, common parent directories of inputDirectory and outputDirectory might get deleted !!)
+  //std::cout << "--> meInput_copied = " << meInput_copied << std::endl;
   if ( rmInputDirectory && meInput_copied ) dqmStore.rmdir(inputDirectory);
 }
 
