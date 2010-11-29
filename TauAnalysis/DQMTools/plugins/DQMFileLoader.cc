@@ -329,24 +329,31 @@ void DQMFileLoader::endJob()
       dqmStore.setCurrentFolder(inputDirectory);
       std::vector<std::string> dirNames = dqmStore.getSubdirs();
       for ( std::vector<std::string>::const_iterator dirName = dirNames.begin();
-           dirName != dirNames.end(); ++dirName ) {
-        std::string subDirName = dqmSubDirectoryName(inputDirectory, *dirName);
-        std::cout << " subDirName = " << subDirName << std::endl;
+	    dirName != dirNames.end(); ++dirName ) {
+	//std::cout << " dirName = " << (*dirName) << std::endl;
+//--- skip directories starting with '/' = name of dqmRootDirectory,
+//    as '/' characted refers to DQM **output** directories
+//   (containing previously loaded MonitorElements)
+	if ( dirName->find(dqmRootDirectory) == 0 ) continue;
 
-        const sstring& subDirectories = subDirectoryMap_[inputFileName_full];
-        if ( subDirectories.find(subDirName) != subDirectories.end() ) {
-          std::string inputDirName_full = dqmDirectoryName_dqmRootDirectoryOmitted(inputDirectory).append(subDirName);
-          std::cout << " inputDirName_full = " << inputDirName_full << std::endl;
-          std::string outputDirName_full = dqmDirectoryName(outputDirectory).append(subDirName);
-          std::cout << " outputDirName_full = " << outputDirName_full << std::endl;
+	std::string subDirName = dqmSubDirectoryName(inputDirectory, *dirName);
+	//std::cout << " subDirName = " << subDirName << std::endl;
 
-          //--- load histograms contained in inputFile into inputDirectory;
-          //    when processing first inputFile, check that histograms in outputDirectory do not yet exist;
-          //    add histograms in inputFile to those in outputDirectory afterwards;
-          //    clear inputDirectory once finished processing all inputFiles.
-          int mode = ( inputFileName == fileSet->second.inputFileNames_.begin() ) ? 1 : 2;
-          dqmCopyRecursively(dqmStore, inputDirName_full, outputDirName_full, fileSet->second.scaleFactor_, 0., mode, true);
-        }
+	const sstring& subDirectories = subDirectoryMap_[inputFileName_full];
+	if ( subDirectories.find(subDirName) != subDirectories.end() ) {
+	  std::string inputDirName_full = dqmDirectoryName_dqmRootDirectoryOmitted(inputDirectory).append(subDirName);	    
+	  //std::cout << " inputDirName_full = " << inputDirName_full << std::endl;
+	  std::string outputDirName_full = dqmDirectoryName(outputDirectory).append(subDirName);
+	  //std::cout << " outputDirName_full = " << outputDirName_full << std::endl;
+
+//--- load histograms contained in inputFile into inputDirectory;
+//    when processing first inputFile, check that histograms in outputDirectory do not yet exist;
+//    add histograms in inputFile to those in outputDirectory afterwards;
+//    clear inputDirectory once finished processing all inputFiles.
+	  int mode = ( inputFileName == fileSet->second.inputFileNames_.begin() ) ? 1 : 2;
+	  dqmCopyRecursively(dqmStore, inputDirName_full, outputDirName_full, fileSet->second.scaleFactor_, 0., mode, true);
+	  //dqmStore.showDirStructure();
+	}
       }
     }
   }
