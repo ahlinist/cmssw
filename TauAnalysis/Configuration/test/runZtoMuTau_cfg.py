@@ -70,9 +70,9 @@ process.source = cms.Source("PoolSource",
     fileNames = cms.untracked.vstring(
         #'/store/relval/CMSSW_3_6_1/RelValZTT/GEN-SIM-RECO/START36_V7-v1/0021/F405BC9A-525D-DF11-AB96-002618943811.root',
         #'/store/relval/CMSSW_3_6_1/RelValZTT/GEN-SIM-RECO/START36_V7-v1/0020/EE3E8F74-365D-DF11-AE3D-002618FDA211.root'
-        #'file:/data1/veelken/CMSSW_3_6_x/skims/Ztautau_1_1_sXK.root'
+        'file:/data1/veelken/CMSSW_3_6_x/skims/Ztautau_1_1_sXK.root'
         #'file:/data1/veelken/CMSSW_3_8_x/skims/AHtoMuTau/selEvents_AHtoMuTau_woBtag_runs145762to148058_RECO.root'
-        'file:/data1/veelken/CMSSW_3_8_x/skims/test/mcDYttPU156bx_GEN_SIM_RECO_1_1_1VV.root'
+        #'file:/data1/veelken/CMSSW_3_8_x/skims/test/mcDYttPU156bx_GEN_SIM_RECO_1_1_1VV.root'
     )
     #skipBadFiles = cms.untracked.bool(True)
 )
@@ -168,10 +168,10 @@ changeCut(process, "selectedPatTausForMuTauEcalIso", "tauID('ecalIsolation') > -
 # change cut on TaNC output in case using new HPS + TaNC combined tau id. algorithm
 # CV: discriminators by Track/ECAL isolation do not exist for the combined tau id. algorithm
 #     and need to be replaced by dummy cuts, in order to avoid run-time exceptions
-changeCut(process, "selectedPatTausTrkIso", "tauID('byTaNCtight') > -1.")
-changeCut(process, "selectedPatTausForMuTauTrkIso", "tauID('byTaNCtight') > -1.")
-changeCut(process, "selectedPatTausEcalIso", "tauID('byTaNCtight') > -1.")
-changeCut(process, "selectedPatTausForMuTauEcalIso", "tauID('byTaNCtight') > -1.")
+changeCut(process, "selectedPatTausTrkIso", "tauID('byTaNCloose') > -1.")
+changeCut(process, "selectedPatTausForMuTauTrkIso", "tauID('byTaNCloose') > -1.")
+changeCut(process, "selectedPatTausEcalIso", "tauID('byTaNCloose') > -1.")
+changeCut(process, "selectedPatTausForMuTauEcalIso", "tauID('byTaNCloose') > -1.")
 changeCut(process, "selectedPatTausTaNCdiscr", "tauID('byTaNCmedium') > 0.5")
 changeCut(process, "selectedPatTausForMuTauTaNCdiscr", "tauID('byTaNCmedium') > 0.5")
 
