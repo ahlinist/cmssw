@@ -87,7 +87,7 @@ def makeYieldPlot(inputFileName = None, dqmDirectory = None, outputFileName = No
     commandLine = 'chmod +x generateEDF.py'
     _runCommand(commandLine)
 
-    commandLine = './generateEDF.py %s %s %s' % (lumiCalcFileName, selEventsFileName, outputFileName)
+    commandLine = './generateEDF.py %s %s %s --ignoreNoLumiEvents' % (lumiCalcFileName, selEventsFileName, outputFileName)
     _runCommand(commandLine)
 
     #subprocess.call("rm %s" % lumiCalcFileName, shell = True)
