@@ -69,8 +69,17 @@ void PATLeptonPFIsolationEmbedder<T>::produce(edm::Event& evt,
   evt.put(output);
 }
 
+#include "DataFormats/PatCandidates/interface/Electron.h"
 #include "DataFormats/PatCandidates/interface/Muon.h"
+#include "DataFormats/PatCandidates/interface/Tau.h"
+
+typedef PATLeptonPFIsolationEmbedder<pat::Electron> PATElectronPFIsolationEmbedder;
 typedef PATLeptonPFIsolationEmbedder<pat::Muon> PATMuonPFIsolationEmbedder;
+typedef PATLeptonPFIsolationEmbedder<pat::Tau> PATTauPFIsolationEmbedder;
 
 #include "FWCore/Framework/interface/MakerMacros.h"
+
+DEFINE_FWK_MODULE(PATElectronPFIsolationEmbedder);
 DEFINE_FWK_MODULE(PATMuonPFIsolationEmbedder);
+DEFINE_FWK_MODULE(PATTauPFIsolationEmbedder);
+
