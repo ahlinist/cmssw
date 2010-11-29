@@ -2,7 +2,7 @@ import FWCore.ParameterSet.Config as cms
 
 import copy
 
-from TauAnalysis.Configuration.prepareConfigFile2 import getNewConfigFileName, prepareConfigFile2, PLOT_FILES_PREFIX
+from TauAnalysis.Configuration.prepareConfigFile2 import getNewConfigFileName, prepareConfigFile, PLOT_FILES_PREFIX
 from TauAnalysis.Configuration.submitToGrid2 import submitToGrid
 
 def _number_of_jobs(sample_info, preferred = 10000, max_jobs = 300):
@@ -27,8 +27,8 @@ def submitAnalysisToGrid(configFile = None, channel = None, samples = None,
                          disableFactorization = False,
                          disableSysUncertainties = False,
                          create = True, submit = True,
-                         cfgdir = 'crab', inputFileMap = None,
-                         outputFileMap = None,
+                         cfgdir = 'crab',
+                         inputFileMap = None, outputFileMap = None,
                          enableEventDumps = False,
                          enableFakeRates = False,
                          processName = None,
@@ -76,7 +76,7 @@ def submitAnalysisToGrid(configFile = None, channel = None, samples = None,
             'id' : jobId
         }
 
-        newConfigFile = getNewConfigFileName(configFile, cfgdir, sample, jobId)
+        newConfigFile = getNewConfigFileName(configFile, cfgdir, sample, jobId, label = "@Grid")
 
         # Check if we want to use a special file for the produced cfg file
         # File map is a function that takes a sample name and returns a list of
@@ -91,7 +91,7 @@ def submitAnalysisToGrid(configFile = None, channel = None, samples = None,
         if outputFileMap is not None:
             output_file = outputFileMap(sample)
             
-        prepareConfigFile2(
+        prepareConfigFile(
           configFile = configFile, jobInfo = jobInfo, newConfigFile = newConfigFile,
           sample_infos = samples,
           disableFactorization = disableFactorization,

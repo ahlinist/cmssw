@@ -9,7 +9,7 @@ from TauAnalysis.Configuration.cfgOptionMethods import copyCfgFileAndApplyOption
 
 PLOT_FILES_PREFIX = 'plots'
 
-def getNewConfigFileName(configFile = None, cfgdir = None, sample = None, jobId = None):
+def getNewConfigFileName(configFile = None, cfgdir = None, sample = None, jobId = None, label = ""):
     # check that configFile, cfgdir, sample and jobId
     # parameters are defined and non-empty
     if configFile is None:
@@ -25,7 +25,7 @@ def getNewConfigFileName(configFile = None, cfgdir = None, sample = None, jobId 
     submissionDirectory = os.path.join(workingDirectory, cfgdir)
 
     # Strip off _cfg.py and add sample info
-    newConfigFile = configFile.replace('_cfg.py', '_%s_%s@Grid_cfg.py' % (sample, jobId))
+    newConfigFile = configFile.replace('_cfg.py', '_%s_%s%s_cfg.py' % (sample, jobId, label))
 
     newConfigFilePath = os.path.join(submissionDirectory, newConfigFile)
 
@@ -50,16 +50,19 @@ def _get_conditions(globalTag):
     else:
         return globalTag
 
-def prepareConfigFile2(configFile = None, jobInfo = None, newConfigFile = None,
-                       sample_infos = None,
-                       disableFactorization = False, disableSysUncertainties = False,
-                       input_files = None, output_file = None,
-                       enableEventDumps = False, enableFakeRates = False,
-                       processName = None,
-                       saveFinalEvents = False):
+def prepareConfigFile(configFile = None, jobInfo = None, newConfigFile = None,
+                      sample_infos = None,
+                      disableFactorization = False, disableSysUncertainties = False,
+                      input_files = None, output_file = None,
+                      enableEventDumps = False, enableFakeRates = False,
+                      processName = None,
+                      saveFinalEvents = False,
+                      customizations = []):
     """
     Create cfg.py file used as input for cmsRun analysis job
     """
+
+    #print("<prepareConfigFile>:")
 
     # check that configFile, channel, sample and sample_infos
     # parameters are defined and non-empty
@@ -71,6 +74,8 @@ def prepareConfigFile2(configFile = None, jobInfo = None, newConfigFile = None,
         raise ValueError("Undefined 'sample_infos' Parameter !!")
 
     sample_info = sample_infos['RECO_SAMPLES'][jobInfo['sample']]
+    #print("sample_info:")
+    #print(sample_info)
 
     jobOptions = copy.copy(_JOB_OPTIONS_DEFAULTS)
 
@@ -88,6 +93,14 @@ def prepareConfigFile2(configFile = None, jobInfo = None, newConfigFile = None,
         jobOptions.append(('files', input_files))            
     if output_file is not None:
         jobOptions.append(('outputFile', output_file))
+
+    # Set maxEvents and skipEvents parameters
+    if 'maxEvents' in sample_info:
+        print("--> setting 'maxEvents' to %i" % sample_info['maxEvents'])
+	jobOptions.append(('maxEvents', sample_info['maxEvents']))	
+    if 'skipEvents' in sample_info:
+        print("--> setting 'skipEvents' to %i" % sample_info['skipEvents'])
+	jobOptions.append(('skipEvents', sample_info['skipEvents']))	
 
     # Get the type and genPhaseSpace cut
     jobOptions.append(('type', sample_info['type']))
@@ -146,5 +159,5 @@ def prepareConfigFile2(configFile = None, jobInfo = None, newConfigFile = None,
     configFilePath = os.path.join(workingDirectory, configFile)
     if not os.path.exists(configFilePath):
         raise ValueError("Failed to find config file %s in current directory !!" % configFile)
-    copyCfgFileAndApplyOptions(configFilePath, newConfigFile, jobInfo, jobOptions)
+    copyCfgFileAndApplyOptions(configFilePath, newConfigFile, jobInfo, jobOptions, customizations)
         
