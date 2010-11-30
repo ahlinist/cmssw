@@ -410,13 +410,13 @@ def loadBackgroundHist(ws,output,options):
 
         #start counting bins from 1 (to match root convention)
         for bin in range(startBin,inpHist.GetNbinsX()+1):
-            if bkgHist.GetBinWidth(bin) != binSize:
+            if inpHist.GetBinWidth(bin) != binSize:
                 print 'Bin sizes not the same!!'
                 exit(1)
 
-            if  bin <= bkgHist.GetNbinsX():
-                bkgHist.SetBinContent(bin+1,inpHist.GetBinContent(bin))
-                bkgHist.SetBinError(bin+1,inpHist.GetBinError(bin))
+            if  bin-startBin+1 <= bkgHist.GetNbinsX():
+                bkgHist.SetBinContent(bin-startBin+1,inpHist.GetBinContent(bin))
+                bkgHist.SetBinError(bin-startBin+1,inpHist.GetBinError(bin))
             else:
                 total = bkgHist.GetBinContent(bkgHist.GetNbinsX()) + inpHist.GetBinContent(bin)
                 tot_err = sqrt(bkgHist.GetBinError(bkgHist.GetNbinsX())**2 + inpHist.GetBinError(bin)**2)
