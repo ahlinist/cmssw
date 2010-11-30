@@ -24,7 +24,7 @@
 class SimTrack;
 class SimVertex;
 
-#define MAXHLTBITS    200
+#define MAXHLTBITS    5000
 
 using namespace edm;
 using namespace std;
@@ -391,11 +391,13 @@ class GammaJetAnalyzer : public edm::EDAnalyzer {
       Float_t phiMetGen2;
 
       Bool_t   hltPass;
-      char     aHLTNames[6000];
       Int_t    hltNamesLen;
       Int_t    hltCount;
-      bool     aHLTResults[MAXHLTBITS];
 
+      std::vector<std::string>*  aHLTNames;
+      //bool     aHLTResults[MAXHLTBITS];
+      std::vector<bool>*  aHLTResults;
+      
       int nHLT;
       std::map<std::string, int> hltTriggers;
 };
