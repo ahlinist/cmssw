@@ -15,9 +15,9 @@ def main(options,args):
         options.inputVar = options.obsVar
 
 
-    ROOT.gROOT.ProcessLine('struct InputContents { Float_t '+options.inputVar+';}')
+    ROOT.gROOT.ProcessLine('struct InputContents { Double_t '+options.inputVar+';}')
 
-    ROOT.gROOT.ProcessLine('struct TreeContents { Float_t '+options.obsVar+';}')
+    ROOT.gROOT.ProcessLine('struct TreeContents { Double_t '+options.obsVar+';}')
 
     treecontents = ROOT.TreeContents()
 
@@ -26,14 +26,14 @@ def main(options,args):
     outTree = ROOT.TTree(options.treeName,'The Background')
     outTree.Branch(options.obsVar,
                    ROOT.AddressOf(treecontents,options.obsVar),
-                   options.obsVar+'/F')
+                   options.obsVar+'/D')
 
     for f in args:        
         print f
         currentFile = ROOT.TFile.Open(f)
         currentTree = currentFile.Get(options.inputTreeName)
-        currentTree.SetBranchAddress(options.inputVar,ROOT.AddressOf(inTreeContents,options.inputVar))        
-
+        currentTree.SetBranchAddress(options.inputVar,ROOT.AddressOf(inTreeContents,options.inputVar))
+        
         for i in range(currentTree.GetEntries()):
             currentTree.GetEntry(i)
             setattr(treecontents,options.obsVar,getattr(inTreeContents,options.inputVar))

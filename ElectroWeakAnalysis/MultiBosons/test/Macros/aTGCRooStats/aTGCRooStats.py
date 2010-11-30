@@ -9,8 +9,7 @@ import ROOT
 def main(options,args):
 
     obsMax = float(options.obsMax)
-    obsMax = float(options.obsMax)
-    
+    obsMax = float(options.obsMax)    
 
     dataChain = ROOT.TChain(options.treeName)
     for dFile in str(options.inputData).split(','):
@@ -145,7 +144,7 @@ def setupWorkspace(dataTree,mcTree,ws,output,options):
                                sqrt(.02*.02 + .02*.02 + .15*.15)) #acceptance error + XS err + 15%
     bkgErr = ROOT.RooRealVar('backgroundError',
                              'Fractional Error on the expected number of background events',
-                             .1) # fix background error to be 10% for now
+                             .35) # fix background error to be 10% for now
     lumiErr = ROOT.RooRealVar('luminosityError',
                               'Fractional Error on the luminosity',
                               .1) #fix lumi error to 10%    
@@ -405,17 +404,22 @@ def loadBackgroundHist(ws,output,options):
         
         bkgHist = ROOT.TH1F('bkgHist','Background Shape',nObsBins,obsMin,obsMax)
 
-        for bin in range(inpHist.GetNbinsX()):
-            if bkgHist.GetBinWidth(bin+1) != binSize:
+        #get bin corresponding to first bin in bkgHist
+        startBin = inpHist.GetXaxis().FindFixBin(bkgHist.GetBinCenter(1))
+        print 'Starting bin is: ',startBin
+
+        #start counting bins from 1 (to match root convention)
+        for bin in range(startBin,inpHist.GetNbinsX()+1):
+            if bkgHist.GetBinWidth(bin) != binSize:
                 print 'Bin sizes not the same!!'
                 exit(1)
-            
-            if not bin+1 > inpHist.GetNbinsX():
-                bkgHist.SetBinContent(bin+1,inpHist.GetBinContent(bin+1))
-                bkgHist.SetBinError(bin+1,inpHist.GetBinError(bin+1))
+
+            if  bin <= bkgHist.GetNbinsX():
+                bkgHist.SetBinContent(bin+1,inpHist.GetBinContent(bin))
+                bkgHist.SetBinError(bin+1,inpHist.GetBinError(bin))
             else:
-                total = bkgHist.GetBinContent(bkgHist.GetNbinsX()) + inpHist.GetBinContent(bin+1)
-                tot_err = sqrt(bkgHist.GetBinError(bkgHist.GetNbinsX())**2 + inpHist.GetBinError(bin+1)**2)
+                total = bkgHist.GetBinContent(bkgHist.GetNbinsX()) + inpHist.GetBinContent(bin)
+                tot_err = sqrt(bkgHist.GetBinError(bkgHist.GetNbinsX())**2 + inpHist.GetBinError(bin)**2)
                 bkgHist.SetBinContent(bkgHist.GetNbinsX(),total)
                 bkgHist.SetBinError(bkgHist.GetNbinsX(),tot_err)
         
@@ -515,8 +519,7 @@ if __name__ == "__main__":
     parser = OptionParser(description="%prog : A RooStats Implementation of Anomalous Triple Gauge Coupling Analysis.",
                           usage="aTGCRooStats --intLumi=TheLumi --lumiErr=Err")
     parser.add_option("--workspaceName",dest="workspaceName",help="The name of your RooWorkspace")
-    parser.add_option("--backgroundFile",dest="bkgFile",help="The path to the file containing the estimated background in each bin.")
-    parser.add_option("--intLumi",dest="intLumi",help="Integrated luminosity.")
+    parser.add_option("--backgroundFile",dest="bkgFile",help="The path to the file containing the estimated background in each bin.")    
     parser.add_option("--lumiErr",dest="lumiErr",help="Integrated luminosity fractional error.")
 
     #parameters of the observable
@@ -599,13 +602,10 @@ if __name__ == "__main__":
         
     if options.treeName is None:
         print 'Need to specify --treeName'
-        miss_options=True
-    if options.intLumi is None:
-        print 'Need to specify --intLumi'
-        miss_options=True
-    if options.lumiErr is None:
-        print 'Need to specify --lumiErr'
-        miss_options=True
+        miss_options=True    
+#    if options.lumiErr is None:
+#        print 'Need to specify --lumiErr'
+#        miss_options=True
 
     if miss_options:
         exit(1)

@@ -26,7 +26,7 @@ def main(options,args):
         currentFile = ROOT.TFile.Open(f)
         currentTree = currentFile.Get(options.treeName)
         currentTree.SetBranchAddress(options.obsVar,ROOT.AddressOf(inTreeContents,options.obsVar))        
-        treecontents.weight = currentTree.GetWeight()*float(options.intLumi)/15.0
+        treecontents.weight = currentTree.GetWeight()*float(options.intLumi)/float(options.inputLumi)
 
         for i in range(currentTree.GetEntries()):
             currentTree.GetEntry(i)
@@ -36,7 +36,7 @@ def main(options,args):
         currentFile.Close()
 
     out.cd()
-    outTree.Write()    
+    outTree.Write()
     out.Close()
     
 
@@ -47,6 +47,7 @@ if __name__ == "__main__":
     parser.add_option("--obsVar",dest="obsVar",help="Name of the observable in the TTree.")
     parser.add_option("--treeName",dest="treeName",help="The name of input TTrees.")
     parser.add_option("--intLumi",dest="intLumi",help="Integrated luminosity to scale to.")
+    parser.add_option("--inputLumi",dest="inputLumi",help="The equivalent luminosity of each of the input samples in inverse picobarns, must be same for all.")
 
     (options,args) = parser.parse_args()
 
@@ -60,6 +61,9 @@ if __name__ == "__main__":
         miss_options=True
     if options.treeName is None:
         print 'Need to specify --treeName'
+        miss_options=True
+    if options.inputLumi is None:
+        print 'Need to specify --inputLumi'
         miss_options=True
     if options.intLumi is None:
         print 'Need to specify --intLumi'
