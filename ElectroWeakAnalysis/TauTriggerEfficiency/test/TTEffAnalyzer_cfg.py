@@ -225,7 +225,7 @@ else:
 	process.ak5PFJetTracksAssociatorAtVertex *
 	process.myPFTauTagInfoProducer+
 	process.myConeProducer+
-#	process.TauMCProducer*
+	process.TauMCProducer*
         process.thisPFTauDiscriminationByLeadingPionPtCut *
         process.PFTausSelected *
         process.thisPFTauDiscriminationByLeadingTrackFinding *
