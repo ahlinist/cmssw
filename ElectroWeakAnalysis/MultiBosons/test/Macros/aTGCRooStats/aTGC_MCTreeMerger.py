@@ -8,26 +8,26 @@ def main(options,args):
 
     out = ROOT.TFile.Open(options.output,'RECREATE')
 
-    ROOT.gROOT.ProcessLine('struct TreeContents { Double_t '+
+    ROOT.gROOT.ProcessLine('struct TreeContents { Float_t '+
                            options.obsVar+'; Float_t '+
                            options.par1Name+'_grid; Float_t '+
-                           options.par2Name+'_grid; Double_t weight;}')
+                           options.par2Name+'_grid; Float_t weight;}')
 
     treecontents = ROOT.TreeContents()
 
-    inTreeContents = ROOT.TreeContents()
+    
         
     outTree = ROOT.TTree(options.treeName,'The Merged Tree')
     outTree.Branch(options.obsVar,
                    ROOT.AddressOf(treecontents,options.obsVar),
-                   options.obsVar+'/D')
+                   options.obsVar+'/F')
     outTree.Branch(options.par1Name+'_grid',
                    ROOT.AddressOf(treecontents,options.par1Name+'_grid'),
                    options.par1Name+'_grid/F')
     outTree.Branch(options.par2Name+'_grid',
                    ROOT.AddressOf(treecontents,options.par2Name+'_grid'),
                    options.par2Name+'_grid/F')
-    outTree.Branch('weight',ROOT.AddressOf(treecontents,'weight'),'weight/D')
+    outTree.Branch('weight',ROOT.AddressOf(treecontents,'weight'),'weight/F')
 
     for f in args:
         coup1= f.split(".root")[0].split(options.par1Name+'_')[-1].split('_')[0]
@@ -35,6 +35,16 @@ def main(options,args):
         print f,'\t',coup1,'\t',coup2
         currentFile = ROOT.TFile.Open(f)
         currentTree = currentFile.Get(options.treeName)
+
+        ROOT.gROOT.ProcessLine('struct InTreeContents { '+
+                               currentTree.GetLeaf(options.obsVar).GetTypeName()+' '+
+                               options.obsVar+'; Float_t '+
+                               options.par1Name+'_grid; Float_t '+
+                               options.par2Name+'_grid;'+
+                               currentTree.GetLeaf('weight').GetTypeName()+' weight;}')
+
+        inTreeContents = ROOT.InTreeContents()
+        
         currentTree.SetBranchAddress(options.obsVar,
                                      ROOT.AddressOf(inTreeContents,options.obsVar))
         setattr(treecontents,options.par1Name+'_grid',float(coup1))

@@ -8,12 +8,11 @@ def main(options,args):
 
     out = ROOT.TFile.Open(options.output,'RECREATE')
 
-    ROOT.gROOT.ProcessLine(
-        'struct TreeContents { Float_t '+options.obsVar+'; Double_t weight; }')
+    ROOT.gROOT.ProcessLine('struct TreeContents { Float_t '+options.obsVar+'; Double_t weight; }')
 
     treecontents = ROOT.TreeContents()
 
-    inTreeContents = ROOT.TreeContents()
+    
         
     outTree = ROOT.TTree(options.treeName,'The Background')
     outTree.Branch(options.obsVar,
@@ -25,6 +24,11 @@ def main(options,args):
         print f
         currentFile = ROOT.TFile.Open(f)
         currentTree = currentFile.Get(options.treeName)
+
+        ROOT.gROOT.ProcessLine('struct InTreeContents { '+currentTree.GetLeaf(options.obsVar).GetTypeName()+
+                               ' '+options.obsVar+'; Double_t weight; }')
+        inTreeContents = ROOT.InTreeContents()
+        
         currentTree.SetBranchAddress(options.obsVar,ROOT.AddressOf(inTreeContents,options.obsVar))        
         treecontents.weight = currentTree.GetWeight()*float(options.intLumi)/float(options.inputLumi)
 
