@@ -1,3 +1,3 @@
 #!/bin/bash
 
-python aTGCRooStats.py --workspaceName=Zgg_mm_35pb_limits --couplingType=Zgg --treeName=photonTree --obsVar=photonEt --obsMin=0 --obsMax=90 --nObsBins=9 --intLumi=11.0 --lumiErr=0.1 --par1Name=h3 --par1Max=.3 --par2Name=h4 --par2Max=.006 --inputData=Zgamma/Data_mm_35pb.root --inputMC=Zgamma/Zgg_mm_MC_merged_35pb.root --MCbackground --backgroundFile=Zgamma/ZJets_mm_35pb.root --par1GridMax=.12 --par2GridMax=.004 --nGridParBins=3
+python aTGCRooStats.py --workspaceName=WW_35pb_limits --couplingType=WWV --treeName=ww --obsVar=pt1 --obsMin=30 --obsMax=120 --nObsBins=9  --lumiErr=0.1 --par1Name=dkz --par1Max=1.5 --par2Name=lg --par2Max=1.5 --inputData=Data_ww.root --inputMC=WW_SignalExpectation.root --backgroundFile=bkg_ww_mc.root --par1GridMax=.75 --par2GridMax=.5 --nGridParBins=3
