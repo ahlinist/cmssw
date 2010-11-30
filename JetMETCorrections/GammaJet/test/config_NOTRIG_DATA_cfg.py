@@ -27,7 +27,8 @@ process.source = cms.Source("PoolSource",
     fileNames = cms.untracked.vstring(
 #'file:/cmsrm/pc18/pandolf/CMSSW_3_5_7/src/JetMETCorrections/GammaJet/test/eventi_136097.root'
 #'file:/cmsrm/pc18/pandolf/CMSSW_3_6_3/src/JetMETCorrections/GammaJet/test/events_136100.root'
-'file:/cmsrm/pc21/emanuele/data/Pool/EG_Run2010A_RECO.root'
+#'file:/cmsrm/pc21/emanuele/data/Pool/EG_Run2010A_RECO.root'
+'file:/tmp/delre/Photon_RECO_Nov4ReReco_v2.root'
 )
 
 )

@@ -13,7 +13,7 @@
 //
 // Original Author:  Daniele del Re
 //         Created:  Thu Sep 13 16:00:15 CEST 2007
-// $Id: GammaJetAnalyzer.cc,v 1.39 2010/11/16 10:43:45 delre Exp $
+// $Id: GammaJetAnalyzer.cc,v 1.40 2010/11/26 16:38:40 delre Exp $
 //
 //
 
@@ -95,7 +95,6 @@
 #include "FWCore/Framework/interface/TriggerNamesService.h"
 #include <FWCore/Common/interface/TriggerNames.h>
 #include <DataFormats/Common/interface/TriggerResults.h>
-#define MAXHLTBITS    200
 
 #include "SimDataFormats/Track/interface/SimTrack.h"
 #include "SimDataFormats/Track/interface/SimTrackContainer.h"
@@ -179,6 +178,8 @@ GammaJetAnalyzer::GammaJetAnalyzer(const edm::ParameterSet& iConfig)
   jptjetnmin_ = iConfig.getParameter<int>("jptjetnmin");
   Xsec_ = iConfig.getParameter<double>("Xsec");
   jetID_ = new reco::helper::JetIDHelper(iConfig.getParameter<ParameterSet>("JetIDParams"));
+  aHLTNames = new std::vector<std::string>;
+  aHLTResults = new std::vector<bool>;
  
 }
 
@@ -204,6 +205,9 @@ GammaJetAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
    nJet_jptak5  = 0;
    nJet_pfakt7 = nJet_akt7 = nJetGen_akt7 = 0;
    nvertex = 0;
+
+   aHLTNames->clear();
+   aHLTResults->clear();
 
    using reco::TrackCollection;
   
@@ -373,58 +377,50 @@ GammaJetAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
 //---------------------------HLT Trigger ---------------------------------------------------------------------------------------------
 // You Can See HLT Name list ->  " JetMETCorrections/GammaJet/test/HLTList.txt " file 
 
-   for (unsigned int iHLT = 0; iHLT != MAXHLTBITS; ++iHLT) 
-   {
-   	aHLTResults[iHLT] = false;
-   }
    hltPass = false;
 
-   strcpy(aHLTNames,"");
+
+
    hltNamesLen = 0;
 
    edm::Handle<edm::TriggerResults> hltTriggerResultHandle;
    iEvent.getByLabel(triggerTag_, hltTriggerResultHandle);
 
-   if (!hltTriggerResultHandle.isValid()) 
+   if (!hltTriggerResultHandle.isValid())
    {
-   	std::cout << "invalid handle for HLT TriggerResults" << std::endl;
-   } 
-   else 
+     std::cout << "invalid handle for HLT TriggerResults" << std::endl;
+   }
+   else
    {
-   	edm::TriggerNames HLTNames;
-//   	HLTNames.init(*hltTriggerResultHandle);
-      HLTNames = iEvent.triggerNames(*hltTriggerResultHandle);
 
-   	std::string tempnames;  
-   	hltCount = hltTriggerResultHandle->size();
-   	//std::cout << "hltTriggerResult->size(): " << hltCount << std::endl;
+     edm::TriggerNames HLTNames;
+//   HLTNames.init(*hltTriggerResultHandle);
+     HLTNames = iEvent.triggerNames(*hltTriggerResultHandle);
+     std::string tempnames;
+     hltCount = hltTriggerResultHandle->size();
+     //std::cout << "hltTriggerResult->size(): " << hltCount << std::endl;
 
-   	for (int i = 0 ; i != hltCount; ++i) {
+      for (int i = 0 ; i != hltCount; ++i) {
 
-	  map<string, int>::const_iterator it 
-	    = hltTriggers.find(HLTNames.triggerName(i));
 
-        TString hltName(HLTNames.triggerName(i));
+        TString hltName_tstr(HLTNames.triggerName(i));
+        std::string hltName_str(HLTNames.triggerName(i));
         TRegexp reg("Photon");
 
-//	  if (it != hltTriggers.end()) {
-	  if ( hltName.Contains(reg) ) {
+        if ( hltName_tstr.Contains(reg) ) {
 
-	    tempnames += HLTNames.triggerName(i) + ":";
-	    //aHLTResults[i] = hltTriggerResultHandle->accept(i);
-	    //cout << i <<"....." << HLTNames.triggerName(i).c_str() << ".... : " << hltTriggerResultHandle->accept(i) << endl;
+          aHLTNames->push_back(hltName_str);
+          aHLTResults->push_back(hltTriggerResultHandle->accept(i));
 
-	    int itrig = it->second;
-	    aHLTResults[itrig] = hltTriggerResultHandle->accept(i);
-	    hltPass |= aHLTResults[itrig];
 
-	  }
-   	} // for i
+        }
+     } // for i
 
-   	hltNamesLen = tempnames.length();
-   	strcpy(aHLTNames,tempnames.c_str());
+     hltNamesLen = tempnames.length();
 
    } // HLT isValid
+
+
 //--------------------------------------------------------------------------------------------------------------------------------------
 
    // Loop over MC truth
@@ -543,7 +539,7 @@ GammaJetAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
 
      } // loop particles
 
-   
+
      //const double genjetptthr = 5.; // already implicit in GenJet reco
      //const int genjetnmin = 4;
      // Loop over gen Jets
@@ -628,6 +624,7 @@ GammaJetAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
        } // has vertex
      } // for simTracks
 
+     
      if (_debug)
        cout << "Found mapping DaughterSimTracks<-(Vertex)->ParentSimTrack"
         << endl << flush;
@@ -1969,13 +1966,15 @@ GammaJetAnalyzer::beginJob()
   hltTriggers["HLT_Photon20_Cleaned_L1R"] = 11;
   hltTriggers["HLT_Photon30_Cleaned_L1R"] = 12;
 
-  m_tree->Branch("hltPass",&hltPass,"hltPass/O");
+
+  //m_tree->Branch("hltPass",&hltPass,"hltPass/O");
   //m_tree->Branch("hltCount",&hltCount,"hltCount/I");
   m_tree->Branch("nHLT",&nHLT,"nHLT/I");
   m_tree->Branch("hltNamesLen",&hltNamesLen,"hltNamesLen/I");
-  m_tree->Branch("HLTNames",&aHLTNames,"HLTNames[hltNamesLen]/C,6000");
-  //m_tree->Branch("HLTResults",&aHLTResults,"HLTResults[hltCount]/O");
-  m_tree->Branch("HLTResults",&aHLTResults,"HLTResults[nHLT]/O");
+  //m_tree->Branch("HLTNames",&aHLTNames,"HLTNames[hltNamesLen]/C,6000");
+  m_tree->Branch("HLTNames",&aHLTNames);
+  m_tree->Branch("HLTResults",&aHLTResults);
+  //m_tree->Branch("HLTResults",&aHLTResults,"HLTResults[nHLT]/O");
 
   m_tree->Branch("Xsec",  &Xsec_, "Xsec/D");
 
