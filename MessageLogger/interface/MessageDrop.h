@@ -56,6 +56,13 @@
 //  9  mf 9/23/10	Support for situations where no thresholds are low
 //                      enough to react to LogDebug (or info, or warning)
 //
+// 10  mf, crj 11/2/10	(see MessageServer/src/MessageLogger.cc change 17)
+//                      Support for reducing the string operations done when
+//			moving from one module to the next.
+//
+// 11  mf 11/29/10	Snapshot method to preare for invalidation of the   
+//			pointers used to hold module context.  Supports 
+//			surviving throws that cause objects to go out of scope.
 
 // user include files
 
@@ -83,6 +90,7 @@ public:
 			  const char* phase);  
   void setPath(const char* type, std::string const & pathname);
   void setSinglet(const char * sing);
+  void snapshot();
   std::string runEvent;
   std::string jobreport_name;				// change log 5
   std::string jobMode;					// change log 6
