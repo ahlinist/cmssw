@@ -66,8 +66,9 @@ def main(options,args):
     level_68 = ROOT.TMath.ChisquareQuantile(.68,2)/2.0 # delta NLL for 68% confidence level for -log(LR)
     level_95 = ROOT.TMath.ChisquareQuantile(.95,2)/2.0 # delta NLL for 95% confidence level for -log(LR)
 
-    print '68% CL Delta-NLL=',level_68
-    print '95% CL Delta-NLL=',level_95
+    print
+    print '68% CL Delta-NLL 2 DOF=',level_68
+    print '95% CL Delta-NLL 2 DOF=',level_95
 
     profMinuit = profileLL.minuit()
     profMinuit.setStrategy(2)
@@ -78,14 +79,55 @@ def main(options,args):
 
     thePlot = profMinuit.contour(ws.var(options.couplingType+'_'+options.par1Name),
                                  ws.var(options.couplingType+'_'+options.par2Name),
-                                 sqrt(2*level_68),sqrt(2*level_95))
+                                 sqrt(2*level_68),sqrt(2*level_95)) # here the error is in sigmas
 
     theCanvas = ROOT.TCanvas('contours','',500,500)
     
     thePlot.SetTitle('68% & 95% CL on the Best Fit Values of '+options.par1Name+' and '+options.par2Name)
-    thePlot.Draw()
+    
 
+    level_95 = ROOT.TMath.ChisquareQuantile(.95,1)/2.0 # delta NLL for -log(LR) with 1 dof
+    print '95% CL Delta-NLL 1 DOF=',level_95
+    profMinuit.setErrorLevel(level_95)
+
+    # now do the 1D confidence intervals with other TGC at SM
+    # do par 1 first
+    ws.var(options.couplingType+'_'+options.par2Name).setVal(0.0)
+    ws.var(options.couplingType+'_'+options.par2Name).setConstant(True)
+    profMinuit.minos(ws.set('POI'))
+
+    parm1 = ws.var(options.couplingType+'_'+options.par1Name)
+
+    #parm1.Print()
+
+    par1Line = ROOT.TLine(parm1.getVal()+parm1.getErrorLo(),0,
+                          parm1.getVal()+parm1.getErrorHi(),0)
+    par1Line.SetLineWidth(2)
+    par1Line.SetLineColor(ROOT.kRed)
+    
+    thePlot.addObject(par1Line)
+
+    #do par 2
+    ws.var(options.couplingType+'_'+options.par1Name).setVal(0.0)
+    ws.var(options.couplingType+'_'+options.par1Name).setConstant(True)
+    ws.var(options.couplingType+'_'+options.par2Name).setConstant(False)
+    profMinuit.minos(ws.set('POI'))
+
+    parm2 = ws.var(options.couplingType+'_'+options.par2Name)
+
+    #parm2.Print()
+
+    par2Line = ROOT.TLine(0,parm2.getVal()+parm2.getErrorLo(),
+                          0,parm2.getVal()+parm2.getErrorHi())
+    par2Line.SetLineWidth(2)
+    par2Line.SetLineColor(ROOT.kRed)
+
+    thePlot.addObject(par2Line)
+
+    thePlot.Draw()
     theCanvas.Print(options.workspaceName+'_contour.root')
+
+    profMinuit.setErrorLevel(.5)
     
     #theLHInterval = ROOT.RooStats.LikelihoodInterval('profLikelihoodInterval',
     #                                                 profileLL,
@@ -130,12 +172,16 @@ def setupWorkspace(dataTree,mcTree,ws,output,options):
     par1 = ROOT.RooRealVar(options.couplingType+'_'+options.par1Name,
                          options.par1Name+'_{'+options.couplingType+'}',
                          -float(options.par1Max),
-                         float(options.par1Max)) #parameter
+                         float(options.par1Max)) #parameter 1
     
     par2 = ROOT.RooRealVar(options.couplingType+'_'+options.par2Name,
                          options.par2Name+'_{'+options.couplingType+'}',
                          -float(options.par2Max),
-                         float(options.par2Max)) #parameter
+                         float(options.par2Max)) #parameter 2
+
+    getattr(ws,'import')(obs)    
+    getattr(ws,'import')(par1)
+    getattr(ws,'import')(par2)
     #acc = ROOT.RooRealVar('acceptance','The acceptance in this pT bin',0)
     #acc_err = ROOT.RooRealVar('acceptance_error','The error on the accpetance in the pT bin',0) 
 
@@ -148,24 +194,37 @@ def setupWorkspace(dataTree,mcTree,ws,output,options):
     lumiErr = ROOT.RooRealVar('luminosityError',
                               'Fractional Error on the luminosity',
                               .1) #fix lumi error to 10%    
+
+    #build nExpectedBackground RooHistFunc
+    bkg = loadBackgroundHist(ws,output,options)
+    getattr(ws,'import')(bkg)
+    
+    nExpectedBackground = ROOT.RooHistFunc('nExpectedBackground','Number of expected background in bins of pT',
+                                           ROOT.RooArgSet(obs),ws.data('bkgShape'))
+    getattr(ws,'import')(nExpectedBackground)
+
+    ws.function('nExpectedBackground').Print()
     
     #start hack to always make last bin include overflow
     aTGCObsHist = ROOT.TH1F('aTGCObsHist',
                             'Histogram Containing the pt Spectrum',
                             nObsBins,
-                            obsMin,obsMax) # because including overflow bins in roofit sucks, alot...
-    
-    dataTree.Draw(options.obsVar+' >> aTGCObsHist','','goff')
+                            obsMin,obsMax) # because including overflow bins in roofit sucks, a lot...
 
-    lastBin = aTGCObsHist.GetBinContent(nObsBins) + aTGCObsHist.GetBinContent(nObsBins+1)
-    lastBinError = sqrt(aTGCObsHist.GetBinError(nObsBins)*aTGCObsHist.GetBinError(nObsBins) +
-                        aTGCObsHist.GetBinError(nObsBins+1)*aTGCObsHist.GetBinError(nObsBins+1))
+    if options.pseudodata:
+        generatePseudodata(dataTree,ws.obj('bkgHist'),aTGCObsHist,options)
+    else:
+        dataTree.Draw(options.obsVar+' >> aTGCObsHist','','goff')
 
-    for i in range(nObsBins-1):
-        aTGCObsHist.SetBinError(i+1,sqrt(aTGCObsHist.GetBinContent(i+1)))
+        lastBin = aTGCObsHist.GetBinContent(nObsBins) + aTGCObsHist.GetBinContent(nObsBins+1)
+        lastBinError = sqrt(aTGCObsHist.GetBinError(nObsBins)*aTGCObsHist.GetBinError(nObsBins) +
+                            aTGCObsHist.GetBinError(nObsBins+1)*aTGCObsHist.GetBinError(nObsBins+1))
 
-    aTGCObsHist.SetBinContent(nObsBins,lastBin)
-    aTGCObsHist.SetBinError(nObsBins,lastBinError)
+        for i in range(nObsBins-1):
+            aTGCObsHist.SetBinError(i+1,sqrt(aTGCObsHist.GetBinContent(i+1)))
+
+        aTGCObsHist.SetBinContent(nObsBins,lastBin)
+        aTGCObsHist.SetBinError(nObsBins,lastBinError)
 
     aTGCObsHist.Write()
     #end hack to make last bin include overflow
@@ -190,9 +249,7 @@ def setupWorkspace(dataTree,mcTree,ws,output,options):
     
     getattr(ws,'import')(aTGCData)
     getattr(ws,'import')(aTGCDataUnitWeight)
-    getattr(ws,'import')(obs)    
-    getattr(ws,'import')(par1)
-    getattr(ws,'import')(par2)
+    
     #getattr(ws,'import')(acc)
     #getattr(ws,'import')(acc_err)    
     getattr(ws,'import')(evSelErr)
@@ -253,15 +310,7 @@ def setupWorkspace(dataTree,mcTree,ws,output,options):
 
     ws.function('nExpectedSignal').Print()
 
-    #build nExpectedBackground RooHistFunc
-    bkg = loadBackgroundHist(ws,output,options)
-    getattr(ws,'import')(bkg)
     
-    nExpectedBackground = ROOT.RooHistFunc('nExpectedBackground','Number of expected background in bins of pT',
-                                           ROOT.RooArgSet(obs),ws.data('bkgShape'))
-    getattr(ws,'import')(nExpectedBackground)
-
-    ws.function('nExpectedBackground').Print()
 
     #finally make the pdf
     makeATGCExpectationPdf(ws,options)
@@ -472,6 +521,38 @@ def loadBackgroundHist(ws,output,options):
     
     return bkgData
 
+#take input TTree and generate pseudodata from resulting histogram
+def generatePseudodata(tree,bkg,hist,options):
+
+    rand = ROOT.TRandom3(int(os.urandom(4).encode('hex'),16))
+
+    nObsBins = int(options.nObsBins)
+
+    if tree.FindLeaf('weight'):
+        tree.Draw(options.obsVar+' >> '+hist.GetName(),'weight','goff')
+    else:
+        tree.Draw(options.obsVar+' >> '+hist.GetName(),'','goff')
+
+    if options.inputDataIsSignalOnly:
+        print 'Adding background estimate to signal yield.'
+        hist.Add(bkg)
+
+    lastBin = hist.GetBinContent(nObsBins) + hist.GetBinContent(nObsBins+1)
+    lastBinError = sqrt(hist.GetBinError(nObsBins)**2 + hist.GetBinError(nObsBins+1)**2)
+    
+    for i in range(nObsBins-1):
+        print 'Input histogram bin: ',hist.GetBinContent(i+1),' +- ',hist.GetBinError(i+1)
+        hist.SetBinContent(i+1,rand.Poisson(hist.GetBinContent(i+1)))
+        hist.SetBinError(i+1,sqrt(hist.GetBinContent(i+1)))
+        print 'Pseudodata histogram bin: ',hist.GetBinContent(i+1),' +- ',hist.GetBinError(i+1)
+
+    print 'Input histogram bin: ',lastBin,' +- ',lastBinError
+    lastBin=rand.Poisson(lastBin)
+    lastBinError=sqrt(lastBin)
+    hist.SetBinContent(nObsBins,lastBin)
+    hist.SetBinError(nObsBins,lastBinError)
+    print 'Pseudodata histogram bin: ',hist.GetBinContent(nObsBins),' +- ',hist.GetBinError(nObsBins)
+
 #define the PDF that defines the likelihood
 def makeATGCExpectationPdf(ws,options):
     if not isinstance(ws,ROOT.RooWorkspace):
@@ -508,18 +589,14 @@ def makeATGCExpectationPdf(ws,options):
     ws.factory('PROD::TopLevelPdf(corePoisson)')  #
     
 
-def makePlots(LLplot,options):
-    print "not done yet"
-    theCanvas = ROOT.TCanvas("Likelihood Plot")
-    LLplot.Draw("tf1")
-    theCanvas.Print("contour.root")
-    
+def makePlots(ws,options):
+    print "not done yet"    
 
 if __name__ == "__main__":
     parser = OptionParser(description="%prog : A RooStats Implementation of Anomalous Triple Gauge Coupling Analysis.",
                           usage="aTGCRooStats --intLumi=TheLumi --lumiErr=Err")
     parser.add_option("--workspaceName",dest="workspaceName",help="The name of your RooWorkspace")
-    parser.add_option("--backgroundFile",dest="bkgFile",help="The path to the file containing the estimated background in each bin.")    
+    parser.add_option("--backgroundFile",dest="bkgFile",help="The path to the file containing the estimated background in each bin.")
     parser.add_option("--lumiErr",dest="lumiErr",help="Integrated luminosity fractional error.")
 
     #parameters of the observable
@@ -541,9 +618,15 @@ if __name__ == "__main__":
     
     parser.add_option("--treeName",dest="treeName",help="Name of the TTree, assumed to be the same between all input samples.")
     parser.add_option("--inputData",dest="inputData",help="Name of input data file. Multiple files given in comma separated list.")
-    parser.add_option("--inputMC",dest="inputMC",help="Name of input MC file used to extract quadratic dependence of shapes. Multiple files in comma separated list.")
+    parser.add_option("--inputMC",dest="inputMC",help="Name of input MC file used to extract quadratic dependence of shapes.")
     parser.add_option("--couplingType",dest="couplingType",help="Name of the coupling (i.e. ZZg, Zgg, WWg, etc.")
-    parser.add_option("--MCbackground",dest="MCbackground",help="Is background from MC?",action="store_true")
+
+    #optional things
+    parser.add_option("--MCbackground",dest="MCbackground",help="Is background from MC?",action="store_true",default=False)
+    parser.add_option("--pseudodata",dest="pseudodata",help="Run in pseudodata mode.",action="store_true",default=False)
+    parser.add_option("--inputDataIsSignalOnly",dest="inputDataIsSignalOnly",
+                      help="Flag input data as signal only, for use with --pseudodata",
+                      action="store_true",default=False)
     (options,args) = parser.parse_args()
 
     miss_options = False
