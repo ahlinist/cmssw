@@ -22,7 +22,7 @@ public:
     //inFile = TFile::Open("tteffAnalysis-merged.root");
     tree = (TTree *) (inFile->Get(treename));
 
-    if(pickEventsFile.Sizeof() > 0) tree = pickEvents(pickEventsFile,tree);
+////    if(pickEventsFile.Sizeof() > 0) tree = pickEvents(pickEventsFile,tree);
 
     plotXtitle = 0;
     plotYtitle = 0;
