@@ -9,12 +9,12 @@ process.source = cms.Source("PoolSource",
     'file:patTuple.root'
   )
 )
-## restrict the number of events for testing 
+## restrict the number of events for testing
 process.maxEvents = cms.untracked.PSet(
     input = cms.untracked.int32(1000)
 )
 
-from PhysicsTools.PatExamples.samplesFNAL_cff import *
+from PhysicsTools.PatExamples.samplesCERN_cff import *
 ##process.source.fileNames = muonSKIM        ## ATTENTION these samoek are NOT available on castor
 ##process.source.fileNames = simulationQCD
 ##process.source.fileNames = simulationWjets
@@ -65,7 +65,7 @@ from PhysicsTools.PatAlgos.selectionLayer1.muonCountFilter_cfi import *
 process.step3a = countPatMuons.clone(src = 'tightMuons', minNumber = 1, maxNumber = 1)
 ## Exact one loose muon
 process.step3b = countPatMuons.clone(src = 'looseMuons', minNumber = 1, maxNumber = 1)
-## Veto on additional muons 
+## Veto on additional muons
 process.step4  = countPatMuons.clone(src = 'vetoMuons' , maxNumber = 1)
 ## Veto on additional electrons
 from PhysicsTools.PatAlgos.selectionLayer1.electronCountFilter_cfi import *
@@ -98,12 +98,12 @@ process.monStep7  = analyzePatTopSelection.clone(muons='vetoMuons', elecs='vetoE
 
 
 ## ----------------------------------------------------------------
-## Define the analysis paths: we define two selection paths to 
+## Define the analysis paths: we define two selection paths to
 ## monitor the cutflow according to the TopPAG reference selection
 ## for ICHEP 2010. All necessary object collections have been pro-
 ## duced in the cms.Path topObjectProduction before hand. The out-
 ## put report is switched on to get a quick overview of the number
-## number of events after each selection step. 
+## number of events after each selection step.
 ## ----------------------------------------------------------------
 
 ## Switch output report on
@@ -123,23 +123,23 @@ process.looseEventSelection = cms.Path(
 
 ## Define tight event selection path
 process.tightEventSelection = cms.Path(
-    process.monStart   * 
+    process.monStart   *
     process.step1      *
-    process.monStep1   *         
+    process.monStep1   *
     process.step2      *
-    process.monStep2   * 
+    process.monStep2   *
     process.step3a     *
-    process.monStep3a  *     
+    process.monStep3a  *
     process.step4      *
-    process.monStep4   *     
+    process.monStep4   *
     process.step5      *
-    process.monStep5   *     
+    process.monStep5   *
     process.step6a     *
-    process.monStep6a  *     
+    process.monStep6a  *
     process.step6b     *
-    process.monStep6b  *     
+    process.monStep6b  *
     process.step6c     *
     process.monStep6c  *
     process.step7      *
-    process.monStep7     
+    process.monStep7
     )
