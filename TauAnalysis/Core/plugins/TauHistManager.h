@@ -159,13 +159,22 @@ class TauHistManager : public HistManagerBase
   MonitorElement* hTauDiscriminatorTaNCmedium_;
   MonitorElement* hTauDiscriminatorTaNCtight_;
 
+  MonitorElement* hTauDiscriminatorHPSloose_;
+  MonitorElement* hTauDiscriminatorHPSmedium_;
+  MonitorElement* hTauDiscriminatorHPStight_;
+
   MonitorElement* hTauTrkIsoPt_;
   MonitorElement* hTauEcalIsoPt_;
   MonitorElement* hTauHcalIsoPt_;
   MonitorElement* hTauIsoSumPt_;
 
+  MonitorElement* hTauNumSignalPFChargedHadrons_;
   MonitorElement* hTauNumIsoPFChargedHadrons_;
+  MonitorElement* hTauNumPFChargedHadrons_;
+
+  MonitorElement* hTauNumSignalPFGammas_;
   MonitorElement* hTauNumIsoPFGammas_;
+  MonitorElement* hTauNumPFGammas_;
 
   MonitorElement* hTauDeltaRnearestJet_;
 

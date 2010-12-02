@@ -294,6 +294,13 @@ void TauHistManager::bookHistogramsImp()
   hTauDiscriminatorTaNCtight_ = book1D("TauDiscriminatorTaNCtight",
 				       "TauDiscriminatorTaNCtight", 2, -0.5, 1.5);
 
+  hTauDiscriminatorHPSloose_ = book1D("TauDiscriminatorHPSloose",
+				      "TauDiscriminatorHPSloose", 2, -0.5, 1.5);
+  hTauDiscriminatorHPSmedium_ = book1D("TauDiscriminatorHPSmedium",
+				       "TauDiscriminatorHPSmedium", 2, -0.5, 1.5);
+  hTauDiscriminatorHPStight_ = book1D("TauDiscriminatorHPStight",
+				      "TauDiscriminatorHPStight", 2, -0.5, 1.5);
+
   hTauTrkIsoPt_ = book1D("TauTrkIsoPt", "Track Isolation P_{T}", 100, 0., 10.);    
   hTauEcalIsoPt_ = book1D("TauEcalIsoPt", "ECAL Isolation P_{T}", 100, 0., 10.);
   hTauHcalIsoPt_ = book1D("TauHcalIsoPt", "HCAL Isolation P_{T}", 100, 0., 10.);
@@ -306,8 +313,13 @@ void TauHistManager::bookHistogramsImp()
   hTauPFNeutralHadronIsoPt_ = book1D("TauPFNeutralHadronIsoPt", "Particle Flow (Neutral Hadron) Isolation P_{T}", 100, 0., 10.);   
   hTauPFGammaIsoPt_ = book1D("TauPFGammaIsoPt", "Particle Flow (Photon) Isolation P_{T}", 100, 0., 10.);  
   
-  hTauNumIsoPFChargedHadrons_ = book1D("TauNumIsoPFChargedHadrons", "PF charged hadrons in isolation cone", 10, 0., 10.);  
-  hTauNumIsoPFGammas_ = book1D("TauNumIsoPFGammas", "PF gammas in isolation cone", 10, 0., 10.);  
+  hTauNumSignalPFChargedHadrons_ = book1D("TauNumSignalPFChargedHadrons", "PF charged hadrons in signal cone", 10, -0.5, 9.5);  
+  hTauNumIsoPFChargedHadrons_ = book1D("TauNumIsoPFChargedHadrons", "PF charged hadrons in isolation cone", 10, -0.5, 9.5);  
+  hTauNumPFChargedHadrons_ = book1D("TauNumPFChargedHadrons", "PF charged hadrons in Tau jet", 20, -0.5, 19.5);  
+
+  hTauNumSignalPFGammas_ = book1D("TauNumSignalPFGammas", "PF photons in signal cone", 10, -0.5, 9.5);
+  hTauNumIsoPFGammas_ = book1D("TauNumIsoPFGammas", "PF photons in isolation cone", 10, -0.5, 9.5);
+  hTauNumPFGammas_= book1D("TauNumPFGammas", "PF photons in Tau jet", 20, -0.5, 19.5);
 
  //--- book "control" histograms to check agreement between tau isolation variables
 //    computed by PAT-level IsoDeposits with the values computed by reco::PFTau producer
@@ -595,6 +607,13 @@ void TauHistManager::fillHistogramsImp(const edm::Event& evt, const edm::EventSe
 				    discrAvailability_hasBeenChecked, weight);
       fillTauDiscriminatorHistogram(hTauDiscriminatorTaNCtight_, *patTau, "byTaNCtight", 
 				    discrAvailability_hasBeenChecked, weight);
+
+      fillTauDiscriminatorHistogram(hTauDiscriminatorHPSloose_, *patTau, "byHPSloose", 
+				    discrAvailability_hasBeenChecked, weight);
+      fillTauDiscriminatorHistogram(hTauDiscriminatorHPSmedium_, *patTau, "byHPSmedium", 
+				    discrAvailability_hasBeenChecked, weight);
+      fillTauDiscriminatorHistogram(hTauDiscriminatorHPStight_, *patTau, "byHPStight", 
+				    discrAvailability_hasBeenChecked, weight);
     } else {
       fillTauDiscriminatorHistogram(hTauDiscriminatorTaNCfrOnePercent_, *patTau, "byTaNCfrOnePercent", 
 				    discrAvailability_hasBeenChecked, weight);
@@ -717,8 +736,13 @@ void TauHistManager::fillTauIsoHistograms(const pat::Tau& patTau, double weight)
   hTauPFNeutralHadronIsoPt_->Fill(patTau.neutralHadronIso(), weight);
   hTauPFGammaIsoPt_->Fill(patTau.photonIso(), weight);
 
-  hTauNumIsoPFChargedHadrons_->Fill(patTau.isolationPFChargedHadrCands().size(),weight);
-  hTauNumIsoPFGammas_->Fill(patTau.isolationPFGammaCands().size(),weight);
+  hTauNumSignalPFChargedHadrons_->Fill(patTau.signalPFChargedHadrCands().size(), weight);
+  hTauNumIsoPFChargedHadrons_->Fill(patTau.isolationPFChargedHadrCands().size(), weight);
+  hTauNumPFChargedHadrons_->Fill(patTau.signalPFChargedHadrCands().size() + patTau.isolationPFChargedHadrCands().size(), weight);
+
+  hTauNumSignalPFGammas_->Fill(patTau.signalPFGammaCands().size(), weight);
+  hTauNumIsoPFGammas_->Fill(patTau.isolationPFGammaCands().size(), weight);
+  hTauNumPFGammas_->Fill(patTau.signalPFGammaCands().size() + patTau.isolationPFGammaCands().size(), weight);
 
   if ( makeIsoPtCtrlHistograms_ ) {
     double sumPtIsolationConePFChargedHadrons = 0.;
