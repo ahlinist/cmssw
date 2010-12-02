@@ -525,10 +525,12 @@ void CompositePtrCandidateT1T2MEtHistManager<T1,T2>::fillHistogramsImp(const edm
     hVisMass_->Fill(visMass, weight);
     hVisMassL_->Fill(visMass, weight);
     hVisMassXL_->Fill(visMass, weight);
-    fillHistogramGenMatch(hVisMassGenLeg2Electron_, visMass, diTauCandidate->leg2()->p4(), *genParticles, pdgIdsElectron_, weight);
-    fillHistogramGenMatch(hVisMassGenLeg2Muon_, visMass, diTauCandidate->leg2()->p4(), *genParticles, pdgIdsMuon_, weight);
-    fillHistogramGenMatch(hVisMassGenLeg2Photon_, visMass, diTauCandidate->leg2()->p4(), *genParticles, pdgIdsPhoton_, weight);
-    fillHistogramGenMatch(hVisMassGenLeg2Jet_, visMass, diTauCandidate->leg2()->p4(), *genParticles, pdgIdsJet_, weight);
+    if ( genParticles.isValid() ) { 
+      fillHistogramGenMatch(hVisMassGenLeg2Electron_, visMass, diTauCandidate->leg2()->p4(), *genParticles, pdgIdsElectron_, weight);
+      fillHistogramGenMatch(hVisMassGenLeg2Muon_, visMass, diTauCandidate->leg2()->p4(), *genParticles, pdgIdsMuon_, weight);
+      fillHistogramGenMatch(hVisMassGenLeg2Photon_, visMass, diTauCandidate->leg2()->p4(), *genParticles, pdgIdsPhoton_, weight);
+      fillHistogramGenMatch(hVisMassGenLeg2Jet_, visMass, diTauCandidate->leg2()->p4(), *genParticles, pdgIdsJet_, weight);
+    }
     if ( visMassHypothesisSrc_.label() != "" ) {
       typedef edm::RefProd<CompositePtrCandidateCollection> CompositePtrCandidateRefProd;
       typedef std::vector<float> vfloat;
@@ -586,8 +588,6 @@ void CompositePtrCandidateT1T2MEtHistManager<T1,T2>::fillHistogramsImp(const edm
   }
 }
 
-#include "FWCore/Framework/interface/MakerMacros.h"
-
 #include "DataFormats/Candidate/interface/Candidate.h" 
 #include "DataFormats/PatCandidates/interface/Electron.h"
 #include "DataFormats/PatCandidates/interface/Muon.h"
@@ -600,6 +600,8 @@ typedef CompositePtrCandidateT1T2MEtHistManager<pat::Tau, pat::Tau> PATDiTauPair
 typedef CompositePtrCandidateT1T2MEtHistManager<pat::Electron, pat::Muon> PATElecMuPairHistManager;
 typedef CompositePtrCandidateT1T2MEtHistManager<pat::Electron, pat::Electron> PATDiElecPairHistManager;
 typedef CompositePtrCandidateT1T2MEtHistManager<pat::Muon, pat::Muon> PATDiMuPairHistManager;
+
+#include "FWCore/Framework/interface/MakerMacros.h"
 
 //DEFINE_EDM_PLUGIN(AnalyzerPluginFactory, DiCandidatePairHistManager, "DiCandidatePairHistManager");
 //DEFINE_EDM_PLUGIN(HistManagerPluginFactory, DiCandidatePairHistManager, "DiCandidatePairHistManager");
