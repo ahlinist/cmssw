@@ -203,6 +203,39 @@ int TAna01Event::getGenIndex(double px, double py, double pz, int charge, double
   return index;
 }
 
+// ----------------------------------------------------------------------
+int TAna01Event::getGenIndexWithDeltaR(const TLorentzVector &tlv, double charge)
+{
+  TGenCand *pGenCand;
+  int ret(-1);
+  //const double dRthrsh(0.12);
+  //const double dpTthrsh(0.3);
+  double dRmin(99999.9);
+  double dpTmin(99999.9);
+  int dRminIdx(-1);
+  int dpTminIdx(-1);
+
+  for (int i = 0; i < fnGenCands; i++) {
+      pGenCand = getGenCand(i);
+      if ((pGenCand->fStatus == 1 || pGenCand->fStatus == 8) && charge * pGenCand->fQ > 0) {
+	  double dR = tlv.DeltaR(pGenCand->fP);
+	  double dpT = TMath::Abs((tlv.Perp() - pGenCand->fP.Perp())/tlv.Perp());
+	  if(dR < dRmin)
+	  {
+	      dRmin = dR;
+	      dRminIdx = i;
+	  }
+	  if(dpT < dpTmin)
+	  {
+	      dpTmin = dpT;
+	      dpTminIdx = i;
+	  }
+      }
+  }
+  //cout << "getGenIndexWithDeltaR(const TLorentzVector &tlv, double charge): dR " << dRmin << " " << dRminIdx << " dpT " << dpTmin << " " << dpTminIdx << endl;
+  ret = dRminIdx;
+  return ret;
+}
 
 // ----------------------------------------------------------------------
 int TAna01Event::getGenIndexWithDeltaR(double pt, double eta, double phi, double charge) {
@@ -215,8 +248,8 @@ int TAna01Event::getGenIndexWithDeltaR(double pt, double eta, double phi, double
 				       
   for (int i = 0; i < fnGenCands; i++) {
     pGenCand = getGenCand(i);
-    if (pGenCand->fStatus == 1) {
-      if (charge * pGenCand->fQ > 0) {
+    cout << "getGenIndexWithDeltaR: " << i << " " << pGenCand->fStatus << " " << charge * pGenCand->fQ;
+    if ((pGenCand->fStatus == 1 || pGenCand->fStatus == 8) && charge * pGenCand->fQ > 0) {
 	/*   
 	     gencand.SetXYZM(pGenCand->fP.X(),
 	     pGenCand->fP.Y(),
@@ -225,13 +258,15 @@ int TAna01Event::getGenIndexWithDeltaR(double pt, double eta, double phi, double
 	*/
 	double dR = track.DeltaR(pGenCand->fP);
 	double dpt = TMath::Abs((track.Perp() - pGenCand->fP.Perp())/track.Perp());
+	cout << dR << " " << dpt << endl;
 	
 	if (dR < 0.12 && dpt < 0.3  && count < 30) {
 	  tmp_index[count] = i;
 	  count++; 
 	}
-      }
     }
+    else
+	cout << " - no dR calculated" << endl;
     
   }
   
