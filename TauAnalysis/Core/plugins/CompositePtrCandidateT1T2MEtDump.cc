@@ -8,7 +8,6 @@
 
 #include "DataFormats/Common/interface/Handle.h"
 #include "DataFormats/HepMCCandidate/interface/GenParticle.h"
-#include "AnalysisDataFormats/TauAnalysis/interface/CompositePtrCandidateT1T2MEt.h"
 
 #include "TauAnalysis/Core/interface/eventDumpAuxFunctions.h"
 #include "TauAnalysis/GenSimTools/interface/genParticleAuxFunctions.h"
@@ -37,12 +36,25 @@ CompositePtrCandidateT1T2MEtDump<T1,T2>::CompositePtrCandidateT1T2MEtDump(const 
       svFitAlgorithms_.push_back(svfitAlgorithm);
     }
   }
+
+  if ( cfg.exists("annotations") ) {
+    typedef std::vector<edm::ParameterSet> vParameterSet;
+    vParameterSet cfgAnnotations = cfg.getParameter<vParameterSet>("annotations");
+    for ( vParameterSet::const_iterator cfgAnnotation = cfgAnnotations.begin();
+	  cfgAnnotation != cfgAnnotations.end(); ++cfgAnnotation ) {
+      annotationType* annotation = new annotationType(*cfgAnnotation);
+      annotations_.push_back(annotation);
+    }
+  }
 }
 
 template<typename T1, typename T2>
 CompositePtrCandidateT1T2MEtDump<T1,T2>::~CompositePtrCandidateT1T2MEtDump()
 {
-//--- nothing to be done yet...
+  for ( typename std::vector<annotationType*>::iterator it = annotations_.begin();
+	it != annotations_.end(); ++it ) {
+    delete (*it);
+  }
 }
 
 double compDeltaRlegNu(const reco::Candidate::LorentzVector& p4leg, const reco::GenParticleCollection& genParticles)
@@ -108,6 +120,7 @@ void CompositePtrCandidateT1T2MEtDump<T1,T2>::print(const edm::Event& evt, const
     *outputStream_ << " M(visible) = " << diTauCandidate->p4Vis().mass() << std::endl;
     *outputStream_ << " Mt(Leg1+MET) = " << diTauCandidate->mt1MET() << std::endl;
     *outputStream_ << " Mt(Leg2+MET) = " << diTauCandidate->mt2MET() << std::endl;
+    *outputStream_ << " PzetaDiff = " << (diTauCandidate->pZeta() - 1.5*diTauCandidate->pZetaVis()) << std::endl;
     *outputStream_ << " M(CDF method) = " << diTauCandidate->p4CDFmethod().mass() << std::endl;
     *outputStream_ << " M(collinear Approx.) = " << diTauCandidate->p4CollinearApprox().mass() << std::endl;
     *outputStream_ << "  x1 = " << diTauCandidate->x1CollinearApprox() 
@@ -131,17 +144,28 @@ void CompositePtrCandidateT1T2MEtDump<T1,T2>::print(const edm::Event& evt, const
 	if ( solution ) *outputStream_ << (*solution);	
       }
     }
+    for ( typename std::vector<annotationType*>::const_iterator annotation = annotations_.begin();
+	  annotation != annotations_.end(); ++annotation ) {
+      if ( (*(*annotation)->condition_)(*diTauCandidate) ) std::cout << (*annotation)->text_ << std::endl;
+    }
     ++iDiTauCandidate;
   }
 
   *outputStream_ << std::endl;
 }
 
+#include "DataFormats/Candidate/interface/Candidate.h" 
+#include "DataFormats/PatCandidates/interface/Electron.h"
+#include "DataFormats/PatCandidates/interface/Muon.h"
+#include "DataFormats/PatCandidates/interface/Tau.h"
+
 typedef CompositePtrCandidateT1T2MEtDump<reco::Candidate, reco::Candidate> DiCandidatePairDump;
 typedef CompositePtrCandidateT1T2MEtDump<pat::Electron, pat::Tau> PATElecTauPairDump;
 typedef CompositePtrCandidateT1T2MEtDump<pat::Muon, pat::Tau> PATMuTauPairDump;
 typedef CompositePtrCandidateT1T2MEtDump<pat::Tau, pat::Tau> PATDiTauPairDump;
 typedef CompositePtrCandidateT1T2MEtDump<pat::Electron, pat::Muon> PATElecMuPairDump;
+
+#include "FWCore/Framework/interface/MakerMacros.h"
 
 DEFINE_EDM_PLUGIN(AnalyzerPluginFactory, DiCandidatePairDump, "DiCandidatePairDump");
 DEFINE_EDM_PLUGIN(ObjectDumpPluginFactory, DiCandidatePairDump, "DiCandidatePairDump");
