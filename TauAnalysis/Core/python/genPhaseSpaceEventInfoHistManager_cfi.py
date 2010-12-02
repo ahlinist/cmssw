@@ -13,7 +13,7 @@ genPhaseSpaceEventInfoHistManager = cms.PSet(
   #genJetEtaMax = cms.double(+2.5),
   
   genParticlesFromZsSource = cms.InputTag('genParticlesFromZs'),
-  genParticlesFromHsSource = cms.InputTag('genParticlesFromHs'),
+  genParticlesFromHsSource = cms.InputTag('genParticlesFromAHs'),
 
   dqmDirectory_store = cms.string('GenPhaseSpaceEventInfoQuantities'),
 
