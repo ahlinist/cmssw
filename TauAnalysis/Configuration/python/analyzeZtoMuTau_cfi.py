@@ -463,6 +463,20 @@ muTauEventDump = cms.PSet(
         ##    name = cms.string("psKine_MEt_Track_ptBalance")
         )
     ),
+    annotations = cms.VPSet(
+        cms.PSet(
+            condition = cms.string("leg1.pt() > 80."),
+            text = cms.string ("--> CV: high leg1 Pt !!")
+        ),
+        cms.PSet(
+            condition = cms.string("leg2.pt() > 80."),
+            text = cms.string ("--> CV: high leg2 Pt !!")
+        ),
+        cms.PSet(
+            condition = cms.string("svFitSolution('psKine_MEt_ptBalance').mass() > 150."),
+            text = cms.string ("--> CV: high SVfit mass !!")
+        )
+    ),
     muTauZmumuHypothesisSource = cms.InputTag('muTauPairZmumuHypotheses'),
     diMuZmumuHypothesisSource = cms.InputTag('allDiMuPairZmumuHypothesesByLooseIsolation'),
     jetSource = cms.InputTag('patJets'),

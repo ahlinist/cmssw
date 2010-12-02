@@ -8,9 +8,9 @@
  * 
  * \author Christian Veelken, UC Davis
  *
- * \version $Revision: 1.2 $
+ * \version $Revision: 1.3 $
  *
- * $Id: CompositePtrCandidateT1T2MEtDump.h,v 1.2 2010/05/19 08:51:07 veelken Exp $
+ * $Id: CompositePtrCandidateT1T2MEtDump.h,v 1.3 2010/09/02 11:33:45 veelken Exp $
  *
  */
 
@@ -19,7 +19,9 @@
 #include "FWCore/Framework/interface/EventSetup.h"
 #include "FWCore/Utilities/interface/InputTag.h"
 
-#include "DataFormats/PatCandidates/interface/Tau.h"
+#include "CommonTools/UtilAlgos/interface/StringCutObjectSelector.h"
+
+#include "AnalysisDataFormats/TauAnalysis/interface/CompositePtrCandidateT1T2MEt.h"
 
 #include "TauAnalysis/Core/interface/ObjectDumpBase.h"
 
@@ -47,6 +49,23 @@ class CompositePtrCandidateT1T2MEtDump : public ObjectDumpBase
   };
   std::vector<svFitAlgorithmType> svFitAlgorithms_;
   
+  struct annotationType
+  {
+    annotationType(const edm::ParameterSet& cfg)
+    {
+      std::string condition_string = cfg.getParameter<std::string>("condition");
+      condition_ = new StringCutObjectSelector<CompositePtrCandidateT1T2MEt<T1, T2> >(condition_string);
+      text_ = cfg.getParameter<std::string>("text");
+    }
+    ~annotationType()
+    {
+      delete condition_;
+    }
+    StringCutObjectSelector<CompositePtrCandidateT1T2MEt<T1, T2> >* condition_;
+    std::string text_;
+  };
+  std::vector<annotationType*> annotations_;
+
   edm::InputTag genParticleSource_;
 };
 
