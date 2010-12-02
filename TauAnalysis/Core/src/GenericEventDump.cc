@@ -329,9 +329,11 @@ void GenericEventDump::printEventHeaderInfo(const edm::Event& evt, double eventW
   }
   
   edm::RunNumber_t runNumber = evt.id().run();
+  edm::LuminosityBlockNumber_t lumiSectionNumber = evt.luminosityBlock();
   edm::EventNumber_t eventNumber = evt.id().event();
   
   *outputStream_ << "Run: " << runNumber << std::endl;
+  *outputStream_ << "LumiSection: " << lumiSectionNumber << std::endl;
   *outputStream_ << "Event: " << eventNumber << std::endl;
   *outputStream_ << std::endl;
   *outputStream_ << " weight = " << eventWeight << std::endl;
