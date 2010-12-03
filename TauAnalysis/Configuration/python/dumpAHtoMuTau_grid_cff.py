@@ -40,6 +40,6 @@ dumpAHtoMuTau_wBtag = cms.EDAnalyzer(
     columnsSummaryTable = cms.vstring("Passed", "cumul. Efficiency", "margin. Efficiency", "indiv. Efficiency")
 )
 
-#dumpAHtoMuTau = cms.Sequence(dumpAHtoMuTau_woBtag * dumpAHtoMuTau_wBtag)
-dumpAHtoMuTau = cms.Sequence(dumpAHtoMuTau_woBtag)
+dumpAHtoMuTau = cms.Sequence(dumpAHtoMuTau_woBtag * dumpAHtoMuTau_wBtag)
+#dumpAHtoMuTau = cms.Sequence(dumpAHtoMuTau_woBtag)
 
