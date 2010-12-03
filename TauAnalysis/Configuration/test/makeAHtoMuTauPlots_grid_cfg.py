@@ -19,10 +19,9 @@ from TauAnalysis.Configuration.tools.factorizationTools import \
 process = cms.Process('makeAHtoMuTauPlots')
 
 process.load("TauAnalysis.Configuration.dumpAHtoMuTau_grid_cff")
-##process.load("TauAnalysis.Configuration.plotAHtoMuTau_grid_cff")
 
 channel = 'AHtoMuTau'
-overrideJobId(channel, 'Run28')
+#overrideJobId(channel, 'Run28')
 inputFilePath = getHarvestingFilePath(channel)
 jobId = getJobId(channel)
 
