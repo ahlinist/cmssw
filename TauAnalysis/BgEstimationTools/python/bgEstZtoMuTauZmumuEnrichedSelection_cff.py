@@ -54,7 +54,7 @@ from TauAnalysis.CandidateTools.muTauPairProduction_cff import *
 from TauAnalysis.CandidateTools.muTauPairSelection_cfi import *
 
 muTauPairsBgEstZmumuJetMisIdEnriched = allMuTauPairs.clone(
-    srcLeg1 = cms.InputTag('selectedPatMuonsPionVetoCumulative'),
+    srcLeg1 = cms.InputTag('selectedPatMuonsPFRelIsoCumulative'),
     srcLeg2 = cms.InputTag('tausBgEstZmumuJetMisIdEnrichedMuonVetoCumulative'),
     verbosity = cms.untracked.int32(0)
 )
@@ -78,7 +78,7 @@ selectMuTauPairsBgEstZmumuJetMisIdEnriched = muTauPairSelConfiguratorBgEstZmumuJ
 #--------------------------------------------------------------------------------
 
 muTauPairsBgEstZmumuMuonMisIdEnriched = allMuTauPairs.clone(
-    srcLeg1 = cms.InputTag('selectedPatMuonsPionVetoCumulative'),
+    srcLeg1 = cms.InputTag('selectedPatMuonsPFRelIsoCumulative'),
     srcLeg2 = cms.InputTag('tausBgEstZmumuMuonMisIdEnrichedAntiMuonVeto'),
     verbosity = cms.untracked.int32(0)
 )
@@ -313,7 +313,7 @@ from TauAnalysis.BgEstimationTools.tauIdEffZtoMuTauHistManager_cfi import *
 
 muonHistManagerBgEstZmumuEnriched = copy.deepcopy(muonHistManager)
 muonHistManagerBgEstZmumuEnriched.pluginName = cms.string('muonHistManagerBgEstZmumuEnriched')
-muonHistManagerBgEstZmumuEnriched.muonSource = cms.InputTag('selectedPatMuonsPionVetoCumulative')
+muonHistManagerBgEstZmumuEnriched.muonSource = cms.InputTag('selectedPatMuonsPFRelIsoCumulative')
 
 dataBinnerBgEstZmumuEnriched = copy.deepcopy(dataBinner)
 dataBinnerBgEstZmumuEnriched.pluginName = cms.string('dataBinnerBgEstZmumuEnriched')
@@ -335,7 +335,7 @@ diTauCandidateSVfitHistManagerBgEstZmumuJetMisIdEnriched.diTauCandidateSource = 
 
 tauIdEffHistManagerBgEstZmumuJetMisIdEnriched = copy.deepcopy(tauIdEffZtoMuTauHistManager)
 tauIdEffHistManagerBgEstZmumuJetMisIdEnriched.pluginName = cms.string('tauIdEffHistManagerBgEstZmumuJetMisIdEnriched')
-tauIdEffHistManagerBgEstZmumuJetMisIdEnriched.muonSource = cms.InputTag('selectedPatMuonsPionVetoCumulative')
+tauIdEffHistManagerBgEstZmumuJetMisIdEnriched.muonSource = cms.InputTag('selectedPatMuonsPFRelIsoCumulative')
 tauIdEffHistManagerBgEstZmumuJetMisIdEnriched.tauSource = tauHistManagerBgEstZmumuJetMisIdEnriched.tauSource
 tauIdEffHistManagerBgEstZmumuJetMisIdEnriched.diTauSource = diTauCandidateHistManagerBgEstZmumuJetMisIdEnriched.diTauCandidateSource
 tauIdEffHistManagerBgEstZmumuJetMisIdEnriched.diTauChargeSignExtractor.src = tauIdEffHistManagerBgEstZmumuJetMisIdEnriched.diTauSource
@@ -356,7 +356,6 @@ analyzeEventsBgEstZmumuJetMisIdEnriched = cms.EDAnalyzer("GenericAnalyzer",
         evtSelMuonPt,
         evtSelMuonVbTfId,
         evtSelMuonPFRelIso,
-        evtSelMuonAntiPion,
         evtSelTauAntiOverlapWithMuonsVeto,
         evtSelTauEta,
         evtSelTauPt,
@@ -480,10 +479,6 @@ analyzeEventsBgEstZmumuJetMisIdEnriched = cms.EDAnalyzer("GenericAnalyzer",
             title = cms.string('Muon iso.')
         ),
         cms.PSet(
-            filter = cms.string('evtSelMuonAntiPion'),
-            title = cms.string('Muon pi-Veto')
-        ),
-        cms.PSet(
             filter = cms.string('evtSelTauLeadTrk'),
             title = cms.string('Tau lead. Track find.')
         ),
@@ -561,7 +556,7 @@ diTauCandidateSVfitHistManagerBgEstZmumuMuonMisIdEnriched.diTauCandidateSource =
 
 tauIdEffHistManagerBgEstZmumuMuonMisIdEnriched = copy.deepcopy(tauIdEffZtoMuTauHistManager)
 tauIdEffHistManagerBgEstZmumuMuonMisIdEnriched.pluginName = cms.string('tauIdEffHistManagerBgEstZmumuMuonMisIdEnriched')
-tauIdEffHistManagerBgEstZmumuMuonMisIdEnriched.muonSource = cms.InputTag('selectedPatMuonsPionVetoCumulative')
+tauIdEffHistManagerBgEstZmumuMuonMisIdEnriched.muonSource = cms.InputTag('selectedPatMuonsPFRelIsoCumulative')
 tauIdEffHistManagerBgEstZmumuMuonMisIdEnriched.tauSource = tauHistManagerBgEstZmumuMuonMisIdEnriched.tauSource
 tauIdEffHistManagerBgEstZmumuMuonMisIdEnriched.diTauSource = diTauCandidateHistManagerBgEstZmumuMuonMisIdEnriched.diTauCandidateSource
 tauIdEffHistManagerBgEstZmumuMuonMisIdEnriched.diTauChargeSignExtractor.src = tauIdEffHistManagerBgEstZmumuMuonMisIdEnriched.diTauSource
@@ -587,7 +582,6 @@ analyzeEventsBgEstZmumuMuonMisIdEnriched = cms.EDAnalyzer("GenericAnalyzer",
         evtSelMuonPt,
         evtSelMuonVbTfId,
         evtSelMuonPFRelIso,
-        evtSelMuonAntiPion,
         cms.PSet(
             pluginName = cms.string('tauEtaBgEstZmumuMuonMisIdEnriched'),
             pluginType = cms.string('BoolEventSelector'),
@@ -719,10 +713,6 @@ analyzeEventsBgEstZmumuMuonMisIdEnriched = cms.EDAnalyzer("GenericAnalyzer",
         cms.PSet(
             filter = cms.string('evtSelMuonPFRelIso'),
             title = cms.string('Muon iso.')
-        ),
-        cms.PSet(
-            filter = cms.string('evtSelMuonAntiPion'),
-            title = cms.string('Muon pi-Veto')
         ),
         cms.PSet(
             filter = cms.string('tauLeadTrkBgEstZmumuMuonMisIdEnriched'),
