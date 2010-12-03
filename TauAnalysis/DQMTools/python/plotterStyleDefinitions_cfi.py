@@ -49,6 +49,9 @@ xAxis_mass.xAxisTitle = cms.string('M / GeV')
 xAxis_transMass = copy.deepcopy(xAxis)
 xAxis_transMass.xAxisTitle = cms.string('M_{T} / GeV')
 
+xAxis_massRebin = copy.deepcopy(xAxis_mass)
+xAxis_massRebin.rebin = cms.int32(2)
+
 xAxis_num = copy.deepcopy(xAxis)
 xAxis_num.xAxisTitle = cms.string('N')
 
@@ -105,6 +108,17 @@ legend_regular = cms.PSet(
     fillColor = cms.int32(0)
 )
 
+legend_big = cms.PSet(
+    posX = cms.double(0.50),
+    posY = cms.double(0.54),
+    sizeX = cms.double(0.39),
+    sizeY = cms.double(0.35),
+    header = cms.string(''),
+    option = cms.string('brNDC'),
+    borderSize = cms.int32(0),
+    fillColor = cms.int32(0)
+)
+
 legend_eff = cms.PSet(
     posX = cms.double(0.60),
     posY = cms.double(0.77),
@@ -141,12 +155,12 @@ label_mcNormScale = cms.PSet(
 
 color_black = cms.int32(1)
 color_red = cms.int32(628)
-color_green = cms.int32(817)
+color_green = cms.int32(418) # kGreen + 2
 color_darkBlue = cms.int32(596)
 color_lightBlue = cms.int32(856)
 color_yellow = cms.int32(396)
 color_orange = cms.int32(797)
-color_violett = cms.int32(877)
+color_violett = cms.int32(618) #kMagenta + 2
 color_lightGray = cms.int32(17)
 color_darkGray = cms.int32(14)
 
@@ -492,8 +506,8 @@ drawOption_uncertainty = cms.PSet(
 
 drawOption_Data = cms.PSet(
 	markerColor = color_black,
-	markerSize = cms.double(0.5),
-	markerStyle = cms.int32(8),
+	markerSize = cms.double(1.0),
+	markerStyle = cms.int32(20),
 	lineColor = color_black,
 	lineStyle = cms.int32(1),
 	lineWidth = cms.int32(2),
@@ -516,7 +530,7 @@ drawOption_MinBiasPlusJets = drawOption_MinBias
 drawOption_Ztautau_stacked = copy.deepcopy(drawOption_red_stacked)
 drawOption_Ztautau_separate = copy.deepcopy(drawOption_red_separate)
 drawOption_Ztautau = drawOption_Ztautau_stacked
-drawOption_Ztautau.fillStyle = 1
+drawOption_Ztautau.fillStyle = 1001
 drawOption_ZtautauPlusJets = drawOption_Ztautau
 
 drawOption_Zee_stacked = copy.deepcopy(drawOption_green_stacked)
@@ -527,7 +541,7 @@ drawOption_ZeePlusJets = drawOption_Zee
 drawOption_Zmumu_stacked = copy.deepcopy(drawOption_darkBlue_stacked)
 drawOption_Zmumu_separate = copy.deepcopy(drawOption_darkBlue_separate)
 drawOption_Zmumu = drawOption_Zmumu_stacked
-drawOption_Zmumu.fillStyle = 1
+drawOption_Zmumu.fillStyle = 1001
 drawOption_ZmumuPlusJets = drawOption_Zmumu
 
 drawOption_ZplusJets_stacked = copy.deepcopy(drawOption_lightBlue_stacked)
@@ -553,11 +567,12 @@ drawOption_Wmunu = drawOption_Wmunu_stacked
 drawOption_WplusJets_stacked = copy.deepcopy(drawOption_lightBlue_stacked)
 drawOption_WplusJets_separate = copy.deepcopy(drawOption_lightBlue_separate)
 drawOption_WplusJets = drawOption_WplusJets_stacked
-drawOption_WplusJets.fillStyle = 1
+drawOption_WplusJets.fillStyle = 1001
 
 drawOption_TTplusJets_stacked = copy.deepcopy(drawOption_violett_stacked)
 drawOption_TTplusJets_separate = copy.deepcopy(drawOption_violett_separate)
 drawOption_TTplusJets = drawOption_TTplusJets_stacked
+drawOption_TTplusJets.fillStyle = 1001
 
 drawOption_gammaPlusJets_stacked = copy.deepcopy(drawOption_yellow_stacked)
 drawOption_gammaPlusJets_separate = copy.deepcopy(drawOption_yellow_separate)
@@ -572,7 +587,7 @@ drawOption_gammaPlusJetsSum = drawOption_gammaPlusJets
 drawOption_QCD_stacked = copy.deepcopy(drawOption_orange_stacked)
 drawOption_QCD_separate = copy.deepcopy(drawOption_orange_separate)
 drawOption_QCD = drawOption_QCD_stacked
-drawOption_QCD.fillStyle = 1
+drawOption_QCD.fillStyle = 1001
 drawOption_QCD_BCtoE_Pt20to30 = drawOption_QCD
 drawOption_QCD_BCtoE_Pt30to80 = drawOption_QCD
 drawOption_QCD_BCtoE_Pt80to170 = drawOption_QCD
