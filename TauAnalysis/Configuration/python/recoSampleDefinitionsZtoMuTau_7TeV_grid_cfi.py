@@ -118,9 +118,9 @@ RECO_SAMPLES = {
             'HLT_Mu9'               : '132440:MIN-147116:MAX',  # period A
             'HLT_IsoMu9'            : '147196:MIN-148058:MAX',  # period B
             'HLT_Mu11'              : '147196:MIN-148058:MAX',  # period B
+            'HLT_Mu15_v1'           : '147196:MIN-149442:MAX',  # period B & C
             'HLT_IsoMu13_v3'        : '148822:MIN-149182:MAX',  # period C
-            'HLT_IsoMu13_v4'        : '147196:MIN-149442:MAX',  # period B
-            'HLT_Mu15_v1'           : '147196:MIN-149442:MAX',  # period B
+            'HLT_IsoMu13_v4'        : '149291:MIN-149442:MAX',  # period C
             'HLT_IsoMu9_PFTau15_v1' : '148822:MIN-149182:MAX',  # period C
             'HLT_IsoMu9_PFTau15_v2' : '149291:MIN-149442:MAX',  # period C
             'HLT_Mu11_PFTau15_v1'   : '148822:MIN-149182:MAX',
@@ -369,6 +369,24 @@ MERGE_SAMPLES = {
         'type' : 'Data',
         'drawOption' : styles.drawOption_Data
     },
+    'data_preNov4' : {
+        'samples' : [
+            'data_Mu_Run2010A_Sep17ReReco',
+            'data_Mu_Run2010B_Prompt'
+        ],
+        'legendEntry' : 'DATA',
+        'type' : 'Data',
+        'drawOption' : styles.drawOption_Data
+    },
+    'data_nov25workaround' : {
+        'samples' : [
+            'data_Mu_Run2010A_Nov4ReReco',
+            'data_Mu_Run2010B_Prompt'
+        ],
+        'legendEntry' : 'DATA',
+        'type' : 'Data',
+        'drawOption' : styles.drawOption_Data
+    },
     'ZtautauSum' : {
         'samples' : [
             ##'Ztautau',
@@ -386,7 +404,8 @@ MERGE_SAMPLES = {
             'PPmuXptGt20Mu10',
             'PPmuXptGt20Mu15'
         ],
-        'legendEntry' : plotter.process_PPmuXptGt20.config_dqmHistPlotter.legendEntry.value(),
+        #'legendEntry' : plotter.process_PPmuXptGt20.config_dqmHistPlotter.legendEntry.value(),
+        'legendEntry' : 'QCD',
         'type' : plotter.process_PPmuXptGt20.config_dqmHistPlotter.type.value(),
         'drawOption' : styles.drawOption_QCD
     },
