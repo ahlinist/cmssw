@@ -43,4 +43,9 @@ double f_p1a3G(double *x, double *par);
 double f_p2ag(double *x, double *par);
 double f_p0a2g(double *x, double *par);
 
+// Exponentials and Gauss
+double f_eag(double *x, double *par);
+double f_eaG(double *x, double *par);
+
+
 double f2_chi2ellipsis(double *x, double *par);
