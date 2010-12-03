@@ -29,9 +29,9 @@ SysUncertaintyService = cms.Service("SysUncertaintyService",
     )
 )
 
-analyzeAHtoMuTauEvents_woBtag = cms.EDAnalyzer("GenericAnalyzer",
+analyzeAHtoMuTauEventsOS_woBtag = cms.EDAnalyzer("GenericAnalyzer",
   
-    name = cms.string('ahMuTauAnalyzer_woBtag'), 
+    name = cms.string('ahMuTauAnalyzerOS_woBtag'), 
                             
     filters = cms.VPSet(
         # generator level phase-space selection
@@ -54,7 +54,6 @@ analyzeAHtoMuTauEvents_woBtag = cms.EDAnalyzer("GenericAnalyzer",
         evtSelMuonPt,
         evtSelMuonVbTfId,
         evtSelMuonPFRelIso,
-        evtSelMuonAntiPion,
         evtSelMuonTrkIP,
 
         # tau candidate selection
@@ -64,8 +63,6 @@ analyzeAHtoMuTauEvents_woBtag = cms.EDAnalyzer("GenericAnalyzer",
         evtSelTauLeadTrk,
         evtSelTauLeadTrkPt,
         evtSelTauTaNCdiscr,
-        evtSelTauTrkIso,
-        evtSelTauEcalIso,
         evtSelTauProng,
         evtSelTauCharge,
         evtSelTauMuonVeto,
@@ -73,9 +70,10 @@ analyzeAHtoMuTauEvents_woBtag = cms.EDAnalyzer("GenericAnalyzer",
 
         # di-tau candidate selection
         evtSelDiTauCandidateForAHtoMuTauAntiOverlapVeto,
-        evtSelDiTauCandidateForAHtoMuTauZeroCharge,
         evtSelDiTauCandidateForAHtoMuTauMt1MET,
         evtSelDiTauCandidateForAHtoMuTauPzetaDiff,
+        evtSelDiTauCandidateForAHtoMuTauZeroCharge,
+        evtSelDiTauCandidateForAHtoMuTauNonZeroCharge,
 
         # Z --> mu+ mu- hypothesis veto (based on combinations of muon pairs)
         evtSelDiMuPairZmumuHypothesisVetoByLooseIsolation,
@@ -120,7 +118,7 @@ analyzeAHtoMuTauEvents_woBtag = cms.EDAnalyzer("GenericAnalyzer",
         muTauEventDump_woBtag
     ),
    
-    analysisSequence = muTauAnalysisSequence_woBtag,
+    analysisSequence = muTauAnalysisSequenceOS_woBtag,
 
     estimateSysUncertainties = cms.bool(False), 
     systematics = cms.vstring(
@@ -133,18 +131,28 @@ analyzeAHtoMuTauEvents_woBtag = cms.EDAnalyzer("GenericAnalyzer",
     )                                                 
 )
 
-analyzeAHtoMuTauEvents_wBtag = analyzeAHtoMuTauEvents_woBtag.clone(
+analyzeAHtoMuTauEventsOS_wBtag = analyzeAHtoMuTauEventsOS_woBtag.clone(
   
-    name = cms.string('ahMuTauAnalyzer_wBtag'), 
+    name = cms.string('ahMuTauAnalyzerOS_wBtag'), 
 
     eventDumps = cms.VPSet(
         muTauEventDump_wBtag
     ),
    
-    analysisSequence = muTauAnalysisSequence_wBtag
+    analysisSequence = muTauAnalysisSequenceOS_wBtag
 )
 
-# split analysis into b-Tag and no-b-Tag channels
-analyzeAHtoMuTauEvents = cms.Sequence(analyzeAHtoMuTauEvents_woBtag * analyzeAHtoMuTauEvents_wBtag)
-# disable b-Tag channel for now
-#analyzeAHtoMuTauEvents = cms.Sequence(analyzeAHtoMuTauEvents_woBtag)
+analyzeAHtoMuTauEventsSS_woBtag = analyzeAHtoMuTauEventsOS_woBtag.clone(
+    name = cms.string('ahMuTauAnalyzerSS_woBtag'), 
+    analysisSequence = muTauAnalysisSequenceSS_woBtag
+) 
+
+analyzeAHtoMuTauEventsSS_wBtag = analyzeAHtoMuTauEventsOS_wBtag.clone(
+    name = cms.string('ahMuTauAnalyzerSS_wBtag'), 
+    analysisSequence = muTauAnalysisSequenceSS_wBtag
+)  
+
+analyzeAHtoMuTauEvents = cms.Sequence(
+    analyzeAHtoMuTauEventsOS_woBtag * analyzeAHtoMuTauEventsOS_wBtag
+   * analyzeAHtoMuTauEventsSS_woBtag * analyzeAHtoMuTauEventsSS_wBtag
+)

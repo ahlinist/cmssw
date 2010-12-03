@@ -23,33 +23,33 @@ userSettings = {
         'AHtoMuTau' : {
             'analysisFilePath' : "/user/v/veelken/CMSSW_3_8_x/plots/AHtoMuTau/",
             'harvestingFilePath' : "/data1/veelken/CMSSW_3_8_x/plots/AHtoMuTau/",
-            'tmpFilePath' : "/tmp/veelken/",
-            'jobId' : "2010Nov22",
+            'tmpFilePath' : "/data1/veelken/tmp/",
+            'jobId' : "2010Dec01",
             # Directory containing selected events
             'pickevents' : '/data1/friis/Run26'
         },
         'ZtoMuTau' : {
             'analysisFilePath' : "/user/v/veelken/CMSSW_3_8_x/plots/ZtoMuTau/",
             'harvestingFilePath' : "/data1/veelken/CMSSW_3_8_x/plots/ZtoMuTau/",
-            'tmpFilePath' : "/tmp/veelken/",
+            'tmpFilePath' : "/data1/veelken/tmp/",
             'jobId' : "2010Nov26ii"
         },
         'ZtoMuTau_bgEstTemplate' : {
             'analysisFilePath' : "/user/v/veelken/CMSSW_3_8_x/plots/ZtoMuTau_bgEstTemplate/",
             'harvestingFilePath' : "/data1/veelken/CMSSW_3_8_x/plots/ZtoMuTau_bgEstTemplate/",
-            'tmpFilePath' : "/tmp/veelken/ZtoMuTau_bgEstTemplate/",
+            'tmpFilePath' : "/data1/veelken/tmp/ZtoMuTau_bgEstTemplate/",
             'jobId' : "2010Nov26ii"
         },
         'ZtoMuTau_tauIdEff' : {
             'analysisFilePath' : "/user/v/veelken/CMSSW_3_8_x/plots/ZtoMuTau_tauIdEff/",
             'harvestingFilePath' : "/data1/veelken/CMSSW_3_8_x/plots/ZtoMuTau_tauIdEff/",
-            'tmpFilePath' : "/tmp/veelken/ZtoMuTau_tauIdEff/",
-            'jobId' : "2010Nov01"
+            'tmpFilePath' : "/data1/veelken/tmp/ZtoMuTau_tauIdEff/",
+            'jobId' : "2010Dec01ii"
         },
         'ZtoDiTau' : {
             'analysisFilePath' : "/user/v/veelken/CMSSW_3_8_x/plots/ZtoDiTau/",
             'harvestingFilePath' : "/data1/veelken/CMSSW_3_8_x/plots/ZtoDiTau/",
-            'tmpFilePath' : "/tmp/veelken/",
+            'tmpFilePath' : "/data1/veelken/tmp/",
             'jobId' : "2010Nov19"
         },
         'global' : {

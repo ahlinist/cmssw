@@ -189,7 +189,7 @@ selectPatElectronsForElecMuLooseIsolation = patElectronSelConfiguratorForElecMuL
 
 selectedPatMuonsGlobal.cut = cms.string('isGlobalMuon()')
 selectedPatMuonsEta21.cut = cms.string('abs(eta) < 2.1')
-selectedPatMuonsPt10.cut = cms.string('pt > 10.')
+selectedPatMuonsPt15.cut = cms.string('pt > 15.')
 selectedPatMuonsVbTfId.beamSpotSource = cms.InputTag("offlineBeamSpot")
 selectedPatMuonsPFRelIso.chargedHadronIso.ptMin = cms.double(-1.)
 selectedPatMuonsPFRelIso.chargedHadronIso.dRvetoCone = cms.double(-1.)
@@ -202,9 +202,6 @@ selectedPatMuonsPFRelIso.photonIso.dRvetoCone = cms.double(-1.)
 selectedPatMuonsPFRelIso.photonIso.dRisoCone = cms.double(0.4)
 selectedPatMuonsPFRelIso.sumPtMax = cms.double(0.10)
 selectedPatMuonsPFRelIso.sumPtMethod = cms.string("relative")
-selectedPatMuonsPionVeto.CaloCompCoefficient = cms.double(0.8)
-selectedPatMuonsPionVeto.SegmCompCoefficient = cms.double(1.2)
-selectedPatMuonsPionVeto.AntiPionCut = cms.double(1.0)
 selectedPatMuonsTrk.cut = cms.string('innerTrack.isNonnull')
 selectedPatMuonsTrkIP.vertexSource = cms.InputTag("selectedPrimaryVertexHighestPtTrackSum")
 selectedPatMuonsTrkIP.IpMax = cms.double(0.05)
@@ -212,10 +209,9 @@ selectedPatMuonsTrkIP.IpMax = cms.double(0.05)
 patMuonSelConfigurator = objSelConfigurator(
     [ selectedPatMuonsGlobal,
       selectedPatMuonsEta21,
-      selectedPatMuonsPt10,
+      selectedPatMuonsPt15,
       selectedPatMuonsVbTfId,
       selectedPatMuonsPFRelIso,
-      selectedPatMuonsPionVeto,
       selectedPatMuonsTrk,
       selectedPatMuonsTrkIP ],
     src = "cleanPatMuons",
@@ -227,9 +223,6 @@ selectPatMuons = patMuonSelConfigurator.configure(pyNameSpace = locals())
 
 selectedPatMuonsPFRelIsoLooseIsolation.sumPtMax = cms.double(0.25)
 selectedPatMuonsPFRelIsoLooseIsolation.sumPtMethod = cms.string("relative")
-selectedPatMuonsPionVetoLooseIsolation.CaloCompCoefficient = selectedPatMuonsPionVeto.CaloCompCoefficient
-selectedPatMuonsPionVetoLooseIsolation.SegmCompCoefficient = selectedPatMuonsPionVeto.SegmCompCoefficient
-selectedPatMuonsPionVetoLooseIsolation.AntiPionCut = selectedPatMuonsPionVeto.AntiPionCut
 selectedPatMuonsTrkLooseIsolation.cut = selectedPatMuonsTrk.cut
 selectedPatMuonsTrkIPlooseIsolation.vertexSource = selectedPatMuonsTrkIP.vertexSource
 selectedPatMuonsTrkIPlooseIsolation.IpMax = selectedPatMuonsTrkIP.IpMax
@@ -237,10 +230,9 @@ selectedPatMuonsTrkIPlooseIsolation.IpMax = selectedPatMuonsTrkIP.IpMax
 patMuonSelConfiguratorLooseIsolation = objSelConfigurator(
     [ selectedPatMuonsGlobal,
       selectedPatMuonsEta21,
-      selectedPatMuonsPt10,
+      selectedPatMuonsPt15,
       selectedPatMuonsVbTfId,
       selectedPatMuonsPFRelIsoLooseIsolation,
-      selectedPatMuonsPionVetoLooseIsolation,
       selectedPatMuonsTrkLooseIsolation,
       selectedPatMuonsTrkIPlooseIsolation ],
     src = "cleanPatMuons",
@@ -255,13 +247,11 @@ selectPatMuonsLooseIsolation = patMuonSelConfiguratorLooseIsolation.configure(py
 # (settings made here overwrite values defined in pftauPatSelector_cfi)
 #--------------------------------------------------------------------------------
 
-selectedPatTausEta21.cut = cms.string("abs(eta) < 2.1")
+selectedPatTausEta23.cut = cms.string("abs(eta) < 2.3")
 selectedPatTausPt20.cut = cut = cms.string("pt > 20.")
 selectedPatTausLeadTrk.cut = cms.string('tauID("leadingTrackFinding") > 0.5')
 selectedPatTausLeadTrkPt.cut = cms.string('tauID("leadingTrackPtCut") > 0.5')
-selectedPatTausTaNCdiscr.cut = cms.string('tauID("byTaNCfrQuarterPercent") > -1.e+3') # cut on TaNC output disabled per default
-selectedPatTausTrkIso.cut = cms.string('tauID("trackIsolation") > 0.5')
-selectedPatTausEcalIso.cut = cms.string('tauID("ecalIsolation") > 0.5')
+selectedPatTausTaNCdiscr.cut = cms.string('tauID("byTaNCmedium") > 0.5')
 selectedPatTausProng.cut = cms.string("signalPFChargedHadrCands.size() = 1 | signalPFChargedHadrCands.size() = 3")
 selectedPatTausCharge.cut = cms.string('abs(charge) > 0.5 & abs(charge) < 1.5')
 selectedPatTausMuonVeto.cut = cms.string('tauID("againstMuon") > 0.5')
@@ -269,13 +259,11 @@ selectedPatTausElectronVeto.cut = cms.string('tauID("againstElectron") > 0.5')
 selectedPatTausEcalCrackVeto.cut = cms.string("abs(eta) < 1.460 | abs(eta) > 1.558")
 
 patTauSelConfigurator = objSelConfigurator(
-    [ selectedPatTausEta21,
+    [ selectedPatTausEta23,
       selectedPatTausPt20,
       selectedPatTausLeadTrk,
       selectedPatTausLeadTrkPt,
       selectedPatTausTaNCdiscr,
-      selectedPatTausTrkIso,
-      selectedPatTausEcalIso,
       selectedPatTausProng,
       selectedPatTausCharge,
       selectedPatTausMuonVeto,
@@ -295,13 +283,13 @@ selectPatTaus = patTauSelConfigurator.configure(pyNameSpace = locals())
 #  apply anti-electron veto only; no need to apply anti-muon veto)
 #
 selectedPatTausForElecTauAntiOverlapWithElectronsVeto.dRmin = cms.double(0.3)
-selectedPatTausForElecTauEta21.cut = selectedPatTausEta21.cut
+selectedPatTausForElecTauEta21.cut = selectedPatTausEta23.cut
 selectedPatTausForElecTauPt20.cut = selectedPatTausPt20.cut
 selectedPatTausForElecTauLeadTrk.cut = selectedPatTausLeadTrk.cut
 selectedPatTausForElecTauLeadTrkPt.cut = selectedPatTausLeadTrkPt.cut
 selectedPatTausForElecTauTaNCdiscr.cut = cms.string('tauID("byTaNCfrHalfPercent") > 0') 
-selectedPatTausForElecTauTrkIso.cut = selectedPatTausTrkIso.cut
-selectedPatTausForElecTauEcalIso.cut = selectedPatTausEcalIso.cut
+selectedPatTausForElecTauTrkIso.cut = selectedPatTausForElecTauTaNCdiscr.cut
+selectedPatTausForElecTauEcalIso.cut = selectedPatTausForElecTauTaNCdiscr.cut
 selectedPatTausForElecTauProng.cut = selectedPatTausProng.cut
 selectedPatTausForElecTauCharge.cut = selectedPatTausCharge.cut
 selectedPatTausForElecTauElectronVeto.cut = selectedPatTausElectronVeto.cut
@@ -335,13 +323,11 @@ selectPatTausForElecTau = patTauSelConfiguratorForElecTau.configure(pyNameSpace 
 #  apply anti-muon veto only; no need to apply anti-electron veto)
 #
 selectedPatTausForMuTauAntiOverlapWithMuonsVeto.dRmin = cms.double(0.3)
-selectedPatTausForMuTauEta21.cut = selectedPatTausEta21.cut
+selectedPatTausForMuTauEta23.cut = selectedPatTausEta23.cut
 selectedPatTausForMuTauPt20.cut = selectedPatTausPt20.cut
 selectedPatTausForMuTauLeadTrk.cut = selectedPatTausLeadTrk.cut
 selectedPatTausForMuTauLeadTrkPt.cut = selectedPatTausLeadTrkPt.cut
-selectedPatTausForMuTauTaNCdiscr.cut = cms.string('tauID("byTaNCfrQuarterPercent") > 0.5')
-selectedPatTausForMuTauTrkIso.cut = selectedPatTausTrkIso.cut
-selectedPatTausForMuTauEcalIso.cut = selectedPatTausEcalIso.cut
+selectedPatTausForMuTauTaNCdiscr.cut = cms.string('tauID("byTaNCmedium") > 0.5')
 selectedPatTausForMuTauProng.cut = selectedPatTausProng.cut
 selectedPatTausForMuTauCharge.cut = selectedPatTausCharge.cut
 selectedPatTausForMuTauMuonVeto.cut = selectedPatTausMuonVeto.cut
@@ -350,13 +336,11 @@ selectedPatTausForMuTauElectronVeto.cut = selectedPatTausElectronVeto.cut
 
 patTauSelConfiguratorForMuTau = objSelConfigurator(
     [ selectedPatTausForMuTauAntiOverlapWithMuonsVeto,
-      selectedPatTausForMuTauEta21,
+      selectedPatTausForMuTauEta23,
       selectedPatTausForMuTauPt20,
       selectedPatTausForMuTauLeadTrk,
       selectedPatTausForMuTauLeadTrkPt,
       selectedPatTausForMuTauTaNCdiscr,
-      selectedPatTausForMuTauTrkIso,
-      selectedPatTausForMuTauEcalIso,
       selectedPatTausForMuTauProng,
       selectedPatTausForMuTauCharge,
       selectedPatTausForMuTauMuonVeto,
@@ -372,34 +356,28 @@ selectPatTausForMuTau = patTauSelConfiguratorForMuTau.configure(pyNameSpace = lo
 # define collections of pat::(PF)Taus used in pure hadronic tau-jet + tau-jet channel
 # (no need to apply anti-electron or anti-muon vetos)
 #
-selectedPatTausForDiTauEta21.cut = selectedPatTausEta21.cut
+selectedPatTausForDiTauEta23.cut = selectedPatTausEta23.cut
 selectedPatTausForDiTauPt20.cut = selectedPatTausPt20.cut
 selectedPatTausForDiTauLeadTrk.cut = selectedPatTausLeadTrk.cut
 selectedPatTausForDiTau1stLeadTrkPt.cut = cms.string('leadPFChargedHadrCand().isNonnull() & leadPFChargedHadrCand().pt() > 12.')
-selectedPatTausForDiTau1stTaNCdiscr.cut = cms.string('tauID("byTaNCfrQuarterPercent") > 0.5')
-selectedPatTausForDiTau1stTrkIso.cut = selectedPatTausTrkIso.cut
-selectedPatTausForDiTau1stEcalIso.cut = selectedPatTausEcalIso.cut
+selectedPatTausForDiTau1stTaNCdiscr.cut = cms.string('tauID("byTaNCmedium") > 0.5')
 selectedPatTausForDiTau1stProng.cut = selectedPatTausProng.cut
 selectedPatTausForDiTau1stCharge.cut = selectedPatTausCharge.cut
 selectedPatTausForDiTau1stMuonVeto.cut = selectedPatTausMuonVeto.cut
 selectedPatTausForDiTau1stElectronVeto.cut = selectedPatTausElectronVeto.cut
 selectedPatTausForDiTau2ndLeadTrkPt.cut = cms.string('leadPFChargedHadrCand().isNonnull() & leadPFChargedHadrCand().pt() > 8.')
-selectedPatTausForDiTau2ndTaNCdiscr.cut = cms.string('tauID("byTaNCfrQuarterPercent") > 0.5')
-selectedPatTausForDiTau2ndTrkIso.cut = selectedPatTausTrkIso.cut
-selectedPatTausForDiTau2ndEcalIso.cut = selectedPatTausEcalIso.cut
+selectedPatTausForDiTau2ndTaNCdiscr.cut = cms.string('tauID("byTaNCmedium") > 0.5')
 selectedPatTausForDiTau2ndProng.cut = selectedPatTausProng.cut
 selectedPatTausForDiTau2ndCharge.cut = selectedPatTausCharge.cut
 selectedPatTausForDiTau2ndMuonVeto.cut = selectedPatTausMuonVeto.cut
 selectedPatTausForDiTau2ndElectronVeto.cut = selectedPatTausElectronVeto.cut
 
 patTauSelConfiguratorForDiTau1st = objSelConfigurator(
-    [ selectedPatTausForDiTauEta21,
+    [ selectedPatTausForDiTauEta23,
       selectedPatTausForDiTauPt20,
       selectedPatTausForDiTauLeadTrk,
       selectedPatTausForDiTau1stLeadTrkPt,
       selectedPatTausForDiTau1stTaNCdiscr,
-      selectedPatTausForDiTau1stTrkIso,
-      selectedPatTausForDiTau1stEcalIso,
       selectedPatTausForDiTau1stProng,
       selectedPatTausForDiTau1stCharge,
       selectedPatTausForDiTau1stMuonVeto,
@@ -414,8 +392,6 @@ selectPatTausForDiTau1st = patTauSelConfiguratorForDiTau1st.configure(pyNameSpac
 patTauSelConfiguratorForDiTau2nd = objSelConfigurator(
     [ selectedPatTausForDiTau2ndLeadTrkPt,
       selectedPatTausForDiTau2ndTaNCdiscr,
-      selectedPatTausForDiTau2ndTrkIso,
-      selectedPatTausForDiTau2ndEcalIso,
       selectedPatTausForDiTau2ndProng,
       selectedPatTausForDiTau2ndCharge,
       selectedPatTausForDiTau2ndMuonVeto,
@@ -428,9 +404,7 @@ patTauSelConfiguratorForDiTau2nd = objSelConfigurator(
 selectPatTausForDiTau2nd = patTauSelConfiguratorForDiTau2nd.configure(pyNameSpace = locals())
 
 selectedPatTausForDiTau2ndLeadTrkPtLoose.cut = cms.string('leadPFChargedHadrCand().isNonnull() & leadPFChargedHadrCand().pt() > 5.')
-selectedPatTausForDiTau2ndTaNCdiscrLoose.cut = cms.string('tauID("byTaNCfrQuarterPercent") > -1.')
-selectedPatTausForDiTau2ndTrkIsoLoose.cut = cms.string('userIsolation("PfChargedHadronIso") < 8.')
-selectedPatTausForDiTau2ndEcalIsoLoose.cut = cms.string('userIsolation("PfGammaIso") < 8.')
+selectedPatTausForDiTau2ndTaNCdiscrLoose.cut = cms.string('tauID("byTaNCloose") > -1.')
 selectedPatTausForDiTau2ndProngLoose.cut = cms.string('signalPFChargedHadrCands.size() > -1')
 selectedPatTausForDiTau2ndChargeLoose.cut = cms.string('abs(charge) > -1.')
 selectedPatTausForDiTau2ndMuonVetoLoose.cut = selectedPatTausForDiTau2ndMuonVeto.cut
@@ -439,8 +413,6 @@ selectedPatTausForDiTau2ndElectronVetoLoose.cut = selectedPatTausForDiTau2ndElec
 patTauSelConfiguratorForDiTau2ndLoose = objSelConfigurator(
     [ selectedPatTausForDiTau2ndLeadTrkPtLoose,
       selectedPatTausForDiTau2ndTaNCdiscrLoose,
-      selectedPatTausForDiTau2ndTrkIsoLoose,
-      selectedPatTausForDiTau2ndEcalIsoLoose,
       selectedPatTausForDiTau2ndProngLoose,
       selectedPatTausForDiTau2ndChargeLoose,
       selectedPatTausForDiTau2ndMuonVetoLoose,
@@ -455,13 +427,13 @@ selectPatTausForDiTau2ndLoose = patTauSelConfiguratorForDiTau2ndLoose.configure(
 selectPatTausForDiTau = cms.Sequence(selectPatTausForDiTau1st * selectPatTausForDiTau2nd * selectPatTausForDiTau2ndLoose)
 
 # define collections of pat::(PF)Taus used in W->tau-jet + nu channel
-selectedPatTausForWTauNuEta21.cut = selectedPatTausEta21.cut
+selectedPatTausForWTauNuEta21.cut = selectedPatTausEta23.cut
 selectedPatTausForWTauNuPt20.cut = cms.string("pt > 25. & pt < 60.")
 selectedPatTausForWTauNuLeadTrk.cut = selectedPatTausLeadTrk.cut
 selectedPatTausForWTauNuLeadTrkPt.cut = cms.string('leadTrack().isNonnull() & leadTrack().pt() > 20.')
 selectedPatTausForWTauNuTaNCdiscr.cut = cms.string('tauID("byTaNCfrQuarterPercent") > -1.e+3') 
-selectedPatTausForWTauNuEcalIso.cut = selectedPatTausEcalIso.cut
-selectedPatTausForWTauNuTrkIso.cut = selectedPatTausTrkIso.cut
+selectedPatTausForWTauNuEcalIso.cut = selectedPatTausForWTauNuTaNCdiscr.cut
+selectedPatTausForWTauNuTrkIso.cut = selectedPatTausForWTauNuTaNCdiscr.cut
 selectedPatTausForWTauNuProng.cut = selectedPatTausProng.cut
 selectedPatTausForWTauNuCharge.cut = selectedPatTausCharge.cut
 selectedPatTausForWTauNuMuonVeto.cut = selectedPatTausMuonVeto.cut
@@ -490,8 +462,8 @@ selectPatTausForWTauNu = patTauSelConfiguratorForWTauNu.configure(pyNameSpace = 
 # loose isolation selection
 selectedPatTausForWTauNuLeadTrkPtLooseIsolation.cut = cms.string("leadTrack().isNonnull() & leadTrack().pt() > 15.")
 selectedPatTausForWTauNuTaNCdiscrLooseIsolation.cut = cms.string('tauID("byTaNCfrQuarterPercent") > -1.e+3') # cut on TaNC output disabled per default
-selectedPatTausForWTauNuEcalIsoLooseIsolation.cut = cms.string("isolationPFChargedHadrCandsPtSum()<6")
-selectedPatTausForWTauNuTrkIsoLooseIsolation.cut = cms.string("isolationPFChargedHadrCandsPtSum()<6")
+selectedPatTausForWTauNuEcalIsoLooseIsolation.cut = selectedPatTausForWTauNuTaNCdiscrLooseIsolation.cut
+selectedPatTausForWTauNuTrkIsoLooseIsolation.cut = selectedPatTausForWTauNuTaNCdiscrLooseIsolation.cut
 selectedPatTausForWTauNuProngLooseIsolation.cut = selectedPatTausForWTauNuTrkIsoLooseIsolation.cut
 selectedPatTausForWTauNuChargeLooseIsolation.cut = selectedPatTausForWTauNuTrkIsoLooseIsolation.cut
 selectedPatTausForWTauNuMuonVetoLooseIsolation.cut = selectedPatTausForWTauNuTrkIsoLooseIsolation.cut

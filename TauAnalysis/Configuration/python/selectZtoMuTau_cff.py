@@ -86,14 +86,6 @@ cfgMuonPFRelIsoCut = cms.PSet(
     systematics = cms.vstring(muonSystematics.keys()),
     minNumber = cms.uint32(1)
 )
-cfgMuonAntiPionCut = cms.PSet(
-    pluginName = cms.string('muonAntiPionCut'),
-    pluginType = cms.string('PATCandViewMinEventSelector'),
-    src_cumulative = cms.InputTag('selectedPatMuonsPionVetoCumulative'),
-    src_individual = cms.InputTag('selectedPatMuonsPionVetoIndividual'),
-    systematics = cms.vstring(muonSystematics.keys()),
-    minNumber = cms.uint32(1)
-)
 cfgMuonTrkIPcut = cms.PSet(
     pluginName = cms.string('muonTrkIPcut'),
     pluginType = cms.string('PATCandViewMinEventSelector'),
@@ -152,22 +144,6 @@ cfgTauTaNCdiscrCut = cms.PSet(
     systematics = cms.vstring(tauSystematics.keys()),
     minNumber = cms.uint32(1)
 )
-cfgTauTrkIsoCut = cms.PSet(
-    pluginName = cms.string('tauTrkIsoCut'),
-    pluginType = cms.string('PATCandViewMinEventSelector'),
-    src_cumulative = cms.InputTag('selectedPatTausForMuTauTrkIsoCumulative'),
-    src_individual = cms.InputTag('selectedPatTausForMuTauTrkIsoIndividual'),
-    systematics = cms.vstring(tauSystematics.keys()),
-    minNumber = cms.uint32(1)
-)
-cfgTauEcalIsoCut = cms.PSet(
-    pluginName = cms.string('tauEcalIsoCut'),
-    pluginType = cms.string('PATCandViewMinEventSelector'),
-    src_cumulative = cms.InputTag('selectedPatTausForMuTauEcalIsoCumulative'),
-    src_individual = cms.InputTag('selectedPatTausForMuTauEcalIsoIndividual'),
-    systematics = cms.vstring(tauSystematics.keys()),
-    minNumber = cms.uint32(1)
-)
 cfgTauProngCut = cms.PSet(
     pluginName = cms.string('tauProngCut'),
     pluginType = cms.string('PATCandViewMinEventSelector'),
@@ -210,22 +186,6 @@ cfgDiTauCandidateForMuTauAntiOverlapVeto = cms.PSet(
     systematics = cms.vstring(muTauPairSystematics.keys()),
     minNumber = cms.uint32(1)
 )
-cfgDiTauCandidateForMuTauZeroChargeCut = cms.PSet(
-    pluginName = cms.string('diTauCandidateForMuTauZeroChargeCut'),
-    pluginType = cms.string('PATCandViewMinEventSelector'),
-    src_cumulative = cms.InputTag('selectedMuTauPairsZeroChargeCumulative'),
-    src_individual = cms.InputTag('selectedMuTauPairsZeroChargeIndividual'),
-    systematics = cms.vstring(muTauPairSystematics.keys()),
-    minNumber = cms.uint32(1)
-)
-cfgDiTauCandidateForMuTauAcoplanarity12Cut = cms.PSet(
-    pluginName = cms.string('diTauCandidateForMuTauAcoplanarity12Cut'),
-    pluginType = cms.string('PATCandViewMinEventSelector'),
-    src_cumulative = cms.InputTag('selectedMuTauPairsAcoplanarity12Cumulative'),
-    src_individual = cms.InputTag('selectedMuTauPairsAcoplanarity12Individual'),
-    systematics = cms.vstring(muTauPairSystematics.keys()),
-    minNumber = cms.uint32(1)
-)
 cfgDiTauCandidateForMuTauMt1METcut = cms.PSet(
     pluginName = cms.string('diTauCandidateForMuTauMt1METcut'),
     pluginType = cms.string('PATCandViewMinEventSelector'),
@@ -239,6 +199,26 @@ cfgDiTauCandidateForMuTauPzetaDiffCut = cms.PSet(
     pluginType = cms.string('PATCandViewMinEventSelector'),
     src_cumulative = cms.InputTag('selectedMuTauPairsPzetaDiffCumulative'),
     src_individual = cms.InputTag('selectedMuTauPairsPzetaDiffIndividual'),
+    systematics = cms.vstring(muTauPairSystematics.keys()),
+    minNumber = cms.uint32(1)
+)
+
+# "final" selection of di-tau candidates for "OppositeSign" signal region
+cfgDiTauCandidateForMuTauZeroChargeCut = cms.PSet(
+    pluginName = cms.string('diTauCandidateForMuTauZeroChargeCut'),
+    pluginType = cms.string('PATCandViewMinEventSelector'),
+    src_cumulative = cms.InputTag('selectedMuTauPairsZeroChargeCumulative'),
+    src_individual = cms.InputTag('selectedMuTauPairsZeroChargeIndividual'),
+    systematics = cms.vstring(muTauPairSystematics.keys()),
+    minNumber = cms.uint32(1)
+)
+
+# "final" selection of di-tau candidates for "SameSign" background dominated control region
+cfgDiTauCandidateForMuTauNonZeroChargeCut = cms.PSet(
+    pluginName = cms.string('diTauCandidateForMuTauNonZeroChargeCut'),
+    pluginType = cms.string('PATCandViewMinEventSelector'),
+    src_cumulative = cms.InputTag('selectedMuTauPairsNonZeroChargeCumulative'),
+    src_individual = cms.InputTag('selectedMuTauPairsNonZeroChargeIndividual'),
     systematics = cms.vstring(muTauPairSystematics.keys()),
     minNumber = cms.uint32(1)
 )
@@ -269,22 +249,19 @@ zToMuTauEventSelConfigurator = eventSelFlagProdConfigurator(
       cfgTauPtCut,
       cfgMuonVbTfIdCut,
       cfgMuonPFRelIsoCut,
-      cfgMuonAntiPionCut,
       cfgMuonTrkIPcut,
       cfgTauLeadTrkCut,
       cfgTauLeadTrkPtCut,
       cfgTauTaNCdiscrCut,
-      cfgTauTrkIsoCut,
-      cfgTauEcalIsoCut,
       cfgTauProngCut,
       cfgTauChargeCut,
       cfgTauMuonVeto,
       cfgTauElectronVeto,
       cfgDiTauCandidateForMuTauAntiOverlapVeto,
-      cfgDiTauCandidateForMuTauZeroChargeCut,
-      cfgDiTauCandidateForMuTauAcoplanarity12Cut,
       cfgDiTauCandidateForMuTauMt1METcut,
       cfgDiTauCandidateForMuTauPzetaDiffCut,
+      cfgDiTauCandidateForMuTauZeroChargeCut,
+      cfgDiTauCandidateForMuTauNonZeroChargeCut,
       cfgDiMuPairZmumuHypothesisVetoByLooseIsolation ],
     boolEventSelFlagProducer = "BoolEventSelFlagProducer",
     pyModuleName = __name__
@@ -300,7 +277,7 @@ isRecZtoMuTau = cms.EDProducer("BoolEventSelFlagProducer",
         cms.InputTag('primaryEventVertexPosition'),
         cms.InputTag('muonTrkIPcut', 'cumulative'),
         cms.InputTag('tauElectronVeto', 'cumulative'),
-        cms.InputTag('diTauCandidateForMuTauPzetaDiffCut', 'cumulative'),
+        cms.InputTag('diTauCandidateForMuTauZeroChargeCut', 'cumulative'),
         cms.InputTag('diMuPairZmumuHypothesisVetoByLooseIsolation')
     )
 )

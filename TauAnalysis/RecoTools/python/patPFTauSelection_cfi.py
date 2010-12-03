@@ -10,8 +10,8 @@ import FWCore.ParameterSet.Config as cms
 #--------------------------------------------------------------------------------
 
 # require tau candidate to be within geometric acceptance of Pixel + SiTracker detectors
-selectedPatTausEta21 = cms.EDFilter("PATTauSelector",
-    cut = cms.string("abs(eta) < 2.1"),
+selectedPatTausEta23 = cms.EDFilter("PATTauSelector",
+    cut = cms.string("abs(eta) < 2.3"),
     filter = cms.bool(False)                                 
 )
 
@@ -36,21 +36,7 @@ selectedPatTausLeadTrkPt = cms.EDFilter("PATTauSelector",
 
 # require tau candidate to pass TaNC discriminator
 selectedPatTausTaNCdiscr = cms.EDFilter("PATTauSelector",
-    cut = cms.string('tauID("byTaNCfrQuarterPercent") > 0.5'),
-    filter = cms.bool(False)                                 
-)
-
-# require tau candidate to have no tracks of Pt > 1. GeV
-# in isolation cone of size dR = 0.8, surrounding signal cone of size dR = 5./Et
-selectedPatTausTrkIso = cms.EDFilter("PATTauSelector",
-    cut = cms.string('tauID("trackIsolation") > 0.5'),
-    filter = cms.bool(False)                                 
-)
-
-# require tau candidate to be isolated
-# with respect to energy deposits in ECAL
-selectedPatTausEcalIso = cms.EDFilter("PATTauSelector",
-    cut = cms.string('tauID("ecalIsolation") > 0.5'),
+    cut = cms.string('tauID("byTaNCmedium") > 0.5'),
     filter = cms.bool(False)                                 
 )
 

@@ -130,6 +130,57 @@ def applyZrecoilCorrection_runZtoMuTau_bgEstTemplate(process):
 
     applyZrecoilCorrection_runZtoMuTau(process)
 
+def applyZrecoilCorrection_runZtoMuTau_tauIdEff(process):
+
+    process.load("TauAnalysis.RecoTools.recoZllRecoilCorrection_cfi")
+
+    if hasattr(process, "muTauPairsTauIdEffZtoMuTauTemplateFit"):
+        process.patPFMETsZllRecoilCorrectedTemplateFit = cms.EDProducer("ZllRecoilCorrectionMuTauPair",
+            process.recoZllRecoilCorrectionParameter,                                         
+            src = cms.InputTag('muTauPairsTauIdEffZtoMuTauTemplateFit')
+        )
+
+        process.muTauPairsTauIdEffZtoMuTauTemplateFitPFMETsZllRecoilCorrected = process.allMuTauPairs.clone()
+        process.muTauPairsTauIdEffZtoMuTauTemplateFitPFMETsZllRecoilCorrected.srcMET = \
+           cms.InputTag('patPFMETsZllRecoilCorrectedTemplateFit', 'met')
+        process.muTauPairsTauIdEffZtoMuTauTemplateFitPFMETsZllRecoilCorrected.srcReRecoDiTauObjects = \
+           cms.InputTag('patPFMETsZllRecoilCorrectedTemplateFit')
+        process.muTauPairsTauIdEffZtoMuTauTemplateFitPFMETsZllRecoilCorrected.srcReRecoDiTauToMEtAssociations = \
+           cms.InputTag('patPFMETsZllRecoilCorrectedTemplateFit', 'diTauToMEtAssociations')
+
+        process.patPFMETsZllRecoilCorrectionTemplateFitSequence = cms.Sequence(
+            process.muTauPairsTauIdEffZtoMuTauTemplateFit
+           * process.patPFMETsZllRecoilCorrectedTemplateFit
+           * process.muTauPairsTauIdEffZtoMuTauTemplateFitPFMETsZllRecoilCorrected
+        )
+
+        process.produceMuTauPairs.replace(process.muTauPairsTauIdEffZtoMuTauTemplateFit,
+                                          process.patPFMETsZllRecoilCorrectionTemplateFitSequence)
+
+    # iterate over all sequences attached to process object
+    # and replace:
+    #  o muTauPairsTauIdEffZtoMuTauTemplateFit --> muTauPairsTauIdEffZtoMuTauTemplateFitPFMETsZllRecoilCorrected
+    for processAttrName in dir(process):
+        processAttr = getattr(process, processAttrName)
+        if isinstance(processAttr, cms.Sequence):
+            print "--> Replacing InputTags in sequence:", processAttrName
+            patutils.massSearchReplaceAnyInputTag(processAttr, cms.InputTag('muTauPairsTauIdEffZtoMuTauTemplateFit'), 
+              cms.InputTag('muTauPairsTauIdEffZtoMuTauTemplateFitPFMETsZllRecoilCorrected'))
+
+    # check if process object has GenericAnalyzer modules specific to ZtoMuTau channel attached to it.
+    # If it has, replace in template fit analysis sequence:
+    #  o patPFMETs --> cms.InputTag('patPFMETsZllRecoilCorrectedTemplateFit', 'met')
+    if hasattr(process, "analyzeEventsTauIdEffZtoMuTauTemplateFitSequence"):
+        patutils.massSearchReplaceAnyInputTag(process.analyzeEventsTauIdEffZtoMuTauTemplateFitSequence, cms.InputTag('patPFMETs'),
+          cms.InputTag('patPFMETsZllRecoilCorrectedTemplateFit', 'met'))
+
+    # disable warnings in MET histogram managers
+    # that num. MET objects != 1
+    if hasattr(process, "caloMEtHistManagerTemplateFit"):
+        process.caloMEtHistManagerTemplateFit.expectUniqueMEt = cms.bool(False)
+    if hasattr(process, "pfMEtHistManagerTemplateFit"):    
+        process.pfMEtHistManagerTemplateFit.expectUniqueMEt = cms.bool(False)
+
 def applyZrecoilCorrection_runAHtoMuTau(process):
 
     applyZrecoilCorrection_runZtoMuTau(process)
@@ -199,6 +250,31 @@ def applyVertexMultiplicityReweighting_runZtoMuTau_bgEstTemplate(process):
     applyVertexMultiplicityReweighting_runZtoMuTau(process)
 
     _addEventWeightZtoMuTau_bgEstTemplate(process, "vertexMultiplicityReweight")
+
+def _addEventWeightZtoMuTau_tauIdEff(process, srcEventWeight):
+
+    _addEventWeight(process,
+                    [ "analyzeEventsTauIdEffZtoMuTauCombinedFit",
+                      "analyzeEventsTauIdEffZtoMuTauGenMatrixFit",
+                      "analyzeEventsTauIdEffZtoMuTauTemplateFit",
+                      "analyzeEventsBgEstQCDenriched",
+                      "analyzeEventsBgEstTTplusJetsEnriched",
+                      "analyzeEventsBgEstWplusJetsEnriched",
+                      "analyzeEventsBgEstZmumuJetMisIdEnriched",
+                      "analyzeEventsBgEstZmumuMuonMisIdEnriched" ],
+                    srcEventWeight)
+
+def applyMuonTriggerEfficiencyCorrection_runZtoMuTau_tauIdEff(process):
+
+    applyMuonTriggerEfficiencyCorrection_runZtoMuTau(process)
+
+    _addEventWeightZtoMuTau_tauIdEff(process, "muonTriggerEfficiencyCorrection")
+
+def applyVertexMultiplicityReweighting_runZtoMuTau_tauIdEff(process):
+
+    applyVertexMultiplicityReweighting_runZtoMuTau(process)
+
+    _addEventWeightZtoMuTau_tauIdEff(process, "vertexMultiplicityReweight")
 
 def _addEventWeighAHtoMuTau(process, srcEventWeight):
 

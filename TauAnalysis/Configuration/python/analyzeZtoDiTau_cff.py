@@ -38,8 +38,6 @@ analyzeZtoDiTauEvents = cms.EDAnalyzer("GenericAnalyzer",
         evtSelFirstTauLeadTrk,
         evtSelFirstTauLeadTrkPt,
         evtSelFirstTauTaNCdiscr,
-        evtSelFirstTauTrkIso,
-        evtSelFirstTauEcalIso,
         evtSelFirstTauProng,
         evtSelFirstTauCharge,
         evtSelFirstTauMuonVeto,
@@ -51,8 +49,6 @@ analyzeZtoDiTauEvents = cms.EDAnalyzer("GenericAnalyzer",
         evtSelSecondTauLeadTrk,
         evtSelSecondTauLeadTrkPt,
         evtSelSecondTauTaNCdiscr,
-        evtSelSecondTauTrkIso,
-        evtSelSecondTauEcalIso,
         evtSelSecondTauProng,
         evtSelSecondTauCharge,
         evtSelSecondTauMuonVeto,
@@ -60,12 +56,9 @@ analyzeZtoDiTauEvents = cms.EDAnalyzer("GenericAnalyzer",
 
         # di-tau candidate selection
         evtSelDiTauCandidateForDiTauAntiOverlapVeto,
-        evtSelDiTauCandidateForDiTauZeroCharge,
         evtSelDiTauCandidateForDiTauAcoplanarity,
-        evtSelDiTauCandidateForDiTauPzetaDiff
-        
-        # veto events containing additional central jets with Et > 20 GeV
-        #evtSelCentralJetVeto
+        evtSelDiTauCandidateForDiTauPzetaDiff,
+        evtSelDiTauCandidateForDiTauZeroCharge
     ),
   
     analyzers = cms.VPSet(

@@ -70,26 +70,14 @@ process.source = cms.Source("PoolSource",
     fileNames = cms.untracked.vstring(
         #'/store/relval/CMSSW_3_6_1/RelValZTT/GEN-SIM-RECO/START36_V7-v1/0021/F405BC9A-525D-DF11-AB96-002618943811.root',
         #'/store/relval/CMSSW_3_6_1/RelValZTT/GEN-SIM-RECO/START36_V7-v1/0020/EE3E8F74-365D-DF11-AE3D-002618FDA211.root'
-        'file:/data1/veelken/CMSSW_3_6_x/skims/Ztautau_1_1_sXK.root'
+        #'file:/data1/veelken/CMSSW_3_6_x/skims/Ztautau_1_1_sXK.root'
         #'file:/data1/veelken/CMSSW_3_8_x/skims/AHtoMuTau/selEvents_AHtoMuTau_woBtag_runs145762to148058_RECO.root'
         #'file:/data1/veelken/CMSSW_3_8_x/skims/test/mcDYttPU156bx_GEN_SIM_RECO_1_1_1VV.root'
+        'file:/data1/friis/PickMikesEvents/mikes_events_2010b_incomplete.root',
+        'file:/data1/friis/PickMikesEvents/mikes_events_2010b_incomplete001.root'
     )
     #skipBadFiles = cms.untracked.bool(True)
 )
-
-#--------------------------------------------------------------------------------
-# define "hooks" for replacing configuration parameters
-# in case running jobs on the CERN batch system
-#
-#__process.source.fileNames = #inputFileNames#
-#__process.maxEvents.input = cms.untracked.int32(#maxEvents#)
-#__process.analyzeZtoMuTauEvents.filters[0] = copy.deepcopy(#genPhaseSpaceCut#)
-#__process.saveZtoMuTauPlots.outputFileName = #plotsOutputFileName#
-#__#isBatchMode#
-#__#disableEventDump#
-#__process.GlobalTag.globaltag = '#globalTag#'
-#
-#--------------------------------------------------------------------------------
 
 #--------------------------------------------------------------------------------
 # import utility function for configuring PAT trigger matching

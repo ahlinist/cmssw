@@ -21,24 +21,18 @@ from TauAnalysis.RecoTools.patMuonSelection_cfi import *
 #       of opposite sign - same sign muon and tau-jet combinations.
 #      (SS/OS ratio is close to one for QCD background; significant charge asymmetry expected for W + jets background)
 #    
-muonsBgEstWplusJetsEnrichedPt = copy.deepcopy(selectedPatMuonsPt10)
-muonsBgEstWplusJetsEnrichedPt.cut = cms.string('pt > 10.')
+muonsBgEstWplusJetsEnrichedPt = copy.deepcopy(selectedPatMuonsPt15)
+muonsBgEstWplusJetsEnrichedPt.cut = cms.string('pt > 15.')
 
 muonsBgEstWplusJetsEnrichedVbTfId = copy.deepcopy(selectedPatMuonsVbTfId)
 
 muonsBgEstWplusJetsEnrichedPFRelIso = copy.deepcopy(selectedPatMuonsPFRelIso)
 muonsBgEstWplusJetsEnrichedPFRelIso.sumPtMax = cms.double(0.10)
 
-muonsBgEstWplusJetsEnrichedPionVeto = copy.deepcopy(selectedPatMuonsPionVeto)
-# disable cut on muon calo. + segment compatibility
-# (check that muon calo. compatibility is not affected by pile-up before re-enabling this cut)
-muonsBgEstWplusJetsEnrichedPionVeto.AntiPionCut = cms.double(-1000.) 
-
 muonSelConfiguratorBgEstWplusJetsEnriched = objSelConfigurator(
     [ muonsBgEstWplusJetsEnrichedPt,
       muonsBgEstWplusJetsEnrichedVbTfId,
-      muonsBgEstWplusJetsEnrichedPFRelIso,
-      muonsBgEstWplusJetsEnrichedPionVeto ],
+      muonsBgEstWplusJetsEnrichedPFRelIso ],
     src = "selectedPatMuonsEta21Cumulative",
     pyModuleName = __name__,
     doSelIndividual = False
@@ -61,21 +55,12 @@ from TauAnalysis.RecoTools.patPFTauSelectionForMuTau_cfi import *
 #      (would gain a factor of about 2.5 in event statistics; reweighting of tauPt distribution not implemented yet, however)
 #
 tausBgEstWplusJetsEnrichedTaNCdiscr = copy.deepcopy(selectedPatTausTaNCdiscr)
-#tausBgEstWplusJetsEnrichedTaNCdiscr.cut = cms.string('tauID("byTaNCfrOnePercent") > -1.e+3')
-tausBgEstWplusJetsEnrichedTaNCdiscr.cut = cms.string('tauID("byTaNCfrOnePercent") > 0.5')
-
-tausBgEstWplusJetsEnrichedTrkIso = copy.deepcopy(selectedPatTausTrkIso)
-tausBgEstWplusJetsEnrichedTrkIso.cut = cms.string('tauID("trackIsolation") > -1.')
-
-tausBgEstWplusJetsEnrichedEcalIso = copy.deepcopy(selectedPatTausEcalIso)
-tausBgEstWplusJetsEnrichedEcalIso.cut = cms.string('tauID("ecalIsolation") > -1.')
+tausBgEstWplusJetsEnrichedTaNCdiscr.cut = cms.string('tauID("byTaNCvloose") > 0.5 & tauID("byTaNCloose") < 0.5')
 
 tausBgEstWplusJetsEnrichedMuonVeto = copy.deepcopy(selectedPatTausMuonVeto)
 
 tauSelConfiguratorBgEstWplusJetsEnriched = objSelConfigurator(
     [ tausBgEstWplusJetsEnrichedTaNCdiscr,
-      tausBgEstWplusJetsEnrichedTrkIso,
-      tausBgEstWplusJetsEnrichedEcalIso,
       tausBgEstWplusJetsEnrichedMuonVeto ],
     src = "selectedPatTausForMuTauLeadTrkPtCumulative",
     pyModuleName = __name__,
@@ -113,7 +98,7 @@ jetsBgEstWplusJetsEnrichedAntiOverlapWithLeptonsVeto = cms.EDFilter("PATJetAntiO
     src = cms.InputTag("selectedPatJetsEt20Cumulative"),                                                                  
     srcNotToBeFiltered = cms.VInputTag(
         "selectedPatElectronsTrkIPcumulative",
-        "muonsBgEstWplusJetsEnrichedPionVetoCumulative",
+        "muonsBgEstWplusJetsEnrichedPFRelIsoCumulative",
         "tausBgEstWplusJetsEnrichedMuonVetoCumulative"
     ),
     dRmin = cms.double(0.7),
@@ -151,25 +136,10 @@ cfgMuonPFRelIsoCutBgEstWplusJetsEnriched.pluginName = cms.string('muonPFRelIsoCu
 cfgMuonPFRelIsoCutBgEstWplusJetsEnriched.src_cumulative = cms.InputTag('muonsBgEstWplusJetsEnrichedPFRelIsoCumulative')
 cfgMuonPFRelIsoCutBgEstWplusJetsEnriched.systematics = cms.vstring()
 
-cfgMuonAntiPionCutBgEstWplusJetsEnriched = copy.deepcopy(cfgMuonAntiPionCut)
-cfgMuonAntiPionCutBgEstWplusJetsEnriched.pluginName = cms.string('muonAntiPionCutBgEstWplusJetsEnriched')
-cfgMuonAntiPionCutBgEstWplusJetsEnriched.src_cumulative = cms.InputTag('muonsBgEstWplusJetsEnrichedPionVetoCumulative')
-cfgMuonAntiPionCutBgEstWplusJetsEnriched.systematics = cms.vstring()
-
 cfgTauTaNCdiscrCutBgEstWplusJetsEnriched = copy.deepcopy(cfgTauTaNCdiscrCut)
 cfgTauTaNCdiscrCutBgEstWplusJetsEnriched.pluginName = cms.string('tauTaNCdiscrCutBgEstWplusJetsEnriched')
 cfgTauTaNCdiscrCutBgEstWplusJetsEnriched.src_cumulative = cms.InputTag('tausBgEstWplusJetsEnrichedTaNCdiscrCumulative')
 cfgTauTaNCdiscrCutBgEstWplusJetsEnriched.systematics = cms.vstring()
-
-cfgTauTrkIsoCutBgEstWplusJetsEnriched = copy.deepcopy(cfgTauTrkIsoCut)
-cfgTauTrkIsoCutBgEstWplusJetsEnriched.pluginName = cms.string('tauTrkIsoCutBgEstWplusJetsEnriched')
-cfgTauTrkIsoCutBgEstWplusJetsEnriched.src_cumulative = cms.InputTag('tausBgEstWplusJetsEnrichedTrkIsoCumulative')
-cfgTauTrkIsoCutBgEstWplusJetsEnriched.systematics = cms.vstring()
-
-cfgTauEcalIsoCutBgEstWplusJetsEnriched = copy.deepcopy(cfgTauEcalIsoCut)
-cfgTauEcalIsoCutBgEstWplusJetsEnriched.pluginName = cms.string('tauEcalIsoCutBgEstWplusJetsEnriched')
-cfgTauEcalIsoCutBgEstWplusJetsEnriched.src_cumulative = cms.InputTag('tausBgEstWplusJetsEnrichedEcalIsoCumulative')
-cfgTauEcalIsoCutBgEstWplusJetsEnriched.systematics = cms.vstring()
 
 cfgTauMuonVetoBgEstWplusJetsEnriched = copy.deepcopy(cfgTauMuonVeto)
 cfgTauMuonVetoBgEstWplusJetsEnriched.pluginName = cms.string('tauMuonVetoBgEstWplusJetsEnriched')
@@ -208,10 +178,7 @@ evtSelConfiguratorBgEstWplusJetsEnriched = eventSelFlagProdConfigurator(
     [ cfgMuonPtCutBgEstWplusJetsEnriched,
       cfgMuonVbTfIdCutBgEstWplusJetsEnriched,      
       cfgMuonPFRelIsoCutBgEstWplusJetsEnriched,
-      cfgMuonAntiPionCutBgEstWplusJetsEnriched,
       cfgTauTaNCdiscrCutBgEstWplusJetsEnriched,
-      cfgTauTrkIsoCutBgEstWplusJetsEnriched,
-      cfgTauEcalIsoCutBgEstWplusJetsEnriched,
       cfgTauMuonVetoBgEstWplusJetsEnriched,
       cfgMuTauPairBgEstWplusJetsEnriched,
       cfgMuTauPairMt1MEtBgEstWplusJetsEnriched,
@@ -231,11 +198,11 @@ from TauAnalysis.Configuration.analyzeZtoMuTau_cfi import *
 
 muonHistManagerBgEstWplusJetsEnriched = copy.deepcopy(muonHistManager)
 muonHistManagerBgEstWplusJetsEnriched.pluginName = cms.string('muonHistManagerBgEstWplusJetsEnriched')
-muonHistManagerBgEstWplusJetsEnriched.muonSource = cms.InputTag('muonsBgEstWplusJetsEnrichedPionVetoCumulative')
+muonHistManagerBgEstWplusJetsEnriched.muonSource = muTauPairsBgEstWplusJetsEnriched.srcLeg1
 
 tauHistManagerBgEstWplusJetsEnriched = copy.deepcopy(tauHistManager)
 tauHistManagerBgEstWplusJetsEnriched.pluginName = cms.string('tauHistManagerBgEstWplusJetsEnriched')
-tauHistManagerBgEstWplusJetsEnriched.tauSource = cms.InputTag('tausBgEstWplusJetsEnrichedMuonVetoCumulative')
+tauHistManagerBgEstWplusJetsEnriched.tauSource = muTauPairsBgEstWplusJetsEnriched.srcLeg2
 
 diTauCandidateHistManagerBgEstWplusJetsEnriched = copy.deepcopy(diTauCandidateHistManagerForMuTau)
 diTauCandidateHistManagerBgEstWplusJetsEnriched.pluginName = cms.string('diTauCandidateHistManagerBgEstWplusJetsEnriched')
@@ -253,8 +220,8 @@ jetHistManagerBgEstWplusJetsEnriched.jetSource = cms.InputTag('jetsBgEstWplusJet
 from TauAnalysis.BgEstimationTools.tauIdEffZtoMuTauHistManager_cfi import *
 tauIdEffHistManagerBgEstWplusJetsEnriched = copy.deepcopy(tauIdEffZtoMuTauHistManager)
 tauIdEffHistManagerBgEstWplusJetsEnriched.pluginName = cms.string('tauIdEffHistManagerBgEstWplusJetsEnriched')
-tauIdEffHistManagerBgEstWplusJetsEnriched.muonSource = muonHistManagerBgEstWplusJetsEnriched.muonSource
-tauIdEffHistManagerBgEstWplusJetsEnriched.tauSource = tauHistManagerBgEstWplusJetsEnriched.tauSource
+tauIdEffHistManagerBgEstWplusJetsEnriched.muonSource = muTauPairsBgEstWplusJetsEnriched.srcLeg1
+tauIdEffHistManagerBgEstWplusJetsEnriched.tauSource = muTauPairsBgEstWplusJetsEnriched.srcLeg2
 tauIdEffHistManagerBgEstWplusJetsEnriched.diTauSource = diTauCandidateHistManagerBgEstWplusJetsEnriched.diTauCandidateSource
 tauIdEffHistManagerBgEstWplusJetsEnriched.diTauChargeSignExtractor.src = tauIdEffHistManagerBgEstWplusJetsEnriched.diTauSource
 

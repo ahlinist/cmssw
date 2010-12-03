@@ -310,7 +310,7 @@ _METHOD_MAP = {
     'saveFinalEvents' : _saveFinalEvents,
     'disableDuplicateCheck' : _disableDuplicateEvents,
     'processName' : _changeProcessName,
-    'enableFakeRates' : _enableFakeRates,
+    'enableFakeRates' : _enableFakeRates
 }
 
 def applyProcessOptions(process, jobInfo, options):

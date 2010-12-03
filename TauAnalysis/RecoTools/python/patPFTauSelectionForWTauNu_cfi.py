@@ -3,13 +3,13 @@ import copy
 
 from TauAnalysis.RecoTools.patPFTauSelection_cfi import *
 
-selectedPatTausForWTauNuEta21 = copy.deepcopy(selectedPatTausEta21)
+selectedPatTausForWTauNuEta21 = copy.deepcopy(selectedPatTausEta23)
 selectedPatTausForWTauNuPt20 = copy.deepcopy(selectedPatTausPt20)
 selectedPatTausForWTauNuLeadTrk = copy.deepcopy(selectedPatTausLeadTrk)
 selectedPatTausForWTauNuLeadTrkPt = copy.deepcopy(selectedPatTausLeadTrkPt)
 selectedPatTausForWTauNuTaNCdiscr = copy.deepcopy(selectedPatTausTaNCdiscr)
-selectedPatTausForWTauNuTrkIso = copy.deepcopy(selectedPatTausTrkIso)
-selectedPatTausForWTauNuEcalIso = copy.deepcopy(selectedPatTausEcalIso)
+selectedPatTausForWTauNuTrkIso = copy.deepcopy(selectedPatTausTaNCdiscr)
+selectedPatTausForWTauNuEcalIso = copy.deepcopy(selectedPatTausTaNCdiscr)
 selectedPatTausForWTauNuProng = copy.deepcopy(selectedPatTausProng)
 selectedPatTausForWTauNuCharge = copy.deepcopy(selectedPatTausCharge)
 selectedPatTausForWTauNuMuonVeto = copy.deepcopy(selectedPatTausMuonVeto)
@@ -18,8 +18,8 @@ selectedPatTausForWTauNuEcalCrackVeto = copy.deepcopy(selectedPatTausEcalCrackVe
 
 selectedPatTausForWTauNuLeadTrkPtLooseIsolation = copy.deepcopy(selectedPatTausForWTauNuLeadTrkPt)
 selectedPatTausForWTauNuTaNCdiscrLooseIsolation = copy.deepcopy(selectedPatTausForWTauNuTaNCdiscr)
-selectedPatTausForWTauNuTrkIsoLooseIsolation = copy.deepcopy(selectedPatTausForWTauNuTrkIso)
-selectedPatTausForWTauNuEcalIsoLooseIsolation = copy.deepcopy(selectedPatTausForWTauNuEcalIso)
+selectedPatTausForWTauNuTrkIsoLooseIsolation = copy.deepcopy(selectedPatTausForWTauNuTaNCdiscr)
+selectedPatTausForWTauNuEcalIsoLooseIsolation = copy.deepcopy(selectedPatTausForWTauNuTaNCdiscr)
 selectedPatTausForWTauNuProngLooseIsolation = copy.deepcopy(selectedPatTausForWTauNuProng)
 selectedPatTausForWTauNuChargeLooseIsolation = copy.deepcopy(selectedPatTausForWTauNuCharge)
 selectedPatTausForWTauNuMuonVetoLooseIsolation = copy.deepcopy(selectedPatTausForWTauNuMuonVeto)

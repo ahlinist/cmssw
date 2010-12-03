@@ -29,8 +29,8 @@ selectedPatMuonsEta21 = cms.EDFilter("PATMuonSelector",
 )
 
 # require muon candidate to have transverse momentum above threshold
-selectedPatMuonsPt10 = cms.EDFilter("PATMuonSelector",
-    cut = cms.string('pt > 10.'),
+selectedPatMuonsPt15 = cms.EDFilter("PATMuonSelector",
+    cut = cms.string('pt > 15.'),
     filter = cms.bool(False)
 )
 
@@ -45,14 +45,6 @@ selectedPatMuonsVbTfId = cms.EDFilter("PATMuonVbTfSelector",
 # with respect to particle-flow candidates
 selectedPatMuonsPFRelIso = cms.EDFilter("PATMuonPFIsolationSelector",
     patMuonPFIsolationSelector,
-    filter = cms.bool(False)
-)
-
-# require muon candidate to pass pion veto
-selectedPatMuonsPionVeto = cms.EDFilter("PATMuonAntiPionSelector",
-    CaloCompCoefficient = cms.double(0.8),
-    SegmCompCoefficient = cms.double(1.2),
-    AntiPionCut = cms.double(1.0),
     filter = cms.bool(False)
 )
 
@@ -83,10 +75,8 @@ selectedPatMuonsTrkIP = cms.EDFilter("PATMuonIpSelector",
 #--------------------------------------------------------------------------------
 
 selectedPatMuonsPFRelIsoLooseIsolation = selectedPatMuonsPFRelIso.clone(
-    sumPtMax = cms.double(0.25)
+    sumPtMax = cms.double(0.30)
 )    
-
-selectedPatMuonsPionVetoLooseIsolation = selectedPatMuonsPionVeto.clone()
 
 selectedPatMuonsTrkLooseIsolation = selectedPatMuonsTrk.clone()
 

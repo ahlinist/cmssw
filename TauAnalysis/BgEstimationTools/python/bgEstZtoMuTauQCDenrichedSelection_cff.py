@@ -20,7 +20,7 @@ muonsBgEstQCDenrichedPFRelIso.sumPtMax = cms.double(0.30)
 
 muonSelConfiguratorBgEstQCDenriched = objSelConfigurator(
     [ muonsBgEstQCDenrichedPFRelIso ],
-    src = "selectedPatMuonsPt10Cumulative",
+    src = "selectedPatMuonsPt15Cumulative",
     pyModuleName = __name__,
     doSelIndividual = False
 )
@@ -42,23 +42,12 @@ from TauAnalysis.RecoTools.patPFTauSelectionForMuTau_cfi import *
 #      (--> see TauAnalysis/BgEstimationTools/python/bgEstZtoMuTauWplusJetsEnrichedSelection_cff.py also)
 #
 tausBgEstQCDenrichedTaNCdiscr = copy.deepcopy(selectedPatTausTaNCdiscr)
-#tausBgEstQCDenrichedTaNCdiscr.cut = cms.string('tauID("byTaNCfrOnePercent") > -1.e+3')
-tausBgEstQCDenrichedTaNCdiscr.cut = cms.string('tauID("byTaNCfrOnePercent") > 0.5')
-
-tausBgEstQCDenrichedTrkIso = copy.deepcopy(selectedPatTausTrkIso)
-#tausBgEstQCDenrichedTrkIso.cut = cms.string('tauID("trackIsolation") > 0.5 | chargedHadronIso < 8.')
-tausBgEstQCDenrichedTrkIso.cut = cms.string('tauID("trackIsolation") > -1.')
-
-tausBgEstQCDenrichedEcalIso = copy.deepcopy(selectedPatTausEcalIso)
-#tausBgEstQCDenrichedEcalIso.cut = cms.string('tauID("ecalIsolation") > 0.5 | photonIso < 8.')
-tausBgEstQCDenrichedEcalIso.cut = cms.string('tauID("ecalIsolation") > -1.')
+tausBgEstQCDenrichedTaNCdiscr.cut = cms.string('tauID("byTaNCvloose") > 0.5 & tauID("byTaNCloose") < 0.5')
 
 tausBgEstQCDenrichedMuonVeto = copy.deepcopy(selectedPatTausMuonVeto)
 
 tauSelConfiguratorBgEstQCDenriched = objSelConfigurator(
     [ tausBgEstQCDenrichedTaNCdiscr,
-      tausBgEstQCDenrichedTrkIso,
-      tausBgEstQCDenrichedEcalIso,
       tausBgEstQCDenrichedMuonVeto ],
     src = "selectedPatTausForMuTauLeadTrkPtCumulative",
     pyModuleName = __name__,
@@ -112,16 +101,6 @@ cfgTauTaNCdiscrCutBgEstQCDenriched.pluginName = cms.string('tauTaNCdiscrCutBgEst
 cfgTauTaNCdiscrCutBgEstQCDenriched.src_cumulative = cms.InputTag('tausBgEstQCDenrichedTaNCdiscrCumulative')
 cfgTauTaNCdiscrCutBgEstQCDenriched.systematics = cms.vstring()
 
-cfgTauTrkIsoCutBgEstQCDenriched = copy.deepcopy(cfgTauTrkIsoCut)
-cfgTauTrkIsoCutBgEstQCDenriched.pluginName = cms.string('tauTrkIsoCutBgEstQCDenriched')
-cfgTauTrkIsoCutBgEstQCDenriched.src_cumulative = cms.InputTag('tausBgEstQCDenrichedTrkIsoCumulative')
-cfgTauTrkIsoCutBgEstQCDenriched.systematics = cms.vstring()
-
-cfgTauEcalIsoCutBgEstQCDenriched = copy.deepcopy(cfgTauEcalIsoCut)
-cfgTauEcalIsoCutBgEstQCDenriched.pluginName = cms.string('tauEcalIsoCutBgEstQCDenriched')
-cfgTauEcalIsoCutBgEstQCDenriched.src_cumulative = cms.InputTag('tausBgEstQCDenrichedEcalIsoCumulative')
-cfgTauEcalIsoCutBgEstQCDenriched.systematics = cms.vstring()
-
 cfgTauMuonVetoBgEstQCDenriched = copy.deepcopy(cfgTauMuonVeto)
 cfgTauMuonVetoBgEstQCDenriched.pluginName = cms.string('tauMuonVetoBgEstQCDenriched')
 cfgTauMuonVetoBgEstQCDenriched.src_cumulative = cms.InputTag('tausBgEstQCDenrichedMuonVetoCumulative')
@@ -158,8 +137,6 @@ cfgDiMuonVetoBgEstQCDenriched = cms.PSet(
 evtSelConfiguratorBgEstQCDenriched = eventSelFlagProdConfigurator(
     [ cfgMuonPFRelIsoCutBgEstQCDenriched,
       cfgTauTaNCdiscrCutBgEstQCDenriched,
-      cfgTauTrkIsoCutBgEstQCDenriched,
-      cfgTauEcalIsoCutBgEstQCDenriched,
       cfgTauMuonVetoBgEstQCDenriched,
       cfgMuTauPairBgEstQCDenriched,
       cfgMuTauPairMt1METbgEstQCDenriched,
@@ -233,16 +210,6 @@ analyzeEventsBgEstQCDenriched = cms.EDAnalyzer("GenericAnalyzer",
             pluginName = cms.string('tauTaNCdiscrCutBgEstQCDenriched'),
             pluginType = cms.string('BoolEventSelector'),
             src = cms.InputTag('tauTaNCdiscrCutBgEstQCDenriched', 'cumulative')
-        ),
-        cms.PSet(
-            pluginName = cms.string('tauTrkIsoCutBgEstQCDenriched'),
-            pluginType = cms.string('BoolEventSelector'),
-            src = cms.InputTag('tauTrkIsoCutBgEstQCDenriched', 'cumulative')
-        ),
-        cms.PSet(
-            pluginName = cms.string('tauEcalIsoCutBgEstQCDenriched'),
-            pluginType = cms.string('BoolEventSelector'),
-            src = cms.InputTag('tauEcalIsoCutBgEstQCDenriched', 'cumulative')
         ),
         cms.PSet(
             pluginName = cms.string('tauMuonVetoBgEstQCDenriched'),
@@ -372,7 +339,7 @@ analyzeEventsBgEstQCDenriched = cms.EDAnalyzer("GenericAnalyzer",
         ),
         cms.PSet(
             filter = cms.string('muTauPairMt1METbgEstQCDenriched'),
-            title = cms.string('M_{T}(Muon-MET) < 50 GeV'),
+            title = cms.string('M_{T}(Muon-MET) < 40 GeV'),
         ),
         cms.PSet(
             filter = cms.string('muTauPairPzetaDiffBgEstQCDenriched'),
