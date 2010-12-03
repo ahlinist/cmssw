@@ -287,6 +287,8 @@ void TauHistManager::bookHistogramsImp()
   hTauDiscriminatorTaNCfrTenthPercent_ = book1D("TauDiscriminatorTaNCfrTenthPercent",
 						"TauDiscriminatorTaNCfrTenthPercent", 2, -0.5, 1.5);
   
+  hTauDiscriminatorTaNCvloose_ = book1D("TauDiscriminatorTaNCvloose",
+					"TauDiscriminatorTaNCvloose", 2, -0.5, 1.5);
   hTauDiscriminatorTaNCloose_ = book1D("TauDiscriminatorTaNCloose",
 				       "TauDiscriminatorTaNCloose", 2, -0.5, 1.5);
   hTauDiscriminatorTaNCmedium_ = book1D("TauDiscriminatorTaNCmedium",
@@ -601,6 +603,8 @@ void TauHistManager::fillHistogramsImp(const edm::Event& evt, const edm::EventSe
       fillTauDiscriminatorHistogram(hTauTaNCoutputTransform_, *patTau, "byTaNCtransform",
 				    discrAvailability_hasBeenChecked, weight);
 
+      fillTauDiscriminatorHistogram(hTauDiscriminatorTaNCvloose_, *patTau, "byTaNCvloose", 
+				    discrAvailability_hasBeenChecked, weight);
       fillTauDiscriminatorHistogram(hTauDiscriminatorTaNCloose_, *patTau, "byTaNCloose", 
 				    discrAvailability_hasBeenChecked, weight);
       fillTauDiscriminatorHistogram(hTauDiscriminatorTaNCmedium_, *patTau, "byTaNCmedium", 
