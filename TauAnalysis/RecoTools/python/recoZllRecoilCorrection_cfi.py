@@ -22,5 +22,7 @@ recoZllRecoilCorrectionParameter = cms.PSet(
             b2 = cms.double(-1.01039e-2),
             c2 = cms.double(+2.11601e-05)
         )
-    )
+    ),
+    srcGenParticles = cms.InputTag('genParticles'),
+    genParticlePdgIds = cms.vint32( 36, 35, 25, 23, 24 )
 )
