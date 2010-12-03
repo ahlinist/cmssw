@@ -44,7 +44,8 @@ if(isData):
 else:
     process.source = cms.Source("PoolSource",
 	fileNames = cms.untracked.vstring(
-	    "rfio:/castor/cern.ch/user/s/slehti/testData/test_H120_100_1_08t_RAW_RECO.root"
+	    "file:/data/ndpc2/b/nvallsve/temp/test_H120_100_1_08t_RAW_RECO.root"
+#	    "rfio:/castor/cern.ch/user/s/slehti/testData/test_H120_100_1_08t_RAW_RECO.root"
 #	    '/store/user/eluiggi/MinBias/TTEffCSTauSkimMinBiasSpring10MC3XYV27S09/3a986c9293445dcb2819d07578601385/CSTauSkim_1_1_3W4.root',
 #	    '/store/user/eluiggi/MinBias/TTEffCSTauSkimMinBiasSpring10MC3XYV27S09/3a986c9293445dcb2819d07578601385/CSTauSkim_2_1_tfj.root',
 #	    '/store/user/eluiggi/MinBias/TTEffCSTauSkimMinBiasSpring10MC3XYV27S09/3a986c9293445dcb2819d07578601385/CSTauSkim_3_1_1up.root',
@@ -147,6 +148,12 @@ process.TTEffAnalysis = cms.EDAnalyzer("TTEffAnalyzer",
 	L1extraMETSource	= cms.InputTag("l1extraParticles", "MET"),
 	L1extraMHTSource	= cms.InputTag("l1extraParticles", "MHT"),
 
+		# "Good" vertex finding parameters
+        OfflinePVSource      = cms.InputTag("offlinePrimaryVertices"),                               
+	    goodPVminNdof 		 = cms.int32(4),
+		goodPVmaxAbsZ 		 = cms.double(24.0),
+		goodPVmaxRho  		 = cms.double(2.0),
+		# To be implemented: cut = cms.string("!isFake && ndof > 4 && abs(z) < 24.0 && position.rho < 2.0"),
 
         L1CaloRegionSource      = cms.InputTag("hltGctDigis"), # "", "TTEff"),                               
         L1GtReadoutRecord       = cms.InputTag("gtDigis",""),
