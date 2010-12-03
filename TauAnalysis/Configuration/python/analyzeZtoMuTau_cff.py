@@ -24,9 +24,9 @@ SysUncertaintyService = cms.Service("SysUncertaintyService",
     )
 )
 
-analyzeZtoMuTauEvents = cms.EDAnalyzer("GenericAnalyzer",
+analyzeZtoMuTauEventsOS = cms.EDAnalyzer("GenericAnalyzer",
   
-    name = cms.string('zMuTauAnalyzer'), 
+    name = cms.string('zMuTauAnalyzerOS'), 
                             
     filters = cms.VPSet(
         # generator level phase-space selection
@@ -55,7 +55,6 @@ analyzeZtoMuTauEvents = cms.EDAnalyzer("GenericAnalyzer",
         evtSelMuonPt,
         evtSelMuonVbTfId,
         evtSelMuonPFRelIso,
-        evtSelMuonAntiPion,
         evtSelMuonTrkIP,
 
         # tau candidate selection
@@ -65,8 +64,6 @@ analyzeZtoMuTauEvents = cms.EDAnalyzer("GenericAnalyzer",
         evtSelTauLeadTrk,
         evtSelTauLeadTrkPt,
         evtSelTauTaNCdiscr,
-        evtSelTauTrkIso,
-        evtSelTauEcalIso,
         evtSelTauProng,
         evtSelTauCharge,
         evtSelTauMuonVeto,
@@ -74,10 +71,10 @@ analyzeZtoMuTauEvents = cms.EDAnalyzer("GenericAnalyzer",
 
         # di-tau candidate selection
         evtSelDiTauCandidateForMuTauAntiOverlapVeto,
-        evtSelDiTauCandidateForMuTauZeroCharge,
-        evtSelDiTauCandidateForMuTauAcoplanarity12,
         evtSelDiTauCandidateForMuTauMt1MET,
         evtSelDiTauCandidateForMuTauPzetaDiff,
+        evtSelDiTauCandidateForMuTauZeroCharge,
+        evtSelDiTauCandidateForMuTauNonZeroCharge,
 
         # Z --> mu+ mu- hypothesis veto (based on combinations of muon pairs)
         evtSelDiMuPairZmumuHypothesisVetoByLooseIsolation
@@ -116,7 +113,7 @@ analyzeZtoMuTauEvents = cms.EDAnalyzer("GenericAnalyzer",
         muTauEventDump
     ),
    
-    analysisSequence = muTauAnalysisSequence,
+    analysisSequence = muTauAnalysisSequenceOS,
 
     estimateSysUncertainties = cms.bool(False), 
     systematics = cms.vstring(
@@ -129,4 +126,9 @@ analyzeZtoMuTauEvents = cms.EDAnalyzer("GenericAnalyzer",
     )                                   
 )
 
-analyzeZtoMuTauSequence = cms.Sequence(analyzeZtoMuTauEvents)
+analyzeZtoMuTauEventsSS = analyzeZtoMuTauEventsOS.clone(
+    name = cms.string('zMuTauAnalyzerSS'), 
+    analysisSequence = muTauAnalysisSequenceSS
+)    
+
+analyzeZtoMuTauSequence = cms.Sequence(analyzeZtoMuTauEventsOS * analyzeZtoMuTauEventsSS)

@@ -13,7 +13,7 @@ selectedPatTausForElecTauAntiOverlapWithElectronsVeto = cms.EDFilter("PATTauAnti
 )
 
 # require tau candidate to be within geometric acceptance of Pixel + SiTracker detectors
-selectedPatTausForElecTauEta21 = copy.deepcopy(selectedPatTausEta21)
+selectedPatTausForElecTauEta21 = copy.deepcopy(selectedPatTausEta23)
 
 # require tau candidate to have transverse energy above threshold
 selectedPatTausForElecTauPt20 = copy.deepcopy(selectedPatTausPt20)
@@ -30,11 +30,11 @@ selectedPatTausForElecTauTaNCdiscr = copy.deepcopy(selectedPatTausTaNCdiscr)
 
 # require tau candidate to have no tracks of Pt > 1. GeV
 # in isolation cone of size dR = 0.8, surrounding signal cone of size dR = 5./Et
-selectedPatTausForElecTauTrkIso = copy.deepcopy(selectedPatTausTrkIso)
+selectedPatTausForElecTauTrkIso = copy.deepcopy(selectedPatTausTaNCdiscr)
 
 # require tau candidate to be isolated
 # with respect to energy deposits in ECAL
-selectedPatTausForElecTauEcalIso = copy.deepcopy(selectedPatTausEcalIso)
+selectedPatTausForElecTauEcalIso = copy.deepcopy(selectedPatTausTaNCdiscr)
 
 # require tau candidate to have either one or three tracks within signal cone
 selectedPatTausForElecTauProng = copy.deepcopy(selectedPatTausProng)

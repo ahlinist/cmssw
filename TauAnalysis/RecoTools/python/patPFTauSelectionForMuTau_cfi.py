@@ -12,7 +12,7 @@ selectedPatTausForMuTauAntiOverlapWithMuonsVeto = cms.EDFilter("PATTauAntiOverla
 )
 
 # require tau candidate to be within geometric acceptance of Pixel + SiTracker detectors
-selectedPatTausForMuTauEta21 = selectedPatTausEta21.clone()
+selectedPatTausForMuTauEta23 = selectedPatTausEta23.clone()
 
 # require tau candidate to have transverse energy above threshold
 selectedPatTausForMuTauPt20 = selectedPatTausPt20.clone()
@@ -26,14 +26,6 @@ selectedPatTausForMuTauLeadTrkPt = selectedPatTausLeadTrkPt.clone()
 
 # require tau candidate to pass TaNC discriminator
 selectedPatTausForMuTauTaNCdiscr = selectedPatTausTaNCdiscr.clone()
-
-# require tau candidate to have no tracks of Pt > 1. GeV
-# in isolation cone of size dR = 0.8, surrounding signal cone of size dR = 5./Et
-selectedPatTausForMuTauTrkIso = selectedPatTausTrkIso.clone()
-
-# require tau candidate to be isolated
-# with respect to energy deposits in ECAL
-selectedPatTausForMuTauEcalIso = selectedPatTausEcalIso.clone()
 
 # require tau candidate to have either one or three tracks within signal cone
 selectedPatTausForMuTauProng = selectedPatTausProng.clone()

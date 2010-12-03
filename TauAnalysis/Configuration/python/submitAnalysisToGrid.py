@@ -126,6 +126,6 @@ def submitAnalysisToGrid(configFile = None, channel = None, samples = None,
             'SE_black_list' : sample_info['SE_black_list']
         }
 
-        ##submitToGrid(newConfigFile, jobInfo, jobOptions, crabOptions,
-        ##             create=create, submit=submit, cfgdir=cfgdir)
-        submitToGrid(newConfigFile, jobInfo, crabOptions, create=False, submit=False, cfgdir=cfgdir) # CV: only for testing
+        submitToGrid(newConfigFile, jobInfo, crabOptions,
+                     create=create, submit=submit, cfgdir=cfgdir)
+        ##submitToGrid(newConfigFile, jobInfo, crabOptions, create=False, submit=False, cfgdir=cfgdir) # CV: only for testing

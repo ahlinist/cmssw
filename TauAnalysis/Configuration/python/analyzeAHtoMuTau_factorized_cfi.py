@@ -21,10 +21,6 @@ evtSelDiTauCandidateForAHtoMuTauAntiOverlapVetoLooseMuonIsolation = evtSelDiTauC
     src_cumulative = cms.InputTag('diTauCandidateForAHtoMuTauAntiOverlapVetoLooseMuonIsolation', 'cumulative'),
     src_individual = cms.InputTag('diTauCandidateForAHtoMuTauAntiOverlapVetoLooseMuonIsolation', 'individual')
 )    
-evtSelDiTauCandidateForAHtoMuTauZeroChargeLooseMuonIsolation = evtSelDiTauCandidateForAHtoMuTauZeroCharge.clone(
-    src_cumulative = cms.InputTag('diTauCandidateForAHtoMuTauZeroChargeCutLooseMuonIsolation', 'cumulative'),
-    src_individual = cms.InputTag('diTauCandidateForAHtoMuTauZeroChargeCutLooseMuonIsolation', 'individual')
-)    
 evtSelDiTauCandidateForAHtoMuTauMt1METlooseMuonIsolation = evtSelDiTauCandidateForAHtoMuTauMt1MET.clone(
     src_cumulative = cms.InputTag('diTauCandidateForAHtoMuTauMt1METcutLooseMuonIsolation', 'cumulative'),
     src_individual = cms.InputTag('diTauCandidateForAHtoMuTauMt1METcutLooseMuonIsolation', 'individual')
@@ -32,6 +28,16 @@ evtSelDiTauCandidateForAHtoMuTauMt1METlooseMuonIsolation = evtSelDiTauCandidateF
 evtSelDiTauCandidateForAHtoMuTauPzetaDiffLooseMuonIsolation = evtSelDiTauCandidateForAHtoMuTauPzetaDiff.clone(
     src_cumulative = cms.InputTag('diTauCandidateForAHtoMuTauPzetaDiffCutLooseMuonIsolation', 'cumulative'),
     src_individual = cms.InputTag('diTauCandidateForAHtoMuTauPzetaDiffCutLooseMuonIsolation', 'individual')
+)
+
+evtSelDiTauCandidateForAHtoMuTauZeroChargeLooseMuonIsolation = evtSelDiTauCandidateForAHtoMuTauZeroCharge.clone(
+    src_cumulative = cms.InputTag('diTauCandidateForAHtoMuTauZeroChargeCutLooseMuonIsolation', 'cumulative'),
+    src_individual = cms.InputTag('diTauCandidateForAHtoMuTauZeroChargeCutLooseMuonIsolation', 'individual')
+)
+
+evtSelDiTauCandidateForAHtoMuTauNonZeroChargeLooseMuonIsolation = evtSelDiTauCandidateForAHtoMuTauNonZeroCharge.clone(
+    src_cumulative = cms.InputTag('diTauCandidateForAHtoMuTauNonZeroChargeCutLooseMuonIsolation', 'cumulative'),
+    src_individual = cms.InputTag('diTauCandidateForAHtoMuTauNonZeroChargeCutLooseMuonIsolation', 'individual')
 )
 
 # central jet veto/b-jet candidate selection
@@ -81,10 +87,6 @@ inputTagReplacements = \
     [ "selectedPatMuonsTrkIPcumulative", "selectedPatMuonsTrkIPlooseIsolationCumulative" ],
     [ "selectedMuTauPairsForAHtoMuTauAntiOverlapVetoCumulative",
       "selectedMuTauPairsForAHtoMuTauAntiOverlapVetoLooseMuonIsolationCumulative" ],
-    [ "selectedMuTauPairsForAHtoMuTauZeroChargeCumulative",
-      "selectedMuTauPairsForAHtoMuTauZeroChargeLooseMuonIsolationCumulative" ],
-    [ "selectedMuTauPairsForAHtoMuTauAcoplanarity12Cumulative",
-      "selectedMuTauPairsForAHtoMuTauAcoplanarity12LooseMuonIsolationCumulative" ],
     [ "selectedMuTauPairsForAHtoMuTauMt1METcumulative",
       "selectedMuTauPairsForAHtoMuTauMt1METlooseMuonIsolationCumulative" ],
     [ "selectedMuTauPairsForAHtoMuTauPzetaDiffCumulative",
@@ -97,13 +99,30 @@ inputTagReplacements = \
       "selectedPatJetsForAHtoMuTauAntiOverlapWithLeptonsVetoLooseMuonIsolationCumulative" ],
     [ "selectedPatJetsForAHtoMuTauBtagCumulative", "selectedPatJetsForAHtoMuTauBtagLooseMuonIsolationCumulative" ] ]
 
+inputTagReplacementsOS = copy.deepcopy(inputTagReplacements)
+inputTagReplacementsOS.append([ "selectedMuTauPairsForAHtoMuTauZeroChargeCumulative",
+                                "selectedMuTauPairsForAHtoMuTauZeroChargeLooseMuonIsolationCumulative" ])
 
-muTauAnalysisSequence_woBtag_factorizedWithoutMuonIsolation = copy.deepcopy(muTauAnalysisSequence_woBtag)
-replaceAnalyzerInputTags(muTauAnalysisSequence_woBtag_factorizedWithoutMuonIsolation, inputTagReplacements)
+muTauAnalysisSequenceOS_woBtag_factorizedWithoutMuonIsolation = copy.deepcopy(muTauAnalysisSequenceOS_woBtag)
+replaceAnalyzerInputTags(muTauAnalysisSequenceOS_woBtag_factorizedWithoutMuonIsolation, inputTagReplacementsOS)
 
-muTauAnalysisSequence_woBtag_factorizedWithMuonIsolation = copy.deepcopy(muTauAnalysisSequence_woBtag)
+muTauAnalysisSequenceOS_woBtag_factorizedWithMuonIsolation = copy.deepcopy(muTauAnalysisSequenceOS_woBtag)
 
-muTauAnalysisSequence_wBtag_factorizedWithoutMuonIsolation = copy.deepcopy(muTauAnalysisSequence_wBtag)
-replaceAnalyzerInputTags(muTauAnalysisSequence_wBtag_factorizedWithoutMuonIsolation, inputTagReplacements)
+muTauAnalysisSequenceOS_wBtag_factorizedWithoutMuonIsolation = copy.deepcopy(muTauAnalysisSequenceOS_wBtag)
+replaceAnalyzerInputTags(muTauAnalysisSequenceOS_wBtag_factorizedWithoutMuonIsolation, inputTagReplacementsOS)
 
-muTauAnalysisSequence_wBtag_factorizedWithMuonIsolation = copy.deepcopy(muTauAnalysisSequence_wBtag)
+muTauAnalysisSequenceOS_wBtag_factorizedWithMuonIsolation = copy.deepcopy(muTauAnalysisSequenceOS_wBtag)
+
+inputTagReplacementsSS = copy.deepcopy(inputTagReplacements)
+inputTagReplacementsSS.append([ "selectedMuTauPairsForAHtoMuTauNonZeroChargeCumulative",
+                                "selectedMuTauPairsForAHtoMuTauNonZeroChargeLooseMuonIsolationCumulative" ])
+
+muTauAnalysisSequenceSS_woBtag_factorizedWithoutMuonIsolation = copy.deepcopy(muTauAnalysisSequenceSS_woBtag)
+replaceAnalyzerInputTags(muTauAnalysisSequenceSS_woBtag_factorizedWithoutMuonIsolation, inputTagReplacementsSS)
+
+muTauAnalysisSequenceSS_woBtag_factorizedWithMuonIsolation = copy.deepcopy(muTauAnalysisSequenceSS_woBtag)
+
+muTauAnalysisSequenceSS_wBtag_factorizedWithoutMuonIsolation = copy.deepcopy(muTauAnalysisSequenceSS_wBtag)
+replaceAnalyzerInputTags(muTauAnalysisSequenceSS_wBtag_factorizedWithoutMuonIsolation, inputTagReplacementsSS)
+
+muTauAnalysisSequenceSS_wBtag_factorizedWithMuonIsolation = copy.deepcopy(muTauAnalysisSequenceSS_wBtag)

@@ -15,11 +15,6 @@ cfgDiTauCandidateForAHtoMuTauAntiOverlapVeto = cfgDiTauCandidateForMuTauAntiOver
     src_cumulative = cms.InputTag('selectedMuTauPairsForAHtoMuTauAntiOverlapVetoCumulative'),
     src_individual = cms.InputTag('selectedMuTauPairsForAHtoMuTauAntiOverlapVetoIndividual')
 )
-cfgDiTauCandidateForAHtoMuTauZeroChargeCut = cfgDiTauCandidateForMuTauZeroChargeCut.clone(
-    pluginName = cms.string('diTauCandidateForAHtoMuTauZeroChargeCut'),
-    src_cumulative = cms.InputTag('selectedMuTauPairsForAHtoMuTauZeroChargeCumulative'),
-    src_individual = cms.InputTag('selectedMuTauPairsForAHtoMuTauZeroChargeIndividual')
-)
 cfgDiTauCandidateForAHtoMuTauMt1METcut = cfgDiTauCandidateForMuTauMt1METcut.clone(
     pluginName = cms.string('diTauCandidateForAHtoMuTauMt1METcut'),
     src_cumulative = cms.InputTag('selectedMuTauPairsForAHtoMuTauMt1METcumulative'),
@@ -29,6 +24,26 @@ cfgDiTauCandidateForAHtoMuTauPzetaDiffCut = cfgDiTauCandidateForMuTauPzetaDiffCu
     pluginName = cms.string('diTauCandidateForAHtoMuTauPzetaDiffCut'),
     src_cumulative = cms.InputTag('selectedMuTauPairsForAHtoMuTauPzetaDiffCumulative'),
     src_individual = cms.InputTag('selectedMuTauPairsForAHtoMuTauPzetaDiffIndividual')
+)
+
+# "final" selection of di-tau candidates for "OppositeSign" signal region
+cfgDiTauCandidateForAHtoMuTauZeroChargeCut = cms.PSet(
+    pluginName = cms.string('diTauCandidateForAHtoMuTauZeroChargeCut'),
+    pluginType = cms.string('PATCandViewMinEventSelector'),
+    src_cumulative = cms.InputTag('selectedMuTauPairsForAHtoMuTauZeroChargeCumulative'),
+    src_individual = cms.InputTag('selectedMuTauPairsForAHtoMuTauZeroChargeIndividual'),
+    systematics = cms.vstring(muTauPairSystematics.keys()),
+    minNumber = cms.uint32(1)
+)
+
+# "final" selection of di-tau candidates for "SameSign" background dominated control region
+cfgDiTauCandidateForAHtoMuTauNonZeroChargeCut = cms.PSet(
+    pluginName = cms.string('diTauCandidateForAHtoMuTauNonZeroChargeCut'),
+    pluginType = cms.string('PATCandViewMinEventSelector'),
+    src_cumulative = cms.InputTag('selectedMuTauPairsForAHtoMuTauNonZeroChargeCumulative'),
+    src_individual = cms.InputTag('selectedMuTauPairsForAHtoMuTauNonZeroChargeIndividual'),
+    systematics = cms.vstring(muTauPairSystematics.keys()),
+    minNumber = cms.uint32(1)
 )
 
 # central jet veto/b-jet candidate selection
@@ -71,21 +86,19 @@ ahToMuTauEventSelConfigurator = eventSelFlagProdConfigurator(
       cfgTauPtCut,
       cfgMuonVbTfIdCut,
       cfgMuonPFRelIsoCut,
-      cfgMuonAntiPionCut,
       cfgMuonTrkIPcut,
       cfgTauLeadTrkCut,
       cfgTauLeadTrkPtCut,
       cfgTauTaNCdiscrCut,
-      cfgTauTrkIsoCut,
-      cfgTauEcalIsoCut,
       cfgTauProngCut,
       cfgTauChargeCut,
       cfgTauMuonVeto,
       cfgTauElectronVeto,
       cfgDiTauCandidateForAHtoMuTauAntiOverlapVeto,
-      cfgDiTauCandidateForAHtoMuTauZeroChargeCut,
       cfgDiTauCandidateForAHtoMuTauMt1METcut,
       cfgDiTauCandidateForAHtoMuTauPzetaDiffCut,
+      cfgDiTauCandidateForAHtoMuTauZeroChargeCut,
+      cfgDiTauCandidateForAHtoMuTauNonZeroChargeCut,
       cfgDiMuPairZmumuHypothesisVetoByLooseIsolation,
       cfgCentralJetEt20bTagVeto,
       cfgCentralJetEt20Cut,
@@ -104,7 +117,7 @@ isRecAHtoMuTauCentralJetVeto = cms.EDProducer("BoolEventSelFlagProducer",
         cms.InputTag('primaryEventVertexPosition'),
         cms.InputTag('muonTrkIPcut', 'cumulative'),
         cms.InputTag('tauElectronVeto', 'cumulative'),
-        cms.InputTag('diTauCandidateForAHtoMuTauPzetaDiffCut', 'cumulative'),
+        cms.InputTag('diTauCandidateForAHtoMuTauZeroChargeCut', 'cumulative'),
         cms.InputTag('diMuPairZmumuHypothesisVetoByLooseIsolation'),
         cms.InputTag('centralJetEt20bTagVeto', 'cumulative')
     )
@@ -118,7 +131,7 @@ isRecAHtoMuTauCentralJetBtag = cms.EDProducer("BoolEventSelFlagProducer",
         cms.InputTag('primaryEventVertexPosition'),
         cms.InputTag('muonTrkIPcut', 'cumulative'),
         cms.InputTag('tauElectronVeto', 'cumulative'),
-        cms.InputTag('diTauCandidateForAHtoMuTauPzetaDiffCut', 'cumulative'),
+        cms.InputTag('diTauCandidateForAHtoMuTauZeroChargeCut', 'cumulative'),
         cms.InputTag('diMuPairZmumuHypothesisVetoByLooseIsolation'),
         cms.InputTag('centralJetEt20bTagCut', 'cumulative')
     )
@@ -132,14 +145,14 @@ isRecAHtoMuTau = cms.EDProducer("BoolEventSelFlagProducer",
         cms.InputTag('primaryEventVertexPosition'),
         cms.InputTag('muonTrkIPcut', 'cumulative'),
         cms.InputTag('tauMuonVeto', 'cumulative'),
-        cms.InputTag('diTauCandidateForAHtoMuTauPzetaDiffCut', 'cumulative'),
+        cms.InputTag('diTauCandidateForAHtoMuTauZeroChargeCut', 'cumulative'),
         cms.InputTag('diMuPairZmumuHypothesisVetoByLooseIsolation'),
     )
 )
 
 selectAHtoMuTauEvents = cms.Sequence(
     produceEventSelFlagsAHtoMuTau
-    * isRecAHtoMuTauCentralJetVeto
-    * isRecAHtoMuTauCentralJetBtag
-    * isRecAHtoMuTau
+   * isRecAHtoMuTauCentralJetVeto
+   * isRecAHtoMuTauCentralJetBtag
+   * isRecAHtoMuTau
 )

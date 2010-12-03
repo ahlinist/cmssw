@@ -4,7 +4,7 @@ import copy
 from TauAnalysis.RecoTools.patPFTauSelection_cfi import *
 
 # require tau candidate to be within geometric acceptance of Pixel + SiTracker detectors
-selectedPatTausForDiTauEta21 = copy.deepcopy(selectedPatTausEta21)
+selectedPatTausForDiTauEta23 = copy.deepcopy(selectedPatTausEta23)
 
 # require tau candidate to have transverse energy above threshold
 selectedPatTausForDiTauPt20 = copy.deepcopy(selectedPatTausPt20)
@@ -25,16 +25,6 @@ selectedPatTausForDiTau2ndLeadTrkPt = selectedPatTausLeadTrkPt.clone(
 # require tau candidate to pass TaNC discriminator
 selectedPatTausForDiTau1stTaNCdiscr = copy.deepcopy(selectedPatTausTaNCdiscr)
 selectedPatTausForDiTau2ndTaNCdiscr = copy.deepcopy(selectedPatTausTaNCdiscr)
-
-# require tau candidate to have no tracks of Pt > 1. GeV
-# in isolation cone of size dR = 0.8, surrounding signal cone of size dR = 5./Et
-selectedPatTausForDiTau1stTrkIso = copy.deepcopy(selectedPatTausTrkIso)
-selectedPatTausForDiTau2ndTrkIso = copy.deepcopy(selectedPatTausTrkIso)
-
-# require tau candidate to be isolated
-# with respect to energy deposits in ECAL
-selectedPatTausForDiTau1stEcalIso = copy.deepcopy(selectedPatTausEcalIso)
-selectedPatTausForDiTau2ndEcalIso = copy.deepcopy(selectedPatTausEcalIso)
 
 # require tau candidate to have either one or three tracks within signal cone
 selectedPatTausForDiTau1stProng = copy.deepcopy(selectedPatTausProng)
@@ -66,14 +56,8 @@ selectedPatTausForDiTau2ndLeadTrkPtLoose = selectedPatTausForDiTau2ndLeadTrkPt.c
     cut = cms.string('leadPFChargedHadrCand().isNonnull() & leadPFChargedHadrCand().pt() > 5.')
 )    
 selectedPatTausForDiTau2ndTaNCdiscrLoose = selectedPatTausForDiTau2ndTaNCdiscr.clone(
-    cut = cms.string('tauID("byTaNCfrQuarterPercent") > -1.')
-)    
-selectedPatTausForDiTau2ndTrkIsoLoose = selectedPatTausForDiTau2ndTrkIso.clone(
-    cut = cms.string('userIsolation("PfChargedHadronIso") < 8.')
-)     
-selectedPatTausForDiTau2ndEcalIsoLoose = selectedPatTausForDiTau2ndEcalIso.clone(
-    cut = cms.string('userIsolation("PfGammaIso") < 8.')
-)     
+    cut = cms.string('tauID("byTaNCloose") > -1.')
+)
 selectedPatTausForDiTau2ndProngLoose = selectedPatTausForDiTau2ndProng.clone(
     cut = cms.string('signalPFChargedHadrCands.size() > -1')
 )     

@@ -24,23 +24,12 @@ from TauAnalysis.RecoTools.patPFTauSelection_cfi import *
 from TauAnalysis.RecoTools.patPFTauSelectionForMuTau_cfi import *
 
 tausBgEstZmumuJetMisIdEnrichedTaNCdiscr = copy.deepcopy(selectedPatTausTaNCdiscr)
-#tausBgEstZmumuJetMisIdEnrichedTaNCdiscr.cut = cms.string('tauID("byTaNCfrOnePercent") > -1.e+3')
-tausBgEstZmumuJetMisIdEnrichedTaNCdiscr.cut = cms.string('tauID("byTaNCfrOnePercent") > 0.5')
-
-tausBgEstZmumuJetMisIdEnrichedTrkIso = copy.deepcopy(selectedPatTausTrkIso)
-#tausBgEstZmumuJetMisIdEnrichedTrkIso.cut = cms.string('tauID("trackIsolation") > 0.5 | chargedHadronIso < 8.')
-tausBgEstZmumuJetMisIdEnrichedTrkIso.cut = cms.string('tauID("trackIsolation") > -1.')
-
-tausBgEstZmumuJetMisIdEnrichedEcalIso = copy.deepcopy(selectedPatTausEcalIso)
-#tausBgEstZmumuJetMisIdEnrichedEcalIso.cut = cms.string('tauID("ecalIsolation") > 0.5 | photonIso < 8.')
-tausBgEstZmumuJetMisIdEnrichedEcalIso.cut = cms.string('tauID("ecalIsolation") > -1.')
+tausBgEstZmumuJetMisIdEnrichedTaNCdiscr.cut = cms.string('tauID("byTaNCvloose") > 0.5 & tauID("byTaNCloose") < 0.5')
 
 tausBgEstZmumuJetMisIdEnrichedMuonVeto = copy.deepcopy(selectedPatTausMuonVeto)
 
 tauSelConfiguratorBgEstZmumuJetMisIdEnriched = objSelConfigurator(
     [ tausBgEstZmumuJetMisIdEnrichedTaNCdiscr,
-      tausBgEstZmumuJetMisIdEnrichedTrkIso,
-      tausBgEstZmumuJetMisIdEnrichedEcalIso,
       tausBgEstZmumuJetMisIdEnrichedMuonVeto ],
     src = "selectedPatTausForMuTauLeadTrkPtCumulative",
     pyModuleName = __name__,
@@ -166,16 +155,6 @@ cfgTauTaNCdiscrBgEstZmumuJetMisIdEnriched.pluginName = cms.string('tauTaNCdiscrB
 cfgTauTaNCdiscrBgEstZmumuJetMisIdEnriched.src_cumulative = cms.InputTag('tausBgEstZmumuJetMisIdEnrichedTaNCdiscrCumulative')
 cfgTauTaNCdiscrBgEstZmumuJetMisIdEnriched.systematics = cms.vstring()
 
-cfgTauTrkIsoBgEstZmumuJetMisIdEnriched = copy.deepcopy(cfgTauTrkIsoCut)
-cfgTauTrkIsoBgEstZmumuJetMisIdEnriched.pluginName = cms.string('tauTrkIsoBgEstZmumuJetMisIdEnriched')
-cfgTauTrkIsoBgEstZmumuJetMisIdEnriched.src_cumulative = cms.InputTag('tausBgEstZmumuJetMisIdEnrichedTrkIsoCumulative')
-cfgTauTrkIsoBgEstZmumuJetMisIdEnriched.systematics = cms.vstring()
-
-cfgTauEcalIsoBgEstZmumuJetMisIdEnriched = copy.deepcopy(cfgTauEcalIsoCut)
-cfgTauEcalIsoBgEstZmumuJetMisIdEnriched.pluginName = cms.string('tauEcalIsoBgEstZmumuJetMisIdEnriched')
-cfgTauEcalIsoBgEstZmumuJetMisIdEnriched.src_cumulative = cms.InputTag('tausBgEstZmumuJetMisIdEnrichedEcalIsoCumulative')
-cfgTauEcalIsoBgEstZmumuJetMisIdEnriched.systematics = cms.vstring()
-
 cfgTauMuonVetoBgEstZmumuJetMisIdEnriched = copy.deepcopy(cfgTauMuonVeto)
 cfgTauMuonVetoBgEstZmumuJetMisIdEnriched.pluginName = cms.string('tauMuonVetoBgEstZmumuJetMisIdEnriched')
 cfgTauMuonVetoBgEstZmumuJetMisIdEnriched.src_cumulative = cms.InputTag('tausBgEstZmumuJetMisIdEnrichedMuonVetoCumulative')
@@ -260,16 +239,6 @@ cfgTauTaNCdiscrBgEstZmumuMuonMisIdEnriched.pluginName = cms.string('tauTaNCdiscr
 cfgTauTaNCdiscrBgEstZmumuMuonMisIdEnriched.src_cumulative = cms.InputTag('selectedPatTausTaNCdiscrCumulative')
 cfgTauTaNCdiscrBgEstZmumuMuonMisIdEnriched.systematics = cms.vstring()
 
-cfgTauTrkIsoBgEstZmumuMuonMisIdEnriched = copy.deepcopy(cfgTauTrkIsoCut)
-cfgTauTrkIsoBgEstZmumuMuonMisIdEnriched.pluginName = cms.string('tauTrkIsoBgEstZmumuMuonMisIdEnriched')
-cfgTauTrkIsoBgEstZmumuMuonMisIdEnriched.src_cumulative = cms.InputTag('selectedPatTausTrkIsoCumulative')
-cfgTauTrkIsoBgEstZmumuMuonMisIdEnriched.systematics = cms.vstring()
-
-cfgTauEcalIsoBgEstZmumuMuonMisIdEnriched = copy.deepcopy(cfgTauEcalIsoCut)
-cfgTauEcalIsoBgEstZmumuMuonMisIdEnriched.pluginName = cms.string('tauEcalIsoBgEstZmumuMuonMisIdEnriched')
-cfgTauEcalIsoBgEstZmumuMuonMisIdEnriched.src_cumulative = cms.InputTag('selectedPatTausEcalIsoCumulative')
-cfgTauEcalIsoBgEstZmumuMuonMisIdEnriched.systematics = cms.vstring()
-
 cfgTauProngBgEstZmumuMuonMisIdEnriched = copy.deepcopy(cfgTauProngCut)
 cfgTauProngBgEstZmumuMuonMisIdEnriched.pluginName = cms.string('tauProngBgEstZmumuMuonMisIdEnriched')
 cfgTauProngBgEstZmumuMuonMisIdEnriched.src_cumulative = cms.InputTag('selectedPatTausProngCumulative')
@@ -310,8 +279,6 @@ cfgDiMuonPairBgEstZmumuMuonMisIdEnriched = cms.PSet(
 
 evtSelConfiguratorBgEstZmumuEnriched = eventSelFlagProdConfigurator(
     [ cfgTauTaNCdiscrBgEstZmumuJetMisIdEnriched,
-      cfgTauTrkIsoBgEstZmumuJetMisIdEnriched,
-      cfgTauEcalIsoBgEstZmumuJetMisIdEnriched,      
       cfgTauMuonVetoBgEstZmumuJetMisIdEnriched,
       cfgMuTauPairBgEstZmumuJetMisIdEnriched,
       cfgMuTauPairMt1METbgEstZmumuJetMisIdEnriched,
@@ -325,8 +292,6 @@ evtSelConfiguratorBgEstZmumuEnriched = eventSelFlagProdConfigurator(
       cfgTauLeadTrkBgEstZmumuMuonMisIdEnriched,
       cfgTauLeadTrkPtBgEstZmumuMuonMisIdEnriched,
       cfgTauTaNCdiscrBgEstZmumuMuonMisIdEnriched,
-      cfgTauTrkIsoBgEstZmumuMuonMisIdEnriched,
-      cfgTauEcalIsoBgEstZmumuMuonMisIdEnriched,
       cfgTauProngBgEstZmumuMuonMisIdEnriched,
       cfgTauChargeBgEstZmumuMuonMisIdEnriched,
       cfgTauAntiMuonVetoBgEstZmumuMuonMisIdEnriched,      
@@ -401,16 +366,6 @@ analyzeEventsBgEstZmumuJetMisIdEnriched = cms.EDAnalyzer("GenericAnalyzer",
             pluginName = cms.string('tauTaNCdiscrBgEstZmumuJetMisIdEnriched'),
             pluginType = cms.string('BoolEventSelector'),
             src = cms.InputTag('tauTaNCdiscrBgEstZmumuJetMisIdEnriched', 'cumulative')
-        ),
-        cms.PSet(
-            pluginName = cms.string('tauTrkIsoBgEstZmumuJetMisIdEnriched'),
-            pluginType = cms.string('BoolEventSelector'),
-            src = cms.InputTag('tauTrkIsoBgEstZmumuJetMisIdEnriched', 'cumulative')
-        ),
-        cms.PSet(
-            pluginName = cms.string('tauEcalIsoBgEstZmumuJetMisIdEnriched'),
-            pluginType = cms.string('BoolEventSelector'),
-            src = cms.InputTag('tauEcalIsoBgEstZmumuJetMisIdEnriched', 'cumulative')
         ),
         cms.PSet(
             pluginName = cms.string('tauMuonVetoBgEstZmumuJetMisIdEnriched'),
@@ -541,14 +496,6 @@ analyzeEventsBgEstZmumuJetMisIdEnriched = cms.EDAnalyzer("GenericAnalyzer",
             title = cms.string('Tau TaNC discr.')
         ),
         cms.PSet(
-            filter = cms.string('tauTrkIsoBgEstZmumuJetMisIdEnriched'),
-            title = cms.string('Tau Track iso.')
-        ),
-        cms.PSet(
-            filter = cms.string('tauEcalIsoBgEstZmumuJetMisIdEnriched'),
-            title = cms.string('Tau ECAL iso.')
-        ),
-        cms.PSet(
             filter = cms.string('tauMuonVetoBgEstZmumuJetMisIdEnriched'),
             title = cms.string('Tau mu-Veto')
         ),
@@ -665,16 +612,6 @@ analyzeEventsBgEstZmumuMuonMisIdEnriched = cms.EDAnalyzer("GenericAnalyzer",
             pluginName = cms.string('tauTaNCdiscrBgEstZmumuMuonMisIdEnriched'),
             pluginType = cms.string('BoolEventSelector'),
             src = cms.InputTag('tauTaNCdiscrBgEstZmumuMuonMisIdEnriched', 'cumulative')
-        ),
-        cms.PSet(
-            pluginName = cms.string('tauTrkIsoBgEstZmumuMuonMisIdEnriched'),
-            pluginType = cms.string('BoolEventSelector'),
-            src = cms.InputTag('tauTrkIsoBgEstZmumuMuonMisIdEnriched', 'cumulative')
-        ),
-        cms.PSet(
-            pluginName = cms.string('tauEcalIsoBgEstZmumuMuonMisIdEnriched'),
-            pluginType = cms.string('BoolEventSelector'),
-            src = cms.InputTag('tauEcalIsoBgEstZmumuMuonMisIdEnriched', 'cumulative')
         ),
         cms.PSet(
             pluginName = cms.string('tauProngBgEstZmumuMuonMisIdEnriched'),
@@ -798,14 +735,6 @@ analyzeEventsBgEstZmumuMuonMisIdEnriched = cms.EDAnalyzer("GenericAnalyzer",
         cms.PSet(
             filter = cms.string('tauTaNCdiscrBgEstZmumuMuonMisIdEnriched'),
             title = cms.string('Tau TaNC discr.')
-        ),
-        cms.PSet(
-            filter = cms.string('tauTrkIsoBgEstZmumuMuonMisIdEnriched'),
-            title = cms.string('Tau Track iso.')
-        ),
-        cms.PSet(
-            filter = cms.string('tauEcalIsoBgEstZmumuMuonMisIdEnriched'),
-            title = cms.string('Tau ECAL iso.')
         ),
         cms.PSet(
             filter = cms.string('tauProngBgEstZmumuMuonMisIdEnriched'),

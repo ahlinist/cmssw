@@ -22,9 +22,11 @@ from TauAnalysis.Core.eventWeightHistManager_cfi import *
 
 # import config for muon histogram manager
 from TauAnalysis.Core.muonHistManager_cfi import *
+muonHistManager.src = cms.InputTag('selectedPatMuonsTrkIPcumulative')
 
 # import config for tau-jet histogram manager
 from TauAnalysis.Core.pftauHistManager_cfi import *
+tauHistManager.src = cms.InputTag('selectedPatTausForMuTauElectronVetoCumulative')
 tauHistManager.useHPSpTaNCalgorithm = cms.bool(True)
 
 # import config for di-tau histogram manager
@@ -32,20 +34,20 @@ from TauAnalysis.Core.diTauCandidateHistManager_cfi import *
 diTauCandidateHistManagerForMuTau = copy.deepcopy(diTauCandidateHistManager)
 diTauCandidateHistManagerForMuTau.pluginName = cms.string('diTauCandidateHistManagerForMuTau')
 diTauCandidateHistManagerForMuTau.pluginType = cms.string('PATMuTauPairHistManager')
-diTauCandidateHistManagerForMuTau.diTauCandidateSource = cms.InputTag('selectedMuTauPairsForAHtoMuTauPzetaDiffCumulative')
+diTauCandidateHistManagerForMuTau.diTauCandidateSource = cms.InputTag('selectedMuTauPairsForAHtoMuTauZeroChargeCumulative')
 diTauCandidateHistManagerForMuTau.visMassHypothesisSource = cms.InputTag('')
 
 from TauAnalysis.Core.diTauCandidateCollinearApproxHistManager_cfi import *
 diTauCandidateCollinearApproxHistManagerForMuTau = copy.deepcopy(diTauCandidateCollinearApproxHistManager)
 diTauCandidateCollinearApproxHistManagerForMuTau.pluginName = cms.string('diTauCandidateCollinearApproxHistManagerForMuTau')
 diTauCandidateCollinearApproxHistManagerForMuTau.pluginType = cms.string('PATMuTauPairCollinearApproxHistManager')
-diTauCandidateCollinearApproxHistManagerForMuTau.diTauCandidateSource = cms.InputTag('selectedMuTauPairsForAHtoMuTauPzetaDiffCumulative')
+diTauCandidateCollinearApproxHistManagerForMuTau.diTauCandidateSource = diTauCandidateHistManagerForMuTau.diTauCandidateSource
 
 from TauAnalysis.Core.diTauCandidateSVfitHistManager_cfi import *
 diTauCandidateSVfitHistManagerForMuTau = copy.deepcopy(diTauCandidateSVfitHistManager)
 diTauCandidateSVfitHistManagerForMuTau.pluginName = cms.string('diTauCandidateSVfitHistManagerForMuTau')
 diTauCandidateSVfitHistManagerForMuTau.pluginType = cms.string('PATMuTauPairSVfitHistManager')
-diTauCandidateSVfitHistManagerForMuTau.diTauCandidateSource = cms.InputTag('selectedMuTauPairsForAHtoMuTauPzetaDiffCumulative')
+diTauCandidateSVfitHistManagerForMuTau.diTauCandidateSource = diTauCandidateHistManagerForMuTau.diTauCandidateSource
 
 from TauAnalysis.Core.diTauCandidateZllHypothesisHistManager_cfi import *
 diTauCandidateZmumuHypothesisHistManagerForMuTau = copy.deepcopy(ZllHypothesisHistManager)
@@ -67,11 +69,11 @@ from TauAnalysis.Core.jetHistManager_cfi import *
 
 # import config for missing-Et histogram managers
 from TauAnalysis.Core.caloMEtHistManager_cfi import *
-caloMEtHistManager.leg1Source = cms.InputTag('selectedPatMuonsTrkIPcumulative')
-caloMEtHistManager.leg2Source = cms.InputTag('selectedPatTausForMuTauElectronVetoCumulative')
+caloMEtHistManager.leg1Source = muonHistManager.src
+caloMEtHistManager.leg2Source = tauHistManager.src
 from TauAnalysis.Core.pfMEtHistManager_cfi import *
-pfMEtHistManager.leg1Source = cms.InputTag('selectedPatMuonsTrkIPcumulative')
-pfMEtHistManager.leg2Source = cms.InputTag('selectedPatTausForMuTauElectronVetoCumulative')
+pfMEtHistManager.leg1Source = muonHistManager.src
+pfMEtHistManager.leg2Source = tauHistManager.src
 
 # import config for particle multiplicity histogram manager
 from TauAnalysis.Core.particleMultiplicityHistManager_cfi import *
@@ -189,7 +191,7 @@ diTauLeg1ChargeBinGridHistManager = cms.PSet(
             cms.PSet(
                 extractor = cms.PSet(
                     pluginType = cms.string("PATMuTauPairValExtractor"),
-                    src = cms.InputTag('selectedMuTauPairsForAHtoMuTauPzetaDiffCumulative'),
+                    src = cms.InputTag('selectedMuTauPairsForAHtoMuTauZeroChargeCumulative'),
                     value = cms.string('leg1.charge')
                 ),
                 branchName = cms.string('diTauLeg1Charge'),
@@ -218,11 +220,6 @@ evtSelDiTauCandidateForAHtoMuTauAntiOverlapVeto = evtSelDiTauCandidateForMuTauAn
     src_cumulative = cms.InputTag('diTauCandidateForAHtoMuTauAntiOverlapVeto', 'cumulative'),
     src_individual = cms.InputTag('diTauCandidateForAHtoMuTauAntiOverlapVeto', 'individual')
 )
-evtSelDiTauCandidateForAHtoMuTauZeroCharge = evtSelDiTauCandidateForMuTauZeroCharge.clone(
-    pluginName = cms.string('evtSelDiTauCandidateForAHtoMuTauZeroCharge'),
-    src_cumulative = cms.InputTag('diTauCandidateForAHtoMuTauZeroChargeCut', 'cumulative'),
-    src_individual = cms.InputTag('diTauCandidateForAHtoMuTauZeroChargeCut', 'individual')
-)
 evtSelDiTauCandidateForAHtoMuTauMt1MET = evtSelDiTauCandidateForMuTauMt1MET.clone(
     pluginName = cms.string('evtSelDiTauCandidateForAHtoMuTauMt1MET'),
     src_cumulative = cms.InputTag('diTauCandidateForAHtoMuTauMt1METcut', 'cumulative'),
@@ -232,6 +229,24 @@ evtSelDiTauCandidateForAHtoMuTauPzetaDiff = evtSelDiTauCandidateForMuTauPzetaDif
     pluginName = cms.string('evtSelDiTauCandidateForAHtoMuTauPzetaDiff'),
     src_cumulative = cms.InputTag('diTauCandidateForAHtoMuTauPzetaDiffCut', 'cumulative'),
     src_individual = cms.InputTag('diTauCandidateForAHtoMuTauPzetaDiffCut', 'individual')
+)
+
+# "final" selection of di-tau candidates for "OppositeSign" signal region
+evtSelDiTauCandidateForAHtoMuTauZeroCharge = cms.PSet(
+    pluginName = cms.string('evtSelDiTauCandidateForAHtoMuTauZeroCharge'),
+    pluginType = cms.string('BoolEventSelector'),
+    src_cumulative = cms.InputTag('diTauCandidateForAHtoMuTauZeroChargeCut', 'cumulative'),
+    src_individual = cms.InputTag('diTauCandidateForAHtoMuTauZeroChargeCut', 'individual'),
+    systematics = cms.vstring(muTauPairSystematics.keys())
+)
+
+# "final" selection of di-tau candidates for "SameSign" background dominated control region
+evtSelDiTauCandidateForAHtoMuTauNonZeroCharge = cms.PSet(
+    pluginName = cms.string('evtSelDiTauCandidateForAHtoMuTauNonZeroCharge'),
+    pluginType = cms.string('BoolEventSelector'),
+    src_cumulative = cms.InputTag('diTauCandidateForAHtoMuTauNonZeroChargeCut', 'cumulative'),
+    src_individual = cms.InputTag('diTauCandidateForAHtoMuTauNonZeroChargeCut', 'individual'),
+    systematics = cms.vstring(muTauPairSystematics.keys())
 )
 
 # central jet veto/b-jet candidate selection
@@ -278,7 +293,7 @@ muTauEventDump_wBtag = muTauEventDump.clone(
 # (ordered list of event selection criteria and histogram filling)
 #--------------------------------------------------------------------------------
 
-muTauAnalysisSequence_woBtag = cms.VPSet(
+muTauAnalysisSequenceOS_woBtag = cms.VPSet(
     # fill histograms for full event sample
     cms.PSet(
         analyzers = cms.vstring(
@@ -467,7 +482,7 @@ muTauAnalysisSequence_woBtag = cms.VPSet(
     ),
     cms.PSet(
         filter = cms.string('evtSelTauEta'),
-        title = cms.string('-2.1 < eta(Tau) < +2.1'),
+        title = cms.string('-2.3 < eta(Tau) < +2.3'),
         saveRunLumiSectionEventNumbers = cms.vstring('')
     ),
     cms.PSet(
@@ -526,17 +541,6 @@ muTauAnalysisSequence_woBtag = cms.VPSet(
             'muonHistManager'
         ),
         replace = cms.vstring('muonHistManager.muonSource = selectedPatMuonsPFRelIsoCumulative')
-    ),
-    cms.PSet(
-        filter = cms.string('evtSelMuonAntiPion'),
-        title = cms.string('Muon pi-Veto'),
-        saveRunLumiSectionEventNumbers = cms.vstring('')
-    ),
-    cms.PSet(
-        analyzers = cms.vstring(
-            'muonHistManager'
-        ),
-        replace = cms.vstring('muonHistManager.muonSource = selectedPatMuonsPionVetoCumulative')
     ),
     cms.PSet(
         filter = cms.string('evtSelMuonTrkIP'),
@@ -600,36 +604,6 @@ muTauAnalysisSequence_woBtag = cms.VPSet(
         replace = cms.vstring(
             'muonHistManager.muonSource = selectedPatMuonsTrkIPcumulative',
             'tauHistManager.tauSource = selectedPatTausForMuTauTaNCdiscrCumulative'
-        )
-    ),
-    cms.PSet(
-        filter = cms.string('evtSelTauTrkIso'),
-        title = cms.string('Tau Track iso.'),
-        saveRunLumiSectionEventNumbers = cms.vstring('')
-    ),
-    cms.PSet(
-        analyzers = cms.vstring(
-            'muonHistManager',
-            'tauHistManager'
-        ),
-        replace = cms.vstring(
-            'muonHistManager.muonSource = selectedPatMuonsTrkIPcumulative',
-            'tauHistManager.tauSource = selectedPatTausForMuTauTrkIsoCumulative'
-        )
-    ),
-    cms.PSet(
-        filter = cms.string('evtSelTauEcalIso'),
-        title = cms.string('Tau ECAL iso.'),
-        saveRunLumiSectionEventNumbers = cms.vstring('')
-    ),
-    cms.PSet(
-        analyzers = cms.vstring(
-            'muonHistManager',
-            'tauHistManager'
-        ),
-        replace = cms.vstring(
-            'muonHistManager.muonSource = selectedPatMuonsTrkIPcumulative',
-            'tauHistManager.tauSource = selectedPatTausForMuTauEcalIsoCumulative'
         )
     ),
     cms.PSet(
@@ -721,25 +695,8 @@ muTauAnalysisSequence_woBtag = cms.VPSet(
         )
     ),
     cms.PSet(
-        filter = cms.string('evtSelDiTauCandidateForAHtoMuTauZeroCharge'),
-        title = cms.string('Charge(Muon+Tau) = 0'),
-        saveRunLumiSectionEventNumbers = cms.vstring('')
-    ),
-    cms.PSet(
-        analyzers = cms.vstring(
-            'muonHistManager',
-            'tauHistManager',
-            'diTauCandidateHistManagerForMuTau'
-        ),
-        replace = cms.vstring(
-            'muonHistManager.muonSource = selectedPatMuonsTrkIPcumulative',
-            'tauHistManager.tauSource = selectedPatTausForMuTauElectronVetoCumulative',
-            'diTauCandidateHistManagerForMuTau.diTauCandidateSource = selectedMuTauPairsForAHtoMuTauZeroChargeCumulative'
-        ),
-    ),
-    cms.PSet(
         filter = cms.string('evtSelDiTauCandidateForAHtoMuTauMt1MET'),
-        title = cms.string('M_{T}(Muon-MET) < 50 GeV'),
+        title = cms.string('M_{T}(Muon-MET) < 40 GeV'),
         saveRunLumiSectionEventNumbers = cms.vstring('')
     ),
     cms.PSet(
@@ -815,6 +772,32 @@ muTauAnalysisSequence_woBtag = cms.VPSet(
     ),
     cms.PSet(
         analyzers = cms.vstring(
+            'muonHistManager',
+            'tauHistManager',
+            'diTauCandidateHistManagerForMuTau',
+            'diTauCandidateCollinearApproxHistManagerForMuTau',
+            'diTauCandidateSVfitHistManagerForMuTau',
+            'jetHistManager'
+        ),
+        replace = cms.vstring(
+            'muonHistManager.muonSource = selectedPatMuonsTrkIPcumulative',
+            'tauHistManager.tauSource = selectedPatTausForMuTauElectronVetoCumulative',
+            'diTauCandidateHistManagerForMuTau.diTauCandidateSource = selectedMuTauPairsForAHtoMuTauPzetaDiffCumulative',
+            'diTauCandidateHistManagerForMuTau.visMassHypothesisSource = muTauPairVisMassHypothesesForAHtoMuTau',
+            'diTauCandidateCollinearApproxHistManagerForMuTau.diTauCandidateSource = selectedMuTauPairsForAHtoMuTauPzetaDiffCumulative',
+            'diTauCandidateSVfitHistManagerForMuTau.diTauCandidateSource = selectedMuTauPairsForAHtoMuTauPzetaDiffCumulative',
+            'jetHistManager.jetSource = selectedPatJetsForAHtoMuTauAntiOverlapWithLeptonsVetoCumulative'
+        )
+    ),
+
+    # apply "final" selection of "OS" di-tau candidates
+    cms.PSet(
+        filter = cms.string('evtSelDiTauCandidateForAHtoMuTauZeroCharge'),
+        title = cms.string('Charge(Muon+Tau) = 0'),
+        saveRunLumiSectionEventNumbers = cms.vstring('')
+    ),
+    cms.PSet(
+        analyzers = cms.vstring(
             'genPhaseSpaceEventInfoHistManager',
             'eventWeightHistManager',
             'muonHistManager',
@@ -837,17 +820,17 @@ muTauAnalysisSequence_woBtag = cms.VPSet(
         replace = cms.vstring(
             'muonHistManager.muonSource = selectedPatMuonsTrkIPcumulative',
             'tauHistManager.tauSource = selectedPatTausForMuTauElectronVetoCumulative',
-            'diTauCandidateHistManagerForMuTau.diTauCandidateSource = selectedMuTauPairsForAHtoMuTauPzetaDiffCumulative',
+            'diTauCandidateHistManagerForMuTau.diTauCandidateSource = selectedMuTauPairsForAHtoMuTauZeroChargeCumulative',
             'diTauCandidateHistManagerForMuTau.visMassHypothesisSource = muTauPairVisMassHypothesesForAHtoMuTau',
-            'diTauCandidateCollinearApproxHistManagerForMuTau.diTauCandidateSource = selectedMuTauPairsForAHtoMuTauPzetaDiffCumulative',
-            'diTauCandidateSVfitHistManagerForMuTau.diTauCandidateSource = selectedMuTauPairsForAHtoMuTauPzetaDiffCumulative',
+            'diTauCandidateCollinearApproxHistManagerForMuTau.diTauCandidateSource = selectedMuTauPairsForAHtoMuTauZeroChargeCumulative',
+            'diTauCandidateSVfitHistManagerForMuTau.diTauCandidateSource = selectedMuTauPairsForAHtoMuTauZeroChargeCumulative',
             'diTauCandidateZmumuHypothesisHistManagerForMuTau.ZllHypothesisSource = muTauPairZmumuHypothesesForAHtoMuTau',
             'jetHistManager.jetSource = selectedPatJetsForAHtoMuTauAntiOverlapWithLeptonsVetoCumulative'
         )
     )
 )
 
-muTauAnalysisSequence_wBtag = cms.VPSet(
+muTauAnalysisSequenceOS_wBtag = cms.VPSet(
     # fill histograms for full event sample
     cms.PSet(
         analyzers = cms.vstring(
@@ -1000,7 +983,7 @@ muTauAnalysisSequence_wBtag = cms.VPSet(
     ),
     cms.PSet(
         filter = cms.string('evtSelMuonPt'),
-        title = cms.string('Pt(Muon) > 10 GeV'),
+        title = cms.string('Pt(Muon) > 15 GeV'),
         saveRunLumiSectionEventNumbers = cms.vstring('')
     ),
     cms.PSet(
@@ -1036,7 +1019,7 @@ muTauAnalysisSequence_wBtag = cms.VPSet(
     ),
     cms.PSet(
         filter = cms.string('evtSelTauEta'),
-        title = cms.string('-2.1 < eta(Tau) < +2.1'),
+        title = cms.string('-2.3 < eta(Tau) < +2.3'),
         saveRunLumiSectionEventNumbers = cms.vstring('')
     ),
     cms.PSet(
@@ -1095,17 +1078,6 @@ muTauAnalysisSequence_wBtag = cms.VPSet(
             'muonHistManager'
         ),
         replace = cms.vstring('muonHistManager.muonSource = selectedPatMuonsPFRelIsoCumulative')
-    ),
-    cms.PSet(
-        filter = cms.string('evtSelMuonAntiPion'),
-        title = cms.string('Muon pi-Veto'),
-        saveRunLumiSectionEventNumbers = cms.vstring('')
-    ),
-    cms.PSet(
-        analyzers = cms.vstring(
-            'muonHistManager'
-        ),
-        replace = cms.vstring('muonHistManager.muonSource = selectedPatMuonsPionVetoCumulative')
     ),
     cms.PSet(
         filter = cms.string('evtSelMuonTrkIP'),
@@ -1169,36 +1141,6 @@ muTauAnalysisSequence_wBtag = cms.VPSet(
         replace = cms.vstring(
             'muonHistManager.muonSource = selectedPatMuonsTrkIPcumulative',
             'tauHistManager.tauSource = selectedPatTausForMuTauTaNCdiscrCumulative'
-        )
-    ),
-    cms.PSet(
-        filter = cms.string('evtSelTauTrkIso'),
-        title = cms.string('Tau Track iso.'),
-        saveRunLumiSectionEventNumbers = cms.vstring('')
-    ),
-    cms.PSet(
-        analyzers = cms.vstring(
-            'muonHistManager',
-            'tauHistManager'
-        ),
-        replace = cms.vstring(
-            'muonHistManager.muonSource = selectedPatMuonsTrkIPcumulative',
-            'tauHistManager.tauSource = selectedPatTausForMuTauTrkIsoCumulative'
-        )
-    ),
-    cms.PSet(
-        filter = cms.string('evtSelTauEcalIso'),
-        title = cms.string('Tau ECAL iso.'),
-        saveRunLumiSectionEventNumbers = cms.vstring('')
-    ),
-    cms.PSet(
-        analyzers = cms.vstring(
-            'muonHistManager',
-            'tauHistManager'
-        ),
-        replace = cms.vstring(
-            'muonHistManager.muonSource = selectedPatMuonsTrkIPcumulative',
-            'tauHistManager.tauSource = selectedPatTausForMuTauEcalIsoCumulative'
         )
     ),
     cms.PSet(
@@ -1290,25 +1232,8 @@ muTauAnalysisSequence_wBtag = cms.VPSet(
         )
     ),
     cms.PSet(
-        filter = cms.string('evtSelDiTauCandidateForAHtoMuTauZeroCharge'),
-        title = cms.string('Charge(Muon+Tau) = 0'),
-        saveRunLumiSectionEventNumbers = cms.vstring('')
-    ),
-    cms.PSet(
-        analyzers = cms.vstring(
-            'muonHistManager',
-            'tauHistManager',
-            'diTauCandidateHistManagerForMuTau'
-        ),
-        replace = cms.vstring(
-            'muonHistManager.muonSource = selectedPatMuonsTrkIPcumulative',
-            'tauHistManager.tauSource = selectedPatTausForMuTauElectronVetoCumulative',
-            'diTauCandidateHistManagerForMuTau.diTauCandidateSource = selectedMuTauPairsForAHtoMuTauZeroChargeCumulative'
-        ),
-    ),
-    cms.PSet(
         filter = cms.string('evtSelDiTauCandidateForAHtoMuTauMt1MET'),
-        title = cms.string('M_{T}(Muon-MET) < 50 GeV'),
+        title = cms.string('M_{T}(Muon-MET) < 40 GeV'),
         saveRunLumiSectionEventNumbers = cms.vstring('')
     ),
     cms.PSet(
@@ -1403,6 +1328,32 @@ muTauAnalysisSequence_wBtag = cms.VPSet(
     ),
     cms.PSet(
         analyzers = cms.vstring(
+            'muonHistManager',
+            'tauHistManager',
+            'diTauCandidateHistManagerForMuTau',
+            'diTauCandidateCollinearApproxHistManagerForMuTau',
+            'diTauCandidateSVfitHistManagerForMuTau',
+            'jetHistManager'
+        ),
+        replace = cms.vstring(
+            'muonHistManager.muonSource = selectedPatMuonsTrkIPcumulative',
+            'tauHistManager.tauSource = selectedPatTausForMuTauElectronVetoCumulative',
+            'diTauCandidateHistManagerForMuTau.diTauCandidateSource = selectedMuTauPairsForAHtoMuTauPzetaDiffCumulative',
+            'diTauCandidateHistManagerForMuTau.visMassHypothesisSource = muTauPairVisMassHypothesesForAHtoMuTau',
+            'diTauCandidateCollinearApproxHistManagerForMuTau.diTauCandidateSource = selectedMuTauPairsForAHtoMuTauPzetaDiffCumulative',
+            'diTauCandidateSVfitHistManagerForMuTau.diTauCandidateSource = selectedMuTauPairsForAHtoMuTauPzetaDiffCumulative',
+            'jetHistManager.jetSource = selectedPatJetsForAHtoMuTauBtagCumulative'
+        )
+    ),
+
+    # apply "final" selection of "OS" di-tau candidates
+    cms.PSet(
+        filter = cms.string('evtSelDiTauCandidateForAHtoMuTauZeroCharge'),
+        title = cms.string('Charge(Muon+Tau) = 0'),
+        saveRunLumiSectionEventNumbers = cms.vstring('')
+    ),
+    cms.PSet(
+        analyzers = cms.vstring(
             'genPhaseSpaceEventInfoHistManager',
             'eventWeightHistManager',
             'muonHistManager',
@@ -1425,10 +1376,352 @@ muTauAnalysisSequence_wBtag = cms.VPSet(
         replace = cms.vstring(
             'muonHistManager.muonSource = selectedPatMuonsTrkIPcumulative',
             'tauHistManager.tauSource = selectedPatTausForMuTauElectronVetoCumulative',
-            'diTauCandidateHistManagerForMuTau.diTauCandidateSource = selectedMuTauPairsForAHtoMuTauPzetaDiffCumulative',
+            'diTauCandidateHistManagerForMuTau.diTauCandidateSource = selectedMuTauPairsForAHtoMuTauZeroChargeCumulative',
             'diTauCandidateHistManagerForMuTau.visMassHypothesisSource = muTauPairVisMassHypothesesForAHtoMuTau',
-            'diTauCandidateCollinearApproxHistManagerForMuTau.diTauCandidateSource = selectedMuTauPairsForAHtoMuTauPzetaDiffCumulative',
-            'diTauCandidateSVfitHistManagerForMuTau.diTauCandidateSource = selectedMuTauPairsForAHtoMuTauPzetaDiffCumulative',
+            'diTauCandidateCollinearApproxHistManagerForMuTau.diTauCandidateSource = selectedMuTauPairsForAHtoMuTauZeroChargeCumulative',
+            'diTauCandidateSVfitHistManagerForMuTau.diTauCandidateSource = selectedMuTauPairsForAHtoMuTauZeroChargeCumulative',
+            'diTauCandidateZmumuHypothesisHistManagerForMuTau.ZllHypothesisSource = muTauPairZmumuHypothesesForAHtoMuTau',
+            'jetHistManager.jetSource = selectedPatJetsForAHtoMuTauBtagCumulative'
+        )
+    )
+)
+
+muTauAnalysisSequenceSS_woBtag = cms.VPSet(
+    cms.PSet(
+        filter = cms.string('genPhaseSpaceCut'),
+        title = cms.string('gen. Phase-Space'),
+        saveRunLumiSectionEventNumbers = cms.vstring('')
+    ),
+    cms.PSet(
+        filter = cms.string('evtSelTrigger'),
+        title = cms.string('Muon Trigger'),
+        saveRunLumiSectionEventNumbers = cms.vstring('')
+    ),
+    cms.PSet(
+        filter = cms.string('evtSelDataQuality'),
+        title = cms.string('Data quality'),
+        saveRunLumiSectionEventNumbers = cms.vstring('')
+    ),
+    cms.PSet(
+        filter = cms.string('evtSelPrimaryEventVertex'),
+        title = cms.string('Vertex'),
+        saveRunLumiSectionEventNumbers = cms.vstring('')
+    ),
+    cms.PSet(
+        filter = cms.string('evtSelPrimaryEventVertexQuality'),
+        title = cms.string('Vertex quality'),
+        saveRunLumiSectionEventNumbers = cms.vstring('')
+    ),
+    cms.PSet(
+        filter = cms.string('evtSelPrimaryEventVertexPosition'),
+        title = cms.string('-24 < zVertex < +24 cm'),
+        saveRunLumiSectionEventNumbers = cms.vstring('')
+    ),
+    cms.PSet(
+        filter = cms.string('evtSelGlobalMuon'),
+        title = cms.string('global Muon'),
+        saveRunLumiSectionEventNumbers = cms.vstring('')
+    ),
+    cms.PSet(
+        filter = cms.string('evtSelMuonEta'),
+        title = cms.string('-2.1 < eta(Muon) < +2.1'),
+        saveRunLumiSectionEventNumbers = cms.vstring('')
+    ),
+    cms.PSet(
+        filter = cms.string('evtSelMuonPt'),
+        title = cms.string('Pt(Muon) > 15 GeV'),
+        saveRunLumiSectionEventNumbers = cms.vstring('')
+    ),
+    cms.PSet(
+        filter = cms.string('evtSelTauAntiOverlapWithMuonsVeto'),
+        title = cms.string('Tau not overlapping w. Muon'),
+        saveRunLumiSectionEventNumbers = cms.vstring('')
+    ),
+    cms.PSet(
+        filter = cms.string('evtSelTauEta'),
+        title = cms.string('-2.3 < eta(Tau) < +2.3'),
+        saveRunLumiSectionEventNumbers = cms.vstring('')
+    ),
+    cms.PSet(
+        filter = cms.string('evtSelTauPt'),
+        title = cms.string('Pt(Tau) > 20 GeV'),
+        saveRunLumiSectionEventNumbers = cms.vstring('')
+    ),
+    cms.PSet(
+        filter = cms.string('evtSelMuonVbTfId'),
+        title = cms.string('Muon VBTF id.'),
+        saveRunLumiSectionEventNumbers = cms.vstring('')
+    ),
+    cms.PSet(
+        filter = cms.string('evtSelMuonPFRelIso'),
+        title = cms.string('Muon iso.'),
+        saveRunLumiSectionEventNumbers = cms.vstring('')
+    ),
+    cms.PSet(
+        filter = cms.string('evtSelMuonTrkIP'),
+        title = cms.string('Muon Track IP'),
+        saveRunLumiSectionEventNumbers = cms.vstring('')
+    ),
+    cms.PSet(
+        filter = cms.string('evtSelTauLeadTrk'),
+        title = cms.string('Tau lead. Track find.'),
+        saveRunLumiSectionEventNumbers = cms.vstring('')
+    ),
+    cms.PSet(
+        filter = cms.string('evtSelTauLeadTrkPt'),
+        title = cms.string('Tau lead. Track Pt'),
+        saveRunLumiSectionEventNumbers = cms.vstring('')
+    ),
+    cms.PSet(
+        filter = cms.string('evtSelTauTaNCdiscr'),
+        title = cms.string('Tau TaNC discr.'),
+        saveRunLumiSectionEventNumbers = cms.vstring('')
+    ),
+    cms.PSet(
+        filter = cms.string('evtSelTauProng'),
+        title = cms.string('Tau 1||3-Prong'),
+        saveRunLumiSectionEventNumbers = cms.vstring('')
+    ),
+    cms.PSet(
+        filter = cms.string('evtSelTauCharge'),
+        title = cms.string('Charge(Tau) = +/-1'),
+        saveRunLumiSectionEventNumbers = cms.vstring('')
+    ),
+    cms.PSet(
+        filter = cms.string('evtSelTauMuonVeto'),
+        title = cms.string('Tau mu-Veto'),
+        saveRunLumiSectionEventNumbers = cms.vstring('')
+    ),
+    cms.PSet(
+        filter = cms.string('evtSelTauElectronVeto'),
+        title = cms.string('Tau e-Veto'),
+        saveRunLumiSectionEventNumbers = cms.vstring('')
+    ),
+    cms.PSet(
+        filter = cms.string('evtSelDiTauCandidateForAHtoMuTauAntiOverlapVeto'),
+        title = cms.string('dR(Muon-Tau) > 0.7'),
+        saveRunLumiSectionEventNumbers = cms.vstring('')
+    ),
+    cms.PSet(
+        filter = cms.string('evtSelDiTauCandidateForAHtoMuTauMt1MET'),
+        title = cms.string('M_{T}(Muon-MET) < 40 GeV'),
+        saveRunLumiSectionEventNumbers = cms.vstring('')
+    ),
+    cms.PSet(
+        filter = cms.string('evtSelDiTauCandidateForAHtoMuTauPzetaDiff'),
+        title = cms.string('P_{#zeta} - 1.5*P_{#zeta}^{vis} > -20 GeV'),
+        saveRunLumiSectionEventNumbers = cms.vstring('')
+    ),
+    cms.PSet(
+        filter = cms.string('evtSelDiMuPairZmumuHypothesisVetoByLooseIsolation'),
+        title = cms.string('not Charge(isoMuon+isoMuon) = 0'),
+        saveRunLumiSectionEventNumbers = cms.vstring('')
+    ),
+    cms.PSet(
+        filter = cms.string('evtSelNonCentralJetEt20bTag'),
+        title = cms.string('no E_{T} > 20 GeV central Jet with b-Tag'),
+        saveRunLumiSectionEventNumbers = cms.vstring('passed_cumulative')
+    ),
+    cms.PSet(
+        filter = cms.string('evtSelDiTauCandidateForAHtoMuTauNonZeroCharge'),
+        title = cms.string('Charge(Muon+Tau) != 0'),
+        saveRunLumiSectionEventNumbers = cms.vstring('')
+    ),
+    cms.PSet(
+        analyzers = cms.vstring(
+            'muonHistManager',
+            'tauHistManager',
+            'diTauCandidateHistManagerForMuTau',
+            'diTauCandidateCollinearApproxHistManagerForMuTau',
+            'diTauCandidateSVfitHistManagerForMuTau',
+            'diTauCandidateZmumuHypothesisHistManagerForMuTau',
+            'diTauLeg1ChargeBinGridHistManager',
+            'jetHistManager',
+            'caloMEtHistManager',
+            'pfMEtHistManager',
+            'vertexHistManager',
+            'triggerHistManagerForMuTau'
+        ),
+        replace = cms.vstring(
+            'muonHistManager.muonSource = selectedPatMuonsTrkIPcumulative',
+            'tauHistManager.tauSource = selectedPatTausForMuTauElectronVetoCumulative',
+            'diTauCandidateHistManagerForMuTau.diTauCandidateSource = selectedMuTauPairsForAHtoMuTauNonZeroChargeCumulative',
+            'diTauCandidateHistManagerForMuTau.visMassHypothesisSource = muTauPairVisMassHypothesesForAHtoMuTau',
+            'diTauCandidateCollinearApproxHistManagerForMuTau.diTauCandidateSource = selectedMuTauPairsForAHtoMuTauNonZeroChargeCumulative',
+            'diTauCandidateSVfitHistManagerForMuTau.diTauCandidateSource = selectedMuTauPairsForAHtoMuTauNonZeroChargeCumulative',
+            'diTauCandidateZmumuHypothesisHistManagerForMuTau.ZllHypothesisSource = muTauPairZmumuHypothesesForAHtoMuTau',
+            'jetHistManager.jetSource = selectedPatJetsForAHtoMuTauAntiOverlapWithLeptonsVetoCumulative'
+        )
+    )
+)
+
+muTauAnalysisSequenceSS_wBtag = cms.VPSet(
+    cms.PSet(
+        filter = cms.string('genPhaseSpaceCut'),
+        title = cms.string('gen. Phase-Space'),
+        saveRunLumiSectionEventNumbers = cms.vstring('')
+    ),
+    cms.PSet(
+        filter = cms.string('evtSelTrigger'),
+        title = cms.string('Muon Trigger'),
+        saveRunLumiSectionEventNumbers = cms.vstring('')
+    ),
+    cms.PSet(
+        filter = cms.string('evtSelDataQuality'),
+        title = cms.string('Data quality'),
+        saveRunLumiSectionEventNumbers = cms.vstring('')
+    ),
+    cms.PSet(
+        filter = cms.string('evtSelPrimaryEventVertex'),
+        title = cms.string('Vertex'),
+        saveRunLumiSectionEventNumbers = cms.vstring('')
+    ),
+    cms.PSet(
+        filter = cms.string('evtSelPrimaryEventVertexQuality'),
+        title = cms.string('Vertex quality'),
+        saveRunLumiSectionEventNumbers = cms.vstring('')
+    ),
+    cms.PSet(
+        filter = cms.string('evtSelPrimaryEventVertexPosition'),
+        title = cms.string('-24 < zVertex < +24 cm'),
+        saveRunLumiSectionEventNumbers = cms.vstring('')
+    ),
+    cms.PSet(
+        filter = cms.string('evtSelGlobalMuon'),
+        title = cms.string('global Muon'),
+        saveRunLumiSectionEventNumbers = cms.vstring('')
+    ),
+    cms.PSet(
+        filter = cms.string('evtSelMuonEta'),
+        title = cms.string('-2.1 < eta(Muon) < +2.1'),
+        saveRunLumiSectionEventNumbers = cms.vstring('')
+    ),
+    cms.PSet(
+        filter = cms.string('evtSelMuonPt'),
+        title = cms.string('Pt(Muon) > 15 GeV'),
+        saveRunLumiSectionEventNumbers = cms.vstring('')
+    ),
+    cms.PSet(
+        filter = cms.string('evtSelTauAntiOverlapWithMuonsVeto'),
+        title = cms.string('Tau not overlapping w. Muon'),
+        saveRunLumiSectionEventNumbers = cms.vstring('')
+    ),
+    cms.PSet(
+        filter = cms.string('evtSelTauEta'),
+        title = cms.string('-2.3 < eta(Tau) < +2.3'),
+        saveRunLumiSectionEventNumbers = cms.vstring('')
+    ),
+    cms.PSet(
+        filter = cms.string('evtSelTauPt'),
+        title = cms.string('Pt(Tau) > 20 GeV'),
+        saveRunLumiSectionEventNumbers = cms.vstring('')
+    ),
+    cms.PSet(
+        filter = cms.string('evtSelMuonVbTfId'),
+        title = cms.string('Muon VBTF id.'),
+        saveRunLumiSectionEventNumbers = cms.vstring('')
+    ),
+    cms.PSet(
+        filter = cms.string('evtSelMuonPFRelIso'),
+        title = cms.string('Muon iso.'),
+        saveRunLumiSectionEventNumbers = cms.vstring('')
+    ),
+    cms.PSet(
+        filter = cms.string('evtSelMuonTrkIP'),
+        title = cms.string('Muon Track IP'),
+        saveRunLumiSectionEventNumbers = cms.vstring('')
+    ),
+    cms.PSet(
+        filter = cms.string('evtSelTauLeadTrk'),
+        title = cms.string('Tau lead. Track find.'),
+        saveRunLumiSectionEventNumbers = cms.vstring('')
+    ),
+    cms.PSet(
+        filter = cms.string('evtSelTauLeadTrkPt'),
+        title = cms.string('Tau lead. Track Pt'),
+        saveRunLumiSectionEventNumbers = cms.vstring('')
+    ),
+    cms.PSet(
+        filter = cms.string('evtSelTauTaNCdiscr'),
+        title = cms.string('Tau TaNC discr.'),
+        saveRunLumiSectionEventNumbers = cms.vstring('')
+    ),
+    cms.PSet(
+        filter = cms.string('evtSelTauProng'),
+        title = cms.string('Tau 1||3-Prong'),
+        saveRunLumiSectionEventNumbers = cms.vstring('')
+    ),
+    cms.PSet(
+        filter = cms.string('evtSelTauCharge'),
+        title = cms.string('Charge(Tau) = +/-1'),
+        saveRunLumiSectionEventNumbers = cms.vstring('')
+    ),
+    cms.PSet(
+        filter = cms.string('evtSelTauMuonVeto'),
+        title = cms.string('Tau mu-Veto'),
+        saveRunLumiSectionEventNumbers = cms.vstring('')
+    ),
+    cms.PSet(
+        filter = cms.string('evtSelTauElectronVeto'),
+        title = cms.string('Tau e-Veto'),
+        saveRunLumiSectionEventNumbers = cms.vstring('')
+    ),
+    cms.PSet(
+        filter = cms.string('evtSelDiTauCandidateForAHtoMuTauAntiOverlapVeto'),
+        title = cms.string('dR(Muon-Tau) > 0.7'),
+        saveRunLumiSectionEventNumbers = cms.vstring('')
+    ),
+    cms.PSet(
+        filter = cms.string('evtSelDiTauCandidateForAHtoMuTauMt1MET'),
+        title = cms.string('M_{T}(Muon-MET) < 40 GeV'),
+        saveRunLumiSectionEventNumbers = cms.vstring('')
+    ),
+    cms.PSet(
+        filter = cms.string('evtSelDiTauCandidateForAHtoMuTauPzetaDiff'),
+        title = cms.string('P_{#zeta} - 1.5*P_{#zeta}^{vis} > -20 GeV'),
+        saveRunLumiSectionEventNumbers = cms.vstring('')
+    ),
+    cms.PSet(
+        filter = cms.string('evtSelDiMuPairZmumuHypothesisVetoByLooseIsolation'),
+        title = cms.string('not Charge(isoMuon+isoMuon) = 0'),
+        saveRunLumiSectionEventNumbers = cms.vstring('')
+    ),
+    cms.PSet(
+        filter = cms.string('evtSelCentralJetEt20'),
+        title = cms.string('E_{T} > 20 GeV central Jet'),
+        saveRunLumiSectionEventNumbers = cms.vstring('')
+    ),
+    cms.PSet(
+        filter = cms.string('evtSelCentralJetEt20bTag'),
+        title = cms.string('E_{T} > 20 GeV central Jet with b-Tag'),
+        saveRunLumiSectionEventNumbers = cms.vstring('passed_cumulative')
+    ),
+    cms.PSet(
+        filter = cms.string('evtSelDiTauCandidateForAHtoMuTauNonZeroCharge'),
+        title = cms.string('Charge(Muon+Tau) = 0'),
+        saveRunLumiSectionEventNumbers = cms.vstring('')
+    ),
+    cms.PSet(
+        analyzers = cms.vstring(
+            'muonHistManager',
+            'tauHistManager',
+            'diTauCandidateHistManagerForMuTau',
+            'diTauCandidateCollinearApproxHistManagerForMuTau',
+            'diTauCandidateSVfitHistManagerForMuTau',
+            'diTauCandidateZmumuHypothesisHistManagerForMuTau',
+            'jetHistManager',
+            'caloMEtHistManager',
+            'pfMEtHistManager',
+            'vertexHistManager',
+            'triggerHistManagerForMuTau'
+        ),
+        replace = cms.vstring(
+            'muonHistManager.muonSource = selectedPatMuonsTrkIPcumulative',
+            'tauHistManager.tauSource = selectedPatTausForMuTauElectronVetoCumulative',
+            'diTauCandidateHistManagerForMuTau.diTauCandidateSource = selectedMuTauPairsForAHtoMuTauNonZeroChargeCumulative',
+            'diTauCandidateHistManagerForMuTau.visMassHypothesisSource = muTauPairVisMassHypothesesForAHtoMuTau',
+            'diTauCandidateCollinearApproxHistManagerForMuTau.diTauCandidateSource = selectedMuTauPairsForAHtoMuTauNonZeroChargeCumulative',
+            'diTauCandidateSVfitHistManagerForMuTau.diTauCandidateSource = selectedMuTauPairsForAHtoMuTauNonZeroChargeCumulative',
             'diTauCandidateZmumuHypothesisHistManagerForMuTau.ZllHypothesisSource = muTauPairZmumuHypothesesForAHtoMuTau',
             'jetHistManager.jetSource = selectedPatJetsForAHtoMuTauBtagCumulative'
         )

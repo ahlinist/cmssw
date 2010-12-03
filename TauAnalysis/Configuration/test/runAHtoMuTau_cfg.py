@@ -85,21 +85,6 @@ process.source = cms.Source(
 )
 
 #--------------------------------------------------------------------------------
-# define "hooks" for replacing configuration parameters
-# in case running jobs on the CERN batch system
-#
-#__process.source.fileNames = #inputFileNames#
-#__process.maxEvents.input = cms.untracked.int32(#maxEvents#)
-#__process.analyzeAHtoMuTauEvents_woBtag.filters[0] = copy.deepcopy(#genPhaseSpaceCut#)
-#__process.analyzeAHtoMuTauEvents_wBtag.filters[0] = copy.deepcopy(#genPhaseSpaceCut#)
-#__process.saveAHtoMuTauPlots.outputFileName = #plotsOutputFileName#
-#__#isBatchMode#
-#__#disableEventDump#
-#__process.GlobalTag.globaltag = '#globalTag#'
-#
-#--------------------------------------------------------------------------------
-
-#--------------------------------------------------------------------------------
 # import utility function for configuring PAT trigger matching
 from PhysicsTools.PatAlgos.tools.trigTools import switchOnTrigger
 switchOnTrigger(process, hltProcess = 'HLT', outputModule = '')

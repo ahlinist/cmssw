@@ -14,14 +14,6 @@ selectedDiTauPairsAntiOverlapVeto = cms.EDFilter("PATDiTauPairSelector",
     filter = cms.bool(False)
 )
 
-# require muon and tau to form a zero-charge pair
-selectedDiTauPairsZeroCharge = cms.EDFilter("PATDiTauPairSelector",
-    cut = cms.string('charge = 0'),
-    # CV: the following definition of the zero-charge cut is to be used for background studies only !!
-    #cut = cms.string('(leg1.leadPFChargedHadrCand.charge + leg2.leadPFChargedHadrCand.charge) = 0'),
-    filter = cms.bool(False)
-)
-
 # require the two tau-jets not to be back-to-back
 selectedDiTauPairsAcoplanarity = cms.EDFilter("PATDiTauPairSelector",
     #cut = cms.string('(dPhi1MET < 2.4) | (dPhi2MET < 2.4)'),
@@ -36,6 +28,20 @@ selectedDiTauPairsPzetaDiff = cms.EDFilter("PATDiTauPairSelector",
     filter = cms.bool(False)
 )
 
+# require muon and tau to form a zero-charge pair
+# (selection applied in signal region)
+selectedDiTauPairsZeroCharge = cms.EDFilter("PATDiTauPairSelector",
+    cut = cms.string('charge = 0'),
+    filter = cms.bool(False)
+)
+
+# require muon and tau to form a non-zero-charge pair
+# (selection applied in background dominated control region)
+selectedDiTauPairsNonZeroCharge = cms.EDFilter("PATDiTauPairSelector",
+    cut = cms.string('charge != 0'),
+    filter = cms.bool(False)
+)
+
 # define additional collections of tau-jet + tau-jet candidates
 # with loose lead. track Pt, track isolation and ECAL isolation applied on second leg
 # (NOTE: to be used for the purpose of factorizing efficiencies
@@ -44,10 +50,14 @@ selectedDiTauPairsPzetaDiff = cms.EDFilter("PATDiTauPairSelector",
 
 selectedDiTauPairsAntiOverlapVetoLoose2ndTau = copy.deepcopy(selectedDiTauPairsAntiOverlapVeto)
 
-selectedDiTauPairsZeroChargeLoose2ndTau = selectedDiTauPairsZeroCharge.clone(
-    cut = cms.string('(leg1.charge + leg2.leadPFChargedHadrCand.charge) = 0')
-)    
-
 selectedDiTauPairsAcoplanarityLoose2ndTau = copy.deepcopy(selectedDiTauPairsAcoplanarity)
 
 selectedDiTauPairsPzetaDiffLoose2ndTau = copy.deepcopy(selectedDiTauPairsPzetaDiff)
+
+selectedDiTauPairsZeroChargeLoose2ndTau = selectedDiTauPairsZeroCharge.clone(
+    cut = cms.string('(leg1.charge + leg2.leadPFChargedHadrCand.charge) = 0')
+)
+
+selectedDiTauPairsNonZeroChargeLoose2ndTau = selectedDiTauPairsNonZeroCharge.clone(
+    cut = cms.string('(leg1.charge + leg2.leadPFChargedHadrCand.charge) != 0')
+)
