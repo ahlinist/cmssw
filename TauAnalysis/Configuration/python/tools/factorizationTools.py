@@ -3,6 +3,8 @@ import copy
 
 from TauAnalysis.DQMTools.tools.composeSubDirectoryName import composeSubDirectoryName
 
+import TauAnalysis.Configuration.tools.factorization as factorizer
+
 #--------------------------------------------------------------------------------
 # generic utility functions for factorization
 # usable for all channels
@@ -213,6 +215,116 @@ def enableFactorization_runZtoMuTau(process):
        * process.analyzeZtoMuTauSequence_factorizedWithMuonIsolation
     )
     process.p.replace(process.analyzeZtoMuTauSequence, process.analyzeZtoMuTauSequence_factorized)
+
+##############################################
+# Temporary factorization  update
+# ###########################################
+
+def enableFactorization_makeZtoMuTauPlots_grid2(
+    process,
+    factorizationSequenceName = "loadAndFactorizeZtoMuTauSamples",
+    samplesToFactorize = [ 'InclusivePPmuX', 'PPmuXptGt20Mu10', 'PPmuXptGt20Mu15' ],
+    relevantMergedSamples = [ 'qcdSum' ],
+    mergedToRecoSampleDict = {},
+    mergedSampleAdderModule = lambda sample: 'addZtoMuTau_%s' % (sample)):
+
+    process.load("TauAnalysis.Configuration.analyzeZtoMuTau_cfi")
+
+    # define list of event selection criteria on "tight" muon isolation branch
+    # of the analysis, **before** applying factorization of muon track + ECAL
+    # isolation efficiencies
+    evtSelZtoMuTau_factorizedTight = [
+        'evtSelGenPhaseSpace',
+        'evtSelTrigger',
+        'evtSelDataQuality',
+        'evtSelPrimaryEventVertex',
+        'evtSelPrimaryEventVertexQuality',
+        'evtSelPrimaryEventVertexPosition',
+        'evtSelGlobalMuon',
+        'evtSelMuonEta',
+        'evtSelMuonPt',
+        'evtSelTauAntiOverlapWithMuonsVeto',
+        'evtSelTauEta',
+        'evtSelTauPt',
+        'evtSelMuonVbTfId',
+        'evtSelMuonPFRelIso',
+    ]
+
+    # define list of event selection criteria on "loose" muon isolation branch
+    # of the analysis, **after** applying factorization of muon track + ECAL
+    # isolation efficiencies
+    evtSelZtoMuTau_factorizedLoose = [
+        'evtSelMuonAntiPion',
+        'evtSelMuonTrkIP',
+        'evtSelTauLeadTrk',
+        'evtSelTauLeadTrkPt',
+        'evtSelTauTaNCdiscr',
+        'evtSelTauTrkIso',
+        'evtSelTauEcalIso',
+        'evtSelTauProng',
+        'evtSelTauCharge',
+        'evtSelTauMuonVeto',
+        'evtSelTauElectronVeto',
+        'evtSelDiTauCandidateForMuTauAntiOverlapVeto',
+        'evtSelDiTauCandidateForMuTauZeroCharge',
+        'evtSelDiTauCandidateForMuTauAcoplanarity12',
+        'evtSelDiTauCandidateForMuTauMt1MET',
+        'evtSelDiTauCandidateForMuTauPzetaDiff',
+        'evtSelDiMuPairZmumuHypothesisVetoByLooseIsolation',
+    ]
+
+    # Loop over the samples and create sequences
+    # for each of the factorization jobs and add them to the factorization
+    # sequence
+    factorizationSequence = getattr(process, factorizationSequenceName)
+    for sample in samplesToFactorize:
+        factorizer.factorize(
+            process,
+            input_dir= '/harvested/%s' % sample,
+            output_dir = '/harvested/%s_factorized' % sample,
+            analyzers = {
+                'zMuTauAnalyzer' : {
+                    'tight_cuts' : evtSelZtoMuTau_factorizedTight,
+                    'loose_cuts' : evtSelZtoMuTau_factorizedLoose,
+                    'loose_analyzer' :
+                    'zMuTauAnalyzer_factorizedWithoutMuonIsolation',
+                    'tight_analyzer' :
+                    'zMuTauAnalyzer_factorizedWithMuonIsolation',
+                },
+            },
+            sequence = factorizationSequence
+        )
+
+    dqmDirectoryOut = lambda sample:'/harvested/%s_factorized/zMuTauAnalyzer/'% sample
+    dqmDirectoryOutUnfactorized = lambda sample:'/harvested/%s/zMuTauAnalyzer/'% sample
+
+    # Now update any of the relevant mergers
+    for mergedSample in relevantMergedSamples:
+        # Get the module that is doing the merging, if it exists
+        if not hasattr(process.mergeSamplesZtoMuTau, "merge_%s_zMuTauAnalyzer" % (mergedSample)): continue
+        merger = getattr(process.mergeSamplesZtoMuTau, "merge_%s_zMuTauAnalyzer" % (mergedSample))
+
+        # Get the subsamples associated with this merged sample
+        subsamples = mergedToRecoSampleDict[mergedSample]['samples']
+        # Set the adder to use our new factorized inputs
+        def merge_directories(_list):
+            for sample in _list:
+                if sample in samplesToFactorize:
+                    yield dqmDirectoryOut(sample)
+                else:
+                    yield dqmDirectoryOutUnfactorized(sample)
+
+        merger.dqmDirectories_input = cms.vstring(list(merge_directories(subsamples)))
+
+    # Update the plot sources in the plot jobs.  Note that we don't need to do
+    # this for the merged samples, since we have replaced the HistAdder sources
+    for plotterModuleName in [ 'plotZtoMuTau_log', 'plotZtoMuTau_linear' ]:
+        plotterModuleProcesses = getattr(process, plotterModuleName).processes
+        for sample in samplesToFactorize:
+            if hasattr(plotterModuleProcesses, sample):
+                getattr(plotterModuleProcesses, sample).dqmDirectory = \
+                        cms.string("/harvested/%s_factorized" % sample)
+
 
 def enableFactorization_makeZtoMuTauPlots_grid(
     process,
@@ -724,10 +836,10 @@ def enableFactorization_makeZtoElecTauPlots(process):
 		+ process.scaleZtoElecTau_gammaPlusJets_Pt15to30
 		+ process.scaleZtoElecTau_gammaPlusJets_Pt30to50
 		+ process.scaleZtoElecTau_gammaPlusJets_Pt50to80
-		#			+ process.addZtoElecTau_qcdSum 
-		+ process.addZtoElecTau_qcdBCtoESum 
-		+ process.addZtoElecTau_qcdEMenrichedSum 
-		+ process.addZtoElecTau_gammaPlusJetsSum 
+		#			+ process.addZtoElecTau_qcdSum
+		+ process.addZtoElecTau_qcdBCtoESum
+		+ process.addZtoElecTau_qcdEMenrichedSum
+		+ process.addZtoElecTau_gammaPlusJetsSum
 		#			+ process.addZtoElecTau_smSum
 		+ process.addZtoElecTau_wPlusJetsSum
 		#+ process.addZtoElecTau_dataSum
@@ -976,6 +1088,130 @@ def enableFactorization_runAHtoMuTau(process):
        * process.analyzeAHtoMuTauEvents_factorizedWithMuonIsolation
     )
     process.p.replace(process.analyzeAHtoMuTauEvents, process.analyzeAHtoMuTauEvents_factorized)
+
+def enableFactorization_makeAHtoMuTauPlots_grid2(
+    process,
+    factorizationSequenceName = "loadAndFactorizeAHtoMuTauSamples",
+    samplesToFactorize = [ 'InclusivePPmuX', 'PPmuXptGt20Mu10', 'PPmuXptGt20Mu15' ],
+    relevantMergedSamples = [ 'qcdSum', ],
+    mergedToRecoSampleDict = {},
+    mergedSampleAdderModule = lambda sample, btag: 'addAHtoMuTau_%s_%s' % (btag, sample)):
+
+    process.load("TauAnalysis.Configuration.analyzeAHtoMuTau_cfi")
+
+    # define list of event selection criteria on "tight" muon isolation branch
+    # of the analysis, **before** applying factorization of muon track + ECAL
+    # isolation efficiencies
+    tight_cuts = [
+        'evtSelGenPhaseSpace',
+        'evtSelTrigger',
+        'evtSelDataQuality',
+        'evtSelPrimaryEventVertex',
+        'evtSelPrimaryEventVertexQuality',
+        'evtSelPrimaryEventVertexPosition',
+        'evtSelGlobalMuon',
+        'evtSelMuonEta',
+        'evtSelMuonPt',
+        'evtSelTauAntiOverlapWithMuonsVeto',
+        'evtSelTauEta',
+        'evtSelTauPt',
+        'evtSelMuonVbTfId',
+        'evtSelMuonPFRelIso',
+    ]
+
+    # define list of event selection criteria on "loose" muon isolation branch
+    # of the analysis, **after** applying factorization of muon track + ECAL
+    # isolation efficiencies
+    loose_cuts_base = [
+        'evtSelMuonAntiPion',
+        'evtSelMuonTrkIP',
+        'evtSelTauLeadTrk',
+        'evtSelTauLeadTrkPt',
+        'evtSelTauTaNCdiscr',
+        'evtSelTauTrkIso',
+        'evtSelTauEcalIso',
+        'evtSelTauProng',
+        'evtSelTauCharge',
+        'evtSelTauMuonVeto',
+        'evtSelTauElectronVeto',
+        'evtSelDiTauCandidateForAHtoMuTauAntiOverlapVeto',
+        'evtSelDiTauCandidateForAHtoMuTauZeroCharge',
+        'evtSelDiTauCandidateForAHtoMuTauMt1MET',
+        'evtSelDiTauCandidateForAHtoMuTauPzetaDiff',
+        'evtSelDiMuPairZmumuHypothesisVetoByLooseIsolation',
+    ]
+
+    loose_cuts_woBtag = loose_cuts_base + ['evtSelNonCentralJetEt20bTag']
+    loose_cuts_wBtag = loose_cuts_base + ['evtSelCentralJetEt20',
+                                          'evtSelCentralJetEt20bTag']
+
+    # Loop over the samples and create sequences
+    # for each of the factorization jobs and add them to the factorization
+    # sequence
+    factorizationSequence = getattr(process, factorizationSequenceName)
+    for sample in samplesToFactorize:
+        factorizer.factorize(
+            process,
+            input_dir= '/harvested/%s' % sample,
+            output_dir = '/harvested/%s_factorized' % sample,
+            analyzers = {
+                'ahMuTauAnalyzer_wBtag' : {
+                    'tight_cuts' : tight_cuts,
+                    'loose_cuts' : loose_cuts_wBtag,
+                    'loose_analyzer' :
+                    'ahMuTauAnalyzer_wBtag_factorizedWithoutMuonIsolation',
+                    'tight_analyzer' :
+                    'ahMuTauAnalyzer_wBtag_factorizedWithMuonIsolation',
+                },
+                'ahMuTauAnalyzer_woBtag' : {
+                    'tight_cuts' : tight_cuts,
+                    'loose_cuts' : loose_cuts_woBtag,
+                    'loose_analyzer' :
+                    'ahMuTauAnalyzer_woBtag_factorizedWithoutMuonIsolation',
+                    'tight_analyzer' :
+                    'ahMuTauAnalyzer_woBtag_factorizedWithMuonIsolation',
+                },
+            },
+            sequence = factorizationSequence
+        )
+
+    dqmDirectoryOut = lambda sample, btag:'/harvested/%s_factorized/ahMuTauAnalyzer_%s/'% (sample, btag)
+    dqmDirectoryOutUnfactorized = lambda sample, btag:'/harvested/%s/ahMuTauAnalyzer_%s/'% (sample, btag)
+
+    # Now update any of the relevant mergers
+    for btag in ['woBtag', 'wBtag']:
+        for mergedSample in relevantMergedSamples:
+            # Get the module that is doing the merging, if it exists
+            merger_name = "merge_%s_ahMuTauAnalyzer_%s" % (mergedSample, btag)
+            if not hasattr(process.mergeSamplesAHtoMuTau, merger_name):
+                print "factorizationTools: Expected to update ",\
+                        merger_name, "but it's not in the process! skipping.."
+                continue
+            merger = getattr(process.mergeSamplesAHtoMuTau, merger_name)
+
+            # Get the subsamples associated with this merged sample
+            subsamples = mergedToRecoSampleDict[mergedSample]['samples']
+            # Set the adder to use our new factorized inputs
+            def merge_directories(_list):
+                for sample in _list:
+                    if sample in samplesToFactorize:
+                        yield dqmDirectoryOut(sample, btag)
+                    else:
+                        yield dqmDirectoryOutUnfactorized(sample, btag)
+
+            merger.dqmDirectories_input = cms.vstring(list(merge_directories(subsamples)))
+
+    # Update the plot sources in the plot jobs.  Note that we don't need to do
+    # this for the merged samples, since we have replaced the HistAdder sources
+    for plotterModuleName in [ 'plotAHtoMuTau_woBtag_log', 'plotAHtoMuTau_woBtag_linear',
+                               'plotAHtoMuTau_wBtag_log',  'plotAHtoMuTau_wBtag_linear' ]:
+        if hasattr(process, plotterModuleName):
+            plotterModuleProcesses = getattr(process, plotterModuleName).processes
+            for sample in samplesToFactorize:
+                if hasattr(plotterModuleProcesses, sample):
+                    getattr(plotterModuleProcesses, sample).dqmDirectory = \
+                      cms.string("/harvested/%s_factorized" % sample)
+
 
 def enableFactorization_makeAHtoMuTauPlots_grid(
     process,
