@@ -47,6 +47,8 @@ class L1TauEfficiencyAnalyzer {
         edm::InputTag L1extraMETSource;
         edm::InputTag L1extraMHTSource;
         edm::InputTag L1CaloRegionSource;
+		edm::InputTag OfflinePVSource;
+
 
         edm::InputTag L1GtReadoutRecordSource;
         edm::InputTag L1GtObjectMapRecordSource;
@@ -57,6 +59,11 @@ class L1TauEfficiencyAnalyzer {
         std::vector<unsigned> isolationThresholds;
         std::vector<double> thresholds;
 
+		// good PV cuts
+		int goodPVminNdof;
+		double goodPVmaxAbsZ;
+		double goodPVmaxRho;
+
         // Output tree and related variables
         TTree *l1tree;
 
@@ -66,6 +73,8 @@ class L1TauEfficiencyAnalyzer {
         bool hasTauVeto;
         std::vector<int> l1Isolations;
         std::vector<float> l1CaloRegions;        
+		 int numOfflinePV; // To count total number of offline primary vertices 
+		 int numGoodOfflinePV; // To count only the number of GOOD offline primary vertices
 	bool hasTriggeredL1TauJet;
  	bool hasTriggeredL1CenJet;
 

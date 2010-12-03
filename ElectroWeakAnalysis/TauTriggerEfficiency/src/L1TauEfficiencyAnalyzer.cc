@@ -22,6 +22,10 @@
 
 #include "DataFormats/Candidate/interface/Candidate.h"
 
+#include "DataFormats/VertexReco/interface/Vertex.h"
+#include "DataFormats/VertexReco/interface/VertexFwd.h"
+
+
 #include "DataFormats/Math/interface/deltaR.h"
 #include "DataFormats/L1GlobalCaloTrigger/interface/L1GctJetCand.h"
 #include "DataFormats/L1CaloTrigger/interface/L1CaloRegion.h"
@@ -36,8 +40,8 @@
 #include <TF1.h>
 
 #include <string>
-#include<algorithm>
-#include<iostream>
+#include <algorithm>
+#include <iostream>
 
 namespace {
   class EtaPhiHelper {
@@ -119,6 +123,13 @@ void L1TauEfficiencyAnalyzer::Setup(const edm::ParameterSet& iConfig,TTree *trig
   jetMatchingCone = iConfig.getParameter<double>("L1JetMatchingCone");
   isolationThresholds = iConfig.getParameter<std::vector<unsigned> >("L1IsolationThresholds");
 
+  // Vertex and good vertex parameters. The cuts should be replaced in the future by the cut string parser...
+  OfflinePVSource = iConfig.getParameter<edm::InputTag>("OfflinePVSource");
+  goodPVminNdof  = iConfig.getParameter<int>("goodPVminNdof");
+  goodPVmaxAbsZ  = iConfig.getParameter<double>("goodPVmaxAbsZ");
+  goodPVmaxRho   = iConfig.getParameter<double>("goodPVmaxRho");
+
+
   if(isolationThresholds.size() == 0)
     throw cms::Exception("Configuration") << "At least one item in L1IsolationThresholds is needed!" << std::endl;
 
@@ -155,6 +166,9 @@ void L1TauEfficiencyAnalyzer::Setup(const edm::ParameterSet& iConfig,TTree *trig
 
   l1tree->Branch("L1CaloRegionEt", &l1CaloRegions);
 
+  l1tree->Branch("numOfflinePV", &numOfflinePV);
+  l1tree->Branch("numGoodOfflinePV", &numGoodOfflinePV);
+
   l1tree->Branch("hasTriggeredAndMatchedL1TauJet", &hasTriggeredL1TauJet);
   l1tree->Branch("hasTriggeredAndMatchedL1CenJet", &hasTriggeredL1CenJet);
 
@@ -181,6 +195,8 @@ void L1TauEfficiencyAnalyzer::fill(const edm::Event& iEvent, const edm::EventSet
   hasTauVeto = false;
   std::fill(l1Isolations.begin(), l1Isolations.end(), 0);
   std::fill(l1CaloRegions.begin(), l1CaloRegions.end(), -1);
+  numOfflinePV = 0; // Event primary vertex counter
+  numGoodOfflinePV = 0; // Event GOOD primary vertex counter
   hasTriggeredL1TauJet = false;
   hasTriggeredL1CenJet = false;
   met=0.;
@@ -231,6 +247,32 @@ void L1TauEfficiencyAnalyzer::fill(const edm::Event& iEvent, const edm::EventSet
     mht = l1MHTHandle->at(0).et();
   else 
     mht=0;
+
+
+   // Count the number of offline primary vertices
+   edm::Handle<reco::VertexCollection> offlinePVHandle; // Handle to the actual vertex collection
+
+   try {
+ 	  iEvent.getByLabel(OfflinePVSource, offlinePVHandle); // Try to get collection
+   } catch (...) {
+	  edm::LogWarning("TTEffAnalyzer") << "No offlinePV found with label " << OfflinePVSource << std::endl;
+   }
+ 
+   if ( offlinePVHandle.isValid() ) {
+ 	  numOfflinePV = offlinePVHandle->size();
+   }
+ 
+   // Loop over each offline PV and count only those considered "good"
+   for (vector<Vertex>::const_iterator iOfflinePV = offlinePVHandle->begin(); iOfflinePV != offlinePVHandle->end(); iOfflinePV++) {
+ 	  if ( (iOfflinePV->isValid() == true) 	&&
+           (iOfflinePV->isFake() == false) 	&&
+ 		   (iOfflinePV->ndof() >= 4) 		&&
+ 		   (fabs(iOfflinePV->z()) < 24.0)	&&
+ 		   (iOfflinePV->position().rho() < 2.0) ){
+ 		   numGoodOfflinePV++;	   
+ 	  }
+   }
+
 
 
   // Process L1 triggered taus
