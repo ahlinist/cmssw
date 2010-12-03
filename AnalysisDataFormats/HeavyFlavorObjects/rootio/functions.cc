@@ -567,6 +567,30 @@ double f_p0a2g(double *x, double *par) {
   return  (par[6] + f_gauss(x, &par[0]) + f_gauss(x, &par[3]));
 }
 
+
+// ----------------------------------------------------------------------
+// expo and Gauss 
+double f_eag(double *x, double *par) {
+  //   par[0] = normalization of gaussian
+  //   par[1] = mean of gaussian
+  //   par[2] = sigma of gaussian
+  //   par[3] = par 0 of expo
+  //   par[4] = par 1 of expo
+  return  (f_expo(x, &par[3]) + f_gauss(x, &par[0]));
+}
+
+// ----------------------------------------------------------------------
+// expo and Gauss 
+double f_eaG(double *x, double *par) {
+  //   par[0] = area of gaussian
+  //   par[1] = mean of gaussian
+  //   par[2] = sigma of gaussian
+  //   par[3] = par 0 of expo
+  //   par[4] = par 1 of expo
+  return  (f_expo(x, &par[3]) + f_Gauss(x, &par[0]));
+}
+
+
 // ----------------------------------------------------------------------
 // chi2 ellipsis
 double f2_chi2ellipsis(double *x, double *par) {
