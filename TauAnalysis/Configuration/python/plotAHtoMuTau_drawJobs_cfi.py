@@ -465,16 +465,16 @@ drawJobConfigurator_AHtoMuTau.add(
     )
 )
 
-drawJobConfigurator_AHtoMuTau.add(
-    afterCut = evtSelDiTauCandidateForAHtoMuTauPzetaDiff,
-    beforeCut = evtSelDiMuPairZmumuHypothesisVetoByLooseIsolation,
-    plot = drawJobConfigEntry(
-	meName = 'DiMuZmumuHypothesisByLooseIsolationQuantities/DiTauCandidateCharge',
-        title = "Charge(iso. Muon + iso. Muon) (after P_{#zeta} Cut)",
-        xAxis = 'unlabeled',
-        name = "cutFlowControlPlots_diMuonCharge_afterPzetaDiff"
-    )
-)
+#drawJobConfigurator_AHtoMuTau.add(
+    #afterCut = evtSelDiTauCandidateForAHtoMuTauPzetaDiff,
+    #beforeCut = evtSelDiMuPairZmumuHypothesisVetoByLooseIsolation,
+    #plot = drawJobConfigEntry(
+	#meName = 'DiMuZmumuHypothesisByLooseIsolationQuantities/DiTauCandidateCharge',
+        #title = "Charge(iso. Muon + iso. Muon) (after P_{#zeta} Cut)",
+        #xAxis = 'unlabeled',
+        #name = "cutFlowControlPlots_diMuonCharge_afterPzetaDiff"
+    #)
+#)
 
 #--------------------------------------------------------------------------------
 # define cut-flow control plots specific to "non-b-tag" analysis path
@@ -483,17 +483,17 @@ drawJobConfigurator_AHtoMuTau.add(
 drawJobConfigurator_AHtoMuTau_woBtag = copy.deepcopy(drawJobConfigurator_AHtoMuTau)
 drawJobConfigurator_AHtoMuTau_woBtag.setDQMdirectory('#PROCESSDIR#/ahMuTauAnalyzer_woBtag/')
 
-drawJobConfigurator_AHtoMuTau_woBtag.add(
-    afterCut = evtSelDiMuPairZmumuHypothesisVetoByLooseIsolation,
-    beforeCut = evtSelNonCentralJetEt20bTag,
-    plot = drawJobConfigEntry(
-	meName = 'JetQuantities/Jet#PAR#',
-        PAR = [ 'Pt', 'Eta', 'Phi' ],
-        title = "Jet (after Z #rightarrow #mu^{+} #mu^{-} hypothesis Veto)",
-        xAxis = '#PAR#',
-        name = "cutFlowControlPlots_jet_afterZmumuHypothesisVeto"
-    )
-)
+#drawJobConfigurator_AHtoMuTau_woBtag.add(
+    #afterCut = evtSelDiMuPairZmumuHypothesisVetoByLooseIsolation,
+    #beforeCut = evtSelNonCentralJetEt20bTag,
+    #plot = drawJobConfigEntry(
+	#meName = 'JetQuantities/Jet#PAR#',
+        #PAR = [ 'Pt', 'Eta', 'Phi' ],
+        #title = "Jet (after Z #rightarrow #mu^{+} #mu^{-} hypothesis Veto)",
+        #xAxis = '#PAR#',
+        #name = "cutFlowControlPlots_jet_afterZmumuHypothesisVeto"
+    #)
+#)
 
 #--------------------------------------------------------------------------------
 # define cut-flow control plots specific to "b-tag" analysis path
@@ -502,17 +502,17 @@ drawJobConfigurator_AHtoMuTau_woBtag.add(
 drawJobConfigurator_AHtoMuTau_wBtag = copy.deepcopy(drawJobConfigurator_AHtoMuTau)
 drawJobConfigurator_AHtoMuTau_wBtag.setDQMdirectory('#PROCESSDIR#/ahMuTauAnalyzer_wBtag/')
 
-drawJobConfigurator_AHtoMuTau_wBtag.add(
-    afterCut = evtSelDiMuPairZmumuHypothesisVetoByLooseIsolation,
-    beforeCut = evtSelCentralJetEt20,
-    plot = drawJobConfigEntry(
-	meName = 'JetQuantities/Jet#PAR#',
-        PAR = [ 'Pt', 'Eta', 'Phi' ],
-        title = "Jet (after Z #rightarrow #mu^{+} #mu^{-} hypothesis Veto)",
-        xAxis = '#PAR#',
-        name = "cutFlowControlPlots_jet_afterZmumuHypothesisVeto"
-    )
-)
+#drawJobConfigurator_AHtoMuTau_wBtag.add(
+    #afterCut = evtSelDiMuPairZmumuHypothesisVetoByLooseIsolation,
+    #beforeCut = evtSelCentralJetEt20,
+    #plot = drawJobConfigEntry(
+	#meName = 'JetQuantities/Jet#PAR#',
+        #PAR = [ 'Pt', 'Eta', 'Phi' ],
+        #title = "Jet (after Z #rightarrow #mu^{+} #mu^{-} hypothesis Veto)",
+        #xAxis = '#PAR#',
+        #name = "cutFlowControlPlots_jet_afterZmumuHypothesisVeto"
+    #)
+#)
 
 drawJobConfigurator_AHtoMuTau_wBtag.add(
     afterCut = evtSelCentralJetEt20,
@@ -647,7 +647,7 @@ finalSamplePlots = [
     drawJobConfigEntry(
         meName = 'DiTauCandidateQuantities/VisMass',
         title = "M_{vis}(Muon + Tau) (final Event sample)",
-        xAxis = 'Mass',
+        xAxis = 'MassRebin',
         name = "finalSamplePlots_mVisible"
     ),
     drawJobConfigEntry(
@@ -659,19 +659,19 @@ finalSamplePlots = [
     drawJobConfigEntry(
         meName = 'DiTauCandidateQuantities/CDFmethodMass',
         title = "M(Muon + Tau + MET), CDF method (final Event sample)",
-        xAxis = 'Mass',
+        xAxis = 'MassRebin',
         name = "finalSamplePlots_mCDFmethod"
     ),
     drawJobConfigEntry(
         meName = 'DiTauCandidateQuantities/CollinearApproxMass',
         title = "M(Muon + Tau), collinear Approx. (final Event sample)",
-        xAxis = 'Mass',
+        xAxis = 'MassRebin',
         name = "finalSamplePlots_mCollApprox"
     ),
     drawJobConfigEntry(
         meName = 'DiTauCandidateSVfitQuantities/psKine_MEt_ptBalance/Mass',
         title = "M(Muon + Tau), SVfit method (final Event sample)",
-        xAxis = 'Mass',
+        xAxis = 'MassRebin',
         name = "finalSamplePlots_mSVmethod"
     ),
     drawJobConfigEntry(
