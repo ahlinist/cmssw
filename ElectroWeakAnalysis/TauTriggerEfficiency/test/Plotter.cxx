@@ -6,10 +6,13 @@
 #include "TROOT.h"
 #include "TPad.h"
 #include "TCut.h"
+#include "TEventList.h"
 
 #include "tdrstyle.cxx"
 
 #include <string>
+#include <stdint.h>
+
 class Plotter {
 public:
   Plotter(TString filename="tteffAnalysis.root", TString treename="TTEffTree", TString pickEventsFile = ""){
@@ -42,9 +45,10 @@ public:
   void SetFileName(TString name){plotFileName = name;}
   void SetFormat(const char *frmt){format = frmt;}
   void SetSave(bool s) {save = s;}
+  int GetNEvents(const TCut& selection = "");
 
 private:
-  TTree* pickEvents(TString,TTree*);
+//  TTree* pickEvents(TString,TTree*);
 
   TFile* inFile;
   TTree* tree;
@@ -167,7 +171,7 @@ TH1 *Plotter::DrawDistribution(const char* varexp, const TCut& selection){
   }
   return hnum;
 }
-
+/*
 TTree* Plotter::pickEvents(TString fPickEvents,TTree* intree){
 	TList* treeList = new TList();
 
@@ -193,3 +197,44 @@ TTree* Plotter::pickEvents(TString fPickEvents,TTree* intree){
 	cout << "picked events tree size " << tree->GetEntries() << endl;
 	return tree;
 }
+*/
+
+int Plotter::GetNEvents(const TCut& selection){
+	int events = 0;
+
+        tree->Draw(">>elist",selection);
+        TEventList *elist = (TEventList*)gDirectory->Get("elist");
+        tree->SetEventList(elist);
+
+	TTree *selTree = 0;
+	if(selection.Sizeof() == TCut("").Sizeof()) selTree = tree;
+	else {
+		tree->SetBranchStatus("*",0);
+   		tree->SetBranchStatus("run",1);
+   		tree->SetBranchStatus("lumi",1);
+   		tree->SetBranchStatus("event",1);
+		selTree = tree->CopyTree("");
+	}
+
+	uint32_t run,lumi,event;
+	uint32_t run_old   = -1,
+                 lumi_old  = -1,
+                 event_old = -1;
+
+	selTree->SetBranchAddress("run",&run);
+   	selTree->SetBranchAddress("lumi",&lumi);
+   	selTree->SetBranchAddress("event",&event);
+
+	for(int i = 0; i < selTree->GetEntries(); ++i){
+		selTree->GetEvent(i);
+		if(run == run_old && lumi == lumi_old && event == event_old) continue;
+		run_old   = run;
+		lumi_old  = lumi;
+		event_old = event;
+		++events;
+	}
+	tree->SetBranchStatus("*",1);
+	delete elist;
+	return events;
+}
+
