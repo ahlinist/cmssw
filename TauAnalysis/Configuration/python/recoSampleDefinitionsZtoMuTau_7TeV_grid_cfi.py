@@ -294,6 +294,7 @@ RECO_SAMPLES = {
        'legendEntry' : plotter.process_WplusJets.config_dqmHistPlotter.legendEntry.value(),
        'type' : plotter.process_WplusJets.config_dqmHistPlotter.type.value(),
        'drawOption' : styles.drawOption_WplusJets,
+       'applyZrecoilCorrection' : True,
        'applyMuonTriggerEfficiencyCorrection' : True
     },
     'Wenu' : {
@@ -306,6 +307,7 @@ RECO_SAMPLES = {
         'type' : plotter.process_WplusJets.config_dqmHistPlotter.type.value(),
         'enableFakeRates' : True,
         'drawOption' : styles.drawOption_WplusJets,
+        'applyZrecoilCorrection' : True,
         'applyMuonTriggerEfficiencyCorrection' : True,
         'applyVertexMultiplicityReweighting' : True,
         'hlt' : cms.InputTag("TriggerResults", "", "REDIGI38XPU"),
@@ -320,6 +322,7 @@ RECO_SAMPLES = {
         'legendEntry' : plotter.process_WplusJets.config_dqmHistPlotter.legendEntry.value(),
         'type' : plotter.process_WplusJets.config_dqmHistPlotter.type.value(),
         'drawOption' : styles.drawOption_WplusJets,
+        'applyZrecoilCorrection' : True,
         'applyMuonTriggerEfficiencyCorrection' : True,
         'applyVertexMultiplicityReweighting' : True,
         'hlt' : cms.InputTag("TriggerResults", "", "REDIGI38XPU"),
@@ -334,6 +337,7 @@ RECO_SAMPLES = {
         'legendEntry' : plotter.process_WplusJets.config_dqmHistPlotter.legendEntry.value(),
         'type' : plotter.process_WplusJets.config_dqmHistPlotter.type.value(),
         'drawOption' : styles.drawOption_WplusJets,
+        'applyZrecoilCorrection' : True,
         'applyMuonTriggerEfficiencyCorrection' : True,
         'applyVertexMultiplicityReweighting' : True,
         'hlt' : cms.InputTag("TriggerResults", "", "REDIGI38XPU"),
