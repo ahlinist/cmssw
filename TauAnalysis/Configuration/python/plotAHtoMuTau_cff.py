@@ -19,7 +19,7 @@ loadAHtoMuTau = cms.EDAnalyzer("DQMFileLoader",
     Zmumu = copy.deepcopy(processAHtoMuTau_ZmumuSum.config_dqmFileLoader),
     ZplusJets = copy.deepcopy(processAHtoMuTau_ZplusJetsSum.config_dqmFileLoader),
     WplusJets = copy.deepcopy(processAHtoMuTau_WplusJetsSum.config_dqmFileLoader),
-    Vqq = copy.deepcopy(processAHtoMuTau_VqqSum.config_dqmFileLoader),                           
+    Vqq = copy.deepcopy(processAHtoMuTau_VqqSum.config_dqmFileLoader),
     InclusivePPmuX = copy.deepcopy(processAHtoMuTau_InclusivePPmuXsum.config_dqmFileLoader),
     PPmuXptGt20 = copy.deepcopy(processAHtoMuTau_PPmuXptGt20Sum.config_dqmFileLoader),
     TTplusJets = copy.deepcopy(processAHtoMuTau_TTplusJetsSum.config_dqmFileLoader),
@@ -34,7 +34,7 @@ addAHtoMuTau_woBtag_AHsum120_tautau = cms.EDAnalyzer("DQMHistAdder",
             'harvested/AHbb120_tautau/ahMuTauAnalyzer_woBtag'
         ),
         dqmDirectory_output = cms.string('harvested/AHsum120_tautau/ahMuTauAnalyzer_woBtag')
-    )                          
+    )
 )
 
 addAHtoMuTau_wBtag_AHsum120_tautau = cms.EDAnalyzer("DQMHistAdder",
@@ -44,7 +44,7 @@ addAHtoMuTau_wBtag_AHsum120_tautau = cms.EDAnalyzer("DQMHistAdder",
             'harvested/AHbb120_tautau/ahMuTauAnalyzer_wBtag'
         ),
         dqmDirectory_output = cms.string('harvested/AHsum120_tautau/ahMuTauAnalyzer_wBtag')
-    )                          
+    )
 )
 
 addAHtoMuTau_AHsum120_tautau = cms.Sequence(addAHtoMuTau_woBtag_AHsum120_tautau * addAHtoMuTau_wBtag_AHsum120_tautau)
@@ -56,7 +56,7 @@ addAHtoMuTau_woBtag_qcdSum = cms.EDAnalyzer("DQMHistAdder",
             'harvested/PPmuXptGt20/ahMuTauAnalyzer_woBtag'
         ),
         dqmDirectory_output = cms.string('harvested/qcdSum/ahMuTauAnalyzer_woBtag')
-    )                          
+    )
 )
 
 addAHtoMuTau_wBtag_qcdSum = cms.EDAnalyzer("DQMHistAdder",
@@ -66,7 +66,7 @@ addAHtoMuTau_wBtag_qcdSum = cms.EDAnalyzer("DQMHistAdder",
             'harvested/PPmuXptGt20/ahMuTauAnalyzer_wBtag'
         ),
         dqmDirectory_output = cms.string('harvested/qcdSum/ahMuTauAnalyzer_wBtag')
-    )                          
+    )
 )
 
 addAHtoMuTau_qcdSum = cms.Sequence(addAHtoMuTau_woBtag_qcdSum * addAHtoMuTau_wBtag_qcdSum)
@@ -161,13 +161,14 @@ plotAHtoMuTau_woBtag = cms.EDAnalyzer("DQMHistPlotter",
         posZ = copy.deepcopy(xAxis_posZ),
         Mt = copy.deepcopy(xAxis_transMass),
         Mass = copy.deepcopy(xAxis_mass),
+        MassRebin = copy.deepcopy(xAxis_massRebin),
         N = copy.deepcopy(xAxis_num),
         PdgId = copy.deepcopy(xAxis_pdgId),
         GeV = copy.deepcopy(xAxis_GeV),
         unlabeled = copy.deepcopy(xAxis_unlabeled)
     ),
 
-    yAxes = cms.PSet(                         
+    yAxes = cms.PSet(
         numEntries_linear = copy.deepcopy(yAxis_numEntries_linear),
         numEntries_log = copy.deepcopy(yAxis_numEntries_log)
     ),
@@ -192,21 +193,21 @@ plotAHtoMuTau_woBtag = cms.EDAnalyzer("DQMHistPlotter",
             AHsum120_tautau = copy.deepcopy(drawOption_AHbb_separate)
         )
     ),
-                              
+
     drawJobs = drawJobConfigurator_AHtoMuTau_woBtag.configure(),
 
     canvasSizeX = cms.int32(800),
-    canvasSizeY = cms.int32(640),                         
+    canvasSizeY = cms.int32(640),
 
     outputFilePath = cms.string('./plots/'),
     #outputFileName = cms.string('plotsAHtoMuTau_woBtag.ps')
-    indOutputFileName = cms.string('plotAHtoMuTau_woBtag_#PLOT#.png')
+    indOutputFileName = cms.string('plotAHtoMuTau_woBtag_#PLOT#.pdf')
 )
 
 plotAHtoMuTau_wBtag = plotAHtoMuTau_woBtag.clone(
     drawJobs = drawJobConfigurator_AHtoMuTau_wBtag.configure(),
     #outputFileName = cms.string('plotsAHtoMuTau_wBtag.ps')
-    indOutputFileName = cms.string('plotAHtoMuTau_wBtag_#PLOT#.png')
+    indOutputFileName = cms.string('plotAHtoMuTau_wBtag_#PLOT#.pdf')
 )
 
 plotAHtoMuTau = cms.Sequence(plotAHtoMuTau_woBtag * plotAHtoMuTau_wBtag)
@@ -216,4 +217,4 @@ saveAHtoMuTau = cms.EDAnalyzer("DQMSimpleFileSaver",
 )
 
 
-  
+
