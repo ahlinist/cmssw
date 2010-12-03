@@ -32,4 +32,7 @@
 #pragma link C++ function f_p0a2g(double *, double *);
 #pragma link C++ function f2_chi2ellipsis(double *, double *);
 
+#pragma link C++ function f_eag(double *, double *);
+#pragma link C++ function f_eaG(double *, double *);
+
 #endif
