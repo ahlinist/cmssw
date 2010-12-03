@@ -264,25 +264,13 @@ drawJobConfigurator_AHtoMuTau.add(
 
 drawJobConfigurator_AHtoMuTau.add(
     afterCut = evtSelMuonPFRelIso,
-    beforeCut = evtSelMuonAntiPion,
-    plot = drawJobConfigEntry(
-        meName = 'MuonQuantities/Muon#PAR#Compatibility',
-        PAR = [ 'Calo', 'Segment' ],
-        title = "Muon #PAR# compatibility (after Muon Combined iso. Cut)",
-        xAxis = 'prob',
-        name = "cutFlowControlPlots_muonComp_afterMuonCombIso"
-    )
-)
-
-drawJobConfigurator_AHtoMuTau.add(
-    afterCut = evtSelMuonAntiPion,
     beforeCut = evtSelMuonTrkIP,
     plot = drawJobConfigEntry(
         meName = 'MuonQuantities/MuonTrackIP#PAR#',
         PAR = [ 'xy', 'z' ],
-        title = "Muon Track IP_{#PAR#}(after Muon #pi-Veto Cut)",
+        title = "Muon Track IP_{#PAR#} (after Muon Combined iso. Cut)",
         xAxis = 'IP#PAR#',
-        name = "cutFlowControlPlots_muonTrkIP_afterMuonAntiPionVeto"
+        name = "cutFlowControlPlots_muonTrkIP_afterMuonCombIso"
     )
 )
 
@@ -339,34 +327,12 @@ drawJobConfigurator_AHtoMuTau.add(
 
 drawJobConfigurator_AHtoMuTau.add(
     afterCut = evtSelTauTaNCdiscr,
-    beforeCut = evtSelTauTrkIso,
-    plot = drawJobConfigEntry(
-        meName = 'TauQuantities/TauTrkIsoPt',
-        title = "Tau Track iso. (after Tau TaNC discr. Cut)",
-        xAxis = 'Pt',
-        name = "cutFlowControlPlots_tauTrkIso_afterTauTaNCdiscr"
-    )
-)
-
-drawJobConfigurator_AHtoMuTau.add(
-    afterCut = evtSelTauTrkIso,
-    beforeCut = evtSelTauEcalIso,
-    plot = drawJobConfigEntry(
-        meName = 'TauQuantities/TauEcalIsoPt',
-        title = "Tau ECAL iso. (after Tau Track iso. Cut)",
-        xAxis = 'Pt',
-        name = "cutFlowControlPlots_tauEcalIso_afterTauTrkIso"
-    )
-)
-
-drawJobConfigurator_AHtoMuTau.add(
-    afterCut = evtSelTauEcalIso,
     beforeCut = evtSelTauProng,
     plot = drawJobConfigEntry(
         meName = 'TauQuantities/TauNumTracksSignalCone',
-        title = "Tau Tracks in Signal Cone (after Tau ECAL iso. Cut)",
+        title = "Tau Tracks in Signal Cone (after Tau TaNC discr. Cut)",
         xAxis = 'unlabeled',
-        name = "cutFlowControlPlots_tauNumTracksSignalCone_afterTauEcalIso"
+        name = "cutFlowControlPlots_tauNumTracksSignalCone_afterTauTaNCdiscr"
     )
 )
 
@@ -434,23 +400,12 @@ drawJobConfigurator_AHtoMuTau.add(
 
 drawJobConfigurator_AHtoMuTau.add(
     afterCut = evtSelDiTauCandidateForAHtoMuTauAntiOverlapVeto,
-    beforeCut = evtSelDiTauCandidateForAHtoMuTauZeroCharge,
-    plot = drawJobConfigEntry(
-        meName = 'DiTauCandidateQuantities/DiTauCandidateCharge',
-        title = "Charge(Muon + Tau) (after diTau anti-Overlap Veto)",
-        xAxis = 'unlabeled',
-        name = "cutFlowControlPlots_diTauCharge_afterAntiOverlapVeto"
-    )
-)
-
-drawJobConfigurator_AHtoMuTau.add(
-    afterCut = evtSelDiTauCandidateForAHtoMuTauZeroCharge,
     beforeCut = evtSelDiTauCandidateForAHtoMuTauMt1MET,
     plot = drawJobConfigEntry(
         meName = 'DiTauCandidateQuantities/Mt1MET',
-        title = "M_{T}(Muon + MET) (after opposite Charge Cut)",
+        title = "M_{T}(Muon + MET) (after diTau anti-Overlap Veto)",
         xAxis = 'Mt',
-        name = "cutFlowControlPlots_mtMuonMET_afterZeroCharge"
+        name = "cutFlowControlPlots_mtMuonMET_afterAntiOverlapVeto"
     )
 )
 
@@ -465,54 +420,65 @@ drawJobConfigurator_AHtoMuTau.add(
     )
 )
 
-#drawJobConfigurator_AHtoMuTau.add(
-    #afterCut = evtSelDiTauCandidateForAHtoMuTauPzetaDiff,
-    #beforeCut = evtSelDiMuPairZmumuHypothesisVetoByLooseIsolation,
-    #plot = drawJobConfigEntry(
-	#meName = 'DiMuZmumuHypothesisByLooseIsolationQuantities/DiTauCandidateCharge',
-        #title = "Charge(iso. Muon + iso. Muon) (after P_{#zeta} Cut)",
-        #xAxis = 'unlabeled',
-        #name = "cutFlowControlPlots_diMuonCharge_afterPzetaDiff"
-    #)
-#)
+drawJobConfigurator_AHtoMuTau.add(
+    afterCut = evtSelDiTauCandidateForAHtoMuTauPzetaDiff,
+    beforeCut = evtSelDiMuPairZmumuHypothesisVetoByLooseIsolation,
+    plot = drawJobConfigEntry(
+	meName = 'DiMuZmumuHypothesisByLooseIsolationQuantities/DiTauCandidateCharge',
+        title = "Charge(iso. Muon + iso. Muon) (after P_{#zeta} Cut)",
+        xAxis = 'unlabeled',
+        name = "cutFlowControlPlots_diMuonCharge_afterPzetaDiff"
+    )
+)
 
 #--------------------------------------------------------------------------------
 # define cut-flow control plots specific to "non-b-tag" analysis path
 #--------------------------------------------------------------------------------
 
 drawJobConfigurator_AHtoMuTau_woBtag = copy.deepcopy(drawJobConfigurator_AHtoMuTau)
-drawJobConfigurator_AHtoMuTau_woBtag.setDQMdirectory('#PROCESSDIR#/ahMuTauAnalyzer_woBtag/')
+drawJobConfigurator_AHtoMuTau_woBtag.setDQMdirectory('#PROCESSDIR#/ahMuTauAnalyzerOS_woBtag/')
 
-#drawJobConfigurator_AHtoMuTau_woBtag.add(
-    #afterCut = evtSelDiMuPairZmumuHypothesisVetoByLooseIsolation,
-    #beforeCut = evtSelNonCentralJetEt20bTag,
-    #plot = drawJobConfigEntry(
-	#meName = 'JetQuantities/Jet#PAR#',
-        #PAR = [ 'Pt', 'Eta', 'Phi' ],
-        #title = "Jet (after Z #rightarrow #mu^{+} #mu^{-} hypothesis Veto)",
-        #xAxis = '#PAR#',
-        #name = "cutFlowControlPlots_jet_afterZmumuHypothesisVeto"
-    #)
-#)
+drawJobConfigurator_AHtoMuTau_woBtag.add(
+    afterCut = evtSelDiMuPairZmumuHypothesisVetoByLooseIsolation,
+    beforeCut = evtSelNonCentralJetEt20bTag,
+    plot = drawJobConfigEntry(
+	meName = 'JetQuantities/Jet#PAR#',
+        PAR = [ 'Pt', 'Eta', 'Phi' ],
+        title = "Jet (after Z #rightarrow #mu^{+} #mu^{-} hypothesis Veto)",
+        xAxis = '#PAR#',
+        name = "cutFlowControlPlots_jet_afterZmumuHypothesisVeto"
+    )
+)
+
+drawJobConfigurator_AHtoMuTau_woBtag.add(
+    afterCut = evtSelNonCentralJetEt20bTag,
+    beforeCut = evtSelDiTauCandidateForAHtoMuTauZeroCharge,
+    plot = drawJobConfigEntry(
+        meName = 'DiTauCandidateQuantities/DiTauCandidateCharge',
+        title = "Charge(Muon + Tau) (after Jet no b-tag Cut)",
+        xAxis = 'unlabeled',
+        name = "cutFlowControlPlots_diTauCharge_afterJetNoBtag"
+    )
+)
 
 #--------------------------------------------------------------------------------
 # define cut-flow control plots specific to "b-tag" analysis path
 #--------------------------------------------------------------------------------
 
 drawJobConfigurator_AHtoMuTau_wBtag = copy.deepcopy(drawJobConfigurator_AHtoMuTau)
-drawJobConfigurator_AHtoMuTau_wBtag.setDQMdirectory('#PROCESSDIR#/ahMuTauAnalyzer_wBtag/')
+drawJobConfigurator_AHtoMuTau_wBtag.setDQMdirectory('#PROCESSDIR#/ahMuTauAnalyzerOS_wBtag/')
 
-#drawJobConfigurator_AHtoMuTau_wBtag.add(
-    #afterCut = evtSelDiMuPairZmumuHypothesisVetoByLooseIsolation,
-    #beforeCut = evtSelCentralJetEt20,
-    #plot = drawJobConfigEntry(
-	#meName = 'JetQuantities/Jet#PAR#',
-        #PAR = [ 'Pt', 'Eta', 'Phi' ],
-        #title = "Jet (after Z #rightarrow #mu^{+} #mu^{-} hypothesis Veto)",
-        #xAxis = '#PAR#',
-        #name = "cutFlowControlPlots_jet_afterZmumuHypothesisVeto"
-    #)
-#)
+drawJobConfigurator_AHtoMuTau_wBtag.add(
+    afterCut = evtSelDiMuPairZmumuHypothesisVetoByLooseIsolation,
+    beforeCut = evtSelCentralJetEt20,
+    plot = drawJobConfigEntry(
+	meName = 'JetQuantities/Jet#PAR#',
+        PAR = [ 'Pt', 'Eta', 'Phi' ],
+        title = "Jet (after Z #rightarrow #mu^{+} #mu^{-} hypothesis Veto)",
+        xAxis = '#PAR#',
+        name = "cutFlowControlPlots_jet_afterZmumuHypothesisVeto"
+    )
+)
 
 drawJobConfigurator_AHtoMuTau_wBtag.add(
     afterCut = evtSelCentralJetEt20,
@@ -539,6 +505,17 @@ drawJobConfigurator_AHtoMuTau_wBtag.add(
         )
     ]
 
+)
+
+drawJobConfigurator_AHtoMuTau_woBtag.add(
+    afterCut = evtSelCentralJetEt20bTag,
+    beforeCut = evtSelDiTauCandidateForAHtoMuTauZeroCharge,
+    plot = drawJobConfigEntry(
+        meName = 'DiTauCandidateQuantities/DiTauCandidateCharge',
+        title = "Charge(Muon + Tau) (after Jet b-tag Cut)",
+        xAxis = 'unlabeled',
+        name = "cutFlowControlPlots_diTauCharge_afterJetBtag"
+    )
 )
 
 #--------------------------------------------------------------------------------
@@ -702,12 +679,12 @@ finalSamplePlots = [
 ]
 
 drawJobConfigurator_AHtoMuTau_woBtag.add(
-    afterCut = evtSelNonCentralJetEt20bTag,
+    afterCut = evtSelDiTauCandidateForAHtoMuTauZeroCharge,
     plots = finalSamplePlots
 )
 
 drawJobConfigurator_AHtoMuTau_wBtag.add(
-    afterCut = evtSelCentralJetEt20bTag,
+    afterCut = evtSelDiTauCandidateForAHtoMuTauZeroCharge,
     plots = finalSamplePlots
 )
 

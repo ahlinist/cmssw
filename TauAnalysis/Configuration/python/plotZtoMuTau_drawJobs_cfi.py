@@ -34,7 +34,7 @@ plots_ZtoMuTau = cms.PSet(
 
 drawJobConfigurator_ZtoMuTau = drawJobConfigurator(
     template = plots_ZtoMuTau,
-    dqmDirectory = '#PROCESSDIR#/zMuTauAnalyzer/'
+    dqmDirectory = '#PROCESSDIR#/zMuTauAnalyzerOS/'
 )
 
 #--------------------------------------------------------------------------------
@@ -259,25 +259,13 @@ drawJobConfigurator_ZtoMuTau.add(
 
 drawJobConfigurator_ZtoMuTau.add(
     afterCut = evtSelMuonPFRelIso,
-    beforeCut = evtSelMuonAntiPion,
-    plot = drawJobConfigEntry(
-        meName = 'MuonQuantities/Muon#PAR#Compatibility',
-        PAR = [ 'Calo', 'Segment' ],
-        title = "Muon #PAR# compatibility (after Muon Combined iso. Cut)",
-        xAxis = 'prob',
-        name = "cutFlowControlPlots_muonComp_afterMuonCombIso"
-    )
-)
-
-drawJobConfigurator_ZtoMuTau.add(
-    afterCut = evtSelMuonAntiPion,
     beforeCut = evtSelMuonTrkIP,
     plot = drawJobConfigEntry(
         meName = 'MuonQuantities/MuonTrackIP#PAR#',
         PAR = [ 'xy', 'z' ],
-        title = "Muon Track IP_{#PAR#}(after Muon #pi-Veto Cut)",
+        title = "Muon Track IP_{#PAR#} (after Muon Combined iso. Cut)",
         xAxis = 'IP#PAR#',
-        name = "cutFlowControlPlots_muonTrkIP_afterMuonAntiPionVeto"
+        name = "cutFlowControlPlots_muonTrkIP_afterMuonCombIso"
     )
 )
 
@@ -334,34 +322,12 @@ drawJobConfigurator_ZtoMuTau.add(
 
 drawJobConfigurator_ZtoMuTau.add(
     afterCut = evtSelTauTaNCdiscr,
-    beforeCut = evtSelTauTrkIso,
-    plot = drawJobConfigEntry(
-        meName = 'TauQuantities/TauTrkIsoPt',
-        title = "Tau Track iso. (after Tau TaNC discr. Cut)",
-        xAxis = 'Pt',
-        name = "cutFlowControlPlots_tauTrkIso_afterTauTaNCdiscr"
-    )
-)
-
-drawJobConfigurator_ZtoMuTau.add(
-    afterCut = evtSelTauTrkIso,
-    beforeCut = evtSelTauEcalIso,
-    plot = drawJobConfigEntry(
-        meName = 'TauQuantities/TauEcalIsoPt',
-        title = "Tau ECAL iso. (after Tau Track iso. Cut)",
-        xAxis = 'Pt',
-        name = "cutFlowControlPlots_tauEcalIso_afterTauTrkIso"
-    )
-)
-
-drawJobConfigurator_ZtoMuTau.add(
-    afterCut = evtSelTauEcalIso,
     beforeCut = evtSelTauProng,
     plot = drawJobConfigEntry(
         meName = 'TauQuantities/TauNumTracksSignalCone',
-        title = "Tau Tracks in Signal Cone (after Tau ECAL iso. Cut)",
+        title = "Tau Tracks in Signal Cone (after Tau TaNC discr. Cut)",
         xAxis = 'unlabeled',
-        name = "cutFlowControlPlots_tauNumTracksSignalCone_afterTauEcalIso"
+        name = "cutFlowControlPlots_tauNumTracksSignalCone_afterTauTaNCdiscr"
     )
 )
 
@@ -429,34 +395,12 @@ drawJobConfigurator_ZtoMuTau.add(
 
 drawJobConfigurator_ZtoMuTau.add(
     afterCut = evtSelDiTauCandidateForMuTauAntiOverlapVeto,
-    beforeCut = evtSelDiTauCandidateForMuTauZeroCharge,
-    plot = drawJobConfigEntry(
-        meName = 'DiTauCandidateQuantities/DiTauCandidateCharge',
-        title = "Charge(Muon + Tau) (after diTau anti-Overlap Veto)",
-        xAxis = 'unlabeled',
-        name = "cutFlowControlPlots_diTauCharge_afterAntiOverlapVeto"
-    )
-)
-
-drawJobConfigurator_ZtoMuTau.add(
-    afterCut = evtSelDiTauCandidateForMuTauZeroCharge,
-    beforeCut = evtSelDiTauCandidateForMuTauAcoplanarity12,
-    plot = drawJobConfigEntry(
-        meName = 'DiTauCandidateQuantities/DPhi12',
-        title = "#Delta#phi(Muon-Tau) (after opposite Charge Cut)",
-        xAxis = 'dPhi',
-        name = "cutFlowControlPlots_dPhiMuonTau_afterZeroCharge"
-    )
-)
-
-drawJobConfigurator_ZtoMuTau.add(
-    afterCut = evtSelDiTauCandidateForMuTauAcoplanarity12,
     beforeCut = evtSelDiTauCandidateForMuTauMt1MET,
     plot = drawJobConfigEntry(
         meName = 'DiTauCandidateQuantities/Mt1MET',
-        title = "M_{T}(Muon + MET) (after Acoplanarity(Muon-Tau) Cut)",
+        title = "M_{T}(Muon + MET) (after diTau anti-Overlap Veto)",
         xAxis = 'Mt',
-        name = "cutFlowControlPlots_mtMuonMET_afterAcoplanarityMuonTau"
+        name = "cutFlowControlPlots_mtMuonMET_afterAntiOverlapVeto"
     )
 )
 
@@ -482,13 +426,24 @@ drawJobConfigurator_ZtoMuTau.add(
     )
 )
 
+drawJobConfigurator_ZtoMuTau.add(
+    afterCut = evtSelDiMuPairZmumuHypothesisVetoByLooseIsolation,
+    beforeCut = evtSelDiTauCandidateForMuTauZeroCharge,
+    plot = drawJobConfigEntry(
+        meName = 'DiTauCandidateQuantities/DiTauCandidateCharge',
+        title = "Charge(Muon + Tau) (after Z #rightarrow #mu^{+} #mu^{-} hypothesis Veto)",
+        xAxis = 'unlabeled',
+        name = "cutFlowControlPlots_diTauCharge_aafterZmumuHypothesisVeto"
+    )
+)
+
 #--------------------------------------------------------------------------------
 # define distributions to be plotted
 # for events passing all event selection criteria
 #--------------------------------------------------------------------------------
 
 drawJobConfigurator_ZtoMuTau.add(
-    afterCut = evtSelDiMuPairZmumuHypothesisVetoByLooseIsolation,
+    afterCut = evtSelDiTauCandidateForMuTauZeroCharge,
     plots = [
         drawJobConfigEntry(
             meName = 'MuonQuantities/Muon#PAR#',
