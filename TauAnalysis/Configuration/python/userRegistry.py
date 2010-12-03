@@ -5,10 +5,10 @@ import os
 userSettings = {
     'friis' : {
         'AHtoMuTau' : {
-            'analysisFilePath' : '/user/f/friis/AHtoMuTauNov26/',
+            'analysisFilePath' : '/user/f/friis/AHtoMuTauNov28/',
             'harvestingFilePath' : "/data1/friis/",
             'tmpFilePath' : "/data2/friis/tmp/",
-            'jobId' : 'Run29',
+            'jobId' : 'Run30',
             # Directory containing selected events
             'pickevents' : '/data1/friis/Run26'
         },
