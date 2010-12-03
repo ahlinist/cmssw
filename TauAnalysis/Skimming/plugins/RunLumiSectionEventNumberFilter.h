@@ -8,9 +8,9 @@
  * 
  * \author Christian Veelken, UC Davis
  *
- * \version $Revision: 1.1 $
+ * \version $Revision: 1.2 $
  *
- * $Id: RunLumiSectionEventNumberFilter.h,v 1.1 2010/10/22 12:23:02 veelken Exp $
+ * $Id: RunLumiSectionEventNumberFilter.h,v 1.2 2010/11/12 16:59:47 veelken Exp $
  *
  */
 
@@ -32,6 +32,8 @@ class RunLumiSectionEventNumberFilter : public edm::EDFilter
   virtual ~RunLumiSectionEventNumberFilter();
     
  private:
+  void beginJob();
+
   bool filter(edm::Event&, const edm::EventSetup&);
 
 //--- read ASCII file containing run and event numbers

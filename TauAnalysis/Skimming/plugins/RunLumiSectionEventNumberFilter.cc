@@ -13,23 +13,15 @@
 const int noMatchRequired = -1;
 
 RunLumiSectionEventNumberFilter::RunLumiSectionEventNumberFilter(const edm::ParameterSet& cfg)
+  : cfgError_(0)
 {
   //std::cout << "<RunLumiSectionEventNumberFilter::RunLumiSectionEventNumberFilter>:" << std::endl;
 
-  cfgError_ = 0;
-
   runLumiSectionEventNumberFileName_ = cfg.getParameter<std::string>("runLumiSectionEventNumberFileName");
-  if ( runLumiSectionEventNumberFileName_ != "" ) {
-    readRunLumiSectionEventNumberFile();
-  } else {
-    edm::LogError ("RunLumiSectionEventNumberFilter") 
-      << " Configuration Parameter runLumiSectionEventNumberFileName = " << runLumiSectionEventNumberFileName_ 
-      << " invalid --> no Events will be selected !!";
-    cfgError_ = 1;
-  }
 
   separator_ = cfg.exists("separator") ? 
     cfg.getParameter<std::string>("separator") : "[[:space:]]+";
+  //std::cout << " separator = '" << separator_ << "'" << std::endl;
 
   numEventsProcessed_ = 0;
   numEventsSelected_ = 0;
@@ -89,15 +81,31 @@ RunLumiSectionEventNumberFilter::~RunLumiSectionEventNumberFilter()
     std::cout << "--> Number of ambiguously matched Events = " << numRunLumiSectionEventNumbersAmbiguousMatch << std::endl;
 }
 
+void RunLumiSectionEventNumberFilter::beginJob()
+{
+  if ( runLumiSectionEventNumberFileName_ != "" ) {
+    readRunLumiSectionEventNumberFile();
+  } else {
+    edm::LogError ("RunLumiSectionEventNumberFilter") 
+      << " Configuration Parameter runLumiSectionEventNumberFileName = " << runLumiSectionEventNumberFileName_ 
+      << " invalid --> no Events will be selected !!";
+    cfgError_ = 1;
+  }
+}
+
 void RunLumiSectionEventNumberFilter::readRunLumiSectionEventNumberFile()
 {
 //--- read run + luminosity section + event number pairs from ASCII file
 
+  //std::cout << "<RunLumiSectionEventNumberFilter::readRunLumiSectionEventNumberFile>:" << std::endl;
+
   std::string regexpParser_threeColumnLine_string = std::string("[[:digit:]]+");
   regexpParser_threeColumnLine_string.append(separator_).append("[[:digit:]]+").append(separator_).append("[[:digit:]]+");
+  //std::cout << " regexpParser_threeColumnLine_string = " << regexpParser_threeColumnLine_string << std::endl;
   TPRegexp regexpParser_threeColumnLine(regexpParser_threeColumnLine_string.data());
   std::string regexpParser_threeColumnNumber_string = std::string("([[:digit:]]+)");
   regexpParser_threeColumnNumber_string.append(separator_).append("([[:digit:]]+)").append(separator_).append("([[:digit:]]+)");
+  //std::cout << " regexpParser_threeColumnNumber_string = " << regexpParser_threeColumnNumber_string << std::endl;
   TPRegexp regexpParser_threeColumnNumber(regexpParser_threeColumnNumber_string.data());
 
   ifstream runLumiSectionEventNumberFile(runLumiSectionEventNumberFileName_.data());
@@ -111,6 +119,8 @@ void RunLumiSectionEventNumberFilter::readRunLumiSectionEventNumberFile()
 //--- skip empty lines
     if ( line == "" ) continue;
 
+    //std::cout << " line = '" << line << "'" << std::endl;
+
     bool parseError = false;
 
     TString line_tstring = line.data();
@@ -120,8 +130,11 @@ void RunLumiSectionEventNumberFilter::readRunLumiSectionEventNumberFile()
     if ( regexpParser_threeColumnLine.Match(line_tstring) == 1 ) {
       TObjArray* subStrings = regexpParser_threeColumnNumber.MatchS(line_tstring);
       if ( subStrings->GetEntries() == 4 ) {
+	//std::cout << " runNumber_string = " << ((TObjString*)subStrings->At(1))->GetString() << std::endl;
 	edm::RunNumber_t runNumber = ((TObjString*)subStrings->At(1))->GetString().Atoll();
+	//std::cout << " lumiSectionNumber_string = " << ((TObjString*)subStrings->At(2))->GetString() << std::endl;
 	edm::LuminosityBlockNumber_t lumiSectionNumber = ((TObjString*)subStrings->At(2))->GetString().Atoll();
+	//std::cout << " eventNumber_string = " << ((TObjString*)subStrings->At(3))->GetString() << std::endl;
 	edm::EventNumber_t eventNumber = ((TObjString*)subStrings->At(3))->GetString().Atoll();
 
 	std::cout << "--> adding Run# = " << runNumber << ", Luminosity Section# " << lumiSectionNumber << ","
