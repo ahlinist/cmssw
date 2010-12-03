@@ -22,6 +22,7 @@ dqmHistPlotter_template = cms.EDAnalyzer("DQMHistPlotter",
         posZ = copy.deepcopy(styles.xAxis_posZ),
         Mt = copy.deepcopy(styles.xAxis_transMass),
         Mass = copy.deepcopy(styles.xAxis_mass),
+        MassRebin = copy.deepcopy(styles.xAxis_massRebin),
         N = copy.deepcopy(styles.xAxis_num),
         PdgId = copy.deepcopy(styles.xAxis_pdgId),
         GeV = copy.deepcopy(styles.xAxis_GeV),
@@ -34,7 +35,8 @@ dqmHistPlotter_template = cms.EDAnalyzer("DQMHistPlotter",
     ),
 
     legends = cms.PSet(
-        regular = copy.deepcopy(styles.legend_regular)
+        #regular = copy.deepcopy(styles.legend_regular)
+        regular = copy.deepcopy(styles.legend_big)
     ),
 
     labels = cms.PSet(
@@ -185,7 +187,7 @@ def makePlots(process, channel = None, samples = None, inputFilePath = None, job
             sample_pset.targetIntLumi = cms.double(samples['TARGET_LUMI'])
 
             # Define the filter to take the processed events from
-            sample_pset.filterToUse = cms.string("genPhaseSpaceCut")
+            sample_pset.filterToUse = cms.string("genPhaseSpaceCut/processed_num#a1#s0")
             sample_pset.filterStatisticsLocation = cms.string(dqmDirectoryFilterStatistics['factorizationDisabled'])
         else:
             # For data, don't apply any scaling
