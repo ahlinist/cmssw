@@ -6,7 +6,7 @@ from TauAnalysis.Configuration.makePlots2_grid import makePlots
 from TauAnalysis.Configuration.userRegistry import getHarvestingFilePath, getJobId
 
 # import utility function to enable factorization
-from TauAnalysis.Configuration.tools.factorizationTools import enableFactorization_makeZtoMuTauPlots_grid
+from TauAnalysis.Configuration.tools.factorizationTools import enableFactorization_makeZtoMuTauPlots_grid2
 
 process = cms.Process('makeZtoMuTauPlots')
 
@@ -22,7 +22,7 @@ makePlots(process, channel = channel, samples = recoSampleDefinitionsZtoMuTau_7T
               [ "zMuTauAnalyzer", drawJobConfigurator_ZtoMuTau, "plotZtoMuTau_#PLOT#.png" ]
           ],
           drawJobTemplate = plots_ZtoMuTau,
-          enableFactorizationFunction = enableFactorization_makeZtoMuTauPlots_grid,
+          enableFactorizationFunction = enableFactorization_makeZtoMuTauPlots_grid2,
           dqmDirectoryFilterStatistics = {
               'factorizationDisabled' : 'zMuTauAnalyzer/FilterStatistics',
               'factorizationEnabled' : 'zMuTauAnalyzer_factorizedWithMuonIsolation/FilterStatistics'
