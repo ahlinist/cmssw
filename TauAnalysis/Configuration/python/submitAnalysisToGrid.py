@@ -127,7 +127,9 @@ def submitAnalysisToGrid(configFile = None, channel = None, samples = None,
           saveFinalEvents = saveFinalEvents,
           customizations = jobCustomizations)
 
-        output_files = [ output_file ]
+        output_files = []
+        if output_file is not None:
+            output_files.append(output_file)
 
         # Always include the plot files
         output_files.append("%s_%s_%s_%s.root" % (
