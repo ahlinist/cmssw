@@ -1129,9 +1129,9 @@ def enableFactorization_makeAHtoMuTauPlots_grid2(
         'evtSelDiMuPairZmumuHypothesisVetoByLooseIsolation',
     ]
 
-    loose_cuts_woBtag = loose_cuts_base
+    loose_cuts_woBtag = loose_cuts_base \
       + [ 'evtSelNonCentralJetEt20bTag', 'evtSelDiTauCandidateForAHtoMuTauZeroCharge' ]
-    loose_cuts_wBtag = loose_cuts_base
+    loose_cuts_wBtag = loose_cuts_base \
       + [ 'evtSelCentralJetEt20', 'evtSelCentralJetEt20bTag', 'evtSelDiTauCandidateForAHtoMuTauZeroCharge' ]
 
     # Loop over the samples and create sequences
