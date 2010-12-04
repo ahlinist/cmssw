@@ -469,6 +469,8 @@ analyzeEventsBgEstWplusJetsEnriched = cms.EDAnalyzer("GenericAnalyzer",
     )
 )
 
+analysisSequenceBgEstWplusJetsEnriched = cms.Sequence(analyzeEventsBgEstWplusJetsEnriched)
+
 #--------------------------------------------------------------------------------  
 # define (final) analysis sequence
 #--------------------------------------------------------------------------------
@@ -479,5 +481,5 @@ bgEstWplusJetsEnrichedAnalysisSequence = cms.Sequence(
    + selectMuTauPairsBgEstWplusJetsEnriched
    + selectJetsBgEstWplusJetsEnriched 
    + selectEventsBgEstWplusJetsEnriched
-   + analyzeEventsBgEstWplusJetsEnriched
+   + analysisSequenceBgEstWplusJetsEnriched
 )

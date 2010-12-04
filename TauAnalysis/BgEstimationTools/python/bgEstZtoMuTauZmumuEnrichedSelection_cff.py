@@ -539,6 +539,8 @@ analyzeEventsBgEstZmumuJetMisIdEnriched = cms.EDAnalyzer("GenericAnalyzer",
     )
 )
 
+analysisSequenceBgEstZmumuJetMisIdEnriched = cms.Sequence(analyzeEventsBgEstZmumuJetMisIdEnriched)
+
 #--------------------------------------------------------------------------------
 
 tauHistManagerBgEstZmumuMuonMisIdEnriched = copy.deepcopy(tauHistManager)
@@ -763,6 +765,8 @@ analyzeEventsBgEstZmumuMuonMisIdEnriched = cms.EDAnalyzer("GenericAnalyzer",
     )
 )
 
+analysisSequenceBgEstZmumuMuonMisIdEnriched = cms.Sequence(analyzeEventsBgEstZmumuMuonMisIdEnriched)
+
 #--------------------------------------------------------------------------------  
 # define (final) analysis sequence
 #--------------------------------------------------------------------------------
@@ -773,5 +777,5 @@ bgEstZmumuEnrichedAnalysisSequence = cms.Sequence(
    + selectMuTauPairsBgEstZmumuEnriched
    + selectDiMuonPairsBgEstZmumuEnriched
    + selectEventsBgEstZmumuEnriched   
-   + analyzeEventsBgEstZmumuJetMisIdEnriched + analyzeEventsBgEstZmumuMuonMisIdEnriched
+   + analysisSequenceBgEstZmumuJetMisIdEnriched + analysisSequenceBgEstZmumuMuonMisIdEnriched
 )
