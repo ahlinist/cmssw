@@ -362,6 +362,8 @@ analyzeEventsBgEstQCDenriched = cms.EDAnalyzer("GenericAnalyzer",
     )
 )
 
+analysisSequenceBgEstQCDenriched = cms.Sequence(analyzeEventsBgEstQCDenriched)
+
 #--------------------------------------------------------------------------------  
 # define (final) analysis sequence
 #--------------------------------------------------------------------------------
@@ -371,5 +373,5 @@ bgEstQCDenrichedAnalysisSequence = cms.Sequence(
    + selectTausBgEstQCDenriched
    + muTauPairsBgEstQCDenriched + selectMuTauPairsBgEstQCDenriched
    + selectEventsBgEstQCDenriched
-   + analyzeEventsBgEstQCDenriched
+   + analysisSequenceBgEstQCDenriched
 )
