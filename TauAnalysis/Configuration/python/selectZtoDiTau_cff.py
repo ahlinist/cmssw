@@ -48,8 +48,8 @@ cfgPrimaryEventVertexPosition = cms.PSet(
 cfgFirstTauEtaCut = cms.PSet(
     pluginName = cms.string('firstTauEtaCut'),
     pluginType = cms.string('PATCandViewMinEventSelector'),
-    src_cumulative = cms.InputTag('selectedDiTauPairs1stTauEta21Cumulative'),
-    src_individual = cms.InputTag('selectedDiTauPairs1stTauEta21Individual'),
+    src_cumulative = cms.InputTag('selectedDiTauPairs1stTauEta23Cumulative'),
+    src_individual = cms.InputTag('selectedDiTauPairs1stTauEta23Individual'),
     minNumber = cms.uint32(1)
 )
 cfgFirstTauPtCut = cms.PSet(
@@ -127,8 +127,8 @@ cfgFirstTauElectronVeto = cms.PSet(
 cfgSecondTauEtaCut = cms.PSet(
     pluginName = cms.string('secondTauEtaCut'),
     pluginType = cms.string('PATCandViewMinEventSelector'),
-    src_cumulative = cms.InputTag('selectedDiTauPairs2ndTauEta21Cumulative'),
-    src_individual = cms.InputTag('selectedDiTauPairs2ndTauEta21Individual'),
+    src_cumulative = cms.InputTag('selectedDiTauPairs2ndTauEta23Cumulative'),
+    src_individual = cms.InputTag('selectedDiTauPairs2ndTauEta23Individual'),
     minNumber = cms.uint32(1)
 )
 cfgSecondTauPtCut = cms.PSet(
