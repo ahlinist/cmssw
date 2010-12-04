@@ -20,12 +20,6 @@ cfgMuonPFRelIsoCutLooseIsolation = cfgMuonPFRelIsoCut.clone(
     src_individual = cms.InputTag('selectedPatMuonsPFRelIsoLooseIsolationIndividual')
 )    
 
-cfgMuonAntiPionCutLooseIsolation = cfgMuonAntiPionCut.clone(
-    pluginName = cms.string('muonAntiPionCutLooseIsolation'),
-    src_cumulative = cms.InputTag('selectedPatMuonsPionVetoLooseIsolationCumulative'),
-    src_individual = cms.InputTag('selectedPatMuonsPionVetoLooseIsolationIndividual')
-)    
-
 cfgMuonTrkIPcutLooseIsolation = cfgMuonTrkIPcut.clone(
     pluginName = cms.string('muonTrkIPcutLooseIsolation'),
     src_cumulative = cms.InputTag('selectedPatMuonsTrkIPlooseIsolationCumulative'),
@@ -39,18 +33,6 @@ cfgDiTauCandidateForMuTauAntiOverlapVetoLooseMuonIsolation = cfgDiTauCandidateFo
     src_individual = cms.InputTag('selectedMuTauPairsAntiOverlapVetoLooseMuonIsolationIndividual')
 )
 
-cfgDiTauCandidateForMuTauZeroChargeCutLooseMuonIsolation = cfgDiTauCandidateForMuTauZeroChargeCut.clone(
-    pluginName = cms.string('diTauCandidateForMuTauZeroChargeCutLooseMuonIsolation'),
-    src_cumulative = cms.InputTag('selectedMuTauPairsZeroChargeLooseMuonIsolationCumulative'),
-    src_individual = cms.InputTag('selectedMuTauPairsZeroChargeLooseMuonIsolationIndividual')
-)
-
-cfgDiTauCandidateForMuTauAcoplanarity12CutLooseMuonIsolation = cfgDiTauCandidateForMuTauAcoplanarity12Cut.clone(
-    pluginName = cms.string('diTauCandidateForMuTauAcoplanarity12CutLooseMuonIsolation'),
-    src_cumulative = cms.InputTag('selectedMuTauPairsAcoplanarity12LooseMuonIsolationCumulative'),
-    src_individual = cms.InputTag('selectedMuTauPairsAcoplanarity12LooseMuonIsolationIndividual')
-)    
-
 cfgDiTauCandidateForMuTauMt1METcutLooseMuonIsolation = cfgDiTauCandidateForMuTauMt1METcut.clone(
     pluginName = cms.string('diTauCandidateForMuTauMt1METcutLooseMuonIsolation'),
     src_cumulative = cms.InputTag('selectedMuTauPairsMt1METlooseMuonIsolationCumulative'),
@@ -63,15 +45,26 @@ cfgDiTauCandidateForMuTauPzetaDiffCutLooseMuonIsolation = cfgDiTauCandidateForMu
     src_individual = cms.InputTag('selectedMuTauPairsPzetaDiffLooseMuonIsolationIndividual')
 )    
 
+cfgDiTauCandidateForMuTauZeroChargeCutLooseMuonIsolation = cfgDiTauCandidateForMuTauZeroChargeCut.clone(
+    pluginName = cms.string('diTauCandidateForMuTauZeroChargeCutLooseMuonIsolation'),
+    src_cumulative = cms.InputTag('selectedMuTauPairsZeroChargeLooseMuonIsolationCumulative'),
+    src_individual = cms.InputTag('selectedMuTauPairsZeroChargeLooseMuonIsolationIndividual')
+)
+
+cfgDiTauCandidateForMuTauNonZeroChargeCutLooseMuonIsolation = cfgDiTauCandidateForMuTauNonZeroChargeCut.clone(
+    pluginName = cms.string('diTauCandidateForMuTauNonZeroChargeCutLooseMuonIsolation'),
+    src_cumulative = cms.InputTag('selectedMuTauPairsNonZeroChargeLooseMuonIsolationCumulative'),
+    src_individual = cms.InputTag('selectedMuTauPairsNonZeroChargeLooseMuonIsolationIndividual')
+)
+
 zToMuTauEventSelConfiguratorLooseMuonIsolation = eventSelFlagProdConfigurator(
     [ cfgMuonPFRelIsoCutLooseIsolation,
-      cfgMuonAntiPionCutLooseIsolation,
       cfgMuonTrkIPcutLooseIsolation,
       cfgDiTauCandidateForMuTauAntiOverlapVetoLooseMuonIsolation,
-      cfgDiTauCandidateForMuTauZeroChargeCutLooseMuonIsolation,
-      cfgDiTauCandidateForMuTauAcoplanarity12CutLooseMuonIsolation,
       cfgDiTauCandidateForMuTauMt1METcutLooseMuonIsolation,
-      cfgDiTauCandidateForMuTauPzetaDiffCutLooseMuonIsolation ],
+      cfgDiTauCandidateForMuTauPzetaDiffCutLooseMuonIsolation,
+      cfgDiTauCandidateForMuTauZeroChargeCutLooseMuonIsolation,
+      cfgDiTauCandidateForMuTauNonZeroChargeCutLooseMuonIsolation ],
     boolEventSelFlagProducer = "BoolEventSelFlagProducer",
     pyModuleName = __name__
 )

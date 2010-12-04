@@ -21,11 +21,6 @@ cfgDiTauCandidateForAHtoMuTauAntiOverlapVetoLooseMuonIsolation = cfgDiTauCandida
     src_cumulative = cms.InputTag('selectedMuTauPairsForAHtoMuTauAntiOverlapVetoLooseMuonIsolationCumulative'),
     src_individual = cms.InputTag('selectedMuTauPairsForAHtoMuTauAntiOverlapVetoLooseMuonIsolationIndividual')
 )
-cfgDiTauCandidateForAHtoMuTauZeroChargeCutLooseMuonIsolation = cfgDiTauCandidateForAHtoMuTauZeroChargeCut.clone(
-    pluginName = cms.string('diTauCandidateForAHtoMuTauZeroChargeCutLooseMuonIsolation'),
-    src_cumulative = cms.InputTag('selectedMuTauPairsForAHtoMuTauZeroChargeLooseMuonIsolationCumulative'),
-    src_individual = cms.InputTag('selectedMuTauPairsForAHtoMuTauZeroChargeLooseMuonIsolationIndividual')
-)    
 cfgDiTauCandidateForAHtoMuTauMt1METcutLooseMuonIsolation = cfgDiTauCandidateForAHtoMuTauMt1METcut.clone(
     pluginName = cms.string('diTauCandidateForAHtoMuTauMt1METcutLooseMuonIsolation'),
     src_cumulative = cms.InputTag('selectedMuTauPairsForAHtoMuTauMt1METlooseMuonIsolationCumulative'),
@@ -35,6 +30,18 @@ cfgDiTauCandidateForAHtoMuTauPzetaDiffCutLooseMuonIsolation = cfgDiTauCandidateF
     pluginName = cms.string('diTauCandidateForAHtoMuTauPzetaDiffCutLooseMuonIsolation'),
     src_cumulative = cms.InputTag('selectedMuTauPairsForAHtoMuTauPzetaDiffLooseMuonIsolationCumulative'),
     src_individual = cms.InputTag('selectedMuTauPairsForAHtoMuTauPzetaDiffLooseMuonIsolationIndividual')
+)
+
+cfgDiTauCandidateForAHtoMuTauZeroChargeCutLooseMuonIsolation = cfgDiTauCandidateForAHtoMuTauZeroChargeCut.clone(
+    pluginName = cms.string('diTauCandidateForAHtoMuTauZeroChargeCutLooseMuonIsolation'),
+    src_cumulative = cms.InputTag('selectedMuTauPairsForAHtoMuTauZeroChargeLooseMuonIsolationCumulative'),
+    src_individual = cms.InputTag('selectedMuTauPairsForAHtoMuTauZeroChargeLooseMuonIsolationIndividual')
+)
+
+cfgDiTauCandidateForAHtoMuTauNonZeroChargeCutLooseMuonIsolation = cfgDiTauCandidateForAHtoMuTauNonZeroChargeCut.clone(
+    pluginName = cms.string('diTauCandidateForAHtoMuTauNonZeroChargeCutLooseMuonIsolation'),
+    src_cumulative = cms.InputTag('selectedMuTauPairsForAHtoMuTauNonZeroChargeLooseMuonIsolationCumulative'),
+    src_individual = cms.InputTag('selectedMuTauPairsForAHtoMuTauNonZeroChargeLooseMuonIsolationIndividual')
 )
 
 # central jet veto/b-jet candidate selection
@@ -57,12 +64,12 @@ cfgCentralJetEt20bTagCutLooseMuonIsolation = cfgCentralJetEt20bTagCut.clone(
 
 ahToMuTauEventSelConfiguratorLooseMuonIsolation = eventSelFlagProdConfigurator(
     [ cfgMuonPFRelIsoCutLooseIsolation,
-      cfgMuonAntiPionCutLooseIsolation,
       cfgMuonTrkIPcutLooseIsolation,
       cfgDiTauCandidateForAHtoMuTauAntiOverlapVetoLooseMuonIsolation,
-      cfgDiTauCandidateForAHtoMuTauZeroChargeCutLooseMuonIsolation,
       cfgDiTauCandidateForAHtoMuTauMt1METcutLooseMuonIsolation,
       cfgDiTauCandidateForAHtoMuTauPzetaDiffCutLooseMuonIsolation,
+      cfgDiTauCandidateForAHtoMuTauZeroChargeCutLooseMuonIsolation,
+      cfgDiTauCandidateForAHtoMuTauNonZeroChargeCutLooseMuonIsolation,
       cfgCentralJetEt20bTagVetoLooseMuonIsolation,
       cfgCentralJetEt20CutLooseMuonIsolation,
       cfgCentralJetEt20bTagCutLooseMuonIsolation ],
