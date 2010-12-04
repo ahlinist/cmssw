@@ -173,10 +173,12 @@ def submitAnalysisToLocal(configFile = None, channel = None, samples = None, job
                 jobConfigFile = jobConfigFile.replace("_cfg.py", "_%i_cfg.py" % (job + 1))
 
             #--------------------------------------------------------------------
-            # CV: temporary "hack" for producing (ED)Ntuples for tau id. efficiency measurement
+            # CV: temporary "hack" for producing (ED)Ntuples/skims for tau id. efficiency measurement
             jobCustomizations = []
             jobCustomizations.append("if hasattr(process, 'ntupleOutputModule'):")
             jobCustomizations.append("    process.ntupleOutputModule.fileName = '%s'" % output_file)
+            jobCustomizations.append("if hasattr(process, 'skimOutputModule'):")
+            jobCustomizations.append("    process.skimOutputModule.fileName = '%s'" % output_file)
             HLTprocessName = 'HLT'
             if 'hlt' in sample_infos['RECO_SAMPLES'][sample].keys():
                 HLTprocessName = sample_infos['RECO_SAMPLES'][sample]['hlt'].getProcessName()

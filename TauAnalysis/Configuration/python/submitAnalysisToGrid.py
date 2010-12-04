@@ -89,7 +89,32 @@ def submitAnalysisToGrid(configFile = None, channel = None, samples = None,
                 print "Warning: No special input files specified for sample%s, using default." % sample
         output_file = None        
         if outputFileMap is not None:
-            output_file = outputFileMap(sample)
+            output_file = outputFileMap(channel, sample, jobId)
+
+        #--------------------------------------------------------------------
+        # CV: temporary "hack" for producing (ED)Ntuples/skims for tau id. efficiency measurement
+        jobCustomizations = []
+        jobCustomizations.append("if hasattr(process, 'ntupleOutputModule'):")
+        jobCustomizations.append("    process.ntupleOutputModule.fileName = '%s'" % output_file)
+        jobCustomizations.append("if hasattr(process, 'skimOutputModule'):")
+        jobCustomizations.append("    process.skimOutputModule.fileName = '%s'" % output_file)
+        HLTprocessName = 'HLT'
+        if 'hlt' in sample_info.keys():
+            HLTprocessName = sample_info['hlt'].getProcessName()
+        jobCustomizations.append("if hasattr(process, 'hltMu'):")
+        jobCustomizations.append("    process.hltMu.selector.src = cms.InputTag('TriggerResults::%s')" % HLTprocessName)
+        jobCustomizations.append("process.patTrigger.processName = '%s'" % HLTprocessName)
+        jobCustomizations.append("process.patTriggerEvent.processName = '%s'" % HLTprocessName)
+        jobCustomizations.append("if hasattr(process, 'prePatProductionSequence'):")
+        jobCustomizations.append("    process.prePatProductionSequence.remove(process.prePatProductionSequenceGen)")
+        if sample_info['type'] == 'Data':
+            jobCustomizations.append("if hasattr(process, 'ntupleProducer'):")
+            jobCustomizations.append("    delattr(process.ntupleProducer.sources, 'tauGenJets')")
+            jobCustomizations.append("    delattr(process.ntupleProducer.sources, 'genJets')")
+            jobCustomizations.append("    delattr(process.ntupleProducer.sources, 'genPhaseSpaceEventInfo')")
+            jobCustomizations.append("    delattr(process.ntupleProducer.sources, 'genPileUpEventInfo')")
+        #jobCustomizations.append("print process.dumpPython()")
+        #--------------------------------------------------------------------    
             
         prepareConfigFile(
           configFile = configFile, jobInfo = jobInfo, newConfigFile = newConfigFile,
@@ -99,12 +124,15 @@ def submitAnalysisToGrid(configFile = None, channel = None, samples = None,
           input_files = input_files, output_file = output_file,
           enableEventDumps = enableEventDumps, enableFakeRates = enableFakeRates,
           processName = processName,
-          saveFinalEvents = saveFinalEvents)
+          saveFinalEvents = saveFinalEvents,
+          customizations = jobCustomizations)
+
+        output_files = [ output_file ]
 
         # Always include the plot files
-        output_files = ["%s_%s_%s_%s.root" % (
+        output_files.append("%s_%s_%s_%s.root" % (
             PLOT_FILES_PREFIX, jobInfo['channel'],
-            jobInfo['sample'], jobInfo['id'])]
+            jobInfo['sample'], jobInfo['id']))
 
         # Add our final event skim as well
         if saveFinalEvents:
