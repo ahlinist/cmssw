@@ -6,10 +6,8 @@ import TauAnalysis.DQMTools.plotterStyleDefinitions_cfi as styles
 
 # List of samples to run in the analysis
 SAMPLES_TO_ANALYZE = [
-    'data_Mu_Run2010A_Sep17ReReco',
     'data_Mu_Run2010A_Nov4ReReco',
     'data_Mu_Run2010B_Nov4ReReco',
-    'data_Mu_Run2010B_Prompt',
     ##'Ztautau', 'qqZtautau',
     'ZtautauPU156bx',
     'qqZtautau',
@@ -17,7 +15,6 @@ SAMPLES_TO_ANALYZE = [
     'Zmumu',
     #'InclusivePPmuX',
     'PPmuXptGt20Mu10', 'PPmuXptGt20Mu15',
-    'WplusJets',
     'Wenu', 'Wmunu', 'Wtaunu',
     'TTplusJets'
 ]
@@ -80,7 +77,7 @@ RECO_SAMPLES = {
         'datasetpath' : '/Mu/Run2010A-Sep17ReReco_v2/RECO',
         'dbs_url' :  "http://cmsdbsprod.cern.ch/cms_dbs_prod_global/servlet/DBSServlet",
         'lumi_mask' : "/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions10/7TeV/Reprocessing/Cert_132440-144114_7TeV_Sep17ReReco_Collisions10_JSON_v2.txt",
-        'runselection' : "132440-135735",
+        'runselection' : "132440-136032",
         'conditions' : 'GR_R_38X_V14::All',
         'events_processed' : -1,
         'skim_eff' : 1.0,
@@ -285,18 +282,6 @@ RECO_SAMPLES = {
         'hlt' : cms.InputTag("TriggerResults", "", "REDIGI38XPU"),
         'enableFakeRates' : True,
     },
-    # CV: /WJetsToLNu_TuneZ2_7TeV-madgraph-tauola/Fall10-START38_V12-v1/GEN-SIM-RECO (32500000) events not ready yet
-    'WplusJets' : {
-       'datasetpath' : "/WJets-madgraph/akalinow-SkimTauTau_356_pass1-0a3d3891f015a95324f94837322fb8aa-muTauSkim/USER",
-       'events_processed' : 9008895,
-       'skim_eff' : 0.260,
-       'x_sec' : 1.28*24170*_picobarns, # W + jets correction factor for NLO/LO cross-sections = 1.28
-       'legendEntry' : plotter.process_WplusJets.config_dqmHistPlotter.legendEntry.value(),
-       'type' : plotter.process_WplusJets.config_dqmHistPlotter.type.value(),
-       'drawOption' : styles.drawOption_WplusJets,
-       'applyZrecoilCorrection' : True,
-       'applyMuonTriggerEfficiencyCorrection' : True
-    },
     'Wenu' : {
         'datasetpath' : "/WToENu_TuneZ2_7TeV-pythia6/Fall10-E7TeV_ProbDist_2010Data_BX156_START38_V12-v1/GEN-SIM-RECO",
         'dbs_url' :  "http://cmsdbsprod.cern.ch/cms_dbs_prod_global/servlet/DBSServlet",
@@ -343,12 +328,12 @@ RECO_SAMPLES = {
         'hlt' : cms.InputTag("TriggerResults", "", "REDIGI38XPU"),
         'SE_black_list' : 'T2_TW_Taiwan',
     },
-    # CV: /TT_TuneZ2_7TeV-pythia6-tauola/Fall10-E7TeV_ProbDist_2010Data_BX156_START38_V12-v1/GEN-SIM-RECO (1095950) events not ready yet
     'TTplusJets' : {
-        ##'datasetpath' : "/TT_TuneZ2_7TeV-pythia6-tauola/Fall10-E7TeV_ProbDist_2010Data_BX156_START38_V12-v1/GEN-SIM-RECO",
-        'datasetpath' : "/TT_TuneZ2_7TeV-pythia6-tauola/Fall10-START38_V12-v1/GEN-SIM-RECO",
+        'datasetpath' : "/TT_TuneZ2_7TeV-pythia6-tauola/Fall10-E7TeV_ProbDist_2010Data_BX156_START38_V12-v1/GEN-SIM-RECO",
+        ##'datasetpath' : "/TT_TuneZ2_7TeV-pythia6-tauola/Fall10-START38_V12-v1/GEN-SIM-RECO",
         'dbs_url' :  "http://cmsdbsprod.cern.ch/cms_dbs_prod_global/servlet/DBSServlet",
-        'events_processed' : 1099550,
+        ##'events_processed' : 1099550,
+        'events_processed' : 1095950,
         'skim_eff' : 1.0,
         'x_sec' : 165*_picobarns, # NNLO cross-section from https://twiki.cern.ch/twiki/bin/viewauth/CMS/StandardModelCrossSections
         'legendEntry' : plotter.process_TTplusJets.config_dqmHistPlotter.legendEntry.value(),
@@ -356,10 +341,10 @@ RECO_SAMPLES = {
         'drawOption' : styles.drawOption_TTplusJets,
         'applyMuonTriggerEfficiencyCorrection' : True,
         'applyVertexMultiplicityReweighting' : True,
-        ##'hlt' : cms.InputTag("TriggerResults", "", "REDIGI38XPU")
-        'hlt' : cms.InputTag("TriggerResults", "", "HLT")
+        ##'hlt' : cms.InputTag("TriggerResults", "", "HLT")
+        'hlt' : cms.InputTag("TriggerResults", "", "REDIGI38XPU")
     }
-    }
+}
 
 # Define samples that get merged together
 MERGE_SAMPLES = {
@@ -427,7 +412,7 @@ MERGE_SAMPLES = {
         'samples' : [
             'Zmumu',
             'qcdSum',
-            'WplusJets',
+            'WplusJetsSum',
             'TTplusJets'
         ],
         'legendEntry' : 'SM',
