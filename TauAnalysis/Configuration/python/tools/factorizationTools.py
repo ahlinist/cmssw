@@ -217,8 +217,8 @@ def enableFactorization_runZtoMuTau(process):
     process.p.replace(process.analyzeZtoMuTauSequence, process.analyzeZtoMuTauSequence_factorized)
 
 ##############################################
-# Temporary factorization  update
-# ###########################################
+# EK: Temporary factorization update
+##############################################
 
 def enableFactorization_makeZtoMuTauPlots_grid2(
     process,
@@ -254,23 +254,19 @@ def enableFactorization_makeZtoMuTauPlots_grid2(
     # of the analysis, **after** applying factorization of muon track + ECAL
     # isolation efficiencies
     evtSelZtoMuTau_factorizedLoose = [
-        'evtSelMuonAntiPion',
         'evtSelMuonTrkIP',
         'evtSelTauLeadTrk',
         'evtSelTauLeadTrkPt',
         'evtSelTauTaNCdiscr',
-        'evtSelTauTrkIso',
-        'evtSelTauEcalIso',
         'evtSelTauProng',
         'evtSelTauCharge',
         'evtSelTauMuonVeto',
         'evtSelTauElectronVeto',
         'evtSelDiTauCandidateForMuTauAntiOverlapVeto',
-        'evtSelDiTauCandidateForMuTauZeroCharge',
-        'evtSelDiTauCandidateForMuTauAcoplanarity12',
         'evtSelDiTauCandidateForMuTauMt1MET',
         'evtSelDiTauCandidateForMuTauPzetaDiff',
         'evtSelDiMuPairZmumuHypothesisVetoByLooseIsolation',
+        'evtSelDiTauCandidateForMuTauZeroCharge'
     ]
 
     # Loop over the samples and create sequences
@@ -325,7 +321,6 @@ def enableFactorization_makeZtoMuTauPlots_grid2(
                 getattr(plotterModuleProcesses, sample).dqmDirectory = \
                         cms.string("/harvested/%s_factorized" % sample)
 
-
 def enableFactorization_makeZtoMuTauPlots_grid(
     process,
     factorizationSequenceName = "loadAndFactorizeZtoMuTauSamples",
@@ -369,23 +364,19 @@ def enableFactorization_makeZtoMuTauPlots_grid(
     # of the analysis, **after** applying factorization of muon track + ECAL
     # isolation efficiencies
     evtSelZtoMuTau_factorizedLoose = [
-        process.evtSelMuonAntiPion,
         process.evtSelMuonTrkIP,
         process.evtSelTauLeadTrk,
         process.evtSelTauLeadTrkPt,
         process.evtSelTauTaNCdiscr,
-        process.evtSelTauTrkIso,
-        process.evtSelTauEcalIso,
         process.evtSelTauProng,
         process.evtSelTauCharge,
         process.evtSelTauMuonVeto,
         process.evtSelTauElectronVeto,
         process.evtSelDiTauCandidateForMuTauAntiOverlapVeto,
-        process.evtSelDiTauCandidateForMuTauZeroCharge,
-        process.evtSelDiTauCandidateForMuTauAcoplanarity12,
         process.evtSelDiTauCandidateForMuTauMt1MET,
         process.evtSelDiTauCandidateForMuTauPzetaDiff,
-        process.evtSelDiMuPairZmumuHypothesisVetoByLooseIsolation
+        process.evtSelDiMuPairZmumuHypothesisVetoByLooseIsolation,
+        process.evtSelDiTauCandidateForMuTauZeroCharge
     ]
 
     # defines names of MonitorElements used as numerator and denominator
@@ -1123,13 +1114,10 @@ def enableFactorization_makeAHtoMuTauPlots_grid2(
     # of the analysis, **after** applying factorization of muon track + ECAL
     # isolation efficiencies
     loose_cuts_base = [
-        'evtSelMuonAntiPion',
         'evtSelMuonTrkIP',
         'evtSelTauLeadTrk',
         'evtSelTauLeadTrkPt',
         'evtSelTauTaNCdiscr',
-        'evtSelTauTrkIso',
-        'evtSelTauEcalIso',
         'evtSelTauProng',
         'evtSelTauCharge',
         'evtSelTauMuonVeto',
@@ -1141,9 +1129,10 @@ def enableFactorization_makeAHtoMuTauPlots_grid2(
         'evtSelDiMuPairZmumuHypothesisVetoByLooseIsolation',
     ]
 
-    loose_cuts_woBtag = loose_cuts_base + ['evtSelNonCentralJetEt20bTag']
-    loose_cuts_wBtag = loose_cuts_base + ['evtSelCentralJetEt20',
-                                          'evtSelCentralJetEt20bTag']
+    loose_cuts_woBtag = loose_cuts_base
+      + [ 'evtSelNonCentralJetEt20bTag', 'evtSelDiTauCandidateForAHtoMuTauZeroCharge' ]
+    loose_cuts_wBtag = loose_cuts_base
+      + [ 'evtSelCentralJetEt20', 'evtSelCentralJetEt20bTag', 'evtSelDiTauCandidateForAHtoMuTauZeroCharge' ]
 
     # Loop over the samples and create sequences
     # for each of the factorization jobs and add them to the factorization
@@ -1256,7 +1245,6 @@ def enableFactorization_makeAHtoMuTauPlots_grid(
     # of the analysis, **after** applying factorization of muon track + ECAL
     # isolation efficiencies
     evtSelAHtoMuTau_factorizedLoose = [
-        process.evtSelMuonAntiPion,
         process.evtSelMuonTrkIP,
         process.evtSelTauLeadTrk,
         process.evtSelTauLeadTrkPt,
@@ -1268,7 +1256,6 @@ def enableFactorization_makeAHtoMuTauPlots_grid(
         process.evtSelTauMuonVeto,
         process.evtSelTauElectronVeto,
         process.evtSelDiTauCandidateForAHtoMuTauAntiOverlapVeto,
-        process.evtSelDiTauCandidateForAHtoMuTauZeroCharge,
         process.evtSelDiTauCandidateForAHtoMuTauMt1MET,
         process.evtSelDiTauCandidateForAHtoMuTauPzetaDiff,
         process.evtSelDiMuPairZmumuHypothesisVetoByLooseIsolation
@@ -1281,16 +1268,20 @@ def enableFactorization_makeAHtoMuTauPlots_grid(
     }
     evtSelAHtoMuTau_factorizedLoose_specialized['woBtag'].append(
         process.evtSelNonCentralJetEt20bTag)
+    evtSelAHtoMuTau_factorizedLoose_specialized['woBtag'].append(
+        process.evtSelDiTauCandidateForAHtoMuTauZeroCharge)
     evtSelAHtoMuTau_factorizedLoose_specialized['wBtag'].append(
         process.evtSelCentralJetEt20)
     evtSelAHtoMuTau_factorizedLoose_specialized['wBtag'].append(
         process.evtSelCentralJetEt20bTag)
+    evtSelAHtoMuTau_factorizedLoose_specialized['wBtag'].append(
+        process.evtSelDiTauCandidateForAHtoMuTauZeroCharge)
 
     # defines names of MonitorElements used as numerator and denominator
     # to compute factorization scale-factor
     meNameAHtoMuTau_numerator = {
-        'woBtag' : "evtSelNonCentralJetEt20bTag/passed_cumulative_numWeighted",
-        'wBtag' : "evtSelCentralJetEt20bTag/passed_cumulative_numWeighted"
+        'woBtag' : "evtSelDiTauCandidateForAHtoMuTauZeroCharge/passed_cumulative_numWeighted",
+        'wBtag' : "evtSelDiTauCandidateForAHtoMuTauZeroCharge/passed_cumulative_numWeighted"
     }
     meNameAHtoMuTau_denominator = "evtSelMuonPFRelIso/processed_cumulative_numWeighted"
 
