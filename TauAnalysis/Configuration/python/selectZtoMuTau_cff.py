@@ -65,8 +65,8 @@ cfgMuonEtaCut = cms.PSet(
 cfgMuonPtCut = cms.PSet(
     pluginName = cms.string('muonPtCut'),
     pluginType = cms.string('PATCandViewMinEventSelector'),
-    src_cumulative = cms.InputTag('selectedPatMuonsPt10Cumulative'),
-    src_individual = cms.InputTag('selectedPatMuonsPt10Individual'),
+    src_cumulative = cms.InputTag('selectedPatMuonsPt15Cumulative'),
+    src_individual = cms.InputTag('selectedPatMuonsPt15Individual'),
     systematics = cms.vstring(muonSystematics.keys()),
     minNumber = cms.uint32(1)
 )
