@@ -458,7 +458,7 @@ muTauAnalysisSequenceOS_woBtag = cms.VPSet(
             'vertexHistManager',
             'triggerHistManagerForMuTau'
         ),
-        replace = cms.vstring('muonHistManager.muonSource = selectedPatMuonsPt10Cumulative')
+        replace = cms.vstring('muonHistManager.muonSource = selectedPatMuonsPt15Cumulative')
     ),
 
     # tau acceptance cuts
@@ -476,7 +476,7 @@ muTauAnalysisSequenceOS_woBtag = cms.VPSet(
             'vertexHistManager'
         ),
         replace = cms.vstring(
-            'muonHistManager.muonSource = selectedPatMuonsPt10Cumulative',
+            'muonHistManager.muonSource = selectedPatMuonsPt15Cumulative',
             'tauHistManager.tauSource = selectedPatTausForMuTauAntiOverlapWithMuonsVetoCumulative'
         )
     ),
@@ -494,8 +494,8 @@ muTauAnalysisSequenceOS_woBtag = cms.VPSet(
             'vertexHistManager'
         ),
         replace = cms.vstring(
-           'muonHistManager.muonSource = selectedPatMuonsPt10Cumulative',
-           'tauHistManager.tauSource = selectedPatTausForMuTauEta21Cumulative'
+           'muonHistManager.muonSource = selectedPatMuonsPt15Cumulative',
+           'tauHistManager.tauSource = selectedPatTausForMuTauEta23Cumulative'
         )
     ),
     cms.PSet(
@@ -513,7 +513,7 @@ muTauAnalysisSequenceOS_woBtag = cms.VPSet(
             'triggerHistManagerForMuTau'
         ),
         replace = cms.vstring(
-            'muonHistManager.muonSource = selectedPatMuonsPt10Cumulative',
+            'muonHistManager.muonSource = selectedPatMuonsPt15Cumulative',
             'tauHistManager.tauSource = selectedPatTausForMuTauPt20Cumulative'
         )
     ),
@@ -995,7 +995,7 @@ muTauAnalysisSequenceOS_wBtag = cms.VPSet(
             'vertexHistManager',
             'triggerHistManagerForMuTau'
         ),
-        replace = cms.vstring('muonHistManager.muonSource = selectedPatMuonsPt10Cumulative')
+        replace = cms.vstring('muonHistManager.muonSource = selectedPatMuonsPt15Cumulative')
     ),
 
     # tau acceptance cuts
@@ -1013,7 +1013,7 @@ muTauAnalysisSequenceOS_wBtag = cms.VPSet(
             'vertexHistManager'
         ),
         replace = cms.vstring(
-            'muonHistManager.muonSource = selectedPatMuonsPt10Cumulative',
+            'muonHistManager.muonSource = selectedPatMuonsPt15Cumulative',
             'tauHistManager.tauSource = selectedPatTausForMuTauAntiOverlapWithMuonsVetoCumulative'
         )
     ),
@@ -1031,8 +1031,8 @@ muTauAnalysisSequenceOS_wBtag = cms.VPSet(
             'vertexHistManager'
         ),
         replace = cms.vstring(
-           'muonHistManager.muonSource = selectedPatMuonsPt10Cumulative',
-           'tauHistManager.tauSource = selectedPatTausForMuTauEta21Cumulative'
+           'muonHistManager.muonSource = selectedPatMuonsPt15Cumulative',
+           'tauHistManager.tauSource = selectedPatTausForMuTauEta23Cumulative'
         )
     ),
     cms.PSet(
@@ -1050,7 +1050,7 @@ muTauAnalysisSequenceOS_wBtag = cms.VPSet(
             'triggerHistManagerForMuTau'
         ),
         replace = cms.vstring(
-            'muonHistManager.muonSource = selectedPatMuonsPt10Cumulative',
+            'muonHistManager.muonSource = selectedPatMuonsPt15Cumulative',
             'tauHistManager.tauSource = selectedPatTausForMuTauPt20Cumulative'
         )
     ),

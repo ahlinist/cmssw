@@ -107,8 +107,8 @@ cfgTauAntiOverlapWithMuonsVeto = cms.PSet(
 cfgTauEtaCut = cms.PSet(
     pluginName = cms.string('tauEtaCut'),
     pluginType = cms.string('PATCandViewMinEventSelector'),
-    src_cumulative = cms.InputTag('selectedPatTausForMuTauEta21Cumulative'),
-    src_individual = cms.InputTag('selectedPatTausForMuTauEta21Individual'),
+    src_cumulative = cms.InputTag('selectedPatTausForMuTauEta23Cumulative'),
+    src_individual = cms.InputTag('selectedPatTausForMuTauEta23Individual'),
     systematics = cms.vstring(tauSystematics.keys()),
     minNumber = cms.uint32(1)
 )
