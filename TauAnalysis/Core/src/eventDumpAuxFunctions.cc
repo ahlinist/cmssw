@@ -56,8 +56,8 @@ std::ostream* getOutputOptions(const edm::ParameterSet& cfg, bool& isOutputFile,
 //-----------------------------------------------------------------------------------------------------------------------
 //
 
-void printEventSelectionInfo(const std::vector<std::pair<std::string, bool> >& filterResults_cumulative, 
-			     const std::vector<std::pair<std::string, bool> >& filterResults_individual, std::ostream* stream)
+void printEventSelectionInfo(const EventDumpBase::filterResults_type& filterResults_cumulative, 
+			     const EventDumpBase::filterResults_type& filterResults_individual, std::ostream* stream)
 {
   if ( !stream ) {
     edm::LogError ("printSelectionInfo") << " stream = NULL --> skipping !!";
@@ -66,7 +66,7 @@ void printEventSelectionInfo(const std::vector<std::pair<std::string, bool> >& f
 
   *stream << "filterResults:" << std::endl;
 
-  for ( std::vector<std::pair<std::string, bool> >::const_iterator filterResult_cumulative = filterResults_cumulative.begin();
+  for ( EventDumpBase::filterResults_type::const_iterator filterResult_cumulative = filterResults_cumulative.begin();
 	filterResult_cumulative != filterResults_cumulative.end(); ++filterResult_cumulative ) {
     const std::string& filterName = filterResult_cumulative->first;
     bool filterPassed_cumulative = filterResult_cumulative->second;

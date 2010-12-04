@@ -33,7 +33,7 @@ void EventDumpAnalyzer::analyze(const edm::Event& evt, const edm::EventSetup& es
     edm::Handle<bool> evtSelResult;
     evt.getByLabel(*evtSelFlag, evtSelResult);
 
-    evtSelResults.push_back(std::pair<std::string, bool>(evtSelFlag->label(), *evtSelResult));
+    evtSelResults.insert(std::pair<std::string, bool>(evtSelFlag->label(), *evtSelResult));
   }
 
   double eventWeight = 1.;
