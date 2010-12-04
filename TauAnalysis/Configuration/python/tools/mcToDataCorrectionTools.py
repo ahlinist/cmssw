@@ -1,178 +1,163 @@
 import FWCore.ParameterSet.Config as cms
+import copy
 
 #--------------------------------------------------------------------------------
 # utility functions to apply Z-recoil corrections to MEt
 # NOTE: implementations specific to different analysis channels
 #--------------------------------------------------------------------------------
 
-import copy
-
 import PhysicsTools.PatAlgos.tools.helpers as patutils
 
-def _addEventWeight(process, genAnalyzerModuleNames, srcEventWeight):
+from TauAnalysis.CandidateTools.tools.composeModuleName import composeModuleName
+
+def _applyZllRecoilCorrection(process, diTauProductionSequenceName, diTauProducerModuleName, ZllRecoilCorrectionType,
+                              genericAnalyzerSequenceNames = []):
+
+    process.load("TauAnalysis.RecoTools.recoZllRecoilCorrection_cfi")
+
+    if hasattr(process, diTauProductionSequenceName):
+        patPFMETsZllRecoilCorrectionModule = cms.EDProducer(ZllRecoilCorrectionType,
+            process.recoZllRecoilCorrectionParameter,                                         
+            src = cms.InputTag(diTauProducerModuleName)
+        )
+        patPFMETsZllRecoilCorrectionModuleName = composeModuleName("patPFMETsZllRecoilCorrected", diTauProducerModuleName)
+        setattr(process, patPFMETsZllRecoilCorrectionModuleName, patPFMETsZllRecoilCorrectionModule)
+
+        diTauProducerModule = getattr(process, diTauProducerModuleName)
+
+        diTauProducerModuleZllRecoilCorrected = diTauProducerModule.clone()
+        diTauProducerModuleZllRecoilCorrected.srcMET = \
+           cms.InputTag(patPFMETsZllRecoilCorrectionModuleName, 'met')
+        diTauProducerModuleZllRecoilCorrected.srcReRecoDiTauObjects = \
+           cms.InputTag(diTauProducerModuleName)
+        diTauProducerModuleZllRecoilCorrected.srcReRecoDiTauToMEtAssociations = \
+           cms.InputTag(patPFMETsZllRecoilCorrectionModuleName, 'diTauToMEtAssociations')
+        diTauProducerModuleZllRecoilCorrectedName = composeModuleName("diTauProducerModuleName", "ZllRecoilCorrected")
+        setattr(process, diTauProducerModuleZllRecoilCorrectedName, diTauProducerModuleZllRecoilCorrected)
+
+        patPFMETsZllRecoilCorrectionSequence = cms.Sequence(
+            diTauProducerModule
+           * patPFMETsZllRecoilCorrectionModule
+           * diTauProducerModuleZllRecoilCorrected
+        )
+        patPFMETsZllRecoilCorrectionSequenceName = composeModuleName("patPFMETsZllRecoilCorrectionSequence", diTauProducerModuleName)
+        setattr(process, patPFMETsZllRecoilCorrectionSequenceName, patPFMETsZllRecoilCorrectionSequence)
+
+        diTauProductionSequence = getattr(process, diTauProductionSequenceName)
+        diTauProducerModule = getattr(process, diTauProducerModuleName)
+        diTauProductionSequence.replace(process.diTauProducerModule, patPFMETsZllRecoilCorrectionSequence)
+
+        # iterate over all sequences attached to process object
+        # and replace InputTags:
+        #  o diTauProducerModuleName --> diTauProducerModuleZllRecoilCorrectedName
+        #  o patPFMETs --> cms.InputTag(patPFMETsZllRecoilCorrectionModuleName, 'met')
+        for processAttrName in dir(process):
+            processAttr = getattr(process, processAttrName)
+            if isinstance(processAttr, cms.Sequence):
+                print "--> Replacing InputTags in sequence:", processAttrName
+                patutils.massSearchReplaceAnyInputTag(processAttr, cms.InputTag(diTauProducerModuleName),
+                  cms.InputTag(diTauProducerModuleZllRecoilCorrectedName))
+
+        # replace InputTags:
+        #  o patPFMETs --> cms.InputTag(patPFMETsZllRecoilCorrectionModuleName, 'met')
+        # in GenericAnalyzer sequences
+        for genericAnalyzerSequenceName in genericAnalyzerSequenceNames:
+            genericAnalyzerSequence = getattr(process, genericAnalyzerSequenceName)
+            patutils.massSearchReplaceAnyInputTag(genericAnalyzerSequence, cms.InputTag('patPFMETs'),
+              cms.InputTag(patPFMETsZllRecoilCorrectionModuleName, 'met'))
+        
+        # restore InputTags of ZllRecoilCorrection modules
+        patPFMETsZllRecoilCorrectionModule.src = cms.InputTag(diTauProducerModuleName)
+        diTauProducerModuleZllRecoilCorrected.srcReRecoDiTauObjects = \
+           cms.InputTag(diTauProducerModuleName)
+
+        # disable warnings in MET histogram managers
+        # that num. MET objects != 1
+        if hasattr(process, "caloMEtHistManager"):
+            process.caloMEtHistManager.expectUniqueMEt = cms.bool(False)
+        if hasattr(process, "pfMEtHistManager"):    
+            process.pfMEtHistManager.expectUniqueMEt = cms.bool(False)                                              
+
+def _addEventWeight(process, genAnalyzerModuleNames, srcEventWeight, applyAfterFilterName = "*"):
     for genAnalyzerModuleName in genAnalyzerModuleNames:
         if hasattr(process, genAnalyzerModuleName):
-            genAnalyzerModule = getattr(process, genAnalyzerModuleName)    
-            if hasattr(genAnalyzerModule, "eventWeightSource"):
-                getattr(genAnalyzerModule, "eventWeightSource").append(cms.InputTag(srcEventWeight))
+            genAnalyzerModule = getattr(process, genAnalyzerModuleName)
+            pset = cms.PSet(
+                src = srcEventWeight,
+                applyAfterFilter = applyAfterFilterName)
+            )
+            if hasattr(genAnalyzerModule, "eventWeights"):
+                getattr(genAnalyzerModule, "eventWeights").append(pset)
             else:
-                setattr(genAnalyzerModule, "eventWeightSource", cms.VInputTag(cms.InputTag(srcEventWeight)))
+                setattr(genAnalyzerModule, "eventWeights", cms.VPSet(pset))
 
 #--------------------------------------------------------------------------------
 # Z --> muon + tau-jet, A/H --> muon + tau-jet channels
 #--------------------------------------------------------------------------------
 
-def restoreZllRecoilCorrectionInputTags_ZtoMuTau(process):
-    if hasattr(process, "patPFMETsZllRecoilCorrected"):
-        process.patPFMETsZllRecoilCorrected.src = cms.InputTag('allMuTauPairs')
-    if hasattr(process, "allMuTauPairsPFMETsZllRecoilCorrected"):
-        process.allMuTauPairsPFMETsZllRecoilCorrected.srcReRecoDiTauObjects = \
-          cms.InputTag('allMuTauPairs')
-    if hasattr(process, "patPFMETsZllRecoilCorrectedLooseMuonIsolation"):
-        process.patPFMETsZllRecoilCorrectedLooseMuonIsolation.src = cms.InputTag('allMuTauPairsLooseMuonIsolation')
-    if hasattr(process, "allMuTauPairsPFMETsZllRecoilCorrectedLooseMuonIsolation"):
-        process.allMuTauPairsPFMETsZllRecoilCorrectedLooseMuonIsolation.srcReRecoDiTauObjects = \
-          cms.InputTag('allMuTauPairsLooseMuonIsolation')
-
 def applyZrecoilCorrection_runZtoMuTau(process):
-
-    #print("<applyZrecoilCorrection_runZtoMuTau>:")
-    #print(" --> applying Z-recoil correction to MET !!")
-
-    process.load("TauAnalysis.RecoTools.recoZllRecoilCorrection_cfi")
-
-    if hasattr(process, "produceMuTauPairs"):
-        process.patPFMETsZllRecoilCorrected = cms.EDProducer("ZllRecoilCorrectionMuTauPair",
-            process.recoZllRecoilCorrectionParameter,                                         
-            src = cms.InputTag('allMuTauPairs')
-        )
-
-        process.allMuTauPairsPFMETsZllRecoilCorrected = process.allMuTauPairs.clone()
-        process.allMuTauPairsPFMETsZllRecoilCorrected.srcMET = \
-           cms.InputTag('patPFMETsZllRecoilCorrected', 'met')
-        process.allMuTauPairsPFMETsZllRecoilCorrected.srcReRecoDiTauObjects = \
-           cms.InputTag('allMuTauPairs')
-        process.allMuTauPairsPFMETsZllRecoilCorrected.srcReRecoDiTauToMEtAssociations = \
-           cms.InputTag('patPFMETsZllRecoilCorrected', 'diTauToMEtAssociations')
-
-        process.patPFMETsZllRecoilCorrectionSequence = cms.Sequence(
-            process.allMuTauPairs
-           * process.patPFMETsZllRecoilCorrected
-           * process.allMuTauPairsPFMETsZllRecoilCorrected
-        )
-
-        process.produceMuTauPairs.replace(process.allMuTauPairs,
-                                          process.patPFMETsZllRecoilCorrectionSequence)
-
-    if hasattr(process, "produceMuTauPairsLooseMuonIsolation"):
-        process.patPFMETsZllRecoilCorrectedLooseMuonIsolation = process.patPFMETsZllRecoilCorrected.clone(
-            src = cms.InputTag('allMuTauPairsLooseMuonIsolation')
-        )
-
-        process.allMuTauPairsPFMETsZllRecoilCorrectedLooseMuonIsolation = process.allMuTauPairsLooseMuonIsolation.clone()
-        process.allMuTauPairsPFMETsZllRecoilCorrectedLooseMuonIsolation.srcMET = \
-           cms.InputTag('patPFMETsZllRecoilCorrectedLooseMuonIsolation', 'met')
-        process.allMuTauPairsPFMETsZllRecoilCorrectedLooseMuonIsolation.srcReRecoDiTauObjects = \
-           cms.InputTag('allMuTauPairsLooseMuonIsolation')
-        process.allMuTauPairsPFMETsZllRecoilCorrectedLooseMuonIsolation.srcReRecoDiTauToMEtAssociations = \
-           cms.InputTag('patPFMETsZllRecoilCorrectedLooseMuonIsolation', 'diTauToMEtAssociations')
-
-        process.patPFMETsZllRecoilCorrectionSequenceLooseMuonIsolation = cms.Sequence(
-            process.allMuTauPairsLooseMuonIsolation
-           * process.patPFMETsZllRecoilCorrectedLooseMuonIsolation
-           * process.allMuTauPairsPFMETsZllRecoilCorrectedLooseMuonIsolation
-        )
-
-        process.produceMuTauPairsLooseMuonIsolation.replace(process.allMuTauPairsLooseMuonIsolation,
-                                                            process.patPFMETsZllRecoilCorrectionSequenceLooseMuonIsolation)
-
-    # iterate over all sequences attached to process object
-    # and replace:
-    #  o allMuTauPairs --> allMuTauPairsPFMETsZllRecoilCorrected
-    #  o allMuTauPairsLooseMuonIsolation --> allMuTauPairsPFMETsZllRecoilCorrectedLooseMuonIsolation
-    for processAttrName in dir(process):
-        processAttr = getattr(process, processAttrName)
-        if isinstance(processAttr, cms.Sequence):
-            print "--> Replacing InputTags in sequence:", processAttrName
-            if processAttrName.find("LooseMuonIsolation") != -1:
-                patutils.massSearchReplaceAnyInputTag(processAttr, cms.InputTag('allMuTauPairsLooseMuonIsolation'),
-                  cms.InputTag('allMuTauPairsPFMETsZllRecoilCorrectedLooseMuonIsolation'))
-            else:
-                patutils.massSearchReplaceAnyInputTag(processAttr, cms.InputTag('allMuTauPairs'), 
-                  cms.InputTag('allMuTauPairsPFMETsZllRecoilCorrected'))
-
-    # check if process object has GenericAnalyzer modules specific to ZtoMuTau channel attached to it.
-    # If it has, replace in "regular" analysis sequence:
-    #  o patPFMETs --> cms.InputTag('patPFMETsZllRecoilCorrected', 'met')
-    # and in analysis sequence with loose muon isolation applied (used for factorization purposes):
-    #  o patPFMETs --> cms.InputTag('patPFMETsZllRecoilCorrectedLooseMuonIsolation', 'met')
-    if hasattr(process, "analyzeZtoMuTauSequence"):
-        patutils.massSearchReplaceAnyInputTag(process.analyzeZtoMuTauSequence, cms.InputTag('patPFMETs'),
-          cms.InputTag('patPFMETsZllRecoilCorrected', 'met'))
-    if hasattr(process, "analyzeZtoMuTauSequence_factorizedWithMuonIsolation"):
-        patutils.massSearchReplaceAnyInputTag(process.analyzeZtoMuTauSequence_factorizedWithMuonIsolation, cms.InputTag('patPFMETs'),
-          cms.InputTag('patPFMETsZllRecoilCorrected', 'met'))
-    if hasattr(process, "analyzeZtoMuTauSequence_factorizedWithoutMuonIsolation"):
-        patutils.massSearchReplaceAnyInputTag(process.analyzeZtoMuTauSequence_factorizedWithoutMuonIsolation, cms.InputTag('patPFMETs'),
-          cms.InputTag('patPFMETsZllRecoilCorrectedLooseMuonIsolation', 'met'))
-
-    # disable warnings in MET histogram managers
-    # that num. MET objects != 1
-    if hasattr(process, "caloMEtHistManager"):
-        process.caloMEtHistManager.expectUniqueMEt = cms.bool(False)
-    if hasattr(process, "pfMEtHistManager"):    
-        process.pfMEtHistManager.expectUniqueMEt = cms.bool(False)
-
-    # restore InputTag of ZllRecoilCorrection modules
-    restoreZllRecoilCorrectionInputTags_ZtoMuTau(process)
-
+    
+    _applyZllRecoilCorrection(process,
+                              "produceMuTauPairs", 'allMuTauPairs',
+                              "ZllRecoilCorrectionMuTauPair",
+                              [ "analyzeZtoMuTauSequence" ])
+    _applyZllRecoilCorrection(process,
+                              "produceMuTauPairsLooseMuonIsolation", 'allMuTauPairsLooseMuonIsolation',
+                              "ZllRecoilCorrectionMuTauPair",
+                              [ "analyzeZtoMuTauSequence_factorizedWithMuonIsolation",
+                                "analyzeZtoMuTauSequence_factorizedWithoutMuonIsolation" ])
+    
 def applyZrecoilCorrection_runZtoMuTau_bgEstTemplate(process):
 
-    applyZrecoilCorrection_runZtoMuTau(process)
+    _applyZllRecoilCorrection(process,
+                              "produceMuTauPairs", 'allMuTauPairs',
+                              "ZllRecoilCorrectionMuTauPair",
+                              [ "analyzeZtoMuTauSequence" ])
+    _applyZllRecoilCorrection(process,
+                              "selectMuTauPairsBgEstZmumuEnriched", 'muTauPairsBgEstZmumuJetMisIdEnriched',
+                              "ZllRecoilCorrectionMuTauPair",
+                              [ "analysisSequenceBgEstZmumuJetMisIdEnriched" ])
+    _applyZllRecoilCorrection(process,
+                              "selectMuTauPairsBgEstZmumuEnriched", 'muTauPairsBgEstZmumuMuonMisIdEnriched',
+                              "ZllRecoilCorrectionMuTauPair",
+                              [ "analysisSequenceBgEstZmumuMuonMisIdEnriched" ])
+    _applyZllRecoilCorrection(process,
+                              "bgEstQCDenrichedAnalysisSequence", 'muTauPairsBgEstQCDenriched',
+                              "ZllRecoilCorrectionMuTauPair",
+                              [ "analysisSequenceBgEstQCDenriched" ])
+    _applyZllRecoilCorrection(process,
+                              "selectMuTauPairsBgEstWplusJetsEnriched", 'muTauPairsBgEstWplusJetsEnriched',
+                              "ZllRecoilCorrectionMuTauPair",
+                              [ "analysisSequenceBgEstWplusJetsEnriched" ])
+    _applyZllRecoilCorrection(process,
+                              "selectMuTauPairsBgEstTTplusJetsEnriched", 'muTauPairsBgEstTTplusJetsEnriched',
+                              "ZllRecoilCorrectionMuTauPair",
+                              [ "analysisSequenceBgEstTTplusJetsEnriched" ])
 
 def applyZrecoilCorrection_runZtoMuTau_tauIdEff(process):
 
     process.load("TauAnalysis.RecoTools.recoZllRecoilCorrection_cfi")
 
-    if hasattr(process, "muTauPairsTauIdEffZtoMuTauTemplateFit"):
-        process.patPFMETsZllRecoilCorrectedTemplateFit = cms.EDProducer("ZllRecoilCorrectionMuTauPair",
-            process.recoZllRecoilCorrectionParameter,                                         
-            src = cms.InputTag('muTauPairsTauIdEffZtoMuTauTemplateFit')
-        )
-
-        process.muTauPairsTauIdEffZtoMuTauTemplateFitPFMETsZllRecoilCorrected = process.allMuTauPairs.clone()
-        process.muTauPairsTauIdEffZtoMuTauTemplateFitPFMETsZllRecoilCorrected.srcMET = \
-           cms.InputTag('patPFMETsZllRecoilCorrectedTemplateFit', 'met')
-        process.muTauPairsTauIdEffZtoMuTauTemplateFitPFMETsZllRecoilCorrected.srcReRecoDiTauObjects = \
-           cms.InputTag('patPFMETsZllRecoilCorrectedTemplateFit')
-        process.muTauPairsTauIdEffZtoMuTauTemplateFitPFMETsZllRecoilCorrected.srcReRecoDiTauToMEtAssociations = \
-           cms.InputTag('patPFMETsZllRecoilCorrectedTemplateFit', 'diTauToMEtAssociations')
-
-        process.patPFMETsZllRecoilCorrectionTemplateFitSequence = cms.Sequence(
-            process.muTauPairsTauIdEffZtoMuTauTemplateFit
-           * process.patPFMETsZllRecoilCorrectedTemplateFit
-           * process.muTauPairsTauIdEffZtoMuTauTemplateFitPFMETsZllRecoilCorrected
-        )
-
-        process.produceMuTauPairs.replace(process.muTauPairsTauIdEffZtoMuTauTemplateFit,
-                                          process.patPFMETsZllRecoilCorrectionTemplateFitSequence)
-
-    # iterate over all sequences attached to process object
-    # and replace:
-    #  o muTauPairsTauIdEffZtoMuTauTemplateFit --> muTauPairsTauIdEffZtoMuTauTemplateFitPFMETsZllRecoilCorrected
-    for processAttrName in dir(process):
-        processAttr = getattr(process, processAttrName)
-        if isinstance(processAttr, cms.Sequence):
-            print "--> Replacing InputTags in sequence:", processAttrName
-            patutils.massSearchReplaceAnyInputTag(processAttr, cms.InputTag('muTauPairsTauIdEffZtoMuTauTemplateFit'), 
-              cms.InputTag('muTauPairsTauIdEffZtoMuTauTemplateFitPFMETsZllRecoilCorrected'))
-
-    # check if process object has GenericAnalyzer modules specific to ZtoMuTau channel attached to it.
-    # If it has, replace in template fit analysis sequence:
-    #  o patPFMETs --> cms.InputTag('patPFMETsZllRecoilCorrectedTemplateFit', 'met')
-    if hasattr(process, "analyzeEventsTauIdEffZtoMuTauTemplateFitSequence"):
-        patutils.massSearchReplaceAnyInputTag(process.analyzeEventsTauIdEffZtoMuTauTemplateFitSequence, cms.InputTag('patPFMETs'),
-          cms.InputTag('patPFMETsZllRecoilCorrectedTemplateFit', 'met'))
+    _applyZllRecoilCorrection(process,
+                              "produceMuTauPairs", 'allMuTauPairs',
+                              "ZllRecoilCorrectionMuTauPair",
+                              [ "analyzeZtoMuTauSequence" ])
+    _applyZllRecoilCorrection(process,
+                              "bgEstTauIdEffZtoMuTauTemplateFitAnalysisSequence", '',
+                              "ZllRecoilCorrectionMuTauPair",
+                              [ "" ])
+    _applyZllRecoilCorrection(process,
+                              "produceMuTauPairsTauIdEffZtoMuTauCombinedFit", 'muTauPairsTauIdEffZtoMuTauCombinedFit',
+                              "ZllRecoilCorrectionMuTauPair",
+                              [ "analysisSequenceTauIdEffZtoMuTauCombinedFit" ])
+    _applyZllRecoilCorrection(process,
+                              "produceMuTauPairsTauIdEffZtoMuTauCombinedFit", 'muTauPairsTauIdEffZtoMuTauCombinedFitWplusJets',
+                              "ZllRecoilCorrectionMuTauPair",
+                              [ "analysisSequenceTauIdEffZtoMuTauCombinedFitWplusJets" ])
+    _applyZllRecoilCorrection(process,
+                              "produceMuTauPairsTauIdEffZtoMuTauCombinedFit", 'muTauPairsTauIdEffZtoMuTauCombinedFitQCD',
+                              "ZllRecoilCorrectionMuTauPair",
+                              [ "analysisSequenceTauIdEffZtoMuTauCombinedFitQCD" ])
 
     # disable warnings in MET histogram managers
     # that num. MET objects != 1
@@ -183,33 +168,23 @@ def applyZrecoilCorrection_runZtoMuTau_tauIdEff(process):
 
 def applyZrecoilCorrection_runAHtoMuTau(process):
 
-    applyZrecoilCorrection_runZtoMuTau(process)
-    
-    # check if process object has GenericAnalyzer modules specific to AHtoMuTau channel attached to it.
-    # If it has, replace in "regular" analysis sequence:
-    #  o patPFMETs --> cms.InputTag('patPFMETsZllRecoilCorrected', 'met')
-    # and in analysis sequence with loose muon isolation applied (used for factorization purposes):
-    #  o patPFMETs --> cms.InputTag('patPFMETsZllRecoilCorrectedLooseMuonIsolation', 'met')
-    if hasattr(process, "analyzeAHtoMuTauSequence"):
-        patutils.massSearchReplaceAnyInputTag(process.analyzeAHtoMuTauSequence, cms.InputTag('patPFMETs'),
-          cms.InputTag('patPFMETsZllRecoilCorrected', 'met'))
-    if hasattr(process, "analyzeAHtoMuTauSequence_factorizedWithMuonIsolation"):
-        patutils.massSearchReplaceAnyInputTag(process.analyzeAHtoMuTauSequence_factorizedWithMuonIsolation, cms.InputTag('patPFMETs'),
-          cms.InputTag('patPFMETsZllRecoilCorrected', 'met'))
-    if hasattr(process, "analyzeAHtoMuTauSequence_factorizedWithoutMuonIsolation"):
-        patutils.massSearchReplaceAnyInputTag(process.analyzeAHtoMuTauSequence_factorizedWithoutMuonIsolation, cms.InputTag('patPFMETs'),
-          cms.InputTag('patPFMETsZllRecoilCorrectedLooseMuonIsolation', 'met'))
+    _applyZllRecoilCorrection(process,
+                              "produceMuTauPairs", 'allMuTauPairs',
+                              "ZllRecoilCorrectionMuTauPair",
+                              [ "analyzeAHtoMuTauSequence" ])
+    _applyZllRecoilCorrection(process,
+                              "produceMuTauPairsLooseMuonIsolation", 'allMuTauPairsLooseMuonIsolation',
+                              "ZllRecoilCorrectionMuTauPair",
+                              [ "analyzeAHtoMuTauSequence_factorizedWithMuonIsolation",
+                                "analyzeAHtoMuTauSequence_factorizedWithoutMuonIsolation" ])
 
-    # restore InputTag of ZllRecoilCorrection modules
-    restoreZllRecoilCorrectionInputTags_ZtoMuTau(process)
-
-def _addEventWeightZtoMuTau(process, srcEventWeight):
+def _addEventWeightZtoMuTau(process, srcEventWeight, applyAfterFilterName):
     
     _addEventWeight(process,
                     [ "analyzeZtoMuTauEvents",
                       "analyzeZtoMuTauEvents_factorizedWithMuonIsolation",
-                      "analyzeZtoMuTauEvents_factorizedWithoutMuonIsolation" ],
-                    srcEventWeight)
+                      "analyzeZtoMuTauEvents_factorizedWithoutMuonIsolation" ],                    
+                    srcEventWeight, applyAfterFilterName)
     
 def applyMuonTriggerEfficiencyCorrection_runZtoMuTau(process):
 
@@ -218,7 +193,7 @@ def applyMuonTriggerEfficiencyCorrection_runZtoMuTau(process):
         process.producePatTupleZtoMuTauSpecific._seq = process.producePatTupleZtoMuTauSpecific._seq \
           * process.muonTriggerEfficiencyCorrection
 
-    _addEventWeightZtoMuTau(process, "muonTriggerEfficiencyCorrection")
+    _addEventWeightZtoMuTau(process, "muonTriggerEfficiencyCorrection", applyAfterFilterName = "evtSelTrigger")
 
 def applyVertexMultiplicityReweighting_runZtoMuTau(process):
 
@@ -229,7 +204,7 @@ def applyVertexMultiplicityReweighting_runZtoMuTau(process):
 
     _addEventWeightZtoMuTau(process, "vertexMultiplicityReweight")
 
-def _addEventWeightZtoMuTau_bgEstTemplate(process, srcEventWeight):
+def _addEventWeightZtoMuTau_bgEstTemplate(process, srcEventWeight, applyAfterFilterName):
 
     _addEventWeight(process,
                     [ "analyzeEventsBgEstQCDenriched",
@@ -237,13 +212,13 @@ def _addEventWeightZtoMuTau_bgEstTemplate(process, srcEventWeight):
                       "analyzeEventsBgEstWplusJetsEnriched",
                       "analyzeEventsBgEstZmumuJetMisIdEnriched",
                       "analyzeEventsBgEstZmumuMuonMisIdEnriched" ],
-                    srcEventWeight)
+                    srcEventWeight, applyAfterFilterName)
 
 def applyMuonTriggerEfficiencyCorrection_runZtoMuTau_bgEstTemplate(process):
 
     applyMuonTriggerEfficiencyCorrection_runZtoMuTau(process)
 
-    _addEventWeightZtoMuTau_bgEstTemplate(process, "muonTriggerEfficiencyCorrection")
+    _addEventWeightZtoMuTau_bgEstTemplate(process, "muonTriggerEfficiencyCorrection", applyAfterFilterName = "evtSelTrigger")
 
 def applyVertexMultiplicityReweighting_runZtoMuTau_bgEstTemplate(process):
 
@@ -251,7 +226,7 @@ def applyVertexMultiplicityReweighting_runZtoMuTau_bgEstTemplate(process):
 
     _addEventWeightZtoMuTau_bgEstTemplate(process, "vertexMultiplicityReweight")
 
-def _addEventWeightZtoMuTau_tauIdEff(process, srcEventWeight):
+def _addEventWeightZtoMuTau_tauIdEff(process, srcEventWeight, applyAfterFilterName):
 
     _addEventWeight(process,
                     [ "analyzeEventsTauIdEffZtoMuTauCombinedFit",
@@ -262,13 +237,13 @@ def _addEventWeightZtoMuTau_tauIdEff(process, srcEventWeight):
                       "analyzeEventsBgEstWplusJetsEnriched",
                       "analyzeEventsBgEstZmumuJetMisIdEnriched",
                       "analyzeEventsBgEstZmumuMuonMisIdEnriched" ],
-                    srcEventWeight)
+                    srcEventWeight, applyAfterFilterName)
 
 def applyMuonTriggerEfficiencyCorrection_runZtoMuTau_tauIdEff(process):
 
     applyMuonTriggerEfficiencyCorrection_runZtoMuTau(process)
 
-    _addEventWeightZtoMuTau_tauIdEff(process, "muonTriggerEfficiencyCorrection")
+    _addEventWeightZtoMuTau_tauIdEff(process, "muonTriggerEfficiencyCorrection", applyAfterFilterName = "evtSelTrigger")
 
 def applyVertexMultiplicityReweighting_runZtoMuTau_tauIdEff(process):
 
@@ -276,7 +251,7 @@ def applyVertexMultiplicityReweighting_runZtoMuTau_tauIdEff(process):
 
     _addEventWeightZtoMuTau_tauIdEff(process, "vertexMultiplicityReweight")
 
-def _addEventWeighAHtoMuTau(process, srcEventWeight):
+def _addEventWeighAHtoMuTau(process, srcEventWeight, applyAfterFilterName):
 
     _addEventWeight(process,
                     [ "analyzeAHtoMuTauEvents_woBtag",
@@ -285,13 +260,13 @@ def _addEventWeighAHtoMuTau(process, srcEventWeight):
                       "analyzeAHtoMuTauEvents_wBtag_factorizedWithMuonIsolation",
                       "analyzeAHtoMuTauEvents_woBtag_factorizedWithoutMuonIsolation",
                       "analyzeAHtoMuTauEvents_wBtag_factorizedWithoutMuonIsolation" ],
-                    srcEventWeight)    
+                    srcEventWeight, applyAfterFilterName)    
                     
 def applyMuonTriggerEfficiencyCorrection_runAHtoMuTau(process):
 
     applyMuonTriggerEfficiencyCorrection_runZtoMuTau(process)
 
-    _addEventWeighAHtoMuTau(process, "muonTriggerEfficiencyCorrection")
+    _addEventWeighAHtoMuTau(process, "muonTriggerEfficiencyCorrection", applyAfterFilterName = "evtSelTrigger")
 
 def applyVertexMultiplicityReweighting_runAHtoMuTau(process):
 
