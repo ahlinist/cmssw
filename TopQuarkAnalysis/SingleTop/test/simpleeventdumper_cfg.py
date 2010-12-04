@@ -52,7 +52,12 @@ from PhysicsTools.PatAlgos.tools.jetTools import *
 from PhysicsTools.PatAlgos.tools.coreTools import *
 
 # turn off MC matching for the process
-removeMCMatching(process, ['All'])
+switchJetCollection( process,
+                     jetCollection=cms.InputTag('ak5CaloJets'),
+                     jetCorrLabel=('AK5Calo', ['L2Relative', 'L3Absolute']))
+### data: jetCorrLabel=('AK5Calo', ['L2Relative', 'L3Absolute', 'L2L3Residual']))
+
+#removeMCMatching(process, ['All'])
 
 # MC only: run ak5 gen jets
 from PhysicsTools.PatAlgos.tools.cmsswVersionTools import *
@@ -65,7 +70,7 @@ addJetCollection(process,
                    'PF',
                    doJTA=True,
                    doBTagging=True,
-                   jetCorrLabel=('AK5','PF'),
+                   jetCorrLabel=('AK5PF', cms.vstring(['L2Relative', 'L3Absolute'])),#('AK5','PF'),
                    doType1MET=True,
                    doJetID      = True,
                    jetIdLabel   = "ak5"
@@ -80,7 +85,7 @@ addJetCollection(process,cms.InputTag('JetPlusTrackZSPCorJetAntiKt5'),
                                   'AK5', 'JPT',
                                   doJTA        = True,
                                   doBTagging   = True,
-                                  jetCorrLabel = ('AK5','JPT'),
+                                  jetCorrLabel = ('AK5JPT', cms.vstring(['L2Relative', 'L3Absolute'])),#('AK5','JPT'),
                                   doType1MET   = False,
                                   doL1Cleaning = False,
                                   doL1Counters = True,
@@ -90,8 +95,8 @@ addJetCollection(process,cms.InputTag('JetPlusTrackZSPCorJetAntiKt5'),
                                   )
 
 # corrections:
-patJetCorrFactors.corrSample = cms.string("Spring10") 
-switchJECSet( process, "Spring10")
+#patJetCorrFactors.corrSample = cms.string("Spring10") 
+#switchJECSet( process, "Spring10")
 
 # set the dB to the beamspot
 process.patMuons.usePV = cms.bool(False)

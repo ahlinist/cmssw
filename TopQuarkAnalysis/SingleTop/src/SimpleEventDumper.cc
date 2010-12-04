@@ -13,7 +13,7 @@
 //
 // Original Author:  Andrea Giammanco,40 4-B20,+41227671567,
 //         Created:  Sun Aug 15 18:30:03 CEST 2010
-// $Id: SimpleEventDumper.cc,v 1.17 2010/08/30 21:52:41 giamman Exp $
+// $Id: SimpleEventDumper.cc,v 1.18 2010/09/22 22:13:19 giamman Exp $
 //
 //
 
@@ -366,9 +366,11 @@ SimpleEventDumper::analyze(const edm::Event& iEvent, const edm::EventSetup& iSet
 	cout << "EM fraction = " << emf << ", fHPD = " << fHPD << ", N90 = " << n90hits << endl;
 	cout << "b-tagging, TCHP = " << tchp << ", TCHE = " << tche << ", SSVHP = " << ssvhp << ", SSVHE = " << ssvhe << endl;
 	if (l5corr) {
+	  /* obsolete
 	  cout << "L5 correction factor under the hypothesis B: " <<  (*patjets)[j].corrFactor("had", "B") << endl;
 	  cout << "L5 correction factor under the hypothesis UDS: " <<  (*patjets)[j].corrFactor("had", "UDS") << endl;
 	  cout << "L5 correction factor under the hypothesis GLU: " <<  (*patjets)[j].corrFactor("had", "GLU") << endl;
+	  */
 	}
 	// find highest-TCHP jet:
 	if (tchp > max_tchp) {
@@ -552,6 +554,7 @@ SimpleEventDumper::analyze(const edm::Event& iEvent, const edm::EventSetup& iSet
       met_pat_y = (*patmets)[0].py();
       //      cout << "met_x = " << met_pat_x << ", met_y = " << met_pat_y << endl;
       if (l5corr && patjets->size() > 0) {
+	/* obsolete
 	met_patL5_x = met_pat_x + (1.-(*patjets)[index_max_tchp].corrFactor("had", "B"))*(*patjets)[index_max_tchp].px() + (1.-(*patjets)[index_bveto].corrFactor("had", "UDS"))*(*patjets)[index_bveto].px();
 	met_patL5_y = met_pat_y + (1.-(*patjets)[index_max_tchp].corrFactor("had", "B"))*(*patjets)[index_max_tchp].py() + (1.-(*patjets)[index_bveto].corrFactor("had", "UDS"))*(*patjets)[index_bveto].py();
 	if (l5corr_inclGlu) { // correct all other jets, if any, as gluons
@@ -565,6 +568,7 @@ SimpleEventDumper::analyze(const edm::Event& iEvent, const edm::EventSetup& iSet
 	metL5 = AddQuadratically(met_patL5_x,met_patL5_y);
 	phiL5 = atan2(met_patL5_y,met_patL5_x);
 	cout << "PAT+L5 met = " << metL5 << ", phi = " << phiL5 << endl;
+	*/
       }
     }
   } catch (std::exception & err) {
