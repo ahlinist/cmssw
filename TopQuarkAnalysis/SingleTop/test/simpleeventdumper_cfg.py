@@ -52,11 +52,6 @@ from PhysicsTools.PatAlgos.tools.jetTools import *
 from PhysicsTools.PatAlgos.tools.coreTools import *
 
 # turn off MC matching for the process
-switchJetCollection( process,
-                     jetCollection=cms.InputTag('ak5CaloJets'),
-                     jetCorrLabel=('AK5Calo', ['L2Relative', 'L3Absolute']))
-### data: jetCorrLabel=('AK5Calo', ['L2Relative', 'L3Absolute', 'L2L3Residual']))
-
 #removeMCMatching(process, ['All'])
 
 # MC only: run ak5 gen jets
@@ -93,6 +88,13 @@ addJetCollection(process,cms.InputTag('JetPlusTrackZSPCorJetAntiKt5'),
                                   doJetID      = True,
                                   jetIdLabel   = "ak5"
                                   )
+
+# set default collection
+switchJetCollection( process,
+                     jetCollection=cms.InputTag('ak5CaloJets'),
+                     jetCorrLabel=('AK5Calo', ['L2Relative', 'L3Absolute']))
+### data: jetCorrLabel=('AK5Calo', ['L2Relative', 'L3Absolute', 'L2L3Residual']))
+
 
 # corrections:
 #patJetCorrFactors.corrSample = cms.string("Spring10") 
