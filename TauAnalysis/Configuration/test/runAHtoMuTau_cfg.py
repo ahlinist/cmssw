@@ -227,23 +227,10 @@ changeCut(process, "selectedMuTauPairsForAHtoMuTauPzetaDiffLooseMuonIsolation",
 changeCut(process, "selectedMuTauPairsZeroCharge", cuts['charge'])
 changeCut(process, "selectedMuTauPairsForAHtoMuTauZeroCharge", cuts['charge'])
 
-# disable cut on muon calo. + segment compatibility
-# (check that muon calo. compatibility is not affected by pile-up before re-enabling this cut)
-changeCut(process, "selectedPatMuonsPionVeto", -1000., attribute = "AntiPionCut")
-changeCut(process, "selectedPatMuonsPionVetoLooseIsolation", -1000., attribute = "AntiPionCut")
-
 # change upper limit on tranverse impact parameter of muon track to 2mm
 changeCut(process, "selectedPatMuonsTrkIP", 0.2, attribute = "IpMax")
 
-# disable cuts on tau id. discriminators for Track && ECAL isolation
 # change cut on TaNC output in case using new HPS + TaNC combined tau id. algorithm
-# CV: discriminators by Track/ECAL isolation do not exist for the combined tau id. algorithm
-#     and need to be replaced by dummy cuts, in order to avoid run-time exceptions
-changeCut(process, "selectedPatTausTrkIso", "tauID('byTaNCtight') > -1.")
-changeCut(process, "selectedPatTausForMuTauTrkIso", "tauID('byTaNCtight') > -1.")
-changeCut(process, "selectedPatTausEcalIso", "tauID('byTaNCtight') > -1.")
-changeCut(process, "selectedPatTausForMuTauEcalIso", "tauID('byTaNCtight') > -1.")
-
 changeCut(process, "selectedPatTausTaNCdiscr",
           "tauID('byTaNCmedium') > %0.2f" % cuts['tanc'])
 changeCut(process, "selectedPatTausForMuTauTaNCdiscr",
