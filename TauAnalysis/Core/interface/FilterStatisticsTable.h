@@ -58,7 +58,7 @@ class FilterStatisticsRow
   const std::string& filterName() const { return filterName_; }
   const std::string& filterTitle() const { return filterTitle_; }
 
-  void update(bool, bool, bool, unsigned, unsigned, double);
+  void update(bool, bool, bool, unsigned, unsigned, double, double);
   
   void print(std::ostream&, unsigned, unsigned) const;
 
@@ -92,8 +92,9 @@ class FilterStatisticsTable
 
   const std::string& name() const { return name_; }
   
-  typedef std::vector<std::pair<std::string, bool> > filterResults_type;
-  void update(const filterResults_type&, const filterResults_type&, double);
+  typedef std::map<std::string, bool> filterResults_type;
+  typedef std::map<std::string, double> eventWeights_type;
+  void update(const filterResults_type&, const filterResults_type&, const eventWeights_type&, const eventWeights_type&);
 
   void print(std::ostream&, unsigned = 42, unsigned = 19) const;
 

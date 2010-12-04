@@ -53,8 +53,8 @@ ElecTauEventDump::~ElecTauEventDump()
 }
 
 void ElecTauEventDump::print(const edm::Event& iEvent, const edm::EventSetup& iSetup, 
-			     const std::vector<std::pair<std::string, bool> >& filterResults_cumulative, 
-			     const std::vector<std::pair<std::string, bool> >& filterResults_individual, 
+			     const filterResults_type& filterResults_cumulative, 
+			     const filterResults_type& filterResults_individual, 
 			     double eventWeight) const
 {  
   //std::cout << "<ElecTauEventDump::print>:" << std::endl; 

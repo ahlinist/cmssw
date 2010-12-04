@@ -21,10 +21,9 @@ void checkKeyword(const std::string& filterCondition, const char* keyword, bool&
 }
 
 RunLumiSectionEventNumberService::RunLumiSectionEventNumberService(const edm::ParameterSet& cfg)
+  : cfgError_(0)
 {
   //std::cout << "<RunLumiSectionEventNumberService::RunLumiSectionEventNumberService>:" << std::endl; 
-
-  cfgError_ = 0;
 
   name_ = cfg.getParameter<std::string>("name");
   //std::cout << " name = " << name_ << std::endl;
@@ -140,14 +139,7 @@ void RunLumiSectionEventNumberService::update(
     const std::string& filterName = filterResult_cumulative->first;
     bool filterPassed_cumulative = filterResult_cumulative->second;
 
-    filterResults_type::const_iterator filterResult_individual = filterResults_individual.end();
-    for ( filterResults_type::const_iterator it = filterResults_individual.begin();
-	  it != filterResults_individual.end(); ++it ) {
-      if ( it->first == filterName ) {
-	filterResult_individual = it;
-	break;
-      }
-    }
+    filterResults_type::const_iterator filterResult_individual = filterResults_individual.find(filterName);
     if ( filterResult_individual == filterResults_individual.end() ) {
       edm::LogError ("RunLumiSectionEventNumberService::update") 
 	<< " Failed to find filterResult_individual for filterName = " << filterName

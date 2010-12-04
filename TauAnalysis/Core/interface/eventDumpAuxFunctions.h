@@ -15,6 +15,7 @@
 #include "DataFormats/ParticleFlowCandidate/interface/PFCandidateFwd.h"
 #include "DataFormats/VertexReco/interface/Vertex.h"
 
+#include "TauAnalysis/Core/interface/EventDumpBase.h"
 #include "TauAnalysis/Core/interface/eventAuxFunctions.h"
 
 #include <vector>
@@ -24,7 +25,7 @@
 
 std::ostream* getOutputOptions(const edm::ParameterSet&, bool&, int&);
 
-void printEventSelectionInfo(const std::vector<std::pair<std::string, bool> >&, const std::vector<std::pair<std::string, bool> >&, std::ostream*);
+void printEventSelectionInfo(const EventDumpBase::filterResults_type&, const EventDumpBase::filterResults_type&, std::ostream*);
 
 void printGenParticleInfo(const reco::GenParticleCollection&, const reco::GenJetCollection&, std::ostream*);
 

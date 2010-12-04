@@ -39,13 +39,14 @@ FilterStatisticsRow::~FilterStatisticsRow()
 }
 
 void FilterStatisticsRow::update(bool filterPassed_cumulative, bool previousFiltersPassed, bool filterPassed_individual, 
-				 unsigned numFiltersPassed_individual, unsigned numFiltersRejected_individual, double eventWeight)
+				 unsigned numFiltersPassed_individual, unsigned numFiltersRejected_individual, 
+				 double eventWeight_processed, double eventWeight_passed)
 {
-  numEvents_processed_->update(true, eventWeight);
-  numEvents_passed_->update(filterPassed_individual, eventWeight);
-  numEvents_exclRejected_->update(!filterPassed_individual && numFiltersRejected_individual == 1, eventWeight);
-  numEvents_processed_cumulative_->update(previousFiltersPassed, eventWeight);
-  numEvents_passed_cumulative_->update(previousFiltersPassed && filterPassed_cumulative, eventWeight);
+  numEvents_processed_->update(true, eventWeight_processed);
+  numEvents_passed_->update(filterPassed_individual, eventWeight_processed);
+  numEvents_exclRejected_->update(!filterPassed_individual && numFiltersRejected_individual == 1, eventWeight_processed);
+  numEvents_processed_cumulative_->update(previousFiltersPassed, eventWeight_processed);
+  numEvents_passed_cumulative_->update(previousFiltersPassed && filterPassed_cumulative, eventWeight_passed);
 }
 
 double compEff(double numerator, double denominator)
@@ -144,7 +145,9 @@ FilterStatisticsTable::~FilterStatisticsTable()
 }
 
 void FilterStatisticsTable::update(const filterResults_type& filterResults_cumulative, 
-				   const filterResults_type& filterResults_individual, double eventWeight)
+				   const filterResults_type& filterResults_individual, 
+				   const eventWeights_type& eventWeights_processed, 
+				   const eventWeights_type& eventWeights_passed)
 {
 //--- first pass through filterResults: 
 //    count number of filters which passed/rejected the event
@@ -172,15 +175,7 @@ void FilterStatisticsTable::update(const filterResults_type& filterResults_cumul
     const std::string& filterName = filterResult_cumulative->first;
     bool filterPassed_cumulative = filterResult_cumulative->second;
     
-    filterResults_type::const_iterator filterResult_individual = filterResults_individual.end();
-    for ( filterResults_type::const_iterator it = filterResults_individual.begin();
-	  it != filterResults_individual.end(); ++it ) {
-      if ( it->first == filterName ) {
-	filterResult_individual = it;
-	break;
-      }
-    }
-
+    filterResults_type::const_iterator filterResult_individual = filterResults_individual.find(filterName);
     if ( filterResult_individual == filterResults_individual.end() ) {
       edm::LogError ("FilterStatisticsTable::update") 
 	<< " Failed to find filterResult_individual for filterName = " << filterName << " --> skipping !!";     
@@ -188,6 +183,20 @@ void FilterStatisticsTable::update(const filterResults_type& filterResults_cumul
     }
 
     bool filterPassed_individual = filterResult_individual->second;
+
+    eventWeights_type::const_iterator eventWeight_processed = eventWeights_processed.find(filterName);
+    if ( eventWeight_processed == eventWeights_processed.end() ) {
+      edm::LogError ("FilterStatisticsTable::update") 
+	<< " Failed to find eventWeight_processed for filterName = " << filterName << " --> skipping !!";     
+      continue;
+    }
+    
+    eventWeights_type::const_iterator eventWeight_passed = eventWeights_passed.find(filterName);
+    if ( eventWeight_passed == eventWeights_passed.end() ) {
+      edm::LogError ("FilterStatisticsTable::update") 
+	<< " Failed to find eventWeight_passed for filterName = " << filterName << " --> skipping !!";     
+      continue;
+    }
 	
     FilterStatisticsRow* row = 0;
     for ( std::vector<rowEntry_type>::iterator it = rows_.begin();
@@ -204,7 +213,8 @@ void FilterStatisticsTable::update(const filterResults_type& filterResults_cumul
     }
 
     row->update(filterPassed_cumulative, previousFiltersPassed, filterPassed_individual,
-		numFiltersPassed_individual, numFiltersRejected_individual, eventWeight);
+		numFiltersPassed_individual, numFiltersRejected_individual, 
+		eventWeight_processed->second, eventWeight_passed->second);
       
     if ( !filterPassed_cumulative ) previousFiltersPassed = false;
   }

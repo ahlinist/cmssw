@@ -9,9 +9,9 @@
   * 
   * \author Christian Veelken, UC Davis
   *
-  * \version $Revision: 1.12 $
+  * \version $Revision: 1.13 $
   *
-  * $Id: GenericAnalyzer.h,v 1.12 2010/09/28 11:23:31 jkolb Exp $
+  * $Id: GenericAnalyzer.h,v 1.13 2010/10/22 12:17:37 veelken Exp $
   *
   */
 
@@ -88,6 +88,7 @@ class GenericAnalyzer : public edm::EDAnalyzer
       bool supportsSystematics_;
     };
     std::list<analyzerPluginEntry> analyzerPlugins_;
+    double eventWeight_;
   };
 
  public: 
@@ -105,8 +106,19 @@ class GenericAnalyzer : public edm::EDAnalyzer
 
   std::string name_;
 
-  typedef std::vector<edm::InputTag> vInputTag;
-  vInputTag eventWeightSrc_;
+  struct eventWeightType
+  {
+    eventWeightType(const edm::ParameterSet& cfg)
+      : src_(cfg.getParameter<edm::InputTag>("src"))
+    {
+      applyAfterFilter_ = ( cfg.exists("applyAfterFilter") ) ? 
+	cfg.getParameter<std::string>("applyAfterFilter") : "*";
+    }
+    edm::InputTag src_;
+    std::string applyAfterFilter_;
+    bool isActive_;
+  };
+  std::vector<eventWeightType> eventWeights_;
 
   std::map<std::string, edm::ParameterSet> cfgFilters_;
   std::map<std::string, edm::ParameterSet> cfgAnalyzers_;

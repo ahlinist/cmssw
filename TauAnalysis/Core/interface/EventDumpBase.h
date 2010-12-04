@@ -7,9 +7,9 @@
  * 
  * \author Christian Veelken, UC Davis
  *
- * \version $Revision: 1.3 $
+ * \version $Revision: 1.4 $
  *
- * $Id: EventDumpBase.h,v 1.3 2009/08/03 07:02:11 veelken Exp $
+ * $Id: EventDumpBase.h,v 1.4 2010/02/12 17:18:50 veelken Exp $
  *
  */
 
@@ -33,7 +33,7 @@ class EventDumpBase
   virtual ~EventDumpBase();
 
   // base-class method for print-out of event level information
-  typedef std::vector<std::pair<std::string, bool> > filterResults_type;
+  typedef std::map<std::string, bool> filterResults_type;
   virtual void analyze(const edm::Event&, const edm::EventSetup&, 
 		       const filterResults_type&, const filterResults_type&, double);
 

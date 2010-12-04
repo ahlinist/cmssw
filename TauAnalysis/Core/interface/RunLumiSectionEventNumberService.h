@@ -29,7 +29,7 @@ class RunLumiSectionEventNumberService
   explicit RunLumiSectionEventNumberService(const edm::ParameterSet&);
   ~RunLumiSectionEventNumberService();
 
-  typedef std::vector<std::pair<std::string, bool> > filterResults_type;
+  typedef std::map<std::string, bool> filterResults_type;
   void update(edm::RunNumber_t, edm::LuminosityBlockNumber_t, edm::EventNumber_t,
 	      const filterResults_type&, const filterResults_type&, double);
 

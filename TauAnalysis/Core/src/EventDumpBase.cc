@@ -66,8 +66,8 @@ ObjectDumpBase* EventDumpBase::makeObjectDump(const edm::ParameterSet& cfg, cons
 }
 
 bool isFulfilled(const std::string& filterName, const std::string& triggerCondition,
-		 const std::vector<std::pair<std::string, bool> >& filterResults_cumulative, 
-		 const std::vector<std::pair<std::string, bool> >& filterResults_individual)
+		 const EventDumpBase::filterResults_type& filterResults_cumulative, 
+		 const EventDumpBase::filterResults_type& filterResults_individual)
 {
   //std::cout << "<isFulFilled>:" << std::endl;
   //std::cout << " filterName = " << filterName << std::endl;
@@ -94,14 +94,7 @@ bool isFulfilled(const std::string& filterName, const std::string& triggerCondit
     bool filterPassed_cumulative = filterResult_cumulative->second;
     //std::cout << " filterPassed_cumulative = " << filterPassed_cumulative << std::endl;
     
-    EventDumpBase::filterResults_type::const_iterator filterResult_individual = filterResults_individual.end();
-    for ( EventDumpBase::filterResults_type::const_iterator it = filterResults_individual.begin();
-	  it != filterResults_individual.end(); ++it ) {
-      if ( it->first == filterName_i ) {
-	filterResult_individual = it;
-	break;
-      }
-    }
+    EventDumpBase::filterResults_type::const_iterator filterResult_individual = filterResults_individual.find(filterName);
     if ( filterResult_individual == filterResults_individual.end() ) {
       edm::LogError ("isFulFilled") 
 	<< " Failed to find filterResult_individual for filterName = " << filterName << " --> skipping !!";     

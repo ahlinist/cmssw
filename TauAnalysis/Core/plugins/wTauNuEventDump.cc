@@ -28,9 +28,9 @@ wTauNuEventDump::~wTauNuEventDump()
 }
 
 void wTauNuEventDump::print(const edm::Event& iEvent, const edm::EventSetup& iSetup, 
-			   const std::vector<std::pair<std::string, bool> >& filterResults_cumulative, 
-			   const std::vector<std::pair<std::string, bool> >& filterResults_individual, 
-			   double eventWeight) const
+			    const filterResults_type& filterResults_cumulative, 
+			    const filterResults_type& filterResults_individual, 
+			    double eventWeight) const
 {  
   printEventHeaderInfo(iEvent, eventWeight);
 
