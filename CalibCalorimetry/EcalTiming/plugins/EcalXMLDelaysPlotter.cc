@@ -227,7 +227,7 @@ void EcalXMLDelaysPlotter::readinXMLs(void)
   for ( int fed = 601; fed < 655 ; ++fed)
   {
   ifstream FileXML(Form("sm_%d.xml",fed));
-  if( !(FileXML.is_open()) ){cout<<"Error: file"<< Form("sm_%d.xml",fed) <<" not found!!"<<endl; return; }
+  if( !(FileXML.is_open()) ){std::cout<<"Error: file"<< Form("sm_%d.xml",fed) <<" not found!!"<<std::endl; return; }
   char Buffer[5000];
   //int TimeOffset[71];
   //for(int i=0;i<71;i++){TimeOffset[i]=-100;}
@@ -237,24 +237,24 @@ void EcalXMLDelaysPlotter::readinXMLs(void)
    while( !(FileXML.eof()) ){
     FileXML.getline(Buffer,5000);
     //    if (!strstr(Buffer,"#") && !(strspn(Buffer," ") == strlen(Buffer)))
-    string initial(Buffer);
-    if( find_SMnum && initial.find("<SUPERMODULE>") != string::npos){
+    std::string initial(Buffer);
+    if( find_SMnum && initial.find("<SUPERMODULE>") != std::string::npos){
       char stSM[100];
       sscanf(Buffer,"%s",stSM);
       sscanf(stSM,"<SUPERMODULE>%d</SUPERMODULE>",&SMn);
       find_SMnum = false;
     }
 
-    if( initial.find("<DELAY_OFFSET>") != string::npos ){
+    if( initial.find("<DELAY_OFFSET>") != std::string::npos ){
       FileXML.getline(Buffer,5000);// get the line with SM id
       FileXML.getline(Buffer,5000);// get the line with TT id
       char st1[200];
       int TT = -1;
       sscanf(Buffer,"%s",st1);
       sscanf(st1,"<TRIGGERTOWER>%d</TRIGGERTOWER>",&TT);
-      //cout<<"TT: "<<TT<<endl;
-      //cout<<"Buffer: "<<Buffer<<"  []TT: "<<TT<<endl;
-      if(TT< 1 || TT >68){cout<<"Ignoring TT "<<TT<<endl;}
+      //std::cout<<"TT: "<<TT<<std::endl;
+      //std::cout<<"Buffer: "<<Buffer<<"  []TT: "<<TT<<std::endl;
+      if(TT< 1 || TT >68){std::cout<<"Ignoring TT "<<TT<<std::endl;}
       else{
 	ttVector.push_back(TT); 
 	int time_off = -10;
@@ -263,7 +263,7 @@ void EcalXMLDelaysPlotter::readinXMLs(void)
 	sscanf(Buffer,"%s",st2);
 	sscanf(st2,"<TIME_OFFSET>%d</TIME_OFFSET>",&time_off);
 	XMLTTVals_[fed-601][TT-1]=time_off;
-	//else{cout<<"Error for delays in TT: "<<TT<<" Offsets: "<<TimeOffset[TT] <<endl;}
+	//else{std::cout<<"Error for delays in TT: "<<TT<<" Offsets: "<<TimeOffset[TT] <<std::endl;}
       }
 
     }//end of detecting offset of a TT

@@ -128,6 +128,7 @@ EcalTimingCorrection::analyze(  edm::Event const& iEvent,  edm::EventSetup const
 
    using namespace edm;
    using namespace cms;
+   //using namespace std;
    ievt_++;
    if (ievt_ > 1 ) return;
 
@@ -302,7 +303,7 @@ EcalTimingCorrection::analyze(  edm::Event const& iEvent,  edm::EventSetup const
        {
          //std::cout << " ok 1 dcc " << idcc << " itt " << itt << std::endl;
          // ETT_[idcc][itt]=-100;
-         txt_file << std::setw(8)<< std::setprecision(4) << itt+1 << "   " << std::setw(8)<<std::setprecision(0) << fixed << ETT_[idcc][itt]<< std::endl;
+         txt_file << std::setw(8)<< std::setprecision(4) << itt+1 << "   " << std::setw(8)<<std::setprecision(0) << std::fixed << ETT_[idcc][itt]<< std::endl;
        } 
      }
      //close the text file
