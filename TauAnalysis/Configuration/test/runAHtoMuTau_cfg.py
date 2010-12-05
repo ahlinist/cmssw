@@ -174,7 +174,7 @@ cuts = cut_values['normal']
 from TauAnalysis.Configuration.tools.changeCut import changeCut
 
 # change muon Pt threshold to 15 GeV
-changeCut(process, "selectedPatMuonsPt10", "pt > %0.2f" % cuts['muon_pt'])
+changeCut(process, "selectedPatMuonsPt15", "pt > %0.2f" % cuts['muon_pt'])
 
 # change muon eta acceptance
 changeCut(process, "selectedPatMuonsEta21", "abs(eta) < %0.2f"
