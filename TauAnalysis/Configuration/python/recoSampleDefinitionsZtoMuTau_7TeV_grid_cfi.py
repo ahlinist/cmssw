@@ -154,8 +154,8 @@ RECO_SAMPLES = {
         'enableFakeRates' : True
     },
     'Ztautau' : {
-        'datasetpath' : "/DYToTauTau_M-20_TuneZ2_7TeV-pythia6-tauola/Fall10-START38_V12-v1/GEN-SIM-RECO",
-        'events_processed' : 2057446,
+        'datasetpath' : "/DYtoTauTau_M_20_TuneD6T_7TeV-pythia6-tauola/Fall10-START38_V12-v1/GEN-SIM-RECO",
+        'events_processed' : 2677550,
         'skim_eff' : 1.0,
         'x_sec' : 1.28*1300*_picobarns, # Z + jets correction factor for NLO/LO cross-sections = 1.28
         'legendEntry' : plotter.process_Ztautau.config_dqmHistPlotter.legendEntry.value(),
@@ -181,9 +181,9 @@ RECO_SAMPLES = {
         'applyMuonTriggerEfficiencyCorrection' : True
     },
     'ZtautauPU156bx' : {
-        'datasetpath' : "/DYToTauTau_M-20_TuneZ2_7TeV-pythia6-tauola/Fall10-E7TeV_ProbDist_2010Data_BX156_START38_V12-v1/GEN-SIM-RECO",
+        'datasetpath' : "/DYtoTauTau_M_20_TuneD6T_7TeV-pythia6-tauola/Fall10-E7TeV_ProbDist_2010Data_BX156_START38_V12-v1/GEN-SIM-RECO",
         'dbs_url' :  "http://cmsdbsprod.cern.ch/cms_dbs_prod_global/servlet/DBSServlet",
-        'events_processed' : 2011186,
+        'events_processed' : 2568490,
         'skim_eff' : 1.0,
         'x_sec' : 1.28*1300*_picobarns, # Z + jets correction factor for NLO/LO cross-sections = 1.28
         'legendEntry' : plotter.process_Ztautau.config_dqmHistPlotter.legendEntry.value(),
@@ -224,9 +224,9 @@ RECO_SAMPLES = {
         'hlt' : cms.InputTag("TriggerResults", "", "REDIGI38XPU")
     },
     'Zmumu' : {
-        'datasetpath' : "/DYToMuMu_M-20_TuneZ2_7TeV-pythia6/Fall10-E7TeV_ProbDist_2010Data_BX156_START38_V12-v1/GEN-SIM-RECO",
+        'datasetpath' : "/DYtoMuMu_M_20_TuneD6T_7TeV-pythia6/Fall10-E7TeV_ProbDist_2010Data_BX156_START38_V12-v1/GEN-SIM-RECO",
         'dbs_url' :  "http://cmsdbsprod.cern.ch/cms_dbs_prod_global/servlet/DBSServlet",
-        'events_processed' : 2289913,
+        'events_processed' : 2558038,
         'skim_eff' : 1.0,
         'x_sec' : 1.28*1300*_picobarns, # Z + jets correction factor for NLO/LO cross-sections = 1.28
         'legendEntry' : plotter.process_Zmumu.config_dqmHistPlotter.legendEntry.value(),
@@ -283,9 +283,9 @@ RECO_SAMPLES = {
         'enableFakeRates' : True,
     },
     'Wenu' : {
-        'datasetpath' : "/WToENu_TuneZ2_7TeV-pythia6/Fall10-E7TeV_ProbDist_2010Data_BX156_START38_V12-v1/GEN-SIM-RECO",
+        'datasetpath' : "/WtoENu_TuneD6T_7TeV-pythia6/Fall10-E7TeV_ProbDist_2010Data_BX156_START38_V12-v1/GEN-SIM-RECO",
         'dbs_url' :  "http://cmsdbsprod.cern.ch/cms_dbs_prod_global/servlet/DBSServlet",
-        'events_processed' : 5021834,
+        'events_processed' : 5495740,
         'skim_eff' : 1.0,
         'x_sec' : 1.32*7899*_picobarns, # W --> e nucorrection factor for NLO/LO cross-sections = 1.32
         'legendEntry' : plotter.process_WplusJets.config_dqmHistPlotter.legendEntry.value(),
@@ -299,9 +299,9 @@ RECO_SAMPLES = {
         'SE_black_list' : 'T2_TW_Taiwan'
     },
     'Wmunu' : {
-        'datasetpath' : "/WToMuNu_TuneZ2_7TeV-pythia6/Fall10-E7TeV_ProbDist_2010Data_BX156_START38_V12-v1/GEN-SIM-RECO",
+        'datasetpath' : "/WtoMuNu_TuneD6T_7TeV-pythia6/Fall10-E7TeV_ProbDist_2010Data_BX156_START38_V12-v1/GEN-SIM-RECO",
         'dbs_url' :  "http://cmsdbsprod.cern.ch/cms_dbs_prod_global/servlet/DBSServlet",
-        'events_processed' : 5283540,
+        'events_processed' : 5485510,
         'skim_eff' : 1.0,
         'x_sec' : 1.32*7899*_picobarns, # W --> mu nu correction factor for NLO/LO cross-sections = 1.32
         'legendEntry' : plotter.process_WplusJets.config_dqmHistPlotter.legendEntry.value(),
@@ -314,9 +314,9 @@ RECO_SAMPLES = {
         'SE_black_list' : 'T2_TW_Taiwan'
     },
     'Wtaunu' : {
-        'datasetpath' : "/WToTauNu_TuneZ2_7TeV-pythia6-tauola/Fall10-E7TeV_ProbDist_2010Data_BX156_START38_V12-v1/GEN-SIM-RECO",
+        'datasetpath' : "/WtoTauNu_TuneD6T_7TeV-pythia6-tauola/Fall10-E7TeV_ProbDist_2010Data_BX156_START38_V12-v1/GEN-SIM-RECO",
         'dbs_url' :  "http://cmsdbsprod.cern.ch/cms_dbs_prod_global/servlet/DBSServlet",
-        'events_processed' : 5193750,
+        'events_processed' : 5476550,
         'skim_eff' : 1.0,
         'x_sec' : 1.32*7899*_picobarns, # W --> tau nu correction factor for NLO/LO cross-sections = 1.32
         'legendEntry' : plotter.process_WplusJets.config_dqmHistPlotter.legendEntry.value(),
@@ -350,7 +350,6 @@ RECO_SAMPLES = {
 MERGE_SAMPLES = {
     'data' : {
         'samples' : [
-            'data_Mu_Run2010A_Sep17ReReco',
             'data_Mu_Run2010A_Nov4ReReco',
             'data_Mu_Run2010B_Nov4ReReco'
         ],
