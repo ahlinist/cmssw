@@ -84,7 +84,7 @@ def _addEventWeight(process, genAnalyzerModuleNames, srcEventWeight, applyAfterF
             genAnalyzerModule = getattr(process, genAnalyzerModuleName)
             pset = cms.PSet(
                 src = srcEventWeight,
-                applyAfterFilter = applyAfterFilterName)
+                applyAfterFilter = applyAfterFilterName
             )
             if hasattr(genAnalyzerModule, "eventWeights"):
                 getattr(genAnalyzerModule, "eventWeights").append(pset)
