@@ -39,7 +39,7 @@ def removeModules(process, sequenceName, moduleNamePattern, pyNameSpace):
         sequence = getattr(process, sequenceName)
 
         modules = listModules(sequence)
-        
+
         for module in modules:
             if hasattr(module, "label"):
                 moduleName = module.label()
@@ -61,9 +61,9 @@ def addBoolEventSelFlagProducer(process, moduleName, expSysUncertainties, sequen
             flags_systematic = []
 
             for flag in flags:
-                                
+
                 flagModuleLabel_systematic = composeModuleName(flag.getModuleLabel(), expSysUncertainty)
-                
+
                 if hasattr(process, flagModuleLabel_systematic):
                     flag_systematic = copy.deepcopy(flag)
                     flag_systematic.setModuleLabel(flagModuleLabel_systematic)
@@ -79,7 +79,7 @@ def addBoolEventSelFlagProducer(process, moduleName, expSysUncertainties, sequen
             module_systematic = getattr(process, moduleName_systematic)
 
             sequence._seq = sequence._seq * module_systematic
-            
+
 #--------------------------------------------------------------------------------
 # functions to enable/disable estimation of systematic uncertainties
 # in PAT-tuple production
@@ -87,7 +87,7 @@ def addBoolEventSelFlagProducer(process, moduleName, expSysUncertainties, sequen
 
 def disableSysUncertainties_patTupleProduction(process):
     #print("<disableSysUncertainties_patTupleProduction>:")
-    
+
     process.produceGenObjects.remove(process.produceSysErrGenEventReweights)
 
 #--------------------------------------------------------------------------------
@@ -98,7 +98,7 @@ def disableSysUncertainties_patTupleProduction(process):
 def enableSysUncertainties_runZtoMuTau(process):
     print("<enableSysUncertainties_runZtoMuTau>:")
     print("--> **enabling** estimation of systematic uncertainties...")
-    
+
     pyNameSpace = None
 
     process.produceGenObjects._seq = process.produceGenObjects._seq * process.produceSysErrGenEventReweights
@@ -135,7 +135,7 @@ def enableSysUncertainties_runZtoMuTau(process):
         process.smearedMET,
         pyModuleName = __name__,
         systematics = {
-            "sysMuonPtUp" : {        
+            "sysMuonPtUp" : {
                 "smearedParticles.srcOriginal" : cms.InputTag('selectedPatMuonsTrkIPcumulative'),
                 "smearedParticles.srcSmeared"  : cms.InputTag('selectedPatMuonsTrkIPsysMuonPtUpCumulative')
             },
@@ -150,19 +150,19 @@ def enableSysUncertainties_runZtoMuTau(process):
             "sysTauJetEnDown" : {
                 "smearedParticles.srcOriginal" : cms.InputTag('selectedPatTausForMuTauMuonVetoCumulative'),
                 "smearedParticles.srcSmeared"  : cms.InputTag('selectedPatTausForMuTauMuonVetoSysTauJetEnDownCumulative')
-            }, 
+            },
             ##"sysTauJetThetaUp" : {
             ##    "smearedParticles.srcOriginal" : cms.InputTag('selectedPatTausForMuTauMuonVetoCumulative'),
             ##    "smearedParticles.srcSmeared"  : cms.InputTag('selectedPatTausForMuTauMuonVetoSysTauJetThetaUpCumulative')
-            ##}, 
+            ##},
             ##"sysTauJetThetaDown" : {
             ##    "smearedParticles.srcOriginal" : cms.InputTag('selectedPatTausForMuTauMuonVetoCumulative'),
             ##    "smearedParticles.srcSmeared"  : cms.InputTag('selectedPatTausForMuTauMuonVetoSysTauJetThetaDownCumulative')
-            ##}, 
+            ##},
             ##"sysTauJetPhiUp" : {
             ##    "smearedParticles.srcOriginal" : cms.InputTag('selectedPatTausForMuTauMuonVetoCumulative'),
             ##    "smearedParticles.srcSmeared"  : cms.InputTag('selectedPatTausForMuTauMuonVetoSysTauJetPhiUpCumulative')
-            ##}, 
+            ##},
             ##"sysTauJetPhiDown" : {
             ##    "smearedParticles.srcOriginal" : cms.InputTag('selectedPatTausForMuTauMuonVetoCumulative'),
             ##    "smearedParticles.srcSmeared"  : cms.InputTag('selectedPatTausForMuTauMuonVetoSysTauJetPhiDownCumulative')
@@ -186,7 +186,7 @@ def enableSysUncertainties_runZtoMuTau(process):
         },
         "sysMuonPtDown" : {
             "srcLeg1" : cms.InputTag('selectedPatMuonsTrkIPsysMuonPtDownCumulative'),
-            "srcMET"  : cms.InputTag('smearedMETsysMuonPtDown')           
+            "srcMET"  : cms.InputTag('smearedMETsysMuonPtDown')
         },
         "sysTauJetEnUp" : {
             "srcLeg2" : cms.InputTag('selectedPatTausForMuTauMuonVetoSysTauJetEnUpCumulative'),
@@ -195,22 +195,22 @@ def enableSysUncertainties_runZtoMuTau(process):
         "sysTauJetEnDown" : {
             "srcLeg2" : cms.InputTag('selectedPatTausForMuTauMuonVetoSysTauJetEnDownCumulative'),
             "srcMET"  : cms.InputTag('smearedMETsysTauJetEnDown')
-        }, 
+        },
         ##"sysTauJetThetaUp" : {
         ##    "srcLeg2" : cms.InputTag('selectedPatTausForMuTauMuonVetoSysTauJetThetaUpCumulative'),
         ##    "srcMET"  : cms.InputTag('smearedMETsysTauJetThetaUp')
-        ##}, 
+        ##},
         ##"sysTauJetThetaDown" : {
         ##    "srcLeg2" : cms.InputTag('selectedPatTausForMuTauMuonVetoSysTauJetThetaDownCumulative'),
         ##    "srcMET"  : cms.InputTag('smearedMETsysTauJetThetaDown')
-        ##}, 
+        ##},
         ##"sysTauJetPhiUp" : {
         ##    "srcLeg2" : cms.InputTag('selectedPatTausForMuTauMuonVetoSysTauJetPhiUpCumulative'),
         ##    "srcMET"  : cms.InputTag('smearedMETsysTauJetPhiUp')
-        ##}, 
+        ##},
         ##"sysTauJetPhiDown" : {
         ##    "srcLeg2" : cms.InputTag('selectedPatTausForMuTauMuonVetoSysTauJetPhiDownCumulative'),
-        ##    "srcMET"  : cms.InputTag('smearedMETsysTauJetPhiDown')                        
+        ##    "srcMET"  : cms.InputTag('smearedMETsysTauJetPhiDown')
         ##},
         "sysJetEnUp" : {
             "srcMET"  : cms.InputTag('smearedMETsysJetEnUp')
@@ -229,7 +229,7 @@ def enableSysUncertainties_runZtoMuTau(process):
         },
         "sysMuonPtDown" : {
             "srcLeg1" : cms.InputTag('selectedPatMuonsTrkIPlooseIsolationSysMuonPtDownCumulative'),
-            "srcMET"  : cms.InputTag('smearedMETsysMuonPtDown')           
+            "srcMET"  : cms.InputTag('smearedMETsysMuonPtDown')
         },
         "sysTauJetEnUp" : {
             "srcLeg2" : cms.InputTag('selectedPatTausForMuTauMuonVetoSysTauJetEnUpCumulative'),
@@ -238,22 +238,22 @@ def enableSysUncertainties_runZtoMuTau(process):
         "sysTauJetEnDown" : {
             "srcLeg2" : cms.InputTag('selectedPatTausForMuTauMuonVetoSysTauJetEnDownCumulative'),
             "srcMET"  : cms.InputTag('smearedMETsysTauJetEnDown')
-        }, 
+        },
         ##"sysTauJetThetaUp" : {
         ##    "srcLeg2" : cms.InputTag('selectedPatTausForMuTauMuonVetoSysTauJetThetaUpCumulative'),
         ##    "srcMET"  : cms.InputTag('smearedMETsysTauJetThetaUp')
-        ##}, 
+        ##},
         ##"sysTauJetThetaDown" : {
         ##    "srcLeg2" : cms.InputTag('selectedPatTausForMuTauMuonVetoSysTauJetThetaDownCumulative'),
         ##    "srcMET"  : cms.InputTag('smearedMETsysTauJetThetaDown')
-        ##}, 
+        ##},
         ##"sysTauJetPhiUp" : {
         ##    "srcLeg2" : cms.InputTag('selectedPatTausForMuTauMuonVetoSysTauJetPhiUpCumulative'),
         ##    "srcMET"  : cms.InputTag('smearedMETsysTauJetPhiUp')
-        ##}, 
+        ##},
         ##"sysTauJetPhiDown" : {
         ##    "srcLeg2" : cms.InputTag('selectedPatTausForMuTauMuonVetoSysTauJetPhiDownCumulative'),
-        ##    "srcMET"  : cms.InputTag('smearedMETsysTauJetPhiDown')            
+        ##    "srcMET"  : cms.InputTag('smearedMETsysTauJetPhiDown')
         ##},
         "sysJetEnUp" : {
             "srcMET"  : cms.InputTag('smearedMETsysJetEnUp')
@@ -264,13 +264,21 @@ def enableSysUncertainties_runZtoMuTau(process):
     })
     process.produceMuTauPairsLooseMuonIsolation = muTauPairProdConfiguratorLooseMuonIsolation.configure(process = process)
 
+    #setattr(patMuTauPairSelConfigurator, "systematics", muTauPairSystematics)
+    #process.selectMuTauPairs = patMuTauPairSelConfigurator.configure(process = process)
+
     setattr(patMuTauPairSelConfiguratorOS, "systematics", muTauPairSystematics)
     process.selectMuTauPairsOS = patMuTauPairSelConfiguratorOS.configure(process = process)
-    
+
+    setattr(patMuTauPairSelConfiguratorSS, "systematics", muTauPairSystematics)
+    process.selectMuTauPairsSS = patMuTauPairSelConfiguratorSS.configure(process = process)
+
     setattr(patMuTauPairSelConfiguratorLooseMuonIsolationOS, "systematics", muTauPairSystematics)
     process.selectMuTauPairsLooseMuonIsolationOS = patMuTauPairSelConfiguratorLooseMuonIsolationOS.configure(process = process)
+    setattr(patMuTauPairSelConfiguratorLooseMuonIsolationSS, "systematics", muTauPairSystematics)
+    process.selectMuTauPairsLooseMuonIsolationSS = patMuTauPairSelConfiguratorLooseMuonIsolationSS.configure(process = process)
 
-    if hasattr(process, "isRecZtoMuTau"):        
+    if hasattr(process, "isRecZtoMuTau"):
         expSysUncertainties = getSysUncertaintyNames(
             [ muonSystematics,
               tauSystematics,
@@ -279,11 +287,18 @@ def enableSysUncertainties_runZtoMuTau(process):
         addBoolEventSelFlagProducer(process, "isRecZtoMuTau", expSysUncertainties, "selectZtoMuTauEvents")
 
     if hasattr(process, "analyzeZtoMuTauEventsOS"):
-        process.analyzeZtoMuTauEvents.estimateSysUncertainties = cms.bool(True)
+        process.analyzeZtoMuTauEventsOS.estimateSysUncertainties = cms.bool(True)
     if hasattr(process, "analyzeZtoMuTauEventsOS_factorizedWithMuonIsolation"):
-        process.analyzeZtoMuTauEvents_factorizedWithMuonIsolation.estimateSysUncertainties = cms.bool(True)
+        process.analyzeZtoMuTauEventsOS_factorizedWithMuonIsolation.estimateSysUncertainties = cms.bool(True)
     if hasattr(process, "analyzeZtoMuTauEventsOS_factorizedWithoutMuonIsolation"):
-        process.analyzeZtoMuTauEvents_factorizedWithoutMuonIsolation.estimateSysUncertainties = cms.bool(True)    
+        process.analyzeZtoMuTauEventsOS_factorizedWithoutMuonIsolation.estimateSysUncertainties = cms.bool(True)
+
+    if hasattr(process, "analyzeZtoMuTauEventsSS"):
+        process.analyzeZtoMuTauEventsSS.estimateSysUncertainties = cms.bool(True)
+    if hasattr(process, "analyzeZtoMuTauEventsSS_factorizedWithMuonIsolation"):
+        process.analyzeZtoMuTauEventsSS_factorizedWithMuonIsolation.estimateSysUncertainties = cms.bool(True)
+    if hasattr(process, "analyzeZtoMuTauEventsSS_factorizedWithoutMuonIsolation"):
+        process.analyzeZtoMuTauEventsSS_factorizedWithoutMuonIsolation.estimateSysUncertainties = cms.bool(True)
 
 #--------------------------------------------------------------------------------
 # functions to enable/disable estimation of systematic uncertainties
@@ -292,7 +307,7 @@ def enableSysUncertainties_runZtoMuTau(process):
 
 def disableSysUncertainties_runZtoElecTau(process):
     #print("<disableSysUncertainties_runZtoElecTau>:")
-    
+
     moduleNamePattern = "\w+Sys\w+(Up|Down)"
     pyNameSpace = None
 
@@ -309,7 +324,7 @@ def disableSysUncertainties_runZtoElecTau(process):
 
 def disableSysUncertainties_runZtoElecMu(process):
     #print("<disableSysUncertainties_runZtoElecMu>:")
-    
+
     moduleNamePattern = "\w+Sys\w+(Up|Down)"
     pyNameSpace = None
 
@@ -326,7 +341,7 @@ def disableSysUncertainties_runZtoElecMu(process):
 
 def disableSysUncertainties_runWtoTauNu(process):
     #print("<disableSysUncertainties_runWtoTauNu>:")
-    
+
     moduleNamePattern = "\w+Sys\w+(Up|Down)"
     pyNameSpace = None
 
@@ -352,12 +367,26 @@ def enableSysUncertainties_runAHtoMuTau(process):
     process.produceEventSelFlagsAHtoMuTauLooseMuonIsolationOS = \
       ahToMuTauEventSelConfiguratorLooseMuonIsolationOS.configure(process = process, estimateSysUncertainties = True)
 
+    #setattr(patMuTauPairSelConfiguratorForAHtoMuTau, "systematics", muTauPairSystematics)
+    #process.selectMuTauPairsForAHtoMuTau = patMuTauPairSelConfiguratorForAHtoMuTau.configure(process = process)
+
     setattr(patMuTauPairSelConfiguratorForAHtoMuTauOS, "systematics", muTauPairSystematics)
     process.selectMuTauPairsForAHtoMuTauOS = patMuTauPairSelConfiguratorForAHtoMuTauOS.configure(process = process)
-    
+
+    setattr(patMuTauPairSelConfiguratorForAHtoMuTauSS, "systematics", muTauPairSystematics)
+    process.selectMuTauPairsForAHtoMuTauSS = patMuTauPairSelConfiguratorForAHtoMuTauSS.configure(process = process)
+
+    #setattr(patMuTauPairSelConfiguratorForAHtoMuTauLooseMuonIsolation, "systematics", muTauPairSystematics)
+    #process.selectMuTauPairsForAHtoMuTauLooseMuonIsolation = \
+      #patMuTauPairSelConfiguratorForAHtoMuTauLooseMuonIsolation.configure(process = process)
+
     setattr(patMuTauPairSelConfiguratorForAHtoMuTauLooseMuonIsolationOS, "systematics", muTauPairSystematics)
     process.selectMuTauPairsForAHtoMuTauLooseMuonIsolationOS = \
       patMuTauPairSelConfiguratorForAHtoMuTauLooseMuonIsolationOS.configure(process = process)
+
+    setattr(patMuTauPairSelConfiguratorForAHtoMuTauLooseMuonIsolationSS, "systematics", muTauPairSystematics)
+    process.selectMuTauPairsForAHtoMuTauLooseMuonIsolationSS = \
+      patMuTauPairSelConfiguratorForAHtoMuTauLooseMuonIsolationSS.configure(process = process)
 
     setattr(patJetSelConfiguratorForAHtoMuTau, "systematics", jetSystematics)
     process.selectPatJetsForAHtoMuTau = patJetSelConfiguratorForAHtoMuTau.configure(process = process)
@@ -371,25 +400,17 @@ def enableSysUncertainties_runAHtoMuTau(process):
           tauSystematics,
           jetSystematics ]
     )
-    if hasattr(process, "isRecAHtoMuTauCentralJetVeto"):        
+    if hasattr(process, "isRecAHtoMuTauCentralJetVeto"):
         addBoolEventSelFlagProducer(process, "isRecAHtoMuTauCentralJetVeto", expSysUncertainties, "selectAHtoMuTauEvents")
-    if hasattr(process, "isRecAHtoMuTauCentralJetBtag"):        
-        addBoolEventSelFlagProducer(process, "isRecAHtoMuTauCentralJetBtag", expSysUncertainties, "selectAHtoMuTauEvents")    
+    if hasattr(process, "isRecAHtoMuTauCentralJetBtag"):
+        addBoolEventSelFlagProducer(process, "isRecAHtoMuTauCentralJetBtag", expSysUncertainties, "selectAHtoMuTauEvents")
 
-    if hasattr(process, "analyzeAHtoMuTauEventsOS_woBtag"):
-        process.analyzeAHtoMuTauEventsOS_woBtag.estimateSysUncertainties = cms.bool(True)
-    if hasattr(process, "analyzeAHtoMuTauEventsOS_wBtag"):
-        process.analyzeAHtoMuTauEventsOS_wBtag.estimateSysUncertainties = cms.bool(True)    
-    if hasattr(process, "analyzeAHtoMuTauEventsOS_woBtag_factorizedWithMuonIsolation"):
-        process.analyzeAHtoMuTauEventsOS_woBtag_factorizedWithMuonIsolation.estimateSysUncertainties = cms.bool(True)
-    if hasattr(process, "analyzeAHtoMuTauEventsOS_wBtag_factorizedWithMuonIsolation"):
-        process.analyzeAHtoMuTauEventsOS_wBtag_factorizedWithMuonIsolation.estimateSysUncertainties = cms.bool(True)    
-    if hasattr(process, "analyzeAHtoMuTauEventsOS_woBtag_factorizedWithoutMuonIsolation"):
-        process.analyzeAHtoMuTauEventsOS_woBtag_factorizedWithoutMuonIsolation.estimateSysUncertainties = cms.bool(True)
-    if hasattr(process, "analyzeAHtoMuTauEventsOS_wBtag_factorizedWithoutMuonIsolation"):
-        process.analyzeAHtoMuTauEventsOS_wBtag_factorizedWithoutMuonIsolation.estimateSysUncertainties = cms.bool(True)    
-
-
+    for sign in ['OS', 'SS']:
+        for btag in ['_woBtag', '_wBtag']:
+            for suffix in ['', '_factorizedWithMuonIsolation', '_factorizedWithoutMuonIsolation']:
+                name = 'analyzeAHtoMuTauEvents' + sign + btag + suffix
+                if hasattr(process, name):
+                    getattr(process, name).estimateSysUncertainties = cms.bool(True)
 
 
 
