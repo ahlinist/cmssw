@@ -29,6 +29,7 @@ struct EcalTimeTreeContent
   
   unsigned int runId;
   unsigned int lumiSection;
+  unsigned int unixTime; /// Time in seconds since January 1, 1970.
   unsigned int orbit;
   unsigned int bx;
   unsigned int eventId;
@@ -141,6 +142,7 @@ struct EcalTimeTreeContent
   
   // vertex variables
   int   nVertices;
+  bool  vtxIsFake[MAXVTX];
   int   vtxNTracks[MAXVTX];
   float vtxChi2[MAXVTX];
   float vtxNdof[MAXVTX];

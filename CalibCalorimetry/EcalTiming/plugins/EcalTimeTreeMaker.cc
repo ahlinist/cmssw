@@ -14,7 +14,7 @@ Implementation:
 // Skeleton Derived from an example by:  F. DE GUIO C. DOGLIONI P. MERIDIANI
 // Authors:                              Seth Cooper, Giovanni Franzoni (UMN)
 //         Created:  Mo Jul 14 5:46:22 CEST 2008
-// $Id: EcalTimeTreeMaker.cc,v 1.22 2010/07/05 14:22:59 scooper Exp $
+// $Id: EcalTimeTreeMaker.cc,v 1.1 2010/10/14 23:43:55 franzoni Exp $
 //
 //
 
@@ -226,6 +226,7 @@ void EcalTimeTreeMaker::analyze (const edm::Event& iEvent, const edm::EventSetup
   
   myTreeVariables_.bx          = iEvent.bunchCrossing();
   myTreeVariables_.lumiSection = iEvent.id().luminosityBlock();
+  myTreeVariables_.unixTime    = iEvent.eventAuxiliary().time().unixTime();
   myTreeVariables_.orbit       = iEvent.orbitNumber();
   
   myTreeVariables_.runId         = iEvent.id ().run () ;
@@ -896,6 +897,7 @@ EcalTimeTreeMaker::dumpVertexInfo(const reco::VertexCollection* recVtxs, EcalTim
 
     for(int i=0; i<MAXVTX; i++) {
       myTreeVariables_.vtxNTracks[i]=v->tracksSize();
+      myTreeVariables_.vtxIsFake[i]= v->isFake();
       myTreeVariables_.vtxChi2[i]=   v->chi2();
       myTreeVariables_.vtxNdof[i]=   v->ndof();
       myTreeVariables_.vtxX[i]=      v->x();
