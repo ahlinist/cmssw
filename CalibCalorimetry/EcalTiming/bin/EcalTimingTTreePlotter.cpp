@@ -1350,7 +1350,7 @@ int main(int argc,  char * argv[]){
   cout << "The total number of entries is NOW NtimeCHProfile: " << NtimeCHProfile->GetEntries() << endl;
 
   // Now I need to print some of these new histograms and plots
-  TF1 *gauss = new TF1("gauss","gaus",-10,10); 
+  //TF1 *gauss = new TF1("gauss","gaus",-10,10); 
   c[28]->cd();
   gStyle->SetOptStat(1110);
   hctEB->Draw();
