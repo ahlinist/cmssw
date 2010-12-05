@@ -642,8 +642,8 @@ void GenericAnalyzer::analyze(const edm::Event& evt, const edm::EventSetup& es)
     }
   }
 
-  std::cout << " eventWeight = " << eventWeight_initial 
-	    << " (initial value)" << std::endl;
+  //std::cout << " eventWeight = " << eventWeight_initial 
+  //	      << " (initial value)" << std::endl;
 
   SysUncertaintyService* sysUncertaintyService = 0;
   if ( edm::Service<SysUncertaintyService>().isAvailable() ) {
@@ -711,8 +711,8 @@ void GenericAnalyzer::analyze(const edm::Event& evt, const edm::EventSetup& es)
 		eventWeight_passed *= (*eventWeight_i);
 	      }
 	      
-	      std::cout << " eventWeight = " << eventWeight_passed 
-			<< " (value after filter name = " << (*entry)->name_<< ")" << std::endl;
+	      //std::cout << " eventWeight = " << eventWeight_passed 
+	      //	  << " (value after filter name = " << (*entry)->name_<< ")" << std::endl;
 	    }
 	  }
 
