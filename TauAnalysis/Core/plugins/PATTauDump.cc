@@ -41,7 +41,6 @@ void printTauEfficiency(std::ostream& outputStream, const pat::Tau& patTau,
 	       << std::endl;
 }
 
-namespace {
 void printTauId(std::ostream& stream, const pat::Tau& patTau, const std::string& name)
 {
   stream << "  " << name << " = ";
@@ -49,7 +48,7 @@ void printTauId(std::ostream& stream, const pat::Tau& patTau, const std::string&
     stream << patTau.tauID(name);
   else
     stream << "UNAVAILABLE";
-}
+  stream << std::endl;
 }
 
 void PATTauDump::print(const edm::Event& evt, const edm::EventSetup& es) const
