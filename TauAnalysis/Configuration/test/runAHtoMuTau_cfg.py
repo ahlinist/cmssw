@@ -185,7 +185,7 @@ changeCut(process, "selectedPatTausForMuTauPt20", "pt > %0.2f"
           % cuts['tau_pt'])
 
 # change eta acceptance for tau-jets to |eta| < 2.3
-changeCut(process, "selectedPatTausForMuTauEta21",
+changeCut(process, "selectedPatTausForMuTauEta23",
           "abs(eta) < %0.2f" % cuts['tau_eta'])
 
 # Use absolute muon isolation
@@ -318,8 +318,8 @@ from TauAnalysis.Configuration.tools.sysUncertaintyTools import enableSysUncerta
 # in order to reduce size of log-files
 process.disableEventDump = cms.PSet()
 if hasattr(process, "disableEventDump"):
-    process.analyzeAHtoMuTauEvents_woBtag.eventDumps = cms.VPSet()
-    process.analyzeAHtoMuTauEvents_wBtag.eventDumps = cms.VPSet()
+    process.analyzeAHtoMuTauEventsOS_woBtag.eventDumps = cms.VPSet()
+    process.analyzeAHtoMuTauEventsOS_wBtag.eventDumps = cms.VPSet()
 #--------------------------------------------------------------------------------
 
 #--------------------------------------------------------------------------------

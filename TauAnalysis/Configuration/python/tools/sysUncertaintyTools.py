@@ -264,11 +264,11 @@ def enableSysUncertainties_runZtoMuTau(process):
     })
     process.produceMuTauPairsLooseMuonIsolation = muTauPairProdConfiguratorLooseMuonIsolation.configure(process = process)
 
-    setattr(patMuTauPairSelConfigurator, "systematics", muTauPairSystematics)
-    process.selectMuTauPairs = patMuTauPairSelConfigurator.configure(process = process)
+    setattr(patMuTauPairSelConfiguratorOS, "systematics", muTauPairSystematics)
+    process.selectMuTauPairs = patMuTauPairSelConfiguratorOS.configure(process = process)
     
-    setattr(patMuTauPairSelConfiguratorLooseMuonIsolation, "systematics", muTauPairSystematics)
-    process.selectMuTauPairsLooseMuonIsolation = patMuTauPairSelConfiguratorLooseMuonIsolation.configure(process = process)
+    setattr(patMuTauPairSelConfiguratorLooseMuonIsolationOS, "systematics", muTauPairSystematics)
+    process.selectMuTauPairsLooseMuonIsolation = patMuTauPairSelConfiguratorLooseMuonIsolationOS.configure(process = process)
 
     if hasattr(process, "isRecZtoMuTau"):        
         expSysUncertainties = getSysUncertaintyNames(
@@ -278,11 +278,11 @@ def enableSysUncertainties_runZtoMuTau(process):
         )
         addBoolEventSelFlagProducer(process, "isRecZtoMuTau", expSysUncertainties, "selectZtoMuTauEvents")
 
-    if hasattr(process, "analyzeZtoMuTauEvents"):
+    if hasattr(process, "analyzeZtoMuTauEventsOS"):
         process.analyzeZtoMuTauEvents.estimateSysUncertainties = cms.bool(True)
-    if hasattr(process, "analyzeZtoMuTauEvents_factorizedWithMuonIsolation"):
+    if hasattr(process, "analyzeZtoMuTauEventsOS_factorizedWithMuonIsolation"):
         process.analyzeZtoMuTauEvents_factorizedWithMuonIsolation.estimateSysUncertainties = cms.bool(True)
-    if hasattr(process, "analyzeZtoMuTauEvents_factorizedWithoutMuonIsolation"):
+    if hasattr(process, "analyzeZtoMuTauEventsOS_factorizedWithoutMuonIsolation"):
         process.analyzeZtoMuTauEvents_factorizedWithoutMuonIsolation.estimateSysUncertainties = cms.bool(True)    
 
 #--------------------------------------------------------------------------------
@@ -352,12 +352,12 @@ def enableSysUncertainties_runAHtoMuTau(process):
     process.produceEventSelFlagsAHtoMuTauLooseMuonIsolation = \
       ahToMuTauEventSelConfiguratorLooseMuonIsolation.configure(process = process, estimateSysUncertainties = True)
 
-    setattr(patMuTauPairSelConfiguratorForAHtoMuTau, "systematics", muTauPairSystematics)
-    process.selectMuTauPairsForAHtoMuTau = patMuTauPairSelConfiguratorForAHtoMuTau.configure(process = process)
+    setattr(patMuTauPairSelConfiguratorForAHtoMuTauOS, "systematics", muTauPairSystematics)
+    process.selectMuTauPairsForAHtoMuTau = patMuTauPairSelConfiguratorForAHtoMuTauOS.configure(process = process)
     
-    setattr(patMuTauPairSelConfiguratorForAHtoMuTauLooseMuonIsolation, "systematics", muTauPairSystematics)
+    setattr(patMuTauPairSelConfiguratorForAHtoMuTauLooseMuonIsolationOS, "systematics", muTauPairSystematics)
     process.selectMuTauPairsForAHtoMuTauLooseMuonIsolation = \
-      patMuTauPairSelConfiguratorForAHtoMuTauLooseMuonIsolation.configure(process = process)
+      patMuTauPairSelConfiguratorForAHtoMuTauLooseMuonIsolationOS.configure(process = process)
 
     setattr(patJetSelConfiguratorForAHtoMuTau, "systematics", jetSystematics)
     process.selectPatJetsForAHtoMuTau = patJetSelConfiguratorForAHtoMuTau.configure(process = process)
@@ -376,18 +376,18 @@ def enableSysUncertainties_runAHtoMuTau(process):
     if hasattr(process, "isRecAHtoMuTauCentralJetBtag"):        
         addBoolEventSelFlagProducer(process, "isRecAHtoMuTauCentralJetBtag", expSysUncertainties, "selectAHtoMuTauEvents")    
 
-    if hasattr(process, "analyzeAHtoMuTauEvents_woBtag"):
-        process.analyzeAHtoMuTauEvents_woBtag.estimateSysUncertainties = cms.bool(True)
-    if hasattr(process, "analyzeAHtoMuTauEvents_wBtag"):
-        process.analyzeAHtoMuTauEvents_wBtag.estimateSysUncertainties = cms.bool(True)    
-    if hasattr(process, "analyzeAHtoMuTauEvents_woBtag_factorizedWithMuonIsolation"):
-        process.analyzeAHtoMuTauEvents_woBtag_factorizedWithMuonIsolation.estimateSysUncertainties = cms.bool(True)
-    if hasattr(process, "analyzeAHtoMuTauEvents_wBtag_factorizedWithMuonIsolation"):
-        process.analyzeAHtoMuTauEvents_wBtag_factorizedWithMuonIsolation.estimateSysUncertainties = cms.bool(True)    
-    if hasattr(process, "analyzeAHtoMuTauEvents_woBtag_factorizedWithoutMuonIsolation"):
-        process.analyzeAHtoMuTauEvents_woBtag_factorizedWithoutMuonIsolation.estimateSysUncertainties = cms.bool(True)
-    if hasattr(process, "analyzeAHtoMuTauEvents_wBtag_factorizedWithoutMuonIsolation"):
-        process.analyzeAHtoMuTauEvents_wBtag_factorizedWithoutMuonIsolation.estimateSysUncertainties = cms.bool(True)    
+    if hasattr(process, "analyzeAHtoMuTauEventsOS_woBtag"):
+        process.analyzeAHtoMuTauEventsOS_woBtag.estimateSysUncertainties = cms.bool(True)
+    if hasattr(process, "analyzeAHtoMuTauEventsOS_wBtag"):
+        process.analyzeAHtoMuTauEventsOS_wBtag.estimateSysUncertainties = cms.bool(True)    
+    if hasattr(process, "analyzeAHtoMuTauEventsOS_woBtag_factorizedWithMuonIsolation"):
+        process.analyzeAHtoMuTauEventsOS_woBtag_factorizedWithMuonIsolation.estimateSysUncertainties = cms.bool(True)
+    if hasattr(process, "analyzeAHtoMuTauEventsOS_wBtag_factorizedWithMuonIsolation"):
+        process.analyzeAHtoMuTauEventsOS_wBtag_factorizedWithMuonIsolation.estimateSysUncertainties = cms.bool(True)    
+    if hasattr(process, "analyzeAHtoMuTauEventsOS_woBtag_factorizedWithoutMuonIsolation"):
+        process.analyzeAHtoMuTauEventsOS_woBtag_factorizedWithoutMuonIsolation.estimateSysUncertainties = cms.bool(True)
+    if hasattr(process, "analyzeAHtoMuTauEventsOS_wBtag_factorizedWithoutMuonIsolation"):
+        process.analyzeAHtoMuTauEventsOS_wBtag_factorizedWithoutMuonIsolation.estimateSysUncertainties = cms.bool(True)    
 
 
 
