@@ -235,7 +235,7 @@ cfgDiMuPairZmumuHypothesisVetoByLooseIsolation = cms.PSet(
     maxNumber = cms.uint32(0)
 )
 
-zToMuTauEventSelConfigurator = eventSelFlagProdConfigurator(
+zToMuTauEventSelConfiguratorOS = eventSelFlagProdConfigurator(
     [ cfgGenPhaseSpaceCut,
       cfgTrigger,
       cfgPrimaryEventVertex,
@@ -261,13 +261,22 @@ zToMuTauEventSelConfigurator = eventSelFlagProdConfigurator(
       cfgDiTauCandidateForMuTauMt1METcut,
       cfgDiTauCandidateForMuTauPzetaDiffCut,
       cfgDiTauCandidateForMuTauZeroChargeCut,
-      cfgDiTauCandidateForMuTauNonZeroChargeCut,
       cfgDiMuPairZmumuHypothesisVetoByLooseIsolation ],
     boolEventSelFlagProducer = "BoolEventSelFlagProducer",
     pyModuleName = __name__
 )
 
-produceEventSelFlagsZtoMuTau = zToMuTauEventSelConfigurator.configure()
+produceEventSelFlagsZtoMuTauOS = zToMuTauEventSelConfiguratorOS.configure()
+
+zToMuTauEventSelConfiguratorSS = eventSelFlagProdConfigurator(
+    [ cfgDiTauCandidateForMuTauNonZeroChargeCut ],
+    boolEventSelFlagProducer = "BoolEventSelFlagProducer",
+    pyModuleName = __name__
+)
+
+produceEventSelFlagsZtoMuTauSS = zToMuTauEventSelConfiguratorSS.configure()
+
+produceEventSelFlagsZtoMuTau = cms.Sequence(produceEventSelFlagsZtoMuTauOS * produceEventSelFlagsZtoMuTauSS)
 
 isRecZtoMuTau = cms.EDProducer("BoolEventSelFlagProducer",
     pluginName = cms.string('isRecZtoMuTau'),

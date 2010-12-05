@@ -107,10 +107,10 @@ def enableSysUncertainties_runZtoMuTau(process):
     process.producePatTupleZtoMuTauSpecific._seq = process.prodSmearedTaus * process.producePatTupleZtoMuTauSpecific._seq
     process.producePatTupleZtoMuTauSpecific._seq = process.prodSmearedJets * process.producePatTupleZtoMuTauSpecific._seq
 
-    process.produceEventSelFlagsZtoMuTau = \
-      zToMuTauEventSelConfigurator.configure(process = process, estimateSysUncertainties = True)
-    process.produceEventSelFlagsZtoMuTauLooseMuonIsolation = \
-      zToMuTauEventSelConfiguratorLooseMuonIsolation.configure(process = process, estimateSysUncertainties = True)
+    process.produceEventSelFlagsZtoMuTauOS = \
+      zToMuTauEventSelConfiguratorOS.configure(process = process, estimateSysUncertainties = True)
+    process.produceEventSelFlagsZtoMuTauLooseMuonIsolationOS = \
+      zToMuTauEventSelConfiguratorLooseMuonIsolationOS.configure(process = process, estimateSysUncertainties = True)
 
     setattr(patMuonSelConfigurator, "systematics", muonSystematics)
     process.selectPatMuons = patMuonSelConfigurator.configure(process = process)
@@ -265,10 +265,10 @@ def enableSysUncertainties_runZtoMuTau(process):
     process.produceMuTauPairsLooseMuonIsolation = muTauPairProdConfiguratorLooseMuonIsolation.configure(process = process)
 
     setattr(patMuTauPairSelConfiguratorOS, "systematics", muTauPairSystematics)
-    process.selectMuTauPairs = patMuTauPairSelConfiguratorOS.configure(process = process)
+    process.selectMuTauPairsOS = patMuTauPairSelConfiguratorOS.configure(process = process)
     
     setattr(patMuTauPairSelConfiguratorLooseMuonIsolationOS, "systematics", muTauPairSystematics)
-    process.selectMuTauPairsLooseMuonIsolation = patMuTauPairSelConfiguratorLooseMuonIsolationOS.configure(process = process)
+    process.selectMuTauPairsLooseMuonIsolationOS = patMuTauPairSelConfiguratorLooseMuonIsolationOS.configure(process = process)
 
     if hasattr(process, "isRecZtoMuTau"):        
         expSysUncertainties = getSysUncertaintyNames(
@@ -347,16 +347,16 @@ def enableSysUncertainties_runAHtoMuTau(process):
 
     enableSysUncertainties_runZtoMuTau(process)
 
-    process.produceEventSelFlagsAHtoMuTau = \
-      ahToMuTauEventSelConfigurator.configure(process = process, estimateSysUncertainties = True)
-    process.produceEventSelFlagsAHtoMuTauLooseMuonIsolation = \
-      ahToMuTauEventSelConfiguratorLooseMuonIsolation.configure(process = process, estimateSysUncertainties = True)
+    process.produceEventSelFlagsAHtoMuTauOS = \
+      ahToMuTauEventSelConfiguratorOS.configure(process = process, estimateSysUncertainties = True)
+    process.produceEventSelFlagsAHtoMuTauLooseMuonIsolationOS = \
+      ahToMuTauEventSelConfiguratorLooseMuonIsolationOS.configure(process = process, estimateSysUncertainties = True)
 
     setattr(patMuTauPairSelConfiguratorForAHtoMuTauOS, "systematics", muTauPairSystematics)
-    process.selectMuTauPairsForAHtoMuTau = patMuTauPairSelConfiguratorForAHtoMuTauOS.configure(process = process)
+    process.selectMuTauPairsForAHtoMuTauOS = patMuTauPairSelConfiguratorForAHtoMuTauOS.configure(process = process)
     
     setattr(patMuTauPairSelConfiguratorForAHtoMuTauLooseMuonIsolationOS, "systematics", muTauPairSystematics)
-    process.selectMuTauPairsForAHtoMuTauLooseMuonIsolation = \
+    process.selectMuTauPairsForAHtoMuTauLooseMuonIsolationOS = \
       patMuTauPairSelConfiguratorForAHtoMuTauLooseMuonIsolationOS.configure(process = process)
 
     setattr(patJetSelConfiguratorForAHtoMuTau, "systematics", jetSystematics)

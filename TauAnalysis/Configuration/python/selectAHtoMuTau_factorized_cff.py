@@ -62,14 +62,13 @@ cfgCentralJetEt20bTagCutLooseMuonIsolation = cfgCentralJetEt20bTagCut.clone(
     src_individual = cms.InputTag('selectedPatJetsForAHtoMuTauBtagLooseMuonIsolationIndividual')
 )
 
-ahToMuTauEventSelConfiguratorLooseMuonIsolation = eventSelFlagProdConfigurator(
+ahToMuTauEventSelConfiguratorLooseMuonIsolationOS = eventSelFlagProdConfigurator(
     [ cfgMuonPFRelIsoCutLooseIsolation,
       cfgMuonTrkIPcutLooseIsolation,
       cfgDiTauCandidateForAHtoMuTauAntiOverlapVetoLooseMuonIsolation,
       cfgDiTauCandidateForAHtoMuTauMt1METcutLooseMuonIsolation,
       cfgDiTauCandidateForAHtoMuTauPzetaDiffCutLooseMuonIsolation,
       cfgDiTauCandidateForAHtoMuTauZeroChargeCutLooseMuonIsolation,
-      cfgDiTauCandidateForAHtoMuTauNonZeroChargeCutLooseMuonIsolation,
       cfgCentralJetEt20bTagVetoLooseMuonIsolation,
       cfgCentralJetEt20CutLooseMuonIsolation,
       cfgCentralJetEt20bTagCutLooseMuonIsolation ],
@@ -77,7 +76,19 @@ ahToMuTauEventSelConfiguratorLooseMuonIsolation = eventSelFlagProdConfigurator(
     pyModuleName = __name__
 )
 
-produceEventSelFlagsAHtoMuTauLooseMuonIsolation = ahToMuTauEventSelConfiguratorLooseMuonIsolation.configure()
+produceEventSelFlagsAHtoMuTauLooseMuonIsolationOS = ahToMuTauEventSelConfiguratorLooseMuonIsolationOS.configure()
+
+ahToMuTauEventSelConfiguratorLooseMuonIsolationSS = eventSelFlagProdConfigurator(
+    [ cfgDiTauCandidateForAHtoMuTauNonZeroChargeCutLooseMuonIsolation ],
+        boolEventSelFlagProducer = "BoolEventSelFlagProducer",
+    pyModuleName = __name__
+)
+
+produceEventSelFlagsAHtoMuTauLooseMuonIsolationSS = ahToMuTauEventSelConfiguratorLooseMuonIsolationSS.configure()
+
+produceEventSelFlagsAHtoMuTauLooseMuonIsolation = cms.Sequence(
+    produceEventSelFlagsAHtoMuTauLooseMuonIsolationOS * produceEventSelFlagsAHtoMuTauLooseMuonIsolationSS
+)
 
 selectAHtoMuTauEventsLooseMuonIsolation = cms.Sequence(produceEventSelFlagsAHtoMuTauLooseMuonIsolation)
     

@@ -72,7 +72,7 @@ cfgCentralJetEt20bTagCut = cms.PSet(
     minNumber = cms.uint32(1)
 )
 
-ahToMuTauEventSelConfigurator = eventSelFlagProdConfigurator(
+ahToMuTauEventSelConfiguratorOS = eventSelFlagProdConfigurator(
     [ cfgGenPhaseSpaceCut,
       cfgTrigger,
       cfgPrimaryEventVertex,
@@ -98,7 +98,6 @@ ahToMuTauEventSelConfigurator = eventSelFlagProdConfigurator(
       cfgDiTauCandidateForAHtoMuTauMt1METcut,
       cfgDiTauCandidateForAHtoMuTauPzetaDiffCut,
       cfgDiTauCandidateForAHtoMuTauZeroChargeCut,
-      cfgDiTauCandidateForAHtoMuTauNonZeroChargeCut,
       cfgDiMuPairZmumuHypothesisVetoByLooseIsolation,
       cfgCentralJetEt20bTagVeto,
       cfgCentralJetEt20Cut,
@@ -107,7 +106,17 @@ ahToMuTauEventSelConfigurator = eventSelFlagProdConfigurator(
     pyModuleName = __name__
 )
 
-produceEventSelFlagsAHtoMuTau = ahToMuTauEventSelConfigurator.configure()
+produceEventSelFlagsAHtoMuTauOS = ahToMuTauEventSelConfiguratorOS.configure()
+
+ahToMuTauEventSelConfiguratorSS = eventSelFlagProdConfigurator(
+    [ cfgDiTauCandidateForAHtoMuTauNonZeroChargeCut ],
+     boolEventSelFlagProducer = "BoolEventSelFlagProducer",
+    pyModuleName = __name__
+)
+
+produceEventSelFlagsAHtoMuTauSS = ahToMuTauEventSelConfiguratorSS.configure()
+
+produceEventSelFlagsAHtoMuTau = cms.Sequence(produceEventSelFlagsAHtoMuTauOS * produceEventSelFlagsAHtoMuTauSS)
 
 isRecAHtoMuTauCentralJetVeto = cms.EDProducer("BoolEventSelFlagProducer",
     pluginName = cms.string('isRecAHtoMuTauCentralJetVeto'),

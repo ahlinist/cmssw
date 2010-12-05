@@ -57,19 +57,30 @@ cfgDiTauCandidateForMuTauNonZeroChargeCutLooseMuonIsolation = cfgDiTauCandidateF
     src_individual = cms.InputTag('selectedMuTauPairsNonZeroChargeLooseMuonIsolationIndividual')
 )
 
-zToMuTauEventSelConfiguratorLooseMuonIsolation = eventSelFlagProdConfigurator(
+zToMuTauEventSelConfiguratorLooseMuonIsolationOS = eventSelFlagProdConfigurator(
     [ cfgMuonPFRelIsoCutLooseIsolation,
       cfgMuonTrkIPcutLooseIsolation,
       cfgDiTauCandidateForMuTauAntiOverlapVetoLooseMuonIsolation,
       cfgDiTauCandidateForMuTauMt1METcutLooseMuonIsolation,
       cfgDiTauCandidateForMuTauPzetaDiffCutLooseMuonIsolation,
-      cfgDiTauCandidateForMuTauZeroChargeCutLooseMuonIsolation,
-      cfgDiTauCandidateForMuTauNonZeroChargeCutLooseMuonIsolation ],
+      cfgDiTauCandidateForMuTauZeroChargeCutLooseMuonIsolation ],
     boolEventSelFlagProducer = "BoolEventSelFlagProducer",
     pyModuleName = __name__
 )
 
-produceEventSelFlagsZtoMuTauLooseMuonIsolation = zToMuTauEventSelConfiguratorLooseMuonIsolation.configure()
+produceEventSelFlagsZtoMuTauLooseMuonIsolationOS = zToMuTauEventSelConfiguratorLooseMuonIsolationOS.configure()
+
+zToMuTauEventSelConfiguratorLooseMuonIsolationSS = eventSelFlagProdConfigurator(
+    [ cfgDiTauCandidateForMuTauNonZeroChargeCutLooseMuonIsolation ],
+    boolEventSelFlagProducer = "BoolEventSelFlagProducer",
+    pyModuleName = __name__
+)
+
+produceEventSelFlagsZtoMuTauLooseMuonIsolationSS = zToMuTauEventSelConfiguratorLooseMuonIsolationSS.configure()
+
+produceEventSelFlagsZtoMuTauLooseMuonIsolation = cms.Sequence(
+    produceEventSelFlagsZtoMuTauLooseMuonIsolationOS * produceEventSelFlagsZtoMuTauLooseMuonIsolationSS
+)    
 
 selectZtoMuTauEventsLooseMuonIsolation = cms.Sequence(produceEventSelFlagsZtoMuTauLooseMuonIsolation)
     
