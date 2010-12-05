@@ -45,7 +45,7 @@ def _applyZllRecoilCorrection(process, diTauProductionSequenceName, diTauProduce
 
         diTauProductionSequence = getattr(process, diTauProductionSequenceName)
         diTauProducerModule = getattr(process, diTauProducerModuleName)
-        diTauProductionSequence.replace(process.diTauProducerModule, patPFMETsZllRecoilCorrectionSequence)
+        diTauProductionSequence.replace(diTauProducerModule, patPFMETsZllRecoilCorrectionSequence)
 
         # iterate over all sequences attached to process object
         # and replace InputTags:
@@ -62,9 +62,10 @@ def _applyZllRecoilCorrection(process, diTauProductionSequenceName, diTauProduce
         #  o patPFMETs --> cms.InputTag(patPFMETsZllRecoilCorrectionModuleName, 'met')
         # in GenericAnalyzer sequences
         for genericAnalyzerSequenceName in genericAnalyzerSequenceNames:
-            genericAnalyzerSequence = getattr(process, genericAnalyzerSequenceName)
-            patutils.massSearchReplaceAnyInputTag(genericAnalyzerSequence, cms.InputTag('patPFMETs'),
-              cms.InputTag(patPFMETsZllRecoilCorrectionModuleName, 'met'))
+            if hasattr(process, genericAnalyzerSequenceName):
+                genericAnalyzerSequence = getattr(process, genericAnalyzerSequenceName)
+                patutils.massSearchReplaceAnyInputTag(genericAnalyzerSequence, cms.InputTag('patPFMETs'),
+                  cms.InputTag(patPFMETsZllRecoilCorrectionModuleName, 'met'))
         
         # restore InputTags of ZllRecoilCorrection modules
         patPFMETsZllRecoilCorrectionModule.src = cms.InputTag(diTauProducerModuleName)
@@ -178,7 +179,7 @@ def applyZrecoilCorrection_runAHtoMuTau(process):
                               [ "analyzeAHtoMuTauSequence_factorizedWithMuonIsolation",
                                 "analyzeAHtoMuTauSequence_factorizedWithoutMuonIsolation" ])
 
-def _addEventWeightZtoMuTau(process, srcEventWeight, applyAfterFilterName):
+def _addEventWeightZtoMuTau(process, srcEventWeight, applyAfterFilterName = "*"):
     
     _addEventWeight(process,
                     [ "analyzeZtoMuTauEvents",
@@ -204,7 +205,7 @@ def applyVertexMultiplicityReweighting_runZtoMuTau(process):
 
     _addEventWeightZtoMuTau(process, "vertexMultiplicityReweight")
 
-def _addEventWeightZtoMuTau_bgEstTemplate(process, srcEventWeight, applyAfterFilterName):
+def _addEventWeightZtoMuTau_bgEstTemplate(process, srcEventWeight, applyAfterFilterName = "*"):
 
     _addEventWeight(process,
                     [ "analyzeEventsBgEstQCDenriched",
@@ -226,7 +227,7 @@ def applyVertexMultiplicityReweighting_runZtoMuTau_bgEstTemplate(process):
 
     _addEventWeightZtoMuTau_bgEstTemplate(process, "vertexMultiplicityReweight")
 
-def _addEventWeightZtoMuTau_tauIdEff(process, srcEventWeight, applyAfterFilterName):
+def _addEventWeightZtoMuTau_tauIdEff(process, srcEventWeight, applyAfterFilterName = "*"):
 
     _addEventWeight(process,
                     [ "analyzeEventsTauIdEffZtoMuTauCombinedFit",
@@ -251,7 +252,7 @@ def applyVertexMultiplicityReweighting_runZtoMuTau_tauIdEff(process):
 
     _addEventWeightZtoMuTau_tauIdEff(process, "vertexMultiplicityReweight")
 
-def _addEventWeighAHtoMuTau(process, srcEventWeight, applyAfterFilterName):
+def _addEventWeighAHtoMuTau(process, srcEventWeight, applyAfterFilterName = "*"):
 
     _addEventWeight(process,
                     [ "analyzeAHtoMuTauEvents_woBtag",
