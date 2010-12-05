@@ -927,26 +927,17 @@ muTauAnalysisSequenceOS = cms.VPSet(
             'muonHistManager',
             'tauHistManager',
             'diTauCandidateHistManagerForMuTau',
-            'muPairHistManagerByLooseIsolation',
-
-            'jetHistManager',
-            'caloMEtHistManager',
-            'pfMEtHistManager',
-            'particleMultiplicityHistManager',
-            'vertexHistManager',
-            'triggerHistManagerForMuTau',
-            'dataBinner',
-	    'sysUncertaintyBinnerForMuTauEff'
+	    'diTauCandidateCollinearApproxHistManagerForMuTau',	
+	    'diTauCandidateSVfitHistManagerForMuTau',
+            'muPairHistManagerByLooseIsolation'
         ),
         replace = cms.vstring(
             'muonHistManager.muonSource = selectedPatMuonsTrkIPcumulative',
             'tauHistManager.tauSource = selectedPatTausForMuTauElectronVetoCumulative',
-            'diTauCandidateHistManagerForMuTau.diTauCandidateSource = selectedMuTauPairsOSpZetaDiffCumulative',
+            'diTauCandidateHistManagerForMuTau.diTauCandidateSource = selectedMuTauPairsPzetaDiffCumulative',
             'diTauCandidateHistManagerForMuTau.visMassHypothesisSource = muTauPairVisMassHypotheses',
-            'diTauCandidateCollinearApproxHistManagerForMuTau.diTauCandidateSource = selectedMuTauPairsOSpZetaDiffCumulative',
-            'diTauCandidateSVfitHistManagerForMuTau.diTauCandidateSource = selectedMuTauPairsOSpZetaDiffCumulative',
-            'diTauCandidateEventActivityHistManagerForMuTau.diTauCandidateSource = selectedMuTauPairsOSpZetaDiffCumulative',
-            'diTauCandidateZmumuHypothesisHistManagerForMuTau.ZllHypothesisSource = muTauPairZmumuHypotheses',
+            'diTauCandidateCollinearApproxHistManagerForMuTau.diTauCandidateSource = selectedMuTauPairsPzetaDiffCumulative',
+            'diTauCandidateSVfitHistManagerForMuTau.diTauCandidateSource = selectedMuTauPairsPzetaDiffCumulative',
             'muPairHistManagerByLooseIsolation.diTauCandidateSource = selectedDiMuPairZmumuHypothesesByLooseIsolation'
         )
     ),
