@@ -319,7 +319,9 @@ from TauAnalysis.Configuration.tools.sysUncertaintyTools import enableSysUncerta
 process.disableEventDump = cms.PSet()
 if hasattr(process, "disableEventDump"):
     process.analyzeAHtoMuTauEventsOS_woBtag.eventDumps = cms.VPSet()
+    process.analyzeAHtoMuTauEventsSS_woBtag.eventDumps = cms.VPSet()
     process.analyzeAHtoMuTauEventsOS_wBtag.eventDumps = cms.VPSet()
+    process.analyzeAHtoMuTauEventsSS_wBtag.eventDumps = cms.VPSet()
 #--------------------------------------------------------------------------------
 
 #--------------------------------------------------------------------------------
