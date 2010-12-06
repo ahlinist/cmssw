@@ -13,10 +13,12 @@ SAMPLES_TO_ANALYZE = [
     'qqZtautau',
     ##'qqZtautauPU156bx',
     'Zmumu',
+    'Zee_PU156BX',
     #'InclusivePPmuX',
     'PPmuXptGt20Mu10', 'PPmuXptGt20Mu15',
     'Wenu', 'Wmunu', 'Wtaunu',
     'TTplusJets'
+    'TTplusJetsNoPU'
 ]
 
 # List of samples to include in the final level plots.  May include selections
@@ -237,6 +239,17 @@ RECO_SAMPLES = {
         'applyVertexMultiplicityReweighting' : True,
         'hlt' : cms.InputTag("TriggerResults", "", "REDIGI38XPU")
     },
+    'Zee_PU156BX' : {
+        'datasetpath' : "/DYToEE_M-20_TuneZ2_7TeV-pythia6/Fall10-E7TeV_ProbDist_2010Data_BX156_START38_V12-v1/GEN-SIM-RECO",
+        'events_processed' : 2085586,
+        'skim_eff' : 1.0,
+        'x_sec' : 1.28*1300*_picobarns, # Z + jets correction factor for NLO/LO cross-sections = 1.28
+        'legendEntry' : plotter.process_Zee.config_dqmHistPlotter.legendEntry.value(),
+        'type' : plotter.process_Zee.config_dqmHistPlotter.type.value(),
+        'drawOption' : styles.drawOption_Zee,
+        'applyZrecoilCorrection' : False,
+        'hlt' : cms.InputTag("TriggerResults", "", "REDIGI38XPU")
+    },
     'InclusivePPmuX' : {
         'datasetpath' : "/ppMuX/akalinow-SkimTauTau_356_pass1-0a3d3891f015a95324f94837322fb8aa-muTauSkim/USER",
         'events_processed' : 9878911,
@@ -343,7 +356,20 @@ RECO_SAMPLES = {
         'applyVertexMultiplicityReweighting' : True,
         ##'hlt' : cms.InputTag("TriggerResults", "", "HLT")
         'hlt' : cms.InputTag("TriggerResults", "", "REDIGI38XPU")
-    }
+    },
+    'TTplusJetsNoPU' : {
+        'datasetpath' : "/TT_TuneZ2_7TeV-pythia6-tauola/Fall10-START38_V12-v1/GEN-SIM-RECO",
+        'dbs_url' :  "http://cmsdbsprod.cern.ch/cms_dbs_prod_global/servlet/DBSServlet",
+        'events_processed' : 1099550,
+        'skim_eff' : 1.0,
+        'x_sec' : 165*_picobarns, # NNLO cross-section from https://twiki.cern.ch/twiki/bin/viewauth/CMS/StandardModelCrossSections
+        'legendEntry' : plotter.process_TTplusJets.config_dqmHistPlotter.legendEntry.value(),
+        'type' : plotter.process_TTplusJets.config_dqmHistPlotter.type.value(),
+        'drawOption' : styles.drawOption_TTplusJets,
+        'applyMuonTriggerEfficiencyCorrection' : True,
+        'applyVertexMultiplicityReweighting' : True,
+        'hlt' : cms.InputTag("TriggerResults", "", "HLT")
+    },
 }
 
 # Define samples that get merged together
