@@ -21,8 +21,14 @@ process.maxEvents = cms.untracked.PSet(
 
 process.source = cms.Source("PoolSource",
                             fileNames = cms.untracked.vstring(        
-#          'file:/ciet3b/data4/MUSKIM2010/MUSKIM_143958-144114_6.root'
-            "file:/ciet3b/data4/MUSKIM2010B/MUAODRED_SKIM_147117-148058_5.root"
+#"rfio:/castor/cern.ch/cms/store/data/Run2010B/Mu/RECO/PromptReco-v2/000/146/728/5C8D6727-3BCA-DF11-8D0E-00304879FBB2.root"
+#"rfio:/castor/cern.ch/cms/store/data/Run2010B/Mu/RECO/PromptReco-v2/000/147/926/6662D99B-35D8-DF11-AD29-003048D37456.root"
+
+"rfio:/castor/cern.ch/cms/store/data/Run2010B/Mu/RECO/PromptReco-v2/000/149/442/B0642007-47E6-DF11-ACC0-0030487CD16E.root"
+
+#"rfio:/castor/cern.ch/cms/store/relval/CMSSW_3_8_2/RelValZMM/GEN-SIM-RECO/START38_V9-v1/0019/62C86D62-BFAF-DF11-85B3-003048678A6C.root"
+#"rfio:/castor/cern.ch/cms/store/relval/CMSSW_3_6_1/RelValZMM/GEN-SIM-RECO/START36_V7-v1/0020/566083FA-005D-DF11-B5E5-003048679030.root"
+#"rfio:/castor/cern.ch/cms/store/relval/CMSSW_3_6_1/RelValWM/GEN-SIM-RECO/START36_V7-v1/0020/5426D78D-055D-DF11-AE6B-003048678F84.root"
     )
 )
 
