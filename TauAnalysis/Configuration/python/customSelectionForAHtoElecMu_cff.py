@@ -164,23 +164,23 @@ patMuons.userIsolation.hcal.deltaR = cms.double(0.3)
 patMuons.userIsolation.user.deltaR = cms.double(0.3)
 #***** custom selection *****
 selectedPatMuonsEta = selectedPatMuonsEta21.clone(cut = cms.string('abs(eta) < 2.4'))
-selectedPatMuonsPt = selectedPatMuonsPt10.clone(cut = cms.string('pt > 10.'))
+selectedPatMuonsPt = selectedPatMuonsPt15.clone(cut = cms.string('pt > 10.'))
 selectedPatMuonsIso = cms.EDFilter("PATMuonSelector",
      cut = cms.string('hcalIso/pt + ecalIso/pt + trackIso/pt < 0.15'),
      filter = cms.bool(False)
 )
 ##cut optimization
-selectedPatMuonsPt10 = selectedPatMuonsPt10.clone(cut = cms.string('pt > 10.'))
-selectedPatMuonsPt11 = selectedPatMuonsPt10.clone(cut = cms.string('pt > 11.'))
-selectedPatMuonsPt12 = selectedPatMuonsPt10.clone(cut = cms.string('pt > 12.'))
-selectedPatMuonsPt13 = selectedPatMuonsPt10.clone(cut = cms.string('pt > 13.'))
-selectedPatMuonsPt14 = selectedPatMuonsPt10.clone(cut = cms.string('pt > 14.'))
-selectedPatMuonsPt15 = selectedPatMuonsPt10.clone(cut = cms.string('pt > 14.'))
-selectedPatMuonsPt16 = selectedPatMuonsPt10.clone(cut = cms.string('pt > 16.'))
-selectedPatMuonsPt17 = selectedPatMuonsPt10.clone(cut = cms.string('pt > 17.'))
-selectedPatMuonsPt18 = selectedPatMuonsPt10.clone(cut = cms.string('pt > 18.'))
-selectedPatMuonsPt19 = selectedPatMuonsPt10.clone(cut = cms.string('pt > 19.'))
-selectedPatMuonsPt20 = selectedPatMuonsPt10.clone(cut = cms.string('pt > 20.'))
+selectedPatMuonsPt10 = selectedPatMuonsPt15.clone(cut = cms.string('pt > 10.'))
+selectedPatMuonsPt11 = selectedPatMuonsPt15.clone(cut = cms.string('pt > 11.'))
+selectedPatMuonsPt12 = selectedPatMuonsPt15.clone(cut = cms.string('pt > 12.'))
+selectedPatMuonsPt13 = selectedPatMuonsPt15.clone(cut = cms.string('pt > 13.'))
+selectedPatMuonsPt14 = selectedPatMuonsPt15.clone(cut = cms.string('pt > 14.'))
+selectedPatMuonsPt15 = selectedPatMuonsPt15.clone(cut = cms.string('pt > 14.'))
+selectedPatMuonsPt16 = selectedPatMuonsPt15.clone(cut = cms.string('pt > 16.'))
+selectedPatMuonsPt17 = selectedPatMuonsPt15.clone(cut = cms.string('pt > 17.'))
+selectedPatMuonsPt18 = selectedPatMuonsPt15.clone(cut = cms.string('pt > 18.'))
+selectedPatMuonsPt19 = selectedPatMuonsPt15.clone(cut = cms.string('pt > 19.'))
+selectedPatMuonsPt20 = selectedPatMuonsPt15.clone(cut = cms.string('pt > 20.'))
 selectedPatMuonsIso005 = selectedPatMuonsIso.clone(cut = cms.string('hcalIso/pt + ecalIso/pt + trackIso/pt < 0.05'))
 selectedPatMuonsIso010 = selectedPatMuonsIso.clone(cut = cms.string('hcalIso/pt + ecalIso/pt + trackIso/pt < 0.10'))
 selectedPatMuonsIso015 = selectedPatMuonsIso.clone(cut = cms.string('hcalIso/pt + ecalIso/pt + trackIso/pt < 0.15'))
@@ -213,7 +213,6 @@ patMuonSelConfigurator = objSelConfigurator(
       selectedPatMuonsEta,
       selectedPatMuonsPt,
       selectedPatMuonsIso,
-      selectedPatMuonsPionVeto,
       selectedPatMuonsTrk,
       selectedPatMuonsTrkIP ],
     src = "cleanPatMuons",
@@ -233,9 +232,6 @@ selectLayer1Muons = patMuonSelConfigurator.configure(pyNameSpace = locals())
 #    ),
 #    tauAnalysisSelMuonIso = cms.PSet(
 #      src = cms.InputTag('selectedPatMuonsIsoIndividual')
-#    ),
-#    tauAnalysisSelMuonPionVeto = cms.PSet(
-#      src = cms.InputTag('selectedPatMuonsPionVetoIndividual')
 #    ),
 #    tauAnalysisSelMuonTrkIP = cms.PSet(
 #      src = cms.InputTag('selectedPatMuonsTrkIPindividual')
@@ -311,7 +307,7 @@ produceDiTauPairsAllKinds = cms.Sequence( produceElecMuPairs )
 
 #------------------------------------- jets -------------------------------------#
 selectedPatJetsAntiOverlapWithLeptonsVeto.srcNotToBeFiltered = cms.VInputTag("selectedPatElectronsTrkCumulative",
-                                                                                "selectedPatMuonsPionVetoCumulative")
+                                                                                "selectedPatMuonsTrkCumulative")
 selectedPatJetsEta = selectedPatJetsEta21.clone(cut = cms.string('abs(eta) < 2.4'))
 # select jets with b-tagging
 selectedPatJetsBtag = cms.EDFilter("PATJetSelector",                                                                            
