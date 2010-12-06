@@ -152,10 +152,10 @@ cut_values = {
     },
     'loose' : {
         'muon_pt' : 13.5,
-        'muon_eta' : 2.3,
+        'muon_eta' : 2.2,
         'mt1MET' : 50.,
-        'tau_pt' : 15,
-        'tau_eta' : 2.5,
+        'tau_pt' : 18,
+        'tau_eta' : 2.4,
         'pzeta' : -25.,
         'tanc' : -1000,
         'charge' : 'charge > -1000',
