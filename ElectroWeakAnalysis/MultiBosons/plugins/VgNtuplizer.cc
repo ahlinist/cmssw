@@ -175,7 +175,7 @@ VgNtuplizer::VgNtuplizer(const edm::ParameterSet& ps) : verbosity_(0), helper_(p
   tree_->Branch("eleRecoFlag", eleRecoFlag_, "eleRecoFlag[nEle]/I");
   // If Severity == 3, it is spike. If Severity == 4, it is bad, not sutiable to be used in reconstruction.
   tree_->Branch("eleSeverity", eleSeverity_, "eleSeverity[nEle]/I");
-  
+
   if (doGenParticles_) {
     tree_->Branch("eleGenIndex", eleGenIndex_, "eleGenIndex[nEle]/I");
     tree_->Branch("eleGenGMomPID", eleGenGMomPID_, "eleGenGMomPID[nEle]/I");
@@ -219,7 +219,7 @@ VgNtuplizer::VgNtuplizer(const edm::ParameterSet& ps) : verbosity_(0), helper_(p
   // If Flag == 2, it means that rechit is out of time
   tree_->Branch("phoRecoFlag", phoRecoFlag_, "phoRecoFlag[nPho]/I");
   // If Severity == 3, it is spike. If Severity == 4, it is bad, not sutiable to be used in reconstruction.
-  tree_->Branch("phoSeverity", phoSeverity_, "phoSeverity[nPho]/I");  
+  tree_->Branch("phoSeverity", phoSeverity_, "phoSeverity[nPho]/I");
   tree_->Branch("phoPos", phoPos_, "phoPos[nPho]/I");
   tree_->Branch("phoRoundness", phoRoundness_, "phoRoundness[nPho]/F");
   tree_->Branch("phoAngle", phoAngle_, "phoAngle[nPho]/F");
@@ -435,14 +435,14 @@ void VgNtuplizer::produce(edm::Event & e, const edm::EventSetup & es) {
   HLTIndexPath[15] = "HLT_DoubleMu3_v2";
   HLTIndexPath[16] = "HLT_DoubleMu5_v1";
   HLTIndexPath[17] = "HLT_Ele15_LW_L1R";
-  HLTIndexPath[18] = "HLT_Ele20_LW_L1R"; 
+  HLTIndexPath[18] = "HLT_Ele20_LW_L1R";
   HLTIndexPath[19] = "HLT_Ele15_SW_L1R";
   HLTIndexPath[20] = "HLT_Ele20_SW_L1R";
   HLTIndexPath[21] = "HLT_Ele15_SW_EleId_L1R";
   HLTIndexPath[22] = "HLT_Ele20_SW_EleId_L1R";
   HLTIndexPath[23] = "HLT_Ele15_SW_CaloEleId_L1R";
-  HLTIndexPath[24] = "HLT_Ele20_SW_CaloEleId_L1R"; 
-  HLTIndexPath[25] = "HLT_Ele17_SW_CaloEleId_L1R"; 
+  HLTIndexPath[24] = "HLT_Ele20_SW_CaloEleId_L1R";
+  HLTIndexPath[25] = "HLT_Ele17_SW_CaloEleId_L1R";
   HLTIndexPath[26] = "HLT_Ele17_SW_TightEleId_L1R";
   HLTIndexPath[27] = "HLT_Ele17_SW_TighterEleIdIsol_L1R";
   HLTIndexPath[28] = "HLT_Ele17_SW_TighterEleIdIsol_L1R_v2";
@@ -469,7 +469,7 @@ void VgNtuplizer::produce(edm::Event & e, const edm::EventSetup & es) {
   HLTIndexPath[49] = "HLT_Photon10_L1R";
 
   for (int i=0; i<50; ++i) HLTIndex_[i] = -1;
-  
+
   nHLT_ = 0;
   if (saveHLTInfo_) {
     const TriggerPathCollection &trgPaths = *triggerEvent->paths();
@@ -477,7 +477,7 @@ void VgNtuplizer::produce(edm::Event & e, const edm::EventSetup & es) {
     for (size_t i=0; i<trgPaths.size(); ++i) {
       HLT_[i] = trgPaths[i].wasAccept() == true ? 1 : 0;
     }
-    
+
     for (size_t i=0; i<HLTIndexPath.size(); ++i) {
       if ( HLTIndexPath.find(i) == HLTIndexPath.end() ) {
         throw cms::Exception("HLTIndex") << "Illegal index of "
@@ -489,12 +489,12 @@ void VgNtuplizer::produce(edm::Event & e, const edm::EventSetup & es) {
       }
     } // for (size_t i=0; i<HLTIndexPath.size(); ++i)
   } // if (saveHLTInfo_)
-  
+
   // vertex
   nVtx_ = 0;
   Handle<VertexCollection> recVtxs;
   if (e.getByLabel(vtxlabel_, recVtxs)) {
-    
+
     for (size_t i=0; i<recVtxs->size(); ++i)
       if (!((*recVtxs)[i].isFake())) {
 	vtx_[nVtx_][0] = (*recVtxs)[i].x();
@@ -503,11 +503,11 @@ void VgNtuplizer::produce(edm::Event & e, const edm::EventSetup & es) {
 	vtxNTrk_[nVtx_] = (*recVtxs)[i].tracksSize();
 	vtxNDF_[nVtx_] = (*recVtxs)[i].ndof();
 	vtxD0_[nVtx_] = (*recVtxs)[i].position().rho();
-	
+
 	nVtx_++;
       }
   }
-  
+
   // PDF information
   // cout << "VgNtuplizer: produce: PDF information..." << endl;
   if (!isData_) {
@@ -527,30 +527,30 @@ void VgNtuplizer::produce(edm::Event & e, const edm::EventSetup & es) {
       // cout << "Got pThat info..." << endl;
     }
   }
-  
+
   // GenParticle
   // cout << "VgNtuplizer: produce: GenParticle... " << endl;
   if (!isData_ && genParticlesHandle_.isValid() ) {
-    
+
     nMC_ = 0;
     int genIndex = 0;
     const Candidate *mom = 0;
-    
+
     for (vector<GenParticle>::const_iterator ip = genParticlesHandle_->begin(); ip != genParticlesHandle_->end(); ++ip) {
-      
+
       genIndex++;
-      
+
       if ((ip->status()==3 && (ip->pdgId()==23 || fabs(ip->pdgId())==24)) || (ip->status()==1 && ((fabs(ip->pdgId())>=11 && fabs(ip->pdgId())<=14) || ip->pdgId()==22))) {
-	
+
 	const Candidate *p = (const Candidate*)&(*ip);
-	
+
 	if (!p->mother()) continue;
-	
+
 	if (fabs(p->pdgId())==4 && fabs(p->mother()->pdgId())!=7) continue;
 	if ((genIndex-1)>70 && ip->pdgId()==22) continue;
 	if (fabs(p->pdgId())==12 && fabs(p->mother()->pdgId())>100) continue;
 	if (fabs(p->pdgId())==14 && fabs(p->mother()->pdgId())>100) continue;
-	
+
 	mcPID[nMC_] = p->pdgId();
 	mcPt[nMC_] = p->pt();
 	mcMass[nMC_] = p->mass();
@@ -681,7 +681,7 @@ void VgNtuplizer::produce(edm::Event & e, const edm::EventSetup & es) {
 
       // cout << "Get Electron Trigger" << std::endl;
       eleTrg_[nEle_][0] = (iEle->triggerObjectMatchesByPath("HLT_Photon10_L1R").size()) ? 1 : -99;
-      eleTrg_[nEle_][1] = (iEle->triggerObjectMatchesByPath("HLT_Photon15_Cleaned_L1R").size()) ? 1 : -99;      
+      eleTrg_[nEle_][1] = (iEle->triggerObjectMatchesByPath("HLT_Photon15_Cleaned_L1R").size()) ? 1 : -99;
       eleTrg_[nEle_][2] = (iEle->triggerObjectMatchesByPath("HLT_Ele15_LW_L1R").size()) ? 1 : -99;
       eleTrg_[nEle_][3] = (iEle->triggerObjectMatchesByPath("HLT_Ele15_SW_L1R").size()) ? 1 : -99;
       eleTrg_[nEle_][4] = (iEle->triggerObjectMatchesByPath("HLT_Ele15_SW_CaloEleId_L1R").size()) ? 1 : -99;
@@ -693,7 +693,7 @@ void VgNtuplizer::produce(edm::Event & e, const edm::EventSetup & es) {
       eleTrg_[nEle_][10] = (iEle->triggerObjectMatchesByPath("HLT_DoubleEle15_SW_L1R_v1").size()) ? 1 : -99;
       eleTrg_[nEle_][11] = (iEle->triggerObjectMatchesByPath("HLT_DoubleEle17_SW_L1R").size()) ? 1 : -99;
       eleTrg_[nEle_][12] = (iEle->triggerObjectMatchesByPath("HLT_DoubleEle17_SW_L1R_v1").size()) ? 1 : -99;
-      
+
 
       // cout << "Got Electron Trigger" << std::endl;
 
@@ -790,17 +790,17 @@ void VgNtuplizer::produce(edm::Event & e, const edm::EventSetup & es) {
       if (!isData_) {
 	// cout << "Trying to get electron gen info!" << std::endl;
         if ((*iEle).genLepton() && genParticlesHandle_.isValid() ) {
-	  
+
           for (vector<GenParticle>::const_iterator iGen = genParticlesHandle_->begin(); iGen != genParticlesHandle_->end(); ++iGen) {
-	    
+
             if (iGen->p4() == (*iEle).genLepton()->p4() && iGen->pdgId() == (*iEle).genLepton()->pdgId() && iGen->status() == (*iEle).genLepton()->status()) {
-	      
+
 	      eleGenIndex_[nEle_] = EleGenIndex;
-	      
+
 	      const Candidate *elep = (const Candidate*)&(*iGen);
-	      
+
 	      for (size_t j=0; j<elep->numberOfMothers(); ++j) {
-		
+
 		elemom = elep->mother(j);
 		eleGenMomPID_[nEle_] = elemom->pdgId();
 		eleGenMomPt_[nEle_] = elemom->pt();
@@ -812,11 +812,11 @@ void VgNtuplizer::produce(edm::Event & e, const edm::EventSetup & es) {
         }
 	// cout << "Got electron gen info!" << std::endl;
       }
-      
+
       eleIsoTrkDR03_[nEle_]  = iEle->dr03TkSumPt();
       eleIsoEcalDR03_[nEle_] = iEle->dr03EcalRecHitSumEt();
       eleIsoHcalDR03_[nEle_] = iEle->dr03HcalTowerSumEt();
-      
+
       eleIsoTrkDR04_[nEle_]  = iEle->dr04TkSumPt();
       eleIsoEcalDR04_[nEle_] = iEle->dr04EcalRecHitSumEt();
       eleIsoHcalDR04_[nEle_] = iEle->dr04HcalTowerSumEt();
@@ -845,7 +845,7 @@ void VgNtuplizer::produce(edm::Event & e, const edm::EventSetup & es) {
       if (iPho->pt() > leadingPhoPtCut_) nPhoPassCut++;
 
       // cout << "Get Electron Trigger" << std::endl;
-      
+
       phoTrg_[nPho_][0] = (iPho->triggerObjectMatchesByPath("HLT_Photon10_Cleaned_L1R").size()) ? 1 : -99;
       phoTrg_[nPho_][1] = (iPho->triggerObjectMatchesByPath("HLT_Photon15_Cleaned_L1R").size()) ? 1 : -99;
       phoTrg_[nPho_][2] = (iPho->triggerObjectMatchesByPath("HLT_Photon20_Cleaned_L1R").size()) ? 1 : -99;
@@ -883,7 +883,7 @@ void VgNtuplizer::produce(edm::Event & e, const edm::EventSetup & es) {
 
       phoOverlap_[nPho_] = (int) iPho->hasOverlaps("electrons");
       phohasPixelSeed_[nPho_] = (int) iPho->hasPixelSeed();
- 
+
       // where is photon ? (0: EB, 1: EE, 2: EBGap, 3: EEGap, 4: EBEEGap)
       phoPos_[nPho_] = -1;
       if (iPho->isEB() == true) phoPos_[nPho_] = 0;
@@ -914,15 +914,15 @@ void VgNtuplizer::produce(edm::Event & e, const edm::EventSetup & es) {
         if ((*iPho).genPhoton()) {
           for (vector<GenParticle>::const_iterator iGen = genParticlesHandle_->begin();
 	       iGen != genParticlesHandle_->end(); ++iGen) {
-	    
+
             if (iGen->p4() == (*iPho).genPhoton()->p4() &&
 		iGen->pdgId() == (*iPho).genPhoton()->pdgId() &&
 		iGen->status() == (*iPho).genPhoton()->status()) {
-	      
+
               phoGenIndex_[nPho_] = phoGenIndex;
-	      
+
               const Candidate *phop = (const Candidate*)&(*iGen);
-	      
+
               for (size_t j=0; j<phop->numberOfMothers(); ++j) {
                 phomom = phop->mother(j);
                 phoGenMomPID[nPho_] = phomom->pdgId();
@@ -930,12 +930,12 @@ void VgNtuplizer::produce(edm::Event & e, const edm::EventSetup & es) {
                 if (phomom->mother()) phoGenGMomPID[nPho_] = phomom->mother()->pdgId();
               }
             }
-	    
+
             phoGenIndex++;
           }
         }
       }
-      
+
       // Super Cluster
       phoSCE_[nPho_]   = iPho->superCluster()->energy();
       phoSCEta_[nPho_] = iPho->superCluster()->eta();
@@ -1277,15 +1277,15 @@ void VgNtuplizer::produce(edm::Event & e, const edm::EventSetup & es) {
     if ( jetHandle_.isValid() )
       for (View<pat::Jet>::const_iterator iJet = jetHandle_->begin(); iJet != jetHandle_->end(); ++iJet) {
 
-	std::cout << iJet->hasCorrFactors() << std::endl;
+	std::cout << iJet->jecSetsAvailable() << std::endl;
 
-	
+
 	/*
-	if(iJet->hasCorrFactors())
-	  for( std::vector<std::string>::const_iterator ilbl = iJet->corrFactorSetLabels().begin();
-	       ilbl != iJet->corrFactorSetLabels().end();
+	if(iJet->jecSetsAvailable())
+	  for( std::vector<std::string>::const_iterator ilbl = iJet->availableJECSets().begin();
+	       ilbl != iJet->availableJECSets().end();
 	       ++ilbl ) {
-	    std::cout << "Correction Factor: " << ilbl - iJet->corrFactorSetLabels().begin() << std::endl;
+	    std::cout << "Correction Factor: " << ilbl - iJet->availableJECSets().begin() << std::endl;
 	    std::cout << *ilbl << std::endl;
 	  }
 	*/
@@ -1306,8 +1306,8 @@ void VgNtuplizer::produce(edm::Event & e, const edm::EventSetup & es) {
 	jetTrg_[nJet_][11] = (iJet->triggerObjectMatchesByPath("HLT_Jet70U_v3").size()) ? 1 : -99;
 	jetTrg_[nJet_][12] = (iJet->triggerObjectMatchesByPath("HLT_Jet100U_v3").size()) ? 1 : -99;
 	jetTrg_[nJet_][13] = (iJet->triggerObjectMatchesByPath("HLT_Jet140U_v3").size()) ? 1 : -99;
-	
-	
+
+
 	jetEn_[nJet_]     = iJet->energy();
 	jetPt_[nJet_]     = iJet->pt();
 	jetEta_[nJet_]    = iJet->eta();
@@ -1315,9 +1315,9 @@ void VgNtuplizer::produce(edm::Event & e, const edm::EventSetup & es) {
 	jetMass_[nJet_]   = iJet->mass();
 	jetCharge_[nJet_] = iJet->jetCharge();
 	jetEt_[nJet_]     = iJet->et();
-	
+
 	//std::cout << iJet->correctedJet("RAW").pt() << ' ' << iJet->correctedJet("RAW").energy() << std::endl;
-	
+
 	jetRawPt_[nJet_]  = (*iJet).correctedJet("RAW").pt();
 	jetRawEn_[nJet_]  = (*iJet).correctedJet("RAW").energy();
 	jetpartonFlavour_[nJet_] = iJet->partonFlavour();
