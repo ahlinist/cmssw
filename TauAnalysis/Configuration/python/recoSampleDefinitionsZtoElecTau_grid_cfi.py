@@ -219,7 +219,7 @@ RECO_SAMPLES = {
         'events_processed' : 1025840,
         'skim_eff' : 1.0,
 		'factorize' : True,
-        'x_sec' : 5.98*_picobarns, 
+        'x_sec' : 171700*_picobarns, 
         'legendEntry' : plotter.process_gammaPlusJets.config_dqmHistPlotter.legendEntry.value(),
         'type' : plotter.process_gammaPlusJets.config_dqmHistPlotter.type.value(),
         'drawOption' : styles.drawOption_gammaPlusJets,
@@ -230,7 +230,7 @@ RECO_SAMPLES = {
         'events_processed' : 1025840,
         'skim_eff' : 1.0,
 		'factorize' : True,
-        'x_sec' : 5.98*_picobarns, 
+        'x_sec' : 171700*_picobarns, 
         'legendEntry' : plotter.process_gammaPlusJets.config_dqmHistPlotter.legendEntry.value(),
         'type' : plotter.process_gammaPlusJets.config_dqmHistPlotter.type.value(),
         'drawOption' : styles.drawOption_gammaPlusJets,
@@ -241,7 +241,7 @@ RECO_SAMPLES = {
         'events_processed' : 1025480,
         'skim_eff' : 1.0,
 		'factorize' : True,
-        'x_sec' : 61.4*_picobarns, 
+        'x_sec' : 16690*_picobarns, 
         'legendEntry' : plotter.process_gammaPlusJets.config_dqmHistPlotter.legendEntry.value(),
         'type' : plotter.process_gammaPlusJets.config_dqmHistPlotter.type.value(),
         'drawOption' : styles.drawOption_gammaPlusJets,
@@ -252,7 +252,7 @@ RECO_SAMPLES = {
         'events_processed' : 1025480,
         'skim_eff' : 1.0,
 		'factorize' : True,
-        'x_sec' : 61.4*_picobarns, 
+        'x_sec' : 16690*_picobarns, 
         'legendEntry' : plotter.process_gammaPlusJets.config_dqmHistPlotter.legendEntry.value(),
         'type' : plotter.process_gammaPlusJets.config_dqmHistPlotter.type.value(),
         'drawOption' : styles.drawOption_gammaPlusJets,
@@ -263,7 +263,7 @@ RECO_SAMPLES = {
         'events_processed' : 1024608,
         'skim_eff' : 1.0,
 		'factorize' : True,
-        'x_sec' : 376.4*_picobarns, 
+        'x_sec' : 2722*_picobarns, 
         'legendEntry' : plotter.process_gammaPlusJets.config_dqmHistPlotter.legendEntry.value(),
         'type' : plotter.process_gammaPlusJets.config_dqmHistPlotter.type.value(),
         'drawOption' : styles.drawOption_gammaPlusJets,
@@ -274,7 +274,7 @@ RECO_SAMPLES = {
         'events_processed' : 1024608,
         'skim_eff' : 1.0,
 		'factorize' : True,
-        'x_sec' : 376.4*_picobarns, 
+        'x_sec' : 2722*_picobarns, 
         'legendEntry' : plotter.process_gammaPlusJets.config_dqmHistPlotter.legendEntry.value(),
         'type' : plotter.process_gammaPlusJets.config_dqmHistPlotter.type.value(),
         'drawOption' : styles.drawOption_gammaPlusJets,
@@ -549,22 +549,22 @@ MERGE_SAMPLES = {
     },
     'photonPlusJetsSum' : {
         'samples' : [
-            'QCD_EM_Pt15to30',
-            'QCD_EM_Pt30to50',
-            'QCD_EM_Pt50to80'
+            'PhotonPlusJets_Pt15to30',
+            'PhotonPlusJets_Pt30to50',
+            'PhotonPlusJets_Pt50to80'
         ],
         'legendEntry' : 'gammaPlusJets',
         'type' : 'smMC', 
-        'drawOption' : styles.drawOption_QCD,
+        'drawOption' : styles.drawOption_gammaPlusJets,
     },
     'wPlusJetsSum' : {
         'samples' : [
-            'WtoENu',
+            'WtoENu_PU156BX',
             'WtoTauNu'
         ],
         'legendEntry' : 'WplusJets',
         'type' : 'smMC', 
-        'drawOption' : styles.drawOption_QCD,
+        'drawOption' : styles.drawOption_WplusJets,
     },
     'smBgSum' : {
         'samples' : [
