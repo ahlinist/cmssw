@@ -6,7 +6,7 @@ from TauAnalysis.CandidateTools.tools.objSelConfigurator import objSelConfigurat
 # produce all objects specific to Z --> electron + muon channel
 # which do **not** get stored in PATTuple
 #--------------------------------------------------------------------------------
-from TauAnalysis.RecoTools.eventVertexSelector_cfi import *
+from TauAnalysis.RecoTools.recoVertexSelection_cff import *
 selectedPrimaryVertexQuality.cut = cms.string("isValid & ndof > 3")
 selectedPrimaryVertexPosition.cut = cms.string("z > -15 & z < +15 & sqrt(x*x+y*y) < 2")
 
