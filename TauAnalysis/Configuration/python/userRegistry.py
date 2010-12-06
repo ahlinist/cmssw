@@ -2,13 +2,23 @@ import os
 
 userSettings = {
     'friis' : {
-        # The run to select
+        # The job ID to use per default.
         'current' : 'Run31',
         # List of runs
         'jobs' : {
             'Run31' : {
                 'AHtoMuTau' : {
                     'analysisFilePath' : '/user/f/friis/Run31/',
+                    'harvestingFilePath' : "/data1/friis/",
+                    'tmpFilePath' : "/data2/friis/tmp/",
+                    'pickevents' : '/data1/friis/Run26'
+                }
+            },
+            'Run32' : {
+                'AHtoMuTau' : {
+                    # The output directory on castor
+                    'analysisFilePath' : '/user/f/friis/Run32/',
+                    # The output directory for the plots
                     'harvestingFilePath' : "/data1/friis/",
                     'tmpFilePath' : "/data2/friis/tmp/",
                     'pickevents' : '/data1/friis/Run26'
@@ -146,7 +156,7 @@ def getAnalysisFilePath(channel):
 def getHarvestingFilePath(channel):
     user_settings = getInfo(channel)
     harvestingFilePath = os.path.join(
-        user_settings['harvestingFilePath'], user_settings['jobId'])
+        user_settings['harvestingFilePath'], getJobId(channel))
     if not os.path.exists(harvestingFilePath):
         os.makedirs(harvestingFilePath)
     if not os.path.isdir(harvestingFilePath):
