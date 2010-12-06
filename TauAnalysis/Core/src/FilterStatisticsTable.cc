@@ -170,11 +170,19 @@ void FilterStatisticsTable::update(const filterResults_type& filterResults_cumul
 //--- second pass through filterResults: 
 //    update statistics of individual filters
   bool previousFiltersPassed = true;
-  for ( filterResults_type::const_iterator filterResult_cumulative = filterResults_cumulative.begin();
-	filterResult_cumulative != filterResults_cumulative.end(); ++filterResult_cumulative ) {
-    const std::string& filterName = filterResult_cumulative->first;
-    bool filterPassed_cumulative = filterResult_cumulative->second;
+  for ( std::vector<rowEntry_type>::iterator row = rows_.begin();
+	row != rows_.end(); ++row ) {
+    const std::string& filterName = row->second->filterName();
     
+    filterResults_type::const_iterator filterResult_cumulative = filterResults_cumulative.find(filterName);
+    if ( filterResult_cumulative == filterResults_cumulative.end() ) {
+      edm::LogError ("FilterStatisticsTable::update") 
+	<< " Failed to find filterResult_cumulative for filterName = " << filterName << " --> skipping !!";     
+      continue;
+    }
+
+    bool filterPassed_cumulative = filterResult_cumulative->second;
+
     filterResults_type::const_iterator filterResult_individual = filterResults_individual.find(filterName);
     if ( filterResult_individual == filterResults_individual.end() ) {
       edm::LogError ("FilterStatisticsTable::update") 
@@ -197,24 +205,10 @@ void FilterStatisticsTable::update(const filterResults_type& filterResults_cumul
 	<< " Failed to find eventWeight_passed for filterName = " << filterName << " --> skipping !!";     
       continue;
     }
-	
-    FilterStatisticsRow* row = 0;
-    for ( std::vector<rowEntry_type>::iterator it = rows_.begin();
-	  it != rows_.end(); ++it ) {
-      if ( it->first == filterName ) {
-	row = it->second;
-	break;
-      }
-    }
-    if ( !row ) {
-      edm::LogError ("FilterStatisticsTable::update") 
-	<< " Failed to access FilterStatisticsRow for filterName = " << filterName << " --> skipping !!";     
-      continue;
-    }
 
-    row->update(filterPassed_cumulative, previousFiltersPassed, filterPassed_individual,
-		numFiltersPassed_individual, numFiltersRejected_individual, 
-		eventWeight_processed->second, eventWeight_passed->second);
+    row->second->update(filterPassed_cumulative, previousFiltersPassed, filterPassed_individual,
+			numFiltersPassed_individual, numFiltersRejected_individual, 
+			eventWeight_processed->second, eventWeight_passed->second);
       
     if ( !filterPassed_cumulative ) previousFiltersPassed = false;
   }
