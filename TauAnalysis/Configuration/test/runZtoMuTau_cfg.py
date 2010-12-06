@@ -134,6 +134,19 @@ process.load("TauAnalysis.CandidateTools.diTauPairProductionAllKinds_cff")
 replaceMETforDiTaus(process, cms.InputTag('patMETs'), cms.InputTag('patPFMETs'))
 #--------------------------------------------------------------------------------
 
+# Use absolute muon isolation
+process.selectedPatMuonsPFRelIso.chargedHadronIso.ptMin = 1.0
+process.selectedPatMuonsPFRelIso.neutralHadronIso.ptMin = 2000.
+process.selectedPatMuonsPFRelIso.photonIso.ptMin = 1.5
+process.selectedPatMuonsPFRelIso.sumPtMax = 1.0
+process.selectedPatMuonsPFRelIso.sumPtMethod = "absolute"
+
+process.selectedPatMuonsPFRelIsoLooseIsolation.chargedHadronIso.ptMin = 1.0
+process.selectedPatMuonsPFRelIsoLooseIsolation.neutralHadronIso.ptMin = 2000.
+process.selectedPatMuonsPFRelIsoLooseIsolation.photonIso.ptMin = 1.5
+process.selectedPatMuonsPFRelIsoLooseIsolation.sumPtMax = 8.0
+process.selectedPatMuonsPFRelIsoLooseIsolation.sumPtMethod = "absolute"
+
 #--------------------------------------------------------------------------------
 # import utility function for changing cut values
 from TauAnalysis.Configuration.tools.changeCut import changeCut
