@@ -11,7 +11,7 @@ SAMPLES_TO_ANALYZE = [
     ##'Ztautau', 'qqZtautau',
     'ZtautauPU156bx',
     'qqZtautau',
-    ##'qqZtautauPU156bx',
+    ##'qqZtautauPU156bx', # EK - not at any site as of Dec 6
     'Zmumu',
     'Zee_PU156BX',
     #'InclusivePPmuX',
@@ -209,7 +209,7 @@ RECO_SAMPLES = {
         'applyZrecoilCorrection' : True,
         'enableFakeRates' : True,
         'applyMuonTriggerEfficiencyCorrection' : True,
-        'hlt' : cms.InputTag("TriggerResults", "", "REDIGI38X")
+        'hlt' : cms.InputTag("TriggerResults", "", "HLT")
     },
     'qqZtautauPU156bx' : {
         'datasetpath' : "/VQQJetsToLL_TuneD6T_7TeV-madgraph-tauola/Fall10-E7TeV_ProbDist_2010Data_BX156_START38_V12-v1/GEN-SIM-RECO",
