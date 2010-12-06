@@ -17,18 +17,21 @@ def applyJobOptions(options):
   if options.jobType == "testMC":
     jobOptions.outEvents = 100
     jobOptions.inputFiles = [
-      "/store/relval/CMSSW_3_5_7/" +
-      "RelValZMM/GEN-SIM-RECO/START3X_V26-v1/0012/" +
+      "/store/relval/CMSSW_3_8_7/RelValZMM/GEN-SIM-RECO/START38_V13-v1/" +
       file for file in """
-        10B71379-4549-DF11-9D80-003048D15D22.root
-        34FD3B1D-6949-DF11-9529-0018F3D09612.root
-        4C8D7358-4449-DF11-86BB-003048678A6C.root
+      0017/E81C0282-93FC-DF11-B15D-00261894390A.root
+      0017/50641150-9DFC-DF11-AC76-001A92971B54.root
+      0016/AEA8DD07-8BFC-DF11-A505-003048678FE4.root
+      0016/A4A2387F-8CFC-DF11-BCBF-00304867C136.root
+      0016/86090D81-8BFC-DF11-AB45-003048679228.root
+      0016/5418F1FD-89FC-DF11-9610-002618943852.root
+      0016/124ACA84-8AFC-DF11-8D9B-0030486791F2.root
       """.split()
     ]
-    jobOptions.globalTag = "START38_V10::All"
+    jobOptions.globalTag = "START38_V14::All"
     jobOptions.reportEvery = 1
     jobOptions.isRealData = False
-    jobOptions.use35XInput = True
+    jobOptions.use35XInput = False
     jobOptions.wantSummary = False
     jobOptions.skimType = "MuonPhoton"
 
@@ -42,7 +45,7 @@ def applyJobOptions(options):
         36FD5DFF-D67F-DF11-9C85-0026189438A9.root
       """.split()
     ]
-    jobOptions.globalTag = "START38_V10::All"
+    jobOptions.globalTag = "START38_V14::All"
     jobOptions.reportEvery = 1
     jobOptions.isRealData = False
     jobOptions.use35XInput = False
@@ -74,13 +77,13 @@ def applyJobOptions(options):
       FED2F305-D1E1-DF11-8595-0030487D05B0.root
       """.split()
     ]
-    jobOptions.globalTag = "GR10_P_V9::All"
+    jobOptions.globalTag = "GR_R_38X_V15::All"
     jobOptions.reportEvery = 1
     jobOptions.isRealData = True
     jobOptions.use35XInput = False
     jobOptions.wantSummary = False
     jobOptions.skimType = "MuonPhoton"
-    
+
   # end of testRealData options <-----------------------------------
 
   elif options.jobType == "testJetRealData":
@@ -102,7 +105,7 @@ def applyJobOptions(options):
         147/755/E865F520-98D6-DF11-8BAC-001617C3B6CE.root
       """.split()
     ]
-    jobOptions.globalTag = "GR10_P_V10::All"
+    jobOptions.globalTag = "GR_R_38X_V15::All"
     jobOptions.reportEvery = 1
     jobOptions.isRealData = True
     jobOptions.use35XInput = False
@@ -116,7 +119,7 @@ def applyJobOptions(options):
         "rfio:/castor/cern.ch/user/z/zkliu/TestRECO/36x_ZJet_Madgraph_tauola_TestRECO.root"
         ]
     jobOptions.skimType = "ElectronPhoton"
-    jobOptions.globalTag = "START38_V10::All"
+    jobOptions.globalTag = "START38_V14::All"
     jobOptions.reportEvery = 1
     jobOptions.isRealData = False
     jobOptions.use35XInput = False
@@ -133,7 +136,7 @@ def applyJobOptions(options):
         /store/mc/Fall10/DYJetsToLL_TuneZ2_M-50_7TeV-madgraph-tauola/GEN-SIM-RECO/START38_V12-v2/0005/90E09BA7-AEE3-DF11-A22D-001EC9EAFEBE.root
         """.split()
     jobOptions.skimType = "ElectronPhoton"
-    jobOptions.globalTag = "START38_V13::All"
+    jobOptions.globalTag = "START38_V14::All"
     jobOptions.reportEvery = 1
     jobOptions.isRealData = False
     jobOptions.wantSummary = True
@@ -386,7 +389,7 @@ def applyJobOptions(options):
   ##+ association
   duplicates.reverse()
   for index in duplicates: del options.inputFiles[index]
-  
+
 # applyMultiOptionTag(options) <----------------------------------------------
 
 
