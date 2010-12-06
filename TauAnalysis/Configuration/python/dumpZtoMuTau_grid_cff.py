@@ -18,7 +18,7 @@ dumpZtoMuTau = cms.EDAnalyzer("DQMDumpFilterStatisticsTables",
     dqmDirectories = cms.PSet(
         **dict(
             (sample, cms.string(
-                '/harvested/%s/zMuTauAnalyzer/FilterStatistics' 
+                '/harvested/%s/zMuTauAnalyzerOS/FilterStatistics' 
                 % sample_dqm_name(sample))
             ) for sample in samples.SAMPLES_TO_PRINT)
     ), 

@@ -41,7 +41,7 @@ SAMPLES_TO_PLOT = [
     ##'A200Sum',
     ##'A300Sum',
     'qcdSum',
-    'WplusJets',
+    'WplusJetsSum',
     #'TTplusJets',
     'Zmumu',
     #'Ztautau'

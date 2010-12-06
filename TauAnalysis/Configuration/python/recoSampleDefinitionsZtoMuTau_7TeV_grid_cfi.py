@@ -26,7 +26,7 @@ SAMPLES_TO_ANALYZE = [
 SAMPLES_TO_PLOT = [
     'data',
     'qcdSum',
-    'WplusJets',
+    'WplusJetsSum',
     'TTplusJets',
     'Zmumu',
     'ZtautauSum'
