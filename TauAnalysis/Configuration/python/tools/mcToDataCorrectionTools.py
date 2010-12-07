@@ -32,7 +32,7 @@ def _applyZllRecoilCorrection(process, diTauProductionSequenceName, diTauProduce
            cms.InputTag(diTauProducerModuleName)
         diTauProducerModuleZllRecoilCorrected.srcReRecoDiTauToMEtAssociations = \
            cms.InputTag(patPFMETsZllRecoilCorrectionModuleName, 'diTauToMEtAssociations')
-        diTauProducerModuleZllRecoilCorrectedName = composeModuleName("diTauProducerModuleName", "ZllRecoilCorrected")
+        diTauProducerModuleZllRecoilCorrectedName = composeModuleName(diTauProducerModuleName, "ZllRecoilCorrected")
         setattr(process, diTauProducerModuleZllRecoilCorrectedName, diTauProducerModuleZllRecoilCorrected)
 
         patPFMETsZllRecoilCorrectionSequence = cms.Sequence(
