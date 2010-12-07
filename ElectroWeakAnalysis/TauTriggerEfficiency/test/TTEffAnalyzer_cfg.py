@@ -44,8 +44,8 @@ if(isData):
 else:
     process.source = cms.Source("PoolSource",
 	fileNames = cms.untracked.vstring(
-	    "file:/data/ndpc2/b/nvallsve/temp/test_H120_100_1_08t_RAW_RECO.root"
-#	    "rfio:/castor/cern.ch/user/s/slehti/testData/test_H120_100_1_08t_RAW_RECO.root"
+#	    "file:/data/ndpc2/b/nvallsve/temp/test_H120_100_1_08t_RAW_RECO.root"
+	    "rfio:/castor/cern.ch/user/s/slehti/testData/test_H120_100_1_08t_RAW_RECO.root"
 #	    '/store/user/eluiggi/MinBias/TTEffCSTauSkimMinBiasSpring10MC3XYV27S09/3a986c9293445dcb2819d07578601385/CSTauSkim_1_1_3W4.root',
 #	    '/store/user/eluiggi/MinBias/TTEffCSTauSkimMinBiasSpring10MC3XYV27S09/3a986c9293445dcb2819d07578601385/CSTauSkim_2_1_tfj.root',
 #	    '/store/user/eluiggi/MinBias/TTEffCSTauSkimMinBiasSpring10MC3XYV27S09/3a986c9293445dcb2819d07578601385/CSTauSkim_3_1_1up.root',
@@ -98,13 +98,10 @@ process.PFTausSelected = cms.EDFilter("PFTauSelector",
 
 process.load('Configuration/StandardSequences/FrontierConditions_GlobalTag_cff')
 if (isData):
-    #process.GlobalTag.globaltag = 'GR_R_35X_V7A::All'
-    #process.GlobalTag.globaltag = 'GR_R_37X_V6D::All'
-    process.GlobalTag.globaltag = 'GR_R_38X_V13A::All'
+    process.GlobalTag.globaltag = 'GR_R_38X_V15::All'
 else:
-    #process.GlobalTag.globaltag = 'START3X_V26::All'
-    #process.GlobalTag.globaltag = 'MC_36Y_V9::All'
-    process.GlobalTag.globaltag = 'MC_38Y_V12::All'
+    process.GlobalTag.globaltag = 'START38_V14::All'
+    #process.GlobalTag.globaltag = 'MC_38Y_V14::All'
 
 print process.GlobalTag.globaltag
 
