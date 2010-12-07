@@ -13,6 +13,7 @@
 
 #include "FWCore/Framework/interface/Frameworkfwd.h"
 #include "FWCore/Framework/interface/EDAnalyzer.h"
+#include "FWCore/Utilities/interface/InputTag.h"
 
 //#include "DataFormats/METReco/interface/PFMET.h"
 //#include "DataFormats/METReco/interface/PFMETFwd.h"
