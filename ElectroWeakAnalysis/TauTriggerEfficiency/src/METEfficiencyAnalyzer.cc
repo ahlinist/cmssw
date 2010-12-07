@@ -56,23 +56,26 @@ void METEfficiencyAnalyzer::fill(const edm::Event& iEvent, const edm::EventSetup
 
 //
 
+	mcMET = -1;
 	edm::Handle<reco::GenParticleCollection> mcEventHandle;
         iEvent.getByLabel(MCSource, mcEventHandle);
 
-	const reco::GenParticleCollection& genParticles(*mcEventHandle);
+	if(mcEventHandle.isValid()) {
+	  const reco::GenParticleCollection& genParticles(*mcEventHandle);
 
-        double mcMetX = 0;
-        double mcMetY = 0;
+          double mcMetX = 0;
+          double mcMetY = 0;
 
-        reco::GenParticleCollection::const_iterator i;
-        for(i = genParticles.begin(); i!= genParticles.end(); ++i){
+          reco::GenParticleCollection::const_iterator i;
+          for(i = genParticles.begin(); i!= genParticles.end(); ++i){
 		int id = i->pdgId();
                 if(abs(id) == 12 || abs(id) == 14 || abs(id) == 16){
                         mcMetX += i->px();
                         mcMetY += i->py();
                 }
-	}
+	  }
 
-	mcMET = sqrt(mcMetX*mcMetX + mcMetY*mcMetY);
+	  mcMET = sqrt(mcMetX*mcMetX + mcMetY*mcMetY);
+	}
 } 
 
