@@ -16,6 +16,6 @@ DQMStore = cms.Service( "DQMStore",)
 from SimGeneral.HepPDTESSource.pythiapdt_cfi import *
 
 #TEMPORARY FIX to the maxElement problem (CMSSW_3_6_1_patch4)
-openhltL25TauPixelSeeds.OrderedHitsFactoryPSet.maxElement = cms.uint32(0)
-hltL1IsoSSEleRegPSG.OrderedHitsFactoryPSet.maxElement = cms.uint32(0)
-hltL1NonIsoSSEleRegPSG.OrderedHitsFactoryPSet.maxElement = cms.uint32(0)
+#openhltL25TauPixelSeeds.OrderedHitsFactoryPSet.maxElement = cms.uint32(0)
+#hltL1IsoSSEleRegPSG.OrderedHitsFactoryPSet.maxElement = cms.uint32(0)
+#hltL1NonIsoSSEleRegPSG.OrderedHitsFactoryPSet.maxElement = cms.uint32(0)
