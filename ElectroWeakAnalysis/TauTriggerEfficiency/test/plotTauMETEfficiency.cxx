@@ -78,11 +78,12 @@ void plot(TriggerCuts triggerCuts){
 
 	gROOT->LoadMacro("./Plotter.cxx");
 
-	TString plotDir = triggerCuts.name + "plots/";
-	TString sysCommand = "mkdir " + plotDir;
-	if(gSystem->Exec(sysCommand) > 0){}// exit(0);
-
 	Plotter* plotter = new Plotter(filename,"TTEffTree");
+
+
+        TString plotDir = triggerCuts.name + "plots/";
+        TString sysCommand = "mkdir " + plotDir;
+        if(gSystem->Exec(sysCommand) > 0){}// exit(0);
 
 // As a function of tau pt
 
@@ -189,12 +190,29 @@ void plot(TriggerCuts triggerCuts){
         plotter->SetFileName(plotDir+"TauMET_MET"+suffix);
         plotter->DrawHistogram("MET>>hnum(25,0.,100.)",TauMETTot,pfTauSelection);
 
+/////////////////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////////////////
+
 	int nAllEvents    = plotter->GetNEvents(TCut(""));
+	int nL1Events     = plotter->GetNEvents(l1Selection);
+	int nL2Events     = plotter->GetNEvents(l1Selection + l2Selection);
+	int nL25Events    = plotter->GetNEvents(l1Selection + l2Selection + l25Selection);
+	int nL3Events     = plotter->GetNEvents(l1Selection + l2Selection + l25Selection + l3Selection);
         int nPassedTauMET = plotter->GetNEvents(l1Selection + l2Selection + l25Selection + l3Selection + metSelection);
 
+	float l1EffPerEvent  = float(nL1Events)/nAllEvents;
+	float l2EffPerEvent  = float(nL2Events)/nAllEvents;
+	float l25EffPerEvent = float(nL25Events)/nAllEvents;
+	float l3EffPerEvent  = float(nL3Events)/nAllEvents;
 	float totEffPerEvent = float(nPassedTauMET)/nAllEvents;
+
+	cout << "L1 eff/event    = " << l1EffPerEvent  << endl;
+	cout << "L2 eff/event    = " << l2EffPerEvent  << endl;
+	cout << "L25 eff/event   = " << l25EffPerEvent << endl;
+	cout << "L3 eff/event    = " << l3EffPerEvent  << endl;
 	cout << "Total eff/event = " << totEffPerEvent << endl;
 
+/////////////////////////////////////////////////////////////////////////////////////////
 }
 
 void plotTauMETEfficiency(){
