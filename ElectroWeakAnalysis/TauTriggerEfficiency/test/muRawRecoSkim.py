@@ -1,7 +1,7 @@
 import FWCore.ParameterSet.Config as cms
 import copy
 
-isData = 1
+isData = 0
 
 process = cms.Process('RECO')
 
@@ -17,6 +17,7 @@ process.load('Configuration.StandardSequences.Reconstruction_cff')
 process.load('Configuration.StandardSequences.EndOfProcess_cff')
 process.load('Configuration.StandardSequences.FrontierConditions_GlobalTag_cff')
 process.load('Configuration.EventContent.EventContent_cff')
+
 if(isData):
   process.load('Configuration.StandardSequences.RawToDigi_Data_cff')
 else:
@@ -31,7 +32,7 @@ process.configurationMetadata = cms.untracked.PSet(
     name = cms.untracked.string('PyReleaseValidation')
 )
 process.maxEvents = cms.untracked.PSet(
-    input = cms.untracked.int32(1000)
+    input = cms.untracked.int32(10)
 )
 process.options = cms.untracked.PSet(
 
@@ -46,7 +47,8 @@ if(isData):
 else:
   process.source = cms.Source("PoolSource",
     fileNames = cms.untracked.vstring(
-      '/store/mc/Fall10/MinBias_TuneZ2_7TeV-pythia6/GEN-SIM-RAW/START38_V12-v1/0003/FEE7EA26-DCC7-DF11-BCD1-0030486790FE.root'
+#      '/store/mc/Fall10/MinBias_TuneZ2_7TeV-pythia6/GEN-SIM-RAW/START38_V12-v1/0003/FEE7EA26-DCC7-DF11-BCD1-0030486790FE.root'
+	"rfio:/castor/cern.ch/user/s/slehti/testData/Fall10_DYToTauTau_M-20_TuneZ2_7TeV-pythia6-tauola_GEN-SIM-RAW_START38_V12-v1_0000_8037FA24-3EC8-DF11-9725-00215E221B48.root"
     )
   )
 
@@ -81,6 +83,17 @@ process.PFTauSkimmed = cms.EDFilter("CandViewCountFilter",
   minNumber = cms.uint32(1)
 )
 
+process.load("ElectroWeakAnalysis.TauTriggerEfficiency.HLTFilter_cff")
+process.MuonHLTs.hltResults    = cms.InputTag('TriggerResults::REDIGI38X')
+
+process.TTEffSkimCounterAllEvents   = cms.EDProducer("EventCountProducer")
+process.TTEffSkimCounterSavedEvents = cms.EDProducer("EventCountProducer")
+
+process.muonFilter = cms.Path(
+        process.TTEffSkimCounterAllEvents *
+        process.MuonHLTs *
+        process.TTEffSkimCounterSavedEvents
+)
 
 process.tauFilter = cms.Path(
 	process.hltLevel1GTSeed *
@@ -94,12 +107,12 @@ process.FEVTEventContent.outputCommands.append('keep recoGenParticles_*_*_*')
 process.output = cms.OutputModule("PoolOutputModule",
     splitLevel = cms.untracked.int32(0),
     outputCommands = process.FEVTEventContent.outputCommands,
-    fileName = cms.untracked.string('CSTauSkim.root'),
+    fileName = cms.untracked.string('TTEffSkim.root'),
     dataset = cms.untracked.PSet(
         dataTier = cms.untracked.string('RAW-RECO'),
         #filterName = cms.untracked.string('tauFilter')
     ),
-    SelectEvents = cms.untracked.PSet(SelectEvents = cms.vstring('tauFilter'))
+    SelectEvents = cms.untracked.PSet(SelectEvents = cms.vstring('muonFilter','tauFilter'))
 )
 
 # Additional output definition
@@ -109,8 +122,10 @@ if(isData):
   #process.GlobalTag.globaltag = "GR10_P_V10::All" # propt reco 
   process.GlobalTag.globaltag = "GR_R_38X_V13A::All" # reprocessing  
 else:
-  process.GlobalTag.globaltag = 'START38_V12::All'
+  process.GlobalTag.globaltag = 'START38_V13::All'
   #process.GlobalTag.globaltag = 'MC_36Y_V9::All'
+
+process.load("ElectroWeakAnalysis.TauTriggerEfficiency.HLTFilter_cff")
 
 # Path and EndPath definitions
 process.raw2digi_step = cms.Path(process.RawToDigi)
@@ -121,7 +136,14 @@ process.endjob_step = cms.Path(process.endOfProcess)
 process.out_step = cms.EndPath(process.output)
 
 # Schedule definition
-process.schedule = cms.Schedule(process.raw2digi_step,process.L1Reco_step,process.reconstruction_step,process.tauFilter,process.endjob_step,process.out_step)
+process.schedule = cms.Schedule(
+	process.raw2digi_step,
+	process.L1Reco_step,
+	process.reconstruction_step,
+	process.muonFilter,
+	process.tauFilter,
+	process.endjob_step,
+	process.out_step)
 
 
 # Automatic addition of the customisation function
