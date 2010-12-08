@@ -80,6 +80,10 @@ class MuonHistManager : public HistManagerBase
   MonitorElement* hMuonWeightZero_;
   MonitorElement* hMuonWeightLinear_;
 
+  MonitorElement* hGenMuonPt_;
+  MonitorElement* hGenMuonEta_;
+  MonitorElement* hGenMuonPhi_;
+
   MonitorElement* hMuonPtCompToGen_;
   MonitorElement* hMuonThetaCompToGen_;
   MonitorElement* hMuonPhiCompToGen_;

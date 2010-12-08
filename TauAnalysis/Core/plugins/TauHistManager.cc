@@ -219,9 +219,11 @@ void TauHistManager::bookHistogramsImp()
 		       hTauJetWeightPosLog_, hTauJetWeightNegLog_, hTauJetWeightZero_, 
 		       hTauJetWeightLinear_);
 
+  bookTauHistograms(hGenTauPt_, hGenTauEta_, hGenTauPhi_, "GenTau");
+
   hTauEnCompToGen_ = book1D("TauEnCompToGen", "RECO-GEN #Delta E", 100, -2.50, +2.50);
-  hTauThetaCompToGen_ = book1D("TauThetaCompToGen", "RECO-GEN #Delta#theta", 200, -0.050, +0.050);
-  hTauPhiCompToGen_ = book1D("TauPhiCompToGen", "RECO-GEN #Delta#phi", 200, -0.050, +0.050);
+  hTauThetaCompToGen_ = book1D("TauThetaCompToGen", "RECO-GEN #Delta#theta", 200, -0.250, +0.250);
+  hTauPhiCompToGen_ = book1D("TauPhiCompToGen", "RECO-GEN #Delta#phi", 100, -0.050, +0.050);
   
   hTauMatchingGenParticlePdgId_ = book1D("TauMatchingGenParticlePdgId", "matching gen. Particle PdgId", 26, -1.5, 24.5);
   hTauMatchingFinalStateGenParticlePdgId_ = book1D("TauMatchingFinalStateGenParticlePdgId", "matching final state gen. Particle PdgId", 26, -1.5, 24.5);
@@ -505,6 +507,10 @@ void TauHistManager::fillHistogramsImp(const edm::Event& evt, const edm::EventSe
 //    normalize difference between reconstructed and generated energy
 //    to expected energy dependence of resolution
     if ( patTau->genJet() ) {
+      hGenTauPt_->Fill(patTau->genJet()->pt(), weight);
+      hGenTauEta_->Fill(patTau->genJet()->eta(), weight);
+      hGenTauPhi_->Fill(patTau->genJet()->phi(), weight);
+
       hTauEnCompToGen_->Fill((patTau->energy() - patTau->genJet()->energy())/patTau->genJet()->energy(), weight);
       hTauThetaCompToGen_->Fill(patTau->theta() - patTau->genJet()->theta(), weight);
       hTauPhiCompToGen_->Fill(patTau->phi() - patTau->genJet()->phi(), weight);

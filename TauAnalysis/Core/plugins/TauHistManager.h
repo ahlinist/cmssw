@@ -102,6 +102,10 @@ class TauHistManager : public HistManagerBase
   MonitorElement* hTauJetWeightZero_;
   MonitorElement* hTauJetWeightLinear_;
 
+  MonitorElement* hGenTauPt_;
+  MonitorElement* hGenTauEta_;
+  MonitorElement* hGenTauPhi_;
+
   MonitorElement* hTauEnCompToGen_;
   MonitorElement* hTauThetaCompToGen_;
   MonitorElement* hTauPhiCompToGen_;

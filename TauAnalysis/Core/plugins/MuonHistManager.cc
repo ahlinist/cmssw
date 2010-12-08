@@ -147,8 +147,10 @@ void MuonHistManager::bookHistogramsImp()
 		       hMuonWeightPosLog_, hMuonWeightNegLog_, hMuonWeightZero_, 
 		       hMuonWeightLinear_);
   
+  bookMuonHistograms(hGenMuonPt_, hGenMuonEta_, hGenMuonPhi_, "GenMuon");
+
   hMuonPtCompToGen_ = book1D("MuonPtCompToGen", "MuonPtCompToGen", 200, -0.10, +0.10);
-  hMuonThetaCompToGen_ = book1D("MuonThetaCompToGen", "MuonThetaCompToGen", 200, -0.010, +0.010);
+  hMuonThetaCompToGen_ = book1D("MuonThetaCompToGen", "MuonThetaCompToGen", 200, -0.025, +0.025);
   hMuonPhiCompToGen_ = book1D("MuonPhiCompToGen", "MuonPhiCompToGen", 200, -0.010, +0.010);
   
   hMuonMatchingGenParticlePdgId_ = book1D("MuonMatchingGenParticlePdgId", "matching gen. Particle PdgId", 26, -1.5, 24.5);
@@ -292,6 +294,10 @@ void MuonHistManager::fillHistogramsImp(const edm::Event& evt, const edm::EventS
 //    normalize difference between reconstructed and generated Pt
 //    to expected Pt dependence of resolution
     if ( patMuon->genLepton() ) {
+      hGenMuonPt_->Fill(patMuon->genLepton()->pt(), weight);
+      hGenMuonEta_->Fill(patMuon->genLepton()->eta(), weight);
+      hGenMuonPhi_->Fill(patMuon->genLepton()->phi(), weight);
+
       hMuonPtCompToGen_->Fill((patMuon->pt() - patMuon->genLepton()->pt())/patMuon->genLepton()->pt(), weight);
       hMuonThetaCompToGen_->Fill(patMuon->theta() - patMuon->genLepton()->theta(), weight);
       hMuonPhiCompToGen_->Fill(patMuon->phi() - patMuon->genLepton()->phi(), weight);
