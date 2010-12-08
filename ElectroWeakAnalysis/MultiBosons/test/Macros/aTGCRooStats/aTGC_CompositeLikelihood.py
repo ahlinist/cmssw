@@ -26,9 +26,9 @@ def main(options,args):
         print 'Loaded workspace: ',arg[:arg.find('.root')]
 
     for ws in workspaces:
-        #ws.var('err_x_gs').setConstant(False)
-        #ws.var('err_x_gl').setConstant(False)
-        #ws.var('err_x_gb').setConstant(False)
+        ws.var(par1.GetName()).setConstant(False)
+        ws.var(par2.GetName()).setConstant(False)
+
 
         #change workspace par1,par2 to point at the ones here
         getattr(combinedWorkspace,'import')(ws.function('nll_TopLevelPdf_aTGCDataUnitWeight_with_constr'),
@@ -96,10 +96,59 @@ def main(options,args):
     theCanvas = ROOT.TCanvas('contours','',500,500)
     
     thePlot.SetTitle('68% & 95% CL on the Best Fit Values of '+options.par1Name+' and '+options.par2Name)
-    thePlot.Draw()
-    
-    theCanvas.Print(options.workspaceName+'_contour.root')
 
+    level_95 = ROOT.TMath.ChisquareQuantile(.95,1)/2.0 # delta NLL for -log(LR) with 1 dof
+    print '95% CL Delta-NLL 1 DOF=',level_95
+    profMinuit.setErrorLevel(level_95)
+
+    # now do the 1D confidence intervals with other TGC at SM
+    # do par 1 first
+    fArgs.find(par2.GetName()).setVal(0.0)
+    fArgs.find(par2.GetName()).setConstant(True)
+    profMinuit.minos(ws.set('POI'))
+
+    parm1 = fArgs.find(par1.GetName())
+
+    if not (0 < parm1.getVal()+parm1.getErrorHi() and 0 > parm1.getVal()+parm1.getErrorLo()):
+        print '95% CL does not cover SM for parameter 1'
+    else:
+        print '95% CL covers SM for parameter 1'
+    
+
+    #parm1.Print()
+
+    par1Line = ROOT.TLine(parm1.getVal()+parm1.getErrorLo(),0,
+                          parm1.getVal()+parm1.getErrorHi(),0)
+    par1Line.SetLineWidth(2)
+    par1Line.SetLineColor(ROOT.kRed)
+    
+    thePlot.addObject(par1Line)
+
+    #do par 2
+    fArgs.find(par1.GetName()).setVal(0.0)
+    fArgs.find(par1.GetName()).setConstant(True)
+    fArgs.find(par2.GetName()).setConstant(False)
+    profMinuit.minos(ws.set('POI'))
+
+    parm2 = fArgs.find(par2.GetName())
+
+    if not (0 < parm2.getVal()+parm2.getErrorHi() and 0 > parm2.getVal()+parm2.getErrorLo()):
+        print '95% CL does not cover SM for parameter 2'
+    else:
+        print '95% CL covers SM for parameter 2'
+
+    #parm2.Print()
+
+    par2Line = ROOT.TLine(0,parm2.getVal()+parm2.getErrorLo(),
+                          0,parm2.getVal()+parm2.getErrorHi())
+    par2Line.SetLineWidth(2)
+    par2Line.SetLineColor(ROOT.kRed)
+
+    thePlot.addObject(par2Line)
+
+    thePlot.Draw()
+    theCanvas.Print(options.workspaceName+'_contour.root')
+    
     output.cd()
     combinedWorkspace.Write()
     output.Close()

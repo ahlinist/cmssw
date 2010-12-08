@@ -25,8 +25,10 @@ def main(options,args):
         currentFile = ROOT.TFile.Open(f)
         currentTree = currentFile.Get(options.treeName)
 
-        ROOT.gROOT.ProcessLine('struct InTreeContents { '+currentTree.GetLeaf(options.obsVar).GetTypeName()+
-                               ' '+options.obsVar+'; Double_t weight; }')
+        ROOT.gROOT.ProcessLine('struct InTreeContents { '+
+                               currentTree.GetLeaf(options.obsVar).GetTypeName()+
+                               ' '+options.obsVar+'; '+
+                               currentTree.GetLeaf('weight').GetTypeName()+' weight; }')
         inTreeContents = ROOT.InTreeContents()
         
         currentTree.SetBranchAddress(options.obsVar,ROOT.AddressOf(inTreeContents,options.obsVar))        
