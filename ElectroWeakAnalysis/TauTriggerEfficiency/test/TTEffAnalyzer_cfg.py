@@ -45,7 +45,8 @@ else:
     process.source = cms.Source("PoolSource",
 	fileNames = cms.untracked.vstring(
 #	    "file:/data/ndpc2/b/nvallsve/temp/test_H120_100_1_08t_RAW_RECO.root"
-	    "rfio:/castor/cern.ch/user/s/slehti/testData/test_H120_100_1_08t_RAW_RECO.root"
+#	    "rfio:/castor/cern.ch/user/s/slehti/testData/test_H120_100_1_08t_RAW_RECO.root"
+	    "rfio:/castor/cern.ch/user/s/slehti/testData/TTEffSkim_DYToTauTau_M-20_TuneZ2_7TeV-pythia6-tauola_Fall10_muRawRecoSkim.root"
 #	    '/store/user/eluiggi/MinBias/TTEffCSTauSkimMinBiasSpring10MC3XYV27S09/3a986c9293445dcb2819d07578601385/CSTauSkim_1_1_3W4.root',
 #	    '/store/user/eluiggi/MinBias/TTEffCSTauSkimMinBiasSpring10MC3XYV27S09/3a986c9293445dcb2819d07578601385/CSTauSkim_2_1_tfj.root',
 #	    '/store/user/eluiggi/MinBias/TTEffCSTauSkimMinBiasSpring10MC3XYV27S09/3a986c9293445dcb2819d07578601385/CSTauSkim_3_1_1up.root',
@@ -156,9 +157,11 @@ process.TTEffAnalysis = cms.EDAnalyzer("TTEffAnalyzer",
         L1GtReadoutRecord       = cms.InputTag("gtDigis",""),
         L1GtObjectMapRecord     = cms.InputTag("hltL1GtObjectMap","","HLT"),
         HltResults              = cms.InputTag("TriggerResults","","HLT"),
+#	L1GtObjectMapRecord     = cms.InputTag("hltL1GtObjectMap","","REDIGI38X"),
+#	HltResults              = cms.InputTag("TriggerResults","","REDIGI38X"),
         L1TauTriggerSource      = cms.InputTag("tteffL1GTSeed"),
 	L1JetMatchingCone	= cms.double(0.5),
-	L1JetMatchingMode	= cms.string("nearestDR"), # "nearestDR", "highestEt"                                       
+	L1JetMatchingMode	= cms.string("nearestDR"), # "nearestDR", "highestEt"
         L1IsolationThresholds   = cms.vuint32(1,2,3,4), # count regions with "et() < threshold", these are in GeV
 	L2AssociationCollection = cms.InputTag("openhltL2TauIsolationProducer"),
         EERecHits               = cms.untracked.InputTag("ecalRecHit","EcalRecHitsEE"),
@@ -229,7 +232,7 @@ else:
 	process.ak5PFJetTracksAssociatorAtVertex *
 	process.myPFTauTagInfoProducer+
 	process.myConeProducer+
-	process.TauMCProducer*
+####	process.TauMCProducer*
         process.thisPFTauDiscriminationByLeadingPionPtCut *
         process.PFTausSelected *
         process.thisPFTauDiscriminationByLeadingTrackFinding *
