@@ -12,17 +12,13 @@ electronSystematics = {
 }
 
 muonSystematics = {
-    "sysMuonPtUp"           : cms.InputTag('smearedMuonsEnScaleUp'),
-    "sysMuonPtDown"         : cms.InputTag('smearedMuonsEnScaleDown')
+    "sysMuonPtUp"           : cms.InputTag('patMuonsMuScleFitCorrectedMomentumShiftUp'),
+    "sysMuonPtDown"         : cms.InputTag('patMuonsMuScleFitCorrectedMomentumShiftDown')
 }
 
 tauSystematics = {   
-    "sysTauJetEnUp"         : cms.InputTag('smearedTausEnScaleUp'),
-    "sysTauJetEnDown"       : cms.InputTag('smearedTausEnScaleDown')
-    ##"sysTauJetThetaUp"      : cms.InputTag('smearedTausEtaShiftUp'),
-    ##"sysTauJetThetaDown"    : cms.InputTag('smearedTausEtaShiftDown'),
-    ##"sysTauJetPhiUp"        : cms.InputTag('smearedTausPhiShiftUp'),
-    ##"sysTauJetPhiDown"      : cms.InputTag('smearedTausPhiShiftDown')
+    "sysTauJetEnUp"         : cms.InputTag('patTausJECshiftUp'),
+    "sysTauJetEnDown"       : cms.InputTag('patTausJECshiftDown')
 }
 
 muTauPairSystematics = {
@@ -30,10 +26,6 @@ muTauPairSystematics = {
     "sysMuonPtDown"         : cms.InputTag('allMuTauPairsSysMuonPtDown'),
     "sysTauJetEnUp"         : cms.InputTag('allMuTauPairsSysTauJetEnUp'),
     "sysTauJetEnDown"       : cms.InputTag('allMuTauPairsSysTauJetEnDown'),
-    ##"sysTauJetThetaUp"      : cms.InputTag('allMuTauPairsSysTauJetThetaUp'),
-    ##"sysTauJetThetaDown"    : cms.InputTag('allMuTauPairsSysTauJetThetaDown'),
-    ##"sysTauJetPhiUp"        : cms.InputTag('allMuTauPairsSysTauJetPhiUp'),
-    ##"sysTauJetPhiDown"      : cms.InputTag('allMuTauPairsSysTauJetPhiDown'),
     "sysJetEnUp"            : cms.InputTag('allMuTauPairsSysJetEnUp'),
     "sysJetEnDown"          : cms.InputTag('allMuTauPairsSysJetEnDown')
 }
@@ -42,11 +34,7 @@ metSystematicsForZtoMuTau = {
     "sysMuonPtUp"           : cms.InputTag('patMETsSysMuonPtUp'),
     "sysMuonPtDown"         : cms.InputTag('patMETsSysMuonPtDown'),
     "sysTauJetEnUp"         : cms.InputTag('patMETsSysTauJetEnUp'),
-    "sysTauJetEnDown"       : cms.InputTag('patMETsSysTauJetEnDown'),
-    ##"sysTauJetThetaUp"      : cms.InputTag('patMETsSysTauJetThetaUp'),
-    ##"sysTauJetThetaDown"    : cms.InputTag('patMETsSysTauJetThetaDown'),
-    ##"sysTauJetPhiUp"        : cms.InputTag('patMETsSysTauJetPhiUp'),
-    ##"sysTauJetPhiDown"      : cms.InputTag('patMETsSysTauJetPhiDown')
+    "sysTauJetEnDown"       : cms.InputTag('patMETsSysTauJetEnDown')
 }
 
 metSystematicsForAHtoMuTau = {
@@ -54,23 +42,22 @@ metSystematicsForAHtoMuTau = {
     "sysMuonPtDown"         : cms.InputTag('patMETsSysMuonPtDown'),
     "sysTauJetEnUp"         : cms.InputTag('patMETsSysTauJetEnUp'),
     "sysTauJetEnDown"       : cms.InputTag('patMETsSysTauJetEnDown'),
-    ##"sysTauJetThetaUp"      : cms.InputTag('patMETsSysTauJetThetaUp'),
-    ##"sysTauJetThetaDown"    : cms.InputTag('patMETsSysTauJetThetaDown'),
-    ##"sysTauJetPhiUp"        : cms.InputTag('patMETsSysTauJetPhiUp'),
-    ##"sysTauJetPhiDown"      : cms.InputTag('patMETsSysTauJetPhiDown'),
     "sysJetEnUp"            : cms.InputTag('patMETsSysJetEnUp'),
     "sysJetEnDown"          : cms.InputTag('patMETsSysJetEnDown')
 }
 
 jetSystematics = {   
-    "sysJetEnUp"            : cms.InputTag('smearedJetsEnScaleUp'),
-    "sysJetEnDown"          : cms.InputTag('smearedJetsEnScaleDown')
+    "sysJetEnUp"            : cms.InputTag('patJetsJECshiftUp'),
+    "sysJetEnDown"          : cms.InputTag('patJetsJECshiftDown')
 }
 
 theorySystematics = {
-    ##"sysPdfWeights(41)"     : cms.InputTag('pdfWeights:cteq65'),
-    ##"sysIsrWeight"          : cms.InputTag('isrWeight'),
-    ##"sysFsrWeight"          : cms.InputTag('fsrWeight')
+    # CV: do not run theory systematics for now,
+    #     as in particular the module for estimating PDF uncertainties
+    #     significantly increases the overall run-time/memory consumption of the cmsRun job !!
+    #"sysPdfWeights(41)"     : cms.InputTag('pdfWeights:cteq65'),
+    #"sysIsrWeight"          : cms.InputTag('isrWeight'),
+    #"sysFsrWeight"          : cms.InputTag('fsrWeight')
 }
 
 def getSysUncertaintyNames(sysUncertaintyMaps):
