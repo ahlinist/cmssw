@@ -91,7 +91,7 @@ ElectronHistManager::ElectronHistManager(const edm::ParameterSet& cfg)
   electronEtaMaxBarrel_ = 1.442;
   electronEtaMinEndcap_ = 1.560;
   
-  //--- create "veto" objects for computation of IsoDeposit sums
+//--- create "veto" objects for computation of IsoDeposit sums
   electronTrkIsoParam_.push_back(IsoDepositVetoFactory::make("0.02"));
   electronTrkIsoParam_.push_back(IsoDepositVetoFactory::make("Threshold(1.0)"));
   
@@ -131,8 +131,10 @@ void ElectronHistManager::bookHistogramsImp()
 		       hElectronWeightPosLog_, hElectronWeightNegLog_, hElectronWeightZero_,
 		       hElectronWeightLinear_);
   
+  bookElectronHistograms(hGenElectronPt_, hGenElectronEta_, hGenElectronPhi_, "GenElectron");	
+
   hElectronEnCompToGen_ = book1D("ElectronEnCompToGen", "Electron RECO-GEN #Delta E", 100, -0.50, +0.50);
-  hElectronThetaCompToGen_ = book1D("ElectronThetaCompToGen", "Electron RECO-GEN #Delta#theta", 200, -0.010, +0.010);
+  hElectronThetaCompToGen_ = book1D("ElectronThetaCompToGen", "Electron RECO-GEN #Delta#theta", 200, -0.025, +0.025);
   hElectronPhiCompToGen_ = book1D("ElectronPhiCompToGen", "Electron RECO-GEN #Delta#phi", 200, -0.010, +0.010);
   
   hElectronMatchingGenParticlePdgId_ = book1D("ElectronMatchingGenParticlePdgId", "matching gen. Particle PdgId", 26, -1.5, 24.5);
@@ -258,6 +260,10 @@ void ElectronHistManager::fillHistogramsImp(const edm::Event& evt, const edm::Ev
 //    normalize difference between reconstructed and generated energy
 //    to expected energy dependence of resolution
     if ( patElectron->genLepton() ) {
+      hGenElectronPt_->Fill(patElectron->genLepton()->pt(), weight);
+      hGenElectronEta_->Fill(patElectron->genLepton()->eta(), weight);
+      hGenElectronPhi_->Fill(patElectron->genLepton()->phi(), weight);
+
       hElectronEnCompToGen_->Fill((patElectron->energy() - patElectron->genLepton()->energy())
 				  /TMath::Sqrt(patElectron->genLepton()->energy()), weight);
       hElectronThetaCompToGen_->Fill(patElectron->theta() - patElectron->genLepton()->theta(), weight);
