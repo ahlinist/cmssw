@@ -20,9 +20,11 @@ process.source = cms.Source("EmptySource")
 process.loadAnalysisResults = cms.EDAnalyzer("DQMFileLoader",
     all = cms.PSet(
         inputFileNames = cms.vstring(
-            '/data1/veelken/CMSSW_3_8_x/plots/MSSM_Higgs_combined/plotsAHtoMuTau_all.root',
+            ##'/data1/veelken/CMSSW_3_8_x/plots/MSSM_Higgs_combined/plotsAHtoMuTau_all.root',
+            '/data1/friis/Run28/plotsAHtoMuTau_all_bsmonly.root',
+            '/data1/friis/Run28/plotsAHtoMuTau_all_smonly.root'
         ),
-        dqmDirectory_store = cms.string('')
+        dqmDirectory_store = cms.string('/')
     )
 )
 
