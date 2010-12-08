@@ -52,6 +52,7 @@ TChain* DYToTauTau_M_20_TuneZ2_7TeV_tagV00_06_20() {
         chain->AddFile("rfio:/castor/cern.ch/user/s/slehti/TauTriggerEfficiencyMeasurementData/DYToTauTau_M-20_TuneZ2_7TeV_tagV00-06-20/tteffAnalysis-pftau_53_1_vbH.root");
         chain->AddFile("rfio:/castor/cern.ch/user/s/slehti/TauTriggerEfficiencyMeasurementData/DYToTauTau_M-20_TuneZ2_7TeV_tagV00-06-20/tteffAnalysis-pftau_54_1_nS4.root");
         chain->AddFile("rfio:/castor/cern.ch/user/s/slehti/TauTriggerEfficiencyMeasurementData/DYToTauTau_M-20_TuneZ2_7TeV_tagV00-06-20/tteffAnalysis-pftau_55_1_lsV.root");
+	chain->AddFile("rfio:/castor/cern.ch/user/s/slehti/TauTriggerEfficiencyMeasurementData/DYToTauTau_M-20_TuneZ2_7TeV_tagV00-06-20/tteffAnalysis-pftau_56_1_t5Y.root");
         chain->AddFile("rfio:/castor/cern.ch/user/s/slehti/TauTriggerEfficiencyMeasurementData/DYToTauTau_M-20_TuneZ2_7TeV_tagV00-06-20/tteffAnalysis-pftau_57_1_i6M.root");
         chain->AddFile("rfio:/castor/cern.ch/user/s/slehti/TauTriggerEfficiencyMeasurementData/DYToTauTau_M-20_TuneZ2_7TeV_tagV00-06-20/tteffAnalysis-pftau_58_1_Nxj.root");
         chain->AddFile("rfio:/castor/cern.ch/user/s/slehti/TauTriggerEfficiencyMeasurementData/DYToTauTau_M-20_TuneZ2_7TeV_tagV00-06-20/tteffAnalysis-pftau_59_1_CYB.root");
