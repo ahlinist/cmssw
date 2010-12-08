@@ -10,6 +10,7 @@
 #include "CondTools/Ecal/interface/EcalTimeCalibConstantsXMLTranslator.h"
 #include "CondTools/Ecal/interface/EcalCondHeader.h"
 
+#include "DataFormats/DetId/interface/DetId.h"
 #include "DataFormats/EcalDetId/interface/EBDetId.h"
 #include "DataFormats/EcalDetId/interface/EEDetId.h"
 
@@ -56,6 +57,8 @@ EcalTimeCalibrationValidator::analyze(edm::Event const& evt, edm::EventSetup con
 {
   if(!produce_)
     return;
+
+  set(es);
 
   // prepare output
   EcalTimeTreeContent ttreeMembersOutput;
@@ -107,13 +110,17 @@ EcalTimeCalibrationValidator::analyze(edm::Event const& evt, edm::EventSetup con
       {
         int hashedIndex = ttreeMembersInput_.xtalInBCHashedIndex[bCluster][cryInBC];
         uint32_t rawId = 0;
+        DetId det = 0;
         if(isEB)
         {
           EBDetId detid = EBDetId::unhashIndex(hashedIndex);
           if(detid==EBDetId() || !EBDetId::validHashIndex(hashedIndex)) // make sure DetId is valid
             continue;
           else
+          {
             rawId = detid.rawId();
+            det = detid;
+          }
         }
         else
         {
@@ -121,10 +128,27 @@ EcalTimeCalibrationValidator::analyze(edm::Event const& evt, edm::EventSetup con
           if(detid==EEDetId() || !EEDetId::validHashIndex(hashedIndex)) // make sure DetId is valid
             continue;
           else
+          {
             rawId = detid.rawId();
+            det = detid;
+          }
         }
 
-        // get time calibration coefficient
+        float origTime = ttreeMembersOutput.xtalInBCTime[bCluster][cryInBC];
+        // get orig time calibration coefficient
+        const EcalTimeCalibConstantMap & origTimeMap = origTimeCalibConstHandle->getMap();
+        EcalTimeCalibConstant itimeconstOrig = 0;
+        EcalTimeCalibConstantMap::const_iterator itimeItrOrig = origTimeMap.find(det);
+        if( itimeItrOrig!=origTimeMap.end() ) {
+          itimeconstOrig = (*itimeItrOrig);
+        } else {
+          //edm::LogError("EcalTimeCalibrationValidator") << "No time calib const found for xtal "
+          //  << rawId
+          //  << "in database! something wrong with EcalTimeCalibConstants in the database?";
+        }
+        origTime-=itimeconstOrig;
+
+        // get new time calibration coefficient
         EcalTimeCalibConstantMap::const_iterator itimeItr = itimeMap.find(rawId);
         EcalTimeCalibConstant itimeconst = 0;
         if( itimeItr!=itimeMap.end() ) {
@@ -132,13 +156,9 @@ EcalTimeCalibrationValidator::analyze(edm::Event const& evt, edm::EventSetup con
         } else {
           edm::LogError("EcalTimeCalibrationValidator") << "No time calib const found for xtal "
             << rawId
-            << "! something wrong with EcalTimeCalibConstants?";
+            << "! something wrong with EcalTimeCalibConstants in the XML file?";
         }
-        // jitter + itimeconst (OLD TREE)
-        //ttreeMembersOutput.cryTimesEB_[cry]=25*(ttreeMembersInput_.cryUTimesEB_[cry]-5)+itimeconst;
-        // New  tree-->applying diffs wrt old timing calibrations
-        //ttreeMembersOutput.xtalInBCTime[bCluster][cryInBC] = itimeconst+ttreeMembersInput_.xtalInBCTime[bCluster][cryInBC];
-        ttreeMembersOutput.xtalInBCTime[bCluster][cryInBC]+= itimeconst;
+        ttreeMembersOutput.xtalInBCTime[bCluster][cryInBC]= origTime+itimeconst;
       }
     }
     myOutputTree_->Fill();
@@ -147,6 +167,11 @@ EcalTimeCalibrationValidator::analyze(edm::Event const& evt, edm::EventSetup con
       myOutputTree_->FlushBaskets();
     }
   }
+}
+
+void EcalTimeCalibrationValidator::set(edm::EventSetup const& eventSetup)
+{
+  eventSetup.get<EcalTimeCalibConstantsRcd>().get(origTimeCalibConstHandle);
 }
 
 void EcalTimeCalibrationValidator::beginRun(edm::EventSetup const& eventSetup)
