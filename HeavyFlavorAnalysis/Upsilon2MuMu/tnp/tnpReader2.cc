@@ -33,36 +33,31 @@ void tnpReader2::startAnalysis() {
 
 void tnpReader2::eventProcessing() {
   
-  
-  if ( !fpJSON->good(fRun, fLS) ) goto end;
+  if ( SAMPLE == 2  ) if ( !fpJSON->good(fRun, fLS) ) goto end;
   Trigger = -1;
-  
+   
   //cout << " NEW EVENT  " << endl;
   if ( SAMPLE == 1 ) MCTruth(MODE);  // For running on MC
   if ( isPathPreScaled(HLTPATH_TAG) ) goto end;
   if ( !isPathFired(HLTPATH_TAG) ) goto end;
   TagSelection();
   for ( unsigned int v = 0; v < fCand.size(); ++v   ) {
+    /// For Single Muon Trigger
     //if ( !isMatchedToTrig(fCand[v],HLTLABEL_TAG,1)) continue;    //0 -- No Trigger Matching , 1 -- Trigger Matching for Tag , 2 -- Trigger Matching for Probe
-    
-    if ( !isMatchedToDoubleTrig(fCand[v],HLTLABEL_TAG,1)) continue;  //0 -- No Trigger Matching , 1 -- Trigger Matching for Tag to Single Muon T.O., 2 -- Trigger Matching for Tag to Double Muon T.O. // 3 -- Trigger Matching for Probe to Double Muon T.O.
-    
+    ///
+    if ( !isMatchedToDoubleTrig(fCand[v],HLTLABEL_TAG,1)) continue;  //0 -- No Trigger Matching , 1 -- Trigger Matching for Tag to Single Muon T.O., 
+    //2 -- Trigger Matching for Tag to Double Muon T.O. // 3 -- Trigger Matching for Probe to Double Muon T.O.
   }
-  
-  //cout << "fCandTT.size() = "  << fCandTT.size() << endl;
   
   if ( MODE == 2 ) {
     if ( isPathPreScaled(HLTPATH_PROBE) ) goto end;  // Only for Trigger Study
   }
   
   ProbeSelection();
-  ///////if ( fCandPS.size() > 0  ) cout << " after PS  " << endl;
-  
   Info();
   
   if ( MODE == 1 ){ // MuID Efficiency Mode
     
-    //cout << "fCandPS.size() = "  << fCandPS.size() << endl;
     for ( unsigned int y = 0; y < fCandPS.size(); ++y   ) {
       
       fillHist(fCandPS[y], 1, false); // Mode: 1 -- mt
@@ -88,12 +83,13 @@ void tnpReader2::eventProcessing() {
     
   } else if ( MODE == 2  ){  // Trigger Efficiency Mode
     for ( unsigned int y = 0; y < fCandPS.size(); ++y   ) {
-      //cout << " mt " << endl;
       fillHist(fCandPS[y], 1, false); // Mode: 1 -- mt
       if ( SAMPLE == 1 ) {  // For running on MC
 	if ( truthMatch(fCandPS[y]) ) fillHist(fCandPS[y], 4, false); // Mode: 4 -- mtMatched
       }
+      /// For Single Muon Trigger
       //isMatchedToTrig(fCandPS[y],HLTLABEL_PROBE,2);
+      ///
       isMatchedToDoubleTrig(fCandPS[y],HLTLABEL_PROBE,2);
     }
     
@@ -151,9 +147,7 @@ void tnpReader2::freePointers(){
   
   while (!fCandPS.empty())
     {
-      // get first 'element'
       pCand = fCandPS.front();
-      // remove it from the list
       fCandPS.erase(fCandPS.begin());
     }
   
@@ -165,9 +159,7 @@ void tnpReader2::freePointers(){
   
   while (!fCandnotTP.empty())
     {
-      // get first 'element'
       pCand = fCandnotTP.front();
-      // remove it from the list
       fCandnotTP.erase(fCandnotTP.begin());
     }
   
@@ -179,9 +171,7 @@ void tnpReader2::freePointers(){
   
   while (!fCandnotGP.empty())
     {
-      // get first 'element'
       pCand = fCandnotGP.front();
-      // remove it from the list
       fCandnotGP.erase(fCandnotGP.begin());
     }
 }
@@ -227,7 +217,7 @@ void tnpReader2::MCTruth(int mode){
 	    ((TH2D*)fpHistFile->Get("tEtaPt_neg"))->Fill(pTrack->fPlab.Eta() , pTrack->fPlab.Perp());
 	  }
 	
-	  if ( isRecTrackMatchedToTrig(pTrack, HLTLABEL_PROBE)  ){
+	  if ( isRecTrackMatchedToTrig(pTrack, HLTLABEL_PROBE)  ){ 
 	    if ( (pTrack->fPlab.Perp() <= 20.) && (pTrack->fPlab.Perp() >= 3.) && (pTrack->fPlab.Eta() <= 2.4) && (pTrack->fPlab.Eta() >= -2.4)){
 	      ((TH2D*)fpHistFile->Get("mEtaPt_neg"))->Fill(pTrack->fPlab.Eta() , pTrack->fPlab.Perp());
 	    }
@@ -239,7 +229,7 @@ void tnpReader2::MCTruth(int mode){
 	    ((TH2D*)fpHistFile->Get("tEtaPt_pos"))->Fill(pTrack->fPlab.Eta() , pTrack->fPlab.Perp());
 	  }
 	  
-	  if ( isRecTrackMatchedToTrig(pTrack, HLTLABEL_PROBE)  ){
+	  if ( isRecTrackMatchedToTrig(pTrack, HLTLABEL_PROBE)  ){ 
 	    if ( (pTrack->fPlab.Perp() <= 20.) && (pTrack->fPlab.Perp() >= 3.) && (pTrack->fPlab.Eta() <= 2.4) && (pTrack->fPlab.Eta() >= -2.4)){
 	      ((TH2D*)fpHistFile->Get("mEtaPt_pos"))->Fill(pTrack->fPlab.Eta() , pTrack->fPlab.Perp());
 	    }
@@ -264,6 +254,8 @@ bool tnpReader2::isPathPreScaled( TString Path ){
 
 bool tnpReader2::isPathFired( TString Path ){
   bool HLT_Path = false;
+  bool v1 = false;
+  bool LS_v1 = false;
   
   for (int a = 0; a < NHLT ; ++a) {
     //cout << "fpEvt->fHLTNames[a]  = " << fpEvt->fHLTNames[a] << endl;
@@ -272,10 +264,11 @@ bool tnpReader2::isPathFired( TString Path ){
   for (int a = 0; a < NHLT ; ++a) {
     if ( fpEvt->fHLTNames[a] ==  Path  && fpEvt->fHLTResult[a] == 1  ) {
       HLT_Path = true;
+      
       //cout << Path << " fired!!!! "  << endl;
       for (int b = 0; b < NHLT ; ++b){
 	if ( fpEvt->fHLTResult[b] == 1  ){
-	  if ( fpEvt->fHLTNames[b] ==  "HLT_DoubleMu0_Quarkonium_v1"  ) {
+	  if ( fpEvt->fHLTNames[b] ==  "HLT_DoubleMu0"  ) {
 	    //cout << fpEvt->fHLTNames[b] << endl;
 	    Trigger = 1;
 	  }
@@ -284,7 +277,6 @@ bool tnpReader2::isPathFired( TString Path ){
     }
   }
   
-  //cout << endl;
   if ( HLT_Path ){
     TTrgObj *pTrig(0);
     for (int s = 0; s < fpEvt->nTrgObj() ; ++s) {
@@ -334,298 +326,287 @@ void tnpReader2::ProbeSelection(){
     if ( MODE == 2  ) if ( !((pProbe->fMuID & 0x1<< MUTYPE1 ) && (pProbe->fMuID & 0x1<< MUTYPE2)) ) continue;
     
     pTag = fpEvt->getSigTrack(pCand->fSig1);
-    if ( RESTYPE == 443 ) if ( (pProbe->fQ*(pProbe->fPlab.Phi() - pTag->fPlab.Phi())) > 0  ) { //// CHANGE IT, It's Seagull
-      continue; // Cowboy Veto For JPsi muons
-    }
-    
-    // SOME CHANGES to Mimic Spainard's Study
-    //pTrack = fpEvt->getRecTrack(pProbe->fIndex);
-    //if ( !TrackSelection(pTrack,2)) continue; 
-    
-    //if ( pProbe->fTrackQuality != 2 ) continue;
-    //cout << " pProbe->fIndex = "  << pProbe->fIndex << endl;
-    fCandPS.push_back(pCand);
-  }
-  
-}
+    if ( RESTYPE == 443 ) if ( (pProbe->fQ*(pProbe->fPlab.Phi() - pTag->fPlab.Phi())) > 0  ) { 
+        continue; // Cowboy Veto For JPsi muons
+     }
 
-bool tnpReader2::TrackSelection(TAnaTrack *pTrack, int mode){
-  bool passed = false;					
-  if ((pTrack->fChi2/pTrack->fDof) > 4) return passed;
-  if (fabs(pTrack->fd0) > 2 ) return passed;
-  if (fabs(pTrack->fdz) > 30 ) return passed;
-  int pixelhits(0), siliconhits(0);
-  for (int i=0; i < 20; i++){
-    cout << " NEW PATTERN  " << endl;
-    /* for (int j=9; j>=0; j--) {
-       int bit = (pTrack->fHitPattern[i] >> j) & 0x1;
-       cout << bit << endl;;
-       }*/
-    if ( !(~(pTrack->fHitPattern[i]) & 0x1) ) continue;
-    if ( !(~(pTrack->fHitPattern[i]) & 0x2) ) continue;
-    if ( !(pTrack->fHitPattern[i] & 0x1 << 10)) continue;
-    if ( (pTrack->fHitPattern[i] & 0x1 << 9) ) siliconhits++;
-    if ( (pTrack->fHitPattern[i] & 0x1 << 8) && (pTrack->fHitPattern[i] & 0x1 << 7)) siliconhits++;
-    if ( (pTrack->fHitPattern[i] & 0x1 << 7) && !(pTrack->fHitPattern[i] & 0x1 << 8) && !(pTrack->fHitPattern[i] & 0x1 << 9) ) pixelhits++;
-    if ( !(pTrack->fHitPattern[i] & 0x1 << 7) && (pTrack->fHitPattern[i] & 0x1 << 8) && !(pTrack->fHitPattern[i] & 0x1 << 9) ) pixelhits++;
-  }
-  // if ( pixelhits >= 1 ) cout << pTrack->fPlab.Eta() << endl;
-  //cout <<"pixelhits = " << pixelhits <<"siliconhits = "<<siliconhits << endl;
-  //cout <<"validhits = " << pTrack->fValidHits << endl;
-  if ( (pixelhits > 1) && (siliconhits > 11) ) {
-    //cout << " Valid Track "  << endl;
-    passed = true;
-  }
-  return passed;
-}
+     // SOME CHANGES to Mimic Spainard's Study
+     //pTrack = fpEvt->getRecTrack(pProbe->fIndex);
+     //if ( !TrackSelection(pTrack,2)) continue; 
+
+     //if ( pProbe->fTrackQuality != 2 ) continue;
+     //cout << " pProbe->fIndex = "  << pProbe->fIndex << endl;
+     fCandPS.push_back(pCand);
+   }
+
+ }
+
+ bool tnpReader2::TrackSelection(TAnaTrack *pTrack, int mode){
+   bool passed = false;					
+   if ((pTrack->fChi2/pTrack->fDof) > 4) return passed;
+   if (fabs(pTrack->fd0) > 2 ) return passed;
+   if (fabs(pTrack->fdz) > 30 ) return passed;
+   int pixelhits(0), siliconhits(0);
+   for (int i=0; i < 20; i++){
+     cout << " NEW PATTERN  " << endl;
+     /* for (int j=9; j>=0; j--) {
+	int bit = (pTrack->fHitPattern[i] >> j) & 0x1;
+	cout << bit << endl;;
+	}*/
+     if ( !(~(pTrack->fHitPattern[i]) & 0x1) ) continue;
+     if ( !(~(pTrack->fHitPattern[i]) & 0x2) ) continue;
+     if ( !(pTrack->fHitPattern[i] & 0x1 << 10)) continue;
+     if ( (pTrack->fHitPattern[i] & 0x1 << 9) ) siliconhits++;
+     if ( (pTrack->fHitPattern[i] & 0x1 << 8) && (pTrack->fHitPattern[i] & 0x1 << 7)) siliconhits++;
+     if ( (pTrack->fHitPattern[i] & 0x1 << 7) && !(pTrack->fHitPattern[i] & 0x1 << 8) && !(pTrack->fHitPattern[i] & 0x1 << 9) ) pixelhits++;
+     if ( !(pTrack->fHitPattern[i] & 0x1 << 7) && (pTrack->fHitPattern[i] & 0x1 << 8) && !(pTrack->fHitPattern[i] & 0x1 << 9) ) pixelhits++;
+   }
+   // if ( pixelhits >= 1 ) cout << pTrack->fPlab.Eta() << endl;
+   //cout <<"pixelhits = " << pixelhits <<"siliconhits = "<<siliconhits << endl;
+   //cout <<"validhits = " << pTrack->fValidHits << endl;
+   if ( (pixelhits > 1) && (siliconhits > 11) ) {
+     //cout << " Valid Track "  << endl;
+     passed = true;
+   }
+   return passed;
+ }
 
 
 
-void tnpReader2::Info(){
-  
-  TAnaCand *pCand(0);  TAnaTrack *pTag(0);
-  for (int i = 0; i < fCandPS.size(); ++i) {
-    pCand = fpEvt->getCand(i);
-    pTag = fpEvt->getSigTrack(pCand->fSig1);
-    ((TH1D*)fpHistFile->Get("Tag_pt"))->Fill(pTag->fPlab.Perp());
-    ((TH1D*)fpHistFile->Get("Cand_MaxDoca"))->Fill(pCand->fMaxDoca);
-    ((TH1D*)fpHistFile->Get("Cand_Chi2"))->Fill(pCand->fVtx.fChi2);
-  }
-  
-}
+ void tnpReader2::Info(){
+
+   TAnaCand *pCand(0);  TAnaTrack *pTag(0);
+   for (int i = 0; i < fCandPS.size(); ++i) {
+     pCand = fpEvt->getCand(i);
+     pTag = fpEvt->getSigTrack(pCand->fSig1);
+     ((TH1D*)fpHistFile->Get("Tag_pt"))->Fill(pTag->fPlab.Perp());
+     ((TH1D*)fpHistFile->Get("Cand_MaxDoca"))->Fill(pCand->fMaxDoca);
+     ((TH1D*)fpHistFile->Get("Cand_Chi2"))->Fill(pCand->fVtx.fChi2);
+   }
+
+ }
 
 
 bool tnpReader2::isRecTrackMatchedToTrig(TAnaTrack *pTrack, TString Label){
-  bool Matched = false;
-  TTrgObj *pTrig(0);
-  TLorentzVector track;
-  track.SetPtEtaPhiM(pTrack->fPlab.Pt(), pTrack->fPlab.Eta(), pTrack->fPlab.Phi(), MMUON);
-  for (int s = 0; s < fpEvt->nTrgObj() ; ++s) {
-    pTrig = fpEvt->getTrgObj(s);
-    if ( !(Label.CompareTo(pTrig->fLabel)) ) {
-      //cout << "For Track: pTrig->fLabel is " << pTrig->fLabel << endl;;
-      double track_dR = track.DeltaR(pTrig->fP);
-      double track_dEta = TMath::Abs(pTrack->fPlab.Eta() - pTrig->fP.Eta());
-      double track_dPhi = TMath::Abs(pTrack->fPlab.Phi() - pTrig->fP.Phi());
-      if ( ( track_dPhi < DPHI ) && ( track_dEta < DETA )) {
-	Matched = true;				
-	//cout << " Trigger Matched to Track " << endl;
-	break;
-      }
-    }
-  }
-  return Matched;
+   bool Matched = false;
+   TTrgObj *pTrig(0);
+   
+   TLorentzVector track;
+   track.SetPtEtaPhiM(pTrack->fPlab.Pt(), pTrack->fPlab.Eta(), pTrack->fPlab.Phi(), MMUON);
+   for (int s = 0; s < fpEvt->nTrgObj() ; ++s) {
+     pTrig = fpEvt->getTrgObj(s);
+     if ( !(Label.CompareTo(pTrig->fLabel)) ) {
+       //cout << "For Track: pTrig->fLabel is " << pTrig->fLabel << endl;;
+       double track_dR = track.DeltaR(pTrig->fP);
+       double track_dEta = TMath::Abs(pTrack->fPlab.Eta() - pTrig->fP.Eta());
+       double track_dPhi = TMath::Abs(pTrack->fPlab.Phi() - pTrig->fP.Phi());
+       if ( ( track_dPhi < DPHI ) && ( track_dEta < DETA )) {
+	 Matched = true;				
+	   //cout << " Trigger Matched to Track " << endl;
+	 break;
+	 }
+     }
+   }
+   
+   return Matched;
 }
 
 
 
-bool tnpReader2::isMatchedToTrig(TAnaCand *pCand, TString Label, int mode){
-  bool HLTlabel = false;
-  TTrgObj *pTrig(0);
+ bool tnpReader2::isMatchedToTrig(TAnaCand *pCand, TString Label, int mode){
+   bool HLTlabel = false;
+   TTrgObj *pTrig(0);
 
-  if ( mode == 0 ){
-    HLTlabel = true;
-    fCandTT.push_back(pCand);
-  }
-  
-  if ( mode == 1 ){ // For Matching Tag muon to T.O.
-    TLorentzVector tag;
-    TAnaTrack *pTag(0);
-    pTag = fpEvt->getSigTrack(pCand->fSig1);
-    tag.SetPtEtaPhiM(pTag->fPlab.Pt(), pTag->fPlab.Eta(), pTag->fPlab.Phi(), MMUON);
-    for (int s = 0; s < fpEvt->nTrgObj() ; ++s) {
-      pTrig = fpEvt->getTrgObj(s);
-      if ( !(Label.CompareTo(pTrig->fLabel)) ) {
-	//cout << "For Tag: pTrig->fLabel is " << pTrig->fLabel << endl;;
-	double tag_dR = tag.DeltaR(pTrig->fP);
-	double tag_dEta = TMath::Abs(pTag->fPlab.Eta() - pTrig->fP.Eta());
-	double tag_dPhi = TMath::Abs(pTag->fPlab.Phi() - pTrig->fP.Phi());
-	((TH1D*)fpHistFile->Get("Tag_trig_dEta"))->Fill(tag_dEta);
-	((TH1D*)fpHistFile->Get("Tag_trig_dPhi"))->Fill(tag_dPhi);
-	if ( ( tag_dPhi < DPHI ) && ( tag_dEta < DETA )) {
-	  HLTlabel = true;				
-	  ((TH1D*)fpHistFile->Get("Tag_trig_dR_aftercuts"))->Fill(tag_dR);
-	  //cout << " Trigger Matched to Tag " << endl;
-	  fCandTT.push_back(pCand);
-	  break;
+   if ( mode == 0 ){
+     HLTlabel = true;
+     fCandTT.push_back(pCand);
+   }
+
+   if ( mode == 1 ){ // For Matching Tag muon to T.O.
+     TLorentzVector tag;
+     TAnaTrack *pTag(0);
+     pTag = fpEvt->getSigTrack(pCand->fSig1);
+     tag.SetPtEtaPhiM(pTag->fPlab.Pt(), pTag->fPlab.Eta(), pTag->fPlab.Phi(), MMUON);
+     for (int s = 0; s < fpEvt->nTrgObj() ; ++s) {
+       pTrig = fpEvt->getTrgObj(s);
+       if ( !(Label.CompareTo(pTrig->fLabel)) ) {
+	 //cout << "For Tag: pTrig->fLabel is " << pTrig->fLabel << endl;;
+	 double tag_dR = tag.DeltaR(pTrig->fP);
+	 double tag_dEta = TMath::Abs(pTag->fPlab.Eta() - pTrig->fP.Eta());
+	 double tag_dPhi = TMath::Abs(pTag->fPlab.Phi() - pTrig->fP.Phi());
+	 ((TH1D*)fpHistFile->Get("Tag_trig_dEta"))->Fill(tag_dEta);
+	 ((TH1D*)fpHistFile->Get("Tag_trig_dPhi"))->Fill(tag_dPhi);
+	 if ( ( tag_dPhi < DPHI ) && ( tag_dEta < DETA )) {
+	   HLTlabel = true;				
+	   ((TH1D*)fpHistFile->Get("Tag_trig_dR_aftercuts"))->Fill(tag_dR);
+	   //cout << " Trigger Matched to Tag " << endl;
+	   fCandTT.push_back(pCand);
+	   break;
+	 }
+       }
+     }
+   }
+
+   if ( mode == 2 ){ // For Matching Probe muon to T.O.
+     TLorentzVector probe;
+     TAnaTrack *pProbe(0);
+     pProbe = fpEvt->getSigTrack(pCand->fSig2);
+     probe.SetPtEtaPhiM(pProbe->fPlab.Pt(), pProbe->fPlab.Eta(), pProbe->fPlab.Phi(), MMUON);
+     for (int s = 0; s < fpEvt->nTrgObj() ; ++s) {
+       pTrig = fpEvt->getTrgObj(s);
+       if ( !(Label.CompareTo(pTrig->fLabel)) ) {
+	 double probe_dR = probe.DeltaR(pTrig->fP);
+	 double probe_dEta = TMath::Abs(pProbe->fPlab.Eta() - pTrig->fP.Eta());
+	 double probe_dPhi = TMath::Abs(pProbe->fPlab.Phi() - pTrig->fP.Phi());
+	 ((TH1D*)fpHistFile->Get("Probe_trig_dEta"))->Fill(probe_dEta);
+	 ((TH1D*)fpHistFile->Get("Probe_trig_dPhi"))->Fill(probe_dPhi);
+	 if ( ( probe_dPhi < DPHI ) && ( probe_dEta < DETA )) {
+	   HLTlabel = true;				
+	   ((TH1D*)fpHistFile->Get("Probe_trig_dR_aftercuts"))->Fill(probe_dR);
+	   //cout << " Trigger Matched to Probe " << endl;
+	   fCandTP.push_back(pCand); // will be used for mm
+	   break;
+	 } 
+       }
+     }
+
+     if ( !(HLTlabel) ) fCandnotTP.push_back(pCand);  // wiil be used for mmbar 
+
+   }
+     return HLTlabel;
+ }
+
+
+
+ bool tnpReader2::isMatchedToDoubleTrig(TAnaCand *pCand, TString Label, int mode){
+   bool HLTlabel = false;
+   TTrgObj *pTrig(0);
+   int t(-1);
+   if ( mode == 0 ){
+     HLTlabel = true;
+     fCandTT.push_back(pCand);
+   }
+
+   if ( mode == 1 ){ // For Matching Tag muon to Single Muon T.O.
+     TLorentzVector tag;
+     TAnaTrack *pTag(0);
+     pTag = fpEvt->getSigTrack(pCand->fSig1);
+     tag.SetPtEtaPhiM(pTag->fPlab.Pt(), pTag->fPlab.Eta(), pTag->fPlab.Phi(), MMUON);
+     for (int s = 0; s < fpEvt->nTrgObj() ; ++s) {
+       pTrig = fpEvt->getTrgObj(s);
+       if ( !(Label.CompareTo(pTrig->fLabel)) ) {
+	 double tag_dR = tag.DeltaR(pTrig->fP);
+	 double tag_dEta = TMath::Abs(pTag->fPlab.Eta() - pTrig->fP.Eta());
+	 double tag_dPhi = TMath::Abs(pTag->fPlab.Phi() - pTrig->fP.Phi());
+	 ((TH1D*)fpHistFile->Get("Tag_trig_dEta"))->Fill(tag_dEta);
+	 ((TH1D*)fpHistFile->Get("Tag_trig_dPhi"))->Fill(tag_dPhi);
+	 if ( ( tag_dPhi < DPHI ) && ( tag_dEta < DETA )) {
+	   HLTlabel = true;				
+	   ((TH1D*)fpHistFile->Get("Tag_trig_dR_aftercuts"))->Fill(tag_dR);
+	   fCandTT.push_back(pCand);
+	   break;
+	 }
+       }
+     }
+   }
+   
+   if ( mode == 2 ){ // For Matching Tag muon to Double Muon T.O.
+     TLorentzVector tagD;
+     TAnaTrack *pTagD(0);
+     pTagD = fpEvt->getSigTrack(pCand->fSig1);
+     tagD.SetPtEtaPhiM(pTagD->fPlab.Pt(), pTagD->fPlab.Eta(), pTagD->fPlab.Phi(), MMUON);
+     for (int s = 0; s < fpEvt->nTrgObj() ; ++s) {
+       pTrig = fpEvt->getTrgObj(s);
+       if ( !(Label.CompareTo(pTrig->fLabel)) ) {
+	 double tagD_dR = tagD.DeltaR(pTrig->fP);
+	 double tagD_dEta = TMath::Abs(pTagD->fPlab.Eta() - pTrig->fP.Eta());
+	 double tagD_dPhi = TMath::Abs(pTagD->fPlab.Phi() - pTrig->fP.Phi());
+	 ((TH1D*)fpHistFile->Get("Tag_Dtrig_dEta"))->Fill(tagD_dEta);
+	 ((TH1D*)fpHistFile->Get("Tag_Dtrig_dPhi"))->Fill(tagD_dPhi);
+	 if ( ( tagD_dPhi < DPHI ) && ( tagD_dEta < DETA )) {
+	   HLTlabel = true;				
+	   ((TH1D*)fpHistFile->Get("Tag_Dtrig_dR_aftercuts"))->Fill(tagD_dR);
+	   //cout << " Tag matched to Double mu T.O.  " << endl;
+	   fCandTT2.push_back(pCand); 
+	   t=s;
+	   break;
+	 } 
+       }
+     }
+     
+     if ( !HLTlabel ) {
+       TAnaTrack *p(0);
+       p = fpEvt->getSigTrack(pCand->fSig2);
+       if ( Trigger > 0. ){
+	 ((TH1D*)fpHistFile->Get("mmbar_Triggered_Tag_Pt"))->Fill(pTagD->fPlab.Pt());
+	 ((TH1D*)fpHistFile->Get("mmbar_Triggered_Tag_Eta"))->Fill(pTagD->fPlab.Eta());
+	 ((TH1D*)fpHistFile->Get("mmbar_Triggered_Probe_Pt"))->Fill(p->fPlab.Pt());
+	 ((TH1D*)fpHistFile->Get("mmbar_Triggered_Probe_Eta"))->Fill(p->fPlab.Eta());	
+       }
+       
+       if ( Trigger  < 0.) {
+	 ((TH1D*)fpHistFile->Get("mmbar_NotTriggered_Tag_Pt"))->Fill(pTagD->fPlab.Pt());
+	 ((TH1D*)fpHistFile->Get("mmbar_NotTriggered_Tag_Eta"))->Fill(pTagD->fPlab.Eta());
+	 ((TH1D*)fpHistFile->Get("mmbar_NotTriggered_Probe_Pt"))->Fill(p->fPlab.Pt());
+	 ((TH1D*)fpHistFile->Get("mmbar_NotTriggered_Probe_Eta"))->Fill(p->fPlab.Eta());
+	 double dEta =  TMath::Abs(pTagD->fPlab.Eta() - p->fPlab.Eta());
+	 TLorentzVector P;
+	 P.SetPtEtaPhiM(p->fPlab.Pt(), p->fPlab.Eta(), p->fPlab.Phi(), MMUON);
+	 double dr = tagD.DeltaR(P);
+	 ((TH1D*)fpHistFile->Get("mmbar_NotTriggered_TagProbe_dEta"))->Fill(dEta);
+	 ((TH1D*)fpHistFile->Get("mmbar_NotTriggered_TagProbe_dR"))->Fill(dr);
+       }
+       
+       fCandnotTP.push_back(pCand);  // wiil be used for mmbar 
+     }
+     
+   }
+   
+   if ( mode == 3 ){ // For Matching Probe muon to Double Muon T.O.
+     TLorentzVector probe;
+     TAnaTrack *pProbe(0);
+     pProbe = fpEvt->getSigTrack(pCand->fSig2);
+     probe.SetPtEtaPhiM(pProbe->fPlab.Pt(), pProbe->fPlab.Eta(), pProbe->fPlab.Phi(), MMUON);
+     for (int s = 0; s < fpEvt->nTrgObj() ; ++s) {
+       if ( s == t ) continue;
+       pTrig = fpEvt->getTrgObj(s);
+       if ( !(Label.CompareTo(pTrig->fLabel)) ) {
+	 double probe_dR = probe.DeltaR(pTrig->fP);
+	 double probe_dEta = TMath::Abs(pProbe->fPlab.Eta() - pTrig->fP.Eta());
+	 double probe_dPhi = TMath::Abs(pProbe->fPlab.Phi() - pTrig->fP.Phi());
+	 ((TH1D*)fpHistFile->Get("Probe_trig_dEta"))->Fill(probe_dEta);
+	 ((TH1D*)fpHistFile->Get("Probe_trig_dPhi"))->Fill(probe_dPhi);
+	 if ( ( probe_dPhi < DPHI ) && ( probe_dEta < DETA )) {
+	   HLTlabel = true;
+	   ((TH1D*)fpHistFile->Get("Probe_trig_dR_aftercuts"))->Fill(probe_dR);
+	   //cout << " Probe to Double mu T.O. " << endl;
+	   fCandTP.push_back(pCand); // will be used for mm
+	   TAnaTrack *t(0);
+	   t = fpEvt->getSigTrack(pCand->fSig1);
+	   if ( Trigger > 0. ){
+	     ((TH1D*)fpHistFile->Get("mm_Triggered_Tag_Pt"))->Fill(t->fPlab.Pt());
+	     ((TH1D*)fpHistFile->Get("mm_Triggered_Tag_Eta"))->Fill(t->fPlab.Eta());
+	     ((TH1D*)fpHistFile->Get("mm_Triggered_Probe_Pt"))->Fill(pProbe->fPlab.Pt());
+	     ((TH1D*)fpHistFile->Get("mm_Triggered_Probe_Eta"))->Fill(pProbe->fPlab.Eta());
+	     double deta =  TMath::Abs(t->fPlab.Eta() - pProbe->fPlab.Eta());
+	     TLorentzVector T;
+	     T.SetPtEtaPhiM(t->fPlab.Pt(), t->fPlab.Eta(), t->fPlab.Phi(), MMUON);
+	     double dR = probe.DeltaR(T);
+	     ((TH1D*)fpHistFile->Get("mm_Triggered_TagProbe_dEta"))->Fill(deta);
+	     ((TH1D*)fpHistFile->Get("mm_Triggered_TagProbe_dR"))->Fill(dR);
+	   }
+	   break;
 	}
-      }
-    }
-  }
+       }
+     }
+     
+     if ( !HLTlabel ) {
+       fCandnotTP.push_back(pCand);  // wiil be used for mmbar 
+     }
+   }
   
-  if ( mode == 2 ){ // For Matching Probe muon to T.O.
-    TLorentzVector probe;
-    TAnaTrack *pProbe(0);
-    pProbe = fpEvt->getSigTrack(pCand->fSig2);
-    probe.SetPtEtaPhiM(pProbe->fPlab.Pt(), pProbe->fPlab.Eta(), pProbe->fPlab.Phi(), MMUON);
-    for (int s = 0; s < fpEvt->nTrgObj() ; ++s) {
-      pTrig = fpEvt->getTrgObj(s);
-      if ( !(Label.CompareTo(pTrig->fLabel)) ) {
-	//cout << "For Probe: pTrig->fLabel is " << pTrig->fLabel << endl;;
-	double probe_dR = probe.DeltaR(pTrig->fP);
-	double probe_dEta = TMath::Abs(pProbe->fPlab.Eta() - pTrig->fP.Eta());
-	double probe_dPhi = TMath::Abs(pProbe->fPlab.Phi() - pTrig->fP.Phi());
-	((TH1D*)fpHistFile->Get("Probe_trig_dEta"))->Fill(probe_dEta);
-	((TH1D*)fpHistFile->Get("Probe_trig_dPhi"))->Fill(probe_dPhi);
-	if ( ( probe_dPhi < DPHI ) && ( probe_dEta < DETA )) {
-	  HLTlabel = true;				
-	  ((TH1D*)fpHistFile->Get("Probe_trig_dR_aftercuts"))->Fill(probe_dR);
-	  //cout << " Trigger Matched to Probe " << endl;
-	  //if ( ((pProbe->fMuID & 0x1<< MUTYPE1 ) && (pProbe->fMuID & 0x1<< MUTYPE2)) ) cout << " Gl&Tr  " << endl;
-	  fCandTP.push_back(pCand); // will be used for mm
-	  break;
-	} 
-      }
-    }
-    
-    if ( !(HLTlabel) ) fCandnotTP.push_back(pCand);  // wiil be used for mmbar 
-    
-  }
-    return HLTlabel;
-}
-
-
-
-bool tnpReader2::isMatchedToDoubleTrig(TAnaCand *pCand, TString Label, int mode){
-  bool HLTlabel = false;
-  TTrgObj *pTrig(0);
-  int t(-1);
-  if ( mode == 0 ){
-    HLTlabel = true;
-    fCandTT.push_back(pCand);
-  }
-  
-  if ( mode == 1 ){ // For Matching Tag muon to Single Muon T.O.
-    TLorentzVector tag;
-    TAnaTrack *pTag(0);
-    pTag = fpEvt->getSigTrack(pCand->fSig1);
-    tag.SetPtEtaPhiM(pTag->fPlab.Pt(), pTag->fPlab.Eta(), pTag->fPlab.Phi(), MMUON);
-    for (int s = 0; s < fpEvt->nTrgObj() ; ++s) {
-      pTrig = fpEvt->getTrgObj(s);
-      if ( !(Label.CompareTo(pTrig->fLabel)) ) {
-	//cout << "For Tag: pTrig->fLabel is " << pTrig->fLabel << endl;
-	double tag_dR = tag.DeltaR(pTrig->fP);
-	double tag_dEta = TMath::Abs(pTag->fPlab.Eta() - pTrig->fP.Eta());
-	double tag_dPhi = TMath::Abs(pTag->fPlab.Phi() - pTrig->fP.Phi());
-	//cout <<"tag_dEta = "<< tag_dEta << "tag_dPhi = "<< tag_dPhi << "pTrig->fP.Pt() = " << pTrig->fP.Pt() << " pTag->fPlab.Pt() = " << pTag->fPlab.Pt() << endl;
-	((TH1D*)fpHistFile->Get("Tag_trig_dEta"))->Fill(tag_dEta);
-	((TH1D*)fpHistFile->Get("Tag_trig_dPhi"))->Fill(tag_dPhi);
-	if ( ( tag_dPhi < DPHI ) && ( tag_dEta < DETA )) {
-	  HLTlabel = true;				
-	  ((TH1D*)fpHistFile->Get("Tag_trig_dR_aftercuts"))->Fill(tag_dR);
-	  //cout << " Tag matched to Single mu T.O.  " << endl;
-	  fCandTT.push_back(pCand);
-	  break;
-	}
-      }
-    }
-  }
-  
-  if ( mode == 2 ){ // For Matching Tag muon to Double Muon T.O.
-    TLorentzVector tagD;
-    TAnaTrack *pTagD(0);
-    pTagD = fpEvt->getSigTrack(pCand->fSig1);
-    tagD.SetPtEtaPhiM(pTagD->fPlab.Pt(), pTagD->fPlab.Eta(), pTagD->fPlab.Phi(), MMUON);
-    for (int s = 0; s < fpEvt->nTrgObj() ; ++s) {
-      pTrig = fpEvt->getTrgObj(s);
-      //cout << "For Tag: pTrig->fLabel is " << pTrig->fLabel << endl;
-      if ( !(Label.CompareTo(pTrig->fLabel)) ) {
-	//cout << "For TagD: pTrig->fLabel is " << pTrig->fLabel << endl;
-	double tagD_dR = tagD.DeltaR(pTrig->fP);
-	double tagD_dEta = TMath::Abs(pTagD->fPlab.Eta() - pTrig->fP.Eta());
-	double tagD_dPhi = TMath::Abs(pTagD->fPlab.Phi() - pTrig->fP.Phi());
-	((TH1D*)fpHistFile->Get("Tag_Dtrig_dEta"))->Fill(tagD_dEta);
-	((TH1D*)fpHistFile->Get("Tag_Dtrig_dPhi"))->Fill(tagD_dPhi);
-	//cout <<"tagD_dEta = "<< tagD_dEta << "tagD_dPhi = "<< tagD_dPhi << "pTrig->fP.Pt() = " << pTrig->fP.Pt() << " pTagD->fPlab.Pt() = " << pTagD->fPlab.Pt() << endl;
-	if ( ( tagD_dPhi < DPHI ) && ( tagD_dEta < DETA )) {
-	  HLTlabel = true;				
-	  ((TH1D*)fpHistFile->Get("Tag_Dtrig_dR_aftercuts"))->Fill(tagD_dR);
-	  //cout << " Tag matched to Double mu T.O.  " << endl;
-	  fCandTT2.push_back(pCand); 
-	  t=s;
-	  break;
-	} 
-      }
-    }
-
-    if ( !HLTlabel ) {
-      //cout << " mmbar stage 1  " << endl;
-      TAnaTrack *p(0);
-      p = fpEvt->getSigTrack(pCand->fSig2);
-      if ( Trigger > 0. ){
-	((TH1D*)fpHistFile->Get("mmbar_Triggered_Tag_Pt"))->Fill(pTagD->fPlab.Pt());
-	((TH1D*)fpHistFile->Get("mmbar_Triggered_Tag_Eta"))->Fill(pTagD->fPlab.Eta());
-	((TH1D*)fpHistFile->Get("mmbar_Triggered_Probe_Pt"))->Fill(p->fPlab.Pt());
-	((TH1D*)fpHistFile->Get("mmbar_Triggered_Probe_Eta"))->Fill(p->fPlab.Eta());	
-      }
-      
-      if ( Trigger  < 0.) {
-	((TH1D*)fpHistFile->Get("mmbar_NotTriggered_Tag_Pt"))->Fill(pTagD->fPlab.Pt());
-	((TH1D*)fpHistFile->Get("mmbar_NotTriggered_Tag_Eta"))->Fill(pTagD->fPlab.Eta());
-	((TH1D*)fpHistFile->Get("mmbar_NotTriggered_Probe_Pt"))->Fill(p->fPlab.Pt());
-	((TH1D*)fpHistFile->Get("mmbar_NotTriggered_Probe_Eta"))->Fill(p->fPlab.Eta());
-	double dEta =  TMath::Abs(pTagD->fPlab.Eta() - p->fPlab.Eta());
-	TLorentzVector P;
-	P.SetPtEtaPhiM(p->fPlab.Pt(), p->fPlab.Eta(), p->fPlab.Phi(), MMUON);
-	double dr = tagD.DeltaR(P);
-	((TH1D*)fpHistFile->Get("mmbar_NotTriggered_TagProbe_dEta"))->Fill(dEta);
-	((TH1D*)fpHistFile->Get("mmbar_NotTriggered_TagProbe_dR"))->Fill(dr);
-      }
-      
-      fCandnotTP.push_back(pCand);  // wiil be used for mmbar 
-    }
-    
-  }
-  
-  if ( mode == 3 ){ // For Matching Probe muon to Double Muon T.O.
-    TLorentzVector probe;
-    TAnaTrack *pProbe(0);
-    pProbe = fpEvt->getSigTrack(pCand->fSig2);
-    probe.SetPtEtaPhiM(pProbe->fPlab.Pt(), pProbe->fPlab.Eta(), pProbe->fPlab.Phi(), MMUON);
-    for (int s = 0; s < fpEvt->nTrgObj() ; ++s) {
-      if ( s == t ) continue;
-      pTrig = fpEvt->getTrgObj(s);
-      if ( !(Label.CompareTo(pTrig->fLabel)) ) {
-	//cout << "For Probe: pTrig->fLabel is " << pTrig->fLabel << endl;;
-	double probe_dR = probe.DeltaR(pTrig->fP);
-	double probe_dEta = TMath::Abs(pProbe->fPlab.Eta() - pTrig->fP.Eta());
-	double probe_dPhi = TMath::Abs(pProbe->fPlab.Phi() - pTrig->fP.Phi());
-	((TH1D*)fpHistFile->Get("Probe_trig_dEta"))->Fill(probe_dEta);
-	((TH1D*)fpHistFile->Get("Probe_trig_dPhi"))->Fill(probe_dPhi);
-	if ( ( probe_dPhi < DPHI ) && ( probe_dEta < DETA )) {
-	  HLTlabel = true;
-	  ((TH1D*)fpHistFile->Get("Probe_trig_dR_aftercuts"))->Fill(probe_dR);
-	  //cout << " Probe to Double mu T.O. " << endl;
-	  //if ( ((pProbe->fMuID & 0x1<< MUTYPE1 ) && (pProbe->fMuID & 0x1<< MUTYPE2)) ) cout << " Gl&Tr  " << endl;
-	  fCandTP.push_back(pCand); // will be used for mm
-	  //cout << " mm " << endl;
-	  TAnaTrack *t(0);
-	  t = fpEvt->getSigTrack(pCand->fSig1);
-	  if ( Trigger > 0. ){
-	    ((TH1D*)fpHistFile->Get("mm_Triggered_Tag_Pt"))->Fill(t->fPlab.Pt());
-	    ((TH1D*)fpHistFile->Get("mm_Triggered_Tag_Eta"))->Fill(t->fPlab.Eta());
-	    ((TH1D*)fpHistFile->Get("mm_Triggered_Probe_Pt"))->Fill(pProbe->fPlab.Pt());
-	    ((TH1D*)fpHistFile->Get("mm_Triggered_Probe_Eta"))->Fill(pProbe->fPlab.Eta());
-	    double deta =  TMath::Abs(t->fPlab.Eta() - pProbe->fPlab.Eta());
-	    TLorentzVector T;
-	    T.SetPtEtaPhiM(t->fPlab.Pt(), t->fPlab.Eta(), t->fPlab.Phi(), MMUON);
-	    double dR = probe.DeltaR(T);
-	    ((TH1D*)fpHistFile->Get("mm_Triggered_TagProbe_dEta"))->Fill(deta);
-	    ((TH1D*)fpHistFile->Get("mm_Triggered_TagProbe_dR"))->Fill(dR);
-	  }
-	  break;
-	}
-      }
-    }
-        
-    if ( !HLTlabel ) {
-      cout << " mmbar stage 2  " << endl;
-      fCandnotTP.push_back(pCand);  // wiil be used for mmbar 
-    }
-  }
-  
-  return HLTlabel;
-}
+   return HLTlabel;
+ }
 
 
 
@@ -634,8 +615,8 @@ bool tnpReader2::isGoodProbe(TAnaCand *pCand){
   
   TAnaTrack *pProbe(0);
   pProbe = fpEvt->getSigTrack(pCand->fSig2);
-  //  if ( (pProbe->fMuID & 0x1<< MUTYPE1 ) && (pProbe->fMuID & 0x1<< MUTYPE2) ){
-  if ( pProbe->fMuID & 0x1<< MUTYPE2 ){  
+  if ( (pProbe->fMuID & 0x1<< MUTYPE1 ) && (pProbe->fMuID & 0x1<< MUTYPE2) ){
+  //if ( pProbe->fMuID & 0x1<< MUTYPE2 ){  
     GoodProbe = true;
     fCandGP.push_back(pCand); // will be used for mm
     //cout << " GOOD PROBE " << endl;
@@ -991,6 +972,8 @@ void tnpReader2::bookHist() {
   h = new TH1D("Probe_trig_dEta", "Probe_trig_dEta", 50, 0., 1.);
   h = new TH1D("Probe_trig_dPhi", "Probe_trig_dPhi", 50, 0., 1.); 
   
+  h = new TH1D("GenJpsi", "GenJpsi", 5, 0., 5.);
+  
   h = new TH1D("mmbar_Triggered_Tag_Pt","mmbar_Triggered_Tag_Pt", 40, 0., 40.);
   h = new TH1D("mmbar_Triggered_Tag_Eta","mmbar_Triggered_Tag_Eta", 60, -3., 3.);
   h = new TH1D("mmbar_Triggered_Probe_Pt","mmbar_Triggered_Probe_Pt", 40, 0., 40.);
@@ -1007,7 +990,6 @@ void tnpReader2::bookHist() {
   h = new TH1D("mm_Triggered_Probe_Eta","mm_Triggered_Probe_Eta", 60, -3., 3.);
   h = new TH1D("mm_Triggered_TagProbe_dEta","mm_Triggered_TagProbe_dEta", 40, 0., 2.);
   h = new TH1D("mm_Triggered_TagProbe_dR","mm_Triggered_TagProbe_dR", 40, 0., 2.);
-  
   
   // Infoo Histograms
   h = new TH1D("Tag_pt","Tag_pt", 40, 0., 40.);
