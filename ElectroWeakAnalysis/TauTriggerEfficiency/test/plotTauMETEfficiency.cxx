@@ -77,8 +77,10 @@ void plot(TriggerCuts triggerCuts){
 	TCut TauMETTot  = pfTauSelection + l1Selection + l2Selection + l25Selection + l3Selection + metSelection;
 
 	gROOT->LoadMacro("./Plotter.cxx");
+	gROOT->LoadMacro("./ntupleChains.cxx");
 
-	Plotter* plotter = new Plotter(filename,"TTEffTree");
+//	Plotter* plotter = new Plotter(filename,"TTEffTree");
+	Plotter* plotter = new Plotter(DYToTauTau_M_20_TuneZ2_7TeV_tagV00_06_20());
 
 
         TString plotDir = triggerCuts.name + "plots/";

@@ -7,6 +7,7 @@
 #include "TPad.h"
 #include "TCut.h"
 #include "TEventList.h"
+#include "TChain.h"
 
 #include "tdrstyle.cxx"
 
@@ -16,24 +17,16 @@
 class Plotter {
 public:
   Plotter(TString filename="tteffAnalysis.root", TString treename="TTEffTree", TString pickEventsFile = ""){
-
-    //gROOT->LoadMacro("./tdrstyle.cxx");
-    setTDRStyle();
-
-    inFile = TFile::Open(filename);
-    //inFile = TFile::Open("tteffAnalysis.root");
-    //inFile = TFile::Open("tteffAnalysis-merged.root");
-    tree = (TTree *) (inFile->Get(treename));
-
-////    if(pickEventsFile.Sizeof() > 0) tree = pickEvents(pickEventsFile,tree);
-
-    plotXtitle = 0;
-    plotYtitle = 0;
-    format = "";
-    save = false;
+    init();
+    chain = new TChain(treename);
+    chain->AddFile(filename);
+  }
+  Plotter(TChain* chIN){
+    init();
+    chain = chIN;
   }
   ~Plotter(){
-    delete tree;
+    delete chain;
     delete inFile;
   };
 
@@ -50,8 +43,19 @@ public:
 private:
 //  TTree* pickEvents(TString,TTree*);
 
+  void init(){
+    //gROOT->LoadMacro("./tdrstyle.cxx");
+    setTDRStyle();
+
+    plotXtitle = 0;
+    plotYtitle = 0;
+    format = "";
+    save = false;
+  }
+
   TFile* inFile;
-  TTree* tree;
+//  TTree* tree;
+  TChain* chain;
   const char* plotXtitle;
   const char* plotYtitle;
   TString plotFileName;
@@ -74,8 +78,8 @@ TGraphAsymmErrors *Plotter::DrawHistogram(const char* varexp, const TCut& select
 
   const char* varexp2 = s_varexp.c_str();
 
-  tree->Draw(varexp1,selection,"e");
-  tree->Draw(varexp2,"","h");
+  chain->Draw(varexp1,selection,"e");
+  chain->Draw(varexp2,"","h");
 
   TH1F *hnum = (TH1F*)gDirectory->Get("hnum");
   TH1F *hden = (TH1F*)gDirectory->Get("hden");
@@ -117,8 +121,8 @@ TGraphAsymmErrors *Plotter::DrawHistogram(const char* varexp, const TCut& select
 
   const char* varexp2 = s_varexp.c_str();
 
-  tree->Draw(varexp1,selection&&selection2,"e");
-  tree->Draw(varexp2,selection2,"h");
+  chain->Draw(varexp1,selection&&selection2,"e");
+  chain->Draw(varexp2,selection2,"h");
 
   TH1F *hnum = (TH1F*)gDirectory->Get("hnum");
   TH1F *hden = (TH1F*)gDirectory->Get("hden");
@@ -152,7 +156,7 @@ TGraphAsymmErrors *Plotter::DrawHistogram(const char* varexp, const TCut& select
 TH1 *Plotter::DrawDistribution(const char* varexp, const TCut& selection){
 
   const char* varexp1 = varexp;
-  tree->Draw(varexp1,selection);
+  chain->Draw(varexp1,selection);
   TH1F *hnum = (TH1F*)gDirectory->Get("hnum");
 
   hnum->SetStats(0);
@@ -202,38 +206,29 @@ TTree* Plotter::pickEvents(TString fPickEvents,TTree* intree){
 int Plotter::GetNEvents(const TCut& selection){
 	int events = 0;
 
-        tree->Draw(">>elist",selection);
-        TEventList *elist = (TEventList*)gDirectory->Get("elist");
-        tree->SetEventList(elist);
+	TEventList *elist = new TEventList("elist");
+	chain->Draw(">>elist",selection);
 
-	TTree *selTree = 0;
-	if(selection.Sizeof() == TCut("").Sizeof()) selTree = tree;
-	else {
-		tree->SetBranchStatus("*",0);
-   		tree->SetBranchStatus("run",1);
-   		tree->SetBranchStatus("lumi",1);
-   		tree->SetBranchStatus("event",1);
-		selTree = tree->CopyTree("");
-	}
-
-	uint32_t run,lumi,event;
-	uint32_t run_old   = -1,
+        uint32_t run,lumi,event;
+        uint32_t run_old   = -1,
                  lumi_old  = -1,
                  event_old = -1;
 
-	selTree->SetBranchAddress("run",&run);
-   	selTree->SetBranchAddress("lumi",&lumi);
-   	selTree->SetBranchAddress("event",&event);
+        chain->SetBranchAddress("run",&run);
+        chain->SetBranchAddress("lumi",&lumi);
+        chain->SetBranchAddress("event",&event);
 
-	for(int i = 0; i < selTree->GetEntries(); ++i){
-		selTree->GetEvent(i);
-		if(run == run_old && lumi == lumi_old && event == event_old) continue;
-		run_old   = run;
-		lumi_old  = lumi;
-		event_old = event;
-		++events;
-	}
-	tree->SetBranchStatus("*",1);
+	for(int i = 0; i < elist->GetN(); ++i){
+		chain->GetEntry(elist->GetEntry(i));
+
+		if(i%1000 == 0) cout << "Entries processed " << i << endl;
+
+                if(run == run_old && lumi == lumi_old && event == event_old) continue;
+                run_old   = run;
+                lumi_old  = lumi;
+                event_old = event;
+                ++events;
+        }
 	delete elist;
 	return events;
 }
