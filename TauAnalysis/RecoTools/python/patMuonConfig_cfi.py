@@ -66,4 +66,3 @@ patMuons.embedHighLevelSelection = cms.bool(True)
 # enable matching to generator level information
 patMuons.addGenMatch = cms.bool(True)
 
-

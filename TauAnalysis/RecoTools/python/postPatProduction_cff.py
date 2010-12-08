@@ -45,4 +45,4 @@ produceRecObjects = cms.Sequence(
    + produceMEtTopology
 )
 
-producePostPat = cms.Sequence( produceGenObjects + produceRecObjects )
+producePostPat = cms.Sequence(produceGenObjects + produceRecObjects)
