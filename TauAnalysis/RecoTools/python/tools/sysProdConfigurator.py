@@ -32,23 +32,31 @@ class sysProdConfigurator(cms._ParameterTypeBase):
             module.gaussianSmearingSigmaPhi = cms.double(phiSmearing)
             module.gaussianSmearingSigmaEScale = cms.double(energyScaleSmearing)
             module.setLabel(modulePrefix)
-            if moduleType =='SmearedTauProducer': #Additional Tau default Config
-                module.smearConstituents = cms.bool(False)
-                module.hadronEnergyScale = cms.double(1.0)
-                module.gammaEnergyScale = cms.double(1.0)  
+            if moduleType == 'SmearedTauProducer': # Additional Tau default Config
+                module.jetCorrPayloadName    = cms.string('AK5PF')
+                module.jetCorrUncertaintyTag = cms.string('START38_V13')
+                module.jecFlavorUncertainty  = cms.double(2.)
+                module.shiftByJECuncertainty = cms.double(0.)
 
             randomPSet = cms.PSet(
                 initialSeed = cms.untracked.uint32(987346),
                 engineName = cms.untracked.string('TRandom3')
             )
 
-            #ENERGY SCALE
-            energyScaleValues = [ energyScaleMean - energyScaleShift, energyScaleMean ,energyScaleMean + energyScaleShift ]
+            # ENERGY SCALE
+            energyScaleValues = [ energyScaleMean - energyScaleShift, energyScaleMean, energyScaleMean + energyScaleShift ]
             energyScaleLabels = [ 'EnScaleDown', '', 'EnScaleUp' ]
 
-            for label,eScale in zip(energyScaleLabels,energyScaleValues):
+            for label, eScale in zip(energyScaleLabels, energyScaleValues):
                 m = module.clone()
                 m.energyScale = cms.double(eScale)
+
+                # Additional Tau default Config
+                if label == 'EnScaleDown':
+                    m.shiftByJECuncertainty = cms.double(-1.)
+                if label == 'EnScaleUp':
+                    m.shiftByJECuncertainty = cms.double(+1.)    
+                
                 #Register the filter in the namespace
                 pyModule = sys.modules[self.pyModuleName[0]]
                 if pyModule is None:
@@ -64,13 +72,13 @@ class sysProdConfigurator(cms._ParameterTypeBase):
                 randomSet.initialSeed = random.randint(100000,300000)
                 setattr(randomNumberService,modulePrefix+label,randomSet)
 
-            #Pt
+            # Pt
             ptValues = [ -ptShift, ptShift ]
             ptLabels = [ 'PtShiftDown', 'PtShiftUp' ]
 
             for label, value in zip(ptLabels, ptValues):
                 m = module.clone()
-                m.deltaPt = cms.double(value)
+                m.deltaPt = cms.double(value)                
                 m.setLabel(modulePrefix+label)
                 #Register the filter in the namespace
                 pyModule = sys.modules[self.pyModuleName[0]]
