@@ -207,10 +207,10 @@ void anaTNP::loadFiles(const char *dir, int i) {
       ufile = fDirectory + string("/upsilon/UpsTagandprobe_10TeV_nocut.root");
       jfile = fDirectory + string("/jpsi/JpsiTagandprobe_10TeV_nocut.root");  
     } else if (40 == i) {
-      ufile = fDirectory + string("/upsilon/100804.sp10.mt.COMBINED.tnpReaderTrig_MC.default.root");
+      ufile = fDirectory + string("/upsilon/111112.data.MuOnia.mt.HT160.NoVeto.tnpReaderTrig_DATA.default.root");
      // ufile = fDirectory + string("/upsilon/UpsTagAndProbe_7TeV.root"); 
-      //jfile = fDirectory + string("/jpsi/100807.data.mt.tnpReaderMuID_DATA.CompareICHEP.default.root");
-      jfile = fDirectory + string("/jpsi/100807.data.mt.tnpReaderMuID_DATA.ComEndCaps.default.root");  
+     // jfile = fDirectory + string("/jpsi/231112.data.MU.mt.NoVeto.tnpReaderTrig_DATA.default.root");
+      jfile = fDirectory + string("/jpsi/101130.fl10.CowboyVeto.mt.jpsi.tnpReaderTrig_MC.default.root");  
     } else {
       cout << "Don't know which J/psi file to open for i = " << i << ". Specify this in anaTNP::loadfiles()" << endl;
       return;
@@ -320,7 +320,7 @@ void anaTNP::makeAllDATA(int channel) {
     readHistogramsDATA(fM[1], "mm", "mt", "mmbar", "mt,pt-eta");
     
     // -- add backgrounds
-    addBackground(fS1VectorPos, 0.3);
+    //addBackground(fS1VectorPos, 0.3);
     
     fitJpsi(1);
     fillPidTables(0); // 0 - DATA, 1 - MC
@@ -4432,7 +4432,7 @@ void anaTNP::fitJpsi(int mode) {
   	int status(0);
 	const char* Status;
 
-  	int MINFIT(20);
+  	int MINFIT(50);
 	 
  	TH1D *hChisq_mm    = new TH1D("hChisq/ndof_mm"   , "hChisq/ndof_mm"   , 40, -20.,20.);
 	TH1D *hChisq_mt    = new TH1D("hChisq/ndof_mt"   , "hChisq/ndof_mt"   , 40, -20.,20.); 
