@@ -3,9 +3,20 @@ import FWCore.ParameterSet.Config as cms
 
 from PhysicsTools.PatAlgos.tools.trigTools import *
 
+def removeTriggerPathsForAllBut(matchHltPaths, notToRemove):
+    """Take a dictionary matchHltPaths of the form
+    value: key = collection: HLT path list
+    and remove all the HLT path lists (set value = []) for all collections
+    that are not listed in 'notToRemove' which is a list of strings
+    """
+    for key in matchHltPaths.keys():
+        if not key in notToRemove:
+            matchHltPaths[key] = []
+
+
 def getTargetBaseName(name):
-  ## Return e.g. baseName = "electron" for name = "cleanPatElectrons".
-  ##+ Frist make all lower case and remove trailing "s".
+  'Return e.g. baseName = "electron" for name = "cleanPatElectrons".'
+  ## Frist make all lower case and remove trailing "s".
   baseName = name.lower()
   ## Remove various PAT prefixes.
   baseName = baseName.replace("selected", "")
@@ -14,7 +25,7 @@ def getTargetBaseName(name):
   baseName = baseName.replace("pf", "")
   baseName = baseName.replace("tc", "")
   baseName = baseName.rstrip("s")
-  if baseName == "met": 
+  if baseName == "met":
     baseName = "MET"
   else:
     baseName = baseName.title()
@@ -111,7 +122,7 @@ def addPhotonReReco(process):
     process.load('Configuration.StandardSequences.Reconstruction_cff')
     process.load('Configuration.StandardSequences.FrontierConditions_GlobalTag_cff')
     process.load("SimGeneral.HepPDTESSource.pythiapdt_cfi")
-    
+
     process.photonReReco = cms.Sequence(process.conversionSequence*
                                         process.trackerOnlyConversionSequence*
                                         process.photonSequence*

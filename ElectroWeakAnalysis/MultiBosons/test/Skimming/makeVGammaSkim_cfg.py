@@ -13,9 +13,10 @@ from PhysicsTools.PatAlgos.tools.trigTools import *
 from PhysicsTools.PatAlgos.tools.cmsswVersionTools import *
 from ElectroWeakAnalysis.MultiBosons.Skimming.egammaUserDataProducts_cff import *
 from ElectroWeakAnalysis.MultiBosons.Skimming.jobOptions import *
-from ElectroWeakAnalysis.MultiBosons.Skimming.matchHltPaths import matchHltPaths
+from ElectroWeakAnalysis.MultiBosons.Skimming.matchHltPaths import *
 from ElectroWeakAnalysis.MultiBosons.Skimming.options import options as defaultOptions
 from ElectroWeakAnalysis.MultiBosons.tools.skimmingTools import *
+
 
 ## See link below for the definition of the selection
 ## https://twiki.cern.ch/twiki/bin/view/CMS/VGammaFirstPaper#Vgamma_Group_skims
@@ -177,38 +178,21 @@ process.hltFilter.TriggerResultsTag = \
 process.skimFilterSequence = cms.Sequence(process.hltFilter) # Extend below
 process.skimFilterPath = cms.Path(process.skimFilterSequence)
 
-objectsHLTToMatch = ""
-
 if options.skimType == "MuonPhoton":
-    objectsToHLTMatch="cleanPatMuons"
-    process.hltFilter.HLTPaths += ["HLT_Mu9",
-                                   "HLT_Mu11",
-                                   "HLT_Mu15",
-                                   "HLT_Mu15_v1",
-                                   "HLT_Mu15_v2"]
+    removeTriggerPathsForAllBut(matchHltPaths, ["cleanPatMuons"])
+    process.hltFilter.HLTPaths = matchHltPaths["cleanPatMuons"]
     process.load(basePath + "muonPhotonSkimFilterSequence_cff")
     process.skimFilterSequence += process.muonPhotonSkimFilterSequence
 
 elif options.skimType == "ElectronPhoton":
-    objectsToHLTMatch="cleanPatElectrons"
-    process.hltFilter.HLTPaths += ["HLT_Ele15_LW_L1R",
-                                   "HLT_Ele15_SW_L1R",
-                                   "HLT_Ele15_SW_EleId_L1R",
-                                   "HLT_Ele17_SW_CaloEleId_L1R",
-                                   "HLT_Ele17_SW_TightEleId_L1R",
-                                   "HLT_Ele17_SW_TighterEleIdIsol_L1R_v2",
-                                   "HLT_Ele22_SW_TighterEleId_L1R_v2",
-                                   "HLT_DoubleEle17_SW_L1R"]
+    removeTriggerPathsForAllBut(matchHltPaths, ["cleanPatElectrons"])
+    process.hltFilter.HLTPaths = matchHltPaths["cleanPatElectrons"]
     process.load(basePath + "electronPhotonSkimFilterSequence_cff")
     process.skimFilterSequence += process.electronPhotonSkimFilterSequence
 
 elif options.skimType == "Dimuon":
-    objectsToHLTMatch="cleanPatMuons"
-    process.hltFilter.HLTPaths += ["HLT_Mu9",
-                                   "HLT_Mu11",
-                                   "HLT_Mu15",
-                                   "HLT_Mu15_v2",
-                                   "HLT_DoubleMu3"]
+    removeTriggerPathsForAllBut(matchHltPaths, ["cleanPatMuons"])
+    process.hltFilter.HLTPaths = matchHltPaths["cleanPatMuons"]
     process.load(basePath + "dimuonSkimFilterSequence_cff")
     process.skimFilterSequence += process.dimuonSkimFilterSequence
     addPhotonReReco(process)
@@ -220,23 +204,11 @@ elif options.skimType == "Dimuon":
     process.photons.maxHoverEEndcap = 10.0
 
 elif options.skimType == "Jet":
-    process.load('Configuration.StandardSequences.Services_cff')
-    process.load('Configuration.StandardSequences.MagneticField_38T_cff')
-    process.load('Configuration.StandardSequences.Geometry_cff')
-    process.load('Configuration.StandardSequences.Reconstruction_cff')
-    process.load('Configuration.StandardSequences.FrontierConditions_GlobalTag_cff')
-    process.load("SimGeneral.HepPDTESSource.pythiapdt_cfi")
-
-    process.photonReReco = cms.Sequence(process.conversionSequence*
-                                        process.trackerOnlyConversionSequence*
-                                        process.photonSequence*
-                                        process.photonIDSequence)
-
-    objectsToHLTMatch="cleanPatJets"
-
-    process.hltFilter.HLTPaths += ["HLT_Jet100U","HLT_Jet70U","HLT_Jet50U","HLT_Jet30U","HLT_Jet15U"]
+    removeTriggerPathsForAllBut(matchHltPaths, ["cleanPatJets"])
+    process.hltFilter.HLTPaths = matchHltPaths["cleanPatJets"]
     process.load(basePath + "jetSkimFilterSequence_cff")
     process.skimFilterSequence += process.jetSkimFilterSequence
+    addPhotonReReco(process)
     # now change the photon reco to much looser settings
     process.photonCore.minSCEt = 10.0
     process.photons.minSCEtBarrel = 10.0
@@ -246,12 +218,12 @@ elif options.skimType == "Jet":
     #edit the pat sequence to do the rereco
     process.patDefaultSequence = cms.Sequence(process.photonReReco*process.patDefaultSequence)
 
+elif options.skimType == "Inclusive":
+    ## Remove all skimming filters
+    process.skimFilterSequence = cms.Sequence()
+
 else:
     raise RuntimeError, "Illegal skimType option: %s" % options.skimType
-
-for key in matchHltPaths.keys():
-    if key != objectsToHLTMatch and objectsToHLTMatch != "":
-        matchHltPaths[key] = []
 
 embedTriggerMatches(process, matchHltPaths)
 
@@ -267,11 +239,8 @@ if options.isRealData:
     ## Run the hltPhysicsDeclared filter in a separate path to
     ##+ store its result in the triggerEvent product.
     process.hltPhysicsDeclaredPath = cms.Path(process.hltPhysicsDeclared)
-    process.skimFilterSequence = cms.Sequence(
-        process.goodCollisionDataSequence +
-        process.skimFilterSequence
-        )
     process.defaultSequence = cms.Sequence(
+        process.goodCollisionDataSequence +
         process.skimFilterSequence +
         process.patDefaultSequence
     )
@@ -310,12 +279,12 @@ else:
         process.defaultSequence *
         process.powhegPartonShowerFsrSequenceVeto
         )
-    
+
     process.hasPhotonCandidateNotPythiaPartonShower = cms.Path(
         process.defaultSequence *
         process.pythiaPartonShowerPhotonVeto
         )
-    
+
     # construct path for select events based on options...
     process.partonShowerFilterPath = cms.Path( process.defaultSequence )
 
@@ -323,7 +292,7 @@ else:
         process.partonShowerFilterPath.replace(process.defaultSequence,
                                                process.defaultSequence*
                                                process.pythiaPartonShowerIsrSequenceVeto)
-        
+
     if options.vetoFSR:
         if options.isPOWHEG:
             process.partonShowerFilterPath.replace(process.defaultSequence,
@@ -333,8 +302,8 @@ else:
             process.partonShowerFilterPath.replace(process.defaultSequence,
                                                    process.defaultSequence*
                                                    process.pythiaPartonShowerFsrSequenceVeto)
-             
-        
+
+
     if options.skimISR:
         process.partonShowerFilterPath.replace(process.defaultSequence,
                                                process.defaultSequence*
@@ -383,7 +352,7 @@ if not (options.vetoISR or options.vetoFSR or options.skimISR or options.skimFSR
     process.out.SelectEvents.SelectEvents = ["skimFilterPath"]
 else: #if we want to filter on I/FSR we must process the whole event first... sadface.
     process.out.SelectEvents.SelectEvents = ["partonShowerFilterPath"]
-        
+
 process.out.fileName = options.outputFile
 
 ## Logging
