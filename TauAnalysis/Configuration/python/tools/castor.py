@@ -37,7 +37,7 @@ def group(iterator, count):
         yield tuple([itr.next() for i in xrange(count)])
 
 __author__  = "Sebastien Binet <binet@cern.ch>"
-__version__ = "$Revision: 1.1 $"
+__version__ = "$Revision: 1.2 $"
 __doc__ = """A set of simple helper methods to handle simple tasks with CASTOR.
 """
 
@@ -49,7 +49,29 @@ def hasWildcard(name) :
         return True
     else :
         return False
-    
+
+def nslsl(path):
+    '''
+    List CASTOR directory/file contents, returning the information found
+    in 'nsls -l'.  The output is a list of dictionaries with the following
+    entries:
+        permissions
+        file
+        modified
+        size (in bytes)
+    '''
+    status,output = commands.getstatusoutput('nsls -l ' + path)
+    for line in output.splitlines():
+        fields = line.split()
+        output = {
+            'permissions' : fields[0],
+            'size' : int(fields[4]),
+            'time' : time.strptime(
+                " ".join(fields[5:8]), "%b %d %H:%M"),
+            'file' : fields[8]
+        }
+        yield output
+
 def nsls(path) :
     """
     lists CASTOR name server directory/file entries.
@@ -68,7 +90,7 @@ def nsls(path) :
     wildcards = False
     tail = "*"
     path = os.path.expandvars(path)
-    
+
     if path.endswith('/') :
         path = path[0:len(path)-1]
     # Do we detect a wildcard in the path we are given ?
@@ -88,7 +110,7 @@ def nsls(path) :
             else :
                 raise Exception, \
                       "Malformed path to files: <"+path+">"
-            
+
         # Check that the wildcard is not in the path to files
         if tail.count('/') > 0 :
             if tail.endswith('/') :
@@ -97,13 +119,13 @@ def nsls(path) :
             else :
                 raise Exception, \
                       "No wildcard allowed in the path to files: <"+path+">"
-               
-            
+
+
         path      = path.split(tail)[0]
         if hasWildcard(path) :
             raise ValueError("No wildcard allowed in the path to files: <"+path+">")
         #print path
-        
+
     status,output = commands.getstatusoutput('nsls '+path)
 
     if status != 0 :
@@ -143,7 +165,7 @@ def getFileSize( pathToFile = None ) :
     if hasWildcard(pathToFile) :
         raise Exception, \
               "No wildcard allowed in the path to files: <"+pathToFile+">"
-    
+
     status,output = commands.getstatusoutput( 'nsls -l '+pathToFile )
     #'nsls -l $CASTOR_DIR/$FILE | awk -F ' ' '{print $5}'
 
@@ -163,7 +185,7 @@ def getFileSize( pathToFile = None ) :
 
     output = output[0]
     output = output.split( " " )
-    
+
     result = []
     # Removes whitespaces
     for i in output :
@@ -174,7 +196,7 @@ def getFileSize( pathToFile = None ) :
 
     size = int(result[4])/(1024.*1024.) # size in Mb
     #print "size = ",size," Mb"
-    
+
     return size
 
 def stagein( fileListPattern = None, nSlices = 10, verbose = True ) :
@@ -196,7 +218,7 @@ def stagein( fileListPattern = None, nSlices = 10, verbose = True ) :
         if verbose :
             print ">>> cmd= ",cmd
         status,output = commands.getstatusoutput(cmd)
-        
+
         if status != 0 :
             print "** PyCastor ERROR **"
             print output
@@ -207,7 +229,7 @@ def stagein( fileListPattern = None, nSlices = 10, verbose = True ) :
                 pass
             pass
         pass
-    
+
     return 0
 
 def stager_qry(inFiles):
@@ -224,23 +246,23 @@ def stager_qry(inFiles):
             print "## Could not check status of this file [%s] !!" % inFile
             print "## status sc=", sc
             print "## output out=", out
-        
+
         #for str in out.split():
         #   print "out_str=", str
-        
+
         if out.split()[-1] == "STAGED":
             outStatus[inFile] = 1
         else:
-            outStatus[inFile] = 0   
+            outStatus[inFile] = 0
         #print "-"*77
 
     return outStatus
 
 def extract_rfio(inFile, outDir):
     """
-    Extract the list of rfio:/castor/.. files from given input file_name 
+    Extract the list of rfio:/castor/.. files from given input file_name
     - Finds out STAGED status of files using stager_qry -M ...
-    - if STAGED: rfcp them into outDir 
+    - if STAGED: rfcp them into outDir
     - if NOT: stage them in using stager_get -M ...
     - returns status dictionary returned by stager_qry() above
     """
@@ -248,7 +270,7 @@ def extract_rfio(inFile, outDir):
     f = open(inFile, 'r')
     file_text = f.read()
     f.close()
-    
+
     import re
     import urlparse
     def grep_path(schema, text):
@@ -263,33 +285,33 @@ def extract_rfio(inFile, outDir):
     path_list = grep_path("rfio", file_text)
     print "rfio_file list extracted from input file =", inFile
     print "-"*77; print path_list; print "-"*77
-    
+
     def _print(str):
         print str
-    
+
     status_dict = stager_qry(path_list)
     ready_files_list = [file for file in status_dict if status_dict[file] == 1]
-    print "---STAGED (ready to be copied):";  
+    print "---STAGED (ready to be copied):";
     p = map(_print, ready_files_list); print "-"*77
-    
+
     noready_files_list = [file for file in status_dict if status_dict[file] == 0]
-    print "---NOT STAGED (not ready to be copied):";  
+    print "---NOT STAGED (not ready to be copied):";
     p = map(_print, noready_files_list); print "-"*77
-    
+
     def _rfcp(file): #aux func. just for reporting purpose
         print "rfcp ", file
-        return file    
-    rfcp( map(_rfcp, ready_files_list), #[file for file in ready_files_list],  
+        return file
+    rfcp( map(_rfcp, ready_files_list), #[file for file in ready_files_list],
           outDir  )
-    
+
     def _stager_get(file): #aux func. just for reporting purpose
         print "stager_get -M ", file
-        stager_get(file)       
+        stager_get(file)
     map(_stager_get, noready_files_list) #[stager_get(file) for file in noready_files_list if 1 print "stager_get -M ", file]
-    
+
     return status_dict #returned from stager_qry(),
     #not completely true since the outcome of rfcp is not checked here
-        
+
 def stager_get(inFile):
     """
     STAGE IN the inFile on castor
@@ -325,7 +347,7 @@ def rfcp( inFiles, outDir ):
     if allGood:
         return 0
     return 1
-    
+
 
 def rfstat (pathname):
     """rfstat <file_path>
@@ -356,19 +378,19 @@ def rfdir (paths, recursive=False):
     """
     if isinstance(paths, str):
         paths = [paths]
-        
+
     cmd = "rfdir %s %s" % ('-R' if recursive else '',
                            ' '.join(paths))
     sc, out = commands.getstatusoutput (cmd)
     return sc, out
-        
+
 def last_modified(path):
     ''' last_modified <file_path>
     Return the last modification time for a castor file
     '''
 
     #Castor time string
-    castor_time = time.strptime(rfstat(path)['Last modify'], 
+    castor_time = time.strptime(rfstat(path)['Last modify'],
                                 "%a %b %d %H:%M:%S %Y")
     return time.mktime(castor_time)
 
