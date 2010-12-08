@@ -204,11 +204,14 @@ double getSumBinErrors2(TH1* histogram, int firstBinX, int lastBinX, int firstBi
 void exportAnalysisResults(
        DQMStore& dqmStore, 
        const std::string& meNameTemplate, const std::string& meNameNumEventsProcessed, const std::string& meNameNumEventsPassed, 
+       double xSection, double dataIntLumi,
        unsigned numChannels, unsigned binOffset, unsigned numBinsTotal,
        const std::string& outputFileName, bool failSilent = false)
 {
   std::cout << "<exportAnalysisResults>:" << std::endl;
   std::cout << " meNameTemplate = " << meNameTemplate << std::endl;
+  std::cout << " xSection = " << xSection << std::endl;
+  std::cout << " dataIntLumi = " << dataIntLumi << std::endl;
   std::cout << " outputFileName = " << outputFileName << std::endl;
   std::cout << " binOffset = " << binOffset << std::endl;
 
@@ -305,10 +308,22 @@ void exportAnalysisResults(
       edm::LogInfo ("exportAnalysisResults")
 	<< " Assuming that histograms were summed by 'hadd' instead of harvested properly using DQM tools"
         << " --> scaling numbers to match integral of histogram !!";
-      numEventsProcessed*= (sumBinContents*scaleFactor/numEventsPassed);
+      numEventsProcessed *= (sumBinContents*scaleFactor/numEventsPassed);
       numEventsPassed *= (sumBinContents*scaleFactor/numEventsPassed);
     }
-  } 
+
+//--- correct for skimming efficiency
+//   (by scaling-up number of processed events such that
+//    number of processed events = integrated luminosity of analyzed dataset * cross-section)
+    if ( xSection > 0. && dataIntLumi > 0. ) {
+      double effXsection = numEventsProcessed/dataIntLumi;
+      std::cout << "--> scaling number of processed events up by factor = " << (xSection/effXsection) << ","
+		<< " in order to account for skimming efficiencies !!" << std::endl;
+      std::cout << " xSection = " << xSection << std::endl;
+      std::cout << " effXsection = " << effXsection << std::endl;
+      numEventsProcessed *= (xSection/effXsection);
+    } 
+  }
 
   int errorFlag = 0;
   createSubDirectories(outputFileName, errorFlag);
@@ -448,10 +463,12 @@ void DQMExportAnalysisResults::endJob()
 
 	exportAnalysisResults(dqmStore, 
 			      meNameTemplate_channel, meNameNumEventsProcessed_channel, meNameNumEventsPassed_channel, 
+			      (*process)->xSection_, (*channel)->dataIntLumi_,
 			      numChannels_, binOffsets_[(*channel)->index_], numBinsTotal_, outputFileName_channel, false);
       } else {
 	exportAnalysisResults(dqmStore, 
 			      "", "", "", 
+			      (*process)->xSection_, (*channel)->dataIntLumi_,
 			      numChannels_, binOffsets_[(*channel)->index_], numBinsTotal_, outputFileName_channel, false);
       }
 
@@ -483,10 +500,12 @@ void DQMExportAnalysisResults::endJob()
 
 	  exportAnalysisResults(dqmStore, meNameTemplate_systematic, 
 				meNameNumEventsProcessed_systematic, meNameNumEventsPassed_systematic, 
+				(*process)->xSection_, (*channel)->dataIntLumi_,
 				numChannels_, binOffsets_[(*channel)->index_], numBinsTotal_, outputFileName_systematic, false);
 	} else {
 	  exportAnalysisResults(dqmStore, 
 				"", "", "", 
+				(*process)->xSection_, (*channel)->dataIntLumi_,
 				numChannels_, binOffsets_[(*channel)->index_], numBinsTotal_, outputFileName_systematic, false);
 	}
       }

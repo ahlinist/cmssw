@@ -8,9 +8,9 @@
  *
  * \author Christian Veelken, UC Davis
  *
- * \version $Revision: 1.4 $
+ * \version $Revision: 1.5 $
  *
- * $Id: DQMExportAnalysisResults.h,v 1.4 2010/11/17 19:23:52 veelken Exp $
+ * $Id: DQMExportAnalysisResults.h,v 1.5 2010/11/24 17:10:11 veelken Exp $
  *
  */
 
@@ -51,7 +51,8 @@ class DQMExportAnalysisResults : public edm::EDAnalyzer
         index_(index),
 	shortName_(cfg.getParameter<std::string>("shortName")),
 	meNameBinning_(cfg.getParameter<std::string>("binning")),
-	histogramBinning_(0)
+	histogramBinning_(0),
+	dataIntLumi_(cfg.getParameter<double>("dataIntLumi"))
     {}
     ~channelEntryType() {}
     std::string name_;
@@ -59,6 +60,7 @@ class DQMExportAnalysisResults : public edm::EDAnalyzer
     std::string shortName_;
     std::string meNameBinning_;
     TH1* histogramBinning_;
+    double dataIntLumi_;
   };
 
   std::vector<channelEntryType*> channels_;
@@ -106,6 +108,9 @@ class DQMExportAnalysisResults : public edm::EDAnalyzer
 	distributionEntryType* distributionEntry = new distributionEntryType(*channelName, cfgDistribution);
 	distributions_.insert(std::pair<std::string, distributionEntryType*>(*channelName, distributionEntry));
       }
+      
+      xSection_ = ( cfg.exists("xSection") ) ?
+	cfg.getParameter<double>("xSection") : -1.;
     }
     ~processEntryType() 
     {
@@ -116,6 +121,7 @@ class DQMExportAnalysisResults : public edm::EDAnalyzer
     }
     std::string name_;	
     std::map<std::string, distributionEntryType*> distributions_; // key = channelName
+    double xSection_; // cross-section [pb] (@ highest available order)
     std::string outputFilePath_;
     std::string outputFileName_;
   };
