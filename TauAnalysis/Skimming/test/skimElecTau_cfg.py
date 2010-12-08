@@ -8,9 +8,9 @@ process.load('FWCore/MessageService/MessageLogger_cfi')
 process.MessageLogger.cerr.FwkReport.reportEvery = 5000
 process.MessageLogger.cerr.threshold = cms.untracked.string('INFO')
 process.load("Configuration.StandardSequences.Geometry_cff")
-#process.load("Configuration.StandardSequences.MagneticField_cff")
-#process.load('Configuration/StandardSequences/FrontierConditions_GlobalTag_cff')
-#process.GlobalTag.globaltag = cms.string('MC_31X_V2::All')
+process.load("Configuration.StandardSequences.MagneticField_cff")
+process.load('Configuration/StandardSequences/FrontierConditions_GlobalTag_cff')
+process.GlobalTag.globaltag = cms.string('START38_V13::All')
 
 process.maxEvents = cms.untracked.PSet(
     input = cms.untracked.int32(-1)
@@ -18,10 +18,15 @@ process.maxEvents = cms.untracked.PSet(
 
 process.source = cms.Source("PoolSource",
     fileNames = cms.untracked.vstring(
-		'rfio:///castor/cern.ch/cms/store/caf/user/meridian/EGMPromptFilter_Beam10/133483/EGMPromptFilter_Electrons_133483_19627412_1_1.root'
+        'file:/data1/veelken/CMSSW_3_6_x/skims/Ztautau_1_1_sXK.root'  
     )
 )
-process.source.inputCommands = cms.untracked.vstring("keep *", "drop *_MEtoEDMConverter_*_*")
+
+#--------------------------------------------------------------------------------
+# rerun tau reconstruction algorithm
+#--------------------------------------------------------------------------------
+
+process.load("RecoTauTag.Configuration.RecoPFTauTag_cff")
 
 #--------------------------------------------------------------------------------
 # select electrons and tau-jets
@@ -29,26 +34,26 @@ process.source.inputCommands = cms.untracked.vstring("keep *", "drop *_MEtoEDMCo
 
 process.selectedElectrons = cms.EDFilter("GsfElectronSelector",
     src = cms.InputTag("gsfElectrons"),
-    cut = cms.string("abs(eta) < 2.5 & pt > 8."),
+    cut = cms.string("abs(eta) < 2.5 & pt > 12."),
     filter = cms.bool(True)
 )
 
-process.selectedPFTaus = cms.EDFilter("PFTauSelector",
-    src = cms.InputTag('shrinkingConePFTauProducer'),
+process.selectedTaNCtaus = cms.EDFilter("PFTauSelector",
+    src = cms.InputTag('hpsTancTaus'),
     discriminators = cms.VPSet(
         cms.PSet(
-            discriminator = cms.InputTag("shrinkingConePFTauDiscriminationByLeadingPionPtCut"),
+            discriminator = cms.InputTag("hpsTancTausDiscriminationByVLooseIsolation"),
             selectionCut = cms.double(0.5)
         )
     ),
     filter = cms.bool(True)
 )
 
-process.selectedCaloTaus = cms.EDFilter("CaloTauSelector",
-    src = cms.InputTag('caloRecoTauProducer'),
+process.selectedHPStaus = cms.EDFilter("PFTauSelector",
+    src = cms.InputTag('hpsTancTaus'),
     discriminators = cms.VPSet(
         cms.PSet(
-            discriminator = cms.InputTag("caloRecoTauDiscriminationByLeadingTrackPtCut"),
+            discriminator = cms.InputTag("hpsTancTausDiscriminationByTancVLoose"),
             selectionCut = cms.double(0.5)
         )
     ),
@@ -62,36 +67,34 @@ process.selectedCaloTaus = cms.EDFilter("CaloTauSelector",
 # particle as the electron (note that almost all electrons get selected as tau-jets !!)
 #--------------------------------------------------------------------------------
 
-process.elecCaloTauPairs = cms.EDProducer("DiCandidatePairProducer",
+process.elecTaNCtauPairs = cms.EDProducer("DiCandidatePairProducer",
     useLeadingTausOnly = cms.bool(False),
-    srcLeg1 = cms.InputTag('selectedCaloTaus'),
+    srcLeg1 = cms.InputTag('selectedTaNCtaus'),
     srcLeg2 = cms.InputTag('selectedElectrons'),
-    dRmin12 = cms.double(0.),
+    dRmin12 = cms.double(0.3),
     srcMET = cms.InputTag(''),
     recoMode = cms.string(""),
-    scaleFuncImprovedCollinearApprox = cms.string('1'),                                      
     verbosity = cms.untracked.int32(0)                                       
 )
 
-process.selectedElecCaloTauPairs = cms.EDFilter("DiCandidatePairSelector",
-    src = cms.InputTag('elecCaloTauPairs'),
+process.selectedElecTaNCtauPairs = cms.EDFilter("DiCandidatePairSelector",
+    src = cms.InputTag('elecTaNCtauPairs'),
     cut = cms.string("dR12 > 0.3"),
     filter = cms.bool(True)                                     
 )
 
-process.elecPFTauPairs = cms.EDProducer("DiCandidatePairProducer",
+process.elecHPStauPairs = cms.EDProducer("DiCandidatePairProducer",
     useLeadingTausOnly = cms.bool(False),
-    srcLeg1 = cms.InputTag('selectedPFTaus'),
+    srcLeg1 = cms.InputTag('selectedHPStaus'),
     srcLeg2 = cms.InputTag('selectedElectrons'),
-    dRmin12 = cms.double(0.),
+    dRmin12 = cms.double(0.3),
     srcMET = cms.InputTag(''),
     recoMode = cms.string(""),
-    scaleFuncImprovedCollinearApprox = cms.string('1'),                                    
     verbosity = cms.untracked.int32(0)
 )
 
-process.selectedElecPFTauPairs = cms.EDFilter("DiCandidatePairSelector",
-    src = cms.InputTag('elecPFTauPairs'),
+process.selectedElecHPStauPairs = cms.EDFilter("DiCandidatePairSelector",
+    src = cms.InputTag('elecHPStauPairs'),
     cut = cms.string("dR12 > 0.3"),
     filter = cms.bool(True)                                     
 )
@@ -100,21 +103,23 @@ process.selectedElecPFTauPairs = cms.EDFilter("DiCandidatePairSelector",
 # keep event in case it passed either the electron + pfTau or electron + caloTau selection
 #--------------------------------------------------------------------------------
 
-process.elecPFTauSkimPath = cms.Path(
-    (process.selectedPFTaus + process.selectedElectrons)
-   * process.elecPFTauPairs
-   * process.selectedElecPFTauPairs
+process.elecTaNCtauSkimPath = cms.Path(
+    process.PFTau
+   * (process.selectedTaNCtaus + process.selectedElectrons)
+   * process.elecTaNCtauPairs
+   * process.selectedElecTaNCtauPairs
 )
 
-process.elecCaloTauSkimPath = cms.Path(
-    (process.selectedCaloTaus + process.selectedElectrons)
-   * process.elecCaloTauPairs
-   * process.selectedElecCaloTauPairs
+process.elecHPStauSkimPath = cms.Path(
+    process.PFTau
+   * (process.selectedHPStaus + process.selectedElectrons)
+   * process.elecHPStauPairs
+   * process.selectedElecHPStauPairs
 )
 
 elecTauEventSelection = cms.untracked.PSet(
     SelectEvents = cms.untracked.PSet(
-        SelectEvents = cms.vstring('elecPFTauSkimPath','elecCaloTauSkimPath')
+        SelectEvents = cms.vstring('elecTaNCtauSkimPath', 'elecHPStauSkimPath')
     )
 )
 
@@ -130,49 +135,24 @@ process.dummyFilter = cms.EDFilter("HLTHighLevel",
      throw = cms.bool(True)    # throw exception on unknown path names
 )
 
-#--------------------------------------------------------------------------------
-# fill validation histograms for events passing either the electron + pfTau or electron + caloTau selection
-#--------------------------------------------------------------------------------
-
-process.DQMStore = cms.Service("DQMStore")
-
-from TauAnalysis.Skimming.ewkElecTauValHistManager_cfi import *
-
-process.fillElecTauValPlots = cms.EDAnalyzer("EwkTauValidation",
-
-    # list of individual channels                           
-    channels = cms.VPSet(
-        ewkElecTauValHistManager
-    ),
-
-    # disable all warnings
-    maxNumWarnings = cms.int32(1)                      
-)
-
-process.saveElecTauValPlots = cms.EDAnalyzer("DQMSimpleFileSaver",
-    outputFileName = cms.string('elecTauValPlots.root')
-)
-
-process.p = cms.Path(
-    process.fillElecTauValPlots
-   + process.saveElecTauValPlots
-   + process.dummyFilter
-)
+process.p = cms.Path(process.dummyFilter)
 
 #--------------------------------------------------------------------------------
-# save events passing either the electron + pfTau or electron + caloTau selection
+# save events passing either the electron + TaNC tau or electron + HPS tau selection
 #--------------------------------------------------------------------------------
 
 process.elecTauSkimOutputModule = cms.OutputModule("PoolOutputModule",                                 
     tauAnalysisEventContent,                                               
     elecTauEventSelection,
-    fileName = cms.untracked.string('skimElecTau.root')
+    fileName = cms.untracked.string('elecTauSkim.root')
 )
+
 
 process.options = cms.untracked.PSet(
     wantSummary = cms.untracked.bool(True)
-	#fileMode = cms.untracked.string('NOMERGE')
 )
 
 process.o = cms.EndPath(process.elecTauSkimOutputModule)
-#print process.dumpPython()
+
+
+
