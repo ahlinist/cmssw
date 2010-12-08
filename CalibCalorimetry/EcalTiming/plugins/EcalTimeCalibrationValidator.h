@@ -29,9 +29,10 @@ class EcalTimeCalibrationValidator : public edm::EDAnalyzer {
                 virtual void beginJob();
                 virtual void beginRun(edm::EventSetup const&);
                 virtual void endJob();
+                void set(edm::EventSetup const&);
 
         private:
-
+                edm::ESHandle<EcalTimeCalibConstants> origTimeCalibConstHandle;
                 std::vector<std::string> inputFiles_;
                 std::string outputTreeFileName_; // file name of output ttree
                 std::string calibConstantFileName_; // file name of XML calib constants
