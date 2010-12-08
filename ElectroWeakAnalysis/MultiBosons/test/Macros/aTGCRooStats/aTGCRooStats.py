@@ -8,7 +8,7 @@ import ROOT
 #where the magic happens
 def main(options,args):
 
-    obsMax = float(options.obsMax)
+    obsMin = float(options.obsMin)
     obsMax = float(options.obsMax)    
 
     dataChain = ROOT.TChain(options.treeName)
@@ -30,16 +30,25 @@ def main(options,args):
     setupWorkspace(dataChain,mcChain,ws,output,options)        
 
     #create -log(likelihood)
-    theNLL = ws.pdf('TopLevelPdf').createNLL(ws.data('aTGCDataUnitWeight'),
-                                             ROOT.RooFit.NumCPU(2),
-                                             ROOT.RooFit.ExternalConstraints(ROOT.RooArgSet(ws.pdf('lumiErr'),
-                                                                                            ws.pdf('selectionErr'),
-                                                                                            ws.pdf('backgroundErr')))
-                                             )
+    theNLL = None
+    if options.noBackground:
+        theNLL = ws.pdf('TopLevelPdf').createNLL(ws.data('aTGCDataUnitWeight'),
+                                                 ROOT.RooFit.NumCPU(2),
+                                                 ROOT.RooFit.ExternalConstraints(ROOT.RooArgSet(ws.pdf('lumiErr'),
+                                                                                                ws.pdf('selectionErr')))
+                                                 )
+    else:
+        theNLL =ws.pdf('TopLevelPdf').createNLL(ws.data('aTGCDataUnitWeight'),
+                                                ROOT.RooFit.NumCPU(2),
+                                                ROOT.RooFit.ExternalConstraints(ROOT.RooArgSet(ws.pdf('lumiErr'),
+                                                                                               ws.pdf('selectionErr'),
+                                                                                               ws.pdf('backgroundErr')))
+                                                )
     getattr(ws,'import')(theNLL)
                                             
     minuit = ROOT.RooMinuit(theNLL)
-        
+    minuit.setPrintLevel(1)
+    
     #find the values of the errors that minimize the likelihood
     minuit.setStrategy(2)
     minuit.hesse()
@@ -58,7 +67,9 @@ def main(options,args):
     ROOT.RooArgSet(ROOT.RooArgSet(h3_best,h4_best))
     
     nll_fit_result = minuit.save(options.couplingType+'_NLL_fitResult')
-        
+
+    #ws.Print("v")
+    
     #create profile likelihood    
     profileLL = theNLL.createProfile(ws.set('POI'))
     profileLL.getVal() # to cache the values of the constrained params
@@ -79,7 +90,7 @@ def main(options,args):
 
     thePlot = profMinuit.contour(ws.var(options.couplingType+'_'+options.par1Name),
                                  ws.var(options.couplingType+'_'+options.par2Name),
-                                 sqrt(2*level_68),sqrt(2*level_95)) # here the error is in sigmas
+                                 sqrt(2*level_68),sqrt(2*level_95)) # here the error is in sigmas 
 
     theCanvas = ROOT.TCanvas('contours','',500,500)
     
@@ -98,6 +109,14 @@ def main(options,args):
 
     parm1 = ws.var(options.couplingType+'_'+options.par1Name)
 
+    print  'parameter 1 value: '+str(parm1.getVal())
+
+    if not (0 < parm1.getVal()+parm1.getErrorHi() and 0 > parm1.getVal()+parm1.getErrorLo()):
+        print '95% CL does not cover SM for parameter 1'
+    else:
+        print '95% CL covers SM for parameter 1'
+    
+
     #parm1.Print()
 
     par1Line = ROOT.TLine(parm1.getVal()+parm1.getErrorLo(),0,
@@ -115,6 +134,13 @@ def main(options,args):
 
     parm2 = ws.var(options.couplingType+'_'+options.par2Name)
 
+    print  'parameter 2 value: '+str(parm2.getVal())
+
+    if not (0 < parm2.getVal()+parm2.getErrorHi() and 0 > parm2.getVal()+parm2.getErrorLo()):
+        print '95% CL does not cover SM for parameter 2'
+    else:
+        print '95% CL covers SM for parameter 2'
+
     #parm2.Print()
 
     par2Line = ROOT.TLine(0,parm2.getVal()+parm2.getErrorLo(),
@@ -127,7 +153,54 @@ def main(options,args):
     thePlot.Draw()
     theCanvas.Print(options.workspaceName+'_contour.root')
 
+    ws.var(options.couplingType+'_'+options.par1Name).setConstant(False)
+
     profMinuit.setErrorLevel(.5)
+
+    scanCanvas =  ROOT.TCanvas('scan','',500,500)
+
+    plot = parm1.frame()
+    parm1.setBins(200)
+    parm2.setBins(200)
+
+    scanHist = ROOT.TH2F('scanHist','Scan of the Likelihood',
+                         200,parm1.getMin(),parm1.getMax(),
+                         200,parm2.getMin(),parm2.getMax())                         
+
+    for i in range(200):
+        for j in range(200):
+            parm1.setVal(parm1.getMin() + (i+.5)*(parm1.getMax()-parm1.getMin())/200)
+            parm2.setVal(parm2.getMin() + (j+.5)*(parm2.getMax()-parm2.getMin())/200)
+            scanHist.SetBinContent(i+1,j+1,profileLL.getVal())
+
+    scanHist.Draw('colz')
+
+    scanCanvas.Print(options.workspaceName+'_scan.root')
+
+    #par1Canvas = ROOT.TCanvas('par1 profiled','',500,500)
+    #par1Canvas.cd()
+    
+    #profPar1 = profileLL.createProfile(ROOT.RooArgSet(ws.var(options.couplingType+'_'+options.par1Name)))
+
+    #profPar1Plot = ws.var(options.couplingType+'_'+options.par1Name).frame()
+
+    #profPar1.plotOn(profPar1Plot)
+    #profPar1Plot.Draw()
+
+    #par1Canvas.Print(options.workspaceName+'_par1_profile.root')
+
+    #par2Canvas = ROOT.TCanvas('par2 profiled','',500,500)
+    #par2Canvas.cd()
+    
+    #profPar2 = profileLL.createProfile(ROOT.RooArgSet(ws.var(options.couplingType+'_'+options.par2Name)))
+
+    #profPar2Plot = ws.var(options.couplingType+'_'+options.par2Name).frame()
+
+    #profPar2.plotOn(profPar2Plot)
+    #profPar2Plot.Draw()
+
+
+    #par2Canvas.Print(options.workspaceName+'_par2_profile.root')
     
     #theLHInterval = ROOT.RooStats.LikelihoodInterval('profLikelihoodInterval',
     #                                                 profileLL,
@@ -150,11 +223,13 @@ def main(options,args):
 
     #ws.Print("v")
 
+    
     ws.Write()
     output.Close()
-    
-    #really, that's all I had to do??
 
+    return 0
+    #really, that's all I had to do??
+    
 
 def setupWorkspace(dataTree,mcTree,ws,output,options):
     # explanation forthcoming...
@@ -190,10 +265,10 @@ def setupWorkspace(dataTree,mcTree,ws,output,options):
                                sqrt(.02*.02 + .02*.02 + .15*.15)) #acceptance error + XS err + 15%
     bkgErr = ROOT.RooRealVar('backgroundError',
                              'Fractional Error on the expected number of background events',
-                             .35) # fix background error to be 10% for now
+                             .27) # fix background error to be 10% for now
     lumiErr = ROOT.RooRealVar('luminosityError',
                               'Fractional Error on the luminosity',
-                              .1) #fix lumi error to 10%    
+                              .11) #fix lumi error to 11%    
 
     #build nExpectedBackground RooHistFunc
     bkg = loadBackgroundHist(ws,output,options)
@@ -323,10 +398,15 @@ def fitATGCExpectedYields(ws,mcChain,options):
     nGridParBins = int(options.nGridParBins)
     par1GridMax = float(options.par1GridMax)
     par2GridMax = float(options.par2GridMax)
-    par1PadSize = 2*par1GridMax/(nGridParBins+1)
-    par2PadSize = 2*par2GridMax/(nGridParBins+1)
+    par1GridMin = float(options.par1GridMin)
+    par2GridMin = float(options.par2GridMin)
+    par1PadSize = (par1GridMax-par1GridMin)/(nGridParBins+1)
+    par2PadSize = (par2GridMax-par2GridMin)/(nGridParBins+1)
     par1GridMax = par1GridMax + par1PadSize #add padding to put values at bin centers, assuming evently spaced points
     par2GridMax = par2GridMax + par2PadSize
+    par1GridMin = par1GridMin - par1PadSize #add padding to put values at bin centers, assuming evently spaced points
+    par2GridMin = par2GridMin - par2PadSize
+    
     
     #create the variables for the nxn grid, doesn't go in the workspace
     obs_mc = ROOT.RooRealVar(ws.var(options.obsVar),options.obsVar)
@@ -334,12 +414,12 @@ def fitATGCExpectedYields(ws,mcChain,options):
     #figure out how to determine binning on the fly.... can probably do by finding max h3,h4 in tree + info that we have 9 bins
     par1_grid = ROOT.RooRealVar(options.par1Name+'_grid',
                                'temp par1 to extrapolate grid',
-                               -par1GridMax,
+                               par1GridMin,
                                par1GridMax) #above calulation should put grid values in bin centers
     par1_grid.setBins(nGridParBins)
     par2_grid = ROOT.RooRealVar(options.par2Name+'_grid',
                                'temp par2 to extrapolate grid',
-                               -par2GridMax,
+                               par2GridMin,
                                par2GridMax) # same
     par2_grid.setBins(nGridParBins)
     weight = ROOT.RooRealVar('weight','the weight of the data',0,1000)
@@ -358,9 +438,9 @@ def fitATGCExpectedYields(ws,mcChain,options):
         binMax = binMin + binSize
 
         theBaseData = ROOT.TH2F('theBaseData_'+str(i),'Base Histogram for RooDataHist',
-                                3,par1_grid.getMin(),par1_grid.getMax(),
-                                3,par2_grid.getMin(),par2_grid.getMax())
-                
+                                nGridParBins,par1_grid.getMin(),par1_grid.getMax(),
+                                nGridParBins,par2_grid.getMin(),par2_grid.getMax())
+        
         if i == (nObsBins - 1):
             print obs_mc.GetName(),' > ',str(binMin)
             mcChain.Draw(options.par2Name+'_grid:'+options.par1Name+'_grid >> theBaseData_'+str(i),
@@ -373,9 +453,7 @@ def fitATGCExpectedYields(ws,mcChain,options):
                          ' > ' + str(binMin) +
                          ' && ' + obs_mc.GetName() +
                          ' < ' + str(binMax)+')','goff')
-
-        
-
+            
         #for k in range(1,nObsBins):
         #    for j in range(1,nObsBins):
         #        theBaseData.SetBinError(k,j,.3e-3)        
@@ -445,7 +523,7 @@ def loadBackgroundHist(ws,output,options):
     bkgFile = ROOT.TFile.Open(options.bkgFile)
     bkgData = None 
 
-    if isinstance(bkgFile.Get(options.treeName),ROOT.TH1F):
+    if isinstance(bkgFile.Get(options.treeName),ROOT.TH1):
         print 'Background Data Given as TH1F!'
         inpHist = bkgFile.Get(options.treeName)
 
@@ -581,7 +659,10 @@ def makeATGCExpectationPdf(ws,options):
 
     ws.factory('prod::sigExp(nExpectedSignal,err_x_gl,err_x_gs)') #
     ws.factory('prod::bkgExp(nExpectedBackground,err_x_gb)') #
-    ws.factory('sum::expected(sigExp,bkgExp)')
+    if options.noBackground:
+        ws.factory('sum:expected(sigExp)')
+    else:
+        ws.factory('sum::expected(sigExp,bkgExp)')
     
     #now we create the core poisson pdf with errors left as floating
     ws.factory("RooPoisson::corePoisson(nObserved,expected)")    
@@ -613,8 +694,10 @@ if __name__ == "__main__":
 
     #definitions for MC grid of aTGCs (assumed to be a fully populated square grid, that is symmetric about zero)
     parser.add_option("--nGridParBins",dest="nGridParBins",help="Number of Bins of one side of the input parameter grid.")
-    parser.add_option("--par1GridMax",dest="par1GridMax",help="Max of |par1| in the input grid.")
-    parser.add_option("--par2GridMax",dest="par2GridMax",help="Max of |par2| in the input grid.")
+    parser.add_option("--par1GridMax",dest="par1GridMax",help="Max of par1 in the input grid.")
+    parser.add_option("--par2GridMax",dest="par2GridMax",help="Max of par2 in the input grid.")
+    parser.add_option("--par1GridMin",dest="par1GridMin",help="Min of par1 in the input grid.")
+    parser.add_option("--par2GridMin",dest="par2GridMin",help="Min of par2 in the input grid.")
     
     parser.add_option("--treeName",dest="treeName",help="Name of the TTree, assumed to be the same between all input samples.")
     parser.add_option("--inputData",dest="inputData",help="Name of input data file. Multiple files given in comma separated list.")
@@ -627,6 +710,11 @@ if __name__ == "__main__":
     parser.add_option("--inputDataIsSignalOnly",dest="inputDataIsSignalOnly",
                       help="Flag input data as signal only, for use with --pseudodata",
                       action="store_true",default=False)
+    parser.add_option("--coverageTest",dest="coverageTest",help="Run a coverage test with 1000 pseudodata samples",
+                      default=False,action="store_true")
+    parser.add_option("--noBackground",dest="noBackground",help="Run without a background estimate.",
+                      default=False,action="store_true")
+    
     (options,args) = parser.parse_args()
 
     miss_options = False
@@ -682,6 +770,12 @@ if __name__ == "__main__":
     if options.par2GridMax is None:
         print 'Need to specify --par2GridMax'
         miss_options=True
+    if options.par1GridMax is None:
+        print 'Need to specify --par1GridMin'
+        miss_options=True
+    if options.par2GridMax is None:
+        print 'Need to specify --par2GridMin'
+        miss_options=True
         
     if options.treeName is None:
         print 'Need to specify --treeName'
@@ -693,4 +787,11 @@ if __name__ == "__main__":
     if miss_options:
         exit(1)
 
-    main(options,args)
+    if options.coverageTest and options.pseudodata:
+        wstemp = options.workspaceName
+        for i in range(500):
+            options.workspaceName = wstemp+'_'+str(i)
+            main(options,args)
+        options.workspaceName = wstemp
+    else:
+        main(options,args)
