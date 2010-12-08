@@ -14,7 +14,7 @@ argument_offset = 0
 if sys.argv[0] == 'cmsRun':
     argument_offset = 1
 
-if not len(sys.argv) > 3+argument_offset:
+if not len(sys.argv) > 2+argument_offset:
     sys.exit("Usage: %s [outputFile] [inputFile1] [inputFile2] ..." % sys.argv[0])
 
 outputFileName = sys.argv[1+argument_offset]
@@ -24,14 +24,22 @@ process = cms.Process('MERGE')
 
 process.maxEvents = cms.untracked.PSet(input = cms.untracked.int32(-1))
 
-inputFileNamesPrefixed = [ 'file:' + name for name in inputFileNames ]
+def fix_file_name(file):
+    " Add an file: or rfio: if needed "
+    if file.startswith('rfio:') or file.startswith('file:') \
+       or file.startswith('/store/'):
+        # Already formatted
+        return file
+    if file.startswith('/castor/cern.ch'):
+        return 'rfio:' + file
+    return 'file:' + file
 
 process.source = cms.Source (
     "PoolSource",
-    fileNames = cms.untracked.vstring (inputFileNamesPrefixed),
+    fileNames = cms.untracked.vstring (map(fix_file_name, inputFileNames)),
     noEventSort = cms.untracked.bool(True),
     duplicateCheckMode = cms.untracked.string("noDuplicateCheck"),
-    skipBadFiles = cms.untracked.bool(True),
+    skipBadFiles = cms.untracked.bool(False),
 )
 
 process.Out = cms.OutputModule("PoolOutputModule",

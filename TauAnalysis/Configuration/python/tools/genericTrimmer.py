@@ -1,6 +1,6 @@
 #!/usr/bin/env cmsRun
 
-# usage: ../python/tools/genericTrimmer.py test.root /data1/friis/Run10_v2/harvested_AHtoMuTau_Zmumu_Run10.root "drop ahMuTauAnalyzer_wBtag/*" 
+# usage: ../python/tools/genericTrimmer.py test.root /data1/friis/Run10_v2/harvested_AHtoMuTau_Zmumu_Run10.root "drop ahMuTauAnalyzer_wBtag/*"
 
 import FWCore.ParameterSet.Config as cms
 import sys
@@ -11,7 +11,7 @@ if sys.argv[0] == 'cmsRun':
     argument_offset = 1
 
 if not len(sys.argv) > 3+argument_offset:
-    sys.exit("Usage: %s [outputFile] [inputFile1] [keep statements] ..." 
+    sys.exit("Usage: %s [outputFile] [inputFile1] [keep statements] ..."
              % sys.argv[0])
 
 outputFileName = sys.argv[1+argument_offset]
