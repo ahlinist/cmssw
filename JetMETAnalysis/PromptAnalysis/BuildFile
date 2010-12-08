@@ -47,6 +47,7 @@
    <use name=RecoJets/JetAssociationAlgorithms>
    <use name=MagneticField/Records>
    <use name=TrackingTools/Records>
+   <use name=RecoJets/JetProducers>
 <flags EDM_PLUGIN=1>
 <export>
    <lib name=JetMETAnalysisPromptAnalysis>
@@ -76,5 +77,6 @@
    <use name=DataFormats/TrackReco>
    <use name=DataFormats/VertexReco>
    <use name=Geometry/CSCGeometry>
+   <use name=RecoJets/JetProducers>
    <use name=root>
 </export>
