@@ -3,6 +3,7 @@ import FWCore.ParameterSet.Config as cms
 from TauAnalysis.RecoTools.patElectronSelection_cfi import *
 from TauAnalysis.RecoTools.patElectronSelectionForElecTau_cfi import *
 from TauAnalysis.RecoTools.patElectronSelectionForElecMu_cfi import *
+from TauAnalysis.RecoTools.patMuonMomentumCorrection_cfi import *
 from TauAnalysis.RecoTools.patMuonSelection_cfi import *
 from TauAnalysis.RecoTools.patPFTauSelection_cfi import *
 from TauAnalysis.RecoTools.patPFTauSelectionForElecTau_cfi import *
@@ -214,7 +215,7 @@ patMuonSelConfigurator = objSelConfigurator(
       selectedPatMuonsPFRelIso,
       selectedPatMuonsTrk,
       selectedPatMuonsTrkIP ],
-    src = "cleanPatMuons",
+    src = "muScleFitMomentumCorrectedMuons",
     pyModuleName = __name__,
     doSelIndividual = True
 )
@@ -235,7 +236,7 @@ patMuonSelConfiguratorLooseIsolation = objSelConfigurator(
       selectedPatMuonsPFRelIsoLooseIsolation,
       selectedPatMuonsTrkLooseIsolation,
       selectedPatMuonsTrkIPlooseIsolation ],
-    src = "cleanPatMuons",
+    src = "muScleFitMomentumCorrectedMuons",
     pyModuleName = __name__,
     doSelIndividual = True
 )
@@ -492,7 +493,7 @@ selectPatTausForWTauNuLooseIsolation = patTauSelConfiguratorForWTauNuLooseIsolat
 
 producePatSelLeptons = cms.Sequence (
     selectPatElectrons + selectPatElectronsLooseIsolation
-   + selectPatMuons + selectPatMuonsLooseIsolation
+   + patMuonsMuScleFitCorrectedMomentum + selectPatMuons + selectPatMuonsLooseIsolation
    + selectPatTaus
    + selectPatElectronsForElecTau + selectPatElectronsForElecTauLooseIsolation
    + selectPatElectronsForElecMu + selectPatElectronsForElecMuLooseIsolation
