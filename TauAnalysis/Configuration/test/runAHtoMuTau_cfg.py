@@ -3,8 +3,17 @@ import copy
 
 process = cms.Process('runAHtoMuTau')
 
-# import of standard configurations for RECOnstruction
-# of electrons, muons and tau-jets with non-standard isolation cones
+import FWCore.ParameterSet.VarParsing as VarParsing
+options = VarParsing.VarParsing ('analysis')
+
+# Default options
+options.inputFiles = [ 'file:/data1/veelken/CMSSW_3_6_x/skims/Ztautau_1_1_sXK.root']
+#options.inputFiles = [ 'file:/data1/friis/Run17/get_events/data_Mu_Run2010A_Sep17ReReco_pickevents/final_events.root' ]
+options.outputFile = "plotsAHtoMuTau.root"
+
+# Get command line arguments
+options.parseArguments()
+
 process.load('Configuration/StandardSequences/Services_cff')
 process.load('FWCore/MessageService/MessageLogger_cfi')
 process.MessageLogger.cerr.FwkReport.reportEvery = 100
@@ -34,11 +43,6 @@ process.load("TauAnalysis.RecoTools.filterDataQuality_cfi")
 # and of run + event number pairs for events passing event selection
 process.load("TauAnalysis.Configuration.analyzeAHtoMuTau_cff")
 
-# import configuration parameters for submission of jobs to CERN batch system
-# (running over skimmed samples stored on CASTOR)
-from TauAnalysis.Configuration.recoSampleDefinitionsAHtoMuTau_7TeV_cfi import *
-#--------------------------------------------------------------------------------
-
 #--------------------------------------------------------------------------------
 # print memory consumed by cmsRun
 # (for debugging memory leaks)
@@ -48,7 +52,7 @@ from TauAnalysis.Configuration.recoSampleDefinitionsAHtoMuTau_7TeV_cfi import *
 
 process.printGenParticleList = cms.EDAnalyzer("ParticleListDrawer",
     src = cms.InputTag("genParticles"),
-    maxEventsToPrint = cms.untracked.int32(100)
+    maxEventsToPrint = cms.untracked.int32(2)
 )
 
 # print event content
@@ -66,7 +70,7 @@ process.o = cms.Path(process.filterFirstEvent + process.printEventContent)
 process.DQMStore = cms.Service("DQMStore")
 
 process.saveAHtoMuTauPlots = cms.EDAnalyzer("DQMSimpleFileSaver",
-    outputFileName = cms.string('plotsAHtoMuTau.root')
+    outputFileName = cms.string(options.outputFile)
 )
 
 process.maxEvents = cms.untracked.PSet(
@@ -76,9 +80,8 @@ process.maxEvents = cms.untracked.PSet(
 process.source = cms.Source(
     "PoolSource",
     fileNames = cms.untracked.vstring(
-        #'/store/relval/CMSSW_3_6_1/RelValZTT/GEN-SIM-RECO/START36_V7-v1/0021/F405BC9A-525D-DF11-AB96-002618943811.root',
-        #'/store/relval/CMSSW_3_6_1/RelValZTT/GEN-SIM-RECO/START36_V7-v1/0020/EE3E8F74-365D-DF11-AE3D-002618FDA211.root'
-        'file:/data1/veelken/CMSSW_3_6_x/skims/Ztautau_1_1_sXK.root'
+        options.inputFiles
+        #'file:/data1/veelken/CMSSW_3_6_x/skims/Ztautau_1_1_sXK.root'
         #'file:/data1/friis/Run17/get_events/data_Mu_Run2010A_Sep17ReReco_pickevents/final_events.root'
     )
     #skipBadFiles = cms.untracked.bool(True)
@@ -94,20 +97,20 @@ process.patTrigger.addL1Algos = cms.bool(True)
 #--------------------------------------------------------------------------------
 # import utility function for switching pat::Tau input
 # to different reco::Tau collection stored on AOD
-from PhysicsTools.PatAlgos.tools.tauTools import *
+import PhysicsTools.PatAlgos.tools.tauTools as tauTools
 
 # comment-out to take reco::CaloTaus instead of reco::PFTaus
 # as input for pat::Tau production
-#switchToCaloTau(process)
+#tauTools.switchToCaloTau(process)
 
 # comment-out to take shrinking dR = 5.0/Et(PFTau) signal cone
 # instead of fixed dR = 0.07 signal cone reco::PFTaus
 # as input for pat::Tau production
-#switchToPFTauShrinkingCone(process)
-#switchToPFTauFixedCone(process)
+#tauTools.switchToPFTauShrinkingCone(process)
+#tauTools.switchToPFTauFixedCone(process)
 
 # comment-out to take new HPS + TaNC combined tau id. algorithm
-switchToPFTauHPSpTaNC(process)
+tauTools.switchToPFTauHPSpTaNC(process)
 
 # disable preselection on of pat::Taus
 # (disabled also in TauAnalysis/RecoTools/python/patPFTauConfig_cfi.py ,
@@ -117,24 +120,25 @@ process.cleanPatTaus.preselection = cms.string('')
 
 #--------------------------------------------------------------------------------
 # import utility function for managing pat::Jets
-from PhysicsTools.PatAlgos.tools.jetTools import *
+import PhysicsTools.PatAlgos.tools.jetTools as jetTools
 
 # uncomment to replace caloJets by pfJets
-switchJetCollection(process, jetCollection = cms.InputTag("ak5PFJets"),
+jetTools.switchJetCollection(process, jetCollection = cms.InputTag("ak5PFJets"),
                     doBTagging = True, outputModule = '')
 #--------------------------------------------------------------------------------
 
 #--------------------------------------------------------------------------------
 # import utility function for managing pat::METs
-from TauAnalysis.Configuration.tools.metTools import *
+import TauAnalysis.Configuration.tools.metTools as metTools
 
 # uncomment to add pfMET
 # set Boolean swich to true in order to apply type-1 corrections
-addPFMet(process, correct = False)
+metTools.addPFMet(process, correct = False)
 
 # uncomment to replace caloMET by pfMET in all di-tau objects
 process.load("TauAnalysis.CandidateTools.diTauPairProductionAllKinds_cff")
-replaceMETforDiTaus(process, cms.InputTag('patMETs'), cms.InputTag('patPFMETs'))
+metTools.replaceMETforDiTaus(
+    process, cms.InputTag('patMETs'), cms.InputTag('patPFMETs'))
 #--------------------------------------------------------------------------------
 
 #--------------------------------------------------------------------------------
@@ -166,9 +170,11 @@ cut_values['loose_tauID'] = copy.deepcopy(cut_values['normal'])
 cut_values['loose_tauID']['tanc'] = cut_values['loose']['tanc']
 
 # Loose tauid cuts
-cuts = cut_values['normal']
+#cuts = cut_values['loose_tauID']
 # Normal cuts
 #cuts = cut_values['normal']
+# Loose cuts for skim
+cuts = cut_values['normal']
 
 # import utility function for changing cut values
 from TauAnalysis.Configuration.tools.changeCut import changeCut
