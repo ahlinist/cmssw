@@ -36,12 +36,14 @@ def main(options,args):
         currentFile = ROOT.TFile.Open(f)
         currentTree = currentFile.Get(options.treeName)
 
-        ROOT.gROOT.ProcessLine('struct InTreeContents { '+
-                               currentTree.GetLeaf(options.obsVar).GetTypeName()+' '+
-                               options.obsVar+'; Float_t '+
-                               options.par1Name+'_grid; Float_t '+
-                               options.par2Name+'_grid;'+
-                               currentTree.GetLeaf('weight').GetTypeName()+' weight;}')
+        contentString = 'struct InTreeContents { '+currentTree.GetLeaf(options.obsVar).GetTypeName()+' '+options.obsVar+'; Float_t '+options.par1Name+'_grid; Float_t '+options.par2Name+'_grid; '
+
+        if options.weightAsBranch:
+            contentString += currentTree.GetLeaf('weight').GetTypeName()+' weight;}'
+        else:
+            contentString += '}'
+
+        ROOT.gROOT.ProcessLine(contentString)
 
         inTreeContents = ROOT.InTreeContents()
         
