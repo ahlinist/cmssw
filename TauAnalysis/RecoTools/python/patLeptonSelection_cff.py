@@ -215,7 +215,7 @@ patMuonSelConfigurator = objSelConfigurator(
       selectedPatMuonsPFRelIso,
       selectedPatMuonsTrk,
       selectedPatMuonsTrkIP ],
-    src = "muScleFitMomentumCorrectedMuons",
+    src = "patMuonsMuScleFitCorrectedMomentum",
     pyModuleName = __name__,
     doSelIndividual = True
 )
@@ -236,7 +236,7 @@ patMuonSelConfiguratorLooseIsolation = objSelConfigurator(
       selectedPatMuonsPFRelIsoLooseIsolation,
       selectedPatMuonsTrkLooseIsolation,
       selectedPatMuonsTrkIPlooseIsolation ],
-    src = "muScleFitMomentumCorrectedMuons",
+    src = "patMuonsMuScleFitCorrectedMomentum",
     pyModuleName = __name__,
     doSelIndividual = True
 )
@@ -493,7 +493,7 @@ selectPatTausForWTauNuLooseIsolation = patTauSelConfiguratorForWTauNuLooseIsolat
 
 producePatSelLeptons = cms.Sequence (
     selectPatElectrons + selectPatElectronsLooseIsolation
-   + patMuonsMuScleFitCorrectedMomentum + selectPatMuons + selectPatMuonsLooseIsolation
+   + selectPatMuons + selectPatMuonsLooseIsolation
    + selectPatTaus
    + selectPatElectronsForElecTau + selectPatElectronsForElecTauLooseIsolation
    + selectPatElectronsForElecMu + selectPatElectronsForElecMuLooseIsolation
