@@ -13,7 +13,7 @@ from TauAnalysis.RecoTools.tools.eventSelFlagProdConfigurator import *
 # produce collection of good vertices
 #--------------------------------------------------------------------------------
 
-from TauAnalysis.RecoTools.eventVertexSelector_cfi import *
+from TauAnalysis.RecoTools.recoVertexSelection_cff import *
 selectPrimaryVertexBgEst = cms.Sequence(selectPrimaryVertex)
 
 
