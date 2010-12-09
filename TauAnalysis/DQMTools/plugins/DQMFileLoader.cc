@@ -258,7 +258,7 @@ void DQMFileLoader::endJob()
       std::cout << " Looping over input files to find scale factor for sample " << fileSet->first << std::endl;
       // If using the autoscale option, first loop over the files to compute the total number
       // of events process
-      unsigned int eventsProcessed = 0;
+      int eventsProcessed = 0;
       for ( vstring::const_iterator inputFileName = cfgFileSet.inputFileNames_.begin();
            inputFileName != cfgFileSet.inputFileNames_.end(); ++inputFileName ) {
         std::string inputFileName_full;
@@ -341,7 +341,7 @@ void DQMFileLoader::endJob()
 
 	const sstring& subDirectories = subDirectoryMap_[inputFileName_full];
 	if ( subDirectories.find(subDirName) != subDirectories.end() ) {
-	  std::string inputDirName_full = dqmDirectoryName_dqmRootDirectoryOmitted(inputDirectory).append(subDirName);	    
+	  std::string inputDirName_full = dqmDirectoryName_dqmRootDirectoryOmitted(inputDirectory).append(subDirName);
 	  //std::cout << " inputDirName_full = " << inputDirName_full << std::endl;
 	  std::string outputDirName_full = dqmDirectoryName(outputDirectory).append(subDirName);
 	  //std::cout << " outputDirName_full = " << outputDirName_full << std::endl;
