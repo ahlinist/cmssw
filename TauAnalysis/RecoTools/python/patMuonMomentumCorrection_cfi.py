@@ -1,13 +1,12 @@
 import FWCore.ParameterSet.Config as cms
 
+from CondCore.DBCommon.CondDBSetup_cfi import *
+
 poolDBESSourceMuScleFitCentralValue = cms.ESSource("PoolDBESSource",
+    CondDBSetup,
+    connect = cms.string('frontier://FrontierProd/CMS_COND_31X_PHYSICSTOOLS'),
     BlobStreamerName = cms.untracked.string('TBufferBlobStreamingService'),
-    DBParameters = cms.PSet(
-        messageLevel = cms.untracked.int32(0),
-        authenticationPath = cms.untracked.string('/afs/cern.ch/cms/DB/conddb')
-    ),
-    timetype = cms.untracked.string('runnumber'),
-    connect = cms.string('oracle://cms_orcoff_prod/CMS_COND_31X_PHYSICSTOOLS'),
+    timetype = cms.untracked.string('runnumber'),                                                
     appendToDataLabel = cms.string("centralValue"),                                               
     toGet = cms.VPSet(
         cms.PSet(
