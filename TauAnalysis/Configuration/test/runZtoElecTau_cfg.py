@@ -11,9 +11,8 @@ process.MessageLogger.cerr.FwkReport.reportEvery = 100
 #process.MessageLogger.cerr.threshold = cms.untracked.string('INFO')
 process.load('Configuration/StandardSequences/GeometryIdeal_cff')
 process.load('Configuration/StandardSequences/MagneticField_cff')
-process.load('Configuration/StandardSequences/Reconstruction_cff')
 process.load('Configuration/StandardSequences/FrontierConditions_GlobalTag_cff')
-process.GlobalTag.globaltag = cms.string('START38_V12::All')
+process.GlobalTag.globaltag = cms.string('START38_V14::All')
 
 #--------------------------------------------------------------------------------
 # import sequences for PAT-tuple production
