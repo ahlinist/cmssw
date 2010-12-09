@@ -10,9 +10,7 @@ def main(options,args):
 
     ROOT.gROOT.ProcessLine('struct TreeContents { Float_t '+options.obsVar+'; Double_t weight; }')
 
-    treecontents = ROOT.TreeContents()
-
-    
+    treecontents = ROOT.TreeContents()    
         
     outTree = ROOT.TTree(options.treeName,'The Background')
     outTree.Branch(options.obsVar,
@@ -25,18 +23,29 @@ def main(options,args):
         currentFile = ROOT.TFile.Open(f)
         currentTree = currentFile.Get(options.treeName)
 
-        ROOT.gROOT.ProcessLine('struct InTreeContents { '+
-                               currentTree.GetLeaf(options.obsVar).GetTypeName()+
-                               ' '+options.obsVar+'; '+
-                               currentTree.GetLeaf('weight').GetTypeName()+' weight; }')
+        contentString = 'struct InTreeContents { '+currentTree.GetLeaf(options.obsVar).GetTypeName()+' '+options.obsVar+'; '
+
+        if options.weightAsBranch:
+            contentString += currentTree.GetLeaf('weight').GetTypeName()+' weight;}'
+        else:
+            contentString += '}'
+
+        ROOT.gROOT.ProcessLine(contentString)
         inTreeContents = ROOT.InTreeContents()
         
-        currentTree.SetBranchAddress(options.obsVar,ROOT.AddressOf(inTreeContents,options.obsVar))        
-        treecontents.weight = currentTree.GetWeight()*float(options.intLumi)/float(options.inputLumi)
+        currentTree.SetBranchAddress(options.obsVar,ROOT.AddressOf(inTreeContents,options.obsVar))
+        if options.weightAsBranch:
+            currentTree.SetBranchAddress('weight',ROOT.AddressOf(inTreeContents,'weight')) 
+        else:
+            treecontents.weight = currentTree.GetWeight()*float(options.intLumi)/float(options.inputLumi)
+        
 
         for i in range(currentTree.GetEntries()):
             currentTree.GetEntry(i)
             setattr(treecontents,options.obsVar,getattr(inTreeContents,options.obsVar))
+            if(options.weightAsBranch):                
+                treecontents.weight = inTreeContents.weight*float(options.intLumi)/float(options.inputLumi)
+            
             outTree.Fill()
 
         currentFile.Close()
@@ -54,7 +63,7 @@ if __name__ == "__main__":
     parser.add_option("--treeName",dest="treeName",help="The name of input TTrees.")
     parser.add_option("--intLumi",dest="intLumi",help="Integrated luminosity to scale to.")
     parser.add_option("--inputLumi",dest="inputLumi",help="The equivalent luminosity of each of the input samples in inverse picobarns, must be same for all.")
-
+    parser.add_option("--weightAsBranch",dest="weightAsBranch",help="Is input weight a branch?",action="store_true",default=False)
     (options,args) = parser.parse_args()
 
     miss_options = False
