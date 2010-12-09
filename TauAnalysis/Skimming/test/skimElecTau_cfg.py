@@ -18,7 +18,7 @@ process.maxEvents = cms.untracked.PSet(
 
 process.source = cms.Source("PoolSource",
     fileNames = cms.untracked.vstring(
-        'file:/data1/veelken/CMSSW_3_6_x/skims/Ztautau_1_1_sXK.root'  
+		'rfio:/castor/cern.ch/cms/store/relval/CMSSW_3_8_5/RelValZEE/GEN-SIM-RECO/MC_38Y_V12-v1/0040/406EA972-22D2-DF11-9052-002618943918.root'
     )
 )
 
@@ -32,9 +32,14 @@ process.load("RecoTauTag.Configuration.RecoPFTauTag_cff")
 # select electrons and tau-jets
 #--------------------------------------------------------------------------------
 
+#  select electrons with 
+#    - abs(eta) < 2.5
+#    - pt > 12
+#    - WP95 ID (no conversion rejection or isolation)
+#
 process.selectedElectrons = cms.EDFilter("GsfElectronSelector",
     src = cms.InputTag("gsfElectrons"),
-    cut = cms.string("abs(eta) < 2.5 & pt > 12."),
+    cut = cms.string("abs(eta) < 2.5 & pt > 12. & ((abs(superCluster.eta) < 1.479 & abs(deltaEtaSuperClusterTrackAtVtx) < 0.007 & abs(deltaPhiSuperClusterTrackAtVtx) < 0.8 & hcalOverEcal < 0.15 & sigmaIetaIeta < 0.01) | (abs(superCluster.eta) > 1.479 & abs(deltaEtaSuperClusterTrackAtVtx) < 0.01 & abs(deltaPhiSuperClusterTrackAtVtx) <0.7 & hcalOverEcal < 0.07 & sigmaIetaIeta < 0.03))"),
     filter = cms.bool(True)
 )
 
@@ -79,7 +84,7 @@ process.elecTaNCtauPairs = cms.EDProducer("DiCandidatePairProducer",
 
 process.selectedElecTaNCtauPairs = cms.EDFilter("DiCandidatePairSelector",
     src = cms.InputTag('elecTaNCtauPairs'),
-    cut = cms.string("dR12 > 0.3"),
+    cut = cms.string("dR12 > -0.3"),
     filter = cms.bool(True)                                     
 )
 
@@ -95,7 +100,7 @@ process.elecHPStauPairs = cms.EDProducer("DiCandidatePairProducer",
 
 process.selectedElecHPStauPairs = cms.EDFilter("DiCandidatePairSelector",
     src = cms.InputTag('elecHPStauPairs'),
-    cut = cms.string("dR12 > 0.3"),
+    cut = cms.string("dR12 > -0.3"),
     filter = cms.bool(True)                                     
 )
 
