@@ -44,6 +44,7 @@ process.save = cms.EDAnalyzer("DQMSimpleFileSaver",
         'keep *',
         # Dont' keep events lists
         "drop */FilterStatistics/evtSelCentralJetEt20bTag/events_passed_cumulative",
+        "drop */FilterStatistics/evtSelNonCentralJetEt20bTag/events_passed_cumulative",
     )
 )
 
