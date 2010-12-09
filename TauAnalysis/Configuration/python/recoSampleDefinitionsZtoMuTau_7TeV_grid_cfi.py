@@ -18,9 +18,6 @@ SAMPLES_TO_ANALYZE = [
     'PPmuXptGt20Mu10', 'PPmuXptGt20Mu15',
     'Wenu', 'Wmunu', 'Wtaunu',
     'TTplusJets'
-    #'TTplusJetsNoPU'
-    'TTplusJets',
-    ##'TTplusJetsNoPU',
 ]
 
 # List of samples to include in the final level plots.  May include selections
