@@ -13,12 +13,14 @@ SAMPLES_TO_ANALYZE = [
     'qqZtautau',
     ##'qqZtautauPU156bx', # EK - not at any site as of Dec 6
     'Zmumu',
-    'Zee_PU156BX',
+    'Zee',
     #'InclusivePPmuX',
     'PPmuXptGt20Mu10', 'PPmuXptGt20Mu15',
     'Wenu', 'Wmunu', 'Wtaunu',
+    'TTplusJets'
+    #'TTplusJetsNoPU'
     'TTplusJets',
-    'TTplusJetsNoPU',
+    ##'TTplusJetsNoPU',
 ]
 
 # List of samples to include in the final level plots.  May include selections
@@ -29,10 +31,12 @@ SAMPLES_TO_PLOT = [
     'WplusJetsSum',
     'TTplusJets',
     'Zmumu',
+    ##'Zee',
     'ZtautauSum'
 ]
 
 SAMPLES_TO_PRINT = copy.copy(SAMPLES_TO_PLOT)
+SAMPLES_TO_PRINT.append('Zee')
 SAMPLES_TO_PRINT.append('smBgSum')
 SAMPLES_TO_PRINT.append('smSum')
 #SAMPLES_TO_PRINT.append('data_Mu_Run2010A_Sep17ReReco')
@@ -40,7 +44,9 @@ SAMPLES_TO_PRINT.append('smSum')
 
 SAMPLE_DEFAULTS = {
     'dbs_url' : "http://cmsdbsprod.cern.ch/cms_dbs_ph_analysis_02/servlet/DBSServlet",
-    'conditions' : 'startup',
+    ##'conditions' : 'startup', # CV: temporarily disabled, because JEC uncertainties need 'START38_V14' tag
+                                #     while default tag for CMSSW_3_8_7 is 'START38_V13'
+    'conditions' : 'START38_V14::All',
     'genPhaseSpaceCut' : '',
     'factorize' : False,
     'applyZrecoilCorrection' : False,
@@ -76,26 +82,13 @@ TARGET_LUMI = 36.15/_picobarns # for runs 132440 - 149442
 #--------------------------------------------------------------------------------
 
 RECO_SAMPLES = {
-    'data_Mu_Run2010A_Sep17ReReco' : {
-        'datasetpath' : '/Mu/Run2010A-Sep17ReReco_v2/RECO',
-        'dbs_url' :  "http://cmsdbsprod.cern.ch/cms_dbs_prod_global/servlet/DBSServlet",
-        'lumi_mask' : "/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions10/7TeV/Reprocessing/Cert_132440-144114_7TeV_Sep17ReReco_Collisions10_JSON_v2.txt",
-        'runselection' : "132440-136032",
-        'conditions' : 'GR_R_38X_V14::All',
-        'events_processed' : -1,
-        'skim_eff' : 1.0,
-        'type' : 'Data',
-        'drawOption' : styles.drawOption_Data,
-        'enableSysUncertainties' : False,
-        'enableFakeRates' : True
-    },
     'data_Mu_Run2010A_Nov4ReReco' : {
         'datasetpath' : '/Mu/Run2010A-Nov4ReReco_v1/RECO',
         'dbs_url' :  "http://cmsdbsprod.cern.ch/cms_dbs_prod_global/servlet/DBSServlet",
         'lumi_mask' : "/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions10/7TeV/Reprocessing/Cert_136033-149442_7TeV_Nov4ReReco_Collisions10_JSON.txt",
         'runselection' : "136033-144114",
         'number_of_jobs' : 500,
-        'conditions' : 'GR_R_38X_V14::All',
+        'conditions' : 'GR_R_38X_V15::All',
         'events_processed' : -1,
         'skim_eff' : 1.0,
         'type' : 'Data',
@@ -109,7 +102,7 @@ RECO_SAMPLES = {
         'lumi_mask' : "/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions10/7TeV/Reprocessing/Cert_136033-149442_7TeV_Nov4ReReco_Collisions10_JSON.txt",
         'runselection' : '146428-149442',
         'number_of_jobs' : 1000,
-        'conditions' : 'GR_R_38X_V14::All',
+        'conditions' : 'GR_R_38X_V15::All',
         'events_processed' : -1,
         'skim_eff' : 1.0,
         'type' : 'Data',
@@ -121,33 +114,6 @@ RECO_SAMPLES = {
             'HLT_Mu15_v1'           : '147196:MIN-149442:MAX',  # period B & C
             'HLT_IsoMu13_v3'        : '148822:MIN-149182:MAX',  # period C
             'HLT_IsoMu13_v4'        : '149291:MIN-149442:MAX',  # period C
-            'HLT_IsoMu9_PFTau15_v1' : '148822:MIN-149182:MAX',  # period C
-            'HLT_IsoMu9_PFTau15_v2' : '149291:MIN-149442:MAX',  # period C
-            'HLT_Mu11_PFTau15_v1'   : '148822:MIN-149182:MAX',
-            'HLT_Mu11_PFTau15_v2'   : '149291:MIN-149442:MAX'
-        },
-        'enableSysUncertainties' : False,
-        'enableFakeRates' : True
-    },
-    # Keep this here temporarily as the Nov4th is swamped
-    'data_Mu_Run2010B_Prompt' : {
-        'datasetpath' : '/Mu/Run2010B-PromptReco-v2/RECO',
-        'dbs_url' :  "http://cmsdbsprod.cern.ch/cms_dbs_prod_global/servlet/DBSServlet",
-        'lumi_mask' : "/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions10/7TeV/StreamExpress/Cert_132440-149442_7TeV_StreamExpress_Collisions10_JSON_v2.txt",
-        'runselection' : '145762 - 149442',
-        'number_of_jobs' : 1000,
-        'conditions' : 'GR_R_38X_V13::All',
-        'events_processed' : -1,
-        'skim_eff' : 1.0,
-        'type' : 'Data',
-        'drawOption' : styles.drawOption_Data,
-        'hlt_paths' : {
-            'HLT_Mu9'               : '132440:MIN-147116:MAX',  # period A
-            'HLT_IsoMu9'            : '147196:MIN-148058:MAX',  # period B
-            'HLT_Mu11'              : '147196:MIN-148058:MAX',  # period B
-            'HLT_IsoMu13_v3'        : '148822:MIN-149182:MAX',  # period C
-            'HLT_IsoMu13_v4'        : '147196:MIN-149442:MAX',  # period B
-            'HLT_Mu15_v1'           : '147196:MIN-149442:MAX',  # period B
             'HLT_IsoMu9_PFTau15_v1' : '148822:MIN-149182:MAX',  # period C
             'HLT_IsoMu9_PFTau15_v2' : '149291:MIN-149442:MAX',  # period C
             'HLT_Mu11_PFTau15_v1'   : '148822:MIN-149182:MAX',
@@ -245,7 +211,7 @@ RECO_SAMPLES = {
         'applyVertexMultiplicityReweighting' : True,
         'hlt' : cms.InputTag("TriggerResults", "", "REDIGI38XPU")
     },
-    'Zee_PU156BX' : {
+    'Zee' : {
         'datasetpath' : "/DYToEE_M-20_TuneZ2_7TeV-pythia6/Fall10-E7TeV_ProbDist_2010Data_BX156_START38_V12-v1/GEN-SIM-RECO",
         'events_processed' : 2085586,
         'skim_eff' : 1.0,
@@ -358,9 +324,7 @@ RECO_SAMPLES = {
     },
     'TTplusJets' : {
         'datasetpath' : "/TT_TuneZ2_7TeV-pythia6-tauola/Fall10-E7TeV_ProbDist_2010Data_BX156_START38_V12-v1/GEN-SIM-RECO",
-        ##'datasetpath' : "/TT_TuneZ2_7TeV-pythia6-tauola/Fall10-START38_V12-v1/GEN-SIM-RECO",
         'dbs_url' :  "http://cmsdbsprod.cern.ch/cms_dbs_prod_global/servlet/DBSServlet",
-        ##'events_processed' : 1099550,
         'events_processed' : 1095950,
         'skim_eff' : 1.0,
         'x_sec' : 165*_picobarns, # NNLO cross-section from https://twiki.cern.ch/twiki/bin/viewauth/CMS/StandardModelCrossSections
@@ -370,23 +334,8 @@ RECO_SAMPLES = {
         'applyMuonTriggerEfficiencyCorrection' : True,
         'applyMuonIsolationEfficiencyCorrection' : True,
         'applyVertexMultiplicityReweighting' : True,
-        ##'hlt' : cms.InputTag("TriggerResults", "", "HLT")
         'hlt' : cms.InputTag("TriggerResults", "", "REDIGI38XPU")
-    },
-    'TTplusJetsNoPU' : {
-        'datasetpath' : "/TT_TuneZ2_7TeV-pythia6-tauola/Fall10-START38_V12-v1/GEN-SIM-RECO",
-        'dbs_url' :  "http://cmsdbsprod.cern.ch/cms_dbs_prod_global/servlet/DBSServlet",
-        'events_processed' : 1099550,
-        'skim_eff' : 1.0,
-        'x_sec' : 165*_picobarns, # NNLO cross-section from https://twiki.cern.ch/twiki/bin/viewauth/CMS/StandardModelCrossSections
-        'legendEntry' : plotter.process_TTplusJets.config_dqmHistPlotter.legendEntry.value(),
-        'type' : plotter.process_TTplusJets.config_dqmHistPlotter.type.value(),
-        'drawOption' : styles.drawOption_TTplusJets,
-        'applyMuonTriggerEfficiencyCorrection' : True,
-        'applyMuonIsolationEfficiencyCorrection' : True,
-        'applyVertexMultiplicityReweighting' : True,
-        'hlt' : cms.InputTag("TriggerResults", "", "HLT")
-    },
+    }
 }
 
 # Define samples that get merged together
@@ -395,24 +344,6 @@ MERGE_SAMPLES = {
         'samples' : [
             'data_Mu_Run2010A_Nov4ReReco',
             'data_Mu_Run2010B_Nov4ReReco'
-        ],
-        'legendEntry' : 'DATA',
-        'type' : 'Data',
-        'drawOption' : styles.drawOption_Data
-    },
-    'data_preNov4' : {
-        'samples' : [
-            'data_Mu_Run2010A_Sep17ReReco',
-            'data_Mu_Run2010B_Prompt'
-        ],
-        'legendEntry' : 'DATA',
-        'type' : 'Data',
-        'drawOption' : styles.drawOption_Data
-    },
-    'data_nov25workaround' : {
-        'samples' : [
-            'data_Mu_Run2010A_Nov4ReReco',
-            'data_Mu_Run2010B_Prompt'
         ],
         'legendEntry' : 'DATA',
         'type' : 'Data',
