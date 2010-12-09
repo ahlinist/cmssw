@@ -79,7 +79,7 @@ process.muTaNCtauPairs = cms.EDProducer("DiCandidatePairProducer",
 
 process.selectedMuTaNCtauPairs = cms.EDFilter("DiCandidatePairSelector",
     src = cms.InputTag('muTaNCtauPairs'),
-    cut = cms.string("dR12 > 0.3"),
+    cut = cms.string("dR12 > -0.3"),
     filter = cms.bool(True)                                     
 )
 
@@ -95,7 +95,7 @@ process.muHPStauPairs = cms.EDProducer("DiCandidatePairProducer",
 
 process.selectedMuHPStauPairs = cms.EDFilter("DiCandidatePairSelector",
     src = cms.InputTag('muHPStauPairs'),
-    cut = cms.string("dR12 > 0.3"),
+    cut = cms.string("dR12 > -0.3"),
     filter = cms.bool(True)                                     
 )
 
