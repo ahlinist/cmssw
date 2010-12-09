@@ -37,7 +37,8 @@ from TauAnalysis.RecoTools.elecTauPairZeeHypothesis_cff import *
 
 producePatTupleZtoElecTauSpecific = cms.Sequence(
     selectPatMuons  
-   + selectPatElectrons + selectPatElectronsLooseIsolation
+    + selectPatElectrons 
+	+ selectPatElectronsLooseIsolation
    + selectPatElectronsForElecTau + selectPatElectronsForElecTauLooseIsolation
    + selectPatTaus + selectPatTausForElecTau
    + produceElecTauPairs + produceElecTauPairsLooseElectronIsolation

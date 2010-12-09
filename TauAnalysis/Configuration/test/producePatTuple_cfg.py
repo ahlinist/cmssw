@@ -75,7 +75,7 @@ producePatElectronIsolation(process)
 # import function to remove MC-specific modules 
 from TauAnalysis.Configuration.tools.switchToData import switchToData
 # uncomment to run over data
-switchToData(process)
+##switchToData(process)#
 #--------------------------------------------------------------------------------
 
 #--------------------------------------------------------------------------------
