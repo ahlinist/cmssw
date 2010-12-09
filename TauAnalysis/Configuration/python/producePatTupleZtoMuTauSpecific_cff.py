@@ -7,20 +7,9 @@ import FWCore.ParameterSet.Config as cms
 
 #
 # produce collections of pat::Electrons, pat::Muons and
-# pat::(PF)Taus shifted and smeared to better describe the data
-# and for estimating systematic uncertainties
-#
-from TauAnalysis.RecoTools.patLeptonSystematics_cff import *
-#
-# produce collections of pat::Electrons, pat::Muons and
 # pat::(PF)Taus passing different selection criteria
 #
 from TauAnalysis.RecoTools.patLeptonSelection_cff import *
-#
-# produce collections of pat::Jets shifted and smeared to better describe the data
-# and for estimating systematic uncertainties
-#
-from TauAnalysis.RecoTools.patJetSystematics_cff import *
 #
 # produce collection of pat::Jets passing Et threshold and
 # Eta acceptance cuts and not overlapping with any object
@@ -52,12 +41,9 @@ from TauAnalysis.RecoTools.muTauPairZmumuHypothesis_cff import *
 from TauAnalysis.RecoTools.diMuPairZmumuHypothesis_cff import *
 
 producePatTupleZtoMuTauSpecific = cms.Sequence(
-    prodSmearedMuons
-   + prodSmearedTaus
-   + selectPatMuons + selectPatMuonsLooseIsolation
+    patMuonsMuScleFitCorrectedMomentum + selectPatMuons + selectPatMuonsLooseIsolation
    + selectPatElectrons
    + selectPatTaus + selectPatTausForMuTau
-   + prodSmearedJets 
    + selectPatJets 
    + produceMuTauPairs + produceMuTauPairsLooseMuonIsolation
    + selectMuTauPairs + selectMuTauPairsLooseMuonIsolation
