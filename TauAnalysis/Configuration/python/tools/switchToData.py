@@ -21,6 +21,7 @@ def switchToData(process):
 
 	# remove MC matching from standard PAT sequences
 	removeMCMatching(process, ["All"])
+	#removeMCMatching(process, ["Electrons","Muons","Photons","Taus","METs"])
 	process.patDefaultSequence.remove(process.patJetPartonMatch)
 
 	# add data-quality cuts which work on "real" data only
@@ -120,4 +121,3 @@ def switchToData(process):
 		    # disable estimation of systematic uncertainties by setting
 		    #  o analyzers_systematic = cms.VPSet(..) --> cms.VPSet()
 		    processAttr.analyzers.analyzers_systematic = cms.VPSet()	
-
