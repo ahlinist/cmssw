@@ -74,6 +74,12 @@ plotAnalysisMC_pure = cms.PSet(
     drawOptionEntry = cms.string('analysis'),
     legendEntry = cms.string('Z #rightarrow #mu + #tau-jet Analysis')
 )
+plotAnalysis_ZmumuEmbedding = cms.PSet(
+    dqmMonitorElements = cms.vstring(''),
+    process = cms.string('analysisZmumuEmbedding'),
+    drawOptionEntry = cms.string('analysisZmumuEmbedding'),
+    legendEntry = cms.string('Z #rightarrow #mu + #mu Embedding')
+)
 
 drawJobTemplateHist = cms.PSet(
     plots = cms.VPSet(
@@ -104,6 +110,18 @@ drawJobAnalysisHistMC = cms.PSet(
     plots = cms.VPSet(
         plotBgEstMC_smSum,
         plotAnalysisMC_pure
+    ),
+    norm = cms.double(1.),
+    title = cms.string(''),
+    xAxis = cms.string('Mass'),
+    yAxis = cms.string('numEntries_linear'),
+    legend = cms.string('regular')
+)
+
+drawJobAnalysisHistZmumuEmbedding = cms.PSet(
+    plots = cms.VPSet(
+        plotAnalysisMC_pure,
+        plotAnalysis_ZmumuEmbedding
     ),
     norm = cms.double(1.),
     title = cms.string(''),

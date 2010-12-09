@@ -39,7 +39,7 @@ tauSelConfiguratorBgEstZmumuJetMisIdEnriched = objSelConfigurator(
 selectTausBgEstZmumuJetMisIdEnriched = tauSelConfiguratorBgEstZmumuJetMisIdEnriched.configure(pyNameSpace = locals())
 
 tausBgEstZmumuMuonMisIdEnrichedAntiMuonVeto = cms.EDFilter("PATTauSelector",
-    src = cms.InputTag('selectedPatTausEcalIsoCumulative'),                                              
+    src = cms.InputTag('tausBgEstZmumuJetMisIdEnrichedTaNCdiscrCumulative'),                                              
     cut = cms.string('tauID("againstMuon") < 0.5'),
     filter = cms.bool(False)                                 
 )
@@ -216,7 +216,7 @@ cfgMuonStandaloneZmumuMuonMisIdEnriched = cms.PSet(
 # NOTE: no anti-overlap with muons veto not applied to tau-jets
 cfgTauEtaBgEstZmumuMuonMisIdEnriched = copy.deepcopy(cfgTauEtaCut)
 cfgTauEtaBgEstZmumuMuonMisIdEnriched.pluginName = cms.string('tauEtaBgEstZmumuMuonMisIdEnriched')
-cfgTauEtaBgEstZmumuMuonMisIdEnriched.src_cumulative = cms.InputTag('selectedPatTausEta21Cumulative')
+cfgTauEtaBgEstZmumuMuonMisIdEnriched.src_cumulative = cms.InputTag('selectedPatTausEta23Cumulative')
 cfgTauEtaBgEstZmumuMuonMisIdEnriched.systematics = cms.vstring()
 
 cfgTauPtBgEstZmumuMuonMisIdEnriched = copy.deepcopy(cfgTauPtCut)
@@ -333,6 +333,15 @@ diTauCandidateSVfitHistManagerBgEstZmumuJetMisIdEnriched = copy.deepcopy(diTauCa
 diTauCandidateSVfitHistManagerBgEstZmumuJetMisIdEnriched.pluginName = cms.string('diTauCandidateSVfitHistManagerBgEstZmumuJetMisIdEnriched')
 diTauCandidateSVfitHistManagerBgEstZmumuJetMisIdEnriched.diTauCandidateSource = diTauCandidateHistManagerBgEstZmumuJetMisIdEnriched.diTauCandidateSource
 
+caloMEtHistManagerBgEstZmumuJetMisIdEnriched = copy.deepcopy(caloMEtHistManager)
+caloMEtHistManagerBgEstZmumuJetMisIdEnriched.pluginName = cms.string('caloMEtHistManagerBgEstZmumuJetMisIdEnriched')
+caloMEtHistManagerBgEstZmumuJetMisIdEnriched.leg1Source = muonHistManagerBgEstZmumuEnriched.muonSource
+caloMEtHistManagerBgEstZmumuJetMisIdEnriched.leg2Source = tauHistManagerBgEstZmumuJetMisIdEnriched.tauSource
+pfMEtHistManagerBgEstZmumuJetMisIdEnriched = copy.deepcopy(pfMEtHistManager)
+pfMEtHistManagerBgEstZmumuJetMisIdEnriched.pluginName = cms.string('pfMEtHistManagerBgEstZmumuJetMisIdEnriched')
+pfMEtHistManagerBgEstZmumuJetMisIdEnriched.leg1Source = muonHistManagerBgEstZmumuEnriched.muonSource
+pfMEtHistManagerBgEstZmumuJetMisIdEnriched.leg2Source = tauHistManagerBgEstZmumuJetMisIdEnriched.tauSource
+
 tauIdEffHistManagerBgEstZmumuJetMisIdEnriched = copy.deepcopy(tauIdEffZtoMuTauHistManager)
 tauIdEffHistManagerBgEstZmumuJetMisIdEnriched.pluginName = cms.string('tauIdEffHistManagerBgEstZmumuJetMisIdEnriched')
 tauIdEffHistManagerBgEstZmumuJetMisIdEnriched.muonSource = cms.InputTag('selectedPatMuonsPFRelIsoCumulative')
@@ -408,6 +417,8 @@ analyzeEventsBgEstZmumuJetMisIdEnriched = cms.EDAnalyzer("GenericAnalyzer",
         tauHistManagerBgEstZmumuJetMisIdEnriched,
         diTauCandidateHistManagerBgEstZmumuJetMisIdEnriched,
         diTauCandidateSVfitHistManagerBgEstZmumuJetMisIdEnriched,
+	caloMEtHistManagerBgEstZmumuJetMisIdEnriched,
+	pfMEtHistManagerBgEstZmumuJetMisIdEnriched,
         tauIdEffHistManagerBgEstZmumuJetMisIdEnriched,
         dataBinnerBgEstZmumuEnriched
     ),
@@ -532,6 +543,8 @@ analyzeEventsBgEstZmumuJetMisIdEnriched = cms.EDAnalyzer("GenericAnalyzer",
                 'tauHistManagerBgEstZmumuJetMisIdEnriched',
                 'diTauCandidateHistManagerBgEstZmumuJetMisIdEnriched',
                 'diTauCandidateSVfitHistManagerBgEstZmumuJetMisIdEnriched',
+                'caloMEtHistManagerBgEstZmumuJetMisIdEnriched',
+	        'pfMEtHistManagerBgEstZmumuJetMisIdEnriched',
                 'tauIdEffHistManagerBgEstZmumuJetMisIdEnriched',
                 'dataBinnerBgEstZmumuEnriched'
             )
@@ -555,6 +568,15 @@ diTauCandidateHistManagerBgEstZmumuMuonMisIdEnriched.visMassHypothesisSource = c
 diTauCandidateSVfitHistManagerBgEstZmumuMuonMisIdEnriched = copy.deepcopy(diTauCandidateSVfitHistManagerForMuTau)
 diTauCandidateSVfitHistManagerBgEstZmumuMuonMisIdEnriched.pluginName = cms.string('diTauCandidateSVfitHistManagerBgEstZmumuMuonMisIdEnriched')
 diTauCandidateSVfitHistManagerBgEstZmumuMuonMisIdEnriched.diTauCandidateSource = diTauCandidateHistManagerBgEstZmumuMuonMisIdEnriched.diTauCandidateSource
+
+caloMEtHistManagerBgEstZmumuMuonMisIdEnriched = copy.deepcopy(caloMEtHistManager)
+caloMEtHistManagerBgEstZmumuMuonMisIdEnriched.pluginName = cms.string('caloMEtHistManagerBgEstZmumuMuonMisIdEnriched')
+caloMEtHistManagerBgEstZmumuMuonMisIdEnriched.leg1Source = muonHistManagerBgEstZmumuEnriched.muonSource
+caloMEtHistManagerBgEstZmumuMuonMisIdEnriched.leg2Source = tauHistManagerBgEstZmumuMuonMisIdEnriched.tauSource
+pfMEtHistManagerBgEstZmumuMuonMisIdEnriched = copy.deepcopy(pfMEtHistManager)
+pfMEtHistManagerBgEstZmumuMuonMisIdEnriched.pluginName = cms.string('pfMEtHistManagerBgEstZmumuMuonMisIdEnriched')
+pfMEtHistManagerBgEstZmumuMuonMisIdEnriched.leg1Source = muonHistManagerBgEstZmumuEnriched.muonSource
+pfMEtHistManagerBgEstZmumuMuonMisIdEnriched.leg2Source = tauHistManagerBgEstZmumuMuonMisIdEnriched.tauSource
 
 tauIdEffHistManagerBgEstZmumuMuonMisIdEnriched = copy.deepcopy(tauIdEffZtoMuTauHistManager)
 tauIdEffHistManagerBgEstZmumuMuonMisIdEnriched.pluginName = cms.string('tauIdEffHistManagerBgEstZmumuMuonMisIdEnriched')
@@ -646,6 +668,8 @@ analyzeEventsBgEstZmumuMuonMisIdEnriched = cms.EDAnalyzer("GenericAnalyzer",
         tauHistManagerBgEstZmumuMuonMisIdEnriched,
         diTauCandidateHistManagerBgEstZmumuMuonMisIdEnriched,
         diTauCandidateSVfitHistManagerBgEstZmumuMuonMisIdEnriched,
+        caloMEtHistManagerBgEstZmumuMuonMisIdEnriched,
+	pfMEtHistManagerBgEstZmumuMuonMisIdEnriched,
         tauIdEffHistManagerBgEstZmumuMuonMisIdEnriched,
         dataBinnerBgEstZmumuEnriched
     ),
@@ -758,6 +782,8 @@ analyzeEventsBgEstZmumuMuonMisIdEnriched = cms.EDAnalyzer("GenericAnalyzer",
                 'tauHistManagerBgEstZmumuMuonMisIdEnriched',
                 'diTauCandidateHistManagerBgEstZmumuMuonMisIdEnriched',
                 'diTauCandidateSVfitHistManagerBgEstZmumuMuonMisIdEnriched',
+                'caloMEtHistManagerBgEstZmumuMuonMisIdEnriched',
+	        'pfMEtHistManagerBgEstZmumuMuonMisIdEnriched',
                 'tauIdEffHistManagerBgEstZmumuMuonMisIdEnriched',
                 'dataBinnerBgEstZmumuEnriched'
             )
