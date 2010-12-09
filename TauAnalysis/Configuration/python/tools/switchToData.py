@@ -19,7 +19,7 @@ def _setattr_ifexists(obj, attrName, attrValue):
 
 def switchToData(process):
 
-	# remove MC matching from standard PAT sequences
+	removeMCMatching.addParameter(removeMCMatching._defaultParameters, 'outputInProcess', False, "this thing sucks")
 	removeMCMatching(process, ["All"])
 	#removeMCMatching(process, ["Electrons","Muons","Photons","Taus","METs"])
 	process.patDefaultSequence.remove(process.patJetPartonMatch)
@@ -84,7 +84,7 @@ def switchToData(process):
 			    _setattr_ifexists(analyzerPlugin, "genJetSource", cms.InputTag(''))
 			    _setattr_ifexists(analyzerPlugin, "genTauJetSource", cms.InputTag(''))
 			    _setattr_ifexists(analyzerPlugin, "genMEtSource", cms.InputTag(''))
-			
+
                     # remove from all analysis sequences the following objects:
 		    #  o genPhaseSpaceInfoHistManager
 		    #  o modelBinnerForMuTauGenTauLeptonPairAcc
@@ -92,7 +92,7 @@ def switchToData(process):
 		    #  o modelBinnerForMuTauCentralJetVetoWrtGenTauLeptonPairAcc
 		    #  o modelBinnerForMuTauCentralJetBtagWrtGenTauLeptonPairAcc
 		    #  o sysUncertaintyBinnerForMuTau
-		    #  o diTauCandidateCollinearApproxHistManagerBinnedForMuTau		    
+		    #  o diTauCandidateCollinearApproxHistManagerBinnedForMuTau
 		    analyzerPluginsToRemove = [
 		       "genPhaseSpaceEventInfoHistManager",
 		       "modelBinnerForMuTauGenTauLeptonPairAcc",
@@ -120,4 +120,4 @@ def switchToData(process):
 
 		    # disable estimation of systematic uncertainties by setting
 		    #  o analyzers_systematic = cms.VPSet(..) --> cms.VPSet()
-		    processAttr.analyzers.analyzers_systematic = cms.VPSet()	
+		    processAttr.analyzers.analyzers_systematic = cms.VPSet()
