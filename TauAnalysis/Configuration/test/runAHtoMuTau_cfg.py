@@ -24,7 +24,7 @@ process.MessageLogger.suppressWarning = cms.untracked.vstring("PATTriggerProduce
 process.load('Configuration/StandardSequences/GeometryIdeal_cff')
 process.load('Configuration/StandardSequences/MagneticField_cff')
 process.load('Configuration/StandardSequences/FrontierConditions_GlobalTag_cff')
-process.GlobalTag.globaltag = cms.string('START38_V12::All')
+process.GlobalTag.globaltag = cms.string('START38_V14::All')
 
 # import particle data table
 # needed for print-out of generator level information
