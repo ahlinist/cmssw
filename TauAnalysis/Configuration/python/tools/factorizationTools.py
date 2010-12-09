@@ -1249,6 +1249,14 @@ def enableFactorization_makeAHtoMuTauPlots_grid2(
     loose_cuts_wBtag = loose_cuts_base \
       + [ 'evtSelCentralJetEt20', 'evtSelCentralJetEt20bTag', 'evtSelDiTauCandidateForAHtoMuTauZeroCharge' ]
 
+    # Same sign verions of final cuts
+    loose_cuts_woBtag_ss = loose_cuts_base \
+      + [ 'evtSelNonCentralJetEt20bTag', 'evtSelDiTauCandidateForAHtoMuTauNonZeroCharge' ]
+    loose_cuts_wBtag_ss = loose_cuts_base \
+      + [ 'evtSelCentralJetEt20', 'evtSelCentralJetEt20bTag', 'evtSelDiTauCandidateForAHtoMuTauNonZeroCharge' ]
+
+
+
     # Loop over the samples and create sequences
     # for each of the factorization jobs and add them to the factorization
     # sequence
@@ -1259,7 +1267,7 @@ def enableFactorization_makeAHtoMuTauPlots_grid2(
             input_dir= '/harvested/%s' % sample,
             output_dir = '/harvested/%s_factorized' % sample,
             analyzers = {
-                'ahMuTauAnalyzer_wBtag' : {
+                'ahMuTauAnalyzerOS_wBtag' : {
                     'tight_cuts' : tight_cuts,
                     'loose_cuts' : loose_cuts_wBtag,
                     'loose_analyzer' :
@@ -1267,9 +1275,25 @@ def enableFactorization_makeAHtoMuTauPlots_grid2(
                     'tight_analyzer' :
                     'ahMuTauAnalyzer_wBtag_factorizedWithMuonIsolation',
                 },
-                'ahMuTauAnalyzer_woBtag' : {
+                'ahMuTauAnalyzerOS_woBtag' : {
                     'tight_cuts' : tight_cuts,
                     'loose_cuts' : loose_cuts_woBtag,
+                    'loose_analyzer' :
+                    'ahMuTauAnalyzer_woBtag_factorizedWithoutMuonIsolation',
+                    'tight_analyzer' :
+                    'ahMuTauAnalyzer_woBtag_factorizedWithMuonIsolation',
+                },
+                'ahMuTauAnalyzerSS_wBtag' : {
+                    'tight_cuts' : tight_cuts,
+                    'loose_cuts' : loose_cuts_wBtag_ss,
+                    'loose_analyzer' :
+                    'ahMuTauAnalyzer_wBtag_factorizedWithoutMuonIsolation',
+                    'tight_analyzer' :
+                    'ahMuTauAnalyzer_wBtag_factorizedWithMuonIsolation',
+                },
+                'ahMuTauAnalyzerSS_woBtag' : {
+                    'tight_cuts' : tight_cuts,
+                    'loose_cuts' : loose_cuts_woBtag_ss,
                     'loose_analyzer' :
                     'ahMuTauAnalyzer_woBtag_factorizedWithoutMuonIsolation',
                     'tight_analyzer' :
