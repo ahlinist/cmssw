@@ -641,8 +641,8 @@ _inclusion_ranges = {
 
 # Update higgs sample cross sections
 if _USE_BARI_XSEC:
-    ##verbose = False
-    verbose = True
+    verbose = False
+    #verbose = True
     if verbose: print "Updating samples to use Bari xsections"
     import re
     import TauAnalysis.Configuration.tools.mssm_xsec as mssm_xsec
