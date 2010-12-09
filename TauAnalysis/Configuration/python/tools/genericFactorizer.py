@@ -44,9 +44,11 @@ process.loader = cms.EDAnalyzer(
 
 # For the factorizer to hook into
 process.loadAndFactorizeAHtoMuTauSamples = cms.Sequence()
+process.loadAndFactorizeAHtoElecTauSamples = cms.Sequence()
+process.loadAndFactorizeZtoElecTauSamples = cms.Sequence()
 
 import TauAnalysis.Configuration.tools.factorizationTools as tools
-tools.enableFactorization_makeAHtoMuTauPlots_grid(
+tools.enableFactorization_makeZtoElecTauPlots_grid(
     process, samplesToFactorize = [ sampleName ], relevantMergedSamples = [])
 
 
@@ -55,7 +57,7 @@ process.save = cms.EDAnalyzer("DQMSimpleFileSaver",
 )
 process.path = cms.Path(
     process.loader*
-    process.loadAndFactorizeAHtoMuTauSamples*
+    process.loadAndFactorizeZtoElecTauSamples*
     process.save
 )
 
