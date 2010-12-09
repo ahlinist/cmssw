@@ -33,7 +33,7 @@ elecTauPairsAfterTauPt = cms.EDProducer("PATElecTauPairProducer",
     srcBeamSpot = cms.InputTag("offlineBeamSpot"),                             
     srcGenParticles = cms.InputTag('genParticles'),                                   
     recoMode = cms.string(""),
-    doSVreco = cms.bool(True),                          
+    doSVreco = cms.bool(False),                          
     svFit = cms.PSet(
         psKine = cms.PSet(
             likelihoodFunctions = cms.VPSet(
@@ -127,11 +127,42 @@ allElecTauPairs = cms.EDProducer("PATElecTauPairProducer",
     dRmin12 = cms.double(0.3),
     srcMET = cms.InputTag('patMETs'),
     srcPrimaryVertex = cms.InputTag("offlinePrimaryVerticesWithBS"),
-	#    srcBeamSpot = cms.InputTag("offlineBeamSpot"),                             
+	srcBeamSpot = cms.InputTag("offlineBeamSpot"),                             
     srcGenParticles = cms.InputTag('genParticles'),                                   
     recoMode = cms.string(""),
     scaleFuncImprovedCollinearApprox = cms.string('1'),                             
-    verbosity = cms.untracked.int32(0)
+    verbosity = cms.untracked.int32(0),
+    doSVreco = cms.bool(True),                          
+    svFit = cms.PSet(
+        psKine = cms.PSet(
+            likelihoodFunctions = cms.VPSet(
+                svFitLikelihoodElecTauPairKinematicsPhaseSpace         
+            ),
+            estUncertainties = cms.PSet(
+                numSamplings = cms.int32(-1)
+            )
+        ),
+        psKine_MEt = cms.PSet(
+            likelihoodFunctions = cms.VPSet(
+                svFitLikelihoodElecTauPairKinematicsPhaseSpace,
+                svFitLikelihoodElecTauPairMEt
+            ),
+            estUncertainties = cms.PSet(
+                numSamplings = cms.int32(-1)
+            )
+        ),
+        psKine_MEt_ptBalance = cms.PSet(
+            likelihoodFunctions = cms.VPSet(
+                svFitLikelihoodElecTauPairKinematicsPhaseSpace,
+                svFitLikelihoodElecTauPairMEt,
+                svFitLikelihoodElecTauPairPtBalance
+            ),
+            estUncertainties = cms.PSet(
+                #numSamplings = cms.int32(1000)
+                numSamplings = cms.int32(-1)
+            )
+        )
+    )
 )
 
 produceElecTauPairs = cms.Sequence( elecTauPairsAfterTauPt 
