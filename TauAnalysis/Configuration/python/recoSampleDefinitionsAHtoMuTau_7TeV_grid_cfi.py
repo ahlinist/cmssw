@@ -105,6 +105,7 @@ AHtoMuTauSpecific_RECO_SAMPLES = {
         'drawOption' : styles.drawOption_darkBlue_separate,
         'applyZrecoilCorrection' : True,
         'applyMuonTriggerEfficiencyCorrection' : True,
+        'applyMuonIsolationEfficiencyCorrection' : True,
         'applyVertexMultiplicityReweighting' : True,
         'enableSysUncertainties' : True,
         'hlt' : cms.InputTag("TriggerResults", "", "REDIGI38XPU")
@@ -126,6 +127,7 @@ AHtoMuTauSpecific_RECO_SAMPLES = {
         'drawOption' : styles.drawOption_darkBlue_separate,
         'applyZrecoilCorrection' : True,
         'applyMuonTriggerEfficiencyCorrection' : True,
+        'applyMuonIsolationEfficiencyCorrection' : True,
         'applyVertexMultiplicityReweighting' : True,
         'enableSysUncertainties' : True,
         'hlt' : cms.InputTag("TriggerResults", "", "REDIGI38XPU")
@@ -146,6 +148,7 @@ AHtoMuTauSpecific_RECO_SAMPLES = {
         'drawOption' : styles.drawOption_darkBlue_separate,
         'applyZrecoilCorrection' : True,
         'applyMuonTriggerEfficiencyCorrection' : True,
+        'applyMuonIsolationEfficiencyCorrection' : True,
         'applyVertexMultiplicityReweighting' : True,
         'enableSysUncertainties' : True,
         'hlt' : cms.InputTag("TriggerResults", "", "REDIGI38XPU")
@@ -166,6 +169,7 @@ AHtoMuTauSpecific_RECO_SAMPLES = {
         'drawOption' : styles.drawOption_darkBlue_separate,
         'applyZrecoilCorrection' : True,
         'applyMuonTriggerEfficiencyCorrection' : True,
+        'applyMuonIsolationEfficiencyCorrection' : True,
         'applyVertexMultiplicityReweighting' : True,
         'enableSysUncertainties' : True,
         'hlt' : cms.InputTag("TriggerResults", "", "REDIGI38XPU")
@@ -187,6 +191,7 @@ AHtoMuTauSpecific_RECO_SAMPLES = {
         'drawOption' : styles.drawOption_darkBlue_separate,
         'applyZrecoilCorrection' : True,
         'applyMuonTriggerEfficiencyCorrection' : True,
+        'applyMuonIsolationEfficiencyCorrection' : True,
         'applyVertexMultiplicityReweighting' : True,
         'enableSysUncertainties' : True,
         'hlt' : cms.InputTag("TriggerResults", "", "REDIGI38XPU")
@@ -208,6 +213,7 @@ AHtoMuTauSpecific_RECO_SAMPLES = {
         'drawOption' : styles.drawOption_darkBlue_separate,
         'applyZrecoilCorrection' : True,
         'applyMuonTriggerEfficiencyCorrection' : True,
+        'applyMuonIsolationEfficiencyCorrection' : True,
         'applyVertexMultiplicityReweighting' : True,
         'enableSysUncertainties' : True,
         'hlt' : cms.InputTag("TriggerResults", "", "REDIGI38XPU")
@@ -229,6 +235,7 @@ AHtoMuTauSpecific_RECO_SAMPLES = {
         'drawOption' : styles.drawOption_lightBlue_separate,
         'applyZrecoilCorrection' : True,
         'applyMuonTriggerEfficiencyCorrection' : True,
+        'applyMuonIsolationEfficiencyCorrection' : True,
         'applyVertexMultiplicityReweighting' : True,
         'enableSysUncertainties' : True,
         'hlt' : cms.InputTag("TriggerResults", "", "REDIGI38XPU")
@@ -250,6 +257,7 @@ AHtoMuTauSpecific_RECO_SAMPLES = {
         'drawOption' : styles.drawOption_darkBlue_separate,
         'applyZrecoilCorrection' : True,
         'applyMuonTriggerEfficiencyCorrection' : True,
+        'applyMuonIsolationEfficiencyCorrection' : True,
         'applyVertexMultiplicityReweighting' : True,
         'enableSysUncertainties' : True,
         'hlt' : cms.InputTag("TriggerResults", "", "REDIGI38XPU")
@@ -271,6 +279,7 @@ AHtoMuTauSpecific_RECO_SAMPLES = {
         'drawOption' : styles.drawOption_darkBlue_separate,
         'applyZrecoilCorrection' : True,
         'applyMuonTriggerEfficiencyCorrection' : True,
+        'applyMuonIsolationEfficiencyCorrection' : True,
         'applyVertexMultiplicityReweighting' : True,
         'enableSysUncertainties' : True,
         'hlt' : cms.InputTag("TriggerResults", "", "REDIGI38XPU")
@@ -292,6 +301,7 @@ AHtoMuTauSpecific_RECO_SAMPLES = {
         'drawOption' : styles.drawOption_darkBlue_separate,
         'applyZrecoilCorrection' : True,
         'applyMuonTriggerEfficiencyCorrection' : True,
+        'applyMuonIsolationEfficiencyCorrection' : True,
         'applyVertexMultiplicityReweighting' : True,
         'enableSysUncertainties' : True,
         'hlt' : cms.InputTag("TriggerResults", "", "REDIGI38XPU")
@@ -312,6 +322,7 @@ AHtoMuTauSpecific_RECO_SAMPLES = {
         'drawOption' : styles.drawOption_darkBlue_separate,
         'applyZrecoilCorrection' : True,
         'applyMuonTriggerEfficiencyCorrection' : True,
+        'applyMuonIsolationEfficiencyCorrection' : True,
         'applyVertexMultiplicityReweighting' : True,
         'enableSysUncertainties' : True,
         'hlt' : cms.InputTag("TriggerResults", "", "REDIGI38XPU")
@@ -332,6 +343,7 @@ AHtoMuTauSpecific_RECO_SAMPLES = {
         'drawOption' : styles.drawOption_darkBlue_separate,
         'applyZrecoilCorrection' : True,
         'applyMuonTriggerEfficiencyCorrection' : True,
+        'applyMuonIsolationEfficiencyCorrection' : True,
         'applyVertexMultiplicityReweighting' : True,
         'enableSysUncertainties' : True,
         'hlt' : cms.InputTag("TriggerResults", "", "REDIGI38XPU")
@@ -352,6 +364,7 @@ AHtoMuTauSpecific_RECO_SAMPLES = {
         'drawOption' : styles.drawOption_violett_separate,
         'applyZrecoilCorrection' : True,
         'applyMuonTriggerEfficiencyCorrection' : True,
+        'applyMuonIsolationEfficiencyCorrection' : True,
         'applyVertexMultiplicityReweighting' : True,
         'enableSysUncertainties' : True,
         'hlt' : cms.InputTag("TriggerResults", "", "REDIGI38XPU")
@@ -372,6 +385,7 @@ AHtoMuTauSpecific_RECO_SAMPLES = {
         'drawOption' : styles.drawOption_darkBlue_separate,
         'applyZrecoilCorrection' : True,
         'applyMuonTriggerEfficiencyCorrection' : True,
+        'applyMuonIsolationEfficiencyCorrection' : True,
         'applyVertexMultiplicityReweighting' : True,
         'enableSysUncertainties' : True,
         'hlt' : cms.InputTag("TriggerResults", "", "REDIGI38XPU")
@@ -392,6 +406,7 @@ AHtoMuTauSpecific_RECO_SAMPLES = {
         'drawOption' : styles.drawOption_darkBlue_separate,
         'applyZrecoilCorrection' : True,
         'applyMuonTriggerEfficiencyCorrection' : True,
+        'applyMuonIsolationEfficiencyCorrection' : True,
         'applyVertexMultiplicityReweighting' : True,
         'enableSysUncertainties' : True,
         'hlt' : cms.InputTag("TriggerResults", "", "REDIGI38XPU")
@@ -412,6 +427,7 @@ AHtoMuTauSpecific_RECO_SAMPLES = {
         'drawOption' : styles.drawOption_darkBlue_separate,
         'applyZrecoilCorrection' : True,
         'applyMuonTriggerEfficiencyCorrection' : True,
+        'applyMuonIsolationEfficiencyCorrection' : True,
         'applyVertexMultiplicityReweighting' : True,
         'enableSysUncertainties' : True,
         'hlt' : cms.InputTag("TriggerResults", "", "REDIGI38XPU")
@@ -432,6 +448,7 @@ AHtoMuTauSpecific_RECO_SAMPLES = {
         'drawOption' : styles.drawOption_darkBlue_separate,
         'applyZrecoilCorrection' : True,
         'applyMuonTriggerEfficiencyCorrection' : True,
+        'applyMuonIsolationEfficiencyCorrection' : True,
         'applyVertexMultiplicityReweighting' : True,
         'enableSysUncertainties' : True,
         'hlt' : cms.InputTag("TriggerResults", "", "REDIGI38XPU")
@@ -452,6 +469,7 @@ AHtoMuTauSpecific_RECO_SAMPLES = {
         'drawOption' : styles.drawOption_darkBlue_separate,
         'applyZrecoilCorrection' : True,
         'applyMuonTriggerEfficiencyCorrection' : True,
+        'applyMuonIsolationEfficiencyCorrection' : True,
         'applyVertexMultiplicityReweighting' : True,
         'enableSysUncertainties' : True,
         'hlt' : cms.InputTag("TriggerResults", "", "REDIGI38XPU")
@@ -472,6 +490,7 @@ AHtoMuTauSpecific_RECO_SAMPLES = {
         'drawOption' : styles.drawOption_darkBlue_separate,
         'applyZrecoilCorrection' : True,
         'applyMuonTriggerEfficiencyCorrection' : True,
+        'applyMuonIsolationEfficiencyCorrection' : True,
         'applyVertexMultiplicityReweighting' : True,
         'enableSysUncertainties' : True,
         'hlt' : cms.InputTag("TriggerResults", "", "REDIGI38XPU")
@@ -492,6 +511,7 @@ AHtoMuTauSpecific_RECO_SAMPLES = {
         'drawOption' : styles.drawOption_darkBlue_separate,
         'applyZrecoilCorrection' : True,
         'applyMuonTriggerEfficiencyCorrection' : True,
+        'applyMuonIsolationEfficiencyCorrection' : True,
         'applyVertexMultiplicityReweighting' : True,
         'enableSysUncertainties' : True,
         'hlt' : cms.InputTag("TriggerResults", "", "REDIGI38XPU")
@@ -512,6 +532,7 @@ AHtoMuTauSpecific_RECO_SAMPLES = {
         'drawOption' : styles.drawOption_darkBlue_separate,
         'applyZrecoilCorrection' : True,
         'applyMuonTriggerEfficiencyCorrection' : True,
+        'applyMuonIsolationEfficiencyCorrection' : True,
         'applyVertexMultiplicityReweighting' : True,
         'enableSysUncertainties' : True,
         'hlt' : cms.InputTag("TriggerResults", "", "REDIGI38XPU")
@@ -532,6 +553,7 @@ AHtoMuTauSpecific_RECO_SAMPLES = {
         'drawOption' : styles.drawOption_darkBlue_separate,
         'applyZrecoilCorrection' : True,
         'applyMuonTriggerEfficiencyCorrection' : True,
+        'applyMuonIsolationEfficiencyCorrection' : True,
         'applyVertexMultiplicityReweighting' : True,
         'enableSysUncertainties' : True,
         'hlt' : cms.InputTag("TriggerResults", "", "REDIGI38XPU")
@@ -619,7 +641,8 @@ _inclusion_ranges = {
 
 # Update higgs sample cross sections
 if _USE_BARI_XSEC:
-    verbose = False
+    ##verbose = False
+    verbose = True
     if verbose: print "Updating samples to use Bari xsections"
     import re
     import TauAnalysis.Configuration.tools.mssm_xsec as mssm_xsec
