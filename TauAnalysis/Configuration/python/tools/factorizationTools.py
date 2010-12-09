@@ -576,7 +576,7 @@ def enableFactorization_makeZtoElecTauPlots(process):
 	# define list of event selection criteria on "tight" electron isolation branch of the analysis,
 	# **before** applying factorization of electron track + ECAL isolation efficiencies
 	evtSelZtoElecTau_factorizedTight = [
-		process.genPhaseSpaceCut,
+		process.evtSelGenPhaseSpace,
 		process.evtSelTrigger,
 		process.evtSelPrimaryEventVertex,
 		process.evtSelPrimaryEventVertexQuality,
@@ -835,6 +835,121 @@ def enableFactorization_makeZtoElecTauPlots(process):
 		+ process.addZtoElecTau_wPlusJetsSum
 		#+ process.addZtoElecTau_dataSum
 	)
+
+def enableFactorization_makeZtoElecTauPlots_grid(
+			process,
+			factorizationSequenceName = "loadAndFactorizeZtoElecTau_stdCutsSamples",
+			samplesToFactorize = [  ],
+			relevantMergedSamples = [ 'qcdSum','photonPlusJetsSum' ],
+			mergedToRecoSampleDict = {},
+			mergedSampleAdderModule = lambda sample: 'addZtoElecTau_%s' % (sample),
+			dqmDirectoryOut =
+			lambda sample:'/harvested/%s_factorized/zElecTauAnalyzer/'% (sample),
+			dqmDirectoryOutUnfactorized =
+			lambda sample:'/harvested/%s/zElecTauAnalyzer/'% (sample),
+			dqmDirectoryTight =
+			lambda sample:'/harvested/%s/zElecTauAnalyzer_factorizedWithElectronIsolation/' % (sample),
+			dqmDirectoryLoose =
+			lambda sample:'/harvested/%s/zElecTauAnalyzer_factorizedWithoutElectronIsolation/' % (sample),
+			pyObjectLabel = ""):
+
+	process.load("TauAnalysis.Configuration.analyzeZtoElecTau_cfi")
+
+	# define list of event selection criteria on "tight" electron isolation branch of the analysis,
+	# **before** applying factorization of electron track + ECAL isolation efficiencies
+	evtSelZtoElecTau_factorizedTight = [
+			process.evtSelGenPhaseSpace,
+			process.evtSelTrigger,
+			process.evtSelPrimaryEventVertex,
+			process.evtSelPrimaryEventVertexQuality,
+			process.evtSelPrimaryEventVertexPosition,
+			process.evtSelElectronId,
+			process.evtSelElectronAntiCrack,
+			process.evtSelElectronEta,
+			process.evtSelElectronPt,
+			process.evtSelTauAntiOverlapWithElectronsVeto,
+			process.evtSelTauEta,
+			process.evtSelTauPt,
+			process.evtSelElectronTrkIso,
+			process.evtSelElectronEcalIso,
+			process.evtSelElectronConversionVeto
+	]
+
+	# define list of event selection criteria on "loose" electron isolation branch of the analysis,
+	# **after** applying factorization of electron track + ECAL isolation efficiencies
+	evtSelZtoElecTau_factorizedLoose = [
+			process.evtSelElectronTrkIP,
+			process.evtSelTauLeadTrk,
+			process.evtSelTauLeadTrkPt,
+			process.evtSelTauTaNCdiscr,
+			process.evtSelTauTrkIso,
+			process.evtSelTauEcalIso,
+			process.evtSelTauProng,
+			process.evtSelTauCharge,
+			process.evtSelTauElectronVeto,
+			process.evtSelTauEcalCrackVeto,
+			process.evtSelTauMuonVeto,
+			process.evtSelDiTauCandidateForElecTauAntiOverlapVeto,
+			process.evtSelDiTauCandidateForElecTauZeroCharge,
+			process.evtSelDiTauCandidateForElecTauAcoplanarity12,
+			process.evtSelDiTauCandidateForElecTauMt1MET,
+			process.evtSelDiTauCandidateForElecTauPzetaDiff,
+			process.evtSelElecTauPairZeeHypothesisVeto
+	]
+
+	# defines names of MonitorElements used as numerator and denominator
+	# to compute factorization scale-factor
+	meNameZtoElecTau_numerator = "evtSelElectronConversionVeto/passed_cumulative_numWeighted"
+	meNameZtoElecTau_denominator = "evtSelElectronTrkIso/processed_cumulative_numWeighted"
+
+	# Loop over the samples and create sequences
+	# for each of the factorization jobs and add them to the factorization
+	# sequence
+	factorizationSequence = getattr(process, factorizationSequenceName)
+	for sample in samplesToFactorize:
+		new_factorization_sequence = composeFactorizationSequence(
+				process = process,
+				processName = sample + "_" + pyObjectLabel,
+				dqmDirectoryIn_factorizedTightEvtSel = dqmDirectoryTight(sample),
+				evtSel_factorizedTight = evtSelZtoElecTau_factorizedTight,
+				dqmDirectoryIn_factorizedLooseEvtSel = dqmDirectoryLoose(sample),
+				evtSel_factorizedLoose = evtSelZtoElecTau_factorizedLoose,
+				meName_numerator = meNameZtoElecTau_numerator,
+				meName_denominator = meNameZtoElecTau_denominator,
+				dqmDirectoryOut = dqmDirectoryOut(sample),
+				dropInputDirectories = False
+				)
+		new_factorization_seq_name = "scaleZtoElecTau_%s_%s" % (sample, pyObjectLabel)
+		setattr(process, new_factorization_seq_name, new_factorization_sequence)
+		factorizationSequence += new_factorization_sequence
+
+	# Now update any of the relevant mergers
+	for mergedSample in relevantMergedSamples:
+		# Get the module that is doing the merging, if it exists
+		if not hasattr(process.mergeSamplesZtoElecTau_stdCuts, "merge_%s_zElecTauAnalyzer" % (mergedSample)): continue
+		merger = getattr(process.mergeSamplesZtoElecTau_stdCuts, "merge_%s_zElecTauAnalyzer" % (mergedSample))
+
+		# Get the subsamples associated with this merged sample
+		subsamples = mergedToRecoSampleDict[mergedSample]['samples']
+		# Set the adder to use our new factorized inputs
+		def merge_directories(_list):
+			for sample in _list:
+				if sample in samplesToFactorize:
+					yield dqmDirectoryOut(sample)
+				else:
+					yield dqmDirectoryOutUnfactorized(sample)
+
+		merger.dqmDirectories_input = cms.vstring(list(merge_directories(subsamples)))
+
+	# Update the plot sources in the plot jobs.  Note that we don't need to do
+	# this for the merged samples, since we have replaced the HistAdder sources
+	for plotterModuleName in [ 'plotZtoElecTau_stdCuts_log', 'plotZtoElecTau_stdCuts_linear' ]:
+		plotterModuleProcesses = getattr(process, plotterModuleName).processes
+		for sample in samplesToFactorize:
+			if hasattr(plotterModuleProcesses, sample):
+				getattr(plotterModuleProcesses, sample).dqmDirectory = \
+						cms.string("/harvested/%s_factorized" % sample)
+
 
 #--------------------------------------------------------------------------------
 # utility functions specific to factorization
