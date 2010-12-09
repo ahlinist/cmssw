@@ -18,7 +18,10 @@ def make_harvest_scripts(plot_regex, skim_regex, castor_directory,
                          castor_output_directory,
                          script_directory='/tmp/harvest_scripts',
                          harvest_script = 'submit_harvest.sh',
-                         merge_script_name = 'submit_merge.sh'):
+                         merge_script_name = 'submit_merge.sh',
+                         local_copy_mapper = None,
+                         local_copy_script = 'copy_harvest_local.sh'):
+
     # Create the directory where we store the scripts if it doesn't exist
     if not os.path.exists(script_directory):
         os.mkdir(script_directory)
@@ -50,6 +53,8 @@ def make_harvest_scripts(plot_regex, skim_regex, castor_directory,
             plot_file_map[sample].append((file['time'], full_file))
 
 
+    # Keep track of the final harvested output
+    final_harvest_files = []
     with open(harvest_script, 'w') as submit_file:
         # Make the bsub scripts
         submit_file.write("#!/bin/bash\n")
@@ -63,7 +68,7 @@ def make_harvest_scripts(plot_regex, skim_regex, castor_directory,
             #    continue
             # Add helpful comments
             write_comment_header(submit_file, "Havesting" + sample)
-            print " Generating harvest scripts for sample %s" % sample
+            print " Building harvesting for sample %s" % sample
             print " -- Found %i files to harvest" % len(plot_file_map[sample])
             # Build merge tree
             split = 6
@@ -88,6 +93,9 @@ def make_harvest_scripts(plot_regex, skim_regex, castor_directory,
                     # Keep track of the relevant files, so we can delete old
                     # cruft
                     relevant_tmp_files.add(file_base_name)
+                # Check if this is the final output layer
+                if len(layer) == 1:
+                    final_harvest_files.append((sample, layer[0][0]))
                 print " ---- layer %i has %i jobs, of which %i not done" % (
                     i, len(layer), len(layer_jobs_needed))
                 merge_jobs_needed.append(layer_jobs_needed)
@@ -219,13 +227,20 @@ def make_harvest_scripts(plot_regex, skim_regex, castor_directory,
 
     # Compute all the extra tmp files
     extra_crap = tmp_files - relevant_tmp_files
-    print " Found %i extra files from previous harvest jobs"%len(extra_crap)
-    print " Writing these files to file garbage.txt. To delete, please run: "
-    print " cat garbage.txt | xargs -P 10 -n 1 rfrm "
-    with open('garbage.txt', 'w') as garbage_file:
-        for file in extra_crap:
-            full_path = os.path.join(castor_output_directory, file)
-            garbage_file.write(full_path + '\n')
+    if extra_crap:
+        print " Found %i extra files from previous harvest jobs"%len(extra_crap)
+        print " Writing these files to file garbage.txt. To delete, please run: "
+        print " cat garbage.txt | xargs -P 10 -n 1 rfrm "
+        with open('garbage.txt', 'w') as garbage_file:
+            for file in extra_crap:
+                full_path = os.path.join(castor_output_directory, file)
+                garbage_file.write(full_path + '\n')
+
+    with open(local_copy_script, 'w') as copy_script:
+        for sample, file in final_harvest_files:
+            copy_script.write('rfcp %s %s &\n' % (
+                file, local_copy_mapper(sample)))
+    print "After harvesting is done, run %s to copy files locally" % local_copy_script
 
 if __name__ == "__main__":
     #regex = r"plots_AHtoMuTau_(?P<sample>\w+?)_Run32_(?P<gridJob>\d*)_(?P<gridTry>\d*)_(?P<gridId>[a-zA-Z0-9]*).root"
@@ -235,5 +250,6 @@ if __name__ == "__main__":
     skim_regex = r"final_events_AHtoMuTau_(?P<sample>\w+?)_Run31_(?P<gridJob>\d*)_(?P<gridTry>\d*)_(?P<gridId>[a-zA-Z0-9]*).root"
     make_harvest_scripts(
         plot_regex, skim_regex, os.path.join(os.environ['CASTOR_HOME'], 'Run31'),
-        os.path.join(os.environ['CASTOR_HOME'], 'Run31harvest'),
+        os.path.join(os.environ['CASTOR_HOME'], 'Run31harvest',),
+        local_copy_mapper = lambda s: '/data1/friis/Run31/harvested_AHtoMuTau_%s_Run31.root' % s,
     )
