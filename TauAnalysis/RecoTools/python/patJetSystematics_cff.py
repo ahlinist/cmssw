@@ -5,10 +5,11 @@ import FWCore.ParameterSet.Config as cms
 #--------------------------------------------------------------------------------
 
 patJetsJECshiftUp = cms.EDProducer("SmearedJetProducer",
-    src                   = cms.InputTag('cleanPatJets'),
-    jetCorrPayloadName    = cms.string('AK5PF'),
-    jetCorrUncertaintyTag = cms.string('L2L3Residual'),
-    shiftByJECuncertainty = cms.double(+1.)
+    src                         = cms.InputTag('cleanPatJets'),
+    ##jecUncertaintyInputFileName = cms.FileInPath("TauAnalysis/RecoTools/data/START38_V13_AK5PF_Uncertainty.txt"),
+    jetCorrPayloadName          = cms.string('AK5PF'),
+    jetCorrUncertaintyTag       = cms.string('Uncertainty'),
+    shiftByJECuncertainty       = cms.double(+1.)
 )
 
 patJetsJECshiftDown = patJetsJECshiftUp.clone(
