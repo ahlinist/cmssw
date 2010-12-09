@@ -157,25 +157,25 @@ def main(options,args):
 
     profMinuit.setErrorLevel(.5)
 
-    scanCanvas =  ROOT.TCanvas('scan','',500,500)
+#    scanCanvas =  ROOT.TCanvas('scan','',500,500)
 
-    plot = parm1.frame()
-    parm1.setBins(200)
-    parm2.setBins(200)
+#    plot = parm1.frame()
+#    parm1.setBins(200)
+#    parm2.setBins(200)
 
-    scanHist = ROOT.TH2F('scanHist','Scan of the Likelihood',
-                         200,parm1.getMin(),parm1.getMax(),
-                         200,parm2.getMin(),parm2.getMax())                         
+#    scanHist = ROOT.TH2F('scanHist','Scan of the Likelihood',
+#                         200,parm1.getMin(),parm1.getMax(),
+#                         200,parm2.getMin(),parm2.getMax())                         
 
-    for i in range(200):
-        for j in range(200):
-            parm1.setVal(parm1.getMin() + (i+.5)*(parm1.getMax()-parm1.getMin())/200)
-            parm2.setVal(parm2.getMin() + (j+.5)*(parm2.getMax()-parm2.getMin())/200)
-            scanHist.SetBinContent(i+1,j+1,profileLL.getVal())
+#    for i in range(200):
+#        for j in range(200):
+#            parm1.setVal(parm1.getMin() + (i+.5)*(parm1.getMax()-parm1.getMin())/200)
+#            parm2.setVal(parm2.getMin() + (j+.5)*(parm2.getMax()-parm2.getMin())/200)
+#            scanHist.SetBinContent(i+1,j+1,profileLL.getVal())
 
-    scanHist.Draw('colz')
+#    scanHist.Draw('colz')
 
-    scanCanvas.Print(options.workspaceName+'_scan.root')
+#    scanCanvas.Print(options.workspaceName+'_scan.root')
 
     #par1Canvas = ROOT.TCanvas('par1 profiled','',500,500)
     #par1Canvas.cd()
