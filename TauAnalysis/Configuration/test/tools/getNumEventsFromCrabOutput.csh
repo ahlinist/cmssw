@@ -5,4 +5,4 @@ if( $#argv != 1) then
 	exit(1)
 endif
 
-grep -r "Events total = " $1/res/CMSSW_*stdout | awk '{x+=$5;y+=$8} END {print x,y}'
+grep -r "Events total = " $1/res/CMSSW_*stdout | awk '{x+=$5;y+=$8} END {printf "processed: %d passed: %d eff: %f\n",x,y,y/x}'
