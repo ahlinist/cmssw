@@ -171,6 +171,15 @@ diTauCandidateSVfitHistManagerBgEstQCDenriched = copy.deepcopy(diTauCandidateSVf
 diTauCandidateSVfitHistManagerBgEstQCDenriched.pluginName = cms.string('diTauCandidateSVfitHistManagerBgEstQCDenriched')
 diTauCandidateSVfitHistManagerBgEstQCDenriched.diTauCandidateSource = diTauCandidateHistManagerBgEstQCDenriched.diTauCandidateSource
 
+caloMEtHistManagerBgEstQCDenriched = copy.deepcopy(caloMEtHistManager)
+caloMEtHistManagerBgEstQCDenriched.pluginName = cms.string('caloMEtHistManagerBgEstQCDenriched')
+caloMEtHistManagerBgEstQCDenriched.leg1Source = muonHistManagerBgEstQCDenriched.muonSource
+caloMEtHistManagerBgEstQCDenriched.leg2Source = tauHistManagerBgEstQCDenriched.tauSource
+pfMEtHistManagerBgEstQCDenriched = copy.deepcopy(pfMEtHistManager)
+pfMEtHistManagerBgEstQCDenriched.pluginName = cms.string('pfMEtHistManagerBgEstQCDenriched')
+pfMEtHistManagerBgEstQCDenriched.leg1Source = muonHistManagerBgEstQCDenriched.muonSource
+pfMEtHistManagerBgEstQCDenriched.leg2Source = tauHistManagerBgEstQCDenriched.tauSource
+
 from TauAnalysis.BgEstimationTools.tauIdEffZtoMuTauHistManager_cfi import *
 tauIdEffHistManagerBgEstQCDenriched = copy.deepcopy(tauIdEffZtoMuTauHistManager)
 tauIdEffHistManagerBgEstQCDenriched.pluginName = cms.string('tauIdEffHistManagerBgEstQCDenriched')
@@ -243,6 +252,8 @@ analyzeEventsBgEstQCDenriched = cms.EDAnalyzer("GenericAnalyzer",
         tauHistManagerBgEstQCDenriched,
         diTauCandidateHistManagerBgEstQCDenriched,
         diTauCandidateSVfitHistManagerBgEstQCDenriched,
+        pfMEtHistManagerBgEstQCDenriched,
+        caloMEtHistManagerBgEstQCDenriched,
         tauIdEffHistManagerBgEstQCDenriched,
         dataBinnerBgEstQCDenriched
     ),
@@ -322,14 +333,6 @@ analyzeEventsBgEstQCDenriched = cms.EDAnalyzer("GenericAnalyzer",
             title = cms.string('Tau TaNC discr.')
         ),
         cms.PSet(
-            filter = cms.string('tauTrkIsoCutBgEstQCDenriched'),
-            title = cms.string('Tau Track iso.')
-        ),
-        cms.PSet(
-            filter = cms.string('tauEcalIsoCutBgEstQCDenriched'),
-            title = cms.string('Tau ECAL iso.')
-        ),
-        cms.PSet(
             filter = cms.string('tauMuonVetoBgEstQCDenriched'),
             title = cms.string('Tau mu-Veto')
         ),
@@ -355,6 +358,8 @@ analyzeEventsBgEstQCDenriched = cms.EDAnalyzer("GenericAnalyzer",
                 'tauHistManagerBgEstQCDenriched',
                 'diTauCandidateHistManagerBgEstQCDenriched',
                 'diTauCandidateSVfitHistManagerBgEstQCDenriched',
+                'pfMEtHistManagerBgEstQCDenriched',
+                'caloMEtHistManagerBgEstQCDenriched',
                 'tauIdEffHistManagerBgEstQCDenriched',
                 'dataBinnerBgEstQCDenriched'
             )
