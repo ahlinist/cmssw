@@ -18,8 +18,8 @@ process.maxEvents = cms.untracked.PSet(
 process.source = cms.Source("EmptySource")
 
 # define directory from which .root files containing the histograms get loaded
-process.loadZtoElecTau.inputFilePath = cms.string("rfio:/castor/cern.ch/user/j/jkolb/elecTauAnalysis/spring10/current/")
-#process.loadZtoElecTau.inputFilePath = cms.string("file:/data/ndpc2/b/jkolb/ZtoElecTauAnalysis/spring10/analysis/harvested/")
+process.loadZtoElecTau.inputFilePath = cms.string("rfio:/castor/cern.ch/user/j/jkolb/elecTauAnalysis/fall10/current/")
+#process.loadZtoElecTau.inputFilePath = cms.string("file:/data/ndpc2/b/jkolb/ZtoElecTauAnalysis/fall10/analysis/harvested/")
 
 # import utility function to enable factorization
 from TauAnalysis.Configuration.tools.factorizationTools import enableFactorization_makeZtoElecTauPlots

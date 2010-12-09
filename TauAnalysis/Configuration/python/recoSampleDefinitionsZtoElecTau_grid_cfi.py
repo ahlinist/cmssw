@@ -65,7 +65,7 @@ _femtobarns = 1.0e-3
 
 # Integrated luminosity to normalize
 ##TARGET_LUMI = (200.0)/_picobarns
-TARGET_LUMI = (32)/_picobarns # for runs 132440 - 149442
+TARGET_LUMI = (36)/_picobarns # for runs 132440 - 149442
 
 #--------------------------------------------------------------------------------
 # NOTE: cross-sections for W and Z production are scaled to next-to-leading order values
@@ -97,7 +97,6 @@ RECO_SAMPLES = {
     },
     'data_EG_Run2010A_Nov4ReReco' : {
         'datasetpath' : '/EG/Run2010A-Nov4ReReco_v1/RECO',
-		#'dbs_url' : "http://cmsdbsprod.cern.ch/cms_dbs_ph_analysis_01/servlet/DBSServlet",
         'lumi_mask' : "/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions10/7TeV//Reprocessing/Cert_136033-149442_7TeV_Nov4ReReco_Collisions10_JSON.txt",
         'runselection' : "136033 - 144114",
         'number_of_jobs' : 1000,
@@ -169,10 +168,20 @@ RECO_SAMPLES = {
     },
     'Ztautau_PU156BX' : {
         'datasetpath' : "/DYToTauTau_M-20_TuneZ2_7TeV-pythia6-tauola/Fall10-E7TeV_ProbDist_2010Data_BX156_START38_V12-v1/GEN-SIM-RECO",
-        'dbs_url' :  "http://cmsdbsprod.cern.ch/cms_dbs_prod_global/servlet/DBSServlet",  
         'events_processed' : 2011186,
         'skim_eff' : 1.0,
-        'x_sec' : 1.28*1300*_picobarns, # Z + jets correction factor for NLO/LO cross-sections = 1.28
+        'x_sec' : 1300*_picobarns, # Z + jets correction factor for NLO/LO cross-sections = 1.28 (removed)
+        'legendEntry' : plotter.process_Ztautau.config_dqmHistPlotter.legendEntry.value(),
+        'type' : plotter.process_Ztautau.config_dqmHistPlotter.type.value(),
+        'drawOption' : styles.drawOption_Ztautau,
+        'applyZrecoilCorrection' : False,
+        'hlt' : cms.InputTag("TriggerResults", "", "REDIGI38XPU")
+    },
+    'Ztautau_PU156BX_D6T' : {
+        'datasetpath' : "/DYtoTauTau_M_20_TuneD6T_7TeV-pythia6-tauola/Fall10-E7TeV_ProbDist_2010Data_BX156_START38_V12-v1/GEN-SIM-RECO",
+        'events_processed' : 2568490,
+        'skim_eff' : 1.0,
+        'x_sec' : 1300*_picobarns, # Z + jets correction factor for NLO/LO cross-sections = 1.28
         'legendEntry' : plotter.process_Ztautau.config_dqmHistPlotter.legendEntry.value(),
         'type' : plotter.process_Ztautau.config_dqmHistPlotter.type.value(),
         'drawOption' : styles.drawOption_Ztautau,
@@ -184,7 +193,7 @@ RECO_SAMPLES = {
         'dbs_url' : "http://cmsdbsprod.cern.ch/cms_dbs_ph_analysis_02/servlet/DBSServlet",
         'events_processed' : 132731,
         'skim_eff' : 1.0,
-        'x_sec' : 1.28*1300*_picobarns, # Z + jets correction factor for NLO/LO cross-sections = 1.28
+        'x_sec' : 1300*_picobarns, # Z + jets correction factor for NLO/LO cross-sections = 1.28
         'legendEntry' : plotter.process_Ztautau.config_dqmHistPlotter.legendEntry.value(),
         'type' : 'Data',
         'drawOption' : styles.drawOption_Ztautau,
@@ -207,7 +216,18 @@ RECO_SAMPLES = {
         'datasetpath' : "/DYToEE_M-20_TuneZ2_7TeV-pythia6/Fall10-E7TeV_ProbDist_2010Data_BX156_START38_V12-v1/GEN-SIM-RECO",
         'events_processed' : 2085586,
         'skim_eff' : 1.0,
-        'x_sec' : 1.28*1300*_picobarns, # Z + jets correction factor for NLO/LO cross-sections = 1.28
+        'x_sec' : 1300*_picobarns, # Z + jets correction factor for NLO/LO cross-sections = 1.28 (removed)
+        'legendEntry' : plotter.process_Zee.config_dqmHistPlotter.legendEntry.value(),
+        'type' : plotter.process_Zee.config_dqmHistPlotter.type.value(),
+        'drawOption' : styles.drawOption_Zee,
+        'applyZrecoilCorrection' : False,
+        'hlt' : cms.InputTag("TriggerResults", "", "REDIGI38XPU")
+    },
+    'Zee_PU156BX_D6T' : {
+        'datasetpath' : "/DYtoEE_M_20_TuneD6T_7TeV-pythia6/Fall10-E7TeV_ProbDist_2010Data_BX156_START38_V12-v1/GEN-SIM-RECO",
+        'events_processed' : 2474014,
+        'skim_eff' : 1.0,
+        'x_sec' : 1300*_picobarns, # Z + jets correction factor for NLO/LO cross-sections = 1.28 (removed)
         'legendEntry' : plotter.process_Zee.config_dqmHistPlotter.legendEntry.value(),
         'type' : plotter.process_Zee.config_dqmHistPlotter.type.value(),
         'drawOption' : styles.drawOption_Zee,
@@ -486,6 +506,16 @@ RECO_SAMPLES = {
         'events_processed' : 5021834,
         'skim_eff' : 1.0,
         'x_sec' : 7899*_picobarns,
+        'legendEntry' : plotter.process_WplusJets.config_dqmHistPlotter.legendEntry.value(),
+        'type' : plotter.process_WplusJets.config_dqmHistPlotter.type.value(),
+        'drawOption' : styles.drawOption_WplusJets,
+        'hlt' : cms.InputTag("TriggerResults", "", "REDIGI38XPU")
+    },
+    'WJetsToEllNu_PU156BX' : {
+        'datasetpath' : "/WJetsToLNu_TuneZ2_7TeV-madgraph-tauola/Fall10-E7TeV_ProbDist_2010Data_BX156_START38_V12-v1/GEN-SIM-RECO",
+        'events_processed' : 15168266,
+        'skim_eff' : 1.0,
+        'x_sec' : 1111111111111*_picobarns,
         'legendEntry' : plotter.process_WplusJets.config_dqmHistPlotter.legendEntry.value(),
         'type' : plotter.process_WplusJets.config_dqmHistPlotter.type.value(),
         'drawOption' : styles.drawOption_WplusJets,

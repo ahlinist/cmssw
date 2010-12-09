@@ -98,18 +98,9 @@ process.source = cms.Source("PoolSource",
 
 #--------------------------------------------------------------------------------
 # set trigger
+from TauAnalysis.RecoTools.triggerConfigForElecTau import setTriggerConfig
+setTriggerConfig(process)
 
-triggerString = cms.vstring('HLT_Ele10_SW_EleId_L1R','HLT_Ele10_LW_EleId_L1R','HLT_Ele10_LW_L1R','HLT_Ele10_SW_L1R','HLT_Ele12_SW_TightEleIdIsol_L1R','HLT_Ele17_SW_TighterEleIdIsol_L1R')
-triggerCollection = cms.InputTag('TriggerResults::HLT')
-
-process.Trigger.selectors[0].src = triggerCollection
-process.Trigger.selectors[0].triggerPaths = triggerString
-
-process.analyzeZtoElecTauEvents.eventDumps[0].hltPathsToPrint = triggerString
-process.analyzeZtoElecTauEvents.eventDumps[0].hltResultsSource = triggerCollection
-
-process.triggerHistManagerForElecTau.hltPaths = triggerString
-process.triggerHistManagerForElecTau.hltResultsSource = triggerCollection
 #--------------------------------------------------------------------------------
 
 #--------------------------------------------------------------------------------
@@ -166,7 +157,7 @@ replaceMETforDiTaus(process, cms.InputTag('patMETs'), cms.InputTag('patPFMETs'))
 
 #--------------------------------------------------------------------------------
 # import utility to remove modules operating on GEN-level collections
-from TauAnalysis.Configuration.tools.switchToData import *
+from TauAnalysis.Configuration.tools.switchToData_ZtoElecTau import *
 #
 # uncomment when running over DATA samples
 ##switchToData(process)#
