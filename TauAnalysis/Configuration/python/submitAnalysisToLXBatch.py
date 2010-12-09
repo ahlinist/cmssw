@@ -124,8 +124,8 @@ def submitAnalysisToLXBatch(configFile = None, channel = None, samples = None, j
                     map(lambda x:x[1], input_files), add_time=False)
                 # Add the hash of the input file so we know the provenance of all
                 # files
-                output_file = output_file.replace(
-                    '.root', '_' + input_file_hash + '.root')
+                output_file = os.path.join(outputDirectory, output_file.replace(
+                    '.root', '_' + input_file_hash + '.root'))
 
                 # Build our batch job
                 jobname, script = jobtools.make_bsub_script(
