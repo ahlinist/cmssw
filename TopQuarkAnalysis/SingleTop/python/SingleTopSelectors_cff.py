@@ -29,10 +29,17 @@ hltFilterEle = cms.EDFilter("HLTSummaryFilter",
 
 #####Primary vertex filter
 PVFilter = cms.EDFilter(
-    'VertexSelector',
+    'SingleTopVertexFilter',
     src = cms.InputTag("offlinePrimaryVertices"),
     cut = cms.string('!isFake & position().Rho() < 2.0 & abs(z) < 24 & ndof > 4.'),
     filter = cms.bool(True)
+    )
+
+PVFilterProducer = cms.EDFilter(
+    'VertexSelector',
+    src = cms.InputTag("offlinePrimaryVertices"),
+    cut = cms.string('!isFake & position().Rho() < 2.0 & abs(z) < 24 & ndof > 4.'),
+    filter = cms.bool(False)
     )
 
 
@@ -256,7 +263,11 @@ src2 = cms.InputTag("preselectedMETs"),
 
 MTWFilterMuonsPF = MTWFilterMuons.clone(
     src1 = cms.InputTag("topMuons"),
-    src2 = cms.InputTag("patMETsPF"),)
+    src2 = cms.InputTag("patMETsPF"),
+    cut = cms.untracked.double(40),
+    )
+
+
 
 MTWFilterElectrons = MTWFilterMuons.clone(src1 = cms.InputTag("topElectrons"),)
 MTWFilterElectronsPF = MTWFilterElectrons.clone(src2 = cms.InputTag("patMETsPF"),)
