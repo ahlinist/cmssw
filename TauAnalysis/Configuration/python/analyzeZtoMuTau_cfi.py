@@ -22,23 +22,6 @@ diTauCandidateHistManagerForMuTau.pluginType = cms.string('PATMuTauPairHistManag
 diTauCandidateHistManagerForMuTau.diTauCandidateSource = cms.InputTag('allMuTauPairs')
 diTauCandidateHistManagerForMuTau.visMassHypothesisSource = cms.InputTag('')
 
-from TauAnalysis.Core.diTauCandidateCollinearApproxHistManager_cfi import *
-diTauCandidateCollinearApproxHistManagerBinnedForMuTau = copy.deepcopy(diTauCandidateCollinearApproxHistManagerBinned)
-diTauCandidateCollinearApproxHistManagerBinnedForMuTau.pluginName = cms.string('diTauCandidateCollinearApproxHistManagerBinnedForMuTau')
-diTauCandidateCollinearApproxHistManagerForMuTau = copy.deepcopy(diTauCandidateCollinearApproxHistManager)
-diTauCandidateCollinearApproxHistManagerForMuTau.pluginName = cms.string('diTauCandidateCollinearApproxHistManagerForMuTau')
-diTauCandidateCollinearApproxHistManagerForMuTau.pluginType = cms.string('PATMuTauPairCollinearApproxHistManager')
-diTauCandidateCollinearApproxHistManagerForMuTau.diTauCandidateSource = cms.InputTag('selectedMuTauPairsPzetaDiffCumulative')
-diTauCandidateCollinearApproxHistManagerBinnedForMuTau.histManagers = cms.VPSet(
-    diTauCandidateHistManagerForMuTau.clone(
-        diTauCandidateSource = cms.InputTag('selectedMuTauPairsPzetaDiffCumulative')
-    ),
-    diTauCandidateCollinearApproxHistManagerForMuTau,
-    pfMEtHistManager,
-    caloMEtHistManager,
-    genPhaseSpaceEventInfoHistManager
-)
-
 from TauAnalysis.Core.diTauCandidateSVfitHistManager_cfi import *
 diTauCandidateSVfitHistManagerForMuTau = copy.deepcopy(diTauCandidateSVfitHistManager)
 diTauCandidateSVfitHistManagerForMuTau.pluginName = cms.string('diTauCandidateSVfitHistManagerForMuTau')
@@ -59,12 +42,6 @@ diTauCandidateSVfitHistManagerForMuTau.SVfitAlgorithms = cms.VPSet(
     )
 )
 
-from TauAnalysis.Core.diTauCandidateEventActivityHistManager_cfi import *
-diTauCandidateEventActivityHistManagerForMuTau = copy.deepcopy(diTauCandidateEventActivityHistManager)
-diTauCandidateEventActivityHistManagerForMuTau.pluginName = cms.string('diTauCandidateEventActivityHistManagerForMuTau')
-diTauCandidateEventActivityHistManagerForMuTau.pluginType = cms.string('PATMuTauPairEventActivityHistManager')
-diTauCandidateEventActivityHistManagerForMuTau.diTauCandidateSource = cms.InputTag('selectedMuTauPairsPzetaDiffCumulative')
-
 from TauAnalysis.Core.diTauCandidateZllHypothesisHistManager_cfi import *
 diTauCandidateZmumuHypothesisHistManagerForMuTau = copy.deepcopy(ZllHypothesisHistManager)
 diTauCandidateZmumuHypothesisHistManagerForMuTau.pluginName = cms.string('diTauCandidateZmumuHypothesisHistManagerForMuTau')
@@ -80,9 +57,6 @@ muPairHistManagerByLooseIsolation = diTauCandidateHistManager.clone(
     dqmDirectory_store = cms.string('DiMuZmumuHypothesisByLooseIsolationQuantities')
 )
 
-# import config for central jet veto histogram manager
-from TauAnalysis.Core.jetHistManager_cfi import *
-
 # import config for missing-Et histogram managers
 from TauAnalysis.Core.caloMEtHistManager_cfi import *
 caloMEtHistManager.leg1Source = cms.InputTag('selectedPatMuonsTrkIPcumulative')
@@ -90,6 +64,9 @@ caloMEtHistManager.leg2Source = cms.InputTag('selectedPatTausForMuTauElectronVet
 from TauAnalysis.Core.pfMEtHistManager_cfi import *
 pfMEtHistManager.leg1Source = cms.InputTag('selectedPatMuonsTrkIPcumulative')
 pfMEtHistManager.leg2Source = cms.InputTag('selectedPatTausForMuTauElectronVetoCumulative')
+
+# import config for central jet veto histogram manager
+from TauAnalysis.Core.jetHistManager_cfi import *
 
 # import config for particle multiplicity histogram manager
 from TauAnalysis.Core.particleMultiplicityHistManager_cfi import *
@@ -120,16 +97,6 @@ triggerHistManagerForMuTau.hltPaths = cms.vstring(
 
 # import config for event weight histogram manager
 from TauAnalysis.Core.eventWeightHistManager_cfi import *
-
-diTauCandidateCollinearApproxBinnerForMuTau = cms.PSet(
-    pluginName = cms.string('diTauCandidateCollinearApproxBinnerForMuTau'),
-    pluginType = cms.string('DataBinner'),
-    binning = collinearApproxBinning,
-    binningService = cms.PSet(
-        pluginType = cms.string("DataBinningService")
-    ),
-    dqmDirectory_store = cms.string('collinearApproxBinningResults4regions')
-)
 
 # import config for binning results
 # used for keeping track of number of events passing all selection criteria
@@ -927,7 +894,6 @@ muTauAnalysisSequenceOS = cms.VPSet(
             'muonHistManager',
             'tauHistManager',
             'diTauCandidateHistManagerForMuTau',
-	    'diTauCandidateCollinearApproxHistManagerForMuTau',	
 	    'diTauCandidateSVfitHistManagerForMuTau',
             'muPairHistManagerByLooseIsolation'
         ),
@@ -936,7 +902,6 @@ muTauAnalysisSequenceOS = cms.VPSet(
             'tauHistManager.tauSource = selectedPatTausForMuTauElectronVetoCumulative',
             'diTauCandidateHistManagerForMuTau.diTauCandidateSource = selectedMuTauPairsPzetaDiffCumulative',
             'diTauCandidateHistManagerForMuTau.visMassHypothesisSource = muTauPairVisMassHypotheses',
-            'diTauCandidateCollinearApproxHistManagerForMuTau.diTauCandidateSource = selectedMuTauPairsPzetaDiffCumulative',
             'diTauCandidateSVfitHistManagerForMuTau.diTauCandidateSource = selectedMuTauPairsPzetaDiffCumulative',
             'muPairHistManagerByLooseIsolation.diTauCandidateSource = selectedDiMuPairZmumuHypothesesByLooseIsolation'
         )
@@ -946,7 +911,7 @@ muTauAnalysisSequenceOS = cms.VPSet(
     cms.PSet(
         filter = cms.string('evtSelDiTauCandidateForMuTauZeroCharge'),
         title = cms.string('Charge(Muon+Tau) = 0'),
-        saveRunLumiSectionEventNumbers = cms.vstring('')
+        saveRunLumiSectionEventNumbers = cms.vstring('passed_cumulative')
     ),
     cms.PSet(
         analyzers = cms.vstring(
@@ -955,11 +920,7 @@ muTauAnalysisSequenceOS = cms.VPSet(
             'muonHistManager',
             'tauHistManager',
             'diTauCandidateHistManagerForMuTau',
-            'diTauCandidateCollinearApproxHistManagerForMuTau',
-            'diTauCandidateCollinearApproxHistManagerBinnedForMuTau',
-            'diTauCandidateCollinearApproxBinnerForMuTau',
             'diTauCandidateSVfitHistManagerForMuTau',
-            'diTauCandidateEventActivityHistManagerForMuTau',
             'diTauCandidateZmumuHypothesisHistManagerForMuTau',
             'muPairHistManagerByLooseIsolation',
             'jetHistManager',
@@ -976,9 +937,7 @@ muTauAnalysisSequenceOS = cms.VPSet(
             'tauHistManager.tauSource = selectedPatTausForMuTauElectronVetoCumulative',
             'diTauCandidateHistManagerForMuTau.diTauCandidateSource = selectedMuTauPairsZeroChargeCumulative',
             'diTauCandidateHistManagerForMuTau.visMassHypothesisSource = muTauPairVisMassHypotheses',
-            'diTauCandidateCollinearApproxHistManagerForMuTau.diTauCandidateSource = selectedMuTauPairsZeroChargeCumulative',
             'diTauCandidateSVfitHistManagerForMuTau.diTauCandidateSource = selectedMuTauPairsZeroChargeCumulative',
-            'diTauCandidateEventActivityHistManagerForMuTau.diTauCandidateSource = selectedMuTauPairsZeroChargeCumulative',
             'diTauCandidateZmumuHypothesisHistManagerForMuTau.ZllHypothesisSource = muTauPairZmumuHypotheses',
             'muPairHistManagerByLooseIsolation.diTauCandidateSource = selectedDiMuPairZmumuHypothesesByLooseIsolation'
         )
@@ -1119,14 +1078,13 @@ muTauAnalysisSequenceSS = cms.VPSet(
     cms.PSet(
         filter = cms.string('evtSelDiTauCandidateForMuTauNonZeroCharge'),
         title = cms.string('Charge(Muon+Tau) != 0'),
-        saveRunLumiSectionEventNumbers = cms.vstring('')
+        saveRunLumiSectionEventNumbers = cms.vstring('passed_cumulative')
     ),
     cms.PSet(
         analyzers = cms.vstring(
             'muonHistManager',
             'tauHistManager',
             'diTauCandidateHistManagerForMuTau',
-            'diTauCandidateCollinearApproxHistManagerForMuTau',
             'diTauCandidateSVfitHistManagerForMuTau',
             'diTauCandidateZmumuHypothesisHistManagerForMuTau',
             'muPairHistManagerByLooseIsolation',
@@ -1141,9 +1099,7 @@ muTauAnalysisSequenceSS = cms.VPSet(
             'tauHistManager.tauSource = selectedPatTausForMuTauElectronVetoCumulative',
             'diTauCandidateHistManagerForMuTau.diTauCandidateSource = selectedMuTauPairsNonZeroChargeCumulative',
             'diTauCandidateHistManagerForMuTau.visMassHypothesisSource = muTauPairVisMassHypotheses',
-            'diTauCandidateCollinearApproxHistManagerForMuTau.diTauCandidateSource = selectedMuTauPairsNonZeroChargeCumulative',
             'diTauCandidateSVfitHistManagerForMuTau.diTauCandidateSource = selectedMuTauPairsNonZeroChargeCumulative',
-            'diTauCandidateEventActivityHistManagerForMuTau.diTauCandidateSource = selectedMuTauPairsNonZeroChargeCumulative',
             'diTauCandidateZmumuHypothesisHistManagerForMuTau.ZllHypothesisSource = muTauPairZmumuHypotheses',
             'muPairHistManagerByLooseIsolation.diTauCandidateSource = selectedDiMuPairZmumuHypothesesByLooseIsolation'
         )
