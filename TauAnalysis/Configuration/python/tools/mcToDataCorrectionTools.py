@@ -84,8 +84,8 @@ def _addEventWeight(process, genAnalyzerModuleNames, srcEventWeight, applyAfterF
         if hasattr(process, genAnalyzerModuleName):
             genAnalyzerModule = getattr(process, genAnalyzerModuleName)
             pset = cms.PSet(
-                src = srcEventWeight,
-                applyAfterFilter = applyAfterFilterName
+                src = cms.InputTag(srcEventWeight),
+                applyAfterFilter = cms.string(applyAfterFilterName)
             )
             if hasattr(genAnalyzerModule, "eventWeights"):
                 getattr(genAnalyzerModule, "eventWeights").append(pset)
@@ -230,6 +230,24 @@ def applyMuonTriggerEfficiencyCorrection_runZtoMuTau_bgEstTemplate(process):
 
     _addEventWeightZtoMuTau_bgEstTemplate(process, "muonTriggerEfficiencyCorrection", applyAfterFilterName = "evtSelTrigger")
 
+def applyMuonIsolationEfficiencyCorrection_runZtoMuTau_bgEstTemplate(process):
+
+    applyMuonIsolationEfficiencyCorrection_runZtoMuTau(process)
+
+    _addEventWeight(process, 
+	            [ "analyzeEventsBgEstQCDenriched" ], 
+	            "muonIsolationEfficiencyCorrection", applyAfterFilterName = "muonPFRelIsoCutBgEstQCDenriched")
+    _addEventWeight(process, 
+                    [ "analyzeEventsBgEstTTplusJetsEnriched" ], 
+	            "muonIsolationEfficiencyCorrection", applyAfterFilterName = "muonPFRelIsoCutBgEstTTplusJetsEnriched")
+    _addEventWeight(process, 
+                    [ "analyzeEventsBgEstWplusJetsEnriched" ], 
+	            "muonIsolationEfficiencyCorrection", applyAfterFilterName = "muonPFRelIsoCutBgEstWplusJetsEnriched")
+    _addEventWeight(process, 
+	            [ "analyzeEventsBgEstZmumuJetMisIdEnriched",
+                      "analyzeEventsBgEstZmumuMuonMisIdEnriched" ], 
+	            "muonIsolationEfficiencyCorrection", applyAfterFilterName = "evtSelMuonPFRelIso")
+
 def applyVertexMultiplicityReweighting_runZtoMuTau_bgEstTemplate(process):
 
     applyVertexMultiplicityReweighting_runZtoMuTau(process)
@@ -254,6 +272,20 @@ def applyMuonTriggerEfficiencyCorrection_runZtoMuTau_tauIdEff(process):
     applyMuonTriggerEfficiencyCorrection_runZtoMuTau(process)
 
     _addEventWeightZtoMuTau_tauIdEff(process, "muonTriggerEfficiencyCorrection", applyAfterFilterName = "evtSelTrigger")
+
+def applyMuonIsolationCorrection_runZtoMuTau_tauIdEff(process):
+
+    applyMuonIsolationCorrection_runZtoMuTau(process)
+
+    _addEventWeight(process,
+	            [ "analyzeEventsTauIdEffZtoMuTauCombinedFit" ],
+                    "muonIsolationEfficiencyCorrection", applyAfterFilterName = "muonCombRelIsoTightCutTauIdEffZtoMuTauCombinedFit")
+    _addEventWeight(process,
+	            [ "analyzeEventsTauIdEffZtoMuTauGenMatrixFit" ],
+                    "muonIsolationEfficiencyCorrection", applyAfterFilterName = "muonCombRelIsoCutTauIdEffZtoMuTauGenMatrixFit")
+    _addEventWeight(process,
+	            [ "analyzeEventsTauIdEffZtoMuTauTemplateFit" ],
+                    "muonIsolationEfficiencyCorrection", applyAfterFilterName = "muonPFRelIsoCutTauIdEffZtoMuTauTemplateFit")
 
 def applyVertexMultiplicityReweighting_runZtoMuTau_tauIdEff(process):
 
