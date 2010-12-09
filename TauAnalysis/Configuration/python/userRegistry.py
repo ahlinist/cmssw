@@ -3,7 +3,7 @@ import os
 userSettings = {
     'friis' : {
         # The job ID to use per default.
-        'current' : 'Run31',
+        'current' : 'Run32onskim',
         # List of runs
         'jobs' : {
             'Run31' : {
@@ -21,9 +21,21 @@ userSettings = {
                     # The output directory for the plots
                     'harvestingFilePath' : "/data1/friis/",
                     'tmpFilePath' : "/data2/friis/tmp/",
-                    'pickevents' : '/data1/friis/Run26'
+                    'pickevents' : '/data1/friis/Run26',
                 }
             },
+            'Run32onskim' : {
+                'AHtoMuTau' : {
+                    # The output directory on castor
+                    'analysisFilePath' : '/castor/cern.ch/user/f/friis/Run32onskim/',
+                    # The output directory for the plots
+                    'harvestingFilePath' : "/data1/friis/",
+                    'tmpFilePath' : "/data2/friis/tmp/",
+                    'pickevents' : '/castor/cern.ch/user/f/friis/Run32harvest/',
+                    'skimPath' : '/castor/cern.ch/user/f/friis/Run32harvest/',
+                }
+            },
+
         },
         'global' : {
             'drawOptions' : {
@@ -145,9 +157,10 @@ def getJobId(channel):
         return jobIdInfo
 
 
-def getInfo(channel):
+def getInfo(channel, jobid = None):
     # Get the current job id for this channel
-    jobid = getJobId(channel)
+    if jobid is None:
+        jobid = getJobId(channel)
     # Get the channel information for the jobId
     return mine()['jobs'][jobid][channel]
 
@@ -157,6 +170,9 @@ def overrideJobId(channel, jobId):
 
 def getPickEventsPath(channel):
     return  getInfo(channel)['pickevents']
+
+def getSkimEvents(channel, jobid = None):
+    return getInfo(channel, jobid)['skimPath']
 
 def getAnalysisFilePath(channel):
     return getInfo(channel)['analysisFilePath']
