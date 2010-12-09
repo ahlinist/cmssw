@@ -2,21 +2,23 @@ import FWCore.ParameterSet.Config as cms
 
 from PhysicsTools.PatAlgos.tools.helpers import *
 
-def addPFMet(process,correct=False):
+def addPFMet(process,correct=False):    
+    process.load("JetMETCorrections.Type1MET.MetType1Corrections_cff")    
+    process.metJESCorAK5PFJet.jetPTthreshold = cms.double(10.0)
+    process.metJESCorAK5PFJet.useTypeII = cms.bool(True)
+
     process.load("PhysicsTools.PFCandProducer.pfType1MET_cff")
     process.patPFMETs = process.patMETs.clone()
     process.patPFMETs.addMuonCorrections = False
-
-    process.makePatPFMETs = cms.Sequence(process.patPFMETs)
-    if correct:
-        process.makePatPFMETs.replace(process.patPFMETs,
-                                         process.pfCorMET*process.patPFMETs)
-        process.patPFMETs.metSource = cms.InputTag('pfType1MET')
-    else:
-        process.makePatPFMETs.replace(process.patPFMETs,
-                                         process.pfMET*process.patPFMETs)
-        process.patPFMETs.metSource = cms.InputTag('pfMET')
     process.patPFMETs.genMETSource = cms.InputTag('genMetTrue')
+
+    if correct:
+        process.patPFMETs.metSource = cms.InputTag('metJESCorAK5PFJet')
+        process.makePatPFMETs = cms.Sequence(process.metJESCorAK5PFJet * process.patPFMETs)
+    else:
+        process.patPFMETs.metSource = cms.InputTag('pfMET')
+        process.makePatPFMETs = cms.Sequence(process.pfMET * process.patPFMETs)
+
     process.makePatMETs += process.makePatPFMETs
 
 def addTCMet(process):
