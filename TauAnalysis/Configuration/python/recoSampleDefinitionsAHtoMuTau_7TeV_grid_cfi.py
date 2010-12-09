@@ -13,7 +13,6 @@ TAN_BETA = 30
 # List of samples to run in the analysis
 SAMPLES_TO_ANALYZE = copy.deepcopy(ZtoMuTau.SAMPLES_TO_ANALYZE)
 SAMPLES_TO_ANALYZE.extend([
-    'qqZtautau',
     'A90',  'bbA90',
     'A100', 'bbA100',
     'A120', 'bbA120',
@@ -686,9 +685,9 @@ recoSampleDefinitionsAHtoMuTau_7TeV = {
     'SAMPLES_TO_PLOT' : SAMPLES_TO_PLOT,
     'SAMPLES_TO_PRINT' : SAMPLES_TO_PRINT,
     'SAMPLE_DEFAULTS' : SAMPLE_DEFAULTS,
-    #'TARGET_LUMI' : ZtoMuTau.TARGET_LUMI,
-    'TARGET_LUMI' : (3061964.0/ZtoMuTau._microbarns +
-                     32264363.944/ZtoMuTau._microbarns),
+    'TARGET_LUMI' : ZtoMuTau.TARGET_LUMI,
+    #'TARGET_LUMI' : (3061964.0/ZtoMuTau._microbarns +
+                     #32264363.944/ZtoMuTau._microbarns),
     'RECO_SAMPLES' : RECO_SAMPLES,
     'MERGE_SAMPLES' : MERGE_SAMPLES,
     'FLATTENED_SAMPLES_TO_PLOT' : FLATTENED_SAMPLES_TO_PLOT,
