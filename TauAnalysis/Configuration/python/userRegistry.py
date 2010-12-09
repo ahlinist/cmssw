@@ -108,32 +108,37 @@ userSettings = {
     },
     'jkolb': {
         'current' : {
-            'AHtoElecTau' : '7TeV',
+            'AHtoElecTau' : 'Run01',
             'ZtoElecTau' : '2010Nov13',
             'ZtoElecTau_stdCuts' : '2010Nov24',
         },
         'jobs' : {
-            '7TeV' : {
+            'Run01' : {
                 'AHtoElecTau' : {
                     'analysisFilePath' : "/user/j/jkolb/elecTauAnalysis/fall10/HtoElecTau/",
-                    'harvestingFilePath' : "/user/j/jkolb/elecTauAnalysis/fall10/HtoElecTau/",
-                    'tmpFilePath' : "/tmp/jkolb/",
+                    'harvestingFilePath' : "/data/ndpc2/b/jkolb/ZtoElecTauAnalysis/fall10/analysis/harvested/stdCuts",
+                    'tmpFilePath' : "/data/ndpc2/b/jkolb/ZtoElecTauAnalysis/fall10/analysis/harvested/stdCuts",
                 },
+                'ZtoElecTau' : {
+                    'analysisFilePath' : "/user/j/jkolb/elecTauAnalysis/fall10/stdCuts/",
+                    'harvestingFilePath' : "/data/ndpc2/b/jkolb/ZtoElecTauAnalysis/fall10/analysis/harvested/stdCuts",
+                    'tmpFilePath' : "/data/ndpc2/b/jkolb/ZtoElecTauAnalysis/fall10/analysis/harvested/stdCuts",
+                }
             },
             '2010Nov13' : {
                 'ZtoElecTau' : {
                     'analysisFilePath' : "/user/j/jkolb/elecTauAnalysis/fall10/current/",
                     'harvestingFilePath' : "/user/j/jkolb/elecTauAnalysis/fall10/current/",
                     'tmpFilePath' : "/tmp/jkolb/",
-                },
+                }
             },
             '2010Nov24' : {
                 'ZtoElecTau_stdCuts' : {
                     'analysisFilePath' : "/user/j/jkolb/elecTauAnalysis/fall10/stdCuts/",
                     'harvestingFilePath' : "/user/j/jkolb/elecTauAnalysis/fall10/stdCuts/",
                     'tmpFilePath' : "/tmp/jkolb/",
-                },
-            },
+                }
+            }
         },
         'global' : {
             'drawOptions' : {
