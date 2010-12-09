@@ -196,6 +196,15 @@ def applyMuonTriggerEfficiencyCorrection_runZtoMuTau(process):
 
     _addEventWeightZtoMuTau(process, "muonTriggerEfficiencyCorrection", applyAfterFilterName = "evtSelTrigger")
 
+def applyMuonIsolationEfficiencyCorrection_runZtoMuTau(process):
+
+    process.load("TauAnalysis.RecoTools.muonIsolationEfficiencyCorrection_cfi")
+    if hasattr(process, "producePatTupleZtoMuTauSpecific"):
+        process.producePatTupleZtoMuTauSpecific._seq = process.producePatTupleZtoMuTauSpecific._seq \
+          * process.muonIsolationEfficiencyCorrection
+
+    _addEventWeightZtoMuTau(process, "muonIsolationEfficiencyCorrection", applyAfterFilterName = "evtSelMuonPFRelIso")
+
 def applyVertexMultiplicityReweighting_runZtoMuTau(process):
 
     process.load("TauAnalysis.RecoTools.vertexMultiplicityReweight_cfi")
@@ -268,6 +277,12 @@ def applyMuonTriggerEfficiencyCorrection_runAHtoMuTau(process):
     applyMuonTriggerEfficiencyCorrection_runZtoMuTau(process)
 
     _addEventWeighAHtoMuTau(process, "muonTriggerEfficiencyCorrection", applyAfterFilterName = "evtSelTrigger")
+
+def applyMuonIsolationEfficiencyCorrection_runAHtoMuTau(process):
+
+    applyMuonIsolationEfficiencyCorrection_runZtoMuTau(process)
+
+    _addEventWeighAHtoMuTau(process, "muonIsolationEfficiencyCorrection", applyAfterFilterName = "evtSelMuonPFRelIso")
 
 def applyVertexMultiplicityReweighting_runAHtoMuTau(process):
 
