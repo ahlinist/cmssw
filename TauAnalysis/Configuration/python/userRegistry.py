@@ -36,10 +36,18 @@ userSettings = {
         'current' : {
             'AHtoMuTau' : '2010Dec01',
             'ZtoMuTau' : '2010Nov26ii',
-            'ZtoMuTau_bgEstTemplate' : '2010Nov26ii',
+            'ZtoMuTau_bgEstTemplate' : '2010Dec08',
             'ZtoMuTau_tauIdEff' : '2010Dec01iii'
         },
         'jobs' : {
+            '2010Dec08' : {
+                'ZtoMuTau_bgEstTemplate' : {
+                    'analysisFilePath' : "/user/v/veelken/CMSSW_3_8_x/plots/ZtoMuTau_bgEstTemplate/",
+                    'harvestingFilePath' : "/data1/veelken/CMSSW_3_8_x/plots/ZtoMuTau_bgEstTemplate/",
+                    'tmpFilePath' : "/data1/veelken/tmp/ZtoMuTau_bgEstTemplate/",
+                    'jobId' : "2010Dec08"
+                }
+            },
             '2010Dec01' : {
                 'AHtoMuTau' : {
                     'analysisFilePath' : "/user/v/veelken/CMSSW_3_8_x/plots/AHtoMuTau/",
@@ -48,7 +56,7 @@ userSettings = {
                     'jobId' : "2010Dec01",
                     # Directory containing selected events
                     'pickevents' : '/data1/friis/Run26'
-                },
+                }
             },
             '2010Nov26ii' : {
                 'ZtoMuTau' : {
@@ -61,7 +69,7 @@ userSettings = {
                     'harvestingFilePath' : "/data1/veelken/CMSSW_3_8_x/plots/ZtoMuTau_bgEstTemplate/",
                     'tmpFilePath' : "/data1/veelken/tmp/ZtoMuTau_bgEstTemplate/",
                     'jobId' : "2010Nov26ii"
-                },
+                }
             },
             '2010Dec01iii': {
                 'ZtoMuTau_tauIdEff' : {
@@ -69,14 +77,14 @@ userSettings = {
                     'harvestingFilePath' : "/data1/veelken/CMSSW_3_8_x/plots/ZtoMuTau_tauIdEff/",
                     'tmpFilePath' : "/data1/veelken/tmp/ZtoMuTau_tauIdEff/",
                     'jobId' : "2010Dec01ii"
-                },
+                }
             },
             '2010Nov19' : {
                 'ZtoDiTau' : {
                     'analysisFilePath' : "/user/v/veelken/CMSSW_3_8_x/plots/ZtoDiTau/",
                     'harvestingFilePath' : "/data1/veelken/CMSSW_3_8_x/plots/ZtoDiTau/",
                     'tmpFilePath' : "/data1/veelken/tmp/",
-                },
+                }
             },
         },
         'global' : {
