@@ -14,9 +14,8 @@ process.MessageLogger.cerr.FwkReport.reportEvery = 100
 process.MessageLogger.suppressWarning = cms.untracked.vstring("PATTriggerProducer",)
 process.load('Configuration/StandardSequences/GeometryIdeal_cff')
 process.load('Configuration/StandardSequences/MagneticField_cff')
-process.load('Configuration/StandardSequences/Reconstruction_cff')
 process.load('Configuration/StandardSequences/FrontierConditions_GlobalTag_cff')
-process.GlobalTag.globaltag = cms.string('START38_V12::All')
+process.GlobalTag.globaltag = cms.string('START38_V14::All')
 
 #--------------------------------------------------------------------------------
 # import sequences for PAT-tuple production
@@ -127,31 +126,31 @@ process.load("TauAnalysis.Configuration.analyzeZtoMuTau_cff")
 from TauAnalysis.Configuration.tools.analysisSequenceTools import addAnalyzer, addSysAnalyzer, removeAnalyzer
 from TauAnalysis.CandidateTools.sysErrDefinitions_cfi import *
 
-process.analyzeZtoMuTauEvents.name = cms.string('BgEstTemplateAnalyzer_Ztautau')
-process.analyzeZtoMuTauEvents.eventDumps = cms.VPSet()
-removeAnalyzer(process.analyzeZtoMuTauEvents.analysisSequence, 'genPhaseSpaceEventInfoHistManager')
-removeAnalyzer(process.analyzeZtoMuTauEvents.analysisSequence, 'eventWeightHistManager')
-removeAnalyzer(process.analyzeZtoMuTauEvents.analysisSequence, 'muonHistManager')
-removeAnalyzer(process.analyzeZtoMuTauEvents.analysisSequence, 'tauHistManager')
-removeAnalyzer(process.analyzeZtoMuTauEvents.analysisSequence, 'diTauCandidateHistManagerForMuTau')
-removeAnalyzer(process.analyzeZtoMuTauEvents.analysisSequence, 'diTauCandidateCollinearApproxHistManagerForMuTau')
-removeAnalyzer(process.analyzeZtoMuTauEvents.analysisSequence, 'diTauCandidateCollinearApproxHistManagerBinnedForMuTau')
-removeAnalyzer(process.analyzeZtoMuTauEvents.analysisSequence, 'diTauCandidateCollinearApproxBinnerForMuTau')
-removeAnalyzer(process.analyzeZtoMuTauEvents.analysisSequence, 'diTauCandidateSVfitHistManagerForMuTau')
-removeAnalyzer(process.analyzeZtoMuTauEvents.analysisSequence, 'diTauCandidateEventActivityHistManagerForMuTau')
-removeAnalyzer(process.analyzeZtoMuTauEvents.analysisSequence, 'diTauCandidateZmumuHypothesisHistManagerForMuTau')
-removeAnalyzer(process.analyzeZtoMuTauEvents.analysisSequence, 'muPairHistManagerByMass')
-removeAnalyzer(process.analyzeZtoMuTauEvents.analysisSequence, 'muPairHistManagerByLooseIsolationAndCharge')
-removeAnalyzer(process.analyzeZtoMuTauEvents.analysisSequence, 'jetHistManager')
-removeAnalyzer(process.analyzeZtoMuTauEvents.analysisSequence, 'caloMEtHistManager')
-removeAnalyzer(process.analyzeZtoMuTauEvents.analysisSequence, 'pfMEtHistManager')
-removeAnalyzer(process.analyzeZtoMuTauEvents.analysisSequence, 'particleMultiplicityHistManager')
-removeAnalyzer(process.analyzeZtoMuTauEvents.analysisSequence, 'vertexHistManager')
-removeAnalyzer(process.analyzeZtoMuTauEvents.analysisSequence, 'triggerHistManagerForMuTau')
-removeAnalyzer(process.analyzeZtoMuTauEvents.analysisSequence, 'dataBinner')
+process.analyzeZtoMuTauEventsOS.name = cms.string('BgEstTemplateAnalyzer_Ztautau')
+process.analyzeZtoMuTauEventsOS.eventDumps = cms.VPSet()
+removeAnalyzer(process.analyzeZtoMuTauEventsOS.analysisSequence, 'genPhaseSpaceEventInfoHistManager')
+removeAnalyzer(process.analyzeZtoMuTauEventsOS.analysisSequence, 'eventWeightHistManager')
+removeAnalyzer(process.analyzeZtoMuTauEventsOS.analysisSequence, 'muonHistManager')
+removeAnalyzer(process.analyzeZtoMuTauEventsOS.analysisSequence, 'tauHistManager')
+removeAnalyzer(process.analyzeZtoMuTauEventsOS.analysisSequence, 'diTauCandidateHistManagerForMuTau')
+removeAnalyzer(process.analyzeZtoMuTauEventsOS.analysisSequence, 'diTauCandidateCollinearApproxHistManagerForMuTau')
+removeAnalyzer(process.analyzeZtoMuTauEventsOS.analysisSequence, 'diTauCandidateCollinearApproxHistManagerBinnedForMuTau')
+removeAnalyzer(process.analyzeZtoMuTauEventsOS.analysisSequence, 'diTauCandidateCollinearApproxBinnerForMuTau')
+removeAnalyzer(process.analyzeZtoMuTauEventsOS.analysisSequence, 'diTauCandidateSVfitHistManagerForMuTau')
+removeAnalyzer(process.analyzeZtoMuTauEventsOS.analysisSequence, 'diTauCandidateEventActivityHistManagerForMuTau')
+removeAnalyzer(process.analyzeZtoMuTauEventsOS.analysisSequence, 'diTauCandidateZmumuHypothesisHistManagerForMuTau')
+removeAnalyzer(process.analyzeZtoMuTauEventsOS.analysisSequence, 'muPairHistManagerByMass')
+removeAnalyzer(process.analyzeZtoMuTauEventsOS.analysisSequence, 'muPairHistManagerByLooseIsolationAndCharge')
+removeAnalyzer(process.analyzeZtoMuTauEventsOS.analysisSequence, 'jetHistManager')
+removeAnalyzer(process.analyzeZtoMuTauEventsOS.analysisSequence, 'caloMEtHistManager')
+removeAnalyzer(process.analyzeZtoMuTauEventsOS.analysisSequence, 'pfMEtHistManager')
+removeAnalyzer(process.analyzeZtoMuTauEventsOS.analysisSequence, 'particleMultiplicityHistManager')
+removeAnalyzer(process.analyzeZtoMuTauEventsOS.analysisSequence, 'vertexHistManager')
+removeAnalyzer(process.analyzeZtoMuTauEventsOS.analysisSequence, 'triggerHistManagerForMuTau')
+removeAnalyzer(process.analyzeZtoMuTauEventsOS.analysisSequence, 'dataBinner')
 process.diTauCandidateHistManagerForMuTau.diTauCandidateSource = cms.InputTag('selectedMuTauPairsPzetaDiffCumulative')
 process.diTauCandidateHistManagerForMuTau.visMassHypothesisSource = cms.InputTag('')
-addAnalyzer(process.analyzeZtoMuTauEvents, process.diTauCandidateHistManagerForMuTau, 'evtSelDiMuPairZmumuHypothesisVeto')
+addAnalyzer(process.analyzeZtoMuTauEventsOS, process.diTauCandidateHistManagerForMuTau, 'evtSelDiMuPairZmumuHypothesisVeto')
 process.diTauCandidateSVfitHistManager.diTauCandidateSource = cms.InputTag('selectedMuTauPairsPzetaDiffCumulative')
 process.diTauCandidateSVfitHistManager.SVfitAlgorithms = cms.VPSet(
     cms.PSet(
@@ -180,7 +179,7 @@ process.sysUncertaintyHistManager = cms.PSet(
     ),
     dqmDirectory_store = cms.string('sysUncertaintyHistManagerResults')
 )
-addSysAnalyzer(process.analyzeZtoMuTauEvents, process.sysUncertaintyHistManager, 'evtSelDiMuPairZmumuHypothesisVeto')
+addSysAnalyzer(process.analyzeZtoMuTauEventsOS, process.sysUncertaintyHistManager, 'evtSelDiMuPairZmumuHypothesisVeto')
     
 process.load('TauAnalysis.BgEstimationTools.bgEstZtoMuTauWplusJetsEnrichedSelection_cff')
 process.load('TauAnalysis.BgEstimationTools.bgEstZtoMuTauTTplusJetsEnrichedSelection_cff')
@@ -202,43 +201,8 @@ if hasattr(process, "patPFMETs"):
 # import utility function for changing cut values
 from TauAnalysis.Configuration.tools.changeCut import changeCut
 
-# change muon Pt threshold to 15 GeV
-changeCut(process, "selectedPatMuonsPt10", "pt > 15.")
-changeCut(process, "muonsBgEstWplusJetsEnrichedPt", "pt > 15.")
-
-# disable cut on muon calo. + segment compatibility
-# (check that muon calo. compatibility is not affected by pile-up before re-enabling this cut)
-changeCut(process, "selectedPatMuonsPionVeto", -1000., attribute = "AntiPionCut")
-changeCut(process, "selectedPatMuonsPionVetoLooseIsolation", -1000., attribute = "AntiPionCut")
-
 # change upper limit on tranverse impact parameter of muon track to 2mm
 changeCut(process, "selectedPatMuonsTrkIP", 0.2, attribute = "IpMax")
-
-# change eta acceptance for tau-jets to |eta| < 2.3
-changeCut(process, "selectedPatTausForMuTauEta21", "abs(eta) < 2.3")
-
-# disable cuts on tau id. discriminators for Track && ECAL isolation
-changeCut(process, "selectedPatTausTrkIso", "tauID('trackIsolation') > -1.")
-changeCut(process, "selectedPatTausEcalIso", "tauID('ecalIsolation') > -1.")
-
-# change cut on TaNC output in case using new HPS + TaNC combined tau id. algorithm
-# CV: discriminators by Track/ECAL isolation do not exist for the combined tau id. algorithm
-#     and need to be replaced by dummy cuts, in order to avoid run-time exceptions
-changeCut(process, "selectedPatTausTrkIso", "tauID('byTaNCloose') > -1.")
-changeCut(process, "selectedPatTausForMuTauTrkIso", "tauID('byTaNCloose') > -1.")
-changeCut(process, "selectedPatTausEcalIso", "tauID('byTaNCloose') > -1.")
-changeCut(process, "selectedPatTausForMuTauEcalIso", "tauID('byTaNCloose') > -1.")
-changeCut(process, "selectedPatTausTaNCdiscr", "tauID('byTaNCmedium') > 0.5")
-changeCut(process, "selectedPatTausForMuTauTaNCdiscr", "tauID('byTaNCmedium') > 0.5")
-changeCut(process, "tausBgEstQCDenrichedTaNCdiscr", "tauID('byTaNCloose') > 0.5 & tauID('byTaNCmedium') < 0.5")
-changeCut(process, "tausBgEstQCDenrichedTrkIso", "tauID('byTaNCloose') > -1.")
-changeCut(process, "tausBgEstQCDenrichedEcalIso", "tauID('byTaNCloose') > -1.")
-changeCut(process, "tausBgEstWplusJetsEnrichedTaNCdiscr", "tauID('byTaNCloose') > 0.5 & tauID('byTaNCmedium') < 0.5")
-changeCut(process, "tausBgEstWplusJetsEnrichedTrkIso", "tauID('byTaNCloose') > -1.")
-changeCut(process, "tausBgEstWplusJetsEnrichedEcalIso", "tauID('byTaNCloose') > -1.")
-changeCut(process, "tausBgEstZmumuJetMisIdEnrichedTaNCdiscr", "tauID('byTaNCloose') > 0.5 & tauID('byTaNCmedium') < 0.5")
-changeCut(process, "tausBgEstZmumuJetMisIdEnrichedTrkIso", "tauID('byTaNCloose') > -1.")
-changeCut(process, "tausBgEstZmumuJetMisIdEnrichedEcalIso", "tauID('byTaNCloose') > -1.")
 
 # change lower limit on separation required between muon and tau-jet to dR > 0.5
 changeCut(process, "selectedMuTauPairsAntiOverlapVeto", "dR12 > 0.5")
@@ -268,7 +232,7 @@ changeCut(process, "muTauPairsBgEstZmumuJetMisIdEnrichedPzetaDiff", "(pZeta - 1.
 process.p = cms.Path(
    process.producePatTupleZtoMuTauSpecific
   + process.selectZtoMuTauEvents
-  + process.analyzeZtoMuTauEvents
+  + process.analyzeZtoMuTauEventsOS
   + process.bgEstWplusJetsEnrichedAnalysisSequence
   + process.bgEstTTplusJetsEnrichedAnalysisSequence
   + process.bgEstZmumuEnrichedAnalysisSequence
