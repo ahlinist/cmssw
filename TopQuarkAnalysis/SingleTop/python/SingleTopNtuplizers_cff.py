@@ -1,5 +1,6 @@
 import FWCore.ParameterSet.Config as cms
 
+
 nTupleEventsPF = cms.EDProducer(
     "CandViewNtpProducer",
     src = cms.InputTag("recoTChanEventsPF"),
@@ -35,7 +36,6 @@ nTupleEventsPF = cms.EDProducer(
     tag = cms.untracked.string("forwardJetPt"),
     quantity = cms.untracked.string("daughter('LightJet').pt()")
     ),
-    
 
     )
     )
@@ -66,10 +66,27 @@ nTupleTopJetsPF = cms.EDProducer(
     quantity = cms.untracked.string("pt")
     ),
     cms.PSet(
+    tag = cms.untracked.string("Px"),
+    quantity = cms.untracked.string("px")
+    ),
+    cms.PSet(
+    tag = cms.untracked.string("Py"),
+    quantity = cms.untracked.string("py")
+    ),
+    cms.PSet(
+    tag = cms.untracked.string("Pz"),
+    quantity = cms.untracked.string("pz")
+    ),
+    cms.PSet(
     tag = cms.untracked.string("Eta"),
     quantity = cms.untracked.string("eta")
     ),
+    cms.PSet(
+    tag = cms.untracked.string("Flavour"),
+    quantity = cms.untracked.string("partonFlavour")
+    ),
     )
+   
 )
 
 nTupleTopJetsAntiIsoPF = nTupleTopJetsPF.clone(
@@ -127,6 +144,16 @@ nTupleElectrons = cms.EDProducer(
     cms.PSet(
     tag = cms.untracked.string("Phi"),
     quantity = cms.untracked.string("phi")
+    ),
+
+    cms.PSet(
+    tag = cms.untracked.string("Charge"),
+    quantity = cms.untracked.string("charge")
+    ),
+
+    cms.PSet(
+    tag = cms.untracked.string("Pz"),
+    quantity = cms.untracked.string("pz")
     ),
 
     )
@@ -495,7 +522,8 @@ nTuplesAntiIso = cms.Sequence(
 
 saveNTuples = cms.untracked.vstring(
     'drop *',
-
+#    'keep *_nTupleGenerator_*_*',
+    
     'keep *_cFlavorHistoryProducer_*_*',
     'keep *_bFlavorHistoryProducer_*_*',
 
@@ -510,6 +538,8 @@ saveNTuples = cms.untracked.vstring(
 
 saveNTuplesAntiIso = cms.untracked.vstring(
     'drop *',
+
+    'keep *_nTupleGenerator_*_*',
     
     'keep *_cFlavorHistoryProducer_*_*',
     'keep *_bFlavorHistoryProducer_*_*',
@@ -524,14 +554,14 @@ saveNTuplesAntiIso = cms.untracked.vstring(
     )
 
 
-saveNTuplesMu = saveNTuples
-saveNTuplesEle = saveNTuples
+saveNTuplesMu = cms.untracked.vstring(saveNTuples)
+saveNTuplesEle = cms.untracked.vstring(saveNTuples)
 
-saveNTuplesMuAntiIso = saveNTuplesAntiIso
-saveNTuplesEleAntiIso = saveNTuples
+saveNTuplesMuAntiIso = cms.untracked.vstring(saveNTuplesAntiIso)
+saveNTuplesEleAntiIso = cms.untracked.vstring(saveNTuplesAntiIso)
 
-saveNTuplesMu.extend(['keep floats_nTupleMuons_*_*'])
-saveNTuplesEle.extend(['keep floats_nTupleElectrons_*_*'])
+saveNTuplesMu.append('keep floats_nTupleMuons_*_*')
+saveNTuplesEle.append('keep floats_nTupleElectrons_*_*')
 
-saveNTuplesMuAntiIso.extend(['keep floats_nTupleMuonsAntiIso_*_*'])
-saveNTuplesEleAntiIso.extend(['keep floats_nTupleElectronsAntiIso_*_*'])
+saveNTuplesMuAntiIso.append('keep floats_nTupleMuonsAntiIso_*_*')
+saveNTuplesEleAntiIso.append('keep floats_nTupleElectronsAntiIso_*_*')

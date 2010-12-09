@@ -2,7 +2,7 @@
  *\Author: A. Orso M. Iorio 
  *
  *
- *\version  $Id: SingleTopElectronProducer.cc,v 1.4 2010/09/15 14:59:25 oiorio Exp $ 
+ *\version  $Id: SingleTopElectronProducer.cc,v 1.5 2010/11/08 08:26:42 oiorio Exp $ 
  */
 
 // Single Top producer: produces a top candidate made out of a Lepton, a B jet and a MET
@@ -65,6 +65,7 @@ SingleTopElectronProducer::SingleTopElectronProducer(const edm::ParameterSet& iC
   isData_ = iConfig.getUntrackedParameter<bool>("isData",false); 
   id_ = iConfig.getParameter<std::string> ("id"); 
   useConversionVeto_ = iConfig.getUntrackedParameter<bool>("useConversionVeto",true);
+  useVertexVeto_ = iConfig.getUntrackedParameter<bool>("useVertexVeto",true);
   
   produces<std::vector<pat::Electron> >();
 }
@@ -85,6 +86,10 @@ void SingleTopElectronProducer::produce(edm::Event & iEvent, const edm::EventSet
 
   edm::Handle<reco::TrackCollection> ctfTracks;
   iEvent.getByLabel("generalTracks",ctfTracks);  
+
+  edm::Handle<edm::View<reco::Vertex> > vertices;
+  iEvent.getByLabel("offlinePrimaryVertices",vertices);
+  //iEvent.getByLabel("PVFilterProducer",vertices);
 
   ////std::cout << " mark 3 " << std::endl;
   double bfield = 3.8;
@@ -109,17 +114,32 @@ void SingleTopElectronProducer::produce(edm::Event & iEvent, const edm::EventSet
   for(size_t i = 0; i < electrons->size(); ++i){
     
     if(id_==std::string("cIso70")){
-      SimpleCutBasedElectronIDSelectionFunctor patSele(SimpleCutBasedElectronIDSelectionFunctor::cIso70,bfield,ctfTracks);
-    bit0 = bool(patSele(electrons->at(i)));
+      //      SimpleCutBasedElectronIDSelectionFunctor patSele(SimpleCutBasedElectronIDSelectionFunctor::cIso70,bfield,ctfTracks);
+      //      patSele.set("cIso_EB",100000.);
+      // patSele.set("cIso_EE",100000.);
+      // patSele.set("conversionRejection",0);
+      // patSele.set("maxNumberOfExpectedMissingHits",11);
+      //bit0 = bool(patSele(electrons->at(i)));
+      int eid = (int) electrons->at(i).electronID("simpleEleId70cIso");
+      bool hadId(eid & 0x1) ;
+      bit0 = hadId;
     }
     else if(id_ == std::string("cIso95")){
-    SimpleCutBasedElectronIDSelectionFunctor patSele(SimpleCutBasedElectronIDSelectionFunctor::cIso95,bfield,ctfTracks);
-    bit0 = bool(patSele(electrons->at(i)));
-  }else if(id_ == std::string("antiIso")){
+      //SimpleCutBasedElectronIDSelectionFunctor patSele(SimpleCutBasedElectronIDSelectionFunctor::cIso95,bfield,ctfTracks);
+      //patSele.set("cIso_EB",100000.);
+      //patSele.set("cIso_EE",100000.);
+      //patSele.set("conversionRejection",0);
+      //patSele.set("maxNumberOfExpectedMissingHits",11);
+      //bit0 = bool(patSele(electrons->at(i)));
+      int eid = (int) electrons->at(i).electronID("simpleEleId95cIso");
+      bool hadId(eid & 0x1) ;
+      bit0 = hadId;
+    }else if(id_ == std::string("antiIso")){
     SimpleCutBasedElectronIDSelectionFunctor patSele(SimpleCutBasedElectronIDSelectionFunctor::cIso95,bfield,ctfTracks);
     //    std::cout << "is anti iso"  <<std::endl;
     patSele.set("cIso_EB",100000.);
     patSele.set("cIso_EE",100000.);
+    patSele.set("conversionRejection",0);
     bit0 = bool(patSele(electrons->at(i)));
 
   }
@@ -137,9 +157,12 @@ void SingleTopElectronProducer::produce(edm::Event & iEvent, const edm::EventSet
     if(!bit0) continue;
     if(useConversionVeto_ && (fabs(dist) < 0.02 && fabs(dcot) < 0.02))continue;
 
-        
+    bool goodVertexDist = true;
+    for(size_t v = 0; v < vertices->size(); ++v){
+      if(electrons->at(i).vertex().z()-vertices->at(0).z()>=1){goodVertexDist = false;break;}
+    }
+    if (useVertexVeto_ && !goodVertexDist)continue;
     //std::cout << " pass all "<< std::endl;
-
     finalElectrons->push_back(electrons->at(i));
    
     

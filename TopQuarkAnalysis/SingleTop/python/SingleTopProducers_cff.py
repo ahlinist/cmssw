@@ -16,6 +16,7 @@ preselectedElectrons = cms.EDProducer("SingleTopElectronProducer",
   isData = cms.untracked.bool(False),                                   
   id = cms.string("none"), 
   useConversionVeto = cms.untracked.bool(False),
+  useVertexVeto = cms.untracked.bool(False),
 )
 
 #loose second electron skim part
@@ -24,6 +25,7 @@ looseElectrons = cms.EDProducer("SingleTopElectronProducer",
   cut = cms.string('pt >  20 & abs(eta) < 2.4'),
   id = cms.string("cIso95"), 
   useConversionVeto = cms.untracked.bool(False),
+  useVertexVeto = cms.untracked.bool(False),
 )
 
 ###Cleaning options for jets:
@@ -83,6 +85,7 @@ topElectrons = cms.EDProducer("SingleTopElectronProducer",
                             id = cms.string("cIso70"), 
                             cut = cms.string("pt > 0"),
                             useConversionVeto = cms.untracked.bool(True),
+                            useVertexVeto = cms.untracked.bool(True),
                             )
 
 topElectronsForJets = cms.EDProducer("SingleTopElectronProducer",
@@ -91,6 +94,7 @@ topElectronsForJets = cms.EDProducer("SingleTopElectronProducer",
                             id = cms.string("cIso70"), 
                             cut = cms.string("et>0"),
                             useConversionVeto = cms.untracked.bool(False),
+                            useVertexVeto = cms.untracked.bool(True),
                             )
 
 

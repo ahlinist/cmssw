@@ -6,14 +6,21 @@ from PhysicsTools.HepMCCandAlgos.flavorHistoryPaths_cfi import *
 
 from PhysicsTools.PatAlgos.patSequences_cff import *
 
+from ElectroWeakAnalysis.WENu.simpleEleIdSequence_cff import *
+
+patElectronIDs = cms.Sequence(simpleEleIdSequence)
+electronIDSources = cms.PSet(
+    simpleEleId70cIso = cms.InputTag("simpleEleId70cIso"),
+    simpleEleId95cIso = cms.InputTag("simpleEleId95cIso"),
+    ) 
 
 #cFlavorHistoryProducer.matchedSrc = cms.InputTag("antikt5GenJets")
 #bFlavorHistoryProducer.matchedSrc = cms.InputTag("antikt5GenJets")
 
-#patElectrons.addElectronID = cms.bool(True)
-#patElectrons.electronIDSources = electronIDSources
+patElectrons.addElectronID = cms.bool(True)
+patElectrons.electronIDSources = electronIDSources
 
-#patElectronIDs = cms.Sequence(simpleEleIdSequence)
+patElectronIDs = cms.Sequence(simpleEleIdSequence)
 
 #makeNewPatElectrons = cms.Sequence(patElectronIDs * patElectronIsolation * patElectrons)
 
@@ -21,10 +28,11 @@ patElectrons.usePV = cms.bool(False)
 patMuons.usePV = cms.bool(False)
 
 basePath = cms.Sequence(
-   preselectedMETs *
-   preselectedMuons *
-   preselectedElectrons *
-   looseElectrons
+   preselectedMETs +
+   preselectedMuons +
+   PVFilterProducer +
+   preselectedElectrons +
+   looseElectrons 
    )
 
 flavorHistorySequence = cms.Sequence(
@@ -84,7 +92,8 @@ hltFilterEleSequence = cms.Sequence( hltFilterEle )
 baseElectronSequence = cms.Sequence(
     PVFilter *
     HBHENoiseFilter *
-    vetoLooseMuons *
+    countLeptons *
+#    vetoLooseMuons *
     topElectrons *
     diElectrons *
     vetoDiElectrons *
@@ -100,7 +109,8 @@ baseElectronSequencePF = cms.Sequence(
     PVFilter *
     HBHENoiseFilter *
     #    countLeptons *
-    vetoLooseMuons *
+#    vetoLooseMuons *
+    countLeptons *
     topElectrons *
     diElectrons *
     vetoDiElectrons *
@@ -200,7 +210,7 @@ IsoMuons = cms.Sequence(
     )
 
 IsoMuonsPF = cms.Sequence(
-    baseMuonSequencePF +
+    baseMuonSequencePF *
     baseJetMETSequencePF
     )
 
@@ -302,7 +312,7 @@ allPseudoBJetsAntiIsoTops= cms.Sequence(
 TSampleMuonPF = cms.Sequence(
     IsoMuonsPF *
     countJetsPF *
-    #MTWFilterMuonsPF * 
+#    MTWFilterMuonsPF * 
     countBTagsPF * 
     countForwardJetsPF *
     allTopsPF * 
@@ -408,7 +418,7 @@ TSampleElectron = cms.Sequence(
 TSampleElectronPF = cms.Sequence(
     IsoElectronsPF *
     countJetsPF *
-    #MTWFilterElectronsPF * 
+#    MTWFilterElectronsPF * 
     countBTagsPF * 
     countForwardJetsPF * 
     allTopsPF *

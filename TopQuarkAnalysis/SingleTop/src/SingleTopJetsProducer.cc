@@ -2,7 +2,7 @@
  *\Author: A. Orso M. Iorio 
  *
  *
- *\version  $Id: SingleTopJetsProducer.cc,v 1.3 2010/09/09 13:57:36 oiorio Exp $ 
+ *\version  $Id: SingleTopJetsProducer.cc,v 1.4 2010/11/17 09:24:42 oiorio Exp $ 
  */
 
 // Single Top producer: produces a top candidate made out of a Lepton, a B jet and a MET
@@ -128,8 +128,10 @@ for(size_t i = 0; i < jets->size(); ++i){
        //std::cout <<"size"<<jets->size()<<" emenfrac " <<myCalo->emEnergyFraction()<<std::endl;
     }
     else if(isPF){
-      
-      condition = (jets->at(i).numberOfDaughters()>1 && jets->at(i).neutralHadronEnergyFraction() < 1 && jets->at(i).neutralEmEnergyFraction() < 1 && ((fabs(jets->at(i).eta())>2.4) || ( jets->at(i).chargedHadronEnergyFraction() > 0 && jets->at(i).chargedMultiplicity()>0)) && jets->at(i).pt()> ptCut_ && fabs(jets->at(i).eta())<5)  ;
+      condition = (jets->at(i).numberOfDaughters()>1 &&
+		   ((fabs(jets->at(i).eta())>2.4) || 
+		    ( jets->at(i).chargedHadronEnergyFraction() > 0 && jets->at(i).chargedMultiplicity()>0 && jets->at(i).neutralEmEnergyFraction() < 0.99 && jets->at(i).neutralHadronEnergyFraction() < 0.99 && jets->at(i).chargedEmEnergyFraction()<0.99)) &&
+		   jets->at(i).pt()> ptCut_ && fabs(jets->at(i).eta())<5)  ;
       //      std::cout << " ndau " << jets->at(i).numberOfDaughters() << " neuHadEn "<< jets->at(i).neutralHadronEnergyFraction() << " EmFrac " <<jets->at(i).neutralEmEnergyFraction() << " eta " << fabs(jets->at(i).eta())<< " HadEnFrac " << jets->at(i).chargedHadronEnergyFraction() << " CharMul "<< jets->at(i).chargedMultiplicity() << " pt "<<jets->at(i).pt()<<" passes ? " << condition<<std::endl; 
     }
     if(!(condition) )continue; 
