@@ -27,9 +27,9 @@ plots_AHtoMuTau = cms.PSet(
     labels = cms.vstring('mcNormScale'),
     drawOptionSet = cms.string('default'),
     stack = cms.vstring(
+        'TTplusJets',
         'Zmumu',
         'WplusJets',
-        'TTplusJets',
         'qcdSum',
         #'ZplusJets',
         'Vqq',
