@@ -13,7 +13,7 @@
 //
 // Original Author:  Sudhir_Malik
 //         Created:  Fri Mar 13 09:52:17 CDT 2009
-// $Id: PATValidation_Jet.cc,v 1.10 2010/03/25 16:30:23 kfjack Exp $
+// $Id: PATValidation_Jet.cc,v 1.11 2010/08/09 09:32:26 kfjack Exp $
 //
 //
 
@@ -485,13 +485,20 @@ PATValidation_Jet::analyze(const edm::Event& iEvent, const edm::EventSetup& iSet
       p4tmp[1] = jet->p4();
     }
 
-    if (mPtRaw) mPtRaw->Fill (jet->correctedJet(pat::JetCorrFactors::Raw).pt());
-    if (mPtRaw_80) mPtRaw_80->Fill (jet->correctedJet(pat::JetCorrFactors::Raw).pt());
-    if (mPtRaw_3000) mPtRaw_3000->Fill(jet->correctedJet(pat::JetCorrFactors::Raw).pt());
+    //if (mPtRaw) mPtRaw->Fill (jet->correctedJet(pat::JetCorrFactors::Raw).pt());
+    //if (mPtRaw_80) mPtRaw_80->Fill (jet->correctedJet(pat::JetCorrFactors::Raw).pt());
+    //if (mPtRaw_3000) mPtRaw_3000->Fill(jet->correctedJet(pat::JetCorrFactors::Raw).pt());
+    if (mPtRaw) mPtRaw->Fill (jet->correctedJet("Uncorrected").pt());
+    if (mPtRaw_80) mPtRaw_80->Fill (jet->correctedJet("Uncorrected").pt());
+    if (mPtRaw_3000) mPtRaw_3000->Fill(jet->correctedJet("Uncorrected").pt());
 
-    if (mPtL2) mPtL2->Fill (jet->correctedJet(pat::JetCorrFactors::L2).pt());
-    if (mPtL2_80) mPtL2_80->Fill (jet->correctedJet(pat::JetCorrFactors::L2).pt());
-    if (mPtL2_3000) mPtL2_3000->Fill(jet->correctedJet(pat::JetCorrFactors::L2).pt());
+
+    //if (mPtL2) mPtL2->Fill (jet->correctedJet(pat::JetCorrFactors::L2).pt());
+    //if (mPtL2_80) mPtL2_80->Fill (jet->correctedJet(pat::JetCorrFactors::L2).pt());
+    //if (mPtL2_3000) mPtL2_3000->Fill(jet->correctedJet(pat::JetCorrFactors::L2).pt());
+    if (mPtL2) mPtL2->Fill (jet->correctedJet("L2Relative").pt());
+    if (mPtL2_80) mPtL2_80->Fill (jet->correctedJet("L2Relative").pt());
+    if (mPtL2_3000) mPtL2_3000->Fill(jet->correctedJet("L2Relative").pt());
 
     if (mMaxEInEmTowers) mMaxEInEmTowers->Fill(jet->maxEInEmTowers());
     if (mMaxEInHadTowers) mMaxEInHadTowers->Fill(jet->maxEInHadTowers());
