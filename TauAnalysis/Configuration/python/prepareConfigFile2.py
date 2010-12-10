@@ -9,7 +9,8 @@ from TauAnalysis.Configuration.cfgOptionMethods import copyCfgFileAndApplyOption
 
 PLOT_FILES_PREFIX = 'plots'
 
-def getNewConfigFileName(configFile = None, cfgdir = None, sample = None, jobId = None, label = ""):
+def getNewConfigFileName(configFile = None, cfgdir = None, sample = None,
+                         jobId = None, index=None, label = ""):
     # check that configFile, cfgdir, sample and jobId
     # parameters are defined and non-empty
     if configFile is None:
@@ -24,8 +25,12 @@ def getNewConfigFileName(configFile = None, cfgdir = None, sample = None, jobId 
     workingDirectory = os.getcwd()
     submissionDirectory = os.path.join(workingDirectory, cfgdir)
 
+    # Add an index if desired
+    if index is not None:
+        jobId = "_".join([jobId, str(index)])
     # Strip off _cfg.py and add sample info
-    newConfigFile = configFile.replace('_cfg.py', '_%s_%s%s_cfg.py' % (sample, jobId, label))
+    newConfigFile = configFile.replace(
+        '_cfg.py', '_%s_%s%s_cfg.py' % (sample, jobId, label))
 
     newConfigFilePath = os.path.join(submissionDirectory, newConfigFile)
 
@@ -90,17 +95,17 @@ def prepareConfigFile(configFile = None, jobInfo = None, newConfigFile = None,
     # or let crab decide which samples to run on, based on the DBS names defined
     # in the recoSampleDefinitions file
     if input_files is not None:
-        jobOptions.append(('files', input_files))            
+        jobOptions.append(('files', input_files))
     if output_file is not None:
         jobOptions.append(('outputFile', output_file))
 
     # Set maxEvents and skipEvents parameters
     if 'maxEvents' in sample_info:
         print("--> setting 'maxEvents' to %i" % sample_info['maxEvents'])
-	jobOptions.append(('maxEvents', sample_info['maxEvents']))	
+	jobOptions.append(('maxEvents', sample_info['maxEvents']))
     if 'skipEvents' in sample_info:
         print("--> setting 'skipEvents' to %i" % sample_info['skipEvents'])
-	jobOptions.append(('skipEvents', sample_info['skipEvents']))	
+	jobOptions.append(('skipEvents', sample_info['skipEvents']))
 
     # Get the type and genPhaseSpace cut
     jobOptions.append(('type', sample_info['type']))
@@ -160,4 +165,4 @@ def prepareConfigFile(configFile = None, jobInfo = None, newConfigFile = None,
     if not os.path.exists(configFilePath):
         raise ValueError("Failed to find config file %s in current directory !!" % configFile)
     copyCfgFileAndApplyOptions(configFilePath, newConfigFile, jobInfo, jobOptions, customizations)
-        
+
