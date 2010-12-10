@@ -244,12 +244,12 @@ def make_harvest_scripts(plot_regex, skim_regex, castor_directory,
 
 if __name__ == "__main__":
     #regex = r"plots_AHtoMuTau_(?P<sample>\w+?)_Run32_(?P<gridJob>\d*)_(?P<gridTry>\d*)_(?P<gridId>[a-zA-Z0-9]*).root"
-    #plot_regex = r"plots_AHtoMuTau_(?P<sample>\w+?)_Run32_(?P<gridJob>\d*)_(?P<gridTry>\d*)_(?P<gridId>[a-zA-Z0-9]*).root"
-    #skim_regex = r"final_events_AHtoMuTau_(?P<sample>\w+?)_Run32_(?P<gridJob>\d*)_(?P<gridTry>\d*)_(?P<gridId>[a-zA-Z0-9]*).root"
-    plot_regex = r"plots_AHtoMuTau_(?P<sample>\w+?)_Run31_(?P<gridJob>\d*)_(?P<gridTry>\d*)_(?P<gridId>[a-zA-Z0-9]*).root"
-    skim_regex = r"final_events_AHtoMuTau_(?P<sample>\w+?)_Run31_(?P<gridJob>\d*)_(?P<gridTry>\d*)_(?P<gridId>[a-zA-Z0-9]*).root"
+    plot_regex = r"plots_AHtoMuTau_(?P<sample>\w+?)_Run32_(?P<gridJob>\d*)_(?P<gridTry>\d*)_(?P<gridId>[a-zA-Z0-9]*).root"
+    skim_regex = r"final_events_AHtoMuTau_(?P<sample>\w+?)_Run32_(?P<gridJob>\d*)_(?P<gridTry>\d*)_(?P<gridId>[a-zA-Z0-9]*).root"
+    #plot_regex = r"plots_AHtoMuTau_(?P<sample>\w+?)_Run31_(?P<gridJob>\d*)_(?P<gridTry>\d*)_(?P<gridId>[a-zA-Z0-9]*).root"
+    #skim_regex = r"final_events_AHtoMuTau_(?P<sample>\w+?)_Run31_(?P<gridJob>\d*)_(?P<gridTry>\d*)_(?P<gridId>[a-zA-Z0-9]*).root"
     make_harvest_scripts(
-        plot_regex, skim_regex, os.path.join(os.environ['CASTOR_HOME'], 'Run31'),
-        os.path.join(os.environ['CASTOR_HOME'], 'Run31harvest',),
-        local_copy_mapper = lambda s: '/data1/friis/Run31/harvested_AHtoMuTau_%s_Run31.root' % s,
+        plot_regex, skim_regex, os.path.join(os.environ['CASTOR_HOME'], 'Run32'),
+        os.path.join(os.environ['CASTOR_HOME'], 'Run32harvest',),
+        local_copy_mapper = lambda s: '/data1/friis/Run32/harvested_AHtoMuTau_%s_Run32.root' % s,
     )
