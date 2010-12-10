@@ -192,16 +192,40 @@ elif options.skimType == "ElectronPhoton":
 
 elif options.skimType == "Dimuon":
     removeTriggerPathsForAllBut(matchHltPaths, ["cleanPatMuons"])
-    process.hltFilter.HLTPaths = matchHltPaths["cleanPatMuons"]
+    ## Don't require any triggers.
+    process.skimFilterSequence.remove(process.hltFilter)
     process.load(basePath + "dimuonSkimFilterSequence_cff")
     process.skimFilterSequence += process.dimuonSkimFilterSequence
+    ## Add the photon re-reco.
     addPhotonReReco(process)
-    # now change the photon reco to much looser settings
+    ## Now change the photon reco to much looser settings.
     process.photonCore.minSCEt = 1.0
     process.photons.minSCEtBarrel = 1.0
     process.photons.minSCEtEndcap = 1.0
     process.photons.maxHoverEBarrel = 10.0
     process.photons.maxHoverEEndcap = 10.0
+    ## Remove the pi0 discriminator
+    ## (currently doesn't work with extremely loos photons)
+    ## FIXME: make the pi0Discriminator work for these weird photons too
+    for module in [process.preshowerClusterShape,
+                   process.piZeroDiscriminators,
+                   process.pi0Discriminator]:
+        process.patDefaultSequence.remove( module )
+    while cms.InputTag("pi0Discriminator") in process.patPhotons.userData.userFloats.src:
+        process.patPhotons.userData.userFloats.src.remove(
+            cms.InputTag("pi0Discriminator")
+            )
+
+    ## Add more photon-related event content (super clusters, clusters)
+    vgEventContent.extraSkimEventContent += \
+        vgEventContent.vgExtraPhotonEventContent
+    ## Add island basic clusters to the sequence and event content
+    process.load("RecoEcal.EgammaClusterProducers.islandBasicClusters_cfi")
+    process.patDefaultSequence = cms.Sequence(
+       process.islandBasicClusters *
+       process.patDefaultSequence
+    )
+    vgEventContent.extraSkimEventContent.append("keep *_islandBasicClusters_*_*")
 
 elif options.skimType == "Jet":
     removeTriggerPathsForAllBut(matchHltPaths, ["cleanPatJets"])
