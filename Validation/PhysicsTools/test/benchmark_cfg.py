@@ -12,10 +12,10 @@ process.options   = cms.untracked.PSet( wantSummary = cms.untracked.bool(True) )
 ## Source
 process.source = cms.Source("PoolSource",
     fileNames = cms.untracked.vstring(
-	'rfio:/castor/cern.ch/cms/store/relval/CMSSW_3_8_0/RelValTTbar/GEN-SIM-RECO/START38_V7-v1/0004/2CEECFE9-1995-DF11-A731-001A92811714.root',
-	'rfio:/castor/cern.ch/cms/store/relval/CMSSW_3_8_0/RelValTTbar/GEN-SIM-RECO/START38_V7-v1/0004/38D102EC-1895-DF11-8C87-0018F3D096DA.root',
-	'rfio:/castor/cern.ch/cms/store/relval/CMSSW_3_8_0/RelValTTbar/GEN-SIM-RECO/START38_V7-v1/0004/50410AEC-1A95-DF11-B786-0018F3D0960A.root',
-	'rfio:/castor/cern.ch/cms/store/relval/CMSSW_3_8_0/RelValTTbar/GEN-SIM-RECO/START38_V7-v1/0004/5AE276E9-1495-DF11-86F1-0018F3D096C2.root'
+'rfio:/castor/cern.ch/cms/store/relval/CMSSW_3_8_5/RelValTTbar/GEN-SIM-RECO/START38_V12-v1/0040/0840E1E4-B5D2-DF11-8F73-002618943870.root',
+'rfio:/castor/cern.ch/cms/store/relval/CMSSW_3_8_5/RelValTTbar/GEN-SIM-RECO/START38_V12-v1/0040/16B7DF72-22D2-DF11-9901-002618943943.root',
+'rfio:/castor/cern.ch/cms/store/relval/CMSSW_3_8_5/RelValTTbar/GEN-SIM-RECO/START38_V12-v1/0040/1A487D44-23D2-DF11-9DB4-003048678B0C.root',
+'rfio:/castor/cern.ch/cms/store/relval/CMSSW_3_8_5/RelValTTbar/GEN-SIM-RECO/START38_V12-v1/0040/3667674E-EAD1-DF11-8507-002618943933.root'
     )
 )
 ## Maximal Number of Events
@@ -24,9 +24,8 @@ process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(-1) )
 ## Geometry and Detector Conditions (needed for a few patTuple production steps)
 process.load("Configuration.StandardSequences.Geometry_cff")
 process.load("Configuration.StandardSequences.FrontierConditions_GlobalTag_cff")
-#process.GlobalTag.globaltag = cms.string('MC_3XY_V12::All')
-process.GlobalTag.globaltag = cms.string('START38_V7::All')
-#process.GlobalTag.globaltag = cms.string('STARTUP3XY_V9::All')
+#process.GlobalTag.globaltag = cms.string('MC_38Y_V13::All')
+process.GlobalTag.globaltag = cms.string('START38_V14::All')
 process.load("Configuration.StandardSequences.MagneticField_cff")
 
 ## Standard PAT Configuration File
@@ -57,6 +56,8 @@ process.L2L3CorJetAK5Calo = cms.EDProducer("CaloJetCorrectionProducer",
     src = cms.InputTag("ak5CaloJets"),
     correctors = cms.vstring('ak5CaloL2L3')
 )
+
+process.patJetCorrFactors.levels = ['L2Relative', 'L3Absolute']
 
 process.p =cms.Path(
     process.patDefaultSequence*
