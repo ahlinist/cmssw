@@ -3,24 +3,21 @@ import copy
 
 process = cms.Process('runAHtoMuTau')
 
-import FWCore.ParameterSet.VarParsing as VarParsing
-options = VarParsing.VarParsing ('analysis')
-
-# Default options
-options.inputFiles = [ 'file:/data1/veelken/CMSSW_3_6_x/skims/Ztautau_1_1_sXK.root']
-#options.inputFiles = [ 'file:/data1/friis/Run17/get_events/data_Mu_Run2010A_Sep17ReReco_pickevents/final_events.root' ]
-options.outputFile = "plotsAHtoMuTau.root"
-
-# Get command line arguments
-options.parseArguments()
-
 process.load('Configuration/StandardSequences/Services_cff')
 process.load('FWCore/MessageService/MessageLogger_cfi')
 process.MessageLogger.cerr.FwkReport.reportEvery = 100
 #process.MessageLogger.cerr.FwkReport.reportEvery = 1
 #process.MessageLogger.cerr.threshold = cms.untracked.string('INFO')
 #process.MessageLogger.suppressInfo = cms.untracked.vstring()
-process.MessageLogger.suppressWarning = cms.untracked.vstring("PATTriggerProducer",)
+process.MessageLogger.suppressWarning = cms.untracked.vstring(
+    "PATTriggerProducer",
+    # Supress warnings in DiTau hist manager
+    "analyzeAHtoMuTauEventsOS_woBtag",
+    "analyzeAHtoMuTauEventsOS_wBtag",
+    "analyzeAHtoMuTauEventsSS_woBtag",
+    "analyzeAHtoMuTauEventsSS_wBtag",
+)
+
 process.load('Configuration/StandardSequences/GeometryIdeal_cff')
 process.load('Configuration/StandardSequences/MagneticField_cff')
 process.load('Configuration/StandardSequences/FrontierConditions_GlobalTag_cff')
@@ -70,7 +67,7 @@ process.o = cms.Path(process.filterFirstEvent + process.printEventContent)
 process.DQMStore = cms.Service("DQMStore")
 
 process.saveAHtoMuTauPlots = cms.EDAnalyzer("DQMSimpleFileSaver",
-    outputFileName = cms.string(options.outputFile)
+    outputFileName = cms.string("plotsAHtoMuTau.root")
 )
 
 process.maxEvents = cms.untracked.PSet(
@@ -80,8 +77,7 @@ process.maxEvents = cms.untracked.PSet(
 process.source = cms.Source(
     "PoolSource",
     fileNames = cms.untracked.vstring(
-        options.inputFiles
-        #'file:/data1/veelken/CMSSW_3_6_x/skims/Ztautau_1_1_sXK.root'
+        'file:/data1/veelken/CMSSW_3_6_x/skims/Ztautau_1_1_sXK.root'
         #'file:/data1/friis/Run17/get_events/data_Mu_Run2010A_Sep17ReReco_pickevents/final_events.root'
     )
     #skipBadFiles = cms.untracked.bool(True)
