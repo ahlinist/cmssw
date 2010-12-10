@@ -1,6 +1,49 @@
 import os
 
 userSettings = {
+    'squires' : {
+        # The job ID to use per default.
+        'current' : 'Run29',
+        # List of runs
+        'jobs' : {
+            'Run29' : {
+                'AHtoMuTau' : {
+                    'analysisFilePath' : '/user/s/squires/tau_3_8_7/',
+                    'harvestingFilePath' : "/data2/squires/",
+                    'tmpFilePath' : "/data2/squires/tmp/",
+                    'pickevents' : '/data2/squires/Run29'
+                }
+            },
+            'Run32' : {
+                'AHtoMuTau' : {
+                    # The output directory on castor
+                    'analysisFilePath' : '/user/f/squires/Run32/',
+                    # The output directory for the plots
+                    'harvestingFilePath' : "/data1/squires/",
+                    'tmpFilePath' : "/data2/squires/tmp/",
+                    'pickevents' : '/data1/squires/Run26',
+                }
+            },
+            'Run32onskim' : {
+                'AHtoMuTau' : {
+                    # The output directory on castor
+                    'analysisFilePath' : '/castor/cern.ch/user/f/squires/Run32onskim/',
+                    # The output directory for the plots
+                    'harvestingFilePath' : "/data1/squires/",
+                    'tmpFilePath' : "/data2/squires/tmp/",
+                    'pickevents' : '/castor/cern.ch/user/f/squires/Run32harvest/',
+                    'skimPath' : '/castor/cern.ch/user/f/squires/Run32harvest/',
+                }
+            },
+ 
+        },
+        'global' : {
+            'drawOptions' : {
+                'canvasSizeX' : 640,
+                'canvasSizeY' : 800
+            }
+        }
+    },
     'friis' : {
         # The job ID to use per default.
         'current' : 'Run32onskim',
