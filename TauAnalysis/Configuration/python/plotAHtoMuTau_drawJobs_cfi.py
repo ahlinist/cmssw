@@ -507,7 +507,7 @@ drawJobConfigurator_AHtoMuTau_wBtag.add(
 
 )
 
-drawJobConfigurator_AHtoMuTau_woBtag.add(
+drawJobConfigurator_AHtoMuTau_wBtag.add(
     afterCut = evtSelCentralJetEt20bTag,
     beforeCut = evtSelDiTauCandidateForAHtoMuTauZeroCharge,
     plot = drawJobConfigEntry(
