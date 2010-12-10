@@ -95,6 +95,14 @@ userSettings = {
             'ZtoMuTau_tauIdEff' : '2010Dec01iii'
         },
         'jobs' : {
+            '2010Dec09' : {
+                'AHtoMuTau' : {
+                    'analysisFilePath' : "/user/v/veelken/CMSSW_3_8_x/plots/AHtoMuTau/",
+                    'harvestingFilePath' : "/data1/veelken/CMSSW_3_8_x/plots/AHtoMuTau/",
+                    'tmpFilePath' : "/data1/veelken/tmp/",
+                    'jobId' : "2010Dec09"
+                }
+            },
             '2010Dec08' : {
                 'ZtoMuTau_bgEstTemplate' : {
                     'analysisFilePath' : "/user/v/veelken/CMSSW_3_8_x/plots/ZtoMuTau_bgEstTemplate/",

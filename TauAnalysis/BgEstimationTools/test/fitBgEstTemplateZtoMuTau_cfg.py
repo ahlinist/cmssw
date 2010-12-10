@@ -726,7 +726,7 @@ process.fitZtoMuTau = cms.EDAnalyzer("TemplateHistFitter",
 
     output = cms.PSet(
         controlPlots = cms.PSet(
-            fileName = cms.string("./plots/fitBgEstTemplateZtoMuTau_#PLOT#.png")
+            fileName = cms.string("./plots/fitBgEstTemplateZtoMuTau_#PLOT#.pdf")
         ),
         fitResults = cms.PSet(
             dqmDirectory = cms.string('/fitResults')
@@ -738,13 +738,13 @@ process.fitZtoMuTau = cms.EDAnalyzer("TemplateHistFitter",
 ##process.fitZtoMuTauSysTauEnUp.processes.Ztautau.templates.visMass.meName = \
 ##  cms.string(dqmDirectory_Ztautau_templateSysTauEnUp + '/' + meName_visMass)
 ##process.fitZtoMuTauSysTauEnUp.output.controlPlots.fileName = \
-##  cms.string("./plots/fitBgEstTemplateZtoMuTau_#PLOT#_sysTauEnUp.png")
+##  cms.string("./plots/fitBgEstTemplateZtoMuTau_#PLOT#_sysTauEnUp.pdf")
 
 ##process.fitZtoMuTauSysTauEnDown = copy.deepcopy(process.fitZtoMuTau)
 ##process.fitZtoMuTauSysTauEnDown.processes.Ztautau.templates.visMass.meName = \
 ##  cms.string(dqmDirectory_Ztautau_templateSysTauEnDown + '/' + meName_visMass)
 ##process.fitZtoMuTauSysTauEnDown.output.controlPlots.fileName = \
-##  cms.string("./plots/fitBgEstTemplateZtoMuTau_#PLOT#_sysTauEnDown.png")
+##  cms.string("./plots/fitBgEstTemplateZtoMuTau_#PLOT#_sysTauEnDown.pdf")
 
 process.saveFitResultsZtoMuTau = cms.EDAnalyzer("DQMSimpleFileSaver",
     outputFileName = cms.string('fitBgEstTemplateZtoMuTau_results.root'),

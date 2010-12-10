@@ -644,22 +644,22 @@ plotHistZtoMuTau = cms.EDAnalyzer("DQMHistPlotter",
 
 process.plotTemplateHistZtoMuTau = plotHistZtoMuTau.clone(
     drawJobs = drawTemplateHistConfiguratorZtoMuTau.configure(),
-    indOutputFileName = cms.string('plotBgEstTemplateZtoMuTau_#PLOT#.png')
+    indOutputFileName = cms.string('plotBgEstTemplateZtoMuTau_#PLOT#.pdf')
 )
 
 process.plotAnalysisHistZtoMuTauData = plotHistZtoMuTau.clone(
     drawJobs = drawAnalysisHistConfiguratorZtoMuTauData.configure(),
-    indOutputFileName = cms.string('plotBgEstTemplateData_vs_AnalysisZtoMuTau_#PLOT#.png')
+    indOutputFileName = cms.string('plotBgEstTemplateData_vs_AnalysisZtoMuTau_#PLOT#.pdf')
 )
 
 process.plotAnalysisHistZtoMuTauMC = plotHistZtoMuTau.clone(
     drawJobs = drawAnalysisHistConfiguratorZtoMuTauMC.configure(),
-    indOutputFileName = cms.string('plotBgEstTemplateMC_vs_AnalysisZtoMuTau_#PLOT#.png')
+    indOutputFileName = cms.string('plotBgEstTemplateMC_vs_AnalysisZtoMuTau_#PLOT#.pdf')
 )
 
 process.plotAnalysisHistZtoMuTauZmumuEmbedding = plotHistZtoMuTau.clone(
     drawJobs = drawAnalysisHistConfiguratorZtoMuTauZmumuEmbedding.configure(),
-    indOutputFileName = cms.string('plotZmumuEmbedding_vs_AnalysisZtoMuTau_#PLOT#.png')
+    indOutputFileName = cms.string('plotZmumuEmbedding_vs_AnalysisZtoMuTau_#PLOT#.pdf')
 )
 
 process.saveBgEstTemplateHistZtoMuTau = cms.EDAnalyzer("DQMSimpleFileSaver",
