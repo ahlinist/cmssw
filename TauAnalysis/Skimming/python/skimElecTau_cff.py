@@ -60,7 +60,7 @@ def addElecTauSkimm(process):
 
     process.selectedElecTaNCtauPairs = cms.EDFilter("DiCandidatePairSelector",
         src = cms.InputTag('elecTaNCtauPairs'),
-        cut = cms.string("dR12 > -0.3"),
+        cut = cms.string("dR12 > 0."),
         filter = cms.bool(True)                                     
     )
 
@@ -76,7 +76,7 @@ def addElecTauSkimm(process):
 
     process.selectedElecHPStauPairs = cms.EDFilter("DiCandidatePairSelector",
         src = cms.InputTag('elecHPStauPairs'),
-        cut = cms.string("dR12 > -0.3"),
+        cut = cms.string("dR12 > 0."),
         filter = cms.bool(True)                                     
     )
 

@@ -84,7 +84,7 @@ process.elecTaNCtauPairs = cms.EDProducer("DiCandidatePairProducer",
 
 process.selectedElecTaNCtauPairs = cms.EDFilter("DiCandidatePairSelector",
     src = cms.InputTag('elecTaNCtauPairs'),
-    cut = cms.string("dR12 > -0.3"),
+    cut = cms.string("dR12 > 0."),
     filter = cms.bool(True)                                     
 )
 
@@ -100,12 +100,12 @@ process.elecHPStauPairs = cms.EDProducer("DiCandidatePairProducer",
 
 process.selectedElecHPStauPairs = cms.EDFilter("DiCandidatePairSelector",
     src = cms.InputTag('elecHPStauPairs'),
-    cut = cms.string("dR12 > -0.3"),
+    cut = cms.string("dR12 > 0."),
     filter = cms.bool(True)                                     
 )
 
 #--------------------------------------------------------------------------------
-# keep event in case it passed either the electron + pfTau or electron + caloTau selection
+# keep event in case it passed either the electron + TaNC tau or electron + hpsTau selection
 #--------------------------------------------------------------------------------
 
 process.elecTaNCtauSkimPath = cms.Path(
