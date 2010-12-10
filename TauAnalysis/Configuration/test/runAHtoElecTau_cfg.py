@@ -18,7 +18,7 @@ process.GlobalTag.globaltag = cms.string('START38_V12::All')
 #--------------------------------------------------------------------------------
 # import sequences for PAT-tuple production
 process.load("TauAnalysis.Configuration.producePatTuple_cff")
-process.load("TauAnalysis.Configuration.producePatTupleZtoElecTauSpecific_cff")
+process.load("TauAnalysis.Configuration.producePatTupleAHtoElecTauSpecific_cff")
 
 # import sequence for event selection
 process.load("TauAnalysis.Configuration.selectAHtoElecTau_cff")
@@ -108,9 +108,9 @@ changeCut(process,"selectedPatElectronsForElecTauTrkIso","(abs(superCluster.eta)
 #  VBTF WP80 electron ECAL isolation
 changeCut(process,"selectedPatElectronsForElecTauEcalIso","(abs(superCluster.eta) < 1.479 & dr03EcalRecHitSumEt/p4.Pt < 0.04) | (abs(superCluster.eta) > 1.479 & dr03EcalRecHitSumEt/p4.Pt < 0.05)")
 #  remove electron track IP_xy cut
-changeCut(process,"selectedPatElectronsForElecTauTrkIP",cms.double(5),"IpMax")
+#changeCut(process,"selectedPatElectronsForElecTauTrkIP",cms.double(5),"IpMax")
 #  put tanc at quarter eprcent
-changeCut(process,"selectedPatTausForElecTauTaNCdiscr.cut",'tauID("byTaNCfrQuarterPercent") > 0.5')
+changeCut(process,"selectedPatTausForElecTauTaNCdiscr",'tauID("byTaNCfrQuarterPercent") > 0.5')
 #  remove 1/3-prong track cut for taus
 changeCut(process,"selectedPatTausForElecTauProng","")
 #  remove charge = +/-1 cut for taus
@@ -154,7 +154,7 @@ from PhysicsTools.PatAlgos.tools.jetTools import *
 process.jetCorrFactors = cms.PSet()
 
 # uncomment to replace caloJets by pfJets
-switchJetCollection(process, jetCollection = cms.InputTag("ak5PFJets"))
+switchJetCollection(process, jetCollection = cms.InputTag("ak5PFJets"),outputModule = "")
 #--------------------------------------------------------------------------------
 
 #--------------------------------------------------------------------------------
@@ -191,7 +191,7 @@ from TauAnalysis.Configuration.tools.switchToData import *
 #--------------------------------------------------------------------------------
 
 process.p = cms.Path(
-    process.producePatTupleZtoElecTauSpecific
+    process.producePatTupleAHtoElecTauSpecific
 # + process.printGenParticleList # uncomment to enable print-out of generator level particles
 # + process.printEventContent    # uncomment to enable dump of event content after PAT-tuple production
   + process.selectAHtoElecTauEvents 
@@ -233,14 +233,14 @@ if not hasattr(process, "isBatchMode"):
 
 #--------------------------------------------------------------------------------
 #
-process.producePatTupleAll = cms.Sequence(process.producePatTuple + process.producePatTupleZtoElecTauSpecific)
+process.producePatTupleAll = cms.Sequence(process.producePatTuple + process.producePatTupleAHtoElecTauSpecific)
 #
 # define "hook" for enabling/disabling production of PAT-tuple event content,
 # depending on whether RECO/AOD or PAT-tuples are used as input for analysis
 #
 #__#patTupleProduction#
 if not hasattr(process, "isBatchMode"):
-    process.p.replace(process.producePatTupleZtoElecTauSpecific, process.producePatTuple + process.producePatTupleZtoElecTauSpecific)
+    process.p.replace(process.producePatTupleAHtoElecTauSpecific, process.producePatTuple + process.producePatTupleAHtoElecTauSpecific)
 #--------------------------------------------------------------------------------
 
 # print-out all python configuration parameter information
