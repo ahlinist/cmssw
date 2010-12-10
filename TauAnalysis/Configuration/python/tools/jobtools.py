@@ -43,14 +43,14 @@ if ( "$$status" != 0 ) then
     exit 100
 endif
 echo "Running script"
-$merger_comand $outputFileCommand $inputFileCommand
+$merger_comand $outputFileName $inputFileCommand
 setenv result $$status
 echo Job finished with exit code: $$result
 if ( "$$result" == 0 ) then
     echo "Removing existing file"
     rfrm $outputFile
     echo "Copying output"
-    rfcp output.root $outputFile
+    rfcp $outputFileName $outputFile
 endif
 exit 0
 ''')
@@ -64,7 +64,7 @@ def hash_files(files, add_time=True):
     return hash.hexdigest()[:4]
 
 def make_bsub_script(output_file, input_jobs_and_files,
-                     log_dir, merge_method, use_VarParsing=False):
+                     log_dir, merge_method, pass_io_files=True):
     # Create a unique job name for our output file.  We leave the add_time
     # option set to true so that lxbatch jobs always have a unique name.
     # Otherwise when we add dependencies LXB gets confused if there were
@@ -91,16 +91,17 @@ def make_bsub_script(output_file, input_jobs_and_files,
     copy_command = '\n'.join('rfcp %s . &' % file for file in input_files)
     copy_command += "\n wait\n"
 
+    local_output_file = os.path.basename(output_file)
+
     inputFileCommand = " ".join(map(os.path.basename, input_files))
     inputFileList = inputFileCommand # just a list of the files
-    outputFileCommand = "output.root"
+    outputFileName = local_output_file
 
-    # Check if we are using the VarParsing method for passing options
-    if use_VarParsing:
-        inputFileCommand = " ".join(
-            "inputFiles=file:%s" % os.path.basename(file)
-            for file in input_files)
-        outputFileCommand = "outputFile=output.root"
+    # If we customize the cfg to auto load the correct names, we don't need to
+    # pass any command line options
+    if not pass_io_files:
+        inputFileCommand = ""
+        outputFileName = ""
 
     # Return a tuple containing the output job name and the text of the script
     # file
@@ -111,7 +112,7 @@ def make_bsub_script(output_file, input_jobs_and_files,
         outputFile = output_file,
         inputFileCommand = inputFileCommand,
         inputFileList = inputFileList,
-        outputFileCommand = outputFileCommand,
+        outputFileName = outputFileName,
         logfile = log_file,
         copy_command = copy_command,
         merger_comand = merge_method,
