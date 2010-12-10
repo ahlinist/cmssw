@@ -1238,7 +1238,6 @@ def enableFactorization_makeAHtoMuTauPlots_grid2(
         'evtSelTauMuonVeto',
         'evtSelTauElectronVeto',
         'evtSelDiTauCandidateForAHtoMuTauAntiOverlapVeto',
-        'evtSelDiTauCandidateForAHtoMuTauZeroCharge',
         'evtSelDiTauCandidateForAHtoMuTauMt1MET',
         'evtSelDiTauCandidateForAHtoMuTauPzetaDiff',
         'evtSelDiMuPairZmumuHypothesisVetoByLooseIsolation',
@@ -1271,33 +1270,33 @@ def enableFactorization_makeAHtoMuTauPlots_grid2(
                     'tight_cuts' : tight_cuts,
                     'loose_cuts' : loose_cuts_wBtag,
                     'loose_analyzer' :
-                    'ahMuTauAnalyzer_wBtag_factorizedWithoutMuonIsolation',
+                    'ahMuTauAnalyzerOS_wBtag_factorizedWithoutMuonIsolation',
                     'tight_analyzer' :
-                    'ahMuTauAnalyzer_wBtag_factorizedWithMuonIsolation',
+                    'ahMuTauAnalyzerOS_wBtag_factorizedWithMuonIsolation',
                 },
                 'ahMuTauAnalyzerOS_woBtag' : {
                     'tight_cuts' : tight_cuts,
                     'loose_cuts' : loose_cuts_woBtag,
                     'loose_analyzer' :
-                    'ahMuTauAnalyzer_woBtag_factorizedWithoutMuonIsolation',
+                    'ahMuTauAnalyzerOS_woBtag_factorizedWithoutMuonIsolation',
                     'tight_analyzer' :
-                    'ahMuTauAnalyzer_woBtag_factorizedWithMuonIsolation',
+                    'ahMuTauAnalyzerOS_woBtag_factorizedWithMuonIsolation',
                 },
                 'ahMuTauAnalyzerSS_wBtag' : {
                     'tight_cuts' : tight_cuts,
                     'loose_cuts' : loose_cuts_wBtag_ss,
                     'loose_analyzer' :
-                    'ahMuTauAnalyzer_wBtag_factorizedWithoutMuonIsolation',
+                    'ahMuTauAnalyzerSS_wBtag_factorizedWithoutMuonIsolation',
                     'tight_analyzer' :
-                    'ahMuTauAnalyzer_wBtag_factorizedWithMuonIsolation',
+                    'ahMuTauAnalyzerSS_wBtag_factorizedWithMuonIsolation',
                 },
                 'ahMuTauAnalyzerSS_woBtag' : {
                     'tight_cuts' : tight_cuts,
                     'loose_cuts' : loose_cuts_woBtag_ss,
                     'loose_analyzer' :
-                    'ahMuTauAnalyzer_woBtag_factorizedWithoutMuonIsolation',
+                    'ahMuTauAnalyzerSS_woBtag_factorizedWithoutMuonIsolation',
                     'tight_analyzer' :
-                    'ahMuTauAnalyzer_woBtag_factorizedWithMuonIsolation',
+                    'ahMuTauAnalyzerSS_woBtag_factorizedWithMuonIsolation',
                 },
             },
             sequence = factorizationSequence
