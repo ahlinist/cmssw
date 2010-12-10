@@ -232,6 +232,8 @@ changeCut(process, "selectedMuTauPairsForAHtoMuTauPzetaDiffLooseMuonIsolation",
 # Set chage requirement - can be turned of to keep SS ditaus
 changeCut(process, "selectedMuTauPairsZeroCharge", cuts['charge'])
 changeCut(process, "selectedMuTauPairsForAHtoMuTauZeroCharge", cuts['charge'])
+changeCut(process, "selectedMuTauPairsZeroChargeLooseMuonIsolation", cuts['charge'])
+changeCut(process, "selectedMuTauPairsForAHtoMuTauZeroChargeLooseMuonIsolation", cuts['charge'])
 
 # change upper limit on tranverse impact parameter of muon track to 2mm
 changeCut(process, "selectedPatMuonsTrkIP", 0.2, attribute = "IpMax")
