@@ -19,9 +19,8 @@ def _setattr_ifexists(obj, attrName, attrValue):
 
 def switchToData(process):
 
-	removeMCMatching.addParameter(removeMCMatching._defaultParameters, 'outputInProcess', False, "this thing sucks")
-	removeMCMatching(process, ["All"])
-	#removeMCMatching(process, ["Electrons","Muons","Photons","Taus","METs"])
+	# remove MC matching from standard PAT sequences
+	removeMCMatching(process, ["All"], outputInProcess = False)
 	process.patDefaultSequence.remove(process.patJetPartonMatch)
 
 	# add data-quality cuts which work on "real" data only
