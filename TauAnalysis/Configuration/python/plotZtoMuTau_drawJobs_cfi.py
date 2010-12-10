@@ -7,7 +7,7 @@ from TauAnalysis.DQMTools.tools.drawJobConfigurator import *
 # define template for all kinds of plots
 # (specific to Z --> mu + tau-jet analysis)
 plots_ZtoMuTau = cms.PSet(
-    plots = cms.PSet(  
+    plots = cms.PSet(
         dqmMonitorElements = cms.vstring(''),
         processes = cms.vstring(
             'Zmumu',
@@ -21,12 +21,12 @@ plots_ZtoMuTau = cms.PSet(
     yAxis = cms.string('numEntries_linear'),
     #yAxis = cms.string('numEntries_log'),
     legend = cms.string('regular'),
-    labels = cms.vstring('mcNormScale'),                   
+    labels = cms.vstring('mcNormScale'),
     drawOptionSet = cms.string('default'),
     stack = cms.vstring(
+        'TTplusJets',
         'Zmumu',
         'WplusJets',
-        'TTplusJets',
         'qcdSum',
         'Ztautau'
     )
@@ -75,7 +75,7 @@ drawJobConfigurator_ZtoMuTau.add(
         xAxis = '#PAR#',
         name = "cutFlowControlPlots_muon_afterPrimaryEventVertexPosition"
     )
-)    
+)
 
 drawJobConfigurator_ZtoMuTau.add(
     afterCut = evtSelGlobalMuon,
@@ -99,7 +99,7 @@ drawJobConfigurator_ZtoMuTau.add(
         xAxis = '#PAR#',
         name = "cutFlowControlPlots_muon_afterMuonEta"
     )
-)    
+)
 
 drawJobConfigurator_ZtoMuTau.add(
     afterCut = evtSelMuonPt,
@@ -593,4 +593,4 @@ drawJobConfigurator_ZtoMuTau.add(
             name = "finalSamplePlots_numCentralJets"
         )
     ]
-)                
+)
