@@ -291,14 +291,14 @@ def enableFactorization_makeZtoMuTauPlots_grid2(
             sequence = factorizationSequence
         )
 
-    dqmDirectoryOut = lambda sample:'/harvested/%s_factorized/zMuTauAnalyzer/'% sample
-    dqmDirectoryOutUnfactorized = lambda sample:'/harvested/%s/zMuTauAnalyzer/'% sample
+    dqmDirectoryOut = lambda sample:'/harvested/%s_factorized'% sample
+    dqmDirectoryOutUnfactorized = lambda sample:'/harvested/%s'% sample
 
     # Now update any of the relevant mergers
     for mergedSample in relevantMergedSamples:
         # Get the module that is doing the merging, if it exists
-        if not hasattr(process.mergeSamplesZtoMuTau, "merge_%s_zMuTauAnalyzer" % (mergedSample)): continue
-        merger = getattr(process.mergeSamplesZtoMuTau, "merge_%s_zMuTauAnalyzer" % (mergedSample))
+        if not hasattr(process.mergeSamplesZtoMuTau, "merge_%s" % (mergedSample)): continue
+        merger = getattr(process.mergeSamplesZtoMuTau, "merge_%s" % (mergedSample))
 
         # Get the subsamples associated with this merged sample
         subsamples = mergedToRecoSampleDict[mergedSample]['samples']
@@ -1302,36 +1302,35 @@ def enableFactorization_makeAHtoMuTauPlots_grid2(
             sequence = factorizationSequence
         )
 
-    dqmDirectoryOut = lambda sample, btag:'/harvested/%s_factorized/ahMuTauAnalyzer_%s/'% (sample, btag)
-    dqmDirectoryOutUnfactorized = lambda sample, btag:'/harvested/%s/ahMuTauAnalyzer_%s/'% (sample, btag)
+    dqmDirectoryOut = lambda sample:'/harvested/%s_factorized' % sample
+    dqmDirectoryOutUnfactorized = lambda sample:'/harvested/%s'% sample
 
     # Now update any of the relevant mergers
-    for btag in ['woBtag', 'wBtag']:
-        for mergedSample in relevantMergedSamples:
-            # Get the module that is doing the merging, if it exists
-            merger_name = "merge_%s_ahMuTauAnalyzer_%s" % (mergedSample, btag)
-            if not hasattr(process.mergeSamplesAHtoMuTau, merger_name):
-                print "factorizationTools: Expected to update ",\
-                        merger_name, "but it's not in the process! skipping.."
-                continue
-            merger = getattr(process.mergeSamplesAHtoMuTau, merger_name)
+    for mergedSample in relevantMergedSamples:
+        # Get the module that is doing the merging, if it exists
+        merger_name = "merge_%s" % mergedSample
+        if not hasattr(process.mergeSamplesAHtoMuTau, merger_name):
+            print "factorizationTools: Expected to update ",\
+                    merger_name, "but it's not in the process! skipping.."
+            continue
+        merger = getattr(process.mergeSamplesAHtoMuTau, merger_name)
 
-            # Get the subsamples associated with this merged sample
-            subsamples = mergedToRecoSampleDict[mergedSample]['samples']
-            # Set the adder to use our new factorized inputs
-            def merge_directories(_list):
-                for sample in _list:
-                    if sample in samplesToFactorize:
-                        yield dqmDirectoryOut(sample, btag)
-                    else:
-                        yield dqmDirectoryOutUnfactorized(sample, btag)
+        # Get the subsamples associated with this merged sample
+        subsamples = mergedToRecoSampleDict[mergedSample]['samples']
+        # Set the adder to use our new factorized inputs
+        def merge_directories(_list):
+            for sample in _list:
+                if sample in samplesToFactorize:
+                    yield dqmDirectoryOut(sample)
+                else:
+                    yield dqmDirectoryOutUnfactorized(sample)
 
-            merger.dqmDirectories_input = cms.vstring(list(merge_directories(subsamples)))
+        merger.dqmDirectories_input = cms.vstring(list(merge_directories(subsamples)))
 
     # Update the plot sources in the plot jobs.  Note that we don't need to do
     # this for the merged samples, since we have replaced the HistAdder sources
-    for plotterModuleName in [ 'plotAHtoMuTau_woBtag_log', 'plotAHtoMuTau_woBtag_linear',
-                               'plotAHtoMuTau_wBtag_log',  'plotAHtoMuTau_wBtag_linear' ]:
+    for plotterModuleName in [ 'plotAHtoMuTauOS_woBtag_log', 'plotAHtoMuTauOS_woBtag_linear',
+                               'plotAHtoMuTauOS_wBtag_log',  'plotAHtoMuTauOS_wBtag_linear' ]:
         if hasattr(process, plotterModuleName):
             plotterModuleProcesses = getattr(process, plotterModuleName).processes
             for sample in samplesToFactorize:
