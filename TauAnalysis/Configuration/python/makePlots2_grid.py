@@ -53,6 +53,21 @@ dqmHistPlotter_template = cms.EDAnalyzer("DQMHistPlotter",
     outputFilePath = cms.string('./plots/')
 )
 
+def get_filter_stat(file, filter_stats_dir, statistic,
+                    type="processed_num#a1#s0"):
+    " Parse the filter statistics of a harvested file to get # number of events"
+    if isinstance(file, str):
+        file = ROOT.TFile.Open(file, "READ")
+    directory = os.path.join('DQMData', filter_stats_dir, statistic)
+    matcher = re.compile(
+        '<' + type + '>[if]=(?P<value>[0-9\.]*)</' + type + '>')
+    filter_stats = file.Get(directory)
+    for key in filter_stats.GetListOfKeys():
+        matches = matcher.match(key.GetName())
+        if matches:
+            return float(matches.group('value'))
+    return None
+
 def _getInputSamples(mergeSampleDict, samples):
     # recursively expand name of samples to be merged
     # CV: a recursive implementation of this function is neccessary,
@@ -125,6 +140,11 @@ def makePlots(process, channel = None, samples = None, inputFilePath = None, job
     for sample in samplesToLoad:
         sample_info = samples['RECO_SAMPLES'][sample]
 
+        # Get the location of filter stats for this sample
+        filter_stat_base_dir = dqmDirectoryFilterStatistics[
+            sample_info['factorize'] and 'factorizationEnabled' or
+            'factorizationDisabled' ]
+
         # If this was run on a local skim, make sure we update the skim eff to
         # include the factor from the skim
         if skimStatFileMapper is not None:
@@ -132,39 +152,14 @@ def makePlots(process, channel = None, samples = None, inputFilePath = None, job
             print "Loading level 2 skim info from file: %s" % skim_file_name
             skim_file = ROOT.TFile(skim_file_name, "READ")
             # Get the filter statistics folder
-            filter_stat_base_dir = dqmDirectoryFilterStatistics[
-                sample_info['factorize'] and 'factorizationEnabled' or
-                'factorizationDisabled' ]
-            filter_stat_dir = os.path.join(
-                'DQMData', filter_stat_base_dir, skimFilterStatistic)
-            filter_stats = skim_file.Get(filter_stat_dir)
-            # Find the key corresponding to processed and passed
-            passed_matcher = re.compile(
-                r'<passed_cumulative_numWeighted#a1#s1>f=(?P<passed>[0-9\.]*)</passed_cumulative_numWeighted#a1#s1>')
-            processed_matcher = re.compile(
-                r'<processed_numWeighted#a1#s1>f=(?P<processed>[0-9\.]*)</processed_numWeighted#a1#s1>')
-            passed = None
-            processed = None
-
-            # Find the number of passed
-            for key in filter_stats.GetListOfKeys():
-                passed_match = passed_matcher.match(key.GetName())
-                if passed_match:
-                    passed_value = float(passed_match.group('passed'))
-                    print "Got passed entries: %0.2f" % (passed_value)
-                    if passed is not None:
-                        print "Fatal: Multiple filter statistics identified as passed!"
-                    passed = passed_value
-
-            # Find the number of processed
-            for key in filter_stats.GetListOfKeys():
-                proc_match = processed_matcher.match(key.GetName())
-                if proc_match:
-                    proc_value = float(proc_match.group('processed'))
-                    print "Got processed entries: %0.2f" % (proc_value)
-                    if processed is not None:
-                        print "Fatal: Multiple filter statistics identified as processed!"
-                    processed = proc_value
+            passed = get_filter_stat(
+                skim_file, filter_stat_base_dir,
+                skimFilterStatistic,
+                'passed_cumulative_num#a1#s0')
+            processed = get_filter_stat(
+                skim_file, filter_stat_base_dir,
+                skimFilterStatistic,
+                'processed_num#a1#s0')
 
             local_skim_eff = passed/processed
             # Update sample skim efficiency
@@ -175,7 +170,7 @@ def makePlots(process, channel = None, samples = None, inputFilePath = None, job
 
         # Build DQMFileLoader PSet for this sample
         sample_pset = cms.PSet(
-            inputFileNames = cms.vstring(''),
+            inputFileNames = cms.vstring(sample_mapper(sample)),
             dqmDirectory_store = cms.string('/harvested/%s' % sample),
         )
         # Auto scale MC samples
@@ -205,10 +200,6 @@ def makePlots(process, channel = None, samples = None, inputFilePath = None, job
     dqmFileLoaderModule = cms.EDAnalyzer("DQMFileLoader",
         **dqmFileLoaderJobs)
     dqmFileLoaderModule.inputFilePath = cms.string(inputFilePath)
-    for sample in samplesToLoad:
-        getattr(dqmFileLoaderModule, sample).inputFileNames = cms.vstring(
-            sample_mapper(sample)
-        )
     setattr(process, dqmFileLoaderModuleName, dqmFileLoaderModule)
 
     # Loop over the different merged samples we have defined and
@@ -221,19 +212,16 @@ def makePlots(process, channel = None, samples = None, inputFilePath = None, job
                 continue
         merge_info = samples['MERGE_SAMPLES'][merge_name]
         input_samples = _getInputSamples(samples['MERGE_SAMPLES'], merge_info['samples'])
-        for analyzer_drawJobConfigurator_indOutputFileName_set in analyzer_drawJobConfigurator_indOutputFileName_sets:
-            analyzer = analyzer_drawJobConfigurator_indOutputFileName_set[0]
-            # Build the new PSet
-            new_pset = cms.PSet(
-                dqmDirectories_input = cms.vstring([
-                    '/harvested/%s/%s' % (sample, analyzer)
-                    for sample in input_samples
-                ]),
-                dqmDirectory_output = cms.string(
-                    '/harvested/%s/%s'%(merge_name, analyzer)),
-            )
-            # Add the new PSet to our list
-            dqmHistAdderJobs["merge_%s_%s" % (merge_name, analyzer)] = new_pset
+        # Build the new PSet
+        new_pset = cms.PSet(
+            dqmDirectories_input = cms.vstring([
+                '/harvested/%s' % sample
+                for sample in input_samples
+            ]),
+            dqmDirectory_output = cms.string('/harvested/%s'% merge_name),
+        )
+        # Add the new PSet to our list
+        dqmHistAdderJobs["merge_%s" % merge_name] = new_pset
 
     # configure DQMHistAdder module
     dqmHistAdderModuleName = "mergeSamples%s" % channel
