@@ -64,6 +64,8 @@ userSettings = {
                     # The output directory for the plots
                     'harvestingFilePath' : "/data1/friis/",
                     'tmpFilePath' : "/data2/friis/tmp/",
+                    # Where to store the harvested histograms on lxbatch
+                    'batchHarvest' : "/user/f/friis/Run32harvest",
                     'pickevents' : '/data1/friis/Run26',
                 }
             },
@@ -74,11 +76,35 @@ userSettings = {
                     # The output directory for the plots
                     'harvestingFilePath' : "/data1/friis/",
                     'tmpFilePath' : "/data2/friis/tmp/",
-                    'pickevents' : '/castor/cern.ch/user/f/friis/Run32harvest/',
-                    'skimPath' : '/castor/cern.ch/user/f/friis/Run32harvest/',
+                    'batchHarvest' : '/castor/cern.ch/user/f/friis/Run32onskimTmp/',
+                    # The source that paroduced the skim
+                    'skimSource' : 'Run32',
                 }
             },
-
+            'Run33FR' : {
+                'AHtoMuTau' : {
+                    # The output directory on castor
+                    'analysisFilePath' : '/castor/cern.ch/user/f/friis/Run33FR/',
+                    # The output directory for the plots
+                    'harvestingFilePath' : "/data1/friis/",
+                    'tmpFilePath' : "/data2/friis/tmp/",
+                    'batchHarvest' :  '/castor/cern.ch/user/f/friis/Run33FRharvest/',
+                    # The source that paroduced the skim
+                    'skimSource' : 'Run32',
+                }
+            },
+            'Run33SYS' : {
+                'AHtoMuTau' : {
+                    # The output directory on castor
+                    'analysisFilePath' : '/castor/cern.ch/user/f/friis/Run33SYS/',
+                    # The output directory for the plots
+                    'harvestingFilePath' : "/data1/friis/",
+                    'tmpFilePath' : "/data2/friis/tmp/",
+                    'castorTmp' : '/castor/cern.ch/user/f/friis/Run33SYSharvest/',
+                    # The job ID of the skim producer
+                    'skimSource' : 'Run32',
+                }
+            },
         },
         'global' : {
             'drawOptions' : {
@@ -228,17 +254,25 @@ def getPickEventsPath(channel):
     return  getInfo(channel)['pickevents']
 
 def getSkimEvents(channel, jobid = None):
-    return getInfo(channel, jobid)['skimPath']
+    " Get the directory on castor that containing the skimmed files "
+    skimJobId = getInfo(channel, jobid)['skimSource']
+    # Get the location of the harvested & merged skims
+    output_path = os.path.normpath(
+        '/castor/cern.ch/' + getInfo(channel, skimJobId)['batchHarvest'])
+    return output_path
 
 def getAnalysisFilePath(channel):
     return getInfo(channel)['analysisFilePath']
 
-def getHarvestingFilePath(channel):
+def getHarvestingFilePath(channel, jobid=None):
     user_settings = getInfo(channel)
     harvestingFilePath = os.path.join(
         user_settings['harvestingFilePath'], getJobId(channel))
     if not os.path.exists(harvestingFilePath):
-        os.makedirs(harvestingFilePath)
+        try:
+            os.makedirs(harvestingFilePath)
+        except:
+            print "Failed to make harvesting file path: %s" % harvestingFilePath
     if not os.path.isdir(harvestingFilePath):
         print "WARNING: Harvesting file path %s is not a directory!"
     return harvestingFilePath
@@ -248,6 +282,10 @@ def getLocalHarvestingFilePath(channel):
 
 def getTmpFilePath(channel):
     return getInfo(channel)['tmpFilePath']
+
+def getBatchHarvestLocation(channel):
+    " Where to store the output histograms when harvesting on LXBatch "
+    return getInfo(channel)['batchHarvest']
 
 def getConfigFileName(channel):
     return getInfo(channel)['configFileName']
