@@ -43,7 +43,7 @@ if ( "$$status" != 0 ) then
     exit 100
 endif
 echo "Running script"
-$merger_comand $outputFileName $inputFileCommand
+$merger_comand $outputFileCommand $inputFileCommand
 setenv result $$status
 echo Job finished with exit code: $$result
 if ( "$$result" == 0 ) then
@@ -91,17 +91,17 @@ def make_bsub_script(output_file, input_jobs_and_files,
     copy_command = '\n'.join('rfcp %s . &' % file for file in input_files)
     copy_command += "\n wait\n"
 
-    local_output_file = os.path.basename(output_file)
+    outputFileName = os.path.basename(output_file)
 
     inputFileCommand = " ".join(map(os.path.basename, input_files))
     inputFileList = inputFileCommand # just a list of the files
-    outputFileName = local_output_file
+    outputFileCommand = outputFileName
 
     # If we customize the cfg to auto load the correct names, we don't need to
     # pass any command line options
     if not pass_io_files:
         inputFileCommand = ""
-        outputFileName = ""
+        outputFileCommand = ""
 
     # Return a tuple containing the output job name and the text of the script
     # file
@@ -112,6 +112,7 @@ def make_bsub_script(output_file, input_jobs_and_files,
         outputFile = output_file,
         inputFileCommand = inputFileCommand,
         inputFileList = inputFileList,
+        outputFileCommand = outputFileCommand,
         outputFileName = outputFileName,
         logfile = log_file,
         copy_command = copy_command,
