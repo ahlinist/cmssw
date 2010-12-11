@@ -37,7 +37,7 @@ def group(iterator, count):
         yield tuple([itr.next() for i in xrange(count)])
 
 __author__  = "Sebastien Binet <binet@cern.ch>"
-__version__ = "$Revision: 1.2 $"
+__version__ = "$Revision: 1.3 $"
 __doc__ = """A set of simple helper methods to handle simple tasks with CASTOR.
 """
 
@@ -61,6 +61,8 @@ def nslsl(path):
         size (in bytes)
     '''
     status,output = commands.getstatusoutput('nsls -l ' + path)
+    if status == 256:
+        raise IOError("Can't nsls -l on path: %s, it doesn't exist!" % path)
     for line in output.splitlines():
         fields = line.split()
         output = {
