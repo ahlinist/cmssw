@@ -28,7 +28,7 @@ SAMPLES_TO_PLOT = [
     'WplusJetsSum',
     'TTplusJets',
     'Zmumu',
-    ##'Zee',
+    'Zee',
     'ZtautauSum'
 ]
 
@@ -145,7 +145,7 @@ RECO_SAMPLES = {
         'disableDuplicateCheck' : True,
         'applyZrecoilCorrection' : False,
         'enableFakeRates' : True,
-        'applyMuonTriggerEfficiencyCorrection' : True        
+        'applyMuonTriggerEfficiencyCorrection' : True
     },
     'ZtautauPU156bx' : {
         'datasetpath' : "/DYtoTauTau_M_20_TuneD6T_7TeV-pythia6-tauola/Fall10-E7TeV_ProbDist_2010Data_BX156_START38_V12-v1/GEN-SIM-RECO",
@@ -205,6 +205,7 @@ RECO_SAMPLES = {
         'applyZrecoilCorrection' : True,
         'applyMuonTriggerEfficiencyCorrection' : True,
         'applyMuonIsolationEfficiencyCorrection' : True,
+        'enableFakeRates' : True,
         'applyVertexMultiplicityReweighting' : True,
         'hlt' : cms.InputTag("TriggerResults", "", "REDIGI38XPU")
     },
@@ -266,9 +267,9 @@ RECO_SAMPLES = {
         'applyMuonTriggerEfficiencyCorrection' : True,
         'applyMuonIsolationEfficiencyCorrection' : True,
         'applyVertexMultiplicityReweighting' : True,
+        'enableFakeRates' : True,
         'factorize' : True,
         'hlt' : cms.InputTag("TriggerResults", "", "REDIGI38XPU"),
-        'enableFakeRates' : True,
     },
     'Wenu' : {
         'datasetpath' : "/WtoENu_TuneD6T_7TeV-pythia6/Fall10-E7TeV_ProbDist_2010Data_BX156_START38_V12-v1/GEN-SIM-RECO",
@@ -278,12 +279,12 @@ RECO_SAMPLES = {
         'x_sec' : 1.32*7899*_picobarns, # W --> e nucorrection factor for NLO/LO cross-sections = 1.32
         'legendEntry' : plotter.process_WplusJets.config_dqmHistPlotter.legendEntry.value(),
         'type' : plotter.process_WplusJets.config_dqmHistPlotter.type.value(),
-        'enableFakeRates' : True,
         'drawOption' : styles.drawOption_WplusJets,
         'applyZrecoilCorrection' : True,
         'applyMuonTriggerEfficiencyCorrection' : True,
         'applyMuonIsolationEfficiencyCorrection' : True,
         'applyVertexMultiplicityReweighting' : True,
+        'enableFakeRates' : True,
         'hlt' : cms.InputTag("TriggerResults", "", "REDIGI38XPU"),
         'SE_black_list' : 'T2_TW_Taiwan'
     },
@@ -300,6 +301,7 @@ RECO_SAMPLES = {
         'applyMuonTriggerEfficiencyCorrection' : True,
         'applyMuonIsolationEfficiencyCorrection' : True,
         'applyVertexMultiplicityReweighting' : True,
+        'enableFakeRates' : True,
         'hlt' : cms.InputTag("TriggerResults", "", "REDIGI38XPU"),
         'SE_black_list' : 'T2_TW_Taiwan'
     },
@@ -316,6 +318,7 @@ RECO_SAMPLES = {
         'applyMuonTriggerEfficiencyCorrection' : True,
         'applyMuonIsolationEfficiencyCorrection' : True,
         'applyVertexMultiplicityReweighting' : True,
+        'enableFakeRates' : True,
         'hlt' : cms.InputTag("TriggerResults", "", "REDIGI38XPU"),
         'SE_black_list' : 'T2_TW_Taiwan'
     },
@@ -331,6 +334,7 @@ RECO_SAMPLES = {
         'applyMuonTriggerEfficiencyCorrection' : True,
         'applyMuonIsolationEfficiencyCorrection' : True,
         'applyVertexMultiplicityReweighting' : True,
+        'enableFakeRates' : True,
         'hlt' : cms.InputTag("TriggerResults", "", "REDIGI38XPU")
     }
 }
