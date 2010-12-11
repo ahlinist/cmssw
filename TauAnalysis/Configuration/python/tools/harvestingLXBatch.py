@@ -133,7 +133,7 @@ def make_harvest_scripts(plot_regex, skim_regex, castor_directory,
                     submit_file.write("bsub < %s\n" % script_file)
                     # Keep track of how many files we access
                     bsub_file_access_counter += split
-                    if bsub_file_access_counter > 1000:
+                    if bsub_file_access_counter > 2000:
                         bsub_file_access_counter = 0
                         submit_file.write("# thwart rate limit\n")
                         submit_file.write(
@@ -241,6 +241,10 @@ def make_harvest_scripts(plot_regex, skim_regex, castor_directory,
             copy_script.write('rfcp %s %s &\n' % (
                 file, local_copy_mapper(sample)))
     print "After harvesting is done, run %s to copy files locally" % local_copy_script
+    # Make all our stuff executable
+    os.chmod(local_copy_script, 0755)
+    os.chmod(harvest_script, 0755)
+    os.chmod(merge_script_name, 0755)
 
 if __name__ == "__main__":
     #regex = r"plots_AHtoMuTau_(?P<sample>\w+?)_Run32_(?P<gridJob>\d*)_(?P<gridTry>\d*)_(?P<gridId>[a-zA-Z0-9]*).root"
