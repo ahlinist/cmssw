@@ -31,6 +31,10 @@ def submitAnalysisToLXBatch(configFile = None, channel = None, samples = None, j
         if locals()[param] is None:
             raise ValueError("Undefined '%s' parameter!!" % param)
 
+    # Make sure our output file for the scripts is okay
+    if not os.path.exists(script_directory):
+        os.makedirs(script_directory)
+
     # Get all the files in our output directory that have non-zero size
     tmp_files = set(x['file'] for x in castor.nslsl(outputDirectory)
                     if x['size'])
@@ -64,45 +68,6 @@ def submitAnalysisToLXBatch(configFile = None, channel = None, samples = None, j
                 'id' : jobId
             }
 
-            # First, prepare the configuration file
-            newConfigFile = getNewConfigFileName(configFile, cfgdir, sample, jobId, label = "@lxbatch")
-            write_comment_header(submit_file, " cfg: " + newConfigFile)
-            #--------------------------------------------------------------------
-            # CV: temporary "hack" for producing (ED)Ntuples/skims for tau id. efficiency measurement
-            jobCustomizations = []
-            jobCustomizations.append("if hasattr(process, 'ntupleOutputModule'):")
-            jobCustomizations.append("    process.ntupleOutputModule.fileName = options.outputFile")
-            jobCustomizations.append("if hasattr(process, 'skimOutputModule'):")
-            jobCustomizations.append("    process.skimOutputModule.fileName = options.outputFile")
-            HLTprocessName = 'HLT'
-            if 'hlt' in samples['RECO_SAMPLES'][sample].keys():
-                HLTprocessName = samples['RECO_SAMPLES'][sample]['hlt'].getProcessName()
-            jobCustomizations.append("if hasattr(process, 'hltMu'):")
-            jobCustomizations.append("    process.hltMu.selector.src = cms.InputTag('TriggerResults::%s')" % HLTprocessName)
-            jobCustomizations.append("process.patTrigger.processName = '%s'" % HLTprocessName)
-            jobCustomizations.append("process.patTriggerEvent.processName = '%s'" % HLTprocessName)
-            jobCustomizations.append("if hasattr(process, 'prePatProductionSequence'):")
-            jobCustomizations.append("    process.prePatProductionSequence.remove(process.prePatProductionSequenceGen)")
-            if samples['RECO_SAMPLES'][sample]['type'] == 'Data':
-                jobCustomizations.append("if hasattr(process, 'ntupleProducer'):")
-                jobCustomizations.append("    delattr(process.ntupleProducer.sources, 'tauGenJets')")
-                jobCustomizations.append("    delattr(process.ntupleProducer.sources, 'genJets')")
-                jobCustomizations.append("    delattr(process.ntupleProducer.sources, 'genPhaseSpaceEventInfo')")
-                jobCustomizations.append("    delattr(process.ntupleProducer.sources, 'genPileUpEventInfo')")
-            #jobCustomizations.append("print process.dumpPython()")
-            #--------------------------------------------------------------------
-
-            prepareConfigFile(
-              configFile = configFile, jobInfo = jobInfo, newConfigFile = newConfigFile,
-              sample_infos = samples,
-              disableFactorization = disableFactorization,
-              disableSysUncertainties = disableSysUncertainties,
-              #input_files = input_files, output_file = output_file,
-              enableEventDumps = enableEventDumps, enableFakeRates = enableFakeRates,
-              processName = processName,
-              saveFinalEvents = saveFinalEvents,
-              customizations = jobCustomizations)
-
             # Now build the scripts to feed to bsub
             # Find the input files
             input_files = list(inputFileMap(channel, sample, jobId))
@@ -113,24 +78,78 @@ def submitAnalysisToLXBatch(configFile = None, channel = None, samples = None, j
                 print("No local input files for %s found !!" % sample)
 
             for job, file in enumerate(input_files):
-                #print("job %i:" % (job + 1))
 
+                input_files = [file]
                 # The None in the tuple indicates this file has no dependencies in
                 # the batch job.
-                input_files = [ (None, file) ]
+                input_files_and_jobs = [ (None, file) for file in input_files ]
+                # Need to prepend file:, and strip off the directory since we
+                # always have bsub rfcp the input files to the working
+                # directory.
+                input_files_for_cfgOptions = [
+                    'file:' + os.path.basename(file) for file in input_files]
+
 
                 output_file = outputFileMap(channel, sample, jobId)
                 input_file_hash = jobtools.hash_files(
-                    map(lambda x:x[1], input_files), add_time=False)
+                    input_files, add_time=False)
                 # Add the hash of the input file so we know the provenance of all
                 # files
                 output_file = os.path.join(outputDirectory, output_file.replace(
-                    '.root', '_' + input_file_hash + '.root'))
+                    '.root', '_' + str(job) + '_' + input_file_hash + '.root'))
+
+                # First, prepare the configuration file
+                newConfigFile = getNewConfigFileName(
+                    configFile, cfgdir, sample,
+                    jobId, index = job, label = "@lxbatch")
+
+                write_comment_header(submit_file, " cfg: " + newConfigFile)
+                #--------------------------------------------------------------------
+                # CV: temporary "hack" for producing (ED)Ntuples/skims for tau id. efficiency measurement
+                jobCustomizations = []
+                jobCustomizations.append("if hasattr(process, 'ntupleOutputModule'):")
+                jobCustomizations.append("    process.ntupleOutputModule.fileName = '%s'" % output_file)
+                jobCustomizations.append("if hasattr(process, 'skimOutputModule'):")
+                jobCustomizations.append("    process.skimOutputModule.fileName = '%s'" % output_file)
+                HLTprocessName = 'HLT'
+                if 'hlt' in samples['RECO_SAMPLES'][sample].keys():
+                    HLTprocessName = samples['RECO_SAMPLES'][sample]['hlt'].getProcessName()
+                    jobCustomizations.append("if hasattr(process, 'hltMu'):")
+                    jobCustomizations.append("    process.hltMu.selector.src = cms.InputTag('TriggerResults::%s')" % HLTprocessName)
+                    jobCustomizations.append("process.patTrigger.processName = '%s'" % HLTprocessName)
+                    jobCustomizations.append("process.patTriggerEvent.processName = '%s'" % HLTprocessName)
+                    jobCustomizations.append("if hasattr(process, 'prePatProductionSequence'):")
+                    jobCustomizations.append("    process.prePatProductionSequence.remove(process.prePatProductionSequenceGen)")
+                    if samples['RECO_SAMPLES'][sample]['type'] == 'Data':
+                        jobCustomizations.append("if hasattr(process, 'ntupleProducer'):")
+                        jobCustomizations.append("    delattr(process.ntupleProducer.sources, 'tauGenJets')")
+                        jobCustomizations.append("    delattr(process.ntupleProducer.sources, 'genJets')")
+                        jobCustomizations.append("    delattr(process.ntupleProducer.sources, 'genPhaseSpaceEventInfo')")
+                        jobCustomizations.append("    delattr(process.ntupleProducer.sources, 'genPileUpEventInfo')")
+                        #jobCustomizations.append("print process.dumpPython()")
+                        #--------------------------------------------------------------------
+
+                prepareConfigFile(
+                    configFile = configFile, jobInfo = jobInfo,
+                    newConfigFile = newConfigFile,
+                    sample_infos = samples,
+                    disableFactorization = disableFactorization,
+                    disableSysUncertainties = disableSysUncertainties,
+                    # We always copy the input files to the local directory
+                    # before running cmsRun, so just take the basname
+                    input_files = input_files_for_cfgOptions,
+                    output_file = os.path.basename(output_file),
+                    enableEventDumps = enableEventDumps, enableFakeRates = enableFakeRates,
+                    processName = processName,
+                    saveFinalEvents = saveFinalEvents,
+                    customizations = jobCustomizations)
+
+                #print("job %i:" % (job + 1))
 
                 # Build our batch job
                 jobname, script = jobtools.make_bsub_script(
-                    output_file, input_files, '/tmp/log',
-                    "cmsRun %s" % newConfigFile, use_VarParsing = True)
+                    output_file, input_files_and_jobs, '/tmp/log',
+                    "cmsRun %s" % newConfigFile, pass_io_files = False)
 
                 bsub_script_file = os.path.join(
                     script_directory, "_".join([
