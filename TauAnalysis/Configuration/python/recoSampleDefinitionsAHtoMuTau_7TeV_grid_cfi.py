@@ -30,20 +30,21 @@ SAMPLES_TO_ANALYZE.extend([
 # from the MERGE_SAMPLES defined at the bottom.
 SAMPLES_TO_PLOT = [
     'data',
-    ##'A90Sum',
-    #'A100Sum',
+    ###'A90Sum',
+    ##'A100Sum',
     'A120Sum',
-    #'A130Sum',
-    ##'A140Sum',
-    ##'A160Sum',
+    ##'A130Sum',
+    ###'A140Sum',
+    ###'A160Sum',
     'A180Sum',
-    ##'A200Sum',
-    ##'A300Sum',
+    ###'A200Sum',
+    ###'A300Sum',
     'qcdSum',
+    #'PPmuXptGt20Mu15',
     'WplusJetsSum',
-    #'TTplusJets',
+    'TTplusJets',
     'Zmumu',
-    #'Ztautau'
+    ##'Ztautau'
     'ZtautauPU156bx',
 ]
 
