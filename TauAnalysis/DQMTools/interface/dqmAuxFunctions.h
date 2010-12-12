@@ -21,6 +21,8 @@ typedef std::pair<int, TPRegexp> outputCommandEntry;
 
 float* getBinning(const TAxis*);
 
+MonitorElement* getMonitorElement(DQMStore&, const std::string&, bool&);
+
 TH1* getHistogram(DQMStore&, const std::string&, bool&);
 std::vector<TH1*> getHistograms(DQMStore&, const std::vector<std::string>&, bool&);
 

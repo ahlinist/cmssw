@@ -45,14 +45,26 @@ float* getBinning(const TAxis* axis)
 //-----------------------------------------------------------------------------------------------------------------------
 //
 
+MonitorElement* getMonitorElement(DQMStore& dqmStore, const std::string& meName_full, bool& dqmError)
+{
+  std::string meName, dqmDirectory;
+  separateMonitorElementFromDirectoryName(meName_full, meName, dqmDirectory);
+
+  MonitorElement* me = dqmStore.get(terminate_dqmDirectory(dqmDirectory).append(meName));
+  if ( !me ) {
+    edm::LogError("getMonitorElement") << " Failed to retrieve MonitorElement = " << meName << " !!";
+    dqmError = true;
+  }
+
+  return me;
+}
+
+
 TH1* getHistogram(DQMStore& dqmStore, const std::string& meName, bool& dqmError)
 {
-  std::string histogramName, histogramDirectory;
-  separateMonitorElementFromDirectoryName(meName, histogramName, histogramDirectory);
-
   TH1* histogram = 0;
 
-  MonitorElement* me = dqmStore.get(terminate_dqmDirectory(histogramDirectory).append(histogramName));
+  MonitorElement* me = getMonitorElement(dqmStore, meName, dqmError);
   if ( me ) {
     int meType = me->kind();
     if ( meType == MonitorElement::DQM_KIND_TH1F      ||
@@ -82,10 +94,7 @@ TH1* getHistogram(DQMStore& dqmStore, const std::string& meName, bool& dqmError)
     } else {
       edm::LogError("getHistogram") << " MonitorElement name = " << meName << " is not of type histogram !!";
     }
-  } else {
-    edm::LogError("getHistogram") << " Failed to retrieve MonitorElement = " << meName << " !!";
-    dqmError = true;
-  }
+  } 
 
   return histogram;
 }
@@ -106,9 +115,7 @@ std::vector<TH1*> getHistograms(DQMStore& dqmStore, const std::vector<std::strin
 
 double getValue(DQMStore& dqmStore, const std::string& meName_full, bool& error)
 {
-  std::string meName, dqmDirectory;
-  separateMonitorElementFromDirectoryName(meName_full, meName, dqmDirectory);
-  MonitorElement* me = dqmStore.get(terminate_dqmDirectory(dqmDirectory).append(meName));
+  MonitorElement* me = getMonitorElement(dqmStore, meName_full, error);
   if ( me ) {
     int meType = me->kind();
     if ( meType == MonitorElement::DQM_KIND_REAL ) return me->getFloatValue();
@@ -117,9 +124,6 @@ double getValue(DQMStore& dqmStore, const std::string& meName_full, bool& error)
       edm::LogError ("getValue") << " MonitorElement = " << meName_full << " is of invalid Type !!";
       error = true;
     }
-  } else {
-    edm::LogError ("getValue") << " Failed to retrieve MonitorElement = " << meName_full << " !!";
-    error = true;
   }
   
   return -1.;
