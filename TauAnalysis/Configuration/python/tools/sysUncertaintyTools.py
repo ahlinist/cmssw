@@ -546,7 +546,11 @@ def enableSysUncertainties_runAHtoMuTau(process):
       ahToMuTauEventSelConfiguratorOS.configure(process = process, estimateSysUncertainties = True)
     process.produceEventSelFlagsAHtoMuTauLooseMuonIsolationOS = \
       ahToMuTauEventSelConfiguratorLooseMuonIsolationOS.configure(process = process, estimateSysUncertainties = True)
-
+    process.produceEventSelFlagsAHtoMuTauSS = \
+      ahToMuTauEventSelConfiguratorSS.configure(process = process, estimateSysUncertainties = True)
+    process.produceEventSelFlagsAHtoMuTauLooseMuonIsolationSS = \
+      ahToMuTauEventSelConfiguratorLooseMuonIsolationSS.configure(process = process, estimateSysUncertainties = True)
+  
     setattr(patMuTauPairSelConfiguratorForAHtoMuTauOS, "systematics", muTauPairSystematics)
     process.selectMuTauPairsForAHtoMuTauOS = patMuTauPairSelConfiguratorForAHtoMuTauOS.configure(process = process)
 
@@ -571,6 +575,7 @@ def enableSysUncertainties_runAHtoMuTau(process):
     expSysUncertainties = getSysUncertaintyNames(
         [ muonSystematics,
           tauSystematics,
+          muTauPairSystematics,
           jetSystematics ]
     )
     if hasattr(process, "isRecAHtoMuTauCentralJetVeto"):
