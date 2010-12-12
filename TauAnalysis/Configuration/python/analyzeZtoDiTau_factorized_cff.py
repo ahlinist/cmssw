@@ -72,7 +72,7 @@ replaceEventSelections(analyzeZtoDiTauEvents_factorizedLoose2ndTau,
 )
 analyzeZtoDiTauEvents_factorizedLoose2ndTau.analysisSequence = diTauAnalysisSequence_factorizedLoose2ndTau
 replaceAnalyzerModules(analyzeZtoDiTauEvents_factorizedLoose2ndTau,
-    [ [ diTauCandidateSVfitHistManagerForDiTau, diTauCandidateSVfitHistManagerForDiTau_factorizedLoose2ndTau ], ]
+    [ [ diTauCandidateSVfitHistManagerForDiTau, diTauCandidateSVfitHistManagerForDiTau_factorizedLoose2ndTau ] ]
 )                       
 
 analyzeZtoDiTauSequence_factorizedLoose2ndTau = cms.Sequence(analyzeZtoDiTauEvents_factorizedLoose2ndTau)
