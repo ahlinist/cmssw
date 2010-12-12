@@ -6,6 +6,7 @@ from PhysicsTools.PatAlgos.tools.helpers import listModules
 from TauAnalysis.CandidateTools.tools.objSelConfigurator import *
 from TauAnalysis.CandidateTools.tools.composeModuleName import composeModuleName
 from TauAnalysis.Configuration.tools.analysisSequenceTools import removeAnalyzer
+from TauAnalysis.Configuration.tools.factorizationTools import replaceSysAnalyzerModules
 
 from TauAnalysis.RecoTools.patLeptonSelection_cff import *
 from TauAnalysis.RecoTools.patLeptonSystematics_cff import *
@@ -157,12 +158,12 @@ def enableSysUncertainties_runZtoMuTau(process):
                 "smearedParticles.srcSmeared"  : cms.InputTag('selectedPatMuonsTrkIPsysMuonPtDownCumulative')
             },
             "sysTauJetEnUp" : {
-                "smearedParticles.srcOriginal" : cms.InputTag('selectedPatTausForMuTauMuonVetoCumulative'),
-                "smearedParticles.srcSmeared"  : cms.InputTag('selectedPatTausForMuTauMuonVetoSysTauJetEnUpCumulative')
+                "smearedParticles.srcOriginal" : cms.InputTag('selectedPatTausForMuTauElectronVetoCumulative'),
+                "smearedParticles.srcSmeared"  : cms.InputTag('selectedPatTausForMuTauElectronVetoSysTauJetEnUpCumulative')
             },
             "sysTauJetEnDown" : {
-                "smearedParticles.srcOriginal" : cms.InputTag('selectedPatTausForMuTauMuonVetoCumulative'),
-                "smearedParticles.srcSmeared"  : cms.InputTag('selectedPatTausForMuTauMuonVetoSysTauJetEnDownCumulative')
+                "smearedParticles.srcOriginal" : cms.InputTag('selectedPatTausForMuTauElectronVetoCumulative'),
+                "smearedParticles.srcSmeared"  : cms.InputTag('selectedPatTausForMuTauElectronVetoSysTauJetEnDownCumulative')
             },
             "sysJetEnUp" : {
                 "smearedParticles.srcOriginal" : cms.InputTag('selectedPatJetsAntiOverlapWithLeptonsVetoCumulative'),
@@ -187,11 +188,11 @@ def enableSysUncertainties_runZtoMuTau(process):
             "srcMET"  : cms.InputTag('smearedMETsysMuonPtDown')
         },
         "sysTauJetEnUp" : {
-            "srcLeg2" : cms.InputTag('selectedPatTausForMuTauMuonVetoSysTauJetEnUpCumulative'),
+            "srcLeg2" : cms.InputTag('selectedPatTausForMuTauElectronVetoSysTauJetEnUpCumulative'),
             "srcMET"  : cms.InputTag('smearedMETsysTauJetEnUp')
         },
         "sysTauJetEnDown" : {
-            "srcLeg2" : cms.InputTag('selectedPatTausForMuTauMuonVetoSysTauJetEnDownCumulative'),
+            "srcLeg2" : cms.InputTag('selectedPatTausForMuTauElectronVetoSysTauJetEnDownCumulative'),
             "srcMET"  : cms.InputTag('smearedMETsysTauJetEnDown')
         },
         "sysJetEnUp" : {
@@ -238,12 +239,12 @@ def enableSysUncertainties_runZtoMuTau(process):
                 "smearedParticles.srcSmeared"  : cms.InputTag('selectedPatMuonsTrkIPlooseIsolationSysMuonPtDownCumulative')
             },
             "sysTauJetEnUp" : {
-                "smearedParticles.srcOriginal" : cms.InputTag('selectedPatTausForMuTauMuonVetoCumulative'),
-                "smearedParticles.srcSmeared"  : cms.InputTag('selectedPatTausForMuTauMuonVetoSysTauJetEnUpCumulative')
+                "smearedParticles.srcOriginal" : cms.InputTag('selectedPatTausForMuTauElectronVetoCumulative'),
+                "smearedParticles.srcSmeared"  : cms.InputTag('selectedPatTausForMuTauElectronVetoSysTauJetEnUpCumulative')
             },
             "sysTauJetEnDown" : {
-                "smearedParticles.srcOriginal" : cms.InputTag('selectedPatTausForMuTauMuonVetoCumulative'),
-                "smearedParticles.srcSmeared"  : cms.InputTag('selectedPatTausForMuTauMuonVetoSysTauJetEnDownCumulative')
+                "smearedParticles.srcOriginal" : cms.InputTag('selectedPatTausForMuTauElectronVetoCumulative'),
+                "smearedParticles.srcSmeared"  : cms.InputTag('selectedPatTausForMuTauElectronVetoSysTauJetEnDownCumulative')
             },
             "sysJetEnUp" : {
                 "smearedParticles.srcOriginal" : cms.InputTag('selectedPatJetsAntiOverlapWithLeptonsVetoCumulative'),
@@ -268,11 +269,11 @@ def enableSysUncertainties_runZtoMuTau(process):
             "srcMET"  : cms.InputTag('smearedMETsysMuonPtDown')
         },
         "sysTauJetEnUp" : {
-            "srcLeg2" : cms.InputTag('selectedPatTausForMuTauMuonVetoSysTauJetEnUpCumulative'),
+            "srcLeg2" : cms.InputTag('selectedPatTausForMuTauElectronVetoSysTauJetEnUpCumulative'),
             "srcMET"  : cms.InputTag('smearedMETsysTauJetEnUp')
         },
         "sysTauJetEnDown" : {
-            "srcLeg2" : cms.InputTag('selectedPatTausForMuTauMuonVetoSysTauJetEnDownCumulative'),
+            "srcLeg2" : cms.InputTag('selectedPatTausForMuTauElectronVetoSysTauJetEnDownCumulative'),
             "srcMET"  : cms.InputTag('smearedMETsysTauJetEnDown')
         },
         "sysJetEnUp" : {
@@ -305,12 +306,15 @@ def enableSysUncertainties_runZtoMuTau(process):
     process.produceMuTauPairsAll += configZllRecoilCorrection['patPFMETsZllRecoilCorrectionSequence']
 
     setattr(patMuTauPairSelConfiguratorOS, "systematics", muTauPairSystematics)
+    if hasattr(process, "allMuTauPairsZllRecoilCorrected"):
+        setattr(patMuTauPairSelConfiguratorOS, "src", "allMuTauPairsZllRecoilCorrected")
     process.selectMuTauPairsOS = patMuTauPairSelConfiguratorOS.configure(process = process)
-
     setattr(patMuTauPairSelConfiguratorSS, "systematics", muTauPairSystematics)
     process.selectMuTauPairsSS = patMuTauPairSelConfiguratorSS.configure(process = process)
 
     setattr(patMuTauPairSelConfiguratorLooseMuonIsolationOS, "systematics", muTauPairSystematicsLooseMuonIsolation)
+    if hasattr(process, "allMuTauPairsLooseMuonIsolationZllRecoilCorrected"):
+        setattr(patMuTauPairSelConfiguratorLooseMuonIsolationOS, "src", "allMuTauPairsLooseMuonIsolationZllRecoilCorrected")
     process.selectMuTauPairsLooseMuonIsolationOS = patMuTauPairSelConfiguratorLooseMuonIsolationOS.configure(process = process)
     setattr(patMuTauPairSelConfiguratorLooseMuonIsolationSS, "systematics", muTauPairSystematicsLooseMuonIsolation)
     process.selectMuTauPairsLooseMuonIsolationSS = patMuTauPairSelConfiguratorLooseMuonIsolationSS.configure(process = process)
@@ -552,22 +556,24 @@ def enableSysUncertainties_runAHtoMuTau(process):
       ahToMuTauEventSelConfiguratorLooseMuonIsolationSS.configure(process = process, estimateSysUncertainties = True)
   
     setattr(patMuTauPairSelConfiguratorForAHtoMuTauOS, "systematics", muTauPairSystematics)
+    if hasattr(process, "allMuTauPairsZllRecoilCorrected"):
+        setattr(patMuTauPairSelConfiguratorForAHtoMuTauOS, "src", "allMuTauPairsZllRecoilCorrected")
     process.selectMuTauPairsForAHtoMuTauOS = patMuTauPairSelConfiguratorForAHtoMuTauOS.configure(process = process)
-
     setattr(patMuTauPairSelConfiguratorForAHtoMuTauSS, "systematics", muTauPairSystematics)
     process.selectMuTauPairsForAHtoMuTauSS = patMuTauPairSelConfiguratorForAHtoMuTauSS.configure(process = process)
 
     setattr(patMuTauPairSelConfiguratorForAHtoMuTauLooseMuonIsolationOS, "systematics", muTauPairSystematicsLooseMuonIsolation)
+    if hasattr(process, "allMuTauPairsLooseMuonIsolationZllRecoilCorrected"):
+        setattr(patMuTauPairSelConfiguratorForAHtoMuTauLooseMuonIsolationOS, "src", "allMuTauPairsLooseMuonIsolationZllRecoilCorrected")
     process.selectMuTauPairsForAHtoMuTauLooseMuonIsolationOS = \
       patMuTauPairSelConfiguratorForAHtoMuTauLooseMuonIsolationOS.configure(process = process)
-
     setattr(patMuTauPairSelConfiguratorForAHtoMuTauLooseMuonIsolationSS, "systematics", muTauPairSystematicsLooseMuonIsolation)
     process.selectMuTauPairsForAHtoMuTauLooseMuonIsolationSS = \
       patMuTauPairSelConfiguratorForAHtoMuTauLooseMuonIsolationSS.configure(process = process)
 
     setattr(patJetSelConfiguratorForAHtoMuTau, "systematics", jetSystematics)
     process.selectPatJetsForAHtoMuTau = patJetSelConfiguratorForAHtoMuTau.configure(process = process)
-
+    
     setattr(patJetSelConfiguratorForAHtoMuTauLooseMuonIsolation, "systematics", jetSystematics)
     process.selectPatJetsForAHtoMuTauLooseMuonIsolation = \
       patJetSelConfiguratorForAHtoMuTauLooseMuonIsolation.configure(process = process)
@@ -590,9 +596,65 @@ def enableSysUncertainties_runAHtoMuTau(process):
                 if hasattr(process, name):
                     getattr(process, name).estimateSysUncertainties = cms.bool(True)
 
+    # update InputTags of systematic uncertainty histogram managers
+    if hasattr(process, "sysUncertaintyHistManagerForMuTau"):
+        sysUncertaintyHistManagerMuTauPairSystematics = {
+            "sysMuonPtUp"                : cms.InputTag('selectedMuTauPairsForAHtoMuTauPzetaDiffSysMuonPtUpCumulative'),
+            "sysMuonPtDown"              : cms.InputTag('selectedMuTauPairsForAHtoMuTauPzetaDiffSysMuonPtDownCumulative'),
+            "sysTauJetEnUp"              : cms.InputTag('selectedMuTauPairsForAHtoMuTauPzetaDiffSysTauJetEnUpCumulative'),
+            "sysTauJetEnDown"            : cms.InputTag('selectedMuTauPairsForAHtoMuTauPzetaDiffSysTauJetEnDownCumulative'),
+            "sysJetEnUp"                 : cms.InputTag('selectedMuTauPairsForAHtoMuTauPzetaDiffSysJetEnUpCumulative'),
+            "sysJetEnDown"               : cms.InputTag('selectedMuTauPairsForAHtoMuTauPzetaDiffSysJetEnDownCumulative'),
+            "sysZllRecoilCorrectionUp"   : cms.InputTag('selectedMuTauPairsForAHtoMuTauPzetaDiffSysZllRecoilCorrectionUpCumulative'),
+            "sysZllRecoilCorrectionDown" : cms.InputTag('selectedMuTauPairsForAHtoMuTauPzetaDiffSysZllRecoilCorrectionDownCumulative')
+        }
+        process.sysUncertaintyHistManagerForMuTau_updated = copy.deepcopy(process.sysUncertaintyHistManagerForMuTau)
+        process.sysUncertaintyHistManagerForMuTau_updated.histManagers[0].systematics.diTauCandidateSource = \
+          getSysUncertaintyParameterSets([ sysUncertaintyHistManagerMuTauPairSystematics ])
+        process.sysUncertaintyHistManagerForMuTau_updated.histManagers[1].systematics.diTauCandidateSource = \
+          process.sysUncertaintyHistManagerForMuTau_updated.histManagers[0].systematics.diTauCandidateSource
 
+        for genAnalyzerModuleName in [ "analyzeAHtoMuTauEventsOS_woBtag", 
+                                       "analyzeAHtoMuTauEventsOS_wBtag",
+                                       "analyzeAHtoMuTauEventsOS_woBtag_factorizedWithMuonIsolation", 
+                                       "analyzeAHtoMuTauEventsOS_wBtag_factorizedWithMuonIsolation",
+                                       "analyzeAHtoMuTauEventsSS_woBtag_factorizedWithMuonIsolation",
+                                       "analyzeAHtoMuTauEventsSS_wBtag_factorizedWithMuonIsolation" ]:
+            if hasattr(process, genAnalyzerModuleName):
+                print("--> replacing %s in %s" % ("sysUncertaintyHistManagerForMuTau", genAnalyzerModuleName))
+                genAnalyzerMode = getattr(process, genAnalyzerModuleName) 
+                replaceSysAnalyzerModules(genAnalyzerMode,
+                  [ [ process.sysUncertaintyHistManagerForMuTau, process.sysUncertaintyHistManagerForMuTau_updated ] ]
+                )   
 
+    if hasattr(process, "sysUncertaintyHistManagerForMuTauLooseMuonIsolation"):
+        sysUncertaintyHistManagerMuTauPairSystematicsLooseMuonIsolation = {
+            "sysMuonPtUp"                : cms.InputTag('selectedMuTauPairsForAHtoMuTauPzetaDiffLooseMuonIsolationSysMuonPtUpCumulative'),
+            "sysMuonPtDown"              : cms.InputTag('selectedMuTauPairsForAHtoMuTauPzetaDiffLooseMuonIsolationSysMuonPtDownCumulative'),
+            "sysTauJetEnUp"              : cms.InputTag('selectedMuTauPairsForAHtoMuTauPzetaDiffLooseMuonIsolationSysTauJetEnUpCumulative'),
+            "sysTauJetEnDown"            : cms.InputTag('selectedMuTauPairsForAHtoMuTauPzetaDiffLooseMuonIsolationSysTauJetEnDownCumulative'),
+            "sysJetEnUp"                 : cms.InputTag('selectedMuTauPairsForAHtoMuTauPzetaDiffLooseMuonIsolationSysJetEnUpCumulative'),
+            "sysJetEnDown"               : cms.InputTag('selectedMuTauPairsForAHtoMuTauPzetaDiffLooseMuonIsolationSysJetEnDownCumulative'),
+            "sysZllRecoilCorrectionUp"   : cms.InputTag('selectedMuTauPairsForAHtoMuTauPzetaDiffLooseMuonIsolationSysZllRecoilCorrectionUpCumulative'),
+            "sysZllRecoilCorrectionDown" : cms.InputTag('selectedMuTauPairsForAHtoMuTauPzetaDiffLooseMuonIsolationSysZllRecoilCorrectionDownCumulative')
+        }
+        process.sysUncertaintyHistManagerForMuTauLooseMuonIsolation_updated = copy.deepcopy(process.sysUncertaintyHistManagerForMuTauLooseMuonIsolation)
+        process.sysUncertaintyHistManagerForMuTauLooseMuonIsolation_updated.histManagers[0].systematics.diTauCandidateSource = \
+          getSysUncertaintyParameterSets([ sysUncertaintyHistManagerMuTauPairSystematicsLooseMuonIsolation ])
+        process.sysUncertaintyHistManagerForMuTauLooseMuonIsolation_updated.histManagers[1].systematics.diTauCandidateSource = \
+          process.sysUncertaintyHistManagerForMuTauLooseMuonIsolation_updated.histManagers[0].systematics.diTauCandidateSource   
 
+        for genAnalyzerModuleName in [ "analyzeAHtoMuTauEventsOS_woBtag_factorizedWithoutMuonIsolation", 
+                                       "analyzeAHtoMuTauEventsOS_wBtag_factorizedWithoutMuonIsolation",
+                                       "analyzeAHtoMuTauEventsSS_woBtag_factorizedWithoutMuonIsolation",
+                                       "analyzeAHtoMuTauEventsSS_wBtag_factorizedWithoutMuonIsolation" ]:
+            if hasattr(process, genAnalyzerModuleName):
+                print("--> replacing %s in %s" % ("sysUncertaintyHistManagerForMuTauLooseMuonIsolation", genAnalyzerModuleName))
+                genAnalyzerMode = getattr(process, genAnalyzerModuleName) 
+                replaceSysAnalyzerModules(genAnalyzerMode,
+                  [ [ process.sysUncertaintyHistManagerForMuTauLooseMuonIsolation, process.sysUncertaintyHistManagerForMuTauLooseMuonIsolation_updated ] ]
+                )   
+    
 
 
 
