@@ -55,7 +55,7 @@ def addMuTauSkimm(process):
 
     process.selectedMuTaNCtauPairs = cms.EDFilter("DiCandidatePairSelector",
         src = cms.InputTag('muTaNCtauPairs'),
-        cut = cms.string("dR12 > -0.3"),
+        cut = cms.string("dR12 > 0."),
         filter = cms.bool(True)                                     
     )
 
@@ -71,7 +71,7 @@ def addMuTauSkimm(process):
 
     process.selectedMuHPStauPairs = cms.EDFilter("DiCandidatePairSelector",
         src = cms.InputTag('muHPStauPairs'),
-        cut = cms.string("dR12 > -0.3"),
+        cut = cms.string("dR12 > 0."),
         filter = cms.bool(True)                                     
     )
 
