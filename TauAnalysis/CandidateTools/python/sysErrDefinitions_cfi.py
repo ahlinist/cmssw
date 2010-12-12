@@ -93,13 +93,13 @@ theorySystematics = {
 
 def getSysUncertaintyNames(sysUncertaintyMaps):
     
-    sysUncertaintyNames = []
+    sysUncertaintyNames = set()
     
     for sysUncertaintyMap in sysUncertaintyMaps:
         for sysUncertaintyName in sysUncertaintyMap.keys():
-            sysUncertaintyNames.append(sysUncertaintyName)
+            sysUncertaintyNames.add(sysUncertaintyName)
 
-    return sysUncertaintyNames
+    return list(sysUncertaintyNames)
 
 def getSysUncertaintyParameterSets(sysUncertaintyMaps):
     
