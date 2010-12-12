@@ -8,7 +8,7 @@ import FWCore.ParameterSet.Config as cms
 
 from TauAnalysis.Configuration.analyzeAHtoMuTau_factorized_cfi import *
 from TauAnalysis.Configuration.analyzeAHtoMuTau_cff import *
-from TauAnalysis.Configuration.tools.factorizationTools import replaceEventSelections
+from TauAnalysis.Configuration.tools.factorizationTools import replaceEventSelections, replaceSysAnalyzerModules
 
 #--------------------------------------------------------------------------------
 # define A/H --> mu + tau-jet analysis modules
@@ -79,6 +79,9 @@ eventSelectionReplacementsOS.append([ evtSelDiTauCandidateForAHtoMuTauZeroCharge
 analyzeAHtoMuTauEventsOS_woBtag_factorizedWithoutMuonIsolation = analyzeAHtoMuTauEventsOS_woBtag.clone(
     name = cms.string('ahMuTauAnalyzerOS_woBtag_factorizedWithoutMuonIsolation')
 )
+replaceSysAnalyzerModules(analyzeAHtoMuTauEventsOS_woBtag_factorizedWithoutMuonIsolation,
+    [ [ sysUncertaintyHistManagerForMuTau, sysUncertaintyHistManagerForMuTauLooseMuonIsolation ] ]
+)   
 if analyzeAHtoMuTauEventsOS_woBtag_factorizedWithoutMuonIsolation.eventDumps:
     analyzeAHtoMuTauEventsOS_woBtag_factorizedWithoutMuonIsolation.eventDumps[0] = muTauEventDump_factorizedWithoutMuonIsolation
 replaceEventSelections(analyzeAHtoMuTauEventsOS_woBtag_factorizedWithoutMuonIsolation, eventSelectionReplacementsOS)
@@ -87,6 +90,9 @@ analyzeAHtoMuTauEventsOS_woBtag_factorizedWithoutMuonIsolation.analysisSequence 
 
 analyzeAHtoMuTauEventsOS_wBtag_factorizedWithoutMuonIsolation = analyzeAHtoMuTauEventsOS_wBtag.clone(
     name = cms.string('ahMuTauAnalyzerOS_wBtag_factorizedWithoutMuonIsolation')
+)
+replaceSysAnalyzerModules(analyzeAHtoMuTauEventsOS_wBtag_factorizedWithoutMuonIsolation,
+    [ [ sysUncertaintyHistManagerForMuTau, sysUncertaintyHistManagerForMuTauLooseMuonIsolation ] ]
 )
 if analyzeAHtoMuTauEventsOS_wBtag_factorizedWithoutMuonIsolation.eventDumps:
     analyzeAHtoMuTauEventsOS_wBtag_factorizedWithoutMuonIsolation.eventDumps[0] = muTauEventDump_factorizedWithoutMuonIsolation
@@ -101,6 +107,9 @@ eventSelectionReplacementsSS.append([ evtSelDiTauCandidateForAHtoMuTauNonZeroCha
 analyzeAHtoMuTauEventsSS_woBtag_factorizedWithoutMuonIsolation = analyzeAHtoMuTauEventsSS_woBtag.clone(
     name = cms.string('ahMuTauAnalyzerSS_woBtag_factorizedWithoutMuonIsolation')
 )
+replaceSysAnalyzerModules(analyzeAHtoMuTauEventsSS_woBtag_factorizedWithoutMuonIsolation,
+    [ [ sysUncertaintyHistManagerForMuTau, sysUncertaintyHistManagerForMuTauLooseMuonIsolation ] ]
+) 
 if analyzeAHtoMuTauEventsSS_woBtag_factorizedWithoutMuonIsolation.eventDumps:
     analyzeAHtoMuTauEventsSS_woBtag_factorizedWithoutMuonIsolation.eventDumps[0] = muTauEventDump_factorizedWithoutMuonIsolation
 replaceEventSelections(analyzeAHtoMuTauEventsSS_woBtag_factorizedWithoutMuonIsolation, eventSelectionReplacementsSS)
@@ -109,6 +118,9 @@ analyzeAHtoMuTauEventsSS_woBtag_factorizedWithoutMuonIsolation.analysisSequence 
 
 analyzeAHtoMuTauEventsSS_wBtag_factorizedWithoutMuonIsolation = analyzeAHtoMuTauEventsSS_wBtag.clone(
     name = cms.string('ahMuTauAnalyzerSS_wBtag_factorizedWithoutMuonIsolation')
+)
+replaceSysAnalyzerModules(analyzeAHtoMuTauEventsSS_wBtag_factorizedWithoutMuonIsolation,
+    [ [ sysUncertaintyHistManagerForMuTau, sysUncertaintyHistManagerForMuTauLooseMuonIsolation ] ]
 )
 if analyzeAHtoMuTauEventsSS_wBtag_factorizedWithoutMuonIsolation.eventDumps:
     analyzeAHtoMuTauEventsSS_wBtag_factorizedWithoutMuonIsolation.eventDumps[0] = muTauEventDump_factorizedWithoutMuonIsolation

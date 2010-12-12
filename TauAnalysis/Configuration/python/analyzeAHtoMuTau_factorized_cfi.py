@@ -61,6 +61,31 @@ evtSelCentralJetEt20bTagLooseMuonIsolation = cms.PSet(
 )
 
 #--------------------------------------------------------------------------------
+# define systematic uncertainty histogram manager specific to factorization
+#--------------------------------------------------------------------------------
+
+sysUncertaintyHistManagerForMuTauLooseMuonIsolation = sysUncertaintyHistManagerForMuTau.clone(
+    histManagers = cms.VPSet(
+        cms.PSet(
+            config = diTauCandidateHistManagerForMuTau,
+            systematics = cms.PSet(
+                diTauCandidateSource = getSysUncertaintyParameterSets(
+                    [ muTauPairSystematicsLooseMuonIsolation ]
+                )
+            )
+        ),
+        cms.PSet(
+            config = diTauCandidateSVfitHistManagerForMuTau,
+            systematics = cms.PSet(
+                diTauCandidateSource = getSysUncertaintyParameterSets(
+                    [ muTauPairSystematicsLooseMuonIsolation ]
+                )
+            )
+        )
+    )
+)
+
+#--------------------------------------------------------------------------------
 # define event print-out
 #--------------------------------------------------------------------------------
 
