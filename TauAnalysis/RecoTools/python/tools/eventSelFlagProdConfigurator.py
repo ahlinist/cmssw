@@ -28,7 +28,7 @@ class eventSelFlagProdConfigurator(cms._ParameterTypeBase):
         if sysName is None:
             moduleName = objSelItem.pluginName.value()
         else:
-            moduleName = composeModuleName(objSelItem.pluginName.value(), sysName)
+            moduleName = composeModuleName([ objSelItem.pluginName.value(), sysName ])
         module.setLabel(moduleName)
 
         selectors = []
@@ -54,9 +54,9 @@ class eventSelFlagProdConfigurator(cms._ParameterTypeBase):
                     if src_i[0].value().endswith(src_extension):
                         src_iBase = src_i[0].value()[:src_i[0].value().rindex(src_extension)]
                         src_iExt = src_extension
-                        setattr(selector_i, "src", cms.InputTag(composeModuleName(composeModuleName(src_iBase, sysName), src_iExt)))
+                        setattr(selector_i, "src", cms.InputTag(composeModuleName([ src_iBase, sysName, src_iExt ])))
                 if not hasattr(selector_i, "src"):
-                    setattr(selector_i, "src", cms.InputTag(composeModuleName(src_i[0].value(), sysName)))
+                    setattr(selector_i, "src", cms.InputTag(composeModuleName([ src_i[0].value(), sysName ])))
 
             if src_i[1] is not None:
                 setattr(selector_i, "instanceName", cms.string(src_i[1]))
