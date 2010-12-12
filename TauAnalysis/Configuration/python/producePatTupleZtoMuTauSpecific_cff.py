@@ -45,7 +45,7 @@ producePatTupleZtoMuTauSpecific = cms.Sequence(
    + selectPatElectrons
    + selectPatTaus + selectPatTausForMuTau
    + selectPatJets 
-   + produceMuTauPairs + produceMuTauPairsLooseMuonIsolation
+   + produceMuTauPairsAll
    + selectMuTauPairs + selectMuTauPairsLooseMuonIsolation
    + produceMuTauPairZmumuHypotheses
    + produceDiMuPairs
