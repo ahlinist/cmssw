@@ -19,11 +19,13 @@ SysUncertaintyService = cms.Service("SysUncertaintyService",
         isRecAHtoMuTauCentralJetVeto = cms.vstring(
             "sysMuon*", "",
             "sysTau*", "",
+            "sysZllRecoilCorrection*", "",
             "sysJet*", ""                               
         ),
         isRecAHtoMuTauCentralJetBtag = cms.vstring(
             "sysMuon*", "",
             "sysTau*", "",
+            "sysZllRecoilCorrection*", "",
             "sysJet*", ""                               
         )                                
     )
@@ -124,6 +126,7 @@ analyzeAHtoMuTauEventsOS_woBtag = cms.EDAnalyzer("GenericAnalyzer",
         getSysUncertaintyNames(
             [ muonSystematics,
               tauSystematics,
+              muTauPairSystematics,
               jetSystematics,
               theorySystematics ]
         )

@@ -19,6 +19,7 @@ SysUncertaintyService = cms.Service("SysUncertaintyService",
         isRecZtoMuTau = cms.vstring(
             "sysMuon*", "",
             "sysTau*", "",
+            "sysZllRecoilCorrection*", "",
             "sysJet*", ""
         )        
     )
@@ -116,6 +117,7 @@ analyzeZtoMuTauEventsOS = cms.EDAnalyzer("GenericAnalyzer",
         getSysUncertaintyNames(
             [ muonSystematics,
               tauSystematics,
+              muTauPairSystematics,
               jetSystematics,
               theorySystematics ]
         )

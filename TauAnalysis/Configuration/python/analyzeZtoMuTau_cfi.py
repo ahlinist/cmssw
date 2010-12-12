@@ -120,11 +120,12 @@ modelBinnerForMuTauWrtGenTauLeptonPairAcc.dqmDirectory_store = cms.string('model
 # used to estimate systematic uncertainties
 from TauAnalysis.Core.sysUncertaintyBinner_cfi import *
 from TauAnalysis.CandidateTools.sysErrDefinitions_cfi import *
-sysUncertaintyNames = [ "CENTRAL_VALUE", ]
+sysUncertaintyNames = [ "CENTRAL_VALUE" ]
 sysUncertaintyNames.extend(
     getSysUncertaintyNames(
         [ muonSystematics,
           tauSystematics,
+          muTauPairSystematics,
           jetSystematics,
           theorySystematics ]
     )
