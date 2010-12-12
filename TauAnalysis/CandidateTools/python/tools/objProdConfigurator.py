@@ -56,7 +56,7 @@ class objProdConfigurator(cms._ParameterTypeBase):
         for sysAttrName, sysAttrValue in sysAttributes.items():
             self._recursiveSetAttr(module, sysAttrName, sysAttrValue)
                 
-        moduleName = composeModuleName(getInstanceName(objProdItem, pyNameSpace, process), sysName)
+        moduleName = composeModuleName([ getInstanceName(objProdItem, pyNameSpace, process), sysName ])
         module.setLabel(moduleName)
 
         # if process object exists, attach module to process object;
