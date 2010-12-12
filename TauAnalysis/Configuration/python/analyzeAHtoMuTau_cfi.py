@@ -168,7 +168,7 @@ sysUncertaintyHistManagerForMuTau = cms.PSet(
             config = diTauCandidateHistManagerForMuTau,
             systematics = cms.PSet(
                 diTauCandidateSource = getSysUncertaintyParameterSets(
-                    [ muTauPairSystematics, ]
+                    [ muTauPairSystematics ]
                 )
             )
         ),
@@ -176,7 +176,7 @@ sysUncertaintyHistManagerForMuTau = cms.PSet(
             config = diTauCandidateSVfitHistManagerForMuTau,
             systematics = cms.PSet(
                 diTauCandidateSource = getSysUncertaintyParameterSets(
-                    [ muTauPairSystematics, ]
+                    [ muTauPairSystematics ]
                 )
             )
         )
