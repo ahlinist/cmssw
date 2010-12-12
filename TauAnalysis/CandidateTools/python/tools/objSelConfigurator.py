@@ -37,8 +37,8 @@ class objSelConfigurator(cms._ParameterTypeBase):
         def get_moduleName(name, sysName = None):
             moduleName_base = name
             if sysName is not None:
-                moduleName_base = composeModuleName(name, sysName)
-            return composeModuleName(moduleName_base, "Cumulative")
+                moduleName_base = composeModuleName([ name, sysName ])
+            return composeModuleName([ moduleName_base, "Cumulative" ])
 
     class _getterIndividual:
         # auxiliary class for composing name of module selecting "individual" collection
@@ -49,8 +49,8 @@ class objSelConfigurator(cms._ParameterTypeBase):
         def get_moduleName(name, sysName = None):
             moduleName_base = name
             if sysName is not None:
-                moduleName_base = composeModuleName(name, sysName)
-            return composeModuleName(moduleName_base, "Individual")
+                moduleName_base = composeModuleName([ name, sysName ])
+            return composeModuleName([ moduleName_base, "Individual" ])
 
     def _addModule(self, objSelItem, getter, sysName = None, sysInputTag = None, pyNameSpace = None, process = None):
         # create module
