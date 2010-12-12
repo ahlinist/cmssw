@@ -205,6 +205,18 @@ def enableSysUncertainties_runZtoMuTau(process):
     process.produceMuTauPairsAll.replace(process.produceMuTauPairs, process.allMuTauPairs)
     process.produceMuTauPairsAll += process.produceMuTauPairs
 
+    # apply Z-recoil corrections to shifted/smeared diTau objects
+    if hasattr(process, "allMuTauPairsZllRecoilCorrected"):
+        for sysName, src in muTauPairSystematics.items():
+
+            if sysName.find("ZllRecoilCorrection") != -1:
+                continue;
+
+            configZllRecoilCorrection = configureZllRecoilCorrection(process, src.getModuleLabel(), "ZllRecoilCorrectionMuTauPair")
+            process.produceMuTauPairsAll += configZllRecoilCorrection['patPFMETsZllRecoilCorrectionSequence']
+            muTauPairSystematics[sysName] = configZllRecoilCorrection['diTauProducerModuleZllRecoilCorrectedName']
+
+    # add uncertainties on Z-recoil correction
     configZllRecoilCorrection = configureZllRecoilCorrection(process, "allMuTauPairs",
                                                              "ZllRecoilCorrectionMuTauPair", +1., "SysUp")
     process.produceMuTauPairsAll += configZllRecoilCorrection['patPFMETsZllRecoilCorrectionSequence']
@@ -274,6 +286,17 @@ def enableSysUncertainties_runZtoMuTau(process):
     process.produceMuTauPairsAll.replace(process.produceMuTauPairsLooseMuonIsolation, process.allMuTauPairsLooseMuonIsolation)
     process.produceMuTauPairsAll += process.produceMuTauPairsLooseMuonIsolation
 
+    # apply Z-recoil corrections to shifted/smeared diTau objects
+    if hasattr(process, "allMuTauPairsLooseMuonIsolationZllRecoilCorrected"):
+        for sysName, src in muTauPairSystematicsLooseMuonIsolation.items():
+
+            if sysName.find("ZllRecoilCorrection") != -1:
+                continue;
+
+            configZllRecoilCorrection = configureZllRecoilCorrection(process, src.getModuleLabel(), "ZllRecoilCorrectionMuTauPair")
+            process.produceMuTauPairsAll += configZllRecoilCorrection['patPFMETsZllRecoilCorrectionSequence']
+            muTauPairSystematicsLooseMuonIsolation[sysName] = configZllRecoilCorrection['diTauProducerModuleZllRecoilCorrectedName']
+
     configZllRecoilCorrection = configureZllRecoilCorrection(process, "allMuTauPairsLooseMuonIsolation",
                                                              "ZllRecoilCorrectionMuTauPair", +1., "SysUp")
     process.produceMuTauPairsAll += configZllRecoilCorrection['patPFMETsZllRecoilCorrectionSequence']
@@ -296,6 +319,7 @@ def enableSysUncertainties_runZtoMuTau(process):
         expSysUncertainties = getSysUncertaintyNames(
             [ muonSystematics,
               tauSystematics,
+              muTauPairSystematics,
               jetSystematics ]
         )
         addBoolEventSelFlagProducer(process, "isRecZtoMuTau", expSysUncertainties, "selectZtoMuTauEvents")
