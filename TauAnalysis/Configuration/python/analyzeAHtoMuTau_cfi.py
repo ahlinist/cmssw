@@ -132,6 +132,7 @@ sysUncertaintyNames.extend(
     getSysUncertaintyNames(
         [ muonSystematics,
           tauSystematics,
+          muTauPairSystematics,
           jetSystematics,
           theorySystematics ]
     )
