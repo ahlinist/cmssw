@@ -33,7 +33,7 @@ def addElecMuSkimm(process):
 
     process.selectedElecMuPairs = cms.EDFilter("DiCandidatePairSelector",
         src = cms.InputTag('elecMuPairs'),
-        cut = cms.string("dR12 > -0.3"),
+        cut = cms.string("dR12 > 0."),
         filter = cms.bool(True)                                     
     )
 
