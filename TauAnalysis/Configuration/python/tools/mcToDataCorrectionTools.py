@@ -2,50 +2,23 @@ import FWCore.ParameterSet.Config as cms
 import copy
 
 #--------------------------------------------------------------------------------
-# utility functions to apply Z-recoil corrections to MEt
-# NOTE: implementations specific to different analysis channels
+# utility functions to add Z-recoil corrections to MEt
+# to different analysis channels
 #--------------------------------------------------------------------------------
 
 import PhysicsTools.PatAlgos.tools.helpers as patutils
 
-from TauAnalysis.CandidateTools.tools.composeModuleName import composeModuleName
+from TauAnalysis.RecoTools.tools.configureZllRecoilCorrection import configureZllRecoilCorrection
 
 def _applyZllRecoilCorrection(process, diTauProductionSequenceName, diTauProducerModuleName, ZllRecoilCorrectionType,
                               genericAnalyzerSequenceNames = []):
 
-    process.load("TauAnalysis.RecoTools.recoZllRecoilCorrection_cfi")
+    configZllRecoilCorrection = \
+      configureZllRecoilCorrection(process, diTauProducerModuleName, ZllRecoilCorrectionType)
+    diTauProductionSequence = getattr(process, diTauProductionSequenceName)
+    diTauProductionSequence += configZllRecoilCorrection['patPFMETsZllRecoilCorrectionSequence']
 
     if hasattr(process, diTauProductionSequenceName):
-        patPFMETsZllRecoilCorrectionModule = cms.EDProducer(ZllRecoilCorrectionType,
-            process.recoZllRecoilCorrectionParameter,                                         
-            src = cms.InputTag(diTauProducerModuleName)
-        )
-        patPFMETsZllRecoilCorrectionModuleName = composeModuleName("patPFMETsZllRecoilCorrected", diTauProducerModuleName)
-        setattr(process, patPFMETsZllRecoilCorrectionModuleName, patPFMETsZllRecoilCorrectionModule)
-
-        diTauProducerModule = getattr(process, diTauProducerModuleName)
-
-        diTauProducerModuleZllRecoilCorrected = diTauProducerModule.clone()
-        diTauProducerModuleZllRecoilCorrected.srcMET = \
-           cms.InputTag(patPFMETsZllRecoilCorrectionModuleName, 'met')
-        diTauProducerModuleZllRecoilCorrected.srcReRecoDiTauObjects = \
-           cms.InputTag(diTauProducerModuleName)
-        diTauProducerModuleZllRecoilCorrected.srcReRecoDiTauToMEtAssociations = \
-           cms.InputTag(patPFMETsZllRecoilCorrectionModuleName, 'diTauToMEtAssociations')
-        diTauProducerModuleZllRecoilCorrectedName = composeModuleName(diTauProducerModuleName, "ZllRecoilCorrected")
-        setattr(process, diTauProducerModuleZllRecoilCorrectedName, diTauProducerModuleZllRecoilCorrected)
-
-        patPFMETsZllRecoilCorrectionSequence = cms.Sequence(
-            diTauProducerModule
-           * patPFMETsZllRecoilCorrectionModule
-           * diTauProducerModuleZllRecoilCorrected
-        )
-        patPFMETsZllRecoilCorrectionSequenceName = composeModuleName("patPFMETsZllRecoilCorrectionSequence", diTauProducerModuleName)
-        setattr(process, patPFMETsZllRecoilCorrectionSequenceName, patPFMETsZllRecoilCorrectionSequence)
-
-        diTauProductionSequence = getattr(process, diTauProductionSequenceName)
-        diTauProducerModule = getattr(process, diTauProducerModuleName)
-        diTauProductionSequence.replace(diTauProducerModule, patPFMETsZllRecoilCorrectionSequence)
 
         # iterate over all sequences attached to process object
         # and replace InputTags:
@@ -56,7 +29,7 @@ def _applyZllRecoilCorrection(process, diTauProductionSequenceName, diTauProduce
             if isinstance(processAttr, cms.Sequence):
                 print "--> Replacing InputTags in sequence:", processAttrName
                 patutils.massSearchReplaceAnyInputTag(processAttr, cms.InputTag(diTauProducerModuleName),
-                  cms.InputTag(diTauProducerModuleZllRecoilCorrectedName))
+                  cms.InputTag(configZllRecoilCorrection['diTauProducerModuleZllRecoilCorrectedName']))
 
         # replace InputTags:
         #  o patPFMETs --> cms.InputTag(patPFMETsZllRecoilCorrectionModuleName, 'met')
@@ -65,11 +38,11 @@ def _applyZllRecoilCorrection(process, diTauProductionSequenceName, diTauProduce
             if hasattr(process, genericAnalyzerSequenceName):
                 genericAnalyzerSequence = getattr(process, genericAnalyzerSequenceName)
                 patutils.massSearchReplaceAnyInputTag(genericAnalyzerSequence, cms.InputTag('patPFMETs'),
-                  cms.InputTag(patPFMETsZllRecoilCorrectionModuleName, 'met'))
+                  cms.InputTag(configZllRecoilCorrection['patPFMETsZllRecoilCorrectionModuleName'], 'met'))
         
         # restore InputTags of ZllRecoilCorrection modules
-        patPFMETsZllRecoilCorrectionModule.src = cms.InputTag(diTauProducerModuleName)
-        diTauProducerModuleZllRecoilCorrected.srcReRecoDiTauObjects = \
+        configZllRecoilCorrection['patPFMETsZllRecoilCorrectionModule'].src = cms.InputTag(diTauProducerModuleName)
+        configZllRecoilCorrection['diTauProducerModuleZllRecoilCorrected'].srcReRecoDiTauObjects = \
            cms.InputTag(diTauProducerModuleName)
 
         # disable warnings in MET histogram managers
@@ -99,11 +72,11 @@ def _addEventWeight(process, genAnalyzerModuleNames, srcEventWeight, applyAfterF
 def applyZrecoilCorrection_runZtoMuTau(process):
     
     _applyZllRecoilCorrection(process,
-                              "produceMuTauPairs", 'allMuTauPairs',
+                              "produceMuTauPairsAll", 'allMuTauPairs',
                               "ZllRecoilCorrectionMuTauPair",
                               [ "analyzeZtoMuTauSequence" ])
     _applyZllRecoilCorrection(process,
-                              "produceMuTauPairsLooseMuonIsolation", 'allMuTauPairsLooseMuonIsolation',
+                              "produceMuTauPairsAll", 'allMuTauPairsLooseMuonIsolation',
                               "ZllRecoilCorrectionMuTauPair",
                               [ "analyzeZtoMuTauSequence_factorizedWithMuonIsolation",
                                 "analyzeZtoMuTauSequence_factorizedWithoutMuonIsolation" ])
@@ -111,7 +84,7 @@ def applyZrecoilCorrection_runZtoMuTau(process):
 def applyZrecoilCorrection_runZtoMuTau_bgEstTemplate(process):
 
     _applyZllRecoilCorrection(process,
-                              "produceMuTauPairs", 'allMuTauPairs',
+                              "produceMuTauPairsAll", 'allMuTauPairs',
                               "ZllRecoilCorrectionMuTauPair",
                               [ "analyzeZtoMuTauSequence" ])
     _applyZllRecoilCorrection(process,
@@ -140,7 +113,7 @@ def applyZrecoilCorrection_runZtoMuTau_tauIdEff(process):
     process.load("TauAnalysis.RecoTools.recoZllRecoilCorrection_cfi")
 
     _applyZllRecoilCorrection(process,
-                              "produceMuTauPairs", 'allMuTauPairs',
+                              "produceMuTauPairsAll", 'allMuTauPairs',
                               "ZllRecoilCorrectionMuTauPair",
                               [ "analyzeZtoMuTauSequence" ])
     _applyZllRecoilCorrection(process,
@@ -170,11 +143,11 @@ def applyZrecoilCorrection_runZtoMuTau_tauIdEff(process):
 def applyZrecoilCorrection_runAHtoMuTau(process):
 
     _applyZllRecoilCorrection(process,
-                              "produceMuTauPairs", 'allMuTauPairs',
+                              "produceMuTauPairsAll", 'allMuTauPairs',
                               "ZllRecoilCorrectionMuTauPair",
                               [ "analyzeAHtoMuTauSequence" ])
     _applyZllRecoilCorrection(process,
-                              "produceMuTauPairsLooseMuonIsolation", 'allMuTauPairsLooseMuonIsolation',
+                              "produceMuTauPairsAll", 'allMuTauPairsLooseMuonIsolation',
                               "ZllRecoilCorrectionMuTauPair",
                               [ "analyzeAHtoMuTauSequence_factorizedWithMuonIsolation",
                                 "analyzeAHtoMuTauSequence_factorizedWithoutMuonIsolation" ])
@@ -210,7 +183,7 @@ def applyVertexMultiplicityReweighting_runZtoMuTau(process):
     process.load("TauAnalysis.RecoTools.vertexMultiplicityReweight_cfi")
     if hasattr(process, "producePatTupleZtoMuTauSpecific"):
         process.producePatTupleZtoMuTauSpecific._seq = process.producePatTupleZtoMuTauSpecific._seq \
-          * cms.Sequence(process.selectedPrimaryVerticesTrackPtSumGt10 * process.vertexMultiplicityReweight)
+          * process.selectedPrimaryVerticesTrackPtSumGt10 * process.vertexMultiplicityReweight
 
     _addEventWeightZtoMuTau(process, "vertexMultiplicityReweight")
 

@@ -34,8 +34,8 @@ def replaceEventSelections(analyzer, evtSel_replacements):
                       + getattr(evtSel_tight, "pluginName").value() + " by " + getattr(evtSel_loose, "pluginName").value()
                       + " (version with factorization enabled)")
 
-def replaceAnalyzerModules(analyzer, analyzerModule_replacements):
-    # auxiliary function to replace analyzer modules
+def _replaceAnyAnalyzerModules(analyzer, analyzersAttributeName, analyzerModule_replacements):
+    # auxiliary function to replace analyzer/systematic analyzer modules
     # in configuration of GenericAnalyzer
 
     for analyzerModule_replacement in analyzerModule_replacements:
@@ -46,18 +46,39 @@ def replaceAnalyzerModules(analyzer, analyzerModule_replacements):
             raise ValueError("Invalid 'analyzerModule_replacements' Parameter !!")
 
         analyzerModule_old = analyzerModule_replacement[0]
+        analyzerModuleName_old = getattr(analyzerModule_old, "pluginName").value()
         analyzerModule_new = analyzerModule_replacement[1]
+        analyzerModuleName_new = getattr(analyzerModule_new, "pluginName").value()
 
-        for analyzerModule_i in analyzer.analyzers:
-            if getattr(analyzerModule_i, "pluginName").value() == getattr(analyzerModule_old, "pluginName").value():
+        if hasattr(analyzer, analyzersAttributeName):
+            analyzers = getattr(analyzer, analyzersAttributeName)
 
-                analyzer.analyzers.remove(analyzerModule_i)
-                analyzer.analyzers.append(analyzerModule_new)
+            for analyzerModule in analyzers:
+                analyzerModuleName = getattr(analyzerModule, "pluginName").value()
+                
+                if analyzerModuleName == analyzerModuleName_old:
 
-                print("Replaced in " + getattr(analyzer, "name").value() + ": "
-                      + getattr(analyzerModule_old, "pluginName").value() + " by " + getattr(analyzerModule_new, "pluginName").value()
-                      + " (version with factorization enabled)")
+                    analyzers.remove(analyzerModule)
+                    analyzers.append(analyzerModule_new)
 
+                    print("Replaced in " + getattr(analyzer, "name").value() + ": "
+                          + analyzerModuleName_old + " by " + analyzerModuleName_new
+                          + " (version with factorization enabled)")
+        else:
+            raise ValueError("GenericAnalyzer module %s has not attribute %s !!" % (getattr(analyzer, "name"), analyzersAttributeName))
+
+def replaceAnalyzerModules(analyzer, analyzerModule_replacements):
+    # auxiliary function to replace analyzer modules
+    # in configuration of GenericAnalyzer
+
+    _replaceAnyAnalyzerModules(analyzer, "analyzers", analyzerModule_replacements)
+
+def replaceSysAnalyzerModules(analyzer, sysAnalyzerModule_replacements):
+    # auxiliary function to replace systematics analyzer modules
+    # in configuration of GenericAnalyzer
+
+    _replaceAnyAnalyzerModules(analyzer, "analyzers_systematic", sysAnalyzerModule_replacements)
+    
 #
 #--------------------------------------------------------------------------------
 #

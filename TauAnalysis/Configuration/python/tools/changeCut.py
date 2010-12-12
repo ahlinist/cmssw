@@ -6,8 +6,8 @@ def changeCut(process, name, value, attribute = "cut"):
 
     cutNames = []
     cutNames.append(name)
-    cutNames.append(composeModuleName(name, "Cumulative"))
-    cutNames.append(composeModuleName(name, "Individual"))
+    cutNames.append(composeModuleName([ name, "Cumulative" ]))
+    cutNames.append(composeModuleName([ name, "Individual" ]))
 
     oldValue = None
     oldValue_initialized = False
