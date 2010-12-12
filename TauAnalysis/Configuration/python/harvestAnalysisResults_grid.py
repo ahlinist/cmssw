@@ -100,6 +100,8 @@ def harvestAnalysisResults(channel = None, samples = None, inputFilePath = None,
     buildMakefile(skim_harvest_jobs, tmpFilePath, skim_MakefileName,
                   merge_per_job = 7, harvest_tool = 'genericSkimMerger.py')
 
+    print "Makefile built. In order to start harvesting, execute 'make -f %s -j 8 -k'" % MakefileName
+
     #print "Starting harvesting..."
     #makeCommand = "make -f %s -j 8 -k" % MakefileName
     #subprocess.call(makeCommand, shell = True)
