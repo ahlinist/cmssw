@@ -22,23 +22,32 @@ tauSystematics = {
 }
 
 muTauPairSystematics = {
-    "sysMuonPtUp"           : cms.InputTag('allMuTauPairsSysMuonPtUp'),
-    "sysMuonPtDown"         : cms.InputTag('allMuTauPairsSysMuonPtDown'),
-    "sysTauJetEnUp"         : cms.InputTag('allMuTauPairsSysTauJetEnUp'),
-    "sysTauJetEnDown"       : cms.InputTag('allMuTauPairsSysTauJetEnDown'),
-    "sysJetEnUp"            : cms.InputTag('allMuTauPairsSysJetEnUp'),
-    "sysJetEnDown"          : cms.InputTag('allMuTauPairsSysJetEnDown')
+    "sysMuonPtUp"                : cms.InputTag('allMuTauPairsSysMuonPtUp'),
+    "sysMuonPtDown"              : cms.InputTag('allMuTauPairsSysMuonPtDown'),
+    "sysTauJetEnUp"              : cms.InputTag('allMuTauPairsSysTauJetEnUp'),
+    "sysTauJetEnDown"            : cms.InputTag('allMuTauPairsSysTauJetEnDown'),
+    "sysJetEnUp"                 : cms.InputTag('allMuTauPairsSysJetEnUp'),
+    "sysJetEnDown"               : cms.InputTag('allMuTauPairsSysJetEnDown'),
+    "sysZllRecoilCorrectionUp"   : cms.InputTag('allMuTauPairsZllRecoilCorrectedSysUp'),
+    "sysZllRecoilCorrectionDown" : cms.InputTag('allMuTauPairsZllRecoilCorrectedSysDown')
+}
+
+muTauPairSystematicsLooseMuonIsolation = {
+    "sysMuonPtUp"                : cms.InputTag('allMuTauPairsLooseMuonIsolationSysMuonPtUp'),
+    "sysMuonPtDown"              : cms.InputTag('allMuTauPairsLooseMuonIsolationSysMuonPtDown'),
+    "sysTauJetEnUp"              : cms.InputTag('allMuTauPairsLooseMuonIsolationSysTauJetEnUp'),
+    "sysTauJetEnDown"            : cms.InputTag('allMuTauPairsLooseMuonIsolationSysTauJetEnDown'),
+    "sysJetEnUp"                 : cms.InputTag('allMuTauPairsLooseMuonIsolationSysJetEnUp'),
+    "sysJetEnDown"               : cms.InputTag('allMuTauPairsLooseMuonIsolationSysJetEnDown'),
+    "sysZllRecoilCorrectionUp"   : cms.InputTag('allMuTauPairsLooseMuonIsolationZllRecoilCorrectedSysUp'),
+    "sysZllRecoilCorrectionDown" : cms.InputTag('allMuTauPairsLooseMuonIsolationZllRecoilCorrectedSysDown')
 }
 
 elecTauPairSystematics = {
-    "sysElectronPtUp"           : cms.InputTag('allElecTauPairsSysElectronPtUp'),
-    "sysElectronPtDown"         : cms.InputTag('allElecTauPairsSysElectronPtDown'),
+    "sysElectronPtUp"       : cms.InputTag('allElecTauPairsSysElectronPtUp'),
+    "sysElectronPtDown"     : cms.InputTag('allElecTauPairsSysElectronPtDown'),
     "sysTauJetEnUp"         : cms.InputTag('allElecTauPairsSysTauJetEnUp'),
     "sysTauJetEnDown"       : cms.InputTag('allElecTauPairsSysTauJetEnDown'),
-    ##"sysTauJetThetaUp"      : cms.InputTag('allElecTauPairsSysTauJetThetaUp'),
-    ##"sysTauJetThetaDown"    : cms.InputTag('allElecTauPairsSysTauJetThetaDown'),
-    ##"sysTauJetPhiUp"        : cms.InputTag('allElecTauPairsSysTauJetPhiUp'),
-    ##"sysTauJetPhiDown"      : cms.InputTag('allElecTauPairsSysTauJetPhiDown'),
     "sysJetEnUp"            : cms.InputTag('allElecTauPairsSysJetEnUp'),
     "sysJetEnDown"          : cms.InputTag('allElecTauPairsSysJetEnDown')
 }
@@ -47,18 +56,16 @@ metSystematicsForZtoMuTau = {
     "sysMuonPtUp"           : cms.InputTag('patMETsSysMuonPtUp'),
     "sysMuonPtDown"         : cms.InputTag('patMETsSysMuonPtDown'),
     "sysTauJetEnUp"         : cms.InputTag('patMETsSysTauJetEnUp'),
-    "sysTauJetEnDown"       : cms.InputTag('patMETsSysTauJetEnDown')
+    "sysTauJetEnDown"       : cms.InputTag('patMETsSysTauJetEnDown'),
+    "sysJetEnUp"            : cms.InputTag('patMETsSysJetEnUp'),
+    "sysJetEnDown"          : cms.InputTag('patMETsSysJetEnDown')
 }
 
 metSystematicsForZtoElecTau = {
-    "sysElectronPtUp"           : cms.InputTag('patMETsSysElectronPtUp'),
-    "sysElectronPtDown"         : cms.InputTag('patMETsSysElectronPtDown'),
+    "sysElectronPtUp"       : cms.InputTag('patMETsSysElectronPtUp'),
+    "sysElectronPtDown"     : cms.InputTag('patMETsSysElectronPtDown'),
     "sysTauJetEnUp"         : cms.InputTag('patMETsSysTauJetEnUp'),
     "sysTauJetEnDown"       : cms.InputTag('patMETsSysTauJetEnDown'),
-    ##"sysTauJetThetaUp"      : cms.InputTag('patMETsSysTauJetThetaUp'),
-    ##"sysTauJetThetaDown"    : cms.InputTag('patMETsSysTauJetThetaDown'),
-    ##"sysTauJetPhiUp"        : cms.InputTag('patMETsSysTauJetPhiUp'),
-    ##"sysTauJetPhiDown"      : cms.InputTag('patMETsSysTauJetPhiDown')
 }
 
 metSystematicsForAHtoMuTau = {
