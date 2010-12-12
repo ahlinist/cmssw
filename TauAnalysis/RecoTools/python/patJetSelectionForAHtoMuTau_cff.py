@@ -12,7 +12,7 @@ from TauAnalysis.CandidateTools.tools.objSelConfigurator import *
 
 # select central jets
 selectedPatJetsForAHtoMuTauEta21 = cms.EDFilter("PATJetSelector",
-    cut = cms.string('abs(eta) < 2.1'),
+    cut = cms.string('abs(eta) < 2.4'),
     filter = cms.bool(False)
 )
 
