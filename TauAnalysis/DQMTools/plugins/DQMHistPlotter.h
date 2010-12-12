@@ -5,8 +5,8 @@
  *
  *  Class to plot histograms and create a postscript file
  *
- *  $Date: 2009/11/20 15:27:32 $
- *  $Revision: 1.5 $
+ *  $Date: 2010/11/27 18:42:59 $
+ *  $Revision: 1.6 $
  *  \author Christian Veelken, UC Davis
  */
 
@@ -114,6 +114,7 @@ class DQMHistPlotter : public edm::EDAnalyzer
     int textAlign_;
     double textAngle_;
     vstring text_;
+    std::string meName_;
   };
 
   struct cfgEntryDrawOption
