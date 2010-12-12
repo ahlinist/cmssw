@@ -23,6 +23,29 @@ recoZllRecoilCorrectionParameter = cms.PSet(
             c2 = cms.double(+2.11601e-05)
         )
     ),
+    uncertainties = cms.PSet(
+        data = cms.PSet(
+            d = cms.double(0.),
+            k = cms.double(0.003905),
+            sigma1 = cms.double(0.2019),
+            b1 = cms.double(0.0419e-2),
+            c1 = cms.double(0.04284e-4),
+            sigma2 = cms.double(0.15132),
+            b2 = cms.double(0.02622e-2),
+            c2 = cms.double(0.19576e-5)
+        ),
+        mc = cms.PSet(
+            d = cms.double(0.),
+            k = cms.double(0.002881),
+            sigma1 = cms.double(0.16254),
+            b1 = cms.double(0.04032e-2),
+            c1 = cms.double(0.40988e-5),
+            sigma2 = cms.double(0.10048),
+            b2 = cms.double(0.01746e-2),
+            c2 = cms.double(0.13773e-5)
+        )
+    ),
+    shiftByUncertainty = cms.double(0.),
     srcGenParticles = cms.InputTag('genParticles'),
     genParticlePdgIds = cms.vint32( 36, 35, 25, 23, 24 )
 )
