@@ -427,6 +427,7 @@ DQMHistPlotter::cfgEntryLabel::cfgEntryLabel(const std::string& name, const edm:
   textAlign_ = ( cfg.exists("textAlign") ) ? cfg.getParameter<int>("textAlign") : defaultLabelTextAlign;
   textAngle_ = ( cfg.exists("textAngle") ) ? cfg.getParameter<double>("textAngle") : defaultLabelTextAngle;
   text_ = cfg.getParameter<vstring>("text");
+  meName_ =  ( cfg.exists("meName") ) ? cfg.getParameter<std::string>("meName") : "";
 
   if ( verbosity ) print();
 }
@@ -447,6 +448,7 @@ void DQMHistPlotter::cfgEntryLabel::print() const
   std::cout << " textAlign = " << textAlign_ << std::endl;
   std::cout << " textAngle = " << textAngle_ << std::endl;
   std::cout << " text = " << format_vstring(text_) << std::endl;
+  std::cout << " meName = " << meName_ << std::endl;
 }
 
 void DQMHistPlotter::cfgEntryLabel::applyTo(TPaveText* label) const
@@ -469,7 +471,38 @@ void DQMHistPlotter::cfgEntryLabel::applyTo(TPaveText* label) const
     label->SetTextAngle(textAngle_);
     for ( vstring::const_iterator line = text_.begin();
          line != text_.end(); ++line ) {
-      label->AddText(line->data());
+      bool isValueReplacement = false;
+      if ( line->find("%") != std::string::npos && meName_ != "" ) {
+	size_t pos = line->find("%");
+	while ( pos != std::string::npos ) {
+	  if ( line->find("%%", pos) != pos ) {
+	    isValueReplacement = true;
+	    break;
+	  }
+	  if ( pos < (line->length() - 1) ) pos = line->find("%", pos + 1);
+	}
+      }
+      if ( isValueReplacement ) {
+	DQMStore& dqmStore = (*edm::Service<DQMStore>());
+	bool dqmError = false;
+	MonitorElement* me = getMonitorElement(dqmStore, meName_, dqmError);
+	if ( me ) {
+	  int meType = me->kind();
+	  if      ( meType == MonitorElement::DQM_KIND_INT    ) label->AddText(TString::Format(line->data(), me->getIntValue()).Data());
+	  else if ( meType == MonitorElement::DQM_KIND_REAL   ) label->AddText(TString::Format(line->data(), me->getFloatValue()).Data());
+	  else if ( meType == MonitorElement::DQM_KIND_STRING ) label->AddText(TString::Format(line->data(), me->getStringValue().data()).Data());
+	  else if ( meType == MonitorElement::DQM_KIND_TH1F   ||
+		    meType == MonitorElement::DQM_KIND_TH1S   ||
+		    meType == MonitorElement::DQM_KIND_TH2F   ||
+		    meType == MonitorElement::DQM_KIND_TH2S   ||
+		    meType == MonitorElement::DQM_KIND_TH3F   ) label->AddText(TString::Format(line->data(), me->getTH1()->Integral()).Data());
+	  else {
+	    edm::LogError ("applyTo") << " Invalid MonitorElement Type = " << meType << " --> skipping !!";
+	  }
+	}
+      } else {
+	label->AddText(line->data());
+      }
     }
   }
 }
@@ -645,17 +678,16 @@ void DQMHistPlotter::cfgEntryDrawJob::print() const
 //
 
 DQMHistPlotter::DQMHistPlotter(const edm::ParameterSet& cfg)
+  : cfgError_(0)
 {
   //std::cout << "<DQMHistPlotter::DQMHistPlotter>:" << std::endl;
 
-  cfgError_ = 0;
-
-  //--- configure processes
+//--- configure processes
   //std::cout << "--> configuring processes..." << std::endl;
   edm::ParameterSet cfgParSet_processes = cfg.getParameter<edm::ParameterSet>("processes");
   readCfgParameter<cfgEntryProcess>(cfgParSet_processes, processes_);
 
-  //--- check that process types are defined
+//--- check that process types are defined
   //std::cout << "--> checking configuration parameters..." << std::endl;
 
   int numProcesses_Data = 0;
@@ -681,27 +713,27 @@ DQMHistPlotter::DQMHistPlotter(const edm::ParameterSet& cfg)
     cfgError_ = 1;
   }
 
-  //--- configure x-axes
+//--- configure x-axes
   //std::cout << "--> configuring x-axes..." << std::endl;
   edm::ParameterSet cfgParSet_xAxes = cfg.getParameter<edm::ParameterSet>("xAxes");
   readCfgParameter<cfgEntryAxisX>(cfgParSet_xAxes, xAxes_);
 
-  //--- configure y-axes
+//--- configure y-axes
   //std::cout << "--> configuring y-axes..." << std::endl;
   edm::ParameterSet cfgParSet_yAxes = cfg.getParameter<edm::ParameterSet>("yAxes");
   readCfgParameter<cfgEntryAxisY>(cfgParSet_yAxes, yAxes_);
 
-  //--- configure legends
+//--- configure legends
   //std::cout << "--> configuring legends..." << std::endl;
   edm::ParameterSet cfgParSet_legends = cfg.getParameter<edm::ParameterSet>("legends");
   readCfgParameter<cfgEntryLegend>(cfgParSet_legends, legends_);
 
-  //--- configure labels
+//--- configure labels
   //std::cout << "--> configuring labels..." << std::endl;
   edm::ParameterSet cfgParSet_labels = cfg.getParameter<edm::ParameterSet>("labels");
   readCfgParameter<cfgEntryLabel>(cfgParSet_labels, labels_);
 
-  //--- configure drawOptions
+//--- configure drawOptions
   //std::cout << "--> configuring drawOptions..." << std::endl;
   if ( cfg.exists("drawOptionSets") ) {
     edm::ParameterSet drawOptionSets = cfg.getParameter<edm::ParameterSet>("drawOptionSets");
@@ -727,7 +759,7 @@ DQMHistPlotter::DQMHistPlotter(const edm::ParameterSet& cfg)
     readCfgParameter<cfgEntryDrawOption>(cfgParSet_drawOptionEntries, drawOptionEntries_);
   }
 
-  //--- configure drawJobs
+//--- configure drawJobs
   //std::cout << "--> configuring drawJobs..." << std::endl;
   edm::ParameterSet drawJobs = cfg.getParameter<edm::ParameterSet>("drawJobs");
   vstring drawJobNames = drawJobs.getParameterNamesForType<edm::ParameterSet>();
@@ -798,7 +830,7 @@ DQMHistPlotter::DQMHistPlotter(const edm::ParameterSet& cfg)
       }
     }
 
-    //--- check that number of displayed monitor elements is the same for each plot
+//--- check that number of displayed monitor elements is the same for each plot
     unsigned numMonitorElements_ref = 0;
     bool isFirstEntry = true;
     for ( std::map<int, plotDefList>::const_iterator plot = plotDefMap.begin();
@@ -815,7 +847,7 @@ DQMHistPlotter::DQMHistPlotter(const edm::ParameterSet& cfg)
       }
     }
 
-    //--- expand process directories in names of dqmMonitorElements
+//--- expand process directories in names of dqmMonitorElements
     for ( std::map<int, plotDefList>::iterator plot = plotDefMap.begin();
          plot != plotDefMap.end(); ++plot ) {
       for ( plotDefList::iterator entry = plot->second.begin();
@@ -856,8 +888,8 @@ DQMHistPlotter::DQMHistPlotter(const edm::ParameterSet& cfg)
 
     vstring labels = ( drawJob.exists("labels") ) ? drawJob.getParameter<vstring>("labels") : vstring();
 
-    //--- expand parameters in names of dqmMonitorElements;
-    //    create drawJob objects
+//--- expand parameters in names of dqmMonitorElements;
+//    create drawJob objects
     for ( std::map<int, plotDefList>::iterator plot = plotDefMap.begin();
          plot != plotDefMap.end(); ++plot ) {
       if ( drawJob.exists("parameter") ) {
@@ -908,7 +940,7 @@ DQMHistPlotter::DQMHistPlotter(const edm::ParameterSet& cfg)
     }
   }
 
-  //--- check that all information neccessary to process drawJob is defined;
+//--- check that all information neccessary to process drawJob is defined;
   for ( std::vector<cfgEntryDrawJob>::const_iterator drawJob = drawJobs_.begin();
        drawJob != drawJobs_.end(); ++drawJob ) {
     for ( plotDefList::const_iterator plot = drawJob->plots_.begin();
@@ -925,12 +957,12 @@ DQMHistPlotter::DQMHistPlotter(const edm::ParameterSet& cfg)
     checkCfgDefs<cfgEntryLabel>(drawJob->labels_, labels_, cfgError_, "label", drawJob->name_);
   }
 
-  //--- configure canvas size
+//--- configure canvas size
   //std::cout << "--> configuring canvas size..." << std::endl;
   canvasSizeX_ = ( cfg.exists("canvasSizeX") ) ? cfg.getParameter<int>("canvasSizeX") : defaultCanvasSizeX;
   canvasSizeY_ = ( cfg.exists("canvasSizeY") ) ? cfg.getParameter<int>("canvasSizeY") : defaultCanvasSizeY;
 
-  //--- configure output files
+//--- configure output files
   //std::cout << "--> configuring postscript output file..." << std::endl;
 
   outputFilePath_ = ( cfg.exists("outputFilePath") ) ? cfg.getParameter<std::string>("outputFilePath") : "";
@@ -949,11 +981,11 @@ DQMHistPlotter::DQMHistPlotter(const edm::ParameterSet& cfg)
   }
   //std::cout << " indOutputFileName = " << indOutputFileName_ << std::endl;
 
-  //--- check that exactly one type of output is specified for the plots
-  //    (either separate graphics files displaying one plot each
-  //     or postscript file displaying all plots on successive pages;
-  //     cannot create both types of output simultaneously,
-  //     as TCanvas::Print seems to interfere with TPostScript::NewPage)
+//--- check that exactly one type of output is specified for the plots
+//    (either separate graphics files displaying one plot each
+//     or postscript file displaying all plots on successive pages;
+//     cannot create both types of output simultaneously,
+//     as TCanvas::Print seems to interfere with TPostScript::NewPage)
   if ( outputFileName_ == "" && indOutputFileName_ == "" ) {
     edm::LogError ("DQMHistPlotter") << " Either outputFileName or indOutputFileName must be specified !!";
     cfgError_ = 1;
