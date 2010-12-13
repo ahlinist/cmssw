@@ -19,10 +19,14 @@
 # date:   May 2006
 # @author: Sebastien Binet <binet@cern.ch>
 
+import datetime
 import commands
 import os
 import fnmatch
 import time
+
+# Memoize calls to nslsl
+_CACHE = {}
 
 def group(iterator, count):
     """
@@ -37,7 +41,7 @@ def group(iterator, count):
         yield tuple([itr.next() for i in xrange(count)])
 
 __author__  = "Sebastien Binet <binet@cern.ch>"
-__version__ = "$Revision: 1.3 $"
+__version__ = "$Revision: 1.4 $"
 __doc__ = """A set of simple helper methods to handle simple tasks with CASTOR.
 """
 
@@ -60,90 +64,116 @@ def nslsl(path):
         modified
         size (in bytes)
     '''
-    status,output = commands.getstatusoutput('nsls -l ' + path)
-    if status == 256:
-        raise IOError("Can't nsls -l on path: %s, it doesn't exist!" % path)
-    for line in output.splitlines():
-        fields = line.split()
-        output = {
-            'permissions' : fields[0],
-            'size' : int(fields[4]),
-            'time' : time.strptime(
-                " ".join(fields[5:8]), "%b %d %H:%M"),
-            'file' : fields[8]
-        }
-        yield output
+    # Get path
+    directory = os.path.dirname(path)
+    basename = os.path.basename(path)
 
-def nsls(path) :
-    """
-    lists CASTOR name server directory/file entries.
-    If path is a directory, nsls lists the entries in the directory;
-    they are sorted alphabetically.
+    # Memoize the results
+    if path in _CACHE:
+        yield _CACHE[path]
+    else:
+        status,output = commands.getstatusoutput('nsls -l ' + directory)
 
-    path specifies the CASTOR pathname. If path does not start  with  /,
-    it  is  prefixed  by  the content of the CASTOR_HOME environment
-    variable.
+        if status == 256:
+            raise IOError("Can't nsls -l on path: %s, it doesn't exist!" % path)
+        for line in output.splitlines():
+            fields = line.split()
+            output = {
+                'permissions' : fields[0],
+                'size' : int(fields[4]),
+                'time' : time.strptime(" ".join(fields[5:8]), "%b %d %H:%M"),
+                'file' : fields[8]
+            }
+            time_stamp = " ".join(fields[5:8])
+            if time_stamp.find(':'):
+                output['time'] = time.strptime(
+                    time_stamp + " " + str(datetime.datetime.now().year),
+                    "%b %d %H:%M %Y")
+            else:
+                output['time'] = time.strptime(time_stamp, "%b %d %Y")
 
-    ex:
-    >>> nsls( '/castor/cern.ch/atlas/*' )
-    >>> nsls( 'mydata' )
-    """
+            output['path'] = os.path.join(directory, output['file'])
+            _CACHE[output['path']] = output
+            #print path, output['file']
+            # Check the filename matches our pattern
+            if not basename or fnmatch.fnmatch(output['file'], basename):
+                #print "match!"
+                yield output
 
-    wildcards = False
-    tail = "*"
-    path = os.path.expandvars(path)
+def nsls(path):
+    for file_info in nslsl(path):
+        yield file_info['file']
 
-    if path.endswith('/') :
-        path = path[0:len(path)-1]
-    # Do we detect a wildcard in the path we are given ?
-    # if so then we have to parse it to remove them because
-    # nsls does not understand them.
-    # The ouput of the command will be filtered afterwards
-    if hasWildcard(path) :
-        wildcards = True
+#def nsls(path):
+    #"""
+    #lists CASTOR name server directory/file entries.
+    #If path is a directory, nsls lists the entries in the directory;
+    #they are sorted alphabetically.
 
-        wholepath = path.split(os.sep)
+    #path specifies the CASTOR pathname. If path does not start  with  /,
+    #it  is  prefixed  by  the content of the CASTOR_HOME environment
+    #variable.
 
-        # Here we assume the wildcards are located *only* in the filename !!
-        tail      = wholepath[len(wholepath)-1]
-        if tail == '' :
-            if len(wholepath) >= 2 :
-                tail = wholepath[len(wholepath)-2]
-            else :
-                raise Exception, \
-                      "Malformed path to files: <"+path+">"
+    #ex:
+    #>>> nsls( '/castor/cern.ch/atlas/*' )
+    #>>> nsls( 'mydata' )
+    #"""
 
-        # Check that the wildcard is not in the path to files
-        if tail.count('/') > 0 :
-            if tail.endswith('/') :
-                # the / is sitting in last position. Can safely remove it
-                tail = tail[0:len(tail)-1]
-            else :
-                raise Exception, \
-                      "No wildcard allowed in the path to files: <"+path+">"
+    #wildcards = False
+    #tail = "*"
+    #path = os.path.expandvars(path)
+
+    #if path.endswith('/') :
+        #path = path[0:len(path)-1]
+    ## Do we detect a wildcard in the path we are given ?
+    ## if so then we have to parse it to remove them because
+    ## nsls does not understand them.
+    ## The ouput of the command will be filtered afterwards
+    #if hasWildcard(path) :
+        #wildcards = True
+
+        #wholepath = path.split(os.sep)
+
+        ## Here we assume the wildcards are located *only* in the filename !!
+        #tail      = wholepath[len(wholepath)-1]
+        #if tail == '' :
+            #if len(wholepath) >= 2 :
+                #tail = wholepath[len(wholepath)-2]
+            #else :
+                #raise Exception, \
+                      #"Malformed path to files: <"+path+">"
+
+        ## Check that the wildcard is not in the path to files
+        #if tail.count('/') > 0 :
+            #if tail.endswith('/') :
+                ## the / is sitting in last position. Can safely remove it
+                #tail = tail[0:len(tail)-1]
+            #else :
+                #raise Exception, \
+                      #"No wildcard allowed in the path to files: <"+path+">"
 
 
-        path      = path.split(tail)[0]
-        if hasWildcard(path) :
-            raise ValueError("No wildcard allowed in the path to files: <"+path+">")
-        #print path
+        #path      = path.split(tail)[0]
+        #if hasWildcard(path) :
+            #raise ValueError("No wildcard allowed in the path to files: <"+path+">")
+        ##print path
 
-    status,output = commands.getstatusoutput('nsls '+path)
+    #status,output = commands.getstatusoutput('nsls '+path)
 
-    if status != 0 :
-        print output
-        return []
+    #if status != 0 :
+        #print output
+        #return []
 
-    output = output.splitlines()
+    #output = output.splitlines()
 
-    if wildcards :
-        output = fnmatch.filter(output,tail)
+    #if wildcards :
+        #output = fnmatch.filter(output,tail)
 
-    for i in xrange(0,len(output)) :
-        if output[i].count(path) < 1:
-            output[i] = path+"/"+output[i]
-        output[i] = output[i].replace('//','/')
-    return output
+    #for i in xrange(0,len(output)) :
+        #if output[i].count(path) < 1:
+            #output[i] = path+"/"+output[i]
+        #output[i] = output[i].replace('//','/')
+    #return output
 
 def pool_nsls( path ) :
     """
