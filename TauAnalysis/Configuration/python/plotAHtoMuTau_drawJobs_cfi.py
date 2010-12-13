@@ -678,6 +678,23 @@ finalSamplePlots = [
     )
 ]
 
+drawJobConfigurator_AHtoMuTau_woBtagSS = copy.deepcopy(
+    drawJobConfigurator_AHtoMuTau_woBtag)
+drawJobConfigurator_AHtoMuTau_woBtagSS.setDQMdirectory('#PROCESSDIR#/ahMuTauAnalyzerSS_woBtag/')
+
+drawJobConfigurator_AHtoMuTau_wBtagSS = copy.deepcopy(
+    drawJobConfigurator_AHtoMuTau_wBtag)
+drawJobConfigurator_AHtoMuTau_wBtagSS.setDQMdirectory('#PROCESSDIR#/ahMuTauAnalyzerSS_wBtag/')
+
+drawJobConfigurator_AHtoMuTau_woBtagSS.add(
+    afterCut = evtSelDiTauCandidateForAHtoMuTauNonZeroCharge,
+    plots = finalSamplePlots
+)
+drawJobConfigurator_AHtoMuTau_wBtagSS.add(
+    afterCut = evtSelDiTauCandidateForAHtoMuTauNonZeroCharge,
+    plots = finalSamplePlots
+)
+
 drawJobConfigurator_AHtoMuTau_woBtag.add(
     afterCut = evtSelDiTauCandidateForAHtoMuTauZeroCharge,
     plots = finalSamplePlots
@@ -687,4 +704,5 @@ drawJobConfigurator_AHtoMuTau_wBtag.add(
     afterCut = evtSelDiTauCandidateForAHtoMuTauZeroCharge,
     plots = finalSamplePlots
 )
+
 
