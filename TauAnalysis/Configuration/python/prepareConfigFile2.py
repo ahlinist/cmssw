@@ -143,7 +143,8 @@ def prepareConfigFile(configFile = None, jobInfo = None, newConfigFile = None,
     jobOptions.append(('applyVertexMultiplicityReweighting',
                        sample_info['applyVertexMultiplicityReweighting']))
 
-    # This must be done after the factorization step ?
+    # CV: enabaling of systematic uncertainties must be done
+    #     **after** the factorization step (**not** before)
     jobOptions.append(('enableSysUncertainties',
                        sample_info['enableSysUncertainties']
                        and not disableSysUncertainties))
