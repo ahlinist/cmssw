@@ -26,6 +26,7 @@ def make_harvest_scripts(plot_regex, skim_regex, castor_directory,
     if not os.path.exists(script_directory):
         os.mkdir(script_directory)
 
+    print "Getting files to harvest from %s" % castor_directory
     # Get all files with nonzero size in the input castor directory
     input_files_info = [x for x in castor.nslsl(castor_directory)
                         if x['size']]
@@ -33,8 +34,20 @@ def make_harvest_scripts(plot_regex, skim_regex, castor_directory,
     input_files_info.sort(key = lambda x: (x['time'], x['file']))
 
     # Get all the tmp files (that are non-zero)
-    tmp_files = set(x['file'] for x in castor.nslsl(castor_output_directory)
-                    if x['size'])
+    tmp_files_info = [x for x in castor.nslsl(castor_output_directory)
+                    if x['size']]
+    tmp_files = set(x['file'] for x in tmp_files_info)
+
+    # Make a repository of info about our files
+    all_files_dict = {}
+    for file_info in input_files_info:
+        all_files_dict[os.path.join(castor_directory,
+                                    file_info['file'])] = file_info
+    for file_info in tmp_files_info:
+        all_files_dict[os.path.join(castor_output_directory,
+                                    file_info['file'])] = file_info
+
+
 
     # Keep track of files that we put in tmp with these jobs and that we care
     # about.  We can stop caring about old files if after adding new files (i.e.
@@ -81,6 +94,7 @@ def make_harvest_scripts(plot_regex, skim_regex, castor_directory,
             # input file names, we can be sure that if a file is out of date we
             # will notice.
             merge_jobs_needed = []
+            files_to_build = set([])
             print " --- Generated %i harvest layers:" % len(merge_jobs)
             for i, layer in enumerate(merge_jobs):
                 # Figure out how many files we need to build
@@ -88,7 +102,23 @@ def make_harvest_scripts(plot_regex, skim_regex, castor_directory,
                 for layer_job in layer:
                     # Check if we've already built this output file in the tmp
                     file_base_name = os.path.basename(layer_job[0])
-                    if file_base_name not in tmp_files:
+                    needed = True
+                    # Check if we are rebuilding a dependency
+                    building_a_dependency = any(
+                        file in files_to_build for file in layer_job[1])
+                    if not building_a_dependency and file_base_name in tmp_files:
+                        output_m_time = all_files_dict[layer_job[0]]['time']
+                        out_of_date = False
+                        for input_file in layer_job[1]:
+                            if all_files_dict[input_file]['time'] > output_m_time:
+                                print "File: %s is older than its dependency %s, rebuilding!" % (
+                                    file_base_name, input_file)
+                                # Check if it's out of date
+                                out_of_date = True
+                                break
+                        if not out_of_date:
+                            needed = False
+                    if needed:
                         layer_jobs_needed.append(layer_job)
                     # Keep track of the relevant files, so we can delete old
                     # cruft
@@ -240,6 +270,7 @@ def make_harvest_scripts(plot_regex, skim_regex, castor_directory,
         for sample, file in final_harvest_files:
             copy_script.write('rfcp %s %s &\n' % (
                 file, local_copy_mapper(sample)))
+        copy_script.write('wait\n')
     print "After harvesting is done, run %s to copy files locally" % local_copy_script
     # Make all our stuff executable
     os.chmod(local_copy_script, 0755)
