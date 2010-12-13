@@ -39,6 +39,9 @@ SAMPLES_TO_PRINT = copy.copy(SAMPLES_TO_PLOT)
 SAMPLES_TO_PRINT.append('Zee')
 SAMPLES_TO_PRINT.append('smBgSum')
 SAMPLES_TO_PRINT.append('smSum')
+SAMPLES_TO_PRINT.append( 'ZmumuPOWHEG' )
+SAMPLES_TO_PRINT.append( 'ZtautauPOWHEG' )
+SAMPLES_TO_PRINT.append( 'WplusJetsSumPOWHEG' )
 #SAMPLES_TO_PRINT.append('data_Mu_Run2010A_Sep17ReReco')
 #SAMPLES_TO_PRINT.append('data_Mu_Run2010B_Prompt')
 
@@ -523,6 +526,14 @@ MERGE_SAMPLES = {
             'Wtaunu'
         ],
         'legendEntry' : plotter.process_WplusJets.config_dqmHistPlotter.legendEntry.value(),
+        'type' : plotter.process_WplusJets.config_dqmHistPlotter.type.value(),
+        'drawOption' : styles.drawOption_WplusJets,
+    },
+    'WplusJetsSumPOWHEG' : {
+	'samples' : [
+		'WePlusnuPOWHEG' , 'WeMinusNuPOWHEG', 'WmuMinusnuPOWHEG', 'WmuPlusnuPOWHEG', 'WtauMinusnuPOWHEG', 'WtauPlusnuPOWHEG'
+	],
+	'legendEntry' : plotter.process_WplusJets.config_dqmHistPlotter.legendEntry.value(),
         'type' : plotter.process_WplusJets.config_dqmHistPlotter.type.value(),
         'drawOption' : styles.drawOption_WplusJets,
     },
