@@ -36,10 +36,10 @@ diTauCandidateSVfitHistManagerForMuTau.SVfitAlgorithms = cms.VPSet(
     ),
     cms.PSet(
         name = cms.string("psKine_MEt_ptBalance")
-    ##),
-    ##cms.PSet(
-    ##    name = cms.string("psKine_MEt_Track_ptBalance")
-    )
+    ),
+    cms.PSet(
+        name = cms.string("psKine_MEt_ptBalance2")
+    ),
 )
 
 from TauAnalysis.Core.diTauCandidateZllHypothesisHistManager_cfi import *
@@ -409,10 +409,13 @@ muTauEventDump = cms.PSet(
         ),
         cms.PSet(
             name = cms.string("psKine_MEt_ptBalance")
+        ),
+        cms.PSet(
+            name = cms.string("psKine_MEt_ptBalance2")
+        ),
         ##),
         ##cms.PSet(
         ##    name = cms.string("psKine_MEt_Track_ptBalance")
-        )
     ),
     annotations = cms.VPSet(
         cms.PSet(
@@ -848,7 +851,7 @@ muTauAnalysisSequenceOS = cms.VPSet(
             'tauHistManager.tauSource = selectedPatTausForMuTauElectronVetoCumulative',
             'diTauCandidateHistManagerForMuTau.diTauCandidateSource = selectedMuTauPairsAntiOverlapVetoCumulative'
         )
-    ),    
+    ),
     cms.PSet(
         filter = cms.string('evtSelDiTauCandidateForMuTauMt1MET'),
         title = cms.string('M_{T}(Muon-MET) < 40 GeV'),
@@ -883,7 +886,7 @@ muTauAnalysisSequenceOS = cms.VPSet(
             'diTauCandidateHistManagerForMuTau.diTauCandidateSource = selectedMuTauPairsPzetaDiffCumulative'
         )
     ),
-    
+
     # veto events compatible with Z --> mu+ mu- hypothesis
     cms.PSet(
         filter = cms.string('evtSelDiMuPairZmumuHypothesisVetoByLooseIsolation'),
@@ -1060,7 +1063,7 @@ muTauAnalysisSequenceSS = cms.VPSet(
         filter = cms.string('evtSelDiTauCandidateForMuTauAntiOverlapVeto'),
         title = cms.string('dR(Muon-Tau) > 0.7'),
         saveRunLumiSectionEventNumbers = cms.vstring('')
-    ),    
+    ),
     cms.PSet(
         filter = cms.string('evtSelDiTauCandidateForMuTauMt1MET'),
         title = cms.string('M_{T}(Muon-MET) < 40 GeV'),
