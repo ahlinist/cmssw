@@ -210,7 +210,24 @@ plotAHtoMuTau_wBtag = plotAHtoMuTau_woBtag.clone(
     indOutputFileName = cms.string('plotAHtoMuTau_wBtag_#PLOT#.pdf')
 )
 
-plotAHtoMuTau = cms.Sequence(plotAHtoMuTau_woBtag * plotAHtoMuTau_wBtag)
+plotAHtoMuTauSS_wBtag = plotAHtoMuTau_woBtag.clone(
+    drawJobs = drawJobConfigurator_AHtoMuTau_wBtagSS.configure(),
+    #outputFileName = cms.string('plotsAHtoMuTau_wBtag.ps')
+    indOutputFileName = cms.string('plotAHtoMuTauSS_wBtag_#PLOT#.pdf')
+)
+
+plotAHtoMuTauSS_woBtag = plotAHtoMuTau_woBtag.clone(
+    drawJobs = drawJobConfigurator_AHtoMuTau_woBtagSS.configure(),
+    #outputFileName = cms.string('plotsAHtoMuTau_wBtag.ps')
+    indOutputFileName = cms.string('plotAHtoMuTauSS_woBtag_#PLOT#.pdf')
+)
+
+plotAHtoMuTau = cms.Sequence(
+    plotAHtoMuTau_woBtag
+    *plotAHtoMuTau_wBtag
+    *plotAHtoMuTauSS_woBtag
+    *plotAHtoMuTauSS_wBtag
+)
 
 saveAHtoMuTau = cms.EDAnalyzer("DQMSimpleFileSaver",
     outputFileName = cms.string('plotsAHtoMuTau_all.root')
