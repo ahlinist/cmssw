@@ -26,6 +26,9 @@ svFitLikelihoodMuTauPairTrackInfo.leg2.pluginType = "SVfitTauLikelihoodTrackInfo
 svFitLikelihoodMuTauPairPtBalance = copy.deepcopy(svFitLikelihoodDiTauPtBalance)
 svFitLikelihoodMuTauPairPtBalance.pluginType = cms.string("SVfitLikelihoodMuTauPairPtBalance")
 
+svFitLikelihoodMuTauPairPtBalance2 = copy.deepcopy(svFitLikelihoodDiTauPtBalance2)
+svFitLikelihoodMuTauPairPtBalance2.pluginType = cms.string("SVfitLikelihoodMuTauPairPtBalance2")
+
 svFitLikelihoodMuTauPairZprod = copy.deepcopy(svFitLikelihoodDiTauProdZ0)
 svFitLikelihoodMuTauPairZprod.pluginType = cms.string("SVfitLikelihoodMuTauPairProd")
 svFitLikelihoodMuTauPairZprod.process = cms.string("Z0")
@@ -73,6 +76,18 @@ allMuTauPairs = cms.EDProducer("PATMuTauPairProducer",
                 #numSamplings = cms.int32(1000)
                 numSamplings = cms.int32(-1)
             )
+        ),
+        psKine_MEt_ptBalance2 = cms.PSet(
+            likelihoodFunctions = cms.VPSet(
+                svFitLikelihoodMuTauPairKinematicsPhaseSpace,
+                svFitLikelihoodMuTauPairMEt,
+                svFitLikelihoodMuTauPairPtBalance2
+            ),
+            estUncertainties = cms.PSet(
+                #numSamplings = cms.int32(1000)
+                numSamplings = cms.int32(-1)
+            )
+        ),
         ##),
         ##psKine_MEt_Track_ptBalance = cms.PSet(
         ##    likelihoodFunctions = cms.VPSet(
@@ -86,7 +101,6 @@ allMuTauPairs = cms.EDProducer("PATMuTauPairProducer",
         ##        #numSamplings = cms.int32(1000)
         ##        numSamplings = cms.int32(-1)
         ##    )
-        )
     ),
     scaleFuncImprovedCollinearApprox = cms.string('1'),
     verbosity = cms.untracked.int32(0)
