@@ -19,8 +19,9 @@ SAMPLES_TO_ANALYZE = [
     'Wenu', 'Wmunu', 'Wtaunu',
     'TTplusJets',
     'ZtautauPOWHEG','ZmumuPOWHEG','ZeePOWHEG',
-    'WePlusnuPOWHEG' , 'WeMinusNuPOWHEG', 'WmuMinusnuPOWHEG', 'WmuPlusnuPOWHEG', 'WtauMinusnuPOWHEG', 'WtauPlusnuPOWHEG'
-    
+    'WePlusnuPOWHEG', 'WeMinusNuPOWHEG',
+    'WmuMinusnuPOWHEG', 'WmuPlusnuPOWHEG',
+    'WtauMinusnuPOWHEG', 'WtauPlusnuPOWHEG',
 ]
 
 # List of samples to include in the final level plots.  May include selections
@@ -143,7 +144,7 @@ RECO_SAMPLES = {
         'datasetpath' : "/DYToTauTau_M-20_CT10_TuneZ2_7TeV-powheg-pythia-tauola/Fall10-E7TeV_ProbDist_2010Data_BX156_START38_V12-v1/GEN-SIM-RECO",
         'events_processed' : 1994719,
         'skim_eff' : 1.0,
-        'x_sec' : 1737.9*_picobarns, 
+        'x_sec' : 1737.9*_picobarns,
         'legendEntry' : plotter.process_Ztautau.config_dqmHistPlotter.legendEntry.value(),
         'type' : plotter.process_Ztautau.config_dqmHistPlotter.type.value(),
         'drawOption' : styles.drawOption_Ztautau,
@@ -234,7 +235,7 @@ RECO_SAMPLES = {
         'dbs_url' :  "http://cmsdbsprod.cern.ch/cms_dbs_prod_global/servlet/DBSServlet",
         'events_processed' : 1998931,
         'skim_eff' : 1.0,
-        'x_sec' : 1737.9*_picobarns, 
+        'x_sec' : 1737.9*_picobarns,
         'legendEntry' : plotter.process_Zmumu.config_dqmHistPlotter.legendEntry.value(),
         'type' : plotter.process_Zmumu.config_dqmHistPlotter.type.value(),
         'drawOption' : styles.drawOption_Zmumu,
@@ -258,20 +259,20 @@ RECO_SAMPLES = {
         'applyVertexMultiplicityReweighting' : True,
         'hlt' : cms.InputTag("TriggerResults", "", "REDIGI38XPU")
     },
-    'ZeePOWHEG' : {                             
+    'ZeePOWHEG' : {
         'datasetpath' : "/DYToEE_M-20_CT10_TuneZ2_7TeV-powheg-pythia/Fall10-E7TeV_ProbDist_2010Data_BX156_START38_V12-v1/GEN-SIM-RECO",
-        'events_processed' : 1998990,     
-        'skim_eff' : 1.0,                 
+        'events_processed' : 1998990,
+        'skim_eff' : 1.0,
         'x_sec' : 1737.9*_picobarns, # Z + jets correction factor for NLO/LO cross-sections = 1.28
         'legendEntry' : plotter.process_Zee.config_dqmHistPlotter.legendEntry.value(),
         'type' : plotter.process_Zee.config_dqmHistPlotter.type.value(),
-        'drawOption' : styles.drawOption_Zee,                                                                                                                                                                                            
-        'applyZrecoilCorrection' : True,  
+        'drawOption' : styles.drawOption_Zee,
+        'applyZrecoilCorrection' : True,
         'applyMuonTriggerEfficiencyCorrection' : True,
         'applyMuonIsolationEfficiencyCorrection' : True,
         'applyVertexMultiplicityReweighting' : True,
         'hlt' : cms.InputTag("TriggerResults", "", "REDIGI38XPU")
-    },  
+    },
     'InclusivePPmuX' : {
         'datasetpath' : "/ppMuX/akalinow-SkimTauTau_356_pass1-0a3d3891f015a95324f94837322fb8aa-muTauSkim/USER",
         'events_processed' : 9878911,
@@ -337,12 +338,12 @@ RECO_SAMPLES = {
         'hlt' : cms.InputTag("TriggerResults", "", "REDIGI38XPU"),
         'SE_black_list' : 'T2_TW_Taiwan'
     },
-    'WePlusnuPOWHEG' : {                  
+    'WePlusnuPOWHEG' : {
         'datasetpath' : "/WPlusToENu_CT10_TuneZ2_7TeV-powheg-pythia/Fall10-E7TeV_ProbDist_2010Data_BX156_START38_V12-v1/GEN-SIM-RECO",
         'dbs_url' :  "http://cmsdbsprod.cern.ch/cms_dbs_prod_global/servlet/DBSServlet",
         'events_processed' : 1997953,
-        'skim_eff' : 1.0,       
-        'x_sec' : 6290.7*_picobarns, 
+        'skim_eff' : 1.0,
+        'x_sec' : 6290.7*_picobarns,
         'legendEntry' : plotter.process_WplusJets.config_dqmHistPlotter.legendEntry.value(),
         'type' : plotter.process_WplusJets.config_dqmHistPlotter.type.value(),
         'enableFakeRates' : True,
@@ -354,12 +355,12 @@ RECO_SAMPLES = {
         'hlt' : cms.InputTag("TriggerResults", "", "REDIGI38XPU"),
         'SE_black_list' : 'T2_TW_Taiwan'
     },
-    'WeMinusNuPOWHEG' : {                                                                                                                                                                           
+    'WeMinusNuPOWHEG' : {
         'datasetpath' : "/WMinusToENu_CT10_TuneZ2_7TeV-powheg-pythia/Fall10-E7TeV_ProbDist_2010Data_BX156_START38_V12-v1/GEN-SIM-RECO",
         'dbs_url' :  "http://cmsdbsprod.cern.ch/cms_dbs_prod_global/servlet/DBSServlet",
         'events_processed' : 1996734,
         'skim_eff' : 1.0,
-        'x_sec' : 4513.3*_picobarns, 
+        'x_sec' : 4513.3*_picobarns,
         'legendEntry' : plotter.process_WplusJets.config_dqmHistPlotter.legendEntry.value(),
         'type' : plotter.process_WplusJets.config_dqmHistPlotter.type.value(),
         'enableFakeRates' : True,
@@ -393,7 +394,7 @@ RECO_SAMPLES = {
         'dbs_url' :  "http://cmsdbsprod.cern.ch/cms_dbs_prod_global/servlet/DBSServlet",
         'events_processed' : 1996548,
         'skim_eff' : 1.0,
-        'x_sec' : 4513.3*_picobarns, 
+        'x_sec' : 4513.3*_picobarns,
         'legendEntry' : plotter.process_WplusJets.config_dqmHistPlotter.legendEntry.value(),
         'type' : plotter.process_WplusJets.config_dqmHistPlotter.type.value(),
         'drawOption' : styles.drawOption_WplusJets,
@@ -442,7 +443,7 @@ RECO_SAMPLES = {
         'dbs_url' :  "http://cmsdbsprod.cern.ch/cms_dbs_prod_global/servlet/DBSServlet",
         'events_processed' : 1994870,
         'skim_eff' : 1.0,
-        'x_sec' : 4513.3*_picobarns, 
+        'x_sec' : 4513.3*_picobarns,
         'legendEntry' : plotter.process_WplusJets.config_dqmHistPlotter.legendEntry.value(),
         'type' : plotter.process_WplusJets.config_dqmHistPlotter.type.value(),
         'drawOption' : styles.drawOption_WplusJets,
@@ -521,7 +522,9 @@ MERGE_SAMPLES = {
     },
     'WplusJetsSum' : {
         'samples' : [
-            'Wenu',
+            # EK - disabling Wenu sample, as it only has 1 event in the skimmed
+            # sample.
+            #'Wenu',
             'Wmunu',
             'Wtaunu'
         ],
@@ -531,7 +534,12 @@ MERGE_SAMPLES = {
     },
     'WplusJetsSumPOWHEG' : {
 	'samples' : [
-		'WePlusnuPOWHEG' , 'WeMinusNuPOWHEG', 'WmuMinusnuPOWHEG', 'WmuPlusnuPOWHEG', 'WtauMinusnuPOWHEG', 'WtauPlusnuPOWHEG'
+		'WePlusnuPOWHEG' ,
+        'WeMinusNuPOWHEG',
+        'WmuMinusnuPOWHEG',
+        'WmuPlusnuPOWHEG',
+        'WtauMinusnuPOWHEG',
+        'WtauPlusnuPOWHEG'
 	],
 	'legendEntry' : plotter.process_WplusJets.config_dqmHistPlotter.legendEntry.value(),
         'type' : plotter.process_WplusJets.config_dqmHistPlotter.type.value(),
