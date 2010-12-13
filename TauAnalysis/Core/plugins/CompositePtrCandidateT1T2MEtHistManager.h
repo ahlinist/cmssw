@@ -1,4 +1,4 @@
-#ifndef TauAnalysis_Core_CompositePtrCandidateT1T2MEtHistManager_h  
+#ifndef TauAnalysis_Core_CompositePtrCandidateT1T2MEtHistManager_h
 #define TauAnalysis_Core_CompositePtrCandidateT1T2MEtHistManager_h
 
 #include "FWCore/Framework/interface/Event.h"
@@ -18,14 +18,14 @@
 #include <string>
 
 template<typename T1, typename T2>
-class CompositePtrCandidateT1T2MEtHistManager : public HistManagerBase 
+class CompositePtrCandidateT1T2MEtHistManager : public HistManagerBase
 {
- public:  
+ public:
   explicit CompositePtrCandidateT1T2MEtHistManager(const edm::ParameterSet&);
   ~CompositePtrCandidateT1T2MEtHistManager();
-  
+
  private:
-//--- histogram booking and filling functions 
+//--- histogram booking and filling functions
 //    inherited from HistManagerBase class
   void bookHistogramsImp();
   void fillHistogramsImp(const edm::Event&, const edm::EventSetup&, double);
@@ -56,7 +56,7 @@ class CompositePtrCandidateT1T2MEtHistManager : public HistManagerBase
   std::vector<FakeRateJetWeightExtractor<T1>*> diTauLeg1WeightExtractors_;
   std::vector<FakeRateJetWeightExtractor<T2>*> diTauLeg2WeightExtractors_;
 
-//--- "helper" classes for accessing the tracks 
+//--- "helper" classes for accessing the tracks
 //    of the two tau decay products
   PATLeptonTrackExtractor<T1> trackExtractorLeg1_;
   PATLeptonTrackExtractor<T2> trackExtractorLeg2_;
@@ -68,7 +68,14 @@ class CompositePtrCandidateT1T2MEtHistManager : public HistManagerBase
   MonitorElement* hGenDiTauCandidatePhi_;
 
   MonitorElement* hGenLeg1En_;
+  MonitorElement* hGenLeg1Pt_;
+  MonitorElement* hGenLeg1Phi_;
+  MonitorElement* hGenLeg1Eta_;
   MonitorElement* hGenLeg2En_;
+  MonitorElement* hGenLeg2Pt_;
+  MonitorElement* hGenLeg2Phi_;
+  MonitorElement* hGenLeg2Eta_;
+
   MonitorElement* hGenLeg1PtVsLeg2Pt_;
   MonitorElement* hGenLeg1EtaVsLeg2Eta_;
   MonitorElement* hGenDeltaRleg1VisNu_;
@@ -144,7 +151,7 @@ class CompositePtrCandidateT1T2MEtHistManager : public HistManagerBase
 
   MonitorElement* hMt1MET_;
   MonitorElement* hMt2MET_;
-  
+
   MonitorElement* hHt12MET_;
 
   MonitorElement* hDPhi12_;
@@ -161,6 +168,6 @@ class CompositePtrCandidateT1T2MEtHistManager : public HistManagerBase
   MonitorElement* hPzetaDiff_;
 };
 
-#endif  
+#endif
 
 
