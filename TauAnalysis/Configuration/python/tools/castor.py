@@ -41,7 +41,7 @@ def group(iterator, count):
         yield tuple([itr.next() for i in xrange(count)])
 
 __author__  = "Sebastien Binet <binet@cern.ch>"
-__version__ = "$Revision: 1.4 $"
+__version__ = "$Revision: 1.5 $"
 __doc__ = """A set of simple helper methods to handle simple tasks with CASTOR.
 """
 
@@ -81,11 +81,10 @@ def nslsl(path):
             output = {
                 'permissions' : fields[0],
                 'size' : int(fields[4]),
-                'time' : time.strptime(" ".join(fields[5:8]), "%b %d %H:%M"),
                 'file' : fields[8]
             }
             time_stamp = " ".join(fields[5:8])
-            if time_stamp.find(':'):
+            if time_stamp.find(':') != -1:
                 output['time'] = time.strptime(
                     time_stamp + " " + str(datetime.datetime.now().year),
                     "%b %d %H:%M %Y")
