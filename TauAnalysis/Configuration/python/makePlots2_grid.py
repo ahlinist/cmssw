@@ -68,6 +68,42 @@ def get_filter_stat(file, filter_stats_dir, statistic,
             return float(matches.group('value'))
     return None
 
+def get_skim_eff(skim_file_name, filter_stat_base_dir, skimFilterStatistic):
+    " Get the efficiency for a harvested root file for a given filter stat "
+    skim_file = ROOT.TFile(skim_file_name, "READ")
+    # Get the filter statistics folder
+    passed = get_filter_stat(
+        skim_file, filter_stat_base_dir,
+        skimFilterStatistic,
+        'passed_cumulative_num#a1#s0')
+    processed = get_filter_stat(
+        skim_file, filter_stat_base_dir,
+        skimFilterStatistic,
+        'processed_num#a1#s0')
+    local_skim_eff = passed/processed
+    return local_skim_eff
+
+def apply_auto_scale(sample_info, pset, target_lumi, dqmDirectoryFilterStatistics):
+    " Build the autoscale information in the DQM loader [pset] given sample info"
+    # Auto scale MC samples
+    if sample_info['type'].lower().find('mc') != -1:
+        pset.autoscale = cms.bool(True)
+        pset.totalExpectedEventsBeforeSkim = cms.uint32(sample_info['events_processed'])
+        pset.skimEfficiency = cms.double(sample_info['skim_eff'])
+        pset.xSection = cms.double(sample_info['x_sec'])
+        pset.targetIntLumi = cms.double(target_lumi)
+
+        # Define the filter to take the processed events from
+        pset.filterToUse = cms.string("genPhaseSpaceCut/processed_num#a1#s0")
+        pset.filterStatisticsLocation = cms.string(dqmDirectoryFilterStatistics['factorizationDisabled'])
+    else:
+        # For data, don't apply any scaling
+        pset.scaleFactor = cms.double(1.0)
+    # If the sample is factorized, we need to change the location of the filter
+    # statistics information
+    if sample_info['factorize']:
+        pset.filterStatisticsLocation = cms.string(dqmDirectoryFilterStatistics['factorizationEnabled'])
+
 def _getInputSamples(mergeSampleDict, samples):
     # recursively expand name of samples to be merged
     # CV: a recursive implementation of this function is neccessary,
@@ -150,18 +186,8 @@ def makePlots(process, channel = None, samples = None, inputFilePath = None, job
         if skimStatFileMapper is not None:
             skim_file_name = skimStatFileMapper(sample)
             print "Loading level 2 skim info from file: %s" % skim_file_name
-            skim_file = ROOT.TFile(skim_file_name, "READ")
-            # Get the filter statistics folder
-            passed = get_filter_stat(
-                skim_file, filter_stat_base_dir,
-                skimFilterStatistic,
-                'passed_cumulative_num#a1#s0')
-            processed = get_filter_stat(
-                skim_file, filter_stat_base_dir,
-                skimFilterStatistic,
-                'processed_num#a1#s0')
-
-            local_skim_eff = passed/processed
+            local_skim_eff = get_skim_eff(skim_file_name, filter_stat_base_dir,
+                                          skimFilterStatistic)
             # Update sample skim efficiency
             sample_info['skim_eff'] *= local_skim_eff
             print ("Got local skim eff: %0.2f%% for sample %s, "
@@ -173,24 +199,10 @@ def makePlots(process, channel = None, samples = None, inputFilePath = None, job
             inputFileNames = cms.vstring(sample_mapper(sample)),
             dqmDirectory_store = cms.string('/harvested/%s' % sample),
         )
-        # Auto scale MC samples
-        if sample_info['type'].lower().find('mc') != -1:
-            sample_pset.autoscale = cms.bool(True)
-            sample_pset.totalExpectedEventsBeforeSkim = cms.uint32(sample_info['events_processed'])
-            sample_pset.skimEfficiency = cms.double(sample_info['skim_eff'])
-            sample_pset.xSection = cms.double(sample_info['x_sec'])
-            sample_pset.targetIntLumi = cms.double(samples['TARGET_LUMI'])
 
-            # Define the filter to take the processed events from
-            sample_pset.filterToUse = cms.string("genPhaseSpaceCut/processed_num#a1#s0")
-            sample_pset.filterStatisticsLocation = cms.string(dqmDirectoryFilterStatistics['factorizationDisabled'])
-        else:
-            # For data, don't apply any scaling
-            sample_pset.scaleFactor = cms.double(1.0)
-        # If the sample is factorized, we need to change the location of the filter
-        # statistics information
-        if sample_info['factorize']:
-            sample_pset.filterStatisticsLocation = cms.string(dqmDirectoryFilterStatistics['factorizationEnabled'])
+        # Apply autoscaling
+        apply_auto_scale(sample_info, sample_pset, samples['TARGET_LUMI'],
+                         dqmDirectoryFilterStatistics)
 
         # Add to our sample dictionary
         dqmFileLoaderJobs[sample] = sample_pset
