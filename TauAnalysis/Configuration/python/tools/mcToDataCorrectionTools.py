@@ -88,23 +88,23 @@ def applyZrecoilCorrection_runZtoMuTau_bgEstTemplate(process):
                               "ZllRecoilCorrectionMuTauPair",
                               [ "analyzeZtoMuTauSequence" ])
     _applyZllRecoilCorrection(process,
-                              "selectMuTauPairsBgEstZmumuEnriched", 'muTauPairsBgEstZmumuJetMisIdEnriched',
+                              "produceMuTauPairsBgEstZmumuJetMisIdEnriched", 'muTauPairsBgEstZmumuJetMisIdEnriched',
                               "ZllRecoilCorrectionMuTauPair",
                               [ "analysisSequenceBgEstZmumuJetMisIdEnriched" ])
     _applyZllRecoilCorrection(process,
-                              "selectMuTauPairsBgEstZmumuEnriched", 'muTauPairsBgEstZmumuMuonMisIdEnriched',
+                              "produceMuTauPairsBgEstZmumuMuonMisIdEnriched", 'muTauPairsBgEstZmumuMuonMisIdEnriched',
                               "ZllRecoilCorrectionMuTauPair",
                               [ "analysisSequenceBgEstZmumuMuonMisIdEnriched" ])
     _applyZllRecoilCorrection(process,
-                              "bgEstQCDenrichedAnalysisSequence", 'muTauPairsBgEstQCDenriched',
+                              "produceMuTauPairsBgEstQCDenriched", 'muTauPairsBgEstQCDenriched',
                               "ZllRecoilCorrectionMuTauPair",
                               [ "analysisSequenceBgEstQCDenriched" ])
     _applyZllRecoilCorrection(process,
-                              "selectMuTauPairsBgEstWplusJetsEnriched", 'muTauPairsBgEstWplusJetsEnriched',
+                              "produceMuTauPairsBgEstWplusJetsEnriched", 'muTauPairsBgEstWplusJetsEnriched',
                               "ZllRecoilCorrectionMuTauPair",
                               [ "analysisSequenceBgEstWplusJetsEnriched" ])
     _applyZllRecoilCorrection(process,
-                              "selectMuTauPairsBgEstTTplusJetsEnriched", 'muTauPairsBgEstTTplusJetsEnriched',
+                              "produceMuTauPairsBgEstTTplusJetsEnriched", 'muTauPairsBgEstTTplusJetsEnriched',
                               "ZllRecoilCorrectionMuTauPair",
                               [ "analysisSequenceBgEstTTplusJetsEnriched" ])
 
@@ -117,9 +117,9 @@ def applyZrecoilCorrection_runZtoMuTau_tauIdEff(process):
                               "ZllRecoilCorrectionMuTauPair",
                               [ "analyzeZtoMuTauSequence" ])
     _applyZllRecoilCorrection(process,
-                              "bgEstTauIdEffZtoMuTauTemplateFitAnalysisSequence", '',
+                              "produceMuTauPairsTauIdEffZtoMuTauTemplateFit", 'muTauPairsTauIdEffZtoMuTauTemplateFit',
                               "ZllRecoilCorrectionMuTauPair",
-                              [ "" ])
+                              [ "analysisSequenceTauIdEffZtoMuTauTemplateFit" ])
     _applyZllRecoilCorrection(process,
                               "produceMuTauPairsTauIdEffZtoMuTauCombinedFit", 'muTauPairsTauIdEffZtoMuTauCombinedFit',
                               "ZllRecoilCorrectionMuTauPair",
