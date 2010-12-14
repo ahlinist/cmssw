@@ -141,6 +141,10 @@ def submitAnalysisToGrid(configFile = None, channel = None, samples = None,
             output_files.append("final_events_%s_%s_%s.root" % (
              jobInfo['channel'], jobInfo['sample'], jobInfo['id']))
 
+        # Check if we need to reformat the output file path
+        if outputFilePath.startswith('/castor/cern.ch'):
+            outputFilePath = outputFilePath.replace('/castor/cern.ch','')
+
         # Build crab options
         crabOptions = {
             'number_of_jobs' : _number_of_jobs(sample_info),
