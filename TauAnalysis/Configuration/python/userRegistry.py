@@ -57,6 +57,7 @@ userSettings = {
                     'pickevents' : '/data1/friis/Run26'
                 }
             },
+            # Loose skim
             'Run32' : {
                 'AHtoMuTau' : {
                     # The output directory on castor
@@ -66,8 +67,20 @@ userSettings = {
                     'harvestingFilePath' : "/data1/friis/",
                     'tmpFilePath' : "/data2/friis/tmp/",
                     # Where to store the harvested histograms on lxbatch
-                    'batchHarvest' : "/castor/cern.ch/user/f/friis/Run32harvest",
-                    'pickevents' : '/data1/friis/Run26',
+                    'batchHarvest' : "/castor/cern.ch/user/f/friis/Run32harvest/",
+                }
+            },
+            # Another skim, only with Loose TaNC and Muon Iso turned off
+            'Run35' : {
+                'AHtoMuTau' : {
+                    # The output directory on castor
+                    'analysisFilePath' : '/castor/cern.ch/user/f/friis/Run35/',
+                    #'analysisFilePath' : '/castor/cern.ch/user/f/friis/Run32/',
+                    # The output directory for the plots
+                    'harvestingFilePath' : "/data1/friis/",
+                    'tmpFilePath' : "/data2/friis/tmp/",
+                    # Where to store the harvested histograms on lxbatch
+                    'batchHarvest' : "/castor/cern.ch/user/f/friis/Run35harvest/",
                 }
             },
             'Run32onskim' : {
@@ -301,7 +314,11 @@ def getTmpFilePath(channel):
 
 def getBatchHarvestLocation(channel):
     " Where to store the output histograms when harvesting on LXBatch "
-    return getInfo(channel)['batchHarvest']
+    output = getInfo(channel)['batchHarvest']
+    # Add a trailing slash if we don't have one
+    if not output.endswith('/'):
+        output += '/'
+    return output
 
 def getConfigFileName(channel):
     return getInfo(channel)['configFileName']
