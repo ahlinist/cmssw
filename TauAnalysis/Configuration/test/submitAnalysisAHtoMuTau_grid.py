@@ -13,13 +13,10 @@ jobId = getJobId(channel)
 
 samplesToAnalyze = [
     # modify in case you want to submit crab jobs for some of the samples only...
-    'ZtautauPU156bx',
-    'A120', 'bbA120',
-    'A200', 'bbA200'
 ]
 
-#enableSystematics = True
-enableSystematics = False
+enableSystematics = True
+#enableSystematics = False
 
 submitAnalysisToGrid(configFile = configFile, channel = 'AHtoMuTau',
                      samples = recoSampleDefinitionsAHtoMuTau_7TeV,

@@ -501,9 +501,9 @@ MERGE_SAMPLES = {
     'ZtautauSum' : {
         'samples' : [
             ##'Ztautau',
-            ##'qqZtautau',
+            'qqZtautau',
             'ZtautauPU156bx',
-            'qqZtautauPU156bx',
+            ##'qqZtautauPU156bx',
         ],
         'legendEntry' : plotter.process_Ztautau.config_dqmHistPlotter.legendEntry.value(),
         'type' : plotter.process_Ztautau.config_dqmHistPlotter.type.value(),

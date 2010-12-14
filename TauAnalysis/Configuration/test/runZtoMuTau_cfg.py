@@ -70,7 +70,7 @@ process.source = cms.Source("PoolSource",
     fileNames = cms.untracked.vstring(
         #'/store/relval/CMSSW_3_6_1/RelValZTT/GEN-SIM-RECO/START36_V7-v1/0021/F405BC9A-525D-DF11-AB96-002618943811.root',
         #'/store/relval/CMSSW_3_6_1/RelValZTT/GEN-SIM-RECO/START36_V7-v1/0020/EE3E8F74-365D-DF11-AE3D-002618FDA211.root'
-        'file:/data1/veelken/CMSSW_3_6_x/skims/Ztautau_1_1_sXK.root'
+        #'file:/data1/veelken/CMSSW_3_6_x/skims/Ztautau_1_1_sXK.root'
         #'file:/data1/veelken/CMSSW_3_8_x/skims/AHtoMuTau/selEvents_AHtoMuTau_woBtag_runs145762to148058_RECO.root'
         #'file:/data1/veelken/CMSSW_3_8_x/skims/test/mcDYttPU156bx_GEN_SIM_RECO_1_1_1VV.root'
         #'file:/data1/friis/PickMikesEvents/mikes_events_2010a.root',
@@ -78,6 +78,9 @@ process.source = cms.Source("PoolSource",
         #'file:/data1/friis/PickMikesEvents/mikes_events_2010b.root',
         #'file:/data1/friis/PickMikesEvents/mikes_events_2010b001.root',
         #'file:/data1/friis/PickMikesEvents/mikes_events_2010b002.root'
+        #'rfio:/castor/cern.ch/user/v/veelken/CMSSW_3_6_x/skims/ZtoMuTau/test/Ztautau_1_1_sXK.root'
+        #'file:/tmp/veelken/Ztautau_1_1_sXK.root'
+        'file:/data1/veelken/tmp/final_events_AHtoMuTau_ZtautauPOWHEG_Run32_51_0_ZW7.root'
     )
     #skipBadFiles = cms.untracked.bool(True)
 )
@@ -226,7 +229,7 @@ from TauAnalysis.Configuration.tools.sysUncertaintyTools import enableSysUncerta
 # in case running jobs on the CERN batch system
 # (needs to be done after process.p has been defined)
 #__#systematics#
-enableSysUncertainties_runZtoMuTau(process)
+##enableSysUncertainties_runZtoMuTau(process)
 #--------------------------------------------------------------------------------
 
 #--------------------------------------------------------------------------------

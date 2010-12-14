@@ -143,17 +143,23 @@ userSettings = {
     'veelken': {
         'current' : {
             'AHtoMuTau' : '2010Dec01',
-            'ZtoMuTau' : '2010Nov26ii',
-            'ZtoMuTau_bgEstTemplate' : '2010Dec08',
+            'ZtoMuTau' : '2010Dec14ii',
+            'ZtoMuTau_bgEstTemplate' : '2010Dec14ii',
             'ZtoMuTau_tauIdEff' : '2010Dec01iii'
         },
         'jobs' : {
-            '2010Dec09' : {
-                'AHtoMuTau' : {
-                    'analysisFilePath' : "/user/v/veelken/CMSSW_3_8_x/plots/AHtoMuTau/",
-                    'harvestingFilePath' : "/data1/veelken/CMSSW_3_8_x/plots/AHtoMuTau/",
-                    'tmpFilePath' : "/data1/veelken/tmp/",
-                    'jobId' : "2010Dec09"
+            '2010Dec14ii' : {
+                'ZtoMuTau' : {
+                    'analysisFilePath' : "/user/v/veelken/CMSSW_3_8_x/plots/ZtoMuTau/", 
+                    'harvestingFilePath' : "/data1/veelken/CMSSW_3_8_x/plots/ZtoMuTau/",
+                    'tmpFilePath' : "/data1/veelken/tmp/ZtoMuTau/",
+                    'jobId' : "2010Dec14ii"
+                },
+                'ZtoMuTau_bgEstTemplate' : {
+                    'analysisFilePath' : "/user/v/veelken/CMSSW_3_8_x/plots/ZtoMuTau_bgEstTemplate/",
+                    'harvestingFilePath' : "/data1/veelken/CMSSW_3_8_x/plots/ZtoMuTau_bgEstTemplate/",
+                    'tmpFilePath' : "/data1/veelken/tmp/ZtoMuTau_bgEstTemplate/",
+                    'jobId' : "2010Dec14ii"
                 }
             },
             '2010Dec08' : {
