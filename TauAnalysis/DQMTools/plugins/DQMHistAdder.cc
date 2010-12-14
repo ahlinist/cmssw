@@ -229,9 +229,9 @@ void DQMHistAdder::endJob()
 	    dqmDirectory_input != addJob->dqmDirectories_input_.end(); ++dqmDirectory_input ) {
 	
 	std::string inputDirectory = dqmDirectoryName(*dqmDirectory_input);
-	std::cout << " inputDirectory = " << inputDirectory << std::endl;
+	//std::cout << " inputDirectory = " << inputDirectory << std::endl;
 	std::string outputDirectory = dqmDirectoryName(dqmDirectory_output);
-	std::cout << " outputDirectory = " << outputDirectory << std::endl;
+	//std::cout << " outputDirectory = " << outputDirectory << std::endl;
 	
 //--- when processing first inputDirectory, check that histograms in outputDirectory do not yet exist;
 //    afterwards, add histograms in inputDirectory to those in outputDirectory
