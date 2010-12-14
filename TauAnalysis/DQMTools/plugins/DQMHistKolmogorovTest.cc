@@ -63,6 +63,8 @@ void DQMHistKolmogorovTest::cfgEntryTest::initialize(DQMStore& dqmStore)
   //compatibility_ = ksTest.runTest(me_test_);
 
   compatibility_ = me_reference_->getTH1()->KolmogorovTest(me_test_->getTH1());
+
+  print();
 }
 
 void DQMHistKolmogorovTest::cfgEntryTest::save(DQMStore& dqmStore) 
