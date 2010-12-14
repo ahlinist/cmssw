@@ -128,7 +128,7 @@ def split(input_files, threshold, function):
     while input_files:
         current_list.append(input_files.pop(0))
         current_value += function(current_list[-1])
-        if current_value > threshold:
+        if current_value > threshold or not input_files:
             yield current_list
             current_value = 0
             current_list = []
