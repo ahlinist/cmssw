@@ -536,6 +536,7 @@ drawOption_ZtautauPlusJets = drawOption_Ztautau
 drawOption_Zee_stacked = copy.deepcopy(drawOption_green_stacked)
 drawOption_Zee_separate = copy.deepcopy(drawOption_green_separate)
 drawOption_Zee = drawOption_Zee_stacked
+drawOption_Zee.fillStyle = 1001
 drawOption_ZeePlusJets = drawOption_Zee
 
 drawOption_Zmumu_stacked = copy.deepcopy(drawOption_darkBlue_stacked)
@@ -547,22 +548,27 @@ drawOption_ZmumuPlusJets = drawOption_Zmumu
 drawOption_ZplusJets_stacked = copy.deepcopy(drawOption_lightBlue_stacked)
 drawOption_ZplusJets_separate = copy.deepcopy(drawOption_lightBlue_separate)
 drawOption_ZplusJets = drawOption_ZplusJets_stacked
+drawOption_ZplusJets.fillStyle = 1001
 
 drawOption_Vqq_stacked = copy.deepcopy(drawOption_yellow_stacked)
 drawOption_Vqq_separate = copy.deepcopy(drawOption_yellow_separate)
 drawOption_Vqq = drawOption_Vqq_stacked
+drawOption_Vqq.fillStyle = 1001
 
 drawOption_Wtaunu_stacked = copy.deepcopy(drawOption_red_stacked)
 drawOption_Wtaunu_separate = copy.deepcopy(drawOption_red_separate)
 drawOption_Wtaunu = drawOption_Wtaunu_stacked
+drawOption_Wtaunu.fillStyle = 1001
 
 drawOption_Wenu_stacked = copy.deepcopy(drawOption_green_stacked)
 drawOption_Wenu_separate = copy.deepcopy(drawOption_green_separate)
 drawOption_Wenu = drawOption_Wenu_stacked
+drawOption_Wenu.fillStyle = 1001
 
 drawOption_Wmunu_stacked = copy.deepcopy(drawOption_darkBlue_stacked)
 drawOption_Wmunu_separate = copy.deepcopy(drawOption_darkBlue_separate)
 drawOption_Wmunu = drawOption_Wmunu_stacked
+drawOption_Wmunu.fillStyle = 1001
 
 drawOption_WplusJets_stacked = copy.deepcopy(drawOption_lightBlue_stacked)
 drawOption_WplusJets_separate = copy.deepcopy(drawOption_lightBlue_separate)
@@ -577,6 +583,7 @@ drawOption_TTplusJets.fillStyle = 1001
 drawOption_gammaPlusJets_stacked = copy.deepcopy(drawOption_yellow_stacked)
 drawOption_gammaPlusJets_separate = copy.deepcopy(drawOption_yellow_separate)
 drawOption_gammaPlusJets = drawOption_gammaPlusJets_stacked
+drawOption_gammaPlusJets.fillStyle = 1001
 drawOption_gammaPlusJets_Pt15to20 = drawOption_gammaPlusJets
 drawOption_gammaPlusJets_Pt20to25 = drawOption_gammaPlusJets
 drawOption_gammaPlusJets_Pt25to30 = drawOption_gammaPlusJets
