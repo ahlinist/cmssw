@@ -8,9 +8,9 @@
  *
  * \author Christian Veelken, UC Davis
  *
- * \version $Revision: 1.8 $
+ * \version $Revision: 1.9 $
  *
- * $Id: FakeRateWeightProducerBase.h,v 1.8 2010/03/05 08:52:49 veelken Exp $
+ * $Id: FakeRateWeightProducerBase.h,v 1.9 2010/09/28 11:23:23 jkolb Exp $
  *
  */
 
@@ -87,6 +87,11 @@ class FakeRateWeightProducerBase : public edm::EDProducer
   double maxJetPt_;
   double minJetEta_;
   double maxJetEta_;
+
+//--- configuration parameters
+  double shiftTauIdEff_; // multiply tau id. efficiency by (1 + shift),
+                         // in order to estimate systematic uncertainties due to imprecise knowledge of tau id. efficiency
+                         // if using "CDF"-type weights 
 
   int cfgError_;
 

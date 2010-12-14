@@ -56,12 +56,12 @@ void FakeRateJetWeightProducer::produce(edm::Event& evt, const edm::EventSetup&)
       bool tauJetDiscr_passed = true;
 
       getTauJetProperties(evt, tauJetRef, iTauJet, preselTauJets, frTypeEntry->second, tauJetIdEff, qcdJetFakeRate, tauJetDiscr_passed);
-
+     
       double fakeRateJetWeight = getFakeRateJetWeight(tauJetIdEff, qcdJetFakeRate, tauJetDiscr_passed, tauJetRef.get());
 
       if ( gVerbosity_ )
         std::cout << " Pt = " << tauJetRef->pt() << ", eta = " << tauJetRef->eta() << ", phi = " << tauJetRef->phi() << ","
-            << " jet-radius = " << getJetRadius(*tauJetRef) << ":" << " jet weight = " << fakeRateJetWeight << std::endl;
+		  << " jet-radius = " << getJetRadius(*tauJetRef) << ":" << " jet weight = " << fakeRateJetWeight << std::endl;
 
       fakeRateJetWeights.push_back(pat::LookupTableRecord(fakeRateJetWeight));
     }

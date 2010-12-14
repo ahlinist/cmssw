@@ -156,7 +156,7 @@ process.p = cms.Path(
   #+ process.printGenParticleList # uncomment to enable print-out of generator level particles
   #+ process.printEventContent    # uncomment to enable dump of event content after PAT-tuple production
    + process.selectZtoMuTauEvents
-   + process.analyzeZtoMuTauEvents
+   + process.analyzeZtoMuTauSequence
    + process.saveZtoMuTauPlots
 )
 
@@ -176,12 +176,12 @@ from TauAnalysis.Configuration.tools.factorizationTools import enableFactorizati
 
 #--------------------------------------------------------------------------------
 # import utility function for fake-rate technique
-from TauAnalysis.BgEstimationTools.tools.fakeRateTools import enableFakeRates_runZtoMuTau
+from TauAnalysis.BgEstimationTools.tools.fakeRateTools import enableFakeRates
 #
 # disable cuts on tau id. discriminators;
 # instead, weight events passing all selection criteria except tau id. discriminators
 # by fake-rates
-enableFakeRates_runZtoMuTau(process, method = "simple") # "simple"/"CDF"
+enableFakeRates(process, "ZtoMuTau", method = "simple") # "simple"/"CDF"
 #--------------------------------------------------------------------------------
 
 # print-out all python configuration parameter information
