@@ -7,8 +7,8 @@
  *  computed by summing bin-contents of histograms,
  *  either from left-to-right or from right-to-left
  *
- *  $Date: 2010/10/31 15:21:08 $
- *  $Revision: 1.5 $
+ *  $Date: 2010/12/12 08:59:27 $
+ *  $Revision: 1.1 $
  *  \author Christian Veelken, UC Davis
  */
 
@@ -30,12 +30,12 @@ class DQMHistIntegrator : public edm::EDAnalyzer
     explicit cfgEntryPlot(const edm::ParameterSet&);
     void print() const;
     void integrate(DQMStore&);
-    std::string meName_distribution_;
-    MonitorElement* me_distribution_;
+    std::string meName_input_;
+    MonitorElement* me_input_;
     enum { kIntegrateFromLeft, kIntegrateFromRight };
     int mode_;
-    std::string meName_integrated_;
-    MonitorElement* me_integrated_;
+    std::string meName_output_;
+    MonitorElement* me_output_;
     int cfgError_;
   };
 

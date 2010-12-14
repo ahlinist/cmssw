@@ -15,12 +15,12 @@
 #include <iomanip>
 
 DQMHistIntegrator::cfgEntryPlot::cfgEntryPlot(const edm::ParameterSet& cfg)
-  : me_distribution_(0),
-    me_integrated_(0),
+  : me_input_(0),
+    me_output_(0),
     cfgError_(0)
 {
-  meName_distribution_ = cfg.getParameter<std::string>("meName_distribution");
-  meName_integrated_ = cfg.getParameter<std::string>("meName_integrated");
+  meName_input_ = cfg.getParameter<std::string>("meName_input");
+  meName_output_ = cfg.getParameter<std::string>("meName_output");
 
   std::string mode_string = cfg.getParameter<std::string>("integrateFrom");
   if      ( mode_string == "left"  ) mode_ = kIntegrateFromLeft;
@@ -36,15 +36,15 @@ DQMHistIntegrator::cfgEntryPlot::cfgEntryPlot(const edm::ParameterSet& cfg)
 void DQMHistIntegrator::cfgEntryPlot::print() const
 {
   std::cout << "<cfgEntryPlot::print>:" << std::endl;
-  std::cout << " meName_distribution = " << meName_distribution_ << std::endl;
-  std::cout << " meName_integrated = " << meName_integrated_ << std::endl;
+  std::cout << " meName_input = " << meName_input_ << std::endl;
+  std::cout << " meName_output = " << meName_output_ << std::endl;
   std::cout << " mode = " << mode_ << std::endl;
 }
 
 void DQMHistIntegrator::cfgEntryPlot::integrate(DQMStore& dqmStore) 
 {
   bool dqmError = false;
-  me_distribution_ = getMonitorElement(dqmStore, meName_distribution_, dqmError);
+  me_input_ = getMonitorElement(dqmStore, meName_input_, dqmError);
    
   if ( dqmError ) {
     edm::LogError ("integrate") << " Failed to access histogram !!";
@@ -52,15 +52,15 @@ void DQMHistIntegrator::cfgEntryPlot::integrate(DQMStore& dqmStore)
     return;
   }
 
-  int meType = me_distribution_->kind();
+  int meType = me_input_->kind();
   if ( !(meType == MonitorElement::DQM_KIND_TH1F ||
 	 meType == MonitorElement::DQM_KIND_TH1S) ) {
-     edm::LogError ("integrate") << " MonitorElement = " << meName_distribution_ << " is not a histogram of Type 1d !!";
+     edm::LogError ("integrate") << " MonitorElement = " << meName_input_ << " is not a histogram of Type 1d !!";
      cfgError_ = 1;
      return;
   }
 
-  TH1* histogram = me_distribution_->getTH1();
+  TH1* histogram = me_input_->getTH1();
 
   std::auto_ptr<TH1> clone(dynamic_cast<TH1*>(histogram->Clone()));
   if ( !clone->GetSumw2N() ) clone->Sumw2();
@@ -93,7 +93,7 @@ void DQMHistIntegrator::cfgEntryPlot::integrate(DQMStore& dqmStore)
   }
 
   std::string meName, dqmDirectory;
-  separateMonitorElementFromDirectoryName(meName_integrated_, meName, dqmDirectory);
+  separateMonitorElementFromDirectoryName(meName_output_, meName, dqmDirectory);
   dqmStore.setCurrentFolder(dqmDirectory);
   std::string meName_full = dqmDirectoryName(dqmDirectory).append(meName);
   dqmRegisterHistogram(dqmStore, clone.release(), meName_full);
