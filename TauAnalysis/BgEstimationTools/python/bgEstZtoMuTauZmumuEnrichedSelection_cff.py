@@ -39,7 +39,7 @@ tauSelConfiguratorBgEstZmumuJetMisIdEnriched = objSelConfigurator(
 selectTausBgEstZmumuJetMisIdEnriched = tauSelConfiguratorBgEstZmumuJetMisIdEnriched.configure(pyNameSpace = locals())
 
 tausBgEstZmumuMuonMisIdEnrichedAntiMuonVeto = cms.EDFilter("PATTauSelector",
-    src = cms.InputTag('tausBgEstZmumuJetMisIdEnrichedTaNCdiscrCumulative'),                                              
+    src = cms.InputTag('selectedPatTausForMuTauLeadTrkPtCumulative'),                                              
     cut = cms.string('tauID("againstMuon") < 0.5'),
     filter = cms.bool(False)                                 
 )
@@ -58,6 +58,8 @@ muTauPairsBgEstZmumuJetMisIdEnriched = allMuTauPairs.clone(
     srcLeg2 = cms.InputTag('tausBgEstZmumuJetMisIdEnrichedMuonVetoCumulative'),
     verbosity = cms.untracked.int32(0)
 )
+
+produceMuTauPairsBgEstZmumuJetMisIdEnriched = cms.Sequence(muTauPairsBgEstZmumuJetMisIdEnriched)
 
 muTauPairsBgEstZmumuJetMisIdEnrichedMt1MET = copy.deepcopy(selectedMuTauPairsMt1MET)
 muTauPairsBgEstZmumuJetMisIdEnrichedMt1MET.cut = cms.string('mt1MET < 40.')
@@ -83,18 +85,15 @@ muTauPairsBgEstZmumuMuonMisIdEnriched = allMuTauPairs.clone(
     verbosity = cms.untracked.int32(0)
 )
 
+produceMuTauPairsBgEstZmumuMuonMisIdEnriched = cms.Sequence(muTauPairsBgEstZmumuMuonMisIdEnriched)
+
 muTauPairsBgEstZmumuMuonMisIdEnrichedZeroCharge = cms.EDFilter("PATMuTauPairSelector",
     src = cms.InputTag('muTauPairsBgEstZmumuMuonMisIdEnriched'),                                                   
     cut = cms.string('charge = 0'),
     filter = cms.bool(False)
 )
 
-#--------------------------------------------------------------------------------
-
-selectMuTauPairsBgEstZmumuEnriched = cms.Sequence(
-    muTauPairsBgEstZmumuJetMisIdEnriched + selectMuTauPairsBgEstZmumuJetMisIdEnriched
-   + muTauPairsBgEstZmumuMuonMisIdEnriched + muTauPairsBgEstZmumuMuonMisIdEnrichedZeroCharge
-)
+selectMuTauPairsBgEstZmumuMuonMisIdEnriched = cms.Sequence(muTauPairsBgEstZmumuMuonMisIdEnrichedZeroCharge)
 
 #--------------------------------------------------------------------------------  
 # produce collection of muon + muon combinations
@@ -109,6 +108,8 @@ diMuonPairsBgEstZmumuJetMisIdEnriched = cms.EDProducer("DiCandidatePairProducer"
     recoMode = cms.string(""),
     verbosity = cms.untracked.int32(0)
 )
+
+produceDiMuonPairsBgEstZmumuJetMisIdEnriched = cms.Sequence(diMuonPairsBgEstZmumuJetMisIdEnriched)
 
 diMuonPairsZeroChargeBgEstZmumuJetMisIdEnriched = cms.EDFilter("DiCandidatePairSelector",
     src = cms.InputTag('diMuonPairsBgEstZmumuJetMisIdEnriched'),                                   
@@ -125,6 +126,9 @@ diMuonPairsInvMassBgEstZmumuJetMisIdEnriched = cms.EDFilter("DiCandidatePairSele
     filter = cms.bool(False)
 )
 
+selectDiMuonPairsBgEstZmumuJetMisIdEnriched = cms.Sequence(
+    diMuonPairsZeroChargeBgEstZmumuJetMisIdEnriched * diMuonPairsInvMassBgEstZmumuJetMisIdEnriched
+)
 #--------------------------------------------------------------------------------
 
 diMuonPairsBgEstZmumuMuonMisIdEnriched = cms.EDProducer("DiCandidatePairProducer",
@@ -137,12 +141,7 @@ diMuonPairsBgEstZmumuMuonMisIdEnriched = cms.EDProducer("DiCandidatePairProducer
     verbosity = cms.untracked.int32(0)
 )
 
-#--------------------------------------------------------------------------------
-
-selectDiMuonPairsBgEstZmumuEnriched = cms.Sequence(
-    diMuonPairsBgEstZmumuJetMisIdEnriched + diMuonPairsZeroChargeBgEstZmumuJetMisIdEnriched + diMuonPairsInvMassBgEstZmumuJetMisIdEnriched
-   + diMuonPairsBgEstZmumuMuonMisIdEnriched
-)
+produceDiMuonPairsBgEstZmumuMuonMisIdEnriched = cms.Sequence(diMuonPairsBgEstZmumuMuonMisIdEnriched)
 
 #--------------------------------------------------------------------------------  
 # produce boolean event selection flags
@@ -800,8 +799,10 @@ analysisSequenceBgEstZmumuMuonMisIdEnriched = cms.Sequence(analyzeEventsBgEstZmu
 bgEstZmumuEnrichedAnalysisSequence = cms.Sequence(
     selectMuonsBgEstZmumuEnriched
    + selectTausBgEstZmumuEnriched
-   + selectMuTauPairsBgEstZmumuEnriched
-   + selectDiMuonPairsBgEstZmumuEnriched
+   + produceMuTauPairsBgEstZmumuJetMisIdEnriched + selectMuTauPairsBgEstZmumuJetMisIdEnriched
+   + produceMuTauPairsBgEstZmumuMuonMisIdEnriched + selectMuTauPairsBgEstZmumuMuonMisIdEnriched
+   + produceDiMuonPairsBgEstZmumuJetMisIdEnriched + selectDiMuonPairsBgEstZmumuJetMisIdEnriched
+   + produceDiMuonPairsBgEstZmumuMuonMisIdEnriched
    + selectEventsBgEstZmumuEnriched   
    + analysisSequenceBgEstZmumuJetMisIdEnriched + analysisSequenceBgEstZmumuMuonMisIdEnriched
 )
