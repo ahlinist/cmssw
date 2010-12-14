@@ -7,7 +7,7 @@ _CRAB_TEMPLATE = string.Template('''
 [CRAB]
 jobtype = cmssw
 use_server = 1
-scheduler = glidein
+scheduler = glite
 
 [CMSSW]
 datasetpath = $datasetpath
