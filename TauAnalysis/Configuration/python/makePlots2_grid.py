@@ -283,11 +283,13 @@ def makePlots(process, channel = None, samples = None, inputFilePath = None, job
             drawJobConfigurator_linear = copy.deepcopy(analyzer_drawJobConfigurator_indOutputFileName_set[1])
             drawJobConfigurator_linear.setTemplate(drawJobTemplate_linear)
 
+            print analyzer
             dqmHistPlotterModuleName = None
             if analyzer.find("_") != -1:
                 dqmHistPlotterModuleName = "plot%s%s" % (channel, analyzer[analyzer.rfind("_"):])
             else:
                 dqmHistPlotterModuleName = "plot%s" % channel
+            dqmHistPlotterModuleName = "plot" + analyzer
             print("--> configuring DQMHistPlotter: " + dqmHistPlotterModuleName)
             dqmHistPlotterModule = dqmHistPlotter_template.clone(
                 processes = cms.PSet(**processesForPlots),
