@@ -52,7 +52,7 @@ MonitorElement* getMonitorElement(DQMStore& dqmStore, const std::string& meName_
 
   MonitorElement* me = dqmStore.get(terminate_dqmDirectory(dqmDirectory).append(meName));
   if ( !me ) {
-    edm::LogError("getMonitorElement") << " Failed to retrieve MonitorElement = " << meName << " !!";
+    edm::LogError("getMonitorElement") << " Failed to retrieve MonitorElement = " << meName_full << " !!";
     dqmError = true;
   }
 
