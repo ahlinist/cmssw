@@ -33,10 +33,12 @@ def make_harvest_scripts(plot_regex, skim_regex, castor_directory,
     # Sort the input files by time, then file name
     input_files_info.sort(key = lambda x: (x['time'], x['file']))
 
+    print "Getting files from output dir", castor_output_directory
     # Get all the tmp files (that are non-zero)
     tmp_files_info = [x for x in castor.nslsl(castor_output_directory)
                     if x['size']]
     tmp_files = set(x['file'] for x in tmp_files_info)
+    #print tmp_files_info
 
     # Make a repository of info about our files
     all_files_dict = {}
@@ -167,8 +169,9 @@ def make_harvest_scripts(plot_regex, skim_regex, castor_directory,
                         bsub_file_access_counter = 0
                         submit_file.write("# thwart rate limit\n")
                         submit_file.write(
-                            "echo Sleeping for 500 seconds, it is now %s\n" %
-                            time.asctime())
+                            "echo Sleeping for 500 seconds, it is now:\n")
+                        submit_file.write(
+                            "date\n")
                         submit_file.write("sleep 500\n")
                     with open(script_file, 'w') as script_file:
                         script_file.write(script)
@@ -197,13 +200,13 @@ def make_harvest_scripts(plot_regex, skim_regex, castor_directory,
         bsub_file_access_counter = 0
         for sample in skim_file_map.keys():
             write_comment_header(merge_script, " Merging " + sample)
-            print " Generating merge scripts for sample %s" % sample
+            print "Merging %s" % sample,
             files = skim_file_map[sample]
             total_file_size =  sum(map(lambda x: x[1], files))/1e6
             # Divide the job up into chunks that are about 200 MB in size
             chunks = list(jobtools.split(files, 250e6, lambda x: x[1]))
             print " Total sample size: %i MB - splitting into %i chunks" % (
-                total_file_size, len(chunks))
+                total_file_size, len(chunks)),
             # Keep track of jobs we are actually running
             skim_merge_jobs = []
             for ichunk, input_files in enumerate(chunks):
@@ -242,12 +245,12 @@ def make_harvest_scripts(plot_regex, skim_regex, castor_directory,
                 merge_script.write("bsub < %s\n" % script_file)
                 merge_jobs_counter += 1
                 bsub_file_access_counter += len(input_files)
-                if bsub_file_access_counter > 1000:
+                if bsub_file_access_counter > 2000:
                     bsub_file_access_counter = 0
                     merge_script.write("# thwart rate limit\n")
                     merge_script.write(
-                        "echo Sleeping for 500 seconds, it is now %s\n" %
-                        time.asctime())
+                        "echo Sleeping for 500 seconds, it is now:\n")
+                    merge_script.write('date\n')
                     merge_script.write("sleep 500\n")
                 with open(script_file, 'w') as script_file:
                     script_file.write(script)
