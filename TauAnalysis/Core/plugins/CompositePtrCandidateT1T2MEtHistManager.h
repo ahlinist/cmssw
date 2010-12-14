@@ -68,14 +68,7 @@ class CompositePtrCandidateT1T2MEtHistManager : public HistManagerBase
   MonitorElement* hGenDiTauCandidatePhi_;
 
   MonitorElement* hGenLeg1En_;
-  MonitorElement* hGenLeg1Pt_;
-  MonitorElement* hGenLeg1Phi_;
-  MonitorElement* hGenLeg1Eta_;
   MonitorElement* hGenLeg2En_;
-  MonitorElement* hGenLeg2Pt_;
-  MonitorElement* hGenLeg2Phi_;
-  MonitorElement* hGenLeg2Eta_;
-
   MonitorElement* hGenLeg1PtVsLeg2Pt_;
   MonitorElement* hGenLeg1EtaVsLeg2Eta_;
   MonitorElement* hGenDeltaRleg1VisNu_;
