@@ -69,6 +69,8 @@ muTauPairsBgEstQCDenriched = allMuTauPairs.clone(
     verbosity = cms.untracked.int32(0)
 )
 
+produceMuTauPairsBgEstQCDenriched = cms.Sequence(muTauPairsBgEstQCDenriched)
+
 muTauPairsBgEstQCDenrichedMt1MET = copy.deepcopy(selectedMuTauPairsMt1MET)
 muTauPairsBgEstQCDenrichedMt1MET.cut = cms.string('mt1MET < 40.')
 
@@ -376,7 +378,7 @@ analysisSequenceBgEstQCDenriched = cms.Sequence(analyzeEventsBgEstQCDenriched)
 bgEstQCDenrichedAnalysisSequence = cms.Sequence(
     selectMuonsBgEstQCDenriched
    + selectTausBgEstQCDenriched
-   + muTauPairsBgEstQCDenriched + selectMuTauPairsBgEstQCDenriched
+   + produceMuTauPairsBgEstQCDenriched + selectMuTauPairsBgEstQCDenriched
    + selectEventsBgEstQCDenriched
    + analysisSequenceBgEstQCDenriched
 )

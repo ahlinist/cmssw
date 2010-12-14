@@ -41,13 +41,15 @@ muTauPairsBgEstTTplusJetsEnriched = allMuTauPairs.clone(
     verbosity = cms.untracked.int32(0)
 )
 
+produceMuTauPairsBgEstTTplusJetsEnriched = cms.Sequence(muTauPairsBgEstTTplusJetsEnriched)
+
 muTauPairsBgEstTTplusJetsEnrichedZeroCharge = cms.EDFilter("PATMuTauPairSelector",
     src = cms.InputTag('muTauPairsBgEstTTplusJetsEnriched'),                                                   
     cut = cms.string('abs(charge) < 0.5'),
     filter = cms.bool(False)
 )
 
-selectMuTauPairsBgEstTTplusJetsEnriched = cms.Sequence(muTauPairsBgEstTTplusJetsEnriched + muTauPairsBgEstTTplusJetsEnrichedZeroCharge)
+selectMuTauPairsBgEstTTplusJetsEnriched = cms.Sequence(muTauPairsBgEstTTplusJetsEnrichedZeroCharge)
 
 #--------------------------------------------------------------------------------  
 # produce collection of pat::Jets used for central jet veto
@@ -55,7 +57,7 @@ selectMuTauPairsBgEstTTplusJetsEnriched = cms.Sequence(muTauPairsBgEstTTplusJets
 #--------------------------------------------------------------------------------
 
 jetsBgEstTTplusJetsEnrichedAntiOverlapWithLeptonsVeto = cms.EDFilter("PATJetAntiOverlapSelector",
-    src = cms.InputTag("selectedPatJetsEt20Cumulative"),                                                                  
+    src = cms.InputTag("patJets"),                                                                  
     srcNotToBeFiltered = cms.VInputTag(
         "selectedPatElectronsTrkCumulative",
         "muonsBgEstTTplusJetsEnrichedPFRelIsoCumulative",
@@ -65,15 +67,21 @@ jetsBgEstTTplusJetsEnrichedAntiOverlapWithLeptonsVeto = cms.EDFilter("PATJetAnti
     filter = cms.bool(False)                                           
 )
 
-jetsBgEstTTplusJetsEnrichedEt40 = cms.EDFilter("PATJetSelector",
+jetsBgEstTTplusJetsEnrichedEta24 = cms.EDFilter("PATJetSelector",
     src = cms.InputTag("jetsBgEstTTplusJetsEnrichedAntiOverlapWithLeptonsVeto"),
+    cut = cms.string('abs(eta) < 2.4'),
+    filter = cms.bool(False)
+)
+
+jetsBgEstTTplusJetsEnrichedEt40 = cms.EDFilter("PATJetSelector",
+    src = cms.InputTag("jetsBgEstTTplusJetsEnrichedEta24"),
     cut = cms.string('et > 40.'),
     filter = cms.bool(False)
 )
 
 jetsBgEstTTplusJetsEnrichedEt40bTag = cms.EDFilter("PATJetSelector",
     src = cms.InputTag("jetsBgEstTTplusJetsEnrichedEt40"),
-    cut = cms.string('bDiscriminator("trackCountingHighEffBJetTags") > 4.5'),
+    cut = cms.string('bDiscriminator("trackCountingHighEffBJetTags") > 2.5'),
     filter = cms.bool(False)
 )
 
@@ -85,6 +93,7 @@ jetsBgEstTTplusJetsEnrichedEt60 = cms.EDFilter("PATJetSelector",
 
 selectJetsBgEstTTplusJetsEnriched = cms.Sequence(
     jetsBgEstTTplusJetsEnrichedAntiOverlapWithLeptonsVeto
+   + jetsBgEstTTplusJetsEnrichedEta24
    + jetsBgEstTTplusJetsEnrichedEt40 + jetsBgEstTTplusJetsEnrichedEt40bTag
    + jetsBgEstTTplusJetsEnrichedEt60
 )
@@ -407,7 +416,7 @@ analysisSequenceBgEstTTplusJetsEnriched = cms.Sequence(analyzeEventsBgEstTTplusJ
 
 bgEstTTplusJetsEnrichedAnalysisSequence = cms.Sequence(
     selectMuonsBgEstTTplusJetsEnriched
-   + selectMuTauPairsBgEstTTplusJetsEnriched
+   + produceMuTauPairsBgEstTTplusJetsEnriched + selectMuTauPairsBgEstTTplusJetsEnriched
    + selectJetsBgEstTTplusJetsEnriched 
    + selectEventsBgEstTTplusJetsEnriched
    + analysisSequenceBgEstTTplusJetsEnriched

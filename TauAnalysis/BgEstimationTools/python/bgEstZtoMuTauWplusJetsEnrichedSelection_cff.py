@@ -81,13 +81,15 @@ muTauPairsBgEstWplusJetsEnriched = allMuTauPairs.clone(
     verbosity = cms.untracked.int32(0)
 )
 
+produceMuTauPairsBgEstWplusJetsEnriched = cms.Sequence(muTauPairsBgEstWplusJetsEnriched)
+
 muTauPairsBgEstWplusJetsEnrichedMt1MET = cms.EDFilter("PATMuTauPairSelector",
     src = cms.InputTag('muTauPairsBgEstWplusJetsEnriched'),                                                   
     cut = cms.string('mt1MET > 30.'),
     filter = cms.bool(False)
 )
 
-selectMuTauPairsBgEstWplusJetsEnriched = cms.Sequence(muTauPairsBgEstWplusJetsEnriched + muTauPairsBgEstWplusJetsEnrichedMt1MET)
+selectMuTauPairsBgEstWplusJetsEnriched = cms.Sequence(muTauPairsBgEstWplusJetsEnrichedMt1MET)
 
 #--------------------------------------------------------------------------------  
 # produce collection of pat::Jets used for central jet veto
@@ -464,7 +466,7 @@ analysisSequenceBgEstWplusJetsEnriched = cms.Sequence(analyzeEventsBgEstWplusJet
 bgEstWplusJetsEnrichedAnalysisSequence = cms.Sequence(
     selectMuonsBgEstWplusJetsEnriched
    + selectTausBgEstWplusJetsEnriched
-   + selectMuTauPairsBgEstWplusJetsEnriched
+   + produceMuTauPairsBgEstWplusJetsEnriched + selectMuTauPairsBgEstWplusJetsEnriched
    + selectJetsBgEstWplusJetsEnriched 
    + selectEventsBgEstWplusJetsEnriched
    + analysisSequenceBgEstWplusJetsEnriched

@@ -28,16 +28,16 @@ prodTemplateHist = cms.EDAnalyzer("TemplateHistProducer",
 
     config = cms.VPSet(
         cms.PSet(
-			variables = cms.VPSet(
-				cms.PSet(
-					branchName = cms.string('selDiTauMvis12_0'),
-					numBins = cms.uint32(40),
-					min = cms.double(0.),
-					max = cms.double(200.)
-				)
-			),
-			meName = cms.string("diTauMvis12"),
-		)
+	    variables = cms.VPSet(
+                cms.PSet(
+                    branchName = cms.string('selDiTauMvis12_0'),
+                    numBins = cms.uint32(40),
+                    min = cms.double(0.),
+                    max = cms.double(200.)
+                )
+            ),
+            meName = cms.string("diTauMvis12")
+        )
     ),
                                                           
     branchNamesEventWeight = cms.vstring('eventWeight'),
@@ -92,6 +92,19 @@ drawJobTemplateHist = cms.PSet(
     xAxis = cms.string('Mass'),
     yAxis = cms.string('numEntries_linear'),
     legend = cms.string('regular')
+)
+
+drawJobTemplateHistIntegrated = cms.PSet(
+    plots = cms.VPSet(
+        plotBgEstMC_smSum,
+        plotBgEstData
+    ),
+    norm = cms.double(1.),
+    title = cms.string(''),
+    xAxis = cms.string('Mass'),
+    yAxis = cms.string('numEntries_linear'),
+    legend = cms.string('regular'),
+    labels = cms.vstring()
 )
 
 drawJobAnalysisHistData = cms.PSet(
