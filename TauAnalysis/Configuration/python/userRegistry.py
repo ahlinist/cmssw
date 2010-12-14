@@ -61,7 +61,7 @@ userSettings = {
             'Run32' : {
                 'AHtoMuTau' : {
                     # The output directory on castor
-                    'analysisFilePath' : '/user/f/friis/Run32/',
+                    'analysisFilePath' : '/castor/cern.ch/user/f/friis/Run32/',
                     #'analysisFilePath' : '/castor/cern.ch/user/f/friis/Run32/',
                     # The output directory for the plots
                     'harvestingFilePath' : "/data1/friis/",
@@ -117,6 +117,8 @@ userSettings = {
                     'batchHarvest' :  '/castor/cern.ch/user/f/friis/Run33FRharvest/',
                     # The source that paroduced the skim
                     'skimSource' : 'Run32',
+                    # Just for testing
+                    'pickevents' : '/data1/friis/Run26',
                 }
             },
             'Run33SYS' : {
