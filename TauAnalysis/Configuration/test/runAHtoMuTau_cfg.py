@@ -77,8 +77,9 @@ process.maxEvents = cms.untracked.PSet(
 process.source = cms.Source(
     "PoolSource",
     fileNames = cms.untracked.vstring(
-        'file:/data1/veelken/CMSSW_3_6_x/skims/Ztautau_1_1_sXK.root'
+        #'file:/data1/veelken/CMSSW_3_6_x/skims/Ztautau_1_1_sXK.root'
         #'file:/data1/friis/Run17/get_events/data_Mu_Run2010A_Sep17ReReco_pickevents/final_events.root'
+        'file:/data1/veelken/CMSSW_3_8_x/skims/test/mcDYttPU156bx_GEN_SIM_RECO_1_1_1VV.root'
     )
     #skipBadFiles = cms.untracked.bool(True)
 )
