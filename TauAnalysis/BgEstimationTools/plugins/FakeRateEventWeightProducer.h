@@ -9,9 +9,9 @@
  *
  * \author Christian Veelken, UC Davis
  *
- * \version $Revision: 1.5 $
+ * \version $Revision: 1.6 $
  *
- * $Id: FakeRateEventWeightProducer.h,v 1.5 2010/08/13 12:41:23 veelken Exp $
+ * $Id: FakeRateEventWeightProducer.h,v 1.6 2010/09/28 11:23:25 jkolb Exp $
  *
  */
 
@@ -26,16 +26,13 @@
 class FakeRateEventWeightProducer : public FakeRateWeightProducerBase
 {
  public:
-  
   explicit FakeRateEventWeightProducer(const edm::ParameterSet&);
   ~FakeRateEventWeightProducer();
   
  private:
-
   void beginJob() {}
   void produce(edm::Event&, const edm::EventSetup&);
   void endJob() {}
-
 };
 
 #endif  

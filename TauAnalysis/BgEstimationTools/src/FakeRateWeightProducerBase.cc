@@ -32,18 +32,23 @@ FakeRateWeightProducerBase::tauJetDiscrEntry::tauJetDiscrEntry(const edm::Parame
   tauJetIdEffSource_ = cfg.getParameter<edm::InputTag>("tauJetIdEffSource");
   qcdJetFakeRateSource_ = cfg.getParameter<edm::InputTag>("qcdJetFakeRateSource");
 
-  tauJetDiscrSource_ = cfg.exists("tauJetDiscrSource") ? cfg.getParameter<edm::InputTag>("tauJetDiscrSource") : edm::InputTag();
-  tauJetDiscrThreshold_ = cfg.exists("tauJetDiscrThreshold") ? cfg.getParameter<double>("tauJetDiscrThreshold") : 0.5;
+  tauJetDiscrSource_ = cfg.exists("tauJetDiscrSource") ? 
+    cfg.getParameter<edm::InputTag>("tauJetDiscrSource") : edm::InputTag();
+  tauJetDiscrThreshold_ = cfg.exists("tauJetDiscrThreshold") ? 
+    cfg.getParameter<double>("tauJetDiscrThreshold") : 0.5;
 
-  tauJetCut_ = cfg.exists("tauJetCut") ? cfg.getParameter<std::string>("tauJetCut") : "";
+  tauJetCut_ = cfg.exists("tauJetCut") ? 
+    cfg.getParameter<std::string>("tauJetCut") : "";
 
   if ( tauJetDiscrSource_.label() == "" && tauJetCut_ == "" ) {
-    edm::LogError("FakeRateWeightProducerBase::tauJetDiscrEntry") << " Either tauJetDiscrSource or tauJetCut must be specified !!";
+    edm::LogError("FakeRateWeightProducerBase::tauJetDiscrEntry") 
+      << " Either tauJetDiscrSource or tauJetCut must be specified !!";
     cfgError_ = 1;
   }
 
   if ( tauJetDiscrSource_.label() != "" && tauJetCut_ != "" ) {
-    edm::LogError("FakeRateWeightProducerBase::tauJetDiscrEntry") << " Must not specify tauJetDiscrSource and tauJetCut !!";
+    edm::LogError("FakeRateWeightProducerBase::tauJetDiscrEntry") 
+      << " Must not specify tauJetDiscrSource and tauJetCut !!";
     cfgError_ = 1;
   }
 
@@ -124,6 +129,9 @@ FakeRateWeightProducerBase::FakeRateWeightProducerBase(const edm::ParameterSet& 
   maxJetPt_ = cfg.getParameter<double>("maxJetPt");
   minJetEta_ = cfg.getParameter<double>("minJetEta");
   maxJetEta_ = cfg.getParameter<double>("maxJetEta");
+
+  shiftTauIdEff_ = cfg.exists("shiftTauIdEff") ?
+    cfg.getParameter<double>("shiftTauIdEff") : 0.;
 }
 
 FakeRateWeightProducerBase::~FakeRateWeightProducerBase()
@@ -230,6 +238,12 @@ void FakeRateWeightProducerBase::getTauJetProperties(const edm::Event& evt,
 
     if ( !(tauJetDiscr_value > tauJetDiscr->tauJetDiscrThreshold_) ) tauJetDiscr_passed = false;
   }
+
+  if ( shiftTauIdEff_ != 0. ) {
+    tauJetIdEff *= (1. + shiftTauIdEff_);
+    if ( tauJetIdEff < 0. ) tauJetIdEff = 0.;
+    if ( tauJetIdEff > 1. ) tauJetIdEff = 1.;
+  }   
 }
 
 double FakeRateWeightProducerBase::getFakeRateJetWeight(double tauJetIdEff, double qcdJetFakeRate,
