@@ -79,12 +79,15 @@ class InclusiveMuonPlots: public edm::EDAnalyzer {
     private:
         edm::InputTag muons_;
         StringCutObjectSelector<pat::Muon> selector_;
+        StringCutObjectSelector<pat::Muon> subSelector_;
         bool onlyLeadingMuon_;
 
         bool old36Xdata_;
 
         edm::InputTag primaryVertices_;
         edm::InputTag normalization_;
+
+        bool doTrackExtrapolations_;
 
         bool extraPlots_;
         edm::InputTag jets_;
@@ -113,9 +116,11 @@ class InclusiveMuonPlots: public edm::EDAnalyzer {
 InclusiveMuonPlots::InclusiveMuonPlots(const edm::ParameterSet& pset):
     muons_(pset.getParameter<edm::InputTag>("muons")),
     selector_(pset.getParameter<std::string>("selection")),
+    subSelector_(pset.existsAs<std::string>("subSelection") ? pset.getParameter<std::string>("subSelection") : ""),
     onlyLeadingMuon_(pset.getParameter<bool>("onlyLeadingMuon")),
     old36Xdata_(pset.existsAs<bool>("old36Xdata") ? pset.getParameter<bool>("old36Xdata") : true),
     primaryVertices_(pset.getParameter<edm::InputTag>("primaryVertices")),
+    doTrackExtrapolations_(pset.existsAs<bool>("doTrackExtrapolations") ? pset.getParameter<bool>("doTrackExtrapolations") : true),
     extraPlots_(pset.existsAs<bool>("extraPlots") ? pset.getParameter<bool>("extraPlots") : false),
     jets_(extraPlots_ ? pset.getParameter<edm::InputTag>("jets") : edm::InputTag("NONE")),
     met_(extraPlots_ ? pset.getParameter<edm::InputTag>("met") : edm::InputTag("NONE")),
@@ -198,15 +203,16 @@ InclusiveMuonPlots::InclusiveMuonPlots(const edm::ParameterSet& pset):
     book(*fs, pset, "segmentCompatArb",      "segmentCompat"); 
     book(*fs, pset, "segmentCompatNoArb",    "segmentCompat"); 
     book(*fs, pset, "caloCompat",            "caloCompat"); 
-
     book(*fs, pset, "timeAtIpInOut");
     book(*fs, pset, "timeAtIpInOutSig");
 
-    book(*fs, pset, "trkPhi_at_pME1_1",      "trkPhiAtSurface");
-    book(*fs, pset, "trkPhi_at_mME1_1",      "trkPhiAtSurface");
-    book(*fs, pset, "trkPhi_at_pME1_23",     "trkPhiAtSurface");
-    book(*fs, pset, "trkPhi_at_mME1_23",     "trkPhiAtSurface");
-    book(*fs, pset, "trkPhi_at_MB1",         "trkPhiAtSurface");
+    if (doTrackExtrapolations_) {
+        book(*fs, pset, "trkPhi_at_pME1_1",      "trkPhiAtSurface");
+        book(*fs, pset, "trkPhi_at_mME1_1",      "trkPhiAtSurface");
+        book(*fs, pset, "trkPhi_at_pME1_23",     "trkPhiAtSurface");
+        book(*fs, pset, "trkPhi_at_mME1_23",     "trkPhiAtSurface");
+        book(*fs, pset, "trkPhi_at_MB1",         "trkPhiAtSurface");
+    }
 
     if (pset.existsAs<edm::InputTag>("normalization")) {
         normalization_ = pset.getParameter<edm::InputTag>("normalization");
@@ -229,8 +235,9 @@ InclusiveMuonPlots::InclusiveMuonPlots(const edm::ParameterSet& pset):
 
         book(*fs, pset, "ptRel");
 
-        book(*fs, pset, "jetMuonPtRatio");
+        book(*fs, pset, "jetFragmentation");
         book(*fs, pset, "oppoJetMuonPtRatio");
+        book(*fs, pset, "oppoJetFragmentation");
     }
 }
 
@@ -274,9 +281,11 @@ void InclusiveMuonPlots::analyze(const edm::Event & event, const edm::EventSetup
     using namespace std;
 
     eventSetup.get<TransientTrackRecord>().get("TransientTrackBuilder",theTTBuilder);
+    if (doTrackExtrapolations_) {
     eventSetup.get<IdealMagneticFieldRecord>().get(bField);
     eventSetup.get<TrackingComponentsRecord>().get("SteppingHelixPropagatorAlong",propagator);
     eventSetup.get<MuonRecoGeometryRecord>().get(muonGeometry);
+    }
 
     Handle<View<reco::Muon> > muons;
     event.getByLabel(muons_, muons);
@@ -296,8 +305,10 @@ void InclusiveMuonPlots::analyze(const edm::Event & event, const edm::EventSetup
         // we want to make a pat::Muon so that we can access directly muonID in the cuts
         const pat::Muon &mu = (typeid(recomu) == typeid(pat::Muon) ? static_cast<const pat::Muon &>(recomu) : pat::Muon(recomu));
         
-        if (!selector_(mu)) continue;
+        if (!selector_(mu)) continue; // apply before counting
         nmu++;
+        if (!subSelector_(mu)) continue; // apply after counting
+        if (onlyLeadingMuon_ && nmu > 1) break; // we already did ++, so it counts from 1
     
         plots["p"  ]->Fill(mu.p());
         plots["pt" ]->Fill(mu.pt());
@@ -449,7 +460,7 @@ void InclusiveMuonPlots::analyze(const edm::Event & event, const edm::EventSetup
         }
 
         // Andy's phi at ME/MB 1 surface
-        if (mu.innerTrack().isNonnull()) {
+        if (doTrackExtrapolations_ && mu.innerTrack().isNonnull()) {
           barrelCylinder_ = dynamic_cast<const BoundCylinder *>(& muonGeometry->allDTLayers()[0]->surface());
           endcapDisk11Pos_  = dynamic_cast<const BoundDisk *>(& muonGeometry->forwardCSCLayers()[0]->surface());
           endcapDisk11Neg_  = dynamic_cast<const BoundDisk *>(& muonGeometry->backwardCSCLayers()[0]->surface());
@@ -523,7 +534,7 @@ void InclusiveMuonPlots::analyze(const edm::Event & event, const edm::EventSetup
                 math::XYZVector jetDirection = match->momentum().Unit();
 
                 plots["ptRel"]->Fill(jetDirection.Cross(mu.momentum()).R());
-                plots["jetMuonPtRatio"]->Fill(match->pt()/mu.pt());
+                plots["jetFragmentation"]->Fill(mu.pt()/match->pt());
 
                 if (mu.innerTrack().isNonnull() && !vertices->empty() && !vertices->front().isFake()) {
                     GlobalVector jetDirectionGV(jetDirection.X(), jetDirection.Y(), jetDirection.Z()); // stupid dataformats
@@ -547,7 +558,8 @@ void InclusiveMuonPlots::analyze(const edm::Event & event, const edm::EventSetup
                 }
 
             }
-            plots["oppoJetMuonPtRatio"]->Fill(oppoPtMin/mu.pt());
+            plots["oppoJetMuonPtRatio"  ]->Fill(oppoPtMin/mu.pt());
+            plots["oppoJetFragmentation"]->Fill(oppoPtMin == 0 ? 9e9 : mu.pt()/oppoPtMin);
 
             const reco::MET & m = met->front();
             double dphi = std::abs(deltaPhi(mu.phi(), m.phi()));
