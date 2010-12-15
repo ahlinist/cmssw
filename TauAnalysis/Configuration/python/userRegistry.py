@@ -70,19 +70,6 @@ userSettings = {
                     'batchHarvest' : "/castor/cern.ch/user/f/friis/Run32harvest/",
                 }
             },
-            # Another skim, only with Loose TaNC and Muon Iso turned off
-            'Run35' : {
-                'AHtoMuTau' : {
-                    # The output directory on castor
-                    'analysisFilePath' : '/castor/cern.ch/user/f/friis/Run35/',
-                    #'analysisFilePath' : '/castor/cern.ch/user/f/friis/Run32/',
-                    # The output directory for the plots
-                    'harvestingFilePath' : "/data1/friis/",
-                    'tmpFilePath' : "/data2/friis/tmp/",
-                    # Where to store the harvested histograms on lxbatch
-                    'batchHarvest' : "/castor/cern.ch/user/f/friis/Run35harvest/",
-                }
-            },
             'Run32onskim' : {
                 'AHtoMuTau' : {
                     # The output directory on castor
@@ -134,6 +121,32 @@ userSettings = {
                     'skimSource' : 'Run32',
                 }
             },
+            # Another skim, only with Loose TaNC and Muon Iso turned off
+            'Run35' : {
+                'AHtoMuTau' : {
+                    # The output directory on castor
+                    'analysisFilePath' : '/castor/cern.ch/user/f/friis/Run35/',
+                    #'analysisFilePath' : '/castor/cern.ch/user/f/friis/Run32/',
+                    # The output directory for the plots
+                    'harvestingFilePath' : "/data1/friis/",
+                    'tmpFilePath' : "/data2/friis/tmp/",
+                    # Where to store the harvested histograms on lxbatch
+                    'batchHarvest' : "/castor/cern.ch/user/f/friis/Run35harvest/",
+                }
+            },
+            'Run35SYS' : {
+                'AHtoMuTau' : {
+                    # The output directory on castor
+                    'analysisFilePath' : '/castor/cern.ch/user/f/friis/Run35SYS/',
+                    #'analysisFilePath' : '/castor/cern.ch/user/f/friis/Run32/',
+                    # The output directory for the plots
+                    'harvestingFilePath' : "/data2/friis/",
+                    'tmpFilePath' : "/data2/friis/tmp/",
+                    # Where to store the harvested histograms on lxbatch
+                    'batchHarvest' : "/castor/cern.ch/user/f/friis/Run35SYSharvest/",
+                    'skimSource' : 'Run35',
+                }
+            },
         },
         'global' : {
             'drawOptions' : {
@@ -152,7 +165,7 @@ userSettings = {
         'jobs' : {
             '2010Dec14ii' : {
                 'ZtoMuTau' : {
-                    'analysisFilePath' : "/user/v/veelken/CMSSW_3_8_x/plots/ZtoMuTau/", 
+                    'analysisFilePath' : "/user/v/veelken/CMSSW_3_8_x/plots/ZtoMuTau/",
                     'harvestingFilePath' : "/data1/veelken/CMSSW_3_8_x/plots/ZtoMuTau/",
                     'tmpFilePath' : "/data1/veelken/tmp/ZtoMuTau/",
                     'jobId' : "2010Dec14ii"
@@ -273,6 +286,11 @@ def getJobId(channel):
     else:
         return jobIdInfo
 
+def check_slash(dir):
+    " Make sure a directory has a trailing slash "
+    if not dir.endswith('/'):
+        dir += '/'
+    return dir
 
 def getInfo(channel, jobid = None):
     # Get the current job id for this channel
@@ -296,15 +314,17 @@ def getSkimEvents(channel, jobid = None):
     #    '/castor/cern.ch/' + getInfo(channel, skimJobId)['batchHarvest'])
     output_path = os.path.normpath(
          getInfo(channel, skimJobId)['batchHarvest'])
-    return output_path
+    return check_slash(output_path)
 
 def getAnalysisFilePath(channel):
     return getInfo(channel)['analysisFilePath']
 
 def getHarvestingFilePath(channel, jobid=None):
-    user_settings = getInfo(channel)
+    user_settings = getInfo(channel, jobid)
+    if jobid is None:
+        jobid = getJobId(channel)
     harvestingFilePath = os.path.join(
-        user_settings['harvestingFilePath'], getJobId(channel))
+        user_settings['harvestingFilePath'], jobid)
     if not os.path.exists(harvestingFilePath):
         try:
             os.makedirs(harvestingFilePath)
@@ -312,7 +332,17 @@ def getHarvestingFilePath(channel, jobid=None):
             print "Failed to make harvesting file path: %s" % harvestingFilePath
     if not os.path.isdir(harvestingFilePath):
         print "WARNING: Harvesting file path %s is not a directory!"
-    return harvestingFilePath
+    return check_slash(harvestingFilePath)
+
+def makeSkimStatFileMapper(channel, jobid=None):
+    skimJobId = getInfo(channel, jobid)['skimSource']
+    print skimJobId
+    skim_path = getHarvestingFilePath(channel, skimJobId)
+    print skim_path
+    def mapper(sample):
+        return os.path.join(skim_path, 'harvested_%s_%s_%s.root' %
+                            (channel, sample, skimJobId))
+    return mapper
 
 def getLocalHarvestingFilePath(channel):
     return os.path.join(getHarvestingFilePath(channel), 'local')
@@ -324,9 +354,7 @@ def getBatchHarvestLocation(channel):
     " Where to store the output histograms when harvesting on LXBatch "
     output = getInfo(channel)['batchHarvest']
     # Add a trailing slash if we don't have one
-    if not output.endswith('/'):
-        output += '/'
-    return output
+    return check_slash(output)
 
 def getConfigFileName(channel):
     return getInfo(channel)['configFileName']
