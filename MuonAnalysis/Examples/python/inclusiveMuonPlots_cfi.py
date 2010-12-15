@@ -73,8 +73,9 @@ def makeInclusiveMuonPlots(rebinFactor=1,ptScale=1):
         ptRelBins = _evenBins( 0, 6*sqrt(ptScale), 0.1 * rebinFactor * sqrt(ptScale)),
         mtBins  = _evenBins( 0, 160, 2.5 * rebinFactor),
         metBins = _evenBins( 0, 160, 2.5 * rebinFactor),
-        jetMuonPtRatioBins     = _nBins(40/rebinFactor, 0, 2.0),
-        oppoJetMuonPtRatioBins = _nBins(40/rebinFactor, 0, 5.0),
+        jetFragmentationBins     = _nBins(40/rebinFactor, 0, 2.0),
+        oppoJetFragmentationBins = _nBins(40/rebinFactor, 0, 2.0),
+        oppoJetMuonPtRatioBins   = _nBins(40/rebinFactor, 0, 5.0),
     )
 
 inclusiveMuonPlots = cms.EDAnalyzer("InclusiveMuonPlots",

@@ -99,7 +99,8 @@ projMetSame: proj. missing E_{T} (GeV): Projected missing transverse energy (if 
 projMetAny: proj. missing E_{T} (GeV): Projected missing transverse energy (any #Delta#Phi)
 mt: - E_{T}^{miss} M_{T} (GeV): Transverse mass of muon and missing energy
 ptRel: p_{T} relative to jet axis: Transverse momentum relative to jet axis
-jetMuonPtRatio: jet p_{T} ratio: Ratio between jet p_{T} and muon p_{T}
+jetFragmentation: / jet p_{T} ratio: Ratio between muon p_{T} and jet p_{T}
 oppoJetMuonPtRatio: oppo. jet p_{T} ratio: Ratio between opposite jet p_{T} and muon p_{T}
+oppoJetFragmentation: / oppo. jet p_{T} ratio: Ratio between muon p_{T} and opposite jet p_{T}
 
 
