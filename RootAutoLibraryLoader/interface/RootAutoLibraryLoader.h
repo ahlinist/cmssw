@@ -11,6 +11,7 @@
  *
  */
 #include "TClassGenerator.h"
+#include "RVersion.h"
 
 class DummyClassToStopCompilerWarning;
 
@@ -35,7 +36,9 @@ private:
   RootAutoLibraryLoader();
   RootAutoLibraryLoader(const RootAutoLibraryLoader&); // stop default
   const RootAutoLibraryLoader& operator=(const RootAutoLibraryLoader&); // stop default
+#if ROOT_VERSION_CODE >= ROOT_VERSION(5,27,6)
   bool isInitializingCintex_;
+#endif
 };
 
 }
