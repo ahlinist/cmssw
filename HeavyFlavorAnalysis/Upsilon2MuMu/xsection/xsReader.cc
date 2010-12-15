@@ -19,13 +19,13 @@ xsReader::xsReader(TChain *tree, TString evtClassName): treeReaderXS(tree, evtCl
   fYbin[0] = -2.; fYbin[1] = -1.; fYbin[2] = 0.; fYbin[3] = 1.; fYbin[4] = 2.;
   //fPidTableMuIDPos = new PidTable("../tnp/PidTables/MC/Upsilon/MuID/PtTnpPos-upsilon.dat");
   //fPidTableMuIDNeg = new PidTable("../tnp/PidTables/MC/Upsilon/MuID/PtTnpNeg-upsilon.dat");
-  //fPidTableTrigPos = new PidTable("../tnp/PidTables/MC/Upsilon/Trig/PtTnpPos-upsilon.dat");   // MC 
-  //fPidTableTrigNeg = new PidTable("../tnp/PidTables/MC/Upsilon/Trig/PtTnpNeg-upsilon.dat"); 
+  //fPidTableTrigPos = new PidTable("../tnp/PidTables/MC/Jpsi/Trig/CowboyVeto/PtMmbPos-jpsi.dat");   // MC 
+  //fPidTableTrigNeg = new PidTable("../tnp/PidTables/MC/Jpsi/Trig/CowboyVeto/PtMmbNeg-jpsi.dat"); 
   
-  //fPidTableMuIDPos = new PidTable("../tnp/PidTables/DATA/Jpsi/MuID/PtMmbPos-jpsi.dat");
-  //fPidTableMuIDNeg = new PidTable("../tnp/PidTables/DATA/Jpsi/MuID/PtMmbNeg-jpsi.dat");
-  //fPidTableTrigPos = new PidTable("../tnp/PidTables/DATA/Jpsi/Trig/PtMmbPos-jpsi.dat");     // DATA
-  //fPidTableTrigNeg = new PidTable("../tnp/PidTables/DATA/Jpsi/Trig/PtMmbNeg-jpsi.dat"); 
+  fPidTableMuIDPos = new PidTable("../tnp/PidTables/DATA/Jpsi/MuID/CowboyVeto/PtMmbPos-jpsi.dat");
+  fPidTableMuIDNeg = new PidTable("../tnp/PidTables/DATA/Jpsi/MuID/CowboyVeto/PtMmbNeg-jpsi.dat");
+  fPidTableTrigPos = new PidTable("../tnp/PidTables/DATA/Jpsi/Trig/MuOnia/CowboyVeto/PtMmbBoth-jpsi.dat");     // DATA
+  fPidTableTrigNeg = new PidTable("../tnp/PidTables/DATA/Jpsi/Trig/MuOnia/CowboyVeto/PtMmbBoth-jpsi.dat"); 
   
 }
 // ----------------------------------------------------------------------
@@ -41,154 +41,26 @@ void xsReader::startAnalysis() {
 
 void xsReader::eventProcessing() {
   
-  //cout << fRun << " " << fLS << ": " << fpJSON->good(fRun, fLS) << endl;
-  
-  //if ( MODE == 1  ) acceptance();  // FOR MC only
-  //if ( isPathPreScaled(HLTPATH) ) goto end;
-  //if ( !isPathFired(HLTPATH) ) goto end;
-  PathStudy();
-  //candidateSelection(2); 
-  //if ( 0 != fpCand  ){
-  //calculateWeights(0); 
-  //fillCandHist(); 
-  //if ( 0 != fgCand && MODE == 1 ) MCstudy(); // FOr MC only
-    ////x_btest();
-    //// x_brestframe();
-  //}
-	   
-  //fpHistFile->cd();
-  
-  //end:
-  //fillHist();
-}
-
-void xsReader::x_brestframe(){
-  
-  TGenCand *gCand(0);
-  TGenCand *gDau1(0);
-  TGenCand *gDau2(0);
-  TVector3 xb;
-  TLorentzVector genCand;
-  TLorentzVector upsCand;
-  TLorentzVector gammaCand;
-  double GenAngle(-99.), SgMatchedAngle(-99.), BgMatchedAngle(-99.), NoMatchedAngle(-99.);
-  cout << " NEW EVENT " << endl;
-  
-  for (int iG = 0; iG < fpEvt->nGenCands(); ++iG) {
-    gCand = fpEvt->getGenCand(iG);
-    
-    if ( (gCand->fID == 20553 || gCand->fID == 10551 || gCand->fID == 555) && gCand->fStatus == 2 ){
-      genCand.SetPtEtaPhiE(gCand->fP.Perp(),gCand->fP.Eta(),gCand->fP.Phi(),gCand->fP.Energy());
-      xb = genCand.BoostVector();
-      xb*=-1.;
-      //cout << "Boost Momentum = "  << xb.Mag()  << endl;
-      //cout << "Momentum = "  << genCand.P()  << endl;
-      genCand.Boost(xb);
-      //cout << "Boosted Momentum = "  << genCand.P()  << endl;
-      
-      gDau1 = fpEvt->getGenCand(gCand->fDau1);
-      gDau2 = fpEvt->getGenCand(gCand->fDau2);
-      
-      if ( gDau1->fID == 553 ){
-	//cout << " Dau1  "  << endl;
-	upsCand.SetPtEtaPhiE(gDau1->fP.Perp(),gDau1->fP.Eta(),gDau1->fP.Phi(),gDau1->fP.Energy());  
-	upsCand.Boost(xb);
-	//cout << "upsCand = " << upsCand.P() << endl;
-	if ( gDau2->fID == 22 ){
-	  gammaCand.SetPtEtaPhiE(gDau2->fP.Perp(),gDau2->fP.Eta(),gDau2->fP.Phi(),gDau2->fP.Energy());
-	  gammaCand.Boost(xb);
-	  //cout << "gammaCand = " << gammaCand.P() << endl;
-	  GenAngle = upsCand.Angle(gammaCand.Vect());
-	  //cout << " GenAngle "  << GenAngle  << endl;
-	  ((TH1D*)fpHistFile->Get("hGenAngle"))->Fill(GenAngle);
-	}
-      } 
-	
-      if ( gDau1->fID == 22 ){
-	//cout << " Dau2  "  << endl;
-	gammaCand.SetPtEtaPhiE(gDau1->fP.Perp(),gDau1->fP.Eta(),gDau1->fP.Phi(),gDau1->fP.Energy());
-	gammaCand.Boost(xb);
-	//cout << "gammaCand = " << gammaCand.P() << endl;
-	if ( gDau2->fID == 553 ){
-	  upsCand.SetPtEtaPhiE(gDau2->fP.Perp(),gDau2->fP.Eta(),gDau2->fP.Phi(),gDau2->fP.Energy());  
-	  upsCand.Boost(xb);
-	  //cout << "upsCand = " << upsCand.P() << endl; 
-	  GenAngle = upsCand.Angle(gammaCand.Vect());
-	  //cout << " GenAngle "  << GenAngle << endl;
-	  ((TH1D*)fpHistFile->Get("hGenAngle"))->Fill(GenAngle);
-	}
-      }   
-    }
-    
-  }
-
-  TAnaTrack *pTrack(0);
-  TLorentzVector Cand, Gamma, gamma, x_b;
-  TVector3 xB;
-  int n(-1);
-  
-  Cand.SetPtEtaPhiM(fpCand->fPlab.Perp(),fpCand->fPlab.Eta(),fpCand->fPlab.Phi(),fpCand->fMass);
-  for (int iG = 0; iG < fpEvt->nRecTracks(); ++iG) {
-    pTrack = fpEvt->getRecTrack(iG);
-    if ( pTrack->fMCID == 22 && pTrack->fQ == 0  ){
-      ++n;
-      TGenCand  *gGamma = fpEvt->getGenCand(pTrack->fGenIndex);
-      TGenCand  *geCand = fpEvt->getGenCand(gGamma->fMom1);
-      if ( geCand->fID == 555 || geCand->fID == 20553 || geCand->fID == 10551 ) {
-	Gamma.SetPtEtaPhiM(pTrack->fPlab.Perp(),pTrack->fPlab.Eta(),pTrack->fPlab.Phi(), 0.);
-	TAnaTrack *pl1 = fpEvt->getSigTrack(fpCand->fSig1); 
-	TAnaTrack *pl2 = fpEvt->getSigTrack(fpCand->fSig2);
-	if ( (pl1->fGenIndex > -1) && (pl2->fGenIndex > -1) && (pl1->fGenIndex != pl2->fGenIndex) ){
-	  TGenCand  *gl1 = fpEvt->getGenCand(pl1->fGenIndex);
-	  TGenCand  *gl2 = fpEvt->getGenCand(pl2->fGenIndex);
-	  if ( gl1->fMom1 == gl2->fMom1 ) {
-	    TGenCand  *GenCand = fpEvt->getGenCand(gl1->fMom1);
-	    if ( GenCand->fID == RESTYPE ) {
-	      x_b = Cand + Gamma;
-	      xB = x_b.BoostVector();
-	      xB*=-1.;
-	      Cand.Boost(xB);
-	      Gamma.Boost(xB);
-	      SgMatchedAngle = Cand.Angle(Gamma.Vect());
-	      ((TH1D*)fpHistFile->Get("hSgMatchedAngle"))->Fill(SgMatchedAngle);
-	    }
-	  }
-	}
-      } 
-      
-      if ( !(geCand->fID == 555 || geCand->fID == 20553 || geCand->fID == 10551) ){
-	gamma.SetPtEtaPhiM(pTrack->fPlab.Perp(),pTrack->fPlab.Eta(),pTrack->fPlab.Phi(), 0.);
-	x_b = Cand + Gamma;
-	xB = x_b.BoostVector();
-	xB*=-1.;
-	Cand.Boost(xB);
-	gamma.Boost(xB);
-	BgMatchedAngle = Cand.Angle(gamma.Vect());
-	((TH1D*)fpHistFile->Get("hBgMatchedAngle"))->Fill(BgMatchedAngle);
-      }
-    }
-  }
-
-  TLorentzVector g, X_b;
-  TVector3 XB;
-  for (int iG = 0; iG < fpEvt->nRecTracks(); ++iG) {
-    pTrack = fpEvt->getRecTrack(iG);
-    if ( pTrack->fQ == 0  ){  
-      g.SetPtEtaPhiM(pTrack->fPlab.Perp(),pTrack->fPlab.Eta(),pTrack->fPlab.Phi(), 0.);
-      X_b = Cand + Gamma;
-      XB = X_b.BoostVector();
-      XB*=-1.;
-      Cand.Boost(XB);
-      g.Boost(XB);
-      NoMatchedAngle = Cand.Angle(g.Vect());
-      ((TH1D*)fpHistFile->Get("hAngle"))->Fill(NoMatchedAngle);
-    }
+  if ( MODE == 2  ) { // FOR Data only
+    if ( !fpJSON->good(fRun, fLS) ) goto end;
   }
   
-   
+  if ( MODE == 1  ) acceptance();  // FOR MC only
+  if ( isPathPreScaled(HLTPATH) ) goto end;
+  if ( !isPathFired(HLTPATH) ) goto end;
+  candidateSelection(2);
+  if ( 0 != fpCand  ){
+    calculateWeights(0); 
+    fillCandHist(); 
+  }
+  
+  if ( 0 != fgCand && MODE == 1 ) MCstudy(); // FOr MC only
+  fpHistFile->cd();
+  
+  end:
+  fillHist();
   
 }
-
 
 
 void xsReader::x_btest(){
@@ -355,6 +227,53 @@ void xsReader::x_btest(){
   
 }
 
+void xsReader::TriggerComparisonStudy(){
+  
+  for (int iC = 0; iC < fpEvt->nCands(); ++iC) {
+    fpCand = fpEvt->getCand(iC);
+    if ( fpCand->fMass > 9.7 ) continue;
+    if ( fpCand->fMass < 9.2 ) continue;
+    TAnaTrack *p1 = fpEvt->getSigTrack(fpCand->fSig1); 
+    TAnaTrack *p2 = fpEvt->getSigTrack(fpCand->fSig2);
+    if ( (p1->fMuID & MUTYPE1) != MUTYPE1 ) continue;
+    if ( (p2->fMuID & MUTYPE1) != MUTYPE1 ) continue;
+    if ( p1->fPlab.Eta() > ETAHI ) continue;
+    if ( p1->fPlab.Eta() < ETALO ) continue;
+    if ( p2->fPlab.Eta() > ETAHI ) continue;
+    if ( p2->fPlab.Eta() < ETALO ) continue;
+    if ( p1->fPlab.Perp() < 3.0 ) continue;
+    if ( p2->fPlab.Perp() < 3.0 ) continue;
+    calculateWeights(0);
+  }
+    
+  TAnaTrack *pTrack(0); TAnaTrack *pTrack2(0);
+  TLorentzVector first; TLorentzVector second; TLorentzVector cand;
+  bool First = false; bool Second = false;
+  for (int iC = 0; iC < fpEvt->nRecTracks(); ++iC) {
+    pTrack = fpEvt->getRecTrack(iC);
+    if ( pTrack->fPlab.Perp() < 3.0 ) continue;
+    if ( pTrack->fPlab.Eta() > ETAHI ) continue;
+    if ( pTrack->fPlab.Eta() < ETALO ) continue;
+    if ( (pTrack->fMuID & MUTYPE1) != MUTYPE1 ) continue;
+    if ( !First ) {
+      first.SetPtEtaPhiM(pTrack->fPlab.Perp(),pTrack->fPlab.Eta(),pTrack->fPlab.Phi(),MMUON);
+      First = true;
+      continue;
+    }
+    if ( First && !Second ) {
+      second.SetPtEtaPhiM(pTrack->fPlab.Perp(),pTrack->fPlab.Eta(),pTrack->fPlab.Phi(),MMUON);
+      Second = true;
+    }
+    if ( First && Second ){
+      cand = first + second;
+      if ( cand.M() > 9.7 ) continue;
+      if ( cand.M() < 9.2 ) continue;
+      ((TH1D*)fpHistFile->Get("TriggerStudy_2Reco"))->Fill(cand.Rapidity(),cand.Pt());
+      if ( isPathFired(HLTPATH) ) ((TH1D*)fpHistFile->Get("TriggerStudy_Fired"))->Fill(cand.Rapidity(),cand.Pt());
+    }
+  }
+}
+
 void xsReader::PathStudy(){
   
   int n(0), m15(0), m13(0), m11(0);
@@ -519,12 +438,12 @@ void xsReader::candidateSelection(int mode){
     lCands_CT_M1T.push_back(iC);
     if ( (pl2->fMuID & MUTYPE2) != MUTYPE2 ) continue;
     lCands_CT_M1T_M2T.push_back(iC);
-    if ( (pl1->fPlab.Perp() > PTHI) || ( (fabs(pl1->fPlab.Eta()) < 1.2) && (pl1->fPlab.Perp() < PTLO) ) || (  (fabs(pl1->fPlab.Eta()) > 1.2) && (pl1->fPlab.Perp() < 3.) ) ) continue;
-    //if ( (pl1->fPlab.Perp() > PTHI) || (pl1->fPlab.Perp() < PTLO) ) continue;
+    //if ( (pl1->fPlab.Perp() > PTHI) || ( (fabs(pl1->fPlab.Eta()) < 1.2) && (pl1->fPlab.Perp() < PTLO) ) || (  (fabs(pl1->fPlab.Eta()) > 1.2) && (pl1->fPlab.Perp() < 3.) ) ) continue;
+    if ( (pl1->fPlab.Perp() > PTHI) || (pl1->fPlab.Perp() < PTLO) ) continue;
     if ( (pl1->fPlab.Eta() > ETAHI) || (pl1->fPlab.Eta() < ETALO) ) continue;
     lCands_CT_M1T_M2T_Pt1.push_back(iC);
-    if ( (pl2->fPlab.Perp() > PTHI) || ( (fabs(pl2->fPlab.Eta()) < 1.2) && (pl2->fPlab.Perp() < PTLO) ) || (  (fabs(pl2->fPlab.Eta()) > 1.2) && (pl2->fPlab.Perp() < 3.) ) ) continue;
-    //if ( (pl2->fPlab.Perp() > PTHI) || (pl2->fPlab.Perp() < PTLO) ) continue;
+    //if ( (pl2->fPlab.Perp() > PTHI) || ( (fabs(pl2->fPlab.Eta()) < 1.2) && (pl2->fPlab.Perp() < PTLO) ) || (  (fabs(pl2->fPlab.Eta()) > 1.2) && (pl2->fPlab.Perp() < 3.) ) ) continue;
+    if ( (pl2->fPlab.Perp() > PTHI) || (pl2->fPlab.Perp() < PTLO) ) continue;
     if ( (pl2->fPlab.Eta() > ETAHI) || (pl2->fPlab.Eta() < ETALO) ) continue;
     lCands_CT_M1T_M2T_Pt1_Pt2.push_back(iC);
     if ( pCand->fVtx.fChi2 > CHI2 ) continue;
@@ -562,7 +481,7 @@ void xsReader::candidateSelection(int mode){
   if (0 == nc_CT_M1T_M2T_Pt1_Pt2_CHI2) return; 
   int best(0);
   if (nc_CT_M1T_M2T_Pt1_Pt2_CHI2 > 1) {
-    //cout << "MORE THAN ONE CANDIDATE  " << nc_CT_M1T_M2T_Pt1_Pt2_CHI2   <<  endl;
+    cout << "MORE THAN ONE CANDIDATE  " << nc_CT_M1T_M2T_Pt1_Pt2_CHI2   <<  endl;
     double ptMax(0.), pt(0.);
     double maxDocaMax(99.), maxDoca(0.);
     double chi2Max(99.), chi2(0.);
@@ -748,13 +667,12 @@ void xsReader::calculateWeights(int mode){
     effTR2 = fPidTableTrigNeg->effD(pl2->fPlab.Perp(), pl2->fPlab.Eta(), 0.);
   }
   
-  fWeight = 1/(effID1*effID2*effTR1*effTR2);
+  //fWeight = 1/(effID1*effID2*effTR1*effTR2);
   
   fWeight = 1;
   
   MuIdWeight = effID1*effID2;
   TrigWeight = effTR1*effTR2;
-  
   
   for ( int iy = 0; iy < fNy; ++iy ){
     for ( int ipt = 0; ipt < fNpt; ++ipt ){
@@ -906,6 +824,15 @@ void xsReader::bookHist() {
   h = new TH1D("DeltaPtoverPt_Muon", "DeltaPtoverPt_Muon", 50, -0.1, 0.1);
   h = new TH1D("DeltaEtaoverEta_Muon", "DeltaEtaoverEta_Muon", 50, -0.05, 0.05); 
   h = new TH1D("MaxDoca_Cand", "MaxDoca_Cand", 60, 0., 0.03); 
+  
+  
+  //// Trigger Study
+  //////////////////////
+  k = new TH2D("TriggerStudy_2Reco","TriggerStudy_2Reco", fNy, fYbin, fNpt, fPTbin);
+  k = new TH2D("TriggerStudy_Fired","TriggerStudy_Fired", fNy, fYbin, fNpt, fPTbin);
+  /////////////////////
+  
+  
   
   
   ///////////////////////////////////////////// ---- Reduced Tree

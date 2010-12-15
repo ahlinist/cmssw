@@ -53,7 +53,7 @@ public:
   void        candidateSelection(int mode);
   bool        isMatchedToTrig(TAnaTrack *pTag, TString Label);
   void        x_btest();
-  void        x_brestframe();
+  void        TriggerComparisonStudy();
   
   // -- Cut values
   int TYPE;
