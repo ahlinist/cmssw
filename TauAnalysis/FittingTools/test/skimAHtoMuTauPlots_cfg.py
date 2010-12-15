@@ -20,9 +20,9 @@ process.source = cms.Source("EmptySource")
 process.loadAnalysisResults = cms.EDAnalyzer("DQMFileLoader",
     all = cms.PSet(
         inputFileNames = cms.vstring(
-            ##'/data1/veelken/CMSSW_3_8_x/plots/MSSM_Higgs_combined/plotsAHtoMuTau_all.root',
-            '/data1/friis/Run28/plotsAHtoMuTau_all_bsmonly.root',
-            '/data1/friis/Run28/plotsAHtoMuTau_all_smonly.root'
+            #'/data2/squires/Run29/plotsAHtoMuTau_all.root'
+            '/data2/friis/Run35SYS/plots_all.bsm.root',
+            '/data2/friis/Run35SYS/plots_all.sm.root'                                          
         ),
         dqmDirectory_store = cms.string('/')
     )
@@ -31,11 +31,14 @@ process.loadAnalysisResults = cms.EDAnalyzer("DQMFileLoader",
 process.dumpDQMStore = cms.EDAnalyzer("DQMStoreDump")
 
 process.saveAnalysisResults = cms.EDAnalyzer("DQMSimpleFileSaver",
-    outputFileName = cms.string('/data1/veelken/CMSSW_3_8_x/plots/MSSM_Higgs_combined/plotsAHtoMuTau_skimmed.root'),
+    #outputFileName = cms.string('/data1/veelken/CMSSW_3_8_x/plots/MSSM_Higgs_combined/plotsAHtoMuTau_TaNCloose_woSys_skimmed.root'),
+    outputFileName = cms.string('/data1/veelken/CMSSW_3_8_x/plots/MSSM_Higgs_combined/plotsAHtoMuTau_TaNCmedium_wSys_skimmed.root'),
     outputCommands = cms.vstring(
         'drop harvested/*',
-        'keep harvested/*/ahMuTauAnalyzer_woBtag/afterEvtSelNonCentralJetEt20bTag/*',
-        'keep harvested/*/ahMuTauAnalyzer_woBtag/FilterStatistics/*'
+        'keep harvested/*/ahMuTauAnalyzerOS_woBtag/afterEvtSelDiTauCandidateForAHtoMuTauZeroCharge/*',
+        'keep harvested/*/ahMuTauAnalyzerOS_woBtag/FilterStatistics/*',
+        'keep harvested/*/ahMuTauAnalyzerOS_wBtag/afterEvtSelDiTauCandidateForAHtoMuTauZeroCharge/*',
+        'keep harvested/*/ahMuTauAnalyzerOS_wBtag/FilterStatistics/*'
     )                                   
 )
 
