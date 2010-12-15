@@ -17,7 +17,7 @@ SAMPLES_TO_ANALYZE = [
     'Zee_pythia',
     #'InclusivePPmuX',
     'PPmuXptGt20Mu10', 'PPmuXptGt20Mu15',
-    'Wenu', 'Wmunu', 'Wtaunu',
+    'Wenu_pythia', 'Wmunu_pythia', 'Wtaunu_pythia',
     'WplusJets_madgraph',
     'Ztautau_powheg','Zmumu_powheg','Zee_powheg',
     ##'WePlus_powheg', 'WeMinus_powheg',
@@ -323,7 +323,7 @@ RECO_SAMPLES = {
         'factorize' : True,
         'hlt' : cms.InputTag("TriggerResults", "", "REDIGI38XPU"),
     },
-    'Wenu_powheg' : {
+    'Wenu_pythia' : {
         'datasetpath' : "/WtoENu_TuneD6T_7TeV-pythia6/Fall10-E7TeV_ProbDist_2010Data_BX156_START38_V12-v1/GEN-SIM-RECO",
         'dbs_url' :  "http://cmsdbsprod.cern.ch/cms_dbs_prod_global/servlet/DBSServlet",
         'events_processed' : 5495740,
@@ -551,9 +551,7 @@ MERGE_SAMPLES = {
     },
     'WplusJetsSum_pythia' : {
         'samples' : [
-            # EK - disabling Wenu sample, as it only has 1 event in the skimmed
-            # sample.
-            #'Wenu_pythia',
+            'Wenu_pythia',
             'Wmunu_pythia',
             'Wtaunu_pythia'
         ],
