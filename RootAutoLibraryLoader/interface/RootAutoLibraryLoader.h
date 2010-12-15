@@ -35,6 +35,7 @@ private:
   RootAutoLibraryLoader();
   RootAutoLibraryLoader(const RootAutoLibraryLoader&); // stop default
   const RootAutoLibraryLoader& operator=(const RootAutoLibraryLoader&); // stop default
+  bool isInitializingCintex_;
 };
 
 }
