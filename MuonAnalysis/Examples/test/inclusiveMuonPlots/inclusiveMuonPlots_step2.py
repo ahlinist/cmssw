@@ -102,6 +102,8 @@ prelim = None
 gratio = None ## make it global, so it doesn't get deleted
 legend = None; # list of labels
 glegend = None; # TLegend
+## last scale factor used (for integral normalization)
+gscale = 1
 
 ## === Open references ===
 if options.ref != None:
@@ -268,6 +270,9 @@ def addOverflowHist(histo):
         over  = histo.GetBinContent(n+1)
         histo.SetBinContent(1, histo.GetBinContent(1) + under);
         histo.SetBinContent(n, histo.GetBinContent(n) + over );
+        # then clear the overflow bins, so that integral is preserved
+        histo.SetBinContent(0,   0);
+        histo.SetBinContent(n+1, 0);
 def maybeOverflow(histo, refs):
     if options.showOverflow:
         addOverflowHist(histo)
@@ -356,11 +361,13 @@ def printHisto(name, title, subname):
 ##                                                                    
 ##   
 def normalize(hist,hdata):
+    global gscale
     hist.Sumw2();
     if options.norm == "integral":
         if (hist.Integral() != 0):  
-            scale = hdata.Integral()/hist.Integral()
+            scale = hdata.Integral(0,hdata.GetNbinsX()+1)/hist.Integral(0,hist.GetNbinsX()+1)
             hist.Scale(scale)
+            gscale = scale
             return scale
     elif options.norm == "external":
         #if externalNorm == None:
@@ -469,11 +476,11 @@ def getrefs(hdata, name, doNormalize=True):
     return None
    
 def printStats(name, histo):
-    global info;
-    ndata = histo.GetEntries();
-    info += [ "Muons: %.0f +/- %.0f" % (histo.GetEntries(), sqrt(histo.GetEntries())) ]
+    global info, gscale;
+    ndata = histo.Integral(0,histo.GetNbinsX()+1);
+    info += [ "Muons: %.0f +/- %.0f" % (ndata, sqrt(ndata)) ]
     refs = getrefs(histo,name,doNormalize=False)
-    if refs != None and options.norm != "integral":
+    if refs != None:
         scale = 1
         if options.norm == "external":
             normData = dirIn.Get("normalization")
@@ -485,6 +492,9 @@ def printStats(name, histo):
         elif options.norm.startswith("manual,"):
             scale = options.norm_value
             info += [ "Scale: %.4f (by hand)" % scale ]
+        elif options.norm == "integral":
+            scale = gscale;
+            info += [ "Scale: %.4f (from number of entries)" % scale ]
         ## Note: when we get here, the histogram has already been normalized (it happens when it's drawn), so we scale it back up
         nmc = refs[1].Integral(0,refs[1].GetNbinsX()+1) / scale;
         try:
