@@ -367,9 +367,20 @@ def makePlots(process, channel = None, samples = None, inputFilePath = None, job
 
     # configure DQMSimpleFileSaver module
     dqmSimpleFileSaverModuleName = "save%s" % channel
-    dqmSimpleFileSaverModule = cms.EDAnalyzer("DQMSimpleFileSaver",
-        outputFileName = cms.string(outputFilePath + '/' + "plots%s_all.root" % channel)
+    dqmSimpleFileSaverModule = cms.EDAnalyzer(
+        "DQMSimpleFileSaver",
+        outputFileName = cms.string(outputFilePath + '/' + "plots%s_all.root" % channel),
+        outputCommands = cms.vstring(
+            # Drop everything at first, we keep thte samples to plot elow
+            'drop harvested/*',
+        )
     )
+    # Keep all of the relevant processes
+    for sample in set(samples['SAMPLES_TO_PLOT'] + samples['SAMPLES_TO_PRINT']):
+        dqmSimpleFileSaverModule.outputCommands.append(
+            'keep harvested/%s/*' % sample
+        )
+
     setattr(process, dqmSimpleFileSaverModuleName, dqmSimpleFileSaverModule)
 
     makePlotSequenceName = "make%sPlots" % channel
