@@ -34,5 +34,6 @@
 
 #pragma link C++ function f_eag(double *, double *);
 #pragma link C++ function f_eaG(double *, double *);
+#pragma link C++ function f_ea2G(double *, double *);
 
 #endif
