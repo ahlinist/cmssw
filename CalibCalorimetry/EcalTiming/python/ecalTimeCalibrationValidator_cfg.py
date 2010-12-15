@@ -22,7 +22,11 @@ process.expressValidator = cms.EDAnalyzer("EcalTimeCalibrationValidator",
   MaxTreeEntriesToProcess = cms.untracked.int32(100000000)
 )
 
-process.maxEvents = cms.untracked.PSet(  input = cms.untracked.int32(1) )
-process.source = cms.Source("EmptySource")
+process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(1) )
+process.source = cms.Source("EmptySource",
+       numberEventsInRun = cms.untracked.uint32(1),
+       firstRun = cms.untracked.uint32(888888)
+)
+
 
 process.p = cms.Path(process.expressValidator)
