@@ -42,7 +42,7 @@ poolDBESSourceMuScleFitShiftUp = poolDBESSourceMuScleFitCentralValue.clone(
 )
 
 patMuonsMuScleFitCorrectedMomentumShiftUp = patMuonsMuScleFitCorrectedMomentum.clone(
-    dbObjectLabel = cms.string("shiftUp")
+    DbObjectLabel = cms.untracked.string("shiftUp")
 )
 
 poolDBESSourceMuScleFitShiftDown = poolDBESSourceMuScleFitCentralValue.clone(
@@ -57,7 +57,7 @@ poolDBESSourceMuScleFitShiftDown = poolDBESSourceMuScleFitCentralValue.clone(
 )
 
 patMuonsMuScleFitCorrectedMomentumShiftDown = patMuonsMuScleFitCorrectedMomentum.clone(
-    dbObjectLabel = cms.string("shiftDown")
+    DbObjectLabel = cms.untracked.string("shiftDown")
 )
 
 prodSmearedMuons = cms.Sequence(patMuonsMuScleFitCorrectedMomentumShiftUp * patMuonsMuScleFitCorrectedMomentumShiftDown)
