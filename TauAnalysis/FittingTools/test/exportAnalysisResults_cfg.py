@@ -38,18 +38,22 @@ processesToExport = [
 
 #outputFilePath = "/data1/veelken/CMSSW_3_8_x/plots/MSSM_Higgs_combined/export_AHtoMuTau_AHtoElecTau_AHtoElecMu"
 #outputFilePath = "/data1/veelken/CMSSW_3_8_x/plots/MSSM_Higgs_combined/export_AHtoMuTau_TaNCmedium_woSys"
-#outputFilePath = "/data1/veelken/CMSSW_3_8_x/plots/MSSM_Higgs_combined/export_AHtoMuTau_TaNCmedium_wSys"
-outputFilePath = "/data1/veelken/CMSSW_3_8_x/plots/MSSM_Higgs_combined/export_AHtoMuTau_TaNCloose_woSys"
+outputFilePath = "/data1/veelken/CMSSW_3_8_x/plots/MSSM_Higgs_combined/export_AHtoMuTau_TaNCmedium_wSys"
+#outputFilePath = "/data1/veelken/CMSSW_3_8_x/plots/MSSM_Higgs_combined/export_AHtoMuTau_TaNCloose_woSys"
 
 channels = {
     'AHtoMuTau_woBtag' : {
         'shortName'                : "ma",
         'dqmDirectoryTemplate'     : '/export/harvested/%s/ahMuTauAnalyzerOS_woBtag/afterEvtSelDiTauCandidateForAHtoMuTauZeroCharge/',
         'dqmDirectoryFilterStat'   : '/export/harvested/%s/ahMuTauAnalyzerOS_woBtag/FilterStatistics/',
-        'meNameTemplate'           : 'DiTauCandidateSVfitQuantities/psKine_MEt_ptBalance/Mass',
         'meNameNumEventsProcessed' : 'genPhaseSpaceCut/passed_cumulative_numWeighted#a1#s1',
+        # wo. systematics
+        'meNameTemplate'           : 'DiTauCandidateSVfitQuantities/psKine_MEt_ptBalance/MassL',
         'meNameNumEventsPassed'    : 'evtSelDiTauCandidateForAHtoMuTauZeroCharge/passed_cumulative_numWeighted#a1#s1',
-        ##'meNameNumEventsPassed'    : 'binContent_region1#a1#s1',
+        # w. systematics
+	'meNameTemplateSys'        : 'sysUncertaintyHistManagerResults/#SYSTEMATICSDIR#/' \
+                                    + 'DiTauCandidateSVfitQuantities/psKine_MEt_ptBalance/MassL',
+        'meNameNumEventsPassedSys' : 'sysUncertaintyBinningResults/dataBinningResults/#SYSTEMATICSDIR#/binContent_region1#a1#s1',
         'dataIntLumi' : ZtoMuTau.TARGET_LUMI,
         'systematics' : [
             'muonPtUp',
@@ -71,20 +75,24 @@ channels = {
             'data'       : 'data'
         },
         'inputFileNames' : [
-            #'/data1/veelken/CMSSW_3_8_x/plots/MSSM_Higgs_combined/plotsAHtoMuTau_TaNCmedium_wSys_skimmed_part01.root',
-            #'/data1/veelken/CMSSW_3_8_x/plots/MSSM_Higgs_combined/plotsAHtoMuTau_TaNCmedium_wSys_skimmed_part02.root'
-            '/data1/veelken/CMSSW_3_8_x/plots/MSSM_Higgs_combined/plotsAHtoMuTau_TaNCloose_woSys_skimmed_part01.root',
-            '/data1/veelken/CMSSW_3_8_x/plots/MSSM_Higgs_combined/plotsAHtoMuTau_TaNCloose_woSys_skimmed_part02.root'
+            '/data1/veelken/CMSSW_3_8_x/plots/MSSM_Higgs_combined/plotsAHtoMuTau_TaNCmedium_wSys_skimmed_part01.root',
+            '/data1/veelken/CMSSW_3_8_x/plots/MSSM_Higgs_combined/plotsAHtoMuTau_TaNCmedium_wSys_skimmed_part02.root'
+            #'/data1/veelken/CMSSW_3_8_x/plots/MSSM_Higgs_combined/plotsAHtoMuTau_TaNCloose_woSys_skimmed_part01.root',
+            #'/data1/veelken/CMSSW_3_8_x/plots/MSSM_Higgs_combined/plotsAHtoMuTau_TaNCloose_woSys_skimmed_part02.root'
         ]
     },
     'AHtoMuTau_wBtag' : {
         'shortName'                : "mab",
-        'dqmDirectoryTemplate'     : '/export/harvested/%s/ahMuTauAnalyzerOS_wBtag/afterEvtSelDiTauCandidateForAHtoMuTauZeroCharge/',
+	'dqmDirectoryTemplate'     : '/export/harvested/%s/ahMuTauAnalyzerOS_wBtag/afterEvtSelDiTauCandidateForAHtoMuTauZeroCharge/',
         'dqmDirectoryFilterStat'   : '/export/harvested/%s/ahMuTauAnalyzerOS_wBtag/FilterStatistics/',
-        'meNameTemplate'           : 'DiTauCandidateSVfitQuantities/psKine_MEt_ptBalance/MassL',
         'meNameNumEventsProcessed' : 'genPhaseSpaceCut/passed_cumulative_numWeighted#a1#s1',
+        # wo. systematics
+        'meNameTemplate'           : 'DiTauCandidateSVfitQuantities/psKine_MEt_ptBalance/MassL',
         'meNameNumEventsPassed'    : 'evtSelDiTauCandidateForAHtoMuTauZeroCharge/passed_cumulative_numWeighted#a1#s1',
-        ##'meNameNumEventsPassed'    : 'binContent_region1#a1#s1',
+        # w. systematics
+	'meNameTemplateSys'        : 'sysUncertaintyHistManagerResults/#SYSTEMATICSDIR#/' \
+                                    + 'DiTauCandidateSVfitQuantities/psKine_MEt_ptBalance/MassL',
+        'meNameNumEventsPassedSys' : 'sysUncertaintyBinningResults/dataBinningResults/#SYSTEMATICSDIR#/binContent_region1#a1#s1',
         'dataIntLumi' : ZtoMuTau.TARGET_LUMI,
         'systematics' : [
             'muonPtUp',
@@ -102,7 +110,7 @@ channels = {
             'Zmumu'      : 'Zmumu',
             'QCD'        : 'qcdSum',
             'WplusJets'  : 'WplusJetsSum',
-            'TTplusJets' : 'TpsetProcessesTplusJets',
+            'TTplusJets' : 'TTplusJets',
             'data'       : 'data'
         },
         'inputFileNames' : [
@@ -178,6 +186,12 @@ channels = {
 }
 
 processes = {
+    'A' : {
+        'outputFileName' : "gga_#CHANNEL_OUTPUTFILENAME#.hst"        
+    },
+    'bbA' : {
+        'outputFileName' : "qqa_#CHANNEL_OUTPUTFILENAME#.hst"        
+    },
     'Ztautau' : {
         'xSection'       : ZtoMuTau.RECO_SAMPLES['ZtautauPU156bx']['x_sec']
                           + ZtoMuTau.RECO_SAMPLES['qqZtautauPU156bx']['x_sec'],
@@ -198,8 +212,8 @@ processes = {
         'outputFileName' : "gammajets_#CHANNEL_OUTPUTFILENAME#.hst"
     },
     'WplusJets' : {
-        'xSection'       : ##ZtoMuTau.RECO_SAMPLES['Wenu']['x_sec']
-                           ZtoMuTau.RECO_SAMPLES['Wmunu']['x_sec']
+        'xSection'       : ZtoMuTau.RECO_SAMPLES['Wenu']['x_sec']
+                          + ZtoMuTau.RECO_SAMPLES['Wmunu']['x_sec']
                           + ZtoMuTau.RECO_SAMPLES['Wtaunu']['x_sec'],
         'outputFileName' : "wjets_#CHANNEL_OUTPUTFILENAME#.hst"
     },
@@ -260,19 +274,20 @@ if 'AHtoElecTau' in channelsToExport:
 
     psetsAHtoElecTauPrediction = []
     for higgsMassPoint in higgsMassPoints:
-        pset = cms.PSet(
-            meName_input = cms.string(
-                (channels['AHtoMuTau_woBtag']['dqmDirectoryFilterStat']
-               + channels['AHtoMuTau_woBtag']['meNameNumEventsPassed']) % ("A%sSum" % higgsMassPoint)
-            ),
-            meName_output = cms.string(
-                (channels['AHtoElecTau']['dqmDirectoryFilterStat']
-               + channels['AHtoElecTau']['meNameNumEventsPassed']) % ("A%sSum" % higgsMassPoint)
-            ),
-            meType = cms.string("real"),
-            scaleFactor = cms.double(0.613) # CV: scale-factor set to ratio of Ztautau efficiencies
-        )
-        psetsAHtoElecTauPrediction.append(pset)
+	for higgsType in [ "A", "bbA" ]:
+	    pset = cms.PSet(
+                meName_input = cms.string(
+                    (channels['AHtoMuTau_woBtag']['dqmDirectoryFilterStat']
+                   + channels['AHtoMuTau_woBtag']['meNameNumEventsPassed']) % ("%s%sSum" % (higgsType, higgsMassPoint))
+                ),
+                meName_output = cms.string(
+                    (channels['AHtoElecTau']['dqmDirectoryFilterStat']
+                   + channels['AHtoElecTau']['meNameNumEventsPassed']) % ("%s%sSum" % (higgsType, higgsMassPoint))
+                ),
+                meType = cms.string("real"),
+                scaleFactor = cms.double(0.613) # CV: scale-factor set to ratio of Ztautau efficiencies
+            )
+            psetsAHtoElecTauPrediction.append(pset)
 
     process.compAHtoElecTauPrediction = cms.EDAnalyzer("DQMHistScaler",
         config = cms.VPSet(psetsAHtoElecTauPrediction)
@@ -304,19 +319,20 @@ if 'AHtoElecMu' in channelsToExport:
 
     psetsAHtoElecMuPrediction = []
     for higgsMassPoint in higgsMassPoints:
-        pset = cms.PSet(
-            meName_input = cms.string(
-                (channels['AHtoMuTau_woBtag']['dqmDirectoryFilterStat']
-               + channels['AHtoMuTau_woBtag']['meNameNumEventsPassed']) % ("A%sSum" % higgsMassPoint)
-            ),
-            meName_output = cms.string(
-                (channels['AHtoElecTau']['dqmDirectoryFilterStat']
-               + channels['AHtoElecTau']['meNameNumEventsPassed']) % ("A%sSum" % higgsMassPoint)
-            ),
-            meType = cms.string("real"),
-            scaleFactor = cms.double(0.433) # CV: scale-factor set to ratio of Ztautau efficiencies
-        )
-        psetsAHtoElecMuPrediction.append(pset)
+	for higgsType in [ "A", "bbA" ]:
+	    pset = cms.PSet(
+                meName_input = cms.string(
+                    (channels['AHtoMuTau_woBtag']['dqmDirectoryFilterStat']
+                   + channels['AHtoMuTau_woBtag']['meNameNumEventsPassed']) % ("%s%sSum" % (higgsType, higgsMassPoint))
+                ),
+                meName_output = cms.string(
+                    (channels['AHtoElecMu']['dqmDirectoryFilterStat']
+                   + channels['AHtoElecMu']['meNameNumEventsPassed']) % ("%s%sSum" % (higgsType, higgsMassPoint))
+                ),
+                meType = cms.string("real"),
+                scaleFactor = cms.double(0.433) # CV: scale-factor set to ratio of Ztautau efficiencies
+            )
+            psetsAHtoElecMuPrediction.append(pset)
 
     process.compAHtoElecMuPrediction = cms.EDAnalyzer("DQMHistScaler",
         config = cms.VPSet(psetsAHtoElecMuPrediction)
@@ -355,27 +371,32 @@ for processName in processesToExport:
         if channelName in channelsToExport:
             if channels[channelName]['processes'].get(processName) is not None:
                 psetChannel = cms.PSet(
-                    template = cms.string(
-                        (channels[channelName]['dqmDirectoryTemplate']
-                       ##+ 'sysUncertaintyHistManagerResults/#SYSTEMATICSDIR#/'
-                       + channels[channelName]['meNameTemplate']) % (channels[channelName]['processes'][processName])
-                    ),
-                    normalization = cms.PSet(
-                        numEventsProcessed = cms.string(
+	            normalization = cms.PSet(
+	                numEventsProcessed = cms.string(
                             (channels[channelName]['dqmDirectoryFilterStat'] 
                            + channels[channelName]['meNameNumEventsProcessed']) % (channels[channelName]['processes'][processName])
-                        ),
-                        numEventsPassed = cms.string(
-                            (channels[channelName]['dqmDirectoryFilterStat']
-                           + channels[channelName]['meNameNumEventsPassed']) % (channels[channelName]['processes'][processName])
-                           ## (channels[channelName]['dqmDirectoryTemplate']
-                           ##+ '/sysUncertaintyBinningResults/dataBinningResults/#SYSTEMATICSDIR#/'
-                           ##+ channels[channelName]['meNameNumEventsPassed']) % (channels[channelName]['processes'][processName])
                         )
                     )
                 )
-                if channels[channelName]['doExportSystematics']:
-                    setattr(psetChannel, "systematics", cms.vstring(channels[channelName]['systematics']))                
+	        if channels[channelName]['doExportSystematics']:
+	            setattr(psetChannel, "template", cms.string(
+                        (channels[channelName]['dqmDirectoryTemplate']
+                       + channels[channelName]['meNameTemplateSys']) % (channels[channelName]['processes'][processName])
+                    ))
+	            setattr(psetChannel.normalization, "numEventsPassed", cms.string(
+                        (channels[channelName]['dqmDirectoryTemplate']
+                       + channels[channelName]['meNameNumEventsPassedSys']) % (channels[channelName]['processes'][processName])
+                    ))	            
+                    setattr(psetChannel, "systematics", cms.vstring(channels[channelName]['systematics']))  
+	        else:
+	            setattr(psetChannel, "template", cms.string(
+                        (channels[channelName]['dqmDirectoryTemplate']
+                       + channels[channelName]['meNameTemplate']) % (channels[channelName]['processes'][processName])
+                    ))
+	            setattr(psetChannel.normalization, "numEventsPassed", cms.string(
+                        (channels[channelName]['dqmDirectoryFilterStat']
+                       + channels[channelName]['meNameNumEventsPassed']) % (channels[channelName]['processes'][processName])
+                    ))
                 setattr(psetProcess.distributions, channelName, psetChannel)
     setattr(psetProcesses, processName, psetProcess)
  
@@ -383,40 +404,44 @@ for processName in processesToExport:
 # CV: take all Higgs templates from AHtoMuTau channel for now;
 #     adjust normalization by AHtoElecTau/AHtoMuTau (AHtoElecMu/AHtoMuTau) Ztautau efficiency ratio
 for higgsMassPoint in higgsMassPoints:
-    psetHiggsMassPoint = cms.PSet(
-        distributions = cms.PSet(),
-        outputFilePath = cms.string("m%s" % higgsMassPoint),
-        outputFileName = cms.string("A_#CHANNEL_OUTPUTFILENAME#.hst")
-    )
-    xSection_gg = AHtoMuTauSpecific_RECO_SAMPLES['A%s' % higgsMassPoint]['x_sec']
-    xSection_bb = AHtoMuTauSpecific_RECO_SAMPLES['bbA%s' % higgsMassPoint]['x_sec']
-    setattr(psetHiggsMassPoint, "xSection", cms.double(xSection_gg + xSection_bb))
-    for channelName in channels.keys():
-        if channelName in channelsToExport:
-            psetChannel = cms.PSet(
-                template = cms.string(
-                    (channels['AHtoMuTau_woBtag']['dqmDirectoryTemplate']
-                   ##+ 'sysUncertaintyHistManagerResults/#SYSTEMATICSDIR#/'
-                   + channels['AHtoMuTau_woBtag']['meNameTemplate']) % ('A%sSum' % higgsMassPoint)
-                ),
-                normalization = cms.PSet(
-                    numEventsProcessed = cms.string(
-                         (channels[channelName]['dqmDirectoryFilterStat'] 
-                        + channels[channelName]['meNameNumEventsProcessed']) % ('A%sSum' % higgsMassPoint)
-                    ),
-                    numEventsPassed = cms.string(
-                         (channels[channelName]['dqmDirectoryFilterStat']
-                        + channels[channelName]['meNameNumEventsPassed']) % ('A%sSum' % higgsMassPoint)
-                        ## (channels[channelName]['dqmDirectoryTemplate']
-                        ##+ '/sysUncertaintyBinningResults/dataBinningResults/#SYSTEMATICSDIR#/'
-                        ##+ channels[channelName]['meNameNumEventsPassed']) % ('A%sSum' % higgsMassPoint)
+    for higgsType in [ "A", "bbA" ]:
+        psetHiggsMassPoint = cms.PSet(
+            distributions = cms.PSet(),
+            xSection = cms.double(AHtoMuTauSpecific_RECO_SAMPLES['%s%s' % (higgsType, higgsMassPoint)]['x_sec']),
+            outputFilePath = cms.string("m%s" % higgsMassPoint),
+            outputFileName = cms.string(processes[higgsType]['outputFileName'])
+        )
+	for channelName in channels.keys():
+            if channelName in channelsToExport:
+                psetChannel = cms.PSet(
+	            normalization = cms.PSet(
+	                numEventsProcessed = cms.string(
+                            (channels[channelName]['dqmDirectoryFilterStat'] 
+                           + channels[channelName]['meNameNumEventsProcessed']) % ('%s%s' % (higgsType, higgsMassPoint))
+                        )
                     )
                 )
-            )
-            if channels[channelName]['doExportSystematics']:
-                setattr(psetChannel, "systematics", cms.vstring(channels[channelName]['systematics']))                
-            setattr(psetHiggsMassPoint.distributions, channelName, psetChannel)
-    setattr(psetProcesses, "A%s" % higgsMassPoint, psetHiggsMassPoint)
+	        if channels[channelName]['doExportSystematics']:
+	            setattr(psetChannel, "template", cms.string(
+                        (channels[channelName]['dqmDirectoryTemplate']
+                       + channels[channelName]['meNameTemplateSys']) % ('%s%s' % (higgsType, higgsMassPoint))
+                    ))
+	            setattr(psetChannel.normalization, "numEventsPassed", cms.string(
+                        (channels[channelName]['dqmDirectoryTemplate']
+                       + channels[channelName]['meNameNumEventsPassedSys']) % ('%s%s' % (higgsType, higgsMassPoint))
+                    ))            
+                    setattr(psetChannel, "systematics", cms.vstring(channels[channelName]['systematics']))  
+	        else:
+	            setattr(psetChannel, "template", cms.string(
+                        (channels[channelName]['dqmDirectoryTemplate']
+                       + channels[channelName]['meNameTemplate']) % ('%s%s' % (higgsType, higgsMassPoint))
+                    ))
+	            setattr(psetChannel.normalization, "numEventsPassed", cms.string(
+                        (channels[channelName]['dqmDirectoryFilterStat']
+                       + channels[channelName]['meNameNumEventsPassed']) % ('%s%s' % (higgsType, higgsMassPoint))
+                    ))
+                setattr(psetHiggsMassPoint.distributions, channelName, psetChannel)
+    setattr(psetProcesses, "%s%s" % (higgsType, higgsMassPoint), psetHiggsMassPoint)
     
 process.exportAnalysisResults = cms.EDAnalyzer("DQMExportAnalysisResults",
 
@@ -429,48 +454,46 @@ process.exportAnalysisResults = cms.EDAnalyzer("DQMExportAnalysisResults",
     systematics = cms.PSet(
     	elecEnUp = cms.PSet(
     	      dqmDirectory = cms.string('sysElecEnUp'),
-     	      outputFilePath = cms.string("mu_pt+1")
+     	      outputFilePath = cms.string("ees+1")
         ),
     	elecEnDown = cms.PSet(
     	      dqmDirectory = cms.string('sysElecEnDown'),
-    	      outputFilePath = cms.string("mu_pt-1")
+    	      outputFilePath = cms.string("ees-1")
         ),
     	muonPtUp = cms.PSet(
     	      dqmDirectory = cms.string('sysMuonPtUp'),
-     	      outputFilePath = cms.string("mu_pt+1")
+     	      outputFilePath = cms.string("mpt+1")
         ),
     	muonPtDown = cms.PSet(
     	      dqmDirectory = cms.string('sysMuonPtDown'),
-    	      outputFilePath = cms.string("mu_pt-1")
+    	      outputFilePath = cms.string("mpt-1")
         ),                                                  
     	tauJetEnUp = cms.PSet(
     	      dqmDirectory = cms.string('sysTauJetEnUp'),
-     	      outputFilePath = cms.string("tau_es+1")
+     	      outputFilePath = cms.string("tes+1")
         ),
     	tauJetEnDown = cms.PSet(
     	      dqmDirectory = cms.string('sysTauJetEnDown'),
-    	      outputFilePath = cms.string("tau_es-1")
+    	      outputFilePath = cms.string("tes-1")
         ),
     	jetEnUp = cms.PSet(
     	      dqmDirectory = cms.string('sysJetEnUp'),
-     	      outputFilePath = cms.string("jet_es+1")
+     	      outputFilePath = cms.string("jes+1")
         ),
     	jetEnDown = cms.PSet(
     	      dqmDirectory = cms.string('sysJetEnDown'),
-    	      outputFilePath = cms.string("jet_es-1")
+    	      outputFilePath = cms.string("jes-1")
         ),
         ZllRecoilCorrectionUp = cms.PSet(
      	      dqmDirectory = cms.string('sysZllRecoilCorrectionUp'),
-    	      outputFilePath = cms.string("met_recoil+1")
+    	      outputFilePath = cms.string("met+1")
         ),
         ZllRecoilCorrectionDown = cms.PSet(
      	      dqmDirectory = cms.string('sysZllRecoilCorrectionDown'),
-    	      outputFilePath = cms.string("met_recoil-1")
+    	      outputFilePath = cms.string("met-1")
         )
     )
 )
-
-delattr(process.exportAnalysisResults, "systematics")
 
 process.exportAnalysisSequence += process.exportAnalysisResults
 

@@ -217,6 +217,9 @@ void exportAnalysisResults(
   std::cout << " binOffset = " << binOffset << std::endl;
 
   std::vector<int> binContents(numBinsTotal);
+  for ( unsigned iBin = 0; iBin < numBinsTotal; ++iBin ) {
+    binContents[iBin] = 0;		
+  }
 
   double numEventsProcessed, numEventsPassed;
   if ( meNameTemplate == "" && meNameNumEventsProcessed == "" && meNameNumEventsPassed == "" ) { // create "empty" (dummy) file
@@ -400,11 +403,12 @@ void DQMExportAnalysisResults::endJob()
   TH1* refHistogramBinning = 0;
   for ( std::vector<channelEntryType*>::const_iterator channel = channels_.begin();
 	channel != channels_.end(); ++channel ) {
+    std::string meNameBinning = getMEname_full((*channel)->meNameBinning_, SysUncertaintyService::getNameCentralValue());		
     bool dqmError = false;
-    (*channel)->histogramBinning_ = getHistogram(dqmStore, (*channel)->meNameBinning_, dqmError);
+    (*channel)->histogramBinning_ = getHistogram(dqmStore, meNameBinning, dqmError);
     if ( dqmError ) {
       edm::LogError ("endJob") 
-	<< " Failed to access MonitorElement name = " << (*channel)->meNameBinning_
+	<< " Failed to access MonitorElement name = " << meNameBinning
 	<< " --> histograms will NOT be exported !!";
       return;
     }
@@ -455,13 +459,14 @@ void DQMExportAnalysisResults::endJob()
       if ( (*process)->distributions_.find((*channel)->name_) != (*process)->distributions_.end() ) {
 	distribution = (*process)->distributions_.find((*channel)->name_)->second;
 
-	std::string meNameTemplate_channel = getMEname_full(distribution->meNameTemplate_, nameCentralValue);
+	std::string meNameTemplate_channel = 
+	  getMEname_full(distribution->meNameTemplate_, SysUncertaintyService::getNameCentralValue());
 	std::cout << " meNameTemplate_channel = " << meNameTemplate_channel << std::endl;
 
 	std::string meNameNumEventsProcessed_channel = getMEname_full(distribution->meNameNumEventsProcessed_, "");
 	std::cout << " meNameNumEventsProcessed_channel = " << meNameNumEventsProcessed_channel << std::endl;
-	//std::string meNameNumEventsPassed_channel = getMEname_full(distribution->meNameNumEventsPassed_, "");
-        std::string meNameNumEventsPassed_channel = getMEname_full(distribution->meNameNumEventsPassed_, nameCentralValue);
+        std::string meNameNumEventsPassed_channel = 
+          getMEname_full(distribution->meNameNumEventsPassed_, SysUncertaintyService::getNameCentralValue());
 	std::cout << " meNameNumEventsPassed_channel = " << meNameNumEventsPassed_channel << std::endl;
 
 	exportAnalysisResults(dqmStore, 
@@ -480,8 +485,8 @@ void DQMExportAnalysisResults::endJob()
 	    systematic != systematics_.end(); ++systematic ) {
 
 	std::string outputFileName_systematic = std::string(outputFilePath_).append("/");
-	outputFileName_systematic.append((*process)->outputFilePath_).append("/");
 	outputFileName_systematic.append((*systematic)->outputFilePath_).append("/");
+	outputFileName_systematic.append((*process)->outputFilePath_).append("/");
 	outputFileName_systematic.append((*process)->outputFileName_);
 	outputFileName_systematic = 
 	  replace_string(outputFileName_systematic, channelOutputFileNameKeyword, (*channel)->shortName_, 0, 1, errorFlag);
