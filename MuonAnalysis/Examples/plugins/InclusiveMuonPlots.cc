@@ -129,11 +129,6 @@ InclusiveMuonPlots::InclusiveMuonPlots(const edm::ParameterSet& pset):
 
     edm::Service<TFileService> fs;
 
-    TFileDirectory md = fs->mkdir("metadata");
-    TDirectory *md_dir = md.cd();
-    md_dir->WriteTObject(new TObjString(muons_.encode().c_str()), "muons");
-    md_dir->WriteTObject(new TObjString(pset.getParameter<std::string>("selection").c_str()), "selection");
-
     book(*fs, pset, "nMuons"),
 
     book(*fs, pset, "p"); 
@@ -239,6 +234,10 @@ InclusiveMuonPlots::InclusiveMuonPlots(const edm::ParameterSet& pset):
         book(*fs, pset, "oppoJetMuonPtRatio");
         book(*fs, pset, "oppoJetFragmentation");
     }
+
+    TDirectory *md_dir = gDirectory->mkdir("metadata");   
+    md_dir->WriteTObject(new TObjString(muons_.encode().c_str()), "muons");
+    md_dir->WriteTObject(new TObjString(pset.getParameter<std::string>("selection").c_str()), "selection");
 }
 
 /// Destructor
