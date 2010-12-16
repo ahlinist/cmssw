@@ -80,6 +80,7 @@ bool LeptonVetoSelector::select(const edm::Event& event) const {
 
   for (std::vector<pat::Electron>::const_iterator ie = (*eleHandle).begin(); ie != (*eleHandle).end(); ++ie) {
 
+    currIso = 0;
     //common for PF and Reco:
     if (ie->pt() < minPtEle_)
       continue;
@@ -101,7 +102,6 @@ bool LeptonVetoSelector::select(const edm::Event& event) const {
     if(ie->pfCandidateRef().isNonnull() )
       {
 	if(ie->gsfTrack()->trackerExpectedHitsInner().numberOfLostHits() > 1) continue;
-	double Iso = 0;
 
 	for(int i =4; i<7; ++i)
 	  {
@@ -151,6 +151,7 @@ bool LeptonVetoSelector::select(const edm::Event& event) const {
   for (std::vector<pat::Muon>::const_iterator im = (*muonHandle).begin(); im != (*muonHandle).end(); ++im) {
 
     //common for PF and Reco:
+    currIso = 0;
 
     if( im->isGood("GlobalMuonPromptTight") < 1 ) continue;
     if (im->pt() < minPtMuon_)
