@@ -9,6 +9,7 @@
 #include "TauAnalysis/DQMTools/interface/dqmAuxFunctions.h"
 #include "TauAnalysis/DQMTools/interface/generalAuxFunctions.h"
 #include "TauAnalysis/DQMTools/interface/histogramAuxFunctions.h"
+#include "TauAnalysis/Core/interface/SysUncertaintyService.h"
 
 #include <TMath.h>
 #include <TH1.h>
@@ -232,6 +233,26 @@ void exportAnalysisResults(
       return;
     }
 
+    bool error = false;
+    numEventsProcessed = getValue(dqmStore, meNameNumEventsProcessed, error);
+    std::cout << " numEventsProcessed = " << numEventsProcessed << std::endl;
+    numEventsPassed = getValue(dqmStore, meNameNumEventsPassed, error);
+    std::cout << " numEventsPassed = " << numEventsPassed << std::endl;
+    assert(!error);
+
+//--- correct for skimming efficiency
+//   (by scaling-up number of processed events such that
+//    number of processed events = integrated luminosity of analyzed dataset * cross-section)
+    if ( xSection > 0. && dataIntLumi > 0. ) {
+      double effXsection = numEventsProcessed/dataIntLumi;
+      std::cout << "--> scaling number of processed events up by factor = " << (xSection/effXsection) << ","
+		<< " in order to account for skimming efficiencies !!" << std::endl;
+      std::cout << " xSection = " << xSection << std::endl;
+      std::cout << " effXsection = " << effXsection << std::endl;
+      numEventsProcessed *= (xSection/effXsection);
+    } 
+
+//--- read bin-contents, bin-errors
     int firstBinX = getFirstBin(histogram, "X");
     int lastBinX = getLastBin(histogram, "X");
 
@@ -287,13 +308,6 @@ void exportAnalysisResults(
 
     std::cout << " binContents = " << format_vint(binContents) << std::endl;
 
-    bool error = false;
-    numEventsProcessed = getValue(dqmStore, meNameNumEventsProcessed, error);
-    //std::cout << " numEventsProcessed = " << numEventsProcessed << std::endl;
-    numEventsPassed = getValue(dqmStore, meNameNumEventsPassed, error);
-    //std::cout << " numEventsPassed = " << numEventsPassed << std::endl;
-    assert(!error);
-
     numEventsProcessed *= scaleFactor;
     numEventsPassed *= scaleFactor;
 
@@ -311,18 +325,6 @@ void exportAnalysisResults(
       numEventsProcessed *= (sumBinContents*scaleFactor/numEventsPassed);
       numEventsPassed *= (sumBinContents*scaleFactor/numEventsPassed);
     }
-
-//--- correct for skimming efficiency
-//   (by scaling-up number of processed events such that
-//    number of processed events = integrated luminosity of analyzed dataset * cross-section)
-    if ( xSection > 0. && dataIntLumi > 0. ) {
-      double effXsection = numEventsProcessed/dataIntLumi;
-      std::cout << "--> scaling number of processed events up by factor = " << (xSection/effXsection) << ","
-		<< " in order to account for skimming efficiencies !!" << std::endl;
-      std::cout << " xSection = " << xSection << std::endl;
-      std::cout << " effXsection = " << effXsection << std::endl;
-      numEventsProcessed *= (xSection/effXsection);
-    } 
   }
 
   int errorFlag = 0;
@@ -453,12 +455,13 @@ void DQMExportAnalysisResults::endJob()
       if ( (*process)->distributions_.find((*channel)->name_) != (*process)->distributions_.end() ) {
 	distribution = (*process)->distributions_.find((*channel)->name_)->second;
 
-	std::string meNameTemplate_channel = getMEname_full(distribution->meNameTemplate_, "");
+	std::string meNameTemplate_channel = getMEname_full(distribution->meNameTemplate_, nameCentralValue);
 	std::cout << " meNameTemplate_channel = " << meNameTemplate_channel << std::endl;
 
 	std::string meNameNumEventsProcessed_channel = getMEname_full(distribution->meNameNumEventsProcessed_, "");
 	std::cout << " meNameNumEventsProcessed_channel = " << meNameNumEventsProcessed_channel << std::endl;
-	std::string meNameNumEventsPassed_channel = getMEname_full(distribution->meNameNumEventsPassed_, "");
+	//std::string meNameNumEventsPassed_channel = getMEname_full(distribution->meNameNumEventsPassed_, "");
+        std::string meNameNumEventsPassed_channel = getMEname_full(distribution->meNameNumEventsPassed_, nameCentralValue);
 	std::cout << " meNameNumEventsPassed_channel = " << meNameNumEventsPassed_channel << std::endl;
 
 	exportAnalysisResults(dqmStore, 
