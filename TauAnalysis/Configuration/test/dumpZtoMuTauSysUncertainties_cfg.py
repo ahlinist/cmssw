@@ -1,7 +1,8 @@
 import FWCore.ParameterSet.Config as cms
 
 #--------------------------------------------------------------------------------
-# Print-out systematic uncertainties on Z --> tau+ tau- signal acceptance and efficiency
+# Print-out systematic uncertainties on Z --> tau+ tau- 
+# signal acceptance and efficiency
 #--------------------------------------------------------------------------------
 
 process = cms.Process('dumpZtoMuTauSysUncertainties')
@@ -19,13 +20,11 @@ process.loadZtoMuTauSysUncertainties = cms.EDAnalyzer("DQMFileLoader",
         inputFileNames = cms.vstring(
             'rfio:/castor/cern.ch/user/v/veelken/CMSSW_3_1_2/plots/ZtoMuTau/7TeV/plotsZtoMuTau_ZtautauGenTauLeptonPairAccSum.root'
         ),
-        #inputFileNames = cms.vstring('plotsZtoMuTau_systematics.root'),
         dqmDirectory_store = cms.string('')
     )
 )
 
-dqmDirectory_Ztautau = 'Ztautau/zMuTauAnalyzer/afterGenPhaseSpaceCut_beforeEvtSelTrigger'
-#dqmDirectory_Ztautau = 'zMuTauAnalyzer/afterGenPhaseSpaceCut_beforeEvtSelTrigger'
+dqmDirectory_Ztautau = 'zMuTauAnalyzerOS/afterGenPhaseSpaceCut_beforeEvtSelTrigger'
 
 process.dumpZtoMuTauAcceptance = cms.EDAnalyzer("DQMDumpBinningResults",
     binningService = cms.PSet(
@@ -48,7 +47,7 @@ theoryUncertainty = cms.PSet(
 process.dumpZtoMuTauAccUncertainties = cms.EDAnalyzer("DQMDumpSysUncertaintyBinningResults",
     config = cms.VPSet(
         theoryUncertainty.clone(
-            sysNames = cms.vstring("sysPdfWeights(41)"),
+            sysNames = cms.vstring("sysPdfWeights(45)"),
             sysTitle = cms.string("PDF"),
             sysCentralValue = cms.string("sysPdfWeights(0)"),
             method = cms.string("pdf")
@@ -82,7 +81,7 @@ process.dumpZtoMuTauEffUncertainties = cms.EDAnalyzer("DQMDumpSysUncertaintyBinn
                 "sysMuonPtUp",
                 "sysMuonPtDown"
             ),
-            sysTitle = cms.string("Muon Pt Shift")
+            sysTitle = cms.string("Muon Momentum scale")
         ),
         expUncertainty.clone(
             sysNames = cms.vstring(
@@ -91,19 +90,19 @@ process.dumpZtoMuTauEffUncertainties = cms.EDAnalyzer("DQMDumpSysUncertaintyBinn
             ),
             sysTitle = cms.string("Tau-jet Energy scale")
         ),
-        expUncertainty.clone(
+	expUncertainty.clone(
             sysNames = cms.vstring(
-                "sysTauJetThetaUp",
-                "sysTauJetThetaDown"
+                "sysJetEnUp",
+                "sysJetEnDown"
             ),
-            sysTitle = cms.string("Tau-jet Theta Shift")
+            sysTitle = cms.string("Jet Energy scale")
         ),
         expUncertainty.clone(
             sysNames = cms.vstring(
-                "sysTauJetPhiUp",
-                "sysTauJetPhiDown"
+                "sysZllRecoilCorrectionUp",
+                "sysZllRecoilCorrectionDown"
             ),
-            sysTitle = cms.string("Tau-jet Phi Shift")
+            sysTitle = cms.string("MEt Z-recoil correction")
         )
     ),
     resultTypes = cms.vstring("acceptance"),                                                  
