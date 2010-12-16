@@ -81,9 +81,6 @@ bool LeptonVetoSelector::select(const edm::Event& event) const {
   for (std::vector<pat::Electron>::const_iterator ie = (*eleHandle).begin(); ie != (*eleHandle).end(); ++ie) {
 
     //common for PF and Reco:
-    if (ie->electronID("eidLoose") < 1)
-      continue;
-
     if (ie->pt() < minPtEle_)
       continue;
 
@@ -103,6 +100,8 @@ bool LeptonVetoSelector::select(const edm::Event& event) const {
     //PF only:
     if(ie->pfCandidateRef().isNonnull() )
       {
+	if(ie->gsfTrack()->trackerExpectedHitsInner().numberOfLostHits() > 1) continue;
+	double Iso = 0;
 
 	for(int i =4; i<7; ++i)
 	  {
@@ -124,6 +123,11 @@ bool LeptonVetoSelector::select(const edm::Event& event) const {
 
       if(currIso < bestIsoElec) bestIsoElec = currIso;
 
+    if (ie->electronID("eidLoose") < 1)
+      continue;
+
+    if((ie->isEB() &&(( ie->dr03TkSumPt() + std::max(0., ie->dr03EcalRecHitSumEt() - 1.) + ie->dr03HcalTowerSumEt() ) / ie->p4().Pt() > eleIso_)) || ( ! ie->isEB() && ( ie->dr03TkSumPt() + ie->dr03EcalRecHitSumEt() + ie->dr03HcalTowerSumEt() ) / ie->p4().Pt() > eleIso_))   
+      continue;
       if( currIso > eleIso_ ) continue;
     }
   
