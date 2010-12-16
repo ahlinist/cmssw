@@ -86,7 +86,7 @@ theorySystematics = {
     # CV: do not run theory systematics for now,
     #     as in particular the module for estimating PDF uncertainties
     #     significantly increases the overall run-time/memory consumption of the cmsRun job !!
-    #"sysPdfWeights(41)"     : cms.InputTag('pdfWeights:cteq65'),
+    #"sysPdfWeights(45)"     : cms.InputTag('pdfWeights:cteq66'),
     #"sysIsrWeight"          : cms.InputTag('isrWeight'),
     #"sysFsrWeight"          : cms.InputTag('fsrWeight')
 }
