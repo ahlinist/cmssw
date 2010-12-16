@@ -20,8 +20,9 @@ process.source = cms.Source("EmptySource")
 process.loadAnalysisResults = cms.EDAnalyzer("DQMFileLoader",
     all = cms.PSet(
         inputFileNames = cms.vstring(
-            #'/data2/squires/Run29/plotsAHtoMuTau_all.root'
-            '/data2/friis/Run35SYS/plots_all.bsm.root',
+            #'/data2/squires/Run29/plotsAHtoMuTau_allHiggs.root',
+            #'/data2/squires/Run29/plotsAHtoMuTau_allOthers.root',
+            '/data2/friis/Run35SYS/plots_all.bsm.root',                                        
             '/data2/friis/Run35SYS/plots_all.sm.root'                                          
         ),
         dqmDirectory_store = cms.string('/')
