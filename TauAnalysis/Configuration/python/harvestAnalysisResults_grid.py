@@ -43,19 +43,15 @@ def harvestAnalysisResults(channel = None, samples = None, inputFilePath = None,
         inputFilePath = '/castor/cern.ch' + '/' + inputFilePath
         inputFilePath = inputFilePath.replace('//', '/')
         print(" inputFilePath = " + inputFilePath)
-        files_in_castor = castor.nsls(inputFilePath)
 
-        files_to_process = [file for file in files_in_castor
-                            if file.find('_%s_' % jobId) != -1]
+        files_in_castor_info = castor.nslsl(inputFilePath)
 
+        files_and_times = [
+            (file_info['time'], file_info['path'])
+            for file_info in files_in_castor_info
+            if file_info['file'].find('_%s_' % jobId) != -1 ]
         # Sort files by modified time
         print "Sorting by modified time"
-        if len(files_to_process) > 0:
-            print castor.last_modified(files_to_process[1])
-        files_and_times = [
-            (castor.last_modified(file), file)
-            for file in files_to_process
-        ]
         files_and_times.sort()
 
     else:
