@@ -19,6 +19,6 @@ poolDBESSourceMuScleFitCentralValue = cms.ESSource("PoolDBESSource",
 patMuonsMuScleFitCorrectedMomentum = cms.EDProducer('MuScleFitMuonProducer',
     MuonLabel = cms.InputTag("cleanPatMuons"),
     PatMuons = cms.bool(True),
-    dbObjectLabel = cms.string("centralValue")                                             
+    DbObjectLabel = cms.untracked.string("centralValue")                                             
 )
 
