@@ -15,5 +15,5 @@ ewkTauId = cms.EDProducer("PFRecoTauDiscriminationByStringCut",
             cut = cms.double(0.5)
         ),
     ),
-    cut = cms.string('(signalTracks.size() = 1 | signalTracks.size() = 3) && (abs(charge) > 0.5 & abs(charge) < 1.5)')
+    cut = cms.string('(signalPFChargedHadrCands.size() = 1 | signalPFChargedHadrCands.size() = 3) && (abs(charge) > 0.5 & abs(charge) < 1.5)')
 )
