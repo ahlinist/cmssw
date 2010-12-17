@@ -291,15 +291,23 @@ def enableFactorization_makeZtoMuTauPlots_grid2(
     ]
 
     analyzers = {
-        'zMuTauAnalyzer' : {
+        'zMuTauAnalyzerOS' : {
             'tight_cuts' : evtSelZtoMuTau_factorizedTight,
             'loose_cuts' : evtSelZtoMuTau_factorizedLoose,
             'loose_analyzer' :
-            'zMuTauAnalyzer_factorizedWithoutMuonIsolation',
+            'zMuTauAnalyzerOS_factorizedWithoutMuonIsolation',
             'tight_analyzer' :
-            'zMuTauAnalyzer_factorizedWithMuonIsolation',
+            'zMuTauAnalyzerOS_factorizedWithMuonIsolation',
         },
-    }
+	'zMuTauAnalyzerSS' : {
+            'tight_cuts' : evtSelZtoMuTau_factorizedTight,
+            'loose_cuts' : evtSelZtoMuTau_factorizedLoose,
+            'loose_analyzer' :
+            'zMuTauAnalyzerSS_factorizedWithoutMuonIsolation',
+            'tight_analyzer' :
+            'zMuTauAnalyzerSS_factorizedWithMuonIsolation',
+        }
+    }	
 
     # Loop over the samples and create sequences
     # for each of the factorization jobs and add them to the factorization
@@ -310,7 +318,7 @@ def enableFactorization_makeZtoMuTauPlots_grid2(
             process,
             input_dir= '/harvested/%s' % sample,
             output_dir = '/harvested/%s_factorized' % sample,
-            sequence = factorizationSequence,
+	    sequence = factorizationSequence,
             analyzers = analyzers
         )
 
@@ -337,7 +345,7 @@ def enableFactorization_makeZtoMuTauPlots_grid2(
 
     # Update the plot sources in the plot jobs.  Note that we don't need to do
     # this for the merged samples, since we have replaced the HistAdder sources
-    for scale in ['linear', 'log']:
+    for scale in [ 'linear', 'log' ]:
         for analyzer in analyzers.keys():
             plotterModuleName = 'plot' + analyzer + '_' + scale
             print "Trying to update plotter:", plotterModuleName
