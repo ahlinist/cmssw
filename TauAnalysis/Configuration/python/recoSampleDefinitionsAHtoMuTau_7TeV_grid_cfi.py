@@ -684,14 +684,18 @@ if _USE_BARI_XSEC:
 
 # List of all subsamples used in any plot job.  i.e. if qcdSum is included in
 # samples to plot it will be expanded to the inclusive/exclusive ppMux samples
-FLATTENED_SAMPLES_TO_PLOT = set([])
 
-for sample in itertools.chain(SAMPLES_TO_PLOT, SAMPLES_TO_PRINT):
-    if sample in MERGE_SAMPLES:
-        for subsample in MERGE_SAMPLES[sample]['samples']:
-            FLATTENED_SAMPLES_TO_PLOT.add(subsample)
-    else:
-        FLATTENED_SAMPLES_TO_PLOT.add(sample)
+def make_flattened_samples():
+    output = set([])
+    for sample in itertools.chain(SAMPLES_TO_PLOT, SAMPLES_TO_PRINT):
+        if sample in MERGE_SAMPLES:
+            for subsample in MERGE_SAMPLES[sample]['samples']:
+                output.add(subsample)
+        else:
+            output.add(sample)
+    return output
+
+FLATTENED_SAMPLES_TO_PLOT = make_flattened_samples()
 
 ALL_SAMPLES = {}
 # Update to use the defaults if necessary
@@ -715,5 +719,5 @@ recoSampleDefinitionsAHtoMuTau_7TeV = {
     'RECO_SAMPLES' : RECO_SAMPLES,
     'MERGE_SAMPLES' : MERGE_SAMPLES,
     'FLATTENED_SAMPLES_TO_PLOT' : FLATTENED_SAMPLES_TO_PLOT,
-    'ALL_SAMPLES' : ALL_SAMPLES
+    'ALL_SAMPLES' : ALL_SAMPLES,
 }
