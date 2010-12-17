@@ -18,9 +18,9 @@ process.source = cms.Source("EmptySource")
 process.loadAHtoMuTauSysUncertainties = cms.EDAnalyzer("DQMFileLoader",
     dump = cms.PSet(
         inputFileNames = cms.vstring(
-            'rfio:/castor/cern.ch/user/v/veelken/CMSSW_3_1_2/plots/ZtoMuTau/7TeV/plotsAHtoMuTau_all.root'
+            'rfio:/data2/friis/Run35SYS/plotsAHtoMuTau_all.root'
         ),
-        dqmDirectory_store = cms.string('')
+        dqmDirectory_store = cms.string('/')
     )
 )
 
