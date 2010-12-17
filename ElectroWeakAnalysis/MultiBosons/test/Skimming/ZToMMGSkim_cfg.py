@@ -1,15 +1,12 @@
 import FWCore.ParameterSet.Config as cms
+import FWCore.ParameterSet.VarParsing as VarParsing
 
-process = cms.Process('SKIM')
+## setup 'analysis'  options
+options = VarParsing.VarParsing ('analysis')
 
-process.maxEvents = cms.untracked.PSet(
-    input = cms.untracked.int32(-1)
-)
-
-process.source = cms.Source("PoolSource",
-    fileNames = cms.untracked.vstring()
-)
-
+## setup any defaults you want
+options.outputFile = "ZToMMGSkim.root"
+options.maxEvents = -1 # -1 means all events
 sourcePath = "/store/data/Run2010B/Mu/RECO/PromptReco-v2/000/149/291/"
 sourceFiles = """
     FC6AEC33-C6E4-DF11-862E-003048F024FE.root
@@ -64,13 +61,31 @@ sourceFiles = """
     0C7164CA-C4E4-DF11-8E19-0019B9F70468.root
     02AD73D0-D7E4-DF11-945F-001D09F28F25.root
     """.split()
-process.source.fileNames.extend([sourcePath + f for f in sourceFiles])
+options.inputFiles = ",".join([sourcePath + f for f in sourceFiles])
+
+# get and parse the command line arguments
+options.parseArguments()
+
+
+process = cms.Process('SKIM')
+
+process.load("FWCore.MessageLogger.MessageLogger_cfi")
+if options.maxEvents < 0:
+    process.MessageLogger.cerr.FwkReport.reportEvery = 100
+
+process.maxEvents = cms.untracked.PSet(
+    input = cms.untracked.int32(options.maxEvents)
+)
+
+process.source = cms.Source("PoolSource",
+    fileNames = cms.untracked.vstring(options.inputFiles)
+)
 
 process.load("ElectroWeakAnalysis.MultiBosons.Skimming.ZToMMGSkim_cff")
 process.ZToMMGSkimFilterPath = cms.Path(process.ZToMMGSkimFilterSequence)
 
 process.out = cms.OutputModule("PoolOutputModule",
-    fileName = cms.untracked.string("ZToMMGSkim.root"),
+    fileName = cms.untracked.string(options.outputFile),
     SelectEvents = cms.untracked.PSet(
         SelectEvents = cms.vstring("ZToMMGSkimFilterPath")
     ),
