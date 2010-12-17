@@ -55,7 +55,7 @@ def _replaceAnyAnalyzerModules(analyzer, analyzersAttributeName, analyzerModule_
 
             for analyzerModule in analyzers:
                 analyzerModuleName = getattr(analyzerModule, "pluginName").value()
-                
+
                 if analyzerModuleName == analyzerModuleName_old:
 
                     analyzers.remove(analyzerModule)
@@ -78,7 +78,7 @@ def replaceSysAnalyzerModules(analyzer, sysAnalyzerModule_replacements):
     # in configuration of GenericAnalyzer
 
     _replaceAnyAnalyzerModules(analyzer, "analyzers_systematic", sysAnalyzerModule_replacements)
-    
+
 #
 #--------------------------------------------------------------------------------
 #
@@ -290,6 +290,17 @@ def enableFactorization_makeZtoMuTauPlots_grid2(
         'evtSelDiTauCandidateForMuTauZeroCharge'
     ]
 
+    analyzers = {
+        'zMuTauAnalyzer' : {
+            'tight_cuts' : evtSelZtoMuTau_factorizedTight,
+            'loose_cuts' : evtSelZtoMuTau_factorizedLoose,
+            'loose_analyzer' :
+            'zMuTauAnalyzer_factorizedWithoutMuonIsolation',
+            'tight_analyzer' :
+            'zMuTauAnalyzer_factorizedWithMuonIsolation',
+        },
+    }
+
     # Loop over the samples and create sequences
     # for each of the factorization jobs and add them to the factorization
     # sequence
@@ -299,17 +310,8 @@ def enableFactorization_makeZtoMuTauPlots_grid2(
             process,
             input_dir= '/harvested/%s' % sample,
             output_dir = '/harvested/%s_factorized' % sample,
-            analyzers = {
-                'zMuTauAnalyzer' : {
-                    'tight_cuts' : evtSelZtoMuTau_factorizedTight,
-                    'loose_cuts' : evtSelZtoMuTau_factorizedLoose,
-                    'loose_analyzer' :
-                    'zMuTauAnalyzer_factorizedWithoutMuonIsolation',
-                    'tight_analyzer' :
-                    'zMuTauAnalyzer_factorizedWithMuonIsolation',
-                },
-            },
-            sequence = factorizationSequence
+            sequence = factorizationSequence,
+            analyzers = analyzers
         )
 
     dqmDirectoryOut = lambda sample:'/harvested/%s_factorized'% sample
@@ -335,12 +337,18 @@ def enableFactorization_makeZtoMuTauPlots_grid2(
 
     # Update the plot sources in the plot jobs.  Note that we don't need to do
     # this for the merged samples, since we have replaced the HistAdder sources
-    for plotterModuleName in [ 'plotZtoMuTau_log', 'plotZtoMuTau_linear' ]:
-        plotterModuleProcesses = getattr(process, plotterModuleName).processes
-        for sample in samplesToFactorize:
-            if hasattr(plotterModuleProcesses, sample):
-                getattr(plotterModuleProcesses, sample).dqmDirectory = \
-                        cms.string("/harvested/%s_factorized" % sample)
+    for scale in ['linear', 'log']:
+        for analyzer in analyzers.keys():
+            plotterModuleName = 'plot' + analyzer + '_' + scale
+            print "Trying to update plotter:", plotterModuleName
+            if hasattr(process, plotterModuleName):
+                print " - found it in the process, modifying"
+                plotterModuleProcesses = getattr(process, plotterModuleName).processes
+                for sample in samplesToFactorize:
+                    print "Plotter is plotting %s, changing dqm directory in!" %  sample
+                    if hasattr(plotterModuleProcesses, sample):
+                        getattr(plotterModuleProcesses, sample).dqmDirectory = \
+                                cms.string("/harvested/%s_factorized" % sample)
 
 def enableFactorization_makeZtoMuTauPlots_grid(
     process,
@@ -1275,7 +1283,40 @@ def enableFactorization_makeAHtoMuTauPlots_grid2(
     loose_cuts_wBtag_ss = loose_cuts_base \
       + [ 'evtSelCentralJetEt20', 'evtSelCentralJetEt20bTag', 'evtSelDiTauCandidateForAHtoMuTauNonZeroCharge' ]
 
-
+    analyzers = {
+        'ahMuTauAnalyzerOS_wBtag' : {
+            'tight_cuts' : tight_cuts,
+            'loose_cuts' : loose_cuts_wBtag,
+            'loose_analyzer' :
+            'ahMuTauAnalyzerOS_wBtag_factorizedWithoutMuonIsolation',
+            'tight_analyzer' :
+            'ahMuTauAnalyzerOS_wBtag_factorizedWithMuonIsolation',
+        },
+        'ahMuTauAnalyzerOS_woBtag' : {
+            'tight_cuts' : tight_cuts,
+            'loose_cuts' : loose_cuts_woBtag,
+            'loose_analyzer' :
+            'ahMuTauAnalyzerOS_woBtag_factorizedWithoutMuonIsolation',
+            'tight_analyzer' :
+            'ahMuTauAnalyzerOS_woBtag_factorizedWithMuonIsolation',
+        },
+        'ahMuTauAnalyzerSS_wBtag' : {
+            'tight_cuts' : tight_cuts,
+            'loose_cuts' : loose_cuts_wBtag_ss,
+            'loose_analyzer' :
+            'ahMuTauAnalyzerSS_wBtag_factorizedWithoutMuonIsolation',
+            'tight_analyzer' :
+            'ahMuTauAnalyzerSS_wBtag_factorizedWithMuonIsolation',
+        },
+        'ahMuTauAnalyzerSS_woBtag' : {
+            'tight_cuts' : tight_cuts,
+            'loose_cuts' : loose_cuts_woBtag_ss,
+            'loose_analyzer' :
+            'ahMuTauAnalyzerSS_woBtag_factorizedWithoutMuonIsolation',
+            'tight_analyzer' :
+            'ahMuTauAnalyzerSS_woBtag_factorizedWithMuonIsolation',
+        },
+    }
 
     # Loop over the samples and create sequences
     # for each of the factorization jobs and add them to the factorization
@@ -1286,41 +1327,8 @@ def enableFactorization_makeAHtoMuTauPlots_grid2(
             process,
             input_dir= '/harvested/%s' % sample,
             output_dir = '/harvested/%s_factorized' % sample,
-            analyzers = {
-                'ahMuTauAnalyzerOS_wBtag' : {
-                    'tight_cuts' : tight_cuts,
-                    'loose_cuts' : loose_cuts_wBtag,
-                    'loose_analyzer' :
-                    'ahMuTauAnalyzerOS_wBtag_factorizedWithoutMuonIsolation',
-                    'tight_analyzer' :
-                    'ahMuTauAnalyzerOS_wBtag_factorizedWithMuonIsolation',
-                },
-                'ahMuTauAnalyzerOS_woBtag' : {
-                    'tight_cuts' : tight_cuts,
-                    'loose_cuts' : loose_cuts_woBtag,
-                    'loose_analyzer' :
-                    'ahMuTauAnalyzerOS_woBtag_factorizedWithoutMuonIsolation',
-                    'tight_analyzer' :
-                    'ahMuTauAnalyzerOS_woBtag_factorizedWithMuonIsolation',
-                },
-                'ahMuTauAnalyzerSS_wBtag' : {
-                    'tight_cuts' : tight_cuts,
-                    'loose_cuts' : loose_cuts_wBtag_ss,
-                    'loose_analyzer' :
-                    'ahMuTauAnalyzerSS_wBtag_factorizedWithoutMuonIsolation',
-                    'tight_analyzer' :
-                    'ahMuTauAnalyzerSS_wBtag_factorizedWithMuonIsolation',
-                },
-                'ahMuTauAnalyzerSS_woBtag' : {
-                    'tight_cuts' : tight_cuts,
-                    'loose_cuts' : loose_cuts_woBtag_ss,
-                    'loose_analyzer' :
-                    'ahMuTauAnalyzerSS_woBtag_factorizedWithoutMuonIsolation',
-                    'tight_analyzer' :
-                    'ahMuTauAnalyzerSS_woBtag_factorizedWithMuonIsolation',
-                },
-            },
-            sequence = factorizationSequence
+            sequence = factorizationSequence,
+            analyzers = analyzers
         )
 
     dqmDirectoryOut = lambda sample:'/harvested/%s_factorized' % sample
@@ -1350,14 +1358,18 @@ def enableFactorization_makeAHtoMuTauPlots_grid2(
 
     # Update the plot sources in the plot jobs.  Note that we don't need to do
     # this for the merged samples, since we have replaced the HistAdder sources
-    for plotterModuleName in [ 'plotAHtoMuTauOS_woBtag_log', 'plotAHtoMuTauOS_woBtag_linear',
-                               'plotAHtoMuTauOS_wBtag_log',  'plotAHtoMuTauOS_wBtag_linear' ]:
-        if hasattr(process, plotterModuleName):
-            plotterModuleProcesses = getattr(process, plotterModuleName).processes
-            for sample in samplesToFactorize:
-                if hasattr(plotterModuleProcesses, sample):
-                    getattr(plotterModuleProcesses, sample).dqmDirectory = \
-                      cms.string("/harvested/%s_factorized" % sample)
+    for scale in ['linear', 'log']:
+        for analyzer in analyzers.keys():
+            plotterModuleName = 'plot' + analyzer + '_' + scale
+            print "Trying to update plotter:", plotterModuleName
+            if hasattr(process, plotterModuleName):
+                print " - found it in the process, modifying"
+                plotterModuleProcesses = getattr(process, plotterModuleName).processes
+                for sample in samplesToFactorize:
+                    if hasattr(plotterModuleProcesses, sample):
+                        print "Plotter is plotting %s, changing dqm directory in!" %  sample
+                        getattr(plotterModuleProcesses, sample).dqmDirectory = \
+                          cms.string("/harvested/%s_factorized" % sample)
 
 
 def enableFactorization_makeAHtoMuTauPlots_grid(
