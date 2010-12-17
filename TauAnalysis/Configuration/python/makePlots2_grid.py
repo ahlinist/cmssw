@@ -61,6 +61,7 @@ def get_filter_stat(file, filter_stats_dir, statistic,
     directory = os.path.join('DQMData', filter_stats_dir, statistic)
     matcher = re.compile(
         '<' + type + '>[if]=(?P<value>[0-9\.]*)</' + type + '>')
+    print directory
     filter_stats = file.Get(directory)
     for key in filter_stats.GetListOfKeys():
         matches = matcher.match(key.GetName())
@@ -125,8 +126,13 @@ def makePlots(process, channel = None, samples = None, inputFilePath = None, job
               analyzer_drawJobConfigurator_indOutputFileName_sets = None,
               drawJobTemplate = None,
               enableFactorizationFunction = None,
-              dqmDirectoryFilterStatistics = None, dumpDQMStore = False,
-              skimStatFileMapper = None, skimFilterStatistic=None):
+              dqmDirectoryFilterStatistics = None,
+              dqmDirectoryFilterStatisticsForSkim = None, # not usually different, only for fake rate
+              dumpDQMStore = False,
+              skimStatFileMapper = None, skimFilterStatistic=None,
+              outputFileNameMaker = lambda channel: 'plots%s_all.root' % channel,
+              plotsDirectory = './plots',
+              moduleLabel = ""):
 
     # check that channel, samples, inputFilePath and jobId
     # parameters are defined and non-empty
@@ -146,6 +152,8 @@ def makePlots(process, channel = None, samples = None, inputFilePath = None, job
                 raise ValueError("Undefined drawJobTemplate Parameter !!")
     if dqmDirectoryFilterStatistics is None:
         raise ValueError("Undefined dqmDirectoryFilterStatistics Parameter !!")
+    if dqmDirectoryFilterStatisticsForSkim is None:
+        dqmDirectoryFilterStatisticsForSkim = dqmDirectoryFilterStatistics
 
     print(" inputFilePath = " + inputFilePath)
 
@@ -173,8 +181,10 @@ def makePlots(process, channel = None, samples = None, inputFilePath = None, job
     for sample in samples['SAMPLES_TO_PRINT']:
         if not sample in samplesToLoad and not sample in samples['MERGE_SAMPLES']:
             samplesToLoad.append(sample)
+
     for sample in samplesToLoad:
-        sample_info = samples['RECO_SAMPLES'][sample]
+        # Make a copy here so if we run twice we don't square the skim eff.
+        sample_info = copy.deepcopy(samples['RECO_SAMPLES'][sample])
 
         # Get the location of filter stats for this sample
         filter_stat_base_dir = dqmDirectoryFilterStatistics[
@@ -184,9 +194,12 @@ def makePlots(process, channel = None, samples = None, inputFilePath = None, job
         # If this was run on a local skim, make sure we update the skim eff to
         # include the factor from the skim
         if skimStatFileMapper is not None:
+            skim_filter_base_dir = dqmDirectoryFilterStatisticsForSkim[
+                sample_info['factorize'] and 'factorizationEnabled' or
+                'factorizationDisabled' ]
             skim_file_name = skimStatFileMapper(sample)
             print "Loading level 2 skim info from file: %s" % skim_file_name
-            local_skim_eff = get_skim_eff(skim_file_name, filter_stat_base_dir,
+            local_skim_eff = get_skim_eff(skim_file_name, skim_filter_base_dir,
                                           skimFilterStatistic)
             # Update sample skim efficiency
             sample_info['skim_eff'] *= local_skim_eff
@@ -209,6 +222,7 @@ def makePlots(process, channel = None, samples = None, inputFilePath = None, job
 
     # configure DQMFileLoader module
     dqmFileLoaderModuleName = "load%sSamples" % channel
+    dqmFileLoaderModuleName += moduleLabel
     dqmFileLoaderModule = cms.EDAnalyzer("DQMFileLoader",
         **dqmFileLoaderJobs)
     dqmFileLoaderModule.inputFilePath = cms.string(inputFilePath)
@@ -237,16 +251,19 @@ def makePlots(process, channel = None, samples = None, inputFilePath = None, job
 
     # configure DQMHistAdder module
     dqmHistAdderModuleName = "mergeSamples%s" % channel
+    dqmHistAdderModuleName += moduleLabel
     dqmHistAdderModule = cms.EDAnalyzer("DQMHistAdder",
         **dqmHistAdderJobs
     )
     setattr(process, dqmHistAdderModuleName, dqmHistAdderModule)
 
     dqmLoadAndFactorizeSequenceName = "loadAndFactorize%sSamples" % channel
+    dqmLoadAndFactorizeSequenceName += moduleLabel
     dqmLoadAndFactorizeSequence = cms.Sequence(dqmFileLoaderModule)
     setattr(process, dqmLoadAndFactorizeSequenceName, dqmLoadAndFactorizeSequence)
 
     dqmLoadFactorizeAndMergeSequenceName = "load%s" % channel
+    dqmLoadFactorizeAndMergeSequenceName += moduleLabel
     dqmLoadFactorizeAndMergeSequence = cms.Sequence(
         dqmLoadAndFactorizeSequence * dqmHistAdderModule)
     setattr(process, dqmLoadFactorizeAndMergeSequenceName, dqmLoadFactorizeAndMergeSequence)
@@ -277,6 +294,7 @@ def makePlots(process, channel = None, samples = None, inputFilePath = None, job
         ])
 
     dqmHistPlotterSequenceName = "plot%sSequence" % channel
+    dqmHistPlotterSequenceName += moduleLabel
     dqmHistPlotterSequence = None
 
     # configure DQMHistPlotter modules
@@ -302,13 +320,16 @@ def makePlots(process, channel = None, samples = None, inputFilePath = None, job
             else:
                 dqmHistPlotterModuleName = "plot%s" % channel
             dqmHistPlotterModuleName = "plot" + analyzer
+            # Add module label if desired
+            dqmHistPlotterModuleName += moduleLabel
             print("--> configuring DQMHistPlotter: " + dqmHistPlotterModuleName)
             dqmHistPlotterModule = dqmHistPlotter_template.clone(
                 processes = cms.PSet(**processesForPlots),
                 drawOptionSets = cms.PSet(
                     default = cms.PSet(**dict((sampleName, samples['ALL_SAMPLES'][sampleName]['drawOption'])
                                               for sampleName in samples['SAMPLES_TO_PLOT']))
-                )
+                ),
+                outputFilePath = cms.string(plotsDirectory),
             )
 
             dqmHistPlotterModule.labels.mcNormScale.text = cms.vstring(
@@ -367,9 +388,11 @@ def makePlots(process, channel = None, samples = None, inputFilePath = None, job
 
     # configure DQMSimpleFileSaver module
     dqmSimpleFileSaverModuleName = "save%s" % channel
+    dqmSimpleFileSaverModuleName += moduleLabel
     dqmSimpleFileSaverModule = cms.EDAnalyzer(
         "DQMSimpleFileSaver",
-        outputFileName = cms.string(outputFilePath + '/' + "plots%s_all.root" % channel),
+        outputFileName = cms.string(os.path.join(
+            outputFilePath, outputFileNameMaker(channel))),
         outputCommands = cms.vstring(
             # Drop everything at first, we keep thte samples to plot elow
             'drop harvested/*',
@@ -384,7 +407,9 @@ def makePlots(process, channel = None, samples = None, inputFilePath = None, job
     setattr(process, dqmSimpleFileSaverModuleName, dqmSimpleFileSaverModule)
 
     makePlotSequenceName = "make%sPlots" % channel
+    makePlotSequenceName += moduleLabel
     makePlotSequence = cms.Sequence(dqmLoadFactorizeAndMergeSequence)
+    makePlotSequence._seq = makePlotSequence._seq * dqmSimpleFileSaverModule
     if dumpDQMStore:
         process.dumpDQMStore = cms.EDAnalyzer("DQMStoreDump")
         makePlotSequence._seq = makePlotSequence._seq * process.dumpDQMStore
@@ -394,7 +419,7 @@ def makePlots(process, channel = None, samples = None, inputFilePath = None, job
         makePlotSequence._seq = makePlotSequence._seq * dqmDumpFilterStatisticsModule
     if dqmHistPlotterSequence is not None:
         makePlotSequence._seq = makePlotSequence._seq * dqmHistPlotterSequence
-    makePlotSequence._seq = makePlotSequence._seq * dqmSimpleFileSaverModule
+    #makePlotSequence._seq = makePlotSequence._seq * dqmSimpleFileSaverModule
     setattr(process, makePlotSequenceName, makePlotSequence)
 
     process.p = cms.Path(makePlotSequence)
