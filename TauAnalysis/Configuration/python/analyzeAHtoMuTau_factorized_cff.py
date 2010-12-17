@@ -45,7 +45,7 @@ if len(analyzeAHtoMuTauEventsSS_woBtag_factorizedWithMuonIsolation.eventDumps):
 if len(analyzeAHtoMuTauEventsSS_wBtag_factorizedWithMuonIsolation.eventDumps):
     analyzeAHtoMuTauEventsSS_wBtag_factorizedWithMuonIsolation.eventDumps[0] = muTauEventDump_factorizedWithMuonIsolation
 
-analyzeAHtoMuTauEvents_factorizedWithMuonIsolation = cms.Sequence(
+analyzeAHtoMuTauSequence_factorizedWithMuonIsolation = cms.Sequence(
     analyzeAHtoMuTauEventsOS_woBtag_factorizedWithMuonIsolation * analyzeAHtoMuTauEventsOS_wBtag_factorizedWithMuonIsolation
    * analyzeAHtoMuTauEventsSS_woBtag_factorizedWithMuonIsolation * analyzeAHtoMuTauEventsSS_wBtag_factorizedWithMuonIsolation
 )
@@ -128,7 +128,7 @@ replaceEventSelections(analyzeAHtoMuTauEventsSS_wBtag_factorizedWithoutMuonIsola
 analyzeAHtoMuTauEventsSS_wBtag_factorizedWithoutMuonIsolation.analysisSequence = \
   muTauAnalysisSequenceSS_wBtag_factorizedWithoutMuonIsolation
 
-analyzeAHtoMuTauEvents_factorizedWithoutMuonIsolation = cms.Sequence(
+analyzeAHtoMuTauSequence_factorizedWithoutMuonIsolation = cms.Sequence(
     analyzeAHtoMuTauEventsOS_woBtag_factorizedWithoutMuonIsolation * analyzeAHtoMuTauEventsOS_wBtag_factorizedWithoutMuonIsolation
    * analyzeAHtoMuTauEventsSS_woBtag_factorizedWithoutMuonIsolation * analyzeAHtoMuTauEventsSS_wBtag_factorizedWithoutMuonIsolation
 )

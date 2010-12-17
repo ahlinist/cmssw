@@ -154,7 +154,7 @@ analyzeAHtoMuTauEventsSS_wBtag = analyzeAHtoMuTauEventsOS_wBtag.clone(
     analysisSequence = muTauAnalysisSequenceSS_wBtag
 )  
 
-analyzeAHtoMuTauEvents = cms.Sequence(
+analyzeAHtoMuTauSequence = cms.Sequence(
     analyzeAHtoMuTauEventsOS_woBtag * analyzeAHtoMuTauEventsOS_wBtag
    * analyzeAHtoMuTauEventsSS_woBtag * analyzeAHtoMuTauEventsSS_wBtag
 )
