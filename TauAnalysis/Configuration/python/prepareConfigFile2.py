@@ -126,11 +126,6 @@ def prepareConfigFile(configFile = None, jobInfo = None, newConfigFile = None,
         jobOptions.append(('enableFactorization',
                            sample_info['factorize']))
 
-    # Enable fake rates if desired - this must be done AFTER factorization
-    if 'enableFakeRates' in sample_info and enableFakeRates:
-        jobOptions.append(('enableFakeRates',
-                           sample_info['enableFakeRates']))
-
     # Apply Z-recoil correction to MEt if requested
     jobOptions.append(('applyZrecoilCorrection',
                        sample_info['applyZrecoilCorrection']))
@@ -148,6 +143,13 @@ def prepareConfigFile(configFile = None, jobInfo = None, newConfigFile = None,
     jobOptions.append(('enableSysUncertainties',
                        sample_info['enableSysUncertainties']
                        and not disableSysUncertainties))
+
+    # Enable fake rates if desired - this must be done AFTER factorization and
+    # any other modification of the event weights of the analyzers
+    if 'enableFakeRates' in sample_info and enableFakeRates:
+        jobOptions.append(('enableFakeRates',
+                           sample_info['enableFakeRates']))
+
 
     jobOptions.append(('eventDump', enableEventDumps))
 
