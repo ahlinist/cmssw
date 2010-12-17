@@ -19,13 +19,14 @@ jobId = getJobId(channel)
 makePlots(process, channel = channel, samples = recoSampleDefinitionsZtoMuTau_7TeV,
           inputFilePath = inputFilePath, jobId = jobId,
           analyzer_drawJobConfigurator_indOutputFileName_sets = [
-              [ "zMuTauAnalyzer", drawJobConfigurator_ZtoMuTau, "plotZtoMuTau_#PLOT#.png" ]
+              [ "zMuTauAnalyzerOS", drawJobConfigurator_ZtoMuTau, "plotZtoMuTauOS_#PLOT#.png",
+	        "zMuTauAnalyzerSS", drawJobConfigurator_ZtoMuTau, "plotZtoMuTauSS_#PLOT#.png" ]
           ],
           drawJobTemplate = plots_ZtoMuTau,
           enableFactorizationFunction = enableFactorization_makeZtoMuTauPlots_grid2,
           dqmDirectoryFilterStatistics = {
-              'factorizationDisabled' : 'zMuTauAnalyzer/FilterStatistics',
-              'factorizationEnabled' : 'zMuTauAnalyzer_factorizedWithMuonIsolation/FilterStatistics'
+              'factorizationDisabled' : 'zMuTauAnalyzerOS/FilterStatistics',
+              'factorizationEnabled' : 'zMuTauAnalyzerOS_factorizedWithMuonIsolation/FilterStatistics'
           },
           dumpDQMStore = False)
 
