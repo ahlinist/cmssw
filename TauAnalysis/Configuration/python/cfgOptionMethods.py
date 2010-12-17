@@ -136,7 +136,7 @@ def _setApplyMuonIsolationEfficiencyCorrection(process, enable, **kwargs):
     if enable:
         print "Applying Muon Isolation efficiency correction"
         enabler = getattr(mcToDataCorrectionTools, "applyMuonIsolationEfficiencyCorrection_run%s" % channel)
-        enabler(process)        
+        enabler(process)
 
 @_requires(args=['channel'])
 def _setApplyVertexMultiplicityReweighting(process, enable, **kwargs):
@@ -293,7 +293,7 @@ def _enableFakeRates(process, enable, **kwargs):
     if enable:
         print "--> Enabling fake rate BG estimation method"
         fakeRateTools.enableFakeRates(
-            kwargs['channel'], process, method="simple")
+            kwargs['channel'], process, method="CDF")
 
 # Map the above methods to user-friendly names
 _METHOD_MAP = {
@@ -379,7 +379,7 @@ applyProcessOptions(process, _JOB_INFO, _JOB_OPTIONS)
 
     # Copy the input file to the output file
     output.write(input.read())
-    
+
     # Add our modifiers at the end
     output.write(appendage)
     output.write("\n")
