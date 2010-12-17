@@ -18,20 +18,24 @@ process.source = cms.Source("EmptySource")
 process.loadZtoMuTauSysUncertainties = cms.EDAnalyzer("DQMFileLoader",
     dump = cms.PSet(
         inputFileNames = cms.vstring(
-            'rfio:/castor/cern.ch/user/v/veelken/CMSSW_3_1_2/plots/ZtoMuTau/7TeV/plotsZtoMuTau_ZtautauGenTauLeptonPairAccSum.root'
+            '/data2/friis/Run35SYS/plotsAHtoMuTau_all.root'
         ),
-        dqmDirectory_store = cms.string('')
+        dqmDirectory_store = cms.string('/')
     )
 )
 
-dqmDirectory_Ztautau = 'zMuTauAnalyzerOS/afterGenPhaseSpaceCut_beforeEvtSelTrigger'
+##dqmDirectory_Ztautau = '/ZtautauSum/zMuTauAnalyzerOS/afterGenPhaseSpaceCut_beforeEvtSelTrigger'
+dqmDirectory_Ztautau = '/harvested/ZtautauSum/ahMuTauAnalyzerOS_woBtag/afterGenPhaseSpaceCut_beforeEvtSelTrigger'
+
+genAccBinner = 'modelBinnerForMuTauGenTauLeptonPairAcc'
+recEffBinner = 'modelBinnerForMuTauCentralJetVetoWrtGenTauLeptonPairAcc'
 
 process.dumpZtoMuTauAcceptance = cms.EDAnalyzer("DQMDumpBinningResults",
     binningService = cms.PSet(
         pluginType = cms.string("ModelBinningService"),
         dqmDirectories = cms.PSet(
-            ZtautauGenTauLeptonPairAcc = cms.string(dqmDirectory_Ztautau + '/' + 'modelBinnerForMuTauGenTauLeptonPairAcc'),
-            ZtautauWrtGenTauLeptonPairAcc = cms.string(dqmDirectory_Ztautau + '/' + 'modelBinnerForMuTauWrtGenTauLeptonPairAcc')
+            genAcc = cms.string(dqmDirectory_Ztautau + '/' + genAccBinner),
+            recEff = cms.string(dqmDirectory_Ztautau + '/' + recEffBinner)
         )
     )
 )
@@ -51,19 +55,19 @@ process.dumpZtoMuTauAccUncertainties = cms.EDAnalyzer("DQMDumpSysUncertaintyBinn
             sysTitle = cms.string("PDF"),
             sysCentralValue = cms.string("sysPdfWeights(0)"),
             method = cms.string("pdf")
-        ),
-        theoryUncertainty.clone(
-            sysNames = cms.vstring("sysIsrWeight"),
-            sysTitle = cms.string("ISR")
-        ),
-        theoryUncertainty.clone(            
-            sysNames = cms.vstring("sysFsrWeight"),
-            sysTitle = cms.string("FSR")
+        ##),
+        ##theoryUncertainty.clone(
+        ##    sysNames = cms.vstring("sysIsrWeight"),
+        ##    sysTitle = cms.string("ISR")
+        ##),
+        ##theoryUncertainty.clone(            
+        ##    sysNames = cms.vstring("sysFsrWeight"),
+        ##    sysTitle = cms.string("FSR")
         )
     ),
     resultTypes = cms.vstring("acceptance"),  
     dqmDirectories = cms.PSet(
-        Ztautau = cms.string(dqmDirectory_Ztautau + '/' + 'sysUncertaintyBinningResults/modelBinnerForMuTauGenTauLeptonPairAcc')
+        Ztautau = cms.string(dqmDirectory_Ztautau + '/' + 'sysUncertaintyBinningResults' + '/' + genAccBinner)
     )
 )
 
@@ -107,7 +111,7 @@ process.dumpZtoMuTauEffUncertainties = cms.EDAnalyzer("DQMDumpSysUncertaintyBinn
     ),
     resultTypes = cms.vstring("acceptance"),                                                  
     dqmDirectories = cms.PSet(
-        Ztautau = cms.string(dqmDirectory_Ztautau + '/' + 'sysUncertaintyBinningResults/modelBinnerForMuTauWrtGenTauLeptonPairAcc')
+        Ztautau = cms.string(dqmDirectory_Ztautau + '/' + 'sysUncertaintyBinningResults' + '/' + recEffBinner)
     )
 ) 
 
