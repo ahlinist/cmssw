@@ -4,6 +4,16 @@ import FWCore.ParameterSet.VarParsing as VarParsing
 ## setup 'analysis'  options
 options = VarParsing.VarParsing ('analysis')
 
+## setup tags
+options.setupTags (tag = 'of_%d',
+    ifCond = 'totalSections > 0',
+    tagArg = 'totalSections'
+)
+options.setupTags (tag = '%03d',
+    ifCond = 'totalSections > 0',
+    tagArg = 'section'
+)
+
 ## setup any defaults you want
 options.outputFile = "ZToMMGSkim.root"
 options.maxEvents = -1 # -1 means all events
@@ -67,7 +77,7 @@ options.inputFiles = ",".join([sourcePath + f for f in sourceFiles])
 options.parseArguments()
 
 
-process = cms.Process('SKIM')
+process = cms.Process("SKIM")
 
 process.load("FWCore.MessageLogger.MessageLogger_cfi")
 if options.maxEvents < 0:
@@ -89,8 +99,16 @@ process.out = cms.OutputModule("PoolOutputModule",
     SelectEvents = cms.untracked.PSet(
         SelectEvents = cms.vstring("ZToMMGSkimFilterPath")
     ),
+    outputCommands = cms.untracked.vstring(
+        "keep *",
+        "drop *_*_*_SKIM"
+    )
 )
 
 process.endpath = cms.EndPath(process.out)
+
+process.options = cms.untracked.PSet(
+    wantSummary = cms.untracked.bool(True)
+)
 
 if __name__ == "__main__": import user
