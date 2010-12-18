@@ -13,6 +13,8 @@ from TauAnalysis.RecoTools.tools.configureZllRecoilCorrection import configureZl
 def _applyZllRecoilCorrection(process, diTauProductionSequenceName, diTauProducerModuleName, ZllRecoilCorrectionType,
                               genericAnalyzerSequenceNames = []):
 
+    #print("<applyZllRecoilCorrection>:")
+
     configZllRecoilCorrection = \
       configureZllRecoilCorrection(process, diTauProducerModuleName, ZllRecoilCorrectionType)
     diTauProductionSequence = getattr(process, diTauProductionSequenceName)
@@ -47,6 +49,22 @@ def _applyZllRecoilCorrection(process, diTauProductionSequenceName, diTauProduce
 
         # disable warnings in MET histogram managers
         # that num. MET objects != 1
+	class updateMEtHistManagerVisitor():
+	    def enter(self, genericAnalyzerModule):
+	        if hasattr(genericAnalyzerModule, "analyzers"):
+	    	    analyzers = getattr(genericAnalyzerModule, "analyzers")
+	            for analyzer in analyzers:
+	                if hasattr(analyzer, "pluginType"):
+                            analyzerPluginType = getattr(analyzer, "pluginType").value()
+	                    if analyzerPluginType == "CaloMEtHistManager" or analyzerPluginType == "PFMEtHistManager":
+	                        setattr(analyzer, "expectUniqueMEt", cms.bool(False))
+	    def leave(self, genericAnalyzerModule):
+     	        pass
+	for genericAnalyzerSequenceName in genericAnalyzerSequenceNames:
+            if hasattr(process, genericAnalyzerSequenceName):
+                genericAnalyzerSequence = getattr(process, genericAnalyzerSequenceName)
+	        updateMEtHistManagers = updateMEtHistManagerVisitor()
+	        genericAnalyzerSequence.visit(updateMEtHistManagers)
         if hasattr(process, "caloMEtHistManager"):
             process.caloMEtHistManager.expectUniqueMEt = cms.bool(False)
         if hasattr(process, "pfMEtHistManager"):
