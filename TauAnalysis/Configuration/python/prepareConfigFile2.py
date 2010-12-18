@@ -62,6 +62,7 @@ def prepareConfigFile(configFile = None, jobInfo = None, newConfigFile = None,
                       enableEventDumps = False, enableFakeRates = False,
                       processName = None,
                       saveFinalEvents = False,
+                      changeTauId = None,
                       customizations = []):
     """
     Create cfg.py file used as input for cmsRun analysis job
@@ -111,6 +112,10 @@ def prepareConfigFile(configFile = None, jobInfo = None, newConfigFile = None,
     jobOptions.append(('type', sample_info['type']))
     jobOptions.append(('genPhaseSpaceCut', sample_info['genPhaseSpaceCut']))
 
+    # Check if we want to change the tauId.
+    if changeTauId is not None:
+        jobOptions.append(('changeTauId', changeTauId))
+
     # Check if we need to change the HLT tag
     if 'hlt' in sample_info:
         jobOptions.append(('hlt', sample_info['hlt']))
@@ -126,9 +131,9 @@ def prepareConfigFile(configFile = None, jobInfo = None, newConfigFile = None,
         jobOptions.append(('enableFactorization',
                            sample_info['factorize']))
 
-    # Apply Z-recoil correction to MEt if requested
+    #Apply Z-recoil correction to MEt if requested
     jobOptions.append(('applyZrecoilCorrection',
-                       sample_info['applyZrecoilCorrection']))
+                      sample_info['applyZrecoilCorrection']))
 
     # Apply muon trigger efficiency correction if requested
     jobOptions.append(('applyMuonTriggerEfficiencyCorrection',
