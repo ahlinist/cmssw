@@ -132,6 +132,8 @@ def makePlots(process, channel = None, samples = None, inputFilePath = None, job
               skimStatFileMapper = None, skimFilterStatistic=None,
               outputFileNameMaker = lambda channel: 'plots%s_all.root' % channel,
               plotsDirectory = './plots',
+              disableFactorizationSample = False,
+              disableFactorizationSkim = False,
               moduleLabel = ""):
 
     # check that channel, samples, inputFilePath and jobId
@@ -186,6 +188,14 @@ def makePlots(process, channel = None, samples = None, inputFilePath = None, job
         # Make a copy here so if we run twice we don't square the skim eff.
         sample_info = copy.deepcopy(samples['RECO_SAMPLES'][sample])
 
+        factorize_skim = sample_info['factorize']
+
+        if disableFactorizationSample:
+            sample_info['factorize'] = False
+
+        if disableFactorizationSkim:
+            factorize_skim = False
+
         # Get the location of filter stats for this sample
         filter_stat_base_dir = dqmDirectoryFilterStatistics[
             sample_info['factorize'] and 'factorizationEnabled' or
@@ -195,7 +205,7 @@ def makePlots(process, channel = None, samples = None, inputFilePath = None, job
         # include the factor from the skim
         if skimStatFileMapper is not None:
             skim_filter_base_dir = dqmDirectoryFilterStatisticsForSkim[
-                sample_info['factorize'] and 'factorizationEnabled' or
+                factorize_skim and 'factorizationEnabled' or
                 'factorizationDisabled' ]
             skim_file_name = skimStatFileMapper(sample)
             print "Loading level 2 skim info from file: %s" % skim_file_name
