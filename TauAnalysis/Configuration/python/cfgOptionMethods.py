@@ -8,6 +8,7 @@ import TauAnalysis.Configuration.tools.mcToDataCorrectionTools as mcToDataCorrec
 import TauAnalysis.Configuration.tools.sysUncertaintyTools as sysUncertaintyTools
 import TauAnalysis.Configuration.tools.switchToData as switchToData
 import TauAnalysis.BgEstimationTools.tools.fakeRateTools as fakeRateTools
+from TauAnalysis.Configuration.tools.changeCut import changeCut
 
 import PhysicsTools.PatAlgos.tools.helpers as patutils
 
@@ -292,8 +293,20 @@ def _changeProcessName(process, name, **kwargs):
 def _enableFakeRates(process, enable, **kwargs):
     if enable:
         print "--> Enabling fake rate BG estimation method"
-        fakeRateTools.enableFakeRates(
-            kwargs['channel'], process, method="CDF")
+        fakeRateTools.enableFakeRates(process,
+            kwargs['channel'], method="CDF")
+
+_tauIdChannelMap = {
+    'AHtoMuTau' : ["selectedPatTausTaNCdiscr",
+                   "selectedPatTausForMuTauTaNCdiscr"],
+    'ZtoMuTau' : ["selectedPatTausTaNCdiscr",
+                   "selectedPatTausForMuTauTaNCdiscr"],
+}
+
+@_requires(args=['channel'])
+def _changeTauId(process, tau_id, **kwargs):
+    for selector in _tauIdChannelMap[kwargs['channel']]:
+        changeCut(process, selector, tau_id)
 
 # Map the above methods to user-friendly names
 _METHOD_MAP = {
@@ -319,6 +332,7 @@ _METHOD_MAP = {
     'saveFinalEvents' : _saveFinalEvents,
     'disableDuplicateCheck' : _disableDuplicateEvents,
     'processName' : _changeProcessName,
+    'changeTauId' : _changeTauId,
     'enableFakeRates' : _enableFakeRates
 }
 
