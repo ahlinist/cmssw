@@ -307,7 +307,7 @@ def enableFactorization_makeZtoMuTauPlots_grid2(
             'tight_analyzer' :
             'zMuTauAnalyzerSS_factorizedWithMuonIsolation',
         }
-    }	
+    }
 
     # Loop over the samples and create sequences
     # for each of the factorization jobs and add them to the factorization
@@ -1226,11 +1226,11 @@ def enableFactorization_runAHtoMuTau(process):
     )
     process.p.replace(process.selectAHtoMuTauEvents, process.selectAHtoMuTauEvents_factorized)
     process.load("TauAnalysis.Configuration.analyzeAHtoMuTau_factorized_cff")
-    process.analyzeAHtoMuTauEvents_factorized = cms.Sequence(
-        process.analyzeAHtoMuTauEvents_factorizedWithoutMuonIsolation
-       * process.analyzeAHtoMuTauEvents_factorizedWithMuonIsolation
+    process.analyzeAHtoMuTauSequence_factorized = cms.Sequence(
+        process.analyzeAHtoMuTauSequence_factorizedWithoutMuonIsolation
+       * process.analyzeAHtoMuTauSequence_factorizedWithMuonIsolation
     )
-    process.p.replace(process.analyzeAHtoMuTauEvents, process.analyzeAHtoMuTauEvents_factorized)
+    process.p.replace(process.analyzeAHtoMuTauSequence, process.analyzeAHtoMuTauSequence_factorized)
 
 def enableFactorization_makeAHtoMuTauPlots_grid2(
     process,
