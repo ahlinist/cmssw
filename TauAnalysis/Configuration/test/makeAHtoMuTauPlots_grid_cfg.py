@@ -20,7 +20,6 @@ from TauAnalysis.Configuration.tools.factorizationTools import \
 
 process = cms.Process('makeAHtoMuTauPlots')
 
-process.load("TauAnalysis.Configuration.dumpAHtoMuTau_grid_cff")
 
 channel = 'AHtoMuTau'
 reg.overrideJobId(channel, 'Run35SYS')
@@ -30,11 +29,19 @@ jobId = reg.getJobId(channel)
 plotsDirectory = './plots'
 outputFileNameMaker = lambda channel: 'plots%s_all.root' % channel
 
+# Update skim efficiency to correct for un-applied weights
+for sample, info in recoSampleDefinitionsAHtoMuTau_7TeV['RECO_SAMPLES'].iteritems():
+    if info['type'].lower().find('mc'):
+        print "Adding weight to", sample
+        print "old", info['skim_eff']
+        info['skim_eff'] = info['skim_eff']*(0.95*0.985)
+        print "new", info['skim_eff']
+
 # Check if we want to override what's in reco sample definitions
 if len(sys.argv) > 2:
     mode = sys.argv[2]
     print "Using plot mode: ", mode
-    plotsDirectory += "_" + mode
+    plotsDirectory += os.path.join(jobId, "_" + mode)
     if not os.path.exists(plotsDirectory):
         os.makedirs(plotsDirectory)
     print "Putting plots in", plotsDirectory
@@ -47,34 +54,32 @@ if len(sys.argv) > 2:
 
     if mode.lower() == 'sm':
         # Just do SM
-        recoSampleDefinitionsAHtoMuTau_7TeV['SAMPLES_TO_PRINT'][:] = []
         recoSampleDefinitionsAHtoMuTau_7TeV['SAMPLES_TO_PLOT'][:] = [
             'data',
-            'ZtautauSum'
             'TTplusJets',
             'Zmumu',
             'WplusJetsSum',
             'qcdSum',
+            'ZtautauSum',
         ]
-    elif mode.lower() == 'bsm':
+        recoSampleDefinitionsAHtoMuTau_7TeV['SAMPLES_TO_PRINT'][:] = \
+                recoSampleDefinitionsAHtoMuTau_7TeV['SAMPLES_TO_PLOT']
+    elif mode.lower() == 'bsmgg':
         recoSampleDefinitionsAHtoMuTau_7TeV['SAMPLES_TO_PLOT'][:] = []
-        recoSampleDefinitionsAHtoMuTau_7TeV['SAMPLES_TO_PRINT'][:] = []
-        map(recoSampleDefinitionsAHtoMuTau_7TeV['SAMPLES_TO_PRINT'].append,
-            ('A%sSum' % mass for mass in
-             ['90', '100', '130', '160', '200', '250', '350'])
-           )
-    elif mode.lower() == 'bsmsplit':
-        # Don't merge Higgs samples
-        recoSampleDefinitionsAHtoMuTau_7TeV['SAMPLES_TO_PLOT'][:] = []
-        recoSampleDefinitionsAHtoMuTau_7TeV['SAMPLES_TO_PRINT'][:] = []
-        map(recoSampleDefinitionsAHtoMuTau_7TeV['SAMPLES_TO_PRINT'].append,
+        map(recoSampleDefinitionsAHtoMuTau_7TeV['SAMPLES_TO_PLOT'].append,
             ('A%s' % mass for mass in
-             ['90', '100', '130', '160', '200', '250', '350'])
+             ['90', '100', '120', '130', '160', '180', '200', '250', '300', '350'])
            )
-        map(recoSampleDefinitionsAHtoMuTau_7TeV['SAMPLES_TO_PRINT'].append,
+        recoSampleDefinitionsAHtoMuTau_7TeV['SAMPLES_TO_PRINT'][:] = \
+                recoSampleDefinitionsAHtoMuTau_7TeV['SAMPLES_TO_PLOT']
+    elif mode.lower() == 'bsmbb':
+        recoSampleDefinitionsAHtoMuTau_7TeV['SAMPLES_TO_PLOT'][:] = []
+        map(recoSampleDefinitionsAHtoMuTau_7TeV['SAMPLES_TO_PLOT'].append,
             ('bbA%s' % mass for mass in
-             ['90', '100', '130', '160', '200', '250', '350'])
+             ['90', '100', '120', '130', '160', '180', '200', '250', '300', '350'])
            )
+        recoSampleDefinitionsAHtoMuTau_7TeV['SAMPLES_TO_PRINT'][:] = \
+                recoSampleDefinitionsAHtoMuTau_7TeV['SAMPLES_TO_PLOT']
 
     recoSampleDefinitionsAHtoMuTau_7TeV['FLATTENED_SAMPLES_TO_PLOT'] = \
             make_flattened_samples()
@@ -97,6 +102,8 @@ analyzer_draw_jobs = [
      drawJobConfigurator_AHtoMuTau_wBtagSS,
      "plotAHtoMuTauSS_wBtag_#PLOT#.pdf"  ],
 ]
+
+process.load("TauAnalysis.Configuration.dumpAHtoMuTau_grid_cff")
 
 makePlots(process, channel = channel,
           samples = recoSampleDefinitionsAHtoMuTau_7TeV,
