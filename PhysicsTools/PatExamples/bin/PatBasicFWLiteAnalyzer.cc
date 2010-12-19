@@ -47,7 +47,7 @@ int main(int argc, char* argv[])
   // now get each parameter
   std::vector<std::string> inputFiles_( cfg.getParameter<std::vector<std::string> >("fileNames") );
   std::string outputFile_( cfg.getParameter<std::string  >("outputFile" ) );
-  unsigned int reportAfter_( cfg.getParameter<unsigned int>("reportAfter") );
+  unsigned int reportAfter_( cfg.getParameter<unsigned int>("outputEvery") );
   int maxEvents_( cfg.getParameter<int>("maxEvents") );
   edm::InputTag muons_ ( cfg.getParameter<edm::InputTag>("muons"  ) );
 
