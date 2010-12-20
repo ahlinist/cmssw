@@ -8,7 +8,7 @@ import os
 import copy
 import glob
 
-overrideJobId('AHtoMuTau', 'Run26')
+overrideJobId('AHtoMuTau', 'Run33FR')
 
 channel = 'AHtoMuTau'
 configFile = 'runAHtoMuTau_cfg.py'
@@ -29,7 +29,7 @@ def local_sample_mapper(sample):
 
 # Define what output plot file name a sample will have.  We emulate the final
 # "harvested" results, but put it in the 'local' directory.
-def output_mapper(sample, label=''):
+def output_mapper(channel, sample, jobId, label=''):
     output_file = os.path.join(
         getHarvestingFilePath(channel),
         'local',
@@ -52,28 +52,7 @@ submitAnalysisToGrid(configFile = configFile, channel = 'AHtoMuTau',
                      # Options for local running
                      create=False, submit=False, cfgdir='local',
                      inputFileMap = local_sample_mapper,
-                     outputFileMap = lambda x: output_mapper(x, ''),
-                     processName = 'local',
-                     saveFinalEvents = False)
-
-# Make systematics jobs
-jobIdSys = jobId + "sys"
-samplesToAnalyze = [
-    sample for sample in recoSampleDefinitionsAHtoMuTau_7TeV['SAMPLES_TO_ANALYZE']
-    if recoSampleDefinitionsAHtoMuTau_7TeV['RECO_SAMPLES'][sample][
-        'enableSysUncertainties'] ]
-
-print "Building systematics"
-submitAnalysisToGrid(configFile = configFile, channel = 'AHtoMuTau',
-                     samples = recoSampleDefinitionsAHtoMuTau_7TeV,
-                     outputFilePath = analysisFilePath, jobId = jobIdSys,
-                     samplesToAnalyze = samplesToAnalyze,
-                     disableSysUncertainties = False,
-                     enableFakeRates = False,
-                     # Options for local running
-                     create=False, submit=False, cfgdir='local',
-                     inputFileMap = local_sample_mapper,
-                     outputFileMap = lambda x: output_mapper(x, 'sys'),
+                     outputFileMap = lambda x,y,z: output_mapper(x,y,z, ''),
                      processName = 'local',
                      saveFinalEvents = False)
 
@@ -101,7 +80,7 @@ submitAnalysisToGrid(configFile = configFile, channel = 'AHtoMuTau',
                      # Options for local running
                      create=False, submit=False, cfgdir='local',
                      inputFileMap = local_sample_mapper,
-                     outputFileMap = lambda x: output_mapper(x, 'fr'),
+                     outputFileMap = lambda x,y,z: output_mapper(x,y,z, ''),
                      processName = 'local',
                      saveFinalEvents = False)
 
