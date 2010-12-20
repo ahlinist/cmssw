@@ -18,9 +18,9 @@ std::string terminate_dqmDirectory(const std::string& dqmDirectory)
 {
   std::string dqmDirectory_terminated = dqmDirectory;
 
-//--- add tailing '/'
-  if ( dqmDirectory_terminated != "" && 
-       dqmDirectory_terminated.find_last_of(dqmSeparator) != (dqmDirectory_terminated.length() - 1) ) 
+  //--- add tailing '/'
+  if ( dqmDirectory_terminated != "" &&
+      dqmDirectory_terminated.find_last_of(dqmSeparator) != (dqmDirectory_terminated.length() - 1) )
     dqmDirectory_terminated.append(dqmSeparator);
 
   return dqmDirectory_terminated;
@@ -68,33 +68,33 @@ TH1* getHistogram(DQMStore& dqmStore, const std::string& meName, bool& dqmError)
   if ( me ) {
     int meType = me->kind();
     if ( meType == MonitorElement::DQM_KIND_TH1F      ||
-	 meType == MonitorElement::DQM_KIND_TH1S      ||
-	 meType == MonitorElement::DQM_KIND_TH2F      ||
-	 meType == MonitorElement::DQM_KIND_TH2S      ||
-	 meType == MonitorElement::DQM_KIND_TH3F      ||
-	 meType == MonitorElement::DQM_KIND_TPROFILE  ||
-	 meType == MonitorElement::DQM_KIND_TPROFILE2D ) {
+        meType == MonitorElement::DQM_KIND_TH1S      ||
+        meType == MonitorElement::DQM_KIND_TH2F      ||
+        meType == MonitorElement::DQM_KIND_TH2S      ||
+        meType == MonitorElement::DQM_KIND_TH3F      ||
+        meType == MonitorElement::DQM_KIND_TPROFILE  ||
+        meType == MonitorElement::DQM_KIND_TPROFILE2D ) {
       try {
-	histogram = me->getTH1();
+        histogram = me->getTH1();
       } catch ( cms::Exception& ex ) {
-	edm::LogError ("getHistogram") 
-	  << " Exception triggered when trying to access histogram associated to meName = " << meName << ","
-	  << " MonitorElement type = " << meType << ":" << ex.what() << " !!";
-	return histogram;
-      } 
+        edm::LogError ("getHistogram")
+            << " Exception triggered when trying to access histogram associated to meName = " << meName << ","
+            << " MonitorElement type = " << meType << ":" << ex.what() << " !!";
+        return histogram;
+      }
       if ( !histogram ) {
-        edm::LogError ("getHistogram") 
-  	  << " Failed to access histogram associated to meName = " << meName << " in DQMStore" << " --> skipping !!";
+        edm::LogError ("getHistogram")
+            << " Failed to access histogram associated to meName = " << meName << " in DQMStore" << " --> skipping !!";
         return histogram;
       }
 
       //std::cout << "meName = " << meName << ": integral = " << histogram->Integral() << std::endl;
-      
+
       if ( !histogram->GetSumw2N() ) histogram->Sumw2();
     } else {
       edm::LogError("getHistogram") << " MonitorElement name = " << meName << " is not of type histogram !!";
     }
-  } 
+  }
 
   return histogram;
 }
@@ -104,11 +104,11 @@ std::vector<TH1*> getHistograms(DQMStore& dqmStore, const std::vector<std::strin
   std::vector<TH1*> histograms;
 
   for ( std::vector<std::string>::const_iterator meName = meNames.begin();
-	meName != meNames.end(); ++meName ) {
+       meName != meNames.end(); ++meName ) {
     TH1* histogram = getHistogram(dqmStore, *meName, dqmError);
 
     if ( histogram ) histograms.push_back(histogram);
-  } 
+  }
 
   return histograms;
 }
@@ -125,7 +125,7 @@ double getValue(DQMStore& dqmStore, const std::string& meName_full, bool& error)
       error = true;
     }
   }
-  
+
   return -1.;
 }
 
@@ -135,15 +135,15 @@ double getValue(DQMStore& dqmStore, const std::string& meName_full, bool& error)
 
 std::string dqmDirectoryName(const std::string& directory)
 {
-//--- add leading '/'
+  //--- add leading '/'
   std::string dirName = dqmRootDirectory;
 
   dirName += directory;
 
-//--- add tailing '/'
+  //--- add tailing '/'
   dirName = terminate_dqmDirectory(dirName);
 
-//--- replace all instances of '//' by '/'
+  //--- replace all instances of '//' by '/'
   while ( dirName.find(dqmSeparator2) != std::string::npos ) {
     dirName.replace(dirName.find(dqmSeparator2), dqmSeparator2.length(), dqmSeparator);
   }
@@ -154,26 +154,26 @@ std::string dqmDirectoryName(const std::string& directory)
 std::string dqmDirectoryName_dqmRootDirectoryOmitted(const std::string& directory)
 {
   std::string dirName = dqmDirectoryName(directory);
-  
-  if ( dqmRootDirectory != "" && dirName.find(dqmRootDirectory) == 0 ) 
+
+  if ( dqmRootDirectory != "" && dirName.find(dqmRootDirectory) == 0 )
     dirName = std::string(dirName, dqmRootDirectory.length());
 
   return dirName;
 }
 
 std::string dqmSubDirectoryName(const std::string& directory, const std::string& subdirectory)
-{ 
+{
   std::string subDirName = subdirectory;
 
-//--- remove characters specifying directory part from name of subdirectory
+  //--- remove characters specifying directory part from name of subdirectory
   if ( subDirName.find(directory) <= 1 ) subDirName.replace(subDirName.find(directory), directory.length(), "");
 
-//--- remove tailing '/'s
+  //--- remove tailing '/'s
   while ( subDirName.find(dqmSeparator) == 0 ) {
     subDirName.replace(subDirName.find(dqmSeparator), dqmSeparator.length(), "");
   }
 
-//--- replace all instances of '//' by '/'
+  //--- replace all instances of '//' by '/'
   while ( subDirName.find(dqmSeparator2) != std::string::npos ) {
     subDirName.replace(subDirName.find(dqmSeparator2), dqmSeparator2.length(), dqmSeparator);
   }
@@ -188,19 +188,19 @@ std::string dqmSubDirectoryName(const std::string& directory, const std::string&
 void dqmCheckExistence(DQMStore& dqmStore, const std::string& directoryName, const std::string& meName, int mode, int& errorFlag)
 {
   MonitorElement* meOutput = dqmStore.get(dqmDirectoryName(directoryName).append(meName));
- 
+
   if ( meOutput ) {
     switch ( mode ) {
-    case 1: // print error message 
-      edm::LogError ("dqmCheckExistence") 
-	<< " meName = " << meName << " already exists in directoryName = " << directoryName << " --> skipping !!";
-      errorFlag = 1;
-      break;
-    case 2:
-      break;
-    default:
-      edm::LogError ("dqmCheckExistence") << " Undefined mode = " << mode << " !!";
-      errorFlag = 1;
+      case 1: // print error message
+        edm::LogError ("dqmCheckExistence")
+            << " meName = " << meName << " already exists in directoryName = " << directoryName << " --> skipping !!";
+        errorFlag = 1;
+        break;
+      case 2:
+        break;
+      default:
+        edm::LogError ("dqmCheckExistence") << " Undefined mode = " << mode << " !!";
+        errorFlag = 1;
     }
   }
 }
@@ -211,7 +211,7 @@ void dqmRegisterHistogram(DQMStore& dqmStore, TH1* histogram, const std::string&
   separateMonitorElementFromDirectoryName(meName_full, meName, dqmDirectory);
   if ( dqmDirectory != "" ) dqmStore.setCurrentFolder(dqmDirectory);
 
-  histogram->SetName(histogram->GetName());  
+  histogram->SetName(histogram->GetName());
   if ( TH1F* h = dynamic_cast<TH1F*>(histogram) ) {
     dqmStore.book1D(meName, h);
   } else if ( TH1S* h = dynamic_cast<TH1S*>(histogram) ) {
@@ -226,11 +226,15 @@ void dqmRegisterHistogram(DQMStore& dqmStore, TH1* histogram, const std::string&
     dqmStore.bookProfile(meName, h);
   } else if ( TProfile2D* h = dynamic_cast<TProfile2D*>(histogram) ) {
     dqmStore.bookProfile2D(meName, h);
+  } else {
+    edm::LogError("BadDQMType") << " DQM register histogram can't figure out "
+        " the type of " << meName_full;
+    throw cms::Exception("BadDQMType");
   }
 }
 
 void dqmRegisterFloat(DQMStore& dqmStore, double meValue, const std::string& meName_full)
-{ 
+{
   std::string meName, dqmDirectory;
   separateMonitorElementFromDirectoryName(meName_full, meName, dqmDirectory);
   if ( dqmDirectory != "" ) dqmStore.setCurrentFolder(dqmDirectory);
@@ -247,20 +251,20 @@ double getPower_general(const std::string& meName, const std::string& arg, doubl
 
   if ( posStart != std::string::npos ) {
     posStart += arg_full.length();
-    
+
     unsigned posEnd = meName.find(std::string(meOptionsSeparator), posStart);
-    
+
     std::string power_string = ( posEnd != std::string::npos ) ?
-      std::string(meName, posStart, posEnd - posStart) : std::string(meName, posStart);
-    
-    //std::cout << "meName = " << meName << ": power_string = " << power_string << std::endl; 
-    
+        std::string(meName, posStart, posEnd - posStart) : std::string(meName, posStart);
+
+    //std::cout << "meName = " << meName << ": power_string = " << power_string << std::endl;
+
     return atof(power_string.data());
   }
 
-  edm::LogWarning ("getPower_general") 
-    << " Failed to decode power for argument " << arg << " in meName = " << meName
-    <<  " --> returning default value = " << defaultValue << " !!";
+  edm::LogWarning ("getPower_general")
+      << " Failed to decode power for argument " << arg << " in meName = " << meName
+      <<  " --> returning default value = " << defaultValue << " !!";
   return defaultValue;
 }
 
@@ -275,8 +279,8 @@ double getPower_add(const std::string& meName)
 }
 
 void dqmCopyMonitorElement(DQMStore& dqmStore, const std::string& inputDirectory, const std::string& meName_input,
-			   const std::string& outputDirectory, const std::string& meName_output, 
-			   double scaleFactor, double scaleFactorErr, int mode)
+                           const std::string& outputDirectory, const std::string& meName_output,
+                           double scaleFactor, double scaleFactorErr, int mode)
 {
   //std::cout << "<dqmCopyMonitorElement>:" << std::endl;
   //std::cout << " inputDirectory = " << inputDirectory << std::endl;
@@ -291,12 +295,12 @@ void dqmCopyMonitorElement(DQMStore& dqmStore, const std::string& inputDirectory
   MonitorElement* meInput = dqmStore.get(meName_full);
   //std::cout << " meInput = " << meInput << std::endl;
   if ( !meInput ) {
-    edm::LogError ("dqmCopyMonitorElement") 
-      << " Failed to access meName = " << meName_input << " in DQMStore" << " --> skipping !!";
+    edm::LogError ("dqmCopyMonitorElement")
+        << " Failed to access meName = " << meName_input << " in DQMStore" << " --> skipping !!";
     return;
   }
-      
-  //-----------------------------------------------------begin of TauAnalysis specific code 
+
+  //-----------------------------------------------------begin of TauAnalysis specific code
   //
   // WARNING: the following code is handles MonitorElements of different type differently;
   //          the handling is specific to the TauAnalysis !!
@@ -305,106 +309,106 @@ void dqmCopyMonitorElement(DQMStore& dqmStore, const std::string& inputDirectory
   //           o strings are simply copied from input to output
   //             (strings are used to encode run + event numbers in the TauAnalysis)
   //           o integer numbers are added
-  //             (integer numbers are used in the TauAnalysis to count the number 
+  //             (integer numbers are used in the TauAnalysis to count the number
   //              of **unweighted** events passing different stages in the event selection)
   //           o real numbers are scaled then added
-  //             (real numbers are used in the TauAnalysis to count the number 
+  //             (real numbers are used in the TauAnalysis to count the number
   //              of **weighted** events passing different stages in the event selection)
   //
-      
-//--- skip "invalid" MonitorElements
+
+  //--- skip "invalid" MonitorElements
   if ( meInput->kind() == MonitorElement::DQM_KIND_INVALID ) {
-    edm::LogWarning ("dqmCopyMonitorElement") 
-      << " MonitorElement meName = " << meName_full << " marked as invalid" << " --> skipping !!";
+    edm::LogWarning ("dqmCopyMonitorElement")
+        << " MonitorElement meName = " << meName_full << " marked as invalid" << " --> skipping !!";
     return;
   }
-  
+
   int meType = meInput->kind();
   if ( meType == MonitorElement::DQM_KIND_TH1F      ||
-       meType == MonitorElement::DQM_KIND_TH1S      ||
-       meType == MonitorElement::DQM_KIND_TH2F      ||
-       meType == MonitorElement::DQM_KIND_TH2S      ||
-       meType == MonitorElement::DQM_KIND_TH3F      ||
-       meType == MonitorElement::DQM_KIND_TPROFILE  ||
-       meType == MonitorElement::DQM_KIND_TPROFILE2D ) {
+      meType == MonitorElement::DQM_KIND_TH1S      ||
+      meType == MonitorElement::DQM_KIND_TH2F      ||
+      meType == MonitorElement::DQM_KIND_TH2S      ||
+      meType == MonitorElement::DQM_KIND_TH3F      ||
+      meType == MonitorElement::DQM_KIND_TPROFILE  ||
+      meType == MonitorElement::DQM_KIND_TPROFILE2D ) {
     TH1* histogram = 0;
     try {
       histogram = meInput->getTH1();
     } catch ( cms::Exception& ex ) {
-      edm::LogError ("dqmCopyMonitorElement") 
-	<< " Exception triggered when trying to access histogram associated to meName = " << meName_full << ","
-	<< " MonitorElement type = " << meType << ":" << ex.what() << " !!";
+      edm::LogError ("dqmCopyMonitorElement")
+          << " Exception triggered when trying to access histogram associated to meName = " << meName_full << ","
+          << " MonitorElement type = " << meType << ":" << ex.what() << " !!";
       return;
     }
     if ( !histogram ) {
-      edm::LogError ("dqmCopyMonitorElement") 
-	<< " Failed to access histogram associated to meName = " << meName_full << " in DQMStore" << " --> skipping !!";
+      edm::LogError ("dqmCopyMonitorElement")
+          << " Failed to access histogram associated to meName = " << meName_full << " in DQMStore" << " --> skipping !!";
       return;
     }
-	
+
     std::auto_ptr<TH1> clone(dynamic_cast<TH1*>(histogram->Clone()));
 
-//--- do not scale profile histograms
-//    (as their y-axis represents average values of observables,
-//     **not** number of events)
+    //--- do not scale profile histograms
+    //    (as their y-axis represents average values of observables,
+    //     **not** number of events)
     if ( !(meType == MonitorElement::DQM_KIND_TPROFILE   ||
-	   meType == MonitorElement::DQM_KIND_TPROFILE2D) ) {
+           meType == MonitorElement::DQM_KIND_TPROFILE2D) ) {
       if ( scaleFactorErr > 0. ) {
-	unsigned numBinsX = clone->GetNbinsX();
-	for ( unsigned iBinX = 1; iBinX <= numBinsX; ++iBinX ) {
-	  unsigned numBinsY = clone->GetNbinsY();
-	  for ( unsigned iBinY = 1; iBinY <= numBinsY; ++iBinY ) {
-	    unsigned numBinsZ = clone->GetNbinsZ();
-	    for ( unsigned iBinZ = 1; iBinZ <= numBinsZ; ++iBinZ ) {
-	      double binContent = clone->GetBinContent(iBinX, iBinY, iBinZ);
-	      double binError = clone->GetBinError(iBinX, iBinY, iBinZ);
-	      
-	      clone->SetBinContent(iBinX, iBinY, iBinZ, scaleFactor*binContent);
-	      clone->SetBinError(iBinX, iBinY, iBinZ, 
-				 TMath::Sqrt(TMath::Power(scaleFactor*binError, 2) + TMath::Power(scaleFactorErr*binContent, 2)));
-	    }
-	  }
-	}
+        unsigned numBinsX = clone->GetNbinsX();
+        for ( unsigned iBinX = 1; iBinX <= numBinsX; ++iBinX ) {
+          unsigned numBinsY = clone->GetNbinsY();
+          for ( unsigned iBinY = 1; iBinY <= numBinsY; ++iBinY ) {
+            unsigned numBinsZ = clone->GetNbinsZ();
+            for ( unsigned iBinZ = 1; iBinZ <= numBinsZ; ++iBinZ ) {
+              double binContent = clone->GetBinContent(iBinX, iBinY, iBinZ);
+              double binError = clone->GetBinError(iBinX, iBinY, iBinZ);
+
+              clone->SetBinContent(iBinX, iBinY, iBinZ, scaleFactor*binContent);
+              clone->SetBinError(iBinX, iBinY, iBinZ,
+                                 TMath::Sqrt(TMath::Power(scaleFactor*binError, 2) + TMath::Power(scaleFactorErr*binContent, 2)));
+            }
+          }
+        }
       } else {
-	clone->Scale(scaleFactor);
+        clone->Scale(scaleFactor);
       }
     }
-	
+
     dqmStore.setCurrentFolder(outputDirectory);
-	
-//--- check if output MonitorElement already exists
+
+    //--- check if output MonitorElement already exists
     int error = 0;
     dqmCheckExistence(dqmStore, outputDirectory, meName_output, mode, error);
     if ( error ) return;
-	
+
     std::string meNameOutput_full = dqmDirectoryName(outputDirectory).append(meName_output);
     MonitorElement* meOutput = dqmStore.get(meNameOutput_full);
     if ( meOutput ) {
-//--- add histogram to outputHistogram
+      //--- add histogram to outputHistogram
       //std::cout << "--> adding to existing histogram." << std::endl;
       try {
         meOutput->getTH1()->Add(clone.get());
       } catch ( cms::Exception& ex ) {
-        edm::LogError ("dqmCopyMonitorElement") 
-	  << " Exception triggered when trying to add histogram associated to meName = " << meName_full
-          << " to existing histogram associated to meName = " << meNameOutput_full << ":" << ex.what() << " !!";
-	return;
+        edm::LogError ("dqmCopyMonitorElement")
+            << " Exception triggered when trying to add histogram associated to meName = " << meName_full
+            << " to existing histogram associated to meName = " << meNameOutput_full << ":" << ex.what() << " !!";
+        return;
       }
     } else {
-//--- create new outputHistogram
+      //--- create new outputHistogram
       //std::cout << "--> registering as new histogram." << std::endl;
       dqmRegisterHistogram(dqmStore, clone.release(), meNameOutput_full);
     }
   } else if ( meType == MonitorElement::DQM_KIND_INT ) {
     int intValue = meInput->getIntValue();
-    
+
     dqmStore.setCurrentFolder(outputDirectory);
-	
-//--- check if output MonitorElement already exists
+
+    //--- check if output MonitorElement already exists
     int error = 0;
     dqmCheckExistence(dqmStore, outputDirectory, meName_output, mode, error);
     if ( error ) return;
-    
+
     MonitorElement* meOutput = dqmStore.get(dqmDirectoryName(outputDirectory).append(meName_output));
     if ( meOutput ) {
       int intSum = meOutput->getIntValue();
@@ -419,14 +423,14 @@ void dqmCopyMonitorElement(DQMStore& dqmStore, const std::string& inputDirectory
     double power_scale = getPower_scale(meName_input);
     //std::cout << "power_scale = " << power_scale << std::endl;
     realValue *= TMath::Power(scaleFactor, power_scale);
-    
+
     dqmStore.setCurrentFolder(outputDirectory);
 
-//--- check if output MonitorElement already exists
+    //--- check if output MonitorElement already exists
     int error = 0;
     dqmCheckExistence(dqmStore, outputDirectory, meName_output, mode, error);
     if ( error ) return;
-    
+
     MonitorElement* meOutput = dqmStore.get(dqmDirectoryName(outputDirectory).append(meName_output));
     if ( meOutput ) {
       double power_add = getPower_add(meName_input);
@@ -440,28 +444,28 @@ void dqmCopyMonitorElement(DQMStore& dqmStore, const std::string& inputDirectory
     }
   } else if ( meType == MonitorElement::DQM_KIND_STRING ) {
     std::string stringValue = meInput->getStringValue();
-    
+
     dqmStore.setCurrentFolder(outputDirectory);
 
-//--- check if output MonitorElement already exists
+    //--- check if output MonitorElement already exists
     int error = 0;
     dqmCheckExistence(dqmStore, outputDirectory, meName_output, mode, error);
     if ( error ) return;
-    
+
     //std::cout << " --> calling DQMStore::bookString" << std::endl;
     dqmStore.bookString(meName_output, stringValue);
   } else {
-    edm::LogError ("dqmCopyMonitorElement") 
-      << " MonitorElement meName = " << meName_input << " of unknown type" << " --> skipping !!";
+    edm::LogError ("dqmCopyMonitorElement")
+        << " MonitorElement meName = " << meName_input << " of unknown type" << " --> skipping !!";
     return;
   }
   //
-  //-------------------------------------------------------end of TauAnalysis specific code 
+  //-------------------------------------------------------end of TauAnalysis specific code
 }
 
-void dqmCopyRecursively(DQMStore& dqmStore, const std::string& inputDirectory, const std::string& outputDirectory, 
-			double scaleFactor, double scaleFactorErr, int mode, 
-			bool rmInputDirectory, std::vector<outputCommandEntry>* outputCommands)
+void dqmCopyRecursively(DQMStore& dqmStore, const std::string& inputDirectory, const std::string& outputDirectory,
+                        double scaleFactor, double scaleFactorErr, int mode,
+                        bool rmInputDirectory, std::vector<outputCommandEntry>* outputCommands)
 {
   //std::cout << "<dqmCopyRecursively>:" << std::endl;
   //std::cout << " inputDirectory = " << inputDirectory << std::endl;
@@ -472,59 +476,59 @@ void dqmCopyRecursively(DQMStore& dqmStore, const std::string& inputDirectory, c
 
   dqmStore.setCurrentFolder(inputDirectory);
 
-//--- check if current inputDirectory is to be kept or dropped
+  //--- check if current inputDirectory is to be kept or dropped
   bool copyMonitorElements = true;
   if ( outputCommands ) {
     TString outputDirectory_tstring = outputDirectory.data();
 
     for ( std::vector<outputCommandEntry>::iterator outputCommand = outputCommands->begin();
-	  outputCommand != outputCommands->end(); ++outputCommand ) {
+         outputCommand != outputCommands->end(); ++outputCommand ) {
       int statement = outputCommand->first;
       //std::cout << " statement = " << statement << std::endl;
 
       TPRegexp& dqmDirectory_regexp = outputCommand->second;
       //std::cout << " dqmDirectory_regexp = " << dqmDirectory_regexp.GetPattern() << std::endl;
 
-      //std::cout << "--> dqmDirectory_regexp.Match(outputDirectory_tstring) = " 
+      //std::cout << "--> dqmDirectory_regexp.Match(outputDirectory_tstring) = "
       //          << dqmDirectory_regexp.Match(outputDirectory_tstring) << std::endl;
 
       if ( dqmDirectory_regexp.Match(outputDirectory_tstring) == 1 ) {
-	if ( statement == kKeep ) copyMonitorElements = true;
-	if ( statement == kDrop ) copyMonitorElements = false;
+        if ( statement == kKeep ) copyMonitorElements = true;
+        if ( statement == kDrop ) copyMonitorElements = false;
       }
     }
   }
 
-//--- copy all monitor elements in current inputDirectory to the outputDirectory
+  //--- copy all monitor elements in current inputDirectory to the outputDirectory
   bool meInput_copied = false;
-  if ( copyMonitorElements ) {    
+  if ( copyMonitorElements ) {
     dqmStore.setCurrentFolder(inputDirectory);
     std::vector<std::string> meNames = dqmStore.getMEs();
     //std::cout << " #meNames = " << meNames.size() << std::endl;
     for ( std::vector<std::string>::const_iterator meName = meNames.begin();
-	  meName != meNames.end(); ++meName ) {
+         meName != meNames.end(); ++meName ) {
       dqmCopyMonitorElement(dqmStore, inputDirectory, *meName, outputDirectory, *meName, scaleFactor, scaleFactorErr, mode);
       meInput_copied = true;
     }
   }
 
-//--- call function recursively for all sub-directories
+  //--- call function recursively for all sub-directories
   dqmStore.setCurrentFolder(inputDirectory);
   std::vector<std::string> dirNames = dqmStore.getSubdirs();
   for ( std::vector<std::string>::const_iterator dirName = dirNames.begin();
-	dirName != dirNames.end(); ++dirName ) {
+       dirName != dirNames.end(); ++dirName ) {
     std::string subDirName = dqmSubDirectoryName(inputDirectory, *dirName);
 
     std::string inputDirName_full = terminate_dqmDirectory(inputDirectory).append(subDirName);
     std::string outputDirName_full = dqmDirectoryName(outputDirectory).append(subDirName);
 
-    dqmCopyRecursively(dqmStore, inputDirName_full, outputDirName_full, 
-		       scaleFactor, scaleFactorErr, mode, rmInputDirectory, outputCommands);
+    dqmCopyRecursively(dqmStore, inputDirName_full, outputDirName_full,
+                       scaleFactor, scaleFactorErr, mode, rmInputDirectory, outputCommands);
   }
 
-//--- delete inputDirectory 
-//    (if requested to do so and inputDirectory is **not empty**;
-//     otherwise, common parent directories of inputDirectory and outputDirectory might get deleted !!)
+  //--- delete inputDirectory
+  //    (if requested to do so and inputDirectory is **not empty**;
+  //     otherwise, common parent directories of inputDirectory and outputDirectory might get deleted !!)
   //std::cout << "--> meInput_copied = " << meInput_copied << std::endl;
   if ( rmInputDirectory && meInput_copied ) dqmStore.rmdir(inputDirectory);
 }
@@ -542,41 +546,41 @@ void printMonitorElementValue(MonitorElement* me, std::ostream& stream)
     stream << me->getFloatValue();
   } else if ( meType == MonitorElement::DQM_KIND_STRING ) {
     stream << me->getStringValue();
-  } 
+  }
 }
 
-void dqmDumpMonitorElement(DQMStore& dqmStore, const std::string& meName, const std::string& meName_err, 
-			   const std::string& label, std::ostream& stream)
+void dqmDumpMonitorElement(DQMStore& dqmStore, const std::string& meName, const std::string& meName_err,
+                           const std::string& label, std::ostream& stream)
 {
   MonitorElement* me = dqmStore.get(meName);
   MonitorElement* me_err = ( meName_err != "" ) ? dqmStore.get(meName_err) : 0;
 
   if ( !me ) {
-    edm::LogError ("dqmDumpMonitorElement") 
-      << " Failed to retrieve MonitorElement " << meName << " from dqmStore !!";
+    edm::LogError ("dqmDumpMonitorElement")
+        << " Failed to retrieve MonitorElement " << meName << " from dqmStore !!";
     return;
   }
 
   int meType = me->kind();
   if ( meType == MonitorElement::DQM_KIND_TH1F      ||
-       meType == MonitorElement::DQM_KIND_TH1S      ||
-       meType == MonitorElement::DQM_KIND_TH2F      ||
-       meType == MonitorElement::DQM_KIND_TH2S      ||
-       meType == MonitorElement::DQM_KIND_TH3F      ||
-       meType == MonitorElement::DQM_KIND_TPROFILE  ||
-       meType == MonitorElement::DQM_KIND_TPROFILE2D ) {
+      meType == MonitorElement::DQM_KIND_TH1S      ||
+      meType == MonitorElement::DQM_KIND_TH2F      ||
+      meType == MonitorElement::DQM_KIND_TH2S      ||
+      meType == MonitorElement::DQM_KIND_TH3F      ||
+      meType == MonitorElement::DQM_KIND_TPROFILE  ||
+      meType == MonitorElement::DQM_KIND_TPROFILE2D ) {
     TH1* histogram = 0;
     try {
       histogram = me->getTH1();
     } catch ( cms::Exception& ex ) {
-      edm::LogError ("dqmDumpMonitorElement") 
-	<< " Exception triggered when trying to access histogram associated to meName = " << meName << ","
-	<< " MonitorElement type = " << meType << ":" << ex.what() << " !!";
+      edm::LogError ("dqmDumpMonitorElement")
+          << " Exception triggered when trying to access histogram associated to meName = " << meName << ","
+          << " MonitorElement type = " << meType << ":" << ex.what() << " !!";
       return;
     }
     if ( !histogram ) {
-      edm::LogError ("dqmDumpMonitorElement") 
-	<< " Failed to access histogram associated to meName = " << meName << " in DQMStore" << " --> skipping !!";
+      edm::LogError ("dqmDumpMonitorElement")
+          << " Failed to access histogram associated to meName = " << meName << " in DQMStore" << " --> skipping !!";
       return;
     }
 
@@ -586,17 +590,17 @@ void dqmDumpMonitorElement(DQMStore& dqmStore, const std::string& meName, const 
     for ( unsigned iBinX = 1; iBinX <= numBinsX; ++iBinX ) {
       unsigned numBinsY = histogram->GetNbinsY();
       for ( unsigned iBinY = 1; iBinY <= numBinsY; ++iBinY ) {
-	unsigned numBinsZ = histogram->GetNbinsZ();
-	for ( unsigned iBinZ = 1; iBinZ <= numBinsZ; ++iBinZ ) {
-	  stream << "  binX = " << iBinX;
-	  if ( histogram->GetNbinsY() > 1 ) stream << ", binY = " << iBinY;
-	  if ( histogram->GetNbinsZ() > 1 ) stream << ", binZ = " << iBinZ;
-	  stream << " (x = " << histogram->GetXaxis()->GetBinCenter(iBinX);
-	  if ( histogram->GetNbinsY() > 1 ) stream << ", y = " << histogram->GetYaxis()->GetBinCenter(iBinY);
-	  if ( histogram->GetNbinsZ() > 1 ) stream << ", z = " << histogram->GetZaxis()->GetBinCenter(iBinZ);
-	  stream << "): " << histogram->GetBinContent(iBinX, iBinY, iBinZ) 
-		 << " +/- " << histogram->GetBinError(iBinX, iBinY, iBinZ) << std::endl;
-	}
+        unsigned numBinsZ = histogram->GetNbinsZ();
+        for ( unsigned iBinZ = 1; iBinZ <= numBinsZ; ++iBinZ ) {
+          stream << "  binX = " << iBinX;
+          if ( histogram->GetNbinsY() > 1 ) stream << ", binY = " << iBinY;
+          if ( histogram->GetNbinsZ() > 1 ) stream << ", binZ = " << iBinZ;
+          stream << " (x = " << histogram->GetXaxis()->GetBinCenter(iBinX);
+          if ( histogram->GetNbinsY() > 1 ) stream << ", y = " << histogram->GetYaxis()->GetBinCenter(iBinY);
+          if ( histogram->GetNbinsZ() > 1 ) stream << ", z = " << histogram->GetZaxis()->GetBinCenter(iBinZ);
+          stream << "): " << histogram->GetBinContent(iBinX, iBinY, iBinZ)
+                             << " +/- " << histogram->GetBinError(iBinX, iBinY, iBinZ) << std::endl;
+        }
       }
     }
   } else if ( meType == MonitorElement::DQM_KIND_INT ) {
@@ -626,15 +630,15 @@ void separateMonitorElementFromDirectoryName(const std::string& meName_full, std
 {
   std::string tempName = meName_full;
 
-//--- remove DQM root directory from histogram name
+  //--- remove DQM root directory from histogram name
   std::string::size_type dqmRootDirectoryPos = tempName.find(dqmRootDirectory);
-  if ( dqmRootDirectoryPos != std::string::npos ) {  
-    tempName.replace(dqmRootDirectoryPos, dqmRootDirectory.size(), "");  
-  }  
- 
-//--- extract directory from histogram name
+  if ( dqmRootDirectoryPos != std::string::npos ) {
+    tempName.replace(dqmRootDirectoryPos, dqmRootDirectory.size(), "");
+  }
+
+  //--- extract directory from histogram name
   std::string::size_type lastPos;
-  std::string::size_type nextPos = tempName.find(dqmSeparator);  
+  std::string::size_type nextPos = tempName.find(dqmSeparator);
   do {
     lastPos = nextPos;
     nextPos = tempName.find(dqmSeparator, lastPos + 1);
