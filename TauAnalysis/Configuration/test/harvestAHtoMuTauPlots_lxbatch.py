@@ -13,7 +13,8 @@ import os
 
 channel = 'AHtoMuTau'
 
-reg.overrideJobId(channel, 'Run33')
+#reg.overrideJobId(channel, 'Run35SYS')
+reg.overrideJobId(channel, 'Run35test')
 analysisFilePath = reg.getAnalysisFilePath(channel)
 harvestingFilePath = reg.getHarvestingFilePath(channel)
 jobId = reg.getJobId(channel)
