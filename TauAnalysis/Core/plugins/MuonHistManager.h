@@ -1,4 +1,4 @@
-#ifndef TauAnalysis_Core_MuonHistManager_h  
+#ifndef TauAnalysis_Core_MuonHistManager_h
 #define TauAnalysis_Core_MuonHistManager_h
 
 #include "FWCore/Framework/interface/Event.h"
@@ -15,14 +15,14 @@
 #include <vector>
 #include <string>
 
-class MuonHistManager : public HistManagerBase 
+class MuonHistManager : public HistManagerBase
 {
- public:  
+ public:
   explicit MuonHistManager(const edm::ParameterSet&);
   ~MuonHistManager();
-  
+
  private:
-//--- histogram booking and filling functions 
+//--- histogram booking and filling functions
 //    inherited from HistManagerBase class
   void bookHistogramsImp();
   void fillHistogramsImp(const edm::Event&, const edm::EventSetup&, double);
@@ -79,6 +79,11 @@ class MuonHistManager : public HistManagerBase
   MonitorElement* hMuonWeightNegLog_;
   MonitorElement* hMuonWeightZero_;
   MonitorElement* hMuonWeightLinear_;
+
+  MonitorElement* hGenTauPt_;
+  MonitorElement* hGenTauEta_;
+  MonitorElement* hGenTauPhi_;
+  MonitorElement* hGenTauX_;
 
   MonitorElement* hGenMuonPt_;
   MonitorElement* hGenMuonEta_;
@@ -152,8 +157,8 @@ class MuonHistManager : public HistManagerBase
   reco::isodeposit::AbsVetos muonHcalIsoParam_;
 
 //--- IsoDeposits reconstructed from Partcile Flow
-  MonitorElement* hMuonParticleFlowIsoPt_;  
-  MonitorElement* hMuonParticleFlowIsoPtRel_;  
+  MonitorElement* hMuonParticleFlowIsoPt_;
+  MonitorElement* hMuonParticleFlowIsoPtRel_;
   MonitorElement* hMuonPFChargedHadronIsoPt_;
   MonitorElement* hMuonPFChargedHadronIsoPtRel_;
   MonitorElement* hMuonPFNeutralHadronIsoPt_;
@@ -161,8 +166,8 @@ class MuonHistManager : public HistManagerBase
   MonitorElement* hMuonPFGammaIsoPt_;
   MonitorElement* hMuonPFGammaIsoPtRel_;
 
-  MonitorElement* hMuonPFCombIsoPt_; 
-  MonitorElement* hMuonPFCombIsoPtRel_;  
+  MonitorElement* hMuonPFCombIsoPt_;
+  MonitorElement* hMuonPFCombIsoPtRel_;
 
   MonitorElement* hMuonPFChargedHadronIsoPtCtrl_;
   MonitorElement* hMuonPFGammaIsoPtCtrl_;
@@ -175,6 +180,6 @@ class MuonHistManager : public HistManagerBase
   reco::isodeposit::AbsVetos muonParticleFlowIsoParam_;
 };
 
-#endif  
+#endif
 
 
