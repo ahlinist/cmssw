@@ -76,6 +76,51 @@ bgEstFakeRateJetWeights = cms.EDProducer(
                     tauJetDiscrSource = cms.InputTag("ewkTauId")
                 )
             )
+        ),
+        # MC fake rate sources
+        qcdMuEnrichedMC = cms.PSet(
+            tauJetDiscriminators = cms.VPSet(
+                cms.PSet(
+                    tauJetIdEffSource = cms.InputTag(config.frproducer_name(
+                        config.PRODUCER, 'ZTTsim')),
+                    qcdJetFakeRateSource = cms.InputTag(config.frproducer_name(
+                        config.PRODUCER, 'ppMuXSim')),
+                    tauJetDiscrSource = cms.InputTag("ewkTauId")
+                )
+            )
+        ),
+        qcdDiJetLeadJetMC = cms.PSet(
+            tauJetDiscriminators = cms.VPSet(
+                cms.PSet(
+                    tauJetIdEffSource = cms.InputTag(config.frproducer_name(
+                        config.PRODUCER, 'ZTTsim')),
+                    qcdJetFakeRateSource = cms.InputTag(config.frproducer_name(
+                        config.PRODUCER, 'DiJetHighPtSim')),
+                    tauJetDiscrSource = cms.InputTag("ewkTauId")
+                )
+            )
+        ),
+        qcdDiJetSecondLeadJetMC = cms.PSet(
+            tauJetDiscriminators = cms.VPSet(
+                cms.PSet(
+                    tauJetIdEffSource = cms.InputTag(config.frproducer_name(
+                        config.PRODUCER, 'ZTTsim')),
+                    qcdJetFakeRateSource = cms.InputTag(config.frproducer_name(
+                        config.PRODUCER, 'DiJetSecondPtSim')),
+                    tauJetDiscrSource = cms.InputTag("ewkTauId")
+                )
+            )
+        ),
+        WplusJetsMC = cms.PSet(
+            tauJetDiscriminators = cms.VPSet(
+                cms.PSet(
+                    tauJetIdEffSource = cms.InputTag(config.frproducer_name(
+                        config.PRODUCER, 'ZTTsim')),
+                    qcdJetFakeRateSource = cms.InputTag(config.frproducer_name(
+                        config.PRODUCER, 'WplusJetsSim')),
+                    tauJetDiscrSource = cms.InputTag("ewkTauId")
+                )
+            )
         )
         #gammaPlusJets
     ),

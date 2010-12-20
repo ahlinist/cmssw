@@ -1,5 +1,6 @@
 import FWCore.ParameterSet.Config as cms
 import copy
+import os
 
 from TauAnalysis.DQMTools.tools.composeSubDirectoryName import composeSubDirectoryName
 
@@ -31,7 +32,7 @@ class drawFakeRateHistConfigurator(cms._ParameterTypeBase):
         self.dqmSubDirectories_process[process] = dqmSubDirectory_process.value()
 
     def addPlots(self, afterCut = None, beforeCut = None, plot = None, plots = None):
-        
+
         # check validity of parameters passed as function arguments
         if self.template is None:
             raise ValueError("Invalid 'template' Parameter !!")
@@ -61,17 +62,19 @@ class drawFakeRateHistConfigurator(cms._ParameterTypeBase):
                 plot_configEntry = self.plots_configEntry[iPlot]
 
                 drawJobConfig_plots = []
-                
+
                 for frType in self.frTypes:
                     drawJobConfig_plot = cms.PSet()
-    
+
                     dqmDirectory = self.dqmDirectories[frType]
                     dqmDirectory = dqmDirectory.replace("#PROCESSDIR#", dqmSubDirectory_process)
                     afterCut = self.plots_afterCut[iPlot]
                     beforeCut = self.plots_beforeCut[iPlot]
                     dqmDirectory += '/' + composeSubDirectoryName(afterCut = afterCut, beforeCut = beforeCut)
 
-                    meName_full = dqmDirectory + '/' + getattr(plot_configEntry, "meName")
+                    meName_full = os.path.normpath(
+                        dqmDirectory + '/' +
+                        getattr(plot_configEntry, "meName"))
 
                     setattr(drawJobConfig_plot, "process", cms.string(frType))
                     setattr(drawJobConfig_plot, "dqmMonitorElements", cms.vstring(meName_full))
@@ -80,7 +83,7 @@ class drawFakeRateHistConfigurator(cms._ParameterTypeBase):
 
                     drawJobConfig_plots.append(drawJobConfig_plot)
 
-                drawJob = copy.deepcopy(self.template)               
+                drawJob = copy.deepcopy(self.template)
                 setattr(drawJob, "plots", cms.VPSet(drawJobConfig_plots))
                 if hasattr(plot_configEntry, "title"):
                     title = getattr(plot_configEntry, "title")
@@ -94,4 +97,4 @@ class drawFakeRateHistConfigurator(cms._ParameterTypeBase):
                 setattr(self.pset, drawJobName, drawJob)
 
         return self.pset
-    
+
