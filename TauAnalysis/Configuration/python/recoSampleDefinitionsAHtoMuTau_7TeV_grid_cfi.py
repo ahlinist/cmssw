@@ -29,23 +29,23 @@ SAMPLES_TO_ANALYZE.extend([
 # List of samples to include in the final level plots.  May include selections
 # from the MERGE_SAMPLES defined at the bottom.
 SAMPLES_TO_PLOT = [
-    'data',
+    #'data',
     ###'A90Sum',
     ##'A100Sum',
-    'A120Sum',
+    #'A120Sum',
     ##'A130Sum',
     ###'A140Sum',
     ###'A160Sum',
-    'A180Sum',
-    ###'A200Sum',
+    #'A180Sum',
+    ####'A200Sum',
     ###'A300Sum',
-    'qcdSum',
+    #'qcdSum',
     #'PPmuXptGt20Mu15',
-    'WplusJetsSum',
-    'TTplusJets',
-    'Zmumu',
+    #'WplusJetsSum',
+    #'TTplusJets',
+    #'Zmumu',
     ##'Ztautau'
-    'ZtautauPU156bx',
+    #'ZtautauPU156bx',
 ]
 
 SAMPLES_TO_PRINT = copy.copy(SAMPLES_TO_PLOT)
@@ -265,7 +265,7 @@ AHtoMuTauSpecific_RECO_SAMPLES = {
     },
     'A140' : {
         # Not skimmed
-        'datasetpath' : "/SUSYGluGluToHToTauTau_M-1400_7TeV-pythia6-tauola/Fall10-E7TeV_ProbDist_2010Data_BX156_START38_V12-v1/GEN-SIM-RECO",
+        'datasetpath' : "/SUSYGluGluToHToTauTau_M-140_7TeV-pythia6-tauola/Fall10-E7TeV_ProbDist_2010Data_BX156_START38_V12-v1/GEN-SIM-RECO",
         'dbs_url' :  "http://cmsdbsprod.cern.ch/cms_dbs_prod_global/servlet/DBSServlet",
         'events_processed' : 110000,
         'number_of_jobs' : 25,

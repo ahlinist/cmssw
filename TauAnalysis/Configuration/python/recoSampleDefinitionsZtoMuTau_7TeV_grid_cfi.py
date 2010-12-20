@@ -32,15 +32,16 @@ SAMPLES_TO_ANALYZE = [
 SAMPLES_TO_PLOT = [
     'data',
     'qcdSum',
-    'WplusJetsSum',
+    'WplusJetsSum_pythia',
+    #'WplusJets',
     'TTplusJets_madgraph',
-    'Zmumu',
+    'Zmumu_pythia',
     #'Zee',
     'ZtautauSum'
 ]
 
 SAMPLES_TO_PRINT = copy.copy(SAMPLES_TO_PLOT)
-SAMPLES_TO_PRINT.append('Zee')
+SAMPLES_TO_PRINT.append('Zee_pythia')
 SAMPLES_TO_PRINT.append('smBgSum')
 SAMPLES_TO_PRINT.append('smSum')
 SAMPLES_TO_PRINT.append('Zmumu_powheg')
