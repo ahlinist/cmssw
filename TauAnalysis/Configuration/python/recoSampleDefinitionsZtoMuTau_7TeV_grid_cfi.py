@@ -20,9 +20,9 @@ SAMPLES_TO_ANALYZE = [
     'Wenu_pythia', 'Wmunu_pythia', 'Wtaunu_pythia',
     'WplusJets_madgraph',
     'Ztautau_powheg','Zmumu_powheg','Zee_powheg',
-    ##'WePlus_powheg', 'WeMinus_powheg',
-    ##'WmuMinus_powheg', 'WmuPlus_powheg',
-    ##'WtauMinus_powheg', 'WtauPlus_powheg',
+    'WePlus_powheg', 'WeMinus_powheg',
+    'WmuMinus_powheg', 'WmuPlus_powheg',
+    'WtauMinus_powheg', 'WtauPlus_powheg',
     'TTplusJets_pythia',
     'TTplusJets_madgraph',
 ]
@@ -422,7 +422,7 @@ RECO_SAMPLES = {
         'applyVertexMultiplicityReweighting' : True,
         'hlt' : cms.InputTag("TriggerResults", "", "REDIGI38XPU")
     },
-    'Wtaunu' : {
+    'Wtaunu_pythia' : {
         'datasetpath' : "/WtoTauNu_TuneD6T_7TeV-pythia6-tauola/Fall10-E7TeV_ProbDist_2010Data_BX156_START38_V12-v1/GEN-SIM-RECO",
         'dbs_url' :  "http://cmsdbsprod.cern.ch/cms_dbs_prod_global/servlet/DBSServlet",
         'events_processed' : 5476550,
