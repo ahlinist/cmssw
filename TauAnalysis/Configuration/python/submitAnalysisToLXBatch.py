@@ -180,3 +180,4 @@ def submitAnalysisToLXBatch(configFile = None, channel = None, samples = None, j
                 for file in garbage:
                     garbage_script.write(
                         '%s\n' % os.path.join(outputDirectory, file))
+        print "Run ./submit_lxbatch_analysis.sh to submit jobs"
