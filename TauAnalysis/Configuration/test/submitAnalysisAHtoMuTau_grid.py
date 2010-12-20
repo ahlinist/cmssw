@@ -1,15 +1,17 @@
 #!/usr/bin/env python
 
-from TauAnalysis.Configuration.recoSampleDefinitionsAHtoMuTau_7TeV_grid_cfi import recoSampleDefinitionsAHtoMuTau_7TeV
+from TauAnalysis.Configuration.recoSampleDefinitionsAHtoMuTau_7TeV_grid_cfi \
+        import recoSampleDefinitionsAHtoMuTau_7TeV as samples
+
 from TauAnalysis.Configuration.submitAnalysisToGrid import submitAnalysisToGrid
-from TauAnalysis.Configuration.userRegistry import getAnalysisFilePath, \
-       getJobId, overrideJobId
+import TauAnalysis.Configuration.userRegistry as reg
 
 channel = 'AHtoMuTau'
+reg.overrideJobId(channel, 'Run35')
 
 configFile = 'runAHtoMuTau_cfg.py'
-analysisFilePath = getAnalysisFilePath(channel)
-jobId = getJobId(channel)
+analysisFilePath = reg.getAnalysisFilePath(channel)
+jobId = reg.getJobId(channel)
 
 samplesToAnalyze = [
     # modify in case you want to submit crab jobs for some of the samples only...
@@ -19,7 +21,7 @@ enableSystematics = True
 #enableSystematics = False
 
 submitAnalysisToGrid(configFile = configFile, channel = 'AHtoMuTau',
-                     samples = recoSampleDefinitionsAHtoMuTau_7TeV,
+                     samples = samples,
                      outputFilePath = analysisFilePath, jobId = jobId,
                      samplesToAnalyze = samplesToAnalyze,
                      disableSysUncertainties = not enableSystematics,
