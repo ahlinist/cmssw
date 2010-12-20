@@ -1,4 +1,4 @@
-#ifndef TauAnalysis_Core_TauHistManager_h  
+#ifndef TauAnalysis_Core_TauHistManager_h
 #define TauAnalysis_Core_TauHistManager_h
 
 #include "FWCore/Framework/interface/Event.h"
@@ -13,14 +13,14 @@
 #include <vector>
 #include <string>
 
-class TauHistManager : public HistManagerBase 
+class TauHistManager : public HistManagerBase
 {
- public:  
+ public:
   explicit TauHistManager(const edm::ParameterSet&);
   ~TauHistManager();
-  
+
  private:
-//--- histogram booking and filling functions 
+//--- histogram booking and filling functions
 //    inherited from HistManagerBase class
   void bookHistogramsImp();
   void fillHistogramsImp(const edm::Event&, const edm::EventSetup&, double);
@@ -92,7 +92,7 @@ class TauHistManager : public HistManagerBase
   MonitorElement* hTauVisMassResThreeProngNoPi0s_;
   MonitorElement* hTauVisMassThreeProngOnePi0_;
   MonitorElement* hTauVisMassResThreeProngOnePi0_;
-  
+
   MonitorElement* hDistPionEnResOneProngOnePi0_;
   MonitorElement* hDistPionEnResOneProngTwoPi0s_;
   MonitorElement* hDistPionEnResThreeProngNoPi0s_;
@@ -105,6 +105,11 @@ class TauHistManager : public HistManagerBase
   MonitorElement* hGenTauPt_;
   MonitorElement* hGenTauEta_;
   MonitorElement* hGenTauPhi_;
+  MonitorElement* hGenTauX_;
+
+  MonitorElement* hGenVisTauPt_;
+  MonitorElement* hGenVisTauEta_;
+  MonitorElement* hGenVisTauPhi_;
 
   MonitorElement* hTauEnCompToGen_;
   MonitorElement* hTauThetaCompToGen_;
@@ -132,7 +137,7 @@ class TauHistManager : public HistManagerBase
   MonitorElement* hTauDiscriminatorByIsolation_;
   MonitorElement* hTauDiscriminatorByTrackIsolation_;
   MonitorElement* hTauDiscriminatorByEcalIsolation_;
-  
+
   MonitorElement* hTauDiscriminatorAgainstElectrons_;
   MonitorElement* hTauEmFraction_;
   MonitorElement* hTauHcalTotOverPLead_;
@@ -213,6 +218,6 @@ class TauHistManager : public HistManagerBase
   std::vector<MonitorElement*> hTauFakeRates_;
 };
 
-#endif  
+#endif
 
 

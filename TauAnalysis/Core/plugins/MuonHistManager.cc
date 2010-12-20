@@ -25,7 +25,6 @@
 bool matchesGenMuon(const pat::Muon& patMuon)
 {
   //std::cout << "<matchesGenMuon>:" << std::endl;
-
   bool isGenMuonMatched = false;
   std::vector<reco::GenParticleRef> associatedGenParticles = patMuon.genParticleRefs();
   for ( std::vector<reco::GenParticleRef>::const_iterator it = associatedGenParticles.begin();
@@ -39,6 +38,7 @@ bool matchesGenMuon(const pat::Muon& patMuon)
   }
   return isGenMuonMatched;
 }
+
 
 //
 //-----------------------------------------------------------------------------------------------------------------------
@@ -148,6 +148,9 @@ void MuonHistManager::bookHistogramsImp()
 		       hMuonWeightLinear_);
 
   bookMuonHistograms(hGenMuonPt_, hGenMuonEta_, hGenMuonPhi_, "GenMuon");
+
+  bookMuonHistograms(hGenTauPt_, hGenTauEta_, hGenTauPhi_, "GenTau");
+  hGenTauX_ = book1D("GenTauX", "GenTauX", 50, 0, 1);
 
   hMuonPtCompToGen_ = book1D("MuonPtCompToGen", "MuonPtCompToGen", 200, -0.10, +0.10);
   hMuonThetaCompToGen_ = book1D("MuonThetaCompToGen", "MuonThetaCompToGen", 200, -0.025, +0.025);
@@ -301,6 +304,16 @@ void MuonHistManager::fillHistogramsImp(const edm::Event& evt, const edm::EventS
       hMuonPtCompToGen_->Fill((patMuon->pt() - patMuon->genLepton()->pt())/patMuon->genLepton()->pt(), weight);
       hMuonThetaCompToGen_->Fill(patMuon->theta() - patMuon->genLepton()->theta(), weight);
       hMuonPhiCompToGen_->Fill(patMuon->phi() - patMuon->genLepton()->phi(), weight);
+
+      // Find the mother tau, if it exists
+      const reco::GenParticle* genTau = findMotherWithPdgId(patMuon->genLepton(), 15);
+      // Fill tau histograms
+      if (genTau) {
+        hGenTauPt_->Fill(genTau->pt(), weight);
+        hGenTauEta_->Fill(genTau->eta(), weight);
+        hGenTauPhi_->Fill(genTau->phi(), weight);
+        hGenTauX_->Fill(patMuon->genLepton()->energy()/genTau->energy(), weight);
+      }
     }
 
     if ( genParticles.isValid() ) {
