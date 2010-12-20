@@ -12,10 +12,10 @@ configFile = 'runAHtoMuTau_cfg.py'
 
 #reg.overrideJobId(channel, 'Run35SYS')
 #reg.overrideJobId(channel, 'Run35SYStight')
-reg.overrideJobId(channel, 'Run35SYSloose')
+#reg.overrideJobId(channel, 'Run35SYSloose')
+reg.overrideJobId(channel, 'Run35test')
 #reg.overrideJobId(channel, 'Run33FR')
 
-# If this is a list, only the items in the list will be analyzed.
 powheg_samples = [sample for sample in samples['SAMPLES_TO_ANALYZE']
                   if sample.find('POWHEG') != -1 ]
 
@@ -25,6 +25,7 @@ fake_rate_samples = [sample for sample in samples['SAMPLES_TO_ANALYZE']
 factorized_samples = [sample for sample in samples['SAMPLES_TO_ANALYZE']
                      if samples['RECO_SAMPLES'][sample]['factorize']]
 
+# If this is a list, only the items in the list will be analyzed.
 samplesToAnalyze = []
 
 # Where we will send the output on castor
@@ -49,6 +50,7 @@ def outputFileMapper(channel, sample, jobId):
 enableFakeRates = False
 enableSystematics = False
 changeTauId = None
+
 # Disable factorization, as we apply muon iso on the Run32 skim
 if jobId == 'Run33FR':
     enableFakeRates = True
