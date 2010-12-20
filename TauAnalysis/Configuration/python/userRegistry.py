@@ -134,6 +134,19 @@ userSettings = {
                     'batchHarvest' : "/castor/cern.ch/user/f/friis/Run35harvest/",
                 }
             },
+            # Rerunning the merging in a separate job
+            'Run35A' : {
+                'AHtoMuTau' : {
+                    # The output directory on castor
+                    'analysisFilePath' : '/castor/cern.ch/user/f/friis/Run35/',
+                    #'analysisFilePath' : '/castor/cern.ch/user/f/friis/Run32/',
+                    # The output directory for the plots
+                    'harvestingFilePath' : "/data1/friis/",
+                    'tmpFilePath' : "/data2/friis/tmp/",
+                    # Where to store the harvested histograms on lxbatch
+                    'batchHarvest' : "/castor/cern.ch/user/f/friis/Run35Aharvest/",
+                }
+            },
             'Run35SYS' : {
                 'AHtoMuTau' : {
                     # The output directory on castor
@@ -147,6 +160,46 @@ userSettings = {
                     'skimSource' : 'Run35',
                 }
             },
+            'Run35SYSloose' : {
+                'AHtoMuTau' : {
+                    # The output directory on castor
+                    'analysisFilePath' : '/castor/cern.ch/user/f/friis/Run35SYSloose/',
+                    #'analysisFilePath' : '/castor/cern.ch/user/f/friis/Run32/',
+                    # The output directory for the plots
+                    'harvestingFilePath' : "/data2/friis/",
+                    'tmpFilePath' : "/data2/friis/tmp/",
+                    # Where to store the harvested histograms on lxbatch
+                    'batchHarvest' : "/castor/cern.ch/user/f/friis/Run35SYSlooseharvest/",
+                    'skimSource' : 'Run35',
+                }
+            },
+            'Run35SYStight' : {
+                'AHtoMuTau' : {
+                    # The output directory on castor
+                    'analysisFilePath' : '/castor/cern.ch/user/f/friis/Run35SYStight/',
+                    #'analysisFilePath' : '/castor/cern.ch/user/f/friis/Run32/',
+                    # The output directory for the plots
+                    'harvestingFilePath' : "/data2/friis/",
+                    'tmpFilePath' : "/data2/friis/tmp/",
+                    # Where to store the harvested histograms on lxbatch
+                    'batchHarvest' : "/castor/cern.ch/user/f/friis/Run35SYStightharvest/",
+                    'skimSource' : 'Run35',
+                }
+            },
+            'Run35test' : {
+                'AHtoMuTau' : {
+                    # The output directory on castor
+                    'analysisFilePath' : '/castor/cern.ch/user/f/friis/Run35test/',
+                    #'analysisFilePath' : '/castor/cern.ch/user/f/friis/Run32/',
+                    # The output directory for the plots
+                    'harvestingFilePath' : "/data2/friis/",
+                    'tmpFilePath' : "/data2/friis/tmp/",
+                    # Where to store the harvested histograms on lxbatch
+                    'batchHarvest' : "/castor/cern.ch/user/f/friis/Run35testharvest/",
+                    'skimSource' : 'Run35',
+                }
+            },
+
         },
         'global' : {
             'drawOptions' : {
