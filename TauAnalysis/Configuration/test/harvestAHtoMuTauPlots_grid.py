@@ -2,13 +2,14 @@
 
 from TauAnalysis.Configuration.recoSampleDefinitionsAHtoMuTau_7TeV_grid_cfi import recoSampleDefinitionsAHtoMuTau_7TeV
 from TauAnalysis.Configuration.harvestAnalysisResults_grid import harvestAnalysisResults
-from TauAnalysis.Configuration.userRegistry import getAnalysisFilePath, getHarvestingFilePath, getJobId, getTmpFilePath
+import TauAnalysis.Configuration.userRegistry as reg
 
 channel = 'AHtoMuTau'
-analysisFilePath = getAnalysisFilePath(channel)
-harvestingFilePath = getHarvestingFilePath(channel)
-jobId = getJobId(channel)
-tmpFilePath = getTmpFilePath(channel)
+#reg.overrideJobId(channel, 'Run33')
+analysisFilePath = reg.getAnalysisFilePath(channel)
+harvestingFilePath = reg.getHarvestingFilePath(channel)
+jobId = reg.getJobId(channel)
+tmpFilePath = reg.getTmpFilePath(channel)
 
 harvestAnalysisResults(channel = channel, samples = recoSampleDefinitionsAHtoMuTau_7TeV,
                        inputFilePath = analysisFilePath, outputFilePath = harvestingFilePath, jobId = jobId,
