@@ -10,11 +10,7 @@ import os
 channel = 'AHtoMuTau'
 configFile = 'runAHtoMuTau_cfg.py'
 
-#reg.overrideJobId(channel, 'Run35SYS')
-#reg.overrideJobId(channel, 'Run35SYStight')
-#reg.overrideJobId(channel, 'Run35SYSloose')
 reg.overrideJobId(channel, 'Run35test')
-#reg.overrideJobId(channel, 'Run33FR')
 
 powheg_samples = [sample for sample in samples['SAMPLES_TO_ANALYZE']
                   if sample.find('POWHEG') != -1 ]
@@ -50,26 +46,6 @@ def outputFileMapper(channel, sample, jobId):
 enableFakeRates = False
 enableSystematics = False
 changeTauId = None
-
-# Disable factorization, as we apply muon iso on the Run32 skim
-if jobId == 'Run33FR':
-    enableFakeRates = True
-    for sample in samples['SAMPLES_TO_ANALYZE']:
-        if samples['RECO_SAMPLES'][sample]['factorize']:
-            print "Disabling factorization for", sample
-            samples['RECO_SAMPLES'][sample]['factorize'] = False
-if jobId == 'Run35SYS':
-    enableFakeRates = False
-    enableSystematics = True
-if jobId == 'Run35SYSloose':
-    enableFakeRates = False
-    enableSystematics = True
-    changeTauId = "tauID('byTaNCloose') > 0.5"
-if jobId == 'Run35SYStight':
-    enableFakeRates = False
-    enableSystematics = True
-    changeTauId = "tauID('byTaNCtight') > 0.5"
-
 
 submit.submitAnalysisToLXBatch(
     configFile=configFile,
