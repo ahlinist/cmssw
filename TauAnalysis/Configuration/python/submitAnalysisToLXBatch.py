@@ -17,6 +17,7 @@ def submitAnalysisToLXBatch(configFile = None, channel = None, samples = None, j
                             enableEventDumps = False,
                             enableFakeRates = False,
                             processName = None,
+                            changeTauId = None,
                             saveFinalEvents = False):
 
     """
@@ -100,6 +101,11 @@ def submitAnalysisToLXBatch(configFile = None, channel = None, samples = None, j
 
                 relevant_files.add(os.path.basename(output_file))
 
+                # Uncomment to skip rerunning of old jobs
+                #if os.path.basename(output_file) in tmp_files:
+                    #print " done; skipping", output_file
+                    #continue
+
                 # First, prepare the configuration file
                 newConfigFile = getNewConfigFileName(
                     configFile, cfgdir, sample,
@@ -144,6 +150,7 @@ def submitAnalysisToLXBatch(configFile = None, channel = None, samples = None, j
                     enableEventDumps = enableEventDumps, enableFakeRates = enableFakeRates,
                     processName = processName,
                     saveFinalEvents = saveFinalEvents,
+                    changeTauId = changeTauId,
                     customizations = jobCustomizations)
 
                 #print("job %i:" % (job + 1))
