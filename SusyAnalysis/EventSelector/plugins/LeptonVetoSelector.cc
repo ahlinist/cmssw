@@ -80,7 +80,6 @@ bool LeptonVetoSelector::select(const edm::Event& event) const {
 
   for (std::vector<pat::Electron>::const_iterator ie = (*eleHandle).begin(); ie != (*eleHandle).end(); ++ie) {
 
-    currIso = 0;
     //common for PF and Reco:
     if (ie->pt() < minPtEle_)
       continue;
@@ -97,12 +96,13 @@ bool LeptonVetoSelector::select(const edm::Event& event) const {
     if (abs(ie->vz() - myPosition.z()) > 1)     
       continue;
 
+    currIso = 0;
  
     //PF only:
     if(ie->pfCandidateRef().isNonnull() )
       {
 	if(ie->gsfTrack()->trackerExpectedHitsInner().numberOfLostHits() > 1) continue;
-
+	/*
 	for(int i =4; i<7; ++i)
 	  {
 	    const pat::IsoDeposit* Idep = ie->isoDeposit((pat::IsolationKeys)(i));   //only 4,5 and 6 filled
@@ -113,6 +113,8 @@ bool LeptonVetoSelector::select(const edm::Event& event) const {
 	      continue;
 	    }
 	  }
+	*/
+	currIso = (ie->chargedHadronIso()+ie->photonIso()+ie->neutralHadronIso()) / ie->pt();
 	if(currIso > eleIsoPF_) continue;
 
       } else {
@@ -151,8 +153,7 @@ bool LeptonVetoSelector::select(const edm::Event& event) const {
   for (std::vector<pat::Muon>::const_iterator im = (*muonHandle).begin(); im != (*muonHandle).end(); ++im) {
 
     //common for PF and Reco:
-    currIso = 0;
-
+    
     if( im->isGood("GlobalMuonPromptTight") < 1 ) continue;
     if (im->pt() < minPtMuon_)
       continue;
@@ -169,10 +170,12 @@ bool LeptonVetoSelector::select(const edm::Event& event) const {
     if (im->innerTrack()->numberOfValidHits() < muonHits_)
       continue;
 
+    currIso = 0;
+
     //only PF
     if(im->pfCandidateRef().isNonnull())
       {
-
+	/*
 	for(int i =4; i<7; ++i)
 	  {
 	    const pat::IsoDeposit* Idep = im->isoDeposit((pat::IsolationKeys)(i));
@@ -184,6 +187,8 @@ bool LeptonVetoSelector::select(const edm::Event& event) const {
 		continue;
 	      }
 	  }
+	*/
+	currIso = (im->chargedHadronIso()+im->photonIso()+im->neutralHadronIso()) / im->pt();
 	if(currIso > muonIsoPF_) continue;
 
       } else {
