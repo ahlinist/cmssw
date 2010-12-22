@@ -110,7 +110,6 @@ def prepareConfigFile(configFile = None, jobInfo = None, newConfigFile = None,
 
     # Get the type and genPhaseSpace cut
     jobOptions.append(('type', sample_info['type']))
-    jobOptions.append(('genPhaseSpaceCut', sample_info['genPhaseSpaceCut']))
 
     # Check if we want to change the tauId.
     if changeTauId is not None:
@@ -148,6 +147,10 @@ def prepareConfigFile(configFile = None, jobInfo = None, newConfigFile = None,
     jobOptions.append(('enableSysUncertainties',
                        sample_info['enableSysUncertainties']
                        and not disableSysUncertainties))
+
+    # As the event selectors get reconfigured, do this AFTER enabling the sys
+    # uncertainties
+    jobOptions.append(('genPhaseSpaceCut', sample_info['genPhaseSpaceCut']))
 
     # Enable fake rates if desired - this must be done AFTER factorization and
     # any other modification of the event weights of the analyzers
