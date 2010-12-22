@@ -55,7 +55,7 @@ from TauAnalysis.RecoTools.patPFTauSelectionForMuTau_cfi import *
 #      (would gain a factor of about 2.5 in event statistics; reweighting of tauPt distribution not implemented yet, however)
 #
 tausBgEstWplusJetsEnrichedTaNCdiscr = copy.deepcopy(selectedPatTausTaNCdiscr)
-tausBgEstWplusJetsEnrichedTaNCdiscr.cut = cms.string('tauID("byTaNCvloose") > 0.5 & tauID("byTaNCloose") < 0.5')
+tausBgEstWplusJetsEnrichedTaNCdiscr.cut = cms.string('tauID("byTaNCvloose") > 0.5 & tauID("byTaNCmedium") < 0.5')
 
 tausBgEstWplusJetsEnrichedMuonVeto = copy.deepcopy(selectedPatTausMuonVeto)
 

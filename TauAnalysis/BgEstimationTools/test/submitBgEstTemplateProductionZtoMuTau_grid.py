@@ -11,6 +11,7 @@ jobId = getJobId(channel)
 
 samplesToAnalyze = [
     # modify in case you want to submit crab jobs for some of the samples only...
+    'WplusJets_madgraph'
 ]
 
 # Submit analysis jobs to the grid;

@@ -6,6 +6,11 @@ from TauAnalysis.BgEstimationTools.templateHistDefinitions_cfi import \
   drawJobTemplateHist, drawJobTemplateHistIntegrated, drawJobAnalysisHistData, drawJobAnalysisHistMC, drawJobAnalysisHistZmumuEmbedding, \
   plotBgEstData, plotBgEstMC_pure, plotBgEstMC_smSum, plotAnalysisMC_pure, plotAnalysis_ZmumuEmbedding
 from TauAnalysis.BgEstimationTools.tools.drawTemplateHistConfigurator import drawTemplateHistConfigurator
+from TauAnalysis.Configuration.plotZtoMuTau_drawJobs_cfi import plots_ZtoMuTau
+from TauAnalysis.DQMTools.tools.drawJobConfigurator import *
+import TauAnalysis.DQMTools.plotterStyleDefinitions_cfi as styles
+from TauAnalysis.Configuration.makePlots2_grid import dqmHistPlotter_template
+from TauAnalysis.Configuration.recoSampleDefinitionsZtoMuTau_7TeV_grid_cfi import recoSampleDefinitionsZtoMuTau_7TeV
 from TauAnalysis.Configuration.userRegistry import getHarvestingFilePath, getJobId
 
 process = cms.Process('makeBgEstTemplateZtoMuTauPlots')
@@ -33,7 +38,7 @@ dqmDirectoriesProcess = {
     },
     'WplusJets' : {
         'template' : 'WplusJetsSum',
-        'analysis' : 'WplusJets'
+        'analysis' : 'WplusJetsSum'
     },
     'QCD' : {
         'template' : 'qcdSum',
@@ -53,7 +58,7 @@ dqmDirectoriesProcess = {
     }
 }
 
-dqmDirectoryAnalysis = 'zMuTauAnalyzer/afterEvtSelDiMuPairZmumuHypothesisVetoByMass/'
+dqmDirectoryAnalysis = 'zMuTauAnalyzerOS/afterEvtSelDiTauCandidateForMuTauZeroCharge/'
 
 rebinningAnalysis = {
     'visMass' : 2,
@@ -64,7 +69,7 @@ dqmDirectoriesBgEnrichedSelections = {
     'ZmumuJetMisIdEnriched' : 'BgEstTemplateAnalyzer_ZmumuJetMisIdEnriched/afterDiMuonPairInvMassBgEstZmumuJetMisIdEnriched/',
     'ZmumuMuonMisIdEnriched' : 'BgEstTemplateAnalyzer_ZmumuMuonMisIdEnriched/afterDiMuonPairBgEstZmumuMuonMisIdEnriched/',
     'WplusJetsEnriched' : 'BgEstTemplateAnalyzer_WplusJetsEnriched/afterDiMuonVetoBgEstWplusJetsEnriched/',
-    ##'TTplusJetsEnriched' : 'BgEstTemplateAnalyzer_TTplusJetsEnriched/afterJetEt60BgEstTTplusJetsEnriched/',
+    'TTplusJetsEnriched' : 'BgEstTemplateAnalyzer_TTplusJetsEnriched/afterJetEt60BgEstTTplusJetsEnriched/',
     'QCDenriched' : 'BgEstTemplateAnalyzer_QCDenriched/afterDiMuonVetoBgEstQCDenriched/'
 }
 
@@ -72,12 +77,13 @@ pureProcessBgEnrichedSelections = {
     'ZmumuJetMisIdEnriched' : 'Zmumu',
     'ZmumuMuonMisIdEnriched' : 'Zmumu',
     'WplusJetsEnriched' : 'WplusJets',
-    ##'TTplusJetsEnriched' : 'TTplusJets',
+    'TTplusJetsEnriched' : 'TTplusJets',
     'QCDenriched' : 'QCD',
 }
 
 meName_visMass = "DiTauCandidateQuantities/VisMass"
 meName_visMass_norm = "DiTauCandidateQuantities/VisMassShape"
+
 meName_SVfitMass = "DiTauCandidateSVfitQuantities/psKine_MEt_ptBalance/Mass"
 meName_SVfitMass_norm = "DiTauCandidateSVfitQuantities/psKine_MEt_ptBalance/MassShape"
 
@@ -91,32 +97,32 @@ rebinningBgEnrichedSelections = {
     'ZmumuJetMisIdEnriched' : {
         'visMass' : 5,
         'SVfitMass' : 5,
-        'pfMEt' : 1,
-	'visPt' : 1
+        'pfMEt' : 3,
+	'visPt' : 2
     },
     'ZmumuMuonMisIdEnriched' : {
         'visMass' : 1,
         'SVfitMass' : 1,
-        'pfMEt' : 1,
-	'visPt' : 1
+        'pfMEt' : 3,
+	'visPt' : 2
     },
     'WplusJetsEnriched' : {
         'visMass' : 2,
         'SVfitMass' : 2,
-        'pfMEt' : 1,
-	'visPt' : 1
+        'pfMEt' : 3,
+	'visPt' : 2
     },
-    ##'TTplusJetsEnriched' : {
-    ##    'visMass' : 2,
-    ##    'SVfitMass' : 2,
-    ##    'pfMEt' : 1,
-    ##	  'visPt' : 1
-    ##},
+    'TTplusJetsEnriched' : {
+        'visMass' : 5,
+        'SVfitMass' : 5,
+        'pfMEt' : 5,
+    	'visPt' : 5	
+    },
     'QCDenriched' : {
         'visMass' : 2,
         'SVfitMass' : 2,
-        'pfMEt' : 1,
-	'visPt' : 1
+        'pfMEt' : 3,
+	'visPt' : 2
     }
 }    
 
@@ -144,7 +150,7 @@ process.loadTemplateHistZtoMuTau = cms.EDAnalyzer("DQMFileLoader",
     Ztautau = cms.PSet(
         inputFileNames = cms.vstring(
             ##getHarvestingFilePath('ZtoMuTau_bgEstTemplate') + '/' + 'plotsZtoMuTau_bgEstTemplate_all.root'
-            '/data1/veelken/CMSSW_3_8_x/plots/ZtoMuTau_bgEstTemplate/2010Dec08/plotsZtoMuTau_bgEstTemplate_all.root'
+            '/data1/veelken/CMSSW_3_8_x/plots/ZtoMuTau_bgEstTemplate/2010Dec17/plotsZtoMuTau_bgEstTemplate_all.root'
         ),
         scaleFactor = cms.double(1.),
         dqmDirectory_store = cms.string('/template')
@@ -161,7 +167,7 @@ process.loadAnalysisHistZtoMuTau = cms.EDAnalyzer("DQMFileLoader",
         inputFileNames = cms.vstring(
             #getHarvestingFilePath('ZtoMuTau') + '/' + 'plotsZtoMuTau_all.root'
             ##getHarvestingFilePath('ZtoMuTau_bgEstTemplate') + '/' + 'plotsZtoMuTau_all.root'
-            '/data1/veelken/CMSSW_3_8_x/plots/ZtoMuTau_bgEstTemplate/2010Nov14/plotsZtoMuTau_all.root'
+            '/data1/veelken/CMSSW_3_8_x/plots/ZtoMuTau/2010Dec14ii/plotsZtoMuTau_all.root'
         ),
         scaleFactor = cms.double(1.),
         dqmDirectory_store = cms.string('/analysis')
@@ -932,10 +938,141 @@ process.plotAnalysisHistZtoMuTauZmumuEmbedding = plotHistZtoMuTau.clone(
     indOutputFileName = cms.string('plotZmumuEmbedding_vs_AnalysisZtoMuTau_#PLOT#.pdf')
 )
 
+plotAnalysisHistZtoMuTauStacked = None
+
+plotZtoMuTauStacked_template = plots_ZtoMuTau.clone(
+    plots = cms.PSet(
+        dqmMonitorElements = cms.vstring(''),
+        processes = cms.vstring(
+            'TTplusJets',
+            'Zmumu',
+            'WplusJets',
+            'QCD',
+            'Ztautau',
+            'Data'
+        )
+    ),
+    stack = cms.vstring(
+        'TTplusJets',
+	'Zmumu',
+        'WplusJets',
+        'QCD',
+        'Ztautau'
+    )
+)
+
+for bgEnrichedSelectionName, dqmDirectoryBgEnrichedSelection in dqmDirectoriesBgEnrichedSelections.items():
+
+    drawJobConfiguratorZtoMuTauStacked = drawJobConfigurator(
+        template = plotZtoMuTauStacked_template,
+        dqmDirectory = '#PROCESSDIR#' + '/' + dqmDirectoryBgEnrichedSelection
+    )
+
+    drawJobConfiguratorZtoMuTauStacked.add(
+        plots = [
+	    drawJobConfigEntry(
+                meName = meName_visMass_rebinned,
+                title = "M_{vis}(Muon + Tau)",
+                xAxis = 'Mass',
+                name = "mVisible"
+            ),
+            drawJobConfigEntry(
+                meName = meName_SVfitMass_rebinned,
+                title = "M(Muon + Tau), SVfit method",
+                xAxis = 'Mass',
+                name = "mSVmethod"
+            ),
+            drawJobConfigEntry(
+                meName = meName_pfMEt_rebinned,
+                title = "PFMEt",
+                xAxis = 'Pt',
+                name = "pfMet"
+            ),
+            drawJobConfigEntry(
+                meName = meName_visPt_rebinned,
+                title = "P_{T}(Muon + Tau)",
+                xAxis = 'Pt',
+                name = "visPt"
+            )
+	]
+    )
+
+    dqmHistPlotterModule = dqmHistPlotter_template.clone(
+	processes = cms.PSet(
+            Ztautau = cms.PSet(
+                dqmDirectory = cms.string('/template/harvested/' + dqmDirectoriesProcess['Ztautau']['template']),
+                legendEntry = cms.string(recoSampleDefinitionsZtoMuTau_7TeV['ALL_SAMPLES']['Ztautau']['legendEntry']),
+                type = cms.string(recoSampleDefinitionsZtoMuTau_7TeV['ALL_SAMPLES']['Ztautau']['type'])
+            ),
+            Zmumu = cms.PSet(
+                dqmDirectory = cms.string('/template/harvested/' + dqmDirectoriesProcess['Zmumu']['template']),
+                legendEntry = cms.string(recoSampleDefinitionsZtoMuTau_7TeV['ALL_SAMPLES']['Zmumu']['legendEntry']),
+                type = cms.string(recoSampleDefinitionsZtoMuTau_7TeV['ALL_SAMPLES']['Zmumu']['type'])
+            ),
+            WplusJets = cms.PSet(
+                dqmDirectory = cms.string('/template/harvested/' + dqmDirectoriesProcess['WplusJets']['template']),
+                legendEntry = cms.string(recoSampleDefinitionsZtoMuTau_7TeV['ALL_SAMPLES']['WplusJetsSum']['legendEntry']),
+                type = cms.string(recoSampleDefinitionsZtoMuTau_7TeV['ALL_SAMPLES']['WplusJetsSum']['type'])
+            ),
+            TTplusJets = cms.PSet(
+                dqmDirectory = cms.string('/template/harvested/' + dqmDirectoriesProcess['TTplusJets']['template']),
+                legendEntry = cms.string(recoSampleDefinitionsZtoMuTau_7TeV['ALL_SAMPLES']['TTplusJets']['legendEntry']),
+                type = cms.string(recoSampleDefinitionsZtoMuTau_7TeV['ALL_SAMPLES']['TTplusJets']['type'])
+            ),
+            QCD = cms.PSet(
+                dqmDirectory = cms.string('/template/harvested/' + dqmDirectoriesProcess['QCD']['template']),
+                legendEntry = cms.string(recoSampleDefinitionsZtoMuTau_7TeV['ALL_SAMPLES']['qcdSum']['legendEntry']),
+                type = cms.string(recoSampleDefinitionsZtoMuTau_7TeV['ALL_SAMPLES']['qcdSum']['type'])
+            ),
+            Data = cms.PSet(
+                dqmDirectory = cms.string('/template/harvested/' + dqmDirectoriesProcess['Data']['template']),
+                legendEntry = cms.string(recoSampleDefinitionsZtoMuTau_7TeV['ALL_SAMPLES']['data']['legendEntry']),
+                type = cms.string(recoSampleDefinitionsZtoMuTau_7TeV['ALL_SAMPLES']['data']['type'])
+            )
+        ),
+        legends = cms.PSet(
+            regular = copy.deepcopy(styles.legend_regular)
+        ),
+        labels = cms.PSet(
+            mcNormScale = dqmHistPlotter_template.labels.mcNormScale.clone(
+                posY = cms.double(0.74),
+                sizeY = cms.double(0.14),
+                textAlign = cms.int32(12),
+                text = cms.vstring(
+                    'CMS Preliminary', 
+                    'L = 36.2pb^{-1}',
+                    '#sqrt{s}=7TeV'
+                )
+            )
+        ),
+	drawOptionSets = cms.PSet(
+            default = cms.PSet(
+                Ztautau = recoSampleDefinitionsZtoMuTau_7TeV['ALL_SAMPLES']['Ztautau']['drawOption'],
+                Zmumu = recoSampleDefinitionsZtoMuTau_7TeV['ALL_SAMPLES']['Zmumu']['drawOption'],
+                WplusJets = recoSampleDefinitionsZtoMuTau_7TeV['ALL_SAMPLES']['WplusJetsSum']['drawOption'],
+                TTplusJets = recoSampleDefinitionsZtoMuTau_7TeV['ALL_SAMPLES']['TTplusJets']['drawOption'],
+                QCD = recoSampleDefinitionsZtoMuTau_7TeV['ALL_SAMPLES']['qcdSum']['drawOption'],
+                Data = recoSampleDefinitionsZtoMuTau_7TeV['ALL_SAMPLES']['data']['drawOption']
+            )
+        ),
+        drawJobs = drawJobConfiguratorZtoMuTauStacked.configure(),
+        outputFilePath = cms.string('./plots/'),
+        indOutputFileName = cms.string('bgEstControlZtoMuTau_%s_#PLOT#.pdf' % bgEnrichedSelectionName)
+    )
+    dqmHistPlotterModuleName = "plotZtoMuTauStacked%s" % bgEnrichedSelectionName
+    setattr(process, dqmHistPlotterModuleName, dqmHistPlotterModule)
+
+    if plotAnalysisHistZtoMuTauStacked is None:
+	plotAnalysisHistZtoMuTauStacked = cms.Sequence(dqmHistPlotterModule)
+    else:
+	plotAnalysisHistZtoMuTauStacked += dqmHistPlotterModule
+
+process.plotAnalysisHistZtoMuTauStacked = plotAnalysisHistZtoMuTauStacked
+    
 process.saveBgEstTemplateHistZtoMuTau = cms.EDAnalyzer("DQMSimpleFileSaver",
     outputFileName = cms.string(
         ##getHarvestingFilePath('ZtoMuTau_bgEstTemplate') + '/' + 'bgEstTemplateHistZtoMuTau_skimmed.root'
-        '/data1/veelken/CMSSW_3_8_x/plots/ZtoMuTau_bgEstTemplate/2010Nov14/bgEstTemplateHistZtoMuTau_skimmed.root'
+        '/data1/veelken/CMSSW_3_8_x/plots/ZtoMuTau_bgEstTemplate/2010Dec17/bgEstTemplateHistZtoMuTau_skimmed.root'
     ),
     outputCommands = cms.vstring(
         'drop *',
@@ -967,7 +1104,8 @@ process.p = cms.Path(
    + process.plotTemplateHistZtoMuTauIntegrated
    + process.plotAnalysisHistZtoMuTauData
    + process.plotAnalysisHistZtoMuTauMC
-   + process.plotAnalysisHistZtoMuTauZmumuEmbedding
+   + process.plotAnalysisHistZtoMuTauZmumuEmbedding    
+   + process.plotAnalysisHistZtoMuTauStacked
    + process.saveBgEstTemplateHistZtoMuTau 
 )
 

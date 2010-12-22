@@ -24,7 +24,7 @@ from TauAnalysis.RecoTools.patPFTauSelection_cfi import *
 from TauAnalysis.RecoTools.patPFTauSelectionForMuTau_cfi import *
 
 tausBgEstZmumuJetMisIdEnrichedTaNCdiscr = copy.deepcopy(selectedPatTausTaNCdiscr)
-tausBgEstZmumuJetMisIdEnrichedTaNCdiscr.cut = cms.string('tauID("byTaNCvloose") > 0.5 & tauID("byTaNCloose") < 0.5')
+tausBgEstZmumuJetMisIdEnrichedTaNCdiscr.cut = cms.string('tauID("byTaNCvloose") > 0.5 & tauID("byTaNCmedium") < 0.5')
 
 tausBgEstZmumuJetMisIdEnrichedMuonVeto = copy.deepcopy(selectedPatTausMuonVeto)
 
@@ -39,7 +39,7 @@ tauSelConfiguratorBgEstZmumuJetMisIdEnriched = objSelConfigurator(
 selectTausBgEstZmumuJetMisIdEnriched = tauSelConfiguratorBgEstZmumuJetMisIdEnriched.configure(pyNameSpace = locals())
 
 tausBgEstZmumuMuonMisIdEnrichedAntiMuonVeto = cms.EDFilter("PATTauSelector",
-    src = cms.InputTag('selectedPatTausForMuTauLeadTrkPtCumulative'),                                              
+    src = cms.InputTag('selectedPatTausLeadTrkPtCumulative'),
     cut = cms.string('tauID("againstMuon") < 0.5'),
     filter = cms.bool(False)                                 
 )

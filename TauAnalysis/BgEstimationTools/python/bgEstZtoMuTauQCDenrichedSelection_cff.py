@@ -42,7 +42,7 @@ from TauAnalysis.RecoTools.patPFTauSelectionForMuTau_cfi import *
 #      (--> see TauAnalysis/BgEstimationTools/python/bgEstZtoMuTauWplusJetsEnrichedSelection_cff.py also)
 #
 tausBgEstQCDenrichedTaNCdiscr = copy.deepcopy(selectedPatTausTaNCdiscr)
-tausBgEstQCDenrichedTaNCdiscr.cut = cms.string('tauID("byTaNCvloose") > 0.5 & tauID("byTaNCloose") < 0.5')
+tausBgEstQCDenrichedTaNCdiscr.cut = cms.string('tauID("byTaNCvloose") > 0.5 & tauID("byTaNCmedium") < 0.5')
 
 tausBgEstQCDenrichedMuonVeto = copy.deepcopy(selectedPatTausMuonVeto)
 
