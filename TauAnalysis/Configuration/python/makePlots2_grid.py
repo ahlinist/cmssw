@@ -288,10 +288,6 @@ def makePlots(process, channel = None, samples = None, inputFilePath = None, job
         )) for sampleName in samples['SAMPLES_TO_PLOT']
     )
 
-    drawOptionSets = dict(
-        (sampleName, samples['ALL_SAMPLES'][sampleName]['drawOption'])
-        for sampleName in samples['SAMPLES_TO_PLOT'])
-
     # Define draw job configurator for our smaples
     if drawJobTemplate is not None:
         drawJobTemplate = copy.deepcopy(drawJobTemplate)
