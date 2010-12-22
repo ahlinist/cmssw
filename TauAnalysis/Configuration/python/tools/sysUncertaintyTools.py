@@ -599,18 +599,23 @@ def enableSysUncertainties_runAHtoMuTau(process):
     # update InputTags of systematic uncertainty histogram managers
     if hasattr(process, "sysUncertaintyHistManagerForMuTau"):
         sysUncertaintyHistManagerMuTauPairSystematics = {
-            "sysMuonPtUp"                : cms.InputTag('selectedMuTauPairsForAHtoMuTauPzetaDiffSysMuonPtUpCumulative'),
-            "sysMuonPtDown"              : cms.InputTag('selectedMuTauPairsForAHtoMuTauPzetaDiffSysMuonPtDownCumulative'),
-            "sysTauJetEnUp"              : cms.InputTag('selectedMuTauPairsForAHtoMuTauPzetaDiffSysTauJetEnUpCumulative'),
-            "sysTauJetEnDown"            : cms.InputTag('selectedMuTauPairsForAHtoMuTauPzetaDiffSysTauJetEnDownCumulative'),
-            "sysJetEnUp"                 : cms.InputTag('selectedMuTauPairsForAHtoMuTauPzetaDiffSysJetEnUpCumulative'),
-            "sysJetEnDown"               : cms.InputTag('selectedMuTauPairsForAHtoMuTauPzetaDiffSysJetEnDownCumulative'),
-            "sysZllRecoilCorrectionUp"   : cms.InputTag('selectedMuTauPairsForAHtoMuTauPzetaDiffSysZllRecoilCorrectionUpCumulative'),
-            "sysZllRecoilCorrectionDown" : cms.InputTag('selectedMuTauPairsForAHtoMuTauPzetaDiffSysZllRecoilCorrectionDownCumulative')
+            "sysMuonPtUp"                : cms.InputTag('selectedMuTauPairsForAHtoMuTauZeroChargeSysMuonPtUpCumulative'),
+            "sysMuonPtDown"              : cms.InputTag('selectedMuTauPairsForAHtoMuTauZeroChargeSysMuonPtDownCumulative'),
+            "sysTauJetEnUp"              : cms.InputTag('selectedMuTauPairsForAHtoMuTauZeroChargeSysTauJetEnUpCumulative'),
+            "sysTauJetEnDown"            : cms.InputTag('selectedMuTauPairsForAHtoMuTauZeroChargeSysTauJetEnDownCumulative'),
+            "sysJetEnUp"                 : cms.InputTag('selectedMuTauPairsForAHtoMuTauZeroChargeSysJetEnUpCumulative'),
+            "sysJetEnDown"               : cms.InputTag('selectedMuTauPairsForAHtoMuTauZeroChargeSysJetEnDownCumulative'),
+            "sysZllRecoilCorrectionUp"   : cms.InputTag('selectedMuTauPairsForAHtoMuTauZeroChargeSysZllRecoilCorrectionUpCumulative'),
+            "sysZllRecoilCorrectionDown" : cms.InputTag('selectedMuTauPairsForAHtoMuTauZeroChargeSysZllRecoilCorrectionDownCumulative')
         }
-        process.sysUncertaintyHistManagerForMuTau_updated = copy.deepcopy(process.sysUncertaintyHistManagerForMuTau)
+        process.sysUncertaintyHistManagerForMuTau_updated = \
+          copy.deepcopy(process.sysUncertaintyHistManagerForMuTau)
+        process.sysUncertaintyHistManagerForMuTau_updated.histManagers[0].config.diTauCandidateSource = \
+          cms.InputTag('selectedMuTauPairsForAHtoMuTauZeroChargeCumulative')
         process.sysUncertaintyHistManagerForMuTau_updated.histManagers[0].systematics.diTauCandidateSource = \
           getSysUncertaintyParameterSets([ sysUncertaintyHistManagerMuTauPairSystematics ])
+        process.sysUncertaintyHistManagerForMuTau_updated.histManagers[1].config.diTauCandidateSource = \
+          cms.InputTag('selectedMuTauPairsForAHtoMuTauZeroChargeCumulative')
         process.sysUncertaintyHistManagerForMuTau_updated.histManagers[1].systematics.diTauCandidateSource = \
           process.sysUncertaintyHistManagerForMuTau_updated.histManagers[0].systematics.diTauCandidateSource
 
@@ -629,18 +634,23 @@ def enableSysUncertainties_runAHtoMuTau(process):
 
     if hasattr(process, "sysUncertaintyHistManagerForMuTauLooseMuonIsolation"):
         sysUncertaintyHistManagerMuTauPairSystematicsLooseMuonIsolation = {
-            "sysMuonPtUp"                : cms.InputTag('selectedMuTauPairsForAHtoMuTauPzetaDiffLooseMuonIsolationSysMuonPtUpCumulative'),
-            "sysMuonPtDown"              : cms.InputTag('selectedMuTauPairsForAHtoMuTauPzetaDiffLooseMuonIsolationSysMuonPtDownCumulative'),
-            "sysTauJetEnUp"              : cms.InputTag('selectedMuTauPairsForAHtoMuTauPzetaDiffLooseMuonIsolationSysTauJetEnUpCumulative'),
-            "sysTauJetEnDown"            : cms.InputTag('selectedMuTauPairsForAHtoMuTauPzetaDiffLooseMuonIsolationSysTauJetEnDownCumulative'),
-            "sysJetEnUp"                 : cms.InputTag('selectedMuTauPairsForAHtoMuTauPzetaDiffLooseMuonIsolationSysJetEnUpCumulative'),
-            "sysJetEnDown"               : cms.InputTag('selectedMuTauPairsForAHtoMuTauPzetaDiffLooseMuonIsolationSysJetEnDownCumulative'),
-            "sysZllRecoilCorrectionUp"   : cms.InputTag('selectedMuTauPairsForAHtoMuTauPzetaDiffLooseMuonIsolationSysZllRecoilCorrectionUpCumulative'),
-            "sysZllRecoilCorrectionDown" : cms.InputTag('selectedMuTauPairsForAHtoMuTauPzetaDiffLooseMuonIsolationSysZllRecoilCorrectionDownCumulative')
+            "sysMuonPtUp"                : cms.InputTag('selectedMuTauPairsForAHtoMuTauZeroChargeLooseMuonIsolationSysMuonPtUpCumulative'),
+            "sysMuonPtDown"              : cms.InputTag('selectedMuTauPairsForAHtoMuTauZeroChargeLooseMuonIsolationSysMuonPtDownCumulative'),
+            "sysTauJetEnUp"              : cms.InputTag('selectedMuTauPairsForAHtoMuTauZeroChargeLooseMuonIsolationSysTauJetEnUpCumulative'),
+            "sysTauJetEnDown"            : cms.InputTag('selectedMuTauPairsForAHtoMuTauZeroChargeLooseMuonIsolationSysTauJetEnDownCumulative'),
+            "sysJetEnUp"                 : cms.InputTag('selectedMuTauPairsForAHtoMuTauZeroChargeLooseMuonIsolationSysJetEnUpCumulative'),
+            "sysJetEnDown"               : cms.InputTag('selectedMuTauPairsForAHtoMuTauZeroChargeLooseMuonIsolationSysJetEnDownCumulative'),
+            "sysZllRecoilCorrectionUp"   : cms.InputTag('selectedMuTauPairsForAHtoMuTauZeroChargeLooseMuonIsolationSysZllRecoilCorrectionUpCumulative'),
+            "sysZllRecoilCorrectionDown" : cms.InputTag('selectedMuTauPairsForAHtoMuTauZeroChargeLooseMuonIsolationSysZllRecoilCorrectionDownCumulative')
         }
-        process.sysUncertaintyHistManagerForMuTauLooseMuonIsolation_updated = copy.deepcopy(process.sysUncertaintyHistManagerForMuTauLooseMuonIsolation)
+        process.sysUncertaintyHistManagerForMuTauLooseMuonIsolation_updated = \
+          copy.deepcopy(process.sysUncertaintyHistManagerForMuTauLooseMuonIsolation)
+        process.sysUncertaintyHistManagerForMuTauLooseMuonIsolation_updated.histManagers[0].config.diTauCandidateSource = \
+          cms.InputTag('selectedMuTauPairsForAHtoMuTauZeroChargeLooseMuonIsolationCumulative')
         process.sysUncertaintyHistManagerForMuTauLooseMuonIsolation_updated.histManagers[0].systematics.diTauCandidateSource = \
           getSysUncertaintyParameterSets([ sysUncertaintyHistManagerMuTauPairSystematicsLooseMuonIsolation ])
+        process.sysUncertaintyHistManagerForMuTauLooseMuonIsolation_updated.histManagers[1].config.diTauCandidateSource = \
+          cms.InputTag('selectedMuTauPairsForAHtoMuTauZeroChargeLooseMuonIsolationCumulative')
         process.sysUncertaintyHistManagerForMuTauLooseMuonIsolation_updated.histManagers[1].systematics.diTauCandidateSource = \
           process.sysUncertaintyHistManagerForMuTauLooseMuonIsolation_updated.histManagers[0].systematics.diTauCandidateSource   
 
