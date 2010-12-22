@@ -8,9 +8,9 @@
  *
  * \author Christian Veelken, UC Davis
  *
- * \version $Revision: 1.9 $
+ * \version $Revision: 1.10 $
  *
- * $Id: FakeRateWeightProducerBase.h,v 1.9 2010/09/28 11:23:23 jkolb Exp $
+ * $Id: FakeRateWeightProducerBase.h,v 1.10 2010/12/14 15:47:40 veelken Exp $
  *
  */
 
@@ -70,6 +70,8 @@ class FakeRateWeightProducerBase : public edm::EDProducer
   double getFakeRateJetWeight(double, double, bool, const reco::BaseTau*);
 
 //--- configuration parameters
+  std::string moduleLabel_;
+
   std::string method_; // "simple"/"CDF"
 
   edm::InputTag allTauJetSource_;
@@ -88,7 +90,6 @@ class FakeRateWeightProducerBase : public edm::EDProducer
   double minJetEta_;
   double maxJetEta_;
 
-//--- configuration parameters
   double shiftTauIdEff_; // multiply tau id. efficiency by (1 + shift),
                          // in order to estimate systematic uncertainties due to imprecise knowledge of tau id. efficiency
                          // if using "CDF"-type weights 

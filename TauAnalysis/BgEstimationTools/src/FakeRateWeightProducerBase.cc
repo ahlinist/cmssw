@@ -90,7 +90,8 @@ FakeRateWeightProducerBase::fakeRateTypeEntry::~fakeRateTypeEntry()
 //
 
 FakeRateWeightProducerBase::FakeRateWeightProducerBase(const edm::ParameterSet& cfg)
-  : cfgError_(0),
+  : moduleLabel_(cfg.getParameter<std::string>("@module_label")),
+    cfgError_(0),
     numJets_weightBelowMinimum_(0),
     numJets_weightAboveMaximum_(0),
     numJets_reverseWeightOrder_(0),
@@ -137,6 +138,7 @@ FakeRateWeightProducerBase::FakeRateWeightProducerBase(const edm::ParameterSet& 
 FakeRateWeightProducerBase::~FakeRateWeightProducerBase()
 {
   std::cout << "<~FakeRateWeightProducerBase>:" << std::endl;
+  std::cout << "moduleLabel = " << moduleLabel_ << std::endl;
   std::cout << "number of tau-jet candidates" << std::endl;
   std::cout << " processed = " << numJets_processed_ << std::endl;
   std::cout << " jet-weight < miminum (= " << minJetWeight_ << ") = " << numJets_weightBelowMinimum_ << std::endl;
