@@ -10,6 +10,8 @@ from TauAnalysis.CandidateTools.tools.composeModuleName import composeModuleName
 def configureZllRecoilCorrection(process, diTauProducerModuleName,
                                  ZllRecoilCorrectionType, shiftByUncertainty = 0., label = ""):
     
+    #print("<configureZllRecoilCorrection>:")
+
     process.load("TauAnalysis.RecoTools.recoZllRecoilCorrection_cfi")
 
     retVal = {}
