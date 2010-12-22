@@ -151,6 +151,7 @@ isRecAHtoMuTau = cms.EDProducer("BoolEventSelFlagProducer",
     pluginType = cms.string('MultiBoolEventSelFlagSelector'),
     flags = cms.VInputTag(
         cms.InputTag('Trigger'),
+        cms.InputTag('genPhaseSpaceCut'),
         cms.InputTag('primaryEventVertexPosition'),
         cms.InputTag('muonTrkIPcut', 'cumulative'),
         cms.InputTag('tauMuonVeto', 'cumulative'),
