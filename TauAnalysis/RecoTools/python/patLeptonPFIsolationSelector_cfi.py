@@ -7,22 +7,22 @@ patMuonPFIsolationSelector = cms.PSet(
     pfCandidateSource = cms.InputTag('pfNoPileUp'),
 
     chargedHadronIso = cms.PSet(
-        ptMin = cms.double(-1.),        
+        ptMin = cms.double(1.0),        
         dRvetoCone = cms.double(-1.),
         dRisoCone = cms.double(0.4)
     ),
 
     neutralHadronIso = cms.PSet(
-        ptMin = cms.double(0.5),        
+        ptMin = cms.double(1.0),        
         dRvetoCone = cms.double(0.08),        
         dRisoCone = cms.double(0.4)
     ),
 
     photonIso = cms.PSet(
-        ptMin = cms.double(0.5),        
+        ptMin = cms.double(1.0),        
         dPhiVeto = cms.double(-1.),  # asymmetric Eta x Phi veto region 
         dEtaVeto = cms.double(-1.),  # to account for photon conversions in electron isolation case        
-        dRvetoCone = cms.double(-1.),
+        dRvetoCone = cms.double(0.05),
         dRisoCone = cms.double(0.4)
     ),
 
