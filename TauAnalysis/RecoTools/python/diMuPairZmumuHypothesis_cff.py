@@ -13,15 +13,21 @@ selectedPatMuonsForZmumuHypothesesMuonTrack = cms.EDFilter("PATMuonSelector",
     filter = cms.bool(False)
 )
 
-selectedPatMuonsForZmumuHypothesesPt10 = cms.EDFilter("PATMuonSelector",
+selectedPatMuonsForZmumuHypothesesEta24 = cms.EDFilter("PATMuonSelector",
     src = cms.InputTag("selectedPatMuonsForZmumuHypothesesMuonTrack"),
-    cut = cms.string('pt > 10.'),
+    cut = cms.string('abs(eta) < 2.4'),
+    filter = cms.bool(False)
+)
+
+selectedPatMuonsForZmumuHypothesesPt10 = cms.EDFilter("PATMuonSelector",
+    src = cms.InputTag("selectedPatMuonsForZmumuHypothesesEta24"),
+    cut = cms.string('pt > 15.'),
     filter = cms.bool(False)
 )
 
 selectedPatMuonsForZmumuHypothesesLoosePFRelIso = cms.EDFilter("PATMuonPFIsolationSelector",
     patMuonPFIsolationSelector.clone(
-        sumPtMax = cms.double(0.26)
+        sumPtMax = cms.double(0.15)
     ),
     src = cms.InputTag("selectedPatMuonsForZmumuHypothesesPt10"),                                                           
     filter = cms.bool(False)
@@ -29,6 +35,7 @@ selectedPatMuonsForZmumuHypothesesLoosePFRelIso = cms.EDFilter("PATMuonPFIsolati
 
 selectedPatMuonsForZmumuHypotheses = cms.Sequence(
     selectedPatMuonsForZmumuHypothesesMuonTrack
+   * selectedPatMuonsForZmumuHypothesesEta24
    * selectedPatMuonsForZmumuHypothesesPt10
    * selectedPatMuonsForZmumuHypothesesLoosePFRelIso
 )    
