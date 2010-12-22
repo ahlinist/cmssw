@@ -575,6 +575,11 @@ drawOption_WplusJets_separate = copy.deepcopy(drawOption_lightBlue_separate)
 drawOption_WplusJets = drawOption_WplusJets_stacked
 drawOption_WplusJets.fillStyle = 1001
 
+drawOption_VV_stacked = copy.deepcopy(drawOption_yellow_stacked)
+drawOption_VV_separate = copy.deepcopy(drawOption_yellow_separate)
+drawOption_VV = drawOption_VV_stacked
+drawOption_VV.fillStyle = 1001
+
 drawOption_TTplusJets_stacked = copy.deepcopy(drawOption_violett_stacked)
 drawOption_TTplusJets_separate = copy.deepcopy(drawOption_violett_separate)
 drawOption_TTplusJets = drawOption_TTplusJets_stacked
