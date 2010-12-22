@@ -134,8 +134,8 @@ def submitAnalysisToLXBatch(configFile = None, channel = None, samples = None, j
                         jobCustomizations.append("    delattr(process.ntupleProducer.sources, 'genJets')")
                         jobCustomizations.append("    delattr(process.ntupleProducer.sources, 'genPhaseSpaceEventInfo')")
                         jobCustomizations.append("    delattr(process.ntupleProducer.sources, 'genPileUpEventInfo')")
-                        #jobCustomizations.append("print process.dumpPython()")
-                        #--------------------------------------------------------------------
+                #jobCustomizations.append("print process.dumpPython()")
+                #--------------------------------------------------------------------
 
                 prepareConfigFile(
                     configFile = configFile, jobInfo = jobInfo,
