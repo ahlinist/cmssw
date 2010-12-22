@@ -16,6 +16,7 @@ SAMPLES_TO_ANALYZE = [
     'Zee_pythia',
     #'InclusivePPmuX',
     'PPmuXptGt20Mu10', 'PPmuXptGt20Mu15',
+    'PPmuXptGt20Mu10Workaround' # EK - temporary for genPhaseSpace skim bug
     #'Wenu_pythia', 'Wmunu_pythia', 'Wtaunu_pythia',
     'WplusJets_madgraph',
     'Ztautau_powheg','Zmumu_powheg','Zee_powheg',
@@ -291,6 +292,23 @@ RECO_SAMPLES = {
         'factorize' : True
     },
     'PPmuXptGt20Mu10' : {
+        'datasetpath' : "/QCD_Pt-20_MuEnrichedPt-10_TuneZ2_7TeV-pythia6/Fall10-E7TeV_ProbDist_2010Data_BX156_START38_V12-v1/GEN-SIM-RECO",
+        'dbs_url' :  "http://cmsdbsprod.cern.ch/cms_dbs_prod_global/servlet/DBSServlet",
+        'events_processed' : 8063288,
+        'skim_eff' : 1.0,
+        'x_sec' : 0.2966*_millibarns*1.18e-3, # x-sec * gen filter efficiency
+        'genPhaseSpaceCut' : 'leadingGenMuon.pt < 15.',
+        'legendEntry' : plotter.process_PPmuXptGt20.config_dqmHistPlotter.legendEntry.value(),
+        'type' : plotter.process_PPmuXptGt20.config_dqmHistPlotter.type.value(),
+        'drawOption' : styles.drawOption_QCD,
+        'enableFakeRates' : True,
+        'applyMuonTriggerEfficiencyCorrection' : True,
+        'applyMuonIsolationEfficiencyCorrection' : True,
+        'applyVertexMultiplicityReweighting' : True,
+        'factorize' : True,
+        'hlt' : cms.InputTag("TriggerResults", "", "REDIGI38XPU")
+    },
+    'PPmuXptGt20Mu10Workaround' : {
         'datasetpath' : "/QCD_Pt-20_MuEnrichedPt-10_TuneZ2_7TeV-pythia6/Fall10-E7TeV_ProbDist_2010Data_BX156_START38_V12-v1/GEN-SIM-RECO",
         'dbs_url' :  "http://cmsdbsprod.cern.ch/cms_dbs_prod_global/servlet/DBSServlet",
         'events_processed' : 8063288,
