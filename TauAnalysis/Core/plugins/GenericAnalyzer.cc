@@ -66,14 +66,14 @@ GenericAnalyzer::analysisSequenceEntry_filter::analysisSequenceEntry_filter(cons
   filterPlugins_cumulative_.insert(std::pair<std::string, EventSelectorBase*>(nameCentralValue, filterPlugin_cumulative));
   filterPlugins_individual_.insert(std::pair<std::string, EventSelectorBase*>(nameCentralValue, filterPlugin_individual));
 
-  //--- handle systematic uncertainties:
-  //    set InputTag to name of collection with systematic shifts applied
-  //
-  //    NOTE: for estimating systematic uncertainties
-  //          need to take into account only "cumulative" event selection
-  //          ("individual" event selection has effect on filter statistics table only,
-  //           not on histogram filling or computation of binning results)
-  //
+//--- handle systematic uncertainties:
+//    set InputTag to name of collection with systematic shifts applied
+//
+//    NOTE: for estimating systematic uncertainties
+//          need to take into account only "cumulative" event selection
+//          ("individual" event selection has effect on filter statistics table only,
+//           not on histogram filling or computation of binning results)
+//
   if ( estimateSysUncertainties && cfgFilter.exists("systematics") ) {
     typedef std::vector<std::string> vstring;
     vstring systematics = cfgFilter.getParameter<vstring>("systematics");
@@ -90,12 +90,12 @@ GenericAnalyzer::analysisSequenceEntry_filter::analysisSequenceEntry_filter(cons
 
       //std::cout << " src = " << src.label() << std::endl;
 
-      //--- compose name of InputTag
-      //
-      // NOTE: string concatenation rule (first character of systematics name is capitalized) for composition of InputTag
-      //       needs to match implementation in (python) function composeModuleName
-      //       defined in TauAnalysis/CandidateTools/python/tools/composeModuleName.py
-      //
+//--- compose name of InputTag
+//
+// NOTE: string concatenation rule (first character of systematics name is capitalized) for composition of InputTag
+//       needs to match implementation in (python) function composeModuleName
+//       defined in TauAnalysis/CandidateTools/python/tools/composeModuleName.py
+//
       std::string src_label = src.label();
       std::string src_instance = src.instance();
 
@@ -150,9 +150,9 @@ bool GenericAnalyzer::analysisSequenceEntry_filter::filter(const edm::Event& evt
                                                            const SysUncertaintyService* sysUncertaintyService,
                                                            const std::map<std::string, EventSelectorBase*>& filterPlugins)
 {
-  //--- check if specific event selector module is defined for current systematic uncertainty;
-  //    if so evaluate that event selector module,
-  //    else evaluate the event selector module for no systematic shifts applied
+//--- check if specific event selector module is defined for current systematic uncertainty;
+//    if so evaluate that event selector module,
+//    else evaluate the event selector module for no systematic shifts applied
 
   //std::cout << "<analysisSequenceEntry_filter::filter>:" << std::endl;
   //std::cout << " name = " << name_ << std::endl;
@@ -291,8 +291,8 @@ std::string capitalizeFirstCharacter(const std::string& input)
 std::string dqmSubDirectoryName_filter(const std::string& afterFilterName, const std::string& beforeFilterName)
 {
   std::string subDirName;
-  if ( afterFilterName != "" ) subDirName.append("after").append(capitalizeFirstCharacter(afterFilterName));
-  if ( afterFilterName != "" && beforeFilterName != "" ) subDirName.append("_");
+  if ( afterFilterName  != "" ) subDirName.append("after").append(capitalizeFirstCharacter(afterFilterName));
+  if ( afterFilterName  != "" && beforeFilterName != "" ) subDirName.append("_");
   if ( beforeFilterName != "" ) subDirName.append("before").append(capitalizeFirstCharacter(beforeFilterName));
   return subDirName;
 }
@@ -313,7 +313,7 @@ void GenericAnalyzer::addAnalyzers(const vstring& analyzerNames,
       bool supportsSystematics = cfgAnalyzer.getParameter<bool>("supportsSystematics");
       if ( supportsSystematics && (!estimateSysUncertainties_) ) {
         std::cout << "analyzer = " << (*analyzerName) << " supports systematics,"
-            << " but estimateSysUncertainties = false --> skipping..." << std::endl;
+                  << " but estimateSysUncertainties = false --> skipping..." << std::endl;
         continue;
       }
 
@@ -338,11 +338,11 @@ void GenericAnalyzer::addAnalyzers(const vstring& analyzerNames,
           std::string leftHandSide = std::string(replaceCommand_noKeyword, 0, posAssignmentOperator);
           std::string rightHandSide = std::string(replaceCommand_noKeyword, posAssignmentOperator + 1);
 
-          //--- check that parameter that is to be replaced
-          //    exists in configuration parameter set
-          //    and is defined to be a supported type
-          //    (so far, only std::string and edm::InputTag are supported types
-          //     for configuration parameter replacements)
+//--- check that parameter that is to be replaced
+//    exists in configuration parameter set
+//    and is defined to be a supported type
+//    (so far, only std::string and edm::InputTag are supported types
+//     for configuration parameter replacements)
           if ( cfgAnalyzer.existsAs<std::string>(leftHandSide) ) {
             cfgAnalyzer.addParameter<std::string>(leftHandSide, rightHandSide);
           } else if ( cfgAnalyzer.existsAs<edm::InputTag>(leftHandSide) ) {
@@ -371,9 +371,9 @@ void GenericAnalyzer::addAnalyzers(const vstring& analyzerNames,
             continue;
           }
 
-          //--- store modified configuration ParameterSet
-          //    (NOTE: by storing the modified configuration ParameterSet,
-          //           replace statements become cumulative)
+//--- store modified configuration ParameterSet
+//    (NOTE: by storing the modified configuration ParameterSet,
+//           replace statements become cumulative)
           cfgAnalyzers_[it->first] = cfgAnalyzer;
         }
       }
@@ -415,7 +415,7 @@ GenericAnalyzer::GenericAnalyzer(const edm::ParameterSet& cfg)
 
   typedef std::vector<edm::ParameterSet> vParameterSet;
 
-  //--- store configuration parameters for filters
+//--- store configuration parameters for filters
   //std::cout << "--> storing configuration parameters for filters..." << std::endl;
   if ( cfg.exists("filters") ) {
     vParameterSet cfgFilters = cfg.getParameter<vParameterSet>("filters");
@@ -426,8 +426,8 @@ GenericAnalyzer::GenericAnalyzer(const edm::ParameterSet& cfg)
     }
   }
 
-  //--- store configuration parameters for analyzers
-  //    (with and without support for estimating systematic uncertainties)
+//--- store configuration parameters for analyzers
+//    (with and without support for estimating systematic uncertainties)
   //std::cout << "--> storing configuration parameters for analyzers..." << std::endl;
   if ( cfg.exists("analyzers") ) {
     vParameterSet cfgAnalyzers = cfg.getParameter<vParameterSet>("analyzers");
@@ -449,14 +449,14 @@ GenericAnalyzer::GenericAnalyzer(const edm::ParameterSet& cfg)
     }
   }
 
-  //--- store configuration parameters for event weights
+//--- store configuration parameters for event weights
   if ( cfg.exists("eventWeights") ) {
     vParameterSet cfgEventWeights = cfg.getParameter<vParameterSet>("eventWeights");
     for ( vParameterSet::const_iterator cfgEventWeight = cfgEventWeights.begin();
          cfgEventWeight != cfgEventWeights.end(); ++cfgEventWeight ) {
       eventWeightType eventWeight(*cfgEventWeight);
 
-      //--- check that filter of specified name exists
+//--- check that filter of specified name exists
       if ( eventWeight.applyAfterFilter_ != "*" &&
           cfgFilters_.find(eventWeight.applyAfterFilter_) == cfgFilters_.end() ) {
         edm::LogError("GenericAnalyzer")
@@ -470,8 +470,8 @@ GenericAnalyzer::GenericAnalyzer(const edm::ParameterSet& cfg)
     }
   }
 
-  //--- configure names of systematic uncertainties
-  //    to be taken into account in analysis
+//--- configure names of systematic uncertainties
+//    to be taken into account in analysis
   estimateSysUncertainties_ = cfg.exists("estimateSysUncertainties") ?
       cfg.getParameter<bool>("estimateSysUncertainties") : false;
 
@@ -484,17 +484,18 @@ GenericAnalyzer::GenericAnalyzer(const edm::ParameterSet& cfg)
     }
   }
 
+  // NOTE: central value needs to be first entry in list of systematic uncertainties
   systematics_.insert(systematics_.begin(), SysUncertaintyService::getNameCentralValue());
   std::cout << " systematics = " << format_vstring(systematics_) << std::endl;
 
-  //--- configure analysisSequence
+//--- configure analysisSequence
   //std::cout << "--> configuring analysisSequence..." << std::endl;
   typedef std::vector<edm::ParameterSet> vParameterSet;
   vParameterSet cfgAnalysisSequenceEntries = cfg.getParameter<vParameterSet>("analysisSequence");
   std::string lastFilterName = "";
   for ( vParameterSet::const_iterator cfgAnalysisSequenceEntry = cfgAnalysisSequenceEntries.begin();
        cfgAnalysisSequenceEntry != cfgAnalysisSequenceEntries.end(); ++cfgAnalysisSequenceEntry ) {
-    //--- check that analysisSequenceEntry is either a filter or an analyzer
+//--- check that analysisSequenceEntry is either a filter or an analyzer
     if ( !(cfgAnalysisSequenceEntry->exists("filter")    ||
            cfgAnalysisSequenceEntry->exists("analyzers")) ) {
       edm::LogError("GenericAnalyzer") << " Either filter or analyzers must be specified for sequenceEntries !!";
@@ -546,8 +547,8 @@ GenericAnalyzer::GenericAnalyzer(const edm::ParameterSet& cfg)
 
   if ( cfgError_ ) return;
 
-  //--- configure filter statistics service
-  //    and create filter statistics table
+//--- configure filter statistics service
+//    and create filter statistics table
   filterStatisticsService_ = new FilterStatisticsService();
   filterStatisticsService_dqmDirectory_ = dqmDirectoryName(name_).append("FilterStatistics");
 
@@ -571,7 +572,7 @@ GenericAnalyzer::GenericAnalyzer(const edm::ParameterSet& cfg)
   cfgFilterStatisticsTable.addParameter<vParameterSet>("config", filterStatisticsTable_config);
   filterStatisticsTable_ = filterStatisticsService_->createFilterStatisticsTable(cfgFilterStatisticsTable);
 
-  //--- configure run & event number service
+//--- configure run & event number service
   edm::ParameterSet cfgRunLumiSectionEventNumberService;
   cfgRunLumiSectionEventNumberService.addParameter<std::string>("name", std::string(name_).append("-").append("RunLumiSectionEventNumberService"));
   cfgRunLumiSectionEventNumberService.addParameter<std::string>("dqmDirectory_store", dqmDirectoryName(name_).append("FilterStatistics"));
@@ -593,7 +594,7 @@ GenericAnalyzer::GenericAnalyzer(const edm::ParameterSet& cfg)
   cfgRunLumiSectionEventNumberService.addParameter<vParameterSet>("config", runLumiSectionEventNumberService_config);
   runLumiSectionEventNumberService_ = new RunLumiSectionEventNumberService(cfgRunLumiSectionEventNumberService);
 
-  //--- configure eventDumps
+//--- configure eventDumps
   if ( cfg.exists("eventDumps") ) {
     //std::cout << "--> configuring eventDumps..." << std::endl;
     vParameterSet cfgEventDumps = cfg.getParameter<vParameterSet>("eventDumps");
@@ -624,14 +625,14 @@ void GenericAnalyzer::analyze(const edm::Event& evt, const edm::EventSetup& es)
 {
   //std::cout << "<GenericAnalyzer::analyze>:" << std::endl;
 
-  //--- check that configuration parameters contain no errors
+//--- check that configuration parameters contain no errors
   if ( cfgError_ ) {
     edm::LogError("GenericAnalyzer::analyze") << " Error in Configuration ParameterSet --> skipping !!";
     return;
   }
 
-  //--- compute event weight
-  //    (initial value to be used before any filters are applied)
+//--- compute event weight
+//    (initial value to be used before any filters are applied)
   double eventWeight_initial = 1.;
   for ( std::vector<eventWeightType>::const_iterator eventWeightEntry_i = eventWeights_.begin();
        eventWeightEntry_i != eventWeights_.end(); ++eventWeightEntry_i ) {
@@ -643,7 +644,7 @@ void GenericAnalyzer::analyze(const edm::Event& evt, const edm::EventSetup& es)
   }
 
   //std::cout << " eventWeight = " << eventWeight_initial
-  //        << " (initial value)" << std::endl;
+  //          << " (initial value)" << std::endl;
 
   SysUncertaintyService* sysUncertaintyService = 0;
   if ( edm::Service<SysUncertaintyService>().isAvailable() ) {
@@ -654,18 +655,18 @@ void GenericAnalyzer::analyze(const edm::Event& evt, const edm::EventSetup& es)
     return;
   }
 
-  //--- estimate systematic uncertainties:
-  //    iterate over names of systematics uncertainties,
-  //    set name as currently "active" systematic in SysUncertaintyService;
-  //    filter and analyzer plugins will "pick-up" name from SysUncertaintyService
-  //    and take care of correct handling of systematic internally
-  //
-  //    NOTE: there are two distinct "types" of systematic uncertainties;
-  //          the first is handled by reweighting the event
-  //          (used e.g. for estimation of PDF, ISR/FSR uncertainties),
-  //          the second type is handled by shifting values of observables and reapplying the event selection
-  //          (used e.g. for estimation of uncertainties due to imprecise knowledge of tau-jet energy scale)
-  //
+//--- estimate systematic uncertainties:
+//    iterate over names of systematics uncertainties,
+//    set name as currently "active" systematic in SysUncertaintyService;
+//    filter and analyzer plugins will "pick-up" name from SysUncertaintyService
+//    and take care of correct handling of systematic internally
+//
+//    NOTE: there are two distinct "types" of systematic uncertainties;
+//          the first is handled by reweighting the event
+//          (used e.g. for estimation of PDF, ISR/FSR uncertainties),
+//          the second type is handled by shifting values of observables and reapplying the event selection
+//          (used e.g. for estimation of uncertainties due to imprecise knowledge of tau-jet energy scale)
+//
   for ( vstring::const_iterator sysName = systematics_.begin();
        sysName != systematics_.end(); ++sysName ) {
     //std::cout << " sysName = " << (*sysName) << std::endl;
@@ -681,8 +682,8 @@ void GenericAnalyzer::analyze(const edm::Event& evt, const edm::EventSetup& es)
     bool isSystematicApplied = ( (*sysName) == SysUncertaintyService::getNameCentralValue() ) ? false : true;
     //std::cout << " isSystematicApplied = " << isSystematicApplied << std::endl;
 
-    //--- call analyze method of each analyzerPlugin
-    //    (fill histograms, compute binning results,...)
+//--- call analyze method of each analyzerPlugin
+//    (fill histograms, compute binning results,...)
     typedef std::map<std::string, bool> filterResults_type;
     filterResults_type filterResults_cumulative;
     bool previousFiltersPassed = true;
@@ -692,7 +693,7 @@ void GenericAnalyzer::analyze(const edm::Event& evt, const edm::EventSetup& es)
     eventWeights_type eventWeights_passed;
     double eventWeight_passed = eventWeight_initial;
     for ( std::list<analysisSequenceEntry*>::iterator entry = analysisSequence_.begin();
-         entry != analysisSequence_.end(); ++entry ) {
+          entry != analysisSequence_.end(); ++entry ) {
       const std::string& entryName = (*entry)->name_;
 
       double eventWeight_processed = eventWeight_passed;
@@ -701,19 +702,16 @@ void GenericAnalyzer::analyze(const edm::Event& evt, const edm::EventSetup& es)
         //std::cout << " analysisSequenceEntry: name = " << (*entry)->name_ << std::endl;
         if ( (*entry)->type() == analysisSequenceEntry::kFilter ) {
 
-          //--- check if event weight needs to be updated
-          if ( !isSystematicApplied ) {
-            for ( std::vector<eventWeightType>::const_iterator eventWeightEntry_i = eventWeights_.begin();
-                 eventWeightEntry_i != eventWeights_.end(); ++eventWeightEntry_i ) {
-              if ( eventWeightEntry_i->applyAfterFilter_ == (*entry)->name_ ) {
-                edm::Handle<double> eventWeight_i;
-                evt.getByLabel(eventWeightEntry_i->src_, eventWeight_i);
-                eventWeight_passed *= (*eventWeight_i);
-              }
-
-              //std::cout << " eventWeight = " << eventWeight_passed
-              //    << " (value after filter name = " << (*entry)->name_<< ")" << std::endl;
+          for ( std::vector<eventWeightType>::const_iterator eventWeightEntry_i = eventWeights_.begin();
+                eventWeightEntry_i != eventWeights_.end(); ++eventWeightEntry_i ) {
+            if ( eventWeightEntry_i->applyAfterFilter_ == (*entry)->name_ ) {
+              edm::Handle<double> eventWeight_i;
+              evt.getByLabel(eventWeightEntry_i->src_, eventWeight_i);
+              eventWeight_passed *= (*eventWeight_i);
             }
+
+            //std::cout << " eventWeight = " << eventWeight_passed
+            //  	<< " (value after filter name = " << (*entry)->name_<< ")" << std::endl;
           }
 
           bool filterPassed_cumulative = (*entry)->filter_cumulative(evt, es, sysUncertaintyService);
@@ -728,8 +726,8 @@ void GenericAnalyzer::analyze(const edm::Event& evt, const edm::EventSetup& es)
 
           filterResults_individual.insert(std::pair<std::string, bool>((*entry)->name_, filterPassed_individual));
 
-          eventWeights_processed.insert(std::pair<std::string, bool>((*entry)->name_, eventWeight_processed));
-          eventWeights_passed.insert(std::pair<std::string, bool>((*entry)->name_, eventWeight_passed));
+          eventWeights_processed.insert(std::pair<std::string, double>((*entry)->name_, eventWeight_processed));
+          eventWeights_passed.insert(std::pair<std::string, double>((*entry)->name_, eventWeight_passed));
         }
 
         if ( (*entry)->type() == analysisSequenceEntry::kAnalyzer ) {
@@ -745,14 +743,14 @@ void GenericAnalyzer::analyze(const edm::Event& evt, const edm::EventSetup& es)
     }
 
     if ( !isSystematicApplied ) {
-      //--- update filter statistics table
+//--- update filter statistics table
       filterStatisticsTable_->update(filterResults_cumulative, filterResults_individual, eventWeights_processed, eventWeights_passed);
 
-      //--- save run & event numbers
+//--- save run & event numbers
       runLumiSectionEventNumberService_->update(evt.id().run(), evt.luminosityBlock(), evt.id().event(),
                                                 filterResults_cumulative, filterResults_individual, eventWeight_passed);
 
-      //--- if requested, dump event information
+//--- if requested, dump event information
       for ( std::list<EventDumpBase*>::const_iterator it = eventDumps_.begin();
            it != eventDumps_.end(); ++it ) {
         EventDumpBase* eventDump = (*it);
