@@ -290,6 +290,7 @@ process.endtasks = cms.EndPath(process.dummy)
 process.schedule = cms.Schedule(
     process.q,
     process.p,
+    #process.o, 	
     process.endtasks
 )
 
