@@ -247,6 +247,20 @@ process_gammaPlusJets = cms.PSet(
     )
 )
 
+# WW/WZ/ZZ 
+process_VV = cms.PSet(
+    config_dqmFileLoader = cms.PSet(
+        inputFileNames = cms.vstring(''),
+        scaleFactor = cms.double(1.),
+        dqmDirectory_store = cms.string('VV')
+    ),
+    config_dqmHistPlotter = cms.PSet(
+        dqmDirectory = cms.string('harvested/VV'),
+        legendEntry = cms.string('WW/WZ/ZZ'),
+        type = cms.string('smMC') # 'Data' / 'smMC' / 'bsmMC' / 'smSumMC'
+    )
+)
+
 # TT + jets 
 process_TTplusJets = cms.PSet(
     config_dqmFileLoader = cms.PSet(
