@@ -8,23 +8,23 @@ import TauAnalysis.DQMTools.plotterStyleDefinitions_cfi as styles
 SAMPLES_TO_ANALYZE = [
     'data_Mu_Run2010A_Nov4ReReco',
     'data_Mu_Run2010B_Nov4ReReco',
-    ##'Ztautau', 'qqZtautau',
     'ZtautauPU156bx',
-    'qqZtautau',
-    'qqZtautauPU156bx', # EK: not at any site as of Dec 6
-                        # CV: should be available @ ccsrm.in2p3.fr as of Dec 15 (?)
+    'qqZll',
+    'qqZllPU156bx', # EK: not at any site as of Dec 6
+                    # CV: should be available @ ccsrm.in2p3.fr as of Dec 15 (?)
     'Zmumu_pythia',
     'Zee_pythia',
     #'InclusivePPmuX',
     'PPmuXptGt20Mu10', 'PPmuXptGt20Mu15',
-    'Wenu_pythia', 'Wmunu_pythia', 'Wtaunu_pythia',
+    #'Wenu_pythia', 'Wmunu_pythia', 'Wtaunu_pythia',
     'WplusJets_madgraph',
     'Ztautau_powheg','Zmumu_powheg','Zee_powheg',
-    'WePlus_powheg', 'WeMinus_powheg',
-    'WmuMinus_powheg', 'WmuPlus_powheg',
-    'WtauMinus_powheg', 'WtauPlus_powheg',
-    'TTplusJets_pythia',
-    'TTplusJets_madgraph',
+    #'WePlus_powheg', 'WeMinus_powheg',
+    #'WmuMinus_powheg', 'WmuPlus_powheg',
+    #'WtauMinus_powheg', 'WtauPlus_powheg',
+    'WW', 'WZ', 'ZZ',
+    #'TTplusJets_pythia',
+    'TTplusJets_madgraph'
 ]
 
 # List of samples to include in the final level plots.  May include selections
@@ -187,7 +187,7 @@ RECO_SAMPLES = {
         'applyVertexMultiplicityReweighting' : True,
         'hlt' : cms.InputTag("TriggerResults", "", "REDIGI38XPU")
     },
-    'qqZtautau' : {
+    'qqZll' : {
         'datasetpath' : "/VQQJetsToLL_TuneD6T_7TeV-madgraph-tauola/Fall10-START38_V12-v2/GEN-SIM-RECO",
         'dbs_url' :  "http://cmsdbsprod.cern.ch/cms_dbs_prod_global/servlet/DBSServlet",
         'events_processed' : 737157,
@@ -202,7 +202,7 @@ RECO_SAMPLES = {
         'applyMuonIsolationEfficiencyCorrection' : True,
         'hlt' : cms.InputTag("TriggerResults", "", "HLT")
     },
-    'qqZtautauPU156bx' : {
+    'qqZllPU156bx' : {
         'datasetpath' : "/VQQJetsToLL_TuneD6T_7TeV-madgraph-tauola/Fall10-E7TeV_ProbDist_2010Data_BX156_START38_V12-v1/GEN-SIM-RECO",
         'dbs_url' :  "http://cmsdbsprod.cern.ch/cms_dbs_prod_global/servlet/DBSServlet",
         'events_processed' : 740488,
@@ -470,14 +470,59 @@ RECO_SAMPLES = {
         'hlt' : cms.InputTag("TriggerResults", "", "REDIGI38XPU")
     },
     'WplusJets_madgraph' : {
-        'datasetpath' : "/WJetsToLNu_TuneD6T_7TeV-madgraph-tauola/Fall10-E7TeV_ProbDist_2010Data_BX156_START38_V12-v1/GEN-SIM-RECO",
+        'datasetpath' : "/WJetsToLNu_TuneZ2_7TeV-madgraph-tauola/Fall10-E7TeV_ProbDist_2010Data_BX156_START38_V12-v1/GEN-SIM-RECO",
         'dbs_url' :  "http://cmsdbsprod.cern.ch/cms_dbs_prod_global/servlet/DBSServlet",
-        'events_processed' : 14766396,
+        'events_processed' : 15168266,
         'skim_eff' : 1.0,
         'x_sec' : 32412*_picobarns,
         'legendEntry' : plotter.process_WplusJets.config_dqmHistPlotter.legendEntry.value(),
         'type' : plotter.process_WplusJets.config_dqmHistPlotter.type.value(),
         'drawOption' : styles.drawOption_WplusJets,
+        'applyZrecoilCorrection' : True,
+        'applyMuonTriggerEfficiencyCorrection' : True,
+        'applyMuonIsolationEfficiencyCorrection' : True,
+        'applyVertexMultiplicityReweighting' : True,
+        'hlt' : cms.InputTag("TriggerResults", "", "REDIGI38XPU")
+    },
+    'WW' : {
+        'datasetpath' : "/WWtoAnything_TuneZ2_7TeV-pythia6-tauola/Fall10-E7TeV_ProbDist_2010Data_BX156_START38_V12-v1/GEN-SIM-RECO",
+        'dbs_url' :  "http://cmsdbsprod.cern.ch/cms_dbs_prod_global/servlet/DBSServlet",
+        'events_processed' : 2061760,
+        'skim_eff' : 1.0,
+        'x_sec' : 27.8*_picobarns,
+        'legendEntry' : plotter.process_VV.config_dqmHistPlotter.legendEntry.value(),
+        'type' : plotter.process_VV.config_dqmHistPlotter.type.value(),
+        'drawOption' : styles.drawOption_VV,
+        'applyZrecoilCorrection' : True,
+        'applyMuonTriggerEfficiencyCorrection' : True,
+        'applyMuonIsolationEfficiencyCorrection' : True,
+        'applyVertexMultiplicityReweighting' : True,
+        'hlt' : cms.InputTag("TriggerResults", "", "REDIGI38XPU")
+    },
+    'WZ' : {
+        'datasetpath' : "/WZtoAnything_TuneZ2_7TeV-pythia6-tauola/Fall10-E7TeV_ProbDist_2010Data_BX156_START38_V12-v1/GEN-SIM-RECO",
+        'dbs_url' :  "http://cmsdbsprod.cern.ch/cms_dbs_prod_global/servlet/DBSServlet",
+        'events_processed' : 2194752,
+        'skim_eff' : 1.0,
+        'x_sec' : 10.4*_picobarns,
+        'legendEntry' : plotter.process_VV.config_dqmHistPlotter.legendEntry.value(),
+        'type' : plotter.process_VV.config_dqmHistPlotter.type.value(),
+        'drawOption' : styles.drawOption_VV,
+        'applyZrecoilCorrection' : True,
+        'applyMuonTriggerEfficiencyCorrection' : True,
+        'applyMuonIsolationEfficiencyCorrection' : True,
+        'applyVertexMultiplicityReweighting' : True,
+        'hlt' : cms.InputTag("TriggerResults", "", "REDIGI38XPU")
+    },
+    'ZZ' : {
+        'datasetpath' : "/ZZtoAnything_TuneZ2_7TeV-pythia6-tauola/Fall10-E7TeV_ProbDist_2010Data_BX156_START38_V12-v1/GEN-SIM-RECO",
+        'dbs_url' :  "http://cmsdbsprod.cern.ch/cms_dbs_prod_global/servlet/DBSServlet",
+        'events_processed' : 2113368,
+        'skim_eff' : 1.0,
+        'x_sec' : 4.3*_picobarns,
+        'legendEntry' : plotter.process_VV.config_dqmHistPlotter.legendEntry.value(),
+        'type' : plotter.process_VV.config_dqmHistPlotter.type.value(),
+        'drawOption' : styles.drawOption_VV,
         'applyZrecoilCorrection' : True,
         'applyMuonTriggerEfficiencyCorrection' : True,
         'applyMuonIsolationEfficiencyCorrection' : True,
@@ -530,9 +575,9 @@ MERGE_SAMPLES = {
     'ZtautauSum' : {
         'samples' : [
             ##'Ztautau',
-            'qqZtautau',
+            'qqZll',
             ##'ZtautauPU156bx',
-            ##'qqZtautauPU156bx',
+            ##'qqZllPU156bx',
             'Ztautau_powheg'
         ],
         'legendEntry' : plotter.process_Ztautau.config_dqmHistPlotter.legendEntry.value(),
@@ -558,7 +603,7 @@ MERGE_SAMPLES = {
         ],
         'legendEntry' : plotter.process_WplusJets.config_dqmHistPlotter.legendEntry.value(),
         'type' : plotter.process_WplusJets.config_dqmHistPlotter.type.value(),
-        'drawOption' : styles.drawOption_WplusJets,
+        'drawOption' : styles.drawOption_WplusJets
     },
     'WplusJetsSum_powheg' : {
 	'samples' : [
@@ -571,13 +616,24 @@ MERGE_SAMPLES = {
 	],
 	'legendEntry' : plotter.process_WplusJets.config_dqmHistPlotter.legendEntry.value(),
         'type' : plotter.process_WplusJets.config_dqmHistPlotter.type.value(),
-        'drawOption' : styles.drawOption_WplusJets,
+        'drawOption' : styles.drawOption_WplusJets
+    },
+    'VVsum' : {
+        'samples' : [
+            'WW',
+            'WZ',
+            'ZZ'
+        ],
+        'legendEntry' : 'SM',
+        'type' : 'smMC',
+        'drawOption' : styles.drawOption_VV
     },
     'smBgSum' : {
         'samples' : [
             'Zmumu_powheg',
             'qcdSum',
             'WplusJets_madgraph',
+            'VVsum',
             'TTplusJets_madgraph'
         ],
         'legendEntry' : 'SM',
