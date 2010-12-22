@@ -8,9 +8,9 @@
  *
  * \author Christian Veelken, UC Davis
  *
- * \version $Revision: 1.5 $
+ * \version $Revision: 1.6 $
  *
- * $Id: DQMExportAnalysisResults.h,v 1.5 2010/11/24 17:10:11 veelken Exp $
+ * $Id: DQMExportAnalysisResults.h,v 1.6 2010/12/08 10:22:18 veelken Exp $
  *
  */
 
@@ -75,12 +75,14 @@ class DQMExportAnalysisResults : public edm::EDAnalyzer
       : name_(name),
 	meNameTemplate_(cfg.getParameter<std::string>("template"))
     {
-      vstring sysNames = cfg.getParameter<vstring>("systematics");
-      for ( vstring::const_iterator sysName = sysNames.begin();
-	    sysName != sysNames.end(); ++sysName ) {
-	systematics_.insert(*sysName);
+      if ( cfg.exists("systematics") ) {
+        vstring sysNames = cfg.getParameter<vstring>("systematics");
+        for ( vstring::const_iterator sysName = sysNames.begin();
+  	      sysName != sysNames.end(); ++sysName ) {
+	  systematics_.insert(*sysName);
+        }
       }
-      
+
       edm::ParameterSet cfgNormalization = cfg.getParameter<edm::ParameterSet>("normalization");
       meNameNumEventsProcessed_ = cfgNormalization.getParameter<std::string>("numEventsProcessed");
       meNameNumEventsPassed_ = cfgNormalization.getParameter<std::string>("numEventsPassed");
