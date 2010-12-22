@@ -16,7 +16,7 @@ SAMPLES_TO_ANALYZE = [
     'Zee_pythia',
     #'InclusivePPmuX',
     'PPmuXptGt20Mu10', 'PPmuXptGt20Mu15',
-    'PPmuXptGt20Mu10Workaround' # EK - temporary for genPhaseSpace skim bug
+    'PPmuXptGt20Mu10Workaround', # EK - temporary for genPhaseSpace skim bug
     #'Wenu_pythia', 'Wmunu_pythia', 'Wtaunu_pythia',
     'WplusJets_madgraph',
     'Ztautau_powheg','Zmumu_powheg','Zee_powheg',
