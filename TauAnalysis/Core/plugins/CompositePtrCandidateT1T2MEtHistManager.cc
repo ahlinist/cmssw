@@ -547,10 +547,14 @@ void CompositePtrCandidateT1T2MEtHistManager<T1,T2>::fillHistogramsImp(const edm
 	if ( visMassHypotheses->keyProduct().id() == diTauCandidateRef.id() ) {
 	  hVisMassZllCombinedHypothesis_->Fill((*visMassHypotheses)[diTauCandidateRef], weight);
 	} else {
-	  edm::LogWarning("CompositePtrCandidateT1T2MEtHistManager::fillHistogramsImp") 
-	    << " Mismatch between Product ids. of ZtautauVisMassHypothesisCollection  = " << visMassHypotheses->keyProduct().id()
-	    << " and CompositePtrCandidateCollection = " << diTauCandidateRef.id() << ", "
-	    << " presumably CompositePtrCandidateCollection has been filtered without re-keying ZtautauVisMassHypothesisCollection !!";
+          // CV: print warning, but for first event only !!
+	  static bool isFirstWarning = true;
+	  if ( isFirstWarning )
+  	    edm::LogWarning("CompositePtrCandidateT1T2MEtHistManager::fillHistogramsImp") 
+	      << " Mismatch between Product ids. of ZtautauVisMassHypothesisCollection  = " << visMassHypotheses->keyProduct().id()
+	      << " and CompositePtrCandidateCollection = " << diTauCandidateRef.id() << ", "
+	      << " presumably CompositePtrCandidateCollection has been filtered without re-keying ZtautauVisMassHypothesisCollection !!";
+          isFirstWarning = false;
 	}
       }
     }
