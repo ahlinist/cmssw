@@ -18,7 +18,8 @@ process.source = cms.Source("EmptySource")
 process.loadAHtoMuTauSysUncertainties = cms.EDAnalyzer("DQMFileLoader",
     dump = cms.PSet(
         inputFileNames = cms.vstring(
-            'rfio:/data2/friis/Run35SYS/plotsAHtoMuTau_all.root'
+            '/data2/friis/Run1PDF/plotsAHtoMuTau_all.bsmbb.root',
+	    '/data2/friis/Run1PDF/plotsAHtoMuTau_all.bsmgg.root'
         ),
         dqmDirectory_store = cms.string('/')
     )
@@ -26,7 +27,17 @@ process.loadAHtoMuTauSysUncertainties = cms.EDAnalyzer("DQMFileLoader",
 
 process.dumpAHtoMuTauSysUncertaintySequence = cms.Sequence(process.loadAHtoMuTauSysUncertainties)
 
-higgsMassPoints = [ '90', '100', '130', '160', '200', '250', '350' ]
+genAccBinner = 'modelBinnerForMuTauGenTauLeptonPairAcc'
+recEffBinner = {
+    'ahMuTauAnalyzerOS_woBtag' : 'modelBinnerForMuTauCentralJetVetoWrtGenTauLeptonPairAcc',
+    'ahMuTauAnalyzerOS_wBtag'  : 'modelBinnerForMuTauCentralJetBtagWrtGenTauLeptonPairAcc'
+}
+
+#higgsMassPoints = [ '90', '100', '130', '160', '200', '250', '350' ]
+higgsMassPoints = {
+  'A'   : [ '90', '100', '120', '160', '180', '200', '250', '300', '350' ],
+  'bbA' : [ '130', '180', '200', '300' ]
+}
 
 theoryUncertainty = cms.PSet(
     sysNames = cms.vstring(""),
@@ -43,8 +54,8 @@ expUncertainty = cms.PSet(
     pluginType = cms.string("ModelBinningService")
 )
 
-for higgsMassPoint in higgsMassPoints:
-    for higgsType in [ "A", "bbA" ]:
+for higgsType in [ "A", "bbA" ]:
+    for higgsMassPoint in higgsMassPoints[higgsType]:
 	for analyzer in [ "ahMuTauAnalyzerOS_woBtag", "ahMuTauAnalyzerOS_wBtag" ]:
             dqmDirectory = "/harvested/%s%s/%s/afterGenPhaseSpaceCut_beforeEvtSelTrigger" % (higgsType, higgsMassPoint, analyzer)
 
@@ -52,12 +63,12 @@ for higgsMassPoint in higgsMassPoints:
 	        binningService = cms.PSet(
                     pluginType = cms.string("ModelBinningService"),
                     dqmDirectories = cms.PSet(
-                        genAcc = cms.string(dqmDirectory + '/' + 'modelBinnerForMuTauGenTauLeptonPairAcc'),
-                        recWrtGenAcc = cms.string(dqmDirectory + '/' + 'modelBinnerForMuTauWrtGenTauLeptonPairAcc')
+                        genAcc = cms.string(dqmDirectory + '/' + genAccBinner),
+                        recWrtGenAcc = cms.string(dqmDirectory + '/' + recEffBinner[analyzer])
                     )
                 )
             )
-	    dumpAccModuleName = "dumpAHtoMuTauAcc%s%s" % (higgsType, higgsMassPoint)
+	    dumpAccModuleName = "dumpAHtoMuTauAcc%s%s%s" % (analyzer, higgsType, higgsMassPoint)
 	    setattr(process, dumpAccModuleName, dumpAccModule)
 
 	    process.dumpAHtoMuTauSysUncertaintySequence += dumpAccModule
@@ -74,11 +85,11 @@ for higgsMassPoint in higgsMassPoints:
     	        resultTypes = cms.vstring("acceptance"),  
     	        dqmDirectories = cms.PSet(
     	            genAccUncertainry = cms.string(
-	                dqmDirectory + '/' + 'sysUncertaintyBinningResults/modelBinnerForMuTauGenTauLeptonPairAcc'
+	                dqmDirectory + '/' + 'sysUncertaintyBinningResults' + '/' + genAccBinner
                     )
     	        )
             )
-            dumpAccUncertaintyModuleName = "dumpAHtoMuTauAccUncertainty%s%s" % (higgsType, higgsMassPoint)
+            dumpAccUncertaintyModuleName = "dumpAHtoMuTauAccUncertainty%s%s%s" % (analyzer, higgsType, higgsMassPoint)
 	    setattr(process, dumpAccUncertaintyModuleName, dumpAccUncertaintyModule)
 
 	    process.dumpAHtoMuTauSysUncertaintySequence += dumpAccUncertaintyModule
@@ -117,11 +128,11 @@ for higgsMassPoint in higgsMassPoints:
                 resultTypes = cms.vstring("acceptance"),                                                  
                 dqmDirectories = cms.PSet(
                     effUncertainty = cms.string(
-                        dqmDirectory + '/' + 'sysUncertaintyBinningResults/modelBinnerForMuTauWrtGenTauLeptonPairAcc'
+                        dqmDirectory + '/' + 'sysUncertaintyBinningResults' + '/' + recEffBinner[analyzer]
                     )
                 )
             ) 
-            dumpEffUncertaintyModuleName = "dumpAHtoMuTauEffUncertainty%s%s" % (higgsType, higgsMassPoint)
+            dumpEffUncertaintyModuleName = "dumpAHtoMuTauEffUncertainty%s%s%s" % (analyzer, higgsType, higgsMassPoint)
 	    setattr(process, dumpEffUncertaintyModuleName, dumpEffUncertaintyModule)
 
 	    process.dumpAHtoMuTauSysUncertaintySequence += dumpEffUncertaintyModule
