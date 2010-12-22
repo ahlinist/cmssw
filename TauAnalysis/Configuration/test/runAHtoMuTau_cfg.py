@@ -121,7 +121,7 @@ import PhysicsTools.PatAlgos.tools.jetTools as jetTools
 
 # uncomment to replace caloJets by pfJets
 jetTools.switchJetCollection(process, jetCollection = cms.InputTag("ak5PFJets"),
-                    doBTagging = True, outputModule = '')
+             		     doBTagging = True, outputModule = '')
 #--------------------------------------------------------------------------------
 
 #--------------------------------------------------------------------------------
@@ -134,26 +134,25 @@ metTools.addPFMet(process, correct = False)
 
 # uncomment to replace caloMET by pfMET in all di-tau objects
 process.load("TauAnalysis.CandidateTools.diTauPairProductionAllKinds_cff")
-metTools.replaceMETforDiTaus(
-    process, cms.InputTag('patMETs'), cms.InputTag('patPFMETs'))
+metTools.replaceMETforDiTaus(process, cms.InputTag('patMETs'), cms.InputTag('patPFMETs'))
 #--------------------------------------------------------------------------------
 
 #--------------------------------------------------------------------------------
 
-_MUON_ISO = 1.0
-_LOOSE_MUON_ISO = 8.0
+_MUON_ISO = 0.10
+_LOOSE_MUON_ISO = 0.30
 
 cut_values = {
     # Normal is final cuts
     'normal' : {
         'muon_pt' : 15,
         'muon_eta' : 2.1,
-        'muon_iso' : _MUON_ISO, # abs. iso threshold
-        'mt1MET' : 40.,
+        'muon_iso' : _MUON_ISO, # rel. iso threshold
+        'mt1MET' : 50.,
         'tau_pt' : 20,
         'tau_eta' : 2.3,
         'pzeta' : -20.,
-        'tanc' : "tauID('byTaNCmedium') > 0.5",
+        'tanc' : "tauID('byTaNCloose') > 0.5",
         'charge' : 'charge = 0',
     },
     # Loose loosens everything but muon Iso
@@ -161,11 +160,11 @@ cut_values = {
         'muon_pt' : 13.5,
         'muon_eta' : 2.2,
         'muon_iso' : _MUON_ISO,
-        'mt1MET' : 50.,
+        'mt1MET' : 60.,
         'tau_pt' : 18,
         'tau_eta' : 2.4,
         'pzeta' : -25.,
-        'tanc' : "tauID('byTaNCmedium') > -1e3", # turn off
+        'tanc' : "tauID('byTaNCloose') > -1.", # turn off
         'charge' : 'charge > -1000',
     },
 }
@@ -180,11 +179,11 @@ cut_values['loose_looseMuon_tightTau']['tanc'] = "tauID('byTaNCloose') > 0.5"
 # Loose tauid cuts
 #cuts = cut_values['loose_tauID']
 # Normal cuts
-cuts = cut_values['normal']
+#cuts = cut_values['normal']
 # Loose cuts for skim
 #cuts = cut_values['loose']
 # Loose cuts to enable factorization
-#cuts = cut_values['loose_looseMuon_tightTau']
+cuts = cut_values['loose_looseMuon_tightTau']
 
 # import utility function for changing cut values
 from TauAnalysis.Configuration.tools.changeCut import changeCut
@@ -206,24 +205,24 @@ changeCut(process, "selectedPatTausForMuTauEta23",
 
 # Use absolute muon isolation
 process.selectedPatMuonsPFRelIso.chargedHadronIso.ptMin = 1.0
-process.selectedPatMuonsPFRelIso.neutralHadronIso.ptMin = 2000.
-process.selectedPatMuonsPFRelIso.photonIso.ptMin = 1.5
+process.selectedPatMuonsPFRelIso.neutralHadronIso.ptMin = 1.0
+process.selectedPatMuonsPFRelIso.photonIso.ptMin = 1.0
 process.selectedPatMuonsPFRelIso.sumPtMax = cuts['muon_iso']
-process.selectedPatMuonsPFRelIso.sumPtMethod = "absolute"
+process.selectedPatMuonsPFRelIso.sumPtMethod = "relative"
 
 process.selectedPatMuonsPFRelIsoLooseIsolation.chargedHadronIso.ptMin = 1.0
-process.selectedPatMuonsPFRelIsoLooseIsolation.neutralHadronIso.ptMin = 2000.
-process.selectedPatMuonsPFRelIsoLooseIsolation.photonIso.ptMin = 1.5
+process.selectedPatMuonsPFRelIsoLooseIsolation.neutralHadronIso.ptMin = 1.0
+process.selectedPatMuonsPFRelIsoLooseIsolation.photonIso.ptMin = 1.0
 process.selectedPatMuonsPFRelIsoLooseIsolation.sumPtMax = _LOOSE_MUON_ISO
-process.selectedPatMuonsPFRelIsoLooseIsolation.sumPtMethod = "absolute"
+process.selectedPatMuonsPFRelIsoLooseIsolation.sumPtMethod = "relative"
 
-# change upper limit on muon + MET transverse mass to 40 GeV
+# change upper limit on muon + MET transverse mass to 50 GeV
 changeCut(process, "selectedMuTauPairsMt1MET",
           "mt1MET < %0.2f" % cuts['mt1MET'])
 changeCut(process, "selectedMuTauPairsMt1METlooseMuonIsolation",
           "mt1MET < %0.2f" % cuts['mt1MET'])
 
-# change upper limit on muon + MET transverse mass to 40 GeV
+# change upper limit on muon + MET transverse mass to 50 GeV
 changeCut(process, "selectedMuTauPairsForAHtoMuTauMt1MET",
           "mt1MET < %0.2f" % cuts['mt1MET'])
 changeCut(process, "selectedMuTauPairsForAHtoMuTauMt1METlooseMuonIsolation",
@@ -239,7 +238,7 @@ changeCut(process, "selectedMuTauPairsForAHtoMuTauPzetaDiff",
 changeCut(process, "selectedMuTauPairsForAHtoMuTauPzetaDiffLooseMuonIsolation",
           '(pZeta - 1.5*pZetaVis) > %0.2f' % cuts['pzeta'])
 
-# Set chage requirement - can be turned of to keep SS ditaus
+# set charge requirement - can be turned of to keep SS ditaus
 changeCut(process, "selectedMuTauPairsZeroCharge", cuts['charge'])
 changeCut(process, "selectedMuTauPairsForAHtoMuTauZeroCharge", cuts['charge'])
 changeCut(process, "selectedMuTauPairsZeroChargeLooseMuonIsolation", cuts['charge'])
@@ -252,6 +251,9 @@ changeCut(process, "selectedPatMuonsTrkIP", 0.2, attribute = "IpMax")
 changeCut(process, "selectedPatTausTaNCdiscr", cuts['tanc'])
 changeCut(process, "selectedPatTausForMuTauTaNCdiscr", cuts['tanc'])
 
+# disable calorimeter muon veto for now...
+changeCut(process, "selectedPatTausForMuTauCaloMuonVeto", "tauID('againstCaloMuon') > -1.")
+
 # change lower limit on separation required between muon and tau-jet to dR > 0.5
 changeCut(process, "selectedMuTauPairsAntiOverlapVeto", "dR12 > 0.5")
 changeCut(process, "selectedMuTauPairsAntiOverlapVetoLooseMuonIsolation", "dR12 > 0.5")
@@ -263,9 +265,8 @@ changeCut(process, "selectedMuTauPairsAntiOverlapVetoLooseMuonIsolation", "dR12 
 
 # Define a generic end path that filters the final events that a pool
 # output module can be hooked into if desired.
-process.filterFinalEvents = cms.EDFilter(
-    "BoolEventFilter",
-    src = cms.InputTag("isRecAHtoMuTau"),
+process.filterFinalEvents = cms.EDFilter("BoolEventFilter",
+    src = cms.InputTag("isRecAHtoMuTau")
 )
 process.p = cms.Path(
    process.producePatTupleAHtoMuTauSpecific
