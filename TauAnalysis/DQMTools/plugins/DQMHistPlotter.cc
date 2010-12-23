@@ -2,12 +2,11 @@
 
 #include "TauAnalysis/DQMTools/interface/dqmAuxFunctions.h"
 #include "TauAnalysis/DQMTools/interface/generalAuxFunctions.h"
+#include "TauAnalysis/DQMTools/interface/histogramAuxFunctions.h"
 
-// framework & common header files
 #include "FWCore/Framework/interface/Frameworkfwd.h"
 #include "FWCore/MessageLogger/interface/MessageLogger.h"
 
-//DQM services
 #include "DQMServices/Core/interface/DQMStore.h"
 #include "DQMServices/Core/interface/MonitorElement.h"
 #include "FWCore/ServiceRegistry/interface/Service.h"
@@ -1009,18 +1008,36 @@ void DQMHistPlotter::analyze(const edm::Event&, const edm::EventSetup&)
   // nothing to be done yet...
 }
 
+std::string getIndOutputFileName(const std::string& outputFilePath, const std::string& indOutputFileName, const std::string& drawJobName)
+{
+  std::string fullFileName = "";
+
+  int errorFlag = 0;
+  std::string modIndOutputFileName = replace_string(indOutputFileName, plotKeyword, drawJobName, 1, 1, errorFlag);
+  if ( !errorFlag ) {
+    fullFileName = ( outputFilePath != "" ) ?
+      std::string(outputFilePath).append("/").append(modIndOutputFileName) : modIndOutputFileName;
+    //std::cout << " fullFileName = " << fullFileName << std::endl;
+  } else {
+    edm::LogError("getIndOutputFileName") 
+      << " Failed to decode indOutputFileName = " << indOutputFileName << " --> skipping !!";
+  }
+
+  return fullFileName;
+}
+
 void DQMHistPlotter::endJob()
 {
   std::cout << "<DQMHistPlotter::endJob>:" << std::endl;
   gROOT->SetStyle("Plain");
 
-  //--- check that configuration parameters contain no errors
+//--- check that configuration parameters contain no errors
   if ( cfgError_ ) {
     edm::LogError ("endJob") << " Error in Configuration ParameterSet --> histograms will NOT be plotted !!";
     return;
   }
 
-  //--- check that DQMStore service is available
+//--- check that DQMStore service is available
   if ( !edm::Service<DQMStore>().isAvailable() ) {
     edm::LogError ("endJob") << " Failed to access dqmStore --> histograms will NOT be plotted !!";
     return;
@@ -1031,18 +1048,18 @@ void DQMHistPlotter::endJob()
   if ( verbosity ) dqmStore.showDirStructure();
   //dqmStore.showDirStructure();
 
-  //--- stop ROOT from opening X-window for canvas output
-  //    (in order to be able to run in batch mode)
+//--- stop ROOT from opening X-window for canvas output
+//    (in order to be able to run in batch mode)
   gROOT->SetBatch(true);
 
-  //--- initialize graphical output;
-  //    open postscript file
+//--- initialize graphical output;
+//    open postscript file
   TCanvas canvas("DQMHistPlotter","DQMHistPlotter", canvasSizeX_, canvasSizeY_);
   canvas.SetFillColor(10);
   canvas.SetFrameFillColor(10);
 
-  //--- restrict area in which histograms are drawn to quadratic TPad in the center of the TCanvas,
-  //    in order to make space for axis labels...
+//--- restrict area in which histograms are drawn to quadratic TPad in the center of the TCanvas,
+//    in order to make space for axis labels...
   //TPad pad("EWKTauPad", "EWKTauPad", 0.02, 0.15, 0.98, 0.85);
   //pad.SetFillColor(10);
   //pad.Draw();
@@ -1055,13 +1072,13 @@ void DQMHistPlotter::endJob()
     ps = new TPostScript(psFileName.data(), 112);
   }
 
-  //--- process drawJobs
+//--- process drawJobs
   for ( std::vector<cfgEntryDrawJob>::const_iterator drawJob = drawJobs_.begin();
        drawJob != drawJobs_.end(); ++drawJob ) {
     const std::string& drawJobName = drawJob->name_;
     std::cout << "--> processing drawJob " << drawJobName << "..." << std::endl;
 
-    //--- prepare internally used histogram data-structures
+//--- prepare internally used histogram data-structures
     TH1* stackedHistogram_sum = NULL;
     std::vector<TH1*> histogramsToDelete;
     std::vector<plotDefEntry*> drawOptionsToDelete;
@@ -1096,7 +1113,7 @@ void DQMHistPlotter::endJob()
       }
 
       if ( drawOptionConfig->drawOption_ == drawOption_eBand ) {
-        //--- add histogram displaying central value as solid line
+//--- add histogram displaying central value as solid line
         TH1* histogram_centralValue = dynamic_cast<TH1*>(histogram->Clone());
         histogram_centralValue->SetName(std::string(histogram->GetName()).append("_centralValue").data());
         cfgEntryDrawOption drawOptionConfig_centralValue(*drawOptionConfig);
@@ -1105,8 +1122,8 @@ void DQMHistPlotter::endJob()
         drawOptionConfig_centralValue.drawOption_ = "hist";
         drawOptionConfig_centralValue.drawOptionLegend_ = "l";
         std::string drawOptionName_centralValue = std::string(plot->drawOptionEntry_).append("_centralValue");
-        //--- entries in std::map need to be unique,
-        //    so need to check whether drawOptionEntry already exists...
+//--- entries in std::map need to be unique,
+//    so need to check whether drawOptionEntry already exists...
         if ( drawOptionEntries_.find(drawOptionName_centralValue) == drawOptionEntries_.end() )
           drawOptionEntries_.insert(std::pair<std::string, cfgEntryDrawOption>
                                     (drawOptionName_centralValue, cfgEntryDrawOption(drawOptionName_centralValue, drawOptionConfig_centralValue)));
@@ -1116,7 +1133,7 @@ void DQMHistPlotter::endJob()
         histogramsToDelete.push_back(histogram_centralValue);
         drawOptionsToDelete.push_back(plot_centralValue);
 
-        //--- add histogram displaying uncertainty as shaded error band
+//--- add histogram displaying uncertainty as shaded error band
         TH1* histogram_ErrorBand = dynamic_cast<TH1*>(histogram->Clone());
         histogram_ErrorBand->SetName(std::string(histogram->GetName()).append("_ErrorBand").data());
         cfgEntryDrawOption drawOptionConfig_ErrorBand(*drawOptionConfig);
@@ -1127,8 +1144,8 @@ void DQMHistPlotter::endJob()
         drawOptionConfig_ErrorBand.drawOption_ = "e2";
         drawOptionConfig_ErrorBand.drawOptionLegend_ = "f";
         std::string drawOptionName_ErrorBand = std::string(plot->drawOptionEntry_).append("_ErrorBand");
-        //--- entries in std::map need to be unique,
-        //    so need to check whether drawOptionEntry already exists...
+//--- entries in std::map need to be unique,
+//    so need to check whether drawOptionEntry already exists...
         if ( drawOptionEntries_.find(drawOptionName_ErrorBand) == drawOptionEntries_.end() )
           drawOptionEntries_.insert(std::pair<std::string, cfgEntryDrawOption>
                                     (drawOptionName_ErrorBand, cfgEntryDrawOption(drawOptionName_ErrorBand, drawOptionConfig_ErrorBand)));
@@ -1149,17 +1166,17 @@ void DQMHistPlotter::endJob()
       }
     }
 
-    //--- Get the x-axis configuration
+//--- Get the x-axis configuration
     const cfgEntryAxisX* xAxisConfig = findCfgDef<cfgEntryAxisX>(drawJob->xAxis_, xAxes_, "xAxis", drawJobName);
 
-    //--- determine normalization of y-axis
-    //    (maximum of any of the histograms included in drawJob)
+//--- determine normalization of y-axis
+//    (maximum of any of the histograms included in drawJob)
     double yAxisNorm_min = 0.;
     double yAxisNorm_max = 0.;
     for ( std::vector<histogram_drawOption_pair>::const_iterator it = allHistograms.begin();
          it != allHistograms.end(); ++it ) {
-      //-- apply a rebinning to the xaxis, if we are using one.  We have to do
-      // this before the computation of the minimum and maximum.
+//-- apply a rebinning to the xaxis, if we are using one.  We have to do
+// this before the computation of the minimum and maximum.
       xAxisConfig->rebin(it->first);
       yAxisNorm_min = TMath::Min(yAxisNorm_min, it->first->GetMinimum());
       yAxisNorm_max = TMath::Max(yAxisNorm_max, it->first->GetMaximum());
@@ -1171,8 +1188,9 @@ void DQMHistPlotter::endJob()
     const cfgEntryAxisY* yAxisConfig = findCfgDef<cfgEntryAxisY>(drawJob->yAxis_, yAxes_, "yAxis", drawJobName);
     const cfgEntryLegend* legendConfig = findCfgDef<cfgEntryLegend>(drawJob->legend_, legends_, "legend", drawJobName);
     if ( xAxisConfig == NULL || yAxisConfig == NULL || legendConfig == NULL ) {
-      edm::LogError ("endJob") << " Failed to access information needed by drawJob = " << drawJobName
-          << " --> histograms will NOT be plotted !!";
+      edm::LogError ("endJob") 
+        << " Failed to access information needed by drawJob = " << drawJobName
+        << " --> histograms will NOT be plotted !!";
       return;
     }
 
@@ -1191,8 +1209,9 @@ void DQMHistPlotter::endJob()
           findCfgDef<cfgEntryDrawOption>(drawOption->drawOptionEntry_, drawOptionEntries_, "drawOptionEntry", drawJobName);
       const cfgEntryProcess* processConfig = findCfgDef<cfgEntryProcess>(drawOption->process_, processes_, "process", drawJobName);
       if ( drawOptionConfig == NULL || processConfig == NULL ) {
-        edm::LogError ("endJob") << " Failed to access information needed by drawJob = " << drawJobName
-            << " --> histograms will NOT be plotted !!";
+        edm::LogError ("endJob") 
+	  << " Failed to access information needed by drawJob = " << drawJobName
+          << " --> histograms will NOT be plotted !!";
         return;
       }
 
@@ -1224,16 +1243,16 @@ void DQMHistPlotter::endJob()
       }
     }
 
-    //--- create legend;
-    //    add legend entries in "reverse" order
-    //    so that legend and stacked plots appear in same order (from top to bottom)
-    //
-    //    WARNING: need to call
-    //              TLegend::TLegend(Double_t, Double_t,Double_t, Double_t, const char* = "", Option_t* = "brNDC")
-    //             constructor, as TLegend::TLegend default constructor causes the created TLegend object to behave differently !!
-    //
-    //    NOTE: cannot use const_reverse_iterator due to compiler bug in gcc3.4 series
-    //
+//--- create legend;
+//    add legend entries in "reverse" order
+//    so that legend and stacked plots appear in same order (from top to bottom)
+//
+//    WARNING: need to call
+//              TLegend::TLegend(Double_t, Double_t,Double_t, Double_t, const char* = "", Option_t* = "brNDC")
+//             constructor, as TLegend::TLegend default constructor causes the created TLegend object to behave differently !!
+//
+//    NOTE: cannot use const_reverse_iterator due to compiler bug in gcc3.4 series
+//
     TLegend legend(defaultLegendPosX, defaultLegendPosY, defaultLegendPosX + defaultLegendSizeX, defaultLegendPosY + defaultLegendSizeY);
     legendConfig->applyTo(&legend);
 
@@ -1274,19 +1293,19 @@ void DQMHistPlotter::endJob()
       labels.push_back(label);
     }
 
-    //--- draw histograms
-    //   - in the order:
-    //    1. uncertainty on sum of all Standard Model processes
-    //    2. sum of all Standard Model processes
-    //    3. individual Standard Model processes
-    //    4. individual beyond the Standard Model processes
-    //    5. data
+//--- draw histograms
+//   - in the order:
+//    1. uncertainty on sum of all Standard Model processes
+//    2. sum of all Standard Model processes
+//    3. individual Standard Model processes
+//    4. individual beyond the Standard Model processes
+//    5. data
     bool isFirstHistogram = true;
     drawHistograms(smSumUncertaintyHistogramList, isFirstHistogram, histogramsToDelete);
     drawHistograms(smSumHistogramList, isFirstHistogram, histogramsToDelete);
 
-    //--- process histograms for individual Standard Model processes
-    //    in reverse order, so that most stacked histogram gets drawn first
+//--- process histograms for individual Standard Model processes
+//    in reverse order, so that most stacked histogram gets drawn first
     for ( std::vector<histoDrawEntry>::reverse_iterator histogram = smProcessHistogramList.rbegin();
          histogram != smProcessHistogramList.rend(); ++histogram ) {
       drawHistogram(*histogram, isFirstHistogram, histogramsToDelete);
@@ -1306,24 +1325,91 @@ void DQMHistPlotter::endJob()
 
     canvas.Update();
     //pad.Update();
-
+ 
     if ( indOutputFileName_ != "" ) {
-      const std::string& drawJobName_full = drawJob->name_full_;
-      int errorFlag = 0;
-      std::string modIndOutputFileName = replace_string(indOutputFileName_, plotKeyword, drawJobName_full, 1, 1, errorFlag);
-      if ( !errorFlag ) {
-        std::string fullFileName = ( outputFilePath_ != "" ) ?
-            std::string(outputFilePath_).append("/").append(modIndOutputFileName) : modIndOutputFileName;
-        //std::cout << " fullFileName = " << fullFileName << std::endl;
-        canvas.Print(fullFileName.data());
-      } else {
-        edm::LogError("endJob") << " Failed to decode indOutputFileName = " << indOutputFileName_ << " --> skipping !!";
-      }
+      std::string fullFileName = getIndOutputFileName(outputFilePath_, indOutputFileName_, drawJob->name_full_);
+      if ( fullFileName != "" ) canvas.Print(fullFileName.data());
     }
 
     if ( ps ) ps->NewPage();
 
-    //--- delete temporarily created histogram and drawOption objects
+//--- create plot of data/MC ratio
+    if ( dataHistogramList.size() == 1 && smSumHistogramList.size() == 1 ) {
+      TH1* histogram_data = dataHistogramList.begin()->first;
+      TH1* histogram_mcSMsum = smSumHistogramList.begin()->first;
+
+//-- check that binning is compatible
+      if ( isCompatibleBinning(histogram_data, histogram_mcSMsum) ) {
+        std::string histogramName_ratio = std::string(histogram_data->GetName()).append("ToMCsmSumRatio");
+        TH1* histogram_ratio = (TH1*)histogram_data->Clone(histogramName_ratio.data());
+      
+        std::string histogramName_mcSMsumErr = std::string(histogram_mcSMsum->GetName()).append("Err");
+        TH1* histogram_mcSMsumErr = (TH1*)histogram_mcSMsum->Clone(histogramName_mcSMsumErr.data());
+
+        int numBinsX = histogram_data->GetNbinsX();
+        for ( int iBinX = 0; iBinX <= (numBinsX + 1); ++iBinX ) {
+          double binContent_data = histogram_data->GetBinContent(iBinX);
+          double binError_data = histogram_data->GetBinError(iBinX);
+
+          double binContent_mcSMsum = histogram_mcSMsum->GetBinContent(iBinX);
+          double binError_mcSMsum = histogram_mcSMsum->GetBinError(iBinX);
+
+          if ( binContent_mcSMsum != 0 ) {
+            histogram_ratio->SetBinContent(iBinX, binContent_data/binContent_mcSMsum);
+            histogram_ratio->SetBinError(iBinX, binError_data/binContent_mcSMsum);
+             
+            histogram_mcSMsumErr->SetBinContent(iBinX, 1.);
+            histogram_mcSMsumErr->SetBinError(iBinX, binError_mcSMsum/binContent_mcSMsum);
+          }
+        }
+
+        histogram_mcSMsumErr->SetStats(false);
+        histogram_mcSMsumErr->SetMaximum(1.5*TMath::Max(histogram_data->GetMaximum(), histogram_mcSMsumErr->GetMaximum()));
+        histogram_mcSMsumErr->SetMinimum(TMath::Min(histogram_data->GetMinimum(), histogram_mcSMsumErr->GetMinimum())/1.1);
+        histogram_mcSMsumErr->SetLineColor(396);
+        histogram_mcSMsumErr->SetFillColor(396);
+        histogram_mcSMsumErr->SetMarkerColor(396);
+        histogram_mcSMsumErr->Draw("e2");
+   
+        histogram_ratio->SetMarkerStyle(20);
+        histogram_ratio->SetMarkerColor(1);
+        histogram_ratio->SetMarkerSize(1.2); 
+        histogram_ratio->Draw("e1psame");
+
+        TLegend legend_ratio(0.60, 0.74, 0.29, 0.14, "", "brNDC");
+        legend_ratio.AddEntry(histogram_ratio, "Data/Simulation", "p");
+        legend_ratio.AddEntry(histogram_mcSMsumErr, "Simulation stat. Uncertainty", "f");
+        legend_ratio.Draw();
+
+        canvas.Update();
+        //pad.Update();
+
+        if ( indOutputFileName_ != "" ) {
+          std::string fullFileName = getIndOutputFileName(outputFilePath_, indOutputFileName_, drawJob->name_full_);
+          if ( fullFileName != "" ) {
+            size_t pos_dot = fullFileName.rfind(".");
+            if ( pos_dot != std:: string::npos ) {
+              fullFileName.replace(pos_dot, 1, "_diff.");
+              canvas.Print(fullFileName.data());
+            } else {
+              edm::LogError("endJob") 
+                << " Failed to determine output file format for Data/Simulation ratio plot --> skipping !!";
+            }
+          }
+        }
+
+        if ( ps ) ps->NewPage();
+
+        delete histogram_ratio;
+        delete histogram_mcSMsumErr;
+      } else {
+	edm::LogError ("endJob") 
+	  << " Incompatible binning of histograms for Data and Simulation"
+          << " --> ratio will NOT be plotted !!";
+      }
+    }
+
+//--- delete temporarily created histogram and drawOption objects
     for ( std::vector<TH1*>::const_iterator histogram = histogramsToDelete.begin();
          histogram != histogramsToDelete.end(); ++histogram ) {
       delete (*histogram);
@@ -1335,7 +1421,7 @@ void DQMHistPlotter::endJob()
     }
   }
 
-  //--- close postscript file
+//--- close postscript file
   canvas.Clear();
   std::cout << "done." << std::endl;
   if ( ps ) ps->Close();
