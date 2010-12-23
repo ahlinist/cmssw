@@ -87,15 +87,21 @@ private:
   std::vector<edm::InputTag> gctEGammas_; 
   edm::InputTag gtEGammas_; 
   edm::InputTag refEGammas_;
+  edm::InputTag refJetSums_;
+
+
+
 	const L1CaloGeometry* caloGeom;
 	const L1CaloEtScale* emS ;
 	const L1CaloEcalScale* eS ;
 	const L1CaloHcalScale* hS ;
   std::string directory_;
+
   std::string outfile_;
   bool matchL1Objects_;
 	
 	L1RCTParameters*	rctGeo;
+
 
   double maxEt_;
   int    binsEt_; 
@@ -103,11 +109,16 @@ private:
   int    binsPhi_;
   double matchDR_;
   double egammaThreshold_;
+
   double tpgSumWindow_;
   double thresholdForEtaPhi_;
 	double barrelBoundry_;
 	double endcapBoundry_;
- 
+
+	double isolation_;
+	double HEcut_;
+	
+
   //MEs
 
 
@@ -183,6 +194,16 @@ private:
   MonitorElement* rctEtaCorrIEta;
   MonitorElement* rctEtaCorrAbsIEta;
 
+  MonitorElement* rctFGneighborEt;
+  MonitorElement* rctFGMainTowerEt;
+  MonitorElement* rctNoFGMainTowerEt;
+  MonitorElement* rctPtNoSpike;
+
+  MonitorElement* rctPtEGHEcut;
+
+  MonitorElement* rctPtIsoEGHEFGcut;
+  MonitorElement* rctPtIsoEGHEFGIsocut;
+
 	MonitorElement* rctEtaCorrEt;
 	MonitorElement* rctEtaCorrIEtaEt;
 	MonitorElement* rctEtaCorrAbsIEtaEt;
@@ -204,6 +225,7 @@ private:
 	MonitorElement* rctHEvECALEt;
 	MonitorElement* rctHEvHCALEt;
 	MonitorElement* rctHE;
+	MonitorElement* rctHEafterFG;
 
 	MonitorElement* refRxtal;
 
@@ -220,8 +242,11 @@ private:
 	MonitorElement* sumHCAL;
 	MonitorElement* regionSum;
 	MonitorElement* regionHE;
+	MonitorElement* regionMaxHE;
+	MonitorElement* regionMaxHEafterFG;
 	MonitorElement* diffSumEgamma;
 	MonitorElement* minLSum;
+	MonitorElement* minLSumHE;
 
 	math::PtEtaPhiMLorentzVector rctLorentzVector(const L1GctEmCand&);//,const L1CaloGeometry* ,const  L1CaloEtScale *);
 
@@ -232,6 +257,8 @@ private:
 	void
 	  findRegionTowers(const L1GctEmCand& cand,const EcalTrigPrimDigiCollection& ecalDigis, EcalTrigPrimDigiCollection* l1region);//,const L1CaloGeometry* geom ,const  L1CaloEcalScale* scale);
 	std::vector<double> find3x3Towers(int etaCentral, int phiCentral ,const EcalTrigPrimDigiCollection& ecalDigis,const HcalTrigPrimDigiCollection& hcalDigis);//, std::vector<double> tpgs3x3);
+
+	
 
   class RCTEmSorter {
   public:
