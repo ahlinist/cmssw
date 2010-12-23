@@ -20,8 +20,9 @@ process.load("Configuration.EventContent.EventContent_cff")
 process.source = cms.Source("PoolSource",
     fileNames = cms.untracked.vstring(
 
-'/store/data/Run2010B/MinimumBias/RAW-RECO/v2/000/146/944/36A3519B-B3CC-DF11-B099-002618943877.root'
-#       $inputFileNames
+#'/store/data/Run2010B/MinimumBias/RAW-RECO/v2/000/146/944/36A3519B-B3CC-DF11-B099-002618943877.root'
+#                                '/store/data/Run2010B/EGMonitor/RAW/v1/000/147/826/6A32EF3E-41D6-DF11-966F-001617DBD5AC.root'
+       $inputFileNames
 #                                '/store/user/swanson/LowECandsRaw/pickevents_156_1_l3O.root'
            #                     '/store/data/Run2010A/EG/RAW/Aug13ReHLTReReco_PreProd_v3/0002/3A6F5B01-F6A9-DF11-A4F9-0030488A0ACE.root'
     ),
@@ -44,11 +45,11 @@ process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(-1) )
 process.load("DQMServices.Core.DQM_cfg")
 process.load("DQMServices.Components.DQMEnvironment_cfi")
 
-#process.mylocalreco =  cms.Sequence(process.trackerlocalreco*process.calolocalreco)
-#process.myglobalreco = cms.Sequence(process.offlineBeamSpot+process.recopixelvertexing*process.ckftracks+process.ecalClusters+process.caloTowersRec*process.vertexreco*process.particleFlowCluster)
-#process.myelectronseeding = cms.Sequence(process.trackerDrivenElectronSeeds*process.ecalDrivenElectronSeeds*process.electronMergedSeeds)
-#process.myelectrontracking = cms.Sequence(process.electronCkfTrackCandidates*process.electronGsfTracks*process.trackerOnlyConversionSequence)
-#process.electronFromRaw = cms.Sequence(process.mylocalreco*process.myglobalreco*process.myelectronseeding*process.myelectrontracking*process.particleFlowReco*process.pfElectronTranslator*process.gsfElectronSequence)
+process.mylocalreco =  cms.Sequence(process.trackerlocalreco*process.calolocalreco)
+process.myglobalreco = cms.Sequence(process.offlineBeamSpot+process.recopixelvertexing*process.ckftracks+process.ecalClusters+process.caloTowersRec*process.vertexreco*process.particleFlowCluster)
+process.myelectronseeding = cms.Sequence(process.trackerDrivenElectronSeeds*process.ecalDrivenElectronSeeds*process.electronMergedSeeds)
+process.myelectrontracking = cms.Sequence(process.electronCkfTrackCandidates*process.electronGsfTracks*process.trackerOnlyConversionSequence)
+process.electronFromRaw = cms.Sequence(process.mylocalreco*process.myglobalreco*process.myelectronseeding*process.myelectrontracking*process.particleFlowReco*process.pfElectronTranslator*process.gsfElectronSequence)
 
 
 #process.load("ElectroWeakAnalysis.WENu.simpleEleIdSequence_cff")
@@ -58,7 +59,10 @@ process.load("Validation.L1Trigger.L1TRCToffline_DataReEmul_cff")
 #process.load("Validation.L1Trigger.L1TRCToffline_HE3_cff")
 
 #process.rctheemul = cms.Sequence(process.rctemul+process.rctemul7+process.rctemul6+process.rctemul5+process.rctemul45+process.rctemul4+process.rctemul35+process.rctemul3)
-
+process.highestElectron = cms.EDFilter("LargestPtCandViewSelector",
+                           src = cms.InputTag("gsfElectrons"),
+                           maxNumber = cms.uint32(1)
+                         )
 process.selectedPhotonsBarrel = cms.EDFilter("PhotonSelector",
 #process.selectedPhotonsBarrel = cms.EDFilter("GsfElectronSelector",
    src = cms.InputTag("photons"),
@@ -85,43 +89,43 @@ process.selectedSC = cms.EDFilter("SuperClusterSelector",
 )    
 
 process.selectedElectrons = cms.EDFilter("GsfElectronSelector",
-   src = cms.InputTag("highestElectron"),
+   src = cms.InputTag("gsfElectrons"),
    cut = cms.string('pt>1'),
    filter = cms.bool(True)
 )    
 
 process.selectedElectronsBarrel = cms.EDFilter("GsfElectronSelector",
-   src = cms.InputTag("highestElectron"),
+   src = cms.InputTag("gsfElectrons"),
    cut = cms.string('pt>1&&isEB()'),
    filter = cms.bool(True)
 )    
 
 process.selectedElectronsEndcap = cms.EDFilter("GsfElectronSelector",
-   src = cms.InputTag("highestElectron"),
+   src = cms.InputTag("gsfElectrons"),
    cut = cms.string('pt>1&&isEE()'),
    filter = cms.bool(True)
 )    
 
 process.selectedElectronsLow = cms.EDFilter("GsfElectronSelector",
-   src = cms.InputTag("highestElectron"),
+   src = cms.InputTag("gsfElectrons"),
    cut = cms.string('pt>1&&pt<6'),
    filter = cms.bool(True)
 )    
 
 process.selectedElectronsTurnOn = cms.EDFilter("GsfElectronSelector",
-   src = cms.InputTag("highestElectron"),
+   src = cms.InputTag("gsfElectrons"),
    cut = cms.string('pt>6&&pt<12'),
    filter = cms.bool(True)
 )    
 
 process.selectedElectronsPlateau = cms.EDFilter("GsfElectronSelector",
-   src = cms.InputTag("highestElectron"),
+   src = cms.InputTag("gsfElectrons"),
    cut = cms.string('pt>12&&pt<20'),
    filter = cms.bool(True)
 )    
 
 process.selectedElectronsHigh = cms.EDFilter("GsfElectronSelector",
-   src = cms.InputTag("highestElectron"),
+   src = cms.InputTag("gsfElectrons"),
    cut = cms.string('pt>20'),
    filter = cms.bool(True)
 )  
@@ -132,10 +136,7 @@ process.highestBarrelPhoton = cms.EDFilter("LargestPtCandViewSelector",
                          )
 
 
-process.highestElectron = cms.EDFilter("LargestPtCandViewSelector",
-                           src = cms.InputTag("gsfElectrons"),
-                           maxNumber = cms.uint32(1)
-                         )
+
 #process.highestEndcapPhoton = cms.EDFilter("LargestPtCandViewSelector",
 #                           src = cms.InputTag("selectedPhotonsEndcap"),
 #                           maxNumber = cms.uint32(1)
@@ -374,8 +375,8 @@ process.gsf8 = cms.EDAnalyzer('RctValidation',
                 maxEt = cms.untracked.double(40),
                 binsEt = cms.untracked.int32(40),
                 gammaThreshold = cms.untracked.double(5.),
-#                outputFileName = cms.untracked.string('$outputFileName')
-                              outputFileName = cms.untracked.string('outputFileName.root')
+                outputFileName = cms.untracked.string('$outputFileName')
+#                              outputFileName = cms.untracked.string('outputFileName.root')
 )
 
 process.gsfB8          = process.gsf8.clone()
@@ -434,6 +435,99 @@ process.gsfH8iden.genEGamma = cms.InputTag("selectedElectronsHigh")
 
 
 
+process.he01iso15thr12 = cms.EDAnalyzer('RctValidation',
+                ecalTPGs = cms.InputTag("ecalDigis:EcalTriggerPrimitives"),
+                hcalTPGs = cms.InputTag("hcalDigis"),
+                rctEGamma = cms.InputTag('gctDigis'),
+                gctEGamma = cms.VInputTag(cms.InputTag('gctDigis','isoEm'),
+                                          cms.InputTag('gctDigis','nonIsoEm')
+                ),                          
+                genEGamma = cms.InputTag("selectedElectrons"),
+                directory = cms.string("L1T/ALL/he01iso15thr12"),
+                maxEt = cms.untracked.double(40),
+                binsEt = cms.untracked.int32(40),
+                gammaThreshold = cms.untracked.double(12.),
+                outputFileName = cms.untracked.string('$outputFileName'),
+                                        iso =cms.untracked.double(1.5),
+                                        heCut = cms.untracked.double(.1),
+                                        matchL1Objects = cms.untacked.bool(False)
+
+)
+
+process.he005iso15thr12 = process.he10iso15thr12.clone()
+process.he005iso15thr12 =  cms.string("L1T/ALL/he005iso15thr12")
+process.he005iso15thr12 = heCut = cms.untracked.double(.005)
+
+process.he005iso20thr12 = process.he10iso15thr12.clone()
+process.he005iso20thr12.directory =  cms.string("L1T/ALL/he005iso20thr12")
+process.he005iso20thr12.heCut = cms.untracked.double(.005)
+process.he005iso20thr12.iso = cms.untracked.double(2.0)
+
+
+process.he005iso25thr12 = process.he10iso15thr12.clone()
+process.he005iso25thr12.directory =  cms.string("L1T/ALL/he005iso25thr12")
+process.he005iso25thr12.heCut = cms.untracked.double(.005)
+process.he005iso25thr12.iso = cms.untracked.double(2.5)
+
+
+process.he01iso20thr12 = process.he10iso15thr12.clone()
+process.he01iso20thr12.directory =  cms.string("L1T/ALL/he01iso20thr12")
+process.he01iso20thr12.heCut = cms.untracked.double(.01)
+process.he01iso20thr12.iso = cms.untracked.double(2.0)
+
+
+process.he01iso25thr12 = process.he10iso15thr12.clone()
+process.he01iso25thr12.directory =  cms.string("L1T/ALL/he01iso25thr12")
+process.he01iso25thr12.heCut = cms.untracked.double(.01)
+process.he01iso25thr12.iso = cms.untracked.double(2.5)
+
+
+process.he01iso15thr20 = cms.EDAnalyzer('RctValidation',
+                ecalTPGs = cms.InputTag("ecalDigis:EcalTriggerPrimitives"),
+                hcalTPGs = cms.InputTag("hcalDigis"),
+                rctEGamma = cms.InputTag('gctDigis'),
+                gctEGamma = cms.VInputTag(cms.InputTag('gctDigis','isoEm'),
+                                          cms.InputTag('gctDigis','nonIsoEm')
+                ),                          
+                genEGamma = cms.InputTag("selectedElectrons"),
+                directory = cms.string("L1T/ALL/he01iso15thr12"),
+                maxEt = cms.untracked.double(40),
+                binsEt = cms.untracked.int32(40),
+                gammaThreshold = cms.untracked.double(20.),
+                outputFileName = cms.untracked.string('$outputFileName'),
+                                        iso =cms.untracked.double(1.5),
+                                        heCut = cms.untracked.double(.1),
+                                        matchL1Objects = cms.untacked.bool(False)
+
+)
+
+process.he005iso15thr20 = process.he10iso15thr12.clone()
+process.he005iso15thr20 =  cms.string("L1T/ALL/he005iso15thr20")
+process.he005iso15thr20 = heCut = cms.untracked.double(.005)
+
+process.he005iso20thr20 = process.he10iso15thr12.clone()
+process.he005iso20thr20.directory =  cms.string("L1T/ALL/he005iso20thr20")
+process.he005iso20thr20.heCut = cms.untracked.double(.005)
+process.he005iso20thr20.iso = cms.untracked.double(2.0)
+
+
+process.he005iso25thr20 = process.he10iso15thr12.clone()
+process.he005iso25thr20.directory =  cms.string("L1T/ALL/he005iso25thr20")
+process.he005iso25thr20.heCut = cms.untracked.double(.005)
+process.he005iso25thr20.iso = cms.untracked.double(2.5)
+
+
+process.he01iso20thr20 = process.he10iso15thr12.clone()
+process.he01iso20thr20.directory =  cms.string("L1T/ALL/he01iso20thr20")
+process.he01iso20thr20.heCut = cms.untracked.double(.01)
+process.he01iso20thr20.iso = cms.untracked.double(2.0)
+
+
+process.he01iso25thr20 = process.he10iso15thr12.clone()
+process.he01iso25thr20.directory =  cms.string("L1T/ALL/he01iso25thr20")
+process.he01iso25thr20.heCut = cms.untracked.double(.01)
+process.he01iso25thr20.iso = cms.untracked.double(2.5)
+
 
 process.content = cms.EDAnalyzer("EventContentAnalyzer")
 
@@ -466,16 +560,16 @@ process.load("Configuration.StandardSequences.Geometry_cff")
 #process.load("Configuration.StandardSequences.DigiToRecoPU")
 
 process.p1 = cms.Path(process.RawToDigi*process.rctemul*#*process.l1RCTParametersTest
-#                      process.electronFromRaw*
-                      process.highestElectron*
+                      process.electronFromRaw*
+#                      process.gsfElectron*
                       process.selectedElectrons*
                      process.gsf8*
                       process.gsf8iden
 )
 
 process.pB = cms.Path(process.RawToDigi*process.rctemul*#*process.l1RCTParametersTest
-#                      process.electronFromRaw*
-                      process.highestElectron*
+                      process.electronFromRaw*
+
                       process.selectedElectronsBarrel*
                      process.gsfB8*
                       process.gsfB8iden
@@ -483,48 +577,66 @@ process.pB = cms.Path(process.RawToDigi*process.rctemul*#*process.l1RCTParameter
 
 
 process.pE = cms.Path(process.RawToDigi*process.rctemul*#*process.l1RCTParametersTest
-#                      process.electronFromRaw*
-                      process.highestElectron*
+                      process.electronFromRaw*
                       process.selectedElectronsEndcap*
                      process.gsfE8*
                       process.gsfE8iden
 )
 
 process.pL = cms.Path(process.RawToDigi*process.rctemul*#*process.l1RCTParametersTest
-#                      process.electronFromRaw*
-                      process.highestElectron*
+                      process.electronFromRaw*
+
                       process.selectedElectronsLow*
                      process.gsfL8*
                       process.gsfL8iden
 )
 
 process.pTO = cms.Path(process.RawToDigi*process.rctemul*#*process.l1RCTParametersTest
-#                      process.electronFromRaw*
-                       process.highestElectron*
+                      process.electronFromRaw*
                       process.selectedElectronsTurnOn*
                      process.gsfTO8*
                       process.gsfTO8iden
 )
 
 process.pP = cms.Path(process.RawToDigi*process.rctemul*#*process.l1RCTParametersTest
-#                      process.electronFromRaw*
-                      process.highestElectron*
+                      process.electronFromRaw*
+
                       process.selectedElectronsPlateau*
                      process.gsfP8*
                       process.gsfP8iden
 )
 
 process.pH = cms.Path(process.RawToDigi*process.rctemul*#*process.l1RCTParametersTest
-#                      process.electronFromRaw*
-                      process.highestElectron*
+                      process.electronFromRaw*
                       process.selectedElectronsHigh*
                      process.gsfH8*
                       process.gsfH8iden
 )
 
+process.cutAccess =  cms.Path(process.RawToDigi*process.rctemul*#*process.l1RCTParametersTest
+                      process.electronFromRaw*
+                              process.he01iso15thr20*
+                              process.he005iso15thr20*     
+                              process.he005iso20thr20*     
+                              process.he005iso25thr20*     
+                              process.he01iso20thr20*     
+                              process.he01iso25thr20*
+                                process.he01iso15thr12*
+                              process.he005iso15thr12*     
+                              process.he005iso20thr12*     
+                              process.he005iso25thr12*     
+                              process.he01iso20thr12*     
+                              process.he01iso25thr12
+                              
+                   
+)
+
+
+
 process.e = cms.EndPath(process.dqmSaver)
 #process.Tracer = cms.Service("Tracer")
-process.schedule = cms.Schedule(process.p1,process.pB,process.pE,process.pL,process.pTO,process.pP,process.pH)#,process.e)#,process.p2,process.p3,process.e)
+#process.schedule = cms.Schedule(process.p1,process.pB,process.pE,process.pL,process.pTO,process.pP,process.pH)#,process.e)#,process.p2,process.p3,process.e)
+process.schedule = cms.Schedule(process.cutAccess)
 #process.schedule = cms.Schedule(process.s1,process.e)
 #outfile = open('config.py','w')
 #print >> outfile,process.dumpPython()
