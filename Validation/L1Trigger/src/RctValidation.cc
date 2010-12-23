@@ -17,6 +17,7 @@ RctValidation::RctValidation( const edm::ParameterSet& iConfig ) :
   rctEGammas_(iConfig.getParameter<edm::InputTag >("rctEGamma")),
   gctEGammas_(iConfig.getParameter<std::vector<edm::InputTag> >("gctEGamma")),
   refEGammas_(iConfig.getParameter<edm::InputTag>("genEGamma")),
+  //  refJetSums_(iConfig.getParameter<edm::InputTag>("genJetSums")),
   directory_(iConfig.getParameter<std::string>("directory")),  
   outfile_(iConfig.getUntrackedParameter<std::string>("outputFileName")),
   maxEt_(iConfig.getUntrackedParameter<double>("maxEt",100)),
@@ -24,6 +25,10 @@ RctValidation::RctValidation( const edm::ParameterSet& iConfig ) :
   binsEta_(iConfig.getUntrackedParameter<int>("binsEta",32)),
   binsPhi_(iConfig.getUntrackedParameter<int>("binsPhi",36)),
   matchDR_(iConfig.getUntrackedParameter<double>("matchDeltaR",0.5)),
+  HEcut_(iConfig.getUntrackedParameter<double>("heCut",0.1)),
+  isolation_(iConfig.getUntrackedParameter<double>("iso",1.5)),
+  
+
 
   egammaThreshold_(iConfig.getUntrackedParameter<double>("gammaThreshold",5.)),
   tpgSumWindow_(iConfig.getUntrackedParameter<double>("tpgSumWindow",0.4)),
@@ -97,7 +102,7 @@ RctValidation::RctValidation( const edm::ParameterSet& iConfig ) :
       tpgEffEta->getTH1F()->Sumw2();
       tpgEffPhi->getTH1F()->Sumw2();
 
-      HCALtpgPt = store->book1D("HCALtpgPt" ,"HCAL tpg e/#gamma P_{T}",binsEt_,0.,maxEt_);
+      HCALtpgPt = store->book1D("HCALtpgPt" ,"HCAL tpg e/#gamma P_{T}",80,0.,20);
       HCALtpgPt->getTH1F()->Sumw2();
       //      tpgEffEtaPhi->getTH1F()->Sumw2();
 
@@ -113,6 +118,18 @@ RctValidation::RctValidation( const edm::ParameterSet& iConfig ) :
 
       
       rctEffPtHighest = store->book1D("rctEffPtHighest" ,"rct e/#gamma E_{T}",binsEt_,0.,maxEt_);
+
+      rctPtNoSpike = store->book1D("rctPtNoSpike" ,"rct e/#gamma E_{T} wo spike",binsEt_,0.,maxEt_);
+      rctPtEGHEcut = store->book1D("rctPtEGHEcut" ,"rct e/#gamma E_{T} objects with h/e and fg cut",binsEt_,0.,maxEt_);
+      rctPtIsoEGHEFGcut = store->book1D("rctPtIsoEGHEFGcut" ,"rct isolated e/#gamma E_{T} h/e cut and fg cut ",binsEt_,0.,maxEt_);
+      rctPtIsoEGHEFGIsocut = store->book1D("rctPtIsoEGHEFGIsocut" ,"rct isolated e/#gamma E_{T} h/e cut, fg cut, and iso ",binsEt_,0.,maxEt_);
+
+
+      rctPtNoSpike->getTH1F()->Sumw2();
+      rctPtEGHEcut->getTH1F()->Sumw2();
+      rctPtIsoEGHEFGcut->getTH1F()->Sumw2();
+      rctPtIsoEGHEFGIsocut->getTH1F()->Sumw2();
+
 
 		rctEffPt->getTH1F()->Sumw2();
 		rctEffPtBarrel->getTH1F()->Sumw2();
@@ -213,7 +230,10 @@ RctValidation::RctValidation( const edm::ParameterSet& iConfig ) :
 		rctHEvECALEt = store->book2D("rctHEvECALEt","H/E values versus ECAL e/#gamma E_{T}", 64, -0.5, 32.5, 40, 0, 1);
 		rctHEvHCALEt = store->book2D("rctHEvHCALEt","H/E values versus HCAL e/#gamma E_{T}", 64, -0.5, 32.5, 40, 0, 1);
 		rctHE = store->book1D("rctHE","H/E values of L1 e/#gamma objects", 40, 0, 1);
+		rctHEafterFG = store->book1D("rctHEafterFG","H/E values of L1 e/#gamma objects with FG cut", 40, 0, 1);
 		regionHE = store->book1D("regionHE","H/E values of L1 e/#gamma 3x3 objects", 40, 0, 1);
+		regionMaxHE = store->book1D("regionMaxHE","H/E values of L1 e/#gamma 3x3 objects", 40, 0, 1);
+		regionMaxHEafterFG = store->book1D("regionMaxHE","H/E values of L1 e/#gamma 3x3 objects", 40, 0, 1);
 
 		rctHEvL1Et->getTH2F()->Sumw2();
 		rctHEvEt->getTH2F()->Sumw2();
@@ -234,8 +254,18 @@ RctValidation::RctValidation( const edm::ParameterSet& iConfig ) :
 		sumHCAL  = store->book1D("sumHCAL" ,"tpg e/#gamma E_{T} sum of HCAL 3x3 region towers",80,0.,40);
 		regionSum =	    store->book1D("regionSum" ,"tpg e/#gamma E_{T} sum of 3x3 region towers",80,0.,40);
 		diffSumEgamma = store->book1D("diffSumEgamma", "energy of other towers",40,0.,10);
-		minLSum = store->book1D("minLSum", "Smallest L Sum of surronding towers",40,0.,10);
-		
+		minLSum = store->book1D("minLSum", "Smallest neighbor energy of isolation comparison",40,0.,10);
+		minLSumHE = store->book1D("minLSum", "Smallest neighbor energy of isolation comparison with HE 0.1 cut",40,0.,10);
+	
+		rctFGneighborEt = store->book1D("rctFGneighborEt","Max Et of neighbor with FG", 40, 0., 20);
+		rctFGMainTowerEt = store->book1D("rctFGMainTowerEt"," Et of central with FG", 40, 0., 20);
+		//		rctNoFGneighborEt = store->book1D("rctFGneighborEt","Max Et of neighbor without FG", 40, 0., 20);
+		rctNoFGMainTowerEt = store->book1D("rctFGMainTowerEt"," Et of central without FG", 40, 0., 20);
+
+
+		rctFGneighborEt->getTH1F()->Sumw2();
+		rctFGMainTowerEt->getTH1F()->Sumw2();
+		rctNoFGMainTowerEt->getTH1F()->Sumw2();
 		tpgECALsecondtower->getTH1F()->Sumw2();
 		tpgHCALSurronding->getTH1F()->Sumw2();
 		tpgECALSurronding->getTH1F()->Sumw2();
@@ -245,6 +275,7 @@ RctValidation::RctValidation( const edm::ParameterSet& iConfig ) :
 		sumHCAL->getTH1F()->Sumw2();
 		diffSumEgamma->getTH1F()->Sumw2();
 		minLSum->getTH1F()->Sumw2();
+		minLSumHE->getTH1F()->Sumw2();
 
 		store->setVerbose(1);
 
@@ -335,111 +366,143 @@ RctValidation::analyze(const Event& iEvent, const EventSetup& iSetup )
   L1GctEmCandCollection rctEGammas;
   edm::Handle<L1CaloEmCollection> egamma;
 
-	
+  L1CaloEmCand rctEGamma;	
   if(iEvent.getByLabel(rctEGammas_,egamma) && !egamma.failedToGet())
     for(L1CaloEmCollection::const_iterator i=egamma->begin();i!=egamma->end();++i)
     {
-      L1CaloEmCand rctEGamma = *i;
-      rctEGammas.push_back(L1GctEmCand(rctEGamma));
-      highestEG = max(highestEG, emS->et(rctEGamma.rank()));
-      
-      if ( rctEGamma.isolated() )
-        highestEGiso = max(highestEGiso, emS->et(rctEGamma.rank()));
+      L1CaloEmCand rctEGammaTemp = *i;
+      rctEGammas.push_back(L1GctEmCand(rctEGammaTemp));
+      if(highestEG < emS->et(i->rank())) {
+	highestEG = emS->et(i->rank());
+	rctEGamma = *i;
+      }
+      if ( i->isolated() )
+        highestEGiso = max(highestEGiso, emS->et(i->rank()));
 
-      if( emS->et(rctEGamma.rank() > egammaThreshold_)){
-	  EcalTrigPrimDigiCollection* l1TrigTowers = new EcalTrigPrimDigiCollection();
-	  
+
+    }
+
+
+  if ( highestEG > 0 ) {
+    rctEffPtHighest->Fill(highestEG);   
+    if( highestEG>egammaThreshold_ && !matchL1Objects_){
+      EcalTrigPrimDigiCollection* l1TrigTowers = new EcalTrigPrimDigiCollection();
 	  findRegionTowers(rctEGamma,*ecalTPGs,l1TrigTowers);
-	  
+
 	  EcalTriggerPrimitiveDigi highestEtTT;
 	  int nTowers =0 ;
-    double totalEnergy = 0., highestEtTTet =-1.,highestEtTTHCAL= 0.;
-    for(EcalTrigPrimDigiCollection::const_iterator iTT = l1TrigTowers->begin() ; iTT != l1TrigTowers->end(); ++iTT){
-      //			  std::cout << "loop, high trig tower et " << highestEtTTet <<std::endl;
-      double et = eS->et(iTT->compressedEt(),abs(iTT->id().ieta()),iTT->id().ieta()/abs(iTT->id().ieta()));	
-	  //			  std::cout << "loop, trig tower  compressed et " << iTT->compressedEt(); //<<std::endl;	
-      totalEnergy += et;
-      if(et> 0)
-	++nTowers;
-      if(et > highestEtTTet ) {
-	highestEtTT = *iTT;
-	    highestEtTTet =et;
-      }
-    }
-    int ieta =  highestEtTT.id().ieta();
-    int iphi = highestEtTT.id().iphi();
-    //    std::cout<< " new part begining";
-    std::vector<double> tpgs3x3 =    find3x3Towers(ieta, iphi, *ecalTPGs, *hcalTPGs);
-    //    std::cout << " after finding 3x3 towers size " << tpgs3x3.size() <<std::endl;
-	double ecal3x3Tot =0.;
-	double hcal3x3Tot =0.;
-	double highestNeighborEcal = -1;
-	double minELsum = 9999;
-	for(int i = 0; i< 9; ++i){
-	  //	  int tEta = ieta + (i / 3) -1 ;
-	  //	  if(abs(tEta)>28) continue;
-	  //	  if(tEta == 0) tEta = -1 * ieta;  // around the eta =0 point
-	  //	  std::cout << " in a loop " << i <<std::endl;
-	  double ecalTTEt= tpgs3x3.at(i);
-	  //	  std::cout << "prepremid  loop " <<std::endl <<std::flush;
-	  double hcalTTEt = tpgs3x3.at(i+9);
-	  //	  std::cout << "premid  loop " <<std::endl <<std::flush;
-
-	  if(hcalTTEt>0){
-	    dirHCALclosest->Fill((i%3)-1,(i/3)-1);
-	    dirHCALclosestWeighted->Fill((i%3)-1,(i/3)-1, hcalTTEt);
-	  }
-	  //	  std::cout << "mid loop " <<std::endl;
-	  ecal3x3Tot += ecalTTEt;
-	  hcal3x3Tot += hcalTTEt;
-	  if( i%2 ==1  )  { // find neighbors of ecal
-	    if(ecalTTEt > highestNeighborEcal)
-	      highestNeighborEcal = ecalTTEt;
-	  }
-	  //	  	  std::cout << "more loop " <<std::endl;
-	  if(i%2 ==0 && i!=4){
-	    double tempELsum = -1* ecalTTEt;
-	    int cornerEta = i/3;
-	    int cornerPhi = i%3;
-	    for(int j=0; j<3; ++j){
-	      tempELsum += tpgs3x3.at(cornerEta*3 + j);
-	      tempELsum += tpgs3x3.at(j*3 + cornerPhi);
+	  double totalEnergy = 0., highestEtTTet =-1.,highestEtTTHCAL= 0.;
+	  bool centralFG = false, centralSpike = false;
+	  for(EcalTrigPrimDigiCollection::const_iterator iTT = l1TrigTowers->begin() ; iTT != l1TrigTowers->end(); ++iTT){
+	    //			  std::cout << "loop, high trig tower et " << highestEtTTet <<std::endl;
+	    double et = eS->et(iTT->compressedEt(),abs(iTT->id().ieta()),iTT->id().ieta()/abs(iTT->id().ieta()));	
+	    //			  std::cout << "loop, trig tower  compressed et " << iTT->compressedEt(); //<<std::endl;	
+	    totalEnergy += et;
+	    if(et> 0)
+	      ++nTowers;
+	    if(et > highestEtTTet ) {
+	      highestEtTT = *iTT;
+	      highestEtTTet =et;
+	      centralFG = iTT->fineGrain();
+	      centralSpike = !(iTT->l1aSpike());
 	    }
-	    if(tempELsum < minELsum)
-	      minELsum = tempELsum;
 	  }
-	  if(i==4)
-	    highestEtTTHCAL = hcalTTEt;
-	}
+	  if(!centralSpike) {// don't look at spike events or fineGrain events\	  
+	  
+	    rctPtNoSpike->Fill(emS->et(rctEGamma.rank()));
+	  
+	    int ieta =  highestEtTT.id().ieta();
+	    int iphi = highestEtTT.id().iphi();
+	    double energyMaxFGcorner = -1;
+	    //    std::cout<< " new part begining";
+	    std::vector<double> tpgs3x3 =    find3x3Towers(ieta, iphi, *ecalTPGs, *hcalTPGs);
+	    //    std::cout << " after finding 3x3 towers size " << tpgs3x3.size() <<std::endl;
+	    double ecal3x3Tot =0.;
+	    double hcal3x3Tot =0.;
+	    double highestNeighborEcal = -1;
+	    double minELsum = 9999;
+	    double highestHEneighbor = 0;
+	    for(int i = 0; i< 9; ++i){
 
+	      double ecalTTEt= tpgs3x3.at(i);
+	      double hcalTTEt = tpgs3x3.at(i+9);
+	    
+	      if(hcalTTEt>0){
+		dirHCALclosest->Fill((i%3)-1,(i/3)-1);
+		dirHCALclosestWeighted->Fill((i%3)-1,(i/3)-1, hcalTTEt);
+		if(highestHEneighbor < (hcalTTEt/ecalTTEt ))
+		  highestHEneighbor = hcalTTEt/ecalTTEt ;
+	      }
+	      
+	      ecal3x3Tot += ecalTTEt;
+	      hcal3x3Tot += hcalTTEt;
+	      if( i%2 ==1  )  { // find neighbors of ecal
+		if(ecalTTEt > highestNeighborEcal)
+		  highestNeighborEcal = ecalTTEt;
+	      }
 
-	//	std::cout << "and end; " << std::endl;
-	//			std:: cout << " highest energy ecal tower is " << et  << " translated HCAL  et " << highestEtTTHCAL <<std::endl;
-	double rctHe =highestEtTTHCAL/highestEtTTet;
-	rctHE->Fill(rctHe);
-	rctHEvL1Et->Fill(emS->et(rctEGamma.rank()),rctHe);
-	//	rctHEvEt->Fill(j->pt(),rctHe);
-	rctHEvECALEt->Fill(highestEtTTet,rctHe);
-	rctHEvHCALEt->Fill(highestEtTTHCAL,rctHe);
-	HCALtpgPt->Fill(highestEtTTHCAL);
-	tpgECALsecondtower->Fill(highestNeighborEcal);
-	tpgHCALSurronding->Fill(hcal3x3Tot);
-	tpgECALSurronding->Fill(ecal3x3Tot-highestEtTTet);
-	regionSum->Fill(hcal3x3Tot+ecal3x3Tot);
-	regionHE->Fill(hcal3x3Tot/ecal3x3Tot);
-	diffSumEgamma->Fill(ecal3x3Tot-highestEtTTet - highestNeighborEcal);
-	minLSum->Fill(minELsum);
-			  
-
-
- }
-
+	      if(i%2 ==0 && i!=4){ 
+		double tempELsum = 0;
+		int cornerEta = i/3;
+		int cornerPhi = i%3;
+		for(int j=0; j<3; ++j){
+		  if(tempELsum <  tpgs3x3.at(cornerEta*3 + j))
+		    tempELsum =   tpgs3x3.at(cornerEta*3 + j);
+		  if(tempELsum <  tpgs3x3.at(j*3 + cornerPhi))
+		    tempELsum = tpgs3x3.at(j*3 + cornerPhi);
+		}
+		if(tempELsum < minELsum)
+		  minELsum = tempELsum;
+	      }
+	      if(i==4)
+		highestEtTTHCAL = hcalTTEt;
+	      else
+		if(tpgs3x3.at(i+18 ) == 1)
+		  energyMaxFGcorner = ecalTTEt;	      
+	    }
+	    
+	  
+	    double rctHe =highestEtTTHCAL/highestEtTTet;
+	    rctHE->Fill(rctHe);
+	    rctHEvL1Et->Fill(emS->et(rctEGamma.rank()),rctHe);
+	    
+	    rctHEvECALEt->Fill(highestEtTTet,rctHe);
+	    rctHEvHCALEt->Fill(highestEtTTHCAL,rctHe);
+	    HCALtpgPt->Fill(highestEtTTHCAL);
+	    tpgECALsecondtower->Fill(highestNeighborEcal);
+	    tpgHCALSurronding->Fill(hcal3x3Tot);
+	    tpgECALSurronding->Fill(ecal3x3Tot-highestEtTTet);
+	    regionSum->Fill(hcal3x3Tot+ecal3x3Tot);
+	    regionHE->Fill(hcal3x3Tot/ecal3x3Tot);
+	    diffSumEgamma->Fill(ecal3x3Tot-highestEtTTet - highestNeighborEcal);
+	    
+	    regionMaxHE->Fill(highestHEneighbor);
+	    if(centralFG) {
+	      rctFGMainTowerEt->Fill(highestEtTTet);
+	    } else {
+	      rctHEafterFG->Fill(rctHe);
+	      if(rctHe < HEcut_){
+	      rctPtEGHEcut->Fill(emS->et(rctEGamma.rank()));
+	      
+	      if(energyMaxFGcorner > 0) 
+		rctFGneighborEt->Fill(energyMaxFGcorner);
+	      else {
+		minLSum->Fill(minELsum);
+		regionMaxHEafterFG->Fill(highestHEneighbor);
+		if(highestHEneighbor < HEcut_) {
+		  rctPtIsoEGHEFGcut->Fill(emS->et(rctEGamma.rank()));
+		  minLSumHE->Fill(minELsum);
+		  if(minELsum < isolation_)
+		    rctPtIsoEGHEFGIsocut->Fill(emS->et(rctEGamma.rank()));
+		}
+	      }
+	    }
+	  }
+	  }
     }
-
-  if ( highestEG > 0 )
-    rctEffPtHighest->Fill(highestEG);   
-    else	
-	  std::cout << " no RCT objects found" << std::endl;
+  }
+  else	
+    std::cout << " no RCT objects found" << std::endl;
 
   if ( highestEGiso > 0 )
     rctIsoEffPtHighest->Fill(highestEGiso);
@@ -477,25 +540,25 @@ RctValidation::analyze(const Event& iEvent, const EventSetup& iSetup )
 
 				continue;
 			}
-//					if(refCand->pt() > j-pt()  && 
-				if(genEGamma->at(refCand).pt() > 1){		
-					double deltaR = ROOT::Math::VectorUtil::DeltaR(genEGamma->at(refCand).p4(),j->p4());
-					if( deltaR < matchDR_) {
-						refNearReference.push_back(refCand);				
-						if(genEGamma->at(refCand).pt() > j->pt())
-							higherRefPresent = true;								
-					}
-				}
+			//					if(refCand->pt() > j-pt()  && 
+			if(genEGamma->at(refCand).pt() > 1){		
+			  double deltaR = ROOT::Math::VectorUtil::DeltaR(genEGamma->at(refCand).p4(),j->p4());
+			  if( deltaR < matchDR_) {
+			    refNearReference.push_back(refCand);				
+			    if(genEGamma->at(refCand).pt() > j->pt())
+			      higherRefPresent = true;								
+			  }
+			}
 		}
 		if(higherRefPresent)
-			continue;
+		  continue;
 		
 		
 		refPt->Fill(j->pt());
 		refEt->Fill(j->et());
-      refEta->Fill(j->eta());
-      refPhi->Fill(j->phi());
-
+		refEta->Fill(j->eta());
+		refPhi->Fill(j->phi());
+		
 		if(fabs(j->phi()) < barrelBoundry_)
 			refPtBarrel->Fill(j->pt());
 		else if(fabs(j->phi()) > endcapBoundry_)
@@ -562,7 +625,122 @@ RctValidation::analyze(const Event& iEvent, const EventSetup& iSetup )
 	math::PtEtaPhiMLorentzVector highestVec = rctLorentzVector(highestRCT);//,caloGeom,emS);
 
 	//		  		  std::cout << "highest RCT found rank" << highestRCT << std::endl;
-	
+    if(  matchL1Objects_){
+      EcalTrigPrimDigiCollection* l1TrigTowers = new EcalTrigPrimDigiCollection();
+	  findRegionTowers(highestRCT,*ecalTPGs,l1TrigTowers);
+
+	  EcalTriggerPrimitiveDigi highestEtTT;
+	  int nTowers =0 ;
+	  double totalEnergy = 0., highestEtTTet =-1.,highestEtTTHCAL= 0.;
+	  bool centralFG = false, centralSpike = false;
+	  for(EcalTrigPrimDigiCollection::const_iterator iTT = l1TrigTowers->begin() ; iTT != l1TrigTowers->end(); ++iTT){
+	    //			  std::cout << "loop, high trig tower et " << highestEtTTet <<std::endl;
+	    double et = eS->et(iTT->compressedEt(),abs(iTT->id().ieta()),iTT->id().ieta()/abs(iTT->id().ieta()));	
+	    //			  std::cout << "loop, trig tower  compressed et " << iTT->compressedEt(); //<<std::endl;	
+	    totalEnergy += et;
+	    if(et> 0)
+	      ++nTowers;
+	    if(et > highestEtTTet ) {
+	      highestEtTT = *iTT;
+	      highestEtTTet =et;
+	      centralFG = iTT->fineGrain();
+	      centralSpike = !(iTT->l1aSpike());
+	    }
+	  }
+	  if(!centralSpike) {// don't look at spike events or fineGrain events\	  
+	  
+	    rctPtNoSpike->Fill(emS->et(highestRCT.rank()));
+	  
+	    int ieta =  highestEtTT.id().ieta();
+	    int iphi = highestEtTT.id().iphi();
+	    double energyMaxFGcorner = -1;
+	    //    std::cout<< " new part begining";
+	    std::vector<double> tpgs3x3 =    find3x3Towers(ieta, iphi, *ecalTPGs, *hcalTPGs);
+	    //    std::cout << " after finding 3x3 towers size " << tpgs3x3.size() <<std::endl;
+	    double ecal3x3Tot =0.;
+	    double hcal3x3Tot =0.;
+	    double highestNeighborEcal = -1;
+	    double minELsum = 9999;
+	    double highestHEneighbor = 0;
+	    for(int i = 0; i< 9; ++i){
+
+	      double ecalTTEt= tpgs3x3.at(i);
+	      double hcalTTEt = tpgs3x3.at(i+9);
+	    
+	      if(hcalTTEt>0){
+		dirHCALclosest->Fill((i%3)-1,(i/3)-1);
+		dirHCALclosestWeighted->Fill((i%3)-1,(i/3)-1, hcalTTEt);
+		if(highestHEneighbor < (hcalTTEt/ecalTTEt ))
+		  highestHEneighbor = hcalTTEt/ecalTTEt ;
+	      }
+	      
+	      ecal3x3Tot += ecalTTEt;
+	      hcal3x3Tot += hcalTTEt;
+	      if( i%2 ==1  )  { // find neighbors of ecal
+		if(ecalTTEt > highestNeighborEcal)
+		  highestNeighborEcal = ecalTTEt;
+	      }
+
+	      if(i%2 ==0 && i!=4){ 
+		double tempELsum = 0;
+		int cornerEta = i/3;
+		int cornerPhi = i%3;
+		for(int j=0; j<3; ++j){
+		  if(tempELsum <  tpgs3x3.at(cornerEta*3 + j))
+		    tempELsum =   tpgs3x3.at(cornerEta*3 + j);
+		  if(tempELsum <  tpgs3x3.at(j*3 + cornerPhi))
+		    tempELsum = tpgs3x3.at(j*3 + cornerPhi);
+		}
+		if(tempELsum < minELsum)
+		  minELsum = tempELsum;
+	      }
+	      if(i==4)
+		highestEtTTHCAL = hcalTTEt;
+	      else
+		if(tpgs3x3.at(i+18 ) == 1)
+		  energyMaxFGcorner = ecalTTEt;	      
+	    }
+	    
+	  
+	    double rctHe =highestEtTTHCAL/highestEtTTet;
+	    rctHE->Fill(rctHe);
+	    rctHEvL1Et->Fill(emS->et(highestRCT.rank()),rctHe);
+	    
+	    rctHEvECALEt->Fill(highestEtTTet,rctHe);
+	    rctHEvHCALEt->Fill(highestEtTTHCAL,rctHe);
+	    HCALtpgPt->Fill(highestEtTTHCAL);
+	    tpgECALsecondtower->Fill(highestNeighborEcal);
+	    tpgHCALSurronding->Fill(hcal3x3Tot);
+	    tpgECALSurronding->Fill(ecal3x3Tot-highestEtTTet);
+	    regionSum->Fill(hcal3x3Tot+ecal3x3Tot);
+	    regionHE->Fill(hcal3x3Tot/ecal3x3Tot);
+	    diffSumEgamma->Fill(ecal3x3Tot-highestEtTTet - highestNeighborEcal);
+	    
+	    regionMaxHE->Fill(highestHEneighbor);
+	    if(centralFG) {
+	      rctFGMainTowerEt->Fill(highestEtTTet);
+	    } else {
+	      rctHEafterFG->Fill(rctHe);
+	      if(rctHe < HEcut_){
+	      rctPtEGHEcut->Fill(emS->et(highestRCT.rank()));
+	      
+	      if(energyMaxFGcorner > 0) 
+		rctFGneighborEt->Fill(energyMaxFGcorner);
+	      else {
+		minLSum->Fill(minELsum);
+		regionMaxHEafterFG->Fill(highestHEneighbor);
+		if(highestHEneighbor < HEcut_) {
+		  rctPtIsoEGHEFGcut->Fill(emS->et(highestRCT.rank()));
+		  minLSumHE->Fill(minELsum);
+		  if(minELsum < isolation_)
+		    rctPtIsoEGHEFGIsocut->Fill(emS->et(highestRCT.rank()));
+		}
+	      }
+	    }
+	  }
+	  }
+    }	
+      
         
 	// find the towers of highest vec
 	
@@ -888,8 +1066,8 @@ RctValidation::findRegionTowers(const L1GctEmCand& cand,const EcalTrigPrimDigiCo
 std::vector<double>
 RctValidation::find3x3Towers(int etaCentral, int phiCentral ,const EcalTrigPrimDigiCollection& ecalTPGs,const HcalTrigPrimDigiCollection& hcalTPGs)//, std::vector<double> tpgs3x3)//,const L1CaloGeometry* geom ,const  L1CaloEcalScale* scale)
 {
-  std::vector<double> tpgs3x3(18);
-  for(int k =0; k< 18; ++k)
+  std::vector<double> tpgs3x3(27);
+  for(int k =0; k< 27; ++k)
     tpgs3x3[k] = 0;
   //  std::cout << " in 3x3 finding eta " << etaCentral << " phi " << phiCentral <<std::endl;
   for(int i = 0; i <= 2 ;++i){ //eta iterator
@@ -913,9 +1091,12 @@ RctValidation::find3x3Towers(int etaCentral, int phiCentral ,const EcalTrigPrimD
       EcalTrigTowerDetId ttEDetId(ieta/abs(ieta), subdet, abs(ieta), iphi);
       //      EcalTrigTowerDetId ttEDetId(ieta,iphi);
       EcalTrigPrimDigiCollection::const_iterator ecalTT = ecalTPGs.find(ttEDetId);
-      if(ecalTT->id() == ttEDetId) // if TP is present in collection, hcalTT is the end piece
-	tpgs3x3[i*3+j] =eS->et(ecalTT->compressedEt(),abs(ieta),ieta/abs(ieta));// ecalTT->compressedEt();
 
+      if(ecalTT->id() == ttEDetId){ // if TP is present in collection, hcalTT is the end piece
+	tpgs3x3[i*3+j] =eS->et(ecalTT->compressedEt(),abs(ieta),ieta/abs(ieta));// ecalTT->compressedEt();
+	if(ecalTT->fineGrain())
+	  tpgs3x3[i*3+j+18] = 1;
+      }
 	
 	//      else //
 	//	highestEtTTHCAL = 0;
