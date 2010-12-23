@@ -15,7 +15,7 @@ process.MessageLogger.suppressWarning = cms.untracked.vstring(
     "analyzeAHtoMuTauEventsOS_woBtag",
     "analyzeAHtoMuTauEventsOS_wBtag",
     "analyzeAHtoMuTauEventsSS_woBtag",
-    "analyzeAHtoMuTauEventsSS_wBtag",
+    "analyzeAHtoMuTauEventsSS_wBtag"
 )
 
 process.load('Configuration/StandardSequences/GeometryIdeal_cff')
@@ -71,7 +71,7 @@ process.saveAHtoMuTauPlots = cms.EDAnalyzer("DQMSimpleFileSaver",
 )
 
 process.maxEvents = cms.untracked.PSet(
-    input = cms.untracked.int32(-1)
+    input = cms.untracked.int32(100)
 )
 
 process.source = cms.Source(
@@ -79,7 +79,8 @@ process.source = cms.Source(
     fileNames = cms.untracked.vstring(
         #'file:/data1/veelken/CMSSW_3_6_x/skims/Ztautau_1_1_sXK.root'
         #'file:/data1/friis/Run17/get_events/data_Mu_Run2010A_Sep17ReReco_pickevents/final_events.root'
-        'file:/data1/veelken/CMSSW_3_8_x/skims/test/mcDYttPU156bx_GEN_SIM_RECO_1_1_1VV.root'
+        #'file:/data1/veelken/CMSSW_3_8_x/skims/test/mcDYttPU156bx_GEN_SIM_RECO_1_1_1VV.root'
+        'file:/data1/veelken/CMSSW_3_8_x/skims/test/mcWplusJetsPU156bx_1_1_LO9.root'
     )
     #skipBadFiles = cms.untracked.bool(True)
 )
