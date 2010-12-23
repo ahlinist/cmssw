@@ -7,7 +7,7 @@ import threading
 import Queue
 import time
 
-from TauAnalysis.Configuration.userRegistry import getAnalysisFilePath
+from TauAnalysis.Configuration.userRegistry import getAnalysisFilePath, getJobId
 
 # Find all files on castor which have zero size or
 # cause an error when opened by ROOT
@@ -104,6 +104,9 @@ castorFilePath = '/castor/cern.ch/' + getAnalysisFilePath(channel)
 castorFilePath = castorFilePath.replace('//', '/')
 print(" castorFilePath = %s" % castorFilePath)
 
+jobId = getJobId(channel)
+print(" jobId = %s" % jobId)
+
 commandLine = 'nsls %s' % castorFilePath
 args = shlex.split(commandLine)
 retval = subprocess.Popen(args, stdout = subprocess.PIPE)
@@ -112,6 +115,10 @@ retval = subprocess.Popen(args, stdout = subprocess.PIPE)
 files = retval.stdout.read().split('\n')
 
 for file in files:
+    # skip files from different submissions
+    if file.find(jobId) == -1:
+	continue
+
     fileName = castorFilePath + '/' + file
     fileName = fileName.replace('//', '/')
     # skip entry referring to castorFilePath directory 
