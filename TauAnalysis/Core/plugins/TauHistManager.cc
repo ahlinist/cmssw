@@ -252,6 +252,7 @@ void TauHistManager::bookHistogramsImp()
 
   hTauDiscriminatorAgainstElectrons_ = book1D("TauDiscriminatorAgainstElectrons",
 					      "Discriminator against Electrons", 2, -0.5, 1.5);
+  hTauPFElectronMVA_ = book1D("TauPFElectronMVA", "TauPFElectronMVA", 40, -1.01, +1.01);
   hTauEmFraction_ = book1D("TauEmFraction", "TauEmFraction", 101, -0.01, 2.01);
   hTauHcalTotOverPLead_ = book1D("TauHcalTotOverPLead", "TauHcalTotOverPLead", 101, -0.01, 2.01);
   hTauHcalMaxOverPLead_ = book1D("TauHcalMaxOverPLead", "TauHcalMaxOverPLead", 101, -0.01, 2.01);
@@ -602,6 +603,12 @@ void TauHistManager::fillHistogramsImp(const edm::Event& evt, const edm::EventSe
     }
 
     hTauDiscriminatorAgainstElectrons_->Fill(patTau->tauID("againstElectron"), weight);
+    if ( patTau->leadPFCand().isNonnull() ) {
+	double pfElectronMVA = patTau->leadPFCand()->mva_e_pi();
+	if ( pfElectronMVA > +1.0 ) pfElectronMVA = +1.0;
+	if ( pfElectronMVA < -1.0 ) pfElectronMVA = -1.0;
+	hTauPFElectronMVA_->Fill(pfElectronMVA, weight);
+    }
     hTauEmFraction_->Fill(patTau->emFraction(), weight);
     hTauHcalTotOverPLead_->Fill(patTau->hcalTotOverPLead(), weight);
     hTauHcalMaxOverPLead_->Fill(patTau->hcalMaxOverPLead(), weight);
