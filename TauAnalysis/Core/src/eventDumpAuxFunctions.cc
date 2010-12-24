@@ -56,8 +56,8 @@ std::ostream* getOutputOptions(const edm::ParameterSet& cfg, bool& isOutputFile,
 //-----------------------------------------------------------------------------------------------------------------------
 //
 
-void printEventSelectionInfo(const EventDumpBase::filterResults_type& filterResults_cumulative, 
-			     const EventDumpBase::filterResults_type& filterResults_individual, std::ostream* stream)
+void printEventSelectionInfo(const GenericAnalyzer_namespace::filterResults_type& filterResults_cumulative, 
+			     const GenericAnalyzer_namespace::filterResults_type& filterResults_individual, std::ostream* stream)
 {
   if ( !stream ) {
     edm::LogError ("printSelectionInfo") << " stream = NULL --> skipping !!";
@@ -66,7 +66,7 @@ void printEventSelectionInfo(const EventDumpBase::filterResults_type& filterResu
 
   *stream << "filterResults:" << std::endl;
 
-  for ( EventDumpBase::filterResults_type::const_iterator filterResult_cumulative = filterResults_cumulative.begin();
+  for ( GenericAnalyzer_namespace::filterResults_type::const_iterator filterResult_cumulative = filterResults_cumulative.begin();
 	filterResult_cumulative != filterResults_cumulative.end(); ++filterResult_cumulative ) {
     const std::string& filterName = filterResult_cumulative->first;
     bool filterPassed_cumulative = filterResult_cumulative->second;
@@ -237,7 +237,7 @@ void printTrackIsolationInfo(const edm::Handle<reco::TrackCollection>& recoTrack
 	*stream << " dR = " << dR << std::endl;
 	*stream << " Pt = " << recoTrack->pt() << std::endl;
 	*stream << " theta = " << recoTrack->theta()*180./TMath::Pi() << std::endl;
-	*stream << " phi = " << recoTrack->phi()*180./TMath::Pi() << std::endl;
+	*stream << " phi = " << recoTrack->phi()*180./TMath::Pi() << std::endl;        
 	*stream << " Hits" << std::endl;
 	const reco::HitPattern& hitPattern = recoTrack->hitPattern();
 	*stream << "  numberOfValidTrackerHits = " << hitPattern.numberOfValidTrackerHits() << std::endl;

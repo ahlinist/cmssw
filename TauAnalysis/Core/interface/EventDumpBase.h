@@ -7,9 +7,9 @@
  * 
  * \author Christian Veelken, UC Davis
  *
- * \version $Revision: 1.4 $
+ * \version $Revision: 1.5 $
  *
- * $Id: EventDumpBase.h,v 1.4 2010/02/12 17:18:50 veelken Exp $
+ * $Id: EventDumpBase.h,v 1.5 2010/12/04 16:31:25 veelken Exp $
  *
  */
 
@@ -18,6 +18,7 @@
 #include "FWCore/ParameterSet/interface/ParameterSet.h"
 
 #include "TauAnalysis/Core/interface/ObjectDumpBase.h"
+#include "TauAnalysis/Core/interface/genericAnalyzerAuxFunctions.h"
 
 #include <vector>
 #include <string>
@@ -33,15 +34,16 @@ class EventDumpBase
   virtual ~EventDumpBase();
 
   // base-class method for print-out of event level information
-  typedef std::map<std::string, bool> filterResults_type;
   virtual void analyze(const edm::Event&, const edm::EventSetup&, 
-		       const filterResults_type&, const filterResults_type&, double);
+		       const GenericAnalyzer_namespace::filterResults_type&, const GenericAnalyzer_namespace::filterResults_type&, 
+	               double);
 
  protected:
   ObjectDumpBase* makeObjectDump(const edm::ParameterSet&, const std::string&);
 
   virtual void print(const edm::Event&, const edm::EventSetup&, 
-		     const filterResults_type&, const filterResults_type&, double) const = 0;
+		     const GenericAnalyzer_namespace::filterResults_type&, const GenericAnalyzer_namespace::filterResults_type&, 
+	             double) const = 0;
 
   std::ostream* outputStream_;
 

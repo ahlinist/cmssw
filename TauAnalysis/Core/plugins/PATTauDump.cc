@@ -80,6 +80,11 @@ void PATTauDump::print(const edm::Event& evt, const edm::EventSetup& es) const
     *outputStream_ << " visMass = " << patTau->mass() << std::endl;
     *outputStream_ << " leading Track" << std::endl;
     printTrackInfo(patTau->leadTrack(), patTau->vertex(), true, false, outputStream_);
+    if ( patTau->leadPFChargedHadrCand().isNonnull() ) {
+      *outputStream_ << " leading PFChargedHadron" << std::endl;
+      *outputStream_ << "   Pt = " << patTau->leadPFChargedHadrCand()->pt() << std::endl;
+      *outputStream_ << "   charge = " << patTau->leadPFChargedHadrCand()->charge() << std::endl;
+    }
     *outputStream_ << " #signal Tracks = " << patTau->signalTracks().size() << std::endl;
     *outputStream_ << " (#signal PFChargedHadrons = " << patTau->signalPFChargedHadrCands().size() << ")" << std::endl;
     *outputStream_ << " tauId" << std::endl;

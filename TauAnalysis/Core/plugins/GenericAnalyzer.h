@@ -9,9 +9,9 @@
   * 
   * \author Christian Veelken, UC Davis
   *
-  * \version $Revision: 1.13 $
+  * \version $Revision: 1.14 $
   *
-  * $Id: GenericAnalyzer.h,v 1.13 2010/10/22 12:17:37 veelken Exp $
+  * $Id: GenericAnalyzer.h,v 1.14 2010/12/04 16:31:25 veelken Exp $
   *
   */
 
@@ -27,6 +27,7 @@
 #include "TauAnalysis/Core/interface/EventDumpBase.h"
 #include "TauAnalysis/Core/interface/FilterStatisticsService.h"
 #include "TauAnalysis/Core/interface/RunLumiSectionEventNumberService.h"
+#include "TauAnalysis/Core/interface/genericAnalyzerAuxFunctions.h"
 
 #include "DQMServices/Core/interface/MonitorElement.h"
 
@@ -98,7 +99,7 @@ class GenericAnalyzer : public edm::EDAnalyzer
   void beginJob();
   void analyze(const edm::Event&, const edm::EventSetup&);
   void endJob();
-
+  
  private:
   typedef std::vector<std::string> vstring;
   void addFilter(const std::string&, const vstring&);

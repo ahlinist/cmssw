@@ -66,8 +66,8 @@ ObjectDumpBase* EventDumpBase::makeObjectDump(const edm::ParameterSet& cfg, cons
 }
 
 bool isFulfilled(const std::string& filterName, const std::string& triggerCondition,
-		 const EventDumpBase::filterResults_type& filterResults_cumulative, 
-		 const EventDumpBase::filterResults_type& filterResults_individual)
+		 const GenericAnalyzer_namespace::filterResults_type& filterResults_cumulative, 
+		 const GenericAnalyzer_namespace::filterResults_type& filterResults_individual)
 {
   //std::cout << "<isFulFilled>:" << std::endl;
   //std::cout << " filterName = " << filterName << std::endl;
@@ -77,7 +77,7 @@ bool isFulfilled(const std::string& filterName, const std::string& triggerCondit
 //    count number of filters which passed/rejected the event
   unsigned numFiltersPassed_individual = 0;
   unsigned numFiltersRejected_individual = 0;
-  for ( EventDumpBase::filterResults_type::const_iterator filterResult_individual = filterResults_individual.begin();
+  for ( GenericAnalyzer_namespace::filterResults_type::const_iterator filterResult_individual = filterResults_individual.begin();
 	filterResult_individual != filterResults_individual.end(); ++filterResult_individual ) {
     if (  filterResult_individual->second ) ++numFiltersPassed_individual;
     if ( !filterResult_individual->second ) ++numFiltersRejected_individual;
@@ -86,7 +86,7 @@ bool isFulfilled(const std::string& filterName, const std::string& triggerCondit
 //--- second pass through filterResults: 
 //    update statistics of individual filters
   bool previousFiltersPassed = true;
-  for ( EventDumpBase::filterResults_type::const_iterator filterResult_cumulative = filterResults_cumulative.begin();
+  for ( GenericAnalyzer_namespace::filterResults_type::const_iterator filterResult_cumulative = filterResults_cumulative.begin();
 	filterResult_cumulative != filterResults_cumulative.end(); ++filterResult_cumulative ) {
     const std::string& filterName_i = filterResult_cumulative->first;
     //std::cout << " filterName_i = " << filterName_i << std::endl;
@@ -94,7 +94,7 @@ bool isFulfilled(const std::string& filterName, const std::string& triggerCondit
     bool filterPassed_cumulative = filterResult_cumulative->second;
     //std::cout << " filterPassed_cumulative = " << filterPassed_cumulative << std::endl;
     
-    EventDumpBase::filterResults_type::const_iterator filterResult_individual = filterResults_individual.find(filterName);
+    GenericAnalyzer_namespace::filterResults_type::const_iterator filterResult_individual = filterResults_individual.find(filterName);
     if ( filterResult_individual == filterResults_individual.end() ) {
       edm::LogError ("isFulFilled") 
 	<< " Failed to find filterResult_individual for filterName = " << filterName << " --> skipping !!";     
@@ -130,8 +130,8 @@ bool isFulfilled(const std::string& filterName, const std::string& triggerCondit
 }
 
 void EventDumpBase::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup, 
-			    const filterResults_type& filterResults_cumulative, 
-			    const filterResults_type& filterResults_individual, 
+			    const GenericAnalyzer_namespace::filterResults_type& filterResults_cumulative, 
+			    const GenericAnalyzer_namespace::filterResults_type& filterResults_individual, 
 			    double eventWeight) 
 {
   //std::cout << "<EventDumpBase::analyze>:" << std::endl;

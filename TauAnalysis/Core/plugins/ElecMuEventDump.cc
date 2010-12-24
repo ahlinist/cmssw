@@ -29,8 +29,8 @@ ElecMuEventDump::~ElecMuEventDump()
 }
 
 void ElecMuEventDump::print(const edm::Event& iEvent, const edm::EventSetup& iSetup, 
-			    const filterResults_type& filterResults_cumulative, 
-			    const filterResults_type& filterResults_individual, 
+			    const GenericAnalyzer_namespace::filterResults_type& filterResults_cumulative, 
+			    const GenericAnalyzer_namespace::filterResults_type& filterResults_individual, 
 			    double eventWeight) const
 {  
   //std::cout << "<ElecMuEventDump::print>:" << std::endl; 

@@ -15,7 +15,7 @@
 #include "DataFormats/ParticleFlowCandidate/interface/PFCandidateFwd.h"
 #include "DataFormats/VertexReco/interface/Vertex.h"
 
-#include "TauAnalysis/Core/interface/EventDumpBase.h"
+#include "TauAnalysis/Core/interface/genericAnalyzerAuxFunctions.h"
 #include "TauAnalysis/Core/interface/eventAuxFunctions.h"
 
 #include <vector>
@@ -25,7 +25,8 @@
 
 std::ostream* getOutputOptions(const edm::ParameterSet&, bool&, int&);
 
-void printEventSelectionInfo(const EventDumpBase::filterResults_type&, const EventDumpBase::filterResults_type&, std::ostream*);
+void printEventSelectionInfo(const GenericAnalyzer_namespace::filterResults_type&, 
+                             const GenericAnalyzer_namespace::filterResults_type&, std::ostream*);
 
 void printGenParticleInfo(const reco::GenParticleCollection&, const reco::GenJetCollection&, std::ostream*);
 
@@ -34,6 +35,7 @@ void printTrackInfo(const edm::Ref<T>& track, const reco::Candidate::Point& vert
 {
   if ( isValidRef(track) ) {
     *stream << "  Pt = " << track->pt() << std::endl;
+    *stream << "  charge = " << track->charge() << std::endl;
     if ( printDxy ) *stream << "  dXY = " << track->dxy(vertex) << std::endl;
     if ( printDz  ) *stream << "  dZ = " << track->dz(vertex) << std::endl;
   } else {

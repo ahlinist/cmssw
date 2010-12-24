@@ -27,13 +27,13 @@ EventDumpAnalyzer::~EventDumpAnalyzer()
 void EventDumpAnalyzer::analyze(const edm::Event& evt, const edm::EventSetup& es)
 {
 //--- check values of boolean event selection flags
-  EventDumpBase::filterResults_type evtSelResults;
+  GenericAnalyzer_namespace::filterResults_type evtSelResults;
   for ( vInputTag::const_iterator evtSelFlag = evtSelFlags_.begin();
 	evtSelFlag != evtSelFlags_.end(); ++evtSelFlag ) {
     edm::Handle<bool> evtSelResult;
     evt.getByLabel(*evtSelFlag, evtSelResult);
 
-    evtSelResults.insert(std::pair<std::string, bool>(evtSelFlag->label(), *evtSelResult));
+    evtSelResults.insert(evtSelFlag->label(), *evtSelResult);
   }
 
   double eventWeight = 1.;

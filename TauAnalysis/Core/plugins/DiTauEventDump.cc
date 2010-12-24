@@ -30,8 +30,8 @@ DiTauEventDump::~DiTauEventDump()
 }
 
 void DiTauEventDump::print(const edm::Event& iEvent, const edm::EventSetup& iSetup, 
-			   const filterResults_type& filterResults_cumulative, 
-			   const filterResults_type& filterResults_individual, 
+			   const GenericAnalyzer_namespace::filterResults_type& filterResults_cumulative, 
+			   const GenericAnalyzer_namespace::filterResults_type& filterResults_individual, 
 			   double eventWeight) const
 {  
   //std::cout << "<DiTauEventDump::print>:" << std::endl; 
