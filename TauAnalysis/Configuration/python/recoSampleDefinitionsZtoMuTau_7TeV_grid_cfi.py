@@ -10,8 +10,7 @@ SAMPLES_TO_ANALYZE = [
     'data_Mu_Run2010B_Nov4ReReco',
     'ZtautauPU156bx',
     'qqZll',
-    'qqZllPU156bx', # EK: not at any site as of Dec 6
-                    # CV: should be available @ ccsrm.in2p3.fr as of Dec 15 (?)
+    'qqZllPU156bx', # EK: not at any site as of Dec 23
     'Zmumu_pythia',
     'Zee_pythia',
     #'InclusivePPmuX',
@@ -33,22 +32,23 @@ SAMPLES_TO_ANALYZE = [
 SAMPLES_TO_PLOT = [
     'data',
     'qcdSum',
-    'WplusJetsSum_pythia',
-    #'WplusJets',
+    #'WplusJetsSum_pythia',
+    'WplusJets_madgraph',
     'TTplusJets_madgraph',
-    'Zmumu_pythia',
-    #'Zee',
+    'VVsum',
+    'Zmumu_powheg',
+    #'Zee_powheg',
     'ZtautauSum'
 ]
 
 SAMPLES_TO_PRINT = copy.copy(SAMPLES_TO_PLOT)
-SAMPLES_TO_PRINT.append('Zee_pythia')
+#SAMPLES_TO_PRINT.append('Zee_pythia')
 SAMPLES_TO_PRINT.append('smBgSum')
 SAMPLES_TO_PRINT.append('smSum')
-SAMPLES_TO_PRINT.append('Zmumu_powheg')
-SAMPLES_TO_PRINT.append('Ztautau_powheg')
-SAMPLES_TO_PRINT.append('WplusJetsSum_powheg')
-SAMPLES_TO_PRINT.append('WplusJets_madgraph')
+#SAMPLES_TO_PRINT.append('Zmumu_powheg')
+#SAMPLES_TO_PRINT.append('Ztautau_powheg')
+#SAMPLES_TO_PRINT.append('WplusJetsSum_powheg')
+#SAMPLES_TO_PRINT.append('WplusJets_madgraph')
 
 SAMPLE_DEFAULTS = {
     'dbs_url' : "http://cmsdbsprod.cern.ch/cms_dbs_ph_analysis_02/servlet/DBSServlet",
@@ -329,7 +329,7 @@ RECO_SAMPLES = {
         'datasetpath' : "/QCD_Pt-20_MuEnrichedPt-15_TuneZ2_7TeV-pythia6/Fall10-E7TeV_ProbDist_2010Data_BX156_START38_V12-v1/GEN-SIM-RECO",
         'dbs_url' :  "http://cmsdbsprod.cern.ch/cms_dbs_prod_global/servlet/DBSServlet",
         'events_processed' : 29504866,
-        'number_of_jobs' : 600,
+        'number_of_jobs' : 1000,
         'skim_eff' : 1.0,
         'x_sec' : 0.2966*_millibarns*2.855e-4, # x-sec * gen filter efficiency
         'legendEntry' : plotter.process_PPmuXptGt20.config_dqmHistPlotter.legendEntry.value(),
@@ -613,36 +613,36 @@ MERGE_SAMPLES = {
         'type' : plotter.process_PPmuXptGt20.config_dqmHistPlotter.type.value(),
         'drawOption' : styles.drawOption_QCD
     },
-    'WplusJetsSum_pythia' : {
-        'samples' : [
-            'Wenu_pythia',
-            'Wmunu_pythia',
-            'Wtaunu_pythia'
-        ],
-        'legendEntry' : plotter.process_WplusJets.config_dqmHistPlotter.legendEntry.value(),
-        'type' : plotter.process_WplusJets.config_dqmHistPlotter.type.value(),
-        'drawOption' : styles.drawOption_WplusJets
-    },
-    'WplusJetsSum_powheg' : {
-	'samples' : [
-            'WePlus_powheg' ,
-            'WeMinus_powheg',
-            'WmuMinus_powheg',
-            'WmuPlus_powheg',
-            'WtauMinus_powheg',
-            'WtauPlus_powheg'
-	],
-	'legendEntry' : plotter.process_WplusJets.config_dqmHistPlotter.legendEntry.value(),
-        'type' : plotter.process_WplusJets.config_dqmHistPlotter.type.value(),
-        'drawOption' : styles.drawOption_WplusJets
-    },
+    ##'WplusJetsSum_pythia' : {
+    ##    'samples' : [
+    ##        'Wenu_pythia',
+    ##        'Wmunu_pythia',
+    ##        'Wtaunu_pythia'
+    ##    ],
+    ##    'legendEntry' : plotter.process_WplusJets.config_dqmHistPlotter.legendEntry.value(),
+    ##    'type' : plotter.process_WplusJets.config_dqmHistPlotter.type.value(),
+    ##    'drawOption' : styles.drawOption_WplusJets
+    ##},
+    ##'WplusJetsSum_powheg' : {
+    ##	'samples' : [
+    ##        'WePlus_powheg' ,
+    ##        'WeMinus_powheg',
+    ##        'WmuMinus_powheg',
+    ##        'WmuPlus_powheg',
+    ##        'WtauMinus_powheg',
+    ##        'WtauPlus_powheg'
+    ##	],
+    ## 	'legendEntry' : plotter.process_WplusJets.config_dqmHistPlotter.legendEntry.value(),
+    ##    'type' : plotter.process_WplusJets.config_dqmHistPlotter.type.value(),
+    ##    'drawOption' : styles.drawOption_WplusJets
+    ##},
     'VVsum' : {
         'samples' : [
             'WW',
             'WZ',
             'ZZ'
         ],
-        'legendEntry' : 'SM',
+        'legendEntry' : 'WW/WZ/ZZ',
         'type' : 'smMC',
         'drawOption' : styles.drawOption_VV
     },
