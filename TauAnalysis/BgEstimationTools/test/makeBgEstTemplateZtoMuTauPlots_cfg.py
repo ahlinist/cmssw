@@ -30,11 +30,11 @@ dqmDirectories_processes = {
         'analysis' : 'ZtoMuTau_from_ZmumuEmbedding'
     },
     'Zmumu' : {
-        'template' : 'Zmumu',
+        'template' : 'Zmumu_powheg',
         'analysis' : 'Zmumu'
     },
     'WplusJets' : {
-        'template' : 'WplusJetsSum',
+        'template' : 'WplusJets_madgraph',
         'analysis' : 'WplusJetsSum'
     },
     'QCD' : {
@@ -42,8 +42,12 @@ dqmDirectories_processes = {
         'analysis' : 'qcdSum'
     },
     'TTplusJets' : {
-        'template' : 'TTplusJets',
+        'template' : 'TTplusJets_madgraph',
         'analysis' : 'TTplusJets'
+    },
+    'diBoson' : {
+        'template' : 'VVsum',
+        'analysis' : 'VVsum'
     },
     'smSum' : {
         'template' : 'smSum',
@@ -113,7 +117,13 @@ rebinning_control = {
         'visMass'   : 1,
         'SVfitMass' : 1,
         'pfMEt'     : 3,
-	'visPt'     : 2
+	'visPt'     : 2,
+        'muonPt'    : 3, 
+        'muonEta'   : 3, 
+        'muonPhi'   : 3, 
+        'tauPt'     : 3, 
+        'tauEta'    : 3, 
+        'tauPhi'    : 3
     },
     'WplusJetsEnriched' : {
         'visMass'   : 2,
@@ -131,13 +141,25 @@ rebinning_control = {
         'visMass'   : 5,
         'SVfitMass' : 5,
         'pfMEt'     : 5,
-    	'visPt'     : 5	
+    	'visPt'     : 5,
+        'muonPt'    : 3, 
+        'muonEta'   : 3, 
+        'muonPhi'   : 3, 
+        'tauPt'     : 3, 
+        'tauEta'    : 3, 
+        'tauPhi'    : 3	
     },
     'QCDenriched'   : {
         'visMass'   : 2,
         'SVfitMass' : 2,
         'pfMEt'     : 3,
-	'visPt'     : 2
+	'visPt'     : 2,
+        'muonPt'    : 3, 
+        'muonEta'   : 3, 
+        'muonPhi'   : 3, 
+        'tauPt'     : 3, 
+        'tauEta'    : 3, 
+        'tauPhi'    : 3
     }
 }    
 
@@ -177,6 +199,8 @@ for processName in dqmDirectories_processes.keys():
         meNameMapping[processName][selectionName] = {}
         for selectionType in [ "analysis", "template" ]:
             if selectionName == 'ZmumuEmbedding' and selectionType != 'analysis':
+ 	        continue
+            if processName == 'diBoson' and selectionType == 'analysis':
  	        continue
             meNameMapping[processName][selectionName][selectionType] = {}
             for distName in meNames.keys(): 
@@ -248,7 +272,7 @@ process.loadTemplateHistZtoMuTau = cms.EDAnalyzer("DQMFileLoader",
     Ztautau = cms.PSet(
         inputFileNames = cms.vstring(
             ##getHarvestingFilePath('ZtoMuTau_bgEstTemplate') + '/' + 'plotsZtoMuTau_bgEstTemplate_all.root'
-            '/data1/veelken/CMSSW_3_8_x/plots/ZtoMuTau_bgEstTemplate/2010Dec17/plotsZtoMuTau_bgEstTemplate_all.root'
+            '/data1/veelken/CMSSW_3_8_x/plots/ZtoMuTau_bgEstTemplate/2010Dec22/plotsZtoMuTau_bgEstTemplate_all.root'
         ),
         scaleFactor = cms.double(1.),
         dqmDirectory_store = cms.string('/template')
@@ -551,33 +575,39 @@ for selectionName, meNameMapping_selectionName_data in meNameMapping_data.items(
 
         for distName in meNameMapping_selectionType_data.keys():
 	    plots.append(drawJobConfigEntry(
-                meName = meNames[distName],
+                meName = meNames[distName] + "Rebinned_%s" % selectionName,
                 title = plotTitles[distName],
                 xAxis = xAxes[distName],
                 name = ("%s" % distName)
             ))
 
+        drawJobConfiguratorZtoMuTauStacked.add(plots = plots)
+
         dqmHistPlotterModule = plotHistZtoMuTauStacked.clone(
             processes = cms.PSet(
                 Ztautau = plotHistZtoMuTauStacked.processes.Ztautau.clone(
-                    dqmDirectory = cms.string('template/harvested/' + dqmDirectories_processes['Ztautau']['template'])
+                    dqmDirectory = cms.string('/template/harvested/' + dqmDirectories_processes['Ztautau']['template'])
                 ),
                 Zmumu = plotHistZtoMuTauStacked.processes.Zmumu.clone(
-                    dqmDirectory = cms.string('template/harvested/' + dqmDirectories_processes['Zmumu']['template'])
+                    dqmDirectory = cms.string('/template/harvested/' + dqmDirectories_processes['Zmumu']['template'])
                 ),
                 WplusJets = plotHistZtoMuTauStacked.processes.WplusJets.clone(
-                    dqmDirectory = cms.string('template/harvested/' + dqmDirectories_processes['WplusJets']['template'])
+                    dqmDirectory = cms.string('/template/harvested/' + dqmDirectories_processes['WplusJets']['template'])
                 ),
                 TTplusJets = plotHistZtoMuTauStacked.processes.TTplusJets.clone(
-                    dqmDirectory = cms.string('template/harvested/' + dqmDirectories_processes['TTplusJets']['template'])
+                    dqmDirectory = cms.string('/template/harvested/' + dqmDirectories_processes['TTplusJets']['template'])
+                ),
+                diBoson = plotHistZtoMuTauStacked.processes.diBoson.clone(
+                    dqmDirectory = cms.string('/template/harvested/' + dqmDirectories_processes['diBoson']['template'])
                 ),
                 QCD = plotHistZtoMuTauStacked.processes.QCD.clone(
-                    dqmDirectory = cms.string('template/harvested/' + dqmDirectories_processes['QCD']['template'])
+                    dqmDirectory = cms.string('/template/harvested/' + dqmDirectories_processes['QCD']['template'])
                 ),
                 Data = plotHistZtoMuTauStacked.processes.Data.clone(
-                    dqmDirectory = cms.string('template/harvested/' + dqmDirectories_processes['Data']['template'])
+                    dqmDirectory = cms.string('/template/harvested/' + dqmDirectories_processes['Data']['template'])
                 )
             ),
+            drawJobs = drawJobConfiguratorZtoMuTauStacked.configure(),
             indOutputFileName = cms.string('bgEstControlZtoMuTau_%s_#PLOT#.pdf' % selectionName)
         )
         dqmHistPlotterModuleName = "plotZtoMuTauStacked%s" % selectionName
@@ -595,10 +625,13 @@ process.saveBgEstTemplateHistZtoMuTau = cms.EDAnalyzer("DQMSimpleFileSaver",
         'keep /template/harvested/ZtautauSum/*',
         'keep /template/harvested/Ztautau_from_ZmumuEmbedding/*',
         'keep /template/harvested/Zmumu/*',
+        'keep /template/harvested/Zmumu_powheg/*',
         'keep /template/harvested/qcdSum/*',
-        'keep /template/harvested/WplusJets/*',
+        'keep /template/harvested/WplusJets_madgraph/*',
         'keep /template/harvested/WplusJetsSum/*',
         'keep /template/harvested/TTplusJets/*',
+        'keep /template/harvested/TTplusJets_madgraph/*',
+        'keep /template/harvested/VVsum/*',
         'keep /template/harvested/data/*'
     )
 )

@@ -263,6 +263,7 @@ plotZtoMuTauStacked_template = plots_ZtoMuTau.clone(
         dqmMonitorElements = cms.vstring(''),
         processes = cms.vstring(
             'TTplusJets',
+            'diBoson',
             'Zmumu',
             'WplusJets',
             'QCD',
@@ -272,6 +273,7 @@ plotZtoMuTauStacked_template = plots_ZtoMuTau.clone(
     ),
     stack = cms.vstring(
         'TTplusJets',
+        'diBoson',
 	'Zmumu',
         'WplusJets',
         'QCD',
@@ -301,6 +303,11 @@ plotHistZtoMuTauStacked = dqmHistPlotter_template.clone(
             legendEntry = cms.string(recoSampleDefinitionsZtoMuTau_7TeV['ALL_SAMPLES']['TTplusJets_madgraph']['legendEntry']),
             type = cms.string(recoSampleDefinitionsZtoMuTau_7TeV['ALL_SAMPLES']['TTplusJets_madgraph']['type'])
         ),
+        diBoson = cms.PSet(
+            dqmDirectory = cms.string(''),
+            legendEntry = cms.string(recoSampleDefinitionsZtoMuTau_7TeV['ALL_SAMPLES']['VVsum']['legendEntry']),
+            type = cms.string(recoSampleDefinitionsZtoMuTau_7TeV['ALL_SAMPLES']['VVsum']['type'])
+        ),
         QCD = cms.PSet(
             dqmDirectory = cms.string(''),
             legendEntry = cms.string(recoSampleDefinitionsZtoMuTau_7TeV['ALL_SAMPLES']['qcdSum']['legendEntry']),
@@ -313,12 +320,20 @@ plotHistZtoMuTauStacked = dqmHistPlotter_template.clone(
         )
     ),
     legends = cms.PSet(
-        regular = copy.deepcopy(legend_regular)
+        regular = legend_regular.clone(
+            posX = cms.double(0.66),
+            posY = cms.double(0.62),
+            sizeX = cms.double(0.23),
+            sizeY = cms.double(0.27)
+        )
     ),
     labels = cms.PSet(
         mcNormScale = dqmHistPlotter_template.labels.mcNormScale.clone(
+            posX = cms.double(0.17),
             posY = cms.double(0.74),
-            sizeY = cms.double(0.14),
+            sizeX = cms.double(0.16),
+            sizeY = cms.double(0.15),
+            textSize = cms.double(0.035),
             textAlign = cms.int32(12),
             text = cms.vstring(
                 'CMS Preliminary', 
@@ -333,6 +348,7 @@ plotHistZtoMuTauStacked = dqmHistPlotter_template.clone(
             Zmumu = recoSampleDefinitionsZtoMuTau_7TeV['ALL_SAMPLES']['Zmumu_powheg']['drawOption'],
             WplusJets = recoSampleDefinitionsZtoMuTau_7TeV['ALL_SAMPLES']['WplusJets_madgraph']['drawOption'],
             TTplusJets = recoSampleDefinitionsZtoMuTau_7TeV['ALL_SAMPLES']['TTplusJets_madgraph']['drawOption'],
+            diBoson = recoSampleDefinitionsZtoMuTau_7TeV['ALL_SAMPLES']['VVsum']['drawOption'],
             QCD = recoSampleDefinitionsZtoMuTau_7TeV['ALL_SAMPLES']['qcdSum']['drawOption'],
             Data = recoSampleDefinitionsZtoMuTau_7TeV['ALL_SAMPLES']['data']['drawOption']
         )
