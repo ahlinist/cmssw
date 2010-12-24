@@ -198,7 +198,7 @@ userSettings = {
                     'batchHarvest' : "/castor/cern.ch/user/f/friis/Run35testharvest/",
                     'skimSource' : 'Run35',
                 }
-            },
+            }
 
         },
         'global' : {
@@ -210,25 +210,28 @@ userSettings = {
     },
     'veelken': {
         'current' : {
-            'AHtoMuTau' : '2010Dec22',
-            'ZtoMuTau' : '2010Dec14ii',
-            'ZtoMuTau_bgEstTemplate' : '2010Dec22'
+            'AHtoMuTau'              : '2010Dec23',
+            'ZtoMuTau'               : '2010Dec14ii',
+            'ZtoMuTau_bgEstTemplate' : '2010Dec22',
+            'ZtoMuTau_tauIdEff'      : '2010Dec04'
         },
         'jobs' : {
-            '2010Dec22' : {
+            '2010Dec23' : {
                 'AHtoMuTau' : {
                     'analysisFilePath' : "/user/v/veelken/CMSSW_3_8_x/plots/AHtoMuTau/",
                     'harvestingFilePath' : "/data1/veelken/CMSSW_3_8_x/plots/AHtoMuTau/",
                     'tmpFilePath' : "/data1/veelken/tmp/AHtoMuTau/",
-                    'jobId' : "2010Dec22iii",
+                    'jobId' : "2010Dec23",
                      # Where to store the harvested histograms on lxbatch
                     'batchHarvest' : "/user/v/veelken/CMSSW_3_8_x/plots/AHtoMuTau_lxbatch/"
-                },
+                }
+            },
+            '2010Dec22' : {
                 'ZtoMuTau_bgEstTemplate' : {
                     'analysisFilePath' : "/user/v/veelken/CMSSW_3_8_x/plots/ZtoMuTau_bgEstTemplate/",
                     'harvestingFilePath' : "/data1/veelken/CMSSW_3_8_x/plots/ZtoMuTau_bgEstTemplate/",
                     'tmpFilePath' : "/data1/veelken/tmp/ZtoMuTau_bgEstTemplate/",
-                    'jobId' : "2010Dec22ii"
+                    'jobId' : "2010Dec22"
                 }
             },
             '2010Dec17' : {
@@ -251,6 +254,42 @@ userSettings = {
                     'harvestingFilePath' : "/data1/veelken/CMSSW_3_8_x/plots/ZtoMuTau_bgEstTemplate/",
                     'tmpFilePath' : "/data1/veelken/tmp/ZtoMuTau_bgEstTemplate/",
                     'jobId' : "2010Dec14ii"
+                }
+            },
+	    '2010Dec04' : {
+                'ZtoMuTau_tauIdEff' : {
+                    'analysisFilePath' : "/user/v/veelken/CMSSW_3_8_x/skims/TauIdEffMeas/",
+                    'harvestingFilePath' : "/data1/veelken/CMSSW_3_8_x/skims/ZtoMuTau_tauIdEff/",
+                    'tmpFilePath' : "/data1/veelken/tmp/ZtoMuTau_tauIdEff/",
+                    'jobId' : "2010Dec04",
+                    # Directory containing selected events
+                    #'pickevents' : '/data1/veelken/CMSSW_3_8_x/skims/ZtoMuTau_tauIdEff/2010Dec04'
+                }
+            },
+            # References to skims run by Evan
+            'Run35test' : {
+                'AHtoMuTau' : {
+                    # The output directory on castor
+                    'analysisFilePath' : '/castor/cern.ch/user/f/friis/Run35test/',
+                    #'analysisFilePath' : '/castor/cern.ch/user/f/friis/Run32/',
+                    # The output directory for the plots
+                    'harvestingFilePath' : "/data2/friis/",
+                    'tmpFilePath' : "/data2/friis/tmp/",
+                    # Where to store the harvested histograms on lxbatch
+                    'batchHarvest' : "/castor/cern.ch/user/f/friis/Run35testharvest/",
+                    'skimSource' : 'Run35',
+                }
+            },
+            'Run35' : {
+                'AHtoMuTau' : {
+                    # The output directory on castor
+                    'analysisFilePath' : '/castor/cern.ch/user/f/friis/Run35/',
+                    #'analysisFilePath' : '/castor/cern.ch/user/f/friis/Run32/',
+                    # The output directory for the plots
+                    'harvestingFilePath' : "/data1/friis/",
+                    'tmpFilePath' : "/data2/friis/tmp/",
+                    # Where to store the harvested histograms on lxbatch
+                    'batchHarvest' : "/castor/cern.ch/user/f/friis/Run35harvest/",
                 }
             }
         },
@@ -334,7 +373,7 @@ def overrideJobId(channel, jobId):
     mine()['current'] = jobId
 
 def getPickEventsPath(channel):
-    return  getInfo(channel)['pickevents']
+    return getInfo(channel)['pickevents']
 
 def getSkimEvents(channel, jobid = None):
     " Get the directory on castor that containing the skimmed files "
