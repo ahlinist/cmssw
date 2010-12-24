@@ -25,7 +25,10 @@ FakeRateEventWeightProducer::~FakeRateEventWeightProducer()
 
 void FakeRateEventWeightProducer::produce(edm::Event& evt, const edm::EventSetup&) 
 { 
-  if ( gVerbosity_ ) std::cout << "<FakeRateEventWeightProducer::produce>:" << std::endl;
+  if ( gVerbosity_ ) {
+    std::cout << "<FakeRateEventWeightProducer::produce>:" << std::endl;
+    std::cout << " moduleLabel = " << moduleLabel_ << std::endl;
+  }
 
   if ( cfgError_ ) return;
 
