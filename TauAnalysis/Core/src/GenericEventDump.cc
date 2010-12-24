@@ -115,8 +115,8 @@ void printMatchingGenParticleTypes(const char* header_matched,
 GenericEventDump::~GenericEventDump()
 {
   if ( doGenInfo_ ) {
-    //--- print counts of different types of particles faking reconstructed electrons,
-    //    muons and tau-jets
+//--- print counts of different types of particles faking reconstructed electrons,
+//    muons and tau-jets
     printMatchingGenParticleTypes("Number of reconstructed Electrons matching generated", 
 				  numRecoElectronsMatchingGenMuons_, 
 				  numRecoElectronsMatchingGenElectrons_,
@@ -158,8 +158,8 @@ GenericEventDump::~GenericEventDump()
 //
 
 void GenericEventDump::analyze(const edm::Event& evt, const edm::EventSetup& es, 
-			       const EventDumpBase::filterResults_type& filterResults_cumulative, 
-			       const EventDumpBase::filterResults_type& filterResults_individual, 
+			       const GenericAnalyzer_namespace::filterResults_type& filterResults_cumulative, 
+			       const GenericAnalyzer_namespace::filterResults_type& filterResults_individual, 
 			       double eventWeight) 
 {
   //std::cout << "<GenericEventDump::analyze>:" << std::endl;

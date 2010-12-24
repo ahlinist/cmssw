@@ -19,7 +19,7 @@ class DiTauEventDump : public GenericEventDump
   
  protected:
   void print(const edm::Event&, const edm::EventSetup&, 
-	     const filterResults_type&, const filterResults_type&, double) const;
+	     const GenericAnalyzer_namespace::filterResults_type&, const GenericAnalyzer_namespace::filterResults_type&, double) const;
 
   ObjectDumpBase* electronDump_;
   ObjectDumpBase* muonDump_;

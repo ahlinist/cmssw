@@ -144,16 +144,16 @@ FilterStatisticsTable::~FilterStatisticsTable()
   }
 }
 
-void FilterStatisticsTable::update(const filterResults_type& filterResults_cumulative, 
-				   const filterResults_type& filterResults_individual, 
-				   const eventWeights_type& eventWeights_processed, 
-				   const eventWeights_type& eventWeights_passed)
+void FilterStatisticsTable::update(const GenericAnalyzer_namespace::filterResults_type& filterResults_cumulative, 
+				   const GenericAnalyzer_namespace::filterResults_type& filterResults_individual, 
+				   const GenericAnalyzer_namespace::eventWeights_type& eventWeights_processed, 
+				   const GenericAnalyzer_namespace::eventWeights_type& eventWeights_passed)
 {
 //--- first pass through filterResults: 
 //    count number of filters which passed/rejected the event
   unsigned numFiltersPassed_individual = 0;
   unsigned numFiltersRejected_individual = 0;
-  for ( filterResults_type::const_iterator filterResult_individual = filterResults_individual.begin();
+  for ( GenericAnalyzer_namespace::filterResults_type::const_iterator filterResult_individual = filterResults_individual.begin();
 	filterResult_individual != filterResults_individual.end(); ++filterResult_individual ) {
     if (  filterResult_individual->second ) ++numFiltersPassed_individual;
     if ( !filterResult_individual->second ) ++numFiltersRejected_individual;
@@ -161,7 +161,7 @@ void FilterStatisticsTable::update(const filterResults_type& filterResults_cumul
 
   unsigned numFiltersPassed_cumulative = 0;
   unsigned numFiltersRejected_cumulative = 0;
-  for ( filterResults_type::const_iterator filterResult_cumulative = filterResults_cumulative.begin();
+  for ( GenericAnalyzer_namespace::filterResults_type::const_iterator filterResult_cumulative = filterResults_cumulative.begin();
 	filterResult_cumulative != filterResults_cumulative.end(); ++filterResult_cumulative ) {
     if (  filterResult_cumulative->second ) ++numFiltersPassed_cumulative;
     if ( !filterResult_cumulative->second ) ++numFiltersRejected_cumulative;
@@ -174,7 +174,7 @@ void FilterStatisticsTable::update(const filterResults_type& filterResults_cumul
 	row != rows_.end(); ++row ) {
     const std::string& filterName = row->second->filterName();
     
-    filterResults_type::const_iterator filterResult_cumulative = filterResults_cumulative.find(filterName);
+    GenericAnalyzer_namespace::filterResults_type::const_iterator filterResult_cumulative = filterResults_cumulative.find(filterName);
     if ( filterResult_cumulative == filterResults_cumulative.end() ) {
       edm::LogError ("FilterStatisticsTable::update") 
 	<< " Failed to find filterResult_cumulative for filterName = " << filterName << " --> skipping !!";     
@@ -183,7 +183,7 @@ void FilterStatisticsTable::update(const filterResults_type& filterResults_cumul
 
     bool filterPassed_cumulative = filterResult_cumulative->second;
 
-    filterResults_type::const_iterator filterResult_individual = filterResults_individual.find(filterName);
+    GenericAnalyzer_namespace::filterResults_type::const_iterator filterResult_individual = filterResults_individual.find(filterName);
     if ( filterResult_individual == filterResults_individual.end() ) {
       edm::LogError ("FilterStatisticsTable::update") 
 	<< " Failed to find filterResult_individual for filterName = " << filterName << " --> skipping !!";     
@@ -192,14 +192,14 @@ void FilterStatisticsTable::update(const filterResults_type& filterResults_cumul
 
     bool filterPassed_individual = filterResult_individual->second;
 
-    eventWeights_type::const_iterator eventWeight_processed = eventWeights_processed.find(filterName);
+    GenericAnalyzer_namespace::eventWeights_type::const_iterator eventWeight_processed = eventWeights_processed.find(filterName);
     if ( eventWeight_processed == eventWeights_processed.end() ) {
       edm::LogError ("FilterStatisticsTable::update") 
 	<< " Failed to find eventWeight_processed for filterName = " << filterName << " --> skipping !!";     
       continue;
     }
     
-    eventWeights_type::const_iterator eventWeight_passed = eventWeights_passed.find(filterName);
+    GenericAnalyzer_namespace::eventWeights_type::const_iterator eventWeight_passed = eventWeights_passed.find(filterName);
     if ( eventWeight_passed == eventWeights_passed.end() ) {
       edm::LogError ("FilterStatisticsTable::update") 
 	<< " Failed to find eventWeight_passed for filterName = " << filterName << " --> skipping !!";     

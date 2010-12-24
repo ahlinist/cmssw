@@ -7,9 +7,9 @@
  * 
  * \author Christian Veelken, UC Davis
  *
- * \version $Revision: 1.14 $
+ * \version $Revision: 1.15 $
  *
- * $Id: GenericEventDump.h,v 1.14 2010/05/11 12:37:26 jkolb Exp $
+ * $Id: GenericEventDump.h,v 1.15 2010/09/02 11:30:45 veelken Exp $
  *
  */
 
@@ -23,6 +23,7 @@
 #include "AnalysisDataFormats/TauAnalysis/interface/CompositePtrCandidateT1T2MEtFwd.h"
 
 #include "TauAnalysis/Core/interface/EventDumpBase.h"
+#include "TauAnalysis/Core/interface/genericAnalyzerAuxFunctions.h"
 
 #include <TMath.h>
 
@@ -40,7 +41,8 @@ class GenericEventDump : public EventDumpBase
   
   // derrived-class method for print-out of event level information
   virtual void analyze(const edm::Event&, const edm::EventSetup&, 
-		       const EventDumpBase::filterResults_type&, const EventDumpBase::filterResults_type&, double);
+		       const GenericAnalyzer_namespace::filterResults_type&, const GenericAnalyzer_namespace::filterResults_type&, 
+	               double);
   
  protected:
 //--- function to count types of particles faking reconstructed electrons,

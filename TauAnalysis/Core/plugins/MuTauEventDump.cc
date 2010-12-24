@@ -39,8 +39,8 @@ MuTauEventDump::~MuTauEventDump()
 }
 
 void MuTauEventDump::print(const edm::Event& iEvent, const edm::EventSetup& iSetup, 
-			   const filterResults_type& filterResults_cumulative, 
-			   const filterResults_type& filterResults_individual, 
+			   const GenericAnalyzer_namespace::filterResults_type& filterResults_cumulative, 
+			   const GenericAnalyzer_namespace::filterResults_type& filterResults_individual, 
 			   double eventWeight) const
 {  
   //std::cout << "<MuTauEventDump::print>:" << std::endl; 

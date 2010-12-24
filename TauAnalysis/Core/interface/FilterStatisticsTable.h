@@ -3,6 +3,8 @@
 
 #include "FWCore/ParameterSet/interface/ParameterSet.h"
 
+#include "TauAnalysis/Core/interface/genericAnalyzerAuxFunctions.h"
+
 #include <string>
 #include <vector>
 #include <map>
@@ -92,9 +94,8 @@ class FilterStatisticsTable
 
   const std::string& name() const { return name_; }
   
-  typedef std::map<std::string, bool> filterResults_type;
-  typedef std::map<std::string, double> eventWeights_type;
-  void update(const filterResults_type&, const filterResults_type&, const eventWeights_type&, const eventWeights_type&);
+  void update(const GenericAnalyzer_namespace::filterResults_type&, const GenericAnalyzer_namespace::filterResults_type&, 
+	      const GenericAnalyzer_namespace::eventWeights_type&, const GenericAnalyzer_namespace::eventWeights_type&);
 
   void print(std::ostream&, unsigned = 42, unsigned = 19) const;
 
@@ -102,7 +103,7 @@ class FilterStatisticsTable
   std::vector<double> extractColumn(const std::string&, bool) const;
 
   /// Extract a number from the table
-  double extractNumber(const std::string& row, const std::string& col, bool weighted=false) const;
+  double extractNumber(const std::string&, const std::string&, bool = false) const;
 
  private:
   std::string name_;

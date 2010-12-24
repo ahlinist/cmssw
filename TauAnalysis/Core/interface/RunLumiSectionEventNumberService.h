@@ -6,6 +6,8 @@
 #include "DataFormats/Provenance/interface/RunID.h"
 #include "DataFormats/Provenance/interface/EventID.h"
 
+#include "TauAnalysis/Core/interface/genericAnalyzerAuxFunctions.h"
+
 #include <string>
 #include <map>
 
@@ -29,9 +31,8 @@ class RunLumiSectionEventNumberService
   explicit RunLumiSectionEventNumberService(const edm::ParameterSet&);
   ~RunLumiSectionEventNumberService();
 
-  typedef std::map<std::string, bool> filterResults_type;
   void update(edm::RunNumber_t, edm::LuminosityBlockNumber_t, edm::EventNumber_t,
-	      const filterResults_type&, const filterResults_type&, double);
+	      const GenericAnalyzer_namespace::filterResults_type&, const GenericAnalyzer_namespace::filterResults_type&, double);
 
  private:
   std::string name_;

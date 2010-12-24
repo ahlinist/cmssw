@@ -112,8 +112,8 @@ void saveRunLumiSectionEventNumber(const std::string& dqmDirectory_store,
 
 void RunLumiSectionEventNumberService::update(
        edm::RunNumber_t runNumber, edm::LuminosityBlockNumber_t lsNumber, edm::EventNumber_t eventNumber,
-       const filterResults_type& filterResults_cumulative, 
-       const filterResults_type& filterResults_individual, double eventWeight)
+       const GenericAnalyzer_namespace::filterResults_type& filterResults_cumulative, 
+       const GenericAnalyzer_namespace::filterResults_type& filterResults_individual, double eventWeight)
 {
 //--- check that configuration parameters contain no errors
   if ( cfgError_ ) {
@@ -125,7 +125,7 @@ void RunLumiSectionEventNumberService::update(
 //    count number of filters which passed/rejected the event
   unsigned numFiltersPassed_individual = 0;
   unsigned numFiltersRejected_individual = 0;
-  for ( filterResults_type::const_iterator filterResult_individual = filterResults_individual.begin();
+  for ( GenericAnalyzer_namespace::filterResults_type::const_iterator filterResult_individual = filterResults_individual.begin();
 	filterResult_individual != filterResults_individual.end(); ++filterResult_individual ) {
     if (  filterResult_individual->second ) ++numFiltersPassed_individual;
     if ( !filterResult_individual->second ) ++numFiltersRejected_individual;
@@ -134,12 +134,12 @@ void RunLumiSectionEventNumberService::update(
 //--- second pass through filterResults: 
 //    save run & event numbers
   bool previousFiltersPassed = true;
-  for ( filterResults_type::const_iterator filterResult_cumulative = filterResults_cumulative.begin();
+  for ( GenericAnalyzer_namespace::filterResults_type::const_iterator filterResult_cumulative = filterResults_cumulative.begin();
 	filterResult_cumulative != filterResults_cumulative.end(); ++filterResult_cumulative ) {
     const std::string& filterName = filterResult_cumulative->first;
     bool filterPassed_cumulative = filterResult_cumulative->second;
 
-    filterResults_type::const_iterator filterResult_individual = filterResults_individual.find(filterName);
+    GenericAnalyzer_namespace::filterResults_type::const_iterator filterResult_individual = filterResults_individual.find(filterName);
     if ( filterResult_individual == filterResults_individual.end() ) {
       edm::LogError ("RunLumiSectionEventNumberService::update") 
 	<< " Failed to find filterResult_individual for filterName = " << filterName

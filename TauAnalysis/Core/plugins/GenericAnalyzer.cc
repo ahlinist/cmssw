@@ -1,17 +1,17 @@
 #include "TauAnalysis/Core/plugins/GenericAnalyzer.h"
 
-#include "TauAnalysis/DQMTools/interface/dqmAuxFunctions.h"
-#include "TauAnalysis/DQMTools/interface/generalAuxFunctions.h"
-
 #include "FWCore/Framework/interface/Frameworkfwd.h"
 #include "FWCore/MessageLogger/interface/MessageLogger.h"
 #include "FWCore/ServiceRegistry/interface/Service.h"
 #include "FWCore/Utilities/interface/Exception.h"
+#include "FWCore/Utilities/interface/InputTag.h"
 
 #include "TauAnalysis/Core/interface/SysUncertaintyService.h"
 #include "TauAnalysis/Core/interface/sysUncertaintyAuxFunctions.h"
+#include "TauAnalysis/Core/interface/genericAnalyzerAuxFunctions.h"
 
-#include "FWCore/Utilities/interface/InputTag.h"
+#include "TauAnalysis/DQMTools/interface/dqmAuxFunctions.h"
+#include "TauAnalysis/DQMTools/interface/generalAuxFunctions.h"
 
 #include <algorithm>
 #include <limits.h>
@@ -684,13 +684,11 @@ void GenericAnalyzer::analyze(const edm::Event& evt, const edm::EventSetup& es)
 
 //--- call analyze method of each analyzerPlugin
 //    (fill histograms, compute binning results,...)
-    typedef std::map<std::string, bool> filterResults_type;
-    filterResults_type filterResults_cumulative;
+    GenericAnalyzer_namespace::filterResults_type filterResults_cumulative;
     bool previousFiltersPassed = true;
-    filterResults_type filterResults_individual;
-    typedef std::map<std::string, double> eventWeights_type;
-    eventWeights_type eventWeights_processed;
-    eventWeights_type eventWeights_passed;
+    GenericAnalyzer_namespace::filterResults_type filterResults_individual;
+    GenericAnalyzer_namespace::eventWeights_type eventWeights_processed;
+    GenericAnalyzer_namespace::eventWeights_type eventWeights_passed;
     double eventWeight_passed = eventWeight_initial;
     for ( std::list<analysisSequenceEntry*>::iterator entry = analysisSequence_.begin();
           entry != analysisSequence_.end(); ++entry ) {
@@ -717,17 +715,17 @@ void GenericAnalyzer::analyze(const edm::Event& evt, const edm::EventSetup& es)
           bool filterPassed_cumulative = (*entry)->filter_cumulative(evt, es, sysUncertaintyService);
           //std::cout << " filter: passed_cumulative = " << filterPassed_cumulative << std::endl;
 
-          filterResults_cumulative.insert(std::pair<std::string, bool>((*entry)->name_, filterPassed_cumulative));
+          filterResults_cumulative.insert((*entry)->name_, filterPassed_cumulative);
 
           if ( !filterPassed_cumulative ) previousFiltersPassed = false;
 
           bool filterPassed_individual = (*entry)->filter_individual(evt, es, sysUncertaintyService);
           //std::cout << " filter: passed_individual = " << filterPassed_individual << std::endl;
 
-          filterResults_individual.insert(std::pair<std::string, bool>((*entry)->name_, filterPassed_individual));
+          filterResults_individual.insert((*entry)->name_, filterPassed_individual);
 
-          eventWeights_processed.insert(std::pair<std::string, double>((*entry)->name_, eventWeight_processed));
-          eventWeights_passed.insert(std::pair<std::string, double>((*entry)->name_, eventWeight_passed));
+          eventWeights_processed.insert((*entry)->name_, eventWeight_processed);
+          eventWeights_passed.insert((*entry)->name_, eventWeight_passed);
         }
 
         if ( (*entry)->type() == analysisSequenceEntry::kAnalyzer ) {
