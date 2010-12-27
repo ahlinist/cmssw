@@ -18,6 +18,7 @@ bsub_template = string.Template(
 '''#!/bin/csh
 #BSUB -J $jobName
 #BSUB -q 8nh
+#BSUB -o $logFile
 $dependencies
 
 echo "Increasing vmem"
@@ -64,7 +65,7 @@ def hash_files(files, add_time=True):
     return hash.hexdigest()[:4]
 
 def make_bsub_script(output_file, input_jobs_and_files,
-                     log_dir, merge_method, pass_io_files=True):
+                     log_file_maker, merge_method, pass_io_files=True):
     # Create a unique job name for our output file.  We leave the add_time
     # option set to true so that lxbatch jobs always have a unique name.
     # Otherwise when we add dependencies LXB gets confused if there were
@@ -84,7 +85,8 @@ def make_bsub_script(output_file, input_jobs_and_files,
     dir = os.environ['CMSSW_BASE']
     input_files = [file for job, file in input_jobs_and_files]
 
-    log_file = os.path.join(log_dir, job_name + ".log")
+    # Build log file name
+    log_file = log_file_maker(job_name)
 
     # Copy all the files locally
     #print input_files
@@ -109,6 +111,7 @@ def make_bsub_script(output_file, input_jobs_and_files,
         dir=dir,
         jobName=job_name,
         dependencies=dependencies,
+        logFile = log_file,
         outputFile = output_file,
         inputFileCommand = inputFileCommand,
         inputFileList = inputFileList,

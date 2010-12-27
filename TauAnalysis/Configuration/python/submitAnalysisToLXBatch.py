@@ -161,11 +161,18 @@ def submitAnalysisToLXBatch(configFile = None, channel = None, samples = None,
                     changeTauId = changeTauId,
                     customizations = jobCustomizations)
 
-                #print("job %i:" % (job + 1))
+                # Build a function that constructs our log file name given the
+                # job file hash.
+                if not os.path.exists('lxbatch_log'):
+                    os.makedirs('lxbatch_log')
+                def log_file_maker(job_hash):
+                    return os.path.join(
+                        'lxbatch_log', "_".join(
+                        ['run', channel, sample, jobId, job_hash]) + '.log')
 
                 # Build our batch job
                 jobname, script = jobtools.make_bsub_script(
-                    output_file, input_files_and_jobs, '/tmp/log',
+                    output_file, input_files_and_jobs, log_file_maker,
                     "cmsRun %s" % newConfigFile, pass_io_files = False)
 
                 bsub_script_file = os.path.join(
