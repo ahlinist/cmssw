@@ -11,6 +11,7 @@ SAMPLES_TO_ANALYZE = [
     'ZtautauPU156bx',
     'qqZll',
     'qqZllPU156bx', # EK: not at any site as of Dec 23
+    'bbZll', 'ccZll',
     'Zmumu_pythia',
     'Zee_pythia',
     #'InclusivePPmuX',
@@ -102,7 +103,8 @@ RECO_SAMPLES = {
         'type' : 'Data',
         'drawOption' : styles.drawOption_Data,
         'enableSysUncertainties' : False,
-        'enableFakeRates' : True
+        'enableFakeRates' : True,
+        'SE_black_list' : 'T2_IT_Legnaro'
     },
     'data_Mu_Run2010B_Nov4ReReco' : {
         'datasetpath' : '/Mu/Run2010B-Nov4ReReco_v1/RECO',
@@ -217,6 +219,36 @@ RECO_SAMPLES = {
         'applyMuonIsolationEfficiencyCorrection' : True,
         'applyVertexMultiplicityReweighting' : True,
         'hlt' : cms.InputTag("TriggerResults", "", "REDIGI38XPU")
+    },
+    'bbZll' : {
+        'datasetpath' : "/ZbbToLL_M-40_PtB1-15_TuneZ2_7TeV-madgraph-pythia6/Fall10-START38_V12-v1/GEN-SIM-RECO",
+        'dbs_url' :  "http://cmsdbsprod.cern.ch/cms_dbs_prod_global/servlet/DBSServlet",
+        'events_processed' : 26837,
+        'skim_eff' : 1.0,
+        'x_sec' : 11.6*_picobarns,
+        'legendEntry' : plotter.process_Ztautau.config_dqmHistPlotter.legendEntry.value(),
+        'type' : plotter.process_Ztautau.config_dqmHistPlotter.type.value(),
+        'drawOption' : styles.drawOption_Ztautau,
+        'applyZrecoilCorrection' : True,
+        'applyMuonTriggerEfficiencyCorrection' : True,
+        'applyMuonIsolationEfficiencyCorrection' : True,
+        'applyVertexMultiplicityReweighting' : True,
+        'hlt' : cms.InputTag("TriggerResults", "", "HLT")
+    },
+    'ccZll' : {
+        'datasetpath' : "/ZccToLL_M-40_PtC1-15_TuneD6T_7TeV-madgraph-pythia6/Fall10-START38_V12-v1/GEN-SIM-RECO",
+        'dbs_url' :  "http://cmsdbsprod.cern.ch/cms_dbs_prod_global/servlet/DBSServlet",
+        'events_processed' : 40000,
+        'skim_eff' : 1.0,
+        'x_sec' : 18.74*_picobarns,
+        'legendEntry' : plotter.process_Ztautau.config_dqmHistPlotter.legendEntry.value(),
+        'type' : plotter.process_Ztautau.config_dqmHistPlotter.type.value(),
+        'drawOption' : styles.drawOption_Ztautau,
+        'applyZrecoilCorrection' : True,
+        'applyMuonTriggerEfficiencyCorrection' : True,
+        'applyMuonIsolationEfficiencyCorrection' : True,
+        'applyVertexMultiplicityReweighting' : True,
+        'hlt' : cms.InputTag("TriggerResults", "", "HLT")
     },
     'Zmumu_pythia' : {
         'datasetpath' : "/DYtoMuMu_M_20_TuneD6T_7TeV-pythia6/Fall10-E7TeV_ProbDist_2010Data_BX156_START38_V12-v1/GEN-SIM-RECO",
