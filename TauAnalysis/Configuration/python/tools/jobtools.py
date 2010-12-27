@@ -169,18 +169,13 @@ def make_merger(name, split, output_dir, filetype=".root"):
                         output_layers)
     return merge
 
-def make_merge_dependency_tree(name, input_times_and_files,
-                               output_dir, split=5):
+def make_merge_dependency_tree(name, input_files, output_dir, split=5):
     ''' Build a merge tree, where each branch merges [split] input files.
     You must specify the last modified times of all input files.
     Note that this function is path indpendent.
     '''
-
-    # Sort by modified time
-    input_times_and_files.sort()
-
     merger= make_merger(name, split, output_dir)
-    result = merger([], [], [file for time, file in input_times_and_files], [])
+    result = merger([], [], input_files, [])
     return result
 
 if __name__ == "__main__":
