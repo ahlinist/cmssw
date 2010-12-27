@@ -198,14 +198,54 @@ userSettings = {
                     'batchHarvest' : "/castor/cern.ch/user/f/friis/Run35testharvest/",
                     'skimSource' : 'Run35',
                 }
-            }
-
+            },
+            # Rerun, with tau ID | or'red with loose and lead track pt off
+            'Run36' : {
+                'AHtoMuTau' : {
+                    # The output directory on castor
+                    'analysisFilePath' : '/castor/cern.ch/user/f/friis/Run36/',
+                    #'analysisFilePath' : '/castor/cern.ch/user/f/friis/Run32/',
+                    # The output directory for the plots
+                    'harvestingFilePath' : "/data2/friis/",
+                    'tmpFilePath' : "/data2/friis/tmp/",
+                    # Where to store the harvested histograms on lxbatch
+                    'batchHarvest' : "/castor/cern.ch/user/f/friis/Run36harvest/",
+                }
+            },
+            # Rerun final?, with MT cut loosened to work with Mike's
+            'Run37' : {
+                'AHtoMuTau' : {
+                    # The output directory on castor
+                    'analysisFilePath' : '/castor/cern.ch/user/f/friis/Run37/',
+                    #'analysisFilePath' : '/castor/cern.ch/user/f/friis/Run32/',
+                    # The output directory for the plots
+                    'harvestingFilePath' : "/data2/friis/",
+                    'tmpFilePath' : "/data2/friis/tmp/",
+                    # Where to store the harvested histograms on lxbatch
+                    'batchHarvest' : "/castor/cern.ch/user/f/friis/Run37harvest/",
+                }
+            },
+            # Run with final? analysis cuts, but with tau ID turned off for fake
+            # rate.
+            'Run39' : {
+                'AHtoMuTau' : {
+                    # The output directory on castor
+                    'analysisFilePath' : '/castor/cern.ch/user/f/friis/Run39/',
+                    #'analysisFilePath' : '/castor/cern.ch/user/f/friis/Run32/',
+                    # The output directory for the plots
+                    'harvestingFilePath' : "/data2/friis/",
+                    'tmpFilePath' : "/data2/friis/tmp/",
+                    # Where to store the harvested histograms on lxbatch
+                    'batchHarvest' : "/castor/cern.ch/user/f/friis/Run39harvest/",
+                }
+            },
         },
         'global' : {
             'drawOptions' : {
                 'canvasSizeX' : 640,
                 'canvasSizeY' : 800
-            }
+            },
+            'harvestScripts' : '/tmp/friis/harvest_scripts',
         }
     },
     'veelken': {
@@ -318,7 +358,8 @@ userSettings = {
             'drawOptions' : {
                 'canvasSizeX' : 800,
                 'canvasSizeY' : 640
-            }
+            },
+            'harvestScripts' : '/tmp/veelken/harvest_scripts',
         }
     },
     'jkolb': {
@@ -359,7 +400,8 @@ userSettings = {
             'drawOptions' : {
                 'canvasSizeX' : 800,
                 'canvasSizeY' : 640
-            }
+            },
+            'harvestScripts' : '/tmp/jkolb/harvest_scripts',
         }
     }
 }
@@ -395,6 +437,10 @@ def overrideJobId(channel, jobId):
 
 def getPickEventsPath(channel):
     return getInfo(channel)['pickevents']
+
+def getHarvestScriptLocation():
+    " Get location of harvest scripts "
+    return mine()['global']['harvestScripts']
 
 def getSkimEvents(channel, jobid = None):
     " Get the directory on castor that containing the skimmed files "
