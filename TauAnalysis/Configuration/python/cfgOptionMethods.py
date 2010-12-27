@@ -294,7 +294,7 @@ def _enableFakeRates(process, enable, **kwargs):
     if enable:
         print "--> Enabling fake rate BG estimation method"
         fakeRateTools.enableFakeRates(process,
-            kwargs['channel'], method="CDF")
+            kwargs['channel'], method="simple")
 
 _tauIdChannelMap = {
     'AHtoMuTau' : ["selectedPatTausTaNCdiscr",
