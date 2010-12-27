@@ -153,7 +153,8 @@ cut_values = {
         'tau_pt' : 20,
         'tau_eta' : 2.3,
         'pzeta' : -20.,
-        'tanc' : "tauID('byTaNCloose') > 0.5",
+        #'tanc' : "tauID('byTaNCloose') > 0.5",
+        'tanc' : "tauID('byHPSloose') > 0.5",
         'charge' : 'charge = 0',
     },
     # Loose loosens everything but muon Iso
@@ -175,16 +176,16 @@ cut_values['loose_tauID']['tanc'] = cut_values['loose']['tanc']
 
 cut_values['loose_looseMuon_tightTau'] = copy.deepcopy(cut_values['loose'])
 cut_values['loose_looseMuon_tightTau']['muon_iso'] = _LOOSE_MUON_ISO
-cut_values['loose_looseMuon_tightTau']['tanc'] = "tauID('byTaNCloose') > 0.5"
+cut_values['loose_looseMuon_tightTau']['tanc'] = "tauID('byTaNCloose') > 0.5 | tauID('byHPSloose') > 0.5"
 
 # Loose tauid cuts
 #cuts = cut_values['loose_tauID']
 # Normal cuts
-#cuts = cut_values['normal']
+cuts = cut_values['normal']
 # Loose cuts for skim
 #cuts = cut_values['loose']
 # Loose cuts to enable factorization
-cuts = cut_values['loose_looseMuon_tightTau']
+#cuts = cut_values['loose_looseMuon_tightTau']
 
 # import utility function for changing cut values
 from TauAnalysis.Configuration.tools.changeCut import changeCut
@@ -259,6 +260,10 @@ changeCut(process, "selectedPatTausForMuTauCaloMuonVeto", "tauID('againstCaloMuo
 changeCut(process, "selectedMuTauPairsAntiOverlapVeto", "dR12 > 0.5")
 changeCut(process, "selectedMuTauPairsAntiOverlapVetoLooseMuonIsolation", "dR12 > 0.5")
 
+# Turn off lead track cut, hps doesn't use it.
+changeCut(process, "selectedPatTausLeadTrkPt", 'tauID("leadingTrackPtCut") > -1e3')
+changeCut(process, "selectedPatTausForMuTauLeadTrkPt", 'tauID("leadingTrackPtCut") > -1e3')
+
 # disable b-tagging for now
 # (--> all events will pass CentralJetVeto/fail CentralJetBtag selection)
 #changeCut(process, "selectedPatJetsForAHtoMuTauBtag", "bDiscriminator('trackCountingHighEffBJetTags') < -1000.")
@@ -291,7 +296,7 @@ process.endtasks = cms.EndPath(process.dummy)
 process.schedule = cms.Schedule(
     process.q,
     process.p,
-    #process.o, 	
+    #process.o,
     process.endtasks
 )
 
