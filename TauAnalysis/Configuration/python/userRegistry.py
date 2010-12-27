@@ -261,19 +261,19 @@ userSettings = {
                     'analysisFilePath' : "/castor/cern.ch/user/v/veelken/CMSSW_3_8_x/plots/AHtoMuTau/",
                     'harvestingFilePath' : "/data1/veelken/CMSSW_3_8_x/plots/AHtoMuTau/",
                     'tmpFilePath' : "/data1/veelken/tmp/AHtoMuTau/",
-                    'jobId' : "2010Dec26",
+                    'jobId' : "2010Dec27",
                     # Where to store the harvested histograms on lxbatch
                     'batchHarvest' : "/castor/cern.ch/user/v/veelken/CMSSW_3_8_x/plots/AHtoMuTau_lxbatch/"
                 }
             },
             '2010Dec23_lxbatch' : {
                 'AHtoMuTau' : {
-                    'analysisFilePath' : "/castor/cern.ch/user/v/veelken/CMSSW_3_8_x/plots/AHtoMuTau/",
+                    'analysisFilePath' : "/castor/cern.ch/user/v/veelken/CMSSW_3_8_x/plots/AHtoMuTau/2010Dec23_lxbatch/analysis",
                     'harvestingFilePath' : "/data1/veelken/CMSSW_3_8_x/plots/AHtoMuTau/",
                     'tmpFilePath' : "/data1/veelken/tmp/AHtoMuTau/",
                     'jobId' : "2010Dec23_lxbatch",
                     # Where to store the harvested histograms on lxbatch
-                    'batchHarvest' : "/castor/cern.ch/user/v/veelken/CMSSW_3_8_x/plots/AHtoMuTau_lxbatch/",
+                    'batchHarvest' : "/castor/cern.ch/user/v/veelken/CMSSW_3_8_x/plots/AHtoMuTau/2010Dec23_lxbatch/harvesting",
                     'skimSource' : '2010Dec23'
                 }
             },
