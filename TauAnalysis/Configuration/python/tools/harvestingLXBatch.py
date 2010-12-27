@@ -66,13 +66,16 @@ def make_harvest_scripts(plot_regex, skim_regex,
                          input_source = None,
                          # Where to put the output
                          castor_output_directory = None,
-                         script_directory='/tmp/harvest_scripts',
+                         script_directory=None,
                          merge_script_name = 'submit_merge.sh',
                          local_copy_mapper = None,
                          local_copy_script = 'copy_harvest_local.sh'):
+
     # Get the jobId from the user registry
     job_id = reg.getJobId(channel)
 
+    if script_directory is None:
+        script_directory = reg.getHarvestScriptLocation()
 
     # Create the directory where we store the scripts if it doesn't exist
     if not os.path.exists(script_directory):
@@ -202,9 +205,23 @@ def make_harvest_scripts(plot_regex, skim_regex,
                 # input files.
                 input_files_and_jobs = [
                     (get_job_name(file), file) for file in input_files]
+
+                # Build a function that constructs our log file name given the
+                # job file hash.
+                # Build a function that constructs our log file name given the
+                # job file hash.
+                if not os.path.exists('lxbatch_log'):
+                    os.makedirs('lxbatch_log')
+                def log_file_maker(job_hash):
+                    return os.path.join(
+                        'lxbatch_log', "_".join(
+                        ['harvest', channel, sample, job_id,
+                         'layer_%i' % ilayer, job_hash]) + '.log')
+
                 # Build the script
                 job_name, script = jobtools.make_bsub_script(
-                    output_file, input_files_and_jobs, script_directory,
+                    output_file, input_files_and_jobs,
+                    log_file_maker,
                     _HARVESTER_CMD)
                 # Register our job
                 job_registry[output_file] = job_name
@@ -256,6 +273,7 @@ def make_harvest_scripts(plot_regex, skim_regex,
         " Generate a nice name for an output skim "
         return "_".join(["skim", sample, "chunk", str(chunk), hash]) + ".root"
 
+    merge_script_name = "_".join(['submit', job_id, 'merge']) + '.sh'
     with open(merge_script_name, 'w') as merge_script:
         merge_jobs_counter = 0
         bsub_file_access_counter = 0
@@ -296,9 +314,14 @@ def make_harvest_scripts(plot_regex, skim_regex,
                 len(chunks) - len(skim_merge_jobs))
 
             for ijob, (output_file, input_files) in enumerate(skim_merge_jobs):
+                def merge_log_file_maker(job_hash):
+                    return os.path.join(
+                        'lxbatch_log', "_".join(
+                        ['merge', channel, sample, job_id,
+                         'job_%i' % ijob, job_hash]) + '.log')
                 # Generate script contents
                 job_name, script = jobtools.make_bsub_script(
-                    output_file, input_files, script_directory, _MERGER_CMD)
+                    output_file, input_files, merge_log_file_maker, _MERGER_CMD)
                 script_file = os.path.join(
                     script_directory, "_".join([
                         'merge', sample,
@@ -339,12 +362,16 @@ def make_harvest_scripts(plot_regex, skim_regex,
                 full_path = os.path.join(castor_output_directory, file)
                 garbage_file.write(full_path + '\n')
 
+    print "To harvest plots, run %s" % harvest_script_name
+    print "To merge skims, run %s" % merge_script_name
+
     with open(local_copy_script, 'w') as copy_script:
         for sample, file in final_harvest_files:
             copy_script.write('rfcp %s %s &\n' % (
                 file, local_copy_mapper(sample)))
         copy_script.write('wait\n')
     print "After harvesting is done, run %s to copy files locally" % local_copy_script
+
     # Make all our stuff executable
     os.chmod(local_copy_script, 0755)
     os.chmod(harvest_script_name, 0755)
