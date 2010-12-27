@@ -18,6 +18,21 @@ process.load('Configuration/StandardSequences/FrontierConditions_GlobalTag_cff')
 process.GlobalTag.globaltag = cms.string('START38_V14::All')
 
 #--------------------------------------------------------------------------------
+# produce templates for W + jets enriched control region without tau id. cuts applied
+# (TaNC vloose passed && TaNC medium failed) and events weighted by fake-rates instead
+#
+# NOTE: fake-rates need to be added to pat::Tau producer before 
+#       it gets modified by other functions
+#
+# import pat::Tau producer module
+from TauAnalysis.RecoTools.patPFTauConfig_cfi import patTaus
+
+# configure conditions for accessing fake-rate weight values from k-NearestNeighbour trees
+from TauAnalysis.BgEstimationTools.fakeRateConfiguration_cfi import setupFakeRates
+setupFakeRates(process, patTaus)
+#--------------------------------------------------------------------------------
+
+#--------------------------------------------------------------------------------
 # import sequences for PAT-tuple production
 process.load("TauAnalysis.Configuration.producePatTuple_cff")
 process.load("TauAnalysis.Configuration.producePatTupleZtoMuTauSpecific_cff")
@@ -181,6 +196,13 @@ process.load('TauAnalysis.BgEstimationTools.bgEstZtoMuTauWplusJetsEnrichedSelect
 process.load('TauAnalysis.BgEstimationTools.bgEstZtoMuTauTTplusJetsEnrichedSelection_cff')
 process.load('TauAnalysis.BgEstimationTools.bgEstZtoMuTauZmumuEnrichedSelection_cff')
 process.load('TauAnalysis.BgEstimationTools.bgEstZtoMuTauQCDenrichedSelection_cff')
+
+# clone W + jets enriched analysis sequence,
+# disable tau id. discriminator and add fake-rate weights
+process.load('TauAnalysis.BgEstimationTools.bgEstZtoMuTauWplusJetsEnrichedSelection_frWeighted_cff')
+from TauAnalysis.BgEstimationTools.tools.fakeRateTools import configureFakeRateWeightProduction
+configureFakeRateWeightProduction(process, method = "simple", preselPFTauJetSource = 'hpsTancTaus',
+                                  patTauJetCut = "tauID('byTaNCmedium') < 0.5 & tauID('againstMuon') > 0.5")
 #--------------------------------------------------------------------------------
 
 #--------------------------------------------------------------------------------
@@ -188,6 +210,7 @@ process.load('TauAnalysis.BgEstimationTools.bgEstZtoMuTauQCDenrichedSelection_cf
 if hasattr(process, "patPFMETs"):
     process.muTauPairsBgEstQCDenriched.srcMET = cms.InputTag('patPFMETs')
     process.muTauPairsBgEstWplusJetsEnriched.srcMET = cms.InputTag('patPFMETs')
+    process.muTauPairsBgEstWplusJetsEnrichedFRweighted.srcMET = cms.InputTag('patPFMETs')
     process.muTauPairsBgEstTTplusJetsEnriched.srcMET = cms.InputTag('patPFMETs')
     process.muTauPairsBgEstZmumuJetMisIdEnriched.srcMET = cms.InputTag('patPFMETs')
     process.muTauPairsBgEstZmumuMuonMisIdEnriched.srcMET = cms.InputTag('patPFMETs')
@@ -205,6 +228,7 @@ changeCut(process, "selectedMuTauPairsAntiOverlapVeto", "dR12 > 0.5")
 changeCut(process, "selectedMuTauPairsAntiOverlapVetoLooseMuonIsolation", "dR12 > 0.5")
 changeCut(process, "muTauPairsBgEstQCDenriched", 0.5, attribute = "dRmin12")
 changeCut(process, "muTauPairsBgEstWplusJetsEnriched", 0.5, attribute = "dRmin12")
+changeCut(process, "muTauPairsBgEstWplusJetsEnrichedFRweighted", 0.5, attribute = "dRmin12")
 changeCut(process, "muTauPairsBgEstTTplusJetsEnriched", 0.5, attribute = "dRmin12") 
 changeCut(process, "muTauPairsBgEstZmumuJetMisIdEnriched", 0.5, attribute = "dRmin12") 
 changeCut(process, "muTauPairsBgEstZmumuMuonMisIdEnriched", 0.5, attribute = "dRmin12") 
@@ -230,6 +254,7 @@ process.p = cms.Path(
   + process.selectZtoMuTauEvents
   + process.analyzeZtoMuTauEventsOS
   + process.bgEstWplusJetsEnrichedAnalysisSequence
+  + process.bgEstWplusJetsEnrichedFRweightedAnalysisSequence
   + process.bgEstTTplusJetsEnrichedAnalysisSequence
   + process.bgEstZmumuEnrichedAnalysisSequence
   + process.bgEstQCDenrichedAnalysisSequence 
@@ -263,6 +288,12 @@ process.producePatTupleAll = cms.Sequence(process.producePatTuple + process.prod
 #__#patTupleProduction#
 if not hasattr(process, "isBatchMode"):
     process.p.replace(process.producePatTupleZtoMuTauSpecific, process.producePatTuple + process.producePatTupleZtoMuTauSpecific)
+#--------------------------------------------------------------------------------
+
+#--------------------------------------------------------------------------------
+# update InputTag of TriggerResults
+from TauAnalysis.Configuration.cfgOptionMethods import _setTriggerProcess
+_setTriggerProcess(process, cms.InputTag('TriggerResults::REDIGI38XPU'))
 #--------------------------------------------------------------------------------
 
 # print-out all python configuration parameter information
