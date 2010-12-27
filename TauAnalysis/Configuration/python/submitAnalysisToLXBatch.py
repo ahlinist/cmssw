@@ -3,14 +3,15 @@ import TauAnalysis.Configuration.tools.castor as castor
 import TauAnalysis.Configuration.tools.jobtools as jobtools
 from TauAnalysis.Configuration.tools.harvestingLXBatch import \
         write_comment_header
+import TauAnalysis.Configuration.userRegistry as reg
 
 from TauAnalysis.Configuration.prepareConfigFile2 import getNewConfigFileName, prepareConfigFile
 
-def submitAnalysisToLXBatch(configFile = None, channel = None, samples = None, jobId = None,
+def submitAnalysisToLXBatch(configFile = None, channel = None, samples = None,
                             samplesToAnalyze = None, samplesToSkip = None,
                             disableFactorization = False,
                             disableSysUncertainties = False,
-                            script_directory='/tmp/harvest_scripts',
+                            script_directory=None,
                             cfgdir = 'lxbatch',
                             inputFileMap = None, outputFileMap = None,
                             outputDirectory = None,
@@ -27,10 +28,16 @@ def submitAnalysisToLXBatch(configFile = None, channel = None, samples = None, j
 
     # check that configFile, channel, samples and jobId
     # parameters are defined and non-empty
-    for param in ["configFile", "jobId", "channel", "samples",
+    for param in ["configFile", "channel", "samples",
                   "outputDirectory"]:
         if locals()[param] is None:
             raise ValueError("Undefined '%s' parameter!!" % param)
+
+    jobId = reg.getJobId(channel)
+
+    # If not specified take script directory from user preferences.
+    if script_directory is None:
+        script_directory = reg.getHarvestScriptLocation()
 
     # Make sure our output file for the scripts is okay
     if not os.path.exists(script_directory):
@@ -43,7 +50,8 @@ def submitAnalysisToLXBatch(configFile = None, channel = None, samples = None, j
     # Keep track of the files we care about
     relevant_files = set([])
 
-    with open('submit_lxbatch_analysis.sh', 'w') as submit_file:
+    submit_file_name = 'submit_lxbatch_analysis_' + jobId + '.sh'
+    with open(submit_file_name, 'w') as submit_file:
         # Loop over the samples to be analyzed
         for sample in samples['SAMPLES_TO_ANALYZE']:
             write_comment_header(submit_file, " Sample: " + sample)
@@ -180,4 +188,5 @@ def submitAnalysisToLXBatch(configFile = None, channel = None, samples = None, j
                 for file in garbage:
                     garbage_script.write(
                         '%s\n' % os.path.join(outputDirectory, file))
-        print "Run ./submit_lxbatch_analysis.sh to submit jobs"
+        print "Run ./%s to submit jobs" % submit_file_name
+        os.chmod(submit_file_name, 0755)

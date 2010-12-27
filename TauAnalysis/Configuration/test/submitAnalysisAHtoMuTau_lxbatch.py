@@ -10,7 +10,8 @@ import os
 channel = 'AHtoMuTau'
 configFile = 'runAHtoMuTau_cfg.py'
 
-reg.overrideJobId(channel, 'Run35test')
+#reg.overrideJobId(channel, 'Run33')
+reg.overrideJobId(channel, 'Run33FR')
 
 powheg_samples = [sample for sample in samples['SAMPLES_TO_ANALYZE']
                   if sample.find('POWHEG') != -1 ]
@@ -47,13 +48,19 @@ enableFakeRates = False
 enableSystematics = False
 changeTauId = None
 
+if jobId == 'Run33FR':
+    enableFakeRates = True
+    for sample in samples['SAMPLES_TO_ANALYZE']:
+        if samples['RECO_SAMPLES'][sample]['factorize']:
+            print "Disabling factorization for", sample
+            samples['RECO_SAMPLES'][sample]['factorize'] = False
+
 submit.submitAnalysisToLXBatch(
     configFile=configFile,
     channel=channel,
     samples=samples,
     samplesToAnalyze = samplesToAnalyze,
     outputDirectory = outputPath,
-    jobId = jobId,
     disableSysUncertainties = not enableSystematics,
     enableFakeRates = enableFakeRates,
     inputFileMap = inputFileMapper,
