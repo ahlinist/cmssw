@@ -29,23 +29,23 @@ SAMPLES_TO_ANALYZE.extend([
 # List of samples to include in the final level plots.  May include selections
 # from the MERGE_SAMPLES defined at the bottom.
 SAMPLES_TO_PLOT = [
-    #'data',
-    ###'A90Sum',
-    ##'A100Sum',
-    #'A120Sum',
-    ##'A130Sum',
-    ###'A140Sum',
-    ###'A160Sum',
-    #'A180Sum',
-    ####'A200Sum',
-    ###'A300Sum',
-    #'qcdSum',
-    #'PPmuXptGt20Mu15',
-    #'WplusJetsSum',
-    #'TTplusJets',
-    #'Zmumu',
-    ##'Ztautau'
-    #'ZtautauPU156bx',
+    'data',
+    ##'A90Sum',
+    #'A100Sum',
+    'A120Sum',
+    #'A130Sum',
+    ##'A140Sum',
+    ##'A160Sum',
+    'A180Sum',
+    ###'A200Sum',
+    ##'A300Sum',
+    'qcdSum',
+    'PPmuXptGt20Mu15',
+    'WplusJetsSum',
+    'TTplusJets',
+    'Zmumu',
+    #'Ztautau'
+    'ZtautauPU156bx',
 ]
 
 SAMPLES_TO_PRINT = copy.copy(SAMPLES_TO_PLOT)
