@@ -20,22 +20,15 @@ from TauAnalysis.Configuration.tools.factorizationTools import \
 
 process = cms.Process('makeAHtoMuTauPlots')
 
-
 channel = 'AHtoMuTau'
-reg.overrideJobId(channel, 'Run35SYS')
+
+reg.overrideJobId(channel, '2010Dec23_lxbatch')
+
 inputFilePath = reg.getHarvestingFilePath(channel)
 jobId = reg.getJobId(channel)
 
 plotsDirectory = './plots'
 outputFileNameMaker = lambda channel: 'plots%s_all.root' % channel
-
-# Update skim efficiency to correct for un-applied weights
-for sample, info in recoSampleDefinitionsAHtoMuTau_7TeV['RECO_SAMPLES'].iteritems():
-    if info['type'].lower().find('mc'):
-        print "Adding weight to", sample
-        print "old", info['skim_eff']
-        info['skim_eff'] = info['skim_eff']*(0.95*0.985)
-        print "new", info['skim_eff']
 
 # Check if we want to override what's in reco sample definitions
 if len(sys.argv) > 2:
@@ -56,9 +49,9 @@ if len(sys.argv) > 2:
         # Just do SM
         recoSampleDefinitionsAHtoMuTau_7TeV['SAMPLES_TO_PLOT'][:] = [
             'data',
-            'TTplusJets',
-            'Zmumu',
-            'WplusJetsSum',
+            'TTplusJets_madgraph',
+            'Zmumu_powheg',
+            'WplusJets_madgraph',
             'qcdSum',
             'ZtautauSum',
         ]
@@ -84,7 +77,6 @@ if len(sys.argv) > 2:
     recoSampleDefinitionsAHtoMuTau_7TeV['FLATTENED_SAMPLES_TO_PLOT'] = \
             make_flattened_samples()
     print recoSampleDefinitionsAHtoMuTau_7TeV['FLATTENED_SAMPLES_TO_PLOT']
-
 
 analyzer_draw_jobs = [
     [ "ahMuTauAnalyzerOS_woBtag",
@@ -124,4 +116,4 @@ makePlots(process, channel = channel,
           plotsDirectory = plotsDirectory)
 
 # print-out all python configuration parameter information
-#print process.dumpPython()
+print process.dumpPython()
