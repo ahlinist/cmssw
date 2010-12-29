@@ -52,6 +52,12 @@ protected:
   Float_t getGenCalIso(edm::Handle<reco::GenParticleCollection> handle, reco::GenParticleCollection::const_iterator thisPho, 
 		     const Float_t dRMax=0.4, Bool_t removeMu=true, Bool_t removeNu=false);
   Float_t getGenTrkIso(edm::Handle<reco::GenParticleCollection> handle, reco::GenParticleCollection::const_iterator thisPho, const Float_t dRMax=0.4);
+  Float_t getESRatio(View<pat::Electron>::const_iterator photon, const edm::Event&, const edm::EventSetup&);
+  std::vector<float> getESProfileFront(View<pat::Electron>::const_iterator photon, const edm::Event&, const edm::EventSetup&);
+  std::vector<float> getESProfileRear(View<pat::Electron>::const_iterator photon, const edm::Event&, const edm::EventSetup&);
+  Float_t getESRatio(View<pat::Photon>::const_iterator photon, const edm::Event&, const edm::EventSetup&);
+  std::vector<float> getESProfileFront(View<pat::Photon>::const_iterator photon, const edm::Event&, const edm::EventSetup&);
+  std::vector<float> getESProfileRear(View<pat::Photon>::const_iterator photon, const edm::Event&, const edm::EventSetup&);
 
   Bool_t saveHistograms_;
   Bool_t saveHLTInfo_;
@@ -206,6 +212,9 @@ protected:
   Float_t  eleDcot_[maxP];
   Float_t  eleConvRadius_[maxP];
   Float_t  eleConvPoInt_t_[maxP][3];
+  Float_t  eleESRatio_[maxP];
+  Float_t  eleESProfileFront_[maxP][63];
+  Float_t  eleESProfileRear_[maxP][63];
 
   // Photon
   Int_t    nPho_;
@@ -254,6 +263,9 @@ protected:
   Int_t    phohasPixelSeed_[maxP];
   Int_t    phoIsConv_[maxP];
   Float_t  phoPi0Disc_[maxP];
+  Float_t  phoESRatio_[maxP];
+  Float_t  phoESProfileFront_[maxP][63];
+  Float_t  phoESProfileRear_[maxP][63];
 
   // Muon
   Int_t    nMu_;
