@@ -63,6 +63,7 @@ protected:
   Bool_t saveHLTInfo_;
   Bool_t doGenParticles_;
   Bool_t doStoreJets_;
+  Bool_t doSkim_;
 
   InputTag vtxlabel_;
   InputTag gtdigilabel_;
