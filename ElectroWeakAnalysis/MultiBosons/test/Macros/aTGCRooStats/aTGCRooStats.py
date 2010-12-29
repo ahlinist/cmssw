@@ -1,6 +1,6 @@
 import sys
 import os
-from math import sqrt
+from math import sqrt,exp
 from optparse import OptionParser
 
 import ROOT
@@ -35,7 +35,7 @@ def main(options,args):
         theNLL = ws.pdf('TopLevelPdf').createNLL(ws.data('aTGCDataUnitWeight'),
                                                  ROOT.RooFit.NumCPU(2),
                                                  ROOT.RooFit.ExternalConstraints(ROOT.RooArgSet(ws.pdf('lumiErr'),
-                                                                                                ws.pdf('selectionErr')))
+                                                                                                ws.pdf('selectionErr'))),
                                                  )
     else:
         theNLL =ws.pdf('TopLevelPdf').createNLL(ws.data('aTGCDataUnitWeight'),
@@ -48,6 +48,7 @@ def main(options,args):
                                             
     minuit = ROOT.RooMinuit(theNLL)
     minuit.setPrintLevel(1)
+    minuit.setPrintEvalErrors(-1)
     
     #find the values of the errors that minimize the likelihood
     minuit.setStrategy(2)
@@ -84,6 +85,7 @@ def main(options,args):
     profMinuit = profileLL.minuit()
     profMinuit.setStrategy(2)
     profMinuit.setPrintLevel(1)
+    profMinuit.setPrintEvalErrors(-1)
 
     profMinuit.migrad()
     profMinuit.minos(ws.set('POI'))
@@ -262,13 +264,13 @@ def setupWorkspace(dataTree,mcTree,ws,output,options):
 
     evSelErr = ROOT.RooRealVar('eventSelectionError',
                                'Fractional Error on the MC event selection',
-                               sqrt(.02*.02 + .02*.02 + .15*.15)) #acceptance error + XS err + 15%
+                               exp(sqrt(.02*.02 + .02*.02 + .15*.15))) #acceptance error + XS err + 15%
     bkgErr = ROOT.RooRealVar('backgroundError',
                              'Fractional Error on the expected number of background events',
-                             .27) # fix background error to be 10% for now
+                             exp(.27)) # fix background error to be 10% for now
     lumiErr = ROOT.RooRealVar('luminosityError',
                               'Fractional Error on the luminosity',
-                              .11) #fix lumi error to 11%    
+                              exp(.11)) #fix lumi error to 11%    
 
     #build nExpectedBackground RooHistFunc
     bkg = loadBackgroundHist(ws,output,options)
@@ -639,23 +641,23 @@ def makeATGCExpectationPdf(ws,options):
 
     #nuisance parameters
     x_gs = ROOT.RooRealVar('err_x_gs','Range for Selection Error',1,
-                           1-4*ws.var('eventSelectionError').getVal(),
-                           1+4*ws.var('eventSelectionError').getVal())
+                           1e-6,
+                           1e6)
     x_gb = ROOT.RooRealVar('err_x_gb','Range for Background Error',1,
-                           1-4*ws.var('backgroundError').getVal(),
-                           1+4*ws.var('backgroundError').getVal())
+                           1e-6,
+                           1e6)
     x_gl = ROOT.RooRealVar('err_x_gl','Range for Lumi Error',1,
-                           1-4*ws.var('luminosityError').getVal(),
-                           1+4*ws.var('luminosityError').getVal())
+                           1e-6,
+                           1e6)
     
     getattr(ws,'import')(x_gs)
     getattr(ws,'import')(x_gb)
     getattr(ws,'import')(x_gl)
     
     #define the Gaussians for the errors
-    ws.factory("RooGaussian::selectionErr(err_x_gs,1,eventSelectionError)")
-    ws.factory("RooGaussian::backgroundErr(err_x_gb,1,backgroundError)")
-    ws.factory("RooGaussian::lumiErr(err_x_gl,1,luminosityError)")
+    ws.factory("RooLognormal::selectionErr(err_x_gs,1,eventSelectionError)")
+    ws.factory("RooLognormal::backgroundErr(err_x_gb,1,backgroundError)")
+    ws.factory("RooLognormal::lumiErr(err_x_gl,1,luminosityError)")
 
     ws.factory('prod::sigExp(nExpectedSignal,err_x_gl,err_x_gs)') #
     ws.factory('prod::bkgExp(nExpectedBackground,err_x_gb)') #
