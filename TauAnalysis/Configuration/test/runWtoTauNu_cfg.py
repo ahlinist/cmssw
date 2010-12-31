@@ -1,5 +1,4 @@
 
-
 import FWCore.ParameterSet.Config as cms
 import copy
 
@@ -7,7 +6,7 @@ process = cms.Process('runWtoTauNu')
 
 process.load('Configuration/StandardSequences/Services_cff')
 process.load('FWCore/MessageService/MessageLogger_cfi')
-process.MessageLogger.cerr.FwkReport.reportEvery = 1
+process.MessageLogger.cerr.FwkReport.reportEvery = 100
 
 #load geometry
 process.load('Configuration/StandardSequences/GeometryIdeal_cff')
@@ -96,7 +95,7 @@ process.cleanPatTaus.preselection = cms.string('')
 from PhysicsTools.PatAlgos.tools.jetTools import *
 
 # uncomment to replace caloJets by pfJets
-#switchJetCollection(process, jetCollection = cms.InputTag("ak5PFJets"))
+switchJetCollection(process, jetCollection = cms.InputTag("ak5PFJets"), outputModule = '')
 #-----------------------------------------------------------------------------
 # import utility function for managing pat::METs
 from TauAnalysis.Configuration.tools.metTools import *
@@ -112,9 +111,14 @@ replaceMETforTauNu(process, cms.InputTag('patMETs'),cms.InputTag('patPFMETs'))
 #--------------------------------------------------------------------------------
 # import utility function for changing cut values
 from TauAnalysis.Configuration.tools.changeCut import changeCut
-changeCut(process,"selectedPatTausForWTauNuEcalIso","tauID('byIsolation') > 0.5")
-changeCut(process,"selectedPatTausForWTauNuTrkIso","tauID('byIsolation') > 0.5")
-changeCut(process, "selectedPatElectronsTightId","electronID('eidRobustTight') > 0")
+changeCut(process,"selectedPatTausTaNCdiscr","tauID('byTaNCfrQuarterPercent') > 0.5")
+
+changeCut(process,"selectedPatTausForWTauNuEcalIso","tauID('byTaNCfrQuarterPercent') > 0.5")
+changeCut(process,"selectedPatTausForWTauNuTrkIso","tauID('byTaNCfrQuarterPercent') > 0.5")
+changeCut(process,"selectedPatTausForWTauNuPt20","pt > 30")
+changeCut(process,"selectedPatTausForWTauNuLeadTrkPt","leadPFChargedHadrCand().isNonnull() & leadPFChargedHadrCand().pt() > 20.")
+changeCut(process,"selectedPatTausForWTauNuElectronVeto","tauID('againstElectron') > 0.5 && emFraction < 0.85")
+changeCut(process,"selectedPatTausForWTauNuEcalCrackVeto","abs(eta) > 0.018 && (abs(eta)<0.423 || abs(eta)>0.461) && (abs(eta)<0.770 || abs(eta)>0.806) && (abs(eta)<1.127 || abs(eta)>1.163) && (abs(eta)<1.460 || abs(eta)>1.558)")
 #-----------------------------------------------------------------------------------
 
 #print event content before starting to process 1st event
