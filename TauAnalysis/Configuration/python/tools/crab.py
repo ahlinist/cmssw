@@ -23,6 +23,7 @@ def lfns(crab_dir):
             job_report = minidom.parse(job_xml)
         except:
             print "Couldn't parse xml file %s, skipping!!!" % job_xml
+            continue
         framework_report = job_report.firstChild
 
         # Check to make sure the job completed successfully
