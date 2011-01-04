@@ -19,9 +19,9 @@ process.source = cms.Source("EmptySource")
 process.loadFilterStatistics = cms.EDAnalyzer("DQMFileLoader",
     all = cms.PSet(
         inputFileNames = cms.vstring(
-            '/data1/friis/Run11.bak/merged_data.root'
+            '/data1/veelken/CMSSW_3_8_x/plots/AHtoMuTau/2010Dec23_lxbatch/plotsAHtoMuTau_all.root'
         ),
-        dqmDirectory_store = cms.string('')
+        dqmDirectory_store = cms.string('/')
     )
 )
 
@@ -29,10 +29,11 @@ process.dumpDQMStore = cms.EDAnalyzer("DQMStoreDump")
 
 process.dumpRunLumiSectionEventNumbers = cms.EDAnalyzer("DQMDumpRunLumiSectionEventNumbers",
     dqmDirectories = cms.vstring(
-        'harvested/data_Mu_132440-145761_Sep17ReReco/ahMuTauAnalyzer_woBtag/FilterStatistics/evtSelNonCentralJetEt20bTag/events_passed_cumulative/'
+        '/harvested/data/ahMuTauAnalyzerOS_woBtag/FilterStatistics/evtSelDiTauCandidateForAHtoMuTauZeroCharge/events_passed_cumulative/',
+        '/harvested/data/ahMuTauAnalyzerOS_wBtag/FilterStatistics/evtSelDiTauCandidateForAHtoMuTauZeroCharge/events_passed_cumulative/'
     ),
     runLumiSectionEventNumberFileName = cms.string(
-        "/afs/cern.ch/user/v/veelken/public/selEvents_AHtoMuTau_woBtag_runs132440to145761.txt"
+        "/afs/cern.ch/user/v/veelken/public/selEvents_AHtoMuTau_2010Dec23.txt"
     ),
     separator = cms.string(':')                                                        
 )
