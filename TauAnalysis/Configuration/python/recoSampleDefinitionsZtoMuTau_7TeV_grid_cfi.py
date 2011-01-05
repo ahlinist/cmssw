@@ -8,21 +8,17 @@ import TauAnalysis.DQMTools.plotterStyleDefinitions_cfi as styles
 SAMPLES_TO_ANALYZE = [
     'data_Mu_Run2010A_Nov4ReReco',
     'data_Mu_Run2010B_Nov4ReReco',
-    'ZtautauPU156bx',
+    #'ZtautauPU156bx',
+    #'Zmumu_pythia', 'Zee_pythia',
     'qqZll',
     'qqZllPU156bx', # EK: not at any site as of Dec 23
-    'bbZll', 'ccZll',
-    'Zmumu_pythia',
-    'Zee_pythia',
+    'bbZll', 'ccZll',    
+    'Ztautau_powheg', 'Zmumu_powheg', 'Zee_powheg',
     #'InclusivePPmuX',
     'PPmuXptGt20Mu10', 'PPmuXptGt20Mu15',
-    'PPmuXptGt20Mu10Workaround', # EK - temporary for genPhaseSpace skim bug
     #'Wenu_pythia', 'Wmunu_pythia', 'Wtaunu_pythia',
+    #'WePlus_powheg', 'WeMinus_powheg', 'WmuMinus_powheg', 'WmuPlus_powheg', 'WtauMinus_powheg', 'WtauPlus_powheg',
     'WplusJets_madgraph',
-    'Ztautau_powheg','Zmumu_powheg','Zee_powheg',
-    #'WePlus_powheg', 'WeMinus_powheg',
-    #'WmuMinus_powheg', 'WmuPlus_powheg',
-    #'WtauMinus_powheg', 'WtauPlus_powheg',
     'WW', 'WZ', 'ZZ',
     #'TTplusJets_pythia',
     'TTplusJets_madgraph'
@@ -43,13 +39,8 @@ SAMPLES_TO_PLOT = [
 ]
 
 SAMPLES_TO_PRINT = copy.copy(SAMPLES_TO_PLOT)
-#SAMPLES_TO_PRINT.append('Zee_pythia')
 SAMPLES_TO_PRINT.append('smBgSum')
 SAMPLES_TO_PRINT.append('smSum')
-#SAMPLES_TO_PRINT.append('Zmumu_powheg')
-#SAMPLES_TO_PRINT.append('Ztautau_powheg')
-#SAMPLES_TO_PRINT.append('WplusJetsSum_powheg')
-#SAMPLES_TO_PRINT.append('WplusJets_madgraph')
 
 SAMPLE_DEFAULTS = {
     'dbs_url' : "http://cmsdbsprod.cern.ch/cms_dbs_ph_analysis_02/servlet/DBSServlet",
@@ -136,7 +127,7 @@ RECO_SAMPLES = {
         'datasetpath' : "/DYtoTauTau_M_20_TuneD6T_7TeV-pythia6-tauola/Fall10-START38_V12-v1/GEN-SIM-RECO",
         'events_processed' : 2677550,
         'skim_eff' : 1.0,
-        'x_sec' : 1.337*1300*_picobarns, # Z + jets correction factor for NLO/LO cross-sections = 1.337
+        'x_sec' : 1.282*1300*_picobarns, # Z + jets correction factor for NLO/LO cross-sections = 1.282
         'legendEntry' : plotter.process_Ztautau.config_dqmHistPlotter.legendEntry.value(),
         'type' : plotter.process_Ztautau.config_dqmHistPlotter.type.value(),
         'drawOption' : styles.drawOption_Ztautau,
@@ -150,7 +141,7 @@ RECO_SAMPLES = {
         'datasetpath' : "/DYToTauTau_M-20_CT10_TuneZ2_7TeV-powheg-pythia-tauola/Fall10-E7TeV_ProbDist_2010Data_BX156_START38_V12-v1/GEN-SIM-RECO",
         'events_processed' : 1994719,
         'skim_eff' : 1.0,
-        'x_sec' : 1737.9*_picobarns,
+        'x_sec' : 1666*_picobarns,
         'legendEntry' : plotter.process_Ztautau.config_dqmHistPlotter.legendEntry.value(),
         'type' : plotter.process_Ztautau.config_dqmHistPlotter.type.value(),
         'drawOption' : styles.drawOption_Ztautau,
@@ -165,7 +156,7 @@ RECO_SAMPLES = {
         'dbs_url' : "http://cmsdbsprod.cern.ch/cms_dbs_ph_analysis_01/servlet/DBSServlet",
         'events_processed' : 132731,
         'skim_eff' : 1.0,
-        'x_sec' : 1.337*1300*_picobarns, # Z + jets correction factor for NLO/LO cross-sections = 1.337
+        'x_sec' : 1.282*1300*_picobarns, # Z + jets correction factor for NLO/LO cross-sections = 1.282
         'legendEntry' : plotter.process_Ztautau.config_dqmHistPlotter.legendEntry.value(),
         'type' : 'Data',
         'drawOption' : styles.drawOption_Ztautau,
@@ -179,7 +170,7 @@ RECO_SAMPLES = {
         'dbs_url' :  "http://cmsdbsprod.cern.ch/cms_dbs_prod_global/servlet/DBSServlet",
         'events_processed' : 2568490,
         'skim_eff' : 1.0,
-        'x_sec' : 1.337*1300*_picobarns, # Z + jets correction factor for NLO/LO cross-sections = 1.337
+        'x_sec' : 1.282*1300*_picobarns, # Z + jets correction factor for NLO/LO cross-sections = 1.282
         'legendEntry' : plotter.process_Ztautau.config_dqmHistPlotter.legendEntry.value(),
         'type' : plotter.process_Ztautau.config_dqmHistPlotter.type.value(),
         'drawOption' : styles.drawOption_Ztautau,
@@ -255,7 +246,7 @@ RECO_SAMPLES = {
         'dbs_url' :  "http://cmsdbsprod.cern.ch/cms_dbs_prod_global/servlet/DBSServlet",
         'events_processed' : 2558038,
         'skim_eff' : 1.0,
-        'x_sec' : 1.337*1300*_picobarns, # Z + jets correction factor for NLO/LO cross-sections = 1.337
+        'x_sec' : 1.282*1300*_picobarns, # Z + jets correction factor for NLO/LO cross-sections = 1.282
         'legendEntry' : plotter.process_Zmumu.config_dqmHistPlotter.legendEntry.value(),
         'type' : plotter.process_Zmumu.config_dqmHistPlotter.type.value(),
         'drawOption' : styles.drawOption_Zmumu,
@@ -271,7 +262,7 @@ RECO_SAMPLES = {
         'dbs_url' :  "http://cmsdbsprod.cern.ch/cms_dbs_prod_global/servlet/DBSServlet",
         'events_processed' : 1998931,
         'skim_eff' : 1.0,
-        'x_sec' : 1737.9*_picobarns,
+        'x_sec' : 1666*_picobarns,
         'legendEntry' : plotter.process_Zmumu.config_dqmHistPlotter.legendEntry.value(),
         'type' : plotter.process_Zmumu.config_dqmHistPlotter.type.value(),
         'drawOption' : styles.drawOption_Zmumu,
@@ -285,7 +276,7 @@ RECO_SAMPLES = {
         'datasetpath' : "/DYToEE_M-20_TuneZ2_7TeV-pythia6/Fall10-E7TeV_ProbDist_2010Data_BX156_START38_V12-v1/GEN-SIM-RECO",
         'events_processed' : 2085586,
         'skim_eff' : 1.0,
-        'x_sec' : 1.337*1300*_picobarns, # Z + jets correction factor for NLO/LO cross-sections = 1.337
+        'x_sec' : 1.282*1300*_picobarns, # Z + jets correction factor for NLO/LO cross-sections = 1.282
         'legendEntry' : plotter.process_Zee.config_dqmHistPlotter.legendEntry.value(),
         'type' : plotter.process_Zee.config_dqmHistPlotter.type.value(),
         'drawOption' : styles.drawOption_Zee,
@@ -299,7 +290,7 @@ RECO_SAMPLES = {
         'datasetpath' : "/DYToEE_M-20_CT10_TuneZ2_7TeV-powheg-pythia/Fall10-E7TeV_ProbDist_2010Data_BX156_START38_V12-v1/GEN-SIM-RECO",
         'events_processed' : 1998990,
         'skim_eff' : 1.0,
-        'x_sec' : 1737.9*_picobarns,
+        'x_sec' : 1666*_picobarns,
         'legendEntry' : plotter.process_Zee.config_dqmHistPlotter.legendEntry.value(),
         'type' : plotter.process_Zee.config_dqmHistPlotter.type.value(),
         'drawOption' : styles.drawOption_Zee,
@@ -379,7 +370,7 @@ RECO_SAMPLES = {
         'dbs_url' :  "http://cmsdbsprod.cern.ch/cms_dbs_prod_global/servlet/DBSServlet",
         'events_processed' : 5495740,
         'skim_eff' : 1.0,
-        'x_sec' : 1.368*7899*_picobarns, # W --> e nucorrection factor for NLO/LO cross-sections = 1.368
+        'x_sec' : 1.321*7899*_picobarns, # W --> e nucorrection factor for NLO/LO cross-sections = 1.321
         'legendEntry' : plotter.process_WplusJets.config_dqmHistPlotter.legendEntry.value(),
         'type' : plotter.process_WplusJets.config_dqmHistPlotter.type.value(),
         'drawOption' : styles.drawOption_WplusJets,
@@ -430,7 +421,7 @@ RECO_SAMPLES = {
         'dbs_url' :  "http://cmsdbsprod.cern.ch/cms_dbs_prod_global/servlet/DBSServlet",
         'events_processed' : 5485510,
         'skim_eff' : 1.0,
-        'x_sec' : 1.368*7899*_picobarns, # W --> mu nu correction factor for NLO/LO cross-sections = 1.368
+        'x_sec' : 1.321*7899*_picobarns, # W --> mu nu correction factor for NLO/LO cross-sections = 1.321
         'legendEntry' : plotter.process_WplusJets.config_dqmHistPlotter.legendEntry.value(),
         'type' : plotter.process_WplusJets.config_dqmHistPlotter.type.value(),
         'drawOption' : styles.drawOption_WplusJets,
@@ -477,7 +468,7 @@ RECO_SAMPLES = {
         'dbs_url' :  "http://cmsdbsprod.cern.ch/cms_dbs_prod_global/servlet/DBSServlet",
         'events_processed' : 5476550,
         'skim_eff' : 1.0,
-        'x_sec' : 1.368*7899*_picobarns, # W --> tau nu correction factor for NLO/LO cross-sections = 1.368
+        'x_sec' : 1.321*7899*_picobarns, # W --> tau nu correction factor for NLO/LO cross-sections = 1.321
         'legendEntry' : plotter.process_WplusJets.config_dqmHistPlotter.legendEntry.value(),
         'type' : plotter.process_WplusJets.config_dqmHistPlotter.type.value(),
         'drawOption' : styles.drawOption_WplusJets,
@@ -524,7 +515,7 @@ RECO_SAMPLES = {
         'dbs_url' :  "http://cmsdbsprod.cern.ch/cms_dbs_prod_global/servlet/DBSServlet",
         'events_processed' : 15168266,
         'skim_eff' : 1.0,
-        'x_sec' : 32412*_picobarns,
+        'x_sec' : 31314*_picobarns,
         'legendEntry' : plotter.process_WplusJets.config_dqmHistPlotter.legendEntry.value(),
         'type' : plotter.process_WplusJets.config_dqmHistPlotter.type.value(),
         'drawOption' : styles.drawOption_WplusJets,
@@ -584,7 +575,7 @@ RECO_SAMPLES = {
         'dbs_url' :  "http://cmsdbsprod.cern.ch/cms_dbs_prod_global/servlet/DBSServlet",
         'events_processed' : 1095950,
         'skim_eff' : 1.0,
-        'x_sec' : 165*_picobarns, # NNLO cross-section from https://twiki.cern.ch/twiki/bin/viewauth/CMS/StandardModelCrossSections
+        'x_sec' : 157.5*_picobarns, # NNLO cross-section from https://twiki.cern.ch/twiki/bin/viewauth/CMS/StandardModelCrossSections
         'legendEntry' : plotter.process_TTplusJets.config_dqmHistPlotter.legendEntry.value(),
         'type' : plotter.process_TTplusJets.config_dqmHistPlotter.type.value(),
         'drawOption' : styles.drawOption_TTplusJets,
@@ -599,7 +590,7 @@ RECO_SAMPLES = {
         'dbs_url' :  "http://cmsdbsprod.cern.ch/cms_dbs_prod_global/servlet/DBSServlet",
         'events_processed' : 1164640,
         'skim_eff' : 1.0,
-        'x_sec' : 165*_picobarns, # NNLO cross-section from https://twiki.cern.ch/twiki/bin/viewauth/CMS/StandardModelCrossSections
+        'x_sec' : 157.5*_picobarns, # NNLO cross-section from https://twiki.cern.ch/twiki/bin/viewauth/CMS/StandardModelCrossSections
         'legendEntry' : plotter.process_TTplusJets.config_dqmHistPlotter.legendEntry.value(),
         'type' : plotter.process_TTplusJets.config_dqmHistPlotter.type.value(),
         'drawOption' : styles.drawOption_TTplusJets,
