@@ -5,7 +5,7 @@ bgEstFakeRateJetWeights = cms.EDProducer("FakeRateJetWeightProducer",
     method = cms.string("simple"),
 
     # collection of all reco::PFTau objects
-    allTauJetSource = cms.InputTag(),
+    allTauJetSource = cms.InputTag(''),
 
     # collection of reco::PFTau/pat::Tau objects
     # for which fake-rates are to be computed.
@@ -15,7 +15,7 @@ bgEstFakeRateJetWeights = cms.EDProducer("FakeRateJetWeightProducer",
     #
     # NOTE: 'allTauJetSource' and 'preselTauJetSource' are set in 
     #
-    preselTauJetSource = cms.InputTag(),
+    preselTauJetSource = cms.InputTag(''),
 
     dRmatch = cms.double(0.1),
 
