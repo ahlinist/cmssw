@@ -568,24 +568,24 @@ void TauHistManager::fillHistogramsImp(const edm::Event& evt, const edm::EventSe
     hTauNumTracksSignalCone_->Fill(patTau->signalPFChargedHadrCands().size(), weight);
     hTauNumTracksIsoCone_->Fill(patTau->isolationTracks().size(), weight);
 
-    if ( isValidRef(patTau->leadTrack()) ) {
-      hTauLeadTrkPt_->Fill(patTau->leadTrack()->pt(), weight);
-      hTauLeadTrkEta_->Fill(patTau->leadTrack()->eta(), weight);
-      hTauLeadTrkPhi_->Fill(patTau->leadTrack()->phi(), weight);
+    if ( isValidRef(patTau->leadPFChargedHadrCand()) ) {
+      hTauLeadTrkPt_->Fill(patTau->leadPFChargedHadrCand()->pt(), weight);
+      hTauLeadTrkEta_->Fill(patTau->leadPFChargedHadrCand()->eta(), weight);
+      hTauLeadTrkPhi_->Fill(patTau->leadPFChargedHadrCand()->phi(), weight);
 
-      hTauLeadTrkMatchDist_->Fill(reco::deltaR(patTau->leadTrack()->momentum(), patTau->p4()), weight);
+      hTauLeadTrkMatchDist_->Fill(reco::deltaR(patTau->leadPFChargedHadrCand()->momentum(), patTau->p4()), weight);
 
       if ( vertexSrc_.label() != "" ) {
 	edm::Handle<std::vector<reco::Vertex> > recoVertices;
 	evt.getByLabel(vertexSrc_, recoVertices);
 	if ( recoVertices->size() >= 1 ) {
 	  const reco::Vertex& thePrimaryEventVertex = (*recoVertices->begin());
-	  hTauLeadTrkIPxy_->Fill(patTau->leadTrack()->dxy(thePrimaryEventVertex.position()), weight);
-	  hTauLeadTrkIPz_->Fill(patTau->leadTrack()->dz(thePrimaryEventVertex.position()), weight);
+	  hTauLeadTrkIPxy_->Fill(patTau->leadPFChargedHadrCand()->dxy(thePrimaryEventVertex.position()), weight);
+	  hTauLeadTrkIPz_->Fill(patTau->leadPFChargedHadrCand()->dz(thePrimaryEventVertex.position()), weight);
 	}
       }
 
-      const reco::HitPattern& hitPattern = patTau->leadTrack()->hitPattern();
+      const reco::HitPattern& hitPattern = patTau->leadPFChargedHadrCand()->hitPattern();
       hTauLeadTrkNumHits_->Fill(hitPattern.numberOfValidTrackerHits(), weight);
       hTauLeadTrkNumPixelHits_->Fill(hitPattern.numberOfValidPixelHits(), weight);
       hTauLeadTrkNumStripHits_->Fill(hitPattern.numberOfValidStripHits(), weight);
