@@ -149,6 +149,7 @@ RECO_SAMPLES = {
         'enableFakeRates' : True,
         'applyMuonTriggerEfficiencyCorrection' : True,
         'applyMuonIsolationEfficiencyCorrection' : True,
+	'applyVertexMultiplicityReweighting' : True,
         'hlt' : cms.InputTag("TriggerResults", "", "REDIGI38XPU")
     },
     'Ztautau_from_ZmumuEmbedding' : {
@@ -223,7 +224,7 @@ RECO_SAMPLES = {
         'applyZrecoilCorrection' : True,
         'applyMuonTriggerEfficiencyCorrection' : True,
         'applyMuonIsolationEfficiencyCorrection' : True,
-        'applyVertexMultiplicityReweighting' : True,
+        'applyVertexMultiplicityReweighting' : False,
         'hlt' : cms.InputTag("TriggerResults", "", "HLT")
     },
     'ccZll' : {
@@ -238,7 +239,7 @@ RECO_SAMPLES = {
         'applyZrecoilCorrection' : True,
         'applyMuonTriggerEfficiencyCorrection' : True,
         'applyMuonIsolationEfficiencyCorrection' : True,
-        'applyVertexMultiplicityReweighting' : True,
+        'applyVertexMultiplicityReweighting' : False,
         'hlt' : cms.InputTag("TriggerResults", "", "HLT")
     },
     'Zmumu_pythia' : {
