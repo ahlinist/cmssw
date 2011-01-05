@@ -7,7 +7,7 @@ import TauAnalysis.Configuration.tools.factorizationTools as factorizationTools
 import TauAnalysis.Configuration.tools.mcToDataCorrectionTools as mcToDataCorrectionTools
 import TauAnalysis.Configuration.tools.sysUncertaintyTools as sysUncertaintyTools
 import TauAnalysis.Configuration.tools.switchToData as switchToData
-import TauAnalysis.BgEstimationTools.tools.fakeRateTools as fakeRateTools
+import TauAnalysis.BgEstimationTools.tools.fakeRateAnalysisTools as fakeRateAnalysisTools
 from TauAnalysis.Configuration.tools.changeCut import changeCut
 
 import PhysicsTools.PatAlgos.tools.helpers as patutils
@@ -293,7 +293,7 @@ def _changeProcessName(process, name, **kwargs):
 def _enableFakeRates(process, enable, **kwargs):
     if enable:
         print "--> Enabling fake rate BG estimation method"
-        fakeRateTools.enableFakeRates(process,
+        fakeRateAnalysisTools.enableFakeRates(process,
             kwargs['channel'], method="simple")
 
 _tauIdChannelMap = {
