@@ -240,7 +240,7 @@ changeCut(process, "selectedMuTauPairsForAHtoMuTauPzetaDiff",
 changeCut(process, "selectedMuTauPairsForAHtoMuTauPzetaDiffLooseMuonIsolation",
           '(pZeta - 1.5*pZetaVis) > %0.2f' % cuts['pzeta'])
 
-# set charge requirement - can be turned of to keep SS ditaus
+# set charge requirement - can be turned off to keep SS ditaus
 changeCut(process, "selectedMuTauPairsZeroCharge", cuts['charge'])
 changeCut(process, "selectedMuTauPairsForAHtoMuTauZeroCharge", cuts['charge'])
 changeCut(process, "selectedMuTauPairsZeroChargeLooseMuonIsolation", cuts['charge'])
