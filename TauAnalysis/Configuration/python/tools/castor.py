@@ -41,7 +41,7 @@ def group(iterator, count):
         yield tuple([itr.next() for i in xrange(count)])
 
 __author__  = "Sebastien Binet <binet@cern.ch>"
-__version__ = "$Revision: 1.5 $"
+__version__ = "$Revision: 1.6 $"
 __doc__ = """A set of simple helper methods to handle simple tasks with CASTOR.
 """
 
@@ -84,12 +84,22 @@ def nslsl(path):
                 'file' : fields[8]
             }
             time_stamp = " ".join(fields[5:8])
+            # If it doesn't have a year stamp, assume it was made this year.
             if time_stamp.find(':') != -1:
                 output['time'] = time.strptime(
                     time_stamp + " " + str(datetime.datetime.now().year),
                     "%b %d %H:%M %Y")
             else:
                 output['time'] = time.strptime(time_stamp, "%b %d %Y")
+
+            # If the date is greater than the current date, it was made *last*
+            # year.  nsls sucks.
+            if output['time'] > datetime.datetime.now().timetuple():
+                # Add a year
+                current = datetime.datetime.fromtimestamp(
+                    time.mktime(output['time']))
+                current -= datetime.timedelta(days=365)
+                output['time'] = current.timetuple()
 
             output['path'] = os.path.join(directory, output['file'])
             _CACHE[output['path']] = output
