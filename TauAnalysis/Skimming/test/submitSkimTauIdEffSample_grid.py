@@ -6,7 +6,7 @@ from TauAnalysis.Configuration.userRegistry import getJobId
 
 import os
 
-channel = 'ZtoMuTau'
+channel = 'ZtoMuTau_tauIdEff'
 configFile = 'skimTauIdEffSample_cfg.py'
 jobId = getJobId(channel)
 
@@ -14,7 +14,6 @@ outputFilePath = '/user/v/veelken/CMSSW_3_8_x/skims/TauIdEffMeas/'
 
 samplesToAnalyze = [
     # modify in case you want to submit jobs for some of the samples only...
-    'data_Mu_Run2010A_Sep17ReReco'
 ]
 
 # Define what output file name a skimmed sample will have
@@ -25,7 +24,7 @@ def output_mapper(channel, sample, jobId):
 submitAnalysisToGrid(configFile = configFile, channel = channel, jobId = jobId,
                      samples = recoSampleDefinitionsZtoMuTau_7TeV,
                      samplesToAnalyze = samplesToAnalyze,
-                     disableFactorization = True, disableSysUncertainties = True,
+                     disableFactorization = True, disableSysUncertainties = True, disableZrecoilCorrections = True,
                      outputFilePath = outputFilePath, outputFileMap = output_mapper)
 
 
