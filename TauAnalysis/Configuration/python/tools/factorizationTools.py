@@ -22,13 +22,21 @@ def replaceEventSelections(analyzer, evtSel_replacements):
             raise ValueError("Invalid 'evtSel_replacements' Parameter !!")
 
         evtSel_tight = evtSel_replacement[0]
+        evtSelName_tight = getattr(evtSel_tight, "pluginName").value()
         evtSel_loose = evtSel_replacement[1]
+        evtSelName_loose = getattr(evtSel_loose, "pluginName").value()
 
         for evtSel_i in analyzer.filters:
-            if getattr(evtSel_i, "pluginName").value() == getattr(evtSel_tight, "pluginName").value():
+            if getattr(evtSel_i, "pluginName").value() == evtSelName_tight:
 
                 analyzer.filters.remove(evtSel_i)
                 analyzer.filters.append(evtSel_loose)
+
+                if evtSelName_tight != evtSelName_loose:
+                    analysisSequence = getattr(analyzer, "analysisSequence")
+                    for analysisSequenceEntry in analysisSequence:
+                        if hasattr(analysisSequenceEntry, "filter") and getattr(analysisSequenceEntry, "filter").value() == evtSelName_tight:
+                            setattr(analysisSequenceEntry, "filter", cms.string(evtSelName_loose))
 
                 print("Replaced in " + getattr(analyzer, "name").value() + ": "
                       + getattr(evtSel_tight, "pluginName").value() + " by " + getattr(evtSel_loose, "pluginName").value()
@@ -53,14 +61,24 @@ def _replaceAnyAnalyzerModules(analyzer, analyzersAttributeName, analyzerModule_
         if hasattr(analyzer, analyzersAttributeName):
             analyzers = getattr(analyzer, analyzersAttributeName)
 
-            for analyzerModule in analyzers:
-                analyzerModuleName = getattr(analyzerModule, "pluginName").value()
+            for analyzerModule_i in analyzers:
+                analyzerModuleName_i = getattr(analyzerModule_i, "pluginName").value()
 
-                if analyzerModuleName == analyzerModuleName_old:
+                if analyzerModuleName_i == analyzerModuleName_old:
 
-                    analyzers.remove(analyzerModule)
+                    analyzers.remove(analyzerModule_i)
                     analyzers.append(analyzerModule_new)
 
+                    if analyzerModuleName_old != analyzerModuleName_new:
+                        analysisSequence = getattr(analyzer, "analysisSequence")
+                        for analysisSequenceEntry in analysisSequence:
+                            if hasattr(analysisSequenceEntry, "analyzers"):
+                                numAnalyzerModules = len(getattr(analysisSequenceEntry, "analyzers"))
+                                for j in range(numAnalyzerModules):
+                                    analyzerModuleName_j = getattr(analysisSequenceEntry, "analyzers")[j]
+                                    if analyzerModuleName_j == analyzerModuleName_old:
+                                        getattr(analysisSequenceEntry, "analyzers")[j] = analyzerModuleName_new
+ 
                     print("Replaced in " + getattr(analyzer, "name").value() + ": "
                           + analyzerModuleName_old + " by " + analyzerModuleName_new
                           + " (version with factorization enabled)")
