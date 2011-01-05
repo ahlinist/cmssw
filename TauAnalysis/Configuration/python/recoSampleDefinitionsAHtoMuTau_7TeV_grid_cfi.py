@@ -40,16 +40,13 @@ SAMPLES_TO_PLOT = [
     ###'A200Sum',
     ##'A300Sum',
     'qcdSum',
-    'PPmuXptGt20Mu15',
-    'WplusJetsSum',
-    'TTplusJets',
-    'Zmumu',
-    #'Ztautau'
-    'ZtautauPU156bx',
+    'WplusJets_madgraph',
+    'TTplusJets_madgraph',
+    'Zmumu_powheg',
+    'ZtautauSum'
 ]
 
 SAMPLES_TO_PRINT = copy.copy(SAMPLES_TO_PLOT)
-#SAMPLES_TO_PRINT.append('qqZtautau')
 #SAMPLES_TO_PRINT.append('A90Sum')
 #SAMPLES_TO_PRINT.append('A100Sum')
 #SAMPLES_TO_PRINT.append('A120Sum')
