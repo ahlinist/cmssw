@@ -57,7 +57,7 @@ def _get_conditions(globalTag):
 
 def prepareConfigFile(configFile = None, jobInfo = None, newConfigFile = None,
                       sample_infos = None,
-                      disableFactorization = False, disableSysUncertainties = False,
+                      disableFactorization = False, disableSysUncertainties = False, disableZrecoilCorrections = False,
                       input_files = None, output_file = None,
                       enableEventDumps = False, enableFakeRates = False,
                       processName = None,
@@ -130,9 +130,10 @@ def prepareConfigFile(configFile = None, jobInfo = None, newConfigFile = None,
         jobOptions.append(('enableFactorization',
                            sample_info['factorize']))
 
-    #Apply Z-recoil correction to MEt if requested
-    jobOptions.append(('applyZrecoilCorrection',
-                      sample_info['applyZrecoilCorrection']))
+    # Apply Z-recoil correction to MEt if requested
+    if not disableZrecoilCorrections:
+        jobOptions.append(('applyZrecoilCorrection',
+                          sample_info['applyZrecoilCorrection']))
 
     # Apply muon trigger efficiency correction if requested
     jobOptions.append(('applyMuonTriggerEfficiencyCorrection',
