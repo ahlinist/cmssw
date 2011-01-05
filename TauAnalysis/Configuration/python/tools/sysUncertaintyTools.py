@@ -309,6 +309,8 @@ def enableSysUncertainties_runZtoMuTau(process):
     if hasattr(process, "allMuTauPairsZllRecoilCorrected"):
         setattr(patMuTauPairSelConfiguratorOS, "src", "allMuTauPairsZllRecoilCorrected")
     process.selectMuTauPairsOS = patMuTauPairSelConfiguratorOS.configure(process = process)
+    if hasattr(process, "allMuTauPairsZllRecoilCorrected"):
+        setattr(patMuTauPairSelConfiguratorSS, "src", "allMuTauPairsZllRecoilCorrected")
     setattr(patMuTauPairSelConfiguratorSS, "systematics", muTauPairSystematics)
     process.selectMuTauPairsSS = patMuTauPairSelConfiguratorSS.configure(process = process)
 
@@ -317,6 +319,8 @@ def enableSysUncertainties_runZtoMuTau(process):
         setattr(patMuTauPairSelConfiguratorLooseMuonIsolationOS, "src", "allMuTauPairsLooseMuonIsolationZllRecoilCorrected")
     process.selectMuTauPairsLooseMuonIsolationOS = patMuTauPairSelConfiguratorLooseMuonIsolationOS.configure(process = process)
     setattr(patMuTauPairSelConfiguratorLooseMuonIsolationSS, "systematics", muTauPairSystematicsLooseMuonIsolation)
+    if hasattr(process, "allMuTauPairsLooseMuonIsolationZllRecoilCorrected"):
+        setattr(patMuTauPairSelConfiguratorLooseMuonIsolationSS, "src", "allMuTauPairsLooseMuonIsolationZllRecoilCorrected")
     process.selectMuTauPairsLooseMuonIsolationSS = patMuTauPairSelConfiguratorLooseMuonIsolationSS.configure(process = process)
 
     if hasattr(process, "isRecZtoMuTau"):
