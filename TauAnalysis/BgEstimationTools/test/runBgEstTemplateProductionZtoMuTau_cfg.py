@@ -28,8 +28,8 @@ process.GlobalTag.globaltag = cms.string('START38_V14::All')
 from TauAnalysis.RecoTools.patPFTauConfig_cfi import patTaus
 
 # configure conditions for accessing fake-rate weight values from k-NearestNeighbour trees
-from TauAnalysis.BgEstimationTools.fakeRateConfiguration_cfi import setupFakeRates
-setupFakeRates(process, patTaus)
+#from TauAnalysis.BgEstimationTools.fakeRateConfiguration_cfi import setupFakeRates
+#setupFakeRates(process, patTaus, frType = 'backgroundEstimation')
 #--------------------------------------------------------------------------------
 
 #--------------------------------------------------------------------------------
@@ -200,9 +200,11 @@ process.load('TauAnalysis.BgEstimationTools.bgEstZtoMuTauQCDenrichedSelection_cf
 # clone W + jets enriched analysis sequence,
 # disable tau id. discriminator and add fake-rate weights
 process.load('TauAnalysis.BgEstimationTools.bgEstZtoMuTauWplusJetsEnrichedSelection_frWeighted_cff')
-from TauAnalysis.BgEstimationTools.tools.fakeRateTools import configureFakeRateWeightProduction
-configureFakeRateWeightProduction(process, method = "simple", preselPFTauJetSource = 'hpsTancTaus',
-                                  patTauJetCut = "tauID('byTaNCmedium') < 0.5 & tauID('againstMuon') > 0.5")
+from TauAnalysis.BgEstimationTools.tools.fakeRateAnalysisTools import configureFakeRateWeightProduction
+configureFakeRateWeightProduction(process, method = "simple", 
+	                          preselPFTauJetSource = 'hpsTancTaus', frSet = 'bgEstTemplateTaNCinverted',
+                                  preselPatTauSource = 'selectedPatTausForMuTauLeadTrkPtCumulative',
+		                  addPatTauPreselection = 'tauID("againstMuon") > 0.5')
 #--------------------------------------------------------------------------------
 
 #--------------------------------------------------------------------------------

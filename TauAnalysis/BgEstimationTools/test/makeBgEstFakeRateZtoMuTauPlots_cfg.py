@@ -21,7 +21,7 @@ from TauAnalysis.Configuration.analyzeZtoMuTau_cfi import *
 from TauAnalysis.DQMTools.plotterStyleDefinitions_cfi import *
 
 from TauAnalysis.BgEstimationTools.tools.drawFakeRateHistConfigurator import drawFakeRateHistConfigurator
-from TauAnalysis.BgEstimationTools.tools.fakeRateTools import reconfigDQMFileLoader
+from TauAnalysis.BgEstimationTools.tools.fakeRateAnalysisTools import reconfigDQMFileLoader
 
 process = cms.Process('makeBgEstFakeRateZtoMuTauPlots')
 
@@ -485,7 +485,7 @@ process.plotTauIdEffZtoMuTau = process.plotBgEstFakeRateZtoMuTau_signal.clone(
 #--------------------------------------------------------------------------------
 
 # import utility function for fake-rate technique
-from TauAnalysis.BgEstimationTools.tools.fakeRateTools import enableFakeRates_makeZtoMuTauPlots
+from TauAnalysis.BgEstimationTools.tools.fakeRateAnalysisTools import enableFakeRates_makeZtoMuTauPlots
 enableFakeRates_makeZtoMuTauPlots(process)
 
 #--------------------------------------------------------------------------------
@@ -502,8 +502,8 @@ process.dumpZtoMuTau_frUnweighted = cms.EDAnalyzer("DQMDumpFilterStatisticsTable
 #--------------------------------------------------------------------------------
 
 #--------------------------------------------------------------------------------
-from TauAnalysis.BgEstimationTools.tools.fakeRateTools import makeDataBinningDumpSequence
-from TauAnalysis.BgEstimationTools.tools.fakeRateTools import makeFilterStatTableDumpSequence
+from TauAnalysis.BgEstimationTools.tools.fakeRateAnalysisTools import makeDataBinningDumpSequence
+from TauAnalysis.BgEstimationTools.tools.fakeRateAnalysisTools import makeFilterStatTableDumpSequence
 
 processSubDirectories = dict()
 processSubDirectories["Ztautau"] = processZtoMuTau_Ztautau.config_dqmHistPlotter.dqmDirectory
