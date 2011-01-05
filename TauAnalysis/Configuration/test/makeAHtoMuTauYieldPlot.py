@@ -1,13 +1,15 @@
 #!/usr/bin/env python
 
 from TauAnalysis.Configuration.makeYieldPlot import makeYieldPlot
-from TauAnalysis.Configuration.userRegistry import getHarvestingFilePath
+import TauAnalysis.Configuration.userRegistry as reg
 import os
 
-inputFileName = os.path.join(
-    getHarvestingFilePath('AHtoMuTau'), "plotsAHtoMuTau_all.root")
+reg.overrideJobId('AHtoMuTau', '2010Dec23_lxbatch')
 
-dqmDirectory = 'harvested/data/ahMuTauAnalyzer_woBtag/FilterStatistics/evtSelNonCentralJetEt20bTag/events_passed_cumulative/'
+inputFileName = os.path.join(reg.getHarvestingFilePath('AHtoMuTau'), "plotsAHtoMuTau_all.root")
+
+dqmDirectory = '/harvested/data/ahMuTauAnalyzerOS_woBtag/FilterStatistics/' \
+              + 'evtSelDiTauCandidateForAHtoMuTauZeroCharge/events_passed_cumulative/'
 
 makeYieldPlot(inputFileName = inputFileName, dqmDirectory = dqmDirectory,
               outputFileName = "plotAHtoMuTau_woBtag_yield.png")
