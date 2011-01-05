@@ -1,129 +1,32 @@
 import FWCore.ParameterSet.Config as cms
-import TauAnalysis.BgEstimationTools.fakeRateConfiguration_cfi as config
 
-# Define the dictionary to use to define the fake rates
-fake_rate_dict = config.fake_rates[config.PRODUCER]
-fake_rate_info_dict = fake_rate_dict['fake_rates']
-
-bgEstFakeRateJetWeights = cms.EDProducer(
-    "FakeRateJetWeightProducer",
+bgEstFakeRateJetWeights = cms.EDProducer("FakeRateJetWeightProducer",
     #method = cms.string("CDF"),
     method = cms.string("simple"),
 
-    allTauJetSource = cms.InputTag(fake_rate_dict['producer_name']),
-    preselTauJetSource = cms.InputTag(fake_rate_dict['producer_name']),
+    # collection of all reco::PFTau objects
+    allTauJetSource = cms.InputTag(),
+
+    # collection of reco::PFTau/pat::Tau objects
+    # for which fake-rates are to be computed.
+    # Entries in the reco::PFTau 'allTauJetSource' collection 
+    # are matched in eta-phi to entries in the collection specified by 'preselTauJetSource'.
+    # For unmatched 'allTauJetSource' entries the fake-rate is set to 0. 
+    #
+    # NOTE: 'allTauJetSource' and 'preselTauJetSource' are set in 
+    #
+    preselTauJetSource = cms.InputTag(),
 
     dRmatch = cms.double(0.1),
 
-    # Not used by cmsRun - just a convenient place to put this so that
-    # fakeRateTools.py can enable ZTT eff only fake rates in case the simple
-    # method is used.
-    frTypesExtras = cms.PSet(
-        tauIdEfficiency = cms.PSet(
-            tauJetDiscriminators = cms.VPSet(
-                cms.PSet(
-                    tauJetIdEffSource = cms.InputTag(config.frproducer_name(
-                        config.PRODUCER, 'ZTTsim')),
-                    qcdJetFakeRateSource = cms.InputTag(config.frproducer_name(
-                        config.PRODUCER, 'ZTTsim')),
-                    tauJetDiscrSource = cms.InputTag("ewkTauId")
-                )
-            )
-        )
-    ),
-
-    frTypes = cms.PSet(
-        qcdMuEnriched = cms.PSet(
-            tauJetDiscriminators = cms.VPSet(
-                cms.PSet(
-                    tauJetIdEffSource = cms.InputTag(config.frproducer_name(
-                        config.PRODUCER, 'ZTTsim')),
-                    qcdJetFakeRateSource = cms.InputTag(config.frproducer_name(
-                        config.PRODUCER, 'ppMuXData')),
-                    tauJetDiscrSource = cms.InputTag("ewkTauId")
-                )
-            )
-        ),
-        qcdDiJetLeadJet = cms.PSet(
-            tauJetDiscriminators = cms.VPSet(
-                cms.PSet(
-                    tauJetIdEffSource = cms.InputTag(config.frproducer_name(
-                        config.PRODUCER, 'ZTTsim')),
-                    qcdJetFakeRateSource = cms.InputTag(config.frproducer_name(
-                        config.PRODUCER, 'DiJetHighPtdata')),
-                    tauJetDiscrSource = cms.InputTag("ewkTauId")
-                )
-            )
-        ),
-        qcdDiJetSecondLeadJet = cms.PSet(
-            tauJetDiscriminators = cms.VPSet(
-                cms.PSet(
-                    tauJetIdEffSource = cms.InputTag(config.frproducer_name(
-                        config.PRODUCER, 'ZTTsim')),
-                    qcdJetFakeRateSource = cms.InputTag(config.frproducer_name(
-                        config.PRODUCER, 'DiJetSecondPtdata')),
-                    tauJetDiscrSource = cms.InputTag("ewkTauId")
-                )
-            )
-        ),
-        WplusJets = cms.PSet(
-            tauJetDiscriminators = cms.VPSet(
-                cms.PSet(
-                    tauJetIdEffSource = cms.InputTag(config.frproducer_name(
-                        config.PRODUCER, 'ZTTsim')),
-                    qcdJetFakeRateSource = cms.InputTag(config.frproducer_name(
-                        config.PRODUCER, 'WplusJetsdata')),
-                    tauJetDiscrSource = cms.InputTag("ewkTauId")
-                )
-            )
-        ),
-        # MC fake rate sources
-        qcdMuEnrichedMC = cms.PSet(
-            tauJetDiscriminators = cms.VPSet(
-                cms.PSet(
-                    tauJetIdEffSource = cms.InputTag(config.frproducer_name(
-                        config.PRODUCER, 'ZTTsim')),
-                    qcdJetFakeRateSource = cms.InputTag(config.frproducer_name(
-                        config.PRODUCER, 'ppMuXSim')),
-                    tauJetDiscrSource = cms.InputTag("ewkTauId")
-                )
-            )
-        ),
-        qcdDiJetLeadJetMC = cms.PSet(
-            tauJetDiscriminators = cms.VPSet(
-                cms.PSet(
-                    tauJetIdEffSource = cms.InputTag(config.frproducer_name(
-                        config.PRODUCER, 'ZTTsim')),
-                    qcdJetFakeRateSource = cms.InputTag(config.frproducer_name(
-                        config.PRODUCER, 'DiJetHighPtSim')),
-                    tauJetDiscrSource = cms.InputTag("ewkTauId")
-                )
-            )
-        ),
-        qcdDiJetSecondLeadJetMC = cms.PSet(
-            tauJetDiscriminators = cms.VPSet(
-                cms.PSet(
-                    tauJetIdEffSource = cms.InputTag(config.frproducer_name(
-                        config.PRODUCER, 'ZTTsim')),
-                    qcdJetFakeRateSource = cms.InputTag(config.frproducer_name(
-                        config.PRODUCER, 'DiJetSecondPtSim')),
-                    tauJetDiscrSource = cms.InputTag("ewkTauId")
-                )
-            )
-        ),
-        WplusJetsMC = cms.PSet(
-            tauJetDiscriminators = cms.VPSet(
-                cms.PSet(
-                    tauJetIdEffSource = cms.InputTag(config.frproducer_name(
-                        config.PRODUCER, 'ZTTsim')),
-                    qcdJetFakeRateSource = cms.InputTag(config.frproducer_name(
-                        config.PRODUCER, 'WplusJetsSim')),
-                    tauJetDiscrSource = cms.InputTag("ewkTauId")
-                )
-            )
-        )
-        #gammaPlusJets
-    ),
+    # define fake-rates and tau id. efficiencies
+    # obtained by Monte Carlo simulation/measured in Data
+    # and for different types of signal/background processes
+    #
+    # NOTE: set by configureFakeRateWeightProduction function
+    #       in TauAnalysis/BgEstimationTools/python/tools/fakeRateAnalysisTools.py
+    #
+    frTypes = cms.PSet(),
 
     # minimum/maximum jet weights below/above which
     # jet weights get "truncated"
@@ -142,4 +45,4 @@ bgEstFakeRateJetWeights = cms.EDProducer(
     maxJetPt = cms.double(+1.e+6),
     minJetEta = cms.double(-1.e+6),
     maxJetEta = cms.double(+1.e+6)
-    )
+)
