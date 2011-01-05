@@ -10,7 +10,7 @@ from TauAnalysis.Configuration.tools.factorizationTools import replaceEventSelec
 #--------------------------------------------------------------------------------
 
 tausBgEstWplusJetsEnrichedFRweightedTaNCdiscrNotApplied = copy.deepcopy(selectedPatTausTaNCdiscr)
-tausBgEstWplusJetsEnrichedFRweightedTaNCdiscrNotApplied.cut = cms.string('tauID("byTaNCvloose") > -1. & tauID("byTaNCmedium") < 0.5')
+tausBgEstWplusJetsEnrichedFRweightedTaNCdiscrNotApplied.cut = cms.string('tauID("byTaNCvloose") > -1000. & tauID("byTaNCmedium") < +1000.')
 
 tausBgEstWplusJetsEnrichedFRweightedMuonVeto = copy.deepcopy(selectedPatTausMuonVeto)
 
@@ -103,7 +103,7 @@ cfgMuTauPairMt1MEtBgEstWplusJetsEnrichedFRweighted = cms.PSet(
 cfgCentralJetVetoBgEstWplusJetsEnrichedFRweighted = cms.PSet(
     pluginName = cms.string('centralJetVetoBgEstWplusJetsEnrichedFRweighted'),
     pluginType = cms.string('PATCandViewMaxEventSelector'),
-    src = cms.InputTag('jetsBgEstWplusJetsEnrichedAlpha0point1FRweighted'),
+    src = cms.InputTag('jetsBgEstWplusJetsEnrichedFRweightedAlpha0point1'),
     maxNumber = cms.uint32(0)
 )
 
@@ -129,29 +129,29 @@ tauHistManagerBgEstWplusJetsEnrichedFRweighted = copy.deepcopy(tauHistManagerBgE
 tauHistManagerBgEstWplusJetsEnrichedFRweighted.tauSource = muTauPairsBgEstWplusJetsEnrichedFRweighted.srcLeg2
 tauHistManagerBgEstWplusJetsEnrichedFRmcWeighted = copy.deepcopy(tauHistManagerBgEstWplusJetsEnrichedFRweighted)
 tauHistManagerBgEstWplusJetsEnrichedFRmcWeighted.pluginName = cms.string('tauHistManagerBgEstWplusJetsEnrichedFRmcWeighted')
-tauHistManagerBgEstWplusJetsEnrichedFRmcWeighted.tauJetWeightSource = cms.vstring('WplusJetsSim')
+tauHistManagerBgEstWplusJetsEnrichedFRmcWeighted.tauJetWeightSource = cms.vstring('bgEstFakeRateJetWeight_WplusJetsSim')
 tauHistManagerBgEstWplusJetsEnrichedFRdataWeighted = copy.deepcopy(tauHistManagerBgEstWplusJetsEnrichedFRweighted)
 tauHistManagerBgEstWplusJetsEnrichedFRdataWeighted.pluginName = cms.string('tauHistManagerBgEstWplusJetsEnrichedFRdataWeighted')
-tauHistManagerBgEstWplusJetsEnrichedFRdataWeighted.tauJetWeightSource = cms.vstring('WplusJetsdata')
+tauHistManagerBgEstWplusJetsEnrichedFRdataWeighted.tauJetWeightSource = cms.vstring('bgEstFakeRateJetWeight_WplusJetsData')
 
 diTauCandidateHistManagerBgEstWplusJetsEnrichedFRweighted = copy.deepcopy(diTauCandidateHistManagerBgEstWplusJetsEnriched)
 diTauCandidateHistManagerBgEstWplusJetsEnrichedFRweighted.diTauCandidateSource = cms.InputTag('muTauPairsBgEstWplusJetsEnrichedFRweightedMt1MET')
 diTauCandidateHistManagerBgEstWplusJetsEnrichedFRweighted.visMassHypothesisSource = cms.InputTag('')
 diTauCandidateHistManagerBgEstWplusJetsEnrichedFRmcWeighted = copy.deepcopy(diTauCandidateHistManagerBgEstWplusJetsEnrichedFRweighted)
 diTauCandidateHistManagerBgEstWplusJetsEnrichedFRmcWeighted.pluginName = cms.string('diTauCandidateHistManagerBgEstWplusJetsEnrichedFRmcWeighted')
-diTauCandidateHistManagerBgEstWplusJetsEnrichedFRmcWeighted.diTauLeg2WeightSource = cms.vstring('WplusJetsSim')
+diTauCandidateHistManagerBgEstWplusJetsEnrichedFRmcWeighted.diTauLeg2WeightSource = cms.vstring('bgEstFakeRateJetWeight_WplusJetsSim')
 diTauCandidateHistManagerBgEstWplusJetsEnrichedFRdataWeighted = copy.deepcopy(diTauCandidateHistManagerBgEstWplusJetsEnrichedFRweighted)
 diTauCandidateHistManagerBgEstWplusJetsEnrichedFRdataWeighted.pluginName = cms.string('diTauCandidateHistManagerBgEstWplusJetsEnrichedFRdataWeighted')
-diTauCandidateHistManagerBgEstWplusJetsEnrichedFRdataWeighted.diTauLeg2WeightSource = cms.vstring('WplusJetsdata')
+diTauCandidateHistManagerBgEstWplusJetsEnrichedFRdataWeighted.diTauLeg2WeightSource = cms.vstring('bgEstFakeRateJetWeight_WplusJetsData')
 
 diTauCandidateSVfitHistManagerBgEstWplusJetsEnrichedFRweighted = copy.deepcopy(diTauCandidateSVfitHistManagerBgEstWplusJetsEnriched)
 diTauCandidateSVfitHistManagerBgEstWplusJetsEnrichedFRweighted.diTauCandidateSource = diTauCandidateHistManagerBgEstWplusJetsEnrichedFRweighted.diTauCandidateSource
 diTauCandidateSVfitHistManagerBgEstWplusJetsEnrichedFRmcWeighted = copy.deepcopy(diTauCandidateSVfitHistManagerBgEstWplusJetsEnrichedFRweighted)
 diTauCandidateSVfitHistManagerBgEstWplusJetsEnrichedFRmcWeighted.pluginName = cms.string('diTauCandidateSVfitHistManagerBgEstWplusJetsEnrichedFRmcWeighted')
-diTauCandidateSVfitHistManagerBgEstWplusJetsEnrichedFRmcWeighted.diTauLeg2WeightSource = cms.vstring('WplusJetsSim')
+diTauCandidateSVfitHistManagerBgEstWplusJetsEnrichedFRmcWeighted.diTauLeg2WeightSource = cms.vstring('bgEstFakeRateJetWeight_WplusJetsSim')
 diTauCandidateSVfitHistManagerBgEstWplusJetsEnrichedFRdataWeighted = copy.deepcopy(diTauCandidateSVfitHistManagerBgEstWplusJetsEnrichedFRweighted)
 diTauCandidateSVfitHistManagerBgEstWplusJetsEnrichedFRdataWeighted.pluginName = cms.string('diTauCandidateSVfitHistManagerBgEstWplusJetsEnrichedFRdataWeighted')
-diTauCandidateSVfitHistManagerBgEstWplusJetsEnrichedFRdataWeighted.diTauLeg2WeightSource = cms.vstring('WplusJetsdata')
+diTauCandidateSVfitHistManagerBgEstWplusJetsEnrichedFRdataWeighted.diTauLeg2WeightSource = cms.vstring('bgEstFakeRateJetWeight_WplusJetsData')
 
 caloMEtHistManagerBgEstWplusJetsEnrichedFRweighted = copy.deepcopy(caloMEtHistManagerBgEstWplusJetsEnriched)
 caloMEtHistManagerBgEstWplusJetsEnrichedFRweighted.pluginName = cms.string('caloMEtHistManagerBgEstWplusJetsEnrichedFRweighted')
@@ -190,7 +190,7 @@ analyzerModuleReplacementsWplusJetsEnrichedFRmcWeighted.extend([
 ])
 replaceAnalyzerModules(analyzeEventsBgEstWplusJetsEnrichedFRmcWeighted, analyzerModuleReplacementsWplusJetsEnrichedFRmcWeighted)
 psetFRmcEventWeightWplusJetsEnriched = cms.PSet(
-    src = cms.InputTag('bgEstFakeRateEventWeights::WplusJetsSim'),
+    src = cms.InputTag('bgEstFakeRateEventWeights', 'WplusJetsSim'),
     applyAfterFilter = cms.string("tauTaNCdiscrCutNotAppliedBgEstWplusJetsEnrichedFRweighted")
 )
 if hasattr(analyzeEventsBgEstWplusJetsEnrichedFRmcWeighted, "eventWeights"):
@@ -211,7 +211,7 @@ analyzerModuleReplacementsWplusJetsEnrichedFRdataWeighted.extend([
 ])
 replaceAnalyzerModules(analyzeEventsBgEstWplusJetsEnrichedFRdataWeighted, analyzerModuleReplacementsWplusJetsEnrichedFRdataWeighted)
 psetFRdataEventWeightWplusJetsEnriched = cms.PSet(
-    src = cms.InputTag('bgEstFakeRateEventWeights::WplusJetsdata'),
+    src = cms.InputTag('bgEstFakeRateEventWeights', 'WplusJetsData'),
     applyAfterFilter = cms.string("tauTaNCdiscrCutNotAppliedBgEstWplusJetsEnrichedFRweighted")
 )
 if hasattr(analyzeEventsBgEstWplusJetsEnrichedFRdataWeighted, "eventWeights"):
