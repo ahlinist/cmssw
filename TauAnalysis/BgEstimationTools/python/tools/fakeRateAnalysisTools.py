@@ -270,10 +270,12 @@ def reconfigDQMFileLoader(dqmFileLoaderConfig, dqmDirectory):
 # to PAT production sequence (**not** channel specific)
 #--------------------------------------------------------------------------------
 
-def configureFakeRateWeightProduction(process, method = None, preselPFTauJetSource = 'hpsTancTaus', frSet = 'ewkTauIdTaNCmedium',
-	                              preselPatTauSource = 'selectedPatTausForMuTauLeadTrkPtCumulative',
-                                      addPatTauPreselection = "tauID('againstElectron') > 0.5 & tauID('againstMuon') > 0.5",
-                                      patTupleProdSequenceName = "producePatTupleZtoMuTauSpecific"):
+def configureFakeRateWeightProduction(
+    process, method = None,
+    preselPFTauJetSource = 'hpsTancTaus', frSet = 'ewkTauIdTaNCmedium',
+    preselPatTauSource = 'selectedPatTausForMuTauLeadTrkPtCumulative',
+    addPatTauPreselection = "tauID('againstElectron') > 0.5 & tauID('againstMuon') > 0.5",
+    patTupleProdSequenceName = "producePatTupleZtoMuTauSpecific"):
 
     # check validity of method parameter
     if method is None:
@@ -293,12 +295,12 @@ def configureFakeRateWeightProduction(process, method = None, preselPFTauJetSour
     #       must enter event weight computation !!
     #
     process.load("TauAnalysis.BgEstimationTools.fakeRateJetWeightProducer_cfi")
-    process.bgEstFakeRateJetWeights.frTypes = cms.PSet()	
+    process.bgEstFakeRateJetWeights.frTypes = cms.PSet()
     for frType, patLUT in frProdConfig.items():
         pset = cms.PSet(
             tauJetDiscriminators = cms.VPSet(cms.PSet(
                 tauJetIdEffSource = cms.InputTag(frProdConfig['ZTTsim']),
-	        qcdJetFakeRateSource = cms.InputTag(patLUT),
+            qcdJetFakeRateSource = cms.InputTag(patLUT),
                 tauJetDiscrSource = cms.InputTag('ewkTauId')
             ))
         )
@@ -341,8 +343,7 @@ def configureFakeRateWeightProduction(process, method = None, preselPFTauJetSour
               getattr(process, "bgEstFakeRateJetWeights" + shift).shiftTauIdEff
             frEventWeightProducerModuleName = "bgEstFakeRateEventWeights" + shift
             setattr(process, frEventWeightProducerModuleName, frEventWeightProducerModule)
-
-	    process.produceFakeRateEventWeights += frEventWeightProducerModule
+            process.produceFakeRateEventWeights += frEventWeightProducerModule
 
     # add fake-rates to pat::Tau
     frConfigParameters = getFakeRateConfigParameters(process)
@@ -352,7 +353,8 @@ def configureFakeRateWeightProduction(process, method = None, preselPFTauJetSour
 
     return frProdConfig
 
-def enableFakeRatesImpl(process, method=None, analyzers=None, tau_ids=None,
+def enableFakeRatesImpl(process, method=None, analyzers=None,
+                        frSet = None, tau_ids=None,
                         patTupleProdSeq = None):
     # check validity of method parameter
     if method is None:
@@ -362,7 +364,10 @@ def enableFakeRatesImpl(process, method=None, analyzers=None, tau_ids=None,
             raise ValueError("Invalid method Parameter !!")
 
     # compute fake-rate weights
-    frProdConfig = configureFakeRateWeightProduction(process, method = method, patTupleProdSeq = patTupleProdSeq)
+    frProdConfig = configureFakeRateWeightProduction(
+        process, method = method,
+        frSet = frSet,
+        patTupleProdSequenceName = patTupleProdSeq)
 
     # disable cuts on tau id. discriminators
     #
@@ -437,7 +442,7 @@ def enableFakeRatesImpl(process, method=None, analyzers=None, tau_ids=None,
                 ))
             )
             process.bgEstFakeRateEventWeights.frTypes.tauIdEfficiency = \
-	      process.bgEstFakeRateJetWeights.frTypes.tauIdEfficiency
+          process.bgEstFakeRateJetWeights.frTypes.tauIdEfficiency
             frConfig[frType] = {}
             frConfig[frType]['srcJetWeight']   = cms.InputTag("bgEstFakeRateJetWeights",   "tauIdEfficiency")
             frConfig[frType]['srcEventWeight'] = cms.InputTag("bgEstFakeRateEventWeights", "tauIdEfficiency")
@@ -483,6 +488,7 @@ _FAKE_RATE_CONFIGS = {
             ("selectedPatTausForMuTauCharge", "abs(charge) > -1"),
             ("selectedMuTauPairsZeroCharge", "leg2.leadPFChargedHadrCand.isNonnull & (leg1.charge + leg2.leadPFChargedHadrCand.charge) = 0"),
         ],
+        'frSet' : 'ewkTauIdTaNCloose',
     },
     'AHtoMuTau' : {
         'patTupleProdSeq' : 'producePatTupleAHtoMuTauSpecific',
@@ -507,6 +513,7 @@ _FAKE_RATE_CONFIGS = {
             ("selectedMuTauPairsForAHtoMuTauZeroCharge", "leg2.leadPFChargedHadrCand.isNonnull & (leg1.charge + leg2.leadPFChargedHadrCand.charge) = 0"),
             ("selectedMuTauPairsForAHtoMuTauNonZeroCharge", "leg2.leadPFChargedHadrCand.isNonnull & (leg1.charge + leg2.leadPFChargedHadrCand.charge) != 0"),
         ],
+        'frSet' : 'ewkTauIdHPSloose',
     }
 }
 
