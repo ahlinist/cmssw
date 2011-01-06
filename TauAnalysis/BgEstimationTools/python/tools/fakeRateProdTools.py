@@ -42,47 +42,47 @@ fr_config = {
                 'tag' : 'FakeRate',
             }
         },
-        'ewkTauIdHPSloose' : {
+    'ewkTauIdHPSloose' : {
 	    'qcdMuEnrichedData' : {
-                'db' : '/afs/cern.ch/user/f/friis/scratch0/fakerates/fakerate_HPSloose_PPmuX_data/fakeRate.db',
+                'db' : '/afs/cern.ch/user/f/friis/scratch0/fakerates/fakerate_ewkTauIdHPSloose_PPmuX_data/fakeRate.db',
                 'tag' : 'FakeRate',
             },
             'qcdMuEnrichedSim' : {
-                'db' : '/afs/cern.ch/user/f/friis/scratch0/fakerates/fakerate_HPSloose_PPmuX_mcPU156bx/fakeRate.db',
+                'db' : '/afs/cern.ch/user/f/friis/scratch0/fakerates/fakerate_ewkTauIdHPSloose_PPmuX_mcPU156bx/fakeRate.db',
                 'tag' : 'FakeRate',
             },
             'qcdDiJetLeadJetData' : {
-                'db' : '/afs/cern.ch/user/f/friis/scratch0/fakerates/fakerate_HPSloose_QCDdiJet1st_data/fakeRate.db',
+                'db' : '/afs/cern.ch/user/f/friis/scratch0/fakerates/fakerate_ewkTauIdHPSloose_QCDdiJet1st_data/fakeRate.db',
                 'tag' : 'FakeRate',
             },
             'qcdDiJetLeadJetSim' : {
-                'db' : '/afs/cern.ch/user/f/friis/scratch0/fakerates/fakerate_HPSloose_QCDdiJet1st_mc/fakeRate.db',
+                'db' : '/afs/cern.ch/user/f/friis/scratch0/fakerates/fakerate_ewkTauIdHPSloose_QCDdiJet1st_mc/fakeRate.db',
                 'tag' : 'FakeRate',
             },
             'qcdDiJetSecondLeadJetData' : {
-                'db' : '/afs/cern.ch/user/f/friis/scratch0/fakerates/fakerate_HPSloose_QCDdiJet2nd_data/fakeRate.db',
+                'db' : '/afs/cern.ch/user/f/friis/scratch0/fakerates/fakerate_ewkTauIdHPSloose_QCDdiJet2nd_data/fakeRate.db',
                 'tag' : 'FakeRate',
             },
             'qcdDiJetSecondLeadJetSim' : {
-                'db' : '/afs/cern.ch/user/f/friis/scratch0/fakerates/fakerate_HPSloose_QCDdiJet2nd_mc/fakeRate.db',
+                'db' : '/afs/cern.ch/user/f/friis/scratch0/fakerates/fakerate_ewkTauIdHPSloose_QCDdiJet2nd_mc/fakeRate.db',
                 'tag' : 'FakeRate',
             },
             'WplusJetsData' : {
-                'db' : '/afs/cern.ch/user/f/friis/scratch0/fakerates/fakerate_HPSloose_WplusJets_data/fakeRate.db',
+                'db' : '/afs/cern.ch/user/f/friis/scratch0/fakerates/fakerate_ewkTauIdHPSloose_WplusJets_data/fakeRate.db',
                 'tag' : 'FakeRate',
             },
             'WplusJetsSim' : {
-                'db' : '/afs/cern.ch/user/f/friis/scratch0/fakerates/fakerate_HPSloose_WplusJets_mcPU156bx/fakeRate.db',
+                'db' : '/afs/cern.ch/user/f/friis/scratch0/fakerates/fakerate_ewkTauIdHPSloose_WplusJets_mcPU156bx/fakeRate.db',
                 'tag' : 'FakeRate',
-            }	    
+            }
         },
-        'bgEstTemplateTaNCinverted' : {
+    'bgEstTemplateTaNCinverted' : {
             'WplusJetsData' : {
-                'db' : '/afs/cern.ch/user/f/friis/scratch0/fakerates/fakerate_BgEst_WplusJets_data/fakeRate.db',
+                'db' : '/afs/cern.ch/user/f/friis/scratch0/fakerates/fakerate_bgEstTemplateTaNCinverted_WplusJets_data/fakeRate.db',
                 'tag' : 'FakeRate',
             },
             'WplusJetsSim' : {
-                'db' : '/afs/cern.ch/user/f/friis/scratch0/fakerates/fakerate_BgEst_WplusJets_mcPU156bx/fakeRate.db',
+                'db' : '/afs/cern.ch/user/f/friis/scratch0/fakerates/fakerate_bgEstTemplateTaNCinverted_WplusJets_mcPU156bx/fakeRate.db',
                 'tag' : 'FakeRate',
             }
         }
@@ -97,15 +97,15 @@ eff_config = {
                 'tag' : 'FakeRate'
             }
         },
-        'ewkTauIdTaNCloose' : {
+        'ewkTauIdHPSloose' : {
             'ZTTsim' : {
-                'db' : '/afs/cern.ch/user/f/friis/scratch0/fakerates/fakerate_HPSloose_Ztautau_mcPU156bx/fakeRate.db',
+                'db' : '/afs/cern.ch/user/f/friis/scratch0/fakerates/fakerate_ewkTauIdHPSloose_Ztautau_mcPU156bx/fakeRate.db',
                 'tag' : 'FakeRate'
             }
         },
-        'bgEstTemplateTaNCinverted' : {	     
+        'bgEstTemplateTaNCinverted' : {
             'ZTTsim' : {
-                'db' : '/afs/cern.ch/user/f/friis/scratch0/fakerates/fakerate_HPSloose_Ztautau_mcPU156bx/fakeRate.db',
+                'db' : '/afs/cern.ch/user/f/friis/scratch0/fakerates/fakerate_bgEstTemplateTaNCinverted_Ztautau_mcPU156bx/fakeRate.db',
                 'tag' : 'FakeRate'
             }
         }
@@ -130,7 +130,7 @@ def configureFakeRateProduction(process, patTauProducer, frSet = 'ewkTauIdTaNClo
 
     fr_and_efficiency_config = {}
     addConfigItems(fr_and_efficiency_config, fr_config)
-    addConfigItems(fr_and_efficiency_config, eff_config)	
+    addConfigItems(fr_and_efficiency_config, eff_config)
 
     retVal = {}
 
@@ -178,7 +178,7 @@ def configureFakeRateProduction(process, patTauProducer, frSet = 'ewkTauIdTaNClo
 	process.tauFakeRates += preDiscrModule
 
 	# create "discriminator" module
-        # extracting fake-rate from k-NN tree 
+        # extracting fake-rate from k-NN tree
         mvaDiscrModule = cms.EDProducer("RecoTauMVADiscriminator",
             PFTauProducer = cms.InputTag(patTauProducer),
             Prediscriminants = cms.PSet(
@@ -192,7 +192,7 @@ def configureFakeRateProduction(process, patTauProducer, frSet = 'ewkTauIdTaNClo
             dbLabel = cms.string("%s_%s" % (frSet, frType)),
             # use identical k-NN extraction for all tau decay modes
             mvas = cms.VPSet(),
-            # set name of MVA computer container.  
+            # set name of MVA computer container.
             #
             # NOTE: needs to match name defined in trainTauFakeRate_cfg
 	    #
