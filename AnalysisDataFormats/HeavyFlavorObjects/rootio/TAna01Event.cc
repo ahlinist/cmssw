@@ -238,6 +238,35 @@ int TAna01Event::getGenIndexWithDeltaR(const TLorentzVector &tlv, double charge)
 }
 
 // ----------------------------------------------------------------------
+int TAna01Event::getGenIndexWithDeltaR(const TLorentzVector &tlv, const TVector3 &vtx, double charge)
+{
+  TGenCand *pGenCand;
+  int ret(-1);
+  const double dVtxhPerc(.30); // percentage of distance to PV
+  const double dVtxhThrshMin(1); // minimal threshold for test of distance
+  double dRmin(99999.9);
+  int dRminIdx(-1);
+
+  for (int i = 0; i < fnGenCands; i++) {
+      pGenCand = getGenCand(i);
+      if ((pGenCand->fStatus == 1 || pGenCand->fStatus == 8) && charge * pGenCand->fQ > 0) {
+	  const double dR = tlv.DeltaR(pGenCand->fP);
+	  // the test for the distance makes a slight mistake for simplicity: assumin the PV at (0,0,0)
+	  // therefore introduce a minimal threshold
+	  const double dVtxThrsh = dVtxhPerc * pGenCand->fP.Mag() > dVtxhThrshMin ? dVtxhPerc * pGenCand->fP.Mag() : dVtxhThrshMin;
+	  const double dVtx = (vtx-pGenCand->fV).Mag();
+	  if(dVtx < dVtxThrsh && dR < dRmin)
+	  {
+	      dRmin = dR;
+	      dRminIdx = i;
+	  }
+      }
+  }
+  ret = dRminIdx;
+  return ret;
+}
+
+// ----------------------------------------------------------------------
 int TAna01Event::getGenIndexWithDeltaR(double pt, double eta, double phi, double charge) {
   TGenCand *pGenCand;
   int index(-1);
