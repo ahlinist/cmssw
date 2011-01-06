@@ -303,6 +303,8 @@ def configureFakeRateWeightProduction(process, method = None, preselPFTauJetSour
             ))
         )
         setattr(process.bgEstFakeRateJetWeights.frTypes, frType, pset)
+    process.bgEstFakeRateJetWeights.allTauJetSource = cms.InputTag(preselPFTauJetSource)
+    process.bgEstFakeRateJetWeights.preselTauJetSource = cms.InputTag(preselPFTauJetSource)
     process.bgEstFakeRateJetWeights.method = method
     process.producePrePat += process.bgEstFakeRateJetWeights
 
@@ -323,6 +325,7 @@ def configureFakeRateWeightProduction(process, method = None, preselPFTauJetSour
     )
 
     process.load("TauAnalysis.BgEstimationTools.fakeRateEventWeightProducer_cfi")
+    process.bgEstFakeRateEventWeights.allTauJetSource = cms.InputTag(preselPFTauJetSource)
     process.bgEstFakeRateEventWeights.preselTauJetSource = cms.InputTag('tausForFakeRateEventWeights')
     process.bgEstFakeRateEventWeights.method = method
     process.bgEstFakeRateEventWeights.frTypes = process.bgEstFakeRateJetWeights.frTypes

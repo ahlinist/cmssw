@@ -13,7 +13,8 @@ bgEstFakeRateJetWeights = cms.EDProducer("FakeRateJetWeightProducer",
     # are matched in eta-phi to entries in the collection specified by 'preselTauJetSource'.
     # For unmatched 'allTauJetSource' entries the fake-rate is set to 0. 
     #
-    # NOTE: 'allTauJetSource' and 'preselTauJetSource' are set in 
+    # NOTE: 'allTauJetSource' and 'preselTauJetSource' are set 
+    #       in TauAnalysis/BgEstimationTools/python/tools/fakeRateAnalysisTools.py          
     #
     preselTauJetSource = cms.InputTag(''),
 
