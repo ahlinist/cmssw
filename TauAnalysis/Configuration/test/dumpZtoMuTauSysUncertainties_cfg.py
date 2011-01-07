@@ -18,17 +18,17 @@ process.source = cms.Source("EmptySource")
 process.loadZtoMuTauSysUncertainties = cms.EDAnalyzer("DQMFileLoader",
     dump = cms.PSet(
         inputFileNames = cms.vstring(
-            '/data2/friis/Run35SYS/plotsAHtoMuTau_all.root'
+            '/data2/friis/Run2PDF/harvested_ZtoMuTau_ZtautauPU156bx_Run2PDF.root'
+            #'/data2/friis/Run2PDF/harvested_ZtoMuTau_Ztautau_powheg_Run2PDF.root'
         ),
         dqmDirectory_store = cms.string('/')
     )
 )
 
-##dqmDirectory_Ztautau = '/ZtautauSum/zMuTauAnalyzerOS/afterGenPhaseSpaceCut_beforeEvtSelTrigger'
-dqmDirectory_Ztautau = '/harvested/ZtautauSum/ahMuTauAnalyzerOS_woBtag/afterGenPhaseSpaceCut_beforeEvtSelTrigger'
+dqmDirectory_Ztautau = '/zMuTauAnalyzerOS/afterGenPhaseSpaceCut_beforeEvtSelTrigger'
 
 genAccBinner = 'modelBinnerForMuTauGenTauLeptonPairAcc'
-recEffBinner = 'modelBinnerForMuTauCentralJetVetoWrtGenTauLeptonPairAcc'
+recEffBinner = 'modelBinnerForMuTauWrtGenTauLeptonPairAcc'
 
 process.dumpZtoMuTauAcceptance = cms.EDAnalyzer("DQMDumpBinningResults",
     binningService = cms.PSet(
@@ -55,14 +55,14 @@ process.dumpZtoMuTauAccUncertainties = cms.EDAnalyzer("DQMDumpSysUncertaintyBinn
             sysTitle = cms.string("PDF"),
             sysCentralValue = cms.string("sysPdfWeights(0)"),
             method = cms.string("pdf")
-        ##),
-        ##theoryUncertainty.clone(
-        ##    sysNames = cms.vstring("sysIsrWeight"),
-        ##    sysTitle = cms.string("ISR")
-        ##),
-        ##theoryUncertainty.clone(            
-        ##    sysNames = cms.vstring("sysFsrWeight"),
-        ##    sysTitle = cms.string("FSR")
+        ),
+        theoryUncertainty.clone(
+            sysNames = cms.vstring("sysIsrWeight"),
+            sysTitle = cms.string("ISR")
+        ),
+        theoryUncertainty.clone(            
+            sysNames = cms.vstring("sysFsrWeight"),
+            sysTitle = cms.string("FSR")
         )
     ),
     resultTypes = cms.vstring("acceptance"),  
