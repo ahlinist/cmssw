@@ -154,7 +154,7 @@ isRecAHtoMuTau = cms.EDProducer("BoolEventSelFlagProducer",
         cms.InputTag('genPhaseSpaceCut'),
         cms.InputTag('primaryEventVertexPosition'),
         cms.InputTag('muonTrkIPcut', 'cumulative'),
-        cms.InputTag('tauMuonVeto', 'cumulative'),
+        cms.InputTag('tauElectronVeto', 'cumulative'),
         cms.InputTag('diTauCandidateForAHtoMuTauZeroChargeCut', 'cumulative'),
         cms.InputTag('diMuPairZmumuHypothesisVetoByLooseIsolation'),
     )
