@@ -531,7 +531,7 @@ void TauHistManager::fillHistogramsImp(const edm::Event& evt, const edm::EventSe
       hTauPhiCompToGen_->Fill(patTau->phi() - patTau->genJet()->phi(), weight);
     }
 
-    //  get PDG IDs of matching generator particles
+    // get PDG IDs of matching generator particles
     int matchingGenParticlePdgId = -1;
     int matchingFinalStateGenParticlePdgId = -1;
     if ( genParticles.isValid() ) {
