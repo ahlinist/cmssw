@@ -53,6 +53,7 @@ def inputFileMapper(channel, sample, jobId):
 
 def outputFileMapper(channel, sample, jobId):
     return "plots_%s_%s_%s.root" % (channel, sample, jobId)
+    #return "final_events_%s_%s_%s.root" % (channel, sample, jobId)
 
 enableFakeRates = False
 enableSystematics = False
