@@ -137,19 +137,6 @@ process.load("TauAnalysis.CandidateTools.diTauPairProductionAllKinds_cff")
 replaceMETforDiTaus(process, cms.InputTag('patMETs'), cms.InputTag('patPFMETs'))
 #--------------------------------------------------------------------------------
 
-# Use absolute muon isolation
-process.selectedPatMuonsPFRelIso.chargedHadronIso.ptMin = 1.0
-process.selectedPatMuonsPFRelIso.neutralHadronIso.ptMin = 2000.
-process.selectedPatMuonsPFRelIso.photonIso.ptMin = 1.5
-process.selectedPatMuonsPFRelIso.sumPtMax = 1.0
-process.selectedPatMuonsPFRelIso.sumPtMethod = "absolute"
-
-process.selectedPatMuonsPFRelIsoLooseIsolation.chargedHadronIso.ptMin = 1.0
-process.selectedPatMuonsPFRelIsoLooseIsolation.neutralHadronIso.ptMin = 2000.
-process.selectedPatMuonsPFRelIsoLooseIsolation.photonIso.ptMin = 1.5
-process.selectedPatMuonsPFRelIsoLooseIsolation.sumPtMax = 8.0
-process.selectedPatMuonsPFRelIsoLooseIsolation.sumPtMethod = "absolute"
-
 #--------------------------------------------------------------------------------
 # import utility function for changing cut values
 from TauAnalysis.Configuration.tools.changeCut import changeCut
@@ -158,20 +145,23 @@ from TauAnalysis.Configuration.tools.changeCut import changeCut
 changeCut(process, "selectedPatMuonsTrkIP", 0.2, attribute = "IpMax")
 
 # change cut on TaNC output in case using new HPS + TaNC combined tau id. algorithm
-changeCut(process, "selectedPatTausTaNCdiscr", "tauID('byTaNCmedium') > 0.5")
-changeCut(process, "selectedPatTausForMuTauTaNCdiscr", "tauID('byTaNCmedium') > 0.5")
+changeCut(process, "selectedPatTausTaNCdiscr", "tauID('byTaNCloose') > 0.5")
+changeCut(process, "selectedPatTausForMuTauTaNCdiscr", "tauID('byTaNCloose') > 0.5")
+
+# disable calorimeter muon veto for now...
+changeCut(process, "selectedPatTausForMuTauCaloMuonVeto", "tauID('againstCaloMuon') > -1.")
 
 # change lower limit on separation required between muon and tau-jet to dR > 0.5
 changeCut(process, "selectedMuTauPairsAntiOverlapVeto", "dR12 > 0.5")
 changeCut(process, "selectedMuTauPairsAntiOverlapVetoLooseMuonIsolation", "dR12 > 0.5")
 
-# change upper limit on muon + MET transverse mass to 40 GeV
-changeCut(process, "selectedMuTauPairsMt1MET", "mt1MET < 40.")
-changeCut(process, "selectedMuTauPairsMt1METlooseMuonIsolation", "mt1MET < 40.")
+# change upper limit on muon + MET transverse mass to 50 GeV
+changeCut(process, "selectedMuTauPairsMt1MET", "mt1MET < 50.")
+changeCut(process, "selectedMuTauPairsMt1METlooseMuonIsolation", "mt1MET < 50.")
 
-# disable cut on Pzeta variable
-changeCut(process, "selectedMuTauPairsPzetaDiff", "(pZeta - 1.5*pZetaVis) > -1000.")
-changeCut(process, "selectedMuTauPairsPzetaDiffLooseMuonIsolation", "(pZeta - 1.5*pZetaVis) > -1000.")
+# enable cut on Pzeta variable
+changeCut(process, "selectedMuTauPairsPzetaDiff", "(pZeta - 1.5*pZetaVis) > -20.")
+changeCut(process, "selectedMuTauPairsPzetaDiffLooseMuonIsolation", "(pZeta - 1.5*pZetaVis) > -20.")
 #--------------------------------------------------------------------------------
 
 # before starting to process 1st event, print event content
