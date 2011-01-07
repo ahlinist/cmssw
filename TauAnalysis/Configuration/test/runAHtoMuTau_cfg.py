@@ -155,6 +155,7 @@ cut_values = {
         'pzeta' : -20.,
         #'tanc' : "tauID('byTaNCloose') > 0.5",
         'tanc' : "tauID('byHPSloose') > 0.5",
+        #'tanc' : "tauID('byTaNCmedium') > 0.5",
         'charge' : 'charge = 0',
     },
     # Loose loosens everything but muon Iso
