@@ -93,8 +93,9 @@ def harvestAnalysisResults(channel = None, samples = None, inputFilePath = None,
 
     print "Creating Makefile for skimmed event files"
     skim_MakefileName = "Makefile.mergeSkims_%s_%s" % (channel, jobId)
+    # Make merge_per_job absurdly high, so it doesn't create unnecessary layers.
     buildMakefile(skim_harvest_jobs, tmpFilePath, skim_MakefileName,
-                  merge_per_job = 7, harvest_tool = 'genericSkimMerger.py')
+                  merge_per_job = 1e9, harvest_tool = 'genericSkimMerger.py')
 
     print "Makefile built. In order to start harvesting, execute 'make -f %s -j 8 -k'" % MakefileName
 
