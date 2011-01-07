@@ -17,8 +17,25 @@ def write_comment_header(file_to_write, text):
     file_to_write.write("#            %s\n" % text)
     file_to_write.write("###########################################\n")
 
+crab_extractor = re.compile(
+    "(?P<prefix>\w*?)_(?P<job>\d*)_(?P<retry>\d*)_(?P<code>[0-9a-zA-Z]*).root")
+
+def get_crab_info(file_name):
+    " Extract crab information from a file name "
+    file_name = os.path.basename(file_name)
+    match = crab_extractor.match(file_name)
+    if not match:
+        raise ValueError("Can't parse crab id from file", file_name)
+    return match.groupdict()
+
+def get_crab_id(file_name):
+    " Get a unique tuple for a given crab file - (job, retry, code) "
+    crab_info = get_crab_info(file_name)
+    return tuple(map(int, crab_info.get, ['job', 'retry', 'code']))
+
 def castor_source(directory):
     " Build a generator that lists file in a castor directory, sorted by time "
+    print "<castor_source>", directory
     # First sort by time
     files = list(castor.nslsl(directory))
     # Sort by time
@@ -29,15 +46,28 @@ def castor_source(directory):
                     file_info['path']
         yield file_info
 
-crab_extractor = re.compile(
-    "\w*?_(?P<job>\d*)_(?P<retry>\d*)_(?P<code>[0-9a-zA-Z]*).root")
-def get_crab_id(file_name):
-    file_name = os.path.basename(file_name)
-    match = crab_extractor.match(file_name)
-    if not match:
-        raise ValueError("Can't parse crab id from file", file_name)
-    return (
-        int(match.group('job')), int(match.group('retry')), match.group('code'))
+def clean_by_crab_id(file_infos):
+    ''' Given a list of files, determine any overlapping crab_ids
+    and take only the newest files
+    '''
+    good_ids = {}
+    for file_info in file_infos:
+        crab_info = get_crab_info(file_info['path'])
+        file_id = (
+            crab_info['prefix'],
+            int(crab_info['job'])
+        )
+        if file_id not in good_ids:
+            good_ids[file_id] = file_info
+        else:
+            # Overlap! check which one is newer!
+            print "crab file overlap!", good_ids[file_id]['file'], \
+                    file_info['file'], " taking newer!"
+            if file_info['time'] > good_ids[file_id]['time']:
+                good_ids[file_id] = file_info
+
+    # Return the clean files sorted by time.
+    return sorted(good_ids.values(), key = lambda x: x['time'])
 
 def crabdir_source(directory):
     print "Getting list of files from crab dir:", directory
@@ -69,6 +99,7 @@ def make_harvest_scripts(plot_regex, skim_regex,
                          script_directory=None,
                          merge_script_name = 'submit_merge.sh',
                          local_copy_mapper = None,
+                         chunk_size = 250e6,
                          local_copy_script = 'copy_harvest_local.sh'):
 
     # Get the jobId from the user registry
@@ -81,7 +112,7 @@ def make_harvest_scripts(plot_regex, skim_regex,
     if not os.path.exists(script_directory):
         os.mkdir(script_directory)
 
-    print input_source
+    #print input_source
 
     print "Getting files to harvest from input"
     # Get all files with nonzero size in the input castor directory
@@ -267,7 +298,7 @@ def make_harvest_scripts(plot_regex, skim_regex,
                 (file['time'], file['size'], full_file))
             # Keep track of the hash of all input files so we know what went
             # into our output
-            skim_fileinhash_map.update(full_file)
+            skim_fileinhash_map[sample].update(full_file)
 
     def make_skim_name(sample, chunk, hash):
         " Generate a nice name for an output skim "
@@ -283,7 +314,7 @@ def make_harvest_scripts(plot_regex, skim_regex,
             files = skim_file_map[sample]
             total_file_size =  sum(map(lambda x: x[1], files))/1e6
             # Divide the job up into chunks that are about 200 MB in size
-            chunks = list(jobtools.split(files, 250e6, lambda x: x[1]))
+            chunks = list(jobtools.split(files, chunk_size, lambda x: x[1]))
             print " Total sample size: %i MB - splitting into %i chunks" % (
                 total_file_size, len(chunks)),
             # Keep track of jobs we are actually running
@@ -296,7 +327,7 @@ def make_harvest_scripts(plot_regex, skim_regex,
                 output_file = make_skim_name(
                     sample, ichunk, jobtools.hash_files(
                         just_the_files, add_time=False))
-                skim_fileouthash_map.update(output_file)
+                skim_fileouthash_map[sample].update(output_file)
 
                 relevant_tmp_files.add(output_file)
                 if output_file not in tmp_files:
