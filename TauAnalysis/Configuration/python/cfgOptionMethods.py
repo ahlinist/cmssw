@@ -165,7 +165,7 @@ def _setInputFileType(process, filetype, **kwargs):
         if patTupleProductionSequenceName.find('_') != -1:
             patTupleProductionSequenceName = patTupleProductionSequenceName[:patTupleProductionSequenceName.find('_')]
         patTupleProductionSequenceName += "Specific"
-        if hasattr(process, patTupleProductionSequenceName):
+        if hasattr(process, patTupleProductionSequenceName) and hasattr(process, "producePatTupleAll"):
             patTupleProductionSequence = getattr(process, patTupleProductionSequenceName)
             process.p.replace(patTupleProductionSequence, process.producePatTupleAll)
 
