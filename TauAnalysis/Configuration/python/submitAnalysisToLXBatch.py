@@ -11,6 +11,7 @@ def submitAnalysisToLXBatch(configFile = None, channel = None, samples = None,
                             samplesToAnalyze = None, samplesToSkip = None,
                             disableFactorization = False,
                             disableSysUncertainties = False,
+                            disableZrecoilCorrections = False,
                             script_directory=None,
                             cfgdir = 'lxbatch',
                             inputFileMap = None, outputFileMap = None,
@@ -134,14 +135,19 @@ def submitAnalysisToLXBatch(configFile = None, channel = None, samples = None,
                     jobCustomizations.append("    process.hltMu.selector.src = cms.InputTag('TriggerResults::%s')" % HLTprocessName)
                     jobCustomizations.append("process.patTrigger.processName = '%s'" % HLTprocessName)
                     jobCustomizations.append("process.patTriggerEvent.processName = '%s'" % HLTprocessName)
-                    jobCustomizations.append("if hasattr(process, 'prePatProductionSequence'):")
+                if samples['RECO_SAMPLES'][sample]['type'] == 'Data':
+                    jobCustomizations.append("if hasattr(process, 'prePatProductionSequence')"
+                                            + " and hasattr(process, 'prePatProductionSequenceGen'):")
                     jobCustomizations.append("    process.prePatProductionSequence.remove(process.prePatProductionSequenceGen)")
-                    if samples['RECO_SAMPLES'][sample]['type'] == 'Data':
-                        jobCustomizations.append("if hasattr(process, 'ntupleProducer'):")
-                        jobCustomizations.append("    delattr(process.ntupleProducer.sources, 'tauGenJets')")
-                        jobCustomizations.append("    delattr(process.ntupleProducer.sources, 'genJets')")
-                        jobCustomizations.append("    delattr(process.ntupleProducer.sources, 'genPhaseSpaceEventInfo')")
-                        jobCustomizations.append("    delattr(process.ntupleProducer.sources, 'genPileUpEventInfo')")
+                    jobCustomizations.append("if hasattr(process, 'ntupleProducer'):")
+                    jobCustomizations.append("    if hasattr(process.ntupleProducer.sources, 'tauGenJets'):")
+                    jobCustomizations.append("        delattr(process.ntupleProducer.sources, 'tauGenJets')")
+                    jobCustomizations.append("    if hasattr(process.ntupleProducer.sources, 'genJets'):")
+                    jobCustomizations.append("        delattr(process.ntupleProducer.sources, 'genJets')")
+                    jobCustomizations.append("    if hasattr(process.ntupleProducer.sources, 'genPhaseSpaceEventInfo'):")
+                    jobCustomizations.append("        delattr(process.ntupleProducer.sources, 'genPhaseSpaceEventInfo')")
+                    jobCustomizations.append("    if hasattr(process.ntupleProducer.sources, 'genPileUpEventInfo'):")
+                    jobCustomizations.append("        delattr(process.ntupleProducer.sources, 'genPileUpEventInfo')")
                 #jobCustomizations.append("print process.dumpPython()")
                 #--------------------------------------------------------------------
 
@@ -151,6 +157,7 @@ def submitAnalysisToLXBatch(configFile = None, channel = None, samples = None,
                     sample_infos = samples,
                     disableFactorization = disableFactorization,
                     disableSysUncertainties = disableSysUncertainties,
+                    disableZrecoilCorrections = disableZrecoilCorrections, 
                     # We always copy the input files to the local directory
                     # before running cmsRun, so just take the basname
                     input_files = input_files_for_cfgOptions,
@@ -197,3 +204,5 @@ def submitAnalysisToLXBatch(configFile = None, channel = None, samples = None,
                         '%s\n' % os.path.join(outputDirectory, file))
         print "Run ./%s to submit jobs" % submit_file_name
         os.chmod(submit_file_name, 0755)
+
+        return submit_file_name

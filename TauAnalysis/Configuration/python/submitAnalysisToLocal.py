@@ -93,6 +93,7 @@ def submitAnalysisToLocal(configFile = None, channel = None, samples = None, job
                           samplesToAnalyze = None, samplesToSkip = None,
                           disableFactorization = False,
                           disableSysUncertainties = False,
+                          disableZrecoilCorrections = False,
                           maxEvents = 25000, maxJobsConcurrently = 8,
                           cfgdir = 'local', submit = False, logFilePath = None,
                           inputFileMap = None, outputFileMap = None,
@@ -186,14 +187,19 @@ def submitAnalysisToLocal(configFile = None, channel = None, samples = None, job
             jobCustomizations.append("    process.hltMu.selector.src = cms.InputTag('TriggerResults::%s')" % HLTprocessName)
             jobCustomizations.append("process.patTrigger.processName = '%s'" % HLTprocessName)
             jobCustomizations.append("process.patTriggerEvent.processName = '%s'" % HLTprocessName)
-            jobCustomizations.append("if hasattr(process, 'prePatProductionSequence'):")
-            jobCustomizations.append("    process.prePatProductionSequence.remove(process.prePatProductionSequenceGen)")
             if sample_infos['RECO_SAMPLES'][sample]['type'] == 'Data':
+                jobCustomizations.append("if hasattr(process, 'prePatProductionSequence')"
+                                        + " and hasattr(process, 'prePatProductionSequenceGen'):")
+                jobCustomizations.append("    process.prePatProductionSequence.remove(process.prePatProductionSequenceGen)")
                 jobCustomizations.append("if hasattr(process, 'ntupleProducer'):")
-                jobCustomizations.append("    delattr(process.ntupleProducer.sources, 'tauGenJets')")
-                jobCustomizations.append("    delattr(process.ntupleProducer.sources, 'genJets')")
-                jobCustomizations.append("    delattr(process.ntupleProducer.sources, 'genPhaseSpaceEventInfo')")
-                jobCustomizations.append("    delattr(process.ntupleProducer.sources, 'genPileUpEventInfo')")
+                jobCustomizations.append("    if hasattr(process.ntupleProducer.sources, 'tauGenJets'):")
+                jobCustomizations.append("        delattr(process.ntupleProducer.sources, 'tauGenJets')")
+                jobCustomizations.append("    if hasattr(process.ntupleProducer.sources, 'genJets'):")
+                jobCustomizations.append("        delattr(process.ntupleProducer.sources, 'genJets')")
+                jobCustomizations.append("    if hasattr(process.ntupleProducer.sources, 'genPhaseSpaceEventInfo'):")
+                jobCustomizations.append("        delattr(process.ntupleProducer.sources, 'genPhaseSpaceEventInfo')")
+                jobCustomizations.append("    if hasattr(process.ntupleProducer.sources, 'genPileUpEventInfo'):")
+                jobCustomizations.append("        delattr(process.ntupleProducer.sources, 'genPileUpEventInfo')")
             #jobCustomizations.append("print process.dumpPython()")
             #--------------------------------------------------------------------
 
@@ -202,6 +208,7 @@ def submitAnalysisToLocal(configFile = None, channel = None, samples = None, job
               sample_infos = sample_infos,
               disableFactorization = disableFactorization,
               disableSysUncertainties = disableSysUncertainties,
+              disableZrecoilCorrections = disableZrecoilCorrections,  
               input_files = input_files, output_file = output_file,
               enableEventDumps = enableEventDumps, enableFakeRates = enableFakeRates,
               processName = processName,
