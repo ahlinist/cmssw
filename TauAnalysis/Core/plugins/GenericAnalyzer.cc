@@ -330,7 +330,7 @@ void GenericAnalyzer::addAnalyzers(const vstring& analyzerNames,
           if ( posAssignmentOperator == std::string::npos ||
               !(posAssignmentOperator >= 1 && posAssignmentOperator < (replaceCommand_noKeyword.length() - 1)) ) {
             edm::LogError("GenericAnalyzer::addAnalyzers")
-                << " Failed to parse replaceCommand = " << (*replaceCommand) << " --> skipping !!";
+              << " Failed to parse replaceCommand = " << (*replaceCommand) << " --> skipping !!";
             cfgError_ = 1;
             continue;
           }
@@ -474,6 +474,7 @@ GenericAnalyzer::GenericAnalyzer(const edm::ParameterSet& cfg)
 //    to be taken into account in analysis
   estimateSysUncertainties_ = cfg.exists("estimateSysUncertainties") ?
       cfg.getParameter<bool>("estimateSysUncertainties") : false;
+  std::cout << " estimateSysUncertainties = " << estimateSysUncertainties_ << std::endl;
 
   if ( estimateSysUncertainties_ ) {
     vstring cfgSystematics = cfg.getParameter<vstring>("systematics");
