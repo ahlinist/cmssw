@@ -22,7 +22,10 @@ process = cms.Process('makeAHtoMuTauPlots')
 
 channel = 'AHtoMuTau'
 
-reg.overrideJobId(channel, '2010Dec23_lxbatch')
+#reg.overrideJobId(channel, '2010Dec23_lxbatch')
+#reg.overrideJobId(channel, 'Run33')
+#reg.overrideJobId(channel, 'Run37sysTanc')
+reg.overrideJobId(channel, 'Run37sys')
 
 inputFilePath = reg.getHarvestingFilePath(channel)
 jobId = reg.getJobId(channel)
@@ -53,7 +56,8 @@ if len(sys.argv) > 2:
             'Zmumu_powheg',
             'WplusJets_madgraph',
             'qcdSum',
-            'ZtautauSum',
+            #'ZtautauSum',
+            'Ztautau_powheg',
         ]
         recoSampleDefinitionsAHtoMuTau_7TeV['SAMPLES_TO_PRINT'][:] = \
                 recoSampleDefinitionsAHtoMuTau_7TeV['SAMPLES_TO_PLOT']
@@ -116,4 +120,4 @@ makePlots(process, channel = channel,
           plotsDirectory = plotsDirectory)
 
 # print-out all python configuration parameter information
-print process.dumpPython()
+#print process.dumpPython()
