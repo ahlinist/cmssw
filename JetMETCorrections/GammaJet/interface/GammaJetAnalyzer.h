@@ -108,6 +108,7 @@ class GammaJetAnalyzer : public edm::EDAnalyzer {
       string recoProducer_; 
       string JetCorrector_akt5_; 
       string JetCorrector_akt7_; 
+      string JetCorrector_jptak5_; 
       string JetCorrector_pfakt5_; 
       string JetCorrector_pfakt7_; 
       double genjetptthr_;
@@ -234,6 +235,7 @@ class GammaJetAnalyzer : public edm::EDAnalyzer {
 
       Int_t nJet_jptak5;
       Float_t ptJet_jptak5[100];
+      Float_t ptCorrJet_jptak5[100];
       Float_t eJet_jptak5[100];
       Float_t etaJet_jptak5[100];
       Float_t phiJet_jptak5[100];

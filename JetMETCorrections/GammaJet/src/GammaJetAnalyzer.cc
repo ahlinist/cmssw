@@ -13,7 +13,7 @@
 //
 // Original Author:  Daniele del Re
 //         Created:  Thu Sep 13 16:00:15 CEST 2007
-// $Id: GammaJetAnalyzer.cc,v 1.40 2010/11/26 16:38:40 delre Exp $
+// $Id: GammaJetAnalyzer.cc,v 1.41 2010/11/30 17:37:23 delre Exp $
 //
 //
 
@@ -167,6 +167,7 @@ GammaJetAnalyzer::GammaJetAnalyzer(const edm::ParameterSet& iConfig)
   recoProducer_      = iConfig.getParameter<std::string>("recoProducer");
   JetCorrector_akt5_ = iConfig.getParameter<std::string>("JetCorrectionService_akt5");
   JetCorrector_akt7_ = iConfig.getParameter<std::string>("JetCorrectionService_akt7");
+  JetCorrector_jptak5_ = iConfig.getParameter<std::string>("JetCorrectionService_jptak5");
   JetCorrector_pfakt5_ = iConfig.getParameter<std::string>("JetCorrectionService_pfakt5");
   JetCorrector_pfakt7_ = iConfig.getParameter<std::string>("JetCorrectionService_pfakt7");
   genjetptthr_ = iConfig.getParameter<double>("genjetptthr");
@@ -292,6 +293,7 @@ GammaJetAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
    //get jet correctors
    const JetCorrector* corrector_akt5 = JetCorrector::getJetCorrector (JetCorrector_akt5_, iSetup);
    const JetCorrector* corrector_akt7 = JetCorrector::getJetCorrector (JetCorrector_akt7_, iSetup);
+   const JetCorrector* corrector_jptak5 = JetCorrector::getJetCorrector (JetCorrector_jptak5_, iSetup);
    const JetCorrector* corrector_pfakt5 = JetCorrector::getJetCorrector (JetCorrector_pfakt5_, iSetup);
    const JetCorrector* corrector_pfakt7 = JetCorrector::getJetCorrector (JetCorrector_pfakt7_, iSetup);
  
@@ -1379,6 +1381,12 @@ GammaJetAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
      if (nJet_jptak5>=100) {cout << "number of reco jets jptakt 05 is larger than 100. Skipping" << endl; continue;}
      if (nJet_jptak5 < jptjetnmin_ || it->pt() > jptjetptthr_) {
        
+       // Jet Energy Scale Corrections on-the-fly     
+       JPTJet  correctedJet = *it;
+       double scale = corrector_jptak5->correction(it->p4());
+       correctedJet.scaleEnergy(scale);
+       ptCorrJet_jptak5[nJet_jptak5] = correctedJet.pt();
+
        ptJet_jptak5[nJet_jptak5] = it->pt();	 
        eJet_jptak5[nJet_jptak5] = it->energy();	 
        etaJet_jptak5[nJet_jptak5] = it->eta();	 
@@ -1759,6 +1767,7 @@ GammaJetAnalyzer::beginJob()
 
   m_tree->Branch("nJet_jptak5",&nJet_jptak5,"nJet_jptak5/I");
   m_tree->Branch("ptJet_jptak5 ",&ptJet_jptak5 ,"ptJet_jptak5[nJet_jptak5]/F");
+  m_tree->Branch("ptCorrJet_jptak5 ",&ptCorrJet_jptak5 ,"ptCorrJet_jptak5[nJet_jptak5]/F");
   m_tree->Branch("eJet_jptak5  ",&eJet_jptak5  ,"eJet_jptak5[nJet_jptak5]/F");
   m_tree->Branch("etaJet_jptak5",&etaJet_jptak5,"etaJet_jptak5[nJet_jptak5]/F");
   m_tree->Branch("phiJet_jptak5",&phiJet_jptak5,"phiJet_jptak5[nJet_jptak5]/F");
