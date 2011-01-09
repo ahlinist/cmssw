@@ -69,7 +69,7 @@ process.load('Configuration/StandardSequences/FrontierConditions_GlobalTag_cff')
 #process.load('Configuration/EventContent/EventContent_cff')
 #process.load('TrackingTools/Configuration/TrackingTools_cff')
 
-process.GlobalTag.globaltag = cms.string('GR_R_38X_V14::All')
+process.GlobalTag.globaltag = cms.string('GR_R_38X_V15::All')
 #process.GlobalTag.globaltag = cms.string('GR_R_35X_V8::All')
 #process.GlobalTag.globaltag = cms.string('START36_V10::All')
 
@@ -106,6 +106,7 @@ process.myanalysis = cms.EDAnalyzer("GammaJetAnalyzer",
     recoCollection = cms.string('EcalRecHitsEB'),
     JetCorrectionService_akt5 = cms.string('ak5CaloL2L3Residual'),
     JetCorrectionService_akt7 = cms.string('ak7CaloL2L3Residual'),
+    JetCorrectionService_jptak5 = cms.string('ak5JPTL2L3Residual'),
     JetCorrectionService_pfakt5 = cms.string('ak5PFL2L3Residual'),
     JetCorrectionService_pfakt7 = cms.string('ak7PFL2L3Residual'),
     jetskt4 = cms.untracked.InputTag("kt4CaloJets"),
