@@ -4,9 +4,6 @@ import copy
 # import utility function for changing cut values
 from TauAnalysis.Configuration.tools.changeCut import changeCut
 
-# import utility function to enable factorization
-from TauAnalysis.Configuration.tools.factorizationTools import enableFactorization_makeZtoMuTauPlots_grid
-
 # import configuration parameters of histogram manager
 # for validation of tau id. efficiencies/fake-rates
 from TauAnalysis.BgEstimationTools.tauIdEffValidationHistManager_cfi import tauIdEffValidationHistManager
