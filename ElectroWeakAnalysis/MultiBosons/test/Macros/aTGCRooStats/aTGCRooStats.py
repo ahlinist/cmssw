@@ -34,14 +34,12 @@ def main(options,args):
     if options.noBackground:
         theNLL = ws.pdf('TopLevelPdf').createNLL(ws.data('aTGCDataUnitWeight'),
                                                  ROOT.RooFit.NumCPU(2),
-                                                 ROOT.RooFit.ProjectedObservables(ws.var(options.obsVar)),
                                                  ROOT.RooFit.ExternalConstraints(ROOT.RooArgSet(ws.pdf('lumiErr'),
                                                                                                 ws.pdf('selectionErr'))),
                                                  )
     else:
         theNLL =ws.pdf('TopLevelPdf').createNLL(ws.data('aTGCDataUnitWeight'),
                                                 ROOT.RooFit.NumCPU(2),
-                                                ROOT.RooFit.ProjectedObservables(ws.var(options.obsVar)),
                                                 ROOT.RooFit.ExternalConstraints(ROOT.RooArgSet(ws.pdf('lumiErr'),
                                                                                                ws.pdf('selectionErr'),
                                                                                                ws.pdf('backgroundErr')))
