@@ -307,9 +307,9 @@ def enableFactorization_makeZtoMuTauPlots_grid2(
         'evtSelDiMuPairZmumuHypothesisVetoByLooseIsolation'
     ]
 
-    evtSelZtoMuTau_factorizedLooseOS = evtSelZtoMuTau_factorizedLoose
+    evtSelZtoMuTau_factorizedLooseOS = evtSelZtoMuTau_factorizedLoose \
       + [ 'evtSelDiTauCandidateForMuTauZeroCharge' ]
-    evtSelZtoMuTau_factorizedLooseSS = evtSelZtoMuTau_factorizedLoose
+    evtSelZtoMuTau_factorizedLooseSS = evtSelZtoMuTau_factorizedLoose \
       + [ 'evtSelDiTauCandidateForMuTauNonZeroCharge' ]  
 
     analyzers = {
