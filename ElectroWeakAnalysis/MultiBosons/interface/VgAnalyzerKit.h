@@ -49,6 +49,8 @@ protected:
   Float_t recHitApproxEt( const DetId id, const EcalRecHitCollection &recHits );
   Float_t recHitE( const DetId id, const EcalRecHitCollection &recHits );
   Float_t recHitE( const DetId id, const EcalRecHitCollection & recHits, Int_t di, Int_t dj );
+  Float_t getGenIso(edm::Handle<reco::GenParticleCollection> handle, reco::GenParticleCollection::const_iterator thisPho, 
+		     const Float_t dRMax=0.4, Bool_t removeMu=true, Bool_t removeNu=false);
   Float_t getGenCalIso(edm::Handle<reco::GenParticleCollection> handle, reco::GenParticleCollection::const_iterator thisPho, 
 		     const Float_t dRMax=0.4, Bool_t removeMu=true, Bool_t removeNu=false);
   Float_t getGenTrkIso(edm::Handle<reco::GenParticleCollection> handle, reco::GenParticleCollection::const_iterator thisPho, const Float_t dRMax=0.4);
@@ -60,7 +62,6 @@ protected:
   std::vector<float> getESProfileRear(View<pat::Photon>::const_iterator photon, const edm::Event&, const edm::EventSetup&);
 
   Bool_t saveHistograms_;
-  Bool_t saveHLTInfo_;
   Bool_t doGenParticles_;
   Bool_t doStoreJets_;
   Bool_t doSkim_;
@@ -126,8 +127,10 @@ protected:
   Float_t  mcMomPhi[maxP];
   Int_t    mcIndex[maxP];
   Int_t    mcDecayType[maxP];
+  Float_t  mcIsoDR03[maxP];
   Float_t  mcCalIsoDR03[maxP];
   Float_t  mcTrkIsoDR03[maxP];
+  Float_t  mcIsoDR04[maxP];
   Float_t  mcCalIsoDR04[maxP];
   Float_t  mcTrkIsoDR04[maxP];
   // Gen & Reco MET
