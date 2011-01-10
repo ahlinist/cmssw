@@ -23,7 +23,7 @@ process.maxEvents = cms.untracked.PSet(
 process.source = cms.Source("PoolSource",
     fileNames = cms.untracked.vstring(
         'rfio:/castor/cern.ch/user/l/lusito/SkimOctober09/ZtautauSkimMT314_3/muTauSkim_1.root'
-    )                          
+    )
 )
 
 dummyEventSelection = cms.untracked.PSet(
@@ -32,8 +32,8 @@ dummyEventSelection = cms.untracked.PSet(
     )
 )
 
-process.copyToCastorOutputModule = cms.OutputModule("PoolOutputModule",                                              
-    fileName = cms.untracked.string('test_copy.root')
+process.copyToCastorOutputModule = cms.OutputModule("PoolOutputModule",
+    fileName = cms.untracked.string('Wmunu_pythia_pu.root')
 )
 
 process.options = cms.untracked.PSet(
