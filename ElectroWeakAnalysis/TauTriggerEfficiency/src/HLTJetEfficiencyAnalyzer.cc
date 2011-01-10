@@ -23,7 +23,7 @@ HLTJetEfficiencyAnalyzer::~HLTJetEfficiencyAnalyzer(){
 void HLTJetEfficiencyAnalyzer::Setup(const edm::ParameterSet& iConfig,TTree *trigtree)
 {
 	HLTJetSource = iConfig.getParameter<edm::InputTag>("HLTJetSource");
-	njets        = iConfig.getParameter<edm::int32>("HLTNJets");
+	njets        = iConfig.getParameter<int>("HLTNJets");
 
   	jettree = trigtree;
 
