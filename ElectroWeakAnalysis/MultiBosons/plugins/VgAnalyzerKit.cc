@@ -35,6 +35,15 @@
 #include "DataFormats/PatCandidates/interface/TriggerEvent.h"
 #include "PhysicsTools/PatUtils/interface/TriggerHelper.h"
 
+//geometry
+#include "Geometry/CaloGeometry/interface/CaloGeometry.h"
+#include "Geometry/Records/interface/IdealGeometryRecord.h"
+#include "Geometry/Records/interface/CaloGeometryRecord.h"
+#include "Geometry/CaloEventSetup/interface/CaloTopologyRecord.h"
+#include "Geometry/CaloGeometry/interface/CaloCellGeometry.h"
+#include "Geometry/CaloGeometry/interface/CaloSubdetectorGeometry.h"
+#include "Geometry/EcalAlgo/interface/EcalPreshowerGeometry.h"
+
 using namespace std;
 using namespace pat;
 using namespace edm;
@@ -45,11 +54,11 @@ VgAnalyzerKit::VgAnalyzerKit(const edm::ParameterSet& ps) : verbosity_(0), helpe
   // cout << "VgAnalyzerKit: entering ctor ..." << endl;
 
   saveHistograms_ = ps.getUntrackedParameter<bool>("saveHistograms", false);
-  saveHLTInfo_    = ps.getUntrackedParameter<bool>("saveHLTInfo", true);
   trgResults_     = ps.getParameter<InputTag>("triggerResults");
   trgEvent_       = ps.getParameter<InputTag>("triggerEvent"); 
   doGenParticles_ = ps.getParameter<bool>("doGenParticles");
   doStoreJets_     = ps.getParameter<bool>("doStoreJets");
+  doSkim_         = ps.getParameter<bool>("doSkim");
   gtdigilabel_    = ps.getParameter<InputTag>("GTDigiLabel");
   vtxlabel_       = ps.getParameter<InputTag>("VtxLabel");
   caloTowerlabel_ = ps.getParameter<InputTag>("CaloTowerLabel");
@@ -113,8 +122,10 @@ VgAnalyzerKit::VgAnalyzerKit(const edm::ParameterSet& ps) : verbosity_(0), helpe
     tree_->Branch("mcMomPhi", mcMomPhi, "mcMomPhi[nMC]/F");
     tree_->Branch("mcIndex", mcIndex, "mcIndex[nMC]/I");
     tree_->Branch("mcDecayType", mcDecayType, "mcDecayType[nMC]/I"); //-999:non W or Z, 1:hardronic, 2:e, 3:mu, 4:tau
+    tree_->Branch("mcIsoDR03", mcIsoDR03, "mcIsoDR03[nMC]/F");
     tree_->Branch("mcCalIsoDR03", mcCalIsoDR03, "mcCalIsoDR03[nMC]/F");
     tree_->Branch("mcTrkIsoDR03", mcTrkIsoDR03, "mcTrkIsoDR03[nMC]/F");
+    tree_->Branch("mcIsoDR04", mcIsoDR04, "mcIsoDR04[nMC]/F");
     tree_->Branch("mcCalIsoDR04", mcCalIsoDR04, "mcCalIsoDR04[nMC]/F");
     tree_->Branch("mcTrkIsoDR04", mcTrkIsoDR04, "mcTrkIsoDR04[nMC]/F");
     // Gen MET
@@ -178,6 +189,8 @@ VgAnalyzerKit::VgAnalyzerKit(const edm::ParameterSet& ps) : verbosity_(0), helpe
   tree_->Branch("eledPhiAtVtx", eledPhiAtVtx_, "eledPhiAtVtx[nEle]/F");
   tree_->Branch("eleSigmaEtaEta", eleSigmaEtaEta_, "eleSigmaEtaEta[nEle]/F");
   tree_->Branch("eleSigmaIEtaIEta", eleSigmaIEtaIEta_, "eleSigmaIEtaIEta[nEle]/F");
+  tree_->Branch("eleSigmaIEtaIPhi", eleSigmaIEtaIPhi_, "eleSigmaIEtaIPhi[nEle]/F");
+  tree_->Branch("eleSigmaIPhiIPhi", eleSigmaIPhiIPhi_, "eleSigmaIPhiIPhi[nEle]/F");
   tree_->Branch("eleE2overE9", eleE2overE9_, "eleE2overE9[nEle]/F");
   tree_->Branch("eleE3x3", eleE3x3_, "eleE3x3[nEle]/F");
   tree_->Branch("eleSeedTime", eleSeedTime_, "eleSeedTime[nEle]/F");
@@ -198,6 +211,12 @@ VgAnalyzerKit::VgAnalyzerKit(const edm::ParameterSet& ps) : verbosity_(0), helpe
   tree_->Branch("eleIsoTrkDR04", eleIsoTrkDR04_, "eleIsoTrkDR04[nEle]/F");
   tree_->Branch("eleIsoEcalDR04", eleIsoEcalDR04_, "eleIsoEcalDR04[nEle]/F");
   tree_->Branch("eleIsoHcalDR04", eleIsoHcalDR04_, "eleIsoHcalDR04[nEle]/F");
+  tree_->Branch("eleConvDist_", eleConvDist_, "eleConvDist_[nEle]/F");
+  tree_->Branch("eleConvDcot_", eleConvDcot_, "eleConvDcot_[nEle]/F");
+  tree_->Branch("eleConvRadius_", eleConvRadius_, "eleConvRadius_[nEle]/F");
+  tree_->Branch("eleESRatio", eleESRatio_, "eleESRatio[nEle]/F");
+  tree_->Branch("eleESProfileFront", eleESProfileFront_, "eleESProfileFront[nEle][63]/F");
+  tree_->Branch("eleESProfileRear", eleESProfileRear_, "eleESProfileRear[nEle][63]/F");
   // Photon
   tree_->Branch("nPho", &nPho_, "nPho/I");
   tree_->Branch("phoTrg", phoTrg_, "phoTrg[nPho][8]/I");
@@ -223,6 +242,8 @@ VgAnalyzerKit::VgAnalyzerKit(const edm::ParameterSet& ps) : verbosity_(0), helpe
   tree_->Branch("phoHoverE", phoHoverE_, "phoHoverE[nPho]/F");
   tree_->Branch("phoSigmaEtaEta", phoSigmaEtaEta_, "phoSigmaEtaEta[nPho]/F");
   tree_->Branch("phoSigmaIEtaIEta", phoSigmaIEtaIEta_, "phoSigmaIEtaIEta[nPho]/F");
+  tree_->Branch("phoSigmaIEtaIPhi", phoSigmaIEtaIPhi_, "phoSigmaIEtaIPhi[nPho]/F");
+  tree_->Branch("phoSigmaIPhiIPhi", phoSigmaIPhiIPhi_, "phoSigmaIPhiIPhi[nPho]/F");
   tree_->Branch("phoE2overE9", phoE2overE9_, "phoE2overE9[nPho]/F");
   tree_->Branch("phoE3x3", phoE3x3_, "phoE3x3[nPho]/F");
   tree_->Branch("phoSeedTime", phoSeedTime_, "phoSeedTime[nPho]/F");
@@ -249,6 +270,9 @@ VgAnalyzerKit::VgAnalyzerKit(const edm::ParameterSet& ps) : verbosity_(0), helpe
   tree_->Branch("phohasPixelSeed", phohasPixelSeed_, "phohasPixelSeed[nPho]/I");
   tree_->Branch("phoIsConv", phoIsConv_, "phoIsConv[nPho]/I");
   tree_->Branch("phoPi0Disc",phoPi0Disc_ , "phoPi0Disc[nPho]/F");
+  tree_->Branch("phoESRatio", phoESRatio_, "phoESRatio[nPho]/F");
+  tree_->Branch("phoESProfileFront", phoESProfileFront_, "phoESProfileFront[nPho][63]/F");
+  tree_->Branch("phoESProfileRear", phoESProfileRear_, "phoESProfileRear[nPho][63]/F");
   // Muon
   tree_->Branch("nMu", &nMu_, "nMu/I");
   tree_->Branch("muTrg", muTrg_, "muTrg[nMu][6]/I");
@@ -588,20 +612,16 @@ fabs(ip->pdgId())<=14) || ip->pdgId()==22))) {
 
 	  }
 	}
-        mcCalIsoDR03[nMC_] = 0;
-        mcTrkIsoDR03[nMC_] = 0;
-        mcCalIsoDR04[nMC_] = 0;
-        mcTrkIsoDR04[nMC_] = 0;
+        mcIsoDR03[nMC_]    = getGenIso(genParticlesHandle_, ip, 0.3, false, false);
         mcCalIsoDR03[nMC_] = getGenCalIso(genParticlesHandle_, ip, 0.3, false, false);
         mcTrkIsoDR03[nMC_] = getGenTrkIso(genParticlesHandle_, ip, 0.3);
+        mcIsoDR04[nMC_]    = getGenIso(genParticlesHandle_, ip, 0.4, false, false);
         mcCalIsoDR04[nMC_] = getGenCalIso(genParticlesHandle_, ip, 0.4, false, false);
         mcTrkIsoDR04[nMC_] = getGenTrkIso(genParticlesHandle_, ip, 0.4);
 
 	nMC_++;
       }
-
     }
-
   }
 
   // HLT
@@ -662,71 +682,68 @@ fabs(ip->pdgId())<=14) || ip->pdgId()==22))) {
     HLTIndex_[a] = -1;
  
   nHLT_ = 0;
-  if (saveHLTInfo_) {
-    Handle<TriggerResults> trgResultsHandle;
-    e.getByLabel(trgResults_, trgResultsHandle);
-    const TriggerNames &trgNames = e.triggerNames(*trgResultsHandle);
-    vector<string> hlNames = trgNames.triggerNames();
-    nHLT_ = trgNames.size();
-    for (size_t i=0; i<trgNames.size(); ++i) {
-      HLT_[i] = (trgResultsHandle->accept(i) == true) ? 1:0;
+  Handle<TriggerResults> trgResultsHandle;
+  e.getByLabel(trgResults_, trgResultsHandle);
+  const TriggerNames &trgNames = e.triggerNames(*trgResultsHandle);
+  vector<string> hlNames = trgNames.triggerNames();
+  nHLT_ = trgNames.size();
+  for (size_t i=0; i<trgNames.size(); ++i) {
+    HLT_[i] = (trgResultsHandle->accept(i) == true) ? 1:0;
 
-      if (hlNames[i] == "HLT_Jet15U")                       HLTIndex_[0] = i;
-      else if (hlNames[i] == "HLT_Jet30U")                  HLTIndex_[1] = i;
-      else if (hlNames[i] == "HLT_Jet50U")                  HLTIndex_[2] = i;
-      else if (hlNames[i] == "HLT_Jet70U")                  HLTIndex_[3] = i;
-      else if (hlNames[i] == "HLT_Jet70U_v2")               HLTIndex_[4] = i;
-      else if (hlNames[i] == "HLT_Jet100U")                 HLTIndex_[5] = i;
-      else if (hlNames[i] == "HLT_Jet100U_v2")              HLTIndex_[6] = i;
-      else if (hlNames[i] == "HLT_Jet100U_v1")              HLTIndex_[7] = i;
-      else if (hlNames[i] == "HLT_Mu9")                     HLTIndex_[8] = i;
-      else if (hlNames[i] == "HLT_Mu11")                    HLTIndex_[9] = i;
-      else if (hlNames[i] == "HLT_Mu13")                    HLTIndex_[10] = i;
-      else if (hlNames[i] == "HLT_Mu13_v1")                 HLTIndex_[11] = i;
-      else if (hlNames[i] == "HLT_Mu15")                    HLTIndex_[12] = i;
-      else if (hlNames[i] == "HLT_Mu15_v1")                 HLTIndex_[13] = i;
-      else if (hlNames[i] == "HLT_DoubleMu3")               HLTIndex_[14] = i;
-      else if (hlNames[i] == "HLT_DoubleMu3_v2")            HLTIndex_[15] = i;
-      else if (hlNames[i] == "HLT_DoubleMu5_v1")            HLTIndex_[16] = i;
-      else if (hlNames[i] == "HLT_Ele15_LW_L1R")            HLTIndex_[17] = i;
-      else if (hlNames[i] == "HLT_Ele20_LW_L1R")            HLTIndex_[18] = i;
-      else if (hlNames[i] == "HLT_Ele15_SW_L1R")            HLTIndex_[19] = i;
-      else if (hlNames[i] == "HLT_Ele20_SW_L1R")            HLTIndex_[20] = i;
-      else if (hlNames[i] == "HLT_Ele15_SW_EleId_L1R")      HLTIndex_[21] = i;
-      else if (hlNames[i] == "HLT_Ele20_SW_EleId_L1R")      HLTIndex_[22] = i;
-      else if (hlNames[i] == "HLT_Ele15_SW_CaloEleId_L1R")  HLTIndex_[23] = i;
-      else if (hlNames[i] == "HLT_Ele20_SW_CaloEleId_L1R")  HLTIndex_[24] = i;
-      else if (hlNames[i] == "HLT_Ele17_SW_CaloEleId_L1R")  HLTIndex_[25] = i;
-      else if (hlNames[i] == "HLT_Ele17_SW_TightEleId_L1R") HLTIndex_[26] = i;
-      else if (hlNames[i] == "HLT_Ele17_SW_TighterEleIdIsol_L1R")         HLTIndex_[27] = i;
-      else if (hlNames[i] == "HLT_Ele17_SW_TighterEleIdIsol_L1R_v2")      HLTIndex_[28] = i;
-      else if (hlNames[i] == "HLT_Ele22_SW_TighterEleId_L1R_v2")          HLTIndex_[29] = i;
-      else if (hlNames[i] == "HLT_DoubleEle10_SW_L1R")      HLTIndex_[30] = i;
-      else if (hlNames[i] == "HLT_DoubleEle17_SW_L1R_v1")   HLTIndex_[31] = i;
-      else if (hlNames[i] == "HLT_Photon10_Cleaned_L1R")    HLTIndex_[32] = i;
-      else if (hlNames[i] == "HLT_Photon15_Cleaned_L1R")    HLTIndex_[33] = i;
-      else if (hlNames[i] == "HLT_Photon20_Cleaned_L1R")    HLTIndex_[34] = i;
-      else if (hlNames[i] == "HLT_Photon30_Cleaned_L1R")    HLTIndex_[35] = i;
-      else if (hlNames[i] == "HLT_Photon50_Cleaned_L1R_v1") HLTIndex_[36] = i;
-      else if (hlNames[i] == "HLT_Photon70_Cleaned_L1R_v1") HLTIndex_[37] = i;
-      else if (hlNames[i] == "HLT_Jet15U_v3") 		    HLTIndex_[38] = i;
-      else if (hlNames[i] == "HLT_Jet30U_v3") 		    HLTIndex_[39] = i;
-      else if (hlNames[i] == "HLT_Jet50U_v3") 		    HLTIndex_[40] = i;
-      else if (hlNames[i] == "HLT_Jet70U_v3") 		    HLTIndex_[41] = i;
-      else if (hlNames[i] == "HLT_Jet100U_v3") 		    HLTIndex_[42] = i;
-      else if (hlNames[i] == "HLT_Jet140U_v3") 		    HLTIndex_[43] = i;
-      else if (hlNames[i] == "HLT_Ele17_SW_TightCaloEleId_Ele8HE_L1R_v1") HLTIndex_[44] = i;
-      else if (hlNames[i] == "HLT_Ele17_SW_TightCaloEleId_Ele8HE_L1R_v2") HLTIndex_[45] = i;
-      else if (hlNames[i] == "HLT_Ele17_SW_TighterEleIdIsol_L1R_v3")      HLTIndex_[46] = i;
-      else if (hlNames[i] == "HLT_DoubleEle15_SW_L1R_v1")   HLTIndex_[47] = i;
-      else if (hlNames[i] == "HLT_DoublePhoton17_L1R") 	    HLTIndex_[48] = i;
-      else if (hlNames[i] == "HLT_Photon10_L1R")    HLTIndex_[49] = i;
-    }
+    if (hlNames[i] == "HLT_Jet15U")                       HLTIndex_[0] = i;
+    else if (hlNames[i] == "HLT_Jet30U")                  HLTIndex_[1] = i;
+    else if (hlNames[i] == "HLT_Jet50U")                  HLTIndex_[2] = i;
+    else if (hlNames[i] == "HLT_Jet70U")                  HLTIndex_[3] = i;
+    else if (hlNames[i] == "HLT_Jet70U_v2")               HLTIndex_[4] = i;
+    else if (hlNames[i] == "HLT_Jet100U")                 HLTIndex_[5] = i;
+    else if (hlNames[i] == "HLT_Jet100U_v2")              HLTIndex_[6] = i;
+    else if (hlNames[i] == "HLT_Jet100U_v1")              HLTIndex_[7] = i;
+    else if (hlNames[i] == "HLT_Mu9")                     HLTIndex_[8] = i;
+    else if (hlNames[i] == "HLT_Mu11")                    HLTIndex_[9] = i;
+    else if (hlNames[i] == "HLT_Mu13")                    HLTIndex_[10] = i;
+    else if (hlNames[i] == "HLT_Mu13_v1")                 HLTIndex_[11] = i;
+    else if (hlNames[i] == "HLT_Mu15")                    HLTIndex_[12] = i;
+    else if (hlNames[i] == "HLT_Mu15_v1")                 HLTIndex_[13] = i;
+    else if (hlNames[i] == "HLT_DoubleMu3")               HLTIndex_[14] = i;
+    else if (hlNames[i] == "HLT_DoubleMu3_v2")            HLTIndex_[15] = i;
+    else if (hlNames[i] == "HLT_DoubleMu5_v1")            HLTIndex_[16] = i;
+    else if (hlNames[i] == "HLT_Ele15_LW_L1R")            HLTIndex_[17] = i;
+    else if (hlNames[i] == "HLT_Ele20_LW_L1R")            HLTIndex_[18] = i;
+    else if (hlNames[i] == "HLT_Ele15_SW_L1R")            HLTIndex_[19] = i;
+    else if (hlNames[i] == "HLT_Ele20_SW_L1R")            HLTIndex_[20] = i;
+    else if (hlNames[i] == "HLT_Ele15_SW_EleId_L1R")      HLTIndex_[21] = i;
+    else if (hlNames[i] == "HLT_Ele20_SW_EleId_L1R")      HLTIndex_[22] = i;
+    else if (hlNames[i] == "HLT_Ele15_SW_CaloEleId_L1R")  HLTIndex_[23] = i;
+    else if (hlNames[i] == "HLT_Ele20_SW_CaloEleId_L1R")  HLTIndex_[24] = i;
+    else if (hlNames[i] == "HLT_Ele17_SW_CaloEleId_L1R")  HLTIndex_[25] = i;
+    else if (hlNames[i] == "HLT_Ele17_SW_TightEleId_L1R") HLTIndex_[26] = i;
+    else if (hlNames[i] == "HLT_Ele17_SW_TighterEleIdIsol_L1R")         HLTIndex_[27] = i;
+    else if (hlNames[i] == "HLT_Ele17_SW_TighterEleIdIsol_L1R_v2")      HLTIndex_[28] = i;
+    else if (hlNames[i] == "HLT_Ele22_SW_TighterEleId_L1R_v2")          HLTIndex_[29] = i;
+    else if (hlNames[i] == "HLT_DoubleEle10_SW_L1R")      HLTIndex_[30] = i;
+    else if (hlNames[i] == "HLT_DoubleEle17_SW_L1R_v1")   HLTIndex_[31] = i;
+    else if (hlNames[i] == "HLT_Photon10_Cleaned_L1R")    HLTIndex_[32] = i;
+    else if (hlNames[i] == "HLT_Photon15_Cleaned_L1R")    HLTIndex_[33] = i;
+    else if (hlNames[i] == "HLT_Photon20_Cleaned_L1R")    HLTIndex_[34] = i;
+    else if (hlNames[i] == "HLT_Photon30_Cleaned_L1R")    HLTIndex_[35] = i;
+    else if (hlNames[i] == "HLT_Photon50_Cleaned_L1R_v1") HLTIndex_[36] = i;
+    else if (hlNames[i] == "HLT_Photon70_Cleaned_L1R_v1") HLTIndex_[37] = i;
+    else if (hlNames[i] == "HLT_Jet15U_v3") 		  HLTIndex_[38] = i;
+    else if (hlNames[i] == "HLT_Jet30U_v3") 		  HLTIndex_[39] = i;
+    else if (hlNames[i] == "HLT_Jet50U_v3") 		  HLTIndex_[40] = i;
+    else if (hlNames[i] == "HLT_Jet70U_v3") 		  HLTIndex_[41] = i;
+    else if (hlNames[i] == "HLT_Jet100U_v3") 		  HLTIndex_[42] = i;
+    else if (hlNames[i] == "HLT_Jet140U_v3") 		  HLTIndex_[43] = i;
+    else if (hlNames[i] == "HLT_Ele17_SW_TightCaloEleId_Ele8HE_L1R_v1") HLTIndex_[44] = i;
+    else if (hlNames[i] == "HLT_Ele17_SW_TightCaloEleId_Ele8HE_L1R_v2") HLTIndex_[45] = i;
+    else if (hlNames[i] == "HLT_Ele17_SW_TighterEleIdIsol_L1R_v3")      HLTIndex_[46] = i;
+    else if (hlNames[i] == "HLT_DoubleEle15_SW_L1R_v1")   HLTIndex_[47] = i;
+    else if (hlNames[i] == "HLT_DoublePhoton17_L1R") 	  HLTIndex_[48] = i;
+    else if (hlNames[i] == "HLT_Photon10_L1R")    	  HLTIndex_[49] = i;
   }
 
   // Gen & PAT MET (caloMET)
   // cout << "VgAnalyzerKit: produce: Gen & PAT MET (caloMET) ..." << endl;
-  int nMET = 0;
   if( METHandle_.isValid() )
     for (View<pat::MET>::const_iterator iMET = METHandle_->begin(); iMET != METHandle_->end(); ++iMET) {
       MET_      = iMET->pt();
@@ -753,70 +770,40 @@ fabs(ip->pdgId())<=14) || ip->pdgId()==22))) {
 	genMETy_   = (*iMET).genMET()->py();
 	genMETPhi_ = (*iMET).genMET()->phi();
       }
-
-      nMET++;
     }
 
   // tcMET
   // cout << "VgAnalyzerKit: produce: tcMET ..." << endl;
-  Handle<edm::View<reco::MET> > tcMETcoll;
-  const reco::MET *tcMET = 0;
-  if (e.getByLabel(tcMETlabel_, tcMETcoll)) {
+  Handle<View<pat::MET> > tcMETHandle_;
+  e.getByLabel(tcMETlabel_, tcMETHandle_);
+  for (View<pat::MET>::const_iterator iTCMET = tcMETHandle_->begin(); iTCMET != tcMETHandle_->end(); ++iTCMET) {
 
-    tcMET = &(tcMETcoll->front());
-
-    tcMET_       = tcMET->pt();
-    tcMETx_      = tcMET->px();
-    tcMETy_      = tcMET->py();
-    tcMETPhi_    = tcMET->phi();
-    tcMETsumEt_  = tcMET->sumEt();
-    tcMETmEtSig_ = tcMET->mEtSig();
-    tcMETSig_    = tcMET->significance();
+      tcMET_       = iTCMET->pt();
+      tcMETx_      = iTCMET->px();
+      tcMETy_      = iTCMET->py();
+      tcMETPhi_    = iTCMET->phi();
+      tcMETsumEt_  = iTCMET->sumEt();
+      tcMETmEtSig_ = iTCMET->mEtSig();
+      tcMETSig_    = iTCMET->significance();
   }
 
   // pfMET
   // cout << "VgAnalyzerKit: produce: pfMET ..." << endl;
-  Handle<View<reco::PFMET> > pfMETcoll;
-  const reco::PFMET *pfMET = 0;
-  if (e.getByLabel(pfMETlabel_, pfMETcoll)) {
+  Handle<View<pat::MET> > pfMETHandle_;
+  e.getByLabel(pfMETlabel_, pfMETHandle_);
+  for (View<pat::MET>::const_iterator iPFMET = pfMETHandle_->begin(); iPFMET != pfMETHandle_->end(); ++iPFMET) {
 
-    pfMET = &(pfMETcoll->front());
-
-    pfMET_       = pfMET->pt();
-    pfMETx_      = pfMET->px();
-    pfMETy_      = pfMET->py();
-    pfMETPhi_    = pfMET->phi();
-    pfMETsumEt_  = pfMET->sumEt();
-    pfMETmEtSig_ = pfMET->mEtSig();
-    pfMETSig_    = pfMET->significance();
+      pfMET_       = iPFMET->pt();
+      pfMETx_      = iPFMET->px();
+      pfMETy_      = iPFMET->py();
+      pfMETPhi_    = iPFMET->phi();
+      pfMETsumEt_  = iPFMET->sumEt();
+      pfMETmEtSig_ = iPFMET->mEtSig();
+      pfMETSig_    = iPFMET->significance();
   }
 
   // Electron
-
   // cout << "VgAnalyzerKit: produce: Electron ..." << endl;
-
-  //++++
-
-  edm::Handle<DcsStatusCollection> dcsHandle;
-  e.getByLabel("scalersRawToDigi", dcsHandle);
-  double evt_bField;
-  
-  if (isData_) {
-    // scale factor = 3.801/18166.0 which are
-    // average values taken over a stable two
-    // week period
-    float currentToBFieldScaleFactor = 2.09237036221512717e-04;
-    float current = (*dcsHandle)[0].magnetCurrent();
-    evt_bField = current*currentToBFieldScaleFactor;
-  } else {
-      
-    ESHandle<MagneticField> magneticField;
-    es.get<IdealMagneticFieldRecord>().get(magneticField);
-        
-    evt_bField = magneticField->inTesla(GlobalPoint(0.,0.,0.)).z();
-  }
-  // cout<< "BField:"<< evt_bField <<endl;
-  //=====
   const TriggerObjectMatch *eleTriggerMatch1(triggerEvent->triggerObjectMatchResult("photonTriggerMatchHLTPhoton10L1R"));
   const TriggerObjectMatch *eleTriggerMatch2(triggerEvent->triggerObjectMatchResult("photonTriggerMatchHLTPhoton15CleanedL1R"));
   const TriggerObjectMatch *eleTriggerMatch3(triggerEvent->triggerObjectMatchResult("electronTriggerMatchHLTEle15LWL1R"));
@@ -972,19 +959,27 @@ fabs(ip->pdgId())<=14) || ip->pdgId()==22))) {
       eleIsoEcalDR04_[nEle_] = iEle->dr04EcalRecHitSumEt();
       eleIsoHcalDR04_[nEle_] = iEle->dr04HcalTowerSumEt();
 
-      eleSigmaEtaEta_[nEle_]   = iEle->scSigmaEtaEta();
-      eleSigmaIEtaIEta_[nEle_] = iEle->scSigmaIEtaIEta();
+      eleSigmaEtaEta_[nEle_] = iEle->sigmaEtaEta();
+      
+      eleConvDist_[nEle_]    = iEle->convDist();
+      eleConvDcot_[nEle_]    = iEle->convDcot();
+      eleConvRadius_[nEle_]  = iEle->convRadius();
 
       const reco::CaloClusterPtr eleSeed = (*iEle).superCluster()->seed();
+
+      vector<float> eleCov;
+      eleCov = lazyTool.localCovariances(*eleSeed);
+      eleSigmaIEtaIEta_[nEle_] = iEle->sigmaIetaIeta();
+      eleSigmaIEtaIPhi_[nEle_] = sqrt(eleCov[1]);
+      eleSigmaIPhiIPhi_[nEle_] = sqrt(eleCov[2]);
 
       eleE3x3_[nEle_] = lazyTool.e3x3(*eleSeed);
 
       eleSeedTime_[nEle_] = -999.;
       eleRecoFlag_[nEle_] = -999.;
       eleSeverity_[nEle_] = -999.;
-      DetId eleSeedDetId = lazyTool.getMaximum(*eleSeed).first;
 
-      eleE2overE9_[nEle_] = E2overE9(eleSeedDetId, (*EBRecHits));
+      DetId eleSeedDetId = lazyTool.getMaximum(*eleSeed).first;
 
       if ( iEle->isEB() && EBReducedRecHits.isValid() ) {
         EcalRecHitCollection::const_iterator eleebrhit = EBReducedRecHits->find(eleSeedDetId);
@@ -992,6 +987,7 @@ fabs(ip->pdgId())<=14) || ip->pdgId()==22))) {
 	   eleSeedTime_[nEle_] = eleebrhit->time(); 
            eleRecoFlag_[nEle_] = eleebrhit->recoFlag();
            eleSeverity_[nEle_] = EcalSeverityLevelAlgo::severityLevel( eleSeedDetId, (*EBReducedRecHits), *chStatus );
+	   eleE2overE9_[nEle_] = EcalSeverityLevelAlgo::E2overE9( eleSeedDetId, (*EBReducedRecHits));
 	}
       } else if ( EEReducedRecHits.isValid() ) {
         EcalRecHitCollection::const_iterator eleeerhit = EEReducedRecHits->find(eleSeedDetId);
@@ -999,7 +995,14 @@ fabs(ip->pdgId())<=14) || ip->pdgId()==22))) {
 	   eleSeedTime_[nEle_] = eleeerhit->time(); 
            eleRecoFlag_[nEle_] = eleeerhit->recoFlag();
            eleSeverity_[nEle_] = EcalSeverityLevelAlgo::severityLevel( eleSeedDetId, (*EEReducedRecHits), *chStatus );
+	   eleE2overE9_[nEle_] = EcalSeverityLevelAlgo::E2overE9( eleSeedDetId, (*EEReducedRecHits));
 	}
+      }
+
+      eleESRatio_[nEle_] = getESRatio(iEle, e, es);
+      for (int a=0; a<63; a++) {
+        eleESProfileFront_[nEle_][a] = getESProfileFront(iEle, e, es)[a];
+        eleESProfileRear_[nEle_][a] = getESProfileRear(iEle, e, es)[a];
       }
 
       nEle_++;
@@ -1076,7 +1079,6 @@ fabs(ip->pdgId())<=14) || ip->pdgId()==22))) {
 
       phoHoverE_[nPho_]        = iPho->hadronicOverEm();
       phoSigmaEtaEta_[nPho_]   = iPho->sigmaEtaEta();
-      phoSigmaIEtaIEta_[nPho_] = iPho->sigmaIetaIeta();
 
       phoOverlap_[nPho_] = (int) iPho->hasOverlaps("electrons");
       phohasPixelSeed_[nPho_] = (int) iPho->hasPixelSeed();
@@ -1094,7 +1096,12 @@ fabs(ip->pdgId())<=14) || ip->pdgId()==22))) {
       phoSeverity_[nPho_] = -999.;
       const reco::CaloClusterPtr phoSeed = (*iPho).superCluster()->seed();
       DetId phoSeedDetId = lazyTool.getMaximum(*phoSeed).first;
-      phoE2overE9_[nPho_] = E2overE9(phoSeedDetId, (*EBRecHits));
+
+      vector<float> phoCov;
+      phoCov = lazyTool.localCovariances(*phoSeed);
+      phoSigmaIEtaIEta_[nPho_] = iPho->sigmaIetaIeta();
+      phoSigmaIEtaIPhi_[nEle_] = sqrt(phoCov[1]);
+      phoSigmaIPhiIPhi_[nEle_] = sqrt(phoCov[2]);
 
       if ( iPho->isEB() && EBReducedRecHits.isValid() ) {
         EcalRecHitCollection::const_iterator ebrhit = EBReducedRecHits->find(phoSeedDetId);
@@ -1102,6 +1109,7 @@ fabs(ip->pdgId())<=14) || ip->pdgId()==22))) {
 	   phoSeedTime_[nPho_] = ebrhit->time();
            phoRecoFlag_[nPho_] = ebrhit->recoFlag();
            phoSeverity_[nPho_] = EcalSeverityLevelAlgo::severityLevel( phoSeedDetId, (*EBReducedRecHits), *chStatus );
+	   phoE2overE9_[nPho_] = EcalSeverityLevelAlgo::E2overE9( phoSeedDetId, (*EBReducedRecHits));
         }
       } else if ( EEReducedRecHits.isValid() ) {
         EcalRecHitCollection::const_iterator eerhit = EEReducedRecHits->find(phoSeedDetId);
@@ -1109,6 +1117,7 @@ fabs(ip->pdgId())<=14) || ip->pdgId()==22))) {
 	   phoSeedTime_[nPho_] = eerhit->time(); 
            phoRecoFlag_[nPho_] = eerhit->recoFlag();
            phoSeverity_[nPho_] = EcalSeverityLevelAlgo::severityLevel( phoSeedDetId, (*EEReducedRecHits), *chStatus );
+	   phoE2overE9_[nPho_] = EcalSeverityLevelAlgo::E2overE9( phoSeedDetId, (*EEReducedRecHits));
 	}
       }
 
@@ -1174,9 +1183,15 @@ fabs(ip->pdgId())<=14) || ip->pdgId()==22))) {
         }
         if(iPho->p4() == R_phot_iter->p4()) phoPi0Disc_[nPho_] = nn;
         R_nphot++;              
-      }  
-    
-       nPho_++;
+      }
+  
+      phoESRatio_[nPho_] = getESRatio(iPho, e, es);
+      for (int a=0; a<63; a++) {
+        phoESProfileFront_[nPho_][a] = getESProfileFront(iPho, e, es)[a];
+        phoESProfileRear_[nPho_][a] = getESProfileRear(iPho, e, es)[a];
+      }
+
+      nPho_++;
     }
 
   // muon trigger matching
@@ -1419,10 +1434,8 @@ fabs(ip->pdgId())<=14) || ip->pdgId()==22))) {
   // cout << "VgAnalyzerKit: produce: Wenu candiate..." << endl;
   nWenu_ = 0;
   leg1Index = 0;
-  if (electronHandle_.isValid() &&
-      electronHandle_->size() > 0 &&
-      METHandle_.isValid() &&
-      METHandle_->size() > 0) {
+  if (electronHandle_.isValid() && electronHandle_->size() > 0 && METHandle_.isValid() && METHandle_->size() > 0) {
+
     for (View<pat::Electron>::const_iterator iEle = electronHandle_->begin(); iEle != electronHandle_->end(); ++iEle) {
 
       for (View<pat::MET>::const_iterator iMET = METHandle_->begin(); iMET != METHandle_->end(); ++iMET) {
@@ -1438,25 +1451,32 @@ fabs(ip->pdgId())<=14) || ip->pdgId()==22))) {
         WenuACopCaloMET_[nWenu_]  = acop(iEle->phi(), iMET->phi());
       }
 
-      pat::CompositeCandidate WenuTcMET;
-      WenuTcMET.addDaughter(*iEle, "ele");
-      WenuTcMET.addDaughter(*tcMET, "met");
+      for (View<pat::MET>::const_iterator iTCMET = tcMETHandle_->begin(); iTCMET != tcMETHandle_->end(); ++iTCMET) {
 
-      AddFourMomenta addWenuTcMET;
-      addWenuTcMET.set(WenuTcMET);
-      WenuMassTTcMET_[nWenu_] = massT(iEle->pt(), tcMET->pt(), WenuTcMET.px(), WenuTcMET.py());
-      WenuEtTcMET_[nWenu_]    = eT(iEle->pt(), tcMET->pt());
-      WenuACopTcMET_[nWenu_]  = acop(iEle->phi(), tcMET->phi());
+        pat::CompositeCandidate WenuTcMET;
+	WenuTcMET.addDaughter(*iEle, "ele");
+	WenuTcMET.addDaughter(*iTCMET, "met");
 
-      pat::CompositeCandidate WenuPfMET;
-      WenuPfMET.addDaughter(*iEle, "ele");
-      WenuPfMET.addDaughter(*pfMET, "met");
+	AddFourMomenta addWenuTcMET;
+	addWenuTcMET.set(WenuTcMET);
+	WenuMassTTcMET_[nWenu_] = massT(iEle->pt(), iTCMET->pt(), WenuTcMET.px(), WenuTcMET.py());
+	WenuEtTcMET_[nWenu_]    = eT(iEle->pt(), iTCMET->pt());
+	WenuACopTcMET_[nWenu_]  = acop(iEle->phi(), iTCMET->phi());
+      }
 
-      AddFourMomenta addWenuPfMET;
-      addWenuPfMET.set(WenuPfMET);
-      WenuMassTPfMET_[nWenu_] = massT(iEle->pt(), pfMET->pt(), WenuPfMET.px(), WenuPfMET.py());
-      WenuEtPfMET_[nWenu_]    = eT(iEle->pt(), pfMET->pt());
-      WenuACopPfMET_[nWenu_]  = acop(iEle->phi(), pfMET->phi());
+      for (View<pat::MET>::const_iterator iPFMET = pfMETHandle_->begin(); iPFMET != pfMETHandle_->end(); ++iPFMET) {
+ 
+        pat::CompositeCandidate WenuPfMET;
+	WenuPfMET.addDaughter(*iEle, "ele");
+	WenuPfMET.addDaughter(*iPFMET, "met");
+
+	AddFourMomenta addWenuPfMET;
+	addWenuPfMET.set(WenuPfMET);
+	WenuMassTPfMET_[nWenu_] = massT(iEle->pt(), iPFMET->pt(), WenuPfMET.px(), WenuPfMET.py());
+	WenuEtPfMET_[nWenu_]    = eT(iEle->pt(), iPFMET->pt());
+	WenuACopPfMET_[nWenu_]  = acop(iEle->phi(), iPFMET->phi());
+      }
+
       WenuEleIndex_[nWenu_]   = leg1Index;
       leg1Index++;
       nWenu_++;
@@ -1467,10 +1487,8 @@ fabs(ip->pdgId())<=14) || ip->pdgId()==22))) {
   // cout << "VgAnalyzerKit: produce: Wmunu candiate..." << endl;
   nWmunu_ = 0;
   leg1Index = 0;
-  if (muonHandle_.isValid() &&
-      muonHandle_->size() > 0 &&
-      METHandle_.isValid() &&
-      METHandle_->size() > 0) {
+  if (muonHandle_.isValid() && muonHandle_->size() > 0 && METHandle_.isValid() && METHandle_->size() > 0) {
+
     for (View<pat::Muon>::const_iterator iMu = muonHandle_->begin(); iMu != muonHandle_->end(); ++iMu) {
 
       if (!iMu->isGlobalMuon()) continue;
@@ -1488,28 +1506,33 @@ fabs(ip->pdgId())<=14) || ip->pdgId()==22))) {
         WmunuACopCaloMET_[nWmunu_]  = acop(iMu->phi(), iMET->phi());
       }
 
-      pat::CompositeCandidate WmunuTcMET;
-      WmunuTcMET.addDaughter(*iMu, "mu");
-      WmunuTcMET.addDaughter(*tcMET, "met");
+      for (View<pat::MET>::const_iterator iTCMET = tcMETHandle_->begin(); iTCMET != tcMETHandle_->end(); ++iTCMET) {
 
-      AddFourMomenta addWmunuTcMET;
-      addWmunuTcMET.set(WmunuTcMET);
-      WmunuMassTTcMET_[nWmunu_] = massT(iMu->pt(), tcMET->pt(), WmunuTcMET.px(), WmunuTcMET.py());
-      WmunuEtTcMET_[nWmunu_]    = eT(iMu->pt(), tcMET->pt());
-      WmunuACopTcMET_[nWmunu_]  = acop(iMu->phi(), tcMET->phi());
+        pat::CompositeCandidate WmunuTcMET;
+	WmunuTcMET.addDaughter(*iMu, "mu");
+	WmunuTcMET.addDaughter(*iTCMET, "met");
 
-      pat::CompositeCandidate WmunuPfMET;
-      WmunuPfMET.addDaughter(*iMu, "mu");
-      WmunuPfMET.addDaughter(*pfMET, "met");
+	AddFourMomenta addWmunuTcMET;
+	addWmunuTcMET.set(WmunuTcMET);
+	WmunuMassTTcMET_[nWmunu_] = massT(iMu->pt(), iTCMET->pt(), WmunuTcMET.px(), WmunuTcMET.py());
+	WmunuEtTcMET_[nWmunu_]    = eT(iMu->pt(), iTCMET->pt());
+	WmunuACopTcMET_[nWmunu_]  = acop(iMu->phi(), iTCMET->phi());
+      }
 
-      AddFourMomenta addWmunuPfMET;
-      addWmunuPfMET.set(WmunuPfMET);
-      WmunuMassTPfMET_[nWmunu_] = massT(iMu->pt(), pfMET->pt(), WmunuPfMET.px(), WmunuPfMET.py());
-      WmunuEtPfMET_[nWmunu_]    = eT(iMu->pt(), pfMET->pt());
-      WmunuACopPfMET_[nWmunu_]  = acop(iMu->phi(), pfMET->phi());
+      for (View<pat::MET>::const_iterator iPFMET = pfMETHandle_->begin(); iPFMET != pfMETHandle_->end(); ++iPFMET) {
+ 
+        pat::CompositeCandidate WmunuPfMET;
+	WmunuPfMET.addDaughter(*iMu, "mu");
+	WmunuPfMET.addDaughter(*iPFMET, "met");
+
+	AddFourMomenta addWmunuPfMET;
+	addWmunuPfMET.set(WmunuPfMET);
+	WmunuMassTPfMET_[nWmunu_] = massT(iMu->pt(), iPFMET->pt(), WmunuPfMET.px(), WmunuPfMET.py());
+	WmunuEtPfMET_[nWmunu_]    = eT(iMu->pt(), iPFMET->pt());
+	WmunuACopPfMET_[nWmunu_]  = acop(iMu->phi(), iPFMET->phi());
+      }
 
       leg1Index = iMu-(muonHandle_->begin());
-      
       WmunuMuIndex_[nWmunu_]    = leg1Index;
       nWmunu_++;
     }
@@ -1577,8 +1600,10 @@ fabs(ip->pdgId())<=14) || ip->pdgId()==22))) {
 	jetMass_[nJet_]   = iJet->mass();
 	jetCharge_[nJet_] = iJet->jetCharge();
 	jetEt_[nJet_]     = iJet->et();
-	jetRawPt_[nJet_]  = (*iJet).correctedJet("RAW").pt();
-	jetRawEn_[nJet_]  = (*iJet).correctedJet("RAW").energy();
+	//jetRawPt_[nJet_]  = (*iJet).correctedJet("RAW").pt();
+	//jetRawEn_[nJet_]  = (*iJet).correctedJet("RAW").energy();
+	jetRawPt_[nJet_]  = (*iJet).correctedJet("Uncorrected").pt();
+	jetRawEn_[nJet_]  = (*iJet).correctedJet("Uncorrected").energy();
 	jetpartonFlavour_[nJet_] = iJet->partonFlavour();
 
 	// Jet Id related
@@ -1610,12 +1635,16 @@ fabs(ip->pdgId())<=14) || ip->pdgId()==22))) {
       }
   }
 
-  //if (doStoreJets_ == false && (nElePassCut > 0 || nMuPassCut > 0) && nPhoPassCut > 0) {
-  if (doStoreJets_ == false && (nElePassCut > 0 || nMuPassCut > 0)) {
-    hEvents_->Fill(1.5);
-    tree_->Fill();
-  }
-  if (doStoreJets_ == true && nPhoPassCut > 0) {
+  if (doSkim_ == true) {
+    if (doStoreJets_ == false && (nElePassCut > 0 || nMuPassCut > 0)) {
+      hEvents_->Fill(1.5);
+      tree_->Fill();
+    }
+    if (doStoreJets_ == true && nPhoPassCut > 0) {
+      hEvents_->Fill(1.5);
+      tree_->Fill();
+    }
+  } else {
     hEvents_->Fill(1.5);
     tree_->Fill();
   }
@@ -1647,147 +1676,6 @@ double VgAnalyzerKit::acop(double phi1, double phi2) const {
   return acop;
 }
 
-float VgAnalyzerKit::E2overE9( const DetId id, const EcalRecHitCollection & recHits, 
-			       float recHitEtThreshold, float recHitEtThreshold2 , 
-			       bool avoidIeta85, bool KillSecondHit) {
-  
-  if ( id.subdetId() == EcalBarrel ) {
-    
-    EBDetId ebId( id );
-    
-    // avoid recHits at |eta|=85 where one side of the neighbours is missing
-    if ( abs(ebId.ieta())==85 && avoidIeta85) return 0;
-    
-    // select recHits with Et above recHitEtThreshold
-    float e1 = recHitE( id, recHits );
-    float ete1=recHitApproxEt( id, recHits );
-
-    // check that rechit E_t is above threshold
-    if (ete1 < std::min(recHitEtThreshold,recHitEtThreshold2) ) return 0;
-    
-    if (ete1 < recHitEtThreshold && !KillSecondHit ) return 0;
-
-    float e2=-1;
-    float ete2=0;
-    float s9 = 0;
-
-    // coordinates of 2nd hit relative to central hit
-    int e2eta=0;
-    int e2phi=0;
-
-    // LOOP OVER 3x3 ARRAY CENTERED AROUND HIT 1
-    for ( int deta = -1; deta <= +1; ++deta ) {
-      for ( int dphi = -1; dphi <= +1; ++dphi ) {
-	
-	// compute 3x3 energy
-	
-	float etmp=recHitE( id, recHits, deta, dphi );
-	s9 += etmp;
-	
-	EBDetId idtmp=EBDetId::offsetBy(id,deta,dphi);
-	float eapproxet=recHitApproxEt( idtmp, recHits );
-	
-	// remember 2nd highest energy deposit (above threshold) in 3x3 array 
-	if (etmp>e2 && eapproxet>recHitEtThreshold2 && !(deta==0 && dphi==0)) {
-	  
-	  e2=etmp;
-	  ete2=eapproxet;
-	  e2eta=deta;
-	  e2phi=dphi;
-	  
-	}
-	
-      }
-    }
-    
-    if ( e1 == 0 )  return 0;
-    
-    // return 0 if 2nd hit is below threshold
-    if ( e2 == -1 ) return 0;
-    
-    // compute e2/e9 centered around 1st hit
-    
-    float e2nd=e1+e2;
-    float e2e9=0;
-    
-    if (s9!=0) e2e9=e2nd/s9;
-    
-    // if central hit has higher energy than 2nd hit
-    //  return e2/e9 if 1st hit is above E_t threshold
-    
-    if (e1 > e2 && ete1>recHitEtThreshold) return e2e9;
-
-    // if second hit has higher energy than 1st hit
-    
-    if ( e2 > e1 ) { 
-      
-      
-      // return 0 if user does not want to flag 2nd hit, or
-      // hits are below E_t thresholds - note here we
-      // now assume the 2nd hit to be the leading hit.
-      
-      if (!KillSecondHit || ete2<recHitEtThreshold || ete1<recHitEtThreshold2) {
-	
-	return 0;
-	
-      }
-      
-      else {
-	
-	// LOOP OVER 3x3 ARRAY CENTERED AROUND HIT 2
-	
-	float s92nd=0;
-        
-	float e2nd_prime=0;
-	int e2prime_eta=0;
-	int e2prime_phi=0;
-	
-	EBDetId secondid=EBDetId::offsetBy(id,e2eta,e2phi);
-	
-	
-	for ( int deta = -1; deta <= +1; ++deta ) {
-	  for ( int dphi = -1; dphi <= +1; ++dphi ) {
-	    
-	    // compute 3x3 energy
-	    
-	    float etmp=recHitE( secondid, recHits, deta, dphi );
-	    s92nd += etmp;
-	    
-	    if (etmp>e2nd_prime && !(deta==0 && dphi==0)) {
-	      e2nd_prime=etmp;
-	      e2prime_eta=deta;
-	      e2prime_phi=dphi;
-	    }
-	    
-	  }
-	}
-	
-	// if highest energy hit around E2 is not the same as the input hit, return 0;
-	
-	if (!(e2prime_eta==-e2eta && e2prime_phi==-e2phi)) 
-	  { 
-	    return 0;
-	  }
-	
-	// compute E2/E9 around second hit 
-	float e2e9_2=0;
-	if (s92nd!=0) e2e9_2=e2nd/s92nd;
-        
-	//   return the value of E2/E9 calculated around 2nd hit
-        
-	return e2e9_2;
-	
-      }
-      
-    }
-    
-  } else if ( id.subdetId() == EcalEndcap ) {
-    // only used for EB at the moment
-    return 0;
-  }
-  return 0;
-}
-
 float VgAnalyzerKit::recHitApproxEt( const DetId id, const EcalRecHitCollection &recHits ) {
   // for the time being works only for the barrel
   if ( id.subdetId() == EcalBarrel ) {
@@ -1817,6 +1705,32 @@ float VgAnalyzerKit::recHitE( const DetId id, const EcalRecHitCollection & recHi
   else if( id.subdetId() == EcalEndcap) nid = EEDetId::offsetBy( id, di, dj );
 
   return ( nid == DetId(0) ? 0 : recHitE( nid, recHits ) );
+}
+
+float VgAnalyzerKit::getGenIso(edm::Handle<reco::GenParticleCollection> handle, reco::GenParticleCollection::const_iterator thisPho,
+					 const Float_t dRMax, bool removeMu, bool removeNu)
+{
+  const Float_t etMin = 0.0;
+  Float_t genIsoSum = 0.0;
+  if(!doGenParticles_)return genIsoSum;
+  if(!handle.isValid())return genIsoSum;
+
+  for (reco::GenParticleCollection::const_iterator it_gen=handle->begin(); it_gen!=handle->end(); it_gen++){
+
+    if(it_gen == thisPho)continue;      // can't be the original photon
+    if(it_gen->status()!=1)continue;    // need to be a stable particle
+    if (thisPho->collisionId() != it_gen->collisionId()) continue; // has to come from the same collision
+   
+    Float_t et = it_gen->et();
+    if(et < etMin) continue; // pass a minimum et threshold, default 0
+
+    Float_t dR = reco::deltaR(thisPho->momentum(), it_gen->momentum());
+    if(dR > dRMax) continue; // within deltaR cone
+    genIsoSum += et;
+    
+  }// end of loop over gen particles
+
+  return genIsoSum;
 }
 
 float VgAnalyzerKit::getGenCalIso(edm::Handle<reco::GenParticleCollection> handle, reco::GenParticleCollection::const_iterator thisPho,
@@ -1875,6 +1789,472 @@ float VgAnalyzerKit::getGenTrkIso(edm::Handle<reco::GenParticleCollection> handl
   }// end of loop over gen particles
 
   return genTrkIsoSum;
+}
+
+float VgAnalyzerKit::getESRatio(View<pat::Photon>::const_iterator photon, const edm::Event& e, const edm::EventSetup& iSetup)
+{
+  //get Geometry
+  ESHandle<CaloGeometry> caloGeometry;
+  iSetup.get<CaloGeometryRecord>().get(caloGeometry);
+  const CaloSubdetectorGeometry *geometry = caloGeometry->getSubdetectorGeometry(DetId::Ecal, EcalPreshower);
+  const CaloSubdetectorGeometry *& geometry_p = geometry;
+
+  // Get ES rechits
+  edm::Handle<EcalRecHitCollection> PreshowerRecHits;
+  e.getByLabel(InputTag("ecalPreshowerRecHit","EcalRecHitsES"), PreshowerRecHits);
+  if (PreshowerRecHits.isValid()) EcalRecHitCollection preshowerHits(*PreshowerRecHits);
+
+  Float_t esratio=1.;
+
+  const reco::CaloClusterPtr seed = (*photon).superCluster()->seed();    
+  reco::CaloCluster cluster = (*seed);
+  const GlobalPoint phopoint(cluster.x(), cluster.y(), cluster.z());
+
+  DetId photmp1 = (dynamic_cast<const EcalPreshowerGeometry*>(geometry_p))->getClosestCellInPlane(phopoint, 1);
+  DetId photmp2 = (dynamic_cast<const EcalPreshowerGeometry*>(geometry_p))->getClosestCellInPlane(phopoint, 2);
+  ESDetId esfid = (photmp1 == DetId(0)) ? ESDetId(0) : ESDetId(photmp1);
+  ESDetId esrid = (photmp2 == DetId(0)) ? ESDetId(0) : ESDetId(photmp2);
+
+  if (esfid.strip() != 0 && esrid.strip() != 0) {
+    int gs_esfid = -99;
+    int gs_esrid = -99;
+    gs_esfid = esfid.six()*32 + esfid.strip();
+    gs_esrid = esrid.siy()*32 + esrid.strip();
+
+    float esfe3 = 0.; 
+    float esfe21 = 0.; 
+    float esre3 = 0.; 
+    float esre21 = 0.;
+
+    const ESRecHitCollection *ESRH = PreshowerRecHits.product();
+
+    for (EcalRecHitCollection::const_iterator esrh_it = ESRH->begin(); esrh_it != ESRH->end(); esrh_it++) {
+      ESDetId esdetid = ESDetId(esrh_it->id());
+
+      if (esrh_it->recoFlag() == 1 || (esrh_it->recoFlag() >= 5 && esrh_it->recoFlag() <= 10)) continue;
+      // ES Front plane
+      if (esdetid.plane() == 1) {
+	if (esdetid.zside() == esfid.zside() && esdetid.siy() == esfid.siy()) {
+	  int gs_esid = esdetid.six()*32 + esdetid.strip();
+	  int ss = gs_esid - gs_esfid;
+	  if (abs(ss) <= 10) {
+	    esfe21 += esrh_it->energy();
+	  } 
+	  if (abs(ss) <= 1) {
+	    esfe3 += esrh_it->energy();
+	  } 
+	}
+      }
+      // ES Rear plane
+      if (esdetid.plane() == 2) {
+	if (esdetid.zside() == esrid.zside() && esdetid.six() == esrid.six()) {
+	  int gs_esid = esdetid.siy()*32+esdetid.strip();
+	  int ss = gs_esid-gs_esrid;
+	  if (abs(ss) <= 10) {
+	    esre21 += esrh_it->energy();
+	  } 
+	  if (abs(ss) <= 1) {
+	    esre3 += esrh_it->energy();
+	  } 
+	}
+      }
+    }
+  
+    // If denominator == 0, the ratio = 1;
+    if((esfe21+esre21) == 0.) {
+      esratio = 1.;
+    }
+    else{
+      esratio = (esfe3+esre3) / (esfe21+esre21);
+    }
+  }
+ 
+  return esratio;
+}
+
+float VgAnalyzerKit::getESRatio(View<pat::Electron>::const_iterator photon, const edm::Event& e, const edm::EventSetup& iSetup)
+{
+  //get Geometry
+  ESHandle<CaloGeometry> caloGeometry;
+  iSetup.get<CaloGeometryRecord>().get(caloGeometry);
+  const CaloSubdetectorGeometry *geometry = caloGeometry->getSubdetectorGeometry(DetId::Ecal, EcalPreshower);
+  const CaloSubdetectorGeometry *& geometry_p = geometry;
+
+  // Get ES rechits
+  edm::Handle<EcalRecHitCollection> PreshowerRecHits;
+  e.getByLabel(InputTag("ecalPreshowerRecHit","EcalRecHitsES"), PreshowerRecHits);
+  if (PreshowerRecHits.isValid()) EcalRecHitCollection preshowerHits(*PreshowerRecHits);
+
+  Float_t esratio=1.;
+
+  const reco::CaloClusterPtr seed = (*photon).superCluster()->seed();    
+  reco::CaloCluster cluster = (*seed);
+  const GlobalPoint phopoint(cluster.x(), cluster.y(), cluster.z());
+
+  DetId photmp1 = (dynamic_cast<const EcalPreshowerGeometry*>(geometry_p))->getClosestCellInPlane(phopoint, 1);
+  DetId photmp2 = (dynamic_cast<const EcalPreshowerGeometry*>(geometry_p))->getClosestCellInPlane(phopoint, 2);
+  ESDetId esfid = (photmp1 == DetId(0)) ? ESDetId(0) : ESDetId(photmp1);
+  ESDetId esrid = (photmp2 == DetId(0)) ? ESDetId(0) : ESDetId(photmp2);
+
+  if (esfid.strip() != 0 && esrid.strip() != 0) {
+    int gs_esfid = -99;
+    int gs_esrid = -99;
+    gs_esfid = esfid.six()*32 + esfid.strip();
+    gs_esrid = esrid.siy()*32 + esrid.strip();
+
+    float esfe3 = 0.; 
+    float esfe21 = 0.; 
+    float esre3 = 0.; 
+    float esre21 = 0.;
+
+    const ESRecHitCollection *ESRH = PreshowerRecHits.product();
+
+    for (EcalRecHitCollection::const_iterator esrh_it = ESRH->begin(); esrh_it != ESRH->end(); esrh_it++) {
+      ESDetId esdetid = ESDetId(esrh_it->id());
+
+      if (esrh_it->recoFlag() == 1 || (esrh_it->recoFlag() >= 5 && esrh_it->recoFlag() <= 10)) continue;
+      // ES Front plane
+      if (esdetid.plane() == 1) {
+	if (esdetid.zside() == esfid.zside() && esdetid.siy() == esfid.siy()) {
+	  int gs_esid = esdetid.six()*32 + esdetid.strip();
+	  int ss = gs_esid - gs_esfid;
+	  if (abs(ss) <= 10) {
+	    esfe21 += esrh_it->energy();
+	  } 
+	  if (abs(ss) <= 1) {
+	    esfe3 += esrh_it->energy();
+	  } 
+	}
+      }
+      // ES Rear plane
+      if (esdetid.plane() == 2) {
+	if (esdetid.zside() == esrid.zside() && esdetid.six() == esrid.six()) {
+	  int gs_esid = esdetid.siy()*32+esdetid.strip();
+	  int ss = gs_esid-gs_esrid;
+	  if (abs(ss) <= 10) {
+	    esre21 += esrh_it->energy();
+	  } 
+	  if (abs(ss) <= 1) {
+	    esre3 += esrh_it->energy();
+	  } 
+	}
+      }
+    }
+  
+    // If denominator == 0, the ratio = 1;
+    if((esfe21+esre21) == 0.) {
+      esratio = 1.;
+    }
+    else{
+      esratio = (esfe3+esre3) / (esfe21+esre21);
+    }
+  }
+ 
+  return esratio;
+}
+
+std::vector<float> VgAnalyzerKit::getESProfileFront(View<pat::Photon>::const_iterator photon, const edm::Event& e, const edm::EventSetup& iSetup)
+{
+  //get Geometry
+  ESHandle<CaloGeometry> caloGeometry;
+  iSetup.get<CaloGeometryRecord>().get(caloGeometry);
+  const CaloSubdetectorGeometry *geometry = caloGeometry->getSubdetectorGeometry(DetId::Ecal, EcalPreshower);
+  const CaloSubdetectorGeometry *& geometry_p = geometry;
+
+  // Get ES rechits
+  edm::Handle<EcalRecHitCollection> PreshowerRecHits;
+  e.getByLabel(InputTag("ecalPreshowerRecHit","EcalRecHitsES"), PreshowerRecHits);
+  if (PreshowerRecHits.isValid()) EcalRecHitCollection preshowerHits(*PreshowerRecHits);
+
+  // Store ES rechits energy ±1 sensor and ±10 strips
+  //  0 ~ 20: +1 sensor and ±10 strips
+  // 21 ~ 41: +0 sensor and ±10 strips
+  // 42 ~ 62: -1 sensor and ±10 strips
+  std::vector<float> esprofile;
+  for (int a = 0; a<63; a++) 
+    esprofile.push_back(0); 
+
+  const reco::CaloClusterPtr seed = (*photon).superCluster()->seed();    
+  reco::CaloCluster cluster = (*seed);
+  const GlobalPoint phopoint(cluster.x(), cluster.y(), cluster.z());
+
+  DetId photmp1 = (dynamic_cast<const EcalPreshowerGeometry*>(geometry_p))->getClosestCellInPlane(phopoint, 1);
+  DetId photmp2 = (dynamic_cast<const EcalPreshowerGeometry*>(geometry_p))->getClosestCellInPlane(phopoint, 2);
+  ESDetId esfid = (photmp1 == DetId(0)) ? ESDetId(0) : ESDetId(photmp1);
+  ESDetId esrid = (photmp2 == DetId(0)) ? ESDetId(0) : ESDetId(photmp2);
+
+  if (esfid.strip() != 0 && esrid.strip() != 0) {
+    int strip[21];
+    for (int a=0; a<21; a++) 
+      strip[a] = a - 10;
+
+    int gs_esfid = -99;
+    int gs_esrid = -99;
+    gs_esfid = esfid.six()*32 + esfid.strip();
+    gs_esrid = esrid.siy()*32 + esrid.strip();
+
+    const ESRecHitCollection *ESRH = PreshowerRecHits.product();
+
+    for (EcalRecHitCollection::const_iterator esrh_it = ESRH->begin(); esrh_it != ESRH->end(); esrh_it++) {
+      ESDetId esdetid = ESDetId(esrh_it->id());
+
+      if (esrh_it->recoFlag() == 1 || (esrh_it->recoFlag() >= 5 && esrh_it->recoFlag() <= 10)) continue;
+      // ES Front plane
+      if (esdetid.plane() == 1) {
+	// +1 sensor and ±10 strip
+	if (esdetid.zside() == esfid.zside() && esdetid.siy() == (esfid.siy() + 1)) {
+	  int gs_esid = esdetid.six()*32 + esdetid.strip();
+	  int ss = gs_esid - gs_esfid;
+          for (int a=0; a<21; a++) 
+            if (ss == strip[a]) esprofile[a] = esrh_it->energy();
+	}
+        // +0 sensor and ±10 strip
+        else if (esdetid.zside() == esfid.zside() && esdetid.siy() == (esfid.siy())) {
+          int gs_esid = esdetid.six()*32 + esdetid.strip();
+          int ss = gs_esid - gs_esfid;
+          for (int a=0; a<21; a++)
+            if (ss == strip[a]) esprofile[a+21] = esrh_it->energy();
+        }
+        // -1 sensor and ±10 strip
+        else if (esdetid.zside() == esfid.zside() && esdetid.siy() == (esfid.siy() - 1)) {
+          int gs_esid = esdetid.six()*32 + esdetid.strip();
+          int ss = gs_esid - gs_esfid;
+          for (int a=0; a<21; a++)
+            if (ss == strip[a]) esprofile[a+42] = esrh_it->energy();
+        }
+      }
+    }
+  }
+
+  return esprofile;
+}
+
+std::vector<float> VgAnalyzerKit::getESProfileRear(View<pat::Photon>::const_iterator photon, const edm::Event& e, const edm::EventSetup& iSetup)
+{
+  //get Geometry
+  ESHandle<CaloGeometry> caloGeometry;
+  iSetup.get<CaloGeometryRecord>().get(caloGeometry);
+  const CaloSubdetectorGeometry *geometry = caloGeometry->getSubdetectorGeometry(DetId::Ecal, EcalPreshower);
+  const CaloSubdetectorGeometry *& geometry_p = geometry;
+
+  // Get ES rechits
+  edm::Handle<EcalRecHitCollection> PreshowerRecHits;
+  e.getByLabel(InputTag("ecalPreshowerRecHit","EcalRecHitsES"), PreshowerRecHits);
+  if (PreshowerRecHits.isValid()) EcalRecHitCollection preshowerHits(*PreshowerRecHits);
+
+  // Store ES rechits energy ±1 sensor and ±10 strips
+  //  0 ~ 20: +1 sensor and ±10 strips
+  // 21 ~ 41: +0 sensor and ±10 strips
+  // 42 ~ 62: -1 sensor and ±10 strips
+  std::vector<float> esprofile;
+  for (int a = 0; a<63; a++) 
+    esprofile.push_back(0); 
+
+  const reco::CaloClusterPtr seed = (*photon).superCluster()->seed();    
+  reco::CaloCluster cluster = (*seed);
+  const GlobalPoint phopoint(cluster.x(), cluster.y(), cluster.z());
+
+  DetId photmp1 = (dynamic_cast<const EcalPreshowerGeometry*>(geometry_p))->getClosestCellInPlane(phopoint, 1);
+  DetId photmp2 = (dynamic_cast<const EcalPreshowerGeometry*>(geometry_p))->getClosestCellInPlane(phopoint, 2);
+  ESDetId esfid = (photmp1 == DetId(0)) ? ESDetId(0) : ESDetId(photmp1);
+  ESDetId esrid = (photmp2 == DetId(0)) ? ESDetId(0) : ESDetId(photmp2);
+
+  if (esfid.strip() != 0 && esrid.strip() != 0) {
+    int strip[21];
+    for (int a=0; a<21; a++) 
+      strip[a] = a - 10;
+
+    int gs_esfid = -99;
+    int gs_esrid = -99;
+    gs_esfid = esfid.six()*32 + esfid.strip();
+    gs_esrid = esrid.siy()*32 + esrid.strip();
+
+    const ESRecHitCollection *ESRH = PreshowerRecHits.product();
+
+    for (EcalRecHitCollection::const_iterator esrh_it = ESRH->begin(); esrh_it != ESRH->end(); esrh_it++) {
+      ESDetId esdetid = ESDetId(esrh_it->id());
+
+      if (esrh_it->recoFlag() == 1 || (esrh_it->recoFlag() >= 5 && esrh_it->recoFlag() <= 10)) continue;
+      // ES Rear plane
+      if (esdetid.plane() == 2) {
+	// +1 sensor and ±10 strip
+	if (esdetid.zside() == esfid.zside() && esdetid.siy() == (esfid.siy() + 1)) {
+	  int gs_esid = esdetid.six()*32 + esdetid.strip();
+	  int ss = gs_esid - gs_esfid;
+          for (int a=0; a<21; a++) 
+            if (ss == strip[a]) esprofile[a] = esrh_it->energy();
+	}
+        // +0 sensor and ±10 strip
+        else if (esdetid.zside() == esfid.zside() && esdetid.siy() == (esfid.siy())) {
+          int gs_esid = esdetid.six()*32 + esdetid.strip();
+          int ss = gs_esid - gs_esfid;
+          for (int a=0; a<21; a++)
+            if (ss == strip[a]) esprofile[a+21] = esrh_it->energy();
+        }
+        // -1 sensor and ±10 strip
+        else if (esdetid.zside() == esfid.zside() && esdetid.siy() == (esfid.siy() - 1)) {
+          int gs_esid = esdetid.six()*32 + esdetid.strip();
+          int ss = gs_esid - gs_esfid;
+          for (int a=0; a<21; a++)
+            if (ss == strip[a]) esprofile[a+42] = esrh_it->energy();
+        }
+      }
+    }
+  }
+
+  return esprofile;
+}
+
+std::vector<float> VgAnalyzerKit::getESProfileFront(View<pat::Electron>::const_iterator photon, const edm::Event& e, const edm::EventSetup& iSetup)
+{
+  //get Geometry
+  ESHandle<CaloGeometry> caloGeometry;
+  iSetup.get<CaloGeometryRecord>().get(caloGeometry);
+  const CaloSubdetectorGeometry *geometry = caloGeometry->getSubdetectorGeometry(DetId::Ecal, EcalPreshower);
+  const CaloSubdetectorGeometry *& geometry_p = geometry;
+
+  // Get ES rechits
+  edm::Handle<EcalRecHitCollection> PreshowerRecHits;
+  e.getByLabel(InputTag("ecalPreshowerRecHit","EcalRecHitsES"), PreshowerRecHits);
+  if (PreshowerRecHits.isValid()) EcalRecHitCollection preshowerHits(*PreshowerRecHits);
+
+  // Store ES rechits energy ±1 sensor and ±10 strips
+  //  0 ~ 20: +1 sensor and ±10 strips
+  // 21 ~ 41: +0 sensor and ±10 strips
+  // 42 ~ 62: -1 sensor and ±10 strips
+  std::vector<float> esprofile;
+  for (int a = 0; a<63; a++) 
+    esprofile.push_back(0); 
+
+  const reco::CaloClusterPtr seed = (*photon).superCluster()->seed();    
+  reco::CaloCluster cluster = (*seed);
+  const GlobalPoint phopoint(cluster.x(), cluster.y(), cluster.z());
+
+  DetId photmp1 = (dynamic_cast<const EcalPreshowerGeometry*>(geometry_p))->getClosestCellInPlane(phopoint, 1);
+  DetId photmp2 = (dynamic_cast<const EcalPreshowerGeometry*>(geometry_p))->getClosestCellInPlane(phopoint, 2);
+  ESDetId esfid = (photmp1 == DetId(0)) ? ESDetId(0) : ESDetId(photmp1);
+  ESDetId esrid = (photmp2 == DetId(0)) ? ESDetId(0) : ESDetId(photmp2);
+
+  if (esfid.strip() != 0 && esrid.strip() != 0) {
+    int strip[21];
+    for (int a=0; a<21; a++) 
+      strip[a] = a - 10;
+
+    int gs_esfid = -99;
+    int gs_esrid = -99;
+    gs_esfid = esfid.six()*32 + esfid.strip();
+    gs_esrid = esrid.siy()*32 + esrid.strip();
+
+    const ESRecHitCollection *ESRH = PreshowerRecHits.product();
+
+    for (EcalRecHitCollection::const_iterator esrh_it = ESRH->begin(); esrh_it != ESRH->end(); esrh_it++) {
+      ESDetId esdetid = ESDetId(esrh_it->id());
+
+      if (esrh_it->recoFlag() == 1 || (esrh_it->recoFlag() >= 5 && esrh_it->recoFlag() <= 10)) continue;
+      // ES Front plane
+      if (esdetid.plane() == 1) {
+	// +1 sensor and ±10 strip
+	if (esdetid.zside() == esfid.zside() && esdetid.siy() == (esfid.siy() + 1)) {
+	  int gs_esid = esdetid.six()*32 + esdetid.strip();
+	  int ss = gs_esid - gs_esfid;
+          for (int a=0; a<21; a++) 
+            if (ss == strip[a]) esprofile[a] = esrh_it->energy();
+	}
+        // +0 sensor and ±10 strip
+        else if (esdetid.zside() == esfid.zside() && esdetid.siy() == (esfid.siy())) {
+          int gs_esid = esdetid.six()*32 + esdetid.strip();
+          int ss = gs_esid - gs_esfid;
+          for (int a=0; a<21; a++)
+            if (ss == strip[a]) esprofile[a+21] = esrh_it->energy();
+        }
+        // -1 sensor and ±10 strip
+        else if (esdetid.zside() == esfid.zside() && esdetid.siy() == (esfid.siy() - 1)) {
+          int gs_esid = esdetid.six()*32 + esdetid.strip();
+          int ss = gs_esid - gs_esfid;
+          for (int a=0; a<21; a++)
+            if (ss == strip[a]) esprofile[a+42] = esrh_it->energy();
+        }
+      }
+    }
+  }
+
+  return esprofile;
+}
+
+std::vector<float> VgAnalyzerKit::getESProfileRear(View<pat::Electron>::const_iterator photon, const edm::Event& e, const edm::EventSetup& iSetup)
+{
+  //get Geometry
+  ESHandle<CaloGeometry> caloGeometry;
+  iSetup.get<CaloGeometryRecord>().get(caloGeometry);
+  const CaloSubdetectorGeometry *geometry = caloGeometry->getSubdetectorGeometry(DetId::Ecal, EcalPreshower);
+  const CaloSubdetectorGeometry *& geometry_p = geometry;
+
+  // Get ES rechits
+  edm::Handle<EcalRecHitCollection> PreshowerRecHits;
+  e.getByLabel(InputTag("ecalPreshowerRecHit","EcalRecHitsES"), PreshowerRecHits);
+  if (PreshowerRecHits.isValid()) EcalRecHitCollection preshowerHits(*PreshowerRecHits);
+
+  // Store ES rechits energy ±1 sensor and ±10 strips
+  //  0 ~ 20: +1 sensor and ±10 strips
+  // 21 ~ 41: +0 sensor and ±10 strips
+  // 42 ~ 62: -1 sensor and ±10 strips
+  std::vector<float> esprofile;
+  for (int a = 0; a<63; a++) 
+    esprofile.push_back(0); 
+
+  const reco::CaloClusterPtr seed = (*photon).superCluster()->seed();    
+  reco::CaloCluster cluster = (*seed);
+  const GlobalPoint phopoint(cluster.x(), cluster.y(), cluster.z());
+
+  DetId photmp1 = (dynamic_cast<const EcalPreshowerGeometry*>(geometry_p))->getClosestCellInPlane(phopoint, 1);
+  DetId photmp2 = (dynamic_cast<const EcalPreshowerGeometry*>(geometry_p))->getClosestCellInPlane(phopoint, 2);
+  ESDetId esfid = (photmp1 == DetId(0)) ? ESDetId(0) : ESDetId(photmp1);
+  ESDetId esrid = (photmp2 == DetId(0)) ? ESDetId(0) : ESDetId(photmp2);
+
+  if (esfid.strip() != 0 && esrid.strip() != 0) {
+    int strip[21];
+    for (int a=0; a<21; a++) 
+      strip[a] = a - 10;
+
+    int gs_esfid = -99;
+    int gs_esrid = -99;
+    gs_esfid = esfid.six()*32 + esfid.strip();
+    gs_esrid = esrid.siy()*32 + esrid.strip();
+
+    const ESRecHitCollection *ESRH = PreshowerRecHits.product();
+
+    for (EcalRecHitCollection::const_iterator esrh_it = ESRH->begin(); esrh_it != ESRH->end(); esrh_it++) {
+      ESDetId esdetid = ESDetId(esrh_it->id());
+
+      if (esrh_it->recoFlag() == 1 || (esrh_it->recoFlag() >= 5 && esrh_it->recoFlag() <= 10)) continue;
+      // ES Rear plane
+      if (esdetid.plane() == 2) {
+	// +1 sensor and ±10 strip
+	if (esdetid.zside() == esfid.zside() && esdetid.siy() == (esfid.siy() + 1)) {
+	  int gs_esid = esdetid.six()*32 + esdetid.strip();
+	  int ss = gs_esid - gs_esfid;
+          for (int a=0; a<21; a++) 
+            if (ss == strip[a]) esprofile[a] = esrh_it->energy();
+	}
+        // +0 sensor and ±10 strip
+        else if (esdetid.zside() == esfid.zside() && esdetid.siy() == (esfid.siy())) {
+          int gs_esid = esdetid.six()*32 + esdetid.strip();
+          int ss = gs_esid - gs_esfid;
+          for (int a=0; a<21; a++)
+            if (ss == strip[a]) esprofile[a+21] = esrh_it->energy();
+        }
+        // -1 sensor and ±10 strip
+        else if (esdetid.zside() == esfid.zside() && esdetid.siy() == (esfid.siy() - 1)) {
+          int gs_esid = esdetid.six()*32 + esdetid.strip();
+          int ss = gs_esid - gs_esfid;
+          for (int a=0; a<21; a++)
+            if (ss == strip[a]) esprofile[a+42] = esrh_it->energy();
+        }
+      }
+    }
+  }
+
+  return esprofile;
 }
 
 DEFINE_FWK_MODULE(VgAnalyzerKit);
