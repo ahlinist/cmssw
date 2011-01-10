@@ -140,6 +140,8 @@ process.TTEffAnalysis = cms.EDAnalyzer("TTEffAnalyzer",
 	HLTMETSource		= cms.InputTag("hltMet"),
 	METSource		= cms.InputTag("pfMet"),
 
+	PFJetSource		= cms.InputTag("ak5PFJets"),
+
 	HLTJetSource		= cms.InputTag("iterativeCone5CaloJets"),
 	HLTNJets		= cms.int32(4),
 
