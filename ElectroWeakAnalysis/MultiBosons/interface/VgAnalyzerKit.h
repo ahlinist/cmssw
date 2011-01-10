@@ -192,6 +192,8 @@ protected:
   Float_t  eledPhiAtVtx_[maxP];
   Float_t  eleSigmaEtaEta_[maxP];
   Float_t  eleSigmaIEtaIEta_[maxP];
+  Float_t  eleSigmaIEtaIPhi_[maxP];
+  Float_t  eleSigmaIPhiIPhi_[maxP];
   Float_t  eleE2overE9_[maxP];
   Float_t  eleE3x3_[maxP];
   Float_t  eleSeedTime_[maxP];
@@ -212,8 +214,8 @@ protected:
   Int_t    eleNumberOfValidHits_[maxP];
   Int_t    eleValidHitInFirstPXB_[maxP];
   Int_t    eleTrkExpectHitsInner_[maxP];
-  Float_t  eleDist_[maxP];
-  Float_t  eleDcot_[maxP];
+  Float_t  eleConvDist_[maxP];
+  Float_t  eleConvDcot_[maxP];
   Float_t  eleConvRadius_[maxP];
   Float_t  eleConvPoInt_t_[maxP][3];
   Float_t  eleESRatio_[maxP];
@@ -245,6 +247,8 @@ protected:
   Float_t  phoHoverE_[maxP];
   Float_t  phoSigmaEtaEta_[maxP];
   Float_t  phoSigmaIEtaIEta_[maxP];
+  Float_t  phoSigmaIEtaIPhi_[maxP];
+  Float_t  phoSigmaIPhiIPhi_[maxP];
   Float_t  phoE2overE9_[maxP];
   Float_t  phoE3x3_[maxP];
   Float_t  phoSeedTime_[maxP];
