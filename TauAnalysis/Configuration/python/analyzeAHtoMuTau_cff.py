@@ -116,7 +116,8 @@ analyzeAHtoMuTauEventsOS_woBtag = cms.EDAnalyzer("GenericAnalyzer",
     ),                                           
 
     eventDumps = cms.VPSet(
-        muTauEventDump_woBtag
+        muTauEventDump_woBtag,
+        patTauDebugEventDump                                             
     ),
    
     analysisSequence = muTauAnalysisSequenceOS_woBtag,

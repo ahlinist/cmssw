@@ -285,6 +285,22 @@ muTauEventDump_woBtag = muTauEventDump.clone(
     triggerConditions = cms.vstring("evtSelNonCentralJetEt20bTag: passed_cumulative")
 )
 
+patTauDebugEventDump = cms.PSet(
+    pluginName = cms.string('patTauDebugEventDump'),
+    pluginType = cms.string('PATTauDebugEventDump'),
+
+    src = cms.InputTag('selectedPatTausForMuTauLeadTrkPtCumulative'),
+
+    #values = cms.vstring("tauID('pt_index')"),
+    values = cms.vstring("decayMode()"),
+
+    separator = cms.string(":"),
+    
+    output = cms.string("patTauDebugEventDump.txt"),
+
+    triggerConditions = cms.vstring("evtSelTauLeadTrkPt: passed_cumulative")
+)
+
 muTauEventDump_wBtag = muTauEventDump.clone(
     diTauCandidateSource = cms.InputTag('selectedMuTauPairsForAHtoMuTauPzetaDiffCumulative'),
     muTauZmumuHypothesisSource = cms.InputTag('muTauPairZmumuHypothesesForAHtoMuTau'),
