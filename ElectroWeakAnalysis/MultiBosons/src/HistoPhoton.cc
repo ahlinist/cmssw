@@ -637,7 +637,8 @@ void HistoPhoton::fill( const Photon * photon, uint iE, double weight )
  
        h_zPVFromTracks_[type]->fill ( conversions[iConv]->zOfPrimaryVertexFromTracks() ,iE, weight);
 
-       std::vector<reco::TrackRef> tracks = conversions[iConv]->tracks();
+       //std::vector<reco::TrackRef> tracks = conversions[iConv]->tracks();
+       std::vector<edm::RefToBase<reco::Track> > tracks = conversions[iConv]->tracks();
 
        float px=0;
        float py=0;
@@ -906,7 +907,8 @@ void HistoPhoton::fill( const reco::ShallowClonePtrCandidate * pshallow, uint iE
  
        h_zPVFromTracks_[type]->fill ( conversions[iConv]->zOfPrimaryVertexFromTracks() ,iE, weight);
 
-       std::vector<reco::TrackRef> tracks = conversions[iConv]->tracks();
+       //std::vector<reco::TrackRef> tracks = conversions[iConv]->tracks();
+       std::vector<edm::RefToBase<reco::Track> > tracks = conversions[iConv]->tracks();
 
        float px=0;
        float py=0;
