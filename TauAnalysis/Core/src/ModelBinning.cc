@@ -113,8 +113,8 @@ void ModelBinning::print(std::ostream& stream) const
 void printBinEntry_element(std::ostream& stream, const char* label, double value, double err2)
 {
   stream << "  " << label << ":"
-	 << " " << std::setprecision(3) << std::fixed << value
-	 << " +/- " << std::setprecision(3) << std::fixed << TMath::Sqrt(err2) << " (stat.)" << std::endl;  
+	 << " " << std::setprecision(4) << std::fixed << value
+	 << " +/- " << std::setprecision(4) << std::fixed << TMath::Sqrt(err2) << " (stat.)" << std::endl;  
 }
 
 void ModelBinning::printBinEntry(std::ostream& stream, const binEntryType_model& binEntry) const
@@ -243,14 +243,14 @@ void ModelBinning::encodeBinEntryStringRep(std::vector<std::string>& buffer,
   std::ostringstream meName_binContent;
   meName_binContent << "binContent_region" << (binNumber + 1) << "_" << label << meOptionsBinContent;
   std::ostringstream meValue_binContent;
-  meValue_binContent << std::setprecision(3) << std::fixed << binEntry.binContent_;
+  meValue_binContent << std::setprecision(4) << std::fixed << binEntry.binContent_;
   std::string entry_binContent = encodeBinningStringRep(meName_binContent.str(), "float", meValue_binContent.str());
   buffer.push_back(entry_binContent);
       
   std::ostringstream meName_binError;
   meName_binError << "binError_region" << (binNumber + 1) << "_" << label << meOptionsBinError;
   std::ostringstream meValue_binError;
-  meValue_binError << std::setprecision(3) << std::fixed << TMath::Sqrt(binEntry.binSumw2_);
+  meValue_binError << std::setprecision(4) << std::fixed << TMath::Sqrt(binEntry.binSumw2_);
   std::string entry_binError = encodeBinningStringRep(meName_binError.str(), "float", meValue_binError.str());
   buffer.push_back(entry_binError);
 }
