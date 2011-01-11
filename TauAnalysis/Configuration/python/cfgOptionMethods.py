@@ -257,6 +257,13 @@ def _saveFinalEvents(process, save, **kwargs):
     'endtasks'.  See runAHtoMuTau_cfg.py for an example.
     '''
     if save:
+        file_name = 'final_events_%s_%s_%s.root' % (
+            kwargs['channel'], kwargs['sample'],
+            kwargs['id']
+        )
+        # Check if we want to override the filename
+        if 'filename' in kwargs:
+            file_name = kwargs['filename']
         print "--> Saving final selected events in a EDM file"
         output_module = cms.OutputModule(
             "PoolOutputModule",
@@ -264,10 +271,7 @@ def _saveFinalEvents(process, save, **kwargs):
             SelectEvents = cms.untracked.PSet(
                 SelectEvents = cms.vstring('p')
             ),
-            fileName = cms.untracked.string(
-                'final_events_%s_%s_%s.root' % (
-                    kwargs['channel'], kwargs['sample'],
-                    kwargs['id']))
+            fileName = cms.untracked.string(file_name)
         )
         setattr(process, "saveFinalEvents", output_module)
         process.endtasks += process.saveFinalEvents
