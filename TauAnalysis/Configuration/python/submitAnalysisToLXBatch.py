@@ -125,9 +125,9 @@ def submitAnalysisToLXBatch(configFile = None, channel = None, samples = None,
                 # CV: temporary "hack" for producing (ED)Ntuples/skims for tau id. efficiency measurement
                 jobCustomizations = []
                 jobCustomizations.append("if hasattr(process, 'ntupleOutputModule'):")
-                jobCustomizations.append("    process.ntupleOutputModule.fileName = '%s'" % output_file)
+                jobCustomizations.append("    process.ntupleOutputModule.fileName = '%s'" % os.path.basename(output_file))
                 jobCustomizations.append("if hasattr(process, 'skimOutputModule'):")
-                jobCustomizations.append("    process.skimOutputModule.fileName = '%s'" % output_file)
+                jobCustomizations.append("    process.skimOutputModule.fileName = '%s'" % os.path.basename(output_file))
                 HLTprocessName = 'HLT'
                 if 'hlt' in samples['RECO_SAMPLES'][sample].keys():
                     HLTprocessName = samples['RECO_SAMPLES'][sample]['hlt'].getProcessName()
@@ -189,7 +189,7 @@ def submitAnalysisToLXBatch(configFile = None, channel = None, samples = None,
                 with open(bsub_script_file, 'w') as bsub_script:
                     bsub_script.write(script)
                 # Add this bsub to our submission script
-                submit_file.write("bsub < %s\n" % bsub_script_file)
+                submit_file.write("bsub -q 1nd < %s\n" % bsub_script_file)
 
         print len(tmp_files)
         garbage = tmp_files - relevant_files
