@@ -19,8 +19,8 @@ jobId = getJobId(channel)
 makePlots(process, channel = channel, samples = recoSampleDefinitionsZtoMuTau_7TeV,
           inputFilePath = inputFilePath, jobId = jobId,
           analyzer_drawJobConfigurator_indOutputFileName_sets = [
-              [ "zMuTauAnalyzerOS", drawJobConfigurator_ZtoMuTau, "plotZtoMuTauOS_#PLOT#.png",
-	        "zMuTauAnalyzerSS", drawJobConfigurator_ZtoMuTau, "plotZtoMuTauSS_#PLOT#.png" ]
+              [ "zMuTauAnalyzerOS", drawJobConfigurator_ZtoMuTauOS, "plotZtoMuTauOS_#PLOT#.png",
+	        "zMuTauAnalyzerSS", drawJobConfigurator_ZtoMuTauSS, "plotZtoMuTauSS_#PLOT#.png" ]
           ],
           drawJobTemplate = plots_ZtoMuTau,
           enableFactorizationFunction = enableFactorization_makeZtoMuTauPlots_grid2,
