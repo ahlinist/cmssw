@@ -4,7 +4,7 @@ jetHistManager = cms.PSet(
     pluginName = cms.string('jetHistManager'),
     pluginType = cms.string('JetHistManager'),
       
-    jetSource = cms.InputTag('selectedPatJetsAntiOverlapWithLeptonsVetoCumulative'),
+    jetSource = cms.InputTag('selectedPatJetsEt20Cumulative'),
     genParticleSource = cms.InputTag('genParticles'),
 
     dqmDirectory_store = cms.string('JetQuantities'),
