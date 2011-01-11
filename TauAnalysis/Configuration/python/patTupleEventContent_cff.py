@@ -93,7 +93,7 @@ patTupleEventContent.outputCommands.extend(
 # required by jetHistManager
 #--------------------------------------------------------------------------------
 patTupleEventContent.outputCommands.extend(
-    [ 'keep *_selectedPatJetsAntiOverlapWithLeptonsVetoCumulative_*_*' ]
+    [ 'keep *_selectedPatJetsEt20Cumulative_*_*' ]
 )
 
 #--------------------------------------------------------------------------------
