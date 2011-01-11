@@ -115,7 +115,7 @@ plotZtoMuTau = cms.EDAnalyzer("DQMHistPlotter",
         )
     ),
                               
-    drawJobs = drawJobConfigurator_ZtoMuTau.configure(),
+    drawJobs = drawJobConfigurator_ZtoMuTauOS.configure(),
 
     canvasSizeX = cms.int32(800),
     canvasSizeY = cms.int32(640),                         

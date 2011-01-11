@@ -32,7 +32,7 @@ plots_ZtoMuTau = cms.PSet(
     )
 )
 
-drawJobConfigurator_ZtoMuTau = drawJobConfigurator(
+drawJobConfigurator_ZtoMuTauOS = drawJobConfigurator(
     template = plots_ZtoMuTau,
     dqmDirectory = '#PROCESSDIR#/zMuTauAnalyzerOS/'
 )
@@ -43,7 +43,7 @@ drawJobConfigurator_ZtoMuTau = drawJobConfigurator(
 # (**before** quantity is cutted on)
 #--------------------------------------------------------------------------------
 
-drawJobConfigurator_ZtoMuTau.add(
+drawJobConfigurator_ZtoMuTauOS.add(
     afterCut = evtSelPrimaryEventVertex,
     beforeCut = evtSelPrimaryEventVertexQuality,
     plot = drawJobConfigEntry(
@@ -54,7 +54,7 @@ drawJobConfigurator_ZtoMuTau.add(
     )
 )
 
-drawJobConfigurator_ZtoMuTau.add(
+drawJobConfigurator_ZtoMuTauOS.add(
     afterCut = evtSelPrimaryEventVertexQuality,
     beforeCut = evtSelPrimaryEventVertexPosition,
     plot = drawJobConfigEntry(
@@ -65,7 +65,7 @@ drawJobConfigurator_ZtoMuTau.add(
     )
 )
 
-drawJobConfigurator_ZtoMuTau.add(
+drawJobConfigurator_ZtoMuTauOS.add(
     afterCut = evtSelPrimaryEventVertexPosition,
     beforeCut = evtSelGlobalMuon,
     plot = drawJobConfigEntry(
@@ -77,7 +77,7 @@ drawJobConfigurator_ZtoMuTau.add(
     )
 )
 
-drawJobConfigurator_ZtoMuTau.add(
+drawJobConfigurator_ZtoMuTauOS.add(
     afterCut = evtSelGlobalMuon,
     beforeCut = evtSelMuonEta,
     plot = drawJobConfigEntry(
@@ -89,7 +89,7 @@ drawJobConfigurator_ZtoMuTau.add(
     )
 )
 
-drawJobConfigurator_ZtoMuTau.add(
+drawJobConfigurator_ZtoMuTauOS.add(
     afterCut = evtSelMuonEta,
     beforeCut = evtSelMuonPt,
     plot = drawJobConfigEntry(
@@ -101,7 +101,7 @@ drawJobConfigurator_ZtoMuTau.add(
     )
 )
 
-drawJobConfigurator_ZtoMuTau.add(
+drawJobConfigurator_ZtoMuTauOS.add(
     afterCut = evtSelMuonPt,
     beforeCut = evtSelTauAntiOverlapWithMuonsVeto,
     plot = drawJobConfigEntry(
@@ -113,7 +113,7 @@ drawJobConfigurator_ZtoMuTau.add(
     )
 )
 
-drawJobConfigurator_ZtoMuTau.add(
+drawJobConfigurator_ZtoMuTauOS.add(
     afterCut = evtSelTauAntiOverlapWithMuonsVeto,
     beforeCut = evtSelTauEta,
     plots = [
@@ -133,7 +133,7 @@ drawJobConfigurator_ZtoMuTau.add(
     ]
 )
 
-drawJobConfigurator_ZtoMuTau.add(
+drawJobConfigurator_ZtoMuTauOS.add(
     afterCut = evtSelTauEta,
     beforeCut = evtSelTauPt,
     plots = [
@@ -153,7 +153,7 @@ drawJobConfigurator_ZtoMuTau.add(
     ]
 )
 
-drawJobConfigurator_ZtoMuTau.add(
+drawJobConfigurator_ZtoMuTauOS.add(
     afterCut = evtSelTauPt,
     beforeCut = evtSelMuonVbTfId,
     plots = [
@@ -202,7 +202,7 @@ drawJobConfigurator_ZtoMuTau.add(
     ]
 )
 
-drawJobConfigurator_ZtoMuTau.add(
+drawJobConfigurator_ZtoMuTauOS.add(
     afterCut = evtSelMuonVbTfId,
     beforeCut = evtSelMuonPFRelIso,
     plots = [
@@ -257,7 +257,7 @@ drawJobConfigurator_ZtoMuTau.add(
     ]
 )
 
-drawJobConfigurator_ZtoMuTau.add(
+drawJobConfigurator_ZtoMuTauOS.add(
     afterCut = evtSelMuonPFRelIso,
     beforeCut = evtSelMuonTrkIP,
     plot = drawJobConfigEntry(
@@ -269,7 +269,7 @@ drawJobConfigurator_ZtoMuTau.add(
     )
 )
 
-drawJobConfigurator_ZtoMuTau.add(
+drawJobConfigurator_ZtoMuTauOS.add(
     afterCut = evtSelMuonTrkIP,
     beforeCut = evtSelTauLeadTrk,
     plots = [
@@ -289,7 +289,7 @@ drawJobConfigurator_ZtoMuTau.add(
     ]
 )
 
-drawJobConfigurator_ZtoMuTau.add(
+drawJobConfigurator_ZtoMuTauOS.add(
     afterCut = evtSelTauLeadTrk,
     beforeCut = evtSelTauLeadTrkPt,
     plots = [
@@ -309,7 +309,7 @@ drawJobConfigurator_ZtoMuTau.add(
    ]
 )
 
-drawJobConfigurator_ZtoMuTau.add(
+drawJobConfigurator_ZtoMuTauOS.add(
     afterCut = evtSelTauLeadTrkPt,
     beforeCut = evtSelTauTaNCdiscr,
     plot = drawJobConfigEntry(
@@ -320,7 +320,7 @@ drawJobConfigurator_ZtoMuTau.add(
     )
 )
 
-drawJobConfigurator_ZtoMuTau.add(
+drawJobConfigurator_ZtoMuTauOS.add(
     afterCut = evtSelTauTaNCdiscr,
     beforeCut = evtSelTauProng,
     plot = drawJobConfigEntry(
@@ -331,7 +331,7 @@ drawJobConfigurator_ZtoMuTau.add(
     )
 )
 
-drawJobConfigurator_ZtoMuTau.add(
+drawJobConfigurator_ZtoMuTauOS.add(
     afterCut = evtSelTauProng,
     beforeCut = evtSelTauCharge,
     plot = drawJobConfigEntry(
@@ -342,7 +342,7 @@ drawJobConfigurator_ZtoMuTau.add(
     )
 )
 
-drawJobConfigurator_ZtoMuTau.add(
+drawJobConfigurator_ZtoMuTauOS.add(
     afterCut = evtSelTauCharge,
     beforeCut = evtSelTauMuonVeto,
     plots = [
@@ -362,7 +362,7 @@ drawJobConfigurator_ZtoMuTau.add(
     ]
 )
 
-drawJobConfigurator_ZtoMuTau.add(
+drawJobConfigurator_ZtoMuTauOS.add(
     afterCut = evtSelTauMuonVeto,
     beforeCut = evtSelTauElectronVeto,
     plots = [
@@ -382,7 +382,7 @@ drawJobConfigurator_ZtoMuTau.add(
     ]
 )
 
-drawJobConfigurator_ZtoMuTau.add(
+drawJobConfigurator_ZtoMuTauOS.add(
     afterCut = evtSelTauElectronVeto,
     beforeCut = evtSelDiTauCandidateForMuTauAntiOverlapVeto,
     plot = drawJobConfigEntry(
@@ -393,7 +393,7 @@ drawJobConfigurator_ZtoMuTau.add(
     )
 )
 
-drawJobConfigurator_ZtoMuTau.add(
+drawJobConfigurator_ZtoMuTauOS.add(
     afterCut = evtSelDiTauCandidateForMuTauAntiOverlapVeto,
     beforeCut = evtSelDiTauCandidateForMuTauMt1MET,
     plot = drawJobConfigEntry(
@@ -404,7 +404,7 @@ drawJobConfigurator_ZtoMuTau.add(
     )
 )
 
-drawJobConfigurator_ZtoMuTau.add(
+drawJobConfigurator_ZtoMuTauOS.add(
     afterCut = evtSelDiTauCandidateForMuTauMt1MET,
     beforeCut = evtSelDiTauCandidateForMuTauPzetaDiff,
     plot = drawJobConfigEntry(
@@ -415,7 +415,7 @@ drawJobConfigurator_ZtoMuTau.add(
     )
 )
 
-drawJobConfigurator_ZtoMuTau.add(
+drawJobConfigurator_ZtoMuTauOS.add(
     afterCut = evtSelDiTauCandidateForMuTauPzetaDiff,
     beforeCut = evtSelDiMuPairZmumuHypothesisVetoByLooseIsolation,
     plot = drawJobConfigEntry(
@@ -426,14 +426,14 @@ drawJobConfigurator_ZtoMuTau.add(
     )
 )
 
-drawJobConfigurator_ZtoMuTau.add(
+drawJobConfigurator_ZtoMuTauOS.add(
     afterCut = evtSelDiMuPairZmumuHypothesisVetoByLooseIsolation,
     beforeCut = evtSelDiTauCandidateForMuTauZeroCharge,
     plot = drawJobConfigEntry(
         meName = 'DiTauCandidateQuantities/DiTauCandidateCharge',
         title = "Charge(Muon + Tau) (after Z #rightarrow #mu^{+} #mu^{-} hypothesis Veto)",
         xAxis = 'unlabeled',
-        name = "cutFlowControlPlots_diTauCharge_aafterZmumuHypothesisVeto"
+        name = "cutFlowControlPlots_diTauCharge_afterZmumuHypothesisVeto"
     )
 )
 
@@ -442,155 +442,167 @@ drawJobConfigurator_ZtoMuTau.add(
 # for events passing all event selection criteria
 #--------------------------------------------------------------------------------
 
-drawJobConfigurator_ZtoMuTau.add(
+finalSamplePlots = [
+    drawJobConfigEntry(
+        meName = 'MuonQuantities/Muon#PAR#',
+        PAR = [ 'Pt', 'Eta', 'Phi' ],
+        title = "Muon (final Event sample)",
+        xAxis = '#PAR#',
+        name = "finalSamplePlots_muon"
+    ),
+    drawJobConfigEntry(
+        meName = 'MuonQuantities/MuonCaloCompatibility',
+        title = "Muon Calo. Compatibility (final Event sample)",
+        xAxis = 'unlabeled',
+        name = "finalSamplePlots_muonCaloCompatibility"
+    ),
+    drawJobConfigEntry(
+        meName = 'MuonQuantities/MuonSegmentCompatibility',
+        title = "Muon Segment Compatibility (final Event sample)",
+        xAxis = 'unlabeled',
+        name = "finalSamplePlots_muonSegmentCompatibility"
+    ),
+    drawJobConfigEntry(
+        meName = 'MuonQuantities/MuonMatchingGenParticlePdgId',
+        title = "PdgId of gen. Particle matching Muon (final Event sample)",
+        xAxis = 'PdgId',
+        name = "finalSamplePlots_pdgIdGenParticleMatchingMuon"
+    ),
+    drawJobConfigEntry(
+        meName = 'TauQuantities/Tau#PAR#',
+        PAR = [ 'Pt', 'Eta', 'Phi' ],
+        title = "Tau (final Event sample)",
+        xAxis = '#PAR#',
+        name = "finalSamplePlots_tau"
+    ),
+    drawJobConfigEntry(
+        meName = 'TauQuantities/TauMatchingGenParticlePdgId',
+        title = "PdgId of gen. Particle matching Tau (final Event sample)",
+        xAxis = 'PdgId',
+        name = "finalSamplePlots_pdgIdGenParticleMatchingTau"
+    ),
+    drawJobConfigEntry(
+        meName = 'TauQuantities/TauLeadTrkPt',
+        title = "Tau lead. Track (final Event sample)",
+        xAxis = 'Pt',
+        name = "finalSamplePlots_tauLeadTrkPt"
+    ),
+    drawJobConfigEntry(
+        meName = 'TauQuantities/TauNumTracksSignalCone',
+        title = "Tau Tracks in Signal Cone (final Event sample)",
+        xAxis = 'unlabeled',
+        name = "finalSamplePlots_tauNumTracksSignalCone"
+    ),
+    drawJobConfigEntry(
+        meName = 'TauQuantities/TauJetRadius',
+        title = "Tau Jet Radius (final Event sample)",
+        xAxis = 'unlabeled',
+        name = "finalSamplePlots_tauJetRadius"
+    ),
+    drawJobConfigEntry(
+        meName = 'TauQuantities/TauDiscriminatorTaNCfrQuarterPercent',
+        title = "TaNC output (fr = 0.25%) (final Event sample)",
+        xAxis = 'unlabeled',
+        name = "finalSamplePlots_tauDiscrTaNCfrQuarterPercent"
+    ),
+    drawJobConfigEntry(
+        meName = 'TauQuantities/TauTaNCoutputTransform',
+        title = "TaNC output (transformed) (final Event sample)",
+        xAxis = 'unlabeled',
+        name = "finalSamplePlots_tauTaNCtransform"
+    ),
+    drawJobConfigEntry(
+        meName = 'DiTauCandidateQuantities/DPhi12',
+        title = "#Delta#phi(Muon-Tau) (final Event sample)",
+        xAxis = 'dPhi',
+        name = "finalSamplePlots_dPhiMuonTau"
+    ),
+    drawJobConfigEntry(
+        meName = 'CaloMEtQuantities/RAWplusJESplusMUONplusTAU_MEtPt',
+        title = "MET (final Event sample)",
+        xAxis = 'Pt',
+        name = "finalSamplePlots_met"
+    ),
+    drawJobConfigEntry(
+        meName = 'DiTauCandidateQuantities/PzetaDiff',
+        title = "P_{#zeta} - 1.5*P_{#zeta}^{vis} (final Event sample)",
+        xAxis = 'GeV',
+        name = "finalSamplePlots_PzetaDiff"
+    ),
+    drawJobConfigEntry(
+        meName = 'DiTauCandidateQuantities/Mt1MET',
+        title = "M_{T}(Muon + MET) (final Event sample)",
+        xAxis = 'Mt',
+        name = "finalSamplePlots_mtMuonMET"
+    ),
+    drawJobConfigEntry(
+        meName = 'DiTauCandidateQuantities/Mt2MET',
+        title = "M_{T}(Tau + MET) (final Event sample)",
+        xAxis = 'Mt',
+        name = "finalSamplePlots_mtTauMET"
+    ),
+    drawJobConfigEntry(
+        meName = 'DiTauCandidateQuantities/Mt12MET',
+        title = "M_{T}(Muon + Tau + MET) (final Event sample)",
+        xAxis = 'Mt',
+        name = "finalSamplePlots_mtMuonTauMET"
+    ),
+    drawJobConfigEntry(
+        meName = 'DiTauCandidateQuantities/VisMass',
+        title = "M_{vis}(Muon + Tau) (final Event sample)",
+        xAxis = 'Mass',
+        name = "finalSamplePlots_mVisible"
+    ),
+    drawJobConfigEntry(
+        meName = 'DiTauCandidateQuantities/VisMassZllCombinedHypothesis',
+        title = "M_{vis}(Muon + Tau), Z #rightarrow #ell^{+} #ell^{-} combined Hypothesis (final Event sample)",
+        xAxis = 'Mass',
+        name = "finalSamplePlots_mVisibleZllCombinedHypothesis"
+    ),
+    drawJobConfigEntry(
+        meName = 'DiTauCandidateQuantities/CDFmethodMass',
+        title = "M(Muon + Tau + MET), CDF method (final Event sample)",
+        xAxis = 'Mass',
+        name = "finalSamplePlots_mCDFmethod"
+    ),
+    drawJobConfigEntry(
+        meName = 'DiTauCandidateQuantities/CollinearApproxMass',
+        title = "M(Muon + Tau), collinear Approx. (final Event sample)",
+        xAxis = 'Mass',
+        name = "finalSamplePlots_mCollApprox"
+    ),
+    drawJobConfigEntry(
+        meName = 'DiTauCandidateSVfitQuantities/psKine_MEt_ptBalance/Mass',
+        title = "M(Muon + Tau), SVfit method (final Event sample)",
+        xAxis = 'Mass',
+        name = "finalSamplePlots_mSVmethod"
+    ),
+    drawJobConfigEntry(
+        meName = 'DiTauCandidateQuantities/Ht12MET',
+        title = "#Sigma H_{T}(Muon + Tau + MET) (final Event sample)",
+        xAxis = 'Mass',
+        name = "finalSamplePlots_ht"
+    ),
+    drawJobConfigEntry(
+        meName = 'JetQuantities/numJetsEtGt#PAR#_0EtaLt2_1AlphaGt0_3',
+        PAR = [ '15', '20', '30' ],
+        title = "N_{jets} with E_{T} > #PAR# GeV, |#eta| < 2.1, #alpha > 0.3 (final Event sample)",
+        xAxis = 'N',
+        name = "finalSamplePlots_numCentralJets"
+    )
+]
+
+drawJobConfigurator_ZtoMuTauOS.add(
     afterCut = evtSelDiTauCandidateForMuTauZeroCharge,
-    plots = [
-        drawJobConfigEntry(
-            meName = 'MuonQuantities/Muon#PAR#',
-            PAR = [ 'Pt', 'Eta', 'Phi' ],
-            title = "Muon (final Event sample)",
-            xAxis = '#PAR#',
-            name = "finalSamplePlots_muon"
-        ),
-        drawJobConfigEntry(
-            meName = 'MuonQuantities/MuonCaloCompatibility',
-            title = "Muon Calo. Compatibility (final Event sample)",
-            xAxis = 'unlabeled',
-            name = "finalSamplePlots_muonCaloCompatibility"
-        ),
-        drawJobConfigEntry(
-            meName = 'MuonQuantities/MuonSegmentCompatibility',
-            title = "Muon Segment Compatibility (final Event sample)",
-            xAxis = 'unlabeled',
-            name = "finalSamplePlots_muonSegmentCompatibility"
-        ),
-        drawJobConfigEntry(
-            meName = 'MuonQuantities/MuonMatchingGenParticlePdgId',
-            title = "PdgId of gen. Particle matching Muon (final Event sample)",
-            xAxis = 'PdgId',
-            name = "finalSamplePlots_pdgIdGenParticleMatchingMuon"
-        ),
-        drawJobConfigEntry(
-            meName = 'TauQuantities/Tau#PAR#',
-            PAR = [ 'Pt', 'Eta', 'Phi' ],
-            title = "Tau (final Event sample)",
-            xAxis = '#PAR#',
-            name = "finalSamplePlots_tau"
-        ),
-        drawJobConfigEntry(
-            meName = 'TauQuantities/TauMatchingGenParticlePdgId',
-            title = "PdgId of gen. Particle matching Tau (final Event sample)",
-            xAxis = 'PdgId',
-            name = "finalSamplePlots_pdgIdGenParticleMatchingTau"
-        ),
-        drawJobConfigEntry(
-            meName = 'TauQuantities/TauLeadTrkPt',
-            title = "Tau lead. Track (final Event sample)",
-            xAxis = 'Pt',
-            name = "finalSamplePlots_tauLeadTrkPt"
-        ),
-        drawJobConfigEntry(
-            meName = 'TauQuantities/TauNumTracksSignalCone',
-            title = "Tau Tracks in Signal Cone (final Event sample)",
-            xAxis = 'unlabeled',
-            name = "finalSamplePlots_tauNumTracksSignalCone"
-        ),
-        drawJobConfigEntry(
-            meName = 'TauQuantities/TauJetRadius',
-            title = "Tau Jet Radius (final Event sample)",
-            xAxis = 'unlabeled',
-            name = "finalSamplePlots_tauJetRadius"
-        ),
-        drawJobConfigEntry(
-            meName = 'TauQuantities/TauDiscriminatorTaNCfrQuarterPercent',
-            title = "TaNC output (fr = 0.25%) (final Event sample)",
-            xAxis = 'unlabeled',
-            name = "finalSamplePlots_tauDiscrTaNCfrQuarterPercent"
-        ),
-        drawJobConfigEntry(
-            meName = 'TauQuantities/TauTaNCoutputTransform',
-            title = "TaNC output (transformed) (final Event sample)",
-            xAxis = 'unlabeled',
-            name = "finalSamplePlots_tauTaNCtransform"
-        ),
-        drawJobConfigEntry(
-            meName = 'DiTauCandidateQuantities/DPhi12',
-            title = "#Delta#phi(Muon-Tau) (final Event sample)",
-            xAxis = 'dPhi',
-            name = "finalSamplePlots_dPhiMuonTau"
-        ),
-        drawJobConfigEntry(
-            meName = 'CaloMEtQuantities/RAWplusJESplusMUONplusTAU_MEtPt',
-            title = "MET (final Event sample)",
-            xAxis = 'Pt',
-            name = "finalSamplePlots_met"
-        ),
-        drawJobConfigEntry(
-            meName = 'DiTauCandidateQuantities/PzetaDiff',
-            title = "P_{#zeta} - 1.5*P_{#zeta}^{vis} (final Event sample)",
-            xAxis = 'GeV',
-            name = "finalSamplePlots_PzetaDiff"
-        ),
-        drawJobConfigEntry(
-            meName = 'DiTauCandidateQuantities/Mt1MET',
-            title = "M_{T}(Muon + MET) (final Event sample)",
-            xAxis = 'Mt',
-            name = "finalSamplePlots_mtMuonMET"
-        ),
-        drawJobConfigEntry(
-            meName = 'DiTauCandidateQuantities/Mt2MET',
-            title = "M_{T}(Tau + MET) (final Event sample)",
-            xAxis = 'Mt',
-            name = "finalSamplePlots_mtTauMET"
-        ),
-        drawJobConfigEntry(
-            meName = 'DiTauCandidateQuantities/Mt12MET',
-            title = "M_{T}(Muon + Tau + MET) (final Event sample)",
-            xAxis = 'Mt',
-            name = "finalSamplePlots_mtMuonTauMET"
-        ),
-	drawJobConfigEntry(
-            meName = 'DiTauCandidateQuantities/VisMass',
-            title = "M_{vis}(Muon + Tau) (final Event sample)",
-            xAxis = 'Mass',
-            name = "finalSamplePlots_mVisible"
-        ),
-        drawJobConfigEntry(
-            meName = 'DiTauCandidateQuantities/VisMassZllCombinedHypothesis',
-            title = "M_{vis}(Muon + Tau), Z #rightarrow #ell^{+} #ell^{-} combined Hypothesis (final Event sample)",
-            xAxis = 'Mass',
-            name = "finalSamplePlots_mVisibleZllCombinedHypothesis"
-        ),
-        drawJobConfigEntry(
-            meName = 'DiTauCandidateQuantities/CDFmethodMass',
-            title = "M(Muon + Tau + MET), CDF method (final Event sample)",
-            xAxis = 'Mass',
-            name = "finalSamplePlots_mCDFmethod"
-        ),
-        drawJobConfigEntry(
-            meName = 'DiTauCandidateQuantities/CollinearApproxMass',
-            title = "M(Muon + Tau), collinear Approx. (final Event sample)",
-            xAxis = 'Mass',
-            name = "finalSamplePlots_mCollApprox"
-        ),
-        drawJobConfigEntry(
-            meName = 'DiTauCandidateSVfitQuantities/psKine_MEt_ptBalance/Mass',
-            title = "M(Muon + Tau), SVfit method (final Event sample)",
-            xAxis = 'Mass',
-            name = "finalSamplePlots_mSVmethod"
-        ),
-        drawJobConfigEntry(
-            meName = 'DiTauCandidateQuantities/Ht12MET',
-            title = "#Sigma H_{T}(Muon + Tau + MET) (final Event sample)",
-            xAxis = 'Mass',
-            name = "finalSamplePlots_ht"
-        ),
-        drawJobConfigEntry(
-            meName = 'JetQuantities/numJetsEtGt#PAR#_0EtaLt2_1AlphaGt0_3',
-            PAR = [ '15', '20', '30' ],
-            title = "N_{jets} with E_{T} > #PAR# GeV, |#eta| < 2.1, #alpha > 0.3 (final Event sample)",
-            xAxis = 'N',
-            name = "finalSamplePlots_numCentralJets"
-        )
-    ]
+    plots = finalSamplePlots
+)
+
+drawJobConfigurator_ZtoMuTauSS = drawJobConfigurator(
+    template = plots_ZtoMuTau,
+    dqmDirectory = '#PROCESSDIR#/zMuTauAnalyzerSS/'
+)
+
+drawJobConfigurator_ZtoMuTauSS.add(
+    afterCut = evtSelDiTauCandidateForMuTauNonZeroCharge,
+    plots = finalSamplePlots
 )
