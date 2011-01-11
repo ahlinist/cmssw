@@ -141,6 +141,48 @@ def enableSysUncertainties_runZtoMuTau(process):
     setattr(patJetSelConfigurator, "systematics", jetSystematics)
     process.selectPatJets = patJetSelConfigurator.configure(process = process)
 
+    # produce collections of pat::(PF)Jets
+    #  o of Pt > 10 GeV for MET Type I correction uncertainties
+    #  o of Pt < 10 GeV for MET Type II ("unclustered energy") correction uncertainties
+    #
+    # NOTE: the "unclustered energy" is smeared by an additional resolution uncertainty of 10% * sum(Et) of jets with Pt < 10 GeV
+    #
+    process.selectedPatJetsForMEtTypeIcorr = cms.EDFilter("PATJetSelector",
+        src = cms.InputTag('selectedPatJetsAntiOverlapWithLeptonsVetoCumulative'),                                    
+        cut = cms.string('pt > 10.'), 
+        filter = cms.bool(False)
+    )
+
+    process.selectedPatJetsForMEtTypeIcorrSysJetEnUp = process.patJetsJECshiftUp.clone(
+        src = cms.InputTag('selectedPatJetsForMEtTypeIcorr')
+    )
+    process.selectedPatJetsForMEtTypeIcorrSysJetEnDown = process.patJetsJECshiftDown.clone(
+        src = cms.InputTag('selectedPatJetsForMEtTypeIcorr')
+    )
+
+    process.selectedPatJetsForMEtTypeIIcorr = process.selectedPatJetsForMEtTypeIcorr.clone(
+        cut = cms.string('pt < 10.')
+    )
+
+    process.selectedPatJetsForMEtTypeIIcorrSysJetEnUp = process.patJetsJECshiftUp.clone(
+        src = cms.InputTag('selectedPatJetsForMEtTypeIIcorr')
+    )
+    process.selectedPatJetsForMEtTypeIIcorrSysJetEnUp.jecUncertaintyValue = cms.double(0.10)
+    process.selectedPatJetsForMEtTypeIIcorrSysJetEnDown = process.patJetsJECshiftDown.clone(
+        src = cms.InputTag('selectedPatJetsForMEtTypeIIcorr')
+    )
+    process.selectedPatJetsForMEtTypeIIcorrSysJetEnDown.jecUncertaintyValue = cms.double(0.10)
+
+    process.producePatJetsForMEtCorrUncertainty = cms.Sequence(
+        process.selectedPatJetsForMEtTypeIcorr
+       * process.selectedPatJetsForMEtTypeIcorrSysJetEnUp * process.selectedPatJetsForMEtTypeIcorrSysJetEnDown
+       * process.selectedPatJetsForMEtTypeIIcorr
+       * process.selectedPatJetsForMEtTypeIIcorrSysJetEnUp * process.selectedPatJetsForMEtTypeIIcorrSysJetEnDown
+    )
+    process.produceMuTauPairsAll += process.producePatJetsForMEtCorrUncertainty
+    
+    smearMEtUnclustedEnergyResolution = cms.double(0.10)
+
     process.smearedMET = cms.EDProducer("SmearedMETProducer",
         src = cms.InputTag('patPFMETs'),
         smearedParticles = cms.PSet()
@@ -150,28 +192,34 @@ def enableSysUncertainties_runZtoMuTau(process):
         pyModuleName = __name__,
         systematics = {
             "sysMuonPtUp" : {
-                "smearedParticles.srcOriginal" : cms.InputTag('selectedPatMuonsTrkIPcumulative'),
-                "smearedParticles.srcSmeared"  : cms.InputTag('selectedPatMuonsTrkIPsysMuonPtUpCumulative')
+                "smearedParticles.muons.srcOriginal" : cms.InputTag('selectedPatMuonsTrkIPcumulative'),
+                "smearedParticles.muons.srcSmeared"  : cms.InputTag('selectedPatMuonsTrkIPsysMuonPtUpCumulative')
             },
             "sysMuonPtDown" : {
-                "smearedParticles.srcOriginal" : cms.InputTag('selectedPatMuonsTrkIPcumulative'),
-                "smearedParticles.srcSmeared"  : cms.InputTag('selectedPatMuonsTrkIPsysMuonPtDownCumulative')
+                "smearedParticles.muons.srcOriginal" : cms.InputTag('selectedPatMuonsTrkIPcumulative'),
+                "smearedParticles.muons.srcSmeared"  : cms.InputTag('selectedPatMuonsTrkIPsysMuonPtDownCumulative')
             },
             "sysTauJetEnUp" : {
-                "smearedParticles.srcOriginal" : cms.InputTag('selectedPatTausForMuTauElectronVetoCumulative'),
-                "smearedParticles.srcSmeared"  : cms.InputTag('selectedPatTausForMuTauElectronVetoSysTauJetEnUpCumulative')
+                "smearedParticles.taus.srcOriginal" : cms.InputTag('selectedPatTausForMuTauElectronVetoCumulative'),
+                "smearedParticles.taus.srcSmeared"  : cms.InputTag('selectedPatTausForMuTauElectronVetoSysTauJetEnUpCumulative')
             },
             "sysTauJetEnDown" : {
-                "smearedParticles.srcOriginal" : cms.InputTag('selectedPatTausForMuTauElectronVetoCumulative'),
-                "smearedParticles.srcSmeared"  : cms.InputTag('selectedPatTausForMuTauElectronVetoSysTauJetEnDownCumulative')
+                "smearedParticles.taus.srcOriginal" : cms.InputTag('selectedPatTausForMuTauElectronVetoCumulative'),
+                "smearedParticles.taus.srcSmeared"  : cms.InputTag('selectedPatTausForMuTauElectronVetoSysTauJetEnDownCumulative')
             },
             "sysJetEnUp" : {
-                "smearedParticles.srcOriginal" : cms.InputTag('selectedPatJetsAntiOverlapWithLeptonsVetoCumulative'),
-                "smearedParticles.srcSmeared"  : cms.InputTag('selectedPatJetsAntiOverlapWithLeptonsVetoSysJetEnUpCumulative')
+                "smearedParticles.jetsTypeI.srcOriginal" : cms.InputTag('selectedPatJetsForMEtTypeIcorr'),
+                "smearedParticles.jetsTypeI.srcSmeared"  : cms.InputTag('selectedPatJetsForMEtTypeIcorrSysJetEnUp'),
+                "smearedParticles.jetsTypeII.srcOriginal" : cms.InputTag('selectedPatJetsForMEtTypeIIcorr'),
+                "smearedParticles.jetsTypeII.srcSmeared"  : cms.InputTag('selectedPatJetsForMEtTypeIIcorrSysJetEnUp'),
+                "smearedParticles.jetsTypeII.smearByResolutionUncertainty" : smearMEtUnclustedEnergyResolution
             },
             "sysJetEnDown" : {
-                "smearedParticles.srcOriginal" : cms.InputTag('selectedPatJetsAntiOverlapWithLeptonsVetoCumulative'),
-                "smearedParticles.srcSmeared"  : cms.InputTag('selectedPatJetsAntiOverlapWithLeptonsVetoSysJetEnDownCumulative')
+                "smearedParticles.jetsTypeI.srcOriginal" : cms.InputTag('selectedPatJetsForMEtTypeIcorr'),
+                "smearedParticles.jetsTypeI.srcSmeared"  : cms.InputTag('selectedPatJetsForMEtTypeIcorrSysJetEnDown'),
+                "smearedParticles.jetsTypeII.srcOriginal" : cms.InputTag('selectedPatJetsForMEtTypeIIcorr'),
+                "smearedParticles.jetsTypeII.srcSmeared"  : cms.InputTag('selectedPatJetsForMEtTypeIIcorrSysJetEnDown'),
+                "smearedParticles.jetsTypeII.smearByResolutionUncertainty" : smearMEtUnclustedEnergyResolution
             }
         }
     )
@@ -231,28 +279,34 @@ def enableSysUncertainties_runZtoMuTau(process):
         pyModuleName = __name__,
         systematics = {
             "sysMuonPtUp" : {
-                "smearedParticles.srcOriginal" : cms.InputTag('selectedPatMuonsTrkIPlooseIsolationCumulative'),
-                "smearedParticles.srcSmeared"  : cms.InputTag('selectedPatMuonsTrkIPlooseIsolationSysMuonPtUpCumulative')
+                "smearedParticles.muons.srcOriginal" : cms.InputTag('selectedPatMuonsTrkIPlooseIsolationCumulative'),
+                "smearedParticles.muons.srcSmeared"  : cms.InputTag('selectedPatMuonsTrkIPlooseIsolationSysMuonPtUpCumulative')
             },
             "sysMuonPtDown" : {
-                "smearedParticles.srcOriginal" : cms.InputTag('selectedPatMuonsTrkIPlooseIsolationCumulative'),
-                "smearedParticles.srcSmeared"  : cms.InputTag('selectedPatMuonsTrkIPlooseIsolationSysMuonPtDownCumulative')
+                "smearedParticles.muons.srcOriginal" : cms.InputTag('selectedPatMuonsTrkIPlooseIsolationCumulative'),
+                "smearedParticles.muons.srcSmeared"  : cms.InputTag('selectedPatMuonsTrkIPlooseIsolationSysMuonPtDownCumulative')
             },
             "sysTauJetEnUp" : {
-                "smearedParticles.srcOriginal" : cms.InputTag('selectedPatTausForMuTauElectronVetoCumulative'),
-                "smearedParticles.srcSmeared"  : cms.InputTag('selectedPatTausForMuTauElectronVetoSysTauJetEnUpCumulative')
+                "smearedParticles.taus.srcOriginal" : cms.InputTag('selectedPatTausForMuTauElectronVetoCumulative'),
+                "smearedParticles.taus.srcSmeared"  : cms.InputTag('selectedPatTausForMuTauElectronVetoSysTauJetEnUpCumulative')
             },
             "sysTauJetEnDown" : {
-                "smearedParticles.srcOriginal" : cms.InputTag('selectedPatTausForMuTauElectronVetoCumulative'),
-                "smearedParticles.srcSmeared"  : cms.InputTag('selectedPatTausForMuTauElectronVetoSysTauJetEnDownCumulative')
+                "smearedParticles.taus.srcOriginal" : cms.InputTag('selectedPatTausForMuTauElectronVetoCumulative'),
+                "smearedParticles.taus.srcSmeared"  : cms.InputTag('selectedPatTausForMuTauElectronVetoSysTauJetEnDownCumulative')
             },
             "sysJetEnUp" : {
-                "smearedParticles.srcOriginal" : cms.InputTag('selectedPatJetsAntiOverlapWithLeptonsVetoCumulative'),
-                "smearedParticles.srcSmeared"  : cms.InputTag('selectedPatJetsAntiOverlapWithLeptonsVetoSysJetEnUpCumulative')
+                "smearedParticles.jetsTypeI.srcOriginal" : cms.InputTag('selectedPatJetsForMEtTypeIcorr'),
+                "smearedParticles.jetsTypeI.srcSmeared"  : cms.InputTag('selectedPatJetsForMEtTypeIcorrSysJetEnUp'),
+                "smearedParticles.jetsTypeII.srcOriginal" : cms.InputTag('selectedPatJetsForMEtTypeIIcorr'),
+                "smearedParticles.jetsTypeII.srcSmeared"  : cms.InputTag('selectedPatJetsForMEtTypeIIcorrSysJetEnUp'),
+                "smearedParticles.jetsTypeII.smearByResolutionUncertainty" : smearMEtUnclustedEnergyResolution
             },
             "sysJetEnDown" : {
-                "smearedParticles.srcOriginal" : cms.InputTag('selectedPatJetsAntiOverlapWithLeptonsVetoCumulative'),
-                "smearedParticles.srcSmeared"  : cms.InputTag('selectedPatJetsAntiOverlapWithLeptonsVetoSysJetEnDownCumulative')
+                "smearedParticles.jetsTypeI.srcOriginal" : cms.InputTag('selectedPatJetsForMEtTypeIcorr'),
+                "smearedParticles.jetsTypeI.srcSmeared"  : cms.InputTag('selectedPatJetsForMEtTypeIcorrSysJetEnDown'),
+                "smearedParticles.jetsTypeII.srcOriginal" : cms.InputTag('selectedPatJetsForMEtTypeIIcorr'),
+                "smearedParticles.jetsTypeII.srcSmeared"  : cms.InputTag('selectedPatJetsForMEtTypeIIcorrSysJetEnDown'),
+                "smearedParticles.jetsTypeII.smearByResolutionUncertainty" : smearMEtUnclustedEnergyResolution
             }
         }
     )
@@ -420,12 +474,12 @@ def enableSysUncertainties_runZtoElecTau(process):
                 "smearedParticles.srcSmeared"  : cms.InputTag('selectedPatTausForElecTauElectronVetoSysTauJetEnDownCumulative')
             }, 
             "sysJetEnUp" : {
-                "smearedParticles.srcOriginal" : cms.InputTag('selectedPatJetsAntiOverlapWithLeptonsVetoCumulative'),
-                "smearedParticles.srcSmeared"  : cms.InputTag('selectedPatJetsAntiOverlapWithLeptonsVetoSysJetEnUpCumulative')
+                "smearedParticles.srcOriginal" : cms.InputTag('selectedPatJetsEt20Cumulative'),
+                "smearedParticles.srcSmeared"  : cms.InputTag('selectedPatJetsEt20SysJetEnUpCumulative')
             },
             "sysJetEnDown" : {
-                "smearedParticles.srcOriginal" : cms.InputTag('selectedPatJetsAntiOverlapWithLeptonsVetoCumulative'),
-                "smearedParticles.srcSmeared"  : cms.InputTag('selectedPatJetsAntiOverlapWithLeptonsVetoSysJetEnDownCumulative')
+                "smearedParticles.srcOriginal" : cms.InputTag('selectedPatJetsEt20Cumulative'),
+                "smearedParticles.srcSmeared"  : cms.InputTag('selectedPatJetsEt20SysJetEnDownCumulative')
             }
         }
     )
