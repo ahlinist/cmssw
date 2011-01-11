@@ -28,7 +28,11 @@ class objProdConfigurator(cms._ParameterTypeBase):
         if attrName.find(".") != -1:
             objAttrName = attrName[:attrName.find(".")]
             attrName_new = attrName[attrName.find(".") + 1:]
-            obj_new = getattr(obj, objAttrName)
+            if hasattr(obj, objAttrName):
+                obj_new = getattr(obj, objAttrName)
+            else:
+                obj_new = cms.PSet()
+                setattr(obj, objAttrName, obj_new)
             objProdConfigurator._recursiveSetAttr(obj_new, attrName_new, attrValue)
         else:
             setattr(obj, attrName, attrValue)
