@@ -52,6 +52,15 @@ elecTauPairSystematics = {
     "sysJetEnDown"          : cms.InputTag('allElecTauPairsSysJetEnDown')
 }
 
+elecTauPairSystematicsLooseElectronIsolation = {
+    "sysElectronPtUp"       : cms.InputTag('allElecTauPairsLooseElectronIsolationSysElectronPtUp'),
+    "sysElectronPtDown"     : cms.InputTag('allElecTauPairsLooseElectronIsolationSysElectronPtDown'),
+    "sysTauJetEnUp"         : cms.InputTag('allElecTauPairsLooseElectronIsolationSysTauJetEnUp'),
+    "sysTauJetEnDown"       : cms.InputTag('allElecTauPairsLooseElectronIsolationSysTauJetEnDown'),
+    "sysJetEnUp"            : cms.InputTag('allElecTauPairsLooseElectronIsolationSysJetEnUp'),
+    "sysJetEnDown"          : cms.InputTag('allElecTauPairsLooseElectronIsolationSysJetEnDown')
+}
+
 metSystematicsForZtoMuTau = {
     "sysMuonPtUp"           : cms.InputTag('patMETsSysMuonPtUp'),
     "sysMuonPtDown"         : cms.InputTag('patMETsSysMuonPtDown'),
