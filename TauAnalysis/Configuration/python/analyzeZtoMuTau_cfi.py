@@ -854,7 +854,7 @@ muTauAnalysisSequenceOS = cms.VPSet(
     ),
     cms.PSet(
         filter = cms.string('evtSelDiTauCandidateForMuTauMt1MET'),
-        title = cms.string('M_{T}(Muon-MET) < 40 GeV'),
+        title = cms.string('M_{T}(Muon-MET) < 50 GeV'),
         saveRunLumiSectionEventNumbers = cms.vstring('')
     ),
     cms.PSet(
@@ -878,7 +878,8 @@ muTauAnalysisSequenceOS = cms.VPSet(
         analyzers = cms.vstring(
             'muonHistManager',
             'tauHistManager',
-            'diTauCandidateHistManagerForMuTau'
+            'diTauCandidateHistManagerForMuTau',
+            'muPairHistManagerByLooseIsolation'           
         ),
         replace = cms.vstring(
             'muonHistManager.muonSource = selectedPatMuonsTrkIPcumulative',
@@ -1066,7 +1067,7 @@ muTauAnalysisSequenceSS = cms.VPSet(
     ),
     cms.PSet(
         filter = cms.string('evtSelDiTauCandidateForMuTauMt1MET'),
-        title = cms.string('M_{T}(Muon-MET) < 40 GeV'),
+        title = cms.string('M_{T}(Muon-MET) < 50 GeV'),
         saveRunLumiSectionEventNumbers = cms.vstring('')
     ),
     cms.PSet(

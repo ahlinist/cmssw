@@ -10,11 +10,11 @@ plots_ZtoMuTau = cms.PSet(
     plots = cms.PSet(
         dqmMonitorElements = cms.vstring(''),
         processes = cms.vstring(
+            'TTplusJets',
             'Zmumu',
             'WplusJets',
-            'TTplusJets',
-            'qcdSum',
-            'Ztautau'
+            'qcdSum',            
+            'ZtautauSum'
         )
     ),
     xAxis = cms.string('unlabeled'),
@@ -28,7 +28,7 @@ plots_ZtoMuTau = cms.PSet(
         'Zmumu',
         'WplusJets',
         'qcdSum',
-        'Ztautau'
+        'ZtautauSum'
     )
 )
 
@@ -415,16 +415,16 @@ drawJobConfigurator_ZtoMuTauOS.add(
     )
 )
 
-drawJobConfigurator_ZtoMuTauOS.add(
-    afterCut = evtSelDiTauCandidateForMuTauPzetaDiff,
-    beforeCut = evtSelDiMuPairZmumuHypothesisVetoByLooseIsolation,
-    plot = drawJobConfigEntry(
-	meName = 'DiMuZmumuHypothesisByLooseIsolationQuantities/DiTauCandidateCharge',
-        title = "Charge(iso. Muon + iso. Muon) (after P_{#zeta} Cut)",
-        xAxis = 'unlabeled',
-        name = "cutFlowControlPlots_diMuonCharge_afterPzetaDiff"
-    )
-)
+##drawJobConfigurator_ZtoMuTauOS.add(
+##    afterCut = evtSelDiTauCandidateForMuTauPzetaDiff,
+##    beforeCut = evtSelDiMuPairZmumuHypothesisVetoByLooseIsolation,
+##    plot = drawJobConfigEntry(
+##	meName = 'DiMuZmumuHypothesisByLooseIsolationQuantities/DiTauCandidateCharge',
+##        title = "Charge(iso. Muon + iso. Muon) (after P_{#zeta} Cut)",
+##        xAxis = 'unlabeled',
+##        name = "cutFlowControlPlots_diMuonCharge_afterPzetaDiff"
+##    )
+##)
 
 drawJobConfigurator_ZtoMuTauOS.add(
     afterCut = evtSelDiMuPairZmumuHypothesisVetoByLooseIsolation,
