@@ -35,10 +35,12 @@ class METEfficiencyAnalyzer {
 	edm::InputTag HLTMETSource;
         edm::InputTag METSource;
 	edm::InputTag MCSource;
+	edm::InputTag METCleaningSource;
 
         // Output tree and related variables
         TTree *mettree;
 
 	float hltMET,MET,mcMET;
+	int METclean;
 };
 #endif

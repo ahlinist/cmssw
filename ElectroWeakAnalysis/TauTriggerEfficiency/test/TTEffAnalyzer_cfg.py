@@ -126,7 +126,9 @@ process.thisPFTauDiscriminationAgainstMuon = copy.deepcopy(pfRecoTauDiscriminati
 process.thisPFTauDiscriminationAgainstMuon.PFTauProducer = 'PFTausSelected' 
 process.thisPFTauDiscriminationAgainstMuon.Prediscriminants.leadPion.Producer = cms.InputTag('thisPFTauDiscriminationByLeadingTrackFinding')
 
-
+#MET cleaning flag
+process.load('CommonTools/RecoAlgos/HBHENoiseFilterResultProducer_cfi')
+process.hbheflag = cms.Path(process.HBHENoiseFilterResultProducer)
 
 process.TTEffAnalysis = cms.EDAnalyzer("TTEffAnalyzer",
         DoMCTauEfficiency       = cms.bool(False), #if true: per MCTau cand; default is false: per offline tau cand
@@ -139,6 +141,7 @@ process.TTEffAnalysis = cms.EDAnalyzer("TTEffAnalyzer",
 
 	HLTMETSource		= cms.InputTag("hltMet"),
 	METSource		= cms.InputTag("pfMet"),
+	METCleaningSource	= cms.InputTag("HBHENoiseFilterResultProducer", "HBHENoiseFilterResult"),
 
 	PFJetSource		= cms.InputTag("ak5PFJets"),
 
@@ -249,14 +252,13 @@ else:
         process.TTEffAnalysisL1Cen
     ) 
 
-#process.o1 = cms.OutputModule("PoolOutputModule",
-#    outputCommands = cms.untracked.vstring("keep *"),
-#    fileName = cms.untracked.string('cmssw.root')
-#)
+process.o1 = cms.OutputModule("PoolOutputModule",
+    outputCommands = cms.untracked.vstring("keep *"),
+    fileName = cms.untracked.string('cmssw.root')
+)
 #process.outpath = cms.Path(process.o1)
 
-process.schedule = cms.Schedule(process.DoHLTJetsU,process.DoHLTTau,
-#                               process.PFTausSelected,
+process.schedule = cms.Schedule(process.DoHLTJetsU,process.DoHLTTau,process.hbheflag,
 #                               process.runEDAna,process.outpath)
                                 process.runEDAna)
 
