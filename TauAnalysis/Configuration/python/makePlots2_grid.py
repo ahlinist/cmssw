@@ -139,21 +139,21 @@ def makePlots(process, channel = None, samples = None, inputFilePath = None, job
     # check that channel, samples, inputFilePath and jobId
     # parameters are defined and non-empty
     if channel is None:
-        raise ValueError("Undefined channel Parameter !!")
+        raise ValueError("Undefined 'channel' Parameter !!")
     if samples is None:
-        raise ValueError("Undefined samples Parameter !!")
+        raise ValueError("Undefined 'samples' Parameter !!")
     if inputFilePath is None:
-        raise ValueError("Undefined inputFilePath Parameter !!")
+        raise ValueError("Undefined 'inputFilePath' Parameter !!")
     if jobId is None:
-        raise ValueError("Undefined jobId Parameter !!")
+        raise ValueError("Undefined 'jobId Parameter !!")
     if analyzer_drawJobConfigurator_indOutputFileName_sets is None:
-        raise ValueError("Undefined analyzer_drawJobConfigurator_indOutputFileName_sets Parameter !!")
+        raise ValueError("Undefined 'analyzer_drawJobConfigurator_indOutputFileName_sets' Parameter !!")
     if drawJobTemplate is None:
         for analyzer_drawJobConfigurator_indOutputFileName_set in analyzer_drawJobConfigurator_indOutputFileName_sets:
             if len(analyzer_drawJobConfigurator_indOutputFileName_set) > 1:
-                raise ValueError("Undefined drawJobTemplate Parameter !!")
+                raise ValueError("Undefined 'drawJobTemplate' Parameter !!")
     if dqmDirectoryFilterStatistics is None:
-        raise ValueError("Undefined dqmDirectoryFilterStatistics Parameter !!")
+        raise ValueError("Undefined 'dqmDirectoryFilterStatistics' Parameter !!")
     if dqmDirectoryFilterStatisticsForSkim is None:
         dqmDirectoryFilterStatisticsForSkim = dqmDirectoryFilterStatistics
 
@@ -305,66 +305,70 @@ def makePlots(process, channel = None, samples = None, inputFilePath = None, job
 
     # configure DQMHistPlotter modules
     for analyzer_drawJobConfigurator_indOutputFileName_set in analyzer_drawJobConfigurator_indOutputFileName_sets:
-        if len(analyzer_drawJobConfigurator_indOutputFileName_set) == 3:
-            print("configuring DQMHistPlotter...")
-            analyzer = analyzer_drawJobConfigurator_indOutputFileName_set[0]
+        if len(analyzer_drawJobConfigurator_indOutputFileName_set) != 3:
+            raise ValueError("Invalid '%s' Parameter: expected 3 arguments, found %i !!" %
+                             ("analyzer_drawJobConfigurator_indOutputFileName_set",
+                              len(analyzer_drawJobConfigurator_indOutputFileName_set)))
 
-            drawJobTemplate_log = copy.deepcopy(drawJobTemplate)
-            drawJobTemplate_log.yAxis = cms.string('numEntries_log')
-            drawJobConfigurator_log = copy.deepcopy(analyzer_drawJobConfigurator_indOutputFileName_set[1])
-            drawJobConfigurator_log.setTemplate(drawJobTemplate_log)
+        print("configuring DQMHistPlotter...")
+        analyzer = analyzer_drawJobConfigurator_indOutputFileName_set[0]
 
-            drawJobTemplate_linear = copy.deepcopy(drawJobTemplate)
-            drawJobTemplate_linear.yAxis = cms.string('numEntries_linear')
-            drawJobConfigurator_linear = copy.deepcopy(analyzer_drawJobConfigurator_indOutputFileName_set[1])
-            drawJobConfigurator_linear.setTemplate(drawJobTemplate_linear)
+        drawJobTemplate_log = copy.deepcopy(drawJobTemplate)
+        drawJobTemplate_log.yAxis = cms.string('numEntries_log')
+        drawJobConfigurator_log = copy.deepcopy(analyzer_drawJobConfigurator_indOutputFileName_set[1])
+        drawJobConfigurator_log.setTemplate(drawJobTemplate_log)
 
-            print analyzer
-            dqmHistPlotterModuleName = None
-            dqmHistPlotterModuleName = "plot" + analyzer
-            # Add module label if desired
-            dqmHistPlotterModuleName += moduleLabel
-            print("--> configuring DQMHistPlotter: " + dqmHistPlotterModuleName)
-            dqmHistPlotterModule = dqmHistPlotter_template.clone(
-                processes = cms.PSet(**processesForPlots),
-                drawOptionSets = cms.PSet(
-                    default = cms.PSet(**dict((sampleName, samples['ALL_SAMPLES'][sampleName]['drawOption'])
-                                              for sampleName in samples['SAMPLES_TO_PLOT']))
-                ),
-                outputFilePath = cms.string(plotsDirectory),
-            )
+        drawJobTemplate_linear = copy.deepcopy(drawJobTemplate)
+        drawJobTemplate_linear.yAxis = cms.string('numEntries_linear')
+        drawJobConfigurator_linear = copy.deepcopy(analyzer_drawJobConfigurator_indOutputFileName_set[1])
+        drawJobConfigurator_linear.setTemplate(drawJobTemplate_linear)
 
-            dqmHistPlotterModule.labels.mcNormScale.text = cms.vstring(
-                '%0.1fpb^{-1}' % samples['TARGET_LUMI'],
-                '#sqrt{s}=7TeV'
-            )
+        print analyzer
+        dqmHistPlotterModuleName = None
+        dqmHistPlotterModuleName = "plot" + analyzer
+        # Add module label if desired
+        dqmHistPlotterModuleName += moduleLabel
+        print("--> configuring DQMHistPlotter: " + dqmHistPlotterModuleName)
+        dqmHistPlotterModule = dqmHistPlotter_template.clone(
+            processes = cms.PSet(**processesForPlots),
+            drawOptionSets = cms.PSet(
+                default = cms.PSet(**dict((sampleName, samples['ALL_SAMPLES'][sampleName]['drawOption'])
+                                          for sampleName in samples['SAMPLES_TO_PLOT']))
+            ),
+            outputFilePath = cms.string(plotsDirectory),
+        )
 
-            indOutputFileName_log = analyzer_drawJobConfigurator_indOutputFileName_set[2]
-            posSeparator = indOutputFileName_log.rfind(".")
-            if posSeparator != -1:
-                indOutputFileName_log  = indOutputFileName_log[:posSeparator:] + "_log" + indOutputFileName_log[posSeparator::]
-            else:
-                # if no graphics format is specified explicitely,
-                # save all plots in PDF format
-                indOutputFileName_log += "_log.pdf"
-            dqmHistPlotterModule_log = dqmHistPlotterModule.clone(
-                drawJobs = drawJobConfigurator_log.configure(),
-                indOutputFileName = cms.string(indOutputFileName_log)
-            )
-            setattr(process, dqmHistPlotterModuleName + "_log", dqmHistPlotterModule_log)
+        dqmHistPlotterModule.labels.mcNormScale.text = cms.vstring(
+            '%0.1fpb^{-1}' % samples['TARGET_LUMI'],
+            '#sqrt{s}=7TeV'
+        )
 
-            indOutputFileName_linear = indOutputFileName_log.replace("_log.", "_linear.")
-            dqmHistPlotterModule_linear = dqmHistPlotterModule.clone(
-                drawJobs = drawJobConfigurator_linear.configure(),
-                indOutputFileName = cms.string(indOutputFileName_linear)
-            )
-            setattr(process, dqmHistPlotterModuleName + "_linear", dqmHistPlotterModule_linear)
+        indOutputFileName_log = analyzer_drawJobConfigurator_indOutputFileName_set[2]
+        posSeparator = indOutputFileName_log.rfind(".")
+        if posSeparator != -1:
+            indOutputFileName_log  = indOutputFileName_log[:posSeparator:] + "_log" + indOutputFileName_log[posSeparator::]
+        else:
+            # if no graphics format is specified explicitely,
+            # save all plots in PDF format
+            indOutputFileName_log += "_log.pdf"
+        dqmHistPlotterModule_log = dqmHistPlotterModule.clone(
+            drawJobs = drawJobConfigurator_log.configure(),
+            indOutputFileName = cms.string(indOutputFileName_log)
+        )
+        setattr(process, dqmHistPlotterModuleName + "_log", dqmHistPlotterModule_log)
 
-            if dqmHistPlotterSequence is None:
-                dqmHistPlotterSequence = cms.Sequence(dqmHistPlotterModule_log)
-            else:
-                dqmHistPlotterSequence._seq = dqmHistPlotterSequence._seq * dqmHistPlotterModule_log
-            dqmHistPlotterSequence._seq = dqmHistPlotterSequence._seq * dqmHistPlotterModule_linear
+        indOutputFileName_linear = indOutputFileName_log.replace("_log.", "_linear.")
+        dqmHistPlotterModule_linear = dqmHistPlotterModule.clone(
+            drawJobs = drawJobConfigurator_linear.configure(),
+            indOutputFileName = cms.string(indOutputFileName_linear)
+        )
+        setattr(process, dqmHistPlotterModuleName + "_linear", dqmHistPlotterModule_linear)
+
+        if dqmHistPlotterSequence is None:
+            dqmHistPlotterSequence = cms.Sequence(dqmHistPlotterModule_log)
+        else:
+            dqmHistPlotterSequence._seq = dqmHistPlotterSequence._seq * dqmHistPlotterModule_log
+        dqmHistPlotterSequence._seq = dqmHistPlotterSequence._seq * dqmHistPlotterModule_linear
 
     if dqmHistPlotterSequence is not None:
         setattr(process, dqmHistPlotterSequenceName, dqmHistPlotterSequence)
@@ -376,6 +380,12 @@ def makePlots(process, channel = None, samples = None, inputFilePath = None, job
     relevantMergedSamples = [sample for sample, sample_info in samples['MERGE_SAMPLES'].iteritems() if
                              [subsample for subsample in sample_info['samples']
                               if subsample in samplesToFactorize]]
+    relevantMergedSamples = [sample for sample, sample_info in samples['MERGE_SAMPLES'].iteritems() if
+                             [subsample for subsample in _getInputSamples(samples['MERGE_SAMPLES'], sample_info['samples'])
+                              if subsample in samplesToFactorize]]    
+    mergedToRecoSampleDict = copy.deepcopy(samples['MERGE_SAMPLES'])
+    for sample, sample_info in mergedToRecoSampleDict.iteritems():
+        sample_info['samples'] = _getInputSamples(samples['MERGE_SAMPLES'], sample_info['samples'])
 
     print "Factorizing", samplesToFactorize
     print "Updating", relevantMergedSamples
@@ -385,7 +395,7 @@ def makePlots(process, channel = None, samples = None, inputFilePath = None, job
             process,
             samplesToFactorize = samplesToFactorize,
             relevantMergedSamples = relevantMergedSamples,
-            mergedToRecoSampleDict = samples['MERGE_SAMPLES']
+            mergedToRecoSampleDict = mergedToRecoSampleDict
         )
 
     # configure DQMSimpleFileSaver module
