@@ -13,7 +13,7 @@
 #include "DataFormats/HepMCCandidate/interface/GenParticle.h"
 
 #include <TTree.h>
-
+#include <iostream>
 // Default constructor
 METEfficiencyAnalyzer::METEfficiencyAnalyzer():
   mettree(0){}
@@ -26,6 +26,7 @@ void METEfficiencyAnalyzer::Setup(const edm::ParameterSet& iConfig,TTree *trigtr
 	HLTMETSource = iConfig.getParameter<edm::InputTag>("HLTMETSource");
 	METSource = iConfig.getParameter<edm::InputTag>("METSource");
 	MCSource  = iConfig.getParameter<edm::InputTag>("GenParticleCollection");
+	METCleaningSource = iConfig.getParameter<edm::InputTag>("METCleaningSource");
 
   	mettree = trigtree;
 
@@ -33,6 +34,7 @@ void METEfficiencyAnalyzer::Setup(const edm::ParameterSet& iConfig,TTree *trigtr
   	mettree->Branch("HLTMET", &hltMET);
 	mettree->Branch("MET",    &MET);
 	mettree->Branch("MCMET",  &mcMET);
+	mettree->Branch("METclean", &METclean, "METclean/I");
 }
 
 void METEfficiencyAnalyzer::fill(const edm::Event& iEvent, const edm::EventSetup& iSetup) {
@@ -40,6 +42,7 @@ void METEfficiencyAnalyzer::fill(const edm::Event& iEvent, const edm::EventSetup
 	hltMET = 0.0;
 	MET    = 0.0;
 	mcMET  = 0.0;
+	METclean = 0;
 
 //
 	edm::Handle<reco::CaloMETCollection> hltmetHandle;
@@ -54,6 +57,14 @@ void METEfficiencyAnalyzer::fill(const edm::Event& iEvent, const edm::EventSetup
 
 	MET = (metHandle->front() ).et();
 
+//
+
+	edm::Handle<bool> metCleaningHandle;
+        iEvent.getByLabel(METCleaningSource, metCleaningHandle);
+
+	METclean = *(metCleaningHandle.product());
+//	bool dummy = *(metCleaningHandle.product());
+//	std::cout << "check METCleaning " << dummy << std::endl;
 //
 
 	mcMET = -1;
