@@ -263,7 +263,7 @@ def enableFactorization_makeZtoMuTauPlots_grid2(
     process,
     factorizationSequenceName = "loadAndFactorizeZtoMuTauSamples",
     samplesToFactorize = [ 'InclusivePPmuX', 'PPmuXptGt20Mu10', 'PPmuXptGt20Mu15' ],
-    relevantMergedSamples = [ 'qcdSum' ],
+    relevantMergedSamples = [ 'qcdSum', 'smBgSum', 'smSum' ],
     mergedToRecoSampleDict = {},
     mergedSampleAdderModule = lambda sample: 'addZtoMuTau_%s' % (sample)):
 
