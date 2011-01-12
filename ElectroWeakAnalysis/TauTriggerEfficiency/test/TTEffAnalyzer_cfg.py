@@ -54,48 +54,8 @@ else:
 #	    '/store/user/eluiggi/MinBias/TTEffCSTauSkimMinBiasSpring10MC3XYV27S09/3a986c9293445dcb2819d07578601385/CSTauSkim_5_1_ZSt.root'
 	)
     )
-    
-#process.load("ElectroWeakAnalysis.TauTriggerEfficiency.ztt2FileTest_cff")
-process.load("RecoJets.JetAssociationProducers.ic5PFJetTracksAssociatorAtVertex_cfi")
-process.ak5PFJetTracksAssociatorAtVertex = process.ic5PFJetTracksAssociatorAtVertex.clone()
-process.ak5PFJetTracksAssociatorAtVertex.jets = cms.InputTag("ak5PFJets")
-from RecoTauTag.RecoTau.PFRecoTauTagInfoProducer_cfi import *
-process.myPFTauTagInfoProducer = copy.deepcopy(pfRecoTauTagInfoProducer)
-process.myPFTauTagInfoProducer.tkminPt = cms.double(0.5)
-process.myPFTauTagInfoProducer.ChargedHadrCand_tkminPt = cms.double(0.5)
-process.myPFTauTagInfoProducer.PFJetTracksAssociatorProducer = cms.InputTag("ak5PFJetTracksAssociatorAtVertex")
 
-from RecoTauTag.Configuration.FixedConePFTaus_cfi import *
-process.myConeProducer = copy.deepcopy(fixedConePFTauProducer)
-process.myConeProducer.PFTauTagInfoProducer = cms.InputTag("myPFTauTagInfoProducer")
-
-process.load("RecoTauTag.RecoTau.PFRecoTauDiscriminationByLeadingPionPtCut_cfi")
-from RecoTauTag.RecoTau.TauDiscriminatorTools import noPrediscriminants
-process.thisPFTauDiscriminationByLeadingPionPtCut = cms.EDProducer("PFRecoTauDiscriminationByLeadingObjectPtCut",
-
-    # Tau collection to discriminate
-    PFTauProducer = cms.InputTag('myConeProducer'),
-
-    # no pre-reqs for this cut
-    Prediscriminants = noPrediscriminants,
-
-    # Allow either charged or neutral PFCandidates to meet this requirement
-    UseOnlyChargedHadrons = cms.bool(False),
-
-    MinPtLeadingObject = cms.double(3.0)
-)
-
-process.PFTausSelected = cms.EDFilter("PFTauSelector",
-    src = cms.InputTag("myConeProducer"),
-    discriminators = cms.VPSet(
-	cms.PSet( 
-	  discriminator=cms.InputTag("thisPFTauDiscriminationByLeadingPionPtCut"),
-	  selectionCut=cms.double(0.5)
-	)
-    )
-)
-
-
+process.load("ElectroWeakAnalysis.TauTriggerEfficiency.TTEffPFTau_cff")
 
 process.load('Configuration/StandardSequences/FrontierConditions_GlobalTag_cff')
 if (isData):
@@ -107,24 +67,6 @@ else:
 print process.GlobalTag.globaltag
 
 #process.prefer("magfield")
-
-#copying the Discriminator by Isolation
-#prediscriminator
-from RecoTauTag.RecoTau.PFRecoTauDiscriminationByLeadingTrackFinding_cfi import *
-process.thisPFTauDiscriminationByLeadingTrackFinding = copy.deepcopy(pfRecoTauDiscriminationByLeadingTrackFinding)
-process.thisPFTauDiscriminationByLeadingTrackFinding.PFTauProducer = 'PFTausSelected'
-
-from RecoTauTag.RecoTau.PFRecoTauDiscriminationByIsolationUsingLeadingPion_cfi import *
-process.thisPFTauDiscriminationByIsolation = copy.deepcopy(pfRecoTauDiscriminationByIsolationUsingLeadingPion)
-process.thisPFTauDiscriminationByIsolation.PFTauProducer = 'PFTausSelected' 
-process.thisPFTauDiscriminationByIsolation.MinPtLeadingPion = cms.double(3.0)
-process.thisPFTauDiscriminationByIsolation.Prediscriminants.leadPion.Producer = cms.InputTag('thisPFTauDiscriminationByLeadingTrackFinding')
-
-#copying the Discriminator against Muon
-from RecoTauTag.RecoTau.PFRecoTauDiscriminationAgainstMuon_cfi import *
-process.thisPFTauDiscriminationAgainstMuon = copy.deepcopy(pfRecoTauDiscriminationAgainstMuon)
-process.thisPFTauDiscriminationAgainstMuon.PFTauProducer = 'PFTausSelected' 
-process.thisPFTauDiscriminationAgainstMuon.Prediscriminants.leadPion.Producer = cms.InputTag('thisPFTauDiscriminationByLeadingTrackFinding')
 
 #MET cleaning flag
 process.load('CommonTools/RecoAlgos/HBHENoiseFilterResultProducer_cfi')
