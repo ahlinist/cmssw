@@ -41,6 +41,8 @@ inconsistentMuonSelector::select (const edm::Event& event) const
 
         if ( im->pt() < ptMin_ ) continue;
 
+        if (im->isGlobalMuon());
+
         if ( fabs(im->innerTrack()->pt()/im->globalTrack()->pt() - 1) <= maxPTDiff_)
             continue;
 
