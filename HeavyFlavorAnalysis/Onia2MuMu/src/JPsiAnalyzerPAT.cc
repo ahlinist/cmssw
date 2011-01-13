@@ -13,7 +13,7 @@
 //
 // Original Author: Roberto Covarelli 
 //         Created:  Fri Oct  9 04:59:40 PDT 2009
-// $Id: JPsiAnalyzerPAT.cc,v 1.40 2010/11/24 18:48:31 covarell Exp $
+// $Id: JPsiAnalyzerPAT.cc,v 1.41 2010/11/26 11:00:06 covarell Exp $
 //
 // based on: Onia2MuMu package V00-11-00
 // changes done by: FT
@@ -1052,7 +1052,7 @@ JPsiAnalyzerPAT::selGlobalMuon(const pat::Muon* aMuon) {
 	  iTrack->found() > 11 &&
 	  gTrack->chi2()/gTrack->ndof() < 20.0 &&
           q.numberOfValidMuonHits() > 0 &&
-          iTrack->chi2()/iTrack->ndof() < 4.0 &&
+          iTrack->chi2()/iTrack->ndof() < 1.8 &&
 	  aMuon->muonID("TrackerMuonArbitrated") &&
 	  aMuon->muonID("TMOneStationTight") &&
           p.pixelLayersWithMeasurement() > 1 &&
@@ -1068,7 +1068,7 @@ JPsiAnalyzerPAT::selTrackerMuon(const pat::Muon* aMuon) {
 
   return (// isMuonInAccept(aMuon) &&
 	  iTrack->found() > 11 &&
-	  iTrack->chi2()/iTrack->ndof() < 4.0 &&
+	  iTrack->chi2()/iTrack->ndof() < 1.8 &&
 	  aMuon->muonID("TrackerMuonArbitrated") &&
 	  aMuon->muonID("TMOneStationTight") &&
           p.pixelLayersWithMeasurement() > 1 &&
@@ -1085,7 +1085,7 @@ JPsiAnalyzerPAT::selCaloMuon(const pat::Muon* aMuon) {
   return (// isMuonInAccept(aMuon) &&
 	  aMuon->caloCompatibility() > 0.89 &&
 	  iTrack->found() > 11 &&
-	  iTrack->chi2()/iTrack->ndof() < 4.0 &&
+	  iTrack->chi2()/iTrack->ndof() < 1.8 &&
           p.pixelLayersWithMeasurement() > 1 &&
 	  fabs(iTrack->dxy(RefVtx)) < 3.0 &&
           fabs(iTrack->dz(RefVtx)) < 15.0 );
