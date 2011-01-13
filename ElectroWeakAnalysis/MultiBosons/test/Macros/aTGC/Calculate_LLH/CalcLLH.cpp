@@ -38,7 +38,6 @@ int main(int argc, char *argv[]){
     //cout << "File: " << temp << endl;
   }
 
-
   vector <double> coupling_1;
   vector <double> coupling_2;
   vector <double> XSec;
@@ -83,7 +82,8 @@ int main(int argc, char *argv[]){
   if (!((Coup1==Coup1sec)&&(Coup2==Coup2sec)))
     cout << "AHHHHH not same" << Coup1<< " " << Coup1sec <<" " << Coup2<<" " << Coup2sec << endl;
 
-  double bkgerr = 0.2; // 10% on the uncertainty
+  double bkgerr = 0.12;
+  // 10% on the uncertainty
     
   // Checks:
   for (int i=0; i<List.size(); ++i) 
@@ -113,21 +113,21 @@ int main(int argc, char *argv[]){
       if (debug) cout << List[i].c_str() << endl;
       TH1F* SigHist = (TH1F*)a->Get("signal_Et");
 
-      Float_t TempXSec = XSec[i];
-      Float_t TempXSecNlo = 1.*XSec[i];
-      Float_t TempXSecErr = XSecErr[i]; 
-      Float_t TempXSecNloErr = 1.*XSecErr[i]; 
-      Float_t TempXSecPDF = 0.05*XSec[i];
+      //      Float_t TempXSec = XSec[i];
+      //      Float_t TempXSecNlo = 1.*XSec[i];
+      //      Float_t TempXSecErr = XSecErr[i]; 
+      //      Float_t TempXSecNloErr = 1.*XSecErr[i]; 
+      //      Float_t TempXSecPDF = 0.05*XSec[i];
     
-      TempXSecNloErr = TMath::Sqrt(TempXSecNloErr*TempXSecNloErr+TempXSecPDF*TempXSecPDF);
+      //      TempXSecNloErr = TMath::Sqrt(TempXSecNloErr*TempXSecNloErr+TempXSecPDF*TempXSecPDF);
       
-      Float_t TempAccE = Acc[i];
-      Float_t TempAccErr = AccErr[i];
-      if (debug) cout << TempAccE <<" "<<TempAccErr<<endl;
+      //      Float_t TempAccE = Acc[i];
+      //      Float_t TempAccErr = AccErr[i];
+      //if (debug) cout << TempAccE <<" "<<TempAccErr<<endl;
 
-      EvSelErr = TMath::Sqrt((TempAccErr/TempAccE)*(TempAccErr/TempAccE) + 
-			     (TempXSecNloErr/TempXSecNlo)*(TempXSecNloErr/TempXSecNlo) + 0.15*0.15);
-
+      //      EvSelErr = TMath::Sqrt((TempAccErr/TempAccE)*(TempAccErr/TempAccE) + 
+      //			     (TempXSecNloErr/TempXSecNlo)*(TempXSecNloErr/TempXSecNlo) + 0.15*0.15);
+      EvSelErr = 0.05;
 
       if (debug) cout << "==========SIGNAL=========" << endl;
       Float_t TotSigEvt = SigHist->Integral();
@@ -164,8 +164,8 @@ int main(int argc, char *argv[]){
     if (debug) cout << "Summed: " << TotSig << " " << TotBkg  << " " << TotCand<< endl;
 
     Float_t Lumi = 1.; // already normalised input!
-    Float_t LumiErr = 0.1 * Lumi;
-    bkgerr = 0.2;
+    Float_t LumiErr = 0.11 * Lumi;
+    bkgerr = 0.12;
     
     LogLikelihood llh(Sig, Bkg, Obs, EvSelErr , bkgerr, LumiErr, 1, 3, 51);
     

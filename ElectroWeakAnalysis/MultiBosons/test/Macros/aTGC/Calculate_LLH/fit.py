@@ -1,39 +1,37 @@
 import ROOT, os, re, commands, time, array, math
 
-execfile("../fittingFcn.py")
-execfile("../axis_limits.py")
-execfile("../initCMSStyle.py")
-execfile("../beautify.py")
-execfile("../dRange.py")
-                                        
-def fit(LLHOUT):
+home = commands.getoutput("echo $HOME")
+execfile("%s/beautify.py"%home)
+execfile("%s/initCMSStyle.py"%home)
+
+execfile("/uscms_data/d2/iraklis/VgAnalysis/CMSSW_3_9_0/src/ElectroWeakAnalysis/MultiBosons/test/Macros/aTGC/fittingFcn.py")
+execfile("/uscms_data/d2/iraklis/VgAnalysis/CMSSW_3_9_0/src/ElectroWeakAnalysis/MultiBosons/test/Macros/aTGC/axis_limits.py")
+execfile("/uscms_data/d2/iraklis/VgAnalysis/CMSSW_3_9_0/src/ElectroWeakAnalysis/MultiBosons/test/Macros/aTGC/dRange.py")
+
+Ww=696
+Wh=472
+
+def SaveToFile(file,histo,recreate,name,coupType):
+    option = "UPDATE"
+    if not name=="": histo.SetName(name)
+    if recreate==1:
+        option = "RECREATE"
+    f = ROOT.TFile.Open(file,option)
+    f.cd()
+    histo.Write()
+    f.Close()
+
+def finalFit(LLHOUT,plotDir,drawAXIS, h3Ax, h4Ax,coupType,abc):
     bea = beautify() # helper to make histos pretty
     initCMSStyle()   # initialise cmsStyle
     dRan = dRange()  # allows to build list for range with float step 
-    plotDir = "/afs/fnal.gov/files/home/room3/iraklis/public_html/Vgamma/DataATGC/"
-    lumi = "6.7"
-    if not LLHOUT == "all.out":
-        if "ZZg" in LLHOUT:
-            if "3" in LLHOUT:
-                plotDir = "/afs/fnal.gov/files/home/room3/iraklis/public_html/Vgamma/DataATGC/ZZg/3pb"
-                lumi = "2.7"
-            elif "6.7" in LLHOUT:
-                plotDir = "/afs/fnal.gov/files/home/room3/iraklis/public_html/Vgamma/DataATGC/ZZg/6.7pb"
-                lumi = "6.7"
-        elif "Zgg" in LLHOUT:
-            if "3" in LLHOUT:
-                plotDir = "/afs/fnal.gov/files/home/room3/iraklis/public_html/Vgamma/DataATGC/Zgg/3pb"
-                lumi = "2.7"
-            elif "6.7" in LLHOUT:
-                plotDir = "/afs/fnal.gov/files/home/room3/iraklis/public_html/Vgamma/DataATGC/Zgg/6.7pb"
-                lumi = "6.7"
-            
+    #plotDir = "/afs/fnal.gov/files/home/room3/iraklis/public_html/Vgamma/aTGC/Zgg"
+    lumi = "36.1"
+    #coupType = "#gamma"
 
-    #coupType = "Z"
-    coupType = "#gamma"
-    if "ZZg" in LLHOUT: coupType = "Z"
+    #if "ZZg" in LLHOUT: coupType = "Z"
 
-    ROOT.gStyle.SetPalette(1)
+    #ROOT.gStyle.SetPalette(1)
     
     # read likelyhoods
     file = open(LLHOUT,"r")
@@ -59,14 +57,14 @@ def fit(LLHOUT):
         
     # initialise histo with likelyhoods and make it pretty
     LLH = ROOT.TH2F("LLH","",nbinsX, xmin, xmax, nbinsY, ymin, ymax)
-    bea.SetTitles(LLH,"","","H3_{%s}"%coupType,"H4_{%s}"%coupType,"-log(L)")
-    bea.SetTitleOffsets(LLH,1.3,1.3,1.3)
+    #bea.SetTitles(LLH,"","","H3_{%s}"%coupType,"H4_{%s}"%coupType,"-log(L)")
+    #bea.SetTitleOffsets(LLH,1.3,1.3,1.3)
     #bea.SetNdivisions(LLH,405)
 
     LLH_x = ROOT.TH1F("LLH_x","",nbinsX, xmin, xmax)
     LLH_y = ROOT.TH1F("LLH_y","",nbinsY, ymin, ymax)
-    bea.SetTitles(LLH_x,"","","H3","-log(L)","")
-    bea.SetTitles(LLH_y,"","","H4","-log(L)","")
+    #bea.SetTitles(LLH_x,"","","H3","-log(L)","")
+    #bea.SetTitles(LLH_y,"","","H4","-log(L)","")
 
     #find minimum
     minX = 0
@@ -105,13 +103,13 @@ def fit(LLHOUT):
     cpar = array.array('d',[par[0],par[0]+3])
     print cpar
     fitFcn.SetContour(1,cpar)
-    axisLimits = axis_limits(par)
+    axisLimits = axis_limits(par,file)
     print axisLimits
-    cn1=ROOT.TCanvas("cn1","",0,0,600,600)
-    cn2=ROOT.TCanvas("cn2","",606,0,600,600)
+    cn1 = ROOT.TCanvas("cn1","",Ww,Wh)
+    cn2 = ROOT.TCanvas("cn2","",Ww,Wh)
     cn1.cd()
-    LLH_2.SetMinimum(8)
-    LLH_2.SetMaximum(20)
+    #LLH_2.SetMinimum(15)
+    #LLH_2.SetMaximum(25)
     #LLH_2.Draw("surfz")
     #LLH_2.Draw("colz")
     f=ROOT.TFile.Open("LLH_test.root","RECREATE")
@@ -119,23 +117,26 @@ def fit(LLHOUT):
     f.Close()
     #LLH_2.SetMaximum(85)
     #LLH_2.SetMinimum(77)
-    #LLH_2.Draw("surf3")
+    LLH_2.Draw("surf3")
     #LLH_2.Draw("CONTZ")
-    LLH_2.Draw("lego1")
+    #LLH_2.Draw("lego1")
     #fitFcn.Draw("surfsame")
     #cn1.SetLogz(1)
     textBin = ROOT.TLatex()
     textBin.SetNDC()
-    textBin.SetTextSize(0.06)
-    textBin.DrawLatex(0.05,0.05,"#intL=%s/pb"%lumi)
-    cn1.SaveAs("%s/LLH_lego.png"%plotDir)
+    #textBin.SetTextSize(0.06)
+    #textBin.DrawLatex(0.05,0.05,"#intL=%s/pb"%lumi)
+    
+    cn1.SaveAs("%s/LLH_lego_%s.png"%(plotDir,LLHOUT[:-3]))
 
-    ROOT.gStyle.SetPadRightMargin(0.1)
-    cn3=ROOT.TCanvas("cn3","",606,0,700,600)
+    #ROOT.gStyle.SetPadRightMargin(0.1)
+    cn3 = ROOT.TCanvas("cn3","",Ww,Wh)
     cn3.cd()
+    LLH_2.SetMaximum(30)
+    LLH_2.SetMinimum(5)
     LLH_2.Draw("colz")
-    textBin.DrawLatex(0.05,0.05,"#intL=%s/pb"%lumi)
-    cn3.SaveAs("%s/LLH_colz.png"%plotDir)
+    #textBin.DrawLatex(0.05,0.05,"#intL=%s/pb"%lumi)
+    cn3.SaveAs("%s/LLH_colz_%s.png"%(plotDir,LLHOUT[:-3]))
 
 
     print "<------------- \n Chi2 | NDF \t %s \t %s"%(fitFcn.GetChisquare(),fitFcn.GetNDF())
@@ -159,17 +160,23 @@ def fit(LLHOUT):
 
     cn2.cd()
     #newFcn = ROOT.TF2("newFcn",QuadFcn2(),xmin/4,xmax/4,ymin/4,ymax/4,6)
-    newFcn = ROOT.TF2("newFcn",QuadFcn2(),-.4,0.4,-0.1,0.1,6)
+    newFcn = ROOT.TF2("newFcn",QuadFcn2(),-h3Ax,h3Ax,-h4Ax,h4Ax,6)
+    newFcn.SetTitle("")
     newFcn.SetNpy(500)
     for i in range (0,8):
         newFcn.SetParameter(i,par[i])
 
 
-    bea.SetTitles(newFcn,"","","H3_{%s}"%coupType,"H4_{%s}"%coupType,"")
+    #bea.SetTitles(newFcn,"","","H3_{%s}"%coupType,"H4_{%s}"%coupType,"")
 
-    bea.SetTitleOffsets(newFcn,"",1.15,"")
+    newFcn.GetXaxis().SetTitleFont(132)
+    newFcn.GetYaxis().SetTitleFont(132)
+    newFcn.GetYaxis().SetTitleOffset(1.17)
+    newFcn.GetXaxis().SetTitle("h_{3}^{%s}"%coupType)
+    newFcn.GetYaxis().SetTitle("h_{4}^{%s}"%coupType)
+    
     #bea.SetNdivisions(newFcn,405)
-    bea.SetRange(newFcn,-0.4,0.4,-0.006,0.006,"","")
+    bea.SetRange(newFcn,-h3Ax,h3Ax,-h4Ax,h4Ax,"","")
     
     acpar = array.array('d',[par[0]+3])
     print "acpar[0]: ",acpar[0]
@@ -186,21 +193,20 @@ def fit(LLHOUT):
     cent.SetMarkerStyle(ROOT.kFullCircle)
     cent.SetMarkerColor(ROOT.kRed)
     cent.DrawMarker(min_coup1, min_coup2)
-    l1.Draw("SAME")
-    l2.Draw("SAME")
-    textBin.DrawLatex(0.05,0.05,"#intL=%s/pb"%lumi)
-    cn2.SaveAs("%s/contour.png"%plotDir)
-    
-    #cn3=ROOT.TCanvas("cn3","",500,0,600,600)
-    #LLH_x.Draw()
-    #cn4=ROOT.TCanvas("cn4","",500,500,600,600)
-    #LLH_y.Draw()
-
+    if drawAXIS:
+        l1.Draw("SAME")
+        l2.Draw("SAME")
+    TEXT = ROOT.TText(0.87, 0.85, abc);
+    TEXT.SetNDC(1)
+    TEXT.SetTextFont(132);
+    TEXT.SetTextSize(0.08);
+    TEXT.Draw();
+                        
+    cn2.SaveAs("%s/contour_%s.png"%(plotDir,LLHOUT[:-4]))
+    cn2.SaveAs("%s/contour_%s.eps"%(plotDir,LLHOUT[:-4]))
     #raw_input("")
 
-fit("all.out")
-#fit("all.out_ZZg_3pb")
-#fit("all.out_ZZg_6.7pb")
-#fit("all.out_Zgg_3pb")
-#fit("all.out_Zgg_6.7pb")
-
+#fit("Zgg_all.out")
+#fit("Zgg_mmg.out")
+#fit("Zgg_eeg.out")
+#fit("Zgg_eeg.out")
