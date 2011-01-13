@@ -13,13 +13,14 @@ curDir = commands.getoutput("pwd")
 
 def plotDist(channel,cType):
 
+    lumi = 36.1
     # CONFIGURE SCRIPT HERE
-    #plotDir = "/afs/fnal.gov/files/home/room3/iraklis/public_html/Vgamma/DataATGC/ZZg/3pb/"
-    plotDir = "/afs/fnal.gov/files/home/room3/iraklis/public_html/Vgamma/DataATGC/ZZg/6.7pb/"
+    plotDir = "/afs/fnal.gov/files/home/room3/iraklis/public_html/Vgamma/aTGC/logE/ignore/"
     yTit = ""
     if "mm" in channel: yTit = "Z#gamma#rightarrow#mu#mu#gamma Event Yield"
     elif "ee" in channel: yTit = "Z#gamma#rightarrowee#gamma Event Yield"
 
+    print "------------",cType, channel
     # start
     if not os.path.exists(plotDir): os.mkdir(plotDir)
     
@@ -34,11 +35,17 @@ def plotDist(channel,cType):
     backgrounds=[]
     datas      =[]
 
+    textBin = ROOT.TLatex()
+    textBin.SetNDC()
+    textBin.SetTextSize(0.06)
+
+    print files
     #
     for file in files:
         # filter out files including both ee and uu
         if ".root" in file and channel in file:
             if "h3" in file:
+                print file
                 if cType in file:
                     print "adding file %s to TGC points"%file
                     f=ROOT.TFile.Open(file,"READ")
@@ -91,11 +98,14 @@ def plotDist(channel,cType):
     bk.SetLineColor(ROOT.kGreen)
     st.Draw()
     bk.Draw("samee")
-    cn.SaveAs("%s/Bkg.png"%plotDir)
+    textBin.DrawLatex(0.05,0.05,"#intL=%s/pb"%lumi)
+    cn.SaveAs("%s/Bkg_%s.png"%(plotDir,channel))
     
+    tgcP = None
+    print tgcPoints
     for tgcP in tgcPoints:
-        print tgcP.GetTitle()
-        if "h3_0_h4_0" in tgcP.GetTitle():
+        print "Title Content ",tgcP.GetTitle()
+        if "Standard" in tgcP.GetTitle():
             st.Add(tgcP)
             SM=tgcP
         if "h3_0_h4_0.004" in tgcP.GetTitle():
@@ -132,17 +142,20 @@ def plotDist(channel,cType):
     legend.AddEntry(SM   , "Standard Model"      , "lp")
     legend.AddEntry(TGC  , "TGC H3,H4 = 0., 0.004" , "lp")
     
-    TGC.SetMinimum(0.1)
-    TGC.SetMaximum(TGC.GetMaximum()*1.2)
-    Data.SetMinimum(0.1)
+    TGC.SetMinimum(0.)
+    Data.SetMinimum(0.)
     bea.SetTitles(Data,"","","#gamma E_{T}",yTit,"")
 
+    Data.SetMaximum(200)
     Data.Draw("e")
     TGC.Draw("samehisto")
     SM.Draw("samehisto")
     bk.Draw("samehisto")
     legend.Draw()
     cn.RedrawAxis()
+    #cn.SetLogy(1)
+    #cn.SetMaximum(200)
+    textBin.DrawLatex(0.05,0.05,"#intL=%s/pb"%lumi)
     cn.SaveAs("%s/data%s.png"%(plotDir,channel[:-1]))
     
     
@@ -163,7 +176,6 @@ def plotDist(channel,cType):
     file.Close()
     
 
-coupType = "ZZg"
-#coupType = "Zgg"
+coupType = "Zgg"
 plotDist("_ee_",coupType)
 plotDist("_mm_",coupType)

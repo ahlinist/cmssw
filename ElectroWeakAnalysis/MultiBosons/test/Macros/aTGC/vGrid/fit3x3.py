@@ -21,7 +21,7 @@ def fits(mode):
     eraseContent=cleanDir()
     
     # target directories
-    plotDir = "/afs/fnal.gov/files/home/room3/iraklis/public_html/Vgamma"
+    plotDir = "/afs/fnal.gov/files/home/room3/iraklis/public_html/Vgamma/aTGC/logE/grids/"
     vGridDir = curDir
     #vGridDir = "/data/iraklis/TGC/UPLOADTOCVS/CMSSW_3_6_3/src/ElectroWeakAnalysis/MultiBosons/test/Macros/aTGC/vGrid"
     
@@ -33,8 +33,8 @@ def fits(mode):
     cnH = 500 #canvas height
     gridDensityCoup1 = 20     # produces density+1 points in -border1,border1 range
     gridDensityCoup2 = 20     # produces density+1 points
-    gridBorderCoup1   = 0.5   # H3
-    gridBorderCoup2   = 0.01  # H4
+    gridBorderCoup1   = 0.12   # H3
+    gridBorderCoup2   = 0.004  # H4
     #gridBorderCoup2   = 0.04  # H4
     
 

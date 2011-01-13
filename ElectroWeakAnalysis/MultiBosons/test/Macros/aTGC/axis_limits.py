@@ -1,4 +1,4 @@
-def axis_limits(Par):
+def axis_limits(Par,file):
     #Double_t A,B,C,C1;
     
     # set limits on x axis by setting y=0
@@ -11,7 +11,9 @@ def axis_limits(Par):
     RT=ROOT.sqrt(SQ)
     A1=(-B-RT)/2.0/A
     A2=(-B+RT)/2.0/A
-    print "Limits on x: ", A1 , " < x < ",A2
+    St = (file.name[:-4]).split("_")
+    print St
+    print St[0], St[1], St[2],"Limits on h3: %.2f < h3 < %.2f"%(A1,A2)
     
     x1 = A1
     x2 = A2
@@ -25,7 +27,7 @@ def axis_limits(Par):
     RT=ROOT.sqrt(SQ)
     A1=(-B-RT)/2.0/A
     A2=(-B+RT)/2.0/A
-    print "Limits on y: ", A1 , " < y < ",A2
+    print St[0], St[1], St[2],"Limits on h4: %.4f < h4 < %.4f"%(A1,A2)
     
     y1 = A1
     y2 = A2
