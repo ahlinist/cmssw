@@ -17,10 +17,12 @@
 #include "FWCore/Framework/interface/EventSetupRecordIntervalFinder.h"
 #include "FWCore/Framework/interface/ESProducer.h"
 #include "FWCore/Framework/interface/SourceFactory.h"
-
+#include "FWCore/ParameterSet/interface/ConfigurationDescriptions.h"
+#include "FWCore/ParameterSet/interface/ParameterSetDescription.h"
 
 #include "FWCore/Integration/test/GadgetRcd.h"
 #include "FWCore/Integration/test/Doodad.h"
+#include "FWCore/Utilities/interface/EDMException.h"
 
 namespace edmtest {
 class DoodadESSource :
@@ -29,10 +31,12 @@ class DoodadESSource :
 {
    
 public:
-   DoodadESSource(const edm::ParameterSet&);
+   DoodadESSource(edm::ParameterSet const& pset);
    
    std::auto_ptr<Doodad> produce(const GadgetRcd&) ;
-   
+
+   static void fillDescriptions(edm::ConfigurationDescriptions& descriptions);
+
 protected:
    
    virtual void setIntervalFor(const edm::eventsetup::EventSetupRecordKey&,
@@ -59,8 +63,14 @@ private:
 //
 // constructors and destructor
 //
-DoodadESSource::DoodadESSource(const edm::ParameterSet&)
+DoodadESSource::DoodadESSource(edm::ParameterSet const& pset)
 : nCalls_(0) {
+
+  if (pset.getUntrackedParameter<bool>("test", true)) {
+     throw edm::Exception(edm::errors::Configuration, "Something is wrong with ESSource validation\n")
+       << "Or the test configuration parameter was set true (it should never be true unless you want this exception)\n";
+   }
+
    this->findingRecord<GadgetRcd>();
    setWhatProduced(this);
 }
@@ -81,6 +91,14 @@ DoodadESSource::produce(const GadgetRcd&) {
    return data;
 }
 
+void
+DoodadESSource::fillDescriptions(edm::ConfigurationDescriptions& descriptions) {
+  edm::ParameterSetDescription desc;
+  desc.addOptional<std::string>("appendToDataLabel");
+  desc.addUntracked<bool>("test", false)->
+    setComment("This parameter exists only to test the parameter set validation for ESSources"); 
+  descriptions.add("DoodadESSource", desc);
+}
 
 void 
 DoodadESSource::setIntervalFor(const edm::eventsetup::EventSetupRecordKey&,
