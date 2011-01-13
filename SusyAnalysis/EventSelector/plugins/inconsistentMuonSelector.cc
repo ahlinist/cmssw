@@ -28,12 +28,14 @@ inconsistentMuonSelector::select (const edm::Event& event) const
 
     // Input collections
     edm::Handle<std::vector<pat::Muon> > muonHandle;
-    event.getByLabel(muonTag_, muonHandle);
+    bool muonOK = event.getByLabel(muonTag_, muonHandle);
 
     // Reset cached variables
     resetVariables();
 
     // Compute variables
+
+    if (!muonOK) return true;
 
     bool foundMuon = false;
 
