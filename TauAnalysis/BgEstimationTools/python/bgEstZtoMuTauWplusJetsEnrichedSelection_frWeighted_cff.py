@@ -200,7 +200,7 @@ else:
 setattr(tauHistManagerBgEstWplusJetsEnrichedFRmcWeighted, "checkWeightConsistency", cms.bool(True))
 
 analyzeEventsBgEstWplusJetsEnrichedFRdataWeighted = analyzeEventsBgEstWplusJetsEnriched.clone(
-  name = cms.string('BgEstTemplateAnalyzer_WplusJetsEnrichedFRmdataWeighted')
+  name = cms.string('BgEstTemplateAnalyzer_WplusJetsEnrichedFRdataWeighted')
 )
 replaceEventSelections(analyzeEventsBgEstWplusJetsEnrichedFRdataWeighted, eventSelectionReplacementsWplusJetsEnrichedFRweighted)
 analyzerModuleReplacementsWplusJetsEnrichedFRdataWeighted = copy.deepcopy(analyzerModuleReplacementsWplusJetsEnrichedFRweighted)
