@@ -4,9 +4,6 @@ from TauAnalysis.Configuration.recoSampleDefinitionsZtoMuTau_7TeV_grid_cfi impor
 from TauAnalysis.Configuration.makePlots2_grid import makePlots
 from TauAnalysis.Configuration.userRegistry import getHarvestingFilePath, getJobId
 
-# import utility function to enable factorization
-from TauAnalysis.Configuration.tools.factorizationTools import enableFactorization_makeZtoMuTauPlots_grid
-
 process = cms.Process('prodBgEstTemplatesZtoMuTau')
 
 channel = 'ZtoMuTau_bgEstTemplate'
