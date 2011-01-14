@@ -306,9 +306,9 @@ def makePlots(process, channel = None, samples = None, inputFilePath = None, job
     # configure DQMHistPlotter modules
     for analyzer_drawJobConfigurator_indOutputFileName_set in analyzer_drawJobConfigurator_indOutputFileName_sets:
         if len(analyzer_drawJobConfigurator_indOutputFileName_set) != 3:
-            raise ValueError("Invalid '%s' Parameter: expected 3 arguments, found %i !!" %
-                             ("analyzer_drawJobConfigurator_indOutputFileName_set",
-                              len(analyzer_drawJobConfigurator_indOutputFileName_set)))
+            print("Warning: Invalid '%s' Parameter entry: expected 3 arguments, found %i --> skipping !!" %
+                  ("analyzer_drawJobConfigurator_indOutputFileName_set", len(analyzer_drawJobConfigurator_indOutputFileName_set)))
+            continue;
 
         print("configuring DQMHistPlotter...")
         analyzer = analyzer_drawJobConfigurator_indOutputFileName_set[0]
