@@ -31,11 +31,11 @@ dqmDirectories_processes = {
     },
     'Zmumu' : {
         'template' : 'Zmumu_powheg',
-        'analysis' : 'Zmumu'
+        'analysis' : 'Zmumu_powheg'
     },
     'WplusJets' : {
         'template' : 'WplusJets_madgraph',
-        'analysis' : 'WplusJetsSum'
+        'analysis' : 'WplusJets_madgraph'
     },
     'QCD' : {
         'template' : 'qcdSum',
@@ -43,7 +43,7 @@ dqmDirectories_processes = {
     },
     'TTplusJets' : {
         'template' : 'TTplusJets_madgraph',
-        'analysis' : 'TTplusJets'
+        'analysis' : 'TTplusJets_madgraph'
     },
     'diBoson' : {
         'template' : 'VVsum',
@@ -272,7 +272,7 @@ process.loadTemplateHistZtoMuTau = cms.EDAnalyzer("DQMFileLoader",
     Ztautau = cms.PSet(
         inputFileNames = cms.vstring(
             ##getHarvestingFilePath('ZtoMuTau_bgEstTemplate') + '/' + 'plotsZtoMuTau_bgEstTemplate_all.root'
-            '/data1/veelken/CMSSW_3_8_x/plots/ZtoMuTau_bgEstTemplate/2010Dec22/plotsZtoMuTau_bgEstTemplate_all.root'
+            '/data1/veelken/CMSSW_3_8_x/plots/ZtoMuTau_bgEstTemplate/2011Jan10/plotsZtoMuTau_bgEstTemplate_all.root'
         ),
         scaleFactor = cms.double(1.),
         dqmDirectory_store = cms.string('/template')
@@ -289,7 +289,7 @@ process.loadAnalysisHistZtoMuTau = cms.EDAnalyzer("DQMFileLoader",
         inputFileNames = cms.vstring(
             #getHarvestingFilePath('ZtoMuTau') + '/' + 'plotsZtoMuTau_all.root'
             ##getHarvestingFilePath('ZtoMuTau_bgEstTemplate') + '/' + 'plotsZtoMuTau_all.root'
-            '/data1/veelken/CMSSW_3_8_x/plots/ZtoMuTau/2010Dec14ii/plotsZtoMuTau_all.root'
+            '/data1/veelken/CMSSW_3_8_x/plots/ZtoMuTau/2011Jan07/plotsZtoMuTau_all.root'
         ),
         scaleFactor = cms.double(1.),
         dqmDirectory_store = cms.string('/analysis')
@@ -478,6 +478,8 @@ for selectionName, meNameMapping_selectionName_data in meNameMapping_data.items(
         if meNameMapping_selectionName_data.get(selectionType) is not None:
             meNameMapping_selectionType_data = meNameMapping_selectionName_data[selectionType]
 	    for distName, meNameMapping_distName_data in meNameMapping_selectionType_data.items():
+                # configure histograms for MC(SM|bgEst) vs. MC(pure|bgEst) vs. Data|bgEst comparisson
+                # (showing Data to Monte Carlo comparisson and effect of impurities in background enriched control regions)
                 drawTemplateHistConfiguratorZtoMuTau.add(
                     meNames = [
                         meNameMapping_mcSMsum[selectionName][selectionType][distName]['template'],
@@ -501,6 +503,8 @@ for selectionName, meNameMapping_selectionName_data in meNameMapping_data.items(
                     setattr(process, plotHistZtoMuTauIntegratedName, plotHistZtoMuTauIntegrated)
 	            process.plotTemplateHistZtoMuTauIntegrated += plotHistZtoMuTauIntegrated
 
+                # configure histograms for Data|bgEst vs. MC(pure|analysis) comparisson
+                # (showing possible bias on mass shape caused by event selection criteria applied in analysis)
                 drawAnalysisHistConfiguratorZtoMuTauData.add(
                     meNames = [
                         meNameMapping_distName_data['template'],
@@ -510,6 +514,8 @@ for selectionName, meNameMapping_selectionName_data in meNameMapping_data.items(
                     title = ("%s: %s" % (selectionName, plotTitles[distName]))
                 )
 
+                # configure histograms for MC(SM|bgEst) vs. MC(pure|bgEst)
+                # (showing effect of impurities in background enriched control regions)
                 drawAnalysisHistConfiguratorZtoMuTauMC.add(
                     meNames = [
                         meNameMapping_mcSMsum[selectionName][selectionType][distName]['template'],
@@ -522,11 +528,11 @@ for selectionName, meNameMapping_selectionName_data in meNameMapping_data.items(
 for distName in [ "visMass", "SVfitMass"]:
     drawAnalysisHistConfiguratorZtoMuTauData.add(
         meNames = [
-            meNameMapping_data['WplusJetsEnriched']['template'][distName]['template'],
+            meNameMapping_data['WplusJetsEnriched']['template'][distName]['corrTemplate'],
             meNameMapping['WplusJets']['WplusJetsEnriched']['analysis'][distName]['template']
         ],
-        name = ("WplusJetsEnriched_%s" % distName),
-        title = ("WplusJetsEnriched: %s" % plotTitles[distName])
+        name = ("WplusJetsEnriched_%s_corrected" % distName),
+        title = ("WplusJetsEnriched: %s, corrected" % plotTitles[distName])
     )
 
     drawAnalysisHistConfiguratorZtoMuTauZmumuEmbedding.add(
@@ -618,10 +624,12 @@ for selectionName, meNameMapping_selectionName_data in meNameMapping_data.items(
 process.saveBgEstTemplateHistZtoMuTau = cms.EDAnalyzer("DQMSimpleFileSaver",
     outputFileName = cms.string(
         ##getHarvestingFilePath('ZtoMuTau_bgEstTemplate') + '/' + 'bgEstTemplateHistZtoMuTau_skimmed.root'
-        '/data1/veelken/CMSSW_3_8_x/plots/ZtoMuTau_bgEstTemplate/2010Dec22/bgEstTemplateHistZtoMuTau_skimmed.root'
+        '/data1/veelken/CMSSW_3_8_x/plots/ZtoMuTau_bgEstTemplate/2011Jan10/bgEstTemplateHistZtoMuTau_skimmed.root'
     ),
     outputCommands = cms.vstring(
         'drop *',
+        'keep /analysis/harvested/*/zMuTauAnalyzerOS/afterEvtSelDiTauCandidateForMuTauZeroCharge/*',
+        'keep /analysis/harvested/ZtoMuTau_from_ZmumuEmbedding/*',                                      
         'keep /template/harvested/ZtautauSum/*',
         'keep /template/harvested/Ztautau_from_ZmumuEmbedding/*',
         'keep /template/harvested/Zmumu/*',
@@ -659,7 +667,7 @@ process.p = cms.Path(
 )
 
 # print-out all python configuration parameter information
-print process.dumpPython()
+#print process.dumpPython()
 
 
   
