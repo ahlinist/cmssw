@@ -251,11 +251,70 @@ userSettings = {
     'veelken': {
         'current' : {
             'AHtoMuTau'              : '2010Dec23',
-            'ZtoMuTau'               : '2010Dec14ii',
-            'ZtoMuTau_bgEstTemplate' : '2010Dec22',
-            'ZtoMuTau_tauIdEff'      : '2010Dec04'
+            'ZtoMuTau'               : '2011Jan07',
+            'ZtoMuTau_bgEstTemplate' : '2011Jan10',
+            'ZtoMuTau_tauIdEff'      : '2011Jan12_lxbatch'
         },
         'jobs' : {
+            '2011Jan12_lxbatch' : {
+                'ZtoMuTau_tauIdEff' : {
+                    'analysisFilePath' : "/castor/cern.ch/user/v/veelken/CMSSW_3_8_x/skims/TauIdEffMeas/",
+                    'harvestingFilePath' : "/data1/veelken/CMSSW_3_8_x/skims/ZtoMuTau_tauIdEff/",
+                    'tmpFilePath' : "/data1/veelken/tmp/ZtoMuTau_tauIdEff/",
+                     # Directory containing selected events
+                    'pickevents' : '/castor/cern.ch/user/f/friis/fixme_delete/'
+                }
+            },
+            '2011Jan10' : {
+                'ZtoMuTau_bgEstTemplate' : {
+                    'analysisFilePath' : "/user/v/veelken/CMSSW_3_8_x/plots/ZtoMuTau_bgEstTemplate/",
+                    'harvestingFilePath' : "/data1/veelken/CMSSW_3_8_x/plots/ZtoMuTau_bgEstTemplate/",
+                    'tmpFilePath' : "/data1/veelken/tmp/ZtoMuTau_bgEstTemplate/",
+                    'jobId' : "2011Jan10"
+                }
+            },
+	    '2011Jan09_lxbatch' : {
+                'ZtoMuTau_tauIdEff' : {
+                    'analysisFilePath' : "/castor/cern.ch/user/v/veelken/CMSSW_3_8_x/skims/TauIdEffMeas/",
+                    'harvestingFilePath' : "/data1/veelken/CMSSW_3_8_x/skims/ZtoMuTau_tauIdEff/",
+                    'tmpFilePath' : "/data1/veelken/tmp/ZtoMuTau_tauIdEff/",
+                     # Directory containing selected events
+                    'pickevents' : '/castor/cern.ch/user/f/friis/fixme_delete/'
+                }
+            },
+            '2011Jan07' : {
+                'ZtoMuTau' : {
+                    'analysisFilePath' : "/user/v/veelken/CMSSW_3_8_x/plots/ZtoMuTau/",
+                    'harvestingFilePath' : "/data1/veelken/CMSSW_3_8_x/plots/ZtoMuTau/",
+                    'tmpFilePath' : "/data1/veelken/tmp/ZtoMuTau/",
+                    'jobId' : "2011Jan07"
+                }
+            },
+            '2011Jan06_lxbatch' : {
+                'ZtoMuTau_tauIdEff' : {
+                    'analysisFilePath' : "/castor/cern.ch/user/v/veelken/CMSSW_3_8_x/skims/TauIdEffMeas/",
+                    'harvestingFilePath' : "/data1/veelken/CMSSW_3_8_x/skims/ZtoMuTau_tauIdEff/",
+                    'tmpFilePath' : "/data1/veelken/tmp/ZtoMuTau_tauIdEff/",
+                    # Directory containing selected events
+                    'pickevents' : '/castor/cern.ch/user/f/friis/fixme_delete/'
+                }
+            }, 
+            '2011Jan05ii' : {
+                'ZtoMuTau' : {
+                    'analysisFilePath' : "/user/v/veelken/CMSSW_3_8_x/plots/ZtoMuTau/",
+                    'harvestingFilePath' : "/data1/veelken/CMSSW_3_8_x/plots/ZtoMuTau/",
+                    'tmpFilePath' : "/data1/veelken/tmp/ZtoMuTau/",
+                    'jobId' : "2011Jan05ii"
+                }
+            },
+            '2010Dec31' : {
+                'ZtoMuTau_tauIdEff' : {
+                    'analysisFilePath' : "/user/v/veelken/CMSSW_3_8_x/skims/TauIdEffMeas/",
+                    'harvestingFilePath' : "/data1/veelken/CMSSW_3_8_x/skims/ZtoMuTau_tauIdEff/",
+                    'tmpFilePath' : "/data1/veelken/tmp/ZtoMuTau_tauIdEff/",
+                    'jobId' : "2010Dec31"
+                }
+            },
             '2010Dec27' : {
                 'AHtoMuTau' : {
                     'analysisFilePath' : "/castor/cern.ch/user/v/veelken/CMSSW_3_8_x/plots/AHtoMuTau/",
@@ -268,13 +327,13 @@ userSettings = {
             },
             '2010Dec23_lxbatch' : {
                 'AHtoMuTau' : {
-                    'analysisFilePath' : "/castor/cern.ch/user/v/veelken/CMSSW_3_8_x/plots/AHtoMuTau/2010Dec23_lxbatch/analysis",
+                    'analysisFilePath' : "/castor/cern.ch/user/v/veelken/CMSSW_3_8_x/plots/AHtoMuTau/2010Dec23_lxbatch/analysis/",
                     'harvestingFilePath' : "/data1/veelken/CMSSW_3_8_x/plots/AHtoMuTau/",
                     'tmpFilePath' : "/data1/veelken/tmp/AHtoMuTau/",
                     'jobId' : "2010Dec23_lxbatch",
                     # Where to store the harvested histograms on lxbatch
-                    'batchHarvest' : "/castor/cern.ch/user/v/veelken/CMSSW_3_8_x/plots/AHtoMuTau/2010Dec23_lxbatch/harvesting",
-                    'skimSource' : '2010Dec23'
+                    'batchHarvest' : "/castor/cern.ch/user/v/veelken/CMSSW_3_8_x/plots/AHtoMuTau/2010Dec23_lxbatch/harvesting/",
+                    'skimSource' : '2010Dec27'
                 }
             },
             '2010Dec23' : {
