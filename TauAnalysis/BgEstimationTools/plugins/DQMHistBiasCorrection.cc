@@ -106,7 +106,7 @@ std::pair<double, double> compCorrBinContentErr(
 
 void DQMHistBiasCorrection::endJob()
 {
-  //std::cout << "<DQMHistBiasCorrection::endJob>:" << std::endl;
+  std::cout << "<DQMHistBiasCorrection::endJob>:" << std::endl;
 
 //--- check that DQMStore service is available
   if ( !edm::Service<DQMStore>().isAvailable() ) {
@@ -150,6 +150,7 @@ void DQMHistBiasCorrection::endJob()
 
       unsigned numBins = histCorrNum->GetXaxis()->GetNbins();
       float* binEdges = getBinning(histCorrNum->GetXaxis());
+      //std::cout << "--> booking meCorrected = " << corrHistName << std::endl;
       MonitorElement* meCorrected = dqmStore.book1D(corrHistName, corrHistName, numBins, binEdges);
       TH1* histCorrected = meCorrected->getTH1();
       for ( unsigned iBin = 1; iBin <= numBins; ++iBin ) {
