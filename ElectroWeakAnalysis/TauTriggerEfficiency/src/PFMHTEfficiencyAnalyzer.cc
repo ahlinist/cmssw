@@ -19,6 +19,7 @@ PFMHTEfficiencyAnalyzer::~PFMHTEfficiencyAnalyzer(){}
 void PFMHTEfficiencyAnalyzer::Setup(const edm::ParameterSet& iConfig,TTree *trigtree)
 {
 	PFJetSource = iConfig.getParameter<edm::InputTag>("PFJetSource");
+	MHTJetThreshold = iConfig.getParameter<double>("MHTJetThreshold");
 
   	pfmhttree = trigtree;
 
@@ -39,6 +40,7 @@ void PFMHTEfficiencyAnalyzer::fill(const edm::Event& iEvent, const edm::EventSet
 	edm::PtrVector<reco::PFJet> jets = hjets->ptrVector();
 	for(edm::PtrVector<reco::PFJet>::const_iterator iter = jets.begin(); iter != jets.end(); ++iter) {
                 edm::Ptr<reco::PFJet> iJet = *iter;
+		if(iJet->pt() < MHTJetThreshold) continue;
                 hx += iJet->px();
                 hy += iJet->py();
         }

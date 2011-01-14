@@ -86,6 +86,7 @@ process.TTEffAnalysis = cms.EDAnalyzer("TTEffAnalyzer",
 	METCleaningSource	= cms.InputTag("HBHENoiseFilterResultProducer", "HBHENoiseFilterResult"),
 
 	PFJetSource		= cms.InputTag("ak5PFJets"),
+	MHTJetThreshold		= cms.double(20.),
 
 	HLTJetSource		= cms.InputTag("iterativeCone5CaloJets"),
 	HLTNJets		= cms.int32(4),

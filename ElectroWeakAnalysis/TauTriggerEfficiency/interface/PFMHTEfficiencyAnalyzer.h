@@ -30,6 +30,7 @@ class PFMHTEfficiencyAnalyzer {
 
         // Input parameters
 	edm::InputTag PFJetSource;
+	double MHTJetThreshold;
 
         // Output tree and related variables
         TTree *pfmhttree;
