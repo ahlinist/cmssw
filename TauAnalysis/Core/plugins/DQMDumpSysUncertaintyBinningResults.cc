@@ -288,7 +288,7 @@ void printBinResult(const std::string& sysTitle, const binResultType& binResult_
     
     bool parseError = false;
 
-    double binCentralValue = binResult_sysCentralValue.binContent_;
+    double binCentralValue = binResult_sysCentralValue.binContent_;    
     
     if ( regexpParser_bidirectional_entry.Match(sysName_tstring) >= 1 ) {
       TObjArray* subStrings = regexpParser_bidirectional_name.MatchS(sysName_tstring);
@@ -302,8 +302,8 @@ void printBinResult(const std::string& sysTitle, const binResultType& binResult_
 	double sysShift_down = getSysShift(binResults_systematic, std::string(sysName_bidirectional).append("Down"), binCentralValue);
 	
 	std::cout << " " << std::setw(20) << sysTitle << ":"
-		  << " up = " << std::setprecision(3) << std::fixed << sysShift_up*100. << "%,"
-		  << " down = " << std::setprecision(3) << std::fixed << sysShift_down*100. << "%" << std::endl;
+		  << " up = " << std::setprecision(4) << std::fixed << sysShift_up*100. << "%,"
+		  << " down = " << std::setprecision(4) << std::fixed << sysShift_down*100. << "%" << std::endl;
 	
 	sysNames_skip.push_back(sysName_bidirectional);
       } else {
@@ -344,7 +344,7 @@ void printBinResult(const std::string& sysTitle, const binResultType& binResult_
 	  }
 	
 	  std::cout << " " << std::setw(20) << sysTitle << ":"
-		    << " " << std::setprecision(3) << std::fixed << TMath::Sqrt(sysShiftsSum2)*100. << "%" << std::endl;
+	  	    << " " << std::setprecision(4) << std::fixed << TMath::Sqrt(sysShiftsSum2)*100. << "%" << std::endl;
 	  
 	} else if ( method == kPDF ) {
 //--- estimation of (PDF) uncertainties
@@ -377,8 +377,8 @@ void printBinResult(const std::string& sysTitle, const binResultType& binResult_
 	  }
 	  
 	  std::cout << " " << std::setw(20) << sysTitle << ":"
-		    << " plus " << std::setprecision(3) << std::fixed << TMath::Sqrt(sysShiftsSum2_plus)*100. << "%,"
-		    << " minus " << std::setprecision(3) << std::fixed << TMath::Sqrt(sysShiftsSum2_minus)*100. << "%" 
+		    << " plus " << std::setprecision(4) << std::fixed << TMath::Sqrt(sysShiftsSum2_plus)*100. << "%,"
+		    << " minus " << std::setprecision(4) << std::fixed << TMath::Sqrt(sysShiftsSum2_minus)*100. << "%" 
 		    << " (PDF set central value = " << binCentralValue << ")" << std::endl;
 	}
 
@@ -390,7 +390,7 @@ void printBinResult(const std::string& sysTitle, const binResultType& binResult_
       double sysShift = getSysShift(binResults_systematic, sysName, binCentralValue);
 	
       std::cout << " " << std::setw(20) << sysName << ":"
-		<< " " << std::setprecision(3) << std::fixed << sysShift*100. << "%" << std::endl;
+		<< " " << std::setprecision(4) << std::fixed << sysShift*100. << "%" << std::endl;
     }
     
     if ( parseError ) {
