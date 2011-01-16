@@ -122,5 +122,14 @@ void fillHistogramGenMatch(MonitorElement* histo, double value, const reco::Cand
 			   const reco::GenParticleCollection& genParticles, const std::vector<int>& pdgIds, 
 			   double weight)
 {
-  if ( findGenParticle(p4MatchDirection, genParticles, 0.5, -1, &pdgIds) ) histo->Fill(value, weight);
+  const reco::GenParticle* genParticleBestMatch = findGenParticle(p4MatchDirection, genParticles, 0.5);
+  if ( genParticleBestMatch ) {
+    bool isMatched = false;
+    for ( std::vector<int>::const_iterator pdgId = pdgIds.begin();
+	  pdgId != pdgIds.end(); ++pdgId ) {
+      if ( TMath::Abs(genParticleBestMatch->pdgId()) == TMath::Abs(*pdgId) ) isMatched = true;
+    }
+    
+    if ( isMatched ) histo->Fill(value, weight);
+  }
 }
