@@ -32,7 +32,7 @@ compatibility-->
  <Constant name="SiFrSuppBoxThick"   value="0.258*mm"/>
  <Constant name="SiReenforcementThick"   value="0.387*mm"/>
  <Constant name="NoOverlapShift"   value="0.0*mm"/>
- <Constant name="InactiveDy"   value="0.05*mm"/>
+ <Constant name="InactiveDy"   value="1.50*mm"/>
 </ConstantsSection>
 
 <RotationSection label="tecmodpar.xml">
