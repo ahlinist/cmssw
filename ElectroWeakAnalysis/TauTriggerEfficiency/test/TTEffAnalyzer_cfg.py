@@ -44,14 +44,19 @@ if(isData):
 else:
     process.source = cms.Source("PoolSource",
 	fileNames = cms.untracked.vstring(
-#	    "file:/data/ndpc2/b/nvallsve/temp/test_H120_100_1_08t_RAW_RECO.root"
-#	    "rfio:/castor/cern.ch/user/s/slehti/testData/test_H120_100_1_08t_RAW_RECO.root"
-	    "rfio:/castor/cern.ch/user/s/slehti/testData/TTEffSkim_DYToTauTau_M-20_TuneZ2_7TeV-pythia6-tauola_Fall10_muRawRecoSkim.root"
-#	    '/store/user/eluiggi/MinBias/TTEffCSTauSkimMinBiasSpring10MC3XYV27S09/3a986c9293445dcb2819d07578601385/CSTauSkim_1_1_3W4.root',
-#	    '/store/user/eluiggi/MinBias/TTEffCSTauSkimMinBiasSpring10MC3XYV27S09/3a986c9293445dcb2819d07578601385/CSTauSkim_2_1_tfj.root',
-#	    '/store/user/eluiggi/MinBias/TTEffCSTauSkimMinBiasSpring10MC3XYV27S09/3a986c9293445dcb2819d07578601385/CSTauSkim_3_1_1up.root',
-#	    '/store/user/eluiggi/MinBias/TTEffCSTauSkimMinBiasSpring10MC3XYV27S09/3a986c9293445dcb2819d07578601385/CSTauSkim_4_1_lBK.root',
-#	    '/store/user/eluiggi/MinBias/TTEffCSTauSkimMinBiasSpring10MC3XYV27S09/3a986c9293445dcb2819d07578601385/CSTauSkim_5_1_ZSt.root'
+	'/store/user/luiggi/TTEffSkim_10_1_MV8.root',
+	'/store/user/luiggi/TTEffSkim_15_1_7Zn.root',
+	'/store/user/luiggi/TTEffSkim_1_1_zWT.root',
+	'/store/user/luiggi/TTEffSkim_20_1_26A.root',
+	'/store/user/luiggi/TTEffSkim_23_1_ecx.root',
+	'/store/user/luiggi/TTEffSkim_25_1_beC.root',
+	'/store/user/luiggi/TTEffSkim_30_1_AB6.root',
+	'/store/user/luiggi/TTEffSkim_35_1_10V.root',
+	'/store/user/luiggi/TTEffSkim_40_1_cyO.root',
+	'/store/user/luiggi/TTEffSkim_45_1_NLG.root',
+	'/store/user/luiggi/TTEffSkim_46_1_XpU.root',
+	'/store/user/luiggi/TTEffSkim_47_1_fkY.root',
+	'/store/user/luiggi/TTEffSkim_5_1_P2H.root'
 	)
     )
 
@@ -61,16 +66,40 @@ process.load('Configuration/StandardSequences/FrontierConditions_GlobalTag_cff')
 if (isData):
     process.GlobalTag.globaltag = 'GR_R_38X_V15::All'
 else:
-    process.GlobalTag.globaltag = 'START38_V14::All'
+    process.GlobalTag.globaltag = 'START38_V12::All'
     #process.GlobalTag.globaltag = 'MC_38Y_V14::All'
 
 print process.GlobalTag.globaltag
 
 #process.prefer("magfield")
 
+<<<<<<< TTEffAnalyzer_cfg.py
+#copying the Discriminator by Isolation
+#prediscriminator
+from RecoTauTag.RecoTau.PFRecoTauDiscriminationByLeadingTrackFinding_cfi import *
+process.thisPFTauDiscriminationByLeadingTrackFinding = copy.deepcopy(pfRecoTauDiscriminationByLeadingTrackFinding)
+process.thisPFTauDiscriminationByLeadingTrackFinding.PFTauProducer = 'PFTausSelected'
+
+from RecoTauTag.RecoTau.PFRecoTauDiscriminationByIsolationUsingLeadingPion_cfi import *
+process.thisPFTauDiscriminationByIsolation = copy.deepcopy(pfRecoTauDiscriminationByIsolationUsingLeadingPion)
+process.thisPFTauDiscriminationByIsolation.PFTauProducer = 'PFTausSelected' 
+process.thisPFTauDiscriminationByIsolation.MinPtLeadingPion = cms.double(3.0)
+process.thisPFTauDiscriminationByIsolation.Prediscriminants.leadPion.Producer = cms.InputTag('thisPFTauDiscriminationByLeadingTrackFinding')
+
+#copying the Discriminator against Muon
+from RecoTauTag.RecoTau.PFRecoTauDiscriminationAgainstMuon_cfi import *
+process.thisPFTauDiscriminationAgainstMuon = copy.deepcopy(pfRecoTauDiscriminationAgainstMuon)
+process.thisPFTauDiscriminationAgainstMuon.PFTauProducer = 'PFTausSelected' 
+process.thisPFTauDiscriminationAgainstMuon.Prediscriminants.leadPion.Producer = cms.InputTag('thisPFTauDiscriminationByLeadingTrackFinding')
+
+hltType = "HLT"
+if(not isData):
+  hltType = "REDIGI38X"
+=======
 #MET cleaning flag
 process.load('CommonTools/RecoAlgos/HBHENoiseFilterResultProducer_cfi')
 process.hbheflag = cms.Path(process.HBHENoiseFilterResultProducer)
+>>>>>>> 1.96
 
 process.TTEffAnalysis = cms.EDAnalyzer("TTEffAnalyzer",
         DoMCTauEfficiency       = cms.bool(False), #if true: per MCTau cand; default is false: per offline tau cand
@@ -106,10 +135,8 @@ process.TTEffAnalysis = cms.EDAnalyzer("TTEffAnalyzer",
 
         L1CaloRegionSource      = cms.InputTag("hltGctDigis"), # "", "TTEff"),                               
         L1GtReadoutRecord       = cms.InputTag("gtDigis",""),
-        L1GtObjectMapRecord     = cms.InputTag("hltL1GtObjectMap","","HLT"),
-        HltResults              = cms.InputTag("TriggerResults","","HLT"),
-#	L1GtObjectMapRecord     = cms.InputTag("hltL1GtObjectMap","","REDIGI38X"),
-#	HltResults              = cms.InputTag("TriggerResults","","REDIGI38X"),
+        L1GtObjectMapRecord     = cms.InputTag("hltL1GtObjectMap","",hltType),
+        HltResults              = cms.InputTag("TriggerResults","",hltType),
         L1TauTriggerSource      = cms.InputTag("tteffL1GTSeed"),
 	L1JetMatchingCone	= cms.double(0.5),
 	L1JetMatchingMode	= cms.string("nearestDR"), # "nearestDR", "highestEt"
@@ -123,12 +150,12 @@ process.TTEffAnalysis = cms.EDAnalyzer("TTEffAnalyzer",
         crystalThresholdEB      = cms.untracked.double(0.15),
         crystalThresholdEE      = cms.untracked.double(0.45),
         L2matchingDeltaR        = cms.double(0.2),
-        l25JetSource            = cms.InputTag("openhltL25TauConeIsolation"),
-        l25PtCutSource          = cms.InputTag("hltL25TauLeadingTrackPtCutSelector"),
+        l25JetSource            = cms.InputTag("hltPFTauTagInfo"),
+        l25PtCutSource          = cms.InputTag("hltPFTaus"),
         l3IsoSource             = cms.InputTag("hltL3TauIsolationSelector"), #obsolet: L25/L3 merged?
         l25MatchingCone         = cms.double(0.3),
         MCMatchingCone         = cms.double(0.2),
-        HLTPFTau                = cms.bool(False),
+        HLTPFTau                = cms.bool(True),
         MCTauCollection         = cms.InputTag("TauMCProducer:HadronicTauOneAndThreeProng"),
 	GenParticleCollection	= cms.InputTag("genParticles"),
         outputFileName          = cms.string("tteffAnalysis-pftau.root")
