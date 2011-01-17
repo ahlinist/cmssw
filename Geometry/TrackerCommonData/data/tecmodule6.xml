@@ -100,7 +100,7 @@
   <Numeric name="BackPlaneThick"     value="2*[tracker:BackPlaneDz]"/>
   <Numeric name="InactiveDy"         value="[tecmodpar:InactiveDy]"/>
   <Numeric name="InactivePos"        value="[tecmodule6:InactiveStart]+[tecmodpar:InactiveDy]"/>
-  <String name="InactiveMaterial"    value="materials:Air"/>
+  <String name="InactiveMaterial"    value="materials:Silicon"/>
   <String name="HybridMaterial"      value="tecmaterial:TEC_Hybrid4APV"/>
   <Numeric name="HybridHeight"       value="[tecmodpar:HybridHeight]"/>
   <Numeric name="HybridWidth"        value="[tecmodpar:HybridWidth]"/>
