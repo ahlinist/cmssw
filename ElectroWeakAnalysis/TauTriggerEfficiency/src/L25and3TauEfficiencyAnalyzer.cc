@@ -1,7 +1,7 @@
 // Class:      L25and3TauEfficiencyAnalyzer
 // Original Author:  Eduardo Luiggi, modified by Sho Maruyama
 //         Created:  Fri Apr  4 16:37:44 CDT 2008
-// $Id: L25and3TauEfficiencyAnalyzer.cc,v 1.6 2010/03/19 12:12:15 mkortela Exp $
+// $Id: L25and3TauEfficiencyAnalyzer.cc,v 1.7 2010/09/09 18:25:02 eluiggi Exp $
 #include "ElectroWeakAnalysis/TauTriggerEfficiency/interface/L25and3TauEfficiencyAnalyzer.h"
 #include "FWCore/MessageLogger/interface/MessageLogger.h"
 using namespace edm;
@@ -42,6 +42,9 @@ void L25and3TauEfficiencyAnalyzer::Setup(const edm::ParameterSet& iConfig,TTree*
   l25tree->Branch("l25IsoTrkNHits",&l25IsoTrkNHits,"l25IsoTrkNHits/I");
   l25tree->Branch("l25IsoTrkChi2",&l25IsoTrkChi2,"l25IsoTrkChi2/F");
   l25tree->Branch("l25IsoTrkPt",&l25IsoTrkPt,"l25IsoTrkPt/F");
+  l25tree->Branch("l3GammaIsoSum",&l3GammaIsoSum,"l3GammaIsoSum/F");
+  l25tree->Branch("l3TrkIsoSum",&l3TrkIsoSum,"l3TrkIsoSum/F");
+  
 }
 
 void L25and3TauEfficiencyAnalyzer::fill(const edm::Event& iEvent, const reco::Particle& tau) {
@@ -115,6 +118,8 @@ void L25and3TauEfficiencyAnalyzer::fill(const edm::Event& iEvent, const LorentzV
 	if(deltaR(tau, ptJets->at(j) ) < l25MatchingCone){ // dr < l25MatchingCone
 	  if(l25Depth < 3){
 	    l25Depth = 3; // lead pt cut match
+	    l3TrkIsoSum = ptJets->at(j).isolationPFChargedHadrCandsPtSum();
+	    l3GammaIsoSum = ptJets->at(j).isolationPFGammaCandsEtSum();
 	    break;
 	  }
 	}// pf and l25 tau match dr < l25MatchingCone
@@ -123,6 +128,7 @@ void L25and3TauEfficiencyAnalyzer::fill(const edm::Event& iEvent, const LorentzV
     else {
       //edm::LogWarning("TTEffAnalyzer") <<"No L25PtJetsource in event!"<<std::endl;
     }
+/*
     if(isoJets.isValid()){
       for(unsigned int j = 0; j < isoJets->size(); j++){
 	if(deltaR(tau, isoJets->at(j)) < l25MatchingCone){ // dr < l25MatchingCone
@@ -133,10 +139,12 @@ void L25and3TauEfficiencyAnalyzer::fill(const edm::Event& iEvent, const LorentzV
 	}
       }
     }
+
     else {
       //edm::LogWarning("TTEffAnalyzer") <<"No L3IsoJetsource in event!"<<std::endl;
     }
     
+*/   
   }
   else {
     Handle<IsolatedTauTagInfoCollection> tags;
