@@ -1,7 +1,7 @@
 // Class:      L25and3TauEfficiencyAnalyzer
 // Original Author:  Eduardo Luiggi, modified by Sho Maruyama
 //         Created:  Fri Apr  4 16:37:44 CDT 2008
-// $Id: L25and3TauEfficiencyAnalyzer.h,v 1.4 2010/04/07 09:39:24 slehti Exp $
+// $Id: L25and3TauEfficiencyAnalyzer.h,v 1.5 2010/09/09 18:25:03 eluiggi Exp $
 #include <memory>
 #include "FWCore/Framework/interface/Frameworkfwd.h"
 #include "FWCore/Framework/interface/EDAnalyzer.h"
@@ -63,6 +63,9 @@ virtual void fill(const edm::Event&, const reco::Particle&);
       float l25EtaLdgLoose;
       float l25PhiLdgLoose;
       float l25PtLdgLoose;
+      
+      float l3GammaIsoSum;
+      float l3TrkIsoSum;
       
       bool l25DefDisc_Trk5_IsoPtMin1_Ntrk0;
       bool l25DefDisc_Trk5_IsoPtMin1_Ntrk1;
