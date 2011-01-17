@@ -120,13 +120,15 @@ RctValidation::RctValidation( const edm::ParameterSet& iConfig ) :
       rctEffPtHighest = store->book1D("rctEffPtHighest" ,"rct e/#gamma E_{T}",binsEt_,0.,maxEt_);
 
       rctPtNoSpike = store->book1D("rctPtNoSpike" ,"rct e/#gamma E_{T} wo spike",binsEt_,0.,maxEt_);
-      rctPtEGHEcut = store->book1D("rctPtEGHEcut" ,"rct e/#gamma E_{T} objects with h/e and fg cut",binsEt_,0.,maxEt_);
-      rctPtIsoEGHEFGcut = store->book1D("rctPtIsoEGHEFGcut" ,"rct isolated e/#gamma E_{T} h/e cut and fg cut ",binsEt_,0.,maxEt_);
-      rctPtIsoEGHEFGIsocut = store->book1D("rctPtIsoEGHEFGIsocut" ,"rct isolated e/#gamma E_{T} h/e cut, fg cut, and iso ",binsEt_,0.,maxEt_);
+      rctPtEGFGcut = store->book1D("rctPtEGFGcut" ,"rct e/#gamma E_{T} objects",binsEt_,0.,maxEt_);
+      rctPtEGHEcut = store->book1D("rctPtEGHEcut" ,"rct e/#gamma E_{T} objects",binsEt_,0.,maxEt_);
+      rctPtIsoEGHEFGcut = store->book1D("rctPtIsoEGHEFGcut" ,"rct isolated e/#gamma E_{T",binsEt_,0.,maxEt_);
+      rctPtIsoEGHEFGIsocut = store->book1D("rctPtIsoEGHEFGIsocut" ,"rct isolated e/#gamma E_{T}",binsEt_,0.,maxEt_);
 
 
       rctPtNoSpike->getTH1F()->Sumw2();
       rctPtEGHEcut->getTH1F()->Sumw2();
+      rctPtEGFGcut->getTH1F()->Sumw2();
       rctPtIsoEGHEFGcut->getTH1F()->Sumw2();
       rctPtIsoEGHEFGIsocut->getTH1F()->Sumw2();
 
@@ -230,17 +232,20 @@ RctValidation::RctValidation( const edm::ParameterSet& iConfig ) :
 		rctHEvECALEt = store->book2D("rctHEvECALEt","H/E values versus ECAL e/#gamma E_{T}", 64, -0.5, 32.5, 40, 0, 1);
 		rctHEvHCALEt = store->book2D("rctHEvHCALEt","H/E values versus HCAL e/#gamma E_{T}", 64, -0.5, 32.5, 40, 0, 1);
 		rctHE = store->book1D("rctHE","H/E values of L1 e/#gamma objects", 40, 0, 1);
-		rctHEafterFG = store->book1D("rctHEafterFG","H/E values of L1 e/#gamma objects with FG cut", 40, 0, 1);
+		rctHEafterFG = store->book1D("rctHEafterFG","H/E values of L1 e/#gamma objects", 40, 0, 1);
 		regionHE = store->book1D("regionHE","H/E values of L1 e/#gamma 3x3 objects", 40, 0, 1);
 		regionMaxHE = store->book1D("regionMaxHE","H/E values of L1 e/#gamma 3x3 objects", 40, 0, 1);
-		regionMaxHEafterFG = store->book1D("regionMaxHE","H/E values of L1 e/#gamma 3x3 objects", 40, 0, 1);
+		regionMaxHEafterFG = store->book1D("regionMaxHEafterFG","H/E values of L1 e/#gamma 3x3 objects", 40, 0, 1);
 
 		rctHEvL1Et->getTH2F()->Sumw2();
 		rctHEvEt->getTH2F()->Sumw2();
 		rctHEvECALEt->getTH2F()->Sumw2();
 		rctHEvHCALEt->getTH2F()->Sumw2();
 		rctHE->getTH1F()->Sumw2();
-		
+		rctHEafterFG->getTH1F()->Sumw2();
+		regionMaxHE->getTH1F()->Sumw2();
+		regionMaxHEafterFG->getTH1F()->Sumw2();
+
 		regionHE->getTH1F()->Sumw2();
 
 		tpgECALsecondtower  = store->book1D("tpgECALsecondtower" ,"tpg e/#gamma E_{T} of neighboring tower in object",80,0.,20);
@@ -254,13 +259,13 @@ RctValidation::RctValidation( const edm::ParameterSet& iConfig ) :
 		sumHCAL  = store->book1D("sumHCAL" ,"tpg e/#gamma E_{T} sum of HCAL 3x3 region towers",80,0.,40);
 		regionSum =	    store->book1D("regionSum" ,"tpg e/#gamma E_{T} sum of 3x3 region towers",80,0.,40);
 		diffSumEgamma = store->book1D("diffSumEgamma", "energy of other towers",40,0.,10);
-		minLSum = store->book1D("minLSum", "Smallest neighbor energy of isolation comparison",40,0.,10);
-		minLSumHE = store->book1D("minLSum", "Smallest neighbor energy of isolation comparison with HE 0.1 cut",40,0.,10);
+		minLSum = store->book1D("minLSum", "Smallest Neighbor Corner Energy",40,0.,10);
+		minLSumHE = store->book1D("minLSumHE", "Smallest Neighbor Corner Energy",40,0.,10);
 	
-		rctFGneighborEt = store->book1D("rctFGneighborEt","Max Et of neighbor with FG", 40, 0., 20);
+		rctFGneighborEt = store->book1D("rctFGneighborEt","Max Et of neighbor with FG", 80, 0., 40);
 		rctFGMainTowerEt = store->book1D("rctFGMainTowerEt"," Et of central with FG", 40, 0., 20);
 		//		rctNoFGneighborEt = store->book1D("rctFGneighborEt","Max Et of neighbor without FG", 40, 0., 20);
-		rctNoFGMainTowerEt = store->book1D("rctFGMainTowerEt"," Et of central without FG", 40, 0., 20);
+		rctNoFGMainTowerEt = store->book1D("rctNoFGMainTowerEt"," Et of central without FG", 80, 0., 40);
 
 
 		rctFGneighborEt->getTH1F()->Sumw2();
@@ -346,8 +351,8 @@ RctValidation::analyze(const Event& iEvent, const EventSetup& iSetup )
 
 	if(!gotRef)
 		std::cout << " no referance found " << std::endl;
-	else	
-		std::cout << "  referance FOUND " << std::endl;
+	//	else	
+	//	std::cout << "  referance FOUND " << std::endl;
   //get ECAL TPGs
   edm::Handle<EcalTrigPrimDigiCollection> ecalTPGs;
   bool gotECALTPs = iEvent.getByLabel(ecalTPGs_,ecalTPGs);
@@ -403,8 +408,8 @@ RctValidation::analyze(const Event& iEvent, const EventSetup& iSetup )
 	    if(et > highestEtTTet ) {
 	      highestEtTT = *iTT;
 	      highestEtTTet =et;
-	      centralFG = iTT->fineGrain();
-	      centralSpike = !(iTT->l1aSpike());
+	      centralFG = iTT->fineGrain() && et< 30;
+	      centralSpike = (iTT->l1aSpike()==0);
 	    }
 	  }
 	  if(!centralSpike) {// don't look at spike events or fineGrain events\	  
@@ -427,11 +432,16 @@ RctValidation::analyze(const Event& iEvent, const EventSetup& iSetup )
 	      double ecalTTEt= tpgs3x3.at(i);
 	      double hcalTTEt = tpgs3x3.at(i+9);
 	    
-	      if(hcalTTEt>0){
+	      if(hcalTTEt>0  && ecalTTEt < 30){
 		dirHCALclosest->Fill((i%3)-1,(i/3)-1);
 		dirHCALclosestWeighted->Fill((i%3)-1,(i/3)-1, hcalTTEt);
-		if(highestHEneighbor < (hcalTTEt/ecalTTEt ))
-		  highestHEneighbor = hcalTTEt/ecalTTEt ;
+		if(ecalTTEt >2){  // minimum ecal energy for he cut
+		  if(highestHEneighbor < (hcalTTEt/ecalTTEt ))
+		    highestHEneighbor = hcalTTEt/ecalTTEt ;
+		}  else{ 
+		    if(hcalTTEt >2) // above noise threshold
+		      highestHEneighbor = 0.99;
+		  }
 	      }
 	      
 	      ecal3x3Tot += ecalTTEt;
@@ -480,10 +490,12 @@ RctValidation::analyze(const Event& iEvent, const EventSetup& iSetup )
 	    if(centralFG) {
 	      rctFGMainTowerEt->Fill(highestEtTTet);
 	    } else {
+	      rctPtEGFGcut->Fill(emS->et(rctEGamma.rank()));
+	      rctNoFGMainTowerEt->Fill(highestEtTTet);
 	      rctHEafterFG->Fill(rctHe);
 	      if(rctHe < HEcut_){
 	      rctPtEGHEcut->Fill(emS->et(rctEGamma.rank()));
-	      
+
 	      if(energyMaxFGcorner > 0) 
 		rctFGneighborEt->Fill(energyMaxFGcorner);
 	      else {
@@ -522,7 +534,7 @@ RctValidation::analyze(const Event& iEvent, const EventSetup& iSetup )
 //  	std::cout << "testing" << std::endl;
   //OK Now Efficiency calculations
 	
-  //	std::cout << " number of objects " << genEGamma->size() <<std::endl;
+  //  	std::cout << " number of objects " << genEGamma->size() <<std::endl;
 	if(gotRef){
 	  for(  edm::View<reco::Candidate> ::const_iterator j = genEGamma->begin() ;   j != genEGamma->end(); ++j )
  //   for(unsigned int j=0;j<genEGamma->size();++j) 
@@ -558,7 +570,7 @@ RctValidation::analyze(const Event& iEvent, const EventSetup& iSetup )
 		refEt->Fill(j->et());
 		refEta->Fill(j->eta());
 		refPhi->Fill(j->phi());
-		
+		//		std::cout << "filling referance" << std::endl;
 		if(fabs(j->phi()) < barrelBoundry_)
 			refPtBarrel->Fill(j->pt());
 		else if(fabs(j->phi()) > endcapBoundry_)
@@ -602,7 +614,7 @@ RctValidation::analyze(const Event& iEvent, const EventSetup& iSetup )
 	 */
       if(rctEGammas.size()>0)
         for(L1GctEmCandCollection::const_iterator i=rctEGammas.begin();i!=rctEGammas.end();++i)
-          if(i->rank()>0)
+          if(emS->et(i->rank())>egammaThreshold_)
           {
             //create lorenzt vector
 			  math::PtEtaPhiMLorentzVector rctVec = rctLorentzVector(*i);//,caloGeom),emS);
@@ -619,14 +631,14 @@ RctValidation::analyze(const Event& iEvent, const EventSetup& iSetup )
         //Ok find the highest matched rct cand
         RCTEmSorter sorter;
 		  RCTEmEnergySorter esorter(*j, emS);
-		  std::sort(rctNearReference.begin(),rctNearReference.end(),esorter);
+		  std::sort(rctNearReference.begin(),rctNearReference.end(),sorter);
         L1GctEmCand highestRCT = rctNearReference.at(0);
 
 	math::PtEtaPhiMLorentzVector highestVec = rctLorentzVector(highestRCT);//,caloGeom,emS);
 
-	//		  		  std::cout << "highest RCT found rank" << highestRCT << std::endl;
-    if(  matchL1Objects_){
-      EcalTrigPrimDigiCollection* l1TrigTowers = new EcalTrigPrimDigiCollection();
+	//			  		  std::cout << "highest RCT found rank" << highestRCT << std::endl;
+	if(  matchL1Objects_){
+	  EcalTrigPrimDigiCollection* l1TrigTowers = new EcalTrigPrimDigiCollection();
 	  findRegionTowers(highestRCT,*ecalTPGs,l1TrigTowers);
 
 	  EcalTriggerPrimitiveDigi highestEtTT;
@@ -634,7 +646,7 @@ RctValidation::analyze(const Event& iEvent, const EventSetup& iSetup )
 	  double totalEnergy = 0., highestEtTTet =-1.,highestEtTTHCAL= 0.;
 	  bool centralFG = false, centralSpike = false;
 	  for(EcalTrigPrimDigiCollection::const_iterator iTT = l1TrigTowers->begin() ; iTT != l1TrigTowers->end(); ++iTT){
-	    //			  std::cout << "loop, high trig tower et " << highestEtTTet <<std::endl;
+	    //	
 	    double et = eS->et(iTT->compressedEt(),abs(iTT->id().ieta()),iTT->id().ieta()/abs(iTT->id().ieta()));	
 	    //			  std::cout << "loop, trig tower  compressed et " << iTT->compressedEt(); //<<std::endl;	
 	    totalEnergy += et;
@@ -643,11 +655,12 @@ RctValidation::analyze(const Event& iEvent, const EventSetup& iSetup )
 	    if(et > highestEtTTet ) {
 	      highestEtTT = *iTT;
 	      highestEtTTet =et;
-	      centralFG = iTT->fineGrain();
-	      centralSpike = !(iTT->l1aSpike());
+	      centralFG = iTT->fineGrain()&&  et< 30;
+	      centralSpike = (iTT->l1aSpike()==0 );
 	    }
 	  }
-	  if(!centralSpike) {// don't look at spike events or fineGrain events\	  
+	  //	  std::cout << " high trig tower et " << highestEtTTet <<std::endl;
+	  if(!centralSpike && emS->et(highestRCT.rank()) >egammaThreshold_) {// don't look at spike events or fineGrain events\	  
 	  
 	    rctPtNoSpike->Fill(emS->et(highestRCT.rank()));
 	  
@@ -667,13 +680,19 @@ RctValidation::analyze(const Event& iEvent, const EventSetup& iSetup )
 	      double ecalTTEt= tpgs3x3.at(i);
 	      double hcalTTEt = tpgs3x3.at(i+9);
 	    
-	      if(hcalTTEt>0){
+	      if(hcalTTEt>0 && ecalTTEt < 30){
 		dirHCALclosest->Fill((i%3)-1,(i/3)-1);
 		dirHCALclosestWeighted->Fill((i%3)-1,(i/3)-1, hcalTTEt);
-		if(highestHEneighbor < (hcalTTEt/ecalTTEt ))
-		  highestHEneighbor = hcalTTEt/ecalTTEt ;
+		if(i != 4) {
+		  if(ecalTTEt >2){  // minimum ecal energy for he cut
+		    if(highestHEneighbor < (hcalTTEt/ecalTTEt ))
+		      highestHEneighbor = hcalTTEt/ecalTTEt ;	      
+		  } else{ 
+		    if(hcalTTEt >2) // above noise threshold
+		      highestHEneighbor = .99;
+		  }
+		}
 	      }
-	      
 	      ecal3x3Tot += ecalTTEt;
 	      hcal3x3Tot += hcalTTEt;
 	      if( i%2 ==1  )  { // find neighbors of ecal
@@ -720,15 +739,17 @@ RctValidation::analyze(const Event& iEvent, const EventSetup& iSetup )
 	    if(centralFG) {
 	      rctFGMainTowerEt->Fill(highestEtTTet);
 	    } else {
+	      rctPtEGFGcut->Fill(emS->et(highestRCT.rank()));
+	      rctNoFGMainTowerEt->Fill(highestEtTTet);
 	      rctHEafterFG->Fill(rctHe);
 	      if(rctHe < HEcut_){
-	      rctPtEGHEcut->Fill(emS->et(highestRCT.rank()));
+		rctPtEGHEcut->Fill(emS->et(highestRCT.rank()));
 	      
-	      if(energyMaxFGcorner > 0) 
-		rctFGneighborEt->Fill(energyMaxFGcorner);
-	      else {
-		minLSum->Fill(minELsum);
-		regionMaxHEafterFG->Fill(highestHEneighbor);
+		if(energyMaxFGcorner > 0) 
+		  rctFGneighborEt->Fill(energyMaxFGcorner);	      
+		else{
+		  minLSum->Fill(minELsum);
+		  regionMaxHEafterFG->Fill(highestHEneighbor);
 		if(highestHEneighbor < HEcut_) {
 		  rctPtIsoEGHEFGcut->Fill(emS->et(highestRCT.rank()));
 		  minLSumHE->Fill(minELsum);
@@ -1094,7 +1115,7 @@ RctValidation::find3x3Towers(int etaCentral, int phiCentral ,const EcalTrigPrimD
 
       if(ecalTT->id() == ttEDetId){ // if TP is present in collection, hcalTT is the end piece
 	tpgs3x3[i*3+j] =eS->et(ecalTT->compressedEt(),abs(ieta),ieta/abs(ieta));// ecalTT->compressedEt();
-	if(ecalTT->fineGrain())
+	if(ecalTT->fineGrain() && eS->et(ecalTT->compressedEt(),abs(ieta),ieta/abs(ieta)) <30)
 	  tpgs3x3[i*3+j+18] = 1;
       }
 	

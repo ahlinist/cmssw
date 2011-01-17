@@ -200,6 +200,7 @@ private:
   MonitorElement* rctPtNoSpike;
 
   MonitorElement* rctPtEGHEcut;
+  MonitorElement* rctPtEGFGcut;
 
   MonitorElement* rctPtIsoEGHEFGcut;
   MonitorElement* rctPtIsoEGHEFGIsocut;
@@ -240,6 +241,8 @@ private:
 	MonitorElement* dirHCALclosestWeighted;
 	MonitorElement* sumECAL;
 	MonitorElement* sumHCAL;
+	MonitorElement* maxHCALneighbor;
+	MonitorElement* maxHCALneighborNoEcal;
 	MonitorElement* regionSum;
 	MonitorElement* regionHE;
 	MonitorElement* regionMaxHE;
