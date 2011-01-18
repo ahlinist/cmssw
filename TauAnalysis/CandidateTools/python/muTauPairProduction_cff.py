@@ -37,6 +37,21 @@ svFitLikelihoodMuTauPairZprod.process = cms.string("Z0")
 # produce combinations of muon + tau-jet pairs
 #--------------------------------------------------------------------------------
 
+svfit_with_track = cms.PSet(
+    likelihoodFunctions = cms.VPSet(
+        svFitLikelihoodMuTauPairKinematicsPhaseSpace,
+        svFitLikelihoodMuTauPairMEt,
+        svFitLikelihoodMuTauPairTrackInfo,
+        svFitLikelihoodMuTauPairPtBalance
+    ),
+    parameterizeVertexAlongTrackLeg1 = cms.bool(True),
+    parameterizeVertexAlongTrackLeg2 = cms.bool(True),
+    estUncertainties = cms.PSet(
+        #numSamplings = cms.int32(1000)
+        numSamplings = cms.int32(-1)
+    )
+)
+
 allMuTauPairs = cms.EDProducer("PATMuTauPairProducer",
     useLeadingTausOnly = cms.bool(False),
     srcLeg1 = cms.InputTag('selectedPatMuonsTrkIPcumulative'),
@@ -88,7 +103,6 @@ allMuTauPairs = cms.EDProducer("PATMuTauPairProducer",
                 numSamplings = cms.int32(-1)
             )
         ),
-        ##),
         ##psKine_MEt_Track_ptBalance = cms.PSet(
         ##    likelihoodFunctions = cms.VPSet(
         ##        svFitLikelihoodMuTauPairKinematicsPhaseSpace,
