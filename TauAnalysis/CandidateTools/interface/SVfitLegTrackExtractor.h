@@ -3,15 +3,15 @@
 
 /** \class SVfitLegTrackExtractor
  *
- * Auxiliary class to encapsulate the different methods 
- * for accessing the tracks of pat::Electrons and pat::Muons 
+ * Auxiliary class to encapsulate the different methods
+ * for accessing the tracks of pat::Electrons and pat::Muons
  * and the signal cone tracks of pat::Taus
- * 
+ *
  * \author Evan Friis, Christian Veelken; UC Davis
  *
- * \version $Revision: 1.2 $
+ * \version $Revision: 1.1 $
  *
- * $Id: SVfitLegTrackExtractor.h,v 1.2 2009/05/26 12:36:29 veelken Exp $
+ * $Id: SVfitLegTrackExtractor.h,v 1.1 2010/08/30 13:26:49 veelken Exp $
  *
  */
 
@@ -86,5 +86,44 @@ class SVfitLegTrackExtractor<pat::Tau>
     return tracks;
   }
 };
+
+// Class to determine if a leg has any neutral objects associated to it
+// Generic dummy case
+template <typename T>
+class SVfitLegHasNeutralsExtractor
+{
+  public:
+    bool operator()(const T& lepton) const {
+      return true;
+    }
+};
+
+template <>
+class SVfitLegHasNeutralsExtractor<pat::Electron>
+{
+  public:
+    bool operator()(const pat::Electron& lepton) const {
+      return false;
+    }
+};
+
+template <>
+class SVfitLegHasNeutralsExtractor<pat::Muon>
+{
+  public:
+    bool operator()(const pat::Muon& lepton) const {
+      return false;
+    }
+};
+
+template <>
+class SVfitLegHasNeutralsExtractor<pat::Tau>
+{
+  public:
+    bool operator()(const pat::Tau& tau) const {
+      return tau.signalPFGammaCands().size();
+    }
+};
+
 
 #endif
