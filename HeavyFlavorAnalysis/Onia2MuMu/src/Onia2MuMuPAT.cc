@@ -318,7 +318,7 @@ Onia2MuMuPAT::findJpsiMCInfo(reco::GenParticleRef genJpsi) {
   bool aBhadron = false;
   reco::GenParticleRef Jpsimom = genJpsi->motherRef();       // find mothers
   if (Jpsimom.isNull()) {
-    std::pair<int, float> result = make_pair(momJpsiID, trueLife);
+    std::pair<int, float> result = std::make_pair(momJpsiID, trueLife);
     return result;
   } else {
     reco::GenParticleRef Jpsigrandmom = Jpsimom->motherRef();
@@ -355,7 +355,7 @@ Onia2MuMuPAT::findJpsiMCInfo(reco::GenParticleRef genJpsi) {
 
   // std::cout << "1 " << momJpsiID << " 2 " << trueLife << std::endl; 
 
-  std::pair<int, float> result = make_pair(momJpsiID, trueLife);
+  std::pair<int, float> result = std::make_pair(momJpsiID, trueLife);
   return result;
 
 }

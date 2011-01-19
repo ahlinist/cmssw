@@ -61,7 +61,7 @@ VertexReProducer::makeVertices(const reco::TrackCollection &tracks,
     edm::ESHandle<TransientTrackBuilder> theB;
     iSetup.get<TransientTrackRecord>().get("TransientTrackBuilder",theB);
 
-    vector<reco::TransientTrack> t_tks; t_tks.reserve(tracks.size());
+    std::vector<reco::TransientTrack> t_tks; t_tks.reserve(tracks.size());
     for (reco::TrackCollection::const_iterator it = tracks.begin(), ed = tracks.end(); it != ed; ++it) {
         t_tks.push_back((*theB).build(*it));
         t_tks.back().setBeamSpot(bs);

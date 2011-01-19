@@ -13,10 +13,10 @@
 //
 // Original Author: Roberto Covarelli 
 //         Created:  Fri Oct  9 04:59:40 PDT 2009
-// $Id: JPsiAnalyzerPAT.cc,v 1.41 2010/11/26 11:00:06 covarell Exp $
+// $Id: JPsiAnalyzerPAT.cc,v 1.42 2011/01/13 15:35:16 covarell Exp $
 //
 // based on: Onia2MuMu package V00-11-00
-// changes done by: FT
+// changes done by: FT-HW
 
 // system include files
 #include <memory>
@@ -84,6 +84,7 @@ class JPsiAnalyzerPAT : public edm::EDAnalyzer {
       bool selGlobalMuon(const pat::Muon* aMuon);
       bool selTrackerMuon(const pat::Muon* aMuon);
       bool selCaloMuon(const pat::Muon* aMuon);
+      bool selDimuon(const pat::CompositeCandidate* aCand);
       int getJpsiVarType(const double jpsivar, vector<double> vectbin);
       double CorrectMass(const reco::Muon& mu1,const reco::Muon& mu2, int mode);
 
@@ -180,6 +181,7 @@ class JPsiAnalyzerPAT : public edm::EDAnalyzer {
       int            _oniaPDG;
       InputTag       _genParticles;
       bool           _isMC;
+      bool           _storeAllMCEvents;
       bool           _isPromptMC;
 
       InputTag      _triggerresults;
@@ -251,6 +253,7 @@ JPsiAnalyzerPAT::JPsiAnalyzerPAT(const edm::ParameterSet& iConfig):
   _oniaPDG(iConfig.getParameter<int>("oniaPDG")),
   _genParticles(iConfig.getParameter<InputTag>("genParticles")),
   _isMC(iConfig.getUntrackedParameter<bool>("isMC",false)),
+  _storeAllMCEvents(iConfig.getUntrackedParameter<bool>("storeAllMCEvents",false)),
   _isPromptMC(iConfig.getUntrackedParameter<bool>("isPromptMC",false) ),
   tagTriggerResults_(iConfig.getParameter<InputTag>("TriggerResultsLabel"))
 {
@@ -639,31 +642,20 @@ JPsiAnalyzerPAT::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup
      lastSign = 2;
    }
 
+   bool storeEvent = false;
+
    // BEST J/PSI? 
    if (_onlythebest) {  // yes, fill simply the best (possibly wrong-sign)
 
-     for (int iSign = 0; iSign <= lastSign; iSign++) {
+//      for (int iSign = 0; iSign <= lastSign; iSign++) {
+     for (int iSign = lastSign; iSign >= 0; iSign--) {
        pair< unsigned int, const pat::CompositeCandidate* > theBest = theBestQQ(iSign);
        if (theBest.first < 10) {
            fillTreeAndDS(theBest.first, theBest.second, iEvent);
            passedMuonSelectionCuts_++;
-
-           //! FILL GENERATOR COLLECTION
-	   Handle<reco::GenParticleCollection> genParticles;
-	   iEvent.getByLabel( _genParticles, genParticles );
-	   if ( genParticles.isValid() )
-	     {
-	       //std::cout << "------ analyze GENERATED JPsis:" << std::endl;
-	       this->analyzeGenerator( genParticles );
-	     }
-	   
-	   // Write all Branches to the Tree ONLY 
-	   // - for the best candidate
-	   // - for the opposite sign
-	   if (iSign == 0 && _writeTree) tree_->Fill();
+	   if(iSign == 0) storeEvent = true;
        }
      }
-
    } else {   // no, fill all candidates passing cuts (possibly wrong-sign)
 
      for (int iSign = 0; iSign <= lastSign; iSign++) {
@@ -671,7 +663,23 @@ JPsiAnalyzerPAT::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup
 	 fillTreeAndDS(_thePassedCats[iSign].at(count), _thePassedCands[iSign].at(count),iEvent); 
        }
      }
+   }
 
+   //! FILL GENERATOR COLLECTION and store the event
+  if ( _storeAllMCEvents || storeEvent ) {
+
+     Handle<reco::GenParticleCollection> genParticles;
+     iEvent.getByLabel( _genParticles, genParticles );
+     if ( genParticles.isValid() )
+       {
+	 //std::cout << "------ analyze GENERATED JPsis:" << std::endl;
+	 this->analyzeGenerator( genParticles );
+       }
+   
+     // Write all Branches to the Tree ONLY 
+     // - for the best candidate
+     // - for the opposite sign
+     if (_writeTree) tree_->Fill();
    }
 }
 
@@ -898,7 +906,7 @@ void JPsiAnalyzerPAT::makeCuts(int sign) {
 	    muon1->isTrackerMuon() && muon2->isTrackerMuon()   ) {
 	  if (!_applycuts || (selGlobalMuon(muon1) &&
 			      selGlobalMuon(muon2) &&
-			      cand->userFloat("vProb") > 0.001 )) {
+			      selDimuon(cand) )) {
 	    _thePassedCats[sign].push_back(0);  _thePassedCands[sign].push_back(cand);
             continue;
 	  }
@@ -909,7 +917,7 @@ void JPsiAnalyzerPAT::makeCuts(int sign) {
 	    muon1->isTrackerMuon()    ) {
 	  if (!_applycuts || (selGlobalMuon(muon1) &&
 			      selTrackerMuon(muon2) &&
-			      cand->userFloat("vProb") > 0.001 )) {
+			      selDimuon(cand) )) {
 	    _thePassedCats[sign].push_back(1);  _thePassedCands[sign].push_back(cand);
 	    continue;
 	  }
@@ -919,7 +927,7 @@ void JPsiAnalyzerPAT::makeCuts(int sign) {
             muon2->isTrackerMuon() ) {
 	  if (!_applycuts || (selGlobalMuon(muon2) &&
 			      selTrackerMuon(muon1) &&
-			      cand->userFloat("vProb") > 0.001 )) {
+			      selDimuon(cand) )) {
 	    _thePassedCats[sign].push_back(1);  _thePassedCands[sign].push_back(cand);
 	    continue;
 	  }
@@ -929,7 +937,7 @@ void JPsiAnalyzerPAT::makeCuts(int sign) {
         if (muon1->isTrackerMuon() && muon2->isTrackerMuon() ) {
 	  if (!_applycuts || (selTrackerMuon(muon1) &&
 			      selTrackerMuon(muon2) &&
-			      cand->userFloat("vProb") > 0.001 )) {
+			      selDimuon(cand) )) {
 	    _thePassedCats[sign].push_back(2);  _thePassedCands[sign].push_back(cand);
 	    continue;
 	  }
@@ -958,7 +966,7 @@ void JPsiAnalyzerPAT::makeCuts(int sign) {
 	if (muon1->isGlobalMuon() && muon2->isCaloMuon() ) {
 	  if (!_applycuts || (selGlobalMuon(muon1) &&
 			      selCaloMuon(muon2) &&
-			      cand->userFloat("vProb") > 0.001 )) {
+			      selDimuon(cand) )) {
 	    _thePassedCats[sign].push_back(3);  _thePassedCands[sign].push_back(cand);
             continue;
 	  }
@@ -967,7 +975,7 @@ void JPsiAnalyzerPAT::makeCuts(int sign) {
 	if (muon2->isGlobalMuon() && muon1->isCaloMuon() ) {
 	  if (!_applycuts || (selGlobalMuon(muon2) &&
 			      selCaloMuon(muon1) &&
-			      cand->userFloat("vProb") > 0.001 )) {
+			      selDimuon(cand) )) {
 	    _thePassedCats[sign].push_back(3);  _thePassedCands[sign].push_back(cand);
             continue;
 	  }
@@ -977,7 +985,7 @@ void JPsiAnalyzerPAT::makeCuts(int sign) {
 	if (muon1->isTrackerMuon() && muon2->isCaloMuon() ) {
 	  if (!_applycuts || (selTrackerMuon(muon1) &&
 			      selCaloMuon(muon2) &&
-			      cand->userFloat("vProb") > 0.001 )) {
+			      selDimuon(cand) )) {
 	    _thePassedCats[sign].push_back(4);  _thePassedCands[sign].push_back(cand);
 	    continue;
 	  }
@@ -986,7 +994,7 @@ void JPsiAnalyzerPAT::makeCuts(int sign) {
         if (muon2->isTrackerMuon() && muon1->isCaloMuon() ) {
 	  if (!_applycuts || (selTrackerMuon(muon2) &&
 			      selCaloMuon(muon1) &&
-			      cand->userFloat("vProb") > 0.001 )) {
+			      selDimuon(cand) )) {
 	    _thePassedCats[sign].push_back(4);  _thePassedCands[sign].push_back(cand);
 	    continue;
 	  }
@@ -996,7 +1004,7 @@ void JPsiAnalyzerPAT::makeCuts(int sign) {
         if (muon1->isCaloMuon() && muon2->isCaloMuon() ) {
 	  if (!_applycuts || (selCaloMuon(muon1) &&
 			      selCaloMuon(muon2) &&
-			      cand->userFloat("vProb") > 0.001 )) {
+			      selDimuon(cand) )) {
 	    _thePassedCats[sign].push_back(5);  _thePassedCands[sign].push_back(cand);
 	    continue;
 	  }
@@ -1052,7 +1060,7 @@ JPsiAnalyzerPAT::selGlobalMuon(const pat::Muon* aMuon) {
 	  iTrack->found() > 11 &&
 	  gTrack->chi2()/gTrack->ndof() < 20.0 &&
           q.numberOfValidMuonHits() > 0 &&
-          iTrack->chi2()/iTrack->ndof() < 1.8 &&
+	  iTrack->chi2()/iTrack->ndof() < 1.8 &&
 	  aMuon->muonID("TrackerMuonArbitrated") &&
 	  aMuon->muonID("TMOneStationTight") &&
           p.pixelLayersWithMeasurement() > 1 &&
@@ -1068,7 +1076,7 @@ JPsiAnalyzerPAT::selTrackerMuon(const pat::Muon* aMuon) {
 
   return (// isMuonInAccept(aMuon) &&
 	  iTrack->found() > 11 &&
-	  iTrack->chi2()/iTrack->ndof() < 1.8 &&
+ 	  iTrack->chi2()/iTrack->ndof() < 1.8 &&
 	  aMuon->muonID("TrackerMuonArbitrated") &&
 	  aMuon->muonID("TMOneStationTight") &&
           p.pixelLayersWithMeasurement() > 1 &&
@@ -1089,6 +1097,12 @@ JPsiAnalyzerPAT::selCaloMuon(const pat::Muon* aMuon) {
           p.pixelLayersWithMeasurement() > 1 &&
 	  fabs(iTrack->dxy(RefVtx)) < 3.0 &&
           fabs(iTrack->dz(RefVtx)) < 15.0 );
+}
+
+bool 
+JPsiAnalyzerPAT::selDimuon(const pat::CompositeCandidate* aCand) {
+  
+  return ( aCand->userFloat("vProb") > 0.01 );
 }
 
 int 
@@ -1157,6 +1171,14 @@ JPsiAnalyzerPAT::resetDSVariables(){
     for(std::map< std::string, int >::iterator clearIt= mapTriggerNameToIntFired_.begin(); clearIt != mapTriggerNameToIntFired_.end(); clearIt++){
         clearIt->second=0;
     }
+
+    JpsiP->SetPtEtaPhiM(-999.,-999.,-999., 999.);
+    muPosP->SetPtEtaPhiM(-999.,-999.,-999., 999.);
+    muNegP->SetPtEtaPhiM(-999.,-999.,-999., 999.);
+    JpsiP_Gen->SetPtEtaPhiM(-999.,-999.,-999., 999.);
+    muPosP_Gen->SetPtEtaPhiM(-999.,-999.,-999., 999.);
+    muNegP_Gen->SetPtEtaPhiM(-999.,-999.,-999., 999.);
+    
 }
 
 //! fill Generator Information
