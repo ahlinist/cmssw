@@ -24,13 +24,31 @@ void compZtautauXsectionNumbers()
 // define number of events expected from background proceses
 //-------------------------------------------------------------------------------
 
-  double numEventsExpected_Zmumu      = 0.;
-  double numEventsExpected_WplusJets  = 0.;
-  double numEventsExpected_TTplusJets = 0.;
-  double numEventsExpected_QCD        = 0.;
-  //double numEventsExpected_Bgr        = 
-  //  numEventsExpected_Zmumu + numEventsExpected_WplusJets + numEventsExpected_TTplusJets + numEventsExpected_QCD;
-  double numEventsExpected_Bgr        = 236;
+  double numEventsExpected_Bgr_template = 226.5;
+  double errEventsExpected_Bgr_template =  33.1;
+  double numEventsExpected_Bgr_fr       = 236.1;
+  double errEventsExpected_Bgr_frUp     =  24.1;
+  double errEventsExpected_Bgr_frDown   =  65.9;
+
+  double weight_Bgr_template            = 1./square(errEventsExpected_Bgr_template);
+  double weight_Bgr_fr                  = 2./(square(errEventsExpected_Bgr_frUp) + square(errEventsExpected_Bgr_frDown));
+
+  double numEventsExpected_Bgr          = 
+    (weight_Bgr_template*numEventsExpected_Bgr_template + weight_Bgr_fr*numEventsExpected_Bgr_fr)/
+    (weight_Bgr_template + weight_Bgr_fr);
+  double errEventsExpected_BgrUp        = 
+    TMath::Sqrt(1./(square(1./errEventsExpected_Bgr_template) + square(1./errEventsExpected_Bgr_frUp)));
+  double errEventsExpected_BgrDown      = 
+    TMath::Sqrt(1./(square(1./errEventsExpected_Bgr_template) + square(1./errEventsExpected_Bgr_frDown)));
+  
+  std::cout << "Nbgr = " << numEventsExpected_Bgr 
+	    << " + " << errEventsExpected_BgrUp << " (" << errEventsExpected_BgrUp/numEventsExpected_Bgr*100. << "%)"  
+	    << " - " << errEventsExpected_BgrDown << " (" << errEventsExpected_BgrDown/numEventsExpected_Bgr*100. << "%)"
+	    << std::endl;
+
+  std::cout << "Nsig = " << (numEventsObserved - numEventsExpected_Bgr)
+	    << " + " << TMath::Sqrt(numEventsObserved + square(errEventsExpected_BgrDown)) 
+	    << " - " << TMath::Sqrt(numEventsObserved + square(errEventsExpected_BgrUp)) << std::endl;
 
 //-------------------------------------------------------------------------------
 // define signal efficiency and acceptance
@@ -45,7 +63,7 @@ void compZtautauXsectionNumbers()
 // define integrated luminosity of analyzed dataset
 //-------------------------------------------------------------------------------
 
-  double intLumiData = 36.2;
+  double intLumiData = 36.1;
 
 //-------------------------------------------------------------------------------
 // define Data to Monte Carlo correction factors
@@ -70,7 +88,6 @@ void compZtautauXsectionNumbers()
   double errTauEnScale   = 0.0480;
   double errJetEnScale   = 0.0100;
   double errZrecoilCorr  = 0.0100;
-  double errBgrSum       = 0.1000;
   double errIntLumiData  = 0.1100; 
   double errAccISR       = 0.0380;
   double errAccFSR       = 0.0010; 
@@ -89,22 +106,32 @@ void compZtautauXsectionNumbers()
   double statUncertainty = TMath::Sqrt(numEventsObserved)/denominator;
   std::cout << "statUncertainty = " << statUncertainty << std::endl;
 
-  std::cout << "rel. effect of errBgrSum: " << errBgrSum*numEventsExpected_Bgr/(numEventsObserved - numEventsExpected_Bgr) << std::endl;
+  std::cout << "rel. effect of Nbgr uncertainty:" 
+	    << " '+' = " << errEventsExpected_BgrDown/(numEventsObserved - numEventsExpected_Bgr) << "," 
+	    << " '-' = " << errEventsExpected_BgrUp/(numEventsObserved - numEventsExpected_Bgr) << std::endl;
 
-  double sysUncertaintyRel2 = square(errTriggerEff) 
-                             + square(errMuonIdEff)
-                             + square(errMuonIsoEff)
-                             + square(errMuonMomScale)
-                             + square(errTauIdEff)
-                             + square(errTauEnScale)
-                             + square(errJetEnScale)
-                             + square(errZrecoilCorr)
-                             + square(errBgrSum*numEventsExpected_Bgr/(numEventsObserved - numEventsExpected_Bgr))
-                             + square(errAccISR)
-                             + square(errAccFSR)
-                             + square(errAccPDF)
-                             + square(errAccGenerator);
-  std::cout << "sysUncertainty = " << TMath::Sqrt(sysUncertaintyRel2)*Xsection << std::endl;
+  double sysUncertaintyExclNbgrRel2 = 
+    square(errTriggerEff) 
+   + square(errMuonIdEff)
+   + square(errMuonIsoEff)
+   + square(errMuonMomScale)
+   + square(errTauIdEff)
+   + square(errTauEnScale)
+   + square(errJetEnScale)
+   + square(errZrecoilCorr)
+   + square(errAccISR)
+   + square(errAccFSR)
+   + square(errAccPDF)
+   + square(errAccGenerator);
+  double sysUncertaintyRelUp2 = 
+    sysUncertaintyExclNbgrRel2
+   + square(errEventsExpected_BgrDown/(numEventsObserved - numEventsExpected_Bgr));
+  double sysUncertaintyRelDown2 = 
+    sysUncertaintyExclNbgrRel2
+   + square(errEventsExpected_BgrUp/(numEventsObserved - numEventsExpected_Bgr));
+  std::cout << "sysUncertainty:" 
+	    << " '+' = " << TMath::Sqrt(sysUncertaintyRelUp2)*Xsection << ","
+	    << " '-' = " << TMath::Sqrt(sysUncertaintyRelDown2)*Xsection << std::endl;
 
   std::cout << "intLumiDataUncertainty = " << errIntLumiData*Xsection << std::endl;
 
@@ -127,14 +154,14 @@ void compZtautauXsectionNumbers()
   double statUncertaintyRatioDown = 
     XsectionRatio*TMath::Sqrt(square(statUncertainty/Xsection) + square(statUncertaintyZmumuUp/XsectionZmumuMgt60Mlt120));
   double sysUncertaintyRatioUp   = 
-    XsectionRatio*TMath::Sqrt(sysUncertaintyRel2 + square(sysUncertaintyZmumuDown/XsectionZmumuMgt60Mlt120));
+    XsectionRatio*TMath::Sqrt(sysUncertaintyRelUp2 + square(sysUncertaintyZmumuDown/XsectionZmumuMgt60Mlt120));
   double sysUncertaintyRatioDown = 
-    XsectionRatio*TMath::Sqrt(sysUncertaintyRel2 + square(sysUncertaintyZmumuUp/XsectionZmumuMgt60Mlt120));
+    XsectionRatio*TMath::Sqrt(sysUncertaintyRelDown2 + square(sysUncertaintyZmumuUp/XsectionZmumuMgt60Mlt120));
 
   double sysUncertaintyRatioExclTauIdEffUp =
-    XsectionRatio*TMath::Sqrt((sysUncertaintyRel2 - square(errTauIdEff)) + square(sysUncertaintyZmumuDown/XsectionZmumuMgt60Mlt120));
+    XsectionRatio*TMath::Sqrt((sysUncertaintyRelUp2 - square(errTauIdEff)) + square(sysUncertaintyZmumuDown/XsectionZmumuMgt60Mlt120));
   double sysUncertaintyRatioExclTauIdEffDown =
-    XsectionRatio*TMath::Sqrt((sysUncertaintyRel2 - square(errTauIdEff)) + square(sysUncertaintyZmumuUp/XsectionZmumuMgt60Mlt120));
+    XsectionRatio*TMath::Sqrt((sysUncertaintyRelDown2 - square(errTauIdEff)) + square(sysUncertaintyZmumuUp/XsectionZmumuMgt60Mlt120));
   
   std::cout << "Z --> tau+ tau-/Z --> mu+ mu- Xsection ratio = " << XsectionRatio 
 	    << " + " << statUncertaintyRatioUp << " - " << statUncertaintyRatioDown << " (stat.)"
