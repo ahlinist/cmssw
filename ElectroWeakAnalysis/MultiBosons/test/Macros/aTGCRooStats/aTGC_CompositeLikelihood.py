@@ -29,9 +29,10 @@ def main(options,args):
         ws.var(par1.GetName()).setConstant(False)
         ws.var(par2.GetName()).setConstant(False)
 
+        print 'Trying to import from : ', ws.GetName()
 
         #change workspace par1,par2 to point at the ones here
-        getattr(combinedWorkspace,'import')(ws.function('nll_TopLevelPdf_aTGCDataUnitWeight_with_constr'),
+        getattr(combinedWorkspace,'import')(ws.arg('nll_TopLevelPdf_aTGCDataUnitWeight_with_constr'),
                                             ROOT.RooFit.RenameAllNodes(ws.GetName()),
                                             ROOT.RooFit.RenameAllVariablesExcept(ws.GetName(),
                                                                                  par1.GetName()+','+par2.GetName())
@@ -40,6 +41,8 @@ def main(options,args):
         NLLs.append('nll_TopLevelPdf_aTGCDataUnitWeight_with_constr_'+ws.GetName())
         
     print NLLs
+
+    combinedWorkspace.Print("v")
 
     combinedNLL = 'sum::combinedNLL('
 
@@ -53,7 +56,7 @@ def main(options,args):
 
     print combinedNLL
 
-    combinedWorkspace.factory(combinedNLL)
+    combinedWorkspace.factory().process(combinedNLL)
 
     combinedWorkspace.function('combinedNLL').Print()
 
