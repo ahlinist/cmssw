@@ -10,12 +10,12 @@ process.source = cms.Source("PoolSource",
     duplicateCheckMode = cms.untracked.string('noDuplicateCheck'),
     fileNames = cms.untracked.vstring(
                  "file:onia2MuMuPAT.root"
-    )
+   )
 )
 
 process.hltMuF = cms.EDFilter("HLTHighLevel",
                  TriggerResultsTag = cms.InputTag("TriggerResults","","HLT"),
-                 HLTPaths = cms.vstring("HLT_L1DoubleMuOpen"),
+                 HLTPaths = cms.vstring("HLT_DoubleMu0"),
                  eventSetupPathsKey = cms.string(''),
                  andOr = cms.bool(True),
                  throw = cms.bool(False)
@@ -43,7 +43,7 @@ process.demo = cms.EDAnalyzer('JPsiAnalyzerPAT',
 
     writeDataSet = cms.bool(True),                 
     dataSetName = cms.string("testDataSet.root"),
-    triggerForDataset = cms.string("HLT_L1DoubleMuOpen"),
+    triggerForDataset = cms.string("HLT_DoubleMu0"),
 
     massMin = cms.double(2.6),
     massMax = cms.double(3.5),
@@ -61,6 +61,7 @@ process.demo = cms.EDAnalyzer('JPsiAnalyzerPAT',
     oniaPDG = cms.int32(443),
     genParticles = cms.InputTag("genMuons"),
     isMC = cms.untracked.bool(True),
+    storeAllMCEvents = cms.untracked.bool(True),
     isPromptMC = cms.untracked.bool(True),
     TriggerResultsLabel = cms.InputTag("TriggerResults","","HLT")
 )
