@@ -13,7 +13,7 @@
 //
 // Original Author:  pts/45
 //         Created:  Tue May 13 12:23:34 CEST 2008
-// $Id: RPCMonitorEfficiency.cc,v 1.41 2010/02/12 01:23:23 carrillo Exp $
+// $Id: RPCMonitorEfficiency.cc,v 1.42 2010/06/08 14:31:33 carrillo Exp $
 //
 //
 
@@ -2766,7 +2766,7 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
 	    if(debug) std::cout<<"Writing histograms"<<std::endl;
 	    //histoPRO->Write();
 	    //histoPROY->Write(); //parece este Cuando se descomentan estos histogramas aparece el problema en la visualizacion con TBRowser 
-	    //histoPRO_2D->Write(); //ahora este
+	    histoPRO_2D->Write(); //ahora este
 	    //histoCLS->Write(); //parece este
 	    //histoCellDistro->Write();
 	    //histoBXY->Write();
