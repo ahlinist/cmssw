@@ -142,11 +142,11 @@ void drawHistogram(const histoDrawEntry& histogram, bool& isFirstHistogram, std:
 {
   std::string drawOption = ( isFirstHistogram ) ? histogram.second : std::string(histogram.second).append("same");
 
-  //--- if stacked histogram is drawn as shaded pattern on transparent background
-  //    add a white histogram underneath, in order to "clear" drawing area
-  //    and avoid "interference" of shaded patterns of different histograms
+//--- if stacked histogram is drawn as shaded pattern on transparent background
+//    add a white histogram underneath, in order to "clear" drawing area
+//    and avoid "interference" of shaded patterns of different histograms
   if ( histogram.first->GetFillStyle() != 0   &&
-      histogram.first->GetFillStyle() != 1001 ) {
+       histogram.first->GetFillStyle() != 1001 ) {
     TH1* histogram_white = dynamic_cast<TH1*>(histogram.first->Clone());
     histogram_white->SetFillColor(10);
     histogram_white->SetFillStyle(1001);
@@ -157,6 +157,7 @@ void drawHistogram(const histoDrawEntry& histogram, bool& isFirstHistogram, std:
   }
 
   histogram.first->Draw(drawOption.data());
+  histogram.first->Draw("axissame");
 
   isFirstHistogram = false;
 }
@@ -164,7 +165,7 @@ void drawHistogram(const histoDrawEntry& histogram, bool& isFirstHistogram, std:
 void drawHistograms(const std::vector<histoDrawEntry>& histograms, bool& isFirstHistogram, std::vector<TH1*>& histogramsToDelete)
 {
   for ( std::vector<histoDrawEntry>::const_iterator histogram = histograms.begin();
-       histogram != histograms.end(); ++histogram ) {
+	histogram != histograms.end(); ++histogram ) {
     drawHistogram(*histogram, isFirstHistogram, histogramsToDelete);
   }
 }
@@ -328,26 +329,26 @@ void DQMHistPlotter::cfgEntryAxisY::applyTo(TH1* histogram) const
 
     bool minYset = ( yLogScale ) ? minYset_log_ : minYset_linear_;
     if ( minYset ) {
-      //--- normalize y-axis range using given configuration parameter
+//--- normalize y-axis range using given configuration parameter
       double minY = ( yLogScale ) ? minY_log_ : minY_linear_;
       histogram->SetMinimum(minY);
     } else {
-      //--- in case configuration parameter for y-axis range not explicitely given,
-      //    normalize y-axis range to minimum of any histogram included in drawJob
-      //    times defaultYaxisMinimumScaleFactor
+//--- in case configuration parameter for y-axis range not explicitely given,
+//    normalize y-axis range to minimum of any histogram included in drawJob
+//    times defaultYaxisMinimumScaleFactor
       double defaultYaxisMinimumScaleFactor = ( yLogScale ) ? defaultYaxisMinimumScaleFactor_log : defaultYaxisMinimumScaleFactor_linear;
       histogram->SetMinimum(defaultYaxisMinimumScaleFactor*yAxisNorm_min_);
     }
 
     bool maxYset = ( yLogScale ) ? maxYset_log_ : maxYset_linear_;
     if ( maxYset ) {
-      //--- normalize y-axis range using given configuration parameter
+//--- normalize y-axis range using given configuration parameter
       double maxY = ( yLogScale ) ? maxY_log_ : maxY_linear_;
       histogram->SetMaximum(maxY);
     } else {
-      //--- in case configuration parameter for y-axis range not explicitely given,
-      //    normalize y-axis range to maximum of any histogram included in drawJob
-      //    times defaultYaxisMaximumScaleFactor (apply scale factor in order to make space for legend)
+//--- in case configuration parameter for y-axis range not explicitely given,
+//    normalize y-axis range to maximum of any histogram included in drawJob
+//    times defaultYaxisMaximumScaleFactor (apply scale factor in order to make space for legend)
       double defaultYaxisMaximumScaleFactor = ( yLogScale ) ? defaultYaxisMaximumScaleFactor_log : defaultYaxisMaximumScaleFactor_linear;
       histogram->SetMaximum(defaultYaxisMaximumScaleFactor*yAxisNorm_max_);
     }
@@ -453,10 +454,10 @@ void DQMHistPlotter::cfgEntryLabel::print() const
 void DQMHistPlotter::cfgEntryLabel::applyTo(TPaveText* label) const
 {
   if ( label ) {
-    //--- WARNING: need to call TPaveText::SetX1NDC, **not** TPaveText::SetX1 !!
-    //             (see documentation of base-class constructor
-    //               TPave::TPave(Double_t, Double_t,Double_t, Double_t, Int_t, Option_t*)
-    //              in TPave.cxx for details)
+//--- WARNING: need to call TPaveText::SetX1NDC, **not** TPaveText::SetX1 !!
+//             (see documentation of base-class constructor
+//               TPave::TPave(Double_t, Double_t,Double_t, Double_t, Int_t, Option_t*)
+//              in TPave.cxx for details)
     label->SetX1NDC(posX_);
     label->SetY1NDC(posY_);
     label->SetX2NDC(posX_ + sizeX_);
