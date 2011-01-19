@@ -104,6 +104,10 @@ class CompositePtrCandidateT1T2MEtAlgorithm
 								 const std::string& recoMode, 
 								 bool doSVreco)
   {
+    //std::cout << "<CompositePtrCandidateT1T2MEtAlgorithm::buildCompositePtrCandidate>:"<< std::endl;
+    //if ( !met.isNull() ) std::cout << " MET: pt = " << met->pt() << std::endl;
+    //else                 std::cout << " MET: none." << std::endl;
+
     CompositePtrCandidateT1T2MEt<T1,T2> compositePtrCandidate(leg1, leg2, met);
   
     if ( leg1.isNull() || 
@@ -129,6 +133,7 @@ class CompositePtrCandidateT1T2MEtAlgorithm
       compositePtrCandidate.setP4CDFmethod(compP4CDFmethod(leg1->p4(), leg2->p4(), met->px(), met->py()));
       compositePtrCandidate.setMt12MET(compMt(leg1->p4(), leg2->p4(), met->px(), met->py()));    
       compositePtrCandidate.setMt1MET(compMt(leg1->p4(), met->px(), met->py()));
+      //std::cout << "--> Mt1MET = " << compositePtrCandidate.mt1MET() << std::endl;
       compositePtrCandidate.setMt2MET(compMt(leg2->p4(), met->px(), met->py()));
       compositePtrCandidate.setDPhi1MET(TMath::Abs(normalizedPhi(leg1->phi() - met->phi())));
       compositePtrCandidate.setDPhi2MET(TMath::Abs(normalizedPhi(leg2->phi() - met->phi())));

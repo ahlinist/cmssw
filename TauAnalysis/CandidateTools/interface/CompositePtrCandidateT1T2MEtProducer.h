@@ -12,9 +12,9 @@
  *          Michal Bluj,
  *          Christian Veelken
  *
- * \version $Revision: 1.18 $
+ * \version $Revision: 1.19 $
  *
- * $Id: CompositePtrCandidateT1T2MEtProducer.h,v 1.18 2010/11/10 08:31:29 veelken Exp $
+ * $Id: CompositePtrCandidateT1T2MEtProducer.h,v 1.19 2010/11/10 16:43:57 veelken Exp $
  *
  */
 
@@ -68,12 +68,13 @@ class CompositePtrCandidateT1T2MEtProducer : public edm::EDProducer
  public:
 
   explicit CompositePtrCandidateT1T2MEtProducer(const edm::ParameterSet& cfg)
-    : algorithm_(cfg), 
+    : moduleLabel_(cfg.getParameter<std::string>("@module_label")),
+      algorithm_(cfg), 
       doSVreco_(false), 
       cfgError_(0)
   {
     //std::cout << "<CompositePtrCandidateT1T2MEtProducer::CompositePtrCandidateT1T2MEtProducer>:" << std::endl;
-    //std::cout << " moduleLabel = " << cfg.getParameter<std::string>("@module_label") << std::endl;
+    //std::cout << " moduleLabel = " << moduleLabel_ << std::endl;
 
     useLeadingTausOnly_ = cfg.getParameter<bool>("useLeadingTausOnly");
     srcLeg1_ = cfg.getParameter<edm::InputTag>("srcLeg1");
@@ -134,6 +135,7 @@ class CompositePtrCandidateT1T2MEtProducer : public edm::EDProducer
   void produce(edm::Event& evt, const edm::EventSetup& es)
   {
     //std::cout << "<CompositePtrCandidateT1T2MEtProducer::produce>:" << std::endl;
+    //std::cout << " moduleLabel = " << moduleLabel_ << std::endl;
 
 //--- print-out an error message and add an empty collection to the event 
 //    in case of erroneous configuration parameters
@@ -338,11 +340,15 @@ class CompositePtrCandidateT1T2MEtProducer : public edm::EDProducer
       }
     }
 
+    //std::cout << "--> num. diTau objects = " << compositePtrCandidateCollection->size() << std::endl;
+
 //--- add the collection of reconstructed CompositePtrCandidateT1T2MEts to the event
     evt.put(compositePtrCandidateCollection);
   }
 
  private:
+
+  std::string moduleLabel_;
 
   CompositePtrCandidateT1T2MEtAlgorithm<T1,T2> algorithm_;
   
