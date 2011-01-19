@@ -47,5 +47,6 @@ recoZllRecoilCorrectionParameter = cms.PSet(
     ),
     shiftByUncertainty = cms.double(0.),
     srcGenParticles = cms.InputTag('genParticles'),
-    genParticlePdgIds = cms.vint32( 36, 35, 25, 23, 24 )
+    genParticlePdgIds = cms.vint32( 36, 35, 25, 23, 24 ),
+    srcGenMET = cms.InputTag('genMetTrue')
 )
