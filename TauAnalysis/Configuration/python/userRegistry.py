@@ -253,9 +253,18 @@ userSettings = {
             'AHtoMuTau'              : '2010Dec23',
             'ZtoMuTau'               : '2011Jan07',
             'ZtoMuTau_bgEstTemplate' : '2011Jan10',
-            'ZtoMuTau_tauIdEff'      : '2011Jan12_lxbatch'
+            'ZtoMuTau_tauIdEff'      : '2011Jan17'
         },
         'jobs' : {
+            '2011Jan17' : {
+                'ZtoMuTau_tauIdEff' : {
+                    'analysisFilePath' : "/castor/cern.ch/user/v/veelken/CMSSW_3_8_x/skims/TauIdEffMeas/",
+                    'harvestingFilePath' : "/data1/veelken/CMSSW_3_8_x/skims/ZtoMuTau_tauIdEff/",
+                    'tmpFilePath' : "/data1/veelken/tmp/ZtoMuTau_tauIdEff/",
+                     # Directory containing selected events
+                    'pickevents' : '/castor/cern.ch/user/f/friis/fixme_delete/'
+                }
+            }, 
             '2011Jan12_lxbatch' : {
                 'ZtoMuTau_tauIdEff' : {
                     'analysisFilePath' : "/castor/cern.ch/user/v/veelken/CMSSW_3_8_x/skims/TauIdEffMeas/",
