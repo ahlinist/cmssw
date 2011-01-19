@@ -13,7 +13,7 @@
 //
 // Original Author:  pts/45
 //         Created:  Tue May 13 12:23:34 CEST 2008
-// $Id: RPCMonitorEfficiency.cc,v 1.42 2010/06/08 14:31:33 carrillo Exp $
+// $Id: RPCMonitorEfficiency.cc,v 1.43 2011/01/19 13:29:21 carrillo Exp $
 //
 //
 
@@ -1424,6 +1424,7 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
 	  meIdPROY = "Y_Profile_For_"+name;
 	  meIdPROX = "X_Profile_For_"+name;
 	  meIdPRO_2D = "Profile2D_For_"+name;
+	  if(debug) std::cout<<" meIdPRO_2D "<<meIdPRO_2D<<std::endl;
 	  meIdCEll_2D = "Efficiency_Cells_Distribution_For_"+name;
 	  meIdResidual = folder+"/RPCResiduals_"+ name;
 	  meIdResidual1 = folder+"/RPCResiduals_Clu1_"+ name;
@@ -2350,7 +2351,9 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
 		  
 	  RPCBookFolderStructure *  folderStr = new RPCBookFolderStructure(); //Anna
 	  std::string folder = "DQMData/Muons/MuonSegEff/" +  folderStr->folderStructure(rpcId);
-
+	  
+	  if(debug) std::cout<<"folder string "<<folder<<std::endl;
+	  
 	  delete folderStr;
 	
 	  meIdRPC = folder +"/RPCDataOccupancy_"+ name;	
@@ -2364,6 +2367,7 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
 	  meIdPROY = "Y_Profile_For_"+name;
 	  meIdPROX = "X_Profile_For_"+name;
 	  meIdPRO_2D = "Profile2D_For_"+name;
+	  if(debug) std::cout<<" meIdPRO_2D "<<meIdPRO_2D<<std::endl;
 	  meIdCEll_2D = "Efficiency_Cells_Distribution_For_"+name;
 	  meIdResidual = folder+"/RPCResiduals_"+ name;
 	  meIdResidual1 = folder+"/RPCResiduals_Clu1_"+ name;
@@ -2434,6 +2438,9 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
 	  histoRealRPC = (TH1F*)theFile->Get(meIdRealRPC.c_str());if(!histoRealRPC)if(debug) std::cout<<meIdRealRPC<<"Doesn't exist"<<std::endl;
 	  
 	  histoPRO= new TH1F (meIdPRO.c_str(),meIdPRO.c_str(),nstrips,0.5,nstrips+0.5);
+	  
+	  if(debug) std::cout<<"meIdPRO_2D.c_str() = "<<meIdPRO_2D.c_str()<<std::endl;
+
 	  histoPRO_2D= new TH2F (meIdPRO_2D.c_str(),meIdPRO_2D.c_str(),
 				 2*(int)(0.6*nstrips*stripw),-0.6*nstrips*stripw,0.6*nstrips*stripw,
 				 2*(int)(0.6*stripl),-0.6*stripl,0.6*stripl);
@@ -2762,11 +2769,10 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
 	      system(command.c_str());
 	    }
 
-
 	    if(debug) std::cout<<"Writing histograms"<<std::endl;
 	    //histoPRO->Write();
 	    //histoPROY->Write(); //parece este Cuando se descomentan estos histogramas aparece el problema en la visualizacion con TBRowser 
-	    histoPRO_2D->Write(); //ahora este
+	    //histoPRO_2D->Write(); //ahora este
 	    //histoCLS->Write(); //parece este
 	    //histoCellDistro->Write();
 	    //histoBXY->Write();
