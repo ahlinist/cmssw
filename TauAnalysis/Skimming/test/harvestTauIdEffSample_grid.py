@@ -20,6 +20,7 @@ SAMPLES_TO_ANALYZE = [
     'data_Mu_Run2010A_Nov4ReReco',
     'data_Mu_Run2010B_Nov4ReReco',
     'Ztautau_powheg',
+    'ZtautauPU156bx',
     'Zmumu_powheg',
     'PPmuXptGt20Mu10', 'PPmuXptGt20Mu15',
     'WplusJets_madgraph',
@@ -52,9 +53,8 @@ def harvestTauIdEffSamples(channel = None, samples = None, inputFilePath = None,
 
     # Use CASTOR to find the files to merge
     print "Finding CASTOR files"
-    inputFilePath = '/castor/cern.ch' + '/' + inputFilePath
-    inputFilePath = inputFilePath.replace('//', '/')
     print(" inputFilePath = " + inputFilePath)
+    print(" jobId = " + jobId)
 
     files_in_castor_info = castor.nslsl(inputFilePath)
 
@@ -65,6 +65,7 @@ def harvestTauIdEffSamples(channel = None, samples = None, inputFilePath = None,
     # Sort files by modified time
     print "Sorting by modified time"
     files_and_times.sort()
+    #print "files_and_times", files_and_times
 
     skim_harvest_jobs = []
 
@@ -75,6 +76,7 @@ def harvestTauIdEffSamples(channel = None, samples = None, inputFilePath = None,
             'rfio:%s' % file for time, file in files_and_times
             if file.find('tauIdEffSample_%s_%s_' %
                          (sample, jobId)) != -1)
+        #print "event_files_to_merge", event_files_to_merge
         skim_output_path = os.path.join(
             outputFilePath, "tauIdEffSkim_%s_%s.root" % (sample, jobId))
         skim_harvest_jobs.append(
