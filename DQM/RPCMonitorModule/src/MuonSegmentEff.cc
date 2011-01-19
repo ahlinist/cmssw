@@ -518,7 +518,7 @@ void MuonSegmentEff::analyze(const edm::Event& iEvent, const edm::EventSetup& iS
 	  minres=res;
 	  cluSize = recHit->clusterSize();
 	  bx=recHit->BunchX(); 
-	  if(debug) std::cout<<"DT  \t \t \t \t \t \t New Min Res "<<res<<"cm."<<std::endl;
+	  if(debug) std::cout<<"DT  \t \t \t \t \t \t New Min Res "<<res<<"cm. cluSize= "<<cluSize<<std::endl;
 	}
       }
       
