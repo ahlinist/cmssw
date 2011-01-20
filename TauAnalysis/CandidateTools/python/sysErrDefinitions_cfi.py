@@ -95,9 +95,11 @@ theorySystematics = {
     # CV: do not run theory systematics for now,
     #     as in particular the module for estimating PDF uncertainties
     #     significantly increases the overall run-time/memory consumption of the cmsRun job !!
-    #"sysPdfWeights(45)"     : cms.InputTag('pdfWeights:cteq66'),
-    #"sysIsrWeight"          : cms.InputTag('isrWeight'),
-    #"sysFsrWeight"          : cms.InputTag('fsrWeight')
+    #"sysPdfWeightsCTEQ66(45)"          : cms.InputTag('pdfWeights:cteq66'),
+    #"sysPdfWeightsMSTW2008nlo68cl(41)" : cms.InputTag('pdfWeights:MSTW2008nlo68cl'),
+    #"sysPdfWeightsNNPDF20(100)"        : cms.InputTag('pdfWeights:NNPDF20'),
+    #"sysIsrWeight"                     : cms.InputTag('isrWeight'),
+    #"sysFsrWeight"                     : cms.InputTag('fsrWeight')
 }
 
 def getSysUncertaintyNames(sysUncertaintyMaps):
