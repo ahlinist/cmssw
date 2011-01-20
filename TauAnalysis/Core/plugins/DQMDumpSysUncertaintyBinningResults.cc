@@ -23,15 +23,17 @@ typedef std::vector<std::string> vstring;
 
 enum { kUndefined, kSimple, kPDF };
 
+using namespace DQMDumpSysUncertaintyBinningResults_namespace;
+
 DQMDumpSysUncertaintyBinningResults::sysUncertaintyEntryType::sysUncertaintyEntryType(const edm::ParameterSet& cfg)
   : method_(kSimple),
     cfgError_(0)
 {
   //std::cout << "<sysUncertaintyEntryType::sysUncertaintyEntryType>:" << std::endl;
-
+  
   sysCentralValue_ = ( cfg.exists("sysCentralValue") ) ?
     cfg.getParameter<std::string>("sysCentralValue") : SysUncertaintyService::getNameCentralValue();
-  //std::cout << " sysCentralValue = " << sysCentralValue_ << std::endl;
+  std::cout << " sysCentralValue = " << sysCentralValue_ << std::endl;
 
   vstring cfgSystematics = cfg.getParameter<vstring>("sysNames");
   for ( vstring::const_iterator sysName = cfgSystematics.begin();
@@ -43,7 +45,7 @@ DQMDumpSysUncertaintyBinningResults::sysUncertaintyEntryType::sysUncertaintyEntr
     }
   }
 
-  //std::cout << " sysNames = " << format_vstring(sysNames_) << std::endl;
+  std::cout << " sysNames = " << format_vstring(sysNames_) << std::endl;
 
   sysTitle_ = cfg.getParameter<std::string>("sysTitle");
   //std::cout << " sysTitle = " << sysTitle_ << std::endl;
@@ -52,10 +54,11 @@ DQMDumpSysUncertaintyBinningResults::sysUncertaintyEntryType::sysUncertaintyEntr
     std::string method_string = cfg.getParameter<std::string>("method");
     //std::cout << " method = " << method_string << std::endl;
     
-    if ( method_string == "simple" ) method_ = kSimple;
-    else if ( method_string == "pdf" ) method_ = kPDF;
+    if      ( method_string == "simple" ) method_ = kSimple;
+    else if ( method_string == "pdf"    ) method_ = kPDF;
     else {
-      edm::LogError("sysUncertaintyEntryType") << " Invalid method Parameter = " << method_string << " !!";
+      edm::LogError("sysUncertaintyEntryType") 
+	<< " Invalid method Parameter = " << method_string << " !!";
       method_ = kUndefined;
       cfgError_ = 1;
     }
@@ -106,68 +109,60 @@ binResultType getBinResult(const std::vector<binResultType>& binResults, const s
   return binResultType(0., 0., "undefined");
 }
 
-std::map<std::string, binResultType> 
-DQMDumpSysUncertaintyBinningResults::sysUncertaintyEntryType::getBinResults_systematic(unsigned binNumber, const std::string& resultTypeName) const
+binResultsMappping_type
+DQMDumpSysUncertaintyBinningResults::sysUncertaintyEntryType::getBinResults_systematic(
+  unsigned binNumber, const std::string& resultTypeName) const
 {
-  std::map<std::string, binResultType> binResults_systematic;
+  binResultsMappping_type binResults_systematic;
   
-  for ( std::map<std::string, BinningBase*>::const_iterator binningPlugin = binningPlugins_.begin();
-	binningPlugin != binningPlugins_.end(); ++binningPlugin ) {
-    if ( binningPlugin->first == SysUncertaintyService::getNameCentralValue() ||
-	 binningPlugin->first == sysCentralValue_                            ) continue;
+  for ( std::vector<std::string>::const_iterator sysName = sysNames_.begin();
+	sysName != sysNames_.end(); ++sysName ) {
+    std::map<std::string, BinningBase*>::const_iterator binningPlugin_systematic = binningPlugins_.find(*sysName);
+    assert(binningPlugin_systematic != binningPlugins_.end());
 
-    binResultType binResult_systematic = getBinResult(binningPlugin->second->getBinResults(binNumber), resultTypeName);
+    binResultType binResult_systematic = getBinResult(binningPlugin_systematic->second->getBinResults(binNumber), resultTypeName);
 
-    binResults_systematic.insert(std::pair<std::string, binResultType>(binningPlugin->first, binResult_systematic));
+    binResults_systematic.push_back(std::pair<std::string, binResultType>(*sysName, binResult_systematic));
   }
 
   return binResults_systematic;
 }
  
-std::map<std::string, binResultType> 
-DQMDumpSysUncertaintyBinningResults::sysUncertaintyEntryType::getBinResultsSum_systematic(const std::string& resultTypeName) const
+binResultsMappping_type
+DQMDumpSysUncertaintyBinningResults::sysUncertaintyEntryType::getBinResultsSum_systematic(
+  const std::string& resultTypeName) const
 {
-  std::map<std::string, binResultType> binResultsSum_systematic;
+  binResultsMappping_type binResultsSum_systematic;
 
-  for ( std::map<std::string, BinningBase*>::const_iterator binningPlugin = binningPlugins_.begin();
-	binningPlugin != binningPlugins_.end(); ++binningPlugin ) {
-    if ( binningPlugin->first == SysUncertaintyService::getNameCentralValue() ||
-	 binningPlugin->first == sysCentralValue_                            ) continue;
+  for ( std::vector<std::string>::const_iterator sysName = sysNames_.begin();
+	sysName != sysNames_.end(); ++sysName ) {
+    std::map<std::string, BinningBase*>::const_iterator binningPlugin_systematic = binningPlugins_.find(*sysName);
+    assert(binningPlugin_systematic != binningPlugins_.end());
 
-    binResultType binResultSum_systematic = getBinResult(binningPlugin->second->getBinResultsSum(), resultTypeName);
+    binResultType binResultSum_systematic = getBinResult(binningPlugin_systematic->second->getBinResultsSum(), resultTypeName);
 
-    binResultsSum_systematic.insert(std::pair<std::string, binResultType>(binningPlugin->first, binResultSum_systematic));
+    binResultsSum_systematic.push_back(std::pair<std::string, binResultType>(*sysName, binResultSum_systematic));
   }
 
   return binResultsSum_systematic;
 }
 
 binResultType
-DQMDumpSysUncertaintyBinningResults::sysUncertaintyEntryType::getBinResults_sysCentralValue(unsigned binNumber, const std::string& resultTypeName) const
+DQMDumpSysUncertaintyBinningResults::sysUncertaintyEntryType::getBinResults_sysCentralValue(
+  unsigned binNumber, const std::string& resultTypeName) const
 {
-  std::map<std::string, BinningBase*>::const_iterator binningPlugin_sysCentralValue 
-    = binningPlugins_.find(sysCentralValue_);
- 
-  if ( binningPlugin_sysCentralValue == binningPlugins_.end() ) {
-    edm::LogError ("getBinResults_sysCentralValue") 
-      << " No binning results defined for sys. central value = " << sysCentralValue_ << " !!";
-    return binResultType(0., 0., "undefined");
-  }
+  std::map<std::string, BinningBase*>::const_iterator binningPlugin_sysCentralValue = binningPlugins_.find(sysCentralValue_);
+  assert(binningPlugin_sysCentralValue != binningPlugins_.end());
 
   return getBinResult(binningPlugin_sysCentralValue->second->getBinResults(binNumber), resultTypeName);
 }
 
 binResultType 
-DQMDumpSysUncertaintyBinningResults::sysUncertaintyEntryType::getBinResultsSum_sysCentralValue(const std::string& resultTypeName) const
+DQMDumpSysUncertaintyBinningResults::sysUncertaintyEntryType::getBinResultsSum_sysCentralValue(
+  const std::string& resultTypeName) const
 {
-  std::map<std::string, BinningBase*>::const_iterator binningPlugin_sysCentralValue 
-    = binningPlugins_.find(sysCentralValue_);
- 
-  if ( binningPlugin_sysCentralValue == binningPlugins_.end() ) {
-    edm::LogError ("getBinResults_sysCentralValue") 
-      << " No binning results defined for sys. central value = " << sysCentralValue_ << " !!";
-    return binResultType(0., 0., "undefined");
-  }
+  std::map<std::string, BinningBase*>::const_iterator binningPlugin_sysCentralValue = binningPlugins_.find(sysCentralValue_);
+  assert(binningPlugin_sysCentralValue != binningPlugins_.end());
 
   return getBinResult(binningPlugin_sysCentralValue->second->getBinResultsSum(), resultTypeName);
 }
@@ -221,7 +216,8 @@ DQMDumpSysUncertaintyBinningResults::DQMDumpSysUncertaintyBinningResults(const e
   resultTypeNames_ = cfg.getParameter<vstring>("resultTypes");
   
   if ( processEntries_.size() == 0 ) {
-    edm::LogError("DQMDumpSysUncertaintyBinningResults") << " Configuration Parameter dqmDirectories contains no Entries --> skipping !!";
+    edm::LogError("DQMDumpSysUncertaintyBinningResults") 
+      << " Configuration Parameter dqmDirectories contains no Entries --> skipping !!";
     cfgError_ = 1;
   }
 }
@@ -246,13 +242,14 @@ bool containsSysName(const std::vector<std::string>& sysNames_skip, const std::s
   return false;
 }
 
-double getSysShift(const std::map<std::string, binResultType>& binResults_systematic, const std::string& sysName, double binCentralValue)
+double getSysShift(const binResultsMappping_type& binResults_systematic, 
+		   const std::string& sysName, double binCentralValue)
 {
   //std::cout << "<getSysShift>:" << std::endl;
   //std::cout << " sysName = " << sysName << std::endl;
   //std::cout << " binCentralValue = " << binCentralValue << std::endl;
 
-  std::map<std::string, binResultType>::const_iterator binResult_systematic = binResults_systematic.find(sysName);
+  binResultsMappping_type::const_iterator binResult_systematic = binResults_systematic.find(sysName);
  
   if ( binResult_systematic == binResults_systematic.end() ) {
     edm::LogError ("getSysShift") 
@@ -270,8 +267,10 @@ double getSysShift(const std::map<std::string, binResultType>& binResults_system
 }
 
 void printBinResult(const std::string& sysTitle, const binResultType& binResult_sysCentralValue,
-		    const std::map<std::string, binResultType>& binResults_systematic, int method)
+		    const binResultsMappping_type& binResults_systematic, int method)
 {
+  //std::cout << "<printBinResult>:" << std::endl;
+  
   static TPRegexp regexpParser_bidirectional_entry("[[:alnum:]]+(Up|Down)");
   static TPRegexp regexpParser_bidirectional_name("([[:alnum:]]+)(Up|Down)");
   static TPRegexp regexpParser_array_entry("[[:alnum:]]+\\([[:digit:]]+\\)");
@@ -279,16 +278,17 @@ void printBinResult(const std::string& sysTitle, const binResultType& binResult_
 
   vstring sysNames_skip;
 
-  for ( std::map<std::string, binResultType>::const_iterator binResult_systematic = binResults_systematic.begin();
+  for ( binResultsMappping_type::const_iterator binResult_systematic = binResults_systematic.begin();
 	binResult_systematic != binResults_systematic.end(); ++binResult_systematic ) {
     const std::string sysName = binResult_systematic->first;
-    //std::cout << "sysName = " << (*sysName) << std::endl;
+    //std::cout << " sysName = " << sysName << std::endl;
 
     TString sysName_tstring = sysName.data();
     
     bool parseError = false;
 
     double binCentralValue = binResult_sysCentralValue.binContent_;    
+    //std::cout << " binCentralValue = " << binCentralValue << std::endl;
     
     if ( regexpParser_bidirectional_entry.Match(sysName_tstring) >= 1 ) {
       TObjArray* subStrings = regexpParser_bidirectional_name.MatchS(sysName_tstring);
@@ -298,7 +298,7 @@ void printBinResult(const std::string& sysTitle, const binResultType& binResult_
 	
 	if ( containsSysName(sysNames_skip, sysName_bidirectional) ) continue;
 	      
-	double sysShift_up = getSysShift(binResults_systematic, std::string(sysName_bidirectional).append("Up"), binCentralValue);
+	double sysShift_up   = getSysShift(binResults_systematic, std::string(sysName_bidirectional).append("Up"),   binCentralValue);
 	double sysShift_down = getSysShift(binResults_systematic, std::string(sysName_bidirectional).append("Down"), binCentralValue);
 	
 	std::cout << " " << std::setw(20) << sysTitle << ":"
@@ -320,7 +320,7 @@ void printBinResult(const std::string& sysTitle, const binResultType& binResult_
 	TPRegexp regexpParser_element_entry(std::string(sysName_array).append("\\([[:digit:]]+\\)").data());
 
 	vstring sysNames;
-	for ( std::map<std::string, binResultType>::const_iterator binResult_systematic = binResults_systematic.begin();
+	for ( binResultsMappping_type::const_iterator binResult_systematic = binResults_systematic.begin();
 	      binResult_systematic != binResults_systematic.end(); ++binResult_systematic ) {
 	  if ( regexpParser_element_entry.Match(TString(binResult_systematic->first.data())) == 1 ) {
 	    sysNames.push_back(binResult_systematic->first);
@@ -350,7 +350,7 @@ void printBinResult(const std::string& sysTitle, const binResultType& binResult_
 //--- estimation of (PDF) uncertainties
 //    according to "Master Equations" in hep-ph/0605240
 
-	  double sysShiftsSum2_plus = 0.;
+	  double sysShiftsSum2_plus  = 0.;
 	  double sysShiftsSum2_minus = 0.;
 
 //--- check that sysNames can be paired
@@ -363,11 +363,13 @@ void printBinResult(const std::string& sysTitle, const binResultType& binResult_
 	  
 	  unsigned numSysNamePairs = (numSysNames / 2);
 	  for ( unsigned iSysNamePair = 0; iSysNamePair < numSysNamePairs; ++iSysNamePair ) {
-	    const std::string sysName_up = sysNames[iSysNamePair];
+	    const std::string sysName_up = sysNames[2*iSysNamePair];
 	    double sysShift_up = getSysShift(binResults_systematic, sysName_up, binCentralValue);
+	    //std::cout << " sysName_up = " << sysName_up << ": sysShift_up = " << sysShift_up << std::endl;
 	    
-	    const std::string sysName_down = sysNames[iSysNamePair + 1];
+	    const std::string sysName_down = sysNames[2*iSysNamePair + 1];
 	    double sysShift_down = getSysShift(binResults_systematic, sysName_down, binCentralValue);
+	    //std::cout << " sysName_down = " << sysName_down << ": sysShift_down = " << sysShift_down << std::endl;
 	    
 	    double sysShift_plus = TMath::Max(sysShift_up, sysShift_down);
 	    if ( sysShift_plus > 0. ) sysShiftsSum2_plus += sysShift_plus*sysShift_plus;
@@ -459,9 +461,10 @@ void DQMDumpSysUncertaintyBinningResults::endJob()
 	    for ( std::vector<sysUncertaintyEntryType>::const_iterator sysUncertaintyEntry = processEntry->sysUncertaintyEntries_.begin();
 		  sysUncertaintyEntry != processEntry->sysUncertaintyEntries_.end(); ++sysUncertaintyEntry ) {
 	      binResultType binResult_sysCentralValue = sysUncertaintyEntry->getBinResults_sysCentralValue(iBin, *resultTypeName);
-	      std::map<std::string, binResultType> binResults_systematic 
+	      binResultsMappping_type binResults_systematic 
 		= sysUncertaintyEntry->getBinResults_systematic(iBin, *resultTypeName);
-	      printBinResult(sysUncertaintyEntry->sysTitle_, binResult_sysCentralValue, binResults_systematic, sysUncertaintyEntry->method_);
+	      printBinResult(sysUncertaintyEntry->sysTitle_, 
+			     binResult_sysCentralValue, binResults_systematic, sysUncertaintyEntry->method_);
 	    }
 	  }
 	}
@@ -473,9 +476,10 @@ void DQMDumpSysUncertaintyBinningResults::endJob()
 	for ( std::vector<sysUncertaintyEntryType>::const_iterator sysUncertaintyEntry = processEntry->sysUncertaintyEntries_.begin();
 	      sysUncertaintyEntry != processEntry->sysUncertaintyEntries_.end(); ++sysUncertaintyEntry ) {
 	  binResultType binResultSum_sysCentralValue = sysUncertaintyEntry->getBinResultsSum_sysCentralValue(*resultTypeName);
-	  std::map<std::string, binResultType> binResultsSum_systematic 
+	  binResultsMappping_type binResultsSum_systematic 
 	    = sysUncertaintyEntry->getBinResultsSum_systematic(*resultTypeName);
-	  printBinResult(sysUncertaintyEntry->sysTitle_, binResultSum_sysCentralValue, binResultsSum_systematic, sysUncertaintyEntry->method_);
+	  printBinResult(sysUncertaintyEntry->sysTitle_, 
+			 binResultSum_sysCentralValue, binResultsSum_systematic, sysUncertaintyEntry->method_);
 	}
       }
     }
