@@ -30,7 +30,8 @@ DQMDumpBinningResults::DQMDumpBinningResults(const edm::ParameterSet& cfg)
   }
   
   if ( processes_.size() == 0 ) {
-    edm::LogError("DQMDumpBinningResults") << " Configuration Parameter dqmDirectories contains no Entries --> skipping !!";
+    edm::LogError("DQMDumpBinningResults") 
+      << " Configuration Parameter dqmDirectories contains no Entries --> skipping !!";
     cfgError_ = 1;
   }
   
@@ -60,7 +61,8 @@ BinningBase* DQMDumpBinningResults::loadBinningResults(const std::string& dqmDir
 
 //--- check that BinningService is available
   if ( !binningService_ ) {
-    edm::LogError ("loadBinning") << " BinningService not initialized --> binning results will NOT be loaded !!";
+    edm::LogError ("loadBinning") 
+      << " BinningService not initialized --> binning results will NOT be loaded !!";
     return 0;
   }
 
@@ -95,8 +97,9 @@ void DQMDumpBinningResults::endJob()
     if ( binningResult ) {
       binningResults_[*process] = binningResult;
     } else {
-      edm::LogError ("DQMDumpBinningResults") << " Failed to load Binning result from dqmDirectory = " << dqmDirectory
-					      << " --> Binning results will NOT be printed-out !!";
+      edm::LogError ("DQMDumpBinningResults") 
+	<< " Failed to load Binning result from dqmDirectory = " << dqmDirectory
+	<< " --> Binning results will NOT be printed-out !!";
       return;
     }
   }
