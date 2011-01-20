@@ -262,11 +262,11 @@ std::vector<std::string> ModelBinning::encodeStringRep() const
   for ( unsigned iBin = 0; iBin < numBins_; ++iBin ) {
     const binEntryType_model& binEntry = binEntries_[iBin];
 
-    encodeBinEntryStringRep(buffer, iBin, "gen", binEntry.gen_);
-    encodeBinEntryStringRep(buffer, iBin, "rec", binEntry.rec_);
-    encodeBinEntryStringRep(buffer, iBin, "stay", binEntry.stay_);
-    encodeBinEntryStringRep(buffer, iBin, "lost", binEntry.lost_);
-    encodeBinEntryStringRep(buffer, iBin, "smearIn", binEntry.smearIn_);
+    encodeBinEntryStringRep(buffer, iBin, "gen",      binEntry.gen_);
+    encodeBinEntryStringRep(buffer, iBin, "rec",      binEntry.rec_);
+    encodeBinEntryStringRep(buffer, iBin, "stay",     binEntry.stay_);
+    encodeBinEntryStringRep(buffer, iBin, "lost",     binEntry.lost_);
+    encodeBinEntryStringRep(buffer, iBin, "smearIn",  binEntry.smearIn_);
     encodeBinEntryStringRep(buffer, iBin, "smearOut", binEntry.smearOut_);
   }
 
@@ -347,8 +347,9 @@ void ModelBinning::decodeStringRep(std::vector<std::string>& buffer)
 	    binContents_initialized[binNumber][label] = true;
 	  } 
 	} else {
-	  edm::LogError ("decodeStringRep") << " Bin number = " << binNumber << " decoded from meName = " << meName
-					    << " not within numBins = " << numBins_ << " range of binning object !!";
+	  edm::LogError ("decodeStringRep") 
+	    << " Bin number = " << binNumber << " decoded from meName = " << meName
+	    << " not within numBins = " << numBins_ << " range of binning object !!";
 	  continue;
 	}
       } else {
@@ -356,7 +357,8 @@ void ModelBinning::decodeStringRep(std::vector<std::string>& buffer)
       }
     } else if ( regexpParser_binError_entry.Match(meName_tstring) == 1 ) {
       if ( !numBins_initialized ) {
-	edm::LogError ("ModelBinning::decodeStringRep") << " Need to initialize numBins before setting binError !!";
+	edm::LogError ("ModelBinning::decodeStringRep") 
+	  << " Need to initialize numBins before setting binError !!";
 	continue;
       }
 
@@ -373,8 +375,9 @@ void ModelBinning::decodeStringRep(std::vector<std::string>& buffer)
 	    binSumw2_initialized[binNumber][label] = true;
 	  } 
 	} else {
-	  edm::LogError ("decodeStringRep") << " Bin number = " << binNumber << " decoded from meName = " << meName
-					    << " not within numBins = " << numBins_ << " range of binning object !!";
+	  edm::LogError ("decodeStringRep") 
+	    << " Bin number = " << binNumber << " decoded from meName = " << meName
+	    << " not within numBins = " << numBins_ << " range of binning object !!";
 	  continue;
 	}
       } else {
@@ -383,7 +386,8 @@ void ModelBinning::decodeStringRep(std::vector<std::string>& buffer)
     }
 
     if ( binNumber_error ) {
-      edm::LogError ("ModelBinning::decodeStringRep") << " Failed to decode bin number from meName = " << meName << " !!";
+      edm::LogError ("ModelBinning::decodeStringRep") 
+	<< " Failed to decode bin number from meName = " << meName << " !!";
       continue;
     }
   }
@@ -402,9 +406,11 @@ void ModelBinning::decodeStringRep(std::vector<std::string>& buffer)
       for ( std::vector<std::string>::const_iterator label = defLabels.begin();
 	    label != defLabels.end(); ++label ) {
 	if ( !binContents_initialized[iBin][*label] ) 
-	  edm::LogError ("decodeStringRep") << " Failed to decode binContents[" << iBin << "], label = " << (*label) << " !!";
+	  edm::LogError ("decodeStringRep") 
+	    << " Failed to decode binContents[" << iBin << "], label = " << (*label) << " !!";
 	if ( !binSumw2_initialized[iBin][*label] ) 
-	  edm::LogError ("decodeStringRep") << " Failed to decode binError[" << iBin << "], label = " << (*label) << " !!";
+	  edm::LogError ("decodeStringRep") 
+	    << " Failed to decode binError[" << iBin << "], label = " << (*label) << " !!";
       }
     }
   } else {
