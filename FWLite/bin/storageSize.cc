@@ -85,6 +85,10 @@ int main(int argc, char* argv[])
    
    gDebug = 3;
    cls->WriteBuffer(bf, objInstance);
-   
+ 
+   gDebug = 0;
+   std::cout <<"Total amount stored: "<<bf.Length()<<" bytes"<<std::endl;
+   std::cout<<"\nNOTE: add 4 bytes for each 'has written' value because of a bug in ROOT's printout of the accounting"
+   <<"\n  Each class (inheriting or as member data) has metadata an overhead of 10 bytes"<<std::endl;
    return 0;
 }
