@@ -52,6 +52,7 @@ void compZtautauXsectionNumbers()
 
 //-------------------------------------------------------------------------------
 // define signal efficiency and acceptance
+// (average of values obtained by PYTHIA (D6T tune) and POWHEG (Z2 tune) generators)
 //-------------------------------------------------------------------------------
 
   double mcAcceptance_Sig = 0.0681;
@@ -145,23 +146,34 @@ void compZtautauXsectionNumbers()
   double sysUncertaintyZmumuUp    = 42;
   double sysUncertaintyZmumuDown  = 36;
   
+  double mcAcceptance_SigPOWHEG = 0.0720;
+  double mcEfficiency_SigPOWHEG = 0.3746;
+
+//--- Z --> mu+ mu- cross-section is measured using acceptance value obtained from POWHEG
+//   --> recompute Z --> tau+ cross-section using POWHEG estimates for signal acceptance and efficiency
+//   --> no need to add difference between PYTHIA and POWHEG to systematic uncertainties
   double XsectionRatioMgt60Mlt120 = 0.5834;
-  double XsectionZtautauMgt60Mlt120 = Xsection*XsectionRatioMgt60Mlt120;
+  double XsectionZtautauMgt60Mlt120 = Xsection*XsectionRatioMgt60Mlt120
+                                     *(mcAcceptance_Sig*mcEfficiency_Sig)/(mcAcceptance_SigPOWHEG*mcEfficiency_SigPOWHEG);
 
   double XsectionRatio = XsectionZtautauMgt60Mlt120/XsectionZmumuMgt60Mlt120;
   double statUncertaintyRatioUp   = 
     XsectionRatio*TMath::Sqrt(square(statUncertainty/Xsection) + square(statUncertaintyZmumuDown/XsectionZmumuMgt60Mlt120));
   double statUncertaintyRatioDown = 
     XsectionRatio*TMath::Sqrt(square(statUncertainty/Xsection) + square(statUncertaintyZmumuUp/XsectionZmumuMgt60Mlt120));
+  double sysUncertaintyRelUpExclAccGenerator2   = sysUncertaintyRelUp2 - square(errAccGenerator);
+  double sysUncertaintyRelDownExclAccGenerator2 = sysUncertaintyRelUp2 - square(errAccGenerator);
   double sysUncertaintyRatioUp   = 
-    XsectionRatio*TMath::Sqrt(sysUncertaintyRelUp2 + square(sysUncertaintyZmumuDown/XsectionZmumuMgt60Mlt120));
+    XsectionRatio*TMath::Sqrt(sysUncertaintyRelUpExclAccGenerator2 + square(sysUncertaintyZmumuDown/XsectionZmumuMgt60Mlt120));
   double sysUncertaintyRatioDown = 
-    XsectionRatio*TMath::Sqrt(sysUncertaintyRelDown2 + square(sysUncertaintyZmumuUp/XsectionZmumuMgt60Mlt120));
+    XsectionRatio*TMath::Sqrt(sysUncertaintyRelDownExclAccGenerator2 + square(sysUncertaintyZmumuUp/XsectionZmumuMgt60Mlt120));
 
   double sysUncertaintyRatioExclTauIdEffUp =
-    XsectionRatio*TMath::Sqrt((sysUncertaintyRelUp2 - square(errTauIdEff)) + square(sysUncertaintyZmumuDown/XsectionZmumuMgt60Mlt120));
+    XsectionRatio*TMath::Sqrt(sysUncertaintyRelUpExclAccGenerator2 - square(errTauIdEff) 
+                             + square(sysUncertaintyZmumuDown/XsectionZmumuMgt60Mlt120));
   double sysUncertaintyRatioExclTauIdEffDown =
-    XsectionRatio*TMath::Sqrt((sysUncertaintyRelDown2 - square(errTauIdEff)) + square(sysUncertaintyZmumuUp/XsectionZmumuMgt60Mlt120));
+    XsectionRatio*TMath::Sqrt(sysUncertaintyRelDownExclAccGenerator2 - square(errTauIdEff) 
+		             + square(sysUncertaintyZmumuUp/XsectionZmumuMgt60Mlt120));
   
   std::cout << "Z --> tau+ tau-/Z --> mu+ mu- Xsection ratio = " << XsectionRatio 
 	    << " + " << statUncertaintyRatioUp << " - " << statUncertaintyRatioDown << " (stat.)"
