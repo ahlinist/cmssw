@@ -12,9 +12,9 @@
  * \author Christian Veelken, UC Davis
  *         (inspired by code written for H1 by Paul Laycock, University of Liverpool)
  *
- * \version $Revision: 1.2 $
+ * \version $Revision: 1.3 $
  *
- * $Id: ModelBinning.h,v 1.2 2010/02/16 15:18:50 veelken Exp $
+ * $Id: ModelBinning.h,v 1.3 2010/09/28 11:23:29 jkolb Exp $
  *
  */
 
@@ -32,11 +32,11 @@ struct binEntryType_model
   binEntryType_model() {}
   binEntryType_model& operator+=(const binEntryType_model& operand)
   {
-    gen_ += operand.gen_;
-    rec_ += operand.rec_;
-    stay_ += operand.stay_;
-    lost_ += operand.lost_;
-    smearIn_ += operand.smearIn_;
+    gen_      += operand.gen_;
+    rec_      += operand.rec_;
+    stay_     += operand.stay_;
+    lost_     += operand.lost_;
+    smearIn_  += operand.smearIn_;
     smearOut_ += operand.smearOut_;
     return (*this);
   }
