@@ -1,6 +1,7 @@
 #include "SusyAnalysis/EventSelector/interface/SusyEventSelector.h"
 #include "FWCore/MessageLogger/interface/MessageLogger.h"
 #include "DataFormats/PatCandidates/interface/Muon.h"
+#include "DataFormats/MuonReco/interface/Muon.h"
 
 #include "SusyAnalysis/EventSelector/interface/inconsistentMuonSelector.h"
 
@@ -27,7 +28,8 @@ inconsistentMuonSelector::select (const edm::Event& event) const
     using namespace edm;
 
     // Input collections
-    edm::Handle<std::vector<pat::Muon> > muonHandle;
+    //edm::Handle<std::vector<pat::Muon> > muonHandle;
+    edm::Handle<std::vector<reco::PFCandidate> > muonHandle;
     bool muonOK = event.getByLabel(muonTag_, muonHandle);
 
     // Reset cached variables
@@ -39,26 +41,25 @@ inconsistentMuonSelector::select (const edm::Event& event) const
 
     bool foundMuon = false;
 
-    for (std::vector<pat::Muon>::const_iterator im = (*muonHandle).begin(); im != (*muonHandle).end(); ++im) {
+    //for (std::vector<pat::Muon>::const_iterator im = (*muonHandle).begin(); im != (*muonHandle).end(); ++im) {
+    for (std::vector<reco::PFCandidate>::const_iterator im = (*muonHandle).begin(); im != (*muonHandle).end(); ++im) {
 
-        if ( im->pt() < ptMin_ ) continue;
+        if (!im->muonRef()) continue;
 
-        if (!(im->isGlobalMuon())) continue;
+        reco::Muon p = *(im->muonRef());
 
-        if ( fabs(im->innerTrack()->pt()/im->globalTrack()->pt() - 1) <= maxPTDiff_)
+        if ( p.pt() < ptMin_ ) continue;
+
+        if (!(p.isGlobalMuon())) continue;
+
+        if ( fabs(p.innerTrack()->pt()/p.globalTrack()->pt() - 1) <= maxPTDiff_)
             continue;
 
         foundMuon = true;
 
         if ( verbose_ ) {
-            cout << "\t" << "tracker pT = ";
-            if (im->isTrackerMuon())  cout << im->innerTrack()->pt();
-            else                        cout << "(n/a)";
-            cout << endl;
-            cout << "\t" << "global fit pT = ";
-            if (im->isGlobalMuon())   cout << im->globalTrack()->pt();
-            else                        cout << "(n/a)";
-            cout << endl;
+            cout << "\t" << "tracker pT = " << p.innerTrack()->pt() << endl;
+            cout << "\t" << "global fit pT = " << p.globalTrack()->pt() << endl;
         }
     } // end loop over PF muons
 
