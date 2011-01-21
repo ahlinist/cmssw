@@ -61,7 +61,10 @@ def prepareConfigFile(configFile = None, jobInfo = None, newConfigFile = None,
                       input_files = None, output_file = None,
                       enableEventDumps = False, enableFakeRates = False,
                       processName = None,
+                      eventList = None,
                       saveFinalEvents = False,
+                      # Add optional suffix to end of skim file name
+                      saveFinalEventsFileName = None,
                       changeTauId = None,
                       customizations = []):
     """
@@ -159,17 +162,21 @@ def prepareConfigFile(configFile = None, jobInfo = None, newConfigFile = None,
         jobOptions.append(('enableFakeRates',
                            sample_info['enableFakeRates']))
 
-
     jobOptions.append(('eventDump', enableEventDumps))
 
-    jobOptions.append(('saveFinalEvents', saveFinalEvents))
+    saveFinalEventsOption = ('saveFinalEvents', saveFinalEvents)
+    # Optionally specify the final events name.
+    if saveFinalEventsFileName is not None:
+        saveFinalEventsOption += ({'filename':saveFinalEventsFileName},)
 
-    # Always include the plot files
-    output_files = [ "%s_%s_%s_%s.root" % (PLOT_FILES_PREFIX, jobInfo['channel'], jobInfo['sample'], jobInfo['id']) ]
+    jobOptions.append(saveFinalEventsOption)
 
-    # Add our final event skim as well
-    if saveFinalEvents:
-        output_files.append("final_events_%s_%s_%s.root" % (jobInfo['channel'], jobInfo['sample'], jobInfo['id']))
+    # Check if we want to manually specify the events to run on.
+    if eventList is not None:
+        if not os.path.exists(eventList):
+            raise ValueError("Event list file %s does not exist!" % eventList)
+        full_path = os.path.abspath(eventList)
+        jobOptions.append(('eventList', eventList))
 
     # Create new config file with specialization options added
     workingDirectory = os.getcwd()
