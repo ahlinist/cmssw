@@ -12,7 +12,7 @@ SAMPLES_TO_ANALYZE = [
     #'Zmumu_pythia', 'Zee_pythia',
     'qqZll',
     'qqZllPU156bx', # EK: not at any site as of Dec 23
-    'bbZll', 'ccZll',    
+    'bbZll', 'ccZll',
     'Ztautau_powheg', 'Zmumu_powheg', 'Zee_powheg',
     #'InclusivePPmuX',
     'PPmuXptGt20Mu10', 'PPmuXptGt20Mu15',
@@ -272,6 +272,7 @@ RECO_SAMPLES = {
         'applyMuonTriggerEfficiencyCorrection' : True,
         'applyMuonIsolationEfficiencyCorrection' : True,
         'applyVertexMultiplicityReweighting' : True,
+        'enableFakeRates' : True,
         'hlt' : cms.InputTag("TriggerResults", "", "REDIGI38XPU"),
         'SE_black_list' : 'T2_RU_JINR'
     },
@@ -364,7 +365,7 @@ RECO_SAMPLES = {
         'applyMuonTriggerEfficiencyCorrection' : True,
         'applyMuonIsolationEfficiencyCorrection' : True,
         'applyVertexMultiplicityReweighting' : True,
-        'enableFakeRates' : True,
+        #'enableFakeRates' : True,
         'hlt' : cms.InputTag("TriggerResults", "", "REDIGI38XPU"),
         'SE_black_list' : 'T2_TW_Taiwan'
     },
@@ -376,7 +377,7 @@ RECO_SAMPLES = {
         'x_sec' : 6152*_picobarns,
         'legendEntry' : plotter.process_WplusJets.config_dqmHistPlotter.legendEntry.value(),
         'type' : plotter.process_WplusJets.config_dqmHistPlotter.type.value(),
-        'enableFakeRates' : True,
+        #'enableFakeRates' : True,
         'drawOption' : styles.drawOption_WplusJets,
         'applyZrecoilCorrection' : False,
         'applyMuonTriggerEfficiencyCorrection' : True,
@@ -393,7 +394,7 @@ RECO_SAMPLES = {
         'x_sec' : 4286*_picobarns,
         'legendEntry' : plotter.process_WplusJets.config_dqmHistPlotter.legendEntry.value(),
         'type' : plotter.process_WplusJets.config_dqmHistPlotter.type.value(),
-        'enableFakeRates' : True,
+        #'enableFakeRates' : True,
         'drawOption' : styles.drawOption_WplusJets,
         'applyZrecoilCorrection' : False,
         'applyMuonTriggerEfficiencyCorrection' : True,
@@ -415,7 +416,7 @@ RECO_SAMPLES = {
         'applyMuonTriggerEfficiencyCorrection' : True,
         'applyMuonIsolationEfficiencyCorrection' : True,
         'applyVertexMultiplicityReweighting' : True,
-        'enableFakeRates' : True,
+        #'enableFakeRates' : True,
         'hlt' : cms.InputTag("TriggerResults", "", "REDIGI38XPU"),
         'SE_black_list' : 'T2_TW_Taiwan'
     },
@@ -432,6 +433,7 @@ RECO_SAMPLES = {
         'applyMuonTriggerEfficiencyCorrection' : True,
         'applyMuonIsolationEfficiencyCorrection' : True,
         'applyVertexMultiplicityReweighting' : True,
+        #'enableFakeRates' : True,
         'hlt' : cms.InputTag("TriggerResults", "", "REDIGI38XPU")
     },
     'WmuPlus_powheg' : {
@@ -447,6 +449,7 @@ RECO_SAMPLES = {
         'applyMuonTriggerEfficiencyCorrection' : True,
         'applyMuonIsolationEfficiencyCorrection' : True,
         'applyVertexMultiplicityReweighting' : True,
+        #'enableFakeRates' : True,
         'hlt' : cms.InputTag("TriggerResults", "", "REDIGI38XPU")
     },
     'Wtaunu_pythia' : {
@@ -462,7 +465,7 @@ RECO_SAMPLES = {
         'applyMuonTriggerEfficiencyCorrection' : True,
         'applyMuonIsolationEfficiencyCorrection' : True,
         'applyVertexMultiplicityReweighting' : True,
-        'enableFakeRates' : True,
+        #'enableFakeRates' : True,
         'hlt' : cms.InputTag("TriggerResults", "", "REDIGI38XPU"),
         'SE_black_list' : 'T2_TW_Taiwan'
     },
@@ -479,6 +482,7 @@ RECO_SAMPLES = {
         'applyMuonTriggerEfficiencyCorrection' : True,
         'applyMuonIsolationEfficiencyCorrection' : True,
         'applyVertexMultiplicityReweighting' : True,
+        #'enableFakeRates' : True,
         'hlt' : cms.InputTag("TriggerResults", "", "REDIGI38XPU")
     },
     'WtauPlus_powheg' : {
@@ -494,6 +498,7 @@ RECO_SAMPLES = {
         'applyMuonTriggerEfficiencyCorrection' : True,
         'applyMuonIsolationEfficiencyCorrection' : True,
         'applyVertexMultiplicityReweighting' : True,
+        #'enableFakeRates' : True,
         'hlt' : cms.InputTag("TriggerResults", "", "REDIGI38XPU")
     },
     'WplusJets_madgraph' : {
@@ -509,6 +514,7 @@ RECO_SAMPLES = {
         'applyMuonTriggerEfficiencyCorrection' : True,
         'applyMuonIsolationEfficiencyCorrection' : True,
         'applyVertexMultiplicityReweighting' : True,
+        'enableFakeRates' : True,
         'hlt' : cms.InputTag("TriggerResults", "", "REDIGI38XPU")
     },
     'WW' : {
@@ -616,6 +622,7 @@ MERGE_SAMPLES = {
     'qcdSum' : {
         'samples' : [
             #'InclusivePPmuX',
+            #'PPmuXptGt20Mu10Workaround',
             'PPmuXptGt20Mu10',
             'PPmuXptGt20Mu15'
         ],
@@ -624,16 +631,16 @@ MERGE_SAMPLES = {
         'type' : plotter.process_PPmuXptGt20.config_dqmHistPlotter.type.value(),
         'drawOption' : styles.drawOption_QCD
     },
-    ##'WplusJetsSum_pythia' : {
-    ##    'samples' : [
-    ##        'Wenu_pythia',
-    ##        'Wmunu_pythia',
-    ##        'Wtaunu_pythia'
-    ##    ],
-    ##    'legendEntry' : plotter.process_WplusJets.config_dqmHistPlotter.legendEntry.value(),
-    ##    'type' : plotter.process_WplusJets.config_dqmHistPlotter.type.value(),
-    ##    'drawOption' : styles.drawOption_WplusJets
-    ##},
+    #'WplusJetsSum_pythia' : {
+       #'samples' : [
+           #'Wenu_pythia',
+           #'Wmunu_pythia',
+           #'Wtaunu_pythia'
+       #],
+       #'legendEntry' : plotter.process_WplusJets.config_dqmHistPlotter.legendEntry.value(),
+       #'type' : plotter.process_WplusJets.config_dqmHistPlotter.type.value(),
+       #'drawOption' : styles.drawOption_WplusJets
+    #},
     ##'WplusJetsSum_powheg' : {
     ##	'samples' : [
     ##        'WePlus_powheg' ,
