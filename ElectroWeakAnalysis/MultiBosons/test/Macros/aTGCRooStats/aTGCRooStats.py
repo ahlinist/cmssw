@@ -11,15 +11,20 @@ def main(options,args):
     obsMin = float(options.obsMin)
     obsMax = float(options.obsMax)    
 
-    dataChain = ROOT.TChain(options.treeName)
+    dataChain = [] #ROOT.TChain(options.treeName)
     for dFile in str(options.inputData).split(','):
         print 'Adding: ',dFile
-        dataChain.Add(dFile)
+        ch = ROOT.TChain(options.treeName)
+        ch.Add(dFile)
+        dataChain.append(ch)
+        
 
-    mcChain = ROOT.TChain(options.treeName)
+    mcChain = []#ROOT.TChain(options.treeName)
     for mcFile in str(options.inputMC).split(','):
         print 'Adding: ', mcFile
-        mcChain.Add(mcFile)
+        ch = ROOT.TChain(options.treeName)
+        ch.Add(mcFile)
+        mcChain.append(ch)
 
     output = ROOT.TFile.Open(options.workspaceName+'.root','RECREATE')
     
@@ -30,25 +35,32 @@ def main(options,args):
     setupWorkspace(dataChain,mcChain,ws,output,options)        
 
     #create -log(likelihood)
-    theNLL = None
-    if options.noBackground:
-        theNLL = ws.pdf('TopLevelPdf').createNLL(ws.data('aTGCDataUnitWeight'),
-                                                 ROOT.RooFit.NumCPU(2),
-                                                 ROOT.RooFit.ExternalConstraints(ROOT.RooArgSet(ws.pdf('lumiErr'),
-                                                                                                ws.pdf('selectionErr'))),
-                                                 )
-    else:
-        theNLL =ws.pdf('TopLevelPdf').createNLL(ws.data('aTGCDataUnitWeight'),
-                                                ROOT.RooFit.NumCPU(2),
-                                                ROOT.RooFit.ExternalConstraints(ROOT.RooArgSet(ws.pdf('lumiErr'),
-                                                                                               ws.pdf('selectionErr'),
-                                                                                               ws.pdf('backgroundErr')))
-                                                )
+    theNLLs = ROOT.RooArgSet()
+    for i in range(len(dataChain)):
+        if options.noBackground:
+            theNLLs.add(ws.pdf('TopLevelPdf'+str(i)).createNLL(ws.data('aTGCDataUnitWeight'+str(i)),
+                                                               ROOT.RooFit.NumCPU(1),
+                                                               ROOT.RooFit.ExternalConstraints(ROOT.RooArgSet(ws.pdf('lumiErr'+str(i)),
+                                                                                                              ws.pdf('selectionErr'+str(i))))
+                                                               ))
+        else:
+            theNLLs.add(ws.pdf('TopLevelPdf'+str(i)).createNLL(ws.data('aTGCDataUnitWeight'+str(i)),
+                                                               ROOT.RooFit.NumCPU(1),
+                                                               ROOT.RooFit.ExternalConstraints(ROOT.RooArgSet(ws.pdf('lumiErr'+str(i)),
+                                                                                                              ws.pdf('selectionErr'+str(i)),
+                                                                                                              ws.pdf('backgroundErr'+str(i))))
+                                                               ))
+    
+    theNLL = ROOT.RooAddition('nll_TopLevelPdf_sum'+str(len(dataChain))+'_aTGCDataUnitWeight_with_constr',
+                              'nll_TopLevelPdf_sum'+str(len(dataChain))+'_aTGCDataUnitWeight_with_constr',
+                              theNLLs)
+    
     getattr(ws,'import')(theNLL)
                                             
     minuit = ROOT.RooMinuit(theNLL)
     minuit.setPrintLevel(1)
     minuit.setPrintEvalErrors(-1)
+    minuit.setErrorLevel(.5)
     
     #find the values of the errors that minimize the likelihood
     minuit.setStrategy(2)
@@ -83,6 +95,7 @@ def main(options,args):
     print '95% CL Delta-NLL 2 DOF=',level_95
 
     profMinuit = profileLL.minuit()
+    profMinuit.setErrorLevel(.5)
     profMinuit.setStrategy(2)
     profMinuit.setPrintLevel(1)
     profMinuit.setPrintEvalErrors(-1)
@@ -271,128 +284,126 @@ def setupWorkspace(dataTree,mcTree,ws,output,options):
     lumiErr = ROOT.RooRealVar('luminosityError',
                               'Fractional Error on the luminosity',
                               exp(.11)) #fix lumi error to 11%    
+    for i in range(len(dataTree)):
+         #build nExpectedBackground RooHistFunc
+         bkg = loadBackgroundHist(ws,output,options,i)
+         getattr(ws,'import')(bkg)
+         
+         nExpectedBackground = ROOT.RooHistFunc('nExpectedBackground'+str(i),'Number of expected background in bins of pT',
+                                                ROOT.RooArgSet(obs),ws.data('bkgShape'+str(i)))
+         getattr(ws,'import')(nExpectedBackground)
+         
+         ws.function('nExpectedBackground'+str(i)).Print()
+         
+         #start hack to always make last bin include overflow
+         aTGCObsHist = ROOT.TH1F('aTGCObsHist'+str(i),
+                                 'Histogram Containing the pt Spectrum',
+                                 nObsBins,
+                                 obsMin,obsMax) # because including overflow bins in roofit sucks, a lot...
+         
+         if options.pseudodata:
+             generatePseudodata(dataTree,ws.obj('bkgHist'+str(i)),aTGCObsHist,options)
+         else:
+             dataTree[i].Draw(options.obsVar+' >> aTGCObsHist'+str(i),'','goff')
+             
+             lastBin = aTGCObsHist.GetBinContent(nObsBins) + aTGCObsHist.GetBinContent(nObsBins+1)
+             lastBinError = sqrt(aTGCObsHist.GetBinError(nObsBins)*aTGCObsHist.GetBinError(nObsBins) +
+                                 aTGCObsHist.GetBinError(nObsBins+1)*aTGCObsHist.GetBinError(nObsBins+1))
 
-    #build nExpectedBackground RooHistFunc
-    bkg = loadBackgroundHist(ws,output,options)
-    getattr(ws,'import')(bkg)
+             for j in range(nObsBins-1):
+                 aTGCObsHist.SetBinError(j+1,sqrt(aTGCObsHist.GetBinContent(j+1)))
+                 
+             aTGCObsHist.SetBinContent(nObsBins,lastBin)
+             aTGCObsHist.SetBinError(nObsBins,lastBinError)
+
+         aTGCObsHist.Write()
+         #end hack to make last bin include overflow
+
+         aTGCData = ROOT.RooDataHist('aTGCData'+str(i),
+                                     'Photon E_{T} Spectrum from Data',
+                                     ROOT.RooArgList(obs),aTGCObsHist)
+         
+         #Ok, this does look a little insane but what we want as our actual dataset
+         #is each pT bin with unit weight and a poisson assigned to it
+         #with some expectation... We do this to fake out RooFit.
+
+         aTGCDataUnitWeight = ROOT.RooDataHist(aTGCData,'aTGCDataUnitWeight'+str(i))
+         
+         aTGCDataUnitWeight.reset()
+         
+         for j in range(nObsBins):
+             aTGCDataUnitWeight.get(j)
+             aTGCDataUnitWeight.set(1.0)
+
+         aTGCData.createHistogram('dataHist'+str(i),obs).Write()
     
-    nExpectedBackground = ROOT.RooHistFunc('nExpectedBackground','Number of expected background in bins of pT',
-                                           ROOT.RooArgSet(obs),ws.data('bkgShape'))
-    getattr(ws,'import')(nExpectedBackground)
+         getattr(ws,'import')(aTGCData)
+         getattr(ws,'import')(aTGCDataUnitWeight)
+         
+         #getattr(ws,'import')(acc)
+         #getattr(ws,'import')(acc_err)    
+         getattr(ws,'import')(evSelErr)
+         getattr(ws,'import')(bkgErr)
+         getattr(ws,'import')(lumiErr)
+         #getattr(ws,'import')(aRow)
 
-    ws.function('nExpectedBackground').Print()
-    
-    #start hack to always make last bin include overflow
-    aTGCObsHist = ROOT.TH1F('aTGCObsHist',
-                            'Histogram Containing the pt Spectrum',
-                            nObsBins,
-                            obsMin,obsMax) # because including overflow bins in roofit sucks, a lot...
+         #get the fitted polynomial coefficients from the 3x3 grid info
+         (c,p_0,p_1,p_2,p_3,p_4) = fitATGCExpectedYields(ws,mcTree,options,i) #returns roodatahist describing polynomial terms in bins of pT :-D
 
-    if options.pseudodata:
-        generatePseudodata(dataTree,ws.obj('bkgHist'),aTGCObsHist,options)
-    else:
-        dataTree.Draw(options.obsVar+' >> aTGCObsHist','','goff')
+         getattr(ws,'import')(c)
+         getattr(ws,'import')(p_0)
+         getattr(ws,'import')(p_1)
+         getattr(ws,'import')(p_2)
+         getattr(ws,'import')(p_3)
+         getattr(ws,'import')(p_4)
 
-        lastBin = aTGCObsHist.GetBinContent(nObsBins) + aTGCObsHist.GetBinContent(nObsBins+1)
-        lastBinError = sqrt(aTGCObsHist.GetBinError(nObsBins)*aTGCObsHist.GetBinError(nObsBins) +
-                            aTGCObsHist.GetBinError(nObsBins+1)*aTGCObsHist.GetBinError(nObsBins+1))
+         ws.var(options.obsVar).setVal(1.5*(obsMax-obsMin)/nObsBins)
 
-        for i in range(nObsBins-1):
-            aTGCObsHist.SetBinError(i+1,sqrt(aTGCObsHist.GetBinContent(i+1)))
+         #set up functiont the returns number of observed signal
+         nObserved = ROOT.RooHistFunc('nObserved'+str(i),'Number of Observed Events in Data',
+                                      ROOT.RooArgSet(obs),ws.data('aTGCData'+str(i)))
+         getattr(ws,'import')(nObserved)
+         
+         ws.function('nObserved'+str(i)).Print()
 
-        aTGCObsHist.SetBinContent(nObsBins,lastBin)
-        aTGCObsHist.SetBinError(nObsBins,lastBinError)
+         #set up the signal expectation description
+         #this needs a little care, they *are* nuisance parameters but I don't yet have a way of saving this info
+         #since I use RooHistFunc.... hmmm
+         polyC = ROOT.RooHistFunc('polyC'+str(i),
+                                  'Constant Term for aTGC polynomial description',
+                                  ROOT.RooArgSet(obs),ws.data('c_bin_pt'+str(i)))
+         polyP_0 = ROOT.RooHistFunc('polyP_0'+str(i),
+                                    'Linear par1 Term for aTGC polynomial description',
+                                    ROOT.RooArgSet(obs),ws.data('p0_bin_pt'+str(i)))
+         polyP_1 = ROOT.RooHistFunc('polyP_1'+str(i),
+                                    'Linear par2 Term for aTGC polynomial description',
+                                    ROOT.RooArgSet(obs),ws.data('p1_bin_pt'+str(i)))
+         polyP_2 = ROOT.RooHistFunc('polyP_2'+str(i),
+                                    'par1*par2 Term for aTGC polynomial description',
+                                    ROOT.RooArgSet(obs),ws.data('p2_bin_pt'+str(i)))
+         polyP_3 = ROOT.RooHistFunc('polyP_3'+str(i),
+                                    'Quadratic par1 Term for aTGC polynomial description',
+                                    ROOT.RooArgSet(obs),ws.data('p3_bin_pt'+str(i)))
+         polyP_4 = ROOT.RooHistFunc('polyP_4'+str(i),
+                                    'Quadratic par2 Term for aTGC polynomial description',
+                                    ROOT.RooArgSet(obs),ws.data('p4_bin_pt'+str(i)))
+         nExpectedSignal = ROOT.RooFormulaVar('nExpectedSignal'+str(i),'The expected number of signal events in (h3,h4) in bins',
+                                              '(@3(@0) + @4(@0)*@1 + @5(@0)*@2 + @6(@0)*@1*@2 + @7(@0)*@1*@1 + @8(@0)*@2*@2)',
+                                              ROOT.RooArgList(obs,par1,par2,polyC,polyP_0,polyP_1,polyP_2,polyP_3,polyP_4))
+         #getattr(ws,'import')(polyC)
+         #getattr(ws,'import')(polyP_0)
+         #getattr(ws,'import')(polyP_1)
+         #getattr(ws,'import')(polyP_2)
+         #getattr(ws,'import')(polyP_3)
+         #getattr(ws,'import')(polyP_4)
+         getattr(ws,'import')(nExpectedSignal)    
 
-    aTGCObsHist.Write()
-    #end hack to make last bin include overflow
+         ws.function('nExpectedSignal'+str(i)).Print()
 
-    aTGCData = ROOT.RooDataHist('aTGCData',
-                                'Photon E_{T} Spectrum from Data',
-                                ROOT.RooArgList(obs),aTGCObsHist)
+         #finally make the pdf
+         makeATGCExpectationPdf(ws,options,i)
 
-    #Ok, this does look a little insane but what we want as our actual dataset
-    #is each pT bin with unit weight and a poisson assigned to it
-    #with some expectation... We do this to fake out RooFit.
-
-    aTGCDataUnitWeight = ROOT.RooDataHist(aTGCData,'aTGCDataUnitWeight')
-
-    aTGCDataUnitWeight.reset()
-
-    for i in range(nObsBins):
-        aTGCDataUnitWeight.get(i)
-        aTGCDataUnitWeight.set(1.0)
-
-    aTGCData.createHistogram('dataHist',obs).Write()
-    
-    getattr(ws,'import')(aTGCData)
-    getattr(ws,'import')(aTGCDataUnitWeight)
-    
-    #getattr(ws,'import')(acc)
-    #getattr(ws,'import')(acc_err)    
-    getattr(ws,'import')(evSelErr)
-    getattr(ws,'import')(bkgErr)
-    getattr(ws,'import')(lumiErr)
-    #getattr(ws,'import')(aRow)
-
-    #get the fitted polynomial coefficients from the 3x3 grid info
-    (c,p_0,p_1,p_2,p_3,p_4) = fitATGCExpectedYields(ws,mcTree,options) #returns roodatahist describing polynomial terms in bins of pT :-D
-
-    getattr(ws,'import')(c)
-    getattr(ws,'import')(p_0)
-    getattr(ws,'import')(p_1)
-    getattr(ws,'import')(p_2)
-    getattr(ws,'import')(p_3)
-    getattr(ws,'import')(p_4)
-
-    ws.var(options.obsVar).setVal(1.5*(obsMax-obsMin)/nObsBins)
-
-    #set up functiont the returns number of observed signal
-    nObserved = ROOT.RooHistFunc('nObserved','Number of Observed Events in Data',
-                                 ROOT.RooArgSet(obs),ws.data('aTGCData'))
-    getattr(ws,'import')(nObserved)
-
-    ws.function('nObserved').Print()
-
-    #set up the signal expectation description
-    #this needs a little care, they *are* nuisance parameters but I don't yet have a way of saving this info
-    #since I use RooHistFunc.... hmmm
-    polyC = ROOT.RooHistFunc('polyC',
-                             'Constant Term for aTGC polynomial description',
-                             ROOT.RooArgSet(obs),ws.data('c_bin_pt'))
-    polyP_0 = ROOT.RooHistFunc('polyP_0',
-                               'Linear par1 Term for aTGC polynomial description',
-                               ROOT.RooArgSet(obs),ws.data('p0_bin_pt'))
-    polyP_1 = ROOT.RooHistFunc('polyP_1',
-                               'Linear par2 Term for aTGC polynomial description',
-                               ROOT.RooArgSet(obs),ws.data('p1_bin_pt'))
-    polyP_2 = ROOT.RooHistFunc('polyP_2',
-                               'par1*par2 Term for aTGC polynomial description',
-                               ROOT.RooArgSet(obs),ws.data('p2_bin_pt'))
-    polyP_3 = ROOT.RooHistFunc('polyP_3',
-                               'Quadratic par1 Term for aTGC polynomial description',
-                               ROOT.RooArgSet(obs),ws.data('p3_bin_pt'))
-    polyP_4 = ROOT.RooHistFunc('polyP_4',
-                               'Quadratic par2 Term for aTGC polynomial description',
-                               ROOT.RooArgSet(obs),ws.data('p4_bin_pt'))
-    nExpectedSignal = ROOT.RooFormulaVar('nExpectedSignal','The expected number of signal events in (h3,h4) in bins',
-                                         '(@3(@0) + @4(@0)*@1 + @5(@0)*@2 + @6(@0)*@1*@2 + @7(@0)*@1*@1 + @8(@0)*@2*@2)',
-                                         ROOT.RooArgList(obs,par1,par2,polyC,polyP_0,polyP_1,polyP_2,polyP_3,polyP_4))
-    #getattr(ws,'import')(polyC)
-    #getattr(ws,'import')(polyP_0)
-    #getattr(ws,'import')(polyP_1)
-    #getattr(ws,'import')(polyP_2)
-    #getattr(ws,'import')(polyP_3)
-    #getattr(ws,'import')(polyP_4)
-    getattr(ws,'import')(nExpectedSignal)    
-
-    ws.function('nExpectedSignal').Print()
-
-    
-
-    #finally make the pdf
-    makeATGCExpectationPdf(ws,options)
-        
-def fitATGCExpectedYields(ws,mcChain,options):
+def fitATGCExpectedYields(ws,mcChain,options,index):
 
     nObsBins = int(options.nObsBins)
     obsMin = float(options.obsMin)
@@ -428,39 +439,43 @@ def fitATGCExpectedYields(ws,mcChain,options):
 
     binSize = (obsMax-obsMin)/nObsBins
 
-    hc = ROOT.TH1F('hc','const term',nObsBins,obsMin,obsMax)
-    hp0 = ROOT.TH1F('hp0','h3 linear term',nObsBins,obsMin,obsMax)
-    hp1 = ROOT.TH1F('hp1','h4 linear term',nObsBins,obsMin,obsMax)
-    hp2 = ROOT.TH1F('hp2','h3h4 cross term',nObsBins,obsMin,obsMax)
-    hp3 = ROOT.TH1F('hp3','h3 quadratic term',nObsBins,obsMin,obsMax)
-    hp4 = ROOT.TH1F('hp4','h4 quadratic term',nObsBins,obsMin,obsMax)
+    hc = ROOT.TH1F('hc_'+str(index),'const term',nObsBins,obsMin,obsMax)
+    hp0 = ROOT.TH1F('hp_'+str(index)+'0','h3 linear term',nObsBins,obsMin,obsMax)
+    hp1 = ROOT.TH1F('hp_'+str(index)+'1','h4 linear term',nObsBins,obsMin,obsMax)
+    hp2 = ROOT.TH1F('hp_'+str(index)+'2','h3h4 cross term',nObsBins,obsMin,obsMax)
+    hp3 = ROOT.TH1F('hp_'+str(index)+'3','h3 quadratic term',nObsBins,obsMin,obsMax)
+    hp4 = ROOT.TH1F('hp_'+str(index)+'4','h4 quadratic term',nObsBins,obsMin,obsMax)
+
+    print 'index is ', index
+    print mcChain
+    print mcChain[index]
 
     for i in range(nObsBins):
         binMin = obsMin+i*binSize
         binMax = binMin + binSize
 
-        theBaseData = ROOT.TH2F('theBaseData_'+str(i),'Base Histogram for RooDataHist',
+        theBaseData = ROOT.TH2F('theBaseData'+str(index)+'_'+str(i),'Base Histogram for RooDataHist',
                                 nGridParBins,par1_grid.getMin(),par1_grid.getMax(),
                                 nGridParBins,par2_grid.getMin(),par2_grid.getMax())
         
         if i == (nObsBins - 1):
             print obs_mc.GetName(),' > ',str(binMin)
-            mcChain.Draw(options.par2Name+'_grid:'+options.par1Name+'_grid >> theBaseData_'+str(i),
-                         'weight*('+obs_mc.GetName() +
-                         ' > ' + str(binMin)+')','goff')
+            mcChain[index].Draw(options.par2Name+'_grid:'+options.par1Name+'_grid >> theBaseData'+str(index)+'_'+str(i),
+                                'weight*('+obs_mc.GetName() +
+                                ' > ' + str(binMin)+')','goff')
         else:
             print obs_mc.GetName(),' > ',str(binMin),' && ',obs_mc.GetName(),' < ',str(binMax)
-            mcChain.Draw(options.par2Name+'_grid:'+options.par1Name+'_grid >> theBaseData_'+str(i),
-                         'weight*('+obs_mc.GetName() +
-                         ' > ' + str(binMin) +
-                         ' && ' + obs_mc.GetName() +
-                         ' < ' + str(binMax)+')','goff')
+            mcChain[index].Draw(options.par2Name+'_grid:'+options.par1Name+'_grid >> theBaseData'+str(index)+'_'+str(i),
+                                'weight*('+obs_mc.GetName() +
+                                ' > ' + str(binMin) +
+                                ' && ' + obs_mc.GetName() +
+                                ' < ' + str(binMax)+')','goff')
             
         #for k in range(1,nObsBins):
         #    for j in range(1,nObsBins):
         #        theBaseData.SetBinError(k,j,.3e-3)        
 
-        func = ROOT.TF2('fittingFunction'+str(i),'[0] + [1]*x + [2]*y + [3]*x*y + [4]*x*x + [5]*y*y',
+        func = ROOT.TF2('fittingFunction'+str(index)+'_'+str(i),'[0] + [1]*x + [2]*y + [3]*x*y + [4]*x*x + [5]*y*y',
                         par1_grid.getMin(),par1_grid.getMax(),
                         par2_grid.getMin(),par2_grid.getMax())
 
@@ -483,6 +498,7 @@ def fitATGCExpectedYields(ws,mcChain,options):
         hp3.SetBinError(i+1,func.GetParError(4))
         hp4.SetBinContent(i+1,func.GetParameter(5))
         hp4.SetBinError(i+1,func.GetParError(5))
+        
 
 
     hc.Write()
@@ -500,29 +516,29 @@ def fitATGCExpectedYields(ws,mcChain,options):
     getattr(ws,'import')(hp4)
 
     #note that here we change the variable of the histogram to the main photon eT!!
-    c = ROOT.RooDataHist('c_bin_pt','Constant Term for Each Bin',
+    c = ROOT.RooDataHist('c_bin_pt'+str(index),'Constant Term for Each Bin',
                          ROOT.RooArgList(ws.var(options.obsVar)),hc)
-    p0 = ROOT.RooDataHist('p0_bin_pt','h3 Linear Term for Each Bin',
+    p0 = ROOT.RooDataHist('p0_bin_pt'+str(index),'h3 Linear Term for Each Bin',
                           ROOT.RooArgList(ws.var(options.obsVar)),hp0)
-    p1 = ROOT.RooDataHist('p1_bin_pt','h4 Linear Term for Each Bin',
+    p1 = ROOT.RooDataHist('p1_bin_pt'+str(index),'h4 Linear Term for Each Bin',
                           ROOT.RooArgList(ws.var(options.obsVar)),hp1)
-    p2 = ROOT.RooDataHist('p2_bin_pt','h3h4 Cross Term for Each Bin',
+    p2 = ROOT.RooDataHist('p2_bin_pt'+str(index),'h3h4 Cross Term for Each Bin',
                           ROOT.RooArgList(ws.var(options.obsVar)),hp2)
-    p3 = ROOT.RooDataHist('p3_bin_pt','h3 Quadratic Term for Each Bin',
+    p3 = ROOT.RooDataHist('p3_bin_pt'+str(index),'h3 Quadratic Term for Each Bin',
                           ROOT.RooArgList(ws.var(options.obsVar)),hp3)
-    p4 = ROOT.RooDataHist('p4_bin_pt','h4 Quadratic Term for Each Bin',
+    p4 = ROOT.RooDataHist('p4_bin_pt'+str(index),'h4 Quadratic Term for Each Bin',
                           ROOT.RooArgList(ws.var(options.obsVar)),hp4)
     
     return c,p0,p1,p2,p3,p4
 
-def loadBackgroundHist(ws,output,options):
+def loadBackgroundHist(ws,output,options,index):
 
     nObsBins = int(options.nObsBins)
     obsMin = float(options.obsMin)
     obsMax = float(options.obsMax)
     binSize = (obsMax-obsMin)/nObsBins
     
-    bkgFile = ROOT.TFile.Open(options.bkgFile)
+    bkgFile = ROOT.TFile.Open(options.bkgFile.split(',')[index])
     bkgData = None 
 
     if isinstance(bkgFile.Get(options.treeName),ROOT.TH1):
@@ -531,7 +547,7 @@ def loadBackgroundHist(ws,output,options):
 
         output.cd()
         
-        bkgHist = ROOT.TH1F('bkgHist','Background Shape',nObsBins,obsMin,obsMax)
+        bkgHist = ROOT.TH1F('bkgHist'+str(index),'Background Shape',nObsBins,obsMin,obsMax)
 
         #get bin corresponding to first bin in bkgHist
         startBin = inpHist.GetXaxis().FindFixBin(bkgHist.GetBinCenter(1))
@@ -558,7 +574,7 @@ def loadBackgroundHist(ws,output,options):
 
         getattr(ws,'import')(bkgHist)
 
-        bkgData = ROOT.RooDataHist('bkgShape','The shape of the background in photon eT',
+        bkgData = ROOT.RooDataHist('bkgShape'+str(index),'The shape of the background in photon eT',
                                    ROOT.RooArgList(ws.var(options.obsVar)),
                                    bkgHist)
                                    
@@ -567,12 +583,12 @@ def loadBackgroundHist(ws,output,options):
         print 'Background Data Given as TTree!'
         temp = bkgFile.Get(options.treeName)       
 
-        bkgHist = ROOT.TH1F('bkgHist','Background Shape',nObsBins,obsMin,obsMax)
+        bkgHist = ROOT.TH1F('bkgHist'+str(index),'Background Shape',nObsBins,obsMin,obsMax)
 
         if(options.MCbackground):
-            temp.Draw(options.obsVar+' >> bkgHist','weight','goff')
+            temp.Draw(options.obsVar+' >> bkgHist'+str(index),'weight','goff')
         else:
-            temp.Draw(options.obsVar+' >> bkgHist','','goff')
+            temp.Draw(options.obsVar+' >> bkgHist'+str(index),'','goff')
 
         output.cd()
 
@@ -587,7 +603,7 @@ def loadBackgroundHist(ws,output,options):
 
         getattr(ws,'import')(bkgHist)
 
-        bkgData = ROOT.RooDataHist('bkgShape','The shape of the background in photon eT',
+        bkgData = ROOT.RooDataHist('bkgShape'+str(index),'The shape of the background in photon eT',
                                    ROOT.RooArgList(ws.var(options.obsVar)),
                                    bkgHist)
 
@@ -634,42 +650,42 @@ def generatePseudodata(tree,bkg,hist,options):
     print 'Pseudodata histogram bin: ',hist.GetBinContent(nObsBins),' +- ',hist.GetBinError(nObsBins)
 
 #define the PDF that defines the likelihood
-def makeATGCExpectationPdf(ws,options):
+def makeATGCExpectationPdf(ws,options,index):
     if not isinstance(ws,ROOT.RooWorkspace):
         print "You didn't pass a RooWorkspace!"
         exit(1)
 
     #nuisance parameters
-    x_gs = ROOT.RooRealVar('err_x_gs','Range for Selection Error',1,
+    x_gs = ROOT.RooRealVar('err_x_gs'+str(index),'Range for Selection Error',1,
                            1e-6,
-                           1e6)
-    x_gb = ROOT.RooRealVar('err_x_gb','Range for Background Error',1,
+                           50)
+    x_gb = ROOT.RooRealVar('err_x_gb'+str(index),'Range for Background Error',1,
                            1e-6,
-                           1e6)
-    x_gl = ROOT.RooRealVar('err_x_gl','Range for Lumi Error',1,
+                           50)
+    x_gl = ROOT.RooRealVar('err_x_gl'+str(index),'Range for Lumi Error',1,
                            1e-6,
-                           1e6)
+                           50)
     
     getattr(ws,'import')(x_gs)
     getattr(ws,'import')(x_gb)
     getattr(ws,'import')(x_gl)
     
     #define the Gaussians for the errors
-    ws.factory("RooLognormal::selectionErr(err_x_gs,1,eventSelectionError)")
-    ws.factory("RooLognormal::backgroundErr(err_x_gb,1,backgroundError)")
-    ws.factory("RooLognormal::lumiErr(err_x_gl,1,luminosityError)")
+    ws.factory("RooLognormal::selectionErr"+str(index)+"(err_x_gs"+str(index)+",1,eventSelectionError)")
+    ws.factory("RooLognormal::backgroundErr"+str(index)+"(err_x_gb"+str(index)+",1,backgroundError)")
+    ws.factory("RooLognormal::lumiErr"+str(index)+"(err_x_gl"+str(index)+",1,luminosityError)")
 
-    ws.factory('prod::sigExp(nExpectedSignal,err_x_gl,err_x_gs)') #
-    ws.factory('prod::bkgExp(nExpectedBackground,err_x_gb)') #
+    ws.factory('prod::sigExp'+str(index)+'(nExpectedSignal'+str(index)+',err_x_gl'+str(index)+',err_x_gs'+str(index)+')') #
+    ws.factory('prod::bkgExp'+str(index)+'(nExpectedBackground'+str(index)+',err_x_gb'+str(index)+')') #
     if options.noBackground:
-        ws.factory('sum:expected(sigExp)')
+        ws.factory('sum:expected'+str(index)+'(sigExp'+str(index)+')')
     else:
-        ws.factory('sum::expected(sigExp,bkgExp)')
+        ws.factory('sum::expected'+str(index)+'(sigExp'+str(index)+',bkgExp'+str(index)+')')
     
     #now we create the core poisson pdf with errors left as floating
-    ws.factory("RooPoisson::corePoisson(nObserved,expected)")    
+    ws.factory('RooPoisson::corePoisson'+str(index)+'(nObserved'+str(index)+',expected'+str(index)+')')    
     #now we create the top level pdf, which will be evaluated at each pT bin to create the likelihood.
-    ws.factory('PROD::TopLevelPdf(corePoisson)')  #
+    ws.factory('PROD::TopLevelPdf'+str(index)+'(corePoisson'+str(index)+')')  #
     
 
 def makePlots(ws,options):
@@ -789,6 +805,16 @@ if __name__ == "__main__":
     if miss_options:
         exit(1)
 
+
+    if len(options.inputData.split(',')) != len(options.inputMC.split(',')) and len(options.inputData.split(',')) != len(options.bkgFile.split(',')):
+        print "If you're going to make a composite likelihood you need inputs for each term in the sum!"
+        exit(1)
+
+#    print options.inputData.split(',')
+#    print options.inputMC.split(',')
+#    print options.bkgFile.split(',')
+#    exit(1)
+    
     if options.coverageTest and options.pseudodata:
         wstemp = options.workspaceName
         for i in range(500):
