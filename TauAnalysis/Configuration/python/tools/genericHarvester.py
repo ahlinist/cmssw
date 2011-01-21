@@ -43,8 +43,11 @@ process.save = cms.EDAnalyzer("DQMSimpleFileSaver",
     outputCommands = cms.vstring(
         'keep *',
         # Dont' keep events lists
-        #"drop */FilterStatistics/evtSelCentralJetEt20bTag/events_passed_cumulative",
-        #"drop */FilterStatistics/evtSelNonCentralJetEt20bTag/events_passed_cumulative",
+        # no, drop them
+        "drop */FilterStatistics/evtSelCentralJetEt20bTag/events_passed_cumulative",
+        "drop */FilterStatistics/evtSelNonCentralJetEt20bTag/events_passed_cumulative",
+        "drop */FilterStatistics/evtSelDiTauCandidateForAHtoMuTauZeroCharge/events_passed_cumulative",
+        "drop */FilterStatistics/evtSelDiTauCandidateForAHtoMuTauNonZeroCharge/events_passed_cumulative",
     )
 )
 
