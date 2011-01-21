@@ -172,6 +172,9 @@ changeCut(process, "selectedMuTauPairsMt1METlooseMuonIsolation", "mt1MET < 40.")
 #changeCut(process, "selectedMuTauPairsPzetaDiffLooseMuonIsolation", "(pZeta - 1.5*pZetaVis) > -20.")
 changeCut(process, "selectedMuTauPairsPzetaDiff", "(pZeta - 1.5*pZetaVis) > -1000.")
 changeCut(process, "selectedMuTauPairsPzetaDiffLooseMuonIsolation", "(pZeta - 1.5*pZetaVis) > -1000.")
+
+# change isolation treshold for second muon used in di-muon veto to 0.30 * muon Pt
+changeCut(process, "selectedPatMuonsForZmumuHypothesesLoosePFRelIso", 0.30, "sumPtMax")
 #--------------------------------------------------------------------------------
 
 # before starting to process 1st event, print event content
