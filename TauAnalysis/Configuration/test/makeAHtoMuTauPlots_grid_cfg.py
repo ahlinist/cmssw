@@ -26,6 +26,7 @@ channel = 'AHtoMuTau'
 #reg.overrideJobId(channel, 'Run33')
 #reg.overrideJobId(channel, 'Run37sysTanc')
 reg.overrideJobId(channel, 'Run37sys')
+#reg.overrideJobId(channel, 'Run42OldTaNCfinal')
 
 inputFilePath = reg.getHarvestingFilePath(channel)
 jobId = reg.getJobId(channel)
@@ -120,4 +121,4 @@ makePlots(process, channel = channel,
           plotsDirectory = plotsDirectory)
 
 # print-out all python configuration parameter information
-#print process.dumpPython()
+print process.dumpPython()
