@@ -23,9 +23,18 @@ bool PrimaryVertexEventSelector::select(const edm::Event& event) const {
       return false;
    }
 
-   setVariable("numberOfVertices", (*vertexHandle).size());
+   int noVertices = 0;
 
-   return (*vertexHandle).size() >= 1;
+   for (edm::View<reco::Vertex>::const_iterator iv = (*vertexHandle).begin(); iv != (*vertexHandle).end(); ++iv) {
+
+     if(!iv->isFake() && iv->ndof() > 4 && fabs(iv->z()) <= 24 && iv->position().rho() < 2) noVertices ++;
+   }
+
+   setVariable("numberOfVertices", noVertices);
+   //   setVariable("numberOfVertices", (*vertexHandle).size());
+
+   //   return (*vertexHandle).size() >= 1;
+   return noVertices >= 1;
 
 }
 
