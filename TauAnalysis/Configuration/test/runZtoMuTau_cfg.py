@@ -144,9 +144,15 @@ from TauAnalysis.Configuration.tools.changeCut import changeCut
 # change upper limit on tranverse impact parameter of muon track to 2mm
 changeCut(process, "selectedPatMuonsTrkIP", 0.2, attribute = "IpMax")
 
-# change cut on TaNC output in case using new HPS + TaNC combined tau id. algorithm
-changeCut(process, "selectedPatTausTaNCdiscr", "tauID('byTaNCloose') > 0.5")
-changeCut(process, "selectedPatTausForMuTauTaNCdiscr", "tauID('byTaNCloose') > 0.5")
+# switch between TaNC and HPS tau id. discriminators
+#changeCut(process, "selectedPatTausLeadTrkPt", "tauID('leadingTrackPtCut') > 0.5")
+#changeCut(process, "selectedPatTausForMuTauLeadTrkPt", "tauID('leadingTrackPtCut') > 0.5")
+#changeCut(process, "selectedPatTausTaNCdiscr", "tauID('byTaNCloose') > 0.5")
+#changeCut(process, "selectedPatTausForMuTauTaNCdiscr", "tauID('byTaNCloose') > 0.5")
+changeCut(process, "selectedPatTausLeadTrkPt", "tauID('byDecayMode') > 0.5")
+changeCut(process, "selectedPatTausForMuTauLeadTrkPt", "tauID('byDecayMode') > 0.5")
+changeCut(process, "selectedPatTausTaNCdiscr", "tauID('byHPSloose') > 0.5")
+changeCut(process, "selectedPatTausForMuTauTaNCdiscr", "tauID('byHPSloose') > 0.5")
 
 # disable calorimeter muon veto for now...
 changeCut(process, "selectedPatTausForMuTauCaloMuonVeto", "tauID('againstCaloMuon') > -1.")
@@ -156,12 +162,16 @@ changeCut(process, "selectedMuTauPairsAntiOverlapVeto", "dR12 > 0.5")
 changeCut(process, "selectedMuTauPairsAntiOverlapVetoLooseMuonIsolation", "dR12 > 0.5")
 
 # change upper limit on muon + MET transverse mass to 50 GeV
-changeCut(process, "selectedMuTauPairsMt1MET", "mt1MET < 50.")
-changeCut(process, "selectedMuTauPairsMt1METlooseMuonIsolation", "mt1MET < 50.")
+#changeCut(process, "selectedMuTauPairsMt1MET", "mt1MET < 50.")
+#changeCut(process, "selectedMuTauPairsMt1METlooseMuonIsolation", "mt1MET < 50.")
+changeCut(process, "selectedMuTauPairsMt1MET", "mt1MET < 40.")
+changeCut(process, "selectedMuTauPairsMt1METlooseMuonIsolation", "mt1MET < 40.")
 
 # enable cut on Pzeta variable
-changeCut(process, "selectedMuTauPairsPzetaDiff", "(pZeta - 1.5*pZetaVis) > -20.")
-changeCut(process, "selectedMuTauPairsPzetaDiffLooseMuonIsolation", "(pZeta - 1.5*pZetaVis) > -20.")
+#changeCut(process, "selectedMuTauPairsPzetaDiff", "(pZeta - 1.5*pZetaVis) > -20.")
+#changeCut(process, "selectedMuTauPairsPzetaDiffLooseMuonIsolation", "(pZeta - 1.5*pZetaVis) > -20.")
+changeCut(process, "selectedMuTauPairsPzetaDiff", "(pZeta - 1.5*pZetaVis) > -1000.")
+changeCut(process, "selectedMuTauPairsPzetaDiffLooseMuonIsolation", "(pZeta - 1.5*pZetaVis) > -1000.")
 #--------------------------------------------------------------------------------
 
 # before starting to process 1st event, print event content
