@@ -7,17 +7,17 @@ from TauAnalysis.Configuration.submitAnalysisToGrid import submitAnalysisToGrid
 import TauAnalysis.Configuration.userRegistry as reg
 
 channel = 'AHtoMuTau'
-reg.overrideJobId(channel, 'Run42')
+reg.overrideJobId(channel, 'Run47')
 
 configFile = 'runAHtoMuTau_cfg.py'
 analysisFilePath = reg.getAnalysisFilePath(channel)
 jobId = reg.getJobId(channel)
 
-samplesToAnalyze = [
-    #'Wtaunu',
-    #'Wmunu',
-    # modify in case you want to submit crab jobs for some of the samples only...
-]
+fake_rate_samples = [sample for sample in samples['SAMPLES_TO_ANALYZE']
+                     if samples['RECO_SAMPLES'][sample]['enableFakeRates']]
+
+samplesToAnalyze = []
+samplesToAnalyze = fake_rate_samples
 
 #enableSystematics = True
 enableSystematics = False
