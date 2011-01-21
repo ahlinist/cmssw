@@ -348,7 +348,12 @@ void printBinResult(const std::string& sysTitle, const binResultType& binResult_
 	  
 	} else if ( method == kPDF ) {
 //--- estimation of (PDF) uncertainties
-//    according to "Master Equations" in hep-ph/0605240
+//    according to:
+//   o VBTF analysis CMS EWK-10-002 ("abs")
+//   o "Master Equations" in hep-ph/0605240 ("sum")
+
+	  double maxSysShift_plus   = 0.;
+	  double maxSysShift_minus  = 0.;
 
 	  double sysShiftsSum2_plus  = 0.;
 	  double sysShiftsSum2_minus = 0.;
@@ -372,16 +377,24 @@ void printBinResult(const std::string& sysTitle, const binResultType& binResult_
 	    //std::cout << " sysName_down = " << sysName_down << ": sysShift_down = " << sysShift_down << std::endl;
 	    
 	    double sysShift_plus = TMath::Max(sysShift_up, sysShift_down);
+	    if ( TMath::Abs(sysShift_plus) > maxSysShift_plus ) maxSysShift_plus = TMath::Abs(sysShift_plus);
 	    if ( sysShift_plus > 0. ) sysShiftsSum2_plus += sysShift_plus*sysShift_plus;
 	    
 	    double sysShift_minus = TMath::Min(sysShift_up, sysShift_down);
+	    if ( TMath::Abs(sysShift_minus) > maxSysShift_minus ) maxSysShift_minus = TMath::Abs(sysShift_minus);
 	    if ( sysShift_minus < 0. ) sysShiftsSum2_minus += sysShift_minus*sysShift_minus;
 	  }
-	  
-	  std::cout << " " << std::setw(20) << sysTitle << ":"
-		    << " plus " << std::setprecision(4) << std::fixed << TMath::Sqrt(sysShiftsSum2_plus)*100. << "%,"
-		    << " minus " << std::setprecision(4) << std::fixed << TMath::Sqrt(sysShiftsSum2_minus)*100. << "%" 
-		    << " (PDF set central value = " << binCentralValue << ")" << std::endl;
+
+	  std::cout << " " << std::setw(20) << sysTitle << ":" << std::endl;
+	  std::cout << " " << std::setw(10) << "plus:" 
+		    << " 'abs' method = " << std::setprecision(4) << std::fixed << maxSysShift_plus*100. << "%,"
+		    << " 'sum' method = " << std::setprecision(4) << std::fixed << TMath::Sqrt(sysShiftsSum2_plus)*100. << "%" 
+		    << std::endl;
+	  std::cout << " " << std::setw(10) << "minus:" 
+		    << " 'abs' method = " << std::setprecision(4) << std::fixed << maxSysShift_minus*100. << "%,"
+		    << " 'sum' method = " << std::setprecision(4) << std::fixed << TMath::Sqrt(sysShiftsSum2_minus)*100. << "%" 
+		    << std::endl;
+	  std::cout << " " << std::setw(10) << "(PDF set central value = " << binCentralValue << ")" << std::endl;
 	}
 
 	sysNames_skip.push_back(sysName_array);
