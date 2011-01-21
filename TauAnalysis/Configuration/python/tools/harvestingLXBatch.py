@@ -31,7 +31,7 @@ def get_crab_info(file_name):
 def get_crab_id(file_name):
     " Get a unique tuple for a given crab file - (job, retry, code) "
     crab_info = get_crab_info(file_name)
-    return tuple(map(int, crab_info.get, ['job', 'retry', 'code']))
+    return tuple([crab_info[crabitem] for crabitem in ['job', 'retry', 'code']])
 
 def castor_source(directory):
     " Build a generator that lists file in a castor directory, sorted by time "
@@ -99,8 +99,7 @@ def make_harvest_scripts(plot_regex, skim_regex,
                          script_directory=None,
                          merge_script_name = 'submit_merge.sh',
                          local_copy_mapper = None,
-                         chunk_size = 250e6,
-                         local_copy_script = 'copy_harvest_local.sh'):
+                         chunk_size = 250e6):
 
     # Get the jobId from the user registry
     job_id = reg.getJobId(channel)
@@ -396,6 +395,7 @@ def make_harvest_scripts(plot_regex, skim_regex,
     print "To harvest plots, run %s" % harvest_script_name
     print "To merge skims, run %s" % merge_script_name
 
+    local_copy_script = 'copy_harvest_local_%s.sh' % job_id
     with open(local_copy_script, 'w') as copy_script:
         for sample, file in final_harvest_files:
             copy_script.write('rfcp %s %s &\n' % (
