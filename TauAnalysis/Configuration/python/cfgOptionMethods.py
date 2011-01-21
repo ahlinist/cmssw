@@ -174,6 +174,14 @@ def _setIsData(process, type, **kwargs):
     if type.lower().find('mc') == -1:
         switchToData.switchToData(process)
 
+def _setEventList(process, textfile, **kwargs):
+    " Run only on events in a text file containing evt:run:lumi files "
+    txt_file = open(textfile, 'r')
+    print "Getting events to process from:", textfile
+    event_list = [event.strip() for event in txt_file.readlines()]
+    print " --> running on %i events" % len(event_list)
+    process.source.eventsToProcess = cms.untracked.VEventRange(event_list)
+
 def _setTriggerProcess(process, triggerTag, **kwargs):
 	# Set the input tag for the HLT
 
@@ -298,7 +306,7 @@ def _enableFakeRates(process, enable, **kwargs):
     if enable:
         print "--> Enabling fake rate BG estimation method"
         fakeRateAnalysisTools.enableFakeRates(process,
-            kwargs['channel'], method="simple")
+            kwargs['channel'], method="CDF")
 
 _tauIdChannelMap = {
     'AHtoMuTau' : ["selectedPatTausTaNCdiscr",
@@ -328,6 +336,7 @@ _METHOD_MAP = {
     'applyVertexMultiplicityReweighting' : _setApplyVertexMultiplicityReweighting,
     'enableSysUncertainties' : _setEnableSystematics,
     'inputFileType' : _setInputFileType,
+    'eventList' : _setEventList,
     'type' : _setIsData,
     'hlt' : _setTriggerProcess,
     'hlt_paths' : _setTriggerBits,
