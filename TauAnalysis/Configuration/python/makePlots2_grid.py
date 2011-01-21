@@ -60,9 +60,13 @@ def get_filter_stat(file, filter_stats_dir, statistic,
         file = ROOT.TFile.Open(file, "READ")
     directory = os.path.join('DQMData', filter_stats_dir, statistic)
     matcher = re.compile(
-        '<' + type + '>[if]=(?P<value>[0-9\.]*)</' + type + '>')
+        '<' + type + '>[if]=(?P<value>[\-0-9\.]*)</' + type + '>')
     print directory
     filter_stats = file.Get(directory)
+    if filter_stats is None:
+        print "<get_filter_stat> error: requested directory %s d.n.e!" % \
+                filter_stats_dir
+        return None
     for key in filter_stats.GetListOfKeys():
         matches = matcher.match(key.GetName())
         if matches:
