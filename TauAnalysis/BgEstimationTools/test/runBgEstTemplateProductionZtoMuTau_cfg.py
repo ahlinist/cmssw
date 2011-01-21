@@ -225,6 +225,26 @@ from TauAnalysis.Configuration.tools.changeCut import changeCut
 # change upper limit on tranverse impact parameter of muon track to 2mm
 changeCut(process, "selectedPatMuonsTrkIP", 0.2, attribute = "IpMax")
 
+# switch between TaNC and HPS tau id. discriminators
+#changeCut(process, "selectedPatTausLeadTrkPt", "tauID('leadingTrackPtCut') > 0.5")
+#changeCut(process, "selectedPatTausForMuTauLeadTrkPt", "tauID('leadingTrackPtCut') > 0.5")
+#changeCut(process, "selectedPatTausLeadTrkPt", "tauID('byDecayMode') > 0.5")
+#changeCut(process, "selectedPatTausForMuTauLeadTrkPt", "tauID('byDecayMode') > 0.5")
+#changeCut(process, "selectedPatTausTaNCdiscr", "tauID('byTaNCloose') > 0.5")
+#changeCut(process, "selectedPatTausForMuTauTaNCdiscr", "tauID('byTaNCloose') > 0.5")
+#changeCut(process, "tausBgEstQCDenrichedTaNCdiscr", "tauID('byTaNCvloose') > 0.5 & tauID('byTaNCmedium') < 0.5")
+#changeCut(process, "tausBgEstWplusJetsEnrichedTaNCdiscr", "tauID('byTaNCvloose') > 0.5 & tauID('byTaNCmedium') < 0.5")
+#changeCut(process, "tausBgEstWplusJetsEnrichedFRweightedTaNCdiscrNotApplied", "tauID('byTaNCvloose') > -1000. & tauID('byTaNCmedium') < +1000.")
+#changeCut(process, "tausBgEstZmumuJetMisIdEnrichedTaNCdiscr", "tauID('byTaNCvloose') > 0.5 & tauID('byTaNCmedium') < 0.5")
+changeCut(process, "selectedPatTausLeadTrkPt", "tauID('byDecayMode') > 0.5")
+changeCut(process, "selectedPatTausForMuTauLeadTrkPt", "tauID('byDecayMode') > 0.5")
+changeCut(process, "selectedPatTausTaNCdiscr", "tauID('byHPSloose') > 0.5")
+changeCut(process, "selectedPatTausForMuTauTaNCdiscr", "tauID('byHPSloose') > 0.5")
+changeCut(process, "tausBgEstQCDenrichedTaNCdiscr", "tauID('byHPSvloose') > 0.5 & tauID('byHPSmedium') < 0.5")
+changeCut(process, "tausBgEstWplusJetsEnrichedTaNCdiscr", "tauID('byHPSvloose') > 0.5 & tauID('byHPSmedium') < 0.5")
+changeCut(process, "tausBgEstWplusJetsEnrichedFRweightedTaNCdiscrNotApplied", "tauID('byHPSvloose') > -1000. & tauID('byHPSmedium') < +1000.")
+changeCut(process, "tausBgEstZmumuJetMisIdEnrichedTaNCdiscr", "tauID('byHPSvloose') > 0.5 & tauID('byHPSmedium') < 0.5")
+
 # change lower limit on separation required between muon and tau-jet to dR > 0.5
 changeCut(process, "selectedMuTauPairsAntiOverlapVeto", "dR12 > 0.5")
 changeCut(process, "selectedMuTauPairsAntiOverlapVetoLooseMuonIsolation", "dR12 > 0.5")
