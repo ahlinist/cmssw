@@ -14,10 +14,11 @@ def submitAnalysisToLXBatch(configFile = None, channel = None, samples = None,
                             disableZrecoilCorrections = False,
                             script_directory=None,
                             cfgdir = 'lxbatch',
-                            inputFileMap = None, outputFileMap = None,
+                            inputFileMap = None,
                             outputDirectory = None,
                             enableEventDumps = False,
                             enableFakeRates = False,
+                            eventList = None,
                             processName = None,
                             changeTauId = None,
                             saveFinalEvents = False):
@@ -99,21 +100,34 @@ def submitAnalysisToLXBatch(configFile = None, channel = None, samples = None,
                 input_files_for_cfgOptions = [
                     'file:' + os.path.basename(file) for file in input_files]
 
+                def plotOutputFileMap(channel, sample, jobId):
+                    return "plots_%s_%s_%s.root" % (channel, sample, jobId)
+                    #return "final_events_%s_%s_%s.root" % (channel, sample, jobId)
+                def skimOutputFileMap(channel, sample, jobId):
+                    return "final_events_%s_%s_%s.root" % (channel, sample, jobId)
 
-                output_file = outputFileMap(channel, sample, jobId)
+                def prepare_filename(file):
+                    # Add output dir path and suffix
+                    return os.path.join(outputDirectory, file.replace(
+                        '.root', '_' + str(job) + '_'
+                        + input_file_hash + '.root'))
+
                 input_file_hash = jobtools.hash_files(
                     input_files, add_time=False)
+
+                plot_output_file = prepare_filename(
+                    plotOutputFileMap(channel, sample, jobId))
+                skim_output_file = prepare_filename(
+                    skimOutputFileMap(channel, sample, jobId))
+
                 # Add the hash of the input file so we know the provenance of all
                 # files
-                output_file = os.path.join(outputDirectory, output_file.replace(
-                    '.root', '_' + str(job) + '_' + input_file_hash + '.root'))
-
-                relevant_files.add(os.path.basename(output_file))
+                relevant_files.add(os.path.basename(plot_output_file))
 
                 # Uncomment to skip rerunning of old jobs
-                #if os.path.basename(output_file) in tmp_files:
-                    #print " done; skipping", output_file
-                    #continue
+                if os.path.basename(plot_output_file) in tmp_files:
+                    print " done; skipping", plot_output_file
+                    continue
 
                 # First, prepare the configuration file
                 newConfigFile = getNewConfigFileName(
@@ -125,9 +139,9 @@ def submitAnalysisToLXBatch(configFile = None, channel = None, samples = None,
                 # CV: temporary "hack" for producing (ED)Ntuples/skims for tau id. efficiency measurement
                 jobCustomizations = []
                 jobCustomizations.append("if hasattr(process, 'ntupleOutputModule'):")
-                jobCustomizations.append("    process.ntupleOutputModule.fileName = '%s'" % os.path.basename(output_file))
+                jobCustomizations.append("    process.ntupleOutputModule.fileName = '%s'" % os.path.basename(plot_output_file))
                 jobCustomizations.append("if hasattr(process, 'skimOutputModule'):")
-                jobCustomizations.append("    process.skimOutputModule.fileName = '%s'" % os.path.basename(output_file))
+                jobCustomizations.append("    process.skimOutputModule.fileName = '%s'" % os.path.basename(plot_output_file))
                 HLTprocessName = 'HLT'
                 if 'hlt' in samples['RECO_SAMPLES'][sample].keys():
                     HLTprocessName = samples['RECO_SAMPLES'][sample]['hlt'].getProcessName()
@@ -157,14 +171,16 @@ def submitAnalysisToLXBatch(configFile = None, channel = None, samples = None,
                     sample_infos = samples,
                     disableFactorization = disableFactorization,
                     disableSysUncertainties = disableSysUncertainties,
-                    disableZrecoilCorrections = disableZrecoilCorrections, 
+                    disableZrecoilCorrections = disableZrecoilCorrections,
                     # We always copy the input files to the local directory
                     # before running cmsRun, so just take the basname
                     input_files = input_files_for_cfgOptions,
-                    output_file = os.path.basename(output_file),
+                    output_file = os.path.basename(plot_output_file),
+                    eventList = eventList,
                     enableEventDumps = enableEventDumps, enableFakeRates = enableFakeRates,
                     processName = processName,
                     saveFinalEvents = saveFinalEvents,
+                    saveFinalEventsFileName = os.path.basename(skim_output_file),
                     changeTauId = changeTauId,
                     customizations = jobCustomizations)
 
@@ -177,6 +193,12 @@ def submitAnalysisToLXBatch(configFile = None, channel = None, samples = None,
                         'lxbatch_log', "_".join(
                         ['run', channel, sample, jobId, job_hash]) + '.log')
 
+                output_file = plot_output_file
+                if saveFinalEvents:
+                    print "Warning: only saving the skim output, not the plots!"
+                    print "TODO: save both."
+                    output_file = skim_output_file
+
                 # Build our batch job
                 jobname, script = jobtools.make_bsub_script(
                     output_file, input_files_and_jobs, log_file_maker,
@@ -184,7 +206,7 @@ def submitAnalysisToLXBatch(configFile = None, channel = None, samples = None,
 
                 bsub_script_file = os.path.join(
                     script_directory, "_".join([
-                        'analyze', sample, 'job',
+                        'analyze', sample, jobId, 'job',
                         str(job), input_file_hash]) + '.sh')
                 with open(bsub_script_file, 'w') as bsub_script:
                     bsub_script.write(script)
