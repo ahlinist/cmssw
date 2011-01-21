@@ -5,7 +5,7 @@ process = cms.Process('runAHtoMuTau')
 
 process.load('Configuration/StandardSequences/Services_cff')
 process.load('FWCore/MessageService/MessageLogger_cfi')
-process.MessageLogger.cerr.FwkReport.reportEvery = 100
+process.MessageLogger.cerr.FwkReport.reportEvery = 1
 #process.MessageLogger.cerr.FwkReport.reportEvery = 1
 #process.MessageLogger.cerr.threshold = cms.untracked.string('INFO')
 #process.MessageLogger.suppressInfo = cms.untracked.vstring()
@@ -77,9 +77,6 @@ process.maxEvents = cms.untracked.PSet(
 process.source = cms.Source(
     "PoolSource",
     fileNames = cms.untracked.vstring(
-        #'file:/data1/veelken/CMSSW_3_6_x/skims/Ztautau_1_1_sXK.root'
-        #'file:/data1/friis/Run17/get_events/data_Mu_Run2010A_Sep17ReReco_pickevents/final_events.root'
-        #'file:/data1/veelken/CMSSW_3_8_x/skims/test/mcDYttPU156bx_GEN_SIM_RECO_1_1_1VV.root'
         'file:/data1/veelken/CMSSW_3_8_x/skims/test/mcWplusJetsPU156bx_1_1_LO9.root'
     )
     #skipBadFiles = cms.untracked.bool(True)
@@ -97,18 +94,46 @@ process.patTrigger.addL1Algos = cms.bool(True)
 # to different reco::Tau collection stored on AOD
 import PhysicsTools.PatAlgos.tools.tauTools as tauTools
 
-# comment-out to take reco::CaloTaus instead of reco::PFTaus
-# as input for pat::Tau production
-#tauTools.switchToCaloTau(process)
+
+_TAUID = 'byTaNCloose'
+#_TAUID = 'byHPSloose'
+#_TAUID = 'byLooseIsolation'
 
 # comment-out to take shrinking dR = 5.0/Et(PFTau) signal cone
 # instead of fixed dR = 0.07 signal cone reco::PFTaus
 # as input for pat::Tau production
 #tauTools.switchToPFTauShrinkingCone(process)
 #tauTools.switchToPFTauFixedCone(process)
+if _TAUID == 'byLooseIsolation':
+    print "Switching to HPS (old taus)"
+    tauTools.switchToPFTauHPS(process)
+    process.ewkTauId.PFTauProducer = cms.InputTag("hpsPFTauProducer")
+    process.ewkTauId.Prediscriminants = cms.PSet(
+        BooleanOperator = cms.string("and"),
+        leadTrack = cms.PSet(
+            Producer = cms.InputTag('hpsPFTauDiscriminationByDecayModeFinding'),
+            cut = cms.double(0.5)
+        ),
+        TaNCloose = cms.PSet(
+            Producer = cms.InputTag('hpsPFTauDiscriminationByLooseIsolation'),
+            cut = cms.double(0.5)
+        ),
+        againstMuon = cms.PSet(
+            Producer = cms.InputTag('hpsPFTauDiscriminationAgainstMuon'),
+            cut = cms.double(0.5)
+        )
+    )
+elif _TAUID == "byTaNCloose":
+    print "using hybrid TaNC taus"
+    tauTools.switchToPFTauHPSpTaNC(process)
+elif  _TAUID == "byHPSloose":
+    print "using hybrid hps taus"
+    tauTools.switchToPFTauHPSpTaNC(process)
+
+tauTools.switchToPFTauHPSpTaNC(process)
 
 # comment-out to take new HPS + TaNC combined tau id. algorithm
-tauTools.switchToPFTauHPSpTaNC(process)
+#tauTools.switchToPFTauHPSpTaNC(process)
 
 # disable preselection on of pat::Taus
 # (disabled also in TauAnalysis/RecoTools/python/patPFTauConfig_cfi.py ,
@@ -142,7 +167,6 @@ metTools.replaceMETforDiTaus(process, cms.InputTag('patMETs'), cms.InputTag('pat
 
 _MUON_ISO = 0.10
 _LOOSE_MUON_ISO = 0.30
-
 cut_values = {
     # Normal is final cuts
     'normal' : {
@@ -153,8 +177,9 @@ cut_values = {
         'tau_pt' : 20,
         'tau_eta' : 2.3,
         'pzeta' : -20.,
-        #'tanc' : "tauID('byTaNCloose') > 0.5",
-        'tanc' : "tauID('byHPSloose') > 0.5",
+        'tanc' : "tauID('%s') > 0.5" % _TAUID,
+        #'tanc' : "tauID('byHPSloose') > 0.5",
+        #'tanc' : "tauID('byLooseIsolation') > 0.5",
         #'tanc' : "tauID('byTaNCmedium') > 0.5",
         'charge' : 'charge = 0',
     },
@@ -167,17 +192,30 @@ cut_values = {
         'tau_pt' : 18,
         'tau_eta' : 2.4,
         'pzeta' : -25.,
-        'tanc' : "tauID('byTaNCloose') > -1.", # turn off
+        'tanc' : "tauID('%s') > -1." % _TAUID, # turn off
         'charge' : 'charge > -1000',
     },
 }
 
+# Loose tau ID for fake rate
 cut_values['loose_tauID'] = copy.deepcopy(cut_values['normal'])
 cut_values['loose_tauID']['tanc'] = cut_values['loose']['tanc']
+cut_values['loose_tauID']['charge'] = "charge > -100"
 
 cut_values['loose_looseMuon_tightTau'] = copy.deepcopy(cut_values['loose'])
 cut_values['loose_looseMuon_tightTau']['muon_iso'] = _LOOSE_MUON_ISO
-cut_values['loose_looseMuon_tightTau']['tanc'] = "tauID('byTaNCloose') > 0.5 | tauID('byHPSloose') > 0.5"
+cut_values['loose_looseMuon_tightTau']['tanc'] = \
+        "tauID('byTaNCloose') > 0.5 | tauID('byHPSloose') > 0.5"
+
+# Case where only MT is used, instead of Pzeta
+cut_values['mt_only'] =  copy.deepcopy(cut_values['normal'])
+cut_values['mt_only']['mt1MET'] = 40
+cut_values['mt_only']['pzeta'] = -1e9
+
+# MT only case, for the fake rates
+cut_values['mt_only_loose_tauID'] = copy.deepcopy(cut_values['mt_only'])
+cut_values['mt_only_loose_tauID']['tanc'] = cut_values['loose']['tanc']
+cut_values['mt_only_loose_tauID']['charge'] = "charge > -100"
 
 # Loose tauid cuts
 #cuts = cut_values['loose_tauID']
@@ -187,6 +225,7 @@ cuts = cut_values['normal']
 #cuts = cut_values['loose']
 # Loose cuts to enable factorization
 #cuts = cut_values['loose_looseMuon_tightTau']
+#cuts = cut_values['mt_only_loose_tauID']
 
 # import utility function for changing cut values
 from TauAnalysis.Configuration.tools.changeCut import changeCut
@@ -206,18 +245,10 @@ changeCut(process, "selectedPatTausForMuTauPt20", "pt > %0.2f"
 changeCut(process, "selectedPatTausForMuTauEta23",
           "abs(eta) < %0.2f" % cuts['tau_eta'])
 
-# Use absolute muon isolation
-process.selectedPatMuonsPFRelIso.chargedHadronIso.ptMin = 1.0
-process.selectedPatMuonsPFRelIso.neutralHadronIso.ptMin = 1.0
-process.selectedPatMuonsPFRelIso.photonIso.ptMin = 1.0
-process.selectedPatMuonsPFRelIso.sumPtMax = cuts['muon_iso']
-process.selectedPatMuonsPFRelIso.sumPtMethod = "relative"
 
-process.selectedPatMuonsPFRelIsoLooseIsolation.chargedHadronIso.ptMin = 1.0
-process.selectedPatMuonsPFRelIsoLooseIsolation.neutralHadronIso.ptMin = 1.0
-process.selectedPatMuonsPFRelIsoLooseIsolation.photonIso.ptMin = 1.0
-process.selectedPatMuonsPFRelIsoLooseIsolation.sumPtMax = _LOOSE_MUON_ISO
-process.selectedPatMuonsPFRelIsoLooseIsolation.sumPtMethod = "relative"
+changeCut(process, "selectedPatMuonsPFRelIso", cuts['muon_iso'], "sumPtMax")
+changeCut(process, "selectedPatMuonsPFRelIsoLooseIsolation",
+          _LOOSE_MUON_ISO, "sumPtMax")
 
 # change upper limit on muon + MET transverse mass to 50 GeV
 changeCut(process, "selectedMuTauPairsMt1MET",
@@ -255,15 +286,24 @@ changeCut(process, "selectedPatTausTaNCdiscr", cuts['tanc'])
 changeCut(process, "selectedPatTausForMuTauTaNCdiscr", cuts['tanc'])
 
 # disable calorimeter muon veto for now...
-changeCut(process, "selectedPatTausForMuTauCaloMuonVeto", "tauID('againstCaloMuon') > -1.")
+#changeCut(process, "selectedPatTausForMuTauCaloMuonVeto", "tauID('againstCaloMuon') > -1.")
+changeCut(process, "selectedPatTausForMuTauCaloMuonVeto", "tauID('againstMuon') > -1.")
 
 # change lower limit on separation required between muon and tau-jet to dR > 0.5
-changeCut(process, "selectedMuTauPairsAntiOverlapVeto", "dR12 > 0.5")
-changeCut(process, "selectedMuTauPairsAntiOverlapVetoLooseMuonIsolation", "dR12 > 0.5")
+changeCut(process, "selectedMuTauPairsForAHtoMuTauAntiOverlapVeto", "dR12 > 0.5")
+changeCut(process, "selectedMuTauPairsForAHtoMuTauAntiOverlapVetoLooseMuonIsolation", "dR12 > 0.5")
 
 # Turn off lead track cut, hps doesn't use it.
-changeCut(process, "selectedPatTausLeadTrkPt", 'tauID("leadingTrackPtCut") > -1e3')
-changeCut(process, "selectedPatTausForMuTauLeadTrkPt", 'tauID("leadingTrackPtCut") > -1e3')
+if _TAUID == 'byTaNCloose':
+    print "Using TaNC: enabling lead track cut"
+    changeCut(process, "selectedPatTausLeadTrkPt", 'tauID("leadingTrackPtCut") > 0.5')
+    changeCut(process, "selectedPatTausForMuTauLeadTrkPt", 'tauID("leadingTrackPtCut") > 0.5')
+elif _TAUID == "byHPSloose" or _TAUID == "byLooseIsolation":
+    print "Using HPS: disabling lead track cut"
+    changeCut(process, "selectedPatTausLeadTrkPt", 'tauID("leadingTrackFinding") > -1e3')
+    changeCut(process, "selectedPatTausForMuTauLeadTrkPt", 'tauID("leadingTrackFinding") > -1e3')
+else:
+    raise ValueError("Can't figure out what to do about the lead track cut!")
 
 # disable b-tagging for now
 # (--> all events will pass CentralJetVeto/fail CentralJetBtag selection)
@@ -276,18 +316,20 @@ process.filterFinalEvents = cms.EDFilter("BoolEventFilter",
     src = cms.InputTag("isRecAHtoMuTau")
 )
 process.p = cms.Path(
-   process.producePatTupleAHtoMuTauSpecific
-  #+ process.printEventContent
-# + process.printGenParticleList # uncomment to enable print-out of generator level particles
-# + process.printEventContent    # uncomment to enable dump of event content after PAT-tuple production
-  + process.selectAHtoMuTauEvents
-  + process.analyzeAHtoMuTauSequence
-  + process.saveAHtoMuTauPlots
-  + process.isRecAHtoMuTau
-  + process.filterFinalEvents
+    process.producePatTupleAHtoMuTauSpecific
+    #+ process.printEventContent
+    # + process.printGenParticleList # uncomment to enable print-out of generator level particles
+    # + process.printEventContent    # uncomment to enable dump of event content after PAT-tuple production
+    + process.selectAHtoMuTauEvents
+    + process.analyzeAHtoMuTauSequence
+    + process.saveAHtoMuTauPlots
+    + process.isRecAHtoMuTau
+    + process.filterFinalEvents
 )
 
 process.q = cms.Path(process.dataQualityFilters)
+
+process.o = cms.Path(process.printEventContent)
 
 # Dummy do-nothing module to allow an empty path
 process.dummy = cms.EDProducer("DummyModule")
@@ -297,7 +339,6 @@ process.endtasks = cms.EndPath(process.dummy)
 process.schedule = cms.Schedule(
     process.q,
     process.p,
-    #process.o,
     process.endtasks
 )
 
@@ -367,6 +408,13 @@ process.producePatTupleAll = cms.Sequence(process.producePatTuple + process.prod
 if not hasattr(process, "isBatchMode"):
     process.p.replace(process.producePatTupleAHtoMuTauSpecific, process.producePatTuple + process.producePatTupleAHtoMuTauSpecific)
 #--------------------------------------------------------------------------------
+
+#process.options = cms.untracked.PSet( wantSummary = cms.untracked.bool(True) )
+
+# Remove the PFTaus (call remove until it returns false)
+#print "Disabling PFTau sequence re-running"
+#while process.p.remove(process.PFTau): pass
+#print process.ewkTauId
 
 # print-out all python configuration parameter information
 #print process.dumpPython()
