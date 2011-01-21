@@ -27,7 +27,7 @@ def getInputFiles(jobInfo = None, inputFileMap = None, maxEvents = 25000):
     inputFilePattern = inputFileMap(jobInfo['channel'], jobInfo['sample'], jobInfo['id'])
     if inputFilePattern.rfind('/') != -1:
         inputFilePattern = inputFilePattern[inputFilePattern.rfind('/') + 1:]
-    inputFilePattern = inputFilePattern.replace("*", "[0-9a-zA-Z]*")
+    inputFilePattern = inputFilePattern.replace("*", "[0-9a-zA-Z_]*")
 
     files = None
 
