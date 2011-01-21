@@ -13,7 +13,7 @@
 //
 // Original Author:  pts/45
 //         Created:  Tue May 13 12:23:34 CEST 2008
-// $Id: RPCMonitorEfficiency.cc,v 1.44 2011/01/19 22:19:36 carrillo Exp $
+// $Id: RPCMonitorEfficiency.cc,v 1.45 2011/01/21 11:56:59 carrillo Exp $
 //
 //
 
@@ -581,6 +581,7 @@ private:
   bool debug;
   bool stat;
   double threshold;
+  double fiducialcut;
   bool endcap;
   bool barrel; 
   std::vector<unsigned int> blacklist;
@@ -639,6 +640,7 @@ RPCMonitorEfficiency::RPCMonitorEfficiency(const edm::ParameterSet& iConfig){
   debug=iConfig.getUntrackedParameter<bool>("debug",false);
   stat=iConfig.getUntrackedParameter<bool>("statistics",false);
   threshold=iConfig.getUntrackedParameter<double>("threshold");
+  fiducialcut=iConfig.getUntrackedParameter<double>("fiducialcut",0.25);
   endcap=iConfig.getUntrackedParameter<bool>("endcap");
   barrel=iConfig.getUntrackedParameter<bool>("barrel");
   BlackListFile  = iConfig.getUntrackedParameter<std::string>("BlackListFile","blacklist.dat"); 
@@ -1687,11 +1689,11 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
 	      histoPROX->SetBinError(i,erX);
 	    }
 
-	    int firstxbin = int(0.35*nstrips*stripw);
-	    int lastxbin = int(0.85*nstrips*stripw);
-	    int firstybin = int(0.35*stripl);
-	    int lastybin = int(0.85*stripl);
-
+	    int firstxbin = int((0.6-fiducialcut)*nstrips*stripw);
+	    int lastxbin = int((0.6+fiducialcut)*nstrips*stripw);
+	    int firstybin = int((0.6-fiducialcut)*stripl);
+	    int lastybin = int((0.6+fiducialcut)*stripl);
+	    
 	    if(debug) std::cout<<" firstxbin "<<firstxbin<<" lastxbin "<<lastxbin;
 	    if(debug) std::cout<<" firstybin "<<firstybin<<" lastybin "<<lastybin;
 	      
@@ -2709,10 +2711,10 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
 	      histoPROX->SetBinError(i,erX);
 	    }
 
-	    int firstxbin = int(0.35*nstrips*stripw);
-	    int lastxbin = int(0.85*nstrips*stripw);
-	    int firstybin = int(0.35*stripl);
-	    int lastybin = int(0.85*stripl);
+	    int firstxbin = int((0.6-fiducialcut)*nstrips*stripw);
+	    int lastxbin = int((0.6+fiducialcut)*nstrips*stripw);
+	    int firstybin = int((0.6-fiducialcut)*stripl);
+	    int lastybin = int((0.6+fiducialcut)*stripl);
 
 	    if(debug) std::cout<<" firstxbin"<<firstxbin<<" lastxbin"<<lastxbin;
 	    if(debug) std::cout<<" firstybin"<<firstybin<<" lastybin"<<lastybin;
