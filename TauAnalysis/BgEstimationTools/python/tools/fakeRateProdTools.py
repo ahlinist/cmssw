@@ -3,78 +3,71 @@ import os
 import shutil
 from CondCore.DBCommon.CondDBSetup_cfi import CondDBSetup
 from RecoTauTag.RecoTau.TauDiscriminatorTools import noPrediscriminants
-from RecoTauTag.RecoTau.PFRecoTauDiscriminationByLeadingTrackPtCut_cfi import \
-       pfRecoTauDiscriminationByLeadingTrackPtCut
+from RecoTauTag.RecoTau.PFRecoTauDiscriminationByLeadingTrackFinding_cfi import \
+       pfRecoTauDiscriminationByLeadingTrackFinding
 
 fr_config = {
     'hpsTancTaus' : {
-        'ewkTauIdTaNCmedium' : {
-            'qcdMuEnrichedData' : {
-                'db' : '/afs/cern.ch/user/f/friis/scratch0/fakerates/fakerate_ewkTauId_PPmuX_data/fakeRate.db',
+        'ewkTauIdTaNCloose' : {
+            'qcdMuEnrichedDataJet' : {
+                'db' : '/afs/cern.ch/user/f/friis/scratch0/fakerates/fakerate_ewkTauIdTaNCloose_PPmuX_data_jet/fakeRate.db',
                 'tag' : 'FakeRate',
             },
-            'qcdMuEnrichedSim' : {
-                'db' : '/afs/cern.ch/user/f/friis/scratch0/fakerates/fakerate_ewkTauId_PPmuX_mcPU156bx/fakeRate.db',
+            'qcdMuEnrichedSimJet' : {
+                'db' : '/afs/cern.ch/user/f/friis/scratch0/fakerates/fakerate_ewkTauIdTaNCloose_PPmuX_mcPU156bx_jet/fakeRate.db',
                 'tag' : 'FakeRate',
             },
-            'qcdDiJetLeadJetData' : {
-                'db' : '/afs/cern.ch/user/f/friis/scratch0/fakerates/fakerate_ewkTauId_QCDdiJet1st_data/fakeRate.db',
+            'qcdDiJetFirstDataJet' : {
+                'db' : '/afs/cern.ch/user/f/friis/scratch0/fakerates/fakerate_ewkTauIdTaNCloose_QCDdiJet1st_data_jet20/fakeRate.db',
                 'tag' : 'FakeRate',
             },
-            'qcdDiJetLeadJetSim' : {
-                'db' : '/afs/cern.ch/user/f/friis/scratch0/fakerates/fakerate_ewkTauId_QCDdiJet1st_mc/fakeRate.db',
+            'qcdDiJetFirstSimJet' : {
+                'db' : '/afs/cern.ch/user/f/friis/scratch0/fakerates/fakerate_ewkTauIdTaNCloose_QCDdiJet1st_mc_jet20/fakeRate.db',
                 'tag' : 'FakeRate',
             },
-            'qcdDiJetSecondLeadJetData' : {
-                'db' : '/afs/cern.ch/user/f/friis/scratch0/fakerates/fakerate_ewkTauId_QCDdiJet2nd_data/fakeRate.db',
+            'qcdDiJetSecondDataJet' : {
+                'db' : '/afs/cern.ch/user/f/friis/scratch0/fakerates/fakerate_ewkTauIdTaNCloose_QCDdiJet2nd_data_jet20/fakeRate.db',
                 'tag' : 'FakeRate',
             },
-            'qcdDiJetSecondLeadJetSim' : {
-                'db' : '/afs/cern.ch/user/f/friis/scratch0/fakerates/fakerate_ewkTauId_QCDdiJet2nd_mc/fakeRate.db',
+            'qcdDiJetSecondSimJet' : {
+                'db' : '/afs/cern.ch/user/f/friis/scratch0/fakerates/fakerate_ewkTauIdTaNCloose_QCDdiJet2nd_mc_jet20/fakeRate.db',
                 'tag' : 'FakeRate',
             },
-            'WplusJetsData' : {
-                'db' : '/afs/cern.ch/user/f/friis/scratch0/fakerates/fakerate_ewkTauId_WplusJets_data/fakeRate.db',
+            'WplusJetsDataJet' : {
+                'db' : '/afs/cern.ch/user/f/friis/scratch0/fakerates/fakerate_ewkTauIdTaNCloose_WplusJets_data_jet/fakeRate.db',
                 'tag' : 'FakeRate',
             },
-            'WplusJetsSim' : {
-                'db' : '/afs/cern.ch/user/f/friis/scratch0/fakerates/fakerate_ewkTauId_WplusJets_mcPU156bx/fakeRate.db',
+            'WplusJetsDataJet20' : {
+                'db' : '/afs/cern.ch/user/f/friis/scratch0/fakerates/fakerate_ewkTauIdTaNCloose_WplusJets_data_jet20/fakeRate.db',
                 'tag' : 'FakeRate',
-            }
+            },
+            'WplusJetsDataJetNoEta20' : {
+                'db' : '/afs/cern.ch/user/f/friis/scratch0/fakerates/fakerate_ewkTauIdTaNCloose_WplusJets_data_jetNoEta20/fakeRate.db',
+                'tag' : 'FakeRate',
+            },
+            'WplusJetsSimJet' : {
+                'db' : '/afs/cern.ch/user/f/friis/scratch0/fakerates/fakerate_ewkTauIdTaNCloose_WplusJets_mcPU156bx_jet/fakeRate.db',
+                'tag' : 'FakeRate',
+            },
+
         },
-    'ewkTauIdHPSloose' : {
-	    'qcdMuEnrichedData' : {
-                'db' : '/afs/cern.ch/user/f/friis/scratch0/fakerates/fakerate_ewkTauIdHPSloose_PPmuX_data/fakeRate.db',
+        'ewkTauIdHPSloose' : {
+            'qcdMuEnrichedDataJet' : {
+                'db' : '/afs/cern.ch/user/f/friis/scratch0/fakerates/fakerate_ewkTauIdHPSloose_PPmuX_data_jet/fakeRate.db',
                 'tag' : 'FakeRate',
             },
-            'qcdMuEnrichedSim' : {
-                'db' : '/afs/cern.ch/user/f/friis/scratch0/fakerates/fakerate_ewkTauIdHPSloose_PPmuX_mcPU156bx/fakeRate.db',
+            'qcdMuEnrichedSimJet' : {
+                'db' : '/afs/cern.ch/user/f/friis/scratch0/fakerates/fakerate_ewkTauIdHPSloose_PPmuX_mcPU156bx_jet/fakeRate.db',
                 'tag' : 'FakeRate',
             },
-            'qcdDiJetLeadJetData' : {
-                'db' : '/afs/cern.ch/user/f/friis/scratch0/fakerates/fakerate_ewkTauIdHPSloose_QCDdiJet1st_data/fakeRate.db',
+            'WplusJetsDataJet' : {
+                'db' : '/afs/cern.ch/user/f/friis/scratch0/fakerates/fakerate_ewkTauIdHPSloose_WplusJets_data_jet/fakeRate.db',
                 'tag' : 'FakeRate',
             },
-            'qcdDiJetLeadJetSim' : {
-                'db' : '/afs/cern.ch/user/f/friis/scratch0/fakerates/fakerate_ewkTauIdHPSloose_QCDdiJet1st_mc/fakeRate.db',
+            'WplusJetsSimJet' : {
+                'db' : '/afs/cern.ch/user/f/friis/scratch0/fakerates/fakerate_ewkTauIdHPSloose_WplusJets_mcPU156bx_jet/fakeRate.db',
                 'tag' : 'FakeRate',
             },
-            'qcdDiJetSecondLeadJetData' : {
-                'db' : '/afs/cern.ch/user/f/friis/scratch0/fakerates/fakerate_ewkTauIdHPSloose_QCDdiJet2nd_data/fakeRate.db',
-                'tag' : 'FakeRate',
-            },
-            'qcdDiJetSecondLeadJetSim' : {
-                'db' : '/afs/cern.ch/user/f/friis/scratch0/fakerates/fakerate_ewkTauIdHPSloose_QCDdiJet2nd_mc/fakeRate.db',
-                'tag' : 'FakeRate',
-            },
-            'WplusJetsData' : {
-                'db' : '/afs/cern.ch/user/f/friis/scratch0/fakerates/fakerate_ewkTauIdHPSloose_WplusJets_data/fakeRate.db',
-                'tag' : 'FakeRate',
-            },
-            'WplusJetsSim' : {
-                'db' : '/afs/cern.ch/user/f/friis/scratch0/fakerates/fakerate_ewkTauIdHPSloose_WplusJets_mcPU156bx/fakeRate.db',
-                'tag' : 'FakeRate',
-            }
         },
     'bgEstTemplateTaNCinverted' : {
             'WplusJetsData' : {
@@ -97,9 +90,15 @@ eff_config = {
                 'tag' : 'FakeRate'
             }
         },
+        'ewkTauIdTaNCloose' : {
+            'ZTTsim' : {
+                'db' : '/afs/cern.ch/user/f/friis/scratch0/fakerates/fakerate_ewkTauIdTaNCloose_Ztautau_mcPU156bx_jet/fakeRate.db',
+                'tag' : 'FakeRate'
+            }
+        },
         'ewkTauIdHPSloose' : {
             'ZTTsim' : {
-                'db' : '/afs/cern.ch/user/f/friis/scratch0/fakerates/fakerate_ewkTauIdHPSloose_Ztautau_mcPU156bx/fakeRate.db',
+                'db' : '/afs/cern.ch/user/f/friis/scratch0/fakerates/fakerate_ewkTauIdHPSloose_Ztautau_mcPU156bx_jet/fakeRate.db',
                 'tag' : 'FakeRate'
             }
         },
@@ -145,7 +144,18 @@ def configureFakeRateProduction(process, patTauProducer, frSet = 'ewkTauIdTaNClo
         local_db_copy_name = os.path.join(data_directory, local_db_file_name)
         if not os.path.exists(data_directory):
             os.makedirs(data_directory)
+        do_copy = False
         if not os.path.exists(local_db_copy_name):
+            do_copy = True
+        else:
+            if not os.path.exists(db_source_file):
+                print "WARNING!!! Can't find source file %s" % db_source_file
+                print "I can't check if it's outdated!"
+            else:
+                if os.stat(local_db_copy_name).st_mtime < os.stat(db_source_file).st_mtime:
+                    print " DB file is outdated!"
+                    do_copy = True
+        if do_copy:
             print "Copying fakerate db:", db_source_file, \
                     "->", local_db_copy_name
             shutil.copy(db_source_file, local_db_copy_name)
@@ -169,7 +179,7 @@ def configureFakeRateProduction(process, patTauProducer, frSet = 'ewkTauIdTaNClo
         setattr(process, dbLoaderModuleName, dbLoaderModule)
 
         # create "predisciminator" module
-        preDiscrModule = pfRecoTauDiscriminationByLeadingTrackPtCut.clone(
+        preDiscrModule = pfRecoTauDiscriminationByLeadingTrackFinding.clone(
             PFTauProducer = cms.InputTag(patTauProducer),
             Prediscriminants = noPrediscriminants,
         )

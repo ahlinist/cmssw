@@ -305,7 +305,16 @@ def configureFakeRateWeightProduction(
     process.bgEstFakeRateJetWeights.allTauJetSource = cms.InputTag(preselPFTauJetSource)
     process.bgEstFakeRateJetWeights.preselTauJetSource = cms.InputTag(preselPFTauJetSource)
     process.bgEstFakeRateJetWeights.method = method
+    # Put a minPt on the taus so we don't get a ton of errors.
+    process.bgEstFakeRateJetWeights.minJetPt = 17.0
     process.producePrePat += process.bgEstFakeRateJetWeights
+
+    # Build a preselected pat::Tau source
+    process.tausForFakeRateEventWeights = cms.EDFilter("PATTauSelector",
+        src = cms.InputTag(preselPatTauSource),
+        cut = cms.string(addPatTauPreselection),
+        filter = cms.bool(False)
+    )
 
     # add jet weights computed for tau id. efficiency shifted up/down by 30%
     if method == "CDF":
@@ -316,12 +325,6 @@ def configureFakeRateWeightProduction(
         process.bgEstFakeRateJetWeightsSysTauIdEffDown = copy.deepcopy(process.bgEstFakeRateJetWeights)
         process.bgEstFakeRateJetWeightsSysTauIdEffDown.shiftTauIdEff = cms.double(-0.30)
         process.producePrePat += process.bgEstFakeRateJetWeightsSysTauIdEffDown
-
-    process.tausForFakeRateEventWeights = cms.EDFilter("PATTauSelector",
-        src = cms.InputTag(preselPatTauSource),
-        cut = cms.string(addPatTauPreselection),
-        filter = cms.bool(False)
-    )
 
     process.load("TauAnalysis.BgEstimationTools.fakeRateEventWeightProducer_cfi")
     process.bgEstFakeRateEventWeights.allTauJetSource = cms.InputTag(preselPFTauJetSource)
@@ -510,7 +513,8 @@ _FAKE_RATE_CONFIGS = {
             ("selectedMuTauPairsForAHtoMuTauZeroCharge", "leg2.leadPFChargedHadrCand.isNonnull & (leg1.charge + leg2.leadPFChargedHadrCand.charge) = 0"),
             ("selectedMuTauPairsForAHtoMuTauNonZeroCharge", "leg2.leadPFChargedHadrCand.isNonnull & (leg1.charge + leg2.leadPFChargedHadrCand.charge) != 0"),
         ],
-        'frSet' : 'ewkTauIdHPSloose',
+        #'frSet' : 'ewkTauIdHPSloose',
+        'frSet' : 'ewkTauIdTaNCloose',
     }
 }
 
