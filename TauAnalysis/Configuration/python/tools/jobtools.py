@@ -43,6 +43,8 @@ if ( "$$status" != 0 ) then
     ls -l *.root
     exit 100
 endif
+echo "Current time:"
+date
 echo "Running script"
 $merger_comand $outputFileCommand $inputFileCommand
 setenv result $$status
