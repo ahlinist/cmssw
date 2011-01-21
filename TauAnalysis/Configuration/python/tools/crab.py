@@ -52,12 +52,8 @@ def lfns(crab_dir):
             edmFile = edmFiles[0].getElementsByTagName("LFN")[0].firstChild.data.strip()
             edmEvents = int(edmFiles[0].getElementsByTagName(
                 "TotalEvents")[0].firstChild.data)
-            if edmEvents:
-                #print "Adding %s - %i events" % (edmFile, edmEvents)
-                files.append(edmFile)
-            else:
-                skipped_files += 1
-                #print "EDM file %s has no events, skipping" % edmFile
+            # Keep all, so we do skim eff correctly.
+            files.append(edmFile)
         # Yield all files
         for file in files:
             yield file
