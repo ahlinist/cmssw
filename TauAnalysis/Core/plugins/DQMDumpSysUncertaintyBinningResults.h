@@ -6,8 +6,8 @@
  *  Class to print-out binning results information for estimating systematic uncertainties
  *  contained in DQM (sub)directory structure created by SysUncertaintyBinner class
  *
- *  $Date: 2010/02/16 15:12:43 $
- *  $Revision: 1.1 $
+ *  $Date: 2011/01/20 14:38:09 $
+ *  $Revision: 1.2 $
  *  \author Christian Veelken, UC Davis
  */
 
@@ -26,16 +26,16 @@
 namespace DQMDumpSysUncertaintyBinningResults_namespace
 {
   typedef std::pair<std::string, binResultType> string_binResult_pair;
-  struct binResultsMappping_type : std::vector<string_binResult_pair>
+  struct binResultsMapppingType : std::vector<string_binResult_pair>
   {
     void insert(const std::string& name, binResultType& value)
     {
       this->push_back(string_binResult_pair(name, value));
     }
 
-    binResultsMappping_type::const_iterator find(const std::string& name) const
+    binResultsMapppingType::const_iterator find(const std::string& name) const
     {
-      for ( binResultsMappping_type::const_iterator it = this->begin();
+      for ( binResultsMapppingType::const_iterator it = this->begin();
             it != this->end(); ++it ) {
         if ( it->first == name ) return it;
       }
@@ -53,30 +53,65 @@ class DQMDumpSysUncertaintyBinningResults : public edm::EDAnalyzer
   virtual void endJob();  
 
 private:
-  struct sysUncertaintyEntryType 
+  struct sysUncertaintyBaseType
   {
-    sysUncertaintyEntryType(const edm::ParameterSet&);
-    ~sysUncertaintyEntryType();
+    sysUncertaintyBaseType(const edm::ParameterSet&);
+    virtual ~sysUncertaintyBaseType();
 
     void loadBinningResults(const std::string&);
    
-    DQMDumpSysUncertaintyBinningResults_namespace::binResultsMappping_type getBinResults_systematic(unsigned, const std::string&) const;
-    DQMDumpSysUncertaintyBinningResults_namespace::binResultsMappping_type getBinResultsSum_systematic(const std::string&) const;
+    DQMDumpSysUncertaintyBinningResults_namespace::binResultsMapppingType getBinResults_systematic(
+      const std::vector<std::string>&, unsigned, const std::string&) const;
+    DQMDumpSysUncertaintyBinningResults_namespace::binResultsMapppingType getBinResultsSum_systematic(
+      const std::vector<std::string>&, const std::string&) const;
 
-    binResultType getBinResults_sysCentralValue(unsigned, const std::string&) const;
-    binResultType getBinResultsSum_sysCentralValue(const std::string&) const;
+    binResultType getBinResults_sysCentralValue(const std::string&, unsigned, const std::string&) const;
+    binResultType getBinResultsSum_sysCentralValue(const std::string&, const std::string&) const;
 
-    std::string sysCentralValue_;
-    std::vector<std::string> sysNames_;
+    virtual void printBinResult(int, const std::string&) const = 0;
+
     std::string sysTitle_;
 
-    int method_;
-
     std::string binningServiceType_;
+
+    std::vector<std::string> binningPluginNames_;
 
     std::map<std::string, BinningBase*> binningPlugins_; // key = sysName
 
     int cfgError_;
+  };
+
+  struct simpleUncertaintyType : public sysUncertaintyBaseType
+  {
+    simpleUncertaintyType(const edm::ParameterSet&);
+    ~simpleUncertaintyType();
+
+    void printBinResult(int, const std::string&) const;
+
+    std::string sysCentralValue_;
+    std::vector<std::string> sysNames_;
+  };
+
+  struct pdfUncertaintyType : public sysUncertaintyBaseType
+  {
+    pdfUncertaintyType(const edm::ParameterSet&);
+    ~pdfUncertaintyType();
+
+    void printBinResult(int, const std::string&) const;
+
+    struct pdfSetEntryType
+    {
+      pdfSetEntryType(const std::vector<std::string>& sysCentralValues, const std::vector<std::string>& sysNames)
+	: sysCentralValues_(sysCentralValues),
+	  sysNames_(sysNames)
+      {}
+      ~pdfSetEntryType() {}
+
+      std::vector<std::string> sysCentralValues_;
+      std::vector<std::string> sysNames_;
+    };
+
+    std::vector<pdfSetEntryType> pdfSetEntries_;
   };
 
   struct processEntryType
@@ -88,7 +123,7 @@ private:
 
     std::string dqmDirectory_;
 
-    std::vector<sysUncertaintyEntryType> sysUncertaintyEntries_;
+    std::vector<sysUncertaintyBaseType*> sysUncertaintyEntries_;
   };
 
   std::vector<processEntryType> processEntries_;
