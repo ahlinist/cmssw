@@ -18,8 +18,9 @@ process.source = cms.Source("EmptySource")
 process.loadZtoMuTauSysUncertainties = cms.EDAnalyzer("DQMFileLoader",
     dump = cms.PSet(
         inputFileNames = cms.vstring(
-            '/data2/friis/Run2PDF/harvested_ZtoMuTau_ZtautauPU156bx_Run2PDF.root'
+            #'/data2/friis/Run2PDF/harvested_ZtoMuTau_ZtautauPU156bx_Run2PDF.root'
             #'/data2/friis/Run2PDF/harvested_ZtoMuTau_Ztautau_powheg_Run2PDF.root'
+            '/data1/veelken/CMSSW_3_8_x/plots/ZtoMuTau/local/mcZtautauPU156bx_pythia_lhapdf_all.root'
         ),
         dqmDirectory_store = cms.string('/')
     )
@@ -50,10 +51,23 @@ theoryUncertainty = cms.PSet(
 
 process.dumpZtoMuTauAccUncertainties = cms.EDAnalyzer("DQMDumpSysUncertaintyBinningResults",
     config = cms.VPSet(
-        theoryUncertainty.clone(
-            sysNames = cms.vstring("sysPdfWeights(45)"),
+        cms.PSet(
+            pdfSets = cms.VPSet(
+                cms.PSet(
+                    sysNames = cms.vstring("sysPdfWeightsCTEQ66(45)"),
+                    sysCentralValues = cms.vstring("sysPdfWeightsCTEQ66(0)")
+                ),
+                cms.PSet(
+                    sysNames = cms.vstring("sysPdfWeightsMSTW2008nlo68cl(41)"),
+                    sysCentralValues = cms.vstring("sysPdfWeightsMSTW2008nlo68cl(0)")
+                ),
+                cms.PSet(
+                    sysNames = cms.vstring("sysPdfWeightsNNPDF20(100)"),
+                    sysCentralValues = cms.vstring("sysPdfWeightsNNPDF20(0)", "sysPdfWeightsNNPDF20(1)")
+                )
+            ),
             sysTitle = cms.string("PDF"),
-            sysCentralValue = cms.string("sysPdfWeights(0)"),
+            pluginType = cms.string("ModelBinningService"),                                               
             method = cms.string("pdf")
         ),
         theoryUncertainty.clone(
