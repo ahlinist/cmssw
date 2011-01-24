@@ -5,7 +5,9 @@ void ntplValidation(){
 
 //	TFile* fIN = TFile::Open("tteffAnalysis-pftau.root");
 //	TFile* fIN = TFile::Open("/castor/cern.ch/user/s/slehti/TauTriggerEfficiencyMeasurementData/tteffAnalysis-pftau_MinimumBias_Commissioning10_GOODCOLL_v8_RAW_RECO_run2.root");
-	TFile* fIN = TFile::Open("tteffAnalysis-l1cen.root");
+//	TFile* fIN = TFile::Open("tteffAnalysis-l1cen.root");
+	TFile* fIN = TFile::Open("tteffAnalysis-hltpftau-pftau.root");
+
 	fIN->ls();
 	cout << " TTEffTree entries " << TTEffTree->GetEntries() << endl;
 
