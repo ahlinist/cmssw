@@ -2,7 +2,7 @@ import FWCore.ParameterSet.Config as cms
 import copy
 
 isData = 0
-pftau = 0
+#pftau = 0
 hltType = "HLT"
 
 process = cms.Process("TTEff")
@@ -136,10 +136,10 @@ process.TTEffAnalysis = cms.EDAnalyzer("TTEffAnalyzer",
 	GenParticleCollection	= cms.InputTag("genParticles"),
         outputFileName          = cms.string("tteffAnalysis-pftau.root")
 )
-if pftau == 1:
-    process.TTEffAnalysis.l25JetSource = cms.InputTag("hltPFTauTagInfo")
-    process.TTEffAnalysis.l25PtCutSource = cms.InputTag("hltPFTaus")
-    process.TTEffAnalysis.HLTPFTau = cms.bool(True)
+#if pftau == 1:
+#    process.TTEffAnalysis.l25JetSource = cms.InputTag("hltPFTauTagInfo")
+#    process.TTEffAnalysis.l25PtCutSource = cms.InputTag("hltPFTaus")
+#    process.TTEffAnalysis.HLTPFTau = cms.bool(True)
 
 # One way for running multiple TTEffAnalyzers in one job such that
 # each analyzer loops over different collection and produces a
@@ -150,6 +150,12 @@ process.TTEffAnalysisL1Tau.outputFileName = cms.string("tteffAnalysis-l1tau.root
 process.TTEffAnalysisL1Cen = process.TTEffAnalysis.clone()
 process.TTEffAnalysisL1Cen.LoopingOver = cms.InputTag("l1extraParticles", "Central")
 process.TTEffAnalysisL1Cen.outputFileName = cms.string("tteffAnalysis-l1cen.root");
+
+process.TTEffAnalysisHLTPFTau = process.TTEffAnalysis.clone()
+process.TTEffAnalysisHLTPFTau.outputFileName = cms.string("tteffAnalysis-hltpftau-pftau.root");
+process.TTEffAnalysisHLTPFTau.l25JetSource = cms.InputTag("hltPFTauTagInfo")
+process.TTEffAnalysisHLTPFTau.l25PtCutSource = cms.InputTag("hltPFTaus")
+process.TTEffAnalysisHLTPFTau.HLTPFTau = cms.bool(True)
 
 process.TauMCProducer = cms.EDProducer("HLTTauMCProducer",
 GenParticles  = cms.untracked.InputTag("genParticles"),
@@ -180,7 +186,8 @@ if(isData):
 #    	process.tteffL1GTSeed*
     	process.TTEffAnalysis *
     	process.TTEffAnalysisL1Tau *
-    	process.TTEffAnalysisL1Cen
+    	process.TTEffAnalysisL1Cen *
+	process.TTEffAnalysisHLTPFTau
     )
 else:
     process.runEDAna = cms.Path(
@@ -199,7 +206,8 @@ else:
 #       process.tteffL1GTSeed*
         process.TTEffAnalysis *
         process.TTEffAnalysisL1Tau *
-        process.TTEffAnalysisL1Cen
+        process.TTEffAnalysisL1Cen *
+	process.TTEffAnalysisHLTPFTau
     ) 
 
 process.o1 = cms.OutputModule("PoolOutputModule",
