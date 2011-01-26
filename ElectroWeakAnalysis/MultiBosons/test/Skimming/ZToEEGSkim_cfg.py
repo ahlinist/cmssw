@@ -1,28 +1,22 @@
 import FWCore.ParameterSet.Config as cms
+import FWCore.ParameterSet.VarParsing as VarParsing
 
-process = cms.Process('SKIM')
+## setup 'analysis'  options
+options = VarParsing.VarParsing ('analysis')
 
-process.maxEvents = cms.untracked.PSet(
-    input = cms.untracked.int32(-1)
+## setup tags
+options.setupTags (tag = 'of_%d',
+    ifCond = 'totalSections > 0',
+    tagArg = 'totalSections'
+)
+options.setupTags (tag = '%03d',
+    ifCond = 'totalSections > 0',
+    tagArg = 'section'
 )
 
-process.source = cms.Source("PoolSource",
-    fileNames = cms.untracked.vstring()
-)
-
-process.load("ElectroWeakAnalysis.MultiBosons.Skimming.ZToEEGSkim_cff")
-process.ZToEEGSkimFilterPath = cms.Path(process.ZToEEGSkimFilterSequence)
-
-process.out = cms.OutputModule("PoolOutputModule",
-    fileName = cms.untracked.string("ZToEEGSkim.root"),
-    SelectEvents = cms.untracked.PSet(
-        SelectEvents = cms.vstring("ZToEEGSkimFilterPath")
-    ),
-)
-
-process.endpath = cms.EndPath(process.out)
-
-
+## setup any defaults you want
+options.outputFile = "ZToEEGSkim.root"
+options.maxEvents = -1 # -1 means all events
 sourcePath = "/store/data/Run2010B/Electron/RECO/PromptReco-v2/000/149/291/"
 sourceFiles = """
     E6289EB1-DAE4-DF11-91E8-000423D9997E.root
@@ -62,9 +56,45 @@ sourceFiles = """
     1863A6EA-D7E4-DF11-BF56-003048F117EA.root
     164C079B-DFE4-DF11-B91A-001D09F2532F.root
     104F12EE-DEE4-DF11-9ACC-001617E30CD4.root
-    004644AE-CEE4-DF11-A3EE-001617C3B76A.root
     """.split()
-process.source.fileNames.extend([sourcePath + f for f in sourceFiles])
+options.inputFiles = ",".join([sourcePath + f for f in sourceFiles])
 
+# get and parse the command line arguments
+options.parseArguments()
+
+
+process = cms.Process('SKIM')
+
+process.load("FWCore.MessageLogger.MessageLogger_cfi")
+if options.maxEvents < 0:
+    process.MessageLogger.cerr.FwkReport.reportEvery = 100
+
+process.maxEvents = cms.untracked.PSet(
+    input = cms.untracked.int32(options.maxEvents)
+)
+
+process.source = cms.Source("PoolSource",
+    fileNames = cms.untracked.vstring(options.inputFiles)
+)
+
+process.load("ElectroWeakAnalysis.MultiBosons.Skimming.ZToEEGSkim_cff")
+process.ZToEEGSkimFilterPath = cms.Path(process.ZToEEGSkimFilterSequence)
+
+process.out = cms.OutputModule("PoolOutputModule",
+    fileName = cms.untracked.string(options.outputFile),
+    SelectEvents = cms.untracked.PSet(
+        SelectEvents = cms.vstring("ZToEEGSkimFilterPath")
+    ),
+    outputCommands = cms.untracked.vstring(
+        "keep *",
+        "drop *_*_*_SKIM"
+    )
+)
+
+process.endpath = cms.EndPath(process.out)
+
+process.options = cms.untracked.PSet(
+    wantSummary = cms.untracked.bool(True)
+)
 
 if __name__ == "__main__": import user
