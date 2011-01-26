@@ -276,27 +276,24 @@ int TAna01Event::getGenIndexWithDeltaR(double pt, double eta, double phi, double
   track.SetPtEtaPhiM(pt, eta, phi, 0.);
 				       
   for (int i = 0; i < fnGenCands; i++) {
-    pGenCand = getGenCand(i);
-    cout << "getGenIndexWithDeltaR: " << i << " " << pGenCand->fStatus << " " << charge * pGenCand->fQ;
-    if ((pGenCand->fStatus == 1 || pGenCand->fStatus == 8) && charge * pGenCand->fQ > 0) {
-	/*   
-	     gencand.SetXYZM(pGenCand->fP.X(),
-	     pGenCand->fP.Y(),
-	     pGenCand->fP.Z(),
-	     pGenCand->fMass);
-	*/
-	double dR = track.DeltaR(pGenCand->fP);
-	double dpt = TMath::Abs((track.Perp() - pGenCand->fP.Perp())/track.Perp());
-	cout << dR << " " << dpt << endl;
-	
-	if (dR < 0.12 && dpt < 0.3  && count < 30) {
-	  tmp_index[count] = i;
-	  count++; 
-	}
-    }
-    else
-	cout << " - no dR calculated" << endl;
-    
+	  pGenCand = getGenCand(i);
+// cout << "getGenIndexWithDeltaR: " << i << " " << pGenCand->fStatus << " " << charge * pGenCand->fQ;
+	  if ((pGenCand->fStatus == 1 || pGenCand->fStatus == 8) && charge * pGenCand->fQ > 0) {
+		  /*   
+		   gencand.SetXYZM(pGenCand->fP.X(),
+		   pGenCand->fP.Y(),
+		   pGenCand->fP.Z(),
+		   pGenCand->fMass);
+		   */
+		  double dR = track.DeltaR(pGenCand->fP);
+		  double dpt = TMath::Abs((track.Perp() - pGenCand->fP.Perp())/track.Perp());
+		  // cout << dR << " " << dpt << endl;
+		  
+		  if (dR < 0.12 && dpt < 0.3  && count < 30) {
+			  tmp_index[count] = i;
+			  count++; 
+		  }
+	  }
   }
   
   double deltaR_min(0.12);
