@@ -14,6 +14,7 @@ SAMPLES_TO_ANALYZE = [
     'qqZllPU156bx', # EK: not at any site as of Dec 23
     'bbZll', 'ccZll',
     'Ztautau_powheg', 'Zmumu_powheg', 'Zee_powheg',
+    'Zmumu_pythia', 'Zee_pythia',
     #'InclusivePPmuX',
     'PPmuXptGt20Mu10', 'PPmuXptGt20Mu15',
     #'Wenu_pythia', 'Wmunu_pythia', 'Wtaunu_pythia',
