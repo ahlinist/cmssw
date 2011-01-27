@@ -111,19 +111,25 @@ void compZtautauXsectionNumbers()
 	    << " '+' = " << errEventsExpected_BgrDown/(numEventsObserved - numEventsExpected_Bgr) << "," 
 	    << " '-' = " << errEventsExpected_BgrUp/(numEventsObserved - numEventsExpected_Bgr) << std::endl;
 
-  double sysUncertaintyExclNbgrRel2 = 
+  double errAcc2 = 
+    square(errAccISR)
+   + square(errAccFSR)
+   + square(errAccPDF)
+   + square(errAccGenerator);
+  std::cout << "errAcc = " << TMath::Sqrt(errAcc2) << std::endl;
+
+  double errEffExclTauId2 = 
     square(errTriggerEff) 
    + square(errMuonIdEff)
    + square(errMuonIsoEff)
    + square(errMuonMomScale)
-   + square(errTauIdEff)
    + square(errTauEnScale)
    + square(errJetEnScale)
-   + square(errZrecoilCorr)
-   + square(errAccISR)
-   + square(errAccFSR)
-   + square(errAccPDF)
-   + square(errAccGenerator);
+   + square(errZrecoilCorr);
+  std::cout << "errEffExclTauId = " << TMath::Sqrt(errEffExclTauId2) << std::endl;
+
+  double sysUncertaintyExclNbgrRel2 = errAcc2 + errEffExclTauId2;
+
   double sysUncertaintyRelUp2 = 
     sysUncertaintyExclNbgrRel2
    + square(errEventsExpected_BgrDown/(numEventsObserved - numEventsExpected_Bgr));
