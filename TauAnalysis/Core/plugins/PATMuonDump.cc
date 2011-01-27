@@ -61,8 +61,10 @@ void PATMuonDump::print(const edm::Event& evt, const edm::EventSetup& es) const
     *outputStream_ << " isStandAloneMuon = " << patMuon->isStandAloneMuon() << std::endl;
     *outputStream_ << " inner Track" << std::endl;
     printTrackInfo(patMuon->innerTrack(), patMuon->vertex(), true, false, outputStream_);
+    //printTrackHitPatternInfo(patMuon->innerTrack(), outputStream_);
     *outputStream_ << " outer Track" << std::endl;
     printTrackInfo(patMuon->outerTrack(), patMuon->vertex(), true, false, outputStream_);
+    //printTrackHitPatternInfo(patMuon->outerTrack(), outputStream_);
     *outputStream_ << " global Track" << std::endl;
     printTrackInfo(patMuon->globalTrack(), patMuon->vertex(), true, false, outputStream_);
     *outputStream_ << " caloCompatibility = " << patMuon->caloCompatibility() << std::endl;
