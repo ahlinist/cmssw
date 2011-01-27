@@ -68,8 +68,8 @@ meNames = {
 process.loadAnalysisResultsZtoMuTau = cms.EDAnalyzer("DQMFileLoader",
     Ztautau = cms.PSet(
         inputFileNames = cms.vstring(
-            ##getHarvestingFilePath('ZtoMuTau_bgEstTemplate') + '/' + 'bgEstTemplateHistZtoMuTau_skimmed.root'
-            '/data1/veelken/CMSSW_3_8_x/plots/ZtoMuTau_bgEstTemplate/2011Jan10/bgEstTemplateHistZtoMuTau_skimmed.root'
+            getHarvestingFilePath('ZtoMuTau_bgEstTemplate') + '/' + 'bgEstTemplateHistZtoMuTau_skimmed.root'
+            ##'/data1/veelken/CMSSW_3_8_x/plots/ZtoMuTau_bgEstTemplate/2011Jan10/bgEstTemplateHistZtoMuTau_skimmed.root'
         ),
         scaleFactor = cms.double(1.),
         dqmDirectory_store = cms.string('/')
@@ -367,10 +367,10 @@ process.fitZtoMuTau = cms.EDAnalyzer("TemplateHistFitter",
             templates = cms.PSet(
                 visMass = cms.PSet(
                     meName = cms.string(
-                         ## '/analysis/harvested/' + dqmDirectoriesProcess['Ztautau'] + '/' + dqmDirectoryAnalysis \
-                         ##+ meNames['visMass'] + 'Shape'
-                         '/analysis/harvested/ZtoMuTau_from_ZmumuEmbedding' + '/' + dqmDirectoryAnalysis \
-                        + meNames['visMass'] + 'Shape' + '_' + 'ZmumuEmbedding'
+                         '/analysis/harvested/' + dqmDirectoriesProcess['Ztautau'] + '/' + dqmDirectoryAnalysis \
+                        + meNames['visMass']
+                        ## '/analysis/harvested/ZtoMuTau_from_ZmumuEmbedding' + '/' + dqmDirectoryAnalysis \
+                        ##+ meNames['visMass'] + 'Shape' + '_' + 'ZmumuEmbedding'
                     ),
                     fitSimultaneously = cms.bool(False),                                 
                     smoothing = cms.PSet(
@@ -424,10 +424,10 @@ process.fitZtoMuTau = cms.EDAnalyzer("TemplateHistFitter",
                 ),
                 SVfitMass = cms.PSet(
                     meName = cms.string(
-                        ## '/analysis/harvested/' + dqmDirectoriesProcess['Ztautau'] + '/' + dqmDirectoryAnalysis \
-                        ##+ meNames['SVfitMass'] + 'Shape'
-                        '/analysis/harvested/ZtoMuTau_from_ZmumuEmbedding' + '/' + dqmDirectoryAnalysis \
-                       + meNames['SVfitMass'] + 'Shape' + '_' + 'ZmumuEmbedding'                              
+                        '/analysis/harvested/' + dqmDirectoriesProcess['Ztautau'] + '/' + dqmDirectoryAnalysis \
+                       + meNames['SVfitMass'] + 'Shape'
+                       ## '/analysis/harvested/ZtoMuTau_from_ZmumuEmbedding' + '/' + dqmDirectoryAnalysis \
+                       ##+ meNames['SVfitMass'] + 'Shape' + '_' + 'ZmumuEmbedding'                              
                     )
                 )
             ),    
@@ -663,8 +663,10 @@ process.fitZtoMuTau = cms.EDAnalyzer("TemplateHistFitter",
             ),
             WplusJets = cms.PSet(
                 norm = cms.PSet(
-                    value = cms.double(1.*50.),
-                    uncertainty = cms.double(0.5*50.)
+                    ##value = cms.double(1.*50.),       # for TaNC loose
+                    ##uncertainty = cms.double(0.5*50.) # for TaNC loose
+                    value = cms.double(1.*60.),       # for HPS loose
+                    uncertainty = cms.double(0.5*60.) # for HPS loose                                 
                 )
             ),
             TTplusJets = cms.PSet(
@@ -675,8 +677,10 @@ process.fitZtoMuTau = cms.EDAnalyzer("TemplateHistFitter",
             ),
             QCD = cms.PSet(
                 norm = cms.PSet(
-                    value = cms.double(1.*165.),
-                    uncertainty = cms.double(0.5*165.)
+                    ##value = cms.double(1.*165.),       # for TaNC loose
+                    ##uncertainty = cms.double(0.5*165.) # for TaNC loose
+                    value = cms.double(1.*170.),       # for HPS loose
+                    uncertainty = cms.double(0.5*170.) # for HPS loose                                 
                 )
             )
         ),

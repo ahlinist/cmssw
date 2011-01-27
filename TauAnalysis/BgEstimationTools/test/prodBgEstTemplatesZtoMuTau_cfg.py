@@ -43,14 +43,14 @@ def configureDQMDumpFilterStatisticsTable(dqmDirectoriesProcess, dqmDirectoryFil
     return module
 
 dqmDirectoriesProcess = {
-    'Ztautau' : 'ZtautauSum',
-    'Zmumu' : 'Zmumu_powheg',
-    'WplusJets' : 'WplusJets_madgraph',
-    'QCD' : 'qcdSum',
+    'Ztautau'    : 'ZtautauSum',
+    'Zmumu'      : 'Zmumu_powheg',
+    'WplusJets'  : 'WplusJets_madgraph',
+    'QCD'        : 'qcdSum',
     'TTplusJets' : 'TTplusJets_madgraph',
-    'diBoson' : 'VVsum',
-    'smSum' : 'smSum',
-    'Data' : 'data'
+    'diBoson'    : 'VVsum',
+    'smSum'      : 'smSum',
+    'Data'       : 'data'
 }    
 
 process.dumpZtoMuTau_bgEstZmumuJetMisIdEnriched = configureDQMDumpFilterStatisticsTable(dqmDirectoriesProcess,
