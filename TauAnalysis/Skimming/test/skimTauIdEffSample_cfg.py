@@ -13,7 +13,6 @@ process.MessageLogger.cerr.FwkReport.reportEvery = 1000
 process.load('Configuration/StandardSequences/GeometryIdeal_cff')
 process.load('Configuration/StandardSequences/MagneticField_cff')
 process.load('Configuration/StandardSequences/FrontierConditions_GlobalTag_cff')
-process.GlobalTag.globaltag = cms.string('START38_V13::All')
 
 # load definition of event selection 
 process.load("TauAnalysis.TauIdEfficiency.filterTauIdEffSample_cfi")
@@ -49,9 +48,9 @@ pfCandidateCollection = "particleFlow" # pile-up removal disabled
 # define GlobalTag to be used for event reconstruction
 # (only relevant for HPS tau reconstruction algorithm)
 if isMC:
-    process.GlobalTag.globaltag = cms.string('START38_V12::All')
+    process.GlobalTag.globaltag = cms.string('START38_V14::All')
 else:   
-    process.GlobalTag.globaltag = cms.string('GR_R_38X_V13::All')
+    process.GlobalTag.globaltag = cms.string('GR_R_38X_V15::All')
 #--------------------------------------------------------------------------------    
 
 #--------------------------------------------------------------------------------

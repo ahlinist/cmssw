@@ -15,8 +15,6 @@ outputFilePath = '/user/v/veelken/CMSSW_3_8_x/skims/TauIdEffMeas/'
 
 samplesToAnalyze = [
     # modify in case you want to submit jobs for some of the samples only...
-    'data_Mu_Run2010A_Nov4ReReco',
-    'data_Mu_Run2010B_Nov4ReReco'
 ]
 
 # Define what output file name a skimmed sample will have
