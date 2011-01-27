@@ -479,13 +479,13 @@ void MuonHistManager::fillMuonIsoHistograms(const pat::Muon& patMuon, const reco
   //std::cout << " photonIso = " << patMuon.photonIso() << std::endl;
 
   hMuonParticleFlowIsoPt_->Fill(patMuon.particleIso(), weight);
-  hMuonParticleFlowIsoPt_->Fill(patMuon.particleIso()/patMuon.pt(), weight);
+  hMuonParticleFlowIsoPtRel_->Fill(patMuon.particleIso()/patMuon.pt(), weight);
   hMuonPFChargedHadronIsoPt_->Fill(patMuon.chargedHadronIso(), weight);
-  hMuonPFChargedHadronIsoPt_->Fill(patMuon.chargedHadronIso()/patMuon.pt(), weight);
+  hMuonPFChargedHadronIsoPtRel_->Fill(patMuon.chargedHadronIso()/patMuon.pt(), weight);
   hMuonPFNeutralHadronIsoPt_->Fill(patMuon.neutralHadronIso(), weight);
-  hMuonPFNeutralHadronIsoPt_->Fill(patMuon.neutralHadronIso()/patMuon.pt(), weight);
+  hMuonPFNeutralHadronIsoPtRel_->Fill(patMuon.neutralHadronIso()/patMuon.pt(), weight);
   hMuonPFGammaIsoPt_->Fill(patMuon.photonIso(), weight);
-  hMuonPFGammaIsoPt_->Fill(patMuon.photonIso()/patMuon.pt(), weight);
+  hMuonPFGammaIsoPtRel_->Fill(patMuon.photonIso()/patMuon.pt(), weight);
 
   if ( pfCombIsoExtractor_ ) {
     double pfCombIso = (*pfCombIsoExtractor_)(patMuon, pfCandidates);
