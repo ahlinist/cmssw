@@ -271,8 +271,8 @@ process.loadTemplateHistZtoMuTau_Ztautau = cms.EDAnalyzer("DQMFileLoader",
 process.loadTemplateHistZtoMuTau = cms.EDAnalyzer("DQMFileLoader",
     Ztautau = cms.PSet(
         inputFileNames = cms.vstring(
-            ##getHarvestingFilePath('ZtoMuTau_bgEstTemplate') + '/' + 'plotsZtoMuTau_bgEstTemplate_all.root'
-            '/data1/veelken/CMSSW_3_8_x/plots/ZtoMuTau_bgEstTemplate/2011Jan10/plotsZtoMuTau_bgEstTemplate_all.root'
+            getHarvestingFilePath('ZtoMuTau_bgEstTemplate') + '/' + 'plotsZtoMuTau_bgEstTemplate_all.root'
+            ##'/data1/veelken/CMSSW_3_8_x/plots/ZtoMuTau_bgEstTemplate/2011Jan10/plotsZtoMuTau_bgEstTemplate_all.root'
         ),
         scaleFactor = cms.double(1.),
         dqmDirectory_store = cms.string('/template')
@@ -287,9 +287,9 @@ process.loadTemplateHistZtoMuTau = cms.EDAnalyzer("DQMFileLoader",
 process.loadAnalysisHistZtoMuTau = cms.EDAnalyzer("DQMFileLoader",
     data = cms.PSet(
         inputFileNames = cms.vstring(
-            #getHarvestingFilePath('ZtoMuTau') + '/' + 'plotsZtoMuTau_all.root'
+            getHarvestingFilePath('ZtoMuTau') + '/' + 'plotsZtoMuTau_all.root'
             ##getHarvestingFilePath('ZtoMuTau_bgEstTemplate') + '/' + 'plotsZtoMuTau_all.root'
-            '/data1/veelken/CMSSW_3_8_x/plots/ZtoMuTau/2011Jan07/plotsZtoMuTau_all.root'
+            ##'/data1/veelken/CMSSW_3_8_x/plots/ZtoMuTau/2011Jan07/plotsZtoMuTau_all.root'
         ),
         scaleFactor = cms.double(1.),
         dqmDirectory_store = cms.string('/analysis')
@@ -623,8 +623,8 @@ for selectionName, meNameMapping_selectionName_data in meNameMapping_data.items(
     
 process.saveBgEstTemplateHistZtoMuTau = cms.EDAnalyzer("DQMSimpleFileSaver",
     outputFileName = cms.string(
-        ##getHarvestingFilePath('ZtoMuTau_bgEstTemplate') + '/' + 'bgEstTemplateHistZtoMuTau_skimmed.root'
-        '/data1/veelken/CMSSW_3_8_x/plots/ZtoMuTau_bgEstTemplate/2011Jan10/bgEstTemplateHistZtoMuTau_skimmed.root'
+        getHarvestingFilePath('ZtoMuTau_bgEstTemplate') + '/' + 'bgEstTemplateHistZtoMuTau_skimmed.root'
+        ##'/data1/veelken/CMSSW_3_8_x/plots/ZtoMuTau_bgEstTemplate/2011Jan10/bgEstTemplateHistZtoMuTau_skimmed.root'
     ),
     outputCommands = cms.vstring(
         'drop *',
