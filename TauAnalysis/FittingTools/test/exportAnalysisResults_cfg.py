@@ -20,7 +20,7 @@ process.maxEvents = cms.untracked.PSet(
 
 process.source = cms.Source("EmptySource")
 
-higgsMassPoints = [ 90, 100, 130, 160, 200, 250, 350 ]
+higgsMassPoints = [ 90, 100, 120, 130, 160, 200, 250, 300 ]
 #higgsMassPoints = [ 90, 100, 120, 130, 140, 160, 180, 200, 250, 300, 350 ]
 
 channelsToExport = [
@@ -50,11 +50,14 @@ channels = {
         'dqmDirectoryFilterStat'   : '/export/harvested/%s/ahMuTauAnalyzerOS_woBtag/FilterStatistics/',
         'meNameNumEventsProcessed' : 'genPhaseSpaceCut/passed_cumulative_numWeighted#a1#s1',
         # wo. systematics
-        'meNameTemplate'           : 'DiTauCandidateSVfitQuantities/psKine_MEt_ptBalance/MassL',
+        #'meNameTemplate'           : 'DiTauCandidateSVfitQuantities/psKine_MEt_ptBalance/MassL',
+        'meNameTemplate'           : 'DiTauCandidateQuantities/VisMassL',
         'meNameNumEventsPassed'    : 'evtSelDiTauCandidateForAHtoMuTauZeroCharge/passed_cumulative_numWeighted#a1#s1',
         # w. systematics
-	'meNameTemplateSys'        : 'sysUncertaintyHistManagerResults/#SYSTEMATICSDIR#/' \
-                                    + 'DiTauCandidateSVfitQuantities/psKine_MEt_ptBalance/MassL',
+	#'meNameTemplateSys'        : 'sysUncertaintyHistManagerResults/#SYSTEMATICSDIR#/' \
+        #                            + 'DiTauCandidateSVfitQuantities/psKine_MEt_ptBalance/MassL',
+        'meNameTemplateSys'        : 'sysUncertaintyHistManagerResults/#SYSTEMATICSDIR#/' \
+                                    + 'DiTauCandidateQuantities/VisMassL',
         'meNameNumEventsPassedSys' : 'sysUncertaintyBinningResults/dataBinningResults/#SYSTEMATICSDIR#/binContent_region1#a1#s1',
         'dataIntLumi' : ZtoMuTau.TARGET_LUMI,
         'systematics' : [
@@ -69,11 +72,11 @@ channels = {
         ],
         'doExportSystematics' : True,
         'processes' : {
-            'Ztautau'    : 'ZtautauSum',
-            'Zmumu'      : 'Zmumu',
+            'Ztautau'    : 'Ztautau_powheg',
+            'Zmumu'      : 'Zmumu_powheg',
             'QCD'        : 'qcdSum',
-            'WplusJets'  : 'WplusJetsSum',
-            'TTplusJets' : 'TTplusJets',
+            'WplusJets'  : 'WplusJets_madgraph',
+            'TTplusJets' : 'TTplusJets_madgraph',
             'data'       : 'data'
         },
         'inputFileNames' : [
@@ -89,11 +92,14 @@ channels = {
         'dqmDirectoryFilterStat'   : '/export/harvested/%s/ahMuTauAnalyzerOS_wBtag/FilterStatistics/',
         'meNameNumEventsProcessed' : 'genPhaseSpaceCut/passed_cumulative_numWeighted#a1#s1',
         # wo. systematics
-        'meNameTemplate'           : 'DiTauCandidateSVfitQuantities/psKine_MEt_ptBalance/MassL',
+        #'meNameTemplate'           : 'DiTauCandidateSVfitQuantities/psKine_MEt_ptBalance/MassL',
+        'meNameTemplate'           : 'DiTauCandidateQuantities/VisMassL', 
         'meNameNumEventsPassed'    : 'evtSelDiTauCandidateForAHtoMuTauZeroCharge/passed_cumulative_numWeighted#a1#s1',
         # w. systematics
-	'meNameTemplateSys'        : 'sysUncertaintyHistManagerResults/#SYSTEMATICSDIR#/' \
-                                    + 'DiTauCandidateSVfitQuantities/psKine_MEt_ptBalance/MassL',
+	#'meNameTemplateSys'        : 'sysUncertaintyHistManagerResults/#SYSTEMATICSDIR#/' \
+        #                            + 'DiTauCandidateSVfitQuantities/psKine_MEt_ptBalance/MassL',
+        'meNameTemplateSys'        : 'sysUncertaintyHistManagerResults/#SYSTEMATICSDIR#/' \
+                                    + 'DiTauCandidateQuantities/VisMassL',
         'meNameNumEventsPassedSys' : 'sysUncertaintyBinningResults/dataBinningResults/#SYSTEMATICSDIR#/binContent_region1#a1#s1',
         'dataIntLumi' : ZtoMuTau.TARGET_LUMI,
         'systematics' : [
@@ -108,11 +114,11 @@ channels = {
         ],
         'doExportSystematics' : True,
         'processes' : {
-            'Ztautau'    : 'ZtautauSum',
-            'Zmumu'      : 'Zmumu',
+            'Ztautau'    : 'Ztautau_powheg',
+            'Zmumu'      : 'Zmumu_powheg',
             'QCD'        : 'qcdSum',
-            'WplusJets'  : 'WplusJetsSum',
-            'TTplusJets' : 'TTplusJets',
+            'WplusJets'  : 'WplusJets_madgraph',
+            'TTplusJets' : 'TTplusJets_madgraph',
             'data'       : 'data'
         },
         'inputFileNames' : [
@@ -125,11 +131,14 @@ channels = {
         'dqmDirectoryFilterStat'   : '/export/harvested/%s/ahMuTauAnalyzerOS_inclusive/FilterStatistics/',
         'meNameNumEventsProcessed' : 'genPhaseSpaceCut/passed_cumulative_numWeighted#a1#s1',
         # wo. systematics
-        'meNameTemplate'           : 'DiTauCandidateSVfitQuantities/psKine_MEt_ptBalance/MassL',
+        #'meNameTemplate'           : 'DiTauCandidateSVfitQuantities/psKine_MEt_ptBalance/MassL',
+        'meNameTemplate'           : 'DiTauCandidateQuantities/VisMassL', 
         'meNameNumEventsPassed'    : 'evtSelDiTauCandidateForAHtoMuTauZeroCharge/passed_cumulative_numWeighted#a1#s1',
         # w. systematics
-	'meNameTemplateSys'        : 'sysUncertaintyHistManagerResults/#SYSTEMATICSDIR#/' \
-                                    + 'DiTauCandidateSVfitQuantities/psKine_MEt_ptBalance/MassL',
+	#'meNameTemplateSys'        : 'sysUncertaintyHistManagerResults/#SYSTEMATICSDIR#/' \
+        #                            + 'DiTauCandidateSVfitQuantities/psKine_MEt_ptBalance/MassL',
+        'meNameTemplateSys'        : 'sysUncertaintyHistManagerResults/#SYSTEMATICSDIR#/' \
+                                    + 'DiTauCandidateQuantities/VisMassL',
         'meNameNumEventsPassedSys' : 'sysUncertaintyBinningResults/dataBinningResults/#SYSTEMATICSDIR#/binContent_region1#a1#s1',
         'dataIntLumi' : ZtoMuTau.TARGET_LUMI,
         'systematics' : [
@@ -144,11 +153,11 @@ channels = {
         ],
         'doExportSystematics' : True,
         'processes' : {
-            'Ztautau'    : 'ZtautauSum',
-            'Zmumu'      : 'Zmumu',
+            'Ztautau'    : 'Ztautau_powheg',
+            'Zmumu'      : 'Zmumu_powheg',
             'QCD'        : 'qcdSum',
-            'WplusJets'  : 'WplusJetsSum',
-            'TTplusJets' : 'TTplusJets',
+            'WplusJets'  : 'WplusJets_madgraph',
+            'TTplusJets' : 'TTplusJets_madgraph',
             'data'       : 'data'
         },
         'inputFileNames' : [
@@ -233,18 +242,18 @@ processes = {
         'hasSystematics' : True                
     },
     'Ztautau' : {
-        'xSection'       : ZtoMuTau.RECO_SAMPLES['ZtautauPU156bx']['x_sec']
-                          + ZtoMuTau.RECO_SAMPLES['qqZtautauPU156bx']['x_sec'],
+        'xSection'       : ZtoMuTau.RECO_SAMPLES['Ztautau_powheg']['x_sec']
+                          + ZtoMuTau.RECO_SAMPLES['qqZllPU156bx']['x_sec'],
         'outputFileName' : "ztt_#CHANNEL_OUTPUTFILENAME#.hst",
         'hasSystematics' : True                
     },
     'Zmumu' : {
-        'xSection'       : ZtoMuTau.RECO_SAMPLES['Zmumu']['x_sec'],
+        'xSection'       : ZtoMuTau.RECO_SAMPLES['Zmumu_powheg']['x_sec'],
         'outputFileName' : "zmm_#CHANNEL_OUTPUTFILENAME#.hst",
         'hasSystematics' : True        
     },
     'Zee' : {
-        'xSection'       : ZtoMuTau.RECO_SAMPLES['Zee']['x_sec'],
+        'xSection'       : ZtoMuTau.RECO_SAMPLES['Zee_powheg']['x_sec'],
         'outputFileName' : "zee_#CHANNEL_OUTPUTFILENAME#.hst",
         'hasSystematics' : True        
     },
@@ -257,14 +266,12 @@ processes = {
         'hasSystematics' : True        
     },
     'WplusJets' : {
-        'xSection'       : ZtoMuTau.RECO_SAMPLES['Wenu']['x_sec']
-                          + ZtoMuTau.RECO_SAMPLES['Wmunu']['x_sec']
-                          + ZtoMuTau.RECO_SAMPLES['Wtaunu']['x_sec'],
+        'xSection'       : ZtoMuTau.RECO_SAMPLES['WplusJets_madgraph']['x_sec'],
         'outputFileName' : "wjets_#CHANNEL_OUTPUTFILENAME#.hst",
         'hasSystematics' : True        
     },
     'TTplusJets' : {
-        'xSection'       : ZtoMuTau.RECO_SAMPLES['TTplusJets']['x_sec'],
+        'xSection'       : ZtoMuTau.RECO_SAMPLES['TTplusJets_madgraph']['x_sec'],
         'outputFileName' : "ttbar_#CHANNEL_OUTPUTFILENAME#.hst",
         'hasSystematics' : True        
     },
@@ -517,6 +524,21 @@ if 'AHtoElecMu' in channelsToExport:
     )
     
     process.exportAnalysisSequence += process.compDQMEffXsecAHtoElecMu
+
+#--------------------------------------------------------------------------------
+# save exported histogram into .root file
+#--------------------------------------------------------------------------------
+
+process.saveExportedHistograms = cms.EDAnalyzer("DQMSimpleFileSaver",
+    outputFileName = cms.string('exportAnalysisResults.root'),
+    outputCommands = cms.vstring(
+        'drop /*',
+        'keep /*/DiTauCandidateSVfitQuantities/psKine_MEt_ptBalance/MassL',
+        'keep /*/DiTauCandidateQuantities/VisMassL'
+    )
+)
+
+process.exportAnalysisSequence += process.saveExportedHistograms
 
 #--------------------------------------------------------------------------------
 # done with configuring. Now run it...
