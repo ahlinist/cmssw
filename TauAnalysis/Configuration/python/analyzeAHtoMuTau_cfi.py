@@ -1698,7 +1698,7 @@ muTauAnalysisSequenceSS_wBtag = cms.VPSet(
     ),
     cms.PSet(
         filter = cms.string('evtSelDiTauCandidateForAHtoMuTauNonZeroCharge'),
-        title = cms.string('Charge(Muon+Tau) = 0'),
+        title = cms.string('Charge(Muon+Tau) != 0'),
         saveRunLumiSectionEventNumbers = cms.vstring('passed_cumulative')
     ),
     cms.PSet(
