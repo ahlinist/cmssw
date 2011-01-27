@@ -80,7 +80,9 @@ process.source = cms.Source("PoolSource",
         #'file:/data1/friis/PickMikesEvents/mikes_events_2010b002.root'
         #'rfio:/castor/cern.ch/user/v/veelken/CMSSW_3_6_x/skims/ZtoMuTau/test/Ztautau_1_1_sXK.root'
         #'file:/tmp/veelken/Ztautau_1_1_sXK.root'
-        'file:/data1/veelken/tmp/final_events_AHtoMuTau_ZtautauPOWHEG_Run32_51_0_ZW7.root'
+        #'file:/data1/veelken/tmp/final_events_AHtoMuTau_ZtautauPOWHEG_Run32_51_0_ZW7.root'
+        #'file:/data2/debugMuon/final_events_AHtoMuTau_data_Mu_Run2010B_Nov4ReReco_RunOnOursJan16.root'
+        'file:/data2/veelken/CMSSW_3_8_x/skims/ZtoMuTau/mcZtautauPU156bx_pythia_1_1_xdF.root'
     )
     #skipBadFiles = cms.untracked.bool(True)
 )
@@ -108,7 +110,7 @@ from PhysicsTools.PatAlgos.tools.tauTools import *
 #switchToPFTauFixedCone(process)
 
 # comment-out to take new HPS + TaNC combined tau id. algorithm
-switchToPFTauHPSpTaNC(process)
+#switchToPFTauHPSpTaNC(process)
 
 # disable preselection on of pat::Taus
 # (disabled also in TauAnalysis/RecoTools/python/patPFTauConfig_cfi.py ,
@@ -259,6 +261,33 @@ process.producePatTupleAll = cms.Sequence(process.producePatTuple + process.prod
 #__#patTupleProduction#
 if not hasattr(process, "isBatchMode"):
     process.p.replace(process.producePatTupleZtoMuTauSpecific, process.producePatTuple + process.producePatTupleZtoMuTauSpecific)
+#--------------------------------------------------------------------------------
+
+#--------------------------------------------------------------------------------
+# CV: provisional switch to "old" HPS tau reconstruction (01/26/2011)
+#     as it is included in CMSSW_3_8_x release series
+#
+#    --> remove hpsPFTauProducer from reco::PFTau sequence
+#    --> switch pat::Tau input to HPS tau collection
+#
+print("CV: switching to **old** HPS !!")
+
+while process.p.remove(process.PFTau): pass
+
+switchToPFTauHPS(process)
+process.cleanPatTaus.preselection = cms.string('')
+
+changeCut(process, "selectedPatTausLeadTrkPt", "tauID('leadingTrackFinding') > 0.5")
+changeCut(process, "selectedPatTausForMuTauLeadTrkPt", "tauID('leadingTrackFinding') > 0.5")
+changeCut(process, "selectedPatTausTaNCdiscr", "tauID('byLooseIsolation') > 0.5")
+changeCut(process, "selectedPatTausForMuTauTaNCdiscr", "tauID('byLooseIsolation') > 0.5")
+changeCut(process, "selectedPatTausForMuTauCaloMuonVeto", "tauID('againstMuon') > -1.")
+
+process.ewkTauId.PFTauProducer = cms.InputTag("hpsPFTauProducer")
+process.ewkTauId.Prediscriminants.leadTrack.Producer   = cms.InputTag('hpsPFTauDiscriminationByDecayModeFinding')
+process.ewkTauId.Prediscriminants.leadTrackPt.Producer = cms.InputTag('hpsPFTauDiscriminationByDecayModeFinding')
+process.ewkTauId.Prediscriminants.TaNCloose.Producer   = cms.InputTag('hpsPFTauDiscriminationByLooseIsolation')
+process.ewkTauId.Prediscriminants.againstMuon.Producer = cms.InputTag('hpsPFTauDiscriminationAgainstMuon')
 #--------------------------------------------------------------------------------
 
 # print-out all python configuration parameter information
