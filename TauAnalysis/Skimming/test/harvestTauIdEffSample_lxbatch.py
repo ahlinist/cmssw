@@ -18,13 +18,16 @@ jobId = reg.getJobId(channel)
 tmpFilePath = reg.getBatchHarvestLocation(channel)
 
 SAMPLES_TO_ANALYZE = [
-    'data_Mu_Run2010A_Nov4ReReco',
-    'data_Mu_Run2010B_Nov4ReReco',
-    'Ztautau_powheg',
-    'Zmumu_powheg',
-    'PPmuXptGt20Mu10', 'PPmuXptGt20Mu15',
-    'WplusJets_madgraph',
-    'TTplusJets_madgraph'
+    #'data_Mu_Run2010A_Nov4ReReco',
+    #'data_Mu_Run2010B_Nov4ReReco',
+    #'Ztautau_powheg',
+    #'ZtautauPU156bx',
+    #'Zmumu_powheg',
+    #'Zmumu_pythia', 
+    'PPmuXptGt20Mu10',
+    #'PPmuXptGt20Mu15',
+    #'WplusJets_madgraph',
+    #'TTplusJets_madgraph'
 ]
 
 print analysisFilePath
@@ -46,8 +49,6 @@ def matches_either(files):
 def local_copy_mapper(sample):
     " Define where we want to copy the final output locally "
     return os.path.join(
-        #'/tmp/friis/Run33SYS',
-        #'/tmp/friis/Run32',
         harvestingFilePath,
         "_".join(['harvested', channel, sample, jobId]) + ".root")
 
@@ -58,5 +59,5 @@ make_harvest_scripts(
     clean_by_crab_id(matches_either(castor_source(analysisFilePath))),
     tmpFilePath,
     local_copy_mapper = local_copy_mapper,
-    chunk_size = 2e9, # 3 GB
+    chunk_size = 2.e+9, # 3 GB
 )
