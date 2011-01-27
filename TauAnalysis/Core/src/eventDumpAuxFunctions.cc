@@ -216,6 +216,22 @@ void printVertexInfo(const reco::Candidate::Point& vertex, std::ostream* stream)
 //-----------------------------------------------------------------------------------------------------------------------
 //
 
+void printTrackHitPatternInfo(const reco::TrackRef& recoTrack, std::ostream* stream)
+{
+  if ( isValidRef(recoTrack) ) {
+    const reco::HitPattern& hitPattern = recoTrack->hitPattern();
+
+    int numHits = hitPattern.numberOfHits();
+    for ( int iHit = 0; iHit < numHits; ++iHit ) {
+      if ( stream ) hitPattern.printHitPattern(iHit, *stream);
+    }
+  }
+}
+
+//
+//-----------------------------------------------------------------------------------------------------------------------
+//
+
 void printTrackIsolationInfo(const edm::Handle<reco::TrackCollection>& recoTracks, 
 			     const reco::Candidate::Vector& direction, double vetoConeSize, double isolationConeSize, double minPt,
 			     const reco::Vertex::Point& thePrimaryEventVertexPosition,

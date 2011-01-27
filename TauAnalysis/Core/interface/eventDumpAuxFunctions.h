@@ -46,6 +46,8 @@ void printTrackInfo(const edm::Ref<T>& track, const reco::Candidate::Point& vert
 
 void printVertexInfo(const reco::Candidate::Point&, std::ostream*);
 
+void printTrackHitPatternInfo(const reco::TrackRef&, std::ostream*);
+
 void printTrackIsolationInfo(const edm::Handle<reco::TrackCollection>&, const reco::Candidate::Vector&, double, double, double, const reco::Vertex::Point&, std::ostream*);
 void printPFCandidateIsolationInfo(const edm::Handle<reco::PFCandidateCollection>&, std::string,
 				   const reco::Candidate::Vector&, double, double, double, std::ostream*);
