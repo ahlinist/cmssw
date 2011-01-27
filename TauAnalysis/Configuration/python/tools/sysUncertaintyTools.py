@@ -1,35 +1,49 @@
 import FWCore.ParameterSet.Config as cms
+import copy
 import re
 
 from PhysicsTools.PatAlgos.tools.helpers import listModules
 
-from TauAnalysis.CandidateTools.tools.objSelConfigurator import *
+from TauAnalysis.RecoTools.patLeptonSelection_cff import \
+     patElectronSelConfiguratorForElecTau, patElectronSelConfiguratorForElecTauLooseIsolation, \
+     patMuonSelConfigurator, patMuonSelConfiguratorLooseIsolation, \
+     patTauSelConfigurator, patTauSelConfiguratorForElecTau, patTauSelConfiguratorForMuTau
+from TauAnalysis.RecoTools.patJetSelection_cff import patJetSelConfigurator
+from TauAnalysis.RecoTools.patJetSelectionForAHtoMuTau_cff import \
+     patJetSelConfiguratorForAHtoMuTau, selectPatJetsForAHtoMuTauLooseMuonIsolation
+
+from TauAnalysis.CandidateTools.muTauPairProduction_cff import \
+     muTauPairProdConfigurator, muTauPairProdConfiguratorLooseMuonIsolation
+
+from TauAnalysis.CandidateTools.diTauPairSelectionAllKinds_cff import \
+     patElecTauPairSelConfigurator, patElecTauPairSelConfiguratorLooseElectronIsolation, \
+     patMuTauPairSelConfiguratorOS, patMuTauPairSelConfiguratorLooseMuonIsolationOS, \
+     patMuTauPairSelConfiguratorSS, patMuTauPairSelConfiguratorLooseMuonIsolationSS
+from TauAnalysis.CandidateTools.muTauPairSelectionForAHtoMuTau_cff import \
+     patMuTauPairSelConfiguratorForAHtoMuTauOS, patMuTauPairSelConfiguratorForAHtoMuTauLooseMuonIsolationOS, \
+     patMuTauPairSelConfiguratorForAHtoMuTauSS, patMuTauPairSelConfiguratorForAHtoMuTauLooseMuonIsolationSS
+
+from TauAnalysis.Configuration.selectZtoMuTau_cff import \
+     zToMuTauEventSelConfiguratorOS, zToMuTauEventSelConfiguratorSS
+from TauAnalysis.Configuration.selectZtoMuTau_factorized_cff import \
+     zToMuTauEventSelConfiguratorLooseMuonIsolationOS, zToMuTauEventSelConfiguratorLooseMuonIsolationSS
+from TauAnalysis.Configuration.selectZtoElecTau_cff import \
+     zToElecTauEventSelConfigurator
+from TauAnalysis.Configuration.selectZtoElecTau_factorized_cff import \
+     zToElecTauEventSelConfiguratorLooseElectronIsolation
+from TauAnalysis.Configuration.selectAHtoMuTau_cff import \
+     ahToMuTauEventSelConfiguratorOS, ahToMuTauEventSelConfiguratorSS
+from TauAnalysis.Configuration.selectAHtoMuTau_factorized_cff import \
+     ahToMuTauEventSelConfiguratorLooseMuonIsolationOS, ahToMuTauEventSelConfiguratorLooseMuonIsolationSS
+
+from TauAnalysis.CandidateTools.tools.objProdConfigurator import objProdConfigurator
+from TauAnalysis.CandidateTools.tools.objSelConfigurator import objSelConfigurator
 from TauAnalysis.CandidateTools.tools.composeModuleName import composeModuleName
+from TauAnalysis.CandidateTools.sysErrDefinitions_cfi import *
 from TauAnalysis.Configuration.tools.analysisSequenceTools import removeAnalyzer
 from TauAnalysis.Configuration.tools.factorizationTools import replaceSysAnalyzerModules
-
-from TauAnalysis.RecoTools.patLeptonSelection_cff import *
-from TauAnalysis.RecoTools.patLeptonSystematics_cff import *
-from TauAnalysis.CandidateTools.muTauPairProduction_cff import *
-from TauAnalysis.CandidateTools.elecTauPairProduction_cff import *
-from TauAnalysis.CandidateTools.diTauPairSelectionAllKinds_cff import *
-from TauAnalysis.CandidateTools.muTauPairSelectionForAHtoMuTau_cff import *
-from TauAnalysis.RecoTools.patJetSelection_cff import *
-from TauAnalysis.RecoTools.patJetSelectionForAHtoMuTau_cff import *
-from TauAnalysis.RecoTools.tools.configureZllRecoilCorrection import configureZllRecoilCorrection
-from TauAnalysis.CandidateTools.sysErrDefinitions_cfi import *
 from TauAnalysis.GenSimTools.sysErrGenEventReweights_cfi import *
-
-from TauAnalysis.Configuration.selectZtoMuTau_cff import *
-from TauAnalysis.Configuration.selectZtoMuTau_factorized_cff import *
-from TauAnalysis.Configuration.selectZtoElecTau_cff import *
-from TauAnalysis.Configuration.selectZtoElecTau_factorized_cff import *
-from TauAnalysis.Configuration.selectZtoDiTau_cff import *
-from TauAnalysis.Configuration.selectZtoDiTau_factorized_cff import *
-from TauAnalysis.Configuration.selectAHtoMuTau_cff import *
-from TauAnalysis.Configuration.selectAHtoMuTau_factorized_cff import *
-from TauAnalysis.Configuration.selectAHtoElecTau_cff import *
-from TauAnalysis.Configuration.selectAHtoElecTau_factorized_cff import *
+from TauAnalysis.RecoTools.tools.configureZllRecoilCorrection import configureZllRecoilCorrection
 
 #--------------------------------------------------------------------------------
 # generic utility functions for factorization
