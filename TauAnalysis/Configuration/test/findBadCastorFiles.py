@@ -102,6 +102,7 @@ results_thread.start()
 
 castorFilePath = '/castor/cern.ch/' + getAnalysisFilePath(channel)
 castorFilePath = castorFilePath.replace('//', '/')
+castorFilePath = castorFilePath.replace('/castor/cern.ch/castor/cern.ch/', '/castor/cern.ch/')
 print(" castorFilePath = %s" % castorFilePath)
 
 jobId = getJobId(channel)
