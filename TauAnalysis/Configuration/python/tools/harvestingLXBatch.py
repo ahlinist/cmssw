@@ -175,6 +175,9 @@ def make_harvest_scripts(plot_regex, skim_regex,
         print " -- Found %i files to harvest" % len(plot_file_map[sample])
         # Build merge tree.  We add the source has to the sample name.
         split = 6
+        if 'PPmuX' in sample:
+            print "High yield sample %s detected, setting split to 4" % sample
+            split = 4
         merge_jobs = jobtools.make_merge_dependency_tree(
             sample, plot_file_map[sample],
             castor_output_directory, split=split)
