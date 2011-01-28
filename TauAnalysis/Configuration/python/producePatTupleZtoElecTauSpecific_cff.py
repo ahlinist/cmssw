@@ -34,15 +34,23 @@ from TauAnalysis.CandidateTools.diTauPairSelectionAllKinds_cff import *
 # of being an electron pair resulting from a Z --> e+ e- decay
 #
 from TauAnalysis.RecoTools.elecTauPairZeeHypothesis_cff import *
+#
+# produce PF charged hadrons with IP requirement
+# and produce electron pairs for alternate Z->ee veto 
+from TauAnalysis.RecoTools.diElecPairZeeHypothesis_cff import *
 
 producePatTupleZtoElecTauSpecific = cms.Sequence(
-    selectPatMuons  
-    + selectPatElectrons 
-	+ selectPatElectronsLooseIsolation
+		#patMuonsMuScleFitCorrectedMomentum +
+	selectedPfCandidatesIpCut +
+	selectPatMuons  +
+    selectPatElectrons 
+   + selectPatElectronsLooseIsolation
    + selectPatElectronsForElecTau + selectPatElectronsForElecTauLooseIsolation
-   + selectPatTaus + selectPatTausForElecTau
-   + produceElecTauPairs + produceElecTauPairsLooseElectronIsolation
+   + selectPatTaus 
+   + selectPatTausForElecTau
+   + produceElecTauPairsAll
    + selectElecTauPairs + selectElecTauPairsLooseElectronIsolation
    + produceElecTauPairZeeHypotheses
    + selectPatJets
+   + produceDiElecPairs
 )
