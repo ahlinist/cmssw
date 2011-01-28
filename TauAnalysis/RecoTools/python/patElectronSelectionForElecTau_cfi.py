@@ -2,6 +2,7 @@ import FWCore.ParameterSet.Config as cms
 import copy
 
 from TauAnalysis.RecoTools.patElectronSelection_cfi import *
+from TauAnalysis.RecoTools.patLeptonPFIsolationSelector_cfi import patElectronPFIsolationSelector
 
 #--------------------------------------------------------------------------------
 # define additional collections of electron candidates 
@@ -29,22 +30,37 @@ selectedPatElectronsForElecTauPt15 = copy.deepcopy(selectedPatElectronsPt15)
 
 # require electron candidate to be isolated
 # with respect to tracks (of Pt >~ 0.3 GeV)
-selectedPatElectronsForElecTauTrkIso = copy.deepcopy(selectedPatElectronsTrkIso)
+#selectedPatElectronsForElecTauTrkIso = copy.deepcopy(selectedPatElectronsTrkIso)
 
 # require electron candidate to be isolated
 # with respect to energy deposits in ECAL
 # (not associated to electron candidate)
-selectedPatElectronsForElecTauEcalIso = copy.deepcopy(selectedPatElectronsEcalIso)
+#selectedPatElectronsForElecTauEcalIso = copy.deepcopy(selectedPatElectronsEcalIso)
+
+# require electron candidate to be isolated
+# with respect to particle-flow candidates
+selectedPatElectronsForElecTauIso = cms.EDFilter("PATElectronPFIsolationSelector",
+	patElectronPFIsolationSelector,
+	filter = cms.bool(False)
+)
 
 # require track of electron candidate to have small transverse impact parameter
 # (in order to veto electrons resulting from b-quark decays)
 selectedPatElectronsForElecTauTrkIP = copy.deepcopy(selectedPatElectronsTrkIP)
 
-selectedPatElectronsForElecTauTrkIsoLooseIsolation = copy.deepcopy(selectedPatElectronsForElecTauTrkIso)
-selectedPatElectronsForElecTauTrkIsoLooseIsolation.cut = cms.string('trackIso < 8.')
 
-selectedPatElectronsForElecTauEcalIsoLooseIsolation = copy.deepcopy(selectedPatElectronsForElecTauEcalIso)
-selectedPatElectronsForElecTauEcalIsoLooseIsolation.cut = cms.string('ecalIso < 8.')
+#
+# make collections with loose electron isolation
+#
+#selectedPatElectronsForElecTauTrkIsoLooseIsolation = copy.deepcopy(selectedPatElectronsForElecTauTrkIso)
+#selectedPatElectronsForElecTauTrkIsoLooseIsolation.cut = cms.string('trackIso < 8.')
+
+#selectedPatElectronsForElecTauEcalIsoLooseIsolation = copy.deepcopy(selectedPatElectronsForElecTauEcalIso)
+#selectedPatElectronsForElecTauEcalIsoLooseIsolation.cut = cms.string('ecalIso < 8.')
+
+selectedPatElectronsForElecTauIsoLooseIsolation = selectedPatElectronsForElecTauIso.clone(
+	sumPtMax = cms.double(0.30)
+)
 
 selectedPatElectronsForElecTauTrkIPlooseIsolation = copy.deepcopy(selectedPatElectronsForElecTauTrkIP)
 
@@ -65,6 +81,7 @@ selectedPatElectronsForElecTauConversionVeto = cms.EDFilter("PATElectronConversi
     doHists = cms.bool(False)
 )
 
+# loosen conversion rejection as part of loose isolation
 selectedPatElectronsForElecTauConversionVetoLooseIsolation = cms.EDFilter("PATElectronConversionFinder",
     trackSource = cms.InputTag('generalTracks'),
     conversionSource = cms.InputTag('conversions'),
