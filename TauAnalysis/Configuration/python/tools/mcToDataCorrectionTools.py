@@ -29,7 +29,7 @@ def _applyZllRecoilCorrection(process, diTauProductionSequenceName, diTauProduce
         for processAttrName in dir(process):
             processAttr = getattr(process, processAttrName)
             if isinstance(processAttr, cms.Sequence):
-                print "--> Replacing InputTags in sequence:", processAttrName
+				#print "--> Replacing InputTags in sequence:", processAttrName
                 patutils.massSearchReplaceAnyInputTag(processAttr, cms.InputTag(diTauProducerModuleName),
                   cms.InputTag(configZllRecoilCorrection['diTauProducerModuleZllRecoilCorrectedName']))
 
@@ -441,3 +441,84 @@ def applyZrecoilCorrection_runZtoDiTau(process):
 
     # restore InputTag of ZllRecoilCorrection modules
     restoreZllRecoilCorrectionInputTags_ZtoDiTau(process)
+
+
+#--------------------------------------------------------------------------------
+# Z --> electron + tau-jet, A/H --> electron + tau-jet channels
+#--------------------------------------------------------------------------------
+
+def applyZrecoilCorrection_runZtoElecTau(process):
+	_applyZllRecoilCorrection(process,
+			"produceElecTauPairsAll", 'allElecTauPairs',
+			"ZllRecoilCorrectionElecTauPair",
+			[ "analyzeZtoElecTauSequence" ])
+	_applyZllRecoilCorrection(process,
+			"produceElecTauPairs", 'allElecTauPairsLooseElectronIsolation',
+			"ZllRecoilCorrectionElecTauPair",
+			[ "analyzeZtoElecTauSequence_factorizedWithElectronIsolation",
+				"analyzeZtoElecTauSequence_factorizedWithoutElectronIsolation" ])
+
+
+def applyZrecoilCorrection_runAHtoElecTau(process):
+	_applyZllRecoilCorrection(process,
+			"produceElecTauPairsAll", 'allElecTauPairs',
+			"ZllRecoilCorrectionElecTauPair",
+			[ "analyzeAHtoElecTauSequence" ])
+	_applyZllRecoilCorrection(process,
+			"produceElecTauPairsAll", 'allElecTauPairsLooseElectronIsolation',
+			"ZllRecoilCorrectionElecTauPair",
+			[ "analyzeAHtoElecTauSequence_factorizedWithElectronIsolation",
+				"analyzeAHtoElecTauSequence_factorizedWithoutElectronIsolation" ])
+
+def _addEventWeightZtoElecTau(process, srcEventWeight, applyAfterFilterName = "*"):
+	_addEventWeight(process,
+			[ "analyzeZtoElecTauEvents",
+			"analyzeZtoElecTauEvents_factorizedWithElectronIsolation",
+			"analyzeZtoElecTauEvents_factorizedWithoutElectronIsolation" ],                    
+			srcEventWeight, applyAfterFilterName)
+
+def applyElectronTriggerEfficiencyCorrection_runZtoElecTau(process):
+	process.load("TauAnalysis.RecoTools.electronTriggerEfficiencyCorrection_cfi")
+	if hasattr(process, "producePatTupleZtoElecTauSpecific"):
+		process.producePatTupleZtoElecTauSpecific._seq = process.producePatTupleZtoElecTauSpecific._seq \
+				* process.electronTriggerEfficiencyCorrection
+
+	_addEventWeightZtoElecTau(process, "electronTriggerEfficiencyCorrection", applyAfterFilterName = "evtSelTrigger")
+
+def applyElectronIsolationEfficiencyCorrection_runZtoElecTau(process):
+	process.load("TauAnalysis.RecoTools.electronIsolationEfficiencyCorrection_cfi")
+	if hasattr(process, "producePatTupleZtoElecTauSpecific"):
+	    process.producePatTupleZtoElecTauSpecific._seq = process.producePatTupleZtoElecTauSpecific._seq \
+			      * process.electronIsolationEfficiencyCorrection
+
+	_addEventWeightZtoElecTau(process, "electronIsolationEfficiencyCorrection", applyAfterFilterName = "evtSelElectronEcalIso")
+
+def applyVertexMultiplicityReweighting_runZtoElecTau(process):
+	process.load("TauAnalysis.RecoTools.vertexMultiplicityReweight_cfi")
+	if hasattr(process, "producePatTupleZtoElecTauSpecific"):
+		process.producePatTupleZtoElecTauSpecific._seq = process.producePatTupleZtoElecTauSpecific._seq \
+				* cms.Sequence(process.selectedPrimaryVerticesTrackPtSumGt10 * process.vertexMultiplicityReweight)
+
+	_addEventWeightZtoElecTau(process, "vertexMultiplicityReweight")
+
+
+
+def _addEventWeighAHtoElecTau(process, srcEventWeight, applyAfterFilterName = "*"):
+	_addEventWeight(process,
+			[ "analyzeAHtoElecTauEvents",
+				"analyzeAHtoElecTauEvents_factorizedWithElectronIsolation",
+				"analyzeAHtoElecTauEvents_factorizedWithoutElectronIsolation" ],
+			srcEventWeight, applyAfterFilterName)    
+
+def applyElectronTriggerEfficiencyCorrection_runAHtoElecTau(process):
+	applyElectronTriggerEfficiencyCorrection_runZtoElecTau(process)
+	_addEventWeighAHtoElecTau(process, "electronTriggerEfficiencyCorrection", applyAfterFilterName = "evtSelTrigger")
+
+def applyElectronIsolationEfficiencyCorrection_runAHtoElecTau(process):
+	applyElectronIsolationEfficiencyCorrection_runZtoElecTau(process)
+	_addEventWeighAHtoElecTau(process, "electronIsolationEfficiencyCorrection", applyAfterFilterName = "evtSelElectronEcalIso")
+
+def applyVertexMultiplicityReweighting_runAHtoElecTau(process):
+	applyVertexMultiplicityReweighting_runZtoElecTau(process)
+	_addEventWeighAHtoElecTau(process, "vertexMultiplicityReweight")
+
