@@ -132,6 +132,14 @@ def _setApplyMuonTriggerEfficiencyCorrection(process, enable, **kwargs):
         enabler(process)
 
 @_requires(args=['channel'])
+def _setApplyElectronTriggerEfficiencyCorrection(process, enable, **kwargs):
+    channel = kwargs['channel']
+    if enable:
+        print "Applying Electron Trigger efficiency correction"
+        enabler = getattr(mcToDataCorrectionTools, "applyElectronTriggerEfficiencyCorrection_run%s" % channel)
+        enabler(process)
+
+@_requires(args=['channel'])
 def _setApplyMuonIsolationEfficiencyCorrection(process, enable, **kwargs):
     channel = kwargs['channel']
     if enable:
@@ -189,7 +197,7 @@ def _setTriggerProcess(process, triggerTag, **kwargs):
 	for processAttrName in dir(process):
 		processAttr = getattr(process, processAttrName)
 		if isinstance(processAttr, cms.Sequence):
-			print "--> Resetting HLT input tag for sequence:", processAttrName
+			#print "--> Resetting HLT input tag for sequence:", processAttrName
 			patutils.massSearchReplaceAnyInputTag(processAttr, cms.InputTag("TriggerResults", "", "HLT"), triggerTag)
 			patutils.massSearchReplaceAnyInputTag(processAttr, cms.InputTag("TriggerResults::HLT"), triggerTag)
 
@@ -335,6 +343,7 @@ _METHOD_MAP = {
     'enableFactorization' : _setEnableFactorization,
     'applyZrecoilCorrection' : _setApplyZrecoilCorrection,
     'applyMuonTriggerEfficiencyCorrection' : _setApplyMuonTriggerEfficiencyCorrection,
+    'applyElectronTriggerEfficiencyCorrection' : _setApplyElectronTriggerEfficiencyCorrection,
     'applyMuonIsolationEfficiencyCorrection' : _setApplyMuonIsolationEfficiencyCorrection,
     'applyVertexMultiplicityReweighting' : _setApplyVertexMultiplicityReweighting,
     'enableSysUncertainties' : _setEnableSystematics,

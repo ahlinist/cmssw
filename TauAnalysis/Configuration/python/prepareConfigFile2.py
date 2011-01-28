@@ -142,6 +142,10 @@ def prepareConfigFile(configFile = None, jobInfo = None, newConfigFile = None,
     jobOptions.append(('applyMuonTriggerEfficiencyCorrection',
                        sample_info['applyMuonTriggerEfficiencyCorrection']))
 
+    # Apply electron trigger efficiency correction if requested
+    jobOptions.append(('applyElectronTriggerEfficiencyCorrection',
+                       sample_info['applyElectronTriggerEfficiencyCorrection']))
+
     # Apply vertex multiplicity reweighting if requested
     jobOptions.append(('applyVertexMultiplicityReweighting',
                        sample_info['applyVertexMultiplicityReweighting']))
