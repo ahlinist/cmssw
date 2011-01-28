@@ -432,14 +432,37 @@ userSettings = {
     },
     'jkolb': {
         'current' : {
-            'AHtoElecTau' : 'Run01',
-            'ZtoElecTau' : '2010Nov13',
-            'ZtoElecTau_stdCuts' : '2010Nov24',
+            'AHtoElecTau' : 'Run03',
+            'ZtoElecTau' : 'Run03',
         },
         'jobs' : {
+            'Run03' : {
+                'AHtoElecTau' : {
+                    'analysisFilePath' : "/user/j/jkolb/elecTauAnalysis/fall10/AHtoElecTau/Run03/",
+                    'harvestingFilePath' : "/data/ndpc2/b/jkolb/ZtoElecTauAnalysis/fall10/AHtoElecTau/harvested/Run03/",
+                    'tmpFilePath' : "/data/ndpc2/b/jkolb/ZtoElecTauAnalysis/fall10/AHtoElecTau/harvested/Run03/tmp/"
+                },
+                'ZtoElecTau' : {
+                    'analysisFilePath' : "/user/j/jkolb/elecTauAnalysis/fall10/ZtoElecTau/Run03/",
+                    'harvestingFilePath' : "/data/ndpc2/b/jkolb/ZtoElecTauAnalysis/fall10/ZtoElecTau/Run03/",
+                    'tmpFilePath' : "/data/ndpc2/b/jkolb/ZtoElecTauAnalysis/fall10/ZtoElecTau/Run03/tmp/"
+                }
+            },
+            'Run02' : {
+                'AHtoElecTau' : {
+                    'analysisFilePath' : "/user/j/jkolb/elecTauAnalysis/fall10/AHtoElecTau/Run02",
+                    'harvestingFilePath' : "/data/ndpc2/b/jkolb/ZtoElecTauAnalysis/fall10/analysis/harvested/",
+                    'tmpFilePath' : "/data/ndpc2/b/jkolb/ZtoElecTauAnalysis/fall10/analysis/harvested/tmp"
+                },
+                'ZtoElecTau' : {
+                    'analysisFilePath' : "/user/j/jkolb/elecTauAnalysis/fall10/stdCuts/",
+                    'harvestingFilePath' : "/data/ndpc2/b/jkolb/ZtoElecTauAnalysis/fall10/analysis/harvested/stdCuts",
+                    'tmpFilePath' : "/data/ndpc2/b/jkolb/ZtoElecTauAnalysis/fall10/analysis/harvested/stdCuts"
+                }
+            },
             'Run01' : {
                 'AHtoElecTau' : {
-                    'analysisFilePath' : "/user/j/jkolb/elecTauAnalysis/fall10/HtoElecTau/",
+                    'analysisFilePath' : "/user/j/jkolb/elecTauAnalysis/fall10/AHtoElecTau/",
                     'harvestingFilePath' : "/data/ndpc2/b/jkolb/ZtoElecTauAnalysis/fall10/analysis/harvested/stdCuts",
                     'tmpFilePath' : "/data/ndpc2/b/jkolb/ZtoElecTauAnalysis/fall10/analysis/harvested/stdCuts",
                 },
@@ -447,20 +470,6 @@ userSettings = {
                     'analysisFilePath' : "/user/j/jkolb/elecTauAnalysis/fall10/stdCuts/",
                     'harvestingFilePath' : "/data/ndpc2/b/jkolb/ZtoElecTauAnalysis/fall10/analysis/harvested/stdCuts",
                     'tmpFilePath' : "/data/ndpc2/b/jkolb/ZtoElecTauAnalysis/fall10/analysis/harvested/stdCuts",
-                }
-            },
-            '2010Nov13' : {
-                'ZtoElecTau' : {
-                    'analysisFilePath' : "/user/j/jkolb/elecTauAnalysis/fall10/current/",
-                    'harvestingFilePath' : "/user/j/jkolb/elecTauAnalysis/fall10/current/",
-                    'tmpFilePath' : "/tmp/jkolb/",
-                }
-            },
-            '2010Nov24' : {
-                'ZtoElecTau_stdCuts' : {
-                    'analysisFilePath' : "/user/j/jkolb/elecTauAnalysis/fall10/stdCuts/",
-                    'harvestingFilePath' : "/user/j/jkolb/elecTauAnalysis/fall10/stdCuts/",
-                    'tmpFilePath' : "/tmp/jkolb/",
                 }
             }
         },
