@@ -13,7 +13,7 @@ selectedPatTausForElecTauAntiOverlapWithElectronsVeto = cms.EDFilter("PATTauAnti
 )
 
 # require tau candidate to be within geometric acceptance of Pixel + SiTracker detectors
-selectedPatTausForElecTauEta21 = copy.deepcopy(selectedPatTausEta23)
+selectedPatTausForElecTauEta23 = copy.deepcopy(selectedPatTausEta23)
 
 # require tau candidate to have transverse energy above threshold
 selectedPatTausForElecTauPt20 = copy.deepcopy(selectedPatTausPt20)
