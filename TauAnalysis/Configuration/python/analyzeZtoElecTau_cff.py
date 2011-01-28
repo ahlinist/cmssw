@@ -7,13 +7,19 @@ from TauAnalysis.Configuration.analyzeZtoElecTau_cfi import *
 # define auxiliary service
 # for handling of systematic uncertainties
 from TauAnalysis.CandidateTools.sysErrDefinitions_cfi import *
-SysUncertaintyService = cms.Service("SysUncertaintyService",
-    weights = getSysUncertaintyParameterSets(
-        [ electronSystematics,
-          tauSystematics,
-          theorySystematics ]
-    )
-)
+#SysUncertaintyService = cms.Service("SysUncertaintyService",
+#    weights = getSysUncertaintyParameterSets(
+#        [ theorySystematics ]
+#    ),
+#	sources = cms.PSet(
+#        isRecZtoElecTau = cms.vstring(
+#            "sysElectron*", "",
+#            "sysTau*", "",
+#            "sysZllRecoilCorrection*", "",
+#            "sysJet*", ""
+#        )
+#    )
+#)
 
 analyzeZtoElecTauEvents = cms.EDAnalyzer("GenericAnalyzer",
   
@@ -42,8 +48,9 @@ analyzeZtoElecTauEvents = cms.EDAnalyzer("GenericAnalyzer",
         evtSelElectronAntiCrack,
         evtSelElectronEta,
         evtSelElectronPt,
-        evtSelElectronTrkIso,
-        evtSelElectronEcalIso,
+		#evtSelElectronTrkIso,
+		#evtSelElectronEcalIso,
+        evtSelElectronIso,
         evtSelElectronConversionVeto,
         evtSelElectronTrkIP,
 
@@ -53,7 +60,7 @@ analyzeZtoElecTauEvents = cms.EDAnalyzer("GenericAnalyzer",
         evtSelTauPt,
         evtSelTauLeadTrk,
         evtSelTauLeadTrkPt,
-				evtSelTauTaNCdiscr,
+		evtSelTauTaNCdiscr,
         evtSelTauTrkIso,
         evtSelTauEcalIso,
         evtSelTauProng,

@@ -4,11 +4,15 @@ import copy
 # import config for histogram manager filling information about phase-space simulated in Monte Carlo sample
 from TauAnalysis.Core.genPhaseSpaceEventInfoHistManager_cfi import *
 
+# import config for event weight histogram manager
+from TauAnalysis.Core.eventWeightHistManager_cfi import *
+
 # import config for electron histogram manager
 from TauAnalysis.Core.electronHistManager_cfi import *
 
 # import config for tau histogram manager
 from TauAnalysis.Core.pftauHistManager_cfi import *
+tauHistManager.useHPSpTaNCalgorithm = cms.bool(True)
 
 # import config for di-tau histogram manager
 from TauAnalysis.Core.diTauCandidateHistManager_cfi import *
@@ -23,7 +27,20 @@ diTauCandidateSVfitHistManagerForElecTau = copy.deepcopy(diTauCandidateSVfitHist
 diTauCandidateSVfitHistManagerForElecTau.pluginName = cms.string('diTauCandidateSVfitHistManagerForElecTau')
 diTauCandidateSVfitHistManagerForElecTau.pluginType = cms.string('PATElecTauPairSVfitHistManager')
 diTauCandidateSVfitHistManagerForElecTau.diTauCandidateSource = cms.InputTag('allElecTauPairs')
-
+diTauCandidateSVfitHistManagerForElecTau.SVfitAlgorithms = cms.VPSet(
+		cms.PSet(
+			name = cms.string("psKine")
+			),
+		cms.PSet(
+			name = cms.string("psKine_MEt")
+			),
+		cms.PSet(
+			name = cms.string("psKine_MEt_ptBalance")
+			),
+		cms.PSet(
+			name = cms.string("psKine_MEt_ptBalance2")
+			),
+		)
 from TauAnalysis.Core.diTauCandidateZllHypothesisHistManager_cfi import *
 diTauCandidateZeeHypothesisHistManagerForElecTau = copy.deepcopy(ZllHypothesisHistManager)
 diTauCandidateZeeHypothesisHistManagerForElecTau.pluginName = cms.string('diTauCandidateZeeHypothesisHistManagerForElecTau')
@@ -69,12 +86,54 @@ triggerHistManagerForElecTau.l1Bits = cms.vstring(
 )
 
 triggerHistManagerForElecTau.hltPaths = cms.vstring(    
-	'HLT_Ele15_SW_EleId_L1R',
-	'HLT_Ele15_SW_LooseTrackIso_L1R'
+	'HLT_Ele10_SW_L1R',
+	'HLT_Ele12_SW_TightEleIdIsol_L1R'
 )
 
-# import config for event weight histogram manager
-from TauAnalysis.Core.eventWeightHistManager_cfi import *
+# import config for binning results
+# used to estimate acceptance of event selection
+from TauAnalysis.Core.modelBinner_cfi import *
+#modelBinnerForElecTauGenTauLeptonPairAcc = copy.deepcopy(modelBinner)
+#modelBinnerForElecTauGenTauLeptonPairAcc.pluginName = cms.string('modelBinnerForElecTauGenTauLeptonPairAcc')
+#modelBinnerForElecTauGenTauLeptonPairAcc.srcGenFlag = cms.InputTag("isGenZtoElecTau")
+#modelBinnerForElecTauGenTauLeptonPairAcc.srcRecFlag = cms.InputTag("isGenZtoElecTauWithinAcceptance")
+#modelBinnerForElecTauGenTauLeptonPairAcc.dqmDirectory_store = cms.string('modelBinnerForElecTauGenTauLeptonPairAcc')
+#modelBinnerForElecTauWrtGenTauLeptonPairAcc = copy.deepcopy(modelBinner)
+#modelBinnerForElecTauWrtGenTauLeptonPairAcc.pluginName = cms.string('modelBinnerForElecTauWrtGenTauLeptonPairAcc')
+#modelBinnerForElecTauWrtGenTauLeptonPairAcc.srcGenFlag = cms.InputTag("isGenZtoElecTauWithinAcceptance")
+#modelBinnerForElecTauWrtGenTauLeptonPairAcc.srcRecFlag = cms.InputTag("isRecZtoElecTau")
+#modelBinnerForElecTauWrtGenTauLeptonPairAcc.dqmDirectory_store = cms.string('modelBinnerForElecTauWrtGenTauLeptonPairAcc')
+
+# import config for binning results
+# used to estimate systematic uncertainties
+from TauAnalysis.Core.sysUncertaintyBinner_cfi import *
+from TauAnalysis.CandidateTools.sysErrDefinitions_cfi import *
+sysUncertaintyNames = [ "CENTRAL_VALUE" ]
+sysUncertaintyNames.extend(
+    getSysUncertaintyNames(
+        [ electronSystematics,
+          tauSystematics,
+          elecTauPairSystematics,
+          jetSystematics,
+          theorySystematics ]
+    )
+)
+#sysUncertaintyBinnerForElecTauAcc = sysUncertaintyBinner.clone(
+#    pluginName = cms.string('sysUncertaintyBinnerForElecTauAcc'),
+#    binnerPlugins = cms.VPSet(
+#        modelBinnerForElecTauGenTauLeptonPairAcc,
+#        modelBinnerForElecTauWrtGenTauLeptonPairAcc
+#    ),
+#    systematics = cms.vstring(sysUncertaintyNames)
+#)
+#sysUncertaintyBinnerForElecTauEff = sysUncertaintyBinner.clone(
+#    pluginName = cms.string('sysUncertaintyBinnerForElecTauEff'),
+#    binnerPlugins = cms.VPSet(
+#        dataBinner
+#    ),
+#    systematics = cms.vstring(sysUncertaintyNames)
+#)                                                                                                                                                                 103,1          9
+
 
 #--------------------------------------------------------------------------------
 # define event selection criteria
@@ -133,25 +192,29 @@ evtSelElectronId = cms.PSet(
     pluginName = cms.string('evtSelElectronId'),
     pluginType = cms.string('BoolEventSelector'),
     src_cumulative = cms.InputTag('electronIdCut', 'cumulative'),
-    src_individual = cms.InputTag('electronIdCut', 'individual')
+    src_individual = cms.InputTag('electronIdCut', 'individual'),
+	systematics = cms.vstring(electronSystematics.keys())
 )
 evtSelElectronAntiCrack = cms.PSet(
     pluginName = cms.string('evtSelElectronAntiCrack'),
     pluginType = cms.string('BoolEventSelector'),
     src_cumulative = cms.InputTag('electronAntiCrackCut', 'cumulative'),
-    src_individual = cms.InputTag('electronAntiCrackCut', 'individual')
+    src_individual = cms.InputTag('electronAntiCrackCut', 'individual'),
+	systematics = cms.vstring(electronSystematics.keys())
 )
 evtSelElectronEta = cms.PSet(
     pluginName = cms.string('evtSelElectronEta'),
     pluginType = cms.string('BoolEventSelector'),
     src_cumulative = cms.InputTag('electronEtaCut', 'cumulative'),
-    src_individual = cms.InputTag('electronEtaCut', 'individual')
+    src_individual = cms.InputTag('electronEtaCut', 'individual'),
+	systematics = cms.vstring(electronSystematics.keys())
 )
 evtSelElectronPt = cms.PSet(
     pluginName = cms.string('evtSelElectronPt'),
     pluginType = cms.string('BoolEventSelector'),
     src_cumulative = cms.InputTag('electronPtCut', 'cumulative'),
-    src_individual = cms.InputTag('electronPtCut', 'individual')
+    src_individual = cms.InputTag('electronPtCut', 'individual'),
+	systematics = cms.vstring(electronSystematics.keys())
 )
 
 # tau acceptance cuts
@@ -159,45 +222,59 @@ evtSelTauAntiOverlapWithElectronsVeto = cms.PSet(
     pluginName = cms.string('evtSelTauAntiOverlapWithElectronsVeto'),
     pluginType = cms.string('BoolEventSelector'),
     src_cumulative = cms.InputTag('tauAntiOverlapWithElectronsVeto', 'cumulative'),
-    src_individual = cms.InputTag('tauAntiOverlapWithElectronsVeto', 'individual')
+    src_individual = cms.InputTag('tauAntiOverlapWithElectronsVeto', 'individual'),
+	systematics = cms.vstring(tauSystematics.keys())
 )
 evtSelTauEta = cms.PSet(
     pluginName = cms.string('evtSelTauEta'),
     pluginType = cms.string('BoolEventSelector'),
     src_cumulative = cms.InputTag('tauEtaCut', 'cumulative'),
-    src_individual = cms.InputTag('tauEtaCut', 'individual')
+    src_individual = cms.InputTag('tauEtaCut', 'individual'),
+	systematics = cms.vstring(tauSystematics.keys())
 )
 evtSelTauPt = cms.PSet(
     pluginName = cms.string('evtSelTauPt'),
     pluginType = cms.string('BoolEventSelector'),
     src_cumulative = cms.InputTag('tauPtCut', 'cumulative'),
-    src_individual = cms.InputTag('tauPtCut', 'individual')
+    src_individual = cms.InputTag('tauPtCut', 'individual'),
+	systematics = cms.vstring(tauSystematics.keys())
 )
 
 # electron candidate (isolation & id.) selection
-evtSelElectronTrkIso = cms.PSet(
-    pluginName = cms.string('evtSelElectronTrkIso'),
+#evtSelElectronTrkIso = cms.PSet(
+#    pluginName = cms.string('evtSelElectronTrkIso'),
+#    pluginType = cms.string('BoolEventSelector'),
+#    src_cumulative = cms.InputTag('electronTrkIsoCut', 'cumulative'),
+#    src_individual = cms.InputTag('electronTrkIsoCut', 'individual'),
+#	systematics = cms.vstring(electronSystematics.keys())
+#)
+#evtSelElectronEcalIso = cms.PSet(
+#    pluginName = cms.string('evtSelElectronEcalIso'),
+#    pluginType = cms.string('BoolEventSelector'),
+#    src_cumulative = cms.InputTag('electronEcalIsoCut', 'cumulative'),
+#	src_individual = cms.InputTag('electronEcalIsoCut', 'individual'),
+#	systematics = cms.vstring(electronSystematics.keys())
+#)
+evtSelElectronIso = cms.PSet(
+    pluginName = cms.string('evtSelElectronIso'),
     pluginType = cms.string('BoolEventSelector'),
-    src_cumulative = cms.InputTag('electronTrkIsoCut', 'cumulative'),
-    src_individual = cms.InputTag('electronTrkIsoCut', 'individual')
-)
-evtSelElectronEcalIso = cms.PSet(
-    pluginName = cms.string('evtSelElectronEcalIso'),
-    pluginType = cms.string('BoolEventSelector'),
-    src_cumulative = cms.InputTag('electronEcalIsoCut', 'cumulative'),
-    src_individual = cms.InputTag('electronEcalIsoCut', 'individual')
+    src_cumulative = cms.InputTag('electronIsoCut', 'cumulative'),
+    src_individual = cms.InputTag('electronIsoCut', 'individual'),
+	systematics = cms.vstring(electronSystematics.keys())
 )
 evtSelElectronConversionVeto = cms.PSet(
     pluginName = cms.string('evtSelElectronConversionVeto'),
     pluginType = cms.string('BoolEventSelector'),
     src_cumulative = cms.InputTag('electronConversionVeto', 'cumulative'),
-    src_individual = cms.InputTag('electronConversionVeto', 'individual')
+    src_individual = cms.InputTag('electronConversionVeto', 'individual'),
+	systematics = cms.vstring(electronSystematics.keys())
 )
 evtSelElectronTrkIP = cms.PSet(
     pluginName = cms.string('evtSelElectronTrkIP'),
     pluginType = cms.string('BoolEventSelector'),
     src_cumulative = cms.InputTag('electronTrkIPcut', 'cumulative'),
-    src_individual = cms.InputTag('electronTrkIPcut', 'individual')
+    src_individual = cms.InputTag('electronTrkIPcut', 'individual'),
+	systematics = cms.vstring(electronSystematics.keys())
 )
 
 # tau candidate (id.) selection
@@ -205,61 +282,71 @@ evtSelTauLeadTrk = cms.PSet(
     pluginName = cms.string('evtSelTauLeadTrk'),
     pluginType = cms.string('BoolEventSelector'),
     src_cumulative = cms.InputTag('tauLeadTrkCut', 'cumulative'),
-    src_individual = cms.InputTag('tauLeadTrkCut', 'individual')
+    src_individual = cms.InputTag('tauLeadTrkCut', 'individual'),
+	systematics = cms.vstring(tauSystematics.keys())
 )
 evtSelTauLeadTrkPt = cms.PSet(
     pluginName = cms.string('evtSelTauLeadTrkPt'),
     pluginType = cms.string('BoolEventSelector'),
     src_cumulative = cms.InputTag('tauLeadTrkPtCut', 'cumulative'),
-    src_individual = cms.InputTag('tauLeadTrkPtCut', 'individual')
+    src_individual = cms.InputTag('tauLeadTrkPtCut', 'individual'),
+	systematics = cms.vstring(tauSystematics.keys())
 )
 evtSelTauTaNCdiscr = cms.PSet(
     pluginName = cms.string('evtSelTauTaNCdiscr'),
     pluginType = cms.string('BoolEventSelector'),
     src_cumulative = cms.InputTag('tauTaNCdiscrCut', 'cumulative'),
-    src_individual = cms.InputTag('tauTaNCdiscrCut', 'individual')
+    src_individual = cms.InputTag('tauTaNCdiscrCut', 'individual'),
+	systematics = cms.vstring(tauSystematics.keys())
 )
 evtSelTauTrkIso = cms.PSet(
     pluginName = cms.string('evtSelTauTrkIso'),
     pluginType = cms.string('BoolEventSelector'),
     src_cumulative = cms.InputTag('tauTrkIsoCut', 'cumulative'),
-    src_individual = cms.InputTag('tauTrkIsoCut', 'individual')
+    src_individual = cms.InputTag('tauTrkIsoCut', 'individual'),
+	systematics = cms.vstring(tauSystematics.keys())
 )
 evtSelTauEcalIso = cms.PSet(
     pluginName = cms.string('evtSelTauEcalIso'),
     pluginType = cms.string('BoolEventSelector'),
     src_cumulative = cms.InputTag('tauEcalIsoCut', 'cumulative'),
-    src_individual = cms.InputTag('tauEcalIsoCut', 'individual')
+    src_individual = cms.InputTag('tauEcalIsoCut', 'individual'),
+	systematics = cms.vstring(tauSystematics.keys())
 )
 evtSelTauProng = cms.PSet(
     pluginName = cms.string('evtSelTauProng'),
     pluginType = cms.string('BoolEventSelector'),
     src_cumulative = cms.InputTag('tauProngCut', 'cumulative'),
-    src_individual = cms.InputTag('tauProngCut', 'individual')
+    src_individual = cms.InputTag('tauProngCut', 'individual'),
+	systematics = cms.vstring(tauSystematics.keys())
 )
 evtSelTauCharge = cms.PSet(
     pluginName = cms.string('evtSelTauCharge'),
     pluginType = cms.string('BoolEventSelector'),
     src_cumulative = cms.InputTag('tauChargeCut', 'cumulative'),
-    src_individual = cms.InputTag('tauChargeCut', 'individual')
+    src_individual = cms.InputTag('tauChargeCut', 'individual'),
+	systematics = cms.vstring(tauSystematics.keys())
 )
 evtSelTauElectronVeto = cms.PSet(
     pluginName = cms.string('evtSelTauElectronVeto'),
     pluginType = cms.string('BoolEventSelector'),
     src_cumulative = cms.InputTag('tauElectronVeto', 'cumulative'),
-    src_individual = cms.InputTag('tauElectronVeto', 'individual')
+    src_individual = cms.InputTag('tauElectronVeto', 'individual'),
+	systematics = cms.vstring(tauSystematics.keys())
 )
 evtSelTauEcalCrackVeto = cms.PSet(
     pluginName = cms.string('evtSelTauEcalCrackVeto'),
     pluginType = cms.string('BoolEventSelector'),
     src_cumulative = cms.InputTag('tauEcalCrackVeto', 'cumulative'),
-    src_individual = cms.InputTag('tauEcalCrackVeto', 'individual')
+    src_individual = cms.InputTag('tauEcalCrackVeto', 'individual'),
+	systematics = cms.vstring(tauSystematics.keys())
 )
 evtSelTauMuonVeto = cms.PSet(
     pluginName = cms.string('evtSelTauMuonVeto'),
     pluginType = cms.string('BoolEventSelector'),
     src_cumulative = cms.InputTag('tauMuonVeto', 'cumulative'),
-    src_individual = cms.InputTag('tauMuonVeto', 'individual')
+    src_individual = cms.InputTag('tauMuonVeto', 'individual'),
+	systematics = cms.vstring(tauSystematics.keys())
 )
 
 # di-tau candidate selection
@@ -267,31 +354,36 @@ evtSelDiTauCandidateForElecTauAntiOverlapVeto = cms.PSet(
     pluginName = cms.string('evtSelDiTauCandidateForElecTauAntiOverlapVeto'),
     pluginType = cms.string('BoolEventSelector'),
     src_cumulative = cms.InputTag('diTauCandidateForElecTauAntiOverlapVeto', 'cumulative'),
-    src_individual = cms.InputTag('diTauCandidateForElecTauAntiOverlapVeto', 'individual')
+    src_individual = cms.InputTag('diTauCandidateForElecTauAntiOverlapVeto', 'individual'),
+	systematics = cms.vstring(elecTauPairSystematics.keys())
 )
 evtSelDiTauCandidateForElecTauZeroCharge = cms.PSet(
     pluginName = cms.string('evtSelDiTauCandidateForElecTauZeroCharge'),
     pluginType = cms.string('BoolEventSelector'),
     src_cumulative = cms.InputTag('diTauCandidateForElecTauZeroChargeCut', 'cumulative'),
-    src_individual = cms.InputTag('diTauCandidateForElecTauZeroChargeCut', 'individual')
+    src_individual = cms.InputTag('diTauCandidateForElecTauZeroChargeCut', 'individual'),
+	systematics = cms.vstring(elecTauPairSystematics.keys())
 )
 evtSelDiTauCandidateForElecTauAcoplanarity12 = cms.PSet(
     pluginName = cms.string('evtSelDiTauCandidateForElecTauAcoplanarity12'),
     pluginType = cms.string('BoolEventSelector'),
     src_cumulative = cms.InputTag('diTauCandidateForElecTauAcoplanarity12Cut', 'cumulative'),
-    src_individual = cms.InputTag('diTauCandidateForElecTauAcoplanarity12Cut', 'individual')
+    src_individual = cms.InputTag('diTauCandidateForElecTauAcoplanarity12Cut', 'individual'),
+	systematics = cms.vstring(elecTauPairSystematics.keys())
 )
 evtSelDiTauCandidateForElecTauMt1MET = cms.PSet(
     pluginName = cms.string('evtSelDiTauCandidateForElecTauMt1MET'),
     pluginType = cms.string('BoolEventSelector'),
     src_cumulative = cms.InputTag('diTauCandidateForElecTauMt1METCut', 'cumulative'),
-    src_individual = cms.InputTag('diTauCandidateForElecTauMt1METCut', 'individual')
+    src_individual = cms.InputTag('diTauCandidateForElecTauMt1METCut', 'individual'),
+	systematics = cms.vstring(elecTauPairSystematics.keys())
 )
 evtSelDiTauCandidateForElecTauPzetaDiff = cms.PSet(
     pluginName = cms.string('evtSelDiTauCandidateForElecTauPzetaDiff'),
     pluginType = cms.string('BoolEventSelector'),
     src_cumulative = cms.InputTag('diTauCandidateForElecTauPzetaDiffCut', 'cumulative'),
-    src_individual = cms.InputTag('diTauCandidateForElecTauPzetaDiffCut', 'individual')
+    src_individual = cms.InputTag('diTauCandidateForElecTauPzetaDiffCut', 'individual'),
+	systematics = cms.vstring(elecTauPairSystematics.keys())
 )
 
 # veto events compatible with Z --> e+ e- hypothesis
@@ -321,8 +413,10 @@ elecTauEventDump = cms.PSet(
                                 'L1_SingleIsoEG5', 'L1_SingleIsoEG8', 'L1_SingleIsoEG10', 'L1_SingleIsoEG12', 'L1_SingleIsoEG15'),
     
     hltResultsSource = cms.InputTag('TriggerResults::HLT'),
-    hltPathsToPrint = cms.vstring('HLT_Ele15_SW_EleId_L1R', 'HLT_Ele15_SW_LooseTrackIso_L1R'),
-
+    hltPathsToPrint = cms.vstring(
+		'HLT_Ele10_SW_L1R',
+		'HLT_Ele12_SW_TightEleIdIsol_L1R'
+	),
     doGenInfo = cms.bool(True),
     genParticleSource = cms.InputTag('genParticles'),
     genJetSource = cms.InputTag('ak5GenJets'),
@@ -550,7 +644,7 @@ elecTauAnalysisSequence = cms.VPSet(
     ),
     cms.PSet(
         filter = cms.string('evtSelTauEta'),
-        title = cms.string('-2.1 < eta(Tau) < +2.1'),
+        title = cms.string('-2.3 < eta(Tau) < +2.3'),
         saveRunLumiSectionEventNumbers = cms.vstring('')
     ),
     cms.PSet(
@@ -562,7 +656,7 @@ elecTauAnalysisSequence = cms.VPSet(
             'vertexHistManager'
         ),
         replace = cms.vstring('electronHistManager.electronSource = selectedPatElectronsForElecTauPt15Cumulative',
-                              'tauHistManager.tauSource = selectedPatTausForElecTauEta21Cumulative')
+                              'tauHistManager.tauSource = selectedPatTausForElecTauEta23Cumulative')
     ),
     cms.PSet(
         filter = cms.string('evtSelTauPt'),
@@ -576,43 +670,48 @@ elecTauAnalysisSequence = cms.VPSet(
             'caloMEtHistManager',
             'pfMEtHistManager',
             'vertexHistManager',
-            'triggerHistManagerForElecTau',
-			'diTauCandidateHistManagerForElecTau'
+			#'diTauCandidateHistManagerForElecTau',
+            'triggerHistManagerForElecTau'
         ),
         replace = cms.vstring('electronHistManager.electronSource = selectedPatElectronsForElecTauPt15Cumulative',
                               'electronHistManager.makeIsoPtConeSizeDepHistograms = True',
-                              'tauHistManager.tauSource = selectedPatTausForElecTauPt20Cumulative',
-							  'diTauCandidateHistManagerForElecTau.diTauCandidateSource = elecTauPairsAfterTauPt')
+							  #'diTauCandidateHistManagerForElecTau.diTauCandidateSource = elecTauPairsAfterTauPt',
+                              'tauHistManager.tauSource = selectedPatTausForElecTauPt20Cumulative')
     ),
   
     # selection of electron candidate (isolation & id.)
     # produced in electronic tau decay
+	#cms.PSet(
+	#    filter = cms.string('evtSelElectronTrkIso'),
+	#    title = cms.string('Electron Track iso.'),
+	#    saveRunLumiSectionEventNumbers = cms.vstring('')
+	#),
+	#cms.PSet(
+	#    analyzers = cms.vstring(
+	#        'electronHistManager'
+#			#'diTauCandidateHistManagerForElecTau'
+	#    ),
+	#    replace = cms.vstring('electronHistManager.electronSource = selectedPatElectronsForElecTauTrkIsoCumulative',
+#			#'diTauCandidateHistManagerForElecTau.diTauCandidateSource = elecTauPairsAfterElectronTrkIso',
+#							  'electronHistManager.makeIsoPtConeSizeDepHistograms = True')
+#    ),
+	#cms.PSet(
+	#    filter = cms.string('evtSelElectronEcalIso'),
+	#    title = cms.string('Electron ECAL iso.'),
+	#    saveRunLumiSectionEventNumbers = cms.vstring('')
+	#),
     cms.PSet(
-        filter = cms.string('evtSelElectronTrkIso'),
-        title = cms.string('Electron Track iso.'),
+        filter = cms.string('evtSelElectronIso'),
+        title = cms.string('Electron PF iso. (rel.)'),
         saveRunLumiSectionEventNumbers = cms.vstring('')
     ),
     cms.PSet(
         analyzers = cms.vstring(
-            'electronHistManager',
-			'diTauCandidateHistManagerForElecTau'
+            'electronHistManager'
+			#'diTauCandidateHistManagerForElecTau'
         ),
-        replace = cms.vstring('electronHistManager.electronSource = selectedPatElectronsForElecTauTrkIsoCumulative',
-							  'diTauCandidateHistManagerForElecTau.diTauCandidateSource = elecTauPairsAfterElectronTrkIso',
-							  'electronHistManager.makeIsoPtConeSizeDepHistograms = True')
-    ),
-    cms.PSet(
-        filter = cms.string('evtSelElectronEcalIso'),
-        title = cms.string('Electron ECAL iso.'),
-        saveRunLumiSectionEventNumbers = cms.vstring('')
-    ),
-    cms.PSet(
-        analyzers = cms.vstring(
-            'electronHistManager',
-			'diTauCandidateHistManagerForElecTau'
-        ),
-        replace = cms.vstring('electronHistManager.electronSource = selectedPatElectronsForElecTauEcalIsoCumulative',
-							  'diTauCandidateHistManagerForElecTau.diTauCandidateSource = elecTauPairsAfterElectronEcalIso')
+        replace = cms.vstring('electronHistManager.electronSource = selectedPatElectronsForElecTauIsoCumulative')
+			#'diTauCandidateHistManagerForElecTau.diTauCandidateSource = elecTauPairsAfterElectronIso')
     ),
     cms.PSet(
         filter = cms.string('evtSelElectronConversionVeto'),
@@ -626,11 +725,11 @@ elecTauAnalysisSequence = cms.VPSet(
             'caloMEtHistManager',
             'pfMEtHistManager',
             'vertexHistManager',
-            'triggerHistManagerForElecTau',
-			'diTauCandidateHistManagerForElecTau'
+			#'diTauCandidateHistManagerForElecTau',
+            'triggerHistManagerForElecTau'
         ),
-        replace = cms.vstring('electronHistManager.electronSource = selectedPatElectronsForElecTauConversionVetoCumulative',
-							  'diTauCandidateHistManagerForElecTau.diTauCandidateSource = elecTauPairsAfterElectronConversionVeto')
+        replace = cms.vstring('electronHistManager.electronSource = selectedPatElectronsForElecTauConversionVetoCumulative')
+			#'diTauCandidateHistManagerForElecTau.diTauCandidateSource = elecTauPairsAfterElectronConversionVeto')
     ),
     cms.PSet(
         filter = cms.string('evtSelElectronTrkIP'),
@@ -644,11 +743,11 @@ elecTauAnalysisSequence = cms.VPSet(
             'caloMEtHistManager',
             'pfMEtHistManager',
             'vertexHistManager',
-            'triggerHistManagerForElecTau',
-			'diTauCandidateHistManagerForElecTau'
+			#'diTauCandidateHistManagerForElecTau',
+            'triggerHistManagerForElecTau'
         ),
-        replace = cms.vstring('electronHistManager.electronSource = selectedPatElectronsForElecTauTrkIPcumulative',
-							  'diTauCandidateHistManagerForElecTau.diTauCandidateSource = elecTauPairsAfterElectronTrkIP')
+        replace = cms.vstring('electronHistManager.electronSource = selectedPatElectronsForElecTauTrkIPcumulative')
+		#							  'diTauCandidateHistManagerForElecTau.diTauCandidateSource = elecTauPairsAfterElectronTrkIP')
     ),
   
     # selection of tau-jet candidate (id.)
@@ -661,11 +760,11 @@ elecTauAnalysisSequence = cms.VPSet(
     cms.PSet(
         analyzers = cms.vstring(
             'electronHistManager',
-			'tauHistManager',
-			'diTauCandidateHistManagerForElecTau'
+			#'diTauCandidateHistManagerForElecTau',
+			'tauHistManager'
         ),
         replace = cms.vstring('electronHistManager.electronSource = selectedPatElectronsForElecTauTrkIPcumulative',
-							  'diTauCandidateHistManagerForElecTau.diTauCandidateSource = elecTauPairsAfterTauLeadTrkFind',
+			#'diTauCandidateHistManagerForElecTau.diTauCandidateSource = elecTauPairsAfterTauLeadTrkFind',
                               'tauHistManager.tauSource = selectedPatTausForElecTauLeadTrkCumulative')
     ),
     cms.PSet(
@@ -676,11 +775,11 @@ elecTauAnalysisSequence = cms.VPSet(
     cms.PSet(
         analyzers = cms.vstring(
             'electronHistManager',
-            'tauHistManager',
-			'diTauCandidateHistManagerForElecTau'
+			#'diTauCandidateHistManagerForElecTau',
+            'tauHistManager'
         ),
         replace = cms.vstring('electronHistManager.electronSource = selectedPatElectronsForElecTauTrkIPcumulative',
-		 					  'diTauCandidateHistManagerForElecTau.diTauCandidateSource = elecTauPairsAfterTauLeadTrkPt',
+			#'diTauCandidateHistManagerForElecTau.diTauCandidateSource = elecTauPairsAfterTauLeadTrkPt',
                               'tauHistManager.tauSource = selectedPatTausForElecTauLeadTrkPtCumulative',
                               'tauHistManager.makeIsoPtConeSizeDepHistograms = True')
     ),
@@ -692,12 +791,12 @@ elecTauAnalysisSequence = cms.VPSet(
     cms.PSet(
         analyzers = cms.vstring(
             'electronHistManager',
-            'tauHistManager',
-			'diTauCandidateHistManagerForElecTau'
+			#'diTauCandidateHistManagerForElecTau',
+            'tauHistManager'
         ),
         replace = cms.vstring('electronHistManager.electronSource = selectedPatElectronsForElecTauTrkIPcumulative',
                               'tauHistManager.tauSource = selectedPatTausForElecTauTaNCdiscrCumulative',
-							  'diTauCandidateHistManagerForElecTau.diTauCandidateSource = elecTauPairsAfterTauTaNC',
+							  #'diTauCandidateHistManagerForElecTau.diTauCandidateSource = elecTauPairsAfterTauTaNC',
 							  'tauHistManager.makeIsoPtConeSizeDepHistograms = True')
     ),
     cms.PSet(
@@ -708,12 +807,12 @@ elecTauAnalysisSequence = cms.VPSet(
     cms.PSet(
         analyzers = cms.vstring(
             'electronHistManager',
-            'tauHistManager',
-			'diTauCandidateHistManagerForElecTau'
+			#'diTauCandidateHistManagerForElecTau',
+            'tauHistManager'
         ),
         replace = cms.vstring('electronHistManager.electronSource = selectedPatElectronsForElecTauTrkIPcumulative',
                               'tauHistManager.tauSource = selectedPatTausForElecTauTrkIsoCumulative',
-							  'diTauCandidateHistManagerForElecTau.diTauCandidateSource = elecTauPairsAfterTauTrkIso',
+							  #'diTauCandidateHistManagerForElecTau.diTauCandidateSource = elecTauPairsAfterTauTrkIso',
                               'tauHistManager.makeIsoPtConeSizeDepHistograms = True')
     ),
     cms.PSet(
@@ -724,11 +823,11 @@ elecTauAnalysisSequence = cms.VPSet(
     cms.PSet(
         analyzers = cms.vstring(
             'electronHistManager',
-            'tauHistManager',
-			'diTauCandidateHistManagerForElecTau'
+			#'diTauCandidateHistManagerForElecTau',
+            'tauHistManager'
         ),
         replace = cms.vstring('electronHistManager.electronSource = selectedPatElectronsForElecTauTrkIPcumulative',
-							  'diTauCandidateHistManagerForElecTau.diTauCandidateSource = elecTauPairsAfterTauEcalIso',
+			#'diTauCandidateHistManagerForElecTau.diTauCandidateSource = elecTauPairsAfterTauEcalIso',
                               'tauHistManager.tauSource = selectedPatTausForElecTauEcalIsoCumulative')
     ),
     cms.PSet(
@@ -739,11 +838,11 @@ elecTauAnalysisSequence = cms.VPSet(
     cms.PSet(
         analyzers = cms.vstring(
             'electronHistManager',
-            'tauHistManager',
-			'diTauCandidateHistManagerForElecTau'
+			#'diTauCandidateHistManagerForElecTau',
+            'tauHistManager'
         ),
         replace = cms.vstring('electronHistManager.electronSource = selectedPatElectronsForElecTauTrkIPcumulative',
-							  'diTauCandidateHistManagerForElecTau.diTauCandidateSource = elecTauPairsAfterTauProng',
+			#'diTauCandidateHistManagerForElecTau.diTauCandidateSource = elecTauPairsAfterTauProng',
                               'tauHistManager.tauSource = selectedPatTausForElecTauProngCumulative')
     ),
     cms.PSet(
@@ -754,11 +853,11 @@ elecTauAnalysisSequence = cms.VPSet(
     cms.PSet(
         analyzers = cms.vstring(
             'electronHistManager',
-            'tauHistManager',
-			'diTauCandidateHistManagerForElecTau'
+			#'diTauCandidateHistManagerForElecTau',
+            'tauHistManager'
         ),
         replace = cms.vstring('electronHistManager.electronSource = selectedPatElectronsForElecTauTrkIPcumulative',
-							  'diTauCandidateHistManagerForElecTau.diTauCandidateSource = elecTauPairsAfterTauCharge',
+			#'diTauCandidateHistManagerForElecTau.diTauCandidateSource = elecTauPairsAfterTauCharge',
                               'tauHistManager.tauSource = selectedPatTausForElecTauChargeCumulative')
     ),    
     cms.PSet(
@@ -769,11 +868,11 @@ elecTauAnalysisSequence = cms.VPSet(
     cms.PSet(
         analyzers = cms.vstring(
             'electronHistManager',
-            'tauHistManager',
-			'diTauCandidateHistManagerForElecTau'
+			#'diTauCandidateHistManagerForElecTau',
+            'tauHistManager'
         ),
         replace = cms.vstring('electronHistManager.electronSource = selectedPatElectronsForElecTauTrkIPcumulative',
-							  'diTauCandidateHistManagerForElecTau.diTauCandidateSource = elecTauPairsAfterTauElectronVeto',
+			#'diTauCandidateHistManagerForElecTau.diTauCandidateSource = elecTauPairsAfterTauElectronVeto',
                               'tauHistManager.tauSource = selectedPatTausForElecTauElectronVetoCumulative')
     ),
     cms.PSet(
@@ -784,11 +883,11 @@ elecTauAnalysisSequence = cms.VPSet(
     cms.PSet(
         analyzers = cms.vstring(
             'electronHistManager',
-            'tauHistManager',
-			'diTauCandidateHistManagerForElecTau'
+			#'diTauCandidateHistManagerForElecTau',
+            'tauHistManager'
         ),
         replace = cms.vstring('electronHistManager.electronSource = selectedPatElectronsForElecTauTrkIPcumulative',
-							  'diTauCandidateHistManagerForElecTau.diTauCandidateSource = elecTauPairsAfterTauEcalCrackVeto',
+			#'diTauCandidateHistManagerForElecTau.diTauCandidateSource = elecTauPairsAfterTauEcalCrackVeto',
                               'tauHistManager.tauSource = selectedPatTausForElecTauEcalCrackVetoCumulative')
     ),
     cms.PSet(
