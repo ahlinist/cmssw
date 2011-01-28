@@ -1,5 +1,7 @@
 import FWCore.ParameterSet.Config as cms
 
+from TauAnalysis.RecoTools.patLeptonSelection_cff import selectedPatElectronsForElecTauIso
+
 electronHistManager = cms.PSet(
     pluginName = cms.string('electronHistManager'),
     pluginType = cms.string('ElectronHistManager'),
@@ -15,6 +17,14 @@ electronHistManager = cms.PSet(
     requireGenElectronMatch = cms.bool(False),
 
     skipPdgIdsGenParticleMatch = cms.vint32( 12, 14, 16 ),
+
+	pfCombIsoExtractor = cms.PSet(
+		chargedHadronIso = selectedPatElectronsForElecTauIso.chargedHadronIso,
+		neutralHadronIso = selectedPatElectronsForElecTauIso.neutralHadronIso,
+		photonIso = selectedPatElectronsForElecTauIso.photonIso
+	),
+
+	pfCandidateSource = selectedPatElectronsForElecTauIso.pfCandidateSource,
 
     #normalization = cms.string("electrons"),
     normalization = cms.string("events"),
