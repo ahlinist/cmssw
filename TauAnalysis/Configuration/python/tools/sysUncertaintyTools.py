@@ -439,8 +439,10 @@ def enableSysUncertainties_runZtoElecTau(process):
 
     process.produceGenObjects._seq = process.produceGenObjects._seq * process.produceSysErrGenEventReweights
 
+    process.load("TauAnalysis.RecoTools.patLeptonSystematics_cff")
     process.producePatTupleZtoElecTauSpecific._seq = process.prodSmearedElectrons * process.producePatTupleZtoElecTauSpecific._seq
     process.producePatTupleZtoElecTauSpecific._seq = process.prodSmearedTaus * process.producePatTupleZtoElecTauSpecific._seq
+    process.load("TauAnalysis.RecoTools.patJetSystematics_cff")
     process.producePatTupleZtoElecTauSpecific._seq = process.prodSmearedJets * process.producePatTupleZtoElecTauSpecific._seq
 
     process.produceEventSelFlagsZtoElecTau = \
@@ -448,11 +450,11 @@ def enableSysUncertainties_runZtoElecTau(process):
     process.produceEventSelFlagsZtoElecTauLooseElectronIsolation = \
       zToElecTauEventSelConfiguratorLooseElectronIsolation.configure(process = process, estimateSysUncertainties = True)
 
-    setattr(patElectronSelConfigurator, "systematics", electronSystematics)
-    process.selectPatElectronsForElecTau = patElectronSelConfigurator.configure(process = process)
+    setattr(patElectronSelConfiguratorForElecTau, "systematics", electronSystematics)
+    process.selectPatElectronsForElecTau = patElectronSelConfiguratorForElecTau.configure(process = process)
 
-    setattr(patElectronSelConfiguratorLooseIsolation, "systematics", electronSystematics)
-    process.selectPatElectronsForElecTauLooseIsolation = patElectronSelConfiguratorLooseIsolation.configure(process = process)
+    setattr(patElectronSelConfiguratorForElecTauLooseIsolation, "systematics", electronSystematics)
+    process.selectPatElectronsForElecTauLooseIsolation = patElectronSelConfiguratorForElecTauLooseIsolation.configure(process = process)
 
     setattr(patTauSelConfigurator, "systematics", tauSystematics)
     process.selectPatTaus = patTauSelConfigurator.configure(process = process)
@@ -471,13 +473,13 @@ def enableSysUncertainties_runZtoElecTau(process):
         process.smearedMET,
         pyModuleName = __name__,
         systematics = {
-            "sysElectronPtUp" : {        
-                "smearedParticles.srcOriginal" : cms.InputTag('selectedPatElectronsTrkIPcumulative'),
-                "smearedParticles.srcSmeared"  : cms.InputTag('selectedPatElectronsTrkIPsysElectronPtUpCumulative')
+            "sysElectronEnUp" : {        
+                "smearedParticles.srcOriginal" : cms.InputTag('selectedPatElectronsForElecTauTrkIPcumulative'),
+                "smearedParticles.srcSmeared"  : cms.InputTag('selectedPatElectronsForElecTauTrkIPsysElectronEnUpCumulative')
             },
-            "sysElectronPtDown" : {
-                "smearedParticles.srcOriginal" : cms.InputTag('selectedPatElectronsTrkIPcumulative'),
-                "smearedParticles.srcSmeared"  : cms.InputTag('selectedPatElectronsTrkIPsysElectronPtDownCumulative')
+            "sysElectronEnDown" : {
+                "smearedParticles.srcOriginal" : cms.InputTag('selectedPatElectronsForElecTauTrkIPcumulative'),
+                "smearedParticles.srcSmeared"  : cms.InputTag('selectedPatElectronsForElecTauTrkIPsysElectronEnDownCumulative')
             },
             "sysTauJetEnUp" : {
                 "smearedParticles.srcOriginal" : cms.InputTag('selectedPatTausForElecTauElectronVetoCumulative'),
@@ -500,13 +502,13 @@ def enableSysUncertainties_runZtoElecTau(process):
     process.prodSmearedMET = smearedMETconfigurator.configure(process = process)
 
     setattr(elecTauPairProdConfigurator, "systematics", {
-        "sysElectronPtUp" : {
-            "srcLeg1" : cms.InputTag('selectedPatElectronsTrkIPsysElectronPtUpCumulative'),
-            "srcMET"  : cms.InputTag('smearedMETsysElectronPtUp')
+        "sysElectronEnUp" : {
+            "srcLeg1" : cms.InputTag('selectedPatElectronsForElecTauTrkIPsysElectronEnUpCumulative'),
+            "srcMET"  : cms.InputTag('smearedMETsysElectronEnUp')
         },
-        "sysElectronPtDown" : {
-            "srcLeg1" : cms.InputTag('selectedPatElectronsTrkIPsysElectronPtDownCumulative'),
-            "srcMET"  : cms.InputTag('smearedMETsysElectronPtDown')           
+        "sysElectronEnDown" : {
+            "srcLeg1" : cms.InputTag('selectedPatElectronsForElecTauTrkIPsysElectronEnDownCumulative'),
+            "srcMET"  : cms.InputTag('smearedMETsysElectronEnDown')           
         },
         "sysTauJetEnUp" : {
             "srcLeg2" : cms.InputTag('selectedPatTausForElecTauElectronVetoSysTauJetEnUpCumulative'),
@@ -527,13 +529,13 @@ def enableSysUncertainties_runZtoElecTau(process):
     process.produceElecTauPairs._seq = process.prodSmearedMET * process.produceElecTauPairs._seq
 
     setattr(elecTauPairProdConfiguratorLooseElectronIsolation, "systematics", {
-        "sysElectronPtUp" : {
-            "srcLeg1" : cms.InputTag('selectedPatElectronsTrkIPlooseIsolationSysElectronPtUpCumulative'),
-            "srcMET"  : cms.InputTag('smearedMETsysElectronPtUp')
+        "sysElectronEnUp" : {
+            "srcLeg1" : cms.InputTag('selectedPatElectronsForElecTauTrkIPlooseIsolationSysElectronEnUpCumulative'),
+            "srcMET"  : cms.InputTag('smearedMETsysElectronEnUp')
         },
-        "sysElectronPtDown" : {
-            "srcLeg1" : cms.InputTag('selectedPatElectronsTrkIPlooseIsolationSysElectronPtDownCumulative'),
-            "srcMET"  : cms.InputTag('smearedMETsysElectronPtDown')           
+        "sysElectronEnDown" : {
+            "srcLeg1" : cms.InputTag('selectedPatElectronsForElecTauTrkIPlooseIsolationSysElectronEnDownCumulative'),
+            "srcMET"  : cms.InputTag('smearedMETsysElectronEnDown')           
         },
         "sysTauJetEnUp" : {
             "srcLeg2" : cms.InputTag('selectedPatTausForElecTauElectronVetoSysTauJetEnUpCumulative'),
@@ -737,6 +739,30 @@ def enableSysUncertainties_runAHtoMuTau(process):
                   [ [ process.sysUncertaintyHistManagerForMuTauLooseMuonIsolation, process.sysUncertaintyHistManagerForMuTauLooseMuonIsolation_updated ] ]
                 )   
     
+#--------------------------------------------------------------------------------
+# functions to enable/disable estimation of systematic uncertainties
+# specific to MSSM Higgs --> electron + tau-jet channel
+#--------------------------------------------------------------------------------
 
+def enableSysUncertainties_runAHtoElecTau(process):
+	print("<enableSysUncertainties_runAHtoElecTau>:")
+	print("--> **enabling** estimation of systematic uncertainties...")
 
+	enableSysUncertainties_runZtoElecTau(process)
 
+	# may add these collections later
+	process.producePatTupleAHtoElecTauSpecific._seq = process.prodSmearedElectrons * process.producePatTupleAHtoElecTauSpecific._seq
+	process.producePatTupleAHtoElecTauSpecific._seq = process.prodSmearedTaus * process.producePatTupleAHtoElecTauSpecific._seq
+	process.producePatTupleAHtoElecTauSpecific._seq = process.prodSmearedJets * process.producePatTupleAHtoElecTauSpecific._seq
+
+	process.produceEventSelFlagsAHtoElecTau = \
+			ahToElecTauEventSelConfigurator.configure(process = process, estimateSysUncertainties = True)
+	process.produceEventSelFlagsAHtoElecTauLooseElectronIsolation = \
+			ahToElecTauEventSelConfiguratorLooseElectronIsolation.configure(process = process, estimateSysUncertainties = True)
+
+	if hasattr(process, "analyzeAHtoElecTauEvents"):
+		process.analyzeAHtoElecTauEvents.estimateSysUncertainties = cms.bool(True)
+	if hasattr(process, "analyzeAHtoElecTauEvents_factorizedWithElectronIsolation"):
+		process.analyzeAHtoElecTauEvents_factorizedWithElectronIsolation.estimateSysUncertainties = cms.bool(True)
+	if hasattr(process, "analyzeAHtoElecTauEvents_factorizedWithoutElectronIsolation"):
+		process.analyzeAHtoElecTauEvents_factorizedWithoutElectronIsolation.estimateSysUncertainties = cms.bool(True)    

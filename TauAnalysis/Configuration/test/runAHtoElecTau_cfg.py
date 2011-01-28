@@ -78,8 +78,13 @@ process.maxEvents = cms.untracked.PSet(
 
 process.source = cms.Source("PoolSource",
     fileNames = cms.untracked.vstring(
-		'/store/relval/CMSSW_3_6_1/RelValZTT/GEN-SIM-RECO/START36_V7-v1/0021/F405BC9A-525D-DF11-AB96-002618943811.root',
-		'/store/relval/CMSSW_3_6_1/RelValZTT/GEN-SIM-RECO/START36_V7-v1/0020/EE3E8F74-365D-DF11-AE3D-002618FDA211.root'
+		#'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/fall10/Ztautau/skimElecTau_1_1_6h9.root'
+		'/store/relval/CMSSW_3_8_7/RelValZTT/GEN-SIM-RECO/START38_V13-v1/0016/26155577-92FC-DF11-8E56-001A92810A9A.root',
+		'/store/relval/CMSSW_3_8_7/RelValZTT/GEN-SIM-RECO/START38_V13-v1/0016/506F0476-92FC-DF11-8886-00304867C1BC.root',
+		'/store/relval/CMSSW_3_8_7/RelValZTT/GEN-SIM-RECO/START38_V13-v1/0017/6262925F-9DFC-DF11-B9EF-0026189438BA.root',
+		'/store/relval/CMSSW_3_8_7/RelValZTT/GEN-SIM-RECO/START38_V13-v1/0017/70FD8478-93FC-DF11-90F2-00261894392B.root',
+		'/store/relval/CMSSW_3_8_7/RelValZTT/GEN-SIM-RECO/START38_V13-v1/0017/80E7605B-99FC-DF11-AA99-001A9281170E.root',
+		'/store/relval/CMSSW_3_8_7/RelValZTT/GEN-SIM-RECO/START38_V13-v1/0017/AA64EF7B-93FC-DF11-AB92-001A92971BC8.root'
 	)
     #skipBadFiles = cms.untracked.bool(True)    
 )
@@ -103,22 +108,34 @@ from TauAnalysis.Configuration.tools.changeCut import changeCut
 
 #  VBTF WP80 electron ID
 changeCut(process,"selectedPatElectronsForElecTauId","(abs(superCluster.eta) < 1.479 & abs(deltaEtaSuperClusterTrackAtVtx) < 0.004 & abs(deltaPhiSuperClusterTrackAtVtx) < 0.06 & hcalOverEcal < 0.04 & sigmaIetaIeta < 0.01) | (abs(superCluster.eta) > 1.479 & abs(deltaEtaSuperClusterTrackAtVtx) < 0.007 & abs(deltaPhiSuperClusterTrackAtVtx) <0.03 & hcalOverEcal < 0.025 & sigmaIetaIeta < 0.03)")
+
 #  VBTF WP80 electron tracker isolation
-changeCut(process,"selectedPatElectronsForElecTauTrkIso","(abs(superCluster.eta) < 1.479 & dr03TkSumPt/p4.Pt < 0.09) | (abs(superCluster.eta) > 1.479 & dr03TkSumPt/p4.Pt < 0.04)")
+#changeCut(process,"selectedPatElectronsForElecTauTrkIso","(abs(superCluster.eta) < 1.479 & dr03TkSumPt/p4.Pt < 0.09) | (abs(superCluster.eta) > 1.479 & dr03TkSumPt/p4.Pt < 0.04)")
+
 #  VBTF WP80 electron ECAL isolation
-changeCut(process,"selectedPatElectronsForElecTauEcalIso","(abs(superCluster.eta) < 1.479 & dr03EcalRecHitSumEt/p4.Pt < 0.04) | (abs(superCluster.eta) > 1.479 & dr03EcalRecHitSumEt/p4.Pt < 0.05)")
+#changeCut(process,"selectedPatElectronsForElecTauEcalIso","(abs(superCluster.eta) < 1.479 & dr03EcalRecHitSumEt/p4.Pt < 0.04) | (abs(superCluster.eta) > 1.479 & dr03EcalRecHitSumEt/p4.Pt < 0.05)")
+
+#  PF relative iso
+#changeCut(process,"selectedPatElectronsForElecTauIso","")
+
 #  remove electron track IP_xy cut
 #changeCut(process,"selectedPatElectronsForElecTauTrkIP",cms.double(5),"IpMax")
-#  put tanc at quarter eprcent
-changeCut(process,"selectedPatTausForElecTauTaNCdiscr",'tauID("byTaNCfrQuarterPercent") > 0.5')
-#  remove 1/3-prong track cut for taus
-changeCut(process,"selectedPatTausForElecTauProng","")
-#  remove charge = +/-1 cut for taus
-changeCut(process,"selectedPatTausForElecTauCharge","")
+
 #  chenge Pt cut for taus
 changeCut(process,"selectedPatTausForElecTauPt20","pt > 18")
+
+#  put tau ID at tanc loose
+changeCut(process,"selectedPatTausForElecTauTaNCdiscr",'tauID("byTaNCloose") > 0.5')
+
+#  remove 1/3-prong track cut for taus
+changeCut(process,"selectedPatTausForElecTauProng","")
+
+#  remove charge = +/-1 cut for taus
+changeCut(process,"selectedPatTausForElecTauCharge","")
+
 #  elec/tau overlap cut
 changeCut(process,"selectedElecTauPairsAntiOverlapVeto","dR12 > 0.5")
+
 #  transverse mass of electron + MET
 changeCut(process,"selectedElecTauPairsMt1MET","mt1MET < 50.")
 
@@ -137,8 +154,9 @@ from PhysicsTools.PatAlgos.tools.tauTools import *
 # comment-out to take shrinking dR = 5.0/Et(PFTau) signal cone
 # instead of fixed dR = 0.07 signal cone reco::PFTaus
 # as input for pat::Tau production
-switchToPFTauShrinkingCone(process)
+#switchToPFTauShrinkingCone(process)
 #switchToPFTauFixedCone(process)
+switchToPFTauHPSpTaNC(process)
 
 # disable preselection on of pat::Taus
 # (disabled also in TauAnalysis/RecoTools/python/patPFTauConfig_cfi.py ,
@@ -160,7 +178,7 @@ switchJetCollection(process, jetCollection = cms.InputTag("ak5PFJets"),outputMod
 #--------------------------------------------------------------------------------
 # import utility function for configuring PAT trigger matching
 from PhysicsTools.PatAlgos.tools.trigTools import switchOnTrigger
-switchOnTrigger(process, hltProcess = 'HLT', outputModule = '')
+switchOnTrigger(process, hltProcess = 'REDIGI38X', outputModule = '')
 process.patTrigger.addL1Algos = cms.bool(True)
 #--------------------------------------------------------------------------------
 
@@ -186,8 +204,10 @@ from TauAnalysis.Configuration.tools.switchToData import *
 #--------------------------------------------------------------------------------
 
 #--------------------------------------------------------------------------------
-# for MC, collections are missing
-#process.analyzeAHtoElecTauEvents.eventDumps[0].doGenInfo = cms.bool(False)
+#  do not produce momentum-corrected muons
+from TauAnalysis.RecoTools.patLeptonSelection_cff import patMuonSelConfigurator
+setattr(patMuonSelConfigurator, "src", "patMuons" )
+process.selectPatMuons = patMuonSelConfigurator.configure(process = process)
 #--------------------------------------------------------------------------------
 
 process.p = cms.Path(
@@ -215,20 +235,36 @@ from TauAnalysis.Configuration.tools.factorizationTools import enableFactorizati
 #--------------------------------------------------------------------------------
 
 #--------------------------------------------------------------------------------
+# import utility function for applyting Z-recoil corrections to MET
+from TauAnalysis.Configuration.tools.mcToDataCorrectionTools import applyZrecoilCorrection_runAHtoElecTau
+#applyZrecoilCorrection_runAHtoElecTau(process)
+#--------------------------------------------------------------------------------
+
+#--------------------------------------------------------------------------------
+# import utility function for applyting electron trigger correction factor
+from TauAnalysis.Configuration.tools.mcToDataCorrectionTools import applyElectronTriggerEfficiencyCorrection_runAHtoElecTau
+#applyElectronTriggerEfficiencyCorrection_runAHtoElecTau(process)
+#--------------------------------------------------------------------------------
+
+#--------------------------------------------------------------------------------
+# disable event-dump output
+# in order to reduce size of log-files
+process.disableEventDump = cms.PSet()
+if hasattr(process, "disableEventDump"):
+	process.analyzeAHtoElecTauEvents.eventDumps = cms.VPSet()
+#--------------------------------------------------------------------------------
+
+
+#--------------------------------------------------------------------------------
 # import utility function for disabling estimation of systematic uncertainties
 #
-# NOTE: per default, estimation of systematic uncertainties is **enabled** per default
-#
-from TauAnalysis.Configuration.tools.sysUncertaintyTools import disableSysUncertainties_runAHtoElecTau
 from TauAnalysis.Configuration.tools.sysUncertaintyTools import enableSysUncertainties_runAHtoElecTau
 #
 # define "hook" for keeping enabled/disabling estimation of systematic uncertainties
 # in case running jobs on the CERN batch system
 # (needs to be done after process.p has been defined)
 #__#systematics#
-if not hasattr(process, "isBatchMode"):
-	#disableSysUncertainties_runAHtoElecTau(process)
-    enableSysUncertainties_runAHtoElecTau(process)
+##enableSysUncertainties_runAHtoElecTau(process)
 #--------------------------------------------------------------------------------
 
 #--------------------------------------------------------------------------------

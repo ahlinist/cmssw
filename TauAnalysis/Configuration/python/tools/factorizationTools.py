@@ -920,14 +920,10 @@ def enableFactorization_makeAHtoElecTauPlots_grid(
 			relevantMergedSamples = [ 'qcdSum','photonPlusJetsSum' ],
 			mergedToRecoSampleDict = {},
 			mergedSampleAdderModule = lambda sample: 'addAHtoElecTau_%s' % (sample),
-			dqmDirectoryOut =
-			lambda sample:'/harvested/%s_factorized/ahElecTauAnalyzer/'% (sample),
-			dqmDirectoryOutUnfactorized =
-			lambda sample:'/harvested/%s/ahElecTauAnalyzer/'% (sample),
 			dqmDirectoryTight =
-			lambda sample:'/harvested/%s/ahElecTauAnalyzer_factorizedWithElectronIsolation/' % (sample),
+			lambda sample:'/harvested/%s/zElecTauAnalyzer_factorizedWithElectronIsolation/' % (sample),
 			dqmDirectoryLoose =
-			lambda sample:'/harvested/%s/ahElecTauAnalyzer_factorizedWithoutElectronIsolation/' % (sample),
+			lambda sample:'/harvested/%s/zElecTauAnalyzer_factorizedWithoutElectronIsolation/' % (sample),
 			pyObjectLabel = ""):
 
 	process.load("TauAnalysis.Configuration.analyzeAHtoElecTau_cfi")
@@ -993,7 +989,7 @@ def enableFactorization_makeAHtoElecTauPlots_grid(
 				evtSel_factorizedLoose = evtSelAHtoElecTau_factorizedLoose,
 				meName_numerator = meNameAHtoElecTau_numerator,
 				meName_denominator = meNameAHtoElecTau_denominator,
-				dqmDirectoryOut = dqmDirectoryOut(sample),
+				dqmDirectoryOut = '/harvested/%s_factorized/zElecTauAnalyzer/'% sample,
 				dropInputDirectories = False
 				)
 		new_factorization_seq_name = "scaleAHtoElecTau_%s_%s" % (sample, pyObjectLabel)
@@ -1003,8 +999,8 @@ def enableFactorization_makeAHtoElecTauPlots_grid(
 	# Now update any of the relevant mergers
 	for mergedSample in relevantMergedSamples:
 		# Get the module that is doing the merging, if it exists
-		if not hasattr(process.mergeSamplesAHtoElecTau, "merge_%s_ahElecTauAnalyzer" % (mergedSample)): continue
-		merger = getattr(process.mergeSamplesAHtoElecTau, "merge_%s_ahElecTauAnalyzer" % (mergedSample))
+		if not hasattr(process.mergeSamplesAHtoElecTau, "merge_%s" % (mergedSample)): continue
+		merger = getattr(process.mergeSamplesAHtoElecTau, "merge_%s" % (mergedSample))
 
 		# Get the subsamples associated with this merged sample
 		subsamples = mergedToRecoSampleDict[mergedSample]['samples']
@@ -1012,20 +1008,20 @@ def enableFactorization_makeAHtoElecTauPlots_grid(
 		def merge_directories(_list):
 			for sample in _list:
 				if sample in samplesToFactorize:
-					yield dqmDirectoryOut(sample)
+					yield '/harvested/%s_factorized/'% sample
 				else:
-					yield dqmDirectoryOutUnfactorized(sample)
+					yield '/harvested/%s/'% sample
 
 		merger.dqmDirectories_input = cms.vstring(list(merge_directories(subsamples)))
 
 	# Update the plot sources in the plot jobs.  Note that we don't need to do
 	# this for the merged samples, since we have replaced the HistAdder sources
-	for plotterModuleName in [ 'plotAHtoElecTau_log', 'plotAHtoElecTau_linear' ]:
+	for plotterModuleName in [ 'plotzElecTauAnalyzer_log', 'plotzElecTauAnalyzer_linear' ]:
 		plotterModuleProcesses = getattr(process, plotterModuleName).processes
 		for sample in samplesToFactorize:
 			if hasattr(plotterModuleProcesses, sample):
 				getattr(plotterModuleProcesses, sample).dqmDirectory = \
-						cms.string("/harvested/%s_factorized" % sample)
+						cms.string("/harvested/%s_factorized/zElecTauAnalyzer" % sample)
 
 #--------------------------------------------------------------------------------
 # utility functions specific to factorization
