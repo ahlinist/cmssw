@@ -13,7 +13,6 @@ TAN_BETA = 30
 # List of samples to run in the analysis
 SAMPLES_TO_ANALYZE = copy.deepcopy(ZtoElecTau.SAMPLES_TO_ANALYZE)
 SAMPLES_TO_ANALYZE.extend([
-	#    'qqZtautau',
     'A90',  'bbA90',
     'A100', 'bbA100',
     'A120', 'bbA120',
@@ -30,22 +29,22 @@ SAMPLES_TO_ANALYZE.extend([
 # List of samples to include in the final level plots.  May include selections
 # from the MERGE_SAMPLES defined at the bottom.
 SAMPLES_TO_PLOT = [
-    'data',
+	'data',
     #'A90Sum',
     #'A100Sum',
-    'A120Sum',
+	'A120Sum',
     #'A130Sum',
     #'A140Sum',
     #'A160Sum',
 	#'A180Sum',
     #'A200Sum',
     #'A300Sum',
-    'qcdSum',
-    'wPlusJetsSum',
+	'qcdSum',
+	'wPlusJetsSum',
 	'photonPlusJetsSum',
-    'TTbar',
-    'Zee_PU156BX',
-    'Ztautau_PU156BX'
+	'TTbar',
+	'Zee_PU156BX_T3',
+	'Ztautau_PU156BX_T3'
 ]
 
 SAMPLES_TO_PRINT = copy.copy(SAMPLES_TO_PLOT)
