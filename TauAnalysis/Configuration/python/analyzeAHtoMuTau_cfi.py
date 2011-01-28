@@ -295,7 +295,7 @@ patTauDebugEventDump = cms.PSet(
     values = cms.vstring("decayMode()"),
 
     separator = cms.string(":"),
-    
+
     output = cms.string("patTauDebugEventDump.txt"),
 
     triggerConditions = cms.vstring("evtSelTauLeadTrkPt: passed_cumulative")
