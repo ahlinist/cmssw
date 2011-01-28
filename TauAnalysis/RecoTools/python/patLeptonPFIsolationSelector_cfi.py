@@ -29,3 +29,32 @@ patMuonPFIsolationSelector = cms.PSet(
     sumPtMax = cms.double(0.10),
     sumPtMethod = cms.string("relative") # either "relative" or "absolute"
 )
+
+patElectronPFIsolationSelector = cms.PSet(
+    
+    pfCandidateSource = cms.InputTag('selectedPfCandidatesIpCut'),
+
+    chargedHadronIso = cms.PSet(
+        ptMin = cms.double(1.0),        
+        dRvetoCone = cms.double(-1.),
+        dRisoCone = cms.double(0.4),
+    ),
+
+    neutralHadronIso = cms.PSet(
+        ptMin = cms.double(1.0),        
+        dRvetoCone = cms.double(0.08),        
+        dRisoCone = cms.double(0.4)
+    ),
+
+    photonIso = cms.PSet(
+        ptMin = cms.double(1.0),        
+        dPhiVeto = cms.double(-1.),  # asymmetric Eta x Phi veto region 
+        dEtaVeto = cms.double(-1.),  # to account for photon conversions in electron isolation case        
+        dRvetoCone = cms.double(0.05),
+        dRisoCone = cms.double(0.4)
+    ),
+
+    sumPtMaxEB = cms.double(0.09),
+    sumPtMaxEE = cms.double(0.06),
+    sumPtMethod = cms.string("relative") # either "relative" or "absolute"
+)
