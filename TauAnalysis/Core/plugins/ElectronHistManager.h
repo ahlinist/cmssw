@@ -10,6 +10,8 @@
 
 #include "TauAnalysis/Core/interface/HistManagerBase.h"
 
+#include "TauAnalysis/RecoTools/interface/ParticlePFIsolationExtractor.h"
+
 #include <vector>
 #include <string>
 
@@ -32,19 +34,22 @@ class ElectronHistManager : public HistManagerBase
   double getElectronWeight(const pat::Electron&);
 
   void fillElectronHistograms(const pat::Electron&, MonitorElement*, MonitorElement*, MonitorElement*, double);
-  void fillElectronIsoHistograms(const pat::Electron&, double);
+  void fillElectronIsoHistograms(const pat::Electron&, const reco::PFCandidateCollection&, double);
   void fillElectronIsoConeSizeDepHistograms(const pat::Electron&, double);
 
 //--- configuration parameters
   edm::InputTag electronSrc_;
   edm::InputTag vertexSrc_;
   edm::InputTag jetSrc_;
+  edm::InputTag pfCandidateSrc_;
   edm::InputTag genParticleSrc_;
 
   bool requireGenElectronMatch_;
 
   typedef std::vector<int> vint;
   vint skipPdgIdsGenParticleMatch_;
+
+  PATElectronPFIsolationExtractor* pfCombIsoExtractor_;
 
   bool makeIsoPtCtrlHistograms_;
   bool makeIsoPtConeSizeDepHistograms_;
@@ -102,20 +107,20 @@ class ElectronHistManager : public HistManagerBase
 
 //--- IsoDeposits reconstructed from ECAL and HCAL recHits/CaloTowers and reco::Tracks
   MonitorElement* hElectronTrkIsoPt_;
+  MonitorElement* hElectronTrkIsoPtRel_;
   MonitorElement* hElectronTrkIsoPtVsElectronPt_;
   MonitorElement* hElectronEcalIsoPt_;
+  MonitorElement* hElectronEcalIsoPtRel_;
   MonitorElement* hElectronEcalIsoPtBarrel_;
   MonitorElement* hElectronEcalIsoPtEndcap_;
-  MonitorElement* hElectronEcalIsoPtVsElectronPt_;
-  MonitorElement* hElectronHcalIsoPt_;
-  MonitorElement* hElectronIsoSumPt_;
-  MonitorElement* hElectronIsoSumPtVsElectronPt_;
-  MonitorElement* hElectronTrkIsoPtRel_;
-  MonitorElement* hElectronEcalIsoPtRel_;
   MonitorElement* hElectronEcalIsoPtBarrelRel_;
   MonitorElement* hElectronEcalIsoPtEndcapRel_;
+  MonitorElement* hElectronEcalIsoPtVsElectronPt_;
+  MonitorElement* hElectronHcalIsoPt_;
   MonitorElement* hElectronHcalIsoPtRel_;
+  MonitorElement* hElectronIsoSumPt_;
   MonitorElement* hElectronIsoSumPtRel_;
+  MonitorElement* hElectronIsoSumPtVsElectronPt_;
   
   MonitorElement* hElectronDeltaRnearestJet_;
 
@@ -141,9 +146,20 @@ class ElectronHistManager : public HistManagerBase
 
 //--- IsoDeposits reconstructed from Partcile Flow
   MonitorElement* hElectronParticleFlowIsoPt_;
+  MonitorElement* hElectronParticleFlowIsoPtRel_;
   MonitorElement* hElectronPFChargedHadronIsoPt_;
+  MonitorElement* hElectronPFChargedHadronIsoPtRel_;
   MonitorElement* hElectronPFNeutralHadronIsoPt_;
+  MonitorElement* hElectronPFNeutralHadronIsoPtRel_;
   MonitorElement* hElectronPFGammaIsoPt_;
+  MonitorElement* hElectronPFGammaIsoPtRel_;
+  
+  MonitorElement* hElectronPFCombIsoPt_;
+  MonitorElement* hElectronPFCombIsoPtBarrel_;
+  MonitorElement* hElectronPFCombIsoPtEndcap_;
+  MonitorElement* hElectronPFCombIsoPtRel_;
+  MonitorElement* hElectronPFCombIsoPtRelBarrel_;
+  MonitorElement* hElectronPFCombIsoPtRelEndcap_;
 
   MonitorElement* hElectronPFChargedHadronIsoPtCtrl_;
   MonitorElement* hElectronPFGammaIsoPtCtrl_;
