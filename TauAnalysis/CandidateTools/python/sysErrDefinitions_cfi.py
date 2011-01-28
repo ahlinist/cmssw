@@ -44,8 +44,8 @@ muTauPairSystematicsLooseMuonIsolation = {
 }
 
 elecTauPairSystematics = {
-    "sysElectronPtUp"       : cms.InputTag('allElecTauPairsSysElectronPtUp'),
-    "sysElectronPtDown"     : cms.InputTag('allElecTauPairsSysElectronPtDown'),
+    "sysElectronEnUp"       : cms.InputTag('allElecTauPairsSysElectronEnUp'),
+    "sysElectronEnDown"     : cms.InputTag('allElecTauPairsSysElectronEnDown'),
     "sysTauJetEnUp"         : cms.InputTag('allElecTauPairsSysTauJetEnUp'),
     "sysTauJetEnDown"       : cms.InputTag('allElecTauPairsSysTauJetEnDown'),
     "sysJetEnUp"            : cms.InputTag('allElecTauPairsSysJetEnUp'),
@@ -53,8 +53,8 @@ elecTauPairSystematics = {
 }
 
 elecTauPairSystematicsLooseElectronIsolation = {
-    "sysElectronPtUp"       : cms.InputTag('allElecTauPairsLooseElectronIsolationSysElectronPtUp'),
-    "sysElectronPtDown"     : cms.InputTag('allElecTauPairsLooseElectronIsolationSysElectronPtDown'),
+    "sysElectronEnUp"       : cms.InputTag('allElecTauPairsLooseElectronIsolationSysElectronEnUp'),
+    "sysElectronEnDown"     : cms.InputTag('allElecTauPairsLooseElectronIsolationSysElectronEnDown'),
     "sysTauJetEnUp"         : cms.InputTag('allElecTauPairsLooseElectronIsolationSysTauJetEnUp'),
     "sysTauJetEnDown"       : cms.InputTag('allElecTauPairsLooseElectronIsolationSysTauJetEnDown'),
     "sysJetEnUp"            : cms.InputTag('allElecTauPairsLooseElectronIsolationSysJetEnUp'),
@@ -71,8 +71,8 @@ metSystematicsForZtoMuTau = {
 }
 
 metSystematicsForZtoElecTau = {
-    "sysElectronPtUp"       : cms.InputTag('patMETsSysElectronPtUp'),
-    "sysElectronPtDown"     : cms.InputTag('patMETsSysElectronPtDown'),
+    "sysElectronEnUp"       : cms.InputTag('patMETsSysElectronEnUp'),
+    "sysElectronEnDown"     : cms.InputTag('patMETsSysElectronEnDown'),
     "sysTauJetEnUp"         : cms.InputTag('patMETsSysTauJetEnUp'),
     "sysTauJetEnDown"       : cms.InputTag('patMETsSysTauJetEnDown'),
 }
@@ -80,6 +80,15 @@ metSystematicsForZtoElecTau = {
 metSystematicsForAHtoMuTau = {
     "sysMuonPtUp"           : cms.InputTag('patMETsSysMuonPtUp'),
     "sysMuonPtDown"         : cms.InputTag('patMETsSysMuonPtDown'),
+    "sysTauJetEnUp"         : cms.InputTag('patMETsSysTauJetEnUp'),
+    "sysTauJetEnDown"       : cms.InputTag('patMETsSysTauJetEnDown'),
+    "sysJetEnUp"            : cms.InputTag('patMETsSysJetEnUp'),
+    "sysJetEnDown"          : cms.InputTag('patMETsSysJetEnDown')
+}
+
+metSystematicsForAHtoElecTau = {
+    "sysElectronPtUp"       : cms.InputTag('patMETsSysElectronPtUp'),
+    "sysElectronPtDown"     : cms.InputTag('patMETsSysElectronPtDown'),
     "sysTauJetEnUp"         : cms.InputTag('patMETsSysTauJetEnUp'),
     "sysTauJetEnDown"       : cms.InputTag('patMETsSysTauJetEnDown'),
     "sysJetEnUp"            : cms.InputTag('patMETsSysJetEnUp'),
