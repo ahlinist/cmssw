@@ -12,9 +12,9 @@
  *
  * \author Christian Veelken, UC Davis
  *
- * \version $Revision: 1.3 $
+ * \version $Revision: 1.4 $
  *
- * $Id: ParticlePFIsolationSelector.h,v 1.3 2010/11/16 09:20:01 veelken Exp $
+ * $Id: ParticlePFIsolationSelector.h,v 1.4 2010/11/25 15:09:27 friis Exp $
  *
  */
 
@@ -41,84 +41,109 @@
 template <class T>
 class ParticlePFIsolationSelector
 {
-  public:
-    typedef std::vector<T> collection;
+	public:
+		typedef std::vector<T> collection;
 
-    explicit ParticlePFIsolationSelector(const edm::ParameterSet& cfg)
-        : extractor_(cfg),
-        sumPtMethod_(kAbsoluteIso),
-        cfgError_(0)
-  {
-    pfCandidateSrc_ = cfg.getParameter<edm::InputTag>("pfCandidateSource");
+		explicit ParticlePFIsolationSelector(const edm::ParameterSet& cfg)
+			: extractor_(cfg),
+			sumPtMethod_(kAbsoluteIso),
+			cfgError_(0)
+	{
+		pfCandidateSrc_ = cfg.getParameter<edm::InputTag>("pfCandidateSource");
 
-    sumPtMin_ = cfg.exists("sumPtMin") ?
-        cfg.getParameter<double>("sumPtMin") : -1.;
-    sumPtMax_ = cfg.getParameter<double>("sumPtMax");
+		sumPtMin_ = cfg.exists("sumPtMin") ?
+			cfg.getParameter<double>("sumPtMin") : -1.;
+		
+		if (cfg.exists("sumPtMax")) {
+			sumPtMaxEB_ = cfg.getParameter<double>("sumPtMax");
+			sumPtMaxEE_ = cfg.getParameter<double>("sumPtMax");
+		}
+		else if( cfg.exists("sumPtMaxEB") && cfg.exists("sumPtMaxEE") ) {
+			sumPtMaxEB_ = cfg.getParameter<double>("sumPtMaxEB");
+			sumPtMaxEE_ = cfg.getParameter<double>("sumPtMaxEE");
+		} else {
+			edm::LogError("ParticlePFIsolationSelector")
+				<< " Configuration must specify ( sumPtMaxEB AND sumPtMaxEE ) OR sumPtMax ";
+				cfgError_ = 1;
+		}
 
-    if ( cfg.exists("sumPtMethod") ) {
-      std::string sumPtMethod_string = cfg.getParameter<std::string>("sumPtMethod");
-      if ( sumPtMethod_string == "absolute" ) {
-        sumPtMethod_ = kAbsoluteIso;
-      } else if ( sumPtMethod_string == "relative" ) {
-        sumPtMethod_ = kRelativeIso;
-      } else {
-        edm::LogError("ParticlePFIsolationSelector")
-            << " Configuration parameter 'sumPtMethod' = " << sumPtMethod_string << " invalid !!";
-        cfgError_ = 1;
-      }
-    }
-  }
-    ~ParticlePFIsolationSelector() {}
+		if ( cfg.exists("sumPtMethod") ) {
+			std::string sumPtMethod_string = cfg.getParameter<std::string>("sumPtMethod");
+			if ( sumPtMethod_string == "absolute" ) {
+				sumPtMethod_ = kAbsoluteIso;
+			} else if ( sumPtMethod_string == "relative" ) {
+				sumPtMethod_ = kRelativeIso;
+			} else {
+				edm::LogError("ParticlePFIsolationSelector")
+					<< " Configuration parameter 'sumPtMethod' = " << sumPtMethod_string << " invalid !!";
+				cfgError_ = 1;
+			}
+		}
+	}
+		~ParticlePFIsolationSelector() {}
 
-    typename std::vector<const T*>::const_iterator begin() const { return selected_.begin(); }
-    typename std::vector<const T*>::const_iterator end() const { return selected_.end(); }
+		typename std::vector<const T*>::const_iterator begin() const { return selected_.begin(); }
+		typename std::vector<const T*>::const_iterator end() const { return selected_.end(); }
 
-    void select(const edm::Handle<collection>& isoParticleCandidates, const edm::Event& evt, const edm::EventSetup& es)
-    {
-      selected_.clear();
+		void select(const edm::Handle<collection>& isoParticleCandidates, const edm::Event& evt, const edm::EventSetup& es)
+		{
+			selected_.clear();
 
-      if ( cfgError_ ) {
-        edm::LogError ("select")
-            << " Error in Configuration ParameterSet --> no iso. particle candidate will pass Selection !!";
-        return;
-      }
+			if ( cfgError_ ) {
+				edm::LogError ("select")
+					<< " Error in Configuration ParameterSet --> no iso. particle candidate will pass Selection !!";
+				return;
+			}
 
-      edm::Handle<reco::PFCandidateCollection> pfCandidates;
-      evt.getByLabel(pfCandidateSrc_, pfCandidates);
+			edm::Handle<reco::PFCandidateCollection> pfCandidates;
+			evt.getByLabel(pfCandidateSrc_, pfCandidates);
 
-      for ( typename collection::const_iterator isoParticleCandidate = isoParticleCandidates->begin();
-           isoParticleCandidate != isoParticleCandidates->end(); ++isoParticleCandidate ) {
-        double sumPt = extractor_(*isoParticleCandidate, *pfCandidates);
+			for ( typename collection::const_iterator isoParticleCandidate = isoParticleCandidates->begin();
+					isoParticleCandidate != isoParticleCandidates->end(); ++isoParticleCandidate ) {
+				double sumPt = extractor_(*isoParticleCandidate, *pfCandidates);
+			
+				// need to fix for correct eta
+				if( isoParticleCandidate->eta() < 1.479) {
+					if ( sumPtMethod_ == kAbsoluteIso ) {
+						if ( sumPtMin_ > 0. && sumPt < sumPtMin_ ) continue;
+						if ( sumPtMaxEB_ > 0. && sumPt > sumPtMaxEB_ ) continue;
+					} else if ( sumPtMethod_ == kRelativeIso ) {
+						double relIso = ( isoParticleCandidate->pt() > 1. ) ? (sumPt/isoParticleCandidate->pt()) : sumPt;
+						if ( sumPtMin_ > 0. && relIso < sumPtMin_ ) continue;
+						if ( sumPtMaxEB_ > 0. && relIso > sumPtMaxEB_ ) continue;
+					}
+				} else {
+					if ( sumPtMethod_ == kAbsoluteIso ) {
+						if ( sumPtMin_ > 0. && sumPt < sumPtMin_ ) continue;
+						if ( sumPtMaxEE_ > 0. && sumPt > sumPtMaxEE_ ) continue;
+					} else if ( sumPtMethod_ == kRelativeIso ) {
+						double relIso = ( isoParticleCandidate->pt() > 1. ) ? (sumPt/isoParticleCandidate->pt()) : sumPt;
+						if ( sumPtMin_ > 0. && relIso < sumPtMin_ ) continue;
+						if ( sumPtMaxEE_ > 0. && relIso > sumPtMaxEE_ ) continue;
+					}
+				}
 
-        if ( sumPtMethod_ == kAbsoluteIso ) {
-          if ( sumPtMin_ > 0. && sumPt < sumPtMin_ ) continue;
-          if ( sumPtMax_ > 0. && sumPt > sumPtMax_ ) continue;
-        } else if ( sumPtMethod_ == kRelativeIso ) {
-          double relIso = ( isoParticleCandidate->pt() > 1. ) ? (sumPt/isoParticleCandidate->pt()) : sumPt;
-          if ( sumPtMin_ > 0. && relIso < sumPtMin_ ) continue;
-          if ( sumPtMax_ > 0. && relIso > sumPtMax_ ) continue;
-        }
+				selected_.push_back(&(*isoParticleCandidate));
+			}
+		}
 
-        selected_.push_back(&(*isoParticleCandidate));
-      }
-    }
+		size_t size() const { return selected_.size(); }
 
-    size_t size() const { return selected_.size(); }
+	private:
+		std::vector<const T*> selected_;
 
-  private:
-    std::vector<const T*> selected_;
+		edm::InputTag pfCandidateSrc_;
 
-    edm::InputTag pfCandidateSrc_;
+		ParticlePFIsolationExtractor<T> extractor_;
 
-    ParticlePFIsolationExtractor<T> extractor_;
+		double sumPtMin_;
+		double sumPtMaxEB_;
+		double sumPtMaxEE_;
 
-    double sumPtMin_;
-    double sumPtMax_;
+		enum { kAbsoluteIso, kRelativeIso };
+		int sumPtMethod_;
 
-    enum { kAbsoluteIso, kRelativeIso };
-    int sumPtMethod_;
-
-    int cfgError_;
+		int cfgError_;
 };
 
 #endif
