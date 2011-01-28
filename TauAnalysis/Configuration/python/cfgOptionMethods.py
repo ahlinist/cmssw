@@ -275,7 +275,10 @@ def _saveFinalEvents(process, save, **kwargs):
         print "--> Saving final selected events in a EDM file"
         output_module = cms.OutputModule(
             "PoolOutputModule",
-            RECOSIMEventContent,
+            # Drop everything we create
+            outputCommands = cms.untracked.vstring(
+                'keep *',
+                'drop *_*_*_%s' % process.name_()),
             SelectEvents = cms.untracked.PSet(
                 SelectEvents = cms.vstring('p')
             ),
