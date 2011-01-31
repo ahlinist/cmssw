@@ -84,10 +84,10 @@ bool LeptonVetoSelector::select(const edm::Event& event) const {
     if (ie->pt() < minPtEle_)
       continue;
 
-    if (fabs(ie->eta()) > maxEtaEle_)
+    if (fabs(ie->superCluster()->eta()) >= maxEtaEle_)
       continue;
 
-    if (fabs(ie->superCluster()->eta()) > 1.4442 && fabs(ie->superCluster()->eta()) < 1.566)
+    if (fabs(ie->superCluster()->eta()) >= 1.4442 && fabs(ie->superCluster()->eta()) <= 1.566)
       continue;
 
     if (fabs(ie->gsfTrack()->dxy(myPosition)) > eleDxy_)
@@ -168,7 +168,9 @@ bool LeptonVetoSelector::select(const edm::Event& event) const {
       continue;
 
     if (im->innerTrack()->numberOfValidHits() < muonHits_)
-      continue;
+      continue;     
+
+   if (im->innerTrack()->hitPattern().numberOfValidPixelHits() == 0) continue;
 
     currIso = 0;
 
