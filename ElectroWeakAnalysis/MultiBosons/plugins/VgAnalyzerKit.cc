@@ -2230,22 +2230,22 @@ std::vector<float> VgAnalyzerKit::getESProfileRear(View<pat::Electron>::const_it
       // ES Rear plane
       if (esdetid.plane() == 2) {
 	// +1 sensor and ±10 strip
-	if (esdetid.zside() == esfid.zside() && esdetid.siy() == (esfid.siy() + 1)) {
-	  int gs_esid = esdetid.six()*32 + esdetid.strip();
+	if (esdetid.zside() == esfid.zside() && esdetid.six() == (esfid.six() + 1)) {
+	  int gs_esid = esdetid.siy()*32 + esdetid.strip();
 	  int ss = gs_esid - gs_esfid;
           for (int a=0; a<21; a++) 
             if (ss == strip[a]) esprofile[a] = esrh_it->energy();
 	}
         // +0 sensor and ±10 strip
-        else if (esdetid.zside() == esfid.zside() && esdetid.siy() == (esfid.siy())) {
-          int gs_esid = esdetid.six()*32 + esdetid.strip();
+        else if (esdetid.zside() == esfid.zside() && esdetid.six() == (esfid.six())) {
+          int gs_esid = esdetid.siy()*32 + esdetid.strip();
           int ss = gs_esid - gs_esfid;
           for (int a=0; a<21; a++)
             if (ss == strip[a]) esprofile[a+21] = esrh_it->energy();
         }
         // -1 sensor and ±10 strip
-        else if (esdetid.zside() == esfid.zside() && esdetid.siy() == (esfid.siy() - 1)) {
-          int gs_esid = esdetid.six()*32 + esdetid.strip();
+        else if (esdetid.zside() == esfid.zside() && esdetid.six() == (esfid.six() - 1)) {
+          int gs_esid = esdetid.siy()*32 + esdetid.strip();
           int ss = gs_esid - gs_esfid;
           for (int a=0; a<21; a++)
             if (ss == strip[a]) esprofile[a+42] = esrh_it->energy();
