@@ -437,6 +437,9 @@ void GenericEventDump::printJetInfo(const edm::Event& evt) const
     unsigned iJet = 0;
     for ( pat::JetCollection::const_iterator patJet = patJets->begin(); 
 	  patJet != patJets->end(); ++patJet ) {
+
+      if ( !patJet->et() > 10. ) continue;
+
       *outputStream_ << "Jet(" << iJet << "):" << std::endl;
       *outputStream_ << " Et = " << patJet->et() << std::endl;
       *outputStream_ << " theta = " << patJet->theta()*180./TMath::Pi() 
