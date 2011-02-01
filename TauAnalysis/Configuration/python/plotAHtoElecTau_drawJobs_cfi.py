@@ -39,7 +39,7 @@ plots_AHtoElecTau = cms.PSet(
 
 drawJobConfigurator_AHtoElecTau = drawJobConfigurator(
     template = plots_AHtoElecTau,
-    dqmDirectory = '#PROCESSDIR#/zElecTauAnalyzer/'
+    dqmDirectory = '#PROCESSDIR#/ahElecTauAnalyzer/'
 )
 
 #--------------------------------------------------------------------------------
@@ -175,23 +175,23 @@ drawJobConfigurator_AHtoElecTau.add(
     beforeCut = evtSelElectronIso,
     plots = [
 			drawJobConfigEntry(
-				meName = 'ElectronQuantities/',
+				meName = 'ElectronQuantities/ElectronPFCombIsoPtRel',
 				title = "Relative Electron PF iso. P_{T} sum (after Tau P_{T} Cut)",
 				xAxis = 'Pt',
 				name = "cutFlowControlPlots_electronPfIso_afterTauPt"
-			),
-			drawJobConfigEntry(
-				meName = 'ElectronQuantities/',
-				title = "Relative Electron PF iso. P_{T} sum in barrel (after Tau P_{T} Cut)",
-				xAxis = 'Pt',
-				name = "cutFlowControlPlots_electronPfIsoEB_afterTauPt"
-			),
-			drawJobConfigEntry(
-				meName = 'ElectronQuantities/',
-				title = "Relative Electron PF iso. P_{T} sum in endcap (after Tau P_{T} Cut)",
-				xAxis = 'Pt',
-				name = "cutFlowControlPlots_electronPfIsoEE_afterTauPt"
-			),
+			)
+			#drawJobConfigEntry(
+			#		meName = 'ElectronQuantities/ElectronPFCombIsoPtRelBarrel',
+			#		title = "Relative Electron PF iso. P_{T} sum in barrel (after Tau P_{T} Cut)",
+			#	xAxis = 'Pt',
+			#	name = "cutFlowControlPlots_electronPfIsoEB_afterTauPt"
+			#),
+			#drawJobConfigEntry(
+			#	meName = 'ElectronQuantities/ElectronPFCombIsoPtRelEndcap',
+			#	title = "Relative Electron PF iso. P_{T} sum in endcap (after Tau P_{T} Cut)",
+			#	xAxis = 'Pt',
+			#	name = "cutFlowControlPlots_electronPfIsoEE_afterTauPt"
+			#),
 		]
 )
 #drawJobConfigurator_AHtoElecTau.add(
@@ -295,8 +295,8 @@ drawJobConfigurator_AHtoElecTau.add(
     beforeCut = evtSelTauTaNCdiscr,
     plots = [
 			drawJobConfigEntry(
-        meName = 'TauQuantities/TauDiscriminatorTaNCfrQuarterPercent',
-        title = "TaNC output (fr = 0.5%, after Tau lead. Track Pt Cut)",
+        meName = 'TauQuantities/TauDiscriminatorTaNCloose',
+        title = "TaNC output (loose criteria, after Tau lead. Track Pt Cut)",
         xAxis = 'unlabeled',
         name = "cutFlowControlPlots_tauDiscrTaNCfrQuarterPercent_afterTauLeadTrkPt"
 			)
@@ -311,7 +311,7 @@ drawJobConfigurator_AHtoElecTau.add(
         meName = 'TauQuantities/TauNumIsoPFChargedHadrons',
         title = "Num PF charged hadrons in Tau iso. region (after Tau TaNC cut)",
         xAxis = 'unlabeled',
-        name = "cutFlowControlPlots_tauTrkIso_afterTauDiscrTaNCfrHalfPercent"
+        name = "cutFlowControlPlots_tauTrkIso_afterTauDiscrTaNCloose"
 			)
 		]
 )
@@ -483,21 +483,21 @@ drawJobConfigurator_AHtoElecTau.add(
 
 drawJobConfigurator_AHtoElecTau.add(
     afterCut = evtSelDiTauCandidateForElecTauPzetaDiff,
-    beforeCut = evtSelElecTauPairZeeHypothesisVeto,
+    beforeCut = evtSelDiElecPairZeeHypothesisVetoByLooseIsolation,
     plots = [
-			drawJobConfigEntry(
-				meName = 'DiTauCandidateZeeHypothesisQuantities/VisMassBestMach',
-        title = "M_{vis}(Electron + Tau, Z #rightarrow e^{+} e^{-} Mass hypothesis) (after P_{#zeta} Cut)",
-        xAxis = 'Mass',
-        name = "cutFlowControlPlots_mVisibleZeeHypothesis_afterPzetaDiff"
-			),
-			drawJobConfigEntry(
+		drawJobConfigEntry(
+			meName = 'DiTauCandidateZeeHypothesisQuantities/VisMassBestMach',
+			title = "M_{vis}(Electron + Tau, Z #rightarrow e^{+} e^{-} Mass hypothesis) (after P_{#zeta} Cut)",
+			xAxis = 'Mass',
+			name = "cutFlowControlPlots_mVisibleZeeHypothesis_afterPzetaDiff"
+		),
+		drawJobConfigEntry(
             meName = 'DiTauCandidateQuantities/VisMass',
             title = "M_{vis}(Electron + Tau) (after P_{#zeta} Cut)",
             xAxis = 'Mass',
             name = "cutFlowControlPlots_visibleMass_afterPzetaDiff"
-			)
-		]
+		)
+	]
 )
 
 #--------------------------------------------------------------------------------
@@ -506,7 +506,7 @@ drawJobConfigurator_AHtoElecTau.add(
 #--------------------------------------------------------------------------------
 
 drawJobConfigurator_AHtoElecTau.add(
-    afterCut = evtSelElecTauPairZeeHypothesisVeto,
+    afterCut = evtSelDiElecPairZeeHypothesisVetoByLooseIsolation,
     plots = [
         drawJobConfigEntry(
             meName = 'ElectronQuantities/Electron#PAR#',

@@ -921,9 +921,9 @@ def enableFactorization_makeAHtoElecTauPlots_grid(
 			mergedToRecoSampleDict = {},
 			mergedSampleAdderModule = lambda sample: 'addAHtoElecTau_%s' % (sample),
 			dqmDirectoryTight =
-			lambda sample:'/harvested/%s/zElecTauAnalyzer_factorizedWithElectronIsolation/' % (sample),
+			lambda sample:'/harvested/%s/ahElecTauAnalyzer_factorizedWithElectronIsolation/' % (sample),
 			dqmDirectoryLoose =
-			lambda sample:'/harvested/%s/zElecTauAnalyzer_factorizedWithoutElectronIsolation/' % (sample),
+			lambda sample:'/harvested/%s/ahElecTauAnalyzer_factorizedWithoutElectronIsolation/' % (sample),
 			pyObjectLabel = ""):
 
 	process.load("TauAnalysis.Configuration.analyzeAHtoElecTau_cfi")
@@ -943,8 +943,9 @@ def enableFactorization_makeAHtoElecTauPlots_grid(
 			process.evtSelTauAntiOverlapWithElectronsVeto,
 			process.evtSelTauEta,
 			process.evtSelTauPt,
-			process.evtSelElectronTrkIso,
-			process.evtSelElectronEcalIso,
+			process.evtSelElectronIso,
+			#process.evtSelElectronTrkIso,
+			#process.evtSelElectronEcalIso,
 			process.evtSelElectronConversionVeto
 	]
 
@@ -967,13 +968,13 @@ def enableFactorization_makeAHtoElecTauPlots_grid(
 			process.evtSelDiTauCandidateForElecTauAcoplanarity12,
 			process.evtSelDiTauCandidateForElecTauMt1MET,
 			process.evtSelDiTauCandidateForElecTauPzetaDiff,
-			process.evtSelElecTauPairZeeHypothesisVeto
+			process.evtSelDiElecPairZeeHypothesisVetoByLooseIsolation
 	]
 
 	# defines names of MonitorElements used as numerator and denominator
 	# to compute factorization scale-factor
 	meNameAHtoElecTau_numerator = "evtSelElectronConversionVeto/passed_cumulative_numWeighted"
-	meNameAHtoElecTau_denominator = "evtSelElectronTrkIso/processed_cumulative_numWeighted"
+	meNameAHtoElecTau_denominator = "evtSelElectronIso/processed_cumulative_numWeighted"
 
 	# Loop over the samples and create sequences
 	# for each of the factorization jobs and add them to the factorization
@@ -989,7 +990,7 @@ def enableFactorization_makeAHtoElecTauPlots_grid(
 				evtSel_factorizedLoose = evtSelAHtoElecTau_factorizedLoose,
 				meName_numerator = meNameAHtoElecTau_numerator,
 				meName_denominator = meNameAHtoElecTau_denominator,
-				dqmDirectoryOut = '/harvested/%s_factorized/zElecTauAnalyzer/'% sample,
+				dqmDirectoryOut = '/harvested/%s_factorized/ahElecTauAnalyzer/'% sample,
 				dropInputDirectories = False
 				)
 		new_factorization_seq_name = "scaleAHtoElecTau_%s_%s" % (sample, pyObjectLabel)
@@ -1016,12 +1017,12 @@ def enableFactorization_makeAHtoElecTauPlots_grid(
 
 	# Update the plot sources in the plot jobs.  Note that we don't need to do
 	# this for the merged samples, since we have replaced the HistAdder sources
-	for plotterModuleName in [ 'plotzElecTauAnalyzer_log', 'plotzElecTauAnalyzer_linear' ]:
+	for plotterModuleName in [ 'plotahElecTauAnalyzer_log', 'plotahElecTauAnalyzer_linear' ]:
 		plotterModuleProcesses = getattr(process, plotterModuleName).processes
 		for sample in samplesToFactorize:
 			if hasattr(plotterModuleProcesses, sample):
 				getattr(plotterModuleProcesses, sample).dqmDirectory = \
-						cms.string("/harvested/%s_factorized/zElecTauAnalyzer" % sample)
+						cms.string("/harvested/%s_factorized/ahElecTauAnalyzer" % sample)
 
 #--------------------------------------------------------------------------------
 # utility functions specific to factorization
