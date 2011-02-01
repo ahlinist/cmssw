@@ -8,9 +8,9 @@
  * \author Michail Bachtis,
  *         Christian Veelken
  *
- * \version $Revision: 1.2 $
+ * \version $Revision: 1.1 $
  *
- * $Id: PATMuonIdSelector.h,v 1.2 2010/09/28 11:23:36 jkolb Exp $
+ * $Id: PATMuonIdSelector.h,v 1.1 2011/02/01 11:49:42 veelken Exp $
  *
  */
 
@@ -58,6 +58,6 @@ class PATMuonIdSelectorImp
   double   maxDptOverPt_;       // max. relative error on muon momentum (computed for inner track)
   unsigned minTrackerHits_;     // min. number of hits in SiStrip + Pixel detectors
   unsigned minPixelHits_;       // min. number of hits in Pixel detector
-  unsigned minMuonChamberHits_; // min. number of hits in Muon chambers
-  unsigned minMuonSegments_;    // min. number of segments in Muon stations matched to inner track
+  unsigned minMuonStations_;    // min. number of hits in Muon chambers
+  unsigned minMatchedSegments_; // min. number of segments in Muon stations matched to inner track
 };

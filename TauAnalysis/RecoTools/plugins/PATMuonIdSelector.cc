@@ -28,8 +28,8 @@ double   defaultMaxChi2red_                 = 10.;   // chi^2/nDoF
 double   defaultMaxDptOverPt_               =  0.10;
 unsigned defaultMinTrackerHits_             = 10;
 unsigned defaultMinPixelHits_               =  1; 
-unsigned defaultMinMuonChamberHits_         =  1;
-unsigned defaultMinMuonSegments_            =  2;
+unsigned defaultMinMuonStations_            =  2;
+unsigned defaultMinMatchedSegments_         =  1;
 
 template<typename T>
 T getConfigurationParameter(const edm::ParameterSet& cfg, const std::string& cfgParName, T* cfgParDefaultValue = 0)
@@ -42,16 +42,16 @@ PATMuonIdSelectorImp::PATMuonIdSelectorImp(const edm::ParameterSet& cfg)
   : IPtrackType_(defaultIPtrackType_),
     IPrefType_(defaultIPrefType_)
 {
-  applyGlobalMuonPromptTight_ = getConfigurationParameter<bool>    (cfg, "applyGlobalMuonPromptTight", &applyGlobalMuonPromptTight_);
-  applyAllArbitrated_         = getConfigurationParameter<bool>    (cfg, "applyAllArbitrated",         &applyAllArbitrated_);
+  applyGlobalMuonPromptTight_ = getConfigurationParameter<bool>    (cfg, "applyGlobalMuonPromptTight", &defaultApplyGlobalMuonPromptTight_);
+  applyAllArbitrated_         = getConfigurationParameter<bool>    (cfg, "applyAllArbitrated",         &defaultApplyAllArbitrated_);
   maxIPxy_                    = getConfigurationParameter<double>  (cfg, "maxIPxy",                    &defaultMaxIPxy_);
   maxIPz_                     = getConfigurationParameter<double>  (cfg, "maxIPz",                     &defaultMaxIPz_);
   maxChi2red_                 = getConfigurationParameter<double>  (cfg, "maxChi2red",                 &defaultMaxChi2red_);
-  maxDptOverPt_               = getConfigurationParameter<double>  (cfg, "maxDptOverPt",               &maxDptOverPt_);
+  maxDptOverPt_               = getConfigurationParameter<double>  (cfg, "maxDptOverPt",               &defaultMaxDptOverPt_);
   minTrackerHits_             = getConfigurationParameter<unsigned>(cfg, "minTrackerHits",             &defaultMinTrackerHits_);
   minPixelHits_               = getConfigurationParameter<unsigned>(cfg, "minPixelHits",               &defaultMinPixelHits_);
-  minMuonChamberHits_         = getConfigurationParameter<unsigned>(cfg, "minMuonChamberHits",         &defaultMinMuonChamberHits_);
-  minMuonSegments_            = getConfigurationParameter<unsigned>(cfg, "minMuonSegments",            &defaultMinMuonSegments_);
+  minMuonStations_            = getConfigurationParameter<unsigned>(cfg, "minMuonStations",            &defaultMinMuonStations_);
+  minMatchedSegments_         = getConfigurationParameter<unsigned>(cfg, "minMatchedSegments",         &defaultMinMatchedSegments_);
   
   if ( cfg.exists("IPtrackType") ) {
     std::string IPtrackType_string = cfg.getParameter<std::string>("IPtrackType");
@@ -97,8 +97,8 @@ void PATMuonIdSelectorImp::print()
   std::cout << " maxDptOverPt = " << maxDptOverPt_ << std::endl;
   std::cout << " minTrackerHits = " << minTrackerHits_ << std::endl;
   std::cout << " minPixelHits = " << minPixelHits_ << std::endl;
-  std::cout << " minMuonChamberHits = " << minMuonChamberHits_ << std::endl;
-  std::cout << " minMuonSegments = " << minMuonSegments_ << std::endl;
+  std::cout << " minMuonStations = " << minMuonStations_ << std::endl;
+  std::cout << " minMatchedSegments = " << minMatchedSegments_ << std::endl;
   std::cout << " IPtrackType = ";
   if ( IPtrackType_ == kInnerTrack  ) std::cout << "innerTrack"  << std::endl;
   if ( IPtrackType_ == kGlobalTrack ) std::cout << "globalTrack" << std::endl;
@@ -144,7 +144,7 @@ void PATMuonIdSelectorImp::select(const edm::Handle<collection>& patMuonCollecti
 
     if ( applyGlobalMuonPromptTight_ && !muon::isGoodMuon(*patMuon, muon::GlobalMuonPromptTight) ) continue;
     if ( applyAllArbitrated_         && !muon::isGoodMuon(*patMuon, muon::AllArbitrated)         ) continue;
-    
+
     reco::TrackRef muonTrack;
     if      ( IPtrackType_ == kInnerTrack  ) muonTrack = patMuon->innerTrack();
     else if ( IPtrackType_ == kGlobalTrack ) muonTrack = patMuon->globalTrack();
@@ -158,9 +158,23 @@ void PATMuonIdSelectorImp::select(const edm::Handle<collection>& patMuonCollecti
     const reco::HitPattern& innerTrackHitPattern = patMuon->innerTrack()->hitPattern();
     if ( !(innerTrackHitPattern.numberOfValidTrackerHits() >= (int)minTrackerHits_)              ) continue;
     if ( !(innerTrackHitPattern.numberOfValidPixelHits() >= (int)minPixelHits_)                  ) continue;
-    
-    if ( !(patMuon->numberOfChambers() >= (int)minMuonChamberHits_)                              ) continue;
-    if ( !(patMuon->numberOfMatches() >= (int)minMuonSegments_)                                  ) continue;
+
+    //---------------------------------------------------------------------------
+    // compute numbers of muon stations with matched segments
+    //
+    // CV: code copied from version 1.41 of DataFormats/MuonReco/src/Muon.cc
+    //    (not included in CMSSW_3_8_x yet)
+    //
+    int numMuonStations = 0;
+
+    unsigned int theStationMask = (unsigned int)patMuon->stationMask(reco::Muon::SegmentAndTrackArbitration);
+    for ( int i = 0; i < 8; ++i ) { // eight stations, eight bits
+      if ( theStationMask & (1<<i) ) ++numMuonStations;
+    } 
+    //---------------------------------------------------------------------------
+
+    if ( !(numMuonStations >= (int)minMuonStations_)                                             ) continue;
+    if ( !(patMuon->numberOfMatches() >= (int)minMatchedSegments_)                               ) continue;
 
     selected_.push_back(&(*patMuon));
   }
