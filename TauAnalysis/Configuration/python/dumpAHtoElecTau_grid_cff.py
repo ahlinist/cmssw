@@ -18,7 +18,7 @@ dumpAHtoElecTau = cms.EDAnalyzer("DQMDumpFilterStatisticsTables",
     dqmDirectories = cms.PSet(
         **dict(
             (sample, cms.string(
-                '/harvested/%s/zElecTauAnalyzer/FilterStatistics' 
+                '/harvested/%s/ahElecTauAnalyzer/FilterStatistics' 
                 % sample_dqm_name(sample))
             ) for sample in samples.SAMPLES_TO_PRINT)
     ), 

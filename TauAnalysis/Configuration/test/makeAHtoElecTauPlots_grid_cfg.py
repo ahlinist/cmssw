@@ -14,7 +14,7 @@ from TauAnalysis.Configuration.userRegistry import getHarvestingFilePath, \
 from TauAnalysis.Configuration.tools.factorizationTools import \
         enableFactorization_makeAHtoElecTauPlots_grid
 
-process = cms.Process('makeZtoElecTauPlots')
+process = cms.Process('makeAHtoElecTauPlots')
 
 #from TauAnalysis.Configuration.dumpZtoElecTau_grid_cff import dumpZtoElecTau as dumpZtoElecTau_stdCuts
 #process.dumpZtoElecTau_stdCuts = dumpZtoElecTau_stdCuts
@@ -28,13 +28,13 @@ makePlots(process, channel = channel,
           samples = recoSampleDefinitionsAHtoElecTau,
           inputFilePath = inputFilePath, jobId = jobId,
           analyzer_drawJobConfigurator_indOutputFileName_sets = [
-              [ "zElecTauAnalyzer", drawJobConfigurator_AHtoElecTau, "plotAHtoElecTau_#PLOT#.png" ]
+              [ "ahElecTauAnalyzer", drawJobConfigurator_AHtoElecTau, "plotAHtoElecTau_#PLOT#.png" ]
           ],
           drawJobTemplate = plots_AHtoElecTau,
           enableFactorizationFunction = enableFactorization_makeAHtoElecTauPlots_grid,
           dqmDirectoryFilterStatistics = {
-              'factorizationDisabled' : 'zElecTauAnalyzer/FilterStatistics',
-              'factorizationEnabled' : 'zElecTauAnalyzer_factorizedWithElectronIsolation/FilterStatistics'
+              'factorizationDisabled' : 'ahElecTauAnalyzer/FilterStatistics',
+              'factorizationEnabled' : 'ahElecTauAnalyzer_factorizedWithElectronIsolation/FilterStatistics'
           },
           dumpDQMStore = False)
 
