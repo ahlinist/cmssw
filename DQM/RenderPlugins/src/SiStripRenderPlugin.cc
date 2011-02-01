@@ -2,8 +2,8 @@
   \file SiStripRenderPlugin
   \brief Display Plugin for SiStrip DQM Histograms
   \author S. Dutta
-  \version $Revision: 1.32 $
-  \date $Date: 2010/11/10 08:02:16 $
+  \version $Revision: 1.33 $
+  \date $Date: 2010/11/12 14:08:59 $
 */
 
 #include "VisMonitoring/DQMServer/interface/DQMRenderPlugin.h"
@@ -201,21 +201,21 @@ private:
       if( o.name.find( "Summary_MeanNumberOfDigis" )  != std::string::npos)
       {
         obj->SetStats( kFALSE );
-        obj->SetMaximum(80.0);
+        obj->SetMaximum(4.0);
         obj->SetMinimum(-0.1);
         return;
       }
       if( o.name.find( "Summary_MeanNumberOfDigis__TOB" )  != std::string::npos)
       {
         obj->SetStats( kFALSE );
-        obj->SetMaximum(50.0);
+        obj->SetMaximum(2.5);
         obj->SetMinimum(-0.1);
         return;
       }
       if( o.name.find( "Summary_MeanNumberOfClusters" )  != std::string::npos)
       {
         obj->SetStats( kFALSE );
-        obj->SetMaximum(50.0);
+        obj->SetMaximum(1.0);
         obj->SetMinimum(-0.001);
         return;
       }
@@ -414,30 +414,29 @@ private:
 //           tl2.DrawLine(xmin, TIBLimit1*0.5, xmax, TIBLimit1*0.5);
 //           tl2.DrawLine(xmin, TIBLimit1*2.0, xmax, TIBLimit1*2.0);
 //          obj->SetMinimum(TIBLimit1*0.1);
-          obj->SetMinimum(10);
-          obj->SetMaximum(TMath::Max(ymax, TIBLimit1*200));
+          obj->SetMinimum(1);
+          obj->SetMaximum(TMath::Max(ymax, TIBLimit1*50));
         } else if (name.find( "TotalNumberOfDigiProfile__TOB" ) != std::string::npos) {
 //           tl1.DrawLine(xmin, TOBLimit1,     xmax, TOBLimit1);
 //           tl2.DrawLine(xmin, TOBLimit1*0.5, xmax, TOBLimit1*0.5);
 //           tl2.DrawLine(xmin, TOBLimit1*2.0, xmax, TOBLimit1*2.0);
 //          obj->SetMinimum(TOBLimit1*0.1);
-          obj->SetMinimum(10);
+          obj->SetMinimum(1);
 	  obj->SetMaximum(TMath::Max(ymax, TOBLimit1*50));
-	  obj->SetMaximum(TMath::Max(ymax, TOBLimit1*200));
         } else if (name.find( "TotalNumberOfDigiProfile__TEC" ) != std::string::npos) {
 //           tl1.DrawLine(xmin, TECLimit1,     xmax, TECLimit1);
 //           tl2.DrawLine(xmin, TECLimit1*0.5, xmax, TECLimit1*0.5);
 //           tl2.DrawLine(xmin, TECLimit1*2.0, xmax, TECLimit1*2.0);
 //          obj->SetMinimum(TECLimit1*0.1);
-          obj->SetMinimum(10);
-          obj->SetMaximum(TMath::Max(ymax, TECLimit1*200));
+          obj->SetMinimum(1);
+          obj->SetMaximum(TMath::Max(ymax, TECLimit1*50));
         } else if (name.find( "TotalNumberOfDigiProfile__TID" ) != std::string::npos) {
 //           tl1.DrawLine(xmin, TIDLimit1,     xmax, TIDLimit1);
 //           tl2.DrawLine(xmin, TIDLimit1*0.5, xmax, TIDLimit1*0.5);
 //           tl2.DrawLine(xmin, TIDLimit1*2.0, xmax, TIDLimit1*2.0);
 //          obj->SetMinimum(TIDLimit1*0.1);
-          obj->SetMinimum(10);
-          obj->SetMaximum(TMath::Max(ymax, TIDLimit1*200));
+          obj->SetMinimum(1);
+          obj->SetMaximum(TMath::Max(ymax, TIDLimit1*50));
 	}
         return;
       }
