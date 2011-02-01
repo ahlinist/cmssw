@@ -288,6 +288,9 @@ process.ewkTauId.Prediscriminants.leadTrack.Producer   = cms.InputTag('hpsPFTauD
 process.ewkTauId.Prediscriminants.leadTrackPt.Producer = cms.InputTag('hpsPFTauDiscriminationByDecayModeFinding')
 process.ewkTauId.Prediscriminants.TaNCloose.Producer   = cms.InputTag('hpsPFTauDiscriminationByLooseIsolation')
 process.ewkTauId.Prediscriminants.againstMuon.Producer = cms.InputTag('hpsPFTauDiscriminationAgainstMuon')
+
+# disable muon momentum scale corrections
+process.patMuonsMuScleFitCorrectedMomentum.doApplyCorrection = cms.bool(False)
 #--------------------------------------------------------------------------------
 
 # print-out all python configuration parameter information
