@@ -49,11 +49,13 @@ void compNumbers(double numEventsObserved, double numEventsBgr, double errBgrUp,
   double errXsectionUp2 =
     (square(TMath::Sqrt(errBgrDown_Xp2)/tauIdEff)
    + square(numEvents_Xp*errTauIdEff/square(tauIdEff))
+   - 2*(numEvents_Xp/square(tauIdEff))*cov_numEventsSigC1_tauIdEff
    + square(errEventsSigC1))/square(intLumiData*br*accSig*effEvtSelExclTauId)
    + square(Xsection)*(square(errAccSig/accSig) + square(errEffExclTauIdSig/effEvtSelExclTauId));
   double errXsectionDown2 = 
     (square(TMath::Sqrt(errBgrUp_Xp2)/tauIdEff)
    + square(numEvents_Xp*errTauIdEff/square(tauIdEff))
+   - 2*(numEvents_Xp/square(tauIdEff))*cov_numEventsSigC1_tauIdEff
    + square(errEventsSigC1))/square(intLumiData*br*accSig*effEvtSelExclTauId)
    + square(Xsection)*(square(errAccSig/accSig) + square(errEffExclTauIdSig/effEvtSelExclTauId));
 
