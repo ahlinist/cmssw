@@ -51,6 +51,7 @@ SAMPLE_DEFAULTS = {
     'genPhaseSpaceCut' : '',
     'factorize' : False,
     'applyZrecoilCorrection' : False,
+    'applyElectronTriggerEfficiencyCorrection' : False, # not be used in mu + tau-jet channel
     'applyMuonTriggerEfficiencyCorrection' : False,   # to be used for MC only
     'applyMuonIsolationEfficiencyCorrection' : False, # to be used for MC only
     'applyVertexMultiplicityReweighting' : False,     # to be used for MC with pile-up only
@@ -140,8 +141,8 @@ RECO_SAMPLES = {
         'hlt' : cms.InputTag("TriggerResults", "", "REDIGI38X")
     },
     'Ztautau_powheg' : {
-        'datasetpath' : "/DYToTauTau_M-20_CT10_TuneZ2_7TeV-powheg-pythia-tauola/Fall10-E7TeV_ProbDist_2010Data_BX156_START38_V12-v1/GEN-SIM-RECO",
-        'events_processed' : 1994719,
+        'datasetpath' : "/DYToTauTau_M-20_TuneZ2_7TeV-pythia6-tauola/Fall10-E7TeV_ProbDist_2010Data_BX156_START38_V12-v3/GEN-SIM-RECO",
+        'events_processed' : 2098750,
         'skim_eff' : 1.0,
         'x_sec' : 1666*_picobarns,
         'legendEntry' : plotter.process_Ztautau.config_dqmHistPlotter.legendEntry.value(),
