@@ -34,11 +34,11 @@ selectedPatMuonsPt15 = cms.EDFilter("PATMuonSelector",
     filter = cms.bool(False)
 )
 
-# require muon candidate to pass VBTF selection
-# (selection criteria defined by Vector Boson Task Force
-#  and documented in CMS AN-10-264)
-selectedPatMuonsVbTfId = cms.EDFilter("PATMuonVbTfSelector",
-    beamSpotSource = cms.InputTag("offlineBeamSpot")
+# require muon candidate to pass muon id. selection
+selectedPatMuonsVbTfId = cms.EDFilter("PATMuonIdSelector",
+    beamSpotSource = cms.InputTag("offlineBeamSpot"),   
+    vertexSource = cms.InputTag("offlinePrimaryVerticesWithBS"),
+    filter = cms.bool(False)                                  
 )                                      
 
 # require muon candidate to be isolated
