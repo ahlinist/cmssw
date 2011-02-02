@@ -17,6 +17,7 @@ SAMPLES_TO_ANALYZE = [
     'Zmumu_pythia', 'Zee_pythia',
     #'InclusivePPmuX',
     'PPmuXptGt20Mu10', 'PPmuXptGt20Mu15',
+    #'PPmuXptGt20Mu10Workaround',
     #'Wenu_pythia', 'Wmunu_pythia', 'Wtaunu_pythia',
     #'WePlus_powheg', 'WeMinus_powheg', 'WmuMinus_powheg', 'WmuPlus_powheg', 'WtauMinus_powheg', 'WtauPlus_powheg',
     'WplusJets_madgraph',
@@ -35,7 +36,7 @@ SAMPLES_TO_PLOT = [
     'Zmumu_powheg',
     #'WplusJetsSum_pythia',
     'WplusJets_madgraph',
-    'qcdSum',    
+    'qcdSum',
     'ZtautauSum'
 ]
 
@@ -124,7 +125,7 @@ RECO_SAMPLES = {
         },
         'enableSysUncertainties' : False,
         'enableFakeRates' : True,
-        'SE_black_list' : 'T2_RU_JINR,T2_US_Purdue,T2_US_Wisconsin'
+        'SE_black_list' : 'T2_RU_JINR,T2_US_Purdue,T2_US_Wisconsin,T2_IT_Bari'
     },
     'Ztautau_pythia' : {
         'datasetpath' : "/DYtoTauTau_M_20_TuneD6T_7TeV-pythia6-tauola/Fall10-START38_V12-v1/GEN-SIM-RECO",
@@ -319,6 +320,23 @@ RECO_SAMPLES = {
         'applyMuonTriggerEfficiencyCorrection' : True,
         'applyMuonIsolationEfficiencyCorrection' : True,
         'factorize' : True
+    },
+    'PPmuXptGt20Mu10Workaround' : {
+        'datasetpath' : "/QCD_Pt-20_MuEnrichedPt-10_TuneZ2_7TeV-pythia6/Fall10-E7TeV_ProbDist_2010Data_BX156_START38_V12-v1/GEN-SIM-RECO",
+        'dbs_url' :  "http://cmsdbsprod.cern.ch/cms_dbs_prod_global/servlet/DBSServlet",
+        'events_processed' : 8063288,
+        'skim_eff' : 1.0,
+        'x_sec' : 0.2966*_millibarns*1.18e-3, # x-sec * gen filter efficiency
+        'genPhaseSpaceCut' : 'leadingGenMuon.pt < 15.',
+        'legendEntry' : plotter.process_PPmuXptGt20.config_dqmHistPlotter.legendEntry.value(),
+        'type' : plotter.process_PPmuXptGt20.config_dqmHistPlotter.type.value(),
+        'drawOption' : styles.drawOption_QCD,
+        'enableFakeRates' : True,
+        'applyMuonTriggerEfficiencyCorrection' : True,
+        'applyMuonIsolationEfficiencyCorrection' : True,
+        'applyVertexMultiplicityReweighting' : True,
+        'factorize' : True,
+        'hlt' : cms.InputTag("TriggerResults", "", "REDIGI38XPU")
     },
     'PPmuXptGt20Mu10' : {
         'datasetpath' : "/QCD_Pt-20_MuEnrichedPt-10_TuneZ2_7TeV-pythia6/Fall10-E7TeV_ProbDist_2010Data_BX156_START38_V12-v1/GEN-SIM-RECO",
