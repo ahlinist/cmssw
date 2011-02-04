@@ -9,12 +9,19 @@ import os
 channel = 'ZtoMuTau_tauIdEff'
 configFile = 'skimTauIdEffSample_cfg.py'
 #jobId = getJobId(channel)
-jobId = '2011Jan17'
+jobId = '2011Feb03'
 
 outputFilePath = '/user/v/veelken/CMSSW_3_8_x/skims/TauIdEffMeas/'
 
 samplesToAnalyze = [
     # modify in case you want to submit jobs for some of the samples only...
+    'data_Mu_Run2010A_Nov4ReReco',
+    'data_Mu_Run2010B_Nov4ReReco',
+    'ZtautauPU156bx',
+    'Zmumu_pythia', 
+    'PPmuXptGt20Mu10', 'PPmuXptGt20Mu15',
+    'WplusJets_madgraph',
+    'TTplusJets_madgraph'
 ]
 
 # Define what output file name a skimmed sample will have
