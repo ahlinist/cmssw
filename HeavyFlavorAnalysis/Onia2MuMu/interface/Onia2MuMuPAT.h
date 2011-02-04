@@ -18,6 +18,17 @@
 #include <DataFormats/PatCandidates/interface/Muon.h>
 
 #include <CommonTools/UtilAlgos/interface/StringCutObjectSelector.h>
+
+template<typename T>
+struct GreaterByVProb {
+  typedef T first_argument_type;
+  typedef T second_argument_type;
+  bool operator()( const T & t1, const T & t2 ) const {
+    return t1.userFloat("vProb") > t2.userFloat("vProb");
+  }
+};
+
+
 //
 // class decleration
 //
@@ -47,6 +58,7 @@ class Onia2MuMuPAT : public edm::EDProducer {
   bool resolveAmbiguity_;
   bool addMCTruth_;
   GreaterByPt<pat::CompositeCandidate> pTComparator_;
+  GreaterByVProb<pat::CompositeCandidate> vPComparator_;
 
 };
 
