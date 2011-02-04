@@ -172,49 +172,67 @@ drawJobConfigurator_ZtoElecTau.add(
 
 drawJobConfigurator_ZtoElecTau.add(
     afterCut = evtSelTauPt,
-    beforeCut = evtSelElectronTrkIso,
+    beforeCut = evtSelElectronIso,
     plots = [
-			drawJobConfigEntry(
-        meName = 'ElectronQuantities/ElectronTrkIsoPtRel',
-        title = "Relative Electron Track iso. P_{T} sum (after Tau P_{T} Cut)",
-        xAxis = 'Pt',
-        name = "cutFlowControlPlots_electronTrkIso_afterTauPt"
-			),
-			drawJobConfigEntry(
-        meName = 'DiTauCandidateQuantities/VisMass',
-        title = "M_{vis}(Electron + Tau) (after Tau P_{T} Cut)",
-        xAxis = 'Mass',
-        name = "cutFlowControlPlots_visibleMass_afterTauPt"
-			)
-		]
-)
-drawJobConfigurator_ZtoElecTau.add(
-    afterCut = evtSelElectronTrkIso,
-    beforeCut = evtSelElectronEcalIso,
-    plots = [
-		drawJobConfigEntry(
-        	meName = 'ElectronQuantities/ElectronEcalIsoPtRel',
-        	title = "Relative Electron ECAL iso. P_{T} sum (after Electron Track iso. Cut)",
-        	xAxis = 'Pt',
-        	name = "cutFlowControlPlots_electronEcalIso_afterElectronTrkIso"
-    	),
-		drawJobConfigEntry(
-        	meName = 'ElectronQuantities/ElectronEcalIsoPtBarrelRel',
-        	title = "Relative Electron ECAL iso. in barrel (after Electron Track iso. Cut)",
-        	xAxis = 'Pt',
-        	name = "cutFlowControlPlots_electronEcalIsoBarrel_afterElectronTrkIso"
-    	),
-		drawJobConfigEntry(
-        	meName = 'ElectronQuantities/ElectronEcalIsoPtEndcapRel',
-        	title = "Relative Electron ECAL iso. in endcap (after Electron Track iso. Cut)",
-        	xAxis = 'Pt',
-        	name = "cutFlowControlPlots_electronEcalIsoEndcap_afterElectronTrkIso"
-    	)
-	]
+        drawJobConfigEntry(
+            meName = 'ElectronQuantities/ElectronParticleFlowIsoPt',
+            title = "Electron PFCandidate iso. (after Tau P_{T} Cut)",
+            xAxis = 'Pt',
+            name = "cutFlowControlPlots_electronPFCandidateAbsIso_afterTauPt"
+        ),
+        drawJobConfigEntry(
+            meName = 'ElectronQuantities/ElectronParticleFlowIsoPtRel',
+            title = "Electron PFCandidate rel. iso. (after Tau P_{T} Cut)",
+            xAxis = 'unlabeled',
+            name = "cutFlowControlPlots_electronPFCandidateRelIso_afterTauPt"
+        ),
+        drawJobConfigEntry(
+            meName = 'ElectronQuantities/ElectronPFChargedHadronIsoPt',
+            title = "Electron PFChargedHadron iso. (after Tau P_{T} Cut)",
+            xAxis = 'Pt',
+            name = "cutFlowControlPlots_electronPFChargedHadronAbsIso_afterTauPt"
+        ),
+        drawJobConfigEntry(
+            meName = 'ElectronQuantities/ElectronPFChargedHadronIsoPtRel',
+            title = "Electron PFChargedHadron rel. iso. (after Tau P_{T} Cut)",
+            xAxis = 'unlabeled',
+            name = "cutFlowControlPlots_electronPFChargedHadronRelIso_afterTauPt"
+        ),
+        drawJobConfigEntry(
+            meName = 'ElectronQuantities/ElectronPFNeutralHadronIsoPt',
+            title = "Electron PFNeutralHadron iso. (after Tau P_{T} Cut)",
+            xAxis = 'Pt',
+            name = "cutFlowControlPlots_electronPFNeutralHadronAbsIso_afterTauPt"
+        ),
+        drawJobConfigEntry(
+            meName = 'ElectronQuantities/ElectronPFNeutralHadronIsoPtRel',
+            title = "Electron PFNeutralHadron rel. iso. (after Tau P_{T} Cut)",
+            xAxis = 'unlabeled',
+            name = "cutFlowControlPlots_electronPFNeutralHadronRelIso_afterTauPt"
+        ),
+        drawJobConfigEntry(
+            meName = 'ElectronQuantities/ElectronPFGammaIsoPt',
+            title = "Electron PFGamma iso. (after Tau P_{T} Cut)",
+            xAxis = 'Pt',
+            name = "cutFlowControlPlots_electronPFGammaAbsIso_afterTauPt"
+        ),
+        drawJobConfigEntry(
+            meName = 'ElectronQuantities/ElectronPFGammaIsoPtRel',
+            title = "Electron PFGamma rel. iso. (after Tau P_{T} Cut)",
+            xAxis = 'unlabeled',
+            name = "cutFlowControlPlots_electronPFGammaRelIso_afterTauPt"
+        ),
+        drawJobConfigEntry(
+            meName = 'DiTauCandidateQuantities/VisMass',
+            title = "M_{vis}(Electron + Tau) (after Tau P_{T} Cut)",
+            xAxis = 'Mass',
+            name = "cutFlowControlPlots_visibleMass_afterTauPt"
+        )
+   ]
 )
 
 drawJobConfigurator_ZtoElecTau.add(
-    afterCut = evtSelElectronEcalIso,
+    afterCut = evtSelElectronIso,
     beforeCut = evtSelElectronConversionVeto,
      plot = drawJobConfigEntry(
         meName = 'ElectronQuantities/Electron#PAR#',
