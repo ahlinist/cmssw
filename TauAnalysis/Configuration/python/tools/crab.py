@@ -36,7 +36,7 @@ def lfns(crab_dir):
         for key, value in exit_status.iteritems():
             if value:
                 isOk = False
-                print "Skipping %s - status: %s = %s" % (file, key, value)
+                print "Skipping %s - status: %s = %s" % (job_xml, key, value)
         if not isOk:
             continue
 
