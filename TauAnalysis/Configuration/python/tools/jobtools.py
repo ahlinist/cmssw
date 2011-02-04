@@ -92,7 +92,7 @@ def make_bsub_script(output_file, input_jobs_and_files,
 
     # Copy all the files locally
     #print input_files
-    copy_command = '\n'.join('rfcp %s . &' % file for file in input_files)
+    copy_command = '\n'.join('prfcp.py %s . &' % file for file in input_files)
     copy_command += "\n wait\n"
 
     outputFileName = os.path.basename(output_file)
