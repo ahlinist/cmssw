@@ -277,7 +277,8 @@ Onia2MuMuPAT::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
     }
   }
 
-  std::sort(oniaOutput->begin(),oniaOutput->end(),pTComparator_);
+  // std::sort(oniaOutput->begin(),oniaOutput->end(),pTComparator_);
+  std::sort(oniaOutput->begin(),oniaOutput->end(),vPComparator_);
 
   iEvent.put(oniaOutput);
 
@@ -352,8 +353,6 @@ Onia2MuMuPAT::findJpsiMCInfo(reco::GenParticleRef genJpsi) {
 
   TVector3 vdiff = trueVtx - trueVtxMom;
   trueLife = vdiff.Perp()*3.09688/trueP.Perp();
-
-  // std::cout << "1 " << momJpsiID << " 2 " << trueLife << std::endl; 
 
   std::pair<int, float> result = std::make_pair(momJpsiID, trueLife);
   return result;

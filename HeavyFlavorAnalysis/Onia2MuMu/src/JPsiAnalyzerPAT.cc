@@ -13,7 +13,7 @@
 //
 // Original Author: Roberto Covarelli 
 //         Created:  Fri Oct  9 04:59:40 PDT 2009
-// $Id: JPsiAnalyzerPAT.cc,v 1.42 2011/01/13 15:35:16 covarell Exp $
+// $Id: JPsiAnalyzerPAT.cc,v 1.43 2011/01/19 12:44:24 covarell Exp $
 //
 // based on: Onia2MuMu package V00-11-00
 // changes done by: FT-HW
@@ -151,6 +151,18 @@ class JPsiAnalyzerPAT : public edm::EDAnalyzer {
 
       //7.) TriggerNames Map
       std::map<std::string, int> mapTriggerNameToIntFired_;
+      // USAGE:
+      // ---> For all single or symmetric double triggers:
+      // 0 : event not firing the corresponding trigger
+      // 1 : event firing the corresponding trigger and all RECO muons matched to the required number of HLT objects (1 or 2)
+      // 3 : event firing the corresponding trigger but at least one RECO muon is not matched to the HLT objects
+      // 
+      // ---> For the asymmetric triggers:
+      // 0 : event not firing the corresponding trigger
+      // 1 : event firing the corresponding trigger, 2 RECO muons matched to 2 HLT objects, POSITIVE-charge muon matched to the tighter HLT object (usually a L3 muon)
+      // -1 : event firing the corresponding trigger, 2 RECO muons matched to 2 HLT objects, NEGATIVE-charge muon matched to the tighter HLT object (usually a L3 muon)
+      // 2 : event firing the corresponding trigger, 2 RECO muons matched to 2 HLT objects, both matched to the tighter HLT object (usually a L3 muon)
+      // 3 : event firing the corresponding trigger but at least one RECO muon is not matched to the HLT objects 
 
       Handle<pat::CompositeCandidateCollection > collAll;
       Handle<pat::CompositeCandidateCollection > collCalo;
@@ -170,6 +182,8 @@ class JPsiAnalyzerPAT : public edm::EDAnalyzer {
       vector<double> _etabinranges;
       bool           _onlythebest;
       bool           _applycuts;
+      bool           _applyExpHitcuts;
+      bool           _applyDiMuoncuts;
       bool           _useBS;
       bool           _useCalo;
       bool           _removeSignal;
@@ -242,7 +256,9 @@ JPsiAnalyzerPAT::JPsiAnalyzerPAT(const edm::ParameterSet& iConfig):
   _ptbinranges(iConfig.getParameter< vector<double> >("pTBinRanges")),	
   _etabinranges(iConfig.getParameter< vector<double> >("etaBinRanges")),
   _onlythebest(iConfig.getParameter<bool>("onlyTheBest")),		
-  _applycuts(iConfig.getParameter<bool>("applyCuts")),			
+  _applycuts(iConfig.getParameter<bool>("applyCuts")),
+  _applyExpHitcuts(iConfig.getUntrackedParameter<bool>("applyExpHitCuts",false)),
+  _applyDiMuoncuts(iConfig.getUntrackedParameter<bool>("applyDiMuonCuts",false)),
   _useBS(iConfig.getParameter<bool>("useBeamSpot")),
   _useCalo(iConfig.getUntrackedParameter<bool>("useCaloMuons",false)),
   _removeSignal(iConfig.getUntrackedParameter<bool>("removeSignalEvents",false)),
@@ -264,15 +280,9 @@ JPsiAnalyzerPAT::JPsiAnalyzerPAT(const edm::ParameterSet& iConfig):
   passedTriggerMatch_=0;
   // passedTriggerResultsAnalyzer_=0;
 
-  /* count=0;
-  runtmp=0;
-  lumitmp=11111111;
-  runmax=0;
-  runmin=100000000;*/
-
   JpsiMassMin = _massMin;
   JpsiMassMax = _massMax;
-  JpsiCtMin = -1.0;
+  JpsiCtMin = -2.0;
   JpsiCtMax = 3.5;
 
   if (_writeOutCands) theTextFile = new ofstream("passedCandidates.txt");
@@ -787,7 +797,7 @@ JPsiAnalyzerPAT::fillTreeAndDS(unsigned int theCat, const pat::CompositeCandidat
   if (isMuMatched && _removeMuons) return;
 
   // PAT trigger match, 2 muons to the last filter used in the HLT path (new way)
-  this->matchMuonToHlt(muon1, muon2);
+  this->matchMuonToHlt(muonPos, muonNeg);
 
   // some counter
   passedTriggerMatch_++;
@@ -850,8 +860,9 @@ JPsiAnalyzerPAT::fillTreeAndDS(unsigned int theCat, const pat::CompositeCandidat
 	aCand->pt() > JpsiPtMin && aCand->pt() < JpsiPtMax && 
 	fabs(theRapidity) > JpsiRapMin && fabs(theRapidity) < JpsiRapMax &&
 	isMuonInAccept(muon1) && isMuonInAccept(muon2) &&
-	mapTriggerNameToIntFired_[_triggerForDataset] == 1) {
-      
+	(mapTriggerNameToIntFired_[_triggerForDataset] == 1 ||
+	 mapTriggerNameToIntFired_[_triggerForDataset] == -1 ||
+	 mapTriggerNameToIntFired_[_triggerForDataset] == 2 )) {
 
       int ss=999;
       if (muon1->charge() + muon2->charge() == 0) ss=0;
@@ -1052,12 +1063,22 @@ JPsiAnalyzerPAT::selGlobalMuon(const pat::Muon* aMuon) {
 
   TrackRef iTrack = aMuon->innerTrack();
   const reco::HitPattern& p = iTrack->hitPattern();
+  const reco::HitPattern& ei = iTrack->trackerExpectedHitsInner();
+  const reco::HitPattern& eo = iTrack->trackerExpectedHitsOuter();
 
   TrackRef gTrack = aMuon->globalTrack();
   const reco::HitPattern& q = gTrack->hitPattern();
 
-  return (// isMuonInAccept(aMuon) &&
-	  iTrack->found() > 11 &&
+  bool trackOK = false;
+  // cooler way of cutting on tracks
+  if (_applyExpHitcuts) {
+    float fHits = iTrack->found() / (iTrack->found() + iTrack->lost() + ei.numberOfHits() + eo.numberOfHits());
+    trackOK = (fHits >= 0.85 && (p.hasValidHitInFirstPixelBarrel() || p.hasValidHitInFirstPixelEndcap() ));
+  // old way of cutting on tracks  
+  } else trackOK = (iTrack->found() > 11);
+
+  return (isMuonInAccept(aMuon) &&
+	  trackOK &&
 	  gTrack->chi2()/gTrack->ndof() < 20.0 &&
           q.numberOfValidMuonHits() > 0 &&
 	  iTrack->chi2()/iTrack->ndof() < 1.8 &&
@@ -1073,9 +1094,19 @@ JPsiAnalyzerPAT::selTrackerMuon(const pat::Muon* aMuon) {
   
   TrackRef iTrack = aMuon->innerTrack();
   const reco::HitPattern& p = iTrack->hitPattern();
+  const reco::HitPattern& ei = iTrack->trackerExpectedHitsInner();
+  const reco::HitPattern& eo = iTrack->trackerExpectedHitsOuter();
 
-  return (// isMuonInAccept(aMuon) &&
-	  iTrack->found() > 11 &&
+  bool trackOK = false;
+  // cooler way of cutting on tracks
+  if (_applyExpHitcuts) {
+    float fHits = iTrack->found() / (iTrack->found() + iTrack->lost() + ei.numberOfHits() + eo.numberOfHits());
+    trackOK = (fHits >= 0.85 && (p.hasValidHitInFirstPixelBarrel() || p.hasValidHitInFirstPixelEndcap() ));
+  // old way of cutting on tracks  
+  } else trackOK = (iTrack->found() > 11);
+
+  return (isMuonInAccept(aMuon) &&
+	  trackOK &&
  	  iTrack->chi2()/iTrack->ndof() < 1.8 &&
 	  aMuon->muonID("TrackerMuonArbitrated") &&
 	  aMuon->muonID("TMOneStationTight") &&
@@ -1089,10 +1120,20 @@ JPsiAnalyzerPAT::selCaloMuon(const pat::Muon* aMuon) {
   
   TrackRef iTrack = aMuon->innerTrack();
   const reco::HitPattern& p = iTrack->hitPattern();
+  const reco::HitPattern& ei = iTrack->trackerExpectedHitsInner();
+  const reco::HitPattern& eo = iTrack->trackerExpectedHitsOuter();
+ 
+  bool trackOK = false;
+  // cooler way of cutting on tracks
+  if (_applyExpHitcuts) {
+    float fHits = iTrack->found() / (iTrack->found() + iTrack->lost() + ei.numberOfHits() + eo.numberOfHits());
+    trackOK = (fHits >= 0.85 && (p.hasValidHitInFirstPixelBarrel() || p.hasValidHitInFirstPixelEndcap() ));
+  // old way of cutting on tracks  
+  } else trackOK = (iTrack->found() > 11);
 
-  return (// isMuonInAccept(aMuon) &&
+  return (isMuonInAccept(aMuon) &&
 	  aMuon->caloCompatibility() > 0.89 &&
-	  iTrack->found() > 11 &&
+	  trackOK &&
 	  iTrack->chi2()/iTrack->ndof() < 1.8 &&
           p.pixelLayersWithMeasurement() > 1 &&
 	  fabs(iTrack->dxy(RefVtx)) < 3.0 &&
@@ -1102,6 +1143,7 @@ JPsiAnalyzerPAT::selCaloMuon(const pat::Muon* aMuon) {
 bool 
 JPsiAnalyzerPAT::selDimuon(const pat::CompositeCandidate* aCand) {
   
+  if (!_applyDiMuoncuts) return true;
   return ( aCand->userFloat("vProb") > 0.01 );
 }
 
@@ -1334,7 +1376,7 @@ JPsiAnalyzerPAT::hltReport(const edm::Event &iEvent ,const edm::EventSetup& iSet
 
       if ( mapTriggernameToHLTbit[triggerPathName] < 1000 && handleTriggerResults_->accept( mapTriggernameToHLTbit[triggerPathName] ) ){
           //std::cout << "[FloJPsiAnalyzer::hltReport] --- TriggerName " << triggerPathName << " fired!" << std::endl;
-          mapTriggerNameToIntFired_[triggerPathName] = 2;
+          mapTriggerNameToIntFired_[triggerPathName] = 3;
       }
     }
     }
@@ -1378,10 +1420,12 @@ JPsiAnalyzerPAT::matchMuonToHlt(const pat::Muon* muon1, const pat::Muon* muon2)
                     if (mu2HLTMatches[k].collection() == "hltL3MuonCandidates::HLT") matchedMu3[1] = true;
                     if (mu2HLTMatches[k].collection() == "hltMuTrackJpsiCtfTrackCands::HLT") matchedTrack[1] = true;
                 }
-                if( (matchedMu3[0] && matchedTrack[1]) || (matchedMu3[1] && matchedTrack[0]) ) {
-                    mapTriggerNameToIntFired_[triggerName] = 1;
-                    //std::cout << "[JPsiAnalyzerPAT::matchMuonToHlt] ---- ---- \"MuX + Track\" Trigger: " << triggerName << " FIRED and MATCHED" << std::endl;
-                }
+                if( matchedMu3[0] && matchedTrack[1] )
+		  mapTriggerNameToIntFired_[triggerName] = 1;
+		else if( matchedMu3[1] && matchedTrack[0] )
+		  mapTriggerNameToIntFired_[triggerName] = -1;
+		if( matchedMu3[0] && matchedTrack[1] && matchedMu3[1] && matchedTrack[0] )
+		  mapTriggerNameToIntFired_[triggerName] = 2;
         }
 
         // treat "MuX_TkMuX" Trigger separately: Match by Tracker collection:hltMuTkMuJpsiTrackerMuonCands
@@ -1414,10 +1458,12 @@ JPsiAnalyzerPAT::matchMuonToHlt(const pat::Muon* muon1, const pat::Muon* muon2)
                     if (mu2HLTMatches[k].collection() == "hltL3MuonCandidates::HLT") matchedMu3[1] = true;
                     if (mu2HLTMatches[k].collection() == "hltMuTkMuJpsiTrackerMuonCands::HLT") matchedTrack[1] = true;
                 }
-                if( (matchedMu3[0] && matchedTrack[1]) || (matchedMu3[1] && matchedTrack[0]) ) {
-                    mapTriggerNameToIntFired_[triggerName] = 1;
-                    //std::cout << "[JPsiAnalyzerPAT::matchMuonToHlt] ---- ---- \"MuX + Track\" Trigger: " << triggerName << " FIRED and MATCHED" << std::endl;
-                }
+                if( matchedMu3[0] && matchedTrack[1] )
+		  mapTriggerNameToIntFired_[triggerName] = 1;
+		else if( matchedMu3[1] && matchedTrack[0] )
+		  mapTriggerNameToIntFired_[triggerName] = -1;
+		if( matchedMu3[0] && matchedTrack[1] && matchedMu3[1] && matchedTrack[0] )
+		  mapTriggerNameToIntFired_[triggerName] = 2;
         }
 
         // All the other Paths match by last filter:
