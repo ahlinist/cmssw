@@ -13,7 +13,7 @@
 //
 // Original Author:  pts/45
 //         Created:  Tue May 13 12:23:34 CEST 2008
-// $Id: RPCMonitorEfficiency.cc,v 1.45 2011/01/21 11:56:59 carrillo Exp $
+// $Id: RPCMonitorEfficiency.cc,v 1.46 2011/01/21 12:08:02 carrillo Exp $
 //
 //
 
@@ -323,6 +323,10 @@ public:
   TH1F * EffDistroD2far;
   TH1F * EffDistroD3far;
 
+  TH2F * IntegralMuography[48];//There are 48 different kind of rolls in CMS.
+  TH2F * IntegralMuographyObs[48];//There are 48 different kind of rolls in CMS.
+  TH2F * IntegralMuographyExp[48];//There are 48 different kind of rolls in CMS.
+
   TH2F * Wheelm2Summary;
   TH2F * Wheelm1Summary;
   TH2F * Wheel0Summary;
@@ -585,8 +589,7 @@ private:
   bool endcap;
   bool barrel; 
   std::vector<unsigned int> blacklist;
-  
-
+  std::vector<unsigned int> IntegralMuographyRawIdsVector[48];
 };
 
 int rollY(std::string shortname,std::map<int,std::string> rollNames){
@@ -626,7 +629,7 @@ bool HasBadRoll(int region,uint32_t station,uint32_t ring,int k,std::vector<uint
     hasBadRoll=hasBadRoll*thisroll;
   }
   
-  if(hasBadRoll) std::cout<<"This RawId has bad roll"<<RPCDetId(region,ring,station,sector,1,subsector,1).rawId()<<std::endl;
+  if(hasBadRoll) std::cout<<"This RawId has bad roll "<<RPCDetId(region,ring,station,sector,1,subsector,1).rawId()<<std::endl;
   
   return hasBadRoll;
 }
@@ -657,6 +660,7 @@ RPCMonitorEfficiency::~RPCMonitorEfficiency(){}
 
 void RPCMonitorEfficiency::beginRun(const edm::Run&,const edm::EventSetup&){
   if(debug) std::cout <<"Begin Job"<<std::endl;
+
   theFile = new TFile(file.c_str());
   if(!theFile)if(debug) std::cout<<"The File Doesn't exist"<<std::endl;
   theFileOut = new TFile(fileout.c_str(), "RECREATE");
@@ -719,14 +723,83 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
   bxendcap= new TH2F ("BXEndCap","BX Distribution for the End Cap",51,-5.0,5.0,51,0.,4.);
   bxbarrel= new TH2F ("BXBarrel","BX Distribution for the Barrel",51,-5.0,5.0,51,0.,4.);
 
+  std::string namesIntegralMuography[48];
+
+  namesIntegralMuography[0] = "105.7_2.28889_90";
+  namesIntegralMuography[1] = "105.7_2.45238_84";
+  namesIntegralMuography[2] = "105.7_2.95238_84";
+  namesIntegralMuography[3] = "105.7_3.52381_42";
+  namesIntegralMuography[4] = "105.7_4.05556_36";
+  namesIntegralMuography[5] = "105.7_4.125_48";
+  namesIntegralMuography[6] = "116.9_2.28889_90";
+  namesIntegralMuography[7] = "116.9_2.45238_84";
+  namesIntegralMuography[8] = "116.9_2.75556_90";
+  namesIntegralMuography[9] = "116.9_2.95238_84";
+  namesIntegralMuography[10] = "116.9_3.52381_42";
+  namesIntegralMuography[11] = "116.9_4.11111_36";
+  namesIntegralMuography[12] = "116.9_4.125_48";
+  namesIntegralMuography[13] = "116.9_4.13333_60";
+  namesIntegralMuography[14] = "125.2_2.28889_90";
+  namesIntegralMuography[15] = "125.2_2.45238_84";
+  namesIntegralMuography[16] = "125.2_2.75556_90";
+  namesIntegralMuography[17] = "125.2_2.95238_84";
+  namesIntegralMuography[18] = "125.2_3.52381_42";
+  namesIntegralMuography[19] = "125.2_4.11111_36";
+  namesIntegralMuography[20] = "125.2_4.125_48";
+  namesIntegralMuography[21] = "125.2_4.13333_60";
+  namesIntegralMuography[22] = "40.3_3.61625_32";
+  namesIntegralMuography[23] = "47.9_1.94572_32";
+  namesIntegralMuography[24] = "49_2.09312_32";
+  namesIntegralMuography[25] = "51.9_3.65066_32";
+  namesIntegralMuography[26] = "53.5_2.37878_32";
+  namesIntegralMuography[27] = "53.9_2.22953_32";
+  namesIntegralMuography[28] = "56_2.92697_32";
+  namesIntegralMuography[29] = "57.4_2.75556_90";
+  namesIntegralMuography[30] = "60.4_2.91769_32";
+  namesIntegralMuography[31] = "61.7_2.55106_32";
+  namesIntegralMuography[32] = "65.7_2.75556_90";
+  namesIntegralMuography[33] = "75.9_3.29306_32";
+  namesIntegralMuography[34] = "75.9_3.29581_32";
+  namesIntegralMuography[35] = "76.9_2.75556_90";
+  namesIntegralMuography[36] = "76.9_2.95238_84";
+  namesIntegralMuography[37] = "79.4_1.73672_32";
+  namesIntegralMuography[38] = "79.4_2.75556_90";
+  namesIntegralMuography[39] = "79.4_2.95238_84";
+  namesIntegralMuography[40] = "85.2_2.75556_90";
+  namesIntegralMuography[41] = "85.2_2.95238_84";
+  namesIntegralMuography[42] = "97.4_2.28889_90";
+  namesIntegralMuography[43] = "97.4_2.45238_84";
+  namesIntegralMuography[44] = "97.4_2.95238_84";
+  namesIntegralMuography[45] = "97.4_3.52381_42";
+  namesIntegralMuography[46] = "97.4_4.05556_36";
+  namesIntegralMuography[47] = "97.4_4.125_48";
+
+  for(int m =0; m<48;m++){
+    std::ifstream ifin(("htmltemplates/"+namesIntegralMuography[m]+".txt").c_str());
+    if(debug) std::cout<<"Calling file for Vector"<<"htmltemplates/"+namesIntegralMuography[m]+".txt"<<std::endl;
+    IntegralMuographyRawIdsVector[m].clear();
+    if(ifin.is_open()){
+      uint32_t rawId;
+      std::string name;
+      float stripl,stripw;
+      int nstrips;
+      while (ifin.good()){
+	ifin >>rawId >>name >>stripl >>stripw >>nstrips;
+	IntegralMuographyRawIdsVector[m].push_back(rawId);
+	if(debug) std::cout<<"Building Vectors,  name "<<name<<" vector "<<namesIntegralMuography[m].c_str()<<std::endl;
+      }
+    }
+    ifin.close();
+  }
+  										  		   
   signal_bxendcap= new TH2F ("signal_BXEndCap","Signal BX Distribution for the End Cap",51,-5.0,5.0,51,0.,4.);
   signal_bxbarrel= new TH2F ("signal_BXBarrel","Signal BX Distribution for the Barrel",51,-5.0,5.0,51,0.,4.);
-
+										  		   
   EffBarrel_black = new TH1F ("EffBarrel_black","Efficiency Distribution For All The Barrel",51,-1,101);
   DoubleGapBarrel_black = new TH1F ("DoubleGapBarrel_black","Double Gap Efficiency Distribution For All The Barrel",51,-1,101);
   CentralEffBarrel_black = new TH1F ("CentralEffBarrel_black","Efficiency in central part For All The Barrel",51,-1,101);
-  
-  EffBarrel = new TH1F ("EffBarrel","Efficiency Distribution For All The Barrel",51,-1,101);
+  										  		   
+  EffBarrel = new TH1F ("EffBarrel","Efficiency Distribution For All The Barrel",51,-1,101);	   
   DoubleGapBarrel = new TH1F ("DoubleGapBarrel","Double Gap Efficiency Distribution For All The Barrel",51,-1,101);
   CentralEffBarrel = new TH1F ("CentralEffBarrel","Efficiency in central part For All The Barrel",51,-1,101);
   BXEffBarrel = new TH1F ("BXEffBarrel","Efficiency Distribution For All The Barrel with good BX",51,-1,101);
@@ -1325,7 +1398,7 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
   }
   
   std::map<int,std::string> rollNamesInter;
-  
+
   rollNamesInter[1]="RB1in B";
   rollNamesInter[2]="RB1in F";
   rollNamesInter[3]="RB1out B";
@@ -1335,19 +1408,19 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
   rollNamesInter[7]="RB2in F";
   rollNamesInter[8]="RB2out B";
   rollNamesInter[9]="RB2out F";
-  rollNamesInter[10]="RB3- B";
-  rollNamesInter[11]="RB3- F";
+  rollNamesInter[10]="RB3,- B";
+  rollNamesInter[11]="RB3,- F";
   rollNamesInter[12]="RB3+ B";
   rollNamesInter[13]="RB3+ F";
-  rollNamesInter[14]="RB4,-,-- B";
-  rollNamesInter[15]="RB4,-,-- F";
-  rollNamesInter[16]="RB4+,++ B";
-  rollNamesInter[17]="RB4+,++ F";
-  rollNamesInter[18]="RB4-+ B";
-  rollNamesInter[19]="RB4-+ F";
-  rollNamesInter[20]="RB4+- B";
-  rollNamesInter[21]="RB4+- F";
-
+  rollNamesInter[14]="RB4,- B";
+  rollNamesInter[15]="RB4,- F";
+  rollNamesInter[16]="RB4+ B";
+  rollNamesInter[17]="RB4+ F";
+  rollNamesInter[18]="RB4++ B";
+  rollNamesInter[19]="RB4++ F";
+  rollNamesInter[20]="RB4-- B";
+  rollNamesInter[21]="RB4-- F";
+  
   std::map<int,std::string> rollNamesExter;
   
   for(int i=1;i<=22;i++){
@@ -1477,7 +1550,8 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
 	
 	std::string name = rpcsrv.name();
 
-	if(rpcId.region()!=0 && abs(rpcId.station())==3 && rpcId.ring()==2 && rpcId.roll()==3) continue; //skiping rolls with problems with the extrapolation methodin the endcap RE+/-3_R2_C
+	//if(rpcId.region()!=0 && abs(rpcId.station())==3 && rpcId.ring()==2 && rpcId.roll()==3) continue; 
+	//skiping rolls with problems with the extrapolation methodin the endcap RE+/-3_R2_C
 
 	if(rpcId.region()==0 && barrel == false) continue;
 	if(rpcId.region()!=0 && endcap == false ) continue;
@@ -1522,6 +1596,79 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
 
 	  histoRPC_2D= (TH2F*)theFile->Get(meIdRPC_2D.c_str());
 	  histoDT_2D= (TH2F*)theFile->Get(meIdDT_2D.c_str());
+
+	  for(int m=0;m<48;m++){
+	    if(!(find(IntegralMuographyRawIdsVector[m].begin(),IntegralMuographyRawIdsVector[m].end(),rpcId.rawId())
+		 ==IntegralMuographyRawIdsVector[m].end())){
+
+	      if(!IntegralMuography[m]){
+		assert(!IntegralMuographyExp[m]);
+		assert(!IntegralMuographyObs[m]);
+		
+		std::cout<<"doing first booking for IntegralMuography[m="<<m<<"] with "<< name<<std::endl;
+		
+		IntegralMuography[m] = new TH2F(namesIntegralMuography[m].c_str(),namesIntegralMuography[m].c_str()
+						,histoRPC_2D->GetNbinsX(),histoRPC_2D->GetXaxis()->GetXmin(),histoRPC_2D->GetXaxis()->GetXmax()
+						,histoRPC_2D->GetNbinsY(),histoRPC_2D->GetYaxis()->GetXmin(),histoRPC_2D->GetYaxis()->GetXmax());  
+		
+		IntegralMuographyObs[m] = new TH2F((namesIntegralMuography[m]+"Obs").c_str(),(namesIntegralMuography[m]+"Obs").c_str()
+						,histoRPC_2D->GetNbinsX(),histoRPC_2D->GetXaxis()->GetXmin(),histoRPC_2D->GetXaxis()->GetXmax()
+						,histoRPC_2D->GetNbinsY(),histoRPC_2D->GetYaxis()->GetXmin(),histoRPC_2D->GetYaxis()->GetXmax());  
+
+		IntegralMuographyExp[m] = new TH2F((namesIntegralMuography[m]+"Obs").c_str(),(namesIntegralMuography[m]+"Obs").c_str()
+						,histoRPC_2D->GetNbinsX(),histoRPC_2D->GetXaxis()->GetXmin(),histoRPC_2D->GetXaxis()->GetXmax()
+						,histoRPC_2D->GetNbinsY(),histoRPC_2D->GetYaxis()->GetXmin(),histoRPC_2D->GetYaxis()->GetXmax());  
+		
+		IntegralMuography[m]->Add(histoRPC_2D);
+		IntegralMuographyExp[m]->Add(histoDT_2D);
+	      }else{
+		std::cout<<"found IntegralMuography coincidence filling "<<namesIntegralMuography[m]<<" with "<<name<<std::endl;
+		std::cout
+		  <<IntegralMuographyObs[m]->GetXaxis()->GetXmin()<<" "
+		  <<IntegralMuographyObs[m]->GetXaxis()->GetXmax()<<" "<<std::endl;
+		std::cout
+		  <<histoRPC_2D->GetXaxis()->GetXmin()<<" "
+		  <<histoRPC_2D->GetXaxis()->GetXmax()<<" "<<std::endl;
+		std::cout
+		  <<IntegralMuographyObs[m]->GetYaxis()->GetXmin()<<" "
+		  <<IntegralMuographyObs[m]->GetYaxis()->GetXmax()<<" "<<std::endl;
+		std::cout
+		  <<histoRPC_2D->GetYaxis()->GetXmin()<<" "
+		<<histoRPC_2D->GetYaxis()->GetXmax()<<" "<<std::endl;
+		
+		std::cout
+		  <<histoRPC_2D->GetXaxis()->GetNbins()<<" "	 
+		  <<histoRPC_2D->GetYaxis()->GetNbins()<<std::endl;
+		
+		std::cout
+		  <<IntegralMuographyObs[m]->GetXaxis()->GetNbins()<<" "	 
+		  <<IntegralMuographyObs[m]->GetYaxis()->GetNbins()<<std::endl;
+		
+		if (
+		    IntegralMuographyObs[m]->GetXaxis()->GetXmin() != histoRPC_2D->GetXaxis()->GetXmin() ||
+		    IntegralMuographyObs[m]->GetXaxis()->GetXmax() != histoRPC_2D->GetXaxis()->GetXmax() ||
+		    IntegralMuographyObs[m]->GetYaxis()->GetXmin() != histoRPC_2D->GetYaxis()->GetXmin() ||
+		    IntegralMuographyObs[m]->GetYaxis()->GetXmax() != histoRPC_2D->GetYaxis()->GetXmax() ||
+		    IntegralMuographyObs[m]->GetZaxis()->GetXmin() != histoRPC_2D->GetZaxis()->GetXmin() ||
+		    IntegralMuographyObs[m]->GetZaxis()->GetXmax() != histoRPC_2D->GetZaxis()->GetXmax()){ 
+		  
+		  std::cout<<IntegralMuographyObs[m]->GetXaxis()->GetXmin()<<" "<<histoRPC_2D->GetXaxis()->GetXmin()<<" "<<bool (IntegralMuographyObs[m]->GetXaxis()->GetXmin()!=histoRPC_2D->GetXaxis()->GetXmin())<<std::endl;
+		  std::cout<<IntegralMuographyObs[m]->GetXaxis()->GetXmax()<<" "<<histoRPC_2D->GetXaxis()->GetXmax()<<" "<<bool (IntegralMuographyObs[m]->GetXaxis()->GetXmax()!=histoRPC_2D->GetXaxis()->GetXmax())<<std::endl;
+		  std::cout<<IntegralMuographyObs[m]->GetYaxis()->GetXmin()<<" "<<histoRPC_2D->GetYaxis()->GetXmin()<<" "<<bool (IntegralMuographyObs[m]->GetYaxis()->GetXmin()!=histoRPC_2D->GetYaxis()->GetXmin())<<std::endl;
+		  std::cout<<IntegralMuographyObs[m]->GetYaxis()->GetXmax()<<" "<<histoRPC_2D->GetYaxis()->GetXmax()<<" "<<bool (IntegralMuographyObs[m]->GetYaxis()->GetXmax()!=histoRPC_2D->GetYaxis()->GetXmax())<<std::endl;
+		  std::cout<<IntegralMuographyObs[m]->GetZaxis()->GetXmin()<<" "<<histoRPC_2D->GetZaxis()->GetXmin()<<" "<<bool (IntegralMuographyObs[m]->GetZaxis()->GetXmin()!=histoRPC_2D->GetZaxis()->GetXmin())<<std::endl;
+		  std::cout<<IntegralMuographyObs[m]->GetZaxis()->GetXmax()<<" "<<histoRPC_2D->GetZaxis()->GetXmax()<<" "<<bool (IntegralMuographyObs[m]->GetZaxis()->GetXmax()!=histoRPC_2D->GetZaxis()->GetXmax())<<std::endl;
+		  
+		  std::cout<<"MY WARNING Add Attempt to add histograms with different axis limits"<<std::endl;
+		}
+		
+		IntegralMuographyObs[m]->Add(histoRPC_2D);
+		IntegralMuographyExp[m]->Add(histoDT_2D);
+	      }
+	      //break; 
+	      //warning :P
+	    }
+	  }
 	  
 	  histoResidual1= (TH1F*)theFile->Get(meIdResidual1.c_str());
 	  histoResidual2= (TH1F*)theFile->Get(meIdResidual2.c_str());
@@ -1888,7 +2035,7 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
 	    }
 
 	    if(debug) std::cout<<"Writing histograms"<<std::endl;
-	    
+
 	    histoPRO->Write();
 	    histoPROY->Write();
 	    histoPROX->Write();
@@ -2013,6 +2160,7 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
 	      Ca0->SaveAs(labeltoSave.c_str());
 	      Ca0->Clear();
 	      
+	      if(debug) std::cout<<"histoResidual "<<std::endl;
 	      histoResidual1->GetXaxis()->SetTitle("cm");
 	      //histoResidual->SetFillColor(1);  histoResidual->Draw();
 	      if(histoResidual1->Integral()!=0) {histoResidual1->SetFillColor(1); histoResidual1->DrawNormalized();}
@@ -2022,7 +2170,6 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
 	      labeltoSave = name + "/Residual.png";
 	      Ca0->SaveAs(labeltoSave.c_str());
 	      Ca0->Clear();
-	      
 	    }
 	    
 	    delete histoPRO;
@@ -2480,6 +2627,79 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
 
 	  histoRPC_2D= (TH2F*)theFile->Get(meIdRPC_2D.c_str());
 	  histoCSC_2D= (TH2F*)theFile->Get(meIdCSC_2D.c_str());
+
+	  for(int m=0;m<48;m++){
+	    if(!(find(IntegralMuographyRawIdsVector[m].begin(),IntegralMuographyRawIdsVector[m].end(),rpcId.rawId())
+		 ==IntegralMuographyRawIdsVector[m].end())){
+
+	      if(!IntegralMuography[m]){
+		assert(!IntegralMuographyExp[m]);
+		assert(!IntegralMuographyObs[m]);
+		
+		std::cout<<"doing first booking for IntegralMuography[m="<<m<<"] with "<< name<<std::endl;
+		
+		IntegralMuography[m] = new TH2F(namesIntegralMuography[m].c_str(),namesIntegralMuography[m].c_str()
+						,histoRPC_2D->GetNbinsX(),histoRPC_2D->GetXaxis()->GetXmin(),histoRPC_2D->GetXaxis()->GetXmax()
+						,histoRPC_2D->GetNbinsY(),histoRPC_2D->GetYaxis()->GetXmin(),histoRPC_2D->GetYaxis()->GetXmax());  
+		
+		IntegralMuographyObs[m] = new TH2F((namesIntegralMuography[m]+"Obs").c_str(),(namesIntegralMuography[m]+"Obs").c_str()
+						,histoRPC_2D->GetNbinsX(),histoRPC_2D->GetXaxis()->GetXmin(),histoRPC_2D->GetXaxis()->GetXmax()
+						,histoRPC_2D->GetNbinsY(),histoRPC_2D->GetYaxis()->GetXmin(),histoRPC_2D->GetYaxis()->GetXmax());  
+
+		IntegralMuographyExp[m] = new TH2F((namesIntegralMuography[m]+"Obs").c_str(),(namesIntegralMuography[m]+"Obs").c_str()
+						,histoRPC_2D->GetNbinsX(),histoRPC_2D->GetXaxis()->GetXmin(),histoRPC_2D->GetXaxis()->GetXmax()
+						,histoRPC_2D->GetNbinsY(),histoRPC_2D->GetYaxis()->GetXmin(),histoRPC_2D->GetYaxis()->GetXmax());  
+		
+		IntegralMuography[m]->Add(histoRPC_2D);
+		IntegralMuographyExp[m]->Add(histoCSC_2D);
+	      }else{
+		std::cout<<"found IntegralMuography coincidence filling "<<namesIntegralMuography[m]<<" with "<<name<<std::endl;
+		std::cout
+		  <<IntegralMuographyObs[m]->GetXaxis()->GetXmin()<<" "
+		  <<IntegralMuographyObs[m]->GetXaxis()->GetXmax()<<" "<<std::endl;
+		std::cout
+		  <<histoRPC_2D->GetXaxis()->GetXmin()<<" "
+		  <<histoRPC_2D->GetXaxis()->GetXmax()<<" "<<std::endl;
+		std::cout
+		  <<IntegralMuographyObs[m]->GetYaxis()->GetXmin()<<" "
+		  <<IntegralMuographyObs[m]->GetYaxis()->GetXmax()<<" "<<std::endl;
+		std::cout
+		  <<histoRPC_2D->GetYaxis()->GetXmin()<<" "
+		<<histoRPC_2D->GetYaxis()->GetXmax()<<" "<<std::endl;
+		
+		std::cout
+		  <<histoRPC_2D->GetXaxis()->GetNbins()<<" "	 
+		  <<histoRPC_2D->GetYaxis()->GetNbins()<<std::endl;
+		
+		std::cout
+		  <<IntegralMuographyObs[m]->GetXaxis()->GetNbins()<<" "	 
+		  <<IntegralMuographyObs[m]->GetYaxis()->GetNbins()<<std::endl;
+		
+		if (
+		    IntegralMuographyObs[m]->GetXaxis()->GetXmin() != histoRPC_2D->GetXaxis()->GetXmin() ||
+		    IntegralMuographyObs[m]->GetXaxis()->GetXmax() != histoRPC_2D->GetXaxis()->GetXmax() ||
+		    IntegralMuographyObs[m]->GetYaxis()->GetXmin() != histoRPC_2D->GetYaxis()->GetXmin() ||
+		    IntegralMuographyObs[m]->GetYaxis()->GetXmax() != histoRPC_2D->GetYaxis()->GetXmax() ||
+		    IntegralMuographyObs[m]->GetZaxis()->GetXmin() != histoRPC_2D->GetZaxis()->GetXmin() ||
+		    IntegralMuographyObs[m]->GetZaxis()->GetXmax() != histoRPC_2D->GetZaxis()->GetXmax()){ 
+		  
+		  std::cout<<IntegralMuographyObs[m]->GetXaxis()->GetXmin()<<" "<<histoRPC_2D->GetXaxis()->GetXmin()<<" "<<bool (IntegralMuographyObs[m]->GetXaxis()->GetXmin()!=histoRPC_2D->GetXaxis()->GetXmin())<<std::endl;
+		  std::cout<<IntegralMuographyObs[m]->GetXaxis()->GetXmax()<<" "<<histoRPC_2D->GetXaxis()->GetXmax()<<" "<<bool (IntegralMuographyObs[m]->GetXaxis()->GetXmax()!=histoRPC_2D->GetXaxis()->GetXmax())<<std::endl;
+		  std::cout<<IntegralMuographyObs[m]->GetYaxis()->GetXmin()<<" "<<histoRPC_2D->GetYaxis()->GetXmin()<<" "<<bool (IntegralMuographyObs[m]->GetYaxis()->GetXmin()!=histoRPC_2D->GetYaxis()->GetXmin())<<std::endl;
+		  std::cout<<IntegralMuographyObs[m]->GetYaxis()->GetXmax()<<" "<<histoRPC_2D->GetYaxis()->GetXmax()<<" "<<bool (IntegralMuographyObs[m]->GetYaxis()->GetXmax()!=histoRPC_2D->GetYaxis()->GetXmax())<<std::endl;
+		  std::cout<<IntegralMuographyObs[m]->GetZaxis()->GetXmin()<<" "<<histoRPC_2D->GetZaxis()->GetXmin()<<" "<<bool (IntegralMuographyObs[m]->GetZaxis()->GetXmin()!=histoRPC_2D->GetZaxis()->GetXmin())<<std::endl;
+		  std::cout<<IntegralMuographyObs[m]->GetZaxis()->GetXmax()<<" "<<histoRPC_2D->GetZaxis()->GetXmax()<<" "<<bool (IntegralMuographyObs[m]->GetZaxis()->GetXmax()!=histoRPC_2D->GetZaxis()->GetXmax())<<std::endl;
+		  
+		  std::cout<<"MY WARNING Add Attempt to add histograms with different axis limits"<<std::endl;
+		}
+		
+		IntegralMuographyObs[m]->Add(histoRPC_2D);
+		IntegralMuographyExp[m]->Add(histoCSC_2D);
+	      }
+	      //break; 
+	      //warning :P
+	    }
+	  }
 	  
 	  histoResidual1= (TH1F*)theFile->Get(meIdResidual1.c_str());
 	  histoResidual2= (TH1F*)theFile->Get(meIdResidual2.c_str());
@@ -2919,14 +3139,14 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
 
 	    if(debug) std::cout<<"Writing histograms"<<std::endl;
 
-	    //histoPRO->Write();
-	    //histoPROY->Write(); //parece este Cuando se descomentan estos histogramas aparece el problema en la visualizacion con TBRowser 
-	    //histoPRO_2D->Write(); //ahora este
-	    //histoCLS->Write(); //parece este
-	    //histoCellDistro->Write();
-	    //histoBXY->Write();
-	    //BXDistribution->Write();
-	    //Signal_BXDistribution->Write();
+	    histoPRO->Write();
+	    histoPROY->Write(); //parece este Cuando se descomentan estos histogramas aparece el problema en la visualizacion con TBRowser 
+	    histoPRO_2D->Write(); //ahora este
+	    histoCLS->Write(); //parece este
+	    histoCellDistro->Write();
+	    histoBXY->Write();
+	    BXDistribution->Write();
+	    Signal_BXDistribution->Write();
 
 	    if(debug) std::cout<<"Producing images"<<std::endl;
 	    if(prodimages){//ENDCAP	
@@ -3528,7 +3748,10 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
     acumulatedexpected = N + acumulatedexpected;
     acumulatedobserved = acumulatedobserved + OcGregD1R2->GetBinContent(k);
     if(N!=0.){ eff = OcGregD1R2->GetBinContent(k)/N; err=sqrt(eff*(1-eff)/N);}
-    if(HasBadRoll(1,1,2,k,blacklist)){ GregD1R2_black->SetBinContent(k,eff); GregD1R2_black->SetBinError(k,err);}
+    if(HasBadRoll(1,1,2,k,blacklist)){ 
+      std::cout<<"Filling GregD1R2_black in k="<<k<<"with "<<eff<<"+/-"<<err<<std::endl;
+      GregD1R2_black->SetBinContent(k,eff); GregD1R2_black->SetBinError(k,err);
+    }
     else{GregD1R2->SetBinContent(k,eff); GregD1R2->SetBinError(k,err);}
     HeightVsEffR2->Fill(eff,h);
     
@@ -3677,9 +3900,9 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
     effEndCapP = OcEndCapP/ExEndCapP; float errEndCapP = sqrt(effEndCapP*(1-effEndCapP)/ExEndCapP);
     RollYEff<<"effEndCapP "<<effEndCapP<<" "<<errEndCapP<<std::endl;
   }
- 
+  
   std::cout<<"Doing Summary per disk"<<std::endl;
-
+  
   TH1F * EfficiencyPerRing = new TH1F("EfficiencyPerRing","Efficiency per Ring in the whole endcap",12,0.5,12.5);
   
   float exg = ExGregDm3R3->Integral(); float obg = OcGregDm3R3->Integral();
@@ -4307,7 +4530,7 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
        ex[i]=step*0.5;
        y[i]=mean;
        ey[i]=error;
-       std::cout<<"flag "<<i<<" "<<x[i]<<" "<<ex[i]<<" "<<y[i]<<" "<<ey[i]<<std::endl;
+       //std::cout<<"flag "<<i<<" "<<x[i]<<" "<<ex[i]<<" "<<y[i]<<" "<<ey[i]<<std::endl;
      }
   }   
   
@@ -4755,10 +4978,35 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
   delete residualDisk3Ring2;
   delete residualDisk3Ring3;
 
-  
+  //Writting Inegral Muographies and deleting all.
+
+  for(int m =0; m<48;m++){
+    for(int i=1;i<=IntegralMuography[m]->GetXaxis()->GetNbins();++i){
+      for(int j=1;j<=IntegralMuography[m]->GetYaxis()->GetNbins();++j){
+	float ef2D=0.;
+	float er2D=0.; //ojo con esto en DQMOffline podria ser ef2D en lugar de er2D
+	if(IntegralMuographyExp[m]->GetBinContent(i,j) != 0){
+	  ef2D =IntegralMuographyObs[m]->GetBinContent(i,j)/IntegralMuographyExp[m]->GetBinContent(i,j);
+	  er2D = sqrt(ef2D*(1-ef2D)/IntegralMuographyExp[m]->GetBinContent(i,j));
+	  IntegralMuography[m]->SetBinContent(i,j,ef2D*100.);
+	  IntegralMuography[m]->SetBinError(i,j,er2D*100.);
+	}
+      }//loop on the boxes
+    }
+    
+    IntegralMuography[m]->Write(); 
+    IntegralMuographyObs[m]->Write(); 
+    IntegralMuographyExp[m]->Write(); 
+
+    delete IntegralMuography[m]; 
+    delete IntegralMuographyObs[m]; 
+    delete IntegralMuographyExp[m]; 
+  }
+
   std::stringstream nametosave;
   nametosave.str("");
-  
+
+
   if(debug) std::cout<<"Doing Cluster Size Per Sector"<<std::endl;
 
   for(k=1;k<=12;k++){
@@ -4955,7 +5203,7 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
   GregD1R2_black->SetMarkerStyle(21);
   std::cout<<"drawing first black histogram"<<std::endl;
   GregD1R2_black->Draw("same");
-  Ca5->SaveAs("Greg/D1R2.png"); GregD1R2->Write();
+  Ca5->SaveAs("Greg/D1R2.png");
   Ca5->Clear(); 
   
   GregD1R3->Draw(); GregD1R3->GetXaxis()->SetTitle("Chamber");  GregD1R3->GetYaxis()->SetRangeUser(-0.01,1.01);
@@ -4964,7 +5212,7 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
   GregD1R3_black->Draw("same");
   GregD1R3_black->SetMarkerSize(1.0);
   GregD1R3_black->SetMarkerStyle(21);
-  Ca5->SaveAs("Greg/D1R3.png"); GregD1R3->Write();
+  Ca5->SaveAs("Greg/D1R3.png");
   Ca5->Clear(); 
   
   GregD2R2->Draw(); GregD2R2->GetXaxis()->SetTitle("Chamber");GregD2R2->GetYaxis()->SetRangeUser(-0.01,1.01);
@@ -4972,7 +5220,7 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
   GregD2R2_black->Draw("same");
   GregD2R2_black->SetMarkerSize(1.0);
   GregD2R2_black->SetMarkerStyle(21);
-  Ca5->SaveAs("Greg/D2R2.png"); GregD2R2->Write();
+  Ca5->SaveAs("Greg/D2R2.png");
   Ca5->Clear(); 
   
   GregD2R3->Draw(); GregD2R3->GetXaxis()->SetTitle("Chamber"); GregD2R3->GetYaxis()->SetRangeUser(-0.01,1.01);
@@ -4980,7 +5228,7 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
   GregD2R3_black->Draw("same");
   GregD2R3_black->SetMarkerSize(1.0);
   GregD2R3_black->SetMarkerStyle(21);
-  Ca5->SaveAs("Greg/D2R3.png");  GregD2R3->Write();
+  Ca5->SaveAs("Greg/D2R3.png");
   Ca5->Clear(); 
   
   GregD3R2->Draw(); GregD3R2->GetXaxis()->SetTitle("Chamber");GregD3R2->GetYaxis()->SetRangeUser(-0.01,1.01);
@@ -4989,7 +5237,7 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
   GregD3R2_black->Draw("same");
   GregD3R2_black->SetMarkerSize(1.0);
   GregD3R2_black->SetMarkerStyle(21);
-  Ca5->SaveAs("Greg/D3R2.png"); GregD3R2->Write();
+  Ca5->SaveAs("Greg/D3R2.png");
   Ca5->Clear(); 
   
   GregD3R3->Draw(); GregD3R3->GetXaxis()->SetTitle("Chamber");GregD3R3->GetYaxis()->SetRangeUser(-0.01,1.01);
@@ -4998,7 +5246,7 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
   GregD3R3_black->Draw("same");
   GregD3R3_black->SetMarkerStyle(21);
   GregD3R3_black->SetMarkerSize(1.0);
-  Ca5->SaveAs("Greg/D3R3.png"); GregD3R3->Write();
+  Ca5->SaveAs("Greg/D3R3.png");
   Ca5->Clear(); 
 
   //Negative Endcap
@@ -5009,7 +5257,7 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
   GregDm1R2_black->SetMarkerStyle(21);
   GregDm1R2_black->SetMarkerSize(1.0);
   std::cout<<"drawing second negative endcap black histogram"<<std::endl;
-  Ca5->SaveAs("Greg/Dm1R2.png"); GregDm1R2->Write();
+  Ca5->SaveAs("Greg/Dm1R2.png");
   Ca5->Clear(); 
   
   GregDm1R3->Draw(); GregDm1R3->GetXaxis()->SetTitle("Chamber");  GregDm1R3->GetYaxis()->SetRangeUser(-0.01,1.01);
@@ -5018,7 +5266,7 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
   GregDm1R3_black->SetMarkerStyle(21);
   GregDm1R3_black->SetMarkerSize(1.0);
   std::cout<<"drawing second negative endcap black histogram"<<std::endl;
-  Ca5->SaveAs("Greg/Dm1R3.png"); GregDm1R3->Write();
+  Ca5->SaveAs("Greg/Dm1R3.png");
   Ca5->Clear(); 
   
   GregDm2R2->Draw(); GregDm2R2->GetXaxis()->SetTitle("Chamber");GregDm2R2->GetYaxis()->SetRangeUser(-0.01,1.01);
@@ -5026,7 +5274,7 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
   GregDm2R2_black->Draw("same");
   GregDm2R2_black->SetMarkerStyle(21);
   GregDm2R2_black->SetMarkerSize(1.0);
-  Ca5->SaveAs("Greg/Dm2R2.png"); GregDm2R2->Write();
+  Ca5->SaveAs("Greg/Dm2R2.png");
   Ca5->Clear(); 
   
   GregDm2R3->Draw(); GregDm2R3->GetXaxis()->SetTitle("Chamber"); GregDm2R3->GetYaxis()->SetRangeUser(-0.01,1.01);
@@ -5034,15 +5282,15 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
   GregDm2R3_black->Draw("same");
   GregDm2R3_black->SetMarkerStyle(21);
   GregDm2R3_black->SetMarkerSize(1.0);
-  Ca5->SaveAs("Greg/Dm2R3.png");  GregDm2R3->Write();
-  Ca5->Clear(); 
+  Ca5->SaveAs("Greg/Dm2R3.png");
+  Ca5->Clear();
   
   GregDm3R2->Draw(); GregDm3R2->GetXaxis()->SetTitle("Chamber");GregDm3R2->GetYaxis()->SetRangeUser(-0.01,1.01);
   GregDm3R2_black->SetLineColor(kRed);
   GregDm3R2_black->Draw("same");
   GregDm3R2_black->SetMarkerStyle(21);
   GregDm3R2_black->SetMarkerSize(1.0);
-  Ca5->SaveAs("Greg/Dm3R2.png"); GregDm3R2->Write();
+  Ca5->SaveAs("Greg/Dm3R2.png");
   Ca5->Clear(); 
   
   GregDm3R3->Draw(); GregDm3R3->GetXaxis()->SetTitle("Chamber");GregDm3R3->GetYaxis()->SetRangeUser(-0.01,1.01);
@@ -5050,8 +5298,12 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
   GregDm3R3_black->Draw("same");
   GregDm3R3_black->SetMarkerStyle(21);
   GregDm3R3_black->SetMarkerSize(1.0);
-  Ca5->SaveAs("Greg/Dm3R3.png"); GregDm3R3->Write();
+  Ca5->SaveAs("Greg/Dm3R3.png");
   Ca5->Clear(); 
+
+  if(debug)std::cout<<"Deleting Greg histograms"<<std::endl;
+  
+  if(debug)std::cout<<"After Deleting Greg histograms"<<std::endl;
 
   EfficiencyPerChamberNumber->Draw(); EfficiencyPerChamberNumber->GetXaxis()->SetTitle("Chamber");EfficiencyPerChamberNumber->GetYaxis()->SetRangeUser(0.,1.);
   Ca5->SaveAs("Greg/EfficiencyPerChamberNumber.png"); EfficiencyPerChamberNumber->Write();
@@ -6162,6 +6414,19 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
  GregD3R2->Write();
  GregD3R3->Write();
 
+ GregD1R2_black->Write(); 
+ GregD1R3_black->Write();
+ GregD2R2_black->Write();
+ GregD2R3_black->Write();
+ GregD3R2_black->Write();
+ GregD3R3_black->Write();
+ GregDm1R2_black->Write();
+ GregDm1R3_black->Write();
+ GregDm2R2_black->Write();
+ GregDm2R3_black->Write();
+ GregDm3R2_black->Write();
+ GregDm3R3_black->Write();
+
  OcGregD1R2->Write();
  OcGregD1R3->Write();
  OcGregD2R2->Write();
@@ -6369,6 +6634,31 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
  delete Ca8;
  delete Ca9;
 
+ delete GregD1R2_black; 
+ delete GregD1R3_black;
+ delete GregD2R2_black;
+ delete GregD2R3_black;
+ delete GregD3R2_black;
+ delete GregD3R3_black;
+ delete GregDm1R2_black;
+ delete GregDm1R3_black;
+ delete GregDm2R2_black;
+ delete GregDm2R3_black;
+ delete GregDm3R2_black;
+ delete GregDm3R3_black;
+ 
+ delete GregD1R2; 
+ delete GregD1R3;
+ delete GregD2R2;
+ delete GregD2R3;
+ delete GregD3R2;
+ delete GregD3R3;
+ delete GregDm1R2;
+ delete GregDm1R3;
+ delete GregDm2R2;
+ delete GregDm2R3;
+ delete GregDm3R2;
+ delete GregDm3R3;
 } 
 
 void 
