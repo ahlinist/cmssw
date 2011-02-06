@@ -43,6 +43,16 @@ HLTprocessName = "REDIGI38XPU" # use for Fall'10 reprocessed MC with pile-up
 pfCandidateCollection = "particleFlow" # pile-up removal disabled
 ##pfCandidateCollection = "pfNoPileUp" # pile-up removal enabled
 #--------------------------------------------------------------------------------
+#--------------------------------------------------------------------------------
+# define "hooks" for replacing configuration parameters
+# in case running jobs on the CERN batch system/grid
+#
+#__isMC = #isMC#
+#__HLTprocessName = #HLTprocessName#
+#__pfCandidateCollection = #pfCandidateCollection#
+#__applyZrecoilCorrection = #applyZrecoilCorrection#
+#
+#--------------------------------------------------------------------------------
 
 #--------------------------------------------------------------------------------
 # define GlobalTag to be used for event reconstruction
@@ -75,73 +85,33 @@ from TauAnalysis.TauIdEfficiency.tools.configurePrePatProduction import configur
 
 configurePrePatProduction(process, pfCandidateCollection = pfCandidateCollection, addGenInfo = isMC)
 
-process.prePatProductionSequence.remove(process.tautagging)
+#process.prePatProductionSequence.remove(process.tautagging)
 #--------------------------------------------------------------------------------
 
 #--------------------------------------------------------------------------------
-#
-# produce PAT objects
-#
-process.load("PhysicsTools.PatAlgos.patSequences_cff")
+# import utility function for configurating PAT-tuple production
+from TauAnalysis.TauIdEfficiency.tools.configurePatTupleProductionTauIdEffMeasSpecific import *
 
-# configure PAT trigger matching
-from PhysicsTools.PatAlgos.tools.trigTools import switchOnTrigger
-switchOnTrigger(process, hltProcess = HLTprocessName, outputModule = '')
-process.patTrigger.addL1Algos = cms.bool(True)
-#--------------------------------------------------------------------------------
-
-#--------------------------------------------------------------------------------
-# import utility function for switching pat::Tau input
-# to different reco::Tau collection stored on AOD
-from PhysicsTools.PatAlgos.tools.tauTools import *
-
-# comment-out to take reco::CaloTaus instead of reco::PFTaus
-# as input for pat::Tau production
-#switchToCaloTau(process)
-
-# comment-out to take shrinking dR = 5.0/Et(PFTau) signal cone
-# instead of fixed dR = 0.07 signal cone reco::PFTaus
-# as input for pat::Tau production
-#switchToPFTauShrinkingCone(process)
-#switchToPFTauFixedCone(process)
-
-# comment-out to take new HPS + TaNC combined tau id. algorithm
-switchToPFTauHPSpTaNC(process)
-
-# disable preselection on of pat::Taus
-# (disabled also in TauAnalysis/RecoTools/python/patPFTauConfig_cfi.py ,
-#  but re-enabled after switching tau collection)
-process.cleanPatTaus.preselection = cms.string('')
-#--------------------------------------------------------------------------------
-
-#--------------------------------------------------------------------------------
-# import utility function for managing pat::Jets
-from PhysicsTools.PatAlgos.tools.jetTools import *
-
-# uncomment to replace caloJets by pfJets
-switchJetCollection(process, jetCollection = cms.InputTag("ak5PFJets"), outputModule = '')
-#--------------------------------------------------------------------------------
-
-#--------------------------------------------------------------------------------
-# import utility function for managing pat::METs
-from TauAnalysis.Configuration.tools.metTools import *
-
-# uncomment to add pfMET
-# set Boolean swich to true in order to apply type-1 corrections
-addPFMet(process, correct = False)
-
-# uncomment to replace caloMET by pfMET in all di-tau objects
-process.load("TauAnalysis.CandidateTools.diTauPairProductionAllKinds_cff")
-replaceMETforDiTaus(process, cms.InputTag('patMETs'), cms.InputTag('patPFMETs'))
+patTupleConfig = configurePatTupleProductionTauIdEffMeasSpecific(
+    process, hltProcess = HLTprocessName, addGenInfo = isMC, applyZrecoilCorrection = False)
 #--------------------------------------------------------------------------------
 
 process.p = cms.Path(
-    process.prePatProductionSequence
+     process.prePatProductionSequence
    + process.patDefaultSequence
+   + process.producePatTupleTauIdEffMeasSpecific
+   #+ process.printEventContent
+   #+ process.printGenParticleList
+)    
+
+process.load("Configuration.EventContent.EventContent_cff")
+process.origFEVTSIMEventContent = copy.deepcopy(process.FEVTSIMEventContent)
+process.origFEVTSIMEventContent.outputCommands.extend(
+    cms.untracked.vstring('drop *_*_*_%s' % process.name_())
 )    
 
 process.skimOutputModule = cms.OutputModule("PoolOutputModule",                                 
-    FEVTSIMEventContent,
+    process.origFEVTSIMEventContent,
     process.tauIdEffSampleEventSelection,
     verbose = cms.untracked.bool(False),
     fileName = cms.untracked.string("tauIdEffSample_RECO.root")
@@ -156,7 +126,11 @@ process.o = cms.EndPath(process.skimOutputModule)
 # define order in which different paths are run
 process.schedule = cms.Schedule(
     process.p,
-    process.muonPFTauSkimPath,
+    process.muonCaloTauSkimPath,
+    process.muonPFTauFixedConeSkimPath,
+    process.muonPFTauShrinkingConeSkimPath,
+    process.muonPFTauHPSskimPath,
+    process.muonPFTauHPSpTaNCskimPath,
     process.o
 )
 
