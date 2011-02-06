@@ -9,6 +9,7 @@ SAMPLES_TO_ANALYZE = [
     'data_Mu_Run2010A_Nov4ReReco',
     'data_Mu_Run2010B_Nov4ReReco',
     'ZtautauPU156bx',
+    'DYtautauM10to20PU156bx_pythiaZ2', 'ZtautauPU156bx_pythiaZ2',
     #'Zmumu_pythia', 'Zee_pythia',
     'qqZll',
     'qqZllPU156bx', # EK: not at any site as of Dec 23
@@ -125,7 +126,7 @@ RECO_SAMPLES = {
         },
         'enableSysUncertainties' : False,
         'enableFakeRates' : True,
-        'SE_black_list' : 'T2_RU_JINR,T2_US_Purdue,T2_US_Wisconsin,T2_IT_Bari'
+        'SE_black_list' : 'T2_RU_JINR,T2_US_Purdue,T2_US_Wisconsin,T2_IT_Bari,T3_US_UCLA'
     },
     'Ztautau_pythia' : {
         'datasetpath' : "/DYtoTauTau_M_20_TuneD6T_7TeV-pythia6-tauola/Fall10-START38_V12-v1/GEN-SIM-RECO",
@@ -140,6 +141,36 @@ RECO_SAMPLES = {
         'applyMuonTriggerEfficiencyCorrection' : True,
         'applyMuonIsolationEfficiencyCorrection' : True,
         'hlt' : cms.InputTag("TriggerResults", "", "REDIGI38X")
+    },
+    'DYtautauM10to20PU156bx_pythiaZ2' : {
+        'datasetpath' : "/DYToTauTau_M-10To20_TuneZ2_7TeV-pythia6-tauola/Fall10-E7TeV_ProbDist_2010Data_BX156_START38_V12-v1/GEN-SIM-RECO",
+        'events_processed' : 2029050,
+        'skim_eff' : 1.0,
+        'x_sec' : 1666*_picobarns,
+        'legendEntry' : plotter.process_Ztautau.config_dqmHistPlotter.legendEntry.value(),
+        'type' : plotter.process_Ztautau.config_dqmHistPlotter.type.value(),
+        'drawOption' : styles.drawOption_Ztautau,
+        'applyZrecoilCorrection' : True,
+        'enableFakeRates' : True,
+        'applyMuonTriggerEfficiencyCorrection' : True,
+        'applyMuonIsolationEfficiencyCorrection' : True,
+	'applyVertexMultiplicityReweighting' : True,
+        'hlt' : cms.InputTag("TriggerResults", "", "REDIGI38XPU")
+    },
+    'ZtautauPU156bx_pythiaZ2' : {
+        'datasetpath' : "/DYToTauTau_M-20_TuneZ2_7TeV-pythia6-tauola/Fall10-E7TeV_ProbDist_2010Data_BX156_START38_V12-v3/GEN-SIM-RECO",
+        'events_processed' : 2098750,
+        'skim_eff' : 1.0,
+        'x_sec' : 1666*_picobarns,
+        'legendEntry' : plotter.process_Ztautau.config_dqmHistPlotter.legendEntry.value(),
+        'type' : plotter.process_Ztautau.config_dqmHistPlotter.type.value(),
+        'drawOption' : styles.drawOption_Ztautau,
+        'applyZrecoilCorrection' : True,
+        'enableFakeRates' : True,
+        'applyMuonTriggerEfficiencyCorrection' : True,
+        'applyMuonIsolationEfficiencyCorrection' : True,
+	'applyVertexMultiplicityReweighting' : True,
+        'hlt' : cms.InputTag("TriggerResults", "", "REDIGI38XPU")
     },
     'Ztautau_powheg' : {
         'datasetpath' : "/DYToTauTau_M-20_TuneZ2_7TeV-pythia6-tauola/Fall10-E7TeV_ProbDist_2010Data_BX156_START38_V12-v3/GEN-SIM-RECO",
