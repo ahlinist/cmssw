@@ -134,8 +134,10 @@ selectMuTauPairs = cms.Sequence(selectMuTauPairsOS * selectMuTauPairsSS)
 selectedMuTauPairsAntiOverlapVetoLooseMuonIsolation.cut = selectedMuTauPairsAntiOverlapVeto.cut
 selectedMuTauPairsMt1METlooseMuonIsolation.cut = selectedMuTauPairsMt1MET.cut
 selectedMuTauPairsPzetaDiffLooseMuonIsolation.cut = selectedMuTauPairsPzetaDiff.cut
-selectedMuTauPairsZeroChargeLooseMuonIsolation.cut = selectedMuTauPairsZeroCharge.cut
-selectedMuTauPairsNonZeroChargeLooseMuonIsolation.cut = selectedMuTauPairsNonZeroCharge.cut
+selectedMuTauPairsZeroChargeLooseMuonIsolation.cut = \
+  cms.string('leg2.leadPFChargedHadrCand().isNonnull() & (leg1.charge + leg2.leadPFChargedHadrCand.charge) = 0')
+selectedMuTauPairsNonZeroChargeLooseMuonIsolation.cut = \
+  cms.string('leg2.leadPFChargedHadrCand().isNonnull() & (leg1.charge + leg2.leadPFChargedHadrCand.charge) != 0')
 
 patMuTauPairSelConfiguratorLooseMuonIsolationOS = objSelConfigurator(
     [ selectedMuTauPairsAntiOverlapVetoLooseMuonIsolation,
@@ -205,8 +207,10 @@ selectedDiTauPairsAntiOverlapVetoLoose2ndTau.cut = cms.string('dR12 > 0.7')
 #selectedDiTauPairsAcoplanarityLoose2ndTau.cut = cms.string('(dPhi1MET < 2.4) | (dPhi2MET < 2.4)')
 selectedDiTauPairsAcoplanarityLoose2ndTau.cut = cms.string('(dPhi1MET < 3.2) | (dPhi2MET < 3.2)') # CV: cut disabled for now...
 selectedDiTauPairsPzetaDiffLoose2ndTau.cut = cms.string('(pZeta - 1.5*pZetaVis) > -20.')
-selectedDiTauPairsZeroChargeLoose2ndTau.cut = cms.string('(leg1.charge + leg2.leadPFChargedHadrCand.charge) = 0')
-selectedDiTauPairsNonZeroChargeLoose2ndTau.cut = cms.string('(leg1.charge + leg2.leadPFChargedHadrCand.charge) != 0')
+selectedDiTauPairsZeroChargeLoose2ndTau.cut = \
+  cms.string('leg2.leadPFChargedHadrCand().isNonnull() & (leg1.charge + leg2.leadPFChargedHadrCand.charge) = 0')
+selectedDiTauPairsNonZeroChargeLoose2ndTau.cut = \
+  cms.string('leg2.leadPFChargedHadrCand().isNonnull() & (leg1.charge + leg2.leadPFChargedHadrCand.charge) != 0')
 
 patDiTauPairSelConfiguratorOSloose2ndTau = objSelConfigurator(
     [ selectedDiTauPairsAntiOverlapVetoLoose2ndTau,
