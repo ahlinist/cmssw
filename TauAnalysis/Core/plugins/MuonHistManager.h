@@ -106,6 +106,7 @@ class MuonHistManager : public HistManagerBase
   MonitorElement* hMuonGlobalTrackIPxyBeamSpot_;
 
   MonitorElement* hMuonGlobalTrackChi2red_; // (normalized) chi^2 of global muon track fit per degree of freedom
+  MonitorElement* hMuonInnerTrackDptOverPt_;
 
   MonitorElement* hMuonTime_;
 
