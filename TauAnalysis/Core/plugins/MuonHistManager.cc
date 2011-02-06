@@ -169,6 +169,7 @@ void MuonHistManager::bookHistogramsImp()
   hMuonGlobalTrackIPxyBeamSpot_ = book1D("MuonGlobalTrackIPxyBeamSpot", "MuonGlobalTrackIPxyBeamSpot", 100, -0.100, 0.100);
 
   hMuonGlobalTrackChi2red_ = book1D("MuonGlobalTrackChi2red", "MuonGlobalTrackChi2red", 100, -0.01, 25.);
+  hMuonInnerTrackDptOverPt_ = book1D("MuonInnerTrackDptOverPt", "MuonInnerTrackDptOverPt", 100, -0.01, 1.);
 
   hMuonTime_ = book1D("MuonTime", "MuonTime", 200, -100., +100.);
 
@@ -353,7 +354,10 @@ void MuonHistManager::fillHistogramsImp(const edm::Event& evt, const edm::EventS
 	hMuonGlobalTrackIPxyBeamSpot_->Fill(patMuon->globalTrack()->dxy(beamSpot->position()), weight);
     }
 
-    if ( isValidRef(patMuon->globalTrack()) ) hMuonGlobalTrackChi2red_->Fill(patMuon->globalTrack()->normalizedChi2(), weight);
+    if ( isValidRef(patMuon->globalTrack()) ) 
+      hMuonGlobalTrackChi2red_->Fill(patMuon->globalTrack()->normalizedChi2(), weight);
+    if ( isValidRef(patMuon->innerTrack()) && patMuon->innerTrack()->pt() > 0. ) 
+      hMuonInnerTrackDptOverPt_->Fill(patMuon->innerTrack()->ptError()/patMuon->innerTrack()->pt(), weight);
 
     if ( patMuon->isTimeValid() ) hMuonTime_->Fill(patMuon->time().timeAtIpInOut, weight);
 
