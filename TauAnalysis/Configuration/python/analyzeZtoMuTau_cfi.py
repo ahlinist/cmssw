@@ -110,11 +110,28 @@ modelBinnerForMuTauGenTauLeptonPairAcc.pluginName = cms.string('modelBinnerForMu
 modelBinnerForMuTauGenTauLeptonPairAcc.srcGenFlag = cms.InputTag("isGenZtoMuTau")
 modelBinnerForMuTauGenTauLeptonPairAcc.srcRecFlag = cms.InputTag("isGenZtoMuTauWithinAcceptance")
 modelBinnerForMuTauGenTauLeptonPairAcc.dqmDirectory_store = cms.string('modelBinnerForMuTauGenTauLeptonPairAcc')
-modelBinnerForMuTauWrtGenTauLeptonPairAcc = copy.deepcopy(modelBinner)
+modelBinnerForMuTauWrtGenTauLeptonPairAcc = copy.deepcopy(modelBinnerForMuTauGenTauLeptonPairAcc)
 modelBinnerForMuTauWrtGenTauLeptonPairAcc.pluginName = cms.string('modelBinnerForMuTauWrtGenTauLeptonPairAcc')
 modelBinnerForMuTauWrtGenTauLeptonPairAcc.srcGenFlag = cms.InputTag("isGenZtoMuTauWithinAcceptance")
 modelBinnerForMuTauWrtGenTauLeptonPairAcc.srcRecFlag = cms.InputTag("isRecZtoMuTau")
 modelBinnerForMuTauWrtGenTauLeptonPairAcc.dqmDirectory_store = cms.string('modelBinnerForMuTauWrtGenTauLeptonPairAcc')
+
+modelBinnerForMuTauGenTauLeptonPairAcc3mZbins = copy.deepcopy(modelBinner3mZbins)
+modelBinnerForMuTauGenTauLeptonPairAcc3mZbins.pluginName = cms.string('modelBinnerForMuTauGenTauLeptonPairAcc3mZbins')
+modelBinnerForMuTauGenTauLeptonPairAcc3mZbins.binning.config[0].extractor.pluginType = cms.string("PATMuTauPairValExtractor")
+modelBinnerForMuTauGenTauLeptonPairAcc3mZbins.binning.config[0].extractor.src = \
+  diTauCandidateSVfitHistManagerForMuTau.diTauCandidateSource
+modelBinnerForMuTauGenTauLeptonPairAcc3mZbins.genBinning.config[0].extractor.pluginType = cms.string("PATMuTauPairValExtractor")
+modelBinnerForMuTauGenTauLeptonPairAcc3mZbins.genBinning.config[0].extractor.src = \
+  diTauCandidateSVfitHistManagerForMuTau.diTauCandidateSource
+modelBinnerForMuTauGenTauLeptonPairAcc3mZbins.srcGenFlag = cms.InputTag("isGenZtoMuTau")
+modelBinnerForMuTauGenTauLeptonPairAcc3mZbins.srcRecFlag = cms.InputTag("isGenZtoMuTauWithinAcceptance")
+modelBinnerForMuTauGenTauLeptonPairAcc3mZbins.dqmDirectory_store = cms.string('modelBinnerForMuTauGenTauLeptonPairAcc3mZbins')
+modelBinnerForMuTauWrtGenTauLeptonPairAcc3mZbins = copy.deepcopy(modelBinnerForMuTauGenTauLeptonPairAcc3mZbins)
+modelBinnerForMuTauWrtGenTauLeptonPairAcc3mZbins.pluginName = cms.string('modelBinnerForMuTauWrtGenTauLeptonPairAcc3mZbins')
+modelBinnerForMuTauWrtGenTauLeptonPairAcc3mZbins.srcGenFlag = cms.InputTag("isGenZtoMuTauWithinAcceptance")
+modelBinnerForMuTauWrtGenTauLeptonPairAcc3mZbins.srcRecFlag = cms.InputTag("isRecZtoMuTau")
+modelBinnerForMuTauWrtGenTauLeptonPairAcc3mZbins.dqmDirectory_store = cms.string('modelBinnerForMuTauWrtGenTauLeptonPairAcc3mZbins')
 
 # import config for binning results
 # used to estimate systematic uncertainties
@@ -134,7 +151,9 @@ sysUncertaintyBinnerForMuTauAcc = sysUncertaintyBinner.clone(
     pluginName = cms.string('sysUncertaintyBinnerForMuTauAcc'),
     binnerPlugins = cms.VPSet(
         modelBinnerForMuTauGenTauLeptonPairAcc,
-        modelBinnerForMuTauWrtGenTauLeptonPairAcc
+        modelBinnerForMuTauWrtGenTauLeptonPairAcc,
+        modelBinnerForMuTauGenTauLeptonPairAcc3mZbins,
+        modelBinnerForMuTauWrtGenTauLeptonPairAcc3mZbins
     ),
     systematics = cms.vstring(sysUncertaintyNames)
 )
@@ -491,6 +510,8 @@ muTauAnalysisSequenceOS = cms.VPSet(
             'triggerHistManagerForMuTau',
             'modelBinnerForMuTauGenTauLeptonPairAcc',
             'modelBinnerForMuTauWrtGenTauLeptonPairAcc',
+            'modelBinnerForMuTauGenTauLeptonPairAcc3mZbins',
+            'modelBinnerForMuTauWrtGenTauLeptonPairAcc3mZbins',
             'sysUncertaintyBinnerForMuTauAcc'
         )
     ),

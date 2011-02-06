@@ -81,6 +81,8 @@ def switchToData(process):
 		    #  o genPhaseSpaceInfoHistManager
 		    #  o modelBinnerForMuTauGenTauLeptonPairAcc
 		    #  o modelBinnerForMuTauWrtGenTauLeptonPairAcc
+                    #  o modelBinnerForMuTauGenTauLeptonPairAcc3mZbins
+                    #  o modelBinnerForMuTauWrtGenTauLeptonPairAcc3mZbins 
 		    #  o modelBinnerForMuTauCentralJetVetoWrtGenTauLeptonPairAcc
 		    #  o modelBinnerForMuTauCentralJetBtagWrtGenTauLeptonPairAcc
 		    #  o sysUncertaintyBinnerForMuTau
@@ -89,6 +91,8 @@ def switchToData(process):
 		       "genPhaseSpaceEventInfoHistManager",
 		       "modelBinnerForMuTauGenTauLeptonPairAcc",
 		       "modelBinnerForMuTauWrtGenTauLeptonPairAcc",
+                       "modelBinnerForMuTauGenTauLeptonPairAcc3mZbins",
+                       "modelBinnerForMuTauWrtGenTauLeptonPairAcc3mZbins",
 		       "modelBinnerForMuTauCentralJetVetoWrtGenTauLeptonPairAcc",
 		       "modelBinnerForMuTauCentralJetBtagWrtGenTauLeptonPairAcc",
 		       "sysUncertaintyBinnerForMuTau",

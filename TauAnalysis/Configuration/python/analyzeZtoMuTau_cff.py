@@ -98,7 +98,9 @@ analyzeZtoMuTauEventsOS = cms.EDAnalyzer("GenericAnalyzer",
         triggerHistManagerForMuTau,
         dataBinner,
         modelBinnerForMuTauGenTauLeptonPairAcc,
-        modelBinnerForMuTauWrtGenTauLeptonPairAcc
+        modelBinnerForMuTauWrtGenTauLeptonPairAcc,
+        modelBinnerForMuTauGenTauLeptonPairAcc3mZbins,
+        modelBinnerForMuTauWrtGenTauLeptonPairAcc3mZbins,
     ),
 
     analyzers_systematic = cms.VPSet(
