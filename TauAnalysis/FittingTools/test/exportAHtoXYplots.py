@@ -9,31 +9,31 @@ print("<exportAHtoXYplots>:")
 
 samples = {
   'TaNCloose' : {
-     'input'  : [
-       '/data1/veelken/CMSSW_3_8_x/plots/MSSM_Higgs_combined/plotsAHtoMuTau_TaNCloose_wSys_skimmed_part01.root',
-       '/data1/veelken/CMSSW_3_8_x/plots/MSSM_Higgs_combined/plotsAHtoMuTau_TaNCloose_wSys_skimmed_part02.root',
-       '/data1/veelken/CMSSW_3_8_x/plots/MSSM_Higgs_combined/plotsAHtoMuTau_TaNCloose_wSys_skimmed_part03.root'
-     ],
-     'output' : "/data1/veelken/CMSSW_3_8_x/plots/MSSM_Higgs_combined/export_AHtoMuTau_TaNCloose_wSys"
+      'input'  : [
+          '/data1/veelken/CMSSW_3_8_x/plots/MSSM_Higgs_combined/plotsAHtoMuTau_TaNCloose_wSys_skimmed_2011Jan23_part01.root',
+          '/data1/veelken/CMSSW_3_8_x/plots/MSSM_Higgs_combined/plotsAHtoMuTau_TaNCloose_wSys_skimmed_2011Jan23_part02.root',
+          '/data1/veelken/CMSSW_3_8_x/plots/MSSM_Higgs_combined/plotsAHtoMuTau_TaNCloose_wSys_skimmed_2011Jan23_part03.root'
+      ],
+      'output' : "/data1/veelken/CMSSW_3_8_x/plots/MSSM_Higgs_combined/export_AHtoMuTau_TaNCloose_visMass_wSys_2011Jan23"
   },
 
-  'TaNCmedium' : {
-     'input'  : [
-       '/data1/veelken/CMSSW_3_8_x/plots/MSSM_Higgs_combined/plotsAHtoMuTau_TaNCmedium_wSys_skimmed_part01.root',
-       '/data1/veelken/CMSSW_3_8_x/plots/MSSM_Higgs_combined/plotsAHtoMuTau_TaNCmedium_wSys_skimmed_part02.root',
-       '/data1/veelken/CMSSW_3_8_x/plots/MSSM_Higgs_combined/plotsAHtoMuTau_TaNCmedium_wSys_skimmed_part03.root'
-     ],
-     'output' : "/data1/veelken/CMSSW_3_8_x/plots/MSSM_Higgs_combined/export_AHtoMuTau_TaNCmedium_wSys"
-  },
+  ##'TaNCmedium' : {
+  ##    'input'  : [
+  ##        '/data1/veelken/CMSSW_3_8_x/plots/MSSM_Higgs_combined/plotsAHtoMuTau_TaNCmedium_wSys_skimmed_part01.root',
+  ##        '/data1/veelken/CMSSW_3_8_x/plots/MSSM_Higgs_combined/plotsAHtoMuTau_TaNCmedium_wSys_skimmed_part02.root',
+  ##        '/data1/veelken/CMSSW_3_8_x/plots/MSSM_Higgs_combined/plotsAHtoMuTau_TaNCmedium_wSys_skimmed_part03.root'
+  ##    ],
+  ##    'output' : "/data1/veelken/CMSSW_3_8_x/plots/MSSM_Higgs_combined/export_AHtoMuTau_TaNCmedium_wSys"
+  ##},
 
-  'TaNCtight' : {
-     'input'  : [
-       '/data1/veelken/CMSSW_3_8_x/plots/MSSM_Higgs_combined/plotsAHtoMuTau_TaNCtight_wSys_skimmed_part01.root',
-       '/data1/veelken/CMSSW_3_8_x/plots/MSSM_Higgs_combined/plotsAHtoMuTau_TaNCtight_wSys_skimmed_part02.root',
-       '/data1/veelken/CMSSW_3_8_x/plots/MSSM_Higgs_combined/plotsAHtoMuTau_TaNCtight_wSys_skimmed_part03.root'
-     ],
-     'output' : "/data1/veelken/CMSSW_3_8_x/plots/MSSM_Higgs_combined/export_AHtoMuTau_TaNCtight_wSys"
-  }
+  ##'TaNCtight' : {
+  ##    'input'  : [
+  ##        '/data1/veelken/CMSSW_3_8_x/plots/MSSM_Higgs_combined/plotsAHtoMuTau_TaNCtight_wSys_skimmed_part01.root',
+  ##        '/data1/veelken/CMSSW_3_8_x/plots/MSSM_Higgs_combined/plotsAHtoMuTau_TaNCtight_wSys_skimmed_part02.root',
+  ##        '/data1/veelken/CMSSW_3_8_x/plots/MSSM_Higgs_combined/plotsAHtoMuTau_TaNCtight_wSys_skimmed_part03.root'
+  ##    ],
+  ##    'output' : "/data1/veelken/CMSSW_3_8_x/plots/MSSM_Higgs_combined/export_AHtoMuTau_TaNCtight_wSys"
+  ##}
 }
 
 cfgFileName = "exportAnalysisResults_cfg.py"
