@@ -10,7 +10,7 @@ from TauAnalysis.Configuration.tools.harvestingLXBatch import \
 
 channel = 'ZtoMuTau_tauIdEff'
 
-reg.overrideJobId(channel, '2011Jan17')
+reg.overrideJobId(channel, '2011Feb03b')
 
 analysisFilePath = reg.getAnalysisFilePath(channel)
 harvestingFilePath = reg.getHarvestingFilePath(channel)
@@ -18,16 +18,13 @@ jobId = reg.getJobId(channel)
 tmpFilePath = reg.getBatchHarvestLocation(channel)
 
 SAMPLES_TO_ANALYZE = [
-    #'data_Mu_Run2010A_Nov4ReReco',
-    #'data_Mu_Run2010B_Nov4ReReco',
-    #'Ztautau_powheg',
-    #'ZtautauPU156bx',
-    #'Zmumu_powheg',
-    #'Zmumu_pythia', 
-    'PPmuXptGt20Mu10',
-    #'PPmuXptGt20Mu15',
-    #'WplusJets_madgraph',
-    #'TTplusJets_madgraph'
+    'data_Mu_Run2010A_Nov4ReReco',
+    'data_Mu_Run2010B_Nov4ReReco',
+    'ZtautauPU156bx',
+    'Zmumu_pythia', 
+    'PPmuXptGt20Mu10', 'PPmuXptGt20Mu15',
+    'WplusJets_madgraph',
+    'TTplusJets_madgraph'
 ]
 
 print analysisFilePath
