@@ -213,6 +213,7 @@ void CompositePtrCandidateT1T2MEtHistManager<T1,T2>::bookHistogramsImp()
 
   hPzetaCorr_ = book2D("PzetaCorr", "P_{#zeta} vs. P_{#zeta}^{vis}", 10, 0., 50., 14, -20., 50.);
   hPzetaDiff_ = book1D("PzetaDiff", "P_{#zeta} - 1.5*P_{#zeta}^{vis}", 40, -100., +100.);
+  hPzetaDiffVsMt1MET_ = book2D("PzetaDiffVsMt1MET", "P_{#zeta} - 1.5*P_{#zeta}^{vis} vs. Mass_{T 1,MET}", 20, 0., 200., 20, -100., +100.);
 }
 
 template<typename T1, typename T2>
@@ -589,6 +590,7 @@ void CompositePtrCandidateT1T2MEtHistManager<T1,T2>::fillHistogramsImp(const edm
 
     hPzetaCorr_->Fill(diTauCandidate->pZetaVis(), diTauCandidate->pZeta(), weight);
     hPzetaDiff_->Fill(diTauCandidate->pZeta() - 1.5*diTauCandidate->pZetaVis(), weight);
+    hPzetaDiffVsMt1MET_->Fill(diTauCandidate->mt1MET(), diTauCandidate->pZeta() - 1.5*diTauCandidate->pZetaVis(), weight);
   }
 }
 
