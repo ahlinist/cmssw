@@ -31,27 +31,20 @@ electronsBgEstZtautauEnrichedId = copy.deepcopy(selectedPatElectronsForElecTauId
 electronsBgEstZtautauEnrichedAntiCrackCut = copy.deepcopy(selectedPatElectronsForElecTauAntiCrackCut)
 
 # require electron candidate to be within geometric acceptance of electron trigger
-electronsBgEstZtautauEnrichedEta = copy.deepcopy(selectedPatElectronsForElecTauEta21)
+electronsBgEstZtautauEnrichedEta = copy.deepcopy(selectedPatElectronsForElecTauEta)
 
 # require electron candidate to have transverse momentum above threshold
-electronsBgEstZtautauEnrichedPt = copy.deepcopy(selectedPatElectronsForElecTauPt15)
+electronsBgEstZtautauEnrichedPt = copy.deepcopy(selectedPatElectronsForElecTauPt)
 
-# require electron candidate to be isolated
-# with respect to tracks (of Pt >~ 0.3 GeV)
-electronsBgEstZtautauEnrichedTrkIso = copy.deepcopy(selectedPatElectronsForElecTauTrkIso)
+# require electron candidate to be isolated w.r.t combined relative PF candidates
+electronsBgEstZtautauEnrichedIso = copy.deepcopy(selectedPatElectronsForElecTauIso)
 
-# require electron candidate to be isolated
-# with respect to energy deposits in ECAL
-# (not associated to electron candidate)
-electronsBgEstZtautauEnrichedEcalIso = copy.deepcopy(selectedPatElectronsForElecTauEcalIso)
-
+# require electron to not be from a photon conversion
+electronsBgEstZtautauEnrichedConversionVeto = copy.deepcopy(selectedPatElectronsForElecTauConversionVeto)
 
 # require track of electron candidate to have small transverse impact parameter
 # (in order to veto electrons resulting from b-quark decays)
 electronsBgEstZtautauEnrichedTrkIP = copy.deepcopy(selectedPatElectronsForElecTauTrkIP)
-
-# require electron to not be from a photon conversion
-electronsBgEstZtautauEnrichedConversionVeto = copy.deepcopy(selectedPatElectronsForElecTauConversionVeto)
 
 
 electronSelConfiguratorBgEstZtautauEnriched = objSelConfigurator(
@@ -59,8 +52,7 @@ electronSelConfiguratorBgEstZtautauEnriched = objSelConfigurator(
       electronsBgEstZtautauEnrichedAntiCrackCut,
       electronsBgEstZtautauEnrichedEta,
       electronsBgEstZtautauEnrichedPt,
-      electronsBgEstZtautauEnrichedTrkIso,
-      electronsBgEstZtautauEnrichedEcalIso,
+      electronsBgEstZtautauEnrichedIso,
       electronsBgEstZtautauEnrichedConversionVeto,
       electronsBgEstZtautauEnrichedTrkIP ],
     src = "cleanPatElectrons",
@@ -88,10 +80,10 @@ tausBgEstZtautauEnrichedAntiOverlapWithElectronsVeto = cms.EDFilter("PATTauAntiO
 )
 
 # require tau candidate to be within geometric acceptance of Pixel + SiTracker detectors
-tausBgEstZtautauEnrichedEta = copy.deepcopy(selectedPatTausForElecTauEta21)
+tausBgEstZtautauEnrichedEta = copy.deepcopy(selectedPatTausForElecTauEta)
 
 # require tau candidate to have transverse energy above threshold
-tausBgEstZtautauEnrichedPt = copy.deepcopy(selectedPatTausForElecTauPt20)
+tausBgEstZtautauEnrichedPt = copy.deepcopy(selectedPatTausForElecTauPt)
 
 # require tau candidate to have a leading track
 # (track of Pt > 1. GeV within matching cone of size dR = 0.2 around jet-axis)
@@ -102,14 +94,6 @@ tausBgEstZtautauEnrichedLeadTrkPt = copy.deepcopy(selectedPatTausForElecTauLeadT
 
 # require tau candidate to pass TaNC discriminator
 tausBgEstZtautauEnrichedTaNCdiscr = copy.deepcopy(selectedPatTausForElecTauTaNCdiscr)
-
-# require tau candidate to have no tracks of Pt > 1. GeV
-# in isolation cone of size dR = 0.8, surrounding signal cone of size dR = 5./Et
-tausBgEstZtautauEnrichedTrkIso = copy.deepcopy(selectedPatTausForElecTauTrkIso)
-
-# require tau candidate to be isolated
-# with respect to energy deposits in ECAL
-tausBgEstZtautauEnrichedEcalIso = copy.deepcopy(selectedPatTausForElecTauEcalIso)
 
 # require tau candidate to have either one or three tracks within signal cone
 tausBgEstZtautauEnrichedProng = copy.deepcopy(selectedPatTausForElecTauProng)
@@ -136,8 +120,6 @@ tauSelConfiguratorBgEstZtautauEnriched = objSelConfigurator(
       tausBgEstZtautauEnrichedLeadTrk,
       tausBgEstZtautauEnrichedLeadTrkPt,
       tausBgEstZtautauEnrichedTaNCdiscr,
-      tausBgEstZtautauEnrichedTrkIso,
-      tausBgEstZtautauEnrichedEcalIso,
       tausBgEstZtautauEnrichedProng,
       tausBgEstZtautauEnrichedCharge,
       tausBgEstZtautauEnrichedElectronVeto,
@@ -170,17 +152,15 @@ produceElecTauPairsBgEstZtautauEnriched = cms.Sequence(elecTauPairsBgEstZtautauE
 from TauAnalysis.CandidateTools.elecTauPairSelection_cfi import *
 
 elecTauPairsBgEstZtautauEnrichedAntiOverlapVeto = copy.deepcopy(selectedElecTauPairsAntiOverlapVeto)
-elecTauPairsBgEstZtautauEnrichedZeroCharge = copy.deepcopy(selectedElecTauPairsZeroCharge)
-elecTauPairsBgEstZtautauEnrichedAcoplanarity12 = copy.deepcopy(selectedElecTauPairsAcoplanarity12)
 elecTauPairsBgEstZtautauEnrichedMt1MET = copy.deepcopy(selectedElecTauPairsMt1MET)
 elecTauPairsBgEstZtautauEnrichedPzetaDiff = copy.deepcopy(selectedElecTauPairsPzetaDiff)
+elecTauPairsBgEstZtautauEnrichedZeroCharge = copy.deepcopy(selectedElecTauPairsZeroCharge)
 
 elecTauPairSelConfiguratorBgEstZtautauEnriched = objSelConfigurator(
     [ elecTauPairsBgEstZtautauEnrichedAntiOverlapVeto,
-      elecTauPairsBgEstZtautauEnrichedZeroCharge,
-      elecTauPairsBgEstZtautauEnrichedAcoplanarity12,
       elecTauPairsBgEstZtautauEnrichedMt1MET,
       elecTauPairsBgEstZtautauEnrichedPzetaDiff,
+      elecTauPairsBgEstZtautauEnrichedZeroCharge,
       ],
     src = "elecTauPairsBgEstZtautauEnriched",
     pyModuleName = __name__,
@@ -191,20 +171,36 @@ selectElecTauPairsBgEstZtautauEnriched = elecTauPairSelConfiguratorBgEstZtautauE
 
 ####### anti Zee Cut #######
 
+# Two methods of Z->ee rejection:
+
+# 1)  Z->ee reconstruction veto
+# 2)  Opposite-sign, isolated second lepton veto
+
+#from TauAnalysis.RecoTools.elecTauPairZeeHypothesis_cff import *
+from TauAnalysis.RecoTools.diElecPairZeeHypothesis_cff import *
+
 ### production
 
-from TauAnalysis.RecoTools.elecTauPairZeeHypothesis_cff import *
-
-elecTauPairBgEstZtautauEnrichedZeeHypotheses = copy.deepcopy(elecTauPairZeeHypotheses)
-elecTauPairBgEstZtautauEnrichedZeeHypotheses.diCandidatePairSource = cms.InputTag('elecTauPairsBgEstZtautauEnrichedPzetaDiffCumulative')
+#elecTauPairBgEstZtautauEnrichedZeeHypotheses = copy.deepcopy(elecTauPairZeeHypotheses)
+#elecTauPairBgEstZtautauEnrichedZeeHypotheses.diCandidatePairSource = cms.InputTag('elecTauPairsBgEstZtautauEnrichedPzetaDiffCumulative')
+allDiElecPairBgEstZtautauEnrichedZeeHypothesesByLooseIsolation = allDiElecPairZeeHypothesesByLooseIsolation.clone(
+	srcLeg1 = cms.InputTag("selectedPatElectronsBgEstZtautauEnrichedTrkIPcumulative")
+)
 
 ### selection
 
-selectedElecTauPairBgEstZtautauEnrichedZeeHypotheses = copy.deepcopy(selectedElecTauPairZeeHypotheses)
-selectedElecTauPairBgEstZtautauEnrichedZeeHypotheses.src = cms.InputTag('elecTauPairBgEstZtautauEnrichedZeeHypotheses')
+#selectedElecTauPairBgEstZtautauEnrichedZeeHypotheses = copy.deepcopy(selectedElecTauPairZeeHypotheses)
+#selectedElecTauPairBgEstZtautauEnrichedZeeHypotheses.src = cms.InputTag('elecTauPairBgEstZtautauEnrichedZeeHypotheses')
+selectedDiElecPairBgEstZtautauEnrichedZeeHypothesesByLooseIsolation = selectedDiElecPairZeeHypothesesByLooseIsolation.clone(
+	src = cms.InputTag("allDiElecPairBgEstZtautauEnrichedZeeHypothesesByLooseIsolation")
+)
 
-
-produceElecTauPairZeeHypothesesBgEstZtautauEnriched = cms.Sequence(elecTauPairBgEstZtautauEnrichedZeeHypotheses*selectedElecTauPairBgEstZtautauEnrichedZeeHypotheses)
+#produceElecTauPairZeeHypothesesBgEstZtautauEnriched = cms.Sequence(elecTauPairBgEstZtautauEnrichedZeeHypotheses*selectedElecTauPairBgEstZtautauEnrichedZeeHypotheses)
+produceDiElecPairsBgEstZtautauEnriched = cms.Sequence(
+	selectedPatElectronsForZeeHypotheses * 
+	allDiElecPairBgEstZtautauEnrichedZeeHypothesesByLooseIsolation *
+	selectedDiElecPairBgEstZtautauEnrichedZeeHypothesesByLooseIsolation
+)
 
 #--------------------------------------------------------------------------------  
 # produce boolean event selection flags
@@ -240,21 +236,17 @@ cfgElectronPtCutBgEstZtautauEnriched = copy.deepcopy(cfgElectronPtCut)
 cfgElectronPtCutBgEstZtautauEnriched.pluginName = cms.string('electronPtCutBgEstZtautauEnriched')
 cfgElectronPtCutBgEstZtautauEnriched.src_cumulative = cms.InputTag('electronsBgEstZtautauEnrichedPtCumulative')
 
-cfgElectronTrkIsoCutBgEstZtautauEnriched = copy.deepcopy(cfgElectronTrkIsoCut)
-cfgElectronTrkIsoCutBgEstZtautauEnriched.pluginName = cms.string('electronTrkIsoCutBgEstZtautauEnriched')
-cfgElectronTrkIsoCutBgEstZtautauEnriched.src_cumulative = cms.InputTag('electronsBgEstZtautauEnrichedTrkIsoCumulative')
-
-cfgElectronEcalIsoCutBgEstZtautauEnriched = copy.deepcopy(cfgElectronEcalIsoCut)
-cfgElectronEcalIsoCutBgEstZtautauEnriched.pluginName = cms.string('electronEcalIsoCutBgEstZtautauEnriched')
-cfgElectronEcalIsoCutBgEstZtautauEnriched.src_cumulative = cms.InputTag('electronsBgEstZtautauEnrichedEcalIsoCumulative')
-
-cfgElectronTrkIPcutBgEstZtautauEnriched = copy.deepcopy(cfgElectronTrkIPcut)
-cfgElectronTrkIPcutBgEstZtautauEnriched.pluginName = cms.string('electronTrkIPcutBgEstZtautauEnriched')
-cfgElectronTrkIPcutBgEstZtautauEnriched.src_cumulative = cms.InputTag('electronsBgEstZtautauEnrichedTrkIPcumulative')
+cfgElectronIsoCutBgEstZtautauEnriched = copy.deepcopy(cfgElectronIsoCut)
+cfgElectronIsoCutBgEstZtautauEnriched.pluginName = cms.string('electronIsoCutBgEstZtautauEnriched')
+cfgElectronIsoCutBgEstZtautauEnriched.src_cumulative = cms.InputTag('electronsBgEstZtautauEnrichedIsoCumulative')
 
 cfgElectronConversionVetoBgEstZtautauEnriched = copy.deepcopy(cfgElectronConversionVeto)
 cfgElectronConversionVetoBgEstZtautauEnriched.pluginName = cms.string('electronConversionVetoBgEstZtautauEnriched')
 cfgElectronConversionVetoBgEstZtautauEnriched.src_cumulative = cms.InputTag('electronsBgEstZtautauEnrichedConversionVetoCumulative')
+
+cfgElectronTrkIPcutBgEstZtautauEnriched = copy.deepcopy(cfgElectronTrkIPcut)
+cfgElectronTrkIPcutBgEstZtautauEnriched.pluginName = cms.string('electronTrkIPcutBgEstZtautauEnriched')
+cfgElectronTrkIPcutBgEstZtautauEnriched.src_cumulative = cms.InputTag('electronsBgEstZtautauEnrichedTrkIPcumulative')
 
 # tau cuts
 
@@ -282,14 +274,6 @@ cfgTauTaNCdiscrCutBgEstZtautauEnriched = copy.deepcopy(cfgTauTaNCdiscrCut)
 cfgTauTaNCdiscrCutBgEstZtautauEnriched.pluginName = cms.string('tauTaNCdiscrCutBgEstZtautauEnriched')
 cfgTauTaNCdiscrCutBgEstZtautauEnriched.src_cumulative = cms.InputTag('tausBgEstZtautauEnrichedTaNCdiscrCumulative')
 
-cfgTauTrkIsoCutBgEstZtautauEnriched = copy.deepcopy(cfgTauTrkIsoCut)
-cfgTauTrkIsoCutBgEstZtautauEnriched.pluginName = cms.string('tauTrkIsoCutBgEstZtautauEnriched')
-cfgTauTrkIsoCutBgEstZtautauEnriched.src_cumulative = cms.InputTag('tausBgEstZtautauEnrichedTrkIsoCumulative')
-
-cfgTauEcalIsoCutBgEstZtautauEnriched = copy.deepcopy(cfgTauEcalIsoCut)
-cfgTauEcalIsoCutBgEstZtautauEnriched.pluginName = cms.string('tauEcalIsoCutBgEstZtautauEnriched')
-cfgTauEcalIsoCutBgEstZtautauEnriched.src_cumulative = cms.InputTag('tausBgEstZtautauEnrichedEcalIsoCumulative')
-
 cfgTauProngCutBgEstZtautauEnriched = copy.deepcopy(cfgTauProngCut)
 cfgTauProngCutBgEstZtautauEnriched.pluginName = cms.string('tauProngCutBgEstZtautauEnriched')
 cfgTauProngCutBgEstZtautauEnriched.src_cumulative = cms.InputTag('tausBgEstZtautauEnrichedProngCumulative')
@@ -316,14 +300,6 @@ cfgDiTauCandidateAntiOverlapVetoBgEstZtautauEnriched = copy.deepcopy(cfgDiTauCan
 cfgDiTauCandidateAntiOverlapVetoBgEstZtautauEnriched.pluginName = cms.string('diTauCandidateAntiOverlapVetoBgEstZtautauEnriched')
 cfgDiTauCandidateAntiOverlapVetoBgEstZtautauEnriched.src_cumulative = cms.InputTag('elecTauPairsBgEstZtautauEnrichedAntiOverlapVetoCumulative')
 
-cfgDiTauCandidateForElecTauZeroChargeCutBgEstZtautauEnriched = copy.deepcopy(cfgDiTauCandidateForElecTauZeroChargeCut)
-cfgDiTauCandidateForElecTauZeroChargeCutBgEstZtautauEnriched.pluginName = cms.string('diTauCandidateZeroChargeCutBgEstZtautauEnriched')
-cfgDiTauCandidateForElecTauZeroChargeCutBgEstZtautauEnriched.src_cumulative = cms.InputTag('elecTauPairsBgEstZtautauEnrichedZeroChargeCumulative')
-
-cfgDiTauCandidateForElecTauAcoplanarity12CutBgEstZtautauEnriched = copy.deepcopy(cfgDiTauCandidateForElecTauAcoplanarity12Cut)
-cfgDiTauCandidateForElecTauAcoplanarity12CutBgEstZtautauEnriched.pluginName = cms.string('diTauCandidateAcoplanarity12CutBgEstZtautauEnriched')
-cfgDiTauCandidateForElecTauAcoplanarity12CutBgEstZtautauEnriched.src_cumulative = cms.InputTag('elecTauPairsBgEstZtautauEnrichedAcoplanarity12Cumulative')
-
 cfgDiTauCandidateForElecTauMt1METCutBgEstZtautauEnriched = copy.deepcopy(cfgDiTauCandidateForElecTauMt1METCut)
 cfgDiTauCandidateForElecTauMt1METCutBgEstZtautauEnriched.pluginName = cms.string('diTauCandidateMt1METCutBgEstZtautauEnriched')
 cfgDiTauCandidateForElecTauMt1METCutBgEstZtautauEnriched.src_cumulative = cms.InputTag('elecTauPairsBgEstZtautauEnrichedMt1METcumulative')
@@ -332,10 +308,19 @@ cfgDiTauCandidateForElecTauPzetaDiffCutBgEstZtautauEnriched = copy.deepcopy(cfgD
 cfgDiTauCandidateForElecTauPzetaDiffCutBgEstZtautauEnriched.pluginName = cms.string('diTauCandidatePzetaDiffCutBgEstZtautauEnriched')
 cfgDiTauCandidateForElecTauPzetaDiffCutBgEstZtautauEnriched.src_cumulative = cms.InputTag('elecTauPairsBgEstZtautauEnrichedPzetaDiffCumulative')
 
-cfgElecTauPairZeeHypothesisVetoBgEstZtautauEnriched = copy.deepcopy(cfgElecTauPairZeeHypothesisVeto)
-cfgElecTauPairZeeHypothesisVetoBgEstZtautauEnriched.pluginName = cms.string('diTauCandidateZeeHypothesisVetoBgEstZtautauEnriched')
-cfgElecTauPairZeeHypothesisVetoBgEstZtautauEnriched.src_cumulative = cms.InputTag('selectedElecTauPairBgEstZtautauEnrichedZeeHypotheses')
+cfgDiTauCandidateForElecTauZeroChargeCutBgEstZtautauEnriched = copy.deepcopy(cfgDiTauCandidateForElecTauZeroChargeCut)
+cfgDiTauCandidateForElecTauZeroChargeCutBgEstZtautauEnriched.pluginName = cms.string('diTauCandidateZeroChargeCutBgEstZtautauEnriched')
+cfgDiTauCandidateForElecTauZeroChargeCutBgEstZtautauEnriched.src_cumulative = cms.InputTag('elecTauPairsBgEstZtautauEnrichedZeroChargeCumulative')
 
+#cfgElecTauPairZeeHypothesisVetoBgEstZtautauEnriched = copy.deepcopy(cfgElecTauPairZeeHypothesisVeto)
+#cfgElecTauPairZeeHypothesisVetoBgEstZtautauEnriched.pluginName = cms.string('diTauCandidateZeeHypothesisVetoBgEstZtautauEnriched')
+#cfgElecTauPairZeeHypothesisVetoBgEstZtautauEnriched.src_cumulative = cms.InputTag('selectedElecTauPairBgEstZtautauEnrichedZeeHypotheses')
+
+cfgDiElecPairZeeHypothesisVetoByLooseIsolationBgEstZtautauEnriched = cfgDiElecPairZeeHypothesisVetoByLooseIsolation.clone(
+	pluginName = cms.string('diElecPairZeeHypothesisVetoByLooseIsolationBgEstZtautauEnriched'),
+	src = cms.InputTag('selectedDiElecPairBgEstZtautauEnrichedZeeHypothesesByLooseIsolation'),
+	maxNumber = cms.uint32(0)
+)
 
 evtSelConfiguratorBgEstZtautauEnriched = eventSelFlagProdConfigurator(
     [ cfgTriggerBgEst,
@@ -346,8 +331,7 @@ evtSelConfiguratorBgEstZtautauEnriched = eventSelFlagProdConfigurator(
       cfgElectronAntiCrackCutBgEstZtautauEnriched,
       cfgElectronEtaCutBgEstZtautauEnriched,
       cfgElectronPtCutBgEstZtautauEnriched,
-      cfgElectronTrkIsoCutBgEstZtautauEnriched,
-      cfgElectronEcalIsoCutBgEstZtautauEnriched,
+      cfgElectronIsoCutBgEstZtautauEnriched,
       cfgElectronConversionVetoBgEstZtautauEnriched,
       cfgElectronTrkIPcutBgEstZtautauEnriched,
       cfgTauAntiOverlapWithElectronsVetoBgEstZtautauEnriched,
@@ -356,19 +340,17 @@ evtSelConfiguratorBgEstZtautauEnriched = eventSelFlagProdConfigurator(
       cfgTauLeadTrkCutBgEstZtautauEnriched,
       cfgTauLeadTrkPtCutBgEstZtautauEnriched,
       cfgTauTaNCdiscrCutBgEstZtautauEnriched,
-      cfgTauTrkIsoCutBgEstZtautauEnriched,
-      cfgTauEcalIsoCutBgEstZtautauEnriched,
       cfgTauProngCutBgEstZtautauEnriched,
       cfgTauChargeCutBgEstZtautauEnriched,
       cfgTauElectronVetoBgEstZtautauEnriched,
       cfgTauEcalCrackVetoBgEstZtautauEnriched,
       cfgTauMuonVetoBgEstZtautauEnriched,
       cfgDiTauCandidateAntiOverlapVetoBgEstZtautauEnriched,
-      cfgDiTauCandidateForElecTauZeroChargeCutBgEstZtautauEnriched,
-      cfgDiTauCandidateForElecTauAcoplanarity12CutBgEstZtautauEnriched,
       cfgDiTauCandidateForElecTauMt1METCutBgEstZtautauEnriched,
       cfgDiTauCandidateForElecTauPzetaDiffCutBgEstZtautauEnriched,
-      cfgElecTauPairZeeHypothesisVetoBgEstZtautauEnriched
+      cfgDiTauCandidateForElecTauZeroChargeCutBgEstZtautauEnriched,
+	  #cfgElecTauPairZeeHypothesisVetoBgEstZtautauEnriched
+	  cfgDiElecPairZeeHypothesisVetoByLooseIsolationBgEstZtautauEnriched
       ],
     boolEventSelFlagProducer = "BoolEventSelFlagProducer",
     pyModuleName = __name__
@@ -386,8 +368,8 @@ from TauAnalysis.Configuration.analyzeZtoElecTau_cff import *
 
 diTauCandidateHistManagerForElecTauBgEstZtautauEnriched = copy.deepcopy(diTauCandidateHistManagerForElecTau)
 diTauCandidateHistManagerForElecTauBgEstZtautauEnriched.pluginName = cms.string('diTauCandidateHistManagerForElecTauBgEstZtautauEnriched')
-#diTauCandidateHistManagerForElecTauBgEstZtautauEnriched.diTauCandidateSource = cms.InputTag('selectedElecTauPairBgEstZtautauEnrichedZeeHypotheses')
-diTauCandidateHistManagerForElecTauBgEstZtautauEnriched.ZllHypothesisSource = cms.InputTag('selectedElecTauPairBgEstZtautauEnrichedZeeHypotheses')
+diTauCandidateHistManagerForElecTauBgEstZtautauEnriched.diTauCandidateSource = cms.InputTag('elecTauPairsBgEstZtautauEnrichedZeroChargeCumulative')
+#diTauCandidateHistManagerForElecTauBgEstZtautauEnriched.ZllHypothesisSource = cms.InputTag('selectedElecTauPairBgEstZtautauEnrichedZeeHypotheses')
 
 
 
@@ -425,14 +407,9 @@ analyzeEventsBgEstZtautauEnriched = cms.EDAnalyzer("GenericAnalyzer",
             src = cms.InputTag('electronPtCutBgEstZtautauEnriched','cumulative')
         ),        
         cms.PSet(
-            pluginName = cms.string('electronTrkIsoCutBgEstZtautauEnriched'),
+            pluginName = cms.string('electronIsoCutBgEstZtautauEnriched'),
             pluginType = cms.string('BoolEventSelector'),
-            src = cms.InputTag('electronTrkIsoCutBgEstZtautauEnriched','cumulative')
-        ),
-        cms.PSet(
-            pluginName = cms.string('electronEcalIsoCutBgEstZtautauEnriched'),
-            pluginType = cms.string('BoolEventSelector'),
-            src = cms.InputTag('electronEcalIsoCutBgEstZtautauEnriched','cumulative')
+            src = cms.InputTag('electronIsoCutBgEstZtautauEnriched','cumulative')
         ),
         cms.PSet(
             pluginName = cms.string('electronConversionVetoBgEstZtautauEnriched'),
@@ -479,16 +456,6 @@ analyzeEventsBgEstZtautauEnriched = cms.EDAnalyzer("GenericAnalyzer",
             src = cms.InputTag('tauTaNCdiscrCutBgEstZtautauEnriched','cumulative')
         ),  
         cms.PSet(
-            pluginName = cms.string('tauTrkIsoCutBgEstZtautauEnriched'),
-            pluginType = cms.string('BoolEventSelector'),
-            src = cms.InputTag('tauTrkIsoCutBgEstZtautauEnriched','cumulative')
-        ),  
-        cms.PSet(
-            pluginName = cms.string('tauEcalIsoCutBgEstZtautauEnriched'),
-            pluginType = cms.string('BoolEventSelector'),
-            src = cms.InputTag('tauEcalIsoCutBgEstZtautauEnriched','cumulative')
-        ),  
-        cms.PSet(
             pluginName = cms.string('tauProngCutBgEstZtautauEnriched'),
             pluginType = cms.string('BoolEventSelector'),
             src = cms.InputTag('tauProngCutBgEstZtautauEnriched','cumulative')
@@ -522,16 +489,6 @@ analyzeEventsBgEstZtautauEnriched = cms.EDAnalyzer("GenericAnalyzer",
             src = cms.InputTag('diTauCandidateAntiOverlapVetoBgEstZtautauEnriched','cumulative')
         ),
         cms.PSet(
-            pluginName = cms.string('diTauCandidateZeroChargeCutBgEstZtautauEnriched'),
-            pluginType = cms.string('BoolEventSelector'),
-            src = cms.InputTag('diTauCandidateZeroChargeCutBgEstZtautauEnriched','cumulative')
-        ),
-        cms.PSet(
-            pluginName = cms.string('diTauCandidateAcoplanarity12CutBgEstZtautauEnriched'),
-            pluginType = cms.string('BoolEventSelector'),
-            src = cms.InputTag('diTauCandidateAcoplanarity12CutBgEstZtautauEnriched','cumulative')
-        ),
-        cms.PSet(
             pluginName = cms.string('diTauCandidateMt1METCutBgEstZtautauEnriched'),
             pluginType = cms.string('BoolEventSelector'),
             src = cms.InputTag('diTauCandidateMt1METCutBgEstZtautauEnriched','cumulative')
@@ -542,10 +499,20 @@ analyzeEventsBgEstZtautauEnriched = cms.EDAnalyzer("GenericAnalyzer",
             src = cms.InputTag('diTauCandidatePzetaDiffCutBgEstZtautauEnriched','cumulative')
         ),
         cms.PSet(
-            pluginName = cms.string('diTauCandidateZeeHypothesisVetoBgEstZtautauEnriched'),
+            pluginName = cms.string('diTauCandidateZeroChargeCutBgEstZtautauEnriched'),
             pluginType = cms.string('BoolEventSelector'),
-            src = cms.InputTag('diTauCandidateZeeHypothesisVetoBgEstZtautauEnriched','cumulative')
+            src = cms.InputTag('diTauCandidateZeroChargeCutBgEstZtautauEnriched','cumulative')
+        ),
+        cms.PSet(
+            pluginName = cms.string('diElecPairZeeHypothesisVetoByLooseIsolationBgEstZtautauEnriched'),
+            pluginType = cms.string('BoolEventSelector'),
+            src = cms.InputTag('diElecPairZeeHypothesisVetoByLooseIsolationBgEstZtautauEnriched','cumulative')
         )
+		#cms.PSet(
+		#    pluginName = cms.string('diTauCandidateZeeHypothesisVetoBgEstZtautauEnriched'),
+		#    pluginType = cms.string('BoolEventSelector'),
+		#    src = cms.InputTag('diTauCandidateZeeHypothesisVetoBgEstZtautauEnriched','cumulative')
+		#)
         
         
     ),
@@ -613,11 +580,7 @@ analyzeEventsBgEstZtautauEnriched = cms.EDAnalyzer("GenericAnalyzer",
             title = cms.string('Pt(Tau) > 20 GeV'),
         ),
         cms.PSet(
-            filter = cms.string('electronTrkIsoCutBgEstZtautauEnriched'),
-            title = cms.string('Electron Track iso.'),
-        ),
-        cms.PSet(
-            filter = cms.string('electronEcalIsoCutBgEstZtautauEnriched'),
+            filter = cms.string('electronIsoCutBgEstZtautauEnriched'),
             title = cms.string('Electron ECAL iso.'),
         ),
         cms.PSet(
@@ -635,14 +598,6 @@ analyzeEventsBgEstZtautauEnriched = cms.EDAnalyzer("GenericAnalyzer",
         cms.PSet(
             filter = cms.string('tauTaNCdiscrCutBgEstZtautauEnriched'),
             title = cms.string('Tau TaNC at 0.5%'),
-        ),
-        cms.PSet(
-            filter = cms.string('tauTrkIsoCutBgEstZtautauEnriched'),
-            title = cms.string('Tau Track iso.'),
-        ),
-        cms.PSet(
-            filter = cms.string('tauEcalIsoCutBgEstZtautauEnriched'),
-            title = cms.string('Tau ECAL iso.'),
         ),
         cms.PSet(
             filter = cms.string('tauProngCutBgEstZtautauEnriched'),
@@ -669,14 +624,6 @@ analyzeEventsBgEstZtautauEnriched = cms.EDAnalyzer("GenericAnalyzer",
             title = cms.string('dR(Electron-Tau) > 0.7'),
         ),
         cms.PSet(
-            filter = cms.string('diTauCandidateZeroChargeCutBgEstZtautauEnriched'),
-            title = cms.string('Charge(Electron+Tau) = 0'),
-        ),
-        cms.PSet(
-            filter = cms.string('diTauCandidateAcoplanarity12CutBgEstZtautauEnriched'),
-            title = cms.string('Acoplanarity(Electron+Tau)'),
-        ),
-        cms.PSet(
             filter = cms.string('diTauCandidateMt1METCutBgEstZtautauEnriched'),
             title = cms.string('M_{T}(Electron-MET) < 50 GeV'),
         ),
@@ -685,9 +632,17 @@ analyzeEventsBgEstZtautauEnriched = cms.EDAnalyzer("GenericAnalyzer",
             title = cms.string('P_{#zeta} - 1.5*P_{#zeta}^{vis} > -20 GeV'),
         ),
         cms.PSet(
-            filter = cms.string('diTauCandidateZeeHypothesisVetoBgEstZtautauEnriched'),
-            title = cms.string('not 85 < M_{vis} (Electron-Tau) < 100 GeV'),
+            filter = cms.string('diTauCandidateZeroChargeCutBgEstZtautauEnriched'),
+            title = cms.string('Charge(Electron+Tau) = 0'),
         ),
+		cms.PSet(
+		    filter = cms.string('diElecPairZeeHypothesisVetoByLooseIsolationBgEstZtautauEnriched'),
+		    title = cms.string('charge(elec + looseIsoElec) != 0'),
+		),
+		#cms.PSet(
+		#    filter = cms.string('diTauCandidateZeeHypothesisVetoBgEstZtautauEnriched'),
+		#    title = cms.string('not 85 < M_{vis} (Electron-Tau) < 100 GeV'),
+		#),
 
 
 
@@ -721,7 +676,8 @@ bgEstZtautauEnrichedAnalysisSequence = cms.Sequence(
     + selectTausBgEstZtautauEnriched
     + produceElecTauPairsBgEstZtautauEnriched
     + selectElecTauPairsBgEstZtautauEnriched
-    + produceElecTauPairZeeHypothesesBgEstZtautauEnriched
+	#+ produceElecTauPairZeeHypothesesBgEstZtautauEnriched
+	+ produceDiElecPairsBgEstZtautauEnriched
     + selectEventsBgEstZtautauEnriched 
     + analyzeEventsBgEstZtautauEnriched
 
