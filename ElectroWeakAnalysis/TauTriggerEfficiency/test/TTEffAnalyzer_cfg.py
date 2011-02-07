@@ -91,7 +91,8 @@ process.TTEffAnalysis = cms.EDAnalyzer("TTEffAnalyzer",
 	PFJetSource		= cms.InputTag("ak5PFJets"),
 	MHTJetThreshold		= cms.double(20.),
 
-	HLTJetSource		= cms.InputTag("iterativeCone5CaloJets"),
+#	HLTJetSource            = cms.InputTag("hltIterativeCone5CaloJets"), #uncorrected
+	HLTJetSource            = cms.InputTag("hltMCJetCorJetIcone5Regional"), #corrected
 	HLTNJets		= cms.int32(4),
 
 	L1extraTauJetSource	= cms.InputTag("l1extraParticles", "Tau"),
