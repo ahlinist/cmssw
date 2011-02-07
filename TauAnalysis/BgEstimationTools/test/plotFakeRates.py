@@ -9,17 +9,15 @@ ROOT.gROOT.SetBatch(True)
 ROOT.gROOT.SetStyle("Plain")
 ROOT.gStyle.SetOptStat(0)
 
-rebin = 2
-
 steering = {
     'plain' : {
         'files' : [ROOT.TFile(file, "READ")
-                   for file in glob.glob("/tmp/friis/Run52plain/*root")],
+                   for file in glob.glob("/data2/friis/Run52plain/*data*root")],
         'fake_rates' : [],
     },
     'fr' : {
         'files' : [ROOT.TFile(file, "READ")
-                   for file in glob.glob("/tmp/friis/Run52FR/*root")],
+                   for file in glob.glob("/data/friis/Run52FR/*data*root")],
         'fake_rates' : [
             'qcdMuEnrichedDataJet', 'WplusJetsDataJet'
         ],
@@ -51,7 +49,8 @@ def get_analyzer_dirs(sign, fakerate):
     to_join = ['ahMuTauAnalyzer'+sign]
     fakeratestr = []
     if fakerate is not None:
-        fakeratestr = ['fr_' + fakerate]
+        #fakeratestr = ['fr_' + fakerate]
+        fakeratestr = [fakerate]
     return ("_".join(to_join + ['woBtag'] + fakeratestr),
             "_".join(to_join + ['wBtag'] + fakeratestr))
 
@@ -85,6 +84,9 @@ def get_plain_histogram(sign, histogram):
     histo.SetMarkerSize(1)
     return histo
 
+def quadrature(*items):
+    return math.sqrt(sum(item**2 for item in items))
+
 def get_fakerate_tgraph(sign, histogram, fakerate):
     central = get_histogram(
         steering['fr']['files'], sign, fakerate, histogram)
@@ -93,11 +95,23 @@ def get_fakerate_tgraph(sign, histogram, fakerate):
                               histogram)
     tau_id_down = get_histogram(steering['fr']['files'], sign,
                                 fakerate + 'SysTauIdEffDown', histogram)
+    unweighted = get_histogram(steering['fr']['files'], sign,
+                               'frUnweighted', histogram)
+
     output = ROOT.TGraphAsymmErrors(central.GetNbinsX())
+
     for bin in range(1, central.GetNbinsX()+1):
+        print bin, histogram, fakerate
         central_content = central.GetBinContent(bin)
         tau_id_up_content = tau_id_up.GetBinContent(bin)
         tau_id_down_content = tau_id_down.GetBinContent(bin)
+        print central_content, tau_id_up_content
+
+        # Get the error due to statistics of the unweighted sample
+        unweighted_content = unweighted.GetBinContent(bin)
+        stat_error = (unweighted_content and
+                      math.sqrt(unweighted_content)/unweighted_content
+                      or 0)*central_content
 
         output.SetPoint(bin-1, central.GetXaxis().GetBinCenter(bin),
                         central_content)
@@ -136,7 +150,7 @@ def combine_tgraphs(graph1, graph2, bin_combiner):
 
 def get_fakerate_histogram(sign, histogram):
     fakerates = {}
-    for fakerate in ['qcdMuEnrichedDataJet', 'WplusJetsDataJet']:
+    for fakerate in ['fr_qcdMuEnrichedDataJet', 'fr_WplusJetsDataJet']:
         fakerates[fakerate] = get_fakerate_tgraph(sign, histogram, fakerate)
     combo = combine_tgraphs(
         fakerates.values()[0], fakerates.values()[1], average_central)
