@@ -72,8 +72,8 @@ selectPatElectronsLooseIsolation = patElectronSelConfiguratorLooseIsolation.conf
 # select electrons for Z->electron + tau-jet analysis
 #
 
-# VBTF WP90 electron ID 
-selectedPatElectronsForElecTauId.cut = cms.string('(abs(superCluster.eta) < 1.479 & abs(deltaEtaSuperClusterTrackAtVtx) < 0.004 & abs(deltaPhiSuperClusterTrackAtVtx) < 0.06 & hcalOverEcal < 0.04 & sigmaIetaIeta < 0.01) | (abs(superCluster.eta) > 1.479 & abs(deltaEtaSuperClusterTrackAtVtx) < 0.007 & abs(deltaPhiSuperClusterTrackAtVtx) <0.03 & hcalOverEcal < 0.025 & sigmaIetaIeta < 0.03)') 
+# VBTF WP90 electron ID
+selectedPatElectronsForElecTauId.cut = cms.string('(abs(superCluster.eta) < 1.479 & abs(deltaEtaSuperClusterTrackAtVtx) < 0.004 & abs(deltaPhiSuperClusterTrackAtVtx) < 0.06 & hcalOverEcal < 0.04 & sigmaIetaIeta < 0.01) | (abs(superCluster.eta) > 1.479 & abs(deltaEtaSuperClusterTrackAtVtx) < 0.007 & abs(deltaPhiSuperClusterTrackAtVtx) <0.03 & hcalOverEcal < 0.025 & sigmaIetaIeta < 0.03)')
 selectedPatElectronsForElecTauAntiCrackCut.cut = cms.string('abs(superCluster.eta) < 1.442 | abs(superCluster.eta) > 1.560')
 selectedPatElectronsForElecTauEta21.cut = cms.string('abs(eta) < 2.1')
 selectedPatElectronsForElecTauPt15.cut = cms.string('pt > 15.')
@@ -150,13 +150,13 @@ selectPatElectronsForElecTauLooseIsolation = patElectronSelConfiguratorForElecTa
 selectedPatElectronsForElecMuAntiOverlapWithMuonsVeto.dRmin = cms.double(0.3)
 selectedPatElectronsForElecMuTightId.cut = cms.string('electronID("eidRobustTight") > 0')
 selectedPatElectronsForElecMuAntiCrackCut.cut = selectedPatElectronsAntiCrackCut.cut
-selectedPatElectronsForElecMuEta21.cut = selectedPatElectronsEta21.cut 
-selectedPatElectronsForElecMuPt15.cut = selectedPatElectronsPt15.cut 
+selectedPatElectronsForElecMuEta21.cut = selectedPatElectronsEta21.cut
+selectedPatElectronsForElecMuPt15.cut = selectedPatElectronsPt15.cut
 selectedPatElectronsForElecMuTrkIso.cut = cms.string('userIsolation("pat::TrackIso") < 2.')
 selectedPatElectronsForElecMuEcalIso.cut = selectedPatElectronsEcalIso.cut
-selectedPatElectronsForElecMuTrk.cut = selectedPatElectronsTrk.cut 
-selectedPatElectronsForElecMuTrkIP.vertexSource = selectedPatElectronsTrkIP.vertexSource 
-selectedPatElectronsForElecMuTrkIP.IpMax = selectedPatElectronsTrkIP.IpMax 
+selectedPatElectronsForElecMuTrk.cut = selectedPatElectronsTrk.cut
+selectedPatElectronsForElecMuTrkIP.vertexSource = selectedPatElectronsTrkIP.vertexSource
+selectedPatElectronsForElecMuTrkIP.IpMax = selectedPatElectronsTrkIP.IpMax
 
 patElectronSelConfiguratorForElecMu = objSelConfigurator(
     [ selectedPatElectronsForElecMuAntiOverlapWithMuonsVeto,
@@ -208,6 +208,10 @@ selectedPatMuonsEta21.cut = cms.string('abs(eta) < 2.1')
 selectedPatMuonsPt15.cut = cms.string('pt > 15.')
 selectedPatMuonsVbTfId.beamSpotSource = cms.InputTag("offlineBeamSpot")
 selectedPatMuonsVbTfId.vertexSource = cms.InputTag("selectedPrimaryVertexHighestPtTrackSum")
+
+#print "WARNING DISABLING VBTF MUON ID"
+#selectedPatMuonsVbTfId = copy.deepcopy(selectedPatMuonsPt15)
+
 selectedPatMuonsPFRelIso.chargedHadronIso.ptMin = cms.double(0.5)
 selectedPatMuonsPFRelIso.chargedHadronIso.dRvetoCone = cms.double(-1.)
 selectedPatMuonsPFRelIso.chargedHadronIso.dRisoCone = cms.double(0.4)
@@ -222,6 +226,8 @@ selectedPatMuonsPFRelIso.sumPtMethod = cms.string("relative")
 selectedPatMuonsTrk.cut = cms.string('innerTrack.isNonnull')
 selectedPatMuonsTrkIP.vertexSource = cms.InputTag("selectedPrimaryVertexHighestPtTrackSum")
 selectedPatMuonsTrkIP.IpMax = cms.double(0.05)
+#print "WARNING MESSING AROUND W/ MUON TRK IP"
+#selectedPatMuonsTrkIP.IpMin = cms.double(-1)
 
 patMuonSelConfigurator = objSelConfigurator(
     [ selectedPatMuonsGlobal,
@@ -305,7 +311,7 @@ selectedPatTausForElecTauEta23.cut = selectedPatTausEta23.cut
 selectedPatTausForElecTauPt20.cut = selectedPatTausPt20.cut
 selectedPatTausForElecTauLeadTrk.cut = selectedPatTausLeadTrk.cut
 selectedPatTausForElecTauLeadTrkPt.cut = selectedPatTausLeadTrkPt.cut
-#selectedPatTausForElecTauTaNCdiscr.cut = cms.string('tauID("byTaNCfrHalfPercent") > 0') 
+#selectedPatTausForElecTauTaNCdiscr.cut = cms.string('tauID("byTaNCfrHalfPercent") > 0')
 selectedPatTausForElecTauTaNCdiscr.cut = cms.string('tauID("byTaNCloose") > 0.5')
 selectedPatTausForElecTauTrkIso.cut = selectedPatTausForElecTauTaNCdiscr.cut
 selectedPatTausForElecTauEcalIso.cut = selectedPatTausForElecTauTaNCdiscr.cut
@@ -452,7 +458,7 @@ selectedPatTausForWTauNuEta21.cut = selectedPatTausEta23.cut
 selectedPatTausForWTauNuPt20.cut = cms.string("pt > 25. & pt < 60.")
 selectedPatTausForWTauNuLeadTrk.cut = selectedPatTausLeadTrk.cut
 selectedPatTausForWTauNuLeadTrkPt.cut = cms.string('leadTrack().isNonnull() & leadTrack().pt() > 20.')
-selectedPatTausForWTauNuTaNCdiscr.cut = cms.string('tauID("byTaNCfrQuarterPercent") > -1.e+3') 
+selectedPatTausForWTauNuTaNCdiscr.cut = cms.string('tauID("byTaNCfrQuarterPercent") > -1.e+3')
 selectedPatTausForWTauNuEcalIso.cut = selectedPatTausForWTauNuTaNCdiscr.cut
 selectedPatTausForWTauNuTrkIso.cut = selectedPatTausForWTauNuTaNCdiscr.cut
 selectedPatTausForWTauNuProng.cut = selectedPatTausProng.cut
@@ -470,7 +476,7 @@ patTauSelConfiguratorForWTauNu = objSelConfigurator(
       selectedPatTausForWTauNuEcalIso,
       selectedPatTausForWTauNuTrkIso,
       selectedPatTausForWTauNuProng,
-      selectedPatTausForWTauNuCharge, 
+      selectedPatTausForWTauNuCharge,
       selectedPatTausForWTauNuMuonVeto,
       selectedPatTausForWTauNuElectronVeto,
       selectedPatTausForWTauNuEcalCrackVeto ],
@@ -500,7 +506,7 @@ patTauSelConfiguratorForWTauNuLooseIsolation = objSelConfigurator(
       selectedPatTausForWTauNuEcalIsoLooseIsolation,
       selectedPatTausForWTauNuTrkIsoLooseIsolation,
       selectedPatTausForWTauNuProngLooseIsolation,
-      selectedPatTausForWTauNuChargeLooseIsolation, 
+      selectedPatTausForWTauNuChargeLooseIsolation,
       selectedPatTausForWTauNuMuonVetoLooseIsolation,
       selectedPatTausForWTauNuElectronVetoLooseIsolation,
       selectedPatTausForWTauNuEcalCrackVetoLooseIsolation ],
