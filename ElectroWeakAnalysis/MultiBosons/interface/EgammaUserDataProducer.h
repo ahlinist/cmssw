@@ -31,6 +31,7 @@ Implementation:
 #include "FWCore/MessageLogger/interface/MessageLogger.h"
 
 #include "FWCore/Framework/interface/Event.h"
+#include "FWCore/Framework/interface/EventSetup.h"
 #include "FWCore/Framework/interface/MakerMacros.h"
 #include "FWCore/Framework/interface/ESHandle.h"
 
@@ -316,7 +317,7 @@ namespace vgamma {
       float angle = -999.;
 
       if(egamma->isEB()) {
-	std::vector<float> roundnessAndAngle = 
+	std::vector<float> roundnessAndAngle =
 	  EcalClusterTools::roundnessBarrelSuperClusters(*(egamma->superCluster()),*ebRecHits.product(),0);
 	roundness = roundnessAndAngle[0];
 	angle = roundnessAndAngle[1];
@@ -324,7 +325,7 @@ namespace vgamma {
 
       scRoundness.push_back(roundness);
       scAngle    .push_back(angle);
-      
+
       float smin = -999.;
       float smax = -999.;
       float alphasminmaj = -999.;
@@ -340,11 +341,11 @@ namespace vgamma {
 	smax = theMoments.sMaj;
 	alphasminmaj = theMoments.alpha;
       }
-	
+
       sMin.push_back(smin);
       sMaj.push_back(smax);
       alphaSMinMaj.push_back(alphasminmaj);
-								   
+
 
     } // for(egamma = egammas->begin(); egamma < egammas->end(); ++egamma)
 
@@ -393,7 +394,7 @@ namespace vgamma {
     putMap<int  >(iEvent,egammas,seedSeverityLevel,"seedSeverityLevel");
     putMap<float>(iEvent,egammas,seedSwissCross,"seedSwissCross");
     putMap<float>(iEvent,egammas,seedE1OverE9,"seedE1OverE9");
-    
+
     putMap<float>(iEvent,egammas,scRoundness,"scRoundness");
     putMap<float>(iEvent,egammas,scAngle,"scAngle");
 
