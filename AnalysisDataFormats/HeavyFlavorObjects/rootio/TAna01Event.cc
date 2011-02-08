@@ -1,5 +1,6 @@
 #include "TAna01Event.hh"
 #include <iostream>
+#include <stdexcept>
 
 ClassImp(TAna01Event)
  
@@ -204,58 +205,55 @@ int TAna01Event::getGenIndex(double px, double py, double pz, int charge, double
 }
 
 // ----------------------------------------------------------------------
-int TAna01Event::getGenIndexWithDeltaR(const TLorentzVector &tlv, double charge)
+// This truth matcher gives the particle with minimum deltaR below dRthrsh
+// If there are more than one track below dRthrsh, the best one is returned
+int TAna01Event::getGenIndexWithDeltaR(const TLorentzVector &tlv, double charge, double dRthrsh)
 {
   TGenCand *pGenCand;
   int ret(-1);
-  //const double dRthrsh(0.12);
-  //const double dpTthrsh(0.3);
   double dRmin(99999.9);
-  double dpTmin(99999.9);
   int dRminIdx(-1);
-  int dpTminIdx(-1);
 
   for (int i = 0; i < fnGenCands; i++) {
       pGenCand = getGenCand(i);
       if ((pGenCand->fStatus == 1 || pGenCand->fStatus == 8) && charge * pGenCand->fQ > 0) {
 	  double dR = tlv.DeltaR(pGenCand->fP);
-	  double dpT = TMath::Abs((tlv.Perp() - pGenCand->fP.Perp())/tlv.Perp());
-	  if(dR < dRmin)
+	  if(dR < dRthrsh && dR < dRmin)
 	  {
 	      dRmin = dR;
 	      dRminIdx = i;
 	  }
-	  if(dpT < dpTmin)
-	  {
-	      dpTmin = dpT;
-	      dpTminIdx = i;
-	  }
       }
   }
-  //cout << "getGenIndexWithDeltaR(const TLorentzVector &tlv, double charge): dR " << dRmin << " " << dRminIdx << " dpT " << dpTmin << " " << dpTminIdx << endl;
   ret = dRminIdx;
   return ret;
 }
 
 // ----------------------------------------------------------------------
-int TAna01Event::getGenIndexWithDeltaR(const TLorentzVector &tlv, const TVector3 &vtx, double charge)
+// This truth matcher gives the particle with minimum deltaR below dRthrsh
+// If there are more than one track below dRthrsh, the best one is returned
+int TAna01Event::getGenIndexWithDeltaR(const TLorentzVector &tlv, const TVector3 &vtx, double charge, double dRthrsh, double dVtxRatioThrsh)
 {
+  if(0.0==dVtxRatioThrsh) throw std::invalid_argument("TAna01Event::getGenIndexWithDeltaR: double dVtxRatioThrsh == 0 leads to division by zero");
   TGenCand *pGenCand;
-  int ret(-1);
-  const double dVtxhPerc(.30); // percentage of distance to PV
-  const double dVtxhThrshMin(1); // minimal threshold for test of distance
   double dRmin(99999.9);
+  int ret(-1);
   int dRminIdx(-1);
 
   for (int i = 0; i < fnGenCands; i++) {
       pGenCand = getGenCand(i);
       if ((pGenCand->fStatus == 1 || pGenCand->fStatus == 8) && charge * pGenCand->fQ > 0) {
 	  const double dR = tlv.DeltaR(pGenCand->fP);
-	  // the test for the distance makes a slight mistake for simplicity: assumin the PV at (0,0,0)
-	  // therefore introduce a minimal threshold
-	  const double dVtxThrsh = dVtxhPerc * pGenCand->fP.Mag() > dVtxhThrshMin ? dVtxhPerc * pGenCand->fP.Mag() : dVtxhThrshMin;
-	  const double dVtx = (vtx-pGenCand->fV).Mag();
-	  if(dVtx < dVtxThrsh && dR < dRmin)
+	  double dVtxRatio;
+	  try
+	  {
+	    dVtxRatio = vtx.Mag()/pGenCand->fV.Mag();
+	  }
+	  catch (std::runtime_error)
+	  {
+	      dVtxRatio = 0; // in case we have div by zero we make sure the next check fails
+	  }
+	  if(dR < dRthrsh && dR < dRmin && dVtxRatio < dVtxRatioThrsh && dVtxRatio > 1./dVtxRatioThrsh)
 	  {
 	      dRmin = dR;
 	      dRminIdx = i;
@@ -277,21 +275,12 @@ int TAna01Event::getGenIndexWithDeltaR(double pt, double eta, double phi, double
 				       
   for (int i = 0; i < fnGenCands; i++) {
 	  pGenCand = getGenCand(i);
-// cout << "getGenIndexWithDeltaR: " << i << " " << pGenCand->fStatus << " " << charge * pGenCand->fQ;
 	  if ((pGenCand->fStatus == 1 || pGenCand->fStatus == 8) && charge * pGenCand->fQ > 0) {
-		  /*   
-		   gencand.SetXYZM(pGenCand->fP.X(),
-		   pGenCand->fP.Y(),
-		   pGenCand->fP.Z(),
-		   pGenCand->fMass);
-		   */
 		  double dR = track.DeltaR(pGenCand->fP);
 		  double dpt = TMath::Abs((track.Perp() - pGenCand->fP.Perp())/track.Perp());
-		  // cout << dR << " " << dpt << endl;
-		  
 		  if (dR < 0.12 && dpt < 0.3  && count < 30) {
 			  tmp_index[count] = i;
-			  count++; 
+			  count++;
 		  }
 	  }
   }
@@ -302,12 +291,6 @@ int TAna01Event::getGenIndexWithDeltaR(double pt, double eta, double phi, double
   if (count > 1) { 
     for (int i = 0; i < count; i++) {
       pGenCand = getGenCand(tmp_index[i]);;
-      /*	       
-		      gencand.SetXYZM(pGenCand->fP.X(),
-		      pGenCand->fP.Y(),
-		      pGenCand->fP.Z(),
-		      pGenCand->fMass);
-      */
       if (track.DeltaR(pGenCand->fP) < deltaR_min) {
 	deltaR_min = track.DeltaR(pGenCand->fP);			
 	i_min = i;
