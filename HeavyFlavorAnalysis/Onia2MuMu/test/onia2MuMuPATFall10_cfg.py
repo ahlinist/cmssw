@@ -7,7 +7,7 @@ process = cms.Process("Onia2MuMuPAT")
 
 from HeavyFlavorAnalysis.Onia2MuMu.onia2MuMuPAT_cff import *
 
-onia2MuMuPAT(process, GlobalTag="START38_V12::All", MC=True, HLT="HLT", Filter=False)
+onia2MuMuPAT(process, GlobalTag="START39_V8::All", MC=True, HLT="HLT", Filter=False)
 
 process.source.fileNames = cms.untracked.vstring(
        'file:/tmp/testJpsiMuMuRECO.root'

@@ -7,7 +7,7 @@ process = cms.Process("Onia2MuMuPAT")
 
 from HeavyFlavorAnalysis.Onia2MuMu.onia2MuMuPAT_cff import *
 
-onia2MuMuPAT(process, GlobalTag="FT_R_38X_V14A::All", MC=False, HLT="HLT", Filter=True)
+onia2MuMuPAT(process, GlobalTag="FT_R_39X_V4A::All", MC=False, HLT="HLT", Filter=True)
 
 process.source.fileNames = cms.untracked.vstring(
        '/store/data/Run2010A/MuOnia/RECO/Nov4ReReco_v1/0007/FE96320B-CFEA-DF11-AF94-E0CB4E553666.root',
