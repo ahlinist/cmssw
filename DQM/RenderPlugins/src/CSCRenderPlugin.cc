@@ -21,6 +21,7 @@
 #include "CSCRenderPlugin_SummaryMap.h"
 #include "CSCRenderPlugin_EventDisplay.h"
 #include "CSCRenderPlugin_EmuEventDisplay.h"
+#include "CSC_TPE_hAll.h"
 
 #include <math.h>
 #include <string>
@@ -28,6 +29,7 @@
 #include <bitset>
 #include <TH1.h>
 #include <TH2.h>
+#include <TH3.h>
 #include <TBox.h>
 #include <TText.h>
 #include <TPRegexp.h>
@@ -51,6 +53,7 @@ class CSCRenderPlugin : public DQMRenderPlugin {
     EventDisplay eventDisplay;
     EmuEventDisplay emuEventDisplay;
     MapOfPatternResults mopr;
+    CSC_TPE_hAll hAll;
 
   public:
 
@@ -2066,6 +2069,13 @@ class CSCRenderPlugin : public DQMRenderPlugin {
       {
         TH2* tmp = dynamic_cast<TH2*>(obj);
         emuEventDisplay.drawEventDisplay_XY(tmp);
+        return;
+      }
+
+      if(reMatch(".*TriggerPrimitivesEmulator/h_All$", o.name))
+      {  
+        TH3* tmp = dynamic_cast<TH3*>(obj);
+        hAll.draw(tmp);
         return;
       }
 
