@@ -13,7 +13,7 @@
 //
 // Original Author:  pts/45
 //         Created:  Tue May 13 12:23:34 CEST 2008
-// $Id: RPCMonitorEfficiency.cc,v 1.46 2011/01/21 12:08:02 carrillo Exp $
+// $Id: RPCMonitorEfficiency.cc,v 1.47 2011/02/05 11:26:17 carrillo Exp $
 //
 //
 
@@ -339,7 +339,10 @@ public:
   TH2F * Disk1Summary;
   TH2F * Disk2Summary;
   TH2F * Disk3Summary;
-  
+
+  TH2F * PositiveEndCapSummary;
+  TH2F * NegativeEndCapSummary;
+
   TH1F * histoRPC;
   TH2F * histoRPC_2D;
   TH1F * histoDT;
@@ -643,7 +646,7 @@ RPCMonitorEfficiency::RPCMonitorEfficiency(const edm::ParameterSet& iConfig){
   debug=iConfig.getUntrackedParameter<bool>("debug",false);
   stat=iConfig.getUntrackedParameter<bool>("statistics",false);
   threshold=iConfig.getUntrackedParameter<double>("threshold");
-  fiducialcut=iConfig.getUntrackedParameter<double>("fiducialcut",0.25);
+  fiducialcut=iConfig.getUntrackedParameter<double>("fiducialcut",0.);
   endcap=iConfig.getUntrackedParameter<bool>("endcap");
   barrel=iConfig.getUntrackedParameter<bool>("barrel");
   BlackListFile  = iConfig.getUntrackedParameter<std::string>("BlackListFile","blacklist.dat"); 
@@ -676,8 +679,8 @@ void RPCMonitorEfficiency::beginRun(const edm::Run&,const edm::EventSetup&){
     std::string name;
     while (ifin.good()){
       ifin >>rawId >>name;
+      if(debug) std::cout<<"rawId = "<<rawId<<" name= "<<name<<std::endl;
       blacklist.push_back(rawId);
-      if(debug) std::cout<<"rawId ="<<rawId<<" name="<<name<<std::endl;
     }
   }
   
@@ -786,7 +789,7 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
       while (ifin.good()){
 	ifin >>rawId >>name >>stripl >>stripw >>nstrips;
 	IntegralMuographyRawIdsVector[m].push_back(rawId);
-	if(debug) std::cout<<"Building Vectors,  name "<<name<<" vector "<<namesIntegralMuography[m].c_str()<<std::endl;
+	//if(debug) std::cout<<"Building Vectors,  name "<<name<<" vector "<<namesIntegralMuography[m].c_str()<<std::endl;
       }
     }
     ifin.close();
@@ -1223,6 +1226,12 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
   Disk2Summary = new TH2F (os.c_str(), os.c_str(), 36, 0.5,36.5, 6, 0.5, 6.5);
   os="Efficiency_Roll_vs_Sector_Disk_+3";                                      
   Disk3Summary = new TH2F (os.c_str(), os.c_str(), 36, 0.5,36.5, 6, 0.5, 6.5);
+
+  os="PositiveEndCapSummary";
+  PositiveEndCapSummary = new TH2F (os.c_str(), os.c_str(), 36, 0.5,36.5, 6, 0.5, 6.5);
+  os="NegativeEndCapSummary";                            
+  NegativeEndCapSummary = new TH2F (os.c_str(), os.c_str(), 36, 0.5,36.5, 6, 0.5, 6.5);
+
   
   MeanResiduals = new TH1F ("Mean_Residuals_Distribution","Mean_Residuals_Distribution",20,-5,5);
   MeanResiduals11 = new TH1F ("Mean_Residuals_Distribution_1cm","Mean_Residuals_Distribution_1cm",20,-1,1);
@@ -1448,13 +1457,26 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
   for(int i=1;i<=36;i++){
     binLabel.str("");
     binLabel<<i;
-    //if(debug) std::cout<<"Labeling EndCaps"<<binLabel.str()<<std::endl;
     Diskm3Summary->GetXaxis()->SetBinLabel(i,binLabel.str().c_str());
     Diskm2Summary->GetXaxis()->SetBinLabel(i,binLabel.str().c_str());
     Diskm1Summary->GetXaxis()->SetBinLabel(i,binLabel.str().c_str());
     Disk1Summary->GetXaxis()->SetBinLabel(i,binLabel.str().c_str());
     Disk2Summary->GetXaxis()->SetBinLabel(i,binLabel.str().c_str());
     Disk3Summary->GetXaxis()->SetBinLabel(i,binLabel.str().c_str());
+    
+    PositiveEndCapSummary->GetXaxis()->SetBinLabel(i,binLabel.str().c_str());
+    NegativeEndCapSummary->GetXaxis()->SetBinLabel(i,binLabel.str().c_str());
+  }
+
+  for(int disk =1; disk <=3;disk++){
+    for(int ri=2;ri<=3;ri++){
+      binLabel.str("");
+      binLabel<<"RE+"<<disk<<"/"<<ri;
+      PositiveEndCapSummary->GetYaxis()->SetBinLabel((disk-1)*2+(ri-1),binLabel.str().c_str());
+      binLabel.str("");
+      binLabel<<"RE-"<<disk<<"/"<<ri;
+      NegativeEndCapSummary->GetYaxis()->SetBinLabel((disk-1)*2+(ri-1),binLabel.str().c_str());
+    }
   }
 
   for(int ri=2;ri<=3;ri++){
@@ -1550,8 +1572,9 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
 	
 	std::string name = rpcsrv.name();
 
-	//if(rpcId.region()!=0 && abs(rpcId.station())==3 && rpcId.ring()==2 && rpcId.roll()==3) continue; 
-	//skiping rolls with problems with the extrapolation methodin the endcap RE+/-3_R2_C
+	if(rpcId.region()!=0 && abs(rpcId.station())==3 && rpcId.ring()==2 && rpcId.roll()==3) continue; //skiping rolls with problems with the extrapolation methodin the endcap RE+/-3_R2_C
+	if(rpcId.region()!=0 && abs(rpcId.station())==2 && rpcId.ring()==3 && rpcId.roll()==1) continue; //skiping rolls with problems with the extrapolation methodin the endcap RE+/-2_R2_A
+	
 
 	if(rpcId.region()==0 && barrel == false) continue;
 	if(rpcId.region()!=0 && endcap == false ) continue;
@@ -1622,51 +1645,9 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
 		IntegralMuography[m]->Add(histoRPC_2D);
 		IntegralMuographyExp[m]->Add(histoDT_2D);
 	      }else{
-		std::cout<<"found IntegralMuography coincidence filling "<<namesIntegralMuography[m]<<" with "<<name<<std::endl;
-		std::cout
-		  <<IntegralMuographyObs[m]->GetXaxis()->GetXmin()<<" "
-		  <<IntegralMuographyObs[m]->GetXaxis()->GetXmax()<<" "<<std::endl;
-		std::cout
-		  <<histoRPC_2D->GetXaxis()->GetXmin()<<" "
-		  <<histoRPC_2D->GetXaxis()->GetXmax()<<" "<<std::endl;
-		std::cout
-		  <<IntegralMuographyObs[m]->GetYaxis()->GetXmin()<<" "
-		  <<IntegralMuographyObs[m]->GetYaxis()->GetXmax()<<" "<<std::endl;
-		std::cout
-		  <<histoRPC_2D->GetYaxis()->GetXmin()<<" "
-		<<histoRPC_2D->GetYaxis()->GetXmax()<<" "<<std::endl;
-		
-		std::cout
-		  <<histoRPC_2D->GetXaxis()->GetNbins()<<" "	 
-		  <<histoRPC_2D->GetYaxis()->GetNbins()<<std::endl;
-		
-		std::cout
-		  <<IntegralMuographyObs[m]->GetXaxis()->GetNbins()<<" "	 
-		  <<IntegralMuographyObs[m]->GetYaxis()->GetNbins()<<std::endl;
-		
-		if (
-		    IntegralMuographyObs[m]->GetXaxis()->GetXmin() != histoRPC_2D->GetXaxis()->GetXmin() ||
-		    IntegralMuographyObs[m]->GetXaxis()->GetXmax() != histoRPC_2D->GetXaxis()->GetXmax() ||
-		    IntegralMuographyObs[m]->GetYaxis()->GetXmin() != histoRPC_2D->GetYaxis()->GetXmin() ||
-		    IntegralMuographyObs[m]->GetYaxis()->GetXmax() != histoRPC_2D->GetYaxis()->GetXmax() ||
-		    IntegralMuographyObs[m]->GetZaxis()->GetXmin() != histoRPC_2D->GetZaxis()->GetXmin() ||
-		    IntegralMuographyObs[m]->GetZaxis()->GetXmax() != histoRPC_2D->GetZaxis()->GetXmax()){ 
-		  
-		  std::cout<<IntegralMuographyObs[m]->GetXaxis()->GetXmin()<<" "<<histoRPC_2D->GetXaxis()->GetXmin()<<" "<<bool (IntegralMuographyObs[m]->GetXaxis()->GetXmin()!=histoRPC_2D->GetXaxis()->GetXmin())<<std::endl;
-		  std::cout<<IntegralMuographyObs[m]->GetXaxis()->GetXmax()<<" "<<histoRPC_2D->GetXaxis()->GetXmax()<<" "<<bool (IntegralMuographyObs[m]->GetXaxis()->GetXmax()!=histoRPC_2D->GetXaxis()->GetXmax())<<std::endl;
-		  std::cout<<IntegralMuographyObs[m]->GetYaxis()->GetXmin()<<" "<<histoRPC_2D->GetYaxis()->GetXmin()<<" "<<bool (IntegralMuographyObs[m]->GetYaxis()->GetXmin()!=histoRPC_2D->GetYaxis()->GetXmin())<<std::endl;
-		  std::cout<<IntegralMuographyObs[m]->GetYaxis()->GetXmax()<<" "<<histoRPC_2D->GetYaxis()->GetXmax()<<" "<<bool (IntegralMuographyObs[m]->GetYaxis()->GetXmax()!=histoRPC_2D->GetYaxis()->GetXmax())<<std::endl;
-		  std::cout<<IntegralMuographyObs[m]->GetZaxis()->GetXmin()<<" "<<histoRPC_2D->GetZaxis()->GetXmin()<<" "<<bool (IntegralMuographyObs[m]->GetZaxis()->GetXmin()!=histoRPC_2D->GetZaxis()->GetXmin())<<std::endl;
-		  std::cout<<IntegralMuographyObs[m]->GetZaxis()->GetXmax()<<" "<<histoRPC_2D->GetZaxis()->GetXmax()<<" "<<bool (IntegralMuographyObs[m]->GetZaxis()->GetXmax()!=histoRPC_2D->GetZaxis()->GetXmax())<<std::endl;
-		  
-		  std::cout<<"MY WARNING Add Attempt to add histograms with different axis limits"<<std::endl;
-		}
-		
 		IntegralMuographyObs[m]->Add(histoRPC_2D);
 		IntegralMuographyExp[m]->Add(histoDT_2D);
 	      }
-	      //break; 
-	      //warning :P
 	    }
 	  }
 	  
@@ -1836,10 +1817,11 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
 	      histoPROX->SetBinError(i,erX);
 	    }
 
-	    int firstxbin = int((0.6-fiducialcut)*nstrips*stripw);
-	    int lastxbin = int((0.6+fiducialcut)*nstrips*stripw);
-	    int firstybin = int((0.6-fiducialcut)*stripl);
-	    int lastybin = int((0.6+fiducialcut)*stripl);
+	    //ac[a hay que poner el fiducial cut en cm
+	    int firstxbin = int(0.1*nstrips*stripw+fiducialcut);
+	    int lastxbin = int(1.1*nstrips*stripw-fiducialcut);
+	    int firstybin = int(0.1*stripl+fiducialcut);
+	    int lastybin = int(1.1*stripl-fiducialcut);
 	    
 	    if(debug) std::cout<<" firstxbin "<<firstxbin<<" lastxbin "<<lastxbin;
 	    if(debug) std::cout<<" firstybin "<<firstybin<<" lastybin "<<lastybin;
@@ -2291,14 +2273,14 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
 	  
 	  if(abs((*r)->id().ring())==2){
 	    //if(debug) std::cout<<rollY(rpcsrv.shortname(),rollNamesExter)<<"--"<<rpcsrv.shortname()<<std::endl;
-	    if((*r)->id().ring()==2) Wheel2Summary->SetBinContent((*r)->id().sector(),rollY(rpcsrv.shortname(),rollNamesExter),averageeff);
-	    else Wheelm2Summary->SetBinContent((*r)->id().sector(),rollY(rpcsrv.shortname(),rollNamesExter),averageeff);
+	    if((*r)->id().ring()==2) Wheel2Summary->SetBinContent((*r)->id().sector(),rollY(rpcsrv.shortname(),rollNamesExter),pinoeff);
+	    else Wheelm2Summary->SetBinContent((*r)->id().sector(),rollY(rpcsrv.shortname(),rollNamesExter),pinoeff);
 	    
 	  }else{
 	    //if(debug) std::cout<<rollY(rpcsrv.shortname(),rollNamesInter)<<"--"<<rpcsrv.shortname()<<std::endl; 
-	    if((*r)->id().ring()==-1) Wheelm1Summary->SetBinContent((*r)->id().sector(),rollY(rpcsrv.shortname(),rollNamesInter),averageeff);
-	    else if((*r)->id().ring()==0) Wheel0Summary->SetBinContent((*r)->id().sector(),rollY(rpcsrv.shortname(),rollNamesInter),averageeff);
-	    else if((*r)->id().ring()==1) Wheel1Summary->SetBinContent((*r)->id().sector(),rollY(rpcsrv.shortname(),rollNamesInter),averageeff);
+	    if((*r)->id().ring()==-1) Wheelm1Summary->SetBinContent((*r)->id().sector(),rollY(rpcsrv.shortname(),rollNamesInter),pinoeff);
+	    else if((*r)->id().ring()==0) Wheel0Summary->SetBinContent((*r)->id().sector(),rollY(rpcsrv.shortname(),rollNamesInter),pinoeff);
+	    else if((*r)->id().ring()==1) Wheel1Summary->SetBinContent((*r)->id().sector(),rollY(rpcsrv.shortname(),rollNamesInter),pinoeff);
 	  }
 	  	  
 	  //Near Side
@@ -2931,16 +2913,34 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
 	      histoPROX->SetBinError(i,erX);
 	    }
 
-	    int firstxbin = int((0.6-fiducialcut)*nstrips*stripw);
-	    int lastxbin = int((0.6+fiducialcut)*nstrips*stripw);
-	    int firstybin = int((0.6-fiducialcut)*stripl);
-	    int lastybin = int((0.6+fiducialcut)*stripl);
+	    int firstybin = int(0.1*stripl+fiducialcut);
+	    int lastybin = int(1.1*stripl-fiducialcut);
 
-	    if(debug) std::cout<<" firstxbin"<<firstxbin<<" lastxbin"<<lastxbin;
-	    if(debug) std::cout<<" firstybin"<<firstybin<<" lastybin"<<lastybin;
+	    float averageRollWidth = nstrips*stripw; //This is the roll with.
+	    const BoundPlane & RPCSurface = (*r)->surface();
+	    GlobalPoint CenterPointInGlobal = RPCSurface.toGlobal(top_->localPosition(0));
+	    float radiusCenterRoll=top_->radius();
 	    
-	    pinoobserved = histoRPC_2D->Integral(firstxbin,lastxbin,firstybin,lastybin);	
-	    pinoexpected = histoCSC_2D->Integral(firstxbin,lastxbin,firstybin,lastybin);
+	    if(debug) std::cout<<" Trapezoidal integral for "<<name<<std::endl;
+	    if(debug) std::cout<<" Radius "<<radiusCenterRoll<<std::endl;
+	    if(debug) std::cout<<" firstybin "<<firstybin<<" lastybin "<<lastybin<<std::endl;
+	    
+	    for(int j=firstybin;j<=lastybin;j++){
+	      float y = j-stripl*0.6;
+	      float localRollWidth = averageRollWidth*(1+y/radiusCenterRoll);
+	      int firstxbin = int (0.6*averageRollWidth-localRollWidth*0.5+fiducialcut);
+	      int lastxbin  = int (0.6*averageRollWidth+localRollWidth*0.5-fiducialcut);
+	      if(debug) std::cout<<" firstxbin "<<firstxbin<<" lastxbin "<<lastxbin<<" localRollWidth "<<localRollWidth
+				 <<" j "<<j<<" y "<<y<<" fiducial cut "<<fiducialcut<<std::endl;
+	      for(int i=firstxbin;i<=lastxbin;i++){
+		pinoobserved = pinoobserved + histoRPC_2D->GetBinContent(i,j);	
+		pinoexpected = pinoexpected + histoCSC_2D->GetBinContent(i,j);
+		float eff = -1;
+		if(histoCSC_2D->GetBinContent(i,j)!= 0){
+		  eff = (histoRPC_2D->GetBinContent(i,j)/histoCSC_2D->GetBinContent(i,j))*100.;
+		}
+	      }
+	    }
 	    
 	    if(pinoexpected != 0){
 	      pinoeff = (pinoobserved/pinoexpected)*100.;
@@ -3406,6 +3406,13 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
 	  else if(Disk==1) Disk1Summary->SetBinContent(rpcsrv.segment(),Y,pinoeff);
 	  else if(Disk==2) Disk2Summary->SetBinContent(rpcsrv.segment(),Y,pinoeff);
 	  else if(Disk==3) Disk3Summary->SetBinContent(rpcsrv.segment(),Y,pinoeff);
+
+	  if(rpcId.region()==1){
+	    PositiveEndCapSummary->SetBinContent(rpcsrv.segment(),(rpcId.station()-1)*2+rpcId.ring()-1,pinoeff);
+	  }else if(rpcId.region()==-1){
+	    NegativeEndCapSummary->SetBinContent(rpcsrv.segment(),(rpcId.station()-1)*2+rpcId.ring()-1,pinoeff);
+	  }
+
 
  	  //Near Side
 
@@ -5332,83 +5339,98 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
   colorPalette3[18]= 400; // 90 
   colorPalette3[19]= 416; // 95 % green 
   
-  gStyle->SetPalette(20,colorPalette3);
-  
+  //gStyle->SetPalette(20,colorPalette3);
+
+  gStyle->SetPalette(1);
+
   Diskm3Summary->SetMinimum(0);  
   Diskm3Summary->SetMaximum(100);
   Diskm3Summary->Draw(); Diskm3Summary->GetXaxis()->SetTitle("Chamber");
-  Diskm3Summary->SetDrawOption("color");
+  Diskm3Summary->SetDrawOption("COLZ");
   Ca5->SaveAs("Pigi/Diskm3Summary.png"); 
   Ca5->Clear();
 
   Diskm2Summary->SetMinimum(0); 
   Diskm2Summary->SetMaximum(100);
   Diskm2Summary->Draw(); Diskm2Summary->GetXaxis()->SetTitle("Chamber");
-  Diskm2Summary->SetDrawOption("color");
+  Diskm2Summary->SetDrawOption("COLZ");
   Ca5->SaveAs("Pigi/Diskm2Summary.png");  
   Ca5->Clear();
 
   Diskm1Summary->SetMinimum(0); 
   Diskm1Summary->SetMaximum(100);
   Diskm1Summary->Draw(); Diskm1Summary->GetXaxis()->SetTitle("Chamber");
-  Diskm1Summary->SetDrawOption("color");
+  Diskm1Summary->SetDrawOption("COLZ");
   Ca5->SaveAs("Pigi/Diskm1Summary.png"); 
   Ca5->Clear();
   
   Disk3Summary->SetMinimum(0); 
   Disk3Summary->SetMaximum(100);
   Disk3Summary->Draw(); Disk3Summary->GetXaxis()->SetTitle("Chamber");
-  Disk3Summary->SetDrawOption("color");
+  Disk3Summary->SetDrawOption("COLZ");
   Ca5->SaveAs("Pigi/Disk3Summary.png"); 
   Ca5->Clear();
   
   Disk2Summary->SetMinimum(0); 
   Disk2Summary->SetMaximum(100);
   Disk2Summary->Draw(); Disk2Summary->GetXaxis()->SetTitle("Chamber");
-  Disk2Summary->SetDrawOption("colxor");
+  Disk2Summary->SetDrawOption("COLZ");
   Ca5->SaveAs("Pigi/Disk2Summary.png"); 
   Ca5->Clear();
   
   Disk1Summary->SetMinimum(0); 
   Disk1Summary->SetMaximum(100);
   Disk1Summary->Draw(); Disk1Summary->GetXaxis()->SetTitle("Chamber");
-  Disk1Summary->SetDrawOption("color");
+  Disk1Summary->SetDrawOption("COLZ");
   Ca5->SaveAs("Pigi/Disk1Summary.png"); 
   Ca5->Clear();
   
+  PositiveEndCapSummary->SetMinimum(0); 
+  PositiveEndCapSummary->SetMaximum(100);
+  PositiveEndCapSummary->Draw(); PositiveEndCapSummary->GetXaxis()->SetTitle("Chamber");
+  PositiveEndCapSummary->SetDrawOption("COLZ");
+  Ca5->SaveAs("Pigi/PositiveEndCapSummary.png"); 
+  Ca5->Clear();
 
+  NegativeEndCapSummary->SetMinimum(0); 
+  NegativeEndCapSummary->SetMaximum(100);
+  NegativeEndCapSummary->Draw(); NegativeEndCapSummary->GetXaxis()->SetTitle("Chamber");
+  NegativeEndCapSummary->SetDrawOption("COLZ");
+  Ca5->SaveAs("Pigi/NegativeEndCapSummary.png"); 
+  Ca5->Clear();
+  
   Wheelm2Summary->SetMinimum(0);  
   Wheelm2Summary->SetMaximum(100);
   Wheelm2Summary->Draw(); Wheelm2Summary->GetXaxis()->SetTitle("Sector");
-  Wheelm2Summary->SetDrawOption("color");
+  Wheelm2Summary->SetDrawOption("COLZ");
   Ca5->SaveAs("Pigi/Wheelm2Summary.png");  
   Ca5->Clear();
   
   Wheelm1Summary->SetMinimum(0);  
   Wheelm1Summary->SetMaximum(100);
   Wheelm1Summary->Draw(); Wheelm1Summary->GetXaxis()->SetTitle("Sector");
-  Wheelm1Summary->SetDrawOption("color");
+  Wheelm1Summary->SetDrawOption("COLZ");
   Ca5->SaveAs("Pigi/Wheelm1Summary.png");  
   Ca5->Clear();
   
   Wheel0Summary->SetMinimum(0);  
   Wheel0Summary->SetMaximum(100);
   Wheel0Summary->Draw(); Wheel0Summary->GetXaxis()->SetTitle("Sector");
-  Wheel0Summary->SetDrawOption("color");
+  Wheel0Summary->SetDrawOption("COLZ");
   Ca5->SaveAs("Pigi/Wheel0Summary.png");  
   Ca5->Clear();
   
   Wheel1Summary->SetMinimum(0);  
   Wheel1Summary->SetMaximum(100);
   Wheel1Summary->Draw(); Wheel1Summary->GetXaxis()->SetTitle("Sector");
-  Wheel1Summary->SetDrawOption("color");
+  Wheel1Summary->SetDrawOption("COLZ");
   Ca5->SaveAs("Pigi/Wheel1Summary.png");   
   Ca5->Clear();
   
   Wheel2Summary->SetMinimum(0);  
   Wheel2Summary->SetMaximum(100);
   Wheel2Summary->Draw(); Wheel2Summary->GetXaxis()->SetTitle("Sector");
-  Wheel2Summary->SetDrawOption("color");
+  Wheel2Summary->SetDrawOption("COLZ");
   Ca5->SaveAs("Pigi/Wheel2Summary.png"); 
   Ca5->Clear();
 
@@ -6367,6 +6389,9 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
  Disk1Summary->Write();
  Disk2Summary->Write();
  Disk3Summary->Write();
+
+ PositiveEndCapSummary->Write();
+ NegativeEndCapSummary->Write();
 
  DoubleGapDistroWm2->Write();
  DoubleGapDistroWm1->Write();
