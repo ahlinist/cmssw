@@ -13,7 +13,7 @@
 //
 // Original Author: Roberto Covarelli 
 //         Created:  Fri Oct  9 04:59:40 PDT 2009
-// $Id: JPsiAnalyzerPAT.cc,v 1.44 2011/02/04 13:47:04 covarell Exp $
+// $Id: JPsiAnalyzerPAT.cc,v 1.45 2011/02/09 12:50:02 covarell Exp $
 //
 // based on: Onia2MuMu package V00-11-00
 // changes done by: FT-HW
@@ -175,7 +175,7 @@ class JPsiAnalyzerPAT : public edm::EDAnalyzer {
       string         _treefilename; 
       bool           _writeDataSet; 
       string         _datasetname;
-      string         _triggerForDataset;
+      vector<string> _triggerForDataset;
       double         _massMin;
       double         _massMax;
       vector<double> _ptbinranges;
@@ -250,7 +250,7 @@ JPsiAnalyzerPAT::JPsiAnalyzerPAT(const edm::ParameterSet& iConfig):
   _treefilename(iConfig.getParameter<string>("treeFileName")),	
   _writeDataSet(iConfig.getParameter<bool>("writeDataSet")),
   _datasetname(iConfig.getParameter<string>("dataSetName")),
-  _triggerForDataset(iConfig.getParameter<string>("triggerForDataset")),
+  _triggerForDataset(iConfig.getParameter< vector<string> >("triggerForDataset")),
   _massMin(iConfig.getParameter<double>("massMin")),
   _massMax(iConfig.getParameter<double>("massMax")),
   _ptbinranges(iConfig.getParameter< vector<double> >("pTBinRanges")),	
@@ -854,15 +854,20 @@ JPsiAnalyzerPAT::fillTreeAndDS(unsigned int theCat, const pat::CompositeCandidat
   // this->calcPol(*muPosP, *muNegP, thisCosTh, thisPhi);
 
   if (_writeDataSet) {
+    
+    bool trigOK = false;
+    for (unsigned int iTrig = 0 ; iTrig < _triggerForDataset.size() ; iTrig++) {
+      if (mapTriggerNameToIntFired_[_triggerForDataset.at(iTrig)] == 1 ||
+	  mapTriggerNameToIntFired_[_triggerForDataset.at(iTrig)] == -1 ||
+	  mapTriggerNameToIntFired_[_triggerForDataset.at(iTrig)] == 2 ) trigOK = true;
+    }
 
     if (theMass > JpsiMassMin && theMass < JpsiMassMax && 
 	theCtau > JpsiCtMin && theCtau < JpsiCtMax && 
 	aCand->pt() > JpsiPtMin && aCand->pt() < JpsiPtMax && 
 	fabs(theRapidity) > JpsiRapMin && fabs(theRapidity) < JpsiRapMax &&
 	isMuonInAccept(muon1) && isMuonInAccept(muon2) &&
-	(mapTriggerNameToIntFired_[_triggerForDataset] == 1 ||
-	 mapTriggerNameToIntFired_[_triggerForDataset] == -1 ||
-	 mapTriggerNameToIntFired_[_triggerForDataset] == 2 )) {
+	trigOK) {
 
       int ss=999;
       if (muon1->charge() + muon2->charge() == 0) ss=0;
