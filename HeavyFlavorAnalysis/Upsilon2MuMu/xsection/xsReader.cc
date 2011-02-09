@@ -17,15 +17,17 @@ xsReader::xsReader(TChain *tree, TString evtClassName): treeReaderXS(tree, evtCl
   fpJSON = new JSON("/shome/bora/root/json/json_147196_149442");
   fPTbin[0] = 0.; fPTbin[1] = 2.; fPTbin[2] = 3.; fPTbin[3] = 5.; fPTbin[4] = 8.; fPTbin[5] =12.; fPTbin[6] = 20.;
   fYbin[0] = -2.; fYbin[1] = -1.; fYbin[2] = 0.; fYbin[3] = 1.; fYbin[4] = 2.;
-  //fPidTableMuIDPos = new PidTable("../tnp/PidTables/MC/Upsilon/MuID/PtTnpPos-upsilon.dat");
-  //fPidTableMuIDNeg = new PidTable("../tnp/PidTables/MC/Upsilon/MuID/PtTnpNeg-upsilon.dat");
-  //fPidTableTrigPos = new PidTable("../tnp/PidTables/MC/Jpsi/Trig/CowboyVeto/PtMmbPos-jpsi.dat");   // MC 
-  //fPidTableTrigNeg = new PidTable("../tnp/PidTables/MC/Jpsi/Trig/CowboyVeto/PtMmbNeg-jpsi.dat"); 
+  fPidTableMuIDPos = new PidTable("../tnp/PidTables/MC/Jpsi/MuID/CowboyVeto/PtMmbPos-jpsi.dat");
+  fPidTableMuIDNeg = new PidTable("../tnp/PidTables/MC/Jpsi/MuID/CowboyVeto/PtMmbNeg-jpsi.dat");
+  //fPidTableMuIDPos = new PidTable("../tnp/PidTables/MC/Jpsi/MuID/NoVeto/PtMmbPos-jpsi.dat");
+  //fPidTableMuIDNeg = new PidTable("../tnp/PidTables/MC/Jpsi/MuID/NoVeto/PtMmbNeg-jpsi.dat");  
+  fPidTableTrigPos = new PidTable("../tnp/PidTables/MC/Jpsi/Trig/CowboyVeto/PtMmbPos-jpsi.dat");   // MC 
+  fPidTableTrigNeg = new PidTable("../tnp/PidTables/MC/Jpsi/Trig/CowboyVeto/PtMmbNeg-jpsi.dat"); 
   
-  fPidTableMuIDPos = new PidTable("../tnp/PidTables/DATA/Jpsi/MuID/CowboyVeto/PtMmbPos-jpsi.dat");
-  fPidTableMuIDNeg = new PidTable("../tnp/PidTables/DATA/Jpsi/MuID/CowboyVeto/PtMmbNeg-jpsi.dat");
-  fPidTableTrigPos = new PidTable("../tnp/PidTables/DATA/Jpsi/Trig/MuOnia/CowboyVeto/PtMmbBoth-jpsi.dat");     // DATA
-  fPidTableTrigNeg = new PidTable("../tnp/PidTables/DATA/Jpsi/Trig/MuOnia/CowboyVeto/PtMmbBoth-jpsi.dat"); 
+  //fPidTableMuIDPos = new PidTable("../tnp/PidTables/DATA/Jpsi/MuID/CowboyVeto/PtMmbPos-jpsi.dat");
+  //fPidTableMuIDNeg = new PidTable("../tnp/PidTables/DATA/Jpsi/MuID/CowboyVeto/PtMmbNeg-jpsi.dat");
+  //fPidTableTrigPos = new PidTable("../tnp/PidTables/DATA/Jpsi/Trig/MuOnia/CowboyVeto/PtMmbBoth-jpsi.dat");     // DATA
+  //fPidTableTrigNeg = new PidTable("../tnp/PidTables/DATA/Jpsi/Trig/MuOnia/CowboyVeto/PtMmbBoth-jpsi.dat"); 
   
 }
 // ----------------------------------------------------------------------
@@ -41,27 +43,109 @@ void xsReader::startAnalysis() {
 
 void xsReader::eventProcessing() {
   
-  if ( MODE == 2  ) { // FOR Data only
+  if ( MODE == 2  ) { 
     if ( !fpJSON->good(fRun, fLS) ) goto end;
   }
   
-  if ( MODE == 1  ) acceptance();  // FOR MC only
+  ////// Trigger Check Study
+  // candidateSelection(2);
+  //if ( 0 != fpCand  ){
+  //   trigEffCheck();
+  //}
+  
+  //GenStudy();
+  
+  if ( MODE == 1  ) {
+    acceptance();
+    preSelEff();
+  }
+  
+  //CandidateSelection(2);
+  if ( !MuIDCheck() ) goto end;
+  //calculateWeights(1);
   if ( isPathPreScaled(HLTPATH) ) goto end;
-  if ( !isPathFired(HLTPATH) ) goto end;
+  if ( !isPathFired_Match(HLTPATH,HLTLABEL) ) goto end;
+  //calculateWeights(2);
   candidateSelection(2);
+  
   if ( 0 != fpCand  ){
     calculateWeights(0); 
     fillCandHist(); 
   }
   
-  if ( 0 != fgCand && MODE == 1 ) MCstudy(); // FOr MC only
+  if ( 0 != fgCand && MODE == 1 ) MCstudy(); 
   fpHistFile->cd();
   
   end:
-  fillHist();
+  freePointers();  
   
 }
 
+void xsReader::freePointers(){
+  while (!Cands.empty())
+    {
+      // remove it from the list
+      Cands.erase(Cands.begin());
+    }
+  
+  while (!Cands_ID.empty())
+    {
+      // remove it from the list
+      Cands_ID.erase(Cands_ID.begin());
+    } 
+  
+  while (!Cands_TM.empty())
+    {
+      // remove it from the list
+      Cands_TM.erase(Cands_TM.begin());
+    }  
+  
+}
+
+void xsReader::GenStudy(){
+  
+  TGenCand *gCand(0); 
+  TGenCand *gDau1(0); TGenCand *gDau2(0);  
+  double pt, rapidity; 
+  TLorentzVector genCand;
+  for (int iG = 0; iG < fpEvt->nGenCands(); ++iG) {
+    gCand = fpEvt->getGenCand(iG);
+    if ( gCand->fID == RESTYPE && gCand->fStatus == 2 ){
+      genCand.SetPtEtaPhiE(gCand->fP.Perp(),gCand->fP.Eta(),gCand->fP.Phi(),gCand->fP.Energy());
+      if ( (gCand->fP.Perp() <= 20.) && (fabs(genCand.Rapidity()) <= 2.) ){
+	gDau1 = fpEvt->getGenCand(gCand->fDau1);
+	gDau2 = fpEvt->getGenCand(gCand->fDau2);
+	
+	if ( ((fabs(gDau1->fID)) == 13) && ((fabs(gDau2->fID)) == 13) ){
+	  ((TH1D*)fpHistFile->Get("GenStudy_MuonPt"))->Fill(gDau1->fP.Perp());
+	  ((TH1D*)fpHistFile->Get("GenStudy_MuonPt"))->Fill(gDau2->fP.Perp());
+	
+	  if ( (gDau1->fP.Perp() < 1.) || (gDau2->fP.Perp() < 1.) ){
+	    
+	    cout << "genCand.Rapidity() = "<< genCand.Rapidity() << "gCand->fP.Perp() = " << gCand->fP.Perp() << endl;
+	    ((TH2D*)fpHistFile->Get("GenStudy_Cand"))->Fill(genCand.Rapidity(),gCand->fP.Perp());
+	    
+	  }
+	}
+	
+      }
+    }
+  }
+  
+}
+
+
+void xsReader::trigEffCheck(){
+  
+  TLorentzVector CAND;
+  CAND.SetPtEtaPhiM(fpCand->fPlab.Perp(),fpCand->fPlab.Eta(),fpCand->fPlab.Phi(),fpCand->fMass);
+  ((TH2D*)fpHistFile->Get("TriggerCheck_2Reco"))->Fill(CAND.Rapidity(),fpCand->fPlab.Perp());
+  
+  if ( isPathFired(HLTPATH) ){
+    ((TH2D*)fpHistFile->Get("TriggerCheck_Fired"))->Fill(CAND.Rapidity(),fpCand->fPlab.Perp());
+  }
+  
+}
 
 void xsReader::x_btest(){
   TGenCand *gCand(0);
@@ -320,40 +404,110 @@ void xsReader::acceptance(){
   TGenCand *gCand(0); TAnaTrack *pTrack(0); 
   TGenCand *gDau1(0); TGenCand *gDau2(0);  
   double pt, rapidity; bool match1 = false; bool match2 = false;
-  double pt1(-1), pt2(-1);
+  double pt1(-1.), pt2(-1.);
+  double eta1(-99.), eta2(-99);
   int index1(-1), index2(-1); 
-  TLorentzVector genCand;
+  TLorentzVector genCand; TAnaMuon *pMuon;
+  TGenCand *g2Cand;
+  int m(0);
   for (int iG = 0; iG < fpEvt->nGenCands(); ++iG) {
     gCand = fpEvt->getGenCand(iG);
     if ( gCand->fID == RESTYPE && gCand->fStatus == 2 ){
       genCand.SetPtEtaPhiE(gCand->fP.Perp(),gCand->fP.Eta(),gCand->fP.Phi(),gCand->fP.Energy());
       if ( (gCand->fP.Perp() <= 20.) && (fabs(genCand.Rapidity()) <= 2.) ){
-	getBinCenters(gCand, pt ,rapidity);
-	((TH2D*)fpHistFile->Get(Form("AllGenRes_%.1dS",UPSTYPE)))->Fill(rapidity, pt); 
-            
-	gDau1 = fpEvt->getGenCand(gCand->fDau1);
-	gDau2 = fpEvt->getGenCand(gCand->fDau2);
-	
-	if ( ((fabs(gDau1->fID)) == 13) && ((fabs(gDau2->fID)) == 13) ){
-	  for (int iR = 0; iR < fpEvt->nRecTracks(); ++iR) {
-	    pTrack = fpEvt->getRecTrack(iR);
-	    if ( pTrack->fGenIndex == gDau1->fNumber ) {
-	      index1 = pTrack->fGenIndex;
-	      pt1 = pTrack->fPlab.Perp();
-	      match1 = true;
-	    } 
-	    if ( pTrack->fGenIndex == gDau2->fNumber ) {
-	      index2 = pTrack->fGenIndex;
-	      pt2 = pTrack->fPlab.Perp();
-	      match2 = true;
+	//getBinCenters(gCand, pt ,rapidity);
+	//((TH2D*)fpHistFile->Get(Form("AllGenRes_%.1dS",UPSTYPE)))->Fill(rapidity, pt);
+	((TH2D*)fpHistFile->Get(Form("AllGenRes_%.1dS",UPSTYPE)))->Fill(genCand.Rapidity(), gCand->fP.Perp());
+	for (int i = gCand->fDau1; i <= gCand->fDau2; ++i) {
+	  g2Cand = fpEvt->getGenCand(i);
+	  if (13 == TMath::Abs(g2Cand->fID)) {
+	    for (int iR = 0; iR < fpEvt->nRecTracks(); ++iR) {
+	      pTrack = fpEvt->getRecTrack(iR);
+	      if ( pTrack->fGenIndex == g2Cand->fNumber && !(match1) ) {
+		index1 = pTrack->fGenIndex;
+		pt1 = pTrack->fPlab.Perp();
+		eta1 = pTrack->fPlab.Eta();
+		//cout << "    g2Cand->fNumber = " << g2Cand->fNumber << endl;
+		match1 = true;
+		break;
+	      } 	      
+		  
+	      if ( pTrack->fGenIndex == g2Cand->fNumber  ) {
+		index2 = pTrack->fGenIndex;
+		pt2 = pTrack->fPlab.Perp();
+		eta2 = pTrack->fPlab.Eta();
+		//cout << "g2Cand->fNumber = " << g2Cand->fNumber << endl;
+		match2 = true;
+		break;
+	      }	  
+	      
 	    }
-	    
 	  }
 	  
-	  if ( match1 && match2 ){
-	    if ((pt1 > 3.) && (pt2 > 3.) ){
-	      ((TH2D*)fpHistFile->Get(Form("RecoGenRes_%.1dS",UPSTYPE)))->Fill(rapidity, pt);
-	      match1 = false; match2 = false;
+	} 
+	
+	if ( match1 && match2 ){
+	  if ((pt1 >= 3.) && (pt2 >= 3.) && (eta1 >= -2.4) && (eta2 >= -2.4) && (eta1 <= 2.4) && (eta2 <= 2.4) && (pt1 <= 20.) && (pt2 <= 20.) ){
+	    ////////
+	    if ( ((TMath::Abs(eta1) <= 1.2) && (pt1 < 4.)) || ((TMath::Abs(eta2) <= 1.2) && (pt2 < 4.)) ){
+	      match1 = false;
+	      match2 = false;
+	      continue;
+	    }
+	    ////////
+	    //((TH2D*)fpHistFile->Get(Form("RecoGenRes_%.1dS",UPSTYPE)))->Fill(rapidity, pt);
+	    ((TH2D*)fpHistFile->Get(Form("RecoGenRes_%.1dS",UPSTYPE)))->Fill(genCand.Rapidity(), gCand->fP.Perp());
+	    match1 = false; match2 = false;
+	    //cout <<"pt1 = "<<pt1<<" pt2 = "<<pt2<<" eta1 = "<<eta1<<" eta2 = "<<eta2<< endl;
+	    
+	  }
+	}
+	
+      }
+    }
+  }
+}
+
+void xsReader::preSelEff(){
+  
+  TAnaCand *pCand;
+  TLorentzVector Cand;
+  TLorentzVector Muon1, Muon2, Composite;
+  double pt, rapidity;
+  double Pt, Rapidity;
+  TAnaMuon *pMuon; TGenCand *g2Cand;
+  TGenCand *gCand; TLorentzVector genCand; TLorentzVector GenCand; 
+  TGenCand *gPar1; TGenCand *gPar2; TGenCand *gCAND;
+  TAnaTrack *pTrack;
+  bool match1 = false; bool match2 = false;
+  bool Match1 = false; bool Match2 = false;
+  
+  double pt1(-1.), pt2(-1.);
+  double eta1(-1.), eta2(-1.);
+  for (int i = 0; i < fpEvt->nCands(); ++i) {
+    pCand = fpEvt->getCand(i);
+    Cand.SetPtEtaPhiM(pCand->fPlab.Perp(),pCand->fPlab.Eta(),pCand->fPlab.Phi(),pCand->fMass);
+    if ( (pCand->fPlab.Perp() <= 20.) && (fabs(Cand.Rapidity()) <= 2.) ){
+      TAnaTrack *pl1 = fpEvt->getSigTrack(pCand->fSig1); 
+      TAnaTrack *pl2 = fpEvt->getSigTrack(pCand->fSig2);
+      if ( pl1->fGenIndex > -1 && pl2->fGenIndex > -1  ){
+	gPar1 = fpEvt->getGenCand(pl1->fGenIndex);
+	gPar2 = fpEvt->getGenCand(pl2->fGenIndex);
+	if ( (13 == TMath::Abs(gPar1->fID)) && (13 == TMath::Abs(gPar2->fID)) ){
+	  if ( (gPar1->fMom1 == gPar2->fMom1)  ){
+	    gCAND = fpEvt->getGenCand(gPar1->fMom1);
+	    if ( (gCAND->fID == RESTYPE) && (gCAND->fStatus == 2) ){
+	      GenCand.SetPtEtaPhiE(gCAND->fP.Perp(),gCAND->fP.Eta(),gCAND->fP.Phi(),gCAND->fP.Energy());
+	      if ( (gCAND->fP.Perp() <= 20.) && (fabs(GenCand.Rapidity()) <= 2.) ){
+		if ( (pl1->fPlab.Perp() >= 3.) && (pl2->fPlab.Perp() >= 3.) && (pl1->fPlab.Eta() >= -2.4) && (pl2->fPlab.Eta() >= -2.4) && (pl1->fPlab.Eta() <= 2.4) && (pl2->fPlab.Eta() <= 2.4) && (pl1->fPlab.Perp() <= 20.) && (pl2->fPlab.Perp() <= 20.)  ){
+		  ////////
+		  if ( ((TMath::Abs(pl1->fPlab.Eta()) <= 1.2) && (pl1->fPlab.Perp() < 4.)) || ((TMath::Abs(pl2->fPlab.Eta()) <= 1.2) && (pl2->fPlab.Perp() < 4.)) ) continue;
+		  ///////
+		  if ( ((pl1->fMuID & MUTYPE1) == MUTYPE1) && ((pl2->fMuID & MUTYPE2) == MUTYPE2)){
+		    ((TH2D*)fpHistFile->Get(Form("PreSel_afterVtx_%.1dS",UPSTYPE)))->Fill(GenCand.Rapidity(),gCAND->fP.Perp());
+		  }
+		}
+	      }
 	    }
 	  }
 	}
@@ -361,7 +515,119 @@ void xsReader::acceptance(){
     }
   }
   
+  
+      
+  for (int iG = 0; iG < fpEvt->nGenCands(); ++iG) {
+    gCand = fpEvt->getGenCand(iG);
+    if ( gCand->fID == RESTYPE && gCand->fStatus == 2 ){
+      genCand.SetPtEtaPhiE(gCand->fP.Perp(),gCand->fP.Eta(),gCand->fP.Phi(),gCand->fP.Energy());
+      if ( (gCand->fP.Perp() <= 20.) && (fabs(genCand.Rapidity()) <= 2.) ){
+	for (int i = gCand->fDau1; i <= gCand->fDau2; ++i) {
+	  g2Cand = fpEvt->getGenCand(i);
+	  if (13 == TMath::Abs(g2Cand->fID)) {
+	    for (int j = 0; j < fpEvt->nMuons(); ++j) {
+	      pMuon = fpEvt->getMuon(j);
+	      if ( (pMuon->fIndex > -1) && ((pMuon->fMuID & MUTYPE1) == MUTYPE1) ){
+	      //if ( (pMuon->fIndex > -1) ){
+		pTrack = fpEvt->getRecTrack(pMuon->fIndex);
+		if ( pTrack->fGenIndex == g2Cand->fNumber && !(match1) ) {
+		  Muon1.SetPtEtaPhiM(pTrack->fPlab.Perp(),pTrack->fPlab.Eta(),pTrack->fPlab.Phi(),MMUON);
+		  pt1 = pTrack->fPlab.Perp();
+		  eta1 = pTrack->fPlab.Eta();
+		  match1 = true;
+		  break;
+		} 	      
+		
+		if ( pTrack->fGenIndex == g2Cand->fNumber  ) {
+		  Muon2.SetPtEtaPhiM(pTrack->fPlab.Perp(),pTrack->fPlab.Eta(),pTrack->fPlab.Phi(),MMUON);
+		  pt2 = pTrack->fPlab.Perp();
+		  eta2 = pTrack->fPlab.Eta();
+		  match2 = true;
+		  getBinCenters(gCand, Pt ,Rapidity);
+		  break;
+		}
+	      }
+	      //}
+	    }
+	  }
+	}  
+	
+	
+	if ( match1 && match2 ){
+	  if ((pt1 >= 3.) && (pt2 >= 3.) && (eta1 >= -2.4) && (eta2 >= -2.4) && (eta1 <= 2.4) && (eta2 <= 2.4) && (pt1 <= 20.) && (pt2 <= 20.) ){
+	    //////
+	    if ( ((TMath::Abs(eta1) <= 1.2) && (pt1 < 4.)) || ((TMath::Abs(eta2) <= 1.2) && (pt2 < 4.)) ){
+	      match1 = false;
+	      match2 = false;
+	      continue;
+	    }
+	    //////	  
+	    ((TH2D*)fpHistFile->Get(Form("PreSel_beforeVtx_%.1dS",UPSTYPE)))->Fill(genCand.Rapidity(),gCand->fP.Perp());
+	    match1 = false; match2 = false;
+	    //cout <<"pt1 = "<<pt1<<" pt2 = "<<pt2<<" eta1 = "<<eta1<<" eta2 = "<<eta2<< endl;
+	  }
+	}
+	
+      }
+    }
+  }  
+  
+  
 }
+
+
+void xsReader::GetBINCenters(TLorentzVector Cand, double &pt, double &rapidity ){
+  
+  double ymin(-9), ymax(-9), ptmin(-9), ptmax(-9);
+  for ( int iy = 0; iy <= fNy; ++iy ){
+    if ( Cand.Rapidity() < fYbin[iy] ){
+      ymax = fYbin[iy];
+      ymin = fYbin[iy-1];
+      break;
+    }
+  }
+  
+  for ( int ipt = 0; ipt <= fNpt; ++ipt ){
+    if ( Cand.Pt() < fPTbin[ipt] ){
+      ptmax = fPTbin[ipt];
+      ptmin = fPTbin[ipt-1];
+      break;
+    }
+  }
+  
+  pt = 0.5*(ptmax+ptmin);
+  rapidity = 0.5*(ymax+ymin);
+  
+}
+
+
+
+void xsReader::GetBinCenters(TAnaCand *pCand, double &pt, double &rapidity ){
+  
+  double ymin(-9), ymax(-9), ptmin(-9), ptmax(-9);
+  TLorentzVector Cand;
+  Cand.SetPtEtaPhiM(pCand->fPlab.Perp(),pCand->fPlab.Eta(),pCand->fPlab.Phi(),pCand->fMass);
+  for ( int iy = 0; iy <= fNy; ++iy ){
+    if ( Cand.Rapidity() < fYbin[iy] ){
+      ymax = fYbin[iy];
+      ymin = fYbin[iy-1];
+      break;
+    }
+  }
+  
+  for ( int ipt = 0; ipt <= fNpt; ++ipt ){
+    if ( pCand->fPlab.Perp() < fPTbin[ipt] ){
+      ptmax = fPTbin[ipt];
+      ptmin = fPTbin[ipt-1];
+      break;
+    }
+  }
+  
+  pt = 0.5*(ptmax+ptmin);
+  rapidity = 0.5*(ymax+ymin);
+  
+}
+
 
 void xsReader::getBinCenters(TGenCand *gCand, double &pt, double &rapidity ){
   
@@ -409,8 +675,125 @@ bool xsReader::isPathFired( TString Path ){
     }
   }
   return HLT_Path;
+}  
+  
+  
+  
+bool xsReader::isPathFired_Match( TString Path, TString Label ){
+  bool HLT_Path = false;
+  bool Leg1 = false;
+  bool Leg2 = false;
+  TAnaCand *pCand(0);
+  TAnaCand *pCand_(0);
+  double rapidity, pt;
+  bool Match = false;
+  for (int iC = 0; iC < Cands.size() ; ++iC) {
+    pCand = Cands[iC];
+  //for (int iC = 0; iC < Cands_ID.size() ; ++iC) {   
+  //pCand = Cands_ID[iC];
+    TLorentzVector Candi;
+    Candi.SetPtEtaPhiM(pCand->fPlab.Perp(),pCand->fPlab.Eta(),pCand->fPlab.Phi(),pCand->fMass);
+    ((TH2D*)fpHistFile->Get(Form("TrigCheck_before_%.1dS",UPSTYPE)))->Fill(Candi.Rapidity(), pCand->fPlab.Perp());
+  }
+  
+  for (int a = 0; a < NHLT ; ++a) {
+    if ( fpEvt->fHLTNames[a] ==  Path  && fpEvt->fHLTResult[a] == 1  ) {
+      HLT_Path = true;
+      //cout << Path << " fired!!!! "  << endl;
+    }
+  }
+  
+  if ( HLT_Path  ){
+    for (int iC = 0; iC < Cands.size() ; ++iC) {
+      pCand_ = Cands[iC];
+      //for (int iC = 0; iC < Cands_ID.size() ; ++iC) {  
+      //pCand = Cands_ID[iC];
+      TTrgObj *pTrig(0); TTrgObj *pTrig_(0); 
+      int t(-1);
+      TLorentzVector tagD;
+      TAnaTrack *pTagD(0);
+      pTagD = fpEvt->getSigTrack(pCand_->fSig1);
+      tagD.SetPtEtaPhiM(pTagD->fPlab.Pt(), pTagD->fPlab.Eta(), pTagD->fPlab.Phi(), MMUON);
+      for (int s = 0; s < fpEvt->nTrgObj() ; ++s) {
+	pTrig = fpEvt->getTrgObj(s);
+	if ( !(Label.CompareTo(pTrig->fLabel)) ) {
+	  double tagD_dR = tagD.DeltaR(pTrig->fP);
+	  double tagD_dEta = TMath::Abs(pTagD->fPlab.Eta() - pTrig->fP.Eta());
+	  double tagD_dPhi = TMath::Abs(pTagD->fPlab.Phi() - pTrig->fP.Phi());
+	  if ( ( tagD_dPhi < DPHI ) && ( tagD_dEta < DETA )) {
+	    Leg1 = true;				
+	    //cout << " Leg1 matched to Double mu T.O.  " << endl;
+	    t=s;
+	    break;
+	  } 
+	}
+      }
+      
+      TLorentzVector probe;
+      TAnaTrack *pProbe(0);
+      pProbe = fpEvt->getSigTrack(pCand_->fSig2);
+      probe.SetPtEtaPhiM(pProbe->fPlab.Pt(), pProbe->fPlab.Eta(), pProbe->fPlab.Phi(), MMUON);
+      for (int i = 0; i < fpEvt->nTrgObj() ; ++i) {
+	if ( i == t ) continue;
+	pTrig_ = fpEvt->getTrgObj(i);
+	if ( !(Label.CompareTo(pTrig_->fLabel)) ) {
+	  double probe_dR = probe.DeltaR(pTrig_->fP);
+	  double probe_dEta = TMath::Abs(pProbe->fPlab.Eta() - pTrig_->fP.Eta());
+	  double probe_dPhi = TMath::Abs(pProbe->fPlab.Phi() - pTrig_->fP.Phi());
+	  if ( ( probe_dPhi < DPHI ) && ( probe_dEta < DETA )) {
+	    Leg2 = true;
+	    //cout << " Leg2 matched to Double mu T.O. " << endl;
+	    break;
+	  }
+	}
+      }
+    } 
+  }
+  
+  if ( Leg1 && Leg2 ){
+    Match = true;
+    //fpCand = pCand_;
+    //fCandPt   = fpCand->fPlab.Perp();
+    //fCandMass = fpCand->fMass;
+    TLorentzVector Cand;
+    Cand.SetPtEtaPhiM(pCand_->fPlab.Perp(),pCand_->fPlab.Eta(),pCand_->fPlab.Phi(),pCand_->fMass);
+    //fCandY = Cand.Rapidity();
+    Cands_TM.push_back(pCand_);
+    ((TH2D*)fpHistFile->Get(Form("TrigCheck_after_%.1dS",UPSTYPE)))->Fill(Cand.Rapidity(), pCand_->fPlab.Perp() );
+    //cout << " Match " << endl;
+  }
+    
+  
+  return Match;
 }
 
+bool xsReader::MuIDCheck(){
+  bool check = false;
+  TAnaCand *pCand(0);
+  double rapidity, pt;
+  TLorentzVector Cand;
+  TAnaTrack *pP1(0); TAnaTrack *pP2(0);
+  for (int iC = 0; iC < fpEvt->nCands(); ++iC) {
+    pCand = fpEvt->getCand(iC);
+    //for (int iC = 0; iC < Cands.size() ; ++iC) {
+    //pCand = Cands[iC];
+    Cand.SetPtEtaPhiM(pCand->fPlab.Perp(),pCand->fPlab.Eta(),pCand->fPlab.Phi(),pCand->fMass);
+    if ( Cand.Rapidity() < -2.00 ) continue;
+    if ( Cand.Rapidity() > 2.00 ) continue;
+    if ( pCand->fPlab.Perp() < 0.00 ) continue;
+    if ( pCand->fPlab.Perp() > 20.00 ) continue;
+    ((TH2D*)fpHistFile->Get(Form("MuIDCheck_before_%.1dS",UPSTYPE)))->Fill(Cand.Rapidity(), pCand->fPlab.Perp());
+    TAnaTrack *pl1 = fpEvt->getSigTrack(pCand->fSig1); 
+    TAnaTrack *pl2 = fpEvt->getSigTrack(pCand->fSig2);
+    if ( (pl1->fMuID & MUTYPE1) != MUTYPE1 ) continue;
+    if ( (pl2->fMuID & MUTYPE2) != MUTYPE2 ) continue;
+    Cands.push_back(pCand);
+    //Cands_ID.push_back(pCand);
+    ((TH2D*)fpHistFile->Get(Form("MuIDCheck_after_%.1dS",UPSTYPE)))->Fill(Cand.Rapidity(), pCand->fPlab.Perp()); 
+    check = true;
+  }
+  return check;
+}						
 
 void xsReader::candidateSelection(int mode){
 
@@ -423,53 +806,44 @@ void xsReader::candidateSelection(int mode){
   TAnaCand *pCand(0);
   vector<int> lCands, lCands_CT, lCands_CT_M1T, lCands_CT_M1T_M2T, lCands_CT_M1T_M2T_Pt1, lCands_CT_M1T_M2T_Pt1_Pt2, lCands_CT_M1T_M2T_Pt1_Pt2_CHI2; 
 
-  for (int iC = 0; iC < fpEvt->nCands(); ++iC) {
-    pCand = fpEvt->getCand(iC);
-    if ( MODE == 1 ) AnaEff(pCand, 1); // 1 -- # of TruthCand before Cuts, 2 -- # of TruthCand After Cuts 
+  for (int iC = 0; iC < Cands_TM.size() ; ++iC) {
+    pCand = Cands_TM[iC];
     lCands.push_back(iC);
-    if (TYPE != pCand->fType) continue;
-    if (pCand->fMass < MASSLO) continue;
-    if (pCand->fMass > MASSHI) continue;
-    lCands_CT.push_back(iC);
     TAnaTrack *pl1 = fpEvt->getSigTrack(pCand->fSig1); 
     TAnaTrack *pl2 = fpEvt->getSigTrack(pCand->fSig2);
-    if ( pl1->fQ*pl2->fQ > 0 ) continue ;
-    if ( (pl1->fMuID & MUTYPE1) != MUTYPE1 ) continue;
-    lCands_CT_M1T.push_back(iC);
-    if ( (pl2->fMuID & MUTYPE2) != MUTYPE2 ) continue;
-    lCands_CT_M1T_M2T.push_back(iC);
-    //if ( (pl1->fPlab.Perp() > PTHI) || ( (fabs(pl1->fPlab.Eta()) < 1.2) && (pl1->fPlab.Perp() < PTLO) ) || (  (fabs(pl1->fPlab.Eta()) > 1.2) && (pl1->fPlab.Perp() < 3.) ) ) continue;
+    if (TYPE != pCand->fType) continue;
+    lCands_CT.push_back(iC);
     if ( (pl1->fPlab.Perp() > PTHI) || (pl1->fPlab.Perp() < PTLO) ) continue;
     if ( (pl1->fPlab.Eta() > ETAHI) || (pl1->fPlab.Eta() < ETALO) ) continue;
+    ///////
+    if ( ((TMath::Abs(pl1->fPlab.Eta()) <= 1.2) && (pl1->fPlab.Perp() < 4.)) || ((TMath::Abs(pl2->fPlab.Eta()) <= 1.2) && (pl2->fPlab.Perp() < 4.)) ) continue;
+    ///////
     lCands_CT_M1T_M2T_Pt1.push_back(iC);
-    //if ( (pl2->fPlab.Perp() > PTHI) || ( (fabs(pl2->fPlab.Eta()) < 1.2) && (pl2->fPlab.Perp() < PTLO) ) || (  (fabs(pl2->fPlab.Eta()) > 1.2) && (pl2->fPlab.Perp() < 3.) ) ) continue;
     if ( (pl2->fPlab.Perp() > PTHI) || (pl2->fPlab.Perp() < PTLO) ) continue;
     if ( (pl2->fPlab.Eta() > ETAHI) || (pl2->fPlab.Eta() < ETALO) ) continue;
     lCands_CT_M1T_M2T_Pt1_Pt2.push_back(iC);
-    if ( pCand->fVtx.fChi2 > CHI2 ) continue;
+    //if ( pCand->fVtx.fChi2 > CHI2 ) continue;
+    if ( MODE == 1 ) AnaEff(pCand, 1);
+    if ( pl1->fQ*pl2->fQ > 0 ) continue;
+    if (pCand->fMass < MASSLO) continue;
+    if (pCand->fMass > MASSHI) continue;
     lCands_CT_M1T_M2T_Pt1_Pt2_CHI2.push_back(iC);
   }
   
     
-  int nc(lCands.size()); int nc_CT(lCands_CT.size()); int nc_CT_M1T(lCands_CT_M1T.size()); int nc_CT_M1T_M2T(lCands_CT_M1T_M2T.size());
+  int nc(lCands.size()); int nc_CT(lCands_CT.size()); 
   int nc_CT_M1T_M2T_Pt1(lCands_CT_M1T_M2T_Pt1.size()); int nc_CT_M1T_M2T_Pt1_Pt2(lCands_CT_M1T_M2T_Pt1_Pt2.size());
   int nc_CT_M1T_M2T_Pt1_Pt2_CHI2(lCands_CT_M1T_M2T_Pt1_Pt2_CHI2.size());
   ((TH1D*)fpHistFile->Get("n2"))->Fill(nc); 
   ((TH1D*)fpHistFile->Get("n2_CandType"))->Fill(nc_CT);
-  ((TH1D*)fpHistFile->Get("n2_CandType_MuType1"))->Fill(nc_CT_M1T);
-  ((TH1D*)fpHistFile->Get("n2_CandType_MuType1&2"))->Fill(nc_CT_M1T_M2T);
   ((TH1D*)fpHistFile->Get("n2_CandType_MuType1&2_Pt1"))->Fill(nc_CT_M1T_M2T_Pt1);
   ((TH1D*)fpHistFile->Get("n2_CandType_MuType1&2_Pt1&2"))->Fill(nc_CT_M1T_M2T_Pt1_Pt2);
   ((TH1D*)fpHistFile->Get("n2_CandType_MuType1&2_Pt1&2_Chi2"))->Fill(nc_CT_M1T_M2T_Pt1_Pt2_CHI2);
   
   ((TH1D*)fpHistFile->Get("n2_cuts"))->AddBinContent(10, nc);
   ((TH1D*)fpHistFile->Get("n2_cuts"))->GetXaxis()->SetBinLabel(10, "NOCUT");
-  ((TH1D*)fpHistFile->Get("n2_cuts"))->AddBinContent(12, nc_CT);
+  ((TH1D*)fpHistFile->Get("n2_cuts"))->AddBinContent(16, nc_CT);
   ((TH1D*)fpHistFile->Get("n2_cuts"))->GetXaxis()->SetBinLabel(12, Form("Type^{Cand}=%d",TYPE));
-  ((TH1D*)fpHistFile->Get("n2_cuts"))->AddBinContent(14, nc_CT_M1T);
-  ((TH1D*)fpHistFile->Get("n2_cuts"))->GetXaxis()->SetBinLabel(14, Form("ID^{#mu_{1}}=%d",MUTYPE1));
-  ((TH1D*)fpHistFile->Get("n2_cuts"))->AddBinContent(16, nc_CT_M1T_M2T);
-  ((TH1D*)fpHistFile->Get("n2_cuts"))->GetXaxis()->SetBinLabel(16, Form("ID^{#mu_{2}}=%d",MUTYPE2));
   ((TH1D*)fpHistFile->Get("n2_cuts"))->AddBinContent(18, nc_CT_M1T_M2T_Pt1);
   ((TH1D*)fpHistFile->Get("n2_cuts"))->GetXaxis()->SetBinLabel(18, Form("p_{T}^{#mu_{1}}=%.1f",PTLO));
   ((TH1D*)fpHistFile->Get("n2_cuts"))->AddBinContent(20, nc_CT_M1T_M2T_Pt1_Pt2);
@@ -479,7 +853,7 @@ void xsReader::candidateSelection(int mode){
 
   
   if (0 == nc_CT_M1T_M2T_Pt1_Pt2_CHI2) return; 
-  int best(0);
+  int best(-1);
   if (nc_CT_M1T_M2T_Pt1_Pt2_CHI2 > 1) {
     cout << "MORE THAN ONE CANDIDATE  " << nc_CT_M1T_M2T_Pt1_Pt2_CHI2   <<  endl;
     double ptMax(0.), pt(0.);
@@ -512,7 +886,7 @@ void xsReader::candidateSelection(int mode){
   int truth(0);
   TLorentzVector Cand, gCand;
   if ( best > -1 ) {
-    fpCand = fpEvt->getCand(best);
+    fpCand = Cands_TM[best];
     if ( MODE == 1 ) AnaEff(fpCand, 2);
     fCandPt   = fpCand->fPlab.Perp();
     fCandMass = fpCand->fMass;
@@ -520,10 +894,12 @@ void xsReader::candidateSelection(int mode){
     fCandY = Cand.Rapidity();
     TAnaTrack *pl1 = fpEvt->getSigTrack(fpCand->fSig1); 
     TAnaTrack *pl2 = fpEvt->getSigTrack(fpCand->fSig2);
+    fMuon1Pt = pl1->fPlab.Perp(); fMuon2Pt = pl2->fPlab.Perp(); 
+    fMuon1Eta = pl1->fPlab.Eta(); fMuon2Eta = pl2->fPlab.Eta();
     if ( (pl1->fGenIndex > -1) && (pl2->fGenIndex > -1) && (pl1->fGenIndex != pl2->fGenIndex) ){
       TGenCand  *gl1 = fpEvt->getGenCand(pl1->fGenIndex);
       TGenCand  *gl2 = fpEvt->getGenCand(pl2->fGenIndex);
-      if ( gl1->fMom1 == gl2->fMom1 ) {
+      if ( (gl1->fMom1 == gl2->fMom1) && gl2->fMom1 > -1  ) {
 	TGenCand  *genCand = fpEvt->getGenCand(gl1->fMom1);
 	((TH1D*)fpHistFile->Get("TruthCand"))->Fill(genCand->fID);
 	if ( genCand->fID == RESTYPE ) {
@@ -532,17 +908,94 @@ void xsReader::candidateSelection(int mode){
 	  fGenCandPt   = fgCand->fP.Perp();
 	  gCand.SetPtEtaPhiE(fgCand->fP.Perp(),fgCand->fP.Eta(),fgCand->fP.Phi(),fgCand->fP.Energy());
 	  fGenCandY = gCand.Rapidity();
-	  fGenMuon1Pt = gl1->fP.Perp(); fGenMuon2Pt = gl2->fP.Perp(); fMuon1Pt = pl1->fPlab.Perp(); fMuon2Pt = pl2->fPlab.Perp(); 
-	  fGenMuon1Eta = gl1->fP.Eta(); fGenMuon2Eta = gl2->fP.Eta(); fMuon1Eta = pl1->fPlab.Eta(); fMuon2Eta = pl2->fPlab.Eta();
+	  fGenMuon1Pt = gl1->fP.Perp(); fGenMuon2Pt = gl2->fP.Perp(); 
+	  fGenMuon1Eta = gl1->fP.Eta(); fGenMuon2Eta = gl2->fP.Eta(); 
 	}
 	((TH1D*)fpHistFile->Get("n2_cuts"))->AddBinContent(2, truth);
 	((TH1D*)fpHistFile->Get("n2_cuts"))->GetXaxis()->SetBinLabel(2, Form("TruthCand"));	
-      }	
+      }
     }
   }
   
   
 }
+
+void xsReader::CandidateSelection(int mode){
+
+  fCandY = fCandPt = fCandMass = -1.; 
+  fpCand = 0;
+  fGenCandY = fGenCandPt = -1.;
+  fgCand = 0;
+  fMuon1Eta = fMuon1Pt = fMuon2Eta = fMuon2Pt = -1.;
+  fGenMuon1Eta = fGenMuon1Pt = fGenMuon2Eta = fGenMuon2Pt = -1.;
+  TAnaCand *pCand(0);
+  vector<int> lCands, lCands_CT, lCands_CT_M1T, lCands_CT_M1T_M2T, lCands_CT_M1T_M2T_Pt1, lCands_CT_M1T_M2T_Pt1_Pt2, lCands_CT_M1T_M2T_Pt1_Pt2_CHI2; 
+  
+  for (int iC = 0; iC < fpEvt->nCands() ; ++iC) {
+    pCand = fpEvt->getCand(iC);
+    lCands.push_back(iC);
+    TAnaTrack *pl1 = fpEvt->getSigTrack(pCand->fSig1); 
+    TAnaTrack *pl2 = fpEvt->getSigTrack(pCand->fSig2);
+    if ( MODE == 1 ) AnaEff(pCand, 1);
+    if ( pl1->fQ*pl2->fQ > 0 ) continue;
+    if (TYPE != pCand->fType) continue;
+    if (pCand->fMass < MASSLO) continue;
+    if (pCand->fMass > MASSHI) continue;
+    lCands_CT.push_back(iC);
+    if ( (pl1->fPlab.Perp() > PTHI) || (pl1->fPlab.Perp() < PTLO) ) continue;
+    if ( (pl1->fPlab.Eta() > ETAHI) || (pl1->fPlab.Eta() < ETALO) ) continue;
+    lCands_CT_M1T_M2T_Pt1.push_back(iC);
+    if ( (pl2->fPlab.Perp() > PTHI) || (pl2->fPlab.Perp() < PTLO) ) continue;
+    if ( (pl2->fPlab.Eta() > ETAHI) || (pl2->fPlab.Eta() < ETALO) ) continue;
+    lCands_CT_M1T_M2T_Pt1_Pt2.push_back(iC);
+    //if ( pCand->fVtx.fChi2 > CHI2 ) continue;
+    lCands_CT_M1T_M2T_Pt1_Pt2_CHI2.push_back(iC);
+  }
+  
+    
+  if (0 == lCands_CT_M1T_M2T_Pt1_Pt2_CHI2.size()) return; 
+  int best(-1);
+  if (lCands_CT_M1T_M2T_Pt1_Pt2_CHI2.size() > 1) {
+    cout << "MORE THAN ONE CANDIDATE  " << lCands_CT_M1T_M2T_Pt1_Pt2_CHI2.size() <<  endl;
+    double ptMax(0.), pt(0.);
+    double maxDocaMax(99.), maxDoca(0.);
+    double chi2Max(99.), chi2(0.);
+    for (unsigned int iC = 0; iC < lCands_CT_M1T_M2T_Pt1_Pt2_CHI2.size(); ++iC) {
+      pCand = fpEvt->getCand(lCands_CT_M1T_M2T_Pt1_Pt2_CHI2[iC]);       
+      if ( mode == 1 ){
+	pt = pCand->fPlab.Perp(); 
+	if (pt > ptMax) {
+	  best = lCands_CT_M1T_M2T_Pt1_Pt2_CHI2[iC]; 
+	  ptMax = pt;
+	}
+      } else if ( mode == 2 ){
+	maxDoca = pCand->fMaxDoca;
+	if (maxDoca < maxDocaMax) {
+	  best = lCands_CT_M1T_M2T_Pt1_Pt2_CHI2[iC]; 
+	  maxDocaMax = maxDoca;
+	  }
+      } else if ( mode == 3 ){
+	chi2 = pCand->fVtx.fChi2;
+	  if (chi2 < chi2Max) {
+	    best = lCands_CT_M1T_M2T_Pt1_Pt2_CHI2[iC]; 
+	    chi2Max = chi2;
+	  }
+      } 	
+    }
+  } else if (lCands_CT_M1T_M2T_Pt1_Pt2_CHI2.size() == 1) {best = lCands_CT_M1T_M2T_Pt1_Pt2_CHI2[0];}
+  
+  int truth(0);
+  TLorentzVector Cand, gCand;
+  if ( best > -1 ) {
+    pCand = fpEvt->getCand(best);
+    Cands.push_back(pCand);
+    if ( MODE == 1 ) AnaEff(pCand, 2);
+  }
+  
+  
+}
+
+
 
 void xsReader::AnaEff(TAnaCand *pCand, int mode) {
   
@@ -587,7 +1040,15 @@ void xsReader::fillCandHist() {
   ((TH1D*)fpHistFile->Get("CandRapidity"))->Fill(fCandY,fWeight);
   ((TH1D*)fpHistFile->Get("CandEta"))->Fill(fpCand->fPlab.Eta(),fWeight);
   ((TH1D*)fpHistFile->Get("UpsilonMass"))->Fill(fCandMass,fWeight);
-    
+  
+  ((TH1D*)fpHistFile->Get("SigMuEta"))->Fill(fMuon1Eta);
+  ((TH1D*)fpHistFile->Get("SigMuEta"))->Fill(fMuon2Eta);
+  ((TH1D*)fpHistFile->Get("SigMuPt"))->Fill(fMuon1Pt);
+  ((TH1D*)fpHistFile->Get("SigMuPt"))->Fill(fMuon2Pt);  
+  
+  ((TH1D*)fpHistFile->Get("SigMuEtaPt"))->Fill(fMuon1Eta,fMuon1Pt);  
+  ((TH1D*)fpHistFile->Get("SigMuEtaPt"))->Fill(fMuon2Eta,fMuon2Pt);  
+  
   for ( int iy = 0; iy < fNy; ++iy ){
     for ( int ipt = 0; ipt < fNpt; ++ipt ){
       if ( ( fCandY >= fYbin[iy] ) && ( fCandY < fYbin[iy+1] ) ){
@@ -647,50 +1108,128 @@ void xsReader::calculateWeights(int mode){
   double effID1(-99); double effID2(-99);
   double effTR1(-99); double effTR2(-99);
   double MuIdWeight(-99); double TrigWeight(-99);
-  TAnaTrack *pl1 = fpEvt->getSigTrack(fpCand->fSig1); 
-  TAnaTrack *pl2 = fpEvt->getSigTrack(fpCand->fSig2);
+  TAnaCand *pCand;
+  TLorentzVector Cand;
   
-  if ( pl1->fQ > 0 ){
-    effID1 = fPidTableMuIDPos->effD(pl1->fPlab.Perp(), pl1->fPlab.Eta(), 0.);
-    effTR1 = fPidTableTrigPos->effD(pl1->fPlab.Perp(), pl1->fPlab.Eta(), 0.);
-
-  } else if ( pl1->fQ < 0 ){
-    effID1 = fPidTableMuIDNeg->effD(pl1->fPlab.Perp(), pl1->fPlab.Eta(), 0.);
-    effTR1 = fPidTableTrigNeg->effD(pl1->fPlab.Perp(), pl1->fPlab.Eta(), 0.);
-  }
-  
-  if ( pl2->fQ > 0 ){
-    effID2 = fPidTableMuIDPos->effD(pl2->fPlab.Perp(), pl2->fPlab.Eta(), 0.);
-    effTR2 = fPidTableTrigPos->effD(pl2->fPlab.Perp(), pl2->fPlab.Eta(), 0.);
-  }  else if ( pl2->fQ < 0 ){
-    effID2 = fPidTableMuIDNeg->effD(pl2->fPlab.Perp(), pl2->fPlab.Eta(), 0.);
-    effTR2 = fPidTableTrigNeg->effD(pl2->fPlab.Perp(), pl2->fPlab.Eta(), 0.);
-  }
-  
-  //fWeight = 1/(effID1*effID2*effTR1*effTR2);
-  
-  fWeight = 1;
-  
-  MuIdWeight = effID1*effID2;
-  TrigWeight = effTR1*effTR2;
-  
-  for ( int iy = 0; iy < fNy; ++iy ){
-    for ( int ipt = 0; ipt < fNpt; ++ipt ){
-      if ( ( fCandY >= fYbin[iy] ) && ( fCandY < fYbin[iy+1] ) ){
-	if ( ( fCandPt >= fPTbin[ipt] ) && ( fCandPt < fPTbin[ipt+1] ) ){
-	  ((TH1D*)fpHistFile->Get(Form("MuIDEff_%.1dS,rapidity%.1f_%.1f,pt%.1f_%.1f",UPSTYPE, fYbin[iy], fYbin[iy+1], fPTbin[ipt], fPTbin[ipt+1])))->Fill(MuIdWeight);
-	  ((TH1D*)fpHistFile->Get(Form("TrigEff_%.1dS,rapidity%.1f_%.1f,pt%.1f_%.1f",UPSTYPE, fYbin[iy], fYbin[iy+1], fPTbin[ipt], fPTbin[ipt+1])))->Fill(TrigWeight);
+  if ( mode == 0 ){
+    TAnaTrack *pl1 = fpEvt->getSigTrack(fpCand->fSig1); 
+    TAnaTrack *pl2 = fpEvt->getSigTrack(fpCand->fSig2);
+    if ( pl1->fQ > 0 ){
+      effID1 = fPidTableMuIDPos->effD(pl1->fPlab.Perp(), pl1->fPlab.Eta(), 0.);
+      effTR1 = fPidTableTrigPos->effD(pl1->fPlab.Perp(), pl1->fPlab.Eta(), 0.);
+      
+    } else if ( pl1->fQ < 0 ){
+      effID1 = fPidTableMuIDNeg->effD(pl1->fPlab.Perp(), pl1->fPlab.Eta(), 0.);
+      effTR1 = fPidTableTrigNeg->effD(pl1->fPlab.Perp(), pl1->fPlab.Eta(), 0.);
+    }
+    
+    if ( pl2->fQ > 0 ){
+      effID2 = fPidTableMuIDPos->effD(pl2->fPlab.Perp(), pl2->fPlab.Eta(), 0.);
+      effTR2 = fPidTableTrigPos->effD(pl2->fPlab.Perp(), pl2->fPlab.Eta(), 0.);
+    }  else if ( pl2->fQ < 0 ){
+      effID2 = fPidTableMuIDNeg->effD(pl2->fPlab.Perp(), pl2->fPlab.Eta(), 0.);
+      effTR2 = fPidTableTrigNeg->effD(pl2->fPlab.Perp(), pl2->fPlab.Eta(), 0.);
+    }
+    
+    //fWeight = 1/(effID1*effID2*effTR1*effTR2);
+    
+    fWeight = 1;
+    
+    MuIdWeight = effID1*effID2;
+    TrigWeight = effTR1*effTR2;
+    
+    ((TH1D*)fpHistFile->Get(Form("MuIDEff_%.1dS,OverAll", UPSTYPE)))->Fill(MuIdWeight,1./MuIdWeight);
+    ((TH1D*)fpHistFile->Get(Form("TrigEff_%.1dS,OverAll", UPSTYPE)))->Fill(TrigWeight,1./TrigWeight);
+    
+    for ( int iy = 0; iy < fNy; ++iy ){
+      for ( int ipt = 0; ipt < fNpt; ++ipt ){
+	if ( ( fCandY >= fYbin[iy] ) && ( fCandY < fYbin[iy+1] ) ){
+	  if ( ( fCandPt >= fPTbin[ipt] ) && ( fCandPt < fPTbin[ipt+1] ) ){
+	    ((TH1D*)fpHistFile->Get(Form("MuIDEff_%.1dS,rapidity%.1f_%.1f,pt%.1f_%.1f",UPSTYPE, fYbin[iy], fYbin[iy+1], fPTbin[ipt], fPTbin[ipt+1])))->Fill(MuIdWeight,1./MuIdWeight);
+	    ((TH1D*)fpHistFile->Get(Form("TrigEff_%.1dS,rapidity%.1f_%.1f,pt%.1f_%.1f",UPSTYPE, fYbin[iy], fYbin[iy+1], fPTbin[ipt], fPTbin[ipt+1])))->Fill(TrigWeight,1./TrigWeight);
+	  }
 	}
       }
+    }  
+  }
+  
+  if ( mode == 1 ){
+    for (int iC = 0; iC < Cands.size() ; ++iC) {
+      pCand = Cands[iC];
+      Cand.SetPtEtaPhiM(pCand->fPlab.Perp(),pCand->fPlab.Eta(),pCand->fPlab.Phi(),pCand->fMass);
+      TAnaTrack *pl1 = fpEvt->getSigTrack(pCand->fSig1);
+      TAnaTrack *pl2 = fpEvt->getSigTrack(pCand->fSig2);
+      if ( pl1->fPlab.Perp() > 3. && pl1->fPlab.Perp() < 20. && pl2->fPlab.Perp() > 3. && pl2->fPlab.Perp() < 20. && pl1->fPlab.Eta() > -2.4 && pl1->fPlab.Eta() < 2.4  && pl2->fPlab.Eta() > -2.4 && pl2->fPlab.Eta() < 2.4 ){
+      
+	if ( pl1->fQ > 0 ){
+	  effID1 = fPidTableMuIDPos->effD(pl1->fPlab.Perp(), pl1->fPlab.Eta(), 0.);
+	} else if ( pl1->fQ < 0 ){
+	  effID1 = fPidTableMuIDNeg->effD(pl1->fPlab.Perp(), pl1->fPlab.Eta(), 0.);
+	}
+	
+	if ( pl2->fQ > 0 ){
+	  effID2 = fPidTableMuIDPos->effD(pl2->fPlab.Perp(), pl2->fPlab.Eta(), 0.);
+	}  else if ( pl2->fQ < 0 ){
+	  effID2 = fPidTableMuIDNeg->effD(pl2->fPlab.Perp(), pl2->fPlab.Eta(), 0.);
+	}
+	
+	fWeight = 1;
+	
+	MuIdWeight = effID1*effID2;
+	((TH1D*)fpHistFile->Get(Form("MuIDEff_%.1dS,OverAll", UPSTYPE)))->Fill(MuIdWeight);
+	for ( int iy = 0; iy < fNy; ++iy ){
+	  for ( int ipt = 0; ipt < fNpt; ++ipt ){
+	    if ( ( Cand.Rapidity() >= fYbin[iy] ) && ( Cand.Rapidity() < fYbin[iy+1] ) ){
+	      if ( ( pCand->fPlab.Perp() >= fPTbin[ipt] ) && ( pCand->fPlab.Perp()  < fPTbin[ipt+1] ) ){
+		((TH1D*)fpHistFile->Get(Form("MuIDEff_%.1dS,rapidity%.1f_%.1f,pt%.1f_%.1f",UPSTYPE, fYbin[iy], fYbin[iy+1], fPTbin[ipt], fPTbin[ipt+1])))->Fill(MuIdWeight,1./MuIdWeight);
+	      }
+	    }
+	  }
+	}
+      }  
     }
-  }  
+  }
   
-  
-  
-  
-  
+  if ( mode == 2 ){
+    for (int iC = 0; iC < Cands_TM.size() ; ++iC) {
+      pCand = Cands_TM[iC];
+      Cand.SetPtEtaPhiM(pCand->fPlab.Perp(),pCand->fPlab.Eta(),pCand->fPlab.Phi(),pCand->fMass);
+      TAnaTrack *pl1 = fpEvt->getSigTrack(pCand->fSig1);
+      TAnaTrack *pl2 = fpEvt->getSigTrack(pCand->fSig2);
+      if ( pl1->fPlab.Perp() > 3. && pl1->fPlab.Perp() < 20. && pl2->fPlab.Perp() > 3. && pl2->fPlab.Perp() < 20. && pl1->fPlab.Eta() > -2.4 && pl1->fPlab.Eta() < 2.4  && pl2->fPlab.Eta() > -2.4 && pl2->fPlab.Eta() < 2.4 ){
+    
+	if ( pl1->fQ > 0 ){
+	  effTR1 = fPidTableTrigPos->effD(pl1->fPlab.Perp(), pl1->fPlab.Eta(), 0.);
+	  
+	} else if ( pl1->fQ < 0 ){
+	  effTR1 = fPidTableTrigNeg->effD(pl1->fPlab.Perp(), pl1->fPlab.Eta(), 0.);
+	}
+      
+	if ( pl2->fQ > 0 ){
+	  effTR2 = fPidTableTrigPos->effD(pl2->fPlab.Perp(), pl2->fPlab.Eta(), 0.);
+	}  else if ( pl2->fQ < 0 ){
+	  effTR2 = fPidTableTrigNeg->effD(pl2->fPlab.Perp(), pl2->fPlab.Eta(), 0.);
+	}
+	
+	fWeight = 1;
+	
+	TrigWeight = effTR1*effTR2;
+	
+	for ( int iy = 0; iy < fNy; ++iy ){
+	  for ( int ipt = 0; ipt < fNpt; ++ipt ){
+	    if ( ( Cand.Rapidity() >= fYbin[iy] ) && ( Cand.Rapidity() < fYbin[iy+1] ) ){
+	      if ( ( pCand->fPlab.Perp() >= fPTbin[ipt] ) && ( pCand->fPlab.Perp() < fPTbin[ipt+1] ) ){
+		((TH1D*)fpHistFile->Get(Form("TrigEff_%.1dS,rapidity%.1f_%.1f,pt%.1f_%.1f",UPSTYPE, fYbin[iy], fYbin[iy+1], fPTbin[ipt], fPTbin[ipt+1])))->Fill(TrigWeight,1./TrigWeight);
+	      }
+	    }
+	  }
+	}  
+      }
+    }
+  }
   
 }
+
 // ----------------------------------------------------------------------
 bool xsReader::isMatchedToTrig(TAnaTrack *pTag, TString Label){
 	bool a=false;
@@ -747,6 +1286,25 @@ void xsReader::bookHist() {
   ((TH2D*)fpHistFile->Get(Form("AllGenRes_%.1dS", UPSTYPE)))->Sumw2();
   ((TH2D*)fpHistFile->Get(Form("RecoGenRes_%.1dS", UPSTYPE)))->Sumw2();
   
+  // PreSel Eff
+  k = new TH2D(Form("PreSel_afterVtx_%.1dS",UPSTYPE), Form("PreSel_afterVtx_%1.dS", UPSTYPE), fNy, fYbin, fNpt, fPTbin);
+  k = new TH2D(Form("PreSel_beforeVtx_%.1dS",UPSTYPE), Form("PreSel_beforeVtx_%1.dS", UPSTYPE), fNy, fYbin, fNpt, fPTbin);
+  ((TH2D*)fpHistFile->Get(Form("PreSel_afterVtx_%.1dS", UPSTYPE)))->Sumw2();
+  ((TH2D*)fpHistFile->Get(Form("PreSel_beforeVtx_%.1dS", UPSTYPE)))->Sumw2();  
+  
+  // MuID Check
+  k = new TH2D(Form("MuIDCheck_after_%.1dS",UPSTYPE), Form("MuIDCheck_after_%1.dS", UPSTYPE), fNy, fYbin, fNpt, fPTbin);
+  k = new TH2D(Form("MuIDCheck_before_%.1dS",UPSTYPE), Form("MuIDCheck_before_%1.dS", UPSTYPE), fNy, fYbin, fNpt, fPTbin);
+  ((TH2D*)fpHistFile->Get(Form("MuIDCheck_after_%.1dS", UPSTYPE)))->Sumw2();
+  ((TH2D*)fpHistFile->Get(Form("MuIDCheck_before_%.1dS", UPSTYPE)))->Sumw2();   
+  
+  // Trig Check
+  k = new TH2D(Form("TrigCheck_after_%.1dS",UPSTYPE), Form("TrigCheck_after_%1.dS", UPSTYPE), fNy, fYbin, fNpt, fPTbin);
+  k = new TH2D(Form("TrigCheck_before_%.1dS",UPSTYPE), Form("TrigCheck_before_%1.dS", UPSTYPE), fNy, fYbin, fNpt, fPTbin);
+  ((TH2D*)fpHistFile->Get(Form("TrigCheck_after_%.1dS", UPSTYPE)))->Sumw2();
+  ((TH2D*)fpHistFile->Get(Form("TrigCheck_before_%.1dS", UPSTYPE)))->Sumw2();     
+  
+  
   // candidateSelection() histograms
   h = new TH1D("n2_cuts", "n2_cuts", 100, 0., 100.);
   h = new TH1D("n2", "ncand", 20, 0, 20.);
@@ -768,7 +1326,7 @@ void xsReader::bookHist() {
       ((TH1D*)fpHistFile->Get(Form("MuIDEff_%.1dS,rapidity%.1f_%.1f,pt%.1f_%.1f", UPSTYPE, fYbin[iy], fYbin[iy+1], fPTbin[ipt], fPTbin[ipt+1])))->Sumw2(); 
     }
   }
-  
+  h = new TH1D(Form("MuIDEff_%.1dS,OverAll", UPSTYPE), Form("MuIDEff_%.1dS,OverAll", UPSTYPE), 100, 0., 1.);
   
   // Trig Efficiency Histograms
   for ( int iy = 0; iy < fNy; ++iy ){
@@ -779,6 +1337,7 @@ void xsReader::bookHist() {
       ((TH1D*)fpHistFile->Get(Form("TrigEff_%.1dS,rapidity%.1f_%.1f,pt%.1f_%.1f", UPSTYPE, fYbin[iy], fYbin[iy+1], fPTbin[ipt], fPTbin[ipt+1])))->Sumw2(); 
     }
   }  
+  h = new TH1D(Form("TrigEff_%.1dS,OverAll", UPSTYPE), Form("TrigEff_%.1dS,OverAll", UPSTYPE), 100, 0., 1.);
   
   // Analysis Efficiency Histograms
   for ( int iy = 0; iy < fNy; ++iy ){
@@ -804,6 +1363,9 @@ void xsReader::bookHist() {
   h = new TH1D("CandRapidity", "CandRapidity", 80, -4, 4.);
   h = new TH1D("CandEta", "CandEta", 80, -4, 4.);
   h = new TH1D("UpsilonMass", "UpsilonMass", BIN, fMassLow, fMassHigh); 
+  h = new TH1D("SigMuEta", "SigMuEta", 80, -4, 4.);
+  h = new TH1D("SigMuPt", "SigMuPt", 80, 0, 40.);
+  k = new TH2D("SigMuEtaPt", "SigMuEtaPt", 48, -2.4, 2.4, 40, 0, 20);
   
   for ( int iy = 0; iy < fNy; ++iy ){
     for ( int ipt = 0; ipt < fNpt; ++ipt ){
@@ -832,7 +1394,15 @@ void xsReader::bookHist() {
   k = new TH2D("TriggerStudy_Fired","TriggerStudy_Fired", fNy, fYbin, fNpt, fPTbin);
   /////////////////////
   
+  //// Trigger Check
+  //////////////////////
+  k = new TH2D("TriggerCheck_2Reco","TriggerCheck_2Reco", fNy, fYbin, fNpt, fPTbin);
+  k = new TH2D("TriggerCheck_Fired","TriggerCheck_Fired", fNy, fYbin, fNpt, fPTbin);
+  /////////////////////  
   
+  // GenStudy
+  h = new TH1D("GenStudy_MuonPt", "GenStudy_MuonPt", 80, 0, 40.);
+  k = new TH2D("GenStudy_Cand","GenStudy_Cand", fNy, fYbin, fNpt, fPTbin);
   
   
   ///////////////////////////////////////////// ---- Reduced Tree
@@ -972,6 +1542,16 @@ void xsReader::readCuts(TString filename, int dump) {
       if (dump) cout << "MASSHI:         " << MASSHI << endl;
     }   
     
+    if (!strcmp(CutName, "DETA")) {
+      DETA = CutValue; ok = 1;
+      if (dump) cout << "DETA:           " << DETA << endl;
+    } 
+    
+    if (!strcmp(CutName, "DPHI")) {
+      DPHI = CutValue; ok = 1;
+      if (dump) cout << "DPHI:           " << DPHI << endl;
+    }
+    
     if (!strcmp(CutName, "BIN")) {
       BIN = int(CutValue); ok = 1;
       if (dump) cout << "BIN:              " << BIN << endl;
@@ -981,6 +1561,11 @@ void xsReader::readCuts(TString filename, int dump) {
       HLTPATH = SetName; ok = 1;
       if (dump) cout << "HLTPATH:   " << HLTPATH  << endl;
     } 
+    
+    if (!strcmp(CutName, "HLTLABEL")) {
+      HLTLABEL = SetName; ok = 1;
+      if (dump) cout << "HLTLABEL:   " << HLTLABEL  << endl;
+    }     
     
     if (!strcmp(CutName, "HLTPATH1")) {
       HLTPATH1 = SetName; ok = 1;
