@@ -43,7 +43,7 @@ process.demo = cms.EDAnalyzer('JPsiAnalyzerPAT',
 
     writeDataSet = cms.bool(True),                 
     dataSetName = cms.string("testDataSet.root"),
-    triggerForDataset = cms.string("HLT_DoubleMu0"),
+    triggerForDataset = cms.vstring("HLT_DoubleMu0"),
 
     massMin = cms.double(2.6),
     massMax = cms.double(3.5),

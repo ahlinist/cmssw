@@ -1082,7 +1082,7 @@ JPsiAnalyzerPAT::selGlobalMuon(const pat::Muon* aMuon) {
   // old way of cutting on tracks  
   } else trackOK = (iTrack->found() > 11);
 
-  return (isMuonInAccept(aMuon) &&
+  return (// isMuonInAccept(aMuon) &&
 	  trackOK &&
 	  gTrack->chi2()/gTrack->ndof() < 20.0 &&
           q.numberOfValidMuonHits() > 0 &&
@@ -1110,7 +1110,7 @@ JPsiAnalyzerPAT::selTrackerMuon(const pat::Muon* aMuon) {
   // old way of cutting on tracks  
   } else trackOK = (iTrack->found() > 11);
 
-  return (isMuonInAccept(aMuon) &&
+  return (// isMuonInAccept(aMuon) &&
 	  trackOK &&
  	  iTrack->chi2()/iTrack->ndof() < 1.8 &&
 	  aMuon->muonID("TrackerMuonArbitrated") &&
@@ -1136,7 +1136,7 @@ JPsiAnalyzerPAT::selCaloMuon(const pat::Muon* aMuon) {
   // old way of cutting on tracks  
   } else trackOK = (iTrack->found() > 11);
 
-  return (isMuonInAccept(aMuon) &&
+  return (// isMuonInAccept(aMuon) &&
 	  aMuon->caloCompatibility() > 0.89 &&
 	  trackOK &&
 	  iTrack->chi2()/iTrack->ndof() < 1.8 &&
