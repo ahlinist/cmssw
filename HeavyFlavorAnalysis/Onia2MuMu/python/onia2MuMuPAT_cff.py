@@ -28,11 +28,19 @@ def onia2MuMuPAT(process, GlobalTag, MC=False, HLT='HLT', Filter=True):
         thresh = cms.untracked.double(0.25)
     )
 
-    # Merge CaloMuons and General Tracks into the collection of reco::Muons
-    process.load("RecoMuon.MuonIdentification.mergedMuons_cfi")
-    process.mergedMuons.mergeTracks = True
-    process.mergedMuons.tracksCut = '(abs(eta) <= 1.3 && pt > 3.3) || (1.3 < abs(eta) <= 2.2 && p > 2.9) || (2.2 < abs(eta) <= 2.4  && pt > 0.8)'
-    process.mergedMuons.caloMuonsCut = process.mergedMuons.tracksCut
+    # Merge muons, (calomuons) and tracks in a single collection for T&P
+    process.mergedMuons = cms.EDProducer("CaloMuonMerger",
+        muons     = cms.InputTag("muons"), 
+        muonsCut = cms.string(""),
+        mergeCaloMuons = cms.bool(False),  ### NEEDED TO RUN ON AOD
+        caloMuons = cms.InputTag("calomuons"),
+        caloMuonsCut = cms.string(""),
+        minCaloCompatibility = cms.double(0.6),
+        mergeTracks = cms.bool(True),
+        tracks = cms.InputTag("generalTracks"),
+        tracksCut = cms.string("(abs(eta) <= 1.3 && pt > 3.3) || (1.3 < abs(eta) <= 2.2 && p > 2.9) || (2.2 < abs(eta) <= 2.4  && pt > 0.8)"),
+    )
+
 
     # Prune generated particles to muons and their parents
     process.genMuons = cms.EDProducer("GenParticlePruner",
@@ -94,7 +102,7 @@ def onia2MuMuPAT(process, GlobalTag, MC=False, HLT='HLT', Filter=True):
         addCommonVertex = cms.bool(True), ## Embed the full reco::Vertex out of the common vertex fit
         addMuonlessPrimaryVertex = cms.bool(True), ## Embed the primary vertex re-made from all the tracks except the two muons
         addMCTruth = cms.bool(MC),      ## Add the common MC mother of the two muons, if any
-        resolvePileUpAmbiguity = cms.bool(False)   ## Order PVs by their vicinity to the J/psi vertex, not by sumPt                            
+        resolvePileUpAmbiguity = cms.bool(True)   ## Order PVs by their vicinity to the J/psi vertex, not by sumPt                            
     )
 
     # check if there is at least one (inclusive) tracker+tracker di-muon
@@ -103,11 +111,19 @@ def onia2MuMuPAT(process, GlobalTag, MC=False, HLT='HLT', Filter=True):
         minNumber = cms.uint32(1),
     )
 
+    # add tracks
+    process.load("PhysicsTools.RecoAlgos.allTracks_cfi")
+    process.load("PhysicsTools.RecoAlgos.goodTracks_cfi")
+    process.goodTracks.particleType = 'pi+'
+    process.goodTracks.cut = 'charge !=0 && found > 4 && pt > 0.5 && hitPattern.pixelLayersWithMeasurement > 0 && abs(d0) < 3.0 && abs(dz) < 25.0 && chi2/ndof < 4.0'
+    
     # the onia2MuMu path
     process.Onia2MuMuPAT = cms.Path(
         process.patMuonSequence *
         process.onia2MuMuPatTrkTrk *
-        process.onia2MuMuPatTrkTrkFilter
+        process.allTracks *
+        process.goodTracks * 
+        process.onia2MuMuPatTrkTrkFilter 
     )
 
     # Make Tag and Probe pairs for efficiency measurements
@@ -152,6 +168,7 @@ def onia2MuMuPAT(process, GlobalTag, MC=False, HLT='HLT', Filter=True):
         outputCommands = cms.untracked.vstring('drop *',
             'keep *_genMuons_*_Onia2MuMuPAT',                      # generated muons and parents
             'keep patMuons_patMuonsWithTrigger_*_Onia2MuMuPAT',    # All PAT muos including general tracks and matches to triggers
+            'keep *_goodTracks_*_Onia2MuMuPAT',                    # All good tracks (heavy!)  
             'keep patCompositeCandidates_*__Onia2MuMuPAT',         # PAT di-muons
             'keep patMuons_tagMuons__Onia2MuMuPAT',                # tagMuons for efficiency
             'keep patMuons_probeMuons__Onia2MuMuPAT',              # probeMuons for efficiency
