@@ -13,7 +13,7 @@
 //
 // Original Author: Roberto Covarelli 
 //         Created:  Fri Oct  9 04:59:40 PDT 2009
-// $Id: JPsiAnalyzerPAT.cc,v 1.43 2011/01/19 12:44:24 covarell Exp $
+// $Id: JPsiAnalyzerPAT.cc,v 1.44 2011/02/04 13:47:04 covarell Exp $
 //
 // based on: Onia2MuMu package V00-11-00
 // changes done by: FT-HW
@@ -1386,13 +1386,14 @@ JPsiAnalyzerPAT::hltReport(const edm::Event &iEvent ,const edm::EventSetup& iSet
 void
 JPsiAnalyzerPAT::matchMuonToHlt(const pat::Muon* muon1, const pat::Muon* muon2)
 {
+
     //! Loop over Trigger Paths and match muons to last Filter/collection
     for ( std::map<std::string, int>::iterator it = mapTriggerNameToIntFired_.begin(); it != mapTriggerNameToIntFired_.end(); it ++ ) {
 
         std::string triggerName = it->first;
 
-        //! just use Triggers which are in TriggerResults; value == 2
-        if ( it->second != 2 ) continue;
+        //! just use Triggers which are in TriggerResults; value == 3
+        if ( it->second != 3 ) continue;
 
         std::string hltLastFilterName = mapTriggerToLastFilter_[triggerName];
 
