@@ -1100,8 +1100,8 @@ fabs(ip->pdgId())<=14) || ip->pdgId()==22))) {
       vector<float> phoCov;
       phoCov = lazyTool.localCovariances(*phoSeed);
       phoSigmaIEtaIEta_[nPho_] = iPho->sigmaIetaIeta();
-      phoSigmaIEtaIPhi_[nEle_] = sqrt(phoCov[1]);
-      phoSigmaIPhiIPhi_[nEle_] = sqrt(phoCov[2]);
+      phoSigmaIEtaIPhi_[nPho_] = sqrt(phoCov[1]);
+      phoSigmaIPhiIPhi_[nPho_] = sqrt(phoCov[2]);
 
       if ( iPho->isEB() && EBReducedRecHits.isValid() ) {
         EcalRecHitCollection::const_iterator ebrhit = EBReducedRecHits->find(phoSeedDetId);
