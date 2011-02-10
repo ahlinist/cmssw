@@ -115,7 +115,7 @@ def onia2MuMuPAT(process, GlobalTag, MC=False, HLT='HLT', Filter=True):
     process.load("PhysicsTools.RecoAlgos.allTracks_cfi")
     process.load("PhysicsTools.RecoAlgos.goodTracks_cfi")
     process.goodTracks.particleType = 'pi+'
-    process.goodTracks.cut = 'charge !=0 && found > 4 && pt > 0.5 && hitPattern.pixelLayersWithMeasurement > 0 && abs(d0) < 3.0 && abs(dz) < 25.0 && chi2/ndof < 4.0'
+    process.goodTracks.cut = 'charge !=0 && found > 4 && pt > 0.4 && hitPattern.pixelLayersWithMeasurement > 0 && abs(d0) < 3.0 && abs(dz) < 25.0 && chi2/ndof < 4.0'
     
     # the onia2MuMu path
     process.Onia2MuMuPAT = cms.Path(
