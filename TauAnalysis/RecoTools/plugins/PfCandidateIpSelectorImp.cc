@@ -2,6 +2,8 @@
 
 #include "DataFormats/VertexReco/interface/Vertex.h"
 #include "DataFormats/VertexReco/interface/VertexFwd.h"
+#include "DataFormats/Math/interface/deltaR.h"
+#include "Math/GenVector/VectorUtil.h"
 
 #include "FWCore/MessageLogger/interface/MessageLogger.h"
 #include "FWCore/Utilities/interface/Exception.h"
@@ -52,12 +54,13 @@ void PfCandidateIpSelectorImp::select(const edm::Handle<collection >& pfCandColl
 			
 		reco::TrackRef trackRef = pfCand->trackRef();
 		if ( !trackRef.isNull() ) {
+			
 			double dRho = (trackRef->innerPosition().Rho() - thePrimaryEventVertex.position().Rho());
-
 			if (  rhoMax_ > dRho ) 
 				selected_.push_back(&(*pfCand));
 		}
 	}
+	std::cout << std::endl;
 }
 
 #include "CommonTools/UtilAlgos/interface/ObjectSelector.h"
