@@ -23,6 +23,15 @@ electronHistManager = cms.PSet(
 		neutralHadronIso = selectedPatElectronsForElecTauIso.neutralHadronIso,
 		photonIso = selectedPatElectronsForElecTauIso.photonIso
 	),
+	pfChargedHadronIsoExtractor = cms.PSet(
+		chargedHadronIso = selectedPatElectronsForElecTauIso.chargedHadronIso
+	),
+	pfNeutralHadronIsoExtractor = cms.PSet(
+		neutralHadronIso = selectedPatElectronsForElecTauIso.neutralHadronIso
+	),
+	pfPhotonIsoExtractor = cms.PSet(
+		photonIso = selectedPatElectronsForElecTauIso.photonIso
+	),
 
 	pfCandidateSource = selectedPatElectronsForElecTauIso.pfCandidateSource,
 
