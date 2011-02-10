@@ -10,31 +10,43 @@ from TauAnalysis.RecoTools.patLeptonSelection_cff import \
      patTauSelConfigurator, patTauSelConfiguratorForElecTau, patTauSelConfiguratorForMuTau
 from TauAnalysis.RecoTools.patJetSelection_cff import patJetSelConfigurator
 from TauAnalysis.RecoTools.patJetSelectionForAHtoMuTau_cff import \
-     patJetSelConfiguratorForAHtoMuTau, selectPatJetsForAHtoMuTauLooseMuonIsolation
+     patJetSelConfiguratorForAHtoMuTau, patJetSelConfiguratorForAHtoMuTauLooseMuonIsolation
+from TauAnalysis.RecoTools.patJetSelectionForAHtoElecTau_cff import \
+     patJetSelConfiguratorForAHtoElecTau, patJetSelConfiguratorForAHtoElecTauLooseElectronIsolation
 
 from TauAnalysis.CandidateTools.muTauPairProduction_cff import \
      muTauPairProdConfigurator, muTauPairProdConfiguratorLooseMuonIsolation
+from TauAnalysis.CandidateTools.elecTauPairProduction_cff import \
+     elecTauPairProdConfigurator, elecTauPairProdConfiguratorLooseElectronIsolation
 
 from TauAnalysis.CandidateTools.diTauPairSelectionAllKinds_cff import \
-     patElecTauPairSelConfigurator, patElecTauPairSelConfiguratorLooseElectronIsolation, \
+     patElecTauPairSelConfiguratorOS, patElecTauPairSelConfiguratorLooseElectronIsolationOS, \
+     patElecTauPairSelConfiguratorSS, patElecTauPairSelConfiguratorLooseElectronIsolationSS, \
      patMuTauPairSelConfiguratorOS, patMuTauPairSelConfiguratorLooseMuonIsolationOS, \
      patMuTauPairSelConfiguratorSS, patMuTauPairSelConfiguratorLooseMuonIsolationSS
 from TauAnalysis.CandidateTools.muTauPairSelectionForAHtoMuTau_cff import \
      patMuTauPairSelConfiguratorForAHtoMuTauOS, patMuTauPairSelConfiguratorForAHtoMuTauLooseMuonIsolationOS, \
      patMuTauPairSelConfiguratorForAHtoMuTauSS, patMuTauPairSelConfiguratorForAHtoMuTauLooseMuonIsolationSS
+from TauAnalysis.CandidateTools.elecTauPairSelectionForAHtoElecTau_cff import \
+     patElecTauPairSelConfiguratorForAHtoElecTauOS, patElecTauPairSelConfiguratorForAHtoElecTauLooseElectronIsolationOS, \
+     patElecTauPairSelConfiguratorForAHtoElecTauSS, patElecTauPairSelConfiguratorForAHtoElecTauLooseElectronIsolationSS
 
 from TauAnalysis.Configuration.selectZtoMuTau_cff import \
      zToMuTauEventSelConfiguratorOS, zToMuTauEventSelConfiguratorSS
 from TauAnalysis.Configuration.selectZtoMuTau_factorized_cff import \
      zToMuTauEventSelConfiguratorLooseMuonIsolationOS, zToMuTauEventSelConfiguratorLooseMuonIsolationSS
-from TauAnalysis.Configuration.selectZtoElecTau_cff import \
-     zToElecTauEventSelConfigurator
-from TauAnalysis.Configuration.selectZtoElecTau_factorized_cff import \
-     zToElecTauEventSelConfiguratorLooseElectronIsolation
 from TauAnalysis.Configuration.selectAHtoMuTau_cff import \
      ahToMuTauEventSelConfiguratorOS, ahToMuTauEventSelConfiguratorSS
 from TauAnalysis.Configuration.selectAHtoMuTau_factorized_cff import \
      ahToMuTauEventSelConfiguratorLooseMuonIsolationOS, ahToMuTauEventSelConfiguratorLooseMuonIsolationSS
+from TauAnalysis.Configuration.selectZtoElecTau_cff import \
+     zToElecTauEventSelConfiguratorOS, zToElecTauEventSelConfiguratorSS
+from TauAnalysis.Configuration.selectZtoElecTau_factorized_cff import \
+     zToElecTauEventSelConfiguratorLooseElectronIsolationOS, zToElecTauEventSelConfiguratorLooseElectronIsolationSS
+from TauAnalysis.Configuration.selectAHtoElecTau_cff import \
+     ahToElecTauEventSelConfiguratorOS, ahToElecTauEventSelConfiguratorSS
+from TauAnalysis.Configuration.selectAHtoElecTau_factorized_cff import \
+     ahToElecTauEventSelConfiguratorLooseElectronIsolationOS, ahToElecTauEventSelConfiguratorLooseElectronIsolationSS
 
 from TauAnalysis.CandidateTools.tools.objProdConfigurator import objProdConfigurator
 from TauAnalysis.CandidateTools.tools.objSelConfigurator import objSelConfigurator
@@ -432,148 +444,305 @@ def disableSysUncertainties_runZtoElecTau(process):
         removeModules(process, "selectZtoElecTauEventsLooseElectronIsolation", moduleNamePattern, pyNameSpace)
 
 def enableSysUncertainties_runZtoElecTau(process):
-    print("<enableSysUncertainties_runZtoElecTau>:")
-    print("--> **enabling** estimation of systematic uncertainties...")
-    
-    pyNameSpace = None
+	print("<enableSysUncertainties_runZtoElecTau>:")
+	print("--> **enabling** estimation of systematic uncertainties...")
+	
+	pyNameSpace = None
+	
+	process.produceGenObjects += process.produceSysErrGenEventReweights
+	
+	process.load("TauAnalysis.RecoTools.patLeptonSystematics_cff")
+	process.producePatTupleZtoElecTauSpecific.replace(process.selectPatElectrons, process.prodSmearedElectrons + process.selectPatElectrons)
+	process.producePatTupleZtoElecTauSpecific.replace(process.selectPatTaus, process.prodSmearedTaus + process.selectPatTaus)
 
-    process.produceGenObjects._seq = process.produceGenObjects._seq * process.produceSysErrGenEventReweights
+	process.load("TauAnalysis.RecoTools.patJetSystematics_cff")
+	process.producePatTupleZtoElecTauSpecific.replace(process.selectPatJets, process.prodSmearedJets + process.selectPatJets)
 
-    process.load("TauAnalysis.RecoTools.patLeptonSystematics_cff")
-    process.producePatTupleZtoElecTauSpecific._seq = process.prodSmearedElectrons * process.producePatTupleZtoElecTauSpecific._seq
-    process.producePatTupleZtoElecTauSpecific._seq = process.prodSmearedTaus * process.producePatTupleZtoElecTauSpecific._seq
-    process.load("TauAnalysis.RecoTools.patJetSystematics_cff")
-    process.producePatTupleZtoElecTauSpecific._seq = process.prodSmearedJets * process.producePatTupleZtoElecTauSpecific._seq
+	process.produceEventSelFlagsZtoElecTauOS = \
+			zToElecTauEventSelConfiguratorOS.configure(process = process, estimateSysUncertainties = True)
+	process.produceEventSelFlagsZtoElecTauLooseElectronIsolationOS = \
+			zToElecTauEventSelConfiguratorLooseElectronIsolationOS.configure(process = process, estimateSysUncertainties = True)
+	process.produceEventSelFlagsZtoElecTauSS = \
+			zToElecTauEventSelConfiguratorSS.configure(process = process, estimateSysUncertainties = True)
+	process.produceEventSelFlagsZtoElecTauLooseElectronIsolationSS = \
+			zToElecTauEventSelConfiguratorLooseElectronIsolationSS.configure(process = process, estimateSysUncertainties = True)
 
-    process.produceEventSelFlagsZtoElecTau = \
-      zToElecTauEventSelConfigurator.configure(process = process, estimateSysUncertainties = True)
-    process.produceEventSelFlagsZtoElecTauLooseElectronIsolation = \
-      zToElecTauEventSelConfiguratorLooseElectronIsolation.configure(process = process, estimateSysUncertainties = True)
+	setattr(patElectronSelConfiguratorForElecTau, "systematics", electronSystematics)
+	process.selectPatElectronsForElecTau = patElectronSelConfiguratorForElecTau.configure(process = process)
 
-    setattr(patElectronSelConfiguratorForElecTau, "systematics", electronSystematics)
-    process.selectPatElectronsForElecTau = patElectronSelConfiguratorForElecTau.configure(process = process)
+	setattr(patElectronSelConfiguratorForElecTauLooseIsolation, "systematics", electronSystematics)
+	process.selectPatElectronsForElecTauLooseIsolation = patElectronSelConfiguratorForElecTauLooseIsolation.configure(process = process)
 
-    setattr(patElectronSelConfiguratorForElecTauLooseIsolation, "systematics", electronSystematics)
-    process.selectPatElectronsForElecTauLooseIsolation = patElectronSelConfiguratorForElecTauLooseIsolation.configure(process = process)
+	setattr(patTauSelConfigurator, "systematics", tauSystematics)
+	process.selectPatTaus = patTauSelConfigurator.configure(process = process)
 
-    setattr(patTauSelConfigurator, "systematics", tauSystematics)
-    process.selectPatTaus = patTauSelConfigurator.configure(process = process)
+	setattr(patTauSelConfiguratorForElecTau, "systematics", tauSystematics)
+	process.selectPatTausForElecTau = patTauSelConfiguratorForElecTau.configure(process = process)
 
-    setattr(patTauSelConfiguratorForElecTau, "systematics", tauSystematics)
-    process.selectPatTausForElecTau = patTauSelConfiguratorForElecTau.configure(process = process)
+	setattr(patJetSelConfigurator, "systematics", jetSystematics)
+	process.selectPatJets = patJetSelConfigurator.configure(process = process)
 
-    setattr(patJetSelConfigurator, "systematics", jetSystematics)
-    process.selectPatJets = patJetSelConfigurator.configure(process = process)
+    # produce collections of pat::(PF)Jets
+    #  o of Pt > 10 GeV for MET Type I correction uncertainties
+    #  o of Pt < 10 GeV for MET Type II ("unclustered energy") correction uncertainties
+    #
+    # NOTE: the "unclustered energy" is smeared by an additional resolution uncertainty of 10% * sum(Et) of jets with Pt < 10 GeV
+    #
+	process.selectedPatJetsForMEtTypeIcorr = cms.EDFilter("PATJetSelector",
+		src = cms.InputTag('selectedPatJetsAntiOverlapWithLeptonsVetoCumulative'),
+		cut = cms.string('pt > 10.'),
+		filter = cms.bool(False)
+	)
 
-    process.smearedMET = cms.EDProducer("SmearedMETProducer",
-        src = cms.InputTag('patPFMETs'),
-        smearedParticles = cms.PSet()
-    )
-    smearedMETconfigurator = objProdConfigurator(
-        process.smearedMET,
-        pyModuleName = __name__,
-        systematics = {
-            "sysElectronEnUp" : {        
-                "smearedParticles.srcOriginal" : cms.InputTag('selectedPatElectronsForElecTauTrkIPcumulative'),
-                "smearedParticles.srcSmeared"  : cms.InputTag('selectedPatElectronsForElecTauTrkIPsysElectronEnUpCumulative')
-            },
-            "sysElectronEnDown" : {
-                "smearedParticles.srcOriginal" : cms.InputTag('selectedPatElectronsForElecTauTrkIPcumulative'),
-                "smearedParticles.srcSmeared"  : cms.InputTag('selectedPatElectronsForElecTauTrkIPsysElectronEnDownCumulative')
-            },
-            "sysTauJetEnUp" : {
-                "smearedParticles.srcOriginal" : cms.InputTag('selectedPatTausForElecTauElectronVetoCumulative'),
-                "smearedParticles.srcSmeared"  : cms.InputTag('selectedPatTausForElecTauElectronVetoSysTauJetEnUpCumulative')
-            },
-            "sysTauJetEnDown" : {
-                "smearedParticles.srcOriginal" : cms.InputTag('selectedPatTausForElecTauElectronVetoCumulative'),
-                "smearedParticles.srcSmeared"  : cms.InputTag('selectedPatTausForElecTauElectronVetoSysTauJetEnDownCumulative')
-            }, 
-            "sysJetEnUp" : {
-                "smearedParticles.srcOriginal" : cms.InputTag('selectedPatJetsEt20Cumulative'),
-                "smearedParticles.srcSmeared"  : cms.InputTag('selectedPatJetsEt20SysJetEnUpCumulative')
-            },
-            "sysJetEnDown" : {
-                "smearedParticles.srcOriginal" : cms.InputTag('selectedPatJetsEt20Cumulative'),
-                "smearedParticles.srcSmeared"  : cms.InputTag('selectedPatJetsEt20SysJetEnDownCumulative')
-            }
-        }
-    )
-    process.prodSmearedMET = smearedMETconfigurator.configure(process = process)
+	process.selectedPatJetsForMEtTypeIcorrSysJetEnUp = process.patJetsJECshiftUp.clone(
+		src = cms.InputTag('selectedPatJetsForMEtTypeIcorr')
+	)
+	process.selectedPatJetsForMEtTypeIcorrSysJetEnDown = process.patJetsJECshiftDown.clone(
+		src = cms.InputTag('selectedPatJetsForMEtTypeIcorr')
+	)
 
-    setattr(elecTauPairProdConfigurator, "systematics", {
-        "sysElectronEnUp" : {
-            "srcLeg1" : cms.InputTag('selectedPatElectronsForElecTauTrkIPsysElectronEnUpCumulative'),
-            "srcMET"  : cms.InputTag('smearedMETsysElectronEnUp')
-        },
-        "sysElectronEnDown" : {
-            "srcLeg1" : cms.InputTag('selectedPatElectronsForElecTauTrkIPsysElectronEnDownCumulative'),
-            "srcMET"  : cms.InputTag('smearedMETsysElectronEnDown')           
-        },
-        "sysTauJetEnUp" : {
-            "srcLeg2" : cms.InputTag('selectedPatTausForElecTauElectronVetoSysTauJetEnUpCumulative'),
-            "srcMET"  : cms.InputTag('smearedMETsysTauJetEnUp')
-        },
-        "sysTauJetEnDown" : {
-            "srcLeg2" : cms.InputTag('selectedPatTausForElecTauElectronVetoSysTauJetEnDownCumulative'),
-            "srcMET"  : cms.InputTag('smearedMETsysTauJetEnDown')
-        }, 
-        "sysJetEnUp" : {
-            "srcMET"  : cms.InputTag('smearedMETsysJetEnUp')
-        },
-        "sysJetEnDown" : {
-            "srcMET"  : cms.InputTag('smearedMETsysJetEnDown')
-        }
-    })
-    process.produceElecTauPairs = elecTauPairProdConfigurator.configure(process = process)
-    process.produceElecTauPairs._seq = process.prodSmearedMET * process.produceElecTauPairs._seq
+	process.selectedPatJetsForMEtTypeIIcorr = process.selectedPatJetsForMEtTypeIcorr.clone(
+		cut = cms.string('pt < 10.')
+	)
 
-    setattr(elecTauPairProdConfiguratorLooseElectronIsolation, "systematics", {
-        "sysElectronEnUp" : {
-            "srcLeg1" : cms.InputTag('selectedPatElectronsForElecTauTrkIPlooseIsolationSysElectronEnUpCumulative'),
-            "srcMET"  : cms.InputTag('smearedMETsysElectronEnUp')
-        },
-        "sysElectronEnDown" : {
-            "srcLeg1" : cms.InputTag('selectedPatElectronsForElecTauTrkIPlooseIsolationSysElectronEnDownCumulative'),
-            "srcMET"  : cms.InputTag('smearedMETsysElectronEnDown')           
-        },
-        "sysTauJetEnUp" : {
-            "srcLeg2" : cms.InputTag('selectedPatTausForElecTauElectronVetoSysTauJetEnUpCumulative'),
-            "srcMET"  : cms.InputTag('smearedMETsysTauJetEnUp')
-        },
-        "sysTauJetEnDown" : {
-            "srcLeg2" : cms.InputTag('selectedPatTausForElecTauElectronVetoSysTauJetEnDownCumulative'),
-            "srcMET"  : cms.InputTag('smearedMETsysTauJetEnDown')
-        }, 
-        "sysJetEnUp" : {
-            "srcMET"  : cms.InputTag('smearedMETsysJetEnUp')
-        },
-        "sysJetEnDown" : {
-            "srcMET"  : cms.InputTag('smearedMETsysJetEnDown')
-        }
-    })
-    process.produceElecTauPairsLooseElectronIsolation = elecTauPairProdConfiguratorLooseElectronIsolation.configure(process = process)
+	process.selectedPatJetsForMEtTypeIIcorrSysJetEnUp = process.patJetsJECshiftUp.clone(
+		src = cms.InputTag('selectedPatJetsForMEtTypeIIcorr')
+	)
+	process.selectedPatJetsForMEtTypeIIcorrSysJetEnUp.jecUncertaintyValue = cms.double(0.10)
+	process.selectedPatJetsForMEtTypeIIcorrSysJetEnDown = process.patJetsJECshiftDown.clone(
+			src = cms.InputTag('selectedPatJetsForMEtTypeIIcorr')
+		)
+	process.selectedPatJetsForMEtTypeIIcorrSysJetEnDown.jecUncertaintyValue = cms.double(0.10)
 
-    setattr(patElecTauPairSelConfigurator, "systematics", elecTauPairSystematics)
-    process.selectElecTauPairs = patElecTauPairSelConfigurator.configure(process = process)
-    
-    setattr(patElecTauPairSelConfiguratorLooseElectronIsolation, "systematics", elecTauPairSystematics)
-    process.selectElecTauPairsLooseElectronIsolation = patElecTauPairSelConfiguratorLooseElectronIsolation.configure(process = process)
+	process.producePatJetsForMEtCorrUncertainty = cms.Sequence(
+			process.selectedPatJetsForMEtTypeIcorr
+			* process.selectedPatJetsForMEtTypeIcorrSysJetEnUp * process.selectedPatJetsForMEtTypeIcorrSysJetEnDown
+			* process.selectedPatJetsForMEtTypeIIcorr
+			* process.selectedPatJetsForMEtTypeIIcorrSysJetEnUp * process.selectedPatJetsForMEtTypeIIcorrSysJetEnDown
+	)
+	process.produceElecTauPairsAll += process.producePatJetsForMEtCorrUncertainty
 
-    if hasattr(process, "isRecZtoElecTau"):        
-        expSysUncertainties = getSysUncertaintyNames(
-            [ electronSystematics,
-              tauSystematics,
-              jetSystematics ]
-        )
-        addBoolEventSelFlagProducer(process, "isRecZtoElecTau", expSysUncertainties, "selectZtoElecTauEvents")
+	smearMEtUnclustedEnergyResolution = cms.double(0.10)
 
-    if hasattr(process, "analyzeZtoElecTauEvents"):
-        process.analyzeZtoElecTauEvents.estimateSysUncertainties = cms.bool(True)
-    if hasattr(process, "analyzeZtoElecTauEvents_factorizedWithElectronIsolation"):
-        process.analyzeZtoElecTauEvents_factorizedWithElectronIsolation.estimateSysUncertainties = cms.bool(True)
-    if hasattr(process, "analyzeZtoElecTauEvents_factorizedWithoutElectronIsolation"):
-        process.analyzeZtoElecTauEvents_factorizedWithoutElectronIsolation.estimateSysUncertainties = cms.bool(True)    
+
+	process.smearedMET = cms.EDProducer("SmearedMETProducer",
+			src = cms.InputTag('patPFMETs'),
+			smearedParticles = cms.PSet()
+			)
+	smearedMETconfigurator = objProdConfigurator(
+			process.smearedMET,
+			pyModuleName = __name__,
+			systematics = {
+				"sysElectronEnUp" : {        
+					"smearedParticles.electrons.srcOriginal" : cms.InputTag('selectedPatElectronsForElecTauTrkIPcumulative'),
+					"smearedParticles.electrons.srcSmeared"  : cms.InputTag('selectedPatElectronsForElecTauTrkIPsysElectronEnUpCumulative')
+					},
+				"sysElectronEnDown" : {
+					"smearedParticles.electrons.srcOriginal" : cms.InputTag('selectedPatElectronsForElecTauTrkIPcumulative'),
+					"smearedParticles.electrons.srcSmeared"  : cms.InputTag('selectedPatElectronsForElecTauTrkIPsysElectronEnDownCumulative')
+					},
+				"sysTauJetEnUp" : {
+					"smearedParticles.taus.srcOriginal" : cms.InputTag('selectedPatTausForElecTauElectronVetoCumulative'),
+					"smearedParticles.taus.srcSmeared"  : cms.InputTag('selectedPatTausForElecTauElectronVetoSysTauJetEnUpCumulative')
+					},
+				"sysTauJetEnDown" : {
+					"smearedParticles.taus.srcOriginal" : cms.InputTag('selectedPatTausForElecTauElectronVetoCumulative'),
+					"smearedParticles.taus.srcSmeared"  : cms.InputTag('selectedPatTausForElecTauElectronVetoSysTauJetEnDownCumulative')
+					}, 
+				"sysJetEnUp" : {
+					"smearedParticles.jetsTypeI.srcOriginal" : cms.InputTag('selectedPatJetsForMEtTypeIcorr'),
+					"smearedParticles.jetsTypeI.srcSmeared"  : cms.InputTag('selectedPatJetsForMEtTypeIcorrSysJetEnUp'),
+					"smearedParticles.jetsTypeII.srcOriginal" : cms.InputTag('selectedPatJetsForMEtTypeIIcorr'),
+					"smearedParticles.jetsTypeII.srcSmeared"  : cms.InputTag('selectedPatJetsForMEtTypeIIcorrSysJetEnUp'),
+					"smearedParticles.jetsTypeII.smearByResolutionUncertainty" : smearMEtUnclustedEnergyResolution
+					},
+				"sysJetEnDown" : {
+					"smearedParticles.jetsTypeI.srcOriginal" : cms.InputTag('selectedPatJetsForMEtTypeIcorr'),
+					"smearedParticles.jetsTypeI.srcSmeared"  : cms.InputTag('selectedPatJetsForMEtTypeIcorrSysJetEnDown'),
+					"smearedParticles.jetsTypeII.srcOriginal" : cms.InputTag('selectedPatJetsForMEtTypeIIcorr'),
+					"smearedParticles.jetsTypeII.srcSmeared"  : cms.InputTag('selectedPatJetsForMEtTypeIIcorrSysJetEnDown'),
+					"smearedParticles.jetsTypeII.smearByResolutionUncertainty" : smearMEtUnclustedEnergyResolution
+					}
+			}
+	)
+	process.prodSmearedMET = smearedMETconfigurator.configure(process = process)
+	process.produceElecTauPairsAll += process.prodSmearedMET
+
+	setattr(elecTauPairProdConfigurator, "systematics", {
+		"sysElectronEnUp" : {
+			"srcLeg1" : cms.InputTag('selectedPatElectronsForElecTauTrkIPsysElectronEnUpCumulative'),
+			"srcMET"  : cms.InputTag('smearedMETsysElectronEnUp')
+			},
+		"sysElectronEnDown" : {
+			"srcLeg1" : cms.InputTag('selectedPatElectronsForElecTauTrkIPsysElectronEnDownCumulative'),
+			"srcMET"  : cms.InputTag('smearedMETsysElectronEnDown')           
+			},
+		"sysTauJetEnUp" : {
+			"srcLeg2" : cms.InputTag('selectedPatTausForElecTauElectronVetoSysTauJetEnUpCumulative'),
+			"srcMET"  : cms.InputTag('smearedMETsysTauJetEnUp')
+			},
+		"sysTauJetEnDown" : {
+			"srcLeg2" : cms.InputTag('selectedPatTausForElecTauElectronVetoSysTauJetEnDownCumulative'),
+			"srcMET"  : cms.InputTag('smearedMETsysTauJetEnDown')
+			}, 
+		"sysJetEnUp" : {
+			"srcMET"  : cms.InputTag('smearedMETsysJetEnUp')
+			},
+		"sysJetEnDown" : {
+			"srcMET"  : cms.InputTag('smearedMETsysJetEnDown')
+			}
+		})
+	process.produceElecTauPairs = elecTauPairProdConfigurator.configure(process = process)
+	process.produceElecTauPairsAll.replace(process.produceElecTauPairs, process.allElecTauPairs)
+	process.produceElecTauPairsAll += process.produceElecTauPairs
+
+	# apply Z-recoil corrections to shifted/smeared diTau objects
+	if hasattr(process, "allElecTauPairsZllRecoilCorrected"):
+		for sysName, src in elecTauPairSystematics.items():
+
+			if sysName.find("ZllRecoilCorrection") != -1:
+				continue;
+
+			configZllRecoilCorrection = configureZllRecoilCorrection(process, src.getModuleLabel(), "ZllRecoilCorrectionElecTauPair")
+			process.produceElecTauPairsAll += configZllRecoilCorrection['patPFMETsZllRecoilCorrectionSequence']
+			elecTauPairSystematics[sysName] = configZllRecoilCorrection['diTauProducerModuleZllRecoilCorrectedName']
+
+	# add uncertainties on Z-recoil correction
+	configZllRecoilCorrection = configureZllRecoilCorrection(process, "allElecTauPairs",
+			"ZllRecoilCorrectionElecTauPair", +1., "SysUp")
+	process.produceElecTauPairsAll += configZllRecoilCorrection['patPFMETsZllRecoilCorrectionSequence']
+	configZllRecoilCorrection = configureZllRecoilCorrection(process, "allElecTauPairs",
+			"ZllRecoilCorrectionElecTauPair", -1., "SysDown")
+	process.produceElecTauPairsAll += configZllRecoilCorrection['patPFMETsZllRecoilCorrectionSequence']
+
+	process.smearedMETlooseElectronIsolation = process.smearedMET.clone()
+	smearedMETconfiguratorLooseElectronIsolation = objProdConfigurator(
+		process.smearedMETlooseElectronIsolation,
+				pyModuleName = __name__,
+				systematics = {
+					"sysElectronEnUp" : {
+						"smearedParticles.electrons.srcOriginal" : cms.InputTag('selectedPatElectronsForElecTauTrkIPlooseIsolationCumulative'),
+						"smearedParticles.electrons.srcSmeared"  : cms.InputTag('selectedPatElectronsForElecTauTrkIPlooseIsolationSysElectronEnUpCumulative')
+						},
+					"sysElectronEnDown" : {
+						"smearedParticles.electrons.srcOriginal" : cms.InputTag('selectedPatElectronsForElecTauTrkIPlooseIsolationCumulative'),
+						"smearedParticles.electrons.srcSmeared"  : cms.InputTag('selectedPatElectronsForElecTauTrkIPlooseIsolationSysElectronEnDownCumulative')
+						},
+					"sysTauJetEnUp" : {
+						"smearedParticles.taus.srcOriginal" : cms.InputTag('selectedPatTausForElecTauElectronVetoCumulative'),
+						"smearedParticles.taus.srcSmeared"  : cms.InputTag('selectedPatTausForElecTauElectronVetoSysTauJetEnUpCumulative')
+						},
+					"sysTauJetEnDown" : {
+						"smearedParticles.taus.srcOriginal" : cms.InputTag('selectedPatTausForElecTauElectronVetoCumulative'),
+						"smearedParticles.taus.srcSmeared"  : cms.InputTag('selectedPatTausForElecTauElectronVetoSysTauJetEnDownCumulative')
+						},
+					"sysJetEnUp" : {
+						"smearedParticles.jetsTypeI.srcOriginal" : cms.InputTag('selectedPatJetsForMEtTypeIcorr'),
+						"smearedParticles.jetsTypeI.srcSmeared"  : cms.InputTag('selectedPatJetsForMEtTypeIcorrSysJetEnUp'),
+						"smearedParticles.jetsTypeII.srcOriginal" : cms.InputTag('selectedPatJetsForMEtTypeIIcorr'),
+						"smearedParticles.jetsTypeII.srcSmeared"  : cms.InputTag('selectedPatJetsForMEtTypeIIcorrSysJetEnUp'),
+						"smearedParticles.jetsTypeII.smearByResolutionUncertainty" : smearMEtUnclustedEnergyResolution
+						},
+					"sysJetEnDown" : {
+						"smearedParticles.jetsTypeI.srcOriginal" : cms.InputTag('selectedPatJetsForMEtTypeIcorr'),
+						"smearedParticles.jetsTypeI.srcSmeared"  : cms.InputTag('selectedPatJetsForMEtTypeIcorrSysJetEnDown'),
+						"smearedParticles.jetsTypeII.srcOriginal" : cms.InputTag('selectedPatJetsForMEtTypeIIcorr'),
+						"smearedParticles.jetsTypeII.srcSmeared"  : cms.InputTag('selectedPatJetsForMEtTypeIIcorrSysJetEnDown'),
+						"smearedParticles.jetsTypeII.smearByResolutionUncertainty" : smearMEtUnclustedEnergyResolution
+						}
+			}
+	)
+	process.prodSmearedMETlooseElectronIsolation = smearedMETconfiguratorLooseElectronIsolation.configure(process = process)
+	process.produceElecTauPairsAll += process.prodSmearedMETlooseElectronIsolation
+
+
+	setattr(elecTauPairProdConfiguratorLooseElectronIsolation, "systematics", {
+			"sysElectronEnUp" : {
+				"srcLeg1" : cms.InputTag('selectedPatElectronsForElecTauTrkIPlooseIsolationSysElectronEnUpCumulative'),
+				"srcMET"  : cms.InputTag('smearedMETsysElectronEnUp')
+				},
+			"sysElectronEnDown" : {
+				"srcLeg1" : cms.InputTag('selectedPatElectronsForElecTauTrkIPlooseIsolationSysElectronEnDownCumulative'),
+				"srcMET"  : cms.InputTag('smearedMETsysElectronEnDown')           
+				},
+			"sysTauJetEnUp" : {
+				"srcLeg2" : cms.InputTag('selectedPatTausForElecTauElectronVetoSysTauJetEnUpCumulative'),
+				"srcMET"  : cms.InputTag('smearedMETsysTauJetEnUp')
+				},
+			"sysTauJetEnDown" : {
+				"srcLeg2" : cms.InputTag('selectedPatTausForElecTauElectronVetoSysTauJetEnDownCumulative'),
+				"srcMET"  : cms.InputTag('smearedMETsysTauJetEnDown')
+				}, 
+			"sysJetEnUp" : {
+				"srcMET"  : cms.InputTag('smearedMETsysJetEnUp')
+				},
+			"sysJetEnDown" : {
+				"srcMET"  : cms.InputTag('smearedMETsysJetEnDown')
+				}
+			})
+	process.produceElecTauPairsLooseElectronIsolation = elecTauPairProdConfiguratorLooseElectronIsolation.configure(process = process)
+	process.produceElecTauPairsAll.replace(process.produceElecTauPairsLooseElectronIsolation, process.allElecTauPairsLooseElectronIsolation)
+	process.produceElecTauPairsAll += process.produceElecTauPairsLooseElectronIsolation
+
+	# apply Z-recoil corrections to shifted/smeared diTau objects
+	if hasattr(process, "allElecTauPairsLooseElectronIsolationZllRecoilCorrected"):
+		for sysName, src in elecTauPairSystematicsLooseElectronIsolation.items():
+
+			if sysName.find("ZllRecoilCorrection") != -1:
+				continue;
+
+			configZllRecoilCorrection = configureZllRecoilCorrection(process, src.getModuleLabel(), "ZllRecoilCorrectionElecTauPair")
+			process.produceElecTauPairsAll += configZllRecoilCorrection['patPFMETsZllRecoilCorrectionSequence']
+			elecTauPairSystematicsLooseElectronIsolation[sysName] = configZllRecoilCorrection['diTauProducerModuleZllRecoilCorrectedName']
+
+	configZllRecoilCorrection = configureZllRecoilCorrection(process, "allElecTauPairsLooseElectronIsolation",
+			"ZllRecoilCorrectionElecTauPair", +1., "SysUp")
+	process.produceElecTauPairsAll += configZllRecoilCorrection['patPFMETsZllRecoilCorrectionSequence']
+	configZllRecoilCorrection = configureZllRecoilCorrection(process, "allElecTauPairsLooseElectronIsolation",
+			"ZllRecoilCorrectionElecTauPair", -1., "SysDown")
+	process.produceElecTauPairsAll += configZllRecoilCorrection['patPFMETsZllRecoilCorrectionSequence']
+
+	setattr(patElecTauPairSelConfiguratorOS, "systematics", elecTauPairSystematics)
+	if hasattr(process, "allElecTauPairsZllRecoilCorrected"):
+		setattr(patElecTauPairSelConfiguratorOS, "src", "allElecTauPairsZllRecoilCorrected")
+	process.selectElecTauPairsOS = patElecTauPairSelConfiguratorOS.configure(process = process)
+	if hasattr(process, "allElecTauPairsZllRecoilCorrected"):
+		setattr(patElecTauPairSelConfiguratorSS, "src", "allElecTauPairsZllRecoilCorrected")
+	setattr(patElecTauPairSelConfiguratorSS, "systematics", elecTauPairSystematics)
+	process.selectElecTauPairsSS = patElecTauPairSelConfiguratorSS.configure(process = process)
+
+	setattr(patElecTauPairSelConfiguratorLooseElectronIsolationOS, "systematics", elecTauPairSystematicsLooseElectronIsolation)
+	if hasattr(process, "allElecTauPairsLooseElectronIsolationZllRecoilCorrected"):
+		setattr(patElecTauPairSelConfiguratorLooseElectronIsolationOS, "src", "allElecTauPairsLooseElectronIsolationZllRecoilCorrected")
+	process.selectElecTauPairsLooseElectronIsolationOS = patElecTauPairSelConfiguratorLooseElectronIsolationOS.configure(process = process)
+	setattr(patElecTauPairSelConfiguratorLooseElectronIsolationSS, "systematics", elecTauPairSystematicsLooseElectronIsolation)
+	if hasattr(process, "allElecTauPairsLooseElectronIsolationZllRecoilCorrected"):
+		setattr(patElecTauPairSelConfiguratorLooseElectronIsolationSS, "src", "allElecTauPairsLooseElectronIsolationZllRecoilCorrected")
+	process.selectElecTauPairsLooseElectronIsolationSS = patElecTauPairSelConfiguratorLooseElectronIsolationSS.configure(process = process)
+
+
+	if hasattr(process, "isRecZtoElecTau"):        
+		expSysUncertainties = getSysUncertaintyNames(
+					[ electronSystematics,
+						tauSystematics,
+						elecTauPairSystematics,
+						jetSystematics ]
+					)
+		addBoolEventSelFlagProducer(process, "isRecZtoElecTau", expSysUncertainties, "selectZtoElecTauEvents")
+
+	if hasattr(process, "analyzeZtoElecTauEventsOS"):
+		process.analyzeZtoElecTauEventsOS.estimateSysUncertainties = cms.bool(True)
+	if hasattr(process, "analyzeZtoElecTauEventsOS_factorizedWithElectronIsolation"):
+		process.analyzeZtoElecTauEventsOS_factorizedWithElectronIsolation.estimateSysUncertainties = cms.bool(True)
+	if hasattr(process, "analyzeZtoElecTauEventsOS_factorizedWithoutElectronIsolation"):
+		process.analyzeZtoElecTauEventsOS_factorizedWithoutElectronIsolation.estimateSysUncertainties = cms.bool(True)    
+
+	if hasattr(process, "analyzeZtoElecTauEventsSS"):
+		process.analyzeZtoElecTauEventsSS.estimateSysUncertainties = cms.bool(True)
+	if hasattr(process, "analyzeZtoElecTauEventsSS_factorizedWithElectronIsolation"):
+		process.analyzeZtoElecTauEventsSS_factorizedWithElectronIsolation.estimateSysUncertainties = cms.bool(True)
+	if hasattr(process, "analyzeZtoElecTauEventsSS_factorizedWithoutElectronIsolation"):
+		process.analyzeZtoElecTauEventsSS_factorizedWithoutElectronIsolation.estimateSysUncertainties = cms.bool(True)    
 
 #--------------------------------------------------------------------------------
 # functions to enable/disable estimation of systematic uncertainties
@@ -679,8 +848,8 @@ def enableSysUncertainties_runAHtoMuTau(process):
             "sysTauJetEnDown"            : cms.InputTag('selectedMuTauPairsForAHtoMuTauZeroChargeSysTauJetEnDownCumulative'),
             "sysJetEnUp"                 : cms.InputTag('selectedMuTauPairsForAHtoMuTauZeroChargeSysJetEnUpCumulative'),
             "sysJetEnDown"               : cms.InputTag('selectedMuTauPairsForAHtoMuTauZeroChargeSysJetEnDownCumulative'),
-            "sysZllRecoilCorrectionUp"   : cms.InputTag('selectedMuTauPairsForAHtoMuTauZeroChargeSysZllRecoilCorrectionUpCumulative'),
-            "sysZllRecoilCorrectionDown" : cms.InputTag('selectedMuTauPairsForAHtoMuTauZeroChargeSysZllRecoilCorrectionDownCumulative')
+			"sysZllRecoilCorrectionUp"   : cms.InputTag('selectedMuTauPairsForAHtoMuTauZeroChargeSysZllRecoilCorrectionUpCumulative'),
+			"sysZllRecoilCorrectionDown" : cms.InputTag('selectedMuTauPairsForAHtoMuTauZeroChargeSysZllRecoilCorrectionDownCumulative')
         }
         process.sysUncertaintyHistManagerForMuTau_updated = \
           copy.deepcopy(process.sysUncertaintyHistManagerForMuTau)
@@ -750,19 +919,122 @@ def enableSysUncertainties_runAHtoElecTau(process):
 
 	enableSysUncertainties_runZtoElecTau(process)
 
-	# may add these collections later
-	process.producePatTupleAHtoElecTauSpecific._seq = process.prodSmearedElectrons * process.producePatTupleAHtoElecTauSpecific._seq
-	process.producePatTupleAHtoElecTauSpecific._seq = process.prodSmearedTaus * process.producePatTupleAHtoElecTauSpecific._seq
-	process.producePatTupleAHtoElecTauSpecific._seq = process.prodSmearedJets * process.producePatTupleAHtoElecTauSpecific._seq
+	process.produceEventSelFlagsAHtoElecTauOS = \
+			ahToElecTauEventSelConfiguratorOS.configure(process = process, estimateSysUncertainties = True)
+	process.produceEventSelFlagsAHtoElecTauLooseElectronIsolationOS = \
+			ahToElecTauEventSelConfiguratorLooseElectronIsolationOS.configure(process = process, estimateSysUncertainties = True)
+	process.produceEventSelFlagsAHtoElecTauSS = \
+			ahToElecTauEventSelConfiguratorSS.configure(process = process, estimateSysUncertainties = True)
+	process.produceEventSelFlagsAHtoElecTauLooseElectronIsolationSS = \
+			ahToElecTauEventSelConfiguratorLooseElectronIsolationSS.configure(process = process, estimateSysUncertainties = True)
 
-	process.produceEventSelFlagsAHtoElecTau = \
-			ahToElecTauEventSelConfigurator.configure(process = process, estimateSysUncertainties = True)
-	process.produceEventSelFlagsAHtoElecTauLooseElectronIsolation = \
-			ahToElecTauEventSelConfiguratorLooseElectronIsolation.configure(process = process, estimateSysUncertainties = True)
+	setattr(patElecTauPairSelConfiguratorForAHtoElecTauOS, "systematics", elecTauPairSystematics)
+	if hasattr(process, "allElecTauPairsZllRecoilCorrected"):
+		setattr(patElecTauPairSelConfiguratorForAHtoElecTauOS, "src", "allElecTauPairsZllRecoilCorrected")
+	process.selectElecTauPairsForAHtoElecTauOS = patElecTauPairSelConfiguratorForAHtoElecTauOS.configure(process = process)
+	setattr(patElecTauPairSelConfiguratorForAHtoElecTauSS, "systematics", elecTauPairSystematics)
+	process.selectElecTauPairsForAHtoElecTauSS = patElecTauPairSelConfiguratorForAHtoElecTauSS.configure(process = process)
 
-	if hasattr(process, "analyzeAHtoElecTauEvents"):
-		process.analyzeAHtoElecTauEvents.estimateSysUncertainties = cms.bool(True)
-	if hasattr(process, "analyzeAHtoElecTauEvents_factorizedWithElectronIsolation"):
-		process.analyzeAHtoElecTauEvents_factorizedWithElectronIsolation.estimateSysUncertainties = cms.bool(True)
-	if hasattr(process, "analyzeAHtoElecTauEvents_factorizedWithoutElectronIsolation"):
-		process.analyzeAHtoElecTauEvents_factorizedWithoutElectronIsolation.estimateSysUncertainties = cms.bool(True)    
+	setattr(patElecTauPairSelConfiguratorForAHtoElecTauLooseElectronIsolationOS, "systematics", elecTauPairSystematicsLooseElectronIsolation)
+	if hasattr(process, "allElecTauPairsLooseElectronIsolationZllRecoilCorrected"):
+		setattr(patElecTauPairSelConfiguratorForAHtoElecTauLooseElectronIsolationOS, "src", "allElecTauPairsLooseElectronIsolationZllRecoilCorrected")
+	process.selectElecTauPairsForAHtoElecTauLooseElectronIsolationOS = \
+			patElecTauPairSelConfiguratorForAHtoElecTauLooseElectronIsolationOS.configure(process = process)
+	setattr(patElecTauPairSelConfiguratorForAHtoElecTauLooseElectronIsolationSS, "systematics", elecTauPairSystematicsLooseElectronIsolation)
+	process.selectElecTauPairsForAHtoElecTauLooseElectronIsolationSS = \
+			patElecTauPairSelConfiguratorForAHtoElecTauLooseElectronIsolationSS.configure(process = process)
+
+	setattr(patJetSelConfiguratorForAHtoElecTau, "systematics", jetSystematics)
+	process.selectPatJetsForAHtoElecTau = patJetSelConfiguratorForAHtoElecTau.configure(process = process)
+
+	setattr(patJetSelConfiguratorForAHtoElecTauLooseElectronIsolation, "systematics", jetSystematics)
+	process.selectPatJetsForAHtoElecTauLooseElectronIsolation = \
+			patJetSelConfiguratorForAHtoElecTauLooseElectronIsolation.configure(process = process)
+
+	expSysUncertainties = getSysUncertaintyNames(
+				[ electronSystematics,
+					tauSystematics,
+					elecTauPairSystematics,
+					jetSystematics ]
+	)
+	if hasattr(process, "isRecAHtoElecTauCentralJetVeto"):
+		addBoolEventSelFlagProducer(process, "isRecAHtoElecTauCentralJetVeto", expSysUncertainties, "selectAHtoElecTauEvents")
+	if hasattr(process, "isRecAHtoElecTauCentralJetBtag"):
+		addBoolEventSelFlagProducer(process, "isRecAHtoElecTauCentralJetBtag", expSysUncertainties, "selectAHtoElecTauEvents")
+
+	for sign in ['OS', 'SS']:
+		for btag in ['_woBtag', '_wBtag']:
+			for suffix in ['', '_factorizedWithElectronIsolation', '_factorizedWithoutElectronIsolation']:
+				name = 'analyzeAHtoElecTauEvents' + sign + btag + suffix
+				if hasattr(process, name):
+					getattr(process, name).estimateSysUncertainties = cms.bool(True)
+
+	# update InputTags of systematic uncertainty histogram managers
+	if hasattr(process, "sysUncertaintyHistManagerForElecTau"):
+		sysUncertaintyHistManagerElecTauPairSystematics = {
+					"sysElectronEnUp"                : cms.InputTag('selectedElecTauPairsForAHtoElecTauZeroChargeSysElectronEnUpCumulative'),
+					"sysElectronEnDown"              : cms.InputTag('selectedElecTauPairsForAHtoElecTauZeroChargeSysElectronEnDownCumulative'),
+					"sysTauJetEnUp"              : cms.InputTag('selectedElecTauPairsForAHtoElecTauZeroChargeSysTauJetEnUpCumulative'),
+					"sysTauJetEnDown"            : cms.InputTag('selectedElecTauPairsForAHtoElecTauZeroChargeSysTauJetEnDownCumulative'),
+					"sysJetEnUp"                 : cms.InputTag('selectedElecTauPairsForAHtoElecTauZeroChargeSysJetEnUpCumulative'),
+					"sysJetEnDown"               : cms.InputTag('selectedElecTauPairsForAHtoElecTauZeroChargeSysJetEnDownCumulative')
+					#"sysZllRecoilCorrectionUp"   : cms.InputTag('selectedElecTauPairsForAHtoElecTauZeroChargeSysZllRecoilCorrectionUpCumulative'),
+					#"sysZllRecoilCorrectionDown" : cms.InputTag('selectedElecTauPairsForAHtoElecTauZeroChargeSysZllRecoilCorrectionDownCumulative')
+					}
+		process.sysUncertaintyHistManagerForElecTau_updated = \
+			copy.deepcopy(process.sysUncertaintyHistManagerForElecTau)
+		process.sysUncertaintyHistManagerForElecTau_updated.histManagers[0].config.diTauCandidateSource = \
+			cms.InputTag('selectedElecTauPairsForAHtoElecTauZeroChargeCumulative')
+		process.sysUncertaintyHistManagerForElecTau_updated.histManagers[0].systematics.diTauCandidateSource = \
+				getSysUncertaintyParameterSets([ sysUncertaintyHistManagerElecTauPairSystematics ])
+		process.sysUncertaintyHistManagerForElecTau_updated.histManagers[1].config.diTauCandidateSource = \
+				cms.InputTag('selectedElecTauPairsForAHtoElecTauZeroChargeCumulative')
+		process.sysUncertaintyHistManagerForElecTau_updated.histManagers[1].systematics.diTauCandidateSource = \
+				process.sysUncertaintyHistManagerForElecTau_updated.histManagers[0].systematics.diTauCandidateSource
+
+		for genAnalyzerModuleName in [ "analyzeAHtoElecTauEventsOS_woBtag",
+				"analyzeAHtoElecTauEventsOS_wBtag",
+				"analyzeAHtoElecTauEventsOS_woBtag_factorizedWithElectronIsolation",
+				"analyzeAHtoElecTauEventsOS_wBtag_factorizedWithElectronIsolation",
+				"analyzeAHtoElecTauEventsSS_woBtag_factorizedWithElectronIsolation",
+				"analyzeAHtoElecTauEventsSS_wBtag_factorizedWithElectronIsolation" ]:
+			if hasattr(process, genAnalyzerModuleName):
+				print("--> replacing %s in %s" % ("sysUncertaintyHistManagerForElecTau", genAnalyzerModuleName))
+				genAnalyzerMode = getattr(process, genAnalyzerModuleName)
+				replaceSysAnalyzerModules(genAnalyzerMode,
+						[ [ process.sysUncertaintyHistManagerForElecTau, process.sysUncertaintyHistManagerForElecTau_updated ] ]
+				)
+
+	if hasattr(process, "sysUncertaintyHistManagerForElecTauLooseElectronIsolation"):
+		sysUncertaintyHistManagerElecTauPairSystematicsLooseElectronIsolation = {
+				"sysElectronEnUp"                : cms.InputTag('selectedElecTauPairsForAHtoElecTauZeroChargeLooseElectronIsolationSysElectronEnUpCumulative'),
+				"sysElectronEnDown"              : cms.InputTag('selectedElecTauPairsForAHtoElecTauZeroChargeLooseElectronIsolationSysElectronEnDownCumulative'),
+				"sysTauJetEnUp"              : cms.InputTag('selectedElecTauPairsForAHtoElecTauZeroChargeLooseElectronIsolationSysTauJetEnUpCumulative'),
+				"sysTauJetEnDown"            : cms.InputTag('selectedElecTauPairsForAHtoElecTauZeroChargeLooseElectronIsolationSysTauJetEnDownCumulative'),
+				"sysJetEnUp"                 : cms.InputTag('selectedElecTauPairsForAHtoElecTauZeroChargeLooseElectronIsolationSysJetEnUpCumulative'),
+				"sysJetEnDown"               : cms.InputTag('selectedElecTauPairsForAHtoElecTauZeroChargeLooseElectronIsolationSysJetEnDownCumulative')
+				#"sysZllRecoilCorrectionUp"   : cms.InputTag('selectedElecTauPairsForAHtoElecTauZeroChargeLooseElectronIsolationSysZllRecoilCorrectionUpCumulative'),
+				#"sysZllRecoilCorrectionDown" : cms.InputTag('selectedElecTauPairsForAHtoElecTauZeroChargeLooseElectronIsolationSysZllRecoilCorrectionDownCumulative')
+		}
+		process.sysUncertaintyHistManagerForElecTauLooseElectronIsolation_updated = \
+				copy.deepcopy(process.sysUncertaintyHistManagerForElecTauLooseElectronIsolation)
+		process.sysUncertaintyHistManagerForElecTauLooseElectronIsolation_updated.histManagers[0].config.diTauCandidateSource = \
+				cms.InputTag('selectedElecTauPairsForAHtoElecTauZeroChargeLooseElectronIsolationCumulative')
+		process.sysUncertaintyHistManagerForElecTauLooseElectronIsolation_updated.histManagers[0].systematics.diTauCandidateSource = \
+				getSysUncertaintyParameterSets([ sysUncertaintyHistManagerElecTauPairSystematicsLooseElectronIsolation ])
+		process.sysUncertaintyHistManagerForElecTauLooseElectronIsolation_updated.histManagers[1].config.diTauCandidateSource = \
+				cms.InputTag('selectedElecTauPairsForAHtoElecTauZeroChargeLooseElectronIsolationCumulative')
+		process.sysUncertaintyHistManagerForElecTauLooseElectronIsolation_updated.histManagers[1].systematics.diTauCandidateSource = \
+				process.sysUncertaintyHistManagerForElecTauLooseElectronIsolation_updated.histManagers[0].systematics.diTauCandidateSource
+
+		for genAnalyzerModuleName in [ "analyzeAHtoElecTauEventsOS_woBtag_factorizedWithoutElectronIsolation",
+						"analyzeAHtoElecTauEventsOS_wBtag_factorizedWithoutElectronIsolation",
+						"analyzeAHtoElecTauEventsSS_woBtag_factorizedWithoutElectronIsolation",
+						"analyzeAHtoElecTauEventsSS_wBtag_factorizedWithoutElectronIsolation" ]:
+			if hasattr(process, genAnalyzerModuleName):
+				print("--> replacing %s in %s" % ("sysUncertaintyHistManagerForElecTauLooseElectronIsolation", genAnalyzerModuleName))
+				genAnalyzerMode = getattr(process, genAnalyzerModuleName)
+				replaceSysAnalyzerModules(genAnalyzerMode,
+						[ [ process.sysUncertaintyHistManagerForElecTauLooseElectronIsolation, process.sysUncertaintyHistManagerForElecTauLooseElectronIsolation_updated ] ]
+				)
+
