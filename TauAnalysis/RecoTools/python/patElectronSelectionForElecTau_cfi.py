@@ -23,19 +23,10 @@ selectedPatElectronsForElecTauId = copy.deepcopy(selectedPatElectronsLooseId)
 selectedPatElectronsForElecTauAntiCrackCut = copy.deepcopy(selectedPatElectronsAntiCrackCut)
 
 # require electron candidate to be within geometric acceptance of electron trigger
-selectedPatElectronsForElecTauEta21 = copy.deepcopy(selectedPatElectronsEta21)
+selectedPatElectronsForElecTauEta = copy.deepcopy(selectedPatElectronsEta21)
 
 # require electron candidate to have transverse momentum above threshold
-selectedPatElectronsForElecTauPt15 = copy.deepcopy(selectedPatElectronsPt15)
-
-# require electron candidate to be isolated
-# with respect to tracks (of Pt >~ 0.3 GeV)
-#selectedPatElectronsForElecTauTrkIso = copy.deepcopy(selectedPatElectronsTrkIso)
-
-# require electron candidate to be isolated
-# with respect to energy deposits in ECAL
-# (not associated to electron candidate)
-#selectedPatElectronsForElecTauEcalIso = copy.deepcopy(selectedPatElectronsEcalIso)
+selectedPatElectronsForElecTauPt = copy.deepcopy(selectedPatElectronsPt15)
 
 # require electron candidate to be isolated
 # with respect to particle-flow candidates
@@ -52,12 +43,6 @@ selectedPatElectronsForElecTauTrkIP = copy.deepcopy(selectedPatElectronsTrkIP)
 #
 # make collections with loose electron isolation
 #
-#selectedPatElectronsForElecTauTrkIsoLooseIsolation = copy.deepcopy(selectedPatElectronsForElecTauTrkIso)
-#selectedPatElectronsForElecTauTrkIsoLooseIsolation.cut = cms.string('trackIso < 8.')
-
-#selectedPatElectronsForElecTauEcalIsoLooseIsolation = copy.deepcopy(selectedPatElectronsForElecTauEcalIso)
-#selectedPatElectronsForElecTauEcalIsoLooseIsolation.cut = cms.string('ecalIso < 8.')
-
 selectedPatElectronsForElecTauIsoLooseIsolation = selectedPatElectronsForElecTauIso.clone(
 	sumPtMax = cms.double(0.30)
 )
