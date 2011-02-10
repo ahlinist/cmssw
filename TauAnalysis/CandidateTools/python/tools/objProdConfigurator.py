@@ -3,6 +3,7 @@ import sys
 
 from TauAnalysis.CandidateTools.tools.getInstanceName import getInstanceName
 from TauAnalysis.CandidateTools.tools.composeModuleName import composeModuleName
+from TauAnalysis.CandidateTools.tools.recursiveSetAttr import recursiveSetAttr
 
 #--------------------------------------------------------------------------------
 # utility function for generation of a set of modules
@@ -20,22 +21,6 @@ class objProdConfigurator(cms._ParameterTypeBase):
         self.objProd = objProd
         self.systematics = systematics
         self.pyModuleName = pyModuleName,
-
-    @staticmethod   
-    def _recursiveSetAttr(obj, attrName, attrValue):
-        if isinstance(attrName, cms._ParameterTypeBase):
-            attrName = attrName.value()
-        if attrName.find(".") != -1:
-            objAttrName = attrName[:attrName.find(".")]
-            attrName_new = attrName[attrName.find(".") + 1:]
-            if hasattr(obj, objAttrName):
-                obj_new = getattr(obj, objAttrName)
-            else:
-                obj_new = cms.PSet()
-                setattr(obj, objAttrName, obj_new)
-            objProdConfigurator._recursiveSetAttr(obj_new, attrName_new, attrValue)
-        else:
-            setattr(obj, attrName, attrValue)
 
     def _addModule(self, objProdItem, sysName, sysAttributes, pyNameSpace = None, process = None):
         # create module
@@ -58,7 +43,7 @@ class objProdConfigurator(cms._ParameterTypeBase):
         # set names of source collections
         # to objects shifted in energy/transverse momentum, theta, phi...
         for sysAttrName, sysAttrValue in sysAttributes.items():
-            self._recursiveSetAttr(module, sysAttrName, sysAttrValue)
+            recursiveSetAttr(module, sysAttrName, sysAttrValue)
                 
         moduleName = composeModuleName([ getInstanceName(objProdItem, pyNameSpace, process), sysName ])
         module.setLabel(moduleName)
