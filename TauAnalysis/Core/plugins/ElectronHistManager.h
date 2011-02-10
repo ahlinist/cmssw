@@ -50,6 +50,9 @@ class ElectronHistManager : public HistManagerBase
   vint skipPdgIdsGenParticleMatch_;
 
   PATElectronPFIsolationExtractor* pfCombIsoExtractor_;
+  PATElectronPFIsolationExtractor* pfChargedHadronIsoExtractor_;
+  PATElectronPFIsolationExtractor* pfNeutralHadronIsoExtractor_;
+  PATElectronPFIsolationExtractor* pfPhotonIsoExtractor_;
 
   bool makeIsoPtCtrlHistograms_;
   bool makeIsoPtConeSizeDepHistograms_;
