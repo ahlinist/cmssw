@@ -74,8 +74,20 @@ ElectronHistManager::ElectronHistManager(const edm::ParameterSet& cfg)
   skipPdgIdsGenParticleMatch_ = cfg.getParameter<vint>("skipPdgIdsGenParticleMatch");
  
   if ( cfg.exists("pfCombIsoExtractor") ) {
-	edm::ParameterSet cfgPFCompIsoExtractor = cfg.getParameter<edm::ParameterSet>("pfCombIsoExtractor");
-	pfCombIsoExtractor_ = new PATElectronPFIsolationExtractor(cfgPFCompIsoExtractor);
+	edm::ParameterSet cfgPFCombIsoExtractor = cfg.getParameter<edm::ParameterSet>("pfCombIsoExtractor");
+	pfCombIsoExtractor_ = new PATElectronPFIsolationExtractor(cfgPFCombIsoExtractor);
+  }
+  if ( cfg.exists("pfChargedHadronIsoExtractor") ) {
+	edm::ParameterSet cfgPFChargedHadronIsoExtractor = cfg.getParameter<edm::ParameterSet>("pfChargedHadronIsoExtractor");
+	pfChargedHadronIsoExtractor_ = new PATElectronPFIsolationExtractor(cfgPFChargedHadronIsoExtractor);
+  }
+  if ( cfg.exists("pfNeutralHadronIsoExtractor") ) {
+	edm::ParameterSet cfgPFNeutralHadronIsoExtractor = cfg.getParameter<edm::ParameterSet>("pfNeutralHadronIsoExtractor");
+	pfNeutralHadronIsoExtractor_ = new PATElectronPFIsolationExtractor(cfgPFNeutralHadronIsoExtractor);
+  }
+  if ( cfg.exists("pfPhotonIsoExtractor") ) {
+	edm::ParameterSet cfgPFPhotonIsoExtractor = cfg.getParameter<edm::ParameterSet>("pfPhotonIsoExtractor");
+	pfPhotonIsoExtractor_ = new PATElectronPFIsolationExtractor(cfgPFPhotonIsoExtractor);
   }
 
   std::string normalization_string = cfg.getParameter<std::string>("normalization");
@@ -189,13 +201,13 @@ void ElectronHistManager::bookHistogramsImp()
   hElectronDeltaRnearestJet_ = book1D("ElectronDeltaRnearestJet", "#DeltaR(nearest Jet)", 102, -0.1, 10.1);
   
   hElectronParticleFlowIsoPt_ = book1D("ElectronParticleFlowIsoPt", "Electron Particle Flow Isolation P_{T}", 100, 0., 10.);    
-  hElectronParticleFlowIsoPtRel_ = book1D("ElectronParticleFlowIsoPtRel", "Relative Electron Particle Flow Isolation P_{T}", 100, 0., 10.);    
+  hElectronParticleFlowIsoPtRel_ = book1D("ElectronParticleFlowIsoPtRel", "Relative Electron Particle Flow Isolation P_{T}", 100, 0., 1.);    
   hElectronPFChargedHadronIsoPt_ = book1D("ElectronPFChargedHadronIsoPt", "Electron Particle Flow (Charged Hadrons) Isolation P_{T}", 100, 0., 10.);   
-  hElectronPFChargedHadronIsoPtRel_ = book1D("ElectronPFChargedHadronIsoPtRel", "Relative Electron Particle Flow (Charged Hadrons) Isolation P_{T}", 100, 0., 10.);   
+  hElectronPFChargedHadronIsoPtRel_ = book1D("ElectronPFChargedHadronIsoPtRel", "Relative Electron Particle Flow (Charged Hadrons) Isolation P_{T}", 100, 0., 1.);   
   hElectronPFNeutralHadronIsoPt_ = book1D("ElectronPFNeutralHadronIsoPt", "Electron Particle Flow (Neutral Hadrons) Isolation P_{T}", 100, 0., 10.);   
-  hElectronPFNeutralHadronIsoPtRel_ = book1D("ElectronPFNeutralHadronIsoPtRel", "Relative Electron Particle Flow (Neutral Hadrons) Isolation P_{T}", 100, 0., 10.);   
+  hElectronPFNeutralHadronIsoPtRel_ = book1D("ElectronPFNeutralHadronIsoPtRel", "Relative Electron Particle Flow (Neutral Hadrons) Isolation P_{T}", 100, 0., 1.);   
   hElectronPFGammaIsoPt_ = book1D("ElectronPFGammaIsoPt", "Electron Particle Flow (Photons) Isolation P_{T}", 100, 0., 10.);  
-  hElectronPFGammaIsoPtRel_ = book1D("ElectronPFGammaIsoPtRel", "Relative Electron Particle Flow (Photons) Isolation P_{T}", 100, 0., 10.);  
+  hElectronPFGammaIsoPtRel_ = book1D("ElectronPFGammaIsoPtRel", "Relative Electron Particle Flow (Photons) Isolation P_{T}", 100, 0., 1.);  
  
   hElectronPFCombIsoPt_ = book1D("ElectronPFCombIsoPt", "ElectronPFCombIsoPt", 101, -0.05, 10.05);
   hElectronPFCombIsoPtBarrel_ = book1D("ElectronPFCombIsoPtBarrel", "ElectronPFCombIsoPtBarrel", 101, -0.05, 10.05);
@@ -464,14 +476,15 @@ void ElectronHistManager::fillElectronIsoHistograms(const pat::Electron& patElec
   hElectronIsoSumPt_->Fill(electronTrackIso + electronEcalIso + electronHcalIso, weight);
   hElectronIsoSumPtVsElectronPt_->Fill(patElectron.pt(), electronTrackIso + electronEcalIso, weight);
   hElectronIsoSumPtRel_->Fill((electronTrackIso + electronEcalIso + electronHcalIso)/patElectron.pt(), weight);
-  //hElectronIsoSumPt_->Fill(electronTrackIso + electronEcalIso, weight);
-  //hElectronIsoSumPtRel_->Fill((electronTrackIso + electronEcalIso)/patElectron.pt(), weight);
   
   //std::cout << " particleIso = " << patElectron.particleIso() << std::endl;
   //std::cout << " chargedHadronIso = " << patElectron.chargedHadronIso() << std::endl;
   //std::cout << " neutralHadronIso = " << patElectron.neutralHadronIso() << std::endl;
   //std::cout << " photonIso = " << patElectron.photonIso() << std::endl;
-  
+ 
+  //
+  // PF iso sumas are not currently embedded
+  //
   hElectronParticleFlowIsoPt_->Fill(patElectron.particleIso(), weight);
   hElectronParticleFlowIsoPtRel_->Fill(patElectron.particleIso()/patElectron.pt(), weight);
   hElectronPFChargedHadronIsoPt_->Fill(patElectron.chargedHadronIso(), weight);
@@ -481,6 +494,21 @@ void ElectronHistManager::fillElectronIsoHistograms(const pat::Electron& patElec
   hElectronPFGammaIsoPt_->Fill(patElectron.photonIso(), weight);
   hElectronPFGammaIsoPtRel_->Fill(patElectron.photonIso()/patElectron.pt(), weight);
  
+  if ( pfChargedHadronIsoExtractor_ ) {
+	  double pfChargedHadronIso = (*pfChargedHadronIsoExtractor_)(patElectron, pfCandidates);
+	  hElectronPFChargedHadronIsoPt_->Fill(pfChargedHadronIso, weight);
+	  hElectronPFChargedHadronIsoPtRel_->Fill(pfChargedHadronIso/patElectron.pt(), weight);
+  }
+  if ( pfNeutralHadronIsoExtractor_ ) {
+	  double pfNeutralHadronIso = (*pfNeutralHadronIsoExtractor_)(patElectron, pfCandidates);
+	  hElectronPFNeutralHadronIsoPt_->Fill(pfNeutralHadronIso, weight);
+	  hElectronPFNeutralHadronIsoPtRel_->Fill(pfNeutralHadronIso/patElectron.pt(), weight);
+  }
+  if ( pfPhotonIsoExtractor_ ) {
+	  double pfPhotonIso = (*pfPhotonIsoExtractor_)(patElectron, pfCandidates);
+	  hElectronPFGammaIsoPt_->Fill(pfPhotonIso, weight);
+	  hElectronPFGammaIsoPtRel_->Fill(pfPhotonIso/patElectron.pt(), weight);
+  }
   if ( pfCombIsoExtractor_ ) {
 	  double pfCombIso = (*pfCombIsoExtractor_)(patElectron, pfCandidates);
 	  hElectronPFCombIsoPt_->Fill(pfCombIso, weight);
