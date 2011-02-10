@@ -1,5 +1,4 @@
 import FWCore.ParameterSet.Config as cms
-import sys
 
 #--------------------------------------------------------------------------------
 # utility function to compose module name by concatenating two strings;
