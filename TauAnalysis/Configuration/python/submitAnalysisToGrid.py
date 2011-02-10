@@ -106,7 +106,7 @@ def submitAnalysisToGrid(configFile = None, channel = None, samples = None,
         jobCustomizations.append("    process.hltMu.selector.src = cms.InputTag('TriggerResults::%s')" % HLTprocessName)
         jobCustomizations.append("process.patTrigger.processName = '%s'" % HLTprocessName)
         jobCustomizations.append("process.patTriggerEvent.processName = '%s'" % HLTprocessName)
-        jobCustomizations.append("if hasattr(process, 'prePatProductionSequence'):")
+        jobCustomizations.append("if hasattr(process, 'prePatProductionSequence') and hasattr(process, 'prePatProductionSequenceGen'):")
         jobCustomizations.append("    process.prePatProductionSequence.remove(process.prePatProductionSequenceGen)")
         if sample_info['type'] == 'Data':
             jobCustomizations.append("if hasattr(process, 'ntupleProducer'):")
