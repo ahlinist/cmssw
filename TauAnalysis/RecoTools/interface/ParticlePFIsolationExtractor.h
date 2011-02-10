@@ -8,9 +8,9 @@
  * 
  * \author Christian Veelken, UC Davis
  *
- * \version $Revision: 1.2 $
+ * \version $Revision: 1.1 $
  *
- * $Id: ParticlePFIsolationExtractor.h,v 1.2 2010/11/01 16:06:14 veelken Exp $
+ * $Id: ParticlePFIsolationExtractor.h,v 1.1 2010/11/16 09:20:01 veelken Exp $
  *
  */
 
@@ -53,8 +53,12 @@ class ParticlePFIsolationExtractor
 
   double operator()(const T& lepton, const reco::PFCandidateCollection& pfCandidates)
   {
+    //std::cout << "<ParticlePFIsolationExtractor::operator()>:" << std::endl;
+    //std::cout << "--> checking PFChargedHadron isolation..." << std::endl;
     double sumPt = pfChargedHadronIso_->compSumPt(pfCandidates, lepton.p4());
+    //std::cout << "--> checking PFNeutralHadron isolation..." << std::endl;
     sumPt += pfNeutralHadronIso_->compSumPt(pfCandidates, lepton.p4());
+    //std::cout << "--> checking PFGamma isolation..." << std::endl;
     sumPt += pfPhotonIso_->compSumPt(pfCandidates, lepton.p4());
     return sumPt;
   }
@@ -90,6 +94,10 @@ class ParticlePFIsolationExtractor
 
       if ( TMath::Abs(pfCandidate.eta() - isoParticleCandidateP4.eta()) < dEtaVeto_ ) return false;
       if ( TMath::Abs(pfCandidate.phi() - isoParticleCandidateP4.phi()) < dPhiVeto_ ) return false;
+
+      //std::cout << "<ParticlePFIsolationExtractor::passesVeto>:" << std::endl;
+      //std::cout << " veto passed: Pt = " << pfCandidate.pt() << "," 
+      //	  << " eta = " << pfCandidate.eta() << ", phi = " << pfCandidate.phi() << ", dR = " << dR << std::endl;
 
       return true;
     }
