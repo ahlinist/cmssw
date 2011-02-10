@@ -44,6 +44,8 @@ SAMPLES_TO_PLOT = [
 SAMPLES_TO_PRINT = copy.copy(SAMPLES_TO_PLOT)
 SAMPLES_TO_PRINT.append('smBgSum')
 SAMPLES_TO_PRINT.append('smSum')
+SAMPLES_TO_PRINT.append('DYtautauM10to20PU156bx_pythiaZ2')
+SAMPLES_TO_PRINT.append('ZtautauPU156bx_pythiaZ2')
 
 SAMPLE_DEFAULTS = {
     'dbs_url' : "http://cmsdbsprod.cern.ch/cms_dbs_ph_analysis_02/servlet/DBSServlet",
@@ -159,6 +161,7 @@ RECO_SAMPLES = {
     },
     'ZtautauPU156bx_pythiaZ2' : {
         'datasetpath' : "/DYToTauTau_M-20_TuneZ2_7TeV-pythia6-tauola/Fall10-E7TeV_ProbDist_2010Data_BX156_START38_V12-v3/GEN-SIM-RECO",
+        'dbs_url' :  "http://cmsdbsprod.cern.ch/cms_dbs_prod_global/servlet/DBSServlet",
         'events_processed' : 2098750,
         'skim_eff' : 1.0,
         'x_sec' : 1666*_picobarns,
@@ -173,8 +176,9 @@ RECO_SAMPLES = {
         'hlt' : cms.InputTag("TriggerResults", "", "REDIGI38XPU")
     },
     'Ztautau_powheg' : {
-        'datasetpath' : "/DYToTauTau_M-20_TuneZ2_7TeV-pythia6-tauola/Fall10-E7TeV_ProbDist_2010Data_BX156_START38_V12-v3/GEN-SIM-RECO",
-        'events_processed' : 2098750,
+        'datasetpath' : "/DYToTauTau_M-20_CT10_TuneZ2_7TeV-powheg-pythia-tauola/Fall10-E7TeV_ProbDist_2010Data_BX156_START38_V12-v3/GEN-SIM-RECO",
+        'dbs_url' :  "http://cmsdbsprod.cern.ch/cms_dbs_prod_global/servlet/DBSServlet",
+        'events_processed' : 1995369,
         'skim_eff' : 1.0,
         'x_sec' : 1666*_picobarns,
         'legendEntry' : plotter.process_Ztautau.config_dqmHistPlotter.legendEntry.value(),
@@ -573,7 +577,7 @@ RECO_SAMPLES = {
         'dbs_url' :  "http://cmsdbsprod.cern.ch/cms_dbs_prod_global/servlet/DBSServlet",
         'events_processed' : 2061760,
         'skim_eff' : 1.0,
-        'x_sec' : 27.8*_picobarns,
+        'x_sec' : 43.0*_picobarns, # NLO cross-section from https://twiki.cern.ch/twiki/bin/viewauth/CMS/StandardModelCrossSections
         'legendEntry' : plotter.process_VV.config_dqmHistPlotter.legendEntry.value(),
         'type' : plotter.process_VV.config_dqmHistPlotter.type.value(),
         'drawOption' : styles.drawOption_VV,
@@ -588,7 +592,7 @@ RECO_SAMPLES = {
         'dbs_url' :  "http://cmsdbsprod.cern.ch/cms_dbs_prod_global/servlet/DBSServlet",
         'events_processed' : 2194752,
         'skim_eff' : 1.0,
-        'x_sec' : 10.4*_picobarns,
+        'x_sec' : 18.2*_picobarns, # NLO cross-section from https://twiki.cern.ch/twiki/bin/viewauth/CMS/StandardModelCrossSections
         'legendEntry' : plotter.process_VV.config_dqmHistPlotter.legendEntry.value(),
         'type' : plotter.process_VV.config_dqmHistPlotter.type.value(),
         'drawOption' : styles.drawOption_VV,
@@ -603,7 +607,7 @@ RECO_SAMPLES = {
         'dbs_url' :  "http://cmsdbsprod.cern.ch/cms_dbs_prod_global/servlet/DBSServlet",
         'events_processed' : 2113368,
         'skim_eff' : 1.0,
-        'x_sec' : 4.3*_picobarns,
+        'x_sec' : 5.9*_picobarns, # NLO cross-section from https://twiki.cern.ch/twiki/bin/viewauth/CMS/StandardModelCrossSections
         'legendEntry' : plotter.process_VV.config_dqmHistPlotter.legendEntry.value(),
         'type' : plotter.process_VV.config_dqmHistPlotter.type.value(),
         'drawOption' : styles.drawOption_VV,
@@ -660,8 +664,8 @@ MERGE_SAMPLES = {
         'samples' : [
             ##'Ztautau',
             ##'qqZll',
-            'bbZll',
-            'ccZll',
+            ##'bbZll',
+            ##'ccZll',
             'ZtautauPU156bx'
             ##'qqZllPU156bx',
             ##'Ztautau_powheg'
