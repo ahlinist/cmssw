@@ -10,8 +10,10 @@ from TauAnalysis.RecoTools.patLeptonPFIsolationSelector_cfi import patElectronPF
 selectedPfCandidatesIpCut = cms.EDFilter("PfCandidateIpSelector",
 	vertexSrc = cms.InputTag("selectedPrimaryVertexHighestPtTrackSum"),
 	src = cms.InputTag("pfNoPileUp"),
-	rhoMax = cms.double(0.1)
+	rhoMax = cms.double(10)
 )
+
+selectPfCandidatesIpCut = cms.Sequence( selectedPfCandidatesIpCut )
 
 #--------------------------------------------------------------------------------
 # produce combinations of electron + electron pairs,
@@ -25,14 +27,14 @@ selectedPatElectronsForZeeHypothesesElectronTrack = cms.EDFilter("PATElectronSel
     filter = cms.bool(False)
 )
 
-selectedPatElectronsForZeeHypothesesEta21 = cms.EDFilter("PATElectronSelector",
+selectedPatElectronsForZeeHypothesesEta = cms.EDFilter("PATElectronSelector",
     src = cms.InputTag("selectedPatElectronsForZeeHypothesesElectronTrack"),
     cut = cms.string('abs(eta) < 2.1'),
     filter = cms.bool(False)
 )
 
-selectedPatElectronsForZeeHypothesesPt15 = cms.EDFilter("PATElectronSelector",
-    src = cms.InputTag("selectedPatElectronsForZeeHypothesesEta21"),
+selectedPatElectronsForZeeHypothesesPt = cms.EDFilter("PATElectronSelector",
+    src = cms.InputTag("selectedPatElectronsForZeeHypothesesEta"),
     cut = cms.string('pt > 15.'),
     filter = cms.bool(False)
 )
@@ -40,16 +42,16 @@ selectedPatElectronsForZeeHypothesesPt15 = cms.EDFilter("PATElectronSelector",
 selectedPatElectronsForZeeHypothesesLoosePFRelIso = cms.EDFilter("PATElectronPFIsolationSelector",
     patElectronPFIsolationSelector.clone(
         sumPtMax = cms.double(0.15),
-		pfCandidateSource = cms.InputTag("selectedPfCandidatesIpCut")
+		pfCandidateSource = cms.InputTag("pfNoPileUp")  # we no longer use the IP-selected PF candidates
     ),
-    src = cms.InputTag("selectedPatElectronsForZeeHypothesesPt15"),  
+    src = cms.InputTag("selectedPatElectronsForZeeHypothesesPt"),  
     filter = cms.bool(False)
 )
 
 selectedPatElectronsForZeeHypotheses = cms.Sequence(
     selectedPatElectronsForZeeHypothesesElectronTrack
-   * selectedPatElectronsForZeeHypothesesEta21
-   * selectedPatElectronsForZeeHypothesesPt15
+   * selectedPatElectronsForZeeHypothesesEta
+   * selectedPatElectronsForZeeHypothesesPt
    * selectedPatElectronsForZeeHypothesesLoosePFRelIso
 )    
 
