@@ -13,7 +13,7 @@
 //
 // Original Author:  Daniele del Re
 //         Created:  Thu Sep 13 16:00:15 CEST 2007
-// $Id: GammaJetAnalyzer.cc,v 1.41 2010/11/30 17:37:23 delre Exp $
+// $Id: GammaJetAnalyzer.cc,v 1.42 2011/01/09 18:56:16 pandolf Exp $
 //
 //
 
@@ -141,6 +141,9 @@ inline double GammaJetAnalyzer::fixEMF(double emf, double eta) {
 
 GammaJetAnalyzer::GammaJetAnalyzer(const edm::ParameterSet& iConfig)
 {
+    h1_hbherh_detid = new TH1F("hbherh_detid", "", 6, -0.5, 5.5);
+    h1_etaPhot = new TH1F("etaPhot", "", 50, -5.5, 5.5);
+    h2_n_vs_eta = new TH2D("n_vs_eta", "", 10, 0., 2.5, 1000, 0., 1000.);
   _debug = iConfig.getParameter<bool>("debug");
   MCTruthCollection_ = iConfig.getUntrackedParameter<edm::InputTag>("MCTruthCollection");
   triggerTag_ = iConfig.getUntrackedParameter<edm::InputTag>("TriggerTag");
@@ -190,6 +193,12 @@ GammaJetAnalyzer::~GammaJetAnalyzer()
  
    // do anything here that needs to be done at desctruction time
    // (e.g. close files, deallocate resources etc.)
+   TFile* file_prova = TFile::Open("prova.root", "recreate");
+   file_prova->cd();
+   h1_hbherh_detid->Write();
+   h1_etaPhot->Write();
+   h2_n_vs_eta->Write();
+   file_prova->Close();
 
 }
 
@@ -340,7 +349,8 @@ GammaJetAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
    Handle<HBHERecHitCollection> hbhe;
    iEvent.getByLabel(HBhitsrc_, hbhe);
    const HBHERecHitMetaCollection mhbhe(*hbhe);
- 
+
+
    // get ECAL reco hits
    Handle<EBRecHitCollection> ecalhitseb;
    const EBRecHitCollection* rhitseb=0;
@@ -1226,6 +1236,12 @@ GammaJetAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
      for (CaloRecHitMetaCollectionV::const_iterator hit=selected->begin(); hit != selected->end(); ++hit) hcalEnergy += hit->energy(); 
      hcalovecal04Phot[nPhot] = hcalEnergy/it->energy(); 
 
+   h1_etaPhot->Fill( sc->eta() );
+   for( CaloRecHitMetaCollectionV::const_iterator ihbherh=selected->begin(); ihbherh!=selected->end(); ++ihbherh ) {
+     h1_hbherh_detid->Fill( ihbherh->detid().subdetId() );
+   }
+     h2_n_vs_eta->Fill( fabs(sc->eta()) , selected->size() );
+
      CaloClusterPtr SCseed = it->superCluster()->seed();
 
      // calculate ECAL isolation 
@@ -1448,6 +1464,9 @@ GammaJetAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
        
        vector<PFCandidatePtr> pfCandidates = it->getPFConstituents();
        
+       float sumPt_cands=0.;
+       float sumPt2_cands=0.;
+       float rms_cands=0.;
        
        for (vector<PFCandidatePtr>::const_iterator jt = pfCandidates.begin();
 	    jt != pfCandidates.end(); ++jt) {
@@ -1456,7 +1475,16 @@ GammaJetAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
 	 // Convert particle momentum to normal TLorentzVector, wrong type :(
 	 math::XYZTLorentzVectorD const& p4t = (*jt)->p4();
 	 TLorentzVector p4(p4t.px(), p4t.py(), p4t.pz(), p4t.energy());
+	 TLorentzVector jetp4;
+       jetp4.SetPtEtaPhiE(it->pt(), it->eta(), it->phi(), it->energy());
 	 
+       sumPt_cands += p4.Pt();
+       sumPt2_cands += (p4.Pt()*p4.Pt());
+       //float deltaR = it->p4().DeltaR(p4);
+       float deltaR = jetp4.DeltaR(p4);
+       rms_cands += (p4.Pt()*p4.Pt()*deltaR*deltaR);
+
+
 	 // Store PFCandidates for two leading jets
 	 
 	 if (id==PFCandidate::h) { // charged hadrons
@@ -1489,6 +1517,11 @@ GammaJetAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
 	 }
 	 
        } //for PFCandidates
+
+
+       ptDJet_pfakt5[nJet_pfakt5] = sqrt( sumPt2_cands )/sumPt_cands;
+       rmsCandJet_pfakt5[nJet_pfakt5] = rms_cands/(sumPt_cands*sumPt_cands);
+
        
        const TLorentzVector *p = 0;
        
@@ -1785,6 +1818,8 @@ GammaJetAnalyzer::beginJob()
   m_tree->Branch("eJet_pfakt5  ",&eJet_pfakt5  ,"eJet_pfakt5[nJet_pfakt5]/F");
   m_tree->Branch("etaJet_pfakt5",&etaJet_pfakt5,"etaJet_pfakt5[nJet_pfakt5]/F");
   m_tree->Branch("phiJet_pfakt5",&phiJet_pfakt5,"phiJet_pfakt5[nJet_pfakt5]/F");
+  m_tree->Branch("ptDJet_pfakt5",&ptDJet_pfakt5,"ptDJet_pfakt5[nJet_pfakt5]/F");
+  m_tree->Branch("rmsCandJet_pfakt5",&rmsCandJet_pfakt5,"rmsCandJet_pfakt5[nJet_pfakt5]/F");
 
 //   // Extra variables for PFlow studies
   m_tree->Branch("nChargedHadrons_pfakt5",nChargedHadrons_pfakt5,"nChargedHadrons_pfakt5[nJet_pfakt5]/I");

@@ -16,6 +16,7 @@
 #include "RecoJets/JetProducers/interface/JetIDHelper.h"
 
 #include "TH1.h"
+#include "TH2D.h"
 #include "TFile.h"
 #include "TTree.h"
 
@@ -74,6 +75,9 @@ class GammaJetAnalyzer : public edm::EDAnalyzer {
       // ----------member data ---------------------------
       bool _debug;
 
+TH1F* h1_hbherh_detid;
+TH1F* h1_etaPhot;
+TH2D* h2_n_vs_eta;
       edm::InputTag MCTruthCollection_; 
       edm::InputTag triggerTag_;
       edm::InputTag Vertexsrc_;
@@ -267,6 +271,8 @@ class GammaJetAnalyzer : public edm::EDAnalyzer {
       Float_t eJet_pfakt5[100];
       Float_t etaJet_pfakt5[100];
       Float_t phiJet_pfakt5[100];
+      Float_t ptDJet_pfakt5[100];
+      Float_t rmsCandJet_pfakt5[100];
 
       // Extra variables for PFlow studies
       Int_t nChargedHadrons_pfakt5[100];
