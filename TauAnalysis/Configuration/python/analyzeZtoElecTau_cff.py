@@ -7,23 +7,23 @@ from TauAnalysis.Configuration.analyzeZtoElecTau_cfi import *
 # define auxiliary service
 # for handling of systematic uncertainties
 from TauAnalysis.CandidateTools.sysErrDefinitions_cfi import *
-#SysUncertaintyService = cms.Service("SysUncertaintyService",
-#    weights = getSysUncertaintyParameterSets(
-#        [ theorySystematics ]
-#    ),
-#	sources = cms.PSet(
-#        isRecZtoElecTau = cms.vstring(
-#            "sysElectron*", "",
-#            "sysTau*", "",
-#            "sysZllRecoilCorrection*", "",
-#            "sysJet*", ""
-#        )
-#    )
-#)
+SysUncertaintyService = cms.Service("SysUncertaintyService",
+    weights = getSysUncertaintyParameterSets(
+        [ theorySystematics ]
+    ),
+	sources = cms.PSet(
+        isRecZtoElecTau = cms.vstring(
+            "sysElectron*", "",
+            "sysTau*", "",
+            "sysZllRecoilCorrection*", "",
+            "sysJet*", ""
+        )
+    )
+)
 
-analyzeZtoElecTauEvents = cms.EDAnalyzer("GenericAnalyzer",
+analyzeZtoElecTauEventsOS = cms.EDAnalyzer("GenericAnalyzer",
   
-    name = cms.string('zElecTauAnalyzer'), 
+    name = cms.string('zElecTauAnalyzerOS'), 
                             
     filters = cms.VPSet(
         # generator level phase-space selection
@@ -48,8 +48,6 @@ analyzeZtoElecTauEvents = cms.EDAnalyzer("GenericAnalyzer",
         evtSelElectronAntiCrack,
         evtSelElectronEta,
         evtSelElectronPt,
-		#evtSelElectronTrkIso,
-		#evtSelElectronEcalIso,
         evtSelElectronIso,
         evtSelElectronConversionVeto,
         evtSelElectronTrkIP,
@@ -61,8 +59,6 @@ analyzeZtoElecTauEvents = cms.EDAnalyzer("GenericAnalyzer",
         evtSelTauLeadTrk,
         evtSelTauLeadTrkPt,
 		evtSelTauTaNCdiscr,
-        evtSelTauTrkIso,
-        evtSelTauEcalIso,
         evtSelTauProng,
         evtSelTauCharge,
         evtSelTauElectronVeto,
@@ -71,14 +67,13 @@ analyzeZtoElecTauEvents = cms.EDAnalyzer("GenericAnalyzer",
         
         # di-tau candidate selection
         evtSelDiTauCandidateForElecTauAntiOverlapVeto,
-        evtSelDiTauCandidateForElecTauZeroCharge,
-        evtSelDiTauCandidateForElecTauAcoplanarity12,
         evtSelDiTauCandidateForElecTauMt1MET,
         evtSelDiTauCandidateForElecTauPzetaDiff,
+        evtSelDiTauCandidateForElecTauZeroCharge,
+        evtSelDiTauCandidateForElecTauNonZeroCharge,
 
         # veto events compatible with Z --> e+ e- hypothesis
-        # (based on reconstructed (visible) invariant mass of e + tau-jet pair)
-        evtSelElecTauPairZeeHypothesisVeto
+        evtSelDiElecPairZeeHypothesisVetoByLooseIsolation
     ),
   
     analyzers = cms.VPSet(
@@ -103,7 +98,7 @@ analyzeZtoElecTauEvents = cms.EDAnalyzer("GenericAnalyzer",
         elecTauEventDump
     ),
    
-    analysisSequence = elecTauAnalysisSequence,
+    analysisSequence = elecTauAnalysisSequenceOS,
 
     #estimateSysUncertainties = cms.bool(True),                                       
     estimateSysUncertainties = cms.bool(False), 
@@ -115,4 +110,11 @@ analyzeZtoElecTauEvents = cms.EDAnalyzer("GenericAnalyzer",
         )
     )                                         
 )
+
+analyzeZtoElecTauEventsSS = analyzeZtoElecTauEventsOS.clone(
+	name = cms.string('zElecTauAnalyzerSS'),
+	analysisSequence = elecTauAnalysisSequenceSS
+)
+
+analyzeZtoElecTauEvents = cms.Sequence( analyzeZtoElecTauEventsOS * analyzeZtoElecTauEventsSS )
 

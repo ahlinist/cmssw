@@ -25,7 +25,7 @@ from TauAnalysis.RecoTools.patJetSelectionForAHtoElecTau_cff import *
 
 producePatTupleAHtoElecTauSpecific = cms.Sequence(
 	producePatTupleZtoElecTauSpecific
-	 + selectElecTauPairsForAHtoElecTau + selectElecTauPairsForAHtoElecTauLooseElectronIsolation
+	+ selectElecTauPairsForAHtoElecTau + selectElecTauPairsForAHtoElecTauLooseElectronIsolation
 	+ produceElecTauPairZeeHypothesesForAHtoElecTau + produceElecTauPairZeeHypothesesForAHtoElecTauLooseElectronIsolation
 	+ selectPatJetsForAHtoElecTau + selectPatJetsForAHtoElecTauLooseElectronIsolation
 )
