@@ -6,29 +6,42 @@ from TauAnalysis.CandidateTools.elecTauPairSelection_cfi import *
 from TauAnalysis.CandidateTools.tools.objSelConfigurator import *
 
 
-#--------------------------------------------------------------------------------  
-# produce collections of electron + tau-jet pairs passing selection criteria
-#--------------------------------------------------------------------------------
+#---------------------------------------------------------------------------------------------------
+# produce opposite- and same-sign collections of electron + tau-jet pairs passing selection criteria
+#---------------------------------------------------------------------------------------------------
 
 selectedElecTauPairsForAHtoElecTauAntiOverlapVeto = copy.deepcopy(selectedElecTauPairsAntiOverlapVeto)
-
-selectedElecTauPairsForAHtoElecTauZeroCharge = copy.deepcopy(selectedElecTauPairsZeroCharge)
 
 selectedElecTauPairsForAHtoElecTauMt1MET= copy.deepcopy(selectedElecTauPairsMt1MET)
 
 selectedElecTauPairsForAHtoElecTauPzetaDiff = copy.deepcopy(selectedElecTauPairsPzetaDiff)
 
-patElecTauPairSelConfiguratorForAHtoElecTau = objSelConfigurator(
+selectedElecTauPairsForAHtoElecTauZeroCharge = copy.deepcopy(selectedElecTauPairsZeroCharge)
+
+patElecTauPairSelConfiguratorForAHtoElecTauOS = objSelConfigurator(
     [ selectedElecTauPairsForAHtoElecTauAntiOverlapVeto,
-      selectedElecTauPairsForAHtoElecTauZeroCharge,
       selectedElecTauPairsForAHtoElecTauMt1MET,
-      selectedElecTauPairsForAHtoElecTauPzetaDiff ],
+      selectedElecTauPairsForAHtoElecTauPzetaDiff,
+      selectedElecTauPairsForAHtoElecTauZeroCharge ],
     src = "allElecTauPairs",
     pyModuleName = __name__,
     doSelIndividual = True
 )
 
-selectElecTauPairsForAHtoElecTau = patElecTauPairSelConfiguratorForAHtoElecTau.configure(pyNameSpace = locals())
+selectElecTauPairsForAHtoElecTauOS = patElecTauPairSelConfiguratorForAHtoElecTauOS.configure(pyNameSpace = locals())
+
+selectedElecTauPairsForAHtoElecTauNonZeroCharge = copy.deepcopy(selectedElecTauPairsNonZeroCharge)
+
+patElecTauPairSelConfiguratorForAHtoElecTauSS = objSelConfigurator(
+	[ selectedElecTauPairsForAHtoElecTauNonZeroCharge ],
+    src = "selectedElecTauPairsForAHtoElecTauPzetaDiffCumulative",
+    pyModuleName = __name__,
+    doSelIndividual = True
+)
+
+selectElecTauPairsForAHtoElecTauSS = patElecTauPairSelConfiguratorForAHtoElecTauSS.configure(pyNameSpace = locals())
+
+selectElecTauPairsForAHtoElecTau = cms.Sequence(selectElecTauPairsForAHtoElecTauOS * selectElecTauPairsForAHtoElecTauSS)
 
 # define additional collections of electron + tau-jet candidates
 # with loose track and ECAL isolation applied on electron leg
@@ -38,22 +51,38 @@ selectElecTauPairsForAHtoElecTau = patElecTauPairSelConfiguratorForAHtoElecTau.c
 
 selectedElecTauPairsForAHtoElecTauAntiOverlapVetoLooseElectronIsolation = copy.deepcopy(selectedElecTauPairsAntiOverlapVeto)
 
-selectedElecTauPairsForAHtoElecTauZeroChargeLooseElectronIsolation = copy.deepcopy(selectedElecTauPairsZeroCharge)
-
 selectedElecTauPairsForAHtoElecTauMt1METlooseElectronIsolation = copy.deepcopy(selectedElecTauPairsMt1MET)
 
 selectedElecTauPairsForAHtoElecTauPzetaDiffLooseElectronIsolation = copy.deepcopy(selectedElecTauPairsPzetaDiff)
 
-patElecTauPairSelConfiguratorForAHtoElecTauLooseElectronIsolation = objSelConfigurator(
+selectedElecTauPairsForAHtoElecTauZeroChargeLooseElectronIsolation = copy.deepcopy(selectedElecTauPairsZeroCharge)
+
+patElecTauPairSelConfiguratorForAHtoElecTauLooseElectronIsolationOS = objSelConfigurator(
     [ selectedElecTauPairsForAHtoElecTauAntiOverlapVetoLooseElectronIsolation,
-      selectedElecTauPairsForAHtoElecTauZeroChargeLooseElectronIsolation,
       selectedElecTauPairsForAHtoElecTauMt1METlooseElectronIsolation,
-      selectedElecTauPairsForAHtoElecTauPzetaDiffLooseElectronIsolation ],
+      selectedElecTauPairsForAHtoElecTauPzetaDiffLooseElectronIsolation,
+      selectedElecTauPairsForAHtoElecTauZeroChargeLooseElectronIsolation ],
     src = "allElecTauPairsLooseElectronIsolation",
     pyModuleName = __name__,
     doSelIndividual = True
 )
 
-selectElecTauPairsForAHtoElecTauLooseElectronIsolation = patElecTauPairSelConfiguratorForAHtoElecTauLooseElectronIsolation.configure(pyNameSpace = locals())
+selectElecTauPairsForAHtoElecTauLooseElectronIsolationOS = patElecTauPairSelConfiguratorForAHtoElecTauLooseElectronIsolationOS.configure(pyNameSpace = locals())
+
+selectedElecTauPairsForAHtoElecTauNonZeroChargeLooseElectronIsolation = copy.deepcopy(selectedElecTauPairsNonZeroCharge)
+
+patElecTauPairSelConfiguratorForAHtoElecTauLooseElectronIsolationSS = objSelConfigurator(
+    [ selectedElecTauPairsForAHtoElecTauNonZeroChargeLooseElectronIsolation ],
+    src = "selectedElecTauPairsForAHtoElecTauPzetaDiffLooseElectronIsolationCumulative",
+    pyModuleName = __name__,
+    doSelIndividual = True
+)
+
+selectElecTauPairsForAHtoElecTauLooseElectronIsolationSS = \
+		patElecTauPairSelConfiguratorForAHtoElecTauLooseElectronIsolationSS.configure(pyNameSpace = locals())
+
+selectElecTauPairsForAHtoElecTauLooseElectronIsolation = cms.Sequence(
+		selectElecTauPairsForAHtoElecTauLooseElectronIsolationOS * selectElecTauPairsForAHtoElecTauLooseElectronIsolationSS
+)
 
 

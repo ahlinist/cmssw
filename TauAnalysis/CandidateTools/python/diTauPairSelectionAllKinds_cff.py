@@ -56,46 +56,66 @@ selectElecMuPairsLooseElectronIsolation = patElecMuPairSelConfiguratorLooseElect
 
 #--------------------------------------------------------------------------------
 # define selection criteria for e + tau-jet pairs
-# (settings made here overwrite values defined in elecTauPairSelector_cfi)
+# (settings made here overwrite values defined in elecTauPairSelection)
 #--------------------------------------------------------------------------------
 
 selectedElecTauPairsAntiOverlapVeto.cut = cms.string('dR12 > 0.7')
-selectedElecTauPairsZeroCharge.cut = cms.string('charge = 0')
-selectedElecTauPairsAcoplanarity12.cut = cms.string('cos(dPhi12) > -1.01')
 selectedElecTauPairsMt1MET.cut = cms.string('mt1MET < 50.')
 selectedElecTauPairsPzetaDiff.cut = cms.string('(pZeta - 1.5*pZetaVis) > -20.')
+selectedElecTauPairsZeroCharge.cut = cms.string('charge = 0')
+selectedElecTauPairsNonZeroCharge.cut = cms.string('charge != 0')
 
-patElecTauPairSelConfigurator = objSelConfigurator(
+patElecTauPairSelConfiguratorOS = objSelConfigurator(
     [ selectedElecTauPairsAntiOverlapVeto,
-      selectedElecTauPairsZeroCharge,
-      selectedElecTauPairsAcoplanarity12,
       selectedElecTauPairsMt1MET,
-      selectedElecTauPairsPzetaDiff ],
+      selectedElecTauPairsPzetaDiff,
+      selectedElecTauPairsZeroCharge ],
     src = "allElecTauPairs",
     pyModuleName = __name__,
     doSelIndividual = True
 )
 
-selectElecTauPairs = patElecTauPairSelConfigurator.configure(pyNameSpace = locals())
+selectElecTauPairsOS = patElecTauPairSelConfiguratorOS.configure(pyNameSpace = locals())
+
+patElecTauPairSelConfiguratorSS = objSelConfigurator(
+    [ selectedElecTauPairsNonZeroCharge ],
+    src = "selectedElecTauPairsPzetaDiffCumulative",
+    pyModuleName = __name__,
+    doSelIndividual = True
+)
+
+selectElecTauPairsSS = patElecTauPairSelConfiguratorSS.configure(pyNameSpace = locals())
+
+selectElecTauPairs = cms.Sequence( selectElecTauPairsOS * selectElecTauPairsSS)
 
 selectedElecTauPairsAntiOverlapVetoLooseElectronIsolation.cut = selectedElecTauPairsAntiOverlapVeto.cut
-selectedElecTauPairsZeroChargeLooseElectronIsolation.cut = selectedElecTauPairsZeroCharge.cut
-selectedElecTauPairsAcoplanarity12LooseElectronIsolation.cut = selectedElecTauPairsAcoplanarity12.cut
 selectedElecTauPairsMt1METlooseElectronIsolation.cut = selectedElecTauPairsMt1MET.cut
 selectedElecTauPairsPzetaDiffLooseElectronIsolation.cut = selectedElecTauPairsPzetaDiff.cut
+selectedElecTauPairsZeroChargeLooseElectronIsolation.cut = selectedElecTauPairsZeroCharge.cut
+selectedElecTauPairsNonZeroChargeLooseElectronIsolation.cut = selectedElecTauPairsNonZeroCharge.cut
 
-patElecTauPairSelConfiguratorLooseElectronIsolation = objSelConfigurator(
+patElecTauPairSelConfiguratorLooseElectronIsolationOS = objSelConfigurator(
     [ selectedElecTauPairsAntiOverlapVetoLooseElectronIsolation,
-      selectedElecTauPairsZeroChargeLooseElectronIsolation,
-      selectedElecTauPairsAcoplanarity12LooseElectronIsolation,
       selectedElecTauPairsMt1METlooseElectronIsolation,
-      selectedElecTauPairsPzetaDiffLooseElectronIsolation ],
+      selectedElecTauPairsPzetaDiffLooseElectronIsolation,
+      selectedElecTauPairsZeroChargeLooseElectronIsolation ],
     src = "allElecTauPairsLooseElectronIsolation",
     pyModuleName = __name__,
     doSelIndividual = True
 )
 
-selectElecTauPairsLooseElectronIsolation = patElecTauPairSelConfiguratorLooseElectronIsolation.configure(pyNameSpace = locals())
+selectElecTauPairsLooseElectronIsolationOS = patElecTauPairSelConfiguratorLooseElectronIsolationOS.configure(pyNameSpace = locals())
+
+patElecTauPairSelConfiguratorLooseElectronIsolationSS = objSelConfigurator(
+    [ selectedElecTauPairsNonZeroChargeLooseElectronIsolation ],
+    src = "selectedElecTauPairsPzetaDiffLooseElectronIsolationCumulative",
+    pyModuleName = __name__,
+    doSelIndividual = True
+)
+
+selectElecTauPairsLooseElectronIsolationSS = patElecTauPairSelConfiguratorLooseElectronIsolationSS.configure(pyNameSpace = locals())
+
+selectElecTauPairsLooseElectronIsolation = cms.Sequence( selectElecTauPairsLooseElectronIsolationOS * selectElecTauPairsLooseElectronIsolationSS)
 
 #--------------------------------------------------------------------------------
 # define selection criteria for mu + tau-jet pairs
