@@ -13,7 +13,7 @@
 //
 // Original Author:  pts/45
 //         Created:  Tue May 13 12:23:34 CEST 2008
-// $Id: RPCMonitorEfficiency.cc,v 1.47 2011/02/05 11:26:17 carrillo Exp $
+// $Id: RPCMonitorEfficiency.cc,v 1.48 2011/02/09 08:59:22 carrillo Exp $
 //
 //
 
@@ -621,19 +621,29 @@ bool IsBadRoll(uint32_t rawId,std::vector<uint32_t> thelist){
 bool HasBadRoll(int region,uint32_t station,uint32_t ring,int k,std::vector<uint32_t> thelist){
   uint32_t sector = (k-1)/6+1;
   uint32_t subsector =k%6==0?6:k%6;
-  // RPCDetId(int region, ring,station, sector,layer,subsector,roll);
-  bool hasBadRoll = true;
+  bool hasBadRoll = false;
+
+ std::cout<<"hasBadRoll Evaluating "<<region<<" "<<station<<" "<<ring<<" "<<k<<std::endl;
+
   for(uint32_t roll =1;roll<=3;roll++){
     RPCDetId ThisDetId(region,ring,station,sector,1,subsector,roll);
+    std::cout<<"hasBadRoll For this input"<<region<<" "<<station<<" "<<ring<<" "<<k<<std::endl;
+    RPCGeomServ rpcsrv(ThisDetId);
+    std::cout<<"hasBadRoll We are getting"<<rpcsrv.name()<<std::endl;
+    std::cout<<"hasBadRoll Trying to find in the list "<<ThisDetId.rawId()<<" "<<rpcsrv.name()<<std::endl;
     bool thisroll = false;
     if(!(find(thelist.begin(),thelist.end(),ThisDetId.rawId())==thelist.end())){
+      std::cout<<"hasBadRoll \t found "<<rpcsrv.name()<<std::endl;
       thisroll=true;
     }
-    hasBadRoll=hasBadRoll*thisroll;
+    hasBadRoll=hasBadRoll+thisroll;
   }
-  
-  if(hasBadRoll) std::cout<<"This RawId has bad roll "<<RPCDetId(region,ring,station,sector,1,subsector,1).rawId()<<std::endl;
-  
+  if(hasBadRoll){
+    std::cout<<"hasBadRoll filling GregD1R2_black in k="<<k<<std::endl;
+    std::cout<<"hasBadRoll This Input"<<region<<" "<<station<<" "<<ring<<" "<<k<<"reported a bad roll"<<std::endl;
+  }else{
+    std::cout<<"Filling GregD1R2 in k="<<k<<std::endl;
+  }
   return hasBadRoll;
 }
 
@@ -679,7 +689,7 @@ void RPCMonitorEfficiency::beginRun(const edm::Run&,const edm::EventSetup&){
     std::string name;
     while (ifin.good()){
       ifin >>rawId >>name;
-      if(debug) std::cout<<"rawId = "<<rawId<<" name= "<<name<<std::endl;
+      std::cout<<"rawId = "<<rawId<<" name= "<<name<<std::endl;
       blacklist.push_back(rawId);
     }
   }
@@ -1638,7 +1648,7 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
 						,histoRPC_2D->GetNbinsX(),histoRPC_2D->GetXaxis()->GetXmin(),histoRPC_2D->GetXaxis()->GetXmax()
 						,histoRPC_2D->GetNbinsY(),histoRPC_2D->GetYaxis()->GetXmin(),histoRPC_2D->GetYaxis()->GetXmax());  
 
-		IntegralMuographyExp[m] = new TH2F((namesIntegralMuography[m]+"Obs").c_str(),(namesIntegralMuography[m]+"Obs").c_str()
+		IntegralMuographyExp[m] = new TH2F((namesIntegralMuography[m]+"Exp").c_str(),(namesIntegralMuography[m]+"Exp").c_str()
 						,histoRPC_2D->GetNbinsX(),histoRPC_2D->GetXaxis()->GetXmin(),histoRPC_2D->GetXaxis()->GetXmax()
 						,histoRPC_2D->GetNbinsY(),histoRPC_2D->GetYaxis()->GetXmin(),histoRPC_2D->GetYaxis()->GetXmax());  
 		
@@ -1763,8 +1773,8 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
 
 	  float bufdoublegapeff = 0;
 	  
-	  float doublegaperrexp = 0;
 	  float doublegaperrocc = 0;
+	  float doublegaperrexp = 0;
 
 	  float pinoeff = 0.;
 	  float pinoerr = 0.;
@@ -2635,51 +2645,9 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
 		IntegralMuography[m]->Add(histoRPC_2D);
 		IntegralMuographyExp[m]->Add(histoCSC_2D);
 	      }else{
-		std::cout<<"found IntegralMuography coincidence filling "<<namesIntegralMuography[m]<<" with "<<name<<std::endl;
-		std::cout
-		  <<IntegralMuographyObs[m]->GetXaxis()->GetXmin()<<" "
-		  <<IntegralMuographyObs[m]->GetXaxis()->GetXmax()<<" "<<std::endl;
-		std::cout
-		  <<histoRPC_2D->GetXaxis()->GetXmin()<<" "
-		  <<histoRPC_2D->GetXaxis()->GetXmax()<<" "<<std::endl;
-		std::cout
-		  <<IntegralMuographyObs[m]->GetYaxis()->GetXmin()<<" "
-		  <<IntegralMuographyObs[m]->GetYaxis()->GetXmax()<<" "<<std::endl;
-		std::cout
-		  <<histoRPC_2D->GetYaxis()->GetXmin()<<" "
-		<<histoRPC_2D->GetYaxis()->GetXmax()<<" "<<std::endl;
-		
-		std::cout
-		  <<histoRPC_2D->GetXaxis()->GetNbins()<<" "	 
-		  <<histoRPC_2D->GetYaxis()->GetNbins()<<std::endl;
-		
-		std::cout
-		  <<IntegralMuographyObs[m]->GetXaxis()->GetNbins()<<" "	 
-		  <<IntegralMuographyObs[m]->GetYaxis()->GetNbins()<<std::endl;
-		
-		if (
-		    IntegralMuographyObs[m]->GetXaxis()->GetXmin() != histoRPC_2D->GetXaxis()->GetXmin() ||
-		    IntegralMuographyObs[m]->GetXaxis()->GetXmax() != histoRPC_2D->GetXaxis()->GetXmax() ||
-		    IntegralMuographyObs[m]->GetYaxis()->GetXmin() != histoRPC_2D->GetYaxis()->GetXmin() ||
-		    IntegralMuographyObs[m]->GetYaxis()->GetXmax() != histoRPC_2D->GetYaxis()->GetXmax() ||
-		    IntegralMuographyObs[m]->GetZaxis()->GetXmin() != histoRPC_2D->GetZaxis()->GetXmin() ||
-		    IntegralMuographyObs[m]->GetZaxis()->GetXmax() != histoRPC_2D->GetZaxis()->GetXmax()){ 
-		  
-		  std::cout<<IntegralMuographyObs[m]->GetXaxis()->GetXmin()<<" "<<histoRPC_2D->GetXaxis()->GetXmin()<<" "<<bool (IntegralMuographyObs[m]->GetXaxis()->GetXmin()!=histoRPC_2D->GetXaxis()->GetXmin())<<std::endl;
-		  std::cout<<IntegralMuographyObs[m]->GetXaxis()->GetXmax()<<" "<<histoRPC_2D->GetXaxis()->GetXmax()<<" "<<bool (IntegralMuographyObs[m]->GetXaxis()->GetXmax()!=histoRPC_2D->GetXaxis()->GetXmax())<<std::endl;
-		  std::cout<<IntegralMuographyObs[m]->GetYaxis()->GetXmin()<<" "<<histoRPC_2D->GetYaxis()->GetXmin()<<" "<<bool (IntegralMuographyObs[m]->GetYaxis()->GetXmin()!=histoRPC_2D->GetYaxis()->GetXmin())<<std::endl;
-		  std::cout<<IntegralMuographyObs[m]->GetYaxis()->GetXmax()<<" "<<histoRPC_2D->GetYaxis()->GetXmax()<<" "<<bool (IntegralMuographyObs[m]->GetYaxis()->GetXmax()!=histoRPC_2D->GetYaxis()->GetXmax())<<std::endl;
-		  std::cout<<IntegralMuographyObs[m]->GetZaxis()->GetXmin()<<" "<<histoRPC_2D->GetZaxis()->GetXmin()<<" "<<bool (IntegralMuographyObs[m]->GetZaxis()->GetXmin()!=histoRPC_2D->GetZaxis()->GetXmin())<<std::endl;
-		  std::cout<<IntegralMuographyObs[m]->GetZaxis()->GetXmax()<<" "<<histoRPC_2D->GetZaxis()->GetXmax()<<" "<<bool (IntegralMuographyObs[m]->GetZaxis()->GetXmax()!=histoRPC_2D->GetZaxis()->GetXmax())<<std::endl;
-		  
-		  std::cout<<"MY WARNING Add Attempt to add histograms with different axis limits"<<std::endl;
-		}
-		
 		IntegralMuographyObs[m]->Add(histoRPC_2D);
 		IntegralMuographyExp[m]->Add(histoCSC_2D);
 	      }
-	      //break; 
-	      //warning :P
 	    }
 	  }
 	  
@@ -2808,8 +2776,8 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
 	  float doublegaperrocc = 0;
 	  float doublegaperrexp = 0;
 	 
- 	  float pinoeff = 0;
-	  float pinoerr = 0;
+ 	  float pinoeff = 0.;
+	  float pinoerr = 0.;
 	  
 	  float pinoobserved =0;
 	  float pinoexpected =0;
@@ -3744,7 +3712,9 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
   TH1F * EfficiencyPerChamberNumber = new TH1F("EfficiencyPerChamberNumber","Efficiency per Chamber Number (All Rings and Disks)",36,0.5,36.5);
 
   float eff,N,err;
-  int k;
+  
+  int k =0; 
+
   for(k=1;k<=36;k++){
     float h = sin((k-1)*10*3.14159565/180.);
     
@@ -3754,11 +3724,8 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
     err=0; eff=0; N=ExGregD1R2->GetBinContent(k);
     acumulatedexpected = N + acumulatedexpected;
     acumulatedobserved = acumulatedobserved + OcGregD1R2->GetBinContent(k);
-    if(N!=0.){ eff = OcGregD1R2->GetBinContent(k)/N; err=sqrt(eff*(1-eff)/N);}
-    if(HasBadRoll(1,1,2,k,blacklist)){ 
-      std::cout<<"Filling GregD1R2_black in k="<<k<<"with "<<eff<<"+/-"<<err<<std::endl;
-      GregD1R2_black->SetBinContent(k,eff); GregD1R2_black->SetBinError(k,err);
-    }
+    if(N!=0.){eff = OcGregD1R2->GetBinContent(k)/N; err=sqrt(eff*(1-eff)/N);}
+    if(HasBadRoll(1,1,2,k,blacklist)){GregD1R2_black->SetBinContent(k,eff); GregD1R2_black->SetBinError(k,err);}
     else{GregD1R2->SetBinContent(k,eff); GregD1R2->SetBinError(k,err);}
     HeightVsEffR2->Fill(eff,h);
     
