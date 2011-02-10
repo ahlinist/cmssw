@@ -47,7 +47,7 @@ void TriggerHistManager::bookHistogramsImp()
   for ( vstring::const_iterator l1Bit = l1Bits_.begin();
 	l1Bit != l1Bits_.end(); ++l1Bit ) {
     std::string meName = std::string("Trigger").append(*l1Bit);
-    MonitorElement* me = book1D(meName, meName, 2, -1.5, 1.5);
+    MonitorElement* me = book1D(meName, meName, 3, -1.5, 1.5);
     hL1triggerBits_.insert(std::pair<std::string, MonitorElement*>(*l1Bit, me));
   }
 
@@ -55,7 +55,7 @@ void TriggerHistManager::bookHistogramsImp()
   for ( vstring::const_iterator hltPath = hltPaths_.begin();
 	hltPath != hltPaths_.end(); ++hltPath ) {
     std::string meName = std::string("Trigger").append(*hltPath);
-    MonitorElement* me = book1D(meName, meName, 2, -1.5, 1.5);
+    MonitorElement* me = book1D(meName, meName, 3, -1.5, 1.5);
     hHLTresults_.insert(std::pair<std::string, MonitorElement*>(*hltPath, me));
   }
 }
