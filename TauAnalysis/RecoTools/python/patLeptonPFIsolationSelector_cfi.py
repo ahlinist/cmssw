@@ -32,7 +32,7 @@ patMuonPFIsolationSelector = cms.PSet(
 
 patElectronPFIsolationSelector = cms.PSet(
     
-    pfCandidateSource = cms.InputTag('selectedPfCandidatesIpCut'),
+    pfCandidateSource = cms.InputTag('pfNoPileUp'),
 
     chargedHadronIso = cms.PSet(
         ptMin = cms.double(1.0),        

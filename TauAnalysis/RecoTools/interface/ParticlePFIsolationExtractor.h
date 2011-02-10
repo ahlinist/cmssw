@@ -8,9 +8,9 @@
  * 
  * \author Christian Veelken, UC Davis
  *
- * \version $Revision: 1.1 $
+ * \version $Revision: 1.2 $
  *
- * $Id: ParticlePFIsolationExtractor.h,v 1.1 2010/11/16 09:20:01 veelken Exp $
+ * $Id: ParticlePFIsolationExtractor.h,v 1.2 2011/02/10 13:56:44 veelken Exp $
  *
  */
 
@@ -33,33 +33,38 @@ template <class T>
 class ParticlePFIsolationExtractor
 {
  public:
-  explicit ParticlePFIsolationExtractor(const edm::ParameterSet& cfg)
+  explicit ParticlePFIsolationExtractor(const edm::ParameterSet& cfg):
+	pfChargedHadronIso_(0),
+	pfNeutralHadronIso_(0),
+	pfPhotonIso_(0)
   {
-    edm::ParameterSet cfgChargedHadronIso = cfg.getParameter<edm::ParameterSet>("chargedHadronIso");
-    pfChargedHadronIso_ = new pfIsoConfigType(reco::PFCandidate::h, cfgChargedHadronIso);
-
-    edm::ParameterSet cfgNeutralHadronIso = cfg.getParameter<edm::ParameterSet>("neutralHadronIso");
-    pfNeutralHadronIso_ = new pfIsoConfigType(reco::PFCandidate::h0, cfgNeutralHadronIso);
-
-    edm::ParameterSet cfgPhotonIso = cfg.getParameter<edm::ParameterSet>("photonIso");
-    pfPhotonIso_ = new pfIsoConfigType(reco::PFCandidate::gamma, cfgPhotonIso);
+	
+	if( cfg.exists("chargedHadronIso") ) {
+		edm::ParameterSet cfgChargedHadronIso = cfg.getParameter<edm::ParameterSet>("chargedHadronIso");
+		pfChargedHadronIso_ = new pfIsoConfigType(reco::PFCandidate::h, cfgChargedHadronIso);
+	}
+	if( cfg.exists("neutralHadronIso") ) {
+		edm::ParameterSet cfgNeutralHadronIso = cfg.getParameter<edm::ParameterSet>("neutralHadronIso");
+		pfNeutralHadronIso_ = new pfIsoConfigType(reco::PFCandidate::h0, cfgNeutralHadronIso);
+	}
+	if( cfg.exists("photonIso") ) {
+		edm::ParameterSet cfgPhotonIso = cfg.getParameter<edm::ParameterSet>("photonIso");
+		pfPhotonIso_ = new pfIsoConfigType(reco::PFCandidate::gamma, cfgPhotonIso);
+	}
   }
   ~ParticlePFIsolationExtractor()
   {
-    delete pfChargedHadronIso_;
-    delete pfNeutralHadronIso_;
-    delete pfPhotonIso_;
+    if(pfChargedHadronIso_) delete pfChargedHadronIso_;
+    if(pfNeutralHadronIso_) delete pfNeutralHadronIso_;
+    if(pfPhotonIso_) delete pfPhotonIso_;
   }
 
   double operator()(const T& lepton, const reco::PFCandidateCollection& pfCandidates)
   {
-    //std::cout << "<ParticlePFIsolationExtractor::operator()>:" << std::endl;
-    //std::cout << "--> checking PFChargedHadron isolation..." << std::endl;
-    double sumPt = pfChargedHadronIso_->compSumPt(pfCandidates, lepton.p4());
-    //std::cout << "--> checking PFNeutralHadron isolation..." << std::endl;
-    sumPt += pfNeutralHadronIso_->compSumPt(pfCandidates, lepton.p4());
-    //std::cout << "--> checking PFGamma isolation..." << std::endl;
-    sumPt += pfPhotonIso_->compSumPt(pfCandidates, lepton.p4());
+	double sumPt = 0;
+    if(pfChargedHadronIso_) sumPt += pfChargedHadronIso_->compSumPt(pfCandidates, lepton.p4());
+    if(pfNeutralHadronIso_) sumPt += pfNeutralHadronIso_->compSumPt(pfCandidates, lepton.p4());
+    if(pfPhotonIso_) sumPt += pfPhotonIso_->compSumPt(pfCandidates, lepton.p4());
     return sumPt;
   }
 
@@ -102,40 +107,40 @@ class ParticlePFIsolationExtractor
       return true;
     }
 
-    double compSumPt(const reco::PFCandidateCollection& pfCandidates, const reco::Particle::LorentzVector& isoParticleCandidateP4)
-    {
-      double sumPt = 0.;
+	double compSumPt(const reco::PFCandidateCollection& pfCandidates, const reco::Particle::LorentzVector& isoParticleCandidateP4)
+	{
+		double sumPt = 0.;
 
-      if ( vetoNumHighestPtObjects_ > 0 ) {
-	std::vector<double> pfCandidatePt;
+		if ( vetoNumHighestPtObjects_ > 0 ) {
+			std::vector<double> pfCandidatePt;
 
-	for ( reco::PFCandidateCollection::const_iterator pfCandidate = pfCandidates.begin();
-	      pfCandidate != pfCandidates.end(); ++pfCandidate ) {
-	  if ( !passesVeto(*pfCandidate, isoParticleCandidateP4) ) continue;
-	  
-	  pfCandidatePt.push_back(pfCandidate->pt());
+			for ( reco::PFCandidateCollection::const_iterator pfCandidate = pfCandidates.begin();
+					pfCandidate != pfCandidates.end(); ++pfCandidate ) {
+				if ( !passesVeto(*pfCandidate, isoParticleCandidateP4) ) continue;
+
+				pfCandidatePt.push_back(pfCandidate->pt());
+			}
+
+			// sort transverse momenta of particle-flow candidates
+			// ( lowest/highest Pt value will be stored in pfCandidatePt[0]/pfCandidatePt[numPFCandidates - 1];
+			//  cf. http://www.cplusplus.com/reference/algorithm/sort/ )
+			std::sort(pfCandidatePt.begin(), pfCandidatePt.end());
+
+			int numPt = pfCandidatePt.size();
+			for ( int iPt = 0; iPt < (numPt - (int)vetoNumHighestPtObjects_); ++iPt ) {
+				sumPt += pfCandidatePt[iPt];
+			}
+		} else {
+			for ( reco::PFCandidateCollection::const_iterator pfCandidate = pfCandidates.begin();
+					pfCandidate != pfCandidates.end(); ++pfCandidate ) {
+				if ( !passesVeto(*pfCandidate, isoParticleCandidateP4) ) continue;
+
+				sumPt += pfCandidate->pt();
+			}   
+		} 
+
+		return sumPt;
 	}
-
-	// sort transverse momenta of particle-flow candidates
-	// ( lowest/highest Pt value will be stored in pfCandidatePt[0]/pfCandidatePt[numPFCandidates - 1];
-	//  cf. http://www.cplusplus.com/reference/algorithm/sort/ )
-	std::sort(pfCandidatePt.begin(), pfCandidatePt.end());
-
-        int numPt = pfCandidatePt.size();
-        for ( int iPt = 0; iPt < (numPt - (int)vetoNumHighestPtObjects_); ++iPt ) {
-	  sumPt += pfCandidatePt[iPt];
-	}
-      } else {
-	for ( reco::PFCandidateCollection::const_iterator pfCandidate = pfCandidates.begin();
-	      pfCandidate != pfCandidates.end(); ++pfCandidate ) {
-	  if ( !passesVeto(*pfCandidate, isoParticleCandidateP4) ) continue;
-
-	  sumPt += pfCandidate->pt();
-	}   
-      } 
-
-      return sumPt;
-    }
 
     reco::PFCandidate::ParticleType pfParticleType_;
 
