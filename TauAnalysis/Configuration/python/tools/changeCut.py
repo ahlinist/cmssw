@@ -1,6 +1,7 @@
 import FWCore.ParameterSet.Config as cms
 
 from TauAnalysis.CandidateTools.tools.composeModuleName import *
+from TauAnalysis.CandidateTools.tools.recursiveSetAttr import recursiveGetAttr, recursiveSetAttr
 
 def changeCut(process, name, value, attribute = "cut"):
 
@@ -23,10 +24,10 @@ def changeCut(process, name, value, attribute = "cut"):
              #       the "cumulative" and "individual" cuts upon the first setattr call
              #      --> need to initialize oldValue variable before first setattr call
              if not oldValue_initialized:
-                 oldValue = getattr(cut, attribute).value()
+                 oldValue = recursiveGetAttr(cut, attribute).value()
              oldValue_initialized = True
-            
-             setattr(cut, attribute, value)
+
+             recursiveSetAttr(cut, attribute, value)
 
              numCutsChanged += 1
 
