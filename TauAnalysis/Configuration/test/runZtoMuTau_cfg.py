@@ -82,7 +82,9 @@ process.source = cms.Source("PoolSource",
         #'file:/tmp/veelken/Ztautau_1_1_sXK.root'
         #'file:/data1/veelken/tmp/final_events_AHtoMuTau_ZtautauPOWHEG_Run32_51_0_ZW7.root'
         #'file:/data2/debugMuon/final_events_AHtoMuTau_data_Mu_Run2010B_Nov4ReReco_RunOnOursJan16.root'
-        'file:/data2/veelken/CMSSW_3_8_x/skims/ZtoMuTau/mcZtautauPU156bx_pythia_1_1_xdF.root'
+        #'file:/data2/veelken/CMSSW_3_8_x/skims/ZtoMuTau/mcZtautauPU156bx_pythia_1_1_xdF.root'
+        #'file:/data1/veelken/CMSSW_3_8_x/skims/AHtoMuTau/selEvents_AHtoMuTau_HPSloose_2011Jan29_friis_RECO.root'
+        'file:/data1/veelken/CMSSW_3_8_x/skims/AHtoMuTau/uwOnlyEvents_AHtoMuTau_HPSloose_2011Feb03_bachtis_RECO.root'                        
     )
     #skipBadFiles = cms.untracked.bool(True)
 )
