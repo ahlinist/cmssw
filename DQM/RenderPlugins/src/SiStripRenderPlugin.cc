@@ -2,8 +2,8 @@
   \file SiStripRenderPlugin
   \brief Display Plugin for SiStrip DQM Histograms
   \author S. Dutta
-  \version $Revision: 1.33 $
-  \date $Date: 2010/11/12 14:08:59 $
+  \version $Revision: 1.34 $
+  \date $Date: 2011/02/01 17:07:41 $
 */
 
 #include "VisMonitoring/DQMServer/interface/DQMRenderPlugin.h"
@@ -449,29 +449,29 @@ private:
 //           tl2.DrawLine(xmin, TIBLimit2*0.5, xmax, TIBLimit2*0.5);
 //           tl2.DrawLine(xmin, TIBLimit2*2.0, xmax, TIBLimit2*2.0);
 //          obj->SetMinimum(TIBLimit2*0.1);
-          obj->SetMinimum(10);
-	  obj->SetMaximum(TMath::Max(ymax, TIBLimit2*200));
+          obj->SetMinimum(1);
+	  obj->SetMaximum(TMath::Max(ymax, TIBLimit2*20));
         } else if (name.find( "TotalNumberOfClusterProfile__TOB" ) != std::string::npos) {
 //           tl1.DrawLine(xmin, TOBLimit2,     xmax, TOBLimit2);
 //           tl2.DrawLine(xmin, TOBLimit2*0.5, xmax, TOBLimit2*0.5);
 //           tl2.DrawLine(xmin, TOBLimit2*2.0, xmax, TOBLimit2*2.0);
 //          obj->SetMinimum(TOBLimit2*0.1);
-          obj->SetMinimum(10);
-          obj->SetMaximum(TMath::Max(ymax, TOBLimit2*200));
+          obj->SetMinimum(1);
+          obj->SetMaximum(TMath::Max(ymax, TOBLimit2*20));
         } else if (name.find( "TotalNumberOfClusterProfile__TEC" ) != std::string::npos) {
 //           tl1.DrawLine(xmin, TECLimit2,     xmax, TECLimit2);
 //           tl2.DrawLine(xmin, TECLimit2*0.5, xmax, TECLimit2*0.5);
 //           tl2.DrawLine(xmin, TECLimit2*2.0, xmax, TECLimit2*2.0);
 //          obj->SetMinimum(TECLimit2*0.1);
-          obj->SetMinimum(10);
-          obj->SetMaximum(TMath::Max(ymax, TECLimit2*200));
+          obj->SetMinimum(1);
+          obj->SetMaximum(TMath::Max(ymax, TECLimit2*20));
         }  else if (name.find( "TotalNumberOfClusterProfile__TID" ) != std::string::npos) {
 //           tl1.DrawLine(xmin, TIDLimit2,     xmax, TIDLimit2);
 //           tl2.DrawLine(xmin, TIDLimit2*0.5, xmax, TIDLimit2*0.5);
 //           tl2.DrawLine(xmin, TIDLimit2*2.0, xmax, TIDLimit2*2.0);
 //          obj->SetMinimum(TIDLimit2*0.1);
-          obj->SetMinimum(10);
-          obj->SetMaximum(TMath::Max(ymax, TIDLimit2*200));
+          obj->SetMinimum(1);
+          obj->SetMaximum(TMath::Max(ymax, TIDLimit2*20));
         }
         return;
       }
