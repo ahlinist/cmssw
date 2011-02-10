@@ -167,7 +167,7 @@ def onia2MuMuPAT(process, GlobalTag, MC=False, HLT='HLT', Filter=True):
         fileName = cms.untracked.string('onia2MuMuPAT.root'),
         outputCommands = cms.untracked.vstring('drop *',
             'keep *_genMuons_*_Onia2MuMuPAT',                      # generated muons and parents
-            'keep patMuons_patMuonsWithTrigger_*_Onia2MuMuPAT',    # All PAT muos including general tracks and matches to triggers
+      #      'keep patMuons_patMuonsWithTrigger_*_Onia2MuMuPAT',    # All PAT muos including general tracks and matches to triggers
             'keep *_goodTracks_*_Onia2MuMuPAT',                    # All good tracks (heavy!)  
             'keep patCompositeCandidates_*__Onia2MuMuPAT',         # PAT di-muons
             'keep patMuons_tagMuons__Onia2MuMuPAT',                # tagMuons for efficiency
