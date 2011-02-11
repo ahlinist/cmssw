@@ -162,36 +162,5 @@ processWtoTauNu_ZplusJetsSum.config_dqmFileLoader.scaleFactor = cms.double(1.)
 
 #--------------------------------------------------------------------------------
 
-processWtoTauNu_TTplusJets = copy.deepcopy(process_TTplusJets)
-processWtoTauNu_TTplusJets.config_dqmFileLoader.inputFileNames = cms.vstring(
-    plotDirectoryName.value() + 'plotsWtoTauNu_TTplusJets_part01.root',
-    plotDirectoryName.value() + 'plotsWtoTauNu_TTplusJets_part02.root',
-    plotDirectoryName.value() + 'plotsWtoTauNu_TTplusJets_part03.root',
-    plotDirectoryName.value() + 'plotsWtoTauNu_TTplusJets_part04.root',
-    plotDirectoryName.value() + 'plotsWtoTauNu_TTplusJets_part05.root',
-    plotDirectoryName.value() + 'plotsWtoTauNu_TTplusJets_part06.root',
-    plotDirectoryName.value() + 'plotsWtoTauNu_TTplusJets_part07.root',
-    plotDirectoryName.value() + 'plotsWtoTauNu_TTplusJets_part08.root',
-    plotDirectoryName.value() + 'plotsWtoTauNu_TTplusJets_part09.root',
-    plotDirectoryName.value() + 'plotsWtoTauNu_TTplusJets_part10.root',
-    plotDirectoryName.value() + 'plotsWtoTauNu_TTplusJets_part11.root',
-    plotDirectoryName.value() + 'plotsWtoTauNu_TTplusJets_part12.root',  
-    plotDirectoryName.value() + 'plotsWtoTauNu_TTplusJets_part13.root',
-    plotDirectoryName.value() + 'plotsWtoTauNu_TTplusJets_part14.root',
-    plotDirectoryName.value() + 'plotsWtoTauNu_TTplusJets_part15.root',
-    plotDirectoryName.value() + 'plotsWtoTauNu_TTplusJets_part16.root',
-    plotDirectoryName.value() + 'plotsWtoTauNu_TTplusJets_part17.root',
-    plotDirectoryName.value() + 'plotsWtoTauNu_TTplusJets_part18.root'
-)
-
-
-processWtoTauNu_TTplusJets.config_dqmFileLoader.scaleFactor = cms.double(corrFactorWtoTauNu_TTplusJets*intLumiWtoTauNu_Data/intLumiWtoTauNu_TTplusJets)
-
-processWtoTauNu_TTplusJetsSum = copy.deepcopy(process_TTplusJets)
-processWtoTauNu_TTplusJetsSum.config_dqmFileLoader.inputFileNames = cms.vstring(
-    plotDirectoryName.value() + 'plotsWtoTauNu_TTplusJetsSum.root'
-)
-processWtoTauNu_TTplusJetsSum.config_dqmFileLoader.dqmDirectory_store = cms.string('harvested')
-processWtoTauNu_TTplusJetsSum.config_dqmFileLoader.scaleFactor = cms.double(1.)
 
 
