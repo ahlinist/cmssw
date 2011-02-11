@@ -17,28 +17,31 @@ analyzeWtoTauNuEvents = cms.EDAnalyzer("GenericAnalyzer",
     name = cms.string('wTauNuAnalyzer'), 
                             
     filters = cms.VPSet(
-	#vertex selection
-	evtSelPrimaryEventVertex,
-        evtSelPrimaryEventVertexQuality,
-        evtSelPrimaryEventVertexPosition,
-      
-	#wtaunu specific selection  
-	evtSelTauEta,
-	evtSelTauPt,
-	evtSelPFMetPt,
-	evtSelMetPt,
-	evtSelTauLeadTrk,
-	evtSelTauLeadTrkPt,
-	evtSelTauIso,
-	evtSelTauTaNC,
-        evtSelTauProng,
-        evtSelTauCharge,
-	evtSelTauMuonVeto,
-	evtSelTauElectronVeto,
-        evtSelTauEcalCrackVeto,
-        evtSelCentralJetVeto,
-	evtSelRecoilEnergyFromCaloTowers,
-        evtSelMetTopology
+    #trigger selection
+    evtSelTrigger,
+    
+    #vertex selection
+    evtSelPrimaryEventVertex,
+    evtSelPrimaryEventVertexQuality,
+    evtSelPrimaryEventVertexPosition,
+    
+    #wtaunu specific selection  
+    evtSelTauEta,
+    evtSelTauPt,
+    evtSelPFMetPt,
+    evtSelMetPt,
+    evtSelTauLeadTrk,
+    evtSelTauLeadTrkPt,
+    evtSelTauIso,
+    evtSelTauTaNC,
+    evtSelTauProng,
+    evtSelTauCharge,
+    evtSelTauMuonVeto,
+    evtSelTauElectronVeto,
+    evtSelTauEcalCrackVeto,
+    evtSelCentralJetVeto,
+    evtSelRecoilEnergyFromCaloTowers,
+    evtSelMetTopology
     ),
   
     analyzers = cms.VPSet(
