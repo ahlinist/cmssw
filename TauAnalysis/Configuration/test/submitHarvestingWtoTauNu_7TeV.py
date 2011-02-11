@@ -4,7 +4,7 @@ from TauAnalysis.Configuration.submitToBatch import submitToBatch
 from TauAnalysis.Configuration.makeReplacementsHarvesting import makeReplacementsHarvesting
 
 # name of the directory (either on afs area or castor) to which all .root files produced by the Harvesting job will be copied
-outputFilePath = "/castor/cern.ch/user/l/liis/CMSSW_3_1_X/WTauNuPlots7TeV/"
+outputFilePath = "/castor/cern.ch/user/l/liis/CMSSW_38X/Histograms/"
 inputFilePath = "rfio:" + outputFilePath
 
 #--------------------------------------------------------------------------------
@@ -35,5 +35,7 @@ submitToBatch(configFile = "harvestWtoTauNuPlots_cfg.py", channel = "WtoTauNu", 
               replFunction = makeReplacementsHarvesting, replacements = "inputFilePath = " + inputFilePath + "; recoSampleDefinitionsFile = TauAnalysis.Configuration.plotWtoTauNu_processes_7TeV_cfi", job = "harvesting", queue = "1nd", outputFilePath = outputFilePath )
 
 # harvest qcd
-submitToBatch(configFile = "harvestWtoTauNuPlots_cfg.py", channel = "WtoTauNu", sample = "qcd_W",
-              replFunction = makeReplacementsHarvesting, replacements = "inputFilePath = " + inputFilePath + "; recoSampleDefinitionsFile = TauAnalysis.Configuration.plotWtoTauNu_processes_7TeV_cfi", job = "harvesting", queue = "1nh", outputFilePath = outputFilePath )
+for i in range(5):
+    submitToBatch(configFile = "harvestWtoTauNuPlots_cfg.py", channel = "WtoTauNu", sample = "qcd_W" + "_part%(i)02d" % {"i" : (i+1)},
+                  replFunction = makeReplacementsHarvesting, replacements = "inputFilePath = " + inputFilePath + "; recoSampleDefinitionsFile = TauAnalysis.Configuration.plotWtoTauNu_processes_7TeV_cfi", job = "harvesting", queue = "1nd", outputFilePath = outputFilePath )
+    
