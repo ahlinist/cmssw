@@ -2,11 +2,18 @@ import FWCore.ParameterSet.Config as cms
 
 from TauAnalysis.RecoTools.tools.eventSelFlagProdConfigurator import *
 
+# trigger selection
+cfgTrigger = cms.PSet(
+    pluginName = cms.string('Trigger'),
+    pluginType = cms.string('PATTriggerEventSelector'),
+    src = cms.InputTag('patTriggerEvent'),
+    hltAcceptPaths = cms.vstring('HLT_SingleIsoTau20_Trk15_MET20')
+    )
 # vertex selection
 cfgPrimaryEventVertex = cms.PSet(
     pluginName = cms.string('primaryEventVertex'),
     pluginType = cms.string('VertexMinEventSelector'),
-    src = cms.InputTag('selectedPrimaryVertexHighestPtTrackSum'),
+    src = cms.InputTag('offlinePrimaryVerticesWithBS'),
     minNumber = cms.uint32(1)
 )
 cfgPrimaryEventVertexQuality = cms.PSet(
@@ -129,7 +136,7 @@ cfgCentralJetVeto = cms.PSet(
     pluginName = cms.string('centralJetVeto'),
     pluginType = cms.string('PATCandViewMaxEventSelector'),
     src = cms.InputTag('selectedPatJetsEt15ForWTauNuCumulative'), 
-    maxNumber = cms.uint32(0)                                                      
+    maxNumber = cms.uint32(100)                                                      
 )
 
 # Recoil jet energy cut
@@ -137,7 +144,7 @@ cfgRecoilEnergyFromCaloTowersCut = cms.PSet(
     pluginName = cms.string('recoilEnergyFromCaloTowersCut'),
     pluginType = cms.string('PATTauRecoilEnergyFromCaloTowersMinEventSelector'),
     src = cms.InputTag('tauRecoilEnergyFromCaloTowersPt5'),
-    minNumber = cms.uint32(1)
+    minNumber = cms.uint32(0)
 )
 
 # MET topology cut
@@ -151,28 +158,29 @@ cfgMetTopologyCut = cms.PSet(
 
 wToTauNuEventSelConfigurator = eventSelFlagProdConfigurator(
     [ 
-	cfgPrimaryEventVertex,
-	cfgPrimaryEventVertexQuality,
-	cfgPrimaryEventVertexPosition,
-	cfgTauEtaCut,
-	cfgTauPtCut,
-	cfgPFMetPt,
-	cfgMetPt,
-	cfgTauLeadTrk,
-	cfgTauLeadTrkPt,
-        cfgTauEcalIso,
-	cfgTauTrkIso,
-	cfgTauProngCut,
-        cfgTauChargeCut,
-	cfgTauMuonVeto,
-	cfgTauElectronVeto,
-        cfgTauEcalCrackVeto,
-        cfgCentralJetVeto,
-	cfgRecoilEnergyFromCaloTowersCut,
-        cfgMetTopologyCut
+    cfgTrigger,
+    cfgPrimaryEventVertex,
+    cfgPrimaryEventVertexQuality,
+    cfgPrimaryEventVertexPosition,
+    cfgTauEtaCut,
+    cfgTauPtCut,
+    cfgPFMetPt,
+    cfgMetPt,
+    cfgTauLeadTrk,
+    cfgTauLeadTrkPt,
+    cfgTauEcalIso,
+    cfgTauTrkIso,
+    cfgTauProngCut,
+    cfgTauChargeCut,
+    cfgTauMuonVeto,
+    cfgTauElectronVeto,
+    cfgTauEcalCrackVeto,
+    cfgCentralJetVeto,
+    cfgRecoilEnergyFromCaloTowersCut,
+    cfgMetTopologyCut
     ],
     boolEventSelFlagProducer = "BoolEventSelFlagProducer",
     pyModuleName = __name__
-)
+    )
 
 selectWtoTauNuEvents = wToTauNuEventSelConfigurator.configure()
