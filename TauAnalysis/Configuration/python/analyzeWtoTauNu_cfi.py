@@ -30,8 +30,6 @@ wTauNuHistManagers = cms.vstring(
     'jetHistManager',
     'vertexHistManager',
     'tauRecoilEnergyFromCaloTowersHistManager',
-#    'tauRecoilEnergyFromCentralCaloTowersHistManager',
-#    'tauRecoilEnergyFromForwardCaloTowersHistManager',
     'metTopologyHistManager',
     'tauNuCandidateHistManager',
     'caloEventShapeVarsHistManager',
@@ -42,6 +40,13 @@ wTauNuHistManagers = cms.vstring(
 #--------------------------------------------------------------------------------
 # define event selection criteria
 #--------------------------------------------------------------------------------
+
+# trigger selection
+evtSelTrigger = cms.PSet(
+    pluginName = cms.string('evtSelTrigger'),
+    pluginType = cms.string('BoolEventSelector'),
+    src = cms.InputTag('Trigger')
+    )
 
 # vertex selection
 evtSelPrimaryEventVertex = cms.PSet(
@@ -207,8 +212,16 @@ wTauNuAnalysisSequence = cms.VPSet(
     cms.PSet(
         analyzers = wTauNuHistManagers
     ),
-
-    # vertex selection
+    # trigger selection
+    cms.PSet(
+    filter = cms.string('evtSelTrigger'),
+    title = cms.string('Tau+MET Trigger'),
+    saveRunLumiSectionEventNumbers = cms.vstring('')
+    ),
+    cms.PSet(
+    analyzers = wTauNuHistManagers
+    ),
+    #vertex selection
     cms.PSet(
         filter = cms.string('evtSelPrimaryEventVertex'),
         title = cms.string('Vertex'),
@@ -219,7 +232,7 @@ wTauNuAnalysisSequence = cms.VPSet(
     ),
     cms.PSet(
         filter = cms.string('evtSelPrimaryEventVertexQuality'),
-        title = cms.string('p(chi2Vertex) > 0.01'),
+        title = cms.string('Vertex quality'),
         saveRunLumiSectionEventNumbers = cms.vstring('')
     ),
     cms.PSet(
@@ -227,7 +240,7 @@ wTauNuAnalysisSequence = cms.VPSet(
     ),
     cms.PSet(
         filter = cms.string('evtSelPrimaryEventVertexPosition'),
-        title = cms.string('-50 < Vertex < +50 cm'),
+        title = cms.string('Vertex position'),
         saveRunLumiSectionEventNumbers = cms.vstring('')
     ),
     cms.PSet(
@@ -237,7 +250,7 @@ wTauNuAnalysisSequence = cms.VPSet(
     #primary tau selection
     cms.PSet(
         filter = cms.string('evtSelTauEta'),
-        title = cms.string('-2.1 < eta(Tau) < +2.1'),
+        title = cms.string('|eta(Tau)| < +2.3'),
         saveRunLumiSectionEventNumbers = cms.vstring('')
     ),
     cms.PSet(
@@ -246,7 +259,7 @@ wTauNuAnalysisSequence = cms.VPSet(
     ),
     cms.PSet(
         filter = cms.string('evtSelTauPt'),
-        title = cms.string('25< Pt(Tau) < 60 GeV'),
+        title = cms.string('Pt(Tau) > 30 GeV'),
         saveRunLumiSectionEventNumbers = cms.vstring('')
     ),
     cms.PSet(
@@ -264,7 +277,7 @@ wTauNuAnalysisSequence = cms.VPSet(
 	), 
     cms.PSet(
         filter = cms.string('evtSelMetPt'),
-        title = cms.string('MET > 15 GeV'),
+        title = cms.string('calo-MET cut (switch off)'),
         saveRunLumiSectionEventNumbers = cms.vstring('')
 	),
     cms.PSet(
@@ -300,7 +313,7 @@ wTauNuAnalysisSequence = cms.VPSet(
 	),
     cms.PSet(
         filter = cms.string('evtSelTauTaNC'),
-        title = cms.string('discrimination by isolation'),
+        title = cms.string('Isolation (switch off)'),
         saveRunLumiSectionEventNumbers = cms.vstring('')
     ),
     cms.PSet(
@@ -375,8 +388,8 @@ wTauNuAnalysisSequence = cms.VPSet(
         ),
     cms.PSet(
 	filter = cms.string('evtSelRecoilEnergyFromCaloTowers'),
-	title = cms.string('recoil energy (calotowers) < 5'),
-	saveRunLumiSectionEventNumbers = cms.vstring('passed_cumulative')
+	title = cms.string('recoil energy (switch off)'),
+	saveRunLumiSectionEventNumbers = cms.vstring('')
 	),
     cms.PSet(
         analyzers = wTauNuHistManagers,
@@ -390,7 +403,7 @@ wTauNuAnalysisSequence = cms.VPSet(
  cms.PSet(
         filter = cms.string('evtSelMetTopology'),
         title = cms.string('MET-topology < 0.25'),
-        saveRunLumiSectionEventNumbers = cms.vstring('passed_cumulative')
+        saveRunLumiSectionEventNumbers = cms.vstring('')
         ),
     cms.PSet(
         analyzers = wTauNuHistManagers,
