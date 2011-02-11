@@ -6,7 +6,7 @@ process = cms.Process('runWtoTauNu')
 
 process.load('Configuration/StandardSequences/Services_cff')
 process.load('FWCore/MessageService/MessageLogger_cfi')
-process.MessageLogger.cerr.FwkReport.reportEvery = 100
+process.MessageLogger.cerr.FwkReport.reportEvery = 1000
 
 #load geometry
 process.load('Configuration/StandardSequences/GeometryIdeal_cff')
@@ -29,7 +29,7 @@ process.load("TauAnalysis.Configuration.analyzeWtoTauNu_cff")
 
 # import configuration parameters for submission of jobs to CERN batch system
 from TauAnalysis.Configuration.recoSampleDefinitionsWtoTauNu_7TeV_cfi import *
-from TauAnalysis.Configuration.recoSampleDefinitionsWtoTauNu_10TeV_cfi import *
+from TauAnalysis.Configuration.recoSampleDefinitionsWtoTauNu_cfi import *
 
 #--------------------------------------------------------------------------------
 # print memory consumed by cmsRun
@@ -48,6 +48,10 @@ from TauAnalysis.Configuration.recoSampleDefinitionsWtoTauNu_10TeV_cfi import *
 #process.add_( cms.Service("PrintLoadingPlugins") )
 #---------------------------------------------------------------------------------
 
+process.patTrigger.processName = 'HLT2'
+
+process.patTriggerEvent.processName = "HLT2"
+
 process.DQMStore = cms.Service("DQMStore")
 
 process.saveWtoTauNuPlots = cms.EDAnalyzer("DQMSimpleFileSaver",
@@ -55,15 +59,42 @@ process.saveWtoTauNuPlots = cms.EDAnalyzer("DQMSimpleFileSaver",
 )
 
 process.maxEvents = cms.untracked.PSet(            
-    input = cms.untracked.int32(1000)    
+    input = cms.untracked.int32(5000)    
 )
 
 process.source = cms.Source("PoolSource",
     fileNames = cms.untracked.vstring(
        #'rfio:/castor/cern.ch/user/c/cerati/SkimDataZtautau/tauAnalysisElecMu_skim_TTbar_1_1.root'
-        '/store/relval/CMSSW_3_6_1/RelValZTT/GEN-SIM-RECO/START36_V7-v1/0021/F405BC9A-525D-DF11-AB96-002618943811.root'
+#       '/store/relval/CMSSW_3_6_1/RelValZTT/GEN-SIM-RECO/START36_V7-v1/0021/F405BC9A-525D-DF11-AB96-002618943811.root'
        #'rfio:/castor/cern.ch/user/l/liis/wTauNuPatTuples/spring10/shrinkingcone/patTupleWtoTauNu_Wtaunu_7TeV_part01.root'
 
+#    #Wtaunu
+#    'rfio:/castor/cern.ch/user/a/abdollah/HLT/TrigEfficiency/testRAWRECO/TauHLTOutput_Fall10_79_1_8Yq.root'
+#    'rfio:/castor/cern.ch/user/a/abdollah/HLT/TrigEfficiency/testRAWRECO/TauHLTOutput_Fall10_98_1_gIu.root',
+#    'rfio:/castor/cern.ch/user/a/abdollah/HLT/TrigEfficiency/testRAWRECO/TauHLTOutput_Fall10_99_1_lOa.root',
+    'rfio:/castor/cern.ch/user/a/abdollah/HLT/TrigEfficiency/testRAWRECO/TauHLTOutput_Fall10_9_1_3yD.root'
+    
+    #QCD
+#    'rfio:/castor/cern.ch/user/a/abdollah/HLT/TrigEfficiency/QCD/TauHLTOutput_Fall10_996_1_1OD.root',
+#    'rfio:/castor/cern.ch/user/a/abdollah/HLT/TrigEfficiency/QCD/TauHLTOutput_Fall10_997_1_6Bw.root',
+#    'rfio:/castor/cern.ch/user/a/abdollah/HLT/TrigEfficiency/QCD/TauHLTOutput_Fall10_998_1_rJw.root',
+#    'rfio:/castor/cern.ch/user/a/abdollah/HLT/TrigEfficiency/QCD/TauHLTOutput_Fall10_999_1_yIq.root',
+#    'rfio:/castor/cern.ch/user/a/abdollah/HLT/TrigEfficiency/QCD/TauHLTOutput_Fall10_99_1_AhP.root',
+#    'rfio:/castor/cern.ch/user/a/abdollah/HLT/TrigEfficiency/QCD/TauHLTOutput_Fall10_9_1_i9g.root'
+
+    #Wenu
+#    'rfio:/castor/cern.ch/user/a/abdollah/HLT/TrigEfficiency/Wenu/TauHLTOutput_Fall10_96_0_tkS.root',
+#    'rfio:/castor/cern.ch/user/a/abdollah/HLT/TrigEfficiency/Wenu/TauHLTOutput_Fall10_97_0_d3g.root',
+#    'rfio:/castor/cern.ch/user/a/abdollah/HLT/TrigEfficiency/Wenu/TauHLTOutput_Fall10_98_0_MgD.root',
+#    'rfio:/castor/cern.ch/user/a/abdollah/HLT/TrigEfficiency/Wenu/TauHLTOutput_Fall10_99_0_92n.root',
+#    'rfio:/castor/cern.ch/user/a/abdollah/HLT/TrigEfficiency/Wenu/TauHLTOutput_Fall10_9_0_uKS.root'
+
+    #Wmunu
+#    'rfio:/castor/cern.ch/user/a/abdollah/HLT/TrigEfficiency/testRAWRECO_MU/TauHLTOutput_Fall10_9_1_pBK.root'
+    
+    #Ztautau
+#    'rfio:/castor/cern.ch/user/a/abdollah/HLT/TrigEfficiency/Ztautau/TauHLTOutput_Fall10_9_1_2bX.root'
+    
     )
     #skipBadFiles = cms.untracked.bool(True)
 )
@@ -82,9 +113,9 @@ process.source = cms.Source("PoolSource",
 #import utility function for switching pat::Tau input
 from PhysicsTools.PatAlgos.tools.tauTools import * 
 #switchToCaloTau(process)
-switchToPFTauShrinkingCone(process)
+#switchToPFTauShrinkingCone(process)
 #switchToPFTauFixedCone(process)
-#switchToPFTauHPSpTaNC(process)
+switchToPFTauHPSpTaNC(process)
 
 # disable preselection of pat::Taus
 # (disabled also in TauAnalysis/RecoTools/python/patPFTauConfig_cfi.py ,
@@ -111,12 +142,13 @@ replaceMETforTauNu(process, cms.InputTag('patMETs'),cms.InputTag('patPFMETs'))
 #--------------------------------------------------------------------------------
 # import utility function for changing cut values
 from TauAnalysis.Configuration.tools.changeCut import changeCut
-changeCut(process,"selectedPatTausTaNCdiscr","tauID('byTaNCfrQuarterPercent') > 0.5")
+changeCut(process,"selectedPatTausTaNCdiscr","tauID('byHPSmedium') > -0.5") #inactivate TaNC
 
-changeCut(process,"selectedPatTausForWTauNuEcalIso","tauID('byTaNCfrQuarterPercent') > 0.5")
-changeCut(process,"selectedPatTausForWTauNuTrkIso","tauID('byTaNCfrQuarterPercent') > 0.5")
+changeCut(process,"selectedPatTausForWTauNuEta21","abs(eta) < 2.3")
+changeCut(process,"selectedPatTausForWTauNuEcalIso","tauID('byHPSmedium') > 0.5")
+changeCut(process,"selectedPatTausForWTauNuTrkIso","tauID('byHPSmedium') > 0.5")
 changeCut(process,"selectedPatTausForWTauNuPt20","pt > 30")
-changeCut(process,"selectedPatTausForWTauNuLeadTrkPt","leadPFChargedHadrCand().isNonnull() & leadPFChargedHadrCand().pt() > 20.")
+changeCut(process,"selectedPatTausForWTauNuLeadTrkPt","tauID('byDecayMode') > 0.5")
 changeCut(process,"selectedPatTausForWTauNuElectronVeto","tauID('againstElectron') > 0.5 && emFraction < 0.85")
 changeCut(process,"selectedPatTausForWTauNuEcalCrackVeto","abs(eta) > 0.018 && (abs(eta)<0.423 || abs(eta)>0.461) && (abs(eta)<0.770 || abs(eta)>0.806) && (abs(eta)<1.127 || abs(eta)>1.163) && (abs(eta)<1.460 || abs(eta)>1.558)")
 #-----------------------------------------------------------------------------------
@@ -147,14 +179,14 @@ from TauAnalysis.Configuration.tools.factorizationTools import enableFactorizati
 #__#factorization#
 #--------------------------------------------------------------------------------
 # import utility function for estimation of systematic uncertainties
-#from TauAnalysis.Configuration.tools.sysUncertaintyTools import disableSysUncertainties_runWtoTauNu
+from TauAnalysis.Configuration.tools.sysUncertaintyTools import disableSysUncertainties_runWtoTauNu
 #
 # define "hook" for keeping enabled/disabling estimation of systematic uncertainties
 # in case running jobs on the CERN batch system
 # (needs to be done after process.p has been defined)
 #__#systematics#
-#if not hasattr(process, "isBatchMode"):
-#    disableSysUncertainties_runWtoTauNu(process)
+if not hasattr(process, "isBatchMode"):
+       disableSysUncertainties_runWtoTauNu(process)
 
 #--------------------------------------------------------------------------------
 # disable event-dump output in order to reduce size of log-files
