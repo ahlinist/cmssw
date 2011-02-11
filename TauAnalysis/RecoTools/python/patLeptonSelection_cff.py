@@ -476,7 +476,7 @@ selectPatTausForWTauNu = patTauSelConfiguratorForWTauNu.configure(pyNameSpace = 
 
 # loose isolation selection
 selectedPatTausForWTauNuLeadTrkPtLooseIsolation.cut = cms.string("leadTrack().isNonnull() & leadTrack().pt() > 15.")
-selectedPatTausForWTauNuTaNCdiscrLooseIsolation.cut = cms.string('tauID("byTaNCfrQuarterPercent") > -1.e+3') # cut on TaNC output disabled per default
+selectedPatTausForWTauNuTaNCdiscrLooseIsolation.cut = cms.string("leadTrack().isNonnull() & leadTrack().pt() > 15.")
 selectedPatTausForWTauNuEcalIsoLooseIsolation.cut = selectedPatTausForWTauNuTaNCdiscrLooseIsolation.cut
 selectedPatTausForWTauNuTrkIsoLooseIsolation.cut = selectedPatTausForWTauNuTaNCdiscrLooseIsolation.cut
 selectedPatTausForWTauNuProngLooseIsolation.cut = selectedPatTausForWTauNuTrkIsoLooseIsolation.cut
