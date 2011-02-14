@@ -70,7 +70,6 @@ int main(int argc, char* argv[])
   string inBxs, inOrbits, inTrig, inTTrig, inLumi, inRuns;
   float avgTimeMin, avgTimeMax;
   float minAmpEB, minAmpEE;
-  float maxE1E9, maxSwissCrossNoise;  // EB only, no spikes seen in EE
   float maxHitTimeEB, minHitTimeEB;
   // init to sensible defaults
   avgTimeMin = -1; // in ns
@@ -79,8 +78,6 @@ int main(int argc, char* argv[])
   minAmpEE = 5; // GeV
   maxHitTimeEB = 15; // ns
   minHitTimeEB = -15; // ns
-  maxE1E9 = 0.95; // EB only
-  maxSwissCrossNoise = 0.95; // EB only
   inBxs = "-1";
   inOrbits = "-1";
   inTrig = "-1";
@@ -106,8 +103,6 @@ int main(int argc, char* argv[])
     if (argv[i] == std::string("-runs") && argc>i+1) inRuns = std::string(argv[i+1]);
     if (argv[i] == std::string("-ebampmin") && argc>i+1) minAmpEB = atof(argv[i+1]);
     if (argv[i] == std::string("-eeampmin") && argc>i+1) minAmpEE = atof(argv[i+1]);
-    if (argv[i] == std::string("-e1e9max") && argc>i+1) maxE1E9 = atof(argv[i+1]);
-    if (argv[i] == std::string("-swisskmax") && argc>i+1) maxSwissCrossNoise = atof(argv[i+1]);
     if (argv[i] == std::string("-avgtimemin") && argc>i+1) avgTimeMin = atof(argv[i+1]);
     if (argv[i] == std::string("-avgtimemax") && argc>i+1) avgTimeMax = atof(argv[i+1]);
     if (argv[i] == std::string("-ebhittimemax") && argc>i+1) maxHitTimeEB = atof(argv[i+1]);
@@ -155,7 +150,6 @@ int main(int argc, char* argv[])
   cout << "Running with options: "
     << "avgTimeMin: " << avgTimeMin << " avgTimeMax: " << avgTimeMax
     << " minAmpEB: " << minAmpEB << " minAmpEE: " << minAmpEE
-    << " maxE1E9 (EB): " << maxE1E9 << " maxSwissCrossNoise (EB): " << maxSwissCrossNoise
     << " maxHitTimeEB: " << maxHitTimeEB << " minHitTimeEB: " << minHitTimeEB                                                                   
     << " inTrig: " << inTrig << " inTTrig: " << inTTrig << " inLumi: " << inLumi 
     << " inBxs: " << inBxs << " inRuns: " << inRuns << " inOrbits: " << inOrbits
@@ -327,8 +321,8 @@ int main(int argc, char* argv[])
         float cryTimeError = treeVars_.xtalInBCTimeErr[bCluster][cryInBC];
         float cryAmp = treeVars_.xtalInBCAmplitudeADC[bCluster][cryInBC];
         //float cryEt = treeVars_.cryETEB_[cryIndex]; // not in the tree
-        float cryE1E9 = treeVars_.xtalInBCE1OverE9[bCluster][cryInBC];
-        float crySwissCrossNoise = treeVars_.xtalInBCSwissCross[bCluster][cryInBC];
+        //SIC FEB 14 2011 - removed E/E9 and swiss cross cuts
+        //                - spike cleaning done higher up
 	float Ao = cryAmp/sigmaNoiseEB;
 	float AoLog = log10(Ao/25);
 
@@ -341,8 +335,6 @@ int main(int argc, char* argv[])
 
         //XXX: RecHit cuts
         bool keepHit = cryAmp >= minAmpEB
-          && cryE1E9 < maxE1E9
-          && crySwissCrossNoise < maxSwissCrossNoise
           && cryTime > minHitTimeEB
           && cryTime < maxHitTimeEB
           && AoLog > 0

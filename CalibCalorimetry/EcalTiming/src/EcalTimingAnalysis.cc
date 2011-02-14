@@ -303,8 +303,6 @@ EcalTimingAnalysis::beginJob( ) {
 	eventTimingInfoTree_->Branch("crystalAmplitudesEE",TTreeMembers_.cryAmpsEE_,"crystalAmplitudesEE[numberOfEEcrys]/F");
 	eventTimingInfoTree_->Branch("crystalETEB",TTreeMembers_.cryETEB_,"crystalETEB[numberOfEBcrys]/F");
 	eventTimingInfoTree_->Branch("crystalETEE",TTreeMembers_.cryETEE_,"crystalETEE[numberOfEEcrys]/F");
-	eventTimingInfoTree_->Branch("e1Oe9EB",TTreeMembers_.e1Oe9EB_,"e1Oe9EB[numberOfEBcrys]/F");
-	eventTimingInfoTree_->Branch("kswisskEB",TTreeMembers_.kswisskEB_,"kswisskEB[numberOfEBcrys]/F");
 	eventTimingInfoTree_->Branch("correctionToSampleEB",&TTreeMembers_.correctionToSample5EB_,"correctionToSample5EB/F");
 	eventTimingInfoTree_->Branch("crystalUncalibTimesEB",TTreeMembers_.cryUTimesEB_,"crystalUncalibTimesEB[numberOfEBcrys]/F");
 	eventTimingInfoTree_->Branch("crystalUncalibTimesEE",TTreeMembers_.cryUTimesEE_,"crystalUncalibTimesEE[numberOfEEcrys]/F");
@@ -836,8 +834,6 @@ EcalTimingAnalysis::analyze(  edm::Event const& iEvent,  edm::EventSetup const& 
      int DCCid = elecId.dccId();
      int SMind = anid.ic();
      double damp = ithit->amplitude();
-     double e1Oe9 = 0.;
-     double kswissk = 0.;
 
      LogInfo("EcalTimingAnalysis")<<"SM " << DCCid+600 <<" SMind " << SMind << " Chi sq " << ithit->chi2() << " ampl " << ithit->amplitude() << " lambda " << lambda << " jitter " << ithit->jitter();
      if (DCCid == 644 || DCCid == 645) std::cout << "SM " << DCCid+600 <<" SMind " << SMind << " Chi sq " << ithit->chi2() << " ampl " << ithit->amplitude() << " lambda " << lambda << " jitter " << ithit->jitter();
@@ -858,8 +854,6 @@ EcalTimingAnalysis::analyze(  edm::Event const& iEvent,  edm::EventSetup const& 
 	          ) continue;
 		  damp = (*itt).energy();
 		  rhtime = (*itt).time();
-                  e1Oe9 = EcalSeverityLevelAlgo::spikeFromNeighbours(anid,(*rhits),0.2,EcalSeverityLevelAlgo::kE1OverE9);
-		  kswissk = EcalSeverityLevelAlgo::spikeFromNeighbours(anid,(*rhits),0.2,EcalSeverityLevelAlgo::kSwissCross);
 	   }
        if (correctAVE_) mytime += 5.0 - averagetimeEB;
        if (timingTree_)
@@ -870,8 +864,6 @@ EcalTimingAnalysis::analyze(  edm::Event const& iEvent,  edm::EventSetup const& 
 	   TTreeMembers_.cryTimeErrorsEB_[TTreeMembers_.numEBcrys_]=ithit->chi2();
 	   TTreeMembers_.cryAmpsEB_[TTreeMembers_.numEBcrys_]=damp;
 	   TTreeMembers_.cryETEB_[TTreeMembers_.numEBcrys_]=damp * sin(myTheta(geometry_pEB,anid));;
-	   TTreeMembers_.e1Oe9EB_[TTreeMembers_.numEBcrys_]=e1Oe9;
-	   TTreeMembers_.kswisskEB_[TTreeMembers_.numEBcrys_]=kswissk;
 	   TTreeMembers_.numEBcrys_++;
 	 }
        fullAmpProfileEB_->Fill(anid.iphi(),anid.ieta(),damp);
