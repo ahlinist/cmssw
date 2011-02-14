@@ -13,7 +13,7 @@
 //
 // Original Author:  pts/45
 //         Created:  Tue May 13 12:23:34 CEST 2008
-// $Id: RPCMonitorEfficiency.cc,v 1.48 2011/02/09 08:59:22 carrillo Exp $
+// $Id: RPCMonitorEfficiency.cc,v 1.49 2011/02/10 17:42:00 carrillo Exp $
 //
 //
 
@@ -1582,8 +1582,8 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
 	
 	std::string name = rpcsrv.name();
 
-	if(rpcId.region()!=0 && abs(rpcId.station())==3 && rpcId.ring()==2 && rpcId.roll()==3) continue; //skiping rolls with problems with the extrapolation methodin the endcap RE+/-3_R2_C
-	if(rpcId.region()!=0 && abs(rpcId.station())==2 && rpcId.ring()==3 && rpcId.roll()==1) continue; //skiping rolls with problems with the extrapolation methodin the endcap RE+/-2_R2_A
+	//if(rpcId.region()!=0 && abs(rpcId.station())==3 && rpcId.ring()==2 && rpcId.roll()==3) continue; //skiping rolls with problems with the extrapolation methodin the endcap RE+/-3_R2_C
+	//if(rpcId.region()!=0 && abs(rpcId.station())==2 && rpcId.ring()==3 && rpcId.roll()==1) continue; //skiping rolls with problems with the extrapolation methodin the endcap RE+/-2_R2_A
 	
 
 	if(rpcId.region()==0 && barrel == false) continue;
@@ -1731,7 +1731,7 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
           histoRealRPC = (TH1F*)theFile->Get(meIdRealRPC.c_str());
 	  
 	  histoPRO= new TH1F (meIdPRO.c_str(),meIdPRO.c_str(),nstrips,0.5,nstrips+0.5);
-	  histoPRO_2D= new TH2F (meIdPRO_2D.c_str(),meIdPRO.c_str(),
+	  histoPRO_2D= new TH2F (meIdPRO_2D.c_str(),meIdPRO_2D.c_str(),
 				 2*(int)(0.6*nstrips*stripw),-0.6*nstrips*stripw,0.6*nstrips*stripw,
 				 2*(int)(0.6*stripl),-0.6*stripl,0.6*stripl);
 
@@ -1841,8 +1841,11 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
 
 	    if(pinoexpected != 0){
 	      pinoeff = (pinoobserved/pinoexpected)*100;
-	      pinoerr = (sqrt(100.-pinoeff)/pinoexpected);
+	      pinoerr = 100.*sqrt((1.-(pinoobserved/pinoexpected))/pinoexpected);
 	    }	
+	    
+	    if(debug) std::cout<<"Filling txt file with roll and efficiency"<<std::endl;
+	    RollYEff<<name<<" "<<pinoeff<<" "<<pinoerr<<" "<<pinoexpected<<" "<<histoCLS->GetMean()<<std::endl;
 	    
 	    if(debug) std::cout<<" deleting profiles"<<std::endl;
 
@@ -1979,9 +1982,6 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
 	      if(debug) std::cout<<"This Roll Doesn't have any strip Pointed"<<std::endl;
 	    }
 
-	    if(debug) std::cout<<"Filling txt file with roll and efficiency"<<std::endl;
-	    RollYEff<<name<<" "<<doublegapeff<<" "<<doublegaperr<<" "<<(1.-withouteffect/float(nstrips))*100.<<" "<<doublegaperrexp<<" "<<doublegaperrocc<<std::endl;
-	    
 	    if(debug) std::cout<<"Filling New histograms"<<std::endl;
 	    
 	    if(NumberStripsPointed!=0){
@@ -2912,9 +2912,12 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
 	    
 	    if(pinoexpected != 0){
 	      pinoeff = (pinoobserved/pinoexpected)*100.;
-	      pinoerr = (sqrt(100.-pinoeff)/pinoexpected);
+	      pinoerr = 100.*sqrt((1.-(pinoobserved/pinoexpected))/pinoexpected);
 	    }	
 
+	    if(debug) std::cout<<"Filling txt file with roll and efficiency"<<std::endl;
+	    RollYEff<<name<<" "<<pinoeff<<" "<<pinoerr<<" "<<pinoexpected<<" "<<histoCLS->GetMean()<<std::endl;
+	    
 	    if(debug) std::cout<<" deleting profiles"<<std::endl;
 
 	    delete profileCSC_X;
@@ -3052,8 +3055,7 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
 	    }
 	     
 	    if(debug) std::cout<<"Filling txt file with roll and efficiency"<<std::endl;
-	    RollYEff<<name<<" "<<doublegapeff<<" "<<doublegaperr<<" "<<(1.-withouteffect/float(nstrips))*100.<<" "<<doublegaperrexp<<" "<<doublegaperrocc<<std::endl;
-
+	    
 	    if(debug) std::cout<<"Filling New histograms"<<std::endl;
 	    
 	     if(NumberStripsPointed!=0){
