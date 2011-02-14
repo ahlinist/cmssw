@@ -13,7 +13,7 @@
 //
 // Original Author:  Daniele del Re
 //         Created:  Thu Sep 13 16:00:15 CEST 2007
-// $Id: GammaJetAnalyzer.cc,v 1.42 2011/01/09 18:56:16 pandolf Exp $
+// $Id: GammaJetAnalyzer.cc,v 1.43 2011/02/10 10:57:06 pandolf Exp $
 //
 //
 
@@ -1520,7 +1520,7 @@ GammaJetAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
 
 
        ptDJet_pfakt5[nJet_pfakt5] = sqrt( sumPt2_cands )/sumPt_cands;
-       rmsCandJet_pfakt5[nJet_pfakt5] = rms_cands/(sumPt_cands*sumPt_cands);
+       rmsCandJet_pfakt5[nJet_pfakt5] = rms_cands/sumPt2_cands;
 
        
        const TLorentzVector *p = 0;
