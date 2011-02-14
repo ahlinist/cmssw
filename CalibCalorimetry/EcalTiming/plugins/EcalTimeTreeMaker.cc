@@ -14,7 +14,7 @@ Implementation:
 // Skeleton Derived from an example by:  F. DE GUIO C. DOGLIONI P. MERIDIANI
 // Authors:                              Seth Cooper, Giovanni Franzoni (UMN)
 //         Created:  Mo Jul 14 5:46:22 CEST 2008
-// $Id: EcalTimeTreeMaker.cc,v 1.1 2010/10/14 23:43:55 franzoni Exp $
+// $Id: EcalTimeTreeMaker.cc,v 1.2 2010/12/05 22:09:19 franzoni Exp $
 //
 //
 
@@ -431,6 +431,11 @@ void EcalTimeTreeMaker::dumpBarrelClusterInfo (const CaloGeometry * theGeometry,
 	   // GFdoc this is one crystal in the basic cluster
 	   EcalRecHit myhit = (*thishit) ;
 	   
+           // SIC Feb 14 2011 -- Add check on RecHit flags (takes care of spike cleaning in 42X)
+           uint32_t rhFlag = myhit.recoFlag();
+           if( !(rhFlag == EcalRecHit::kGood || rhFlag == EcalRecHit::kOutOfTime ||
+                 rhFlag == EcalRecHit::kPoorCalib) )
+             continue;
 	   
 	   // thisamp is the EB amplitude of the current rechit
 	   double thisamp  = myhit.energy () ;
@@ -491,16 +496,6 @@ void EcalTimeTreeMaker::dumpBarrelClusterInfo (const CaloGeometry * theGeometry,
 	   myTreeVariables_.xtalInBCAmplitudeADC[numberOfClusters][numberOfXtalsInCluster]= (float) thisamp/(icalconst*adcToGeV);
 	   myTreeVariables_.xtalInBCChi2[numberOfClusters][numberOfXtalsInCluster]=         thisChi2;
 	   myTreeVariables_.xtalInBCOutOfTimeChi2[numberOfClusters][numberOfXtalsInCluster]=thisOutOfTimeChi2;
-	   myTreeVariables_.xtalInBCE1OverE9[numberOfClusters][numberOfXtalsInCluster]=EcalSeverityLevelAlgo::spikeFromNeighbours( EBDetId((detitr -> first)),
-																   (*theBarrelEcalRecHits),
-																   0.5,   //GeV, threshold Et to calculated E1OverE9 
-																   EcalSeverityLevelAlgo::kE1OverE9
-																   );
-	   // note: SwissCross = 1 - E4/E1
-	   myTreeVariables_.xtalInBCSwissCross[numberOfClusters][numberOfXtalsInCluster]=EcalSeverityLevelAlgo::spikeFromNeighbours( EBDetId((detitr -> first)),
-																     (*theBarrelEcalRecHits),
-																     0.5,   //GeV, threshold Et to calculated SwissCross 
-																     EcalSeverityLevelAlgo::kSwissCross);
 
 	   // legacy - to be removed
 	   //energySum += (float) thisamp ; // GFdoc incrementing energy of SC
@@ -716,6 +711,12 @@ void EcalTimeTreeMaker::dumpEndcapClusterInfo (const CaloGeometry * theGeometry,
              
              EcalRecHit myhit = (*thishit) ;
              
+             // SIC Feb 14 2011 -- Add check on RecHit flags (takes care of spike cleaning in 42X)
+             uint32_t rhFlag = myhit.recoFlag();
+             if( !(rhFlag == EcalRecHit::kGood || rhFlag == EcalRecHit::kOutOfTime ||
+                   rhFlag == EcalRecHit::kPoorCalib) )
+               continue;
+
 	     // thisamp is the EE amplitude of the current rechit
 	     double thisamp  = myhit.energy () ;
 	     double thistime = myhit.time ();
@@ -779,16 +780,7 @@ void EcalTimeTreeMaker::dumpEndcapClusterInfo (const CaloGeometry * theGeometry,
 	      myTreeVariables_.xtalInBCAmplitudeADC[numberOfClusters][numberOfXtalsInCluster]=      (float) thisamp/(icalconst*adcToGeV);
 	      myTreeVariables_.xtalInBCChi2[numberOfClusters][numberOfXtalsInCluster]=         thisChi2;
 	      myTreeVariables_.xtalInBCOutOfTimeChi2[numberOfClusters][numberOfXtalsInCluster]=thisOutOfTimeChi2;
-	      myTreeVariables_.xtalInBCE1OverE9[numberOfClusters][numberOfXtalsInCluster]=EcalSeverityLevelAlgo::spikeFromNeighbours( EEDetId((detitr -> first)),
-																      (*theEndcapEcalRecHits),
-																      0.5,   //GeV, threshold Et to calculated E1OverE9 
-																      EcalSeverityLevelAlgo::kE1OverE9
-																      );
-	      myTreeVariables_.xtalInBCSwissCross[numberOfClusters][numberOfXtalsInCluster]=EcalSeverityLevelAlgo::spikeFromNeighbours( EEDetId((detitr -> first)),
-																	(*theEndcapEcalRecHits),
-																	0.5,   //GeV, threshold Et to calculated SwissCross 
-																	EcalSeverityLevelAlgo::kSwissCross
-																	);
+
 	      if (XtalMap.find (raw) != XtalMap.end ())
                myTreeVariables_.xtalTkLength[numberOfXtals] = XtalMap.find (raw)->second ;
              else

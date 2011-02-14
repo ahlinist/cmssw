@@ -8,17 +8,20 @@ process.load('Configuration/StandardSequences/GeometryExtended_cff')
 # Geometry
 process.load("Geometry.CaloEventSetup.CaloTopology_cfi")
 process.load("Geometry.CaloEventSetup.CaloGeometry_cff")
+process.load("Geometry.CMSCommonData.cmsIdealGeometryXML_cfi") # gfwork: need this? 
 process.load("Geometry.CaloEventSetup.CaloGeometry_cfi")
+process.load("Geometry.CommonDetUnit.globalTrackingGeometry_cfi") # gfwork: need this?
 process.load("Geometry.EcalMapping.EcalMapping_cfi")
 process.load("Geometry.EcalMapping.EcalMappingRecord_cfi")
 process.load("Geometry.MuonNumbering.muonNumberingInitialization_cfi") # gfwork: need this?
 
+process.load("Configuration.StandardSequences.MagneticField_38T_cff")
 
 # Global Tag
 process.load("Configuration.StandardSequences.FrontierConditions_GlobalTag_cff")
 #process.load("Configuration.StandardSequences.FrontierConditions_GlobalTag_noesprefer_cff")
+#process.GlobalTag.globaltag = 'CRAFT_ALL_V12::All'
 process.GlobalTag.globaltag = 'GR_R_35X_V8A::All'
-
 
 # Trigger
 process.load("L1TriggerConfig.L1ScalesProducers.L1MuTriggerScalesConfig_cff")
@@ -32,7 +35,21 @@ process.dumpEv = FWCore.Modules.printContent_cfi.printContent.clone()
 import EventFilter.L1GlobalTriggerRawToDigi.l1GtUnpack_cfi
 process.gtDigis = EventFilter.L1GlobalTriggerRawToDigi.l1GtUnpack_cfi.l1GtUnpack.clone()
 
+# Raw
+process.load("Configuration.StandardSequences.Reconstruction_cff")
+process.load("Configuration.StandardSequences.RawToDigi_Data_cff")
+#process.load("RecoLocalCalo.EcalRecProducers.ecalRatioUncalibRecHit_cfi")
+process.load("RecoLocalCalo.EcalRecProducers.ecalGlobalUncalibRecHit_cfi")
+process.load("RecoLocalCalo.Configuration.ecalLocalRecoSequence_cff")
+#process.ecalLocalRecoSequence = cms.Sequence(process.ecalRatioUncalibRecHit*process.ecalDetIdToBeRecovered*process.ecalRecHit+process.ecalPreshowerRecHit)
+#process.ecalLocalRecoSequence = cms.Sequence(process.ecalGlobalUncalibRecHit*process.ecalDetIdToBeRecovered*process.ecalRecHit+process.ecalPreshowerRecHit)
+#process.ecalRecHit.EEuncalibRecHitCollection = cms.InputTag("ecalGlobalUncalibRecHit","EcalUncalibRecHitsEE")
+#process.ecalRecHit.EBuncalibRecHitCollection = cms.InputTag("ecalGlobalUncalibRecHit","EcalUncalibRecHitsEB")
+#process.ecalRecHit.EEuncalibRecHitCollection = cms.InputTag("ecalRatioUncalibRecHit","EcalUncalibRecHitsEE")
+#process.ecalRecHit.EBuncalibRecHitCollection = cms.InputTag("ecalRatioUncalibRecHit","EcalUncalibRecHitsEB")
 
+process.ecalGlobalUncalibRecHit.doEBtimeCorrection = cms.bool(True)
+process.ecalGlobalUncalibRecHit.doEEtimeCorrection = cms.bool(True)
 
 # general basic- and super- clustering sequences
 import RecoEcal.EgammaClusterProducers.multi5x5ClusteringSequence_cff
@@ -121,6 +138,7 @@ process.ecalTimeTree.endcapBasicClusterCollection = cms.InputTag("multi5x5BasicC
 process.ecalTimeTree.barrelClusterShapeAssociationCollection = cms.InputTag("multi5x5BasicClustersTimePi0Barrel","multi5x5BarrelShapeAssoc")
 process.ecalTimeTree.endcapClusterShapeAssociationCollection = cms.InputTag("multi5x5BasicClustersTimePi0Endcap","multi5x5EndcapShapeAssoc") 
 
+process.load("RecoVertex.Configuration.RecoVertex_cff")
 
 
 process.dumpEvContent = cms.EDAnalyzer("EventContentAnalyzer")
@@ -128,11 +146,24 @@ process.dumpEvContent = cms.EDAnalyzer("EventContentAnalyzer")
 process.maxEvents = cms.untracked.PSet(input = cms.untracked.int32(1000))
 
 process.p = cms.Path(
+    process.ecalDigis *
+    process.gctDigis *
+    process.gtDigis *
+    process.gtEvmDigis *
+    process.siPixelDigis *
+    process.siStripDigis *
+    process.offlineBeamSpot *
+    process.trackerlocalreco *
+    process.recopixelvertexing *
+    process.ckftracks *
+    process.ecalPreshowerDigis *
+    process.ecalLocalRecoSequence *
     process.multi5x5BasicClustersTimePi0Barrel *
     process.multi5x5BasicClustersTimePi0Endcap *
     process.multi5x5SuperClustersTimePi0Barrel *
     process.multi5x5SuperClustersTimePi0Endcap *
-    # process.dumpEvContent  *
+    #process.dumpEvContent  *
+    process.vertexreco *
     process.ecalTimeTree
     )
 
@@ -155,11 +186,27 @@ process.source = cms.Source(
     "PoolSource",
     skipEvents = cms.untracked.uint32(0),
 
-    # a few files from:    /MinimumBias/Commissioning10-GR_R_35X_V7A_SD_EG-v2/RECO
-    fileNames = (cms.untracked.vstring(
+     fileNames = (cms.untracked.vstring(
     #'/store/data/Commissioning10/MinimumBias/RAW-RECO/v9/000/135/494/A4C5C9FA-C462-DF11-BC35-003048D45F7A.root',
-    '/store/data/Run2010A/EG/RECO/v4/000/144/114/EEC21BFA-25B4-DF11-840A-001617DBD5AC.root'
-     )
+    '/store/data/Commissioning10/MinimumBias/RAW-RECO/v9/000/135/480/8CFD761E-C562-DF11-8661-003048D476C4.root',
+    '/store/data/Commissioning10/MinimumBias/RAW-RECO/v9/000/135/445/FEE89CEE-F362-DF11-BC8C-003048D476A6.root',
+    '/store/data/Commissioning10/MinimumBias/RAW-RECO/v9/000/135/445/FED57876-1B63-DF11-A201-00E0817917F5.root',
+    '/store/data/Commissioning10/MinimumBias/RAW-RECO/v9/000/135/445/FEC8FFC6-BF62-DF11-81D3-00E081791787.root',
+    '/store/data/Commissioning10/MinimumBias/RAW-RECO/v9/000/135/445/FE52A9F1-ED62-DF11-A2BF-00E0817917EB.root',
+    '/store/data/Commissioning10/MinimumBias/RAW-RECO/v9/000/135/445/FE3CA91C-5D61-DF11-B543-003048D476BA.root',
+    '/store/data/Commissioning10/MinimumBias/RAW-RECO/v9/000/135/445/FCBED777-AC62-DF11-8234-003048D45FD8.root',
+    '/store/data/Commissioning10/MinimumBias/RAW-RECO/v9/000/135/445/FC941F37-0663-DF11-9E2E-003048670B36.root',
+    '/store/data/Commissioning10/MinimumBias/RAW-RECO/v9/000/135/445/FC3B55D8-BF62-DF11-8764-0025B3E05CDE.root',
+    '/store/data/Commissioning10/MinimumBias/RAW-RECO/v9/000/135/445/FA1F044A-B862-DF11-A17C-001A64789D68.root',
+    '/store/data/Commissioning10/MinimumBias/RAW-RECO/v9/000/135/445/F8E0C1BA-C161-DF11-AF90-003048D47736.root',
+    '/store/data/Commissioning10/MinimumBias/RAW-RECO/v9/000/135/445/F88FCD4F-9A61-DF11-ADC3-002481E14F7A.root',
+    '/store/data/Commissioning10/MinimumBias/RAW-RECO/v9/000/135/445/F8855BDC-BF62-DF11-88EC-002481E15008.root',
+    '/store/data/Commissioning10/MinimumBias/RAW-RECO/v9/000/135/445/F8204F63-6A61-DF11-900B-0025B3E063EA.root',
+    '/store/data/Commissioning10/MinimumBias/RAW-RECO/v9/000/135/445/F6688BF3-0063-DF11-ABDC-003048D46030.root',
+    '/store/data/Commissioning10/MinimumBias/RAW-RECO/v9/000/135/445/F6049B12-AB61-DF11-A6B0-00E0817918D9.root',
+    '/store/data/Commissioning10/MinimumBias/RAW-RECO/v9/000/135/445/F483E438-B862-DF11-A20B-003048D45FCA.root',
+    '/store/data/Commissioning10/MinimumBias/RAW-RECO/v9/000/135/445/F4799A8F-DA60-DF11-8C02-0025B3E06388.root'
+                                        )
                   )
     )
 
