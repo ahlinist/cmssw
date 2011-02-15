@@ -50,6 +50,11 @@ namespace edm {
 
       static void fillDescriptions(edm::ConfigurationDescriptions & descriptions);
     };
+
+    inline
+    bool isProcessWideService(JobReportService const*) {
+      return true;
+    }
   }
 }
 
