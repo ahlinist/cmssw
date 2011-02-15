@@ -7,8 +7,11 @@
   \\ subdetector plugins
   \\ preDraw and postDraw methods now check whether histogram was a TH1
   \\ or TH2, and call a private method appropriate for the histogram type
-  $Id: HLTRenderPlugin.cc,v 1.19 2010/06/10 14:59:48 rekovic Exp $
+  $Id: HLTRenderPlugin.cc,v 1.20 2010/07/26 10:45:32 rekovic Exp $
   $Log: HLTRenderPlugin.cc,v $
+  Revision 1.20  2010/07/26 10:45:32  rekovic
+  Extend the Renders from folder FourVector/PathsSummary to folder PathsSummary
+
   Revision 1.19  2010/06/10 14:59:48  rekovic
   Fix a bug of missing bracket
 
@@ -248,16 +251,18 @@ private:
       {
         if ( o.name.find("Filters") != std::string::npos    )
         {
-          gPad->SetBottomMargin(0.16);
+          gPad->SetBottomMargin(0.3);
           gPad->SetLogy(1);
+          obj->SetMaximum(obj->GetBinContent(obj->GetMaximumBin())*1.1);
         }
       }
       if ( o.name.find("PathsSummary/Filters Efficiencies") != std::string::npos)
       {
         if ( o.name.find("Filters") != std::string::npos    )
         {
-          gPad->SetBottomMargin(0.16);
+          gPad->SetBottomMargin(0.3);
           gPad->SetLogy(1);
+          obj->SetMaximum(obj->GetBinContent(obj->GetMaximumBin())*1.1);
         }
       }
 
