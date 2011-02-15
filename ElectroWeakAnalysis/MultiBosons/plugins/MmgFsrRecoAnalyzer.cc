@@ -7,6 +7,7 @@
 
 #include "CommonTools/CandUtils/interface/AddFourMomenta.h"
 #include "CommonTools/UtilAlgos/interface/TFileService.h"
+#include "CommonTools/UtilAlgos/interface/DeltaR.h"
 #include "CondFormats/DataRecord/interface/EcalChannelStatusRcd.h"
 #include "DataFormats/BeamSpot/interface/BeamSpot.h"
 #include "DataFormats/Candidate/interface/CompositeCandidate.h"
@@ -308,9 +309,91 @@ MmgFsrRecoAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSe
     }
   }
 
+  // check if we have at least one selected photon
+  if (selectedPhotons.size() < 1) return;
 
+  // combine selected photons and dimuons to mmg candidates
+  reco::CompositeCandidateCollection mmgCands;
+  // create all photon-dimuon combinations
+  // loop over photons
+  for (dau1 = selectedPhotons.begin();
+        dau1 < selectedPhotons.end();
+        ++dau1) {
+    // loop over dimuons
+    for (dau2 = selectedDimuons.begin();
+          dau2 < selectedDimuons.end();
+          ++dau2) {
+      if ( hasOverlap(*dau1, *dau2) ) continue;
+      reco::CompositeCandidate mmgCand;
+      mmgCand.addDaughter(*dau1, "photon");
+      mmgCand.addDaughter(*dau2, "dimuon");
+      addP4.set(mmgCand);
+      mmgCands.push_back(mmgCand);
+    } // end loop over dimuons
+  } // end loop over photons
 
-}
+  // loop over mmg candidates
+  for (size_t i=0; i< mmgCands.size(); ++i) {
+    reco::CompositeCandidate const & mmgCand = mmgCands[i];
+
+    ++mmgCandsPassedPerEvent["6.0 all mmg candidates"];
+
+    const reco::Photon * photon;
+    const reco::CompositeCandidate * dimuon;
+    const reco::Muon * muon1;
+    const reco::Muon * muon2;
+    const reco::Muon * nearMuon;
+    const reco::Muon * farMuon;
+
+    photon = (const reco::Photon*) mmgCand.daughter("photon");
+    dimuon = (const reco::CompositeCandidate*) mmgCand.daughter("dimuon");
+    muon1  = (const reco::Muon*) dimuon->daughter(0);
+    muon2  = (const reco::Muon*) dimuon->daughter(1);
+
+    DeltaR<reco::Candidate, reco::Candidate> deltaR;
+    double dr1 = deltaR(*muon1, *photon);
+    double dr2 = deltaR(*muon2, *photon);
+    double drMin = dr1;
+
+    if (dr1 < dr2) {
+      nearMuon = muon1; farMuon  = muon2; drMin = dr1;
+    } else {
+      nearMuon = muon2; farMuon  = muon1; drMin = dr2;
+    }
+
+    // if (nearMuon->hcalIso() >= 1.0) continue;
+    if (nearMuon->isolationR03().hadEt >= 1.0) continue;
+    ++mmgCandsPassedPerEvent["6.1 near muon HCAL iso"];
+
+    // if (farMuon->ecalIso() >= 1.0) continue;
+    if (farMuon->isolationR03().emEt >= 1.0) continue;
+    ++mmgCandsPassedPerEvent["6.2 far muon ECAL iso"];
+
+    if (drMin >= 0.8) continue;
+    ++mmgCandsPassedPerEvent["6.3 min Delta R"];
+
+    if (farMuon->pt() <= 30.) continue;
+    ++mmgCandsPassedPerEvent["6.4 far muon pt"];
+
+    if (mmgCand.mass() < 70. || 110. < mmgCand.mass() ) continue;
+    ++mmgCandsPassedPerEvent["6.5 mmg mass"];
+
+    selectedMmgCands.push_back(
+      reco::ShallowClonePtrCandidate(
+        edm::Ptr<reco::CompositeCandidate>(&mmgCands, i)
+        )
+      );
+  } // end loop over mmg candidates
+
+  // update per-event mmg candidate counters
+  for (iCut = mmgCuts.begin(); iCut != mmgCuts.end(); ++iCut) {
+    mmgCandsPassedTotal[*iCut] += mmgCandsPassedPerEvent[*iCut];
+    if (mmgCandsPassedPerEvent[*iCut] >= 1) {
+      ++eventsPassed[*iCut];
+    }
+  }
+
+} // end MmgFsrRecoAnalyzer::analyze()
 
 void
 MmgFsrRecoAnalyzer::beginJob()
