@@ -23,6 +23,7 @@
 #include "FWCore/Framework/interface/Event.h"
 #include "FWCore/Framework/interface/EventSetup.h"
 #include "FWCore/Framework/interface/ESHandle.h"
+#include "FWCore/MessageLogger/interface/MessageLogger.h"
 #include "FWCore/Utilities/interface/InputTag.h"
 #include "FWCore/ParameterSet/interface/ParameterSet.h"
 #include "FWCore/ServiceRegistry/interface/Service.h"
@@ -242,11 +243,15 @@ MmgFsrRecoAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSe
 void
 MmgFsrRecoAnalyzer::beginJob()
 {
+  LogDebug("SegFault") << "Entering beginJob ..." << std::endl;
+
   // register to the TFileService
   edm::Service<TFileService> fs;
 
   // book histograms:
   histContainer_["muons"  ]=fs->make<TH1F>("muons",   "muon multiplicity",     10, 0,  10);
+
+  LogDebug("SegFault") << "defining cuts ..." << std::endl;
 
   // define the cuts
   muonCuts.push_back("2.   Collision Data Cleaning");
@@ -280,10 +285,12 @@ MmgFsrRecoAnalyzer::beginJob()
   mmgCuts.push_back("6.4 far muon pt");
   mmgCuts.push_back("6.5 mmg mass");
 
+  LogDebug("SegFault") << "Initializing counters ..." << std::endl;
+
   // init the counters
   std::vector<std::string>::const_iterator iCut;
 
-  for (muonCuts.begin(); iCut != muonCuts.end(); ++iCut) {
+  for (iCut = muonCuts.begin(); iCut != muonCuts.end(); ++iCut) {
     muonsPassedTotal_[*iCut] = 0;
     eventsPassed[*iCut] = 0;
   }
@@ -305,6 +312,8 @@ MmgFsrRecoAnalyzer::beginJob()
     mmgCandsPassedTotal[*iCut] = 0;
     eventsPassed[*iCut] = 0;
   }
+
+  LogDebug("SegFault") << "Exiting beginJob with success!" << std::endl;
 }
 
 void
