@@ -13,7 +13,7 @@
 //
 // Original Author: Roberto Covarelli 
 //         Created:  Fri Oct  9 04:59:40 PDT 2009
-// $Id: JPsiAnalyzerPAT.cc,v 1.45 2011/02/09 12:50:02 covarell Exp $
+// $Id: JPsiAnalyzerPAT.cc,v 1.47 2011/02/09 16:58:06 covarell Exp $
 //
 // based on: Onia2MuMu package V00-11-00
 // changes done by: FT-HW
@@ -1078,9 +1078,9 @@ JPsiAnalyzerPAT::selGlobalMuon(const pat::Muon* aMuon) {
   // cooler way of cutting on tracks
   if (_applyExpHitcuts) {
     float fHits = iTrack->found() / (iTrack->found() + iTrack->lost() + ei.numberOfHits() + eo.numberOfHits());
-    trackOK = (fHits >= 0.85 && (p.hasValidHitInFirstPixelBarrel() || p.hasValidHitInFirstPixelEndcap() ));
+    trackOK = (fHits >= 0.8 && (p.hasValidHitInFirstPixelBarrel() || p.hasValidHitInFirstPixelEndcap() ));
   // old way of cutting on tracks  
-  } else trackOK = (iTrack->found() > 11);
+  } else trackOK = (iTrack->found() > 10);
 
   return (// isMuonInAccept(aMuon) &&
 	  trackOK &&
@@ -1106,9 +1106,9 @@ JPsiAnalyzerPAT::selTrackerMuon(const pat::Muon* aMuon) {
   // cooler way of cutting on tracks
   if (_applyExpHitcuts) {
     float fHits = iTrack->found() / (iTrack->found() + iTrack->lost() + ei.numberOfHits() + eo.numberOfHits());
-    trackOK = (fHits >= 0.85 && (p.hasValidHitInFirstPixelBarrel() || p.hasValidHitInFirstPixelEndcap() ));
+    trackOK = (fHits >= 0.8 && (p.hasValidHitInFirstPixelBarrel() || p.hasValidHitInFirstPixelEndcap() ));
   // old way of cutting on tracks  
-  } else trackOK = (iTrack->found() > 11);
+  } else trackOK = (iTrack->found() > 10);
 
   return (// isMuonInAccept(aMuon) &&
 	  trackOK &&
@@ -1132,9 +1132,9 @@ JPsiAnalyzerPAT::selCaloMuon(const pat::Muon* aMuon) {
   // cooler way of cutting on tracks
   if (_applyExpHitcuts) {
     float fHits = iTrack->found() / (iTrack->found() + iTrack->lost() + ei.numberOfHits() + eo.numberOfHits());
-    trackOK = (fHits >= 0.85 && (p.hasValidHitInFirstPixelBarrel() || p.hasValidHitInFirstPixelEndcap() ));
+    trackOK = (fHits >= 0.8 && (p.hasValidHitInFirstPixelBarrel() || p.hasValidHitInFirstPixelEndcap() ));
   // old way of cutting on tracks  
-  } else trackOK = (iTrack->found() > 11);
+  } else trackOK = (iTrack->found() > 10);
 
   return (// isMuonInAccept(aMuon) &&
 	  aMuon->caloCompatibility() > 0.89 &&
