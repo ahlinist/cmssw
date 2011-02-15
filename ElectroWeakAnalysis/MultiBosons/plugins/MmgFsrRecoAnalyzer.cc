@@ -237,6 +237,78 @@ MmgFsrRecoAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSe
     } // end loop over second daughters
   } // end loop over first daughters
 
+  // loop over dimuons
+  reco::CompositeCandidateCollection::const_iterator dimuon;
+  for (size_t iDimuon=0; iDimuon < dimuons.size(); ++iDimuon) {
+    reco::CompositeCandidate const & dimuon = dimuons[iDimuon];
+
+    ++dimuonsPassedPerEvent["4.0  all dimuons"];
+
+    if (dimuon.charge() != 0) continue;
+    ++dimuonsPassedPerEvent["4.1  dimuon charge"];
+
+    if (dimuon.mass() < 40. || 80. < dimuon.mass()) continue;
+    ++dimuonsPassedPerEvent["4.2  dimuon mass"];
+
+    selectedDimuons.push_back(
+      reco::ShallowClonePtrCandidate(
+        edm::Ptr<reco::CompositeCandidate>(&dimuons, iDimuon)
+        )
+      );
+  } // end loop over dimuons
+
+  // update per-event dimuon counters
+  for (iCut = dimuonCuts.begin(); iCut != dimuonCuts.end(); ++iCut) {
+    dimuonsPassedTotal[*iCut] += dimuonsPassedPerEvent[*iCut];
+    if (dimuonsPassedPerEvent[*iCut] >= 1) {
+      ++eventsPassed[*iCut];
+    }
+  }
+
+  // make sure there is at leas 1 selected dimuon in the event
+  if (selectedDimuons.size() < 1) return;
+
+  // loop over photons
+  for(size_t iPhoton=0; iPhoton < photons->size(); ++iPhoton) {
+    reco::Photon const & photon = photons->at(iPhoton);
+    ++photonsPassedPerEvent["5.0  all photons"];
+
+    double scEta = photon.superCluster()->eta();
+    if (fabs(scEta) >= 2.5) continue;
+    ++photonsPassedPerEvent["5.1  |eta_SC| tracker coverage"];
+
+    if (1.4442 <= fabs(scEta) && fabs(scEta) <= 1.566) continue;
+    ++photonsPassedPerEvent["5.2  |eta_SC| EB/EE transition"];
+
+//     int seedRecoFlag = photon.userInt("photonUserData:seedRecoFlag");
+//     if (seedRecoFlag == EcalRecHit::kOutOfTime) continue;
+    ++photonsPassedPerEvent["5.3  seed reco flag"];
+
+//     int sLevel = photon.userInt("photonUserData:seedSeverityLevel");
+//     if (sLevel == EcalSeverityLevelAlgo::kWeird ||
+//         sLevel == EcalSeverityLevelAlgo::kBad
+//         ) continue;
+    ++photonsPassedPerEvent["5.4  seed severity level"];
+
+    if (photon.pt() <= 10.) continue;
+    ++photonsPassedPerEvent["5.5  pt"];
+
+    selectedPhotons.push_back(
+      reco::ShallowClonePtrCandidate(
+        edm::Ptr<reco::Photon>(photons, iPhoton)
+      )
+    );
+  }  // end loop over photons
+
+  // update per-event photon counters
+  for (iCut = photonCuts.begin(); iCut != photonCuts.end(); ++iCut) {
+    photonsPassedTotal[*iCut] += photonsPassedPerEvent[*iCut];
+    if (photonsPassedPerEvent[*iCut] >= 1) {
+      ++eventsPassed[*iCut];
+    }
+  }
+
+
 
 }
 
@@ -319,6 +391,9 @@ MmgFsrRecoAnalyzer::beginJob()
 void
 MmgFsrRecoAnalyzer::endJob()
 {
+
+  using namespace std;
+
   std::cout << "Total events processed: " << eventsProcessed_ << std::endl;
 
   std::cout << "== Muon cut flow table ==\n";
@@ -327,6 +402,35 @@ MmgFsrRecoAnalyzer::endJob()
   for (; iCut != muonCuts.end(); ++iCut) {
     printf("%10d   %11d   %s\n",
            muonsPassedTotal_[*iCut],
+           eventsPassed[*iCut],
+           iCut->c_str()
+           );
+  }
+
+  cout << "== Dimuon cut flow table ==" << endl;
+  cout << "Dimuons pass   Events pass   Cut" << endl;
+  for (iCut = dimuonCuts.begin(); iCut != dimuonCuts.end(); ++iCut) {
+    printf("%12d   %11d   %s\n",
+           dimuonsPassedTotal[*iCut],
+           eventsPassed[*iCut],
+           iCut->c_str()
+           );
+  }
+  cout << "== Photons cut flow table ==" << endl;
+  cout << "Photons pass   Events pass   Cut" << endl;
+  for (iCut = photonCuts.begin(); iCut != photonCuts.end(); ++iCut) {
+    printf("%12d   %11d   %s\n",
+           photonsPassedTotal[*iCut],
+           eventsPassed[*iCut],
+           iCut->c_str()
+           );
+  }
+
+  cout << "== MMG candidates cut flow table ==" << endl;
+  cout << "MMG cands pass   Events pass   Cut" << endl;
+  for (iCut = mmgCuts.begin(); iCut != mmgCuts.end(); ++iCut) {
+    printf("%14d   %11d   %s\n",
+           mmgCandsPassedTotal[*iCut],
            eventsPassed[*iCut],
            iCut->c_str()
            );
