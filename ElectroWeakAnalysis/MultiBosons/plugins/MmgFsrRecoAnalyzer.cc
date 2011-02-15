@@ -5,9 +5,12 @@
 #include <stdio.h>
 #include <vector>
 
+#include "CommonTools/CandUtils/interface/AddFourMomenta.h"
 #include "CommonTools/UtilAlgos/interface/TFileService.h"
 #include "CondFormats/DataRecord/interface/EcalChannelStatusRcd.h"
 #include "DataFormats/BeamSpot/interface/BeamSpot.h"
+#include "DataFormats/Candidate/interface/CompositeCandidate.h"
+#include "DataFormats/Candidate/interface/OverlapChecker.h"
 #include "DataFormats/Candidate/interface/ShallowClonePtrCandidate.h"
 #include "DataFormats/EcalDetId/interface/EBDetId.h"
 #include "DataFormats/EcalDetId/interface/EEDetId.h"
@@ -73,12 +76,12 @@ private:
 
   int eventsProcessed_;
 
-  std::vector<reco::ShallowClonePtrCandidate> selectedMuons_;
+  std::vector<reco::ShallowClonePtrCandidate> selectedMuons;
   std::vector<reco::ShallowClonePtrCandidate> selectedDimuons;
   std::vector<reco::ShallowClonePtrCandidate> selectedPhotons;
   std::vector<reco::ShallowClonePtrCandidate> selectedMmgCands;
 
-};
+}; // end class MmgFsrRecoAnalyzer
 
 MmgFsrRecoAnalyzer::MmgFsrRecoAnalyzer(const edm::ParameterSet& iConfig):
   histContainer_(),
@@ -146,7 +149,7 @@ MmgFsrRecoAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSe
   for (iCut = mmgCuts.begin(); iCut != mmgCuts.end(); ++iCut)
     mmgCandsPassedPerEvent[*iCut] = 0;
 
-  selectedMuons_.clear();
+  selectedMuons.clear();
   selectedDimuons.clear();
   selectedPhotons.clear();
   selectedMmgCands.clear();
@@ -191,7 +194,7 @@ MmgFsrRecoAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSe
     if ( fabs( muon.eta() ) >= 2.4 ) continue;
     ++muonsPassedPerEvent_["3.11 |eta|"];
 
-    selectedMuons_.push_back(
+    selectedMuons.push_back(
       reco::ShallowClonePtrCandidate(
         edm::Ptr<reco::Muon>(muons, iMuon)
         )
@@ -207,12 +210,34 @@ MmgFsrRecoAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSe
     }
   }
 
-  // do something similar for the other candidates
-  histContainer_["muons"]->Fill(muons->size() );
-}  std::vector<reco::ShallowClonePtrCandidate> selectedDimuons;
-  std::vector<reco::ShallowClonePtrCandidate> selectedPhotons;
-  std::vector<reco::ShallowClonePtrCandidate> selectedMmgCands;
+  if (selectedMuons.size() < 2) return;
 
+  // combine selected muons to dimuons
+  reco::CompositeCandidateCollection dimuons;
+  std::vector<reco::ShallowClonePtrCandidate>::const_iterator dau1;
+  std::vector<reco::ShallowClonePtrCandidate>::const_iterator dau2;
+  AddFourMomenta addP4;
+  OverlapChecker hasOverlap;
+  // create all dimuon combinations
+  // loop over first daughters
+  for (dau1 = selectedMuons.begin();
+        dau1 < selectedMuons.end() - 1;
+        ++dau1) {
+    // loop over second daughters
+    for (dau2 = dau1 + 1;
+          dau2 < selectedMuons.end();
+          ++dau2) {
+      if ( hasOverlap(*dau1, *dau2) ) continue;
+      reco::CompositeCandidate dimuon;
+      dimuon.addDaughter(*dau1, "muon1");
+      dimuon.addDaughter(*dau2, "muon2");
+      addP4.set( dimuon );
+      dimuons.push_back( dimuon );
+    } // end loop over second daughters
+  } // end loop over first daughters
+
+
+}
 
 void
 MmgFsrRecoAnalyzer::beginJob()
