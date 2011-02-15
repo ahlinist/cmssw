@@ -9,7 +9,7 @@ process.source = cms.Source("PoolSource",
 )
 
 process.maxEvents = cms.untracked.PSet(
-  input = cms.untracked.int32(-1)
+  input = cms.untracked.int32(500)
 )
 
 ## Detector Conditions (needed for a EcalChannelStatusRcd)
@@ -20,7 +20,7 @@ process.GlobalTag.globaltag = cms.string( autoCond[ 'startup' ] )
 
 ## Message logger
 process.load("FWCore.MessageLogger.MessageLogger_cfi")
-process.options   = cms.untracked.PSet( wantSummary = cms.untracked.bool(True) )
+process.options = cms.untracked.PSet( wantSummary = cms.untracked.bool(False) )
 process.MessageLogger.cerr.FwkReport.reportEvery = 100
 
 ## Add cleaning of collision data (no scraping events etc.)
