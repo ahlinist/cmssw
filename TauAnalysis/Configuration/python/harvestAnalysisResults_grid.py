@@ -5,6 +5,7 @@ import subprocess
 
 import TauAnalysis.Configuration.tools.castor as castor
 import TauAnalysis.Configuration.tools.crab as crab
+import TauAnalysis.Configuration.tools.harvesting as harvest_tools
 from TauAnalysis.Configuration.tools.harvestingMakefile import buildMakefile
 
 def harvestAnalysisResults(channel = None, samples = None, inputFilePath = None,
@@ -44,15 +45,12 @@ def harvestAnalysisResults(channel = None, samples = None, inputFilePath = None,
         inputFilePath = inputFilePath.replace('//', '/')
         print(" inputFilePath = " + inputFilePath)
 
-        files_in_castor_info = castor.nslsl(inputFilePath)
-
         files_and_times = [
-            (file_info['time'], file_info['path'])
-            for file_info in files_in_castor_info
-            if file_info['file'].find('_%s_' % jobId) != -1 ]
-        # Sort files by modified time
-        print "Sorting by modified time"
-        files_and_times.sort()
+            (file['time'], file['path']) for file in 
+            harvest_tools.clean_by_crab_id(
+                file for file in harvest_tools.castor_source(
+                    inputFilePath) if '_%s_' % jobId in file['path'])
+        ]
 
     else:
         print "Using job reports to find output files"
@@ -61,8 +59,8 @@ def harvestAnalysisResults(channel = None, samples = None, inputFilePath = None,
                 'crab', 'crabdir_run%s_%s_%s' % (channel, sample, jobId))
             print "Getting output files from:", crab_dir
             files_and_times.extend(
-                (None, file) for file in crab.map_lfns_to_castor(
-                    crab.lfns(crab_dir)))
+                (None, file['path']) 
+                for file in harvest_tools.crabdir_source(crab_dir))
 
     plot_harvest_jobs = []
     skim_harvest_jobs = []
