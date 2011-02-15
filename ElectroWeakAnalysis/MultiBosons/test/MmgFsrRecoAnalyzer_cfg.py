@@ -12,6 +12,12 @@ process.maxEvents = cms.untracked.PSet(
   input = cms.untracked.int32(-1)
 )
 
+## Detector Conditions (needed for a EcalChannelStatusRcd)
+process.load("Configuration.StandardSequences.FrontierConditions_GlobalTag_cff")
+from Configuration.PyReleaseValidation.autoCond import autoCond
+process.GlobalTag.globaltag = cms.string( autoCond[ 'startup' ] )
+
+
 ## Message logger
 process.load("FWCore.MessageLogger.MessageLogger_cfi")
 process.options   = cms.untracked.PSet( wantSummary = cms.untracked.bool(True) )
@@ -31,4 +37,8 @@ process.TFileService = cms.Service("TFileService",
 )
 
 process.p = cms.Path(process.goodCollisionDataSequence + process.analyzeMmgFsr)
+
+## Enable LogDebug for analyzeMmgFsr module
+# process.MessageLogger.debugModules = ["analyzeMmgFsr"]
+# process.MessageLogger.cerr.threshold = "DEBUG"
 
