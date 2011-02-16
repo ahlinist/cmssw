@@ -4,6 +4,7 @@ import copy
 isData = 0
 #pftau = 0
 hltType = "HLT"
+#hltType = "REDIGI38X"
 
 process = cms.Process("TTEff")
 
@@ -56,7 +57,7 @@ else:
 #	    '/store/user/eluiggi/MinBias/TTEffCSTauSkimMinBiasSpring10MC3XYV27S09/3a986c9293445dcb2819d07578601385/CSTauSkim_5_1_ZSt.root'
 	)
     )
-    hltType = "REDIGI38X"
+#    hltType = "REDIGI38X"
 
 process.load("ElectroWeakAnalysis.TauTriggerEfficiency.TTEffPFTau_cff")
 
