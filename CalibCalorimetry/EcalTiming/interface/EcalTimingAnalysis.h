@@ -175,6 +175,7 @@ class EcalTimingAnalysis : public edm::EDAnalyzer {
 	    float cryAmpsEE_[14648];
 	    float cryETEB_[61200];
 	    float cryETEE_[14648];
+            float kswisskEB_[61200];
 	    int numTriggers_;
 	    int numTechTriggers_;
 	    int triggers_[200];
