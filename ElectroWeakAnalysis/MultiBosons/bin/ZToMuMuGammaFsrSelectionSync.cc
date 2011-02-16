@@ -6,6 +6,7 @@
 
 // CMSSW includes
 #include "CommonTools/CandUtils/interface/CandCombiner.h"
+#include "CommonTools/CandUtils/interface/AddFourMomenta.h"
 #include "CommonTools/UtilAlgos/interface/DeltaR.h"
 #include "CommonTools/Utils/interface/ExpressionHisto.h"
 #include "CommonTools/Utils/interface/AnySelector.h"
@@ -19,6 +20,7 @@
 #include "DataFormats/FWLite/interface/MultiChainEvent.h"
 #include "DataFormats/PatCandidates/interface/Muon.h"
 #include "DataFormats/PatCandidates/interface/Photon.h"
+#include "ElectroWeakAnalysis/MultiBosons/interface/DumpPtEtaPhiM.h"
 #include "FWCore/FWLite/interface/AutoLibraryLoader.h"
 #include "FWCore/PythonParameterSet/interface/PythonProcessDesc.h"
 #include "FWCore/ParameterSet/interface/ProcessDesc.h"
@@ -382,6 +384,33 @@ int main ( int argc, char ** argv )
       } else {
         nearMuon = muon2; farMuon  = muon1; drMin = dr2;
       }
+
+      // Dump the event info
+      DumpPtEtaPhi  ptEtaPhi;
+      DumpPtEtaPhiM ptEtaPhiM;
+
+      cout << "run lumi id: "
+            << setw(3) << event.id().run() << " "
+            << setw(3) << event.id().luminosityBlock() << " "
+            << setw(8) << event.id().event()
+            << setw(0) << endl;
+
+      cout << setw(10)
+           << "  pt eta phi m for mmg cand " << i << endl
+           << "    mmg p4 minDR:    " << ptEtaPhiM(mmgCand) << " "
+                                      << drMin
+                                      << endl
+           << "    dimuon p4:       " << ptEtaPhiM(*dimuon) << endl
+           << "    near mu p4 hIso: " << ptEtaPhiM(*nearMuon) << " "
+                                      << nearMuon->hcalIso()
+//                                       << nearMuon->isolationR03().hadEt
+                                      << endl
+           << "    far mu p4 hIso:  " << ptEtaPhiM(*farMuon) << " "
+                                      << farMuon->hcalIso()
+//                                       << farMuon->isolationR03().hadEt
+                                      << endl
+           << "    photon p3:       " << ptEtaPhi(*photon) << endl;
+
 
 //       if (nearMuon->hcalIso() >= 1.0) continue;
       if (nearMuon->isolationR03().hadEt >= 1.0) continue;
