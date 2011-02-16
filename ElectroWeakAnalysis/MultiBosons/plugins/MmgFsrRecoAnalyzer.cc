@@ -20,6 +20,7 @@
 #include "DataFormats/EgammaCandidates/interface/Photon.h"
 #include "DataFormats/MuonReco/interface/Muon.h"
 #include "DataFormats/TrackReco/interface/Track.h"
+#include "ElectroWeakAnalysis/MultiBosons/interface/DumpPtEtaPhiM.h"
 #include "FWCore/Framework/interface/EDAnalyzer.h"
 #include "FWCore/Framework/interface/Event.h"
 #include "FWCore/Framework/interface/EventSetup.h"
@@ -78,10 +79,14 @@ private:
 
   int eventsProcessed_;
 
-  std::vector<reco::ShallowClonePtrCandidate> selectedMuons;
-  std::vector<reco::ShallowClonePtrCandidate> selectedDimuons;
-  std::vector<reco::ShallowClonePtrCandidate> selectedPhotons;
-  std::vector<reco::ShallowClonePtrCandidate> selectedMmgCands;
+  std::vector<const reco::Muon *> selectedMuons;
+  std::vector<const reco::CompositeCandidate *> selectedDimuons;
+  std::vector<const reco::Photon *> selectedPhotons;
+  std::vector<const reco::CompositeCandidate *> selectedMmgCands;
+//   std::vector<reco::ShallowClonePtrCandidate> selectedMuons;
+//   std::vector<reco::ShallowClonePtrCandidate> selectedDimuons;
+//   std::vector<reco::ShallowClonePtrCandidate> selectedPhotons;
+//   std::vector<reco::ShallowClonePtrCandidate> selectedMmgCands;
 
 }; // end class MmgFsrRecoAnalyzer
 
@@ -196,11 +201,12 @@ MmgFsrRecoAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSe
     if ( fabs( muon.eta() ) >= 2.4 ) continue;
     ++muonsPassedPerEvent_["3.11 |eta|"];
 
-    selectedMuons.push_back(
-      reco::ShallowClonePtrCandidate(
-        edm::Ptr<reco::Muon>(muons, iMuon)
-        )
-      );
+//     selectedMuons.push_back(
+//       reco::ShallowClonePtrCandidate(
+//         edm::Ptr<reco::Muon>(muons, iMuon)
+//         )
+//       );
+    selectedMuons.push_back(&muon);
 
   } // end loop over muons
 
@@ -216,23 +222,25 @@ MmgFsrRecoAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSe
 
   // combine selected muons to dimuons
   reco::CompositeCandidateCollection dimuons;
-  std::vector<reco::ShallowClonePtrCandidate>::const_iterator dau1;
-  std::vector<reco::ShallowClonePtrCandidate>::const_iterator dau2;
+//   std::vector<reco::ShallowClonePtrCandidate>::const_iterator dau1;
+//   std::vector<reco::ShallowClonePtrCandidate>::const_iterator dau2;
   AddFourMomenta addP4;
   OverlapChecker hasOverlap;
   // create all dimuon combinations
   // loop over first daughters
-  for (dau1 = selectedMuons.begin();
-        dau1 < selectedMuons.end() - 1;
-        ++dau1) {
+  for (std::vector<const reco::Muon *>::const_iterator
+       dau1 = selectedMuons.begin();
+       dau1 < selectedMuons.end() - 1;
+       ++dau1) {
     // loop over second daughters
-    for (dau2 = dau1 + 1;
-          dau2 < selectedMuons.end();
-          ++dau2) {
-      if ( hasOverlap(*dau1, *dau2) ) continue;
+    for (std::vector<const reco::Muon *>::const_iterator
+         dau2 = dau1 + 1;
+         dau2 < selectedMuons.end();
+         ++dau2) {
+      if ( hasOverlap(**dau1, **dau2) ) continue;
       reco::CompositeCandidate dimuon;
-      dimuon.addDaughter(*dau1, "muon1");
-      dimuon.addDaughter(*dau2, "muon2");
+      dimuon.addDaughter(**dau1, "muon1");
+      dimuon.addDaughter(**dau2, "muon2");
       addP4.set( dimuon );
       dimuons.push_back( dimuon );
     } // end loop over second daughters
@@ -251,11 +259,12 @@ MmgFsrRecoAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSe
     if (dimuon.mass() < 40. || 80. < dimuon.mass()) continue;
     ++dimuonsPassedPerEvent["4.2  dimuon mass"];
 
-    selectedDimuons.push_back(
+    selectedDimuons.push_back(&dimuon);
+/*    selectedDimuons.push_back(
       reco::ShallowClonePtrCandidate(
         edm::Ptr<reco::CompositeCandidate>(&dimuons, iDimuon)
         )
-      );
+      );*/
   } // end loop over dimuons
 
   // update per-event dimuon counters
@@ -294,11 +303,12 @@ MmgFsrRecoAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSe
     if (photon.pt() <= 10.) continue;
     ++photonsPassedPerEvent["5.5  pt"];
 
-    selectedPhotons.push_back(
+    selectedPhotons.push_back(&photon);
+/*    selectedPhotons.push_back(
       reco::ShallowClonePtrCandidate(
         edm::Ptr<reco::Photon>(photons, iPhoton)
       )
-    );
+    );*/
   }  // end loop over photons
 
   // update per-event photon counters
@@ -316,17 +326,19 @@ MmgFsrRecoAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSe
   reco::CompositeCandidateCollection mmgCands;
   // create all photon-dimuon combinations
   // loop over photons
-  for (dau1 = selectedPhotons.begin();
-        dau1 < selectedPhotons.end();
-        ++dau1) {
+  for (std::vector<const reco::Photon *>::const_iterator
+       dau1 = selectedPhotons.begin();
+       dau1 != selectedPhotons.end();
+       ++dau1) {
     // loop over dimuons
-    for (dau2 = selectedDimuons.begin();
-          dau2 < selectedDimuons.end();
-          ++dau2) {
-      if ( hasOverlap(*dau1, *dau2) ) continue;
+    for (std::vector<const reco::CompositeCandidate *>::const_iterator
+         dau2 = selectedDimuons.begin();
+         dau2 < selectedDimuons.end();
+         ++dau2) {
+      if ( hasOverlap(**dau1, **dau2) ) continue;
       reco::CompositeCandidate mmgCand;
-      mmgCand.addDaughter(*dau1, "photon");
-      mmgCand.addDaughter(*dau2, "dimuon");
+      mmgCand.addDaughter(**dau1, "photon");
+      mmgCand.addDaughter(**dau2, "dimuon");
       addP4.set(mmgCand);
       mmgCands.push_back(mmgCand);
     } // end loop over dimuons
@@ -347,8 +359,22 @@ MmgFsrRecoAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSe
 
     photon = (const reco::Photon*) mmgCand.daughter("photon");
     dimuon = (const reco::CompositeCandidate*) mmgCand.daughter("dimuon");
-    muon1  = (const reco::Muon*) dimuon->daughter(0);
-    muon2  = (const reco::Muon*) dimuon->daughter(1);
+    muon1 = (const reco::Muon*) dimuon->daughter("muon1");
+    muon2 = (const reco::Muon*) dimuon->daughter("muon2");
+
+
+//     photon = dynamic_cast<const reco::Photon*> (
+//                mmgCand.daughter("photon")->masterClonePtr().get()
+//              );
+//     dimuon = dynamic_cast<const reco::CompositeCandidate*> (
+//                mmgCand.daughter("dimuon")
+//              );
+//     muon1  = dynamic_cast<const reco::Muon*> (
+//                dimuon->daughter(0)->masterClonePtr().get()
+//              );
+//     muon2  = dynamic_cast<const reco::Muon*> (
+//                dimuon->daughter(1)->masterClonePtr().get()
+//              );
 
     DeltaR<reco::Candidate, reco::Candidate> deltaR;
     double dr1 = deltaR(*muon1, *photon);
@@ -360,6 +386,36 @@ MmgFsrRecoAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSe
     } else {
       nearMuon = muon2; farMuon  = muon1; drMin = dr2;
     }
+
+      // Dump the event info
+      DumpPtEtaPhi  ptEtaPhi;
+      DumpPtEtaPhiM ptEtaPhiM;
+
+      std::cout << "run lumi id: "
+            << std::setw(3) << iEvent.id().run() << " "
+            << std::setw(3) << iEvent.id().luminosityBlock() << " "
+            << std::setw(8) << iEvent.id().event()
+            << std::setw(0) << std::endl;
+
+      std::cout << std::setw(10)
+           << "  pt eta phi m for mmg cand " << i << std::endl
+           << "    mmg p4 minDR:    " << ptEtaPhiM(mmgCand) << " "
+                                      << drMin
+                                      << std::endl
+           << "    dimuon p4:       " << ptEtaPhiM(*dimuon) << std::endl
+           << "    near mu p4 t/e/h Iso: " << ptEtaPhiM(*nearMuon) << " "
+//                                         << nearMuon->hcalIso()
+                                           << nearMuon->isolationR03().sumPt << " "
+                                           << nearMuon->isolationR03().emEt  << " "
+                                           << nearMuon->isolationR03().hadEt
+                                           << std::endl
+           << "    far mu p4 t/e/h Iso:  " << ptEtaPhiM(*farMuon) << " "
+//                                         << farMuon->hcalIso()
+                                           << farMuon->isolationR03().sumPt << " "
+                                           << farMuon->isolationR03().emEt  << " "
+                                           << farMuon->isolationR03().hadEt
+                                           << std::endl
+           << "    photon p3:            " << ptEtaPhi(*photon) << std::endl;
 
     // if (nearMuon->hcalIso() >= 1.0) continue;
     if (nearMuon->isolationR03().hadEt >= 1.0) continue;
@@ -378,11 +434,12 @@ MmgFsrRecoAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSe
     if (mmgCand.mass() < 70. || 110. < mmgCand.mass() ) continue;
     ++mmgCandsPassedPerEvent["6.5 mmg mass"];
 
-    selectedMmgCands.push_back(
+    selectedMmgCands.push_back(&mmgCand);
+/*    selectedMmgCands.push_back(
       reco::ShallowClonePtrCandidate(
         edm::Ptr<reco::CompositeCandidate>(&mmgCands, i)
         )
-      );
+      );*/
   } // end loop over mmg candidates
 
   // update per-event mmg candidate counters
