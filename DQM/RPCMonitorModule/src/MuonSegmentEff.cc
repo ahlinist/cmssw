@@ -28,33 +28,6 @@ camilo.carrilloATcern.ch
 #include "TAxis.h"
 #include "TString.h"
 
-bool isW1far(RPCDetId rpcId){ 
-  if((rpcId.region()==0) && (rpcId.ring()==1) && ( 
-						  rpcId.sector()==4 ||
-						  rpcId.sector()==5 ||
-						  rpcId.sector()==6 ||
-						  rpcId.sector()==7 ||
-						  rpcId.sector()==8 ||
-						  rpcId.sector()==9 )
-     ) return true;
-  else return false;
-}
-
-bool skipExtrapolation(int run, RPCDetId rpcId){
-  if((run == 133873 
-      || run == 133874
-      || run == 133875
-      || run == 133876
-      || run == 133877
-      || run == 133881
-      || run == 133885
-      || run == 133887
-      || run == 133926
-      || run == 133928) && isW1far(rpcId)
-     )return true;
-  else return false;
-}
-
 double straighter(RPCDetId rpcId){ 	 
   
   bool ok = true; 	 
@@ -416,7 +389,7 @@ void MuonSegmentEff::analyze(const edm::Event& iEvent, const edm::EventSetup& iS
     }
   }
   
-  if(rpcDTPoints.isValid()) if(rpcDTPoints->begin()!=rpcDTPoints->end()){ //No Empty Predictions
+  if(rpcDTPoints.isValid() && rpcDTPoints->begin()!=rpcDTPoints->end()){ //No Empty Predictions
   
     RPCRecHitCollection::const_iterator rpcPoint;
   
@@ -424,8 +397,6 @@ void MuonSegmentEff::analyze(const edm::Event& iEvent, const edm::EventSetup& iS
       LocalPoint PointExtrapolatedRPCFrame = rpcPoint->localPosition();
       RPCDetId  rpcId = rpcPoint->rpcId();
       
-      if(skipExtrapolation(iEvent.id().run(),rpcId)) continue;
-
       if(debug) std::cout<<rpcId.rawId()<<" "<<PointExtrapolatedRPCFrame.x()<<" "<<PointExtrapolatedRPCFrame.y()<<std::endl;
             
       double dx=0;
