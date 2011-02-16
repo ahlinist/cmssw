@@ -13,7 +13,7 @@
 //
 // Original Author:  pts/45
 //         Created:  Tue May 13 12:23:34 CEST 2008
-// $Id: RPCMonitorEfficiency.cc,v 1.49 2011/02/10 17:42:00 carrillo Exp $
+// $Id: RPCMonitorEfficiency.cc,v 1.50 2011/02/14 17:11:36 carrillo Exp $
 //
 //
 
@@ -1841,7 +1841,7 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
 
 	    if(pinoexpected != 0){
 	      pinoeff = (pinoobserved/pinoexpected)*100;
-	      pinoerr = 100.*sqrt((1.-(pinoobserved/pinoexpected))/pinoexpected);
+	      pinoerr = 100.*sqrt((pinoobserved/pinoexpected)*(1.-(pinoobserved/pinoexpected))/pinoexpected);
 	    }	
 	    
 	    if(debug) std::cout<<"Filling txt file with roll and efficiency"<<std::endl;
@@ -2912,7 +2912,7 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
 	    
 	    if(pinoexpected != 0){
 	      pinoeff = (pinoobserved/pinoexpected)*100.;
-	      pinoerr = 100.*sqrt((1.-(pinoobserved/pinoexpected))/pinoexpected);
+	      pinoerr = 100.*sqrt((pinoobserved/pinoexpected)*(1.-(pinoobserved/pinoexpected))/pinoexpected);
 	    }	
 
 	    if(debug) std::cout<<"Filling txt file with roll and efficiency"<<std::endl;
