@@ -22,7 +22,7 @@ process.maxEvents = cms.untracked.PSet(
     input = cms.untracked.int32(-1)
 )
 process.source = cms.Source("PoolSource",
-   fileNames = cms.untracked.vstring('rfio:/castor/cern.ch/user/s/stupputi/Beams/Data/Express/PromptReco/stupputi/MuMonitor/RPCSkim_Collisions10_PromptReco_RECO/de32951a8bd98c6e98fd59b2f6c2a3d7/rpcSkimExp_135808-136082_9_1.root')
+   fileNames = cms.untracked.vstring('file:/tmp/carrillo/FC50386C-2737-E011-BE12-001D09F24D67.root')
 )
 
 process.rpcPointProducer = cms.EDProducer('RPCPointProducer',
@@ -41,8 +41,8 @@ process.rpcPointProducer = cms.EDProducer('RPCPointProducer',
 
 ##  cscSegments = cms.untracked.string('hltCscSegments'),
 ##  dt4DSegments = cms.untracked.string('hltDt4DSegments'),
-  cscSegments = cms.untracked.InputTag('cscSegments'),
-  dt4DSegments = cms.untracked.InputTag('dt4DSegments'),
+  cscSegments = cms.InputTag('cscSegments'),
+  dt4DSegments = cms.InputTag('dt4DSegments'),
   tracks = cms.InputTag("standAloneMuons"),
   TrackTransformer = cms.PSet(
       DoPredictionsOnly = cms.bool(False),
@@ -56,7 +56,7 @@ process.rpcPointProducer = cms.EDProducer('RPCPointProducer',
   )
 )
 
-process.museg = cms.EDFilter("MuonSegmentEff",
+process.museg = cms.EDAnalyzer("MuonSegmentEff",
 
     incldt = cms.untracked.bool(True),
     incldtMB4 = cms.untracked.bool(True),
