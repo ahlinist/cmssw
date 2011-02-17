@@ -13,7 +13,7 @@
 //
 // Original Author:  "Sertac Ozturk"
 //         Created:  Mon Jul 27 11:09:40 CDT 2009
-// $Id: JetTrigAnalyzer.cc,v 1.3 2009/10/08 12:20:08 santanas Exp $
+// $Id: JetTrigAnalyzer.cc,v 1.4 2010/05/31 22:24:17 ferencek Exp $
 //
 //
 
@@ -213,7 +213,7 @@ JetTrigAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup
    
   
   // L1 Jets 
-  if (! l1jets_h.isValid()){ cout<<"No L1Jet Information"<<endl;}
+  if (! l1jets_h.isValid()){ std::cout<<"No L1Jet Information"<<std::endl;}
    else if(l1jets){
       for(l1extra::L1JetParticleCollection::const_iterator l1 = l1jets->begin(); l1 != l1jets->end(); ++l1) {
         ntuple_L1Jets->Fill(l1->energy(), l1->pt(), l1->eta(), l1->phi(), lumi, orbit_no, BX);
@@ -251,7 +251,7 @@ JetTrigAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup
 
 
   // L1 Jets
-  if (! l1jets_h.isValid()){ cout<<"No L1Jet Information"<<endl;}
+  if (! l1jets_h.isValid()){ std::cout<<"No L1Jet Information"<<std::endl;}
    else if(l1jets){
       for(l1extra::L1JetParticleCollection::const_iterator l1 = l1jets->begin(); l1 != l1jets->end(); ++l1) {
         ntuple_L1Jets_bit15->Fill(l1->energy(), l1->pt(), l1->eta(), l1->phi(), lumi, orbit_no, BX);
@@ -287,7 +287,7 @@ JetTrigAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup
 
 
   // L1 Jets
-  if (! l1jets_h.isValid()){ cout<<"No L1Jet Information"<<endl;}
+  if (! l1jets_h.isValid()){ std::cout<<"No L1Jet Information"<<std::endl;}
    else if(l1jets){
       for(l1extra::L1JetParticleCollection::const_iterator l1 = l1jets->begin(); l1 != l1jets->end(); ++l1) {
         ntuple_L1Jets_bit16->Fill(l1->energy(), l1->pt(), l1->eta(), l1->phi(), lumi, orbit_no, BX);
@@ -323,7 +323,7 @@ JetTrigAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup
 
 
   // L1 Jets
-  if (! l1jets_h.isValid()){ cout<<"No L1Jet Information"<<endl;}
+  if (! l1jets_h.isValid()){ std::cout<<"No L1Jet Information"<<std::endl;}
    else if(l1jets){
       for(l1extra::L1JetParticleCollection::const_iterator l1 = l1jets->begin(); l1 != l1jets->end(); ++l1) {
         ntuple_L1Jets_bit17->Fill(l1->energy(), l1->pt(), l1->eta(), l1->phi(), lumi, orbit_no, BX);
@@ -358,7 +358,7 @@ JetTrigAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup
   } // end of offline Jets loop
 
   // L1 Jets
-  if (! l1jets_h.isValid()){ cout<<"No L1Jet Information"<<endl;}
+  if (! l1jets_h.isValid()){ std::cout<<"No L1Jet Information"<<std::endl;}
    else if(l1jets){
       for(l1extra::L1JetParticleCollection::const_iterator l1 = l1jets->begin(); l1 != l1jets->end(); ++l1) {
         ntuple_L1Jets_bit18->Fill(l1->energy(), l1->pt(), l1->eta(), l1->phi(), lumi, orbit_no, BX);
@@ -393,7 +393,7 @@ JetTrigAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup
   } // end of offline Jets loop
 
   // L1 Jets
-  if (! l1jets_h.isValid()){ cout<<"No L1Jet Information"<<endl;}
+  if (! l1jets_h.isValid()){ std::cout<<"No L1Jet Information"<<std::endl;}
    else if(l1jets){
       for(l1extra::L1JetParticleCollection::const_iterator l1 = l1jets->begin(); l1 != l1jets->end(); ++l1) {
         ntuple_L1Jets_bit55->Fill(l1->energy(), l1->pt(), l1->eta(), l1->phi(), lumi, orbit_no, BX);
@@ -424,10 +424,10 @@ JetTrigAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup
    if (hltresults.isValid()) {
      ntrigs = hltresults->size();
      if (do_print_ || evt_cnt<10) {
-       cout << "Nr. HLT trigger names:" <<ntrigs<< endl;
-       if (ntrigs==0) {cout << "-- No trigger name given in TriggerResults of the input " << endl;}
+       std::cout << "Nr. HLT trigger names:" <<ntrigs<< std::endl;
+       if (ntrigs==0) {std::cout << "-- No trigger name given in TriggerResults of the input " << std::endl;}
      }
-     triggerNames_.init(* hltresults);
+     //     triggerNames_.init(* hltresults); //deprecated in 3_6_X
      for (int itrig = 0; itrig != ntrigs; ++itrig){
            
        string trigName=triggerNames_.triggerName(itrig);
@@ -452,7 +452,7 @@ JetTrigAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup
        }
      }
    }
-   else { if (do_print_ || evt_cnt<10) cout << "-- No Trigger Result" << endl;}
+   else { if (do_print_ || evt_cnt<10) std::cout << "-- No Trigger Result" << std::endl;}
    h_Nhltbits->Fill(ntrigs);
 
 
@@ -467,7 +467,7 @@ JetTrigAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup
    if(L1GTRR.isValid() and L1GTOMRec.isValid()) {
      DecisionWord gtDecisionWord = L1GTRR->decisionWord();
      numberTriggerBits = gtDecisionWord.size();
-     if (do_print_ || evt_cnt<10) cout << "Nr. L1 trigger names:" <<numberTriggerBits<< endl;    
+     if (do_print_ || evt_cnt<10) std::cout << "Nr. L1 trigger names:" <<numberTriggerBits<< std::endl;    
 
      const std::vector<L1GlobalTriggerObjectMap>& objMapVec =  L1GTOMRec->gtObjectMap();
      for (std::vector<L1GlobalTriggerObjectMap>::const_iterator itMap = objMapVec.begin(); itMap != objMapVec.end(); ++itMap) {
@@ -497,13 +497,13 @@ JetTrigAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup
    else{
      if (do_print_ || evt_cnt<10) {
        if (L1GTRR.isValid()) {
-	 cout << " -- No L1 GT ObjectMapRecord" << endl;
+	 std::cout << " -- No L1 GT ObjectMapRecord" << std::endl;
        }
        else if (L1GTOMRec.isValid()) {
-	 cout << " -- No L1 GT ReadoutRecord" << endl;
+	 std::cout << " -- No L1 GT ReadoutRecord" << std::endl;
        }
        else {
-	 cout << " -- No L1 GT ReadoutRecord and ObjectMapRecord" << endl;
+	 std::cout << " -- No L1 GT ReadoutRecord and ObjectMapRecord" << std::endl;
        }
      }
    }

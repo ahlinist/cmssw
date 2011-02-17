@@ -16,7 +16,7 @@
 // The code takes as input N HCAL Channels (ieta,iphi,depth,detector)
 // and produces diagnostic histograms of RAW, DIGItized and REConstructed data      
 //         Created:  Thu Jun  4 13:12:17 CDT 2009
-// $Id: HcalChanMon.cc,v 1.1 2009/08/31 09:54:55 nsaoulid Exp $
+// $Id: HcalChanMon.cc,v 1.2 2010/05/31 22:24:16 ferencek Exp $
 //
 //
 
@@ -1307,7 +1307,7 @@ void HcalChanMon::bookHistograms() {
 // ------------ method called once each job just after ending the event loop  ------------
 void HcalChanMon::endJob() {
  
- for(map<std::string, TH1D*>::iterator it=histo1D.begin();it!=histo1D.end();it++){
+  for(std::map<std::string, TH1D*>::iterator it=histo1D.begin();it!=histo1D.end();it++){
    
    std::string chan2,chan3;
    size_t pos2,pos3,pos4;
@@ -1324,7 +1324,7 @@ void HcalChanMon::endJob() {
  
    TH1D *histon = 0;
  
-   for(map<std::string, TH1D*>::iterator itn=histo1DNormRaw.begin();itn!=histo1DNormRaw.end();itn++){
+   for(std::map<std::string, TH1D*>::iterator itn=histo1DNormRaw.begin();itn!=histo1DNormRaw.end();itn++){
     std::string chann  = itn->first; // here tra la la 
     pos3   = chann.find("DetId");    // position of "DetId" in str
     chan3  = chann.substr(pos3);    // get from "DetId" to the end
@@ -1339,14 +1339,14 @@ void HcalChanMon::endJob() {
  }
   
   
-  for(map<std::string, TH1D*>::iterator itn=histo1DNormRaw.begin();itn!=histo1DNormRaw.end();itn++){
+  for(std::map<std::string, TH1D*>::iterator itn=histo1DNormRaw.begin();itn!=histo1DNormRaw.end();itn++){
     TH1D *histon       = itn->second;  
     histon->Scale(1./evt);        
   }
    
  
 // DIGITS 
- for(map<std::string, TH1D*>::iterator itd=histo1DD.begin();itd!=histo1DD.end();itd++){
+ for(std::map<std::string, TH1D*>::iterator itd=histo1DD.begin();itd!=histo1DD.end();itd++){
 
    std::string chan2,chan3;
    size_t pos2,pos3;
@@ -1359,7 +1359,7 @@ void HcalChanMon::endJob() {
    
    TH1D *histon = 0;
  
-   for(map<std::string, TH1D*>::iterator itdn=histo1DNormDigit.begin();itdn!=histo1DNormDigit.end();itdn++){
+   for(std::map<std::string, TH1D*>::iterator itdn=histo1DNormDigit.begin();itdn!=histo1DNormDigit.end();itdn++){
     std::string chann  = itdn->first; // here tra la la 
     pos3   = chann.find("DetId");     // position of "DetId" in str
     chan3  = chann.substr(pos3);      // get from "DetId" to the end
@@ -1371,7 +1371,7 @@ void HcalChanMon::endJob() {
   
  }  
 
-  for(map<std::string, TH1D*>::iterator itdn=histo1DNormDigit.begin();itdn!=histo1DNormDigit.end();itdn++){ 
+  for(std::map<std::string, TH1D*>::iterator itdn=histo1DNormDigit.begin();itdn!=histo1DNormDigit.end();itdn++){ 
     TH1D *histon       = itdn->second;     
     histon->Scale(1./evt);      
    }
@@ -1379,7 +1379,7 @@ void HcalChanMon::endJob() {
 // DIGITS NO PROBLEM
 
 
- for(map<std::string, TH1D*>::iterator itd=histo1DD_np.begin();itd!=histo1DD_np.end();itd++){
+ for(std::map<std::string, TH1D*>::iterator itd=histo1DD_np.begin();itd!=histo1DD_np.end();itd++){
 
    std::string chan2,chan3;
    size_t pos2,pos3;
@@ -1392,7 +1392,7 @@ void HcalChanMon::endJob() {
    
    TH1D *histon = 0;
  
-   for(map<std::string, TH1D*>::iterator itdn=histo1DNormDigit_np.begin();itdn!=histo1DNormDigit_np.end();itdn++){
+   for(std::map<std::string, TH1D*>::iterator itdn=histo1DNormDigit_np.begin();itdn!=histo1DNormDigit_np.end();itdn++){
     std::string chann  = itdn->first; // here tra la la 
     pos3   = chann.find("DetId");     // position of "DetId" in str
     chan3  = chann.substr(pos3);      // get from "DetId" to the end
@@ -1404,7 +1404,7 @@ void HcalChanMon::endJob() {
   
  }  
 
-  for(map<std::string, TH1D*>::iterator itdn=histo1DNormDigit_np.begin();itdn!=histo1DNormDigit_np.end();itdn++){ 
+  for(std::map<std::string, TH1D*>::iterator itdn=histo1DNormDigit_np.begin();itdn!=histo1DNormDigit_np.end();itdn++){ 
     TH1D *histon       = itdn->second;     
     histon->Scale(1./evt);      
    }
@@ -1413,7 +1413,7 @@ void HcalChanMon::endJob() {
 
 // REC HITS
 
- for(map<std::string, TH1D*>::iterator itd=histo1DR.begin();itd!=histo1DR.end();itd++){
+ for(std::map<std::string, TH1D*>::iterator itd=histo1DR.begin();itd!=histo1DR.end();itd++){
 
    std::string chan2,chan3;
    size_t pos2,pos3;
@@ -1426,7 +1426,7 @@ void HcalChanMon::endJob() {
 
    TH1D *histon = 0;
 
-   for(map<std::string, TH1D*>::iterator itdn=histo1DNormRecHit.begin();itdn!=histo1DNormRecHit.end();itdn++){
+   for(std::map<std::string, TH1D*>::iterator itdn=histo1DNormRecHit.begin();itdn!=histo1DNormRecHit.end();itdn++){
     std::string chann  = itdn->first; // here tra la la
     pos3   = chann.find("DetId");     // position of "DetId" in str
     chan3  = chann.substr(pos3);      // get from "DetId" to the end
@@ -1438,7 +1438,7 @@ void HcalChanMon::endJob() {
 
  }
 
-  for(map<std::string, TH1D*>::iterator itdn=histo1DNormRecHit.begin();itdn!=histo1DNormRecHit.end();itdn++){
+  for(std::map<std::string, TH1D*>::iterator itdn=histo1DNormRecHit.begin();itdn!=histo1DNormRecHit.end();itdn++){
     TH1D *histon       = itdn->second;
     histon->Scale(1./evt);
    }
@@ -1446,7 +1446,7 @@ void HcalChanMon::endJob() {
 
 // REC HITS NO PROBLEM
 
- for(map<std::string, TH1D*>::iterator itd=histo1DR_np.begin();itd!=histo1DR_np.end();itd++){
+ for(std::map<std::string, TH1D*>::iterator itd=histo1DR_np.begin();itd!=histo1DR_np.end();itd++){
 
    std::string chan2,chan3;
    size_t pos2,pos3;
@@ -1459,7 +1459,7 @@ void HcalChanMon::endJob() {
 
    TH1D *histon = 0;
 
-   for(map<std::string, TH1D*>::iterator itdn=histo1DNormRecHit_np.begin();itdn!=histo1DNormRecHit_np.end();itdn++){
+   for(std::map<std::string, TH1D*>::iterator itdn=histo1DNormRecHit_np.begin();itdn!=histo1DNormRecHit_np.end();itdn++){
     std::string chann  = itdn->first; // here tra la la
     pos3   = chann.find("DetId");     // position of "DetId" in str
     chan3  = chann.substr(pos3);      // get from "DetId" to the end
@@ -1471,7 +1471,7 @@ void HcalChanMon::endJob() {
 
  }
 
-  for(map<std::string, TH1D*>::iterator itdn=histo1DNormRecHit_np.begin();itdn!=histo1DNormRecHit_np.end();itdn++){
+  for(std::map<std::string, TH1D*>::iterator itdn=histo1DNormRecHit_np.begin();itdn!=histo1DNormRecHit_np.end();itdn++){
     TH1D *histon       = itdn->second;
     histon->Scale(1./evt);
    }

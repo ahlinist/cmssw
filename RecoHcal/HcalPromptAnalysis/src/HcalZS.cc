@@ -15,7 +15,7 @@
 */
 //
 // Original Author:  Francesco Santanastasio, Sinjini Sengupta
-// $Id: HcalZS.cc,v 1.10 2009/10/25 10:54:46 santanas Exp $
+// $Id: HcalZS.cc,v 1.11 2010/05/31 22:24:17 ferencek Exp $
 //
 //
 
@@ -116,12 +116,12 @@ HcalZS::HcalZS(const edm::ParameterSet& iConfig)
   thresholdHF_ = iConfig.getUntrackedParameter < int > ("thresholdHF", 9);
   thresholdCalib_ = iConfig.getUntrackedParameter < int > ("thresholdCalib", 9);
 
-  cout << "using digi thresholdHB = " << thresholdHB_ << endl;
-  cout << "using digi thresholdHE = " << thresholdHE_ << endl;
-  cout << "using digi thresholdHO = " << thresholdHO_ << endl;
-  cout << "using digi thresholdHOSiPM = " << thresholdHOSiPM_ << endl;
-  cout << "using digi thresholdHF = " << thresholdHF_ << endl;
-  cout << "using digi thresholdCalib = " << thresholdCalib_ << endl;
+  std::cout << "using digi thresholdHB = " << thresholdHB_ << std::endl;
+  std::cout << "using digi thresholdHE = " << thresholdHE_ << std::endl;
+  std::cout << "using digi thresholdHO = " << thresholdHO_ << std::endl;
+  std::cout << "using digi thresholdHOSiPM = " << thresholdHOSiPM_ << std::endl;
+  std::cout << "using digi thresholdHF = " << thresholdHF_ << std::endl;
+  std::cout << "using digi thresholdCalib = " << thresholdCalib_ << std::endl;
 
   //set ZS mask
   zs_mask[0] = iConfig.getUntrackedParameter < int > ("ZSmask_Sum0", 0);
@@ -134,11 +134,11 @@ HcalZS::HcalZS(const edm::ParameterSet& iConfig)
   zs_mask[7] = iConfig.getUntrackedParameter < int > ("ZSmask_Sum7", 0);
   zs_mask[8] = iConfig.getUntrackedParameter < int > ("ZSmask_Sum8", 0);
 
-  cout << endl;
-  cout << "using zs mask =  ";
+  std::cout << std::endl;
+  std::cout << "using zs mask =  ";
   for(int sum=0;sum<9;sum++)
-    cout << zs_mask[sum] << " ";
-  cout << endl;
+    std::cout << zs_mask[sum] << " ";
+  std::cout << std::endl;
 
 }
 
@@ -168,7 +168,7 @@ namespace ZSRealistic_impl {
     for (int i=0; i< inp.size()-1 && !keepIt; i++) {
 
       //ZS mask
-      //cout << zs_mask[i] << " "; 
+      //std::cout << zs_mask[i] << " "; 
       if(zs_mask[i]==1)
 	continue;
 
@@ -179,7 +179,7 @@ namespace ZSRealistic_impl {
       }
       if (sum>=threshold) keepIt=true;
     }
-    //cout << "next digi" << endl;
+    //std::cout << "next digi" << std::endl;
     return !keepIt;
   }
 }
@@ -205,8 +205,8 @@ HcalZS::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
 
    if (hbhe_digi) { // object is available 
      
-     //      cout << "hbhe_digi is available" << endl;
-     //      cout << "hbhe_digi->size(): " << hbhe_digi->size() << endl;
+     //      std::cout << "hbhe_digi is available" << std::endl;
+     //      std::cout << "hbhe_digi->size(): " << hbhe_digi->size() << std::endl;
      
      for (HBHEDigiCollection::const_iterator j=hbhe_digi->begin(); j!=hbhe_digi->end(); j++)
        {
@@ -214,7 +214,7 @@ HcalZS::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
 	 HcalDetId id = digi.id();
 	 bool agree = false;
 
-	 //cout << "HBHE digi.zsUnsuppressed(): " << digi.zsUnsuppressed() << endl;
+	 //std::cout << "HBHE digi.zsUnsuppressed(): " << digi.zsUnsuppressed() << std::endl;
 	 h_hbhe_US->Fill(digi.zsUnsuppressed());
 	 if(digi.zsUnsuppressed() != 1)
 	   continue;
@@ -240,15 +240,15 @@ HcalZS::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
 	 }
 	 
 	 //-- Mark&Pass bit in the data
-	 //cout << "digi.zsMarkAndPass(): " << digi.zsMarkAndPass() << endl;
+	 //std::cout << "digi.zsMarkAndPass(): " << digi.zsMarkAndPass() << std::endl;
 	 
 	 //-- ZS Emulation
 	 if ( id.subdet() == HcalBarrel ) 
 	   {	  
 	     h_hbdigi_MarkAndPassEmu->Fill( ZSRealistic_impl::MarkAndPassEmu<HBHEDataFrame>(digi,thresholdHB_,zs_mask) );
 	     h_hbdigi_MarkAndPassData->Fill( digi.zsMarkAndPass() );
-	     // 	     cout << "ZSRealistic_impl::MarkAndPassEmu<HBHEDataFrame>(digi,thresholdHB_): "
-	     // 		  << ZSRealistic_impl::MarkAndPassEmu<HBHEDataFrame>(digi,thresholdHB_) << endl;
+	     // 	     std::cout << "ZSRealistic_impl::MarkAndPassEmu<HBHEDataFrame>(digi,thresholdHB_): "
+	     // 		  << ZSRealistic_impl::MarkAndPassEmu<HBHEDataFrame>(digi,thresholdHB_) << std::endl;
 	     
 	     if( ZSRealistic_impl::MarkAndPassEmu<HBHEDataFrame>(digi,thresholdHB_,zs_mask) ==  digi.zsMarkAndPass() )
 	       agree = true;
@@ -257,8 +257,8 @@ HcalZS::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
 	   { 
 	     h_hedigi_MarkAndPassEmu->Fill( ZSRealistic_impl::MarkAndPassEmu<HBHEDataFrame>(digi,thresholdHE_,zs_mask) );
 	     h_hedigi_MarkAndPassData->Fill( digi.zsMarkAndPass() );
-	     // 	     cout << "ZSRealistic_impl::MarkAndPassEmu<HBHEDataFrame>(digi,thresholdHE_): "
-	     // 		  << ZSRealistic_impl::MarkAndPassEmu<HBHEDataFrame>(digi,thresholdHE_) << endl;
+	     // 	     std::cout << "ZSRealistic_impl::MarkAndPassEmu<HBHEDataFrame>(digi,thresholdHE_): "
+	     // 		  << ZSRealistic_impl::MarkAndPassEmu<HBHEDataFrame>(digi,thresholdHE_) << std::endl;
 	    
 	     if( ZSRealistic_impl::MarkAndPassEmu<HBHEDataFrame>(digi,thresholdHE_,zs_mask) ==  digi.zsMarkAndPass() )
 	       agree = true;
@@ -316,8 +316,8 @@ HcalZS::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
    const HODigiCollection* ho_digi = ho_digi_h.failedToGet () ? 0 : &*ho_digi_h;
 
    if (ho_digi) { // object is available 
-     //      cout << "ho_digi is available" << endl;
-     //      cout << "ho_digi->size(): " << ho_digi->size() << endl;
+     //      std::cout << "ho_digi is available" << std::endl;
+     //      std::cout << "ho_digi->size(): " << ho_digi->size() << std::endl;
 
      for (HODigiCollection::const_iterator j=ho_digi->begin(); j!=ho_digi->end(); j++)
        {
@@ -326,7 +326,7 @@ HcalZS::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
 	 bool agree = false;
 
 
-	 //cout << "HO digi.zsUnsuppressed(): " << digi.zsUnsuppressed() << endl;
+	 //std::cout << "HO digi.zsUnsuppressed(): " << digi.zsUnsuppressed() << std::endl;
 	 h_ho_US->Fill(digi.zsUnsuppressed());
 	 if(digi.zsUnsuppressed() != 1)
 	   continue;
@@ -339,7 +339,7 @@ HcalZS::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
 	   h_ho_d4_all->Fill(id.ieta(),id.iphi());	 
 	
 	 //-- Mark&Pass bit in the data
-	 //	 cout << "digi.zsMarkAndPass(): " << digi.zsMarkAndPass() << endl;
+	 //	 std::cout << "digi.zsMarkAndPass(): " << digi.zsMarkAndPass() << std::endl;
 	 
 
 	 //-- ZS Emulation
@@ -347,15 +347,15 @@ HcalZS::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
 	 //---------------------------------------------------
 	 //The RBX of this HO channel
          string theRBX = (lMap->getHcalFrontEndId(id)).rbx();
-         //cout << theRBX << endl; 
+         //std::cout << theRBX << std::endl; 
 	 //---------------------------------------------------
 
 	 if( theRBX=="HO1P10" || theRBX=="HO2P12" )
 	   {//SiPM boxes
 	     h_hodigi_MarkAndPassEmu->Fill( ZSRealistic_impl::MarkAndPassEmu<HODataFrame>(digi,thresholdHOSiPM_,zs_mask) );
 	     h_hodigi_MarkAndPassData->Fill( digi.zsMarkAndPass() );
-	     // 	 cout << "ZSRealistic_impl::MarkAndPassEmu<HODataFrame>(digi,thresholdHOSiPM_): "
-	     // 	      << ZSRealistic_impl::MarkAndPassEmu<HODataFrame>(digi,thresholdHOSiPM_) << endl;	     
+	     // 	 std::cout << "ZSRealistic_impl::MarkAndPassEmu<HODataFrame>(digi,thresholdHOSiPM_): "
+	     // 	      << ZSRealistic_impl::MarkAndPassEmu<HODataFrame>(digi,thresholdHOSiPM_) << std::endl;	     
 	     if ( ZSRealistic_impl::MarkAndPassEmu<HODataFrame>(digi,thresholdHOSiPM_,zs_mask) == digi.zsMarkAndPass() )
 	       agree = true;	     
 	   }
@@ -363,8 +363,8 @@ HcalZS::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
 	   {//All HO except SiPM boxes
 	     h_hodigi_MarkAndPassEmu->Fill( ZSRealistic_impl::MarkAndPassEmu<HODataFrame>(digi,thresholdHO_,zs_mask) );
 	     h_hodigi_MarkAndPassData->Fill( digi.zsMarkAndPass() );
-	     // 	 cout << "ZSRealistic_impl::MarkAndPassEmu<HODataFrame>(digi,thresholdHO_): "
-	     // 	      << ZSRealistic_impl::MarkAndPassEmu<HODataFrame>(digi,thresholdHO_) << endl;
+	     // 	 std::cout << "ZSRealistic_impl::MarkAndPassEmu<HODataFrame>(digi,thresholdHO_): "
+	     // 	      << ZSRealistic_impl::MarkAndPassEmu<HODataFrame>(digi,thresholdHO_) << std::endl;
 	     
 	     if ( ZSRealistic_impl::MarkAndPassEmu<HODataFrame>(digi,thresholdHO_,zs_mask) == digi.zsMarkAndPass() )
 	       agree = true;
@@ -385,14 +385,14 @@ HcalZS::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
 	 // 	 if ( agree == false ) 
 	 // 	   if (id.subdet() == 3)
 	 // 	     {
-	 // 	       cout << "%%%%%%%%%%%%%%%%%%%%%%%%%%" << endl;
+	 // 	       std::cout << "%%%%%%%%%%%%%%%%%%%%%%%%%%" << std::endl;
 	 // 	       printf( "ieta: %i iphi: %i\n" , id.ieta(), id.iphi() ); 
 	 // 	       printf( "M&P: %i M&PEMU: %i\n", digi.zsMarkAndPass(), !(ZSRealistic_impl::MarkAndPassEmu<HODataFrame>(digi,thresholdHO_)) );
 	 // 	       for(int i=0;i<digi.size();i++)
 	 // 		 { 
-	 // 		   cout << i << ") ---> " << digi.sample(i).adc() << endl;
+	 // 		   std::cout << i << ") ---> " << digi.sample(i).adc() << std::endl;
 	 // 		 }
-	 // 	       cout << "%%%%%%%%%%%%%%%%%%%%%%%%%%" << endl;
+	 // 	       std::cout << "%%%%%%%%%%%%%%%%%%%%%%%%%%" << std::endl;
 	 // 	     }
 	 
        }// end loop of HO digi
@@ -407,8 +407,8 @@ HcalZS::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
 
    if (hf_digi) { // object is available 
      
-     //      cout << "hf_digi is available" << endl;
-     //      cout << "hf_digi->size(): " << hf_digi->size() << endl;
+     //      std::cout << "hf_digi is available" << std::endl;
+     //      std::cout << "hf_digi->size(): " << hf_digi->size() << std::endl;
      
      for (HFDigiCollection::const_iterator j=hf_digi->begin(); j!=hf_digi->end(); j++)
        {
@@ -416,7 +416,7 @@ HcalZS::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
 	 HcalDetId id = digi.id();
 	 bool agree = false;
 
-	 //cout << "HF digi.zsUnsuppressed(): " << digi.zsUnsuppressed() << endl;
+	 //std::cout << "HF digi.zsUnsuppressed(): " << digi.zsUnsuppressed() << std::endl;
 	 h_hf_US->Fill(digi.zsUnsuppressed());
 	 if(digi.zsUnsuppressed() != 1)
 	   continue;
@@ -433,13 +433,13 @@ HcalZS::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
 	 }
  
 	 //-- Mark&Pass bit in the data
-	 //	 cout << "digi.zsMarkAndPass(): " << digi.zsMarkAndPass() << endl;
+	 //	 std::cout << "digi.zsMarkAndPass(): " << digi.zsMarkAndPass() << std::endl;
 	 
 	 //-- ZS Emulation
 	 h_hfdigi_MarkAndPassEmu->Fill( ZSRealistic_impl::MarkAndPassEmu<HFDataFrame>(digi,thresholdHF_,zs_mask) );
 	 h_hfdigi_MarkAndPassData->Fill( digi.zsMarkAndPass() );
-	 // 	 cout << "ZSRealistic_impl::MarkAndPassEmu<HFDataFrame>(digi,thresholdHF_): "
-	 // 	      << ZSRealistic_impl::MarkAndPassEmu<HFDataFrame>(digi,thresholdHF_) << endl;
+	 // 	 std::cout << "ZSRealistic_impl::MarkAndPassEmu<HFDataFrame>(digi,thresholdHF_): "
+	 // 	      << ZSRealistic_impl::MarkAndPassEmu<HFDataFrame>(digi,thresholdHF_) << std::endl;
 	 //if( digi.zsMarkAndPass() )
 	 if ( ZSRealistic_impl::MarkAndPassEmu<HFDataFrame>(digi,thresholdHF_,zs_mask) == digi.zsMarkAndPass() )
 	   agree = true;
@@ -488,7 +488,7 @@ HcalZS::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
 	 const HcalCalibDataFrame digi = (const HcalCalibDataFrame)(*calibdigi);
 	 bool agree = false;
 
-	 //cout << "HF digi.zsUnsuppressed(): " << digi.zsUnsuppressed() << endl;
+	 //std::cout << "HF digi.zsUnsuppressed(): " << digi.zsUnsuppressed() << std::endl;
 	 h_calib_US->Fill(digi.zsUnsuppressed());
 	 if(digi.zsUnsuppressed() != 1)
 	   continue;
@@ -674,14 +674,14 @@ void HcalZS::beginJob(const edm::EventSetup&)
 // ------------ method called once each job just after ending the event loop  ------------
 void HcalZS::endJob() {
 
-  cout << "########## SUMMARY OF THE M&P TEST ##########" << endl;
+  std::cout << "########## SUMMARY OF THE M&P TEST ##########" << std::endl;
   float LIMITPREC = 1./float(NtotEvents);
   float LIMITPRECALL = 1./float(NtotDigis);
 
-  cout << "NtotEvents: " << NtotEvents << endl;
-  cout << "NtotDigis: " << NtotDigis << endl;
-  cout << "Limit precision for this test on the single channel: " << LIMITPREC << endl;
-  cout << "Limit precision for this test (considering all the digi): " << LIMITPRECALL << endl;
+  std::cout << "NtotEvents: " << NtotEvents << std::endl;
+  std::cout << "NtotDigis: " << NtotDigis << std::endl;
+  std::cout << "Limit precision for this test on the single channel: " << LIMITPREC << std::endl;
+  std::cout << "Limit precision for this test (considering all the digi): " << LIMITPRECALL << std::endl;
 
   /*
 
@@ -704,10 +704,10 @@ void HcalZS::endJob() {
 	    h_hbhf_d1->SetBinContent( ieta , iphi , percDisagree);
 	    if(percDisagree > LIMITPREC)
 	      {
-		cout << "HB/HF depth=1" 
+		std::cout << "HB/HF depth=1" 
 		     << " ieta=" << ieta - 42 << " iphi=" << iphi 
 		     << " percentage of disagree=" << percDisagree 
-		     << " (number of digis used for the test=" << thisNtotEvents << ")" << endl;
+		     << " (number of digis used for the test=" << thisNtotEvents << ")" << std::endl;
 	      }
 	  }
       }
@@ -731,10 +731,10 @@ void HcalZS::endJob() {
 	    h_hbhf_d2->SetBinContent( ieta , iphi , percDisagree);
 	    if(percDisagree > LIMITPREC)
 	      {
-		cout << "HB/HF depth=2" 
+		std::cout << "HB/HF depth=2" 
 		     << " ieta=" << ieta - 42 << " iphi=" << iphi 
 		     << " percentage of disagree=" << percDisagree 
-		     << " (number of digis used for the test=" << thisNtotEvents << ")" << endl;
+		     << " (number of digis used for the test=" << thisNtotEvents << ")" << std::endl;
 	      }
 	  }
       }
@@ -757,10 +757,10 @@ void HcalZS::endJob() {
 	    h_he_d1->SetBinContent( ieta , iphi , percDisagree);
 	    if(percDisagree > LIMITPREC)
 	      {
-		cout << "HE depth=1" 
+		std::cout << "HE depth=1" 
 		     << " ieta=" << ieta - 42 << " iphi=" << iphi 
 		     << " percentage of disagree=" << percDisagree 
-		     << " (number of digis used for the test=" << thisNtotEvents << ")" << endl;
+		     << " (number of digis used for the test=" << thisNtotEvents << ")" << std::endl;
 	      }
 	  }
       }
@@ -783,10 +783,10 @@ void HcalZS::endJob() {
 	    h_he_d2->SetBinContent( ieta , iphi , percDisagree);
 	    if(percDisagree > LIMITPREC)
 	      {
-		cout << "HE depth=2" 
+		std::cout << "HE depth=2" 
 		     << " ieta=" << ieta - 42 << " iphi=" << iphi 
 		     << " percentage of disagree=" << percDisagree 
-		     << " (number of digis used for the test=" << thisNtotEvents << ")" << endl;
+		     << " (number of digis used for the test=" << thisNtotEvents << ")" << std::endl;
 	      }
 	  }
       }
@@ -809,10 +809,10 @@ void HcalZS::endJob() {
 	    h_he_d3->SetBinContent( ieta , iphi , percDisagree);
 	    if(percDisagree > LIMITPREC)
 	      {
-		cout << "HE depth=3" 
+		std::cout << "HE depth=3" 
 		     << " ieta=" << ieta - 42 << " iphi=" << iphi 
 		     << " percentage of disagree=" << percDisagree 
-		     << " (number of digis used for the test=" << thisNtotEvents << ")" << endl;
+		     << " (number of digis used for the test=" << thisNtotEvents << ")" << std::endl;
 	      }
 	  }
       }
@@ -836,10 +836,10 @@ void HcalZS::endJob() {
 	    h_ho_d4->SetBinContent( ieta , iphi , percDisagree);
 	    if(percDisagree > LIMITPREC)
 	      {
-		cout << "HO depth=4" 
+		std::cout << "HO depth=4" 
 		     << " ieta=" << ieta - 42 << " iphi=" << iphi 
 		     << " percentage of disagree=" << percDisagree 
-		     << " (number of digis used for the test=" << thisNtotEvents << ")" << endl;
+		     << " (number of digis used for the test=" << thisNtotEvents << ")" << std::endl;
 	      }
 	  }
       }
