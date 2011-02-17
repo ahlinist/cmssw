@@ -5,6 +5,16 @@ from Configuration.EventContent.EventContent_cff import *
 
 goldenZmumuEventContent = FEVTEventContent.clone()
 
+# keep extras
+keepExtras = cms.PSet(
+    outputCommands = cms.untracked.vstring(
+        'keep *_genParticles_*_*',
+        'keep *_particleFlow_*_*',
+        'keep *_generator_*_*',
+    )
+)
+goldenZmumuEventContent.outputCommands.extend(keepExtras.outputCommands)
+
 # keep goodMuons
 keepGoodMuons = cms.PSet(
     outputCommands = cms.untracked.vstring(
