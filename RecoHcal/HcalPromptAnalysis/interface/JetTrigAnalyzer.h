@@ -13,7 +13,7 @@
 //
 // Original Author:  "Sertac Ozturk"
 //         Created:  Mon Jul 27 11:09:40 CDT 2009
-// $Id: JetTrigAnalyzer.h,v 1.1 2009/09/01 20:34:55 sertac Exp $
+// $Id: JetTrigAnalyzer.h,v 1.2 2010/05/31 22:24:14 ferencek Exp $
 //
 //
 
@@ -31,7 +31,7 @@
 #include "CommonTools/UtilAlgos/interface/TFileService.h"
 
 #include "DataFormats/Common/interface/TriggerResults.h"
-#include "FWCore/Framework/interface/TriggerNames.h"
+#include "FWCore/Common/interface/TriggerNames.h"
 #include "DataFormats/L1GlobalTrigger/interface/L1GlobalTriggerReadoutSetupFwd.h"
 #include "DataFormats/L1GlobalTrigger/interface/L1GlobalTriggerObjectMapRecord.h"
 #include "DataFormats/L1GlobalTrigger/interface/L1GlobalTriggerObjectMapFwd.h"

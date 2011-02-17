@@ -390,32 +390,32 @@ void HcalPFGBeamSplashTemplate::analyze(const edm::Event& iEvent, const edm::Eve
       //       && NhitAboveThr_hf > 1000 )
       )
     {
-      cout << "#### Splash event candidate ####" << endl; 
-      cout << "iEvent.id().event() : " << iEvent.id().event() << endl;
-      cout << "iEvent.bunchCrossing() : " << iEvent.bunchCrossing() << endl;
-      cout << "iEvent.orbitNumber() : " << iEvent.orbitNumber() << endl;  
-      cout << "--------------------------------" << endl;
-      cout << "## HCAL ##" << endl;
-      cout << "SumE_hb = " << SumE_hb << endl;
-      cout << "SumE_he = " << SumE_he << endl;
-      cout << "SumE_ho = " << SumE_ho << endl;
-      cout << "SumE_hf = " << SumE_hf << endl;
-      cout << "SumE_htot = " << SumE_htot << endl;
-      cout << "NhitAboveThr_hb = " << NhitAboveThr_hb << endl;
-      cout << "NhitAboveThr_he = " << NhitAboveThr_he << endl;
-      cout << "NhitAboveThr_hf = " << NhitAboveThr_hf << endl;
-      cout << "NhitAboveThr_ho = " << NhitAboveThr_ho << endl;
-      cout << "NhitAboveThr_htot = " << NhitAboveThr_htot << endl;
-      cout << "--------------------------------" << endl;
-      cout << "## ECAL ##" << endl;
-      cout << "SumE_eb = " << SumE_eb << endl;
-      cout << "SumE_ee = " << SumE_ee << endl;
-      cout << "SumE_etot = " << SumE_etot << endl;
-      cout << "NhitAboveThr_eb = " << NhitAboveThr_eb << endl;
-      cout << "NhitAboveThr_ee = " << NhitAboveThr_ee << endl;
-      cout << "NhitAboveThr_etot = " << NhitAboveThr_etot << endl;
-      cout << "--------------------------------" << endl;
-      cout << endl;
+      std::cout << "#### Splash event candidate ####" << std::endl; 
+      std::cout << "iEvent.id().event() : " << iEvent.id().event() << std::endl;
+      std::cout << "iEvent.bunchCrossing() : " << iEvent.bunchCrossing() << std::endl;
+      std::cout << "iEvent.orbitNumber() : " << iEvent.orbitNumber() << std::endl;  
+      std::cout << "--------------------------------" << std::endl;
+      std::cout << "## HCAL ##" << std::endl;
+      std::cout << "SumE_hb = " << SumE_hb << std::endl;
+      std::cout << "SumE_he = " << SumE_he << std::endl;
+      std::cout << "SumE_ho = " << SumE_ho << std::endl;
+      std::cout << "SumE_hf = " << SumE_hf << std::endl;
+      std::cout << "SumE_htot = " << SumE_htot << std::endl;
+      std::cout << "NhitAboveThr_hb = " << NhitAboveThr_hb << std::endl;
+      std::cout << "NhitAboveThr_he = " << NhitAboveThr_he << std::endl;
+      std::cout << "NhitAboveThr_hf = " << NhitAboveThr_hf << std::endl;
+      std::cout << "NhitAboveThr_ho = " << NhitAboveThr_ho << std::endl;
+      std::cout << "NhitAboveThr_htot = " << NhitAboveThr_htot << std::endl;
+      std::cout << "--------------------------------" << std::endl;
+      std::cout << "## ECAL ##" << std::endl;
+      std::cout << "SumE_eb = " << SumE_eb << std::endl;
+      std::cout << "SumE_ee = " << SumE_ee << std::endl;
+      std::cout << "SumE_etot = " << SumE_etot << std::endl;
+      std::cout << "NhitAboveThr_eb = " << NhitAboveThr_eb << std::endl;
+      std::cout << "NhitAboveThr_ee = " << NhitAboveThr_ee << std::endl;
+      std::cout << "NhitAboveThr_etot = " << NhitAboveThr_etot << std::endl;
+      std::cout << "--------------------------------" << std::endl;
+      std::cout << std::endl;
 
       h_event_bx_splash->Fill(iEvent.bunchCrossing());
 
@@ -482,32 +482,32 @@ void HcalPFGBeamSplashTemplate::analyze(const edm::Event& iEvent, const edm::Eve
        //NhitAboveThr_hf > 100 && NhitAboveThr_hf < 1000 )
        )
       {
-	cout << "#### After splash event ####" << endl; 
-	cout << "iEvent.id().event() : " << iEvent.id().event() << endl;
-	cout << "iEvent.bunchCrossing() : " << iEvent.bunchCrossing() << endl;
-	cout << "iEvent.orbitNumber() : " << iEvent.orbitNumber() << endl;  
-	cout << "--------------------------------" << endl;
-	cout << "## HCAL ##" << endl;
-	cout << "SumE_hb = " << SumE_hb << endl;
-	cout << "SumE_he = " << SumE_he << endl;
-	cout << "SumE_ho = " << SumE_ho << endl;
-	cout << "SumE_hf = " << SumE_hf << endl;
-	cout << "SumE_htot = " << SumE_htot << endl;
-	cout << "NhitAboveThr_hb = " << NhitAboveThr_hb << endl;
-	cout << "NhitAboveThr_he = " << NhitAboveThr_he << endl;
-	cout << "NhitAboveThr_hf = " << NhitAboveThr_hf << endl;
-	cout << "NhitAboveThr_ho = " << NhitAboveThr_ho << endl;
-	cout << "NhitAboveThr_htot = " << NhitAboveThr_htot << endl;
-	cout << "--------------------------------" << endl;
-	cout << "## ECAL ##" << endl;
-	cout << "SumE_eb = " << SumE_eb << endl;
-	cout << "SumE_ee = " << SumE_ee << endl;
-	cout << "SumE_etot = " << SumE_etot << endl;
-	cout << "NhitAboveThr_eb = " << NhitAboveThr_eb << endl;
-	cout << "NhitAboveThr_ee = " << NhitAboveThr_ee << endl;
-	cout << "NhitAboveThr_etot = " << NhitAboveThr_etot << endl;
-	cout << "--------------------------------" << endl;
-	cout << endl;
+	std::cout << "#### After splash event ####" << std::endl; 
+	std::cout << "iEvent.id().event() : " << iEvent.id().event() << std::endl;
+	std::cout << "iEvent.bunchCrossing() : " << iEvent.bunchCrossing() << std::endl;
+	std::cout << "iEvent.orbitNumber() : " << iEvent.orbitNumber() << std::endl;  
+	std::cout << "--------------------------------" << std::endl;
+	std::cout << "## HCAL ##" << std::endl;
+	std::cout << "SumE_hb = " << SumE_hb << std::endl;
+	std::cout << "SumE_he = " << SumE_he << std::endl;
+	std::cout << "SumE_ho = " << SumE_ho << std::endl;
+	std::cout << "SumE_hf = " << SumE_hf << std::endl;
+	std::cout << "SumE_htot = " << SumE_htot << std::endl;
+	std::cout << "NhitAboveThr_hb = " << NhitAboveThr_hb << std::endl;
+	std::cout << "NhitAboveThr_he = " << NhitAboveThr_he << std::endl;
+	std::cout << "NhitAboveThr_hf = " << NhitAboveThr_hf << std::endl;
+	std::cout << "NhitAboveThr_ho = " << NhitAboveThr_ho << std::endl;
+	std::cout << "NhitAboveThr_htot = " << NhitAboveThr_htot << std::endl;
+	std::cout << "--------------------------------" << std::endl;
+	std::cout << "## ECAL ##" << std::endl;
+	std::cout << "SumE_eb = " << SumE_eb << std::endl;
+	std::cout << "SumE_ee = " << SumE_ee << std::endl;
+	std::cout << "SumE_etot = " << SumE_etot << std::endl;
+	std::cout << "NhitAboveThr_eb = " << NhitAboveThr_eb << std::endl;
+	std::cout << "NhitAboveThr_ee = " << NhitAboveThr_ee << std::endl;
+	std::cout << "NhitAboveThr_etot = " << NhitAboveThr_etot << std::endl;
+	std::cout << "--------------------------------" << std::endl;
+	std::cout << std::endl;
 	
 	h_event_bx_aftersplash->Fill(iEvent.bunchCrossing());
 
@@ -567,26 +567,26 @@ void HcalPFGBeamSplashTemplate::analyze(const edm::Event& iEvent, const edm::Eve
 
       {//no splash event
 
-	//cout << "no splash event" << endl;
+	//cout << "no splash event" << std::endl;
 
 	if (hbhe_hits) { // object is available 
 	  for (HBHERecHitCollection::const_iterator hhit=hbhe_hits->begin(); hhit!=hbhe_hits->end(); hhit++) {	  
 	    h_hcal_rechit_energy_hbhe->Fill(hhit->energy());
-	    //cout << (hhit->id()).ieta() << " "<< (hhit->id()).iphi()) << endl;	  
+	    //cout << (hhit->id()).ieta() << " "<< (hhit->id()).iphi()) << std::endl;	  
 	  }
 	}
 	
 	if (ho_hits) { // object is available 
 	  for (HORecHitCollection::const_iterator hhit=ho_hits->begin(); hhit!=ho_hits->end(); hhit++) {	  
 	    h_hcal_rechit_energy_ho->Fill(hhit->energy());
-	    //cout << (hhit->id()).ieta() << " "<< (hhit->id()).iphi()) << endl;	  
+	    //cout << (hhit->id()).ieta() << " "<< (hhit->id()).iphi()) << std::endl;	  
 	  }
 	}
 	
 	if (hf_hits) { // object is available 
 	  for (HFRecHitCollection::const_iterator hhit=hf_hits->begin(); hhit!=hf_hits->end(); hhit++) {	 
 	    h_hcal_rechit_energy_hf->Fill(hhit->energy());
-	    //cout << (hhit->id()).ieta() << " "<< (hhit->id()).iphi()) << endl;	 
+	    //cout << (hhit->id()).ieta() << " "<< (hhit->id()).iphi()) << std::endl;	 
 	  }
 	}
 	
@@ -750,11 +750,12 @@ void HcalPFGBeamSplashTemplate::endJob() {
   float N_splash_events =   h_event_bx_splash->GetEntries();
   float N_aftersplash_events =   h_event_bx_aftersplash->GetEntries();
 
-  cout << endl;
-  cout << "#####################################" << endl;
-  cout << "--> "<< N_splash_events << " splash events found" <<endl;
-  cout << "--> "<< N_aftersplash_events << " after splash events found" <<endl;
-  cout << "#####################################" << endl;
+  std::cout << std::endl;
+  std::cout << "#####################################" << std::endl;
+  std::cout << "--> "<< N_splash_events << " splash events found" << std::endl;
+  std::cout << "--> "<< N_aftersplash_events << " after splash events found" <<std::endl;
+  std::cout << "#####################################" << std::endl;
+  
 
   float scale_splash = 1/N_splash_events;
   float scale_aftersplash = 1/N_aftersplash_events;
