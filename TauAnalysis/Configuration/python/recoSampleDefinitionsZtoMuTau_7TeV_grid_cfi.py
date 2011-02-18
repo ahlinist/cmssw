@@ -15,7 +15,8 @@ SAMPLES_TO_ANALYZE = [
     'qqZllPU156bx', # EK: not at any site as of Dec 23
     'bbZll', 'ccZll',
     'Ztautau_powheg', 'Zmumu_powheg', 'Zee_powheg',
-    'Zmumu_pythia', 'Zee_pythia',
+    'DYmumuM2to10_pythia', 'DYmumuM10to20_pythia', 'Zmumu_pythia',
+    'Zee_pythia',
     #'InclusivePPmuX',
     'PPmuXptGt20Mu10', 'PPmuXptGt20Mu15',
     #'PPmuXptGt20Mu10Workaround',
@@ -44,8 +45,12 @@ SAMPLES_TO_PLOT = [
 SAMPLES_TO_PRINT = copy.copy(SAMPLES_TO_PLOT)
 SAMPLES_TO_PRINT.append('smBgSum')
 SAMPLES_TO_PRINT.append('smSum')
-SAMPLES_TO_PRINT.append('DYtautauM10to20PU156bx_pythiaZ2')
-SAMPLES_TO_PRINT.append('ZtautauPU156bx_pythiaZ2')
+#SAMPLES_TO_PRINT.append('DYtautauM10to20PU156bx_pythiaZ2')
+#SAMPLES_TO_PRINT.append('ZtautauPU156bx')
+#SAMPLES_TO_PRINT.append('ZtautauPU156bx_pythiaZ2')
+#SAMPLES_TO_PRINT.append('Ztautau_powheg')
+SAMPLES_TO_PRINT.append('DYmumuM2to10_pythia')
+SAMPLES_TO_PRINT.append('DYmumuM10to20_pythia')
 
 SAMPLE_DEFAULTS = {
     'dbs_url' : "http://cmsdbsprod.cern.ch/cms_dbs_ph_analysis_02/servlet/DBSServlet",
@@ -281,10 +286,44 @@ RECO_SAMPLES = {
         'applyVertexMultiplicityReweighting' : False,
         'hlt' : cms.InputTag("TriggerResults", "", "HLT")
     },
-    'Zmumu_pythia' : {
-        'datasetpath' : "/DYtoMuMu_M_20_TuneD6T_7TeV-pythia6/Fall10-E7TeV_ProbDist_2010Data_BX156_START38_V12-v1/GEN-SIM-RECO",
+    'DYmumuM2to10_pythia' : {
+        'datasetpath' : "/DYToMuMu_M-2To10_TuneZ2_7TeV-pythia6/Fall10-E7TeV_ProbDist_2010Data_BX156_START38_V12-v1/GEN-SIM-RECO",
+        #'datasetpath' : "/DYToMuMu_M-2To10_TuneZ2_7TeV-pythia6/Fall10-START38_V12-v1/GEN-SIM-RECO",  
         'dbs_url' :  "http://cmsdbsprod.cern.ch/cms_dbs_prod_global/servlet/DBSServlet",
-        'events_processed' : 2558038,
+        'events_processed' : 1091900,
+        #'events_processed' : 2178400,
+        'skim_eff' : 1.0,
+        'x_sec' : 1.282*72990*_picobarns, # Z + jets correction factor for NLO/LO cross-sections = 1.282 (k-factor for mMuMu > 20 GeV)
+        'legendEntry' : plotter.process_Zmumu.config_dqmHistPlotter.legendEntry.value(),
+        'type' : plotter.process_Zmumu.config_dqmHistPlotter.type.value(),
+        'drawOption' : styles.drawOption_Zmumu,
+        'applyZrecoilCorrection' : True,
+        'applyMuonTriggerEfficiencyCorrection' : True,
+        'applyMuonIsolationEfficiencyCorrection' : True,
+        'enableFakeRates' : True,
+        'applyVertexMultiplicityReweighting' : True,
+        'hlt' : cms.InputTag("TriggerResults", "", "REDIGI38XPU")
+    },   
+    'DYmumuM10to20_pythia' : {
+        'datasetpath' : "/DYToMuMu_M-10To20_TuneZ2_7TeV-pythia6/Fall10-E7TeV_ProbDist_2010Data_BX156_START38_V12-v1/GEN-SIM-RECO",
+        'dbs_url' :  "http://cmsdbsprod.cern.ch/cms_dbs_prod_global/servlet/DBSServlet",
+        'events_processed' : 2184640,
+        'skim_eff' : 1.0,
+        'x_sec' : 1.282*2659*_picobarns, # Z + jets correction factor for NLO/LO cross-sections = 1.282 (k-factor for mMuMu > 20 GeV)
+        'legendEntry' : plotter.process_Zmumu.config_dqmHistPlotter.legendEntry.value(),
+        'type' : plotter.process_Zmumu.config_dqmHistPlotter.type.value(),
+        'drawOption' : styles.drawOption_Zmumu,
+        'applyZrecoilCorrection' : True,
+        'applyMuonTriggerEfficiencyCorrection' : True,
+        'applyMuonIsolationEfficiencyCorrection' : True,
+        'enableFakeRates' : True,
+        'applyVertexMultiplicityReweighting' : True,
+        'hlt' : cms.InputTag("TriggerResults", "", "REDIGI38XPU")
+    },
+    'Zmumu_pythia' : {
+        'datasetpath' : "/DYToMuMu_M-20_TuneZ2_7TeV-pythia6/Fall10-E7TeV_ProbDist_2010Data_BX156_START38_V12-v1/GEN-SIM-RECO",
+        'dbs_url' :  "http://cmsdbsprod.cern.ch/cms_dbs_prod_global/servlet/DBSServlet",
+        'events_processed' : 2235697,
         'skim_eff' : 1.0,
         'x_sec' : 1.282*1300*_picobarns, # Z + jets correction factor for NLO/LO cross-sections = 1.282
         'legendEntry' : plotter.process_Zmumu.config_dqmHistPlotter.legendEntry.value(),
@@ -673,6 +712,17 @@ MERGE_SAMPLES = {
         'legendEntry' : plotter.process_Ztautau.config_dqmHistPlotter.legendEntry.value(),
         'type' : plotter.process_Ztautau.config_dqmHistPlotter.type.value(),
         'drawOption' : styles.drawOption_Ztautau
+    },
+    'ZmumuSum' : {
+        'samples' : [            
+            ##'Zmumu_powheg',            
+            'Zmumu_pythia',
+            'DYmumuM2to10_pythia',
+            'DYmumuM10to20_pythia'
+        ],
+        'legendEntry' : plotter.process_Zmumu.config_dqmHistPlotter.legendEntry.value(),
+        'type' : plotter.process_Zmumu.config_dqmHistPlotter.type.value(),
+        'drawOption' : styles.drawOption_Zmumu
     },
     'qcdSum' : {
         'samples' : [
