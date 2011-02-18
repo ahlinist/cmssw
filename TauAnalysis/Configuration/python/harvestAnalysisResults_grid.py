@@ -43,6 +43,7 @@ def harvestAnalysisResults(channel = None, samples = None, inputFilePath = None,
         print "Finding CASTOR files"
         inputFilePath = '/castor/cern.ch' + '/' + inputFilePath
         inputFilePath = inputFilePath.replace('//', '/')
+        inputFilePath = inputFilePath.replace('/castor/cern.ch/castor/cern.ch', '/castor/cern.ch')
         print(" inputFilePath = " + inputFilePath)
 
         files_and_times = [
