@@ -22,7 +22,7 @@ process.maxEvents = cms.untracked.PSet(
     input = cms.untracked.int32(-1)
 )
 process.source = cms.Source("PoolSource",
-   fileNames = cms.untracked.vstring('/store/data/Run2010B/RPCMonitor/RAW/v1/000/146/804/DAAD617B-ADCA-DF11-B8A9-001D09F2960F.root')
+   fileNames = cms.untracked.vstring('file:/tmp/carrillo/D898DCC4-A439-E011-9828-0030487BC68E.root')
 )
 
 process.rpcPointProducer = cms.EDProducer('RPCPointProducer',
@@ -90,12 +90,12 @@ process.museg = cms.EDAnalyzer("MuonSegmentEff",
 
 process.normfilter = cms.EDFilter("HLTHighLevel",
     TriggerResultsTag = cms.InputTag("TriggerResults","","HLT"),
-    HLTPaths = cms.vstring("AlCa_RPCMuonNormalisation"),
+    HLTPaths = cms.vstring("AlCa_RPCMuonNormalisation_v2"),
     eventSetupPathsKey = cms.string(''),
     andOr = cms.bool(True),
     throw = cms.bool(True)
 )
-
+ 
 process.p = cms.Path(process.normfilter*process.rpcPointProducer*process.museg)
 
 process.DQM.collectorHost = ''
