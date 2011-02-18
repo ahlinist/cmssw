@@ -137,14 +137,16 @@ FakeRateWeightProducerBase::FakeRateWeightProducerBase(const edm::ParameterSet& 
 
 FakeRateWeightProducerBase::~FakeRateWeightProducerBase()
 {
-  std::cout << "<~FakeRateWeightProducerBase>:" << std::endl;
-  std::cout << "moduleLabel = " << moduleLabel_ << std::endl;
-  std::cout << "number of tau-jet candidates" << std::endl;
-  std::cout << " processed = " << numJets_processed_ << std::endl;
-  std::cout << " jet-weight < miminum (= " << minJetWeight_ << ") = " << numJets_weightBelowMinimum_ << std::endl;
-  std::cout << " jet-weight < maxinum (= " << maxJetWeight_ << ") = " << numJets_weightAboveMaximum_ << std::endl;
-  std::cout << " tau id. efficiency < fake-rate = " << numJets_reverseWeightOrder_ << std::endl;
-  std::cout << " in underflow/overflow bins = " << numJets_outOfRange_ << std::endl;
+  if ( gVerbosity_ ) {
+    std::cout << "<~FakeRateWeightProducerBase>:" << std::endl;
+    std::cout << "moduleLabel = " << moduleLabel_ << std::endl;
+    std::cout << "number of tau-jet candidates" << std::endl;
+    std::cout << " processed = " << numJets_processed_ << std::endl;
+    std::cout << " jet-weight < miminum (= " << minJetWeight_ << ") = " << numJets_weightBelowMinimum_ << std::endl;
+    std::cout << " jet-weight < maxinum (= " << maxJetWeight_ << ") = " << numJets_weightAboveMaximum_ << std::endl;
+    std::cout << " tau id. efficiency < fake-rate = " << numJets_reverseWeightOrder_ << std::endl;
+    std::cout << " in underflow/overflow bins = " << numJets_outOfRange_ << std::endl;
+  }
 }
 
 void FakeRateWeightProducerBase::getTauJetProperties(const edm::Event& evt,
