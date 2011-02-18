@@ -201,10 +201,6 @@ selectedPatMuonsEta21.cut = cms.string('abs(eta) < 2.1')
 selectedPatMuonsPt15.cut = cms.string('pt > 15.')
 selectedPatMuonsVbTfId.beamSpotSource = cms.InputTag("offlineBeamSpot")
 selectedPatMuonsVbTfId.vertexSource = cms.InputTag("selectedPrimaryVertexHighestPtTrackSum")
-
-#print "WARNING DISABLING VBTF MUON ID"
-#selectedPatMuonsVbTfId = copy.deepcopy(selectedPatMuonsPt15)
-
 selectedPatMuonsPFRelIso.chargedHadronIso.ptMin = cms.double(0.5)
 selectedPatMuonsPFRelIso.chargedHadronIso.dRvetoCone = cms.double(-1.)
 selectedPatMuonsPFRelIso.chargedHadronIso.dRisoCone = cms.double(0.4)
@@ -219,8 +215,6 @@ selectedPatMuonsPFRelIso.sumPtMethod = cms.string("relative")
 selectedPatMuonsTrk.cut = cms.string('innerTrack.isNonnull')
 selectedPatMuonsTrkIP.vertexSource = cms.InputTag("selectedPrimaryVertexHighestPtTrackSum")
 selectedPatMuonsTrkIP.IpMax = cms.double(0.05)
-#print "WARNING MESSING AROUND W/ MUON TRK IP"
-#selectedPatMuonsTrkIP.IpMin = cms.double(-1)
 
 patMuonSelConfigurator = objSelConfigurator(
     [ selectedPatMuonsGlobal,
