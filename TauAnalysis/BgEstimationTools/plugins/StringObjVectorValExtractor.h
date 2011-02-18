@@ -14,9 +14,9 @@
  * 
  * \author Christian Veelken, UC Davis
  *
- * \version $Revision: 1.3 $
+ * \version $Revision: 1.4 $
  *
- * $Id: StringObjVectorValExtractor.h,v 1.3 2010/05/21 07:53:52 veelken Exp $
+ * $Id: StringObjVectorValExtractor.h,v 1.4 2010/09/28 11:23:28 jkolb Exp $
  *
  */
 
@@ -28,6 +28,8 @@
 #include "CommonTools/Utils/interface/StringObjectFunction.h"
 
 #include "TauAnalysis/BgEstimationTools/interface/ObjValVectorExtractorBase.h"
+
+#include <string>
 
 template<typename T>
 class StringObjVectorValExtractor : public ObjValVectorExtractorBase
@@ -43,6 +45,8 @@ class StringObjVectorValExtractor : public ObjValVectorExtractorBase
 
 //--- configuration parameters
   edm::InputTag src_;
+
+  std::string value_;
 
   StringObjectFunction<T> stringObjFunction_;  
 };
