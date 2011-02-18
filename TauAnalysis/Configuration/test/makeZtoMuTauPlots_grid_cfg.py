@@ -3,7 +3,7 @@ import FWCore.ParameterSet.Config as cms
 from TauAnalysis.Configuration.recoSampleDefinitionsZtoMuTau_7TeV_grid_cfi import recoSampleDefinitionsZtoMuTau_7TeV
 from TauAnalysis.Configuration.plotZtoMuTau_drawJobs_cfi import *
 from TauAnalysis.Configuration.makePlots2_grid import makePlots
-from TauAnalysis.Configuration.userRegistry import getHarvestingFilePath, getJobId
+from TauAnalysis.Configuration.userRegistry import getHarvestingFilePath, overrideJobId, getJobId
 
 # import utility function to enable factorization
 from TauAnalysis.Configuration.tools.factorizationTools import enableFactorization_makeZtoMuTauPlots_grid2
@@ -13,6 +13,7 @@ process = cms.Process('makeZtoMuTauPlots')
 process.load("TauAnalysis.Configuration.dumpZtoMuTau_grid_cff")
 
 channel = 'ZtoMuTau'
+overrideJobId(channel, '2011Feb01_HPSloose')
 inputFilePath = getHarvestingFilePath(channel)
 jobId = getJobId(channel)
 
