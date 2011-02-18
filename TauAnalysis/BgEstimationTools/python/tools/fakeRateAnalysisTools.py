@@ -139,7 +139,7 @@ def addFakeRateGenAnalyzerModule(process, genAnalyzerModule, histManagers = [],
 
             process.load("TauAnalysis.BgEstimationTools.fakeRateEventWeightProducer_cfi")
             bgEstFakeRateEventWeightModule = process.bgEstFakeRateEventWeights.clone(
-                allTauJetSource = cms.InputTag(selTauCollectionName),
+                allTauJetSource = process.bgEstFakeRateJetWeights.allTauJetSource,
                 preselTauJetSource = cms.InputTag(selTauCollectionName),
                 method = process.bgEstFakeRateJetWeights.method,
                 frTypes = process.bgEstFakeRateJetWeights.frTypes
@@ -149,7 +149,7 @@ def addFakeRateGenAnalyzerModule(process, genAnalyzerModule, histManagers = [],
             bgEstFakeRateAnalysisSequence += bgEstFakeRateEventWeightModule
 
             psetFakeRateEventWeight = cms.PSet(
-                src = cms.InputTag(bgEstFakeRateEventWeightModuleName),
+                src = cms.InputTag(bgEstFakeRateEventWeightModuleName, frConfig['srcEventWeight'].getProductInstanceLabel()),
                 applyAfterFilter = cms.string(cutToUpdate)
             )
             if cutIdx < (len(cutsToUpdate_applied) - 1):
@@ -291,8 +291,6 @@ def enableFakeRatesImpl(process, method = None,
     else:
         if method != "simple" and method != "CDF":
             raise ValueError("Invalid method Parameter !!")
-
-    print "selTauByDiTauModuleType", selTauByDiTauModuleType
 
     # compute fake-rates weights and add computed values to pat::Taus
     configureFakeRateProductionPAT(process, recoTauProducerName, recoTauPreselFlag,
@@ -511,6 +509,4 @@ _FAKE_RATE_CONFIGS = {
 }
 
 def enableFakeRates(process, channel, method = None):
-    print channel
-    print _FAKE_RATE_CONFIGS[channel]
     enableFakeRatesImpl(process, method, **_FAKE_RATE_CONFIGS[channel])
