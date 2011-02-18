@@ -61,9 +61,9 @@ modelBinner3mZbins = cms.PSet(
         config = cms.VPSet(
             cms.PSet(
                 extractor = cms.PSet(
-                    pluginType = cms.string("PATMuTauPairValExtractor"),
-                    src = cms.InputTag(''),
-                    value = cms.string("p4gen().mass()")
+                    pluginType = cms.string("CandidateValExtractor"),
+                    src = cms.InputTag('genZdecayToTaus'),
+                    value = cms.string("mass()")
                 )
             )
         )
