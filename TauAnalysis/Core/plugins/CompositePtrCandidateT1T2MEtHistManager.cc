@@ -197,7 +197,9 @@ void CompositePtrCandidateT1T2MEtHistManager<T1,T2>::bookHistogramsImp()
   hMt12MET_ = book1D("Mt12MET", "Mass_{T 1,2,MET}", 50, 0., 250.);
   
   hMt1MET_ = book1D("Mt1MET", "Mass_{T 1,MET}", 40, 0., 200.);
+  hPt1MET_ = book1D("Pt1MET", "P_{T}^{T 1,MET}", 40, 0., 200.);
   hMt2MET_ = book1D("Mt2MET", "Mass_{T 2,MET}", 40, 0., 200.);
+  hPt2MET_ = book1D("Pt2MET", "P_{T}^{T 2,MET}", 40, 0., 200.);
   
   hHt12MET_ = book1D("Ht12MET", "P_{T}^{1} + P_{T}^{2} + MET", 50, 0., 250.);
 
@@ -232,78 +234,6 @@ void fillDeltaRvisNuHistogram(MonitorElement* h,
   h->Fill(TMath::Min(dR, 1.), weight);
 }
 
-std::string getGenTauDecayMode(const std::vector<const reco::GenParticle*>& genTauDecayProducts) 
-{  
-//--- determine generator level tau decay mode
-//
-//    NOTE: function implements logic defined in PhysicsTools/JetMCUtils/src/JetMCTag::genTauDecayMode
-//          for different type of argument
-//
-
-  int numElectrons = 0;
-  int numMuons = 0;
-  int numChargedHadrons = 0;
-  int numNeutralHadrons = 0;
-  int numPhotons = 0;
-  
-  for ( std::vector<const reco::GenParticle*>::const_iterator genTauDecayProduct = genTauDecayProducts.begin();
-	genTauDecayProduct != genTauDecayProducts.end(); ++genTauDecayProduct ) {
-    
-    int pdgId = abs((*genTauDecayProduct)->pdgId());
-    
-    switch ( pdgId ) {
-    case 22: 
-      numPhotons++;
-      break;
-    case 11:
-      numElectrons++;
-      break;
-    case 13:
-      numMuons++;
-      break;
-    default : 
-      if ( (*genTauDecayProduct)->charge() != 0  && (*genTauDecayProduct)->status()==1 ) {
-	numChargedHadrons++; 
-      } else if (pdgId!=16 && (*genTauDecayProduct)->status()==1){
-	numNeutralHadrons++; 
-      }
-    }
-  }
-  
-  if ( numElectrons == 1 ) {
-    return std::string("electron");
-  } else if ( numMuons == 1 ) {
-    return std::string("muon");
-  } else {
-    switch ( numChargedHadrons ) {
-    case 1 : 
-      if ( numNeutralHadrons != 0 ) return std::string("oneProngOther");
-      switch ( numPhotons ) {
-      case 0:
-	return std::string("oneProng0Pi0");
-      case 2:
-	return std::string("oneProng1Pi0");
-      case 4:
-	return std::string("oneProng2Pi0");
-      default:
-	return std::string("oneProngOther");
-      }
-    case 3 : 
-      if ( numNeutralHadrons != 0 ) return std::string("threeProngOther");
-      switch ( numPhotons ) {
-      case 0:
-	return std::string("threeProng0Pi0");
-      case 2:
-	return std::string("threeProng1Pi0");
-      default:
-	return std::string("threeProngOther");
-      }
-    default:
-      return std::string("rare");
-    }
-  }
-}
-
 void fillGenTauHistograms(MonitorElement* hGenTauPlusDecayAngleLepton, 
 			  MonitorElement* hGenTauPlusDecayAngleOneProng, 
 			  MonitorElement* hGenTauPlusDecayAngleThreeProng,
@@ -314,7 +244,7 @@ void fillGenTauHistograms(MonitorElement* hGenTauPlusDecayAngleLepton,
 			  const reco::GenParticleCollection& genParticles,
 			  double weight)
 {
-  //std::cout << "<fillGenTauHistograms>:" << std::endl;
+  std::cout << "<fillGenTauHistograms>:" << std::endl;
 
   const reco::GenParticle* genTau = findGenParticle(genTauMomentum, genParticles);
   //std::cout << " genTau = " << genTau << std::endl;
@@ -329,7 +259,7 @@ void fillGenTauHistograms(MonitorElement* hGenTauPlusDecayAngleLepton,
     reco::Candidate::LorentzVector genTauVisMomentum_restframe = boostToRestFrame(genTauVisMomentum, genTauMomentum);
     reco::Candidate::LorentzVector genTauInvisMomentum_restframe = boostToRestFrame(genTauInvisMomentum, genTauMomentum);
 
-    std::string genTauDecayMode = getGenTauDecayMode(genTauDecayProducts);
+    std::string genTauDecayMode = getGenTauDecayMode(genTau);
     //std::cout << " genTauDecayMode = " << genTauDecayMode << std::endl;
 
     if ( genTauDecayMode == "electron" || 
@@ -572,7 +502,9 @@ void CompositePtrCandidateT1T2MEtHistManager<T1,T2>::fillHistogramsImp(const edm
     hMt12MET_->Fill(diTauCandidate->mt12MET(), weight);
 
     hMt1MET_->Fill(diTauCandidate->mt1MET(), weight);
+    hPt1MET_->Fill(diTauCandidate->pt1MET(), weight);
     hMt2MET_->Fill(diTauCandidate->mt2MET(), weight);
+    hPt2MET_->Fill(diTauCandidate->pt2MET(), weight);
 
     if ( diTauCandidate->leg1().isNonnull() && diTauCandidate->leg2().isNonnull() && diTauCandidate->met().isNonnull() ) {
       hHt12MET_->Fill(diTauCandidate->leg1()->pt() + diTauCandidate->leg2()->pt() + diTauCandidate->met()->pt(), weight);
