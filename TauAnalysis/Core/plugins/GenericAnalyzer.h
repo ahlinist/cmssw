@@ -9,9 +9,9 @@
   * 
   * \author Christian Veelken, UC Davis
   *
-  * \version $Revision: 1.14 $
+  * \version $Revision: 1.15 $
   *
-  * $Id: GenericAnalyzer.h,v 1.14 2010/12/04 16:31:25 veelken Exp $
+  * $Id: GenericAnalyzer.h,v 1.15 2010/12/24 17:20:23 veelken Exp $
   *
   */
 
@@ -54,6 +54,7 @@ class GenericAnalyzer : public edm::EDAnalyzer
     virtual void analyze(const edm::Event&, const edm::EventSetup&, double, bool) {}
     virtual void endJob() {}
     virtual int type() const = 0;
+    virtual int filterId() const { return -1; }
     enum { kUndefined, kFilter, kAnalyzer };
     std::string name_;
   };
@@ -66,12 +67,14 @@ class GenericAnalyzer : public edm::EDAnalyzer
     bool filter_cumulative(const edm::Event&, const edm::EventSetup&, const SysUncertaintyService*);
     bool filter_individual(const edm::Event&, const edm::EventSetup&, const SysUncertaintyService*);
     int type() const { return analysisSequenceEntry::kFilter; }
+    int filterId() const { return filterId_; }
     bool filter(const edm::Event&, const edm::EventSetup&, const SysUncertaintyService*, 
 		const std::map<std::string, EventSelectorBase*>&);
     std::map<std::string, EventSelectorBase*> filterPlugins_cumulative_;
     std::map<std::string, EventSelectorBase*> filterPlugins_individual_;
     bool estimateSysUncertainties_;
-    static unsigned filterId_;
+    int filterId_;
+    static int filterIdCounter_;
   };
 
   struct analysisSequenceEntry_analyzer : analysisSequenceEntry
@@ -105,6 +108,9 @@ class GenericAnalyzer : public edm::EDAnalyzer
   void addFilter(const std::string&, const vstring&);
   void addAnalyzers(const vstring&, const std::string&, const std::string&, const vstring&);
 
+  int checkEventWeightConfig(const std::string&, const std::string&, const std::list<analysisSequenceEntry*>&, int&);
+  friend class analysisSequenceMatch;
+
   std::string name_;
 
   struct eventWeightType
@@ -112,12 +118,22 @@ class GenericAnalyzer : public edm::EDAnalyzer
     eventWeightType(const edm::ParameterSet& cfg)
       : src_(cfg.getParameter<edm::InputTag>("src"))
     {
-      applyAfterFilter_ = ( cfg.exists("applyAfterFilter") ) ? 
-	cfg.getParameter<std::string>("applyAfterFilter") : "*";
+      applyAfterFilter_  = ( cfg.exists("applyAfterFilter")  ) ? 
+	cfg.getParameter<std::string>("applyAfterFilter")  : "*";
+      applyBeforeFilter_ = ( cfg.exists("applyBeforeFilter") ) ? 
+	cfg.getParameter<std::string>("applyBeforeFilter") : "*";
+    }
+    void update(const edm::Event& evt) {
+      edm::Handle<double> weight;
+      evt.getByLabel(src_, weight);
+      value_ = (*weight);
     }
     edm::InputTag src_;
+    double value_;
     std::string applyAfterFilter_;
-    bool isActive_;
+    int applyAfterFilterId_;
+    std::string applyBeforeFilter_;
+    int applyBeforeFilterId_;
   };
   std::vector<eventWeightType> eventWeights_;
 

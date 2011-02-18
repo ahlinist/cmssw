@@ -17,10 +17,10 @@
 #include <limits.h>
 #include <iostream>
 
-unsigned GenericAnalyzer::analysisSequenceEntry_filter::filterId_ = 1;
+int GenericAnalyzer::analysisSequenceEntry_filter::filterIdCounter_ = 0;
 
 GenericAnalyzer::analysisSequenceEntry::analysisSequenceEntry(const std::string& name)
-: name_(name)
+  : name_(name)
 {}
 
 GenericAnalyzer::analysisSequenceEntry::~analysisSequenceEntry()
@@ -47,7 +47,7 @@ GenericAnalyzer::analysisSequenceEntry_filter::analysisSequenceEntry_filter(cons
   EventSelectorBase* filterPlugin_individual = 0;
 
   if ( cfgFilter.exists("src_cumulative") &&
-      cfgFilter.exists("src_individual") ) {
+       cfgFilter.exists("src_individual") ) {
     edm::ParameterSet cfgFilter_cumulative = cfgFilter;
     cfgFilter_cumulative.addParameter<edm::InputTag>("src", cfgFilter.getParameter<edm::InputTag>("src_cumulative"));
     filterPlugin_cumulative = EventSelectorPluginFactory::get()->create(filterType, cfgFilter_cumulative);
@@ -112,7 +112,8 @@ GenericAnalyzer::analysisSequenceEntry_filter::analysisSequenceEntry_filter(cons
     }
   }
 
-  ++filterId_;
+  filterId_ = filterIdCounter_;
+  ++filterIdCounter_;
 
   //print();
 }
@@ -162,7 +163,7 @@ bool GenericAnalyzer::analysisSequenceEntry_filter::filter(const edm::Event& evt
   if ( it == filterPlugins.end() ) it = filterPlugins.find(SysUncertaintyService::getNameCentralValue());
   if ( it == filterPlugins.end() ) {
     edm::LogError ("filter")
-        << " No event selector plugin defined for central value !!";
+      << " No event selector plugin defined for central value !!";
     return false;
   };
 
@@ -173,7 +174,7 @@ bool GenericAnalyzer::analysisSequenceEntry_filter::filter(const edm::Event& evt
     //std::cout << " filterDecision = " << filterDecision << std::endl;
   } catch ( cms::Exception& e ) {
     edm::LogError("filter")
-        << " Filter plugin name = " << name_ << " caused exception --> rethrowing !!";
+      << " Filter plugin name = " << name_ << " caused exception --> rethrowing !!";
     throw e;
   }
 
@@ -268,15 +269,15 @@ void GenericAnalyzer::addFilter(const std::string& filterName, const vstring& sa
   std::map<std::string, edm::ParameterSet>::const_iterator it = cfgFilters_.find(filterName);
   if ( it != cfgFilters_.end() ) {
     edm::ParameterSet cfgFilter = it->second;
-
+    
     std::string filterTitle = ( cfgFilter.exists("title") ) ? cfgFilter.getParameter<std::string>("title") : filterName;
-
+    
     analysisSequenceEntry_filter* entry
-        = new analysisSequenceEntry_filter(filterName, filterTitle, cfgFilter, estimateSysUncertainties_, cfgError_);
+      = new analysisSequenceEntry_filter(filterName, filterTitle, cfgFilter, estimateSysUncertainties_, cfgError_);
     analysisSequence_.push_back(entry);
   } else {
     edm::LogError("GenericAnalyzer::addFilter")
-        << " Failed to access configuration parameter for filter = " << filterName << " --> skipping !!";
+      << " Failed to access configuration parameter for filter = " << filterName << " --> skipping !!";
     cfgError_ = 1;
   }
 }
@@ -407,7 +408,7 @@ void GenericAnalyzer::addAnalyzers(const vstring& analyzerNames,
 //
 
 GenericAnalyzer::GenericAnalyzer(const edm::ParameterSet& cfg)
-: cfgError_(0)
+  : cfgError_(0)
 {
   std::cout << "<GenericAnalyzer::GenericAnalyzer>:" << std::endl;
 
@@ -449,31 +450,10 @@ GenericAnalyzer::GenericAnalyzer(const edm::ParameterSet& cfg)
     }
   }
 
-//--- store configuration parameters for event weights
-  if ( cfg.exists("eventWeights") ) {
-    vParameterSet cfgEventWeights = cfg.getParameter<vParameterSet>("eventWeights");
-    for ( vParameterSet::const_iterator cfgEventWeight = cfgEventWeights.begin();
-         cfgEventWeight != cfgEventWeights.end(); ++cfgEventWeight ) {
-      eventWeightType eventWeight(*cfgEventWeight);
-
-//--- check that filter of specified name exists
-      if ( eventWeight.applyAfterFilter_ != "*" &&
-          cfgFilters_.find(eventWeight.applyAfterFilter_) == cfgFilters_.end() ) {
-        edm::LogError("GenericAnalyzer")
-            << " No filter of name = " << eventWeight.applyAfterFilter_ << " defined"
-            << " --> event weight src = " << eventWeight.src_.label() << " will NOT be applied !!";
-        cfgError_ = 1;
-        continue;
-      }
-
-      eventWeights_.push_back(eventWeight);
-    }
-  }
-
 //--- configure names of systematic uncertainties
 //    to be taken into account in analysis
   estimateSysUncertainties_ = cfg.exists("estimateSysUncertainties") ?
-      cfg.getParameter<bool>("estimateSysUncertainties") : false;
+    cfg.getParameter<bool>("estimateSysUncertainties") : false;
   std::cout << " estimateSysUncertainties = " << estimateSysUncertainties_ << std::endl;
 
   if ( estimateSysUncertainties_ ) {
@@ -497,15 +477,15 @@ GenericAnalyzer::GenericAnalyzer(const edm::ParameterSet& cfg)
   for ( vParameterSet::const_iterator cfgAnalysisSequenceEntry = cfgAnalysisSequenceEntries.begin();
        cfgAnalysisSequenceEntry != cfgAnalysisSequenceEntries.end(); ++cfgAnalysisSequenceEntry ) {
 //--- check that analysisSequenceEntry is either a filter or an analyzer
-    if ( !(cfgAnalysisSequenceEntry->exists("filter")    ||
+    if ( !(cfgAnalysisSequenceEntry->exists("filter")     ||
            cfgAnalysisSequenceEntry->exists("analyzers")) ) {
       edm::LogError("GenericAnalyzer") << " Either filter or analyzers must be specified for sequenceEntries !!";
       cfgError_ = 1;
       continue;
     }
 
-    if ( cfgAnalysisSequenceEntry->exists("filter")      &&
-        cfgAnalysisSequenceEntry->exists("analyzers") ) {
+    if ( cfgAnalysisSequenceEntry->exists("filter")    &&
+	 cfgAnalysisSequenceEntry->exists("analyzers") ) {
       edm::LogError("GenericAnalyzer") << " Must not specify filter and analyzers for same sequenceEntry !!";
       cfgError_ = 1;
       continue;
@@ -543,6 +523,23 @@ GenericAnalyzer::GenericAnalyzer(const edm::ParameterSet& cfg)
       //std::cout << " replaceCommands = " << format_vstring(replaceCommands) << std::endl;
 
       addAnalyzers(analyzerNames, lastFilterName, nextFilterName, replaceCommands);
+    }
+  }
+
+//--- configure event weights
+  if ( cfg.exists("eventWeights") ) {
+    vParameterSet cfgEventWeights = cfg.getParameter<vParameterSet>("eventWeights");
+    for ( vParameterSet::const_iterator cfgEventWeight = cfgEventWeights.begin();
+	  cfgEventWeight != cfgEventWeights.end(); ++cfgEventWeight ) {
+      eventWeightType eventWeight(*cfgEventWeight);
+      
+//--- check that filter of specified name exists
+      eventWeight.applyAfterFilterId_ = 
+	checkEventWeightConfig(eventWeight.src_.label(), eventWeight.applyAfterFilter_, analysisSequence_, cfgError_);
+      eventWeight.applyBeforeFilterId_ = 
+	checkEventWeightConfig(eventWeight.src_.label(), eventWeight.applyBeforeFilter_, analysisSequence_, cfgError_);
+
+      eventWeights_.push_back(eventWeight);
     }
   }
 
@@ -622,6 +619,42 @@ GenericAnalyzer::~GenericAnalyzer()
   delete runLumiSectionEventNumberService_;
 }
 
+class analysisSequenceMatch
+{
+ public:
+  analysisSequenceMatch(const std::string& name, int type)
+    : name_(name),
+      type_(type)
+  {}
+  bool operator ()(GenericAnalyzer::analysisSequenceEntry* entry) 
+  {
+    return (entry != 0 && entry->name_ == name_ && entry->type() == type_);
+  }
+  std::string name_;
+  int type_;
+};
+
+int GenericAnalyzer::checkEventWeightConfig(const std::string& eventWeightName, const std::string& filterName, 
+					    const std::list<analysisSequenceEntry*>& analysisSequence, int& cfgError)
+{
+  if ( filterName == "*" ) {
+    return -1;
+  } else {
+    std::list<analysisSequenceEntry*>::const_iterator filter = 
+      std::find_if(analysisSequence.begin(), analysisSequence.end(), 
+		   analysisSequenceMatch(filterName, analysisSequenceEntry::kFilter));
+    if ( filter != analysisSequence.end() ) {
+      return (*filter)->filterId();
+    } else {
+      edm::LogError("checkEventWeightConfig")
+	<< " No filter of name = " << filterName << " defined"
+	<< " --> event weight src = " << eventWeightName << " will NOT be applied !!";
+      cfgError = 1;
+      return -1;
+    }
+  }
+}
+
 void GenericAnalyzer::analyze(const edm::Event& evt, const edm::EventSetup& es)
 {
   //std::cout << "<GenericAnalyzer::analyze>:" << std::endl;
@@ -632,20 +665,11 @@ void GenericAnalyzer::analyze(const edm::Event& evt, const edm::EventSetup& es)
     return;
   }
 
-//--- compute event weight
-//    (initial value to be used before any filters are applied)
-  double eventWeight_initial = 1.;
-  for ( std::vector<eventWeightType>::const_iterator eventWeightEntry_i = eventWeights_.begin();
-       eventWeightEntry_i != eventWeights_.end(); ++eventWeightEntry_i ) {
-    if ( eventWeightEntry_i->applyAfterFilter_ == "*" ) {
-      edm::Handle<double> eventWeight_i;
-      evt.getByLabel(eventWeightEntry_i->src_, eventWeight_i);
-      eventWeight_initial *= (*eventWeight_i);
-    }
+//--- update event weights
+  for ( std::vector<eventWeightType>::iterator eventWeight = eventWeights_.begin();
+	eventWeight != eventWeights_.end(); ++eventWeight ) {
+    eventWeight->update(evt);
   }
-
-  //std::cout << " eventWeight = " << eventWeight_initial
-  //          << " (initial value)" << std::endl;
 
   SysUncertaintyService* sysUncertaintyService = 0;
   if ( edm::Service<SysUncertaintyService>().isAvailable() ) {
@@ -687,32 +711,45 @@ void GenericAnalyzer::analyze(const edm::Event& evt, const edm::EventSetup& es)
 //    (fill histograms, compute binning results,...)
     GenericAnalyzer_namespace::filterResults_type filterResults_cumulative;
     bool previousFiltersPassed = true;
+    int previousFilterId = -1;
     GenericAnalyzer_namespace::filterResults_type filterResults_individual;
     GenericAnalyzer_namespace::eventWeights_type eventWeights_processed;
     GenericAnalyzer_namespace::eventWeights_type eventWeights_passed;
-    double eventWeight_passed = eventWeight_initial;
+    double eventWeight_allPassed = 1.;
     for ( std::list<analysisSequenceEntry*>::iterator entry = analysisSequence_.begin();
           entry != analysisSequence_.end(); ++entry ) {
       const std::string& entryName = (*entry)->name_;
 
-      double eventWeight_processed = eventWeight_passed;
+      //std::cout << " analysisSequenceEntry: name = " << (*entry)->name_ << std::endl;
+
+//--- compute event weight
+      int currentFilterId = previousFilterId;
+      if ( (*entry)->type() == analysisSequenceEntry::kFilter ) currentFilterId = (*entry)->filterId();
+      double eventWeight_processed = 1.;
+      double eventWeight_passed = 1.;
+      for ( std::vector<eventWeightType>::const_iterator eventWeight = eventWeights_.begin();
+	    eventWeight != eventWeights_.end(); ++eventWeight ) {
+	//std::cout << " checking eventWeight = " << eventWeight->src_.label() << ":" 
+	//	    << " applyBeforeFilterId = " << eventWeight->applyBeforeFilterId_ << ","
+	//	    << " applyAfterFilterId = " << eventWeight->applyAfterFilterId_ << std::endl;
+	if ( eventWeight->applyBeforeFilterId_ == -1 || currentFilterId < eventWeight->applyBeforeFilterId_ ) {
+	  if ( eventWeight->applyAfterFilterId_ == -1 || currentFilterId > eventWeight->applyAfterFilterId_ ) {
+	    //std::cout << "processed && passed: applying event weight = " << eventWeight->src_.label() << ","
+	    //	        << " value = " << eventWeight->value_ << std::endl;
+	    eventWeight_processed *= eventWeight->value_;
+	    eventWeight_passed *= eventWeight->value_;
+	  } else if ( currentFilterId == eventWeight->applyAfterFilterId_ ) {
+	    //std::cout << "passed only: applying event weight = " << eventWeight->src_.label() << ","
+	    //	        << " value = " << eventWeight->value_ << std::endl;
+	    eventWeight_passed *= eventWeight->value_;
+	  }
+	}
+      }
+
+      eventWeight_allPassed = eventWeight_passed;
 
       try {
-        //std::cout << " analysisSequenceEntry: name = " << (*entry)->name_ << std::endl;
         if ( (*entry)->type() == analysisSequenceEntry::kFilter ) {
-
-          for ( std::vector<eventWeightType>::const_iterator eventWeightEntry_i = eventWeights_.begin();
-                eventWeightEntry_i != eventWeights_.end(); ++eventWeightEntry_i ) {
-            if ( eventWeightEntry_i->applyAfterFilter_ == (*entry)->name_ ) {
-              edm::Handle<double> eventWeight_i;
-              evt.getByLabel(eventWeightEntry_i->src_, eventWeight_i);
-              eventWeight_passed *= (*eventWeight_i);
-            }
-
-            //std::cout << " eventWeight = " << eventWeight_passed
-            //  	<< " (value after filter name = " << (*entry)->name_<< ")" << std::endl;
-          }
-
           bool filterPassed_cumulative = (*entry)->filter_cumulative(evt, es, sysUncertaintyService);
           //std::cout << " filter: passed_cumulative = " << filterPassed_cumulative << std::endl;
 
@@ -727,6 +764,8 @@ void GenericAnalyzer::analyze(const edm::Event& evt, const edm::EventSetup& es)
 
           eventWeights_processed.insert((*entry)->name_, eventWeight_processed);
           eventWeights_passed.insert((*entry)->name_, eventWeight_passed);
+
+	  previousFilterId = currentFilterId;
         }
 
         if ( (*entry)->type() == analysisSequenceEntry::kAnalyzer ) {
@@ -747,13 +786,13 @@ void GenericAnalyzer::analyze(const edm::Event& evt, const edm::EventSetup& es)
 
 //--- save run & event numbers
       runLumiSectionEventNumberService_->update(evt.id().run(), evt.luminosityBlock(), evt.id().event(),
-                                                filterResults_cumulative, filterResults_individual, eventWeight_passed);
+                                                filterResults_cumulative, filterResults_individual, eventWeight_allPassed);
 
 //--- if requested, dump event information
       for ( std::list<EventDumpBase*>::const_iterator it = eventDumps_.begin();
            it != eventDumps_.end(); ++it ) {
         EventDumpBase* eventDump = (*it);
-        eventDump->analyze(evt, es, filterResults_cumulative, filterResults_individual, eventWeight_passed);
+        eventDump->analyze(evt, es, filterResults_cumulative, filterResults_individual, eventWeight_allPassed);
       }
     }
   }
