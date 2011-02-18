@@ -11,6 +11,7 @@ from TauAnalysis.Core.eventWeightHistManager_cfi import *
 from TauAnalysis.Core.muonHistManager_cfi import *
 
 # import config for tau-jet histogram manager
+from TauAnalysis.Core.genTauHistManager_cfi import *
 from TauAnalysis.Core.pftauHistManager_cfi import *
 tauHistManager.useHPSpTaNCalgorithm = cms.bool(True)
 
@@ -120,9 +121,6 @@ modelBinnerForMuTauGenTauLeptonPairAcc3mZbins = copy.deepcopy(modelBinner3mZbins
 modelBinnerForMuTauGenTauLeptonPairAcc3mZbins.pluginName = cms.string('modelBinnerForMuTauGenTauLeptonPairAcc3mZbins')
 modelBinnerForMuTauGenTauLeptonPairAcc3mZbins.binning.config[0].extractor.pluginType = cms.string("PATMuTauPairValExtractor")
 modelBinnerForMuTauGenTauLeptonPairAcc3mZbins.binning.config[0].extractor.src = \
-  diTauCandidateSVfitHistManagerForMuTau.diTauCandidateSource
-modelBinnerForMuTauGenTauLeptonPairAcc3mZbins.genBinning.config[0].extractor.pluginType = cms.string("PATMuTauPairValExtractor")
-modelBinnerForMuTauGenTauLeptonPairAcc3mZbins.genBinning.config[0].extractor.src = \
   diTauCandidateSVfitHistManagerForMuTau.diTauCandidateSource
 modelBinnerForMuTauGenTauLeptonPairAcc3mZbins.srcGenFlag = cms.InputTag("isGenZtoMuTau")
 modelBinnerForMuTauGenTauLeptonPairAcc3mZbins.srcRecFlag = cms.InputTag("isGenZtoMuTauWithinAcceptance")
@@ -382,6 +380,9 @@ evtSelDiMuPairZmumuHypothesisVetoByLooseIsolation = cms.PSet(
 # define event print-out
 #--------------------------------------------------------------------------------
 
+from TauAnalysis.RecoTools.patLeptonPFIsolationSelector_cfi import patMuonPFIsolationSelector as patMuonPFIsoExtractorTemplate
+from TauAnalysis.RecoTools.patLeptonSelection_cff import selectedPatMuonsPFRelIso as patMuonPFIsoExtractorValues
+
 muTauEventDump = cms.PSet(
     pluginName = cms.string('muTauEventDump'),
     pluginType = cms.string('MuTauEventDump'),
@@ -419,6 +420,12 @@ muTauEventDump = cms.PSet(
 
     electronSource = cms.InputTag('cleanPatElectrons'),
     muonSource = cms.InputTag('cleanPatMuons'),
+    muonPFIsoExtractor = patMuonPFIsoExtractorTemplate.clone(
+        chargedHadronIso = patMuonPFIsoExtractorValues.chargedHadronIso,
+        neutralHadronIso = patMuonPFIsoExtractorValues.neutralHadronIso,
+        photonIso        = patMuonPFIsoExtractorValues.photonIso
+    ),
+    muonPFIsoCandSource = cms.InputTag('pfNoPileUp'),
     tauSource = cms.InputTag('selectedPatTausPt20Cumulative'),
     printTauIdEfficiencies = cms.bool(False),
     diTauCandidateSource = cms.InputTag('allMuTauPairs'),
@@ -476,6 +483,7 @@ muTauAnalysisSequenceOS = cms.VPSet(
         analyzers = cms.vstring(
             'genPhaseSpaceEventInfoHistManager',
             'muonHistManager',
+            'genTauHistManager',
             'tauHistManager',
             'caloMEtHistManager',
             'pfMEtHistManager',
@@ -944,6 +952,7 @@ muTauAnalysisSequenceOS = cms.VPSet(
             'genPhaseSpaceEventInfoHistManager',
             'eventWeightHistManager',
             'muonHistManager',
+            'genTauHistManager',
             'tauHistManager',
             'diTauCandidateHistManagerForMuTau',
             'diTauCandidateSVfitHistManagerForMuTau',
@@ -1109,6 +1118,7 @@ muTauAnalysisSequenceSS = cms.VPSet(
     cms.PSet(
         analyzers = cms.vstring(
             'muonHistManager',
+            'genTauHistManager',
             'tauHistManager',
             'diTauCandidateHistManagerForMuTau',
             'diTauCandidateSVfitHistManagerForMuTau',
