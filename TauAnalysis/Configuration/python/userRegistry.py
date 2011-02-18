@@ -480,8 +480,36 @@ userSettings = {
             },
             'harvestScripts' : '/tmp/jkolb/harvest_scripts',
         }
+    },
+    'liis': {
+        'current' : 'RunPileup',
+        'jobs' : {
+            'RunPileup' : {
+                'WtoTauNu' : {
+                    'analysisFilePath' : "/castor/cern.ch/user/l/liis/CMSSW_38X/Histograms/Pileup/run2",
+                    'harvestingFilePath' : "/afs/cern.ch/user/l/liis/scratch0",
+                    'tmpFilePath' : "/tmp/liis",
+                    'jobId' : "RunTest",
+                    }
+                },
+            'Run01' : {
+                'WtoTauNu' : {
+                    'analysisFilePath' : "/castor/cern.ch/user/l/liis/CMSSW_38X/Histograms/HPSTau",
+                    'harvestingFilePath' : "/tmp/liis",
+                    'tmpFilePath' : "/tmp/liis",
+                    'jobID' : "Run01",
+                    }
+                }
+            },
+        'global' : {
+            'drawOptions' : {
+                'canvasSizeX' : 800,
+                'canvasSizeY' : 640
+                },
+#            'harvestScripts' : 'tmp/liis/harvest_scripts'
+            }
+        }
     }
-}
 
 def mine():
     return userSettings[os.environ['LOGNAME']]
