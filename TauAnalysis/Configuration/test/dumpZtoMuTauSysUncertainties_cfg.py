@@ -20,13 +20,16 @@ process.loadZtoMuTauSysUncertainties = cms.EDAnalyzer("DQMFileLoader",
         inputFileNames = cms.vstring(
             #'/data2/friis/Run2PDF/harvested_ZtoMuTau_ZtautauPU156bx_Run2PDF.root'
             #'/data2/friis/Run2PDF/harvested_ZtoMuTau_Ztautau_powheg_Run2PDF.root'
-            '/data1/veelken/CMSSW_3_8_x/plots/ZtoMuTau/local/mcZtautauPU156bx_pythia_lhapdf_all.root'
+            #'/data1/veelken/CMSSW_3_8_x/plots/ZtoMuTau/local/mcZtautauPU156bx_pythia_lhapdf_all.root'
+            '/data1/veelken/CMSSW_3_8_x/plots/ZtoMuTau/2011Feb01_HPSloose/plotsZtoMuTau_all.root'
         ),
         dqmDirectory_store = cms.string('/')
     )
 )
 
-dqmDirectory_Ztautau = '/zMuTauAnalyzerOS/afterGenPhaseSpaceCut_beforeEvtSelTrigger'
+dqmDirectory_Ztautau = '/harvested/Ztautau_powheg/zMuTauAnalyzerOS/afterGenPhaseSpaceCut_beforeEvtSelTrigger'
+#dqmDirectory_Ztautau = '/harvested/ZtautauPU156bx_pythiaZ2/zMuTauAnalyzerOS/afterGenPhaseSpaceCut_beforeEvtSelTrigger'
+#dqmDirectory_Ztautau = '/harvested/ZtautauPU156bx/zMuTauAnalyzerOS/afterGenPhaseSpaceCut_beforeEvtSelTrigger'
 
 genAccBinner = 'modelBinnerForMuTauGenTauLeptonPairAcc'
 recEffBinner = 'modelBinnerForMuTauWrtGenTauLeptonPairAcc'
@@ -37,6 +40,19 @@ process.dumpZtoMuTauAcceptance = cms.EDAnalyzer("DQMDumpBinningResults",
         dqmDirectories = cms.PSet(
             genAcc = cms.string(dqmDirectory_Ztautau + '/' + genAccBinner),
             recEff = cms.string(dqmDirectory_Ztautau + '/' + recEffBinner)
+        )
+    )
+)
+
+genAccBinner3mZbins = 'modelBinnerForMuTauGenTauLeptonPairAcc3mZbins'
+recEffBinner3mZbins = 'modelBinnerForMuTauWrtGenTauLeptonPairAcc3mZbins'
+
+process.dumpZtoMuTauAcceptance3mZbins = cms.EDAnalyzer("DQMDumpBinningResults",
+    binningService = cms.PSet(
+        pluginType = cms.string("ModelBinningService"),
+        dqmDirectories = cms.PSet(
+            genAcc = cms.string(dqmDirectory_Ztautau + '/' + genAccBinner3mZbins),
+            recEff = cms.string(dqmDirectory_Ztautau + '/' + recEffBinner3mZbins)
         )
     )
 )
@@ -132,8 +148,9 @@ process.dumpZtoMuTauEffUncertainties = cms.EDAnalyzer("DQMDumpSysUncertaintyBinn
 process.p = cms.Path(
     process.loadZtoMuTauSysUncertainties
    + process.dumpZtoMuTauAcceptance
-   + process.dumpZtoMuTauAccUncertainties
-   + process.dumpZtoMuTauEffUncertainties
+   + process.dumpZtoMuTauAcceptance3mZbins
+   #+ process.dumpZtoMuTauAccUncertainties
+   #+ process.dumpZtoMuTauEffUncertainties
 )
 
 
