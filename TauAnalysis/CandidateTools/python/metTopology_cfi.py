@@ -8,7 +8,7 @@ import FWCore.ParameterSet.Config as cms
 
 metTopologies = cms.EDProducer("MEtTopologyProducer",
     srcMET = cms.InputTag('pfMet'),
-    srcEnergyDeposits = cms.InputTag('towerMaker'),                           
+    srcEnergyDeposits = cms.InputTag('pfNoPileUp'),                           
     globalThreshold = cms.double(0.5),
     verbosity = cms.untracked.int32(0)
 )
