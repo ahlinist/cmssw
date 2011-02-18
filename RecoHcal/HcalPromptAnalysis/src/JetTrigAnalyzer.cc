@@ -13,7 +13,7 @@
 //
 // Original Author:  "Sertac Ozturk"
 //         Created:  Mon Jul 27 11:09:40 CDT 2009
-// $Id: JetTrigAnalyzer.cc,v 1.4 2010/05/31 22:24:17 ferencek Exp $
+// $Id: JetTrigAnalyzer.cc,v 1.5 2011/02/17 16:40:42 jhirsch Exp $
 //
 //
 
@@ -152,9 +152,9 @@ JetTrigAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup
 
 
   //trigger
-   Handle<L1MuGMTReadoutCollection> gmtrc_h;
-   iEvent.getByLabel("l1GmtEmulDigis",gmtrc_h);
-   const L1MuGMTReadoutCollection* gmtrc = gmtrc_h.failedToGet () ? 0 : &*gmtrc_h;
+//    Handle<L1MuGMTReadoutCollection> gmtrc_h;
+//    iEvent.getByLabel("l1GmtEmulDigis",gmtrc_h);
+//    const L1MuGMTReadoutCollection* gmtrc = gmtrc_h.failedToGet () ? 0 : &*gmtrc_h;
 
   // L1 global trigger
   Handle <L1GlobalTriggerReadoutRecord> gtRecord_h;
