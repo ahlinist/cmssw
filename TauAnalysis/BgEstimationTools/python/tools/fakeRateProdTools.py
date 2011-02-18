@@ -202,7 +202,6 @@ def configureFakeRateProductionPAT(process, recoTauProducerName = 'hpsPFTauProdu
 
     # produce fake-rates
     frProdConfigRECO = configureFakeRateProductionRECO(process, recoTauProducerName, frSet)
-    print "frProdConfigRECO", frProdConfigRECO
     prePatProdSequence += frProdConfigRECO['sequence']
 
     # compute fake-rate weights
