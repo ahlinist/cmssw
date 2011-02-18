@@ -200,6 +200,95 @@ reco::Candidate::LorentzVector boostToRestFrame(const reco::Candidate::LorentzVe
 //-------------------------------------------------------------------------------
 //
 
+void countDecayProducts(const reco::GenParticle* genParticle,
+			int& numElectrons, int& numElecNeutrinos, int& numMuons, int& numMuNeutrinos, 
+			int& numChargedHadrons, int& numPi0s, int& numOtherNeutralHadrons, int& numPhotons)
+{
+  int absPdgId = TMath::Abs(genParticle->pdgId());
+  int status   = genParticle->status();
+  int charge   = genParticle->charge();
+
+  if      ( absPdgId == 111 ) ++numPi0s;
+  else if ( status   ==   1 ) {
+    if      ( absPdgId == 11 ) ++numElectrons;
+    else if ( absPdgId == 12 ) ++numElecNeutrinos;
+    else if ( absPdgId == 13 ) ++numMuons;
+    else if ( absPdgId == 14 ) ++numMuNeutrinos;
+    else if ( absPdgId == 22 ) ++numPhotons;
+    else if ( charge   !=  0 ) ++numChargedHadrons;
+    else                       ++numOtherNeutralHadrons;
+  } else {
+    unsigned numDaughters = genParticle->numberOfDaughters();
+    for ( unsigned iDaughter = 0; iDaughter < numDaughters; ++iDaughter ) {
+      const reco::GenParticle* daughter = genParticle->daughterRef(iDaughter).get();
+
+      countDecayProducts(daughter, 
+			 numElectrons, numElecNeutrinos, numMuons, numMuNeutrinos,
+			 numChargedHadrons, numPi0s, numOtherNeutralHadrons, numPhotons);
+    }
+  }
+}
+
+std::string getGenTauDecayMode(const reco::GenParticle* genParticle) 
+{
+//--- determine generator level tau decay mode
+//
+//    NOTE: 
+//        (1) function implements logic defined in PhysicsTools/JetMCUtils/src/JetMCTag::genTauDecayMode
+//            for different type of argument 
+//        (2) this implementation should be more robust to handle cases of tau --> tau + gamma radiation
+//
+  
+  //std::cout << "<getGenTauDecayMode>:" << std::endl;
+
+  int numElectrons           = 0;
+  int numElecNeutrinos       = 0;
+  int numMuons               = 0;
+  int numMuNeutrinos         = 0; 
+  int numChargedHadrons      = 0;
+  int numPi0s                = 0; 
+  int numOtherNeutralHadrons = 0;
+  int numPhotons             = 0;
+
+  countDecayProducts(genParticle,
+		     numElectrons, numElecNeutrinos, numMuons, numMuNeutrinos,
+		     numChargedHadrons, numPi0s, numOtherNeutralHadrons, numPhotons);
+
+  if      ( numElectrons == 1 && numElecNeutrinos == 1 ) return std::string("electron");
+  else if ( numMuons     == 1 && numMuNeutrinos   == 1 ) return std::string("muon");
+  
+  switch ( numChargedHadrons ) {
+  case 1 : 
+    if ( numOtherNeutralHadrons != 0 ) return std::string("oneProngOther");
+    switch ( numPi0s ) {
+    case 0:
+      return std::string("oneProng0Pi0");
+    case 1:
+      return std::string("oneProng1Pi0");
+    case 2:
+      return std::string("oneProng2Pi0");
+    default:
+      return std::string("oneProngOther");
+    }
+  case 3 : 
+    if ( numOtherNeutralHadrons != 0 ) return std::string("threeProngOther");
+    switch ( numPi0s ) {
+    case 0:
+      return std::string("threeProng0Pi0");
+    case 1:
+      return std::string("threeProng1Pi0");
+    default:
+      return std::string("threeProngOther");
+    }
+  default:
+    return std::string("rare");
+  }
+}
+
+//
+//-------------------------------------------------------------------------------
+//
+
 TVector2 getDiTauBisectorDirection(const reco::Candidate::LorentzVector& leg1P4, const reco::Candidate::LorentzVector& leg2P4)
 {
   double leg1CosPhi = TMath::Cos(leg1P4.phi());

@@ -42,6 +42,8 @@ double getPhysX(double x, bool& isWithinPhysRange);
 
 reco::Candidate::LorentzVector boostToRestFrame(const reco::Candidate::LorentzVector&, const reco::Candidate::LorentzVector&);
 
+std::string getGenTauDecayMode(const reco::GenParticle*);
+
 TVector2 getDiTauBisectorDirection(const reco::Candidate::LorentzVector& leg1P4, const reco::Candidate::LorentzVector& leg2P4); 
 void computeMEtProjection(const reco::PFCandidateCollection&, const TVector2&, double&, double&, double&);
 
