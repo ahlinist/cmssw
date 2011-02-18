@@ -1,5 +1,7 @@
 #include "TauAnalysis/Core/interface/histManagerAuxFunctions.h"
 
+#include "DataFormats/TauReco/interface/PFTauDecayMode.h"
+
 #include "TauAnalysis/CandidateTools/interface/candidateAuxFunctions.h"
 #include "TauAnalysis/CandidateTools/interface/svFitAuxFunctions.h"
 
@@ -132,4 +134,61 @@ void fillHistogramGenMatch(MonitorElement* histo, double value, const reco::Cand
     
     if ( isMatched ) histo->Fill(value, weight);
   }
+}
+
+//
+//-----------------------------------------------------------------------------------------------------------------------
+//
+
+void setAxisLabel(TAxis* axis, int tauDecayMode)
+{
+//--- set label for tau decay mode passed as function argument
+//   ( same labels to be used for generated and reconstructed tau decay modes,
+//     except for 3 bins of generated tau decay mode histogram,
+//     which are customized according to the definition in PhysicsTools/JetMCUtils/src/JetMCTag.cc )
+//
+//    NOTE: bin numbers start at 1 (not 0) !!
+//
+  axis->SetBinLabel(1 + tauDecayMode, getTauDecayModeName(tauDecayMode).data());
+}
+
+void setAxisLabelsGenTauDecayMode(TAxis* axis)
+{
+//--- set labels for generated tau decay modes
+
+  setAxisLabel(axis, reco::PFTauDecayMode::tauDecaysElectron);
+  setAxisLabel(axis, reco::PFTauDecayMode::tauDecayMuon);
+  setAxisLabel(axis, reco::PFTauDecayMode::tauDecay1ChargedPion0PiZero);
+  setAxisLabel(axis, reco::PFTauDecayMode::tauDecay1ChargedPion1PiZero);
+  setAxisLabel(axis, reco::PFTauDecayMode::tauDecay1ChargedPion2PiZero);
+  axis->SetBinLabel(1 + reco::PFTauDecayMode::tauDecay1ChargedPion4PiZero, "oneProngOther");
+  setAxisLabel(axis, reco::PFTauDecayMode::tauDecay3ChargedPion0PiZero);
+  setAxisLabel(axis, reco::PFTauDecayMode::tauDecay3ChargedPion1PiZero);
+  axis->SetBinLabel(1 + reco::PFTauDecayMode::tauDecay3ChargedPion4PiZero, "threeProngOther");
+  axis->SetBinLabel(1 + reco::PFTauDecayMode::tauDecayOther, "rare");
+}
+
+
+void setAxisLabelsRecTauDecayMode(TAxis* axis)
+{
+//--- set labels for reconstructed tau decay modes
+
+  setAxisLabel(axis, reco::PFTauDecayMode::tauDecaysElectron);
+  setAxisLabel(axis, reco::PFTauDecayMode::tauDecayMuon);
+  setAxisLabel(axis, reco::PFTauDecayMode::tauDecay1ChargedPion0PiZero);
+  setAxisLabel(axis, reco::PFTauDecayMode::tauDecay1ChargedPion1PiZero);
+  setAxisLabel(axis, reco::PFTauDecayMode::tauDecay1ChargedPion2PiZero);
+  setAxisLabel(axis, reco::PFTauDecayMode::tauDecay1ChargedPion3PiZero);
+  setAxisLabel(axis, reco::PFTauDecayMode::tauDecay1ChargedPion4PiZero);
+  setAxisLabel(axis, reco::PFTauDecayMode::tauDecay2ChargedPion0PiZero);
+  setAxisLabel(axis, reco::PFTauDecayMode::tauDecay2ChargedPion1PiZero);
+  setAxisLabel(axis, reco::PFTauDecayMode::tauDecay2ChargedPion2PiZero);
+  setAxisLabel(axis, reco::PFTauDecayMode::tauDecay2ChargedPion3PiZero);
+  setAxisLabel(axis, reco::PFTauDecayMode::tauDecay2ChargedPion4PiZero);
+  setAxisLabel(axis, reco::PFTauDecayMode::tauDecay3ChargedPion0PiZero);
+  setAxisLabel(axis, reco::PFTauDecayMode::tauDecay3ChargedPion1PiZero);
+  setAxisLabel(axis, reco::PFTauDecayMode::tauDecay3ChargedPion2PiZero);
+  setAxisLabel(axis, reco::PFTauDecayMode::tauDecay3ChargedPion3PiZero);
+  setAxisLabel(axis, reco::PFTauDecayMode::tauDecay3ChargedPion4PiZero);
+  setAxisLabel(axis, reco::PFTauDecayMode::tauDecayOther);
 }
