@@ -8,11 +8,11 @@
  * of tracks associated to tau decay products
  * 
  * \author Giuseppe Cerati;
- *         mofidied by Christian Veelken
+ *         modified by Christian Veelken
  *
- * \version $Revision: 1.1 $
+ * \version $Revision: 1.2 $
  *
- * $Id: CompositePtrCandidateT1T2MEtIpSelector.h,v 1.1 2009/06/10 09:33:53 veelken Exp $
+ * $Id: CompositePtrCandidateT1T2MEtIpSelector.h,v 1.2 2010/09/28 11:23:35 jkolb Exp $
  *
  */
 
