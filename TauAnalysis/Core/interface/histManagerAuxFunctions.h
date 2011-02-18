@@ -14,6 +14,8 @@
 
 #include "TauAnalysis/Core/interface/FakeRateJetWeightExtractor.h"
 
+#include <TAxis.h>
+
 void bookWeightHistograms(DQMStore&, const char*, const char*, MonitorElement*&, MonitorElement*&, MonitorElement*&, MonitorElement*&);
 void fillWeightHistograms(MonitorElement*, MonitorElement*, MonitorElement*, MonitorElement*, double);
 
@@ -57,5 +59,8 @@ double compDecayEigenTime(double, double);
 
 void fillHistogramGenMatch(MonitorElement*, double, const reco::Candidate::LorentzVector&, 
 			   const reco::GenParticleCollection&, const std::vector<int>&, double);
+
+void setAxisLabelsGenTauDecayMode(TAxis* axis);
+void setAxisLabelsRecTauDecayMode(TAxis* axis);
 
 #endif
