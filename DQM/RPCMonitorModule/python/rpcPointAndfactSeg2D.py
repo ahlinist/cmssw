@@ -84,7 +84,7 @@ process.museg = cms.EDAnalyzer("MuonSegmentEff",
     rpcCSCPoints = cms.InputTag("rpcPointProducer","RPCCSCExtrapolatedPoints"),
 
     EffSaveRootFile = cms.untracked.bool(True),
-    EffRootFileName = cms.untracked.string('PromptReco.rpcSkimExp_135808-136082_9_1.root'),
+    EffRootFileName = cms.untracked.string('output.root'),
     EffSaveRootFileEventsInterval = cms.untracked.int32(100)
 )
 
