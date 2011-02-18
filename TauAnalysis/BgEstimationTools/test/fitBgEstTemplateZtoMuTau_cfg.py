@@ -43,7 +43,7 @@ dqmDirectoriesBgEnrichedSelections = {
     'ZmumuJetMisIdEnriched'  : 'BgEstTemplateAnalyzer_ZmumuJetMisIdEnriched/afterDiMuonPairInvMassBgEstZmumuJetMisIdEnriched/',
     'ZmumuMuonMisIdEnriched' : 'BgEstTemplateAnalyzer_ZmumuMuonMisIdEnriched/afterDiMuonPairBgEstZmumuMuonMisIdEnriched/',
     'WplusJetsEnriched'      : 'BgEstTemplateAnalyzer_WplusJetsEnriched/afterDiMuonVetoBgEstWplusJetsEnriched/',
-    ##'TTplusJetsEnriched'   : 'BgEstTemplateAnalyzer_TTplusJetsEnriched/afterJetEt60BgEstTTplusJetsEnriched/',
+    'TTplusJetsEnriched'     : 'BgEstTemplateAnalyzer_TTplusJetsEnriched/afterJetEt60BgEstTTplusJetsEnriched/',
     'QCDenriched'            : 'BgEstTemplateAnalyzer_QCDenriched/afterDiMuonVetoBgEstQCDenriched/'
 }
 
@@ -51,7 +51,7 @@ pureProcessBgEnrichedSelections = {
     'ZmumuJetMisIdEnriched'  : 'Zmumu',
     'ZmumuMuonMisIdEnriched' : 'Zmumu',
     'WplusJetsEnriched'      : 'WplusJets',
-    ##'TTplusJetsEnriched'   : 'TTplusJets',
+    'TTplusJetsEnriched'     : 'TTplusJets',
     'QCDenriched'            : 'QCD'
 }
 
@@ -68,8 +68,8 @@ meNames = {
 process.loadAnalysisResultsZtoMuTau = cms.EDAnalyzer("DQMFileLoader",
     Ztautau = cms.PSet(
         inputFileNames = cms.vstring(
-            getHarvestingFilePath('ZtoMuTau_bgEstTemplate') + '/' + 'bgEstTemplateHistZtoMuTau_skimmed.root'
-            ##'/data1/veelken/CMSSW_3_8_x/plots/ZtoMuTau_bgEstTemplate/2011Jan10/bgEstTemplateHistZtoMuTau_skimmed.root'
+            ##getHarvestingFilePath('ZtoMuTau_bgEstTemplate') + '/' + 'bgEstTemplateHistZtoMuTau_skimmed.root'
+            '/data1/veelken/CMSSW_3_8_x/plots/ZtoMuTau_bgEstTemplate/2011Feb01_HPSloose/bgEstTemplateHistZtoMuTau_skimmed.root'
         ),
         scaleFactor = cms.double(1.),
         dqmDirectory_store = cms.string('/')
@@ -679,8 +679,8 @@ process.fitZtoMuTau = cms.EDAnalyzer("TemplateHistFitter",
                 norm = cms.PSet(
                     ##value = cms.double(1.*165.),       # for TaNC loose
                     ##uncertainty = cms.double(0.5*165.) # for TaNC loose
-                    value = cms.double(1.*170.),       # for HPS loose
-                    uncertainty = cms.double(0.5*170.) # for HPS loose                                 
+                    value = cms.double(1.*110.),       # for HPS loose 
+                    uncertainty = cms.double(0.5*110.) # for HPS loose                                 
                 )
             )
         ),
