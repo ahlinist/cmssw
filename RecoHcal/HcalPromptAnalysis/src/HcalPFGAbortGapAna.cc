@@ -56,8 +56,8 @@ void HcalPFGAbortGapAna::analyze( const edm::Event& evt, const edm::EventSetup& 
   evt.getByLabel("source",rawdata);
     
   // loop over FEDs 
-  //  static bool HBHEseq,HOseq,HFseq;
-  static bool LaserEvent, LaserRaddam;
+  //  static bool HBHEseq,HOseq,HFseq, LaserRaddam;
+  static bool LaserEvent;
 
   for (int i=FEDNumbering::MINHCALFEDID;i<=FEDNumbering::MAXHCALFEDID; i++) {
     const FEDRawData& fedData = rawdata->FEDData(i) ;
@@ -67,7 +67,6 @@ void HcalPFGAbortGapAna::analyze( const edm::Event& evt, const edm::EventSetup& 
     
     // Get event header
     int value = ((const HcalDCCHeader*)(fedData.data()))->getCalibType() ;
-    static bool HBHEseq,HOseq,HFseq;
     
     // Check for Laser events and subdet
     //     if(value==hc_HBHEHPD){HBHEseq=true; HOseq=HFseq=false;}
