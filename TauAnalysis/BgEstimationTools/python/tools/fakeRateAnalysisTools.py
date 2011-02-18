@@ -9,73 +9,13 @@ from TauAnalysis.Configuration.tools.changeCut import changeCut
 from TauAnalysis.BgEstimationTools.tauIdEffValidationHistManager_cfi import tauIdEffValidationHistManager
 
 # import utility function for add histogram manager to analysis sequence
-from TauAnalysis.Configuration.tools.analysisSequenceTools import addAnalyzer
+from TauAnalysis.Configuration.tools.analysisSequenceTools import addAnalyzer, setAnalyzerParameter, pruneAnalysisSequence
 
-from TauAnalysis.BgEstimationTools.tools.fakeRateProdTools import configureFakeRateProduction
+from TauAnalysis.BgEstimationTools.tools.fakeRateProdTools import configureFakeRateProductionPAT, getFakeRateConfigParameters
 
 #--------------------------------------------------------------------------------
 # auxiliary functions needed for reconfiguration of analysis sequences
 #--------------------------------------------------------------------------------
-
-def setAnalyzerParameter(genAnalyzerModule, pluginName, parameterName, parameterValue):
-    for analyzerPlugin in genAnalyzerModule.analyzers:
-        if hasattr(analyzerPlugin, "pluginName"):
-            analyzerPluginName = getattr(analyzerPlugin, "pluginName").value()
-            if analyzerPluginName == pluginName:
-                setattr(analyzerPlugin, parameterName, parameterValue)
-
-def pruneAnalysisSequence(genAnalyzerModule):
-
-    # disable filling of histograms after all stages of the event selection
-    # except for the last occurence (after all cuts have been applied)
-
-    lastEntry = {}
-    for iAnalysisSequenceEntry in range(len(genAnalyzerModule.analysisSequence)):
-        analysisSequenceEntry = genAnalyzerModule.analysisSequence[iAnalysisSequenceEntry]
-        if hasattr(analysisSequenceEntry, "analyzers"):
-            analyzerPlugins = getattr(analysisSequenceEntry, "analyzers")
-            for analyzerPlugin in analyzerPlugins:
-                analyzerPluginName = analyzerPlugin
-                lastEntry[analyzerPluginName] = iAnalysisSequenceEntry
-
-    prunedAnalysisSequence = []
-    for iAnalysisSequenceEntry in range(len(genAnalyzerModule.analysisSequence)):
-        analysisSequenceEntry = genAnalyzerModule.analysisSequence[iAnalysisSequenceEntry]
-        if hasattr(analysisSequenceEntry, "analyzers"):
-            # keep analyzer entry only in case it contains at least one histogram manager
-            # not filled at a later stage of the event selection
-
-            keepAnalyzers = []
-            for lastEntryKey, lastEntryValue in lastEntry.items():
-                if lastEntryValue == iAnalysisSequenceEntry:
-                    keepAnalyzers.append(lastEntryKey)
-
-            if len(keepAnalyzers) > 0:
-                # keep analysis sequence entry, but fill only histograms
-                # which are not filled at a later stage of the event selection
-                analysisSequenceEntry.analyzers = cms.vstring(keepAnalyzers)
-
-                # in all cases, disable storing run and events numbers
-                setattr(genAnalyzerModule.analysisSequence[iAnalysisSequenceEntry], "saveRunLumiSectionEventNumbers", cms.vstring())
-
-                prunedAnalysisSequence.append(analysisSequenceEntry)
-        else:
-            # keep all filter entries,
-            # but disable saving of run and event numbers of events passing filter
-            setattr(analysisSequenceEntry, "saveRunLumiSectionEventNumbers", cms.vstring(''))
-            prunedAnalysisSequence.append(analysisSequenceEntry)
-
-    genAnalyzerModule.analysisSequence = cms.VPSet(prunedAnalysisSequence)
-
-def disableEventDump(genAnalyzerModule):
-    # disable event print-out
-    if not len(genAnalyzerModule.eventDumps):
-        print "-- already disabled!"
-        return
-    disabledEventDump = copy.deepcopy(genAnalyzerModule.eventDumps[0])
-    disabledEventDump.output = cms.string("std::cout")
-    disabledEventDump.triggerConditions = cms.vstring()
-    genAnalyzerModule.eventDumps[0] = disabledEventDump
 
 def makeGenAnalyzerModule(process, genAnalyzerModule, label):
 
@@ -94,46 +34,154 @@ def addGenAnalyzerModule(process, genAnalyzerModule, label, analysisSequence):
     analyzer = makeGenAnalyzerModule(process, genAnalyzerModule, label)
 
     # add module to sequence
-    if analysisSequence is None:
-        analysisSequence = analyzer
-    else:
-        analysisSequence *= analyzer
+    analysisSequence += analyzer
 
     return analysisSequence
 
-def addFakeRateGenAnalyzerModule(process, genAnalyzerModule, frType, frConfig, bgEstFakeRateAnalysisSequence):
+def getBoolEventSelFlagProducer_src(module):
 
-    bgEstFakeRateAnalyzer = makeGenAnalyzerModule(process, genAnalyzerModule, "fr" + "_" + frType)
+    src_cumulative = None
+    src = None
+
+    if hasattr(module, "selectors"):
+        for pset in getattr(module, "selectors"):
+            if getattr(pset, "instanceName").value() == 'cumulative':
+                src_cumulative = getattr(pset, "src")
+            elif getattr(pset, "instanceName").value() == '':
+                src = getattr(pset, "src")
+    else:
+        raise ValueError("BoolEventSelFlagProducer module has no 'selectors' Parameter !!")
+
+    if src_cumulative is not None:
+        return src_cumulative
+    else:
+        return src
+
+def addFakeRateGenAnalyzerModule(process, genAnalyzerModule, histManagers = [],
+                                 tauCuts = None, diTauCuts = [], selTauByDiTauModuleType = None,
+                                 frType = None, frConfig = None,
+                                 bgEstFakeRateAnalysisSequence = None):
+
+    # check that 'tauCuts', 'frType', 'frConfig'
+    # and 'bgEstFakeRateAnalysisSequence' parameters are defined
+    if tauCuts is None:
+        raise ValueError("Undefined 'tauCuts' Parameter !!")
+    if frType is None:
+        raise ValueError("Undefined 'frType' Parameter !!")
+    if frConfig is None:
+        raise ValueError("Undefined 'frConfig' Parameter !!")
+    if bgEstFakeRateAnalysisSequence is None:
+        raise ValueError("Undefined 'bgEstFakeRateAnalysisSequence' Parameter !!")
+    # check that 'selTauByDiTauModuleType' is defined
+    if selTauByDiTauModuleType is None and len(diTauCuts) > 0:
+        raise ValueError("Undefined 'selTauByDiTauModuleType' Parameter !!")
+
+    bgEstFakeRateAnalyzerModule = makeGenAnalyzerModule(process, genAnalyzerModule, "fr" + "_" + frType)
+    bgEstFakeRateAnalyzerName = getattr(bgEstFakeRateAnalyzerModule, "name").value()
+    bgEstFakeRateAnalyzerName = bgEstFakeRateAnalyzerName.replace('_', 'X')
+   
+    cutsToUpdate = []
+    cutsToUpdate.extend(tauCuts)
+    cutsToUpdate.extend(diTauCuts)
+
+    lastSelTauCollection = None
 
     if frConfig is not None:
-        psetFakeRateEventWeight = cms.PSet(
-            src = frConfig['srcEventWeight'],
-            applyAfterFilter = cms.string("evtSelTauTaNCdiscr")
-        )
-        if hasattr(bgEstFakeRateAnalyzer, "eventWeights"):
-            getattr(bgEstFakeRateAnalyzer, "eventWeights").append(psetFakeRateEventWeight)
-        else:
-            setattr(bgEstFakeRateAnalyzer, "eventWeights", cms.VPSet(psetFakeRateEventWeight))
+        
+        # check that cut is applied in analysis sequence of GenericAnalyzer module
+        cutsToUpdate_applied = []
+        for cutToUpdate in cutsToUpdate:
+            isApplied = False
+            analysisSequence = getattr(bgEstFakeRateAnalyzerModule, "analysisSequence")
+            for pset in analysisSequence:
+                if hasattr(pset, "filter") and getattr(pset, "filter").value() == cutToUpdate:
+                    isApplied = True
+            if isApplied:
+                cutsToUpdate_applied.append(cutToUpdate)
+            else:
+                print("Cut = %s not applied in GenericAnalyzer module = %s --> skipping !!" % (cutToUpdate, bgEstFakeRateAnalyzerName))
+            
+        for cutIdx, cutToUpdate in enumerate(cutsToUpdate_applied):
+
+            selTauCollectionName = None
+            
+            if cutToUpdate in tauCuts:
+                evtSelPSet = getattr(process, cutToUpdate)
+                boolEventFlagModuleName = None
+                if hasattr(evtSelPSet, "src_cumulative"):
+                    boolEventFlagModuleName = getattr(evtSelPSet, "src_cumulative").getModuleLabel()
+                else:
+                    boolEventFlagModuleName = getattr(evtSelPSet, "src").getModuleLabel()
+                boolEventFlagModule = getattr(process, boolEventFlagModuleName)
+                selTauCollectionName = getBoolEventSelFlagProducer_src(boolEventFlagModule).getModuleLabel()
+                lastSelTauCollectionName = selTauCollectionName
+              
+            if cutToUpdate in diTauCuts:
+                evtSelPSet = getattr(process, cutToUpdate)
+                boolEventFlagModuleName = None
+                if hasattr(evtSelPSet, "src_cumulative"):
+                    boolEventFlagModuleName = getattr(evtSelPSet, "src_cumulative").getModuleLabel()
+                else:
+                    boolEventFlagModuleName = getattr(evtSelPSet, "src").getModuleLabel()
+                boolEventFlagModule = getattr(process, boolEventFlagModuleName)
+                selDiTauCollectionName = getBoolEventSelFlagProducer_src(boolEventFlagModule).getModuleLabel()
+                
+                selTauByDiTauModule = cms.EDProducer(selTauByDiTauModuleType,
+                    srcDiTau = cms.InputTag(selDiTauCollectionName),                               
+                    srcLeg2 = cms.InputTag(lastSelTauCollectionName),
+                    dRmatchLeg2 = cms.double(0.3)                                          
+                )
+                selTauByDiTauModuleName = "selTauByDiTauX%sX%s" % (bgEstFakeRateAnalyzerName, cutToUpdate)
+                setattr(process, selTauByDiTauModuleName, selTauByDiTauModule)
+                bgEstFakeRateAnalysisSequence += selTauByDiTauModule
+
+                selTauCollectionName = selTauByDiTauModuleName
+
+            process.load("TauAnalysis.BgEstimationTools.fakeRateEventWeightProducer_cfi")
+            bgEstFakeRateEventWeightModule = process.bgEstFakeRateEventWeights.clone(
+                allTauJetSource = cms.InputTag(selTauCollectionName),
+                preselTauJetSource = cms.InputTag(selTauCollectionName),
+                method = process.bgEstFakeRateJetWeights.method,
+                frTypes = process.bgEstFakeRateJetWeights.frTypes
+            )
+            bgEstFakeRateEventWeightModuleName = "bgEstFakeRateEventWeightsX%sX%s" % (bgEstFakeRateAnalyzerName, cutToUpdate)
+            setattr(process, bgEstFakeRateEventWeightModuleName, bgEstFakeRateEventWeightModule)
+            bgEstFakeRateAnalysisSequence += bgEstFakeRateEventWeightModule
+
+            psetFakeRateEventWeight = cms.PSet(
+                src = cms.InputTag(bgEstFakeRateEventWeightModuleName),
+                applyAfterFilter = cms.string(cutToUpdate)
+            )
+            if cutIdx < (len(cutsToUpdate_applied) - 1):
+                setattr(psetFakeRateEventWeight, "applyBeforeFilter", cms.string(cutsToUpdate_applied[cutIdx + 1]))
+            if hasattr(bgEstFakeRateAnalyzerModule, "eventWeights"):
+                getattr(bgEstFakeRateAnalyzerModule, "eventWeights").append(psetFakeRateEventWeight)
+            else:
+                setattr(bgEstFakeRateAnalyzerModule, "eventWeights", cms.VPSet(psetFakeRateEventWeight))
+
+            # add event weights for tau id. efficiency shifted up/down by one sigma
+            for shift in [ "SysTauIdEffUp", "SysTauIdEffDown" ]:
+                if hasattr(process, "bgEstFakeRateJetWeights" + shift):
+                    bgEstFakeRateEventWeightModuleSysTauIdEff = bgEstFakeRateEventWeightModule.clone(
+                        shiftTauIdEff = getattr(process, "bgEstFakeRateJetWeights" + shift).shiftTauIdEff
+                    )
+                    bgEstFakeRateEventWeightModuleNameSysTauIdEff = "%s%s" % (bgEstFakeRateEventWeightModuleName, shift)
+                    setattr(process, bgEstFakeRateEventWeightModuleNameSysTauIdEff, bgEstFakeRateEventWeightModuleSysTauIdEff)
+                    bgEstFakeRateAnalysisSequence += bgEstFakeRateEventWeightModuleSysTauIdEff
 
         srcFakeRateJetWeight = cms.vstring(frConfig['patLabel'])
-        setAnalyzerParameter(bgEstFakeRateAnalyzer,
-                             "tauHistManager", "tauJetWeightSource", srcFakeRateJetWeight)
-        setAnalyzerParameter(bgEstFakeRateAnalyzer,
-                             "diTauCandidateZmumuHypothesisHistManagerForMuTau", "lepton2WeightSource", srcFakeRateJetWeight)
-        setAnalyzerParameter(bgEstFakeRateAnalyzer,
-                             "diTauCandidateHistManagerForMuTau", "diTauLeg2WeightSource", srcFakeRateJetWeight)
-        setAnalyzerParameter(bgEstFakeRateAnalyzer,
-                             "diTauCandidateSVfitHistManagerForMuTau", "diTauLeg2WeightSource", srcFakeRateJetWeight)
+        for histManagerName, srcParamName in histManagers.items():
+            setAnalyzerParameter(bgEstFakeRateAnalyzerModule, histManagerName, srcParamName, srcFakeRateJetWeight)
+
+    srcFakeRateJetWeight = cms.vstring(frConfig['patLabel'])
+    for histManagerName, srcParamName in histManagers.items():
+        setAnalyzerParameter(bgEstFakeRateAnalyzerModule, histManagerName, srcParamName, srcFakeRateJetWeight)        
 
     # add module to sequence
-    if bgEstFakeRateAnalysisSequence is None:
-        bgEstFakeRateAnalysisSequence = bgEstFakeRateAnalyzer
-    else:
-        bgEstFakeRateAnalysisSequence *= bgEstFakeRateAnalyzer
+    bgEstFakeRateAnalysisSequence += bgEstFakeRateAnalyzerModule
 
-    return bgEstFakeRateAnalysisSequence
-
-def makeDataBinningDumpSequence(process, dqmDirectory, processSubDirectories, frSubDirectories, moduleLabel):
+def makeDataBinningDumpSequence(process, channel,
+                                dqmDirectory, processSubDirectories, frSubDirectories, moduleLabel):
 
     dataBinningDumpAnalysisSequence = None
 
@@ -154,7 +202,7 @@ def makeDataBinningDumpSequence(process, dqmDirectory, processSubDirectories, fr
 
             setattr(module.binningService.dqmDirectories, frType, cms.string(dqmDirectory_i))
 
-        moduleName = "".join(["dumpDataBinningBgEstFakeRateZtoMuTau", "_", processName, "_", moduleLabel])
+        moduleName = "".join(["dumpDataBinningBgEstFakeRate", channel, "_", processName, "_", moduleLabel])
         setattr(process, moduleName, module)
 
         module = getattr(process, moduleName)
@@ -166,7 +214,8 @@ def makeDataBinningDumpSequence(process, dqmDirectory, processSubDirectories, fr
 
     return dataBinningDumpAnalysisSequence
 
-def makeFilterStatTableDumpSequence(process, dqmDirectory, processSubDirectories, frSubDirectories, moduleLabel):
+def makeFilterStatTableDumpSequence(process, channel,
+                                    dqmDirectory, processSubDirectories, frSubDirectories, moduleLabel):
 
     filterStatTableDumpAnalysisSequence = None
 
@@ -187,7 +236,7 @@ def makeFilterStatTableDumpSequence(process, dqmDirectory, processSubDirectories
 
             setattr(module.dqmDirectories, frType, cms.string(dqmDirectory_i))
 
-        moduleName = "".join(["dumpFilterStatTableBgEstFakeRateZtoMuTau", "_", processName, "_", moduleLabel])
+        moduleName = "".join(["dumpFilterStatTableBgEstFakeRate", channel, "_", processName, "_", moduleLabel])
         setattr(process, moduleName, module)
 
         module = getattr(process, moduleName)
@@ -198,47 +247,6 @@ def makeFilterStatTableDumpSequence(process, dqmDirectory, processSubDirectories
             filterStatTableDumpAnalysisSequence *= module
 
     return filterStatTableDumpAnalysisSequence
-
-def getPSetAttributes(object):
-
-    attributes = []
-
-    for attribute in dir(object):
-
-        # check that "attribute" is not an internal attribute or method of cms.PSet
-        isInternalAttribute = False
-
-        for classAttribute in dir(cms.PSet):
-            if attribute == classAttribute:
-                isInternalAttribute = True
-        if attribute.startswith("_"):
-            isInternalAttribute = True
-
-        if not isInternalAttribute:
-            attributes.append(attribute)
-
-    return attributes
-
-def getFakeRateConfigParameters(process):
-
-    frConfig = {}
-
-    frTypes = getPSetAttributes(process.bgEstFakeRateJetWeights.frTypes)
-
-    for frType in frTypes:
-        frConfig[frType] = {}
-        frConfig[frType]['srcJetWeight']   = cms.InputTag("bgEstFakeRateJetWeights",   frType)
-        frConfig[frType]['srcEventWeight'] = cms.InputTag("bgEstFakeRateEventWeights", frType)
-        frConfig[frType]['patLabel']       = "".join(["bgEstFakeRateJetWeight", "_", frType])
-
-        for shift in [ "SysTauIdEffUp", "SysTauIdEffDown" ]:
-            if hasattr(process, "bgEstFakeRateJetWeights" + shift):
-                frConfig[frType + shift] = {}
-                frConfig[frType + shift]['srcJetWeight']   = cms.InputTag("bgEstFakeRateJetWeights"   + shift, frType)
-                frConfig[frType + shift]['srcEventWeight'] = cms.InputTag("bgEstFakeRateEventWeights" + shift, frType)
-                frConfig[frType + shift]['patLabel']       = "".join(["bgEstFakeRateJetWeight", "_", frType + shift])
-
-    return frConfig
 
 #--------------------------------------------------------------------------------
 # auxiliary functions needed for reconfiguration of DQM file loader modules
@@ -267,12 +275,15 @@ def reconfigDQMFileLoader(dqmFileLoaderConfig, dqmDirectory):
 # to PAT production sequence (**not** channel specific)
 #--------------------------------------------------------------------------------
 
-def configureFakeRateWeightProduction(
-    process, method = None,
-    preselPFTauJetSource = 'hpsTancTaus', frSet = 'ewkTauIdTaNCmedium',
-    preselPatTauSource = 'selectedPatTausForMuTauLeadTrkPtCumulative',
-    addPatTauPreselection = "tauID('againstElectron') > 0.5 & tauID('againstMuon') > 0.5",
-    patTupleProdSequenceName = "producePatTupleZtoMuTauSpecific"):
+def enableFakeRatesImpl(process, method = None,
+                        preselPatTauSource = None, tauIds = None,
+                        patTupleProdSequenceName = None,
+                        analyzers = None, histManagers = [], tauCuts = None, diTauCuts = [],
+                        selTauByDiTauModuleType = None,
+                        frSet = 'ewkTauIdHPSloose', 
+                        recoTauProducerName = 'hpsPFTauProducer', recoTauPreselFlag = 'ewkTauId',
+                        patTauProducerName = 'patTaus',
+                        prePatProdSequenceName = "producePrePat"):
 
     # check validity of method parameter
     if method is None:
@@ -281,93 +292,11 @@ def configureFakeRateWeightProduction(
         if method != "simple" and method != "CDF":
             raise ValueError("Invalid method Parameter !!")
 
-    # produce fake-rates
-    frProdConfig = configureFakeRateProduction(process, preselPFTauJetSource, frSet)
-    process.producePrePat += process.tauFakeRates
+    print "selTauByDiTauModuleType", selTauByDiTauModuleType
 
-    # compute fake-rate weights
-    #
-    # NOTE: jet weights are computed for all (shrinking signal cone) reco::PFTaus,
-    #       but only those tau-jet candidates passing preselection on PAT level
-    #       must enter event weight computation !!
-    #
-    process.load("TauAnalysis.BgEstimationTools.fakeRateJetWeightProducer_cfi")
-    process.bgEstFakeRateJetWeights.frTypes = cms.PSet()
-    for frType, patLUT in frProdConfig.items():
-        pset = cms.PSet(
-            tauJetDiscriminators = cms.VPSet(cms.PSet(
-                tauJetIdEffSource = cms.InputTag(frProdConfig['ZTTsim']),
-            qcdJetFakeRateSource = cms.InputTag(patLUT),
-                tauJetDiscrSource = cms.InputTag('ewkTauId')
-            ))
-        )
-        setattr(process.bgEstFakeRateJetWeights.frTypes, frType, pset)
-    process.bgEstFakeRateJetWeights.allTauJetSource = cms.InputTag(preselPFTauJetSource)
-    process.bgEstFakeRateJetWeights.preselTauJetSource = cms.InputTag(preselPFTauJetSource)
-    process.bgEstFakeRateJetWeights.method = method
-    # Put a minPt on the taus so we don't get a ton of errors.
-    process.bgEstFakeRateJetWeights.minJetPt = 17.0
-    process.producePrePat += process.bgEstFakeRateJetWeights
-
-    # Build a preselected pat::Tau source
-    process.tausForFakeRateEventWeights = cms.EDFilter("PATTauSelector",
-        src = cms.InputTag(preselPatTauSource),
-        cut = cms.string(addPatTauPreselection),
-        filter = cms.bool(False)
-    )
-
-    # add jet weights computed for tau id. efficiency shifted up/down by 30%
-    if method == "CDF":
-        process.bgEstFakeRateJetWeightsSysTauIdEffUp = copy.deepcopy(process.bgEstFakeRateJetWeights)
-        process.bgEstFakeRateJetWeightsSysTauIdEffUp.shiftTauIdEff = cms.double(+0.30)
-        process.producePrePat += process.bgEstFakeRateJetWeightsSysTauIdEffUp
-
-        process.bgEstFakeRateJetWeightsSysTauIdEffDown = copy.deepcopy(process.bgEstFakeRateJetWeights)
-        process.bgEstFakeRateJetWeightsSysTauIdEffDown.shiftTauIdEff = cms.double(-0.30)
-        process.producePrePat += process.bgEstFakeRateJetWeightsSysTauIdEffDown
-
-    process.load("TauAnalysis.BgEstimationTools.fakeRateEventWeightProducer_cfi")
-    process.bgEstFakeRateEventWeights.allTauJetSource = cms.InputTag(preselPFTauJetSource)
-    process.bgEstFakeRateEventWeights.preselTauJetSource = cms.InputTag('tausForFakeRateEventWeights')
-    process.bgEstFakeRateEventWeights.method = method
-    process.bgEstFakeRateEventWeights.frTypes = process.bgEstFakeRateJetWeights.frTypes
-    process.produceFakeRateEventWeights = cms.Sequence(process.tausForFakeRateEventWeights + process.bgEstFakeRateEventWeights)
-    patTupleProdSequence = getattr(process, patTupleProdSequenceName)
-    patTupleProdSequence += process.produceFakeRateEventWeights
-
-    # add event weights for tau id. efficiency shifted up/down by 30%
-    for shift in [ "SysTauIdEffUp", "SysTauIdEffDown" ]:
-        if hasattr(process, "bgEstFakeRateJetWeights" + shift):
-            frEventWeightProducerModule = copy.deepcopy(process.bgEstFakeRateEventWeights)
-            frEventWeightProducerModule.shiftTauIdEff = \
-              getattr(process, "bgEstFakeRateJetWeights" + shift).shiftTauIdEff
-            frEventWeightProducerModuleName = "bgEstFakeRateEventWeights" + shift
-            setattr(process, frEventWeightProducerModuleName, frEventWeightProducerModule)
-            process.produceFakeRateEventWeights += frEventWeightProducerModule
-
-    # add fake-rates to pat::Tau
-    frConfigParameters = getFakeRateConfigParameters(process)
-    for frType, frConfig in frConfigParameters.items():
-        setattr(process.patTaus.efficiencies, frConfig['patLabel'], frConfig['srcJetWeight'])
-    process.patTaus.addEfficiencies = cms.bool(True)
-
-    return frProdConfig
-
-def enableFakeRatesImpl(process, method=None, analyzers=None,
-                        frSet = None, tau_ids=None,
-                        patTupleProdSeq = None):
-    # check validity of method parameter
-    if method is None:
-        raise ValueError("Undefined method Parameter !!")
-    else:
-        if method != "simple" and method != "CDF":
-            raise ValueError("Invalid method Parameter !!")
-
-    # compute fake-rate weights
-    frProdConfig = configureFakeRateWeightProduction(
-        process, method = method,
-        frSet = frSet,
-        patTupleProdSequenceName = patTupleProdSeq)
+    # compute fake-rates weights and add computed values to pat::Taus
+    configureFakeRateProductionPAT(process, recoTauProducerName, recoTauPreselFlag,
+                                   patTauProducerName, frSet, method, prePatProdSequenceName)
 
     # disable cuts on tau id. discriminators
     #
@@ -378,62 +307,69 @@ def enableFakeRatesImpl(process, method=None, analyzers=None,
     #       passing the lead. track finding and lead. track Pt discriminators
     #       to pass the track && ECAL isolation, 1||3 tracks in signal cone and charge = +/- 1 requirements as well
     #
-    for source, new_cut in tau_ids:
+    for source, new_cut in tauIds.items():
         print "FR method: Disabling tauID cut: %s --> %s for fake rate method" % (
             source, new_cut)
         changeCut(process, source, new_cut)
 
     # get list of fake-rates types to be processed
     frConfigParameters = getFakeRateConfigParameters(process)
-    bgEstFakeRateAnalysisSequence = None
 
     # Fill histograms only for events passing all event selection criteria
-    for analyzer in analyzers:
-        if not hasattr(process, analyzer):
-            print "FR method: Can't add fake rate to analysis sequence %s" % analyzer, \
-                    " it doesn't exist in the process!"
+    for genAnalyzerName in analyzers:
+        if not hasattr(process, genAnalyzerName):
+            print "FR method: Can't add fake rate to analysis sequence %s" % genAnalyzerName, \
+                  " it does not exist in the process !!"
             continue
-        analyzer_sequence = getattr(process, analyzer)
-        print "FR method: Removing extra plots for analyzer: %s" % analyzer
-        pruneAnalysisSequence(analyzer_sequence)
-        print "FR method: Disabling event dumps for analyzer: %s" % analyzer
-        disableEventDump(analyzer_sequence)
+        genAnalyzerModule = getattr(process, genAnalyzerName)
+        print "FR method: Removing extra plots for analyzer: %s" % genAnalyzerName
+        pruneAnalysisSequence(genAnalyzerModule)
+        print "FR method: Disabling event dumps"
+        if len(genAnalyzerModule.eventDumps):
+            disabledEventDump = copy.deepcopy(genAnalyzerModule.eventDumps[0])
+            disabledEventDump.output = cms.string("std::cout")
+            disabledEventDump.triggerConditions = cms.vstring()
+            genAnalyzerModule.eventDumps[0] = disabledEventDump
 
-        # duplicate analysis sequence:
-        #  1.) tau id. discriminators not applied
-        #  2.) events weighted by fake-rate
+        bgEstFakeRateAnalysisSequence = cms.Sequence()
+
+        # for each type of fake-rate weights given as function argument,
+        # duplicate analysis sequence with:
         #
-        # for each type of fake-rate weights given as function argument
-        # Note: special care is needed to avoid double-counting in case there is
-        # more than one (loosely selected) tau-jet candidate in the event when
-        # filling histograms that are sensitive to the tau-jet multiplicity
+        #  1.) tau id. discriminators not applied
+        #  2.) events weighted by fake-rate instead
+        #
+        # NOTE: special care is needed to avoid double-counting in case there is
+        #       more than one (loosely selected) tau-jet candidate in the event when
+        #       filling histograms that are sensitive to the tau-jet multiplicity
+        #
         for frType, frConfig in frConfigParameters.items():
             print "FR method: Building frType:", frType
             # check if factorization is enabled; if so, apply fake-rate event
             # weights to analysis paths without/with muon isolation, else apply
             # fake-rate event weights to "standard" analysis path
-            bgEstFakeRateAnalysisSequence = \
-              addFakeRateGenAnalyzerModule(
-                  process, analyzer_sequence,
-                  frType, frConfig, bgEstFakeRateAnalysisSequence)
+            addFakeRateGenAnalyzerModule(process, genAnalyzerModule, histManagers, tauCuts, diTauCuts, selTauByDiTauModuleType,
+                                         frType, frConfig, bgEstFakeRateAnalysisSequence)
 
-        # add analysis sequence: 1.) with tau id. discriminators not applied 2.)
-        # events **not** weighted by fake-rate (for the purpose of making
-        # control plots for the data sample from which contributions of
-        # individual background processes are estimated via the fake-rate
-        # technique)
+        # for the purpose of making control plots for the data sample
+        # selected in case no tau id. criteria are applied,
+        # add analysis sequence with:
+        #
+        #  1.) tau id. discriminators not applied
+        #  2.) events **not** weighted by fake-rate instead
+        #
         print "FR method: Adding unweighted sequence"
-        bgEstFakeRateAnalysisSequence = \
-          addGenAnalyzerModule(process, analyzer_sequence,
-                               "frUnweighted", bgEstFakeRateAnalysisSequence)
-        # if method is "simple", add one more analysis sequence:
+        addGenAnalyzerModule(process, genAnalyzerModule, "frUnweighted", bgEstFakeRateAnalysisSequence)
+
+        # in case method is "simple",
+        # add analysis sequence with:
+        #
         #  1.) with tau id. discriminators not applied
         #  2.) events weighted by tau id. efficiency
-        # (for the purpose of checking the tau id. efficiency values
-        #  which are used by the "CDF" method)
+        #
+        # for the purpose of checking the tau id. efficiency values
+        # which are used by the "CDF" method.
         if method == "simple":
-            # The extra frType is stored in an unused PSet in the jet fake rate
-            # weight producer
             process.bgEstFakeRateJetWeights.frTypes.tauIdEfficiency = cms.PSet(
                 tauJetDiscriminators = cms.VPSet(cms.PSet(
                     tauJetIdEffSource = cms.InputTag(frProdConfig['ZTTsim']),
@@ -441,22 +377,17 @@ def enableFakeRatesImpl(process, method=None, analyzers=None,
                     tauJetDiscrSource = cms.InputTag("ewkTauId")
                 ))
             )
-            process.bgEstFakeRateEventWeights.frTypes.tauIdEfficiency = \
-          process.bgEstFakeRateJetWeights.frTypes.tauIdEfficiency
             frConfig[frType] = {}
             frConfig[frType]['srcJetWeight']   = cms.InputTag("bgEstFakeRateJetWeights",   "tauIdEfficiency")
-            frConfig[frType]['srcEventWeight'] = cms.InputTag("bgEstFakeRateEventWeights", "tauIdEfficiency")
             frConfig[frType]['patLabel']       = "".join(["bgEstFakeRateJetWeight", "_", "tauIdEfficiency"])
             print "FR method: Using simple weights, adding ZTT eff"
-            bgEstFakeRateAnalysisSequence = \
-              addFakeRateGenAnalyzerModule(
-                  process, analyzer_sequence,
-                  "tauIdEfficiency", frConfig, bgEstFakeRateAnalysisSequence)
+            addFakeRateGenAnalyzerModule(process, genAnalyzerModule, histManagers, tauCuts, diTauCuts, selTauByDiTauModuleType,
+                                         "tauIdEfficiency", frConfig, bgEstFakeRateAnalysisSequence)
 
-        setattr(process, "bgEstFakeRateAnalysisSequence" + analyzer, cms.Sequence(bgEstFakeRateAnalysisSequence))
-        new_sequence = getattr(process, "bgEstFakeRateAnalysisSequence" + analyzer)
-        print "FR method: Replacing %s by the new sequence %s" % (analyzer, "bgEstFakeRateAnalysisSequence" + analyzer)
-        process.p.replace(analyzer_sequence, new_sequence)
+        bgEstFakeRateAnalysisSequenceName = "bgEstFakeRateAnalysisSequenceX%s" % genAnalyzerName
+        setattr(process, bgEstFakeRateAnalysisSequenceName, bgEstFakeRateAnalysisSequence)
+        print "FR method: Replacing %s by the new sequence %s" % (genAnalyzerName, bgEstFakeRateAnalysisSequenceName)
+        process.p.replace(genAnalyzerModule, bgEstFakeRateAnalysisSequence)
 
     # enable checking of fake-rates and tau id. efficiencies
     # with event weights in tau-jet histogram manager
@@ -476,22 +407,67 @@ def enableFakeRatesImpl(process, method=None, analyzers=None,
 
 _FAKE_RATE_CONFIGS = {
     'ZtoMuTau' : {
-        'patTupleProdSeq' : 'producePatTupleZtoMuTauSpecific',
+        'preselPatTauSource' : 'selectedPatTausForMuTauLeadTrkPtCumulative',
+        'tauIds' : {
+            "selectedPatTausForMuTauTaNCdiscr" : \
+              "tauID('leadingTrackFinding') > -1.",
+            "selectedPatTausForMuTauProng"     : \
+              "signalPFChargedHadrCands.size() > -1",
+            "selectedPatTausForMuTauCharge"    : \
+              "abs(charge) > -1",
+            "selectedMuTauPairsZeroCharge"     : \
+              "leg2.leadPFChargedHadrCand.isNonnull & (leg1.charge + leg2.leadPFChargedHadrCand.charge) = 0",
+        },
+        'patTupleProdSequenceName' : 'producePatTupleZtoMuTauSpecific',
         'analyzers' : [
-            "analyzeZtoMuTauEvents_factorizedWithoutMuonIsolation",
-            "analyzeZtoMuTauEvents_factorizedWithMuonIsolation",
-            "analyzeZtoMuTauEvents",
+            "analyzeZtoMuTauEventsOS_factorizedWithoutMuonIsolation",
+            "analyzeZtoMuTauEventsOS_factorizedWithMuonIsolation",
+            "analyzeZtoMuTauEventsOS",
+            "analyzeZtoMuTauEventsSS_factorizedWithoutMuonIsolation",
+            "analyzeZtoMuTauEventsSS_factorizedWithMuonIsolation",
+            "analyzeZtoMuTauEventsSS"
         ],
-        'tau_ids' : [
-            ("selectedPatTausForMuTauTaNCdiscr", "tauID('byTaNCloose') > -1.e+3"),
-            ("selectedPatTausForMuTauProng", "signalPFChargedHadrCands.size() > -1"),
-            ("selectedPatTausForMuTauCharge", "abs(charge) > -1"),
-            ("selectedMuTauPairsZeroCharge", "leg2.leadPFChargedHadrCand.isNonnull & (leg1.charge + leg2.leadPFChargedHadrCand.charge) = 0"),
+        'histManagers' : {
+            "tauHistManager" : "tauJetWeightSource",
+            "diTauCandidateZmumuHypothesisHistManagerForMuTau" : "lepton2WeightSource", 
+            "diTauCandidateHistManagerForMuTau" : "diTauLeg2WeightSource",
+            "diTauCandidateSVfitHistManagerForMuTau" : "diTauLeg2WeightSource"
+        },
+        'tauCuts' : [
+            'evtSelTauTaNCdiscr',
+            'evtSelTauProng',
+            'evtSelTauCharge',
+            'evtSelTauMuonVeto',
+            'evtSelTauElectronVeto'
+
         ],
-        'frSet' : 'ewkTauIdTaNCloose',
+        'diTauCuts' : [
+            'evtSelDiTauCandidateForMuTauAntiOverlapVeto',
+            'evtSelDiTauCandidateForMuTauMt1MET',
+            'evtSelDiTauCandidateForMuTauPzetaDiff',
+            'evtSelDiTauCandidateForMuTauZeroCharge',
+            'evtSelDiTauCandidateForMuTauNonZeroCharge'
+
+        ],
+        'selTauByDiTauModuleType' : 'PATLeptonByMuTauPairMatchSelector',
+        'frSet' : 'ewkTauIdHPSloose'
+        #'frSet' : 'ewkTauIdTaNCloose'
     },
     'AHtoMuTau' : {
-        'patTupleProdSeq' : 'producePatTupleAHtoMuTauSpecific',
+        'preselPatTauSource' : 'selectedPatTausForMuTauLeadTrkPtCumulative',
+        'tauIds' : {
+            "selectedPatTausForMuTauTaNCdiscr"            : \
+              "tauID('leadingTrackFinding') > -1.",
+            "selectedPatTausForMuTauProng"                : \
+              "signalPFChargedHadrCands.size() > -1",
+            "selectedPatTausForMuTauCharge"               : \
+              "abs(charge) > -1",
+            "selectedMuTauPairsForAHtoMuTauZeroCharge"    : \
+              "leg2.leadPFChargedHadrCand.isNonnull & (leg1.charge + leg2.leadPFChargedHadrCand.charge) = 0",
+            "selectedMuTauPairsForAHtoMuTauNonZeroCharge" : \
+              "leg2.leadPFChargedHadrCand.isNonnull & (leg1.charge + leg2.leadPFChargedHadrCand.charge) != 0"
+        },
+        'patTupleProdSequenceName' : 'producePatTupleAHtoMuTauSpecific',
         'analyzers' : [
             "analyzeAHtoMuTauEventsOS_woBtag_factorizedWithoutMuonIsolation",
             "analyzeAHtoMuTauEventsOS_woBtag_factorizedWithMuonIsolation",
@@ -504,181 +480,37 @@ _FAKE_RATE_CONFIGS = {
             "analyzeAHtoMuTauEventsSS_woBtag",
             "analyzeAHtoMuTauEventsSS_wBtag_factorizedWithoutMuonIsolation",
             "analyzeAHtoMuTauEventsSS_wBtag_factorizedWithMuonIsolation",
-            "analyzeAHtoMuTauEventsSS_wBtag",
+            "analyzeAHtoMuTauEventsSS_wBtag"
         ],
-        'tau_ids' : [
-            ("selectedPatTausForMuTauTaNCdiscr", "tauID('byTaNCloose') > -1.e+3"),
-            ("selectedPatTausForMuTauProng", "signalPFChargedHadrCands.size() > -1"),
-            ("selectedPatTausForMuTauCharge", "abs(charge) > -1"),
-            ("selectedMuTauPairsForAHtoMuTauZeroCharge", "leg2.leadPFChargedHadrCand.isNonnull & (leg1.charge + leg2.leadPFChargedHadrCand.charge) = 0"),
-            ("selectedMuTauPairsForAHtoMuTauNonZeroCharge", "leg2.leadPFChargedHadrCand.isNonnull & (leg1.charge + leg2.leadPFChargedHadrCand.charge) != 0"),
+        'histManagers' : {
+            "tauHistManager" : "tauJetWeightSource",
+            "diTauCandidateZmumuHypothesisHistManagerForMuTau" : "lepton2WeightSource", 
+            "diTauCandidateHistManagerForMuTau" : "diTauLeg2WeightSource",
+            "diTauCandidateSVfitHistManagerForMuTau" : "diTauLeg2WeightSource"
+        },
+        'tauCuts' : [
+            'evtSelTauTaNCdiscr',
+            'evtSelTauProng',
+            'evtSelTauCharge',
+            'evtSelTauMuonVeto',
+            'evtSelTauElectronVeto'
+
         ],
-        #'frSet' : 'ewkTauIdHPSloose',
-        'frSet' : 'ewkTauIdTaNCloose',
+        'diTauCuts' : [
+            'evtSelDiTauCandidateForAHtoMuTauAntiOverlapVeto',
+            'evtSelDiTauCandidateForAHtoMuTauMt1MET',
+            'evtSelDiTauCandidateForAHtoMuTauPzetaDiff',
+            'evtSelDiTauCandidateForAHtoMuTauZeroCharge',
+            'evtSelDiTauCandidateForAHtoMuTauNonZeroCharge'
+
+        ],
+        'selTauByDiTauModuleType' : 'PATLeptonByMuTauPairMatchSelector',
+        'frSet' : 'ewkTauIdHPSloose'
+        #'frSet' : 'ewkTauIdTaNCloose'
     }
 }
 
 def enableFakeRates(process, channel, method = None):
     print channel
+    print _FAKE_RATE_CONFIGS[channel]
     enableFakeRatesImpl(process, method, **_FAKE_RATE_CONFIGS[channel])
-
-def enableFakeRates_makeZtoMuTauPlots(process, enableFactorization = True):
-
-    # get list of fake-rates types to be processed
-    process.load("TauAnalysis.BgEstimationTools.fakeRateJetWeightProducer_cfi")
-    frTypes = getPSetAttributes(process.bgEstFakeRateJetWeights.frTypes)
-    frTypes.append("frUnweighted")
-
-    seq_isFirstModule = True
-
-    for frType in frTypes:
-
-        mod_addZtoMuTau_qcdSum = copy.deepcopy(process.addBgEstFakeRateZtoMuTau_qcdSum_tauFakeRate)
-        modInputDir_addZtoMuTau_qcdSum = cms.vstring(
-            "".join(['tauFakeRate/harvested/InclusivePPmuX/zMuTauAnalyzer', '_fr_', frType]),
-            "".join(['tauFakeRate/harvested/PPmuXptGt20/zMuTauAnalyzer', '_fr_', frType])
-        )
-        setattr(mod_addZtoMuTau_qcdSum.qcdSum, "dqmDirectories_input", modInputDir_addZtoMuTau_qcdSum)
-        modOutputDir_addZtoMuTau_qcdSum = cms.string("".join(['tauFakeRate/harvested/qcdSum/zMuTauAnalyzer', '_fr_', frType]))
-        setattr(mod_addZtoMuTau_qcdSum.qcdSum, "dqmDirectory_output", modOutputDir_addZtoMuTau_qcdSum)
-        modName_addZtoMuTau_qcdSum = "".join(["addBgEstFakeRateZtoMuTau_qcdSum_tauFakeRate", "_", frType])
-        setattr(process, modName_addZtoMuTau_qcdSum, mod_addZtoMuTau_qcdSum)
-
-        seq_addZtoMuTau = cms.Sequence(getattr(process, modName_addZtoMuTau_qcdSum))
-
-        modName_addZtoMuTau_smBgSum = "undefined"
-        if hasattr(process, "addBgEstFakeRateZtoMuTau_smBgSum_tauFakeRate"):
-            mod_addZtoMuTau_smBgSum = copy.deepcopy(process.addBgEstFakeRateZtoMuTau_smBgSum_tauFakeRate)
-            modInputDir_addZtoMuTau_smBgSum = cms.vstring(
-                "".join(['tauFakeRate/harvested/Zmumu/zMuTauAnalyzer', '_fr_', frType]),
-                "".join(['tauFakeRate/harvested/WplusJets/zMuTauAnalyzer', '_fr_', frType]),
-                "".join(['tauFakeRate/harvested/TTplusJets/zMuTauAnalyzer', '_fr_', frType]),
-                "".join(['tauFakeRate/harvested/qcdSum/zMuTauAnalyzer', '_fr_', frType])
-            )
-            setattr(mod_addZtoMuTau_smBgSum.smBgSum, "dqmDirectories_input", modInputDir_addZtoMuTau_smBgSum)
-            modOutputDir_addZtoMuTau_smBgSum = cms.string("".join(['tauFakeRate/harvested/smBgSum/zMuTauAnalyzer', '_fr_', frType]))
-            setattr(mod_addZtoMuTau_smBgSum.smBgSum, "dqmDirectory_output", modOutputDir_addZtoMuTau_smBgSum)
-            modName_addZtoMuTau_smBgSum = "".join(["addBgEstFakeRateZtoMuTau_smBgSum_tauFakeRate", "_", frType])
-            setattr(process, modName_addZtoMuTau_smBgSum, mod_addZtoMuTau_smBgSum)
-
-            seq_addZtoMuTau._seq = seq_addZtoMuTau._seq * getattr(process, modName_addZtoMuTau_smBgSum)
-
-        modName_addZtoMuTau_smSum = "undefined"
-        if hasattr(process, "addBgEstFakeRateZtoMuTau_smSum_tauFakeRate"):
-            mod_addZtoMuTau_smSum = copy.deepcopy(process.addBgEstFakeRateZtoMuTau_smSum_tauFakeRate)
-            modInputDir_addZtoMuTau_smSum = cms.vstring(
-                "".join(['tauFakeRate/harvested/Ztautau/zMuTauAnalyzer', '_fr_', frType]),
-                "".join(['tauFakeRate/harvested/smBgSum/zMuTauAnalyzer', '_fr_', frType])
-            )
-            setattr(mod_addZtoMuTau_smSum.smSum, "dqmDirectories_input", modInputDir_addZtoMuTau_smSum)
-            modOutputDir_addZtoMuTau_smSum = cms.string("".join(['tauFakeRate/harvested/smSum/zMuTauAnalyzer', '_fr_', frType]))
-            setattr(mod_addZtoMuTau_smSum.smSum, "dqmDirectory_output", modOutputDir_addZtoMuTau_smSum)
-            modName_addZtoMuTau_smSum = "".join(["addBgEstFakeRateZtoMuTau_smSum_tauFakeRate", "_", frType])
-            setattr(process, modName_addZtoMuTau_smSum, mod_addZtoMuTau_smSum)
-
-            seq_addZtoMuTau._seq = seq_addZtoMuTau._seq * getattr(process, modName_addZtoMuTau_smSum)
-
-        seqName_addZtoMuTau = "".join(["addBgEstFakeRateZtoMuTau_tauFakeRate", "_", frType])
-        setattr(process, seqName_addZtoMuTau, seq_addZtoMuTau)
-
-        ##if enableFactorization:
-        ##    enableFactorization_makeZtoMuTauPlots_grid(process,
-        ##      dqmDirectoryIn_InclusivePPmuX = \
-        ##        "".join(['tauFakeRate/harvested/InclusivePPmuX/zMuTauAnalyzer', '_fr_', frType]),
-        ##      dqmDirectoryOut_InclusivePPmuX = \
-        ##        "".join(['tauFakeRate/harvested/InclusivePPmuX_factorized/zMuTauAnalyzer', '_fr_', frType]),
-        ##      dqmDirectoryIn_PPmuXptGt20 = \
-        ##        "".join(['tauFakeRate/harvested/PPmuXptGt20/zMuTauAnalyzer', '_fr_', frType]),
-        ##      dqmDirectoryOut_PPmuXptGt20 = \
-        ##        "".join(['tauFakeRate/harvested/PPmuXptGt20_factorized/zMuTauAnalyzer', '_fr_', frType]),
-        ##      modName_addZtoMuTau_qcdSum = modName_addZtoMuTau_qcdSum,
-        ##      modName_addZtoMuTau_smBgSum = modName_addZtoMuTau_smBgSum,
-        ##      modName_addZtoMuTau_smSum = modName_addZtoMuTau_smSum,
-        ##      seqName_addZtoMuTau = seqName_addZtoMuTau,
-        ##      pyObjectLabel = frType)
-
-        if seq_isFirstModule:
-            setattr(process, "addBgEstFakeRateZtoMuTau_tauFakeRate", cms.Sequence(getattr(process, seqName_addZtoMuTau)))
-            seq_isFirstModule = False
-        else:
-            process.addBgEstFakeRateZtoMuTau_tauFakeRate._seq = \
-              process.addBgEstFakeRateZtoMuTau_tauFakeRate._seq * getattr(process, seqName_addZtoMuTau)
-
-#--------------------------------------------------------------------------------
-# utility functions specific to application of fake-rate weights
-# to tau id. efficiency measurement analysis
-#--------------------------------------------------------------------------------
-
-def enableFakeRates_runTauIdEffAnalysisZtoMuTau(process):
-
-    method = "simple"
-
-    # compute fake-rate weights
-    configureFakeRateWeightProduction(process, method = method)
-
-    # enable checking of fake-rates and tau id. efficiencies
-    # with event weights in tau-jet histogram manager
-    setattr(process.tauHistManager, "checkWeightConsistency", cms.bool(True))
-
-    # get list of fake-rates types to be processed
-    frTypes = getPSetAttributes(process.bgEstFakeRateJetWeights.frTypes)
-
-    fakeRateAnalysisSequence = None
-
-    # duplicate analysis sequence:
-    #  1.) tau id. discriminators not applied
-    #  2.) events weighted by fake-rate
-    # for each type of fake-rate weights given as function argument
-    #
-    # Note: special care is needed to avoid double-counting
-    #       in case there is more than one (loosely selected) tau-jet candidate in the event
-    #       when filling histograms that are sensitive to the tau-jet multiplicity
-    #
-    for frType in frTypes:
-        fakeRateAnalysisSequence = \
-          addFakeRateGenAnalyzerModule(process, process.analyzeEventsTauIdEffZtoMuTauCombinedFit,
-                                       frType, fakeRateAnalysisSequence)
-
-    setattr(process, "fakeRateAnalysisSequence", cms.Sequence(fakeRateAnalysisSequence))
-
-    process.bgEstTauIdEffZtoMuTauCombinedFitAnalysisSequence._seq = \
-      process.bgEstTauIdEffZtoMuTauCombinedFitAnalysisSequence._seq * process.fakeRateAnalysisSequence
-
-def enableFakeRates_makeTauIdEffZtoMuTauPlots(process):
-
-    # get list of fake-rates types to be processed
-    process.load("TauAnalysis.BgEstimationTools.fakeRateJetWeightProducer_cfi")
-    frTypes = getPSetAttributes(process.bgEstFakeRateJetWeights.frTypes)
-
-    for frType in frTypes:
-
-        mod_addZtoMuTau_qcdSum = copy.deepcopy(process.addTauIdEffZtoMuTau_qcdSum)
-        modInputDir_addZtoMuTau_qcdSum = cms.vstring(
-            "".join(['harvested/InclusivePPmuX/TauIdEffAnalyzerZtoMuTauCombinedFit', '_fr_', frType]),
-            "".join(['harvested/PPmuXptGt20/TauIdEffAnalyzerZtoMuTauCombinedFit', '_fr_', frType])
-        )
-        setattr(mod_addZtoMuTau_qcdSum.qcdSum, "dqmDirectories_input", modInputDir_addZtoMuTau_qcdSum)
-        modOutputDir_addZtoMuTau_qcdSum = \
-          cms.string("".join(['tauFakeRate/harvested/qcdSum/TauIdEffAnalyzerZtoMuTauCombinedFit', '_fr_', frType]))
-        setattr(mod_addZtoMuTau_qcdSum.qcdSum, "dqmDirectory_output", modOutputDir_addZtoMuTau_qcdSum)
-        modName_addZtoMuTau_qcdSum = "".join(["addTauIdEffZtoMuTau_qcdSum", "_", frType])
-        setattr(process, modName_addZtoMuTau_qcdSum, mod_addZtoMuTau_qcdSum)
-
-        process.addTauIdEffZtoMuTau._seq = process.addTauIdEffZtoMuTau._seq * mod_addZtoMuTau_qcdSum
-
-        mod_addZtoMuTau_smSum = copy.deepcopy(process.addTauIdEffZtoMuTau_smSum)
-        modInputDir_addZtoMuTau_smSum = cms.vstring(
-            "".join(['harvested/Ztautau/TauIdEffAnalyzerZtoMuTauCombinedFit', '_fr_', frType]),
-            "".join(['harvested/Zmumu/TauIdEffAnalyzerZtoMuTauCombinedFit', '_fr_', frType]),
-            "".join(['harvested/WplusJets/TauIdEffAnalyzerZtoMuTauCombinedFit', '_fr_', frType]),
-            "".join(['harvested/TTplusJets/TauIdEffAnalyzerZtoMuTauCombinedFit', '_fr_', frType]),
-            "".join(['harvested/qcdSum/TauIdEffAnalyzerZtoMuTauCombinedFit', '_fr_', frType])
-        )
-        setattr(mod_addZtoMuTau_smSum.smSum, "dqmDirectories_input", modInputDir_addZtoMuTau_smSum)
-        modOutputDir_addZtoMuTau_smSum = \
-          cms.string("".join(['tauFakeRate/harvested/smSum/TauIdEffAnalyzerZtoMuTauCombinedFit', '_fr_', frType]))
-        setattr(mod_addZtoMuTau_smSum.smSum, "dqmDirectory_output", modOutputDir_addZtoMuTau_smSum)
-        modName_addZtoMuTau_smSum = "".join(["addTauIdEffZtoMuTau_smSum", "_", frType])
-        setattr(process, modName_addZtoMuTau_smSum, mod_addZtoMuTau_smSum)
-
-        process.addTauIdEffZtoMuTau._seq = process.addTauIdEffZtoMuTau._seq * mod_addZtoMuTau_smSum
