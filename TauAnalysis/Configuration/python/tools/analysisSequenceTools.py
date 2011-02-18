@@ -134,6 +134,13 @@ def replaceAnalyzerTitles(analysisSequence, replacements):
                 if str(entries_orig) == str(replacement_orig):
                    setattr(pset, 'title', replacement_mod)
 
+def setAnalyzerParameter(genAnalyzerModule, pluginName, parameterName, parameterValue):
+    for analyzerPlugin in genAnalyzerModule.analyzers:
+        if hasattr(analyzerPlugin, "pluginName"):
+            analyzerPluginName = getattr(analyzerPlugin, "pluginName").value()
+            if analyzerPluginName == pluginName:
+                setattr(analyzerPlugin, parameterName, parameterValue)
+
 def removeAnalyzer(analysisSequence, analyzerName):
     # remove all analyzers with name given as function argument from analysisSequence object
     
@@ -145,3 +152,46 @@ def removeAnalyzer(analysisSequence, analyzerName):
                 analyzers.remove(analyzerName)
                 if len(analyzers) == 0:
                     analysisSequence.remove(pset)
+                    
+def pruneAnalysisSequence(genAnalyzerModule):
+    # disable filling of histograms after all stages of the event selection
+    # except for the last occurence (after all cuts have been applied)
+
+    lastEntry = {}
+    for iAnalysisSequenceEntry in range(len(genAnalyzerModule.analysisSequence)):
+        analysisSequenceEntry = genAnalyzerModule.analysisSequence[iAnalysisSequenceEntry]
+        if hasattr(analysisSequenceEntry, "analyzers"):
+            analyzerPlugins = getattr(analysisSequenceEntry, "analyzers")
+            for analyzerPlugin in analyzerPlugins:
+                analyzerPluginName = analyzerPlugin
+                lastEntry[analyzerPluginName] = iAnalysisSequenceEntry
+
+    prunedAnalysisSequence = []
+    for iAnalysisSequenceEntry in range(len(genAnalyzerModule.analysisSequence)):
+        analysisSequenceEntry = genAnalyzerModule.analysisSequence[iAnalysisSequenceEntry]
+        if hasattr(analysisSequenceEntry, "analyzers"):
+            # keep analyzer entry only in case it contains at least one histogram manager
+            # not filled at a later stage of the event selection
+
+            keepAnalyzers = []
+            for lastEntryKey, lastEntryValue in lastEntry.items():
+                if lastEntryValue == iAnalysisSequenceEntry:
+                    keepAnalyzers.append(lastEntryKey)
+
+            if len(keepAnalyzers) > 0:
+                # keep analysis sequence entry, but fill only histograms
+                # which are not filled at a later stage of the event selection
+                analysisSequenceEntry.analyzers = cms.vstring(keepAnalyzers)
+
+                # in all cases, disable storing run and events numbers
+                setattr(genAnalyzerModule.analysisSequence[iAnalysisSequenceEntry], "saveRunLumiSectionEventNumbers", cms.vstring())
+
+                prunedAnalysisSequence.append(analysisSequenceEntry)
+        else:
+            # keep all filter entries,
+            # but disable saving of run and event numbers of events passing filter
+            setattr(analysisSequenceEntry, "saveRunLumiSectionEventNumbers", cms.vstring(''))
+            prunedAnalysisSequence.append(analysisSequenceEntry)
+
+    genAnalyzerModule.analysisSequence = cms.VPSet(prunedAnalysisSequence)
+
