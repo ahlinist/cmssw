@@ -6,6 +6,8 @@
 
 #include "DataFormats/Common/interface/Handle.h"
 #include "DataFormats/HepMCCandidate/interface/GenParticle.h"
+#include "DataFormats/ParticleFlowCandidate/interface/PFCandidate.h"
+#include "DataFormats/ParticleFlowCandidate/interface/PFCandidateFwd.h"
 #include "DataFormats/PatCandidates/interface/Muon.h"
 
 #include "TauAnalysis/Core/interface/eventDumpAuxFunctions.h"
@@ -17,16 +19,23 @@
 PATMuonDump::PATMuonDump(const edm::ParameterSet& cfg)
   : ObjectDumpBase(cfg),
     patMuonSource_(cfg.getParameter<edm::InputTag>("muonSource")),
-    genParticleSource_(cfg.getParameter<edm::InputTag>("genParticleSource"))
+    genParticleSource_(cfg.getParameter<edm::InputTag>("genParticleSource")),
+    pfIsolationExtractor_(0)
 {
   typedef std::vector<int> vint;
   skipPdgIdsGenParticleMatch_ = ( cfg.exists("skipPdgIdsGenParticleMatch") ) ?
     cfg.getParameter<vint>("skipPdgIdsGenParticleMatch") : vint();
+
+  if ( cfg.exists("muonPFIsoExtractor") ) {
+    edm::ParameterSet cfgPFIsolationExtractor = cfg.getParameter<edm::ParameterSet>("muonPFIsoExtractor");
+    pfIsolationExtractor_ = new ParticlePFIsolationExtractor<pat::Muon>(cfgPFIsolationExtractor);
+    pfIsoCandSource_ = cfg.getParameter<edm::InputTag>("muonPFIsoCandSource");
+  }
 }
 
 PATMuonDump::~PATMuonDump()
 {
-//--- nothing to be done yet...
+  delete pfIsolationExtractor_;
 }
 
 void PATMuonDump::print(const edm::Event& evt, const edm::EventSetup& es) const
@@ -74,6 +83,11 @@ void PATMuonDump::print(const edm::Event& evt, const edm::EventSetup& es) const
     *outputStream_ << " caloIso = " << patMuon->caloIso() << std::endl;
     *outputStream_ << " ecalIso = " << patMuon->ecalIso() << std::endl;
     *outputStream_ << " hcalIso = " << patMuon->hcalIso() << std::endl;
+    if ( pfIsolationExtractor_ ) {
+      edm::Handle<reco::PFCandidateCollection> pfCandidates;
+      evt.getByLabel(pfIsoCandSource_, pfCandidates);
+      *outputStream_ << " pfIso = " << (*pfIsolationExtractor_)(*patMuon, *pfCandidates) << std::endl;
+    }
     *outputStream_ << " vertex" << std::endl;
     printVertexInfo(patMuon->vertex(), outputStream_);
     if ( isValidRef(patMuon->track()) ) *outputStream_ << " dIP = " << patMuon->track()->dxy(patMuon->vertex()) << std::endl;
