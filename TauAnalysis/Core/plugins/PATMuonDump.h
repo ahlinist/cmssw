@@ -8,9 +8,9 @@
  * 
  * \author Christian Veelken, UC Davis
  *
- * \version $Revision: 1.12 $
+ * \version $Revision: 1.1 $
  *
- * $Id: PATMuonDump.h,v 1.12 2010/02/05 14:05:30 veelken Exp $
+ * $Id: PATMuonDump.h,v 1.1 2010/02/12 17:18:02 veelken Exp $
  *
  */
 
@@ -20,9 +20,10 @@
 #include "FWCore/Utilities/interface/InputTag.h"
 
 #include "DataFormats/PatCandidates/interface/Muon.h"
-#include "DataFormats/PatCandidates/interface/Tau.h"
 
 #include "TauAnalysis/Core/interface/ObjectDumpBase.h"
+
+#include "TauAnalysis/RecoTools/interface/ParticlePFIsolationExtractor.h"
 
 class PATMuonDump : public ObjectDumpBase
 {
@@ -38,6 +39,9 @@ class PATMuonDump : public ObjectDumpBase
   edm::InputTag genParticleSource_;
 
   std::vector<int> skipPdgIdsGenParticleMatch_;
+
+  ParticlePFIsolationExtractor<pat::Muon>* pfIsolationExtractor_; 
+  edm::InputTag pfIsoCandSource_;
 };
 
 #endif  
