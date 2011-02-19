@@ -9,6 +9,7 @@
 
 #include "AnalysisDataFormats/TauAnalysis/interface/CompositePtrCandidateTMEt.h"
 #include "AnalysisDataFormats/TauAnalysis/interface/CompositePtrCandidateTMEtFwd.h"
+#include "AnalysisDataFormats/TauAnalysis/interface/SVfitWtauNuSolution.h"
 
 #include "AnalysisDataFormats/TauAnalysis/interface/PATLeptonRecoilEnergy.h"
 #include "AnalysisDataFormats/TauAnalysis/interface/PATLeptonRecoilEnergyFwd.h"
@@ -76,6 +77,10 @@ namespace {
     std::map<std::string, std::map<std::string, double> > dummySVfitDiTauSolutionLogLikeMapMap;
     std::map<std::string, SVfitDiTauSolution> dummySVfitDiTauSolutionMap;
     std::map<std::string, std::map<std::string, SVfitDiTauSolution> > dummySVfitDiTauSolutionMapMap;
+    SVfitWtauNuSolution dummySVfitWtauNuSolution;
+    std::vector<SVfitWtauNuSolution> dummySVfitWtauNuSolutionCollection;
+    std::map<std::string, SVfitWtauNuSolution> dummySVfitWtauNuSolutionMap;
+    std::map<std::string, std::map<std::string, SVfitWtauNuSolution> > dummySVfitWtauNuSolutionMapMap;
 
     /// create dictionaries for PATDiElecPair objects
     PATDiElecPair dummyPATDiElecPair;
