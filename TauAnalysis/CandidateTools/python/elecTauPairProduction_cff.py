@@ -15,8 +15,8 @@ svFitLikelihoodElecTauPairKinematicsPolarized.pluginType = "SVfitLikelihoodElecT
 svFitLikelihoodElecTauPairKinematicsPolarized.leg1.pluginType = "SVfitMuonLikelihoodPolarization"
 svFitLikelihoodElecTauPairKinematicsPolarized.leg2.pluginType = "SVfitTauLikelihoodPolarization"
 
-svFitLikelihoodElecTauPairMEt = copy.deepcopy(svFitLikelihoodMEt)
-svFitLikelihoodElecTauPairMEt.pluginType = cms.string("SVfitLikelihoodMEtElecTau")
+svFitLikelihoodElecTauPairMEt = copy.deepcopy(svFitLikelihoodDiTauMEt)
+svFitLikelihoodElecTauPairMEt.pluginType = cms.string("SVfitLikelihoodElecTauPairMEt")
 
 svFitLikelihoodElecTauPairTrackInfo = copy.deepcopy(svFitLikelihoodTrackInfo)
 svFitLikelihoodElecTauPairTrackInfo.pluginType = "SVfitLikelihoodElecTauPairTrackInfo"

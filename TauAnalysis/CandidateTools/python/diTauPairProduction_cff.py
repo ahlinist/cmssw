@@ -13,8 +13,8 @@ svFitLikelihoodDiTauPairKinematicsPolarized.pluginType = "SVfitLikelihoodDiTauPa
 svFitLikelihoodDiTauPairKinematicsPolarized.leg2.pluginType = "SVfitTauLikelihoodPolarization"
 svFitLikelihoodDiTauPairKinematicsPolarized.leg1 = svFitLikelihoodDiTauPairKinematicsPolarized.leg2
 
-svFitLikelihoodDiTauPairMEt = copy.deepcopy(svFitLikelihoodMEt)
-svFitLikelihoodDiTauPairMEt.pluginType = cms.string("SVfitLikelihoodMEtDiTau")
+svFitLikelihoodDiTauPairMEt = copy.deepcopy(svFitLikelihoodDiTauMEt)
+svFitLikelihoodDiTauPairMEt.pluginType = cms.string("SVfitLikelihoodDiTauPairMEt")
 
 svFitLikelihoodDiTauPairPtBalance = copy.deepcopy(svFitLikelihoodDiTauPtBalance)
 svFitLikelihoodDiTauPairPtBalance.pluginType = cms.string("SVfitLikelihoodDiTauPairPtBalance")
