@@ -214,6 +214,12 @@ void countDecayProducts(const reco::GenParticle* genParticle,
     else if ( absPdgId == 12 ) ++numElecNeutrinos;
     else if ( absPdgId == 13 ) ++numMuons;
     else if ( absPdgId == 14 ) ++numMuNeutrinos;
+    else if ( absPdgId == 15 ) { 
+      edm::LogError ("countDecayProducts")
+        << "Found tau lepton with status code 1 !!";
+      return; 
+    }
+    else if ( absPdgId == 16 ) return; // no need to count tau neutrinos
     else if ( absPdgId == 22 ) ++numPhotons;
     else if ( charge   !=  0 ) ++numChargedHadrons;
     else                       ++numOtherNeutralHadrons;
