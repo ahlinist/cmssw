@@ -8,8 +8,8 @@ svFitLikelihoodElecMuPairKinematicsPhaseSpace.pluginType = "SVfitLikelihoodElecM
 svFitLikelihoodElecMuPairKinematicsPhaseSpace.leg1.pluginType = "SVfitElectronLikelihoodPhaseSpace"
 svFitLikelihoodElecMuPairKinematicsPhaseSpace.leg2.pluginType = "SVfitMuonLikelihoodPhaseSpace"
 
-svFitLikelihoodElecMuPairMEt = copy.deepcopy(svFitLikelihoodMEt)
-svFitLikelihoodElecMuPairMEt.pluginType = cms.string("SVfitLikelihoodMEtElecMu")
+svFitLikelihoodElecMuPairMEt = copy.deepcopy(svFitLikelihoodDiTauMEt)
+svFitLikelihoodElecMuPairMEt.pluginType = cms.string("SVfitLikelihoodElecMuPairMEt")
 
 svFitLikelihoodElecMuPairTrackInfo = copy.deepcopy(svFitLikelihoodTrackInfo)
 svFitLikelihoodElecMuPairTrackInfo.pluginType = "SVfitLikelihoodElecMuPairTrackInfo"
