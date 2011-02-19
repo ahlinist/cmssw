@@ -11,11 +11,11 @@ plots_WtoTauNu = cms.PSet(
         dqmMonitorElements = cms.vstring(''),
         processes = cms.vstring(
             'data',
-            'ZplusJets',
+#            'ZplusJets',
 #            'Wmunu',
-            'Wenu',
-            'qcd_W',   
-            'Wtaunu',
+#            'Wenu',
+#            'qcd_W',   
+#            'Wtaunu',
             )
     ),
     xAxis = cms.string('unlabeled'),
@@ -25,11 +25,11 @@ plots_WtoTauNu = cms.PSet(
     labels = cms.vstring('mcNormScale'),                   
     drawOptionSet = cms.string('default'),
     stack = cms.vstring(
-        'ZplusJets',
+#        'ZplusJets',
  #       'Wmunu',
-        'Wenu',
-        'qcd_W',                
-        'Wtaunu',
+ #       'Wenu',
+ #       'qcd_W',                
+ #       'Wtaunu',
         )
     )
 
@@ -133,13 +133,7 @@ drawJobConfigurator_WtoTauNu.add(
     afterCut = evtSelPFMetPt,
     beforeCut = evtSelMetPt,
     plots = [
-        drawJobConfigEntry(
-            meName = 'CaloMEtQuantities/RAW_MEtPt',
-            title = "calo-MET (after PF-MET cut)",
-            xAxis = 'Pt',
-            name = "cutFlowControlPlots_MET_afterPFMETcut"
-            ),
-        drawJobConfigEntry(
+          drawJobConfigEntry(
             meName = 'TauQuantities/Tau#PAR#',
             PAR = [ 'Pt', 'Eta', 'Phi' ],
             title = "Tau (after PF-MET cut)",
@@ -163,12 +157,6 @@ drawJobConfigurator_WtoTauNu.add(
             title = "met-topology (after PF-MET cut)",
             xAxis = 'prob',
             name = "cutFlowControlPlots_MetTopology_afterPFMETcut"
-            ),
-        drawJobConfigEntry(
-            meName = 'TauRecoilEnergyFromCaloTowersQuantities/EtSum',
-            title = "tau recoil energy from calo towers (after PF-MET cut)",
-            xAxis = 'Pt',
-            name = "cutFlowControlPlots_TauRecoilEnergyFromCaloTowers_afterPFMETcut"
             ),
         drawJobConfigEntry(
             meName = 'TauNuCandidateQuantities/NuTauCandidateMt',
@@ -195,12 +183,6 @@ drawJobConfigurator_WtoTauNu.add(
     afterCut = evtSelTauCharge,
     beforeCut = evtSelTauMuonVeto,
     plots = [
-        drawJobConfigEntry(
-            meName = 'CaloMEtQuantities/RAW_MEtPt',
-            title = "calo-MET (after tau charge cut)",
-            xAxis = 'Pt',
-            name = "cutFlowControlPlots_MET_afterTauChargecut"
-            ),
         drawJobConfigEntry(
             meName = 'TauQuantities/Tau#PAR#',
             PAR = [ 'Pt', 'Eta', 'Phi' ],
@@ -260,8 +242,8 @@ drawJobConfigurator_WtoTauNu.add(
     )
 
 drawJobConfigurator_WtoTauNu.add(
-    afterCut = evtSelMetTopology,
-    beforeCut = evtSelCentralJetVeto,
+    afterCut = evtSelRecoilEnergyFromCaloTowers,
+    beforeCut = evtSelMetTopology,
     plots = [
         drawJobConfigEntry(
             meName = 'TauQuantities/Tau#PAR#',
@@ -311,13 +293,7 @@ drawJobConfigurator_WtoTauNu.add(
             title = "#Delta #Phi (after Met topology cut)",
             xAxis = 'Phi',
             name = "cutFlowControlPlots_NuTauCandidateDPhi_afterMetTopology"
-            ),
-        drawJobConfigEntry(
-            meName = 'CaloMEtQuantities/RAW_MEtSignificance',
-            title = "MET significance (after Met topology cut)",
-            xAxis = 'Pt',
-            name = "cutFlowControlPlots_MEtSignificance_afterMetTopology"
-            )        
+            )
         ]
     )
 
@@ -344,12 +320,6 @@ drawJobConfigurator_WtoTauNu.add(
             xAxis = 'unlabeled',
             name = "cutFlowControlPlots_tauNumTracksSignalCone_afterJetVeto"
             ),
-        drawJobConfigEntry(
-            meName = 'CaloMEtQuantities/RAW_MEtPt',
-            title = "calo-MET (after jet veto cut)",
-            xAxis = 'Pt',
-            name = "cutFlowControlPlots_MET_afterJetVeto"
-            ), 
         drawJobConfigEntry(
             meName = 'PFMEtQuantities/MEtPt',
             title = "PFMET (after jet veto cut)",
@@ -379,13 +349,7 @@ drawJobConfigurator_WtoTauNu.add(
             title = "#Delta #Phi (after jet veto cut)",
             xAxis = 'Phi',
             name = "cutFlowControlPlots_NuTauCandidateDPhi_afterJetVeto"
-            ),
-        drawJobConfigEntry(
-            meName = 'CaloMEtQuantities/RAW_MEtSignificance',
-            title = "MET significance (after jet veto cut)",
-            xAxis = 'Pt',
-            name = "cutFlowControlPlots_MEtSignificance_afterJetVeto"
-            )        
+            )
         ]
     )
 
@@ -394,8 +358,7 @@ drawJobConfigurator_WtoTauNu.add(
 # for events passing all event selection criteria
 #--------------------------------------------------------------------------------
 drawJobConfigurator_WtoTauNu.add(
-    afterCut = evtSelTauEcalCrackVeto,
-    beforeCut = evtSelMetTopology,
+    afterCut = evtSelMetTopology,
     plots =  [
         drawJobConfigEntry(
             meName = 'JetQuantities/JetPt',
@@ -428,12 +391,6 @@ drawJobConfigurator_WtoTauNu.add(
             xAxis = 'Pt',
             name = "cutFlowControlPlots_tauLeadTrkPt_afterEcalCrack"
             ),
-          drawJobConfigEntry(
-            meName = 'CaloMEtQuantities/RAW_MEtPt',
-            title = "calo-MET (after ecal crack)",
-            xAxis = 'Pt',
-            name = "cutFlowControlPlots_MET_afterEcalCrack"
-            ), 
         drawJobConfigEntry(
             meName = 'PFMEtQuantities/MEtPt',
             title = "Pf-MET (after ecal crack)",
@@ -465,12 +422,6 @@ drawJobConfigurator_WtoTauNu.add(
             name = "cutFlowControlPlots_NuTauCandidateDPhi_afterEcalCrack"
             ),
         drawJobConfigEntry(
-            meName = 'CaloMEtQuantities/RAW_MEtSignificance',
-            title = "MET significance (after ecal crack)",
-            xAxis = 'Pt',
-            name = "cutFlowControlPlots_MEtSignificance_afterEcalCrack"
-            ),
-        drawJobConfigEntry(
             meName = 'TauQuantities/TauLeadTrkNumPixelHits',
             title = "Tau lead. Track num. pixel hits (after ecal crack)",
             xAxis = 'unlabeled',
@@ -481,105 +432,7 @@ drawJobConfigurator_WtoTauNu.add(
             title = "Tau lead. Track num. strip hits (after ecal crack)",
             xAxis = 'unlabeled',
             name = "cutFlowControlPlots_tauLeadTrkNumStripHits_afterEcalCrack"
-            ),
-        drawJobConfigEntry(
-            meName = 'TauQuantities/TauLeadTrkNormChi2',
-            title = "Tau lead. Track norm chi2 (after ecal crack)",
-            xAxis = 'unlabeled',
-            name = "cutFlowControlPlots_tauLeadTrkNormChi2_afterEcalCrack"
             )
         ]    
     )
 
-drawJobConfigurator_WtoTauNu.add(
-    afterCut = evtSelRecoilEnergyFromCaloTowers,
-    plots =  [
-        drawJobConfigEntry(
-            meName = 'TauQuantities/Tau#PAR#',
-            PAR = [ 'Pt', 'Eta', 'Phi' ],
-            title = "Tau (after recoil energy cut)",
-            xAxis = '#PAR#',
-            name = "cutFlowControlPlots_tau_afterRecoilEnergy"
-            ),
-        drawJobConfigEntry(
-            meName = 'TauQuantities/TauLeadTrkPt',
-            title = "Tau lead. Track (after recoil energy cut)",
-            xAxis = 'Pt',
-            name = "cutFlowControlPlots_tauLeadTrkPt_afterRecoilEnergy"
-            ),
-        drawJobConfigEntry(
-            meName = 'TauQuantities/TauNumTracksSignalCone',
-            title = "Tau prong (after recoil energy cut)",
-            xAxis = 'unlabeled',
-            name = "cutFlowControlPlots_tauNumTracksSignalCone_afterRecoilEnergy"
-            ),
-          drawJobConfigEntry(
-            meName = 'CaloMEtQuantities/RAW_MEtPt',
-            title = "calo-MET (after recoil energy cut)",
-            xAxis = 'Pt',
-            name = "cutFlowControlPlots_MET_afterRecoilEnergy"
-            ), 
-        drawJobConfigEntry(
-            meName = 'PFMEtQuantities/MEtPt',
-            title = "Pf-MET (after recoil energy cut)",
-            xAxis = 'Pt',
-            name = "cutFlowControlPlots_PFMET_afterRecoilEnergy"
-            ),           
-        drawJobConfigEntry(
-            meName = 'TauRecoilEnergyFromCaloTowersQuantities/EtSum',
-            title = "Recoil energy from Calo Towers (after recoil energy cut)",
-            xAxis = 'Pt',
-            name = "cutFlowControlPlots_recoilEnergyFromCaloTowers_afterRecoilEnergy"
-            ),
-        drawJobConfigEntry(
-            meName = 'MEtTopologyQuantities/Vratio',
-            title = "met topology (after recoil energy cut)",
-            xAxis = 'prob',
-            name = "cutFlowControlPlots_METtopology_afterRecoilEnergy"
-            ),
-        drawJobConfigEntry(
-            meName = 'TauNuCandidateQuantities/NuTauCandidateMt',
-            title = "m_{T} (tau + nu) (after recoil energy cut)",
-            xAxis = 'Mt',
-            name = "cutFlowControlPlots_NuTauCandidateMt_afterRecoilEnergy"
-            ),
-        drawJobConfigEntry(
-            meName = 'TauNuCandidateQuantities/NuTauCandidateDPhi',
-            title = "#Delta #Phi (after recoil energy cut)",
-            xAxis = 'Phi',
-            name = "cutFlowControlPlots_NuTauCandidateDPhi_afterRecoilEnergy"
-            ),
-        drawJobConfigEntry(
-            meName = 'CaloMEtQuantities/RAW_MEtSignificance',
-            title = "MET significance (after recoil energy cut)",
-            xAxis = 'Pt',
-            name = "cutFlowControlPlots_MEtSignificance_afterRecoilEnergy"
-            ),        
-        drawJobConfigEntry(
-            meName = 'TauQuantities/TauLeadTrkNumHits',
-            title = "Tau lead. track num hits (after recoil energy cut)",
-            xAxis = 'unlabeled',
-            name = "cutFlowControlPlots_tauLeadTrkNumHits_afterRecoilEnergy"
-            ),
-        drawJobConfigEntry(
-            meName = 'TauQuantities/TauLeadTrkNumPixelHits',
-            title = "Tau lead. Track num. pixel hits (after recoil energy cut)",
-            xAxis = 'unlabeled',
-            name = "cutFlowControlPlots_tauLeadTrkNumPixelHits_afterRecoilEnergy"
-            ),
-        drawJobConfigEntry(
-            meName = 'TauQuantities/TauLeadTrkNumStripHits',
-            title = "Tau lead. Track num. strip hits (after recoil energy cut)",
-            xAxis = 'unlabeled',
-            name = "cutFlowControlPlots_tauLeadTrkNumStripHits_afterRecoilEnergy"
-            ),
-        drawJobConfigEntry(
-            meName = 'TauQuantities/TauLeadTrkNormChi2',
-            title = "Tau lead. Track norm chi2 (after recoil energy cut)",
-            xAxis = 'unlabeled',
-            name = "cutFlowControlPlots_tauLeadTrkNormChi2_afterRecoilEnergy"
-            )
-
-        ]
-    )
-                
