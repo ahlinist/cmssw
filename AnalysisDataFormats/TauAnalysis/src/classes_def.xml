@@ -35,6 +35,10 @@
   <class name="std::map<std::string, std::map<std::string, SVfitDiTauSolution> >"/>
   <class name="SVfitLegSolution"/>
   <class name="std::vector<SVfitLegSolution>"/>
+  <class name="SVfitWtauNuSolution"/>
+  <class name="std::vector<SVfitWtauNuSolution>"/>
+  <class name="std::map<std::string, SVfitWtauNuSolution>"/>
+  <class name="std::map<std::string, std::map<std::string, SVfitWtauNuSolution> >"/>
 
   <!-- create dictionaries for PATElecPair objects -->
   <class name="CompositePtrCandidateT1T2MEt<pat::Electron, pat::Electron>"/>

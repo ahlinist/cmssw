@@ -11,19 +11,21 @@
  *
  * \version $Revision: 1.1 $
  *
- * $Id: CompositePtrCandidateTMEt.h,v 1.1 2009/02/04 17:30:15 veelken Exp $
+ * $Id: CompositePtrCandidateTMEt.h,v 1.1 2009/07/09 12:14:42 veelken Exp $
  *
  */
 
 #include "DataFormats/Candidate/interface/CandidateFwd.h" 
 #include "DataFormats/Candidate/interface/Candidate.h" 
 #include "DataFormats/Candidate/interface/LeafCandidate.h" 
+#include "DataFormats/METReco/interface/MET.h"
 #include "DataFormats/Common/interface/Ptr.h"
 
 template<typename T>
 class CompositePtrCandidateTMEt : public reco::LeafCandidate 
 {
   typedef edm::Ptr<T> TPtr;
+  typedef edm::Ptr<reco::MET> MEtPtr;
 
  public:
 
@@ -32,7 +34,9 @@ class CompositePtrCandidateTMEt : public reco::LeafCandidate
 
   /// constructor with MEt
   CompositePtrCandidateTMEt(const TPtr visDecayProducts, const reco::CandidatePtr met)
-    : visDecayProducts_(visDecayProducts), met_(met) {}
+    : visDecayProducts_(visDecayProducts), 
+      met_(met) 
+  {}
 
   /// destructor
   ~CompositePtrCandidateTMEt() {}
@@ -41,7 +45,7 @@ class CompositePtrCandidateTMEt : public reco::LeafCandidate
   const TPtr visDecayProducts() const { return visDecayProducts_; }
  
   /// access to missing transverse momentum
-  const reco::CandidatePtr met() const { return met_; }
+  const MEtPtr& met() const { return met_; }
 
   /// get transverse mass of visible decay products + missing transverse momentum
   double mt() const { return mt_; }
@@ -66,7 +70,7 @@ class CompositePtrCandidateTMEt : public reco::LeafCandidate
 
   /// references/pointers to decay products and missing transverse momentum
   TPtr visDecayProducts_;
-  reco::CandidatePtr met_;
+  MEtPtr met_;
 
   /// transverse mass of visible decay products + missing transverse momentum
   double mt_;

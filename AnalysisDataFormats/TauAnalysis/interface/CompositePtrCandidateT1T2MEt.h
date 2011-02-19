@@ -12,9 +12,9 @@
  *          Michal Bluj,
  *          Christian Veelken
  *
- * \version $Revision: 1.21 $
+ * \version $Revision: 1.22 $
  *
- * $Id: CompositePtrCandidateT1T2MEt.h,v 1.21 2010/10/16 13:48:48 veelken Exp $
+ * $Id: CompositePtrCandidateT1T2MEt.h,v 1.22 2010/11/09 13:49:21 veelken Exp $
  *
  */
 
@@ -150,6 +150,21 @@ class CompositePtrCandidateT1T2MEt : public reco::LeafCandidate
   /// visible decay product + missing transverse momentum
   double mt1MET() const { return mt1MET_; }
   double mt2MET() const { return mt2MET_; }
+
+  /// get transverse momentum of first/second
+  /// visible decay product + missing transverse momentum
+  double pt1MET() const { 
+    if ( leg1_.isAvailable() && leg1_.isNonnull() && met_.isAvailable() && met_.isNonnull() ) 
+      return (leg1_->p4() + met_->p4()).pt();
+    else 
+      return -1.; 
+  }
+  double pt2MET() const { 
+    if ( leg2_.isAvailable() && leg2_.isNonnull() && met_.isAvailable() && met_.isNonnull() ) 
+      return (leg2_->p4() + met_->p4()).pt();
+    else
+      return -1.; 
+  }
 
   /// get acoplanarity angle (angle in transverse plane) between visible decay products
   double dPhi12() const { return dPhi12_; } 
