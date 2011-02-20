@@ -508,8 +508,8 @@ userSettings = {
                 },
 #            'harvestScripts' : 'tmp/liis/harvest_scripts'
             }
-        },'
-        lusito': {
+        },
+        'lusito': {
         'current' : {
             'ZtoMuTau'               : '2011Feb15',
             'ZtoMuTau_bgEstTemplate' : '2011Feb15'
@@ -529,9 +529,10 @@ userSettings = {
                     'tmpFilePath' : "/tmp/lusito/CMSSW_3_8_x/plots15feb/ZtoMuTau_bgEstTemplate/",
                      # Directory containing selected events
                     #'pickevents' : '/castor/cern.ch/user/f/friis/fixme_delete/'
-                }, 
-            }, 
-    
+                } 
+            } 
+          }
+        }
     
     }
 
