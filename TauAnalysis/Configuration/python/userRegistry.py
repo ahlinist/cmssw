@@ -508,7 +508,31 @@ userSettings = {
                 },
 #            'harvestScripts' : 'tmp/liis/harvest_scripts'
             }
-        }
+        },'
+        lusito': {
+        'current' : {
+            'ZtoMuTau'               : '2011Feb15',
+            'ZtoMuTau_bgEstTemplate' : '2011Feb15'
+        },
+        'jobs' : {
+            '2011Feb15' : {
+                'ZtoMuTau' : {
+                    'analysisFilePath' : "/castor/cern.ch/user/l/lusito/CMSSW_3_8_x/plots15feb/ZtoMuTau/",
+                    'harvestingFilePath' : "/tmp/lusito/CMSSW_3_8_x/plots15feb/ZtoMuTau_tmp/",
+                    'tmpFilePath' : "/tmp/lusito/CMSSW_3_8_x/plots15feb/ZtoMuTau/",
+                     # Directory containing selected events
+                    #'pickevents' : '/castor/cern.ch/user/f/friis/fixme_delete/'
+                },
+               'ZtoMuTau_bgEstTemplate' : {
+                    'analysisFilePath' : "/castor/cern.ch/user/l/lusito/CMSSW_3_8_x/plots15feb/ZtoMuTau_bgEstTemplate/",
+                    'harvestingFilePath' : "/tmp/lusito/CMSSW_3_8_x/plots15feb/ZtoMuTau_bgEstTemplate_tmp/",
+                    'tmpFilePath' : "/tmp/lusito/CMSSW_3_8_x/plots15feb/ZtoMuTau_bgEstTemplate/",
+                     # Directory containing selected events
+                    #'pickevents' : '/castor/cern.ch/user/f/friis/fixme_delete/'
+                }, 
+            }, 
+    
+    
     }
 
 def mine():
