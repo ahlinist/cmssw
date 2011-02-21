@@ -13,7 +13,7 @@
 //
 // Original Author:  Daniele del Re
 //         Created:  Thu Sep 13 16:00:15 CEST 2007
-// $Id: GammaJetAnalyzer.cc,v 1.43 2011/02/10 10:57:06 pandolf Exp $
+// $Id: GammaJetAnalyzer.cc,v 1.44 2011/02/14 17:23:50 pandolf Exp $
 //
 //
 
@@ -50,6 +50,8 @@
 //#include "DataFormats/VertexReco/interface/VertexCollection.h"
 //#include "DataFormats/JetReco/interface/CaloJetCollection.h"
 //#include "DataFormats/JetReco/interface/JPTJetCollection.h"
+#include "DataFormats/JetReco/interface/Jet.h"
+#include "DataFormats/JetReco/interface/JetCollection.h"
 #include "DataFormats/JetReco/interface/CaloJet.h"
 #include "DataFormats/JetReco/interface/PFJet.h"
 #include "DataFormats/JetReco/interface/JPTJet.h"
@@ -1344,7 +1346,9 @@ GammaJetAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
 
        // Jet Energy Scale Corrections on-the-fly     
        CaloJet  correctedJet = *it;
-       double scale = corrector_akt5->correction(it->p4());
+       //double scale = corrector_akt5->correction(it->p4());
+       edm::RefToBase<reco::Jet> jetRef(edm::Ref<CaloJetCollection>(jetsakt5,nJet_akt5));
+       double scale = corrector_akt5->correction(*it,jetRef,iEvent,iSetup);
        correctedJet.scaleEnergy(scale);
        ptCorrJet_akt5[nJet_akt5] = correctedJet.pt();
 
@@ -1372,7 +1376,9 @@ GammaJetAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
  
        // Jet Energy Scale Corrections on-the-fly     
        CaloJet  correctedJet = *it;
-       double scale = corrector_akt7->correction(it->p4());
+       //double scale = corrector_akt7->correction(it->p4());
+       edm::RefToBase<reco::Jet> jetRef(edm::Ref<CaloJetCollection>(jetsakt7,nJet_akt7));
+       double scale = corrector_akt7->correction(*it,jetRef,iEvent,iSetup);
        correctedJet.scaleEnergy(scale);
        ptCorrJet_akt7[nJet_akt7] = correctedJet.pt();
 
@@ -1399,7 +1405,9 @@ GammaJetAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
        
        // Jet Energy Scale Corrections on-the-fly     
        JPTJet  correctedJet = *it;
-       double scale = corrector_jptak5->correction(it->p4());
+       //double scale = corrector_jptak5->correction(it->p4());
+       edm::RefToBase<reco::Jet> jetRef(edm::Ref<JPTJetCollection>(jptjetsak5,nJet_jptak5));
+       double scale = corrector_jptak5->correction(*it,jetRef,iEvent,iSetup);
        correctedJet.scaleEnergy(scale);
        ptCorrJet_jptak5[nJet_jptak5] = correctedJet.pt();
 
@@ -1441,7 +1449,9 @@ GammaJetAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
        
        // Jet Energy Scale Corrections on-the-fly     
        PFJet  correctedJet = *it;
-       double scale = corrector_pfakt5->correction(it->p4());
+       //double scale = corrector_pfakt5->correction(it->p4());
+       edm::RefToBase<reco::Jet> jetRef(edm::Ref<PFJetCollection>(pfjetsakt5,nJet_pfakt5));
+       double scale = corrector_pfakt5->correction(*it,jetRef,iEvent,iSetup);
        correctedJet.scaleEnergy(scale);
        ptCorrJet_pfakt5[nJet_pfakt5] = correctedJet.pt();
        
@@ -1572,7 +1582,9 @@ GammaJetAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
      
        // Jet Energy Scale Corrections on-the-fly     
        PFJet  correctedJet = *it;
-       double scale = corrector_pfakt7->correction(it->p4());
+       //double scale = corrector_pfakt7->correction(it->p4());
+       edm::RefToBase<reco::Jet> jetRef(edm::Ref<PFJetCollection>(pfjetsakt7,nJet_pfakt7));
+       double scale = corrector_pfakt5->correction(*it,jetRef,iEvent,iSetup);
        correctedJet.scaleEnergy(scale);
        ptCorrJet_pfakt7[nJet_pfakt7] = correctedJet.pt();
 
