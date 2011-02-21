@@ -18,15 +18,20 @@ xsReader::xsReader(TChain *tree, TString evtClassName): treeReaderXS(tree, evtCl
   fPTbin[0] = 0.; fPTbin[1] = 2.; fPTbin[2] = 3.; fPTbin[3] = 5.; fPTbin[4] = 8.; fPTbin[5] =12.; fPTbin[6] = 20.;
   fYbin[0] = -2.; fYbin[1] = -1.; fYbin[2] = 0.; fYbin[3] = 1.; fYbin[4] = 2.;
   
-  //fPidTableMuIDPos = new PidTable("../tnp/PidTables/MC/Jpsi/MuID/CowboyVeto/PtMmbPos-jpsi.dat");
-  //fPidTableMuIDNeg = new PidTable("../tnp/PidTables/MC/Jpsi/MuID/CowboyVeto/PtMmbNeg-jpsi.dat");
-  //fPidTableTrigPos = new PidTable("../tnp/PidTables/MC/Jpsi/Trig/CowboyVeto/PtMmbPos-jpsi.dat");   // MC 
-  //fPidTableTrigNeg = new PidTable("../tnp/PidTables/MC/Jpsi/Trig/CowboyVeto/PtMmbNeg-jpsi.dat"); 
+  fPidTableMuIDPos = new PidTable("../tnp/PidTables/MC/Jpsi/MuID/CowboyVeto/PtMmbPos-jpsi.dat");
+  fPidTableMuIDNeg = new PidTable("../tnp/PidTables/MC/Jpsi/MuID/CowboyVeto/PtMmbNeg-jpsi.dat");
+  fPidTableTrigPos = new PidTable("../tnp/PidTables/MC/Jpsi/Trig/CowboyVeto/PtMmbPos-jpsi.dat");   // MC 
+  fPidTableTrigNeg = new PidTable("../tnp/PidTables/MC/Jpsi/Trig/CowboyVeto/PtMmbNeg-jpsi.dat"); 
   
-  fPidTableMuIDPos = new PidTable("../tnp/PidTables/DATA/Jpsi/MuID/CowboyVeto/PtMmbPos-jpsi.dat");
-  fPidTableMuIDNeg = new PidTable("../tnp/PidTables/DATA/Jpsi/MuID/CowboyVeto/PtMmbNeg-jpsi.dat");
-  fPidTableTrigPos = new PidTable("../tnp/PidTables/DATA/Jpsi/Trig/MuOnia/CowboyVeto/PtMmbBoth-jpsi.dat");     // DATA
-  fPidTableTrigNeg = new PidTable("../tnp/PidTables/DATA/Jpsi/Trig/MuOnia/CowboyVeto/PtMmbBoth-jpsi.dat"); 
+  //fPidTableMuIDPos = new PidTable("../tnp/PidTables/MC/Jpsi/MuID/CowboyVeto/PtMctPos-jpsi.dat");
+  //fPidTableMuIDNeg = new PidTable("../tnp/PidTables/MC/Jpsi/MuID/CowboyVeto/PtMctNeg-jpsi.dat");
+  //fPidTableTrigPos = new PidTable("../tnp/PidTables/MC/Jpsi/Trig/CowboyVeto/PtMctPos-jpsi.dat");   // MC with McTruth
+  //fPidTableTrigNeg = new PidTable("../tnp/PidTables/MC/Jpsi/Trig/CowboyVeto/PtMctNeg-jpsi.dat"); 
+    
+  //fPidTableMuIDPos = new PidTable("../tnp/PidTables/DATA/Jpsi/MuID/CowboyVeto/PtMmbPos-jpsi.dat");
+  //fPidTableMuIDNeg = new PidTable("../tnp/PidTables/DATA/Jpsi/MuID/CowboyVeto/PtMmbNeg-jpsi.dat");
+  //fPidTableTrigPos = new PidTable("../tnp/PidTables/DATA/Jpsi/Trig/MuOnia/CowboyVeto/PtMmbBoth-jpsi.dat");     // DATA
+  //fPidTableTrigNeg = new PidTable("../tnp/PidTables/DATA/Jpsi/Trig/MuOnia/CowboyVeto/PtMmbBoth-jpsi.dat"); 
   
 }
 // ----------------------------------------------------------------------
@@ -52,7 +57,7 @@ void xsReader::eventProcessing() {
   //   trigEffCheck();
   //}
   
-  //GenStudy();
+  GenStudy();
   
   if ( MODE == 1  ) {
     acceptance();
@@ -104,34 +109,6 @@ void xsReader::GenStudy(){
   TGenCand *gDau1(0); TGenCand *gDau2(0);  
   double pt, rapidity; 
   TLorentzVector genCand;
-  /*  for (int iG = 0; iG < fpEvt->nGenCands(); ++iG) {
-    gCand = fpEvt->getGenCand(iG);
-    if ( gCand->fID == RESTYPE && gCand->fStatus == 2 ){
-      genCand.SetPtEtaPhiE(gCand->fP.Perp(),gCand->fP.Eta(),gCand->fP.Phi(),gCand->fP.Energy());
-      if ( (gCand->fP.Perp() <= 20.) && (fabs(genCand.Rapidity()) <= 2.) ){
-	gDau1 = fpEvt->getGenCand(gCand->fDau1);
-	gDau2 = fpEvt->getGenCand(gCand->fDau2);
-	
-	if ( ((fabs(gDau1->fID)) == 13) && ((fabs(gDau2->fID)) == 13) ){
-	  ((TH1D*)fpHistFile->Get("GenStudy_MuonPt"))->Fill(gDau1->fP.Perp());
-	  ((TH1D*)fpHistFile->Get("GenStudy_MuonPt"))->Fill(gDau2->fP.Perp());
-	  
-	  if ( gDau1->fP.Perp() < gDau2->fP.Perp() ) ((TH1D*)fpHistFile->Get("CandMuPt"))->Fill(gCand->fP.Perp(),gDau2->fP.Perp());
-	  if ( gDau1->fP.Perp() > gDau2->fP.Perp() ) ((TH1D*)fpHistFile->Get("CandMuPt"))->Fill(gCand->fP.Perp(),gDau1->fP.Perp());
-	  
-	  if ( (gDau1->fP.Perp() < 1.) || (gDau2->fP.Perp() < 1.) ){
-	    
-	    cout << "genCand.Rapidity() = "<< genCand.Rapidity() << "gCand->fP.Perp() = " << gCand->fP.Perp() << endl;
-	    ((TH2D*)fpHistFile->Get("GenStudy_Cand"))->Fill(genCand.Rapidity(),gCand->fP.Perp());
-	    
-	  }
-	}
-	
-      }
-    }
-  }
-  */ 
-  
   TGenCand *g2Cand(0);
   TAnaTrack *pTrack(0);
   bool match1 = false; bool match2 = false;
@@ -141,7 +118,7 @@ void xsReader::GenStudy(){
     gCand = fpEvt->getGenCand(iG);
     if ( gCand->fID == RESTYPE && gCand->fStatus == 2 ){
       genCand.SetPtEtaPhiE(gCand->fP.Perp(),gCand->fP.Eta(),gCand->fP.Phi(),gCand->fP.Energy());
-      if ( (gCand->fP.Perp() <= 20.) && (fabs(genCand.Rapidity()) <= 2.) ){
+      if ( (gCand->fP.Perp() <= PTCAND) && (fabs(genCand.Rapidity()) <= RAPCAND) ){
 	gDau1 = fpEvt->getGenCand(gCand->fDau1);
 	gDau2 = fpEvt->getGenCand(gCand->fDau2);
 	for (int i = gCand->fDau1; i <= gCand->fDau2; ++i) {
@@ -172,9 +149,9 @@ void xsReader::GenStudy(){
     	} 
 	
 	if ( match1 && match2 ){
-	  if ((pt1 >= 3.) && (pt2 >= 3.) && (eta1 >= -2.4) && (eta2 >= -2.4) && (eta1 <= 2.4) && (eta2 <= 2.4) && (pt1 <= 20.) && (pt2 <= 20.) ){
+	  if ((pt1 >= PTLO) && (pt2 >= PTLO) && (eta1 >= ETALO) && (eta2 >= ETALO) && (eta1 <= ETAHI) && (eta2 <= ETAHI) && (pt1 <= PTHI) && (pt2 <= PTHI) ){
 	    ////////
-	    if ( ((TMath::Abs(eta1) <= 1.2) && (pt1 < 4.)) || ((TMath::Abs(eta2) <= 1.2) && (pt2 < 4.)) ){
+	    if ( ((TMath::Abs(eta1) <= ETABARREL) && (pt1 < PTBARREL)) || ((TMath::Abs(eta2) <= ETABARREL) && (pt2 < PTBARREL)) ){
 	      match1 = false;
 	      match2 = false;
 	      continue;
