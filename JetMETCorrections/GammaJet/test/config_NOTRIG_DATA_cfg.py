@@ -28,7 +28,8 @@ process.source = cms.Source("PoolSource",
 #'file:/cmsrm/pc18/pandolf/CMSSW_3_5_7/src/JetMETCorrections/GammaJet/test/eventi_136097.root'
 #'file:/cmsrm/pc18/pandolf/CMSSW_3_6_3/src/JetMETCorrections/GammaJet/test/events_136100.root'
 #'file:/cmsrm/pc21/emanuele/data/Pool/EG_Run2010A_RECO.root'
-'file:/tmp/delre/Photon_RECO_Nov4ReReco_v2.root'
+#'file:/tmp/delre/Photon_RECO_Nov4ReReco_v2.root'
+'file:/tmp/delre/FA52A8DD-E00F-E011-AA1B-003048678BB8.root'
 )
 
 )
@@ -67,8 +68,8 @@ process.load('Configuration/StandardSequences/MagneticField_AutoFromDBCurrent_cf
 process.load('Configuration/StandardSequences/FrontierConditions_GlobalTag_cff')
 #process.load('Configuration/EventContent/EventContent_cff')
 #process.load('TrackingTools/Configuration/TrackingTools_cff')
-
-process.GlobalTag.globaltag = cms.string('GR_R_38X_V15::All')
+process.GlobalTag.globaltag = cms.string('GR_R_39X_V5::All')
+#process.GlobalTag.globaltag = cms.string('GR_R_38X_V14::All')
 #process.GlobalTag.globaltag = cms.string('GR_R_35X_V8::All')
 #process.GlobalTag.globaltag = cms.string('START36_V10::All')
 
@@ -81,7 +82,6 @@ process.load("RecoMET.Configuration.GenMETParticles_cff")
 process.load("JetMETCorrections.Configuration.DefaultJEC_cff")
 process.load("JetMETCorrections.Type1MET.MetType1Corrections_cff")
 
-##-------------------- Disable the CondDB for the L1Offset (until they are included in a new global tag) -------
 process.ak5CaloL1Offset.useCondDB = False
 process.ak5PFL1Offset.useCondDB = False
 process.ak5JPTL1Offset.useCondDB = False
@@ -104,17 +104,14 @@ process.myanalysis = cms.EDAnalyzer("GammaJetAnalyzer",
     met = cms.untracked.InputTag("met"),
     tracks = cms.untracked.InputTag("generalTracks"),
     Photonsrc = cms.untracked.InputTag("photons"),
+    Electronsrc = cms.untracked.InputTag("gsfElectrons"),
     recoCollection = cms.string('EcalRecHitsEB'),
     JetCorrectionService_akt5 = cms.string('ak5CaloL1L2L3Residual'),
-    JetCorrectionService_akt7 = cms.string('ak7CaloL1L2L3Residual'),
+    JetCorrectionService_akt7 = cms.string('ak7CaloL2L3Residual'),
     JetCorrectionService_jptak5 = cms.string('ak5JPTL1L2L3Residual'),
+    JetCorrectionService_jptak7 = cms.string('ak7JPTL2L3Residual'),
     JetCorrectionService_pfakt5 = cms.string('ak5PFL1L2L3Residual'),
-    JetCorrectionService_pfakt7 = cms.string('ak7PFL1L2L3Residual'),
-   #JetCorrectionService_akt5 = cms.string('ak5CaloL2L3Residual'),
-   #JetCorrectionService_akt7 = cms.string('ak7CaloL2L3Residual'),
-   #JetCorrectionService_jptak5 = cms.string('ak5JPTL2L3Residual'),
-   #JetCorrectionService_pfakt5 = cms.string('ak5PFL2L3Residual'),
-   #JetCorrectionService_pfakt7 = cms.string('ak7PFL2L3Residual'),
+    JetCorrectionService_pfakt7 = cms.string('ak7PFL2L3Residual'),
     jetskt4 = cms.untracked.InputTag("kt4CaloJets"),
     jetskt6 = cms.untracked.InputTag("kt6CaloJets"),
     jetsakt5 = cms.untracked.InputTag("ak5CaloJets"),

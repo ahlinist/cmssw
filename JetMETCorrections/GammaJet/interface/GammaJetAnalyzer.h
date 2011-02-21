@@ -82,6 +82,7 @@ TH2D* h2_n_vs_eta;
       edm::InputTag triggerTag_;
       edm::InputTag Vertexsrc_;
       edm::InputTag Photonsrc_; 
+      edm::InputTag Electronsrc_; 
       edm::InputTag Jetsrcite_; 
       edm::InputTag Jetsrckt4_; 
       edm::InputTag Jetsrckt6_; 
@@ -180,10 +181,11 @@ TH2D* h2_n_vs_eta;
       Float_t escPhot[40];
       Float_t etaPhot[40];
       Float_t phiPhot[40];
+      Float_t etascPhot[40];
+      Float_t phiscPhot[40];
       Float_t timePhot[40];
       Float_t e4SwissCrossPhot[40];
       Int_t hasPixelSeedPhot[40];
-
 
       // Default PAT photon ID variables
       Bool_t pid_isEM[40];
@@ -212,6 +214,17 @@ TH2D* h2_n_vs_eta;
       Float_t E1Phot[40];
       Float_t E9Phot[40];
       Float_t E25Phot[40];
+      Int_t ieleassocPhot[40];
+
+      Int_t nElePhot;
+      Float_t pid_jurECALElePhot[40]; 
+      Float_t pid_twrHCALElePhot[40]; 
+      Float_t pid_HoverEElePhot[40]; 
+      Float_t pid_hlwTrackElePhot[40]; 
+      Float_t pid_etawidElePhot[40]; 
+      Float_t pid_dphivtxElePhot[40]; 
+      Float_t pid_detavtxElePhot[40]; 
+      Int_t pid_mishitsElePhot[40]; 
 
       Int_t nJet_akt5;
       Float_t ptJet_akt5[100];
