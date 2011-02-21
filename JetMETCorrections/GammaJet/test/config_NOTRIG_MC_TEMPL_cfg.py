@@ -27,8 +27,7 @@ process.source = cms.Source("PoolSource",
     fileNames = cms.untracked.vstring(
 #'file:/cmsrm/pc18/pandolf/CMSSW_3_5_7/src/JetMETCorrections/GammaJet/test/eventi_136097.root'
 #'file:/cmsrm/pc18/pandolf/CMSSW_3_6_3/src/JetMETCorrections/GammaJet/test/events_136100.root'
-#'file:/cmsrm/pc21/emanuele/data/Pool/EG_Run2010A_RECO.root'
-'file:/tmp/delre/Photon_RECO_Nov4ReReco_v2.root'
+'file:events_RelVal387_PhotonJet10.root'
 )
 
 )
@@ -68,12 +67,13 @@ process.load('Configuration/StandardSequences/FrontierConditions_GlobalTag_cff')
 #process.load('Configuration/EventContent/EventContent_cff')
 #process.load('TrackingTools/Configuration/TrackingTools_cff')
 
-process.GlobalTag.globaltag = cms.string('GR_R_38X_V15::All')
-#process.GlobalTag.globaltag = cms.string('GR_R_35X_V8::All')
-#process.GlobalTag.globaltag = cms.string('START36_V10::All')
+#process.GlobalTag.globaltag = cms.string('GR_R_38X_V14::All')
+process.GlobalTag.globaltag = cms.string('START38_V14::All')
 
 
 
+## produce JPT jets
+#process.load('RecoJets.Configuration.RecoJPTJets_cff')
 
 #############   Include the corrections ##########
 process.load("RecoMET.Configuration.RecoGenMET_cff")
@@ -85,6 +85,7 @@ process.load("JetMETCorrections.Type1MET.MetType1Corrections_cff")
 process.ak5CaloL1Offset.useCondDB = False
 process.ak5PFL1Offset.useCondDB = False
 process.ak5JPTL1Offset.useCondDB = False
+
 
 process.metMuonJESCorAK5 = process.metJESCorAK5CaloJet.clone()
 process.metMuonJESCorAK5.inputUncorJetsLabel = "ak5CaloJets"
@@ -105,16 +106,16 @@ process.myanalysis = cms.EDAnalyzer("GammaJetAnalyzer",
     tracks = cms.untracked.InputTag("generalTracks"),
     Photonsrc = cms.untracked.InputTag("photons"),
     recoCollection = cms.string('EcalRecHitsEB'),
-    JetCorrectionService_akt5 = cms.string('ak5CaloL1L2L3Residual'),
-    JetCorrectionService_akt7 = cms.string('ak7CaloL1L2L3Residual'),
-    JetCorrectionService_jptak5 = cms.string('ak5JPTL1L2L3Residual'),
-    JetCorrectionService_pfakt5 = cms.string('ak5PFL1L2L3Residual'),
-    JetCorrectionService_pfakt7 = cms.string('ak7PFL1L2L3Residual'),
-   #JetCorrectionService_akt5 = cms.string('ak5CaloL2L3Residual'),
-   #JetCorrectionService_akt7 = cms.string('ak7CaloL2L3Residual'),
-   #JetCorrectionService_jptak5 = cms.string('ak5JPTL2L3Residual'),
-   #JetCorrectionService_pfakt5 = cms.string('ak5PFL2L3Residual'),
-   #JetCorrectionService_pfakt7 = cms.string('ak7PFL2L3Residual'),
+    JetCorrectionService_akt5 = cms.string('ak5CaloL1L2L3'),
+    JetCorrectionService_akt7 = cms.string('ak5CaloL1L2L3'),
+    JetCorrectionService_jptak5 = cms.string('ak5JPTL1L2L3'),
+    JetCorrectionService_pfakt5 = cms.string('ak5PFL1L2L3'),
+    JetCorrectionService_pfakt7 = cms.string('ak5PFL1L2L3'),
+   #JetCorrectionService_akt5 = cms.string('ak5CaloL2L3'),
+   #JetCorrectionService_akt7 = cms.string('ak7CaloL2L3'),
+   #JetCorrectionService_jptak5 = cms.string('ak5JPTL2L3'),
+   #JetCorrectionService_pfakt5 = cms.string('ak5PFL2L3'),
+   #JetCorrectionService_pfakt7 = cms.string('ak7PFL2L3'),
     jetskt4 = cms.untracked.InputTag("kt4CaloJets"),
     jetskt6 = cms.untracked.InputTag("kt6CaloJets"),
     jetsakt5 = cms.untracked.InputTag("ak5CaloJets"),
@@ -129,7 +130,7 @@ process.myanalysis = cms.EDAnalyzer("GammaJetAnalyzer",
     jetsgenkt6 = cms.untracked.InputTag("kt6GenJets"),
     jetsgenakt5 = cms.untracked.InputTag("ak5GenJets"),
     jetsgenakt7 = cms.untracked.InputTag("ak7GenJets"),
-    TriggerTag = cms.untracked.InputTag("TriggerResults::HLT"),
+    TriggerTag = cms.untracked.InputTag("TriggerResults::REDIGI38X"),
     vertices = cms.untracked.InputTag("offlinePrimaryVertices"),
     genjetptthr = cms.double(5.),
     calojetptthr = cms.double(3.),
@@ -139,7 +140,7 @@ process.myanalysis = cms.EDAnalyzer("GammaJetAnalyzer",
     pfjetnmin = cms.int32(10),
     jptjetnmin = cms.int32(10),
     JetIDParams = theJetIDParams,
-    Xsec = cms.double(1.)
+    Xsec = cms.double(CHANGECROSSECTION)
 )
 
 
