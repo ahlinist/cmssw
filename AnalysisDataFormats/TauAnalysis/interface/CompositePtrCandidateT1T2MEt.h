@@ -12,9 +12,9 @@
  *          Michal Bluj,
  *          Christian Veelken
  *
- * \version $Revision: 1.22 $
+ * \version $Revision: 1.23 $
  *
- * $Id: CompositePtrCandidateT1T2MEt.h,v 1.22 2010/11/09 13:49:21 veelken Exp $
+ * $Id: CompositePtrCandidateT1T2MEt.h,v 1.23 2011/02/19 13:31:59 veelken Exp $
  *
  */
 
@@ -63,9 +63,9 @@ class CompositePtrCandidateT1T2MEt : public reco::LeafCandidate
   const std::string& getRecoMode() const { return recoMode_; }
 
   /// access to gen. momenta
-  reco::Candidate::LorentzVector p4gen() const { return p4Leg1gen() + p4Leg2gen(); }
-  reco::Candidate::LorentzVector p4VisGen() const { return p4VisLeg1gen() + p4VisLeg2gen(); }
-  reco::Candidate::LorentzVector p4InvisGen() const { return p4gen()-p4VisGen(); }
+  reco::Candidate::LorentzVector p4gen()      const { return p4Leg1gen() + p4Leg2gen();       }
+  reco::Candidate::LorentzVector p4VisGen()   const { return p4VisLeg1gen() + p4VisLeg2gen(); }
+  reco::Candidate::LorentzVector p4InvisGen() const { return p4gen() - p4VisGen();            }
 
   /// access to gen. mother particles
   /// (undecayed tau leptons)
@@ -87,9 +87,9 @@ class CompositePtrCandidateT1T2MEt : public reco::LeafCandidate
 
   /// get "true" positions of primary event vertex 
   /// and of tau decay vertices (generator level information)
-  const reco::Candidate::Point& primaryVertexPosGen() const { return primaryVertexPosGen_; }
-  const reco::Candidate::Point& decayVertexPosLeg1gen() const { return decayVertexPosLeg1gen_; };
-  const reco::Candidate::Point& decayVertexPosLeg2gen() const { return decayVertexPosLeg2gen_; };
+  const reco::Candidate::Point& primaryVertexPosGen()   const { return primaryVertexPosGen_;   }
+  const reco::Candidate::Point& decayVertexPosLeg1gen() const { return decayVertexPosLeg1gen_; }
+  const reco::Candidate::Point& decayVertexPosLeg2gen() const { return decayVertexPosLeg2gen_; }
   
   /// return the number of source particle-like Candidates
   /// (the candidates used to construct this Candidate)       
@@ -98,9 +98,9 @@ class CompositePtrCandidateT1T2MEt : public reco::LeafCandidate
 
   /// return a Ptr to one of the source Candidates                                                               
   /// (the candidates used to construct this Candidate)                                                         
-  reco::CandidatePtr sourceCandidatePtr( size_type i ) const {
-    if(i==0) return leg1();
-    else if(i==1) return leg2();
+  reco::CandidatePtr sourceCandidatePtr(size_type idx) const {
+    if      ( idx == 0 ) return leg1();
+    else if ( idx == 1 ) return leg2();
     else assert(0);
   }
 
