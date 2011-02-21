@@ -12,7 +12,15 @@ ZToEEGHltFilter.HLTPaths = """
   HLT_Ele17_SW_CaloEleId_L1R
   HLT_Ele17_SW_L1R
   HLT_Ele17_SW_TightEleId_L1R
+  HLT_Ele17_SW_TighterEleIdIsol_L1R_v2
+  HLT_Ele17_SW_TighterEleIdIsol_L1R_v3
   HLT_Ele17_SW_TightCaloEleId_SC8HE_L1R
+  HLT_DoubleEle10_SW_L1R
+  HLT_DoubleEle15_SW_L1R_v1
+  HLT_DoubleEle17_SW_L1R_v1
+  HLT_Ele17_SW_TightCaloEleId_SC8HE_L1R_v1
+  HLT_Ele17_SW_TightCaloEleId_Ele8HE_L1R_v1
+  HLT_Ele17_SW_TightCaloEleId_Ele8HE_L1R_v2
   """.split()
 
 ZToEEGLooseElectrons = cms.EDFilter("GsfElectronViewRefSelector",
