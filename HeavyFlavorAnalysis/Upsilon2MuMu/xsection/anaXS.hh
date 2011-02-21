@@ -75,6 +75,7 @@ public:
   void GetAnaEff();
   void GetMuIDEff();
   void GetTrigEff();
+  void GetPreSelEff();
   
   void integerEntries(TH1D  *h);
   void validation();
@@ -114,7 +115,7 @@ public:
   std::vector<TH1D> fS1Vector, fS2Vector, fS3Vector, fS4Vector, fS5Vector, fS6Vector, fS7Vector, fS8Vector, fS9Vector, fS10Vector;
   
   //-- 2d histograms for the (fitted) event yields
-  TH2D *fS1Yield, *fAllGenRes, *fRecoGenRes, *fAnaEff, *fS1YieldCorrected, *fS1YieldComparison , *fAcceptance, *fMuIDEff, *fTrigEff;
+  TH2D *fS1Yield, *fAllGenRes, *fRecoGenRes,  *fPreSelBefore, *fPreSelAfter ,*fAnaEff, *fS1YieldCorrected, *fS1YieldComparison , *fAcceptance, *fMuIDEff, *fTrigEff, *fPreSelEff;
   
   //-- 1d histograms for the (fitted) event yields
   TH1D *fAcceptanceProjPt, *fS1YieldPt, *fAllGenResPt, *fS1YieldEta, *fAllGenResEta; 
@@ -134,7 +135,7 @@ public:
   PidTable *fPtTnpNeg, *fPtTnpPos, 
     *fPtMctNeg, *fPtMctPos, 
     *fPtMcpNeg, *fPtMcpPos,
-    *fPtMmbNeg, *fPtMmbPos;
+    *fPtMmbNeg, *fPtMmbPos, *fPtTrigCorr, *fPtMuidCorr;
 
   // -- functions
   TF1 *f0, *f1, *f2, *f3, *f4, *f5, *f6, *f7, *f8, *f9, *f10, *f11, *f12, *f13; 
