@@ -21,7 +21,7 @@ allTauNuPairs = cms.EDProducer("PATTauNuPairProducer",
             )
         )
     ),                           
-    verbosity = cms.untracked.int32(1)
+    verbosity = cms.untracked.int32(0)
 )
 
 allTauNuPairsLooseIsolation = allTauNuPairs.clone(
