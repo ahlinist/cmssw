@@ -75,10 +75,10 @@ int main ( int argc, char ** argv )
   map<string, int> mmgCandsPassedTotal;
   map<string, int> eventsPassed;
 
-  std::vector<reco::ShallowClonePtrCandidate> selectedMuons;
-  std::vector<reco::ShallowClonePtrCandidate> selectedDimuons;
-  std::vector<reco::ShallowClonePtrCandidate> selectedPhotons;
-  std::vector<reco::ShallowClonePtrCandidate> selectedMmgCands;
+  std::vector<const reco::Muon *>               selectedMuons;
+  std::vector<const reco::CompositeCandidate *> selectedDimuons;
+  std::vector<const reco::Photon *>             selectedPhotons;
+  std::vector<const reco::CompositeCandidate *> selectedMmgCands;
 
   muonCuts.push_back("2.   Collision Data Cleaning");
   muonCuts.push_back("3.1  global muon");
@@ -220,11 +220,7 @@ int main ( int argc, char ** argv )
       if ( fabs( muon.eta() ) >= 2.4 ) continue;
       ++muonsPassedPerEvent["3.11 |eta|"];
 
-      selectedMuons.push_back(
-        reco::ShallowClonePtrCandidate(
-          edm::Ptr<pat::Muon>(muons, iMuon)
-          )
-        );
+      selectedMuons.push_back(&muon);
 
     }  // end loop over muons
 
@@ -240,23 +236,23 @@ int main ( int argc, char ** argv )
 
     // combine selected muons to dimuons
     reco::CompositeCandidateCollection dimuons;
-    std::vector<reco::ShallowClonePtrCandidate>::const_iterator dau1;
-    std::vector<reco::ShallowClonePtrCandidate>::const_iterator dau2;
     AddFourMomenta addP4;
     OverlapChecker hasOverlap;
     // create all dimuon combinations
     // loop over first daughters
-    for (dau1 = selectedMuons.begin();
-         dau1 < selectedMuons.end() - 1;
-         ++dau1) {
+    for (std::vector<const reco::Muon *>::const_iterator
+        dau1 = selectedMuons.begin();
+        dau1 < selectedMuons.end() - 1;
+        ++dau1) {
       // loop over second daughters
-      for (dau2 = dau1 + 1;
-           dau2 < selectedMuons.end();
-           ++dau2) {
-        if ( hasOverlap(*dau1, *dau2) ) continue;
+      for (std::vector<const reco::Muon *>::const_iterator
+          dau2 = dau1 + 1;
+          dau2 < selectedMuons.end();
+          ++dau2) {
+        if ( hasOverlap(**dau1, **dau2) ) continue;
         reco::CompositeCandidate dimuon;
-        dimuon.addDaughter(*dau1, "muon1");
-        dimuon.addDaughter(*dau2, "muon2");
+        dimuon.addDaughter(**dau1, "muon1");
+        dimuon.addDaughter(**dau2, "muon2");
         addP4.set( dimuon );
         dimuons.push_back( dimuon );
       } // end loop over second daughters
@@ -275,11 +271,7 @@ int main ( int argc, char ** argv )
       if (dimuon.mass() < 40. || 80. < dimuon.mass()) continue;
       ++dimuonsPassedPerEvent["4.2  dimuon mass"];
 
-      selectedDimuons.push_back(
-        reco::ShallowClonePtrCandidate(
-          edm::Ptr<reco::CompositeCandidate>(&dimuons, iDimuon)
-          )
-        );
+      selectedDimuons.push_back(&dimuon);
     } // end loop over dimuons
 
     // update per-event dimuon counters
@@ -318,11 +310,7 @@ int main ( int argc, char ** argv )
       if (photon.pt() <= 10.) continue;
       ++photonsPassedPerEvent["5.5  pt"];
 
-      selectedPhotons.push_back(
-        reco::ShallowClonePtrCandidate(
-          edm::Ptr<pat::Photon>(photons, iPhoton)
-        )
-      );
+      selectedPhotons.push_back(&photon);
     }  // end loop over photons
 
     // update per-event photon counters
@@ -340,17 +328,19 @@ int main ( int argc, char ** argv )
     reco::CompositeCandidateCollection mmgCands;
     // create all photon-dimuon combinations
     // loop over photons
-    for (dau1 = selectedPhotons.begin();
-         dau1 < selectedPhotons.end();
-         ++dau1) {
+    for (std::vector<const reco::Photon *>::const_iterator
+        dau1 = selectedPhotons.begin();
+        dau1 != selectedPhotons.end();
+        ++dau1) {
       // loop over dimuons
-      for (dau2 = selectedDimuons.begin();
-           dau2 < selectedDimuons.end();
-           ++dau2) {
-        if ( hasOverlap(*dau1, *dau2) ) continue;
+      for (std::vector<const reco::CompositeCandidate *>::const_iterator
+          dau2 = selectedDimuons.begin();
+          dau2 < selectedDimuons.end();
+          ++dau2) {
+        if ( hasOverlap(**dau1, **dau2) ) continue;
         reco::CompositeCandidate mmgCand;
-        mmgCand.addDaughter(*dau1, "photon");
-        mmgCand.addDaughter(*dau2, "dimuon");
+        mmgCand.addDaughter(**dau1, "photon");
+        mmgCand.addDaughter(**dau2, "dimuon");
         addP4.set(mmgCand);
         mmgCands.push_back(mmgCand);
       } // end loop over dimuons
@@ -371,8 +361,8 @@ int main ( int argc, char ** argv )
 
       photon = (const pat::Photon*) mmgCand.daughter("photon");
       dimuon = (const reco::CompositeCandidate*) mmgCand.daughter("dimuon");
-      muon1 = (const pat::Muon*) dimuon->daughter(0);
-      muon2 = (const pat::Muon*) dimuon->daughter(1);
+      muon1 = (const pat::Muon*) dimuon->daughter("muon1");
+      muon2 = (const pat::Muon*) dimuon->daughter("muon2");
 
       DeltaR<pat::Muon, pat::Photon> deltaR;
       double dr1 = deltaR(*muon1, *photon);
@@ -395,21 +385,24 @@ int main ( int argc, char ** argv )
             << setw(8) << event.id().event()
             << setw(0) << endl;
 
-      cout << setw(10)
-           << "  pt eta phi m for mmg cand " << i << endl
-           << "    mmg p4 minDR:    " << ptEtaPhiM(mmgCand) << " "
-                                      << drMin
-                                      << endl
-           << "    dimuon p4:       " << ptEtaPhiM(*dimuon) << endl
-           << "    near mu p4 hIso: " << ptEtaPhiM(*nearMuon) << " "
-                                      << nearMuon->hcalIso()
-//                                       << nearMuon->isolationR03().hadEt
-                                      << endl
-           << "    far mu p4 hIso:  " << ptEtaPhiM(*farMuon) << " "
-                                      << farMuon->hcalIso()
-//                                       << farMuon->isolationR03().hadEt
-                                      << endl
-           << "    photon p3:       " << ptEtaPhi(*photon) << endl;
+      cout << "  p4 (pt eta phi m) for mmg cand " << i << endl
+           << "    mmg p4 minDR:         " << ptEtaPhiM(mmgCand) << " "
+              << drMin
+              << endl
+           << "    dimuon p4:            " << ptEtaPhiM(*dimuon) << endl
+           << "    near mu p4 t/e/h Iso: " << ptEtaPhiM(*nearMuon) << " "
+//                                         << nearMuon->hcalIso()
+              << setw(10) << nearMuon->isolationR03().sumPt << " "
+              << setw(10) << nearMuon->isolationR03().emEt  << " "
+              << setw(10) << nearMuon->isolationR03().hadEt
+              << std::endl
+           << "    far mu p4 t/e/h Iso:  " << ptEtaPhiM(*farMuon) << " "
+//                                         << farMuon->hcalIso()
+              << setw(10) << farMuon->isolationR03().sumPt << " "
+              << setw(10) << farMuon->isolationR03().emEt  << " "
+              << setw(10) << farMuon->isolationR03().hadEt
+              << std::endl
+           << "    photon p3:            " << ptEtaPhi(*photon) << std::endl;
 
 
 //       if (nearMuon->hcalIso() >= 1.0) continue;
@@ -429,11 +422,7 @@ int main ( int argc, char ** argv )
       if (mmgCand.mass() < 70. || 110. < mmgCand.mass() ) continue;
       ++mmgCandsPassedPerEvent["6.5 mmg mass"];
 
-      selectedMmgCands.push_back(
-        reco::ShallowClonePtrCandidate(
-          edm::Ptr<reco::CompositeCandidate>(&mmgCands, i)
-          )
-        );
+      selectedMmgCands.push_back(&mmgCand);
     } // end loop over mmg candidates
 
     // update per-event mmg candidate counters
