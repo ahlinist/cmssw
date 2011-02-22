@@ -117,11 +117,8 @@ void CompositePtrCandidateTMEtHistManager<T>::fillHistogramsImp(const edm::Event
     hNuTauCandidateDPhi_->Fill(tauNuCandidate->dPhi(), weight);
     hNuTauCandidateMt_->Fill(tauNuCandidate->mt(), weight);
     if ( tauNuCandidate->hasSVFitSolutions() ) {
-std::cout << "break-point A.1 reached" << std::endl;
       const SVfitWtauNuSolution* svFitSolution = tauNuCandidate->svFitSolution("psKine_MEt_ptBalance");
-std::cout << "break-point A.2 reached" << std::endl;
       if ( svFitSolution ) hNuTauCandidateMtBySVfit_->Fill(svFitSolution->mt(), weight);
-std::cout << "break-point A.3 reached" << std::endl;
     }
     
     hMEtVsTauPt_->Fill(tauNuCandidate->visDecayProducts()->pt(), tauNuCandidate->met()->pt(), weight);
