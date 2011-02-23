@@ -224,6 +224,8 @@ TH2D* h2_n_vs_eta;
       Float_t pid_etawidElePhot[40]; 
       Float_t pid_dphivtxElePhot[40]; 
       Float_t pid_detavtxElePhot[40]; 
+      Float_t pid_distElePhot[40]; 
+      Float_t pid_dcotElePhot[40]; 
       Int_t pid_mishitsElePhot[40]; 
       Float_t pid_ptElePhot[40]; 
 

@@ -13,7 +13,7 @@
 //
 // Original Author:  Daniele del Re
 //         Created:  Thu Sep 13 16:00:15 CEST 2007
-// $Id: GammaJetAnalyzer.cc,v 1.46 2011/02/21 23:19:39 delre Exp $
+// $Id: GammaJetAnalyzer.cc,v 1.47 2011/02/23 11:06:11 delre Exp $
 //
 //
 
@@ -84,7 +84,7 @@
 
 #include "MagneticField/Engine/interface/MagneticField.h"
 #include "Geometry/TrackerGeometryBuilder/interface/TrackerGeometry.h"
-//#include "MagneticField/Records/interface/IdealMagneticFieldRecord.h"
+#include "MagneticField/Records/interface/IdealMagneticFieldRecord.h"
 #include "Geometry/Records/interface/TrackerDigiGeometryRecord.h"
 #include "TrackingTools/MaterialEffects/interface/PropagatorWithMaterial.h"
 #include "TrackingTools/GeomPropagators/interface/AnalyticalPropagator.h"
@@ -93,6 +93,7 @@
 #include "TrackingTools/TrajectoryState/interface/TrajectoryStateTransform.h"
 #include "TrackingTools/PatternTools/interface/TransverseImpactPointExtrapolator.h"
 #include "TrackingTools/GsfTools/interface/GsfPropagatorAdapter.h"
+#include "RecoEgamma/EgammaTools/interface/ConversionFinder.h"
 
 // HLT trigger
 #include "FWCore/Framework/interface/TriggerNamesService.h"
@@ -264,6 +265,12 @@ GammaJetAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
    // get tracks
    Handle<TrackCollection> tracks;
    iEvent.getByLabel(trackTags_,tracks);
+   ConversionFinder convFinder;
+   Double_t bfield = 0;
+   edm::ESHandle<MagneticField> magneticField;
+   iSetup.get<IdealMagneticFieldRecord>().get(magneticField);
+   const  MagneticField *mField = magneticField.product();
+   bfield = mField->inTesla(GlobalPoint(0.,0.,0.)).z();
    
    // get primary vertices
    Handle<VertexCollection> VertexHandle;
@@ -1339,6 +1346,9 @@ GammaJetAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
        pid_dphivtxElePhot[nElePhot] = itElectron->deltaPhiSuperClusterTrackAtVtx(); 
        pid_detavtxElePhot[nElePhot] = itElectron->deltaEtaSuperClusterTrackAtVtx(); 
        pid_mishitsElePhot[nElePhot] = itElectron->gsfTrack()->trackerExpectedHitsInner().numberOfHits(); 
+       ConversionInfo convInfo = convFinder.getConversionInfo(*itElectron,tracks, bfield);      
+       pid_distElePhot[nElePhot] = (convInfo.dist() == -9999.? 9999:convInfo.dist());
+       pid_dcotElePhot[nElePhot] = (convInfo.dcot() == -9999.? 9999:convInfo.dcot());
        pid_ptElePhot[nElePhot] = sqrt(itElectron->gsfTrack()->innerMomentum().Perp2()); 
 
        nElePhot++;       
@@ -1840,6 +1850,8 @@ GammaJetAnalyzer::beginJob()
   m_tree->Branch("pid_dphivtxElePhot ",&pid_dphivtxElePhot ,"pid_dphivtxElePhot[nElePhot]/F");
   m_tree->Branch("pid_detavtxElePhot ",&pid_detavtxElePhot ,"pid_detavtxElePhot[nElePhot]/F");
   m_tree->Branch("pid_mishitsElePhot ",&pid_mishitsElePhot ,"pid_mishitsElePhot[nElePhot]/I");
+  m_tree->Branch("pid_distElePhot ",&pid_distElePhot ,"pid_distElePhot[nElePhot]/F");
+  m_tree->Branch("pid_dcotElePhot ",&pid_dcotElePhot ,"pid_dcotElePhot[nElePhot]/F");
   m_tree->Branch("pid_ptElePhot ",&pid_ptElePhot ,"pid_ptElePhot[nElePhot]/F");
 
   m_tree->Branch("nJet_akt5",&nJet_akt5,"nJet_akt5/I");
