@@ -4,6 +4,13 @@ import FWCore.ParameterSet.VarParsing as VarParsing
 ## setup 'analysis'  options
 options = VarParsing.VarParsing ('analysis')
 
+## register customized options
+options.register("hltProcessName",
+    "HLT",                             # default value
+    options.multiplicity.singleton, # singleton or list
+    options.varType.string,         # bool, string, int, or float
+    "Name of the Process that produced the HLT information.")
+
 ## setup tags
 options.setupTags (tag = 'of_%d',
     ifCond = 'totalSections > 0',
@@ -78,6 +85,12 @@ process.source = cms.Source("PoolSource",
 
 process.load("ElectroWeakAnalysis.MultiBosons.Skimming.ZToEEGSkim_cff")
 process.ZToEEGSkimFilterPath = cms.Path(process.ZToEEGSkimFilterSequence)
+
+process.ZToEEGHltFilter.TriggerResultsTag = cms.InputTag(
+    "TriggerResults",
+    "",
+    options.hltProcessName
+    )
 
 process.out = cms.OutputModule("PoolOutputModule",
     fileName = cms.untracked.string(options.outputFile),
