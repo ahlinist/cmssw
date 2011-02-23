@@ -142,6 +142,19 @@ def applyJobOptions(options):
     jobOptions.wantSummary = True
     jobOptions.hltProcessName = "HLT"
 
+  elif options.jobType == "testWinter10":
+    jobOptions.inputFiles =  ["/store/mc/Winter10/" + \
+      "DYToMuMu_M-20_CT10_TuneZ2_7TeV-powheg-pythia/" + \
+      "GEN-SIM-RECO/E7TeV_ProbDist_2010Data_BX156_START39_V8-v1/0033/" + \
+      "FE75602D-4810-E011-B662-1CC1DE051038.root"
+      ]
+    jobOptions.skimType = "Dimuon"
+    jobOptions.globalTag = "START39_V8::All"
+    jobOptions.reportEvery = 1
+    jobOptions.isRealData = False
+    jobOptions.wantSummary = True
+    jobOptions.hltProcessName = "REDIGI39X"
+
   elif options.jobType == "MUPHPromptReco36X":
     jobOptions.globalTag = "GR10_P_V7::All"
     jobOptions.isRealData = True
