@@ -45,18 +45,30 @@ options.register("skimType",
     "MuonPhoton", # default value
     VarParsing.multiplicity.singleton, # singleton or list
     VarParsing.varType.string,         # bool, string, int, or float
-    "What is the type of this skim, e.g. MuonPhoton?")
+    "One of MuonPhoton, ElectronPhoton, Dimuon, Jet or Inclusive.")
 options.register("crabOptions",
     "", # default value
     VarParsing.multiplicity.singleton, # singleton or list
     VarParsing.varType.string,         # bool, string, int, or float
     "Pass several options in one string delimited by a `,'?")
 
+options.register("ignoreSkimFilter",
+    False, # default value
+    VarParsing.multiplicity.singleton, # singleton or list
+    VarParsing.varType.bool,         # bool, string, int, or float
+    "Ignore the skimming filter?")
+
+options.register("applyCollisionDataCleaningToMC",
+    False, # default value
+    VarParsing.multiplicity.singleton, # singleton or list
+    VarParsing.varType.bool,         # bool, string, int, or float
+    "Apply the collision data cleaning to MC?")
+
 options.register("isPOWHEG",
                  False, # default value
                  VarParsing.multiplicity.singleton, # singleton or list
                  VarParsing.varType.bool,         # bool, string, int, or float
-                 "Is this MC sample POWHEG?") 
+                 "Is this MC sample POWHEG?")
 
 options.register("vetoISR",
                  False, # default value
@@ -80,7 +92,7 @@ options.register("skimFSR",
                  "Do you want to skim for pythia FSR?")
 
 
-options.setupTags(tag = "outEvent%d",
+options.setupTags(tag = "%doutEvents",
                   ifCond = "outEvents > 0",
                   tagArg = "outEvents")
 options.setupTags(tag = "%s",
