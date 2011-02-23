@@ -55,7 +55,7 @@ public:
 		      const char *s8 = "TrigEff_1S", const char *s9 = "TrigEff_2S", const char *s10 = "TrigEff_3S",
 		      const char *binning = "mt,pt-eta");
   
-  void ReadHistogramsDATA0(TFile *f,  const char *s2 = "AnaEff_1S", const char *binning = "mt,pt-eta");
+  void ReadHistogramsDATA0(TFile *f,  const char *s2 = "AnaEff_1S", const char *s3 = "AnaEff_2S", const char *s4 = "AnaEff_3S", const char *binning = "mt,pt-eta");
   
   void ReadHistogramsDATA1(TFile *f, const char *s1 = "UpsilonMass",  const char *s5 = "MuIDEff_1S", 
 		      const char *s8 = "TrigEff_1S", const char *binning = "mt,pt-eta");
@@ -73,8 +73,8 @@ public:
   void CorrectedYields(int mode); // 1 - MC, 2 - DATA
   void plotAcceptance();
   void GetAnaEff();
-  void GetMuIDEff();
-  void GetTrigEff();
+  void GetMuIDEff(int mode);
+  void GetTrigEff(int mode);
   void GetPreSelEff();
   
   void integerEntries(TH1D  *h);
@@ -115,10 +115,12 @@ public:
   std::vector<TH1D> fS1Vector, fS2Vector, fS3Vector, fS4Vector, fS5Vector, fS6Vector, fS7Vector, fS8Vector, fS9Vector, fS10Vector;
   
   //-- 2d histograms for the (fitted) event yields
-  TH2D *fS1Yield, *fAllGenRes, *fRecoGenRes,  *fPreSelBefore, *fPreSelAfter ,*fAnaEff, *fS1YieldCorrected, *fS1YieldComparison , *fAcceptance, *fMuIDEff, *fTrigEff, *fPreSelEff;
+  TH2D *fS1Yield, *fS2Yield, *fS3Yield, *fAllGenRes, *fRecoGenRes,  *fPreSelBefore, *fPreSelAfter, *fAllGenRes_2S, *fRecoGenRes_2S,  *fPreSelBefore_2S, *fPreSelAfter_2S, *fAllGenRes_3S, *fRecoGenRes_3S,  *fPreSelBefore_3S, *fPreSelAfter_3S, *fAnaEff, *fAnaEff_2S, *fAnaEff_3S, *fS1YieldCorrected, *fS2YieldCorrected, *fS3YieldCorrected, *fS1YieldComparison, *fS2YieldComparison, *fS3YieldComparison, *fAcceptance, *fAcceptance_2S, *fAcceptance_3S,  *fMuIDEff, *fMuIDEff_2, *fMuIDEff_3, *fTrigEff, *fTrigEff_2, *fTrigEff_3, *fPreSelEff, *fPreSelEff_2S, *fPreSelEff_3S;
   
   //-- 1d histograms for the (fitted) event yields
   TH1D *fAcceptanceProjPt, *fS1YieldPt, *fAllGenResPt, *fS1YieldEta, *fAllGenResEta; 
+  TH1D *fAcceptanceProjPt_2S, *fS2YieldPt, *fAllGenResPt_2S, *fS2YieldEta, *fAllGenResEta_2S; 
+  TH1D *fAcceptanceProjPt_3S, *fS3YieldPt, *fAllGenResPt_3S, *fS3YieldEta, *fAllGenResEta_3S; 
   
   // -- vectors containing the fitted histograms: S1 =mm , S2 = mt, S3 = mmbar
   std::vector<TH1D> fS1VectorPos,    fS1VectorNeg,    fS2VectorPos,    fS2VectorNeg,    fS3VectorPos,    fS3VectorNeg; 
