@@ -26,6 +26,11 @@ ZToEEGHltFilter.HLTPaths = """
     HLT_Ele17_SW_TightCaloEleId_Ele8HE_L1R_v2
     """.split()
 
+ZToEEGElectronsCountFilter = cms.EDFilter("CandViewCountFilter",
+    src = cms.InputTag("gsfElectrons"),
+    minNumber = cms.uint32(2)
+    )
+
 ZToEEGLooseElectrons = cms.EDFilter("GsfElectronViewRefSelector",
     src = cms.InputTag("gsfElectrons"),
     cut = cms.string("""
@@ -61,10 +66,10 @@ ZToEEGDielectronsFilter = cms.EDFilter("CandViewCountFilter",
     )
 
 ZToEEGSkimFilterSequence = cms.Sequence(
-    ZToEEGHltFilter          +
-    ZToEEGLooseElectrons     *
-    ZToEEGLooseElectronsCountFilter *
-    ZToEEGTightElectrons     *
-    ZToEEGDielectrons        *
+    ZToEEGHltFilter +
+    ZToEEGElectronsCountFilter +
+    (ZToEEGLooseElectrons + ZToEEGLooseElectronsCountFilter) *
+    ZToEEGTightElectrons *
+    ZToEEGDielectrons *
     ZToEEGDielectronsFilter
     )
