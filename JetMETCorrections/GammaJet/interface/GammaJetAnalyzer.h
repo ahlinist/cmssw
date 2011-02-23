@@ -225,6 +225,7 @@ TH2D* h2_n_vs_eta;
       Float_t pid_dphivtxElePhot[40]; 
       Float_t pid_detavtxElePhot[40]; 
       Int_t pid_mishitsElePhot[40]; 
+      Float_t pid_ptElePhot[40]; 
 
       Int_t nJet_akt5;
       Float_t ptJet_akt5[100];
