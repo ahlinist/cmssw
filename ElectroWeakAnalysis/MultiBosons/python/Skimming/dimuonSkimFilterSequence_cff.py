@@ -10,6 +10,11 @@ goodLooseMuons = cms.EDFilter("MuonViewRefSelector",
     filter = cms.bool(True)
     )
 
+goodLooseMuonsCountFilter = cms.EDFilter("CandViewCountFilter",
+    src = cms.InputTag("goodLooseMuons"),
+    minNumber = cms.uint32(2)
+    )
+
 goodTightMuons = goodLooseMuons.clone(
     src = "goodLooseMuons",
     cut = "pt > 15"
@@ -27,7 +32,7 @@ goodDimuonsFilter = cms.EDFilter("CandViewCountFilter",
     )
 
 dimuonSkimFilterSequence = cms.Sequence(
-    goodLooseMuons *
+    (goodLooseMuons + goodLooseMuonsCountFilter) *
     goodTightMuons *
     goodDimuons *
     goodDimuonsFilter
