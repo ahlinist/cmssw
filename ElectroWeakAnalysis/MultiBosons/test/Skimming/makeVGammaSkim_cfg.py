@@ -166,7 +166,9 @@ process.patTriggerEvent.processName = options.hltProcessName
 for collection in matchHltPaths.keys():
     vgEventContent.extraSkimEventContent.append("drop *_%s_*_*" % collection)
 ## Drop default patTriggerObjectsedmAssociation
-vgEventContent.extraSkimEventContent.append("drop patTriggerObjectsedmAssociation_patTriggerEvent_*_*")
+vgEventContent.extraSkimEventContent.append(
+    "drop patTriggerObjectsedmAssociation_patTriggerEvent_*_*"
+    )
 
 
 ## HLT trigger
@@ -174,38 +176,56 @@ process.load(basePath + "hltFilter_cfi")
 process.hltFilter.TriggerResultsTag = \
     "TriggerResults::" + options.hltProcessName
 
+## Add cleaning of collision data (no scraping events etc.)
+##+ https://twiki.cern.ch/twiki/bin/viewauth/CMS/Collisions2010Recipes
+process.load(basePath + "goodCollisionDataSequence_cff")
+## Remove the hltPhysicsDeclared - it kills some good events, reference?
+process.goodCollisionDataSequence.remove(process.hltPhysicsDeclared)
+## Run the hltPhysicsDeclared filter in a separate path to
+##+ store its result in the triggerEvent product.
+process.hltPhysicsDeclaredPath = cms.Path(process.hltPhysicsDeclared)
+
 ## Define the path that's used to select events
-process.skimFilterSequence = cms.Sequence(process.hltFilter) # Extend below
+process.skimFilterSequence = cms.Sequence(
+    process.hltFilter +
+    process.goodCollisionDataSequence
+    ) # Extend below
 process.skimFilterPath = cms.Path(process.skimFilterSequence)
 
 if options.skimType == "MuonPhoton":
     removeTriggerPathsForAllBut(matchHltPaths, ["cleanPatMuons"])
     process.hltFilter.HLTPaths = matchHltPaths["cleanPatMuons"]
-    process.load(basePath + "muonPhotonSkimFilterSequence_cff")
-    process.skimFilterSequence += process.muonPhotonSkimFilterSequence
+    if not options.ignoreSkimFilter:
+        process.load(basePath + "muonPhotonSkimFilterSequence_cff")
+        process.skimFilterSequence += process.muonPhotonSkimFilterSequence
 
 elif options.skimType == "ElectronPhoton":
     removeTriggerPathsForAllBut(matchHltPaths, ["cleanPatElectrons"])
     process.hltFilter.HLTPaths = matchHltPaths["cleanPatElectrons"]
-    process.load(basePath + "electronPhotonSkimFilterSequence_cff")
-    process.skimFilterSequence += process.electronPhotonSkimFilterSequence
+    if not options.ignoreSkimFilter:
+        process.load(basePath + "electronPhotonSkimFilterSequence_cff")
+        process.skimFilterSequence += process.electronPhotonSkimFilterSequence
 
 elif options.skimType == "Dimuon":
     removeTriggerPathsForAllBut(matchHltPaths, ["cleanPatMuons"])
     ## Don't require any triggers.
-    process.skimFilterSequence.remove(process.hltFilter)
-    process.load(basePath + "dimuonSkimFilterSequence_cff")
-    process.skimFilterSequence += process.dimuonSkimFilterSequence
+    # process.skimFilterSequence.remove(process.hltFilter)
+    ## Require the Muon PD
+    process.hltFilter.HLTPaths = ["*Mu*"]
+    if not options.ignoreSkimFilter:
+        process.load(basePath + "dimuonSkimFilterSequence_cff")
+        process.skimFilterSequence += process.dimuonSkimFilterSequence
     ## Add the photon re-reco.
-    addPhotonReReco(process)
+    ## FIXME: make this work in 39x
+#      addPhotonReReco(process)
     ## Now change the photon reco to much looser settings.
-    process.photonCore.minSCEt = 1.0
-    process.photons.minSCEtBarrel = 1.0
-    process.photons.minSCEtEndcap = 1.0
-    process.photons.maxHoverEBarrel = 10.0
-    process.photons.maxHoverEEndcap = 10.0
+#     process.photonCore.minSCEt = 1.0
+#     process.photons.minSCEtBarrel = 1.0
+#     process.photons.minSCEtEndcap = 1.0
+#     process.photons.maxHoverEBarrel = 10.0
+#     process.photons.maxHoverEEndcap = 10.0
     ## Remove the pi0 discriminator
-    ## (currently doesn't work with extremely loos photons)
+    ## (currently doesn't work with extremely loose photons)
     ## FIXME: make the pi0Discriminator work for these weird photons too
     for module in [process.preshowerClusterShape,
                    process.piZeroDiscriminators,
@@ -230,8 +250,9 @@ elif options.skimType == "Dimuon":
 elif options.skimType == "Jet":
     removeTriggerPathsForAllBut(matchHltPaths, ["cleanPatJets"])
     process.hltFilter.HLTPaths = matchHltPaths["cleanPatJets"]
-    process.load(basePath + "jetSkimFilterSequence_cff")
-    process.skimFilterSequence += process.jetSkimFilterSequence
+    if not options.ignoreSkimFilter:
+        process.load(basePath + "jetSkimFilterSequence_cff")
+        process.skimFilterSequence += process.jetSkimFilterSequence
     addPhotonReReco(process)
     # now change the photon reco to much looser settings
     process.photonCore.minSCEt = 10.0
@@ -253,24 +274,17 @@ embedTriggerMatches(process, matchHltPaths)
 
 process.load(basePath + "VGammaSkimSequences_cff")
 
-## Add cleaning of collision data (no scraping events etc.)
-##+ https://twiki.cern.ch/twiki/bin/viewauth/CMS/Collisions2010Recipes
-process.load(basePath + "goodCollisionDataSequence_cff")
-
 if options.isRealData:
-    ## Remove the hltPhysicsDeclared - it kills some good events, reference?
-    process.goodCollisionDataSequence.remove("hltPhysicsDeclared")
-    ## Run the hltPhysicsDeclared filter in a separate path to
-    ##+ store its result in the triggerEvent product.
-    process.hltPhysicsDeclaredPath = cms.Path(process.hltPhysicsDeclared)
     process.defaultSequence = cms.Sequence(
-        process.goodCollisionDataSequence +
         process.skimFilterSequence +
         process.patDefaultSequence
     )
 else:
     process.primaryVertexFilterPath = cms.Path(process.primaryVertexFilter)
+    process.noScrapingPath = cms.Path(process.noScraping)
     process.load(basePath + "prunedGenParticles_cfi")
+    if not options.applyCollisionDataCleaningToMC:
+        process.skimFilterSequence.remove(process.goodCollisionDataSequence)
     process.defaultSequence = cms.Sequence(
         process.skimFilterSequence +
         process.prunedGenParticles *
@@ -393,6 +407,10 @@ process.options.wantSummary = options.wantSummary
 ## Turn off dimuon filter for testing
 if False and hasattr(process, "goodDimuonsFilter"):
     process.goodDimuonsFilter.minNumber = 0
+
+## Check for an empty path in the output
+if str(process.skimFilterPath) == "None":
+    del process.out.SelectEvents
 
 ## Add tab completion + history during inspection
 if __name__ == "__main__": import user
