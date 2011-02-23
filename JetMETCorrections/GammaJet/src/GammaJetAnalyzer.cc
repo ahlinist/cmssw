@@ -13,7 +13,7 @@
 //
 // Original Author:  Daniele del Re
 //         Created:  Thu Sep 13 16:00:15 CEST 2007
-// $Id: GammaJetAnalyzer.cc,v 1.45 2011/02/21 16:00:14 pandolf Exp $
+// $Id: GammaJetAnalyzer.cc,v 1.46 2011/02/21 23:19:39 delre Exp $
 //
 //
 
@@ -310,10 +310,8 @@ GammaJetAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
 
    //get jet correctors
    const JetCorrector* corrector_akt5 = JetCorrector::getJetCorrector (JetCorrector_akt5_, iSetup);
-   const JetCorrector* corrector_akt7 = JetCorrector::getJetCorrector (JetCorrector_akt7_, iSetup);
    const JetCorrector* corrector_jptak5 = JetCorrector::getJetCorrector (JetCorrector_jptak5_, iSetup);
    const JetCorrector* corrector_pfakt5 = JetCorrector::getJetCorrector (JetCorrector_pfakt5_, iSetup);
-   const JetCorrector* corrector_pfakt7 = JetCorrector::getJetCorrector (JetCorrector_pfakt7_, iSetup);
  
    // get gen jet collection
    Handle<GenJetCollection> jetsgenkt4;
@@ -1247,10 +1245,6 @@ GammaJetAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
      std::auto_ptr<CaloRecHitMetaCollectionV> selected = selector4.select(sc->eta(),sc->phi(),mhbhe); 
      for (CaloRecHitMetaCollectionV::const_iterator hit=selected->begin(); hit != selected->end(); ++hit){
        hcalEnergy += hit->energy(); 
-       const CaloSubdetectorGeometry* geom=geometry->getSubdetectorGeometry(DetId::Hcal,HcalDetId(hit->detid()).subdet());
-       //     std::vector<DetId> EBids=EBgeom->getValidDetIds(DetId::Ecal, 1);
-       const CaloCellGeometry* cell=geom->getGeometry(hit->detid());
-       //       cout << "hit eta: " << cell->getPosition().eta() << "    and phi : " << cell->getPosition().phi() << endl;
      }
      hcalovecal04Phot[nPhot] = hcalEnergy/it->energy(); 
 
@@ -1345,6 +1339,7 @@ GammaJetAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
        pid_dphivtxElePhot[nElePhot] = itElectron->deltaPhiSuperClusterTrackAtVtx(); 
        pid_detavtxElePhot[nElePhot] = itElectron->deltaEtaSuperClusterTrackAtVtx(); 
        pid_mishitsElePhot[nElePhot] = itElectron->gsfTrack()->trackerExpectedHitsInner().numberOfHits(); 
+       pid_ptElePhot[nElePhot] = sqrt(itElectron->gsfTrack()->innerMomentum().Perp2()); 
 
        nElePhot++;       
      }	 
@@ -1427,9 +1422,9 @@ GammaJetAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
  
        // Jet Energy Scale Corrections on-the-fly     
        CaloJet  correctedJet = *it;
-       //double scale = corrector_akt7->correction(it->p4());
+       //double scale = corrector_akt5->correction(it->p4());
        edm::RefToBase<reco::Jet> jetRef(edm::Ref<CaloJetCollection>(jetsakt7,nJet_akt7));
-       double scale = corrector_akt7->correction(*it,jetRef,iEvent,iSetup);
+       double scale = corrector_akt5->correction(*it,jetRef,iEvent,iSetup);
        correctedJet.scaleEnergy(scale);
        ptCorrJet_akt7[nJet_akt7] = correctedJet.pt();
 
@@ -1633,7 +1628,7 @@ GammaJetAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
      
        // Jet Energy Scale Corrections on-the-fly     
        PFJet  correctedJet = *it;
-       //double scale = corrector_pfakt7->correction(it->p4());
+       //double scale = corrector_pfakt5->correction(it->p4());
        edm::RefToBase<reco::Jet> jetRef(edm::Ref<PFJetCollection>(pfjetsakt7,nJet_pfakt7));
        double scale = corrector_pfakt5->correction(*it,jetRef,iEvent,iSetup);
        correctedJet.scaleEnergy(scale);
@@ -1844,8 +1839,8 @@ GammaJetAnalyzer::beginJob()
   m_tree->Branch("pid_etawidElePhot ",&pid_etawidElePhot ,"pid_etawidElePhot[nElePhot]/F");
   m_tree->Branch("pid_dphivtxElePhot ",&pid_dphivtxElePhot ,"pid_dphivtxElePhot[nElePhot]/F");
   m_tree->Branch("pid_detavtxElePhot ",&pid_detavtxElePhot ,"pid_detavtxElePhot[nElePhot]/F");
-  m_tree->Branch("pid_detavtxElePhot ",&pid_detavtxElePhot ,"pid_detavtxElePhot[nElePhot]/F");
   m_tree->Branch("pid_mishitsElePhot ",&pid_mishitsElePhot ,"pid_mishitsElePhot[nElePhot]/I");
+  m_tree->Branch("pid_ptElePhot ",&pid_ptElePhot ,"pid_ptElePhot[nElePhot]/F");
 
   m_tree->Branch("nJet_akt5",&nJet_akt5,"nJet_akt5/I");
   m_tree->Branch("ptJet_akt5 ",&ptJet_akt5 ,"ptJet_akt5[nJet_akt5]/F");
