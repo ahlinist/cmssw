@@ -27,7 +27,9 @@ process.source = cms.Source("PoolSource",
     fileNames = cms.untracked.vstring(
 #'file:/cmsrm/pc18/pandolf/CMSSW_3_5_7/src/JetMETCorrections/GammaJet/test/eventi_136097.root'
 #'file:/cmsrm/pc18/pandolf/CMSSW_3_6_3/src/JetMETCorrections/GammaJet/test/events_136100.root'
-'file:events_RelVal387_PhotonJet10.root'
+#'file:/cmsrm/pc21/emanuele/data/Pool/EG_Run2010A_RECO.root'
+#'file:/tmp/delre/Photon_RECO_Nov4ReReco_v2.root'
+'file:/tmp/delre/2E8275DD-29EC-DF11-ABF9-00237DA80CD2.root'
 )
 
 )
@@ -56,6 +58,7 @@ process.monster = cms.EDFilter(
 )
 
 
+###########  EB SPIKE CLEANING BEGIN #####################
 
 process.load('Configuration/StandardSequences/Services_cff')
 process.load('Configuration/StandardSequences/GeometryExtended_cff')
@@ -66,11 +69,13 @@ process.load('Configuration/StandardSequences/MagneticField_AutoFromDBCurrent_cf
 process.load('Configuration/StandardSequences/FrontierConditions_GlobalTag_cff')
 #process.load('Configuration/EventContent/EventContent_cff')
 #process.load('TrackingTools/Configuration/TrackingTools_cff')
-
+process.GlobalTag.globaltag = cms.string('START39_V8::All')
 #process.GlobalTag.globaltag = cms.string('GR_R_38X_V14::All')
-process.GlobalTag.globaltag = cms.string('START38_V14::All')
+#process.GlobalTag.globaltag = cms.string('GR_R_35X_V8::All')
+#process.GlobalTag.globaltag = cms.string('START36_V10::All')
 
 
+###########  EB SPIKE CLEANING END   #####################
 
 ## produce JPT jets
 #process.load('RecoJets.Configuration.RecoJPTJets_cff')
@@ -83,7 +88,7 @@ process.load("JetMETCorrections.Type1MET.MetType1Corrections_cff")
 
 process.metMuonJESCorAK5 = process.metJESCorAK5CaloJet.clone()
 process.metMuonJESCorAK5.inputUncorJetsLabel = "ak5CaloJets"
-process.metMuonJESCorAK5.corrector = "ak5CaloL2L3Residual"
+process.metMuonJESCorAK5.corrector = "ak5CaloL2L3"
 process.metMuonJESCorAK5.inputUncorMetLabel = "corMetGlobalMuons"
 #process.metMuonJESCorAK5.hasMuonsCorr = True
 #process.metMuonJESCorAK5.useTypeII = True
@@ -98,11 +103,13 @@ process.myanalysis = cms.EDAnalyzer("GammaJetAnalyzer",
     genMet = cms.untracked.InputTag("genMetTrue"),
     met = cms.untracked.InputTag("met"),
     tracks = cms.untracked.InputTag("generalTracks"),
+    Electronsrc = cms.untracked.InputTag("gsfElectrons"),
     Photonsrc = cms.untracked.InputTag("photons"),
     recoCollection = cms.string('EcalRecHitsEB'),
     JetCorrectionService_akt5 = cms.string('ak5CaloL2L3'),
     JetCorrectionService_akt7 = cms.string('ak7CaloL2L3'),
     JetCorrectionService_jptak5 = cms.string('ak5JPTL2L3'),
+    JetCorrectionService_jptak7 = cms.string('ak7JPTL2L3'),
     JetCorrectionService_pfakt5 = cms.string('ak5PFL2L3'),
     JetCorrectionService_pfakt7 = cms.string('ak7PFL2L3'),
     jetskt4 = cms.untracked.InputTag("kt4CaloJets"),
@@ -119,7 +126,7 @@ process.myanalysis = cms.EDAnalyzer("GammaJetAnalyzer",
     jetsgenkt6 = cms.untracked.InputTag("kt6GenJets"),
     jetsgenakt5 = cms.untracked.InputTag("ak5GenJets"),
     jetsgenakt7 = cms.untracked.InputTag("ak7GenJets"),
-    TriggerTag = cms.untracked.InputTag("TriggerResults::REDIGI38X"),
+    TriggerTag = cms.untracked.InputTag("TriggerResults::HLT"),
     vertices = cms.untracked.InputTag("offlinePrimaryVertices"),
     genjetptthr = cms.double(5.),
     calojetptthr = cms.double(3.),
@@ -133,7 +140,7 @@ process.myanalysis = cms.EDAnalyzer("GammaJetAnalyzer",
 )
 
 
-process.p = cms.Path(process.monster*process.ak5PFJetsL2L3Residual*process.metCorSequence*process.myanalysis)
+process.p = cms.Path(process.monster*process.metCorSequence*process.myanalysis)
 #process.p = cms.Path(process.monster*process.myanalysis)
 #process.p = cms.Path(process.ecalCleanClustering*process.recoJPTJets*process.myanalysis)
 #process.p = cms.Path(process.myanalysis)
