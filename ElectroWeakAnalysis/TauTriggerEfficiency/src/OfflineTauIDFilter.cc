@@ -13,7 +13,7 @@
 //
 // Original Author:  Matti Kortelainen
 //         Created:  Thu Sep 18 11:07:16 CEST 2008
-// $Id: OfflineTauIDFilter.cc,v 1.4 2008/09/18 11:19:58 mkortela Exp $
+// $Id: OfflineTauIDFilter.cc,v 1.5 2008/11/20 14:08:59 slehti Exp $
 //
 //
 
@@ -28,8 +28,8 @@
 OfflineTauIDFilter::OfflineTauIDFilter(const edm::ParameterSet& iConfig)
 {
    //now do what ever initialization is needed
-  _PfTauSource = iConfig.getParameter<InputTag>("PfTauSource");
-  _CaloTauSource = iConfig.getParameter<InputTag>("CaloTauSource");
+  _PfTauSource = iConfig.getParameter<edm::InputTag>("PfTauSource");
+  _CaloTauSource = iConfig.getParameter<edm::InputTag>("CaloTauSource");
 
   _nEvents = 0;
   _nPassedEvents = 0;
@@ -51,10 +51,10 @@ OfflineTauIDFilter::filter(edm::Event& iEvent, const edm::EventSetup& iSetup)
 {
   using namespace edm;
 
-  Handle<PFTauCollection> thePFTauHandle;
+  edm::Handle<reco::PFTauCollection> thePFTauHandle;
   iEvent.getByLabel(_PfTauSource,thePFTauHandle);
 
-  Handle<CaloTauCollection> theCaloTauHandle;
+  edm::Handle<reco::CaloTauCollection> theCaloTauHandle;
   iEvent.getByLabel(_CaloTauSource,theCaloTauHandle);
 
   bool passed = false;
@@ -80,7 +80,7 @@ OfflineTauIDFilter::beginJob(const edm::EventSetup&)
 // ------------ method called once each job just after ending the event loop  ------------
 void 
 OfflineTauIDFilter::endJob() {
-  LogInfo("OffLineTauIDFilter") << "Total " << _nEvents << " events, "
+  edm::LogInfo("OffLineTauIDFilter") << "Total " << _nEvents << " events, "
                                 << "from which " << _nPassedEvents << " events passed the filter" << std::endl; 
 }
 

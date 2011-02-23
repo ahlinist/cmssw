@@ -54,7 +54,7 @@ thisPFTauDiscriminationByIsolation.Prediscriminants.leadPion.Producer = cms.Inpu
 from RecoTauTag.RecoTau.PFRecoTauDiscriminationAgainstMuon_cfi import *
 thisPFTauDiscriminationAgainstMuon = copy.deepcopy(pfRecoTauDiscriminationAgainstMuon)
 thisPFTauDiscriminationAgainstMuon.PFTauProducer = 'PFTausSelected'
-thisPFTauDiscriminationAgainstMuon.Prediscriminants.leadPion.Producer = cms.InputTag('thisPFTauDiscriminationByLeadingTrackFinding')
+thisPFTauDiscriminationAgainstMuon.Prediscriminants.leadTrack.Producer = cms.InputTag('thisPFTauDiscriminationByLeadingTrackFinding')
 
 TTEffPFTau = cms.Sequence(
         ak5PFJetTracksAssociatorAtVertex *

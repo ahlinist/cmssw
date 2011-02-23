@@ -65,7 +65,7 @@ process.load('Configuration/StandardSequences/FrontierConditions_GlobalTag_cff')
 if (isData):
     process.GlobalTag.globaltag = 'GR_R_38X_V15::All'
 else:
-    process.GlobalTag.globaltag = 'START38_V14::All'
+    process.GlobalTag.globaltag = 'START311_V1::All'
     #process.GlobalTag.globaltag = 'MC_38Y_V14::All'
 
 print process.GlobalTag.globaltag
