@@ -79,6 +79,39 @@ process.source = cms.Source("PoolSource",
 
 process.load("ElectroWeakAnalysis.MultiBosons.Skimming.ZToEEGSkim_cff")
 process.ZToEEGSkimFilterPath = cms.Path(process.ZToEEGSkimFilterSequence)
+# process.ZToEEGTightElectrons.cut = "pt > 10"
+
+process.load("DPGAnalysis.Skims.WZEGSkim_cff")
+process.hltFilter.HLTPaths = process.ZToEEGHltFilter.HLTPaths
+
+## Tweak the cuts
+process.WZInterestingEventSelector.ptCut = 10
+process.WZInterestingEventSelector.eb_ecalIsoCut = 9999
+process.WZInterestingEventSelector.ee_ecalIsoCut = 9999
+process.WZInterestingEventSelector.eb_seeCut = 9999
+process.WZInterestingEventSelector.ee_seeCut = 9999
+process.WZInterestingEventSelector.invMassCut = 20
+
+## remove all W's
+process.WZInterestingEventSelector.metCut = 9999
+
+## count all electrons
+process.WZElectrons = process.WZInterestingEventSelector.clone(
+    metCut = 0
+    )
+
+process.WZDielectrons = process.WZInterestingEventSelector.clone(
+    invMassCut = 0
+    )
+
+# process.WZInterestingEventSelector.metCut = 0
+
+process.WZEGSkimFilterPath = cms.Path(
+    process.hltFilter +
+    process.WZElectrons +
+    process.WZDielectrons +
+    process.WZInterestingEventSelector
+    )
 
 process.out = cms.OutputModule("PoolOutputModule",
     fileName = cms.untracked.string(options.outputFile),
@@ -96,5 +129,16 @@ process.endpath = cms.EndPath(process.out)
 process.options = cms.untracked.PSet(
     wantSummary = cms.untracked.bool(True)
 )
+
+## DEBUG
+print repr(process.WZInterestingEventSelector)
+
+print "== process.ZToEEGLooseElectrons.cut =="
+print process.ZToEEGLooseElectrons.cut.value()
+
+print "== process.ZToEEGTightElectrons.cut =="
+print process.ZToEEGTightElectrons.cut.value()
+
+print repr(process.ZToEEGDielectrons)
 
 if __name__ == "__main__": import user
