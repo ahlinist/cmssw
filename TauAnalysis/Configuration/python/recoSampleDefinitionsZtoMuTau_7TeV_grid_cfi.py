@@ -14,7 +14,7 @@ SAMPLES_TO_ANALYZE = [
     'qqZll',
     'qqZllPU156bx', # EK: not at any site as of Dec 23
     'bbZll', 'ccZll',
-    'Ztautau_powheg', 'Zmumu_powheg', 'Zee_powheg',
+    'Ztautau_powheg', 'Ztautau_powhegZ2', 'Zmumu_powheg', 'Zee_powheg',
     'DYmumuM2to10_pythia', 'DYmumuM10to20_pythia', 'Zmumu_pythia',
     'Zee_pythia',
     #'InclusivePPmuX',
@@ -181,6 +181,22 @@ RECO_SAMPLES = {
         'hlt' : cms.InputTag("TriggerResults", "", "REDIGI38XPU")
     },
     'Ztautau_powheg' : {
+        'datasetpath' : "/DYToTauTau_M-20_CT10_TuneD6T_7TeV-powheg-pythia-tauola/Fall10-E7TeV_ProbDist_2010Data_BX156_START38_V12-v1/GEN-SIM-RECO",
+        'dbs_url' :  "http://cmsdbsprod.cern.ch/cms_dbs_prod_global/servlet/DBSServlet",
+        'events_processed' : 1989180,
+        'skim_eff' : 1.0,
+        'x_sec' : 1666*_picobarns,
+        'legendEntry' : plotter.process_Ztautau.config_dqmHistPlotter.legendEntry.value(),
+        'type' : plotter.process_Ztautau.config_dqmHistPlotter.type.value(),
+        'drawOption' : styles.drawOption_Ztautau,
+        'applyZrecoilCorrection' : True,
+        'enableFakeRates' : True,
+        'applyMuonTriggerEfficiencyCorrection' : True,
+        'applyMuonIsolationEfficiencyCorrection' : True,
+	'applyVertexMultiplicityReweighting' : True,
+        'hlt' : cms.InputTag("TriggerResults", "", "REDIGI38XPU")
+    },
+    'Ztautau_powhegZ2' : {
         'datasetpath' : "/DYToTauTau_M-20_CT10_TuneZ2_7TeV-powheg-pythia-tauola/Fall10-E7TeV_ProbDist_2010Data_BX156_START38_V12-v3/GEN-SIM-RECO",
         'dbs_url' :  "http://cmsdbsprod.cern.ch/cms_dbs_prod_global/servlet/DBSServlet",
         'events_processed' : 1995369,
