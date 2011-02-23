@@ -17,6 +17,11 @@ ZToMMGHltFilter.HLTPaths = ["*Mu*"]
 #     HLT_DoubleMu3_v2
 #     """.split()
 
+ZToMMGMuonsCountFilter = cms.EDFilter("CandViewCountFilter",
+    src = cms.InputTag("muons"),
+    minNumber = cms.uint32(2)
+    )
+
 ZToMMGLooseMuons = cms.EDFilter("MuonViewRefSelector",
     src = cms.InputTag("muons"),
     cut = cms.string("""
@@ -50,6 +55,7 @@ ZToMMGDimuonsFilter = cms.EDFilter("CandViewCountFilter",
 
 ZToMMGSkimFilterSequence = cms.Sequence(
     ZToMMGHltFilter +
+    ZToMMGMuonsCountFilter +
     (ZToMMGLooseMuons + ZToMMGLooseMuonsCountFilter) *
     ZToMMGTightMuons *
     ZToMMGDimuons *
