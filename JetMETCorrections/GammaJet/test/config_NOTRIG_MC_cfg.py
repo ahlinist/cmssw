@@ -86,6 +86,12 @@ process.load("RecoMET.Configuration.GenMETParticles_cff")
 process.load("JetMETCorrections.Configuration.DefaultJEC_cff")
 process.load("JetMETCorrections.Type1MET.MetType1Corrections_cff")
 
+process.ak5CaloL1Offset.useCondDB = False
+process.ak5PFL1Offset.useCondDB = False
+process.ak5JPTL1Offset.useCondDB = False
+
+
+
 process.metMuonJESCorAK5 = process.metJESCorAK5CaloJet.clone()
 process.metMuonJESCorAK5.inputUncorJetsLabel = "ak5CaloJets"
 process.metMuonJESCorAK5.corrector = "ak5CaloL2L3"
@@ -106,11 +112,11 @@ process.myanalysis = cms.EDAnalyzer("GammaJetAnalyzer",
     Electronsrc = cms.untracked.InputTag("gsfElectrons"),
     Photonsrc = cms.untracked.InputTag("photons"),
     recoCollection = cms.string('EcalRecHitsEB'),
-    JetCorrectionService_akt5 = cms.string('ak5CaloL2L3'),
+    JetCorrectionService_akt5 = cms.string('ak5CaloL1L2L3'),
     JetCorrectionService_akt7 = cms.string('ak7CaloL2L3'),
-    JetCorrectionService_jptak5 = cms.string('ak5JPTL2L3'),
+    JetCorrectionService_jptak5 = cms.string('ak5JPTL1L2L3'),
     JetCorrectionService_jptak7 = cms.string('ak7JPTL2L3'),
-    JetCorrectionService_pfakt5 = cms.string('ak5PFL2L3'),
+    JetCorrectionService_pfakt5 = cms.string('ak5PFL1L2L3'),
     JetCorrectionService_pfakt7 = cms.string('ak7PFL2L3'),
     jetskt4 = cms.untracked.InputTag("kt4CaloJets"),
     jetskt6 = cms.untracked.InputTag("kt6CaloJets"),
