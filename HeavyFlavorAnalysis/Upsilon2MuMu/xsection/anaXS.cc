@@ -3271,7 +3271,10 @@ void anaXS::FITUpsilon(){
   gStyle->SetOptFit(00000000000000);		 
   makeCanvas(1); 
   c1->Clear();
-    
+  
+  //TFile *f = new TFile("Yield.root", "RECREATE");
+  
+  
   for (unsigned int i = 0; i < fS1Vector.size(); ++i) {
     
     // -- positive charge
@@ -3350,6 +3353,7 @@ void anaXS::FITUpsilon(){
     c1->Modified();
     c1->Update();
     
+    
     TString frag(h->GetName()); 
     frag.ReplaceAll("s3:mmbar,", ""); 
     frag.ReplaceAll(",Q1", ""); 
@@ -3358,7 +3362,9 @@ void anaXS::FITUpsilon(){
     c1->SaveAs(Form("%s/massfits-%s-%s.eps", fPtDirectory.c_str(), fSample.c_str(), frag.Data())); 
   }
   
-  
+  //fS1Yield->Write();
+  //fS2Yield->Write();
+  //fS3Yield->Write();
   c1->Clear();
   
 }
