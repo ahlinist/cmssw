@@ -956,6 +956,7 @@ void xsReader::candidateSelection(int mode){
 	  fGenCandPt   = fgCand->fP.Perp();
 	  gCand.SetPtEtaPhiE(fgCand->fP.Perp(),fgCand->fP.Eta(),fgCand->fP.Phi(),fgCand->fP.Energy());
 	  fGenCandY = gCand.Rapidity();
+	  ((TH2D*)fpHistFile->Get(Form("TrueYield_%.1dS",UPSTYPE)))->Fill(gCand.Rapidity(), genCand->fP.Perp());
 	  fGenMuon1Pt = gl1->fP.Perp(); fGenMuon2Pt = gl2->fP.Perp(); 
 	  fGenMuon1Eta = gl1->fP.Eta(); fGenMuon2Eta = gl2->fP.Eta(); 
 	}
@@ -1200,6 +1201,7 @@ void xsReader::bookHist() {
   k = new TH2D(Form("MuIDCheck_Numa_%.1dS",UPSTYPE), Form("MuIDCheck_Numa_%1.dS", UPSTYPE), fNy, fYbin, fNpt, fPTbin);  
   k = new TH2D(Form("TrigCheck_Numa_%.1dS",UPSTYPE), Form("TrigCheck_Numa_%1.dS", UPSTYPE), fNy, fYbin, fNpt, fPTbin);  
   
+  k = new TH2D(Form("TrueYield_%.1dS",UPSTYPE), Form("TrueYield_%1.dS", UPSTYPE), fNy, fYbin, fNpt, fPTbin);
   
   // Trig Check
   k = new TH2D(Form("TrigCheck_after_%.1dS",UPSTYPE), Form("TrigCheck_after_%1.dS", UPSTYPE), fNy, fYbin, fNpt, fPTbin);
