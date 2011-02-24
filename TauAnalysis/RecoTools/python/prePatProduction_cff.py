@@ -44,6 +44,7 @@ producePrePat = cms.Sequence(
    + PFTau
    # CV: discriminator against calo. muons currently disabled per default;
    #     add manually
+   + recoTauHPSTancSequence
    + hpsTancTausDiscriminationAgainstCaloMuon
    #+ shrinkingConePFTauTancCVTransform
    #+ associateTauFakeRates
