@@ -10,22 +10,24 @@ SAMPLES_TO_ANALYZE = [
     'data_Mu_Run2010B_Nov4ReReco',
     'ZtautauPU156bx',
     'DYtautauM10to20PU156bx_pythiaZ2', 'ZtautauPU156bx_pythiaZ2',
-    #'Zmumu_pythia', 'Zee_pythia',
+    'Zmumu_pythia', 'Zee_pythia',
     'qqZll',
     'qqZllPU156bx', # EK: not at any site as of Dec 23
     'bbZll', 'ccZll',
-    'Ztautau_powheg', 'Ztautau_powhegZ2', 'Zmumu_powheg', 'Zee_powheg',
+    'Ztautau_powheg',
+    'Ztautau_powhegZ2', 'Zmumu_powheg', 'Zee_powheg',
     'DYmumuM2to10_pythia', 'DYmumuM10to20_pythia', 'Zmumu_pythia',
     'Zee_pythia',
     #'InclusivePPmuX',
-    'PPmuXptGt20Mu10', 'PPmuXptGt20Mu15',
+    'PPmuXptGt20Mu10',
+    'PPmuXptGt20Mu15',
     #'PPmuXptGt20Mu10Workaround',
-    #'Wenu_pythia', 'Wmunu_pythia', 'Wtaunu_pythia',
-    #'WePlus_powheg', 'WeMinus_powheg', 'WmuMinus_powheg', 'WmuPlus_powheg', 'WtauMinus_powheg', 'WtauPlus_powheg',
+    'Wenu_pythia', 'Wmunu_pythia', 'Wtaunu_pythia',
+    'WePlus_powheg', 'WeMinus_powheg', 'WmuMinus_powheg', 'WmuPlus_powheg', 'WtauMinus_powheg', 'WtauPlus_powheg',
     'WplusJets_madgraph',
     'WW', 'WZ', 'ZZ',
-    #'TTplusJets_pythia',
-    'TTplusJets_madgraph'
+    'TTplusJets_pythia',
+    #'TTplusJets_madgraph'
 ]
 
 # List of samples to include in the final level plots.  May include selections
@@ -33,11 +35,12 @@ SAMPLES_TO_ANALYZE = [
 SAMPLES_TO_PLOT = [
     'data',
     'VVsum',
-    'TTplusJets_madgraph',
+    'TTplusJets_pythia',
     #'Zee_powheg',
     'Zmumu_powheg',
     #'WplusJetsSum_pythia',
-    'WplusJets_madgraph',
+    'WplusJetsSum_powheg',
+    #'WplusJets_madgraph',
     'qcdSum',
     'ZtautauSum'
 ]
@@ -49,11 +52,12 @@ SAMPLES_TO_PRINT.append('smSum')
 #SAMPLES_TO_PRINT.append('ZtautauPU156bx')
 #SAMPLES_TO_PRINT.append('ZtautauPU156bx_pythiaZ2')
 #SAMPLES_TO_PRINT.append('Ztautau_powheg')
-SAMPLES_TO_PRINT.append('DYmumuM2to10_pythia')
-SAMPLES_TO_PRINT.append('DYmumuM10to20_pythia')
+#SAMPLES_TO_PRINT.append('DYmumuM2to10_pythia')
+#SAMPLES_TO_PRINT.append('DYmumuM10to20_pythia')
 
 SAMPLE_DEFAULTS = {
-    'dbs_url' : "http://cmsdbsprod.cern.ch/cms_dbs_ph_analysis_02/servlet/DBSServlet",
+    #'dbs_url' : "http://cmsdbsprod.cern.ch/cms_dbs_ph_analysis_02/servlet/DBSServlet",
+    'dbs_url' : "http://cmsdbsprod.cern.ch/cms_dbs_prod_global/servlet/DBSServlet",
     ##'conditions' : 'startup', # CV: temporarily disabled, because JEC uncertainties need 'START38_V14' tag
                                 #     while default tag for CMSSW_3_8_7 is 'START38_V13'
     'conditions' : 'START38_V14::All',
@@ -151,6 +155,7 @@ RECO_SAMPLES = {
     },
     'DYtautauM10to20PU156bx_pythiaZ2' : {
         'datasetpath' : "/DYToTauTau_M-10To20_TuneZ2_7TeV-pythia6-tauola/Fall10-E7TeV_ProbDist_2010Data_BX156_START38_V12-v1/GEN-SIM-RECO",
+        'dbs_url' : "http://cmsdbsprod.cern.ch/cms_dbs_prod_global/servlet/DBSServlet",
         'events_processed' : 2029050,
         'skim_eff' : 1.0,
         'x_sec' : 1666*_picobarns,
@@ -371,6 +376,7 @@ RECO_SAMPLES = {
     },
     'Zee_pythia' : {
         'datasetpath' : "/DYToEE_M-20_TuneZ2_7TeV-pythia6/Fall10-E7TeV_ProbDist_2010Data_BX156_START38_V12-v1/GEN-SIM-RECO",
+        'dbs_url' : "http://cmsdbsprod.cern.ch/cms_dbs_prod_global/servlet/DBSServlet",
         'events_processed' : 2085586,
         'skim_eff' : 1.0,
         'x_sec' : 1.282*1300*_picobarns, # Z + jets correction factor for NLO/LO cross-sections = 1.282
@@ -385,6 +391,7 @@ RECO_SAMPLES = {
     },
     'Zee_powheg' : {
         'datasetpath' : "/DYToEE_M-20_CT10_TuneZ2_7TeV-powheg-pythia/Fall10-E7TeV_ProbDist_2010Data_BX156_START38_V12-v1/GEN-SIM-RECO",
+        'dbs_url' : "http://cmsdbsprod.cern.ch/cms_dbs_prod_global/servlet/DBSServlet",
         'events_processed' : 1998990,
         'skim_eff' : 1.0,
         'x_sec' : 1666*_picobarns,
@@ -399,6 +406,7 @@ RECO_SAMPLES = {
     },
     'InclusivePPmuX' : {
         'datasetpath' : "/ppMuX/akalinow-SkimTauTau_356_pass1-0a3d3891f015a95324f94837322fb8aa-muTauSkim/USER",
+        'dbs_url' : "http://cmsdbsprod.cern.ch/cms_dbs_ph_analysis_02/servlet/DBSServlet",
         'events_processed' : 9878911,
         'skim_eff' : 0.017,
         'x_sec' : 48.44*_millibarns*0.00176, # 48.44 mb * gen filter efficiency
@@ -721,30 +729,30 @@ MERGE_SAMPLES = {
             ##'qqZll',
             ##'bbZll',
             ##'ccZll',
-            'ZtautauPU156bx'
+            #'ZtautauPU156bx'
             ##'qqZllPU156bx',
-            ##'Ztautau_powheg'
+           'Ztautau_powhegZ2'
         ],
         'legendEntry' : plotter.process_Ztautau.config_dqmHistPlotter.legendEntry.value(),
         'type' : plotter.process_Ztautau.config_dqmHistPlotter.type.value(),
         'drawOption' : styles.drawOption_Ztautau
     },
-    'ZmumuSum' : {
-        'samples' : [            
-            ##'Zmumu_powheg',            
-            'Zmumu_pythia',
-            'DYmumuM2to10_pythia',
-            'DYmumuM10to20_pythia'
-        ],
-        'legendEntry' : plotter.process_Zmumu.config_dqmHistPlotter.legendEntry.value(),
-        'type' : plotter.process_Zmumu.config_dqmHistPlotter.type.value(),
-        'drawOption' : styles.drawOption_Zmumu
-    },
+    #'ZmumuSum' : {
+     #   'samples' : [            
+      #      'Zmumu_powheg',            
+            #'Zmumu_pythia',
+            #'DYmumuM2to10_pythia',
+            #'DYmumuM10to20_pythia'
+      #  ],
+      #  'legendEntry' : plotter.process_Zmumu.config_dqmHistPlotter.legendEntry.value(),
+      #  'type' : plotter.process_Zmumu.config_dqmHistPlotter.type.value(),
+       # 'drawOption' : styles.drawOption_Zmumu
+    #},
     'qcdSum' : {
         'samples' : [
             #'InclusivePPmuX',
             #'PPmuXptGt20Mu10Workaround',
-            'PPmuXptGt20Mu10',
+            #'PPmuXptGt20Mu10',
             'PPmuXptGt20Mu15'
         ],
         #'legendEntry' : plotter.process_PPmuXptGt20.config_dqmHistPlotter.legendEntry.value(),
@@ -762,19 +770,19 @@ MERGE_SAMPLES = {
        #'type' : plotter.process_WplusJets.config_dqmHistPlotter.type.value(),
        #'drawOption' : styles.drawOption_WplusJets
     #},
-    ##'WplusJetsSum_powheg' : {
-    ##	'samples' : [
-    ##        'WePlus_powheg' ,
-    ##        'WeMinus_powheg',
-    ##        'WmuMinus_powheg',
-    ##        'WmuPlus_powheg',
-    ##        'WtauMinus_powheg',
-    ##        'WtauPlus_powheg'
-    ##	],
-    ## 	'legendEntry' : plotter.process_WplusJets.config_dqmHistPlotter.legendEntry.value(),
-    ##    'type' : plotter.process_WplusJets.config_dqmHistPlotter.type.value(),
-    ##    'drawOption' : styles.drawOption_WplusJets
-    ##},
+    'WplusJetsSum_powheg' : {
+    	'samples' : [
+            'WePlus_powheg' ,
+            'WeMinus_powheg',
+            'WmuMinus_powheg',
+            'WmuPlus_powheg',
+            'WtauMinus_powheg',
+            'WtauPlus_powheg'
+    	],
+    	'legendEntry' : plotter.process_WplusJets.config_dqmHistPlotter.legendEntry.value(),
+        'type' : plotter.process_WplusJets.config_dqmHistPlotter.type.value(),
+        'drawOption' : styles.drawOption_WplusJets
+    },
     'VVsum' : {
         'samples' : [
             'WW',
@@ -789,9 +797,9 @@ MERGE_SAMPLES = {
         'samples' : [
             'Zmumu_powheg',
             'qcdSum',
-            'WplusJets_madgraph',
+            'WplusJetsSum_powheg',
             'VVsum',
-            'TTplusJets_madgraph'
+            'TTplusJets_pythia'
         ],
         'legendEntry' : 'SM',
         'type' : 'smMC',
