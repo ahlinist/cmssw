@@ -3,6 +3,11 @@
 #include "AnalysisDataFormats/TauAnalysis/interface/CompositePtrCandidateT1T2MEtFwd.h"
 #include "AnalysisDataFormats/TauAnalysis/interface/SVfitDiTauSolution.h"
 #include "AnalysisDataFormats/TauAnalysis/interface/SVfitLegSolution.h"
+#include "AnalysisDataFormats/TauAnalysis/interface/NSVfitEventHypothesis.h"
+#include "AnalysisDataFormats/TauAnalysis/interface/NSVfitResonanceHypothesis.h"
+#include "AnalysisDataFormats/TauAnalysis/interface/NSVfitSingleParticleHypothesisBase.h"
+#include "AnalysisDataFormats/TauAnalysis/interface/NSVfitTauToLepHypothesis.h"
+#include "AnalysisDataFormats/TauAnalysis/interface/NSVfitTauToHadHypothesis.h"
 
 #include "AnalysisDataFormats/TauAnalysis/interface/ZllHypothesisT1T2.h"
 #include "AnalysisDataFormats/TauAnalysis/interface/ZllHypothesisT1T2Fwd.h"
@@ -81,7 +86,19 @@ namespace {
     std::vector<SVfitWtauNuSolution> dummySVfitWtauNuSolutionCollection;
     std::map<std::string, SVfitWtauNuSolution> dummySVfitWtauNuSolutionMap;
     std::map<std::string, std::map<std::string, SVfitWtauNuSolution> > dummySVfitWtauNuSolutionMapMap;
-
+    NSVfitEventHypothesis dummyNSVfitEventHypothesis;
+    NSVfitResonanceHypothesis dummyNSVfitResonanceHypothesis;
+    //NSVfitSingleParticleHypothesisBase dummyNSVfitSingleParticleHypothesisBase;
+    NSVfitTauToElecHypothesis dummyNSVfitTauToElecHypothesis;
+    NSVfitTauToMuHypothesis dummyNSVfitTauToMuHypothesis;
+    NSVfitTauToHadHypothesis dummyNSVfitTauToHadHypothesis;
+    std::vector<NSVfitEventHypothesis> dummyNSVfitEventHypothesisCollection;
+    std::vector<NSVfitResonanceHypothesis> dummyNSVfitResonanceHypothesisCollection;
+    //std::vector<NSVfitSingleParticleHypothesisBase> dummyNSVfitSingleParticleHypothesisBaseCollection;
+    std::vector<NSVfitTauToElecHypothesis> dummyNSVfitTauToElecHypothesisCollection;
+    std::vector<NSVfitTauToMuHypothesis> dummyNSVfitTauToMuHypothesisCollection;
+    std::vector<NSVfitTauToHadHypothesis> dummyNSVfitTauToHadHypothesisCollection;
+    
     /// create dictionaries for PATDiElecPair objects
     PATDiElecPair dummyPATDiElecPair;
     edm::Wrapper<PATDiElecPair> dummyPATDiElecPairWrapper;

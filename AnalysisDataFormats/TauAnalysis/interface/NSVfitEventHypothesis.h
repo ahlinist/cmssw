@@ -8,7 +8,7 @@
 class NSVfitEventHypothesis
 {
  public:
-  NSVfitEventHypothesis();
+  NSVfitEventHypothesis() {}
   virtual ~NSVfitEventHypothesis() 
   {
     for ( std::vector<NSVfitResonanceHypothesis*>::const_iterator it = resonances_.begin();
@@ -41,6 +41,8 @@ class NSVfitEventHypothesis
       (*resonance)->print(stream);
     }
   }
+
+  friend class NSVfitEventBuilderBase;
 
  private:
 
