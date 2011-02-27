@@ -12,7 +12,7 @@
  *
  * \version $Revision: 1.1 $
  *
- * $Id: NSVfitTauToHadLikelihoodPhaseSpace.h,v 1.1 2010/08/28 14:12:06 veelken Exp $
+ * $Id: NSVfitTauToHadLikelihoodPhaseSpace.h,v 1.1 2011/02/27 16:45:16 veelken Exp $
  *
  */
 
@@ -27,6 +27,8 @@ class NSVfitTauToHadLikelihoodPhaseSpace : public NSVfitSingleParticleLikelihood
  public:
   NSVfitTauToHadLikelihoodPhaseSpace(const edm::ParameterSet&);
   ~NSVfitTauToHadLikelihoodPhaseSpace();
+
+  void initialize(NSVfitAlgorithmBase*) const;
 
   double operator()(const NSVfitSingleParticleHypothesisBase*) const;
 };

@@ -1,8 +1,12 @@
 #include "TauAnalysis/CandidateTools/plugins/NSVfitTauToHadLikelihoodPhaseSpace.h"
 
+#include "TauAnalysis/CandidateTools/interface/NSVfitAlgorithmBase.h"
+
 #include "AnalysisDataFormats/TauAnalysis/interface/NSVfitTauToHadHypothesis.h"
 
 #include <TMath.h>
+
+using namespace SVfit_namespace;
 
 NSVfitTauToHadLikelihoodPhaseSpace::NSVfitTauToHadLikelihoodPhaseSpace(const edm::ParameterSet& cfg)
   : NSVfitSingleParticleLikelihood(cfg)
@@ -13,6 +17,12 @@ NSVfitTauToHadLikelihoodPhaseSpace::NSVfitTauToHadLikelihoodPhaseSpace(const edm
 NSVfitTauToHadLikelihoodPhaseSpace::~NSVfitTauToHadLikelihoodPhaseSpace()
 {
 // nothing to be done yet...
+}
+
+void NSVfitTauToHadLikelihoodPhaseSpace::initialize(NSVfitAlgorithmBase* algorithm) const 
+{
+  algorithm->requestFitParameter(prodParticleLabel_, kTau_theta_rf, pluginName_);
+  algorithm->requestFitParameter(prodParticleLabel_, kTau_phi_lab,  pluginName_);
 }
 
 double NSVfitTauToHadLikelihoodPhaseSpace::operator()(const NSVfitSingleParticleHypothesisBase* hypothesis) const

@@ -8,9 +8,9 @@
  *
  * \author Christian Veelken, UC Davis
  *
- * \version $Revision: 1.12 $
+ * \version $Revision: 1.1 $
  *
- * $Id: NSVfitSingleParticleLikelihood.h,v 1.12 2011/01/18 16:42:29 friis Exp $
+ * $Id: NSVfitSingleParticleLikelihood.h,v 1.1 2011/02/27 16:45:16 veelken Exp $
  *
  */
 
@@ -29,7 +29,8 @@ class NSVfitSingleParticleLikelihood : public NSVfitLikelihoodBase
 {
  public:
   NSVfitSingleParticleLikelihood(const edm::ParameterSet& cfg)
-    : NSVfitLikelihoodBase(cfg)
+    : NSVfitLikelihoodBase(cfg),
+      prodParticleLabel_(cfg.getParameter<std::string>("prodParticleLabel"))
   {}
   virtual ~NSVfitSingleParticleLikelihood() {}
 
@@ -43,6 +44,9 @@ class NSVfitSingleParticleLikelihood : public NSVfitLikelihoodBase
   }
 
   virtual double operator()(const NSVfitSingleParticleHypothesisBase*) const = 0;
+
+ protected:
+  std::string prodParticleLabel_;
 };
 
 #include "FWCore/PluginManager/interface/PluginFactory.h"
