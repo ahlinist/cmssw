@@ -39,6 +39,16 @@
   <class name="std::vector<SVfitWtauNuSolution>"/>
   <class name="std::map<std::string, SVfitWtauNuSolution>"/>
   <class name="std::map<std::string, std::map<std::string, SVfitWtauNuSolution> >"/>
+  <class name="NSVfitEventHypothesis"/>
+  <class name="NSVfitResonanceHypothesis"/>
+  <class name="NSVfitTauToLepHypothesis<pat::Electron>"/>
+  <class name="NSVfitTauToLepHypothesis<pat::Muon>"/>
+  <class name="NSVfitTauToHadHypothesis"/>
+  <class name="std::vector<NSVfitEventHypothesis>"/>
+  <class name="std::vector<NSVfitResonanceHypothesis>"/>
+  <class name="std::vector<NSVfitTauToLepHypothesis<pat::Electron> >"/>
+  <class name="std::vector<NSVfitTauToLepHypothesis<pat::Muon> >"/>
+  <class name="std::vector<NSVfitTauToHadHypothesis>"/>
 
   <!-- create dictionaries for PATElecPair objects -->
   <class name="CompositePtrCandidateT1T2MEt<pat::Electron, pat::Electron>"/>

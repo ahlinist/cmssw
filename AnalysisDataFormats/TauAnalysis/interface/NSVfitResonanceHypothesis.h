@@ -8,7 +8,7 @@
 class NSVfitResonanceHypothesis
 {
  public:
-  NSVfitResonanceHypothesis();
+  NSVfitResonanceHypothesis() {}
   virtual ~NSVfitResonanceHypothesis() 
   {
     for ( std::vector<NSVfitSingleParticleHypothesisBase*>::const_iterator it = daughters_.begin();
@@ -36,6 +36,8 @@ class NSVfitResonanceHypothesis
       (*daughter)->print(stream);
     }
   }
+
+  friend class NSVfitResonanceBuilderBase;
 
  private:
 
