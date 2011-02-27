@@ -1,8 +1,9 @@
 #include "TauAnalysis/CandidateTools/plugins/NSVfitTauToLepLikelihoodPhaseSpace.h"
 
-#include "AnalysisDataFormats/TauAnalysis/interface/NSVfitTauToLepHypothesis.h"
-
+#include "TauAnalysis/CandidateTools/interface/NSVfitAlgorithmBase.h"
 #include "TauAnalysis/CandidateTools/interface/svFitAuxFunctions.h"
+
+#include "AnalysisDataFormats/TauAnalysis/interface/NSVfitTauToLepHypothesis.h"
 
 #include <TMath.h>
 
@@ -21,6 +22,13 @@ template <typename T>
 NSVfitTauToLepLikelihoodPhaseSpace<T>::~NSVfitTauToLepLikelihoodPhaseSpace()
 {
 // nothing to be done yet...
+}
+
+template <typename T>
+void NSVfitTauToLepLikelihoodPhaseSpace<T>::initialize(NSVfitAlgorithmBase* algorithm) const 
+{
+  algorithm->requestFitParameter(prodParticleLabel_, kTau_theta_rf, pluginName_);
+  algorithm->requestFitParameter(prodParticleLabel_, kTau_phi_lab,  pluginName_);
 }
 
 template <typename T>

@@ -8,9 +8,9 @@
  *
  * \author Christian Veelken, UC Davis
  *
- * \version $Revision: 1.11 $
+ * \version $Revision: 1.1 $
  *
- * $Id: NSVfitAlgorithmBase.h,v 1.11 2011/01/18 16:41:35 friis Exp $
+ * $Id: NSVfitAlgorithmBase.h,v 1.1 2011/02/27 16:46:02 veelken Exp $
  *
  */
 
@@ -79,7 +79,6 @@ class NSVfitAlgorithmBase
   double nll(double*, double*) const;
 
  protected:
-
   virtual void fitImp() const = 0;
 
   std::string pluginName_;
@@ -88,11 +87,13 @@ class NSVfitAlgorithmBase
   struct daughterModelType
   {
     daughterModelType(const edm::ParameterSet& cfg)
+      : prodParticleLabel_(cfg.getParameter<std::string>("prodParticleLabel"))
     {    
       typedef std::vector<edm::ParameterSet> vParameterSet;
       vParameterSet cfg_likelihoods = cfg.getParameter<vParameterSet>("likelihoodFunctions");
-      for ( vParameterSet::const_iterator cfg_likelihood = cfg_likelihoods.begin();
+      for ( vParameterSet::iterator cfg_likelihood = cfg_likelihoods.begin();
 	    cfg_likelihood != cfg_likelihoods.end(); ++cfg_likelihood ) {
+	cfg_likelihood->addParameter<std::string>("prodParticleLabel", prodParticleLabel_);
 	std::string pluginType = cfg_likelihood->getParameter<std::string>("pluginType");
 	likelihoods_.push_back(NSVfitSingleParticleLikelihoodPluginFactory::get()->create(pluginType, *cfg_likelihood));
       }
@@ -120,6 +121,7 @@ class NSVfitAlgorithmBase
       }
       return retVal;
     }
+    std::string prodParticleLabel_;
     std::vector<NSVfitSingleParticleLikelihood*> likelihoods_;
   };
 
@@ -140,6 +142,7 @@ class NSVfitAlgorithmBase
       for ( vstring::const_iterator daughterName = daughterNames.begin();
 	    daughterName != daughterNames.end(); ++daughterName ) {
         edm::ParameterSet cfg_daughter = cfg_daughters.getParameter<edm::ParameterSet>(*daughterName);
+	cfg_daughter.addParameter<std::string>("prodParticleLabel", *daughterName);
 	daughters_.push_back(new daughterModelType(cfg_daughter));
       }
       numDaughters_ = daughters_.size();
