@@ -21,8 +21,8 @@ NSVfitTauToHadLikelihoodPhaseSpace::~NSVfitTauToHadLikelihoodPhaseSpace()
 
 void NSVfitTauToHadLikelihoodPhaseSpace::initialize(NSVfitAlgorithmBase* algorithm) const 
 {
-  algorithm->requestFitParameter(prodParticleLabel_, kTau_theta_rf, pluginName_);
-  algorithm->requestFitParameter(prodParticleLabel_, kTau_phi_lab,  pluginName_);
+  algorithm->requestFitParameter(prodParticleLabel_, kTau_visEnFracX, pluginName_);
+  algorithm->requestFitParameter(prodParticleLabel_, kTau_phi_lab,    pluginName_);
 }
 
 double NSVfitTauToHadLikelihoodPhaseSpace::operator()(const NSVfitSingleParticleHypothesisBase* hypothesis) const

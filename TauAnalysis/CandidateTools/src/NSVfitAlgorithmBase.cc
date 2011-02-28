@@ -14,7 +14,7 @@ void initializeFitParameterLimits(std::vector<pdouble>& limits)
   limits[kPV_shiftX]             = pdouble(         -1.,          +1.); // cm
   limits[kPV_shiftY]             = pdouble(         -1.,          +1.); // cm
   limits[kPV_shiftZ]             = pdouble(        -10.,         +10.); // cm
-  limits[kTau_theta_rf]          = pdouble(          0.,  TMath::Pi()); // rad
+  limits[kTau_visEnFracX]        = pdouble(          0.,           1.); // dimensionless
   limits[kTau_phi_lab]           = pdouble(-TMath::Pi(), +TMath::Pi()); // rad
   limits[kTau_decayDistance_lab] = pdouble(          0.,          10.); // cm
   limits[kTau_nuInvMass]         = pdouble(          0.,           0.); // depends on decay: mMau - mVis
