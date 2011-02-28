@@ -108,7 +108,7 @@ void JetHistManager::bookHistogramsImp()
     hName0 << "BtagDisc_" << bTaggingDiscriminators_[i];
     hTitle0 << "Jet B-Tag Discriminator: " << bTaggingDiscriminators_[i];
   
-    hBtagDisc_.push_back(book1D(hName0.str(),hTitle0.str(), 120, -10., 50.));
+    hBtagDisc_.push_back(book1D(hName0.str(),hTitle0.str(), 50, -10., 30.));
     
     std::ostringstream hName1;
     std::ostringstream hTitle1;
