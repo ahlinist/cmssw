@@ -12,6 +12,16 @@ class NSVfitSingleParticleHypothesisBase
 {
  public:
   NSVfitSingleParticleHypothesisBase() {}
+  NSVfitSingleParticleHypothesisBase(const std::string& name, int barcode) 
+    : name_(name),
+      barcode_(barcode)
+  {}
+  NSVfitSingleParticleHypothesisBase(const edm::Ptr<reco::Candidate>& particle, const std::string& name, int barcode) 
+    : name_(name),
+      barcode_(barcode),
+      particle_(particle),
+      p4_(particle->p4())
+  {}
   virtual ~NSVfitSingleParticleHypothesisBase() {}
 
   /// pointer to reco::Candidate from which this hypothesis was made
@@ -20,11 +30,11 @@ class NSVfitSingleParticleHypothesisBase
   /// momentum of particle before fit, after fit
   /// and difference in momentum (after - before) fit
   reco::Candidate::LorentzVector p4() const { return p4_; }
-  reco::Candidate::LorentzVector p4_fitted() const { return (p4_ + dp4_); }
+  reco::Candidate::LorentzVector p4_fitted() const { return p4_fitted_; }
   reco::Candidate::LorentzVector dp4_fitted() const { return dp4_; }
 
   /// collection of tracks associated to reco::Candidate
-  virtual const reco::TrackRefVector& tracks() const { return tracks_; }
+  virtual const std::vector<reco::TrackBaseRef>& tracks() const { return tracks_; }
 
   virtual void print(std::ostream& stream) const
   {
@@ -35,6 +45,7 @@ class NSVfitSingleParticleHypothesisBase
 	   << " eta = " << p4_.eta() << ", phi = " << p4_.phi() << std::endl;
     stream << " p4_fitted: Pt = " << p4_fitted().pt() << "," 
 	   << " eta = " << p4_fitted().eta() << ", phi = " << p4_fitted().phi() << std::endl;
+    stream << " #tracks = " << tracks_.size() << std::endl;
   }
 
  protected:
@@ -47,14 +58,14 @@ class NSVfitSingleParticleHypothesisBase
   /// pointer to reco::Candidate from which this hypothesis was made
   edm::Ptr<reco::Candidate> particle_;
 
-  /// momentum of particle before fit
+  /// momentum of particle before fit, after fit
+  /// and difference (after - before) fit
   reco::Candidate::LorentzVector p4_;
-
-  /// difference in momentum (after - before) fit
+  reco::Candidate::LorentzVector p4_fitted_;
   reco::Candidate::LorentzVector dp4_;
 
   /// collection of tracks associated to reco::Candidate
-  reco::TrackRefVector tracks_;
+  std::vector<reco::TrackBaseRef> tracks_;
 };
 
 #endif
