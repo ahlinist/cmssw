@@ -219,8 +219,8 @@ protected:
   Float_t  eleConvRadius_[maxP];
   Float_t  eleConvPoInt_t_[maxP][3];
   Float_t  eleESRatio_[maxP];
-  Float_t  eleESProfileFront_[maxP][63];
-  Float_t  eleESProfileRear_[maxP][63];
+  Float_t  eleESProfileFront_[maxP][123];
+  Float_t  eleESProfileRear_[maxP][123];
 
   // Photon
   Int_t    nPho_;
@@ -272,8 +272,8 @@ protected:
   Int_t    phoIsConv_[maxP];
   Float_t  phoPi0Disc_[maxP];
   Float_t  phoESRatio_[maxP];
-  Float_t  phoESProfileFront_[maxP][63];
-  Float_t  phoESProfileRear_[maxP][63];
+  Float_t  phoESProfileFront_[maxP][123];
+  Float_t  phoESProfileRear_[maxP][123];
 
   // Muon
   Int_t    nMu_;
