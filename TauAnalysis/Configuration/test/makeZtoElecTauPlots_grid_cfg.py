@@ -4,7 +4,7 @@ from TauAnalysis.Configuration.recoSampleDefinitionsZtoElecTau_grid_cfi \
         import recoSampleDefinitionsZtoElecTau
 
 from TauAnalysis.Configuration.plotZtoElecTau_drawJobs_cfi import \
-        drawJobConfigurator_ZtoElecTau, plots_ZtoElecTau
+        drawJobConfigurator_ZtoElecTauOS, drawJobConfigurator_ZtoElecTauSS, plots_ZtoElecTau
 
 from TauAnalysis.Configuration.makePlots2_grid import makePlots
 from TauAnalysis.Configuration.userRegistry import getHarvestingFilePath, \
@@ -12,15 +12,13 @@ from TauAnalysis.Configuration.userRegistry import getHarvestingFilePath, \
 
 # import utility function to enable factorization
 from TauAnalysis.Configuration.tools.factorizationTools import \
-        enableFactorization_makeZtoElecTauPlots_grid
+        enableFactorization_makeZtoElecTauPlots_grid2
 
 process = cms.Process('makeZtoElecTauPlots')
 
-from TauAnalysis.Configuration.dumpZtoElecTau_grid_cff import dumpZtoElecTau as dumpZtoElecTau_stdCuts
-process.dumpZtoElecTau_stdCuts = dumpZtoElecTau_stdCuts
-#process.load("TauAnalysis.Configuration.dumpZtoElecTau_grid_cff")
+process.load("TauAnalysis.Configuration.dumpZtoElecTau_grid_cff")
 
-channel = 'ZtoElecTau_stdCuts'
+channel = 'ZtoElecTau'
 inputFilePath = getHarvestingFilePath(channel)
 jobId = getJobId(channel)
 
@@ -28,13 +26,14 @@ makePlots(process, channel = channel,
           samples = recoSampleDefinitionsZtoElecTau,
           inputFilePath = inputFilePath, jobId = jobId,
           analyzer_drawJobConfigurator_indOutputFileName_sets = [
-              [ "zElecTauAnalyzer", drawJobConfigurator_ZtoElecTau, "plotZtoElecTau_#PLOT#.png" ]
+              [ "zElecTauAnalyzerOS", drawJobConfigurator_ZtoElecTauOS, "plotZtoElecTauOS_#PLOT#.png" ],
+              [ "zElecTauAnalyzerSS", drawJobConfigurator_ZtoElecTauSS, "plotZtoElecTauSS_#PLOT#.png" ]
           ],
           drawJobTemplate = plots_ZtoElecTau,
-          enableFactorizationFunction = enableFactorization_makeZtoElecTauPlots_grid,
+          enableFactorizationFunction = enableFactorization_makeZtoElecTauPlots_grid2,
           dqmDirectoryFilterStatistics = {
-              'factorizationDisabled' : 'zElecTauAnalyzer/FilterStatistics',
-              'factorizationEnabled' : 'zElecTauAnalyzer_factorizedWithElectronIsolation/FilterStatistics'
+              'factorizationDisabled' : 'zElecTauAnalyzerOS/FilterStatistics',
+              'factorizationEnabled' : 'zElecTauAnalyzerOS_factorizedWithElectronIsolation/FilterStatistics'
           },
           dumpDQMStore = False)
 
