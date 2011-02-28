@@ -8,9 +8,9 @@
  *
  * \author Christian Veelken, UC Davis
  *
- * \version $Revision: 1.11 $
+ * \version $Revision: 1.1 $
  *
- * $Id: NSVfitSingleParticleBuilderBase.h,v 1.11 2011/01/18 16:41:35 friis Exp $
+ * $Id: NSVfitSingleParticleBuilderBase.h,v 1.1 2011/02/27 16:45:16 veelken Exp $
  *
  */
 
@@ -38,9 +38,9 @@ class NSVfitSingleParticleBuilderBase : public NSVfitBuilderBase
   typedef std::map<std::string, CandidatePtr> inputParticleMap;
   virtual NSVfitSingleParticleHypothesisBase* build(const inputParticleMap&) const = 0;
 
-  virtual void applyFitParameter(NSVfitSingleParticleHypothesisBase*, double*) const {} // = 0;
+  virtual void applyFitParameter(NSVfitSingleParticleHypothesisBase*, double*) const = 0;
 
-  virtual void print(std::ostream& stream) const {}
+  virtual void print(std::ostream&) const {}
 
 protected:
   std::string prodParticleLabel_;

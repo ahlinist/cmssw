@@ -8,9 +8,9 @@
  *
  * \author Christian Veelken, UC Davis
  *
- * \version $Revision: 1.12 $
+ * \version $Revision: 1.1 $
  *
- * $Id: NSVfitResonanceLikelihoodBase.h,v 1.12 2011/01/18 16:42:29 friis Exp $
+ * $Id: NSVfitResonanceLikelihood.h,v 1.1 2011/02/27 16:45:16 veelken Exp $
  *
  */
 
@@ -34,13 +34,6 @@ class NSVfitResonanceLikelihood : public NSVfitLikelihoodBase
   virtual ~NSVfitResonanceLikelihood() {}
 
   virtual void beginCandidate(const NSVfitResonanceHypothesis*) {}
-
-  virtual void print(std::ostream& stream) const
-  {
-    stream << "<NSVfitResonanceLikelihood::print>:" << std::endl;
-    stream << " pluginName = " << pluginName_ << std::endl;
-    stream << " pluginType = " << pluginType_ << std::endl;
-  }
 
   virtual double operator()(const NSVfitResonanceHypothesis*) const = 0;
 };

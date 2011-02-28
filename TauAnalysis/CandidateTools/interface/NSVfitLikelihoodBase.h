@@ -8,9 +8,9 @@
  *
  * \author Christian Veelken, UC Davis
  *
- * \version $Revision: 1.12 $
+ * \version $Revision: 1.1 $
  *
- * $Id: NSVfitLikelihoodBase.h,v 1.12 2011/01/18 16:42:29 friis Exp $
+ * $Id: NSVfitLikelihoodBase.h,v 1.1 2011/02/27 16:45:16 veelken Exp $
  *
  */
 
@@ -41,7 +41,12 @@ class NSVfitLikelihoodBase
   virtual void beginJob() {}
   virtual void beginEvent(const edm::Event&, const edm::EventSetup&) {}
  
-  virtual void print(std::ostream& stream) const = 0;
+  virtual void print(std::ostream& stream) const
+  {
+    stream << "<NSVfitLikelihoodBase::print>:" << std::endl;
+    stream << " pluginName = " << pluginName_ << std::endl;
+    stream << " pluginType = " << pluginType_ << std::endl;
+  }
 
  protected:
   std::string pluginType_;

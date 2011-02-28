@@ -8,9 +8,9 @@
  *
  * \author Christian Veelken, UC Davis
  *
- * \version $Revision: 1.11 $
+ * \version $Revision: 1.1 $
  *
- * $Id: NSVfitResonanceBuilderBase.h,v 1.11 2011/01/18 16:41:35 friis Exp $
+ * $Id: NSVfitResonanceBuilderBase.h,v 1.1 2011/02/27 16:45:16 veelken Exp $
  *
  */
 
@@ -41,7 +41,7 @@ class NSVfitResonanceBuilderBase : public NSVfitBuilderBase
 
   virtual void applyFitParameter(NSVfitResonanceHypothesis*, double*) const;
 
-  virtual void print(std::ostream& stream) const;
+  virtual void print(std::ostream&) const;
 
  protected:
   std::string prodResonanceLabel_;
