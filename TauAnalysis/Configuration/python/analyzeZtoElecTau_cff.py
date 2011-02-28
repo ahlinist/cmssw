@@ -68,7 +68,7 @@ analyzeZtoElecTauEventsOS = cms.EDAnalyzer("GenericAnalyzer",
         # di-tau candidate selection
         evtSelDiTauCandidateForElecTauAntiOverlapVeto,
         evtSelDiTauCandidateForElecTauMt1MET,
-        evtSelDiTauCandidateForElecTauPzetaDiff,
+		evtSelDiTauCandidateForElecTauPzetaDiff,
         evtSelDiTauCandidateForElecTauZeroCharge,
         evtSelDiTauCandidateForElecTauNonZeroCharge,
 
@@ -84,15 +84,20 @@ analyzeZtoElecTauEventsOS = cms.EDAnalyzer("GenericAnalyzer",
         diTauCandidateHistManagerForElecTau,
         diTauCandidateSVfitHistManagerForElecTau,                                     
         diTauCandidateZeeHypothesisHistManagerForElecTau,
+		elecPairHistManagerByLooseIsolation,
         jetHistManager,
         caloMEtHistManager,
         pfMEtHistManager,
         particleMultiplicityHistManager,
         vertexHistManager,
-        triggerHistManagerForElecTau
+        triggerHistManagerForElecTau,
+		dataBinner
     ),
 
-    analyzers_systematic = cms.VPSet(),                                     
+    analyzers_systematic = cms.VPSet(
+		sysUncertaintyHistManagerForElecTau,
+		sysUncertaintyBinnerForElecTauEff
+	),
 
     eventDumps = cms.VPSet(
         elecTauEventDump
@@ -116,5 +121,5 @@ analyzeZtoElecTauEventsSS = analyzeZtoElecTauEventsOS.clone(
 	analysisSequence = elecTauAnalysisSequenceSS
 )
 
-analyzeZtoElecTauEvents = cms.Sequence( analyzeZtoElecTauEventsOS * analyzeZtoElecTauEventsSS )
+analyzeZtoElecTauSequence = cms.Sequence( analyzeZtoElecTauEventsOS * analyzeZtoElecTauEventsSS )
 
