@@ -1,5 +1,7 @@
 import FWCore.ParameterSet.Config as cms
 import copy
+import sys
+sys.setrecursionlimit(10000)
 
 process = cms.Process('runAHtoElecTau')
 
@@ -11,6 +13,7 @@ process.MessageLogger.cerr.FwkReport.reportEvery = 100
 #process.MessageLogger.cerr.threshold = cms.untracked.string('INFO')
 process.MessageLogger.suppressWarning = cms.untracked.vstring(
 	"PATTriggerProducer",
+	"PATElecTauPairProducer",
 # Supress warnings in DiTau hist manager
 	"analyzeAHtoElecTauEventsOS_woBtag",
 	"analyzeAHtoElecTauEventsOS_wBtag",
@@ -77,10 +80,20 @@ process.maxEvents = cms.untracked.PSet(
 
 process.source = cms.Source("PoolSource",
     fileNames = cms.untracked.vstring(
-		'/store/relval/CMSSW_3_8_7/RelValZTT/GEN-SIM-RECO/START38_V13-v1/0016/26155577-92FC-DF11-8E56-001A92810A9A.root',
-		'/store/relval/CMSSW_3_8_7/RelValZTT/GEN-SIM-RECO/START38_V13-v1/0016/506F0476-92FC-DF11-8886-00304867C1BC.root',
-		'/store/relval/CMSSW_3_8_7/RelValZTT/GEN-SIM-RECO/START38_V13-v1/0017/6262925F-9DFC-DF11-B9EF-0026189438BA.root',
-		'/store/relval/CMSSW_3_8_7/RelValZTT/GEN-SIM-RECO/START38_V13-v1/0017/AA64EF7B-93FC-DF11-AB92-001A92971BC8.root'
+		'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/fall10/Ztautau/skimElecTau_1_1_6h9.root',
+		'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/fall10/Ztautau/skimElecTau_2_1_LLB.root',
+		'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/fall10/Ztautau/skimElecTau_3_1_oXg.root',
+		'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/fall10/Ztautau/skimElecTau_4_1_pwH.root',
+		'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/fall10/Ztautau/skimElecTau_5_1_EgY.root'
+		#'/store/relval/CMSSW_3_8_7/RelValZTT/GEN-SIM-RECO/START38_V13-v1/0016/26155577-92FC-DF11-8E56-001A92810A9A.root',
+		#'/store/relval/CMSSW_3_8_7/RelValZTT/GEN-SIM-RECO/START38_V13-v1/0016/506F0476-92FC-DF11-8886-00304867C1BC.root',
+		#'/store/relval/CMSSW_3_8_7/RelValZTT/GEN-SIM-RECO/START38_V13-v1/0017/6262925F-9DFC-DF11-B9EF-0026189438BA.root',
+		#'/store/relval/CMSSW_3_8_7/RelValZTT/GEN-SIM-RECO/START38_V13-v1/0017/AA64EF7B-93FC-DF11-AB92-001A92971BC8.root'
+        #'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/fall10/PhotonPlusJets_Pt15to30/skimElecTau_1_1_sTP.root',
+        #'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/fall10/PhotonPlusJets_Pt15to30/skimElecTau_2_1_Y94.root',
+        #'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/fall10/PhotonPlusJets_Pt15to30/skimElecTau_3_1_W3i.root',
+        #'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/fall10/PhotonPlusJets_Pt15to30/skimElecTau_4_2_Cf1.root',
+        #'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/fall10/PhotonPlusJets_Pt15to30/skimElecTau_5_1_Uwo.root'
 	)
     #skipBadFiles = cms.untracked.bool(True)    
 )
@@ -89,6 +102,10 @@ process.source = cms.Source("PoolSource",
 #--------------------------------------------------------------------------------
 #  make cut changes
 from TauAnalysis.Configuration.tools.changeCut import changeCut
+
+#
+# electron selection
+#
 
 #  VBTF WP80 electron ID
 changeCut(process,"selectedPatElectronsForElecTauId","(abs(superCluster.eta) < 1.479 & abs(deltaEtaSuperClusterTrackAtVtx) < 0.004 & abs(deltaPhiSuperClusterTrackAtVtx) < 0.06 & hcalOverEcal < 0.04 & sigmaIetaIeta < 0.01) | (abs(superCluster.eta) > 1.479 & abs(deltaEtaSuperClusterTrackAtVtx) < 0.007 & abs(deltaPhiSuperClusterTrackAtVtx) <0.03 & hcalOverEcal < 0.025 & sigmaIetaIeta < 0.03)")
@@ -104,11 +121,15 @@ changeCut(process,"selectedPatElectronsForElecTauIso",cms.double(0.09),"sumPtMax
 changeCut(process,"selectedPatElectronsForElecTauIso",cms.double(0.06),"sumPtMaxEE")
 
 #  electron conversion veto
-changeCut(process,"selectedPatElectronsForElecTauConversionVeto",cms.double(1),"nTrkMax")
+changeCut(process,"selectedPatElectronsForElecTauConversionVeto",cms.double(1), attribute = "nTrkMax")
+changeCut(process,"selectedPatElectronsForElecTauConversionVeto",cms.double(0.02), attribute = "cotThetaCut")
 
 #  electron track IP_xy cut
 changeCut(process,"selectedPatElectronsForElecTauTrkIP",cms.double(0.05),"IpMax")
 
+#
+# hadronic tau decay selection
+#
 
 #  eta cut for taus
 changeCut(process,"selectedPatTausForElecTauEta","abs(eta) < 2.3")
@@ -125,19 +146,33 @@ changeCut(process,"selectedPatTausForElecTauProng","signalPFChargedHadrCands.siz
 #  charge = +/-1 cut for taus
 changeCut(process,"selectedPatTausForElecTauCharge","abs(charge) > 0.5 & abs(charge) < 1.5")
 
-#  muon veto for taus
-changeCut(process,"selectedPatTausForElecTauCharge",'tauID("againstMuon") > 0.5')
-
 #  electron veto for taus
-changeCut(process,"selectedPatTausForElecTauCharge","leadPFCand().isNonnull() & leadPFCand().mva_e_pi() < 0.6")
+changeCut(process,"selectedPatTausForElecTauElectronVeto","leadPFCand().isNonnull() & leadPFCand().mva_e_pi() < -0.1 & hcalTotOverPLead() > 0.1")
 
+# ECAl crack veto for taus 
+changeCut(process,"selectedPatTausForElecTauEcalCrackVeto",'abs(eta) < 1.460 | abs(eta) > 1.558')
+
+#  muon veto for taus
+changeCut(process,"selectedPatTausForElecTauMuonVeto",'tauID("againstMuon") > 0.5')
+
+#
+# di-tau pair selection
+#
 
 #  elec/tau overlap cut
 changeCut(process,"selectedElecTauPairsAntiOverlapVeto","dR12 > 0.5")
+changeCut(process,"selectedElecTauPairsAntiOverlapVetoLooseElectronIsolation", "dR12 > 0.5")
 
 #  transverse mass of electron + MET
 changeCut(process,"selectedElecTauPairsMt1MET","mt1MET < 40.")
+changeCut(process,"selectedElecTauPairsMt1METlooseElectronIsolation", "mt1MET < 40.")
 
+# enable cut on Pzeta variable
+changeCut(process, "selectedElecTauPairsPzetaDiff", "(pZeta - 1.5*pZetaVis) > -20.")
+changeCut(process, "selectedElecTauPairsPzetaDiffLooseElectronIsolation", "(pZeta - 1.5*pZetaVis) > -20.")
+
+# change isolation treshold for second electron used in di-electron veto to 0.30 * electron Pt
+changeCut(process, "selectedPatElectronsForZeeHypothesesLoosePFRelIso", 0.30, "sumPtMax")
 
 #--------------------------------------------------------------------------------
 
@@ -227,7 +262,7 @@ process.dummy = cms.EDProducer("DummyModule")
 process.endtasks = cms.EndPath(process.dummy)
 
 process.schedule = cms.Schedule(
-	#process.q,
+	process.q,
     process.p,
     process.endtasks
 )
@@ -312,4 +347,4 @@ if not hasattr(process, "isBatchMode"):
 #--------------------------------------------------------------------------------
 
 # print-out all python configuration parameter information
-#print process.dumpPython()
+print process.dumpPython()
