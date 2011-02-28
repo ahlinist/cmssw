@@ -1,10 +1,10 @@
 #!/usr/bin/env python
 
-from TauAnalysis.Configuration.recoSampleDefinitionsAHtoElecTau_grid_cfi import recoSampleDefinitionsAHtoElecTau as recoSampleDefinitionsZtoElecTau
+from TauAnalysis.Configuration.recoSampleDefinitionsZtoElecTau_grid_cfi import recoSampleDefinitionsZtoElecTau
 from TauAnalysis.Configuration.harvestAnalysisResults_grid import harvestAnalysisResults
 from TauAnalysis.Configuration.userRegistry import getAnalysisFilePath, getHarvestingFilePath, getJobId, getTmpFilePath
 
-channel = 'ZtoElecTau_stdCuts'
+channel = 'ZtoElecTau'
 analysisFilePath = getAnalysisFilePath(channel)
 harvestingFilePath = getHarvestingFilePath(channel)
 jobId = getJobId(channel)
