@@ -148,6 +148,14 @@ def _setApplyMuonIsolationEfficiencyCorrection(process, enable, **kwargs):
         enabler(process)
 
 @_requires(args=['channel'])
+def _setApplyElectronIsolationEfficiencyCorrection(process, enable, **kwargs):
+    channel = kwargs['channel']
+    if enable:
+        print "Applying Electron Isolation efficiency correction"
+        enabler = getattr(mcToDataCorrectionTools, "applyElectronIsolationEfficiencyCorrection_run%s" % channel)
+        enabler(process)
+
+@_requires(args=['channel'])
 def _setApplyVertexMultiplicityReweighting(process, enable, **kwargs):
     channel = kwargs['channel']
     if enable:
@@ -346,6 +354,7 @@ _METHOD_MAP = {
     'applyMuonTriggerEfficiencyCorrection' : _setApplyMuonTriggerEfficiencyCorrection,
     'applyElectronTriggerEfficiencyCorrection' : _setApplyElectronTriggerEfficiencyCorrection,
     'applyMuonIsolationEfficiencyCorrection' : _setApplyMuonIsolationEfficiencyCorrection,
+    'applyElectronIsolationEfficiencyCorrection' : _setApplyElectronIsolationEfficiencyCorrection,
     'applyVertexMultiplicityReweighting' : _setApplyVertexMultiplicityReweighting,
     'enableSysUncertainties' : _setEnableSystematics,
     'inputFileType' : _setInputFileType,
