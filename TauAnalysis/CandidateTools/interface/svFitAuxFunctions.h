@@ -77,6 +77,10 @@ namespace SVfit_namespace
       const reco::Candidate::LorentzVector &p4ToBoost
   );
 
+  inline double energyFromMomentum(double momentum, double mass) {
+    return TMath::Sqrt(square(mass)+square(momentum));
+  }
+
   /// Determine visible tau rest frame energy given visible mass and neutrino mass
   double pVisRestFrame(double, double);
 
