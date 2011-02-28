@@ -41,7 +41,7 @@ NSVfitSingleParticleHypothesisBase* NSVfitTauToLepBuilder<T>::build(const inputP
   assert(lepPtr);
 
   hypothesis->tracks_     = trackExtractor_(*lepPtr);
-  
+
   hypothesis->p3Vis_unit_ = lepPtr->p4().Vect().Unit();
   hypothesis->visMass_    = lepPtr->mass();
 
@@ -92,8 +92,8 @@ void NSVfitTauToLepBuilder<T>::applyFitParameter(NSVfitSingleParticleHypothesisB
   hypothesis_T->p4_fitted_      = p4Tau;
   hypothesis_T->dp4_            = (p4Tau - hypothesis_T->p4_);
 
-  //hypothesis_T->p4invis_rf_     = <-- Evan, please finish
-  //hypothesis_T->p4vis_rf_       = <-- Evan, please finish
+  hypothesis_T->p4invis_rf_     = boostToCOM(hypothesis_T->dp4_, p4Tau);
+  hypothesis_T->p4vis_rf_       = boostToCOM(hypothesis_T->p4(), p4Tau);
 
   hypothesis_T->visEnFracX_     = visEnFracX;
   hypothesis_T->decay_angle_rf_ = gjAngle;
