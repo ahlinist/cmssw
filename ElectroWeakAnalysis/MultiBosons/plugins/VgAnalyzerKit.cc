@@ -215,8 +215,8 @@ VgAnalyzerKit::VgAnalyzerKit(const edm::ParameterSet& ps) : verbosity_(0), helpe
   tree_->Branch("eleConvDcot_", eleConvDcot_, "eleConvDcot_[nEle]/F");
   tree_->Branch("eleConvRadius_", eleConvRadius_, "eleConvRadius_[nEle]/F");
   tree_->Branch("eleESRatio", eleESRatio_, "eleESRatio[nEle]/F");
-  tree_->Branch("eleESProfileFront", eleESProfileFront_, "eleESProfileFront[nEle][63]/F");
-  tree_->Branch("eleESProfileRear", eleESProfileRear_, "eleESProfileRear[nEle][63]/F");
+  tree_->Branch("eleESProfileFront", eleESProfileFront_, "eleESProfileFront[nEle][123]/F");
+  tree_->Branch("eleESProfileRear", eleESProfileRear_, "eleESProfileRear[nEle][123]/F");
   // Photon
   tree_->Branch("nPho", &nPho_, "nPho/I");
   tree_->Branch("phoTrg", phoTrg_, "phoTrg[nPho][8]/I");
@@ -271,8 +271,8 @@ VgAnalyzerKit::VgAnalyzerKit(const edm::ParameterSet& ps) : verbosity_(0), helpe
   tree_->Branch("phoIsConv", phoIsConv_, "phoIsConv[nPho]/I");
   tree_->Branch("phoPi0Disc",phoPi0Disc_ , "phoPi0Disc[nPho]/F");
   tree_->Branch("phoESRatio", phoESRatio_, "phoESRatio[nPho]/F");
-  tree_->Branch("phoESProfileFront", phoESProfileFront_, "phoESProfileFront[nPho][63]/F");
-  tree_->Branch("phoESProfileRear", phoESProfileRear_, "phoESProfileRear[nPho][63]/F");
+  tree_->Branch("phoESProfileFront", phoESProfileFront_, "phoESProfileFront[nPho][123]/F");
+  tree_->Branch("phoESProfileRear", phoESProfileRear_, "phoESProfileRear[nPho][123]/F");
   // Muon
   tree_->Branch("nMu", &nMu_, "nMu/I");
   tree_->Branch("muTrg", muTrg_, "muTrg[nMu][6]/I");
@@ -1000,7 +1000,7 @@ fabs(ip->pdgId())<=14) || ip->pdgId()==22))) {
       }
 
       eleESRatio_[nEle_] = getESRatio(iEle, e, es);
-      for (int a=0; a<63; a++) {
+      for (int a=0; a<123; a++) {
         eleESProfileFront_[nEle_][a] = getESProfileFront(iEle, e, es)[a];
         eleESProfileRear_[nEle_][a] = getESProfileRear(iEle, e, es)[a];
       }
@@ -1186,7 +1186,7 @@ fabs(ip->pdgId())<=14) || ip->pdgId()==22))) {
       }
   
       phoESRatio_[nPho_] = getESRatio(iPho, e, es);
-      for (int a=0; a<63; a++) {
+      for (int a=0; a<123; a++) {
         phoESProfileFront_[nPho_][a] = getESProfileFront(iPho, e, es)[a];
         phoESProfileRear_[nPho_][a] = getESProfileRear(iPho, e, es)[a];
       }
@@ -1966,12 +1966,12 @@ std::vector<float> VgAnalyzerKit::getESProfileFront(View<pat::Photon>::const_ite
   e.getByLabel(InputTag("ecalPreshowerRecHit","EcalRecHitsES"), PreshowerRecHits);
   if (PreshowerRecHits.isValid()) EcalRecHitCollection preshowerHits(*PreshowerRecHits);
 
-  // Store ES rechits energy ±1 sensor and ±10 strips
-  //  0 ~ 20: +1 sensor and ±10 strips
-  // 21 ~ 41: +0 sensor and ±10 strips
-  // 42 ~ 62: -1 sensor and ±10 strips
+  // Store ES rechits energy ±1 sensor and�20 strips
+  //  0 ~ 40: +1 sensor and ±20 strips
+  // 41 ~ 81: +0 sensor and ±20 strips
+  // 82 ~123: -1 sensor and ±20 strips
   std::vector<float> esprofile;
-  for (int a = 0; a<63; a++) 
+  for (int a = 0; a<123; a++) 
     esprofile.push_back(0); 
 
   const reco::CaloClusterPtr seed = (*photon).superCluster()->seed();    
@@ -1984,9 +1984,9 @@ std::vector<float> VgAnalyzerKit::getESProfileFront(View<pat::Photon>::const_ite
   ESDetId esrid = (photmp2 == DetId(0)) ? ESDetId(0) : ESDetId(photmp2);
 
   if (esfid.strip() != 0 && esrid.strip() != 0) {
-    int strip[21];
-    for (int a=0; a<21; a++) 
-      strip[a] = a - 10;
+    int strip[41];
+    for (int a=0; a<41; a++) 
+      strip[a] = a - 20;
 
     int gs_esfid = -99;
     int gs_esrid = -99;
@@ -2001,26 +2001,26 @@ std::vector<float> VgAnalyzerKit::getESProfileFront(View<pat::Photon>::const_ite
       if (esrh_it->recoFlag() == 1 || (esrh_it->recoFlag() >= 5 && esrh_it->recoFlag() <= 10)) continue;
       // ES Front plane
       if (esdetid.plane() == 1) {
-	// +1 sensor and ±10 strip
+	// +1 sensor and �20 strip
 	if (esdetid.zside() == esfid.zside() && esdetid.siy() == (esfid.siy() + 1)) {
 	  int gs_esid = esdetid.six()*32 + esdetid.strip();
 	  int ss = gs_esid - gs_esfid;
-          for (int a=0; a<21; a++) 
+          for (int a=0; a<41; a++) 
             if (ss == strip[a]) esprofile[a] = esrh_it->energy();
 	}
-        // +0 sensor and ±10 strip
+        // +0 sensor and �20 strip
         else if (esdetid.zside() == esfid.zside() && esdetid.siy() == (esfid.siy())) {
           int gs_esid = esdetid.six()*32 + esdetid.strip();
           int ss = gs_esid - gs_esfid;
-          for (int a=0; a<21; a++)
-            if (ss == strip[a]) esprofile[a+21] = esrh_it->energy();
+          for (int a=0; a<41; a++)
+            if (ss == strip[a]) esprofile[a+41] = esrh_it->energy();
         }
-        // -1 sensor and ±10 strip
+        // -1 sensor and �20 strip
         else if (esdetid.zside() == esfid.zside() && esdetid.siy() == (esfid.siy() - 1)) {
           int gs_esid = esdetid.six()*32 + esdetid.strip();
           int ss = gs_esid - gs_esfid;
-          for (int a=0; a<21; a++)
-            if (ss == strip[a]) esprofile[a+42] = esrh_it->energy();
+          for (int a=0; a<41; a++)
+            if (ss == strip[a]) esprofile[a+82] = esrh_it->energy();
         }
       }
     }
@@ -2042,12 +2042,12 @@ std::vector<float> VgAnalyzerKit::getESProfileRear(View<pat::Photon>::const_iter
   e.getByLabel(InputTag("ecalPreshowerRecHit","EcalRecHitsES"), PreshowerRecHits);
   if (PreshowerRecHits.isValid()) EcalRecHitCollection preshowerHits(*PreshowerRecHits);
 
-  // Store ES rechits energy ±1 sensor and ±10 strips
-  //  0 ~ 20: +1 sensor and ±10 strips
-  // 21 ~ 41: +0 sensor and ±10 strips
-  // 42 ~ 62: -1 sensor and ±10 strips
+  // Store ES rechits energy ±1 sensor and�20 strips
+  //  0 ~ 40: +1 sensor and ±20 strips
+  // 41 ~ 81: +0 sensor and ±20 strips
+  // 82 ~123: -1 sensor and ±20 strips
   std::vector<float> esprofile;
-  for (int a = 0; a<63; a++) 
+  for (int a = 0; a<123; a++) 
     esprofile.push_back(0); 
 
   const reco::CaloClusterPtr seed = (*photon).superCluster()->seed();    
@@ -2060,9 +2060,9 @@ std::vector<float> VgAnalyzerKit::getESProfileRear(View<pat::Photon>::const_iter
   ESDetId esrid = (photmp2 == DetId(0)) ? ESDetId(0) : ESDetId(photmp2);
 
   if (esfid.strip() != 0 && esrid.strip() != 0) {
-    int strip[21];
-    for (int a=0; a<21; a++) 
-      strip[a] = a - 10;
+    int strip[41];
+    for (int a=0; a<41; a++) 
+      strip[a] = a - 20;
 
     int gs_esfid = -99;
     int gs_esrid = -99;
@@ -2077,26 +2077,26 @@ std::vector<float> VgAnalyzerKit::getESProfileRear(View<pat::Photon>::const_iter
       if (esrh_it->recoFlag() == 1 || (esrh_it->recoFlag() >= 5 && esrh_it->recoFlag() <= 10)) continue;
       // ES Rear plane
       if (esdetid.plane() == 2) {
-	// +1 sensor and ±10 strip
+	// +1 sensor and �20 strip
 	if (esdetid.zside() == esfid.zside() && esdetid.six() == (esfid.six() + 1)) {
 	  int gs_esid = esdetid.siy()*32 + esdetid.strip();
 	  int ss = gs_esid - gs_esrid;
-          for (int a=0; a<21; a++) 
+          for (int a=0; a<41; a++) 
             if (ss == strip[a]) esprofile[a] = esrh_it->energy();
 	}
-        // +0 sensor and ±10 strip
+        // +0 sensor and �20 strip
         else if (esdetid.zside() == esfid.zside() && esdetid.six() == (esfid.six())) {
           int gs_esid = esdetid.siy()*32 + esdetid.strip();
           int ss = gs_esid - gs_esrid;
-          for (int a=0; a<21; a++)
-            if (ss == strip[a]) esprofile[a+21] = esrh_it->energy();
+          for (int a=0; a<41; a++)
+            if (ss == strip[a]) esprofile[a+41] = esrh_it->energy();
         }
-        // -1 sensor and ±10 strip
+        // -1 sensor and �20 strip
         else if (esdetid.zside() == esfid.zside() && esdetid.six() == (esfid.six() - 1)) {
           int gs_esid = esdetid.siy()*32 + esdetid.strip();
           int ss = gs_esid - gs_esrid;
-          for (int a=0; a<21; a++)
-            if (ss == strip[a]) esprofile[a+42] = esrh_it->energy();
+          for (int a=0; a<41; a++)
+            if (ss == strip[a]) esprofile[a+82] = esrh_it->energy();
         }
       }
     }
@@ -2118,12 +2118,12 @@ std::vector<float> VgAnalyzerKit::getESProfileFront(View<pat::Electron>::const_i
   e.getByLabel(InputTag("ecalPreshowerRecHit","EcalRecHitsES"), PreshowerRecHits);
   if (PreshowerRecHits.isValid()) EcalRecHitCollection preshowerHits(*PreshowerRecHits);
 
-  // Store ES rechits energy ±1 sensor and ±10 strips
-  //  0 ~ 20: +1 sensor and ±10 strips
-  // 21 ~ 41: +0 sensor and ±10 strips
-  // 42 ~ 62: -1 sensor and ±10 strips
+  // Store ES rechits energy ±1 sensor and�20 strips
+  //  0 ~ 40: +1 sensor and ±20 strips
+  // 41 ~ 81: +0 sensor and ±20 strips
+  // 82 ~123: -1 sensor and ±20 strips
   std::vector<float> esprofile;
-  for (int a = 0; a<63; a++) 
+  for (int a = 0; a<123; a++) 
     esprofile.push_back(0); 
 
   const reco::CaloClusterPtr seed = (*photon).superCluster()->seed();    
@@ -2136,9 +2136,9 @@ std::vector<float> VgAnalyzerKit::getESProfileFront(View<pat::Electron>::const_i
   ESDetId esrid = (photmp2 == DetId(0)) ? ESDetId(0) : ESDetId(photmp2);
 
   if (esfid.strip() != 0 && esrid.strip() != 0) {
-    int strip[21];
-    for (int a=0; a<21; a++) 
-      strip[a] = a - 10;
+    int strip[41];
+    for (int a=0; a<41; a++) 
+      strip[a] = a - 20;
 
     int gs_esfid = -99;
     int gs_esrid = -99;
@@ -2153,26 +2153,26 @@ std::vector<float> VgAnalyzerKit::getESProfileFront(View<pat::Electron>::const_i
       if (esrh_it->recoFlag() == 1 || (esrh_it->recoFlag() >= 5 && esrh_it->recoFlag() <= 10)) continue;
       // ES Front plane
       if (esdetid.plane() == 1) {
-	// +1 sensor and ±10 strip
+	// +1 sensor and ±20 strip
 	if (esdetid.zside() == esfid.zside() && esdetid.siy() == (esfid.siy() + 1)) {
 	  int gs_esid = esdetid.six()*32 + esdetid.strip();
 	  int ss = gs_esid - gs_esfid;
-          for (int a=0; a<21; a++) 
+          for (int a=0; a<41; a++) 
             if (ss == strip[a]) esprofile[a] = esrh_it->energy();
 	}
-        // +0 sensor and ±10 strip
+        // +0 sensor and ±20 strip
         else if (esdetid.zside() == esfid.zside() && esdetid.siy() == (esfid.siy())) {
           int gs_esid = esdetid.six()*32 + esdetid.strip();
           int ss = gs_esid - gs_esfid;
-          for (int a=0; a<21; a++)
-            if (ss == strip[a]) esprofile[a+21] = esrh_it->energy();
+          for (int a=0; a<41; a++)
+            if (ss == strip[a]) esprofile[a+41] = esrh_it->energy();
         }
-        // -1 sensor and ±10 strip
+        // -1 sensor and ±20 strip
         else if (esdetid.zside() == esfid.zside() && esdetid.siy() == (esfid.siy() - 1)) {
           int gs_esid = esdetid.six()*32 + esdetid.strip();
           int ss = gs_esid - gs_esfid;
-          for (int a=0; a<21; a++)
-            if (ss == strip[a]) esprofile[a+42] = esrh_it->energy();
+          for (int a=0; a<41; a++)
+            if (ss == strip[a]) esprofile[a+82] = esrh_it->energy();
         }
       }
     }
@@ -2194,12 +2194,12 @@ std::vector<float> VgAnalyzerKit::getESProfileRear(View<pat::Electron>::const_it
   e.getByLabel(InputTag("ecalPreshowerRecHit","EcalRecHitsES"), PreshowerRecHits);
   if (PreshowerRecHits.isValid()) EcalRecHitCollection preshowerHits(*PreshowerRecHits);
 
-  // Store ES rechits energy ±1 sensor and ±10 strips
-  //  0 ~ 20: +1 sensor and ±10 strips
-  // 21 ~ 41: +0 sensor and ±10 strips
-  // 42 ~ 62: -1 sensor and ±10 strips
+  // Store ES rechits energy ±1 sensor and�20 strips
+  //  0 ~ 40: +1 sensor and ±20 strips
+  // 41 ~ 81: +0 sensor and ±20 strips
+  // 82 ~123: -1 sensor and ±20 strips
   std::vector<float> esprofile;
-  for (int a = 0; a<63; a++) 
+  for (int a = 0; a<123; a++) 
     esprofile.push_back(0); 
 
   const reco::CaloClusterPtr seed = (*photon).superCluster()->seed();    
@@ -2212,9 +2212,9 @@ std::vector<float> VgAnalyzerKit::getESProfileRear(View<pat::Electron>::const_it
   ESDetId esrid = (photmp2 == DetId(0)) ? ESDetId(0) : ESDetId(photmp2);
 
   if (esfid.strip() != 0 && esrid.strip() != 0) {
-    int strip[21];
-    for (int a=0; a<21; a++) 
-      strip[a] = a - 10;
+    int strip[41];
+    for (int a=0; a<41; a++) 
+      strip[a] = a - 20;
 
     int gs_esfid = -99;
     int gs_esrid = -99;
@@ -2229,26 +2229,26 @@ std::vector<float> VgAnalyzerKit::getESProfileRear(View<pat::Electron>::const_it
       if (esrh_it->recoFlag() == 1 || (esrh_it->recoFlag() >= 5 && esrh_it->recoFlag() <= 10)) continue;
       // ES Rear plane
       if (esdetid.plane() == 2) {
-	// +1 sensor and ±10 strip
+	// +1 sensor and �20 strip
 	if (esdetid.zside() == esfid.zside() && esdetid.six() == (esfid.six() + 1)) {
 	  int gs_esid = esdetid.siy()*32 + esdetid.strip();
 	  int ss = gs_esid - gs_esrid;
-          for (int a=0; a<21; a++) 
+          for (int a=0; a<41; a++) 
             if (ss == strip[a]) esprofile[a] = esrh_it->energy();
 	}
-        // +0 sensor and ±10 strip
+        // +0 sensor and �20 strip
         else if (esdetid.zside() == esfid.zside() && esdetid.six() == (esfid.six())) {
           int gs_esid = esdetid.siy()*32 + esdetid.strip();
           int ss = gs_esid - gs_esrid;
-          for (int a=0; a<21; a++)
-            if (ss == strip[a]) esprofile[a+21] = esrh_it->energy();
+          for (int a=0; a<41; a++)
+            if (ss == strip[a]) esprofile[a+41] = esrh_it->energy();
         }
-        // -1 sensor and ±10 strip
+        // -1 sensor and �20 strip
         else if (esdetid.zside() == esfid.zside() && esdetid.six() == (esfid.six() - 1)) {
           int gs_esid = esdetid.siy()*32 + esdetid.strip();
           int ss = gs_esid - gs_esrid;
-          for (int a=0; a<21; a++)
-            if (ss == strip[a]) esprofile[a+42] = esrh_it->energy();
+          for (int a=0; a<41; a++)
+            if (ss == strip[a]) esprofile[a+82] = esrh_it->energy();
         }
       }
     }
