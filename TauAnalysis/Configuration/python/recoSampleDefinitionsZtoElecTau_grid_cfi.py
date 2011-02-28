@@ -11,15 +11,15 @@ SAMPLES_TO_ANALYZE = [
 	'Ztautau_T3',
     'Ztautau_PU156BX_T3',
 	#'Ztautau_PU156BX_D6T',
-	'ZtautauEmbedded',
     'Zee_PU156BX_T3',
-    'Zee_PU156BX_D6T_T3',
+	#'Zee_PU156BX_D6T_T3',
 	'PhotonPlusJets_Pt15to30_T3','PhotonPlusJets_Pt30to50_T3','PhotonPlusJets_Pt50to80_T3',
 	#'PhotonPlusJets_Pt15to30_PU156BX','PhotonPlusJets_Pt30to50_PU156BX','PhotonPlusJets_Pt50to80_PU156BX',
 	#'PhotonPlusJets_Pt15to30_PU156BX_T3','PhotonPlusJets_Pt30to50_PU156BX_T3','PhotonPlusJets_Pt50to80_PU156BX_T3',
 	'QCD_BCtoE_Pt20to30_PU156BX_T3','QCD_BCtoE_Pt30to80_PU156BX_T3','QCD_BCtoE_Pt80to170_PU156BX_T3',
 	'QCD_EM_Pt20to30_PU156BX_T3','QCD_EM_Pt30to80_PU156BX_T3','QCD_EM_Pt80to170_PU156BX_T3',
-    'TTbar_PU156BX_T3','TTplusJets_PU156BX_T3',
+    'TTbar_PU156BX_T3',
+	#'TTplusJets_PU156BX_T3',
     'WtoENu_PU156BX_T3','WtoTauNu_PU156BX_T3'
 ] 
 
@@ -30,7 +30,7 @@ SAMPLES_TO_PLOT = [
     'qcdSum', 
 	'photonPlusJetsSum',
     'wPlusJetsSum',
-    'TTplusJets_PU156BX_T3',
+    'TTbar_PU156BX_T3',
     'Zee_PU156BX_T3',
     'Ztautau_PU156BX_T3'
 ]
@@ -51,9 +51,9 @@ SAMPLE_DEFAULTS = {
     'SE_white_list' : '',
     'SE_black_list' : 'ccsrm.in2p3.fr',
 	'disableDuplicateCheck' : True,
-    'applyZrecoilCorrection' : False,
+    'applyZrecoilCorrection' : True,
 	'applyElectronTriggerEfficiencyCorrection' : True,
-	'applyElectronIsolationEfficiencyCorrection' : False,
+	'applyElectronIsolationEfficiencyCorrection' : True,
 	'applyMuonTriggerEfficiencyCorrection' : False,
 	'applyVertexMultiplicityReweighting' : False,
 	'hlt' : cms.InputTag("TriggerResults", "", "HLT")
@@ -83,13 +83,14 @@ RECO_SAMPLES = {
         'runselection' : "136033 - 144114",
         'number_of_jobs' : 1000,
 		'conditions' : 'GR_R_38X_V15::All',
-		'enableSysUncertainties' : False,
         'events_processed' : -1,
         'skim_eff' : 1.0,
         'type' : 'Data',
         'drawOption' : styles.drawOption_Data,
+		'enableSysUncertainties' : False,
 		'applyElectronTriggerEfficiencyCorrection' : False,
 		'applyElectronIsolationEfficiencyCorrection' : False,
+        'applyZrecoilCorrection' : False,
         'hlt_paths' : {
             'HLT_Ele10_LW_EleId_L1R'				: '132440:MIN-141955:MAX',
             'HLT_Ele10_SW_EleId_L1R'				: '141956:MIN-146427:MAX',
@@ -104,14 +105,15 @@ RECO_SAMPLES = {
         'datasetpath' : '/EG/jkolb-skimElecTau_385_v3-f555ceec0d7f274eb20b4abf4dbe76f7/USER',
 		'dbs_url' : "https://cmsdbsprod.cern.ch:8443/cms_dbs_ph_analysis_01_writer/servlet/DBSServlet",
 		'conditions' : 'GR_R_38X_V14::All',
-		'enableSysUncertainties' : False,
         'number_of_jobs' : 50,
         'events_processed' : -1,
         'skim_eff' : 0.0,
         'type' : 'Data',
         'drawOption' : styles.drawOption_Data,
+		'enableSysUncertainties' : False,
 		'applyElectronTriggerEfficiencyCorrection' : False,
 		'applyElectronIsolationEfficiencyCorrection' : False,
+        'applyZrecoilCorrection' : False,
         'hlt_paths' : {
             'HLT_Ele10_LW_EleId_L1R'				: '132440:MIN-141955:MAX',
             'HLT_Ele10_SW_EleId_L1R'				: '141956:MIN-146427:MAX',
@@ -128,13 +130,14 @@ RECO_SAMPLES = {
         'runselection' : '146428 - 149442',
         'number_of_jobs' : 1000,
 		'conditions' : 'GR_R_38X_V15::All',
-		'enableSysUncertainties' : False,
         'events_processed' : -1,
         'skim_eff' : 1.0,
         'type' : 'Data',
         'drawOption' : styles.drawOption_Data,
+		'enableSysUncertainties' : False,
 		'applyElectronTriggerEfficiencyCorrection' : False,
 		'applyElectronIsolationEfficiencyCorrection' : False,
+        'applyZrecoilCorrection' : False,
         'hlt_paths' : {
             'HLT_Ele10_LW_EleId_L1R'				: '132440:MIN-141955:MAX',
             'HLT_Ele10_SW_EleId_L1R'				: '141956:MIN-146427:MAX',
@@ -149,14 +152,15 @@ RECO_SAMPLES = {
         'datasetpath' : '/Electron/jkolb-skimElecTau_387_v1-f555ceec0d7f274eb20b4abf4dbe76f7/USER',
 		'dbs_url' : "https://cmsdbsprod.cern.ch:8443/cms_dbs_ph_analysis_01_writer/servlet/DBSServlet",
 		'conditions' : 'GR_R_38X_V15::All',
-		'enableSysUncertainties' : False,
         'number_of_jobs' : 50,
         'events_processed' : -1,
         'skim_eff' : 0.0,
         'type' : 'Data',
         'drawOption' : styles.drawOption_Data,
+		'enableSysUncertainties' : False,
 		'applyElectronTriggerEfficiencyCorrection' : False,
 		'applyElectronIsolationEfficiencyCorrection' : False,
+        'applyZrecoilCorrection' : False,
         'hlt_paths' : {
             'HLT_Ele10_LW_EleId_L1R'				: '132440:MIN-141955:MAX',
             'HLT_Ele10_SW_EleId_L1R'				: '141956:MIN-146427:MAX',
@@ -175,9 +179,6 @@ RECO_SAMPLES = {
         'legendEntry' : plotter.process_Ztautau.config_dqmHistPlotter.legendEntry.value(),
         'type' : plotter.process_Ztautau.config_dqmHistPlotter.type.value(),
         'drawOption' : styles.drawOption_Ztautau,
-        'applyZrecoilCorrection' : True,
-		'applyElectronIsolationEfficiencyCorrection' : True,
-		'enableSysUncertainties' : True,
         'hlt' : cms.InputTag("TriggerResults", "", "HLT")
     },
     'Ztautau_T3' : {
@@ -189,8 +190,6 @@ RECO_SAMPLES = {
         'legendEntry' : plotter.process_Ztautau.config_dqmHistPlotter.legendEntry.value(),
         'type' : plotter.process_Ztautau.config_dqmHistPlotter.type.value(),
         'drawOption' : styles.drawOption_Ztautau,
-        'applyZrecoilCorrection' : True,
-		'enableSysUncertainties' : True,
         'hlt' : cms.InputTag("TriggerResults", "", "REDIGI38X")
     },
     'Ztautau_PU156BX' : {
@@ -201,7 +200,6 @@ RECO_SAMPLES = {
         'legendEntry' : plotter.process_Ztautau.config_dqmHistPlotter.legendEntry.value(),
         'type' : plotter.process_Ztautau.config_dqmHistPlotter.type.value(),
         'drawOption' : styles.drawOption_Ztautau,
-        'applyZrecoilCorrection' : False,
         'hlt' : cms.InputTag("TriggerResults", "", "REDIGI38XPU")
     },
     'Ztautau_PU156BX_T3' : {
@@ -213,7 +211,6 @@ RECO_SAMPLES = {
         'legendEntry' : plotter.process_Ztautau.config_dqmHistPlotter.legendEntry.value(),
         'type' : plotter.process_Ztautau.config_dqmHistPlotter.type.value(),
         'drawOption' : styles.drawOption_Ztautau,
-        'applyZrecoilCorrection' : False,
 		'applyElectronIsolationEfficiencyCorrection' : True,
         'hlt' : cms.InputTag("TriggerResults", "", "REDIGI38XPU")
     },
@@ -225,7 +222,6 @@ RECO_SAMPLES = {
         'legendEntry' : plotter.process_Ztautau.config_dqmHistPlotter.legendEntry.value(),
         'type' : plotter.process_Ztautau.config_dqmHistPlotter.type.value(),
         'drawOption' : styles.drawOption_Ztautau,
-        'applyZrecoilCorrection' : False,
         'hlt' : cms.InputTag("TriggerResults", "", "REDIGI38XPU")
     },
 	'ZtautauEmbedded' : {
@@ -237,9 +233,7 @@ RECO_SAMPLES = {
         'legendEntry' : plotter.process_Ztautau.config_dqmHistPlotter.legendEntry.value(),
         'type' : 'Data',
         'drawOption' : styles.drawOption_Ztautau,
-        'disableDuplicateCheck' : True,
-        'applyZrecoilCorrection' : False,
-        'applyMuonTriggerEfficiencyCorrection' : False
+        'disableDuplicateCheck' : True
     },  
 	'Zee' : {
         'datasetpath' : "/DYToEE_M-20_TuneZ2_7TeV-pythia6/Fall10-START38_V12-v1/GEN-SIM-RECO",
@@ -249,7 +243,6 @@ RECO_SAMPLES = {
         'legendEntry' : plotter.process_Zee.config_dqmHistPlotter.legendEntry.value(),
         'type' : plotter.process_Zee.config_dqmHistPlotter.type.value(),
         'drawOption' : styles.drawOption_Zee,
-        'applyZrecoilCorrection' : False,
         'hlt' : cms.InputTag("TriggerResults", "", "REDIGI38X")
     },
 	'Zee_T3' : {
@@ -261,7 +254,6 @@ RECO_SAMPLES = {
         'legendEntry' : plotter.process_Zee.config_dqmHistPlotter.legendEntry.value(),
         'type' : plotter.process_Zee.config_dqmHistPlotter.type.value(),
         'drawOption' : styles.drawOption_Zee,
-        'applyZrecoilCorrection' : False,
         'hlt' : cms.InputTag("TriggerResults", "", "REDIGI38X")
     },
     'Zee_PU156BX' : {
@@ -272,7 +264,6 @@ RECO_SAMPLES = {
         'legendEntry' : plotter.process_Zee.config_dqmHistPlotter.legendEntry.value(),
         'type' : plotter.process_Zee.config_dqmHistPlotter.type.value(),
         'drawOption' : styles.drawOption_Zee,
-        'applyZrecoilCorrection' : False,
         'hlt' : cms.InputTag("TriggerResults", "", "REDIGI38XPU")
     },
     'Zee_PU156BX_T3' : {
@@ -284,7 +275,6 @@ RECO_SAMPLES = {
         'legendEntry' : plotter.process_Zee.config_dqmHistPlotter.legendEntry.value(),
         'type' : plotter.process_Zee.config_dqmHistPlotter.type.value(),
         'drawOption' : styles.drawOption_Zee,
-        'applyZrecoilCorrection' : False,
         'hlt' : cms.InputTag("TriggerResults", "", "REDIGI38XPU")
     },
     'Zee_PU156BX_D6T' : {
@@ -295,7 +285,6 @@ RECO_SAMPLES = {
         'legendEntry' : plotter.process_Zee.config_dqmHistPlotter.legendEntry.value(),
         'type' : plotter.process_Zee.config_dqmHistPlotter.type.value(),
         'drawOption' : styles.drawOption_Zee,
-        'applyZrecoilCorrection' : False,
         'hlt' : cms.InputTag("TriggerResults", "", "REDIGI38XPU")
     },
     'Zee_PU156BX_D6T_T3' : {
@@ -307,7 +296,6 @@ RECO_SAMPLES = {
         'legendEntry' : plotter.process_Zee.config_dqmHistPlotter.legendEntry.value(),
         'type' : plotter.process_Zee.config_dqmHistPlotter.type.value(),
         'drawOption' : styles.drawOption_Zee,
-        'applyZrecoilCorrection' : False,
         'hlt' : cms.InputTag("TriggerResults", "", "REDIGI38XPU")
     },
     'PhotonPlusJets_Pt15to30' : {
@@ -829,12 +817,12 @@ MERGE_SAMPLES = {
     },
     'qcdSum' : {
         'samples' : [
-            'QCD_BCtoE_Pt20to30_PU156BX_T3',
-            'QCD_BCtoE_Pt30to80_PU156BX_T3',
-            'QCD_BCtoE_Pt80to170_PU156BX_T3',
-            'QCD_EM_Pt20to30_PU156BX_T3',
-            'QCD_EM_Pt30to80_PU156BX_T3',
-            'QCD_EM_Pt80to170_PU156BX_T3'
+			'QCD_BCtoE_Pt20to30_PU156BX_T3',
+			'QCD_BCtoE_Pt30to80_PU156BX_T3',
+			'QCD_BCtoE_Pt80to170_PU156BX_T3',
+			'QCD_EM_Pt20to30_PU156BX_T3',
+			'QCD_EM_Pt30to80_PU156BX_T3',
+			'QCD_EM_Pt80to170_PU156BX_T3'
         ],
         'legendEntry' : 'QCD',
         'type' : 'smMC', 
@@ -842,7 +830,7 @@ MERGE_SAMPLES = {
     },
     'photonPlusJetsSum' : {
         'samples' : [
-            'PhotonPlusJets_Pt15to30_T3',
+			'PhotonPlusJets_Pt15to30_T3',
 			'PhotonPlusJets_Pt30to50_T3',
 			'PhotonPlusJets_Pt50to80_T3'
         ],
@@ -853,7 +841,7 @@ MERGE_SAMPLES = {
     'wPlusJetsSum' : {
         'samples' : [
             'WtoENu_PU156BX_T3',
-            'WtoTauNu_PU156BX_T3'
+			'WtoTauNu_PU156BX_T3'
         ],
         'legendEntry' : plotter.process_WplusJets.config_dqmHistPlotter.legendEntry.value(),
         'type' : 'smMC', 
