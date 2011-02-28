@@ -28,7 +28,8 @@ void initializeFitParameterLimits(std::vector<pdouble>& limits)
 }
 
 NSVfitAlgorithmBase::NSVfitAlgorithmBase(const edm::ParameterSet& cfg)
-  : currentEventHypothesis_(0)
+  : currentEventHypothesis_(0),
+    fitParameterCounter_(0)
 {
   pluginName_ = cfg.getParameter<std::string>("pluginName");
   pluginType_ = cfg.getParameter<std::string>("pluginType");
@@ -60,8 +61,10 @@ void NSVfitAlgorithmBase::requestFitParameter(const std::string& name, int type,
     assert(type >= 0 && type < (int)fitParameterLimits_.size());
     newFitParameter.lowerLimit_ = fitParameterLimits_[type].first;
     newFitParameter.upperLimit_ = fitParameterLimits_[type].second; 
+    newFitParameter.idx_ = fitParameterCounter_;
     fitParameters_.push_back(newFitParameter);
     fitParameter = &fitParameters_.back();
+    ++fitParameterCounter_;
   }
 
   fitParameter->usedBy_.push_back(requester);

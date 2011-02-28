@@ -8,9 +8,9 @@
  *
  * \author Christian Veelken, UC Davis
  *
- * \version $Revision: 1.1 $
+ * \version $Revision: 1.2 $
  *
- * $Id: NSVfitAlgorithmBase.h,v 1.1 2011/02/27 16:46:02 veelken Exp $
+ * $Id: NSVfitAlgorithmBase.h,v 1.2 2011/02/27 17:00:34 veelken Exp $
  *
  */
 
@@ -66,6 +66,7 @@ class NSVfitAlgorithmBase
     std::vector<std::string> usedBy_; // list of SingleParticle likelihoods depending on this fitParameter
     double lowerLimit_;
     double upperLimit_;
+    int idx_;
   };
 
   virtual fitParameterType* getFitParameter(const std::string&, int);
@@ -261,6 +262,7 @@ class NSVfitAlgorithmBase
   mutable NSVfitEventHypothesis* currentEventHypothesis_;
 
   std::vector<fitParameterType> fitParameters_;
+  int fitParameterCounter_;
 
   int verbosity_;
 

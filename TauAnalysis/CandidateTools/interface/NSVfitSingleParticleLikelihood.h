@@ -8,9 +8,9 @@
  *
  * \author Christian Veelken, UC Davis
  *
- * \version $Revision: 1.1 $
+ * \version $Revision: 1.2 $
  *
- * $Id: NSVfitSingleParticleLikelihood.h,v 1.1 2011/02/27 16:45:16 veelken Exp $
+ * $Id: NSVfitSingleParticleLikelihood.h,v 1.2 2011/02/27 17:00:34 veelken Exp $
  *
  */
 
@@ -35,13 +35,6 @@ class NSVfitSingleParticleLikelihood : public NSVfitLikelihoodBase
   virtual ~NSVfitSingleParticleLikelihood() {}
 
   virtual void beginCandidate(const NSVfitSingleParticleHypothesisBase*) {}
-
-  virtual void print(std::ostream& stream) const
-  {
-    stream << "<NSVfitSingleParticleLikelihood::print>:" << std::endl;
-    stream << " pluginName = " << pluginName_ << std::endl;
-    stream << " pluginType = " << pluginType_ << std::endl;
-  }
 
   virtual double operator()(const NSVfitSingleParticleHypothesisBase*) const = 0;
 

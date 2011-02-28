@@ -8,9 +8,9 @@
  *
  * \author Christian Veelken, UC Davis
  *
- * \version $Revision: 1.11 $
+ * \version $Revision: 1.1 $
  *
- * $Id: NSVfitBuilderBase.h,v 1.11 2011/01/18 16:41:35 friis Exp $
+ * $Id: NSVfitBuilderBase.h,v 1.1 2011/02/27 16:46:02 veelken Exp $
  *
  */
 
@@ -33,14 +33,16 @@ class NSVfitBuilderBase
   {}
   virtual ~NSVfitBuilderBase() {}
 
-  virtual void initialize(NSVfitAlgorithmBase*) const {}
+  virtual void initialize(NSVfitAlgorithmBase*) {}
 
   virtual void beginJob() {}
   virtual void beginEvent(const edm::Event&, const edm::EventSetup&) { barcodeCounter_ = 0; }
 
-  virtual void print(std::ostream& stream) const {}
+  virtual void print(std::ostream&) const {}
 
  protected:
+  int getFitParameterIdx(NSVfitAlgorithmBase*, const std::string&, int, bool = false);
+
   std::string pluginName_;
   std::string pluginType_;
 

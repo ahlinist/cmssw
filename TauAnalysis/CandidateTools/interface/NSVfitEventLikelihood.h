@@ -8,9 +8,9 @@
  *
  * \author Christian Veelken, UC Davis
  *
- * \version $Revision: 1.12 $
+ * \version $Revision: 1.1 $
  *
- * $Id: NSVfitEventLikelihoodBase.h,v 1.12 2011/01/18 16:42:29 friis Exp $
+ * $Id: NSVfitEventLikelihood.h,v 1.1 2011/02/27 16:45:16 veelken Exp $
  *
  */
 
@@ -34,13 +34,6 @@ class NSVfitEventLikelihood : public NSVfitLikelihoodBase
   virtual ~NSVfitEventLikelihood() {}
 
   virtual void beginCandidate(const NSVfitEventHypothesis*) {}
-
-  virtual void print(std::ostream& stream) const
-  {
-    stream << "<NSVfitEventLikelihood::print>:" << std::endl;
-    stream << " pluginName = " << pluginName_ << std::endl;
-    stream << " pluginType = " << pluginType_ << std::endl;
-  }
 
   virtual double operator()(const NSVfitEventHypothesis*) const = 0;
 };
