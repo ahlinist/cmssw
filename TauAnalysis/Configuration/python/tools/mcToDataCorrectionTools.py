@@ -509,7 +509,7 @@ def applyElectronIsolationEfficiencyCorrection_runZtoElecTau(process):
         process.producePatTupleZtoElecTauSpecific._seq = process.producePatTupleZtoElecTauSpecific._seq \
           * process.electronIsolationEfficiencyCorrection
 
-    _addEventWeightZtoElecTau(process, "electronIsolationEfficiencyCorrection", applyAfterFilterName = "evtSelElectronPFRelIso")
+    _addEventWeightZtoElecTau(process, "electronIsolationEfficiencyCorrection", applyAfterFilterName = "evtSelElectronIso")
 
 def applyVertexMultiplicityReweighting_runZtoElecTau(process):
 
@@ -549,7 +549,7 @@ def applyElectronIsolationEfficiencyCorrection_runAHtoElecTau(process):
 
     applyElectronIsolationEfficiencyCorrection_runZtoElecTau(process)
 
-    _addEventWeighAHtoElecTau(process, "electronIsolationEfficiencyCorrection", applyAfterFilterName = "evtSelMuonPFRelIso")
+    _addEventWeighAHtoElecTau(process, "electronIsolationEfficiencyCorrection", applyAfterFilterName = "evtSelElectronIso")
 
 def applyVertexMultiplicityReweighting_runAHtoElecTau(process):
 
