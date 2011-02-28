@@ -18,6 +18,9 @@ class NSVfitTauToHadHypothesis : public NSVfitSingleParticleHypothesisBase
   const reco::Candidate::Vector& p3Vis_unit() const { return p3Vis_unit_; }
   double visMass() const { return visMass_; }
 
+  /// energy ratio of visible decay products/tau lepton energy
+  double visEnFracX() const { return visEnFracX_; }
+
   /// decay angle in tau lepton rest-frame
   double decay_angle_rf() const { return decay_angle_rf_; }
 
@@ -27,6 +30,9 @@ class NSVfitTauToHadHypothesis : public NSVfitSingleParticleHypothesisBase
   /// direction and mass of visible decay products
   reco::Candidate::Vector p3Vis_unit_;
   double visMass_;
+
+  /// energy ratio of visible decay products/tau lepton energy
+  double visEnFracX_;
 
   /// decay angle in tau lepton rest-frame
   double decay_angle_rf_;
