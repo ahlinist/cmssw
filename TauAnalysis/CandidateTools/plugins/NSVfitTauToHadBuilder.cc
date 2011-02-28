@@ -34,7 +34,7 @@ NSVfitSingleParticleHypothesisBase* NSVfitTauToHadBuilder::build(const inputPart
   assert(tauPtr);
 
   hypothesis->tracks_     = trackExtractor_(*tauPtr);
-  
+
   hypothesis->p3Vis_unit_ = tauPtr->p4().Vect().Unit();
   hypothesis->visMass_    = tauPtr->mass();
 
@@ -43,19 +43,31 @@ NSVfitSingleParticleHypothesisBase* NSVfitTauToHadBuilder::build(const inputPart
 
 void NSVfitTauToHadBuilder::applyFitParameter(NSVfitSingleParticleHypothesisBase* hypothesis, double* param) const
 {
+  using namespace SVfit_namespace;
+
   NSVfitTauToHadHypothesis* hypothesis_T = dynamic_cast<NSVfitTauToHadHypothesis*>(hypothesis);
   assert(hypothesis_T);
 
-  double gjAngle    = param[idxFitParameter_theta_rf_];
+  //double gjAngle    = param[idxFitParameter_theta_rf_];
+  double visFractionX = -999; //FIXME GET FROM param[]
   double phi_lab    = param[idxFitParameter_phi_lab_];
   double pVis       = hypothesis_T->p4().P();
+  double eVis_lab   = hypothesis_T->p4().energy();
   double visMass    = hypothesis_T->visMass();
+
   double nuInvMass  = 0.;
 
   const reco::Candidate::Vector& p3Vis_unit = hypothesis_T->p3Vis_unit();
 
 //--- compute momentum of visible decay products in tau lepton rest frame
-  double pVis_rf = SVfit_namespace::pVisRestFrame(visMass, nuInvMass);
+  double pVis_rf = pVisRestFrame(visMass, nuInvMass);
+  double eVis_rf = energyFromMomentum(pVis_rf, tauLeptonMass);
+
+  // Computing gjAngle as a function of X
+  // First compute beta
+  double beta = TMath::Sqrt(1 - square(tauLeptonMass*visFractionX/eVis_lab));
+  double cosGjAngle = (tauLeptonMass*visFractionX-eVis_rf)/(pVis_rf*beta);
+  double gjAngle = TMath::ACos(cosGjAngle);
 
 //--- compute tau lepton decay angle in laboratory frame
   double angleVis_lab = SVfit_namespace::gjAngleToLabFrame(pVis_rf, gjAngle, pVis);
