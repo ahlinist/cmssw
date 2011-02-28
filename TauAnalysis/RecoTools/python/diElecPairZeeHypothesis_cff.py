@@ -20,10 +20,10 @@ selectPfCandidatesIpCut = cms.Sequence( selectedPfCandidatesIpCut )
 # the hypothesis being that the pair of electrons results from a Z --> e+ e- decay
 #--------------------------------------------------------------------------------
 
-# VBTF WP80 ID 
+# VBTF WP95 ID 
 selectedPatElectronsForZeeHypothesesElectronTrack = cms.EDFilter("PATElectronSelector",
     src = cms.InputTag("cleanPatElectrons"),
-    cut = cms.string(''),
+    cut = cms.string('(abs(superCluster.eta) < 1.479 & abs(deltaEtaSuperClusterTrackAtVtx) < 0.007 & abs(deltaPhiSuperClusterTrackAtVtx) < 0.8 & hcalOverEcal < 0.15 & sigmaIetaIeta < 0.01) | (abs(superCluster.eta) > 1.479 & abs(deltaEtaSuperClusterTrackAtVtx) < 0.01 & abs(deltaPhiSuperClusterTrackAtVtx) <0.7 & hcalOverEcal < 0.07 & sigmaIetaIeta < 0.03)'),
     filter = cms.bool(False)
 )
 
