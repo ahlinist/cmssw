@@ -55,7 +55,7 @@ selectPatJetsForAHtoElecTau = patJetSelConfiguratorForAHtoElecTau.configure(pyNa
 # define additional collections of jets
 # not overlapping with "loosely" isolated electrons
 # (NOTE: to be used for the purpose of factorizing efficiencies
-#        of muon isolation from other event selection criteria,
+#        of electron isolation from other event selection criteria,
 #        in order to avoid problems with limited Monte Carlo statistics)
 
 selectedPatJetsForAHtoElecTauAntiOverlapWithLeptonsVetoLooseElectronIsolation = selectedPatJetsForAHtoElecTauAntiOverlapWithLeptonsVeto.clone(
