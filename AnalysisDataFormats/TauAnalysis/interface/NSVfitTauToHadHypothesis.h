@@ -8,6 +8,15 @@
 class NSVfitTauToHadHypothesis : public NSVfitSingleParticleHypothesisBase
 {
  public:
+  NSVfitTauToHadHypothesis() {}
+  NSVfitTauToHadHypothesis(const edm::Ptr<reco::Candidate>& particle, const std::string& name, int barcode) 
+    : NSVfitSingleParticleHypothesisBase(particle, name, barcode)
+  {}
+  ~NSVfitTauToHadHypothesis() {}
+
+  /// direction and mass of visible decay products
+  const reco::Candidate::Vector& p3Vis_unit() const { return p3Vis_unit_; }
+  double visMass() const { return visMass_; }
 
   /// decay angle in tau lepton rest-frame
   double decay_angle_rf() const { return decay_angle_rf_; }
@@ -15,6 +24,9 @@ class NSVfitTauToHadHypothesis : public NSVfitSingleParticleHypothesisBase
   friend class NSVfitTauToHadBuilder;
 
  private:
+  /// direction and mass of visible decay products
+  reco::Candidate::Vector p3Vis_unit_;
+  double visMass_;
 
   /// decay angle in tau lepton rest-frame
   double decay_angle_rf_;
