@@ -242,7 +242,7 @@ process_gammaPlusJets = cms.PSet(
     ),
     config_dqmHistPlotter = cms.PSet(
         dqmDirectory = cms.string('harvested/gammaPlusJets'),
-        legendEntry = cms.string('gamma + jets'),
+        legendEntry = cms.string('#gamma + jets'),
         type = cms.string('smMC') # 'Data' / 'smMC' / 'bsmMC' / 'smSumMC'
     )
 )
