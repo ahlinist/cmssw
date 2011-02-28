@@ -1,6 +1,7 @@
 import FWCore.ParameterSet.Config as cms
 import sys
 import os
+sys.setrecursionlimit(10000)
 
 from TauAnalysis.Configuration.recoSampleDefinitionsAHtoElecTau_grid_cfi \
         import recoSampleDefinitionsAHtoElecTau
@@ -9,7 +10,7 @@ from TauAnalysis.Configuration.plotAHtoElecTau_drawJobs_cfi import \
         drawJobConfigurator_AHtoElecTau_woBtag, plots_AHtoElecTau, \
         drawJobConfigurator_AHtoElecTau_wBtag,\
         drawJobConfigurator_AHtoElecTau_woBtagSS,\
-        drawJobConfigurator_AHtoElecTau_wBtagSS\
+        drawJobConfigurator_AHtoElecTau_wBtagSS
 
 from TauAnalysis.Configuration.makePlots2_grid import makePlots
 import TauAnalysis.Configuration.userRegistry as reg
@@ -37,18 +38,18 @@ outputFileNameMaker = lambda channel: 'plots%s_all.root' % channel
 analyzer_draw_jobs = [
     [ "ahElecTauAnalyzerOS_woBtag",
      drawJobConfigurator_AHtoElecTau_woBtag,
-     "plotAHtoElecTauOS_woBtag_#PLOT#.pdf" ],
+     "plotAHtoElecTauOS_woBtag_#PLOT#.png" ],
     [ "ahElecTauAnalyzerOS_wBtag",
      drawJobConfigurator_AHtoElecTau_wBtag,
-     "plotAHtoElecTauOS_wBtag_#PLOT#.pdf"  ],
+     "plotAHtoElecTauOS_wBtag_#PLOT#.png"  ],
 
     [ "ahElecTauAnalyzerSS_woBtag",
      drawJobConfigurator_AHtoElecTau_woBtagSS,
-     "plotAHtoElecTauSS_woBtag_#PLOT#.pdf" ],
+     "plotAHtoElecTauSS_woBtag_#PLOT#.png" ],
 
     [ "ahElecTauAnalyzerSS_wBtag",
      drawJobConfigurator_AHtoElecTau_wBtagSS,
-     "plotAHtoElecTauSS_wBtag_#PLOT#.pdf"  ],
+     "plotAHtoElecTauSS_wBtag_#PLOT#.png"  ],
 ]
 
 process.load("TauAnalysis.Configuration.dumpAHtoElecTau_grid_cff")
