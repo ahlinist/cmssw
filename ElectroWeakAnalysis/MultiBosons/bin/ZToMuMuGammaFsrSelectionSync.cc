@@ -10,6 +10,7 @@
 #include "CommonTools/UtilAlgos/interface/DeltaR.h"
 #include "CommonTools/Utils/interface/ExpressionHisto.h"
 #include "CommonTools/Utils/interface/AnySelector.h"
+#include "DataFormats/BeamSpot/interface/BeamSpot.h"
 #include "DataFormats/Candidate/interface/CandidateFwd.h"
 #include "DataFormats/Candidate/interface/OverlapChecker.h"
 #include "DataFormats/Candidate/interface/ShallowClonePtrCandidate.h"
@@ -33,6 +34,65 @@
 using namespace std;
 using namespace edm;
 
+
+enum IpDef {
+  PAT_dB_BS2D,   // MuonType_Method_Argument_Condition
+  PAT_dB_None,
+  PAT_dB_PV2D,
+  RECO_trackDxy_BS,
+  RECO_globalTrackDxy_BS
+};
+
+enum IpCond {
+  LTGT,   // LT = less than
+  LEGE,   // GT = greater than
+  LT,   // LE = less or equal
+  GT,   // GE = greater or equal
+  LE,
+  GE
+};
+
+// get the impact parameter definition enum
+IpDef getIpDef(std::string str) {
+  IpDef def = PAT_dB_BS2D;
+  if      (str == "PAT_dB_BS2D") def = PAT_dB_BS2D;
+  else if (str == "PAT_dB_None") def = PAT_dB_None;
+  else if (str == "PAT_dB_PV2D") def = PAT_dB_PV2D;
+  else if (str == "RECO_trackDxy_BS") def = RECO_trackDxy_BS;
+  else if (str == "RECO_globalTrackDxy_BS") def = RECO_globalTrackDxy_BS;
+  else throw cms::Exception("InvalidInput")
+                << "\'ipDefinition\' must be one of: "
+                << "PAT_dB_BS2D "
+                << "PAT_dB_None "
+                << "PAT_dB_PV2D "
+                << "RECO_trackDxy_BS "
+                << "RECO_globalTrackDxy_BS "
+                << std::endl;
+  return def;
+}
+
+// get the impact parameter condition enum
+IpCond getIpCond(std::string str) {
+  IpCond cond = LTGT;
+
+  if      (str == "LTGT") cond = LTGT;
+  else if (str == "LEGE") cond = LEGE;
+  else if (str == "LT"  ) cond = LT  ;
+  else if (str == "GT"  ) cond = GT  ;
+  else if (str == "LE"  ) cond = LT  ;
+  else if (str == "GE"  ) cond = GE  ;
+  else throw cms::Exception("InvalidInput")
+                << "\'ipCondition\' must be one of: "
+                << "LTGT "
+                << "LEGE "
+                << "LT "
+                << "GT "
+                << "LE "
+                << "GE "
+                << std::endl;
+  return cond;
+}
+
 int main ( int argc, char ** argv )
 {
   cout << "Welcome to ZToMuMuGammaFsrSelectionSync!" << endl;
@@ -51,8 +111,16 @@ int main ( int argc, char ** argv )
   ParameterSet const& inputs   = cfg->getParameter<ParameterSet>("inputs");
   ParameterSet const& outputs  = cfg->getParameter<ParameterSet>("outputs");
   ParameterSet const& analysis = cfg->getParameter<ParameterSet>("analysis");
-  InputTag muonSrc   = analysis.getParameter<InputTag>("muonSrc");
-  InputTag photonSrc = analysis.getParameter<InputTag>("photonSrc");
+  InputTag muonSrc     = analysis.getParameter<InputTag>("muonSrc");
+  InputTag photonSrc   = analysis.getParameter<InputTag>("photonSrc");
+  InputTag beamSpotSrc = analysis.getParameter<InputTag>("beamSpotSrc");
+  std::string ipDefStr = analysis.getParameter<std::string>("ipDefinition");
+  std::string ipCondStr = analysis.getParameter<std::string>("ipCondition");
+  int verbosity = analysis.getParameter<int>("verbosity");
+
+  IpDef  ipDef  = getIpDef (ipDefStr );
+  IpCond ipCond = getIpCond(ipCondStr);
+
 
   fwlite::TFileService fs = fwlite::TFileService(
     outputs.getParameter<string>("outputName")
@@ -175,8 +243,11 @@ int main ( int argc, char ** argv )
 
     Handle<vector<pat::Muon> > muons;
     Handle<vector<pat::Photon> > photons;
+    Handle<reco::BeamSpot> beamSpot;
+
     event.getByLabel(muonSrc, muons);
     event.getByLabel(photonSrc, photons);
+    event.getByLabel(beamSpotSrc, beamSpot);
 
     // loop over muons
     for(size_t iMuon=0; iMuon < muons->size(); ++iMuon) {
@@ -208,7 +279,42 @@ int main ( int argc, char ** argv )
         continue;
       ++muonsPassedPerEvent["3.7  pixel hits"];
 
-      if ( muon.dB(pat::Muon::BS2D) >= 0.2 ) continue;
+      double ipVal = 0;
+      switch (ipDef) {
+        case PAT_dB_BS2D:
+          ipVal = muon.dB(pat::Muon::BS2D);
+          break;
+        case PAT_dB_None:
+          ipVal = muon.dB(pat::Muon::None);
+          break;
+        case PAT_dB_PV2D:
+          ipVal = muon.dB(pat::Muon::PV2D);
+          break;
+        case RECO_trackDxy_BS:
+          ipVal = muon.track()->dxy( beamSpot->position() );
+          break;
+        case RECO_globalTrackDxy_BS:
+          ipVal = muon.globalTrack()->dxy( beamSpot->position() );
+          break;
+        default:
+          assert(false); // this should never happen
+      }
+
+      switch (ipCond) {
+        case LTGT: if (fabs(ipVal) >=  0.2) continue; break;
+        case LEGE: if (fabs(ipVal) >   0.2) continue; break;
+        case LT  : if (     ipVal  >=  0.2) continue; break;
+        case GT  : if (     ipVal  <= -0.2) continue; break;
+        case LE  : if (     ipVal  >   0.2) continue; break;
+        case GE  : if (     ipVal  <  -0.2) continue; break;
+        default  : assert(false); // this should never happen
+      }
+//       if ( muon.dB(pat::Muon::BS2D) >= 0.2 ) continue;
+//       if ( muon.dB(pat::Muon::PV2D) >= 0.2 ) continue;
+//       if ( muon.dB(pat::Muon::None) >= 0.2 ) continue;
+//       if ( muon.dB(pat::Muon::None) >= 0.2 ) continue;
+//       if ( fabs(muon.track->dxy() ) ) continue;
+//       if ( fabs( muon.track()->dxy( beamSpot->position() ) ) >= 0.2 ) continue;
       ++muonsPassedPerEvent["3.8  |d_xy|"];
 
       if ( muon.trackIso() >= 3. ) continue;
@@ -376,34 +482,35 @@ int main ( int argc, char ** argv )
       }
 
       // Dump the event info
-      DumpPtEtaPhi  ptEtaPhi;
-      DumpPtEtaPhiM ptEtaPhiM;
+      if (verbosity > 1) {
+        DumpPtEtaPhi  ptEtaPhi;
+        DumpPtEtaPhiM ptEtaPhiM;
 
-      cout << "run lumi id: "
-            << setw(3) << event.id().run() << " "
-            << setw(3) << event.id().luminosityBlock() << " "
-            << setw(8) << event.id().event()
-            << setw(0) << endl;
+        cout << "run lumi id: "
+              << setw(3) << event.id().run() << " "
+              << setw(3) << event.id().luminosityBlock() << " "
+              << setw(8) << event.id().event()
+              << setw(0) << endl;
 
-      cout << "  p4 (pt eta phi m) for mmg cand " << i << endl
-           << "    mmg p4 minDR:         " << ptEtaPhiM(mmgCand) << " "
-              << drMin
-              << endl
-           << "    dimuon p4:            " << ptEtaPhiM(*dimuon) << endl
-           << "    near mu p4 t/e/h Iso: " << ptEtaPhiM(*nearMuon) << " "
-//                                         << nearMuon->hcalIso()
-              << setw(10) << nearMuon->isolationR03().sumPt << " "
-              << setw(10) << nearMuon->isolationR03().emEt  << " "
-              << setw(10) << nearMuon->isolationR03().hadEt
-              << std::endl
-           << "    far mu p4 t/e/h Iso:  " << ptEtaPhiM(*farMuon) << " "
-//                                         << farMuon->hcalIso()
-              << setw(10) << farMuon->isolationR03().sumPt << " "
-              << setw(10) << farMuon->isolationR03().emEt  << " "
-              << setw(10) << farMuon->isolationR03().hadEt
-              << std::endl
-           << "    photon p3:            " << ptEtaPhi(*photon) << std::endl;
-
+        cout << "  p4 (pt eta phi m) for mmg cand " << i << endl
+            << "    mmg p4 minDR:         " << ptEtaPhiM(mmgCand) << " "
+                << drMin
+                << endl
+            << "    dimuon p4:            " << ptEtaPhiM(*dimuon) << endl
+            << "    near mu p4 t/e/h Iso: " << ptEtaPhiM(*nearMuon) << " "
+  //                                         << nearMuon->hcalIso()
+                << setw(10) << nearMuon->isolationR03().sumPt << " "
+                << setw(10) << nearMuon->isolationR03().emEt  << " "
+                << setw(10) << nearMuon->isolationR03().hadEt
+                << std::endl
+            << "    far mu p4 t/e/h Iso:  " << ptEtaPhiM(*farMuon) << " "
+  //                                         << farMuon->hcalIso()
+                << setw(10) << farMuon->isolationR03().sumPt << " "
+                << setw(10) << farMuon->isolationR03().emEt  << " "
+                << setw(10) << farMuon->isolationR03().hadEt
+                << std::endl
+            << "    photon p3:            " << ptEtaPhi(*photon) << std::endl;
+      } // end dump event info
 
 //       if (nearMuon->hcalIso() >= 1.0) continue;
       if (nearMuon->isolationR03().hadEt >= 1.0) continue;
