@@ -189,7 +189,12 @@ MmgFsrRecoAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSe
       continue;
     ++muonsPassedPerEvent_["3.7  pixel hits"];
 
-    if ( fabs( muon.track()->dxy( beamSpot->position() ) ) >= 0.2 ) continue;
+//     if ( fabs( muon.track()->dxy( beamSpot->position() ) ) >= 0.2 ) continue;
+    /// Use this one!
+    if ( fabs( muon.globalTrack()->dxy( beamSpot->position() ) ) >= 0.2 ) continue;
+//     if (muon.innerTrack()->dxy(beamSpot->position() ) >= .2) continue;
+    /// Original version of Olivier
+//     if (-muon.innerTrack()->dxy(beamSpot->position() ) >= .2) continue;
     ++muonsPassedPerEvent_["3.8  |d_xy|"];
 
     if ( muon.isolationR03().sumPt >= 3. ) continue;
