@@ -27,11 +27,13 @@ electronsBgEstPhotonPlusJetsEnrichedEta = copy.deepcopy(electronsBgEstZtautauEnr
 # require electron candidate to have transverse momentum above threshold
 electronsBgEstPhotonPlusJetsEnrichedPt = copy.deepcopy(electronsBgEstZtautauEnrichedPt)
 
+
 electronsBgEstPhotonPlusJetsEnrichedIso = copy.deepcopy(electronsBgEstZtautauEnrichedIso)
 electronsBgEstPhotonPlusJetsEnrichedIso.sumPtMinEB = cms.double(0.01)
 electronsBgEstPhotonPlusJetsEnrichedIso.sumPtMaxEB = cms.double(0.05)
 electronsBgEstPhotonPlusJetsEnrichedIso.sumPtMinEE = cms.double(0.01)
 electronsBgEstPhotonPlusJetsEnrichedIso.sumPtMaxEE = cms.double(0.05)
+
 
 
 # require electron to not be from a photon conversion
@@ -82,7 +84,8 @@ tausBgEstPhotonPlusJetsEnrichedLeadTrkPt = copy.deepcopy(tausBgEstZtautauEnriche
 # require tau candidate to pass TaNC discriminator
 tausBgEstPhotonPlusJetsEnrichedTaNCdiscr = copy.deepcopy(tausBgEstZtautauEnrichedTaNCdiscr)
 #tausBgEstPhotonPlusJetsEnrichedTaNCdiscr.cut = cms.string('tauID("byHPSloose") > -1')
-tausBgEstPhotonPlusJetsEnrichedTaNCdiscr.cut = cms.string('tauID("byTaNCfrHalfPercent") > -1')
+tausBgEstPhotonPlusJetsEnrichedTaNCdiscr.cut = cms.string('tauID("byTaNCfrOnePercent") > 0.5')
+
 
 # require tau candidate to have either one or three tracks within signal cone
 tausBgEstPhotonPlusJetsEnrichedProng = copy.deepcopy(tausBgEstZtautauEnrichedProng)
@@ -540,7 +543,7 @@ analyzeEventsBgEstPhotonPlusJetsEnriched = cms.EDAnalyzer("GenericAnalyzer",
         ),        
         cms.PSet(
             filter = cms.string('electronIsoCutBgEstPhotonPlusJetsEnriched'),
-            title = cms.string('Electron Isolation (inverted)'),
+            title = cms.string('Electron Isolation'),
         ),
         cms.PSet(
             analyzers = cms.vstring('electronHistManagerForElecTauBgEstPhotonPlusJetsEnriched',
@@ -576,7 +579,7 @@ analyzeEventsBgEstPhotonPlusJetsEnriched = cms.EDAnalyzer("GenericAnalyzer",
         ),         
         cms.PSet(
             filter = cms.string('tauTaNCdiscrCutBgEstPhotonPlusJetsEnriched'),
-            title = cms.string('Tau TaNC by 0.5% (off)'),
+            title = cms.string('Tau TaNC by 1%'),
         ),
         cms.PSet(
             analyzers = cms.vstring('electronHistManagerForElecTauBgEstPhotonPlusJetsEnriched',
