@@ -5,6 +5,28 @@ import FWCore.ParameterSet.VarParsing as VarParsing
 options = VarParsing.VarParsing ('analysis')
 
 ## register customized options
+## register customized options
+options.register("applyHltFilter",
+    True, # default value
+    options.multiplicity.singleton, # singleton or list
+    options.varType.bool,         # bool, string, int, or float
+    "Apply the HLT filter?"
+    )
+
+options.register("applyNoScrapingFilter",
+    False, # default value
+    options.multiplicity.singleton, # singleton or list
+    options.varType.bool,         # bool, string, int, or float
+    "Apply the no scraping filter?"
+    )
+
+options.register("applyPrimaryVertexFilter",
+    False, # default value
+    options.multiplicity.singleton, # singleton or list
+    options.varType.bool,         # bool, string, int, or float
+    "Apply the primary vertex filter?"
+    )
+
 options.register("hltProcessName",
     "HLT",                             # default value
     options.multiplicity.singleton, # singleton or list
@@ -84,7 +106,6 @@ options.inputFiles = ",".join([sourcePath + f for f in sourceFiles])
 # get and parse the command line arguments
 options.parseArguments()
 
-
 process = cms.Process("SKIM")
 
 process.load("FWCore.MessageLogger.MessageLogger_cfi")
@@ -99,7 +120,15 @@ process.source = cms.Source("PoolSource",
     fileNames = cms.untracked.vstring(options.inputFiles)
 )
 
+process.load("ElectroWeakAnalysis.MultiBosons.Skimming.goodCollisionDataSequence_cff")
 process.load("ElectroWeakAnalysis.MultiBosons.Skimming.ZToMMGSkim_cff")
+
+## Insert the collision cleaning between the HLT filter and the skim filter
+process.ZToMMGSkimFilterSequence.replace(
+    process.ZToMMGHltFilter,
+    process.ZToMMGHltFilter + process.goodCollisionDataSequence
+    )
+
 process.ZToMMGSkimFilterPath = cms.Path(process.ZToMMGSkimFilterSequence)
 
 process.ZToMMGHltFilter.TriggerResultsTag = cms.InputTag(
@@ -107,6 +136,19 @@ process.ZToMMGHltFilter.TriggerResultsTag = cms.InputTag(
     "",
     options.hltProcessName
     )
+
+## Remove the hltPhysicsDeclared - it kills some good events
+process.goodCollisionDataSequence.remove(process.hltPhysicsDeclared)
+
+## Apply options relevant to the path definition
+if not options.applyHltFilter:
+    process.p.remove(process.ZToMMGHltFilter)
+
+if not options.applyNoScrapingFilter:
+    process.p.remove(process.noScraping)
+
+if not options.applyPrimaryVertexFilter:
+    process.p.remove(process.primaryVertexFilter)
 
 process.out = cms.OutputModule("PoolOutputModule",
     fileName = cms.untracked.string(options.outputFile),
