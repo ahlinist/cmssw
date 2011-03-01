@@ -82,7 +82,6 @@ tausBgEstZtautauEnrichedEta = copy.deepcopy(selectedPatTausForElecTauEta)
 
 # require tau candidate to have transverse energy above threshold
 tausBgEstZtautauEnrichedPt = copy.deepcopy(selectedPatTausForElecTauPt)
-tausBgEstZtautauEnrichedPt.cut = cms.string("pt > 18")
 
 # require tau candidate to have a leading track
 # (track of Pt > 1. GeV within matching cone of size dR = 0.2 around jet-axis)
@@ -93,9 +92,6 @@ tausBgEstZtautauEnrichedLeadTrkPt = copy.deepcopy(selectedPatTausForElecTauLeadT
 
 # require tau candidate to pass TaNC discriminator
 tausBgEstZtautauEnrichedTaNCdiscr = copy.deepcopy(selectedPatTausForElecTauTaNCdiscr)
-tausBgEstZtautauEnrichedTaNCdiscr.cut = cms.string('tauID("byTaNCfrHalfPercent") > 0.5')
-#tausBgEstZtautauEnrichedTaNCdiscr.cut = cms.string('tauID("byHPSloose") > 0.5')
-
 
 # require tau candidate to have either one or three tracks within signal cone
 tausBgEstZtautauEnrichedProng = copy.deepcopy(selectedPatTausForElecTauProng)
@@ -595,15 +591,32 @@ analyzeEventsBgEstZtautauEnriched = cms.EDAnalyzer("GenericAnalyzer",
         #        (2) genPhaseSpaceCut needs to be **always** the first entry in the list of cuts
         #           - otherwise the script submitToBatch.csh for submission of cmsRun jobs
         #            to the CERN batch system will not work !!)
+
 ##         cms.PSet(
 ##             filter = cms.string('evtSelGenPhaseSpace'),
 ##             title = cms.string('gen. Phase-Space')
 ##         ),
         cms.PSet(
+            analyzers = cms.vstring('electronHistManagerForElecTauBgEstZtautauEnriched',
+                                    'tauHistManagerForElecTauBgEstZtautauEnriched',
+                                    ),
+            replace = cms.vstring('electronHistManagerForElecTauBgEstZtautauEnriched.electronSource = cleanPatElectrons',
+                                  'tauHistManagerForElecTauBgEstZtautauEnriched.tauSource = cleanPatTaus'
+                                  )
+        ),    
+        cms.PSet(
             filter = cms.string('evtSelTrigger'),
             title = cms.string('Trigger'),
             #saveRunLumiSectionEventNumbers = cms.vstring('passed_cumulative')
         ),
+        cms.PSet(
+            analyzers = cms.vstring('electronHistManagerForElecTauBgEstZtautauEnriched',
+                                    'tauHistManagerForElecTauBgEstZtautauEnriched',
+                                    ),
+            replace = cms.vstring('electronHistManagerForElecTauBgEstZtautauEnriched.electronSource = cleanPatElectrons',
+                                  'tauHistManagerForElecTauBgEstZtautauEnriched.tauSource = cleanPatTaus'
+                                  )
+        ),        
         cms.PSet(
             filter = cms.string('evtSelPrimaryEventVertex'),
             title = cms.string('Vertex exists')
@@ -642,7 +655,15 @@ analyzeEventsBgEstZtautauEnriched = cms.EDAnalyzer("GenericAnalyzer",
         ),
         cms.PSet(
             filter = cms.string('tauPtCutBgEstZtautauEnriched'),
-            title = cms.string('Pt(Tau) > 18 GeV'),
+            title = cms.string('Pt(Tau) > 20 GeV'),
+        ),
+        cms.PSet(
+            analyzers = cms.vstring('electronHistManagerForElecTauBgEstZtautauEnriched',
+                                    'tauHistManagerForElecTauBgEstZtautauEnriched',
+                                    ),
+            replace = cms.vstring('electronHistManagerForElecTauBgEstZtautauEnriched.electronSource = electronsBgEstZtautauEnrichedPtCumulative',
+                                  'tauHistManagerForElecTauBgEstZtautauEnriched.tauSource = tausBgEstZtautauEnrichedPtCumulative'
+                                  )
         ),
         cms.PSet(
             analyzers = cms.vstring('electronHistManagerForElecTauBgEstZtautauEnriched',
