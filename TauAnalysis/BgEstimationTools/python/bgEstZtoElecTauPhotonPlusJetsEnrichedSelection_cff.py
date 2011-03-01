@@ -531,7 +531,7 @@ analyzeEventsBgEstPhotonPlusJetsEnriched = cms.EDAnalyzer("GenericAnalyzer",
         ),
         cms.PSet(
             filter = cms.string('tauPtCutBgEstPhotonPlusJetsEnriched'),
-            title = cms.string('Pt(Tau) > 18 GeV'),
+            title = cms.string('Pt(Tau) > 20 GeV'),
         ),
         cms.PSet(
             analyzers = cms.vstring('electronHistManagerForElecTauBgEstPhotonPlusJetsEnriched',

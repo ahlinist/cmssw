@@ -29,11 +29,10 @@ electronsBgEstQCDenrichedPt = copy.deepcopy(electronsBgEstZtautauEnrichedPt)
 
 electronsBgEstQCDenrichedIso = copy.deepcopy(electronsBgEstZtautauEnrichedIso)
 electronsBgEstQCDenrichedIso.sumPtMinEB = cms.double(0.09)
-#electronsBgEstQCDenrichedIso.sumPtMinEB = cms.double(0.15)
 electronsBgEstQCDenrichedIso.sumPtMaxEB = cms.double(0.15)
 electronsBgEstQCDenrichedIso.sumPtMinEE = cms.double(0.06)
-#electronsBgEstQCDenrichedIso.sumPtMinEE = cms.double(0.15)
 electronsBgEstQCDenrichedIso.sumPtMaxEE = cms.double(0.15)
+
 
 # require electron to not be from a photon conversion 
 electronsBgEstQCDenrichedConversionVeto = copy.deepcopy(electronsBgEstZtautauEnrichedConversionVeto)
@@ -534,7 +533,7 @@ analyzeEventsBgEstQCDenriched = cms.EDAnalyzer("GenericAnalyzer",
         ),
         cms.PSet(
             filter = cms.string('tauPtCutBgEstQCDenriched'),
-            title = cms.string('Pt(Tau) > 18 GeV'),
+            title = cms.string('Pt(Tau) > 20 GeV'),
         ),
         cms.PSet(
             analyzers = cms.vstring('electronHistManagerForElecTauBgEstQCDenriched',

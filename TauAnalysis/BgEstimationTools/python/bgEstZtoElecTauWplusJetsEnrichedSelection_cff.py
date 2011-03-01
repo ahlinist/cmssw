@@ -76,7 +76,7 @@ tausBgEstWplusJetsEnrichedLeadTrkPt = copy.deepcopy(tausBgEstZtautauEnrichedLead
 
 # require tau candidate to pass TaNC discriminator
 tausBgEstWplusJetsEnrichedTaNCdiscr = copy.deepcopy(tausBgEstZtautauEnrichedTaNCdiscr)
-#tausBgEstWplusJetsEnrichedTaNCdiscr.cut = cms.string('tauID("byHPSloose") > -1')
+#tausBgEstWplusJetsEnrichedTaNCdiscr.cut = cms.string('tauID("byHPSvloose") > -1')
 tausBgEstWplusJetsEnrichedTaNCdiscr.cut = cms.string('tauID("byTaNCfrOnePercent") > 0.5')
 
 # require tau candidate to have either one or three tracks within signal cone
@@ -555,7 +555,7 @@ analyzeEventsBgEstWplusJetsEnriched = cms.EDAnalyzer("GenericAnalyzer",
         ),
         cms.PSet(
             filter = cms.string('tauPtCutBgEstWplusJetsEnriched'),
-            title = cms.string('Pt(Tau) > 18 GeV'),
+            title = cms.string('Pt(Tau) > 20 GeV'),
         ),
         cms.PSet(
             analyzers = cms.vstring('electronHistManagerForElecTauBgEstWplusJetsEnriched',
