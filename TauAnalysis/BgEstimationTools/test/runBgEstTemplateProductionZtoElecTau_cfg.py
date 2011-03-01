@@ -8,8 +8,8 @@ process = cms.Process('prodBgEstTemplateProductionZtoElecTau')
 # of electrons, muons and tau-jets with non-standard isolation cones
 process.load('Configuration/StandardSequences/Services_cff')
 process.load('FWCore/MessageService/MessageLogger_cfi')
-process.MessageLogger.cerr.FwkReport.reportEvery = 100
-#process.MessageLogger.cerr.FwkReport.reportEvery = 1
+#process.MessageLogger.cerr.FwkReport.reportEvery = 100
+process.MessageLogger.cerr.FwkReport.reportEvery = 1
 #process.MessageLogger.cerr.threshold = cms.untracked.string('INFO')
 #process.MessageLogger.suppressInfo = cms.untracked.vstring()
 process.MessageLogger.suppressWarning = cms.untracked.vstring("PATTriggerProducer",)
@@ -17,7 +17,7 @@ process.load('Configuration/StandardSequences/GeometryIdeal_cff')
 process.load('Configuration/StandardSequences/MagneticField_cff')
 process.load('Configuration/StandardSequences/Reconstruction_cff')
 process.load('Configuration/StandardSequences/FrontierConditions_GlobalTag_cff')
-process.GlobalTag.globaltag = cms.string('START38_V12::All')
+process.GlobalTag.globaltag = cms.string('START38_V14::All')
 
 #--------------------------------------------------------------------------------
 # import sequences for PAT-tuple production
@@ -36,8 +36,8 @@ process.saveZtoElecTauPlots = cms.EDAnalyzer("DQMSimpleFileSaver",
 )
 
 process.maxEvents = cms.untracked.PSet(
-    input = cms.untracked.int32(-1) 
-    #input = cms.untracked.int32(1000)    
+    #input = cms.untracked.int32(-1) 
+    input = cms.untracked.int32(1000)    
 )
 
 process.source = cms.Source("PoolSource",
@@ -47,22 +47,26 @@ process.source = cms.Source("PoolSource",
     #skipBadFiles = cms.untracked.bool(True) 
 )
 
-#dir = "/pscratch/ndcms/bestman/storage/cms/store/user/lantonel/DYToEE_M-20_TuneZ2_7TeV-pythia6/Zee_Skim_3/fc4017496fe1f426291929e387b48eec/"
-#dir = "/pscratch/ndcms/bestman/storage/cms/store/user/lantonel/DYToTauTau_M-20_TuneZ2_7TeV-pythia6-tauola/Ztautau_Skim/fc4017496fe1f426291929e387b48eec/"
-#dir = "/pscratch/ndcms/bestman/storage/cms/store/user/lantonel/WToTauNu_TuneZ2_7TeV-pythia6-tauola/WToTauNu_Skim/f1545d90fd2c345a2b7b16d6bd838f7e/"
-#dir = "/pscratch/ndcms/bestman/storage/cms/store/user/lantonel/WToENu_TuneZ2_7TeV-pythia6/WToENu_Skim/f1545d90fd2c345a2b7b16d6bd838f7e/"
-#dir = "/pscratch/ndcms/bestman/storage/cms/store/user/lantonel/QCD_Pt-20to30_BCtoE_TuneZ2_7TeV-pythia6/QCD_Pt-20to30_BCtoE_Skim/f1545d90fd2c345a2b7b16d6bd838f7e/"
-#dir = "/pscratch/ndcms/bestman/storage/cms/store/user/lantonel/QCD_Pt-30to80_BCtoE_TuneZ2_7TeV-pythia6/QCD_Pt-30to80_BCtoE_Skim/f1545d90fd2c345a2b7b16d6bd838f7e/"
-#dir="/pscratch/ndcms/bestman/storage/cms/store/user/lantonel/QCD_Pt-80to170_BCtoE_TuneZ2_7TeV-pythia6/QCD_Pt-80to170_BCtoE_Skim/f1545d90fd2c345a2b7b16d6bd838f7e/"
-#dir="/pscratch/ndcms/bestman/storage/cms/store/user/lantonel/QCD_Pt-20to30_EMEnriched_TuneZ2_7TeV-pythia6/QCD_Pt-20to30_EMEnriched_Skim/f1545d90fd2c345a2b7b16d6bd838f7e/"
-#dir="/pscratch/ndcms/bestman/storage/cms/store/user/lantonel/QCD_Pt-30to80_EMEnriched_TuneZ2_7TeV-pythia6/QCD_Pt-30to80_EMEnriched_Skim/f1545d90fd2c345a2b7b16d6bd838f7e/"
-#dir="/pscratch/ndcms/bestman/storage/cms/store/user/lantonel/QCD_Pt-80to170_EMEnriched_TuneZ2_7TeV-pythia6/QCD_Pt-80to170_EMEnriched_Skim/f1545d90fd2c345a2b7b16d6bd838f7e/"
-#dir="/pscratch/ndcms/bestman/storage/cms/store/user/lantonel/G_Pt_15to30_TuneZ2_7TeV_pythia6/G_Pt_15to30_Skim/f1545d90fd2c345a2b7b16d6bd838f7e/"
-#dir="/pscratch/ndcms/bestman/storage/cms/store/user/lantonel/G_Pt_30to50_TuneZ2_7TeV_pythia6/G_Pt_30to50_Skim/f1545d90fd2c345a2b7b16d6bd838f7e/"
 
 
-#dir="/pscratch/ndcms/bestman/storage/cms/store/user/jkolb/DYToTauTau_M-20_TuneZ2_7TeV-pythia6-tauola/skimElecTau_385_v1/0ddb8cbebd1c6c83ded328371cc1c32b/"
-dir="/pscratch/ndcms/bestman/storage/cms/store/user/jkolb/DYToEE_M-20_TuneZ2_7TeV-pythia6/skimElecTau_385_v1/0ddb8cbebd1c6c83ded328371cc1c32b/"
+dir="/pscratch/ndcms/bestman/storage/cms/store/user/jkolb/DYToTauTau_M-20_TuneZ2_7TeV-pythia6-tauola/skimElecTau_385_v1/0ddb8cbebd1c6c83ded328371cc1c32b/"
+#dir="/pscratch/ndcms/bestman/storage/cms/store/user/jkolb/DYToEE_M-20_TuneZ2_7TeV-pythia6/skimElecTau_385_v1/0ddb8cbebd1c6c83ded328371cc1c32b/"
+
+
+#dir="/pscratch/ndcms/bestman/storage/cms/store/user/jkolb/EG/skimElecTau_385_v3/f555ceec0d7f274eb20b4abf4dbe76f7/"
+#dir="/pscratch/ndcms/bestman/storage/cms/store/user/jkolb/Electron/skimElecTau_387_v1/f555ceec0d7f274eb20b4abf4dbe76f7/"
+
+#dir="/pscratch/ndcms/bestman/storage/cms/store/user/jkolb/QCD_Pt-30to80_EMEnriched_TuneZ2_7TeV-pythia6/skimElecTau_385_v3/c7ae91f3f823bf7a101c2a0b38387496/"
+#dir="/pscratch/ndcms/bestman/storage/cms/store/user/jkolb/WToENu_TuneZ2_7TeV-pythia6/skimElecTau_385_v1/0ddb8cbebd1c6c83ded328371cc1c32b/"
+#dir="/pscratch/ndcms/bestman/storage/cms/store/user/jkolb/G_Pt_30to50_TuneZ2_7TeV_pythia6/skimElecTau_385_v2/c7ae91f3f823bf7a101c2a0b38387496/"
+
+
+############ PILE UP SAMPLES
+
+#dir = "/pscratch/ndcms/bestman/storage/cms/store/user/jkolb/DYToEE_M-20_TuneZ2_7TeV-pythia6/skimElecTau_387_v1/f555ceec0d7f274eb20b4abf4dbe76f7/"
+#dir = "/pscratch/ndcms/bestman/storage/cms/store/user/jkolb/DYToTauTau_M-20_TuneZ2_7TeV-pythia6-tauola/skimElecTau_387_PU_v2/f555ceec0d7f274eb20b4abf4dbe76f7/"
+
+
 
 for file in os.listdir(dir):
     process.source.fileNames.extend(cms.untracked.vstring('file:' + dir + file))
@@ -73,6 +77,8 @@ from PhysicsTools.PatAlgos.tools.jetTools import *
 
 # uncomment to replace caloJets by pfJets
 ##switchJetCollection(process, jetCollection = cms.InputTag("ak5PFJets"))
+#switchJetCollection(process, jetCollection = cms.InputTag("ak5PFJets"),outputModule = "")
+
 ##runBTagging(process, cms.InputTag("ak5CaloJets"), 'AOD')
 process.patJets.addDiscriminators = False
 process.patJets.addTagInfos = False
@@ -91,19 +97,29 @@ process.load("TauAnalysis.CandidateTools.diTauPairProductionAllKinds_cff")
 replaceMETforDiTaus(process, cms.InputTag('patMETs'), cms.InputTag('patPFMETs'))
 #--------------------------------------------------------------------------------
 
+#from PhysicsTools.PatAlgos.tools.tauTools import *
+#switchToPFTauHPSpTaNC(process)
+
+
+## #uncomment when running on the pileup samples
+## process.load("PhysicsTools.PatAlgos.triggerLayer1.triggerProducer_cfi")
+## process.load("PhysicsTools.PatAlgos.triggerLayer1.triggerEventProducer_cfi")
+## process.patTriggerEvent.processName = cms.string( 'REDIGI38XPU' )
+## process.patTrigger.processName = cms.string( 'REDIGI38XPU' )
 
 
 process.load('TauAnalysis.BgEstimationTools.bgEstZtoElecTauWplusJetsEnrichedSelection_cff')
 process.load('TauAnalysis.BgEstimationTools.bgEstZtoElecTauPhotonPlusJetsEnrichedSelection_cff')
-process.load('TauAnalysis.BgEstimationTools.bgEstZtoElecTauZeeEnrichedSelection_cff')
 process.load('TauAnalysis.BgEstimationTools.bgEstZtoElecTauZtautauEnrichedSelection_cff')
 process.load('TauAnalysis.BgEstimationTools.bgEstZtoElecTauQCDenrichedSelection_cff')
+process.load('TauAnalysis.BgEstimationTools.bgEstZtoElecTauZeeJetMisIdEnrichedSelection_cff')
+process.load('TauAnalysis.BgEstimationTools.bgEstZtoElecTauZeeElectronMisIdEnrichedSelection_cff')
 
 process.producePatTupleAll = cms.Sequence(process.producePatTuple + process.producePatTupleZtoElecTauSpecific)
 
-saveEvents = cms.OutputModule("PoolOutputModule",
-    fileName = cms.untracked.string('test_output.root')
-)
+## saveEvents = cms.OutputModule("PoolOutputModule",
+##     fileName = cms.untracked.string('test_output.root')
+## )
 
 
 process.p = cms.Path(
@@ -111,16 +127,18 @@ process.p = cms.Path(
     + process.bgEstZtautauEnrichedAnalysisSequence
     + process.bgEstWplusJetsEnrichedAnalysisSequence
     + process.bgEstPhotonPlusJetsEnrichedAnalysisSequence
-    + process.bgEstZeeEnrichedAnalysisSequence
+    + process.bgEstZeeElectronMisIdEnrichedAnalysisSequence
+    + process.bgEstZeeJetMisIdEnrichedAnalysisSequence
     + process.bgEstQCDenrichedAnalysisSequence
     #+ process.saveEvents
     + process.saveZtoElecTauPlots
 )
 
 process.q = cms.Path(process.dataQualityFilters)
+#process.end = cms.EndPath(process.saveEvents)
 
+#process.schedule = cms.Schedule(process.q, process.p, process.end)
 process.schedule = cms.Schedule(process.q, process.p)
-
 
 
 # print-out all python configuration parameter information
