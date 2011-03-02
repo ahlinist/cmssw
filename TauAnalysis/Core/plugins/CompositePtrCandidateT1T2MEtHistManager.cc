@@ -244,7 +244,7 @@ void fillGenTauHistograms(MonitorElement* hGenTauPlusDecayAngleLepton,
 			  const reco::GenParticleCollection& genParticles,
 			  double weight)
 {
-  std::cout << "<fillGenTauHistograms>:" << std::endl;
+  //std::cout << "<fillGenTauHistograms>:" << std::endl;
 
   const reco::GenParticle* genTau = findGenParticle(genTauMomentum, genParticles);
   //std::cout << " genTau = " << genTau << std::endl;
