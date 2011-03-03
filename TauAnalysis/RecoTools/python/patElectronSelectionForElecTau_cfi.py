@@ -51,34 +51,31 @@ selectedPatElectronsForElecTauTrkIPlooseIsolation = copy.deepcopy(selectedPatEle
 
 
 # require electrons not to originate from photon conversions
+#
+# NOTE: EG POG method only pairs OS tracks, hence nConvPairMax is typically 0
+#       the old method( usePogMethod = False ) partners all tracks, therefore nConvPairMax is typically 1 
+#
 selectedPatElectronsForElecTauConversionVeto = cms.EDFilter("PATElectronConversionFinder",
     trackSource = cms.InputTag('generalTracks'),
     conversionSource = cms.InputTag('conversions'),
 	photonSource = cms.InputTag('photons'),
-    cotThetaCut = cms.double(0.05),
-    docaElecTrack = cms.double(0),
-    dRElecTrack = cms.double(0.1),
+	dcsTag = cms.InputTag('scalersRawToDigi'),
+	usePogMethod = cms.bool(False),
+    cotThetaMax = cms.double(0.05),
+	docaElecTrackMax = cms.double(0.1),
+    dRElecTrackMax = cms.double(0.1),
     doPixCut = cms.bool(True),
-    useInnerParsForElec = cms.bool(True),
-    useInnerParsForTrks = cms.bool(True),
+	doMissingHitsCut = cms.bool(False),
     useConversionColl = cms.bool(True),
-    nTrkMax = cms.double(1),
-    doHists = cms.bool(False)
+    nConvPairMax = cms.double(1),
+	nConvPairMin = cms.double(0),
+	useOnlyOSPairs = cms.bool(False),
+	isData = cms.bool(False)
 )
 
 # loosen conversion rejection as part of loose isolation
-selectedPatElectronsForElecTauConversionVetoLooseIsolation = cms.EDFilter("PATElectronConversionFinder",
-    trackSource = cms.InputTag('generalTracks'),
-    conversionSource = cms.InputTag('conversions'),
-	photonSource = cms.InputTag('photons'),
-    cotThetaCut = cms.double(0.05),
-    docaElecTrack = cms.double(0),
-    dRElecTrack = cms.double(0.1),
-    doPixCut = cms.bool(True),
-    useInnerParsForElec = cms.bool(True),
-    useInnerParsForTrks = cms.bool(True),
-    useConversionColl = cms.bool(True),
-    nTrkMax = cms.double(10),
-    doHists = cms.bool(False)
+selectedPatElectronsForElecTauConversionVetoLooseIsolation = selectedPatElectronsForElecTauConversionVeto.clone(
+    nConvPairMax = cms.double(5),
+    nConvPairMin = cms.double(0)
 )
 
