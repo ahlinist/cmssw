@@ -8,9 +8,9 @@
  *
  * \author Christian Veelken, UC Davis
  *
- * \version $Revision: 1.1 $
+ * \version $Revision: 1.2 $
  *
- * $Id: NSVfitBuilderBase.h,v 1.1 2011/02/27 16:46:02 veelken Exp $
+ * $Id: NSVfitBuilderBase.h,v 1.2 2011/02/28 10:46:38 veelken Exp $
  *
  */
 
@@ -33,9 +33,7 @@ class NSVfitBuilderBase
   {}
   virtual ~NSVfitBuilderBase() {}
 
-  virtual void initialize(NSVfitAlgorithmBase*) {}
-
-  virtual void beginJob() {}
+  virtual void beginJob(NSVfitAlgorithmBase*) {}
   virtual void beginEvent(const edm::Event&, const edm::EventSetup&) { barcodeCounter_ = 0; }
 
   virtual void print(std::ostream&) const {}

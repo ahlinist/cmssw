@@ -106,8 +106,11 @@ nSVfitProducer = cms.EDProducer("NSVfitProducer",
                 max = cms.double(200.),
                 stepSize = cms.double(5.),                                                            
                 replace = cms.vstring("leg1.x"),
-                by = cms.vstring("(A.visMass/mass_A)*(A.visMass/mass_A)/leg2.x")
+                by = cms.vstring("(A.p4.mass/mass_A)*(A.p4.mass/mass_A)/leg2.x")
             )
+        ),
+        vegasOptions = cms.PSet(
+            numCalls = cms.uint32(10000)                             
         )
     ),
     minDeltaR = cms.double(0.3)

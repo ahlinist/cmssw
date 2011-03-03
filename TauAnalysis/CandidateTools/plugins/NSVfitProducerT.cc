@@ -8,6 +8,8 @@
 #include "DataFormats/METReco/interface/MET.h"
 #include "DataFormats/Math/interface/deltaR.h"
 
+#include "TauAnalysis/CandidateTools/interface/IndepCombinatoricsGeneratorT.h"
+
 template<typename T>
 NSVfitProducerT<T>::NSVfitProducerT(const edm::ParameterSet& cfg)
   : moduleLabel_(cfg.getParameter<std::string>("@module_label")),
@@ -60,59 +62,6 @@ void NSVfitProducerT<T>::beginJob()
   algorithm_->beginJob();
 }
  
-class inputParticleCombinatoricGenerator
-{
- public:
-  inputParticleCombinatoricGenerator(unsigned n)
-    : n_(n),
-      limits_(n),
-      indices_(n),
-      isValid_(false)
-  {
-    for ( unsigned i = 0; i < n_; ++i ) {
-      limits_[i]  = 0;
-      indices_[i] = 0;
-    }
-  }
-  ~inputParticleCombinatoricGenerator() {}
-
-  void setLimit(unsigned idx, unsigned limit) 
-  {
-    assert(idx < n_);
-    limits_[idx] = limit;
-    isValid_ = true;
-    for ( unsigned i = 0; i < n_; ++i ) {
-      if ( !(indices_[i] < limits_[i]) ) isValid_ = false;
-    }
-  }
-
-  bool isValid() const { return isValid_; }
-
-  unsigned operator[](unsigned idx) const
-  {
-    assert(idx < n_);
-    return indices_[idx];
-  }
-
-  void next()
-  {
-    if ( !isValid_ ) assert(0);
-    for ( int i = (int)n_ - 1; i >= 0; --i ) {
-      if ( indices_[i] < (limits_[i] - 1) ) {
-	++indices_[i];
-	for ( int j = (i + 1); j < (int)n_; ++j ) indices_[j] = 0;
-        break;
-      } else if ( i == 0 ) isValid_ = false;
-    }
-  }
-
- private:
-  unsigned n_;
-  std::vector<unsigned> limits_;
-  std::vector<unsigned> indices_;
-  bool isValid_;
-};
-
 template <typename T>
 void NSVfitProducerT<T>::produce(edm::Event& evt, const edm::EventSetup& es)
 {
@@ -147,9 +96,9 @@ void NSVfitProducerT<T>::produce(edm::Event& evt, const edm::EventSetup& es)
 
   std::auto_ptr<NSVfitEventHypothesisCollection> nSVfitEventHypothesisCollection(new NSVfitEventHypothesisCollection());
   
-  inputParticleCombinatoricGenerator inputParticleCombination(numInputParticles_);
+  IndepCombinatoricsGeneratorT<int> inputParticleCombination(numInputParticles_);
   for ( unsigned iParticleType = 0; iParticleType < numInputParticles_; ++iParticleType ) {
-    inputParticleCombination.setLimit(iParticleType, inputParticleCollections[iParticleType]->size());
+    inputParticleCombination.setUpperLimit(iParticleType, inputParticleCollections[iParticleType]->size());
   }
   while ( inputParticleCombination.isValid() ) {
     typedef edm::Ptr<reco::Candidate> CandidatePtr;

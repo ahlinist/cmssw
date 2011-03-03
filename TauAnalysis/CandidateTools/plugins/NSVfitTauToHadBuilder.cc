@@ -19,7 +19,7 @@ NSVfitTauToHadBuilder::~NSVfitTauToHadBuilder()
 // nothing to be done yet...
 }
 
-void NSVfitTauToHadBuilder::initialize(NSVfitAlgorithmBase* algorithm)
+void NSVfitTauToHadBuilder::beginJob(NSVfitAlgorithmBase* algorithm)
 {
   idxFitParameter_visEnFracX_ = getFitParameterIdx(algorithm, prodParticleLabel_, kTau_visEnFracX);
   idxFitParameter_phi_lab_    = getFitParameterIdx(algorithm, prodParticleLabel_, kTau_phi_lab);

@@ -10,9 +10,9 @@
  * 
  * \author Evan Friis, Christian Veelken; UC Davis
  *
- * \version $Revision: 1.1 $
+ * \version $Revision: 1.2 $
  *
- * $Id: NSVfitTauToHadLikelihoodPhaseSpace.h,v 1.1 2011/02/27 16:45:16 veelken Exp $
+ * $Id: NSVfitTauToHadLikelihoodPhaseSpace.h,v 1.2 2011/02/27 17:00:35 veelken Exp $
  *
  */
 
@@ -28,7 +28,7 @@ class NSVfitTauToHadLikelihoodPhaseSpace : public NSVfitSingleParticleLikelihood
   NSVfitTauToHadLikelihoodPhaseSpace(const edm::ParameterSet&);
   ~NSVfitTauToHadLikelihoodPhaseSpace();
 
-  void initialize(NSVfitAlgorithmBase*) const;
+  void beginJob(NSVfitAlgorithmBase*) const;
 
   double operator()(const NSVfitSingleParticleHypothesisBase*) const;
 };

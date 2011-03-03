@@ -19,7 +19,7 @@ NSVfitTauToHadLikelihoodPhaseSpace::~NSVfitTauToHadLikelihoodPhaseSpace()
 // nothing to be done yet...
 }
 
-void NSVfitTauToHadLikelihoodPhaseSpace::initialize(NSVfitAlgorithmBase* algorithm) const 
+void NSVfitTauToHadLikelihoodPhaseSpace::beginJob(NSVfitAlgorithmBase* algorithm) const 
 {
   algorithm->requestFitParameter(prodParticleLabel_, kTau_visEnFracX, pluginName_);
   algorithm->requestFitParameter(prodParticleLabel_, kTau_phi_lab,    pluginName_);

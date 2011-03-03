@@ -1,5 +1,7 @@
 #include "TauAnalysis/CandidateTools/interface/NSVfitAlgorithmBase.h"
 
+#include "FWCore/MessageLogger/interface/MessageLogger.h"
+
 #include <TMath.h>
 
 using namespace SVfit_namespace;
@@ -35,14 +37,12 @@ NSVfitAlgorithmBase::NSVfitAlgorithmBase(const edm::ParameterSet& cfg)
   pluginType_ = cfg.getParameter<std::string>("pluginType");
 
   edm::ParameterSet cfgEvent = cfg.getParameter<edm::ParameterSet>("event");
-  eventModel_ = new eventModelType(cfgEvent);
+  eventModel_ = new eventModelType(cfgEvent, allLikelihoods_);
 
   verbosity_ = cfg.exists("verbosity") ? 
     cfg.getParameter<int>("verbosity") : 0;
 
   initializeFitParameterLimits(fitParameterLimits_);
-
-  eventModel_->initialize(this);
 }
 
 NSVfitAlgorithmBase::~NSVfitAlgorithmBase() 
@@ -50,8 +50,36 @@ NSVfitAlgorithmBase::~NSVfitAlgorithmBase()
   delete eventModel_;
 }
 
+void NSVfitAlgorithmBase::beginJob() 
+{
+  eventModel_->builder_->beginJob(this);
+  
+  for ( std::vector<NSVfitLikelihoodBase*>::iterator likelihood = allLikelihoods_.begin();
+	likelihood != allLikelihoods_.end(); ++likelihood ) {
+    (*likelihood)->beginJob(this);
+  }
+}
+
+void NSVfitAlgorithmBase::beginEvent(const edm::Event& evt, const edm::EventSetup& es) 
+  {
+    for ( std::vector<NSVfitLikelihoodBase*>::iterator likelihood = allLikelihoods_.begin();
+	  likelihood != allLikelihoods_.end(); ++likelihood ) {
+      (*likelihood)->beginEvent(evt, es);
+    }
+  }  
+
+
 void NSVfitAlgorithmBase::requestFitParameter(const std::string& name, int type, const std::string& requester)
 {
+  if ( name == "allTauDecays" ||
+       name == "allLeptons"   ||
+       name == "allNeutrinos" ) {
+    edm::LogWarning ("NSVfitAlgorithmBase::requestFitParameter")
+      << " Value = " << name << " not supported yet" 
+      << " --> relying on SingleParticleLikelihood plugins to initialize fitParameter for now.";
+    return;
+  }
+
   fitParameterType* fitParameter = getFitParameter(name, type);
 
   if ( !fitParameter ) {
