@@ -65,6 +65,7 @@ SAMPLE_DEFAULTS = {
     'factorize' : False,
     'applyZrecoilCorrection' : False,
     'applyElectronTriggerEfficiencyCorrection' : False, # not be used in mu + tau-jet channel
+    'applyElectronIsolationEfficiencyCorrection' : False, # not be used in mu + tau-jet channel
     'applyMuonTriggerEfficiencyCorrection' : False,   # to be used for MC only
     'applyMuonIsolationEfficiencyCorrection' : False, # to be used for MC only
     'applyVertexMultiplicityReweighting' : False,     # to be used for MC with pile-up only
