@@ -1,5 +1,7 @@
 import FWCore.ParameterSet.Config as cms
 
+import os
+
 #--------------------------------------------------------------------------------
 # Print-out systematic uncertainties on Z --> tau+ tau- 
 # signal acceptance and efficiency
@@ -15,143 +17,155 @@ process.maxEvents = cms.untracked.PSet(
 
 process.source = cms.Source("EmptySource")
 
-process.loadZtoMuTauSysUncertainties = cms.EDAnalyzer("DQMFileLoader",
-    dump = cms.PSet(
-        inputFileNames = cms.vstring(
-            #'/data2/friis/Run2PDF/harvested_ZtoMuTau_ZtautauPU156bx_Run2PDF.root'
-            #'/data2/friis/Run2PDF/harvested_ZtoMuTau_Ztautau_powheg_Run2PDF.root'
-            #'/data1/veelken/CMSSW_3_8_x/plots/ZtoMuTau/local/mcZtautauPU156bx_pythia_lhapdf_all.root'
-            '/data1/veelken/CMSSW_3_8_x/plots/ZtoMuTau/2011Feb01_HPSloose/plotsZtoMuTau_all.root'
-        ),
-        dqmDirectory_store = cms.string('/')
-    )
-)
+inputFilePath = '/data1/veelken/CMSSW_3_8_x/plots/ZtoMuTau/2011Feb23_HPSloose/'
+inputFileNames = {
+    'ZtautauPU156bx'          : 'harvested_ZtoMuTau_ZtautauPU156bx_2011Feb23_HPSloose.root',
+    'ZtautauPU156bx_pythiaZ2' : 'harvested_ZtoMuTau_ZtautauPU156bx_pythiaZ2_2011Feb23_HPSloose.root',
+    'Ztautau_powhegZ2'        : 'harvested_ZtoMuTau_Ztautau_powhegZ2_2011Feb23_HPSloose.root',
+    'Ztautau_powheg'          : 'harvested_ZtoMuTau_Ztautau_powheg_2011Feb23_HPSloose.root'
+}    
 
-dqmDirectory_Ztautau = '/harvested/Ztautau_powheg/zMuTauAnalyzerOS/afterGenPhaseSpaceCut_beforeEvtSelTrigger'
-#dqmDirectory_Ztautau = '/harvested/ZtautauPU156bx_pythiaZ2/zMuTauAnalyzerOS/afterGenPhaseSpaceCut_beforeEvtSelTrigger'
-#dqmDirectory_Ztautau = '/harvested/ZtautauPU156bx/zMuTauAnalyzerOS/afterGenPhaseSpaceCut_beforeEvtSelTrigger'
+dqmDirectory_Ztautau = '/zMuTauAnalyzerOS/afterGenPhaseSpaceCut_beforeEvtSelTrigger'
 
 genAccBinner = 'modelBinnerForMuTauGenTauLeptonPairAcc'
 recEffBinner = 'modelBinnerForMuTauWrtGenTauLeptonPairAcc'
 
-process.dumpZtoMuTauAcceptance = cms.EDAnalyzer("DQMDumpBinningResults",
-    binningService = cms.PSet(
-        pluginType = cms.string("ModelBinningService"),
-        dqmDirectories = cms.PSet(
-            genAcc = cms.string(dqmDirectory_Ztautau + '/' + genAccBinner),
-            recEff = cms.string(dqmDirectory_Ztautau + '/' + recEffBinner)
-        )
-    )
-)
-
 genAccBinner3mZbins = 'modelBinnerForMuTauGenTauLeptonPairAcc3mZbins'
 recEffBinner3mZbins = 'modelBinnerForMuTauWrtGenTauLeptonPairAcc3mZbins'
 
-process.dumpZtoMuTauAcceptance3mZbins = cms.EDAnalyzer("DQMDumpBinningResults",
-    binningService = cms.PSet(
+process.loadZtoMuTau = cms.EDAnalyzer("DQMFileLoader")
+
+process.dumpZtoMuTauSequence = cms.Sequence(process.loadZtoMuTau)
+
+for sample, inputFileName in inputFileNames.items():
+
+    setattr(process.loadZtoMuTau, sample, cms.PSet(
+        inputFileNames = cms.vstring(os.path.join(inputFilePath, inputFileName)),
+        dqmDirectory_store = cms.string('/' + sample + '/')
+    ))
+
+    dumpZtoMuTauAcceptanceModule = cms.EDAnalyzer("DQMDumpBinningResults",
+        binningService = cms.PSet(
+            pluginType = cms.string("ModelBinningService"),
+            dqmDirectories = cms.PSet(
+                genAcc = cms.string('/' + sample + dqmDirectory_Ztautau + '/' + genAccBinner),
+                recEff = cms.string('/' + sample + dqmDirectory_Ztautau + '/' + recEffBinner)
+            )
+        )
+    )
+    dumpZtoMuTauAcceptanceModuleName = "dumpZtoMuTauAcceptance%s" % sample
+    setattr(process, dumpZtoMuTauAcceptanceModuleName, dumpZtoMuTauAcceptanceModule)
+    process.dumpZtoMuTauSequence += dumpZtoMuTauAcceptanceModule
+
+    dumpZtoMuTauAcceptance3mZbinsModule = cms.EDAnalyzer("DQMDumpBinningResults",
+        binningService = cms.PSet(
+            pluginType = cms.string("ModelBinningService"),
+            dqmDirectories = cms.PSet(
+                genAcc = cms.string('/' + sample + dqmDirectory_Ztautau + '/' + genAccBinner3mZbins),
+                recEff = cms.string('/' + sample + dqmDirectory_Ztautau + '/' + recEffBinner3mZbins)
+            )
+        )
+    )
+    dumpZtoMuTauAcceptance3mZbinsModuleName = "dumpZtoMuTauAcceptance3mZbins%s" % sample
+    setattr(process, dumpZtoMuTauAcceptance3mZbinsModuleName, dumpZtoMuTauAcceptance3mZbinsModule)
+    process.dumpZtoMuTauSequence += dumpZtoMuTauAcceptance3mZbinsModule
+
+    theoryUncertainty = cms.PSet(
+        sysNames = cms.vstring(""),
+        sysTitle = cms.string(""),
+        sysCentralValue = cms.string("CENTRAL_VALUE"),
         pluginType = cms.string("ModelBinningService"),
+        method = cms.string("simple")
+    )
+
+    dumpZtoMuTauAccUncertaintyModule = cms.EDAnalyzer("DQMDumpSysUncertaintyBinningResults",
+        config = cms.VPSet(
+            cms.PSet(
+                pdfSets = cms.VPSet(
+                    cms.PSet(
+                        sysNames = cms.vstring("sysPdfWeightsCTEQ66(45)"),
+                        sysCentralValues = cms.vstring("sysPdfWeightsCTEQ66(0)")
+                    ),
+                    cms.PSet(
+                        sysNames = cms.vstring("sysPdfWeightsMSTW2008nlo68cl(41)"),
+                        sysCentralValues = cms.vstring("sysPdfWeightsMSTW2008nlo68cl(0)")
+                    ),
+                    cms.PSet(
+                        sysNames = cms.vstring("sysPdfWeightsNNPDF20(100)"),
+                        sysCentralValues = cms.vstring("sysPdfWeightsNNPDF20(0)", "sysPdfWeightsNNPDF20(1)")
+                    )
+                ),
+                sysTitle = cms.string("PDF"),
+                pluginType = cms.string("ModelBinningService"),                                               
+                method = cms.string("pdf")
+            ),
+            theoryUncertainty.clone(
+                sysNames = cms.vstring("sysIsrWeight"),
+                sysTitle = cms.string("ISR")
+            ),
+            theoryUncertainty.clone(            
+                sysNames = cms.vstring("sysFsrWeight"),
+                sysTitle = cms.string("FSR")
+            )
+        ),
+        resultTypes = cms.vstring("acceptance"),  
         dqmDirectories = cms.PSet(
-            genAcc = cms.string(dqmDirectory_Ztautau + '/' + genAccBinner3mZbins),
-            recEff = cms.string(dqmDirectory_Ztautau + '/' + recEffBinner3mZbins)
+            Ztautau = cms.string('/' + sample + dqmDirectory_Ztautau + '/' + 'sysUncertaintyBinningResults' + '/' + genAccBinner)
         )
     )
-)
+    dumpZtoMuTauAccUncertaintyModuleName = "dumpZtoMuTauAccUncertainties%s" % sample
+    setattr(process, dumpZtoMuTauAccUncertaintyModuleName, dumpZtoMuTauAccUncertaintyModule)
+    ##process.dumpZtoMuTauSequence += dumpZtoMuTauAccUncertaintyModule
 
-theoryUncertainty = cms.PSet(
-    sysNames = cms.vstring(""),
-    sysTitle = cms.string(""),
-    sysCentralValue = cms.string("CENTRAL_VALUE"),
-    pluginType = cms.string("ModelBinningService"),
-    method = cms.string("simple")
-)
+    expUncertainty = cms.PSet(
+        sysNames = cms.vstring(""),
+        sysTitle = cms.string(""),
+        sysCentralValue = cms.string("CENTRAL_VALUE"),
+        pluginType = cms.string("ModelBinningService")
+    )
 
-process.dumpZtoMuTauAccUncertainties = cms.EDAnalyzer("DQMDumpSysUncertaintyBinningResults",
-    config = cms.VPSet(
-        cms.PSet(
-            pdfSets = cms.VPSet(
-                cms.PSet(
-                    sysNames = cms.vstring("sysPdfWeightsCTEQ66(45)"),
-                    sysCentralValues = cms.vstring("sysPdfWeightsCTEQ66(0)")
+    dumpZtoMuTauEffUncertaintyModule = cms.EDAnalyzer("DQMDumpSysUncertaintyBinningResults",
+        config = cms.VPSet(
+            expUncertainty.clone(
+                sysNames = cms.vstring(
+                    "sysMuonPtUp",
+                    "sysMuonPtDown"
                 ),
-                cms.PSet(
-                    sysNames = cms.vstring("sysPdfWeightsMSTW2008nlo68cl(41)"),
-                    sysCentralValues = cms.vstring("sysPdfWeightsMSTW2008nlo68cl(0)")
+                sysTitle = cms.string("Muon Momentum scale")
+            ),
+            expUncertainty.clone(
+                sysNames = cms.vstring(
+                    "sysTauJetEnUp",
+                    "sysTauJetEnDown"
                 ),
-                cms.PSet(
-                    sysNames = cms.vstring("sysPdfWeightsNNPDF20(100)"),
-                    sysCentralValues = cms.vstring("sysPdfWeightsNNPDF20(0)", "sysPdfWeightsNNPDF20(1)")
-                )
+                sysTitle = cms.string("Tau-jet Energy scale")
             ),
-            sysTitle = cms.string("PDF"),
-            pluginType = cms.string("ModelBinningService"),                                               
-            method = cms.string("pdf")
+        	expUncertainty.clone(
+                sysNames = cms.vstring(
+                    "sysJetEnUp",
+                    "sysJetEnDown"
+                ),
+                sysTitle = cms.string("Jet Energy scale")
+            ),
+            expUncertainty.clone(
+                sysNames = cms.vstring(
+                    "sysZllRecoilCorrectionUp",
+                    "sysZllRecoilCorrectionDown"
+                ),
+                sysTitle = cms.string("MEt Z-recoil correction")
+            )
         ),
-        theoryUncertainty.clone(
-            sysNames = cms.vstring("sysIsrWeight"),
-            sysTitle = cms.string("ISR")
-        ),
-        theoryUncertainty.clone(            
-            sysNames = cms.vstring("sysFsrWeight"),
-            sysTitle = cms.string("FSR")
+        resultTypes = cms.vstring("acceptance"),                                                  
+        dqmDirectories = cms.PSet(
+            Ztautau = cms.string('/' + sample + dqmDirectory_Ztautau + '/' + 'sysUncertaintyBinningResults' + '/' + recEffBinner)
         )
-    ),
-    resultTypes = cms.vstring("acceptance"),  
-    dqmDirectories = cms.PSet(
-        Ztautau = cms.string(dqmDirectory_Ztautau + '/' + 'sysUncertaintyBinningResults' + '/' + genAccBinner)
     )
-)
+    dumpZtoMuTauEffUncertaintyModuleName = "dumpZtoMuTauEffUncertainties%s" % sample
+    setattr(process, dumpZtoMuTauEffUncertaintyModuleName, dumpZtoMuTauEffUncertaintyModule)
+    ##process.dumpZtoMuTauSequence += dumpZtoMuTauEffUncertaintyModule
 
-expUncertainty = cms.PSet(
-    sysNames = cms.vstring(""),
-    sysTitle = cms.string(""),
-    sysCentralValue = cms.string("CENTRAL_VALUE"),
-    pluginType = cms.string("ModelBinningService")
-)
+process.p = cms.Path(process.dumpZtoMuTauSequence)
 
-process.dumpZtoMuTauEffUncertainties = cms.EDAnalyzer("DQMDumpSysUncertaintyBinningResults",
-    config = cms.VPSet(
-        expUncertainty.clone(
-            sysNames = cms.vstring(
-                "sysMuonPtUp",
-                "sysMuonPtDown"
-            ),
-            sysTitle = cms.string("Muon Momentum scale")
-        ),
-        expUncertainty.clone(
-            sysNames = cms.vstring(
-                "sysTauJetEnUp",
-                "sysTauJetEnDown"
-            ),
-            sysTitle = cms.string("Tau-jet Energy scale")
-        ),
-	expUncertainty.clone(
-            sysNames = cms.vstring(
-                "sysJetEnUp",
-                "sysJetEnDown"
-            ),
-            sysTitle = cms.string("Jet Energy scale")
-        ),
-        expUncertainty.clone(
-            sysNames = cms.vstring(
-                "sysZllRecoilCorrectionUp",
-                "sysZllRecoilCorrectionDown"
-            ),
-            sysTitle = cms.string("MEt Z-recoil correction")
-        )
-    ),
-    resultTypes = cms.vstring("acceptance"),                                                  
-    dqmDirectories = cms.PSet(
-        Ztautau = cms.string(dqmDirectory_Ztautau + '/' + 'sysUncertaintyBinningResults' + '/' + recEffBinner)
-    )
-) 
-
-process.p = cms.Path(
-    process.loadZtoMuTauSysUncertainties
-   + process.dumpZtoMuTauAcceptance
-   + process.dumpZtoMuTauAcceptance3mZbins
-   #+ process.dumpZtoMuTauAccUncertainties
-   #+ process.dumpZtoMuTauEffUncertainties
-)
-
-
+# print-out all python configuration parameter information
+print process.dumpPython()
 
