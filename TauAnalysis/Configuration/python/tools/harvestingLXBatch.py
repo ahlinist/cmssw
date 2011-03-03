@@ -1,3 +1,4 @@
+from TauAnalysis.Configuration.tools.harvesting import castor_source
 import TauAnalysis.Configuration.tools.jobtools as jobtools
 import TauAnalysis.Configuration.tools.castor as castor
 import TauAnalysis.Configuration.tools.crab as crab
