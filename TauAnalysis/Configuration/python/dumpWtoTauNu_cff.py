@@ -11,7 +11,7 @@ dumpWtoTauNu = cms.EDAnalyzer("DQMDumpFilterStatisticsTables",
         Wenu = cms.string('harvested/Wenu/wTauNuAnalyzer/FilterStatistics/'),
 	ZplusJets = cms.string('harvested/ZplusJets/wTauNuAnalyzer/FilterStatistics/'),
         qcd_W = cms.string('qcd/wTauNuAnalyzer/FilterStatistics/')
-        ),
+    ),
     columnsSummaryTable = cms.vstring("Passed", "cumul. Efficiency", "margin. Efficiency","indiv. Efficiency")
 )
 
@@ -22,6 +22,6 @@ dumpWtoTauNu_boosted = cms.EDAnalyzer("DQMDumpFilterStatisticsTables",
         Wenu = cms.string('harvested/Wenu/wTauNuBoostedAnalyzer/FilterStatistics/'),
 	ZplusJets = cms.string('harvested/ZplusJets/wTauNuBoostedAnalyzer/FilterStatistics/'),
         qcd_W = cms.string('qcd/wTauNuBoostedAnalyzer/FilterStatistics/')
-        ),
+    ),
     columnsSummaryTable = cms.vstring("Passed", "cumul. Efficiency", "margin. Efficiency","indiv. Efficiency")
 ) 
