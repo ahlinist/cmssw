@@ -10,7 +10,7 @@
 #include "TauAnalysis/Core/interface/binningAuxFunctions.h"
 #include "TauAnalysis/Core/interface/sysUncertaintyAuxFunctions.h"
 #include "TauAnalysis/DQMTools/interface/dqmAuxFunctions.h"
-#include "TauAnalysis/DQMTools/interface/generalAuxFunctions.h"
+#include "TauAnalysis/CandidateTools/interface/generalAuxFunctions.h"
 
 #include <iostream>
 #include <iomanip>

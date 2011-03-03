@@ -11,9 +11,9 @@
   * 
   * \author Christian Veelken, UC Davis
   *
-  * \version $Revision: 1.6 $
+  * \version $Revision: 1.7 $
   *
-  * $Id: SysUncertaintyService.h,v 1.6 2010/02/17 18:14:50 veelken Exp $
+  * $Id: SysUncertaintyService.h,v 1.7 2010/09/28 11:23:29 jkolb Exp $
   *
   */
 
@@ -24,7 +24,7 @@
 #include "FWCore/ServiceRegistry/interface/ActivityRegistry.h"
 #include "FWCore/MessageLogger/interface/MessageLogger.h"
 
-#include "TauAnalysis/DQMTools/interface/generalAuxFunctions.h"
+#include "TauAnalysis/CandidateTools/interface/generalAuxFunctions.h"
 
 #include <TPRegexp.h>
 #include <TString.h>

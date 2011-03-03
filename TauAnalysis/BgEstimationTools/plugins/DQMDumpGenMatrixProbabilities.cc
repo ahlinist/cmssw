@@ -7,7 +7,7 @@
 #include "DQMServices/Core/interface/MonitorElement.h"
 
 #include "TauAnalysis/DQMTools/interface/dqmAuxFunctions.h"
-#include "TauAnalysis/DQMTools/interface/generalAuxFunctions.h"
+#include "TauAnalysis/CandidateTools/interface/generalAuxFunctions.h"
 #include "TauAnalysis/Core/interface/binningAuxFunctions.h"
 
 #include <TMath.h>
