@@ -20,7 +20,7 @@ NSVfitTauToLepBuilder<T>::~NSVfitTauToLepBuilder()
 }
 
 template <typename T>
-void NSVfitTauToLepBuilder<T>::initialize(NSVfitAlgorithmBase* algorithm)
+void NSVfitTauToLepBuilder<T>::beginJob(NSVfitAlgorithmBase* algorithm)
 {
   idxFitParameter_visEnFracX_ = getFitParameterIdx(algorithm, prodParticleLabel_, kTau_visEnFracX);
   idxFitParameter_phi_lab_    = getFitParameterIdx(algorithm, prodParticleLabel_, kTau_phi_lab);

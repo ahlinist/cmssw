@@ -27,11 +27,11 @@ NSVfitResonanceBuilderBase::~NSVfitResonanceBuilderBase()
   }
 }
 
-void NSVfitResonanceBuilderBase::beginJob() 
+void NSVfitResonanceBuilderBase::beginJob(NSVfitAlgorithmBase* algorithm) 
 {
   for ( std::vector<NSVfitSingleParticleBuilderBase*>::iterator daughterBuilder = daughterBuilders_.begin();
 	daughterBuilder != daughterBuilders_.end(); ++daughterBuilder ) {
-    (*daughterBuilder)->beginJob();
+    (*daughterBuilder)->beginJob(algorithm);
   }
 }
 

@@ -14,7 +14,7 @@
 #include "DataFormats/Common/interface/Ptr.h"
 
 #include "TauAnalysis/CandidateTools/interface/SVfitAlgorithmWtauNu.h"
-#include "TauAnalysis/DQMTools/interface/generalAuxFunctions.h"
+#include "TauAnalysis/CandidateTools/interface/generalAuxFunctions.h"
 
 #include <TMath.h>
 

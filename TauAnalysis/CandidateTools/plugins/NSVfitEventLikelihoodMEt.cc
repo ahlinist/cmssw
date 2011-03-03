@@ -34,7 +34,7 @@ NSVfitEventLikelihoodMEt::~NSVfitEventLikelihoodMEt()
   delete perpBias_;
 }
 
-void NSVfitEventLikelihoodMEt::initialize(NSVfitAlgorithmBase* algorithm) const 
+void NSVfitEventLikelihoodMEt::beginJob(NSVfitAlgorithmBase* algorithm) const 
 {
   algorithm->requestFitParameter("allTauDecays", kTau_visEnFracX, pluginName_);
   algorithm->requestFitParameter("allTauDecays", kTau_phi_lab,    pluginName_);

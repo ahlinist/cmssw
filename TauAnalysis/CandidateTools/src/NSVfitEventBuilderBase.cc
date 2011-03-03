@@ -27,11 +27,11 @@ NSVfitEventBuilderBase::~NSVfitEventBuilderBase()
   }
 }
 
-void NSVfitEventBuilderBase::beginJob() 
+void NSVfitEventBuilderBase::beginJob(NSVfitAlgorithmBase* algorithm) 
 {
   for ( std::vector<NSVfitResonanceBuilderBase*>::iterator resonanceBuilder = resonanceBuilders_.begin();
 	resonanceBuilder != resonanceBuilders_.end(); ++resonanceBuilder ) {
-    (*resonanceBuilder)->beginJob();
+    (*resonanceBuilder)->beginJob(algorithm);
   }
 }
 

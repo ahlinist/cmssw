@@ -10,7 +10,7 @@
  *
  * \version $Revision: 1.1 $
  *
- * $Id: SVfitLikelihoodDiTauMEt.h,v 1.1 2011/02/19 13:33:56 veelken Exp $
+ * $Id: NSVfitEventLikelihoodMEt.h,v 1.1 2011/02/27 16:45:16 veelken Exp $
  *
  */
 
@@ -30,8 +30,7 @@ class NSVfitEventLikelihoodMEt : public NSVfitEventLikelihood
   NSVfitEventLikelihoodMEt(const edm::ParameterSet&);
   ~NSVfitEventLikelihoodMEt();
 
-  virtual void initialize(NSVfitAlgorithmBase*) const;
-
+  void beginJob(NSVfitAlgorithmBase*) const;
   void beginCandidate(const NSVfitEventHypothesis*) const;
 
   double operator()(const NSVfitEventHypothesis*) const;

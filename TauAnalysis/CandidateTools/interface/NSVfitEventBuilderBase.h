@@ -8,9 +8,9 @@
  *
  * \author Christian Veelken, UC Davis
  *
- * \version $Revision: 1.1 $
+ * \version $Revision: 1.2 $
  *
- * $Id: NSVfitEventBuilderBase.h,v 1.1 2011/02/27 16:45:16 veelken Exp $
+ * $Id: NSVfitEventBuilderBase.h,v 1.2 2011/02/28 10:46:38 veelken Exp $
  *
  */
 
@@ -32,7 +32,7 @@ class NSVfitEventBuilderBase : public NSVfitBuilderBase
   NSVfitEventBuilderBase(const edm::ParameterSet&);
   virtual ~NSVfitEventBuilderBase();
 
-  virtual void beginJob();
+  virtual void beginJob(NSVfitAlgorithmBase*);
   virtual void beginEvent(const edm::Event&, const edm::EventSetup&);
 
   typedef edm::Ptr<reco::Candidate> CandidatePtr;

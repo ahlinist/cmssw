@@ -25,7 +25,7 @@ NSVfitTauToLepLikelihoodPhaseSpace<T>::~NSVfitTauToLepLikelihoodPhaseSpace()
 }
 
 template <typename T>
-void NSVfitTauToLepLikelihoodPhaseSpace<T>::initialize(NSVfitAlgorithmBase* algorithm) const 
+void NSVfitTauToLepLikelihoodPhaseSpace<T>::beginJob(NSVfitAlgorithmBase* algorithm) const 
 {
   algorithm->requestFitParameter(prodParticleLabel_, kTau_visEnFracX, pluginName_);
   algorithm->requestFitParameter(prodParticleLabel_, kTau_phi_lab,    pluginName_);

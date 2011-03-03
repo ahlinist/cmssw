@@ -17,7 +17,7 @@
 
 #include "TauAnalysis/CandidateTools/interface/SVfitAlgorithm.h"
 #include "TauAnalysis/CandidateTools/interface/candidateAuxFunctions.h"
-#include "TauAnalysis/DQMTools/interface/generalAuxFunctions.h"
+#include "TauAnalysis/CandidateTools/interface/generalAuxFunctions.h"
 
 #include "TMath.h"
 #include "TF1.h"
