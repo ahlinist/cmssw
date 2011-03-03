@@ -279,15 +279,15 @@ void drawDiff(const TString& inputFilePath, const TObjArray& inputFileNames,
 
 void compareZtautauMCs()
 {
-  TString inputFilePath = "/data1/veelken/CMSSW_3_8_x/plots/ZtoMuTau/2011Feb11_HPSloose/";
+  TString inputFilePath = "/data1/veelken/CMSSW_3_8_x/plots/ZtoMuTau/2011Feb16_HPSloose/";
 
   TObjArray inputFileNames;
-  //inputFileNames.Add(new TObjString("harvested_ZtoMuTau_ZtautauPU156bx_2011Feb11_HPSloose.root"));
-  inputFileNames.Add(new TObjString("harvested_ZtoMuTau_ZtautauPU156bx_pythiaZ2_2011Feb11_HPSloose.root"));
-  inputFileNames.Add(new TObjString("harvested_ZtoMuTau_Ztautau_powheg_2011Feb11_HPSloose.root"));
+  inputFileNames.Add(new TObjString("harvested_ZtoMuTau_ZtautauPU156bx_2011Feb16_HPSloose.root"));
+  inputFileNames.Add(new TObjString("harvested_ZtoMuTau_ZtautauPU156bx_pythiaZ2_2011Feb16_HPSloose.root"));
+  inputFileNames.Add(new TObjString("harvested_ZtoMuTau_Ztautau_powheg_2011Feb16_HPSloose.root"));
 
   TObjArray legendEntries;
-  //legendEntries.Add(new TObjString("PYTHIA D6T"));
+  legendEntries.Add(new TObjString("PYTHIA D6T"));
   legendEntries.Add(new TObjString("PYTHIA Z2"));
   legendEntries.Add(new TObjString("POWHEG Z2"));
 
