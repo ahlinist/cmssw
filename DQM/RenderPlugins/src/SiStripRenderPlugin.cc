@@ -2,8 +2,8 @@
   \file SiStripRenderPlugin
   \brief Display Plugin for SiStrip DQM Histograms
   \author S. Dutta
-  \version $Revision: 1.34 $
-  \date $Date: 2011/02/01 17:07:41 $
+  \version $Revision: 1.35 $
+  \date $Date: 2011/02/10 10:48:24 $
 */
 
 #include "VisMonitoring/DQMServer/interface/DQMRenderPlugin.h"
@@ -162,6 +162,13 @@ private:
         return;
       }
 
+      if( o.name.find( "DataPresentInLastLS" )  != std::string::npos)
+      {
+        obj->SetStats( kFALSE );
+        dqm::utils::reportSummaryMapPalette(obj);
+        obj->SetOption("colztext");
+        return;
+      }
 
       if( o.name.find( "DeltaBx_vs_ApvCycle" )  != std::string::npos)
       {
@@ -362,6 +369,11 @@ private:
         c->SetGridy();
         return;
       }
+      if( o.name.find( "DataPresentInLastLS" )  != std::string::npos)
+      {
+        c->SetGridx();
+        return;
+      }
     }
   void postDrawTProfile( TCanvas *c, const VisDQMObject &o )
   {
@@ -409,10 +421,10 @@ private:
       {
         if (obj->GetEntries() > 10.0) c->SetLogy(1);
         c->SetGridy();
-        if (name.find( "TotalNumberOfDigiProfile__TIB" ) != std::string::npos) {
-//	     tl1.DrawLine(xmin, TIBLimit1,     xmax, TIBLimit1);
-//           tl2.DrawLine(xmin, TIBLimit1*0.5, xmax, TIBLimit1*0.5);
-//           tl2.DrawLine(xmin, TIBLimit1*2.0, xmax, TIBLimit1*2.0);
+	if (name.find( "TotalNumberOfDigiProfile__TIB" ) != std::string::npos) {
+//	   tl1.DrawLine(xmin, TIBLimit1,     xmax, TIBLimit1);
+//	     tl2.DrawLine(xmin, TIBLimit1*0.5, xmax, TIBLimit1*0.5);
+//	     tl2.DrawLine(xmin, TIBLimit1*2.0, xmax, TIBLimit1*2.0);
 //          obj->SetMinimum(TIBLimit1*0.1);
           obj->SetMinimum(1);
           obj->SetMaximum(TMath::Max(ymax, TIBLimit1*50));
@@ -445,7 +457,7 @@ private:
         if (obj->GetEntries() > 10.0) c->SetLogy(1);
         c->SetGridy();
         if (name.find( "TotalNumberOfClusterProfile__TIB" ) != std::string::npos) {
-//           tl1.DrawLine(xmin, TIBLimit2,     xmax, TIBLimit2);
+//       tl1.DrawLine(xmin, TIBLimit2,     xmax, TIBLimit2);
 //           tl2.DrawLine(xmin, TIBLimit2*0.5, xmax, TIBLimit2*0.5);
 //           tl2.DrawLine(xmin, TIBLimit2*2.0, xmax, TIBLimit2*2.0);
 //          obj->SetMinimum(TIBLimit2*0.1);
