@@ -28,6 +28,8 @@ private:
 
   ThingsTSelector(ThingsTSelector const&);
   ThingsTSelector operator=(ThingsTSelector const&);
+  
+  ClassDef(ThingsTSelector,2)
 };
 }
 #endif
