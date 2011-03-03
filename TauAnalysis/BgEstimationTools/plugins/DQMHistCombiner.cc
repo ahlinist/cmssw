@@ -1,7 +1,7 @@
 #include "TauAnalysis/BgEstimationTools/plugins/DQMHistCombiner.h"
 
 #include "TauAnalysis/DQMTools/interface/dqmAuxFunctions.h"
-#include "TauAnalysis/DQMTools/interface/generalAuxFunctions.h"
+#include "TauAnalysis/CandidateTools/interface/generalAuxFunctions.h"
 
 // framework & common header files
 #include "FWCore/Framework/interface/Frameworkfwd.h"

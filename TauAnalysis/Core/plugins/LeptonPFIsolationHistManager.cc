@@ -12,7 +12,7 @@
 #include "DataFormats/ParticleFlowCandidate/interface/PFCandidateFwd.h"
 #include "DataFormats/Math/interface/deltaR.h"
 
-#include "TauAnalysis/DQMTools/interface/generalAuxFunctions.h"
+#include "TauAnalysis/CandidateTools/interface/generalAuxFunctions.h"
 #include "TauAnalysis/Core/interface/histManagerAuxFunctions.h"
 
 #include <iostream>

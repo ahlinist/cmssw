@@ -7,7 +7,7 @@
 #include "FWCore/ServiceRegistry/interface/Service.h"
 
 #include "TauAnalysis/DQMTools/interface/dqmAuxFunctions.h"
-#include "TauAnalysis/DQMTools/interface/generalAuxFunctions.h"
+#include "TauAnalysis/CandidateTools/interface/generalAuxFunctions.h"
 #include "TauAnalysis/DQMTools/interface/histogramAuxFunctions.h"
 #include "TauAnalysis/Core/interface/SysUncertaintyService.h"
 

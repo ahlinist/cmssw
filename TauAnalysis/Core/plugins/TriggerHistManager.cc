@@ -11,7 +11,7 @@
 #include "DataFormats/Common/interface/TriggerResults.h"
 
 #include "TauAnalysis/Core/interface/histManagerAuxFunctions.h"
-#include "TauAnalysis/DQMTools/interface/generalAuxFunctions.h"
+#include "TauAnalysis/CandidateTools/interface/generalAuxFunctions.h"
 
 TriggerHistManager::TriggerHistManager(const edm::ParameterSet& cfg)
   : HistManagerBase(cfg)

@@ -3,7 +3,7 @@
 #include "FWCore/MessageLogger/interface/MessageLogger.h"
 #include "FWCore/ServiceRegistry/interface/Service.h"
 
-#include "TauAnalysis/DQMTools/interface/generalAuxFunctions.h"
+#include "TauAnalysis/CandidateTools/interface/generalAuxFunctions.h"
 
 #include "TauAnalysis/Core/interface/histManagerAuxFunctions.h"
 

@@ -1,7 +1,7 @@
 #include "TauAnalysis/DQMTools/plugins/DQMHistPlotter.h"
 
 #include "TauAnalysis/DQMTools/interface/dqmAuxFunctions.h"
-#include "TauAnalysis/DQMTools/interface/generalAuxFunctions.h"
+#include "TauAnalysis/CandidateTools/interface/generalAuxFunctions.h"
 #include "TauAnalysis/DQMTools/interface/histogramAuxFunctions.h"
 
 #include "FWCore/Framework/interface/Frameworkfwd.h"

@@ -27,7 +27,7 @@
 #include "TauAnalysis/Core/interface/eventDumpAuxFunctions.h"
 #include "TauAnalysis/Core/interface/eventAuxFunctions.h"
 #include "TauAnalysis/Core/interface/histManagerAuxFunctions.h"
-#include "TauAnalysis/DQMTools/interface/generalAuxFunctions.h"
+#include "TauAnalysis/CandidateTools/interface/generalAuxFunctions.h"
 #include "TauAnalysis/CandidateTools/interface/candidateAuxFunctions.h"
 #include "TauAnalysis/GenSimTools/interface/genParticleAuxFunctions.h"
 

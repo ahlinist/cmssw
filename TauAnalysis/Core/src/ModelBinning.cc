@@ -4,7 +4,7 @@
 
 #include "TauAnalysis/Core/interface/binningAuxFunctions.h"
 #include "TauAnalysis/DQMTools/interface/dqmAuxFunctions.h"
-#include "TauAnalysis/DQMTools/interface/generalAuxFunctions.h"
+#include "TauAnalysis/CandidateTools/interface/generalAuxFunctions.h"
 
 #include <TPRegexp.h>
 #include <TString.h>

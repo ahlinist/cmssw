@@ -10,7 +10,7 @@
 #include "AnalysisDataFormats/TauAnalysis/interface/CompositePtrCandidateTMEt.h"
 
 #include "TauAnalysis/Core/interface/eventDumpAuxFunctions.h"
-#include "TauAnalysis/DQMTools/interface/generalAuxFunctions.h"
+#include "TauAnalysis/CandidateTools/interface/generalAuxFunctions.h"
 
 #include <TMath.h>
 

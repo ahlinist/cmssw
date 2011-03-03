@@ -6,7 +6,7 @@
 #include "FWCore/ServiceRegistry/interface/Service.h"
 
 #include "TauAnalysis/DQMTools/interface/dqmAuxFunctions.h"
-#include "TauAnalysis/DQMTools/interface/generalAuxFunctions.h"
+#include "TauAnalysis/CandidateTools/interface/generalAuxFunctions.h"
 
 #include "TauAnalysis/FittingTools/interface/templateFitAuxFunctions.h"
 

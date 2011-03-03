@@ -1,7 +1,7 @@
 #include "TauAnalysis/DQMTools/plugins/DQMFileLoader.h"
 
 #include "TauAnalysis/DQMTools/interface/dqmAuxFunctions.h"
-#include "TauAnalysis/DQMTools/interface/generalAuxFunctions.h"
+#include "TauAnalysis/CandidateTools/interface/generalAuxFunctions.h"
 #include "TauAnalysis/Core/interface/FilterStatisticsService.h"
 
 // framework & common header files
