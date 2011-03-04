@@ -535,6 +535,7 @@ def enableFactorization_makeZtoElecTauPlots_grid2(
     evtSelZtoElecTau_factorizedTight = [
         'evtSelGenPhaseSpace',
         'evtSelTrigger',
+		'evtSelDataQuality',
         'evtSelPrimaryEventVertex',
         'evtSelPrimaryEventVertexQuality',
         'evtSelPrimaryEventVertexPosition',
@@ -671,6 +672,7 @@ def enableFactorization_makeAHtoElecTauPlots_grid2(
     tight_cuts = [
         'evtSelGenPhaseSpace',
         'evtSelTrigger',
+        'evtSelDataQuality',
         'evtSelPrimaryEventVertex',
         'evtSelPrimaryEventVertexQuality',
         'evtSelPrimaryEventVertexPosition',
