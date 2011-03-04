@@ -2,6 +2,7 @@
 
 #include "FWCore/MessageLogger/interface/MessageLogger.h"
 #include "FWCore/ServiceRegistry/interface/Service.h"
+#include "FWCore/Framework/interface/ESHandle.h"
 
 #include "PhysicsTools/IsolationAlgos/interface/IsoDepositVetoFactory.h"
 #include "DataFormats/VertexReco/interface/Vertex.h"
@@ -10,11 +11,19 @@
 #include "DataFormats/HepMCCandidate/interface/GenParticle.h"
 #include "DataFormats/HepMCCandidate/interface/GenParticleFwd.h"
 #include "DataFormats/EgammaReco/interface/BasicCluster.h"
+#include "DataFormats/Scalers/interface/DcsStatus.h"
 #include "RecoEcal/EgammaCoreTools/interface/EcalClusterLazyTools.h"
+
+#include "RecoEgamma/EgammaTools/interface/ConversionFinder.h"
+
+#include "MagneticField/Engine/interface/MagneticField.h"
+#include "MagneticField/Records/interface/IdealMagneticFieldRecord.h"
 
 #include "TauAnalysis/Core/interface/histManagerAuxFunctions.h"
 #include "TauAnalysis/Core/interface/eventAuxFunctions.h"
 #include "TauAnalysis/GenSimTools/interface/genParticleAuxFunctions.h"
+
+#include "Math/GenVector/VectorUtil.h"
 
 #include <TMath.h>
 
@@ -124,6 +133,32 @@ ElectronHistManager::ElectronHistManager(const edm::ParameterSet& cfg)
   
   electronParticleFlowIsoParam_.push_back(IsoDepositVetoFactory::make("0.0"));
   electronParticleFlowIsoParam_.push_back(IsoDepositVetoFactory::make("Threshold(0.5)"));
+  
+  makeConversionHistograms_ = ( cfg.exists("makeConversionHistograms") ) ? 
+    cfg.getParameter<bool>("makeConversionHistograms") : false;
+  
+  if( makeConversionHistograms_ ) {
+	if( cfg.exists("conversionPartnerTrackSrc") )
+		conversionPartnerTrackSrc_ = cfg.getParameter<edm::InputTag>("conversionPartnerTrackSrc");
+	else {
+		edm::LogWarning("ElectronHistogramManager") 
+			<< "Must set 'conversionPartnerTrackSrc' to make conversion histograms!" << std::endl
+			<< "Using 'generalTracks' collection";
+		conversionPartnerTrackSrc_ = edm::InputTag("generalTracks");
+	}
+	isData_ = cfg.exists("isData") ? cfg.getParameter<bool>("isData") : false;
+	if( isData_ ) {
+		if( cfg.exists("dcsTag") ) 
+			dcsTag_ = cfg.getParameter<edm::InputTag>("dcsTag");
+		else {
+			edm::LogWarning("ElectronHistogramManager") 
+			<< "Must set 'dcsTag' parameter if 'isData == True' !" << std::endl
+			<< "Setting dcsTag = scalersRawToDigi";
+			dcsTag_ = edm::InputTag("scalersRawToDigi");
+		}
+	}
+  }
+  
 }
 
 ElectronHistManager::~ElectronHistManager()
@@ -240,6 +275,14 @@ void ElectronHistManager::bookHistogramsImp()
   hElectronHcalIsoPhiDistProfile_  = book1D("ElectronHcalIsoPhiDistProfile", "ElectronHcalIsoPhiDistProfile", 15, 0., 1.5);
   
   if ( makeIsoPtConeSizeDepHistograms_ ) bookElectronIsoConeSizeDepHistograms();
+
+  if ( makeConversionHistograms_ ) {
+	  hElectronConvRadius_ = book1D("ElectronConversionRadius","ElectronConversionRadius",50,0,40);
+	  hElectronConvDoca_ = book1D("ElectronConversionDoca","ElectronConversionDistanceOfClosestAppreach",50,0,1);
+	  hElectronConvDeltaCotTheta_ = book1D("ElectronConversionDeltaCotTheta","ElectronConversionDeltaCotTheta",50,0,0.5);
+	  hElectronMissExpInnerHits_ = book1D("ElectronMissingExpInnerHits","ElectronMissingExpInnerHits",5,0,4);
+  }
+
 }
 
 double ElectronHistManager::getElectronWeight(const pat::Electron& patElectron)
@@ -369,6 +412,34 @@ void ElectronHistManager::fillHistogramsImp(const edm::Event& evt, const edm::Ev
     fillElectronIsoHistograms(*patElectron, *pfCandidates, weight);
     hElectronDeltaRnearestJet_->Fill(getDeltaRnearestJet(patElectron->p4(), patJets), weight);
     if ( makeIsoPtConeSizeDepHistograms_ ) fillElectronIsoConeSizeDepHistograms(*patElectron, weight);
+    
+	if ( makeConversionHistograms_ ) {
+		edm::Handle<reco::TrackCollection> tracks;
+		evt.getByLabel(conversionPartnerTrackSrc_,tracks);
+
+		// need the magnetic field
+		double evt_bField;
+
+		// if isData then derive bfield using the
+		// magnet current from DcsStatus
+		// otherwise take it from the IdealMagneticFieldRecord
+		if (isData_) {
+			edm::Handle<DcsStatusCollection> dcsHandle;
+			evt.getByLabel(dcsTag_, dcsHandle);
+			// scale factor = 3.801/18166.0 which are
+			// average values taken over a stable two
+			// week period
+			float currentToBFieldScaleFactor = 2.09237036221512717e-04;
+			float current = (*dcsHandle)[0].magnetCurrent();
+			evt_bField = current*currentToBFieldScaleFactor;
+		} else {
+			edm::ESHandle<MagneticField> magneticField;
+			es.get<IdealMagneticFieldRecord>().get(magneticField);
+
+			evt_bField = magneticField->inTesla(GlobalPoint(0.,0.,0.)).z();
+		}
+		fillConversionHistograms(*patElectron, tracks, evt_bField, weight);
+	}
   }
 }
 
@@ -579,6 +650,53 @@ void ElectronHistManager::fillElectronIsoConeSizeDepHistograms(const pat::Electr
       hElectronPFGammaIsoPtConeSizeDep_[iConeSize - 1]->Fill(electronPFGammaIsoDeposit_i, weight);
     }
   }
+}
+
+void ElectronHistManager::fillConversionHistograms(const pat::Electron& patElectron, edm::Handle<reco::TrackCollection>& tracks, double evt_bField, double weight) {
+
+
+	ConversionFinder convFinder;
+	ConversionInfo convInfo = convFinder.getConversionInfo(patElectron, tracks, evt_bField);
+
+	double dist = convInfo.dist();
+	double dcot = convInfo.dcot();
+	double convradius = convInfo.radiusOfConversion();
+	//math::XYZPoint convPoint = convInfo.pointOfConversion();
+            
+	hElectronConvDeltaCotTheta_->Fill(fabs(dcot),weight);
+	hElectronConvRadius_->Fill(fabs(convradius),weight);
+	hElectronConvDoca_->Fill(fabs(dist),weight);
+
+	// get number of expected inner hits
+	const reco::Track *elec_track = (const reco::Track*)(patElectron.gsfTrack().get());
+	const reco::HitPattern& p_inner = elec_track->trackerExpectedHitsInner();
+	hElectronMissExpInnerHits_->Fill(p_inner.numberOfHits(),weight);
+
+	/*	
+	// get dR between gsf electron and track
+	double dRmin = 100;
+	// get z-component of dR between gsf electron and track
+	double dZmin = 100;
+	// get cot(theta) of opening angle between gsf electron and track
+	double cotThetaMin = 100;
+	
+	// loop over partner tracks
+	for( reco::TrackCollection::const_iterator track_it = tracks->begin(); track_it != tracks->end(); track_it++ ) 
+	{
+		if(  (track_it->charge()) * (patElectron.gsfTrack()->charge()) == 0) continue;
+
+		double dR = fabs( ROOT::Math::VectorUtil::DeltaR(track_it->innerPosition(),
+				patElectron.gsfTrack()->innerPosition()) );
+		if( dR < dRmin ) dRmin = dR;
+		double dZ = fabs( track_it->innerPosition().z()-patElectron.gsfTrack()->innerPosition().z() );
+		if( dZ < dZmin ) dZmin = dZ;
+		double cotTheta = fabs( 1./tan(patElectron.gsfTrack()->innerMomentum().Theta()) 
+			- 1./tan(track_it->innerMomentum().Theta()) );
+		if( cotTheta < cotThetaMin ) cotThetaMin = cotTheta;
+		
+	} // end tracks loop
+	*/
+
 }
 
 #include "FWCore/Framework/interface/MakerMacros.h"
