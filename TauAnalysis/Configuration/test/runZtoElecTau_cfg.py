@@ -155,13 +155,17 @@ changeCut(process,"selectedPatElectronsForElecTauEta","abs(eta) < 2.1")
 changeCut(process,"selectedPatElectronsForElecTauPt","pt > 15")
 
 #  PF combinded relative isolation
-changeCut(process,"selectedPatElectronsForElecTauIso",cms.double(0.09),"sumPtMaxEB")
-changeCut(process,"selectedPatElectronsForElecTauIso",cms.double(0.06),"sumPtMaxEE")
+changeCut(process,"selectedPatElectronsForElecTauIso",cms.double(0.08),"sumPtMaxEB")
+changeCut(process,"selectedPatElectronsForElecTauIso",cms.double(0.04),"sumPtMaxEE")
 
 #  electron conversion veto
 #  set deltaCot(theta) < 0.02 for real conversions
-changeCut(process,"selectedPatElectronsForElecTauConversionVeto",cms.double(1), attribute = "nTrkMax")
-changeCut(process,"selectedPatElectronsForElecTauConversionVeto",cms.double(0.02), attribute = "cotThetaCut")
+changeCut(process,"selectedPatElectronsForElecTauConversionVeto",cms.double(0), attribute = "nConvPairMax")
+changeCut(process,"selectedPatElectronsForElecTauConversionVeto",cms.double(0.05), attribute = "cotThetaMax")
+changeCut(process,"selectedPatElectronsForElecTauConversionVeto",cms.double(0.1), attribute = "docaElecTrackMax")
+changeCut(process,"selectedPatElectronsForElecTauConversionVeto",cms.bool(True), attribute = "usePogMethod")
+changeCut(process,"selectedPatElectronsForElecTauConversionVeto",cms.bool(True), attribute = "doMissingHitsCut")
+changeCut(process,"selectedPatElectronsForElecTauConversionVeto",cms.bool(False), attribute = "doPixCut")
 
 # upper limit on tranverse impact parameter of electron track 
 changeCut(process, "selectedPatElectronsForElecTauTrkIP", 0.05, attribute = "IpMax")
@@ -234,7 +238,17 @@ process.p = cms.Path(
 
 process.q = cms.Path(process.dataQualityFilters)
 
-process.schedule = cms.Schedule(process.o, process.q, process.p)
+# Dummy do-nothing module to allow an empty path
+process.dummy = cms.EDProducer("DummyModule")
+# Path that option output modules can be hooked into
+process.endtasks = cms.EndPath(process.dummy)
+
+process.schedule = cms.Schedule(
+		process.o, 
+		process.q, 
+		process.p,
+		process.endtasks
+)
 
 #--------------------------------------------------------------------------------
 # import utility function for switching HLT InputTags when processing
