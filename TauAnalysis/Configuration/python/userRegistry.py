@@ -431,11 +431,61 @@ userSettings = {
         }
     },
     'jkolb': {
-        'current' : {
-            'AHtoElecTau' : 'Run03',
-            'ZtoElecTau' : 'Run03',
-        },
+        'current' : 'Run07',
         'jobs' : {
+			# fall10 MC with PU, 2010 dataset (36/pb);  new conversion veto, data event cleaning
+            'Run07' : {
+                'AHtoElecTau' : {
+                    'analysisFilePath' : "/user/j/jkolb/elecTauAnalysis/fall10/AHtoElecTau/Run07/",
+					'harvestingFilePath' : "/data/ndpc0/c/jkolb/TauResults/",
+                    'tmpFilePath' : "/data/ndpc0/c/jkolb/TauResults/tmp/"
+                },
+                'ZtoElecTau' : {
+                    'analysisFilePath' : "/user/j/jkolb/elecTauAnalysis/fall10/ZtoElecTau/Run07/",
+                    'harvestingFilePath' : "/data/ndpc0/c/jkolb/TauResults",
+                    'tmpFilePath' : "/data/ndpc0/c/jkolb/TauResults/tmp/"
+                }
+            },
+			# fall10 MC with PU, 2010 dataset (36/pb);  fixed bug in tau electron rejection, everything looks OK
+            'Run06' : {
+                'AHtoElecTau' : {
+                    'analysisFilePath' : "/user/j/jkolb/elecTauAnalysis/fall10/AHtoElecTau/Run06/",
+					'harvestingFilePath' : "/data/ndpc0/c/jkolb/TauResults/",
+                    'tmpFilePath' : "/data/ndpc0/c/jkolb/TauResults/tmp/"
+                },
+                'ZtoElecTau' : {
+                    'analysisFilePath' : "/user/j/jkolb/elecTauAnalysis/fall10/ZtoElecTau/Run06/",
+                    'harvestingFilePath' : "/data/ndpc0/c/jkolb/TauResults",
+                    'tmpFilePath' : "/data/ndpc0/c/jkolb/TauResults/tmp/"
+                }
+            },
+			# fall10 MC with PU, 2010 dataset (36/pb);  fixing bug in tau electron/muon/ECAL-crack veto,
+			# and reducing number of histograms
+            'Run05' : {
+                'AHtoElecTau' : {
+                    'analysisFilePath' : "/user/j/jkolb/elecTauAnalysis/fall10/AHtoElecTau/Run05/",
+					'harvestingFilePath' : "/data/ndpc0/c/jkolb/TauResults/",
+                    'tmpFilePath' : "/data/ndpc0/c/jkolb/TauResults/tmp/"
+                },
+                'ZtoElecTau' : {
+                    'analysisFilePath' : "/user/j/jkolb/elecTauAnalysis/fall10/ZtoElecTau/Run05/",
+                    'harvestingFilePath' : "/data/ndpc0/c/jkolb/TauResults",
+                    'tmpFilePath' : "/data/ndpc0/c/jkolb/TauResults/tmp/"
+                }
+            },
+			# fall10 MC with PU, 2010 dataset (36/pb)
+            'Run04' : {
+                'AHtoElecTau' : {
+                    'analysisFilePath' : "/user/j/jkolb/elecTauAnalysis/fall10/AHtoElecTau/Run04/",
+					'harvestingFilePath' : "/data/ndpc0/c/jkolb/TauResults/",
+                    'tmpFilePath' : "/data/ndpc0/c/jkolb/TauResults/tmp/"
+                },
+                'ZtoElecTau' : {
+                    'analysisFilePath' : "/user/j/jkolb/elecTauAnalysis/fall10/ZtoElecTau/Run04/",
+                    'harvestingFilePath' : "/data/ndpc0/c/jkolb/TauResults",
+                    'tmpFilePath' : "/data/ndpc0/c/jkolb/TauResults/tmp/"
+                }
+            },
             'Run03' : {
                 'AHtoElecTau' : {
                     'analysisFilePath' : "/user/j/jkolb/elecTauAnalysis/fall10/AHtoElecTau/Run03/",
