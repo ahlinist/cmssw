@@ -1966,7 +1966,7 @@ std::vector<float> VgAnalyzerKit::getESProfileFront(View<pat::Photon>::const_ite
   e.getByLabel(InputTag("ecalPreshowerRecHit","EcalRecHitsES"), PreshowerRecHits);
   if (PreshowerRecHits.isValid()) EcalRecHitCollection preshowerHits(*PreshowerRecHits);
 
-  // Store ES rechits energy ±1 sensor and�20 strips
+  // Store ES rechits energy ±1 sensor an ±20 strips
   //  0 ~ 40: +1 sensor and ±20 strips
   // 41 ~ 81: +0 sensor and ±20 strips
   // 82 ~123: -1 sensor and ±20 strips
@@ -2001,21 +2001,21 @@ std::vector<float> VgAnalyzerKit::getESProfileFront(View<pat::Photon>::const_ite
       if (esrh_it->recoFlag() == 1 || (esrh_it->recoFlag() >= 5 && esrh_it->recoFlag() <= 10)) continue;
       // ES Front plane
       if (esdetid.plane() == 1) {
-	// +1 sensor and �20 strip
+	// +1 sensor and ±20 strip
 	if (esdetid.zside() == esfid.zside() && esdetid.siy() == (esfid.siy() + 1)) {
 	  int gs_esid = esdetid.six()*32 + esdetid.strip();
 	  int ss = gs_esid - gs_esfid;
           for (int a=0; a<41; a++) 
             if (ss == strip[a]) esprofile[a] = esrh_it->energy();
 	}
-        // +0 sensor and �20 strip
+        // +0 sensor and ±20 strip
         else if (esdetid.zside() == esfid.zside() && esdetid.siy() == (esfid.siy())) {
           int gs_esid = esdetid.six()*32 + esdetid.strip();
           int ss = gs_esid - gs_esfid;
           for (int a=0; a<41; a++)
             if (ss == strip[a]) esprofile[a+41] = esrh_it->energy();
         }
-        // -1 sensor and �20 strip
+        // -1 sensor and ±20 strip
         else if (esdetid.zside() == esfid.zside() && esdetid.siy() == (esfid.siy() - 1)) {
           int gs_esid = esdetid.six()*32 + esdetid.strip();
           int ss = gs_esid - gs_esfid;
@@ -2042,7 +2042,7 @@ std::vector<float> VgAnalyzerKit::getESProfileRear(View<pat::Photon>::const_iter
   e.getByLabel(InputTag("ecalPreshowerRecHit","EcalRecHitsES"), PreshowerRecHits);
   if (PreshowerRecHits.isValid()) EcalRecHitCollection preshowerHits(*PreshowerRecHits);
 
-  // Store ES rechits energy ±1 sensor and�20 strips
+  // Store ES rechits energy ±1 sensor an ±20 strips
   //  0 ~ 40: +1 sensor and ±20 strips
   // 41 ~ 81: +0 sensor and ±20 strips
   // 82 ~123: -1 sensor and ±20 strips
@@ -2077,22 +2077,22 @@ std::vector<float> VgAnalyzerKit::getESProfileRear(View<pat::Photon>::const_iter
       if (esrh_it->recoFlag() == 1 || (esrh_it->recoFlag() >= 5 && esrh_it->recoFlag() <= 10)) continue;
       // ES Rear plane
       if (esdetid.plane() == 2) {
-	// +1 sensor and �20 strip
-	if (esdetid.zside() == esfid.zside() && esdetid.six() == (esfid.six() + 1)) {
+	// +1 sensor and ±20 strip
+	if (esdetid.zside() == esrid.zside() && esdetid.six() == (esrid.six() + 1)) {
 	  int gs_esid = esdetid.siy()*32 + esdetid.strip();
 	  int ss = gs_esid - gs_esrid;
           for (int a=0; a<41; a++) 
             if (ss == strip[a]) esprofile[a] = esrh_it->energy();
 	}
-        // +0 sensor and �20 strip
-        else if (esdetid.zside() == esfid.zside() && esdetid.six() == (esfid.six())) {
+        // +0 sensor and ±20 strip
+        else if (esdetid.zside() == esrid.zside() && esdetid.six() == (esrid.six())) {
           int gs_esid = esdetid.siy()*32 + esdetid.strip();
           int ss = gs_esid - gs_esrid;
           for (int a=0; a<41; a++)
             if (ss == strip[a]) esprofile[a+41] = esrh_it->energy();
         }
-        // -1 sensor and �20 strip
-        else if (esdetid.zside() == esfid.zside() && esdetid.six() == (esfid.six() - 1)) {
+        // -1 sensor and ±20 strip
+        else if (esdetid.zside() == esrid.zside() && esdetid.six() == (esrid.six() - 1)) {
           int gs_esid = esdetid.siy()*32 + esdetid.strip();
           int ss = gs_esid - gs_esrid;
           for (int a=0; a<41; a++)
@@ -2118,7 +2118,7 @@ std::vector<float> VgAnalyzerKit::getESProfileFront(View<pat::Electron>::const_i
   e.getByLabel(InputTag("ecalPreshowerRecHit","EcalRecHitsES"), PreshowerRecHits);
   if (PreshowerRecHits.isValid()) EcalRecHitCollection preshowerHits(*PreshowerRecHits);
 
-  // Store ES rechits energy ±1 sensor and�20 strips
+  // Store ES rechits energy ±1 sensor an ±20 strips
   //  0 ~ 40: +1 sensor and ±20 strips
   // 41 ~ 81: +0 sensor and ±20 strips
   // 82 ~123: -1 sensor and ±20 strips
@@ -2194,7 +2194,7 @@ std::vector<float> VgAnalyzerKit::getESProfileRear(View<pat::Electron>::const_it
   e.getByLabel(InputTag("ecalPreshowerRecHit","EcalRecHitsES"), PreshowerRecHits);
   if (PreshowerRecHits.isValid()) EcalRecHitCollection preshowerHits(*PreshowerRecHits);
 
-  // Store ES rechits energy ±1 sensor and�20 strips
+  // Store ES rechits energy ±1 sensor an ±20 strips
   //  0 ~ 40: +1 sensor and ±20 strips
   // 41 ~ 81: +0 sensor and ±20 strips
   // 82 ~123: -1 sensor and ±20 strips
@@ -2229,22 +2229,22 @@ std::vector<float> VgAnalyzerKit::getESProfileRear(View<pat::Electron>::const_it
       if (esrh_it->recoFlag() == 1 || (esrh_it->recoFlag() >= 5 && esrh_it->recoFlag() <= 10)) continue;
       // ES Rear plane
       if (esdetid.plane() == 2) {
-	// +1 sensor and �20 strip
-	if (esdetid.zside() == esfid.zside() && esdetid.six() == (esfid.six() + 1)) {
+	// +1 sensor and ±20 strip
+	if (esdetid.zside() == esrid.zside() && esdetid.six() == (esrid.six() + 1)) {
 	  int gs_esid = esdetid.siy()*32 + esdetid.strip();
 	  int ss = gs_esid - gs_esrid;
           for (int a=0; a<41; a++) 
             if (ss == strip[a]) esprofile[a] = esrh_it->energy();
 	}
-        // +0 sensor and �20 strip
-        else if (esdetid.zside() == esfid.zside() && esdetid.six() == (esfid.six())) {
+        // +0 sensor and ±20 strip
+        else if (esdetid.zside() == esrid.zside() && esdetid.six() == (esrid.six())) {
           int gs_esid = esdetid.siy()*32 + esdetid.strip();
           int ss = gs_esid - gs_esrid;
           for (int a=0; a<41; a++)
             if (ss == strip[a]) esprofile[a+41] = esrh_it->energy();
         }
-        // -1 sensor and �20 strip
-        else if (esdetid.zside() == esfid.zside() && esdetid.six() == (esfid.six() - 1)) {
+        // -1 sensor and ±20 strip
+        else if (esdetid.zside() == esrid.zside() && esdetid.six() == (esrid.six() - 1)) {
           int gs_esid = esdetid.siy()*32 + esdetid.strip();
           int ss = gs_esid - gs_esrid;
           for (int a=0; a<41; a++)
