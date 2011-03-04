@@ -56,7 +56,11 @@ def switchToData(process):
 		patutils.massSearchReplaceAnyInputTag(processAttr, cms.InputTag('genElectronsFromZs'), cms.InputTag(''))
 		patutils.massSearchReplaceAnyInputTag(processAttr, cms.InputTag('genMuonsFromZs'), cms.InputTag(''))
 
-        # disable access to generator level information in all
+		# switch all 'isData' configuration parameters
+		_setattr_ifexists(processAttr, "isData", cms.bool(True))
+
+
+	# disable access to generator level information in all
 	# histogram managers, binner and event-dump plugins of GenericAnalyzer module
 	for processAttrName in dir(process):
 	    processAttr = getattr(process, processAttrName)
