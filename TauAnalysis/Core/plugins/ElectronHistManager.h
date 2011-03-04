@@ -36,6 +36,7 @@ class ElectronHistManager : public HistManagerBase
   void fillElectronHistograms(const pat::Electron&, MonitorElement*, MonitorElement*, MonitorElement*, double);
   void fillElectronIsoHistograms(const pat::Electron&, const reco::PFCandidateCollection&, double);
   void fillElectronIsoConeSizeDepHistograms(const pat::Electron&, double);
+  void fillConversionHistograms(const pat::Electron&, edm::Handle<reco::TrackCollection>&, double, double );
 
 //--- configuration parameters
   edm::InputTag electronSrc_;
@@ -43,6 +44,8 @@ class ElectronHistManager : public HistManagerBase
   edm::InputTag jetSrc_;
   edm::InputTag pfCandidateSrc_;
   edm::InputTag genParticleSrc_;
+  edm::InputTag conversionPartnerTrackSrc_;
+  edm::InputTag dcsTag_;
 
   bool requireGenElectronMatch_;
 
@@ -56,6 +59,8 @@ class ElectronHistManager : public HistManagerBase
 
   bool makeIsoPtCtrlHistograms_;
   bool makeIsoPtConeSizeDepHistograms_;
+  bool makeConversionHistograms_;
+  bool isData_;
 
   unsigned numElectronIsoConeSizes_;
   double electronIsoConeSizeIncr_;
@@ -166,6 +171,11 @@ class ElectronHistManager : public HistManagerBase
 
   MonitorElement* hElectronPFChargedHadronIsoPtCtrl_;
   MonitorElement* hElectronPFGammaIsoPtCtrl_;
+
+  MonitorElement* hElectronConvDoca_;
+  MonitorElement* hElectronConvDeltaCotTheta_;
+  MonitorElement* hElectronConvRadius_;
+  MonitorElement* hElectronMissExpInnerHits_;
 
   std::vector<MonitorElement*> hElectronParticleFlowIsoPtConeSizeDep_;
   std::vector<MonitorElement*> hElectronPFChargedHadronIsoPtConeSizeDep_;
