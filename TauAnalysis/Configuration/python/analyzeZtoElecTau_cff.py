@@ -37,7 +37,10 @@ analyzeZtoElecTauEventsOS = cms.EDAnalyzer("GenericAnalyzer",
     
         # trigger selection
         evtSelTrigger,
-        
+		
+		# scraping-beam, etc. veto
+        evtSelDataQuality,
+
         # primary event vertex selection
         evtSelPrimaryEventVertex,
         evtSelPrimaryEventVertexQuality,

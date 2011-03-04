@@ -49,6 +49,9 @@ analyzeAHtoElecTauEventsOS_woBtag = cms.EDAnalyzer("GenericAnalyzer",
     
         # trigger selection
         evtSelTrigger,
+
+		# data quality (scraping beam veto, etc)
+		evtSelDataQuality,
         
         # primary event vertex selection
         evtSelPrimaryEventVertex,

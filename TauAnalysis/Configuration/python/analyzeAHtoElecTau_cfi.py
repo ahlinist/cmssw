@@ -22,7 +22,7 @@ from TauAnalysis.Core.eventWeightHistManager_cfi import *
 
 # import config for electron histogram manager
 from TauAnalysis.Core.electronHistManager_cfi import *
-electronHistManager.src = cms.InputTag("selectedPatElectronsTrkIPcumulative")
+electronHistManager.src = cms.InputTag("selectedPatElectronsForElecTauTrkIPcumulative")
 
 # import config for tau histogram manager
 from TauAnalysis.Core.pftauHistManager_cfi import *
@@ -284,6 +284,13 @@ elecTauAnalysisSequenceOS_woBtag = cms.VPSet(
         title = cms.string('Trigger'),
         saveRunLumiSectionEventNumbers = cms.vstring('')
     ),
+
+    # data quality control
+    cms.PSet(
+        filter = cms.string('evtSelDataQuality'),
+        title = cms.string('Data Quality'),
+        saveRunLumiSectionEventNumbers = cms.vstring('')
+    ),
     cms.PSet(
         analyzers = cms.vstring(
             'electronHistManager',
@@ -501,7 +508,7 @@ elecTauAnalysisSequenceOS_woBtag = cms.VPSet(
     ),
     cms.PSet(
         filter = cms.string('evtSelTauTaNCdiscr'),
-        title = cms.string('Tau TaNC at 0.5%'),
+        title = cms.string('Tau ID (HPS loose)'),
         saveRunLumiSectionEventNumbers = cms.vstring('')
     ),
     cms.PSet(
@@ -685,7 +692,7 @@ elecTauAnalysisSequenceOS_woBtag = cms.VPSet(
 			'jetHistManager'
 		),
 		replace = cms.vstring(
-			'electronHistManager.electronSource = selectedPatElectronsTrkIPcumulative',
+			'electronHistManager.electronSource = selectedPatElectronsiForElecTauTrkIPcumulative',
 			'tauHistManager.tauSource = selectedPatTausForElecTauElectronVetoCumulative',
 			'jetHistManager.jetSource = selectedPatJetsForAHtoElecTauAntiOverlapWithLeptonsVetoCumulative',
 			'diTauCandidateHistManagerForElecTau.diTauCandidateSource = selectedElecTauPairsForAHtoElecTauPzetaDiffCumulative',
@@ -1001,7 +1008,7 @@ elecTauAnalysisSequenceOS_wBtag = cms.VPSet(
     ),
     cms.PSet(
         filter = cms.string('evtSelTauTaNCdiscr'),
-        title = cms.string('Tau TaNC at 0.5%'),
+        title = cms.string('Tau ID (HPS loose)'),
         saveRunLumiSectionEventNumbers = cms.vstring('')
     ),
     cms.PSet(
@@ -1181,7 +1188,7 @@ elecTauAnalysisSequenceOS_wBtag = cms.VPSet(
 			'jetHistManager'
 			),
 		replace = cms.vstring(
-			'electronHistManager.electronSource = selectedPatElectronsTrkIPcumulative',
+			'electronHistManager.electronSource = selectedPatElectronsForElecTauTrkIPcumulative',
 			'tauHistManager.tauSource = selectedPatTausForElecTauElectronVetoCumulative',
 			'jetHistManager.jetSource = selectedPatJetsForAHtoElecTauAntiOverlapWithLeptonsVetoCumulative',
 			'diTauCandidateHistManagerForElecTau.diTauCandidateSource = selectedElecTauPairsForAHtoElecTauPzetaDiffCumulative',
@@ -1202,7 +1209,7 @@ elecTauAnalysisSequenceOS_wBtag = cms.VPSet(
 			'jetHistManager'
 			),
 		replace = cms.vstring(
-			'electronHistManager.electronSource = selectedPatElectronsTrkIPcumulative',
+			'electronHistManager.electronSource = selectedPatElectronsForElecTauTrkIPcumulative',
 			'tauHistManager.tauSource = selectedPatTausForElecTauElectronVetoCumulative',
 			'diTauCandidateHistManagerForElecTau.diTauCandidateSource = selectedElecTauPairsForAHtoElecTauPzetaDiffCumulative',
 			'diTauCandidateHistManagerForElecTau.visMassHypothesisSource = elecTauPairVisMassHypothesesForAHtoElecTau',
@@ -1334,7 +1341,7 @@ elecTauAnalysisSequenceSS_woBtag = cms.VPSet(
     ),
     cms.PSet(
         filter = cms.string('evtSelTauTaNCdiscr'),
-        title = cms.string('Tau TaNC discr.'),
+        title = cms.string('Tau ID (HPS loose)'),
         saveRunLumiSectionEventNumbers = cms.vstring('')
     ),
     cms.PSet(
@@ -1406,7 +1413,7 @@ elecTauAnalysisSequenceSS_woBtag = cms.VPSet(
             'triggerHistManagerForElecTau'
         ),
         replace = cms.vstring(
-            'electronHistManager.electronSource = selectedPatElectronsTrkIPcumulative',
+            'electronHistManager.electronSource = selectedPatElectronsForElecTauTrkIPcumulative',
             'tauHistManager.tauSource = selectedPatTausForElecTauElectronVetoCumulative',
             'diTauCandidateHistManagerForElecTau.diTauCandidateSource = selectedElecTauPairsForAHtoElecTauNonZeroChargeCumulative',
             'diTauCandidateHistManagerForElecTau.visMassHypothesisSource = elecTauPairVisMassHypothesesForAHtoElecTau',
@@ -1505,7 +1512,7 @@ elecTauAnalysisSequenceSS_wBtag = cms.VPSet(
     ),
     cms.PSet(
         filter = cms.string('evtSelTauTaNCdiscr'),
-        title = cms.string('Tau TaNC discr.'),
+        title = cms.string('Tau ID (HPS loose)'),
         saveRunLumiSectionEventNumbers = cms.vstring('')
     ),
     cms.PSet(
@@ -1582,7 +1589,7 @@ elecTauAnalysisSequenceSS_wBtag = cms.VPSet(
             'triggerHistManagerForElecTau'
         ),
         replace = cms.vstring(
-            'electronHistManager.electronSource = selectedPatElectronsTrkIPcumulative',
+            'electronHistManager.electronSource = selectedPatElectronsForElecTauTrkIPcumulative',
             'tauHistManager.tauSource = selectedPatTausForElecTauElectronVetoCumulative',
             'diTauCandidateHistManagerForElecTau.diTauCandidateSource = selectedElecTauPairsForAHtoElecTauNonZeroChargeCumulative',
             'diTauCandidateHistManagerForElecTau.visMassHypothesisSource = elecTauPairVisMassHypothesesForAHtoElecTau',
