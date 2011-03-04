@@ -121,8 +121,10 @@ changeCut(process,"selectedPatElectronsForElecTauIso",cms.double(0.09),"sumPtMax
 changeCut(process,"selectedPatElectronsForElecTauIso",cms.double(0.06),"sumPtMaxEE")
 
 #  electron conversion veto
-changeCut(process,"selectedPatElectronsForElecTauConversionVeto",cms.double(1), attribute = "nTrkMax")
-changeCut(process,"selectedPatElectronsForElecTauConversionVeto",cms.double(0.02), attribute = "cotThetaCut")
+changeCut(process,"selectedPatElectronsForElecTauConversionVeto",cms.double(0), attribute = "nConvPairMax")
+changeCut(process,"selectedPatElectronsForElecTauConversionVeto",cms.double(0.05), attribute = "cotThetaMax")
+changeCut(process,"selectedPatElectronsForElecTauConversionVeto",cms.double(0.1), attribute = "docaElecTrackMax")
+changeCut(process,"selectedPatElectronsForElecTauConversionVeto",cms.bool(True), attribute = "usePogMethod")
 
 #  electron track IP_xy cut
 changeCut(process,"selectedPatElectronsForElecTauTrkIP",cms.double(0.05),"IpMax")
@@ -347,4 +349,4 @@ if not hasattr(process, "isBatchMode"):
 #--------------------------------------------------------------------------------
 
 # print-out all python configuration parameter information
-print process.dumpPython()
+#print process.dumpPython()
