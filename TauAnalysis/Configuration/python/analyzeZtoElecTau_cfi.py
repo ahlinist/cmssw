@@ -226,7 +226,13 @@ evtSelTrigger = cms.PSet(
     pluginType = cms.string('BoolEventSelector'),
     src = cms.InputTag('Trigger')
 )
-
+# data-quality selection
+evtSelDataQuality = cms.PSet(
+	pluginName = cms.string('evtSelDataQuality'),
+	pluginType = cms.string('BoolEventSelector'),
+	src = cms.InputTag('dataQualityCutsPassed'),
+	failSilent = cms.bool(True)
+)
 # primary event vertex selection
 evtSelPrimaryEventVertex = cms.PSet(
     pluginName = cms.string('evtSelPrimaryEventVertex'),
@@ -548,6 +554,13 @@ elecTauAnalysisSequenceOS = cms.VPSet(
         title = cms.string('Trigger'),
         saveRunLumiSectionEventNumbers = cms.vstring('')
     ),
+    
+	# data quality control
+	cms.PSet(
+        filter = cms.string('evtSelDataQuality'),
+        title = cms.string('Data Quality'),
+        saveRunLumiSectionEventNumbers = cms.vstring('')
+    ),
     cms.PSet(
         analyzers = cms.vstring(
             'electronHistManager',
@@ -702,7 +715,8 @@ elecTauAnalysisSequenceOS = cms.VPSet(
         analyzers = cms.vstring(
             'electronHistManager'
         ),
-        replace = cms.vstring('electronHistManager.electronSource = selectedPatElectronsForElecTauIsoCumulative')
+        replace = cms.vstring('electronHistManager.electronSource = selectedPatElectronsForElecTauIsoCumulative',
+			'electronHistManager.makeConversionHistograms = True')
     ),
     cms.PSet(
         filter = cms.string('evtSelElectronConversionVeto'),
@@ -764,7 +778,7 @@ elecTauAnalysisSequenceOS = cms.VPSet(
     ),
     cms.PSet(
         filter = cms.string('evtSelTauTaNCdiscr'),
-        title = cms.string('Tau HPS loose'),
+        title = cms.string('Tau ID (HPS loose)'),
         saveRunLumiSectionEventNumbers = cms.vstring('')
     ),
     cms.PSet(
@@ -966,6 +980,11 @@ elecTauAnalysisSequenceSS = cms.VPSet(
         saveRunLumiSectionEventNumbers = cms.vstring('')
     ),
     cms.PSet(
+        filter = cms.string('evtSelDataQuality'),
+        title = cms.string('Data Quality'),
+        saveRunLumiSectionEventNumbers = cms.vstring('')
+    ),
+    cms.PSet(
         filter = cms.string('evtSelPrimaryEventVertex'),
         title = cms.string('Vertex'),
         saveRunLumiSectionEventNumbers = cms.vstring('')
@@ -1042,7 +1061,7 @@ elecTauAnalysisSequenceSS = cms.VPSet(
     ),
     cms.PSet(
         filter = cms.string('evtSelTauTaNCdiscr'),
-        title = cms.string('Tau HPS loose ID'),
+        title = cms.string('Tau ID (HPS loose)'),
         saveRunLumiSectionEventNumbers = cms.vstring('')
     ),
     cms.PSet(
@@ -1110,7 +1129,7 @@ elecTauAnalysisSequenceSS = cms.VPSet(
             'triggerHistManagerForElecTau'
         ),
         replace = cms.vstring(
-            'electronHistManager.electronSource = selectedPatElectronsTrkIPcumulative',
+            'electronHistManager.electronSource = selectedPatElectronsForElecTauTrkIPcumulative',
             'tauHistManager.tauSource = selectedPatTausForElecTauElectronVetoCumulative',
             'diTauCandidateHistManagerForElecTau.diTauCandidateSource = selectedElecTauPairsNonZeroChargeCumulative',
             'diTauCandidateHistManagerForElecTau.visMassHypothesisSource = elecTauPairVisMassHypotheses',
