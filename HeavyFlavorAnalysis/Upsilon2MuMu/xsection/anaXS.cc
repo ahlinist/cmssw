@@ -177,8 +177,10 @@ void anaXS::init(const char *dir, int i) {
   fPtMmbNeg = new PidTable(1); 
   fPtMmbPos = new PidTable(1); 
   
-  fPtTrigCorr = new PidTable("PidTables/DATA/Upsilon/PtTrigCorr.dat");
-  fPtMuidCorr = new PidTable("PidTables/DATA/Upsilon/PtMuidCorr.dat");
+  //fPtTrigCorr = new PidTable("PidTables/DATA/Upsilon/PtTrigCorr.dat");
+  //fPtMuidCorr = new PidTable("PidTables/DATA/Upsilon/PtMuidCorr.dat");
+  fPtTrigCorr = new PidTable("PidTables/DATA/Upsilon/PtTrigCorr_1Sbin.dat");
+  fPtMuidCorr = new PidTable("PidTables/DATA/Upsilon/PtMuidCorr_1Sbin.dat");
   
 }
 
@@ -188,12 +190,12 @@ void anaXS::loadFiles(const char *dir, int i) {
 
   // -- Upsilon merging
   if (0 == i) {
-    string ufile = fDirectory + string("/") + string("upsilon/101201.fl10.mm.ups1s.xsReader.default.root");    
+    string ufile = fDirectory + string("/") + string("upsilon/101201.fl10.mm.ups1s.xsReader_1Sbin_v2.default.root");    
 
     fM[0] = new TFile(ufile.c_str()); lM[0] = 1.;
-    ufile = fDirectory + string("/") + string("upsilon/101201.fl10.mm.ups2s.xsReader.default.root");
+    ufile = fDirectory + string("/") + string("upsilon/101201.fl10.mm.ups2s.xsReader_1Sbin_v2.default.root");
     fM[1] = new TFile(ufile.c_str()); lM[1] = 1.66; 
-    ufile = fDirectory + string("/") + string("upsilon/101201.fl10.mm.ups3s.xsReader.default.root");
+    ufile = fDirectory + string("/") + string("upsilon/101201.fl10.mm.ups3s.xsReader_1Sbin_v2.default.root");
     fM[2] = new TFile(ufile.c_str()); lM[2] = 3.43; 
     cout << "Got the Files for Merging" << endl;
   }
@@ -244,10 +246,11 @@ void anaXS::loadFiles(const char *dir, int i) {
       ufile = fDirectory + string("/upsilon/UpsTagandprobe_10TeV_nocut.root");
       jfile = fDirectory + string("/jpsi/JpsiTagandprobe_10TeV_nocut.root");  
     } else if (40 == i) {
-      //ufile = fDirectory + string("/upsilon/101201.fl10.mm.ups1s.tnpMCtruth.xsReader.default.root");
-      ufile = fDirectory + string("/upsilon/101201.fl10.mm.COMBINED.xsReader.default.root");
+      //ufile = fDirectory + string("/upsilon/101201.fl10.mm.ups1s.xsReader.trueyield_100.default.root");
+      //ufile = fDirectory + string("/upsilon/101201.fl10.mm.ups1s.xsReader_1Sbin.default.root");
+      ufile = fDirectory + string("/upsilon/101201.fl10.mm.COMBINED.xsReader_1Sbin_v2.default.root");
       //jfile = fDirectory + string("/jpsi/111112.dimuons.xsReader.default.root");
-      jfile = fDirectory + string("/upsilon/130211.nov4rereco_v2.dimuons.xsReader.default.root");
+      jfile = fDirectory + string("/upsilon/130211.nov4rereco_v2.dimuons.xsReader_1Sbin.default.root");
      
     } else {
       cout << "Don't know which J/psi file to open for i = " << i << ". Specify this in anaXS::loadfiles()" << endl;
@@ -263,7 +266,7 @@ void anaXS::loadFiles(const char *dir, int i) {
 // ----------------------------------------------------------------------
 void anaXS::combineUpsilons() {
   
-  string ufile = fDirectory + string("/upsilon/101201.fl10.mm.COMBINED.xsReader.default.root");
+  string ufile = fDirectory + string("/upsilon/101201.fl10.mm.COMBINED.xsReader_1Sbin_v2.default.root");
   TFile *f = new TFile(ufile.c_str(), "RECREATE"); 
 
   fM[0]->cd();
@@ -272,7 +275,7 @@ void anaXS::combineUpsilons() {
   TH2D *H0, *H1, *H2; 
 
   int ptbin(-1); int ybin(-1);
-  double PTbin[10]; double Ybin[10];
+  double PTbin[20]; double Ybin[10];
   
   TObject *obj;
   TKey    *key;
@@ -405,7 +408,7 @@ void anaXS::combineUpsilons() {
 	for ( int j=1; j <= ybin+1; j++ ){
 	  //cout<< PTbin[i] << "  " << Ybin[j]  << endl;
 	}
-      }
+      } 
       
       if ( !strcmp(H0->GetName(),"AllGenRes_1S") ){
 	H1 = (TH2D*)(fM[1]->Get("AllGenRes_2S"));
@@ -461,6 +464,24 @@ void anaXS::combineUpsilons() {
 	continue;
       }         
       
+      if ( !strcmp(H0->GetName(),"MuIDCheck_Numa_1S") ){
+	H1 = (TH2D*)(fM[1]->Get("MuIDCheck_Numa_2S"));
+	H2 = (TH2D*)(fM[2]->Get("MuIDCheck_Numa_3S"));
+	H0->SetDirectory(f);
+	H1->SetDirectory(f);
+	H2->SetDirectory(f);
+	continue;
+      }            
+      
+      if ( !strcmp(H0->GetName(),"MuIDCheck_Deno_1S") ){
+	H1 = (TH2D*)(fM[1]->Get("MuIDCheck_Deno_2S"));
+	H2 = (TH2D*)(fM[2]->Get("MuIDCheck_Deno_3S"));
+	H0->SetDirectory(f);
+	H1->SetDirectory(f);
+	H2->SetDirectory(f);
+	continue;
+      }       
+      
       if ( !strcmp(H0->GetName(),"TrigCheck_after_1S") ){
 	H1 = (TH2D*)(fM[1]->Get("TrigCheck_after_2S"));
 	H2 = (TH2D*)(fM[2]->Get("TrigCheck_after_3S"));
@@ -479,24 +500,48 @@ void anaXS::combineUpsilons() {
 	continue;
       }         
       
-            
+      if ( !strcmp(H0->GetName(),"TrigCheck_Numa_1S") ){
+	H1 = (TH2D*)(fM[1]->Get("TrigCheck_Numa_2S"));
+	H2 = (TH2D*)(fM[2]->Get("TrigCheck_Numa_3S"));
+	H0->SetDirectory(f);
+	H1->SetDirectory(f);
+	H2->SetDirectory(f);
+	continue;
+      }            
+      
+      if ( !strcmp(H0->GetName(),"TrigCheck_Deno_1S") ){
+	H1 = (TH2D*)(fM[1]->Get("TrigCheck_Deno_2S"));
+	H2 = (TH2D*)(fM[2]->Get("TrigCheck_Deno_3S"));
+	H0->SetDirectory(f);
+	H1->SetDirectory(f);
+	H2->SetDirectory(f);
+	continue;
+      }        
+      
+      if ( !strcmp(H0->GetName(),"TrueYield_1S") ){
+	H1 = (TH2D*)(fM[1]->Get("TrueYield_2S"));
+	H2 = (TH2D*)(fM[2]->Get("TrueYield_3S"));
+	H0->SetDirectory(f);
+	H1->SetDirectory(f);
+	H2->SetDirectory(f);
+	continue;
+      }       
+      
       H1 = (TH2D*)(fM[1]->Get(H0->GetName()));
       H2 = (TH2D*)(fM[2]->Get(H0->GetName()));
-
+      
       H1->Scale(lM[0]/lM[1]);
       H2->Scale(lM[0]/lM[2]);
       H0->Add(H1);
       H0->Add(H2);
       
      // H0->Scale(5.);
-            
       H0->SetDirectory(f);
     }
   }
-
+  
   f->Write();
   f->Close();
-
 }
 
 void anaXS::makeAllMC(int channel) {
@@ -512,7 +557,7 @@ void anaXS::makeAllMC(int channel) {
     addBackground(fS1Vector, 0.3);
     
     
-    FITUpsilon();
+    FITUpsilon(1);
     GetAnaEff();
     GetPreSelEff();
     GetMuIDEff(1);
@@ -553,7 +598,7 @@ void anaXS::makeAllDATA(int channel) {
     //addBackground(fS1Vector, 0.3);
     
     
-    FITUpsilon();
+    FITUpsilon(1);
     GetAnaEff();
     GetPreSelEff();
     GetMuIDEff(2);
@@ -1239,11 +1284,11 @@ void anaXS::PlotProjections(int mode) {
       //cout << "bin_ratio = "  << bin_ratio << endl;
       fAcceptanceProjPt->SetBinContent(j,bin_ratio);
       cout << bin_contentYield << endl;
-      fS1YieldPt->SetBinContent(j,bin_contentYield);
-      yieldErr = TMath::Sqrt(bin_contentYieldErr);
+      fS1YieldPt->SetBinContent(j,bin_contentYield/fS1YieldPt->GetBinWidth(j));
+      yieldErr = TMath::Sqrt(bin_contentYieldErr/fS1YieldPt->GetBinWidth(j));
       cout << yieldErr  << endl;
       fS1YieldPt->SetBinError(j,yieldErr);
-      fAllGenResPt->SetBinContent(j,bin_contentAll);
+      fAllGenResPt->SetBinContent(j,bin_contentAll/fAllGenResPt->GetBinWidth(j));
       bin_ratio=0;bin_contentAll=0;bin_contentReco=0;
       bin_contentYield=0;
     }
@@ -1260,11 +1305,11 @@ void anaXS::PlotProjections(int mode) {
       fAcceptanceProjPt_2S->SetBinContent(j,bin_ratio);
       cout << bin_contentYield << endl;
       bin_contentYield *= lM[1];
-      fS2YieldPt->SetBinContent(j,bin_contentYield);
-      yieldErr = TMath::Sqrt(bin_contentYieldErr);
+      fS2YieldPt->SetBinContent(j,bin_contentYield/fS2YieldPt->GetBinWidth(j));
+      yieldErr = TMath::Sqrt(bin_contentYieldErr/fS2YieldPt->GetBinWidth(j));
       cout << yieldErr  << endl;
       fS2YieldPt->SetBinError(j,yieldErr);
-      fAllGenResPt_2S->SetBinContent(j,bin_contentAll);
+      fAllGenResPt_2S->SetBinContent(j,bin_contentAll/fAllGenResPt_2S->GetBinWidth(j));
       bin_ratio=0;bin_contentAll=0;bin_contentReco=0;
       bin_contentYield=0;
     }
@@ -1281,11 +1326,11 @@ void anaXS::PlotProjections(int mode) {
       fAcceptanceProjPt_3S->SetBinContent(j,bin_ratio);
       cout << bin_contentYield << endl;
       bin_contentYield *= lM[2];
-      fS3YieldPt->SetBinContent(j,bin_contentYield);
-      yieldErr = TMath::Sqrt(bin_contentYieldErr);
+      fS3YieldPt->SetBinContent(j,bin_contentYield/fS3YieldPt->GetBinWidth(j));
+      yieldErr = TMath::Sqrt(bin_contentYieldErr/fS3YieldPt->GetBinWidth(j));
       cout << yieldErr  << endl;
       fS3YieldPt->SetBinError(j,yieldErr);
-      fAllGenResPt_3S->SetBinContent(j,bin_contentAll);
+      fAllGenResPt_3S->SetBinContent(j,bin_contentAll/fAllGenResPt_3S->GetBinWidth(j));
       bin_ratio=0;bin_contentAll=0;bin_contentReco=0;
       bin_contentYield=0;
     }
@@ -1317,8 +1362,8 @@ void anaXS::PlotProjections(int mode) {
     c1->cd(1);
     fS1YieldPt->SetTitle("Yield Comparison Ups(1S)");
     fS1YieldPt->GetXaxis()->SetTitle("P_{T}");
-    fS1YieldPt->SetMinimum(120000.);
-    fS1YieldPt->SetMaximum(620000.);
+    fS1YieldPt->SetMinimum(0.);
+    fS1YieldPt->SetMaximum(270000.);
     fS1YieldPt->SetMarkerStyle(21);
     fS1YieldPt->SetMarkerColor(3);
     fS1YieldPt->SetLineColor(3);
@@ -1337,8 +1382,8 @@ void anaXS::PlotProjections(int mode) {
     c1->cd(2);
     fS2YieldPt->SetTitle("Yield Comparison Ups(2S)");
     fS2YieldPt->GetXaxis()->SetTitle("P_{T}");
-    fS2YieldPt->SetMinimum(30000.);
-    fS2YieldPt->SetMaximum(300000.);
+    fS2YieldPt->SetMinimum(0.);
+    fS2YieldPt->SetMaximum(120000.);
     fS2YieldPt->SetMarkerStyle(21);
     fS2YieldPt->SetMarkerColor(3);
     fS2YieldPt->SetLineColor(3);
@@ -1357,8 +1402,8 @@ void anaXS::PlotProjections(int mode) {
     c1->cd(3);
     fS3YieldPt->SetTitle("Yield Comparison Ups(3S)");
     fS3YieldPt->GetXaxis()->SetTitle("P_{T}");
-    fS3YieldPt->SetMinimum(30000.);
-    fS3YieldPt->SetMaximum(220000.);
+    fS3YieldPt->SetMinimum(0.);
+    fS3YieldPt->SetMaximum(100000.);
     fS3YieldPt->SetMarkerStyle(21);
     fS3YieldPt->SetMarkerColor(3);
     fS3YieldPt->SetLineColor(3);
@@ -1427,12 +1472,12 @@ void anaXS::PlotProjections(int mode) {
       bin_contentYieldErr=0;
     }
      
-    //makeCanvas(1);
-    //c1->Divide(3,1);
-    //c1->cd(1);
+    makeCanvas(1);
+    c1->Divide(3,1);
+    c1->cd(1);
     fS1YieldEta->SetTitle("Yield Comparison Ups(1S)");
     fS1YieldEta->GetXaxis()->SetTitle("Rapidity");
-    fS1YieldEta->SetMinimum(400000.);
+    fS1YieldEta->SetMinimum(300000.);
     fS1YieldEta->SetMaximum(650000.);
     fS1YieldEta->SetMarkerStyle(21);
     fS1YieldEta->SetMarkerColor(3);
@@ -1440,15 +1485,15 @@ void anaXS::PlotProjections(int mode) {
     fAllGenResEta->SetMarkerStyle(20);
     fAllGenResEta->SetMarkerColor(4);
     fAllGenResEta->SetLineColor(4);
-    //fS1YieldEta->Draw("p");
-    //fAllGenResEta->Draw("psame");
+    fS1YieldEta->Draw("p");
+    fAllGenResEta->Draw("psame");
     legg = new TLegend(0.6,0.7,0.8,0.9);
     legg->SetFillStyle(0); legg->SetBorderSize(0); legg->SetTextSize(0.08); legg->SetTextFont(132); 
     legg->SetHeader("Yield Comparison");
     legge = legg->AddEntry(fS1YieldEta,  "Reconstructed Yield  ","p"); legge->SetTextColor(kBlack);
     legge = legg->AddEntry(fAllGenResEta,  "True Yield","p"); legge->SetTextColor(kBlack);
     legg->Draw();
-    //c1->cd(2);
+    c1->cd(2);
     fS2YieldEta->SetTitle("Yield Comparison Ups(2S)");
     fS2YieldEta->GetXaxis()->SetTitle("Rapidity");
     fS2YieldEta->SetMinimum(100000.);
@@ -1459,15 +1504,15 @@ void anaXS::PlotProjections(int mode) {
     fAllGenResEta_2S->SetMarkerStyle(20);
     fAllGenResEta_2S->SetMarkerColor(4);
     fAllGenResEta_2S->SetLineColor(4);
-    //fS2YieldEta->Draw("p");
-    //fAllGenResEta_2S->Draw("psame");
+    fS2YieldEta->Draw("p");
+    fAllGenResEta_2S->Draw("psame");
     legg = new TLegend(0.6,0.7,0.8,0.9);
     legg->SetFillStyle(0); legg->SetBorderSize(0); legg->SetTextSize(0.08); legg->SetTextFont(132); 
     legg->SetHeader("Yield Comparison");
     legge = legg->AddEntry(fS2YieldEta,  "Reconstructed Yield  ","p"); legge->SetTextColor(kBlack);
     legge = legg->AddEntry(fAllGenResEta_2S,  "True Yield","p"); legge->SetTextColor(kBlack);
-    //legg->Draw();
-    //c1->cd(3);
+    legg->Draw();
+    c1->cd(3);
     fS3YieldEta->SetTitle("Yield Comparison Ups(3S)");
     fS3YieldEta->GetXaxis()->SetTitle("Rapidity");
     fS3YieldEta->SetMinimum(500000.);
@@ -1478,14 +1523,14 @@ void anaXS::PlotProjections(int mode) {
     fAllGenResEta_3S->SetMarkerStyle(20);
     fAllGenResEta_3S->SetMarkerColor(4);
     fAllGenResEta_3S->SetLineColor(4);
-    //fS3YieldEta->Draw("p");
-    //fAllGenResEta_3S->Draw("psame");
+    fS3YieldEta->Draw("p");
+    fAllGenResEta_3S->Draw("psame");
     legg = new TLegend(0.6,0.7,0.8,0.9);
     legg->SetFillStyle(0); legg->SetBorderSize(0); legg->SetTextSize(0.08); legg->SetTextFont(132); 
     legg->SetHeader("Yield Comparison");
     legge = legg->AddEntry(fS3YieldEta,  "Reconstructed Yield  ","p"); legge->SetTextColor(kBlack);
     legge = legg->AddEntry(fAllGenResEta_3S,  "True Yield","p"); legge->SetTextColor(kBlack);
-    //legg->Draw();
+    legg->Draw();
      
     
     
@@ -1519,29 +1564,49 @@ void anaXS::PlotProjections(int mode) {
       fAcceptanceProjPt->SetBinContent(j,bin_ratio);
       cout << bin_contentYield << endl;
       xsection = bin_contentYield/lumi;
-      fS1YieldPt->SetBinContent(j,xsection);
+      fS1YieldPt->SetBinContent(j,xsection/fS1YieldPt->GetBinWidth(j));
       xsectionErr = TMath::Sqrt(bin_contentYieldErr)/lumi;
       cout << xsection  << endl;
-      fS1YieldPt->SetBinError(j,xsectionErr);
+      fS1YieldPt->SetBinError(j,xsectionErr/fS1YieldPt->GetBinWidth(j));
       bin_ratio=0;bin_contentAll=0;bin_contentReco=0;
       bin_contentYield=0;xsection=0;xsectionErr=0;bin_contentYieldErr=0;
     }
     
-    hICHEP->SetBinContent(1,1.23);
-    hICHEP->SetBinError(1,0.3);
-    hICHEP->SetBinContent(2,1.06);
-    hICHEP->SetBinError(2,0.28);
-    hICHEP->SetBinContent(3,1.82);
-    hICHEP->SetBinError(3,0.5); 
-    hICHEP->SetBinContent(4,2.01);
-    hICHEP->SetBinError(4,0.5);    
-    hICHEP->SetBinContent(5,0.96);
-    hICHEP->SetBinError(5,0.25);  
-    hICHEP->SetBinContent(6,0.39);
-    hICHEP->SetBinError(6,0.12);      
+    hICHEP->SetBinContent(1,0.31);
+    hICHEP->SetBinError(1,0.05);
+    hICHEP->SetBinContent(2,0.92);
+    hICHEP->SetBinError(2,0.15);
+    hICHEP->SetBinContent(3,1.06);
+    hICHEP->SetBinError(3,0.18); 
+    hICHEP->SetBinContent(4,0.90);
+    hICHEP->SetBinError(4,0.15);    
+    hICHEP->SetBinContent(5,0.92);
+    hICHEP->SetBinError(5,0.16);  
+    hICHEP->SetBinContent(6,0.84);
+    hICHEP->SetBinError(6,0.14);
+    hICHEP->SetBinContent(7,0.65);
+    hICHEP->SetBinError(7,0.11);
+    hICHEP->SetBinContent(8,0.52);
+    hICHEP->SetBinError(8,0.09);
+    hICHEP->SetBinContent(9,0.34);
+    hICHEP->SetBinError(9,0.06); 
+    hICHEP->SetBinContent(10,0.26);
+    hICHEP->SetBinError(10,0.05);    
+    hICHEP->SetBinContent(11,0.36/hICHEP->GetBinWidth(11));
+    hICHEP->SetBinError(11,0.06/hICHEP->GetBinWidth(11));  
+    hICHEP->SetBinContent(12,0.18/hICHEP->GetBinWidth(12));
+    hICHEP->SetBinError(12,0.03/hICHEP->GetBinWidth(12));    
+    hICHEP->SetBinContent(13,0.14/hICHEP->GetBinWidth(13));
+    hICHEP->SetBinError(13,0.03/hICHEP->GetBinWidth(13));    
+    hICHEP->SetBinContent(14,0.07/hICHEP->GetBinWidth(14));
+    hICHEP->SetBinError(14,0.01/hICHEP->GetBinWidth(14));  
+    hICHEP->SetBinContent(15,0.06/hICHEP->GetBinWidth(15));
+    hICHEP->SetBinError(15,0.01/hICHEP->GetBinWidth(15));    
+			  
+    
     
     makeCanvas(1);
-    c1->Divide(3,1);
+    //c1->Divide(3,1);
     c1->cd(1);
     fAcceptanceProjPt->GetXaxis()->SetTitle("P_{T}");
     fAcceptanceProjPt->SetMinimum(0.2);
@@ -1549,7 +1614,7 @@ void anaXS::PlotProjections(int mode) {
     fAcceptanceProjPt->SetMarkerStyle(22);
     fAcceptanceProjPt->SetMarkerColor(2);
     fAcceptanceProjPt->SetLineColor(2);
-    fAcceptanceProjPt->Draw("p");
+    //fAcceptanceProjPt->Draw("p");
     legg = new TLegend(0.6,0.6,0.8,0.8);
     legg->SetFillStyle(0); legg->SetBorderSize(0); legg->SetTextSize(0.08); legg->SetTextFont(132); 
     legg->SetHeader("Acceptance");
@@ -1559,7 +1624,7 @@ void anaXS::PlotProjections(int mode) {
     fS1YieldPt->SetTitle("Differential XSection");
     fS1YieldPt->GetXaxis()->SetTitle("P_{T}");
     fS1YieldPt->SetMinimum(0.);
-    fS1YieldPt->SetMaximum(3.);
+    fS1YieldPt->SetMaximum(1.5);
     fS1YieldPt->SetMarkerStyle(21);
     fS1YieldPt->SetMarkerColor(3);
     fS1YieldPt->SetLineColor(3);
@@ -1572,7 +1637,7 @@ void anaXS::PlotProjections(int mode) {
     legg->SetFillStyle(0); legg->SetBorderSize(0); legg->SetTextSize(0.08); legg->SetTextFont(132); 
     legg->SetHeader("XSection Comparison");
     legge = legg->AddEntry(fS1YieldPt,  "Xsection ","p"); legge->SetTextColor(kBlack);
-    legge = legg->AddEntry(hICHEP,  "ICHEP Results","p"); legge->SetTextColor(kBlack);
+    legge = legg->AddEntry(hICHEP,  "Results with 3.1 pb^{-1}","p"); legge->SetTextColor(kBlack);
     legg->Draw();
   
     bin_contentAll=0; bin_contentYield=0;
@@ -1600,9 +1665,10 @@ void anaXS::PlotProjections(int mode) {
         
     
     //makeCanvas(1);
+    //c1->cd(1);
     fS1YieldEta->SetTitle("Yield Comparison");
     fS1YieldEta->GetXaxis()->SetTitle("Rapidity");
-    fS1YieldEta->SetMinimum(1.4);
+    fS1YieldEta->SetMinimum(1.2);
     fS1YieldEta->SetMaximum(2.4);
     fS1YieldEta->SetMarkerStyle(21);
     fS1YieldEta->SetMarkerColor(3);
@@ -1616,7 +1682,7 @@ void anaXS::PlotProjections(int mode) {
     legg->SetFillStyle(0); legg->SetBorderSize(0); legg->SetTextSize(0.08); legg->SetTextFont(132); 
     legg->SetHeader("Yield Comparison");
     legge = legg->AddEntry(fS1YieldEta,  "Reconstructed Yield ","p"); legge->SetTextColor(kBlack);
-    legge = legg->AddEntry(hICHEP_ETA,  "ICHEP Results","p"); legge->SetTextColor(kBlack);
+    legge = legg->AddEntry(hICHEP_ETA,  "Results with 3.1 pb^{-1}","p"); legge->SetTextColor(kBlack);
     //legg->Draw();
   }
   
@@ -2202,6 +2268,18 @@ void anaXS::ReadHistogramsDATA1(TFile *f, const char *s1, const char *s5, const 
 		      fHbinning->GetNbinsX(), fHbinning->GetXaxis()->GetXbins()->GetArray()
 		      );
   
+  falpha = new TH2D("falpha", 
+		      Form("%s falpha", s1), 
+		      fHbinning->GetNbinsY(), fHbinning->GetYaxis()->GetXbins()->GetArray(),
+		      fHbinning->GetNbinsX(), fHbinning->GetXaxis()->GetXbins()->GetArray()
+		      );    
+  
+  fn = new TH2D("fn", 
+		      Form("%s fn", s1), 
+		      fHbinning->GetNbinsY(), fHbinning->GetYaxis()->GetXbins()->GetArray(),
+		      fHbinning->GetNbinsX(), fHbinning->GetXaxis()->GetXbins()->GetArray()
+		      );    
+
   fMuIDEff = new TH2D("fMuIDEff", "fMuIdEff", 
 		     fHbinning->GetNbinsY(), fHbinning->GetYaxis()->GetXbins()->GetArray(),
 		     fHbinning->GetNbinsX(), fHbinning->GetXaxis()->GetXbins()->GetArray()
@@ -2494,6 +2572,18 @@ void anaXS::ReadHistograms(TFile *f, const char *s1, const char *s2, const char 
 		      fHbinning->GetNbinsY(), fHbinning->GetYaxis()->GetXbins()->GetArray(),
 		      fHbinning->GetNbinsX(), fHbinning->GetXaxis()->GetXbins()->GetArray()
 		      );  
+  
+  falpha = new TH2D("falpha", 
+		      Form("%s falpha", s1), 
+		      fHbinning->GetNbinsY(), fHbinning->GetYaxis()->GetXbins()->GetArray(),
+		      fHbinning->GetNbinsX(), fHbinning->GetXaxis()->GetXbins()->GetArray()
+		      );    
+  
+  fn = new TH2D("fn", 
+		      Form("%s fn", s1), 
+		      fHbinning->GetNbinsY(), fHbinning->GetYaxis()->GetXbins()->GetArray(),
+		      fHbinning->GetNbinsX(), fHbinning->GetXaxis()->GetXbins()->GetArray()
+		      );    
   
   fAnaEff = new TH2D("fAnaEff", "fAnaEff", 
 		     fHbinning->GetNbinsY(), fHbinning->GetYaxis()->GetXbins()->GetArray(),
@@ -3011,7 +3101,7 @@ void anaXS::GetMuIDEff(int mode){
       nbin = fMuIDEff->FindBin(eta, pt); 
       corr = fPtMuidCorr->effD(pt, eta, 0.);
       cout << nbin  << endl;
-      yield*=corr;
+      //yield*=corr;
       cout << " MuIDEff Ups(1S) " << yield << " +/- " << yieldE << endl;
       fMuIDEff->SetBinContent(nbin, yield); 
       fMuIDEff->SetBinError(nbin, yieldE); 
@@ -3027,7 +3117,7 @@ void anaXS::GetMuIDEff(int mode){
       nbin = fMuIDEff_2->FindBin(eta, pt); 
       corr = fPtMuidCorr->effD(pt, eta, 0.);
       cout << nbin  << endl;
-      yield*=corr;
+      //yield*=corr;
       cout << " MuIDEff Ups(2S) " << yield << " +/- " << yieldE << endl;
       fMuIDEff_2->SetBinContent(nbin, yield); 
       fMuIDEff_2->SetBinError(nbin, yieldE); 
@@ -3043,7 +3133,7 @@ void anaXS::GetMuIDEff(int mode){
       nbin = fMuIDEff_3->FindBin(eta, pt); 
       corr = fPtMuidCorr->effD(pt, eta, 0.);
       cout << nbin  << endl;
-      yield*=corr;
+      //yield*=corr;
       cout << " MuIDEff Ups(3S) " << yield << " +/- " << yieldE << endl;
       fMuIDEff_3->SetBinContent(nbin, yield); 
       fMuIDEff_3->SetBinError(nbin, yieldE); 
@@ -3107,7 +3197,7 @@ void anaXS::GetTrigEff(int mode){
       nbin = fTrigEff->FindBin(eta, pt);
       corr = fPtTrigCorr->effD(pt, eta, 0.);
       cout << nbin  << endl;
-      yield*=corr;
+      //yield*=corr;
       cout << " TrigEff Ups(1S) " << yield << " +/- " << yieldE << endl;
       fTrigEff->SetBinContent(nbin, yield); 
       fTrigEff->SetBinError(nbin, yieldE); 
@@ -3124,7 +3214,7 @@ void anaXS::GetTrigEff(int mode){
       nbin = fTrigEff_2->FindBin(eta, pt);
       corr = fPtTrigCorr->effD(pt, eta, 0.);
       cout << nbin  << endl;
-      yield*=corr;
+      //yield*=corr;
       cout << " TrigEff Ups(2S) " << yield << " +/- " << yieldE << endl;
       fTrigEff_2->SetBinContent(nbin, yield); 
       fTrigEff_2->SetBinError(nbin, yieldE); 
@@ -3141,7 +3231,7 @@ void anaXS::GetTrigEff(int mode){
       nbin = fTrigEff_3->FindBin(eta, pt);
       corr = fPtTrigCorr->effD(pt, eta, 0.);
       cout << nbin  << endl;
-      yield*=corr;
+      //yield*=corr;
       cout << " TrigEff Ups(3S) " << yield << " +/- " << yieldE << endl;
       fTrigEff_3->SetBinContent(nbin, yield); 
       fTrigEff_3->SetBinError(nbin, yieldE); 
@@ -3243,130 +3333,261 @@ void anaXS::GetPreSelEff(){
 }
 
 
-void anaXS::FITUpsilon(){
+void anaXS::FITUpsilon(int mode){
 
-  int PRINT(1); 
-  double PRINTX(0.5);
-  
-  TH1D *h; 
-  
-  //  string fopt("LLIEMQ"); 
-  string fopt("LLE"); 
-  
-  double pt, eta; 
+  if ( mode == 1 ){
     
-  double yield_1S(0.), yieldE_1S(0.);
-  double yield_2S(0.), yieldE_2S(0.);
-  double yield_3S(0.), yieldE_3S(0.);
-
-  double scale(1.033);
-  
-  int    nbin;
-  int fitted(0);
-  
-  int status(0);
-  const char* Status;
-  
-  gStyle->SetOptStat(0000000000000); 
-  gStyle->SetOptFit(00000000000000);		 
-  makeCanvas(1); 
-  c1->Clear();
-  
-  //TFile *f = new TFile("Yield.root", "RECREATE");
-  
-  
-  for (unsigned int i = 0; i < fS1Vector.size(); ++i) {
+    int PRINT(1); 
+    double PRINTX(0.5);
     
-    // -- positive charge
-    c1->cd(1); shrinkPad(0.15, 0.26); 
-    h = &(fS1Vector[i]);
-    h->SetMinimum(0.); setTitles(h, "Mass_{#mu #mu} [GeV]", "Entries/Bin", 0.08, 0.9, 1.8, 0.07);
-    if (h->GetSumOfWeights() > 10.) {
-      setFunctionParameters(h, f13, 6); 
-      h->Fit(f13, fopt.c_str());
-      status = 0;
-      cout << gMinuit->fCstatu.Data() << endl;
-      Status = gMinuit->fCstatu.Data();
-      cout << Status[0] << endl;
-      if ( Status[0] == 'S' || Status[0] == 'P' ){
-	status = 1;
-      } else if ( Status[0] == 'F' ){ 
-	status = -1;
-      }
-      cout << status << endl;
-      ///////////////
-      if ( status == -1 || status == 0 ){
-	f13->SetParameters( f13->GetParameter(0), f13->GetParameter(1), f13->GetParameter(2), f13->GetParameter(3), f13->GetParameter(4) ,
-			    f13->GetParameter(5), f13->GetParameter(6), f13->GetParameter(7), f13->GetParameter(8), f13->GetParameter(9), f13->GetParameter(10));
+    TH1D *h; 
+    
+    //  string fopt("LLIEMQ"); 
+    string fopt("LLE"); 
+    
+    double pt, eta; 
+    
+    double yield_1S(0.), yieldE_1S(0.);
+    double yield_2S(0.), yieldE_2S(0.);
+    double yield_3S(0.), yieldE_3S(0.);
+    double alpha(0.), n(0.);
+    double scale(1.033);
+    
+    int    nbin;
+    int fitted(0);
+    
+    int status(0);
+    const char* Status;
+    
+    gStyle->SetOptStat(0000000000000); 
+    gStyle->SetOptFit(00000000000000);
+    //gStyle->SetOptStat(111111111);
+    gStyle->SetOptFit(111111111);
+    makeCanvas(1); 
+    c1->Clear();
+    
+    TFile *f = new TFile("Yield.root", "RECREATE");
+    
+    
+    for (unsigned int i = 0; i < fS1Vector.size(); ++i) {
+      
+      // -- positive charge
+      c1->cd(1); shrinkPad(0.15, 0.26); 
+      h = &(fS1Vector[i]);
+      h->SetMinimum(0.); setTitles(h, "Mass_{#mu #mu} [GeV]", "Entries/Bin", 0.08, 0.9, 1.8, 0.07);
+      if (h->GetSumOfWeights() > 10.) {
+	setFunctionParameters(h, f13, 6);
 	h->Fit(f13, fopt.c_str());
+	status = 0;
+	cout << gMinuit->fCstatu.Data() << endl;
+	Status = gMinuit->fCstatu.Data();
+	cout << Status[0] << endl;
+	if ( Status[0] == 'S' || Status[0] == 'P' ){
+	  status = 1;
+	} else if ( Status[0] == 'F' ){ 
+	  status = -1;
+	}
+	cout << status << endl;
+	///////////////
+	if ( status == -1 || status == 0 ){
+	  f13->SetParameters( f13->GetParameter(0), f13->GetParameter(1), f13->GetParameter(2), f13->GetParameter(3), f13->GetParameter(4) , f13->GetParameter(5), f13->GetParameter(6), f13->GetParameter(7), f13->GetParameter(8), f13->GetParameter(9), f13->GetParameter(10));
+	  h->Fit(f13, fopt.c_str());
+	}
+	
+	cout << gMinuit->fCstatu.Data() << endl;
+	Status = gMinuit->fCstatu.Data();
+	cout << Status[0] << endl;
+	
+	if ( Status[0] == 'S' || Status[0] == 'P' ){
+	  status = 1;
+	} else if ( Status[0] == 'F' ){ 
+	  status = -1;
+	}
+	///////////////
+	cout << status << endl;
+	// Ups 1S
+	f10->SetParameters( f13->GetParameter(0), f13->GetParameter(1), f13->GetParameter(2), f13->GetParameter(3), f13->GetParameter(4) );
+	yield_1S  = f10->Integral(8.7,11.2)/h->GetBinWidth(1);
+	yieldE_1S = TMath::Sqrt(yield_1S);
+	
+	alpha = f13->GetParameter(2);
+	n = f13->GetParameter(3);
+	
+	// Ups 2S
+	f10->SetParameters( f13->GetParameter(5), f13->GetParameter(6), f13->GetParameter(2), f13->GetParameter(3), f13->GetParameter(7) );
+	yield_2S  = f10->Integral(8.7,11.2)/h->GetBinWidth(1);
+	yieldE_2S = TMath::Sqrt(yield_2S);
+	// Ups 3S
+	f10->SetParameters( scale*f13->GetParameter(5), scale*f13->GetParameter(6), f13->GetParameter(2), f13->GetParameter(3), f13->GetParameter(8) );
+	yield_3S  = f10->Integral(8.7,11.2)/h->GetBinWidth(1);
+	yieldE_3S = TMath::Sqrt(yield_3S);      
+	///
+	fitted = 1;
+      } else {
+	h->Draw();
+	yield_1S  = h->GetSumOfWeights();
+	yieldE_1S = TMath::Sqrt(h->GetSumOfWeights());
+	fitted = 0;
       }
+      if (PRINT) tl->DrawLatex(PRINTX, 0.40, Form("Ups(1S) Yield = %4.1f +/- %4.1f", yield_1S,yieldE_1S)); 
+      if (PRINT) tl->DrawLatex(PRINTX, 0.33, Form("Ups(2S) Yield = %4.1f +/- %4.1f", yield_2S,yieldE_2S));
+      if (PRINT) tl->DrawLatex(PRINTX, 0.26, Form("Ups(3S) Yield = %4.1f +/- %4.1f", yield_3S,yieldE_3S));
+      cout << " --> " << h->GetName() << ", Ups(1S) Yield = " << yield_1S << "+/-" << yieldE_1S << endl;
+      cout << " --> " << h->GetName() << ", Ups(2S) Yield = " << yield_2S << "+/-" << yieldE_2S << endl;
+      cout << " --> " << h->GetName() << ", Ups(3S) Yield = " << yield_3S << "+/-" << yieldE_3S << endl;
+      GetBinCenters(h->GetName(), eta, pt); 
+      cout << "/////" << endl;
+      cout << eta << "  " << pt << endl;
+      nbin = fS1Yield->FindBin(eta, pt); 
+      cout << nbin  << endl;
+      fS1Yield->SetBinContent(nbin, yield_1S); 
+      fS1Yield->SetBinError(nbin, yieldE_1S);
+      fS2Yield->SetBinContent(nbin, yield_2S); 
+      fS2Yield->SetBinError(nbin, yieldE_2S);
+      fS3Yield->SetBinContent(nbin, yield_3S); 
+      fS3Yield->SetBinError(nbin, yieldE_3S);
       
-      cout << gMinuit->fCstatu.Data() << endl;
-      Status = gMinuit->fCstatu.Data();
-      cout << Status[0] << endl;
+      falpha->SetBinContent(nbin, alpha);
+      fn->SetBinContent(nbin, n);
+      cout << "/////" << endl;
+      c1->Modified();
+      c1->Update();
       
-      if ( Status[0] == 'S' || Status[0] == 'P' ){
-	status = 1;
-      } else if ( Status[0] == 'F' ){ 
-	status = -1;
-      }
-      ///////////////
-      cout << status << endl;
-      // Ups 1S
-      f10->SetParameters( f13->GetParameter(0), f13->GetParameter(1), f13->GetParameter(2), f13->GetParameter(3), f13->GetParameter(4) );
-      yield_1S  = f10->Integral(8.7,11.2)/h->GetBinWidth(1);
-      yieldE_1S = TMath::Sqrt(yield_1S);
-      // Ups 2S
-      f10->SetParameters( f13->GetParameter(5), f13->GetParameter(6), f13->GetParameter(2), f13->GetParameter(3), f13->GetParameter(7) );
-      yield_2S  = f10->Integral(8.7,11.2)/h->GetBinWidth(1);
-      yieldE_2S = TMath::Sqrt(yield_2S);
-      // Ups 3S
-      f10->SetParameters( scale*f13->GetParameter(5), scale*f13->GetParameter(6), f13->GetParameter(2), f13->GetParameter(3), f13->GetParameter(8) );
-      yield_3S  = f10->Integral(8.7,11.2)/h->GetBinWidth(1);
-      yieldE_3S = TMath::Sqrt(yield_3S);      
-      ///
-      fitted = 1;
-    } else {
-      h->Draw();
-      yield_1S  = h->GetSumOfWeights();
-      yieldE_1S = TMath::Sqrt(h->GetSumOfWeights());
-      fitted = 0;
+      
+      TString frag(h->GetName()); 
+      frag.ReplaceAll("s3:mmbar,", ""); 
+      frag.ReplaceAll(",Q1", ""); 
+      frag.ReplaceAll(".", "_");
+      frag.ReplaceAll(",", "_");
+      frag.ReplaceAll(":", "_");
+      
+      c1->SaveAs(Form("%s/massfits_%s_%s.eps", fPtDirectory.c_str(), fSample.c_str(), frag.Data())); 
     }
-    if (PRINT) tl->DrawLatex(PRINTX, 0.80, Form("Ups(1S) Yield = %4.1f +/- %4.1f", yield_1S,yieldE_1S)); 
-    if (PRINT) tl->DrawLatex(PRINTX, 0.73, Form("Ups(2S) Yield = %4.1f +/- %4.1f", yield_2S,yieldE_2S));
-    if (PRINT) tl->DrawLatex(PRINTX, 0.66, Form("Ups(3S) Yield = %4.1f +/- %4.1f", yield_3S,yieldE_3S));
-    cout << " --> " << h->GetName() << ", Ups(1S) Yield = " << yield_1S << "+/-" << yieldE_1S << endl;
-    cout << " --> " << h->GetName() << ", Ups(2S) Yield = " << yield_2S << "+/-" << yieldE_2S << endl;
-    cout << " --> " << h->GetName() << ", Ups(3S) Yield = " << yield_3S << "+/-" << yieldE_3S << endl;
-    GetBinCenters(h->GetName(), eta, pt); 
-    cout << "/////" << endl;
-    cout << eta << "  " << pt << endl;
-    nbin = fS1Yield->FindBin(eta, pt); 
-    cout << nbin  << endl;
-    fS1Yield->SetBinContent(nbin, yield_1S); 
-    fS1Yield->SetBinError(nbin, yieldE_1S);
-    fS2Yield->SetBinContent(nbin, yield_2S); 
-    fS2Yield->SetBinError(nbin, yieldE_2S);
-    fS3Yield->SetBinContent(nbin, yield_3S); 
-    fS3Yield->SetBinError(nbin, yieldE_3S);
-    cout << "/////" << endl;
-    c1->Modified();
-    c1->Update();
     
-    
-    TString frag(h->GetName()); 
-    frag.ReplaceAll("s3:mmbar,", ""); 
-    frag.ReplaceAll(",Q1", ""); 
-    frag.ReplaceAll(".", ":"); 
-    
-    c1->SaveAs(Form("%s/massfits-%s-%s.eps", fPtDirectory.c_str(), fSample.c_str(), frag.Data())); 
+    fS1Yield->Write();
+    fS2Yield->Write();
+    fS3Yield->Write();
+    falpha->Write();
+    fn->Write();
+    c1->Clear();
   }
   
-  //fS1Yield->Write();
-  //fS2Yield->Write();
-  //fS3Yield->Write();
-  c1->Clear();
-  
+  if ( mode == 2  ){
+    int PRINT(1); 
+    double PRINTX(0.5);
+    
+    TH1D *h; 
+    
+    //  string fopt("LLIEMQ"); 
+    string fopt("LLE"); 
+    
+    double pt, eta; 
+    
+    double yield_1S(0.), yieldE_1S(0.);
+    double alpha(0.), n(0.);
+    
+    int    nbin;
+    int fitted(0);
+    
+    int status(0);
+    const char* Status;
+    
+    gStyle->SetOptStat(0000000000000); 
+    gStyle->SetOptFit(00000000000000);	
+    //gStyle->SetOptStat(111111111);
+    gStyle->SetOptFit(111111111);
+    makeCanvas(1); 
+    c1->Clear();
+    
+    TFile *f = new TFile("FitParameters.root", "RECREATE");
+    
+    
+    for (unsigned int i = 0; i < fS1Vector.size(); ++i) {
+      
+      // -- positive charge
+      c1->cd(1); shrinkPad(0.15, 0.08); 
+      h = &(fS1Vector[i]);
+      h->SetMinimum(0.);  setTitles(h, "Mass_{#mu #mu} [GeV]", "Entries/Bin", 0.07, 0.75, 0.58, 0.07);
+      if (h->GetSumOfWeights() > 10.) {
+	
+	for (unsigned int i = 0; i < h->GetNbinsX(); ++i) {
+	  if ( h->GetBinContent(i) == 0  ){
+	    h->GetBinError(i,1);
+	  }
+	}
+	
+	setFunctionParameters(h, f6, 5); 
+	h->Fit(f6, fopt.c_str());
+	status = 0;
+	cout << gMinuit->fCstatu.Data() << endl;
+	Status = gMinuit->fCstatu.Data();
+	cout << Status[0] << endl;
+	if ( Status[0] == 'S' || Status[0] == 'P' ){
+	  status = 1;
+	} else if ( Status[0] == 'F' ){ 
+	  status = -1;
+	}
+	cout << status << endl;
+	///////////////
+	if ( status == -1 || status == 0 ){
+	  f6->SetParameters( f6->GetParameter(0), f6->GetParameter(1), f6->GetParameter(2), f6->GetParameter(3), f6->GetParameter(4), f6->GetParameter(5), f6->GetParameter(6));
+	  h->Fit(f6, fopt.c_str());
+	}
+	cout << gMinuit->fCstatu.Data() << endl;
+	Status = gMinuit->fCstatu.Data();
+	cout << Status[0] << endl;
+	
+	if ( Status[0] == 'S' || Status[0] == 'P' ){
+	  status = 1;
+	} else if ( Status[0] == 'F' ){ 
+	  status = -1;
+	}
+	///////////////
+	cout << status << endl;
+	yield_1S  = f6->Integral(8.7,11.2)/h->GetBinWidth(1);
+	yieldE_1S = TMath::Sqrt(yield_1S);
+	alpha = f6->GetParameter(2);
+	n = f6->GetParameter(3);
+	fitted = 1;
+      } else {
+	h->Draw();
+	yield_1S  = h->GetSumOfWeights();
+	yieldE_1S = TMath::Sqrt(h->GetSumOfWeights());
+	fitted = 0;
+      }
+      if (PRINT) tl->DrawLatex(PRINTX, 0.40, Form("Ups Yield = %4.1f +/- %4.1f", yield_1S,yieldE_1S)); 
+      cout << " --> " << h->GetName() << ", Ups Yield = " << yield_1S << "+/-" << yieldE_1S << endl;
+      GetBinCenters(h->GetName(), eta, pt); 
+      cout << "/////" << endl;
+      cout << eta << "  " << pt << endl;
+      nbin = fS1Yield->FindBin(eta, pt); 
+      cout << nbin  << endl;
+      fS1Yield->SetBinContent(nbin, yield_1S); 
+      fS1Yield->SetBinError(nbin, yieldE_1S);
+      falpha->SetBinContent(nbin, alpha);
+      fn->SetBinContent(nbin, n);
+      cout << "/////" << endl;
+      c1->Modified();
+      c1->Update();
+      
+      
+      TString frag(h->GetName()); 
+      frag.ReplaceAll("s3:mmbar,", ""); 
+      frag.ReplaceAll(",Q1", ""); 
+      frag.ReplaceAll(".", "_");
+      frag.ReplaceAll(",", "_");
+      frag.ReplaceAll(":", "_");
+      
+      c1->SaveAs(Form("%s/massfits_%s_%s.eps", fPtDirectory.c_str(), fSample.c_str(), frag.Data())); 
+    }
+    
+    fn->Write();
+    falpha->Write();
+    fS1Yield->Write();
+    c1->Clear();
+    
+    
+  }
 }
 // ----------------------------------------------------------------------
 void anaXS::fitUpsilon(int mode) {  
@@ -6448,7 +6669,7 @@ bool anaXS::getBinCenters(string hname, double &eta, double &pT, int &Q) {
 void anaXS::setFunctionParameters(TH1D *h, TF1 *f, int mode) {
   const int EDG(4), NB(EDG+1); 
   double p0(0.), p1(0.), g0(0.), g1(0.), g2(0.), g3(0.), g4(0.), g5(0.), g6(0.);
-  double c0(0.), c1(0.), c2(0.), c3(0.), c4(0.), c5(0.), c6(0.), c7(0.), c8(0.); 
+  double c0(0.), c1(0.), c2(0.), c3(0.), c4(0.), c5(0.), c6(0.), c7(0.), c8(0.), c9(0.), c10(0.); 
   double lo(0.), hi(0.), dx(0.);
   double lo_2(0.), hi_2(0.);
   double p0E(0.), p1E(0.); 
@@ -6585,12 +6806,17 @@ void anaXS::setFunctionParameters(TH1D *h, TF1 *f, int mode) {
   
   // -- pol1 + CB for Ups(1S)
   if (5 == mode) {
-    c0 = 9.46;
-    c1 = 0.08;
-    c2 = 1.3;
+    c0 = 9.46;				    
+    c1 = 0.06;
+    //c0 = 10.02;				    
+    //c1 = 0.08;    
+    //c0 = 10.35;				    
+    //c1 = 0.10;        
+    c2 = 1.9;
+    c3 = 1.6;
     lo = h->GetMaximumBin()-2.*c1/h->GetBinWidth(1); 
     hi = h->GetMaximumBin()+2.*c1/h->GetBinWidth(1);
-    c4 = (h->Integral(lo, hi) - f0->Integral(lo, hi))*h->GetBinWidth(1);
+    c4 = (h->Integral(lo, hi) - f0->Integral(lo, hi))/h->GetBinWidth(1);
     if (c4 < 0) c4 = h->Integral(lo, hi)*h->GetBinWidth(1);
     f->ReleaseParameter(0); 
     f->ReleaseParameter(1); 
@@ -6599,26 +6825,35 @@ void anaXS::setFunctionParameters(TH1D *h, TF1 *f, int mode) {
     f->ReleaseParameter(4);
     f->ReleaseParameter(5); 
     f->ReleaseParameter(6);     
-
+    
     f->SetParameters(c0, c1, c2, c3, c4, p0, p1);     
     f->SetParLimits(0, 9.410, 9.510); 
     f->SetParLimits(1, 0.04, 0.14);
-    f->FixParameter(2, 1.3);
-    f->FixParameter(3, 3.);
-     
+    //f->SetParLimits(0, 9.9, 10.1); 
+    //f->SetParLimits(1, 0.06, 0.20);      
+    //f->SetParLimits(0, 10.22, 10.43); 
+    //f->SetParLimits(1, 0.06, 0.20);    
+    //f->SetParLimits(2, 1.6, 2.2);
+    //f->SetParLimits(3, 1., 2.2);
+    f->FixParameter(2, 1.9);
+    f->FixParameter(3, 1.6);
+    f->SetParLimits(4, 0, 10000000);
+    f->FixParameter(5, 0.);
+    f->FixParameter(6, 0.);
   }
   
     // -- pol1 + CB for All Upsilons
   if (6 == mode) {
     c0 = 9.46;
-    c1 = 0.06;
-    c2 = 1.5;
+    c1 = 0.08; // 0.06 -> 0.08
+    c2 = 1.9;
+    c3 = 1.6;
     lo = h->GetMaximumBin()-2.*c1/h->GetBinWidth(1); 
     hi = h->GetMaximumBin()+2.*c1/h->GetBinWidth(1);
     c4 = (h->Integral(lo, hi) - f0->Integral(lo, hi))/h->GetBinWidth(1);    //  * -> /
     if (c4 < 0) c4 = h->Integral(lo, hi)*h->GetBinWidth(1);
     c5 = 10.02;
-    c6 = 0.08;
+    c6 = 0.10;
     h->GetXaxis()->SetRangeUser(9.8,10.2);
     lo_2 = h->GetMaximumBin()-2.*c6/h->GetBinWidth(1); 
     hi_2 = h->GetMaximumBin()+2.*c6/h->GetBinWidth(1);
@@ -6640,17 +6875,22 @@ void anaXS::setFunctionParameters(TH1D *h, TF1 *f, int mode) {
     f->SetParameters(c0, c1, c2, c3, c4, c5, c6, c7, c8, p0, p1);     
     f->SetParLimits(0, 9.410, 9.510); 
     f->SetParLimits(1, 0.04, 0.14);
-    f->FixParameter(2, 1.5);
-   // f->SetParLimits(2, 1., 2.);
-    f->FixParameter(3, 3.);
+    f->FixParameter(2, 1.9);
+    //f->SetParLimits(2, 1.6, 2.2);
+    f->FixParameter(3, 1.6);
+    //f->SetParLimits(3, 1., 2.2);
     f->SetParLimits(4, 0, 10000000);
     f->SetParLimits(5, 9.9, 10.1);
     f->SetParLimits(6, 0.06, 0.20);
     f->SetParLimits(7, 0, 10000000);
-    f->SetParLimits(8, 0, 10000000); 
-        
+    f->SetParLimits(8, 0, 10000000);
+    //f->FixParameter(9, 0.);
+    //f->FixParameter(10, 0.);
      
   }
+  
+  
+  
 }
 
 
