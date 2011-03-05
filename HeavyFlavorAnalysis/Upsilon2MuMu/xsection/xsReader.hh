@@ -40,7 +40,7 @@ public:
   void        startAnalysis();
   void        eventProcessing();
   void        fillHist();
-  void        fillCandHist();
+  void        fillCandHist(int mode);
   void        MCstudy();
   void        acceptance();
   void        PathStudy();
@@ -101,7 +101,7 @@ public:
   PidTable    *fPidTableTrigPos, *fPidTableTrigNeg;
   
   double      fWeight;
-  static const int  fNpt = 6;
+  static const int  fNpt = 15;
   static const int  fNy = 4;
   double      fPTbin[fNpt+1], fYbin[fNy+1];
   int fBin;
