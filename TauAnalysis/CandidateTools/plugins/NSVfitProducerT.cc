@@ -29,7 +29,7 @@ NSVfitProducerT<T>::NSVfitProducerT(const edm::ParameterSet& cfg)
     vstring daughterNames = cfg_daughters.getParameterNamesForType<edm::ParameterSet>();
     for ( vstring::const_iterator daughterName = daughterNames.begin();
 	  daughterName != daughterNames.end(); ++daughterName ) {
-      edm::ParameterSet cfg_daughter = cfg_resonances.getParameter<edm::ParameterSet>(*daughterName);
+      edm::ParameterSet cfg_daughter = cfg_daughters.getParameter<edm::ParameterSet>(*daughterName);
       if ( cfg_daughter.exists("src") ) {
 	inputParticleNames_.push_back(*daughterName);
 	srcInputParticles_.push_back(cfg_daughter.getParameter<edm::InputTag>("src"));
@@ -89,17 +89,18 @@ void NSVfitProducerT<T>::produce(edm::Event& evt, const edm::EventSetup& es)
     evt.put(emptyNSVfitEventHypothesisCollection);
     return;
   }
-  
+
   edm::Ptr<reco::MET> metPtr = metCollection->ptrAt(0);
 
   algorithm_->beginEvent(evt, es);
 
   std::auto_ptr<NSVfitEventHypothesisCollection> nSVfitEventHypothesisCollection(new NSVfitEventHypothesisCollection());
-  
+
   IndepCombinatoricsGeneratorT<int> inputParticleCombination(numInputParticles_);
   for ( unsigned iParticleType = 0; iParticleType < numInputParticles_; ++iParticleType ) {
     inputParticleCombination.setUpperLimit(iParticleType, inputParticleCollections[iParticleType]->size());
   }
+
   while ( inputParticleCombination.isValid() ) {
     typedef edm::Ptr<reco::Candidate> CandidatePtr;
     typedef std::map<std::string, CandidatePtr> inputParticleMap;
@@ -108,6 +109,8 @@ void NSVfitProducerT<T>::produce(edm::Event& evt, const edm::EventSetup& es)
       CandidatePtr inputParticlePtr = inputParticleCollections[iParticleType]->ptrAt(inputParticleCombination[iParticleType]);
       inputParticles.insert(std::pair<std::string, CandidatePtr>(inputParticleNames_[iParticleType], inputParticlePtr));
     }
+
+    inputParticles.insert(std::pair<std::string, CandidatePtr>("met", metPtr));
 
 //--- check for overlaps between any pairs of input particles
     bool isOverlap = false;
@@ -122,10 +125,11 @@ void NSVfitProducerT<T>::produce(edm::Event& evt, const edm::EventSetup& es)
     }
 
     if ( isOverlap ) continue;
-    
+
     T* hypothesis = dynamic_cast<T*>(algorithm_->fit(inputParticles));
     assert(hypothesis);
     nSVfitEventHypothesisCollection->push_back(*hypothesis);
+    hypothesis->ownsResonances_ = false;
     delete hypothesis;
 
     inputParticleCombination.next();

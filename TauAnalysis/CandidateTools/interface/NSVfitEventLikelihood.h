@@ -8,9 +8,9 @@
  *
  * \author Christian Veelken, UC Davis
  *
- * \version $Revision: 1.1 $
+ * \version $Revision: 1.2 $
  *
- * $Id: NSVfitEventLikelihood.h,v 1.1 2011/02/27 16:45:16 veelken Exp $
+ * $Id: NSVfitEventLikelihood.h,v 1.2 2011/02/28 10:46:38 veelken Exp $
  *
  */
 
@@ -33,7 +33,7 @@ class NSVfitEventLikelihood : public NSVfitLikelihoodBase
   {}
   virtual ~NSVfitEventLikelihood() {}
 
-  virtual void beginCandidate(const NSVfitEventHypothesis*) {}
+  virtual void beginCandidate(const NSVfitEventHypothesis*) const {}
 
   virtual double operator()(const NSVfitEventHypothesis*) const = 0;
 };

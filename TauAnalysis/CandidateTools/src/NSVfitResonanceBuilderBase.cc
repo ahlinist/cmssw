@@ -1,7 +1,8 @@
 #include "TauAnalysis/CandidateTools/interface/NSVfitResonanceBuilderBase.h"
 
 NSVfitResonanceBuilderBase::NSVfitResonanceBuilderBase(const edm::ParameterSet& cfg) 
-  : NSVfitBuilderBase(cfg.getParameter<edm::ParameterSet>("builder")),
+  : NSVfitBuilderBase(cfg),
+    prodResonanceLabel_(cfg.getParameter<std::string>("prodResonanceLabel")),
     numDaughterBuilders_(0)
 {
   edm::ParameterSet cfg_daughters = cfg.getParameter<edm::ParameterSet>("daughters");
@@ -10,10 +11,11 @@ NSVfitResonanceBuilderBase::NSVfitResonanceBuilderBase(const edm::ParameterSet& 
   for ( vstring::const_iterator daughterName = daughterNames.begin();
 	daughterName != daughterNames.end(); ++daughterName ) {
     edm::ParameterSet cfg_daughter = cfg_daughters.getParameter<edm::ParameterSet>(*daughterName);
-    cfg_daughter.addParameter<std::string>("prodParticleLabel", *daughterName);
-    std::string pluginType = cfg_daughter.getParameter<std::string>("pluginType");
+    edm::ParameterSet cfg_builder = cfg_daughter.getParameter<edm::ParameterSet>("builder");
+    cfg_builder.addParameter<std::string>("prodParticleLabel", *daughterName);
+    std::string pluginType = cfg_builder.getParameter<std::string>("pluginType");
     NSVfitSingleParticleBuilderBase* daughterBuilder = 
-      NSVfitSingleParticleBuilderPluginFactory::get()->create(pluginType, cfg_daughter);
+      NSVfitSingleParticleBuilderPluginFactory::get()->create(pluginType, cfg_builder);
     daughterBuilders_.push_back(daughterBuilder);
     ++numDaughterBuilders_;
   }
@@ -46,34 +48,22 @@ void NSVfitResonanceBuilderBase::beginEvent(const edm::Event& evt, const edm::Ev
 
 NSVfitResonanceHypothesis* NSVfitResonanceBuilderBase::build(const inputParticleMap& inputParticles) const
 {
-/*
   NSVfitResonanceHypothesis* resonanceHypothesis = new NSVfitResonanceHypothesis();
 
-  for ( std::map<std::string, NSVfitSingleParticleBuilderBase*>::const_iterator daughterBuilder = daughterBuilders_.begin();
-	daughterBuilder != daughterBuilders_.end(); ++daughterBuilder ) {
-    NSVfitSingleParticleHypothesisBase* daughterHypothesis = 0;
-
-    inputParticleMap::const_iterator daughterParticle = inputParticles.find((*daughterBuilder)->inputParticleLabel());
-    if ( daughterParticle != inputParticles.end() ) {
-      daughterHypothesis = (*daughterBuilder)->build(daughterParticle->second());
-    } else {
-      daughterHypothesis = (*daughterBuilder)->build();
-    }
-
-    resonanceHypothesis->daughters_.push_back(daughterHypothesis);
-  }
-
-  resonanceHypothesis->barcode_ = barcodeCounter_;
-
-  ++barcodeCounter_;
- */
-  NSVfitResonanceHypothesis* resonanceHypothesis = new NSVfitResonanceHypothesis();
+  reco::Candidate::LorentzVector p4(0,0,0,0);
 
   for ( std::vector<NSVfitSingleParticleBuilderBase*>::const_iterator daughterBuilder = daughterBuilders_.begin();
 	daughterBuilder != daughterBuilders_.end(); ++daughterBuilder ) {
     NSVfitSingleParticleHypothesisBase* daughterHypothesis = (*daughterBuilder)->build(inputParticles);
+
+    p4 += daughterHypothesis->p4();
+
     resonanceHypothesis->daughters_.push_back(daughterHypothesis);
   }
+
+  resonanceHypothesis->p4_ = p4;
+
+  resonanceHypothesis->name_ = prodResonanceLabel_;
 
   resonanceHypothesis->barcode_ = barcodeCounter_;
   ++barcodeCounter_;
@@ -86,6 +76,15 @@ void NSVfitResonanceBuilderBase::applyFitParameter(NSVfitResonanceHypothesis* re
   for ( unsigned iDaughterBuilder = 0; iDaughterBuilder < numDaughterBuilders_; ++iDaughterBuilder ) {
     daughterBuilders_[iDaughterBuilder]->applyFitParameter(resonanceHypothesis->daughters_[iDaughterBuilder], params);
   }
+
+  reco::Candidate::LorentzVector dp4(0,0,0,0);
+
+  for ( std::vector<NSVfitSingleParticleHypothesisBase*>::const_iterator daughter = resonanceHypothesis->daughters_.begin();
+	daughter != resonanceHypothesis->daughters_.end(); ++daughter ) {
+    dp4 += (*daughter)->dp4_fitted();
+  }
+
+  resonanceHypothesis->dp4_ = dp4;
 }
 
 void NSVfitResonanceBuilderBase::print(std::ostream& stream) const 

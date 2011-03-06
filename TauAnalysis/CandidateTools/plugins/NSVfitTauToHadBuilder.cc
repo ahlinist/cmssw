@@ -23,6 +23,7 @@ void NSVfitTauToHadBuilder::beginJob(NSVfitAlgorithmBase* algorithm)
 {
   idxFitParameter_visEnFracX_ = getFitParameterIdx(algorithm, prodParticleLabel_, kTau_visEnFracX);
   idxFitParameter_phi_lab_    = getFitParameterIdx(algorithm, prodParticleLabel_, kTau_phi_lab);
+  algorithm_ = algorithm;
 }
 
 NSVfitSingleParticleHypothesisBase* NSVfitTauToHadBuilder::build(const inputParticleMap& inputParticles) const
@@ -30,21 +31,16 @@ NSVfitSingleParticleHypothesisBase* NSVfitTauToHadBuilder::build(const inputPart
   inputParticleMap::const_iterator particlePtr = inputParticles.find(prodParticleLabel_);
   assert(particlePtr != inputParticles.end());
 
-  std::string hypothesisName = std::string("NSVfitTauToHadHypothesis").append(":").append(prodParticleLabel_);
-  NSVfitTauToHadHypothesis* hypothesis = new NSVfitTauToHadHypothesis(particlePtr->second, hypothesisName, barcodeCounter_);
+  NSVfitTauToHadHypothesis* hypothesis = new NSVfitTauToHadHypothesis(particlePtr->second, prodParticleLabel_, barcodeCounter_);
+  ++barcodeCounter_;
 
   const pat::Tau* tauPtr = dynamic_cast<const pat::Tau*>(particlePtr->second.get());
   assert(tauPtr);
 
   hypothesis->tracks_     = trackExtractor_(*tauPtr);
-
   hypothesis->p3Vis_unit_ = tauPtr->p4().Vect().Unit();
   const double visMassMax = SVfit_namespace::tauLeptonMass - 0.1;
   hypothesis->visMass_    = ( tauPtr->mass() < visMassMax ) ? tauPtr->mass() : visMassMax;
-
-  NSVfitAlgorithmBase::fitParameterType* fitParameter = algorithm_->getFitParameter(prodParticleLabel_, kTau_nuInvMass);
-  assert(fitParameter);
-  fitParameter->upperLimit_ = SVfit_namespace::tauLeptonMass - hypothesis->visMass_;
 
   return hypothesis;
 }
@@ -56,7 +52,7 @@ void NSVfitTauToHadBuilder::applyFitParameter(NSVfitSingleParticleHypothesisBase
 
   double visEnFracX = param[idxFitParameter_visEnFracX_];
   double phi_lab    = param[idxFitParameter_phi_lab_];
-  double pVis       = hypothesis_T->p4().P();
+  double pVis_lab   = hypothesis_T->p4().P();
   double enVis_lab  = hypothesis_T->p4().energy();
   double visMass    = hypothesis_T->visMass();
   double nuInvMass  = 0.;
@@ -74,10 +70,10 @@ void NSVfitTauToHadBuilder::applyFitParameter(NSVfitSingleParticleHypothesisBase
   double gjAngle = TMath::ACos(cosGjAngle);
 
 //--- compute tau lepton decay angle in laboratory frame
-  double angleVis_lab = SVfit_namespace::gjAngleToLabFrame(pVis_rf, gjAngle, pVis);
+  double angleVis_lab = SVfit_namespace::gjAngleToLabFrame(pVis_rf, gjAngle, pVis_lab);
 
 //--- compute tau lepton momentum in laboratory frame
-  double pTau_lab = SVfit_namespace::tauMomentumLabFrame(visMass, pVis_rf, gjAngle, pVis);
+  double pTau_lab = SVfit_namespace::tauMomentumLabFrame(visMass, pVis_rf, gjAngle, pVis_lab);
 
 //--- compute tau lepton direction in laboratory frame
   reco::Candidate::Vector p3Tau = SVfit_namespace::tauDirection(p3Vis_unit, angleVis_lab, phi_lab);
@@ -87,6 +83,23 @@ void NSVfitTauToHadBuilder::applyFitParameter(NSVfitSingleParticleHypothesisBase
 
   hypothesis_T->p4_fitted_      = p4Tau;
   hypothesis_T->dp4_            = (p4Tau - hypothesis_T->p4_);
+
+  if ( verbosity_ ) {
+    std::cout << "<NSVfitTauToHadBuilder::applyFitParameter>:" << std::endl;
+    std::cout << " visEnFracX = " << param[idxFitParameter_visEnFracX_] << std::endl;
+    std::cout << " phi_lab = " << param[idxFitParameter_phi_lab_] << std::endl;
+    std::cout << " enVis_lab = " << enVis_lab << std::endl;
+    std::cout << " visMass = " << visMass << std::endl;
+    std::cout << " gjAngle = " << gjAngle << std::endl;
+    std::cout << " angleVis_lab = " << angleVis_lab << std::endl;
+    std::cout << " pTau_lab = " << pTau_lab << std::endl;
+    std::cout << "p4Vis: E = " << hypothesis_T->p4_.energy() << "," 
+	      << " px = " << hypothesis_T->p4_.px() << ", py = " << hypothesis_T->p4_.py() << "," 
+	      << " pz = " << hypothesis_T->p4_.pz() << std::endl;
+    std::cout << "p4Tau: E = " << p4Tau.energy() << "," 
+	      << " px = " << p4Tau.px() << ", py = " << p4Tau.py() << "," 
+	      << " pz = " << p4Tau.pz() << std::endl;
+  }
 
   hypothesis_T->visEnFracX_     = visEnFracX;
   hypothesis_T->decay_angle_rf_ = gjAngle;
