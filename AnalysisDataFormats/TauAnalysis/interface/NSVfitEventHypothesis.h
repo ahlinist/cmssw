@@ -8,14 +8,21 @@
 class NSVfitEventHypothesis
 {
  public:
-  NSVfitEventHypothesis() {}
+  NSVfitEventHypothesis() 
+    : ownsResonances_(true)
+  {}
   virtual ~NSVfitEventHypothesis() 
   {
-    for ( std::vector<NSVfitResonanceHypothesis*>::const_iterator it = resonances_.begin();
-          it != resonances_.end(); ++it ) {
-      delete (*it);
+    if ( ownsResonances_ ) {
+      for ( std::vector<NSVfitResonanceHypothesis*>::const_iterator it = resonances_.begin();
+	    it != resonances_.end(); ++it ) {
+	delete (*it);
+      }
     }
   }
+
+  const std::string& name() const { return name_; }
+  int barcode() const { return barcode_; }
 
   /// momentum of multi-lepton system before fit, after fit
   /// and difference in momentum (after - before) fit
@@ -30,6 +37,15 @@ class NSVfitEventHypothesis
 
   /// fit hypotheses of lepton resonances
   const std::vector<NSVfitResonanceHypothesis*>& resonances() const { return resonances_; }
+  const NSVfitResonanceHypothesis* resonance(const std::string& name)
+  {
+    const NSVfitResonanceHypothesis* retVal = 0;
+    for ( std::vector<NSVfitResonanceHypothesis*>::const_iterator resonance = resonances_.begin();
+	  resonance != resonances_.end(); ++resonance ) {
+      if ( (*resonance)->name() == name ) retVal = (*resonance);
+    }
+    return retVal;
+  }
 
   virtual void print(std::ostream& stream) const
   {
@@ -43,6 +59,7 @@ class NSVfitEventHypothesis
   }
 
   friend class NSVfitEventBuilderBase;
+  template<typename T_type> friend class NSVfitProducerT;
 
  private:
 
@@ -63,6 +80,7 @@ class NSVfitEventHypothesis
 
   /// fit hypotheses for daughter particles
   std::vector<NSVfitResonanceHypothesis*> resonances_;
+  bool ownsResonances_;
 };
 
 #endif

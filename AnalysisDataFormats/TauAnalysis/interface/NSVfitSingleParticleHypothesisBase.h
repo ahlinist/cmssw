@@ -24,6 +24,9 @@ class NSVfitSingleParticleHypothesisBase
   {}
   virtual ~NSVfitSingleParticleHypothesisBase() {}
 
+  const std::string& name() const { return name_; }
+  int barcode() const { return barcode_; }
+
   /// pointer to reco::Candidate from which this hypothesis was made
   virtual const edm::Ptr<reco::Candidate>& particle() const { return particle_; }
 

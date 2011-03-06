@@ -8,14 +8,21 @@
 class NSVfitResonanceHypothesis
 {
  public:
-  NSVfitResonanceHypothesis() {}
+  NSVfitResonanceHypothesis() 
+    : ownsDaughters_(true)
+  {}
   virtual ~NSVfitResonanceHypothesis() 
   {
-    for ( std::vector<NSVfitSingleParticleHypothesisBase*>::const_iterator it = daughters_.begin();
-          it != daughters_.end(); ++it ) {
-      delete (*it);
+    if ( ownsDaughters_ ) {
+      for ( std::vector<NSVfitSingleParticleHypothesisBase*>::const_iterator it = daughters_.begin();
+	    it != daughters_.end(); ++it ) {
+	delete (*it);
+      }
     }
   }
+  
+  const std::string& name() const { return name_; }
+  int barcode() const { return barcode_; }
 
   /// momentum of particle before fit, after fit
   /// and difference in momentum (after - before) fit
@@ -25,6 +32,15 @@ class NSVfitResonanceHypothesis
 
   /// fit hypotheses of daughter particles
   const std::vector<NSVfitSingleParticleHypothesisBase*>& daughters() const { return daughters_; }
+  const NSVfitSingleParticleHypothesisBase* daughter(const std::string& name)
+  {
+    const NSVfitSingleParticleHypothesisBase* retVal = 0;
+    for ( std::vector<NSVfitSingleParticleHypothesisBase*>::const_iterator daughter = daughters_.begin();
+	  daughter != daughters_.end(); ++daughter ) {
+      if ( (*daughter)->name() == name ) retVal = (*daughter);
+    }
+    return retVal;
+  }
 
   virtual void print(std::ostream& stream) const
   {
@@ -55,6 +71,7 @@ class NSVfitResonanceHypothesis
 
   /// fit hypotheses for daughter particles
   std::vector<NSVfitSingleParticleHypothesisBase*> daughters_;
+  bool ownsDaughters_;
 };
 
 #endif
