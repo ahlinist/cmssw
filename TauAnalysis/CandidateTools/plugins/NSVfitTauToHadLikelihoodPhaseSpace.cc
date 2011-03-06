@@ -19,7 +19,7 @@ NSVfitTauToHadLikelihoodPhaseSpace::~NSVfitTauToHadLikelihoodPhaseSpace()
 // nothing to be done yet...
 }
 
-void NSVfitTauToHadLikelihoodPhaseSpace::beginJob(NSVfitAlgorithmBase* algorithm) const 
+void NSVfitTauToHadLikelihoodPhaseSpace::beginJob(NSVfitAlgorithmBase* algorithm)
 {
   algorithm->requestFitParameter(prodParticleLabel_, kTau_visEnFracX, pluginName_);
   algorithm->requestFitParameter(prodParticleLabel_, kTau_phi_lab,    pluginName_);
@@ -41,9 +41,17 @@ double NSVfitTauToHadLikelihoodPhaseSpace::operator()(const NSVfitSingleParticle
   const NSVfitTauToHadHypothesis* hypothesis_T = dynamic_cast<const NSVfitTauToHadHypothesis*>(hypothesis);
   assert(hypothesis_T != 0);
 
-  double thetaRestFrame = hypothesis_T->decay_angle_rf();
+  double decayAngle = hypothesis_T->decay_angle_rf();
 
-  return -TMath::Log(TMath::Sin(thetaRestFrame));
+  double nll = -TMath::Log(TMath::Sin(decayAngle));
+  
+  if ( verbosity_ ) {
+    std::cout << "<NSVfitTauToHadLikelihoodPhaseSpace::operator()>:" << std::endl;
+    std::cout << " decayAngle = " << decayAngle << std::endl;
+    std::cout << "--> nll = " << nll << std::endl;
+  }
+
+  return nll;
 }
 
 #include "FWCore/Framework/interface/MakerMacros.h"

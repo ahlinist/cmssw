@@ -8,9 +8,9 @@
  *
  * \author Christian Veelken, UC Davis
  *
- * \version $Revision: 1.2 $
+ * \version $Revision: 1.3 $
  *
- * $Id: NSVfitLikelihoodBase.h,v 1.2 2011/02/28 10:46:38 veelken Exp $
+ * $Id: NSVfitLikelihoodBase.h,v 1.3 2011/03/03 13:04:47 veelken Exp $
  *
  */
 
@@ -28,15 +28,16 @@ class NSVfitLikelihoodBase
  public:
   NSVfitLikelihoodBase(const edm::ParameterSet& cfg)
   {
-    pluginName_ = cfg.getParameter<std::string>("pluginName");
     pluginType_ = cfg.getParameter<std::string>("pluginType");
+    pluginName_ = cfg.getParameter<std::string>("pluginName");
 
     verbosity_ = cfg.exists("verbosity") ?
       cfg.getParameter<int>("verbosity") : 0;
   }
   virtual ~NSVfitLikelihoodBase() {}
 
-  virtual void initialize(NSVfitAlgorithmBase*) const {}
+  const std::string& pluginType() const { return pluginType_; }
+  const std::string& pluginName() const { return pluginName_; }
 
   virtual void beginJob(NSVfitAlgorithmBase*) {}
   virtual void beginEvent(const edm::Event&, const edm::EventSetup&) {}

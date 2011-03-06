@@ -19,7 +19,7 @@
  *
  * \version $Revision: 1.1 $
  *
- * $Id: IndepCombinatoricsGeneratorT.h,v 1.1 2011/02/27 16:45:16 veelken Exp $
+ * $Id: IndepCombinatoricsGeneratorT.h,v 1.1 2011/03/03 13:04:47 veelken Exp $
  *
  */
 
@@ -39,7 +39,7 @@ class IndepCombinatoricsGeneratorT
       stepSizes_(N),
       currentValues_(N),
       isFirst_(true),
-      isValid_(true)
+      isValid_(false)
   {
     for ( unsigned i = 0; i < N_; ++i ) {
       lowerLimits_[i]   = 0;
@@ -53,29 +53,35 @@ class IndepCombinatoricsGeneratorT
   {
     checkInputParameter(idx, "setLowerLimit");
     lowerLimits_[idx] = lowerLimit;
+    isFirst_ = true;
   }
 
   void setUpperLimit(unsigned idx, const T& upperLimit) 
   {
     checkInputParameter(idx, "setUpperLimit");
     upperLimits_[idx] = upperLimit;
+    isFirst_ = true;
   }
 
   void setStepSize(unsigned idx, const T& stepSize) 
   {
     checkInputParameter(idx, "setUpperLimit");
     stepSizes_[idx] = stepSize;
+    isFirst_ = true;
   }
 
   void reset() 
   {
     isFirst_ = true;
-    isValid_ = true;
   }
 
   unsigned N() const { return N_; }
 
-  bool isValid() const { return isValid_; }
+  bool isValid() const 
+  {
+    if ( isFirst_ ) initialize();
+    return isValid_; 
+  }
 
   T operator[](unsigned idx) const
   {
@@ -89,14 +95,7 @@ class IndepCombinatoricsGeneratorT
   void next()
   {
     if ( !isValid_ ) assert(0);
-
-    if ( isFirst_ ) {
-      for ( unsigned i = 0; i < N_; ++i ) {
-	currentValues_[i] = lowerLimits_[i];
-      }
-      isFirst_ = false;
-    }
-
+    if (  isFirst_ ) initialize();
     for ( int i = (int)N_ - 1; i >= 0; --i ) {
       if ( currentValues_[i] < (upperLimits_[i] - stepSizes_[i]) ) {
 	currentValues_[i] += stepSizes_[i];
@@ -122,6 +121,16 @@ class IndepCombinatoricsGeneratorT
     }
   }
 
+  void initialize() const
+  {
+    isValid_ = true;
+    for ( unsigned i = 0; i < N_; ++i ) {
+      currentValues_[i] = lowerLimits_[i];
+      if ( !(currentValues_[i] < upperLimits_[i]) ) isValid_ = false;
+    }
+    isFirst_ = false;
+  }
+
  private:
   unsigned N_;
 
@@ -129,10 +138,10 @@ class IndepCombinatoricsGeneratorT
   std::vector<T> upperLimits_;
   std::vector<T> stepSizes_;
 
-  std::vector<T> currentValues_;
+  mutable std::vector<T> currentValues_;
 
-  bool isFirst_;
-  bool isValid_;
+  mutable bool isFirst_;
+  mutable bool isValid_;
 };
 
 template <typename T>

@@ -145,3 +145,6 @@ muTauPairProdConfiguratorLooseMuonIsolation = objProdConfigurator(
 produceMuTauPairsLooseMuonIsolation = muTauPairProdConfiguratorLooseMuonIsolation.configure(pyNameSpace = locals())
 
 produceMuTauPairsAll = cms.Sequence(produceMuTauPairs * produceMuTauPairsLooseMuonIsolation)
+
+from TauAnalysis.CandidateTools.nSVfitAlgorithmDiTau_cfi import nSVfitProducer
+produceMuTauPairsAll *= nSVfitProducer

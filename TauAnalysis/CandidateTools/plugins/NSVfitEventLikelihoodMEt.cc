@@ -17,7 +17,10 @@ NSVfitEventLikelihoodMEt::NSVfitEventLikelihoodMEt(const edm::ParameterSet& cfg)
     parSigma_(0),
     parBias_(0),
     perpSigma_(0),
-    perpBias_(0)
+    perpBias_(0),
+    qX_(0.),
+    qY_(0.),
+    qT_(0.)
 {
   edm::ParameterSet cfgResolution = cfg.getParameter<edm::ParameterSet>("resolution");
   parSigma_  = new TFormula("parSigma",  cfgResolution.getParameter<std::string>("parSigma").data());
@@ -78,6 +81,10 @@ double NSVfitEventLikelihoodMEt::operator()(const NSVfitEventHypothesis* hypothe
 
   double metPx = hypothesis->p4MEt().px();
   double metPy = hypothesis->p4MEt().py();
+  if ( this->verbosity_ ) {
+    std::cout << "metPx = " << metPx << std::endl;
+    std::cout << "metPy = " << metPy << std::endl;
+  }
 
   double metPar  = (metPx*projCosPhi + metPy*projSinPhi);
   double metPerp = (metPx*projSinPhi - metPy*projCosPhi);
@@ -88,6 +95,10 @@ double NSVfitEventLikelihoodMEt::operator()(const NSVfitEventHypothesis* hypothe
 
   double metPx_fitted = hypothesis->p4MEt_fitted().px();
   double metPy_fitted = hypothesis->p4MEt_fitted().py();
+  if ( this->verbosity_ ) {
+    std::cout << "metPx_fitted = " << metPx_fitted << std::endl;
+    std::cout << "metPy_fitted = " << metPy_fitted << std::endl;
+  }
 
   double metPar_fitted  = (metPx_fitted*projCosPhi + metPy_fitted*projSinPhi);
   double metPerp_fitted = (metPx_fitted*projSinPhi - metPy_fitted*projCosPhi);

@@ -25,10 +25,11 @@ NSVfitTauToLepLikelihoodPhaseSpace<T>::~NSVfitTauToLepLikelihoodPhaseSpace()
 }
 
 template <typename T>
-void NSVfitTauToLepLikelihoodPhaseSpace<T>::beginJob(NSVfitAlgorithmBase* algorithm) const 
+void NSVfitTauToLepLikelihoodPhaseSpace<T>::beginJob(NSVfitAlgorithmBase* algorithm)
 {
   algorithm->requestFitParameter(prodParticleLabel_, kTau_visEnFracX, pluginName_);
   algorithm->requestFitParameter(prodParticleLabel_, kTau_phi_lab,    pluginName_);
+  algorithm->requestFitParameter(prodParticleLabel_, kTau_nuInvMass,  pluginName_);
 }
 
 template <typename T>
@@ -43,8 +44,6 @@ double NSVfitTauToLepLikelihoodPhaseSpace<T>::operator()(const NSVfitSingleParti
 //          K. Nakamura et al. (Particle Data Group), J. Phys. G 37, 075021 (2010);
 //          formula 38.20b
 //
-  //std::cout << "<NSVfitTauToLepLikelihoodPhaseSpace::operator()>:" << std::endl;
-
   const NSVfitTauToLepHypothesis<T>* hypothesis_T = dynamic_cast<const NSVfitTauToLepHypothesis<T>*>(hypothesis);
   assert(hypothesis_T != 0);
 
@@ -64,6 +63,14 @@ double NSVfitTauToLepLikelihoodPhaseSpace<T>::operator()(const NSVfitSingleParti
     //  << " visMass: " << visMass << ", (nu+vis)Mass: " << (nuMass + visMass)
     //  << " --> returning very large negative number !!";
     nll = std::numeric_limits<float>::max();
+  }
+
+  if ( verbosity_ ) {
+    std::cout << "<NSVfitTauToLepLikelihoodPhaseSpace::operator()>:" << std::endl;
+    std::cout << " decayAngle = " << decayAngle << std::endl;
+    std::cout << " nuMass = " << nuMass << std::endl;
+    std::cout << " visMass = " << visMass << std::endl;
+    std::cout << "--> nll = " << nll << std::endl;
   }
 
   return nll;

@@ -13,6 +13,7 @@ std::vector<pdouble> NSVfitAlgorithmBase::fitParameterLimits_;
 
 void initializeFitParameterLimits(std::vector<pdouble>& limits)
 {
+  limits.resize(kNu_phi_lab + 1);
   limits[kPV_shiftX]             = pdouble(         -1.,          +1.); // cm
   limits[kPV_shiftY]             = pdouble(         -1.,          +1.); // cm
   limits[kPV_shiftZ]             = pdouble(        -10.,         +10.); // cm
@@ -52,22 +53,21 @@ NSVfitAlgorithmBase::~NSVfitAlgorithmBase()
 
 void NSVfitAlgorithmBase::beginJob() 
 {
-  eventModel_->builder_->beginJob(this);
-  
   for ( std::vector<NSVfitLikelihoodBase*>::iterator likelihood = allLikelihoods_.begin();
 	likelihood != allLikelihoods_.end(); ++likelihood ) {
     (*likelihood)->beginJob(this);
   }
+
+  eventModel_->builder_->beginJob(this);
 }
 
-void NSVfitAlgorithmBase::beginEvent(const edm::Event& evt, const edm::EventSetup& es) 
-  {
-    for ( std::vector<NSVfitLikelihoodBase*>::iterator likelihood = allLikelihoods_.begin();
-	  likelihood != allLikelihoods_.end(); ++likelihood ) {
-      (*likelihood)->beginEvent(evt, es);
-    }
-  }  
-
+void NSVfitAlgorithmBase::beginEvent(const edm::Event& evt, const edm::EventSetup& es)
+{
+  for ( std::vector<NSVfitLikelihoodBase*>::iterator likelihood = allLikelihoods_.begin();
+	likelihood != allLikelihoods_.end(); ++likelihood ) {
+    (*likelihood)->beginEvent(evt, es);
+  }
+}  
 
 void NSVfitAlgorithmBase::requestFitParameter(const std::string& name, int type, const std::string& requester)
 {
@@ -113,6 +113,8 @@ NSVfitAlgorithmBase::fitParameterType* NSVfitAlgorithmBase::getFitParameter(cons
 NSVfitEventHypothesis* NSVfitAlgorithmBase::fit(const inputParticleMap& inputParticles) const
 {
   currentEventHypothesis_ = eventModel_->builder_->build(inputParticles);
+
+  eventModel_->beginCandidate(currentEventHypothesis_);
 
   gNSVfitAlgorithm = this;
 

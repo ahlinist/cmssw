@@ -2,22 +2,26 @@ import FWCore.ParameterSet.Config as cms
 
 nSVfitMuonLikelihoodPhaseSpace = cms.PSet(
     pluginName = cms.string("nSVfitTauToMuLikelihoodPhaseSpace"),
-    pluginType = cms.string("NSVfitTauToMuLikelihoodPhaseSpace")
+    pluginType = cms.string("NSVfitTauToMuLikelihoodPhaseSpace"),
+    verbosity = cms.int32(1)  
 )
 
 nSVfitTauToMuBuilder = cms.PSet(
     pluginName = cms.string("nSVfitTauToMuBuilder"),
-    pluginType = cms.string("NSVfitTauToMuBuilder")
+    pluginType = cms.string("NSVfitTauToMuBuilder"),
+    verbosity = cms.int32(1)  
 )
 
 nSVfitTauLikelihoodPhaseSpace = cms.PSet(
     pluginName = cms.string("nSVfitTauToHadLikelihoodPhaseSpace"),
-    pluginType = cms.string("NSVfitTauToHadLikelihoodPhaseSpace")
+    pluginType = cms.string("NSVfitTauToHadLikelihoodPhaseSpace"),
+    verbosity = cms.int32(1)  
 )
 
 nSVfitTauToHadBuilder = cms.PSet(
     pluginName = cms.string("nSVfitTauToHadBuilder"),
-    pluginType = cms.string("NSVfitTauToHadBuilder")
+    pluginType = cms.string("NSVfitTauToHadBuilder"),
+    verbosity = cms.int32(1)  
 )
 
 nSVfitResonanceLikelihoodPtBalance = cms.PSet(
@@ -45,7 +49,8 @@ nSVfitResonanceLikelihoodPtBalance = cms.PSet(
     ),
     parameter = cms.PSet(
         x = cms.string('mass')
-    )        
+    ),
+    verbosity = cms.int32(1)     
 )
 
 nSVfitResonanceBuilder = cms.PSet(
@@ -61,7 +66,8 @@ nSVfitEventLikelihoodMEt = cms.PSet(
         parBias = cms.string("-0.96"),
         perpSigma = cms.string("6.85*(1 - 0.00547*x)"),
         perpBias = cms.string("0."),
-    )
+    ),
+    verbosity = cms.int32(1)
 )
 
 nSVfitEventBuilder = cms.PSet(
@@ -102,16 +108,17 @@ nSVfitProducer = cms.EDProducer("NSVfitProducer",
         pluginType = cms.string("NSVfitAlgorithmByIntegration"),                                    
         parameters = cms.PSet(
             mass_A = cms.PSet(
-                min = cms.double(20.),
+                #min = cms.double(20.),
+                min = cms.double(60.),                            
                 max = cms.double(200.),
                 stepSize = cms.double(5.),                                                            
-                replace = cms.vstring("leg1.x"),
-                by = cms.vstring("(A.p4.mass/mass_A)*(A.p4.mass/mass_A)/leg2.x")
+                replace = cms.string("leg1.x"),
+                by = cms.string("(A.p4.mass/mass_A)*(A.p4.mass/mass_A)/leg2.x")
             )
         ),
         vegasOptions = cms.PSet(
             numCalls = cms.uint32(10000)                             
         )
     ),
-    minDeltaR = cms.double(0.3)
+    dRmin = cms.double(0.3)
 )                                

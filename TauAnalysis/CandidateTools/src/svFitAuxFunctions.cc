@@ -46,8 +46,8 @@ namespace SVfit_namespace {
   }
 
   reco::Candidate::LorentzVector boostToCOM(
-      const reco::Candidate::LorentzVector &comSystem,
-      const reco::Candidate::LorentzVector &p4ToBoost) {
+      const reco::Candidate::LorentzVector& comSystem,
+      const reco::Candidate::LorentzVector& p4ToBoost) {
     reco::Candidate::Vector boost = comSystem.BoostToCM();
     return ROOT::Math::VectorUtil::boost(p4ToBoost, boost);
   }

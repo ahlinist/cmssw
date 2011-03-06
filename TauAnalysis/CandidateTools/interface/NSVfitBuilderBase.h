@@ -8,9 +8,9 @@
  *
  * \author Christian Veelken, UC Davis
  *
- * \version $Revision: 1.2 $
+ * \version $Revision: 1.3 $
  *
- * $Id: NSVfitBuilderBase.h,v 1.2 2011/02/28 10:46:38 veelken Exp $
+ * $Id: NSVfitBuilderBase.h,v 1.3 2011/03/03 13:04:47 veelken Exp $
  *
  */
 
@@ -30,7 +30,10 @@ class NSVfitBuilderBase
     : pluginName_(cfg.getParameter<std::string>("pluginName")),
       pluginType_(cfg.getParameter<std::string>("pluginType")),
       barcodeCounter_(0)
-  {}
+  {
+    verbosity_ = cfg.exists("verbosity") ?
+      cfg.getParameter<int>("verbosity") : 0;
+  }
   virtual ~NSVfitBuilderBase() {}
 
   virtual void beginJob(NSVfitAlgorithmBase*) {}
@@ -43,6 +46,8 @@ class NSVfitBuilderBase
 
   std::string pluginName_;
   std::string pluginType_;
+
+  int verbosity_;
 
   mutable int barcodeCounter_;
 };
