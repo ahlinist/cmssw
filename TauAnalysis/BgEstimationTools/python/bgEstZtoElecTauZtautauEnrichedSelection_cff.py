@@ -710,7 +710,7 @@ analyzeEventsBgEstZtautauEnriched = cms.EDAnalyzer("GenericAnalyzer",
         ),
         cms.PSet(
             filter = cms.string('tauTaNCdiscrCutBgEstZtautauEnriched'),
-            title = cms.string('Tau TaNC by Medium Isolation'),
+            title = cms.string('Tau TaNC by Loose Isolation'),
 #            title = cms.string('Tau TaNC by 0.5%'),
         ),
         cms.PSet(
