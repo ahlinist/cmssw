@@ -76,8 +76,9 @@ tausBgEstWplusJetsEnrichedLeadTrkPt = copy.deepcopy(tausBgEstZtautauEnrichedLead
 
 # require tau candidate to pass TaNC discriminator
 tausBgEstWplusJetsEnrichedTaNCdiscr = copy.deepcopy(tausBgEstZtautauEnrichedTaNCdiscr)
-#tausBgEstWplusJetsEnrichedTaNCdiscr.cut = cms.string('tauID("byHPSvloose") > -1')
-tausBgEstWplusJetsEnrichedTaNCdiscr.cut = cms.string('tauID("byTaNCfrOnePercent") > 0.5')
+#tausBgEstWplusJetsEnrichedTaNCdiscr.cut = cms.string('tauID("byLooseIsolation") > 0.5')
+#tausBgEstWplusJetsEnrichedTaNCdiscr.cut = cms.string('tauID("byTaNCfrOnePercent") > 0.5')
+
 
 # require tau candidate to have either one or three tracks within signal cone
 tausBgEstWplusJetsEnrichedProng = copy.deepcopy(tausBgEstZtautauEnrichedProng)
@@ -599,21 +600,19 @@ analyzeEventsBgEstWplusJetsEnriched = cms.EDAnalyzer("GenericAnalyzer",
                                     ),
             replace = cms.vstring('electronHistManagerForElecTauBgEstWplusJetsEnriched.electronSource = electronsBgEstWplusJetsEnrichedTrkIPcumulative',
                                   'tauHistManagerForElecTauBgEstWplusJetsEnriched.tauSource = tausBgEstWplusJetsEnrichedLeadTrkPtCumulative')
-        ),          
+        ),
         cms.PSet(
             filter = cms.string('tauTaNCdiscrCutBgEstWplusJetsEnriched'),
-            title = cms.string('Tau TaNC by 1%'),
-        ),
+            title = cms.string('Tau TaNC by Loose Isolation'),
+            #title = cms.string('Tau TaNC by 1%'),            
+        ),        
         cms.PSet(
             analyzers = cms.vstring('electronHistManagerForElecTauBgEstWplusJetsEnriched',
                                     'tauHistManagerForElecTauBgEstWplusJetsEnriched',
                                     ),
             replace = cms.vstring('tauHistManagerForElecTauBgEstWplusJetsEnriched.tauSource = tausBgEstWplusJetsEnrichedTaNCdiscrCumulative')
         ),             
-##         cms.PSet(
-##             filter = cms.string('tauTaNCdiscrCutBgEstWplusJetsEnriched'),
-##             title = cms.string('Tau TaNC by HPS Loose (off)'),
-##         ),
+
         cms.PSet(
             filter = cms.string('tauProngCutBgEstWplusJetsEnriched'),
             title = cms.string('Tau 1||3-Prong (off)'),
