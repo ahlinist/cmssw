@@ -86,8 +86,8 @@ tausBgEstQCDenrichedLeadTrkPt = copy.deepcopy(tausBgEstZtautauEnrichedLeadTrkPt)
 
 # require tau candidate to pass TaNC discriminator
 tausBgEstQCDenrichedTaNCdiscr = copy.deepcopy(tausBgEstZtautauEnrichedTaNCdiscr)
-#tausBgEstQCDenrichedTaNCdiscr.cut = cms.string('tauID("byHPSloose") > -1')
-tausBgEstQCDenrichedTaNCdiscr.cut = cms.string('tauID("byTaNCfrOnePercent") > 0.5')
+#tausBgEstQCDenrichedTaNCdiscr.cut = cms.string('tauID("byLooseIsolation") > 0.5')
+#tausBgEstQCDenrichedTaNCdiscr.cut = cms.string('tauID("byTaNCfrOnePercent") > 0.5')
 
 # require tau candidate to have either one or three tracks within signal cone
 tausBgEstQCDenrichedProng = copy.deepcopy(tausBgEstZtautauEnrichedProng)
@@ -580,7 +580,8 @@ analyzeEventsBgEstQCDenriched = cms.EDAnalyzer("GenericAnalyzer",
         ),             
         cms.PSet(
             filter = cms.string('tauTaNCdiscrCutBgEstQCDenriched'),
-            title = cms.string('Tau TaNC by 1%'),
+#            title = cms.string('Tau TaNC by 1%'),
+            title = cms.string('Tau TaNC by Loose Isolation'),            
         ),
         cms.PSet(
             analyzers = cms.vstring('electronHistManagerForElecTauBgEstQCDenriched',
@@ -588,10 +589,6 @@ analyzeEventsBgEstQCDenriched = cms.EDAnalyzer("GenericAnalyzer",
                                     ),
             replace = cms.vstring('tauHistManagerForElecTauBgEstQCDenriched.tauSource = tausBgEstQCDenrichedTaNCdiscrCumulative')
         ),         
-##         cms.PSet(
-##             filter = cms.string('tauTaNCdiscrCutBgEstQCDenriched'),
-##             title = cms.string('Tau TaNC by HPS Loose (off)'),
-##         ),
         cms.PSet(
             filter = cms.string('tauProngCutBgEstQCDenriched'),
             title = cms.string('Tau 1||3-Prong (off)'),
