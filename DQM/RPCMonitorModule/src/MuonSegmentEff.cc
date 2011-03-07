@@ -45,7 +45,7 @@ double straighter(RPCDetId rpcId){
 }
 
 void MuonSegmentEff::beginJob(){
-  
+  firstbook=true;
 }
 
 int distsector(int sector1,int sector2){
@@ -275,33 +275,37 @@ void MuonSegmentEff::beginRun(const edm::Run& run, const edm::EventSetup& iSetup
     }
   }
   
-  iSetup.get<MuonGeometryRecord>().get(rpcGeo);
-  iSetup.get<MuonGeometryRecord>().get(dtGeo);
-  iSetup.get<MuonGeometryRecord>().get(cscGeo);
-
-  for (TrackingGeometry::DetContainer::const_iterator it=rpcGeo->dets().begin();it<rpcGeo->dets().end();it++){
-    if(dynamic_cast< RPCChamber* >( *it ) != 0 ){
-      RPCChamber* ch = dynamic_cast< RPCChamber* >( *it ); 
-      std::vector< const RPCRoll*> roles = (ch->rolls());
-      for(std::vector<const RPCRoll*>::const_iterator r = roles.begin();r != roles.end(); ++r){
-	RPCDetId rpcId = (*r)->id();
-	int region=rpcId.region();
-	//booking all histograms
-	RPCGeomServ rpcsrv(rpcId);
-	std::string nameRoll = rpcsrv.name();
-	if(region==0){
-	  const RectangularStripTopology* top_= dynamic_cast<const RectangularStripTopology*> (&((*r)->topology()));
-	  float stripl = top_->stripLength();
-	  float stripw = top_->pitch();
-	  meCollection[nameRoll] = bookDetUnitSeg(rpcId,(*r)->nstrips(),stripw,stripl);
-	}else{
-	  const TrapezoidalStripTopology* topE_=dynamic_cast<const TrapezoidalStripTopology*>(&((*r)->topology()));
-	  float stripl = topE_->stripLength();
-	  float stripw = topE_->pitch();
-	  meCollection[nameRoll] = bookDetUnitSeg(rpcId,(*r)->nstrips(),stripw,stripl);
+  if(firstbook){
+    std::cout<<"bbooking all histograms"<<std::endl;
+    iSetup.get<MuonGeometryRecord>().get(rpcGeo);
+    iSetup.get<MuonGeometryRecord>().get(dtGeo);
+    iSetup.get<MuonGeometryRecord>().get(cscGeo);
+    
+    for (TrackingGeometry::DetContainer::const_iterator it=rpcGeo->dets().begin();it<rpcGeo->dets().end();it++){
+      if(dynamic_cast< RPCChamber* >( *it ) != 0 ){
+	RPCChamber* ch = dynamic_cast< RPCChamber* >( *it ); 
+	std::vector< const RPCRoll*> roles = (ch->rolls());
+	for(std::vector<const RPCRoll*>::const_iterator r = roles.begin();r != roles.end(); ++r){
+	  RPCDetId rpcId = (*r)->id();
+	  int region=rpcId.region();
+	  //booking all histograms
+	  RPCGeomServ rpcsrv(rpcId);
+	  std::string nameRoll = rpcsrv.name();
+	  if(region==0){
+	    const RectangularStripTopology* top_= dynamic_cast<const RectangularStripTopology*> (&((*r)->topology()));
+	    float stripl = top_->stripLength();
+	    float stripw = top_->pitch();
+	    meCollection[nameRoll] = bookDetUnitSeg(rpcId,(*r)->nstrips(),stripw,stripl);
+	  }else{
+	    const TrapezoidalStripTopology* topE_=dynamic_cast<const TrapezoidalStripTopology*>(&((*r)->topology()));
+	    float stripl = topE_->stripLength();
+	    float stripw = topE_->pitch();
+	    meCollection[nameRoll] = bookDetUnitSeg(rpcId,(*r)->nstrips(),stripw,stripl);
+	  }
 	}
       }
     }
+    firstbook = false;
   }
 }//beginRun
 
@@ -846,15 +850,15 @@ void MuonSegmentEff::analyze(const edm::Event& iEvent, const edm::EventSetup& iS
 }
 
 void MuonSegmentEff::endRun(const edm::Run& r, const edm::EventSetup& iSetup){
-  if (EffSaveRootFile){
-    dbe->save(EffRootFileName);
-  }
-
 }
 
 
 void MuonSegmentEff::endJob()
 {
+  std::cout<<"saving root file"<<std::endl;
+  if (EffSaveRootFile){
+    dbe->save(EffRootFileName);
+  }
   dbe =0;
 }
 
