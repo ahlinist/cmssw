@@ -13,7 +13,7 @@
 //
 // Original Author:  pts/45
 //         Created:  Tue May 13 12:23:34 CEST 2008
-// $Id: RPCMonitorEfficiency.cc,v 1.50 2011/02/14 17:11:36 carrillo Exp $
+// $Id: RPCMonitorEfficiency.cc,v 1.51 2011/02/16 09:17:33 carrillo Exp $
 //
 //
 
@@ -1581,7 +1581,7 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
 	int nstrips = int((*r)->nstrips());
 	
 	std::string name = rpcsrv.name();
-
+	
 	//if(rpcId.region()!=0 && abs(rpcId.station())==3 && rpcId.ring()==2 && rpcId.roll()==3) continue; //skiping rolls with problems with the extrapolation methodin the endcap RE+/-3_R2_C
 	//if(rpcId.region()!=0 && abs(rpcId.station())==2 && rpcId.ring()==3 && rpcId.roll()==1) continue; //skiping rolls with problems with the extrapolation methodin the endcap RE+/-2_R2_A
 	
@@ -6407,6 +6407,13 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
  GregD2R3->Write();
  GregD3R2->Write();
  GregD3R3->Write();
+ GregDm1R2->Write();
+ GregDm1R3->Write();
+ GregDm2R2->Write();
+ GregDm2R3->Write();
+ GregDm3R2->Write();
+ GregDm3R3->Write();
+
 
  GregD1R2_black->Write(); 
  GregD1R3_black->Write();
