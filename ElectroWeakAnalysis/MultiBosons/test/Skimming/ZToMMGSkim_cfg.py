@@ -122,6 +122,7 @@ process.source = cms.Source("PoolSource",
 
 process.load("ElectroWeakAnalysis.MultiBosons.Skimming.goodCollisionDataSequence_cff")
 process.load("ElectroWeakAnalysis.MultiBosons.Skimming.ZToMMGSkim_cff")
+process.load("DPGAnalysis.Skims.WZMuSkim_cff")
 
 ## Insert the collision cleaning between the HLT filter and the skim filter
 process.ZToMMGSkimFilterSequence.replace(
@@ -129,7 +130,9 @@ process.ZToMMGSkimFilterSequence.replace(
     process.ZToMMGHltFilter + process.goodCollisionDataSequence
     )
 
-process.ZToMMGSkimFilterPath = cms.Path(process.ZToMMGSkimFilterSequence)
+process.p1 = cms.Path(process.ZToMMGSkimFilterSequence)
+
+process.p2 = cms.Path(process.diMuonSelSeq)
 
 process.ZToMMGHltFilter.TriggerResultsTag = cms.InputTag(
     "TriggerResults",
@@ -142,18 +145,18 @@ process.goodCollisionDataSequence.remove(process.hltPhysicsDeclared)
 
 ## Apply options relevant to the path definition
 if not options.applyHltFilter:
-    process.p.remove(process.ZToMMGHltFilter)
+    process.p1.remove(process.ZToMMGHltFilter)
 
 if not options.applyNoScrapingFilter:
-    process.p.remove(process.noScraping)
+    process.p1.remove(process.noScraping)
 
 if not options.applyPrimaryVertexFilter:
-    process.p.remove(process.primaryVertexFilter)
+    process.p1.remove(process.primaryVertexFilter)
 
 process.out = cms.OutputModule("PoolOutputModule",
     fileName = cms.untracked.string(options.outputFile),
     SelectEvents = cms.untracked.PSet(
-        SelectEvents = cms.vstring("ZToMMGSkimFilterPath")
+        SelectEvents = cms.vstring("p1")
     ),
     outputCommands = cms.untracked.vstring(
         "keep *",
@@ -161,10 +164,22 @@ process.out = cms.OutputModule("PoolOutputModule",
     )
 )
 
-process.endpath = cms.EndPath(process.out)
+# process.endpath = cms.EndPath(process.out)
 
 process.options = cms.untracked.PSet(
     wantSummary = cms.untracked.bool(True)
 )
+
+process.ZToMMGHltFilter.HLTPaths = """
+    HLT_Mu9
+    HLT_Mu11
+    HLT_Mu15_v1
+    HLT_IsoMu9
+    HLT_IsoMu13_v3
+    HLT_DoubleMu3_v2
+    """.split()
+
+process.WZMuHLTFilter.HLTPaths = process.ZToMMGHltFilter.HLTPaths
+
 
 if __name__ == "__main__": import user

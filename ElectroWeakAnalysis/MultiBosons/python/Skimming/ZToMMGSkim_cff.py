@@ -26,8 +26,9 @@ ZToMMGLooseMuons = cms.EDFilter("MuonViewRefSelector",
     src = cms.InputTag("muons"),
     cut = cms.string("""
         pt > 10 &
-        (isGlobalMuon | isTrackerMuon) &
-        abs(innerTrack().dxy) < 1.0
+        isGlobalMuon &
+        isTrackerMuon &
+        abs(innerTrack().dxy) < 2.0
         """),
     filter = cms.bool(True)
     )
@@ -39,13 +40,13 @@ ZToMMGLooseMuonsCountFilter = cms.EDFilter("CandViewCountFilter",
 
 ZToMMGTightMuons = ZToMMGLooseMuons.clone(
     src = "ZToMMGLooseMuons",
-    cut = "pt > 15"
+    cut = "pt > 20"
     )
 
 ZToMMGDimuons = cms.EDProducer("CandViewShallowClonePtrCombiner",
     decay = cms.string("ZToMMGTightMuons ZToMMGLooseMuons"),
     checkCharge = cms.bool(False),
-    cut = cms.string("20 < mass")
+    cut = cms.string("30 < mass")
     )
 
 ZToMMGDimuonsFilter = cms.EDFilter("CandViewCountFilter",
