@@ -70,9 +70,9 @@ void HistManagerBase::fillHistograms(const edm::Event& evt, const edm::EventSetu
 //-----------------------------------------------------------------------------------------------------------------------
 //
 
-bool checkExistence(const DQMStore& dqmStore, const std::string& dqmDirectory, const std::string& meName)
+bool HistManagerBase::checkExistence(DQMStore& dqmStore, const std::string& dqmDirectory, const std::string& meName)
 {
-  //std::cout << "<checkExistence>:" << std::endl;
+  //std::cout << "<HistManagerBase::checkExistence>:" << std::endl;
 
   std::string meName_full = dqmDirectoryName(dqmDirectory).append(meName);
   //std::cout << " meName_full = " << meName_full << std::endl;

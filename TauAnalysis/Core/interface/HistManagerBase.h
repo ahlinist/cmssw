@@ -7,9 +7,9 @@
  * 
  * \author Christian Veelken, UC Davis
  *
- * \version $Revision: 1.8 $
+ * \version $Revision: 1.9 $
  *
- * $Id: HistManagerBase.h,v 1.8 2010/02/17 18:16:58 veelken Exp $
+ * $Id: HistManagerBase.h,v 1.9 2010/02/28 16:03:09 veelken Exp $
  *
  */
 
@@ -47,7 +47,9 @@ class HistManagerBase : public AnalyzerPluginBase
 				const std::string&, const std::string&, int, float*, int, float*, bool = true);
   static MonitorElement* bookProfile1D(DQMStore&, const std::string&, const std::string&, const std::string&, int, double, double);
   static MonitorElement* bookProfile1D(DQMStore&, const std::string&, const std::string&, const std::string&, int, float*);
-				       
+		
+  static bool checkExistence(DQMStore&, const std::string&, const std::string&);
+		       
  protected:
   // methods for booking and filling of histograms
   virtual void bookHistograms();
