@@ -129,6 +129,13 @@ double NSVfitAlgorithmBase::nll(double* x, double* param) const
   return eventModel_->nll(currentEventHypothesis_);
 }
 
+void NSVfitAlgorithmBase::setMassResults(NSVfitResonanceHypothesis* resonance, double value, double errUp, double errDown) const
+{
+  resonance->mass_ = value;
+  resonance->massErrUp_ = errUp;
+  resonance->massErrDown_ = errDown;
+}
+
 #include "FWCore/Framework/interface/MakerMacros.h"
 
 EDM_REGISTER_PLUGINFACTORY(NSVfitAlgorithmPluginFactory, "NSVfitAlgorithmPluginFactory");

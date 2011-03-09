@@ -17,9 +17,9 @@
  *
  * \author Christian Veelken, UC Davis
  *
- * \version $Revision: 1.1 $
+ * \version $Revision: 1.2 $
  *
- * $Id: IndepCombinatoricsGeneratorT.h,v 1.1 2011/03/03 13:04:47 veelken Exp $
+ * $Id: IndepCombinatoricsGeneratorT.h,v 1.2 2011/03/06 11:31:11 veelken Exp $
  *
  */
 
@@ -55,6 +55,11 @@ class IndepCombinatoricsGeneratorT
     lowerLimits_[idx] = lowerLimit;
     isFirst_ = true;
   }
+  double lowerLimit(unsigned idx) const
+  {
+    checkInputParameter(idx, "lowerLimit");
+    return lowerLimits_[idx];
+  }
 
   void setUpperLimit(unsigned idx, const T& upperLimit) 
   {
@@ -62,12 +67,22 @@ class IndepCombinatoricsGeneratorT
     upperLimits_[idx] = upperLimit;
     isFirst_ = true;
   }
+  double upperLimit(unsigned idx) const
+  {
+    checkInputParameter(idx, "upperLimit");
+    return upperLimits_[idx];
+  }
 
   void setStepSize(unsigned idx, const T& stepSize) 
   {
-    checkInputParameter(idx, "setUpperLimit");
+    checkInputParameter(idx, "setStepSize");
     stepSizes_[idx] = stepSize;
     isFirst_ = true;
+  }
+  double stepSize(unsigned idx) const 
+  {
+    checkInputParameter(idx, "stepSize");
+    return stepSizes_[idx];
   }
 
   void reset() 
@@ -106,7 +121,7 @@ class IndepCombinatoricsGeneratorT
   }
 
  protected:
-  void checkInputParameter(unsigned idx, const std::string& functionName)
+  void checkInputParameter(unsigned idx, const std::string& functionName) const
   {
     std::string class_plus_functionName = std::string("IndepCombinatoricsGeneratorT").append("::").append(functionName);
     

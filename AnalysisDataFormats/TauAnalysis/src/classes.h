@@ -82,38 +82,22 @@ namespace {
     std::map<std::string, std::map<std::string, double> > dummySVfitDiTauSolutionLogLikeMapMap;
     std::map<std::string, SVfitDiTauSolution> dummySVfitDiTauSolutionMap;
     std::map<std::string, std::map<std::string, SVfitDiTauSolution> > dummySVfitDiTauSolutionMapMap;
+
     SVfitWtauNuSolution dummySVfitWtauNuSolution;
     std::vector<SVfitWtauNuSolution> dummySVfitWtauNuSolutionCollection;
     std::map<std::string, SVfitWtauNuSolution> dummySVfitWtauNuSolutionMap;
     std::map<std::string, std::map<std::string, SVfitWtauNuSolution> > dummySVfitWtauNuSolutionMapMap;
+
     NSVfitEventHypothesis dummyNSVfitEventHypothesis;
-    //edm::Wrapper<NSVfitEventHypothesis> dummyNSVfitEventHypothesisWrapper;
     NSVfitResonanceHypothesis dummyNSVfitResonanceHypothesis;
-    //edm::Wrapper<NSVfitResonanceHypothesis> dummyNSVfitResonanceHypothesisWrapper;
     NSVfitSingleParticleHypothesisBase dummyNSVfitSingleParticleHypothesisBase;
-    //edm::Wrapper<NSVfitSingleParticleHypothesisBase> dummyNSVfitSingleParticleHypothesisBaseWrapper;
     NSVfitTauToElecHypothesis dummyNSVfitTauToElecHypothesis;
-    //edm::Wrapper<NSVfitTauToElecHypothesis> dummyNSVfitTauToElecHypothesisWrapper;
     NSVfitTauToMuHypothesis dummyNSVfitTauToMuHypothesis;
-    //edm::Wrapper<NSVfitTauToMuHypothesis> dummyNSVfitTauToMuHypothesisWrapper;
     NSVfitTauToHadHypothesis dummyNSVfitTauToHadHypothesis;
-    //edm::Wrapper<NSVfitTauToHadHypothesis> dummyNSVfitTauToHadHypothesisWrapper;
     std::vector<NSVfitEventHypothesis> dummyNSVfitEventHypothesisCollection;
     edm::Wrapper<std::vector<NSVfitEventHypothesis> > dummyNSVfitEventHypothesisCollectionWrapper;
-    //std::vector<NSVfitResonanceHypothesis> dummyNSVfitResonanceHypothesisCollection;
-    //edm::Wrapper<std::vector<NSVfitResonanceHypothesis> > dummyNSVfitResonanceHypothesisCollectionWrapper;
     std::vector<NSVfitResonanceHypothesis*> dummyNSVfitResonanceHypothesisPtrCollection;
-    //edm::Wrapper<std::vector<NSVfitResonanceHypothesis*> > dummyNSVfitResonanceHypothesisPtrCollectionWrapper;
-    //std::vector<NSVfitSingleParticleHypothesisBase> dummyNSVfitSingleParticleHypothesisBaseCollection;
-    //edm::Wrapper<std::vector<NSVfitSingleParticleHypothesisBase> > dummyNSVfitSingleParticleHypothesisBaseCollectionWrapper;
     std::vector<NSVfitSingleParticleHypothesisBase*> dummyNSVfitSingleParticleHypothesisBasePtrCollection;
-    //edm::Wrapper<std::vector<NSVfitSingleParticleHypothesisBase*> > dummyNSVfitSingleParticleHypothesisBasePtrCollectionWrapper;
-    //std::vector<NSVfitTauToElecHypothesis> dummyNSVfitTauToElecHypothesisCollection;
-    //edm::Wrapper<std::vector<NSVfitTauToElecHypothesis> > dummyNSVfitTauToElecHypothesisCollectionWrapper;
-    //std::vector<NSVfitTauToMuHypothesis> dummyNSVfitTauToMuHypothesisCollection;
-    //edm::Wrapper<std::vector<NSVfitTauToMuHypothesis> > dummyNSVfitTauToMuHypothesisCollectionWrapper;
-    //std::vector<NSVfitTauToHadHypothesis> dummyNSVfitTauToHadHypothesisCollection;
-    //edm::Wrapper<std::vector<NSVfitTauToHadHypothesis> > dummyNSVfitTauToHadHypothesisCollectionWrapper;
     
     /// create dictionaries for PATDiElecPair objects
     PATDiElecPair dummyPATDiElecPair;

@@ -3,6 +3,8 @@
 
 #include "AnalysisDataFormats/TauAnalysis/interface/NSVfitResonanceHypothesis.h"
 
+#include <TH1.h>
+
 #include <string>
 
 class NSVfitEventHypothesis
@@ -47,6 +49,8 @@ class NSVfitEventHypothesis
     return retVal;
   }
 
+  const TH1* histMassResults() const { return histMassResults_; }
+
   virtual void print(std::ostream& stream) const
   {
     stream << "<NSVfitEventHypothesis::print>:" << std::endl;
@@ -60,6 +64,7 @@ class NSVfitEventHypothesis
 
   friend class NSVfitEventBuilderBase;
   template<typename T_type> friend class NSVfitProducerT;
+  friend class NSVfitAlgorithmByIntegration;
 
  private:
 
@@ -81,6 +86,8 @@ class NSVfitEventHypothesis
   /// fit hypotheses for daughter particles
   std::vector<NSVfitResonanceHypothesis*> resonances_;
   bool ownsResonances_;
+  
+  TH1* histMassResults_;
 };
 
 #endif
