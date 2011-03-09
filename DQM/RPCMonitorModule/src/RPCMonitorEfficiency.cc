@@ -13,7 +13,7 @@
 //
 // Original Author:  pts/45
 //         Created:  Tue May 13 12:23:34 CEST 2008
-// $Id: RPCMonitorEfficiency.cc,v 1.51 2011/02/16 09:17:33 carrillo Exp $
+// $Id: RPCMonitorEfficiency.cc,v 1.52 2011/03/07 08:20:50 carrillo Exp $
 //
 //
 
@@ -789,6 +789,7 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
 
   for(int m =0; m<48;m++){
     std::ifstream ifin(("htmltemplates/"+namesIntegralMuography[m]+".txt").c_str());
+    if(!ifin) std::cout<<"Please copy the right html template!!!!!!! you will get seg fault"<<std::endl;
     if(debug) std::cout<<"Calling file for Vector"<<"htmltemplates/"+namesIntegralMuography[m]+".txt"<<std::endl;
     IntegralMuographyRawIdsVector[m].clear();
     if(ifin.is_open()){
@@ -853,10 +854,10 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
   badBXEffEndCap = new TH1F ("badBXEffEndCap","Efficiency Distribution For All The EndCap with bad BX",51,-1,101);
 
   BXEffPositiveEndCap = new TH1F ("BXEffPositiveEndCap","Efficiency Distribution Positive EndCap with good BX",51,0.5,100.5);
-  BXEffNegativeEndCap = new TH1F ("BXEffPositiveEndCap","Efficiency Distribution Negative EndCap with good BX",51,0.5,100.5);
+  BXEffNegativeEndCap = new TH1F ("BXEffNegativeEndCap","Efficiency Distribution Negative EndCap with good BX",51,0.5,100.5);
 
   badBXEffPositiveEndCap = new TH1F ("badBXEffPositiveEndCap","Efficiency Distribution Positive EndCap with bad BX",51,0.5,100.5);
-  badBXEffNegativeEndCap = new TH1F ("badBXEffPositiveEndCap","Efficiency Distribution Negative EndCap with bad BX",51,0.5,100.5);
+  badBXEffNegativeEndCap = new TH1F ("badBXEffNegativeEndCap","Efficiency Distribution Negative EndCap with bad BX",51,0.5,100.5);
 
   HeightVsEffR2 = new TH2F ("HeightVsEffR2","Height Vs Efficiency Ring 2",100,0.,1.,100,-1.,1.);
   HeightVsEffR3 = new TH2F ("HeightVsEffR3","Height Vs Efficiency Ring 3",100,0.,1.,100,-1.,1.);
@@ -1582,8 +1583,8 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
 	
 	std::string name = rpcsrv.name();
 	
-	//if(rpcId.region()!=0 && abs(rpcId.station())==3 && rpcId.ring()==2 && rpcId.roll()==3) continue; //skiping rolls with problems with the extrapolation methodin the endcap RE+/-3_R2_C
-	//if(rpcId.region()!=0 && abs(rpcId.station())==2 && rpcId.ring()==3 && rpcId.roll()==1) continue; //skiping rolls with problems with the extrapolation methodin the endcap RE+/-2_R2_A
+	if(rpcId.region()!=0 && abs(rpcId.station())==3 && rpcId.ring()==2 && rpcId.roll()==3) continue; //skiping rolls with problems with the extrapolation methodin the endcap RE+/-3_R2_C
+	if(rpcId.region()!=0 && abs(rpcId.station())==2 && rpcId.ring()==3 && rpcId.roll()==1) continue; //skiping rolls with problems with the extrapolation methodin the endcap RE+/-2_R2_A
 	
 
 	if(rpcId.region()==0 && barrel == false) continue;
@@ -2638,7 +2639,7 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
 						,histoRPC_2D->GetNbinsX(),histoRPC_2D->GetXaxis()->GetXmin(),histoRPC_2D->GetXaxis()->GetXmax()
 						,histoRPC_2D->GetNbinsY(),histoRPC_2D->GetYaxis()->GetXmin(),histoRPC_2D->GetYaxis()->GetXmax());  
 
-		IntegralMuographyExp[m] = new TH2F((namesIntegralMuography[m]+"Obs").c_str(),(namesIntegralMuography[m]+"Obs").c_str()
+		IntegralMuographyExp[m] = new TH2F((namesIntegralMuography[m]+"Exp").c_str(),(namesIntegralMuography[m]+"Exp").c_str()
 						,histoRPC_2D->GetNbinsX(),histoRPC_2D->GetXaxis()->GetXmin(),histoRPC_2D->GetXaxis()->GetXmax()
 						,histoRPC_2D->GetNbinsY(),histoRPC_2D->GetYaxis()->GetXmin(),histoRPC_2D->GetYaxis()->GetXmax());  
 		
@@ -4904,14 +4905,17 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
   residualDiskm2Ring3->Draw(); labeltoSave = "resEndCap/residualDiskm2Ring3.png"; residualDiskm2Ring3->GetXaxis()->SetTitle("(cm)");   if(residualDiskm2Ring3->GetEntries()!=0) Ca7->SetLogy(); Ca7->SaveAs(labeltoSave.c_str()); Ca7->Clear();
   residualDiskm3Ring2->Draw(); labeltoSave = "resEndCap/residualDiskm3Ring2.png"; residualDiskm3Ring2->GetXaxis()->SetTitle("(cm)");   if(residualDiskm3Ring2->GetEntries()!=0) Ca7->SetLogy(); Ca7->SaveAs(labeltoSave.c_str()); Ca7->Clear();
   residualDiskm3Ring3->Draw(); labeltoSave = "resEndCap/residualDiskm3Ring3.png"; residualDiskm3Ring3->GetXaxis()->SetTitle("(cm)");   if(residualDiskm3Ring3->GetEntries()!=0) Ca7->SetLogy(); Ca7->SaveAs(labeltoSave.c_str()); Ca7->Clear();
-  		       
+
+  if(debug) std::cout<<"Producing Residual Plots for Disks in the End Cap 2"<<std::endl;
+
   residualDisk1Ring2->Draw();  labeltoSave = "resEndCap/residualDisk1Ring2.png"; residualDisk1Ring2->GetXaxis()->SetTitle("(cm)");   if(residualDisk1Ring2->GetEntries()!=0) Ca7->SetLogy();   Ca7->SaveAs(labeltoSave.c_str()); Ca7->Clear();
   residualDisk1Ring3->Draw();  labeltoSave = "resEndCap/residualDisk1Ring3.png"; residualDisk1Ring3->GetXaxis()->SetTitle("(cm)");   if(residualDisk1Ring3->GetEntries()!=0) Ca7->SetLogy();   Ca7->SaveAs(labeltoSave.c_str()); Ca7->Clear();
   residualDisk2Ring2->Draw();  labeltoSave = "resEndCap/residualDisk2Ring2.png"; residualDisk2Ring2->GetXaxis()->SetTitle("(cm)");   if(residualDisk2Ring2->GetEntries()!=0) Ca7->SetLogy();   Ca7->SaveAs(labeltoSave.c_str()); Ca7->Clear();
   residualDisk2Ring3->Draw();  labeltoSave = "resEndCap/residualDisk2Ring3.png"; residualDisk2Ring3->GetXaxis()->SetTitle("(cm)");   if(residualDisk2Ring3->GetEntries()!=0) Ca7->SetLogy();   Ca7->SaveAs(labeltoSave.c_str()); Ca7->Clear();
   residualDisk3Ring2->Draw();  labeltoSave = "resEndCap/residualDisk3Ring2.png"; residualDisk3Ring2->GetXaxis()->SetTitle("(cm)");   if(residualDisk3Ring2->GetEntries()!=0) Ca7->SetLogy();   Ca7->SaveAs(labeltoSave.c_str()); Ca7->Clear();
   residualDisk3Ring3->Draw();  labeltoSave = "resEndCap/residualDisk3Ring3.png"; residualDisk3Ring3->GetXaxis()->SetTitle("(cm)");   if(residualDisk3Ring3->GetEntries()!=0) Ca7->SetLogy();   Ca7->SaveAs(labeltoSave.c_str()); Ca7->Clear();
- 
+
+  if(debug) std::cout<<"Closing Canvas and deleting"<<std::endl;
 
   Ca7->Close();
   
@@ -4954,29 +4958,34 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
   delete residualDisk3Ring2;
   delete residualDisk3Ring3;
 
-  //Writting Inegral Muographies and deleting all.
-
+  std::cout<<"Writting Inegral Muographies and deleting all."<<std::endl;
+  
   for(int m =0; m<48;m++){
-    for(int i=1;i<=IntegralMuography[m]->GetXaxis()->GetNbins();++i){
-      for(int j=1;j<=IntegralMuography[m]->GetYaxis()->GetNbins();++j){
-	float ef2D=0.;
-	float er2D=0.; //ojo con esto en DQMOffline podria ser ef2D en lugar de er2D
-	if(IntegralMuographyExp[m]->GetBinContent(i,j) != 0){
-	  ef2D =IntegralMuographyObs[m]->GetBinContent(i,j)/IntegralMuographyExp[m]->GetBinContent(i,j);
-	  er2D = sqrt(ef2D*(1-ef2D)/IntegralMuographyExp[m]->GetBinContent(i,j));
-	  IntegralMuography[m]->SetBinContent(i,j,ef2D*100.);
-	  IntegralMuography[m]->SetBinError(i,j,er2D*100.);
-	}
-      }//loop on the boxes
+    if(debug) std::cout<<"m="<<m<<std::endl;
+    if(!IntegralMuography[m] || !IntegralMuographyExp[m] || !IntegralMuographyObs[m]){
+      for(int i=1;i<=IntegralMuography[m]->GetXaxis()->GetNbins();++i){
+	for(int j=1;j<=IntegralMuography[m]->GetYaxis()->GetNbins();++j){
+	  if(debug) std::cout<<"in (i,j) "<<i<<" "<<j<<std::endl;
+	  float ef2D=0.;
+	  float er2D=0.; //ojo con esto en DQMOffline podria ser ef2D en lugar de er2D
+	  if(IntegralMuographyExp[m]->GetBinContent(i,j) != 0){
+	    ef2D =IntegralMuographyObs[m]->GetBinContent(i,j)/IntegralMuographyExp[m]->GetBinContent(i,j);
+	    er2D = sqrt(ef2D*(1-ef2D)/IntegralMuographyExp[m]->GetBinContent(i,j));
+	    IntegralMuography[m]->SetBinContent(i,j,ef2D*100.);
+	    IntegralMuography[m]->SetBinError(i,j,er2D*100.);
+	  }
+	}//loop on the boxes
+      }
+      IntegralMuography[m]->Write(); 
+      IntegralMuographyObs[m]->Write(); 
+      IntegralMuographyExp[m]->Write(); 
+      
+      delete IntegralMuography[m]; 
+      delete IntegralMuographyObs[m]; 
+      delete IntegralMuographyExp[m]; 
+    }else{
+      std::cout<<"Warning Integral Muography do not exist for m="<<m<<std::endl;
     }
-    
-    IntegralMuography[m]->Write(); 
-    IntegralMuographyObs[m]->Write(); 
-    IntegralMuographyExp[m]->Write(); 
-
-    delete IntegralMuography[m]; 
-    delete IntegralMuographyObs[m]; 
-    delete IntegralMuographyExp[m]; 
   }
 
   std::stringstream nametosave;
