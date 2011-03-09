@@ -4,8 +4,8 @@
  *
  * Class for RPC Monitoring using RPCDigi and DT and CSC Segments.
  *
- *  $Date: 2009/07/06 10:17:06 $
- *  $Revision: 1.5 $
+ *  $Date: 2009/11/16 16:13:36 $
+ *  $Revision: 1.6 $
  *
  * \author Camilo Carrillo (Uniandes)
  *
@@ -42,6 +42,7 @@ class MuonSegmentEff : public edm::EDAnalyzer {
    public:
       explicit MuonSegmentEff(const edm::ParameterSet&);
       ~MuonSegmentEff();
+      bool firstbook;
       virtual void beginJob() ;
       virtual void beginRun(const edm::Run&, const edm::EventSetup&);
       virtual void analyze(const edm::Event&, const edm::EventSetup&);
