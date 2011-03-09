@@ -8,9 +8,9 @@
  *
  * \author Christian Veelken, UC Davis
  *
- * \version $Revision: 1.1 $
+ * \version $Revision: 1.2 $
  *
- * $Id: NSVfitAlgorithmByIntegration.h,v 1.1 2011/03/03 13:04:47 veelken Exp $
+ * $Id: NSVfitAlgorithmByIntegration.h,v 1.2 2011/03/06 11:31:11 veelken Exp $
  *
  */
 
@@ -44,6 +44,7 @@ class NSVfitAlgorithmByIntegration : public NSVfitAlgorithmBase
   ~NSVfitAlgorithmByIntegration();
 
   void beginJob();
+  void beginEvent(const edm::Event&, const edm::EventSetup&);
 
   void print(std::ostream&) const {}
 
@@ -52,10 +53,16 @@ class NSVfitAlgorithmByIntegration : public NSVfitAlgorithmBase
  protected:
   void fitImp() const;
 
+  void setMassResults(NSVfitResonanceHypothesis*, const TH1*, unsigned) const;
+
   bool isDaughter(const std::string&);
   bool isResonance(const std::string&);
   
   NSVfitAlgorithmBase::fitParameterType* getFitParameter(const std::string&);
+
+  edm::RunNumber_t currentRunNumber_;
+  edm::LuminosityBlockNumber_t currentLumiSectionNumber_;
+  edm::EventNumber_t currentEventNumber_;
 
   struct fitParameterByIntegrationType
   {

@@ -5,12 +5,20 @@
 #include "TauAnalysis/CandidateTools/interface/generalAuxFunctions.h"
 
 #include <TMath.h>
+#include <TH1F.h>
+#include <TH2F.h>
+#include <TH3F.h>
+
+#include <limits>
 
 using namespace SVfit_namespace;
 
 double g(double* x, size_t dim, void* param)
 {
-  return TMath::Exp(-NSVfitAlgorithmBase::gNSVfitAlgorithm->nll(x, (double*)param));
+  double nll = NSVfitAlgorithmBase::gNSVfitAlgorithm->nll(x, (double*)param);
+  double retVal = TMath::Exp(-nll);
+  std::cout << "<g>: nll = " << nll << " --> returning retVal = " << retVal << std::endl;
+  return retVal;
 }
 
 NSVfitAlgorithmByIntegration::NSVfitAlgorithmByIntegration(const edm::ParameterSet& cfg)
@@ -183,6 +191,23 @@ void NSVfitAlgorithmByIntegration::beginJob()
   rnd_ = gsl_rng_alloc(gsl_rng_default);
 }
 
+void NSVfitAlgorithmByIntegration::beginEvent(const edm::Event& evt, const edm::EventSetup& es)
+{
+  currentRunNumber_ = evt.id().run();
+  currentLumiSectionNumber_ = evt.luminosityBlock();
+  currentEventNumber_ = evt.id().event();
+}
+
+void getBinning(const IndepCombinatoricsGeneratorT<double>& grid, unsigned iDimension, int& numBins, double& min, double& max)
+{
+  double lowerLimit = grid.lowerLimit(iDimension);
+  double upperLimit = grid.upperLimit(iDimension);
+  double stepSize   = grid.stepSize(iDimension);
+  numBins = 1 + (upperLimit - lowerLimit)/grid.stepSize(iDimension);
+  min = lowerLimit - 0.5*(stepSize*numBins - (upperLimit - lowerLimit));
+  max = min + numBins*stepSize;
+}
+
 void NSVfitAlgorithmByIntegration::fitImp() const
 {
   std::cout << "<NSVfitAlgorithmByIntegration::fitImp>:" << std::endl;
@@ -202,11 +227,33 @@ void NSVfitAlgorithmByIntegration::fitImp() const
   for ( unsigned iDimension = 0; iDimension < numDimensions_; ++iDimension ) {
     xl_[iDimension] = fitParametersByIntegration_[iDimension].base_->lowerLimit_; 
     xu_[iDimension] = fitParametersByIntegration_[iDimension].base_->upperLimit_;
-    std::cout << "dim = " << iDimension << ": xl = " << xl_[iDimension] << ", xu = " << xu_[iDimension] << std::endl;
+    std::cout << " dim = " << iDimension << ": xl = " << xl_[iDimension] << ", xu = " << xu_[iDimension] << std::endl;
   }
 
   gsl_monte_vegas_init(workspace_);
   massParForReplacements_->reset();
+
+  TH1* histResults = 0;
+  std::ostringstream histResultsName;
+  histResultsName << pluginName_;
+  histResultsName << "@" << currentRunNumber_ << ":" << currentLumiSectionNumber_ << ":" << currentEventNumber_;
+  if ( numMassParameters_ == 1 ) {
+    int numBinsX;
+    double minX, maxX;
+    getBinning(*massParForReplacements_, 0, numBinsX, minX, maxX);
+    histResults = new TH1F(histResultsName.str().data(), histResultsName.str().data(), numBinsX, minX, maxX);
+  } else if ( numMassParameters_ == 2 ) {
+    int numBinsX, numBinsY;
+    double minX, maxX, minY, maxY;
+    getBinning(*massParForReplacements_, 0, numBinsX, minX, maxX);
+    getBinning(*massParForReplacements_, 1, numBinsY, minY, maxY);
+    histResults = new TH2F(histResultsName.str().data(), histResultsName.str().data(), numBinsX, minX, maxX, numBinsY, minY, maxY);    
+  } else {
+    throw cms::Exception("NSVfitAlgorithmByIntegration::fitImp")
+      << " Only fits in one or two dimensions supported yet "
+      << " --> please contact the developers Evan Friis (friis@physics.ucdavis.edu) and Christian Veelken (christian.veelken@cern.ch)"
+      << " and request support for more dimensions !!\n";
+  }
 
   while ( massParForReplacements_->isValid() ) {
 //--- set mass parameters
@@ -221,10 +268,57 @@ void NSVfitAlgorithmByIntegration::fitImp() const
 
 //--- copy result 
 //   (CV: only debug print-out for now...)
-    std::cout << "M = " << (*massParForReplacements_) << ": p = " << p << " +/- " << pErr << std::endl;
+    std::cout << "--> M = " << (*massParForReplacements_) << ": p = " << p << " +/- " << pErr << std::endl;
+
+    if      ( numMassParameters_ == 1 ) histResults->Fill((*massParForReplacements_)[0], p);
+    else if ( numMassParameters_ == 2 ) {
+      TH2* histResults2d = dynamic_cast<TH2*>(histResults);
+      assert(histResults2d);
+      histResults2d->Fill((*massParForReplacements_)[0], (*massParForReplacements_)[1], p);
+    } else assert(0);
 
     massParForReplacements_->next();
   }
+
+//--- set central values and uncertainties on reconstructed masses
+  for ( unsigned iMassParameter = 0; iMassParameter < numMassParameters_; ++iMassParameter ) {  
+    const std::string& resonanceName = eventModel_->resonances_[iMassParameter]->resonanceName_;
+    NSVfitResonanceHypothesis* resonance = const_cast<NSVfitResonanceHypothesis*>(currentEventHypothesis_->resonance(resonanceName));
+    setMassResults(resonance, histResults, iMassParameter);
+  }
+
+  currentEventHypothesis_->histMassResults_ = histResults;
+}
+
+void NSVfitAlgorithmByIntegration::setMassResults(
+       NSVfitResonanceHypothesis* resonance, const TH1* histMassResults, unsigned iDimension) const
+{
+  const TH1* histMassResult1d = 0;
+  if      ( histMassResults->GetDimension() == 1 ) histMassResult1d = histMassResults;
+  else if ( histMassResults->GetDimension() == 2 ) {
+    const TH2* histMassResults2d = dynamic_cast<const TH2*>(histMassResults);
+    assert(histMassResults2d);
+    if      ( iDimension == 0 ) histMassResult1d = histMassResults2d->ProjectionX();
+    else if ( iDimension == 1 ) histMassResult1d = histMassResults2d->ProjectionY();
+  }
+  assert(histMassResult1d);
+
+  resonance->massMean_ = histMassResult1d->GetMean();
+
+//--- compute median, -1 sigma and +1 sigma limits on reconstructed mass
+  Double_t q[3];
+  Double_t probSum[3];
+  probSum[0] = 0.16;
+  probSum[1] = 0.50;
+  probSum[2] = 0.84;
+  (const_cast<TH1*>(histMassResult1d))->GetQuantiles(3, q, probSum);
+
+  NSVfitAlgorithmBase::setMassResults(resonance, q[1], TMath::Abs(q[2] - q[1]), TMath::Abs(q[1] - q[0]));
+
+  resonance->massMean_ = histMassResult1d->GetMean();
+  resonance->massMedian_  = q[1];
+
+  if ( histMassResult1d != histMassResults ) delete histMassResult1d;
 }
 
 bool NSVfitAlgorithmByIntegration::isDaughter(const std::string& daughterName)
@@ -296,7 +390,7 @@ double NSVfitAlgorithmByIntegration::nll(double* x, double* param) const
 	 fitParameterValue <= fitParameterLimits_[(*fitParameterReplacement)->idxToReplace_].second ) {
       fitParameterValues_[(*fitParameterReplacement)->idxToReplace_] = fitParameterValue;
     } else {
-      return 0.;
+      return std::numeric_limits<float>::max();
     }
   }
 

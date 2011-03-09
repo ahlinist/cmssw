@@ -8,9 +8,9 @@
  *
  * \author Christian Veelken, UC Davis
  *
- * \version $Revision: 1.5 $
+ * \version $Revision: 1.6 $
  *
- * $Id: NSVfitAlgorithmBase.h,v 1.5 2011/03/03 13:04:47 veelken Exp $
+ * $Id: NSVfitAlgorithmBase.h,v 1.6 2011/03/06 11:31:11 veelken Exp $
  *
  */
 
@@ -83,6 +83,8 @@ class NSVfitAlgorithmBase
 
  protected:
   virtual void fitImp() const = 0;
+
+  void setMassResults(NSVfitResonanceHypothesis*, double, double, double) const;
 
   std::string pluginName_;
   std::string pluginType_;
