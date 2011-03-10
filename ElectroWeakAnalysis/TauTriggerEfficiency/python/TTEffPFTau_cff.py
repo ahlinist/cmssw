@@ -1,25 +1,25 @@
 import FWCore.ParameterSet.Config as cms
 import copy
 
-from RecoJets.JetAssociationProducers.ic5PFJetTracksAssociatorAtVertex_cfi import *
-ak5PFJetTracksAssociatorAtVertex = ic5PFJetTracksAssociatorAtVertex.clone()
-ak5PFJetTracksAssociatorAtVertex.jets = cms.InputTag("ak5PFJets")
-from RecoTauTag.RecoTau.PFRecoTauTagInfoProducer_cfi import *
-myPFTauTagInfoProducer = copy.deepcopy(pfRecoTauTagInfoProducer)
-myPFTauTagInfoProducer.tkminPt = cms.double(0.5)
-myPFTauTagInfoProducer.ChargedHadrCand_tkminPt = cms.double(0.5)
-myPFTauTagInfoProducer.PFJetTracksAssociatorProducer = cms.InputTag("ak5PFJetTracksAssociatorAtVertex")
+from RecoJets.JetAssociationProducers.ic5PFJetTracksAssociatorAtVertex_cfi import ic5PFJetTracksAssociatorAtVertex
+TTEffak5PFJetTracksAssociatorAtVertex = ic5PFJetTracksAssociatorAtVertex.clone()
+TTEffak5PFJetTracksAssociatorAtVertex.jets = cms.InputTag("ak5PFJets")
+from RecoTauTag.RecoTau.PFRecoTauTagInfoProducer_cfi import pfRecoTauTagInfoProducer
+TTEffPFTauTagInfoProducer = copy.deepcopy(pfRecoTauTagInfoProducer)
+TTEffPFTauTagInfoProducer.tkminPt = cms.double(0.5)
+TTEffPFTauTagInfoProducer.ChargedHadrCand_tkminPt = cms.double(0.5)
+TTEffPFTauTagInfoProducer.PFJetTracksAssociatorProducer = cms.InputTag("TTEffak5PFJetTracksAssociatorAtVertex")
 
-from RecoTauTag.Configuration.FixedConePFTaus_cfi import *
-myConeProducer = copy.deepcopy(fixedConePFTauProducer)
-myConeProducer.PFTauTagInfoProducer = cms.InputTag("myPFTauTagInfoProducer")
+from RecoTauTag.Configuration.FixedConePFTaus_cfi import fixedConePFTauProducer
+TTEffFixedConePFTauProducer = copy.deepcopy(fixedConePFTauProducer)
+TTEffFixedConePFTauProducer.PFTauTagInfoProducer = cms.InputTag("TTEffPFTauTagInfoProducer")
 
 from RecoTauTag.RecoTau.PFRecoTauDiscriminationByLeadingPionPtCut_cfi import *
 from RecoTauTag.RecoTau.TauDiscriminatorTools import noPrediscriminants
-thisPFTauDiscriminationByLeadingPionPtCut = cms.EDProducer("PFRecoTauDiscriminationByLeadingObjectPtCut",
+TTEffPFTauDiscriminationByLeadingPionPtCut = cms.EDProducer("PFRecoTauDiscriminationByLeadingObjectPtCut",
 
     # Tau collection to discriminate
-    PFTauProducer = cms.InputTag('myConeProducer'),
+    PFTauProducer = cms.InputTag('TTEffFixedConePFTauProducer'),
 
     # no pre-reqs for this cut
     Prediscriminants = noPrediscriminants,
@@ -30,39 +30,42 @@ thisPFTauDiscriminationByLeadingPionPtCut = cms.EDProducer("PFRecoTauDiscriminat
     MinPtLeadingObject = cms.double(3.0)
 )
 
-PFTausSelected = cms.EDFilter("PFTauSelector",
-    src = cms.InputTag("myConeProducer"),
+TTEffPFTausSelected = cms.EDFilter("PFTauSelector",
+    src = cms.InputTag("TTEffFixedConePFTauProducer"),
     discriminators = cms.VPSet(
         cms.PSet(
-          discriminator=cms.InputTag("thisPFTauDiscriminationByLeadingPionPtCut"),
+          discriminator=cms.InputTag("TTEffPFTauDiscriminationByLeadingPionPtCut"),
           selectionCut=cms.double(0.5)
         )
-    )
+    ),
+    cut = cms.string('et > 15. && abs(eta) < 2.5')
 )
 
-from RecoTauTag.RecoTau.PFRecoTauDiscriminationByLeadingTrackFinding_cfi import *
-thisPFTauDiscriminationByLeadingTrackFinding = copy.deepcopy(pfRecoTauDiscriminationByLeadingTrackFinding)
-thisPFTauDiscriminationByLeadingTrackFinding.PFTauProducer = 'PFTausSelected'
 
-from RecoTauTag.RecoTau.PFRecoTauDiscriminationByIsolationUsingLeadingPion_cfi import *
-thisPFTauDiscriminationByIsolation = copy.deepcopy(pfRecoTauDiscriminationByIsolationUsingLeadingPion)
-thisPFTauDiscriminationByIsolation.PFTauProducer = 'PFTausSelected'
-thisPFTauDiscriminationByIsolation.MinPtLeadingPion = cms.double(3.0)
-thisPFTauDiscriminationByIsolation.Prediscriminants.leadPion.Producer = cms.InputTag('thisPFTauDiscriminationByLeadingTrackFinding')
+from RecoTauTag.RecoTau.PFRecoTauDiscriminationByLeadingTrackFinding_cfi import pfRecoTauDiscriminationByLeadingTrackFinding
+TTEffPFTauDiscriminationByLeadingTrackFinding = copy.deepcopy(pfRecoTauDiscriminationByLeadingTrackFinding)
+TTEffPFTauDiscriminationByLeadingTrackFinding.PFTauProducer = cms.InputTag('TTEffPFTausSelected')
+
+from RecoTauTag.RecoTau.PFRecoTauDiscriminationByIsolationUsingLeadingPion_cfi import pfRecoTauDiscriminationByIsolationUsingLeadingPion
+TTEffPFTauDiscriminationByIsolation = copy.deepcopy(pfRecoTauDiscriminationByIsolationUsingLeadingPion)
+TTEffPFTauDiscriminationByIsolation.PFTauProducer = cms.InputTag('TTEffPFTausSelected')
+TTEffPFTauDiscriminationByIsolation.MinPtLeadingPion = cms.double(3.0)
+TTEffPFTauDiscriminationByIsolation.Prediscriminants.leadPion.Producer = cms.InputTag('TTEffPFTauDiscriminationByLeadingTrackFinding')
 
 #copying the Discriminator against Muon
-from RecoTauTag.RecoTau.PFRecoTauDiscriminationAgainstMuon_cfi import *
-thisPFTauDiscriminationAgainstMuon = copy.deepcopy(pfRecoTauDiscriminationAgainstMuon)
-thisPFTauDiscriminationAgainstMuon.PFTauProducer = 'PFTausSelected'
-thisPFTauDiscriminationAgainstMuon.Prediscriminants.leadTrack.Producer = cms.InputTag('thisPFTauDiscriminationByLeadingTrackFinding')
+from RecoTauTag.RecoTau.PFRecoTauDiscriminationAgainstMuon_cfi import pfRecoTauDiscriminationAgainstMuon
+TTEffPFTauDiscriminationAgainstMuon = copy.deepcopy(pfRecoTauDiscriminationAgainstMuon)
+TTEffPFTauDiscriminationAgainstMuon.PFTauProducer = cms.InputTag('TTEffPFTausSelected')
+TTEffPFTauDiscriminationAgainstMuon.Prediscriminants.leadTrack.Producer = cms.InputTag('TTEffPFTauDiscriminationByLeadingTrackFinding')
 
 TTEffPFTau = cms.Sequence(
-        ak5PFJetTracksAssociatorAtVertex *
-        myPFTauTagInfoProducer *
-        myConeProducer *
-        thisPFTauDiscriminationByLeadingPionPtCut *
-        PFTausSelected *
-        thisPFTauDiscriminationByLeadingTrackFinding *
-        thisPFTauDiscriminationByIsolation *
-        thisPFTauDiscriminationAgainstMuon
+        TTEffak5PFJetTracksAssociatorAtVertex *
+        TTEffPFTauTagInfoProducer *
+        TTEffFixedConePFTauProducer *
+        TTEffPFTauDiscriminationByLeadingPionPtCut *
+        TTEffPFTausSelected *
+        TTEffPFTauDiscriminationByLeadingTrackFinding *
+        TTEffPFTauDiscriminationByIsolation *
+        TTEffPFTauDiscriminationAgainstMuon
 )
+
