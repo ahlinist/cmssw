@@ -431,9 +431,35 @@ userSettings = {
         }
     },
     'jkolb': {
-        'current' : 'Run07',
+        'current' : 'Run09',
         'jobs' : {
+			# fall10 MC with PU, 2010 dataset (36/pb);  same as Run07, with no Mt(e+MET) cut
+            'Run10' : {
+                'ZtoElecTau' : {
+                    'analysisFilePath' : "/user/j/jkolb/elecTauAnalysis/fall10/ZtoElecTau/Run10/",
+                    'harvestingFilePath' : "/data/ndpc0/c/jkolb/TauResults",
+                    'tmpFilePath' : "/data/ndpc0/c/jkolb/TauResults/tmp/"
+                }
+            },
+			# fall10 MC with PU, 2010 dataset (36/pb);  same as Run07, with no conversion cut
+            'Run09' : {
+                'ZtoElecTau' : {
+                    'analysisFilePath' : "/user/j/jkolb/elecTauAnalysis/fall10/ZtoElecTau/Run09/",
+                    'harvestingFilePath' : "/data/ndpc0/c/jkolb/TauResults",
+                    'tmpFilePath' : "/data/ndpc0/c/jkolb/TauResults/tmp/"
+                }
+            },
+			# fall10 MC with PU, 2010 dataset (36/pb);  same as Run07, but allowing 1 missing inner hit
+			#(conclusions: stick with zero missing inner hits (Run07) )
+            'Run08' : {
+                'ZtoElecTau' : {
+                    'analysisFilePath' : "/user/j/jkolb/elecTauAnalysis/fall10/ZtoElecTau/Run08/",
+                    'harvestingFilePath' : "/data/ndpc0/c/jkolb/TauResults",
+                    'tmpFilePath' : "/data/ndpc0/c/jkolb/TauResults/tmp/"
+                }
+            },
 			# fall10 MC with PU, 2010 dataset (36/pb);  new conversion veto, data event cleaning
+			# AH files do not have full conversion plots
             'Run07' : {
                 'AHtoElecTau' : {
                     'analysisFilePath' : "/user/j/jkolb/elecTauAnalysis/fall10/AHtoElecTau/Run07/",
