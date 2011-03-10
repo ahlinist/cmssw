@@ -18,7 +18,7 @@ std::string terminate_dqmDirectory(const std::string& dqmDirectory)
 {
   std::string dqmDirectory_terminated = dqmDirectory;
 
-  //--- add tailing '/'
+//--- add trailing '/'
   if ( dqmDirectory_terminated != "" &&
       dqmDirectory_terminated.find_last_of(dqmSeparator) != (dqmDirectory_terminated.length() - 1) )
     dqmDirectory_terminated.append(dqmSeparator);
