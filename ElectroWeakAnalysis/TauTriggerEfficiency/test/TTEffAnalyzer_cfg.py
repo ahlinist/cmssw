@@ -16,7 +16,7 @@ process.prefer("magfield")
 process.hltGctDigis.hltMode = cms.bool(False) # Making L1CaloRegions
 
 process.maxEvents = cms.untracked.PSet(
-        input = cms.untracked.int32(1000)
+        input = cms.untracked.int32(10)
 )
 
 process.load("FWCore/MessageService/MessageLogger_cfi")
@@ -39,17 +39,20 @@ process.load('Configuration/StandardSequences/GeometryPilot2_cff')
 if(isData):
     process.source = cms.Source("PoolSource",
 	fileNames = cms.untracked.vstring(
+#	    '/store/data/Run2010B/Jet/RAW/v1/000/149/181/326E0028-28E2-DF11-8EF5-001D09F2546F.root'
 #	   '/store/user/eluiggi/MinimumBias/MinBiasRun2010A_CSTauSkim371Run2/5b16de9afc6d7bc42a5712a35e6482fe/CSTauSkim_1_1_FFp.root'
-	"rfio:/castor/cern.ch/user/s/slehti/TauTriggerEfficiencyMeasurementData/pickevents_Ztautau_MikeOct2010_Mu_Run2010B-v1_RAW_CSTauSkim.root"
-#"file:pickevents_Ztautau_MikeOct2010_Mu_Run2010B-v1_RAW_CSTauSkim.root"
+#	"rfio:/castor/cern.ch/user/s/slehti/TauTriggerEfficiencyMeasurementData/pickevents_Ztautau_MikeOct2010_Mu_Run2010B-v1_RAW_CSTauSkim.root"
+	"file:TTEffSkim.root"
 	)
     )
 else:
     process.source = cms.Source("PoolSource",
 	fileNames = cms.untracked.vstring(
+	"file:TTEffSkim.root"
+#	    "file:/tmp/slehti/test_H120_100_1_08t_RAW_RECO.root"
 #	    "file:/data/ndpc2/b/nvallsve/temp/test_H120_100_1_08t_RAW_RECO.root"
 #	    "rfio:/castor/cern.ch/user/s/slehti/testData/test_H120_100_1_08t_RAW_RECO.root"
-	    "rfio:/castor/cern.ch/user/s/slehti/testData/TTEffSkim_DYToTauTau_M-20_TuneZ2_7TeV-pythia6-tauola_Fall10_muRawRecoSkim.root"
+#	    "rfio:/castor/cern.ch/user/s/slehti/testData/TTEffSkim_DYToTauTau_M-20_TuneZ2_7TeV-pythia6-tauola_Fall10_muRawRecoSkim.root"
 #	    '/store/user/eluiggi/MinBias/TTEffCSTauSkimMinBiasSpring10MC3XYV27S09/3a986c9293445dcb2819d07578601385/CSTauSkim_1_1_3W4.root',
 #	    '/store/user/eluiggi/MinBias/TTEffCSTauSkimMinBiasSpring10MC3XYV27S09/3a986c9293445dcb2819d07578601385/CSTauSkim_2_1_tfj.root',
 #	    '/store/user/eluiggi/MinBias/TTEffCSTauSkimMinBiasSpring10MC3XYV27S09/3a986c9293445dcb2819d07578601385/CSTauSkim_3_1_1up.root',
@@ -57,33 +60,29 @@ else:
 #	    '/store/user/eluiggi/MinBias/TTEffCSTauSkimMinBiasSpring10MC3XYV27S09/3a986c9293445dcb2819d07578601385/CSTauSkim_5_1_ZSt.root'
 	)
     )
-#    hltType = "REDIGI38X"
 
-process.load("ElectroWeakAnalysis.TauTriggerEfficiency.TTEffPFTau_cff")
 
 process.load('Configuration/StandardSequences/FrontierConditions_GlobalTag_cff')
 if (isData):
-    process.GlobalTag.globaltag = 'GR_R_38X_V15::All'
+    process.GlobalTag.globaltag = 'GR_R_311_V2::All'
+#    process.GlobalTag.globaltag = 'TESTL1_GR_P::All'
 else:
     process.GlobalTag.globaltag = 'START311_V1::All'
     #process.GlobalTag.globaltag = 'MC_38Y_V14::All'
-
+process.GlobalTag.connect   = 'frontier://FrontierProd/CMS_COND_31X_GLOBALTAG'
+process.GlobalTag.pfnPrefix = cms.untracked.string('frontier://FrontierProd/')
 print process.GlobalTag.globaltag
 
-#process.prefer("magfield")
 
 #MET cleaning flag
 process.load('CommonTools/RecoAlgos/HBHENoiseFilterResultProducer_cfi')
-process.hbheflag = cms.Path(process.HBHENoiseFilterResultProducer)
+process.runMETCleaning = cms.Path(process.HBHENoiseFilterResultProducer)
 
 process.TTEffAnalysis = cms.EDAnalyzer("TTEffAnalyzer",
         DoMCTauEfficiency       = cms.bool(False), #if true: per MCTau cand; default is false: per offline tau cand
-        LoopingOver	        = cms.InputTag("PFTausSelected"),
-        PFTauIsoCollection      = cms.InputTag("thisPFTauDiscriminationByIsolation"),
-        PFTauMuonRejectionCollection      = cms.InputTag("thisPFTauDiscriminationAgainstMuon"),
-        # Check that Isolation collection below actually matched up with Tau Collection above
-        #PFTauCollection         = cms.InputTag("pfRecoTauProducerHighEfficiency"),
-        #PFTauIsoCollection      = cms.InputTag("pfRecoTauDiscriminationByIsolationHighEfficiency"),
+        LoopingOver	        = cms.InputTag("TTEffPFTausSelected"),
+        PFTauIsoCollection      = cms.InputTag("TTEffPFTauDiscriminationByIsolation"),
+        PFTauMuonRejectionCollection      = cms.InputTag("TTEffPFTauDiscriminationAgainstMuon"),
 
 	HLTMETSource		= cms.InputTag("hltMet"),
 	METSource		= cms.InputTag("pfMet"),
@@ -92,8 +91,8 @@ process.TTEffAnalysis = cms.EDAnalyzer("TTEffAnalyzer",
 	PFJetSource		= cms.InputTag("ak5PFJets"),
 	MHTJetThreshold		= cms.double(20.),
 
-#	HLTJetSource            = cms.InputTag("hltIterativeCone5CaloJets"), #uncorrected
-	HLTJetSource            = cms.InputTag("hltMCJetCorJetIcone5Regional"), #corrected
+#	HLTJetSource            = cms.InputTag("hltAntiKT5CaloJets"), #uncorrected
+	HLTJetSource            = cms.InputTag("hltAntiKT5L2L3CorrCaloJets"), #corrected
 	HLTNJets		= cms.int32(4),
 
 	L1extraTauJetSource	= cms.InputTag("l1extraParticles", "Tau"),
@@ -113,8 +112,6 @@ process.TTEffAnalysis = cms.EDAnalyzer("TTEffAnalyzer",
         L1GtReadoutRecord       = cms.InputTag("gtDigis",""),
         L1GtObjectMapRecord     = cms.InputTag("hltL1GtObjectMap","",hltType),
         HltResults              = cms.InputTag("TriggerResults","",hltType),
-#	L1GtObjectMapRecord     = cms.InputTag("hltL1GtObjectMap","","REDIGI38X"),
-#	HltResults              = cms.InputTag("TriggerResults","","REDIGI38X"),
         L1TauTriggerSource      = cms.InputTag("tteffL1GTSeed"),
 	L1JetMatchingCone	= cms.double(0.5),
 	L1JetMatchingMode	= cms.string("nearestDR"), # "nearestDR", "highestEt"
@@ -136,12 +133,8 @@ process.TTEffAnalysis = cms.EDAnalyzer("TTEffAnalyzer",
         HLTPFTau                = cms.bool(False),
         MCTauCollection         = cms.InputTag("TauMCProducer:HadronicTauOneAndThreeProng"),
 	GenParticleCollection	= cms.InputTag("genParticles"),
-        outputFileName          = cms.string("tteffAnalysis-pftau.root")
+        outputFileName          = cms.string("tteffAnalysis-hltcalotau-pftau.root")
 )
-#if pftau == 1:
-#    process.TTEffAnalysis.l25JetSource = cms.InputTag("hltPFTauTagInfo")
-#    process.TTEffAnalysis.l25PtCutSource = cms.InputTag("hltPFTaus")
-#    process.TTEffAnalysis.HLTPFTau = cms.bool(True)
 
 # One way for running multiple TTEffAnalyzers in one job such that
 # each analyzer loops over different collection and produces a
@@ -159,6 +152,13 @@ process.TTEffAnalysisHLTPFTau.l25JetSource = cms.InputTag("hltPFTauTagInfo")
 process.TTEffAnalysisHLTPFTau.l25PtCutSource = cms.InputTag("hltPFTaus")
 process.TTEffAnalysisHLTPFTau.HLTPFTau = cms.bool(True)
 
+process.TTEffAnalysisHLTPFTauTight = process.TTEffAnalysis.clone()
+process.TTEffAnalysisHLTPFTauTight.outputFileName = cms.string("tteffAnalysis-hltpftautight-pftau.root");
+process.TTEffAnalysisHLTPFTauTight.l25JetSource = cms.InputTag("hltPFTauTagInfo")
+process.TTEffAnalysisHLTPFTauTight.l25PtCutSource = cms.InputTag("hltPFTausTightIso")
+process.TTEffAnalysisHLTPFTauTight.HLTPFTau = cms.bool(True)
+
+
 process.TauMCProducer = cms.EDProducer("HLTTauMCProducer",
 GenParticles  = cms.untracked.InputTag("genParticles"),
        ptMinTau      = cms.untracked.double(3),
@@ -172,55 +172,40 @@ GenParticles  = cms.untracked.InputTag("genParticles"),
 process.load('HLTrigger.special.hltPhysicsDeclared_cfi')
 process.hltPhysicsDeclared.L1GtReadoutRecordTag = 'gtDigis'
 
+process.load("ElectroWeakAnalysis.TauTriggerEfficiency.TTEffPFTau_cff")
+
 if(isData):
-    process.runEDAna = cms.Path(
-#    	process.hltPhysicsDeclared*
-#	process.myHLTL25ConeIsolation+
-#	process.ic5PFJetTracksAssociatorAtVertex*
-	process.ak5PFJetTracksAssociatorAtVertex *
-	process.myPFTauTagInfoProducer *
-	process.myConeProducer *
-    	process.thisPFTauDiscriminationByLeadingPionPtCut *
-    	process.PFTausSelected *
-    	process.thisPFTauDiscriminationByLeadingTrackFinding *
-    	process.thisPFTauDiscriminationByIsolation *
-    	process.thisPFTauDiscriminationAgainstMuon *
-#    	process.tteffL1GTSeed*
-    	process.TTEffAnalysis *
-    	process.TTEffAnalysisL1Tau *
-    	process.TTEffAnalysisL1Cen *
-	process.TTEffAnalysisHLTPFTau
+    process.runTTEffAna = cms.Path(
     )
 else:
-    process.runEDAna = cms.Path(
+    process.runTTEffAna = cms.Path(
         process.hltPhysicsDeclared+
-#	process.myHLTL25ConeIsolation+
-#	process.ic5PFJetTracksAssociatorAtVertex+
-	process.ak5PFJetTracksAssociatorAtVertex *
-	process.myPFTauTagInfoProducer+
-	process.myConeProducer+
-####	process.TauMCProducer*
-        process.thisPFTauDiscriminationByLeadingPionPtCut *
-        process.PFTausSelected *
-        process.thisPFTauDiscriminationByLeadingTrackFinding *
-        process.thisPFTauDiscriminationByIsolation *
-        process.thisPFTauDiscriminationAgainstMuon *
-#       process.tteffL1GTSeed*
-        process.TTEffAnalysis *
-        process.TTEffAnalysisL1Tau *
-        process.TTEffAnalysisL1Cen *
-	process.TTEffAnalysisHLTPFTau
+	process.TauMCProducer
     ) 
+process.runTTEffAna += process.TTEffPFTau
+process.runTTEffAna += process.TTEffAnalysis
+process.runTTEffAna += process.TTEffAnalysisL1Tau
+process.runTTEffAna += process.TTEffAnalysisL1Cen
+process.runTTEffAna += process.TTEffAnalysisHLTPFTau
+process.runTTEffAna += process.TTEffAnalysisHLTPFTauTight
+
 
 process.o1 = cms.OutputModule("PoolOutputModule",
     outputCommands = cms.untracked.vstring("keep *"),
     fileName = cms.untracked.string('cmssw.root')
 )
-#process.outpath = cms.Path(process.o1)
+process.outpath = cms.EndPath(process.o1)
 
-process.schedule = cms.Schedule(process.DoHLTJetsU,process.DoHLTTau,process.hbheflag,
-#                               process.runEDAna,process.outpath)
-                                process.runEDAna)
+process.schedule = cms.Schedule(process.DoHLTJets,
+				process.DoHltMuon,
+				process.DoHLTPhoton,
+				process.DoHLTElectron,
+				process.DoHLTTau,
+				process.DoHLTMinBiasPixelTracks,
+				process.runMETCleaning,
+				process.runTTEffAna
+#				,process.outpath
+)
 
 if (isData):  # replace all instances of "rawDataCollector" with "source" in In$
     from FWCore.ParameterSet import Mixins
