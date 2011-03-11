@@ -19,17 +19,16 @@ ewkTauId = cms.EDProducer("PFRecoTauDiscriminationByStringCut",
             cut = cms.double(0.5)
         ),
         againstMuon = cms.PSet(
-            Producer = cms.InputTag('hpsTancTausDiscriminationAgainstMuon'),
+            Producer = cms.InputTag('hpsTancTausDiscriminationByTightMuonRejection'),
             cut = cms.double(0.5)
-        ##),
-        ##againstElectron = cms.PSet(
-        ##    Producer = cms.InputTag('hpsTancTausDiscriminationAgainstElectron'),
-        ##    cut = cms.double(0.5)
+        ),
+        againstElectron = cms.PSet(
+            Producer = cms.InputTag('hpsTancTausDiscriminationByLooseElectronRejection'),
+            cut = cms.double(0.5)
         )
     ),
     cut = cms.string(
         '(signalPFChargedHadrCands.size() = 1 | signalPFChargedHadrCands.size() = 3)' \
-       + ' & abs(charge) = 1' \
-       + ' & (leadPFCand().isNonnull() & leadPFCand().mva_e_pi() < 0.6)' 
+       + ' & abs(charge) = 1'
     )
 )

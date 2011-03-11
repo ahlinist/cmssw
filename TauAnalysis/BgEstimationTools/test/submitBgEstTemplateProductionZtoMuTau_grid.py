@@ -11,6 +11,7 @@ jobId = getJobId(channel)
 
 samplesToAnalyze = [
     # modify in case you want to submit crab jobs for some of the samples only...
+    'DYmumuM2to10_pythia', 'DYmumuM10to20_pythia',
 ]
 
 # Submit analysis jobs to the grid;

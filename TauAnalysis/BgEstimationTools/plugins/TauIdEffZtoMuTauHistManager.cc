@@ -190,13 +190,13 @@ void TauIdEffZtoMuTauHistManager::fillHistogramsImp(const edm::Event& evt, const
     double diTauMEtProj = computeDiTauProj(diTauCandidate->met()->p4(), diTauCandidate->leg1()->p4());
     hDiTauMEtProj_->Fill(diTauMEtProj, evtWeight);
 
-    double diTauMass_fromJetP4 = (diTauCandidate->leg1()->p4() + diTauCandidate->leg2()->pfTauTagInfoRef()->pfjetRef()->p4()).mass();
+    double diTauMass_fromJetP4 = (diTauCandidate->leg1()->p4() + diTauCandidate->leg2()->pfJetRef()->p4()).mass();
     hDiTauVisMassFromJetP4_->Fill(diTauMass_fromJetP4, evtWeight);
     double diTauMass_fromTauP4 = (diTauCandidate->leg1()->p4() + diTauCandidate->leg2()->p4()).mass();
     hDiTauVisMassFromTauJetP4_->Fill(diTauMass_fromTauP4, evtWeight);
     //if ( (diTauCandidate->dPhi12()*180./TMath::Pi()) < 160. ) {
       fillCollinearApproxMassHistogram(hDiTauCollinearApproxMassFromJetP4_,
-				       diTauCandidate->leg1()->p4(), diTauCandidate->leg2()->pfTauTagInfoRef()->pfjetRef()->p4(),
+				       diTauCandidate->leg1()->p4(), diTauCandidate->leg2()->pfJetRef()->p4(),
 				       diTauCandidate->met()->px(), diTauCandidate->met()->py(), evtWeight);
       fillCollinearApproxMassHistogram(hDiTauCollinearApproxMassFromTauJetP4_,
 				       diTauCandidate->leg1()->p4(), diTauCandidate->leg2()->p4(),

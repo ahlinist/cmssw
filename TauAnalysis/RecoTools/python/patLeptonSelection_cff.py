@@ -266,9 +266,8 @@ selectedPatTausLeadTrkPt.cut = cms.string('tauID("leadingTrackPtCut") > 0.5')
 selectedPatTausTaNCdiscr.cut = cms.string('tauID("byTaNCloose") > 0.5')
 selectedPatTausProng.cut = cms.string('signalPFChargedHadrCands.size() = 1 | signalPFChargedHadrCands.size() = 3')
 selectedPatTausCharge.cut = cms.string('abs(charge) > 0.5 & abs(charge) < 1.5')
-selectedPatTausMuonVeto.cut = cms.string('tauID("againstMuon") > 0.5')
-#selectedPatTausElectronVeto.cut = cms.string('tauID("againstElectron") > 0.5')
-selectedPatTausElectronVeto.cut = cms.string('leadPFCand().isNonnull() & leadPFCand().mva_e_pi() < 0.6')
+selectedPatTausMuonVeto.cut = cms.string('tauID("againstMuonTight") > 0.5')
+selectedPatTausElectronVeto.cut = cms.string('tauID("againstElectronLoose") > 0.5')
 selectedPatTausEcalCrackVeto.cut = cms.string('abs(eta) < 1.460 | abs(eta) > 1.558')
 
 patTauSelConfigurator = objSelConfigurator(
@@ -341,9 +340,9 @@ selectedPatTausForMuTauTaNCdiscr.cut = cms.string('tauID("byTaNCloose") > 0.5')
 selectedPatTausForMuTauProng.cut = selectedPatTausProng.cut
 selectedPatTausForMuTauCharge.cut = selectedPatTausCharge.cut
 selectedPatTausForMuTauMuonVeto.cut = selectedPatTausMuonVeto.cut
-selectedPatTausForMuTauCaloMuonVeto.cut = cms.string('tauID("againstCaloMuon") > 0.5')
-#selectedPatTausForMuTauElectronVeto.cut = selectedPatTausElectronVeto.cut
-selectedPatTausForMuTauElectronVeto.cut = cms.string('leadPFCand().isNonnull() & leadPFCand().mva_e_pi() < 0.6')
+#selectedPatTausForMuTauCaloMuonVeto.cut = cms.string('tauID("againstCaloMuon") > 0.5')
+selectedPatTausForMuTauCaloMuonVeto.cut = selectedPatTausMuonVeto.cut # CV: caloMuon veto disabled for now
+selectedPatTausForMuTauElectronVeto.cut = selectedPatTausElectronVeto.cut
 
 patTauSelConfiguratorForMuTau = objSelConfigurator(
     [ selectedPatTausForMuTauAntiOverlapWithMuonsVeto,

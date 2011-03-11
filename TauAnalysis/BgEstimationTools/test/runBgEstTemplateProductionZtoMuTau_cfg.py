@@ -204,7 +204,7 @@ from TauAnalysis.BgEstimationTools.tools.fakeRateAnalysisTools import configureF
 configureFakeRateWeightProduction(process, method = "simple", 
 	                          preselPFTauJetSource = 'hpsTancTaus', frSet = 'bgEstTemplateTaNCinverted',
                                   preselPatTauSource = 'selectedPatTausForMuTauLeadTrkPtCumulative',
-		                  addPatTauPreselection = 'tauID("againstMuon") > 0.5')
+		                  addPatTauPreselection = 'tauID("againstMuonTight") > 0.5')
 #--------------------------------------------------------------------------------
 
 #--------------------------------------------------------------------------------
@@ -228,16 +228,16 @@ changeCut(process, "selectedPatMuonsTrkIP", 0.2, attribute = "IpMax")
 # switch between TaNC and HPS tau id. discriminators
 #changeCut(process, "selectedPatTausLeadTrkPt", "tauID('leadingTrackPtCut') > 0.5")
 #changeCut(process, "selectedPatTausForMuTauLeadTrkPt", "tauID('leadingTrackPtCut') > 0.5")
-#changeCut(process, "selectedPatTausLeadTrkPt", "tauID('byDecayMode') > 0.5")
-#changeCut(process, "selectedPatTausForMuTauLeadTrkPt", "tauID('byDecayMode') > 0.5")
+#changeCut(process, "selectedPatTausLeadTrkPt", "tauID('decayModeFinding') > 0.5")
+#changeCut(process, "selectedPatTausForMuTauLeadTrkPt", "tauID('decayModeFinding') > 0.5")
 #changeCut(process, "selectedPatTausTaNCdiscr", "tauID('byTaNCloose') > 0.5")
 #changeCut(process, "selectedPatTausForMuTauTaNCdiscr", "tauID('byTaNCloose') > 0.5")
 #changeCut(process, "tausBgEstQCDenrichedTaNCdiscr", "tauID('byTaNCvloose') > 0.5 & tauID('byTaNCmedium') < 0.5")
 #changeCut(process, "tausBgEstWplusJetsEnrichedTaNCdiscr", "tauID('byTaNCvloose') > 0.5 & tauID('byTaNCmedium') < 0.5")
 #changeCut(process, "tausBgEstWplusJetsEnrichedFRweightedTaNCdiscrNotApplied", "tauID('byTaNCvloose') > -1000. & tauID('byTaNCmedium') < +1000.")
 #changeCut(process, "tausBgEstZmumuJetMisIdEnrichedTaNCdiscr", "tauID('byTaNCvloose') > 0.5 & tauID('byTaNCmedium') < 0.5")
-changeCut(process, "selectedPatTausLeadTrkPt", "tauID('byDecayMode') > 0.5")
-changeCut(process, "selectedPatTausForMuTauLeadTrkPt", "tauID('byDecayMode') > 0.5")
+changeCut(process, "selectedPatTausLeadTrkPt", "tauID('decayModeFinding') > 0.5")
+changeCut(process, "selectedPatTausForMuTauLeadTrkPt", "tauID('decayModeFinding') > 0.5")
 changeCut(process, "selectedPatTausTaNCdiscr", "tauID('byHPSloose') > 0.5")
 changeCut(process, "selectedPatTausForMuTauTaNCdiscr", "tauID('byHPSloose') > 0.5")
 changeCut(process, "tausBgEstQCDenrichedTaNCdiscr", "tauID('byHPSvloose') > 0.5 & tauID('byHPSmedium') < 0.5")

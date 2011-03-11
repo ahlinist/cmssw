@@ -106,8 +106,7 @@ void TauIdEffValidationHistManager::valPlotEntryType::fillHistograms(const pat::
 
   if ( passedTauId ) {
     hTauPt_->Fill(patTau.pt(), weight);
-    if ( isValidRef(patTau.pfTauTagInfoRef()) && isValidRef(patTau.pfTauTagInfoRef()->pfjetRef()) )
-      hTauAssocJetPt_->Fill(patTau.pfTauTagInfoRef()->pfjetRef()->pt(), weight);
+    if ( isValidRef(patTau.pfJetRef()) ) hTauAssocJetPt_->Fill(patTau.pfJetRef()->pt(), weight);
     hTauEta_->Fill(patTau.eta(), weight);
     hTauPhi_->Fill(patTau.phi(), weight);
     double jetRadius = TMath::Sqrt(patTau.etaetaMoment() + patTau.phiphiMoment());

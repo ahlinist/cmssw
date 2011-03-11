@@ -40,7 +40,7 @@ selectTausBgEstZmumuJetMisIdEnriched = tauSelConfiguratorBgEstZmumuJetMisIdEnric
 
 tausBgEstZmumuMuonMisIdEnrichedAntiMuonVeto = cms.EDFilter("PATTauSelector",
     src = cms.InputTag('selectedPatTausLeadTrkPtCumulative'),
-    cut = cms.string('tauID("againstMuon") < 0.5'),
+    cut = cms.string('tauID("againstMuonTight") < 0.5'),
     filter = cms.bool(False)                                 
 )
 

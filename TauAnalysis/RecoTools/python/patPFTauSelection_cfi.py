@@ -55,7 +55,7 @@ selectedPatTausCharge = cms.EDFilter("PATTauSelector",
 
 # require tau candidate to pass electron veto
 selectedPatTausElectronVeto = cms.EDFilter("PATTauSelector",
-    cut = cms.string('tauID("againstElectron") > 0.5'),
+    cut = cms.string('tauID("againstElectronLoose") > 0.5'),
     filter = cms.bool(False)                                 
 )
 
@@ -67,7 +67,7 @@ selectedPatTausEcalCrackVeto = cms.EDFilter("PATTauSelector",
 
 # require tau candidate to pass muon veto
 selectedPatTausMuonVeto = cms.EDFilter("PATTauSelector",
-    cut = cms.string('tauID("againstMuon") > 0.5'),
+    cut = cms.string('tauID("againstMuonTight") > 0.5'),
     filter = cms.bool(False)                                 
 )
 

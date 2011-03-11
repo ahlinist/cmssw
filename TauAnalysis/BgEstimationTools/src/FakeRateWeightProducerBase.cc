@@ -317,7 +317,7 @@ double getJetRadius(const reco::BaseTau& tauJet)
     return TMath::Sqrt(etaPhiStatistics.etaEtaMoment + etaPhiStatistics.phiPhiMoment);
   } else if ( typeid(tauJet) == typeid(reco::PFTau) ) {
     const reco::PFTau* pfTauJet = dynamic_cast<const reco::PFTau*>(&tauJet);
-    reco::Jet::EtaPhiMoments etaPhiStatistics = pfTauJet->pfTauTagInfoRef()->pfjetRef()->etaPhiStatistics();
+    reco::Jet::EtaPhiMoments etaPhiStatistics = pfTauJet->jetRef()->etaPhiStatistics();
     return TMath::Sqrt(etaPhiStatistics.etaEtaMoment + etaPhiStatistics.phiPhiMoment);
   } else {
     edm::LogError ("getJetRadius") << " Unsupported type of Tau-jet passed as function Argument !!";
