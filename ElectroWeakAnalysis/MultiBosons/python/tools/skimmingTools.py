@@ -116,17 +116,24 @@ def embedTriggerMatches(process, hltPaths):
 # def embedTriggerMatches(process, hltPaths): <---------------------------------------
 
 def addPhotonReReco(process):
+    """Include the photon re-reco sequence in the patDefaultSequence
+    See https://hypernews.cern.ch/HyperNews/CMS/get/egamma/960.html
+    and
+    https://hypernews.cern.ch/HyperNews/CMS/get/egamma/958/1/1/1/1/1/1/1/1/1/1/1.html
+    """
     process.load('Configuration.StandardSequences.Services_cff')
     process.load('Configuration.StandardSequences.MagneticField_38T_cff')
     process.load('Configuration.StandardSequences.Geometry_cff')
     process.load('Configuration.StandardSequences.Reconstruction_cff')
     process.load('Configuration.StandardSequences.FrontierConditions_GlobalTag_cff')
-    process.load("SimGeneral.HepPDTESSource.pythiapdt_cfi")
+    process.load('RecoEgamma.EgammaPhotonProducers.conversionTracks_cff')
 
-    process.photonReReco = cms.Sequence(process.conversionSequence*
-                                        process.trackerOnlyConversionSequence*
-                                        process.photonSequence*
+    process.photonReReco = cms.Sequence(process.ckfTracksFromConversions *
+                                        process.conversionSequence *
+                                        process.photonSequence *
                                         process.photonIDSequence)
-    #edit the pat sequence to do the rereco
-    process.patDefaultSequence = cms.Sequence(process.photonReReco*process.patDefaultSequence)
+
+    # Edit the pat sequence to do the rereco
+    process.patDefaultSequence = cms.Sequence(process.photonReReco*
+                                              process.patDefaultSequence)
 # def addPhotonReReco(process): <-----------------------------------------------------
