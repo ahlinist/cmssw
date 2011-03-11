@@ -142,7 +142,7 @@ if _TAUID == 'byLooseIsolation':
             cut = cms.double(0.5)
         ),
         againstMuon = cms.PSet(
-            Producer = cms.InputTag('hpsPFTauDiscriminationAgainstMuon'),
+            Producer = cms.InputTag('hpsPFTauDiscriminationAgainstMuonTight'),
             cut = cms.double(0.5)
         )
     )
@@ -308,7 +308,7 @@ changeCut(process, "selectedPatTausForMuTauTaNCdiscr", cuts['tanc'])
 
 # disable calorimeter muon veto for now...
 #changeCut(process, "selectedPatTausForMuTauCaloMuonVeto", "tauID('againstCaloMuon') > -1.")
-changeCut(process, "selectedPatTausForMuTauCaloMuonVeto", "tauID('againstMuon') > -1.")
+changeCut(process, "selectedPatTausForMuTauCaloMuonVeto", "tauID('againstMuonTight') > -1.")
 
 # change lower limit on separation required between muon and tau-jet to dR > 0.5
 changeCut(process, "selectedMuTauPairsForAHtoMuTauAntiOverlapVeto", "dR12 > 0.5")
@@ -330,9 +330,9 @@ if _TAUID == 'byTaNCloose':
     changeCut(process, "selectedPatTausLeadTrkPt", 'tauID("leadingTrackPtCut") > 0.5')
     changeCut(process, "selectedPatTausForMuTauLeadTrkPt", 'tauID("leadingTrackPtCut") > 0.5')
 elif _TAUID == "byHPSloose" or _TAUID == "byLooseIsolation":
-    print "Using HPS: using only lead track finding"
-    changeCut(process, "selectedPatTausLeadTrkPt", 'tauID("leadingTrackFinding") > 0.5')
-    changeCut(process, "selectedPatTausForMuTauLeadTrkPt", 'tauID("leadingTrackFinding") > 0.5')
+    print "Using HPS: using only decay mode finding"
+    changeCut(process, "selectedPatTausLeadTrkPt", 'tauID("decayModeFinding") > 0.5')
+    changeCut(process, "selectedPatTausForMuTauLeadTrkPt", 'tauID("decayModeFinding") > 0.5')
 else:
     raise ValueError("Can't figure out what to do about the lead track cut!")
 

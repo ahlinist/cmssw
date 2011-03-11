@@ -43,6 +43,13 @@ diTauCandidateSVfitHistManagerForMuTau.SVfitAlgorithms = cms.VPSet(
     ),
 )
 
+from TauAnalysis.Core.diTauCandidateNSVfitHistManager_cfi import *
+diTauCandidateNSVfitHistManagerForMuTau = copy.deepcopy(diTauCandidateNSVfitHistManager)
+diTauCandidateNSVfitHistManagerForMuTau.pluginName = cms.string('diTauCandidateNSVfitHistManagerForMuTau')
+diTauCandidateNSVfitHistManagerForMuTau.pluginType = cms.string('PATMuTauPairNSVfitHistManager')
+diTauCandidateNSVfitHistManagerForMuTau.diTauCandidateSource = cms.InputTag('selectedMuTauPairsPzetaDiffCumulative')
+diTauCandidateNSVfitHistManagerForMuTau.nSVfitEventHypothesisSource = cms.InputTag('nSVfitProducer')
+
 from TauAnalysis.Core.diTauCandidateZllHypothesisHistManager_cfi import *
 diTauCandidateZmumuHypothesisHistManagerForMuTau = copy.deepcopy(ZllHypothesisHistManager)
 diTauCandidateZmumuHypothesisHistManagerForMuTau.pluginName = cms.string('diTauCandidateZmumuHypothesisHistManagerForMuTau')
@@ -929,6 +936,7 @@ muTauAnalysisSequenceOS = cms.VPSet(
             'tauHistManager',
             'diTauCandidateHistManagerForMuTau',
 	    'diTauCandidateSVfitHistManagerForMuTau',
+            #'diTauCandidateNSVfitHistManagerForMuTau',
             'muPairHistManagerByLooseIsolation'
         ),
         replace = cms.vstring(
@@ -956,6 +964,7 @@ muTauAnalysisSequenceOS = cms.VPSet(
             'tauHistManager',
             'diTauCandidateHistManagerForMuTau',
             'diTauCandidateSVfitHistManagerForMuTau',
+            #'diTauCandidateNSVfitHistManagerForMuTau',
             'diTauCandidateZmumuHypothesisHistManagerForMuTau',
             'muPairHistManagerByLooseIsolation',
             'jetHistManager',
@@ -973,6 +982,7 @@ muTauAnalysisSequenceOS = cms.VPSet(
             'diTauCandidateHistManagerForMuTau.diTauCandidateSource = selectedMuTauPairsZeroChargeCumulative',
             'diTauCandidateHistManagerForMuTau.visMassHypothesisSource = muTauPairVisMassHypotheses',
             'diTauCandidateSVfitHistManagerForMuTau.diTauCandidateSource = selectedMuTauPairsZeroChargeCumulative',
+            #'diTauCandidateNSVfitHistManagerForMuTau.diTauCandidateSource = selectedMuTauPairsZeroChargeCumulative',
             'diTauCandidateZmumuHypothesisHistManagerForMuTau.ZllHypothesisSource = muTauPairZmumuHypotheses',
             'muPairHistManagerByLooseIsolation.diTauCandidateSource = selectedDiMuPairZmumuHypothesesByLooseIsolation'
         )
@@ -1122,6 +1132,7 @@ muTauAnalysisSequenceSS = cms.VPSet(
             'tauHistManager',
             'diTauCandidateHistManagerForMuTau',
             'diTauCandidateSVfitHistManagerForMuTau',
+            #'diTauCandidateNSVfitHistManagerForMuTau',
             'diTauCandidateZmumuHypothesisHistManagerForMuTau',
             'muPairHistManagerByLooseIsolation',
             'jetHistManager',
@@ -1136,6 +1147,7 @@ muTauAnalysisSequenceSS = cms.VPSet(
             'diTauCandidateHistManagerForMuTau.diTauCandidateSource = selectedMuTauPairsNonZeroChargeCumulative',
             'diTauCandidateHistManagerForMuTau.visMassHypothesisSource = muTauPairVisMassHypotheses',
             'diTauCandidateSVfitHistManagerForMuTau.diTauCandidateSource = selectedMuTauPairsNonZeroChargeCumulative',
+            #'diTauCandidateNSVfitHistManagerForMuTau.diTauCandidateSource = selectedMuTauPairsNonZeroChargeCumulative',
             'diTauCandidateZmumuHypothesisHistManagerForMuTau.ZllHypothesisSource = muTauPairZmumuHypotheses',
             'muPairHistManagerByLooseIsolation.diTauCandidateSource = selectedDiMuPairZmumuHypothesesByLooseIsolation'
         )

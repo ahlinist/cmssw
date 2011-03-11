@@ -7,7 +7,8 @@ process = cms.Process('runZtoMuTau')
 # of electrons, muons and tau-jets with non-standard isolation cones
 process.load('Configuration/StandardSequences/Services_cff')
 process.load('FWCore/MessageService/MessageLogger_cfi')
-process.MessageLogger.cerr.FwkReport.reportEvery = 100
+#process.MessageLogger.cerr.FwkReport.reportEvery = 100
+process.MessageLogger.cerr.FwkReport.reportEvery = 1
 #process.MessageLogger.cerr.threshold = cms.untracked.string('INFO')
 #process.MessageLogger.suppressInfo = cms.untracked.vstring()
 process.MessageLogger.suppressWarning = cms.untracked.vstring("PATTriggerProducer",)
@@ -82,10 +83,11 @@ process.source = cms.Source("PoolSource",
         #'file:/tmp/veelken/Ztautau_1_1_sXK.root'
         #'file:/data1/veelken/tmp/final_events_AHtoMuTau_ZtautauPOWHEG_Run32_51_0_ZW7.root'
         #'file:/data2/debugMuon/final_events_AHtoMuTau_data_Mu_Run2010B_Nov4ReReco_RunOnOursJan16.root'
-        #'file:/data2/veelken/CMSSW_3_8_x/skims/ZtoMuTau/mcZtautauPU156bx_pythia_1_1_xdF.root'
+        'file:/data2/veelken/CMSSW_3_8_x/skims/ZtoMuTau/mcZtautauPU156bx_pythia_1_1_xdF.root'
+        #'file:/data1/veelken/CMSSW_3_8_x/skims/ZtoMuTau/selEvents_ZtoMuTau_approval_2011Mar03_RECO.root'
         #'file:/data1/veelken/CMSSW_3_8_x/skims/AHtoMuTau/selEvents_AHtoMuTau_HPSloose_2011Jan29_friis_RECO.root'
         #'file:/data1/veelken/CMSSW_3_8_x/skims/AHtoMuTau/uwOnlyEvents_AHtoMuTau_HPSloose_2011Feb03_bachtis_RECO.root'
-        'file:/data1/veelken/CMSSW_3_8_x/skims/test/mcZtautauPU156bx_pythiaZ2v3_1kEvents_1_1_F1c.root'
+        #'file:/data1/veelken/CMSSW_3_8_x/skims/test/mcZtautauPU156bx_pythiaZ2v3_1kEvents_1_1_F1c.root'
         #'file:/data1/veelken/CMSSW_3_8_x/skims/ZtoMuTau/selEvents_ZtoMuTau_HPSloose_2011Feb03_veelken_RECO.root'
         #'file:/data1/veelken/CMSSW_3_8_x/skims/ZtoMuTau/selEvents_ZtoMuTau_HPSloose_2011Feb03_veelken_twoOSglobalMuons_RECO.root'
     )                            
@@ -156,13 +158,13 @@ changeCut(process, "selectedPatMuonsTrkIP", 0.2, attribute = "IpMax")
 #changeCut(process, "selectedPatTausForMuTauLeadTrkPt", "tauID('leadingTrackPtCut') > 0.5")
 #changeCut(process, "selectedPatTausTaNCdiscr", "tauID('byTaNCloose') > 0.5")
 #changeCut(process, "selectedPatTausForMuTauTaNCdiscr", "tauID('byTaNCloose') > 0.5")
-changeCut(process, "selectedPatTausLeadTrkPt", "tauID('byDecayMode') > 0.5")
-changeCut(process, "selectedPatTausForMuTauLeadTrkPt", "tauID('byDecayMode') > 0.5")
+changeCut(process, "selectedPatTausLeadTrkPt", "tauID('decayModeFinding') > 0.5")
+changeCut(process, "selectedPatTausForMuTauLeadTrkPt", "tauID('decayModeFinding') > 0.5")
 changeCut(process, "selectedPatTausTaNCdiscr", "tauID('byHPSloose') > 0.5")
 changeCut(process, "selectedPatTausForMuTauTaNCdiscr", "tauID('byHPSloose') > 0.5")
 
 # disable calorimeter muon veto for now...
-changeCut(process, "selectedPatTausForMuTauCaloMuonVeto", "tauID('againstCaloMuon') > -1.")
+changeCut(process, "selectedPatTausForMuTauCaloMuonVeto", "tauID('againstMuonTight') > -1.")
 
 # change lower limit on separation required between muon and tau-jet to dR > 0.5
 changeCut(process, "selectedMuTauPairsAntiOverlapVeto", "dR12 > 0.5")
@@ -277,22 +279,25 @@ if not hasattr(process, "isBatchMode"):
 #
 print("CV: switching to **old** HPS !!")
 
-while process.p.remove(process.PFTau): pass
+#while process.p.remove(process.PFTau): pass
 
 switchToPFTauHPS(process)
 process.cleanPatTaus.preselection = cms.string('')
 
-changeCut(process, "selectedPatTausLeadTrkPt", "tauID('leadingTrackFinding') > 0.5")
-changeCut(process, "selectedPatTausForMuTauLeadTrkPt", "tauID('leadingTrackFinding') > 0.5")
+changeCut(process, "selectedPatTausLeadTrk", "tauID('decayModeFinding') > 0.5")
+changeCut(process, "selectedPatTausForMuTauLeadTrk", "tauID('decayModeFinding') > 0.5")
+changeCut(process, "selectedPatTausLeadTrkPt", "tauID('decayModeFinding') > 0.5")
+changeCut(process, "selectedPatTausForMuTauLeadTrkPt", "tauID('decayModeFinding') > 0.5")
 changeCut(process, "selectedPatTausTaNCdiscr", "tauID('byLooseIsolation') > 0.5")
 changeCut(process, "selectedPatTausForMuTauTaNCdiscr", "tauID('byLooseIsolation') > 0.5")
-changeCut(process, "selectedPatTausForMuTauCaloMuonVeto", "tauID('againstMuon') > -1.")
+changeCut(process, "selectedPatTausForMuTauCaloMuonVeto", "tauID('againstMuonTight') > -1.")
 
 process.ewkTauId.PFTauProducer = cms.InputTag("hpsPFTauProducer")
-process.ewkTauId.Prediscriminants.leadTrack.Producer   = cms.InputTag('hpsPFTauDiscriminationByDecayModeFinding')
-process.ewkTauId.Prediscriminants.leadTrackPt.Producer = cms.InputTag('hpsPFTauDiscriminationByDecayModeFinding')
-process.ewkTauId.Prediscriminants.TaNCloose.Producer   = cms.InputTag('hpsPFTauDiscriminationByLooseIsolation')
-process.ewkTauId.Prediscriminants.againstMuon.Producer = cms.InputTag('hpsPFTauDiscriminationAgainstMuon')
+process.ewkTauId.Prediscriminants.leadTrack.Producer       = cms.InputTag('hpsPFTauDiscriminationByDecayModeFinding')
+process.ewkTauId.Prediscriminants.leadTrackPt.Producer     = cms.InputTag('hpsPFTauDiscriminationByDecayModeFinding')
+process.ewkTauId.Prediscriminants.TaNCloose.Producer       = cms.InputTag('hpsPFTauDiscriminationByLooseIsolation')
+process.ewkTauId.Prediscriminants.againstMuon.Producer     = cms.InputTag('hpsPFTauDiscriminationByTightMuonRejection')
+process.ewkTauId.Prediscriminants.againstElectron.Producer = cms.InputTag('hpsPFTauDiscriminationByLooseElectronRejection')
 
 # disable muon momentum scale corrections
 process.patMuonsMuScleFitCorrectedMomentum.doApplyCorrection = cms.bool(False)

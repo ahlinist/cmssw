@@ -155,7 +155,7 @@ changeCut(process,"selectedPatTausForElecTauElectronVeto","leadPFCand().isNonnul
 changeCut(process,"selectedPatTausForElecTauEcalCrackVeto",'abs(eta) < 1.460 | abs(eta) > 1.558')
 
 #  muon veto for taus
-changeCut(process,"selectedPatTausForElecTauMuonVeto",'tauID("againstMuon") > 0.5')
+changeCut(process,"selectedPatTausForElecTauMuonVeto",'tauID("againstMuonTight") > 0.5')
 
 #
 # di-tau pair selection

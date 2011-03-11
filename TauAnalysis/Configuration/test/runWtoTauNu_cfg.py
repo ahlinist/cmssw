@@ -13,7 +13,7 @@ process.load('Configuration/StandardSequences/GeometryIdeal_cff')
 process.load('Configuration/StandardSequences/MagneticField_cff')
 process.load('Configuration/StandardSequences/Reconstruction_cff')
 process.load('Configuration/StandardSequences/FrontierConditions_GlobalTag_cff')
-process.GlobalTag.globaltag = cms.string('START38_V12::All')
+process.GlobalTag.globaltag = cms.string('START38_V14::All')
 
 # import particle data table, needed for print-out of generator level information
 process.load("SimGeneral.HepPDTESSource.pythiapdt_cfi")
@@ -72,7 +72,8 @@ process.source = cms.Source("PoolSource",
 #    'rfio:/castor/cern.ch/user/a/abdollah/HLT/TrigEfficiency/testRAWRECO/TauHLTOutput_Fall10_79_1_8Yq.root'
 #    'rfio:/castor/cern.ch/user/a/abdollah/HLT/TrigEfficiency/testRAWRECO/TauHLTOutput_Fall10_98_1_gIu.root',
 #    'rfio:/castor/cern.ch/user/a/abdollah/HLT/TrigEfficiency/testRAWRECO/TauHLTOutput_Fall10_99_1_lOa.root',
-    'rfio:/castor/cern.ch/user/a/abdollah/HLT/TrigEfficiency/testRAWRECO/TauHLTOutput_Fall10_9_1_3yD.root'
+     'rfio:/castor/cern.ch/user/a/abdollah/HLT/TrigEfficiency/testRAWRECO/TauHLTOutput_Fall10_9_1_3yD.root'
+#    'rfio:/castor/cern.ch//user/v/veelken/CMSSW_3_8_x/skims/TauAnalysis/mcWtauNuPU156bx_5kEvents_1_1_wHR.root'
     
     #QCD
 #    'rfio:/castor/cern.ch/user/a/abdollah/HLT/TrigEfficiency/QCD/TauHLTOutput_Fall10_996_1_1OD.root',
@@ -148,8 +149,8 @@ changeCut(process,"selectedPatTausForWTauNuEta21","abs(eta) < 2.3")
 changeCut(process,"selectedPatTausForWTauNuEcalIso","tauID('byHPSmedium') > 0.5")
 changeCut(process,"selectedPatTausForWTauNuTrkIso","tauID('byHPSmedium') > 0.5")
 changeCut(process,"selectedPatTausForWTauNuPt20","pt > 30")
-changeCut(process,"selectedPatTausForWTauNuLeadTrkPt","tauID('byDecayMode') > 0.5")
-changeCut(process,"selectedPatTausForWTauNuElectronVeto","tauID('againstElectron') > 0.5 && emFraction < 0.85")
+changeCut(process,"selectedPatTausForWTauNuLeadTrkPt","tauID('decayModeFinding') > 0.5")
+changeCut(process,"selectedPatTausForWTauNuElectronVeto","tauID('againstElectronTight') > 0.5")
 changeCut(process,"selectedPatTausForWTauNuEcalCrackVeto","abs(eta) > 0.018 && (abs(eta)<0.423 || abs(eta)>0.461) && (abs(eta)<0.770 || abs(eta)>0.806) && (abs(eta)<1.127 || abs(eta)>1.163) && (abs(eta)<1.460 || abs(eta)>1.558)")
 #-----------------------------------------------------------------------------------
 

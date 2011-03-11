@@ -6,7 +6,7 @@ from TauAnalysis.Configuration.userRegistry import getAnalysisFilePath, getHarve
 import TauAnalysis.Configuration.userRegistry as reg
 
 channel = 'ZtoMuTau'
-reg.overrideJobId(channel, '2011Feb16_HPSloose')
+#reg.overrideJobId(channel, '2011Feb16_HPSloose')
 
 analysisFilePath = getAnalysisFilePath(channel)
 harvestingFilePath = getHarvestingFilePath(channel)
