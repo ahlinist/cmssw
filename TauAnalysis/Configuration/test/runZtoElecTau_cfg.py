@@ -7,7 +7,8 @@ process = cms.Process('runZtoElecTau')
 # of electrons, muons and tau-jets with non-standard isolation cones
 process.load('Configuration/StandardSequences/Services_cff')
 process.load('FWCore/MessageService/MessageLogger_cfi')
-process.MessageLogger.cerr.FwkReport.reportEvery = 100
+#process.MessageLogger.cerr.FwkReport.reportEvery = 100
+process.MessageLogger.cerr.FwkReport.reportEvery = 1
 #process.MessageLogger.cerr.threshold = cms.untracked.string('INFO')
 #process.MessageLogger.suppressInfo = cms.untracked.vstring()
 process.MessageLogger.suppressWarning = cms.untracked.vstring("PATTriggerProducer",)
@@ -67,13 +68,15 @@ process.maxEvents = cms.untracked.PSet(
 
 process.source = cms.Source("PoolSource",
     fileNames = cms.untracked.vstring(
-		'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/fall10/Ztautau/skimElecTau_1_1_6h9.root',
-        'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/fall10/Ztautau/skimElecTau_2_1_LLB.root',
-        'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/fall10/Ztautau/skimElecTau_3_1_oXg.root',
-        'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/fall10/Ztautau/skimElecTau_4_1_pwH.root',
-        'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/fall10/Ztautau/skimElecTau_5_1_EgY.root'
+	#'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/fall10/Ztautau/skimElecTau_1_1_6h9.root',
+        #'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/fall10/Ztautau/skimElecTau_2_1_LLB.root',
+        #'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/fall10/Ztautau/skimElecTau_3_1_oXg.root',
+        #'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/fall10/Ztautau/skimElecTau_4_1_pwH.root',
+        #'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/fall10/Ztautau/skimElecTau_5_1_EgY.root'
         #'/store/relval/CMSSW_3_8_7/RelValZTT/GEN-SIM-RECO/START38_V13-v1/0016/26155577-92FC-DF11-8E56-001A92810A9A.root',
         #'/store/relval/CMSSW_3_8_7/RelValZTT/GEN-SIM-RECO/START38_V13-v1/0016/506F0476-92FC-DF11-8886-00304867C1BC.root',
+        #'file:/data2/friis/HiggsPickEvents/e_tau_2010B_partial.root'
+        'file:/data1/veelken/CMSSW_3_8_x/skims/ztt_events.root'                         
     )
     #skipBadFiles = cms.untracked.bool(True)
 )
@@ -196,7 +199,7 @@ changeCut(process,"selectedPatTausForElecTauElectronVeto","leadPFCand().isNonnul
 changeCut(process,"selectedPatTausForElecTauEcalCrackVeto",'abs(eta) < 1.460 | abs(eta) > 1.558')
 
 #  muon veto for taus
-changeCut(process,"selectedPatTausForElecTauMuonVeto",'tauID("againstMuon") > 0.5')
+changeCut(process,"selectedPatTausForElecTauMuonVeto",'tauID("againstMuonTight") > 0.5')
 
 
 #
