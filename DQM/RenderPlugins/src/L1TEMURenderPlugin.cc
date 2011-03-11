@@ -14,8 +14,8 @@
  *      New render plugin for report summary map
  *
  *
- * $Date$
- * $Revision$
+ * $Date: 2011/03/09 14:54:42 $
+ * $Revision: 1.10 $
  *
  */
 
@@ -47,11 +47,14 @@ public:
 
     // determine whether core object is an L1TEMU object
     virtual bool applies(const VisDQMObject& dqmObj, const VisDQMImgInfo&) {
-        if (dqmObj.name.find("L1TEMU/") != std::string::npos
-                && dqmObj.name.find("L1TdeRCT/") == std::string::npos) {
+        if (dqmObj.name.find("L1TEMU/") != std::string::npos) {
 
-            return true;
-
+            // return true for all L1TEMU, except L1TdeRCT
+            if (dqmObj.name.find("L1TEMU/L1TdeRCT/") != std::string::npos) {
+                return false;
+            } else {
+                return true;
+            }
         }
 
         return false;
