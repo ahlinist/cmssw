@@ -91,7 +91,23 @@ options.register("skimFSR",
                  VarParsing.varType.bool,         # bool, string, int, or float
                  "Do you want to skim for pythia FSR?")
 
-
+## setup tags
+options.setupTags (tag = 'of_%d',
+    ifCond = 'totalSections > 0',
+    tagArg = 'totalSections'
+)
+options.setupTags (tag = '%d',
+    ifCond = 'totalSections in range(1,10)',
+    tagArg = 'section'
+)
+options.setupTags (tag = '%2d',
+    ifCond = 'totalSections in range(10,100)',
+    tagArg = 'section'
+)
+options.setupTags (tag = '%3d',
+    ifCond = 'totalSections >= 100',
+    tagArg = 'section'
+)
 options.setupTags(tag = "%doutEvents",
                   ifCond = "outEvents > 0",
                   tagArg = "outEvents")
