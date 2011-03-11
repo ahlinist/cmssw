@@ -138,7 +138,9 @@ class TauHistManager : public HistManagerBase
   MonitorElement* hTauDiscriminatorByTrackIsolation_;
   MonitorElement* hTauDiscriminatorByEcalIsolation_;
 
-  MonitorElement* hTauDiscriminatorAgainstElectrons_;
+  MonitorElement* hTauDiscriminatorAgainstElectronsLoose_;
+  MonitorElement* hTauDiscriminatorAgainstElectronsMedium_;
+  MonitorElement* hTauDiscriminatorAgainstElectronsTight_;
   MonitorElement* hTauPFElectronMVA_;
   MonitorElement* hTauEmFraction_;
   MonitorElement* hTauHcalTotOverPLead_;
@@ -148,7 +150,8 @@ class TauHistManager : public HistManagerBase
   MonitorElement* hTauBremsRecoveryEOverPLead_;
   MonitorElement* hTauCaloEOverPLead_;
 
-  MonitorElement* hTauDiscriminatorAgainstMuons_;
+  MonitorElement* hTauDiscriminatorAgainstMuonsLoose_;
+  MonitorElement* hTauDiscriminatorAgainstMuonsTight_;
 
   MonitorElement* hTauRecDecayMode_;
   MonitorElement* hTauRecVsGenDecayMode_;

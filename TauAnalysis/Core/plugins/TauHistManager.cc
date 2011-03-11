@@ -197,8 +197,12 @@ void TauHistManager::bookHistogramsImp()
   hTauDiscriminatorByEcalIsolation_ = book1D("TauDiscriminatorByEcalIsolation",
 					     "Discriminator by ECAL Isolation", 2, -0.5, 1.5);
 
-  hTauDiscriminatorAgainstElectrons_ = book1D("TauDiscriminatorAgainstElectrons",
-					      "Discriminator against Electrons", 2, -0.5, 1.5);
+  hTauDiscriminatorAgainstElectronsLoose_ = 
+    book1D("TauDiscriminatorAgainstElectronsLoose", "Discriminator against Electrons (loose)", 2, -0.5, 1.5);
+  hTauDiscriminatorAgainstElectronsMedium_ = 
+    book1D("TauDiscriminatorAgainstElectronsMedium", "Discriminator against Electrons (medium)", 2, -0.5, 1.5);
+  hTauDiscriminatorAgainstElectronsTight_ = 
+    book1D("TauDiscriminatorAgainstElectronsTight", "Discriminator against Electrons (tight)", 2, -0.5, 1.5);
   hTauPFElectronMVA_ = book1D("TauPFElectronMVA", "TauPFElectronMVA", 40, -1.01, +1.01);
   hTauEmFraction_ = book1D("TauEmFraction", "TauEmFraction", 101, -0.01, 2.01);
   hTauHcalTotOverPLead_ = book1D("TauHcalTotOverPLead", "TauHcalTotOverPLead", 101, -0.01, 2.01);
@@ -208,8 +212,10 @@ void TauHistManager::bookHistogramsImp()
   hTauBremsRecoveryEOverPLead_ = book1D("TauBremsRecoveryEOverPLead", "TauBremsRecoveryEOverPLead", 101, -0.01, 2.01);
   hTauCaloEOverPLead_ = book1D("TauCaloEOverPLead", "TauCaloEOverPLead", 101, -0.01, 2.01);
 
-  hTauDiscriminatorAgainstMuons_ = book1D("TauDiscriminatorAgainstMuons",
-					  "Discriminator against Muons", 2, -0.5, 1.5);
+  hTauDiscriminatorAgainstMuonsLoose_ = 
+    book1D("TauDiscriminatorAgainstMuonsLoose", "Discriminator against Muons (loose)", 2, -0.5, 1.5);
+  hTauDiscriminatorAgainstMuonsTight_ = 
+    book1D("TauDiscriminatorAgainstMuonsTight", "Discriminator against Muons (tight)", 2, -0.5, 1.5);
 
   hTauRecDecayMode_ = book1D("TauRecDecayMode", "rec. Tau decay mode", 20, -0.5, 19.5);
   setAxisLabelsRecTauDecayMode(hTauRecDecayMode_->getTH1()->GetXaxis());
@@ -557,7 +563,12 @@ void TauHistManager::fillHistogramsImp(const edm::Event& evt, const edm::EventSe
 				    discrAvailability_hasBeenChecked, weight);
     }
 
-    hTauDiscriminatorAgainstElectrons_->Fill(patTau->tauID("againstElectron"), weight);
+    fillTauDiscriminatorHistogram(hTauDiscriminatorAgainstElectronsLoose_, *patTau, "againstElectronLoose",
+				  discrAvailability_hasBeenChecked, weight);
+    fillTauDiscriminatorHistogram(hTauDiscriminatorAgainstElectronsMedium_, *patTau, "againstElectronMedium",
+				  discrAvailability_hasBeenChecked, weight);
+    fillTauDiscriminatorHistogram(hTauDiscriminatorAgainstElectronsTight_, *patTau, "againstElectronTight",
+				  discrAvailability_hasBeenChecked, weight);
     if ( patTau->leadPFCand().isNonnull() ) {
 	double pfElectronMVA = patTau->leadPFCand()->mva_e_pi();
 	if ( pfElectronMVA > +1.0 ) pfElectronMVA = +1.0;
@@ -572,7 +583,10 @@ void TauHistManager::fillHistogramsImp(const edm::Event& evt, const edm::EventSe
     hTauBremsRecoveryEOverPLead_->Fill(patTau->bremsRecoveryEOverPLead(), weight);
     hTauCaloEOverPLead_->Fill(patTau->ecalStripSumEOverPLead() + patTau->hcalTotOverPLead(), weight);
 
-    hTauDiscriminatorAgainstMuons_->Fill(patTau->tauID("againstMuon"), weight);
+    fillTauDiscriminatorHistogram(hTauDiscriminatorAgainstMuonsLoose_, *patTau, "againstMuonLoose",
+				  discrAvailability_hasBeenChecked, weight);
+    fillTauDiscriminatorHistogram(hTauDiscriminatorAgainstMuonsTight_, *patTau, "againstMuonTight",
+				  discrAvailability_hasBeenChecked, weight);
 
     int recTauDecayMode = patTau->decayMode();
     hTauRecDecayMode_->Fill(recTauDecayMode, weight);
