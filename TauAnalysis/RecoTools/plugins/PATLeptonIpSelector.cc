@@ -42,9 +42,6 @@ void PATLeptonIpSelector<T>::select(const edm::Handle<collection>& patLeptonColl
   evt.getByLabel(vertexSrc_, primaryEventVertexCollection);
   if ( primaryEventVertexCollection->size() < 1 ) {
     return;
-  } else if ( primaryEventVertexCollection->size() > 1 ) {
-    edm::LogError ("PATLeptonIpSelector::select") << " Cannot have more than one primary event vertex --> skipping !!";
-    return;
   } 
 
   const reco::Vertex& thePrimaryEventVertex = (*primaryEventVertexCollection->begin());
