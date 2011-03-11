@@ -302,8 +302,7 @@ selectedPatTausForElecTauLeadTrkPt.cut = selectedPatTausLeadTrkPt.cut
 selectedPatTausForElecTauTaNCdiscr.cut = cms.string('tauID("byHPSloose") > 0.5')
 selectedPatTausForElecTauProng.cut = selectedPatTausProng.cut
 selectedPatTausForElecTauCharge.cut = selectedPatTausCharge.cut
-#selectedPatTausForElecTauElectronVeto.cut = selectedPatTausElectronVeto.cut
-selectedPatTausForElecTauElectronVeto.cut = cms.string('leadPFCand().isNonnull() & leadPFCand().mva_e_pi() < -0.1 & hcalTotOverPLead() > 0.1')
+selectedPatTausForElecTauElectronVeto.cut = cms.string('tauID("againstElectronTight") > 0.5')
 selectedPatTausForElecTauEcalCrackVeto.cut =  selectedPatTausEcalCrackVeto.cut
 selectedPatTausForElecTauMuonVeto.cut = selectedPatTausMuonVeto.cut
 
