@@ -1,5 +1,10 @@
 import FWCore.ParameterSet.Config as cms
 
+muonsCountFilter = cms.EDFilter("CandViewCountFilter",
+    src = cms.InputTag("muons"),
+    minNumber = cms.uint32(2)
+    )
+
 goodLooseMuons = cms.EDFilter("MuonViewRefSelector",
     src = cms.InputTag("muons"),
     cut = cms.string("""
@@ -32,6 +37,7 @@ goodDimuonsFilter = cms.EDFilter("CandViewCountFilter",
     )
 
 dimuonSkimFilterSequence = cms.Sequence(
+    muonsCountFilter +
     (goodLooseMuons + goodLooseMuonsCountFilter) *
     goodTightMuons *
     goodDimuons *
