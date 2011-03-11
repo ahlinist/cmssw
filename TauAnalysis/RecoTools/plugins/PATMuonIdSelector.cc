@@ -76,7 +76,7 @@ PATMuonIdSelectorImp::PATMuonIdSelectorImp(const edm::ParameterSet& cfg)
   srcBeamSpot_ = cfg.getParameter<edm::InputTag>("beamSpotSource");
   if ( IPrefType_ == kVertex ) srcVertex_ = cfg.getParameter<edm::InputTag>("vertexSource");
 
-  print();
+  //print();
 }
 
 PATMuonIdSelectorImp::~PATMuonIdSelectorImp() 
