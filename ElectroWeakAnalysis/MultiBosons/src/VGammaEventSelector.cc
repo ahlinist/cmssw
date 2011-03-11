@@ -31,7 +31,7 @@ VGammaEventSelector::VGammaEventSelector( edm::ParameterSet const & params ) :
   zgphotonId_      (params.getParameter<edm::ParameterSet>("zGammaPhotonIdCfg")),
   wgphotonId_      (params.getParameter<edm::ParameterSet>("wGammaPhotonIdCfg")),
   minLeptonPhotonDR_ (params.getParameter<double>("minLeptonPhotonDeltaR")),
-  maxDeltaRPhotonNearLepton_ (params.getParameter<double>("maxDeltaRNearPhotonLepton"))
+  maxDeltaRPhotonNearLepton_ (params.getParameter<double>("maxDeltaRPhotonNearLepton"))
 {
   // make the bitset
   push_back( "Inclusive"      );
