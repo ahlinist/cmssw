@@ -1,5 +1,5 @@
-#ifndef ElectroWeakAnalysis_MultiBosons_VGammaEventSelector_h 
-#define ElectroWeakAnalysis_MultiBosons_VGammaEventSelector_h 
+#ifndef ElectroWeakAnalysis_MultiBosons_VGammaEventSelector_h
+#define ElectroWeakAnalysis_MultiBosons_VGammaEventSelector_h
 
 #include "PhysicsTools/SelectorUtils/interface/EventSelector.h"
 #include "FWCore/Utilities/interface/InputTag.h"
@@ -22,7 +22,7 @@ class VGammaEventSelector : public EventSelector {
  public:
   VGammaEventSelector() {}
   VGammaEventSelector( edm::ParameterSet const & params );
-  
+
   virtual bool operator()( edm::EventBase const & t, pat::strbitset & ret);
   using EventSelector::operator();
 
@@ -36,47 +36,47 @@ class VGammaEventSelector : public EventSelector {
   std::vector<reco::CompositeCandidate> const& allDiElectrons()      const { return *allDiElectrons_; }
   std::vector<reco::CompositeCandidate> const& allMuonPlusMETs()     const { return *allMuonPlusMETs_; }
   std::vector<reco::CompositeCandidate> const& allElectronPlusMETs() const { return *allElectronPlusMETs_; }
-  
+
   std::vector<reco::CompositeCandidate> const& allZMuMuGammaCands() const { return *allZMuMuGammaCands_; }
   std::vector<reco::CompositeCandidate> const& allZEEGammaCands()   const { return *allZEEGammaCands_; }
   std::vector<reco::CompositeCandidate> const& allWENuGammaCands()  const { return *allWENuGammaCands_; }
   std::vector<reco::CompositeCandidate> const& allWMuNuGammaCands() const { return *allWMuNuGammaCands_; }
   std::vector<reco::CompositeCandidate> const& allZNuNuGammaCands() const { return *allZNuNuGammaCands_; }
 
-  // photons  
-  std::vector<reco::ShallowClonePtrCandidate> const& selectedZGammaPhotons()     const 
+  // photons
+  std::vector<reco::ShallowClonePtrCandidate> const& selectedZGammaPhotons()     const
     { return selectedZGammaPhotons_; }
-  std::vector<reco::ShallowClonePtrCandidate> const& selectedWGammaPhotons()     const 
+  std::vector<reco::ShallowClonePtrCandidate> const& selectedWGammaPhotons()     const
     { return selectedWGammaPhotons_; }
 
   //muons
-  std::vector<reco::ShallowClonePtrCandidate> const& selectedZGammaMuons()     const 
+  std::vector<reco::ShallowClonePtrCandidate> const& selectedZGammaMuons()     const
     { return selectedZGammaMuons_; }
-  std::vector<reco::ShallowClonePtrCandidate> const& selectedWGammaMuons()     const 
+  std::vector<reco::ShallowClonePtrCandidate> const& selectedWGammaMuons()     const
     { return selectedWGammaMuons_; }
 
   //electrons
-  std::vector<reco::ShallowClonePtrCandidate> const& selectedZGammaElectrons()     const 
+  std::vector<reco::ShallowClonePtrCandidate> const& selectedZGammaElectrons()     const
     { return selectedZGammaElectrons_; }
-  std::vector<reco::ShallowClonePtrCandidate> const& selectedWGammaElectrons()     const 
+  std::vector<reco::ShallowClonePtrCandidate> const& selectedWGammaElectrons()     const
     { return selectedWGammaElectrons_; }
 
   //met
-  std::vector<reco::ShallowClonePtrCandidate> const& selectedZGammaMETs()     const 
+  std::vector<reco::ShallowClonePtrCandidate> const& selectedZGammaMETs()     const
     { return selectedZGammaMETs_; }
-  std::vector<reco::ShallowClonePtrCandidate> const& selectedWGammaMETs()     const 
+  std::vector<reco::ShallowClonePtrCandidate> const& selectedWGammaMETs()     const
     { return selectedWGammaMETs_; }
-  
+
   //lepton+MET
-  std::vector<reco::ShallowClonePtrCandidate> const& selectedWGammaMuonPlusMETs()     const 
+  std::vector<reco::ShallowClonePtrCandidate> const& selectedWGammaMuonPlusMETs()     const
     { return selectedWGammaMuonPlusMETs_; }
-  std::vector<reco::ShallowClonePtrCandidate> const& selectedWGammaElectronPlusMETs()     const 
+  std::vector<reco::ShallowClonePtrCandidate> const& selectedWGammaElectronPlusMETs()     const
     { return selectedWGammaElectronPlusMETs_; }
 
   // dileptons
-  std::vector<reco::ShallowClonePtrCandidate> const& selectedZGammaDiMuons()     const 
+  std::vector<reco::ShallowClonePtrCandidate> const& selectedZGammaDiMuons()     const
     { return selectedZGammaDiMuons_; }
-  std::vector<reco::ShallowClonePtrCandidate> const& selectedZGammaDiElectrons()     const 
+  std::vector<reco::ShallowClonePtrCandidate> const& selectedZGammaDiElectrons()     const
     { return selectedZGammaDiElectrons_; }
 
 
@@ -85,19 +85,19 @@ class VGammaEventSelector : public EventSelector {
   VGammaLeptonMETEventSelector const& leptonPlusMETSelector() const { return leptonPlusMETId_; }
   /* // will be uncommented as the selectors are written
   VGammaPhotonPlusMETEventSelector const& photonPlusMETSelector() const { return photonPlusMETId_; }
-  */  
+  */
 
   // accessors to full VGamma objects
-  std::vector<reco::ShallowClonePtrCandidate> const& selectedZEEGammaCands()     const 
+  std::vector<reco::ShallowClonePtrCandidate> const& selectedZEEGammaCands()     const
     { return selectedZEEGammaCands_; }
-  std::vector<reco::ShallowClonePtrCandidate> const& selectedZMuMuGammaCands()   const 
+  std::vector<reco::ShallowClonePtrCandidate> const& selectedZMuMuGammaCands()   const
     { return selectedZMuMuGammaCands_; }
-  std::vector<reco::ShallowClonePtrCandidate> const& selectedWENuGammaCands()    const 
+  std::vector<reco::ShallowClonePtrCandidate> const& selectedWENuGammaCands()    const
     { return selectedWENuGammaCands_; }
-  std::vector<reco::ShallowClonePtrCandidate> const& selectedWMuNuGammaCands()   const 
+  std::vector<reco::ShallowClonePtrCandidate> const& selectedWMuNuGammaCands()   const
     { return selectedWMuNuGammaCands_; }
   /* // needs to be written
-   std::vector<reco::ShallowClonePtrCandidate> const& selectedZNuNuGammaCands()   const 
+   std::vector<reco::ShallowClonePtrCandidate> const& selectedZNuNuGammaCands()   const
     { return photonPlusMETId_.selectedPhotonPlusMETs(); }
   */
 
@@ -106,7 +106,7 @@ class VGammaEventSelector : public EventSelector {
     this->print(out);
     if(verbose_) {
       out << "DiLepton Selector: " << std::endl;
-      diLeptonId_.printSelectors(out);    
+      diLeptonId_.printSelectors(out);
       out << "Lepton+MET Selector: " << std::endl;
       leptonPlusMETId_.printSelectors(out);
       out << "ZGamma Photon Selector: " << std::endl;
@@ -121,8 +121,8 @@ class VGammaEventSelector : public EventSelector {
       */
     }
   }
- 
- protected: 
+
+ protected:
 
   void fillAll( edm::EventBase const & event );
   double deltaR(const reco::Candidate*, const reco::Candidate*) const;
@@ -131,7 +131,7 @@ class VGammaEventSelector : public EventSelector {
 
   edm::InputTag               trigTag_;
   edm::InputTag               muonTag_;
-  edm::InputTag               electronTag_;  
+  edm::InputTag               electronTag_;
   edm::InputTag               photonTag_;
   edm::InputTag               metTag_;
   edm::InputTag               dimuonTag_;
@@ -164,7 +164,7 @@ class VGammaEventSelector : public EventSelector {
   edm::Handle<std::vector<reco::CompositeCandidate> > allWENuGammaCands_;
   edm::Handle<std::vector<reco::CompositeCandidate> > allWMuNuGammaCands_;
   edm::Handle<std::vector<reco::CompositeCandidate> > allZNuNuGammaCands_;
-  
+
   std::vector<reco::ShallowClonePtrCandidate> selectedZGammaPhotons_;
   std::vector<reco::ShallowClonePtrCandidate> selectedWGammaPhotons_;
   std::vector<reco::ShallowClonePtrCandidate> selectedZGammaMuons_;
@@ -177,18 +177,19 @@ class VGammaEventSelector : public EventSelector {
   std::vector<reco::ShallowClonePtrCandidate> selectedZGammaDiElectrons_;
   std::vector<reco::ShallowClonePtrCandidate> selectedWGammaMuonPlusMETs_;
   std::vector<reco::ShallowClonePtrCandidate> selectedWGammaElectronPlusMETs_;
-  
+
   std::vector<reco::ShallowClonePtrCandidate> selectedZEEGammaCands_;
   std::vector<reco::ShallowClonePtrCandidate> selectedZMuMuGammaCands_;
-  std::vector<reco::ShallowClonePtrCandidate> selectedWENuGammaCands_;  
+  std::vector<reco::ShallowClonePtrCandidate> selectedWENuGammaCands_;
   std::vector<reco::ShallowClonePtrCandidate> selectedWMuNuGammaCands_;
 
   VGammaDiLeptonEventSelector            diLeptonId_;
   VGammaLeptonMETEventSelector       leptonPlusMETId_;
   //VGammaPhotonPlusMETEventSelector            photonPlusMETId_;
   VGammaPhotonSelector                   zgphotonId_,wgphotonId_;
-  
+
   double minLeptonPhotonDR_;
+  double maxNearLeptonPhotonDeltaR_;
 
 };
 
