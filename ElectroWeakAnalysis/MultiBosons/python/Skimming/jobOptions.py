@@ -2,6 +2,10 @@ import copy
 import sys
 from ElectroWeakAnalysis.MultiBosons.Skimming.options import options as defaultOptions
 
+
+## IDEA: manipulate the command line arguments in sys.argv to parse only the
+## jobType first and then parse the rest of the options
+
 def applyJobOptions(options):
   """
   Set multiple options defined by the jobType argument.
@@ -154,6 +158,30 @@ def applyJobOptions(options):
     jobOptions.isRealData = False
     jobOptions.wantSummary = True
     jobOptions.hltProcessName = "REDIGI39X"
+
+  elif options.jobType == "Winter10":
+    jobOptions.inputFiles =  ["/store/mc/Winter10/" + \
+      "DYToMuMu_M-20_CT10_TuneZ2_7TeV-powheg-pythia/" + \
+      "GEN-SIM-RECO/E7TeV_ProbDist_2010Data_BX156_START39_V8-v1/0033/" + \
+      "FE75602D-4810-E011-B662-1CC1DE051038.root"
+      ]
+    jobOptions.skimType = "Dimuon"
+    jobOptions.globalTag = "START39_V8::All"
+    jobOptions.reportEvery = 1000
+    jobOptions.isRealData = False
+    jobOptions.wantSummary = True
+    jobOptions.hltProcessName = "REDIGI39X"
+
+  elif options.jobType == "Dec22ReReco":
+    jobOptions.inputFiles =  ["/store/data/Run2010B/Mu/RECO/" + \
+      "Dec22ReReco_v1/0025/60BB3418-F60F-E011-8952-90E6BA0D09CB.root"
+      ]
+    jobOptions.skimType = "Dimuon"
+    jobOptions.globalTag = "GR_R_39X_V6::All"
+    jobOptions.reportEvery = 1000
+    jobOptions.isRealData = True
+    jobOptions.wantSummary = True
+    jobOptions.hltProcessName = "HLT"
 
   elif options.jobType == "MUPHPromptReco36X":
     jobOptions.globalTag = "GR10_P_V7::All"
