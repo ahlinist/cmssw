@@ -147,4 +147,4 @@ produceMuTauPairsLooseMuonIsolation = muTauPairProdConfiguratorLooseMuonIsolatio
 produceMuTauPairsAll = cms.Sequence(produceMuTauPairs * produceMuTauPairsLooseMuonIsolation)
 
 from TauAnalysis.CandidateTools.nSVfitAlgorithmDiTau_cfi import nSVfitProducer
-produceMuTauPairsAll *= nSVfitProducer
+#produceMuTauPairsAll *= nSVfitProducer
