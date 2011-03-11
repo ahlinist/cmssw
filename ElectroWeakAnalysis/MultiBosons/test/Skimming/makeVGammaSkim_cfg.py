@@ -209,21 +209,20 @@ elif options.skimType == "ElectronPhoton":
 elif options.skimType == "Dimuon":
     removeTriggerPathsForAllBut(matchHltPaths, ["cleanPatMuons"])
     ## Don't require any triggers.
-    # process.skimFilterSequence.remove(process.hltFilter)
+    process.skimFilterSequence.remove(process.hltFilter)
     ## Require the Muon PD
-    process.hltFilter.HLTPaths = ["*Mu*"]
+    # process.hltFilter.HLTPaths = ["*Mu*"]
     if not options.ignoreSkimFilter:
         process.load(basePath + "dimuonSkimFilterSequence_cff")
         process.skimFilterSequence += process.dimuonSkimFilterSequence
     ## Add the photon re-reco.
-    ## FIXME: make this work in 39x
-#      addPhotonReReco(process)
+    addPhotonReReco(process)
     ## Now change the photon reco to much looser settings.
-#     process.photonCore.minSCEt = 1.0
-#     process.photons.minSCEtBarrel = 1.0
-#     process.photons.minSCEtEndcap = 1.0
-#     process.photons.maxHoverEBarrel = 10.0
-#     process.photons.maxHoverEEndcap = 10.0
+    process.photonCore.minSCEt = 2.0
+    process.photons.minSCEtBarrel = 2.0
+    process.photons.minSCEtEndcap = 2.0
+    process.photons.maxHoverEBarrel = 10.0
+    process.photons.maxHoverEEndcap = 10.0
     ## Remove the pi0 discriminator
     ## (currently doesn't work with extremely loose photons)
     ## FIXME: make the pi0Discriminator work for these weird photons too
@@ -255,9 +254,9 @@ elif options.skimType == "Jet":
         process.skimFilterSequence += process.jetSkimFilterSequence
     addPhotonReReco(process)
     # now change the photon reco to much looser settings
-    process.photonCore.minSCEt = 10.0
-    process.photons.minSCEtBarrel = 10.0
-    process.photons.minSCEtEndcap = 10.0
+    process.photonCore.minSCEt = 2.0
+    process.photons.minSCEtBarrel = 2.0
+    process.photons.minSCEtEndcap = 2.0
     process.photons.maxHoverEBarrel = 10.0
     process.photons.maxHoverEEndcap = 10.0
     #edit the pat sequence to do the rereco
@@ -283,7 +282,8 @@ else:
     process.primaryVertexFilterPath = cms.Path(process.primaryVertexFilter)
     process.noScrapingPath = cms.Path(process.noScraping)
     process.load(basePath + "prunedGenParticles_cfi")
-    if not options.applyCollisionDataCleaningToMC:
+    if not options.applyCollisionDataCleaningToMC \
+        and repr(process.skimFilterSequence) != repr(cms.Sequence()):
         process.skimFilterSequence.remove(process.goodCollisionDataSequence)
     process.defaultSequence = cms.Sequence(
         process.skimFilterSequence +
@@ -404,13 +404,18 @@ if not options.isRealData:
 
 process.options.wantSummary = options.wantSummary
 
-## Turn off dimuon filter for testing
-if False and hasattr(process, "goodDimuonsFilter"):
-    process.goodDimuonsFilter.minNumber = 0
-
 ## Check for an empty path in the output
 if str(process.skimFilterPath) == "None":
     del process.out.SelectEvents
+
+## Test photon re-reco
+# process.TFileService = cms.Service("TFileService",
+#   fileName = cms.string("histo_withPhotonReReco.root")
+# )
+# process.load(basePath + "testPhotonReRecoSequence_cff")
+# process.testPhotonReRecoPath = cms.Path(process.defaultSequence *
+#                                         process.testPhotonReRecoSequence)
+
 
 ## Add tab completion + history during inspection
 if __name__ == "__main__": import user
