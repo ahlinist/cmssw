@@ -16,10 +16,10 @@ VGammaEventSelector::VGammaEventSelector( edm::ParameterSet const & params ) :
   dielectronTag_   (params.getParameter<edm::InputTag>("dielectronSrc") ),
   electronMETTag_  (params.getParameter<edm::InputTag>("electronMETSrc") ),
   muonMETTag_      (params.getParameter<edm::InputTag>("muonMETSrc") ),
-  zeegTag_         (params.getParameter<edm::InputTag>("zeegSrc") ),  
-  zmumugTag_       (params.getParameter<edm::InputTag>("zmumugSrc")),  
-  wenugTag_        (params.getParameter<edm::InputTag>("wenugSrc") ),  
-  wmunugTag_       (params.getParameter<edm::InputTag>("wmunugSrc")), 
+  zeegTag_         (params.getParameter<edm::InputTag>("zeegSrc") ),
+  zmumugTag_       (params.getParameter<edm::InputTag>("zmumugSrc")),
+  wenugTag_        (params.getParameter<edm::InputTag>("wenugSrc") ),
+  wmunugTag_       (params.getParameter<edm::InputTag>("wmunugSrc")),
   znunugTag_       (params.getParameter<edm::InputTag>("znunugSrc")),
   muTrig_          (params.getParameter<std::string>("muTrig")),
   eleTrig_         (params.getParameter<std::string>("eleTrig")),
@@ -30,30 +30,33 @@ VGammaEventSelector::VGammaEventSelector( edm::ParameterSet const & params ) :
   //photonPlusMETId_(params.getParameter<edm::ParameterSet>("photonPlusMETIdCfg")),
   zgphotonId_      (params.getParameter<edm::ParameterSet>("zGammaPhotonIdCfg")),
   wgphotonId_      (params.getParameter<edm::ParameterSet>("wGammaPhotonIdCfg")),
-  minLeptonPhotonDR_ (params.getParameter<double>("minLeptonPhotonDeltaR"))
+  minLeptonPhotonDR_ (params.getParameter<double>("minLeptonPhotonDeltaR")),
+  maxDeltaRPhotonNearLepton_ (params.getParameter<double>("maxDeltaRNearPhotonLepton"))
 {
   // make the bitset
   push_back( "Inclusive"      );
   push_back( "Trigger"        );
   push_back( ">= 1 Photon"  );
-  push_back( "== 1 Tight Photon" );  
+  push_back( "== 1 Tight Photon" );
   push_back( "Pass DiLepton Id" );
   push_back( "Pass Lepton+MET Id" );
   push_back( "Pass Photon+MET Id" );
+  push_back( "max DR(g,l_near)" );
   push_back( "ZMuMuGamma" );
   push_back( "ZEEGamma" );
   push_back( "WMuNuGamma" );
   push_back( "WENuGamma" );
   push_back( "ZInvisibleGamma" );
-  
+
   // turn (almost) everything on by default
   set( "Inclusive"      );
   set( "Trigger"        );
   set( ">= 1 Photon"  );
-  set( "== 1 Tight Photon" );  
+  set( "== 1 Tight Photon" );
   set( "Pass DiLepton Id"  );
   set( "Pass Lepton+MET Id" );
   set( "Pass Photon+MET Id" );
+  set( "max DR(g,l_near)" );
   set( "ZMuMuGamma" );
   set( "ZEEGamma" );
   set( "WMuNuGamma" );
@@ -61,7 +64,7 @@ VGammaEventSelector::VGammaEventSelector( edm::ParameterSet const & params ) :
   set( "ZInvisibleGamma" );
 
   if ( params.exists("cutsToIgnore") )
-    setIgnoredCuts( params.getParameter<std::vector<std::string> >("cutsToIgnore") );  
+    setIgnoredCuts( params.getParameter<std::vector<std::string> >("cutsToIgnore") );
 
   retInternal_ = getBitTemplate();
 }
@@ -69,7 +72,7 @@ VGammaEventSelector::VGammaEventSelector( edm::ParameterSet const & params ) :
 bool VGammaEventSelector::operator() ( edm::EventBase const & event, pat::strbitset & ret)
 {
   ret.set(false);
-  
+
   selectedZGammaPhotons_.clear();
   selectedWGammaPhotons_.clear();
   selectedZGammaMuons_.clear();
@@ -108,18 +111,18 @@ bool VGammaEventSelector::operator() ( edm::EventBase const & event, pat::strbit
       pat::TriggerPath const * elePath = trig->path(eleTrig_);
 
       if ( muPath != 0 && muPath->wasAccept() ) {
-	passTrig = true;    
+	passTrig = true;
       }
-      
+
       if ( elePath != 0 && elePath->wasAccept() ) {
 	passTrig = true;
       }
     }
   }
 
-  if ( ignoreCut("Trigger") || 
+  if ( ignoreCut("Trigger") ||
        passTrig ) {
-    passCut(ret, "Trigger");    
+    passCut(ret, "Trigger");
 
     unsigned len(0);
 
@@ -152,47 +155,48 @@ bool VGammaEventSelector::operator() ( edm::EventBase const & event, pat::strbit
 
     selectedWGammaMETs_.reserve(len);
     selectedWGammaPhotons_.reserve(len);
-    
+
     if(ignoreCut(">= 1 Photon") || allPhotons_->size()) passCut(ret,">= 1 Photon");
-    
+
     if(!ignoreCut("ZMuMuGamma")) {
       //std::cout << "Selecting ZMuMuGamma events!" << std::endl;
-      for ( unsigned i = 0; i < allZMuMuGammaCands_->size(); ++i ) {	
-	const reco::CompositeCandidate* zmumu = (const reco::CompositeCandidate*)allZMuMuGammaCands_->at(i).daughter(0);	
+      for ( unsigned i = 0; i < allZMuMuGammaCands_->size(); ++i ) {
+	const reco::CompositeCandidate* zmumu = (const reco::CompositeCandidate*)allZMuMuGammaCands_->at(i).daughter(0);
 	const pat::Photon* photon = (const pat::Photon*)allZMuMuGammaCands_->at(i).daughter(1)->masterClonePtr().get();
-	
+
 	if( diLeptonId_(*zmumu,event) && zgphotonId_(*photon,event) ) {
-	  if ( deltaR(zmumu->daughter(0),photon) > minLeptonPhotonDR_ && 
-	       deltaR(zmumu->daughter(1),photon) > minLeptonPhotonDR_ ) {	  
-	    
-	    selectedZMuMuGammaCands_.push_back( reco::ShallowClonePtrCandidate( edm::Ptr<reco::CompositeCandidate>( allZMuMuGammaCands_, 
-														    i ) ) ); 
+	  if ( deltaR(zmumu->daughter(0),photon) > minLeptonPhotonDR_ &&
+	       deltaR(zmumu->daughter(1),photon) > minLeptonPhotonDR_ ) {
+
+	    selectedZMuMuGammaCands_.push_back( reco::ShallowClonePtrCandidate( edm::Ptr<reco::CompositeCandidate>( allZMuMuGammaCands_,
+														    i ) ) );
 	    selectedZGammaMuons_.push_back( reco::ShallowClonePtrCandidate( zmumu->daughter(0)->masterClonePtr() ) );
 	    selectedZGammaMuons_.push_back( reco::ShallowClonePtrCandidate( zmumu->daughter(1)->masterClonePtr() ) );
 	    //selectedZGammaDiMuons_.push_back( reco::ShallowClonePtrCandidate( izmumug->daughter(0)->masterClonePtr() ) );
 	    selectedZGammaPhotons_.push_back( reco::ShallowClonePtrCandidate( allZMuMuGammaCands_->at(i).daughter(1)->masterClonePtr() ) );
 	  }
-	}	
+	}
       }
     }
-    
+
     if(!ignoreCut("ZEEGamma")) {
-      for ( unsigned i = 0; i < allZEEGammaCands_->size(); ++i ) {	
+      for ( unsigned i = 0; i < allZEEGammaCands_->size(); ++i ) {
 	const reco::CompositeCandidate *zee = (const reco::CompositeCandidate*)allZMuMuGammaCands_->at(i).daughter(0);
 	const pat::Photon *photon = (const pat::Photon*)allZEEGammaCands_->at(i).daughter(1)->masterClonePtr().get();
 
-	if( diLeptonId_(*zee,event) && zgphotonId_(*photon,event) ) {
-	  if( deltaR(zee->daughter(0),photon) > minLeptonPhotonDR_ && 
-	      deltaR(zee->daughter(1),photon) > minLeptonPhotonDR_ ) {
-	    
-	    selectedZEEGammaCands_.push_back( reco::ShallowClonePtrCandidate( edm::Ptr<reco::CompositeCandidate>( allZEEGammaCands_, 
-														  i ) ) );
-	    selectedZGammaElectrons_.push_back( reco::ShallowClonePtrCandidate( zee->daughter(0)->masterClonePtr() ) );
-	    selectedZGammaElectrons_.push_back( reco::ShallowClonePtrCandidate( zee->daughter(1)->masterClonePtr() ) );
-	    //selectedZGammaDiElectrons_.push_back( reco::ShallowClonePtrCandidate( izeeg->daughter(0)->masterClonePtr() ) );
-	    selectedZGammaPhotons_.push_back( reco::ShallowClonePtrCandidate( allZEEGammaCands_->at(i).daughter(1)->masterClonePtr() ) );
-	  }
-	}      
+	if ( !diLeptonId_(*zee,event) ) continue;
+        if ( !zgphotonId_(*photon,event) ) continue;
+
+        if( deltaR(zee->daughter(0),photon) > minLeptonPhotonDR_ &&
+            deltaR(zee->daughter(1),photon) > minLeptonPhotonDR_ ) {
+
+          selectedZEEGammaCands_.push_back( reco::ShallowClonePtrCandidate( edm::Ptr<reco::CompositeCandidate>( allZEEGammaCands_,
+                                                                                                                i ) ) );
+          selectedZGammaElectrons_.push_back( reco::ShallowClonePtrCandidate( zee->daughter(0)->masterClonePtr() ) );
+          selectedZGammaElectrons_.push_back( reco::ShallowClonePtrCandidate( zee->daughter(1)->masterClonePtr() ) );
+          //selectedZGammaDiElectrons_.push_back( reco::ShallowClonePtrCandidate( izeeg->daughter(0)->masterClonePtr() ) );
+          selectedZGammaPhotons_.push_back( reco::ShallowClonePtrCandidate( allZEEGammaCands_->at(i).daughter(1)->masterClonePtr() ) );
+        }
       }
     }
 
@@ -201,30 +205,38 @@ bool VGammaEventSelector::operator() ( edm::EventBase const & event, pat::strbit
       for ( unsigned i = 0; i < allWMuNuGammaCands_->size(); ++i ) {
 	const reco::CompositeCandidate *wmunu = (const reco::CompositeCandidate*)allWMuNuGammaCands_->at(i).daughter(0);
 	const pat::Photon *photon = (const pat::Photon*)allWMuNuGammaCands_->at(i).daughter(1)->masterClonePtr().get();
-	
-	if( leptonPlusMETId_(*wmunu,event) && wgphotonId_(*photon,event) ) {
-	  if( deltaR(wmunu->daughter(0),photon) > minLeptonPhotonDR_ ) {
-	    
-	    selectedWMuNuGammaCands_.push_back( reco::ShallowClonePtrCandidate( edm::Ptr<reco::CompositeCandidate>( allWMuNuGammaCands_, 
-														    i ) ) );
-	    selectedWGammaMuons_.push_back( reco::ShallowClonePtrCandidate( wmunu->daughter(0)->masterClonePtr() ) );
-	    selectedWGammaMETs_.push_back( reco::ShallowClonePtrCandidate( wmunu->daughter(1)->masterClonePtr() ) );
-	    //selectedWGammaMuonPlusMETs_.push_back( reco::ShallowClonePtrCandidate( iwmunug->daughter(0)->masterClonePtr() ) );
-	    selectedWGammaPhotons_.push_back( reco::ShallowClonePtrCandidate( allWMuNuGammaCands_->at(i).daughter(1)->masterClonePtr() ) );
-	  }
-	}
+
+	if ( ! leptonPlusMETId_(*wmunu,event) ) continue;
+
+        if ( ! ignoreCut("== 1 Tight Photon") &&
+             ! wgphotonId_(*photon,event)        ) continue;
+
+        double drNear = deltaR(wmunu->daughter(0), photon);
+
+        if ( ! ( drNear > minLeptonPhotonDR_ ) ) continue;
+
+        if ( ! ignoreCut("max DR(g,l_near)") &&
+             ! ( drNear < maxDeltaRPhotonNearLepton_  ) ) continue;
+        passCut(ret, "max DR(g,l_near)");
+
+        selectedWMuNuGammaCands_.push_back( reco::ShallowClonePtrCandidate( edm::Ptr<reco::CompositeCandidate>( allWMuNuGammaCands_,
+                                                                                                                i ) ) );
+        selectedWGammaMuons_.push_back( reco::ShallowClonePtrCandidate( wmunu->daughter(0)->masterClonePtr() ) );
+        selectedWGammaMETs_.push_back( reco::ShallowClonePtrCandidate( wmunu->daughter(1)->masterClonePtr() ) );
+        //selectedWGammaMuonPlusMETs_.push_back( reco::ShallowClonePtrCandidate( iwmunug->daughter(0)->masterClonePtr() ) );
+        selectedWGammaPhotons_.push_back( reco::ShallowClonePtrCandidate( allWMuNuGammaCands_->at(i).daughter(1)->masterClonePtr() ) );
       }
     }
-    
+
     if(!ignoreCut("WENuGamma")) {
-      for ( unsigned i = 0; i < allWENuGammaCands_->size(); ++i ) {	
+      for ( unsigned i = 0; i < allWENuGammaCands_->size(); ++i ) {
 	const reco::CompositeCandidate *wenu = (const reco::CompositeCandidate*)allWENuGammaCands_->at(i).daughter(0);
 	const pat::Photon *photon = (const pat::Photon*)allWENuGammaCands_->at(i).daughter(1)->masterClonePtr().get();
-		
+
 	if( leptonPlusMETId_(*wenu,event) && wgphotonId_(*photon,event) ) {
 	  if( deltaR(wenu->daughter(0),photon) > minLeptonPhotonDR_ ) {
-	    
-	    selectedWENuGammaCands_.push_back( reco::ShallowClonePtrCandidate( edm::Ptr<reco::CompositeCandidate>( allWENuGammaCands_, 
+
+	    selectedWENuGammaCands_.push_back( reco::ShallowClonePtrCandidate( edm::Ptr<reco::CompositeCandidate>( allWENuGammaCands_,
 														   i ) ) );
 	    selectedWGammaElectrons_.push_back( reco::ShallowClonePtrCandidate( wenu->daughter(0)->masterClonePtr() ) );
 	    selectedWGammaMETs_.push_back( reco::ShallowClonePtrCandidate( wenu->daughter(1)->masterClonePtr() ) );
@@ -235,15 +247,15 @@ bool VGammaEventSelector::operator() ( edm::EventBase const & event, pat::strbit
       }
     }
     // when it's ready...
-    if(!ignoreCut("ZInvisibleGamma")) {      
+    if(!ignoreCut("ZInvisibleGamma")) {
       for ( unsigned i = 0; i < allWENuGammaCands_->size(); ++i ) {
 	const reco::CompositeCandidate *wenu = (const reco::CompositeCandidate*)allWENuGammaCands_->at(i).daughter(0);
 	const pat::Photon *photon = (const pat::Photon*)allWENuGammaCands_->at(i).daughter(1)->masterClonePtr().get();
-		
+
 	if( leptonPlusMETId_(*wenu,event) && wgphotonId_(*photon,event) ) {
 	  if( deltaR(wenu->daughter(0),photon) > minLeptonPhotonDR_ ) {
-	    
-	    selectedWENuGammaCands_.push_back( reco::ShallowClonePtrCandidate( edm::Ptr<reco::CompositeCandidate>( allWENuGammaCands_, 
+
+	    selectedWENuGammaCands_.push_back( reco::ShallowClonePtrCandidate( edm::Ptr<reco::CompositeCandidate>( allWENuGammaCands_,
 														   i ) ) );
 	    selectedWGammaElectrons_.push_back( reco::ShallowClonePtrCandidate( wenu->daughter(0)->masterClonePtr() ) );
 	    selectedWGammaMETs_.push_back( reco::ShallowClonePtrCandidate( wenu->daughter(1)->masterClonePtr() ) );
@@ -254,45 +266,45 @@ bool VGammaEventSelector::operator() ( edm::EventBase const & event, pat::strbit
       }
     }
 
-    if(ignoreCut("== 1 Tight Photon") || 
+    if(ignoreCut("== 1 Tight Photon") ||
        selectedZGammaPhotons_.size() == 1 ||
        selectedWGammaPhotons_.size() == 1) passCut(ret,"== 1 Tight Photon");
 
     if(ignoreCut("Pass DiLepton Id") || diLeptonId_(event)) passCut(ret,"Pass DiLepton Id");
-       
+
     //if(ignoreCut("Pass Lepton+MET Id") || leptonPlusMETId_(event)) passCut(ret,"Pass Lepton+MET Id");
-    
+
     if(ignoreCut("Pass Photon+MET Id") || false) passCut(ret,"Pass Photon+MET Id");
-       
-    if(ignoreCut("ZMuMuGamma") || selectedZMuMuGammaCands_.size() == 1) passCut(ret,"ZMuMuGamma");    
-    if(ignoreCut("ZEEGamma")   || selectedZEEGammaCands_.size() == 1)   passCut(ret,"ZEEGamma");    
+
+    if(ignoreCut("ZMuMuGamma") || selectedZMuMuGammaCands_.size() == 1) passCut(ret,"ZMuMuGamma");
+    if(ignoreCut("ZEEGamma")   || selectedZEEGammaCands_.size() == 1)   passCut(ret,"ZEEGamma");
     if(ignoreCut("WMuNuGamma") || selectedWMuNuGammaCands_.size() == 1) passCut(ret,"WMuNuGamma");
     if(ignoreCut("WENuGamma")  || selectedWENuGammaCands_.size() == 1)  passCut(ret,"WENuGamma");
     //if(ignoreCut("ZInvisibleGamma") || selectedZNuNuGammaCands().size() == 1) passCut(ret,"ZInvisibleGamma");
-    
+
   } // end if trigger
 
   setIgnored(ret);
-  
+
   return (bool)ret;
 }
 
-void VGammaEventSelector::fillAll( edm::EventBase const & event ) 
+void VGammaEventSelector::fillAll( edm::EventBase const & event )
 {
   event.getByLabel (photonTag_, allPhotons_);
 
   if(!(ignoreCut("ZMuMuGamma") && ignoreCut("WMuNuGamma")))
     event.getByLabel(muonTag_, allMuons_);
-   
+
   if(!(ignoreCut("ZEEGamma") && ignoreCut("WENuGamma")))
     event.getByLabel(electronTag_, allElectrons_);
 
-  if(!(ignoreCut("WENuGamma") && ignoreCut("WMuNuGamma") && ignoreCut("ZInvisibleGamma")))  
+  if(!(ignoreCut("WENuGamma") && ignoreCut("WMuNuGamma") && ignoreCut("ZInvisibleGamma")))
     event.getByLabel(metTag_, allMETs_);
 
   if(!ignoreCut("ZMuMuGamma"))
     event.getByLabel(dimuonTag_, allDiMuons_);
-  
+
   if(!ignoreCut("ZEEGamma"))
     event.getByLabel(dielectronTag_, allDiElectrons_);
 

@@ -528,7 +528,7 @@ void HistoPhoton::fill( const Photon * photon, uint iE, double weight )
 
     bool  scIsInBarrel=false;
     bool  scIsInEndcap=false;
-    if ( fabs(etaClu) <  1.479 ) 
+    if ( fabs(etaClu) <  1.479 )
       scIsInBarrel=true;
     else
       scIsInEndcap=true;
@@ -545,7 +545,7 @@ void HistoPhoton::fill( const Photon * photon, uint iE, double weight )
 
 
     bool isIsolated=false;
-//    if ( (nTracks < numOfTracksInCone_) && 
+//    if ( (nTracks < numOfTracksInCone_) &&
 //           ( ptSum < trkPtSumCut_) &&
 //           ( ecalSum < ecalEtSumCut_ ) &&  ( hcalSum < hcalEtSumCut_ ) ) isIsolated = true;
 
@@ -554,7 +554,7 @@ void HistoPhoton::fill( const Photon * photon, uint iE, double weight )
     int type=0;
     if ( !isIsolated ) type=1;
 
-    nPho[type]++; 
+    nPho[type]++;
     if (phoIsInBarrel) nPhoBarrel[type]++;
     if (phoIsInEndcap) nPhoEndcap[type]++;
 
@@ -602,7 +602,7 @@ void HistoPhoton::fill( const Photon * photon, uint iE, double weight )
       h_phoEt_[type][1]->fill( (*photon).energy()/ cosh( (*photon).eta()) ,iE, weight);
       h_nConv_[type][1]->fill(float( (*photon).conversions().size()),iE, weight);
      }
-    
+
     if ( phoIsInEndcap ) {
       h_phoE_[type][2]->fill( (*photon).energy() ,iE, weight);
       h_phoEt_[type][2]->fill( (*photon).energy()/ cosh( (*photon).eta()) ,iE, weight);
@@ -611,34 +611,34 @@ void HistoPhoton::fill( const Photon * photon, uint iE, double weight )
 
    ////////////////// plot quantitied related to conversions
     reco::ConversionRefVector conversions = (*photon).conversions();
- 
+
     for (unsigned int iConv=0; iConv<conversions.size(); iConv++) {
 
 // two dimensional histogram
-//      h_r9VsNofTracks_[type][0]->fill( r9, conversions[iConv]->nTracks() ) ; 
- 
-//      if ( phoIsInBarrel ) h_r9VsNofTracks_[type][1]->fill( r9,  conversions[iConv]->nTracks() ) ; 
- 
-//      if ( phoIsInEndcap ) h_r9VsNofTracks_[type][2]->fill( r9,  conversions[iConv]->nTracks() ) ; 
+//      h_r9VsNofTracks_[type][0]->fill( r9, conversions[iConv]->nTracks() ) ;
 
-      if ( conversions[iConv]->nTracks() <2 ) continue; 
- 
+//      if ( phoIsInBarrel ) h_r9VsNofTracks_[type][1]->fill( r9,  conversions[iConv]->nTracks() ) ;
+
+//      if ( phoIsInEndcap ) h_r9VsNofTracks_[type][2]->fill( r9,  conversions[iConv]->nTracks() ) ;
+
+      if ( conversions[iConv]->nTracks() <2 ) continue;
+
       h_convEta_[type]->fill( conversions[iConv]-> caloCluster()[0]->eta() );
       h_convPhi_[type]->fill( conversions[iConv]-> caloCluster()[0]->phi() );
       h_EoverPTracks_[type][0] ->fill( conversions[iConv]->EoverP() ,iE, weight) ;
       if ( phoIsInBarrel ) h_EoverPTracks_[type][1] ->fill( conversions[iConv]->EoverP() ,iE, weight) ;
       if ( phoIsInEndcap ) h_EoverPTracks_[type][2] ->fill( conversions[iConv]->EoverP() ,iE, weight) ;
- 
- 
-/* /// two dimensional histogram      
-      if ( conversions[iConv]->conversionVertex().isValid() ) 
+
+
+/* /// two dimensional histogram
+      if ( conversions[iConv]->conversionVertex().isValid() )
         h_convVtxRvsZ_[type] ->fill ( fabs (conversions[iConv]->conversionVertex().position().z() ),  sqrt(conversions[iConv]->conversionVertex().position().perp2())  ) ;
-*/         
- 
+*/
+
        h_zPVFromTracks_[type]->fill ( conversions[iConv]->zOfPrimaryVertexFromTracks() ,iE, weight);
 
-       //std::vector<reco::TrackRef> tracks = conversions[iConv]->tracks();
-       std::vector<edm::RefToBase<reco::Track> > tracks = conversions[iConv]->tracks();
+       std::vector<reco::TrackRef> tracks = conversions[iConv]->tracks();
+//        std::vector<edm::RefToBase<reco::Track> > tracks = conversions[iConv]->tracks();
 
        float px=0;
        float py=0;
@@ -647,7 +647,7 @@ void HistoPhoton::fill( const Photon * photon, uint iE, double weight )
        for (unsigned int i=0; i<tracks.size(); i++) {
 //	   two dimensional histo
 //         p_tk_nHitsVsEta_[type]->fill(  conversions[iConv]->caloCluster()[0]->eta(),   float(tracks[i]->recHitsSize() ) );
-         h_tkChi2_[type] ->fill (tracks[i]->normalizedChi2() ,iE, weight); 
+         h_tkChi2_[type] ->fill (tracks[i]->normalizedChi2() ,iE, weight);
          px+= tracks[i]->innerMomentum().x();
          py+= tracks[i]->innerMomentum().y();
          pz+= tracks[i]->innerMomentum().z();
@@ -658,20 +658,20 @@ void HistoPhoton::fill( const Photon * photon, uint iE, double weight )
        }
        float totP = sqrt(px*px +py*py + pz*pz);
        float invM=  (e + totP) * (e-totP) ;
- 
+
        if ( invM> 0.) {
          invM= sqrt( invM);
        } else {
          invM=-1;
        }
- 
+
        h_invMass_[type][0] ->fill( invM,iE, weight);
        if ( phoIsInBarrel ) h_invMass_[type][1] ->fill(invM,iE, weight);
        if ( phoIsInEndcap ) h_invMass_[type][2] ->fill(invM,iE, weight);
 
 
        float  dPhiTracksAtVtx = -99;
-       
+
        float phiTk1= tracks[0]->innerMomentum().phi();
        float phiTk2= tracks[1]->innerMomentum().phi();
        dPhiTracksAtVtx = phiTk1-phiTk2;
@@ -682,13 +682,13 @@ void HistoPhoton::fill( const Photon * photon, uint iE, double weight )
        h_DCotTracks_[type][0] ->fill ( conversions[iConv]->pairCotThetaSeparation() ,iE, weight);
        if ( phoIsInBarrel ) h_DCotTracks_[type][1] ->fill ( conversions[iConv]->pairCotThetaSeparation() ,iE, weight);
        if ( phoIsInEndcap ) h_DCotTracks_[type][2] ->fill ( conversions[iConv]->pairCotThetaSeparation() ,iE, weight);
-       
-       
+
+
        float  dPhiTracksAtEcal=-99;
        float  dEtaTracksAtEcal=-99;
        if (conversions[iConv]-> bcMatchingWithTracks()[0].isNonnull() && conversions[iConv]->bcMatchingWithTracks()[1].isNonnull() ) {
-         
-         
+
+
          float recoPhi1 = conversions[iConv]->ecalImpactPosition()[0].phi();
          float recoPhi2 = conversions[iConv]->ecalImpactPosition()[1].phi();
          float recoEta1 = conversions[iConv]->ecalImpactPosition()[0].eta();
@@ -704,7 +704,7 @@ void HistoPhoton::fill( const Photon * photon, uint iE, double weight )
          dPhiTracksAtEcal = recoPhi1 -recoPhi2;
          dPhiTracksAtEcal = phiNormalization( dPhiTracksAtEcal );
          dEtaTracksAtEcal = recoEta1 -recoEta2;
-         
+
          h_DPhiTracksAtEcal_[type][0]->fill( dPhiTracksAtEcal,iE, weight);
          h_DEtaTracksAtEcal_[type][0]->fill( dEtaTracksAtEcal,iE, weight);
          if ( phoIsInBarrel ) {
@@ -798,7 +798,7 @@ void HistoPhoton::fill( const reco::ShallowClonePtrCandidate * pshallow, uint iE
 
     bool  scIsInBarrel=false;
     bool  scIsInEndcap=false;
-    if ( fabs(etaClu) <  1.479 ) 
+    if ( fabs(etaClu) <  1.479 )
       scIsInBarrel=true;
     else
       scIsInEndcap=true;
@@ -814,7 +814,7 @@ void HistoPhoton::fill( const reco::ShallowClonePtrCandidate * pshallow, uint iE
 
 
     bool isIsolated=false;
-//    if ( (nTracks < numOfTracksInCone_) && 
+//    if ( (nTracks < numOfTracksInCone_) &&
 //           ( ptSum < trkPtSumCut_) &&
 //           ( ecalSum < ecalEtSumCut_ ) &&  ( hcalSum < hcalEtSumCut_ ) ) isIsolated = true;
 
@@ -823,7 +823,7 @@ void HistoPhoton::fill( const reco::ShallowClonePtrCandidate * pshallow, uint iE
     int type=0;
     if ( !isIsolated ) type=1;
 
-    nPho[type]++; 
+    nPho[type]++;
     if (phoIsInBarrel) nPhoBarrel[type]++;
     if (phoIsInEndcap) nPhoEndcap[type]++;
 
@@ -871,7 +871,7 @@ void HistoPhoton::fill( const reco::ShallowClonePtrCandidate * pshallow, uint iE
       h_phoEt_[type][1]->fill( (*photon).energy()/ cosh( (*photon).eta()) ,iE, weight);
       h_nConv_[type][1]->fill(float( (*photon).conversions().size()),iE, weight);
      }
-    
+
     if ( phoIsInEndcap ) {
       h_phoE_[type][2]->fill( (*photon).energy() ,iE, weight);
       h_phoEt_[type][2]->fill( (*photon).energy()/ cosh( (*photon).eta()) ,iE, weight);
@@ -880,35 +880,35 @@ void HistoPhoton::fill( const reco::ShallowClonePtrCandidate * pshallow, uint iE
 
    ////////////////// plot quantitied related to conversions
     reco::ConversionRefVector conversions = (*photon).conversions();
- 
+
     for (unsigned int iConv=0; iConv<conversions.size(); iConv++) {
 
 // two dimensional histogram
-//      h_r9VsNofTracks_[type][0]->fill( r9, conversions[iConv]->nTracks() ) ; 
- 
-//      if ( phoIsInBarrel ) h_r9VsNofTracks_[type][1]->fill( r9,  conversions[iConv]->nTracks() ) ; 
- 
-//      if ( phoIsInEndcap ) h_r9VsNofTracks_[type][2]->fill( r9,  conversions[iConv]->nTracks() ) ; 
+//      h_r9VsNofTracks_[type][0]->fill( r9, conversions[iConv]->nTracks() ) ;
 
-      if ( conversions[iConv]->nTracks() <2 ) continue; 
- 
- 
+//      if ( phoIsInBarrel ) h_r9VsNofTracks_[type][1]->fill( r9,  conversions[iConv]->nTracks() ) ;
+
+//      if ( phoIsInEndcap ) h_r9VsNofTracks_[type][2]->fill( r9,  conversions[iConv]->nTracks() ) ;
+
+      if ( conversions[iConv]->nTracks() <2 ) continue;
+
+
       h_convEta_[type]->fill( conversions[iConv]-> caloCluster()[0]->eta() );
       h_convPhi_[type]->fill( conversions[iConv]-> caloCluster()[0]->phi() );
       h_EoverPTracks_[type][0] ->fill( conversions[iConv]->EoverP() ,iE, weight) ;
       if ( phoIsInBarrel ) h_EoverPTracks_[type][1] ->fill( conversions[iConv]->EoverP() ,iE, weight) ;
       if ( phoIsInEndcap ) h_EoverPTracks_[type][2] ->fill( conversions[iConv]->EoverP() ,iE, weight) ;
- 
- 
-/* /// two dimensional histogram      
-      if ( conversions[iConv]->conversionVertex().isValid() ) 
+
+
+/* /// two dimensional histogram
+      if ( conversions[iConv]->conversionVertex().isValid() )
         h_convVtxRvsZ_[type] ->fill ( fabs (conversions[iConv]->conversionVertex().position().z() ),  sqrt(conversions[iConv]->conversionVertex().position().perp2())  ) ;
-*/         
- 
+*/
+
        h_zPVFromTracks_[type]->fill ( conversions[iConv]->zOfPrimaryVertexFromTracks() ,iE, weight);
 
-       //std::vector<reco::TrackRef> tracks = conversions[iConv]->tracks();
-       std::vector<edm::RefToBase<reco::Track> > tracks = conversions[iConv]->tracks();
+       std::vector<reco::TrackRef> tracks = conversions[iConv]->tracks();
+//        std::vector<edm::RefToBase<reco::Track> > tracks = conversions[iConv]->tracks();
 
        float px=0;
        float py=0;
@@ -917,7 +917,7 @@ void HistoPhoton::fill( const reco::ShallowClonePtrCandidate * pshallow, uint iE
        for (unsigned int i=0; i<tracks.size(); i++) {
 //	   two dimensional histo
 //         p_tk_nHitsVsEta_[type]->fill(  conversions[iConv]->caloCluster()[0]->eta(),   float(tracks[i]->recHitsSize() ) );
-         h_tkChi2_[type] ->fill (tracks[i]->normalizedChi2() ,iE, weight); 
+         h_tkChi2_[type] ->fill (tracks[i]->normalizedChi2() ,iE, weight);
          px+= tracks[i]->innerMomentum().x();
          py+= tracks[i]->innerMomentum().y();
          pz+= tracks[i]->innerMomentum().z();
@@ -928,20 +928,20 @@ void HistoPhoton::fill( const reco::ShallowClonePtrCandidate * pshallow, uint iE
        }
        float totP = sqrt(px*px +py*py + pz*pz);
        float invM=  (e + totP) * (e-totP) ;
- 
+
        if ( invM> 0.) {
          invM= sqrt( invM);
        } else {
          invM=-1;
        }
- 
+
        h_invMass_[type][0] ->fill( invM,iE, weight);
        if ( phoIsInBarrel ) h_invMass_[type][1] ->fill(invM,iE, weight);
        if ( phoIsInEndcap ) h_invMass_[type][2] ->fill(invM,iE, weight);
 
 
        float  dPhiTracksAtVtx = -99;
-       
+
        float phiTk1= tracks[0]->innerMomentum().phi();
        float phiTk2= tracks[1]->innerMomentum().phi();
        dPhiTracksAtVtx = phiTk1-phiTk2;
@@ -952,13 +952,13 @@ void HistoPhoton::fill( const reco::ShallowClonePtrCandidate * pshallow, uint iE
        h_DCotTracks_[type][0] ->fill ( conversions[iConv]->pairCotThetaSeparation() ,iE, weight);
        if ( phoIsInBarrel ) h_DCotTracks_[type][1] ->fill ( conversions[iConv]->pairCotThetaSeparation() ,iE, weight);
        if ( phoIsInEndcap ) h_DCotTracks_[type][2] ->fill ( conversions[iConv]->pairCotThetaSeparation() ,iE, weight);
-       
-       
+
+
        float  dPhiTracksAtEcal=-99;
        float  dEtaTracksAtEcal=-99;
        if (conversions[iConv]-> bcMatchingWithTracks()[0].isNonnull() && conversions[iConv]->bcMatchingWithTracks()[1].isNonnull() ) {
-         
-         
+
+
          float recoPhi1 = conversions[iConv]->ecalImpactPosition()[0].phi();
          float recoPhi2 = conversions[iConv]->ecalImpactPosition()[1].phi();
          float recoEta1 = conversions[iConv]->ecalImpactPosition()[0].eta();
@@ -974,7 +974,7 @@ void HistoPhoton::fill( const reco::ShallowClonePtrCandidate * pshallow, uint iE
          dPhiTracksAtEcal = recoPhi1 -recoPhi2;
          dPhiTracksAtEcal = phiNormalization( dPhiTracksAtEcal );
          dEtaTracksAtEcal = recoEta1 -recoEta2;
-         
+
          h_DPhiTracksAtEcal_[type][0]->fill( dPhiTracksAtEcal,iE, weight);
          h_DEtaTracksAtEcal_[type][0]->fill( dEtaTracksAtEcal,iE, weight);
          if ( phoIsInBarrel ) {
@@ -1008,7 +1008,7 @@ void HistoPhoton::fill( const reco::ShallowClonePtrCandidate * pshallow, uint iE
 }
 
 
-void HistoPhoton::fillCollection( const edm::View<Photon> & coll, double weight ) 
+void HistoPhoton::fillCollection( const edm::View<Photon> & coll, double weight )
 {
 
   h_size_->fill( coll.size(), 1, weight );     //! Save the size of the collection.
@@ -1020,7 +1020,7 @@ void HistoPhoton::fillCollection( const edm::View<Photon> & coll, double weight 
   uint i = 1;              //! Fortran-style indexing
   for ( ; iobj != iend; ++iobj, ++i ) {
     fill( &*iobj, i, weight);      //! &*iobj dereferences to the pointer to a PHYS_OBJ*
-  } 
+  }
 }
 
 void HistoPhoton::clearVec()
@@ -1081,13 +1081,13 @@ float HistoPhoton::phiNormalization(float & phi)
 //---Definitions
   const float PI    = 3.1415927;
   const float TWOPI = 2.0*PI;
- 
+
 
   if(phi >  PI) {phi = phi - TWOPI;}
   if(phi < -PI) {phi = phi + TWOPI;}
- 
+
   //  cout << " Float_t PHInormalization out " << PHI << endl;
   return phi;
- 
+
 }
 
