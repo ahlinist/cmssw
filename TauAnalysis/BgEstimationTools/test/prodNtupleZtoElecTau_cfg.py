@@ -86,7 +86,7 @@ process.ntupleProducer = cms.EDAnalyzer("ObjValNtupleProducer",
         tauDiscrAgainstElectronsZee = cms.PSet(
             pluginType = cms.string("PATElecTauPairValExtractor"),
             src = cms.InputTag('elecTauPairsForBgEstZeeEnriched'),
-            value = cms.string("leg2.tauID('againstElectron')"),
+            value = cms.string("leg2.tauID('againstElectronTight')"),
             indices = cms.vuint32(0,1)
         ),
         diTauAbsChargeZee = cms.PSet(
@@ -156,7 +156,7 @@ process.ntupleProducer = cms.EDAnalyzer("ObjValNtupleProducer",
         tauDiscrAgainstElectronsWplusJets = cms.PSet(
             pluginType = cms.string("PATElecTauPairValExtractor"),
             src = cms.InputTag('elecTauPairsForBgEstWplusJetsEnriched'),
-            value = cms.string("leg2.tauID('againstElectron')"),
+            value = cms.string("leg2.tauID('againstElectronTight')"),
             indices = cms.vuint32(0,1)
         ),
         diTauMt1MEtWplusJets = cms.PSet(
@@ -202,7 +202,7 @@ process.ntupleProducer = cms.EDAnalyzer("ObjValNtupleProducer",
         tauDiscrAgainstElectronsTTplusJets = cms.PSet(
             pluginType = cms.string("PATElecTauPairValExtractor"),
             src = cms.InputTag('elecTauPairsForBgEstTTplusJetsEnriched'),
-            value = cms.string("leg2.tauID('againstElectron')"),
+            value = cms.string("leg2.tauID('againstElectronTight')"),
             indices = cms.vuint32(0,1)
         ),
         diTauAbsChargeTTplusJets = cms.PSet(
@@ -270,7 +270,7 @@ process.ntupleProducer = cms.EDAnalyzer("ObjValNtupleProducer",
         tauDiscrAgainstElectronsQCD = cms.PSet(
             pluginType = cms.string("PATElecTauPairValExtractor"),
             src = cms.InputTag('elecTauPairsForBgEstQCDenriched'),
-            value = cms.string("leg2.tauID('againstElectron')"),
+            value = cms.string("leg2.tauID('againstElectronTight')"),
             indices = cms.vuint32(0,1)
         ),
         numDiTausQCD = cms.PSet(
