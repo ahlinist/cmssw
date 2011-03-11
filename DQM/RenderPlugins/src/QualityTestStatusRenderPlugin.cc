@@ -113,11 +113,11 @@ void dqm::QualityTestStatusRenderPlugin::reportSummaryMapPalette(TH2* obj) {
                 // do nothing, it should not arrive here
             }
 
-            pallete[i] = 901 + i;
-            TColor* color = gROOT->GetColor(901 + i);
+            pallete[i] = 9001 + i;
+            TColor* color = gROOT->GetColor(9001 + i);
 
             if (!color) {
-                color = new TColor(901 + i, 0, 0, 0, "");
+                color = new TColor(9001 + i, 0, 0, 0, "");
             }
 
             color->SetRGB(rgb[i][0], rgb[i][1], rgb[i][2]);
