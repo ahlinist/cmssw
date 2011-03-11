@@ -189,7 +189,7 @@ class VGammaEventSelector : public EventSelector {
   VGammaPhotonSelector                   zgphotonId_,wgphotonId_;
 
   double minLeptonPhotonDR_;
-  double maxNearLeptonPhotonDeltaR_;
+  double maxDeltaRPhotonNearLepton_;
 
 };
 

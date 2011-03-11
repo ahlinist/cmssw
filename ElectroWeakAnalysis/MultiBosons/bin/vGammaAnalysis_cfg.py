@@ -3,7 +3,7 @@ import os
 
 process = cms.Process("FWLitePlots")
 
-castorDir = "/scratch/lgray/vgamma_skims/data/WJets-madgraph-Full"
+castorDir = "/raid2/veverka/WJets_7TeV-madgraph-tauola/MuonPhotonVGammaSkim/28b662cc3f390786caf43da2275d2425/"
 pathPrefix = "file:" + castorDir + "/"
 filelist = os.popen("ls " + castorDir).read().split()[:10]
 
@@ -42,7 +42,7 @@ process.SelectorConfig.cutsToIgnore.extend([
 ## Modify the selection for Wgamma FSR
 process.SelectorConfig.cutsToIgnore.remove("max DR(g,l_near)")
 process.SelectorConfig.cutsToIgnore.append("== 1 Tight Photon")
-process.SelectorConfig.maxNearLeptonPhotonDeltaR = 0.5
+process.SelectorConfig.maxDeltaRPhotonNearLepton = 0.5
 process.SelectorConfig.minLeptonPhotonDeltaR = -1.
 ## End of Wgamma FSR changes
 
