@@ -183,10 +183,10 @@ void anaXS::init(const char *dir, int i) {
   //fPtMuidCorr = new PidTable("PidTables/DATA/Upsilon/PtMuidCorr.dat");
   //fPtTrigCorr = new PidTable("PidTables/DATA/Upsilon/PtTrigCorr_1Sbin.dat");
   //fPtMuidCorr = new PidTable("PidTables/DATA/Upsilon/PtMuidCorr_1Sbin.dat");
-  fPtTrigCorr = new PidTable("PidTables/DATA/Upsilon/PtTrigCorr_2Sbin.dat");
-  fPtMuidCorr = new PidTable("PidTables/DATA/Upsilon/PtMuidCorr_2Sbin.dat");  
-  //fPtTrigCorr = new PidTable("PidTables/DATA/Upsilon/PtTrigCorr_3Sbin.dat");
-  //fPtMuidCorr = new PidTable("PidTables/DATA/Upsilon/PtMuidCorr_3Sbin.dat");    
+  //fPtTrigCorr = new PidTable("PidTables/DATA/Upsilon/PtTrigCorr_2Sbin.dat");
+  //fPtMuidCorr = new PidTable("PidTables/DATA/Upsilon/PtMuidCorr_2Sbin.dat");  
+  fPtTrigCorr = new PidTable("PidTables/DATA/Upsilon/PtTrigCorr_3Sbin.dat");
+  fPtMuidCorr = new PidTable("PidTables/DATA/Upsilon/PtMuidCorr_3Sbin.dat");    
   
 }
 
@@ -254,9 +254,9 @@ void anaXS::loadFiles(const char *dir, int i) {
     } else if (40 == i) {
       //ufile = fDirectory + string("/upsilon/101201.fl10.mm.ups1s.xsReader.trueyield_100.default.root");
       //ufile = fDirectory + string("/upsilon/101201.fl10.mm.ups1s.xsReader_1Sbin.default.root");
-      ufile = fDirectory + string("/upsilon/101201.fl10.mm.COMBINED.xsReader_1Sbin.default.root");
+      ufile = fDirectory + string("/upsilon/101201.fl10.mm.COMBINED.xsReader_3Sbin.default.root");
       //jfile = fDirectory + string("/jpsi/111112.dimuons.xsReader.default.root");
-      jfile = fDirectory + string("/upsilon/130211.nov4rereco_v2.dimuons.xsReader_1Sbin.default.root");
+      jfile = fDirectory + string("/upsilon/130211.nov4rereco_v2.dimuons.xsReader_3Sbin.default.root");
      
     } else {
       cout << "Don't know which J/psi file to open for i = " << i << ". Specify this in anaXS::loadfiles()" << endl;
@@ -264,6 +264,7 @@ void anaXS::loadFiles(const char *dir, int i) {
     }
     fM[0] = new TFile(ufile.c_str());  lM[0] = 1.0; lM[2] = 3.43;
     fM[1] = new TFile(jfile.c_str());  lM[1] = 1.66;
+    
   }
 
 }
@@ -563,8 +564,8 @@ void anaXS::makeAllMC(int channel) {
     addBackground(fS1Vector, 0.3);
     
     
-    Pull(1);
-    Pull(2);
+    //Pull(1);
+    
     //FITUpsilon(1);
     //GetAnaEff();
     //GetPreSelEff();
@@ -605,6 +606,7 @@ void anaXS::makeAllDATA(int channel) {
     // -- add backgrounds
     //addBackground(fS1Vector, 0.3);
     
+    //table(fS1YieldPt, "anan");
     
     FITUpsilon(1);
     GetAnaEff();
@@ -773,6 +775,24 @@ void anaXS::HistoFlip2D(TH2D *H){
   if ( !strcmp(H->GetName(),"RecoGenRes_1S")  ) fRecoGenRes = hflip;
     //c2->cd(3);
   //H->Draw("colz"); 
+  
+}
+
+void anaXS::table(TH1D *H, int ups){
+  
+  ofstream OUT(Form("xsection_%iS.tex", ups));
+  OUT << "% ----------------------------------------------------------------------" << endl;
+  OUT << "% -- X-sections" << endl;
+  for ( int x = 1; x <= H->GetNbinsX(); ++x ){
+    OUT << Form("\\vdef{%iS_bin%iLowEdge} {\\ensuremath{ {%.2f } } }",ups, x, H->GetXaxis()->GetBinLowEdge(x) ) << endl;
+    if ( x == H->GetNbinsX() ) OUT << Form("\\vdef{%iS_bin%iHighEdge} {\\ensuremath{ {%.2f } } }",ups , x, H->GetXaxis()->GetBinUpEdge(x) ) << endl;
+    OUT << Form("\\vdef{%iS_bin%iContent} {\\ensuremath{ {%.3f } } }",ups, x, H->GetBinContent(x) ) << endl;
+    //OUT << Form("\\vdef{%iS_bin%iError} {\\ensuremath{ {%.3f } } }",ups, x, H->GetBinError(x) ) << endl;
+    OUT << Form("\\vdef{%iS_bin%iErrorPercent} {\\ensuremath{ {%.1f } } }",ups, x, (H->GetBinError(x)/H->GetBinContent(x))*100 ) << endl;
+    
+  }
+  
+  OUT.close();
   
 }
 
@@ -1573,8 +1593,8 @@ void anaXS::PlotProjections(int mode) {
       cout << bin_contentYield << endl;
       xsection = bin_contentYield/lumi;
       fS1YieldPt->SetBinContent(j,xsection/fS1YieldPt->GetBinWidth(j));
-      xsectionErr = TMath::Sqrt(bin_contentYieldErr)/lumi;
-      fS1YieldPt->SetBinError(j,xsectionErr/fS1YieldPt->GetBinWidth(j));
+      xsectionErr = TMath::Sqrt(bin_contentYieldErr/fS1YieldPt->GetBinWidth(j))/lumi;
+      fS1YieldPt->SetBinError(j,xsectionErr);
       cout << " Ups(1S) Results "  << endl;
       cout << "xsection = " << fS1YieldPt->GetBinContent(j) << "+/-" << fS1YieldPt->GetBinError(j) << "(%" << (fS1YieldPt->GetBinError(j)/fS1YieldPt->GetBinContent(j))*100  << ")" << endl;      
       bin_ratio=0;bin_contentAll=0;bin_contentReco=0;
@@ -1594,8 +1614,8 @@ void anaXS::PlotProjections(int mode) {
       cout << bin_contentYield << endl;
       xsection = bin_contentYield/lumi;
       fS2YieldPt->SetBinContent(j,xsection/fS2YieldPt->GetBinWidth(j));
-      xsectionErr = TMath::Sqrt(bin_contentYieldErr)/lumi;
-      fS2YieldPt->SetBinError(j,xsectionErr/fS2YieldPt->GetBinWidth(j));
+      xsectionErr = TMath::Sqrt(bin_contentYieldErr/fS2YieldPt->GetBinWidth(j))/lumi;
+      fS2YieldPt->SetBinError(j,xsectionErr);
       cout << " Ups(2S) Results "  << endl;
       cout << "xsection = " << fS2YieldPt->GetBinContent(j) << "+/-" << fS2YieldPt->GetBinError(j) << "(%" << (fS2YieldPt->GetBinError(j)/fS2YieldPt->GetBinContent(j))*100  << ")" << endl;   
       bin_ratio=0;bin_contentAll=0;bin_contentReco=0;
@@ -1615,8 +1635,8 @@ void anaXS::PlotProjections(int mode) {
       cout << bin_contentYield << endl;
       xsection = bin_contentYield/lumi;
       fS3YieldPt->SetBinContent(j,xsection/fS3YieldPt->GetBinWidth(j));
-      xsectionErr = TMath::Sqrt(bin_contentYieldErr)/lumi;
-      fS3YieldPt->SetBinError(j,xsectionErr/fS3YieldPt->GetBinWidth(j));
+      xsectionErr = TMath::Sqrt(bin_contentYieldErr/fS3YieldPt->GetBinWidth(j))/lumi;
+      fS3YieldPt->SetBinError(j,xsectionErr);
       cout << " Ups(3S) Results "  << endl;
       cout << "xsection = " << fS3YieldPt->GetBinContent(j) << "+/-" << fS3YieldPt->GetBinError(j) << "(%" << (fS3YieldPt->GetBinError(j)/fS3YieldPt->GetBinContent(j))*100  << ")"<< endl;     
       bin_ratio=0;bin_contentAll=0;bin_contentReco=0;
@@ -1625,7 +1645,7 @@ void anaXS::PlotProjections(int mode) {
      
     
     ////// 1s Bin
-    /*    
+    /*
     hICHEP->SetBinContent(1,0.30); hICHEP->SetBinError(1,0.05);
     hICHEP->SetBinContent(2,0.90); hICHEP->SetBinError(2,0.15);
     hICHEP->SetBinContent(3,1.04); hICHEP->SetBinError(3,0.17); 
@@ -1641,11 +1661,11 @@ void anaXS::PlotProjections(int mode) {
     hICHEP->SetBinContent(13,0.14/hICHEP->GetBinWidth(13)); hICHEP->SetBinError(13,0.03/hICHEP->GetBinWidth(13));    
     hICHEP->SetBinContent(14,0.06/hICHEP->GetBinWidth(14)); hICHEP->SetBinError(14,0.01/hICHEP->GetBinWidth(14));  
     hICHEP->SetBinContent(15,0.06/hICHEP->GetBinWidth(15)); hICHEP->SetBinError(15,0.01/hICHEP->GetBinWidth(15));    
-    */		  
+    */	  
     
     
     ////// 2S Bin
-    
+    /*
     hICHEP->SetBinContent(1,0.25/hICHEP->GetBinWidth(1)); hICHEP->SetBinError(1,0.05/hICHEP->GetBinWidth(1));
     hICHEP->SetBinContent(2,0.48/hICHEP->GetBinWidth(2)); hICHEP->SetBinError(2,0.09/hICHEP->GetBinWidth(2));
     hICHEP->SetBinContent(3,0.41/hICHEP->GetBinWidth(3)); hICHEP->SetBinError(3,0.08/hICHEP->GetBinWidth(3));
@@ -1654,17 +1674,17 @@ void anaXS::PlotProjections(int mode) {
     hICHEP->SetBinContent(6,0.09/hICHEP->GetBinWidth(6)); hICHEP->SetBinError(6,0.02/hICHEP->GetBinWidth(6));
     hICHEP->SetBinContent(7,0.04/hICHEP->GetBinWidth(7)); hICHEP->SetBinError(7,0.01/hICHEP->GetBinWidth(7));
     hICHEP->SetBinContent(8,0.02/hICHEP->GetBinWidth(8)); hICHEP->SetBinError(8,0.007/hICHEP->GetBinWidth(8));
-    
+    */
     
     ////// 3S Bin
-    /*
+    
     hICHEP->SetBinContent(1,0.26/hICHEP->GetBinWidth(1)); hICHEP->SetBinError(1,0.05/hICHEP->GetBinWidth(1));
     hICHEP->SetBinContent(2,0.29/hICHEP->GetBinWidth(2)); hICHEP->SetBinError(2,0.07/hICHEP->GetBinWidth(2));
     hICHEP->SetBinContent(3,0.24/hICHEP->GetBinWidth(3)); hICHEP->SetBinError(3,0.05/hICHEP->GetBinWidth(3));
     hICHEP->SetBinContent(4,0.16/hICHEP->GetBinWidth(4)); hICHEP->SetBinError(4,0.03/hICHEP->GetBinWidth(4));
     hICHEP->SetBinContent(5,0.05/hICHEP->GetBinWidth(5)); hICHEP->SetBinError(5,0.013/hICHEP->GetBinWidth(5));
     hICHEP->SetBinContent(6,0.03/hICHEP->GetBinWidth(6)); hICHEP->SetBinError(6,0.075/hICHEP->GetBinWidth(6));
-    */
+    
     
     makeCanvas(1);
     //c1->Divide(3,1);
@@ -1692,14 +1712,14 @@ void anaXS::PlotProjections(int mode) {
     hICHEP->SetMarkerStyle(20);
     hICHEP->SetMarkerColor(4);
     hICHEP->SetLineColor(4);
-    //fS1YieldPt->Draw("p");
-    //hICHEP->Draw("psame");
+    fS1YieldPt->Draw("p");
+    hICHEP->Draw("psame");
     legg = new TLegend(0.6,0.6,0.8,0.8);
     legg->SetFillStyle(0); legg->SetBorderSize(0); legg->SetTextSize(0.08); legg->SetTextFont(132); 
     legg->SetHeader("XSection Comparison For Ups(1S)");
     legge = legg->AddEntry(fS1YieldPt,  "Xsection ","p"); legge->SetTextColor(kBlack);
     legge = legg->AddEntry(hICHEP,  "Results with 3.1 pb^{-1}","p"); legge->SetTextColor(kBlack);
-    //legg->Draw();
+    legg->Draw();
     
     //makeCanvas(1);
     //c1->Divide(3,1);
@@ -1727,14 +1747,14 @@ void anaXS::PlotProjections(int mode) {
     hICHEP->SetMarkerStyle(20);
     hICHEP->SetMarkerColor(4);
     hICHEP->SetLineColor(4);
-    fS2YieldPt->Draw("p");
-    hICHEP->Draw("psame");
+    //fS2YieldPt->Draw("p");
+    //hICHEP->Draw("psame");
     legg = new TLegend(0.4,0.6,0.7,0.8);
     legg->SetFillStyle(0); legg->SetBorderSize(0); legg->SetTextSize(0.08); legg->SetTextFont(132); 
     legg->SetHeader("XSection Comparison For Ups(2S)");
     legge = legg->AddEntry(fS2YieldPt,  "Xsection ","p"); legge->SetTextColor(kBlack);
     legge = legg->AddEntry(hICHEP,  "Results with 3.1 pb^{-1}","p"); legge->SetTextColor(kBlack);
-    legg->Draw();
+    //legg->Draw();
     
 
     //makeCanvas(1);
@@ -1752,7 +1772,7 @@ void anaXS::PlotProjections(int mode) {
     legg->SetHeader("Acceptance");
     legge = legg->AddEntry(fAcceptanceProjPt_3S,  "Y(3S) Acceptance ","p"); legge->SetTextColor(kBlack);
     //legg->Draw();
-    //makeCanvas(1);
+    makeCanvas(1);
     fS3YieldPt->SetTitle("Differential XSection");
     fS3YieldPt->GetXaxis()->SetTitle("P_{T}");
     fS3YieldPt->SetMinimum(0.);
@@ -1763,16 +1783,19 @@ void anaXS::PlotProjections(int mode) {
     hICHEP->SetMarkerStyle(20);
     hICHEP->SetMarkerColor(4);
     hICHEP->SetLineColor(4);
-    //fS3YieldPt->Draw("p");
-    //hICHEP->Draw("psame");
+    fS3YieldPt->Draw("p");
+    hICHEP->Draw("psame");
     legg = new TLegend(0.4,0.6,0.7,0.8);
     legg->SetFillStyle(0); legg->SetBorderSize(0); legg->SetTextSize(0.08); legg->SetTextFont(132); 
     legg->SetHeader("XSection Comparison For Ups(3S)");
     legge = legg->AddEntry(fS3YieldPt,  "Xsection ","p"); legge->SetTextColor(kBlack);
     legge = legg->AddEntry(hICHEP,  "Results with 3.1 pb^{-1}","p"); legge->SetTextColor(kBlack);
-    //legg->Draw();
+    legg->Draw();
 
     
+    //table(fS1YieldPt, 1);
+    //table(fS2YieldPt, 2);
+    table(fS3YieldPt, 3);
     
     bin_contentAll=0; bin_contentYield=0;
     for (int i = 1; i <= fAcceptance->GetNbinsX(); ++i) {

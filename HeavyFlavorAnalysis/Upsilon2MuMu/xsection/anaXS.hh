@@ -26,6 +26,8 @@
 #include <iostream>
 #include <fstream>
 #include <vector>
+#include <stdlib.h>
+
 
 class anaXS: public TObject {
 
@@ -78,6 +80,7 @@ public:
   void GetTrigEff(int mode);
   void GetPreSelEff();
   
+  void table(TH1D *H, int ups);
   void integerEntries(TH1D  *h);
   void validation();
   void projections();
@@ -104,6 +107,7 @@ public:
 
   int fShow; 
   TString fFile; 
+  
 
   // -- lumi values
   double lD[10], lM[20];
