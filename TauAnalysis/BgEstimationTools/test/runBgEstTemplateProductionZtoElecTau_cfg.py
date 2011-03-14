@@ -36,8 +36,8 @@ process.saveZtoElecTauPlots = cms.EDAnalyzer("DQMSimpleFileSaver",
 )
 
 process.maxEvents = cms.untracked.PSet(
-    #input = cms.untracked.int32(-1) 
-    input = cms.untracked.int32(1000)    
+    input = cms.untracked.int32(-1) 
+    #input = cms.untracked.int32(10)    
 )
 
 process.source = cms.Source("PoolSource",
@@ -51,7 +51,7 @@ process.source = cms.Source("PoolSource",
 #  directories pointing to different input samples stored at the ND Tier 3
 #--------------------------------------------------------------------------------
 
-dir="/pscratch/ndcms/bestman/storage/cms/store/user/jkolb/DYToTauTau_M-20_TuneZ2_7TeV-pythia6-tauola/skimElecTau_385_v1/0ddb8cbebd1c6c83ded328371cc1c32b/"
+#dir="/pscratch/ndcms/bestman/storage/cms/store/user/jkolb/DYToTauTau_M-20_TuneZ2_7TeV-pythia6-tauola/skimElecTau_385_v1/0ddb8cbebd1c6c83ded328371cc1c32b/"
 #dir="/pscratch/ndcms/bestman/storage/cms/store/user/jkolb/DYToEE_M-20_TuneZ2_7TeV-pythia6/skimElecTau_385_v1/0ddb8cbebd1c6c83ded328371cc1c32b/"
 
 
@@ -66,7 +66,7 @@ dir="/pscratch/ndcms/bestman/storage/cms/store/user/jkolb/DYToTauTau_M-20_TuneZ2
 ############ PILE UP SAMPLES
 
 #dir = "/pscratch/ndcms/bestman/storage/cms/store/user/jkolb/DYToEE_M-20_TuneZ2_7TeV-pythia6/skimElecTau_387_v1/f555ceec0d7f274eb20b4abf4dbe76f7/"
-#dir = "/pscratch/ndcms/bestman/storage/cms/store/user/jkolb/DYToTauTau_M-20_TuneZ2_7TeV-pythia6-tauola/skimElecTau_387_PU_v2/f555ceec0d7f274eb20b4abf4dbe76f7/"
+dir = "/pscratch/ndcms/bestman/storage/cms/store/user/jkolb/DYToTauTau_M-20_TuneZ2_7TeV-pythia6-tauola/skimElecTau_387_PU_v2/f555ceec0d7f274eb20b4abf4dbe76f7/"
 
 #--------------------------------------------------------------------------------
 
@@ -103,11 +103,18 @@ replaceMETforDiTaus(process, cms.InputTag('patMETs'), cms.InputTag('patPFMETs'))
 #--------------------------------------------------------------------------------
 
 
+# disable accessing generator level information if running on data
+#from TauAnalysis.Configuration.tools.switchToData import switchToData
+#switchToData(process)
+
+
 #--------------------------------------------------------------------------------
 #choose type of Taus
 from PhysicsTools.PatAlgos.tools.tauTools import *
 switchToPFTauHPS(process)
 #switchToPFTauHPSpTaNC(process)
+
+process.cleanPatTaus.preselection = cms.string('')
 
 
 #--------------------------------------------------------------------------------
@@ -120,8 +127,8 @@ process.load("PhysicsTools.PatAlgos.triggerLayer1.triggerEventProducer_cfi")
 process.patTriggerEvent.processName = cms.string( 'REDIGI38X' )
 process.patTrigger.processName = cms.string( 'REDIGI38X' )
 ## #for running on the pileup samples
-## process.patTriggerEvent.processName = cms.string( 'REDIGI38XPU' )
-## process.patTrigger.processName = cms.string( 'REDIGI38XPU' )
+#process.patTriggerEvent.processName = cms.string( 'REDIGI38XPU' )
+#process.patTrigger.processName = cms.string( 'REDIGI38XPU' )
 ## #for running on data
 #process.patTriggerEvent.processName = cms.string( 'HLT' )
 #process.patTrigger.processName = cms.string( 'HLT' )
@@ -139,9 +146,9 @@ process.load('TauAnalysis.BgEstimationTools.bgEstZtoElecTauZeeElectronMisIdEnric
 
 process.producePatTupleAll = cms.Sequence(process.producePatTuple + process.producePatTupleZtoElecTauSpecific)
 
-## saveEvents = cms.OutputModule("PoolOutputModule",
-##     fileName = cms.untracked.string('test_output.root')
-## )
+saveEvents = cms.OutputModule("PoolOutputModule",
+    fileName = cms.untracked.string('test_output.root')
+)
 
 
 process.p = cms.Path(
