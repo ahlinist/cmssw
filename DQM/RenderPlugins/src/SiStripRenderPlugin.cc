@@ -2,8 +2,8 @@
   \file SiStripRenderPlugin
   \brief Display Plugin for SiStrip DQM Histograms
   \author S. Dutta
-  \version $Revision: 1.36 $
-  \date $Date: 2011/03/03 10:56:03 $
+  \version $Revision: 1.37 $
+  \date $Date: 2011/03/13 19:03:52 $
 */
 
 #include "VisMonitoring/DQMServer/interface/DQMRenderPlugin.h"
@@ -397,9 +397,8 @@ private:
     tl2.SetLineColor(4);
     tl2.SetLineWidth(3);
 
-    // FOR HI
-//     float xmin = 0.0;
-//     float xmax = obj->GetXaxis()->GetXmax();
+    float xmin = 0.0;
+    float xmax = obj->GetXaxis()->GetXmax();
     float ymax = obj->GetMaximum()*1.2;
 
     // FOR PP
