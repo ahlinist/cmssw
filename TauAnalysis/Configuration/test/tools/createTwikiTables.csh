@@ -16,4 +16,4 @@ set sample = $2
 
 echo "---+++" "\!${sample}"
 echo "|*Cut*|*Passed*|*cumul. Efficiency*|*margin. Efficiency*|*indiv. Efficiency*|*excl. Rejection*|"
-grep -A34 "process = ${sample}" ${file} | tail -28 | sed 's/ \{8,50\}\([0-9]\)/ |  \1/g' | sed 's/^/|/' | sed 's/$/|/' | sed 's/||/ or /'
+grep -A35 "process = ${sample}" ${file} | tail -28 | sed 's/ \{8,50\}\([0-9]\)/ |  \1/g' | sed 's/^/|/' | sed 's/$/|/' | sed 's/||/ or /'
