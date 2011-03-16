@@ -1,7 +1,7 @@
 import FWCore.ParameterSet.Config as cms
 import copy
 
-isData = 0
+isData = 1
 useMuonSkim = 0
 hltType = "HLT"
 #hltType = "REDIGI38X"
@@ -29,7 +29,7 @@ process.MessageLogger.cerr.threshold = 'INFO'
 process.options   = cms.untracked.PSet( wantSummary = cms.untracked.bool(True) )
 
 process.configurationMetadata = cms.untracked.PSet(
-    version = cms.untracked.string('$Revision: 1.3 $'),
+    version = cms.untracked.string('$Revision: 1.10 $'),
     annotation = cms.untracked.string('reco nevts:1'),
     name = cms.untracked.string('PyReleaseValidation')
 )
@@ -56,13 +56,21 @@ else:
   )
 
 #skiming 
-process.load("L1TriggerConfig.L1GtConfigProducers.L1GtTriggerMaskTechTrigConfig_cff")
-process.load("HLTrigger/HLTfilters/hltLevel1GTSeed_cfi")
-process.hltLevel1GTSeed.L1TechTriggerSeeding = cms.bool(True)
-if(isData):
-  process.hltLevel1GTSeed.L1SeedsLogicalExpression = cms.string('(0 AND (40 OR 41) AND NOT (36 OR 37 OR 38 OR 39))')
-else:
-  process.hltLevel1GTSeed.L1SeedsLogicalExpression = cms.string('(40 OR 41) AND NOT (36 OR 37 OR 38 OR 39)')
+#process.load("L1TriggerConfig.L1GtConfigProducers.L1GtTriggerMaskTechTrigConfig_cff")
+#process.load("HLTrigger/HLTfilters/hltLevel1GTSeed_cfi")
+#process.hltLevel1GTSeed.L1TechTriggerSeeding = cms.bool(True)
+#if(isData):
+#  process.hltLevel1GTSeed.L1SeedsLogicalExpression = cms.string('(0 AND (40 OR 41) AND NOT (36 OR 37 OR 38 OR 39))')
+#else:
+#  process.hltLevel1GTSeed.L1SeedsLogicalExpression = cms.string('(40 OR 41) AND NOT (36 OR 37 OR 38 OR 39)')
+#Replacing bit 40 and 41 with good vertex
+process.primaryVertexFilter = cms.EDFilter("GoodVertexFilter",
+    vertexCollection = cms.InputTag('offlinePrimaryVertices'),
+    minimumNDOF = cms.uint32(4) ,
+    maxAbsZ = cms.double(24),	
+     maxd0 = cms.double(2)	
+)
+
 
 process.scrapping = cms.EDFilter("FilterOutScraping",
     	applyfilter = cms.untracked.bool(True),
@@ -86,7 +94,8 @@ process.tauFilter = cms.Path(
 )
 
 if(isData):
-    process.tauFilter *= process.hltLevel1GTSeed
+####    process.tauFilter *= process.hltLevel1GTSeed
+    process.tauFilter *= process.primaryVertexFilter
     process.tauFilter *= process.scrapping
 
 process.tauFilter *= process.TTEffPFTau
@@ -117,7 +126,7 @@ process.FEVTEventContent.outputCommands.append('keep *_TTEffPFTausSelected_*_*')
 process.FEVTEventContent.outputCommands.append('keep *_TTEffPFTauDiscriminationByLeadingTrackFinding_*_*')
 process.FEVTEventContent.outputCommands.append('keep *_TTEffPFTauDiscriminationByIsolation_*_*')
 process.FEVTEventContent.outputCommands.append('keep *_TTEffPFTauDiscriminationAgainstMuon_*_*')
-#process.FEVTEventContent.outputCommands.append('keep *')
+process.FEVTEventContent.outputCommands.append('keep *')
 process.output = cms.OutputModule("PoolOutputModule",
     splitLevel = cms.untracked.int32(0),
     outputCommands = process.FEVTEventContent.outputCommands,
