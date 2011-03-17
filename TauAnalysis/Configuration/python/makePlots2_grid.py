@@ -8,6 +8,13 @@ import re
 import TauAnalysis.DQMTools.plotterStyleDefinitions_cfi as styles
 from TauAnalysis.Configuration.userRegistry import userSettings
 
+canvasSizeX_preference = 800
+canvasSizeY_preference = 600
+
+if os.environ['LOGNAME'] in userSettings:
+    canvasSizeX_preference = cms.int32(userSettings[os.environ['LOGNAME']]['global']['drawOptions']['canvasSizeX']),
+    canvasSizeY_preference = cms.int32(userSettings[os.environ['LOGNAME']]['global']['drawOptions']['canvasSizeY']),
+
 dqmHistPlotter_template = cms.EDAnalyzer("DQMHistPlotter",
     xAxes = cms.PSet(
         Pt = copy.deepcopy(styles.xAxis_pt),
@@ -386,7 +393,7 @@ def makePlots(process, channel = None, samples = None, inputFilePath = None, job
                               if subsample in samplesToFactorize]]
     relevantMergedSamples = [sample for sample, sample_info in samples['MERGE_SAMPLES'].iteritems() if
                              [subsample for subsample in _getInputSamples(samples['MERGE_SAMPLES'], sample_info['samples'])
-                              if subsample in samplesToFactorize]]    
+                              if subsample in samplesToFactorize]]
     mergedToRecoSampleDict = copy.deepcopy(samples['MERGE_SAMPLES'])
     for sample, sample_info in mergedToRecoSampleDict.iteritems():
         sample_info['samples'] = _getInputSamples(samples['MERGE_SAMPLES'], sample_info['samples'])
