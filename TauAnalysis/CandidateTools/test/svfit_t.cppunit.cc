@@ -11,6 +11,7 @@
  */
 
 #include <cppunit/extensions/HelperMacros.h>
+#include <sstream>
 #include <Utilities/Testing/interface/CppUnit_testdriver.icpp>
 
 #include <boost/foreach.hpp>
@@ -34,6 +35,18 @@ struct TauDecayInfo {
   double gjangle;
   double visMass;
   double nuInvMass;
+  std::string print() const {
+    std::stringstream out;
+    out << std::endl;
+    out << "visible energy (lab): "
+      << labFrameVis.E() <<  std::endl;
+    out << "input parameters:" << std::endl;
+    out << "energy: " << energy << std::endl;
+    out << "gjangle: " << gjangle << std::endl;
+    out << "visMass: " << visMass << std::endl;
+    out << "nuInvMass: " << nuInvMass << std::endl;
+    return out.str();
+  }
 };
 
 TauDecayInfo buildTau(double energy, double gjangle, double visMass, double nuInvMass) {
@@ -86,12 +99,29 @@ class testSVFit : public CppUnit::TestFixture {
 
   public:
     void setUp() {
-      for (double energy = 10; energy < 100; energy += 10) {
-        for (double gjangle = 0; gjangle < 3.14; gjangle += 3.14/10) {
-          testTaus_.push_back(buildTau(
-                energy, gjangle, 0.77, 0));
+      std::vector<double> lightLeptons;
+      lightLeptons.push_back(0.105);
+      lightLeptons.push_back(5.1e-4);
+      for (double energy = 15; energy < 100; energy += 10) {
+        for (double gjangle = 0; gjangle <= 3.13; gjangle += 3.14/20) {
+          // Build hadronic decay test cases
+          for (double visMass = 0.135; visMass < tauLeptonMass; visMass += 0.01) {
+            testTaus_.push_back(buildTau(energy, gjangle, visMass, 0));
+          }
+          // Build leptonic decay test cases
+          BOOST_FOREACH(double visMass, lightLeptons) {
+            double maxNeutrinoMass = TMath::Sqrt(
+                tauLeptonMass*tauLeptonMass +
+                visMass*visMass - 2*tauLeptonMass*visMass);
+            for (double nuMass = 0; nuMass <= maxNeutrinoMass;
+                nuMass += maxNeutrinoMass/30) {
+              testTaus_.push_back(buildTau(energy, gjangle, visMass, nuMass));
+            }
+          }
         }
       }
+      std::cout << "Built " << testTaus_.size() << " taus for testing in various"
+        << " regions of phase space." << std::endl;
     }
 
     // Make sure the defintion of the boost angle and tau decay angle are correct
@@ -138,7 +168,8 @@ class testSVFit : public CppUnit::TestFixture {
             taudecay.restFrameVis.P(),
             taudecay.gjangle,
             taudecay.labFrameVis.P());
-        CPPUNIT_ASSERT_DOUBLES_EQUAL(taudecay.labFrameVis.Angle(taudecay.boost) ,  angleVis_lf, 1e-6);
+        CPPUNIT_ASSERT_DOUBLES_EQUAL_MESSAGE(taudecay.print(),
+            taudecay.labFrameVis.Angle(taudecay.boost) ,  angleVis_lf, 1e-6);
       }
     }
 
@@ -149,7 +180,8 @@ class testSVFit : public CppUnit::TestFixture {
         double tauP_lf = tauMomentumLabFrame(
             taudecay.restFrameVis.M(), taudecay.restFrameVis.P(),
             taudecay.gjangle, taudecay.labFrameVis.P());
-        CPPUNIT_ASSERT_DOUBLES_EQUAL(tauP_lf ,  taudecay.labFrameTotal.P(), 1e-6);
+        CPPUNIT_ASSERT_DOUBLES_EQUAL_MESSAGE(taudecay.print(),
+            tauP_lf ,  taudecay.labFrameTotal.P(), 1e-6);
       }
     }
 
@@ -160,7 +192,11 @@ class testSVFit : public CppUnit::TestFixture {
             taudecay.visMass,
             taudecay.restFrameVis.P(),
             taudecay.labFrameVis.E());
-        CPPUNIT_ASSERT_DOUBLES_EQUAL(taudecay.gjangle, recoGJAngle, 1e-6);
+        // Don't check the very low end
+        if (taudecay.labFrameVis.E() > 5)
+          CPPUNIT_ASSERT_DOUBLES_EQUAL_MESSAGE(
+              taudecay.print(),
+              taudecay.gjangle, recoGJAngle, 1e-6);
       }
 
     }
