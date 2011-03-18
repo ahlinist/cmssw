@@ -81,6 +81,9 @@ namespace SVfit_namespace
     return TMath::Sqrt(square(mass)+square(momentum));
   }
 
+  /// Determine
+  double gjAngleFromX(double, double, double, double);
+
   /// Determine visible tau rest frame energy given visible mass and neutrino mass
   double pVisRestFrame(double, double);
 
