@@ -33,7 +33,7 @@ void LaserAlignmentProducerDQM::beginJob() {
   // x: 16 modules (5*TEC-, 6*TIB, 6*TOB, 5*TEC+), all from -z to z
   // y: 8 beams
   nameAndTitle = "NumberOfSignals_AlignmentTubes";
-  nSignalsAT   = theDqmStore->book2D( nameAndTitle, nameAndTitle, 22, 0, 22, nBeams, 0, nBeams );
+  nSignalsAT   = theDqmStore->book2D( nameAndTitle, nameAndTitle, 22, 0, 22, nBeams, 0, nBeams);
   //  nSignalsAT->setAxisTitle( "z-pos", 1 );
   //  nSignalsAT->setAxisTitle( "beam", 2 );
 
@@ -54,28 +54,26 @@ void LaserAlignmentProducerDQM::beginJob() {
     labelBuilder << "TOB" << i; // TOB
     nSignalsAT->setBinLabel( 12+i, labelBuilder.str(), 1 );
   }
-
-
   // for the tec internal modules:
   // x: disk1...disk9 (from inner to outer, so z changes direction!)
   // y: 8 beams
   nameAndTitle       = "NumberOfSignals_TEC+R4";
-  nSignalsTECPlusR4  = theDqmStore->book2D( nameAndTitle, nameAndTitle, nDisks, 0, nDisks, nBeams, 0, nBeams );
+  nSignalsTECPlusR4  = theDqmStore->book2D( nameAndTitle, nameAndTitle, nDisks, 0, nDisks, nBeams, 0, nBeams);
   //  nSignalsTECPlusR4->setAxisTitle( "disk", 1 );
   //  nSignalsTECPlusR4->setAxisTitle( "beam", 2 );
 
   nameAndTitle       = "NumberOfSignals_TEC+R6";
-  nSignalsTECPlusR6  = theDqmStore->book2D( nameAndTitle, nameAndTitle, nDisks, 0, nDisks, nBeams, 0, nBeams );
+  nSignalsTECPlusR6  = theDqmStore->book2D( nameAndTitle, nameAndTitle, nDisks, 0, nDisks, nBeams, 0, nBeams);
   //  nSignalsTECPlusR6->setAxisTitle( "disk", 1 );
   //  nSignalsTECPlusR6->setAxisTitle( "beam", 2 );
 
   nameAndTitle       = "NumberOfSignals_TEC-R4";
-  nSignalsTECMinusR4 = theDqmStore->book2D( nameAndTitle, nameAndTitle, nDisks, 0, nDisks, nBeams, 0, nBeams );
+  nSignalsTECMinusR4 = theDqmStore->book2D( nameAndTitle, nameAndTitle, nDisks, 0, nDisks, nBeams, 0, nBeams);
   //  nSignalsTECMinusR4->setAxisTitle( "disk", 1 );
   //  nSignalsTECMinusR4->setAxisTitle( "beam", 2 );
 
   nameAndTitle       = "NumberOfSignals_TEC-R6";
-  nSignalsTECMinusR6 = theDqmStore->book2D( nameAndTitle, nameAndTitle, nDisks, 0, nDisks, nBeams, 0, nBeams );
+  nSignalsTECMinusR6 = theDqmStore->book2D( nameAndTitle, nameAndTitle, nDisks, 0, nDisks, nBeams, 0, nBeams);
   //  nSignalsTECMinusR6->setAxisTitle( "disk", 1 );
   //  nSignalsTECMinusR6->setAxisTitle( "beam", 2 );
 
@@ -88,7 +86,6 @@ void LaserAlignmentProducerDQM::beginJob() {
     nSignalsTECMinusR4->setBinLabel( disk+1, labelBuilder.str(), 1 );
     nSignalsTECMinusR6->setBinLabel( disk+1, labelBuilder.str(), 1 );
   }
-
   // beam labels common for all histograms
   for( unsigned int beam = 0; beam < 8; ++beam ) {
     labelBuilder.clear(); labelBuilder.str( "" );
@@ -99,11 +96,25 @@ void LaserAlignmentProducerDQM::beginJob() {
     nSignalsTECMinusR4->setBinLabel( beam+1, labelBuilder.str(), 2 );
     nSignalsTECMinusR6->setBinLabel( beam+1, labelBuilder.str(), 2 );
   }
+  // create and cd into new folder
+  theDqmStore->setCurrentFolder(folderName+"/EventInfo");
+  reportSummaryMapSiStripLAS = theDqmStore->book2D( "reportSummaryMap", "SiStrip LAS Summary Map", 5, 0, 5, nBeams, 0, nBeams);
+  reportSummaryMapSiStripLAS->setBinLabel(1,"AL"    ,1);
+  reportSummaryMapSiStripLAS->setBinLabel(2,"TEC+R4",1);
+  reportSummaryMapSiStripLAS->setBinLabel(3,"TEC+R6",1);
+  reportSummaryMapSiStripLAS->setBinLabel(4,"TEC-R4",1); 
+  reportSummaryMapSiStripLAS->setBinLabel(5,"TEC-R6",1);
+  for( unsigned int beam = 0; beam < 8; ++beam){
+    labelBuilder.clear(); labelBuilder.str( "" );
+    labelBuilder << "BEAM" << beam;
+    reportSummaryMapSiStripLAS->setBinLabel( beam+1, labelBuilder.str(), 2); 
+  }
 }
 ///
 void LaserAlignmentProducerDQM::analyze( const edm::Event& aEvent, const edm::EventSetup& aSetup ) {
   // loop all input products
-  for ( std::vector<edm::ParameterSet>::iterator aDigiProducer = theDigiProducerList.begin(); aDigiProducer != theDigiProducerList.end(); ++aDigiProducer ) {
+  for ( std::vector<edm::ParameterSet>::iterator aDigiProducer = theDigiProducerList.begin(); 
+	aDigiProducer != theDigiProducerList.end(); ++aDigiProducer ) {
     const std::string digiProducer = aDigiProducer->getParameter<std::string>( "DigiProducer" );
     const std::string digiLabel = aDigiProducer->getParameter<std::string>( "DigiLabel" );
     const std::string digiType = aDigiProducer->getParameter<std::string>( "DigiType" );
@@ -132,9 +143,34 @@ void LaserAlignmentProducerDQM::analyze( const edm::Event& aEvent, const edm::Ev
     }
     // otherwise we have a problem
     else {
-      throw cms::Exception( "LaserAlignmentProducerDQM" ) << " ERROR ** Unknown DigiType: " << digiType << " specified in config." << std::endl;
+      throw cms::Exception( "LaserAlignmentProducerDQM" ) 
+	<< " ERROR ** Unknown DigiType: " << digiType << " specified in config." << std::endl;
     }
-  } // loop all input products
+  } // end of loop all input products
+  // fille reportSummaryMap
+  for( int beam = 0; beam < 8; ++beam){
+    // AL
+    double atContent = 0.;
+    for( int i = 0; i < 22; ++i){
+      atContent += nSignalsAT->getBinContent( i, beam+1);
+    }
+    reportSummaryMapSiStripLAS->setBinContent( 1, beam+1, atContent/21.); 
+    // TEC
+    double tecPR4Content = 0.;
+    double tecPR6Content = 0.;
+    double tecMR4Content = 0.;
+    double tecMR6Content = 0.;
+    for( int disk = 0; disk < 9; ++disk){
+      tecPR4Content += nSignalsTECPlusR4 ->getBinContent( disk, beam+1);
+      tecPR6Content += nSignalsTECPlusR6 ->getBinContent( disk, beam+1);
+      tecMR4Content += nSignalsTECMinusR4->getBinContent( disk, beam+1);
+      tecMR6Content += nSignalsTECMinusR6->getBinContent( disk, beam+1);
+    }
+    reportSummaryMapSiStripLAS->setBinContent( 2, beam+1, tecPR4Content/9.);  
+    reportSummaryMapSiStripLAS->setBinContent( 3, beam+1, tecPR6Content/9.);  
+    reportSummaryMapSiStripLAS->setBinContent( 4, beam+1, tecMR4Content/9.);  
+    reportSummaryMapSiStripLAS->setBinContent( 5, beam+1, tecMR6Content/9.);
+  }
 }
 //
 void LaserAlignmentProducerDQM::endJob() {
