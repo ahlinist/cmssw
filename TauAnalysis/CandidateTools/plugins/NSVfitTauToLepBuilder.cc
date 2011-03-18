@@ -73,9 +73,7 @@ void NSVfitTauToLepBuilder<T>::applyFitParameter(NSVfitSingleParticleHypothesisB
 
 //--- decay angle in tau lepton rest frame as function of X
 //    (= energy ratio of visible decay products/tau lepton energy)
-  double beta = TMath::Sqrt(1. - square(tauLeptonMass*visEnFracX/enVis_lab));
-  double cosGjAngle = (tauLeptonMass*visEnFracX - enVis_rf)/(pVis_rf*beta);
-  double gjAngle = TMath::ACos(cosGjAngle);
+  double gjAngle = SVfit_namespace::gjAngleFromX(visEnFracX, visMass, pVis_rf, enVis_lab);
 
 //--- compute tau lepton decay angle in laboratory frame
   double angleVis_lab = SVfit_namespace::gjAngleToLabFrame(pVis_rf, gjAngle, pVis_lab);
@@ -105,14 +103,14 @@ void NSVfitTauToLepBuilder<T>::applyFitParameter(NSVfitSingleParticleHypothesisB
     std::cout << " gjAngle = " << gjAngle << std::endl;
     std::cout << " angleVis_lab = " << angleVis_lab << std::endl;
     std::cout << " pTau_lab = " << pTau_lab << std::endl;
-    std::cout << "p4Vis: E = " << hypothesis_T->p4_.energy() << "," 
-	      << " px = " << hypothesis_T->p4_.px() << ", py = " << hypothesis_T->p4_.py() << "," 
+    std::cout << "p4Vis: E = " << hypothesis_T->p4_.energy() << ","
+	      << " px = " << hypothesis_T->p4_.px() << ", py = " << hypothesis_T->p4_.py() << ","
 	      << " pz = " << hypothesis_T->p4_.pz() << std::endl;
-    std::cout << "p4Tau: E = " << p4Tau.energy() << "," 
-	      << " px = " << p4Tau.px() << ", py = " << p4Tau.py() << "," 
+    std::cout << "p4Tau: E = " << p4Tau.energy() << ","
+	      << " px = " << p4Tau.px() << ", py = " << p4Tau.py() << ","
 	      << " pz = " << p4Tau.pz() << std::endl;
   }
-  
+
   hypothesis_T->visEnFracX_     = visEnFracX;
   hypothesis_T->decay_angle_rf_ = gjAngle;
 }

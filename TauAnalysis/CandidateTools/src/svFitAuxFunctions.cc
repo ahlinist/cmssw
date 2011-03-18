@@ -52,6 +52,14 @@ namespace SVfit_namespace {
     return ROOT::Math::VectorUtil::boost(p4ToBoost, boost);
   }
 
+  double gjAngleFromX(double x, double visMass, double pVis_rf, double enVis_lab) {
+    double enVis_rf = energyFromMomentum(pVis_rf, visMass);
+    double beta = TMath::Sqrt(1. - square(tauLeptonMass*x/enVis_lab));
+    double cosGjAngle = (tauLeptonMass*x - enVis_rf)/(pVis_rf*beta);
+    double gjAngle = TMath::ACos(cosGjAngle);
+    return gjAngle;
+  }
+
   double pVisRestFrame(double tauVisMass, double tauNuNuMass)
   {
     //std::cout << "<pVisRestFrame>:" << std::endl;
