@@ -243,31 +243,32 @@ drawJobConfigurator_ForElecTau.add(
 	plots = [
 		drawJobConfigEntry(
 			meName = 'ElectronQuantities/Electron#PAR#',
+            PAR = [ 'Pt', 'Eta', 'Phi' ],
 			title = "#PAR# (after Electron iso. Cut)",
 			xAxis = '#PAR#',
 			name = "cutFlowControlPlots_electron_afterElectronIso"
 			),
 		drawJobConfigEntry(
 			meName = 'ElectronQuantities/ElectronConversionRadius',
-			title = "Radius of conv. vertex (after Electron iso. Cut)",
-			xAxis = 'cm',
+			title = "Vertex radius of best conv. pair (after Electron iso. Cut)",
+			xAxis = 'posX',
 			name = "cutFlowControlPlots_electronConvRadius_afterElectronIso"
 			),
 		drawJobConfigEntry(
 			meName = 'ElectronQuantities/ElectronConversionDoca',
-			title = "DOCA of conv. pair (after Electron iso. Cut)",
-			xAxis = 'cm',
+			title = "DOCA of best conv. pair (after Electron iso. Cut)",
+			xAxis = 'posX',
 			name = "cutFlowControlPlots_electronConvDOCA_afterElectronIso"
 			),
 		drawJobConfigEntry(
 			meName = 'ElectronQuantities/ElectronConversionDeltaCotTheta',
-			title = "deltaCot(theta) of conv. pair (after Electron iso. Cut)",
+			title = "#DeltaCot(#theta) of best conv. pair (after Electron iso. Cut)",
 			xAxis = 'unlabeled',
 			name = "cutFlowControlPlots_electronConvDeltaCotTheta_afterElectronIso"
 			),
 		drawJobConfigEntry(
 			meName = 'ElectronQuantities/ElectronMissingExpInnerHits',
-			title = " Missing inner hits(after Electron iso. Cut)",
+			title = " Missing inner hits (after Electron iso. Cut)",
 			xAxis = 'unlabeled',
 			name = "cutFlowControlPlots_electronMissingInnerHits_afterElectronIso"
 			)
@@ -361,7 +362,7 @@ drawJobConfigurator_ForElecTau.add(
 			meName = 'TauQuantities/TauNumSignalPFChargedHadrons',
 			title = "Num PF charged hadrons in Tau signal region (after Tau ID cut)",
 			xAxis = 'unlabeled',
-			name = "cutFlowControlPlots_tauTrkIso_afterTauDiscrHPSloose"
+			name = "cutFlowControlPlots_tauProngs_afterTauDiscrHPSloose"
 			),
 		drawJobConfigEntry(
 			meName = 'TauQuantities/Tau#PAR#',
@@ -539,6 +540,30 @@ finalSamplePlots = [
 			title = "Endcap electron comb. PF rel. iso. (final event sample)",
 			xAxis = 'unlabeled',
 			name = "finalSamplePlots_electronCombPFRelIsoEE"
+			),
+		drawJobConfigEntry(
+			meName = 'ElectronQuantities/ElectronConversionRadius',
+			title = "Vertex radius of best conv. pair (final event sample)",
+			xAxis = 'posX',
+			name = "finalSamplePlots_electronConvRadius"
+			),
+		drawJobConfigEntry(
+			meName = 'ElectronQuantities/ElectronConversionDoca',
+			title = "DOCA of best conv. pair (final event sample)",
+			xAxis = 'posX',
+			name = "finalSamplePlots_electronConvDOCA"
+			),
+		drawJobConfigEntry(
+			meName = 'ElectronQuantities/ElectronConversionDeltaCotTheta',
+			title = "#DeltaCot(#theta) of best conv. pair (final event sample)",
+			xAxis = 'unlabeled',
+			name = "finalSamplePlots_electronConvDeltaCotTheta"
+			),
+		drawJobConfigEntry(
+			meName = 'ElectronQuantities/ElectronMissingExpInnerHits',
+			title = "Electron missing inner hits (final event sample)",
+			xAxis = 'unlabeled',
+			name = "finalSamplePlots_electronMissingInnerHits"
 			),
 		drawJobConfigEntry(
 			meName = 'TauQuantities/Tau#PAR#',
