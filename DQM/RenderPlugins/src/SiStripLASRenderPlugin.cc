@@ -2,8 +2,8 @@
   \file SiStripLASRenderPlugin
   \brief Display Plugin for Pixel DQM Histograms
   \author A. Perieanu
-  \version $Revision: 1.1 $
-  \date $Date: 2011/02/25 16:27:53 $
+  \version $Revision: 0.00 $
+  \date $Date: 2011/02/13 11:52:30 $
 */
 
 #include "VisMonitoring/DQMServer/interface/DQMRenderPlugin.h"
@@ -69,7 +69,8 @@ private:
     c->SetRightMargin(0.15);
    
     //if( o.name.find( "NumberOfSignals_AlignmentTubes" ) != std::string::npos){ 
-    if( o.name.find( "NumberOfSignals_" ) != std::string::npos){
+    if( o.name.find( "NumberOfSignals_" ) != std::string::npos ||
+	o.name.find( "reportSummaryMap" )  != std::string::npos){
       gStyle->SetPalette(1);
       gStyle->SetOptStat(0);      
       gStyle->SetOptTitle(0);
@@ -93,7 +94,7 @@ private:
       gPad->SetGridx();
       gPad->SetGridy();
     }
-  }
+   }
   //_____________________________________________________
   void preDrawTH1( TCanvas *, const VisDQMObject &o ){
     TH1* obj = dynamic_cast<TH1*>( o.object );
