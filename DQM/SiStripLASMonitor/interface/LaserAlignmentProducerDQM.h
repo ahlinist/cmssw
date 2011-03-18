@@ -56,6 +56,8 @@ class LaserAlignmentProducerDQM : public edm::EDAnalyzer {
   unsigned int theUpperAdcThreshold;
 
   //2D
+  MonitorElement* reportSummaryMapSiStripLAS;
+  //
   MonitorElement* nSignalsAT;
   MonitorElement* nSignalsTECPlusR4;
   MonitorElement* nSignalsTECPlusR6;
