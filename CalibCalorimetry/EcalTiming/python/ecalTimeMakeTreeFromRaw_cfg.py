@@ -177,7 +177,8 @@ process.MessageLogger = cms.Service("MessageLogger",
     categories = cms.untracked.vstring('ecalTimeTree'),
     destinations = cms.untracked.vstring('cout')
 )
-process.MessageLogger.cerr.FwkReport.reportEvery = 250
+process.load("FWCore.MessageService.MessageLogger_cfi")
+process.MessageLogger.cerr.FwkReport.reportEvery = cms.untracked.int32(100)
 
 
 
