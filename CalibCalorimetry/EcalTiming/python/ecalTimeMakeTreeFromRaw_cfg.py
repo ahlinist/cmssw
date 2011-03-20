@@ -21,7 +21,8 @@ process.load("Configuration.StandardSequences.MagneticField_38T_cff")
 process.load("Configuration.StandardSequences.FrontierConditions_GlobalTag_cff")
 #process.load("Configuration.StandardSequences.FrontierConditions_GlobalTag_noesprefer_cff")
 #process.GlobalTag.globaltag = 'CRAFT_ALL_V12::All'
-process.GlobalTag.globaltag = 'GR_R_35X_V8A::All'
+#process.GlobalTag.globaltag = 'GR_R_35X_V8A::All'
+process.GlobalTag.globaltag = 'GR_R_42_V2::All'
 
 # Trigger
 process.load("L1TriggerConfig.L1ScalesProducers.L1MuTriggerScalesConfig_cff")
@@ -143,7 +144,7 @@ process.load("RecoVertex.Configuration.RecoVertex_cff")
 
 process.dumpEvContent = cms.EDAnalyzer("EventContentAnalyzer")
 
-process.maxEvents = cms.untracked.PSet(input = cms.untracked.int32(1000))
+process.maxEvents = cms.untracked.PSet(input = cms.untracked.int32(10))
 
 process.p = cms.Path(
     process.ecalDigis *
@@ -162,7 +163,7 @@ process.p = cms.Path(
     process.multi5x5BasicClustersTimePi0Endcap *
     process.multi5x5SuperClustersTimePi0Barrel *
     process.multi5x5SuperClustersTimePi0Endcap *
-    #process.dumpEvContent  *
+    process.dumpEvContent  *
     process.vertexreco *
     process.ecalTimeTree
     )
@@ -176,7 +177,7 @@ process.MessageLogger = cms.Service("MessageLogger",
     categories = cms.untracked.vstring('ecalTimeTree'),
     destinations = cms.untracked.vstring('cout')
 )
-
+process.MessageLogger.cerr.FwkReport.reportEvery = 250
 
 
 
@@ -187,25 +188,7 @@ process.source = cms.Source(
     skipEvents = cms.untracked.uint32(0),
 
      fileNames = (cms.untracked.vstring(
-    #'/store/data/Commissioning10/MinimumBias/RAW-RECO/v9/000/135/494/A4C5C9FA-C462-DF11-BC35-003048D45F7A.root',
-    '/store/data/Commissioning10/MinimumBias/RAW-RECO/v9/000/135/480/8CFD761E-C562-DF11-8661-003048D476C4.root',
-    '/store/data/Commissioning10/MinimumBias/RAW-RECO/v9/000/135/445/FEE89CEE-F362-DF11-BC8C-003048D476A6.root',
-    '/store/data/Commissioning10/MinimumBias/RAW-RECO/v9/000/135/445/FED57876-1B63-DF11-A201-00E0817917F5.root',
-    '/store/data/Commissioning10/MinimumBias/RAW-RECO/v9/000/135/445/FEC8FFC6-BF62-DF11-81D3-00E081791787.root',
-    '/store/data/Commissioning10/MinimumBias/RAW-RECO/v9/000/135/445/FE52A9F1-ED62-DF11-A2BF-00E0817917EB.root',
-    '/store/data/Commissioning10/MinimumBias/RAW-RECO/v9/000/135/445/FE3CA91C-5D61-DF11-B543-003048D476BA.root',
-    '/store/data/Commissioning10/MinimumBias/RAW-RECO/v9/000/135/445/FCBED777-AC62-DF11-8234-003048D45FD8.root',
-    '/store/data/Commissioning10/MinimumBias/RAW-RECO/v9/000/135/445/FC941F37-0663-DF11-9E2E-003048670B36.root',
-    '/store/data/Commissioning10/MinimumBias/RAW-RECO/v9/000/135/445/FC3B55D8-BF62-DF11-8764-0025B3E05CDE.root',
-    '/store/data/Commissioning10/MinimumBias/RAW-RECO/v9/000/135/445/FA1F044A-B862-DF11-A17C-001A64789D68.root',
-    '/store/data/Commissioning10/MinimumBias/RAW-RECO/v9/000/135/445/F8E0C1BA-C161-DF11-AF90-003048D47736.root',
-    '/store/data/Commissioning10/MinimumBias/RAW-RECO/v9/000/135/445/F88FCD4F-9A61-DF11-ADC3-002481E14F7A.root',
-    '/store/data/Commissioning10/MinimumBias/RAW-RECO/v9/000/135/445/F8855BDC-BF62-DF11-88EC-002481E15008.root',
-    '/store/data/Commissioning10/MinimumBias/RAW-RECO/v9/000/135/445/F8204F63-6A61-DF11-900B-0025B3E063EA.root',
-    '/store/data/Commissioning10/MinimumBias/RAW-RECO/v9/000/135/445/F6688BF3-0063-DF11-ABDC-003048D46030.root',
-    '/store/data/Commissioning10/MinimumBias/RAW-RECO/v9/000/135/445/F6049B12-AB61-DF11-A6B0-00E0817918D9.root',
-    '/store/data/Commissioning10/MinimumBias/RAW-RECO/v9/000/135/445/F483E438-B862-DF11-A20B-003048D45FCA.root',
-    '/store/data/Commissioning10/MinimumBias/RAW-RECO/v9/000/135/445/F4799A8F-DA60-DF11-8C02-0025B3E06388.root'
+    'rfio:/castor/cern.ch/cms/store/data/Run2011A/MinimumBias/RAW/v1/000/160/410/FC5D32F7-A14D-E011-A73E-0030487CD184.root'
                                         )
                   )
     )
