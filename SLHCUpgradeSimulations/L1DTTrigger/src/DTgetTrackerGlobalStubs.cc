@@ -1,4 +1,4 @@
-#include "SLHCUpgradeSimulations/L1DTTrigger/interface/DTL1SimOperation.h"
+#include "SLHCUpgradeSimulations/L1DTTrigger/interface/DTL1SimOperations.h"
 
 
 // ********************************
@@ -11,8 +11,8 @@
 
 using namespace cmsUpgrades;
 
-void DTL1SimOperation::getTrackerGlobalStubs(edm::Event& event, 
-					     const edm::EventSetup& eventSetup)
+void DTL1SimOperations::getTrackerGlobalStubs(edm::Event& event, 
+		         		      const edm::EventSetup& eventSetup)
 {
   // cout << "Checking tracker global stubs" << endl;
   StackedTrackerDetId id;
@@ -65,9 +65,16 @@ void DTL1SimOperation::getTrackerGlobalStubs(edm::Event& event,
 	  float y = (**DigisIter).position().y();
 	  float z = (**DigisIter).position().z();
 	  float phi = (**DigisIter).position().phi();
-	  if( phi< 0)
+	  if( phi <= 0)
 	    phi += (2.*TMath::Pi());
 	  float theta = (**DigisIter).position().theta();
+	  // apply PT cut to stubs
+	  double MagneticFieldStrength = 
+	    pSet.getUntrackedParameter<double>("magneticFieldStrength");
+	  double PtThreshold = 
+	    pSet.getUntrackedParameter<double>("ptThreshold");
+	  bool flagSTUB = flagStubThreshold(**DigisIter, theStackedTracker, 
+					    MagneticFieldStrength, PtThreshold);
 	  /*
 	  if(debug_stubs)
 	    outAscii << " position" << (**DigisIter).position()
@@ -77,7 +84,7 @@ void DTL1SimOperation::getTrackerGlobalStubs(edm::Event& event,
 	  */
 	  // 090320 SV save Stubs and add in collection
 	  TrackerStub* stub = 
-	    new TrackerStub(id, x, y, z, (**DigisIter).direction(), phi, theta);
+	    new TrackerStub(id, x, y, z,(**DigisIter).direction(),phi,theta,flagSTUB);
 	  DTStubMatches->addStub(stub);
 	}//end digi iteration
       }//end if: NGlobalDigiStubs
@@ -86,5 +93,44 @@ void DTL1SimOperation::getTrackerGlobalStubs(edm::Event& event,
   // end Tracker Global Stubs
 }
   
+
+
+
+//-----------------------------------------------------------------------------------
+//begin
+// From Nicola Pozzobon: 3/5/2010
+/// Check if a Stub can pass a X GeV Threshold 
+bool DTL1SimOperations::
+flagStubThreshold(const GlobalStubRefType& aStub, 
+		  const cmsUpgrades::StackedTrackerGeometry* theStackedTracker, 
+		  double mMagneticFieldStrength, 
+		  double mPtThreshold ) 
+{
+  const double KGMS_C = 2.99792458e+8;
+  double mCompatibilityScalingFactor = 
+    (100.0 * 2.0e+9 * mPtThreshold)/(KGMS_C * mMagneticFieldStrength);
+  mCompatibilityScalingFactor = 1.0/mCompatibilityScalingFactor;
+  const LocalStub<cmsUpgrades::Ref_PixelDigi_> *refLocStub = aStub.localStub();
+  GlobalPoint innerHitPosition = 
+    refLocStub->averagePosition( &(*theStackedTracker) , 0);
+  GlobalPoint outerHitPosition = 
+    refLocStub->averagePosition( &(*theStackedTracker) , 1);
+  double outerPointRadius = outerHitPosition.perp();
+  double innerPointRadius = innerHitPosition.perp();
+  double outerPointPhi = outerHitPosition.phi();
+  double innerPointPhi = innerHitPosition.phi();
+  
+  double deltaPhiThreshold = 
+    (outerPointRadius - innerPointRadius) * mCompatibilityScalingFactor;
+  double deltaPhi = outerPointPhi - innerPointPhi;
+  if (deltaPhi<0) deltaPhi = -deltaPhi;
+  if (deltaPhi > TMath::Pi()) deltaPhi = 2 *
+    TMath::Pi() - deltaPhi; 
+  if ( deltaPhi < deltaPhiThreshold ) 
+    return true;
+  else return false;
+}
+//end
+
 
 
