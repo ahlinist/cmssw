@@ -208,9 +208,9 @@ void anaTNP::loadFiles(const char *dir, int i) {
       jfile = fDirectory + string("/jpsi/JpsiTagandprobe_10TeV_nocut.root");  
     } else if (40 == i) {
       ufile = fDirectory + string("/upsilon/111112.data.MuOnia.mt.HT160.NoVeto.tnpReaderTrig_DATA.default.root");
-     // ufile = fDirectory + string("/upsilon/UpsTagAndProbe_7TeV.root"); 
-     // jfile = fDirectory + string("/jpsi/231112.data.MU.mt.NoVeto.tnpReaderTrig_DATA.default.root");
-      jfile = fDirectory + string("/jpsi/101130.fl10.CowboyVeto.mt.jpsi.tnpReaderTrig_MC.default.root");  
+     //ufile = fDirectory + string("/upsilon/UpsTagAndProbe_7TeV.root"); 
+     jfile = fDirectory + string("/jpsi/160311.data.mt.tnpReaderTrig_DATA.tma.default.root");
+     //jfile = fDirectory + string("/jpsi/101130.fl10.mt.jpsi.tnpReaderTrig_MC.tma.default.root");  
     } else {
       cout << "Don't know which J/psi file to open for i = " << i << ". Specify this in anaTNP::loadfiles()" << endl;
       return;
@@ -426,20 +426,20 @@ void anaTNP::makeAllMC(int channel) {
     allDifferences(2); 
   }
   
-  if (1) {
+  /*if (1) {
     init(fDirectory.c_str(), fMode);
     fSample = string("upsilon");
     readPidTables("upsilon"); 
     projections(1); 
-    //    allDifferences(1); 
+    allDifferences(1); 
 
     init(fDirectory.c_str(), fMode);
     fSample = string("jpsi");
     readPidTables("jpsi"); 
     projections(1); 
-    //    allDifferences(2); 
+    allDifferences(2); 
 
-  }
+    }*/
   
   if ((channel&1) && (channel&2)) allDifferences(3); 
   
@@ -1166,6 +1166,7 @@ void anaTNP::projections(int mode) {
       hPmct->DrawCopy();
       hPmcp->DrawCopy("same");
       hPtnp->DrawCopy("samee");
+      hPmmb->DrawCopy("samee");
       
       tl->DrawLatex(0.2, 0.92, Form("%3.1f < #eta < %3.1f", lo, hi)); 
       
@@ -4509,7 +4510,7 @@ void anaTNP::fitJpsi(int mode) {
       			yield  = h->Integral(ib - 0.2*h->GetNbinsX(),  ib + 0.2*h->GetNbinsX()); 
       			yield  -=h->Integral(h->GetNbinsX() - 0.2*h->GetNbinsX(), h->GetNbinsX()); 
       			yield  -=h->Integral(1, 0.2*h->GetNbinsX()); 
-     			if (yield < 0) yield = 1.; 
+     			if (yield < 0) yield = 0.; 
 
       			yieldE =TMath::Sqrt(yield); 
       			fitted = 0; 
@@ -4577,7 +4578,7 @@ void anaTNP::fitJpsi(int mode) {
       		yieldE =TMath::Sqrt(yield); 
       		yield  -=h->Integral(h->GetNbinsX() - 0.2*h->GetNbinsX(), h->GetNbinsX()); 
       		yield  -=h->Integral(1, 0.2*h->GetNbinsX()); 
-      		if (yield < 0) yield = 1.; 
+      		if (yield < 0) yield = 0.; 
       		width  = 0.030; 
       		width  = 0.010; 
       		fitted = 0; 
@@ -4642,7 +4643,7 @@ void anaTNP::fitJpsi(int mode) {
       		yield  = h->Integral(ib - 0.2*h->GetNbinsX(),  ib + 0.2*h->GetNbinsX()); 
       		yield  -=h->Integral(h->GetNbinsX() - 0.2*h->GetNbinsX(), h->GetNbinsX()); 
       		yield  -=h->Integral(1, 0.2*h->GetNbinsX()); 
-      		if (yield < 0) yield = 1.; 
+      		if (yield < 0) yield = 0.; 
       		yieldE =TMath::Sqrt(yield); 
       		fitted = 0; 
     		}	
@@ -4656,6 +4657,7 @@ void anaTNP::fitJpsi(int mode) {
     		double mm = fS1YieldPos->GetBinContent(nbin); 
     		double mmE= fS1YieldPos->GetBinError(nbin); 
     		fS3YieldPos->SetBinContent(nbin, yield+mm); 
+		cout << "yield+mm = " << yield+mm << endl;
     		fS3YieldPos->SetBinError(nbin, TMath::Sqrt(yieldE*yieldE + mmE*mmE)); 
 
     		c1->Update();
@@ -4723,7 +4725,7 @@ void anaTNP::fitJpsi(int mode) {
       		yield  = h->Integral(ib - 0.2*h->GetNbinsX(),  ib + 0.2*h->GetNbinsX()); 
       		yield  -=h->Integral(h->GetNbinsX() - 0.2*h->GetNbinsX(), h->GetNbinsX()); 
       		yield  -=h->Integral(1, 0.2*h->GetNbinsX()); 
-      		if (yield < 0) yield = 1.; 
+      		if (yield < 0) yield = 0.; 
       		yieldE =TMath::Sqrt(yield); 
     		}
     		cout << " --> " << fitted << " " << h->GetSumOfWeights() << " .. " << yield << "  " 
@@ -4786,7 +4788,7 @@ void anaTNP::fitJpsi(int mode) {
       		yield  = h->Integral(ib - 0.2*h->GetNbinsX(),  ib + 0.2*h->GetNbinsX()); 
       		yield  -=h->Integral(h->GetNbinsX() - 0.2*h->GetNbinsX(), h->GetNbinsX()); 
       		yield  -=h->Integral(1, 0.2*h->GetNbinsX()); 
-      		if (yield < 0) yield = 1.; 
+      		if (yield < 0) yield = 0.; 
       		yieldE =TMath::Sqrt(yield); 
       		width  = 0.030; 
       		widthE = 0.010; 
@@ -4851,7 +4853,7 @@ void anaTNP::fitJpsi(int mode) {
       		yield  = h->Integral(ib - 0.2*h->GetNbinsX(),  ib + 0.2*h->GetNbinsX()); 
       		yield  -=h->Integral(h->GetNbinsX() - 0.2*h->GetNbinsX(), h->GetNbinsX()); 
       		yield  -=h->Integral(1, 0.2*h->GetNbinsX()); 
-     		if (yield < 0) yield = 1.; 
+     		if (yield < 0) yield = 0.; 
      		yieldE =TMath::Sqrt(yield); 
      		fitted = 0; 
     		}
@@ -4878,7 +4880,7 @@ void anaTNP::fitJpsi(int mode) {
     		c1->SaveAs(Form("%s/massfits-neg-%s-%s.eps", fPtDirectory.c_str(), fSample.c_str(), frag.Data()));
 		
  		}
-				 
+		/*		 
 	        TCanvas *c2 = new TCanvas("c2", "c2");
   	        c2->Clear();
   	        c2->Divide(3,1);
@@ -4939,7 +4941,7 @@ void anaTNP::fitJpsi(int mode) {
   		fS1YieldNeg->Draw("colz");
   		c0->cd(4);
   		fS2YieldNeg->Draw("colz");
-	
+		*/
   
   }
   
