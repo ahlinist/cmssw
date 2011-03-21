@@ -100,14 +100,14 @@ protected:
   Float_t  processID_;
   Int_t    nHLT_;
   Int_t    HLT_[maxP];
-  Int_t    HLTIndex_[50];
+  Int_t    HLTIndex_[100];
   Int_t    nHFTowersP_;
   Int_t    nHFTowersN_;
   Int_t    nVtx_;
-  Float_t  vtx_[50][3];
-  Int_t    vtxNTrk_[50];
-  Int_t    vtxNDF_[50];
-  Float_t  vtxD0_[50];
+  Float_t  vtx_[150][3];
+  Int_t    vtxNTrk_[150];
+  Int_t    vtxNDF_[150];
+  Float_t  vtxD0_[150];
   Int_t    IsVtxGood_;
   Int_t    nTrk_;
   Int_t    nGoodTrk_;
@@ -163,7 +163,7 @@ protected:
   Float_t  pfMETmEtSig_;
   Float_t  pfMETSig_;
   // Electron
-  Int_t  nEle_;
+  Int_t    nEle_;
   Int_t    eleTrg_[maxP][13];
   Int_t    eleID_[maxP][12];
   Int_t    eleClass_[maxP];
@@ -224,7 +224,7 @@ protected:
 
   // Photon
   Int_t    nPho_;
-  Int_t    phoTrg_[maxP][8];
+  Int_t    phoTrg_[maxP][10];
   Bool_t   phoIsPhoton_[maxP];
   Float_t  phoE_[maxP];
   Float_t  phoEt_[maxP];
@@ -277,7 +277,7 @@ protected:
 
   // Muon
   Int_t    nMu_;
-  Int_t    muTrg_[maxP][6];
+  Int_t    muTrg_[maxP][16];
   Float_t  muEta_[maxP];
   Float_t  muPhi_[maxP];
   Int_t    muCharge_[maxP];
@@ -303,7 +303,7 @@ protected:
 
   // Jet
   Int_t    nJet_;
-  Int_t    jetTrg_[maxP][14];
+  Int_t    jetTrg_[maxP][21];
   Int_t    jetAlgo_[maxP];
   Float_t  jetEn_[maxP];
   Float_t  jetPt_[maxP];
