@@ -17,7 +17,7 @@ const int  tnpReader2::fNq;
 tnpReader2::tnpReader2(TChain *tree, TString evtClassName): treeReaderTNP(tree, evtClassName) {
   cout << "--> tnpReader2> This is the start ..." << endl;
   fpJSON = new JSON("/shome/bora/root/json/json_147196_149442");
-  fPTbin[0] = 3.; fPTbin[1] = 4.; fPTbin[2] = 5.; fPTbin[3] = 6.; fPTbin[4] = 20.;
+  fPTbin[0] = 3.; fPTbin[1] = 4.; fPTbin[2] = 5.; fPTbin[3] = 6.; fPTbin[4] = 8.; fPTbin[5] = 50.; 
   fEtabin[0] = -2.4; fEtabin[1] = -1.2; fEtabin[2] = -0.4; fEtabin[3] = 0.4; fEtabin[4] = 1.2; fEtabin[5] = 2.4;
   fQ[0] = -1;  fQ[1] = 1;
 }
@@ -188,6 +188,7 @@ void tnpReader2::MCTruth(int mode){
 	}
 	
 	if ( (pTrack->fMuID & 0x1<< MUTYPE1) && (pTrack->fMuID & 0x1<< MUTYPE2)){
+	//if ( (pTrack->fMuID & 6) == 6){
 	  if ( (pTrack->fPlab.Perp() <= 20.) && (pTrack->fPlab.Perp() >= 3.) && (pTrack->fPlab.Eta() <= 2.4) && (pTrack->fPlab.Eta() >= -2.4)){
 	    ((TH2D*)fpHistFile->Get("mEtaPt_neg"))->Fill(pTrack->fPlab.Eta() , pTrack->fPlab.Perp());
 	  }
@@ -297,7 +298,7 @@ void tnpReader2::TagSelection(){
     if ( pTag->fPlab.Perp() < PT_TAG ) continue;
     if ( pTag->fPlab.Eta() > ETAHI_TAG ) continue;
     if ( pTag->fPlab.Eta() < ETALO_TAG ) continue;
-    if ( !((pTag->fMuID & 0x1<< MUTYPE1 ) && (pTag->fMuID & 0x1<< MUTYPE2)) ) continue;
+    if ( !((pTag->fMuID & 0x1<< MUTYPE1) && (pTag->fMuID & 0x1<< MUTYPE2)) ) continue;
     
     // SOME CHANGES to Mimic Spainard's Study
     //if ( !(pTag->fMuID & 0x1<< MUTYPE1) ) continue;

@@ -96,7 +96,7 @@ public:
   vector<TAnaCand*> fCandGP;
   vector<TAnaCand*> fCandnotGP;  
   
-  static const int  fNpt = 4;
+  static const int  fNpt = 5;
   static const int  fNeta = 5;
   static const int  fNq = 1;
   double      fPTbin[fNpt+1], fEtabin[fNeta+1];
