@@ -91,7 +91,7 @@ VgAnalyzerKit::VgAnalyzerKit(const edm::ParameterSet& ps) : verbosity_(0), helpe
   tree_->Branch("ttbit0", &ttbit0_, "ttbit0/I");
   tree_->Branch("nHLT", &nHLT_, "nHLT/I");
   tree_->Branch("HLT", HLT_, "HLT[nHLT]/I");
-  tree_->Branch("HLTIndex", HLTIndex_, "HLTIndex[50]/I");
+  tree_->Branch("HLTIndex", HLTIndex_, "HLTIndex[71]/I");
   tree_->Branch("nHFTowersP", &nHFTowersP_, "nHFTowersP/I");
   tree_->Branch("nHFTowersN", &nHFTowersN_, "nHFTowersN/I");
   tree_->Branch("nVtx", &nVtx_, "nVtx/I");
@@ -219,7 +219,7 @@ VgAnalyzerKit::VgAnalyzerKit(const edm::ParameterSet& ps) : verbosity_(0), helpe
   tree_->Branch("eleESProfileRear", eleESProfileRear_, "eleESProfileRear[nEle][123]/F");
   // Photon
   tree_->Branch("nPho", &nPho_, "nPho/I");
-  tree_->Branch("phoTrg", phoTrg_, "phoTrg[nPho][8]/I");
+  tree_->Branch("phoTrg", phoTrg_, "phoTrg[nPho][10]/I");
   tree_->Branch("phoIsPhoton", phoIsPhoton_, "phoIsPhoton[nPho]/O");
   tree_->Branch("phoE", phoE_, "phoE[nPho]/F");
   tree_->Branch("phoEt", phoEt_, "phoEt[nPho]/F");
@@ -275,7 +275,7 @@ VgAnalyzerKit::VgAnalyzerKit(const edm::ParameterSet& ps) : verbosity_(0), helpe
   tree_->Branch("phoESProfileRear", phoESProfileRear_, "phoESProfileRear[nPho][123]/F");
   // Muon
   tree_->Branch("nMu", &nMu_, "nMu/I");
-  tree_->Branch("muTrg", muTrg_, "muTrg[nMu][6]/I");
+  tree_->Branch("muTrg", muTrg_, "muTrg[nMu][16]/I");
   tree_->Branch("muEta", muEta_, "muEta[nMu]/F");
   tree_->Branch("muPhi", muPhi_, "muPhi[nMu]/F");
   tree_->Branch("muCharge", muCharge_, "muCharge[nMu]/I");
@@ -303,7 +303,7 @@ VgAnalyzerKit::VgAnalyzerKit(const edm::ParameterSet& ps) : verbosity_(0), helpe
   // Jet
   if (doStoreJets_) {
     tree_->Branch("nJet", &nJet_, "nJet/I");
-    tree_->Branch("jetTrg", jetTrg_, "jetTrg[nJet][14]/I");
+    tree_->Branch("jetTrg", jetTrg_, "jetTrg[nJet][21]/I");
     tree_->Branch("jetEn", jetEn_, "jetEn[nJet]/F");
     tree_->Branch("jetPt", jetPt_, "jetPt[nJet]/F");
     tree_->Branch("jetEta", jetEta_, "jetEta[nJet]/F");
@@ -677,8 +677,31 @@ fabs(ip->pdgId())<=14) || ip->pdgId()==22))) {
   //47: HLT_DoubleEle15_SW_L1R_v1 
   //48: HLT_DoublePhoton17_L1R
   //49: HLT_Photon10_L1R
+// HLT path for 2011A
+  //50: HLT_Jet30_v1
+  //51: HLT_Jet60_v1
+  //52: HLT_Jet80_v1
+  //53: HLT_Jet110_v1
+  //54: HLT_Jet150_v1
+  //55: HLT_Jet190_v1
+  //56: HLT_Jet240_v1
+  //57: HLT_Mu12_v1
+  //58: HLT_Mu15_v2
+  //59: HLT_Mu20_v1
+  //60: HLT_Mu24_v1
+  //61: HLT_Mu30_v1
+  //62: HLT_IsoMu12_v1
+  //63: HLT_IsoMu15_v5
+  //64: HLT_IsoMu17_v5
+  //65: HLT_IsoMu24_v1
+  //66: HLT_IsoMu30_v1
+  //67: HLT_Ele27_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_v1
+  //68: HLT_Ele45_CaloIdVT_TrkIdT_v1
+  //69: HLT_Ele90_NoSpikeFilter_v1
+  //70: HLT_Photon75_CaloIdVL_IsoL_v1
+  //71: HLT_Photon75_CaloIdVL_v1
 
-  for (int a=0; a<50; a++)
+  for (int a=0; a<71; a++)
     HLTIndex_[a] = -1;
  
   nHLT_ = 0;
@@ -740,6 +763,28 @@ fabs(ip->pdgId())<=14) || ip->pdgId()==22))) {
     else if (hlNames[i] == "HLT_DoubleEle15_SW_L1R_v1")   HLTIndex_[47] = i;
     else if (hlNames[i] == "HLT_DoublePhoton17_L1R") 	  HLTIndex_[48] = i;
     else if (hlNames[i] == "HLT_Photon10_L1R")    	  HLTIndex_[49] = i;
+    else if (hlNames[i] == "HLT_Jet30_v1")	HLTIndex_[50] = i;
+    else if (hlNames[i] == "HLT_Jet60_v1")	HLTIndex_[51] = i;
+    else if (hlNames[i] == "HLT_Jet80_v1")	HLTIndex_[52] = i;
+    else if (hlNames[i] == "HLT_Jet110_v1")	HLTIndex_[53] = i;
+    else if (hlNames[i] == "HLT_Jet150_v1")	HLTIndex_[54] = i;
+    else if (hlNames[i] == "HLT_Jet190_v1")	HLTIndex_[55] = i;
+    else if (hlNames[i] == "HLT_Jet240_v1")	HLTIndex_[56] = i;
+    else if (hlNames[i] == "HLT_Mu12_v1")	HLTIndex_[57] = i;
+    else if (hlNames[i] == "HLT_Mu15_v2")	HLTIndex_[58] = i;
+    else if (hlNames[i] == "HLT_Mu20_v1")	HLTIndex_[59] = i;
+    else if (hlNames[i] == "HLT_Mu24_v1")	HLTIndex_[60] = i;
+    else if (hlNames[i] == "HLT_Mu30_v1")	HLTIndex_[61] = i;
+    else if (hlNames[i] == "HLT_IsoMu12_v1")	HLTIndex_[62] = i;
+    else if (hlNames[i] == "HLT_IsoMu15_v5")	HLTIndex_[63] = i;
+    else if (hlNames[i] == "HLT_IsoMu17_v5")	HLTIndex_[64] = i;
+    else if (hlNames[i] == "HLT_IsoMu24_v1")	HLTIndex_[65] = i;
+    else if (hlNames[i] == "HLT_IsoMu30_v1")	HLTIndex_[66] = i;
+    else if (hlNames[i] == "HLT_Ele27_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_v1")	HLTIndex_[67] = i;
+    else if (hlNames[i] == "HLT_Ele45_CaloIdVT_TrkIdT_v1")	HLTIndex_[68] = i;
+    else if (hlNames[i] == "HLT_Ele90_NoSpikeFilter_v1")	HLTIndex_[69] = i;
+    else if (hlNames[i] == "HLT_Photon75_CaloIdVL_IsoL_v1")	HLTIndex_[70] = i;
+    else if (hlNames[i] == "HLT_Photon75_CaloIdVL_v1")		HLTIndex_[71] = i;
   }
 
   // Gen & PAT MET (caloMET)
@@ -814,6 +859,9 @@ fabs(ip->pdgId())<=14) || ip->pdgId()==22))) {
   const TriggerObjectMatch *eleTriggerMatch8(triggerEvent->triggerObjectMatchResult("electronTriggerMatchHLTEle17SWTighterEleIdIsolL1R"));
   const TriggerObjectMatch *eleTriggerMatch9(triggerEvent->triggerObjectMatchResult("electronTriggerMatchHLTEle17SWTighterEleIdIsolL1Rv2"));
   const TriggerObjectMatch *eleTriggerMatch10(triggerEvent->triggerObjectMatchResult("electronTriggerMatchHLTEle17SWTighterEleIdIsolL1Rv3"));
+  const TriggerObjectMatch *eleTriggerMatch11(triggerEvent->triggerObjectMatchResult("electronTriggerMatchHLTEle27CaloIdVTCaloIsoTTrkIdTTrkIsoTv1"));
+  const TriggerObjectMatch *eleTriggerMatch12(triggerEvent->triggerObjectMatchResult("electronTriggerMatchHLTEle45CaloIdVTTrkIdTv1"));
+  const TriggerObjectMatch *eleTriggerMatch13(triggerEvent->triggerObjectMatchResult("electronTriggerMatchHLTEle90NoSpikeFilterv1"));
 
   int nElePassCut = 0;
   nEle_ = 0;
@@ -835,6 +883,9 @@ fabs(ip->pdgId())<=14) || ip->pdgId()==22))) {
       const TriggerObjectRef eleTrigRef8( matchHelper.triggerMatchObject( eleBaseRef, eleTriggerMatch8, e, *triggerEvent ) );
       const TriggerObjectRef eleTrigRef9( matchHelper.triggerMatchObject( eleBaseRef, eleTriggerMatch9, e, *triggerEvent ) );
       const TriggerObjectRef eleTrigRef10( matchHelper.triggerMatchObject( eleBaseRef, eleTriggerMatch10, e, *triggerEvent ) );
+      const TriggerObjectRef eleTrigRef11( matchHelper.triggerMatchObject( eleBaseRef, eleTriggerMatch11, e, *triggerEvent ) );
+      const TriggerObjectRef eleTrigRef12( matchHelper.triggerMatchObject( eleBaseRef, eleTriggerMatch12, e, *triggerEvent ) );
+      const TriggerObjectRef eleTrigRef13( matchHelper.triggerMatchObject( eleBaseRef, eleTriggerMatch13, e, *triggerEvent ) );
       eleTrg_[nEle_][0]  = (eleTrigRef1.isAvailable())  ? 1 : -99;
       eleTrg_[nEle_][1]  = (eleTrigRef2.isAvailable())  ? 1 : -99;
       eleTrg_[nEle_][2]  = (eleTrigRef3.isAvailable())  ? 1 : -99;
@@ -845,6 +896,9 @@ fabs(ip->pdgId())<=14) || ip->pdgId()==22))) {
       eleTrg_[nEle_][7]  = (eleTrigRef8.isAvailable())  ? 1 : -99;
       eleTrg_[nEle_][8]  = (eleTrigRef9.isAvailable())  ? 1 : -99;
       eleTrg_[nEle_][9]  = (eleTrigRef10.isAvailable()) ? 1 : -99;
+      eleTrg_[nEle_][10]  = (eleTrigRef11.isAvailable()) ? 1 : -99;
+      eleTrg_[nEle_][11]  = (eleTrigRef12.isAvailable()) ? 1 : -99;
+      eleTrg_[nEle_][12]  = (eleTrigRef13.isAvailable()) ? 1 : -99;
 
       //        new eID with correct isolations and conversion rejection, see https://twiki.cern.ch/twiki/bin/viewauth/CMS/SimpleCutBasedEleID
       //        The value map returns a double with the following meaning:
@@ -925,7 +979,11 @@ fabs(ip->pdgId())<=14) || ip->pdgId()==22))) {
       eleSCPos_[nEle_][2] = iEle->superCluster()->z();
 
       // Gen Particle
-      eleGenIndex_[nEle_] = -1;
+      eleGenIndex_[nEle_]   = -999;
+      eleGenMomPID_[nEle_]  = -999;
+      eleGenMomPt_[nEle_]   = -999;
+      eleGenGMomPID_[nEle_] = -999;
+      eleGenIndex_[nEle_]   = -1;
       int EleGenIndex = 0;
       if (!isData_) {
         if ((*iEle).genLepton() && genParticlesHandle_.isValid() ) {
@@ -1010,6 +1068,7 @@ fabs(ip->pdgId())<=14) || ip->pdgId()==22))) {
 
   // Photon
   // take the pi0 rejection info from RECO
+/*
   Handle<reco::PhotonPi0DiscriminatorAssociationMap>  map;
   e.getByLabel("piZeroDiscriminators","PhotonPi0DiscriminatorAssociationMap",  map);
   reco::PhotonPi0DiscriminatorAssociationMap::const_iterator mapIter;
@@ -1017,6 +1076,7 @@ fabs(ip->pdgId())<=14) || ip->pdgId()==22))) {
   edm::Handle<reco::PhotonCollection> R_PhotonHandle;
   e.getByLabel("photons", "", R_PhotonHandle);
   const reco::PhotonCollection R_photons = *(R_PhotonHandle.product());   
+*/
 
   const Candidate *phomom = 0;
   int nPhoPassCut = 0;
@@ -1030,6 +1090,8 @@ fabs(ip->pdgId())<=14) || ip->pdgId()==22))) {
   const TriggerObjectMatch *phoTriggerMatch6(triggerEvent->triggerObjectMatchResult("photonTriggerMatchHLTPhoton70CleanedL1Rv1"));
   const TriggerObjectMatch *phoTriggerMatch7(triggerEvent->triggerObjectMatchResult("photonTriggerMatchHLTDoublePhoton17L1R"));
   const TriggerObjectMatch *phoTriggerMatch8(triggerEvent->triggerObjectMatchResult("photonTriggerMatchHLTPhoton10L1R"));
+  const TriggerObjectMatch *phoTriggerMatch9(triggerEvent->triggerObjectMatchResult("photonTriggerMatchHLTPhoton75CaloIdVLIsoLv1"));
+  const TriggerObjectMatch *phoTriggerMatch10(triggerEvent->triggerObjectMatchResult("photonTriggerMatchHLTPhoton75CaloIdVLv1"));
 
   if ( photonHandle_.isValid() )
     for (View<pat::Photon>::const_iterator iPho = photonHandle_->begin(); iPho != photonHandle_->end(); ++iPho) {
@@ -1046,6 +1108,8 @@ fabs(ip->pdgId())<=14) || ip->pdgId()==22))) {
       const TriggerObjectRef phoTrigRef6( matchHelper.triggerMatchObject( phoBaseRef, phoTriggerMatch6, e, *triggerEvent ) );
       const TriggerObjectRef phoTrigRef7( matchHelper.triggerMatchObject( phoBaseRef, phoTriggerMatch7, e, *triggerEvent ) );
       const TriggerObjectRef phoTrigRef8( matchHelper.triggerMatchObject( phoBaseRef, phoTriggerMatch8, e, *triggerEvent ) );
+      const TriggerObjectRef phoTrigRef9( matchHelper.triggerMatchObject( phoBaseRef, phoTriggerMatch9, e, *triggerEvent ) );
+      const TriggerObjectRef phoTrigRef10( matchHelper.triggerMatchObject( phoBaseRef, phoTriggerMatch10, e, *triggerEvent ) );
       phoTrg_[nPho_][0] = (phoTrigRef1.isAvailable()) ? 1 : -99;
       phoTrg_[nPho_][1] = (phoTrigRef2.isAvailable()) ? 1 : -99;
       phoTrg_[nPho_][2] = (phoTrigRef3.isAvailable()) ? 1 : -99;
@@ -1054,6 +1118,8 @@ fabs(ip->pdgId())<=14) || ip->pdgId()==22))) {
       phoTrg_[nPho_][5] = (phoTrigRef6.isAvailable()) ? 1 : -99;
       phoTrg_[nPho_][6] = (phoTrigRef7.isAvailable()) ? 1 : -99;
       phoTrg_[nPho_][7] = (phoTrigRef8.isAvailable()) ? 1 : -99;
+      phoTrg_[nPho_][8] = (phoTrigRef9.isAvailable()) ? 1 : -99;
+      phoTrg_[nPho_][9] = (phoTrigRef10.isAvailable()) ? 1 : -99;
 
       phoIsPhoton_[nPho_] = iPho->isPhoton();
       phoE_[nPho_]   = iPho->energy();
@@ -1174,6 +1240,7 @@ fabs(ip->pdgId())<=14) || ip->pdgId()==22))) {
 
       phoPi0Disc_[nPho_] = -1;
 
+/*
       int R_nphot = 0;
       float nn = -1;
       for( reco::PhotonCollection::const_iterator  R_phot_iter = R_photons.begin(); R_phot_iter != R_photons.end(); R_phot_iter++) { 
@@ -1184,7 +1251,7 @@ fabs(ip->pdgId())<=14) || ip->pdgId()==22))) {
         if(iPho->p4() == R_phot_iter->p4()) phoPi0Disc_[nPho_] = nn;
         R_nphot++;              
       }
-  
+*/
       phoESRatio_[nPho_] = getESRatio(iPho, e, es);
       for (int a=0; a<123; a++) {
         phoESProfileFront_[nPho_][a] = getESProfileFront(iPho, e, es)[a];
@@ -1201,6 +1268,16 @@ fabs(ip->pdgId())<=14) || ip->pdgId()==22))) {
   const TriggerObjectMatch * muTriggerMatch4( triggerEvent->triggerObjectMatchResult( "muonTriggerMatchHLTMu13v1" ) );
   const TriggerObjectMatch * muTriggerMatch5( triggerEvent->triggerObjectMatchResult( "muonTriggerMatchHLTMu15" ) );
   const TriggerObjectMatch * muTriggerMatch6( triggerEvent->triggerObjectMatchResult( "muonTriggerMatchHLTMu15v1" ) );
+  const TriggerObjectMatch * muTriggerMatch7( triggerEvent->triggerObjectMatchResult( "muonTriggerMatchHLTMu12v1" ) );
+  const TriggerObjectMatch * muTriggerMatch8( triggerEvent->triggerObjectMatchResult( "muonTriggerMatchHLTMu15v2" ) );
+  const TriggerObjectMatch * muTriggerMatch9( triggerEvent->triggerObjectMatchResult( "muonTriggerMatchHLTMu20v1" ) );
+  const TriggerObjectMatch * muTriggerMatch10( triggerEvent->triggerObjectMatchResult( "muonTriggerMatchHLTMu24v1" ) );
+  const TriggerObjectMatch * muTriggerMatch11( triggerEvent->triggerObjectMatchResult( "muonTriggerMatchHLTMu30v1" ) );
+  const TriggerObjectMatch * muTriggerMatch12( triggerEvent->triggerObjectMatchResult( "muonTriggerMatchHLTIsoMu12v1" ) );
+  const TriggerObjectMatch * muTriggerMatch13( triggerEvent->triggerObjectMatchResult( "muonTriggerMatchHLTIsoMu15v5" ) );
+  const TriggerObjectMatch * muTriggerMatch14( triggerEvent->triggerObjectMatchResult( "muonTriggerMatchHLTIsoMu17v5" ) );
+  const TriggerObjectMatch * muTriggerMatch15( triggerEvent->triggerObjectMatchResult( "muonTriggerMatchHLTIsoMu24v1" ) );
+  const TriggerObjectMatch * muTriggerMatch16( triggerEvent->triggerObjectMatchResult( "muonTriggerMatchHLTIsoMu30v1" ) );
 
   // Muon
   int nMuPassCut = 0;
@@ -1219,12 +1296,32 @@ fabs(ip->pdgId())<=14) || ip->pdgId()==22))) {
       const TriggerObjectRef muTrigRef4( matchHelper.triggerMatchObject( muBaseRef, muTriggerMatch4, e, *triggerEvent ) );
       const TriggerObjectRef muTrigRef5( matchHelper.triggerMatchObject( muBaseRef, muTriggerMatch5, e, *triggerEvent ) );
       const TriggerObjectRef muTrigRef6( matchHelper.triggerMatchObject( muBaseRef, muTriggerMatch6, e, *triggerEvent ) );
+      const TriggerObjectRef muTrigRef7( matchHelper.triggerMatchObject( muBaseRef, muTriggerMatch7, e, *triggerEvent ) );
+      const TriggerObjectRef muTrigRef8( matchHelper.triggerMatchObject( muBaseRef, muTriggerMatch8, e, *triggerEvent ) );
+      const TriggerObjectRef muTrigRef9( matchHelper.triggerMatchObject( muBaseRef, muTriggerMatch9, e, *triggerEvent ) );
+      const TriggerObjectRef muTrigRef10( matchHelper.triggerMatchObject( muBaseRef, muTriggerMatch10, e, *triggerEvent ) );
+      const TriggerObjectRef muTrigRef11( matchHelper.triggerMatchObject( muBaseRef, muTriggerMatch11, e, *triggerEvent ) );
+      const TriggerObjectRef muTrigRef12( matchHelper.triggerMatchObject( muBaseRef, muTriggerMatch12, e, *triggerEvent ) );
+      const TriggerObjectRef muTrigRef13( matchHelper.triggerMatchObject( muBaseRef, muTriggerMatch13, e, *triggerEvent ) );
+      const TriggerObjectRef muTrigRef14( matchHelper.triggerMatchObject( muBaseRef, muTriggerMatch14, e, *triggerEvent ) );
+      const TriggerObjectRef muTrigRef15( matchHelper.triggerMatchObject( muBaseRef, muTriggerMatch15, e, *triggerEvent ) );
+      const TriggerObjectRef muTrigRef16( matchHelper.triggerMatchObject( muBaseRef, muTriggerMatch16, e, *triggerEvent ) );
       muTrg_[nMu_][0] = (muTrigRef1.isAvailable()) ? 1 : -99;
       muTrg_[nMu_][1] = (muTrigRef2.isAvailable()) ? 1 : -99;
       muTrg_[nMu_][2] = (muTrigRef3.isAvailable()) ? 1 : -99;
       muTrg_[nMu_][3] = (muTrigRef4.isAvailable()) ? 1 : -99;
       muTrg_[nMu_][4] = (muTrigRef5.isAvailable()) ? 1 : -99;
       muTrg_[nMu_][5] = (muTrigRef6.isAvailable()) ? 1 : -99;
+      muTrg_[nMu_][6] = (muTrigRef7.isAvailable()) ? 1 : -99;
+      muTrg_[nMu_][7] = (muTrigRef8.isAvailable()) ? 1 : -99;
+      muTrg_[nMu_][8] = (muTrigRef9.isAvailable()) ? 1 : -99;
+      muTrg_[nMu_][9] = (muTrigRef10.isAvailable()) ? 1 : -99;
+      muTrg_[nMu_][10] = (muTrigRef11.isAvailable()) ? 1 : -99;
+      muTrg_[nMu_][11] = (muTrigRef12.isAvailable()) ? 1 : -99;
+      muTrg_[nMu_][12] = (muTrigRef13.isAvailable()) ? 1 : -99;
+      muTrg_[nMu_][13] = (muTrigRef14.isAvailable()) ? 1 : -99;
+      muTrg_[nMu_][14] = (muTrigRef15.isAvailable()) ? 1 : -99;
+      muTrg_[nMu_][15] = (muTrigRef16.isAvailable()) ? 1 : -99;
 
       //       if (!iMu->isGlobalMuon()) continue;
       //       if (!iMu->isTrackerMuon()) continue;
@@ -1554,6 +1651,13 @@ fabs(ip->pdgId())<=14) || ip->pdgId()==22))) {
   const TriggerObjectMatch *jetTriggerMatch12(triggerEvent->triggerObjectMatchResult("jetTriggerMatchHLTJet70Uv3"));
   const TriggerObjectMatch *jetTriggerMatch13(triggerEvent->triggerObjectMatchResult("jetTriggerMatchHLTJet100Uv3"));
   const TriggerObjectMatch *jetTriggerMatch14(triggerEvent->triggerObjectMatchResult("jetTriggerMatchHLTJet140Uv3"));
+  const TriggerObjectMatch *jetTriggerMatch15(triggerEvent->triggerObjectMatchResult("jetTriggerMatchHLTJetJet30v1"));
+  const TriggerObjectMatch *jetTriggerMatch16(triggerEvent->triggerObjectMatchResult("jetTriggerMatchHLTJetJet60v1"));
+  const TriggerObjectMatch *jetTriggerMatch17(triggerEvent->triggerObjectMatchResult("jetTriggerMatchHLTJetJet80v1"));
+  const TriggerObjectMatch *jetTriggerMatch18(triggerEvent->triggerObjectMatchResult("jetTriggerMatchHLTJetJet110v1"));
+  const TriggerObjectMatch *jetTriggerMatch19(triggerEvent->triggerObjectMatchResult("jetTriggerMatchHLTJetJet150v1"));
+  const TriggerObjectMatch *jetTriggerMatch20(triggerEvent->triggerObjectMatchResult("jetTriggerMatchHLTJetJet190v1"));
+  const TriggerObjectMatch *jetTriggerMatch21(triggerEvent->triggerObjectMatchResult("jetTriggerMatchHLTJetJet240v1"));
 
   if (doStoreJets_) {
     nJet_ = 0;
@@ -1578,6 +1682,13 @@ fabs(ip->pdgId())<=14) || ip->pdgId()==22))) {
 	const TriggerObjectRef jetTrigRef12( matchHelper.triggerMatchObject( jetBaseRef, jetTriggerMatch12, e, *triggerEvent ) );
 	const TriggerObjectRef jetTrigRef13( matchHelper.triggerMatchObject( jetBaseRef, jetTriggerMatch13, e, *triggerEvent ) );
 	const TriggerObjectRef jetTrigRef14( matchHelper.triggerMatchObject( jetBaseRef, jetTriggerMatch14, e, *triggerEvent ) );
+	const TriggerObjectRef jetTrigRef15( matchHelper.triggerMatchObject( jetBaseRef, jetTriggerMatch15, e, *triggerEvent ) );
+	const TriggerObjectRef jetTrigRef16( matchHelper.triggerMatchObject( jetBaseRef, jetTriggerMatch16, e, *triggerEvent ) );
+	const TriggerObjectRef jetTrigRef17( matchHelper.triggerMatchObject( jetBaseRef, jetTriggerMatch17, e, *triggerEvent ) );
+	const TriggerObjectRef jetTrigRef18( matchHelper.triggerMatchObject( jetBaseRef, jetTriggerMatch18, e, *triggerEvent ) );
+	const TriggerObjectRef jetTrigRef19( matchHelper.triggerMatchObject( jetBaseRef, jetTriggerMatch19, e, *triggerEvent ) );
+	const TriggerObjectRef jetTrigRef20( matchHelper.triggerMatchObject( jetBaseRef, jetTriggerMatch20, e, *triggerEvent ) );
+	const TriggerObjectRef jetTrigRef21( matchHelper.triggerMatchObject( jetBaseRef, jetTriggerMatch21, e, *triggerEvent ) );
 	jetTrg_[nJet_][0] = (jetTrigRef1.isAvailable()) ? 1 : -99;
 	jetTrg_[nJet_][1] = (jetTrigRef2.isAvailable()) ? 1 : -99;
 	jetTrg_[nJet_][2] = (jetTrigRef3.isAvailable()) ? 1 : -99;
@@ -1592,6 +1703,13 @@ fabs(ip->pdgId())<=14) || ip->pdgId()==22))) {
 	jetTrg_[nJet_][11] = (jetTrigRef12.isAvailable()) ? 1 : -99;
 	jetTrg_[nJet_][12] = (jetTrigRef13.isAvailable()) ? 1 : -99;
 	jetTrg_[nJet_][13] = (jetTrigRef14.isAvailable()) ? 1 : -99;
+	jetTrg_[nJet_][14] = (jetTrigRef15.isAvailable()) ? 1 : -99;
+	jetTrg_[nJet_][15] = (jetTrigRef16.isAvailable()) ? 1 : -99;
+	jetTrg_[nJet_][16] = (jetTrigRef17.isAvailable()) ? 1 : -99;
+	jetTrg_[nJet_][17] = (jetTrigRef18.isAvailable()) ? 1 : -99;
+	jetTrg_[nJet_][18] = (jetTrigRef19.isAvailable()) ? 1 : -99;
+	jetTrg_[nJet_][19] = (jetTrigRef20.isAvailable()) ? 1 : -99;
+	jetTrg_[nJet_][20] = (jetTrigRef21.isAvailable()) ? 1 : -99;
 
 	jetEn_[nJet_]     = iJet->energy();
 	jetPt_[nJet_]     = iJet->pt();
@@ -1799,12 +1917,13 @@ float VgAnalyzerKit::getESRatio(View<pat::Photon>::const_iterator photon, const 
   const CaloSubdetectorGeometry *geometry = caloGeometry->getSubdetectorGeometry(DetId::Ecal, EcalPreshower);
   const CaloSubdetectorGeometry *& geometry_p = geometry;
 
+  Float_t esratio=1.;
+
   // Get ES rechits
   edm::Handle<EcalRecHitCollection> PreshowerRecHits;
   e.getByLabel(InputTag("ecalPreshowerRecHit","EcalRecHitsES"), PreshowerRecHits);
   if (PreshowerRecHits.isValid()) EcalRecHitCollection preshowerHits(*PreshowerRecHits);
-
-  Float_t esratio=1.;
+  else return esratio;
 
   const reco::CaloClusterPtr seed = (*photon).superCluster()->seed();    
   reco::CaloCluster cluster = (*seed);
@@ -1880,12 +1999,12 @@ float VgAnalyzerKit::getESRatio(View<pat::Electron>::const_iterator photon, cons
   const CaloSubdetectorGeometry *geometry = caloGeometry->getSubdetectorGeometry(DetId::Ecal, EcalPreshower);
   const CaloSubdetectorGeometry *& geometry_p = geometry;
 
+  Float_t esratio=1.;
   // Get ES rechits
   edm::Handle<EcalRecHitCollection> PreshowerRecHits;
   e.getByLabel(InputTag("ecalPreshowerRecHit","EcalRecHitsES"), PreshowerRecHits);
   if (PreshowerRecHits.isValid()) EcalRecHitCollection preshowerHits(*PreshowerRecHits);
-
-  Float_t esratio=1.;
+  else return esratio;
 
   const reco::CaloClusterPtr seed = (*photon).superCluster()->seed();    
   reco::CaloCluster cluster = (*seed);
@@ -1961,11 +2080,6 @@ std::vector<float> VgAnalyzerKit::getESProfileFront(View<pat::Photon>::const_ite
   const CaloSubdetectorGeometry *geometry = caloGeometry->getSubdetectorGeometry(DetId::Ecal, EcalPreshower);
   const CaloSubdetectorGeometry *& geometry_p = geometry;
 
-  // Get ES rechits
-  edm::Handle<EcalRecHitCollection> PreshowerRecHits;
-  e.getByLabel(InputTag("ecalPreshowerRecHit","EcalRecHitsES"), PreshowerRecHits);
-  if (PreshowerRecHits.isValid()) EcalRecHitCollection preshowerHits(*PreshowerRecHits);
-
   // Store ES rechits energy ±1 sensor an ±20 strips
   //  0 ~ 40: +1 sensor and ±20 strips
   // 41 ~ 81: +0 sensor and ±20 strips
@@ -1973,6 +2087,12 @@ std::vector<float> VgAnalyzerKit::getESProfileFront(View<pat::Photon>::const_ite
   std::vector<float> esprofile;
   for (int a = 0; a<123; a++) 
     esprofile.push_back(0); 
+
+  // Get ES rechits
+  edm::Handle<EcalRecHitCollection> PreshowerRecHits;
+  e.getByLabel(InputTag("ecalPreshowerRecHit","EcalRecHitsES"), PreshowerRecHits);
+  if (PreshowerRecHits.isValid()) EcalRecHitCollection preshowerHits(*PreshowerRecHits);
+  else return esprofile;
 
   const reco::CaloClusterPtr seed = (*photon).superCluster()->seed();    
   reco::CaloCluster cluster = (*seed);
@@ -2037,11 +2157,6 @@ std::vector<float> VgAnalyzerKit::getESProfileRear(View<pat::Photon>::const_iter
   const CaloSubdetectorGeometry *geometry = caloGeometry->getSubdetectorGeometry(DetId::Ecal, EcalPreshower);
   const CaloSubdetectorGeometry *& geometry_p = geometry;
 
-  // Get ES rechits
-  edm::Handle<EcalRecHitCollection> PreshowerRecHits;
-  e.getByLabel(InputTag("ecalPreshowerRecHit","EcalRecHitsES"), PreshowerRecHits);
-  if (PreshowerRecHits.isValid()) EcalRecHitCollection preshowerHits(*PreshowerRecHits);
-
   // Store ES rechits energy ±1 sensor an ±20 strips
   //  0 ~ 40: +1 sensor and ±20 strips
   // 41 ~ 81: +0 sensor and ±20 strips
@@ -2049,6 +2164,12 @@ std::vector<float> VgAnalyzerKit::getESProfileRear(View<pat::Photon>::const_iter
   std::vector<float> esprofile;
   for (int a = 0; a<123; a++) 
     esprofile.push_back(0); 
+
+  // Get ES rechits
+  edm::Handle<EcalRecHitCollection> PreshowerRecHits;
+  e.getByLabel(InputTag("ecalPreshowerRecHit","EcalRecHitsES"), PreshowerRecHits);
+  if (PreshowerRecHits.isValid()) EcalRecHitCollection preshowerHits(*PreshowerRecHits);
+  else return esprofile;
 
   const reco::CaloClusterPtr seed = (*photon).superCluster()->seed();    
   reco::CaloCluster cluster = (*seed);
@@ -2113,11 +2234,6 @@ std::vector<float> VgAnalyzerKit::getESProfileFront(View<pat::Electron>::const_i
   const CaloSubdetectorGeometry *geometry = caloGeometry->getSubdetectorGeometry(DetId::Ecal, EcalPreshower);
   const CaloSubdetectorGeometry *& geometry_p = geometry;
 
-  // Get ES rechits
-  edm::Handle<EcalRecHitCollection> PreshowerRecHits;
-  e.getByLabel(InputTag("ecalPreshowerRecHit","EcalRecHitsES"), PreshowerRecHits);
-  if (PreshowerRecHits.isValid()) EcalRecHitCollection preshowerHits(*PreshowerRecHits);
-
   // Store ES rechits energy ±1 sensor an ±20 strips
   //  0 ~ 40: +1 sensor and ±20 strips
   // 41 ~ 81: +0 sensor and ±20 strips
@@ -2125,6 +2241,12 @@ std::vector<float> VgAnalyzerKit::getESProfileFront(View<pat::Electron>::const_i
   std::vector<float> esprofile;
   for (int a = 0; a<123; a++) 
     esprofile.push_back(0); 
+
+  // Get ES rechits
+  edm::Handle<EcalRecHitCollection> PreshowerRecHits;
+  e.getByLabel(InputTag("ecalPreshowerRecHit","EcalRecHitsES"), PreshowerRecHits);
+  if (PreshowerRecHits.isValid()) EcalRecHitCollection preshowerHits(*PreshowerRecHits);
+  else return esprofile;
 
   const reco::CaloClusterPtr seed = (*photon).superCluster()->seed();    
   reco::CaloCluster cluster = (*seed);
@@ -2189,11 +2311,6 @@ std::vector<float> VgAnalyzerKit::getESProfileRear(View<pat::Electron>::const_it
   const CaloSubdetectorGeometry *geometry = caloGeometry->getSubdetectorGeometry(DetId::Ecal, EcalPreshower);
   const CaloSubdetectorGeometry *& geometry_p = geometry;
 
-  // Get ES rechits
-  edm::Handle<EcalRecHitCollection> PreshowerRecHits;
-  e.getByLabel(InputTag("ecalPreshowerRecHit","EcalRecHitsES"), PreshowerRecHits);
-  if (PreshowerRecHits.isValid()) EcalRecHitCollection preshowerHits(*PreshowerRecHits);
-
   // Store ES rechits energy ±1 sensor an ±20 strips
   //  0 ~ 40: +1 sensor and ±20 strips
   // 41 ~ 81: +0 sensor and ±20 strips
@@ -2201,6 +2318,12 @@ std::vector<float> VgAnalyzerKit::getESProfileRear(View<pat::Electron>::const_it
   std::vector<float> esprofile;
   for (int a = 0; a<123; a++) 
     esprofile.push_back(0); 
+
+  // Get ES rechits
+  edm::Handle<EcalRecHitCollection> PreshowerRecHits;
+  e.getByLabel(InputTag("ecalPreshowerRecHit","EcalRecHitsES"), PreshowerRecHits);
+  if (PreshowerRecHits.isValid()) EcalRecHitCollection preshowerHits(*PreshowerRecHits);
+  else return esprofile;
 
   const reco::CaloClusterPtr seed = (*photon).superCluster()->seed();    
   reco::CaloCluster cluster = (*seed);
