@@ -14,7 +14,7 @@
 //
 // Original Author:  Ignazio Lazzizzera
 //         Created:  Sun Dec 25 11:56:13 CEST 2008
-// $Id: DTL1slhcProd.h,v 1.3 2010/02/03 09:46:35 arose Exp $
+// $Id: DTL1slhcProd.h,v 1.1 2010/03/03 13:09:38 arose Exp $
 //
 //
 #ifndef __CMSNtuples__
@@ -37,7 +37,7 @@
 //#include "FWCore/Framework/interface/Selector.h"
 #include "FWCore/Framework/interface/CachedProducts.h"
           
-#include "SLHCUpgradeSimulations/L1DTTrigger/interface/DTL1SimOperation.h"
+#include "SLHCUpgradeSimulations/L1DTTrigger/interface/DTL1SimOperations.h"
 
 
 
@@ -46,7 +46,7 @@ using namespace edm;
 using namespace cmsUpgrades;
 
 
-class DTL1slhcProd : public edm::EDProducer, DTL1SimOperation {
+class DTL1slhcProd : public edm::EDProducer, DTL1SimOperations {
   
 public:
   

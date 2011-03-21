@@ -1,11 +1,11 @@
 // -*- C++ -*-
 //
-// Package:    SCMSNtuplesProducer
-// Class:      SCMSNtuplesProducer
+// Package:    DTL1slhcProd
+// Class:      DTL1slhcProd
 // 
 // Original Author:  Ignazio Lazzizzera
 //         Created:  Sun Dec 25 11:56:13 CEST 2008
-// $Id: DTL1slhcProd.cc,v 1.2 2010/02/03 09:46:42 arose Exp $
+// $Id: DTL1slhcProd.cc,v 1.1 2010/03/03 13:09:39 arose Exp $
 //
 //
 
@@ -27,30 +27,34 @@ using namespace edm;
 
 //------------------------------------------------------------------------------
 DTL1slhcProd::DTL1slhcProd(const edm::ParameterSet& pset):
-  DTL1SimOperation(pset)
+DTL1SimOperations(pset)
 {
-  //produces<BtiTrigsCollection>();
+  produces<BtiTrigsCollection>();
   produces<TSPhiTrigsCollection>();
+  //  produces<L1DTTracksCollection>();
   produces<DTStubMatchesCollection>();
-  produces<DTSeededTrackletsCollection>();	
+  produces<DTSeededTrackletsCollection>();
+  
+  for(int i=0; i<StackedLayersInUseTotal; i++) {
+    for(int j=0; j<i; j++) {
+      cout << "(" << i << ", " << j << ") --> " << ((i*(i-1))/2 + j) << endl;
+    }
+  }
+ 
 }
+
 
 
 //------------------------------------------------------------------------------
-DTL1slhcProd::~DTL1slhcProd()
-{
- 
-   // do anything here that needs to be done at desctruction time
-   // (e.g. close files, deallocate resources etc.)
+DTL1slhcProd::~DTL1slhcProd() {}
 
-}
+
 
 
 // ----method called once each job just before starting event loop  ------------
 void DTL1slhcProd::beginJob(const edm::EventSetup& eventSetup)
 {
-  Init(eventSetup);
-	
+  InitDTL1SimOperations(eventSetup);	
 }
 
 
@@ -58,25 +62,32 @@ void DTL1slhcProd::beginJob(const edm::EventSetup& eventSetup)
 //------------------------------------------------------------------------------
 void DTL1slhcProd::produce(edm::Event& event, const edm::EventSetup& eventSetup)
 {
-
+  BtiTrigs            = new BtiTrigsCollection();
+  TSPhiTrigs          = new TSPhiTrigsCollection();
+  TSThetaTrigs        = new TSThetaTrigsCollection();
+  L1MuDTTracks        = new L1DTTracksCollection();
+  DTStubMatches       = new DTStubMatchesCollection();
+  DTSeededTracklets   = new DTSeededTrackletsCollection();
   int do_not_save = 0;
-  do_not_save = Do(event, eventSetup);
+  do_not_save = DoDTL1SimOperations(event, eventSetup);
   if(do_not_save) {
-  BtiTrigs->clear();
-  DTStubMatches->clear();
-  DTSeededTracklets->clear();
-  delete DTSeededTracklets;
-  delete DTStubMatches;
-  delete BtiTrigs;
-  return;
+    BtiTrigs->clear();
+    DTStubMatches->clear();
+    DTSeededTracklets->clear();
+    delete DTSeededTracklets;
+    delete DTStubMatches;
+    delete L1MuDTTracks;
+    delete TSThetaTrigs;
+    delete TSPhiTrigs;
+    delete BtiTrigs;
+    return;
   }
-  //event.put(std::auto_ptr<BtiTrigsCollection>(BtiTrigs));
+  event.put(std::auto_ptr<BtiTrigsCollection>(BtiTrigs));
   event.put(std::auto_ptr<TSPhiTrigsCollection>(TSPhiTrigs));
+  //  event.put(std::auto_ptr<L1DTTracksCollection>(L1MuDTTracks));
   event.put(std::auto_ptr<DTStubMatchesCollection>(DTStubMatches));
   event.put(std::auto_ptr<DTSeededTrackletsCollection>(DTSeededTracklets));
-  delete BtiTrigs;
   return;
-
 }
 
 
@@ -84,7 +95,7 @@ void DTL1slhcProd::produce(edm::Event& event, const edm::EventSetup& eventSetup)
 // ------ method called once each job just after ending the event loop  ------------
 void DTL1slhcProd::endJob() 
 {	
-	End_of_Operations();
+  EndDTL1SimOperations();
 }
 
 

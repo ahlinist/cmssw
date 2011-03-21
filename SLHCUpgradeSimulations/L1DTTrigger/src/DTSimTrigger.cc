@@ -21,25 +21,25 @@
 #include "L1Trigger/DTTrackFinder/interface/L1MuDTTrack.h"
 #include "L1Trigger/GlobalMuonTrigger/src/L1MuGMTConfig.h"
 
-//#include "SLHCUpgradeSimulations/L1Trigger/interface/DTTSPhiTrigger.h"
-//#include "SLHCUpgradeSimulations/L1Trigger/interface/DTTSThetaTrigger.h"
 #include "SimDataFormats/SLHC/interface/DTTSPhiTrigger.h"
 #include "SimDataFormats/SLHC/interface/DTTSThetaTrigger.h"
-#include "SLHCUpgradeSimulations/L1DTTrigger/interface/DTL1SimOperation.h"
-#include "SLHCUpgradeSimulations/L1DTTrigger/src/DTUtils.h"
+#include "SLHCUpgradeSimulations/L1DTTrigger/interface/DTL1SimOperations.h"
+#include "SimDataFormats/SLHC/src/DTUtils.h"
 
 
-void DTL1SimOperation::getDTSimTrigger(edm::Event& event, 
-				       const edm::EventSetup& eventSetup)
+void DTL1SimOperations::getDTSimTrigger(edm::Event& event, 
+					const edm::EventSetup& eventSetup)
 {
-  outAscii << "\nTrigger block\n-------------" << endl;
-
+	
+   if(debug_tsphi || debug_bti || debug_tstheta)	
+	outAscii << "\nTrigger block\n-------------" << endl;
+  
   // L1 Local Trigger Block ----------------------------------------------------
   bool BTI_done     = false;
   bool TSTHETA_done = false;
 
   // BTI
-  vector<DTBtiTrigData> btitrigs = theTrigger->BtiTrigs();
+  vector<DTBtiTrigData> btitrigs = theDTTrigger->BtiTrigs();
   vector<DTBtiTrigData>::const_iterator pbti;
   int ibti = 0;
   if(debug_bti) 
@@ -48,8 +48,8 @@ void DTL1SimOperation::getDTSimTrigger(edm::Event& event,
   DTBtiTrigger* aDTBti;
   for ( pbti = btitrigs.begin(); pbti != btitrigs.end(); pbti++ ) 
     {
-      Global3DPoint pos = theTrigger->CMSPosition(&(*pbti));
-      Global3DVector dir = theTrigger->CMSDirection(&(*pbti));
+      Global3DPoint pos = theDTTrigger->CMSPosition(&(*pbti));
+      Global3DVector dir = theDTTrigger->CMSDirection(&(*pbti));
       aDTBti = new DTBtiTrigger(*pbti, pos, dir);
       BtiTrigs->push_back(*aDTBti);
       ++ibti;
@@ -59,11 +59,10 @@ void DTL1SimOperation::getDTSimTrigger(edm::Event& event,
       }
       delete aDTBti;
     }
-  BTI_done = true;  
-  
-
+  BTI_done = true;   
+		
   // TSTheta
-  vector<DTChambThSegm> theTSThTrigs = theTrigger->TSThTrigs();
+  vector<DTChambThSegm> theTSThTrigs = theDTTrigger->TSThTrigs();
   vector<DTChambThSegm>::const_iterator tsTheta;
   if(debug_tstheta)
     outAscii << "\n[DTTrigger]: " << theTSThTrigs.size() << " TSTheta triggers found" 
@@ -71,7 +70,7 @@ void DTL1SimOperation::getDTSimTrigger(edm::Event& event,
   int itstheta = 0;
   for (tsTheta = theTSThTrigs.begin(); tsTheta != theTSThTrigs.end(); tsTheta++) {
     TSThetaTrigs->push_back(*tsTheta);
-    if(debug_tstheta)
+    if(debug_tstheta && tsTheta->ChamberId().station() < 3)
       outAscii << " Trigger # " << (++itstheta) 
 	       << " on Station " << tsTheta->ChamberId().station() 
 	       << " bx " << tsTheta->step() << endl;
@@ -79,35 +78,39 @@ void DTL1SimOperation::getDTSimTrigger(edm::Event& event,
   TSTHETA_done = true;  
   
   // TSPhi
-  vector<DTChambPhSegm> theTSPhTrigs = theTrigger->TSPhTrigs();
+  vector<DTChambPhSegm> theTSPhTrigs = theDTTrigger->TSPhTrigs();
   vector<DTChambPhSegm>::const_iterator tsphi;
   DTTSPhiTrigger* aTSphiTrig;
   if(debug_tsphi)
     outAscii << "\n[DTTrigger]: " << theTSPhTrigs.size() << " TSPhi triggers found" 
 	     << endl;
+    int itsphi = 0;
   for (tsphi = theTSPhTrigs.begin(); tsphi != theTSPhTrigs.end(); tsphi++) {
-    Global3DPoint pos = theTrigger->CMSPosition(&(*tsphi)); 
-    Global3DVector dir = theTrigger->CMSDirection(&(*tsphi));
+    Global3DPoint pos = theDTTrigger->CMSPosition(&(*tsphi)); 
+    Global3DVector dir = theDTTrigger->CMSDirection(&(*tsphi));
     aTSphiTrig = new DTTSPhiTrigger(*tsphi, pos, dir);
     TSPhiTrigs->push_back(*aTSphiTrig);
-    int itsphi = 0;
-    if(debug_tsphi) {
-      outAscii << (++itsphi) << ")" << endl;
+    if(debug_tsphi && tsphi->ChamberId().station() < 3) {
+      outAscii << " Trigger # " <<(++itsphi) << endl;
       outAscii << aTSphiTrig->sprint();
     }
 
     // *********************************
     // *** match TSphi-BTItheta (SV) *** 
     // *********************************
-    if( !USE_TSTheta && BTI_done &&  (tsphi->station()==1 || tsphi->station()==2) ) {
+    bool bti_match_found = false;
+    if( ! use_TSTheta && BTI_done &&  
+	(tsphi->station()==1 || tsphi->station()==2) ) {
       for(BtiTrigsCollection::iterator bti = BtiTrigs->begin();
 	  bti != BtiTrigs->end(); bti++) {
-	if( match(*bti, *tsphi) )
-	  // Add DTMatch to DTStubCollection
-	  // To "position" as given by a BTI, that is the station center:
+	if( match(*bti, *tsphi) ) {
+	  // Add DTMatch to DTStubMatchesCollection
+	  // To use "position" as given by a BTI, that is the station center:
           // DTStubMatches->addDT(*bti, *tsphi, debug_dttrackmatch_extrapolation);
-	  // To use "position" as given by Phi server:
+	  // To use "position" as given instead by Phi server:
 	  DTStubMatches->addDT(*bti, *aTSphiTrig, debug_dttrackmatch);
+	  bti_match_found =true;
+	}
       }
     }
     // *** end match TSphi-BTItheta (SV) ***
@@ -115,7 +118,8 @@ void DTL1SimOperation::getDTSimTrigger(edm::Event& event,
     // *********************************
     // *** match TSphi-TStheta (PLZ) *** 
     // *********************************
-    if( USE_TSTheta && TSTHETA_done && (tsphi->station()==1 || tsphi->station()==2) ) {
+    bool theta_match_found = false;
+    if( use_TSTheta && TSTHETA_done && (tsphi->station()==1 || tsphi->station()==2) ) {
       for(TSThetaTrigsCollection::iterator tstheta = TSThetaTrigs->begin();
 	  tstheta != TSThetaTrigs->end(); tstheta++) {
 	if( match(*tstheta, *tsphi) ) {
@@ -151,24 +155,82 @@ void DTL1SimOperation::getDTSimTrigger(edm::Event& event,
 		new DTStubMatch(wh, st, se, bx, code, phi, phib, theta, 
 				gpbti, gdbti, flagBxOK);
 	      DTStubMatches->addDT(aDTStubMatch); 
+	      theta_match_found =true;	      
 	    } // end if tstheta->code(i) > 0
 	  } // end loop over i to get bti_id = (i+1)*8 - 3	  
 	  int n0 = DTStubMatches->numDt();
 	  int n1 = DTStubMatches->numDt(1);
 	  int n2 = DTStubMatches->numDt(2);
-	  outAscii << " n0,n1,n2 " << n0 << " " << n1 << " " << n2 <<endl;
+      if(debug_tstheta) 
+	  outAscii << " DTStubMatches all, station 1, station 2: " 
+		   << n0 << " " << n1 << " " << n2 <<endl;
 	} // end if match *tstheta, *tsphi
       } // loop over TS theta's
-    } // end if USE_TSTheta
+    } // end if use_TSTheta
     // *** end match TSphi-BTItheta (PLZ) ***
     
+    /*
+      Case where no Theta Trigger was found: 
+      this method is allowed only for phi trigger code >=2 !!
+    */
+    // Get chamber center and allow error on whole chamber width 
+    bool match_found = false;
+    if(bti_match_found || theta_match_found)   match_found = true;
+    if( !match_found 
+	&& (tsphi->station()==1 || tsphi->station()==2) 
+	&& tsphi->code() >= 2 ) {
+      if(debug_tstheta) 
+	outAscii << " theta match not found for this phi trigger " << endl;
+      int wh   = tsphi->wheel();
+      int st   = tsphi->station();
+      int se   = tsphi->sector(); 
+      int bx   = tsphi->step();
+      int code = tsphi->code()*4 ; 
+      // code 0,1=L, 2,3=H, 4=LL, 5=HL, 6=HH : theta quality set to 0
+      //      if(tsphi->station() == 1) code = code + 2; 
+      // force lower rank assuming it is like station 2  
+      if( use_roughTheta ) {
+	int phi  = tsphi->phi(); 
+	int phib = tsphi->phiB();
+	//      Theta is set at station center with half a chamber window
+	//      DTChamberId chaid = DTChamberId(wh, st, se);
+	//      const DTChamber* chamb = muonGeom->chamber(chaid);
+	//      DTTrigGeom* _geom = new DTTrigGeom(const_cast<DTChamber*>(chamb), false);
+	DTWireId wireId = DTWireId(wh,st,se,2,1,1);
+	const DTLayer* layer = muonGeom->layer(wireId.layerId()); 
+	const DTTopology& tp=layer->specificTopology();
+	float  posX=tp.wirePosition(tp.firstChannel());
+	LocalPoint posInLayer(posX,0.,0.);
+	GlobalPoint pos_first = layer->surface().toGlobal(posInLayer);  
+	int ncells = layer->specificTopology().channels();
+	posX = posX + static_cast<float>(ncells) * 4.2;
+	LocalPoint posInLayer2(posX,0.,0.);;
+	GlobalPoint pos_last = layer->toGlobal(posInLayer2);
+	float theta = (pos_first.theta()+pos_last.theta())/2.;
+	posX = posX - static_cast<float>(ncells) * 2.1;
+	LocalPoint posInLayer3(posX,0.,0.);
+	GlobalPoint pos_center = layer->toGlobal(posInLayer3);
+	GlobalVector gdbti = GlobalVector(); // ????????????????????? Dummy direction
+	bool flagBxOK = false;
+	if(bx == 16) flagBxOK = true;
+	DTStubMatch* aDTStubMatch = 
+	  new DTStubMatch(wh, st, se, bx, code, phi, phib, theta, 
+			  pos_center, gdbti, flagBxOK);
+	DTStubMatches->addDT(aDTStubMatch); 
+	// set needed data for correct extrapolation search and flag for missing theta
+	float delta_theta = fabs((pos_first.theta()-pos_last.theta())/2.);
+	aDTStubMatch ->setTheta(delta_theta); 
+      } // end if use_roughTheta
+    } // end if not match_found ... 
+   
     delete aTSphiTrig; 
 
   }
+	
   if(debug_dtmatch) {
     outAscii 
       << "\n=========================================================="
-      << "\nNumber of DTMatch: " <<  DTStubMatches->numDt()
+      << "\nNumber of DTMatches: " <<  DTStubMatches->numDt()
       << "; in station 1: " << DTStubMatches->numDt(1)
       << "; in station 2: " << DTStubMatches->numDt(2)
       << endl;
@@ -200,15 +262,9 @@ void DTL1SimOperation::getDTSimTrigger(edm::Event& event,
   //----------------------------------------------------------------------------
   // To get tracks as segment collections from DTTF muon sorter
   // edm::Handle<L1MuDTSegmentedTrackContainer>  DTTFSegmentedTracks_handle;
-  //edm::Handle< const vector<const L1MuDTTrack*> > DTTFSegmentedTracks_handle;
+  // edm::Handle< const vector<const L1MuDTTrack*> > DTTFSegmentedTracks_handle;
   edm::Handle< const L1DTTracksCollection > DTTFTracks_handle;
-  try { event.getByLabel( "simDttfDigis", 
-			  "DTTF", 
-			  DTTFTracks_handle); }
-  catch(...) {
-    cout << "exeption event.getByLabel for DTTFTracks_handle) at event "
-         << EvtCounter << endl;
-  }
+  event.getByLabel( "simDttfDigis", "DTTF", DTTFTracks_handle);
   if (! DTTFTracks_handle.isValid()) {
     cout << "Invalid L1DTTracksCollection at event " << EvtCounter << endl;
     if(debug_dttf) 
@@ -219,10 +275,10 @@ void DTL1SimOperation::getDTSimTrigger(edm::Event& event,
     //
     edm::ESHandle< L1MuTriggerScales > triggerscales_handle;
     eventSetup.get< L1MuTriggerScalesRcd >().get( triggerscales_handle );
-    const L1MuTriggerScales* theTriggerScales = triggerscales_handle.product();
+    const L1MuTriggerScales* theDTTriggerScales = triggerscales_handle.product();
     edm::ESHandle< L1MuTriggerPtScale > triggerPtScales_handle;
     eventSetup.get< L1MuTriggerPtScaleRcd >().get( triggerPtScales_handle );
-    const L1MuTriggerPtScale* theTriggerPtScale = triggerPtScales_handle.product();
+    const L1MuTriggerPtScale* theDTTriggerPtScale = triggerPtScales_handle.product();
     //
     const vector<const L1MuDTTrack*>* DTTFTracks = DTTFTracks_handle.product();
     vector<const L1MuDTTrack*>::const_iterator track;
@@ -230,13 +286,13 @@ void DTL1SimOperation::getDTSimTrigger(edm::Event& event,
 	  track != DTTFTracks->end(); track++ ) {
       if ( *track ) {
 	L1MuDTTrack* anL1MuDTTrack = new L1MuDTTrack(*(*track));
-	float phi = theTriggerScales->getPhiScale()->getLowEdge((*track)->phi());
+	float phi = theDTTriggerScales->getPhiScale()->getLowEdge((*track)->phi());
 	phi = (phi > TMath::Pi())? phi - 2.*TMath::Pi(): phi;
 	anL1MuDTTrack->setPhiValue(phi);
-	float eta = theTriggerScales->getRegionalEtaScale((*track)->type_idx())->
+	float eta = theDTTriggerScales->getRegionalEtaScale((*track)->type_idx())->
 	  getCenter((*track)->eta());
 	anL1MuDTTrack->setEtaValue(eta);
-	float pt = theTriggerPtScale->getPtScale()->getLowEdge((*track)->pt());
+	float pt = theDTTriggerPtScale->getPtScale()->getLowEdge((*track)->pt());
 	anL1MuDTTrack->setPtValue(pt);
 	//
 	L1MuDTTracks->push_back(anL1MuDTTrack);
@@ -273,11 +329,7 @@ void DTL1SimOperation::getDTSimTrigger(edm::Event& event,
       << "\n********** L1MuDTTracks: *********************************************" 
       << endl;
   edm::Handle< L1MuDTTrackContainer > L1MuDttfDigis_handle;
-  try { event.getByLabel("simDttfDigis", "DTTF", L1MuDttfDigis_handle); }
-  catch(...) {
-    cout << "exeption event.getByLabel(\"DTTF\"), L1MuDttfDigis_handle); at event "
-         << EvtCounter << endl;
-  }
+  event.getByLabel("simDttfDigis", "DTTF", L1MuDttfDigis_handle);
   if (! L1MuDttfDigis_handle.isValid()) {
     // edm::LogInfo("DataNotFound") << "can't find L1MuDTTrackContainer with label "
     //				    << dttpgSource_.label() ;
@@ -288,22 +340,22 @@ void DTL1SimOperation::getDTSimTrigger(edm::Event& event,
   else {
     edm::ESHandle< L1MuTriggerScales > triggerscales_handle;
     eventSetup.get< L1MuTriggerScalesRcd >().get( triggerscales_handle );
-    const L1MuTriggerScales* theTriggerScales = triggerscales_handle.product();
+    const L1MuTriggerScales* theDTTriggerScales = triggerscales_handle.product();
     edm::ESHandle< L1MuTriggerPtScale > triggerPtScales_handle;
     eventSetup.get< L1MuTriggerPtScaleRcd >().get( triggerPtScales_handle );
-    const L1MuTriggerPtScale* theTriggerPtScale = triggerPtScales_handle.product();
+    const L1MuTriggerPtScale* theDTTriggerPtScale = triggerPtScales_handle.product();
     //
     L1MuDTTrackContainer::TrackContainer* 
       dtTracks = L1MuDttfDigis_handle->getContainer();
     for(L1MuDTTrackContainer::TrackContainer::iterator track = dtTracks->begin(); 
 	track != dtTracks->end(); 
 	++track ) {    
-      float phi = theTriggerScales->getPhiScale()->getLowEdge(track->phi_packed());
+      float phi = theDTTriggerScales->getPhiScale()->getLowEdge(track->phi_packed());
       phi = ( phi > TMath::Pi() )? phi - 2.*TMath::Pi(): phi;
       track->setPhiValue(phi);
-      track->setEtaValue(theTriggerScales->getRegionalEtaScale(track->type_idx())->
+      track->setEtaValue(theDTTriggerScales->getRegionalEtaScale(track->type_idx())->
 			 getCenter(track->eta_packed()));
-      track->setPtValue(theTriggerPtScale->getPtScale()->getLowEdge(track->pt_packed()));
+      track->setPtValue(theDTTriggerPtScale->getPtScale()->getLowEdge(track->pt_packed()));
       if(debug_dttf)
 	outAscii 
 	  << setiosflags(ios::showpoint | ios::fixed | ios::right | ios::adjustfield)
@@ -331,4 +383,3 @@ void DTL1SimOperation::getDTSimTrigger(edm::Event& event,
 
 
 }
-
