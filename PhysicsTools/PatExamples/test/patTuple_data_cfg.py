@@ -49,6 +49,10 @@ switchJetCollection(process,cms.InputTag('ak5PFJets'),
                  genJetCollection=cms.InputTag("ak5GenJets"),
                  doJetID      = True
                  )
+process.patJets.addTagInfos = True
+process.patJets.tagInfoSources  = cms.VInputTag(
+    cms.InputTag("secondaryVertexTagInfosAOD"),
+    )
 
 # Apply loose PF jet ID
 from PhysicsTools.SelectorUtils.pfJetIDSelector_cfi import pfJetIDSelector
@@ -184,5 +188,5 @@ process.out.outputCommands += patExtraAodEventContent
 process.out.outputCommands += [
     'drop patJets_selectedPatJets_*_*',
     'keep patJets_goodPatJets_*_*',    
-    'keep recoPFCandidates_particleFlow_*_*'
+    'keep recoPFCandidates_selectedPatJets*_*_*'
     ]

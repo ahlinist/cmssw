@@ -104,8 +104,8 @@ int main(int argc, char* argv[])
 	}
       }
       // access calo towers
-      std::vector<CaloTowerPtr> const & caloConstituents =  (*jets)[i].getCaloConstituents();
-      for( std::vector<CaloTowerPtr>::const_iterator ibegin=caloConstituents.begin(), iend=caloConstituents.end(), iconstituent=ibegin; iconstituent!=iend; ++iconstituent){
+      std::vector<reco::PFCandidatePtr> const & pfConstituents =  (*jets)[i].getPFConstituents();
+      for( std::vector<reco::PFCandidatePtr>::const_iterator ibegin=pfConstituents.begin(), iend=pfConstituents.end(), iconstituent=ibegin; iconstituent!=iend; ++iconstituent){
 	constituentPt_->Fill( (*iconstituent)->pt() );
       }
     }
