@@ -6,8 +6,8 @@ HLTPATH_TAG  11  HLT_Mu11
 DETA      0.2
 DPHI      0.1
 HLTPATH_PROBE    0  HLT_DoubleMu0_Quarkonium_v1
-MUTYPE1    1  # Global	
-MUTYPE2    2  # Tracker
+MUTYPE1    4  # 1 Global 4 TrackerMuonArbitrated	
+MUTYPE2    4  # 2 Tracker
 PT_TAG	  3.
 ETALO_TAG  -2.4
 ETAHI_TAG   2.4
