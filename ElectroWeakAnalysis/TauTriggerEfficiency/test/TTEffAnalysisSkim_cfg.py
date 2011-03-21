@@ -29,7 +29,7 @@ process.MessageLogger.cerr.threshold = 'INFO'
 process.options   = cms.untracked.PSet( wantSummary = cms.untracked.bool(True) )
 
 process.configurationMetadata = cms.untracked.PSet(
-    version = cms.untracked.string('$Revision: 1.10 $'),
+    version = cms.untracked.string('$Revision: 1.11 $'),
     annotation = cms.untracked.string('reco nevts:1'),
     name = cms.untracked.string('PyReleaseValidation')
 )
@@ -157,7 +157,8 @@ process.out_step = cms.EndPath(process.output)
 
 # Schedule definition
 process.schedule = cms.Schedule(process.raw2digi_step,process.L1Reco_step,process.reconstruction_step,process.tauFilter,process.endjob_step,process.out_step)
-
+if(useMuonSkim):
+     process.schedule = cms.Schedule(process.raw2digi_step,process.L1Reco_step,process.reconstruction_step,process.muonFilter,process.tauFilter,process.endjob_step,process.out_step)
 
 # Automatic addition of the customisation function
 
