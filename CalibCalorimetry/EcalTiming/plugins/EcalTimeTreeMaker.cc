@@ -14,7 +14,7 @@ Implementation:
 // Skeleton Derived from an example by:  F. DE GUIO C. DOGLIONI P. MERIDIANI
 // Authors:                              Seth Cooper, Giovanni Franzoni (UMN)
 //         Created:  Mo Jul 14 5:46:22 CEST 2008
-// $Id: EcalTimeTreeMaker.cc,v 1.3 2011/02/14 15:42:15 scooper Exp $
+// $Id: EcalTimeTreeMaker.cc,v 1.4 2011/02/16 16:53:45 scooper Exp $
 //
 //
 
@@ -1008,15 +1008,16 @@ EcalTimeTreeMaker::determineTriggers (const edm::Event& iEvent, const edm::Event
   for(int i=0;i<5;i++)
     l1Triggers.push_back(false);
   
+  // go AOD compatible...
   // get the GMTReadoutCollection
-  Handle<L1MuGMTReadoutCollection> gmtrc_handle; 
-  iEvent.getByLabel(l1GMTReadoutRecTag_,gmtrc_handle);
-  L1MuGMTReadoutCollection const* gmtrc = gmtrc_handle.product();
-  if (!(gmtrc_handle.isValid())) 
-    {
-      LogWarning("EcalCosmicsHists") << "l1MuGMTReadoutCollection" << " not available";
-      return l1Triggers;
-    }
+  //  Handle<L1MuGMTReadoutCollection> gmtrc_handle; 
+  //  iEvent.getByLabel(l1GMTReadoutRecTag_,gmtrc_handle);
+  //  L1MuGMTReadoutCollection const* gmtrc = gmtrc_handle.product();
+  //  if (!(gmtrc_handle.isValid())) 
+  //    {
+  //      LogWarning("EcalCosmicsHists") << "l1MuGMTReadoutCollection" << " not available";
+  //      return l1Triggers;
+  //    }
   // get hold of L1GlobalReadoutRecord
   Handle<L1GlobalTriggerReadoutRecord> L1GTRR;
   iEvent.getByLabel(l1GMTReadoutRecTag_,L1GTRR);
@@ -1055,54 +1056,52 @@ EcalTimeTreeMaker::determineTriggers (const edm::Event& iEvent, const edm::Event
     || l1DoubleNoIsoEGTopBottomCenVert;
   //cout << "l1Triggers[4]" << l1Triggers[4] << endl;
 
+  // go AOD compatible...
+  //  std::vector<L1MuGMTReadoutRecord> gmt_records = gmtrc->getRecords();
+  //  std::vector<L1MuGMTReadoutRecord>::const_iterator igmtrr;
 
-  std::vector<L1MuGMTReadoutRecord> gmt_records = gmtrc->getRecords();
-  std::vector<L1MuGMTReadoutRecord>::const_iterator igmtrr;
-
-  for(igmtrr=gmt_records.begin(); igmtrr!=gmt_records.end(); igmtrr++) {
-
-    std::vector<L1MuRegionalCand>::const_iterator iter1;
-    std::vector<L1MuRegionalCand> rmc;
-    
-    //DT triggers
-    int idt = 0;
-    rmc = igmtrr->getDTBXCands();
-    for(iter1=rmc.begin(); iter1!=rmc.end(); iter1++) {
-      if ( !(*iter1).empty() ) {
-        idt++;
-      }
-    }
-    //if(idt>0) std::cout << "Found " << idt << " valid DT candidates in bx wrt. L1A = " 
-    //  << igmtrr->getBxInEvent() << std::endl;
-    if(igmtrr->getBxInEvent()==Bx && idt>0) l1Triggers[0] = true;
-    //cout << "l1Triggers[0]" << l1Triggers[0] << endl;
-    //RPC triggers
-    int irpcb = 0;
-    rmc = igmtrr->getBrlRPCCands();
-    for(iter1=rmc.begin(); iter1!=rmc.end(); iter1++) {
-      if ( !(*iter1).empty() ) {
-        irpcb++;
-      }
-    }
-    //if(irpcb>0) std::cout << "Found " << irpcb << " valid RPC candidates in bx wrt. L1A = " 
-    //  << igmtrr->getBxInEvent() << std::endl;
-    if(igmtrr->getBxInEvent()==Bx && irpcb>0) l1Triggers[2] = true;
-    //cout << "l1Triggers[2]" << l1Triggers[2] << endl;
-
-    //CSC Triggers
-    int icsc = 0;
-    rmc = igmtrr->getCSCCands();
-    for(iter1=rmc.begin(); iter1!=rmc.end(); iter1++) {
-      if ( !(*iter1).empty() ) {
-        icsc++;
-      }
-    }
-    //if(icsc>0) std::cout << "Found " << icsc << " valid CSC candidates in bx wrt. L1A = " 
-    //  << igmtrr->getBxInEvent() << std::endl;
-    if(igmtrr->getBxInEvent()==Bx && icsc>0) l1Triggers[1] = true;
-  }
+  //  for(igmtrr=gmt_records.begin(); igmtrr!=gmt_records.end(); igmtrr++) {
+  //
+  //    std::vector<L1MuRegionalCand>::const_iterator iter1;
+  //    std::vector<L1MuRegionalCand> rmc;
+  //    
+  //    //DT triggers
+  //    int idt = 0;
+  //    rmc = igmtrr->getDTBXCands();
+  //    for(iter1=rmc.begin(); iter1!=rmc.end(); iter1++) {
+  //      if ( !(*iter1).empty() ) {
+  //        idt++;
+  //      }
+  //    }
+  //    //if(idt>0) std::cout << "Found " << idt << " valid DT candidates in bx wrt. L1A = " 
+  //    //  << igmtrr->getBxInEvent() << std::endl;
+  //    if(igmtrr->getBxInEvent()==Bx && idt>0) l1Triggers[0] = true;
+  //    //cout << "l1Triggers[0]" << l1Triggers[0] << endl;
+  //    //RPC triggers
+  //    int irpcb = 0;
+  //    rmc = igmtrr->getBrlRPCCands();
+  //    for(iter1=rmc.begin(); iter1!=rmc.end(); iter1++) {
+  //      if ( !(*iter1).empty() ) {
+  //        irpcb++;
+  //      }
+  //    }
+  //    //if(irpcb>0) std::cout << "Found " << irpcb << " valid RPC candidates in bx wrt. L1A = " 
+  //    //  << igmtrr->getBxInEvent() << std::endl;
+  //    if(igmtrr->getBxInEvent()==Bx && irpcb>0) l1Triggers[2] = true;
+  //    //cout << "l1Triggers[2]" << l1Triggers[2] << endl;
+  //
+  //    //CSC Triggers
+  //    int icsc = 0;
+  //    rmc = igmtrr->getCSCCands();
+  //    for(iter1=rmc.begin(); iter1!=rmc.end(); iter1++) {
+  //      if ( !(*iter1).empty() ) {
+  //        icsc++;
+  //      }
+  //    }
+  //    if(igmtrr->getBxInEvent()==Bx && icsc>0) l1Triggers[1] = true;
+  //  }
   //cout << "l1Triggers[1]" << l1Triggers[1] << endl;
-
+  
   L1GlobalTriggerReadoutRecord const* gtrr = L1GTRR.product();
   
   for(int ibx=-1; ibx<=1; ibx++) {
@@ -1124,14 +1123,6 @@ EcalTimeTreeMaker::determineTriggers (const edm::Event& iEvent, const edm::Event
   }
   //cout << "l1Triggers[3]" << l1Triggers[3] << endl;
 
-  /*edm::LogInfo("EcalCosmicsHists") << "**** Trigger SourceSource ****";
-  if(l1Triggers[0]) edm::LogInfo("EcalCosmicsHists") << "DT";
-  if(l1Triggers[2]) edm::LogInfo("EcalCosmicsHists") << "RPC";
-  if(l1Triggers[1]) edm::LogInfo("EcalCosmicsHists") << "CSC";
-  if(l1Triggers[3]) edm::LogInfo("EcalCosmicsHists") << "HCAL";
-  if(l1Triggers[4]) edm::LogInfo("EcalCosmicsHists") << "ECAL";
-  edm::LogInfo("EcalCosmicsHists") << "************************";
-  */
   //cout << "l1Triggers: "; 
   //for(int i=0;i<5;i++)
   //  cout << l1Triggers[i];
