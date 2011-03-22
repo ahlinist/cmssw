@@ -1,16 +1,16 @@
 TYPE	 1313
 MODE        1  # 1 - MC , 2 - DATA
-MUTYPE1	    6	
-MUTYPE2     6
+MUTYPE1	   16  # 6 gltr , 16 tma
+MUTYPE2    16  # 6 gltr , 16 tma
 PTLO      3.0
-PTHI     20.0
+PTHI     50.0  # 20 for gltr, 50 for tma
 PTBARREL  4.0
 ETABARREL 1.2
 ETALO    -2.4
 ETAHI     2.4
-PTCAND   30.0
-RAPCAND   2.0
-CHI2      4.0
+PTCAND   50.0  # before 30
+RAPCAND   2.4  # before 2.0
+CHI2      4.0  
 RESTYPE   100553
 BIN       100
 MASSLO    8.7
