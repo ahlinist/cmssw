@@ -181,12 +181,12 @@ void anaXS::init(const char *dir, int i) {
   
   //fPtTrigCorr = new PidTable("PidTables/DATA/Upsilon/PtTrigCorr.dat");
   //fPtMuidCorr = new PidTable("PidTables/DATA/Upsilon/PtMuidCorr.dat");
-  //fPtTrigCorr = new PidTable("PidTables/DATA/Upsilon/PtTrigCorr_1Sbin.dat");
-  //fPtMuidCorr = new PidTable("PidTables/DATA/Upsilon/PtMuidCorr_1Sbin.dat");
+  fPtTrigCorr = new PidTable("PidTables/DATA/Upsilon/PtTrigCorr_1Sbin.tma.dat");
+  fPtMuidCorr = new PidTable("PidTables/DATA/Upsilon/PtMuidCorr_1Sbin.tma.dat");
   //fPtTrigCorr = new PidTable("PidTables/DATA/Upsilon/PtTrigCorr_2Sbin.dat");
   //fPtMuidCorr = new PidTable("PidTables/DATA/Upsilon/PtMuidCorr_2Sbin.dat");  
-  fPtTrigCorr = new PidTable("PidTables/DATA/Upsilon/PtTrigCorr_3Sbin.dat");
-  fPtMuidCorr = new PidTable("PidTables/DATA/Upsilon/PtMuidCorr_3Sbin.dat");    
+  //fPtTrigCorr = new PidTable("PidTables/DATA/Upsilon/PtTrigCorr_3Sbin.dat");
+  //fPtMuidCorr = new PidTable("PidTables/DATA/Upsilon/PtMuidCorr_3Sbin.dat");    
   
 }
 
@@ -196,12 +196,12 @@ void anaXS::loadFiles(const char *dir, int i) {
 
   // -- Upsilon merging
   if (0 == i) {
-    string ufile = fDirectory + string("/") + string("upsilon/101201.fl10.mm.ups1s.xsReader_3Sbin.default.root");    
+    string ufile = fDirectory + string("/") + string("upsilon/101201.fl10.mm.ups1s.xsReader_1Sbin.tma.default.root");    
 
     fM[0] = new TFile(ufile.c_str()); lM[0] = 1.;
-    ufile = fDirectory + string("/") + string("upsilon/101201.fl10.mm.ups2s.xsReader_3Sbin.default.root");
+    ufile = fDirectory + string("/") + string("upsilon/101201.fl10.mm.ups2s.xsReader_1Sbin.tma.default.root");
     fM[1] = new TFile(ufile.c_str()); lM[1] = 1.66; 
-    ufile = fDirectory + string("/") + string("upsilon/101201.fl10.mm.ups3s.xsReader_3Sbin.default.root");
+    ufile = fDirectory + string("/") + string("upsilon/101201.fl10.mm.ups3s.xsReader_1Sbin.tma.default.root");
     fM[2] = new TFile(ufile.c_str()); lM[2] = 3.43; 
     cout << "Got the Files for Merging" << endl;
   }
@@ -254,7 +254,7 @@ void anaXS::loadFiles(const char *dir, int i) {
     } else if (40 == i) {
       //ufile = fDirectory + string("/upsilon/101201.fl10.mm.ups1s.xsReader.trueyield_100.default.root");
       //ufile = fDirectory + string("/upsilon/101201.fl10.mm.ups1s.xsReader_1Sbin.default.root");
-      ufile = fDirectory + string("/upsilon/101201.fl10.mm.COMBINED.xsReader_3Sbin.default.root");
+      ufile = fDirectory + string("/upsilon/101201.fl10.mm.COMBINED.xsReader_1Sbin.tma.default.root");
       //jfile = fDirectory + string("/jpsi/111112.dimuons.xsReader.default.root");
       jfile = fDirectory + string("/upsilon/130211.nov4rereco_v2.dimuons.xsReader_3Sbin.default.root");
      
@@ -273,7 +273,7 @@ void anaXS::loadFiles(const char *dir, int i) {
 // ----------------------------------------------------------------------
 void anaXS::combineUpsilons() {
   
-  string ufile = fDirectory + string("/upsilon/101201.fl10.mm.COMBINED.xsReader_3Sbin.default.root");
+  string ufile = fDirectory + string("/upsilon/101201.fl10.mm.COMBINED.xsReader_1Sbin.tma.default.root");
   TFile *f = new TFile(ufile.c_str(), "RECREATE"); 
 
   fM[0]->cd();
@@ -282,7 +282,7 @@ void anaXS::combineUpsilons() {
   TH2D *H0, *H1, *H2; 
 
   int ptbin(-1); int ybin(-1);
-  double PTbin[20]; double Ybin[10];
+  double PTbin[25]; double Ybin[10];
   
   TObject *obj;
   TKey    *key;
@@ -566,13 +566,13 @@ void anaXS::makeAllMC(int channel) {
     
     //Pull(1);
     
-    //FITUpsilon(1);
-    //GetAnaEff();
-    //GetPreSelEff();
-    //GetMuIDEff(1);
-    //GetTrigEff(1);
-    //CorrectedYields(1);   // 1- FOR MC, 2 FOR DATA
-    //PlotProjections(1);   // 1- FOR MC, 2 FOR DATA
+    FITUpsilon(1);
+    GetAnaEff();
+    GetPreSelEff();
+    GetMuIDEff(1);
+    GetTrigEff(1);
+    CorrectedYields(1);   // 1- FOR MC, 2 FOR DATA
+    PlotProjections(1);   // 1- FOR MC, 2 FOR DATA
         
   }
 
@@ -1313,9 +1313,9 @@ void anaXS::PlotProjections(int mode) {
       fAcceptanceProjPt->SetBinContent(j,bin_ratio);
       cout << bin_contentYield << endl;
       fS1YieldPt->SetBinContent(j,bin_contentYield/fS1YieldPt->GetBinWidth(j));
-      yieldErr = TMath::Sqrt(bin_contentYieldErr/fS1YieldPt->GetBinWidth(j));
+      yieldErr = TMath::Sqrt(bin_contentYieldErr);
       cout << yieldErr  << endl;
-      fS1YieldPt->SetBinError(j,yieldErr);
+      fS1YieldPt->SetBinError(j,yieldErr/fS1YieldPt->GetBinWidth(j));
       fAllGenResPt->SetBinContent(j,bin_contentAll/fAllGenResPt->GetBinWidth(j));
       bin_ratio=0;bin_contentAll=0;bin_contentReco=0;
       bin_contentYield=0;
@@ -1334,9 +1334,9 @@ void anaXS::PlotProjections(int mode) {
       cout << bin_contentYield << endl;
       bin_contentYield *= lM[1];
       fS2YieldPt->SetBinContent(j,bin_contentYield/fS2YieldPt->GetBinWidth(j));
-      yieldErr = TMath::Sqrt(bin_contentYieldErr/fS2YieldPt->GetBinWidth(j));
+      yieldErr = TMath::Sqrt(bin_contentYieldErr);
       cout << yieldErr  << endl;
-      fS2YieldPt->SetBinError(j,yieldErr);
+      fS2YieldPt->SetBinError(j,yieldErr/fS2YieldPt->GetBinWidth(j));
       fAllGenResPt_2S->SetBinContent(j,bin_contentAll/fAllGenResPt_2S->GetBinWidth(j));
       bin_ratio=0;bin_contentAll=0;bin_contentReco=0;
       bin_contentYield=0;
@@ -1355,9 +1355,9 @@ void anaXS::PlotProjections(int mode) {
       cout << bin_contentYield << endl;
       bin_contentYield *= lM[2];
       fS3YieldPt->SetBinContent(j,bin_contentYield/fS3YieldPt->GetBinWidth(j));
-      yieldErr = TMath::Sqrt(bin_contentYieldErr/fS3YieldPt->GetBinWidth(j));
+      yieldErr = TMath::Sqrt(bin_contentYieldErr);
       cout << yieldErr  << endl;
-      fS3YieldPt->SetBinError(j,yieldErr);
+      fS3YieldPt->SetBinError(j,yieldErr/fS3YieldPt->GetBinWidth(j));
       fAllGenResPt_3S->SetBinContent(j,bin_contentAll/fAllGenResPt_3S->GetBinWidth(j));
       bin_ratio=0;bin_contentAll=0;bin_contentReco=0;
       bin_contentYield=0;
@@ -1391,7 +1391,7 @@ void anaXS::PlotProjections(int mode) {
     fS1YieldPt->SetTitle("Yield Comparison Ups(1S)");
     fS1YieldPt->GetXaxis()->SetTitle("P_{T}");
     fS1YieldPt->SetMinimum(0.);
-    fS1YieldPt->SetMaximum(270000.);
+    fS1YieldPt->SetMaximum(300000.);
     fS1YieldPt->SetMarkerStyle(21);
     fS1YieldPt->SetMarkerColor(3);
     fS1YieldPt->SetLineColor(3);
@@ -1411,7 +1411,7 @@ void anaXS::PlotProjections(int mode) {
     fS2YieldPt->SetTitle("Yield Comparison Ups(2S)");
     fS2YieldPt->GetXaxis()->SetTitle("P_{T}");
     fS2YieldPt->SetMinimum(0.);
-    fS2YieldPt->SetMaximum(120000.);
+    fS2YieldPt->SetMaximum(150000.);
     fS2YieldPt->SetMarkerStyle(21);
     fS2YieldPt->SetMarkerColor(3);
     fS2YieldPt->SetLineColor(3);
@@ -1505,8 +1505,8 @@ void anaXS::PlotProjections(int mode) {
     //c1->cd(1);
     fS1YieldEta->SetTitle("Yield Comparison Ups(1S)");
     fS1YieldEta->GetXaxis()->SetTitle("Rapidity");
-    fS1YieldEta->SetMinimum(300000.);
-    fS1YieldEta->SetMaximum(650000.);
+    fS1YieldEta->SetMinimum(100000.);
+    fS1YieldEta->SetMaximum(500000.);
     fS1YieldEta->SetMarkerStyle(21);
     fS1YieldEta->SetMarkerColor(3);
     fS1YieldEta->SetLineColor(3);
@@ -1524,7 +1524,7 @@ void anaXS::PlotProjections(int mode) {
     //c1->cd(2);
     fS2YieldEta->SetTitle("Yield Comparison Ups(2S)");
     fS2YieldEta->GetXaxis()->SetTitle("Rapidity");
-    fS2YieldEta->SetMinimum(100000.);
+    fS2YieldEta->SetMinimum(50000.);
     fS2YieldEta->SetMaximum(350000.);
     fS2YieldEta->SetMarkerStyle(21);
     fS2YieldEta->SetMarkerColor(3);
@@ -1543,7 +1543,7 @@ void anaXS::PlotProjections(int mode) {
     //c1->cd(3);
     fS3YieldEta->SetTitle("Yield Comparison Ups(3S)");
     fS3YieldEta->GetXaxis()->SetTitle("Rapidity");
-    fS3YieldEta->SetMinimum(500000.);
+    fS3YieldEta->SetMinimum(0.);
     fS3YieldEta->SetMaximum(250000.);
     fS3YieldEta->SetMarkerStyle(21);
     fS3YieldEta->SetMarkerColor(3);
@@ -1593,8 +1593,8 @@ void anaXS::PlotProjections(int mode) {
       cout << bin_contentYield << endl;
       xsection = bin_contentYield/lumi;
       fS1YieldPt->SetBinContent(j,xsection/fS1YieldPt->GetBinWidth(j));
-      xsectionErr = TMath::Sqrt(bin_contentYieldErr/fS1YieldPt->GetBinWidth(j))/lumi;
-      fS1YieldPt->SetBinError(j,xsectionErr);
+      xsectionErr = TMath::Sqrt(bin_contentYieldErr)/lumi;
+      fS1YieldPt->SetBinError(j,xsectionErr/fS1YieldPt->GetBinWidth(j));
       cout << " Ups(1S) Results "  << endl;
       cout << "xsection = " << fS1YieldPt->GetBinContent(j) << "+/-" << fS1YieldPt->GetBinError(j) << "(%" << (fS1YieldPt->GetBinError(j)/fS1YieldPt->GetBinContent(j))*100  << ")" << endl;      
       bin_ratio=0;bin_contentAll=0;bin_contentReco=0;
@@ -1614,8 +1614,8 @@ void anaXS::PlotProjections(int mode) {
       cout << bin_contentYield << endl;
       xsection = bin_contentYield/lumi;
       fS2YieldPt->SetBinContent(j,xsection/fS2YieldPt->GetBinWidth(j));
-      xsectionErr = TMath::Sqrt(bin_contentYieldErr/fS2YieldPt->GetBinWidth(j))/lumi;
-      fS2YieldPt->SetBinError(j,xsectionErr);
+      xsectionErr = TMath::Sqrt(bin_contentYieldErr)/lumi;
+      fS2YieldPt->SetBinError(j,xsectionErr/fS2YieldPt->GetBinWidth(j));
       cout << " Ups(2S) Results "  << endl;
       cout << "xsection = " << fS2YieldPt->GetBinContent(j) << "+/-" << fS2YieldPt->GetBinError(j) << "(%" << (fS2YieldPt->GetBinError(j)/fS2YieldPt->GetBinContent(j))*100  << ")" << endl;   
       bin_ratio=0;bin_contentAll=0;bin_contentReco=0;
@@ -1635,8 +1635,8 @@ void anaXS::PlotProjections(int mode) {
       cout << bin_contentYield << endl;
       xsection = bin_contentYield/lumi;
       fS3YieldPt->SetBinContent(j,xsection/fS3YieldPt->GetBinWidth(j));
-      xsectionErr = TMath::Sqrt(bin_contentYieldErr/fS3YieldPt->GetBinWidth(j))/lumi;
-      fS3YieldPt->SetBinError(j,xsectionErr);
+      xsectionErr = TMath::Sqrt(bin_contentYieldErr)/lumi;
+      fS3YieldPt->SetBinError(j,xsectionErr/fS3YieldPt->GetBinWidth(j));
       cout << " Ups(3S) Results "  << endl;
       cout << "xsection = " << fS3YieldPt->GetBinContent(j) << "+/-" << fS3YieldPt->GetBinError(j) << "(%" << (fS3YieldPt->GetBinError(j)/fS3YieldPt->GetBinContent(j))*100  << ")"<< endl;     
       bin_ratio=0;bin_contentAll=0;bin_contentReco=0;
@@ -1712,14 +1712,14 @@ void anaXS::PlotProjections(int mode) {
     hICHEP->SetMarkerStyle(20);
     hICHEP->SetMarkerColor(4);
     hICHEP->SetLineColor(4);
-    fS1YieldPt->Draw("p");
-    hICHEP->Draw("psame");
+    //fS1YieldPt->Draw("p");
+    //hICHEP->Draw("psame");
     legg = new TLegend(0.6,0.6,0.8,0.8);
     legg->SetFillStyle(0); legg->SetBorderSize(0); legg->SetTextSize(0.08); legg->SetTextFont(132); 
     legg->SetHeader("XSection Comparison For Ups(1S)");
     legge = legg->AddEntry(fS1YieldPt,  "Xsection ","p"); legge->SetTextColor(kBlack);
     legge = legg->AddEntry(hICHEP,  "Results with 3.1 pb^{-1}","p"); legge->SetTextColor(kBlack);
-    legg->Draw();
+    //legg->Draw();
     
     //makeCanvas(1);
     //c1->Divide(3,1);
@@ -1772,7 +1772,7 @@ void anaXS::PlotProjections(int mode) {
     legg->SetHeader("Acceptance");
     legge = legg->AddEntry(fAcceptanceProjPt_3S,  "Y(3S) Acceptance ","p"); legge->SetTextColor(kBlack);
     //legg->Draw();
-    makeCanvas(1);
+    //makeCanvas(1);
     fS3YieldPt->SetTitle("Differential XSection");
     fS3YieldPt->GetXaxis()->SetTitle("P_{T}");
     fS3YieldPt->SetMinimum(0.);
@@ -3423,7 +3423,7 @@ void anaXS::GetMuIDEff(int mode){
       nbin = fMuIDEff->FindBin(eta, pt); 
       corr = fPtMuidCorr->effD(pt, eta, 0.);
       cout << nbin  << endl;
-      yield*=corr;
+      //yield*=corr;
       cout << " MuIDEff Ups " << yield << " +/- " << yieldE << endl;
       fMuIDEff->SetBinContent(nbin, yield); 
       fMuIDEff->SetBinError(nbin, yieldE); 
@@ -3434,7 +3434,7 @@ void anaXS::GetMuIDEff(int mode){
   
   
   ////////////
-  //fMuIDEff_3->Write();
+  //fMuIDEff->Write();
   ////////////
 }
 
@@ -3522,7 +3522,7 @@ void anaXS::GetTrigEff(int mode){
       nbin = fTrigEff->FindBin(eta, pt);
       corr = fPtTrigCorr->effD(pt, eta, 0.);
       cout << nbin  << endl;
-      yield*=corr;
+      //yield*=corr;
       cout << " TrigEff Ups " << yield << " +/- " << yieldE << endl;
       fTrigEff->SetBinContent(nbin, yield); 
       fTrigEff->SetBinError(nbin, yieldE); 
@@ -3535,7 +3535,7 @@ void anaXS::GetTrigEff(int mode){
   }
   
   ///////////
-  //fTrigEff_3->Write();
+  //fTrigEff->Write();
   ////////////
 }
 
@@ -4072,6 +4072,26 @@ void anaXS::FITUpsilon(int mode){
 	}
 	///////////////
 	cout << status << endl;
+	
+	///////////////
+	if ( status == -1 || status == 0 ){
+	  f13->SetParameters( f13->GetParameter(0), f13->GetParameter(1), f13->GetParameter(2), f13->GetParameter(3), f13->GetParameter(4) , f13->GetParameter(5), f13->GetParameter(6), f13->GetParameter(7), f13->GetParameter(8), f13->GetParameter(9), f13->GetParameter(10));
+	  h->Fit(f13, fopt.c_str());
+	}
+	
+	cout << gMinuit->fCstatu.Data() << endl;
+	Status = gMinuit->fCstatu.Data();
+	cout << Status[0] << endl;
+	
+	if ( Status[0] == 'S' || Status[0] == 'P' ){
+	  status = 1;
+	} else if ( Status[0] == 'F' ){ 
+	  status = -1;
+	}
+	///////////////
+	cout << status << endl;	
+		
+	
 	// Ups 1S
 	f10->SetParameters( f13->GetParameter(0), f13->GetParameter(1), f13->GetParameter(2), f13->GetParameter(3), f13->GetParameter(4) );
 	yield_1S  = f10->Integral(8.7,11.2)/h->GetBinWidth(1);
