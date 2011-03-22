@@ -91,7 +91,7 @@ VgAnalyzerKit::VgAnalyzerKit(const edm::ParameterSet& ps) : verbosity_(0), helpe
   tree_->Branch("ttbit0", &ttbit0_, "ttbit0/I");
   tree_->Branch("nHLT", &nHLT_, "nHLT/I");
   tree_->Branch("HLT", HLT_, "HLT[nHLT]/I");
-  tree_->Branch("HLTIndex", HLTIndex_, "HLTIndex[71]/I");
+  tree_->Branch("HLTIndex", HLTIndex_, "HLTIndex[86]/I");
   tree_->Branch("nHFTowersP", &nHFTowersP_, "nHFTowersP/I");
   tree_->Branch("nHFTowersN", &nHFTowersN_, "nHFTowersN/I");
   tree_->Branch("nVtx", &nVtx_, "nVtx/I");
@@ -303,7 +303,7 @@ VgAnalyzerKit::VgAnalyzerKit(const edm::ParameterSet& ps) : verbosity_(0), helpe
   // Jet
   if (doStoreJets_) {
     tree_->Branch("nJet", &nJet_, "nJet/I");
-    tree_->Branch("jetTrg", jetTrg_, "jetTrg[nJet][21]/I");
+    tree_->Branch("jetTrg", jetTrg_, "jetTrg[nJet][22]/I");
     tree_->Branch("jetEn", jetEn_, "jetEn[nJet]/F");
     tree_->Branch("jetPt", jetPt_, "jetPt[nJet]/F");
     tree_->Branch("jetEta", jetEta_, "jetEta[nJet]/F");
@@ -685,23 +685,37 @@ fabs(ip->pdgId())<=14) || ip->pdgId()==22))) {
   //54: HLT_Jet150_v1
   //55: HLT_Jet190_v1
   //56: HLT_Jet240_v1
-  //57: HLT_Mu12_v1
-  //58: HLT_Mu15_v2
-  //59: HLT_Mu20_v1
-  //60: HLT_Mu24_v1
-  //61: HLT_Mu30_v1
-  //62: HLT_IsoMu12_v1
-  //63: HLT_IsoMu15_v5
-  //64: HLT_IsoMu17_v5
-  //65: HLT_IsoMu24_v1
-  //66: HLT_IsoMu30_v1
-  //67: HLT_Ele27_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_v1
-  //68: HLT_Ele45_CaloIdVT_TrkIdT_v1
-  //69: HLT_Ele90_NoSpikeFilter_v1
-  //70: HLT_Photon75_CaloIdVL_IsoL_v1
-  //71: HLT_Photon75_CaloIdVL_v1
+  //57: HLT_Jet370_v1
+  //58: HLT_Mu12_v1
+  //59: HLT_Mu15_v2
+  //60: HLT_Mu20_v1
+  //61: HLT_Mu24_v1
+  //62: HLT_Mu30_v1
+  //63: HLT_IsoMu12_v1
+  //64: HLT_IsoMu15_v5
+  //65: HLT_IsoMu17_v5
+  //66: HLT_IsoMu24_v1
+  //67: HLT_IsoMu30_v1
+  //68: HLT_DoubleMu6_v1
+  //69: HLT_DoubleMu7_v1
+  //70: HLT_Ele27_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_v1
+  //71: HLT_Ele45_CaloIdVT_TrkIdT_v1
+  //72: HLT_Ele90_NoSpikeFilter_v1
+  //73: HLT_Ele17_CaloIdL_CaloIsoVL_Ele8_CaloIdL_CaloIsoVL_v1
+  //74: HLT_Ele17_CaloIdVT_CaloIsoVT_TrkIdT_TrkIsoVT_SC8_Mass30_v1
+  //75: HLT_Ele17_CaloIdL_CaloIsoVL_Ele15_HFL_v1
+  //76: HLT_Ele32_CaloIdL_CaloIsoVL_SC17_v1
+  //77: HLT_Photon30_CaloIdVL_v1
+  //78: HLT_Photon30_CaloIdVL_IsoL_v1
+  //79: HLT_Photon75_CaloIdVL_v1
+  //80: HLT_Photon75_CaloIdVL_IsoL_v1
+  //81: HLT_Photon20_R9Id_Photon18_R9Id_v1
+  //82: HLT_Photon26_IsoVL_Photon18_v1
+  //83: HLT_Photon26_IsoVL_Photon18_IsoVL_v1
+  //84: HLT_Photon26_CaloIdL_IsoVL_Photon18_v1
+  //85: HLT_Photon26_CaloIdL_IsoVL_Photon18_CaloIdL_IsoVL_v1
 
-  for (int a=0; a<71; a++)
+  for (int a=0; a<86; a++)
     HLTIndex_[a] = -1;
  
   nHLT_ = 0;
@@ -770,21 +784,35 @@ fabs(ip->pdgId())<=14) || ip->pdgId()==22))) {
     else if (hlNames[i] == "HLT_Jet150_v1")	HLTIndex_[54] = i;
     else if (hlNames[i] == "HLT_Jet190_v1")	HLTIndex_[55] = i;
     else if (hlNames[i] == "HLT_Jet240_v1")	HLTIndex_[56] = i;
-    else if (hlNames[i] == "HLT_Mu12_v1")	HLTIndex_[57] = i;
-    else if (hlNames[i] == "HLT_Mu15_v2")	HLTIndex_[58] = i;
-    else if (hlNames[i] == "HLT_Mu20_v1")	HLTIndex_[59] = i;
-    else if (hlNames[i] == "HLT_Mu24_v1")	HLTIndex_[60] = i;
-    else if (hlNames[i] == "HLT_Mu30_v1")	HLTIndex_[61] = i;
-    else if (hlNames[i] == "HLT_IsoMu12_v1")	HLTIndex_[62] = i;
-    else if (hlNames[i] == "HLT_IsoMu15_v5")	HLTIndex_[63] = i;
-    else if (hlNames[i] == "HLT_IsoMu17_v5")	HLTIndex_[64] = i;
-    else if (hlNames[i] == "HLT_IsoMu24_v1")	HLTIndex_[65] = i;
-    else if (hlNames[i] == "HLT_IsoMu30_v1")	HLTIndex_[66] = i;
-    else if (hlNames[i] == "HLT_Ele27_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_v1")	HLTIndex_[67] = i;
-    else if (hlNames[i] == "HLT_Ele45_CaloIdVT_TrkIdT_v1")	HLTIndex_[68] = i;
-    else if (hlNames[i] == "HLT_Ele90_NoSpikeFilter_v1")	HLTIndex_[69] = i;
-    else if (hlNames[i] == "HLT_Photon75_CaloIdVL_IsoL_v1")	HLTIndex_[70] = i;
-    else if (hlNames[i] == "HLT_Photon75_CaloIdVL_v1")		HLTIndex_[71] = i;
+    else if (hlNames[i] == "HLT_Jet370_v1")	HLTIndex_[57] = i;
+    else if (hlNames[i] == "HLT_Mu12_v1")	HLTIndex_[58] = i;
+    else if (hlNames[i] == "HLT_Mu15_v2")	HLTIndex_[59] = i;
+    else if (hlNames[i] == "HLT_Mu20_v1")	HLTIndex_[60] = i;
+    else if (hlNames[i] == "HLT_Mu24_v1")	HLTIndex_[61] = i;
+    else if (hlNames[i] == "HLT_Mu30_v1")	HLTIndex_[62] = i;
+    else if (hlNames[i] == "HLT_IsoMu12_v1")	HLTIndex_[63] = i;
+    else if (hlNames[i] == "HLT_IsoMu15_v5")	HLTIndex_[64] = i;
+    else if (hlNames[i] == "HLT_IsoMu17_v5")	HLTIndex_[65] = i;
+    else if (hlNames[i] == "HLT_IsoMu24_v1")	HLTIndex_[66] = i;
+    else if (hlNames[i] == "HLT_IsoMu30_v1")	HLTIndex_[67] = i;
+    else if (hlNames[i] == "HLT_DoubleMu6_v1")	HLTIndex_[68] = i;
+    else if (hlNames[i] == "HLT_DoubleMu7_v1")	HLTIndex_[69] = i;
+    else if (hlNames[i] == "HLT_Ele27_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_v1")		HLTIndex_[70] = i;
+    else if (hlNames[i] == "HLT_Ele45_CaloIdVT_TrkIdT_v1")				HLTIndex_[71] = i;
+    else if (hlNames[i] == "HLT_Ele90_NoSpikeFilter_v1")				HLTIndex_[72] = i;
+    else if (hlNames[i] == "HLT_Ele17_CaloIdL_CaloIsoVL_Ele8_CaloIdL_CaloIsoVL_v1")	HLTIndex_[73] = i;
+    else if (hlNames[i] == "HLT_Ele17_CaloIdVT_CaloIsoVT_TrkIdT_TrkIsoVT_SC8_Mass30_v1")HLTIndex_[74] = i;
+    else if (hlNames[i] == "HLT_Ele17_CaloIdL_CaloIsoVL_Ele15_HFL_v1")			HLTIndex_[75] = i;
+    else if (hlNames[i] == "HLT_Ele32_CaloIdL_CaloIsoVL_SC17_v1")			HLTIndex_[76] = i;
+    else if (hlNames[i] == "HLT_Photon30_CaloIdVL_v1")		HLTIndex_[77] = i;
+    else if (hlNames[i] == "HLT_Photon30_CaloIdVL_IsoL_v1")	HLTIndex_[78] = i;
+    else if (hlNames[i] == "HLT_Photon75_CaloIdVL_v1")		HLTIndex_[79] = i;
+    else if (hlNames[i] == "HLT_Photon75_CaloIdVL_IsoL_v1")	HLTIndex_[80] = i;
+    else if (hlNames[i] == "HLT_Photon20_R9Id_Photon18_R9Id_v1")			HLTIndex_[81] = i;
+    else if (hlNames[i] == "HLT_Photon26_IsoVL_Photon18_v1")				HLTIndex_[82] = i;
+    else if (hlNames[i] == "HLT_Photon26_IsoVL_Photon18_IsoVL_v1")			HLTIndex_[83] = i;
+    else if (hlNames[i] == "HLT_Photon26_CaloIdL_IsoVL_Photon18_v1")			HLTIndex_[84] = i;
+    else if (hlNames[i] == "HLT_Photon26_CaloIdL_IsoVL_Photon18_CaloIdL_IsoVL_v1")	HLTIndex_[85] = i;
   }
 
   // Gen & PAT MET (caloMET)
@@ -899,6 +927,7 @@ fabs(ip->pdgId())<=14) || ip->pdgId()==22))) {
       eleTrg_[nEle_][10]  = (eleTrigRef11.isAvailable()) ? 1 : -99;
       eleTrg_[nEle_][11]  = (eleTrigRef12.isAvailable()) ? 1 : -99;
       eleTrg_[nEle_][12]  = (eleTrigRef13.isAvailable()) ? 1 : -99;
+
 
       //        new eID with correct isolations and conversion rejection, see https://twiki.cern.ch/twiki/bin/viewauth/CMS/SimpleCutBasedEleID
       //        The value map returns a double with the following meaning:
@@ -1658,6 +1687,7 @@ fabs(ip->pdgId())<=14) || ip->pdgId()==22))) {
   const TriggerObjectMatch *jetTriggerMatch19(triggerEvent->triggerObjectMatchResult("jetTriggerMatchHLTJetJet150v1"));
   const TriggerObjectMatch *jetTriggerMatch20(triggerEvent->triggerObjectMatchResult("jetTriggerMatchHLTJetJet190v1"));
   const TriggerObjectMatch *jetTriggerMatch21(triggerEvent->triggerObjectMatchResult("jetTriggerMatchHLTJetJet240v1"));
+  const TriggerObjectMatch *jetTriggerMatch22(triggerEvent->triggerObjectMatchResult("jetTriggerMatchHLTJetJet3700v1"));
 
   if (doStoreJets_) {
     nJet_ = 0;
@@ -1689,6 +1719,7 @@ fabs(ip->pdgId())<=14) || ip->pdgId()==22))) {
 	const TriggerObjectRef jetTrigRef19( matchHelper.triggerMatchObject( jetBaseRef, jetTriggerMatch19, e, *triggerEvent ) );
 	const TriggerObjectRef jetTrigRef20( matchHelper.triggerMatchObject( jetBaseRef, jetTriggerMatch20, e, *triggerEvent ) );
 	const TriggerObjectRef jetTrigRef21( matchHelper.triggerMatchObject( jetBaseRef, jetTriggerMatch21, e, *triggerEvent ) );
+	const TriggerObjectRef jetTrigRef22( matchHelper.triggerMatchObject( jetBaseRef, jetTriggerMatch22, e, *triggerEvent ) );
 	jetTrg_[nJet_][0] = (jetTrigRef1.isAvailable()) ? 1 : -99;
 	jetTrg_[nJet_][1] = (jetTrigRef2.isAvailable()) ? 1 : -99;
 	jetTrg_[nJet_][2] = (jetTrigRef3.isAvailable()) ? 1 : -99;
@@ -1710,6 +1741,7 @@ fabs(ip->pdgId())<=14) || ip->pdgId()==22))) {
 	jetTrg_[nJet_][18] = (jetTrigRef19.isAvailable()) ? 1 : -99;
 	jetTrg_[nJet_][19] = (jetTrigRef20.isAvailable()) ? 1 : -99;
 	jetTrg_[nJet_][20] = (jetTrigRef21.isAvailable()) ? 1 : -99;
+	jetTrg_[nJet_][21] = (jetTrigRef22.isAvailable()) ? 1 : -99;
 
 	jetEn_[nJet_]     = iJet->energy();
 	jetPt_[nJet_]     = iJet->pt();

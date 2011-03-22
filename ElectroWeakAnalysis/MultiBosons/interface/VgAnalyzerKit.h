@@ -303,7 +303,7 @@ protected:
 
   // Jet
   Int_t    nJet_;
-  Int_t    jetTrg_[maxP][21];
+  Int_t    jetTrg_[maxP][22];
   Int_t    jetAlgo_[maxP];
   Float_t  jetEn_[maxP];
   Float_t  jetPt_[maxP];

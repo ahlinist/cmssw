@@ -701,6 +701,16 @@ jetTriggerMatchHLTJet240v1   = cms.EDProducer( "PATTriggerMatcherDRLessByR",
                                                            resolveByMatchQuality = cms.bool( True )
                                                            )
 
+# matches to HLT_Jet370_v1
+jetTriggerMatchHLTJet370v1   = cms.EDProducer( "PATTriggerMatcherDRLessByR",
+                                                           src     = cms.InputTag( "cleanPatJets" ),
+                                                           matched = cms.InputTag( "patTrigger" ),
+                                                           matchedCuts = cms.string( 'path( "HLT_Jet370_v1" )' ),
+                                                           maxDPtRel = cms.double( 0.5 ),
+                                                           maxDeltaR = cms.double( 0.3 ),
+                                                           resolveAmbiguities    = cms.bool( True ),
+                                                           resolveByMatchQuality = cms.bool( True )
+                                                           )
 
 vgTriggerMatcherElectron = cms.Sequence(
         electronTriggerMatchHLTEle15LWL1R +
@@ -774,7 +784,8 @@ vgTriggerMatcherJet = cms.Sequence(
 	jetTriggerMatchHLTJet110v1 +
 	jetTriggerMatchHLTJet150v1 +
 	jetTriggerMatchHLTJet190v1 +
-	jetTriggerMatchHLTJet240v1
+	jetTriggerMatchHLTJet240v1 +
+	jetTriggerMatchHLTJet370v1
 	)
 
 vgTriggerMatcher = cms.Sequence(
