@@ -14,7 +14,9 @@ from TauAnalysis.DQMTools.plotterStyleDefinitions_cfi import *
 from TauAnalysis.BgEstimationTools.tools.drawTemplateHistConfigurator import drawTemplateHistConfigurator
 from TauAnalysis.Configuration.makePlots2_grid import dqmHistPlotter_template
 from TauAnalysis.Configuration.recoSampleDefinitionsZtoMuTau_7TeV_grid_cfi import recoSampleDefinitionsZtoMuTau_7TeV
+from TauAnalysis.Configuration.recoSampleDefinitionsZtoElecTau_grid_cfi import recoSampleDefinitionsZtoElecTau
 from TauAnalysis.Configuration.plotZtoMuTau_drawJobs_cfi import plots_ZtoMuTau
+from TauAnalysis.Configuration.plotZtoElecTau_drawJobs_cfi import plots_ZtoElecTau
 
 #--------------------------------------------------------------------------------
 # define observable to be used as template
@@ -223,6 +225,7 @@ plotHistZtoMuTau = cms.EDAnalyzer("DQMHistPlotter",
     indOutputFileName = cms.string('')
 )
 
+
 #--------------------------------------------------------------------------------
 # define auxiliary function for configuring control plots of cumulative distributions
 #--------------------------------------------------------------------------------
@@ -351,6 +354,146 @@ plotHistZtoMuTauStacked = dqmHistPlotter_template.clone(
             diBoson = recoSampleDefinitionsZtoMuTau_7TeV['ALL_SAMPLES']['VVsum']['drawOption'],
             QCD = recoSampleDefinitionsZtoMuTau_7TeV['ALL_SAMPLES']['qcdSum']['drawOption'],
             Data = recoSampleDefinitionsZtoMuTau_7TeV['ALL_SAMPLES']['data']['drawOption']
+        )
+    ),
+    drawJobs = cms.PSet(),
+    outputFilePath = cms.string('./plots/'),
+    indOutputFileName = cms.string(''),
+)
+
+
+#--------------------------------------------------------------------------------
+#  make objects specific to electron+tau channels 
+#--------------------------------------------------------------------------------
+
+plotHistZtoElecTau = copy.deepcopy(plotHistZtoMuTau)
+
+def configurePlotZtoElecTauIntegrated(meName_data, meName_mc, meName_compatibility, 
+	                            plotName, plotTitle,
+                                    outputFileName):
+    drawTemplateHistConfiguratorZtoElecTauIntegrated = drawTemplateHistConfigurator(
+        template = drawJobTemplateHistIntegrated.clone(
+            labels = cms.vstring('ksProb')
+        )
+    )    
+    drawTemplateHistConfiguratorZtoElecTauIntegrated.add(
+        meNames = [ meName_data, meName_mc ],
+        name = plotName,
+        title = plotTitle
+    )
+    plotHistZtoElecTauIntegrated = plotHistZtoElecTau.clone(
+        labels = cms.PSet(
+            ksProb = label_mcNormScale.clone(
+                text = cms.vstring('KS prob.: %f1.2'),
+                meName = cms.string(meName_compatibility)
+            )
+        ),
+        drawJobs = drawTemplateHistConfiguratorZtoElecTauIntegrated.configure(),
+        indOutputFileName = cms.string(outputFileName)
+    )
+
+    return plotHistZtoElecTauIntegrated
+
+plotZtoElecTauStacked_template = plots_ZtoElecTau.clone(
+	plots = cms.PSet(
+		dqmMonitorElements = cms.vstring(''),
+		processes = cms.vstring(
+			#'TTplusJets',
+			#'diBoson',
+			'Zee',
+			'WplusJets',
+			'PhotonPlusJets',
+			'QCD',
+			'Ztautau',
+			'Data'
+			)
+		),
+	stack = cms.vstring(
+		#'TTplusJets',
+		#'diBoson',
+		'Zee',
+		'WplusJets',
+		'QCD',
+		'PhotonPlusJets',
+		'Ztautau'
+		)
+)
+
+plotHistZtoElecTauStacked = dqmHistPlotter_template.clone(
+    processes = cms.PSet(
+        Ztautau = cms.PSet(
+            dqmDirectory = cms.string(''),
+            legendEntry = cms.string(recoSampleDefinitionsZtoElecTau['ALL_SAMPLES']['Ztautau_PU156BX_T3']['legendEntry']),
+            type = cms.string(recoSampleDefinitionsZtoElecTau['ALL_SAMPLES']['Ztautau_PU156BX_T3']['type'])
+        ),
+        Zee = cms.PSet(
+            dqmDirectory = cms.string(''),
+            legendEntry = cms.string(recoSampleDefinitionsZtoElecTau['ALL_SAMPLES']['Zee_PU156BX_T3']['legendEntry']),
+            type = cms.string(recoSampleDefinitionsZtoElecTau['ALL_SAMPLES']['Zee_PU156BX_T3']['type'])
+        ),
+        WplusJets = cms.PSet(
+            dqmDirectory = cms.string(''),
+            legendEntry = cms.string(recoSampleDefinitionsZtoElecTau['ALL_SAMPLES']['wPlusJetsSum']['legendEntry']),
+            type = cms.string(recoSampleDefinitionsZtoElecTau['ALL_SAMPLES']['wPlusJetsSum']['type'])
+        ),
+		#TTplusJets = cms.PSet(
+		#    dqmDirectory = cms.string(''),
+		#    legendEntry = cms.string(recoSampleDefinitionsZtoElecTau['ALL_SAMPLES']['TTplusJets_madgraph']['legendEntry']),
+		#    type = cms.string(recoSampleDefinitionsZtoElecTau['ALL_SAMPLES']['TTplusJets_madgraph']['type'])
+		#),
+		#diBoson = cms.PSet(
+		#    dqmDirectory = cms.string(''),
+		#    legendEntry = cms.string(recoSampleDefinitionsZtoElecTau['ALL_SAMPLES']['VVsum']['legendEntry']),
+		#    type = cms.string(recoSampleDefinitionsZtoElecTau['ALL_SAMPLES']['VVsum']['type'])
+		#),
+        QCD = cms.PSet(
+            dqmDirectory = cms.string(''),
+            legendEntry = cms.string(recoSampleDefinitionsZtoElecTau['ALL_SAMPLES']['qcdSum']['legendEntry']),
+            type = cms.string(recoSampleDefinitionsZtoElecTau['ALL_SAMPLES']['qcdSum']['type'])
+        ),
+		#PhotonPlusJets = cms.PSet(
+		#    dqmDirectory = cms.string(''),
+		#    legendEntry = cms.string(recoSampleDefinitionsZtoElecTau['ALL_SAMPLES']['photonPlusJetsSum']['legendEntry']),
+		#    type = cms.string(recoSampleDefinitionsZtoElecTau['ALL_SAMPLES']['photonPlusJetsSum']['type'])
+		#),
+        Data = cms.PSet(
+            dqmDirectory = cms.string(''),
+            legendEntry = cms.string(recoSampleDefinitionsZtoElecTau['ALL_SAMPLES']['data']['legendEntry']),
+            type = cms.string(recoSampleDefinitionsZtoElecTau['ALL_SAMPLES']['data']['type'])
+        )
+    ),
+    legends = cms.PSet(
+        regular = legend_regular.clone(
+            posX = cms.double(0.66),
+            posY = cms.double(0.62),
+            sizeX = cms.double(0.23),
+            sizeY = cms.double(0.27)
+        )
+    ),
+    labels = cms.PSet(
+        mcNormScale = dqmHistPlotter_template.labels.mcNormScale.clone(
+            posX = cms.double(0.17),
+            posY = cms.double(0.74),
+            sizeX = cms.double(0.16),
+            sizeY = cms.double(0.15),
+            textSize = cms.double(0.035),
+            textAlign = cms.int32(12),
+            text = cms.vstring(
+                'CMS Preliminary', 
+                'L = 36.2pb^{-1}',
+                '#sqrt{s}=7TeV'
+            )
+        )
+    ),
+    drawOptionSets = cms.PSet(
+        default = cms.PSet(
+            Ztautau = recoSampleDefinitionsZtoElecTau['ALL_SAMPLES']['Ztautau_PU156BX_T3']['drawOption'],
+            Zee = recoSampleDefinitionsZtoElecTau['ALL_SAMPLES']['Zee_PU156BX_T3']['drawOption'],
+            WplusJets = recoSampleDefinitionsZtoElecTau['ALL_SAMPLES']['wPlusJetsSum']['drawOption'],
+			#TTplusJets = recoSampleDefinitionsZtoElecTau['ALL_SAMPLES']['TTplusJets_madgraph']['drawOption'],
+			#diBoson = recoSampleDefinitionsZtoElecTau['ALL_SAMPLES']['VVsum']['drawOption'],
+            QCD = recoSampleDefinitionsZtoElecTau['ALL_SAMPLES']['qcdSum']['drawOption'],
+            Data = recoSampleDefinitionsZtoElecTau['ALL_SAMPLES']['data']['drawOption']
         )
     ),
     drawJobs = cms.PSet(),
