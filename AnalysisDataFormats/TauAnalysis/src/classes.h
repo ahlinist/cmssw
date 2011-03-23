@@ -29,6 +29,7 @@
 #include "DataFormats/Common/interface/Ref.h"
 #include "DataFormats/Common/interface/Ptr.h"
 #include "DataFormats/Common/interface/Wrapper.h"
+#include "DataFormats/Common/interface/OwnVector.h"
 
 #include "DataFormats/PatCandidates/interface/Electron.h"
 #include "DataFormats/PatCandidates/interface/Muon.h"
@@ -97,7 +98,10 @@ namespace {
     std::vector<NSVfitEventHypothesis> dummyNSVfitEventHypothesisCollection;
     edm::Wrapper<std::vector<NSVfitEventHypothesis> > dummyNSVfitEventHypothesisCollectionWrapper;
     std::vector<NSVfitResonanceHypothesis*> dummyNSVfitResonanceHypothesisPtrCollection;
+    edm::OwnVector<NSVfitResonanceHypothesis, edm::ClonePolicy<NSVfitResonanceHypothesis> > dummyNSVfitResonanceHypothesisOwnVector;
+    std::auto_ptr<TH1> dummyTH1Ptr;
     std::vector<NSVfitSingleParticleHypothesisBase*> dummyNSVfitSingleParticleHypothesisBasePtrCollection;
+    edm::OwnVector<NSVfitSingleParticleHypothesisBase, edm::ClonePolicy<NSVfitSingleParticleHypothesisBase> >  dummyNSVfitSingleParticleHypothesisBaseOwnVector;
     
     /// create dictionaries for PATDiElecPair objects
     PATDiElecPair dummyPATDiElecPair;

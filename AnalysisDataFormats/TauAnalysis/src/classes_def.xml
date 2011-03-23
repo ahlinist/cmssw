@@ -49,7 +49,10 @@
   <class name="std::vector<NSVfitEventHypothesis>"/>
   <class name="edm::Wrapper<std::vector<NSVfitEventHypothesis> >"/>
   <class name="std::vector<NSVfitResonanceHypothesis*>"/>
+  <class name="edm::OwnVector<NSVfitResonanceHypothesis, edm::ClonePolicy<NSVfitResonanceHypothesis> >"/>
+  <class name="std::auto_ptr<TH1>"/>
   <class name="std::vector<NSVfitSingleParticleHypothesisBase*>"/>
+  <class name="edm::OwnVector<NSVfitSingleParticleHypothesisBase, edm::ClonePolicy<NSVfitSingleParticleHypothesisBase> >"/>
 
   <!-- create dictionaries for PATElecPair objects -->
   <class name="CompositePtrCandidateT1T2MEt<pat::Electron, pat::Electron>"/>
