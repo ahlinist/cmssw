@@ -8,9 +8,9 @@
  *
  * \author Christian Veelken, UC Davis
  *
- * \version $Revision: 1.2 $
+ * \version $Revision: 1.3 $
  *
- * $Id: NSVfitEventBuilderBase.h,v 1.2 2011/02/28 10:46:38 veelken Exp $
+ * $Id: NSVfitEventBuilderBase.h,v 1.3 2011/03/03 13:04:47 veelken Exp $
  *
  */
 
@@ -18,8 +18,13 @@
 #include "FWCore/Framework/interface/EventSetup.h"
 #include "FWCore/ParameterSet/interface/ParameterSet.h"
 
+#include "DataFormats/Candidate/interface/Candidate.h"
+#include "DataFormats/VertexReco/interface/Vertex.h"
+#include "DataFormats/Common/interface/Ptr.h"
+
 #include "TauAnalysis/CandidateTools/interface/NSVfitBuilderBase.h"
 #include "TauAnalysis/CandidateTools/interface/NSVfitResonanceBuilderBase.h"
+#include "TauAnalysis/CandidateTools/interface/NSVfitEventVertexRefitter.h"
 
 #include "AnalysisDataFormats/TauAnalysis/interface/NSVfitEventHypothesis.h"
 
@@ -37,7 +42,7 @@ class NSVfitEventBuilderBase : public NSVfitBuilderBase
 
   typedef edm::Ptr<reco::Candidate> CandidatePtr;
   typedef std::map<std::string, CandidatePtr> inputParticleMap;
-  virtual NSVfitEventHypothesis* build(const inputParticleMap&) const;
+  virtual NSVfitEventHypothesis* build(const inputParticleMap&, const reco::Vertex*) const;
 
   virtual void applyFitParameter(NSVfitEventHypothesis*, double*) const;
 
@@ -46,6 +51,8 @@ class NSVfitEventBuilderBase : public NSVfitBuilderBase
  protected:
   std::vector<NSVfitResonanceBuilderBase*> resonanceBuilders_;
   unsigned numResonanceBuilders_;
+
+  NSVfitEventVertexRefitter* eventVertexRefitAlgorithm_;
 };
 
 #include "FWCore/PluginManager/interface/PluginFactory.h"

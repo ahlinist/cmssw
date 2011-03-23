@@ -7,9 +7,9 @@
  *
  * \author Christian Veelken, UC Davis
  *
- * \version $Revision: 1.2 $
+ * \version $Revision: 1.1 $
  *
- * $Id: NSVfitProducer.h,v 1.2 2010/09/28 11:23:28 jkolb Exp $
+ * $Id: NSVfitProducerT.h,v 1.1 2011/02/27 16:45:16 veelken Exp $
  *
  */
 
@@ -39,6 +39,8 @@ class NSVfitProducerT : public edm::EDProducer
  private:
   std::string moduleLabel_;
 
+  std::string instanceLabel_;
+
   NSVfitAlgorithmBase* algorithm_;
   
   typedef std::vector<T> NSVfitEventHypothesisCollection;
@@ -52,6 +54,7 @@ class NSVfitProducerT : public edm::EDProducer
   double dRmin_; // minimum eta-phi separation between any pair of input particles
 
   edm::InputTag srcMEt_;
+  edm::InputTag srcPrimaryVertex_;
 };
 
 #endif

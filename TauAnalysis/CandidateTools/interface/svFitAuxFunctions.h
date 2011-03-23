@@ -177,6 +177,12 @@ namespace SVfit_namespace
   /// Determine sign of tau lepton polarization
   /// (depending on handedness and charge, i.e. whether the tau lepton is a tau+ or a tau-)
   double getTauLeptonPolarization(SVfitLegSolution::polarizationHypothesisType, double);
+
+/*
+  /// Determine sign of tau lepton polarization
+  /// (depending on handedness and charge, i.e. whether the tau lepton is a tau+ or a tau-)
+  double getTauLeptonPolarization(double, double);
+ */
 }
 
 #endif

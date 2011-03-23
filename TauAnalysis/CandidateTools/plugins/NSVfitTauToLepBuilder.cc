@@ -1,5 +1,9 @@
 #include "TauAnalysis/CandidateTools/plugins/NSVfitTauToLepBuilder.h"
 
+#include "DataFormats/PatCandidates/interface/Electron.h"
+#include "DataFormats/PatCandidates/interface/Muon.h"
+#include "DataFormats/TauReco/interface/PFTauDecayMode.h"
+
 #include "TauAnalysis/CandidateTools/interface/NSVfitAlgorithmBase.h"
 #include "TauAnalysis/CandidateTools/interface/svFitAuxFunctions.h"
 
@@ -25,7 +29,28 @@ void NSVfitTauToLepBuilder<T>::beginJob(NSVfitAlgorithmBase* algorithm)
   idxFitParameter_visEnFracX_ = getFitParameterIdx(algorithm, prodParticleLabel_, kTau_visEnFracX);
   idxFitParameter_phi_lab_    = getFitParameterIdx(algorithm, prodParticleLabel_, kTau_phi_lab);
   idxFitParameter_nuInvMass_  = getFitParameterIdx(algorithm, prodParticleLabel_, kTau_nuInvMass);
+
+  idxFitParameter_pol_        = getFitParameterIdx(algorithm, prodParticleLabel_, kTau_pol, true); // optional parameter
+
   algorithm_ = algorithm;
+}
+
+template <typename T>
+int getDecayMode(const T&)
+{
+  assert(0); // force template specializations for pat::Electrons/pat::Muons to be used
+}
+
+template <>
+int getDecayMode(const pat::Electron&)
+{
+  return reco::PFTauDecayMode::tauDecaysElectron;
+}
+
+template <>
+int getDecayMode(const pat::Muon&)
+{
+  return reco::PFTauDecayMode::tauDecayMuon;
 }
 
 template <typename T>
@@ -44,6 +69,8 @@ NSVfitSingleParticleHypothesisBase* NSVfitTauToLepBuilder<T>::build(const inputP
 
   hypothesis->p3Vis_unit_ = lepPtr->p4().Vect().Unit();
   hypothesis->visMass_    = lepPtr->mass();
+
+  hypothesis->decayMode_  = getDecayMode(*lepPtr);
 
   NSVfitAlgorithmBase::fitParameterType* fitParameter = algorithm_->getFitParameter(prodParticleLabel_, kTau_nuInvMass);
   assert(fitParameter);
@@ -93,6 +120,9 @@ void NSVfitTauToLepBuilder<T>::applyFitParameter(NSVfitSingleParticleHypothesisB
   hypothesis_T->p4invis_rf_     = boostToCOM(p4Tau, hypothesis_T->dp4_);
   hypothesis_T->p4vis_rf_       = boostToCOM(p4Tau, hypothesis_T->p4());
 
+  if   ( idxFitParameter_pol_ != -1 ) hypothesis_T->polarization_ = param[idxFitParameter_pol_];
+  else                                hypothesis_T->polarization_ = 0.;
+  
   if ( verbosity_ ) {
     std::cout << "<NSVfitTauToLepBuilder::applyFitParameter>:" << std::endl;
     std::cout << " visEnFracX = " << param[idxFitParameter_visEnFracX_] << std::endl;
@@ -109,6 +139,7 @@ void NSVfitTauToLepBuilder<T>::applyFitParameter(NSVfitSingleParticleHypothesisB
     std::cout << "p4Tau: E = " << p4Tau.energy() << ","
 	      << " px = " << p4Tau.px() << ", py = " << p4Tau.py() << ","
 	      << " pz = " << p4Tau.pz() << std::endl;
+    std::cout << "polarization = " << hypothesis_T->polarization_ << std::endl;
   }
 
   hypothesis_T->visEnFracX_     = visEnFracX;
@@ -125,10 +156,8 @@ void NSVfitTauToLepBuilder<T>::print(std::ostream& stream) const
   stream << " idxFitParameter_visEnFracX = " << idxFitParameter_visEnFracX_ << std::endl;
   stream << " idxFitParameter_phi_lab = " << idxFitParameter_phi_lab_ << std::endl;
   stream << " idxFitParameter_nuInvMass = " << idxFitParameter_nuInvMass_ << std::endl;
+  stream << " idxFitParameter_pol = " << idxFitParameter_pol_ << std::endl;
 }
-
-#include "DataFormats/PatCandidates/interface/Electron.h"
-#include "DataFormats/PatCandidates/interface/Muon.h"
 
 typedef NSVfitTauToLepBuilder<pat::Electron> NSVfitTauToElecBuilder;
 typedef NSVfitTauToLepBuilder<pat::Muon> NSVfitTauToMuBuilder;

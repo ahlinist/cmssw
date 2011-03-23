@@ -8,9 +8,9 @@
  *
  * \author Christian Veelken, UC Davis
  *
- * \version $Revision: 1.6 $
+ * \version $Revision: 1.7 $
  *
- * $Id: NSVfitAlgorithmBase.h,v 1.6 2011/03/06 11:31:11 veelken Exp $
+ * $Id: NSVfitAlgorithmBase.h,v 1.7 2011/03/09 18:26:31 veelken Exp $
  *
  */
 
@@ -19,6 +19,7 @@
 #include "FWCore/ParameterSet/interface/ParameterSet.h"
 
 #include "DataFormats/Candidate/interface/Candidate.h"
+#include "DataFormats/VertexReco/interface/Vertex.h"
 #include "DataFormats/Common/interface/Ptr.h"
 
 #include "TauAnalysis/CandidateTools/interface/NSVfitEventLikelihood.h"
@@ -39,7 +40,7 @@ namespace SVfit_namespace
     // fit parameters related to shifts of primary event vertex
     kPV_shiftX, kPV_shiftY, kPV_shiftZ,
     // fit parameters specific to tau decays
-    kTau_visEnFracX, kTau_phi_lab, kTau_decayDistance_lab, kTau_nuInvMass,
+    kTau_visEnFracX, kTau_phi_lab, kTau_decayDistance_lab, kTau_nuInvMass, kTau_pol, 
     kTauVM_theta_rho, kTauVM_theta_a1, kTauVM_theta_a1r, kTauVM_phi_a1r,
     // fit parameters specific to electrons, muons not originating from tau decays
     kLep_shiftEn,
@@ -75,11 +76,13 @@ class NSVfitAlgorithmBase
 
   typedef edm::Ptr<reco::Candidate> CandidatePtr;
   typedef std::map<std::string, CandidatePtr> inputParticleMap;
-  virtual NSVfitEventHypothesis* fit(const inputParticleMap&) const;
+  virtual NSVfitEventHypothesis* fit(const inputParticleMap&, const reco::Vertex*) const;
 
   virtual double nll(double*, double*) const;
 
   static const NSVfitAlgorithmBase* gNSVfitAlgorithm;
+
+  friend class NSVfitTauLikelihoodTrackInfo;
 
  protected:
   virtual void fitImp() const = 0;
@@ -122,7 +125,7 @@ class NSVfitAlgorithmBase
 	(*likelihood)->beginCandidate(hypothesis);
       }
     }
-    double nll(NSVfitSingleParticleHypothesisBase* hypothesis) const
+    double nll(const NSVfitSingleParticleHypothesisBase* hypothesis) const
     {
       double retVal = 0.;
       for ( std::vector<NSVfitSingleParticleLikelihood*>::const_iterator likelihood = likelihoods_.begin();
@@ -181,23 +184,23 @@ class NSVfitAlgorithmBase
 	    likelihood != likelihoods_.end(); ++likelihood ) {
 	(*likelihood)->beginCandidate(hypothesis);
       }
-      const std::vector<NSVfitSingleParticleHypothesisBase*> daughterHypotheses = hypothesis->daughters();
+      const edm::OwnVector<NSVfitSingleParticleHypothesisBase> daughterHypotheses = hypothesis->daughters();
       assert(daughterHypotheses.size() == numDaughters_);
       for ( unsigned iDaughter = 0; iDaughter < numDaughters_; ++iDaughter ) {
-	daughters_[iDaughter]->beginCandidate(daughterHypotheses[iDaughter]);
+	daughters_[iDaughter]->beginCandidate(&daughterHypotheses[iDaughter]);
       }
     }
-    double nll(NSVfitResonanceHypothesis* hypothesis) const
+    double nll(const NSVfitResonanceHypothesis* hypothesis) const
     {
       double retVal = 0.;
       for ( std::vector<NSVfitResonanceLikelihood*>::const_iterator likelihood = likelihoods_.begin();
 	    likelihood != likelihoods_.end(); ++likelihood ) {
 	retVal += (**likelihood)(hypothesis);
       }
-      const std::vector<NSVfitSingleParticleHypothesisBase*> daughterHypotheses = hypothesis->daughters();
+      const edm::OwnVector<NSVfitSingleParticleHypothesisBase> daughterHypotheses = hypothesis->daughters();
       assert(daughterHypotheses.size() == numDaughters_);
       for ( unsigned iDaughter = 0; iDaughter < numDaughters_; ++iDaughter ) {
-	retVal += daughters_[iDaughter]->nll(daughterHypotheses[iDaughter]);
+	retVal += daughters_[iDaughter]->nll(&daughterHypotheses[iDaughter]);
       }
       return retVal;
     }
@@ -255,23 +258,23 @@ class NSVfitAlgorithmBase
 	    likelihood != likelihoods_.end(); ++likelihood ) {
 	(*likelihood)->beginCandidate(hypothesis);
       }
-      const std::vector<NSVfitResonanceHypothesis*> resonanceHypotheses = hypothesis->resonances();
+      const edm::OwnVector<NSVfitResonanceHypothesis> resonanceHypotheses = hypothesis->resonances();
       assert(resonanceHypotheses.size() == numResonances_);
       for ( unsigned iResonance = 0; iResonance < numResonances_; ++iResonance ) {
-	resonances_[iResonance]->beginCandidate(resonanceHypotheses[iResonance]);
+	resonances_[iResonance]->beginCandidate(&resonanceHypotheses[iResonance]);
       }
     }
-    double nll(NSVfitEventHypothesis* hypothesis) const
+    double nll(const NSVfitEventHypothesis* hypothesis) const
     {
       double retVal = 0.;
       for ( std::vector<NSVfitEventLikelihood*>::const_iterator likelihood = likelihoods_.begin();
 	    likelihood != likelihoods_.end(); ++likelihood ) {
 	retVal += (**likelihood)(hypothesis);
       }
-      const std::vector<NSVfitResonanceHypothesis*> resonanceHypotheses = hypothesis->resonances();
+      const edm::OwnVector<NSVfitResonanceHypothesis> resonanceHypotheses = hypothesis->resonances();
       assert(resonanceHypotheses.size() == numResonances_);
       for ( unsigned iResonance = 0; iResonance < numResonances_; ++iResonance ) {
-	retVal += resonances_[iResonance]->nll(resonanceHypotheses[iResonance]);
+	retVal += resonances_[iResonance]->nll(&resonanceHypotheses[iResonance]);
       }
       return retVal;
     }

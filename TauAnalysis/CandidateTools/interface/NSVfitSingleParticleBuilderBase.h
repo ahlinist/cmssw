@@ -8,9 +8,9 @@
  *
  * \author Christian Veelken, UC Davis
  *
- * \version $Revision: 1.2 $
+ * \version $Revision: 1.3 $
  *
- * $Id: NSVfitSingleParticleBuilderBase.h,v 1.2 2011/02/28 10:46:38 veelken Exp $
+ * $Id: NSVfitSingleParticleBuilderBase.h,v 1.3 2011/03/06 11:31:11 veelken Exp $
  *
  */
 
@@ -31,9 +31,7 @@ class NSVfitSingleParticleBuilderBase : public NSVfitBuilderBase
   NSVfitSingleParticleBuilderBase(const edm::ParameterSet& cfg)
     : NSVfitBuilderBase(cfg),
       prodParticleLabel_(cfg.getParameter<std::string>("prodParticleLabel"))
-  {
-    std::cout << "<NSVfitSingleParticleBuilderBase::NSVfitSingleParticleBuilderBase>:" << std::endl;
-  }
+  {}
   virtual ~NSVfitSingleParticleBuilderBase() {}
 
   typedef edm::Ptr<reco::Candidate> CandidatePtr;

@@ -74,14 +74,15 @@ NSVfitResonanceHypothesis* NSVfitResonanceBuilderBase::build(const inputParticle
 void NSVfitResonanceBuilderBase::applyFitParameter(NSVfitResonanceHypothesis* resonanceHypothesis, double* params) const
 {
   for ( unsigned iDaughterBuilder = 0; iDaughterBuilder < numDaughterBuilders_; ++iDaughterBuilder ) {
-    daughterBuilders_[iDaughterBuilder]->applyFitParameter(resonanceHypothesis->daughters_[iDaughterBuilder], params);
+    daughterBuilders_[iDaughterBuilder]->applyFitParameter(&resonanceHypothesis->daughters_[iDaughterBuilder], params);
   }
 
   reco::Candidate::LorentzVector dp4(0,0,0,0);
 
-  for ( std::vector<NSVfitSingleParticleHypothesisBase*>::const_iterator daughter = resonanceHypothesis->daughters_.begin();
-	daughter != resonanceHypothesis->daughters_.end(); ++daughter ) {
-    dp4 += (*daughter)->dp4_fitted();
+  edm::OwnVector<NSVfitSingleParticleHypothesisBase> daughters = resonanceHypothesis->daughters_;
+  for ( edm::OwnVector<NSVfitSingleParticleHypothesisBase>::const_iterator daughter = daughters.begin();
+	daughter != daughters.end(); ++daughter ) {
+    dp4 += daughter->dp4_fitted();
   }
 
   resonanceHypothesis->dp4_ = dp4;
