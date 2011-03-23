@@ -41,15 +41,23 @@ double NSVfitTauToHadLikelihoodPhaseSpace::operator()(const NSVfitSingleParticle
   const NSVfitTauToHadHypothesis* hypothesis_T = dynamic_cast<const NSVfitTauToHadHypothesis*>(hypothesis);
   assert(hypothesis_T != 0);
 
-  double decayAngle = hypothesis_T->decay_angle_rf();
+  if ( this->verbosity_ ) std::cout << "<NSVfitTauToHadLikelihoodPhaseSpace::operator()>:" << std::endl;
 
-  double nll = -TMath::Log(TMath::Sin(decayAngle));
+  double decayAngle = hypothesis_T->decay_angle_rf();
+  double sinDecayAngle = TMath::Sin(decayAngle);
+
+  if ( this->verbosity_ ) std::cout << " decayAngle = " << decayAngle << std::endl;
+
+  double prob = TMath::Sin(decayAngle);
   
-  if ( verbosity_ ) {
-    std::cout << "<NSVfitTauToHadLikelihoodPhaseSpace::operator()>:" << std::endl;
-    std::cout << " decayAngle = " << decayAngle << std::endl;
-    std::cout << "--> nll = " << nll << std::endl;
+  double nll = 0.;
+  if ( sinDecayAngle > 0. ) {
+    nll = -TMath::Log(sinDecayAngle);
+  } else {
+    nll = std::numeric_limits<float>::max();
   }
+  
+  if ( this->verbosity_ ) std::cout << "--> nll = " << nll << std::endl;
 
   return nll;
 }

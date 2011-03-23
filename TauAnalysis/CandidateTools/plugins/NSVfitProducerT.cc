@@ -6,6 +6,8 @@
 #include "DataFormats/Common/interface/View.h"
 #include "DataFormats/Common/interface/Ptr.h"
 #include "DataFormats/METReco/interface/MET.h"
+#include "DataFormats/VertexReco/interface/VertexFwd.h"
+#include "DataFormats/VertexReco/interface/Vertex.h"
 #include "DataFormats/Math/interface/deltaR.h"
 
 #include "TauAnalysis/CandidateTools/interface/IndepCombinatoricsGeneratorT.h"
@@ -41,13 +43,17 @@ NSVfitProducerT<T>::NSVfitProducerT(const edm::ParameterSet& cfg)
   dRmin_ = cfg.getParameter<double>("dRmin");
 
   srcMEt_ = cfg_event.getParameter<edm::InputTag>("srcMEt");
+  srcPrimaryVertex_ = cfg_event.getParameter<edm::InputTag>("srcPrimaryVertex");
 
   edm::ParameterSet cfg_algorithm = cfg.getParameter<edm::ParameterSet>("algorithm");
   cfg_algorithm.addParameter<edm::ParameterSet>("event", cfg_event);
   std::string pluginType = cfg_algorithm.getParameter<std::string>("pluginType");
   algorithm_ = NSVfitAlgorithmPluginFactory::get()->create(pluginType, cfg_algorithm);
   
-  produces<NSVfitEventHypothesisCollection>("");
+  instanceLabel_ = cfg.exists("instanceLabel") ?
+    cfg.getParameter<std::string>("instanceLabel") : "";
+
+  produces<NSVfitEventHypothesisCollection>(instanceLabel_);
 }
 
 template<typename T>
@@ -65,6 +71,9 @@ void NSVfitProducerT<T>::beginJob()
 template <typename T>
 void NSVfitProducerT<T>::produce(edm::Event& evt, const edm::EventSetup& es)
 {
+  std::cout << "<NSVfitProducerT::produce>:" << std::endl;
+  std::cout << " moduleLabel = " << moduleLabel_ << ", instanceLabel = " << instanceLabel_ << std::endl;
+
   typedef edm::View<reco::Candidate> CandidateView;
   typedef edm::Handle<CandidateView> CandidateHandle;
   std::vector<CandidateHandle> inputParticleCollections;
@@ -74,7 +83,7 @@ void NSVfitProducerT<T>::produce(edm::Event& evt, const edm::EventSetup& es)
     evt.getByLabel(*src, inputParticleCollection);
     inputParticleCollections.push_back(inputParticleCollection);
   }
-  
+
   typedef edm::View<reco::MET> MEtView;
   edm::Handle<MEtView> metCollection;
   evt.getByLabel(srcMEt_, metCollection);
@@ -91,6 +100,11 @@ void NSVfitProducerT<T>::produce(edm::Event& evt, const edm::EventSetup& es)
   }
 
   edm::Ptr<reco::MET> metPtr = metCollection->ptrAt(0);
+
+  edm::Handle<reco::VertexCollection> eventVertexCollection;
+  evt.getByLabel(srcPrimaryVertex_, eventVertexCollection);
+  const reco::Vertex* eventVertex = 0;
+  if ( eventVertexCollection->size() > 0 ) eventVertex = &eventVertexCollection->at(0);
 
   algorithm_->beginEvent(evt, es);
 
@@ -109,7 +123,6 @@ void NSVfitProducerT<T>::produce(edm::Event& evt, const edm::EventSetup& es)
       CandidatePtr inputParticlePtr = inputParticleCollections[iParticleType]->ptrAt(inputParticleCombination[iParticleType]);
       inputParticles.insert(std::pair<std::string, CandidatePtr>(inputParticleNames_[iParticleType], inputParticlePtr));
     }
-
     inputParticles.insert(std::pair<std::string, CandidatePtr>("met", metPtr));
 
 //--- check for overlaps between any pairs of input particles
@@ -124,16 +137,16 @@ void NSVfitProducerT<T>::produce(edm::Event& evt, const edm::EventSetup& es)
       }
     }
 
-    if ( isOverlap ) continue;
-
-    T* hypothesis = dynamic_cast<T*>(algorithm_->fit(inputParticles));
-    assert(hypothesis);
-    nSVfitEventHypothesisCollection->push_back(*hypothesis);
-    hypothesis->ownsResonances_ = false;
-    delete hypothesis;
+    if ( !isOverlap ) {
+      std::auto_ptr<T> hypothesis(dynamic_cast<T*>(algorithm_->fit(inputParticles, eventVertex)));
+      assert(hypothesis.get());
+      nSVfitEventHypothesisCollection->push_back(*hypothesis);
+    }
 
     inputParticleCombination.next();
   }
+
+  evt.put(nSVfitEventHypothesisCollection, instanceLabel_);
 }
 
 #include "AnalysisDataFormats/TauAnalysis/interface/NSVfitEventHypothesis.h"

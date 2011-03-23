@@ -21,6 +21,7 @@ void initializeFitParameterLimits(std::vector<pdouble>& limits)
   limits[kTau_phi_lab]           = pdouble(-TMath::Pi(), +TMath::Pi()); // rad
   limits[kTau_decayDistance_lab] = pdouble(          0.,          10.); // cm
   limits[kTau_nuInvMass]         = pdouble(          0.,           0.); // depends on decay: mMau - mVis
+  limits[kTau_pol]               = pdouble(         -1.,          +1.); // -1: left-handed, +1: right-handed
   limits[kTauVM_theta_rho]       = pdouble(          0.,  TMath::Pi()); // rad
   limits[kTauVM_theta_a1]        = pdouble(          0.,  TMath::Pi()); // rad
   limits[kTauVM_theta_a1r]       = pdouble(          0.,  TMath::Pi()); // rad
@@ -110,9 +111,9 @@ NSVfitAlgorithmBase::fitParameterType* NSVfitAlgorithmBase::getFitParameter(cons
   return retVal;
 }
 
-NSVfitEventHypothesis* NSVfitAlgorithmBase::fit(const inputParticleMap& inputParticles) const
+NSVfitEventHypothesis* NSVfitAlgorithmBase::fit(const inputParticleMap& inputParticles, const reco::Vertex* eventVertex) const
 {
-  currentEventHypothesis_ = eventModel_->builder_->build(inputParticles);
+  currentEventHypothesis_ = eventModel_->builder_->build(inputParticles, eventVertex);
 
   eventModel_->beginCandidate(currentEventHypothesis_);
 

@@ -190,4 +190,30 @@ namespace SVfit_namespace {
       return 0.;
     }
   }
+
+/*
+  double getTauLeptonHandedness(double tauLeptonPolarization, double tauLeptonCharge)
+  {
+//--- determine whether visible tau decay products come from a tau- or a tau+ decay;
+//    depending on whether the tau lepton has positive or negative charge,
+//    the following convention is used to relate the "handed-ness" of the tau to its polarization:
+//   o Tau lepton:   
+//       Left-handed  = -1
+//       Right-handed = +1
+//   o Polarization:
+//       P(tau-_{L})  = P(tau+_{R}) = -1
+//       P(tau-_{R})  = P(tau+_{L}) = +1
+//
+    double tauLeptonPolarizationSign = 0.;
+    if      ( tauLeptonCharge < 0. ) tauLeptonPolarizationSign = +1.; // tau- case
+    else if ( tauLeptonCharge > 0. ) tauLeptonPolarizationSign = -1.; // tau+ case
+    else {
+      edm::LogWarning ("getTauLeptonPolarization")
+	<< " Failed to identify whether visible tau decay products come from a tau- or a tau+ decay !!";
+      return 0.;
+    }
+
+    return tauLeptonPolarization*tauLeptonPolarizationSign;
+  }
+ */
 }

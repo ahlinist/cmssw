@@ -3,25 +3,65 @@ import FWCore.ParameterSet.Config as cms
 nSVfitMuonLikelihoodPhaseSpace = cms.PSet(
     pluginName = cms.string("nSVfitTauToMuLikelihoodPhaseSpace"),
     pluginType = cms.string("NSVfitTauToMuLikelihoodPhaseSpace"),
-    verbosity = cms.int32(1)  
+    verbosity = cms.int32(0)  
+)
+
+nSVfitMuonLikelihoodPolarization = cms.PSet(
+    pluginName = cms.string("nSVfitTauToMuLikelihoodPolarization"),
+    pluginType = cms.string("NSVfitTauToMuLikelihoodPolarization"),
+    useCollApproxFormulas = cms.bool(False),
+    #useCollApproxFormulas = cms.bool(True),
+    verbosity = cms.int32(0)  
 )
 
 nSVfitTauToMuBuilder = cms.PSet(
     pluginName = cms.string("nSVfitTauToMuBuilder"),
     pluginType = cms.string("NSVfitTauToMuBuilder"),
-    verbosity = cms.int32(1)  
+    verbosity = cms.int32(0)  
 )
 
 nSVfitTauLikelihoodPhaseSpace = cms.PSet(
     pluginName = cms.string("nSVfitTauToHadLikelihoodPhaseSpace"),
     pluginType = cms.string("NSVfitTauToHadLikelihoodPhaseSpace"),
-    verbosity = cms.int32(1)  
+    verbosity = cms.int32(0)  
+)
+
+nSVfitTauLikelihoodPolarization = cms.PSet(
+    pluginName = cms.string("nSVfitTauToHadLikelihoodPolarization"),
+    pluginType = cms.string("NSVfitTauToHadLikelihoodPolarization"),
+    ##mapRecToGenTauDecayModes = cms.PSet(
+    ##    fileName = cms.string("/afs/cern.ch/user/v/veelken/public/plotsAHtoMuTau.root"),
+    ##    meName = cms.string('DQMData/ahMuTauAnalyzer_woBtag/afterEvtSelNonCentralJetEt20bTag/TauQuantities/TauRecVsGenDecayMode')
+    ##),
+    decayModeParameters = cms.PSet(
+        oneProngZeroPi0s = cms.PSet(
+            pMin = cms.double(0.05)
+        ),
+        oneProngOnePi0 = cms.PSet(
+            xSigma = cms.string("0.014"),
+            xBias = cms.string("0.000"),
+            pMin = cms.double(0.05)
+        ),
+        oneProngTwoPi0s = cms.PSet(
+            xSigma = cms.string("0.013"),
+            xBias = cms.string("0.000"),
+            pMin = cms.double(0.05)
+        ),
+        threeProngZeroPi0s = cms.PSet(
+            xSigma = cms.string("0.018"),
+            xBias = cms.string("0.000"),
+            pMin = cms.double(0.05)
+        )
+    ),
+    useCollApproxFormulas = cms.bool(False),
+    #useCollApproxFormulas = cms.bool(True),
+    verbosity = cms.int32(0)  
 )
 
 nSVfitTauToHadBuilder = cms.PSet(
     pluginName = cms.string("nSVfitTauToHadBuilder"),
     pluginType = cms.string("NSVfitTauToHadBuilder"),
-    verbosity = cms.int32(1)  
+    verbosity = cms.int32(0)  
 )
 
 nSVfitResonanceLikelihoodPtBalance = cms.PSet(
@@ -50,7 +90,7 @@ nSVfitResonanceLikelihoodPtBalance = cms.PSet(
     parameter = cms.PSet(
         x = cms.string('mass')
     ),
-    verbosity = cms.int32(1)     
+    verbosity = cms.int32(0)     
 )
 
 nSVfitResonanceBuilder = cms.PSet(
@@ -67,12 +107,13 @@ nSVfitEventLikelihoodMEt = cms.PSet(
         perpSigma = cms.string("6.85*(1 - 0.00547*x)"),
         perpBias = cms.string("0."),
     ),
-    verbosity = cms.int32(1)
+    verbosity = cms.int32(0)
 )
 
 nSVfitEventBuilder = cms.PSet(
     pluginName = cms.string("nSVfitEventBuilder"),
-    pluginType = cms.string("NSVfitEventBuilder")
+    pluginType = cms.string("NSVfitEventBuilder"),
+    srcBeamSpot = cms.InputTag("offlineBeamSpot")
 )
 
 nSVfitConfig = cms.PSet(
@@ -96,6 +137,7 @@ nSVfitConfig = cms.PSet(
             )
         ),
         srcMEt = cms.InputTag('patPFMETs'),
+        srcPrimaryVertex = cms.InputTag("offlinePrimaryVerticesWithBS"),
         likelihoodFunctions = cms.VPSet(nSVfitEventLikelihoodMEt),
         builder = nSVfitEventBuilder
     )
@@ -120,5 +162,6 @@ nSVfitProducer = cms.EDProducer("NSVfitProducer",
             numCalls = cms.uint32(10000)                             
         )
     ),
-    dRmin = cms.double(0.3)
+    dRmin = cms.double(0.3),
+    instanceLabel = cms.string("")                           
 )                                

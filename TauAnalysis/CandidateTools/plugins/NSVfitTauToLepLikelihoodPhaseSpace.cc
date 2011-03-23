@@ -47,31 +47,42 @@ double NSVfitTauToLepLikelihoodPhaseSpace<T>::operator()(const NSVfitSingleParti
   const NSVfitTauToLepHypothesis<T>* hypothesis_T = dynamic_cast<const NSVfitTauToLepHypothesis<T>*>(hypothesis);
   assert(hypothesis_T != 0);
 
+  if ( this->verbosity_ ) std::cout << "<NSVfitTauToLepLikelihoodPhaseSpace::operator()>:" << std::endl;
+
   double decayAngle = hypothesis_T->decay_angle_rf();
+  double sinDecayAngle = TMath::Sin(decayAngle);
   double nuMass = hypothesis_T->p4invis_rf().mass();
   double visMass = hypothesis_T->p4vis_rf().mass();
 
-  double nll = 0.;
-  if ( nuMass >= 0. && nuMass <= (tauLeptonMass - visMass) ) {
-    double logP1 = TMath::Log(nuMass) - TMath::Log(2.);
-    double logP3 = 0.5*TMath::Log((tauLeptonMass2 - square(nuMass + visMass))*(tauLeptonMass2 - square(nuMass - visMass)))
-                  - TMath::Log(2*tauLeptonMass);
-    nll = -(TMath::Log(TMath::Sin(decayAngle)) + logP1 + logP3);
-  } else {
-    //edm::LogWarning ("NSVfitTauToLepLikelihoodPhaseSpace::operator()")
-    //  << " Unphysical solution due to nuMass: " << nuMass << ","
-    //  << " visMass: " << visMass << ", (nu+vis)Mass: " << (nuMass + visMass)
-    //  << " --> returning very large negative number !!";
-    nll = std::numeric_limits<float>::max();
-  }
-
-  if ( verbosity_ ) {
-    std::cout << "<NSVfitTauToLepLikelihoodPhaseSpace::operator()>:" << std::endl;
+  if ( this->verbosity_ ) {
     std::cout << " decayAngle = " << decayAngle << std::endl;
     std::cout << " nuMass = " << nuMass << std::endl;
     std::cout << " visMass = " << visMass << std::endl;
-    std::cout << "--> nll = " << nll << std::endl;
   }
+
+  double prob = 0.5*nuMass
+               *TMath::Sqrt((tauLeptonMass2 - square(nuMass + visMass))*(tauLeptonMass2 - square(nuMass - visMass)))/(2*tauLeptonMass)
+               *sinDecayAngle;
+
+  double nll = 0.;
+  if ( prob > 0. ) {
+    nll = -TMath::Log(prob);
+  } else {
+    if ( prob < 0. ) 
+      edm::LogWarning ("NSVfitTauToLepLikelihoodPhaseSpace::operator()")
+	<< " Unphysical solution: prob = " << prob << " --> returning very large negative number !!";
+    nll = std::numeric_limits<float>::max();
+  }
+
+  if ( sinDecayAngle > 0. && nuMass > 0. && nuMass < (tauLeptonMass - visMass) ) {
+    double logP1 = TMath::Log(nuMass) - TMath::Log(2.);
+    double logP3 = 0.5*TMath::Log((tauLeptonMass2 - square(nuMass + visMass))*(tauLeptonMass2 - square(nuMass - visMass)))
+                  - TMath::Log(2*tauLeptonMass);
+    double nll2 = -(TMath::Log(sinDecayAngle) + logP1 + logP3);
+    std::cout << "nll1 = " << nll << ", nll2 = " << nll2 << std::endl;
+  }
+
+  if ( this->verbosity_ ) std::cout << "--> nll = " << nll << std::endl;
 
   return nll;
 }
