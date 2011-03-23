@@ -1,6 +1,8 @@
 #ifndef AnalysisDataFormats_TauAnalysis_NSVfitResonanceHypothesis_h
 #define AnalysisDataFormats_TauAnalysis_NSVfitResonanceHypothesis_h
 
+#include "DataFormats/Common/interface/OwnVector.h"
+
 #include "AnalysisDataFormats/TauAnalysis/interface/NSVfitSingleParticleHypothesisBase.h"
 
 #include <string>
@@ -8,19 +10,14 @@
 class NSVfitResonanceHypothesis
 {
  public:
-  NSVfitResonanceHypothesis() 
-    : ownsDaughters_(true)
-  {}
-  virtual ~NSVfitResonanceHypothesis() 
-  {
-    if ( ownsDaughters_ ) {
-      for ( std::vector<NSVfitSingleParticleHypothesisBase*>::const_iterator it = daughters_.begin();
-	    it != daughters_.end(); ++it ) {
-	delete (*it);
-      }
-    }
-  }
+  NSVfitResonanceHypothesis() {}
+  NSVfitResonanceHypothesis(const NSVfitResonanceHypothesis&);
+  virtual ~NSVfitResonanceHypothesis() {}
+
+  virtual NSVfitResonanceHypothesis* clone() const { return new NSVfitResonanceHypothesis(*this); }
   
+  virtual NSVfitResonanceHypothesis& operator=(const NSVfitResonanceHypothesis&);
+
   const std::string& name() const { return name_; }
   int barcode() const { return barcode_; }
 
@@ -38,15 +35,17 @@ class NSVfitResonanceHypothesis
 
   double mass_mean() const { return massMean_; }
   double mass_median() const { return massMedian_; }
+  double mass_maximum() const { return massMaximum_; }
+  double mass_maxInterpol() const { return massMaxInterpol_; }
 
   /// fit hypotheses of daughter particles
-  const std::vector<NSVfitSingleParticleHypothesisBase*>& daughters() const { return daughters_; }
+  const edm::OwnVector<NSVfitSingleParticleHypothesisBase>& daughters() const { return daughters_; }
   const NSVfitSingleParticleHypothesisBase* daughter(const std::string& name)
   {
     const NSVfitSingleParticleHypothesisBase* retVal = 0;
-    for ( std::vector<NSVfitSingleParticleHypothesisBase*>::const_iterator daughter = daughters_.begin();
+    for ( edm::OwnVector<NSVfitSingleParticleHypothesisBase>::const_iterator daughter = daughters_.begin();
 	  daughter != daughters_.end(); ++daughter ) {
-      if ( (*daughter)->name() == name ) retVal = (*daughter);
+      if ( daughter->name() == name ) retVal = &(*daughter);
     }
     return retVal;
   }
@@ -56,9 +55,9 @@ class NSVfitResonanceHypothesis
     stream << "<NSVfitResonanceHypothesis::print>:" << std::endl;
     stream << " name = " << name_ << std::endl;
     stream << " barcode = " << barcode_ << std::endl;
-    for ( std::vector<NSVfitSingleParticleHypothesisBase*>::const_iterator daughter = daughters_.begin();
+    for ( edm::OwnVector<NSVfitSingleParticleHypothesisBase>::const_iterator daughter = daughters_.begin();
           daughter != daughters_.end(); ++daughter ) {
-      (*daughter)->print(stream);
+      daughter->print(stream);
     }
   }
 
@@ -81,8 +80,7 @@ class NSVfitResonanceHypothesis
   reco::Candidate::LorentzVector dp4_;
 
   /// fit hypotheses for daughter particles
-  std::vector<NSVfitSingleParticleHypothesisBase*> daughters_;
-  bool ownsDaughters_;
+  edm::OwnVector<NSVfitSingleParticleHypothesisBase> daughters_;
 
   /// mean and median reconstructed mass, 
   /// -1 sigma and +1 sigma limits on reconstructed mass
@@ -92,6 +90,10 @@ class NSVfitResonanceHypothesis
 
   double massMean_;
   double massMedian_;
+  double massMaximum_;
+  double massMaxInterpol_;
 };
+
+bool operator<(const NSVfitResonanceHypothesis&, const NSVfitResonanceHypothesis&);
 
 #endif

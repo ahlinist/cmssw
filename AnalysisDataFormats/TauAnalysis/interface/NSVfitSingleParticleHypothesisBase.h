@@ -22,7 +22,12 @@ class NSVfitSingleParticleHypothesisBase
       particle_(particle),
       p4_(particle->p4())
   {}
+  NSVfitSingleParticleHypothesisBase(const NSVfitSingleParticleHypothesisBase&);
   virtual ~NSVfitSingleParticleHypothesisBase() {}
+
+  virtual NSVfitSingleParticleHypothesisBase* clone() const { return new NSVfitSingleParticleHypothesisBase(*this); }
+
+  virtual NSVfitSingleParticleHypothesisBase& operator=(const NSVfitSingleParticleHypothesisBase&);
 
   const std::string& name() const { return name_; }
   int barcode() const { return barcode_; }
@@ -38,6 +43,24 @@ class NSVfitSingleParticleHypothesisBase
 
   /// collection of tracks associated to reco::Candidate
   virtual const std::vector<reco::TrackBaseRef>& tracks() const { return tracks_; }
+
+  /// access to position of secondary vertex (tau lepton decay vertex)
+  virtual bool hasDecayVertex() const { return false; }
+  virtual const AlgebraicVector3& decayVertexPos() const 
+  { 
+    throw cms::Exception("NSVfitSingleParticleHypothesisBase::decayVertexPos")
+      << " Function not implemented for base-class !!\n";
+  }
+  virtual const reco::Candidate::Vector& flightPath() const 
+  { 
+    throw cms::Exception("NSVfitSingleParticleHypothesisBase::flightPath")
+      << " Function not implemented for base-class !!\n";
+  }
+  virtual double decayDistance() const 
+  { 
+    throw cms::Exception("NSVfitSingleParticleHypothesisBase::decayDistance")
+      << " Function not implemented for base-class !!\n";
+  }
 
   virtual void print(std::ostream& stream) const
   {
@@ -70,5 +93,7 @@ class NSVfitSingleParticleHypothesisBase
   /// collection of tracks associated to reco::Candidate
   std::vector<reco::TrackBaseRef> tracks_;
 };
+
+bool operator<(const NSVfitSingleParticleHypothesisBase&, const NSVfitSingleParticleHypothesisBase&);
 
 #endif
