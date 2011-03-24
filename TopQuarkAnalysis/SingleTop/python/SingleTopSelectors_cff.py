@@ -61,8 +61,11 @@ countMuons = cms.EDFilter("PATCandViewCountFilter",
 countMuonsPF = countMuons.clone(src = cms.InputTag("topMuons")) 
 
 countLeptons = cms.EDFilter("CandOrCounter",
-                            src1 = cms.InputTag("preselectedMuons"),
-                            src2 = cms.InputTag("preselectedElectrons"),
+                            veto1 = cms.InputTag("preselectedMuons"),
+                            veto2 = cms.InputTag("preselectedElectrons"),
+
+                            src1 = cms.InputTag("topMuons"),
+                            src2 = cms.InputTag("topElectrons"),
                             
                             minNumber = cms.int32(1),
                             maxNumber = cms.int32(9999),
@@ -71,7 +74,10 @@ countLeptons = cms.EDFilter("CandOrCounter",
 countLeptonsTight = cms.EDFilter("CandOrCounter",
                             src1 = cms.InputTag("topMuons"),
                             src2 = cms.InputTag("topElectrons"),
-                            
+
+                            veto1 = cms.InputTag("topMuons"),
+                            veto2 = cms.InputTag("topElectrons"),
+
                             minNumber = cms.int32(1),
                             maxNumber = cms.int32(1),
                             )
@@ -129,6 +135,8 @@ selectSingleTops = cms.EDFilter("SingleTopSelector",
 countLeptonsAntiIso = countLeptons.clone(
     src1 = cms.InputTag("topMuonsAntiIso"),
     src2 = cms.InputTag("topElectronsAntiIso"),
+    veto1 = cms.InputTag("topMuonsAntiIso"),
+    veto2 = cms.InputTag("topElectronsAntiIso"),
     #src1 = cms.InputTag("preselectedMuonsAntiIso"),
     #src2 = cms.InputTag("preselectedElectronsAntiIso"),
 ) 

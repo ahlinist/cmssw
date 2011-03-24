@@ -5,7 +5,7 @@
  *
  * \Author A. Orso M. Iorio
  * 
- * \ version $Id: CandOrCounter.h $
+ * \ version $Id: CandOrCounter.h,v 1.1 2010/03/09 16:33:06 oiorio Exp $
  */
 
 #include "FWCore/Framework/interface/Frameworkfwd.h"
@@ -28,7 +28,15 @@ public:
 private: 
   virtual bool filter(edm::Event & iEvent, const edm::EventSetup & iSetup);
   edm::InputTag cand1_,cand2_;
+  edm::InputTag veto1_,veto2_;
   int minNum_,maxNum_;
+
+  edm::Handle<edm::View<reco::Candidate> > cand1;
+  edm::Handle<edm::View<reco::Candidate> > cand2;
+  edm::Handle<edm::View<reco::Candidate> > veto1;
+  edm::Handle<edm::View<reco::Candidate> > veto2;
+
+  bool useVeto_;
 };
 
 

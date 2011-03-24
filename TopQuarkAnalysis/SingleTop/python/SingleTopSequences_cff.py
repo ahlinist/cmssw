@@ -32,7 +32,9 @@ basePath = cms.Sequence(
    preselectedMuons +
    PVFilterProducer +
    preselectedElectrons +
-   looseElectrons 
+   looseElectrons +
+   UnclusteredMETPF +
+   PDFInfo
    )
 
 flavorHistorySequence = cms.Sequence(
@@ -46,14 +48,14 @@ baseMuonSequence = cms.Sequence(
     hltFilter *
     PVFilter *
     HBHENoiseFilter *
-    countLeptons *
     preselectedJets *
     topElectrons *
     topElectronsForJets *
     topMuonsForJets *
     topJets *
     topMuons *
-    countMuons 
+    countMuons *
+    countLeptons 
     )
 
 baseMuonSequencePF = cms.Sequence(
@@ -61,13 +63,13 @@ baseMuonSequencePF = cms.Sequence(
     PVFilter *
     HBHENoiseFilter *
     preselectedJets *
-    countLeptons *
     topElectrons *
     topElectronsForJets *
     topMuonsForJets *
     topJetsPF *
     topMuons *
-    countMuons 
+    countMuons *
+    countLeptons 
     )
 
 baseMuonAntiIsoSequence = cms.Sequence(
@@ -92,7 +94,7 @@ hltFilterEleSequence = cms.Sequence( hltFilterEle )
 baseElectronSequence = cms.Sequence(
     PVFilter *
     HBHENoiseFilter *
-    countLeptons *
+#    countLeptons *
 #    vetoLooseMuons *
     topElectrons *
     diElectrons *
@@ -102,7 +104,9 @@ baseElectronSequence = cms.Sequence(
     topElectronsForJets *
     topMuonsForJets *
     topJets *
-    topMuons 
+    topMuons *
+    countLeptons 
+
     )
 
 baseElectronSequencePF = cms.Sequence(
@@ -110,7 +114,6 @@ baseElectronSequencePF = cms.Sequence(
     HBHENoiseFilter *
     #    countLeptons *
 #    vetoLooseMuons *
-    countLeptons *
     topElectrons *
     diElectrons *
     vetoDiElectrons *
@@ -119,7 +122,9 @@ baseElectronSequencePF = cms.Sequence(
     topElectronsForJets *
     topMuonsForJets *
     topJetsPF * 
-    topMuons 
+    topMuons *
+    countLeptons 
+
     )
 
 
@@ -134,7 +139,8 @@ baseElectronAntiIsoSequence = cms.Sequence(
     #electronIDAntiIso *
     topMuonsAntiIso *
     vetoMuonsAntiIso *
-    preselectedJets 
+    preselectedJets *
+    countLeptonsAntiIso
     )
 
 baseElectronAntiIsoSequencePF = cms.Sequence(
@@ -147,7 +153,8 @@ baseElectronAntiIsoSequencePF = cms.Sequence(
     #electronIDAntiIso *
     topMuonsAntiIso *
     vetoMuonsAntiIso *
-    preselectedJets 
+    preselectedJets *
+    countLeptonsAntiIso
     )
 
 
@@ -214,9 +221,19 @@ IsoMuonsPF = cms.Sequence(
     baseJetMETSequencePF
     )
 
+IsoMuonsSkimPF = cms.Sequence(
+    baseMuonSequencePF *
+    topJetsPF 
+    )
+
 AntiIsoMuons = cms.Sequence(
     baseMuonAntiIsoSequence +
     baseJetMETAntiIsoSequence
+    )
+
+AntiIsoMuonsSkimPF = cms.Sequence(
+    baseMuonAntiIsoSequence *
+    topJetsAntiIsoPF 
     )
 
 ###Electron paths
@@ -230,9 +247,19 @@ IsoElectronsPF = cms.Sequence(
     baseJetMETSequencePF
     )
 
+IsoElectronsSkimPF = cms.Sequence(
+    baseElectronSequence *
+    topJetsPF
+    )
+
 AntiIsoElectrons = cms.Sequence(
     baseElectronAntiIsoSequence +
     baseJetMETAntiIsoSequence
+    )
+
+AntiIsoElectronsSkimPF = cms.Sequence(
+    baseElectronAntiIsoSequence +
+    topJetsAntiIsoPF  
     )
 
 
@@ -260,6 +287,10 @@ PathElectronsAntiIso = cms.Sequence(
     countJetsNonTTBarAntiIso
     )
 
+PathElectronsAntiIsoSkim = cms.Sequence(
+    AntiIsoElectrons *
+    topJetsAntiIsoPF
+    )
 
 
 ###Tops Sequences
