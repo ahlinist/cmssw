@@ -2,7 +2,7 @@
  *\Author: A. Orso M. Iorio 
  *
  *
- *\version  $Id: TopCosThetaStarDumper.cc,v 1.4 2010/11/17 13:55:42 oiorio Exp $ 
+ *\version  $Id: TopCosThetaStarDumper.cc,v 1.5 2010/12/09 23:11:36 oiorio Exp $ 
  */
 
 // Single Top producer: produces a top candidate made out of a Lepton, a B jet and a MET
@@ -139,7 +139,7 @@ iEvent.getByLabel(tChanSrc_,tChan);
      
      cosThetaLJTmp = ((Lepton->px()*Jet->px()) + (Lepton->py()*Jet->py()) + (Lepton->pz()*Jet->pz()))/(Lepton->p()*Jet->p()); 
      cosThetaBJTmp = ((BJet->px()*Jet->px()) + (BJet->py()*Jet->py()) + (BJet->pz()*Jet->pz()))/(BJet->p()*Jet->p()); 
-
+     
       cosThetaStarTmp = cos(Lepton->theta());
       if(Jet->pz()>0) cosThetaStarTmp = cos(Lepton->theta());
       else cosThetaStarTmp = cos(TMath::Pi() - Lepton->theta());
