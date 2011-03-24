@@ -177,33 +177,8 @@ nSVfitMuTauPairHypothesesPol3 = nSVfitMuTauPairHypothesesPol2.clone(
 )
 nSVfitMuTauPairHypothesesPol3.config.event.resonances.A.likelihoodFunctions = cms.VPSet(nSVfitResonanceLikelihoodPtBalance)
 
-nSVfitMuTauPairHypothesesPolColApprox1 = nSVfitProducer.clone(    
-    instanceLabel = cms.string("polKine")
-)
-nSVfitMuTauPairHypothesesPolColApprox1.config.event.resonances.A.likelihoodFunctions = cms.VPSet()
-nSVfitMuTauPairHypothesesPolColApprox1.config.event.likelihoodFunctions = cms.VPSet()
-nSVfitMuTauPairHypothesesPolColApprox1.config.event.resonances.A.daughters.leg1.likelihoodFunctions = cms.VPSet(
-    nSVfitMuonLikelihoodPolarization.clone(
-        useCollApproxFormulas = cms.bool(True)
-    )
-)    
-nSVfitMuTauPairHypothesesPolColApprox1.config.event.resonances.A.daughters.leg2.likelihoodFunctions = cms.VPSet(
-    nSVfitTauLikelihoodPolarization.clone(
-        useCollApproxFormulas = cms.bool(True)
-    )
-)
-nSVfitMuTauPairHypothesesPolColApprox2 = nSVfitMuTauPairHypothesesPolColApprox1.clone(
-    instanceLabel = cms.string("polKine+MEt")
-)
-nSVfitMuTauPairHypothesesPolColApprox2.config.event.likelihoodFunctions = cms.VPSet(nSVfitEventLikelihoodMEt)
-nSVfitMuTauPairHypothesesPolColApprox3 = nSVfitMuTauPairHypothesesPolColApprox2.clone(
-    instanceLabel = cms.string("polKine+MEt+ptBalance")
-)
-nSVfitMuTauPairHypothesesPolColApprox3.config.event.resonances.A.likelihoodFunctions = cms.VPSet(nSVfitResonanceLikelihoodPtBalance)
-
 nSVfitMuTauPairHypotheses = cms.Sequence(
     nSVfitMuTauPairHypothesesPS1 + nSVfitMuTauPairHypothesesPS2 + nSVfitMuTauPairHypothesesPS3
    + nSVfitMuTauPairHypothesesPol1 + nSVfitMuTauPairHypothesesPol2 + nSVfitMuTauPairHypothesesPol3
-   + nSVfitMuTauPairHypothesesPolColApprox1 + nSVfitMuTauPairHypothesesPolColApprox2 + nSVfitMuTauPairHypothesesPolColApprox3
 )
 produceMuTauPairsAll *= nSVfitMuTauPairHypotheses

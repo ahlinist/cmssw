@@ -9,8 +9,6 @@ nSVfitMuonLikelihoodPhaseSpace = cms.PSet(
 nSVfitMuonLikelihoodPolarization = cms.PSet(
     pluginName = cms.string("nSVfitTauToMuLikelihoodPolarization"),
     pluginType = cms.string("NSVfitTauToMuLikelihoodPolarization"),
-    useCollApproxFormulas = cms.bool(False),
-    #useCollApproxFormulas = cms.bool(True),
     verbosity = cms.int32(0)  
 )
 
@@ -53,8 +51,6 @@ nSVfitTauLikelihoodPolarization = cms.PSet(
             pMin = cms.double(0.05)
         )
     ),
-    useCollApproxFormulas = cms.bool(False),
-    #useCollApproxFormulas = cms.bool(True),
     verbosity = cms.int32(0)  
 )
 

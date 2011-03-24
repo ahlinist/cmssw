@@ -8,9 +8,9 @@
  *
  * \author Christian Veelken, UC Davis
  *
- * \version $Revision: 1.7 $
+ * \version $Revision: 1.8 $
  *
- * $Id: NSVfitAlgorithmBase.h,v 1.7 2011/03/09 18:26:31 veelken Exp $
+ * $Id: NSVfitAlgorithmBase.h,v 1.8 2011/03/23 17:46:39 veelken Exp $
  *
  */
 
@@ -41,7 +41,8 @@ namespace SVfit_namespace
     kPV_shiftX, kPV_shiftY, kPV_shiftZ,
     // fit parameters specific to tau decays
     kTau_visEnFracX, kTau_phi_lab, kTau_decayDistance_lab, kTau_nuInvMass, kTau_pol, 
-    kTauVM_theta_rho, kTauVM_theta_a1, kTauVM_theta_a1r, kTauVM_phi_a1r,
+    kTauVM_theta_rho, kTauVM_mass2_rho, 
+    kTauVM_theta_a1, kTauVM_theta_a1r, kTauVM_phi_a1r, kTauVM_mass2_a1, 
     // fit parameters specific to electrons, muons not originating from tau decays
     kLep_shiftEn,
     // fit parameters specific to neutrinos (not originating from tau decays)
