@@ -29,12 +29,25 @@ looseElectrons = cms.EDProducer("SingleTopElectronProducer",
 )
 
 ###Cleaning options for jets:
-
 preselectedJets = cms.EDFilter("PATJetSelector",
-  src = cms.InputTag("cleanPatJets"),
+  src = cms.InputTag("patJets"),
   cut = cms.string('pt >  30 & abs(eta) < 5.0'),
   filter = cms.bool(False)                                
 )
+
+
+#UnclusteredMET
+UnclusteredMETPF = cms.EDProducer("SingleTopUnclusteredMETProducer",
+                                  metSource = cms.InputTag("patMETsPF"),
+#                                  jetsSource = cms.InputTag("patJetsAK5PF"),
+                                  jetsSource = cms.InputTag("patJets"),
+                                  electronsSource = cms.InputTag("cleanPatElectrons"),
+                                  muonsSource = cms.InputTag("cleanPatMuons"),
+                                  )
+
+#PDF Info
+PDFInfo = cms.EDProducer("PDFInfoDumper",
+                         )
 
 topJets = cms.EDProducer("SingleTopJetsProducer",
                          src = cms.InputTag("preselectedJets"),
@@ -45,10 +58,11 @@ topJets = cms.EDProducer("SingleTopJetsProducer",
 )
 
 topJetsPF = topJets.clone(
-      src = cms.InputTag("patJetsAK5PF"),
-      isJPT = cms.untracked.bool(False),
-      isPF = cms.untracked.bool(True),
-      )
+    #                                  jetsSource = cms.InputTag("patJetsAK5PF"),
+    jetsSource = cms.InputTag("patJets"),
+    isJPT = cms.untracked.bool(False),
+    isPF = cms.untracked.bool(True),
+    )
 
 
 topMuons = cms.EDProducer("SingleTopMuonProducer",

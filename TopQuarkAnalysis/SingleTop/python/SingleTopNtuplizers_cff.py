@@ -1,6 +1,5 @@
 import FWCore.ParameterSet.Config as cms
 
-
 nTupleEventsPF = cms.EDProducer(
     "CandViewNtpProducer",
     src = cms.InputTag("recoTChanEventsPF"),
@@ -78,6 +77,10 @@ nTupleTopJetsPF = cms.EDProducer(
     quantity = cms.untracked.string("pz")
     ),
     cms.PSet(
+    tag = cms.untracked.string("E"),
+    quantity = cms.untracked.string("energy")
+    ),
+    cms.PSet(
     tag = cms.untracked.string("Eta"),
     quantity = cms.untracked.string("eta")
     ),
@@ -85,8 +88,11 @@ nTupleTopJetsPF = cms.EDProducer(
     tag = cms.untracked.string("Flavour"),
     quantity = cms.untracked.string("partonFlavour")
     ),
+    cms.PSet(
+    tag = cms.untracked.string("JetCorrTotal"),
+    quantity = cms.untracked.string("jecFactor('Uncorrected')")
+    ),
     )
-   
 )
 
 nTupleTopJetsAntiIsoPF = nTupleTopJetsPF.clone(
@@ -232,8 +238,6 @@ singleTopPreselectedJets = cms.EDProducer(
     tag = cms.untracked.string("TrackCountingHighEffBJetTags"),
     quantity = cms.untracked.string("bDiscriminator('trackCountingHighEffBJetTags')")
     ),
-
-
 
     ),
 
@@ -500,6 +504,8 @@ singleTopPreselectedMETs = cms.EDProducer(
 
 
 
+
+
 nTuples = cms.Sequence(
     nTupleTopJetsPF *
     #nTupleBJetsPF *
@@ -519,6 +525,27 @@ nTuplesAntiIso = cms.Sequence(
     nTupleElectronsAntiIso *
     nTupleMuonsAntiIso
     )
+
+
+nTuplesSkim = cms.Sequence(
+    nTupleTopJetsPF *
+    #nTupleBJetsPF *
+    #nTupleForwardJetsPF *
+    nTuplePatMETsPF *
+    nTupleElectrons *
+    nTupleMuons
+    )
+
+nTuplesAntiIsoSkim = cms.Sequence(
+    nTupleTopJetsAntiIsoPF *
+    #nTupleBJetsAntiIsoPF *
+    #nTupleForwardJetsAntiIsoPF *
+    nTuplePatMETsPF *
+    nTupleElectronsAntiIso *
+    nTupleMuonsAntiIso
+    )
+
+
 
 saveNTuples = cms.untracked.vstring(
     'drop *',
@@ -540,17 +567,41 @@ saveNTuplesAntiIso = cms.untracked.vstring(
     'drop *',
 
     'keep *_nTupleGenerator_*_*',
-    
+
     'keep *_cFlavorHistoryProducer_*_*',
     'keep *_bFlavorHistoryProducer_*_*',
-
 
     'keep *_singleTopObservablesAntiIsoPF_*_*',
     'keep floats_nTupleEventsAntiIsoPF_*_*',
     'keep floats_nTuplePatMETsPF_*_*',
     'keep floats_nTupleTopJetsAntiIsoPF_*_*',
-
     
+    )
+
+saveNTuplesSkim = cms.untracked.vstring(
+    'drop *',
+#    'keep *_nTupleGenerator_*_*',
+    'keep *_PDFInfo_*_*',
+    
+    'keep *_cFlavorHistoryProducer_*_*',
+    'keep *_bFlavorHistoryProducer_*_*',
+
+    'keep floats_nTuplePatMETsPF_*_*',
+    'keep floats_nTupleTopJetsPF_*_*',
+    'keep *_UnclusteredMETPF_*_*',
+    )
+
+saveNTuplesSkimAntiIso = cms.untracked.vstring(
+    'drop *',
+    #    'keep *_nTupleGenerator_*_*',
+    'keep *_PDFInfo_*_*',
+
+    'keep *_cFlavorHistoryProducer_*_*',
+    'keep *_bFlavorHistoryProducer_*_*',
+    
+    'keep floats_nTuplePatMETsPF_*_*',
+    'keep floats_nTupleTopJetsAntiIsoPF_*_*',
+    'keep *_UnclusteredMETPF_*_*',
     )
 
 
@@ -565,3 +616,17 @@ saveNTuplesEle.append('keep floats_nTupleElectrons_*_*')
 
 saveNTuplesMuAntiIso.append('keep floats_nTupleMuonsAntiIso_*_*')
 saveNTuplesEleAntiIso.append('keep floats_nTupleElectronsAntiIso_*_*')
+
+
+
+saveNTuplesSkimMu = cms.untracked.vstring(saveNTuplesSkim)
+saveNTuplesSkimEle = cms.untracked.vstring(saveNTuplesSkim)
+
+saveNTuplesSkimMuAntiIso = cms.untracked.vstring(saveNTuplesSkimAntiIso)
+saveNTuplesSkimEleAntiIso = cms.untracked.vstring(saveNTuplesSkimAntiIso)
+
+saveNTuplesSkimMu.append('keep floats_nTupleMuons_*_*')
+saveNTuplesSkimEle.append('keep floats_nTupleElectrons_*_*')
+
+saveNTuplesSkimMuAntiIso.append('keep floats_nTupleMuonsAntiIso_*_*')
+saveNTuplesSkimEleAntiIso.append('keep floats_nTupleElectronsAntiIso_*_*')
