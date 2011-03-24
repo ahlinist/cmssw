@@ -34,7 +34,8 @@ process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(-1) )
 process.source = cms.Source ("PoolSource",
                              fileNames = cms.untracked.vstring (
 
-'file:TSampleMuQCDMu.root'
+#'file:TSampleMuQCDMu.root'
+'file:TSampleMuQCDMu_PF2PAT.root'
 
 ),
 duplicateCheckMode = cms.untracked.string('noDuplicateCheck')
@@ -45,10 +46,10 @@ process.TFileService = cms.Service("TFileService", fileName = cms.string("plotti
 process.SystematicsAnalyzer = cms.EDAnalyzer('SingleTopSystematicsDumper',                              
 systematics = cms.untracked.vstring("BTagUp","BTagDown","MisTagUp","MisTagDown","JESUp","JESDown","UnclusteredMETUp","UnclusteredMETDown"),
 channelInfo = cms.PSet(
-    crossSection = cms.untracked.double(31314),
-    channel = cms.untracked.string("WJets"),
-    originalEvents = cms.untracked.double(15000000),
-    finalLumi = cms.untracked.double(36.1),
+    crossSection = cms.untracked.double(20.93),
+    channel = cms.untracked.string("TChannel"),
+    originalEvents = cms.untracked.double(1000),
+    finalLumi = cms.untracked.double(36.),
     MTWCut = cms.untracked.double(50.0),#Default 50.0 GeV
     ),
 
