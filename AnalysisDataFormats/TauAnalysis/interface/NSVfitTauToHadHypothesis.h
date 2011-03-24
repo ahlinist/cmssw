@@ -30,11 +30,13 @@ class NSVfitTauToHadHypothesis : public NSVfitSingleParticleHypothesisBase
   /// decay angle in tau lepton rest-frame
   double decay_angle_rf() const { return decay_angle_rf_; }
 
-  /// decay angles of intermediate vector-meson resonances
+  /// decay angles and masses of intermediate vector-meson resonances
   double decay_angle_VMrho() const { return decay_angle_VMrho_; }
+  double mass2_VMrho() const { return mass2_VMrho_; }
   double decay_angle_VMa1() const { return decay_angle_VMa1_; }
   double decay_angle_VMa1r_theta() const { return decay_angle_VMa1r_theta_; }
   double decay_angle_VMa1r_phi() const { return decay_angle_VMa1r_phi_; }
+  double mass2_VMa1() const { return mass2_VMa1_; }
 
   /// access to position of secondary vertex (tau lepton decay vertex)
   bool hasDecayVertex() const { return true; }
@@ -62,11 +64,13 @@ class NSVfitTauToHadHypothesis : public NSVfitSingleParticleHypothesisBase
   /// decay angle in tau lepton rest-frame
   double decay_angle_rf_;
 
-  /// decay angles of intermediate vector-meson resonances
+  /// decay angles and masses of intermediate vector-meson resonances
   double decay_angle_VMrho_;
+  double mass2_VMrho_;
   double decay_angle_VMa1_;
   double decay_angle_VMa1r_theta_;
   double decay_angle_VMa1r_phi_;
+  double mass2_VMa1_;
 
   /// position of reconstructed tau lepton decay vertex
   AlgebraicVector3 decayVertexPos_;
