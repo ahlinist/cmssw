@@ -2,7 +2,7 @@
  *\Author: A. Orso M. Iorio 
  *
  *
- *\version  $Id: SingleTopMuonProducer.cc,v 1.5 2010/11/08 08:26:42 oiorio Exp $ 
+ *\version  $Id SingleTopMuonProducer.cc,v 1.1 2010/11/17 10:25:21 oiorio Exp $ 
  */
 
 // Single Top producer: produces a top candidate made out of a Lepton, a B jet and a MET
@@ -86,7 +86,6 @@ void SingleTopMuonProducer::produce(edm::Event & iEvent, const edm::EventSetup &
   std::vector< pat::Muon > * finalMuons = new std::vector<pat::Muon>;
 
   bool isIsolated = true;
-
   for(size_t i = 0; i < muons->size(); ++i){
     
     if(!cut(muons->at(i)))continue; 
