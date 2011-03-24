@@ -24,6 +24,8 @@ namespace SVfit_namespace
   //
   const double chargedPionMass = 0.13957; // GeV
   const double chargedPionMass2 = chargedPionMass*chargedPionMass;
+  const double neutralPionMass = 0.13498; // GeV
+  const double neutralPionMass2 = neutralPionMass*neutralPionMass;
 
   const double rhoMesonMass = 0.77549; // GeV
   const double rhoMesonMass2 = rhoMesonMass*rhoMesonMass;

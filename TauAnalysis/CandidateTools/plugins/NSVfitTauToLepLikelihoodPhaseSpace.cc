@@ -74,14 +74,6 @@ double NSVfitTauToLepLikelihoodPhaseSpace<T>::operator()(const NSVfitSingleParti
     nll = std::numeric_limits<float>::max();
   }
 
-  if ( sinDecayAngle > 0. && nuMass > 0. && nuMass < (tauLeptonMass - visMass) ) {
-    double logP1 = TMath::Log(nuMass) - TMath::Log(2.);
-    double logP3 = 0.5*TMath::Log((tauLeptonMass2 - square(nuMass + visMass))*(tauLeptonMass2 - square(nuMass - visMass)))
-                  - TMath::Log(2*tauLeptonMass);
-    double nll2 = -(TMath::Log(sinDecayAngle) + logP1 + logP3);
-    std::cout << "nll1 = " << nll << ", nll2 = " << nll2 << std::endl;
-  }
-
   if ( this->verbosity_ ) std::cout << "--> nll = " << nll << std::endl;
 
   return nll;

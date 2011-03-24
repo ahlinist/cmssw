@@ -27,9 +27,11 @@ void NSVfitTauToHadBuilder::beginJob(NSVfitAlgorithmBase* algorithm)
   idxFitParameter_pol_        = getFitParameterIdx(algorithm, prodParticleLabel_, kTau_pol,         true); // optional parameter
 
   idxFitParameter_thetaVMrho_ = getFitParameterIdx(algorithm, prodParticleLabel_, kTauVM_theta_rho, true); // optional parameter
+  idxFitParameter_mass2VMrho_ = getFitParameterIdx(algorithm, prodParticleLabel_, kTauVM_mass2_rho, true); // optional parameter
   idxFitParameter_thetaVMa1_  = getFitParameterIdx(algorithm, prodParticleLabel_, kTauVM_theta_a1,  true); // optional parameter
   idxFitParameter_thetaVMa1r_ = getFitParameterIdx(algorithm, prodParticleLabel_, kTauVM_theta_a1r, true); // optional parameter 
   idxFitParameter_phiVMa1r_   = getFitParameterIdx(algorithm, prodParticleLabel_, kTauVM_phi_a1r,   true); // optional parameter
+  idxFitParameter_mass2VMa1_  = getFitParameterIdx(algorithm, prodParticleLabel_, kTauVM_mass2_a1,  true); // optional parameter
 
   algorithm_ = algorithm;
 }
@@ -100,9 +102,11 @@ void NSVfitTauToHadBuilder::applyFitParameter(NSVfitSingleParticleHypothesisBase
   applyOptionalFitParameter(param, idxFitParameter_pol_,        hypothesis_T->polarization_);
 
   applyOptionalFitParameter(param, idxFitParameter_thetaVMrho_, hypothesis_T->decay_angle_VMrho_);
+  applyOptionalFitParameter(param, idxFitParameter_mass2VMrho_, hypothesis_T->mass2_VMrho_);
   applyOptionalFitParameter(param, idxFitParameter_thetaVMa1_,  hypothesis_T->decay_angle_VMa1_);
   applyOptionalFitParameter(param, idxFitParameter_thetaVMa1r_, hypothesis_T->decay_angle_VMa1r_theta_);
   applyOptionalFitParameter(param, idxFitParameter_phiVMa1r_,   hypothesis_T->decay_angle_VMa1r_phi_);
+  applyOptionalFitParameter(param, idxFitParameter_mass2VMa1_,  hypothesis_T->mass2_VMa1_);
 
   if ( verbosity_ ) {
     std::cout << "<NSVfitTauToHadBuilder::applyFitParameter>:" << std::endl;
@@ -136,9 +140,11 @@ void NSVfitTauToHadBuilder::print(std::ostream& stream) const
   stream << " idxFitParameter_phi_lab = " << idxFitParameter_phi_lab_ << std::endl;
   stream << " idxFitParameter_pol = " << idxFitParameter_pol_ << std::endl;
   stream << " idxFitParameter_thetaVMrho = " << idxFitParameter_thetaVMrho_ << std::endl;
+  stream << " idxFitParameter_mass2VMrho = " << idxFitParameter_mass2VMrho_ << std::endl;
   stream << " idxFitParameter_thetaVMa1 = " << idxFitParameter_thetaVMa1_ << std::endl;
   stream << " idxFitParameter_thetaVMa1r = " << idxFitParameter_thetaVMa1r_ << std::endl;
   stream << " idxFitParameter_phiVMa1r = " << idxFitParameter_phiVMa1r_ << std::endl;
+  stream << " idxFitParameter_mass2VMa1 = " << idxFitParameter_mass2VMa1_ << std::endl;
 }
 
 #include "FWCore/Framework/interface/MakerMacros.h"

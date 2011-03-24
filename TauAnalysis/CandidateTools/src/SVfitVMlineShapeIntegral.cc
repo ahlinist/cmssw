@@ -9,12 +9,11 @@ using namespace SVfit_namespace;
 #include <limits>
 
 SVfitVMlineShapeIntegral::SVfitVMlineShapeIntegral(SVfitVMlineShapeIntegrand::VMtype vmType, 
-						   SVfitVMlineShapeIntegrand::VMpol vmPol, bool useCollApproxFormulas)
+						   SVfitVMlineShapeIntegrand::VMpol vmPol, bool)
 {
   //std::cout << "<SVfitVMlineShapeIntegral::SVfitVMlineShapeIntegral>:" << std::endl;
   //std::cout << " vmType = " << vmType << std::endl;
   //std::cout << " vmPol = " << vmPol << std::endl;
-  //std::cout << " useCollApproxFormulas = " << useCollApproxFormulas << std::endl;
 
 //--- compute lower limit for normalization integral
 //   = invariant mass of n-pion system
@@ -22,8 +21,9 @@ SVfitVMlineShapeIntegral::SVfitVMlineShapeIntegral(SVfitVMlineShapeIntegrand::VM
 //    CV: difference in mass between charged and neutral pions is ignored
 //
   unsigned numPions = 0;
-  if      ( vmType == SVfitVMlineShapeIntegrand::kVMrho ) numPions = 2;
-  else if ( vmType == SVfitVMlineShapeIntegrand::kVMa1  ) numPions = 3;
+  if      ( vmType == SVfitVMlineShapeIntegrand::kVMrho       ) numPions = 2;
+  else if ( vmType == SVfitVMlineShapeIntegrand::kVMa1Neutral || 
+	    vmType == SVfitVMlineShapeIntegrand::kVMa1Charged ) numPions = 3;
   else {
     edm::LogError ("SVfitVMlineShapeIntegrand::update")
       << " Invalid vecor meson type = " << vmType << " !!";
@@ -31,7 +31,7 @@ SVfitVMlineShapeIntegral::SVfitVMlineShapeIntegral(SVfitVMlineShapeIntegrand::VM
   minMass2_ = square(numPions*chargedPionMass);
   //std::cout << " minMass2 = " << minMass2_ << std::endl;
 
-  integrand_ = new SVfitVMlineShapeIntegrand(useCollApproxFormulas, minMass2_);
+  integrand_ = new SVfitVMlineShapeIntegrand(minMass2_);
   integrand_->SetVMtype(vmType);
   integrand_->SetVMpol(vmPol);
   integrand_->SetMode(SVfitVMlineShapeIntegrand::kVMnorm);

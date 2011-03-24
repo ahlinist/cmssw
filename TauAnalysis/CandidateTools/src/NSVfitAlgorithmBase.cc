@@ -2,6 +2,8 @@
 
 #include "FWCore/MessageLogger/interface/MessageLogger.h"
 
+#include "TauAnalysis/CandidateTools/interface/svFitAuxFunctions.h"
+
 #include <TMath.h>
 
 using namespace SVfit_namespace;
@@ -23,9 +25,11 @@ void initializeFitParameterLimits(std::vector<pdouble>& limits)
   limits[kTau_nuInvMass]         = pdouble(          0.,           0.); // depends on decay: mMau - mVis
   limits[kTau_pol]               = pdouble(         -1.,          +1.); // -1: left-handed, +1: right-handed
   limits[kTauVM_theta_rho]       = pdouble(          0.,  TMath::Pi()); // rad
+  limits[kTauVM_mass2_rho]       = pdouble(square(chargedPionMass +   neutralPionMass), tauLeptonMass2); // GeV^2
   limits[kTauVM_theta_a1]        = pdouble(          0.,  TMath::Pi()); // rad
   limits[kTauVM_theta_a1r]       = pdouble(          0.,  TMath::Pi()); // rad
   limits[kTauVM_phi_a1r]         = pdouble(-TMath::Pi(), +TMath::Pi()); // rad
+  limits[kTauVM_mass2_a1]        = pdouble(square(chargedPionMass + 2*neutralPionMass), tauLeptonMass2); // GeV^2
   limits[kLep_shiftEn]           = pdouble(          0.,          10.); // relative to measured lepton energy
   limits[kNu_energy_lab]         = pdouble(          0.,        1.e+3); // GeV
   limits[kNu_phi_lab]            = pdouble(          0.,  TMath::Pi()); // rad
