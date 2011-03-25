@@ -47,6 +47,7 @@
   <class name="NSVfitTauToLepHypothesis<pat::Muon>"/>
   <class name="NSVfitTauToHadHypothesis"/>
   <class name="std::vector<NSVfitEventHypothesis>"/>
+  <class name="std::map<std::string, NSVfitEventHypothesis>"/>
   <class name="edm::Wrapper<std::vector<NSVfitEventHypothesis> >"/>
   <class name="std::vector<NSVfitResonanceHypothesis*>"/>
   <class name="edm::OwnVector<NSVfitResonanceHypothesis, edm::ClonePolicy<NSVfitResonanceHypothesis> >"/>
