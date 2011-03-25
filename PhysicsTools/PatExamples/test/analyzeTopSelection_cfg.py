@@ -15,11 +15,11 @@ process.maxEvents = cms.untracked.PSet(
 )
 
 from PhysicsTools.PatExamples.samplesCERN_cff import *
-##process.source.fileNames = muonSKIM        ## ATTENTION these samoek are NOT available on castor
+##process.source.fileNames = muonSKIM        ## ATTENTION these samples are NOT available on castor
 ##process.source.fileNames = simulationQCD
-##process.source.fileNames = simulationWjets
+process.source.fileNames = simulationWjets
 ##process.source.fileNames = simulationZjets
-process.source.fileNames = simulationTtbar
+##process.source.fileNames = simulationTtbar
 
 ## Define the TFileService
 process.TFileService = cms.Service("TFileService",
