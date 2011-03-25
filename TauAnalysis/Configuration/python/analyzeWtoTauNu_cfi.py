@@ -33,7 +33,9 @@ wTauNuHistManagers = cms.vstring(
     'metTopologyHistManager',
     'tauNuCandidateHistManager',
     'caloEventShapeVarsHistManager',
-    'pfEventShapeVarsHistManager'
+    'pfEventShapeVarsHistManager',
+    'muonHistManager',
+    'electronHistManager'
 )
 
 
@@ -166,6 +168,18 @@ evtSelRecoilEnergyFromCaloTowers = cms.PSet(
     pluginType = cms.string('BoolEventSelector'),
     src = cms.InputTag('recoilEnergyFromCaloTowersCut')
 )
+
+evtSelCentralJetVeto1 = cms.PSet(
+    pluginName = cms.string('evtSelCentralJetVeto1'),
+    pluginType = cms.string('BoolEventSelector'),
+    src = cms.InputTag('centralJetVeto1')
+    )
+evtSelCentralJetVeto2 = cms.PSet(
+    pluginName = cms.string('evtSelCentralJetVeto2'),
+    pluginType = cms.string('BoolEventSelector'),
+    src = cms.InputTag('centralJetVeto2')
+    )
+
 
 evtSelMetTopology = cms.PSet(
     pluginName = cms.string('evtSelMetTopology'),
@@ -336,11 +350,13 @@ wTauNuAnalysisSequence = cms.VPSet(
 	),
     cms.PSet(
         analyzers = wTauNuHistManagers,
-        replace = cms.vstring('tauHistManager.tauSource = selectedPatTausForWTauNuChargeCumulative')
+        replace = cms.vstring('tauHistManager.tauSource = selectedPatTausForWTauNuChargeCumulative',
+                              'electronHistManager.electronSource = selectedPatElectronsPt15Cumulative',
+                              'muonHistManager.muonSource = selectedPatMuonsPFRelIsoCumulative')
 	),
     cms.PSet(
         filter = cms.string('evtSelTauMuonVeto'),
-        title = cms.string('Muon veto'),
+        title = cms.string('Tau muon veto'),
         saveRunLumiSectionEventNumbers = cms.vstring('')
 	),
     cms.PSet(
@@ -349,7 +365,7 @@ wTauNuAnalysisSequence = cms.VPSet(
 	),
     cms.PSet(
         filter = cms.string('evtSelTauElectronVeto'),
-        title = cms.string('Electron veto'),
+        title = cms.string('Tau electron veto'),
         saveRunLumiSectionEventNumbers = cms.vstring('')
     ),
     cms.PSet(
@@ -374,7 +390,7 @@ wTauNuAnalysisSequence = cms.VPSet(
         ),
     cms.PSet(
         filter = cms.string('evtSelCentralJetVeto'),
-	title = cms.string('central jet veto'),
+	title = cms.string('Electron veto'),
 	saveRunLumiSectionEventNumbers = cms.vstring('')
 	),
     cms.PSet(
@@ -387,8 +403,8 @@ wTauNuAnalysisSequence = cms.VPSet(
                               'tauNuCandidateHistManager.tauNuCandidateSource = allTauNuPairs')	
         ),
     cms.PSet(
-	filter = cms.string('evtSelRecoilEnergyFromCaloTowers'),
-	title = cms.string('recoil energy (switch off)'),
+    filter = cms.string('evtSelRecoilEnergyFromCaloTowers'),
+	title = cms.string('Muon veto'),
 	saveRunLumiSectionEventNumbers = cms.vstring('')
 	),
     cms.PSet(
@@ -400,20 +416,50 @@ wTauNuAnalysisSequence = cms.VPSet(
                               'tauRecoilEnergyFromForwardCaloTowersHistManager.leptonRecoilEnergySource = tauRecoilEnergyFromForwardCaloTowers',
                               'tauNuCandidateHistManager.tauNuCandidateSource = allTauNuPairs')	
         ),
- cms.PSet(
-        filter = cms.string('evtSelMetTopology'),
-        title = cms.string('MET-topology < 0.25'),
-        saveRunLumiSectionEventNumbers = cms.vstring('')
-        ),
     cms.PSet(
-        analyzers = wTauNuHistManagers,
-        replace = cms.vstring('jetHistManager.jetSource = selectedPatJetsEt15ForWTauNuCumulative',
-                              'tauRecoilEnergyFromJetsHistManager.leptonRecoilEnergySource = tauRecoilEnergyFromJets',
-                              'tauRecoilEnergyFromCaloTowersHistManager.leptonRecoilEnergySource = tauRecoilEnergyFromCaloTowers',
-                              'tauRecoilEnergyFromCentralCaloTowersHistManager.leptonRecoilEnergySource = tauRecoilEnergyFromCentralCaloTowers',
-                              'tauRecoilEnergyFromForwardCaloTowersHistManager.leptonRecoilEnergySource = tauRecoilEnergyFromForwardCaloTowers',
-                              'tauNuCandidateHistManager.tauNuCandidateSource = allTauNuPairs')
+    filter = cms.string('evtSelCentralJetVeto1'),
+    title = cms.string('jet veto 1'),
+    saveRunLumiSectionEventNumbers = cms.vstring('')
+    ),
+    cms.PSet(
+    analyzers = wTauNuHistManagers,
+    replace = cms.vstring('tauRecoilEnergyFromJetsHistManager.leptonRecoilEnergySource = tauRecoilEnergyFromJets',
+                          'jetHistManager.jetSource = selectedPatJetsEt15ForWTauNuCumulative',
+                          'tauRecoilEnergyFromCaloTowersHistManager.leptonRecoilEnergySource = tauRecoilEnergyFromCaloTowers',
+                          'tauRecoilEnergyFromCentralCaloTowersHistManager.leptonRecoilEnergySource = tauRecoilEnergyFromCentralCaloTowers',
+                          'tauRecoilEnergyFromForwardCaloTowersHistManager.leptonRecoilEnergySource = tauRecoilEnergyFromForwardCaloTowers',
+                          'tauNuCandidateHistManager.tauNuCandidateSource = allTauNuPairs')
+    ),
+    cms.PSet(
+    filter = cms.string('evtSelCentralJetVeto2'),
+    title = cms.string('jet veto 2'),
+    saveRunLumiSectionEventNumbers = cms.vstring('passed_cumulative')
+    ),
+    cms.PSet(
+    analyzers = wTauNuHistManagers,
+    replace = cms.vstring('tauRecoilEnergyFromJetsHistManager.leptonRecoilEnergySource = tauRecoilEnergyFromJets',
+                          'jetHistManager.jetSource = selectedPatJetsEt15ForWTauNuCumulative',
+                          'tauRecoilEnergyFromCaloTowersHistManager.leptonRecoilEnergySource = tauRecoilEnergyFromCaloTowers',
+                          'tauRecoilEnergyFromCentralCaloTowersHistManager.leptonRecoilEnergySource = tauRecoilEnergyFromCentralCaloTowers',
+                          'tauRecoilEnergyFromForwardCaloTowersHistManager.leptonRecoilEnergySource = tauRecoilEnergyFromForwardCaloTowers',
+                          'tauNuCandidateHistManager.tauNuCandidateSource = allTauNuPairs')
+    ),
+    cms.PSet(
+    filter = cms.string('evtSelMetTopology'),
+    title = cms.string('MET-topology < 0.3'),
+    saveRunLumiSectionEventNumbers = cms.vstring('passed_cumulative')
+    ),
+    cms.PSet(
+    analyzers = wTauNuHistManagers,
+    replace = cms.vstring('jetHistManager.jetSource = selectedPatJetsEt15ForWTauNuCumulative',
+                          'tauRecoilEnergyFromJetsHistManager.leptonRecoilEnergySource = tauRecoilEnergyFromJets',
+                          'tauRecoilEnergyFromCaloTowersHistManager.leptonRecoilEnergySource = tauRecoilEnergyFromCaloTowers',
+                          'tauRecoilEnergyFromCentralCaloTowersHistManager.leptonRecoilEnergySource = tauRecoilEnergyFromCentralCaloTowers',
+                          'tauRecoilEnergyFromForwardCaloTowersHistManager.leptonRecoilEnergySource = tauRecoilEnergyFromForwardCaloTowers',
+                          'tauNuCandidateHistManager.tauNuCandidateSource = allTauNuPairs',
+                          'electronHistManager.electronSource = selectedPatElectronsPt15Cumulative',
+                          'muonHistManager.muonSource = selectedPatMuonsPFRelIsoCumulative')
     )
-
+    
     )
 

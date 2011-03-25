@@ -41,6 +41,8 @@ analyzeWtoTauNuEvents = cms.EDAnalyzer("GenericAnalyzer",
     evtSelTauEcalCrackVeto,
     evtSelCentralJetVeto,
     evtSelRecoilEnergyFromCaloTowers,
+    evtSelCentralJetVeto1,
+    evtSelCentralJetVeto2,
     evtSelMetTopology
     ),
   
@@ -56,7 +58,9 @@ analyzeWtoTauNuEvents = cms.EDAnalyzer("GenericAnalyzer",
         metTopologyHistManager,
         tauNuCandidateHistManager,
         caloEventShapeVarsHistManager,
-        pfEventShapeVarsHistManager
+        pfEventShapeVarsHistManager,
+        muonHistManager,
+        electronHistManager
     ),
 
     eventDumps = cms.VPSet(
