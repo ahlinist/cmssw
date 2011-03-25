@@ -96,6 +96,7 @@ namespace {
     NSVfitTauToMuHypothesis dummyNSVfitTauToMuHypothesis;
     NSVfitTauToHadHypothesis dummyNSVfitTauToHadHypothesis;
     std::vector<NSVfitEventHypothesis> dummyNSVfitEventHypothesisCollection;
+    std::map<std::string, NSVfitEventHypothesis> dummyNSVfitEventHypothesisMap;
     edm::Wrapper<std::vector<NSVfitEventHypothesis> > dummyNSVfitEventHypothesisCollectionWrapper;
     std::vector<NSVfitResonanceHypothesis*> dummyNSVfitResonanceHypothesisPtrCollection;
     edm::OwnVector<NSVfitResonanceHypothesis, edm::ClonePolicy<NSVfitResonanceHypothesis> > dummyNSVfitResonanceHypothesisOwnVector;

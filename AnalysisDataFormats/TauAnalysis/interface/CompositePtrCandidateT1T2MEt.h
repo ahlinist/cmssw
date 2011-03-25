@@ -12,9 +12,9 @@
  *          Michal Bluj,
  *          Christian Veelken
  *
- * \version $Revision: 1.23 $
+ * \version $Revision: 1.24 $
  *
- * $Id: CompositePtrCandidateT1T2MEt.h,v 1.23 2011/02/19 13:31:59 veelken Exp $
+ * $Id: CompositePtrCandidateT1T2MEt.h,v 1.24 2011/02/21 13:08:52 veelken Exp $
  *
  */
 
@@ -29,6 +29,7 @@
 
 #include "AnalysisDataFormats/TauAnalysis/interface/SVfitDiTauSolution.h"
 #include "AnalysisDataFormats/TauAnalysis/interface/SVfitLegSolution.h"
+#include "AnalysisDataFormats/TauAnalysis/interface/NSVfitEventHypothesis.h"
 #include "AnalysisDataFormats/TauAnalysis/interface/tauAnalysisAuxFunctions.h"
 
 template<typename T1, typename T2>
@@ -201,9 +202,9 @@ class CompositePtrCandidateT1T2MEt : public reco::LeafCandidate
   {
     std::string polHypoName_expanded = ( polarizationHypothesisName != "" ) ? polarizationHypothesisName : "Unknown";
 
-    const SVfitDiTauSolution* svFitSolution
-      = TauAnalysis_namespace::findMapElement<std::string, std::string, SVfitDiTauSolution>
-          (svFitSolutionMap_, algorithm, polHypoName_expanded);
+    const SVfitDiTauSolution* svFitSolution =
+      TauAnalysis_namespace::findMapElement<std::string, std::string, SVfitDiTauSolution>
+      (svFitSolutionMap_, algorithm, polHypoName_expanded);
     
     if ( !svFitSolution ) {
       if ( errorFlag ) {
@@ -229,6 +230,31 @@ class CompositePtrCandidateT1T2MEt : public reco::LeafCandidate
     }
 
     return svFitSolution;
+  }
+  bool hasNSVFitSolutions() const { return (nSVfitSolutionMap_.begin() != nSVfitSolutionMap_.end()); }
+  const NSVfitEventHypothesis* nSVfitSolution(const std::string& algorithm, int* errorFlag = 0) const
+  {
+    std::map<std::string, NSVfitEventHypothesis>::const_iterator nSVfitSolution = nSVfitSolutionMap_.find(algorithm);
+    if ( nSVfitSolution != nSVfitSolutionMap_.end() ) {
+      return &nSVfitSolution->second;
+    } else {
+      if ( errorFlag ) {
+	(*errorFlag) = 1;
+      } else {
+	edm::LogError ("CompositePtrCandidateT1T2MEt::nSVfitSolution") 
+	  << " No nSVfit solution defined for algorithm = " << algorithm << " !!";
+	std::cout << "available = { " << std::endl;
+	bool isFirst = true;
+	for ( std::map<std::string, NSVfitEventHypothesis>::const_iterator algorithm = nSVfitSolutionMap_.begin();
+	      algorithm != nSVfitSolutionMap_.end(); ++algorithm ) {
+	  if ( !isFirst ) std::cout << ", ";
+	  std::cout << algorithm->first;
+	  isFirst = false;
+	}
+	std::cout << " }" << std::endl;
+      }
+      return 0;
+    }
   }
 
  private:
@@ -301,6 +327,10 @@ class CompositePtrCandidateT1T2MEt : public reco::LeafCandidate
   {
     svFitSolutionMap_[algorithm].insert(std::pair<std::string, SVfitDiTauSolution>(polarizationHypothesisName, solution));
   }
+  void addNSVfitSolution(const std::string& algorithm, const NSVfitEventHypothesis& solution)
+  {
+    nSVfitSolutionMap_.insert(std::pair<std::string, NSVfitEventHypothesis>(algorithm, solution));
+  }
 
   /// references/pointers to decay products
   T1Ptr leg1_;
@@ -367,6 +397,7 @@ class CompositePtrCandidateT1T2MEt : public reco::LeafCandidate
   /// solutions of secondary vertex based mass reconstruction algorithm
   typedef std::map<std::string, SVfitDiTauSolution> SVfitAlgorithmSolutionType;
   std::map<std::string, SVfitAlgorithmSolutionType> svFitSolutionMap_; // first key = algorithmName, second key = polarizationHypothesis
+  std::map<std::string, NSVfitEventHypothesis> nSVfitSolutionMap_; // key = algorithmName
 };
 
 #include "DataFormats/PatCandidates/interface/Electron.h"
