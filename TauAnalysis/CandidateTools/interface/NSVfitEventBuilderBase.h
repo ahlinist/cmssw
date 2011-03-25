@@ -8,9 +8,9 @@
  *
  * \author Christian Veelken, UC Davis
  *
- * \version $Revision: 1.3 $
+ * \version $Revision: 1.4 $
  *
- * $Id: NSVfitEventBuilderBase.h,v 1.3 2011/03/03 13:04:47 veelken Exp $
+ * $Id: NSVfitEventBuilderBase.h,v 1.4 2011/03/23 17:46:39 veelken Exp $
  *
  */
 
@@ -53,6 +53,12 @@ class NSVfitEventBuilderBase : public NSVfitBuilderBase
   unsigned numResonanceBuilders_;
 
   NSVfitEventVertexRefitter* eventVertexRefitAlgorithm_;
+
+  int idxFitParameter_pvShiftX_;
+  int idxFitParameter_pvShiftY_;
+  int idxFitParameter_pvShiftZ_;
+
+  bool doEventVertexRefit_;
 };
 
 #include "FWCore/PluginManager/interface/PluginFactory.h"

@@ -1,5 +1,6 @@
 #include "TauAnalysis/CandidateTools/plugins/NSVfitEventLikelihoodTrackInfo.h"
 
+#include "TauAnalysis/CandidateTools/interface/NSVfitAlgorithmBase.h"
 #include "TauAnalysis/CandidateTools/interface/svFitAuxFunctions.h"
 
 using namespace SVfit_namespace;
@@ -15,6 +16,12 @@ NSVfitEventLikelihoodTrackInfo::~NSVfitEventLikelihoodTrackInfo()
 // nothing to be done yet...
 }
 
+void NSVfitEventLikelihoodTrackInfo::beginJob(NSVfitAlgorithmBase* algorithm) const 
+{
+  algorithm->requestFitParameter("*", nSVfit_namespace::kPV_shiftX, pluginName_);
+  algorithm->requestFitParameter("*", nSVfit_namespace::kPV_shiftY, pluginName_);
+  algorithm->requestFitParameter("*", nSVfit_namespace::kPV_shiftZ, pluginName_);
+}
 
 double NSVfitEventLikelihoodTrackInfo::operator()(const NSVfitEventHypothesis* hypothesis) const
 {

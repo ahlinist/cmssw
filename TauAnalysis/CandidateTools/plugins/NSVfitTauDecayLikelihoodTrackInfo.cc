@@ -42,8 +42,8 @@ NSVfitTauDecayLikelihoodTrackInfo::~NSVfitTauDecayLikelihoodTrackInfo()
 
 void NSVfitTauDecayLikelihoodTrackInfo::beginJob(NSVfitAlgorithmBase* algorithm)
 {
-  algorithm->requestFitParameter(prodParticleLabel_, kTau_phi_lab,           pluginName_);
-  algorithm->requestFitParameter(prodParticleLabel_, kTau_decayDistance_lab, pluginName_);
+  algorithm->requestFitParameter(prodParticleLabel_, nSVfit_namespace::kTau_phi_lab,           pluginName_);
+  algorithm->requestFitParameter(prodParticleLabel_, nSVfit_namespace::kTau_decayDistance_lab, pluginName_);
 }
 
 void NSVfitTauDecayLikelihoodTrackInfo::beginEvent(const edm::Event& evt, const edm::EventSetup& es)

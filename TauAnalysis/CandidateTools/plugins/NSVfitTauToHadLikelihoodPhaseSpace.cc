@@ -6,8 +6,6 @@
 
 #include <TMath.h>
 
-using namespace SVfit_namespace;
-
 NSVfitTauToHadLikelihoodPhaseSpace::NSVfitTauToHadLikelihoodPhaseSpace(const edm::ParameterSet& cfg)
   : NSVfitSingleParticleLikelihood(cfg)
 {
@@ -21,8 +19,8 @@ NSVfitTauToHadLikelihoodPhaseSpace::~NSVfitTauToHadLikelihoodPhaseSpace()
 
 void NSVfitTauToHadLikelihoodPhaseSpace::beginJob(NSVfitAlgorithmBase* algorithm)
 {
-  algorithm->requestFitParameter(prodParticleLabel_, kTau_visEnFracX, pluginName_);
-  algorithm->requestFitParameter(prodParticleLabel_, kTau_phi_lab,    pluginName_);
+  algorithm->requestFitParameter(prodParticleLabel_, nSVfit_namespace::kTau_visEnFracX, pluginName_);
+  algorithm->requestFitParameter(prodParticleLabel_, nSVfit_namespace::kTau_phi_lab,    pluginName_);
 }
 
 double NSVfitTauToHadLikelihoodPhaseSpace::operator()(const NSVfitSingleParticleHypothesisBase* hypothesis) const
@@ -44,15 +42,14 @@ double NSVfitTauToHadLikelihoodPhaseSpace::operator()(const NSVfitSingleParticle
   if ( this->verbosity_ ) std::cout << "<NSVfitTauToHadLikelihoodPhaseSpace::operator()>:" << std::endl;
 
   double decayAngle = hypothesis_T->decay_angle_rf();
-  double sinDecayAngle = TMath::Sin(decayAngle);
 
   if ( this->verbosity_ ) std::cout << " decayAngle = " << decayAngle << std::endl;
 
   double prob = TMath::Sin(decayAngle);
   
   double nll = 0.;
-  if ( sinDecayAngle > 0. ) {
-    nll = -TMath::Log(sinDecayAngle);
+  if ( prob > 0. ) {
+    nll = -TMath::Log(prob);
   } else {
     nll = std::numeric_limits<float>::max();
   }

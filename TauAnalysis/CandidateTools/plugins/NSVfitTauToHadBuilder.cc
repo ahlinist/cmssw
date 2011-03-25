@@ -21,17 +21,17 @@ NSVfitTauToHadBuilder::~NSVfitTauToHadBuilder()
 
 void NSVfitTauToHadBuilder::beginJob(NSVfitAlgorithmBase* algorithm)
 {
-  idxFitParameter_visEnFracX_ = getFitParameterIdx(algorithm, prodParticleLabel_, kTau_visEnFracX);
-  idxFitParameter_phi_lab_    = getFitParameterIdx(algorithm, prodParticleLabel_, kTau_phi_lab);
+  idxFitParameter_visEnFracX_ = getFitParameterIdx(algorithm, prodParticleLabel_, nSVfit_namespace::kTau_visEnFracX);
+  idxFitParameter_phi_lab_    = getFitParameterIdx(algorithm, prodParticleLabel_, nSVfit_namespace::kTau_phi_lab);
 
-  idxFitParameter_pol_        = getFitParameterIdx(algorithm, prodParticleLabel_, kTau_pol,         true); // optional parameter
+  idxFitParameter_pol_        = getFitParameterIdx(algorithm, prodParticleLabel_, nSVfit_namespace::kTau_pol, true); // optional parameter
 
-  idxFitParameter_thetaVMrho_ = getFitParameterIdx(algorithm, prodParticleLabel_, kTauVM_theta_rho, true); // optional parameter
-  idxFitParameter_mass2VMrho_ = getFitParameterIdx(algorithm, prodParticleLabel_, kTauVM_mass2_rho, true); // optional parameter
-  idxFitParameter_thetaVMa1_  = getFitParameterIdx(algorithm, prodParticleLabel_, kTauVM_theta_a1,  true); // optional parameter
-  idxFitParameter_thetaVMa1r_ = getFitParameterIdx(algorithm, prodParticleLabel_, kTauVM_theta_a1r, true); // optional parameter 
-  idxFitParameter_phiVMa1r_   = getFitParameterIdx(algorithm, prodParticleLabel_, kTauVM_phi_a1r,   true); // optional parameter
-  idxFitParameter_mass2VMa1_  = getFitParameterIdx(algorithm, prodParticleLabel_, kTauVM_mass2_a1,  true); // optional parameter
+  idxFitParameter_thetaVMrho_ = getFitParameterIdx(algorithm, prodParticleLabel_, nSVfit_namespace::kTauVM_theta_rho, true);
+  idxFitParameter_mass2VMrho_ = getFitParameterIdx(algorithm, prodParticleLabel_, nSVfit_namespace::kTauVM_mass2_rho, true);
+  idxFitParameter_thetaVMa1_  = getFitParameterIdx(algorithm, prodParticleLabel_, nSVfit_namespace::kTauVM_theta_a1,  true);
+  idxFitParameter_thetaVMa1r_ = getFitParameterIdx(algorithm, prodParticleLabel_, nSVfit_namespace::kTauVM_theta_a1r, true);
+  idxFitParameter_phiVMa1r_   = getFitParameterIdx(algorithm, prodParticleLabel_, nSVfit_namespace::kTauVM_phi_a1r,   true); 
+  idxFitParameter_mass2VMa1_  = getFitParameterIdx(algorithm, prodParticleLabel_, nSVfit_namespace::kTauVM_mass2_a1,  true);
 
   algorithm_ = algorithm;
 }
@@ -78,7 +78,7 @@ void NSVfitTauToHadBuilder::applyFitParameter(NSVfitSingleParticleHypothesisBase
   const reco::Candidate::Vector& p3Vis_unit = hypothesis_T->p3Vis_unit();
 
 //--- compute momentum of visible decay products in tau lepton rest frame
-  double pVis_rf = pVisRestFrame(visMass, nuInvMass);
+  double pVis_rf = SVfit_namespace::pVisRestFrame(visMass, nuInvMass);
 
 //--- decay angle in tau lepton rest frame as function of X
 //    (= energy ratio of visible decay products/tau lepton energy)

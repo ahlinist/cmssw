@@ -398,7 +398,7 @@ NSVfitAlgorithmBase::fitParameterType* NSVfitAlgorithmByIntegration::getFitParam
   std::string name = std::string(token, 0, posSeparator);
   std::string type_string = std::string(token, posSeparator + 1);
   int type = -1;
-  if ( type_string == "x" ) type = kTau_visEnFracX;
+  if ( type_string == "x" ) type = nSVfit_namespace::kTau_visEnFracX;
   else throw cms::Exception("NSVfitAlgorithmByIntegration::getFitParameter")
     << " Type = " << type << " not defined !!\n";
 

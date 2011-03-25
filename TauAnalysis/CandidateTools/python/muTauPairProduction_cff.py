@@ -4,6 +4,7 @@ import copy
 from TauAnalysis.CandidateTools.tools.objProdConfigurator import *
 from TauAnalysis.CandidateTools.resolutions_cfi import *
 from TauAnalysis.CandidateTools.svFitAlgorithm_cfi import *
+from TauAnalysis.CandidateTools.nSVfitAlgorithmDiTau_cfi import *
 
 svFitLikelihoodMuTauPairKinematicsPhaseSpace = copy.deepcopy(svFitLikelihoodDiTauKinematicsPhaseSpace)
 svFitLikelihoodMuTauPairKinematicsPhaseSpace.pluginType = "SVfitLikelihoodMuTauPairKinematics"
@@ -116,6 +117,28 @@ allMuTauPairs = cms.EDProducer("PATMuTauPairProducer",
         ##        numSamplings = cms.int32(-1)
         ##    )
     ),
+    nSVfit = cms.PSet(                               
+        psKine_MEt_ptBalance = cms.PSet(
+            config    = nSVfitConfig,
+            algorithm = cms.PSet(
+                pluginName = cms.string("nSVfitAlgorithmByIntegration"),
+                pluginType = cms.string("NSVfitAlgorithmByIntegration"),                                    
+                parameters = cms.PSet(
+                    mass_A = cms.PSet(
+                        #min = cms.double(20.),
+                        min = cms.double(60.),                            
+                        max = cms.double(200.),
+                        stepSize = cms.double(5.),                                                            
+                        replace = cms.string("leg1.x"),
+                        by = cms.string("(A.p4.mass/mass_A)*(A.p4.mass/mass_A)/leg2.x")
+                    )
+                ),
+                vegasOptions = cms.PSet(
+                    numCalls = cms.uint32(10000)                             
+                )
+            )
+        )
+    ),
     scaleFuncImprovedCollinearApprox = cms.string('1'),
     verbosity = cms.untracked.int32(0)
 )
@@ -146,7 +169,6 @@ produceMuTauPairsLooseMuonIsolation = muTauPairProdConfiguratorLooseMuonIsolatio
 
 produceMuTauPairsAll = cms.Sequence(produceMuTauPairs * produceMuTauPairsLooseMuonIsolation)
 
-from TauAnalysis.CandidateTools.nSVfitAlgorithmDiTau_cfi import *
 nSVfitMuTauPairHypothesesPS1 = nSVfitProducer.clone(    
     instanceLabel = cms.string("psKine")
 )

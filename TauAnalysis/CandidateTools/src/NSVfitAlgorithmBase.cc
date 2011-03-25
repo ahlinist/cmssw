@@ -15,24 +15,24 @@ std::vector<pdouble> NSVfitAlgorithmBase::fitParameterLimits_;
 
 void initializeFitParameterLimits(std::vector<pdouble>& limits)
 {
-  limits.resize(kNu_phi_lab + 1);
-  limits[kPV_shiftX]             = pdouble(         -1.,          +1.); // cm
-  limits[kPV_shiftY]             = pdouble(         -1.,          +1.); // cm
-  limits[kPV_shiftZ]             = pdouble(        -10.,         +10.); // cm
-  limits[kTau_visEnFracX]        = pdouble(          0.,           1.); // dimensionless
-  limits[kTau_phi_lab]           = pdouble(-TMath::Pi(), +TMath::Pi()); // rad
-  limits[kTau_decayDistance_lab] = pdouble(          0.,          10.); // cm
-  limits[kTau_nuInvMass]         = pdouble(          0.,           0.); // depends on decay: mMau - mVis
-  limits[kTau_pol]               = pdouble(         -1.,          +1.); // -1: left-handed, +1: right-handed
-  limits[kTauVM_theta_rho]       = pdouble(          0.,  TMath::Pi()); // rad
-  limits[kTauVM_mass2_rho]       = pdouble(square(chargedPionMass +   neutralPionMass), tauLeptonMass2); // GeV^2
-  limits[kTauVM_theta_a1]        = pdouble(          0.,  TMath::Pi()); // rad
-  limits[kTauVM_theta_a1r]       = pdouble(          0.,  TMath::Pi()); // rad
-  limits[kTauVM_phi_a1r]         = pdouble(-TMath::Pi(), +TMath::Pi()); // rad
-  limits[kTauVM_mass2_a1]        = pdouble(square(chargedPionMass + 2*neutralPionMass), tauLeptonMass2); // GeV^2
-  limits[kLep_shiftEn]           = pdouble(          0.,          10.); // relative to measured lepton energy
-  limits[kNu_energy_lab]         = pdouble(          0.,        1.e+3); // GeV
-  limits[kNu_phi_lab]            = pdouble(          0.,  TMath::Pi()); // rad
+  limits.resize(nSVfit_namespace::kNu_phi_lab + 1);
+  limits[nSVfit_namespace::kPV_shiftX]             = pdouble(         -1.,          +1.); // cm
+  limits[nSVfit_namespace::kPV_shiftY]             = pdouble(         -1.,          +1.); // cm
+  limits[nSVfit_namespace::kPV_shiftZ]             = pdouble(        -10.,         +10.); // cm
+  limits[nSVfit_namespace::kTau_visEnFracX]        = pdouble(          0.,           1.); // dimensionless
+  limits[nSVfit_namespace::kTau_phi_lab]           = pdouble(-TMath::Pi(), +TMath::Pi()); // rad
+  limits[nSVfit_namespace::kTau_decayDistance_lab] = pdouble(          0.,          10.); // cm
+  limits[nSVfit_namespace::kTau_nuInvMass]         = pdouble(          0.,           0.); // depends on decay: mMau - mVis
+  limits[nSVfit_namespace::kTau_pol]               = pdouble(         -1.,          +1.); // -1: left-handed, +1: right-handed
+  limits[nSVfit_namespace::kTauVM_theta_rho]       = pdouble(          0.,  TMath::Pi()); // rad
+  limits[nSVfit_namespace::kTauVM_mass2_rho]       = pdouble(square(chargedPionMass +   neutralPionMass), tauLeptonMass2); // GeV^2
+  limits[nSVfit_namespace::kTauVM_theta_a1]        = pdouble(          0.,  TMath::Pi()); // rad
+  limits[nSVfit_namespace::kTauVM_theta_a1r]       = pdouble(          0.,  TMath::Pi()); // rad
+  limits[nSVfit_namespace::kTauVM_phi_a1r]         = pdouble(-TMath::Pi(), +TMath::Pi()); // rad
+  limits[nSVfit_namespace::kTauVM_mass2_a1]        = pdouble(square(chargedPionMass + 2*neutralPionMass), tauLeptonMass2); // GeV^2
+  limits[nSVfit_namespace::kLep_shiftEn]           = pdouble(          0.,          10.); // relative to measured lepton energy
+  limits[nSVfit_namespace::kNu_energy_lab]         = pdouble(          0.,        1.e+3); // GeV
+  limits[nSVfit_namespace::kNu_phi_lab]            = pdouble(          0.,  TMath::Pi()); // rad
 }
 
 NSVfitAlgorithmBase::NSVfitAlgorithmBase(const edm::ParameterSet& cfg)
@@ -109,7 +109,7 @@ NSVfitAlgorithmBase::fitParameterType* NSVfitAlgorithmBase::getFitParameter(cons
 
   for ( std::vector<fitParameterType>::iterator fitParameter = fitParameters_.begin();
 	fitParameter != fitParameters_.end(); ++fitParameter ) {
-    if ( fitParameter->name_ == name && fitParameter->type_ == type ) retVal = &(* fitParameter);
+    if ( fitParameter->name_ == name && fitParameter->type_ == type ) retVal = &(*fitParameter);
   }
 
   return retVal;

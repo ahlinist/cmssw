@@ -8,9 +8,9 @@
  *
  * \author Christian Veelken, UC Davis
  *
- * \version $Revision: 1.9 $
+ * \version $Revision: 1.10 $
  *
- * $Id: NSVfitAlgorithmBase.h,v 1.9 2011/03/24 12:01:41 veelken Exp $
+ * $Id: NSVfitAlgorithmBase.h,v 1.10 2011/03/25 14:09:23 friis Exp $
  *
  */
 
@@ -26,6 +26,7 @@
 #include "TauAnalysis/CandidateTools/interface/NSVfitResonanceLikelihood.h"
 #include "TauAnalysis/CandidateTools/interface/NSVfitSingleParticleLikelihood.h"
 #include "TauAnalysis/CandidateTools/interface/NSVfitEventBuilderBase.h"
+#include "TauAnalysis/CandidateTools/interface/nSVfitParameter.h"
 
 #include "AnalysisDataFormats/TauAnalysis/interface/NSVfitEventHypothesis.h"
 #include "AnalysisDataFormats/TauAnalysis/interface/NSVfitResonanceHypothesis.h"
@@ -34,6 +35,9 @@
 #include <vector>
 #include <string>
 
+<<<<<<< NSVfitAlgorithmBase.h
+class NSVfitAlgorithmBase 
+=======
 namespace SVfit_namespace
 {
   enum fitParameter {
@@ -51,6 +55,7 @@ namespace SVfit_namespace
 }
 
 class NSVfitAlgorithmBase
+>>>>>>> 1.10
 {
  public:
   NSVfitAlgorithmBase(const edm::ParameterSet&);

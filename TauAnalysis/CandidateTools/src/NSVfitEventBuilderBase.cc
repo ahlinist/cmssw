@@ -1,5 +1,7 @@
 #include "TauAnalysis/CandidateTools/interface/NSVfitEventBuilderBase.h"
 
+#include "TauAnalysis/CandidateTools/interface/nSVfitParameter.h"
+
 NSVfitEventBuilderBase::NSVfitEventBuilderBase(const edm::ParameterSet& cfg) 
   : NSVfitBuilderBase(cfg),
     numResonanceBuilders_(0),
@@ -40,6 +42,14 @@ void NSVfitEventBuilderBase::beginJob(NSVfitAlgorithmBase* algorithm)
 	resonanceBuilder != resonanceBuilders_.end(); ++resonanceBuilder ) {
     (*resonanceBuilder)->beginJob(algorithm);
   }
+
+  idxFitParameter_pvShiftX_ = getFitParameterIdx(algorithm, "*", nSVfit_namespace::kPV_shiftX, true); // optional parameter
+  idxFitParameter_pvShiftY_ = getFitParameterIdx(algorithm, "*", nSVfit_namespace::kPV_shiftY, true); 
+  idxFitParameter_pvShiftZ_ = getFitParameterIdx(algorithm, "*", nSVfit_namespace::kPV_shiftZ, true); 
+  if ( idxFitParameter_pvShiftX_ != -1 && idxFitParameter_pvShiftY_ != -1 && idxFitParameter_pvShiftZ_ != -1 ) 
+    doEventVertexRefit_ = true;
+  else
+    doEventVertexRefit_ = false;
 }
 
 void NSVfitEventBuilderBase::beginEvent(const edm::Event& evt, const edm::EventSetup& es) 
@@ -50,7 +60,7 @@ void NSVfitEventBuilderBase::beginEvent(const edm::Event& evt, const edm::EventS
     (*resonanceBuilder)->beginEvent(evt, es);
   }
 
-  eventVertexRefitAlgorithm_->beginEvent(evt, es);
+  if ( doEventVertexRefit_ ) eventVertexRefitAlgorithm_->beginEvent(evt, es);
 }
 
 NSVfitEventHypothesis* NSVfitEventBuilderBase::build(const inputParticleMap& inputParticles, const reco::Vertex* eventVertex) const
@@ -73,29 +83,31 @@ NSVfitEventHypothesis* NSVfitEventBuilderBase::build(const inputParticleMap& inp
   assert(metPtr != inputParticles.end());
   eventHypothesis->p4MEt_ = metPtr->second->p4();
 
-//--- refit primary event vertex, excluding tracks of tau decay products
-  std::vector<reco::TrackBaseRef> svTracks;
-  const edm::OwnVector<NSVfitResonanceHypothesis>& resonances = eventHypothesis->resonances();
-  for ( edm::OwnVector<NSVfitResonanceHypothesis>::const_iterator resonance = resonances.begin();
-	resonance != resonances.end(); ++resonance ) {
-    const edm::OwnVector<NSVfitSingleParticleHypothesisBase>& daughters = resonance->daughters();
-    for ( edm::OwnVector<NSVfitSingleParticleHypothesisBase>::const_iterator daughter = daughters.begin();
-	  daughter != daughters.end(); ++daughter ) {
-      if ( daughter->hasDecayVertex() ) 
-	svTracks.insert(svTracks.begin(), daughter->tracks().begin(), daughter->tracks().end());
-    }
-  }
+  eventHypothesis->eventVertexIsValid_ = false;
 
-  TransientVertex eventVertex_refitted = eventVertexRefitAlgorithm_->refit(eventVertex, &svTracks);
-  if ( eventVertex_refitted.isValid() ) {
-    eventHypothesis->eventVertexPosition_(0) = eventVertex_refitted.position().x();
-    eventHypothesis->eventVertexPosition_(1) = eventVertex_refitted.position().y();
-    eventHypothesis->eventVertexPosition_(2) = eventVertex_refitted.position().z();
-    eventHypothesis->eventVertexPositionErr_ = eventVertex_refitted.positionError().matrix_new();
-    // CV: need to add protection against case that primary event vertex is not valid <-- FIXME ?
-    eventHypothesis->eventVertexIsValid_ = true;
-  } else {
-    eventHypothesis->eventVertexIsValid_ = false;
+//--- refit primary event vertex, excluding tracks of tau decay products
+  if ( doEventVertexRefit_ ) {
+    std::vector<reco::TrackBaseRef> svTracks;
+    const edm::OwnVector<NSVfitResonanceHypothesis>& resonances = eventHypothesis->resonances();
+    for ( edm::OwnVector<NSVfitResonanceHypothesis>::const_iterator resonance = resonances.begin();
+	  resonance != resonances.end(); ++resonance ) {
+      const edm::OwnVector<NSVfitSingleParticleHypothesisBase>& daughters = resonance->daughters();
+      for ( edm::OwnVector<NSVfitSingleParticleHypothesisBase>::const_iterator daughter = daughters.begin();
+	    daughter != daughters.end(); ++daughter ) {
+	if ( daughter->hasDecayVertex() ) 
+	  svTracks.insert(svTracks.begin(), daughter->tracks().begin(), daughter->tracks().end());
+      }
+    }
+    
+    TransientVertex eventVertex_refitted = eventVertexRefitAlgorithm_->refit(eventVertex, &svTracks);
+    if ( eventVertex_refitted.isValid() ) {
+      eventHypothesis->eventVertexPosition_(0) = eventVertex_refitted.position().x();
+      eventHypothesis->eventVertexPosition_(1) = eventVertex_refitted.position().y();
+      eventHypothesis->eventVertexPosition_(2) = eventVertex_refitted.position().z();
+      eventHypothesis->eventVertexPositionErr_ = eventVertex_refitted.positionError().matrix_new();
+      // CV: need to add protection against case that primary event vertex is not valid <-- FIXME ?
+      eventHypothesis->eventVertexIsValid_ = true;
+    }
   }
 
   eventHypothesis->barcode_ = barcodeCounter_;
@@ -104,10 +116,17 @@ NSVfitEventHypothesis* NSVfitEventBuilderBase::build(const inputParticleMap& inp
   return eventHypothesis;
 }
 
-void NSVfitEventBuilderBase::applyFitParameter(NSVfitEventHypothesis* eventHypothesis, double* params) const
+void NSVfitEventBuilderBase::applyFitParameter(NSVfitEventHypothesis* eventHypothesis, double* param) const
 {
+  if ( doEventVertexRefit_ ) {
+    double pvShiftX = param[idxFitParameter_pvShiftX_];
+    double pvShiftY = param[idxFitParameter_pvShiftY_];
+    double pvShiftZ = param[idxFitParameter_pvShiftZ_];
+    eventHypothesis->eventVertexPositionShift_ = AlgebraicVector3(pvShiftX, pvShiftY, pvShiftZ);
+  }
+
   for ( unsigned iResonanceBuilder = 0; iResonanceBuilder < numResonanceBuilders_; ++iResonanceBuilder ) {
-    resonanceBuilders_[iResonanceBuilder]->applyFitParameter(&eventHypothesis->resonances_[iResonanceBuilder], params);
+    resonanceBuilders_[iResonanceBuilder]->applyFitParameter(&eventHypothesis->resonances_[iResonanceBuilder], param);
   }
 
   reco::Candidate::LorentzVector dp4(0,0,0,0);

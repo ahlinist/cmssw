@@ -39,11 +39,11 @@ NSVfitEventLikelihoodMEt::~NSVfitEventLikelihoodMEt()
 
 void NSVfitEventLikelihoodMEt::beginJob(NSVfitAlgorithmBase* algorithm) const 
 {
-  algorithm->requestFitParameter("allTauDecays", kTau_visEnFracX, pluginName_);
-  algorithm->requestFitParameter("allTauDecays", kTau_phi_lab,    pluginName_);
-  algorithm->requestFitParameter("allLeptons",   kLep_shiftEn,    pluginName_);
-  algorithm->requestFitParameter("allNeutrinos", kNu_energy_lab,  pluginName_);
-  algorithm->requestFitParameter("allNeutrinos", kNu_phi_lab,     pluginName_);
+  algorithm->requestFitParameter("allTauDecays", nSVfit_namespace::kTau_visEnFracX, pluginName_);
+  algorithm->requestFitParameter("allTauDecays", nSVfit_namespace::kTau_phi_lab,    pluginName_);
+  algorithm->requestFitParameter("allLeptons",   nSVfit_namespace::kLep_shiftEn,    pluginName_);
+  algorithm->requestFitParameter("allNeutrinos", nSVfit_namespace::kNu_energy_lab,  pluginName_);
+  algorithm->requestFitParameter("allNeutrinos", nSVfit_namespace::kNu_phi_lab,     pluginName_);
 }
 
 void NSVfitEventLikelihoodMEt::beginCandidate(const NSVfitEventHypothesis* hypothesis) const
