@@ -16,6 +16,7 @@
 #include "DataFormats/METReco/interface/MET.h"
 
 #include "TauAnalysis/CandidateTools/interface/SVfitAlgorithm.h"
+#include "TauAnalysis/CandidateTools/interface/NSVfitAlgorithmBase.h"
 #include "TauAnalysis/CandidateTools/interface/candidateAuxFunctions.h"
 #include "TauAnalysis/CandidateTools/interface/generalAuxFunctions.h"
 
@@ -36,7 +37,7 @@ class CompositePtrCandidateT1T2MEtAlgorithm
 
   CompositePtrCandidateT1T2MEtAlgorithm(const edm::ParameterSet& cfg)
   {
-    //std::cout << "<CompositePtrCandidateT1T2MEtAlgorithm::CompositePtrCandidateT1T2MEtAlgorithm>:" << std::endl;
+    std::cout << "<CompositePtrCandidateT1T2MEtAlgorithm::CompositePtrCandidateT1T2MEtAlgorithm>:" << std::endl;
 
     verbosity_ = cfg.getUntrackedParameter<int>("verbosity", 0);
     if ( cfg.exists("svFit") ) {
@@ -50,7 +51,23 @@ class CompositePtrCandidateT1T2MEtAlgorithm
 	copyCfgParameter<edm::InputTag>(cfg, "srcBeamSpot", cfgSVfitAlgorithm);
 	SVfitAlgorithm<T1,T2>* svFitAlgorithm = new SVfitAlgorithm<T1,T2>(cfgSVfitAlgorithm);
 	svFitAlgorithms_.insert(std::pair<std::string, SVfitAlgorithm<T1,T2>*>(*svFitAlgorithmName, svFitAlgorithm));
-	//std::cout << "--> adding SVfit algorithm: name = " << (*svFitAlgorithmName) << std::endl;
+	std::cout << "--> adding SVfit algorithm: name = " << (*svFitAlgorithmName) << std::endl;
+      }
+    }
+    if ( cfg.exists("nSVfit") ) {
+      edm::ParameterSet cfgNSVfit = cfg.getParameter<edm::ParameterSet>("nSVfit");	
+      std::vector<std::string> nSVfitAlgorithmNames = cfgNSVfit.getParameterNamesForType<edm::ParameterSet>();
+      for ( std::vector<std::string>::const_iterator nSVfitAlgorithmName = nSVfitAlgorithmNames.begin();
+	    nSVfitAlgorithmName != nSVfitAlgorithmNames.end(); ++nSVfitAlgorithmName ) {
+	edm::ParameterSet cfgNSVfitAlgorithm = cfgNSVfit.getParameter<edm::ParameterSet>(*nSVfitAlgorithmName);
+	edm::ParameterSet cfg_config = cfgNSVfitAlgorithm.getParameter<edm::ParameterSet>("config");
+	edm::ParameterSet cfg_event = cfg_config.getParameter<edm::ParameterSet>("event");
+	edm::ParameterSet cfg_algorithm = cfgNSVfitAlgorithm.getParameter<edm::ParameterSet>("algorithm");
+	cfg_algorithm.addParameter<edm::ParameterSet>("event", cfg_event);
+	std::string pluginType = cfg_algorithm.getParameter<std::string>("pluginType");
+	NSVfitAlgorithmBase* nSVfitAlgorithm = NSVfitAlgorithmPluginFactory::get()->create(pluginType, cfg_algorithm);
+	nSVfitAlgorithms_.insert(std::pair<std::string, NSVfitAlgorithmBase*>(*nSVfitAlgorithmName, nSVfitAlgorithm));
+	std::cout << "--> adding nSVfit algorithm: name = " << (*nSVfitAlgorithmName) << std::endl;
       }
     }
     scaleFuncImprovedCollinearApprox_ = cfg.exists("scaleFuncImprovedCollinearApprox") ?
@@ -84,6 +101,10 @@ class CompositePtrCandidateT1T2MEtAlgorithm
 	  svFitAlgorithm != svFitAlgorithms_.end(); ++svFitAlgorithm ) {
       svFitAlgorithm->second->beginJob();
     }
+    for ( typename std::map<std::string, NSVfitAlgorithmBase*>::iterator nSVfitAlgorithm = nSVfitAlgorithms_.begin();
+	  nSVfitAlgorithm != nSVfitAlgorithms_.end(); ++nSVfitAlgorithm ) {
+      nSVfitAlgorithm->second->beginJob();
+    }
   }
 
   void beginEvent(edm::Event& evt, const edm::EventSetup& es)
@@ -91,6 +112,10 @@ class CompositePtrCandidateT1T2MEtAlgorithm
     for ( typename std::map<std::string, SVfitAlgorithm<T1,T2>*>::iterator svFitAlgorithm = svFitAlgorithms_.begin();
 	  svFitAlgorithm != svFitAlgorithms_.end(); ++svFitAlgorithm ) {
       svFitAlgorithm->second->beginEvent(evt, es);
+    }
+    for ( typename std::map<std::string, NSVfitAlgorithmBase*>::iterator nSVfitAlgorithm = nSVfitAlgorithms_.begin();
+	  nSVfitAlgorithm != nSVfitAlgorithms_.end(); ++nSVfitAlgorithm ) {
+      nSVfitAlgorithm->second->beginEvent(evt, es);
     }
   }
 
@@ -104,7 +129,7 @@ class CompositePtrCandidateT1T2MEtAlgorithm
 								 const std::string& recoMode, 
 								 bool doSVreco)
   {
-    //std::cout << "<CompositePtrCandidateT1T2MEtAlgorithm::buildCompositePtrCandidate>:"<< std::endl;
+    std::cout << "<CompositePtrCandidateT1T2MEtAlgorithm::buildCompositePtrCandidate>:"<< std::endl;
     //if ( !met.isNull() ) std::cout << " MET: pt = " << met->pt() << std::endl;
     //else                 std::cout << " MET: none." << std::endl;
 
@@ -138,13 +163,30 @@ class CompositePtrCandidateT1T2MEtAlgorithm
       compZeta(compositePtrCandidate, leg1->p4(), leg2->p4(), met->px(), met->py());
 
 //--- SV method computation (if we have the PV and beamspot)
-      if ( pv && beamSpot && trackBuilder && doSVreco ) {
-	for ( typename std::map<std::string, SVfitAlgorithm<T1,T2>*>::const_iterator svFitAlgorithm = svFitAlgorithms_.begin();
-	      svFitAlgorithm != svFitAlgorithms_.end(); ++svFitAlgorithm ) {
-	  std::vector<SVfitDiTauSolution> svFitSolutions = svFitAlgorithm->second->fit(compositePtrCandidate);
-	  for ( std::vector<SVfitDiTauSolution>::const_iterator svFitSolution = svFitSolutions.begin();
-		svFitSolution != svFitSolutions.end(); ++svFitSolution ) {
-	    compositePtrCandidate.addSVfitSolution(svFitAlgorithm->first, svFitSolution->polarizationHypothesisName(), *svFitSolution);
+      if ( doSVreco ) {
+	if ( pv && beamSpot && trackBuilder ) {
+	  for ( typename std::map<std::string, SVfitAlgorithm<T1,T2>*>::const_iterator svFitAlgorithm = svFitAlgorithms_.begin();
+		svFitAlgorithm != svFitAlgorithms_.end(); ++svFitAlgorithm ) {
+	    std::vector<SVfitDiTauSolution> svFitSolutions = svFitAlgorithm->second->fit(compositePtrCandidate);
+	    for ( std::vector<SVfitDiTauSolution>::const_iterator svFitSolution = svFitSolutions.begin();
+		  svFitSolution != svFitSolutions.end(); ++svFitSolution ) {
+	      compositePtrCandidate.addSVfitSolution(svFitAlgorithm->first, svFitSolution->polarizationHypothesisName(), *svFitSolution);
+	    }
+	  }
+	}
+	if ( pv ) {	  
+	  for ( typename std::map<std::string, NSVfitAlgorithmBase*>::const_iterator nSVfitAlgorithm = nSVfitAlgorithms_.begin();
+		nSVfitAlgorithm != nSVfitAlgorithms_.end(); ++nSVfitAlgorithm ) {
+	    std::cout << "--> running nSVfit algorithm: name = " << nSVfitAlgorithm->first << std::endl;
+	    typedef edm::Ptr<reco::Candidate> CandidatePtr;
+	    typedef std::map<std::string, CandidatePtr> inputParticleMap;
+	    inputParticleMap inputParticles;
+	    inputParticles.insert(std::pair<std::string, CandidatePtr>("leg1", leg1));
+	    inputParticles.insert(std::pair<std::string, CandidatePtr>("leg2", leg2));
+	    inputParticles.insert(std::pair<std::string, CandidatePtr>("met",  met));
+	    std::auto_ptr<NSVfitEventHypothesis> nSVfitHypothesis(nSVfitAlgorithm->second->fit(inputParticles, pv));
+	    compositePtrCandidate.addNSVfitSolution(nSVfitAlgorithm->first, *nSVfitHypothesis);
+	    std::cout << " done." << std::endl;
 	  }
 	}
       }
@@ -414,6 +456,7 @@ class CompositePtrCandidateT1T2MEtAlgorithm
   std::string scaleFuncImprovedCollinearApprox_;
   TF1* scaleFunc_;
   std::map<std::string, SVfitAlgorithm<T1,T2>*> svFitAlgorithms_;
+  std::map<std::string, NSVfitAlgorithmBase*> nSVfitAlgorithms_;
   typedef std::vector<int> vint;
   vint genParticleMatchPdgId_;
 };

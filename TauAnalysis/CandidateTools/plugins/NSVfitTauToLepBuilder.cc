@@ -26,11 +26,11 @@ NSVfitTauToLepBuilder<T>::~NSVfitTauToLepBuilder()
 template <typename T>
 void NSVfitTauToLepBuilder<T>::beginJob(NSVfitAlgorithmBase* algorithm)
 {
-  idxFitParameter_visEnFracX_ = getFitParameterIdx(algorithm, prodParticleLabel_, kTau_visEnFracX);
-  idxFitParameter_phi_lab_    = getFitParameterIdx(algorithm, prodParticleLabel_, kTau_phi_lab);
-  idxFitParameter_nuInvMass_  = getFitParameterIdx(algorithm, prodParticleLabel_, kTau_nuInvMass);
+  idxFitParameter_visEnFracX_ = getFitParameterIdx(algorithm, prodParticleLabel_, nSVfit_namespace::kTau_visEnFracX);
+  idxFitParameter_phi_lab_    = getFitParameterIdx(algorithm, prodParticleLabel_, nSVfit_namespace::kTau_phi_lab);
+  idxFitParameter_nuInvMass_  = getFitParameterIdx(algorithm, prodParticleLabel_, nSVfit_namespace::kTau_nuInvMass);
 
-  idxFitParameter_pol_        = getFitParameterIdx(algorithm, prodParticleLabel_, kTau_pol, true); // optional parameter
+  idxFitParameter_pol_        = getFitParameterIdx(algorithm, prodParticleLabel_, nSVfit_namespace::kTau_pol, true); // optional parameter
 
   algorithm_ = algorithm;
 }
@@ -72,7 +72,7 @@ NSVfitSingleParticleHypothesisBase* NSVfitTauToLepBuilder<T>::build(const inputP
 
   hypothesis->decayMode_  = getDecayMode(*lepPtr);
 
-  NSVfitAlgorithmBase::fitParameterType* fitParameter = algorithm_->getFitParameter(prodParticleLabel_, kTau_nuInvMass);
+  NSVfitAlgorithmBase::fitParameterType* fitParameter = algorithm_->getFitParameter(prodParticleLabel_, nSVfit_namespace::kTau_nuInvMass);
   assert(fitParameter);
   fitParameter->upperLimit_ = SVfit_namespace::tauLeptonMass - hypothesis->visMass_;
 
@@ -95,8 +95,7 @@ void NSVfitTauToLepBuilder<T>::applyFitParameter(NSVfitSingleParticleHypothesisB
   const reco::Candidate::Vector& p3Vis_unit = hypothesis_T->p3Vis_unit();
 
 //--- compute momentum of visible decay products in tau lepton rest frame
-  double pVis_rf = pVisRestFrame(visMass, nuInvMass);
-  double enVis_rf = energyFromMomentum(pVis_rf, tauLeptonMass);
+  double pVis_rf = SVfit_namespace::pVisRestFrame(visMass, nuInvMass);
 
 //--- decay angle in tau lepton rest frame as function of X
 //    (= energy ratio of visible decay products/tau lepton energy)

@@ -9,9 +9,9 @@
  *
  * \author Evan Friis, Christian Veelken; UC Davis
  *
- * \version $Revision: 1.5 $
+ * \version $Revision: 1.1 $
  *
- * $Id: NSVfitEventLikelihoodTrackInfo.h,v 1.5 2011/01/18 16:47:16 friis Exp $
+ * $Id: NSVfitEventLikelihoodTrackInfo.h,v 1.1 2011/03/23 17:46:39 veelken Exp $
  *
  */
 
@@ -26,6 +26,8 @@ class NSVfitEventLikelihoodTrackInfo : public NSVfitEventLikelihood
  public:
   NSVfitEventLikelihoodTrackInfo(const edm::ParameterSet&);
   ~NSVfitEventLikelihoodTrackInfo();
+
+  void beginJob(NSVfitAlgorithmBase*) const; 
 
   double operator()(const NSVfitEventHypothesis*) const;
 };
