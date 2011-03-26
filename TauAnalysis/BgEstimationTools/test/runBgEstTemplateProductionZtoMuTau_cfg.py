@@ -195,6 +195,7 @@ addSysAnalyzer(process.analyzeZtoMuTauEventsOS, process.sysUncertaintyHistManage
 process.load('TauAnalysis.BgEstimationTools.bgEstZtoMuTauWplusJetsEnrichedSelection_cff')
 process.load('TauAnalysis.BgEstimationTools.bgEstZtoMuTauTTplusJetsEnrichedSelection_cff')
 process.load('TauAnalysis.BgEstimationTools.bgEstZtoMuTauZmumuEnrichedSelection_cff')
+process.load('TauAnalysis.BgEstimationTools.bgEstZtoMuTauZbbEnrichedSelection_cff')
 process.load('TauAnalysis.BgEstimationTools.bgEstZtoMuTauQCDenrichedSelection_cff')
 
 # clone W + jets enriched analysis sequence,
@@ -279,6 +280,7 @@ process.p = cms.Path(
   + process.bgEstWplusJetsEnrichedFRweightedAnalysisSequence
   + process.bgEstTTplusJetsEnrichedAnalysisSequence
   + process.bgEstZmumuEnrichedAnalysisSequence
+  + process.bgEstZbbEnrichedAnalysisSequence  
   + process.bgEstQCDenrichedAnalysisSequence 
   + process.saveZtoMuTauPlots
 )
