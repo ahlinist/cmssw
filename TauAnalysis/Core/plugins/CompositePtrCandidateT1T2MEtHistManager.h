@@ -162,7 +162,12 @@ class CompositePtrCandidateT1T2MEtHistManager : public HistManagerBase
 
   MonitorElement* hPzetaCorr_;
   MonitorElement* hPzetaDiff_;
+  
   MonitorElement* hPzetaDiffVsMt1MET_;
+  MonitorElement* hPzetaDiffVsMET_;
+  MonitorElement* hPzetaDiffVsVisMass_;
+  MonitorElement* hMt1METvsMET_;
+  MonitorElement* hMt1METvsVisMass_;
 };
 
 #endif

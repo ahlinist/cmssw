@@ -37,7 +37,6 @@ class PFCandidateHistManager : public HistManagerBase
 //--- histograms
   MonitorElement* hPFCandidatePt_;
   MonitorElement* hPFCandidateEta_;
-  MonitorElement* hPFCandidatePtVsEta_;
   MonitorElement* hPFCandidatePhi_;
 };
 

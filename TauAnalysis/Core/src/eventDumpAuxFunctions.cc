@@ -178,7 +178,7 @@ void printGenParticleInfo(const reco::GenParticleCollection& genParticles,
       *stream << "tauDecayMode = " << tauDecayMode << std::endl;
 
 //--- reconstruct visible momentum of decay products
-      reco::Particle::LorentzVector genVisibleTauMomentum = getVisMomentum(&(*genParticle), &genParticles);
+      reco::Particle::LorentzVector genVisibleTauMomentum = getVisMomentum(&(*genParticle));
       if ( tauDecayMode == "oneProng0Pi0"    || 
 	   tauDecayMode == "oneProng1Pi0"    || 
 	   tauDecayMode == "oneProng2Pi0"    || 
@@ -194,7 +194,7 @@ void printGenParticleInfo(const reco::GenParticleCollection& genParticles,
 		<< " mass = " << genVisibleTauMomentum.mass() << std::endl;
       }
 
-      *stream << "neutrino mass = " << getInvisMomentum(&(*genParticle), &genParticles);
+      *stream << "neutrino mass = " << getInvisMomentum(&(*genParticle));
       
       *stream << std::endl;
     }

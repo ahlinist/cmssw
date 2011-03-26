@@ -5,6 +5,12 @@
 
 #include "DQMServices/Core/interface/DQMStore.h"
 
+#include "DataFormats/PatCandidates/interface/Electron.h"
+#include "DataFormats/PatCandidates/interface/Muon.h"
+#include "DataFormats/PatCandidates/interface/Tau.h"
+
+#include "PhysicsTools/JetMCUtils/interface/JetMCTag.h"
+
 #include "AnalysisDataFormats/TauAnalysis/interface/CompositePtrCandidateT1T2MEt.h"
 #include "AnalysisDataFormats/TauAnalysis/interface/CompositePtrCandidateT1T2MEtFwd.h"
 #include "AnalysisDataFormats/TauAnalysis/interface/NSVfitEventHypothesis.h"
@@ -43,9 +49,18 @@ CompositePtrCandidateT1T2MEtNSVfitHistManager<T1,T2>::CompositePtrCandidateT1T2M
   genParticleSrc_ = cfg.getParameter<edm::InputTag>("genParticleSource");
   //std::cout << " genParticleSrc = " << genParticleSrc_.label() << std::endl;
 
-  nSVfitEventHypothesisSrc_ = cfg.getParameter<edm::InputTag>("nSVfitEventHypothesisSource");
-  //std::cout << " nSVfitEventHypothesisSrc_ = " << nSVfitEventHypothesisSrc.label() << std::endl;
-
+  edm::ParameterSet cfg_nSVfitEventHypotheses = cfg.getParameter<edm::ParameterSet>("nSVfitEventHypotheses");
+  typedef std::vector<std::string> vstring;
+  vstring nSVfitEventHypothesisNames = cfg_nSVfitEventHypotheses.getParameterNamesForType<edm::InputTag>();
+  for ( vstring::const_iterator nSVfitEventHypothesisName = nSVfitEventHypothesisNames.begin();
+	nSVfitEventHypothesisName != nSVfitEventHypothesisNames.end(); ++nSVfitEventHypothesisName ) {
+    massHypothesisEntryType* massHypothesisEntry = new massHypothesisEntryType();
+    massHypothesisEntry->nSVfitEventHypothesisSrc_ = cfg_nSVfitEventHypotheses.getParameter<edm::InputTag>(*nSVfitEventHypothesisName);
+    massHypothesisEntry->dqmDirectory_ = dqmDirectoryName(dqmDirectory_store_).append(*nSVfitEventHypothesisName);
+    massHypothesisEntry->dqmDirectory_ = dqmDirectoryName(massHypothesisEntry->dqmDirectory_);
+    massHypothesisEntries_.push_back(massHypothesisEntry);
+  }
+  
   diTauLeg1WeightExtractors_ = getTauJetWeightExtractors<T1>(cfg, "diTauLeg1WeightSource");
   diTauLeg2WeightExtractors_ = getTauJetWeightExtractors<T2>(cfg, "diTauLeg2WeightSource");
 
@@ -70,6 +85,11 @@ CompositePtrCandidateT1T2MEtNSVfitHistManager<T1,T2>::CompositePtrCandidateT1T2M
 template<typename T1, typename T2>
 CompositePtrCandidateT1T2MEtNSVfitHistManager<T1,T2>::~CompositePtrCandidateT1T2MEtNSVfitHistManager()
 {
+  for ( typename std::vector<massHypothesisEntryType*>::iterator it = massHypothesisEntries_.begin();
+	it != massHypothesisEntries_.end(); ++it ) {
+    delete (*it);
+  }
+
   for ( typename std::vector<FakeRateJetWeightExtractor<T1>*>::iterator it = diTauLeg1WeightExtractors_.begin();
 	it != diTauLeg1WeightExtractors_.end(); ++it ) {
     delete (*it);
@@ -84,24 +104,57 @@ CompositePtrCandidateT1T2MEtNSVfitHistManager<T1,T2>::~CompositePtrCandidateT1T2
 template<typename T1, typename T2>
 void CompositePtrCandidateT1T2MEtNSVfitHistManager<T1,T2>::bookHistogramsImp()
 {
-  //std::cout << "<CompositePtrCandidateT1T2MEtNSVfitHistManager::bookHistogramsImp>:" << std::endl;
+  std::cout << "<CompositePtrCandidateT1T2MEtNSVfitHistManager::bookHistogramsImp>:" << std::endl;
 
-  hMass_   = book1D("Mass",   "Mass",    50, 0., 250.);
-  hMassL_  = book1D("MassL",  "MassL",  100, 0., 500.);
-  hMassXL_ = book1D("MassXL", "MassXL", 150, 0., 750.);
+  for ( typename std::vector<massHypothesisEntryType*>::iterator massHypothesisEntry = massHypothesisEntries_.begin();
+	massHypothesisEntry != massHypothesisEntries_.end(); ++massHypothesisEntry ) {
+    const std::string& dqmDirectory = (*massHypothesisEntry)->dqmDirectory_;
 
-  hMassGenLeg2Electron_ = book1D("MassGenLeg2Electron", "MassGenLeg2Electron", 50, 0., 250.);
-  hMassGenLeg2Muon_     = book1D("MassGenLeg2Muon",     "MassGenLeg2Muon",     50, 0., 250.);
-  hMassGenLeg2Photon_   = book1D("MassGenLeg2Photon",   "MassGenLeg2Photon",   50, 0., 250.);
-  hMassGenLeg2Jet_      = book1D("MassGenLeg2Jet",      "MassGenLeg2Jet",      50, 0., 250.);
+    (*massHypothesisEntry)->hMass_   = book1D(*dqmStore_, dqmDirectory, "Mass",   "Mass",    50, 0., 250.);
+    (*massHypothesisEntry)->hMassL_  = book1D(*dqmStore_, dqmDirectory, "MassL",  "MassL",  100, 0., 500.);
+    (*massHypothesisEntry)->hMassXL_ = book1D(*dqmStore_, dqmDirectory, "MassXL", "MassXL", 150, 0., 750.);
+    
+    (*massHypothesisEntry)->hMassGenLeg2Electron_ =
+      book1D(*dqmStore_, dqmDirectory, "MassGenLeg2Electron", "MassGenLeg2Electron", 50, 0., 250.);
+    (*massHypothesisEntry)->hMassGenLeg2Muon_ =
+      book1D(*dqmStore_, dqmDirectory, "MassGenLeg2Muon",     "MassGenLeg2Muon",     50, 0., 250.);
+    (*massHypothesisEntry)->hMassGenLeg2Photon_ = 
+      book1D(*dqmStore_, dqmDirectory, "MassGenLeg2Photon",   "MassGenLeg2Photon",   50, 0., 250.);
+    (*massHypothesisEntry)->hMassGenLeg2Jet_ = 
+      book1D(*dqmStore_, dqmDirectory, "MassGenLeg2Jet",      "MassGenLeg2Jet",      50, 0., 250.);
+    
+    (*massHypothesisEntry)->hMassMedian_      = book1D(*dqmStore_, dqmDirectory, "Mass_median",      "Mass_median",      100,  0., 500.);
+    (*massHypothesisEntry)->hMassMean_        = book1D(*dqmStore_, dqmDirectory, "Mass_mean",        "Mass_mean",        100,  0., 500.);
+    (*massHypothesisEntry)->hMassMaximum_     = book1D(*dqmStore_, dqmDirectory, "Mass_maximum",     "Mass_maximum",     100,  0., 500.);
+    (*massHypothesisEntry)->hMassMaxInterpol_ = book1D(*dqmStore_, dqmDirectory, "Mass_maxInterpol", "Mass_maxInterpol", 100,  0., 500.);
+        
+    (*massHypothesisEntry)->hMassPull_ = book1D(*dqmStore_, dqmDirectory, "MassPull", "MassPull", 100, -5., +5.);
+    
+    (*massHypothesisEntry)->hMassSum_           = 0; // book histogram when filling first value
+    (*massHypothesisEntry)->hMassSumNormalized_ = 0;
 
-  hMassMedian_ = book1D("Mass_median", "Mass_median",  50,  0., 250.);
-  hMassMean_   = book1D("Mass_mean",   "Mass_mean",    50,  0., 250.);
+    (*massHypothesisEntry)->hMassHadRecoilPtLt10_   = 
+      book1D(*dqmStore_, dqmDirectory, "MassHadRecoilPtLt10",    "MassHadRecoilPtLt10",   100, 0., 500.);
+    (*massHypothesisEntry)->hMassHadRecoilPt10to20_ = 
+      book1D(*dqmStore_, dqmDirectory, "MassHadRecoilPt10to20",  "MassHadRecoilPt10to20", 100, 0., 500.);
+    (*massHypothesisEntry)->hMassHadRecoilPt20to30_ = 
+      book1D(*dqmStore_, dqmDirectory, "MassHadRecoilPt20to30",  "MassHadRecoilPt20to30", 100, 0., 500.);
+    (*massHypothesisEntry)->hMassHadRecoilPtGt30_   = 
+      book1D(*dqmStore_, dqmDirectory, "MassHadRecoilPtGt30",    "MassHadRecoilPtGt30",   100, 0., 500.);
+    (*massHypothesisEntry)->hHadRecoilPt_ = book1D(*dqmStore_, dqmDirectory, "HadRecoilPt", "HadRecoilPt", 20, 0., 100.);
 
-  hMassPull_   = book1D("MassPull",    "MassPull",    100, -5.,  +5.);
-
-  hMassSum_           = 0; // book histogram when filling first value
-  hMassSumNormalized_ = 0;
+    (*massHypothesisEntry)->hMassDPhiGt175_ =
+      book1D(*dqmStore_, dqmDirectory, "MassDPhiGt175", "MassDPhiGt175",       100, 0., 500.);
+    (*massHypothesisEntry)->hMassDPhi170to175_ =
+      book1D(*dqmStore_, dqmDirectory, "MassDPhi170to175", "MassDPhi170to175", 100, 0., 500.);
+    (*massHypothesisEntry)->hMassDPhi160to170_ =
+      book1D(*dqmStore_, dqmDirectory, "MassDPhi160to170", "MassDPhi160to170", 100, 0., 500.);
+    (*massHypothesisEntry)->hMassDPhi140to160_ =
+      book1D(*dqmStore_, dqmDirectory, "MassDPhi140to160", "MassDPhi140to160", 100, 0., 500.);
+    (*massHypothesisEntry)->hMassDPhiLt140_ =
+      book1D(*dqmStore_, dqmDirectory, "MassDPhiLt140", "MassDPhiLt140",       100, 0., 500.);
+    (*massHypothesisEntry)->hDPhi_ = book1D(*dqmStore_, dqmDirectory, "DPhi", "DPhi", 36, -epsilon, TMath::Pi() + epsilon);
+  }
 
   bookWeightHistograms(*dqmStore_, "DiTauCandidateWeight", "Composite Weight",
 		       hDiTauCandidateWeightPosLog_, hDiTauCandidateWeightNegLog_, hDiTauCandidateWeightZero_,
@@ -116,10 +169,82 @@ double CompositePtrCandidateT1T2MEtNSVfitHistManager<T1,T2>::getDiTauCandidateWe
   return (diTauLeg1Weight*diTauLeg2Weight);
 }
 
+//
+//-------------------------------------------------------------------------------
+//
+
+template <typename T>
+std::string genDecayMode(const T& lepton)
+{
+  return "undefined";
+}
+
+template <>
+std::string genDecayMode<pat::Electron>(const pat::Electron& electron)
+{
+  const reco::GenParticle* genLepton = electron.genLepton();
+  if      ( !genLepton                ) return "undefined";
+  else if (  genLepton->pdgId() == 11 ) return "electron";
+  else if (  genLepton->pdgId() == 13 ) return "muon";
+  else if (  genLepton->pdgId() == 15 ) return getGenTauDecayMode(genLepton);
+  else                                  return "undefined";
+}
+
+template <>
+std::string genDecayMode<pat::Muon>(const pat::Muon& muon)
+{
+  const reco::GenParticle* genLepton = muon.genLepton();
+  if      ( !genLepton                ) return "undefined";
+  else if (  genLepton->pdgId() == 11 ) return "electron";
+  else if (  genLepton->pdgId() == 13 ) return "muon";
+  else if (  genLepton->pdgId() == 15 ) return getGenTauDecayMode(genLepton);
+  else                                  return "undefined";
+}
+
+template <>
+std::string genDecayMode<pat::Tau>(const pat::Tau& tau)
+{
+  const reco::GenJet* genJet = tau.genJet();
+  if   ( !genJet ) return "undefined";
+  else             return JetMCTagUtils::genTauDecayMode(*genJet);
+}
+
+//
+//-------------------------------------------------------------------------------
+//
+
+template <typename T>
+std::string recDecayMode(const T&)
+{
+  return "undefined";
+}
+
+template <>
+std::string recDecayMode<pat::Electron>(const pat::Electron&)
+{
+  return "electron";
+}
+
+template <>
+std::string recDecayMode<pat::Muon>(const pat::Muon&)
+{
+  return "muon";
+}
+
+template <>
+std::string recDecayMode<pat::Tau>(const pat::Tau& tau)
+{
+  return getTauDecayModeName(tau.decayMode());
+}
+
+//
+//-------------------------------------------------------------------------------
+//
+
 template<typename T1, typename T2>
 void CompositePtrCandidateT1T2MEtNSVfitHistManager<T1,T2>::fillHistogramsImp(const edm::Event& evt, const edm::EventSetup& es, double evtWeight)
 {
-  //std::cout << "<CompositePtrCandidateT1T2MEtNSVfitHistManager::fillHistogramsImp>:" << std::endl;
+  std::cout << "<CompositePtrCandidateT1T2MEtNSVfitHistManager::fillHistogramsImp>:" << std::endl;
 
   typedef std::vector<CompositePtrCandidateT1T2MEt<T1,T2> > CompositePtrCandidateCollection;
   edm::Handle<CompositePtrCandidateCollection> diTauCandidates;
@@ -131,108 +256,178 @@ void CompositePtrCandidateT1T2MEtNSVfitHistManager<T1,T2>::fillHistogramsImp(con
   edm::Handle<reco::GenParticleCollection> genParticles;
   if ( genParticleSrc_.label() != "" ) evt.getByLabel(genParticleSrc_, genParticles);
 
-  edm::Handle<NSVfitEventHypothesisCollection> nSVfitEventHypotheses;
-  evt.getByLabel(nSVfitEventHypothesisSrc_, nSVfitEventHypotheses);
+  for ( typename std::vector<massHypothesisEntryType*>::iterator massHypothesisEntry = massHypothesisEntries_.begin();
+	massHypothesisEntry != massHypothesisEntries_.end(); ++massHypothesisEntry ) {
+      
+    edm::Handle<NSVfitEventHypothesisCollection> nSVfitEventHypotheses;
+    evt.getByLabel((*massHypothesisEntry)->nSVfitEventHypothesisSrc_, nSVfitEventHypotheses);
 
-  double diTauCandidateWeightSum = 0.;
-  for ( typename CompositePtrCandidateCollection::const_iterator diTauCandidate = diTauCandidates->begin();
-	diTauCandidate != diTauCandidates->end(); ++diTauCandidate ) {
-    if ( requireGenMatch_ && !matchesGenCandidatePair(*diTauCandidate) ) continue;
+    typedef std::map<const NSVfitEventHypothesis*, const CompositePtrCandidateT1T2MEt<T1,T2>*> diTauCandidateMatchingType;
+    diTauCandidateMatchingType diTauCandidateMatching;
 
-    diTauCandidateWeightSum += getDiTauCandidateWeight(*diTauCandidate);
-  }
-
-  for ( typename CompositePtrCandidateCollection::const_iterator diTauCandidate = diTauCandidates->begin();
-	diTauCandidate != diTauCandidates->end(); ++diTauCandidate ) {
-
-    //bool isGenMatched = matchesGenCandidatePair(*diTauCandidate);
-    //std::cout << " Pt = " << diTauCandidate->pt() << ", phi = " << diTauCandidate->phi() << ","
-    //          << " visMass = " << diTauCandidate->p4Vis().mass() << std::endl;
-    //std::cout << " isGenMatched = " << isGenMatched << std::endl;
-
-    if ( requireGenMatch_ && !matchesGenCandidatePair(*diTauCandidate) ) continue;
-
-    double diTauCandidateWeight = getDiTauCandidateWeight(*diTauCandidate);
-    double weight = getWeight(evtWeight, diTauCandidateWeight, diTauCandidateWeightSum);
-
-    const NSVfitEventHypothesis* matchedNSVfitEventHypothesis = 0;
     for ( NSVfitEventHypothesisCollection::const_iterator nSVfitEventHypothesis = nSVfitEventHypotheses->begin();
 	  nSVfitEventHypothesis != nSVfitEventHypotheses->end(); ++nSVfitEventHypothesis ) {
-      const std::vector<NSVfitResonanceHypothesis*>& resonances = nSVfitEventHypothesis->resonances();     
+
+      const edm::OwnVector<NSVfitResonanceHypothesis>& resonances = nSVfitEventHypothesis->resonances();     
       assert(resonances.size() == 1);
-      const std::vector<NSVfitSingleParticleHypothesisBase*>& daughters = resonances[0]->daughters();
+      const edm::OwnVector<NSVfitSingleParticleHypothesisBase>& daughters = resonances[0].daughters();
       assert(daughters.size() == 2);
-      if ( deltaR(diTauCandidate->leg1()->p4(), daughters[0]->p4()) < epsilon &&
-	   deltaR(diTauCandidate->leg2()->p4(), daughters[1]->p4()) < epsilon ) matchedNSVfitEventHypothesis = &(*nSVfitEventHypothesis);
+
+      std::cout << "nSVfit leg1: Pt = " << daughters[0].p4().pt() << "," 
+		<< " eta = " << daughters[0].p4().eta() << ", phi = " << daughters[0].p4().phi() << std::endl;
+      std::cout << "nSVfit leg2: Pt = " << daughters[1].p4().pt() << "," 
+		<< " eta = " << daughters[1].p4().eta() << ", phi = " << daughters[1].p4().phi() << std::endl;
+
+      const CompositePtrCandidateT1T2MEt<T1,T2>* matchedDiTauCandidate = 0;
+      for ( typename CompositePtrCandidateCollection::const_iterator diTauCandidate = diTauCandidates->begin();
+	    diTauCandidate != diTauCandidates->end(); ++diTauCandidate ) {
+	
+	std::cout << "diTauCandidate leg1: Pt = " << diTauCandidate->leg1()->pt() << "," 
+		  << " eta = " << diTauCandidate->leg1()->eta() << ", phi = " << diTauCandidate->leg1()->phi() << std::endl;
+	std::cout << "diTauCandidate leg2: Pt = " << diTauCandidate->leg2()->pt() << "," 
+		  << " eta = " << diTauCandidate->leg2()->eta() << ", phi = " << diTauCandidate->leg2()->phi() << std::endl;
+	
+	if ( (deltaR(diTauCandidate->leg1()->p4(), daughters[0].p4()) < epsilon &&
+	      deltaR(diTauCandidate->leg2()->p4(), daughters[1].p4()) < epsilon) ||
+	     (deltaR(diTauCandidate->leg1()->p4(), daughters[1].p4()) < epsilon &&
+	      deltaR(diTauCandidate->leg2()->p4(), daughters[0].p4()) < epsilon) ) {
+	  matchedDiTauCandidate = &(*diTauCandidate);
+	  break;
+	}
+      }
+
+      if ( !matchedDiTauCandidate ) {
+	edm::LogWarning("CompositePtrCandidateT1T2MEtNSVfitHistManager::fillHistogramsImp") 
+	  << " Failed to match NSVfitEventHypothesis object to diTauCandidate --> skipping !!";
+	continue;
+      }
+
+      diTauCandidateMatching[&(*nSVfitEventHypothesis)] = matchedDiTauCandidate;
     }
 
-    if ( !matchedNSVfitEventHypothesis ) {
-      edm::LogWarning("CompositePtrCandidateT1T2MEtNSVfitHistManager::fillHistogramsImp") 
-        << " Failed to match NSVfitEventHypothesis object to diTauCandidate --> skipping !!";
-      continue;
+    double diTauCandidateWeightSum = 0.;
+    for ( typename diTauCandidateMatchingType::const_iterator diTauCandidate = diTauCandidateMatching.begin();
+	  diTauCandidate != diTauCandidateMatching.end(); ++diTauCandidate ) {
+      if ( requireGenMatch_ && !matchesGenCandidatePair(*diTauCandidate->second) ) continue;
+
+      diTauCandidateWeightSum += getDiTauCandidateWeight(*diTauCandidate->second);
     }
 
-    const NSVfitResonanceHypothesis* matchedNSVfitResonanceHypothesis = matchedNSVfitEventHypothesis->resonances()[0];
+    for ( typename diTauCandidateMatchingType::const_iterator diTauCandidate = diTauCandidateMatching.begin();
+	  diTauCandidate != diTauCandidateMatching.end(); ++diTauCandidate ) {
+      
+      //bool isGenMatched = matchesGenCandidatePair(*diTauCandidate->second);
+      //std::cout << " Pt = " << diTauCandidate->second->pt() << ", phi = " << diTauCandidate->second->phi() << ","
+      //          << " visMass = " << diTauCandidate->second->p4Vis().mass() << std::endl;
+      //std::cout << " isGenMatched = " << isGenMatched << std::endl;
+      
+      if ( requireGenMatch_ && !matchesGenCandidatePair(*diTauCandidate->second) ) continue;
+      
+      double diTauCandidateWeight = getDiTauCandidateWeight(*diTauCandidate->second);
+      double weight = getWeight(evtWeight, diTauCandidateWeight, diTauCandidateWeightSum);
+      
+      const NSVfitResonanceHypothesis& nSVfitResonanceHypothesis = diTauCandidate->first->resonances()[0];
+      double recMass = nSVfitResonanceHypothesis.mass();
+      double genMass = diTauCandidate->second->p4gen().mass();
+      
+      (*massHypothesisEntry)->hMass_->Fill(recMass, weight);
+      (*massHypothesisEntry)->hMassL_->Fill(recMass, weight);
+      (*massHypothesisEntry)->hMassXL_->Fill(recMass, weight);
+      
+      if ( genParticles.isValid() ) {
+	fillHistogramGenMatch((*massHypothesisEntry)->hMassGenLeg2Electron_, 
+			      recMass, diTauCandidate->second->leg2()->p4(), *genParticles, pdgIdsElectron_, weight);
+	fillHistogramGenMatch((*massHypothesisEntry)->hMassGenLeg2Muon_,     
+			      recMass, diTauCandidate->second->leg2()->p4(), *genParticles, pdgIdsMuon_,     weight);
+	fillHistogramGenMatch((*massHypothesisEntry)->hMassGenLeg2Photon_,   
+			      recMass, diTauCandidate->second->leg2()->p4(), *genParticles, pdgIdsPhoton_,   weight);
+	fillHistogramGenMatch((*massHypothesisEntry)->hMassGenLeg2Jet_,      
+			      recMass, diTauCandidate->second->leg2()->p4(), *genParticles, pdgIdsJet_,      weight);
+      }
+      
+      (*massHypothesisEntry)->hMassMedian_->Fill(nSVfitResonanceHypothesis.mass_median(), weight);
+      (*massHypothesisEntry)->hMassMean_->Fill(nSVfitResonanceHypothesis.mass_mean(), weight);
+      (*massHypothesisEntry)->hMassMaximum_->Fill(nSVfitResonanceHypothesis.mass_maximum(), weight);
+      (*massHypothesisEntry)->hMassMaxInterpol_->Fill(nSVfitResonanceHypothesis.mass_maxInterpol(), weight);
+      
+      double sigma = ( recMass > genMass ) ? 
+	nSVfitResonanceHypothesis.massErrUp() : nSVfitResonanceHypothesis.massErrDown();
+      if ( sigma != 0. ) (*massHypothesisEntry)->hMassPull_->Fill((recMass - genMass)/sigma, weight);
+      
+      if ( diTauCandidate->first->histMassResults() ) {
+	const TH1* histMassResults = diTauCandidate->first->histMassResults();
+	double integral = histMassResults->Integral();
+	if ( integral > 0. ) 
+	  fillHistogramMassResult((*massHypothesisEntry)->hMassSumNormalized_, (*massHypothesisEntry)->dqmDirectory_,
+				  "MassSumNormalized", histMassResults, weight/integral);
+	fillHistogramMassResult((*massHypothesisEntry)->hMassSum_, (*massHypothesisEntry)->dqmDirectory_,
+				"MassSum", histMassResults, weight);
+      }
 
-    double recMass = matchedNSVfitResonanceHypothesis->mass();
-    double genMass = diTauCandidate->p4gen().mass();
+      double hadRecoilPt = (diTauCandidate->second->p4Vis() + diTauCandidate->second->met()->p4()).pt();
+      if      ( hadRecoilPt < 10. ) (*massHypothesisEntry)->hMassHadRecoilPtLt10_->Fill(recMass, weight);
+      else if ( hadRecoilPt < 20. ) (*massHypothesisEntry)->hMassHadRecoilPt10to20_->Fill(recMass, weight);
+      else if ( hadRecoilPt < 30. ) (*massHypothesisEntry)->hMassHadRecoilPt20to30_->Fill(recMass, weight);
+      else                          (*massHypothesisEntry)->hMassHadRecoilPtGt30_->Fill(recMass, weight);
+      (*massHypothesisEntry)->hHadRecoilPt_->Fill(hadRecoilPt, weight);
 
-    hMass_->Fill(recMass, weight);
-    hMassL_->Fill(recMass, weight);
-    hMassXL_->Fill(recMass, weight);
+      double dPhi = diTauCandidate->second->dPhi12()*180./TMath::Pi();
+      if      ( dPhi > 175. ) (*massHypothesisEntry)->hMassDPhiGt175_->Fill(recMass, weight);
+      else if ( dPhi > 170. ) (*massHypothesisEntry)->hMassDPhi170to175_->Fill(recMass, weight);
+      else if ( dPhi > 160. ) (*massHypothesisEntry)->hMassDPhi160to170_->Fill(recMass, weight);
+      else if ( dPhi > 140. ) (*massHypothesisEntry)->hMassDPhi140to160_->Fill(recMass, weight);
+      else                    (*massHypothesisEntry)->hMassDPhiLt140_->Fill(recMass, weight);
+      (*massHypothesisEntry)->hDPhi_->Fill(diTauCandidate->second->dPhi12(), weight);
+
+      std::string leg1genDecayMode = genDecayMode(*diTauCandidate->second->leg1());
+      std::string leg1recDecayMode = recDecayMode(*diTauCandidate->second->leg1());
+      std::string leg2genDecayMode = genDecayMode(*diTauCandidate->second->leg2());
+      std::string leg2recDecayMode = recDecayMode(*diTauCandidate->second->leg2());
+      MonitorElement* me = 
+	(*massHypothesisEntry)->hMassGenVsRecDecayModes_[leg1genDecayMode][leg1recDecayMode][leg2genDecayMode][leg2recDecayMode];
+      if ( !me ) {
+//--- book MonitorElement
+	std::string meName = std::string("Mass");
+	meName.append("_leg1#gen_").append(leg1genDecayMode).append("_rec_").append(leg1recDecayMode);
+	meName.append("_leg2#gen_").append(leg2genDecayMode).append("_rec_").append(leg2recDecayMode);
+	std::cout << "--> booking meName = " << meName << ", dqmDirectory = " << (*massHypothesisEntry)->dqmDirectory_ << std::endl;
+	me = book1D(*dqmStore_, (*massHypothesisEntry)->dqmDirectory_, meName.data(), meName.data(), 50, 0., 250.);
+	(*massHypothesisEntry)->hMassGenVsRecDecayModes_[leg1genDecayMode][leg1recDecayMode][leg2genDecayMode][leg2recDecayMode] = me;
+      }
+      me->Fill(recMass, weight);
     
-    if ( genParticles.isValid() ) {
-      fillHistogramGenMatch(hMassGenLeg2Electron_, recMass, diTauCandidate->leg2()->p4(), *genParticles, pdgIdsElectron_, weight);
-      fillHistogramGenMatch(hMassGenLeg2Muon_,     recMass, diTauCandidate->leg2()->p4(), *genParticles, pdgIdsMuon_,     weight);
-      fillHistogramGenMatch(hMassGenLeg2Photon_,   recMass, diTauCandidate->leg2()->p4(), *genParticles, pdgIdsPhoton_,   weight);
-      fillHistogramGenMatch(hMassGenLeg2Jet_,      recMass, diTauCandidate->leg2()->p4(), *genParticles, pdgIdsJet_,      weight);
+      fillWeightHistograms(hDiTauCandidateWeightPosLog_, hDiTauCandidateWeightNegLog_, hDiTauCandidateWeightZero_,
+			   hDiTauCandidateWeightLinear_, diTauCandidateWeight);
     }
-
-    hMassMedian_->Fill(matchedNSVfitResonanceHypothesis->mass_median(), weight);
-    hMassMean_->Fill(matchedNSVfitResonanceHypothesis->mass_mean(), weight);
-    
-    double sigma = ( recMass > genMass ) ? 
-      matchedNSVfitResonanceHypothesis->massErrUp() : matchedNSVfitResonanceHypothesis->massErrDown();
-    if ( sigma != 0. ) hMassPull_->Fill((recMass - genMass)/sigma, weight);
-    
-    if ( matchedNSVfitEventHypothesis->histMassResults() ) {
-      const TH1* histMassResults = matchedNSVfitEventHypothesis->histMassResults();
-      double integral = histMassResults->Integral();
-      if ( integral > 0. ) fillHistogramMassResult(hMassSum_, "MassSum", histMassResults, weight/integral);
-      fillHistogramMassResult(hMassSumNormalized_, "MassSumNormalized", histMassResults, weight);
-    }
-
-    fillWeightHistograms(hDiTauCandidateWeightPosLog_, hDiTauCandidateWeightNegLog_, hDiTauCandidateWeightZero_,
-			 hDiTauCandidateWeightLinear_, diTauCandidateWeight);
   }
 }
 
 template<typename T1, typename T2>
 void CompositePtrCandidateT1T2MEtNSVfitHistManager<T1,T2>::fillHistogramMassResult(
-       MonitorElement*& me, const std::string& meName, const TH1* histMassResults, double weight)
+       MonitorElement*& me, const std::string& dqmDirectory, const std::string& meName, const TH1* histMassResults, double weight)
 {
   if ( !me ) {
 //--- check that no other MonitorElement with name given as function argument exists
-    if ( checkExistence(*dqmStore_, dqmDirectory_store_, meName) ) return;
+    if ( checkExistence(*dqmStore_, dqmDirectory, meName) ) return;
 
 //--- book MonitorElement
-    dqmStore_->setCurrentFolder(dqmDirectory_store_);
-    
-    std::string meName_full = dqmDirectoryName(dqmDirectory_store_).append(meName);
+    dqmStore_->setCurrentFolder(dqmDirectory);
+    std::string meName_full = dqmDirectoryName(dqmDirectory).append(meName);
+    //std::cout << "<CompositePtrCandidateT1T2MEtNSVfitHistManager::fillHistogramMassResult>:" << std::endl;
+    //std::cout << "--> booking meName = " << meName_full << std::endl;
     TH1* histogram = (TH1*)histMassResults->Clone(meName.data());
     histogram->SetTitle(meName.data());
     histogram->Reset();
     dqmRegisterHistogram(*dqmStore_, histogram, meName_full);
+    bool dqmError = false;
+    me = getMonitorElement(*dqmStore_, meName_full, dqmError);
+    assert(!dqmError);
   }
 
   if ( weight > 0. ) me->getTH1()->Add(histMassResults, weight);
 }
 
 #include "FWCore/Framework/interface/MakerMacros.h"
-
-#include "DataFormats/PatCandidates/interface/Electron.h"
-#include "DataFormats/PatCandidates/interface/Muon.h"
-#include "DataFormats/PatCandidates/interface/Tau.h"
 
 typedef CompositePtrCandidateT1T2MEtNSVfitHistManager<pat::Electron, pat::Tau> PATElecTauPairNSVfitHistManager;
 typedef CompositePtrCandidateT1T2MEtNSVfitHistManager<pat::Muon, pat::Tau> PATMuTauPairNSVfitHistManager;

@@ -109,11 +109,14 @@ void PATTauDump::print(const edm::Event& evt, const edm::EventSetup& es) const
     *outputStream_ << "  pfGammaIsolation: Pt  = " << patTau->photonIso() << ","
 		   << " #particles = " << patTau->isolationPFGammaCands().size() << std::endl;
     *outputStream_ << " jetRadius = " << TMath::Sqrt(patTau->etaetaMoment() + patTau->phiphiMoment()) << std::endl;
-    *outputStream_ << " eVeto = " << patTau->tauID("againstElectron") << std::endl;
+    printTauId(*outputStream_, *patTau, "againstElectronLoose");
+    printTauId(*outputStream_, *patTau, "againstElectronMedium");
+    printTauId(*outputStream_, *patTau, "againstElectronTight");
     *outputStream_ << " EcalStripSumE/P = " << patTau->ecalStripSumEOverPLead() << std::endl;
     *outputStream_ << " BremsRecoveryE/P = " << patTau->bremsRecoveryEOverPLead() << std::endl;
     *outputStream_ << " HCAL3x3/P = " << patTau->hcal3x3OverPLead() << std::endl;
-    *outputStream_ << " muVeto = " << patTau->tauID("againstMuon") << std::endl;
+    printTauId(*outputStream_, *patTau, "againstMuonLoose");
+    printTauId(*outputStream_, *patTau, "againstMuonTight");
     *outputStream_ << " vertex" << std::endl;
     printVertexInfo(patTau->vertex(), outputStream_);
     if ( genParticleSource_.label() != "" )

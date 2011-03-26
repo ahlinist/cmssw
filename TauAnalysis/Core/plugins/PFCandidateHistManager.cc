@@ -35,7 +35,6 @@ void PFCandidateHistManager::bookHistogramsImp()
   //std::cout << "<PFCandidateHistManager::bookHistogramsImp>:" << std::endl;
   
   bookPFCandidateHistograms(hPFCandidatePt_, hPFCandidateEta_, hPFCandidatePhi_, "PFCandidate");
-  hPFCandidatePtVsEta_ = book2D("PFCandidatePtVsEta", "PFCandidatePtVsEta", 24, -3., +3., 30, 0., 150.);
 }
 
 void PFCandidateHistManager::fillHistogramsImp(const edm::Event& evt, const edm::EventSetup& es, double evtWeight)
@@ -54,7 +53,6 @@ void PFCandidateHistManager::fillHistogramsImp(const edm::Event& evt, const edm:
     double weight = getWeight(evtWeight, pfCandidateWeight, pfCandidateWeightSum);
   
     fillPFCandidateHistograms(*pfCandidate, hPFCandidatePt_, hPFCandidateEta_, hPFCandidatePhi_, weight);
-    hPFCandidatePtVsEta_->Fill(pfCandidate->eta(), pfCandidate->pt(), weight);
   }
 }
 
