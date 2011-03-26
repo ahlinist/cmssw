@@ -11,11 +11,11 @@ plots_WtoTauNu = cms.PSet(
         dqmMonitorElements = cms.vstring(''),
         processes = cms.vstring(
             'data',
-#            'ZplusJets',
-#            'Wmunu',
-#            'Wenu',
-#            'qcd_W',   
-#            'Wtaunu',
+            'ZplusJets',
+            'Wmunu',
+            'Wenu',
+            'qcd_W',   
+            'Wtaunu',
             )
     ),
     xAxis = cms.string('unlabeled'),
@@ -25,11 +25,11 @@ plots_WtoTauNu = cms.PSet(
     labels = cms.vstring('mcNormScale'),                   
     drawOptionSet = cms.string('default'),
     stack = cms.vstring(
-#        'ZplusJets',
- #       'Wmunu',
- #       'Wenu',
- #       'qcd_W',                
- #       'Wtaunu',
+        'ZplusJets',
+        'Wmunu',
+        'Wenu',
+        'qcd_W',                
+        'Wtaunu'
         )
     )
 
@@ -70,12 +70,6 @@ drawJobConfigurator_WtoTauNu.add(
     afterCut = evtSelTauPt,
     beforeCut = evtSelPFMetPt,
     plots = [
-        drawJobConfigEntry(
-            meName = 'CaloMEtQuantities/RAW_MEtPt',
-            title = "calo-MET (after tau p_T cut)",
-            xAxis = 'Pt',
-            name = "cutFlowControlPlots_MET_afterTauPtcut"
-            ),
         drawJobConfigEntry(
             meName = 'PFMEtQuantities/MEtPt',
             title = "PF-MET (after tau p_T cut)",
@@ -243,7 +237,7 @@ drawJobConfigurator_WtoTauNu.add(
 
 drawJobConfigurator_WtoTauNu.add(
     afterCut = evtSelRecoilEnergyFromCaloTowers,
-    beforeCut = evtSelMetTopology,
+    beforeCut = evtSelCentralJetVeto1,
     plots = [
         drawJobConfigEntry(
             meName = 'TauQuantities/Tau#PAR#',
@@ -258,12 +252,6 @@ drawJobConfigurator_WtoTauNu.add(
             xAxis = 'Pt',
             name = "cutFlowControlPlots_tauLeadTrkPt_afterMetTopology"
             ),
-        drawJobConfigEntry(
-            meName = 'CaloMEtQuantities/RAW_MEtPt',
-            title = "calo-MET (after Met topology cut)",
-            xAxis = 'Pt',
-            name = "cutFlowControlPlots_MET_afterMetTopology"
-            ), 
         drawJobConfigEntry(
             meName = 'PFMEtQuantities/MEtPt',
             title = "PFMET (after Met topology cut)",
@@ -298,8 +286,8 @@ drawJobConfigurator_WtoTauNu.add(
     )
 
 drawJobConfigurator_WtoTauNu.add(
-    afterCut = evtSelCentralJetVeto,
-    beforeCut = evtSelRecoilEnergyFromCaloTowers,
+    afterCut = evtSelCentralJetVeto1,
+    beforeCut = evtSelCentralJetVeto2,
     plots = [
         drawJobConfigEntry(
             meName = 'TauQuantities/Tau#PAR#',
