@@ -11,6 +11,7 @@
 #include "xercesc/sax/HandlerBase.hpp"
 #include "xercesc/util/XMLString.hpp"
 #include "xercesc/util/PlatformUtils.hpp"
+#include <set>
 
 InterpolGridVector::InterpolGridVector()
   : numElements_(0)
