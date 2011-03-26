@@ -6,7 +6,7 @@ process = cms.Process('runWtoTauNu')
 
 process.load('Configuration/StandardSequences/Services_cff')
 process.load('FWCore/MessageService/MessageLogger_cfi')
-process.MessageLogger.cerr.FwkReport.reportEvery = 1000
+process.MessageLogger.cerr.FwkReport.reportEvery = 1
 
 #load geometry
 process.load('Configuration/StandardSequences/GeometryIdeal_cff')
@@ -48,9 +48,8 @@ from TauAnalysis.Configuration.recoSampleDefinitionsWtoTauNu_cfi import *
 #process.add_( cms.Service("PrintLoadingPlugins") )
 #---------------------------------------------------------------------------------
 
-process.patTrigger.processName = 'HLT2'
-
-process.patTriggerEvent.processName = "HLT2"
+#process.patTrigger.processName = 'HLT2'
+#process.patTriggerEvent.processName = "HLT2"
 
 process.DQMStore = cms.Service("DQMStore")
 
@@ -68,33 +67,17 @@ process.source = cms.Source("PoolSource",
 #       '/store/relval/CMSSW_3_6_1/RelValZTT/GEN-SIM-RECO/START36_V7-v1/0021/F405BC9A-525D-DF11-AB96-002618943811.root'
        #'rfio:/castor/cern.ch/user/l/liis/wTauNuPatTuples/spring10/shrinkingcone/patTupleWtoTauNu_Wtaunu_7TeV_part01.root'
 
-#    #Wtaunu
-#    'rfio:/castor/cern.ch/user/a/abdollah/HLT/TrigEfficiency/testRAWRECO/TauHLTOutput_Fall10_79_1_8Yq.root'
-#    'rfio:/castor/cern.ch/user/a/abdollah/HLT/TrigEfficiency/testRAWRECO/TauHLTOutput_Fall10_98_1_gIu.root',
-#    'rfio:/castor/cern.ch/user/a/abdollah/HLT/TrigEfficiency/testRAWRECO/TauHLTOutput_Fall10_99_1_lOa.root',
-     'rfio:/castor/cern.ch/user/a/abdollah/HLT/TrigEfficiency/testRAWRECO/TauHLTOutput_Fall10_9_1_3yD.root'
-#    'rfio:/castor/cern.ch//user/v/veelken/CMSSW_3_8_x/skims/TauAnalysis/mcWtauNuPU156bx_5kEvents_1_1_wHR.root'
-    
-    #QCD
-#    'rfio:/castor/cern.ch/user/a/abdollah/HLT/TrigEfficiency/QCD/TauHLTOutput_Fall10_996_1_1OD.root',
-#    'rfio:/castor/cern.ch/user/a/abdollah/HLT/TrigEfficiency/QCD/TauHLTOutput_Fall10_997_1_6Bw.root',
-#    'rfio:/castor/cern.ch/user/a/abdollah/HLT/TrigEfficiency/QCD/TauHLTOutput_Fall10_998_1_rJw.root',
-#    'rfio:/castor/cern.ch/user/a/abdollah/HLT/TrigEfficiency/QCD/TauHLTOutput_Fall10_999_1_yIq.root',
-#    'rfio:/castor/cern.ch/user/a/abdollah/HLT/TrigEfficiency/QCD/TauHLTOutput_Fall10_99_1_AhP.root',
-#    'rfio:/castor/cern.ch/user/a/abdollah/HLT/TrigEfficiency/QCD/TauHLTOutput_Fall10_9_1_i9g.root'
 
-    #Wenu
-#    'rfio:/castor/cern.ch/user/a/abdollah/HLT/TrigEfficiency/Wenu/TauHLTOutput_Fall10_96_0_tkS.root',
-#    'rfio:/castor/cern.ch/user/a/abdollah/HLT/TrigEfficiency/Wenu/TauHLTOutput_Fall10_97_0_d3g.root',
-#    'rfio:/castor/cern.ch/user/a/abdollah/HLT/TrigEfficiency/Wenu/TauHLTOutput_Fall10_98_0_MgD.root',
-#    'rfio:/castor/cern.ch/user/a/abdollah/HLT/TrigEfficiency/Wenu/TauHLTOutput_Fall10_99_0_92n.root',
-#    'rfio:/castor/cern.ch/user/a/abdollah/HLT/TrigEfficiency/Wenu/TauHLTOutput_Fall10_9_0_uKS.root'
-
+#    'file:final_events_WtoTauNu_data_BTau_Run2010B_Nov4ReReco_RunPileup_79_1_AZq.root'
+       'file:final_events_WtoTauNu_data_BTau_Run2010B_Nov4ReReco_RunPileup_78_1_4t7.root' # 
+#       'file:final_events_WtoTauNu_data_BTau_Run2010B_Nov4ReReco_RunPileup_126_1_DMx.root'
+#       'file:final_events_WtoTauNu_data_BTau_Run2010B_Nov4ReReco_RunPileup_127_1_nPN.root'
     #Wmunu
 #    'rfio:/castor/cern.ch/user/a/abdollah/HLT/TrigEfficiency/testRAWRECO_MU/TauHLTOutput_Fall10_9_1_pBK.root'
     
     #Ztautau
 #    'rfio:/castor/cern.ch/user/a/abdollah/HLT/TrigEfficiency/Ztautau/TauHLTOutput_Fall10_9_1_2bX.root'
+
     
     )
     #skipBadFiles = cms.untracked.bool(True)
@@ -141,6 +124,11 @@ addPFMet(process, correct = False)
 process.load("TauAnalysis.CandidateTools.tauNuPairProduction_cff")
 replaceMETforTauNu(process, cms.InputTag('patMETs'),cms.InputTag('patPFMETs'))
 #--------------------------------------------------------------------------------
+#process.load("ElectroWeakAnalysis.WENu.simpleEleIdSequence_cff")
+#process.patElectronIDs = cms.Sequence(process.simpleEleIdSequence)
+#process.makePatElectrons = cms.Sequence(process.patElectronIDs*process.patElectrons)
+
+#--------------------------------------------------------------------------------
 # import utility function for changing cut values
 from TauAnalysis.Configuration.tools.changeCut import changeCut
 changeCut(process,"selectedPatTausTaNCdiscr","tauID('byHPSmedium') > -0.5") #inactivate TaNC
@@ -149,9 +137,19 @@ changeCut(process,"selectedPatTausForWTauNuEta21","abs(eta) < 2.3")
 changeCut(process,"selectedPatTausForWTauNuEcalIso","tauID('byHPSmedium') > 0.5")
 changeCut(process,"selectedPatTausForWTauNuTrkIso","tauID('byHPSmedium') > 0.5")
 changeCut(process,"selectedPatTausForWTauNuPt20","pt > 30")
+changeCut(process,"selectedPatTausForWTauNuMuonVeto","tauID('againstMuonTight') > 0.5")
 changeCut(process,"selectedPatTausForWTauNuLeadTrkPt","tauID('decayModeFinding') > 0.5")
 changeCut(process,"selectedPatTausForWTauNuElectronVeto","tauID('againstElectronTight') > 0.5")
 changeCut(process,"selectedPatTausForWTauNuEcalCrackVeto","abs(eta) > 0.018 && (abs(eta)<0.423 || abs(eta)>0.461) && (abs(eta)<0.770 || abs(eta)>0.806) && (abs(eta)<1.127 || abs(eta)>1.163) && (abs(eta)<1.460 || abs(eta)>1.558)")
+
+#electron selection
+changeCut(process,"selectedPatElectronsTightId","electronID('eidLoose') > 0.5")
+#"(abs(superCluster.eta) < 1.479 & electronID('eidRobustLoose') > 0 & eSuperClusterOverP < 1.05 & eSuperClusterOverP > 0.95) | (abs(superCluster.eta) > 1.479 & electronID('eidRobustLoose') > 0 & eSuperClusterOverP < 1.12 & eSuperClusterOverP > 0.95)")
+changeCut(process,"selectedPatElectronsEta21","abs(eta) < 2.4")
+
+#muon selection
+changeCut(process,"selectedPatMuonsEta21","abs(eta) < 2.4")
+process.patMuonPFIsolationSelector.sumPtMax = cms.double(0.2)
 #-----------------------------------------------------------------------------------
 
 #print event content before starting to process 1st event
@@ -160,6 +158,12 @@ process.filterFirstEvent = cms.EDFilter("EventCountFilter",
     numEvents = cms.int32(1)
 )
 
+# Define a generic end path that filters the final events that a pool
+# output module can be hooked into if desired.
+process.filterFinalEvents = cms.EDFilter("BoolEventFilter",
+                                         src = cms.InputTag("isRecWtoTauNu")
+                                         )
+
 process.p = cms.Path( 
     process.producePatTupleWtoTauNuSpecific
 #    +process.printGenParticleList # print-out of generator level particles
@@ -167,8 +171,18 @@ process.p = cms.Path(
     +process.selectWtoTauNuEvents
     +process.analyzeWtoTauNuEvents
     +process.saveWtoTauNuPlots 
+#    +process.filterFinalEvents
 )
 
+# Dummy do-nothing module to allow an empty path
+process.dummy = cms.EDProducer("DummyModule")
+# Path that option output modules can be hooked into
+process.endtasks = cms.EndPath(process.dummy)
+
+process.schedule = cms.Schedule(
+       process.p,
+       process.endtasks
+       )
 
 #--------------------------------------------------------------------------------
 # import utility function for factorization
@@ -195,8 +209,8 @@ if hasattr(process, "disableEventDump"):
     process.analyzeWtoTauNuEvents.eventDumps = cms.VPSet()
 #--------------------------------------------------------------------------------
 # disable accessing generator level information if running on data
-#from TauAnalysis.Configuration.tools.switchToData import switchToData
-#switchToData(process)
+from TauAnalysis.Configuration.tools.switchToData import switchToData
+switchToData(process)
 #--------------------------------------------------------------------------------
 
 process.producePatTupleAll = cms.Sequence(process.producePatTuple + process.producePatTupleWtoTauNuSpecific)
