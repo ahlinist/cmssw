@@ -1,3 +1,4 @@
+
 import FWCore.ParameterSet.Config as cms
 import copy
 
@@ -8,7 +9,7 @@ import TauAnalysis.DQMTools.plotterStyleDefinitions_cfi as styles
 SAMPLES_TO_ANALYZE = [
 	'data_BTau_Run2010B_Nov4ReReco',
 	'Wtaunu',
-	'Wenu',
+	'Wenu'
 	'Wmunu',
 	'Ztautau',
 	'QCD'
@@ -16,7 +17,9 @@ SAMPLES_TO_ANALYZE = [
 
 SAMPLES_TO_PLOT = [
 	'data_BTau_Run2010B_Nov4ReReco',
-#	'Wtaunu'
+	'Wtaunu',
+	'Wenu',
+	'Wmunu'
 ]
 
 SAMPLES_TO_PRINT = copy.copy(SAMPLES_TO_PLOT)
@@ -37,6 +40,7 @@ SAMPLE_DEFAULTS = {
     'disableDuplicateCheck' : True,
     'applyZrecoilCorrection' : False,
     'applyMuonTriggerEfficiencyCorrection' : False,
+    'applyElectronTriggerEfficiencyCorrection' : False,
     'applyVertexMultiplicityReweighting' : False    
     }
 
@@ -48,15 +52,15 @@ _picobarns =  1.0
 _femtobarns = 1.0e-3
 
 # Integrated luminosity to normalize
-TARGET_LUMI = 30.3/_picobarns # for runs 132440 - 149442
+TARGET_LUMI = 18.4/_picobarns # for runs 132440 - 149442
 
 RECO_SAMPLES = {
 	'data_BTau_Run2010B_Nov4ReReco':
 		{
 		'datasetpath' : '/BTau/Run2010B-Nov4ReReco_v1/RECO',
 		'lumi_mask' : "/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions10/7TeV//Reprocessing/Cert_136033-149442_7TeV_Nov4ReReco_Collisions10_JSON.txt",
-		'runselection' : "146428 - 149294",
-		'number_of_jobs' : 200,
+		'runselection' : "148822 - 149294",
+		'number_of_jobs' : 100,
 		'conditions' : 'GR_R_38X_V15::All',
 		'enableSysUncertainties' : False,
 		'events_processed' : -1,
@@ -64,60 +68,61 @@ RECO_SAMPLES = {
 		'legendEntry' : 'DATA',
 		'type' : 'Data',
 		'drawOption' : styles.drawOption_Data,
-		'hlt_paths' : {
-			'HLT_SingleIsoTau20_Trk15_MET20': '146428:MIN - 148058:MAX',
-			'HLT_SingleIsoTau20_Trk15_MET25': '148822:MIN - 149294:MAX'
-			}
+		'hlt_paths' : [ 'HLT_SingleIsoTau20_Trk15_MET25_v3','HLT_SingleIsoTau20_Trk15_MET25_v4' ]
+#		{
+#			'HLT_SingleIsoTau20_Trk15_MET20': '146428:MIN - 148058:MAX',
+#			['HLT_SingleIsoTau20_Trk15_MET25_v3','HLT_SingleIsoTau20_Trk15_MET25_v4']: '148822:MIN - 149294:MAX'
+#			}
 		},
 	'Wtaunu' : {
 		'datasetpath' : "/WToTauNu_TuneZ2_7TeV-pythia6-tauola/Fall10-E7TeV_ProbDist_2010Data_BX156_START38_V12-v1/GEN-SIM-RECO",
-		'events_processed' : -1,
+		'events_processed' : 44864822,
 		'skim_eff' : 1.0,
 		'x_sec' : 10438*_picobarns, # NLO
 		'legendEntry' : plotter.process_Wtaunu.config_dqmHistPlotter.legendEntry.value(),
 		'type' : plotter.process_Wtaunu.config_dqmHistPlotter.type.value(),
-		'drawOption' : styles.drawOption_Wtaunu
-		#'hlt' : cms.InputTag("TriggerResults", "", "HLT")
+		'drawOption' : styles.drawOption_Wtaunu,
+		'hlt' : cms.InputTag("TriggerResults", "", "REDIGI38XPU")
 		},
 	'Wmunu' : {
 		'datasetpath' : "/WToMuNu_TuneZ2_7TeV-pythia6/Fall10-E7TeV_ProbDist_2010Data_BX156_START38_V12-v1/GEN-SIM-RECO",
-		'events_processed' : -1,
+		'events_processed' : 4000000,
 		'skim_eff' : 1.0,
 		'x_sec' : 10438*_picobarns, # NLO
 		'legendEntry' : plotter.process_Wmunu.config_dqmHistPlotter.legendEntry.value(),
 		'type' : plotter.process_Wmunu.config_dqmHistPlotter.type.value(),
-		'drawOption' : styles.drawOption_Wmunu
-#		#'hlt' : cms.InputTag("TriggerResults", "", "HLT")
+		'drawOption' : styles.drawOption_Wmunu,
+		'hlt' : cms.InputTag("TriggerResults", "", "REDIGI38XPU")
 		},
 	'Wenu' : {
 		'datasetpath' : "/WToENu_TuneZ2_7TeV-pythia6/Fall10-E7TeV_ProbDist_2010Data_BX156_START38_V12-v1/GEN-SIM-RECO",
-		'events_processed' : -1,
+		'events_processed' : 1000000,
 		'skim_eff' : 1.0,
 		'x_sec' : 10438*_picobarns, # NLO
 		'legendEntry' : plotter.process_Wenu.config_dqmHistPlotter.legendEntry.value(),
 		'type' : plotter.process_Wenu.config_dqmHistPlotter.type.value(),
-		'drawOption' : styles.drawOption_Wenu
-		# 'hlt' : cms.InputTag("TriggerResults", "", "HLT")
+		'drawOption' : styles.drawOption_Wenu,
+		'hlt' : cms.InputTag("TriggerResults","","REDIGI38XPU")
 		},
 	'Ztautau' : {
 		'datasetpath' : "/DYToTauTau_M-20_TuneZ2_7TeV-pythia6-tauola/Fall10-E7TeV_ProbDist_2010Data_BX156_START38_V12-v3/GEN-SIM-RECO",
-		'events_processed' : -1,
+		'events_processed' : 4000,
 		'skim_eff' : 1.0,
 		'x_sec' : 1.282*1300*_picobarns, # NLO
 		'legendEntry' : plotter.process_Ztautau.config_dqmHistPlotter.legendEntry.value(),
 		'type' : plotter.process_Ztautau.config_dqmHistPlotter.type.value(),
-		'drawOption' : styles.drawOption_Ztautau
-		#'hlt' : cms.InputTag("TriggerResults", "", "HLT")
+		'drawOption' : styles.drawOption_Ztautau,
+		'hlt' : cms.InputTag("TriggerResults", "", "REDIGI38XPU")
 		}, 
 	'QCD' : {
-		'datasetpath' : "/QCD_Pt-15_TauBiased_TuneZ2_7TeV-pythia6/Fall10-E7TeV_ProbDist_2010Data_BX156_START38_V12-v1/GEN-SIM-RECO",
-		'Events_processed' : -1,
+		'datasetpath' : "/QCD_Pt-15_TauBiased_TuneZ2_7TeV-pythia6/Fall10-E7TeV_ProbDist_2010Data_BX156_START38_V12-v1/AODSIM",
+		'events_processed' : 10000000,
 		'skim_eff' : 1.0,
 		'x_sec' : 875100000*_picobarns, # NLO
 		'legendEntry' : plotter.process_qcd_W.config_dqmHistPlotter.legendEntry.value(),
 		'type' : plotter.process_qcd_W.config_dqmHistPlotter.type.value(),
-		'drawOption' : styles.drawOption_QCD
-		#    'hlt' : cms.InputTag("TriggerResults", "", "HLT")
+		'drawOption' : styles.drawOption_QCD,
+		'hlt' : cms.InputTag("TriggerResults", "", "REDIGI38XPU")
 		}
 	
 	}
@@ -127,7 +132,7 @@ MERGE_SAMPLES = {
 	'bgSum' : {
 		'samples' : [
 			'Wenu',
-			'Wmunu',
+			'Wmunu'
 			'Ztautau',
 			'QCD'
 			],
