@@ -66,8 +66,8 @@ double compDeltaRlegNu(const reco::Candidate::LorentzVector& p4leg, const reco::
   const reco::GenParticle* genTauLepton = findGenParticle(p4leg, genParticles);
 
   if ( genTauLepton ) {
-    reco::Candidate::LorentzVector genVisMomentum = getVisMomentum(genTauLepton, &genParticles);
-    reco::Candidate::LorentzVector genInvisMomentum = getInvisMomentum(genTauLepton, &genParticles);
+    reco::Candidate::LorentzVector genVisMomentum = getVisMomentum(genTauLepton);
+    reco::Candidate::LorentzVector genInvisMomentum = getInvisMomentum(genTauLepton);
 
     return angle(genVisMomentum, genInvisMomentum)*180./TMath::Pi();
   }

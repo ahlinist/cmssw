@@ -215,7 +215,17 @@ void CompositePtrCandidateT1T2MEtHistManager<T1,T2>::bookHistogramsImp()
 
   hPzetaCorr_ = book2D("PzetaCorr", "P_{#zeta} vs. P_{#zeta}^{vis}", 10, 0., 50., 14, -20., 50.);
   hPzetaDiff_ = book1D("PzetaDiff", "P_{#zeta} - 1.5*P_{#zeta}^{vis}", 40, -100., +100.);
-  hPzetaDiffVsMt1MET_ = book2D("PzetaDiffVsMt1MET", "P_{#zeta} - 1.5*P_{#zeta}^{vis} vs. Mass_{T 1,MET}", 20, 0., 200., 20, -100., +100.);
+
+  hPzetaDiffVsMt1MET_  = 
+    book2D("PzetaDiffVsMt1MET",  "P_{#zeta} - 1.5*P_{#zeta}^{vis} vs. Mass_{T 1,MET}", 20, 0., 200., 20, -100., +100.);
+  hPzetaDiffVsMET_  = 
+    book2D("PzetaDiffVsMET",     "P_{#zeta} - 1.5*P_{#zeta}^{vis} vs. MET",            20, 0., 200., 20, -100., +100.);
+  hPzetaDiffVsVisMass_ = 
+    book2D("PzetaDiffVsVisMass", "P_{#zeta} - 1.5*P_{#zeta}^{vis} vs. Visible Mass",   20, 0., 500., 20, -100., +100.);
+  hMt1METvsMET_        = 
+    book2D("Mt1METvsMET",        "Mass_{T 1,MET} vs. MET",                             20, 0., 200., 20,    0.,  200.);
+  hMt1METvsVisMass_    = 
+    book2D("Mt1METvsVisMass",    "Mass_{T 1,MET} vs. Visible Mass",                    20, 0., 500., 20, -100., +100.);
 }
 
 template<typename T1, typename T2>
@@ -522,7 +532,14 @@ void CompositePtrCandidateT1T2MEtHistManager<T1,T2>::fillHistogramsImp(const edm
 
     hPzetaCorr_->Fill(diTauCandidate->pZetaVis(), diTauCandidate->pZeta(), weight);
     hPzetaDiff_->Fill(diTauCandidate->pZeta() - 1.5*diTauCandidate->pZetaVis(), weight);
+
     hPzetaDiffVsMt1MET_->Fill(diTauCandidate->mt1MET(), diTauCandidate->pZeta() - 1.5*diTauCandidate->pZetaVis(), weight);
+    if ( diTauCandidate->met().isNonnull() ) {
+      hPzetaDiffVsMET_->Fill(diTauCandidate->met()->pt(), diTauCandidate->pZeta() - 1.5*diTauCandidate->pZetaVis(), weight);
+      hPzetaDiffVsVisMass_->Fill(visMass, diTauCandidate->pZeta() - 1.5*diTauCandidate->pZetaVis(), weight);
+      hMt1METvsMET_->Fill(diTauCandidate->met()->pt(), diTauCandidate->mt1MET(), weight);
+      hMt1METvsVisMass_->Fill(visMass, diTauCandidate->mt1MET(), weight);
+    }
   }
 }
 

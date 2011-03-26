@@ -8,8 +8,8 @@ diTauCandidateNSVfitHistManager = cms.PSet(
 
     genParticleSource = cms.InputTag('genParticles'),
 
-    nSVfitEventHypothesisSource = cms.InputTag(''),
-
+    nSVfitEventHypotheses = cms.PSet(),
+   
     dqmDirectory_store = cms.string('DiTauCandidateNSVfitQuantities'),
 
     #requireGenMatch = cms.bool(True),

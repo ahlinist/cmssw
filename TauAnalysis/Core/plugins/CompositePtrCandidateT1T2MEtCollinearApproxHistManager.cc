@@ -335,8 +335,8 @@ void CompositePtrCandidateT1T2MEtCollinearApproxHistManager<T1,T2>::fillMEtHisto
     if ( genLeg1 && genLeg2 ) {
       reco::Candidate::LorentzVector p4Zgen = genLeg1->p4() + genLeg2->p4();
       
-      reco::Candidate::LorentzVector p4InvisLeg1gen = getInvisMomentum(genLeg1, genParticles.product());
-      reco::Candidate::LorentzVector p4InvisLeg2gen = getInvisMomentum(genLeg2, genParticles.product());
+      reco::Candidate::LorentzVector p4InvisLeg1gen = getInvisMomentum(genLeg1);
+      reco::Candidate::LorentzVector p4InvisLeg2gen = getInvisMomentum(genLeg2);
       
       reco::Candidate::LorentzVector p4GenTauNeutrinos = p4InvisLeg1gen + p4InvisLeg2gen;
       
@@ -353,11 +353,11 @@ void CompositePtrCandidateT1T2MEtCollinearApproxHistManager<T1,T2>::fillMEtHisto
       
       fillHistogram(hMEtNonTauNeutrinosParallelZ_, hMEtNonTauNeutrinosPerpendicularZ_, p4GenNonTauNeutrinos, p4Zgen, weight);
       
-      reco::Candidate::LorentzVector p4VisLeg1gen = getVisMomentum(genLeg1, genParticles.product());
+      reco::Candidate::LorentzVector p4VisLeg1gen = getVisMomentum(genLeg1);
       reco::Candidate::LorentzVector p4MisMeasLeg1 = p4VisLeg1gen - diTauCandidate.leg1()->p4();
       fillHistogram(hMEtLeg1MisMeasParallelZ_, hMEtLeg1MisMeasPerpendicularZ_, p4MisMeasLeg1, p4Zgen, weight);
       
-      reco::Candidate::LorentzVector p4VisLeg2gen = getVisMomentum(genLeg2, genParticles.product());
+      reco::Candidate::LorentzVector p4VisLeg2gen = getVisMomentum(genLeg2);
       reco::Candidate::LorentzVector p4MisMeasLeg2 = p4VisLeg2gen - diTauCandidate.leg2()->p4();
       fillHistogram(hMEtLeg2MisMeasParallelZ_, hMEtLeg2MisMeasPerpendicularZ_, p4MisMeasLeg2, p4Zgen, weight);
 

@@ -32,12 +32,11 @@ class CompositePtrCandidateT1T2MEtNSVfitHistManager : public HistManagerBase
 //--- auxiliary functions
   double getDiTauCandidateWeight(const CompositePtrCandidateT1T2MEt<T1,T2>&);
 
-  void fillHistogramMassResult(MonitorElement*& , const std::string&, const TH1*, double);
+  void fillHistogramMassResult(MonitorElement*&, const std::string&, const std::string&, const TH1*, double);
   
 //--- configuration parameters
   edm::InputTag diTauCandidateSrc_;
   edm::InputTag genParticleSrc_;
-  edm::InputTag nSVfitEventHypothesisSrc_;
 
   bool requireGenMatch_;
 
@@ -53,21 +52,51 @@ class CompositePtrCandidateT1T2MEtNSVfitHistManager : public HistManagerBase
   std::vector<FakeRateJetWeightExtractor<T1>*> diTauLeg1WeightExtractors_;
   std::vector<FakeRateJetWeightExtractor<T2>*> diTauLeg2WeightExtractors_;
 
-  MonitorElement* hMass_;
-  MonitorElement* hMassL_; 
-  MonitorElement* hMassXL_; 
-  MonitorElement* hMassGenLeg2Electron_;
-  MonitorElement* hMassGenLeg2Muon_;
-  MonitorElement* hMassGenLeg2Photon_;
-  MonitorElement* hMassGenLeg2Jet_;
+  struct massHypothesisEntryType
+  {
+    edm::InputTag nSVfitEventHypothesisSrc_;
 
-  MonitorElement* hMassMedian_;
-  MonitorElement* hMassMean_;
+    std::string dqmDirectory_;
 
-  MonitorElement* hMassPull_;
+    MonitorElement* hMass_;
+    MonitorElement* hMassL_; 
+    MonitorElement* hMassXL_; 
+    MonitorElement* hMassGenLeg2Electron_;
+    MonitorElement* hMassGenLeg2Muon_;
+    MonitorElement* hMassGenLeg2Photon_;
+    MonitorElement* hMassGenLeg2Jet_;
+    
+    MonitorElement* hMassMedian_;
+    MonitorElement* hMassMean_;
+    MonitorElement* hMassMaximum_;
+    MonitorElement* hMassMaxInterpol_;
+    
+    MonitorElement* hMassPull_;
+    
+    MonitorElement* hMassSum_;
+    MonitorElement* hMassSumNormalized_;
+    
+    MonitorElement* hMassHadRecoilPtLt10_;
+    MonitorElement* hMassHadRecoilPt10to20_;
+    MonitorElement* hMassHadRecoilPt20to30_;
+    MonitorElement* hMassHadRecoilPtGt30_;
+    MonitorElement* hHadRecoilPt_;
 
-  MonitorElement* hMassSum_;
-  MonitorElement* hMassSumNormalized_;
+    MonitorElement* hMassDPhiGt175_;
+    MonitorElement* hMassDPhi170to175_;
+    MonitorElement* hMassDPhi160to170_;
+    MonitorElement* hMassDPhi140to160_;
+    MonitorElement* hMassDPhiLt140_;
+    MonitorElement* hDPhi_;
+    
+    typedef std::map<std::string, std::map<std::string, MonitorElement*> > decayModeMapType;
+    std::map<std::string, std::map<std::string, decayModeMapType> > hMassGenVsRecDecayModes_; // key = gen. decay mode leg1, 
+                                                                                              //       rec. decay mode leg1,
+                                                                                              //       gen. decay mode leg2,
+                                                                                              //       rec. decay mode leg2
+  };
+
+  std::vector<massHypothesisEntryType*> massHypothesisEntries_;
 
   MonitorElement* hDiTauCandidateWeightPosLog_;
   MonitorElement* hDiTauCandidateWeightNegLog_;
