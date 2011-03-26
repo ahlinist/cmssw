@@ -33,9 +33,9 @@ reco::Candidate::Point getDecayVertex(const reco::GenParticle*);
 bool isNeutrino(const reco::GenParticle*);
 
 reco::Candidate::LorentzVector getVisMomentum(const std::vector<const reco::GenParticle*>&, int = 1);
-reco::Candidate::LorentzVector getVisMomentum(const reco::GenParticle*, const reco::GenParticleCollection*);
+reco::Candidate::LorentzVector getVisMomentum(const reco::GenParticle*);
 reco::Candidate::LorentzVector getInvisMomentum(const std::vector<const reco::GenParticle*>&, int = 1);
-reco::Candidate::LorentzVector getInvisMomentum(const reco::GenParticle*, const reco::GenParticleCollection*);
+reco::Candidate::LorentzVector getInvisMomentum(const reco::GenParticle*);
 
 void compX1X2byCollinearApprox(double&, double&, double, double, double, double, double, double);
 double getPhysX(double x, bool& isWithinPhysRange);

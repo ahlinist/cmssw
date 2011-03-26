@@ -248,7 +248,7 @@ class CompositePtrCandidateT1T2MEtAlgorithm
       compositePtrCandidate.setPrimaryVertexPosGen(genLeg1->vertex());
       compositePtrCandidate.setDecayVertexPosLeg1gen(getDecayVertex(genLeg1));
       compositePtrCandidate.setP4Leg1gen(genLeg1->p4());
-      compositePtrCandidate.setP4VisLeg1gen(getVisMomentum(genLeg1, genParticles));
+      compositePtrCandidate.setP4VisLeg1gen(getVisMomentum(genLeg1));
     }
     
     const reco::GenParticle* genLeg2 = findGenParticle(compositePtrCandidate.leg2()->p4(), *genParticles, 0.5, -1, 
@@ -256,7 +256,7 @@ class CompositePtrCandidateT1T2MEtAlgorithm
     if ( genLeg2 ) {
       compositePtrCandidate.setDecayVertexPosLeg2gen(getDecayVertex(genLeg2));
       compositePtrCandidate.setP4Leg2gen(genLeg2->p4());
-      compositePtrCandidate.setP4VisLeg2gen(getVisMomentum(genLeg2, genParticles));
+      compositePtrCandidate.setP4VisLeg2gen(getVisMomentum(genLeg2));
     }
   }
   void compCollinearApprox(CompositePtrCandidateT1T2MEt<T1,T2>& compositePtrCandidate,
