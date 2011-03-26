@@ -1,6 +1,8 @@
 #include "TauAnalysis/FittingTools/interface/RunningMedian.h"
 
 #include "FWCore/MessageLogger/interface/MessageLogger.h"
+#include <algorithm>
+#include <assert.h>
 
 RunningMedian::RunningMedian(unsigned d)
 {
