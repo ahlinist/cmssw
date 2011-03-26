@@ -37,6 +37,15 @@ basePath = cms.Sequence(
    PDFInfo
    )
 
+basePathData = cms.Sequence(
+   preselectedMETs +
+   preselectedMuons +
+   PVFilterProducer +
+   preselectedElectrons +
+   looseElectrons +
+   UnclusteredMETPF 
+   )
+
 flavorHistorySequence = cms.Sequence(
     cFlavorHistoryProducer *
     bFlavorHistoryProducer
