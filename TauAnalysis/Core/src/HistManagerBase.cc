@@ -92,6 +92,7 @@ MonitorElement* HistManagerBase::book1D(DQMStore& dqmStore, const std::string& d
 {
   if ( checkExistence(dqmStore, dqmDirectory, name) ) return 0;
 
+  dqmStore.setCurrentFolder(dqmDirectory);
   MonitorElement* me = dqmStore.book1D(name, title, numBinsX, xMin, xMax);
   if ( sumWeights ) me->getTH1()->Sumw2();
 
@@ -116,6 +117,7 @@ MonitorElement* HistManagerBase::book1D(DQMStore& dqmStore, const std::string& d
 {
   if ( checkExistence(dqmStore, dqmDirectory, name) ) return 0;
 
+  dqmStore.setCurrentFolder(dqmDirectory);
   MonitorElement* me = dqmStore.book1D(name, title, numBinsX, xBinning);
   if ( sumWeights ) me->getTH1()->Sumw2();
 
@@ -139,6 +141,7 @@ MonitorElement* HistManagerBase::book2D(DQMStore& dqmStore, const std::string& d
 {
   if ( checkExistence(dqmStore, dqmDirectory, name) ) return 0;
 
+  dqmStore.setCurrentFolder(dqmDirectory);
   MonitorElement* me = dqmStore.book2D(name, title, numBinsX, xMin, xMax, numBinsY, yMin, yMax);
   if ( sumWeights ) me->getTH1()->Sumw2();
 
@@ -162,6 +165,7 @@ MonitorElement* HistManagerBase::book2D(DQMStore& dqmStore, const std::string& d
 {
   if ( checkExistence(dqmStore, dqmDirectory, name) ) return 0;
 
+  dqmStore.setCurrentFolder(dqmDirectory);
   MonitorElement* me = dqmStore.book2D(name, title, numBinsX, xBinning, numBinsY, yBinning);
   if ( sumWeights ) me->getTH1()->Sumw2();
 
@@ -184,6 +188,7 @@ MonitorElement* HistManagerBase::bookProfile1D(DQMStore& dqmStore, const std::st
 {
   if ( checkExistence(dqmStore, dqmDirectory, name) ) return 0;
 
+  dqmStore.setCurrentFolder(dqmDirectory);
   MonitorElement* me = dqmStore.bookProfile(name, title, numBinsX, xMin, xMax,
 					    defaultTProfileNumYbins, defaultTProfileYmin, defaultTProfileYmax, defaultTProfileOption);
   
@@ -211,6 +216,7 @@ MonitorElement* HistManagerBase::bookProfile1D(DQMStore& dqmStore, const std::st
     xBinning_double[iBin] = xBinning[iBin];
   }
 
+  dqmStore.setCurrentFolder(dqmDirectory);
   MonitorElement* me = dqmStore.bookProfile(name, title, numBinsX, xBinning_double, 
 					    defaultTProfileNumYbins, defaultTProfileYmin, defaultTProfileYmax, defaultTProfileOption);
 
