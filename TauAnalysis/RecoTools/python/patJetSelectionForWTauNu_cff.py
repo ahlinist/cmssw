@@ -31,6 +31,11 @@ selectedPatJetsEt20ForWTauNu = cms.EDFilter("PATJetSelector",
                                                filter = cms.bool(False)
                                                )
 
+selectedPatJetsEtL20ForWTauNu = cms.EDFilter("PATJetSelector",
+                                             cut = cms.string('et < 20'),
+                                             filter = cms.bool(False)
+                                             )
+
 patJetSelConfiguratorForWTauNu = objSelConfigurator(
     [ selectedPatJetsAntiOverlapWithTausVetoForWTauNu,
       selectedPatJetsEta21ForWTauNu,
@@ -40,7 +45,19 @@ patJetSelConfiguratorForWTauNu = objSelConfigurator(
     pyModuleName = __name__,
     doSelIndividual = False
     )
-selectPatJetsForWTauNu =patJetSelConfiguratorForWTauNu.configure(pyNameSpace = locals())
+
+patJetSelConfiguratorForWTauNu2 = objSelConfigurator(
+        [ selectedPatJetsAntiOverlapWithTausVetoForWTauNu,
+                selectedPatJetsEta21ForWTauNu,
+                selectedPatJetsEt15ForWTauNu,
+                selectedPatJetsEtL20ForWTauNu ],
+            src = "cleanPatJets",
+            pyModuleName = __name__,
+            doSelIndividual = False
+            )
+
+selectPatJetsForWTauNu = patJetSelConfiguratorForWTauNu.configure(pyNameSpace = locals())
+selectPatJetsForWTauNu2 = patJetSelConfiguratorForWTauNu2.configure(pyNameSpace = locals())
 
 #select jets for W->taunu analysis, loose isolation
 selectedPatJetsAntiOverlapWithTausVetoForWTauNuLooseIsolation = cms.EDFilter("PATJetAntiOverlapSelector",
@@ -75,4 +92,5 @@ patJetSelConfiguratorForWTauNuLooseIsolation = objSelConfigurator(
 selectPatJetsForWTauNuLooseIsolation =patJetSelConfiguratorForWTauNuLooseIsolation.configure(pyNameSpace = locals())
 
 selectPatSelJetsForWTauNu = cms.Sequence (selectPatJetsForWTauNu
+                                          *selectPatJetsForWTauNu2
                                              *selectPatJetsForWTauNuLooseIsolation) 
