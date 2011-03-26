@@ -3,7 +3,7 @@
 *
 *
 *
-*\version  $Id: SingleTopAnalyzer.cc,v 1.5 2010/04/23 07:06:27 oiorio Exp $ 
+*\version  $Id: SingleTopSystematicsDumper.cc,v 1.1 2011/03/24 15:58:06 oiorio Exp $ 
 */
 // This analyzer dumps the histograms for all systematics listed in the cfg file 
 //
@@ -182,6 +182,8 @@ void SingleTopSystematicsDumper::analyze(const Event& iEvent, const EventSetup& 
   double Weight = 1;
   double MTWValue =0;
   
+  if(channel=="Data")WeightLumi=1;
+
   for(size_t s = 0; s < systematics.size();++s){
     string syst_name =  systematics.at(s);
     
