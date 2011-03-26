@@ -112,7 +112,7 @@ reco::Candidate::LorentzVector getVisMomentum(const std::vector<const reco::GenP
   return p4Vis;
 }
 
-reco::Candidate::LorentzVector getVisMomentum(const reco::GenParticle* genLeg, const reco::GenParticleCollection* genParticles)
+reco::Candidate::LorentzVector getVisMomentum(const reco::GenParticle* genLeg)
 {
   std::vector<const reco::GenParticle*> stableDaughters;
   findDaughters(genLeg, stableDaughters, 1);
@@ -140,7 +140,7 @@ reco::Candidate::LorentzVector getInvisMomentum(const std::vector<const reco::Ge
   return p4Invis;
 }
 
-reco::Candidate::LorentzVector getInvisMomentum(const reco::GenParticle* genLeg, const reco::GenParticleCollection* genParticles)
+reco::Candidate::LorentzVector getInvisMomentum(const reco::GenParticle* genLeg)
 {
   std::vector<const reco::GenParticle*> stableDaughters;
   findDaughters(genLeg, stableDaughters, 1);
