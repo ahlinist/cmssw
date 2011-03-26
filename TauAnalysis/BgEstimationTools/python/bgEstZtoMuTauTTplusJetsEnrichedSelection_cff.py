@@ -52,8 +52,7 @@ muTauPairsBgEstTTplusJetsEnrichedZeroCharge = cms.EDFilter("PATMuTauPairSelector
 selectMuTauPairsBgEstTTplusJetsEnriched = cms.Sequence(muTauPairsBgEstTTplusJetsEnrichedZeroCharge)
 
 #--------------------------------------------------------------------------------  
-# produce collection of pat::Jets used for central jet veto
-# (in order to reject QCD di-jet events)
+# produce collection of pat::Jets
 #--------------------------------------------------------------------------------
 
 jetsBgEstTTplusJetsEnrichedAntiOverlapWithLeptonsVeto = cms.EDFilter("PATJetAntiOverlapSelector",
