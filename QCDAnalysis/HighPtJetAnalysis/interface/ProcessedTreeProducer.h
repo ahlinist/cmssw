@@ -46,61 +46,65 @@ class ProcessedTreeProducer : public edm::EDAnalyzer
     std::string mCaloPayloadName;
     
     typedef struct {
-      int   runNo;
-      int   evtNo;
-      int   lumi;
-      int   bunch;
-      int   nVtx;
-      int   nVtxGood;
-      int   isPVgood;
-      float PVndof;
-      float PVx;
-      float PVy;
-      float PVz;
-      float pfCorMass;
-      float pfRawMass;
-      float caloCorMass;
-      float caloRawMass;
-      float pfDeta;
-      float caloDeta;
-      float pfmet;
-      float pfsumet;
-      float pfmet_over_sumet;
-      float calomet;
-      float calosumet;
-      float calomet_over_sumet;  
+      int   runNo;// run number
+      int   evtNo;// event number
+      int   lumi;// luminosity section
+      int   bunch;// bunch crossing
+      int   nVtx;// number of vertices
+      int   nVtxGood;// number of good vertices
+      int   isPVgood;// status flag for the primary vertex
+      float PVndof;// number of degrees-of-freedom for the primary vertex
+      float PVx;// primary vertex position in X
+      float PVy;// primary vertex position in Y
+      float PVz;// primary vertex position in Z
+      float pfCorMass;// mass calculated from corrected PF jets
+      float pfCorMassUp;// mass claculated from corrected PF jets shifted up by the JEC uncertainty
+      float pfCorMassDo;// mass claculated from corrected PF jets shifted down by the JEC uncertainty
+      float pfRawMass;// mass claculated from raw PF jets
+      float caloCorMass;// mass claculated from corrected CALO jets
+      float caloCorMassUp;// mass claculated from corrected CALO jets shifted up by the JEC uncertainty
+      float caloCorMassDo;// mass claculated from corrected CALO jets shifted down by the JEC uncertainty
+      float caloRawMass;// mass calculated from raw CALO jets
+      float pfDeta;// delta eta between leading PFJets
+      float caloDeta;// delta eta between leading CALO jets
+      float pfmet;// PF met
+      float pfsumet;// PF sumEt
+      float pfmet_over_sumet;// PF met/sumet
+      float calomet;// CALO met
+      float calosumet;// CALO sumEt
+      float calomet_over_sumet;// CALO met/sumEt  
       float pthat;
       float weight;
     } EVENT_VAR;
     typedef struct {
-      int   passLooseID;
-      int   npr;
-      int   chm;
-      int   nhm;
-      int   phm;
-      int   elm;
-      float jec;
-      float jecUnc;
-      float rawPt;
-      float corPt;
+      int   passLooseID;// ID status flag
+      int   npr;// number of particles
+      int   chm;// charged hadrons multiplicity
+      int   nhm;// neutral hardons multiplicity
+      int   phm;// photons multiplicity
+      int   elm;// electrons multiplicity
+      float jec;// jet energy corrections
+      float jecUnc;// uncertainty of the corrected pt
+      float rawPt;// raw pt
+      float corPt;// corrected pt
       float eta;
       float y;
       float phi;
-      float rawE;
-      float corE;
-      float m;  
-      float chf;
-      float nhf;
-      float phf;
-      float elf;
-      float genR;
-      float genPt;
-      float genEta;
-      float genPhi;
-      float genE;
-      float genM;
-      float corRsp;
-      float rawRsp;
+      float rawE;// raw energy
+      float corE;// corrected energy
+      float m;// jet mass  
+      float chf;// charged hadron energy fraction
+      float nhf;// neutral hadron energy fraction
+      float phf;// photon energy fraction
+      float elf;// electron energy fraction
+      float genR;// matching radius between genjet and PF jet
+      float genPt;// pt of matched genjet
+      float genEta;// eta of matched genjet
+      float genPhi;// phi of matched genjet
+      float genE;// energy of matched genjet
+      float genM;// mass of matched genket
+      float corRsp;// corrected response
+      float rawRsp;// raw response
     } PFJET_VAR;
     typedef struct {
       int   passLooseID;
