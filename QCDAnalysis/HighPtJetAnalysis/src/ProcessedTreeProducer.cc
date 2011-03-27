@@ -196,7 +196,7 @@ void ProcessedTreeProducer::analyze(edm::Event const& event, edm::EventSetup con
       mPFJets[i] = all_pfjets[i];
   }
   if (npfjets > 1) {
-    TLorentzVector pfcorP4[2],pfrawP4[2];
+    TLorentzVector pfcorP4[2],pfcorP4Up[2],pfcorP4Do[2],pfrawP4[2];
     pfrawP4[0].SetPtEtaPhiE(mPFJets[0].rawPt,mPFJets[0].eta,mPFJets[0].phi,mPFJets[0].rawE);
     pfrawP4[1].SetPtEtaPhiE(mPFJets[1].rawPt,mPFJets[1].eta,mPFJets[1].phi,mPFJets[1].rawE);
     mEvent.pfRawMass = (pfrawP4[0]+pfrawP4[1]).M();
@@ -204,6 +204,16 @@ void ProcessedTreeProducer::analyze(edm::Event const& event, edm::EventSetup con
     pfcorP4[0].SetPtEtaPhiE(mPFJets[0].corPt,mPFJets[0].eta,mPFJets[0].phi,mPFJets[0].corE);
     pfcorP4[1].SetPtEtaPhiE(mPFJets[1].corPt,mPFJets[1].eta,mPFJets[1].phi,mPFJets[1].corE);
     mEvent.pfCorMass = (pfcorP4[0]+pfcorP4[1]).M();
+
+    double ss0 = mPFJets[0].jecUnc;
+    double ss1 = mPFJets[1].jecUnc;
+    pfcorP4Up[0].SetPtEtaPhiE((1+ss0)*mPFJets[0].corPt,mPFJets[0].eta,mPFJets[0].phi,(1+ss0)*mPFJets[0].corE);
+    pfcorP4Up[1].SetPtEtaPhiE((1+ss1)*mPFJets[1].corPt,mPFJets[1].eta,mPFJets[1].phi,(1+ss1)*mPFJets[1].corE);
+    mEvent.pfCorMassUp = (pfcorP4Up[0]+pfcorP4Up[1]).M();
+
+    pfcorP4Do[0].SetPtEtaPhiE((1-ss0)*mPFJets[0].corPt,mPFJets[0].eta,mPFJets[0].phi,(1-ss0)*mPFJets[0].corE);
+    pfcorP4Do[1].SetPtEtaPhiE((1-ss1)*mPFJets[1].corPt,mPFJets[1].eta,mPFJets[1].phi,(1-ss1)*mPFJets[1].corE);
+    mEvent.pfCorMassDo = (pfcorP4Do[0]+pfcorP4Do[1]).M();
 
     mEvent.pfDeta = mPFJets[0].eta - mPFJets[1].eta;
   }
@@ -294,7 +304,7 @@ ProcessedTreeProducer::~ProcessedTreeProducer()
 void ProcessedTreeProducer::buildTree() 
 {
   char name[1000];
-  mTree->Branch("event", &mEvent, "runNo/I:evtNo:lumi:bunch:nVtx:nVtxGood:isPVgood:PVndof/F:PVx:PVy:PVz:pfCorMass:pfRawMass:caloCorMass:caloRawMass:pfDeta:caloDeta:pfmet:pfsumet:pfmet_over_sumet:calomet:calosumet:calomet_over_sumet:pthat:weight");
+  mTree->Branch("event", &mEvent, "runNo/I:evtNo:lumi:bunch:nVtx:nVtxGood:isPVgood:PVndof/F:PVx:PVy:PVz:pfCorMass:pfCorMassUp:pfCorMassDo:pfRawMass:caloCorMass:caloCorMassUp:caloCorMassDo:caloRawMass:pfDeta:caloDeta:pfmet:pfsumet:pfmet_over_sumet:calomet:calosumet:calomet_over_sumet:pthat:weight");
   for(int i=0;i<mNPFJETS_MAX;i++) {
     sprintf(name,"pfjet%d",i+1);
     mTree->Branch(name, &mPFJets[i].passLooseID,"passLooseID/I:npr:chm:nhm:phm:elm:jec/F:jecUnc:rawPt:corPt:eta:y:phi:rawE:corE:m:chf:nhf:phf:elf:genR:genPt:genEta:genPhi:genE:genM:corRsp:rawRsp");
