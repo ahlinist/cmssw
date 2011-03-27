@@ -1,71 +1,64 @@
 import FWCore.ParameterSet.Config as cms
 process = cms.Process("SKIM")
 process.load('FWCore.MessageService.MessageLogger_cfi')
+process.load('Configuration.StandardSequences.MagneticField_38T_cff')
+process.load('Configuration.StandardSequences.Geometry_cff')
 #############   Set the number of events #############
 process.maxEvents = cms.untracked.PSet(
-    input = cms.untracked.int32(100)
+    input = cms.untracked.int32(10000)
 )
 #############   Define the source file ###############
 process.source = cms.Source("PoolSource",
     fileNames = cms.untracked.vstring(
-        '/store/mc/Summer09/QCD_BCtoE_Pt30to80/GEN-SIM-RECO/MC_31X_V3-v1/0021/8A504EC5-FC84-DE11-9DF8-00151796D680.root',
-        '/store/mc/Summer09/QCD_BCtoE_Pt30to80/GEN-SIM-RECO/MC_31X_V3-v1/0020/76BC9A89-F384-DE11-BB94-0015179EDC2C.root',
-        '/store/mc/Summer09/QCD_BCtoE_Pt30to80/GEN-SIM-RECO/MC_31X_V3-v1/0015/E49D4ED3-C781-DE11-B39F-001D096B0C83.root',
-        '/store/mc/Summer09/QCD_BCtoE_Pt30to80/GEN-SIM-RECO/MC_31X_V3-v1/0015/B48A2C0B-FD83-DE11-BB2F-001D0967D567.root',
+       '/store/data/Run2011A/Jet/AOD/PromptReco-v1/000/161/303/2CE3E53D-2057-E011-A597-003048F118AC.root',
+        '/store/data/Run2011A/Jet/AOD/PromptReco-v1/000/161/301/7473D78A-1D57-E011-BD5A-003048F118C2.root',
+        '/store/data/Run2011A/Jet/AOD/PromptReco-v1/000/161/233/922A9FC1-6757-E011-8A17-0030487CD6DA.root',
+        '/store/data/Run2011A/Jet/AOD/PromptReco-v1/000/161/224/A849ED85-B756-E011-B665-001617C3B6E2.root'
+    )
 )
-)
-#############   Trigger selection  ###################
-process.hltBit = cms.EDFilter("HLTHighLevel",
-    TriggerResultsTag  = cms.InputTag("TriggerResults","","HLT"),
-    HLTPaths           = cms.vstring("HLT_L1Jet15"),
-    eventSetupPathsKey = cms.string(''),
-    andOr              = cms.bool(True), #----- True = OR, False = AND between the HLTPaths
-    throw              = cms.bool(True)
-)
-#############   Path       ###########################
-process.skimPath = cms.Path(process.hltBit)
-
+process.load('RecoJets.Configuration.RecoPFJets_cff')
+process.load('RecoJets.Configuration.RecoJets_cff')
 #############   output module ########################
-process.compress = cms.OutputModule("PoolOutputModule",
+process.slim = cms.OutputModule("PoolOutputModule",
     outputCommands = cms.untracked.vstring(
         'drop *',
         #------- CaloJet collections ------ 
-        'keep *_sisCone5CaloJets_*_*',
-        'keep *_sisCone7CaloJets_*_*',
-        'keep *_kt4CaloJets_*_*',
-        'keep *_kt6CaloJets_*_*',
-        'keep *_antikt5CaloJets_*_*',
-        'keep *_iterativeCone5CaloJets_*_*',  
+        'keep *_ak7CaloJets_*_*',
+        'keep *_ak7JetID_*_*',
+        'keep *_ak7JetExtender_*_*',
         #------- PFJet collections --------
-        'keep *_sisCone5PFJets_*_*',
-        'keep *_sisCone7PFJets_*_*',
-        'keep *_kt4PFJets_*_*',
-        'keep *_kt6PFJets_*_*',
-        'keep *_antikt5PFJets_*_*',
-        'keep *_iterativeCone5PFJets_*_*',
+        'keep *_kt6PFJets_rho_SKIM',
+        'keep *_kt6PFJets_sigma_SKIM',
+        'keep *_ak7PFJets_*_SKIM',  
         #------- Trigger collections ------
         'keep edmTriggerResults_TriggerResults_*_*',
         'keep *_hltTriggerSummaryAOD_*_*',
         'keep L1GlobalTriggerObjectMapRecord_*_*_*',
         'keep L1GlobalTriggerReadoutRecord_*_*_*',
-        #------- Tracks collection --------
-        'keep *_generalTracks_*_*',
-        #------- CaloTower collection -----
-        'keep *_towerMaker_*_*',
         #------- Various collections ------
         'keep *_EventAuxilary_*_*',
-        'keep *_pixelVertices_*_*',
         'keep *_offlinePrimaryVertices_*_*',
-        'keep *_hcalnoise_*_*', 
+        'keep *_offlinePrimaryVerticesWithBS_*_*',
         #------- MET collections ----------
-        'keep *_metHO_*_*',
-        'keep *_metNoHF_*_*',
-        'keep *_metNoHFHO_*_*', 
-        'keep *_met_*_*'),
-    SelectEvents = cms.untracked.PSet(SelectEvents = cms.vstring('skimPath')), 
-    fileName = cms.untracked.string('JetAOD2.root')
+        'keep *_met_*_*',
+        'keep *_pfMet_*_*'),
+    fileName = cms.untracked.string('JetAOD.root')
 )
+############# turn-on the fastjet area calculation needed for the L1Fastjet ##############
+############# applied only to PFJets because if CaloJets are re-recoed the JetID map will be lost #####
+process.kt6PFJets.doRhoFastjet = True
+process.kt6PFJets.Rho_EtaMax = cms.double(5.0)
+process.ak7PFJets.doAreaFastjet = True
+process.ak7PFJets.Rho_EtaMax = cms.double(5.0)
+############# slimming the PFJet collection by raising the pt cut #################
+process.ak7PFJets.jetPtMin = cms.double(15.0)
 
-process.p = cms.EndPath(process.compress)
+process.p = cms.EndPath(
+############# first run the kt6PFJets reconstruction to calculate the fastjet density rho #####
+process.kt6PFJets * 
+############# then reconstruct the ak7PFJets with jet area calculation ############
+process.ak7PFJets * 
+############# keep only the collections of interest ###############################
+process.slim)
 #############   Format MessageLogger #################
-process.MessageLogger.cerr.FwkReport.reportEvery = 10
+process.MessageLogger.cerr.FwkReport.reportEvery = 100
