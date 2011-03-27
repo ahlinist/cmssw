@@ -1,168 +1,76 @@
-#include "TauAnalysis/CandidateTools/plugins/NSVfitTauToLepBuilder.h"
-
-#include "DataFormats/PatCandidates/interface/Electron.h"
-#include "DataFormats/PatCandidates/interface/Muon.h"
+#include "TauAnalysis/CandidateTools/interface/NSVfitTauDecayBuilderBase.h"
+#include "TauAnalysis/CandidateTools/interface/SVfitLegTrackExtractor.h"
+#include "AnalysisDataFormats/TauAnalysis/interface/NSVfitTauToLepHypothesis.h"
 #include "DataFormats/TauReco/interface/PFTauDecayMode.h"
 
-#include "TauAnalysis/CandidateTools/interface/NSVfitAlgorithmBase.h"
-#include "TauAnalysis/CandidateTools/interface/svFitAuxFunctions.h"
-
-#include "AnalysisDataFormats/TauAnalysis/interface/NSVfitTauToLepHypothesis.h"
-
-using namespace SVfit_namespace;
-
-template <typename T>
-NSVfitTauToLepBuilder<T>::NSVfitTauToLepBuilder(const edm::ParameterSet& cfg)
-  : NSVfitSingleParticleBuilderBase(cfg),
-    algorithm_(0)
-{}
-
-template <typename T>
-NSVfitTauToLepBuilder<T>::~NSVfitTauToLepBuilder()
+namespace {
+void applyOptionalFitParameter(double* param, int idxFitParameter, double& value)
 {
-// nothing to be done yet...
+  if   ( idxFitParameter != -1 ) value = param[idxFitParameter];
+  else                           value = 0.;
+}
 }
 
 template <typename T>
-void NSVfitTauToLepBuilder<T>::beginJob(NSVfitAlgorithmBase* algorithm)
-{
-  idxFitParameter_visEnFracX_ = getFitParameterIdx(algorithm, prodParticleLabel_, nSVfit_namespace::kTau_visEnFracX);
-  idxFitParameter_phi_lab_    = getFitParameterIdx(algorithm, prodParticleLabel_, nSVfit_namespace::kTau_phi_lab);
-  idxFitParameter_nuInvMass_  = getFitParameterIdx(algorithm, prodParticleLabel_, nSVfit_namespace::kTau_nuInvMass);
-
-  idxFitParameter_pol_        = getFitParameterIdx(algorithm, prodParticleLabel_, nSVfit_namespace::kTau_pol, true); // optional parameter
-
-  algorithm_ = algorithm;
-}
-
-template <typename T>
-int getDecayMode(const T&)
+int getDecayMode(const T* cand)
 {
   assert(0); // force template specializations for pat::Electrons/pat::Muons to be used
 }
 
 template <>
-int getDecayMode(const pat::Electron&)
+int getDecayMode<pat::Electron>(const pat::Electron* cand)
 {
   return reco::PFTauDecayMode::tauDecaysElectron;
 }
 
 template <>
-int getDecayMode(const pat::Muon&)
+int getDecayMode<pat::Muon>(const pat::Muon* cand)
 {
   return reco::PFTauDecayMode::tauDecayMuon;
 }
 
-template <typename T>
-NSVfitSingleParticleHypothesisBase* NSVfitTauToLepBuilder<T>::build(const inputParticleMap& inputParticles) const
-{
-  inputParticleMap::const_iterator particlePtr = inputParticles.find(prodParticleLabel_);
-  assert(particlePtr != inputParticles.end());
+template<typename T>
+class NSVfitTauToLepBuilder : public NSVfitTauDecayBuilderBase {
+  public:
+    NSVfitTauToLepBuilder(const edm::ParameterSet& cfg):
+      NSVfitTauDecayBuilderBase(cfg){}
 
-  NSVfitTauToLepHypothesis<T>* hypothesis = new NSVfitTauToLepHypothesis<T>(particlePtr->second, prodParticleLabel_, barcodeCounter_);
-  ++barcodeCounter_;
+    NSVfitTauDecayHypothesis* buildSpecific(
+        const edm::Ptr<reco::Candidate> particle,
+        const std::string& label, int barcode) const {
+      NSVfitTauToLepHypothesis<T>* hypothesis =
+        new NSVfitTauToLepHypothesis<T>(particle, label, barcode);
+      const T* objPtr = dynamic_cast<const T*>(particle);
+      assert(objPtr);
+      hypothesis->decayMode_  = getDecayMode(*objPtr);
+      return hypothesis;
+    }
 
-  const T* lepPtr = dynamic_cast<const T*>(particlePtr->second.get());
-  assert(lepPtr);
+    // The two neutrion system in a leptonic decay can have mass.
+    bool nuSystemIsMassless() const { return false; }
 
-  hypothesis->tracks_     = trackExtractor_(*lepPtr);
+    virtual int getDecayMode(const reco::Candidate* cand) const {
+      const T* objPtr = dynamic_cast<const T*>(cand);
+      assert(objPtr);
+      return getDecayMode(objPtr);
+    }
 
-  hypothesis->p3Vis_unit_ = lepPtr->p4().Vect().Unit();
-  hypothesis->visMass_    = lepPtr->mass();
+    virtual std::vector<reco::TrackBaseRef> extractTracks(
+        const reco::Candidate* cand) const {
+      const T* objPtr = dynamic_cast<const T*>(cand);
+      assert(objPtr);
+      return trackExtractor_(*objPtr);
+    }
 
-  hypothesis->decayMode_  = getDecayMode(*lepPtr);
+    virtual void beginJobSpecific(NSVfitAlgorithmBase* algorithm) {
+      // No extra parameters.
+    }
 
-  NSVfitAlgorithmBase::fitParameterType* fitParameter = algorithm_->getFitParameter(prodParticleLabel_, nSVfit_namespace::kTau_nuInvMass);
-  assert(fitParameter);
-  fitParameter->upperLimit_ = SVfit_namespace::tauLeptonMass - hypothesis->visMass_;
+    virtual void applyFitParameterSpecific(
+        NSVfitTauDecayHypothesis* hypotheis, double *param) const {
+      // Nothing to do for leptonic case
+    }
 
-  return hypothesis;
-}
-
-template <typename T>
-void NSVfitTauToLepBuilder<T>::applyFitParameter(NSVfitSingleParticleHypothesisBase* hypothesis, double* param) const
-{
-  NSVfitTauToLepHypothesis<T>* hypothesis_T = dynamic_cast<NSVfitTauToLepHypothesis<T>*>(hypothesis);
-  assert(hypothesis_T);
-
-  double visEnFracX = param[idxFitParameter_visEnFracX_];
-  double phi_lab    = param[idxFitParameter_phi_lab_];
-  double pVis_lab   = hypothesis_T->p4().P();
-  double enVis_lab  = hypothesis_T->p4().energy();
-  double visMass    = hypothesis_T->visMass();
-  double nuInvMass  = param[idxFitParameter_nuInvMass_];
-
-  const reco::Candidate::Vector& p3Vis_unit = hypothesis_T->p3Vis_unit();
-
-//--- compute momentum of visible decay products in tau lepton rest frame
-  double pVis_rf = SVfit_namespace::pVisRestFrame(visMass, nuInvMass);
-
-//--- decay angle in tau lepton rest frame as function of X
-//    (= energy ratio of visible decay products/tau lepton energy)
-  double gjAngle = SVfit_namespace::gjAngleFromX(visEnFracX, visMass, pVis_rf, enVis_lab);
-
-//--- compute tau lepton decay angle in laboratory frame
-  double angleVis_lab = SVfit_namespace::gjAngleToLabFrame(pVis_rf, gjAngle, pVis_lab);
-
-//--- compute tau lepton momentum in laboratory frame
-  double pTau_lab = SVfit_namespace::tauMomentumLabFrame(visMass, pVis_rf, gjAngle, pVis_lab);
-
-//--- compute tau lepton direction in laboratory frame
-  reco::Candidate::Vector p3Tau = SVfit_namespace::tauDirection(p3Vis_unit, angleVis_lab, phi_lab);
-
-//--- compute tau lepton four-vector in laboratory frame
-  reco::Candidate::LorentzVector p4Tau = SVfit_namespace::tauP4(p3Tau.Unit(), pTau_lab);
-
-  hypothesis_T->p4_fitted_      = p4Tau;
-  hypothesis_T->dp4_            = (p4Tau - hypothesis_T->p4_);
-
-  hypothesis_T->p4invis_rf_     = boostToCOM(p4Tau, hypothesis_T->dp4_);
-  hypothesis_T->p4vis_rf_       = boostToCOM(p4Tau, hypothesis_T->p4());
-
-  if   ( idxFitParameter_pol_ != -1 ) hypothesis_T->polarization_ = param[idxFitParameter_pol_];
-  else                                hypothesis_T->polarization_ = 0.;
-  
-  if ( verbosity_ ) {
-    std::cout << "<NSVfitTauToLepBuilder::applyFitParameter>:" << std::endl;
-    std::cout << " visEnFracX = " << param[idxFitParameter_visEnFracX_] << std::endl;
-    std::cout << " phi_lab = " << param[idxFitParameter_phi_lab_] << std::endl;
-    std::cout << " enVis_lab = " << enVis_lab << std::endl;
-    std::cout << " visMass = " << visMass << std::endl;
-    std::cout << " nuInvMass = " << param[idxFitParameter_nuInvMass_] << std::endl;
-    std::cout << " gjAngle = " << gjAngle << std::endl;
-    std::cout << " angleVis_lab = " << angleVis_lab << std::endl;
-    std::cout << " pTau_lab = " << pTau_lab << std::endl;
-    std::cout << "p4Vis: E = " << hypothesis_T->p4_.energy() << ","
-	      << " px = " << hypothesis_T->p4_.px() << ", py = " << hypothesis_T->p4_.py() << ","
-	      << " pz = " << hypothesis_T->p4_.pz() << std::endl;
-    std::cout << "p4Tau: E = " << p4Tau.energy() << ","
-	      << " px = " << p4Tau.px() << ", py = " << p4Tau.py() << ","
-	      << " pz = " << p4Tau.pz() << std::endl;
-    std::cout << "polarization = " << hypothesis_T->polarization_ << std::endl;
-  }
-
-  hypothesis_T->visEnFracX_     = visEnFracX;
-  hypothesis_T->decay_angle_rf_ = gjAngle;
-}
-
-template <typename T>
-void NSVfitTauToLepBuilder<T>::print(std::ostream& stream) const
-{
-  stream << "<NSVfitTauToLepBuilder::print>:" << std::endl;
-  stream << " pluginName = " << pluginName_ << std::endl;
-  stream << " pluginType = " << pluginType_ << std::endl;
-  stream << " prodParticleLabel = " << prodParticleLabel_ << std::endl;
-  stream << " idxFitParameter_visEnFracX = " << idxFitParameter_visEnFracX_ << std::endl;
-  stream << " idxFitParameter_phi_lab = " << idxFitParameter_phi_lab_ << std::endl;
-  stream << " idxFitParameter_nuInvMass = " << idxFitParameter_nuInvMass_ << std::endl;
-  stream << " idxFitParameter_pol = " << idxFitParameter_pol_ << std::endl;
-}
-
-typedef NSVfitTauToLepBuilder<pat::Electron> NSVfitTauToElecBuilder;
-typedef NSVfitTauToLepBuilder<pat::Muon> NSVfitTauToMuBuilder;
-
-#include "FWCore/Framework/interface/MakerMacros.h"
-
-DEFINE_EDM_PLUGIN(NSVfitSingleParticleBuilderPluginFactory, NSVfitTauToElecBuilder, "NSVfitTauToElecBuilder");
-DEFINE_EDM_PLUGIN(NSVfitSingleParticleBuilderPluginFactory, NSVfitTauToMuBuilder, "NSVfitTauToMuBuilder");
-
+  private:
+    SVfitLegTrackExtractor<T> trackExtractor_;
+};
