@@ -23,12 +23,18 @@ class TrackExtrapolation {
     // Constructor from a transient track and reference spatial point
     TrackExtrapolation(const reco::TransientTrack&, const AlgebraicVector3&);
     // Constructor from values for testing
-    TrackExtrapolation(const GlobalPoint& dcaPosition,
-        const GlobalVector& tangent, const AlgebraicMatrix33& covMatrix);
+    TrackExtrapolation(
+        const GlobalPoint& refPoint,
+        const GlobalPoint& dcaPosition,
+        const GlobalVector& tangent,
+        const AlgebraicMatrix33& covMatrix);
 
     const AlgebraicVector3& tangent() const { return tangent_; }
     const AlgebraicVector3& dcaPosition() const { return dcaPosition_; }
-    const AlgebraicVector3& refPoint() const { return dcaPosition_; }
+    const AlgebraicVector3& refPoint() const { return refPoint_; }
+    const AlgebraicMatrix33& covariance() const { return covMatrix_; }
+    // The appoximate spatial error on the track
+    double approximateTrackError() const { return approximateTrackError_; }
 
     // Log-likelihood given a secondary vertex
     double logLikelihood(const AlgebraicVector3&) const;
@@ -36,20 +42,28 @@ class TrackExtrapolation {
     // Log-likelihood given the displacement
     double logLikelihoodFromDisplacement(const AlgebraicVector3&) const;
 
+
   private:
     // Implementation of the constructors
-    void construct(const GlobalPoint& dcaPosition,
-        const GlobalVector& tangent, const AlgebraicMatrix33& covMatrix);
+    void construct(
+        const GlobalPoint& refPoint,
+        const GlobalPoint& dcaPosition,
+        const GlobalVector& tangent,
+        const AlgebraicMatrix33& covMatrix);
 
     AlgebraicVector3 tangent_;
     AlgebraicVector3 dcaPosition_;
+    AlgebraicVector3 refPoint_;
     AlgebraicMatrix33 invRotationMatrix_;
+    AlgebraicMatrix33 covMatrix_;
     AlgebraicMatrix33 rotCovMatrix_;
     AlgebraicMatrix22 rotCovMatrix2_;
     // Inverted rotated covariance matrix
     AlgebraicMatrix22 invRotCovMatrx2_;
     // Determinant of rotated covariance matrix
     double detRotCovMatrix2_;
+    // Get the error in the direction of the ref. point
+    double approximateTrackError_;
 
     int errorFlag_;
 };

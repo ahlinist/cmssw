@@ -36,17 +36,26 @@ TrackExtrapolation::TrackExtrapolation(
   AlgebraicMatrix33 covMatrix =
     dcaPosition.theState().cartesianError().position().matrix_new();
   // Call the ctor implementation
-  construct(dcaPosition.position(), dcaPosition.momentum(), covMatrix);
+  construct(
+      dcaPosition.referencePoint(), dcaPosition.position(),
+      dcaPosition.momentum(), covMatrix);
 }
 
-TrackExtrapolation::TrackExtrapolation(const GlobalPoint& dcaPosition,
+TrackExtrapolation::TrackExtrapolation(
+    const GlobalPoint& refPoint,
+    const GlobalPoint& dcaPosition,
     const GlobalVector& tangent, const AlgebraicMatrix33& covMatrix) {
   errorFlag_ = 0;
-  construct(dcaPosition, tangent, covMatrix);
+  construct(refPoint, dcaPosition, tangent, covMatrix);
 }
 
-void TrackExtrapolation::construct(const GlobalPoint& dcaPosition,
-  const GlobalVector& tangent, const AlgebraicMatrix33& covMatrix) {
+void TrackExtrapolation::construct(
+    const GlobalPoint& refPoint, const GlobalPoint& dcaPosition,
+    const GlobalVector& tangent, const AlgebraicMatrix33& covMatrix) {
+
+  refPoint_(0)= refPoint.x();
+  refPoint_(1)= refPoint.y();
+  refPoint_(2)= refPoint.z();
 
   dcaPosition_(0) = dcaPosition.x();
   dcaPosition_(1) = dcaPosition.y();
@@ -57,6 +66,8 @@ void TrackExtrapolation::construct(const GlobalPoint& dcaPosition,
   tangent_(0) = tangent.x();
   tangent_(1) = tangent.y();
   tangent_(2) = tangent.z();
+
+  covMatrix_ = covMatrix;
   //std::cout << "tangent:" << std::endl;
   //std::cout << " x = " << tangent_.At(0) << ", y = " << tangent_.At(1) << ", z = " << tangent_.At(2) << std::endl;
 
@@ -123,6 +134,15 @@ void TrackExtrapolation::construct(const GlobalPoint& dcaPosition,
       << detRotCovMatrix2_ << " !!";
     errorFlag_ = 1;
   }
+
+  // Determine approximate track error.  This is defined as the magnitude of
+  // the error at the DCA position in the direction from the DCA to the
+  // RefPoint
+  AlgebraicVector3 displacementAtDCA = dcaPosition_ - refPoint_;
+  approximateTrackError_ = TMath::Sqrt(
+      ROOT::Math::Similarity(covMatrix_, displacementAtDCA.Unit()));
+      //ROOT::Math::Dot(displacementAtDCA,covMatrix_*displacementAtDCA));
+
 }
 
 double TrackExtrapolation::logLikelihood(const AlgebraicVector3& sv) const {
