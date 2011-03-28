@@ -13,7 +13,7 @@
 //
 // Original Author:  Daniele del Re
 //         Created:  Thu Sep 13 16:00:15 CEST 2007
-// $Id: GammaJetAnalyzer.cc,v 1.47 2011/02/23 11:06:11 delre Exp $
+// $Id: GammaJetAnalyzer.cc,v 1.48 2011/02/23 17:07:28 delre Exp $
 //
 //
 
@@ -195,7 +195,7 @@ GammaJetAnalyzer::GammaJetAnalyzer(const edm::ParameterSet& iConfig)
 
 GammaJetAnalyzer::~GammaJetAnalyzer()
 {
- 
+
    // do anything here that needs to be done at desctruction time
    // (e.g. close files, deallocate resources etc.)
    TFile* file_prova = TFile::Open("prova.root", "recreate");
@@ -242,19 +242,18 @@ GammaJetAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
    Handle<GenEventInfoProduct> hEventInfo;
    if( isMC ) iEvent.getByLabel("generator", hEventInfo);
 
-
    // ------ MC INFORMATION:
 
    // get MC info from GenParticleCandidates 
    Handle<GenParticleCollection> genParticles;
    if( isMC ) iEvent.getByLabel("genParticles", genParticles);
-   
+
   // get GEANT sim tracks and vertices (includes conversions)
    Handle<SimTrackContainer> simTracks_h;
    const SimTrackContainer* simTracks;
    if( isMC ) iEvent.getByLabel("g4SimHits", simTracks_h);
    simTracks = (simTracks_h.isValid()) ? simTracks_h.product() : 0;
-   
+
    Handle<SimVertexContainer> simVert_h;
    const SimVertexContainer* simVertices;
    if( isMC ) iEvent.getByLabel("g4SimHits", simVert_h);
@@ -271,13 +270,13 @@ GammaJetAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
    iSetup.get<IdealMagneticFieldRecord>().get(magneticField);
    const  MagneticField *mField = magneticField.product();
    bfield = mField->inTesla(GlobalPoint(0.,0.,0.)).z();
-   
+
    // get primary vertices
    Handle<VertexCollection> VertexHandle;
    //Handle<vector<Vertex> > VertexHandle;
    iEvent.getByLabel("offlinePrimaryVertices", VertexHandle);
    //iEvent.getByLabel(Vertexsrc_, VertexHandle);
-   
+
 
    // get photons
    Handle<PhotonCollection>  PhotonHandle;
@@ -361,20 +360,24 @@ GammaJetAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
   
    // get HCAL info
    Handle<HBHERecHitCollection> hbhe;
-   iEvent.getByLabel(HBhitsrc_, hbhe);
+   //   iEvent.getByLabel(HBhitsrc_, hbhe);
+   iEvent.getByLabel("reducedHcalRecHits","hbhereco",hbhe);
+
    const HBHERecHitMetaCollection mhbhe(*hbhe);
 
 
    // get ECAL reco hits
    Handle<EBRecHitCollection> ecalhitseb;
    const EBRecHitCollection* rhitseb=0;
-   iEvent.getByLabel(recoProducer_, recoCollection_, ecalhitseb);
+//    iEvent.getByLabel(recoProducer_, recoCollection_, ecalhitseb);
+   iEvent.getByLabel("reducedEcalRecHitsEB", ecalhitseb);
    //const EcalRecHitMetaCollection mecalhits(*ecalhits);    
    rhitseb = ecalhitseb.product(); // get a ptr to the product
 
    Handle<EERecHitCollection> ecalhitsee;
    const EERecHitCollection* rhitsee=0;
-   iEvent.getByLabel(recoProducer_, "EcalRecHitsEE", ecalhitsee);
+//    iEvent.getByLabel(recoProducer_, "EcalRecHitsEE", ecalhitsee);
+   iEvent.getByLabel("reducedEcalRecHitsEE", ecalhitsee);
    rhitsee = ecalhitsee.product(); // get a ptr to the product
 
    // get geometry
@@ -1079,6 +1082,7 @@ GammaJetAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
        } // if >genjetptthr
      } // gen_akt5
      
+
      for (GenJetCollection::const_iterator it = jetsgenakt7->begin(); 
 	  it != jetsgenakt7->end(); ++it) {
        
@@ -1108,7 +1112,6 @@ GammaJetAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
      nvertex++;
    }
    
-   
    // Loop over reco photons
    
    for (PhotonCollection::const_iterator it = PhotonHandle->begin(); 
@@ -1130,23 +1133,23 @@ GammaJetAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
      const Ptr<CaloCluster> theSeed = it->superCluster()->seed(); 
      
      const EBRecHitCollection* rechits = ( fabs(it->eta())<1.479 ) ? rhitseb : rhitsee;
-     
+
      // photon ID (spike ID) related info:
      // timing:
      std::pair<DetId, float> maxRH = EcalClusterTools::getMaximum( *theSeed, &(*rechits) );
      DetId seedCrystalId = maxRH.first;
      EcalRecHitCollection::const_iterator seedRH = rechits->find(seedCrystalId);
-     timePhot[nPhot] = (float)seedRH->time();
+     if(maxRH.second) timePhot[nPhot] = (float)seedRH->time();
+     else timePhot[nPhot] = 0;
      // swiss cross:
      e4SwissCrossPhot[nPhot] = (fabs(it->eta())>=1.479) ? 0. :
        ( EcalClusterTools::eLeft( *theSeed, &(*rechits), topology ) +
 	 EcalClusterTools::eRight( *theSeed, &(*rechits), topology ) +
 	 EcalClusterTools::eTop( *theSeed, &(*rechits), topology ) +
 	 EcalClusterTools::eBottom( *theSeed, &(*rechits), topology ) );
-
      
-     double ptiso0015(0.), ptiso035(0.), ptiso04(0.);
-     int ntrkiso0015(0), ntrkiso035(0), ntrkiso04(0);
+     double ptiso004(0.), ptiso035(0.), ptiso04(0.);
+     int ntrkiso004(0), ntrkiso035(0), ntrkiso04(0);
 
      // Fill default photon ID variables
      pid_jurECAL[nPhot] = it->ecalRecHitSumEtConeDR04();//isolationEcalRecHit
@@ -1218,26 +1221,27 @@ GammaJetAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
 
      // calculate track isolation for different cone values
 
+
      for (TrackCollection::const_iterator itTrack = tracks->begin();
 	 itTrack != tracks->end(); ++itTrack) {
 
-       double etaTrack = itTrack->innerMomentum().eta();
-       double phiTrack = itTrack->innerMomentum().phi();
-       
+       double etaTrack = itTrack->eta();
+       double phiTrack = itTrack->phi();
+
        double deltaPhi = phiTrack-it->phi();
        double deltaEta = etaTrack-it->eta();
        if (deltaPhi > Geom::pi()) deltaPhi -= 2.*Geom::pi();
        if (deltaPhi < -Geom::pi()) deltaPhi += 2.*Geom::pi();
        double deltaR = std::sqrt(deltaEta*deltaEta+deltaPhi*deltaPhi);
-       
-       if (deltaR < .015)  {ptiso0015  += sqrt(itTrack->innerMomentum().Perp2()); ntrkiso0015++; }
-       if (deltaR < .35)   {ptiso035 += sqrt(itTrack->innerMomentum().Perp2()); ntrkiso035++;}
-       if (deltaR < .4)   {ptiso04 += sqrt(itTrack->innerMomentum().Perp2()); ntrkiso04++;}
-       
+
+       if (deltaR < .04)  {ptiso004  += sqrt(itTrack->pt()); ntrkiso004++; }
+       if (deltaR < .35)   {ptiso035 += sqrt(itTrack->pt()); ntrkiso035++;}
+       if (deltaR < .4)   {ptiso04 += sqrt(itTrack->pt()); ntrkiso04++;}
+    
      }
-     
-     ptiso0015Phot[nPhot] = ptiso0015;
-     ntrkiso0015Phot[nPhot] = ntrkiso0015;
+
+     ptiso004Phot[nPhot] = ptiso004;
+     ntrkiso004Phot[nPhot] = ntrkiso004;
      ptiso035Phot[nPhot] = ptiso035;
      ntrkiso035Phot[nPhot] = ntrkiso035;
      ptiso04Phot[nPhot] = ptiso04;
@@ -1273,8 +1277,9 @@ GammaJetAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
      ecaliso04Phot[nPhot]  = scBasedIsolation.getSum(iEvent,iSetup,&(*SCseed));
 
      // cluster shape variables
-     
+
      //     if (TMath::Abs(SCseed->eta())<1.47){
+     if(maxRH.second) {
        Cluster2ndMoments moments = EcalClusterTools::cluster2ndMoments(*SCseed, *rechits);
        std::vector<float> etaphimoments = EcalClusterTools::localCovariances(*SCseed, &(*rechits), &(*topology));
        sMajMajPhot[nPhot]=moments.sMaj;
@@ -1283,14 +1288,14 @@ GammaJetAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
        sEtaEtaPhot[nPhot]=etaphimoments[0];
        sEtaPhiPhot[nPhot]=etaphimoments[1];
        sPhiPhiPhot[nPhot]=etaphimoments[2];
-//      }else{
-//        sMajMajPhot[nPhot]=-100.;
-//        sMinMinPhot[nPhot]=-100.;
-//        alphaPhot[nPhot]=-100.;
-//        sEtaEtaPhot[nPhot] = it->sigmaEtaEta();//-100.;
-//        sEtaPhiPhot[nPhot]=-100.;
-//        sPhiPhiPhot[nPhot]=-100.;
-//      }
+     }else{
+       sMajMajPhot[nPhot]=-100.;
+       sMinMinPhot[nPhot]=-100.;
+       alphaPhot[nPhot]=-100.;
+       sEtaEtaPhot[nPhot] = it->sigmaEtaEta();//-100.;
+       sEtaPhiPhot[nPhot]=-100.;
+       sPhiPhiPhot[nPhot]=-100.;
+     }
      E1Phot[nPhot] = SCseed->energy();//-100.;
      E9Phot[nPhot] = it->e3x3();//-100.;
      E25Phot[nPhot] = it->e5x5();//-100.;
@@ -1349,14 +1354,14 @@ GammaJetAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
        ConversionInfo convInfo = convFinder.getConversionInfo(*itElectron,tracks, bfield);      
        pid_distElePhot[nElePhot] = (convInfo.dist() == -9999.? 9999:convInfo.dist());
        pid_dcotElePhot[nElePhot] = (convInfo.dcot() == -9999.? 9999:convInfo.dcot());
-       pid_ptElePhot[nElePhot] = sqrt(itElectron->gsfTrack()->innerMomentum().Perp2()); 
+       pid_ptElePhot[nElePhot] = sqrt(itElectron->gsfTrack()->pt()); 
 
        nElePhot++;       
+
      }	 
      
    }
-  
-
+   
    for (CaloJetCollection::const_iterator it = jetskt4->begin(); 
 	 it != jetskt4->end(); ++it) {
      
@@ -1396,8 +1401,8 @@ GammaJetAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
      
      if (nJet_akt5>=100) {cout << "number of reco jets akt 05 is larger than 100. Skipping" << endl; continue;}
      if (it->pt() > calojetptthr_) {
-       
-       jetID_->calculate(iEvent, *it);
+//        jetID_->calculate(iEvent, *it);
+
        ptJet_akt5[nJet_akt5] = it->pt();	 
 
        // Jet Energy Scale Corrections on-the-fly     
@@ -1413,10 +1418,10 @@ GammaJetAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
        phiJet_akt5[nJet_akt5] = it->phi();	      
        //emfJet_akt5[nJet_akt5] = it->emEnergyFraction();
        emfJet_akt5[nJet_akt5] = fixEMF(it->emEnergyFraction(), it->eta());
-       n90Jet_akt5[nJet_akt5] = jetID_->hitsInN90();	      
-       n90HitsJet_akt5[nJet_akt5] = jetID_->n90Hits();	      
-       fHPDJet_akt5[nJet_akt5] = jetID_->fHPD();	      
-       fRBXJet_akt5[nJet_akt5] = jetID_->fRBX();	      
+//        n90Jet_akt5[nJet_akt5] = jetID_->hitsInN90();	      
+//        n90HitsJet_akt5[nJet_akt5] = jetID_->n90Hits();	      
+//        fHPDJet_akt5[nJet_akt5] = jetID_->fHPD();	      
+//        fRBXJet_akt5[nJet_akt5] = jetID_->fRBX();	      
        
        nJet_akt5++;
      }
@@ -1427,7 +1432,7 @@ GammaJetAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
      
      if (nJet_akt7>=100) {cout << "number of reco jets akt 07 is larger than 100. Skipping" << endl; continue;}
      if (it->pt() > calojetptthr_) {
-       jetID_->calculate(iEvent, *it);
+       //       jetID_->calculate(iEvent, *it);
        ptJet_akt7[nJet_akt7] = it->pt();	 
  
        // Jet Energy Scale Corrections on-the-fly     
@@ -1443,15 +1448,14 @@ GammaJetAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
        phiJet_akt7[nJet_akt7] = it->phi();	      
        //emfJet_akt7[nJet_akt7] = it->emEnergyFraction();
        emfJet_akt7[nJet_akt7] = fixEMF(it->emEnergyFraction(), it->eta());     
-       n90Jet_akt7[nJet_akt7] = jetID_->hitsInN90();	      
-       n90HitsJet_akt7[nJet_akt7] = jetID_->n90Hits();	      
-       fHPDJet_akt7[nJet_akt7] = jetID_->fHPD();	      
-       fRBXJet_akt7[nJet_akt7] = jetID_->fRBX();	      
+//        n90Jet_akt7[nJet_akt7] = jetID_->hitsInN90();	      
+//        n90HitsJet_akt7[nJet_akt7] = jetID_->n90Hits();	      
+//        fHPDJet_akt7[nJet_akt7] = jetID_->fHPD();	      
+//        fRBXJet_akt7[nJet_akt7] = jetID_->fRBX();	      
        
        nJet_akt7++;
      }
    }
-   
    
    for (JPTJetCollection::const_iterator it = jptjetsak5->begin(); 
 	it != jptjetsak5->end(); ++it) {
@@ -1491,7 +1495,7 @@ GammaJetAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
        nJet_pfkt4++;
      }
    }
-   
+
    for (PFJetCollection::const_iterator it = pfjetsakt5->begin(); 
 	it != pfjetsakt5->end(); ++it) {
      
@@ -1543,13 +1547,13 @@ GammaJetAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
 	 TLorentzVector p4(p4t.px(), p4t.py(), p4t.pz(), p4t.energy());
 	 TLorentzVector jetp4;
        jetp4.SetPtEtaPhiE(it->pt(), it->eta(), it->phi(), it->energy());
-	 
-       sumPt_cands += p4.Pt();
-       sumPt2_cands += (p4.Pt()*p4.Pt());
-       //float deltaR = it->p4().DeltaR(p4);
-       float deltaR = jetp4.DeltaR(p4);
-       rms_cands += (p4.Pt()*p4.Pt()*deltaR*deltaR);
-
+       if(p4.Pt()!=0){
+	 sumPt_cands += p4.Pt();
+	 sumPt2_cands += (p4.Pt()*p4.Pt());
+	 //float deltaR = it->p4().DeltaR(p4);
+	 float deltaR = jetp4.DeltaR(p4);
+	 rms_cands += (p4.Pt()*p4.Pt()*deltaR*deltaR);
+       }
 
 	 // Store PFCandidates for two leading jets
 	 
@@ -1581,7 +1585,7 @@ GammaJetAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
 	   nHFEM += 1;
 	   p4HFEM += p4;
 	 }
-	 
+
        } //for PFCandidates
 
 
@@ -1623,7 +1627,6 @@ GammaJetAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
        
      } // if >pfjetptthr     
    } // pfakt5
-   
    
    for (PFJetCollection::const_iterator it = pfjetsakt7->begin(); 
 	 it != pfjetsakt7->end(); ++it) {
@@ -1820,8 +1823,8 @@ GammaJetAnalyzer::beginJob()
   m_tree->Branch("pid_hlwTrack",&pid_hlwTrack,"pid_hlwTarck[nPhot]/F");
   m_tree->Branch("pid_etawid",&pid_etawid,"pid_etawid[nPhot]/F");
 
-  m_tree->Branch("ptiso0015Phot",&ptiso0015Phot,"ptiso0015Phot[nPhot]/F");
-  m_tree->Branch("ntrkiso0015Phot",&ntrkiso0015Phot,"ntrkiso0015Phot[nPhot]/I");
+  m_tree->Branch("ptiso004Phot",&ptiso004Phot,"ptiso004Phot[nPhot]/F");
+  m_tree->Branch("ntrkiso004Phot",&ntrkiso004Phot,"ntrkiso004Phot[nPhot]/I");
   m_tree->Branch("ptiso035Phot",&ptiso035Phot,"ptiso035Phot[nPhot]/F");
   m_tree->Branch("ntrkiso035Phot",&ntrkiso035Phot,"ntrkiso035Phot[nPhot]/I");
   m_tree->Branch("ptiso04Phot",&ptiso04Phot,"ptiso04Phot[nPhot]/F");
