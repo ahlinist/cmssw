@@ -2,6 +2,7 @@
 
 // System includes
 #include <iostream>
+#include <vector>
 #include <boost/shared_ptr.hpp>
 
 // CMSSW includes
@@ -21,6 +22,7 @@
 #include "DataFormats/FWLite/interface/MultiChainEvent.h"
 #include "DataFormats/PatCandidates/interface/Muon.h"
 #include "DataFormats/PatCandidates/interface/Photon.h"
+#include "DataFormats/Provenance/interface/LuminosityBlockRange.h"
 #include "ElectroWeakAnalysis/MultiBosons/interface/DumpPtEtaPhiM.h"
 #include "FWCore/FWLite/interface/AutoLibraryLoader.h"
 #include "FWCore/PythonParameterSet/interface/PythonProcessDesc.h"
@@ -34,6 +36,7 @@
 using namespace std;
 using namespace edm;
 
+typedef std::vector< edm::LuminosityBlockRange > VLuminosityBlockRange;
 
 enum IpDef {
   PAT_dB_BS2D,   // MuonType_Method_Argument_Condition
@@ -93,6 +96,25 @@ IpCond getIpCond(std::string str) {
   return cond;
 }
 
+bool jsonContainsEvent (const VLuminosityBlockRange &jsonVec,
+                        const edm::EventBase &event)
+{
+   // if the jsonVec is empty, then no JSON file was provided so all
+   // events should pass
+   if (jsonVec.empty()) {
+      return true;
+   }
+
+   bool (* funcPtr) (edm::LuminosityBlockRange const &,
+                     edm::LuminosityBlockID const &) = &edm::contains;
+   edm::LuminosityBlockID lumiID(event.id().run(),
+                                 event.id().luminosityBlock());
+   VLuminosityBlockRange::const_iterator iter = 
+      std::find_if (jsonVec.begin(), jsonVec.end(),
+                    boost::bind(funcPtr, _1, lumiID) );
+   return jsonVec.end() != iter;
+}
+
 int main ( int argc, char ** argv )
 {
   cout << "Welcome to ZToMuMuGammaFsrSelectionSync!" << endl;
@@ -105,7 +127,7 @@ int main ( int argc, char ** argv )
     cout << "Usage : " << argv[0] << " [parameters.py]" << endl;
     return 0;
   }
-  PythonProcessDesc builder(argv[1]);
+  PythonProcessDesc builder(argv[1], argc, argv);
   boost::shared_ptr<ParameterSet>
     cfg = builder.processDesc()->getProcessPSet();
   ParameterSet const& inputs   = cfg->getParameter<ParameterSet>("inputs");
@@ -117,6 +139,15 @@ int main ( int argc, char ** argv )
   std::string ipDefStr = analysis.getParameter<std::string>("ipDefinition");
   std::string ipCondStr = analysis.getParameter<std::string>("ipCondition");
   int verbosity = analysis.getParameter<int>("verbosity");
+
+  VLuminosityBlockRange lumisToProcess;
+  if ( inputs.exists("lumisToProcess") ) {
+    VLuminosityBlockRange const & lumisTemp =
+      inputs.getUntrackedParameter<VLuminosityBlockRange> ("lumisToProcess");
+    lumisToProcess.resize( lumisTemp.size() );
+    copy( lumisTemp.begin(), lumisTemp.end(), lumisToProcess.begin() );
+  }
+
 
   IpDef  ipDef  = getIpDef (ipDefStr );
   IpCond ipCond = getIpCond(ipCondStr);
@@ -220,6 +251,10 @@ int main ( int argc, char ** argv )
     if (iEvent % 1000 == 0) {
       cout << "Processing event: " << iEvent << endl;
     }
+
+    if ( ! jsonContainsEvent (lumisToProcess, ev) )
+        // this event is not in a good lumi section
+        continue;
 
     // initialize per event counters
     for (iCut = muonCuts.begin(); iCut != muonCuts.end(); ++iCut)
