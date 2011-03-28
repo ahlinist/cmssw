@@ -2,7 +2,7 @@
 
 #include "TauAnalysis/CandidateTools/interface/nSVfitParameter.h"
 
-NSVfitEventBuilderBase::NSVfitEventBuilderBase(const edm::ParameterSet& cfg) 
+NSVfitEventBuilderBase::NSVfitEventBuilderBase(const edm::ParameterSet& cfg)
   : NSVfitBuilderBase(cfg),
     numResonanceBuilders_(0),
     eventVertexRefitAlgorithm_(0)
@@ -17,7 +17,7 @@ NSVfitEventBuilderBase::NSVfitEventBuilderBase(const edm::ParameterSet& cfg)
     cfg_builder.addParameter<edm::ParameterSet>("daughters", cfg_resonance.getParameter<edm::ParameterSet>("daughters"));
     cfg_builder.addParameter<std::string>("prodResonanceLabel", *resonanceName);
     std::string pluginType = cfg_builder.getParameter<std::string>("pluginType");
-    NSVfitResonanceBuilderBase* resonanceBuilder = 
+    NSVfitResonanceBuilderBase* resonanceBuilder =
       NSVfitResonanceBuilderPluginFactory::get()->create(pluginType, cfg_builder);
     resonanceBuilders_.push_back(resonanceBuilder);
     ++numResonanceBuilders_;
@@ -26,7 +26,7 @@ NSVfitEventBuilderBase::NSVfitEventBuilderBase(const edm::ParameterSet& cfg)
   eventVertexRefitAlgorithm_ = new NSVfitEventVertexRefitter(cfg);
 }
 
-NSVfitEventBuilderBase::~NSVfitEventBuilderBase() 
+NSVfitEventBuilderBase::~NSVfitEventBuilderBase()
 {
   for ( std::vector<NSVfitResonanceBuilderBase*>::iterator it = resonanceBuilders_.begin();
 	it != resonanceBuilders_.end(); ++it ) {
@@ -36,7 +36,7 @@ NSVfitEventBuilderBase::~NSVfitEventBuilderBase()
   delete eventVertexRefitAlgorithm_;
 }
 
-void NSVfitEventBuilderBase::beginJob(NSVfitAlgorithmBase* algorithm) 
+void NSVfitEventBuilderBase::beginJob(NSVfitAlgorithmBase* algorithm)
 {
   for ( std::vector<NSVfitResonanceBuilderBase*>::iterator resonanceBuilder = resonanceBuilders_.begin();
 	resonanceBuilder != resonanceBuilders_.end(); ++resonanceBuilder ) {
@@ -44,15 +44,15 @@ void NSVfitEventBuilderBase::beginJob(NSVfitAlgorithmBase* algorithm)
   }
 
   idxFitParameter_pvShiftX_ = getFitParameterIdx(algorithm, "*", nSVfit_namespace::kPV_shiftX, true); // optional parameter
-  idxFitParameter_pvShiftY_ = getFitParameterIdx(algorithm, "*", nSVfit_namespace::kPV_shiftY, true); 
-  idxFitParameter_pvShiftZ_ = getFitParameterIdx(algorithm, "*", nSVfit_namespace::kPV_shiftZ, true); 
-  if ( idxFitParameter_pvShiftX_ != -1 && idxFitParameter_pvShiftY_ != -1 && idxFitParameter_pvShiftZ_ != -1 ) 
+  idxFitParameter_pvShiftY_ = getFitParameterIdx(algorithm, "*", nSVfit_namespace::kPV_shiftY, true);
+  idxFitParameter_pvShiftZ_ = getFitParameterIdx(algorithm, "*", nSVfit_namespace::kPV_shiftZ, true);
+  if ( idxFitParameter_pvShiftX_ != -1 && idxFitParameter_pvShiftY_ != -1 && idxFitParameter_pvShiftZ_ != -1 )
     doEventVertexRefit_ = true;
   else
     doEventVertexRefit_ = false;
 }
 
-void NSVfitEventBuilderBase::beginEvent(const edm::Event& evt, const edm::EventSetup& es) 
+void NSVfitEventBuilderBase::beginEvent(const edm::Event& evt, const edm::EventSetup& es)
 {
   NSVfitBuilderBase::beginEvent(evt, es);
   for ( std::vector<NSVfitResonanceBuilderBase*>::iterator resonanceBuilder = resonanceBuilders_.begin();
@@ -75,6 +75,7 @@ NSVfitEventHypothesis* NSVfitEventBuilderBase::build(const inputParticleMap& inp
   for ( std::vector<NSVfitResonanceBuilderBase*>::const_iterator resonanceBuilder = resonanceBuilders_.begin();
 	resonanceBuilder != resonanceBuilders_.end(); ++resonanceBuilder ) {
     NSVfitResonanceHypothesis* resonanceHypothesis = (*resonanceBuilder)->build(inputParticles);
+    resonanceHypothesis->setEventHypothesis(eventHypothesis);
 
     p4 += resonanceHypothesis->p4();
 
@@ -94,11 +95,11 @@ NSVfitEventHypothesis* NSVfitEventBuilderBase::build(const inputParticleMap& inp
       const edm::OwnVector<NSVfitSingleParticleHypothesisBase>& daughters = resonance->daughters();
       for ( edm::OwnVector<NSVfitSingleParticleHypothesisBase>::const_iterator daughter = daughters.begin();
 	    daughter != daughters.end(); ++daughter ) {
-	if ( daughter->hasDecayVertex() ) 
+	if ( daughter->hasDecayVertex() )
 	  svTracks.insert(svTracks.begin(), daughter->tracks().begin(), daughter->tracks().end());
       }
     }
-    
+
     TransientVertex eventVertex_refitted = eventVertexRefitAlgorithm_->refit(eventVertex, &svTracks);
     if ( eventVertex_refitted.isValid() ) {
       eventHypothesis->eventVertexPosition_(0) = eventVertex_refitted.position().x();
@@ -139,7 +140,7 @@ void NSVfitEventBuilderBase::applyFitParameter(NSVfitEventHypothesis* eventHypot
   eventHypothesis->dp4_ = dp4;
 }
 
-void NSVfitEventBuilderBase::print(std::ostream& stream) const 
+void NSVfitEventBuilderBase::print(std::ostream& stream) const
 {
   stream << "<NSVfitEventBuilderBase::print>:" << std::endl;
   stream << " pluginName = " << pluginName_ << std::endl;

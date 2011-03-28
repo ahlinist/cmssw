@@ -44,14 +44,17 @@ public:
   /// Linearize a track about a reference point
   const SVfit::track::TrackExtrapolation& linearizedTrack(
       const reco::TrackRef& track) const;
+  const SVfit::track::TrackExtrapolation& linearizedTrack(
+      const reco::TrackBaseRef& track) const;
 
-  /// Must be called before any other functions are called.  The point
+  /// *Must* be called before any other functions are called.  The [point]
   /// argument is the spatial point about which to linearize the tracks
   /// (i.e. the nominal PV).
   void setup(const edm::EventSetup& es, const reco::Candidate::Point& point);
 
   /// Build a transient track from a TrackRef
   reco::TransientTrack transientTrack(const reco::TrackRef& track) const;
+  reco::TransientTrack transientTrack(const reco::TrackBaseRef& track) const;
 
   /// Helper function to convert a collection of tracks to a vector of
   /// TransientTracks (for use in vertex fits)

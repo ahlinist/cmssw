@@ -8,3 +8,8 @@
   <use   name="TauAnalysis/CandidateTools"/>
   <use   name="cppunit"/>
 </bin>
+<bin   name="TestSVFitTrackExtrapolation" file="svfit_trackextrapolation_t.cppunit.cc">
+  <use   name="root"/>
+  <use   name="TauAnalysis/CandidateTools"/>
+  <use   name="cppunit"/>
+</bin>

@@ -8,9 +8,9 @@
  *
  * \author Christian Veelken, UC Davis
  *
- * \version $Revision: 1.3 $
+ * \version $Revision: 1.4 $
  *
- * $Id: NSVfitSingleParticleBuilderBase.h,v 1.3 2011/03/06 11:31:11 veelken Exp $
+ * $Id: NSVfitSingleParticleBuilderBase.h,v 1.4 2011/03/23 17:46:39 veelken Exp $
  *
  */
 
@@ -24,6 +24,8 @@
 
 #include <string>
 #include <iostream>
+
+class NSVfitResonanceHypothesis;
 
 class NSVfitSingleParticleBuilderBase : public NSVfitBuilderBase
 {

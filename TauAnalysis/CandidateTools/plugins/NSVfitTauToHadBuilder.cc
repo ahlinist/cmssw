@@ -3,37 +3,55 @@
 #include "AnalysisDataFormats/TauAnalysis/interface/NSVfitTauToHadHypothesis.h"
 #include "TauAnalysis/CandidateTools/interface/nSVfitParameter.h"
 
-class NSVfitTauToHadBuilder : public NSVfitTauDecayBuilderBase 
+#include "FWCore/ServiceRegistry/interface/Service.h"
+#include "TauAnalysis/CandidateTools/interface/NSVfitTrackService.h"
+
+#include "RecoVertex/KalmanVertexFit/interface/KalmanVertexFitter.h"
+#include "RecoVertex/VertexPrimitives/interface/TransientVertex.h"
+
+using namespace nSVfit_namespace;
+
+class NSVfitTauToHadBuilder : public NSVfitTauDecayBuilderBase
 {
  public:
   NSVfitTauToHadBuilder(const edm::ParameterSet& cfg)
     : NSVfitTauDecayBuilderBase(cfg)
   {}
-  
-  NSVfitTauDecayHypothesis* buildSpecific(const edm::Ptr<reco::Candidate> particle, const std::string& label, int barcode) const 
+
+  NSVfitTauDecayHypothesis* buildSpecific(const edm::Ptr<reco::Candidate> particle, const std::string& label, int barcode) const
   {
     NSVfitTauToHadHypothesis* hypothesis = new NSVfitTauToHadHypothesis(particle, label, barcode);
+    // Three prong case: check if we can fit a reconstructed vertex.
+    std::vector<reco::TrackBaseRef> tracks = extractTracks(particle.get());
+    if (tracks.size() > 1) {
+      KalmanVertexFitter kvf(true);
+      // Get the associated transient tracks
+      std::vector<reco::TransientTrack> transTracks =
+        trackService_->transientTracks(tracks.begin(), tracks.end());
+      TransientVertex vertex = kvf.vertex(transTracks);
+      hypothesis->fittedVertex_ = vertex;
+    }
     return hypothesis;
   }
-  
+
   // The two neutrion system in a leptonic decay can have mass.
   bool nuSystemIsMassless() const { return true; }
-  
-  virtual int getDecayMode(const reco::Candidate* candidate) const 
+
+  virtual int getDecayMode(const reco::Candidate* candidate) const
   {
     const pat::Tau* tauPtr = dynamic_cast<const pat::Tau*>(candidate);
     assert(tauPtr);
     return tauPtr->decayMode();
   }
-  
-  virtual std::vector<reco::TrackBaseRef> extractTracks(const reco::Candidate* candidate) const 
+
+  virtual std::vector<reco::TrackBaseRef> extractTracks(const reco::Candidate* candidate) const
   {
     const pat::Tau* tauPtr = dynamic_cast<const pat::Tau*>(candidate);
     assert(tauPtr);
     return trackExtractor_(*tauPtr);
   }
-  
-  virtual void beginJobSpecific(NSVfitAlgorithmBase* algorithm) 
+
+  virtual void beginJobSpecific(NSVfitAlgorithmBase* algorithm)
   {
     idxFitParameter_thetaVMrho_ = getFitParameterIdx(algorithm, prodParticleLabel_, nSVfit_namespace::kTauVM_theta_rho, true);
     idxFitParameter_mass2VMrho_ = getFitParameterIdx(algorithm, prodParticleLabel_, nSVfit_namespace::kTauVM_mass2_rho, true);
@@ -43,8 +61,8 @@ class NSVfitTauToHadBuilder : public NSVfitTauDecayBuilderBase
     idxFitParameter_mass2VMa1_  = getFitParameterIdx(algorithm, prodParticleLabel_, nSVfit_namespace::kTauVM_mass2_a1,  true);
     // Check if we can fit a reconstructed vertex.
   }
-  
-  virtual void applyFitParameterSpecific(NSVfitTauDecayHypothesis* hypothesis, double *param) const 
+
+  virtual void applyFitParameterSpecific(NSVfitTauDecayHypothesis* hypothesis, double *param) const
   {
     NSVfitTauToHadHypothesis* hypothesis_T = dynamic_cast<NSVfitTauToHadHypothesis*>(hypothesis);
     applyOptionalFitParameter(param, idxFitParameter_thetaVMrho_, hypothesis_T->decay_angle_VMrho_);
@@ -54,8 +72,9 @@ class NSVfitTauToHadBuilder : public NSVfitTauDecayBuilderBase
     applyOptionalFitParameter(param, idxFitParameter_phiVMa1r_,   hypothesis_T->decay_angle_VMa1r_phi_);
     applyOptionalFitParameter(param, idxFitParameter_mass2VMa1_,  hypothesis_T->mass2_VMa1_);
   }
-  
+
   private:
+    edm::Service<NSVfitTrackService> trackService_;
     SVfitLegTrackExtractor<pat::Tau> trackExtractor_;
 
     int idxFitParameter_thetaVMrho_;
