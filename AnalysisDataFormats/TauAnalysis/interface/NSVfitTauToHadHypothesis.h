@@ -13,10 +13,11 @@ class NSVfitTauToHadHypothesis : public NSVfitTauDecayHypothesis
   NSVfitTauToHadHypothesis(const edm::Ptr<reco::Candidate>& particle, const std::string& name, int barcode)
     : NSVfitTauDecayHypothesis(particle, name, barcode)
   {}
+  NSVfitTauToHadHypothesis(const NSVfitTauToHadHypothesis&);
   ~NSVfitTauToHadHypothesis() {}
 
-  NSVfitTauToHadHypothesis(const NSVfitTauToHadHypothesis&);
   virtual NSVfitTauDecayHypothesis* clone() const { return new NSVfitTauToHadHypothesis(*this); }
+
   virtual NSVfitTauDecayHypothesis& operator=(const NSVfitTauToHadHypothesis&);
 
   /// decay angles and masses of intermediate vector-meson resonances
@@ -28,7 +29,8 @@ class NSVfitTauToHadHypothesis : public NSVfitTauDecayHypothesis
   double mass2_VMa1() const { return mass2_VMa1_; }
 
   bool hasFittedVertex() const { return fittedVertex_.isValid(); }
-  virtual const reco::Vertex& fittedVertex() const {
+  virtual const reco::Vertex& fittedVertex() const 
+  {
     return fittedVertex_;
   }
 
