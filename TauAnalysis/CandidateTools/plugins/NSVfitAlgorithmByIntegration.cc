@@ -1,5 +1,6 @@
 #include "TauAnalysis/CandidateTools/plugins/NSVfitAlgorithmByIntegration.h"
 
+#include "FWCore/MessageLogger/interface/MessageLogger.h"
 #include "FWCore/Utilities/interface/Exception.h"
 
 #include "TauAnalysis/CandidateTools/interface/generalAuxFunctions.h"
@@ -19,9 +20,9 @@ double g(double* x, size_t dim, void* param)
   double nll = NSVfitAlgorithmBase::gNSVfitAlgorithm->nll(x, (double*)param);
   double retVal = TMath::Exp(-nll);
   static long callCounter = 0;
-  if ( (callCounter % 100000) == 0 ) 
-    std::cout << "<g> (call = " << callCounter << "):" 
-	      << " nll = " << nll << " --> returning retVal = " << retVal << std::endl;
+  //if ( (callCounter % 100000) == 0 ) 
+  //  std::cout << "<g> (call = " << callCounter << "):" 
+  //	        << " nll = " << nll << " --> returning retVal = " << retVal << std::endl;
   ++callCounter;
   return retVal;
 }
@@ -215,7 +216,7 @@ void getBinning(const IndepCombinatoricsGeneratorT<double>& grid, unsigned iDime
 
 void NSVfitAlgorithmByIntegration::fitImp() const
 {
-  std::cout << "<NSVfitAlgorithmByIntegration::fitImp>:" << std::endl;
+  //std::cout << "<NSVfitAlgorithmByIntegration::fitImp>:" << std::endl;
 
   for ( std::vector<fitParameterReplacementType*>::const_iterator fitParameterReplacement = fitParameterReplacements_.begin();
 	fitParameterReplacement != fitParameterReplacements_.end(); ++fitParameterReplacement ) {
@@ -232,9 +233,9 @@ void NSVfitAlgorithmByIntegration::fitImp() const
   for ( unsigned iDimension = 0; iDimension < numDimensions_; ++iDimension ) {
     xl_[iDimension] = fitParametersByIntegration_[iDimension].base_->lowerLimit_; 
     xu_[iDimension] = fitParametersByIntegration_[iDimension].base_->upperLimit_;
-    std::cout << " fitParameter #" << iDimension << " (" << fitParametersByIntegration_[iDimension].base_->name_ << ":" 
-	      << fitParametersByIntegration_[iDimension].base_->type_ << "):"
-	      << " xl = " << xl_[iDimension] << ", xu = " << xu_[iDimension] << std::endl;
+    //std::cout << " fitParameter #" << iDimension << " (" << fitParametersByIntegration_[iDimension].base_->name_ << ":" 
+    //	        << fitParametersByIntegration_[iDimension].base_->type_ << "):"
+    //	        << " xl = " << xl_[iDimension] << ", xu = " << xu_[iDimension] << std::endl;
   }
 
   gsl_monte_vegas_init(workspace_);
@@ -272,7 +273,7 @@ void NSVfitAlgorithmByIntegration::fitImp() const
 //    to perform actual integration
     double p, pErr;
     gsl_monte_vegas_integrate(integrand_, xl_, xu_, numDimensions_, numCalls_, rnd_, workspace_, &p, &pErr);
-    std::cout << "--> M = " << (*massParForReplacements_) << ": p = " << p << " +/- " << pErr << std::endl;
+    //std::cout << "--> M = " << (*massParForReplacements_) << ": p = " << p << " +/- " << pErr << std::endl;
 
     if      ( numMassParameters_ == 1 ) histResults->Fill((*massParForReplacements_)[0], p);
     else if ( numMassParameters_ == 2 ) {
@@ -308,54 +309,58 @@ void NSVfitAlgorithmByIntegration::setMassResults(
   assert(histMassResult1d);
 
 //--- compute median, -1 sigma and +1 sigma limits on reconstructed mass
-  Double_t q[3];
-  Double_t probSum[3];
-  probSum[0] = 0.16;
-  probSum[1] = 0.50;
-  probSum[2] = 0.84;
-  (const_cast<TH1*>(histMassResult1d))->GetQuantiles(3, q, probSum);
+  if ( histMassResult1d->Integral() > 0. ) {
+    Double_t q[3];
+    Double_t probSum[3];
+    probSum[0] = 0.16;
+    probSum[1] = 0.50;
+    probSum[2] = 0.84;
+    (const_cast<TH1*>(histMassResult1d))->GetQuantiles(3, q, probSum);
 
-  int binMaximum = histMassResult1d->GetMaximumBin();
-  double massMaxInterpol = 0.;
-  if ( binMaximum > 1 && binMaximum < histMassResult1d->GetNbinsX() ) {
-    double xMaximum = histMassResult1d->GetBinCenter(binMaximum);
-    double yMaximum = histMassResult1d->GetBinContent(binMaximum);
-    //std::cout << "xMaximum = " << xMaximum << ", yMaximum = " << yMaximum << std::endl;
+    int binMaximum = histMassResult1d->GetMaximumBin();
+    double massMaxInterpol = 0.;
+    if ( binMaximum > 1 && binMaximum < histMassResult1d->GetNbinsX() ) {
+      double xMaximum = histMassResult1d->GetBinCenter(binMaximum);
+      double yMaximum = histMassResult1d->GetBinContent(binMaximum);
+      
+      int binLeft     = binMaximum - 1;
+      double xLeft    = histMassResult1d->GetBinCenter(binLeft);
+      double yLeft    = histMassResult1d->GetBinContent(binLeft);    
+      
+      int binRight    = binMaximum + 1;
+      double xRight   = histMassResult1d->GetBinCenter(binRight);
+      double yRight   = histMassResult1d->GetBinContent(binRight); 
+      
+      double xMinus   = xLeft - xMaximum;
+      double yMinus   = yLeft - yMaximum;
+      double xPlus    = xRight - xMaximum;
+      double yPlus    = yRight - yMaximum;
+      
+      massMaxInterpol = xMaximum + 0.5*(yPlus*square(xMinus) - yMinus*square(xPlus))/(yPlus*xMinus - yMinus*xPlus);
+    } else {
+      massMaxInterpol = histMassResult1d->GetBinCenter(binMaximum);
+    }
 
-    int binLeft     = binMaximum - 1;
-    double xLeft    = histMassResult1d->GetBinCenter(binLeft);
-    double yLeft    = histMassResult1d->GetBinContent(binLeft);    
-    //std::cout << "xLeft = " << xLeft << ", yLeft = " << yLeft << std::endl;
+    NSVfitAlgorithmBase::setMassResults(resonance, q[1], TMath::Abs(q[2] - q[1]), TMath::Abs(q[1] - q[0]));
 
-    int binRight    = binMaximum + 1;
-    double xRight   = histMassResult1d->GetBinCenter(binRight);
-    double yRight   = histMassResult1d->GetBinContent(binRight); 
-    //std::cout << "xRight = " << xRight << ", yRight = " << yRight << std::endl;
-
-    double xMinus   = xLeft - xMaximum;
-    double yMinus   = yLeft - yMaximum;
-    //std::cout << "xMinus = " << xMinus << ", yMinus = " << yMinus << std::endl;
-    double xPlus    = xRight - xMaximum;
-    double yPlus    = yRight - yMaximum;
-    //std::cout << "xPlus = " << xPlus << ", yPlus = " << yPlus << std::endl;
+    resonance->massMean_ = histMassResult1d->GetMean();
+    resonance->massMedian_ = q[1];
+    resonance->massMaximum_ = histMassResult1d->GetBinCenter(binMaximum);
+    resonance->massMaxInterpol_ = massMaxInterpol;
+    resonance->isValidSolution_ = false;
     
-    massMaxInterpol = xMaximum + 0.5*(yPlus*square(xMinus) - yMinus*square(xPlus))/(yPlus*xMinus - yMinus*xPlus);
+    //std::cout << "<NSVfitAlgorithmByIntegration::setMassResults>:" << std::endl;
+    //std::cout << " massMean = " << resonance->massMean_ << std::endl;
+    //std::cout << " massMedian = " << resonance->massMedian_ << std::endl;
+    //std::cout << " massMaximum = " << resonance->massMaximum_ << std::endl;
+    //std::cout << " massMaxInterpol = " << resonance->massMaxInterpol_ << std::endl;
+    //std::cout << "--> mass = " << resonance->mass_ << std::endl;
   } else {
-    massMaxInterpol = histMassResult1d->GetBinCenter(binMaximum);
+    edm::LogWarning("NSVfitAlgorithmByIntegration::setMassResults")
+      << "Probability computed to be zero for all tested mass hypotheses --> no valid solution found !!";
+    resonance->isValidSolution_ = false;
   }
-  NSVfitAlgorithmBase::setMassResults(resonance, q[1], TMath::Abs(q[2] - q[1]), TMath::Abs(q[1] - q[0]));
-
-  resonance->massMean_ = histMassResult1d->GetMean();
-  resonance->massMedian_ = q[1];
-  resonance->massMaximum_ = histMassResult1d->GetBinCenter(binMaximum);
-  resonance->massMaxInterpol_ = massMaxInterpol;
-  std::cout << "<NSVfitAlgorithmByIntegration::setMassResults>:" << std::endl;
-  std::cout << " massMean = " << resonance->massMean_ << std::endl;
-  std::cout << " massMedian = " << resonance->massMedian_ << std::endl;
-  std::cout << " massMaximum = " << resonance->massMaximum_ << std::endl;
-  std::cout << " massMaxInterpol = " << resonance->massMaxInterpol_ << std::endl;
-  std::cout << "--> mass = " << resonance->mass_ << std::endl;
-
+  
   if ( histMassResult1d != histMassResults ) delete histMassResult1d;
 }
 
