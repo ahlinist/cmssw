@@ -23,7 +23,7 @@ class NSVfitEventHypothesis
   virtual ~NSVfitEventHypothesis() {}
 
   virtual NSVfitEventHypothesis* clone() const { return new NSVfitEventHypothesis(*this); }
-  
+
   virtual NSVfitEventHypothesis& operator=(const NSVfitEventHypothesis&);
 
   const std::string& name() const { return name_; }
@@ -39,7 +39,7 @@ class NSVfitEventHypothesis
   reco::Candidate::LorentzVector dp4fitted() const { return dp4_; }
 
   /// missing transverse momentum before fit
-  /// and fitted value of missing transverse momentum 
+  /// and fitted value of missing transverse momentum
   reco::Candidate::LorentzVector p4MEt() const { return p4MEt_; }
   reco::Candidate::LorentzVector p4MEt_fitted() const { return (p4MEt_ - dp4_); }
 
@@ -114,7 +114,7 @@ class NSVfitEventHypothesis
 
   /// fit hypotheses for daughter particles
   edm::OwnVector<NSVfitResonanceHypothesis> resonances_;
-  
+
   /// Nd-histogram containing full correlations of masses reconstructed for resonances
   std::auto_ptr<TH1> histMassResults_;
 };
