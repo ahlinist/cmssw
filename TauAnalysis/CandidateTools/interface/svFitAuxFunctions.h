@@ -130,6 +130,8 @@ namespace SVfit_namespace
   /// in one/N dimensions
   double logGaussian(double, double);
 
+  /// Compute the log likelihood from a residual and n-dim gaussian.  Will
+  /// compute determinant and inverse of covariance in place.
   template<typename T1, typename T2>
   double logGaussianNd(const T1& residual, const T2& cov)
   {
@@ -142,12 +144,13 @@ namespace SVfit_namespace
     //std::cout << "cov:" << std::endl;
     //cov.Print(std::cout);
     //std::cout << std::endl;
-
     unsigned numDimensions = residual.Dim();
     if ( cov.Diagonal().Dim() != numDimensions ) {
       edm::LogError ("logGaussianNd")
-	<< " Dimension of covariance matrix = " << cov.Diagonal().Dim() << "x" << cov.Diagonal().Dim()
-	<< " does not match dimension = " << numDimensions << " of residual vector !!";
+	<< " Dimension of covariance matrix = "
+        << cov.Diagonal().Dim() << "x" << cov.Diagonal().Dim()
+	<< " does not match dimension = " << numDimensions
+        << " of residual vector !!";
       return std::numeric_limits<float>::min();
     }
 
@@ -155,7 +158,8 @@ namespace SVfit_namespace
     cov.Det2(det);
     if ( det == 0. ) {
       edm::LogError ("logGaussianNd")
-	<< " Cannot invert " << numDimensions << "x" << numDimensions << " covariance matrix, det = " << det << " !!";
+	<< " Cannot invert " << numDimensions << "x" << numDimensions
+        << " covariance matrix, det = " << det << " !!";
       return std::numeric_limits<float>::min();
     }
 
@@ -172,9 +176,43 @@ namespace SVfit_namespace
     //std::cout << std::endl;
 
     //std::cout << "--> residual^T V^-1 redidual = " << ROOT::Math::Dot(residual, covInverse*residual) << std::endl;
+    return logGaussianNdInvertedCovariance(residual, covInverse, det);
+  }
+
+  /// Compute multivariate gaussian likelihood witha pre-computed
+  /// inverted covariance matrix and determinant.
+  template<typename T1, typename T2>
+  double logGaussianNdInvertedCovariance(
+      const T1& residual, const T2& covInverse, double det){
+    //std::cout << "<logGaussianNd>:" << std::endl;
+
+    //std::cout << "residual:" << std::endl;
+    //residual.Print(std::cout);
+    //std::cout << std::endl;
+
+    //std::cout << "cov:" << std::endl;
+    //cov.Print(std::cout);
+    //std::cout << std::endl;
+
+    unsigned numDimensions = residual.Dim();
+    if ( covInverse.Diagonal().Dim() != numDimensions ) {
+      edm::LogError ("logGaussianNd")
+	<< " Dimension of covariance matrix = " << covInverse.Diagonal().Dim()
+        << "x" << covInverse.Diagonal().Dim()
+	<< " does not match dimension = " << numDimensions
+        << " of residual vector !!";
+      return std::numeric_limits<float>::min();
+    }
+
+    //std::cout << "covInverse:" << std::endl;
+    //covInverse.Print(std::cout);
+    //std::cout << std::endl;
+
+    //std::cout << "--> residual^T V^-1 redidual = " << ROOT::Math::Dot(residual, covInverse*residual) << std::endl;
 
     return -0.5*numDimensions*TMath::Log(2*TMath::Pi()) - 0.5*TMath::Log(det) - 0.5*(ROOT::Math::Dot(residual, covInverse*residual));
   }
+
 
   /// Determine sign of tau lepton polarization
   /// (depending on handedness and charge, i.e. whether the tau lepton is a tau+ or a tau-)
