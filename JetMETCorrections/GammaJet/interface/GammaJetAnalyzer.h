@@ -197,8 +197,8 @@ TH2D* h2_n_vs_eta;
       Float_t pid_hlwTrack[40]; // Hollow cone track isolation
       Float_t pid_etawid[40]; // eta width
      
-      Float_t ptiso0015Phot[40];
-      Int_t ntrkiso0015Phot[40];
+      Float_t ptiso004Phot[40];
+      Int_t ntrkiso004Phot[40];
       Float_t ptiso035Phot[40];
       Int_t ntrkiso035Phot[40];
       Float_t ptiso04Phot[40];
