@@ -9,9 +9,9 @@ using namespace SVfit_namespace;
 
 namespace SVfit { namespace track {
 
-TrackExtrapolation::TrackExtrapolation(const reco::TransientTrack& transientTrack, const AlgebraicVector3& refPoint)
-: errorFlag_(0)
-{
+TrackExtrapolation::TrackExtrapolation(
+    const reco::TransientTrack& transientTrack,
+    const AlgebraicVector3& refPoint) : errorFlag_(0) {
   //std::cout << "<TrackExtrapolation::TrackExtrapolation>:" << std::endl;
 
   //std::cout << "refPoint:" << std::endl;
@@ -20,26 +20,43 @@ TrackExtrapolation::TrackExtrapolation(const reco::TransientTrack& transientTrac
   //--- compute point of closest approach of track to reference point
   GlobalPoint refPoint_global(refPoint.At(0), refPoint.At(1), refPoint.At(2));
 
-  TrajectoryStateClosestToPoint dcaPosition = transientTrack.trajectoryStateClosestToPoint(refPoint_global);
+  TrajectoryStateClosestToPoint dcaPosition =
+    transientTrack.trajectoryStateClosestToPoint(refPoint_global);
   if (TMath::IsNaN(dcaPosition.position().x()) ||
       TMath::IsNaN(dcaPosition.position().y()) ||
       TMath::IsNaN(dcaPosition.position().z()) ) {
     edm::LogWarning ("TrackExtrapolation")
-        << " Failed to extrapolate track: Pt = " << transientTrack.track().pt() << ","
-        << " eta = " << transientTrack.track().eta() << ", phi = " << transientTrack.track().phi()*180./TMath::Pi()
+        << " Failed to extrapolate track: Pt = "
+        << transientTrack.track().pt() << ","
+        << " eta = " << transientTrack.track().eta()
+        << ", phi = " << transientTrack.track().phi()*180./TMath::Pi()
         << " --> skipping !!";
     errorFlag_ = 1;
   }
+  AlgebraicMatrix33 covMatrix =
+    dcaPosition.theState().cartesianError().position().matrix_new();
+  // Call the ctor implementation
+  construct(dcaPosition.position(), dcaPosition.momentum(), covMatrix);
+}
 
-  dcaPosition_(0) = dcaPosition.position().x();
-  dcaPosition_(1) = dcaPosition.position().y();
-  dcaPosition_(2) = dcaPosition.position().z();
+TrackExtrapolation::TrackExtrapolation(const GlobalPoint& dcaPosition,
+    const GlobalVector& tangent, const AlgebraicMatrix33& covMatrix) {
+  errorFlag_ = 0;
+  construct(dcaPosition, tangent, covMatrix);
+}
+
+void TrackExtrapolation::construct(const GlobalPoint& dcaPosition,
+  const GlobalVector& tangent, const AlgebraicMatrix33& covMatrix) {
+
+  dcaPosition_(0) = dcaPosition.x();
+  dcaPosition_(1) = dcaPosition.y();
+  dcaPosition_(2) = dcaPosition.z();
   //std::cout << "dcaPosition:" << std::endl;
   //std::cout << " x = " << dcaPosition_.At(0) << ", y = " << dcaPosition_.At(1) << ", z = " << dcaPosition_.At(2) << std::endl;
 
-  tangent_(0) = dcaPosition.momentum().x();
-  tangent_(1) = dcaPosition.momentum().y();
-  tangent_(2) = dcaPosition.momentum().z();
+  tangent_(0) = tangent.x();
+  tangent_(1) = tangent.y();
+  tangent_(2) = tangent.z();
   //std::cout << "tangent:" << std::endl;
   //std::cout << " x = " << tangent_.At(0) << ", y = " << tangent_.At(1) << ", z = " << tangent_.At(2) << std::endl;
 
@@ -74,7 +91,6 @@ TrackExtrapolation::TrackExtrapolation(const reco::TransientTrack& transientTrac
   //                         = (R x)^T (R^-1 Vxx R)^-1 (R x) // y := R x
   //                         = y^T (R^T Vxx R)^-1 y          // Vyy := R^T Vxx R
   //                         = y^T Vyy^-1 y
-  AlgebraicMatrix33 covMatrix = dcaPosition.theState().cartesianError().position().matrix_new();
   //std::cout << "covMatrix:" << std::endl;
   //covMatrix.Print(std::cout);
   //std::cout << std::endl;
@@ -88,6 +104,24 @@ TrackExtrapolation::TrackExtrapolation(const reco::TransientTrack& transientTrac
     for ( unsigned iColumn = 0; iColumn < 2; ++iColumn ) {
       rotCovMatrix2_(iRow, iColumn) = rotCovMatrix_(iRow, iColumn);
     }
+  }
+
+  // Invert the rotatated covariance matrix
+  invRotCovMatrx2_ = AlgebraicMatrix22(rotCovMatrix2_);
+  bool invertResult = invRotCovMatrx2_.Invert();
+  if (!invertResult) {
+      edm::LogError ("SVFitTrackExtrapolation")
+	<< " Failed to invert covariance matrix!" << std::endl;
+      errorFlag_ = 1;
+  }
+
+  // Compute determinant of rotated covariance matrix
+  rotCovMatrix2_.Det2(detRotCovMatrix2_);
+  if (detRotCovMatrix2_ == 0.) {
+    edm::LogError ("SVFitTrackExtrapolation")
+      << " Cannot invert covariance matrix, det = "
+      << detRotCovMatrix2_ << " !!";
+    errorFlag_ = 1;
   }
 }
 
@@ -109,8 +143,10 @@ double TrackExtrapolation::logLikelihood(const AlgebraicVector3& sv) const {
   double y3 = sv.At(1);
   double z3 = sv.At(2);
 
-  double t = (Power(x1,2) + x2*x3 - x1*(x2 + x3) + Power(y1,2) - y1*y2 - y1*y3 + y2*y3 + Power(z1,2) - z1*z2 - z1*z3 + z2*z3)/
-   (Power(x1,2) - 2*x1*x2 + Power(x2,2) + Power(y1,2) - 2*y1*y2 + Power(y2,2) + Power(z1,2) - 2*z1*z2 + Power(z2,2));
+  double t = (square(x1) + x2*x3 - x1*(x2 + x3) + square(y1)
+      - y1*y2 - y1*y3 + y2*y3 + square(z1) - z1*z2 - z1*z3 + z2*z3)/
+   (square(x1) - 2*x1*x2 + square(x2) + square(y1) - 2*y1*y2
+    + square(y2) + square(z1) - 2*z1*z2 + square(z2));
 
   AlgebraicVector3 dcaOnTrack = dcaPosition_ + t*(tangent_);
 
@@ -120,8 +156,7 @@ double TrackExtrapolation::logLikelihood(const AlgebraicVector3& sv) const {
 }
 
 double TrackExtrapolation::logLikelihoodFromDisplacement(
-    const AlgebraicVector3& displacement) const
-{
+    const AlgebraicVector3& displacement) const {
   //std::cout << "<TrackExtrapolation::logLikelihood>:" << std::endl;
 
   if ( errorFlag_ ) return 0.;
@@ -135,7 +170,9 @@ double TrackExtrapolation::logLikelihoodFromDisplacement(
   rotDisplacement2(0) = rotDisplacement(0);
   rotDisplacement2(1) = rotDisplacement(1);
 
-  double logLikelihood = logGaussianNd(rotDisplacement2, rotCovMatrix2_);
+  double logLikelihood =
+    logGaussianNdInvertedCovariance(
+        rotDisplacement2, invRotCovMatrx2_, detRotCovMatrix2_);
 
   //--- add "penalty" term in case displacement has component opposite to direction of track momentum
   if ( rotDisplacement(2) < 0. ) {
