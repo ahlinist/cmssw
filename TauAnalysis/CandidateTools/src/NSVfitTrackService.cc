@@ -38,9 +38,11 @@ const SVfit::track::TrackExtrapolation& NSVfitTrackService::linearizedTrack(
 
 void NSVfitTrackService::setup(
     const edm::EventSetup& es, const reco::Candidate::Point& refPoint) {
-  es.get<TransientTrackRecord>().get("TransientTrackBuilder", builder_);
-  isValid_ = true;
-  refPoint_ = AlgebraicVector3(refPoint.x(), refPoint.y(), refPoint.z());
+  if (!isValid_) {
+    es.get<TransientTrackRecord>().get("TransientTrackBuilder", builder_);
+    isValid_ = true;
+    refPoint_ = AlgebraicVector3(refPoint.x(), refPoint.y(), refPoint.z());
+  }
 }
 
 reco::TransientTrack
