@@ -8,15 +8,16 @@
  *
  * \author Christian Veelken, UC Davis
  *
- * \version $Revision: 1.11 $
+ * \version $Revision: 1.12 $
  *
- * $Id: NSVfitAlgorithmBase.h,v 1.11 2011/03/25 14:34:30 veelken Exp $
+ * $Id: NSVfitAlgorithmBase.h,v 1.12 2011/03/25 14:35:17 veelken Exp $
  *
  */
 
 #include "FWCore/Framework/interface/Event.h"
 #include "FWCore/Framework/interface/EventSetup.h"
 #include "FWCore/ParameterSet/interface/ParameterSet.h"
+#include "FWCore/ServiceRegistry/interface/Service.h"
 
 #include "DataFormats/Candidate/interface/Candidate.h"
 #include "DataFormats/VertexReco/interface/Vertex.h"
@@ -27,6 +28,7 @@
 #include "TauAnalysis/CandidateTools/interface/NSVfitSingleParticleLikelihood.h"
 #include "TauAnalysis/CandidateTools/interface/NSVfitEventBuilderBase.h"
 #include "TauAnalysis/CandidateTools/interface/nSVfitParameter.h"
+#include "TauAnalysis/CandidateTools/interface/NSVfitTrackService.h"
 
 #include "AnalysisDataFormats/TauAnalysis/interface/NSVfitEventHypothesis.h"
 #include "AnalysisDataFormats/TauAnalysis/interface/NSVfitResonanceHypothesis.h"
@@ -275,6 +277,8 @@ class NSVfitAlgorithmBase
   std::vector<NSVfitLikelihoodBase*> allLikelihoods_; // list of all event, resonance and single particle likelihood plugins
                                                       // NOTE: plugins in list are **not** owned by NSVfitAlgorithmBase
 
+  edm::Service<NSVfitTrackService> trackService_;
+  const edm::EventSetup* currentEventSetup_;
   mutable NSVfitEventHypothesis* currentEventHypothesis_;
 
   std::vector<fitParameterType> fitParameters_;

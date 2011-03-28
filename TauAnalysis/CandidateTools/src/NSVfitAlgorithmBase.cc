@@ -45,18 +45,18 @@ NSVfitAlgorithmBase::NSVfitAlgorithmBase(const edm::ParameterSet& cfg)
   edm::ParameterSet cfgEvent = cfg.getParameter<edm::ParameterSet>("event");
   eventModel_ = new eventModelType(cfgEvent, allLikelihoods_);
 
-  verbosity_ = cfg.exists("verbosity") ? 
+  verbosity_ = cfg.exists("verbosity") ?
     cfg.getParameter<int>("verbosity") : 0;
 
   initializeFitParameterLimits(fitParameterLimits_);
 }
 
-NSVfitAlgorithmBase::~NSVfitAlgorithmBase() 
+NSVfitAlgorithmBase::~NSVfitAlgorithmBase()
 {
   delete eventModel_;
 }
 
-void NSVfitAlgorithmBase::beginJob() 
+void NSVfitAlgorithmBase::beginJob()
 {
   for ( std::vector<NSVfitLikelihoodBase*>::iterator likelihood = allLikelihoods_.begin();
 	likelihood != allLikelihoods_.end(); ++likelihood ) {
@@ -68,11 +68,12 @@ void NSVfitAlgorithmBase::beginJob()
 
 void NSVfitAlgorithmBase::beginEvent(const edm::Event& evt, const edm::EventSetup& es)
 {
+  currentEventSetup_ = &es;
   for ( std::vector<NSVfitLikelihoodBase*>::iterator likelihood = allLikelihoods_.begin();
 	likelihood != allLikelihoods_.end(); ++likelihood ) {
     (*likelihood)->beginEvent(evt, es);
   }
-}  
+}
 
 void NSVfitAlgorithmBase::requestFitParameter(const std::string& name, int type, const std::string& requester)
 {
@@ -80,7 +81,7 @@ void NSVfitAlgorithmBase::requestFitParameter(const std::string& name, int type,
        name == "allLeptons"   ||
        name == "allNeutrinos" ) {
     edm::LogWarning ("NSVfitAlgorithmBase::requestFitParameter")
-      << " Value = " << name << " not supported yet" 
+      << " Value = " << name << " not supported yet"
       << " --> relying on SingleParticleLikelihood plugins to initialize fitParameter for now.";
     return;
   }
@@ -93,7 +94,7 @@ void NSVfitAlgorithmBase::requestFitParameter(const std::string& name, int type,
     newFitParameter.type_ = type;
     assert(type >= 0 && type < (int)fitParameterLimits_.size());
     newFitParameter.lowerLimit_ = fitParameterLimits_[type].first;
-    newFitParameter.upperLimit_ = fitParameterLimits_[type].second; 
+    newFitParameter.upperLimit_ = fitParameterLimits_[type].second;
     newFitParameter.idx_ = fitParameterCounter_;
     fitParameters_.push_back(newFitParameter);
     fitParameter = &fitParameters_.back();
@@ -103,7 +104,7 @@ void NSVfitAlgorithmBase::requestFitParameter(const std::string& name, int type,
   fitParameter->usedBy_.push_back(requester);
 }
 
-NSVfitAlgorithmBase::fitParameterType* NSVfitAlgorithmBase::getFitParameter(const std::string& name, int type) 
+NSVfitAlgorithmBase::fitParameterType* NSVfitAlgorithmBase::getFitParameter(const std::string& name, int type)
 {
   fitParameterType* retVal = 0;
 
@@ -117,6 +118,11 @@ NSVfitAlgorithmBase::fitParameterType* NSVfitAlgorithmBase::getFitParameter(cons
 
 NSVfitEventHypothesis* NSVfitAlgorithmBase::fit(const inputParticleMap& inputParticles, const reco::Vertex* eventVertex) const
 {
+  // beginEvent should always be called before fit(...)
+  assert(currentEventSetup_);
+  // Setup the track service
+  trackService_->setup(*currentEventSetup_, eventVertex->position());
+
   currentEventHypothesis_ = eventModel_->builder_->build(inputParticles, eventVertex);
 
   eventModel_->beginCandidate(currentEventHypothesis_);
