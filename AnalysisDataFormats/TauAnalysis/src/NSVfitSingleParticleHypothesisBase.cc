@@ -1,7 +1,8 @@
 #include "AnalysisDataFormats/TauAnalysis/interface/NSVfitSingleParticleHypothesisBase.h"
 
 NSVfitSingleParticleHypothesisBase::NSVfitSingleParticleHypothesisBase(const NSVfitSingleParticleHypothesisBase& bluePrint)
-  : name_(bluePrint.name_),
+  : mother_(bluePrint.mother_),
+    name_(bluePrint.name_),
     barcode_(bluePrint.barcode_),
     particle_(bluePrint.particle_),
     p4_(bluePrint.p4_),
@@ -12,6 +13,7 @@ NSVfitSingleParticleHypothesisBase::NSVfitSingleParticleHypothesisBase(const NSV
 
 NSVfitSingleParticleHypothesisBase& NSVfitSingleParticleHypothesisBase::operator =(const NSVfitSingleParticleHypothesisBase& bluePrint)
 {
+  mother_ = bluePrint.mother_;
   name_ = bluePrint.name_;
   barcode_ = bluePrint.barcode_;
   particle_ = bluePrint.particle_;

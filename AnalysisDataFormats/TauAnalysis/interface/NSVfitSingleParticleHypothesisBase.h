@@ -9,16 +9,20 @@
 
 #include <string>
 
+class NSVfitResonanceHypothesis;
+
 class NSVfitSingleParticleHypothesisBase
 {
  public:
   NSVfitSingleParticleHypothesisBase() {}
   NSVfitSingleParticleHypothesisBase(const std::string& name, int barcode)
-    : name_(name),
-      barcode_(barcode)
+    : mother_(NULL),
+    name_(name),
+    barcode_(barcode)
   {}
   NSVfitSingleParticleHypothesisBase(const edm::Ptr<reco::Candidate>& particle, const std::string& name, int barcode)
-    : name_(name),
+    : mother_(NULL),
+      name_(name),
       barcode_(barcode),
       particle_(particle),
       p4_(particle->p4())
@@ -29,6 +33,11 @@ class NSVfitSingleParticleHypothesisBase
   virtual NSVfitSingleParticleHypothesisBase* clone() const { return new NSVfitSingleParticleHypothesisBase(*this); }
 
   virtual NSVfitSingleParticleHypothesisBase& operator=(const NSVfitSingleParticleHypothesisBase&);
+
+  const NSVfitResonanceHypothesis* mother() const { return mother_; }
+  void setMother(const NSVfitResonanceHypothesis* mother) {
+    mother_ = mother;
+  }
 
   const std::string& name() const { return name_; }
   int barcode() const { return barcode_; }
@@ -83,6 +92,9 @@ class NSVfitSingleParticleHypothesisBase
   }
 
  protected:
+
+  const NSVfitResonanceHypothesis * mother_;
+
   /// "human-readable" label for print-out
   std::string name_;
 

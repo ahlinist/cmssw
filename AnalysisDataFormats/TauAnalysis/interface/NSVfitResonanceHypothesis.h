@@ -7,6 +7,8 @@
 
 #include <string>
 
+class NSVfitEventHypothesis;
+
 class NSVfitResonanceHypothesis
 {
  public:
@@ -15,9 +17,13 @@ class NSVfitResonanceHypothesis
   virtual ~NSVfitResonanceHypothesis() {}
 
   virtual NSVfitResonanceHypothesis* clone() const { return new NSVfitResonanceHypothesis(*this); }
-  
+
   virtual NSVfitResonanceHypothesis& operator=(const NSVfitResonanceHypothesis&);
 
+  const NSVfitEventHypothesis* eventHypothesis() const { return eventHyp_; }
+  void setEventHypothesis(const NSVfitEventHypothesis* input) {
+    eventHyp_ = input;
+  }
   const std::string& name() const { return name_; }
   int barcode() const { return barcode_; }
 
@@ -27,7 +33,7 @@ class NSVfitResonanceHypothesis
   reco::Candidate::LorentzVector p4_fitted() const { return (p4_ + dp4_); }
   reco::Candidate::LorentzVector dp4_fitted() const { return dp4_; }
 
-  /// mean and median reconstructed mass, 
+  /// mean and median reconstructed mass,
   /// -1 sigma and +1 sigma limits on reconstructed mass
   double mass() const { return mass_; }
   double massErrUp() const { return massErrUp_; }
@@ -69,6 +75,9 @@ class NSVfitResonanceHypothesis
 
  private:
 
+  /// Mother event hypothesis
+  const NSVfitEventHypothesis* eventHyp_;
+
   /// "human-readable" label for print-out
   std::string name_;
 
@@ -84,7 +93,7 @@ class NSVfitResonanceHypothesis
   /// fit hypotheses for daughter particles
   edm::OwnVector<NSVfitSingleParticleHypothesisBase> daughters_;
 
-  /// mean and median reconstructed mass, 
+  /// mean and median reconstructed mass,
   /// -1 sigma and +1 sigma limits on reconstructed mass
   double mass_;
   double massErrUp_;
