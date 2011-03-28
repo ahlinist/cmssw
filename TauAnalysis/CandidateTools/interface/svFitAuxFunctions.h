@@ -210,7 +210,9 @@ namespace SVfit_namespace
 
     //std::cout << "--> residual^T V^-1 redidual = " << ROOT::Math::Dot(residual, covInverse*residual) << std::endl;
 
-    return -0.5*numDimensions*TMath::Log(2*TMath::Pi()) - 0.5*TMath::Log(det) - 0.5*(ROOT::Math::Dot(residual, covInverse*residual));
+    return -0.5*numDimensions*TMath::Log(2*TMath::Pi())
+      - 0.5*TMath::Log(det)
+      - 0.5*(ROOT::Math::Dot(residual, covInverse*residual));
   }
 
 

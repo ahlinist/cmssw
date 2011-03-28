@@ -31,6 +31,11 @@ const SVfit::track::TrackExtrapolation& NSVfitTrackService::linearizedTrack(
   return insertResult.first->second;
 }
 
+const SVfit::track::TrackExtrapolation& NSVfitTrackService::linearizedTrack(
+      const reco::TrackBaseRef& track) const {
+  return linearizedTrack(track.castTo<reco::TrackRef>());
+}
+
 void NSVfitTrackService::setup(
     const edm::EventSetup& es, const reco::Candidate::Point& refPoint) {
   es.get<TransientTrackRecord>().get("TransientTrackBuilder", builder_);
@@ -57,6 +62,11 @@ NSVfitTrackService::transientTrack(const reco::TrackRef& track) const {
     cacheTransientTrack_.insert(std::make_pair(track, result));
   assert(insertResult.second);
   return insertResult.first->second;
+}
+
+reco::TransientTrack
+NSVfitTrackService::transientTrack(const reco::TrackBaseRef& track) const {
+  return transientTrack(track.castTo<reco::TrackRef>());
 }
 
 void NSVfitTrackService::reset(const edm::Event& evt, const edm::EventSetup&) {

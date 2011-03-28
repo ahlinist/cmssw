@@ -1,6 +1,6 @@
 #include "TauAnalysis/CandidateTools/interface/NSVfitResonanceBuilderBase.h"
 
-NSVfitResonanceBuilderBase::NSVfitResonanceBuilderBase(const edm::ParameterSet& cfg) 
+NSVfitResonanceBuilderBase::NSVfitResonanceBuilderBase(const edm::ParameterSet& cfg)
   : NSVfitBuilderBase(cfg),
     prodResonanceLabel_(cfg.getParameter<std::string>("prodResonanceLabel")),
     numDaughterBuilders_(0)
@@ -14,14 +14,14 @@ NSVfitResonanceBuilderBase::NSVfitResonanceBuilderBase(const edm::ParameterSet& 
     edm::ParameterSet cfg_builder = cfg_daughter.getParameter<edm::ParameterSet>("builder");
     cfg_builder.addParameter<std::string>("prodParticleLabel", *daughterName);
     std::string pluginType = cfg_builder.getParameter<std::string>("pluginType");
-    NSVfitSingleParticleBuilderBase* daughterBuilder = 
+    NSVfitSingleParticleBuilderBase* daughterBuilder =
       NSVfitSingleParticleBuilderPluginFactory::get()->create(pluginType, cfg_builder);
     daughterBuilders_.push_back(daughterBuilder);
     ++numDaughterBuilders_;
   }
 }
 
-NSVfitResonanceBuilderBase::~NSVfitResonanceBuilderBase() 
+NSVfitResonanceBuilderBase::~NSVfitResonanceBuilderBase()
 {
   for ( std::vector<NSVfitSingleParticleBuilderBase*>::iterator it = daughterBuilders_.begin();
 	it != daughterBuilders_.end(); ++it ) {
@@ -29,7 +29,7 @@ NSVfitResonanceBuilderBase::~NSVfitResonanceBuilderBase()
   }
 }
 
-void NSVfitResonanceBuilderBase::beginJob(NSVfitAlgorithmBase* algorithm) 
+void NSVfitResonanceBuilderBase::beginJob(NSVfitAlgorithmBase* algorithm)
 {
   for ( std::vector<NSVfitSingleParticleBuilderBase*>::iterator daughterBuilder = daughterBuilders_.begin();
 	daughterBuilder != daughterBuilders_.end(); ++daughterBuilder ) {
@@ -37,7 +37,7 @@ void NSVfitResonanceBuilderBase::beginJob(NSVfitAlgorithmBase* algorithm)
   }
 }
 
-void NSVfitResonanceBuilderBase::beginEvent(const edm::Event& evt, const edm::EventSetup& es) 
+void NSVfitResonanceBuilderBase::beginEvent(const edm::Event& evt, const edm::EventSetup& es)
 {
   NSVfitBuilderBase::beginEvent(evt, es);
   for ( std::vector<NSVfitSingleParticleBuilderBase*>::iterator daughterBuilder = daughterBuilders_.begin();
@@ -46,7 +46,8 @@ void NSVfitResonanceBuilderBase::beginEvent(const edm::Event& evt, const edm::Ev
   }
 }
 
-NSVfitResonanceHypothesis* NSVfitResonanceBuilderBase::build(const inputParticleMap& inputParticles) const
+NSVfitResonanceHypothesis* NSVfitResonanceBuilderBase::build(
+    const inputParticleMap& inputParticles) const
 {
   NSVfitResonanceHypothesis* resonanceHypothesis = new NSVfitResonanceHypothesis();
 
@@ -54,7 +55,9 @@ NSVfitResonanceHypothesis* NSVfitResonanceBuilderBase::build(const inputParticle
 
   for ( std::vector<NSVfitSingleParticleBuilderBase*>::const_iterator daughterBuilder = daughterBuilders_.begin();
 	daughterBuilder != daughterBuilders_.end(); ++daughterBuilder ) {
-    NSVfitSingleParticleHypothesisBase* daughterHypothesis = (*daughterBuilder)->build(inputParticles);
+    NSVfitSingleParticleHypothesisBase* daughterHypothesis =
+      (*daughterBuilder)->build(inputParticles);
+    daughterHypothesis->setMother(resonanceHypothesis);
 
     p4 += daughterHypothesis->p4();
 
@@ -88,7 +91,7 @@ void NSVfitResonanceBuilderBase::applyFitParameter(NSVfitResonanceHypothesis* re
   resonanceHypothesis->dp4_ = dp4;
 }
 
-void NSVfitResonanceBuilderBase::print(std::ostream& stream) const 
+void NSVfitResonanceBuilderBase::print(std::ostream& stream) const
 {
   stream << "<NSVfitResonanceBuilderBase::print>:" << std::endl;
   stream << " pluginName = " << pluginName_ << std::endl;
