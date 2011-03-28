@@ -1,5 +1,23 @@
 import FWCore.ParameterSet.Config as cms
 
+nSVfitElectronLikelihoodPhaseSpace = cms.PSet(
+    pluginName = cms.string("nSVfitTauToElecLikelihoodPhaseSpace"),
+    pluginType = cms.string("NSVfitTauToElecLikelihoodPhaseSpace"),
+    verbosity = cms.int32(0)  
+)
+
+nSVfitElectronLikelihoodPolarization = cms.PSet(
+    pluginName = cms.string("nSVfitTauToElecLikelihoodPolarization"),
+    pluginType = cms.string("NSVfitTauToElecLikelihoodPolarization"),
+    verbosity = cms.int32(0)  
+)
+
+nSVfitTauToElecBuilder = cms.PSet(
+    pluginName = cms.string("nSVfitTauToElecBuilder"),
+    pluginType = cms.string("NSVfitTauToElecBuilder"),
+    verbosity = cms.int32(0)  
+)
+
 nSVfitMuonLikelihoodPhaseSpace = cms.PSet(
     pluginName = cms.string("nSVfitTauToMuLikelihoodPhaseSpace"),
     pluginType = cms.string("NSVfitTauToMuLikelihoodPhaseSpace"),
@@ -101,7 +119,7 @@ nSVfitEventLikelihoodMEt = cms.PSet(
         parSigma = cms.string("7.54*(1 - 0.00542*x)"),
         parBias = cms.string("-0.96"),
         perpSigma = cms.string("6.85*(1 - 0.00547*x)"),
-        perpBias = cms.string("0."),
+        perpBias = cms.string("0.")
     ),
     verbosity = cms.int32(0)
 )

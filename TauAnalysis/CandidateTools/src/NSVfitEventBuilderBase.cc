@@ -65,7 +65,10 @@ void NSVfitEventBuilderBase::beginEvent(const edm::Event& evt, const edm::EventS
 
 NSVfitEventHypothesis* NSVfitEventBuilderBase::build(const inputParticleMap& inputParticles, const reco::Vertex* eventVertex) const
 {
-  NSVfitEventHypothesis* eventHypothesis = new NSVfitEventHypothesis();
+  inputParticleMap::const_iterator metPtr = inputParticles.find("met");
+  assert(metPtr != inputParticles.end());
+
+  NSVfitEventHypothesis* eventHypothesis = new NSVfitEventHypothesis(metPtr->second);
 
   reco::Candidate::LorentzVector p4(0,0,0,0);
 
@@ -79,9 +82,6 @@ NSVfitEventHypothesis* NSVfitEventBuilderBase::build(const inputParticleMap& inp
   }
 
   eventHypothesis->p4_    = p4;
-  inputParticleMap::const_iterator metPtr = inputParticles.find("met");
-  assert(metPtr != inputParticles.end());
-  eventHypothesis->p4MEt_ = metPtr->second->p4();
 
   eventHypothesis->eventVertexIsValid_ = false;
 

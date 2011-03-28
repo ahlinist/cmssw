@@ -9,9 +9,9 @@
  *
  * \author Evan Friis, Christian Veelken; UC Davis
  *
- * \version $Revision: 1.1 $
+ * \version $Revision: 1.2 $
  *
- * $Id: SVfitLegTrackExtractor.h,v 1.1 2010/08/30 13:26:49 veelken Exp $
+ * $Id: SVfitLegTrackExtractor.h,v 1.2 2011/01/18 16:43:00 friis Exp $
  *
  */
 
@@ -34,9 +34,7 @@ class SVfitLegTrackExtractor
  public:
   std::vector<reco::TrackBaseRef> operator()(const T& lepton) const
   {
-    //std::cout << "<SVfitLegTrackExtractor::operator()>:" << std::endl;
-    std::vector<reco::TrackBaseRef> tracks;
-    return tracks;
+    assert(0);
   }
 };
 
@@ -49,7 +47,9 @@ class SVfitLegTrackExtractor<pat::Electron>
   {
     //std::cout << "<SVfitLegTrackExtractor<pat::Electron>::operator()>:" << std::endl;
     std::vector<reco::TrackBaseRef> tracks;
-    tracks.push_back(reco::TrackBaseRef(electron.gsfTrack()));
+    if ( electron.core().isAvailable() && electron.core().isNonnull() ) {
+      tracks.push_back(reco::TrackBaseRef(electron.gsfTrack()));
+    }
     return tracks;
   }
 };
@@ -124,6 +124,5 @@ class SVfitLegHasNeutralsExtractor<pat::Tau>
       return tau.signalPFGammaCands().size();
     }
 };
-
 
 #endif

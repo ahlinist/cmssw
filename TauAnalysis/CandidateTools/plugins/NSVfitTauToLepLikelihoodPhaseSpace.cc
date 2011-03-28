@@ -52,12 +52,17 @@ double NSVfitTauToLepLikelihoodPhaseSpace<T>::operator()(const NSVfitSingleParti
   double decayAngle = hypothesis_T->decay_angle_rf();
   double sinDecayAngle = TMath::Sin(decayAngle);
   double nuMass = hypothesis_T->p4invis_rf().mass();
+  if ( nuMass < 0. ) nuMass = 0.; // CV: add protection against rounding errors when boosting between laboratory and rest frame
   double visMass = hypothesis_T->p4vis_rf().mass();
 
-  if ( this->verbosity_ ) {
+  if ( this->verbosity_ ) {    
+    std::cout << " tauLeptonMass2 = " << tauLeptonMass2 << std::endl;
     std::cout << " decayAngle = " << decayAngle << std::endl;
+    std::cout << " sinDecayAngle = " << sinDecayAngle << std::endl;
     std::cout << " nuMass = " << nuMass << std::endl;
     std::cout << " visMass = " << visMass << std::endl;
+    std::cout << " square(nuMass + visMass) = " << square(nuMass + visMass) << std::endl;
+    std::cout << " square(nuMass - visMass) = " << square(nuMass - visMass) << std::endl;
   }
 
   double prob = 0.5*nuMass
@@ -70,7 +75,7 @@ double NSVfitTauToLepLikelihoodPhaseSpace<T>::operator()(const NSVfitSingleParti
   } else {
     if ( prob < 0. ) 
       edm::LogWarning ("NSVfitTauToLepLikelihoodPhaseSpace::operator()")
-	<< " Unphysical solution: prob = " << prob << " --> returning very large negative number !!";
+	<< " Unphysical solution: prob = " << prob << " --> returning very large positive number !!";
     nll = std::numeric_limits<float>::max();
   }
 
