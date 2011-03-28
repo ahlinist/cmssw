@@ -40,6 +40,9 @@ public:
   int         fPvIdx; 
   double      fPvLip, fPvLipE, fPvTip, fPvTipE;
 
+  // -- proper lifetime and its error
+  double      fTau, fTauE;
+
   // information on tracks near this candidate
   std::vector<std::pair<int,std::pair<float,float> > > fNstTracks; // usage: (trackIx,doca(value,error))
 
