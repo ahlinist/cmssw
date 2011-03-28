@@ -1,5 +1,7 @@
 import FWCore.ParameterSet.Config as cms
 import FWCore.ParameterSet.VarParsing as VarParsing
+import FWCore.ParameterSet.Types as CfgTypes
+import PhysicsTools.PythonAnalysis.LumiList as LumiList
 
 ## setup 'analysis'  options
 options = VarParsing.VarParsing ('analysis')
@@ -13,10 +15,10 @@ def newBoolOption(name, default, description):
                      description)
 
 newBoolOption("applyHltFilter", False, "Apply the HLT filter?")
-newBoolOption("applyNoScrapingFilter", True, "Apply the no scraping filter?")
-newBoolOption("applyPrimaryVertexFilter", True,
+newBoolOption("applyNoScrapingFilter", False, "Apply the no scraping filter?")
+newBoolOption("applyPrimaryVertexFilter", False,
               "Apply the primary vertex filter?")
-newBoolOption("applySkimFilter", True, "Apply the skim filter?")
+newBoolOption("applySkimFilter", False, "Apply the skim filter?")
 
 options.register("hltProcessName",
     "REDIGI39X",                    # default value
@@ -24,6 +26,13 @@ options.register("hltProcessName",
     options.varType.string,         # bool, string, int, or float
     "Name of the Process that produced the HLT information."
     )
+
+options.register("jsonFile",
+    "Cert_136033-149442_7TeV_Dec22ReReco_Collisions10_JSON_v3.txt", # default value
+    VarParsing.VarParsing.multiplicity.singleton, # singleton or list
+    VarParsing.VarParsing.varType.string,          # string, int, or float
+    "JSON file to be applied."
+)
 
 ## setup any defaults you want
 options.outputFile = "MmgFsrRecoAnalyzer.root"
@@ -40,6 +49,14 @@ process = cms.Process("Test")
 process.source = cms.Source("PoolSource",
   fileNames = cms.untracked.vstring() + options.inputFiles
 )
+# JSON file
+if options.jsonFile != "":
+    myLumis = \
+        LumiList.LumiList(filename = options.jsonFile
+                          ).getCMSSWString().split(',')
+    process.source.lumisToProcess = \
+        CfgTypes.untracked(CfgTypes.VLuminosityBlockRange())
+    process.source.lumisToProcess.extend(myLumis)
 
 process.maxEvents = cms.untracked.PSet(
   input = cms.untracked.int32(options.maxEvents)
@@ -60,6 +77,10 @@ process.MessageLogger.cerr.FwkReport.reportEvery = 100
 process.load("ElectroWeakAnalysis.MultiBosons.Skimming.goodCollisionDataSequence_cff")
 process.load("ElectroWeakAnalysis.MultiBosons.Skimming.ZToMMGSkim_cff")
 process.load("ElectroWeakAnalysis.MultiBosons.MmgFsrRecoAnalyzer_cfi")
+
+## Customize defaults
+process.analyzeMmgFsr.photonSrc = "cleanPatPhotonsTriggerMatch"
+process.analyzeMmgFsr.muonSrc   = "cleanPatMuonsTriggerMatch"
 
 process.ZToMMGSkimFilterSequence.replace(
     process.ZToMMGHltFilter,

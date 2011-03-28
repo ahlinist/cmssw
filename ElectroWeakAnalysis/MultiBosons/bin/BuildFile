@@ -20,4 +20,5 @@
 <bin file="plotPhotons.cc"> </bin>
 <bin file="plotElectrons.cc"> </bin>
 <bin file="vGammaFWLiteAnalysis.cc"> </bin>
+<bin file="signature.cc"> </bin>
 </environment>

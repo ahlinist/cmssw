@@ -393,35 +393,36 @@ MmgFsrRecoAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSe
     }
 
       // Dump the event info
-      DumpPtEtaPhi  ptEtaPhi;
-      DumpPtEtaPhiM ptEtaPhiM;
+      if (0) {
+        DumpPtEtaPhi  ptEtaPhi;
+        DumpPtEtaPhiM ptEtaPhiM;
 
-      std::cout << "run lumi id: "
-            << std::setw(3) << iEvent.id().run() << " "
-            << std::setw(3) << iEvent.id().luminosityBlock() << " "
-            << std::setw(8) << iEvent.id().event()
-            << std::setw(0) << std::endl;
+        std::cout << "run lumi id: "
+              << std::setw(3) << iEvent.id().run() << " "
+              << std::setw(3) << iEvent.id().luminosityBlock() << " "
+              << std::setw(8) << iEvent.id().event()
+              << std::setw(0) << std::endl;
 
-      std::cout << std::setw(10)
-           << "  pt eta phi m for mmg cand " << i << std::endl
-           << "    mmg p4 minDR:    " << ptEtaPhiM(mmgCand) << " "
-                                      << drMin
-                                      << std::endl
-           << "    dimuon p4:       " << ptEtaPhiM(*dimuon) << std::endl
-           << "    near mu p4 t/e/h Iso: " << ptEtaPhiM(*nearMuon) << " "
-//                                         << nearMuon->hcalIso()
-                                           << nearMuon->isolationR03().sumPt << " "
-                                           << nearMuon->isolationR03().emEt  << " "
-                                           << nearMuon->isolationR03().hadEt
-                                           << std::endl
-           << "    far mu p4 t/e/h Iso:  " << ptEtaPhiM(*farMuon) << " "
-//                                         << farMuon->hcalIso()
-                                           << farMuon->isolationR03().sumPt << " "
-                                           << farMuon->isolationR03().emEt  << " "
-                                           << farMuon->isolationR03().hadEt
-                                           << std::endl
-           << "    photon p3:            " << ptEtaPhi(*photon) << std::endl;
-
+        std::cout << std::setw(10)
+            << "  pt eta phi m for mmg cand " << i << std::endl
+            << "    mmg p4 minDR:    " << ptEtaPhiM(mmgCand) << " "
+                                        << drMin
+                                        << std::endl
+            << "    dimuon p4:       " << ptEtaPhiM(*dimuon) << std::endl
+            << "    near mu p4 t/e/h Iso: " << ptEtaPhiM(*nearMuon) << " "
+  //                                         << nearMuon->hcalIso()
+                                            << nearMuon->isolationR03().sumPt << " "
+                                            << nearMuon->isolationR03().emEt  << " "
+                                            << nearMuon->isolationR03().hadEt
+                                            << std::endl
+            << "    far mu p4 t/e/h Iso:  " << ptEtaPhiM(*farMuon) << " "
+  //                                         << farMuon->hcalIso()
+                                            << farMuon->isolationR03().sumPt << " "
+                                            << farMuon->isolationR03().emEt  << " "
+                                            << farMuon->isolationR03().hadEt
+                                            << std::endl
+            << "    photon p3:            " << ptEtaPhi(*photon) << std::endl;
+      } // end if dump the info
     // if (nearMuon->hcalIso() >= 1.0) continue;
     if (nearMuon->isolationR03().hadEt >= 1.0) continue;
     ++mmgCandsPassedPerEvent["6.1 near muon HCAL iso"];

@@ -6,7 +6,7 @@ ptHisto = cms.PSet(
   max = cms.untracked.double(300),
   nbins = cms.untracked.int32(300),
   name = cms.untracked.string("Pt"),
-  description = cms.untracked.string("P_{#perp} [GeV/c]:P_{#perp} [GeV/c]:N per 1 GeV/c"),
+  description = cms.untracked.string("p_{T} [GeV/c];P_{#perp} [GeV/c];N per 1 GeV/c"),
   plotquantity = cms.untracked.string("pt")
 )
 
@@ -16,7 +16,7 @@ etaHisto = cms.PSet(
   max = cms.untracked.double(10.0),
   nbins = cms.untracked.int32(100),
   name = cms.untracked.string("Eta"),
-  description = cms.untracked.string("#eta:Pseudorapidity:N per 0.2"),
+  description = cms.untracked.string("#eta;Pseudorapidity;N per 0.2"),
   plotquantity = cms.untracked.string("eta")
 )
 
@@ -27,7 +27,7 @@ phiHisto = cms.PSet(
   max = cms.untracked.double(math.pi),
   nbins = cms.untracked.int32(100),
   name = cms.untracked.string("Phi"),
-  description = cms.untracked.string("#phi:Azimuthal Angle [radians]:N per 0.063 radians"),
+  description = cms.untracked.string("#phi;Azimuthal Angle [radians];N per 0.063 radians"),
   plotquantity = cms.untracked.string("phi")
 )
 
