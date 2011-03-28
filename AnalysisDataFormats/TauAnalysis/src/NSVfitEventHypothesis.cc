@@ -3,6 +3,7 @@
 NSVfitEventHypothesis::NSVfitEventHypothesis(const NSVfitEventHypothesis& bluePrint)
   : name_(bluePrint.name_),
     barcode_(bluePrint.barcode_),
+    met_(bluePrint.met_),
     p4_(bluePrint.p4_),
     dp4_(bluePrint.dp4_),
     p4MEt_(bluePrint.p4MEt_),
@@ -18,6 +19,7 @@ NSVfitEventHypothesis& NSVfitEventHypothesis::operator =(const NSVfitEventHypoth
 {
   name_ = bluePrint.name_;
   barcode_ = bluePrint.barcode_;
+  met_ = bluePrint.met_;
   p4_ = bluePrint.p4_;
   dp4_ = bluePrint.dp4_;
   p4MEt_ = bluePrint.p4MEt_;

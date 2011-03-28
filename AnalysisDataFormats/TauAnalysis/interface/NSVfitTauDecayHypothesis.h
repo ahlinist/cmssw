@@ -12,7 +12,8 @@
 
 #include "AnalysisDataFormats/TauAnalysis/interface/NSVfitSingleParticleHypothesisBase.h"
 
-class NSVfitTauDecayHypothesis : public NSVfitSingleParticleHypothesisBase {
+class NSVfitTauDecayHypothesis : public NSVfitSingleParticleHypothesisBase 
+{
  public:
   NSVfitTauDecayHypothesis() {}
   NSVfitTauDecayHypothesis(const edm::Ptr<reco::Candidate>& particle,
@@ -55,7 +56,7 @@ class NSVfitTauDecayHypothesis : public NSVfitSingleParticleHypothesisBase {
 
   friend class NSVfitTauDecayBuilderBase;
 
- private:
+ protected:
   /// momenta of visible (electron/muon) and invisible (neutrinos)
   /// decay products in tau lepton rest-frame
   reco::Candidate::LorentzVector p4invis_rf_;

@@ -38,9 +38,11 @@ class NSVfitResonanceHypothesis
   double mass_maximum() const { return massMaximum_; }
   double mass_maxInterpol() const { return massMaxInterpol_; }
 
+  bool isValidSolution() const { return isValidSolution_; }
+
   /// fit hypotheses of daughter particles
   const edm::OwnVector<NSVfitSingleParticleHypothesisBase>& daughters() const { return daughters_; }
-  const NSVfitSingleParticleHypothesisBase* daughter(const std::string& name)
+  const NSVfitSingleParticleHypothesisBase* daughter(const std::string& name) const
   {
     const NSVfitSingleParticleHypothesisBase* retVal = 0;
     for ( edm::OwnVector<NSVfitSingleParticleHypothesisBase>::const_iterator daughter = daughters_.begin();
@@ -92,6 +94,9 @@ class NSVfitResonanceHypothesis
   double massMedian_;
   double massMaximum_;
   double massMaxInterpol_;
+
+  /// flag indicating that computed mass hypotheses are physically "valid" solutions
+  bool isValidSolution_;
 };
 
 bool operator<(const NSVfitResonanceHypothesis&, const NSVfitResonanceHypothesis&);

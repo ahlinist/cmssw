@@ -3,6 +3,7 @@
 
 #include "DataFormats/CLHEP/interface/AlgebraicObjects.h"
 #include "DataFormats/Common/interface/OwnVector.h"
+#include "DataFormats/Candidate/interface/Candidate.h" 
 
 #include "AnalysisDataFormats/TauAnalysis/interface/NSVfitResonanceHypothesis.h"
 
@@ -14,6 +15,10 @@ class NSVfitEventHypothesis
 {
  public:
   NSVfitEventHypothesis() {}
+  NSVfitEventHypothesis(const edm::Ptr<reco::Candidate>& met) 
+    : met_(met),
+      p4MEt_(met->p4())
+  {}
   NSVfitEventHypothesis(const NSVfitEventHypothesis&);
   virtual ~NSVfitEventHypothesis() {}
 
@@ -23,6 +28,9 @@ class NSVfitEventHypothesis
 
   const std::string& name() const { return name_; }
   int barcode() const { return barcode_; }
+
+  /// pointer to MET object from which this hypothesis was made
+  virtual const edm::Ptr<reco::Candidate>& met() const { return met_; }
 
   /// momentum of multi-lepton system before fit, after fit
   /// and difference in momentum (after - before) fit
@@ -50,7 +58,7 @@ class NSVfitEventHypothesis
 
   /// fit hypotheses of lepton resonances
   const edm::OwnVector<NSVfitResonanceHypothesis>& resonances() const { return resonances_; }
-  const NSVfitResonanceHypothesis* resonance(const std::string& name)
+  const NSVfitResonanceHypothesis* resonance(const std::string& name) const
   {
     const NSVfitResonanceHypothesis* retVal = 0;
     for ( edm::OwnVector<NSVfitResonanceHypothesis>::const_iterator resonance = resonances_.begin();
@@ -84,6 +92,9 @@ class NSVfitEventHypothesis
 
   /// unique identifier to associate hypothesis to likelihood function
   int barcode_;
+
+  /// pointer to MET object from which this hypothesis was made
+  edm::Ptr<reco::Candidate> met_;
 
   /// momentum of particle before fit
   reco::Candidate::LorentzVector p4_;
