@@ -5,7 +5,7 @@ import FWCore.ParameterSet.Config as cms
 # names and settings taken from CMSSW_2_2_X, to be tuned
 #--------------------------------------------------------------------------------
 
-from PhysicsTools.PFCandProducer.Isolation.pfMuonIsolation_cff import *
+from CommonTools.ParticleFlow.Isolation.pfMuonIsolation_cff import *
 muonCollection = "muons"
 pfmuIsoDepositPFCandidates   = isoDepositReplace(muonCollection, "particleFlow")
 pfmuIsoChDepositPFCandidates = isoDepositReplace(muonCollection, "pfAllChargedHadrons")

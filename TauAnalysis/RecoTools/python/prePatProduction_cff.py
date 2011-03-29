@@ -5,10 +5,10 @@ import FWCore.ParameterSet.Config as cms
 #--------------------------------------------------------------------------------
 
 # produce particle flow based muon isolation quantities
-from PhysicsTools.PFCandProducer.pfNoPileUp_cff import *
-from PhysicsTools.PFCandProducer.ParticleSelectors.pfAllChargedHadrons_cfi import *
-from PhysicsTools.PFCandProducer.ParticleSelectors.pfAllNeutralHadrons_cfi import *
-from PhysicsTools.PFCandProducer.ParticleSelectors.pfAllPhotons_cfi import *
+from CommonTools.ParticleFlow.pfNoPileUp_cff import *
+from CommonTools.ParticleFlow.ParticleSelectors.pfAllChargedHadrons_cfi import *
+from CommonTools.ParticleFlow.ParticleSelectors.pfAllNeutralHadrons_cfi import *
+from CommonTools.ParticleFlow.ParticleSelectors.pfAllPhotons_cfi import *
 from TauAnalysis.RecoTools.recoElectronIsolation_cfi import *
 from TauAnalysis.RecoTools.recoMuonIsolation_cfi import *
 
