@@ -270,6 +270,7 @@ void CompositePtrCandidateT1T2MEtNSVfitHistManager<T1,T2>::fillHistogramsImp(con
 
       const edm::OwnVector<NSVfitResonanceHypothesis>& resonances = nSVfitEventHypothesis->resonances();     
       assert(resonances.size() == 1);
+      if ( !resonances[0].isValidSolution() ) continue;
       const edm::OwnVector<NSVfitSingleParticleHypothesisBase>& daughters = resonances[0].daughters();
       assert(daughters.size() == 2);
 
