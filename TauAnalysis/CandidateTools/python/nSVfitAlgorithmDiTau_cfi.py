@@ -1,5 +1,7 @@
 import FWCore.ParameterSet.Config as cms
 
+nSVfitTrackService = cms.Service("NSVfitTrackService")
+
 nSVfitElectronLikelihoodPhaseSpace = cms.PSet(
     pluginName = cms.string("nSVfitTauToElecLikelihoodPhaseSpace"),
     pluginType = cms.string("NSVfitTauToElecLikelihoodPhaseSpace"),
