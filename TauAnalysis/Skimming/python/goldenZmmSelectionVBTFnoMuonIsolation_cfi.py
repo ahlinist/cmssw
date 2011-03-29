@@ -13,7 +13,7 @@ import copy
 # Depending on whether the muons pass the isolation cut or not, the two muons are marked as "tag" and "probe".
 #--------------------------------------------------------------------------------
 
-from PhysicsTools.PFCandProducer.pfNoPileUp_cff import *
+from CommonTools.ParticleFlow.pfNoPileUp_cff import *
 
 from PhysicsTools.PatAlgos.producersLayer1.muonProducer_cfi import patMuons
 patMuons.addGenMatch = cms.bool(False)
