@@ -3,24 +3,6 @@
 #include "AnalysisDataFormats/TauAnalysis/interface/NSVfitTauToLepHypothesis.h"
 #include "DataFormats/TauReco/interface/PFTauDecayMode.h"
 
-template <typename T>
-int getDecayMode(const T*)
-{
-  assert(0); // force template specializations for pat::Electrons/pat::Muons to be used
-}
-
-template <>
-int getDecayMode<pat::Electron>(const pat::Electron*)
-{
-  return reco::PFTauDecayMode::tauDecaysElectron;
-}
-
-template <>
-int getDecayMode<pat::Muon>(const pat::Muon*)
-{
-  return reco::PFTauDecayMode::tauDecayMuon;
-}
-
 template<typename T>
 class NSVfitTauToLepBuilder : public NSVfitTauDecayBuilderBase 
 {
@@ -29,23 +11,25 @@ class NSVfitTauToLepBuilder : public NSVfitTauDecayBuilderBase
     : NSVfitTauDecayBuilderBase(cfg)
   {}
 
-  NSVfitTauDecayHypothesis* buildSpecific(const edm::Ptr<reco::Candidate> particle, const std::string& label, int barcode) const 
+  NSVfitSingleParticleHypothesisBase* build(const NSVfitTauDecayBuilderBase::inputParticleMap& inputParticles) const 
   {
-    NSVfitTauToLepHypothesis<T>* hypothesis = new NSVfitTauToLepHypothesis<T>(particle, label, barcode);
-    const T* objPtr = dynamic_cast<const T*>(&(*particle));
-    assert(objPtr);
-    hypothesis->decayMode_ = getDecayMode(&(*objPtr));
+    inputParticleMap::const_iterator particlePtr = inputParticles.find(prodParticleLabel_);
+    assert(particlePtr != inputParticles.end());
+
+    NSVfitTauToLepHypothesis<T>* hypothesis = new NSVfitTauToLepHypothesis<T>(particlePtr->second, prodParticleLabel_, barcodeCounter_);
+    ++barcodeCounter_;
+
+    NSVfitTauDecayBuilderBase::initialize(hypothesis, particlePtr->second.get());
+
     return hypothesis;
   }
 
-  // The two neutrion system in a leptonic decay can have mass.
+  // The two neutrion system in a leptonic tau decay can have non-zero mass.
   bool nuSystemIsMassless() const { return false; }
   
   virtual int getDecayMode(const reco::Candidate* candidate) const 
   {
-    const T* objPtr = dynamic_cast<const T*>(candidate);
-    assert(objPtr);
-    return getDecayMode(&(*objPtr));
+    assert(0); // force template specializations for pat::Electrons/pat::Muons to be used
   }
 
   virtual std::vector<reco::TrackBaseRef> extractTracks(const reco::Candidate* candidate) const 
@@ -54,20 +38,22 @@ class NSVfitTauToLepBuilder : public NSVfitTauDecayBuilderBase
     assert(objPtr);
     return trackExtractor_(*objPtr);
   }
-  
-  virtual void beginJobSpecific(NSVfitAlgorithmBase* algorithm) 
-  {
-    // No need to request additional parameters. 
-  }
-
-  virtual void applyFitParameterSpecific(NSVfitTauDecayHypothesis* hypothesis, double* param) const 
-  {
-    // Nothing to do for leptonic case.
-  }
 
  private:
   SVfitLegTrackExtractor<T> trackExtractor_;
 };
+
+template<>
+int NSVfitTauToLepBuilder<pat::Electron>::getDecayMode(const reco::Candidate* candidate) const 
+{
+  return reco::PFTauDecayMode::tauDecaysElectron;
+}
+
+template <>
+int NSVfitTauToLepBuilder<pat::Muon>::getDecayMode(const reco::Candidate* candidate) const
+{
+  return reco::PFTauDecayMode::tauDecayMuon;
+}
 
 typedef NSVfitTauToLepBuilder<pat::Electron> NSVfitTauToElecBuilder;
 typedef NSVfitTauToLepBuilder<pat::Muon> NSVfitTauToMuBuilder;
