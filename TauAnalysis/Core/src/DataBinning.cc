@@ -103,7 +103,7 @@ std::vector<binResultType> DataBinning::getBinResults(unsigned binNumber) const
 {
   std::vector<binResultType> binResults;
   
-  if ( binNumber >= 0 && binNumber < numBins_ ) {
+  if ( binNumber < numBins_ ) {
     const binEntryType& binEntry = binEntries_[binNumber];
 
     binResults.push_back(binResultType(binEntry.binContent_, binEntry.binSumw2_, "rec"));
