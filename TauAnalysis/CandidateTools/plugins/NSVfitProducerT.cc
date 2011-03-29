@@ -6,6 +6,7 @@
 #include "DataFormats/Common/interface/View.h"
 #include "DataFormats/Common/interface/Ptr.h"
 #include "DataFormats/METReco/interface/MET.h"
+#include "DataFormats/HepMCCandidate/interface/GenParticle.h" // CV: only for testing
 #include "DataFormats/VertexReco/interface/VertexFwd.h"
 #include "DataFormats/VertexReco/interface/Vertex.h"
 #include "DataFormats/Math/interface/deltaR.h"
@@ -72,7 +73,9 @@ template <typename T>
 void NSVfitProducerT<T>::produce(edm::Event& evt, const edm::EventSetup& es)
 {
   std::cout << "<NSVfitProducerT::produce>:" << std::endl;
-  std::cout << " moduleLabel = " << moduleLabel_ << ", instanceLabel = " << instanceLabel_ << std::endl;
+  std::cout << " moduleLabel = " << moduleLabel_;
+  if ( instanceLabel_ != "" ) std::cout << ", instanceLabel = " << instanceLabel_;
+  std::cout << std::endl;
 
   typedef edm::View<reco::Candidate> CandidateView;
   typedef edm::Handle<CandidateView> CandidateHandle;
@@ -125,6 +128,19 @@ void NSVfitProducerT<T>::produce(edm::Event& evt, const edm::EventSetup& es)
     }
     inputParticles.insert(std::pair<std::string, CandidatePtr>("met", metPtr));
 
+//--- check if the same particle collection is used as input for daughters more than once;
+//    if so, skip combinations corresponding to inputParticleCombination[..i..j] with i >= j
+//    and i and j referring to the same particle collection 
+    bool isCombinatorialDuplicate = false;
+    for ( unsigned iParticleType = 0; iParticleType < numInputParticles_; ++iParticleType ) {
+      for ( unsigned jParticleType = (iParticleType + 1); jParticleType < numInputParticles_; ++jParticleType ) {
+	if ( inputParticleCollections[iParticleType].id() == inputParticleCollections[jParticleType].id() && 
+	     inputParticleCombination[iParticleType]      >= inputParticleCombination[jParticleType]      ) {
+	  isCombinatorialDuplicate = true;
+	}
+      }
+    }
+
 //--- check for overlaps between any pairs of input particles
     bool isOverlap = false;
     for ( inputParticleMap::const_iterator inputParticle1 = inputParticles.begin();
@@ -133,11 +149,12 @@ void NSVfitProducerT<T>::produce(edm::Event& evt, const edm::EventSetup& es)
       ++inputParticle2_begin;
       for ( inputParticleMap::const_iterator inputParticle2 = inputParticle2_begin;
 	    inputParticle2 != inputParticles.end(); ++inputParticle2 ) {
-	if ( deltaR(inputParticle1->second->p4(), inputParticle2->second->p4()) < dRmin_ ) isOverlap = true;
+	if ( inputParticle2->first != "met" && deltaR(inputParticle1->second->p4(), inputParticle2->second->p4()) < dRmin_ )
+	  isOverlap = true;
       }
     }
 
-    if ( !isOverlap ) {
+    if ( !(isCombinatorialDuplicate || isOverlap) ) {
       std::auto_ptr<T> hypothesis(dynamic_cast<T*>(algorithm_->fit(inputParticles, eventVertex)));
       assert(hypothesis.get());
       nSVfitEventHypothesisCollection->push_back(*hypothesis);

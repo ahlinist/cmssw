@@ -20,9 +20,9 @@ double g(double* x, size_t dim, void* param)
   double nll = NSVfitAlgorithmBase::gNSVfitAlgorithm->nll(x, (double*)param);
   double retVal = TMath::Exp(-nll);
   static long callCounter = 0;
-  //if ( (callCounter % 100000) == 0 ) 
-  //  std::cout << "<g> (call = " << callCounter << "):" 
-  //	        << " nll = " << nll << " --> returning retVal = " << retVal << std::endl;
+  if ( (callCounter % 10000) == 0 ) 
+    std::cout << "<g> (call = " << callCounter << "):" 
+	      << " nll = " << nll << " --> returning retVal = " << retVal << std::endl;
   ++callCounter;
   return retVal;
 }
@@ -273,7 +273,7 @@ void NSVfitAlgorithmByIntegration::fitImp() const
 //    to perform actual integration
     double p, pErr;
     gsl_monte_vegas_integrate(integrand_, xl_, xu_, numDimensions_, numCalls_, rnd_, workspace_, &p, &pErr);
-    //std::cout << "--> M = " << (*massParForReplacements_) << ": p = " << p << " +/- " << pErr << std::endl;
+    std::cout << "--> M = " << (*massParForReplacements_) << ": p = " << p << " +/- " << pErr << std::endl;
 
     if      ( numMassParameters_ == 1 ) histResults->Fill((*massParForReplacements_)[0], p);
     else if ( numMassParameters_ == 2 ) {
@@ -357,7 +357,7 @@ void NSVfitAlgorithmByIntegration::setMassResults(
     //std::cout << "--> mass = " << resonance->mass_ << std::endl;
   } else {
     edm::LogWarning("NSVfitAlgorithmByIntegration::setMassResults")
-      << "Probability computed to be zero for all tested mass hypotheses --> no valid solution found !!";
+      << "Likelihood functions returned Probability zero for all tested mass hypotheses --> no valid solution found !!";
     resonance->isValidSolution_ = false;
   }
   
