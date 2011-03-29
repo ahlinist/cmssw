@@ -11,9 +11,9 @@
  *
  * \author Evan Friis, Christian Veelken; UC Davis
  *
- * \version $Revision: 1.13 $
+ * \version $Revision: 1.14 $
  *
- * $Id: NSVfitTauToHadBuilder.cc,v 1.13 2011/03/29 14:53:26 veelken Exp $
+ * $Id: NSVfitTauToHadBuilder.cc,v 1.14 2011/03/29 15:33:01 veelken Exp $
  *
  */
 
@@ -43,7 +43,7 @@ class NSVfitTauToHadBuilder : public NSVfitTauDecayBuilderBase
     idxFitParameter_phiVMa1r_   = getFitParameterIdx(algorithm, prodParticleLabel_, nSVfit_namespace::kTauVM_phi_a1r,   true);
     idxFitParameter_mass2VMa1_  = getFitParameterIdx(algorithm, prodParticleLabel_, nSVfit_namespace::kTauVM_mass2_a1,  true);
 
-    if ( verbosity_ ) print(std::cout);
+    //if ( verbosity_ ) print(std::cout);
   }
 
   NSVfitSingleParticleHypothesisBase* build(const NSVfitTauDecayBuilderBase::inputParticleMap& inputParticles) const 

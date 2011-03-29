@@ -12,9 +12,9 @@
  *
  * \author Evan Friis, Christian Veelken; UC Davis
  *
- * \version $Revision: 1.2 $
+ * \version $Revision: 1.11 $
  *
- * $Id: NSVfitTauToLepBuilder.h,v 1.2 2011/03/03 13:04:47 veelken Exp $
+ * $Id: NSVfitTauToLepBuilder.cc,v 1.11 2011/03/29 15:33:01 veelken Exp $
  *
  */
 
@@ -32,7 +32,7 @@ class NSVfitTauToLepBuilder : public NSVfitTauDecayBuilderBase
 
     idxFitParameter_nuInvMass_ = getFitParameterIdx(algorithm, prodParticleLabel_, nSVfit_namespace::kTau_nuInvMass);
 
-    if ( verbosity_ ) print(std::cout);
+    //if ( verbosity_ ) print(std::cout);
   }
 
   NSVfitSingleParticleHypothesisBase* build(const NSVfitTauDecayBuilderBase::inputParticleMap& inputParticles) const 

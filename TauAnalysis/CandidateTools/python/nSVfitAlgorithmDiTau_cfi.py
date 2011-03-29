@@ -1,5 +1,7 @@
 import FWCore.ParameterSet.Config as cms
 
+from TrackingTools.TransientTrack.TransientTrackBuilder_cfi import *
+
 nSVfitTrackService = cms.Service("NSVfitTrackService")
 
 nSVfitElectronLikelihoodPhaseSpace = cms.PSet(

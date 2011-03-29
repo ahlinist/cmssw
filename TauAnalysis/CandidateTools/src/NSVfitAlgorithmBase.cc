@@ -68,11 +68,12 @@ void NSVfitAlgorithmBase::beginJob()
 
 void NSVfitAlgorithmBase::beginEvent(const edm::Event& evt, const edm::EventSetup& es)
 {
-  currentEventSetup_ = &es;
   for ( std::vector<NSVfitLikelihoodBase*>::iterator likelihood = allLikelihoods_.begin();
 	likelihood != allLikelihoods_.end(); ++likelihood ) {
     (*likelihood)->beginEvent(evt, es);
   }
+
+  currentEventSetup_ = &es;
 }
 
 void NSVfitAlgorithmBase::requestFitParameter(const std::string& name, int type, const std::string& requester)
