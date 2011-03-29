@@ -41,7 +41,8 @@ public:
   double      fPvLip, fPvLipE, fPvTip, fPvTipE;
 
   // -- proper lifetime and its error
-  double      fTau, fTauE;
+  double      fTauxy, fTauxyE; // from 2d (r-phi) measurement
+  double      fTau3d, fTau3dE; // from 3d measurement
 
   // information on tracks near this candidate
   std::vector<std::pair<int,std::pair<float,float> > > fNstTracks; // usage: (trackIx,doca(value,error))
