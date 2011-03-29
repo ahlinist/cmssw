@@ -519,8 +519,6 @@ void ElectronHistManager::fillElectronIsoHistograms(const pat::Electron& patElec
   double electronTrackIso = patElectron.dr03TkSumPt();
   double electronEcalIso = patElectron.dr03EcalRecHitSumEt();
   double electronHcalIso = patElectron.userIsolation(pat::HcalIso);
-  double electronTrackEcalHcalIsoSum = electronTrackIso + electronEcalIso + electronHcalIso; 
-  double electronTrackEcalIsoSum = electronTrackIso + electronEcalIso; 
 
   hElectronTrkIsoPt_->Fill(electronTrackIso, weight);
   hElectronTrkIsoPtRel_->Fill(electronTrackIso/patElectron.pt(), weight);

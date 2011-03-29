@@ -282,7 +282,7 @@ std::string GenMatrixFit::modelNdEntryType::getRegionTitle(unsigned region, cons
   unsigned numVar = model1dEntries_.size();
 
   unsigned numRegions = TMath::Nint(TMath::Power(2, numVar));
-  if ( region >= 0 && region < numRegions ) {
+  if ( region < numRegions ) {
     std::ostringstream regionTitle;
     for ( unsigned iVar = 0; iVar < numVar; ++iVar ) {
       const std::string& varName = varNames[iVar];
@@ -312,7 +312,7 @@ std::string GenMatrixFit::modelNdEntryType::getContrTitle(unsigned region)
   unsigned numVar = model1dEntries_.size();
 
   unsigned numRegions = TMath::Nint(TMath::Power(2, numVar));
-  if ( region >= 0 && region < numRegions ) {
+  if ( region < numRegions ) {
     std::ostringstream contrTitle;
     contrTitle << "Norm * ";
 
@@ -343,7 +343,7 @@ double GenMatrixFit::modelNdEntryType::getContr(unsigned region)
   unsigned numVar = model1dEntries_.size();
 
   unsigned numRegions = TMath::Nint(TMath::Power(2, numVar));
-  if ( region >= 0 && region < numRegions ) {
+  if ( region < numRegions ) {
 
     double contribution = norm_->getVal();
 

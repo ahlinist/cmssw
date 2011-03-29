@@ -88,7 +88,7 @@ TMatrixD RunningCovMatrix::operator()() const
 
 double RunningCovMatrix::sigma(unsigned i) const
 {
-  if ( i >= 0 && i < numVar_ ) {
+  if ( i < numVar_ ) {
     if ( iValue_ > 0 ) return TMath::Sqrt(cov_(i, i)/iValue_);
   } else {
     edm::LogError("RunningCovMatrix::sigma") 
@@ -101,8 +101,8 @@ double RunningCovMatrix::sigma(unsigned i) const
 
 double RunningCovMatrix::correlation(unsigned i, unsigned j) const
 {
-  if ( i >= 0 && i < numVar_ &&
-       j >= 0 && j < numVar_ ) {
+  if ( i < numVar_ &&
+       j < numVar_ ) {
     double sigmaI = TMath::Sqrt(cov_(i, i));
     double sigmaJ = TMath::Sqrt(cov_(j, j));
     return cov_(i,j)/(sigmaI*sigmaJ);

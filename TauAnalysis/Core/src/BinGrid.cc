@@ -123,7 +123,7 @@ unsigned BinGrid::encodeTotBin(const vunsigned& binIndices) const
 
 std::vector<unsigned> BinGrid::decodeTotBin(unsigned totBin) const
 {
-  assert(totBin >= 0 && totBin < numBinsTotal_);
+  assert(totBin < numBinsTotal_);
 
   vunsigned binIndices(numDimensions_);
 
@@ -142,7 +142,7 @@ std::vector<unsigned> BinGrid::decodeTotBin(unsigned totBin) const
 
 unsigned BinGrid::getDimValue(unsigned i) const
 {
-  assert(i >= 0 && i < numDimensions_);
+  assert(i < numDimensions_);
 
   unsigned dimValue = 1;
   for ( unsigned iDimension = 0; iDimension < i; ++iDimension ) {
@@ -207,7 +207,7 @@ int BinGrid::binNumber(const std::vector<double>& x) const
 
 std::vector<double> BinGrid::binCenter(unsigned totBin) const
 {
-  if ( totBin >= 0 && totBin < numBinsTotal_ ) {
+  if ( totBin < numBinsTotal_ ) {
     std::vector<double> binCenter(numDimensions_);
 
     vunsigned binIndices = decodeTotBin(totBin);
@@ -226,7 +226,7 @@ std::vector<double> BinGrid::binCenter(unsigned totBin) const
 
 std::vector<double> BinGrid::binEdges(unsigned dimension) const
 {
-  if ( dimension >= 0 && dimension < numDimensions_ ) {
+  if ( dimension < numDimensions_ ) {
     return binEdges_[dimension];
   } else {
     edm::LogError ("BinGrid::binCenter") << " Invalid dimension = " << dimension << " !!";
@@ -236,7 +236,7 @@ std::vector<double> BinGrid::binEdges(unsigned dimension) const
 
 double BinGrid::binVolume(unsigned totBin) const
 {
-  if ( totBin >= 0 && totBin < numBinsTotal_ ) {
+  if ( totBin < numBinsTotal_ ) {
     double binVolume = 1.;
 
     vunsigned binIndices = decodeTotBin(totBin);

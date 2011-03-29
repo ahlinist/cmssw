@@ -74,7 +74,7 @@ void BinGridHistManager::fillHistogramsImp(const edm::Event& evt, const edm::Eve
   //std::cout << "<BinGridHistManager::fillHistogramsImp>:" << std::endl; 
 
   std::vector<double> x = (*objValExtractor_)(evt);
-  unsigned iRegion = binGrid_->binNumber(x);
+  int iRegion = binGrid_->binNumber(x);
 
 //--- skip processing event if region outside bin-grid
   if ( iRegion < 0 ) return;

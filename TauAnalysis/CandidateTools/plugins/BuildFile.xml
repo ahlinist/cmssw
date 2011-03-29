@@ -1,0 +1,20 @@
+<export>
+</export>
+<library   name="TauAnalysisCandidateTools_plugins" file="*.cc">
+  <use   name="CommonTools/UtilAlgos"/>
+  <use   name="CommonTools/Utils"/>
+  <use   name="DataFormats/Candidate"/>
+  <use   name="DataFormats/CLHEP"/>
+  <use   name="DQMServices/Core"/>
+  <use   name="FWCore/Framework"/>
+  <use   name="FWCore/MessageLogger"/>
+  <use   name="FWCore/ParameterSet"/>
+  <use   name="FWCore/PluginManager"/>
+  <use   name="FWCore/Utilities"/>
+  <use   name="TrackingTools/TrajectoryState"/>
+  <use   name="TrackingTools/TransientTrack"/>
+  <use   name="TrackingTools/Records"/>
+  <use   name="AnalysisDataFormats/TauAnalysis"/>
+  <use   name="TauAnalysis/CandidateTools"/>
+  <use   name="lhapdf"/>
+</library>

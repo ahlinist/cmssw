@@ -247,12 +247,12 @@ double getPower_general(const std::string& meName, const std::string& arg, doubl
 {
   std::string arg_full = std::string(meOptionsSeparator).append(arg);
 
-  unsigned posStart = meName.find(arg_full);
+  size_t posStart = meName.find(arg_full);
 
   if ( posStart != std::string::npos ) {
     posStart += arg_full.length();
 
-    unsigned posEnd = meName.find(std::string(meOptionsSeparator), posStart);
+    size_t posEnd = meName.find(std::string(meOptionsSeparator), posStart);
 
     std::string power_string = ( posEnd != std::string::npos ) ?
         std::string(meName, posStart, posEnd - posStart) : std::string(meName, posStart);

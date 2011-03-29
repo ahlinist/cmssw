@@ -167,7 +167,7 @@ std::vector<binResultType> makeBinResults(const binEntryType_model& binEntry)
 
 std::vector<binResultType> ModelBinning::getBinResults(unsigned binNumber) const
 {
-  if ( binNumber >= 0 && binNumber < numBins_ ) {
+  if ( binNumber < numBins_ ) {
     const binEntryType_model& binEntry = binEntries_[binNumber];
 
     return makeBinResults(binEntry);
@@ -275,7 +275,7 @@ std::vector<std::string> ModelBinning::encodeStringRep() const
 
 binEntryType* ModelBinning::findBinEntry(unsigned binNumber, const std::string& label)
 {
-  if ( binNumber >= 0 && binNumber < numBins_ ) {
+  if ( binNumber < numBins_ ) {
     binEntryType_model& binEntry = binEntries_[binNumber];
 
     if ( label == "gen"      ) return &binEntry.gen_;

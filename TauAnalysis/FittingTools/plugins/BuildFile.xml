@@ -1,0 +1,14 @@
+<export>
+</export>
+<library   name="TauAnalysisFittingTools_plugins" file="*.cc">
+  <use   name="FWCore/Framework"/>
+  <use   name="FWCore/MessageLogger"/>
+  <use   name="FWCore/PluginManager"/>
+  <use   name="FWCore/ParameterSet"/>
+  <use   name="PhysicsTools/RooStatsCms"/>
+  <use   name="TauAnalysis/DQMTools"/>
+  <use   name="TauAnalysis/FittingTools"/>
+  <use   name="root"/>
+  <use   name="roofit"/>
+  <use   name="lhapdf"/>
+</library>
