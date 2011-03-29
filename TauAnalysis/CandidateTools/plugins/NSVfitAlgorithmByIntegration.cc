@@ -199,6 +199,8 @@ void NSVfitAlgorithmByIntegration::beginJob()
 
 void NSVfitAlgorithmByIntegration::beginEvent(const edm::Event& evt, const edm::EventSetup& es)
 {
+  NSVfitAlgorithmBase::beginEvent(evt, es);
+
   currentRunNumber_ = evt.id().run();
   currentLumiSectionNumber_ = evt.luminosityBlock();
   currentEventNumber_ = evt.id().event();

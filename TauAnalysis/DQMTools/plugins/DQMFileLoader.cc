@@ -118,7 +118,7 @@ DQMFileLoader::cfgEntryFileSet::cfgEntryFileSet(const std::string& name, const e
     filterToUse_ = cfg.getParameter<std::string>("filterToUse");
     scaleFactor_ = -1;
     // Warn if old scale factor is hanging around
-    if( cfg.exists("scaleFactor") ) {
+    if ( cfg.exists("scaleFactor") ) {
       edm::LogWarning("DQMFileLoader::cfgEntryFileSet")
           << "Both the <autoscale> and <scaleFactor> options are set. The <scaleFactor> specified "
           << " in the parameter set will be ignored and the autoscale value will be used!";
