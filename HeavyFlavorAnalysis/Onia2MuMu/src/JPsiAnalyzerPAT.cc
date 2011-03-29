@@ -13,7 +13,7 @@
 //
 // Original Author: Roberto Covarelli 
 //         Created:  Fri Oct  9 04:59:40 PDT 2009
-// $Id: JPsiAnalyzerPAT.cc,v 1.47 2011/02/09 16:58:06 covarell Exp $
+// $Id: JPsiAnalyzerPAT.cc,v 1.48 2011/02/15 16:12:05 covarell Exp $
 //
 // based on: Onia2MuMu package V00-11-00
 // changes done by: FT-HW
@@ -56,6 +56,8 @@
 #include "DataFormats/VertexReco/interface/Vertex.h"
 #include <DataFormats/VertexReco/interface/VertexFwd.h>
 #include <DataFormats/BeamSpot/interface/BeamSpot.h>
+#include <DataFormats/Math/interface/deltaR.h>
+#include <MuonAnalysis/MuonAssociators/interface/PropagateToMuon.h>
 
 #include "HLTrigger/HLTcore/interface/HLTConfigProvider.h"
 
@@ -95,6 +97,7 @@ class JPsiAnalyzerPAT : public edm::EDAnalyzer {
       void beginRun(const edm::Run &, const edm::EventSetup &);
       void hltReport(const edm::Event &iEvent ,const edm::EventSetup& iSetup);
       void matchMuonToHlt(const pat::Muon*, const pat::Muon*);
+      void muonStationDistance (const pat::CompositeCandidate* aCand);
 
       // ROOT tree 
       TTree* tree_;//data; //*recoData;
@@ -121,6 +124,8 @@ class JPsiAnalyzerPAT : public edm::EDAnalyzer {
       TLorentzVector* JpsiP;
       double Jpsict, JpsictErr, JpsiVprob;
       int JpsiType,  JpsiCharge, MCType; //GG, GT and TT
+      double JpsiDistM1, JpsiDphiM1, JpsiDrM1;
+      double JpsiDistM2, JpsiDphiM2, JpsiDrM2;
 
       //2.) muon variables RECO
       // double muPosPx, muPosPy, muPosPz;
@@ -199,6 +204,7 @@ class JPsiAnalyzerPAT : public edm::EDAnalyzer {
       bool           _isPromptMC;
 
       InputTag      _triggerresults;
+
       vector<unsigned int>                     _thePassedCats[3];
       vector<const pat::CompositeCandidate*>   _thePassedCands[3];
 
@@ -234,6 +240,9 @@ class JPsiAnalyzerPAT : public edm::EDAnalyzer {
       bool hltConfigInit_;
       std::vector<std::string> HLTbitNames_;
       std::map< std::string, std::string> mapTriggerToLastFilter_;
+
+      //muon distance
+      PropagateToMuon prop1_, prop2_; 
 };    
       
 // constants, enums and typedefs
@@ -271,7 +280,9 @@ JPsiAnalyzerPAT::JPsiAnalyzerPAT(const edm::ParameterSet& iConfig):
   _isMC(iConfig.getUntrackedParameter<bool>("isMC",false)),
   _storeAllMCEvents(iConfig.getUntrackedParameter<bool>("storeAllMCEvents",false)),
   _isPromptMC(iConfig.getUntrackedParameter<bool>("isPromptMC",false) ),
-  tagTriggerResults_(iConfig.getParameter<InputTag>("TriggerResultsLabel"))
+  tagTriggerResults_(iConfig.getParameter<InputTag>("triggerResultsLabel")),
+  prop1_(iConfig.getParameter<edm::ParameterSet>("propagatorStation1")),
+  prop2_(iConfig.getParameter<edm::ParameterSet>("propagatorStation2"))
 {
    //now do what ever initialization is needed
   nEvents = 0; 
@@ -431,6 +442,14 @@ JPsiAnalyzerPAT::beginJob()
     tree_->Branch("Jpsict",     &Jpsict,    "Jpsict/D");
     tree_->Branch("JpsictErr",  &JpsictErr, "JpsictErr/D");
     tree_->Branch("JpsiVprob",  &JpsiVprob, "JpsiVprob/D");
+    //muon distance 
+    tree_->Branch("JpsiDistM1",   &JpsiDistM1,    "JpsiDistM1/D");
+    tree_->Branch("JpsiDphiM1",   &JpsiDphiM1,    "JpsiDphiM1/D");
+    tree_->Branch("JpsiDrM1",     &JpsiDrM1,      "JpsiDrM1/D");
+    tree_->Branch("JpsiDistM2",   &JpsiDistM2,    "JpsiDistM2/D");
+    tree_->Branch("JpsiDphiM2",   &JpsiDphiM2,    "JpsiDphiM2/D");
+    tree_->Branch("JpsiDrM2",     &JpsiDrM2,      "JpsiDrM2/D");
+
     tree_->Branch("muPosP", "TLorentzVector", &muPosP);
     tree_->Branch("muNegP", "TLorentzVector", &muNegP);
     // tree_->Branch("muPosPx",    &muPosPx,   "muPosPx/D");
@@ -703,6 +722,9 @@ JPsiAnalyzerPAT::beginRun(const edm::Run& iRun, const edm::EventSetup& iSetup){
     //bool init(const edm::Run& iRun, const edm::EventSetup& iSetup, const std::string& processName, bool& changed);
     hltConfigInit_ = false;
     if( hltConfig_.init(iRun, iSetup, pro, changed) ) hltConfigInit_ = true;
+
+    prop1_.init(iSetup);
+    prop2_.init(iSetup);
 }
 
 // ------------ method called once each job just after ending the event loop  ------------
@@ -820,6 +842,7 @@ JPsiAnalyzerPAT::fillTreeAndDS(unsigned int theCat, const pat::CompositeCandidat
   Jpsict_Gen=10.*aCand->userFloat("ppdlTrue");
   JpsiType=theCat;
   JpsiVprob=aCand->userFloat("vProb");
+  this->muonStationDistance(aCand);
   
   // write out Muon RECO information
   float f_muPosPx, f_muPosPy, f_muPosPz;
@@ -1178,6 +1201,12 @@ JPsiAnalyzerPAT::resetDSVariables(){
     JpsictErr=-9999.;
     Jpsict_Gen=-9999.;
     JpsiVprob=-9999.;
+    JpsiDistM1=-9999.;
+    JpsiDphiM1=-9999.; 
+    JpsiDrM1=-9999.;
+    JpsiDistM2=-9999.;
+    JpsiDphiM2=-9999.;
+    JpsiDrM2=-9999.;
 
     JpsiType=-1;
 
@@ -1488,6 +1517,36 @@ JPsiAnalyzerPAT::matchMuonToHlt(const pat::Muon* muon1, const pat::Muon* muon2)
         if ( triggerName == "HLT_Mu9" && (pass1  == true || pass2 == true) ) mapTriggerNameToIntFired_[triggerName] = 1;
         if ( triggerName == "HLT_Mu11"&& (pass1  == true || pass2 == true) ) mapTriggerNameToIntFired_[triggerName] = 1;
     }
+}
+
+void 
+JPsiAnalyzerPAT::muonStationDistance (const pat::CompositeCandidate* aCand) 
+{
+  
+   const pat::Muon* muon1 = dynamic_cast<const pat::Muon*>(aCand->daughter("muon1"));
+   const pat::Muon* muon2 = dynamic_cast<const pat::Muon*>(aCand->daughter("muon2"));
+   const reco::Candidate &d1 = *muon1; 
+   const reco::Candidate &d2 = *muon2;
+   const reco::RecoCandidate *mu1 = dynamic_cast<const reco::RecoCandidate *>(&d1);
+   const reco::RecoCandidate *mu2 = dynamic_cast<const reco::RecoCandidate *>(&d2);
+    
+   // Propagate to station 1
+   TrajectoryStateOnSurface prop1_Stat1 = prop1_.extrapolate(*mu1);
+   TrajectoryStateOnSurface prop2_Stat1 = prop1_.extrapolate(*mu2);
+   if (prop1_Stat1.isValid() && prop2_Stat1.isValid()) {
+     JpsiDphiM1 = deltaPhi<float>(prop1_Stat1.globalPosition().phi(), prop2_Stat1.globalPosition().phi());
+     JpsiDrM1   = hypot(JpsiDphiM1, std::abs<float>(prop1_Stat1.globalPosition().eta() - prop2_Stat1.globalPosition().eta()));
+     JpsiDistM1 = (prop1_Stat1.globalPosition()-prop2_Stat1.globalPosition()).mag();
+   }
+   // Propagate to station 2
+   TrajectoryStateOnSurface prop1_Stat2 = prop2_.extrapolate(*mu1);
+   TrajectoryStateOnSurface prop2_Stat2 = prop2_.extrapolate(*mu2);
+   if (prop1_Stat2.isValid() && prop2_Stat2.isValid()) {
+     JpsiDphiM2 = deltaPhi<float>(prop1_Stat2.globalPosition().phi(), prop2_Stat2.globalPosition().phi());
+     JpsiDrM2   = hypot(JpsiDphiM2, std::abs<float>(prop1_Stat2.globalPosition().eta() - prop2_Stat2.globalPosition().eta()));
+     JpsiDistM2 = (prop1_Stat2.globalPosition()-prop2_Stat2.globalPosition()).mag();
+   }
+
 }
 
 //define this as a plug-in
