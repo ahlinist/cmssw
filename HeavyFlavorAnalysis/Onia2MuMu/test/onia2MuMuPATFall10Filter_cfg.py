@@ -7,11 +7,11 @@ process = cms.Process("Onia2MuMuPAT")
 
 from HeavyFlavorAnalysis.Onia2MuMu.onia2MuMuPAT_cff import *
 
-onia2MuMuPAT(process, GlobalTag="START39_V8::All", MC=True, HLT="HLT", Filter=True)
+onia2MuMuPAT(process, GlobalTag="START39_V8::All", MC=True, HLT="REDIGI39X", Filter=True)
 
 process.source.fileNames = cms.untracked.vstring(
-       'file:/tmp/testJpsiMuMuRECO.root'
+       'file:/tmp/testJpsiMuMuAOD.root'
 )
 
-process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(2000) )
+process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(5000) )
 

@@ -3,6 +3,11 @@ import FWCore.ParameterSet.Config as cms
 process = cms.Process("ANAPAT")
 
 process.load("FWCore.MessageService.MessageLogger_cfi")
+process.load('Configuration.StandardSequences.GeometryExtended_cff')
+process.load("Configuration.StandardSequences.MagneticField_cff")
+process.load("Configuration.StandardSequences.Reconstruction_cff")
+process.load("Configuration.StandardSequences.FrontierConditions_GlobalTag_cff")
+process.GlobalTag.globaltag = "START39_V8::All"
 
 process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(-1) )
 
@@ -65,7 +70,21 @@ process.demo = cms.EDAnalyzer('JPsiAnalyzerPAT',
     isMC = cms.untracked.bool(True),
     storeAllMCEvents = cms.untracked.bool(True),
     isPromptMC = cms.untracked.bool(True),
-    TriggerResultsLabel = cms.InputTag("TriggerResults","","HLT")
+    triggerResultsLabel = cms.InputTag("TriggerResults","","REDIGI39X"),
+    # Configuration for the extrapolation at the muon system 
+    propagatorStation1 = cms.PSet(
+        useStation2 = cms.bool(False), 
+        useTrack = cms.string("tracker"),
+        useState = cms.string("atVertex"),  # for AOD
+        useSimpleGeometry = cms.bool(True), 
+    ),
+    propagatorStation2 = cms.PSet(
+        useStation2 = cms.bool(True), 
+        useTrack = cms.string("tracker"),
+        useState = cms.string("atVertex"),  # for AOD
+        useSimpleGeometry = cms.bool(True), 
+    )
+                          
 )
 
 ## no filter
