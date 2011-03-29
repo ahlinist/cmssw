@@ -2,7 +2,7 @@
 // Original Author:  Konstantinos A. Petridis
 //         Created:  Wed Oct 15 21:33:34 CEST 2008
 //		Major re-write: Jeff Kolb, March 2011
-// $Id: PATElectronConversionFinder.cc,v 1.6 2011/03/03 13:41:35 jkolb Exp $
+// $Id: PATElectronConversionFinder.cc,v 1.7 2011/03/26 16:50:59 liis Exp $
 //
 //
 #include "RecoEgamma/EgammaTools/interface/ConversionFinder.h"
@@ -88,8 +88,8 @@ void PATElectronConversionFinderImp::select(const edm::Handle<collection>& elecs
 					reco::Photon photon = photons->at(iPhoton);
 					reco::ConversionRefVector conversions = photon.conversions();
 					for( unsigned int iConversion = 0; iConversion < conversions.size(); iConversion++) {
-					  std::vector<edm::RefToBase<reco::Track> > tracks = conversions.at(iConversion)->tracks(); //compatible with CMSSW_3_9_X
-					  //	std::vector<reco::TrackRef> tracks = conversions.at(iConversion)->tracks(); //compatible with CMSSW_3_8_X
+					  //std::vector<edm::RefToBase<reco::Track> > tracks = conversions.at(iConversion)->tracks(); //compatible with CMSSW_3_9_X
+					  std::vector<reco::TrackRef> tracks = conversions.at(iConversion)->tracks(); //compatible with CMSSW_3_8_X
 						for( unsigned int iTrk = 0; iTrk < tracks.size(); iTrk++) {
 							trackCollectionTmp->push_back( *(tracks.at(iTrk)) );
 						}
