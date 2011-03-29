@@ -9,11 +9,11 @@
  * building NSVfitTauToHadHypothesis objects;
  * used by NSVfit algorithm
  *
- * \author Christian Veelken, UC Davis
+ * \author Evan Friis, Christian Veelken; UC Davis
  *
- * \version $Revision: 1.6 $
+ * \version $Revision: 1.13 $
  *
- * $Id: NSVfitTauToHadBuilder.h,v 1.6 2011/03/27 14:22:35 friis Exp $
+ * $Id: NSVfitTauToHadBuilder.cc,v 1.13 2011/03/29 14:53:26 veelken Exp $
  *
  */
 
@@ -108,6 +108,17 @@ class NSVfitTauToHadBuilder : public NSVfitTauDecayBuilderBase
     const pat::Tau* tauPtr = dynamic_cast<const pat::Tau*>(candidate);
     assert(tauPtr);
     return trackExtractor_(*tauPtr);
+  }
+
+  void print(std::ostream& stream) const 
+  {
+    NSVfitTauDecayBuilderBase::print(stream);
+    stream << " idxFitParameter_thetaVMrho = " << idxFitParameter_thetaVMrho_ << std::endl;
+    stream << " idxFitParameter_mass2VMrho = " << idxFitParameter_mass2VMrho_ << std::endl;
+    stream << " idxFitParameter_thetaVMa1 = " << idxFitParameter_thetaVMa1_ << std::endl;
+    stream << " idxFitParameter_thetaVMa1r = " << idxFitParameter_thetaVMa1r_ << std::endl;
+    stream << " idxFitParameter_phiVMa1r = " << idxFitParameter_phiVMa1r_ << std::endl;
+    stream << " idxFitParameter_mass2VMa1 = " << idxFitParameter_mass2VMa1_ << std::endl;
   }
 
   private:

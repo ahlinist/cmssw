@@ -1,7 +1,22 @@
 #include "TauAnalysis/CandidateTools/interface/NSVfitTauDecayBuilderBase.h"
 #include "TauAnalysis/CandidateTools/interface/SVfitLegTrackExtractor.h"
 #include "AnalysisDataFormats/TauAnalysis/interface/NSVfitTauToLepHypothesis.h"
+#include "TauAnalysis/CandidateTools/interface/nSVfitParameter.h"
 #include "DataFormats/TauReco/interface/PFTauDecayMode.h"
+
+/** \class NSVfitTauToLepBuilder
+ *
+ * Auxiliary class reconstructing tau --> e/mu decays and
+ * building NSVfitTauToLepHypothesis objects;
+ * used by NSVfit algorithm
+ *
+ * \author Evan Friis, Christian Veelken; UC Davis
+ *
+ * \version $Revision: 1.2 $
+ *
+ * $Id: NSVfitTauToLepBuilder.h,v 1.2 2011/03/03 13:04:47 veelken Exp $
+ *
+ */
 
 template<typename T>
 class NSVfitTauToLepBuilder : public NSVfitTauDecayBuilderBase 
@@ -10,6 +25,15 @@ class NSVfitTauToLepBuilder : public NSVfitTauDecayBuilderBase
   NSVfitTauToLepBuilder(const edm::ParameterSet& cfg)
     : NSVfitTauDecayBuilderBase(cfg)
   {}
+
+  void beginJob(NSVfitAlgorithmBase* algorithm) 
+  {
+    NSVfitTauDecayBuilderBase::beginJob(algorithm);
+
+    idxFitParameter_nuInvMass_ = getFitParameterIdx(algorithm, prodParticleLabel_, nSVfit_namespace::kTau_nuInvMass);
+
+    if ( verbosity_ ) print(std::cout);
+  }
 
   NSVfitSingleParticleHypothesisBase* build(const NSVfitTauDecayBuilderBase::inputParticleMap& inputParticles) const 
   {
