@@ -91,7 +91,7 @@ VgAnalyzerKit::VgAnalyzerKit(const edm::ParameterSet& ps) : verbosity_(0), helpe
   tree_->Branch("ttbit0", &ttbit0_, "ttbit0/I");
   tree_->Branch("nHLT", &nHLT_, "nHLT/I");
   tree_->Branch("HLT", HLT_, "HLT[nHLT]/I");
-  tree_->Branch("HLTIndex", HLTIndex_, "HLTIndex[86]/I");
+  tree_->Branch("HLTIndex", HLTIndex_, "HLTIndex[106]/I");
   tree_->Branch("nHFTowersP", &nHFTowersP_, "nHFTowersP/I");
   tree_->Branch("nHFTowersN", &nHFTowersN_, "nHFTowersN/I");
   tree_->Branch("nVtx", &nVtx_, "nVtx/I");
@@ -161,7 +161,7 @@ VgAnalyzerKit::VgAnalyzerKit(const edm::ParameterSet& ps) : verbosity_(0), helpe
   tree_->Branch("pfMETSig", &pfMETSig_, "pfMETSig/F");
   // Electron
   tree_->Branch("nEle", &nEle_, "nEle/I");
-  tree_->Branch("eleTrg", eleTrg_, "eleTrg[nEle][13]/I");
+  tree_->Branch("eleTrg", eleTrg_, "eleTrg[nEle][17]/I");
   tree_->Branch("eleID", eleID_, "eleID[nEle][12]/I");
   tree_->Branch("eleClass", eleClass_, "eleClass[nEle]/I");
   tree_->Branch("eleCharge", eleCharge_, "eleCharge[nEle]/I");
@@ -219,7 +219,7 @@ VgAnalyzerKit::VgAnalyzerKit(const edm::ParameterSet& ps) : verbosity_(0), helpe
   tree_->Branch("eleESProfileRear", eleESProfileRear_, "eleESProfileRear[nEle][123]/F");
   // Photon
   tree_->Branch("nPho", &nPho_, "nPho/I");
-  tree_->Branch("phoTrg", phoTrg_, "phoTrg[nPho][10]/I");
+  tree_->Branch("phoTrg", phoTrg_, "phoTrg[nPho][13]/I");
   tree_->Branch("phoIsPhoton", phoIsPhoton_, "phoIsPhoton[nPho]/O");
   tree_->Branch("phoE", phoE_, "phoE[nPho]/F");
   tree_->Branch("phoEt", phoEt_, "phoEt[nPho]/F");
@@ -699,23 +699,43 @@ fabs(ip->pdgId())<=14) || ip->pdgId()==22))) {
   //68: HLT_DoubleMu6_v1
   //69: HLT_DoubleMu7_v1
   //70: HLT_Ele27_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_v1
-  //71: HLT_Ele45_CaloIdVT_TrkIdT_v1
-  //72: HLT_Ele90_NoSpikeFilter_v1
-  //73: HLT_Ele17_CaloIdL_CaloIsoVL_Ele8_CaloIdL_CaloIsoVL_v1
-  //74: HLT_Ele17_CaloIdVT_CaloIsoVT_TrkIdT_TrkIsoVT_SC8_Mass30_v1
-  //75: HLT_Ele17_CaloIdL_CaloIsoVL_Ele15_HFL_v1
-  //76: HLT_Ele32_CaloIdL_CaloIsoVL_SC17_v1
-  //77: HLT_Photon30_CaloIdVL_v1
-  //78: HLT_Photon30_CaloIdVL_IsoL_v1
-  //79: HLT_Photon75_CaloIdVL_v1
-  //80: HLT_Photon75_CaloIdVL_IsoL_v1
-  //81: HLT_Photon20_R9Id_Photon18_R9Id_v1
-  //82: HLT_Photon26_IsoVL_Photon18_v1
-  //83: HLT_Photon26_IsoVL_Photon18_IsoVL_v1
-  //84: HLT_Photon26_CaloIdL_IsoVL_Photon18_v1
-  //85: HLT_Photon26_CaloIdL_IsoVL_Photon18_CaloIdL_IsoVL_v1
-
-  for (int a=0; a<86; a++)
+  //71: HLT_Ele27_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_v2
+  //72: HLT_Ele32_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_v1
+  //73: HLT_Ele45_CaloIdVT_TrkIdT_v1
+  //74: HLT_Ele45_CaloIdVT_TrkIdT_v2
+  //75: HLT_Ele90_NoSpikeFilter_v1
+  //76: HLT_Ele90_NoSpikeFilter_v2
+  //77: HLT_Ele17_CaloIdL_CaloIsoVL_Ele8_CaloIdL_CaloIsoVL_v1
+  //78: HLT_Ele17_CaloIdL_CaloIsoVL_Ele8_CaloIdL_CaloIsoVL_v2
+  //79: HLT_Ele17_CaloIdT_TrkIdVL_CaloIsoVL_TrkIsoVL_Ele8_CaloIdT_TrkIdVL_CaloIsoVL_TrkIsoVL_v2
+  //80: HLT_Ele17_CaloIdVT_CaloIsoVT_TrkIdT_TrkIsoVT_SC8_Mass30_v1
+  //81: HLT_Ele17_CaloIdVT_CaloIsoVT_TrkIdT_TrkIsoVT_SC8_Mass30_v2
+  //82: HLT_Ele17_CaloIdL_CaloIsoVL_Ele15_HFL_v1
+  //83: HLT_Ele17_CaloIdL_CaloIsoVL_Ele15_HFL_v2
+  //84: HLT_Ele32_CaloIdL_CaloIsoVL_SC17_v1
+  //85: HLT_Ele32_CaloIdL_CaloIsoVL_SC17_v2
+  //86: HLT_Photon30_CaloIdVL_v1
+  //87: HLT_Photon30_CaloIdVL_v2
+  //88: HLT_Photon30_CaloIdVL_IsoL_v1
+  //89: HLT_Photon30_CaloIdVL_IsoL_v2
+  //90: HLT_Photon50_CaloIdVL_IsoL_v1
+  //91: HLT_Photon75_CaloIdVL_v1
+  //92: HLT_Photon75_CaloIdVL_v2
+  //93: HLT_Photon75_CaloIdVL_IsoL_v1
+  //94: HLT_Photon75_CaloIdVL_IsoL_v2
+  //95: HLT_Photon20_R9Id_Photon18_R9Id_v1
+  //96: HLT_Photon20_R9Id_Photon18_R9Id_v2
+  //97: HLT_Photon26_IsoVL_Photon18_v1
+  //98: HLT_Photon26_IsoVL_Photon18_v2
+  //99:  HLT_Photon26_IsoVL_Photon18_IsoVL_v1
+  //100: HLT_Photon26_IsoVL_Photon18_IsoVL_v2
+  //101: HLT_Photon26_CaloIdL_IsoVL_Photon18_v1
+  //102: HLT_Photon26_CaloIdL_IsoVL_Photon18_v2
+  //103: HLT_Photon26_CaloIdL_IsoVL_Photon18_CaloIdL_IsoVL_v1
+  //104: HLT_Photon26_CaloIdL_IsoVL_Photon18_CaloIdL_IsoVL_v2
+  //105: HLT_Photon26_CaloIdL_IsoVL_Photon18_R9Id_v1
+  
+  for (int a=0; a<106; a++)
     HLTIndex_[a] = -1;
  
   nHLT_ = 0;
@@ -798,21 +818,41 @@ fabs(ip->pdgId())<=14) || ip->pdgId()==22))) {
     else if (hlNames[i] == "HLT_DoubleMu6_v1")	HLTIndex_[68] = i;
     else if (hlNames[i] == "HLT_DoubleMu7_v1")	HLTIndex_[69] = i;
     else if (hlNames[i] == "HLT_Ele27_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_v1")		HLTIndex_[70] = i;
-    else if (hlNames[i] == "HLT_Ele45_CaloIdVT_TrkIdT_v1")				HLTIndex_[71] = i;
-    else if (hlNames[i] == "HLT_Ele90_NoSpikeFilter_v1")				HLTIndex_[72] = i;
-    else if (hlNames[i] == "HLT_Ele17_CaloIdL_CaloIsoVL_Ele8_CaloIdL_CaloIsoVL_v1")	HLTIndex_[73] = i;
-    else if (hlNames[i] == "HLT_Ele17_CaloIdVT_CaloIsoVT_TrkIdT_TrkIsoVT_SC8_Mass30_v1")HLTIndex_[74] = i;
-    else if (hlNames[i] == "HLT_Ele17_CaloIdL_CaloIsoVL_Ele15_HFL_v1")			HLTIndex_[75] = i;
-    else if (hlNames[i] == "HLT_Ele32_CaloIdL_CaloIsoVL_SC17_v1")			HLTIndex_[76] = i;
-    else if (hlNames[i] == "HLT_Photon30_CaloIdVL_v1")		HLTIndex_[77] = i;
-    else if (hlNames[i] == "HLT_Photon30_CaloIdVL_IsoL_v1")	HLTIndex_[78] = i;
-    else if (hlNames[i] == "HLT_Photon75_CaloIdVL_v1")		HLTIndex_[79] = i;
-    else if (hlNames[i] == "HLT_Photon75_CaloIdVL_IsoL_v1")	HLTIndex_[80] = i;
-    else if (hlNames[i] == "HLT_Photon20_R9Id_Photon18_R9Id_v1")			HLTIndex_[81] = i;
-    else if (hlNames[i] == "HLT_Photon26_IsoVL_Photon18_v1")				HLTIndex_[82] = i;
-    else if (hlNames[i] == "HLT_Photon26_IsoVL_Photon18_IsoVL_v1")			HLTIndex_[83] = i;
-    else if (hlNames[i] == "HLT_Photon26_CaloIdL_IsoVL_Photon18_v1")			HLTIndex_[84] = i;
-    else if (hlNames[i] == "HLT_Photon26_CaloIdL_IsoVL_Photon18_CaloIdL_IsoVL_v1")	HLTIndex_[85] = i;
+    else if (hlNames[i] == "HLT_Ele27_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_v2")		HLTIndex_[71] = i;
+    else if (hlNames[i] == "HLT_Ele32_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_v1")		HLTIndex_[72] = i;
+    else if (hlNames[i] == "HLT_Ele45_CaloIdVT_TrkIdT_v1")				HLTIndex_[73] = i;
+    else if (hlNames[i] == "HLT_Ele45_CaloIdVT_TrkIdT_v2")				HLTIndex_[74] = i;
+    else if (hlNames[i] == "HLT_Ele90_NoSpikeFilter_v1")				HLTIndex_[75] = i;
+    else if (hlNames[i] == "HLT_Ele90_NoSpikeFilter_v2")				HLTIndex_[76] = i;
+    else if (hlNames[i] == "HLT_Ele17_CaloIdL_CaloIsoVL_Ele8_CaloIdL_CaloIsoVL_v1")	HLTIndex_[77] = i;
+    else if (hlNames[i] == "HLT_Ele17_CaloIdL_CaloIsoVL_Ele8_CaloIdL_CaloIsoVL_v2")	HLTIndex_[78] = i;
+    else if (hlNames[i] == "HLT_Ele17_CaloIdT_TrkIdVL_CaloIsoVL_TrkIsoVL_Ele8_CaloIdT_TrkIdVL_CaloIsoVL_TrkIsoVL_v2")	HLTIndex_[79] = i;
+    else if (hlNames[i] == "HLT_Ele17_CaloIdVT_CaloIsoVT_TrkIdT_TrkIsoVT_SC8_Mass30_v1")HLTIndex_[80] = i;
+    else if (hlNames[i] == "HLT_Ele17_CaloIdVT_CaloIsoVT_TrkIdT_TrkIsoVT_SC8_Mass30_v2")HLTIndex_[81] = i;
+    else if (hlNames[i] == "HLT_Ele17_CaloIdL_CaloIsoVL_Ele15_HFL_v1")			HLTIndex_[82] = i;
+    else if (hlNames[i] == "HLT_Ele17_CaloIdL_CaloIsoVL_Ele15_HFL_v2")			HLTIndex_[83] = i;
+    else if (hlNames[i] == "HLT_Ele32_CaloIdL_CaloIsoVL_SC17_v1")			HLTIndex_[84] = i;
+    else if (hlNames[i] == "HLT_Ele32_CaloIdL_CaloIsoVL_SC17_v1")			HLTIndex_[85] = i;
+    else if (hlNames[i] == "HLT_Photon30_CaloIdVL_v1")		HLTIndex_[86] = i;
+    else if (hlNames[i] == "HLT_Photon30_CaloIdVL_v2")		HLTIndex_[87] = i;
+    else if (hlNames[i] == "HLT_Photon30_CaloIdVL_IsoL_v1")	HLTIndex_[88] = i;
+    else if (hlNames[i] == "HLT_Photon30_CaloIdVL_IsoL_v2")	HLTIndex_[89] = i;
+    else if (hlNames[i] == "HLT_Photon50_CaloIdVL_IsoL_v1")	HLTIndex_[90] = i;
+    else if (hlNames[i] == "HLT_Photon75_CaloIdVL_v1")		HLTIndex_[91] = i;
+    else if (hlNames[i] == "HLT_Photon75_CaloIdVL_v2")		HLTIndex_[92] = i;
+    else if (hlNames[i] == "HLT_Photon75_CaloIdVL_IsoL_v1")	HLTIndex_[93] = i;
+    else if (hlNames[i] == "HLT_Photon75_CaloIdVL_IsoL_v2")	HLTIndex_[94] = i;
+    else if (hlNames[i] == "HLT_Photon20_R9Id_Photon18_R9Id_v1")			HLTIndex_[95] = i;
+    else if (hlNames[i] == "HLT_Photon20_R9Id_Photon18_R9Id_v2")			HLTIndex_[96] = i;
+    else if (hlNames[i] == "HLT_Photon26_IsoVL_Photon18_v1")				HLTIndex_[97] = i;
+    else if (hlNames[i] == "HLT_Photon26_IsoVL_Photon18_v2")				HLTIndex_[98] = i;
+    else if (hlNames[i] == "HLT_Photon26_IsoVL_Photon18_IsoVL_v1")			HLTIndex_[99] = i;
+    else if (hlNames[i] == "HLT_Photon26_IsoVL_Photon18_IsoVL_v2")			HLTIndex_[100] = i;
+    else if (hlNames[i] == "HLT_Photon26_CaloIdL_IsoVL_Photon18_v1")			HLTIndex_[101] = i;
+    else if (hlNames[i] == "HLT_Photon26_CaloIdL_IsoVL_Photon18_v2")			HLTIndex_[102] = i;
+    else if (hlNames[i] == "HLT_Photon26_CaloIdL_IsoVL_Photon18_CaloIdL_IsoVL_v1")	HLTIndex_[103] = i;
+    else if (hlNames[i] == "HLT_Photon26_CaloIdL_IsoVL_Photon18_CaloIdL_IsoVL_v2")	HLTIndex_[104] = i;
+    else if (hlNames[i] == "HLT_Photon26_CaloIdL_IsoVL_Photon18_R9Id_v1")		HLTIndex_[105] = i;
   }
 
   // Gen & PAT MET (caloMET)
@@ -888,8 +928,12 @@ fabs(ip->pdgId())<=14) || ip->pdgId()==22))) {
   const TriggerObjectMatch *eleTriggerMatch9(triggerEvent->triggerObjectMatchResult("electronTriggerMatchHLTEle17SWTighterEleIdIsolL1Rv2"));
   const TriggerObjectMatch *eleTriggerMatch10(triggerEvent->triggerObjectMatchResult("electronTriggerMatchHLTEle17SWTighterEleIdIsolL1Rv3"));
   const TriggerObjectMatch *eleTriggerMatch11(triggerEvent->triggerObjectMatchResult("electronTriggerMatchHLTEle27CaloIdVTCaloIsoTTrkIdTTrkIsoTv1"));
-  const TriggerObjectMatch *eleTriggerMatch12(triggerEvent->triggerObjectMatchResult("electronTriggerMatchHLTEle45CaloIdVTTrkIdTv1"));
-  const TriggerObjectMatch *eleTriggerMatch13(triggerEvent->triggerObjectMatchResult("electronTriggerMatchHLTEle90NoSpikeFilterv1"));
+  const TriggerObjectMatch *eleTriggerMatch12(triggerEvent->triggerObjectMatchResult("electronTriggerMatchHLTEle27CaloIdVTCaloIsoTTrkIdTTrkIsoTv2"));
+  const TriggerObjectMatch *eleTriggerMatch13(triggerEvent->triggerObjectMatchResult("electronTriggerMatchHLTEle32CaloIdVTCaloIsoTTrkIdTTrkIsoTv1"));
+  const TriggerObjectMatch *eleTriggerMatch14(triggerEvent->triggerObjectMatchResult("electronTriggerMatchHLTEle45CaloIdVTTrkIdTv1"));
+  const TriggerObjectMatch *eleTriggerMatch15(triggerEvent->triggerObjectMatchResult("electronTriggerMatchHLTEle45CaloIdVTTrkIdTv2"));
+  const TriggerObjectMatch *eleTriggerMatch16(triggerEvent->triggerObjectMatchResult("electronTriggerMatchHLTEle90NoSpikeFilterv1"));
+  const TriggerObjectMatch *eleTriggerMatch17(triggerEvent->triggerObjectMatchResult("electronTriggerMatchHLTEle90NoSpikeFilterv2"));
 
   int nElePassCut = 0;
   nEle_ = 0;
@@ -914,6 +958,10 @@ fabs(ip->pdgId())<=14) || ip->pdgId()==22))) {
       const TriggerObjectRef eleTrigRef11( matchHelper.triggerMatchObject( eleBaseRef, eleTriggerMatch11, e, *triggerEvent ) );
       const TriggerObjectRef eleTrigRef12( matchHelper.triggerMatchObject( eleBaseRef, eleTriggerMatch12, e, *triggerEvent ) );
       const TriggerObjectRef eleTrigRef13( matchHelper.triggerMatchObject( eleBaseRef, eleTriggerMatch13, e, *triggerEvent ) );
+      const TriggerObjectRef eleTrigRef14( matchHelper.triggerMatchObject( eleBaseRef, eleTriggerMatch14, e, *triggerEvent ) );
+      const TriggerObjectRef eleTrigRef15( matchHelper.triggerMatchObject( eleBaseRef, eleTriggerMatch15, e, *triggerEvent ) );
+      const TriggerObjectRef eleTrigRef16( matchHelper.triggerMatchObject( eleBaseRef, eleTriggerMatch16, e, *triggerEvent ) );
+      const TriggerObjectRef eleTrigRef17( matchHelper.triggerMatchObject( eleBaseRef, eleTriggerMatch17, e, *triggerEvent ) );
       eleTrg_[nEle_][0]  = (eleTrigRef1.isAvailable())  ? 1 : -99;
       eleTrg_[nEle_][1]  = (eleTrigRef2.isAvailable())  ? 1 : -99;
       eleTrg_[nEle_][2]  = (eleTrigRef3.isAvailable())  ? 1 : -99;
@@ -927,7 +975,10 @@ fabs(ip->pdgId())<=14) || ip->pdgId()==22))) {
       eleTrg_[nEle_][10]  = (eleTrigRef11.isAvailable()) ? 1 : -99;
       eleTrg_[nEle_][11]  = (eleTrigRef12.isAvailable()) ? 1 : -99;
       eleTrg_[nEle_][12]  = (eleTrigRef13.isAvailable()) ? 1 : -99;
-
+      eleTrg_[nEle_][13]  = (eleTrigRef14.isAvailable()) ? 1 : -99;
+      eleTrg_[nEle_][14]  = (eleTrigRef15.isAvailable()) ? 1 : -99;
+      eleTrg_[nEle_][15]  = (eleTrigRef16.isAvailable()) ? 1 : -99;
+      eleTrg_[nEle_][16]  = (eleTrigRef17.isAvailable()) ? 1 : -99;
 
       //        new eID with correct isolations and conversion rejection, see https://twiki.cern.ch/twiki/bin/viewauth/CMS/SimpleCutBasedEleID
       //        The value map returns a double with the following meaning:
@@ -1119,8 +1170,11 @@ fabs(ip->pdgId())<=14) || ip->pdgId()==22))) {
   const TriggerObjectMatch *phoTriggerMatch6(triggerEvent->triggerObjectMatchResult("photonTriggerMatchHLTPhoton70CleanedL1Rv1"));
   const TriggerObjectMatch *phoTriggerMatch7(triggerEvent->triggerObjectMatchResult("photonTriggerMatchHLTDoublePhoton17L1R"));
   const TriggerObjectMatch *phoTriggerMatch8(triggerEvent->triggerObjectMatchResult("photonTriggerMatchHLTPhoton10L1R"));
-  const TriggerObjectMatch *phoTriggerMatch9(triggerEvent->triggerObjectMatchResult("photonTriggerMatchHLTPhoton75CaloIdVLIsoLv1"));
-  const TriggerObjectMatch *phoTriggerMatch10(triggerEvent->triggerObjectMatchResult("photonTriggerMatchHLTPhoton75CaloIdVLv1"));
+  const TriggerObjectMatch *phoTriggerMatch9(triggerEvent->triggerObjectMatchResult("photonTriggerMatchHLTHLTPhoton50CaloIdVLIsoLv1"));
+  const TriggerObjectMatch *phoTriggerMatch10(triggerEvent->triggerObjectMatchResult("photonTriggerMatchHLTPhoton75CaloIdVLIsoLv1"));
+  const TriggerObjectMatch *phoTriggerMatch11(triggerEvent->triggerObjectMatchResult("photonTriggerMatchHLTPhoton75CaloIdVLIsoLv2"));
+  const TriggerObjectMatch *phoTriggerMatch12(triggerEvent->triggerObjectMatchResult("photonTriggerMatchHLTPhoton75CaloIdVLv1"));
+  const TriggerObjectMatch *phoTriggerMatch13(triggerEvent->triggerObjectMatchResult("photonTriggerMatchHLTPhoton75CaloIdVLv2"));
 
   if ( photonHandle_.isValid() )
     for (View<pat::Photon>::const_iterator iPho = photonHandle_->begin(); iPho != photonHandle_->end(); ++iPho) {
@@ -1139,6 +1193,9 @@ fabs(ip->pdgId())<=14) || ip->pdgId()==22))) {
       const TriggerObjectRef phoTrigRef8( matchHelper.triggerMatchObject( phoBaseRef, phoTriggerMatch8, e, *triggerEvent ) );
       const TriggerObjectRef phoTrigRef9( matchHelper.triggerMatchObject( phoBaseRef, phoTriggerMatch9, e, *triggerEvent ) );
       const TriggerObjectRef phoTrigRef10( matchHelper.triggerMatchObject( phoBaseRef, phoTriggerMatch10, e, *triggerEvent ) );
+      const TriggerObjectRef phoTrigRef11( matchHelper.triggerMatchObject( phoBaseRef, phoTriggerMatch11, e, *triggerEvent ) );
+      const TriggerObjectRef phoTrigRef12( matchHelper.triggerMatchObject( phoBaseRef, phoTriggerMatch12, e, *triggerEvent ) );
+      const TriggerObjectRef phoTrigRef13( matchHelper.triggerMatchObject( phoBaseRef, phoTriggerMatch13, e, *triggerEvent ) );
       phoTrg_[nPho_][0] = (phoTrigRef1.isAvailable()) ? 1 : -99;
       phoTrg_[nPho_][1] = (phoTrigRef2.isAvailable()) ? 1 : -99;
       phoTrg_[nPho_][2] = (phoTrigRef3.isAvailable()) ? 1 : -99;
@@ -1149,6 +1206,9 @@ fabs(ip->pdgId())<=14) || ip->pdgId()==22))) {
       phoTrg_[nPho_][7] = (phoTrigRef8.isAvailable()) ? 1 : -99;
       phoTrg_[nPho_][8] = (phoTrigRef9.isAvailable()) ? 1 : -99;
       phoTrg_[nPho_][9] = (phoTrigRef10.isAvailable()) ? 1 : -99;
+      phoTrg_[nPho_][10] = (phoTrigRef11.isAvailable()) ? 1 : -99;
+      phoTrg_[nPho_][11] = (phoTrigRef12.isAvailable()) ? 1 : -99;
+      phoTrg_[nPho_][12] = (phoTrigRef13.isAvailable()) ? 1 : -99;
 
       phoIsPhoton_[nPho_] = iPho->isPhoton();
       phoE_[nPho_]   = iPho->energy();
