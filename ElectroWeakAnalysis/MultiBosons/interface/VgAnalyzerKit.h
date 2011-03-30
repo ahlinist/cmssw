@@ -100,7 +100,7 @@ protected:
   Float_t  processID_;
   Int_t    nHLT_;
   Int_t    HLT_[maxP];
-  Int_t    HLTIndex_[100];
+  Int_t    HLTIndex_[200];
   Int_t    nHFTowersP_;
   Int_t    nHFTowersN_;
   Int_t    nVtx_;
@@ -164,7 +164,7 @@ protected:
   Float_t  pfMETSig_;
   // Electron
   Int_t    nEle_;
-  Int_t    eleTrg_[maxP][13];
+  Int_t    eleTrg_[maxP][17];
   Int_t    eleID_[maxP][12];
   Int_t    eleClass_[maxP];
   Int_t    eleCharge_[maxP];
@@ -224,7 +224,7 @@ protected:
 
   // Photon
   Int_t    nPho_;
-  Int_t    phoTrg_[maxP][10];
+  Int_t    phoTrg_[maxP][13];
   Bool_t   phoIsPhoton_[maxP];
   Float_t  phoE_[maxP];
   Float_t  phoEt_[maxP];

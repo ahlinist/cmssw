@@ -332,6 +332,28 @@ electronTriggerMatchHLTEle27CaloIdVTCaloIsoTTrkIdTTrkIsoTv1    = cms.EDProducer(
                                                            resolveByMatchQuality = cms.bool( True )
                                                            )
 
+# matches to HLT_Ele27_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_v2
+electronTriggerMatchHLTEle27CaloIdVTCaloIsoTTrkIdTTrkIsoTv2    = cms.EDProducer( "PATTriggerMatcherDRLessByR",
+                                                           src     = cms.InputTag( "cleanPatElectrons" ),
+                                                           matched = cms.InputTag( "patTrigger" ),
+                                                           matchedCuts = cms.string( 'path( "HLT_Ele27_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_v2" )' ),
+                                                           maxDPtRel = cms.double( 0.5 ),
+                                                           maxDeltaR = cms.double( 0.3 ),
+                                                           resolveAmbiguities    = cms.bool( True ),
+                                                           resolveByMatchQuality = cms.bool( True )
+                                                           )
+
+# matches to HLT_Ele32_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_v1
+electronTriggerMatchHLTEle32CaloIdVTCaloIsoTTrkIdTTrkIsoTv1    = cms.EDProducer( "PATTriggerMatcherDRLessByR",
+							   src     = cms.InputTag( "cleanPatElectrons" ),
+                                                           matched = cms.InputTag( "patTrigger" ),
+                                                           matchedCuts = cms.string( 'path( "HLT_Ele32_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_v1" )' ),
+                                                           maxDPtRel = cms.double( 0.5 ),
+                                                           maxDeltaR = cms.double( 0.3 ),
+                                                           resolveAmbiguities    = cms.bool( True ),
+                                                           resolveByMatchQuality = cms.bool( True )
+                                                           )
+
 # matches to HLT_Ele45_CaloIdVT_TrkIdT_v1
 electronTriggerMatchHLTEle45CaloIdVTTrkIdTv1    = cms.EDProducer( "PATTriggerMatcherDRLessByR",
                                                            src     = cms.InputTag( "cleanPatElectrons" ),
@@ -343,11 +365,34 @@ electronTriggerMatchHLTEle45CaloIdVTTrkIdTv1    = cms.EDProducer( "PATTriggerMat
                                                            resolveByMatchQuality = cms.bool( True )
                                                            )
 
+# matches to HLT_Ele45_CaloIdVT_TrkIdT_v2
+electronTriggerMatchHLTEle45CaloIdVTTrkIdTv2    = cms.EDProducer( "PATTriggerMatcherDRLessByR",
+                                                           src     = cms.InputTag( "cleanPatElectrons" ),
+                                                           matched = cms.InputTag( "patTrigger" ),
+                                                           matchedCuts = cms.string( 'path( "HLT_Ele45_CaloIdVT_TrkIdT_v2" )' ),
+                                                           maxDPtRel = cms.double( 0.5 ),
+                                                           maxDeltaR = cms.double( 0.3 ),
+                                                           resolveAmbiguities    = cms.bool( True ),
+                                                           resolveByMatchQuality = cms.bool( True )
+                                                           )
+
+
 # matches to HLT_Ele90_NoSpikeFilter_v1
 electronTriggerMatchHLTEle90NoSpikeFilterv1    = cms.EDProducer( "PATTriggerMatcherDRLessByR",
                                                            src     = cms.InputTag( "cleanPatElectrons" ),
                                                            matched = cms.InputTag( "patTrigger" ),
                                                            matchedCuts = cms.string( 'path( "HLT_Ele90_NoSpikeFilter_v1" )' ),
+                                                           maxDPtRel = cms.double( 0.5 ),
+                                                           maxDeltaR = cms.double( 0.3 ),
+                                                           resolveAmbiguities    = cms.bool( True ),
+                                                           resolveByMatchQuality = cms.bool( True )
+                                                           )
+
+# matches to HLT_Ele90_NoSpikeFilter_v2
+electronTriggerMatchHLTEle90NoSpikeFilterv2    = cms.EDProducer( "PATTriggerMatcherDRLessByR",
+                                                           src     = cms.InputTag( "cleanPatElectrons" ),
+                                                           matched = cms.InputTag( "patTrigger" ),
+                                                           matchedCuts = cms.string( 'path( "HLT_Ele90_NoSpikeFilter_v2" )' ),
                                                            maxDPtRel = cms.double( 0.5 ),
                                                            maxDeltaR = cms.double( 0.3 ),
                                                            resolveAmbiguities    = cms.bool( True ),
@@ -442,11 +487,33 @@ photonTriggerMatchHLTPhoton10L1R   = cms.EDProducer( "PATTriggerMatcherDRLessByR
                                                            resolveByMatchQuality = cms.bool( True )
                                                            )
 
+# matches to HLT_Photon50_CaloIdVL_IsoL_v1
+photonTriggerMatchHLTPhoton50CaloIdVLIsoLv1   = cms.EDProducer( "PATTriggerMatcherDRLessByR",
+                                                           src     = cms.InputTag( "cleanPatPhotons" ),
+                                                           matched = cms.InputTag( "patTrigger" ),
+                                                           matchedCuts = cms.string( 'path( "HLT_Photon50_CaloIdVL_IsoL_v1" )' ),
+                                                           maxDPtRel = cms.double( 0.5 ),
+                                                           maxDeltaR = cms.double( 0.3 ),
+                                                           resolveAmbiguities    = cms.bool( True ),
+                                                           resolveByMatchQuality = cms.bool( True )
+                                                           )
+
 # matches to HLT_Photon75_CaloIdVL_IsoL_v1
 photonTriggerMatchHLTPhoton75CaloIdVLIsoLv1   = cms.EDProducer( "PATTriggerMatcherDRLessByR",
                                                            src     = cms.InputTag( "cleanPatPhotons" ),
                                                            matched = cms.InputTag( "patTrigger" ),
                                                            matchedCuts = cms.string( 'path( "HLT_Photon75_CaloIdVL_IsoL_v1" )' ),
+                                                           maxDPtRel = cms.double( 0.5 ),
+                                                           maxDeltaR = cms.double( 0.3 ),
+                                                           resolveAmbiguities    = cms.bool( True ),
+                                                           resolveByMatchQuality = cms.bool( True )
+                                                           )
+
+# matches to HLT_Photon75_CaloIdVL_IsoL_v2
+photonTriggerMatchHLTPhoton75CaloIdVLIsoLv2   = cms.EDProducer( "PATTriggerMatcherDRLessByR",
+                                                           src     = cms.InputTag( "cleanPatPhotons" ),
+                                                           matched = cms.InputTag( "patTrigger" ),
+                                                           matchedCuts = cms.string( 'path( "HLT_Photon75_CaloIdVL_IsoL_v2" )' ),
                                                            maxDPtRel = cms.double( 0.5 ),
                                                            maxDeltaR = cms.double( 0.3 ),
                                                            resolveAmbiguities    = cms.bool( True ),
@@ -463,6 +530,18 @@ photonTriggerMatchHLTPhoton75CaloIdVLv1   = cms.EDProducer( "PATTriggerMatcherDR
                                                            resolveAmbiguities    = cms.bool( True ),
                                                            resolveByMatchQuality = cms.bool( True )
                                                            )
+
+# matches to HLT_Photon75_CaloIdVL_v2
+photonTriggerMatchHLTPhoton75CaloIdVLv2   = cms.EDProducer( "PATTriggerMatcherDRLessByR",
+                                                           src     = cms.InputTag( "cleanPatPhotons" ),
+                                                           matched = cms.InputTag( "patTrigger" ),
+                                                           matchedCuts = cms.string( 'path( "HLT_Photon75_CaloIdVL_v2" )' ),
+                                                           maxDPtRel = cms.double( 0.5 ),
+                                                           maxDeltaR = cms.double( 0.3 ),
+                                                           resolveAmbiguities    = cms.bool( True ),
+                                                           resolveByMatchQuality = cms.bool( True )
+                                                           )
+
 
 # matches to HLT_Jet15U
 jetTriggerMatchHLTJet15U   = cms.EDProducer( "PATTriggerMatcherDRLessByR",
@@ -727,8 +806,12 @@ vgTriggerMatcherElectron = cms.Sequence(
 	electronTriggerMatchHLTEle17SWTightCaloEleIdEle8HEL1Rv2 +
 	electronTriggerMatchHLTEle17SWTighterEleIdIsolL1Rv3 +
 	electronTriggerMatchHLTEle27CaloIdVTCaloIsoTTrkIdTTrkIsoTv1 + 
+	electronTriggerMatchHLTEle27CaloIdVTCaloIsoTTrkIdTTrkIsoTv2 + 
+        electronTriggerMatchHLTEle32CaloIdVTCaloIsoTTrkIdTTrkIsoTv1 +
 	electronTriggerMatchHLTEle45CaloIdVTTrkIdTv1 +
-	electronTriggerMatchHLTEle90NoSpikeFilterv1
+	electronTriggerMatchHLTEle45CaloIdVTTrkIdTv2 +
+	electronTriggerMatchHLTEle90NoSpikeFilterv1 +
+	electronTriggerMatchHLTEle90NoSpikeFilterv2
         )
 
 vgTriggerMatcherPhoton = cms.Sequence(
@@ -740,8 +823,11 @@ vgTriggerMatcherPhoton = cms.Sequence(
 	photonTriggerMatchHLTPhoton70CleanedL1Rv1 +
         photonTriggerMatchHLTDoublePhoton17L1R +
 	photonTriggerMatchHLTPhoton10L1R +
+        photonTriggerMatchHLTPhoton50CaloIdVLIsoLv1 +
 	photonTriggerMatchHLTPhoton75CaloIdVLIsoLv1 +
-	photonTriggerMatchHLTPhoton75CaloIdVLv1
+	photonTriggerMatchHLTPhoton75CaloIdVLIsoLv2 +
+	photonTriggerMatchHLTPhoton75CaloIdVLv1 +
+	photonTriggerMatchHLTPhoton75CaloIdVLv2
 	)
 
 vgTriggerMatcherMuon = cms.Sequence(
