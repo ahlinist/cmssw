@@ -16,6 +16,7 @@ def addPFMet(process,correct=False):
         process.patPFMETs.metSource = cms.InputTag('metJESCorAK5PFJet')
         process.makePatPFMETs = cms.Sequence(process.metJESCorAK5PFJet * process.patPFMETs)
     else:
+        process.pfMET.jets = cms.InputTag("ak5PFJets")
         process.patPFMETs.metSource = cms.InputTag('pfMET')
         process.makePatPFMETs = cms.Sequence(process.pfMET * process.patPFMETs)
 
