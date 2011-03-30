@@ -1,7 +1,7 @@
 import FWCore.ParameterSet.Config as cms
 import copy
 
-isData = 1
+isData = 0
 useMuonSkim = 0
 hltType = "HLT"
 #hltType = "REDIGI38X"
@@ -29,7 +29,7 @@ process.MessageLogger.cerr.threshold = 'INFO'
 process.options   = cms.untracked.PSet( wantSummary = cms.untracked.bool(True) )
 
 process.configurationMetadata = cms.untracked.PSet(
-    version = cms.untracked.string('$Revision: 1.11 $'),
+    version = cms.untracked.string('$Revision: 1.12 $'),
     annotation = cms.untracked.string('reco nevts:1'),
     name = cms.untracked.string('PyReleaseValidation')
 )
@@ -144,7 +144,7 @@ if(isData):
   #process.GlobalTag.globaltag = "GR10_P_V10::All" # propt reco 
   process.GlobalTag.globaltag = "GR_R_311_V2::All" # reprocessing  
 else:
-  process.GlobalTag.globaltag = 'START311_V2::All'
+  process.GlobalTag.globaltag = 'START311_V2A::All'
   #process.GlobalTag.globaltag = 'MC_36Y_V9::All'
 
 # Path and EndPath definitions

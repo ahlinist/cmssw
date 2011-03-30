@@ -67,7 +67,7 @@ if (isData):
     process.GlobalTag.globaltag = 'GR_R_311_V2::All'
 #    process.GlobalTag.globaltag = 'TESTL1_GR_P::All'
 else:
-    process.GlobalTag.globaltag = 'START311_V1::All'
+    process.GlobalTag.globaltag = 'START311_V2A::All'
     #process.GlobalTag.globaltag = 'MC_38Y_V14::All'
 process.GlobalTag.connect   = 'frontier://FrontierProd/CMS_COND_31X_GLOBALTAG'
 process.GlobalTag.pfnPrefix = cms.untracked.string('frontier://FrontierProd/')
