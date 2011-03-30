@@ -155,7 +155,7 @@ process.TTEffAnalysisHLTPFTau.HLTPFTau = cms.bool(True)
 process.TTEffAnalysisHLTPFTauTight = process.TTEffAnalysis.clone()
 process.TTEffAnalysisHLTPFTauTight.outputFileName = cms.string("tteffAnalysis-hltpftautight-pftau.root");
 process.TTEffAnalysisHLTPFTauTight.l25JetSource = cms.InputTag("hltPFTauTagInfo")
-process.TTEffAnalysisHLTPFTauTight.l25PtCutSource = cms.InputTag("hltPFTausTightIso")
+process.TTEffAnalysisHLTPFTauTight.l25PtCutSource = cms.InputTag("hltPFTausTightCone")
 process.TTEffAnalysisHLTPFTauTight.HLTPFTau = cms.bool(True)
 
 
@@ -196,6 +196,7 @@ process.o1 = cms.OutputModule("PoolOutputModule",
 )
 process.outpath = cms.EndPath(process.o1)
 
+process.HLTPFTauSequence+= process.hltPFTausTightCone
 process.schedule = cms.Schedule(process.DoHLTJets,
 				process.DoHltMuon,
 				process.DoHLTPhoton,
@@ -204,7 +205,7 @@ process.schedule = cms.Schedule(process.DoHLTJets,
 				process.DoHLTMinBiasPixelTracks,
 				process.runMETCleaning,
 				process.runTTEffAna
-#				,process.outpath
+				,process.outpath
 )
 
 if (isData):  # replace all instances of "rawDataCollector" with "source" in In$
