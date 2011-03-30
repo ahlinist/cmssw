@@ -11,6 +11,7 @@ from RecoEgamma.EgammaIsolationAlgos.eleHcalExtractorBlocks_cff import *
 
 from RecoEgamma.EgammaIsolationAlgos.eleIsoDepositTk_cff import *
 from RecoEgamma.EgammaIsolationAlgos.eleIsoDepositEcalFromHits_cff import *
+from RecoLocalCalo.EcalRecAlgos.EcalSeverityLevelESProducer_cfi import *
 
 #--------------------------------------------------------------------------------
 #
