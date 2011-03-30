@@ -1,7 +1,7 @@
 // Class:      L25and3TauEfficiencyAnalyzer
 // Original Author:  Eduardo Luiggi, modified by Sho Maruyama
 //         Created:  Fri Apr  4 16:37:44 CDT 2008
-// $Id: L25and3TauEfficiencyAnalyzer.cc,v 1.8 2011/01/17 23:31:08 eluiggi Exp $
+// $Id: L25and3TauEfficiencyAnalyzer.cc,v 1.9 2011/02/02 14:57:09 eluiggi Exp $
 #include "ElectroWeakAnalysis/TauTriggerEfficiency/interface/L25and3TauEfficiencyAnalyzer.h"
 #include "FWCore/MessageLogger/interface/MessageLogger.h"
 using namespace edm;
@@ -79,6 +79,7 @@ void L25and3TauEfficiencyAnalyzer::fill(const edm::Event& iEvent, const LorentzV
   l25DefDisc_Trk5_IsoPtMin2_Ntrk0 = 0;
  
   l25IsoPtSum = 0;
+  l25EcalIsoEtSum = 0;
   l25NTrksIso = 0;
 
   if(HLTPFTau == true){
