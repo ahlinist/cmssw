@@ -3,8 +3,9 @@
 #include "FWCore/ServiceRegistry/interface/ActivityRegistry.h"
 #include "FWCore/ParameterSet/interface/ParameterSet.h"
 
-NSVfitTrackService::NSVfitTrackService(const edm::ParameterSet& pset,
-    edm::ActivityRegistry& reg):builder_(NULL) {
+NSVfitTrackService::NSVfitTrackService(const edm::ParameterSet& pset, edm::ActivityRegistry& reg)
+  : builder_(NULL) 
+{
   isValid_ = false;
   // Register the reset() function to be called after all modules have
   // processed the event.  This make sure the state is always consistent for
@@ -12,14 +13,12 @@ NSVfitTrackService::NSVfitTrackService(const edm::ParameterSet& pset,
   reg.watchPostProcessEvent(this, &NSVfitTrackService::reset);
 }
 
-const SVfit::track::TrackExtrapolation& NSVfitTrackService::linearizedTrack(
-      const reco::TrackRef& track) const {
+const SVfit::track::TrackExtrapolation& NSVfitTrackService::linearizedTrack(const reco::Track* track) const 
+{
   // Check if we've already computed this linearization.
-  TrackExtrapolationCache::const_iterator lookup =
-    cacheTrackExtrapolations_.find(track);
+  TrackExtrapolationCache::const_iterator lookup = cacheTrackExtrapolations_.find(track);
 
-  if ( lookup != cacheTrackExtrapolations_.end() )
-    return lookup->second;
+  if ( lookup != cacheTrackExtrapolations_.end() ) return lookup->second;
 
   // Otherwise, build it ourselves.
   reco::TransientTrack transTrack = transientTrack(track);
@@ -31,13 +30,8 @@ const SVfit::track::TrackExtrapolation& NSVfitTrackService::linearizedTrack(
   return insertResult.first->second;
 }
 
-const SVfit::track::TrackExtrapolation& NSVfitTrackService::linearizedTrack(
-      const reco::TrackBaseRef& track) const {
-  return linearizedTrack(track.castTo<reco::TrackRef>());
-}
-
-void NSVfitTrackService::setup(
-    const edm::EventSetup& es, const reco::Candidate::Point& refPoint) {
+void NSVfitTrackService::setup(const edm::EventSetup& es, const reco::Candidate::Point& refPoint) 
+{
   if ( !isValid_ ) {
     es.get<TransientTrackRecord>().get("TransientTrackBuilder", builder_);
     isValid_ = true;
@@ -46,11 +40,12 @@ void NSVfitTrackService::setup(
 }
 
 reco::TransientTrack
-NSVfitTrackService::transientTrack(const reco::TrackRef& track) const {
+NSVfitTrackService::transientTrack(const reco::Track* track) const 
+{
   // Check if we've already made it.
   TransTrackCache::const_iterator lookup = cacheTransientTrack_.find(track);
-  if ( lookup != cacheTransientTrack_.end() )
-    return lookup->second;
+  if ( lookup != cacheTransientTrack_.end() ) return lookup->second;
+
   // Build the transient track
   if ( !isValid_ || !builder_.isValid() ) {
     throw cms::Exception("NoTransTrackBuilder")
@@ -66,12 +61,8 @@ NSVfitTrackService::transientTrack(const reco::TrackRef& track) const {
   return insertResult.first->second;
 }
 
-reco::TransientTrack
-NSVfitTrackService::transientTrack(const reco::TrackBaseRef& track) const {
-  return transientTrack(track.castTo<reco::TrackRef>());
-}
-
-void NSVfitTrackService::reset(const edm::Event& evt, const edm::EventSetup&) {
+void NSVfitTrackService::reset(const edm::Event& evt, const edm::EventSetup&) 
+{
   cacheTransientTrack_.clear();
   cacheTrackExtrapolations_.clear();
   isValid_ = false;

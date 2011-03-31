@@ -88,7 +88,7 @@ NSVfitEventHypothesis* NSVfitEventBuilderBase::build(const inputParticleMap& inp
 
 //--- refit primary event vertex, excluding tracks of tau decay products
   if ( doEventVertexRefit_ ) {
-    std::vector<reco::TrackBaseRef> svTracks;
+    std::vector<const reco::Track*> svTracks;
     const edm::OwnVector<NSVfitResonanceHypothesis>& resonances = eventHypothesis->resonances();
     for ( edm::OwnVector<NSVfitResonanceHypothesis>::const_iterator resonance = resonances.begin();
 	  resonance != resonances.end(); ++resonance ) {

@@ -65,8 +65,8 @@ void NSVfitTauDecayLikelihoodTrackInfo::beginCandidate(const NSVfitSingleParticl
 
   selectedTracks_.clear();
 
-  const std::vector<reco::TrackBaseRef>& tracks = hypothesis->tracks();
-  for ( std::vector<reco::TrackBaseRef>::const_iterator track = tracks.begin();
+  const std::vector<const reco::Track*>& tracks = hypothesis->tracks();
+  for ( std::vector<const reco::Track*>::const_iterator track = tracks.begin();
 	track != tracks.end(); ++track ) {
     const reco::HitPattern& trackHitPattern = (*track)->hitPattern();
     if ( trackHitPattern.numberOfValidTrackerHits() >= (int)minNumHits_ &&
@@ -74,7 +74,7 @@ void NSVfitTauDecayLikelihoodTrackInfo::beginCandidate(const NSVfitSingleParticl
 	 (*track)->normalizedChi2() < maxChi2DoF_ &&
 	 ((*track)->ptError()/(*track)->pt()) < maxDeltaPoverP_ &&
 	 (*track)->pt() > minPt_ ) {
-      reco::TransientTrack transientTrack = trackBuilder_->build(track->get());
+      reco::TransientTrack transientTrack = trackBuilder_->build(*track);
       selectedTracks_.push_back(transientTrack);
     }
   }

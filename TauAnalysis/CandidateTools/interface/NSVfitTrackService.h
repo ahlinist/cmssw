@@ -42,27 +42,24 @@ public:
   virtual ~NSVfitTrackService() {};
 
   /// Linearize a track about a reference point
-  const SVfit::track::TrackExtrapolation& linearizedTrack(
-      const reco::TrackRef& track) const;
-  const SVfit::track::TrackExtrapolation& linearizedTrack(
-      const reco::TrackBaseRef& track) const;
+  const SVfit::track::TrackExtrapolation& linearizedTrack(const reco::Track*) const;
 
   /// *Must* be called before any other functions are called.  The [point]
   /// argument is the spatial point about which to linearize the tracks
   /// (i.e. the nominal PV).
-  void setup(const edm::EventSetup& es, const reco::Candidate::Point& point);
+  void setup(const edm::EventSetup&, const reco::Candidate::Point&);
 
   /// Build a transient track from a TrackRef
-  reco::TransientTrack transientTrack(const reco::TrackRef& track) const;
-  reco::TransientTrack transientTrack(const reco::TrackBaseRef& track) const;
+  reco::TransientTrack transientTrack(const reco::Track*) const;
 
   /// Helper function to convert a collection of tracks to a vector of
   /// TransientTracks (for use in vertex fits)
   template<typename Iter> std::vector<reco::TransientTrack>
-  transientTracks(const Iter& begin, const Iter& end) const {
+  transientTracks(const Iter& begin, const Iter& end) const 
+  {
     std::vector<reco::TransientTrack> output;
     for ( Iter i = begin; i < end; i++ ) {
-      if ( i->isAvailable() && i->isNonnull() ) output.push_back(transientTrack(*i));
+      output.push_back(transientTrack(*i));
     }
     return output;
   }
@@ -72,10 +69,9 @@ private:
   /// automatically by the servic eregisterat end of event.
   void reset(const edm::Event& evt, const edm::EventSetup&);
   edm::ESHandle<TransientTrackBuilder> builder_;
-  typedef std::map<reco::TrackRef, reco::TransientTrack> TransTrackCache;
+  typedef std::map<const reco::Track*, reco::TransientTrack> TransTrackCache;
   mutable TransTrackCache cacheTransientTrack_;
-  typedef std::map<reco::TrackRef, SVfit::track::TrackExtrapolation>
-    TrackExtrapolationCache;
+  typedef std::map<const reco::Track*, SVfit::track::TrackExtrapolation> TrackExtrapolationCache;
   mutable TrackExtrapolationCache cacheTrackExtrapolations_;
   bool isValid_;
   AlgebraicVector3 refPoint_;

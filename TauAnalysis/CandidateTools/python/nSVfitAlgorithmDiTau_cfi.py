@@ -45,7 +45,7 @@ nSVfitMuonLikelihoodTrackInfo = cms.PSet(
     pluginName = cms.string("nSVfitTauToMuonLikelihoodTrackInfo"),
     pluginType = cms.string("NSVfitTauDecayLikelihoodTrackInfo"),
     useLifetimeConstraint = cms.bool(True),
-    verbosity = cms.int32(0)  
+    verbosity = cms.int32(1)  
 )
 
 nSVfitTauToMuBuilder = cms.PSet(
@@ -94,7 +94,7 @@ nSVfitTauLikelihoodTrackInfo = cms.PSet(
     pluginName = cms.string("nSVfitTauToHadLikelihoodTrackInfo"),
     pluginType = cms.string("NSVfitTauDecayLikelihoodTrackInfo"),
     useLifetimeConstraint = cms.bool(True),
-    verbosity = cms.int32(0)  
+    verbosity = cms.int32(1)  
 )
 
 nSVfitTauToHadBuilder = cms.PSet(

@@ -1,5 +1,5 @@
 #include "TauAnalysis/CandidateTools/interface/NSVfitTauDecayBuilderBase.h"
-#include "TauAnalysis/CandidateTools/interface/SVfitLegTrackExtractor.h"
+#include "TauAnalysis/CandidateTools/interface/NSVfitSingleParticleTrackExtractor.h"
 #include "AnalysisDataFormats/TauAnalysis/interface/NSVfitTauToLepHypothesis.h"
 #include "TauAnalysis/CandidateTools/interface/nSVfitParameter.h"
 #include "DataFormats/TauReco/interface/PFTauDecayMode.h"
@@ -12,9 +12,9 @@
  *
  * \author Evan Friis, Christian Veelken; UC Davis
  *
- * \version $Revision: 1.11 $
+ * \version $Revision: 1.12 $
  *
- * $Id: NSVfitTauToLepBuilder.cc,v 1.11 2011/03/29 15:33:01 veelken Exp $
+ * $Id: NSVfitTauToLepBuilder.cc,v 1.12 2011/03/29 17:25:21 veelken Exp $
  *
  */
 
@@ -56,7 +56,7 @@ class NSVfitTauToLepBuilder : public NSVfitTauDecayBuilderBase
     assert(0); // force template specializations for pat::Electrons/pat::Muons to be used
   }
 
-  virtual std::vector<reco::TrackBaseRef> extractTracks(const reco::Candidate* candidate) const 
+  virtual std::vector<const reco::Track*> extractTracks(const reco::Candidate* candidate) const 
   {
     const T* objPtr = dynamic_cast<const T*>(candidate);
     assert(objPtr);
@@ -64,7 +64,7 @@ class NSVfitTauToLepBuilder : public NSVfitTauDecayBuilderBase
   }
 
  private:
-  SVfitLegTrackExtractor<T> trackExtractor_;
+  NSVfitSingleParticleTrackExtractor<T> trackExtractor_;
 };
 
 template<>
