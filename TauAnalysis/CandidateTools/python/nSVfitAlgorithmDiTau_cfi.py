@@ -25,7 +25,7 @@ nSVfitTauToElecBuilder = cms.PSet(
 nSVfitMuonLikelihoodPhaseSpace = cms.PSet(
     pluginName = cms.string("nSVfitTauToMuLikelihoodPhaseSpace"),
     pluginType = cms.string("NSVfitTauToMuLikelihoodPhaseSpace"),
-    verbosity = cms.int32(1)  
+    verbosity = cms.int32(0)  
 )
 
 nSVfitMuonLikelihoodPolarization = cms.PSet(
@@ -37,13 +37,13 @@ nSVfitMuonLikelihoodPolarization = cms.PSet(
 nSVfitTauToMuBuilder = cms.PSet(
     pluginName = cms.string("nSVfitTauToMuBuilder"),
     pluginType = cms.string("NSVfitTauToMuBuilder"),
-    verbosity = cms.int32(1)  
+    verbosity = cms.int32(0)  
 )
 
 nSVfitTauLikelihoodPhaseSpace = cms.PSet(
     pluginName = cms.string("nSVfitTauToHadLikelihoodPhaseSpace"),
     pluginType = cms.string("NSVfitTauToHadLikelihoodPhaseSpace"),
-    verbosity = cms.int32(1)  
+    verbosity = cms.int32(0)  
 )
 
 nSVfitTauLikelihoodPolarization = cms.PSet(
@@ -73,13 +73,13 @@ nSVfitTauLikelihoodPolarization = cms.PSet(
             pMin = cms.double(0.05)
         )
     ),
-    verbosity = cms.int32(1)  
+    verbosity = cms.int32(0)  
 )
 
 nSVfitTauToHadBuilder = cms.PSet(
     pluginName = cms.string("nSVfitTauToHadBuilder"),
     pluginType = cms.string("NSVfitTauToHadBuilder"),
-    verbosity = cms.int32(1)  
+    verbosity = cms.int32(0)  
 )
 
 nSVfitResonanceLikelihoodPtBalance = cms.PSet(
@@ -108,7 +108,7 @@ nSVfitResonanceLikelihoodPtBalance = cms.PSet(
     parameter = cms.PSet(
         x = cms.string('mass')
     ),
-    verbosity = cms.int32(1)     
+    verbosity = cms.int32(0)     
 )
 
 nSVfitResonanceBuilder = cms.PSet(
@@ -125,7 +125,7 @@ nSVfitEventLikelihoodMEt = cms.PSet(
         perpSigma = cms.string("6.85*(1 - 0.00547*x)"),
         perpBias = cms.string("0.")
     ),
-    verbosity = cms.int32(1)
+    verbosity = cms.int32(0)
 )
 
 nSVfitEventBuilder = cms.PSet(
