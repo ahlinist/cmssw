@@ -72,10 +72,10 @@ void NSVfitProducerT<T>::beginJob()
 template <typename T>
 void NSVfitProducerT<T>::produce(edm::Event& evt, const edm::EventSetup& es)
 {
-  std::cout << "<NSVfitProducerT::produce>:" << std::endl;
-  std::cout << " moduleLabel = " << moduleLabel_;
-  if ( instanceLabel_ != "" ) std::cout << ", instanceLabel = " << instanceLabel_;
-  std::cout << std::endl;
+  //std::cout << "<NSVfitProducerT::produce>:" << std::endl;
+  //std::cout << " moduleLabel = " << moduleLabel_;
+  //if ( instanceLabel_ != "" ) std::cout << ", instanceLabel = " << instanceLabel_;
+  //std::cout << std::endl;
 
   typedef edm::View<reco::Candidate> CandidateView;
   typedef edm::Handle<CandidateView> CandidateHandle;
@@ -108,9 +108,9 @@ void NSVfitProducerT<T>::produce(edm::Event& evt, const edm::EventSetup& es)
   evt.getByLabel(srcPrimaryVertex_, eventVertexCollection);
   const reco::Vertex* eventVertex = 0;
   if ( eventVertexCollection->size() > 0 ) eventVertex = &eventVertexCollection->at(0);
-std::cout << "break-point A.1 reached" << std::endl;
+
   algorithm_->beginEvent(evt, es);
-std::cout << "break-point A.2 reached" << std::endl;
+
   std::auto_ptr<NSVfitEventHypothesisCollection> nSVfitEventHypothesisCollection(new NSVfitEventHypothesisCollection());
 
   IndepCombinatoricsGeneratorT<int> inputParticleCombination(numInputParticles_);
