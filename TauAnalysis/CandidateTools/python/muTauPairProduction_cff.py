@@ -137,10 +137,20 @@ allMuTauPairs = cms.EDProducer("PATMuTauPairProducer",
                     numCalls = cms.uint32(10000)                             
                 )
             )
-        )
+        )                           
     ),
     scaleFuncImprovedCollinearApprox = cms.string('1'),
     verbosity = cms.untracked.int32(0)
+)
+
+allMuTauPairs.nSVfit.psKine_MEt_Track_ptBalance = copy.deepcopy(allMuTauPairs.nSVfit.psKine_MEt_ptBalance)
+allMuTauPairs.nSVfit.psKine_MEt_Track_ptBalance.config.event.resonances.A.daughters.leg1.likelihoodFunctions = cms.VPSet(
+    nSVfitMuonLikelihoodPhaseSpace,
+    nSVfitMuonLikelihoodTrackInfo
+)
+allMuTauPairs.nSVfit.psKine_MEt_Track_ptBalance.config.event.resonances.A.daughters.leg2.likelihoodFunctions = cms.VPSet(
+    nSVfitTauLikelihoodPhaseSpace,
+    nSVfitTauLikelihoodTrackInfo
 )
 
 muTauPairProdConfigurator = objProdConfigurator(
