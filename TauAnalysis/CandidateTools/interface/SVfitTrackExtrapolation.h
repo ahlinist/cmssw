@@ -15,6 +15,8 @@
 #include "DataFormats/GeometryVector/interface/GlobalPoint.h"
 #include "DataFormats/GeometryVector/interface/GlobalVector.h"
 
+#include <iostream>
+
 namespace SVfit { namespace track {
 class TrackExtrapolation {
   public:
@@ -35,6 +37,9 @@ class TrackExtrapolation {
     const AlgebraicMatrix33& covariance() const { return covMatrix_; }
     // The appoximate spatial error on the track
     double approximateTrackError() const { return approximateTrackError_; }
+
+    // Compute the displacent of a test point from the extrapolated track.
+    AlgebraicVector3 displacementFromTrack(const AlgebraicVector3&) const;
 
     // Log-likelihood given a secondary vertex
     double logLikelihood(const AlgebraicVector3&) const;
@@ -67,4 +72,8 @@ class TrackExtrapolation {
     int errorFlag_;
 };
 }} // end namespace SVfit::track
+
+// Print to stream
+std::ostream& operator<<(std::ostream& stream,
+    const SVfit::track::TrackExtrapolation& trk);
 #endif
