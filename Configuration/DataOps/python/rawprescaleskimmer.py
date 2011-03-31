@@ -27,7 +27,7 @@ process.load("Configuration.EventContent.EventContentCosmics_cff")
 
 
 process.configurationMetadata = cms.untracked.PSet(
-    version = cms.untracked.string('$Revision: 1.1 $'),
+    version = cms.untracked.string('$Revision: 1.2 $'),
     name = cms.untracked.string('$Source: /cvs_server/repositories/CMSSW/CMSSW/Configuration/DataOps/python/rawprescaleskimmer.py,v $'),
     annotation = cms.untracked.string('Test Skim Thingy')
 )
@@ -66,7 +66,7 @@ process.fakeSkimOut1 = cms.OutputModule("PoolOutputModule",
         filterName = cms.untracked.string('PreScaleThingy50'),
         dataTier = cms.untracked.string('RAW')
     ),
-    fileName = cms.untracked.string('PreScaleThingy5.root')
+    fileName = cms.untracked.string('PreScaleThingy50.root')
 ) 
 
 
@@ -79,7 +79,7 @@ process.fakeSkimOut2 = cms.OutputModule("PoolOutputModule",
         filterName = cms.untracked.string('PreScaleThingy10'),
         dataTier = cms.untracked.string('RAW')
     ),
-    fileName = cms.untracked.string('PreScaleThingy1.root')
+    fileName = cms.untracked.string('PreScaleThingy10.root')
 )
 
  
@@ -92,7 +92,7 @@ process.fakeSkimOut3 = cms.OutputModule("PoolOutputModule",
         filterName = cms.untracked.string('PreScaleThingy100'),
         dataTier = cms.untracked.string('RAW')
     ),
-    fileName = cms.untracked.string('PreScaleThingy10.root')
+    fileName = cms.untracked.string('PreScaleThingy100.root')
 )
 
  
@@ -102,10 +102,10 @@ process.fakeSkimOut4 = cms.OutputModule("PoolOutputModule",
         SelectEvents = cms.vstring('prescalepath50')
     ),
     dataset = cms.untracked.PSet(
-        filterName = cms.untracked.string('PreScaleThingy50'),
+        filterName = cms.untracked.string('PreScaleThingy500'),
         dataTier = cms.untracked.string('RAW')
     ),
-    fileName = cms.untracked.string('PreScaleThingy50.root')
+    fileName = cms.untracked.string('PreScaleThingy500.root')
 )
 
  
@@ -118,7 +118,7 @@ process.fakeSkimOut5 = cms.OutputModule("PoolOutputModule",
         filterName = cms.untracked.string('PreScaleThingy2000'),
         dataTier = cms.untracked.string('RAW')
     ),
-    fileName = cms.untracked.string('PreScaleThingy200.root')
+    fileName = cms.untracked.string('PreScaleThingy2000.root')
 )
 
 
