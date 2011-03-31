@@ -16,9 +16,9 @@ class NSVfitTauToHadHypothesis : public NSVfitTauDecayHypothesis
   NSVfitTauToHadHypothesis(const NSVfitTauToHadHypothesis&);
   ~NSVfitTauToHadHypothesis() {}
 
-  virtual NSVfitTauDecayHypothesis* clone() const { return new NSVfitTauToHadHypothesis(*this); }
+  virtual NSVfitTauToHadHypothesis* clone() const { return new NSVfitTauToHadHypothesis(*this); }
 
-  virtual NSVfitTauDecayHypothesis& operator=(const NSVfitTauToHadHypothesis&);
+  virtual NSVfitTauToHadHypothesis& operator=(const NSVfitTauToHadHypothesis&);
 
   /// decay angles and masses of intermediate vector-meson resonances
   double decay_angle_VMrho() const { return decay_angle_VMrho_; }
@@ -44,6 +44,7 @@ class NSVfitTauToHadHypothesis : public NSVfitTauDecayHypothesis
   double decay_angle_VMa1r_theta_;
   double decay_angle_VMa1r_phi_;
   double mass2_VMa1_;
+
   reco::Vertex fittedVertex_;
 };
 

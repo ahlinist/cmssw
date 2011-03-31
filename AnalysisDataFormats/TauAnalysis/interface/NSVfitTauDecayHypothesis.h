@@ -18,13 +18,13 @@ class NSVfitTauDecayHypothesis : public NSVfitSingleParticleHypothesisBase
   NSVfitTauDecayHypothesis() {}
   NSVfitTauDecayHypothesis(const edm::Ptr<reco::Candidate>& particle,
       const std::string& name, int barcode)
-    : NSVfitSingleParticleHypothesisBase(particle, name, barcode) {}
-
+    : NSVfitSingleParticleHypothesisBase(particle, name, barcode) 
+  {}
   ~NSVfitTauDecayHypothesis() {}
   // Copy constructors
   NSVfitTauDecayHypothesis(const NSVfitTauDecayHypothesis&);
-  virtual NSVfitSingleParticleHypothesisBase* clone() const { return new NSVfitTauDecayHypothesis(*this); }
-  virtual NSVfitSingleParticleHypothesisBase& operator=(const NSVfitTauDecayHypothesis&);
+  virtual NSVfitTauDecayHypothesis* clone() const { return new NSVfitTauDecayHypothesis(*this); }
+  virtual NSVfitTauDecayHypothesis& operator=(const NSVfitTauDecayHypothesis&);
 
   /// momenta of visible (electron/muon) and invisible (neutrinos)
   /// decay products in tau lepton rest-frame
