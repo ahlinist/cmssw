@@ -145,7 +145,8 @@ void TrackExtrapolation::construct(
 
 }
 
-double TrackExtrapolation::logLikelihood(const AlgebraicVector3& sv) const {
+AlgebraicVector3 TrackExtrapolation::displacementFromTrack(
+    const AlgebraicVector3& sv) const {
   // Solve for the closest point on the line to the test point
   // The line is defined by  P(t) = P1 + t*(P2-P1), where P1 = dcaPosition
   // and P2 = dcaPosition + tangent();  P3 is the test point. At DCA P,
@@ -171,8 +172,13 @@ double TrackExtrapolation::logLikelihood(const AlgebraicVector3& sv) const {
   AlgebraicVector3 dcaOnTrack = dcaPosition_ + t*(tangent_);
 
   AlgebraicVector3 displacement = sv - dcaOnTrack;
+  return displacement;
+}
+
+double TrackExtrapolation::logLikelihood(const AlgebraicVector3& sv) const {
   //std::cout << "track likelihood - got displacement" << displacement << std::endl;
-  return logLikelihoodFromDisplacement(displacement);
+  return logLikelihoodFromDisplacement(
+      displacementFromTrack(sv));
 }
 
 double TrackExtrapolation::logLikelihoodFromDisplacement(
@@ -205,6 +211,17 @@ double TrackExtrapolation::logLikelihoodFromDisplacement(
 
   return logLikelihood;
 }
-
-
 }} // end namespace SVfit::track
+
+// stream operator
+std::ostream& operator<<(std::ostream& stream,
+    const SVfit::track::TrackExtrapolation& trk) {
+  stream << " <TrackExtrapolation> : ("
+    << trk.dcaPosition() << ") + t*(" << trk.tangent()
+    << "), ref point = " << trk.refPoint()
+    << ", approx error = " << trk.approximateTrackError();
+  return stream;
+}
+
+
+
