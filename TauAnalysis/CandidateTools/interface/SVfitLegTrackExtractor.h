@@ -9,9 +9,9 @@
  *
  * \author Evan Friis, Christian Veelken; UC Davis
  *
- * \version $Revision: 1.2 $
+ * \version $Revision: 1.3 $
  *
- * $Id: SVfitLegTrackExtractor.h,v 1.2 2011/01/18 16:43:00 friis Exp $
+ * $Id: SVfitLegTrackExtractor.h,v 1.3 2011/03/28 13:31:51 veelken Exp $
  *
  */
 
@@ -25,6 +25,14 @@
 #include "DataFormats/Candidate/interface/Candidate.h"
 
 #include <vector>
+
+namespace{
+  template<typename T>
+  bool isValidRef(const edm::Ref<T>& ref)
+  {
+    return ( (ref.isAvailable() || ref.isTransient()) && ref.isNonnull() );  
+  }
+}
 
 // define template for generic particle Candidate case
 // (dummy implementation returning empty track vector)
@@ -47,9 +55,9 @@ class SVfitLegTrackExtractor<pat::Electron>
   {
     //std::cout << "<SVfitLegTrackExtractor<pat::Electron>::operator()>:" << std::endl;
     std::vector<reco::TrackBaseRef> tracks;
-    if ( electron.core().isAvailable() && electron.core().isNonnull() ) {
+    if ( isValidRef(electron.core()) && isValidRef(electron.gsfTrack()) ) 
       tracks.push_back(reco::TrackBaseRef(electron.gsfTrack()));
-    }
+    //std::cout << "--> tracks.size = " << tracks.size() << std::endl;
     return tracks;
   }
 };
@@ -63,7 +71,9 @@ class SVfitLegTrackExtractor<pat::Muon>
   {
     //std::cout << "<SVfitLegTrackExtractor<pat::Muon>::operator()>:" << std::endl;
     std::vector<reco::TrackBaseRef> tracks;
-    tracks.push_back(reco::TrackBaseRef(muon.innerTrack()));
+    if ( isValidRef(muon.innerTrack()) )
+      tracks.push_back(reco::TrackBaseRef(muon.innerTrack()));
+    //std::cout << "--> tracks.size = " << tracks.size() << std::endl;
     return tracks;
   }
 };
@@ -81,8 +91,10 @@ class SVfitLegTrackExtractor<pat::Tau>
     const reco::PFCandidateRefVector& signalChargedHadrons = tau.signalPFChargedHadrCands();
     unsigned numChargedHadrons = signalChargedHadrons.size();
     for ( unsigned iChargedHadron = 0; iChargedHadron < numChargedHadrons; ++iChargedHadron ) {
-      tracks.push_back(reco::TrackBaseRef(signalChargedHadrons.at(iChargedHadron)->trackRef()));
+      if ( isValidRef(signalChargedHadrons.at(iChargedHadron)->trackRef()) ) 
+	tracks.push_back(reco::TrackBaseRef(signalChargedHadrons.at(iChargedHadron)->trackRef()));
     }
+    //std::cout << "--> tracks.size = " << tracks.size() << std::endl;
     return tracks;
   }
 };
