@@ -12,7 +12,7 @@
 
 #include "AnalysisDataFormats/TauAnalysis/interface/NSVfitSingleParticleHypothesisBase.h"
 
-class NSVfitTauDecayHypothesis : public NSVfitSingleParticleHypothesisBase 
+class NSVfitTauDecayHypothesis : public NSVfitSingleParticleHypothesisBase
 {
  public:
   NSVfitTauDecayHypothesis() {}
@@ -71,14 +71,6 @@ class NSVfitTauDecayHypothesis : public NSVfitSingleParticleHypothesisBase
 
   /// decay angle in tau lepton rest-frame
   double decay_angle_rf_;
-
-  /// decay angles and masses of intermediate vector-meson resonances
-  double decay_angle_VMrho_;
-  double mass2_VMrho_;
-  double decay_angle_VMa1_;
-  double decay_angle_VMa1r_theta_;
-  double decay_angle_VMa1r_phi_;
-  double mass2_VMa1_;
 
   /// position of reconstructed tau lepton decay vertex
   AlgebraicVector3 decayVertexPos_;
