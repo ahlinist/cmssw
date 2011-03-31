@@ -11,9 +11,9 @@
  *
  * \author Evan Friis, Christian Veelken; UC Davis
  *
- * \version $Revision: 1.15 $
+ * \version $Revision: 1.16 $
  *
- * $Id: NSVfitTauToHadBuilder.cc,v 1.15 2011/03/29 17:25:21 veelken Exp $
+ * $Id: NSVfitTauToHadBuilder.cc,v 1.16 2011/03/31 09:29:25 veelken Exp $
  *
  */
 
@@ -57,7 +57,8 @@ class NSVfitTauToHadBuilder : public NSVfitTauDecayBuilderBase
     NSVfitTauDecayBuilderBase::initialize(hypothesis, particlePtr->second.get());
 
     // Three prong case: check if we can fit a reconstructed vertex.
-    std::vector<reco::TrackBaseRef> tracks = extractTracks(particlePtr->second.get());
+    const std::vector<reco::TrackBaseRef>& tracks = hypothesis->tracks();
+
     if ( tracks.size() > 1 ) {
       KalmanVertexFitter kvf(true);
       // Get the associated transient tracks
