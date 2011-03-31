@@ -65,9 +65,15 @@ void NSVfitTauDecayLikelihoodTrackInfo::beginCandidate(const NSVfitSingleParticl
 
   selectedTracks_.clear();
 
+  if ( this->verbosity_ )
+    std::cout << "<NSVfitTauDecayLikelihoodTrackInfo>::beginCandidate"
+      << std::endl;
+
   const std::vector<const reco::Track*>& tracks = hypothesis->tracks();
   for ( std::vector<const reco::Track*>::const_iterator track = tracks.begin();
 	track != tracks.end(); ++track ) {
+    if (this->verbosity_)
+      std::cout << "Examining track with pt: " << (*track)->pt() << " ... ";
     const reco::HitPattern& trackHitPattern = (*track)->hitPattern();
     if ( trackHitPattern.numberOfValidTrackerHits() >= (int)minNumHits_ &&
 	 trackHitPattern.numberOfValidPixelHits() >= (int)minNumPixelHits_ &&
@@ -76,9 +82,14 @@ void NSVfitTauDecayLikelihoodTrackInfo::beginCandidate(const NSVfitSingleParticl
 	 (*track)->pt() > minPt_ ) {
       reco::TransientTrack transientTrack = trackBuilder_->build(*track);
       selectedTracks_.push_back(transientTrack);
+      if (this->verbosity_)
+        std::cout << "passes quality cuts." << std::endl;
+    } else {
+      if (this->verbosity_)
+        std::cout << "FAILS quality cuts." << std::endl;
     }
   }
-  
+
   isNewCandidate_ = true;
 }
 
@@ -103,7 +114,7 @@ double logExponentialDecay(double tauFlightPath, double p)
 
 // Compute a penalty incase the flight correction moves the SV 'behind' the
 // primary vertex.
-double backwardsPenaltyTerm(const reco::Candidate::Vector& flight, const reco::Candidate::LorentzVector& visP4, bool verbosity) 
+double backwardsPenaltyTerm(const reco::Candidate::Vector& flight, const reco::Candidate::LorentzVector& visP4, bool verbosity)
 {
   double penalty = 0.;
 
@@ -112,7 +123,7 @@ double backwardsPenaltyTerm(const reco::Candidate::Vector& flight, const reco::C
     penalty += 1.e+4*distance*distance;
     if ( verbosity ) {
       std::cout << "<backwardsPenaltyTerm>:" << std::endl;
-      std::cout << " backwards decay distance = " << distance 
+      std::cout << " backwards decay distance = " << distance
 		<< " --> penalty = " << penalty << std::endl;
     }
   }
@@ -129,7 +140,7 @@ double NSVfitTauDecayLikelihoodTrackInfo::operator()(const NSVfitSingleParticleH
 //    to be compatible with the hypothetic secondary vertex of the tau lepton decay
 //   (distance of closest approach of track to secondary vertex divided by estimated uncertainties of track extrapolation)
 
-  if ( this->verbosity_ ) 
+  if ( this->verbosity_ )
     std::cout << "<NSVfitTauDecayLikelihoodTrackInfo::operator()>:" << std::endl;
 
   double nll = 0.;
@@ -147,22 +158,22 @@ double NSVfitTauDecayLikelihoodTrackInfo::operator()(const NSVfitSingleParticleH
 //     primaryVertex + trackVector*scalarProduct(trackVector, secondaryVertex)/(|trackVector|*|secondaryVertex|)
 //
     if ( isNewCandidate_ ) {
-      if ( this->verbosity_ ) 
+      if ( this->verbosity_ )
 	std::cout << "--> computing linear approximation of helix track extrapolation..." << std::endl;
 
       AlgebraicVector3 direction;
       direction(0) = hypothesis->p4().px()/hypothesis->p4().P();
       direction(1) = hypothesis->p4().py()/hypothesis->p4().P();
       direction(2) = hypothesis->p4().pz()/hypothesis->p4().P();
-      
+
       AlgebraicVector3 refPoint = pvPosition_;
-      
+
       selectedTrackInfo_.clear();
       for ( std::vector<reco::TransientTrack>::const_iterator selectedTrack = selectedTracks_.begin();
 	    selectedTrack != selectedTracks_.end(); ++selectedTrack ) {
         selectedTrackInfo_.push_back(SVfit::track::TrackExtrapolation(*selectedTrack, refPoint));
       }
-      
+
       isNewCandidate_ = false;
     }
 
@@ -171,9 +182,20 @@ double NSVfitTauDecayLikelihoodTrackInfo::operator()(const NSVfitSingleParticleH
     for ( std::vector<SVfit::track::TrackExtrapolation>::const_iterator selectedTrackInfo = selectedTrackInfo_.begin();
 	  selectedTrackInfo != selectedTrackInfo_.end(); ++selectedTrackInfo ) {
 
-      if ( this->verbosity_ )
+      double trackLL = selectedTrackInfo->logLikelihood(hypothesis->decayVertexPos());
+      if ( this->verbosity_ ) {
+        AlgebraicVector3 displacement =
+          selectedTrackInfo->displacementFromTrack(
+              hypothesis->decayVertexPos());
 	std::cout << " SV is: " << hypothesis->decayVertexPos() << std::endl;
-      nll -= selectedTrackInfo->logLikelihood(hypothesis->decayVertexPos());
+	std::cout << " displacement is: "
+          << displacement << " mag: " << ROOT::Math::Mag(displacement)
+          << " approx track error: "
+          << selectedTrackInfo->approximateTrackError() << std::endl;
+        std::cout << *selectedTrackInfo << std::endl;
+        std::cout << " tracking NLL: " << -trackLL << std::endl;
+      }
+      nll -= trackLL;
     }
   } else {
     if ( this->verbosity_ )
@@ -181,21 +203,30 @@ double NSVfitTauDecayLikelihoodTrackInfo::operator()(const NSVfitSingleParticleH
     for ( std::vector<reco::TransientTrack>::const_iterator selectedTrack = selectedTracks_.begin();
 	  selectedTrack != selectedTracks_.end(); ++selectedTrack ) {
       SVfit::track::TrackExtrapolation selectedTrackInfo(*selectedTrack, hypothesis->decayVertexPos());
-      
+
       AlgebraicVector3 displacement = hypothesis->decayVertexPos() - selectedTrackInfo.dcaPosition();
-      
+
       nll -= selectedTrackInfo.logLikelihoodFromDisplacement(displacement);
     }
   }
 
-  if ( useLifetimeConstraint_ ) nll -= logExponentialDecay(hypothesis->decayDistance(), hypothesis->p4().P());
-  
+  if ( useLifetimeConstraint_ ) {
+    double lifeTimeConstraintLL = logExponentialDecay(
+        hypothesis->decayDistance(), hypothesis->p4().P());
+    if (this->verbosity_) {
+      std::cout << " flight distance: " << hypothesis->decayDistance()
+        << " p: " << hypothesis->p4().P()
+        << " flight NLL " << -lifeTimeConstraintLL << std::endl;
+    }
+    nll -= lifeTimeConstraintLL;
+  }
+
 //--- add a penalty term in case the SV is 'behind' the PV
   nll += backwardsPenaltyTerm(hypothesis->flightPath(), hypothesis->p4(), this->verbosity_);
 
   if ( this->verbosity_ )
-    std::cout << "--> nll = " << nll << std::endl;
-  
+    std::cout << "--> total nll = " << nll << std::endl;
+
   return nll;
 }
 
