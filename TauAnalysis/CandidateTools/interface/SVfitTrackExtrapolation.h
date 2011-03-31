@@ -42,7 +42,6 @@ class TrackExtrapolation {
     // Log-likelihood given the displacement
     double logLikelihoodFromDisplacement(const AlgebraicVector3&) const;
 
-
   private:
     // Implementation of the constructors
     void construct(
