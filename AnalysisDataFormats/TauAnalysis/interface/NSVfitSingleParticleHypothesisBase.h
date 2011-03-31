@@ -17,8 +17,8 @@ class NSVfitSingleParticleHypothesisBase
   NSVfitSingleParticleHypothesisBase() {}
   NSVfitSingleParticleHypothesisBase(const std::string& name, int barcode)
     : mother_(NULL),
-    name_(name),
-    barcode_(barcode)
+      name_(name),
+      barcode_(barcode)
   {}
   NSVfitSingleParticleHypothesisBase(const edm::Ptr<reco::Candidate>& particle, const std::string& name, int barcode)
     : mother_(NULL),
