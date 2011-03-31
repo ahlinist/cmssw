@@ -11,9 +11,9 @@
  *
  * \author Evan Friis, Christian Veelken; UC Davis
  *
- * \version $Revision: 1.14 $
+ * \version $Revision: 1.15 $
  *
- * $Id: NSVfitTauToHadBuilder.cc,v 1.14 2011/03/29 15:33:01 veelken Exp $
+ * $Id: NSVfitTauToHadBuilder.cc,v 1.15 2011/03/29 17:25:21 veelken Exp $
  *
  */
 
@@ -69,28 +69,19 @@ class NSVfitTauToHadBuilder : public NSVfitTauDecayBuilderBase
     return hypothesis;
   }
 
-  void applyFitParameter(NSVfitTauDecayHypothesis* hypothesis, double* param) const 
+  void applyFitParameter(NSVfitSingleParticleHypothesisBase* hypothesis, double* param) const
   {
-    std::cout << "<NSVfitTauToHadBuilder::applyFitParameter>:" << std::endl;
     NSVfitTauDecayBuilderBase::applyFitParameter(hypothesis, param);
-    std::cout << "hypothesis = " << hypothesis << std::endl;
-    std::cout << "param = " << param << std::endl;
+
     NSVfitTauToHadHypothesis* hypothesis_T = dynamic_cast<NSVfitTauToHadHypothesis*>(hypothesis);
-    std::cout << "hypothesis_T = " << hypothesis_T << std::endl;
     assert(hypothesis_T);
-    std::cout << "break-point A.1 reached" << std::endl;
+
     applyOptionalFitParameter(param, idxFitParameter_thetaVMrho_, hypothesis_T->decay_angle_VMrho_);
-    std::cout << "break-point A.2 reached" << std::endl;
     applyOptionalFitParameter(param, idxFitParameter_mass2VMrho_, hypothesis_T->mass2_VMrho_);
-    std::cout << "break-point A.3 reached" << std::endl;
     applyOptionalFitParameter(param, idxFitParameter_thetaVMa1_,  hypothesis_T->decay_angle_VMa1_);
-    std::cout << "break-point A.4 reached" << std::endl;
     applyOptionalFitParameter(param, idxFitParameter_thetaVMa1r_, hypothesis_T->decay_angle_VMa1r_theta_);
-    std::cout << "break-point A.5 reached" << std::endl;
     applyOptionalFitParameter(param, idxFitParameter_phiVMa1r_,   hypothesis_T->decay_angle_VMa1r_phi_);
-    std::cout << "break-point A.6 reached" << std::endl;
     applyOptionalFitParameter(param, idxFitParameter_mass2VMa1_,  hypothesis_T->mass2_VMa1_);
-    std::cout << "break-point A.7 reached" << std::endl;
   }
 
   // The two neutrion system in a leptonic decay can have mass.
