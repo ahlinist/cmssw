@@ -48,17 +48,8 @@ void NSVfitEventVertexRefitter::beginEvent(const edm::Event& evt, const edm::Eve
 }
 
 //-------------------------------------------------------------------------------
-// auxiliary functions to compare two Tracks by reference/by match in eta-phi
-template<typename T>
-struct RefToBase_less : public std::binary_function<edm::RefToBase<T>, edm::RefToBase<T>, bool>
-{
-  inline bool operator()(const edm::RefToBase<T> &r1, const edm::RefToBase<T> &r2) const
-  {
-    return r1.id() < r2.id() || (r1.id() == r2.id() && r1.key() < r2.key());
-  }
-};
-
-bool tracksMatchByDeltaR(const reco::TrackBaseRef& trk1, const reco::TrackBaseRef& trk2)
+// auxiliary functions to compare two Tracks 
+bool tracksMatchByDeltaR(const reco::Track* trk1, const reco::Track* trk2)
 {
   if ( reco::deltaR(*trk1, *trk2) < 0.01 && trk1->charge() == trk2->charge() &&
        TMath::Abs(trk1->pt() - trk2->pt()) < 0.05*(trk1->pt() + trk2->pt()) )
@@ -69,32 +60,27 @@ bool tracksMatchByDeltaR(const reco::TrackBaseRef& trk1, const reco::TrackBaseRe
 
 // auxiliary function to exclude tracks associated to tau lepton decay "leg"
 // from primary event vertex refit
-typedef std::map<reco::TrackBaseRef, reco::TransientTrack, RefToBase_less<reco::Track> > TransientTrackMap;
-void removeTracks(TransientTrackMap& pvTracks_toRefit, const std::vector<reco::TrackBaseRef>& svTracks)
+typedef std::map<const reco::Track*, reco::TransientTrack> TransientTrackMap;
+void removeTracks(TransientTrackMap& pvTracks_toRefit, const std::vector<const reco::Track*>& svTracks)
 {
-  for ( std::vector<reco::TrackBaseRef>::const_iterator svTrack = svTracks.begin();
+  for ( std::vector<const reco::Track*>::const_iterator svTrack = svTracks.begin();
 	svTrack != svTracks.end(); ++svTrack ) {
 
 //--- remove track from list of tracks included in primary event vertex refit
 //    if track matches by reference or in eta-phi
 //    any of the tracks associated to tau lepton decay "leg"
-    TransientTrackMap::iterator pvTrack_match = pvTracks_toRefit.find(*svTrack);
-    if ( pvTrack_match != pvTracks_toRefit.end() ) {
-      pvTracks_toRefit.erase(pvTrack_match);
-    } else {
-      for ( TransientTrackMap::iterator pvTrack = pvTracks_toRefit.begin();
-	    pvTrack != pvTracks_toRefit.end(); ++pvTrack ) {
-	if ( tracksMatchByDeltaR(pvTrack->first, *svTrack) ) {
-	  pvTracks_toRefit.erase(pvTrack);
-	  break;
-	}
+    for ( TransientTrackMap::iterator pvTrack = pvTracks_toRefit.begin();
+	  pvTrack != pvTracks_toRefit.end(); ++pvTrack ) {
+      if ( tracksMatchByDeltaR(pvTrack->first, *svTrack) ) {
+	pvTracks_toRefit.erase(pvTrack);
+	break;
       }
     }
   }
 }
 //-------------------------------------------------------------------------------
 
-TransientVertex NSVfitEventVertexRefitter::refit(const reco::Vertex* eventVertex, const std::vector<reco::TrackBaseRef>* svTracks)
+TransientVertex NSVfitEventVertexRefitter::refit(const reco::Vertex* eventVertex, const std::vector<const reco::Track*>* svTracks)
 {
 //--- return (invalid) dummy vertex in case primary event vertex cannot be refitted,
 //    due to insufficient information
@@ -105,9 +91,9 @@ TransientVertex NSVfitEventVertexRefitter::refit(const reco::Vertex* eventVertex
   TransientTrackMap pvTrackMap_refit;
   for ( reco::Vertex::trackRef_iterator pvTrack = eventVertex->tracks_begin();
 	pvTrack != eventVertex->tracks_end(); ++pvTrack ) {
-    reco::TransientTrack pvTrack_transient = trackBuilder_->build(pvTrack->castTo<reco::TrackRef>());
+    reco::TransientTrack pvTrack_transient = trackBuilder_->build(pvTrack->get());
     pvTracks_original.push_back(pvTrack_transient);
-    pvTrackMap_refit.insert(std::make_pair(*pvTrack, pvTrack_transient));
+    pvTrackMap_refit.insert(std::make_pair(pvTrack->get(), pvTrack_transient));
   }
 
 //--- exclude tracks associated to any one of the two tau lepton decay "legs"
@@ -136,7 +122,7 @@ TransientVertex NSVfitEventVertexRefitter::refit(const reco::Vertex* eventVertex
   }
 }
 
-TransientVertex NSVfitEventVertexRefitter::fitSecondaryVertex(const std::vector<reco::TrackBaseRef>& tracks) const 
+TransientVertex NSVfitEventVertexRefitter::fitSecondaryVertex(const std::vector<const reco::Track*>& tracks) const 
 {
 //-- return dummy vertex for one-prong tau decays
 //   for which tau decay vertex cannot be determined
@@ -144,9 +130,9 @@ TransientVertex NSVfitEventVertexRefitter::fitSecondaryVertex(const std::vector<
   
 //--- build transient tracks
   std::vector<reco::TransientTrack> transTracks;
-  for ( std::vector<reco::TrackBaseRef>::const_iterator track = tracks.begin();
+  for ( std::vector<const reco::Track*>::const_iterator track = tracks.begin();
 	track != tracks.end(); ++track ) {
-    transTracks.push_back(trackBuilder_->build(track->castTo<reco::TrackRef>()));
+    transTracks.push_back(trackBuilder_->build(*track));
   }
   
 //--- fit tau decay vertex

@@ -42,7 +42,9 @@
 
   <class name="NSVfitEventHypothesis"/>
   <class name="NSVfitResonanceHypothesis"/>
-  <class name="NSVfitSingleParticleHypothesisBase"/>
+  <class name="NSVfitSingleParticleHypothesisBase">
+    <field name="tracks_" transient="true"/>
+  </class>
   <class name="NSVfitTauToLepHypothesis<pat::Electron>"/>
   <class name="NSVfitTauToLepHypothesis<pat::Muon>"/>
   <class name="NSVfitTauToHadHypothesis"/>

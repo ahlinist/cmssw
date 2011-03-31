@@ -1,5 +1,5 @@
 #include "TauAnalysis/CandidateTools/interface/NSVfitTauDecayBuilderBase.h"
-#include "TauAnalysis/CandidateTools/interface/SVfitLegTrackExtractor.h"
+#include "TauAnalysis/CandidateTools/interface/NSVfitSingleParticleTrackExtractor.h"
 #include "AnalysisDataFormats/TauAnalysis/interface/NSVfitTauToHadHypothesis.h"
 #include "TauAnalysis/CandidateTools/interface/nSVfitParameter.h"
 
@@ -11,9 +11,9 @@
  *
  * \author Evan Friis, Christian Veelken; UC Davis
  *
- * \version $Revision: 1.16 $
+ * \version $Revision: 1.17 $
  *
- * $Id: NSVfitTauToHadBuilder.cc,v 1.16 2011/03/31 09:29:25 veelken Exp $
+ * $Id: NSVfitTauToHadBuilder.cc,v 1.17 2011/03/31 15:01:48 veelken Exp $
  *
  */
 
@@ -57,7 +57,7 @@ class NSVfitTauToHadBuilder : public NSVfitTauDecayBuilderBase
     NSVfitTauDecayBuilderBase::initialize(hypothesis, particlePtr->second.get());
 
     // Three prong case: check if we can fit a reconstructed vertex.
-    const std::vector<reco::TrackBaseRef>& tracks = hypothesis->tracks();
+    const std::vector<const reco::Track*>& tracks = hypothesis->tracks();
 
     if ( tracks.size() > 1 ) {
       KalmanVertexFitter kvf(true);
@@ -95,7 +95,7 @@ class NSVfitTauToHadBuilder : public NSVfitTauDecayBuilderBase
     return tauPtr->decayMode();
   }
 
-  virtual std::vector<reco::TrackBaseRef> extractTracks(const reco::Candidate* candidate) const
+  virtual std::vector<const reco::Track*> extractTracks(const reco::Candidate* candidate) const
   {
     const pat::Tau* tauPtr = dynamic_cast<const pat::Tau*>(candidate);
     assert(tauPtr);
@@ -115,7 +115,7 @@ class NSVfitTauToHadBuilder : public NSVfitTauDecayBuilderBase
 
   private:
     edm::Service<NSVfitTrackService> trackService_;
-    SVfitLegTrackExtractor<pat::Tau> trackExtractor_;
+    NSVfitSingleParticleTrackExtractor<pat::Tau> trackExtractor_;
 
     int idxFitParameter_thetaVMrho_;
     int idxFitParameter_mass2VMrho_;

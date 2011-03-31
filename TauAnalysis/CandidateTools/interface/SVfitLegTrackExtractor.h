@@ -9,9 +9,9 @@
  *
  * \author Evan Friis, Christian Veelken; UC Davis
  *
- * \version $Revision: 1.3 $
+ * \version $Revision: 1.4 $
  *
- * $Id: SVfitLegTrackExtractor.h,v 1.3 2011/03/28 13:31:51 veelken Exp $
+ * $Id: SVfitLegTrackExtractor.h,v 1.4 2011/03/31 15:00:38 veelken Exp $
  *
  */
 
@@ -26,7 +26,7 @@
 
 #include <vector>
 
-namespace{
+namespace {
   template<typename T>
   bool isValidRef(const edm::Ref<T>& ref)
   {

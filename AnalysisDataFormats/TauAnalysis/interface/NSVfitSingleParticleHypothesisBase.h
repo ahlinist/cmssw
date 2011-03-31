@@ -52,7 +52,7 @@ class NSVfitSingleParticleHypothesisBase
   const reco::Candidate::LorentzVector& dp4_fitted() const { return dp4_; }
 
   /// collection of tracks associated to reco::Candidate
-  virtual const std::vector<reco::TrackBaseRef>& tracks() const { return tracks_; }
+  virtual const std::vector<const reco::Track*>& tracks() const { return tracks_; }
 
   /// access to position of secondary vertex (tau lepton decay vertex)
   virtual bool hasDecayVertex() const { return false; }
@@ -111,7 +111,7 @@ class NSVfitSingleParticleHypothesisBase
   reco::Candidate::LorentzVector dp4_;
 
   /// collection of tracks associated to reco::Candidate
-  std::vector<reco::TrackBaseRef> tracks_;
+  std::vector<const reco::Track*> tracks_; // transient data-member
 };
 
 bool operator<(const NSVfitSingleParticleHypothesisBase&, const NSVfitSingleParticleHypothesisBase&);
