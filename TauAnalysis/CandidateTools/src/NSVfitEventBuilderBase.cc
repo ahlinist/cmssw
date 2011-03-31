@@ -109,6 +109,14 @@ NSVfitEventHypothesis* NSVfitEventBuilderBase::build(const inputParticleMap& inp
       // CV: need to add protection against case that primary event vertex is not valid <-- FIXME ?
       eventHypothesis->eventVertexIsValid_ = true;
     }
+  } else {
+    // Otherwise just take the position of the PV from the event.
+    // Leave the errors @ 0.
+    eventHypothesis->eventVertexPosition_(0) = eventVertex->position().x();
+    eventHypothesis->eventVertexPosition_(1) = eventVertex->position().y();
+    eventHypothesis->eventVertexPosition_(2) = eventVertex->position().z();
+    // CV: need to add protection against case that primary event vertex is not valid <-- FIXME ?
+    eventHypothesis->eventVertexIsValid_ = true;
   }
 
   eventHypothesis->barcode_ = barcodeCounter_;
