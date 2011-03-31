@@ -21,7 +21,7 @@ void initializeFitParameterLimits(std::vector<pdouble>& limits)
   limits[nSVfit_namespace::kPV_shiftZ]             = pdouble(        -10.,         +10.); // cm
   limits[nSVfit_namespace::kTau_visEnFracX]        = pdouble(          0.,           1.); // dimensionless
   limits[nSVfit_namespace::kTau_phi_lab]           = pdouble(-TMath::Pi(), +TMath::Pi()); // rad
-  limits[nSVfit_namespace::kTau_decayDistance_lab] = pdouble(          0.,          10.); // cm
+  limits[nSVfit_namespace::kTau_decayDistance_lab] = pdouble(        -4.,            1.); // sigmas
   limits[nSVfit_namespace::kTau_nuInvMass]         = pdouble(          0.,           0.); // depends on decay: mMau - mVis
   limits[nSVfit_namespace::kTau_pol]               = pdouble(         -1.,          +1.); // -1: left-handed, +1: right-handed
   limits[nSVfit_namespace::kTauVM_theta_rho]       = pdouble(          0.,  TMath::Pi()); // rad
