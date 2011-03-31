@@ -57,7 +57,8 @@ patMuons.isoDeposits = cms.PSet(
 
 # embed Pixel + SiStrip track reference in pat::Muon
 # (so that analysis can access "inner" track information if running on PAT-tuples)
-patMuons.embedTrack = cms.bool(True)
+#patMuons.embedTrack = cms.bool(True)
+patMuons.embedTrack = cms.bool(False)
 
 # enable matching to HLT trigger information;
 # match offline reconstructed muons to isolated and non-isolated HLT muon paths
