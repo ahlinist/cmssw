@@ -121,6 +121,7 @@ NSVfitEventHypothesis* NSVfitAlgorithmBase::fit(const inputParticleMap& inputPar
 {
   // beginEvent should always be called before fit(...)
   assert(currentEventSetup_);
+
   // Setup the track service
   trackService_->setup(*currentEventSetup_, eventVertex->position());
 

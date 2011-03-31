@@ -18,7 +18,7 @@ const SVfit::track::TrackExtrapolation& NSVfitTrackService::linearizedTrack(
   TrackExtrapolationCache::const_iterator lookup =
     cacheTrackExtrapolations_.find(track);
 
-  if (lookup != cacheTrackExtrapolations_.end())
+  if ( lookup != cacheTrackExtrapolations_.end() )
     return lookup->second;
 
   // Otherwise, build it ourselves.
@@ -38,7 +38,7 @@ const SVfit::track::TrackExtrapolation& NSVfitTrackService::linearizedTrack(
 
 void NSVfitTrackService::setup(
     const edm::EventSetup& es, const reco::Candidate::Point& refPoint) {
-  if (!isValid_) {
+  if ( !isValid_ ) {
     es.get<TransientTrackRecord>().get("TransientTrackBuilder", builder_);
     isValid_ = true;
     refPoint_ = AlgebraicVector3(refPoint.x(), refPoint.y(), refPoint.z());
@@ -49,10 +49,10 @@ reco::TransientTrack
 NSVfitTrackService::transientTrack(const reco::TrackRef& track) const {
   // Check if we've already made it.
   TransTrackCache::const_iterator lookup = cacheTransientTrack_.find(track);
-  if (lookup != cacheTransientTrack_.end())
+  if ( lookup != cacheTransientTrack_.end() )
     return lookup->second;
   // Build the transient track
-  if (!isValid_ || !builder_.isValid()) {
+  if ( !isValid_ || !builder_.isValid() ) {
     throw cms::Exception("NoTransTrackBuilder")
       << "<NSVfitTrackService> The handle to the transient track builder is"
       << " not valid.  Please ensure that it is declared in the cfg file"

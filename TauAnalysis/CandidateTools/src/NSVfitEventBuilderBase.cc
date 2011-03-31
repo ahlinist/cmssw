@@ -82,7 +82,7 @@ NSVfitEventHypothesis* NSVfitEventBuilderBase::build(const inputParticleMap& inp
     eventHypothesis->resonances_.push_back(resonanceHypothesis);
   }
 
-  eventHypothesis->p4_    = p4;
+  eventHypothesis->p4_ = p4;
 
   eventHypothesis->eventVertexIsValid_ = false;
 
