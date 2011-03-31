@@ -61,8 +61,8 @@ public:
   template<typename Iter> std::vector<reco::TransientTrack>
   transientTracks(const Iter& begin, const Iter& end) const {
     std::vector<reco::TransientTrack> output;
-    for (Iter i = begin; i < end; i++) {
-      output.push_back(transientTrack(*i));
+    for ( Iter i = begin; i < end; i++ ) {
+      if ( i->isAvailable() && i->isNonnull() ) output.push_back(transientTrack(*i));
     }
     return output;
   }
