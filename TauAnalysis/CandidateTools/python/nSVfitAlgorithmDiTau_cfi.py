@@ -16,6 +16,13 @@ nSVfitElectronLikelihoodPolarization = cms.PSet(
     verbosity = cms.int32(0)  
 )
 
+nSVfitElectronLikelihoodTrackInfo = cms.PSet(
+    pluginName = cms.string("nSVfitTauToElecLikelihoodTrackInfo"),
+    pluginType = cms.string("NSVfitTauDecayLikelihoodTrackInfo"),
+    useLifetimeConstraint = cms.bool(True),
+    verbosity = cms.int32(0)  
+)
+
 nSVfitTauToElecBuilder = cms.PSet(
     pluginName = cms.string("nSVfitTauToElecBuilder"),
     pluginType = cms.string("NSVfitTauToElecBuilder"),
@@ -31,6 +38,13 @@ nSVfitMuonLikelihoodPhaseSpace = cms.PSet(
 nSVfitMuonLikelihoodPolarization = cms.PSet(
     pluginName = cms.string("nSVfitTauToMuLikelihoodPolarization"),
     pluginType = cms.string("NSVfitTauToMuLikelihoodPolarization"),
+    verbosity = cms.int32(0)  
+)
+
+nSVfitMuonLikelihoodTrackInfo = cms.PSet(
+    pluginName = cms.string("nSVfitTauToMuonLikelihoodTrackInfo"),
+    pluginType = cms.string("NSVfitTauDecayLikelihoodTrackInfo"),
+    useLifetimeConstraint = cms.bool(True),
     verbosity = cms.int32(0)  
 )
 
@@ -73,6 +87,13 @@ nSVfitTauLikelihoodPolarization = cms.PSet(
             pMin = cms.double(0.05)
         )
     ),
+    verbosity = cms.int32(0)  
+)
+
+nSVfitTauLikelihoodTrackInfo = cms.PSet(
+    pluginName = cms.string("nSVfitTauToHadLikelihoodTrackInfo"),
+    pluginType = cms.string("NSVfitTauDecayLikelihoodTrackInfo"),
+    useLifetimeConstraint = cms.bool(True),
     verbosity = cms.int32(0)  
 )
 
