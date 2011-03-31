@@ -76,7 +76,6 @@ NSVfitResonanceHypothesis* NSVfitResonanceBuilderBase::build(
 
 void NSVfitResonanceBuilderBase::applyFitParameter(NSVfitResonanceHypothesis* resonanceHypothesis, double* params) const
 {
-  std::cout << "<NSVfitResonanceBuilderBase::applyFitParameter>:" << std::endl;
   for ( unsigned iDaughterBuilder = 0; iDaughterBuilder < numDaughterBuilders_; ++iDaughterBuilder ) {
     daughterBuilders_[iDaughterBuilder]->applyFitParameter(&resonanceHypothesis->daughters_[iDaughterBuilder], params);
   }
