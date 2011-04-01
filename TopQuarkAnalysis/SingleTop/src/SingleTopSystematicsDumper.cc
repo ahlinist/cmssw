@@ -3,7 +3,7 @@
 *
 *
 *
-*\version  $Id: SingleTopSystematicsDumper.cc,v 1.1 2011/03/24 15:58:06 oiorio Exp $ 
+*\version  $Id: SingleTopSystematicsDumper.cc,v 1.2 2011/03/26 00:30:03 oiorio Exp $ 
 */
 // This analyzer dumps the histograms for all systematics listed in the cfg file 
 //
@@ -42,6 +42,9 @@ SingleTopSystematicsDumper::SingleTopSystematicsDumper(const edm::ParameterSet& 
   originalEvents = channelInfo.getUntrackedParameter<double>("originalEvents");
   finalLumi = channelInfo.getUntrackedParameter<double>("finalLumi");
   MTWCut = channelInfo.getUntrackedParameter<double>("MTWCut",50);
+  loosePtCut = channelInfo.getUntrackedParameter<double>("loosePtCut",30); 
+
+
   
   leptonsPt_ =  iConfig.getParameter< edm::InputTag >("leptonsPt");
   leptonsPz_ =  iConfig.getParameter< edm::InputTag >("leptonsPz");
@@ -69,6 +72,8 @@ SingleTopSystematicsDumper::SingleTopSystematicsDumper(const edm::ParameterSet& 
   
   jetsCorrTotal_ =  iConfig.getParameter< edm::InputTag >("jetsCorrTotal");
 
+
+  
   //  jetsPF_ =  iConfig.getParameter< edm::InputTag >("patJets");
   
   systematics.push_back("noSyst");
@@ -182,6 +187,7 @@ void SingleTopSystematicsDumper::analyze(const Event& iEvent, const EventSetup& 
   double Weight = 1;
   double MTWValue =0;
   
+  float ptCut = 30;  
   if(channel=="Data")WeightLumi=1;
 
   for(size_t s = 0; s < systematics.size();++s){
@@ -204,13 +210,14 @@ void SingleTopSystematicsDumper::analyze(const Event& iEvent, const EventSetup& 
     //    double TCHP_MisTag = 1.4; //
     //    double TCHE_MisTag = 1.0; //DummyValues, to be changed in the next part of the code
     
-    cout << " TCHP_BTag should be 0.9 "<< TCHP_BTag <<endl;    
+    //    cout << " TCHP_BTag should be 0.9 "<< TCHP_BTag <<endl;    
     
     
     leptons.clear();
     jets.clear();
     bjets.clear();
     antibjets.clear();
+    //    loosejets.clear();
 
     MTWValue =0;
     metPx = metPxTmp; 
@@ -243,7 +250,8 @@ void SingleTopSystematicsDumper::analyze(const Event& iEvent, const EventSetup& 
     float ptCorr;
     int flavour;
     double unc =0;
-    
+
+    //    cout << " test 0 " << endl;
     //Loops to apply systematics on jets-leptons
     
     for(size_t i = 0;i<nJets;++i){
@@ -251,28 +259,37 @@ void SingleTopSystematicsDumper::analyze(const Event& iEvent, const EventSetup& 
       ptCorr = jetsPt->at(i);
       flavour = jetsFlavour->at(i);
       
-      bool passesPtCut = ptCorr>30;
+      bool passesPtCut = ptCorr>ptCut;
+      //bool passesLoosePtCut = ptCorr>loosePtCut;
       if(passesPtCut && syst_name != "JESUp" && syst_name != "JESDown") jets.push_back(math::XYZTLorentzVector(jetsPx->at(i),jetsPy->at(i),jetsPz->at(i),jetsEnergy->at(i) ) ); 
+      //if(passesLoosePtCut && syst_name != "JESUp" && syst_name != "JESDown") loosejets.push_back(math::XYZTLorentzVector(jetsPx->at(i),jetsPy->at(i),jetsPz->at(i),jetsEnergy->at(i)) );   
       else if(syst_name == "JESUp"){
 	unc = jetUncertainty( eta,  ptCorr, flavour);
-	passesPtCut = ptCorr * (1+unc) >30;
+	passesPtCut = ptCorr * (1+unc) >ptCut;
+	//passesLoosePtCut = ptCorr * (1+unc) > loosePtCut;
 	metPx-=jetsPx->at(i)*unc;
 	metPy-=jetsPy->at(i)*unc;
 	if(passesPtCut) jets.push_back(math::XYZTLorentzVector(jetsPx->at(i) * (1+unc),jetsPy->at(i) * (1+unc),jetsPz->at(i) * (1+unc),jetsEnergy->at(i) * (1+unc)) ); 
+	//if(passesLoosePtCut) loosejets.push_back(math::XYZTLorentzVector(jetsPx->at(i) * (1+unc),jetsPy->at(i)*(1+unc),jetsPz->at(i)*(1+unc),jetsEnergy->at(i)*(1+unc)) );   
       }
       else if(syst_name == "JESDown"){
 	unc = jetUncertainty( eta,  ptCorr, flavour);
-	passesPtCut = ptCorr * (1-unc) > 30;
+	passesPtCut = ptCorr * (1-unc) > ptCut;
+	//passesLoosePtCut = ptCorr * (1-unc) > loosePtCut;
 	metPx-= -jetsPx->at(i)*unc;
 	metPy-= -jetsPy->at(i)*unc;
 	if(passesPtCut) jets.push_back(math::XYZTLorentzVector(jetsPx->at(i) * (1-unc),jetsPy->at(i)*(1-unc),jetsPz->at(i)*(1-unc),jetsEnergy->at(i)*(1-unc)) ); 
+	//if(passesLoosePtCut) loosejets.push_back(math::XYZTLorentzVector(jetsPx->at(i) * (1-unc),jetsPy->at(i)*(1-unc),jetsPz->at(i)*(1-unc),jetsEnergy->at(i)*(1-unc)) );   
       }
-      if(passesPtCut) cout <<" jet "<< i <<" passes pt cut, flavor "<< abs(flavour)<< " syst " << syst_name << " pt "<< ptCorr<< " pt with unc "<< jets.back().pt() <<" unc "<< unc << endl;
+      //      if(passesPtCut) cout <<" jet "<< i <<" passes pt cut, flavor "<< abs(flavour)<< " syst " << syst_name << " pt "<< ptCorr<< " pt with unc "<< jets.back().pt() <<" unc "<< unc << endl;
 
       bool passesBTag = jetsBTagAlgo->at(i)>3.41;
       bool passesAntiBTag = jetsAntiBTagAlgo->at(i)<1.7;
+      //bool passesAntiBTag = jetsBTagAlgo->at(i)<3.41;
+      
       
       if(passesPtCut && passesBTag) {
+	
 	bjets.push_back(jets.back()); 
 	
 	if(abs(flavour)==4) BTagWeight*=TCHP_CTag ;
@@ -291,13 +308,13 @@ void SingleTopSystematicsDumper::analyze(const Event& iEvent, const EventSetup& 
 	  BTagWeight*=  MisTagScaleFactor("TCHP_L",syst_name,SF,eff,SFErr);
 	  
 	  measurePoint.reset();
-
+	  
 	}
-	cout <<" jet "<< i <<" passes rbtag, flavor "<< abs(flavour)<< " b weight " << BTagWeight << endl;
+	//	cout <<" jet "<< i <<" passes rbtag, flavor "<< abs(flavour)<< " b weight " << BTagWeight << endl;
 	      
       }
       if(passesPtCut && passesAntiBTag){
-
+	
 	antibjets.push_back(jets.back());
 	if(abs(flavour)==4) BTagWeight*=TCHE_CTag ;
 	if(abs(flavour)==5) BTagWeight*=TCHE_BTag ;
@@ -307,26 +324,28 @@ void SingleTopSystematicsDumper::analyze(const Event& iEvent, const EventSetup& 
 	  
 	  measurePoint.insert(BinningVariables::JetAbsEta,etaMin);
 	  measurePoint.insert(BinningVariables::JetEt,jets.back().pt());
-
+	  
 	  double eff =(perfHE->getResult(PerformanceResult::BTAGLEFF,measurePoint));
 	  double SF = (perfHE->getResult(PerformanceResult::BTAGLEFFCORR,measurePoint));
 	  double SFErr = (perfHE->getResult(PerformanceResult::BTAGLERRCORR,measurePoint));
-
+	  
 	  BTagWeight*=  MisTagScaleFactor("TCHE_L",syst_name,SF,eff,SFErr);
 	  
 	  measurePoint.reset();
-	  cout <<" jet "<< i <<" passes anti-btag, flavor "<< abs(flavour)<< " b weight " << BTagWeight << " eff "<<  eff<<" SF "<< SF << " sf unc "<< SFErr <<endl;
+	  //cout <<" jet "<< i <<" passes anti-btag, flavor "<< abs(flavour)<< " b weight " << BTagWeight << " eff "<<  eff<<" SF "<< SF << " sf unc "<< SFErr <<endl;
 	}
       }
       
-      if(!passesPtCut)continue;
-      if(jetsBTagAlgo->at(i) > highestBTag){
-	highestBTag=jetsBTagAlgo->at(i);
-	highestBTagPosition=i;
-      }
-      if(jetsAntiBTagAlgo->at(i) < lowestBTag){
+      //      if(!passesLoosePtCut)continue;
+      if(passesPtCut && jetsAntiBTagAlgo->at(i) > highestBTag){
+	highestBTag=jetsAntiBTagAlgo->at(i);
+	highestBTagPosition=jets.size()-1;
+      } 
+      
+      //if(!passesPtCut)continue;
+      if(passesPtCut && jetsAntiBTagAlgo->at(i) < lowestBTag){
 	lowestBTag=jetsAntiBTagAlgo->at(i);
-	lowestBTagPosition=i;
+	lowestBTagPosition=jets.size()-1;
       }
     }
     for(size_t i = 0;i<nLeptons;++i){
@@ -335,6 +354,7 @@ void SingleTopSystematicsDumper::analyze(const Event& iEvent, const EventSetup& 
       float leptonP = sqrt( (leptonsPt->at(i)*leptonsPt->at(i)) + (leptonsPz->at(i)*leptonsPz->at(i)));
       leptons.push_back(math::XYZTLorentzVector(leptonPx,leptonPy,leptonsPz->at(i),leptonP));
     }
+
     
     //Part of the effective selection and filling
     if(leptons.size()!=1)return;
@@ -343,15 +363,35 @@ void SingleTopSystematicsDumper::analyze(const Event& iEvent, const EventSetup& 
       MTWValue =  sqrt((leptons.at(0).pt()+metPt)*(leptons.at(0).pt()+metPt)  -(leptons.at(0).px()+metPx)*(leptons.at(0).px()+metPx) -(leptons.at(0).py()+metPy)*(leptons.at(0).py()+metPy));
     }
     
+    //    cout << " test 1 " << endl;
+    
     //W control Sample
-    if( jets.size()==2 && bjets.size()==0 ){
+
+
+    //    if( lowestBTagPosition > -1 && highestBTagPosition > -1 && jets.size()>=1 && loosejets.size() ==2 &&  bjets.size()==0 ){
+    if( lowestBTagPosition > -1 && highestBTagPosition > -1 && jets.size() ==2 &&  bjets.size()==0 ){
+           
+      //    cout << " test 2 " << endl;
+      
       MTWWSample[syst_name]->Fill(MTWValue,Weight);
       if(leptonsCharge->at(0)>0)MTWWSamplePlus[syst_name]->Fill(MTWValue,Weight);
       if(leptonsCharge->at(0)<0)MTWWSampleMinus[syst_name]->Fill(MTWValue,Weight);
       if(MTWValue<MTWCut) continue;
+      
+      
+      
+      if(highestBTagPosition == lowestBTagPosition)      cout << " test 3: loosejets size "<<jets.size() << " jets size "<<jets.size() << " highestB pos " << highestBTagPosition<< " lowestB pos " << lowestBTagPosition << " highestBTag "<< highestBTag << " lowestBTag  "<< lowestBTag<< endl;
+    //      cout << " test 3: loosejets size "<<loosejets.size() << " jets size "<<jets.size() << " highestB pos " << highestBTagPosition<< " lowestB pos " << lowestBTagPosition << endl;
+      
+      if(highestBTagPosition == lowestBTagPosition)continue;
+
       math::XYZTLorentzVector top = top4Momentum(leptons.at(0),jets.at(highestBTagPosition),metPx,metPy);
+      
+      //      cout << " test 3 " << endl;
+
       float fCosThetaLJ =  cosThetaLJ(leptons.at(0),jets.at(lowestBTagPosition),top);
       
+      //cout << " test 4 " << endl;
       
       TopMassWSample[syst_name]->Fill(top.mass(),Weight);
       CosThetaLJWSample[syst_name]->Fill(fCosThetaLJ,Weight);
@@ -360,7 +400,7 @@ void SingleTopSystematicsDumper::analyze(const Event& iEvent, const EventSetup& 
       
 
       if(leptonsCharge->at(0)>0){
-      TopMassWSamplePlus[syst_name]->Fill(top.mass(),Weight);
+	TopMassWSamplePlus[syst_name]->Fill(top.mass(),Weight);
       CosThetaLJWSamplePlus[syst_name]->Fill(fCosThetaLJ,Weight);
       ForwardJetEtaWSamplePlus[syst_name]->Fill(fabs(jets.at(0).eta()),Weight);
       ForwardJetEtaWSamplePlus[syst_name]->Fill(fabs(jets.at(1).eta()),Weight);

@@ -27,7 +27,7 @@ print "test03 "
 #process.GlobalTag.globaltag = cms.string("GR_R_35X_V6::All")
 #process.GlobalTag.globaltag = cms.string('GR_R_38X_V11::All') #TAG FOR  382
 #process.GlobalTag.globaltag = cms.string("GR_R_38X_V11::All")
-process.GlobalTag.globaltag = cms.string("START311_V2::All")
+process.GlobalTag.globaltag = cms.string('GR_R_311_V2::All')
 
 print "test04 "
 
@@ -78,12 +78,21 @@ process.load("PhysicsTools.HepMCCandAlgos.flavorHistoryPaths_cfi")
 #process.cFlavorHistoryProducer.matchedSrc = cms.InputTag("antikt5GenJets")
 #process.bFlavorHistoryProducer.matchedSrc = cms.InputTag("antikt5GenJets")
 
-process.PathFlavor = cms.Path(
-    process.genParticlesForJets *
-    process.ak5GenJets *
-    process.cFlavorHistoryProducer *
-    process.bFlavorHistoryProducer
-    )
+#process.PathFlavor = cms.Path(
+#    process.genParticlesForJets *
+#    process.ak5GenJets *
+#    process.cFlavorHistoryProducer *
+#    process.bFlavorHistoryProducer
+#    )
+
+#mytrigs=["HLT_Mu9"]
+mytrigs=["*"]
+
+from HLTrigger.HLTfilters.hltHighLevel_cfi import *
+if mytrigs is not None :
+    process.hltSelection = hltHighLevel.clone(TriggerResultsTag = 'TriggerResults::HLT', HLTPaths = mytrigs)
+    process.hltSelection.throw = False
+
 
 
 
@@ -194,6 +203,7 @@ process.WbbFilter = process.flavorHistoryFilter.clone(pathToSelect = cms.int32(5
 #process.hltFilter.TriggerResultsTag = cms.InputTag("TriggerResults","","REDIGI37X")
 #process.hltFilter.TriggerResultsTag = cms.InputTag("TriggerResults","","REDIGI")
 process.hltFilter.TriggerResultsTag = cms.InputTag("TriggerResults","","HLT")
+process.hltFilter.HLTPaths = mytrigs
 
 #process.bJetsPF = cms.EDProducer("SingleTopBJetsProducer",
 #                               src = cms.InputTag("topJetsPF"),
@@ -225,16 +235,11 @@ process.hltFilter.TriggerResultsTag = cms.InputTag("TriggerResults","","HLT")
 
 
 process.baseLeptonSequence = cms.Path(
-    process.basePath
+    process.basePathData
     )
 
 #Muon control samples
 
-#process.PathTSampleMuonPF = cms.Path(
-#    process.TSampleMuonPF *
-#    process.nTuples *
-#    process.demo
-#    )
 
 process.PathTSampleMuonPF = cms.Path(
     process.IsoMuonsSkimPF *
@@ -291,7 +296,7 @@ process.allControlSamples = cms.OutputModule("PoolOutputModule",
 
 
 process.tSampleMu =  process.allControlSamples.clone(
-    fileName = cms.untracked.string('TSampleMuQCDMu_PF2PAT.root'),
+    fileName = cms.untracked.string('TSampleMuData_PF2PAT.root'),
     
     SelectEvents   = cms.untracked.PSet( SelectEvents = cms.vstring(
     'PathTSampleMuonPF',
@@ -302,7 +307,7 @@ process.tSampleMu =  process.allControlSamples.clone(
 
 
 process.tSampleMuAntiIso =  process.allControlSamples.clone(
-    fileName = cms.untracked.string('QCDSampleMuQCDMu_PF2PAT.root'),
+    fileName = cms.untracked.string('QCDSampleMuData_PF2PAT.root'),
     SelectEvents   = cms.untracked.PSet( SelectEvents = cms.vstring(
     'PathTSampleMuonPFQCD',
 #    'PathTSampleElectron',
@@ -315,7 +320,7 @@ process.tSampleMuAntiIso =  process.allControlSamples.clone(
 process.tSampleEleAntiIso =  process.allControlSamples.clone(
     #    fileName = cms.untracked.string('QCDChanSampleEleCiso95.root'),
 #    fileName = cms.untracked.string('QCDSampleEleQCDBCToE_Pt80to170.root'),
-    fileName = cms.untracked.string('QCDSampleEleQCDMu_PF2PAT.root'),
+    fileName = cms.untracked.string('QCDSampleEleData_PF2PAT.root'),
  
     SelectEvents   = cms.untracked.PSet( SelectEvents = cms.vstring(
     'PathTSampleElectronPFQCD',
@@ -339,7 +344,7 @@ process.tSampleEleAntiIso =  process.allControlSamples.clone(
 
 process.tSampleEle =  process.allControlSamples.clone(
 #    fileName = cms.untracked.string('QCDChanSampleEleCiso95.root'),
-fileName = cms.untracked.string('TSampleEleQCDMu_PF2PAT.root'),
+fileName = cms.untracked.string('TSampleEleData_PF2PAT.root'),
     SelectEvents   = cms.untracked.PSet( SelectEvents = cms.vstring(
 #    'PathTSampleMuon',
     'PathTSampleElectronPF',
@@ -353,8 +358,8 @@ fileName = cms.untracked.string('TSampleEleQCDMu_PF2PAT.root'),
 )
 process.outpath = cms.EndPath(
 #    process.out +
-    process.tSampleMu + 
-    process.tSampleMuAntiIso + 
+#    process.tSampleMu + 
+#    process.tSampleMuAntiIso #+ 
     process.tSampleEle +
     process.tSampleEleAntiIso 
     )

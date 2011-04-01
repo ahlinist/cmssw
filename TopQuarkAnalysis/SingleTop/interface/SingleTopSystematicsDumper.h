@@ -6,7 +6,7 @@
  * \Authors A. Orso M. Iorio
  * 
  * Produces systematics histograms out of a standard Single Top n-tuple 
- * \ version $Id: SingleTopAnalyzer.h,v 1.3 2010/03/18 11:34:07 oiorio Exp $
+ * \ version $Id: SingleTopSystematicsDumper.h,v 1.1 2011/03/24 15:58:25 oiorio Exp $
  */
 
 
@@ -111,12 +111,13 @@ class SingleTopSystematicsDumper : public edm::EDAnalyzer {
   string rootFileName;
 
   std::vector<std::string> systematics;
-  
+
   edm::ParameterSet channelInfo;
   std::string channel;
   double crossSection,originalEvents,finalLumi,MTWCut; 
   edm::Event*   iEvent;
   
+  double loosePtCut ;
   //  std::vector<float> leptonsPt,leptonsPhi,leptonsPz,leptonsEta,jetsPt,jetsPx,jetsPy,jetsPz,jetsEta,jetEnergy,jetsBTagAlgo,jetsAntiBTagAlgo,METPt,METPhi;
   
   //InputTags
@@ -158,6 +159,7 @@ class SingleTopSystematicsDumper : public edm::EDAnalyzer {
   
   std::vector<math::XYZTLorentzVector> leptons;
   std::vector<math::XYZTLorentzVector> jets;
+  std::vector<math::XYZTLorentzVector> loosejets;
   std::vector<math::XYZTLorentzVector> bjets;
   std::vector<math::XYZTLorentzVector> antibjets;
   
