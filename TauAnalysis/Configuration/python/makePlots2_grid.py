@@ -54,8 +54,8 @@ dqmHistPlotter_template = cms.EDAnalyzer("DQMHistPlotter",
 
     drawJobs = cms.PSet(),
 
-    canvasSizeX = cms.int32(userSettings[os.environ['LOGNAME']]['global']['drawOptions']['canvasSizeX']),
-    canvasSizeY = cms.int32(userSettings[os.environ['LOGNAME']]['global']['drawOptions']['canvasSizeY']),
+    canvasSizeX = canvasSizeX_preference
+    canvasSizeY = canvasSizeY_preference
 
     outputFilePath = cms.string('./plots/')
 )
