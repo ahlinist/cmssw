@@ -19,7 +19,8 @@ process.maxEvents = cms.untracked.PSet(
 
 process.source = cms.Source("PoolSource",
     fileNames = cms.untracked.vstring(
-        'rfio:/castor/cern.ch/user/f/friis/weirdMuonSpike/2010B_data_muonSpike.root'
+        #'rfio:/castor/cern.ch/user/f/friis/weirdMuonSpike/2010B_data_muonSpike.root'
+        'file:/data1/veelken/CMSSW_3_8_x/skims/debug/debugTauIdEffMeasSample_data_all_2011Feb03bV2_RECO.root                         '
     )
 )
 
