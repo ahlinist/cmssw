@@ -13,7 +13,7 @@
 //
 // Original Author: Roberto Covarelli 
 //         Created:  Fri Oct  9 04:59:40 PDT 2009
-// $Id: JPsiAnalyzerPAT.cc,v 1.48 2011/02/15 16:12:05 covarell Exp $
+// $Id: JPsiAnalyzerPAT.cc,v 1.49 2011/03/29 12:06:27 covarell Exp $
 //
 // based on: Onia2MuMu package V00-11-00
 // changes done by: FT-HW
@@ -308,6 +308,7 @@ JPsiAnalyzerPAT::JPsiAnalyzerPAT(const edm::ParameterSet& iConfig):
   HLTbitNames_.push_back( "HLT_Mu0_Track0_Jpsi" );
   HLTbitNames_.push_back( "HLT_Mu3_Track0_Jpsi" );
   HLTbitNames_.push_back( "HLT_Mu5_Track0_Jpsi" );
+  HLTbitNames_.push_back( "HLT_Mu5_Track0_Jpsi_v2" );
   //
   HLTbitNames_.push_back( "HLT_Mu0_TkMu0_Jpsi" );
   HLTbitNames_.push_back( "HLT_Mu3_TkMu0_Jpsi" );
@@ -333,6 +334,8 @@ JPsiAnalyzerPAT::JPsiAnalyzerPAT(const edm::ParameterSet& iConfig):
   HLTbitNames_.push_back( "HLT_Mu3_Track3_Jpsi_v2" );
   HLTbitNames_.push_back( "HLT_Mu3_Track5_Jpsi_v1" );
   HLTbitNames_.push_back( "HLT_Mu3_Track5_Jpsi_v2" );
+  //Mixed MuX + L2Mu Trigger
+  HLTbitNames_.push_back( "HLT_Mu5_L2Mu0" );
   // Double Muon Trigger
   HLTbitNames_.push_back( "HLT_DoubleMu0" );
   HLTbitNames_.push_back( "HLT_DoubleMu0_Quarkonium_v1" );
@@ -355,6 +358,7 @@ JPsiAnalyzerPAT::JPsiAnalyzerPAT(const edm::ParameterSet& iConfig):
   mapTriggerToLastFilter_["HLT_Mu0_Track0_Jpsi"]="hltMu0TrackJpsiTrackMassFiltered";
   mapTriggerToLastFilter_["HLT_Mu3_Track0_Jpsi"]="hltMu3TrackJpsiTrackMassFiltered";
   mapTriggerToLastFilter_["HLT_Mu5_Track0_Jpsi"]="hltMu5TrackJpsiTrackMassFiltered";
+  mapTriggerToLastFilter_["HLT_Mu5_Track0_Jpsi_v2"]="hltMu5TrackJpsiTrackMassFiltered";
 //
   mapTriggerToLastFilter_["HLT_Mu0_TkMu0_Jpsi"] = "hltMu0TkMuJpsiTkMuMassFiltered";
   mapTriggerToLastFilter_["HLT_Mu3_TkMu0_Jpsi"] = "hltMu3TkMuJpsiTkMuMassFiltered";
@@ -380,6 +384,9 @@ JPsiAnalyzerPAT::JPsiAnalyzerPAT(const edm::ParameterSet& iConfig):
   mapTriggerToLastFilter_["HLT_Mu3_Track3_Jpsi_v2"] = "hltMu3Track3JpsiTrackMassFiltered";
   mapTriggerToLastFilter_["HLT_Mu3_Track5_Jpsi_v1"] = "hltMu3Track5JpsiTrackMassFiltered";
   mapTriggerToLastFilter_["HLT_Mu3_Track5_Jpsi_v2"] = "hltMu3Track5JpsiTrackMassFiltered";
+//MuX + L2MuY triggers (SaveTag placed badly in configuration, need two last-filter tags)
+  mapTriggerToLastFilter_["HLT_Mu5_L2Mu0"] = "hltMu5L2Mu0L3Filtered5";
+  mapTriggerToLastFilter_["HLT_Mu5_L2Mu0_special"] = "hltDiMuonL2PreFiltered0";
 // Double Muon Trigger
   mapTriggerToLastFilter_["HLT_DoubleMu0"]                  = "hltDiMuonL3PreFiltered0";
   mapTriggerToLastFilter_["HLT_DoubleMu0_Quarkonium_v1"]    = "hltDoubleMu0QuarkoniumL3PreFiltered";
@@ -1421,6 +1428,11 @@ void
 JPsiAnalyzerPAT::matchMuonToHlt(const pat::Muon* muon1, const pat::Muon* muon2)
 {
 
+    std::string HLTL3MuCollName = "hltL3MuonCandidates::" + tagTriggerResults_.process();
+    std::string HLTL2MuCollName = "hltL2MuonCandidates::" + tagTriggerResults_.process();
+    std::string HLTTrackCollName = "hltMuTrackJpsiCtfTrackCands::" + tagTriggerResults_.process();
+    std::string HLTTkMuCollName = "hltMuTkMuJpsiTrackerMuonCands::" + tagTriggerResults_.process();
+    
     //! Loop over Trigger Paths and match muons to last Filter/collection
     for ( std::map<std::string, int>::iterator it = mapTriggerNameToIntFired_.begin(); it != mapTriggerNameToIntFired_.end(); it ++ ) {
 
@@ -1434,12 +1446,13 @@ JPsiAnalyzerPAT::matchMuonToHlt(const pat::Muon* muon1, const pat::Muon* muon2)
         const pat::TriggerObjectStandAloneCollection mu1HLTMatches = muon1->triggerObjectMatchesByFilter( hltLastFilterName );
         const pat::TriggerObjectStandAloneCollection mu2HLTMatches = muon2->triggerObjectMatchesByFilter( hltLastFilterName );
         bool pass1 = mu1HLTMatches.size() > 0;
-        bool pass2 = mu2HLTMatches.size() > 0;
+        bool pass2 = mu2HLTMatches.size() > 0; 
 
         // treat "MuX_TrackX" Trigger separately: Match by Tracker collection: hltMuTrackJpsiCtfTrackCands
         if (    triggerName == "HLT_Mu0_Track0_Jpsi" ||
                 triggerName == "HLT_Mu3_Track0_Jpsi" ||
                 triggerName == "HLT_Mu5_Track0_Jpsi" ||
+		triggerName == "HLT_Mu5_Track0_Jpsi_v2" ||
 
                 triggerName == "HLT_Mu3_Track3_Jpsi"    ||
                 triggerName == "HLT_Mu3_Track3_Jpsi_v2" ||
@@ -1448,12 +1461,12 @@ JPsiAnalyzerPAT::matchMuonToHlt(const pat::Muon* muon1, const pat::Muon* muon2)
         {
                 bool matchedMu3[2] = {false, false}, matchedTrack[2] = {false, false};
                 for (unsigned k = 0; k < mu1HLTMatches.size(); ++k) {
-                    if (mu1HLTMatches[k].collection() == "hltL3MuonCandidates::HLT") matchedMu3[0] = true;
-                    if (mu1HLTMatches[k].collection() == "hltMuTrackJpsiCtfTrackCands::HLT" ) matchedTrack[0] = true;
+		    if (mu1HLTMatches[k].collection() == HLTL3MuCollName ) matchedMu3[0] = true;	     
+                    if (mu1HLTMatches[k].collection() == HLTTrackCollName ) matchedTrack[0] = true;
                 }
                 for (unsigned k = 0; k < mu2HLTMatches.size(); ++k) {
-                    if (mu2HLTMatches[k].collection() == "hltL3MuonCandidates::HLT") matchedMu3[1] = true;
-                    if (mu2HLTMatches[k].collection() == "hltMuTrackJpsiCtfTrackCands::HLT") matchedTrack[1] = true;
+                    if (mu2HLTMatches[k].collection() == HLTL3MuCollName ) matchedMu3[1] = true;
+                    if (mu2HLTMatches[k].collection() == HLTTrackCollName ) matchedTrack[1] = true;
                 }
                 if( matchedMu3[0] && matchedTrack[1] )
 		  mapTriggerNameToIntFired_[triggerName] = 1;
@@ -1486,18 +1499,48 @@ JPsiAnalyzerPAT::matchMuonToHlt(const pat::Muon* muon1, const pat::Muon* muon2)
         {
                 bool matchedMu3[2] = {false, false}, matchedTrack[2] = {false, false};
                 for (unsigned k = 0; k < mu1HLTMatches.size(); ++k) {
-                    if (mu1HLTMatches[k].collection() == "hltL3MuonCandidates::HLT") matchedMu3[0] = true;
-                    if (mu1HLTMatches[k].collection() == "hltMuTkMuJpsiTrackerMuonCands::HLT") matchedTrack[0] = true;
+                    if (mu1HLTMatches[k].collection() == HLTL3MuCollName ) matchedMu3[0] = true;
+                    if (mu1HLTMatches[k].collection() == HLTTkMuCollName ) matchedTrack[0] = true;
                 }
                 for (unsigned k = 0; k < mu2HLTMatches.size(); ++k) {
-                    if (mu2HLTMatches[k].collection() == "hltL3MuonCandidates::HLT") matchedMu3[1] = true;
-                    if (mu2HLTMatches[k].collection() == "hltMuTkMuJpsiTrackerMuonCands::HLT") matchedTrack[1] = true;
+                    if (mu2HLTMatches[k].collection() == HLTL3MuCollName ) matchedMu3[1] = true;
+                    if (mu2HLTMatches[k].collection() == HLTTkMuCollName ) matchedTrack[1] = true;
                 }
                 if( matchedMu3[0] && matchedTrack[1] )
 		  mapTriggerNameToIntFired_[triggerName] = 1;
 		else if( matchedMu3[1] && matchedTrack[0] )
 		  mapTriggerNameToIntFired_[triggerName] = -1;
 		if( matchedMu3[0] && matchedTrack[1] && matchedMu3[1] && matchedTrack[0] )
+		  mapTriggerNameToIntFired_[triggerName] = 2;
+        }
+
+	// treat "MuX_L2MuX" Trigger separately: Match by L2 collection: hltL2MuonCandidates and on a different SaveTag'ed filter
+        if (    triggerName == "HLT_Mu5_L2Mu0"  )
+        {
+	        std::string triggerNameSpecial = triggerName + "_special";
+		std::string hltLastFilterName2 = mapTriggerToLastFilter_[triggerNameSpecial];
+		
+		const pat::TriggerObjectStandAloneCollection mu1Level2Matches = muon1->triggerObjectMatchesByFilter( hltLastFilterName2 );
+		const pat::TriggerObjectStandAloneCollection mu2Level2Matches = muon2->triggerObjectMatchesByFilter( hltLastFilterName2 );
+    
+                bool matchedMu3[2] = {false, false}, matchedMu2[2] = {false, false};
+                for (unsigned k = 0; k < mu1HLTMatches.size(); ++k) {
+                    if (mu1HLTMatches[k].collection() == HLTL3MuCollName ) matchedMu3[0] = true;
+		}
+		for (unsigned k = 0; k < mu1Level2Matches.size(); ++k) {
+                    if (mu1Level2Matches[k].collection() == HLTL2MuCollName ) matchedMu2[0] = true;
+                }
+                for (unsigned k = 0; k < mu2HLTMatches.size(); ++k) {
+                    if (mu2HLTMatches[k].collection() == HLTL3MuCollName ) matchedMu3[1] = true;
+		}
+		for (unsigned k = 0; k < mu2Level2Matches.size(); ++k) {
+                    if (mu2Level2Matches[k].collection() == HLTL2MuCollName ) matchedMu2[1] = true;
+                }
+                if( matchedMu3[0] && matchedMu2[1] )
+		  mapTriggerNameToIntFired_[triggerName] = 1;
+		else if( matchedMu3[1] && matchedMu2[0] )
+		  mapTriggerNameToIntFired_[triggerName] = -1;
+		if( matchedMu3[0] && matchedMu2[1] && matchedMu3[1] && matchedMu2[0] )
 		  mapTriggerNameToIntFired_[triggerName] = 2;
         }
 

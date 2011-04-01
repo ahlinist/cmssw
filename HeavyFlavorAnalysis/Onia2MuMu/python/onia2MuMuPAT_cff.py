@@ -66,7 +66,7 @@ def onia2MuMuPAT(process, GlobalTag, MC=False, HLT='HLT', Filter=True):
     changeTriggerProcessName(process, HLT)
     switchOffAmbiguityResolution(process) # Switch off ambiguity resolution: allow multiple reco muons to match to the same trigger muon
     #useL1MatchingWindowForSinglets(process)
-    process.muonL1Info.maxDeltaR     =0.3 
+    process.muonL1Info.maxDeltaR     = 0.3 
     process.muonL1Info.fallbackToME1 = True
     process.muonMatchHLTL1.maxDeltaR     = 0.3
     process.muonMatchHLTL1.fallbackToME1 = True
