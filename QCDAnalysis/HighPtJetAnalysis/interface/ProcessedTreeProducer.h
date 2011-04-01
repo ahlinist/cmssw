@@ -14,6 +14,8 @@
 //TFile Service 
 #include "FWCore/ServiceRegistry/interface/Service.h"
 #include "CommonTools/UtilAlgos/interface/TFileService.h"
+#include "JetMETCorrections/Objects/interface/JetCorrector.h"
+#include "CondFormats/JetMETObjects/interface/JetCorrectionUncertainty.h"
 
 class ProcessedTreeProducer : public edm::EDAnalyzer 
 {
@@ -46,7 +48,12 @@ class ProcessedTreeProducer : public edm::EDAnalyzer
     std::string mPFJECservice;
     std::string mPFPayloadName;
     std::string mCaloPayloadName;
-    
+    //---- CORRECTORS ----------------------
+    const JetCorrector *mPFJEC;
+    const JetCorrector *mCALOJEC;
+    JetCorrectionUncertainty *mCALOUnc;
+    JetCorrectionUncertainty *mPFUnc;
+
     typedef struct {
       int   runNo;// run number
       int   evtNo;// event number

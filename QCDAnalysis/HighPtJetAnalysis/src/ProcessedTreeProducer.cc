@@ -144,16 +144,16 @@ void ProcessedTreeProducer::analyze(edm::Event const& event, edm::EventSetup con
     mEvent.weight = hEventInfo->weight();
   }
   //---------------- Jets ---------------------------------------------
-  const JetCorrector* PFJEC   = JetCorrector::getJetCorrector(mPFJECservice,iSetup);
-  const JetCorrector* CALOJEC = JetCorrector::getJetCorrector(mCaloJECservice,iSetup);
+  mPFJEC   = JetCorrector::getJetCorrector(mPFJECservice,iSetup);
+  mCALOJEC = JetCorrector::getJetCorrector(mCaloJECservice,iSetup);
   edm::ESHandle<JetCorrectorParametersCollection> PFJetCorParColl;
   iSetup.get<JetCorrectionsRecord>().get(mPFPayloadName,PFJetCorParColl); 
   JetCorrectorParameters const& PFJetCorPar = (*PFJetCorParColl)["Uncertainty"];
-  JetCorrectionUncertainty *pfjetUnc = new JetCorrectionUncertainty(PFJetCorPar);
+  mPFUnc = new JetCorrectionUncertainty(PFJetCorPar);
   edm::ESHandle<JetCorrectorParametersCollection> CaloJetCorParColl;
   iSetup.get<JetCorrectionsRecord>().get(mCaloPayloadName,CaloJetCorParColl);    
   JetCorrectorParameters const& CaloJetCorPar = (*CaloJetCorParColl)["Uncertainty"];
-  JetCorrectionUncertainty *calojetUnc = new JetCorrectionUncertainty(CaloJetCorPar);
+  mCALOUnc = new JetCorrectionUncertainty(CaloJetCorPar);
 
   Handle<GenJetCollection>  genjets;
   Handle<PFJetCollection>   pfjets;
@@ -174,10 +174,10 @@ void ProcessedTreeProducer::analyze(edm::Event const& event, edm::EventSetup con
   for(PFJetCollection::const_iterator i_pfjet = pfjets->begin(); i_pfjet != pfjets->end(); i_pfjet++) {
     int index = i_pfjet-pfjets->begin();
     edm::RefToBase<reco::Jet> pfjetRef(edm::Ref<PFJetCollection>(pfjets,index));
-    double scale = PFJEC->correction(*i_pfjet,pfjetRef,event,iSetup);
-    pfjetUnc->setJetEta(i_pfjet->eta());
-    pfjetUnc->setJetPt(scale * i_pfjet->pt());
-    double unc = pfjetUnc->getUncertainty(true);
+    double scale = mPFJEC->correction(*i_pfjet,pfjetRef,event,iSetup);
+    mPFUnc->setJetEta(i_pfjet->eta());
+    mPFUnc->setJetPt(scale * i_pfjet->pt());
+    double unc = mPFUnc->getUncertainty(true);
     aux_pfjet.rawPt = i_pfjet->pt();
     aux_pfjet.corPt = scale*i_pfjet->pt();
     aux_pfjet.eta   = i_pfjet->eta();
@@ -252,10 +252,10 @@ void ProcessedTreeProducer::analyze(edm::Event const& event, edm::EventSetup con
   for(CaloJetCollection::const_iterator i_calojet = calojets->begin(); i_calojet != calojets->end(); i_calojet++) {
     int index = i_calojet-calojets->begin();
     edm::RefToBase<reco::Jet> calojetRef(edm::Ref<CaloJetCollection>(calojets,index));
-    double scale = CALOJEC->correction(*i_calojet,calojetRef,event,iSetup);
-    calojetUnc->setJetEta(i_calojet->eta());
-    calojetUnc->setJetPt(scale * i_calojet->pt());
-    double unc = calojetUnc->getUncertainty(true);
+    double scale = mCALOJEC->correction(*i_calojet,calojetRef,event,iSetup);
+    mCALOUnc->setJetEta(i_calojet->eta());
+    mCALOUnc->setJetPt(scale * i_calojet->pt());
+    double unc = mCALOUnc->getUncertainty(true);
     aux_calojet.rawPt    = i_calojet->pt();
     aux_calojet.corPt    = scale*i_calojet->pt();
     aux_calojet.eta      = i_calojet->eta();
@@ -344,6 +344,8 @@ void ProcessedTreeProducer::analyze(edm::Event const& event, edm::EventSetup con
   else {
     mTree->Fill();
   } 
+  delete mPFUnc;
+  delete mCALOUnc;
 }
 //////////////////////////////////////////////////////////////////////////////////////////
 ProcessedTreeProducer::~ProcessedTreeProducer() 
