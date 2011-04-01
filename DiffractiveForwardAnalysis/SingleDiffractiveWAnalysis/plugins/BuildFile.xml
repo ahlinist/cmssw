@@ -14,6 +14,7 @@
   <use   name="DataFormats/GeometrySurface"/>
   <use   name="SimDataFormats/CaloHit"/>
   <use   name="SimDataFormats/GeneratorProducts"/>
+  <use   name="Geometry/Records"/>
   <use   name="Geometry/CaloTopology"/>
   <use   name="Geometry/CaloGeometry"/>
   <use   name="CommonTools/UtilAlgos"/>
