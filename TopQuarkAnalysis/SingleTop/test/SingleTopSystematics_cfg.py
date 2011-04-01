@@ -34,32 +34,47 @@ process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(-1) )
 process.source = cms.Source ("PoolSource",
                              fileNames = cms.untracked.vstring (
 
+
+'file:/tmp/oiorio/TSampleEleWJets_Old_PU_16_1_lOM.root',
+'file:/tmp/oiorio/TSampleEleWJets_Old_PU_102_0_TPi.root',
+'file:/tmp/oiorio/TSampleEleWJets_Old_PU_68_0_DGv.root',
+
 #'file:TSampleMuQCDMu.root'
-'file:TSampleMuQCDMu_PF2PAT.root'
+#'file:TSampleMuQCDMu_PF2PAT.root'
+#'file:/tmp/oiorio/TSampleEleTChannel_10_1_T2Y.root'
+#'file:/tmp/oiorio/TSampleEleWJets_89_1_oMj.root'
 
 ),
 duplicateCheckMode = cms.untracked.string('noDuplicateCheck')
 )
 
-process.TFileService = cms.Service("TFileService", fileName = cms.string("plotting.root"))
+
+from WJets import *
+from WJets_Old_PU import *
+
+process.source.fileNames = WJets_Old_PU_EleT
+#process.source.fileNames = WJetsEleT
+                           
+process.TFileService = cms.Service("TFileService", fileName = cms.string("plotsWJetsEleOldPU.root"))
 
 process.SystematicsAnalyzer = cms.EDAnalyzer('SingleTopSystematicsDumper',                              
 systematics = cms.untracked.vstring("BTagUp","BTagDown","MisTagUp","MisTagDown","JESUp","JESDown","UnclusteredMETUp","UnclusteredMETDown"),
 channelInfo = cms.PSet(
-    crossSection = cms.untracked.double(20.93),
-    channel = cms.untracked.string("TChannel"),
-    originalEvents = cms.untracked.double(1000),
-    finalLumi = cms.untracked.double(36.),
+    crossSection = cms.untracked.double(31314),
+    channel = cms.untracked.string("WJets"),
+    originalEvents = cms.untracked.double(14800000),
+    finalLumi = cms.untracked.double(15.),
     MTWCut = cms.untracked.double(50.0),#Default 50.0 GeV
+    loosePtCut = cms.untracked.double(30.0),#Default 30.0 GeV
     ),
 
 
 #Part of the kin quantities:
-leptonsPt = cms.InputTag("nTupleMuons","topMuonsPt"),  
-leptonsPz = cms.InputTag("nTupleMuons","topMuonsPz"),  
-leptonsPhi = cms.InputTag("nTupleMuons","topMuonsPhi"),  
-leptonsEta = cms.InputTag("nTupleMuons","topMuonsEta"),  
-leptonsCharge = cms.InputTag("nTupleMuons","topMuonsCharge"),  
+leptonsPt = cms.InputTag("nTupleElectrons","topElectronsPt"),  
+leptonsPz = cms.InputTag("nTupleElectrons","topElectronsPz"),  
+leptonsPhi = cms.InputTag("nTupleElectrons","topElectronsPhi"),  
+leptonsEta = cms.InputTag("nTupleElectrons","topElectronsEta"),  
+leptonsCharge = cms.InputTag("nTupleElectrons","topElectronsCharge"),  
 
 jetsEta = cms.InputTag("nTupleTopJetsPF","topJetsPFEta"),  
 jetsPx = cms.InputTag("nTupleTopJetsPF","topJetsPFPx"),  

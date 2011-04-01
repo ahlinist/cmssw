@@ -69,6 +69,8 @@ print "test2 "
 #module named out. Even if it is empty. Unfortunately when it is called by something like usePf2Pat I have no way to pass this parameter.
 #This is utterly moronic.
 
+mytrigs=["*"]
+
 process.out = cms.OutputModule("PoolOutputModule",
                                fileName = cms.untracked.string('dummy.root'),
                                outputCommands = cms.untracked.vstring(""),
@@ -85,10 +87,7 @@ process.PathFlavor = cms.Path(
     process.bFlavorHistoryProducer
     )
 
-
-
 from PhysicsTools.PatAlgos.tools.pfTools import *
-
 
 postfix = ""
 jetAlgo="AK5"
@@ -138,13 +137,14 @@ process.source = cms.Source ("PoolSource",
 
 #    'file:/tmp/oiorio/F81B1889-AF4B-DF11-85D3-001A64789DF4.root'
 #'rfio:/castor/cern.ch/user/g/giamman/singletop/sync/00012F91-72E5-DF11-A763-00261834B5F1.root'
-'file:/tmp/oiorio/00012F91-72E5-DF11-A763-00261834B5F1.root'
+#'file:/tmp/oiorio/00012F91-72E5-DF11-A763-00261834B5F1.root'
+'file:/tmp/oiorio/WJetsNewFile_1_1_Vuo.root'
 #'file:/tmp/oiorio/F81B1889-AF4B-DF11-85D3-001A64789DF4.root'
 #'rfio:    /castor/cern.ch/user/g/giamman/singletop/sync/F81B1889-AF4B-DF11-85D3-001A64789DF4.root',
 #    'file:/tmp/oiorio/TChanFile2_1_1_L7h.root',
 #    'file:/tmp/oiorio/TChanFile_1_1_xtA.root',
 #    'file:/tmp/oiorio/EMEnrichedFile_1_1_CWt.root',
-#   'file:/tmp/oiorio/WJets_File_Tauola_1_1_2nU.root',
+#   'file:/tmp/oiorio/TTBar_File_TauAola_1_1_2nU.root',
 
 ),
 duplicateCheckMode = cms.untracked.string('noDuplicateCheck')
@@ -192,7 +192,9 @@ process.WbbFilter = process.flavorHistoryFilter.clone(pathToSelect = cms.int32(5
 #process.hltFilter.TriggerResultsTag = cms.InputTag("TriggerResults","","REDIGI38X")
 #process.hltFilter.TriggerResultsTag = cms.InputTag("TriggerResults","","REDIGI37X")
 #process.hltFilter.TriggerResultsTag = cms.InputTag("TriggerResults","","REDIGI")
+#process.hltFilter.TriggerResultsTag = cms.InputTag("TriggerResults","","REDIGI311X")
 process.hltFilter.TriggerResultsTag = cms.InputTag("TriggerResults","","HLT")
+process.hltFilter.HLTPaths = mytrigs
 
 #process.bJetsPF = cms.EDProducer("SingleTopBJetsProducer",
 #                               src = cms.InputTag("topJetsPF"),
@@ -219,7 +221,7 @@ process.hltFilter.TriggerResultsTag = cms.InputTag("TriggerResults","","HLT")
 #    process.WbbFilter 
 #    )
 
-#process.countJetsNonTTBarAntiIso.minNumber = cms.uint32(0)
+#process.countJetsNonTChannelAntiIso.minNumber = cms.uint32(0)
 
 
 
@@ -268,6 +270,7 @@ process.PathTSampleElectronPFQCD = cms.Path(
 #    process.QCDSampleElectronPF *
 #    process.PathElectronsAntiIso *
 #    )
+
 from TopQuarkAnalysis.SingleTop.SingleTopNtuplizers_cff import saveNTuplesSkimMu
 from TopQuarkAnalysis.SingleTop.SingleTopNtuplizers_cff import saveNTuplesSkimEle
 from TopQuarkAnalysis.SingleTop.SingleTopNtuplizers_cff import saveNTuplesSkimMuAntiIso
@@ -290,7 +293,7 @@ process.allControlSamples = cms.OutputModule("PoolOutputModule",
 
 
 process.tSampleMu =  process.allControlSamples.clone(
-    fileName = cms.untracked.string('TSampleMuQCDMu_PF2PAT.root'),
+    fileName = cms.untracked.string('TSampleMuTChannelOld.root'),
     
     SelectEvents   = cms.untracked.PSet( SelectEvents = cms.vstring(
     'PathTSampleMuonPF',
@@ -301,7 +304,7 @@ process.tSampleMu =  process.allControlSamples.clone(
 
 
 process.tSampleMuAntiIso =  process.allControlSamples.clone(
-    fileName = cms.untracked.string('QCDSampleMuQCDMu_PF2PAT.root'),
+    fileName = cms.untracked.string('QCDSampleMuTChannelOld.root'),
     SelectEvents   = cms.untracked.PSet( SelectEvents = cms.vstring(
     'PathTSampleMuonPFQCD',
 #    'PathTSampleElectron',
@@ -314,7 +317,7 @@ process.tSampleMuAntiIso =  process.allControlSamples.clone(
 process.tSampleEleAntiIso =  process.allControlSamples.clone(
     #    fileName = cms.untracked.string('QCDChanSampleEleCiso95.root'),
 #    fileName = cms.untracked.string('QCDSampleEleQCDBCToE_Pt80to170.root'),
-    fileName = cms.untracked.string('QCDSampleEleQCDMu_PF2PAT.root'),
+    fileName = cms.untracked.string('QCDSampleEleTChannelOld.root'),
  
     SelectEvents   = cms.untracked.PSet( SelectEvents = cms.vstring(
     'PathTSampleElectronPFQCD',
@@ -338,7 +341,7 @@ process.tSampleEleAntiIso =  process.allControlSamples.clone(
 
 process.tSampleEle =  process.allControlSamples.clone(
 #    fileName = cms.untracked.string('QCDChanSampleEleCiso95.root'),
-fileName = cms.untracked.string('TSampleEleQCDMu_PF2PAT.root'),
+fileName = cms.untracked.string('TSampleEleTChannelOld.root'),
     SelectEvents   = cms.untracked.PSet( SelectEvents = cms.vstring(
 #    'PathTSampleMuon',
     'PathTSampleElectronPF',
@@ -348,8 +351,8 @@ fileName = cms.untracked.string('TSampleEleQCDMu_PF2PAT.root'),
    )
 ),
     outputCommands = saveNTuplesSkimEle,
-
 )
+
 process.outpath = cms.EndPath(
 #    process.out +
     process.tSampleMu + 
