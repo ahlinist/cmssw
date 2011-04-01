@@ -5,8 +5,8 @@ import TauAnalysis.Configuration.userRegistry as reg
 import os
 import re
 
-from TauAnalysis.Configuration.tools.harvestingLXBatch import \
-        make_harvest_scripts, castor_source, clean_by_crab_id
+from TauAnalysis.Configuration.tools.harvestingLXBatch import make_harvest_scripts
+from TauAnalysis.Configuration.tools.harvesting import castor_source, clean_by_crab_id
 
 channel = 'ZtoMuTau_tauIdEff'
 
@@ -18,13 +18,16 @@ jobId = reg.getJobId(channel)
 tmpFilePath = reg.getBatchHarvestLocation(channel)
 
 SAMPLES_TO_ANALYZE = [
-    'data_Mu_Run2010A_Nov4ReReco',
-    'data_Mu_Run2010B_Nov4ReReco',
-    'ZtautauPU156bx',
-    'Zmumu_pythia', 
-    'PPmuXptGt20Mu10', 'PPmuXptGt20Mu15',
-    'WplusJets_madgraph',
-    'TTplusJets_madgraph'
+    #'data_Mu_Run2010A_Nov4ReReco',
+    #'data_Mu_Run2010B_Nov4ReReco',
+    #'ZtautauPU156bx',
+    #'Zmumu_pythia', 
+    #'PPmuXptGt20Mu10', 'PPmuXptGt20Mu15',
+    #'WplusJets_madgraph',
+    #'TTplusJets_madgraph'
+    'Zee_pythia',
+    'DYmumuM2to10_pythia', 'DYmumuM10to20_pythia',
+    'Zmumu_powheg', 'Zee_powheg',
 ]
 
 print analysisFilePath

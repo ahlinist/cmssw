@@ -43,7 +43,7 @@ for job in jobs:
 
 scriptFile.close()
 
-#subprocess.call("source %s" % scriptFileName, shell = True)
+subprocess.call("source %s" % scriptFileName, shell = True)
 
 for job in jobs:
     if not (job.find("crabdir") != -1 and job.find(jobId) != -1):
