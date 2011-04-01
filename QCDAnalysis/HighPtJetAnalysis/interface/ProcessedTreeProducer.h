@@ -28,9 +28,11 @@ class ProcessedTreeProducer : public edm::EDAnalyzer
     
     void buildTree();
     void clearTreeArrays();
+    void initEvent();
     
     //---- configurable parameters --------  
     bool   mIsMCarlo;
+    bool   mPreselection;
     int    mNCaloJETS_MAX;
     int    mNPFJETS_MAX;
     int    mGoodVtxNdof;
@@ -67,6 +69,8 @@ class ProcessedTreeProducer : public edm::EDAnalyzer
       float caloRawMass;// mass calculated from raw CALO jets
       float pfDeta;// delta eta between leading PFJets
       float caloDeta;// delta eta between leading CALO jets
+      float pfYmax;// maximum absolute rapidity of the leading PFJets
+      float caloYmax;// maximum absolute rapidity of the leading CALO jets
       float pfmet;// PF met
       float pfsumet;// PF sumEt
       float pfmet_over_sumet;// PF met/sumet

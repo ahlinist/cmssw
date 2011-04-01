@@ -54,6 +54,7 @@ ProcessedTreeProducer::ProcessedTreeProducer(edm::ParameterSet const& cfg)
   mNCaloJETS_MAX   = cfg.getParameter<int>                  ("nCaloJets");
   mGoodVtxNdof     = cfg.getParameter<double>               ("goodVtxNdof");
   mGoodVtxZ        = cfg.getParameter<double>               ("goodVtxZ"); 
+  mPreselection    = cfg.getParameter<bool>                 ("preselDijet");
   mIsMCarlo        = cfg.getUntrackedParameter<bool>        ("isMCarlo",false);
   mGenJetsName     = cfg.getUntrackedParameter<std::string> ("genjets","");
 }
@@ -69,10 +70,46 @@ void ProcessedTreeProducer::endJob()
 
 }
 //////////////////////////////////////////////////////////////////////////////////////////
+void ProcessedTreeProducer::initEvent()
+{
+  mEvent.runNo              = -999;
+  mEvent.evtNo              = -999;
+  mEvent.lumi               = -999;
+  mEvent.bunch              = -999;
+  mEvent.nVtx               = -999;
+  mEvent.isPVgood           = -999;
+  mEvent.PVz                = -999;
+  mEvent.PVx                = -999;
+  mEvent.PVy                = -999;
+  mEvent.PVndof             = -999;
+  mEvent.pthat              = -999;
+  mEvent.weight             = -999;
+  mEvent.pfRawMass          = -999;
+  mEvent.pfCorMass          = -999;
+  mEvent.pfCorMassUp        = -999;
+  mEvent.pfCorMassDo        = -999;
+  mEvent.pfDeta             = -999;
+  mEvent.pfYmax             = -999;
+  mEvent.caloRawMass        = -999;
+  mEvent.caloCorMass        = -999;
+  mEvent.caloCorMassUp      = -999;
+  mEvent.caloCorMassDo      = -999;
+  mEvent.caloDeta           = -999;
+  mEvent.caloYmax           = -999;
+  mEvent.pfmet              = -999;
+  mEvent.pfsumet            = -999;
+  mEvent.pfmet_over_sumet   = -999;
+  mEvent.calomet            = -999;
+  mEvent.calosumet          = -999;
+  mEvent.calomet_over_sumet = -999;
+}
+//////////////////////////////////////////////////////////////////////////////////////////
 void ProcessedTreeProducer::analyze(edm::Event const& event, edm::EventSetup const& iSetup) 
 { 
   //Clear all the vectors stored in tree
   clearTreeArrays();
+  //initialize the event variables
+  initEvent();
   //-------------- Basic Event Info ------------------------------
   mEvent.runNo = event.id().run();
   mEvent.evtNo = event.id().event();
@@ -82,12 +119,6 @@ void ProcessedTreeProducer::analyze(edm::Event const& event, edm::EventSetup con
   Handle<reco::VertexCollection> recVtxs;
   event.getByLabel("offlinePrimaryVertices",recVtxs);
   int VtxGood(0);
-  mEvent.nVtx = recVtxs->size();
-  mEvent.isPVgood = 0;
-  mEvent.PVz      = -999;
-  mEvent.PVx      = -999;
-  mEvent.PVy      = -999;
-  mEvent.PVndof   = -999;
   for(VertexCollection::const_iterator i_vtx = recVtxs->begin(); i_vtx != recVtxs->end(); i_vtx++) {
     int index = i_vtx-recVtxs->begin();
     if (index == 0) {
@@ -106,8 +137,6 @@ void ProcessedTreeProducer::analyze(edm::Event const& event, edm::EventSetup con
   mEvent.nVtxGood = VtxGood;
   //-------------- Generator Info -------------------------------------
   Handle<GenEventInfoProduct> hEventInfo;
-  mEvent.pthat = 0.0;
-  mEvent.weight = 0.0;
   if (mIsMCarlo) { 
     event.getByLabel("generator", hEventInfo);
     mEvent.pthat  = hEventInfo->binningValues()[0];
@@ -216,6 +245,7 @@ void ProcessedTreeProducer::analyze(edm::Event const& event, edm::EventSetup con
     mEvent.pfCorMassDo = (pfcorP4Do[0]+pfcorP4Do[1]).M();
 
     mEvent.pfDeta = mPFJets[0].eta - mPFJets[1].eta;
+    mEvent.pfYmax = max(fabs(mPFJets[0].y),fabs(mPFJets[1].y));
   }
 
   for(CaloJetCollection::const_iterator i_calojet = calojets->begin(); i_calojet != calojets->end(); i_calojet++) {
@@ -268,10 +298,10 @@ void ProcessedTreeProducer::analyze(edm::Event const& event, edm::EventSetup con
   
   sort(all_calojets.begin(),all_calojets.end(),sort_calojets);
   for(int i=0;i<min(mNCaloJETS_MAX,ncalojets);i++) {
-      mCaloJets[i] = all_calojets[i];
+    mCaloJets[i] = all_calojets[i];
   }
   if (ncalojets > 1) {
-    TLorentzVector calocorP4[2],calorawP4[2];
+    TLorentzVector calocorP4[2],calocorP4Up[2],calocorP4Do[2],calorawP4[2];
     calorawP4[0].SetPtEtaPhiE(mCaloJets[0].rawPt,mCaloJets[0].eta,mCaloJets[0].phi,mCaloJets[0].rawE);
     calorawP4[1].SetPtEtaPhiE(mCaloJets[1].rawPt,mCaloJets[1].eta,mCaloJets[1].phi,mCaloJets[1].rawE);
     mEvent.caloRawMass = (calorawP4[0]+calorawP4[1]).M();
@@ -280,7 +310,18 @@ void ProcessedTreeProducer::analyze(edm::Event const& event, edm::EventSetup con
     calocorP4[1].SetPtEtaPhiE(mCaloJets[1].corPt,mCaloJets[1].eta,mCaloJets[1].phi,mCaloJets[1].corE);
     mEvent.caloCorMass = (calocorP4[0]+calocorP4[1]).M();
 
+    double ss0 = mCaloJets[0].jecUnc;
+    double ss1 = mCaloJets[1].jecUnc;
+    calocorP4Up[0].SetPtEtaPhiE((1+ss0)*mCaloJets[0].corPt,mCaloJets[0].eta,mCaloJets[0].phi,(1+ss0)*mCaloJets[0].corE);
+    calocorP4Up[1].SetPtEtaPhiE((1+ss1)*mCaloJets[1].corPt,mCaloJets[1].eta,mCaloJets[1].phi,(1+ss1)*mCaloJets[1].corE);
+    mEvent.caloCorMassUp = (calocorP4Up[0]+calocorP4Up[1]).M();
+
+    calocorP4Do[0].SetPtEtaPhiE((1-ss0)*mCaloJets[0].corPt,mCaloJets[0].eta,mCaloJets[0].phi,(1-ss0)*mCaloJets[0].corE);
+    calocorP4Do[1].SetPtEtaPhiE((1-ss1)*mCaloJets[1].corPt,mCaloJets[1].eta,mCaloJets[1].phi,(1-ss1)*mCaloJets[1].corE);
+    mEvent.caloCorMassDo = (calocorP4Do[0]+calocorP4Do[1]).M();
+
     mEvent.caloDeta = mCaloJets[0].eta - mCaloJets[1].eta;
+    mEvent.caloYmax = max(fabs(mCaloJets[0].y),fabs(mCaloJets[1].y));
   }
   //---------------- met ---------------------------------------------
   Handle<PFMETCollection> pfmet;
@@ -294,7 +335,14 @@ void ProcessedTreeProducer::analyze(edm::Event const& event, edm::EventSetup con
   mEvent.calosumet = (*calomet)[0].sumEt();
   mEvent.calomet_over_sumet = (*calomet)[0].et()/(*calomet)[0].sumEt();
   //-------------- fill the tree -------------------------------------  
-  mTree->Fill();
+  if (mPreselection) {
+    if (npfjets > 1 || ncalojets > 1) {
+      mTree->Fill();
+    }
+  }
+  else {
+    mTree->Fill();
+  } 
 }
 //////////////////////////////////////////////////////////////////////////////////////////
 ProcessedTreeProducer::~ProcessedTreeProducer() 
@@ -304,7 +352,7 @@ ProcessedTreeProducer::~ProcessedTreeProducer()
 void ProcessedTreeProducer::buildTree() 
 {
   char name[1000];
-  mTree->Branch("event", &mEvent, "runNo/I:evtNo:lumi:bunch:nVtx:nVtxGood:isPVgood:PVndof/F:PVx:PVy:PVz:pfCorMass:pfCorMassUp:pfCorMassDo:pfRawMass:caloCorMass:caloCorMassUp:caloCorMassDo:caloRawMass:pfDeta:caloDeta:pfmet:pfsumet:pfmet_over_sumet:calomet:calosumet:calomet_over_sumet:pthat:weight");
+  mTree->Branch("event", &mEvent, "runNo/I:evtNo:lumi:bunch:nVtx:nVtxGood:isPVgood:PVndof/F:PVx:PVy:PVz:pfCorMass:pfCorMassUp:pfCorMassDo:pfRawMass:caloCorMass:caloCorMassUp:caloCorMassDo:caloRawMass:pfDeta:caloDeta:pfYmax,caloYmax:pfmet:pfsumet:pfmet_over_sumet:calomet:calosumet:calomet_over_sumet:pthat:weight");
   for(int i=0;i<mNPFJETS_MAX;i++) {
     sprintf(name,"pfjet%d",i+1);
     mTree->Branch(name, &mPFJets[i].passLooseID,"passLooseID/I:npr:chm:nhm:phm:elm:jec/F:jecUnc:rawPt:corPt:eta:y:phi:rawE:corE:m:chf:nhf:phf:elf:genR:genPt:genEta:genPhi:genE:genM:corRsp:rawRsp");
