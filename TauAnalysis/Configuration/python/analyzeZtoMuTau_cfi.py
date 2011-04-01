@@ -49,12 +49,8 @@ diTauCandidateNSVfitHistManagerForMuTau.pluginName = cms.string('diTauCandidateN
 diTauCandidateNSVfitHistManagerForMuTau.pluginType = cms.string('PATMuTauPairNSVfitHistManager')
 diTauCandidateNSVfitHistManagerForMuTau.diTauCandidateSource = cms.InputTag('selectedMuTauPairsPzetaDiffCumulative')
 diTauCandidateNSVfitHistManagerForMuTau.nSVfitEventHypotheses = cms.PSet(
-    psKine                = cms.InputTag('nSVfitMuTauPairHypothesesPS1',  'psKine'),
-    psKine_MEt            = cms.InputTag('nSVfitMuTauPairHypothesesPS2',  'psKine+MEt'),
-    psKine_MEt_ptBalance  = cms.InputTag('nSVfitMuTauPairHypothesesPS3',  'psKine+MEt+ptBalance'),
-    polKine               = cms.InputTag('nSVfitMuTauPairHypothesesPol1', 'polKine'),
-    polKine_MEt           = cms.InputTag('nSVfitMuTauPairHypothesesPol2', 'polKine+MEt'),
-    polKine_MEt_ptBalance = cms.InputTag('nSVfitMuTauPairHypothesesPol3', 'polKine+MEt+ptBalance'),
+    psKine_MEt_ptBalance       = cms.string('psKine_MEt_ptBalance'),
+    psKine_MEt_Track_ptBalance = cms.string('psKine_MEt_Track_ptBalance')
 )
 
 from TauAnalysis.Core.diTauCandidateZllHypothesisHistManager_cfi import *

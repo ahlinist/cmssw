@@ -178,39 +178,3 @@ muTauPairProdConfiguratorLooseMuonIsolation = objProdConfigurator(
 produceMuTauPairsLooseMuonIsolation = muTauPairProdConfiguratorLooseMuonIsolation.configure(pyNameSpace = locals())
 
 produceMuTauPairsAll = cms.Sequence(produceMuTauPairs * produceMuTauPairsLooseMuonIsolation)
-
-nSVfitMuTauPairHypothesesPS1 = nSVfitProducer.clone(    
-    instanceLabel = cms.string("psKine")
-)
-nSVfitMuTauPairHypothesesPS1.config.event.resonances.A.likelihoodFunctions = cms.VPSet()
-nSVfitMuTauPairHypothesesPS1.config.event.likelihoodFunctions = cms.VPSet()
-nSVfitMuTauPairHypothesesPS2 = nSVfitMuTauPairHypothesesPS1.clone(
-    instanceLabel = cms.string("psKine+MEt")
-)
-nSVfitMuTauPairHypothesesPS2.config.event.likelihoodFunctions = cms.VPSet(nSVfitEventLikelihoodMEt)
-nSVfitMuTauPairHypothesesPS3 = nSVfitMuTauPairHypothesesPS2.clone(
-    instanceLabel = cms.string("psKine+MEt+ptBalance")
-)
-nSVfitMuTauPairHypothesesPS3.config.event.resonances.A.likelihoodFunctions = cms.VPSet(nSVfitResonanceLikelihoodPtBalance)
-
-nSVfitMuTauPairHypothesesPol1 = nSVfitProducer.clone(    
-    instanceLabel = cms.string("polKine")
-)
-nSVfitMuTauPairHypothesesPol1.config.event.resonances.A.likelihoodFunctions = cms.VPSet()
-nSVfitMuTauPairHypothesesPol1.config.event.likelihoodFunctions = cms.VPSet()
-nSVfitMuTauPairHypothesesPol1.config.event.resonances.A.daughters.leg1.likelihoodFunctions = cms.VPSet(nSVfitMuonLikelihoodPolarization)
-nSVfitMuTauPairHypothesesPol1.config.event.resonances.A.daughters.leg2.likelihoodFunctions = cms.VPSet(nSVfitTauLikelihoodPolarization)
-nSVfitMuTauPairHypothesesPol2 = nSVfitMuTauPairHypothesesPol1.clone(
-    instanceLabel = cms.string("polKine+MEt")
-)
-nSVfitMuTauPairHypothesesPol2.config.event.likelihoodFunctions = cms.VPSet(nSVfitEventLikelihoodMEt)
-nSVfitMuTauPairHypothesesPol3 = nSVfitMuTauPairHypothesesPol2.clone(
-    instanceLabel = cms.string("polKine+MEt+ptBalance")
-)
-nSVfitMuTauPairHypothesesPol3.config.event.resonances.A.likelihoodFunctions = cms.VPSet(nSVfitResonanceLikelihoodPtBalance)
-
-nSVfitMuTauPairHypotheses = cms.Sequence(
-    nSVfitMuTauPairHypothesesPS1 + nSVfitMuTauPairHypothesesPS2 + nSVfitMuTauPairHypothesesPS3
-   + nSVfitMuTauPairHypothesesPol1 + nSVfitMuTauPairHypothesesPol2 + nSVfitMuTauPairHypothesesPol3
-)
-produceMuTauPairsAll *= nSVfitMuTauPairHypotheses
