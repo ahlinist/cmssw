@@ -118,6 +118,7 @@ void ProcessedTreeProducer::analyze(edm::Event const& event, edm::EventSetup con
   //-------------- Vertex Info -----------------------------------
   Handle<reco::VertexCollection> recVtxs;
   event.getByLabel("offlinePrimaryVertices",recVtxs);
+  mEvent.nVtx = recVtxs->size();
   int VtxGood(0);
   for(VertexCollection::const_iterator i_vtx = recVtxs->begin(); i_vtx != recVtxs->end(); i_vtx++) {
     int index = i_vtx-recVtxs->begin();
