@@ -2,6 +2,7 @@
 #define DiffractiveForwardAnalysis_SingleDiffractiveWAnalysis_TrackMultiplicityEdmNtupleDumper_h
 
 #include "FWCore/Framework/interface/EDProducer.h"
+#include "FWCore/ParameterSet/interface/ParameterSet.h"
 
 class TrackMultiplicityEdmNtupleDumper : public edm::EDProducer {
 public:

@@ -2,7 +2,7 @@
 #define DiffractiveForwardAnalysis_SingleDiffractiveWAnalysis_CASTORGenInfoDumper_h
 
 #include "FWCore/Framework/interface/EDProducer.h"
-#include "FWCore/ParameterSet/interface/InputTag.h"
+#include "FWCore/ParameterSet/interface/ParameterSet.h"
 
 class CASTORGenInfoDumper : public edm::EDProducer {
 public:
