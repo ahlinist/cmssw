@@ -54,7 +54,8 @@ class CompositePtrCandidateT1T2MEtNSVfitHistManager : public HistManagerBase
 
   struct massHypothesisEntryType
   {
-    edm::InputTag nSVfitEventHypothesisSrc_;
+    edm::InputTag nSVfitEventHypothesisSrc_; // get NSVfitEventHypothesis via InputTag, directly from edm::Event 
+    std::string nSVfitEventHypothesisName_;  // get NSVfitEventHypothesis via CompositeRefCandidateT1T2MEt::nSVfitSolution(name)
 
     std::string dqmDirectory_;
 
