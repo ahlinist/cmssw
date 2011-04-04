@@ -31,7 +31,7 @@ process.GlobalTag.globaltag = 'GR_R_311_V2::All'
 ##   'HLT_Jet80_v1' ),
 mytrigs = ['*']
 
-# Jet energy corrections to use: 
+# Jet energy corrections to use:
 inputJetCorrLabel = ('AK5PF', ['L1Offset', 'L2Relative', 'L3Absolute', 'L2L3Residual'])
 
 # add pf met
@@ -91,8 +91,8 @@ if mytrigs is not None :
 process.primaryVertexFilter = cms.EDFilter("GoodVertexFilter",
                                            vertexCollection = cms.InputTag('offlinePrimaryVertices'),
                                            minimumNDOF = cms.uint32(4) ,
-                                           maxAbsZ = cms.double(24), 
-                                           maxd0 = cms.double(2) 
+                                           maxAbsZ = cms.double(24),
+                                           maxd0 = cms.double(2)
                                            )
 
 
@@ -187,6 +187,12 @@ process.out.outputCommands = patEventContentNoCleaning
 process.out.outputCommands += patExtraAodEventContent
 process.out.outputCommands += [
     'drop patJets_selectedPatJets_*_*',
-    'keep patJets_goodPatJets_*_*',    
+    'keep patJets_goodPatJets_*_*',
     'keep recoPFCandidates_selectedPatJets*_*_*'
     ]
+
+# switch on PAT trigger
+from PhysicsTools.PatAlgos.tools.trigTools import switchOnTrigger
+switchOnTrigger( process )
+process.patTrigger.addL1Algos = cms.bool( True )
+switchOnTrigger( process ) # to fix event content
