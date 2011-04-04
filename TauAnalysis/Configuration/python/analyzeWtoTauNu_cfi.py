@@ -196,7 +196,7 @@ wTauNuEventDump = cms.PSet(
     pluginType = cms.string('wTauNuEventDump'),
 
     genParticleSource = cms.InputTag('genParticles'),
-    genJetSource = cms.InputTag('iterativeCone5GenJets'),
+    genJetSource = cms.InputTag('ak5GenJets'),
     genTauJetSource = cms.InputTag('tauGenJets'),
     genEventInfoSource = cms.InputTag('generator'),
     
@@ -209,7 +209,7 @@ wTauNuEventDump = cms.PSet(
     pfGammaSource = cms.InputTag('pfAllPhotons'),
     pfNeutralHadronSource = cms.InputTag('pfAllNeutralHadrons'),    
     output = cms.string("wTauNuEventDump.txt"),
-    triggerConditions = cms.vstring("evtSelRecoilEnergyFromCaloTowers: passed_cumulative")
+    triggerConditions = cms.vstring("evtSelMetTopology : passed_cumulative")
 )
 
 #replace met with pfmet for met-plots and event dump
