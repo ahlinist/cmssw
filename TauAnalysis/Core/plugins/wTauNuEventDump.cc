@@ -53,7 +53,7 @@ void wTauNuEventDump::print(const edm::Event& iEvent, const edm::EventSetup& iSe
     printGenParticleInfo(*genParticleCollection, *genTauJetCollection, outputStream_);
     
     edm::Handle<edm::View<reco::GenJet> > genJetCollection;
-    iEvent.getByLabel("iterativeCone5GenJets", genJetCollection);
+    iEvent.getByLabel("ak5GenJets", genJetCollection);
 	
     edm::Handle<pat::JetCollection> patJets;
     iEvent.getByLabel(patJetSource_, patJets);
