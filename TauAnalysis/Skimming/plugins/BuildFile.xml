@@ -14,5 +14,6 @@
   <use   name="DataFormats/HepMCCandidate"/>
   <use   name="TauAnalysis/Skimming"/>
   <use   name="TauAnalysis/Core"/>
+  <use   name="TauAnalysis/RecoTools"/>
   <use   name="root"/>
 </library>
