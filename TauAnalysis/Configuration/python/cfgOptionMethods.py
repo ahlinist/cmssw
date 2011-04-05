@@ -7,6 +7,7 @@ import TauAnalysis.Configuration.tools.factorizationTools as factorizationTools
 import TauAnalysis.Configuration.tools.mcToDataCorrectionTools as mcToDataCorrectionTools
 import TauAnalysis.Configuration.tools.sysUncertaintyTools as sysUncertaintyTools
 import TauAnalysis.Configuration.tools.switchToData as switchToData
+import TauAnalysis.Configuration.tools.switchToAOD as switchToAOD
 import TauAnalysis.BgEstimationTools.tools.fakeRateAnalysisTools as fakeRateAnalysisTools
 from TauAnalysis.Configuration.tools.changeCut import changeCut
 
@@ -173,10 +174,10 @@ def _setEnableSystematics(process, enable, **kwargs):
     else:
         print "Keeping systematics disabled"
 
-@_requires(args=['channel'], inputs=['RECO/AOD', 'PATTuple'])
+@_requires(args=['channel'], inputs=['RECO', 'AOD', 'PATTuple'])
 def _setInputFileType(process, filetype, **kwargs):
     # when running over RECO samples, produce PAT-tuple
-    if filetype == 'RECO/AOD':
+    if filetype == 'RECO' or filetype == 'AOD':
         patTupleProductionSequenceName = "producePatTuple%s" % kwargs['channel']
         if patTupleProductionSequenceName.find('_') != -1:
             patTupleProductionSequenceName = patTupleProductionSequenceName[:patTupleProductionSequenceName.find('_')]
@@ -184,6 +185,8 @@ def _setInputFileType(process, filetype, **kwargs):
         if hasattr(process, patTupleProductionSequenceName) and hasattr(process, "producePatTupleAll"):
             patTupleProductionSequence = getattr(process, patTupleProductionSequenceName)
             process.p.replace(patTupleProductionSequence, process.producePatTupleAll)
+        if filetype == 'AOD':
+            switchToAOD.switchToAOD(process)
 
 @_requires(inputs=['Data', 'smMC', 'smSumMC', 'bsmMC',])
 def _setIsData(process, type, **kwargs):
