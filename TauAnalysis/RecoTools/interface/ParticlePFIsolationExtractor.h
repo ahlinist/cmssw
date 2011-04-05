@@ -8,9 +8,9 @@
  * 
  * \author Christian Veelken, UC Davis
  *
- * \version $Revision: 1.3 $
+ * \version $Revision: 1.4 $
  *
- * $Id: ParticlePFIsolationExtractor.h,v 1.3 2011/02/10 16:33:32 jkolb Exp $
+ * $Id: ParticlePFIsolationExtractor.h,v 1.4 2011/02/18 11:15:06 veelken Exp $
  *
  */
 
@@ -19,11 +19,19 @@
 #include "FWCore/Framework/interface/Event.h"
 #include "FWCore/ParameterSet/interface/ParameterSet.h"
 #include "FWCore/Utilities/interface/InputTag.h"
+#include "FWCore/Utilities/interface/Exception.h"
 
 #include "DataFormats/Candidate/interface/Particle.h"
 #include "DataFormats/ParticleFlowCandidate/interface/PFCandidate.h"
 #include "DataFormats/ParticleFlowCandidate/interface/PFCandidateFwd.h"
 #include "DataFormats/Math/interface/deltaR.h"
+#include "DataFormats/TrackReco/interface/TrackFwd.h"
+#include "DataFormats/VertexReco/interface/VertexFwd.h"
+#include "DataFormats/BeamSpot/interface/BeamSpot.h"
+#include "DataFormats/Math/interface/deltaR.h"
+
+#include "TauAnalysis/RecoTools/interface/PATLeptonTrackRefVectorExtractor.h"
+#include "TauAnalysis/RecoTools/interface/pfCandAuxFunctions.h"
 
 #include <TMath.h>
 
@@ -33,37 +41,130 @@ template <class T>
 class ParticlePFIsolationExtractor
 {
  public:
+  enum { kNone, kBeta, kDeltaBeta };
   explicit ParticlePFIsolationExtractor(const edm::ParameterSet& cfg):
     pfChargedHadronIso_(0),
+    addChargedHadronIso_(false),
     pfNeutralHadronIso_(0),
-    pfPhotonIso_(0)
+    addNeutralHadronIso_(false),
+    pfPhotonIso_(0),
+    addPhotonIso_(false),
+    methodPUcorr_(kNone),
+    trackExtractor_(0),
+    pfNeutralHadronIsoPUcorr_(0),
+    pfPhotonIsoPUcorr_(0)
   {    
     if( cfg.exists("chargedHadronIso") ) {
       edm::ParameterSet cfgChargedHadronIso = cfg.getParameter<edm::ParameterSet>("chargedHadronIso");
       pfChargedHadronIso_ = new pfIsoConfigType(reco::PFCandidate::h, cfgChargedHadronIso);
+      addChargedHadronIso_ = cfgChargedHadronIso.exists("add") ? cfgChargedHadronIso.getParameter<bool>("add") : true;
     }
+
     if( cfg.exists("neutralHadronIso") ) {
       edm::ParameterSet cfgNeutralHadronIso = cfg.getParameter<edm::ParameterSet>("neutralHadronIso");
       pfNeutralHadronIso_ = new pfIsoConfigType(reco::PFCandidate::h0, cfgNeutralHadronIso);
+      addNeutralHadronIso_ = cfgNeutralHadronIso.exists("add") ? cfgNeutralHadronIso.getParameter<bool>("add") : true;
     }
+
     if( cfg.exists("photonIso") ) {
       edm::ParameterSet cfgPhotonIso = cfg.getParameter<edm::ParameterSet>("photonIso");
       pfPhotonIso_ = new pfIsoConfigType(reco::PFCandidate::gamma, cfgPhotonIso);
+      addPhotonIso_ = cfgPhotonIso.exists("add") ? cfgPhotonIso.getParameter<bool>("add") : true;
+    }
+
+    if ( cfg.exists("pileUpCorr") ) {
+      edm::ParameterSet cfgPUcorr = cfg.getParameter<edm::ParameterSet>("pileUpCorr");
+
+      std::string method_string = cfgPUcorr.getParameter<std::string>("method");
+      if      ( method_string == "beta"      ) methodPUcorr_ = kBeta;
+      else if ( method_string == "deltaBeta" ) methodPUcorr_ = kDeltaBeta;
+      else if ( method_string == "none"      ) methodPUcorr_ = kNone;
+      else throw cms::Exception("ParticlePFIsolationExtractor")
+	<< "Invalid Configuration parameter method = " << method_string << "!!\n";
+      
+      if ( methodPUcorr_ != kNone ) {
+	trackExtractor_ = new PATLeptonTrackRefVectorExtractor<T>();
+	
+	deltaZ_ = cfgPUcorr.getParameter<double>("deltaZ");
+	if ( methodPUcorr_ == kDeltaBeta ) chargedToNeutralFactor_ = cfgPUcorr.getParameter<double>("chargedToNeutralFactor");
+	
+	if ( pfNeutralHadronIso_ ) {
+	  edm::ParameterSet cfgNeutralHadronIso = cfg.getParameter<edm::ParameterSet>("neutralHadronIso");
+	  pfNeutralHadronIsoPUcorr_ = new pfIsoConfigType(reco::PFCandidate::h, cfgNeutralHadronIso);
+	}
+	
+	if ( pfPhotonIso_ ) {
+	  edm::ParameterSet cfgPhotonIso = cfg.getParameter<edm::ParameterSet>("photonIso");
+	  pfPhotonIsoPUcorr_ = new pfIsoConfigType(reco::PFCandidate::h, cfgPhotonIso);
+	}
+	
+	if ( !pfChargedHadronIso_ ) throw cms::Exception("ParticlePFIsolationExtractor")
+	  << "Pile-up correction requires 'chargedHadronIso' Configuration parameter !!\n";
+      }
     }
   }
   ~ParticlePFIsolationExtractor()
   {
-    if ( pfChargedHadronIso_ ) delete pfChargedHadronIso_;
-    if ( pfNeutralHadronIso_ ) delete pfNeutralHadronIso_;
-    if ( pfPhotonIso_        ) delete pfPhotonIso_;
+    delete pfChargedHadronIso_;
+    delete pfNeutralHadronIso_;
+    delete pfPhotonIso_;
+
+    delete trackExtractor_;
+    delete pfNeutralHadronIsoPUcorr_;
+    delete pfPhotonIsoPUcorr_;
   }
 
-  double operator()(const T& lepton, const reco::PFCandidateCollection& pfCandidates)
+  double operator()(const T& lepton, const reco::PFCandidateCollection& pfCandidates,
+		    const reco::VertexCollection* vertices = 0, const reco::BeamSpot* bs = 0)
   {
-    double sumPt = 0;
-    if ( pfChargedHadronIso_ ) sumPt += pfChargedHadronIso_->compSumPt(pfCandidates, lepton.p4());
-    if ( pfNeutralHadronIso_ ) sumPt += pfNeutralHadronIso_->compSumPt(pfCandidates, lepton.p4());
-    if ( pfPhotonIso_        ) sumPt += pfPhotonIso_->compSumPt(pfCandidates, lepton.p4());
+    std::vector<const reco::PFCandidate*> pfChargedHadrons, pfNeutralHadrons, pfPhotons;
+    if ( addChargedHadronIso_   || 
+	 methodPUcorr_ != kNone ) pfChargedHadrons = getPFCandidatesOfType(pfCandidates, reco::PFCandidate::h);
+    if ( addNeutralHadronIso_   ) pfNeutralHadrons = getPFCandidatesOfType(pfCandidates, reco::PFCandidate::h0);
+    if ( addPhotonIso_          ) pfPhotons        = getPFCandidatesOfType(pfCandidates, reco::PFCandidate::gamma);
+
+    double sumPt = 0.;
+    
+    if ( methodPUcorr_ == kNone ) {
+      if ( addChargedHadronIso_ ) sumPt += pfChargedHadronIso_->compSumPt(pfChargedHadrons, lepton.p4());
+      if ( addNeutralHadronIso_ ) sumPt += pfNeutralHadronIso_->compSumPt(pfNeutralHadrons, lepton.p4());
+      if ( addPhotonIso_        ) sumPt += pfPhotonIso_->compSumPt(pfPhotons, lepton.p4());
+    } else {
+      std::vector<reco::TrackBaseRef> signalTracks = (*trackExtractor_)(lepton);
+
+      std::vector<const reco::PFCandidate*> pfNoPileUpChargedHadrons, pfPileUpChargedHadrons;
+      getPileUpPFCandidates(pfChargedHadrons, signalTracks, *vertices, deltaZ_, *bs, pfNoPileUpChargedHadrons, pfPileUpChargedHadrons);
+
+      if ( methodPUcorr_ == kBeta ) {
+	double pfNoPileUpChargedHadronIsoSumPt = pfChargedHadronIso_->compSumPt(pfNoPileUpChargedHadrons, lepton.p4());
+	double pfPileUpChargedHadronIsoSumPt   = pfChargedHadronIso_->compSumPt(pfPileUpChargedHadrons, lepton.p4());
+	sumPt = pfNoPileUpChargedHadronIsoSumPt;
+
+	double pfNeutralIsoCorrFactor = ( pfPileUpChargedHadronIsoSumPt > 0. ) ? 
+	  (pfNoPileUpChargedHadronIsoSumPt/(pfNoPileUpChargedHadronIsoSumPt + pfPileUpChargedHadronIsoSumPt)) : 1.0;
+	
+	if ( pfNeutralHadronIso_ ) sumPt += pfNeutralHadronIso_->compSumPt(pfNeutralHadrons, lepton.p4())*pfNeutralIsoCorrFactor;
+	if ( pfPhotonIso_        ) sumPt += pfPhotonIso_->compSumPt(pfPhotons, lepton.p4())*pfNeutralIsoCorrFactor;
+      } else if ( methodPUcorr_ == kDeltaBeta ) {
+	sumPt = pfChargedHadronIso_->compSumPt(pfNoPileUpChargedHadrons, lepton.p4());
+
+	double sumPtNeutralIsoSumPt  = 0.;
+	double sumPtNeutralIsoPUcorr = 0.;
+      
+	if ( pfNeutralHadronIso_ ) {
+	  sumPtNeutralIsoSumPt += pfNeutralHadronIso_->compSumPt(pfNeutralHadrons, lepton.p4());
+	  sumPtNeutralIsoPUcorr += pfNeutralHadronIsoPUcorr_->compSumPt(pfPileUpChargedHadrons, lepton.p4());
+	}
+	
+	if ( pfPhotonIso_ ) {
+	  sumPtNeutralIsoSumPt += pfPhotonIso_->compSumPt(pfPhotons, lepton.p4());
+	  sumPtNeutralIsoPUcorr += pfPhotonIsoPUcorr_->compSumPt(pfPileUpChargedHadrons, lepton.p4());
+	}
+
+	sumPt += TMath::Max(sumPtNeutralIsoSumPt - chargedToNeutralFactor_*sumPtNeutralIsoPUcorr, 0.); 
+      } else assert(0);
+    }
+
     return sumPt;
   }
 
@@ -106,18 +207,19 @@ class ParticlePFIsolationExtractor
       return true;
     }
 
-    double compSumPt(const reco::PFCandidateCollection& pfCandidates, const reco::Particle::LorentzVector& isoParticleCandidateP4)
+    double compSumPt(const std::vector<const reco::PFCandidate*>& pfCandidates, 
+		     const reco::Particle::LorentzVector& isoParticleCandidateP4)
     {
       double sumPt = 0.;
       
       if ( vetoNumHighestPtObjects_ > 0 ) {
 	std::vector<double> pfCandidatePt;
 	
-	for ( reco::PFCandidateCollection::const_iterator pfCandidate = pfCandidates.begin();
+	for ( std::vector<const reco::PFCandidate*>::const_iterator pfCandidate = pfCandidates.begin();
 	      pfCandidate != pfCandidates.end(); ++pfCandidate ) {
-	  if ( !passesVeto(*pfCandidate, isoParticleCandidateP4) ) continue;
+	  if ( !passesVeto(**pfCandidate, isoParticleCandidateP4) ) continue;
 	  
-	  pfCandidatePt.push_back(pfCandidate->pt());
+	  pfCandidatePt.push_back((*pfCandidate)->pt());
 	}
 	
 	// sort transverse momenta of particle-flow candidates
@@ -130,11 +232,11 @@ class ParticlePFIsolationExtractor
 	  sumPt += pfCandidatePt[iPt];
 	}
       } else {
-	for ( reco::PFCandidateCollection::const_iterator pfCandidate = pfCandidates.begin();
+	for ( std::vector<const reco::PFCandidate*>::const_iterator pfCandidate = pfCandidates.begin();
 	      pfCandidate != pfCandidates.end(); ++pfCandidate ) {
-	  if ( !passesVeto(*pfCandidate, isoParticleCandidateP4) ) continue;
+	  if ( !passesVeto(**pfCandidate, isoParticleCandidateP4) ) continue;
 	  
-	  sumPt += pfCandidate->pt();
+	  sumPt += (*pfCandidate)->pt();
 	}   
       } 
       
@@ -155,8 +257,18 @@ class ParticlePFIsolationExtractor
   };
 
   pfIsoConfigType* pfChargedHadronIso_;
+  bool addChargedHadronIso_;
   pfIsoConfigType* pfNeutralHadronIso_;
+  bool addNeutralHadronIso_;
   pfIsoConfigType* pfPhotonIso_;
+  bool addPhotonIso_;
+
+  int methodPUcorr_;
+  double deltaZ_;
+  double chargedToNeutralFactor_;
+  PATLeptonTrackRefVectorExtractor<T>* trackExtractor_;			  
+  pfIsoConfigType* pfNeutralHadronIsoPUcorr_;
+  pfIsoConfigType* pfPhotonIsoPUcorr_;  
 };
 
 #include "DataFormats/PatCandidates/interface/Electron.h"
