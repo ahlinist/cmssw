@@ -53,6 +53,32 @@ diTauCandidateNSVfitHistManagerForMuTau.nSVfitEventHypotheses = cms.PSet(
     psKine_MEt_Track_ptBalance = cms.string('psKine_MEt_Track_ptBalance')
 )
 
+diTauCandidateNSVfitVtxMultiplicityBinGridHistManager = cms.PSet(
+    pluginName = cms.string('diTauCandidateNSVfitVtxMultiplicityBinGridHistManager'),
+    pluginType = cms.string('BinGridHistManager'),
+    binning = cms.PSet(
+        name = cms.string("vtxMultiplicityTrackPtSumGt10"),
+        config = cms.VPSet(
+            cms.PSet(
+                extractor = cms.PSet(
+                    pluginType = cms.string("NumVertexExtractor"),
+                    src = cms.InputTag('selectedPrimaryVerticesTrackPtSumGt10')
+                ),
+                branchName = cms.string('vtxMultiplicityTrackPtSumGt10'),
+                binning = cms.PSet(
+                    boundaries = cms.vdouble(4.5, 7.5, 10.5),
+                    min = cms.double(-0.5),
+                    max = cms.double(+20.5)
+                )
+            )
+        )
+    ),
+    histManagers = cms.VPSet(
+        diTauCandidateNSVfitHistManagerForMuTau,
+    ),
+    dqmDirectory_store = cms.string('vtxMultiplicityBinnedHistograms')
+)
+
 from TauAnalysis.Core.diTauCandidateZllHypothesisHistManager_cfi import *
 diTauCandidateZmumuHypothesisHistManagerForMuTau = copy.deepcopy(ZllHypothesisHistManager)
 diTauCandidateZmumuHypothesisHistManagerForMuTau.pluginName = cms.string('diTauCandidateZmumuHypothesisHistManagerForMuTau')
@@ -108,6 +134,17 @@ triggerHistManagerForMuTau.hltPaths = cms.vstring(
 
 # import config for event weight histogram manager
 from TauAnalysis.Core.eventWeightHistManager_cfi import *
+
+# import config for cut-flow histogram manager
+from TauAnalysis.Core.cutFlowHistManager_cfi import *
+cutFlowHistManagerGenMultiplicity = copy.deepcopy(cutFlowHistManager)
+cutFlowHistManagerGenMultiplicity.pluginName = cms.string('cutFlowHistManagerGenMultiplicity')
+cutFlowHistManagerGenMultiplicity.mode = cms.string("gen")
+cutFlowHistManagerGenMultiplicity.dqmDirectory_store = cms.string('CutFlowStatisticsGenMultiplicity')
+cutFlowHistManagerRecMultiplicity = copy.deepcopy(cutFlowHistManager)
+cutFlowHistManagerRecMultiplicity.pluginName = cms.string('cutFlowHistManagerRecMultiplicity')
+cutFlowHistManagerRecMultiplicity.mode = cms.string("rec")
+cutFlowHistManagerRecMultiplicity.dqmDirectory_store = cms.string('CutFlowStatisticsRecMultiplicity')
 
 # import config for binning results
 # used for keeping track of number of events passing all selection criteria
@@ -526,6 +563,8 @@ muTauAnalysisSequenceOS = cms.VPSet(
             'pfMEtHistManager',
             'vertexHistManager',
             'triggerHistManagerForMuTau',
+            'cutFlowHistManagerGenMultiplicity',
+            'cutFlowHistManagerRecMultiplicity',
             'modelBinnerForMuTauGenTauLeptonPairAcc',
             'modelBinnerForMuTauWrtGenTauLeptonPairAcc',
             'modelBinnerForMuTauGenTauLeptonPairAcc3mZbins',
@@ -940,6 +979,7 @@ muTauAnalysisSequenceOS = cms.VPSet(
             'diTauCandidateHistManagerForMuTau',
 	    'diTauCandidateSVfitHistManagerForMuTau',
             'diTauCandidateNSVfitHistManagerForMuTau',
+            'diTauCandidateNSVfitVtxMultiplicityBinGridHistManager',
             'muPairHistManagerByLooseIsolation'
         ),
         replace = cms.vstring(
