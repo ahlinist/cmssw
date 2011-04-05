@@ -12,8 +12,8 @@ canvasSizeX_preference = 800
 canvasSizeY_preference = 600
 
 if os.environ['LOGNAME'] in userSettings:
-    canvasSizeX_preference = cms.int32(userSettings[os.environ['LOGNAME']]['global']['drawOptions']['canvasSizeX']),
-    canvasSizeY_preference = cms.int32(userSettings[os.environ['LOGNAME']]['global']['drawOptions']['canvasSizeY']),
+    canvasSizeX_preference = userSettings[os.environ['LOGNAME']]['global']['drawOptions']['canvasSizeX']
+    canvasSizeY_preference = userSettings[os.environ['LOGNAME']]['global']['drawOptions']['canvasSizeY']
 
 dqmHistPlotter_template = cms.EDAnalyzer("DQMHistPlotter",
     xAxes = cms.PSet(
