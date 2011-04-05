@@ -19,6 +19,10 @@ def _applyZllRecoilCorrection(process, diTauProductionSequenceName, diTauProduce
       configureZllRecoilCorrection(process, diTauProducerModuleName, ZllRecoilCorrectionType)
     diTauProductionSequence = getattr(process, diTauProductionSequenceName)
     diTauProductionSequence += configZllRecoilCorrection['patPFMETsZllRecoilCorrectionSequence']
+    print "INFO: Disabling NSVfit in %s for di-taus without corrected MET." % \
+            diTauProducerModuleName
+    diTauProducer = getattr(process, diTauProducerModuleName)
+    diTauProducer.nSVfit = cms.PSet()
 
     if hasattr(process, diTauProductionSequenceName):
 
