@@ -26,9 +26,12 @@ double NumObjExtractor<T>::operator()(const edm::Event& evt) const
 }
 
 #include "DataFormats/Candidate/interface/Candidate.h"
+#include "DataFormats/VertexReco/interface/Vertex.h"
 
 typedef NumObjExtractor<reco::Candidate> NumCandidateExtractor;
+typedef NumObjExtractor<reco::Vertex> NumVertexExtractor;
 
 #include "FWCore/Framework/interface/MakerMacros.h"
 
 DEFINE_EDM_PLUGIN(ObjValExtractorPluginFactory, NumCandidateExtractor, "NumCandidateExtractor");
+DEFINE_EDM_PLUGIN(ObjValExtractorPluginFactory, NumVertexExtractor, "NumVertexExtractor");
