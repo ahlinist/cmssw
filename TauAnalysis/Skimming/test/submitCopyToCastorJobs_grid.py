@@ -8,32 +8,38 @@ import time
 print("<submitCopyToCastorJobs_grid>:")
 
 samples = {
-    'A90'    : "/SUSYGluGluToHToTauTau_M-90_7TeV-pythia6-tauola/Fall10-E7TeV_ProbDist_2010Data_BX156_START38_V12-v1/GEN-SIM-RECO",
-    'bbA90'  : "/SUSYBBHToTauTau_M-90_7TeV-pythia6-tauola/Fall10-E7TeV_ProbDist_2010Data_BX156_START38_V12-v1/GEN-SIM-RECO",
-    'A100'   : "/SUSYGluGluToHToTauTau_M-100_7TeV-pythia6-tauola/Fall10-E7TeV_ProbDist_2010Data_BX156_START38_V12-v1/GEN-SIM-RECO",
-    'bbA100' : "/SUSYBBHToTauTau_M-100_7TeV-pythia6-tauola/Fall10-E7TeV_ProbDist_2010Data_BX156_START38_V12-v1/GEN-SIM-RECO",
-    'A120'   : "/SUSYGluGluToHToTauTau_M-120_7TeV-pythia6-tauola/Fall10-E7TeV_ProbDist_2010Data_BX156_START38_V12-v1/GEN-SIM-RECO",
-    'bbA120' : "/SUSYBBHToTauTau_M-120_7TeV-pythia6-tauola/Fall10-E7TeV_ProbDist_2010Data_BX156_START38_V12-v1/GEN-SIM-RECO",
-    'A130'   : "/SUSYGluGluToHToTauTau_M-130_7TeV-pythia6-tauola/Fall10-E7TeV_ProbDist_2010Data_BX156_START38_V12-v1/GEN-SIM-RECO",
-    'bbA130' : "/SUSYBBHToTauTau_M-130_7TeV-pythia6-tauola/Fall10-E7TeV_ProbDist_2010Data_BX156_START38_V12-v1/GEN-SIM-RECO",
-    'A140'   : "/SUSYGluGluToHToTauTau_M-1400_7TeV-pythia6-tauola/Fall10-E7TeV_ProbDist_2010Data_BX156_START38_V12-v1/GEN-SIM-RECO",
-    'bbA140' : "/SUSYBBHToTauTau_M-140_7TeV-pythia6-tauola/Fall10-E7TeV_ProbDist_2010Data_BX156_START38_V12-v1/GEN-SIM-RECO",
-    'A160'   : "/SUSYGluGluToHToTauTau_M-160_7TeV-pythia6-tauola/Fall10-E7TeV_ProbDist_2010Data_BX156_START38_V12-v1/GEN-SIM-RECO",
-    'bbA160' : "/SUSYBBHToTauTau_M-160_7TeV-pythia6-tauola/Fall10-E7TeV_ProbDist_2010Data_BX156_START38_V12-v1/GEN-SIM-RECO",
-    'A180'   : "/SUSYGluGluToHToTauTau_M-180_7TeV-pythia6-tauola/Fall10-E7TeV_ProbDist_2010Data_BX156_START38_V12-v1/GEN-SIM-RECO",
-    'bbA180' : "/SUSYBBHToTauTau_M-180_7TeV-pythia6-tauola/Fall10-E7TeV_ProbDist_2010Data_BX156_START38_V12-v1/GEN-SIM-RECO",
-    'A200'   : "/SUSYGluGluToHToTauTau_M-200_7TeV-pythia6-tauola/Fall10-E7TeV_ProbDist_2010Data_BX156_START38_V12-v1/GEN-SIM-RECO",
-    'bbA200' : "/SUSYBBHToTauTau_M-200_7TeV-pythia6-tauola/Fall10-E7TeV_ProbDist_2010Data_BX156_START38_V12-v1/GEN-SIM-RECO",
-    'A250'   : "/SUSYGluGluToHToTauTau_M-250_7TeV-pythia6-tauola/Fall10-E7TeV_ProbDist_2010Data_BX156_START38_V12-v1/GEN-SIM-RECO",
-    'bbA250' : "/SUSYBBHToTauTau_M-250_7TeV-pythia6-tauola/Fall10-E7TeV_ProbDist_2010Data_BX156_START38_V12-v1/GEN-SIM-RECO",
-    'A300'   : "/SUSYGluGluToHToTauTau_M-300_7TeV-pythia6-tauola/Fall10-E7TeV_ProbDist_2010Data_BX156_START38_V12-v1/GEN-SIM-RECO",
-    'bbA300' : "/SUSYBBHToTauTau_M-300_7TeV-pythia6-tauola/Fall10-E7TeV_ProbDist_2010Data_BX156_START38_V12-v1/GEN-SIM-RECO",
-    'A350'   : "/SUSYGluGluToHToTauTau_M-350_7TeV-pythia6-tauola/Fall10-E7TeV_ProbDist_2010Data_BX156_START38_V12-v1/GEN-SIM-RECO",
-    'bbA350' : "/SUSYBBHToTauTau_M-350_7TeV-pythia6-tauola/Fall10-E7TeV_ProbDist_2010Data_BX156_START38_V12-v1/GEN-SIM-RECO"
+    ##'data2011A_tauPlusX_AOD'    : {
+    ##    'dbsName' : "/TauPlusX/Run2011A-PromptReco-v1/AOD",
+    ##    'type'    : "Data"
+    ##},
+    ##'data2011A_tauPlusX_RECO'   : {
+    ##    'dbsName' : "/TauPlusX/Run2011A-PromptReco-v1/RECO",
+    ##    'type'    : "Data"
+    ##},
+    ##'DYtautau_spring11_powhegZ2' : {
+    ##    'dbsName' : "/DYToTauTau_M-20_CT10_TuneZ2_7TeV-powheg-pythia-tauola/Spring11-PU_S1_START311_V1G1-v1/GEN-SIM-RECO",
+    ##    'type'    : "MC"
+    ##},
+    ##'DYtautau_spring11_pythiaZ2debug' : {
+    ##    'dbsName' : "/DYToTauTau_M-20_TuneZ2_7TeV-pythia6-tauola/Spring11-PU_S1_START311_V1G1-v1/GEN-SIM-RECODEBUG",
+    ##    'type'    : "MC"
+    ##},
+    ##'DYtautau_spring11flatPU10_pythiaZ2debug' : {
+    ##    'dbsName' : "/DYToTauTau_M-20_TuneZ2_7TeV-pythia6-tauola/Spring11-E7TeV_FlatDist10_2011EarlyData_50ns_START311_V1G1-v1/GEN-SIM-RECODEBUG",
+    ##    'type'    : "MC"
+    ##}
+    ##'DYtautau_powhegZ2_aodsim' : {
+    ##    'dbsName' : "/DYToTauTau_M-10To20_CT10_TuneZ2_7TeV-powheg-pythia-tauola/Spring11-PU_S1_START311_V1G1-v2/AODSIM",
+    ##    'type'    : "MC"
+    ##},
+    'WplusJets_madgraph_aodsim' : {
+        'dbsName' : "/WJetsToLNu_TuneZ2_7TeV-madgraph-tauola/Spring11-PU_S1_START311_V1G1-v1/AODSIM",
+        'type'    : "MC"
+    },
 }
 
-castorFilePath = "/castor/cern.ch/user/v/veelken/CMSSW_3_8_x/skims/AHtoMuTau/"
-crabFilePath = "/afs/cern.ch/user/v/veelken/scratch0/CMSSW_3_8_7/src/TauAnalysis/Skimming/test/crab/"
+castorFilePath = "/castor/cern.ch/user/v/veelken/CMSSW_4_1_x/skims/ZtoMuTau/"
+crabFilePath = "/afs/cern.ch/user/v/veelken/scratch0/CMSSW_4_1_3/src/TauAnalysis/Skimming/test/crab/"
 
 cfg_template = """
 import FWCore.ParameterSet.Config as cms
@@ -51,10 +57,10 @@ process.MessageLogger.cerr.FwkReport.reportEvery = 5000
 process.load('Configuration/StandardSequences/GeometryIdeal_cff')
 process.load('Configuration/StandardSequences/MagneticField_cff')
 process.load('Configuration/StandardSequences/FrontierConditions_GlobalTag_cff')
-process.GlobalTag.globaltag = cms.string('START38_V14::All')
+process.GlobalTag.globaltag = cms.string('START311_V2::All')
 
 process.maxEvents = cms.untracked.PSet(
-    input = cms.untracked.int32(20)
+    input = cms.untracked.int32(-1)
 )
 
 process.source = cms.Source("PoolSource",
@@ -92,8 +98,8 @@ use_server = 1
 datasetpath = DATASETPATH
 pset = PSET
 output_file = OUTPUT_FILE
-total_number_of_events = -1
-events_per_job = 10000
+JOB_SPLIT_METHOD
+number_of_jobs = 1
 
 [USER]
 
@@ -103,29 +109,34 @@ copy_data = 1
 storage_element = srm-cms.cern.ch
 storage_path = /srm/managerv2?SFN=/castor/cern.ch
 user_remote_dir = USER_REMOTE_DIR
+
+[EDG]
+
+se_black_list = T2_US_Nebraska
 """
 
-def executeCommand(commandLine):
-     print(commandLine)
-     #args = shlex.split(commandLine)
-     #retval = subprocess.Popen(args, stdout = subprocess.PIPE)
-     #retval.wait()	
-     #subprocess.call(commandLine, shell = True)
+shellCommands = []
 
-for sampleName, sampleDatasetPath in samples.items():
+for sampleName, sampleOptions in samples.items():
    print("submitting copyToCastor job for sample = %s" % sampleName)
 
    rootFileName = "%s.root" % sampleName
 
-   cfgFileName = (crabFilePath + "crabCopyToCastor_%s.cfg") % sampleName
+   cfgFileName = (crabFilePath + "crabCopyToCastor_%s_cfg.py") % sampleName
    cfgFile = open(cfgFileName, "w")
    cfgFile.write(cfg_template)
    cfgFile.write("process.copyToCastorOutputModule.fileName = cms.untracked.string('%s')" % rootFileName)
 
    crabFileName = (crabFilePath + "crab_%s.cfg") % sampleName
    crabConfig = str(crab_template)
-   crabConfig = crabConfig.replace("DATASETPATH", sampleDatasetPath)
+   crabConfig = crabConfig.replace("DATASETPATH", sampleOptions['dbsName'])
    crabConfig = crabConfig.replace("PSET", cfgFileName)
+   if sampleOptions['type'] == "Data":
+       crabConfig = crabConfig.replace("JOB_SPLIT_METHOD", "total_number_of_events = 1000")
+   elif sampleOptions['type'] == "MC":
+       crabConfig = crabConfig.replace("JOB_SPLIT_METHOD", "lumis_per_job = 5")
+   else:
+       raise ValueError("Undefined sample type = %s !!" %sampleOptions['type'])
    crabConfig = crabConfig.replace("OUTPUT_FILE", rootFileName)
    ui_working_dir = (crabFilePath + "crabdirCopyToCastor_%s") % sampleName
    crabConfig = crabConfig.replace("UI_WORKING_DIR", ui_working_dir)
@@ -141,7 +152,24 @@ for sampleName, sampleDatasetPath in samples.items():
    subprocess.call("rfmkdir %s" % user_remote_dir, shell = True)
    subprocess.call("rfchmod 777 %s" % user_remote_dir, shell = True)
 
-   executeCommand("crab -create -cfg %s" % crabFileName)
-   #time.sleep(30)
-   executeCommand("crab -submit -c %s" % ui_working_dir)
-   #time.sleep(30)
+   shellCommands.append("crab -create -cfg %s" % crabFileName)
+   shellCommands.append("crab -submit -c %s" % ui_working_dir)
+
+shellFileName = "submitCopyToCastorJobs_grid.csh"
+shellFile = open(shellFileName, "w")
+shellFile.write("#!/bin/csh -f\n")
+shellFile.write("\n")
+
+for shellCommdand in shellCommands:
+    shellFile.write(shellCommdand + '\n')
+
+shellFile.close()
+
+subprocess.call("chmod +x %s" % shellFileName, shell = True)
+
+# need to wait until config files have finished writing...
+time.sleep(1)
+
+print("Finished building config files. Now execute 'source %s'." % shellFileName)
+#subprocess.call("source %s" % shellFileName, shell = True)
+    
