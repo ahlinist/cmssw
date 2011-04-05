@@ -11,10 +11,6 @@ jobId = getJobId(channel)
 
 samplesToAnalyze = [
     # modify in case you want to submit crab jobs for some of the samples only...
-    #'ZtautauPU156bx',
-    #'ZtautauPU156bx_pythiaZ2',
-    #'Ztautau_powheg',
-    #'Ztautau_powhegZ2'
 ]
 
 #enableSystematics = True
