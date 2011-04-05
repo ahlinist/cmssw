@@ -100,7 +100,7 @@ import PhysicsTools.PatAlgos.tools.tauTools as tauTools
 #--------------------------------------------------------------------------------
 # MAIN CONFIGURATION POINT
 
-disableReRunningTaus = True
+disableReRunningTaus = False
 #disableReRunningTaus = False
 #_TAUID = 'byTaNCloose'
 #_TAUID = 'byHPSloose'
@@ -110,7 +110,7 @@ _TAUID = 'byLooseIsolation'
 # Loose tauid cuts
 #'loose_tauID'
 ## Normal cuts
-#_CUTS = 'normal'
+_CUTS = 'normal'
 ## Loose cuts for skim
 #'loose'
 ## Loose cuts to enable factorization
@@ -118,7 +118,7 @@ _TAUID = 'byLooseIsolation'
 ## Mike cuts
 #_CUTS = 'mt_only'
 ## Mikes cuts, skim for FR
-_CUTS = 'mt_only_loose_tauID'
+#_CUTS = 'mt_only_loose_tauID'
 #_CUTS = 'mt_only_loose_Muon_tightTau'
 
 
@@ -142,7 +142,7 @@ if _TAUID == 'byLooseIsolation':
             cut = cms.double(0.5)
         ),
         againstMuon = cms.PSet(
-            Producer = cms.InputTag('hpsPFTauDiscriminationAgainstMuonTight'),
+            Producer = cms.InputTag('hpsPFTauDiscriminationByTightMuonRejection'),
             cut = cms.double(0.5)
         )
     )
@@ -333,6 +333,8 @@ elif _TAUID == "byHPSloose" or _TAUID == "byLooseIsolation":
     print "Using HPS: using only decay mode finding"
     changeCut(process, "selectedPatTausLeadTrkPt", 'tauID("decayModeFinding") > 0.5')
     changeCut(process, "selectedPatTausForMuTauLeadTrkPt", 'tauID("decayModeFinding") > 0.5')
+    changeCut(process, "selectedPatTausLeadTrk", 'tauID("decayModeFinding") > 0.5')
+    changeCut(process, "selectedPatTausForMuTauLeadTrk", 'tauID("decayModeFinding") > 0.5')
 else:
     raise ValueError("Can't figure out what to do about the lead track cut!")
 
