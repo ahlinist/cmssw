@@ -72,12 +72,12 @@ selectPatElectronsLooseIsolation = patElectronSelConfiguratorLooseIsolation.conf
 # select electrons for Z->electron + tau-jet analysis
 #
 
-# VBTF WP90 electron ID
+# VBTF WP80 electron ID
 selectedPatElectronsForElecTauId.cut = cms.string('(abs(superCluster.eta) < 1.479 & abs(deltaEtaSuperClusterTrackAtVtx) < 0.004 & abs(deltaPhiSuperClusterTrackAtVtx) < 0.06 & hcalOverEcal < 0.04 & sigmaIetaIeta < 0.01) | (abs(superCluster.eta) > 1.479 & abs(deltaEtaSuperClusterTrackAtVtx) < 0.007 & abs(deltaPhiSuperClusterTrackAtVtx) <0.03 & hcalOverEcal < 0.025 & sigmaIetaIeta < 0.03)')
-selectedPatElectronsForElecTauAntiCrackCut.cut = cms.string('abs(superCluster.eta) < 1.442 | abs(superCluster.eta) > 1.560')
+selectedPatElectronsForElecTauAntiCrackCut.cut = cms.string('abs(superCluster.eta) < 1.442 | abs(superCluster.eta) > 1.566')
 selectedPatElectronsForElecTauEta.cut = cms.string('abs(eta) < 2.1')
 selectedPatElectronsForElecTauPt.cut = cms.string('pt > 15.')
-selectedPatElectronsForElecTauIso.chargedHadronIso.ptMin = cms.double(1.0)
+selectedPatElectronsForElecTauIso.chargedHadronIso.ptMin = cms.double(0.5)
 selectedPatElectronsForElecTauIso.chargedHadronIso.dRvetoCone = cms.double(-1.)
 selectedPatElectronsForElecTauIso.chargedHadronIso.dRisoCone = cms.double(0.4)
 selectedPatElectronsForElecTauIso.neutralHadronIso.ptMin = cms.double(1.0)
@@ -86,8 +86,8 @@ selectedPatElectronsForElecTauIso.neutralHadronIso.dRisoCone = cms.double(0.4)
 selectedPatElectronsForElecTauIso.photonIso.ptMin = cms.double(1.0)
 selectedPatElectronsForElecTauIso.photonIso.dRvetoCone = cms.double(0.05)
 selectedPatElectronsForElecTauIso.photonIso.dRisoCone = cms.double(0.4)
-selectedPatElectronsForElecTauIso.sumPtMaxEB = cms.double(0.09)
-selectedPatElectronsForElecTauIso.sumPtMaxEE = cms.double(0.06)
+selectedPatElectronsForElecTauIso.sumPtMaxEB = cms.double(0.08)
+selectedPatElectronsForElecTauIso.sumPtMaxEE = cms.double(0.04)
 selectedPatElectronsForElecTauIso.sumPtMethod = cms.string("relative")
 selectedPatElectronsForElecTauIso.pfCandidateSource = cms.InputTag('pfNoPileUp')
 selectedPatElectronsForElecTauConversionVeto.cotThetaMax = cms.double(0.05)
