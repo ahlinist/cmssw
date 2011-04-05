@@ -20,21 +20,21 @@ SysUncertaintyService = cms.Service("SysUncertaintyService",
             "sysMuon*", "",
             "sysTau*", "",
             "sysZllRecoilCorrection*", "",
-            "sysJet*", ""                               
+            "sysJet*", ""
         ),
         isRecAHtoMuTauCentralJetBtag = cms.vstring(
             "sysMuon*", "",
             "sysTau*", "",
             "sysZllRecoilCorrection*", "",
-            "sysJet*", ""                               
-        )                                
+            "sysJet*", ""
+        )
     )
 )
 
 analyzeAHtoMuTauEventsOS_woBtag = cms.EDAnalyzer("GenericAnalyzer",
-  
-    name = cms.string('ahMuTauAnalyzerOS_woBtag'), 
-                            
+
+    name = cms.string('ahMuTauAnalyzerOS_woBtag'),
+
     filters = cms.VPSet(
         # generator level phase-space selection
         evtSelGenPhaseSpace,
@@ -83,9 +83,9 @@ analyzeAHtoMuTauEventsOS_woBtag = cms.EDAnalyzer("GenericAnalyzer",
         # central jet veto/b-jet candidate selection
         evtSelNonCentralJetEt20bTag,
         evtSelCentralJetEt20,
-        evtSelCentralJetEt20bTag 
+        evtSelCentralJetEt20bTag
     ),
-  
+
     analyzers = cms.VPSet(
         genPhaseSpaceEventInfoHistManager,
         eventWeightHistManager,
@@ -93,6 +93,7 @@ analyzeAHtoMuTauEventsOS_woBtag = cms.EDAnalyzer("GenericAnalyzer",
         tauHistManager,
         diTauCandidateHistManagerForMuTau,
         diTauCandidateSVfitHistManagerForMuTau,
+        diTauCandidateNSVfitHistManagerForMuTau,
         diTauCandidateZmumuHypothesisHistManagerForMuTau,
         diTauLeg1ChargeBinGridHistManager,
         muPairHistManagerByLooseIsolation,
@@ -105,24 +106,24 @@ analyzeAHtoMuTauEventsOS_woBtag = cms.EDAnalyzer("GenericAnalyzer",
         dataBinner,
         modelBinnerForMuTauGenTauLeptonPairAcc,
         modelBinnerForMuTauCentralJetVetoWrtGenTauLeptonPairAcc,
-        modelBinnerForMuTauCentralJetBtagWrtGenTauLeptonPairAcc                                           
+        modelBinnerForMuTauCentralJetBtagWrtGenTauLeptonPairAcc
     ),
 
     analyzers_systematic = cms.VPSet(
 	sysUncertaintyBinnerForMuTauAccCentralJetVeto,
 	sysUncertaintyBinnerForMuTauAccCentralJetBtag,
 	sysUncertaintyBinnerForMuTauEff,
-        sysUncertaintyHistManagerForMuTau                                           
-    ),                                           
+        sysUncertaintyHistManagerForMuTau
+    ),
 
     eventDumps = cms.VPSet(
         muTauEventDump_woBtag,
-        patTauDebugEventDump                                             
+        patTauDebugEventDump
     ),
-   
+
     analysisSequence = muTauAnalysisSequenceOS_woBtag,
 
-    estimateSysUncertainties = cms.bool(False), 
+    estimateSysUncertainties = cms.bool(False),
     systematics = cms.vstring(
         getSysUncertaintyNames(
             [ muonSystematics,
@@ -131,29 +132,29 @@ analyzeAHtoMuTauEventsOS_woBtag = cms.EDAnalyzer("GenericAnalyzer",
               jetSystematics,
               theorySystematics ]
         )
-    )                                                 
+    )
 )
 
 analyzeAHtoMuTauEventsOS_wBtag = analyzeAHtoMuTauEventsOS_woBtag.clone(
-  
-    name = cms.string('ahMuTauAnalyzerOS_wBtag'), 
+
+    name = cms.string('ahMuTauAnalyzerOS_wBtag'),
 
     eventDumps = cms.VPSet(
         muTauEventDump_wBtag
     ),
-   
+
     analysisSequence = muTauAnalysisSequenceOS_wBtag
 )
 
 analyzeAHtoMuTauEventsSS_woBtag = analyzeAHtoMuTauEventsOS_woBtag.clone(
-    name = cms.string('ahMuTauAnalyzerSS_woBtag'), 
+    name = cms.string('ahMuTauAnalyzerSS_woBtag'),
     analysisSequence = muTauAnalysisSequenceSS_woBtag
-) 
+)
 
 analyzeAHtoMuTauEventsSS_wBtag = analyzeAHtoMuTauEventsOS_wBtag.clone(
-    name = cms.string('ahMuTauAnalyzerSS_wBtag'), 
+    name = cms.string('ahMuTauAnalyzerSS_wBtag'),
     analysisSequence = muTauAnalysisSequenceSS_wBtag
-)  
+)
 
 analyzeAHtoMuTauSequence = cms.Sequence(
     analyzeAHtoMuTauEventsOS_woBtag * analyzeAHtoMuTauEventsOS_wBtag
