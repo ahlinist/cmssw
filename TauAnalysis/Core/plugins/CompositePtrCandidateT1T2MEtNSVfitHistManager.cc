@@ -119,7 +119,7 @@ CompositePtrCandidateT1T2MEtNSVfitHistManager<T1,T2>::~CompositePtrCandidateT1T2
 template<typename T1, typename T2>
 void CompositePtrCandidateT1T2MEtNSVfitHistManager<T1,T2>::bookHistogramsImp()
 {
-  std::cout << "<CompositePtrCandidateT1T2MEtNSVfitHistManager::bookHistogramsImp>:" << std::endl;
+  //std::cout << "<CompositePtrCandidateT1T2MEtNSVfitHistManager::bookHistogramsImp>:" << std::endl;
 
   for ( typename std::vector<massHypothesisEntryType*>::iterator massHypothesisEntry = massHypothesisEntries_.begin();
 	massHypothesisEntry != massHypothesisEntries_.end(); ++massHypothesisEntry ) {
@@ -259,7 +259,7 @@ std::string recDecayMode<pat::Tau>(const pat::Tau& tau)
 template<typename T1, typename T2>
 void CompositePtrCandidateT1T2MEtNSVfitHistManager<T1,T2>::fillHistogramsImp(const edm::Event& evt, const edm::EventSetup& es, double evtWeight)
 {
-  std::cout << "<CompositePtrCandidateT1T2MEtNSVfitHistManager::fillHistogramsImp>:" << std::endl;
+  //std::cout << "<CompositePtrCandidateT1T2MEtNSVfitHistManager::fillHistogramsImp>:" << std::endl;
 
   typedef std::vector<CompositePtrCandidateT1T2MEt<T1,T2> > CompositePtrCandidateCollection;
   edm::Handle<CompositePtrCandidateCollection> diTauCandidates;
@@ -292,10 +292,10 @@ void CompositePtrCandidateT1T2MEtNSVfitHistManager<T1,T2>::fillHistogramsImp(con
     double diTauCandidateWeight = getDiTauCandidateWeight(*diTauCandidate);
     double weight = getWeight(evtWeight, diTauCandidateWeight, diTauCandidateWeightSum);
 
-    std::cout << "diTauCandidate leg1: Pt = " << diTauCandidate->leg1()->pt() << "," 
-    	      << " eta = " << diTauCandidate->leg1()->eta() << ", phi = " << diTauCandidate->leg1()->phi() << std::endl;
-    std::cout << "diTauCandidate leg2: Pt = " << diTauCandidate->leg2()->pt() << "," 
-	      << " eta = " << diTauCandidate->leg2()->eta() << ", phi = " << diTauCandidate->leg2()->phi() << std::endl;
+    //std::cout << "diTauCandidate leg1: Pt = " << diTauCandidate->leg1()->pt() << "," 
+    //	        << " eta = " << diTauCandidate->leg1()->eta() << ", phi = " << diTauCandidate->leg1()->phi() << std::endl;
+    //std::cout << "diTauCandidate leg2: Pt = " << diTauCandidate->leg2()->pt() << "," 
+    //	        << " eta = " << diTauCandidate->leg2()->eta() << ", phi = " << diTauCandidate->leg2()->phi() << std::endl;
 	
     for ( typename std::vector<massHypothesisEntryType*>::iterator massHypothesisEntry = massHypothesisEntries_.begin();
 	  massHypothesisEntry != massHypothesisEntries_.end(); ++massHypothesisEntry ) {
@@ -317,10 +317,10 @@ void CompositePtrCandidateT1T2MEtNSVfitHistManager<T1,T2>::fillHistogramsImp(con
 	  const edm::OwnVector<NSVfitSingleParticleHypothesisBase>& daughterHypotheses = resonanceHypotheses[0].daughters();
 	  assert(daughterHypotheses.size() == 2);
 	  
-	  std::cout << "nSVfit leg1: Pt = " << daughterHypotheses[0].p4().pt() << "," 
-		    << " eta = " << daughterHypotheses[0].p4().eta() << ", phi = " << daughterHypotheses[0].p4().phi() << std::endl;
-	  std::cout << "nSVfit leg2: Pt = " << daughterHypotheses[1].p4().pt() << "," 
-		    << " eta = " << daughterHypotheses[1].p4().eta() << ", phi = " << daughterHypotheses[1].p4().phi() << std::endl;
+	  //std::cout << "nSVfit leg1: Pt = " << daughterHypotheses[0].p4().pt() << "," 
+	  //	      << " eta = " << daughterHypotheses[0].p4().eta() << ", phi = " << daughterHypotheses[0].p4().phi() << std::endl;
+	  //std::cout << "nSVfit leg2: Pt = " << daughterHypotheses[1].p4().pt() << "," 
+	  //	      << " eta = " << daughterHypotheses[1].p4().eta() << ", phi = " << daughterHypotheses[1].p4().phi() << std::endl;
 	  
 	  if ( (deltaR(diTauCandidate->leg1()->p4(), daughterHypotheses[0].p4()) < epsilon &&
 		deltaR(diTauCandidate->leg2()->p4(), daughterHypotheses[1].p4()) < epsilon) ||
@@ -402,7 +402,7 @@ void CompositePtrCandidateT1T2MEtNSVfitHistManager<T1,T2>::fillHistogramsImp(con
 	std::string meName = std::string("Mass");
 	meName.append("_leg1#gen_").append(leg1genDecayMode).append("_rec_").append(leg1recDecayMode);
 	meName.append("_leg2#gen_").append(leg2genDecayMode).append("_rec_").append(leg2recDecayMode);
-	std::cout << "--> booking meName = " << meName << ", dqmDirectory = " << (*massHypothesisEntry)->dqmDirectory_ << std::endl;
+	//std::cout << "--> booking meName = " << meName << ", dqmDirectory = " << (*massHypothesisEntry)->dqmDirectory_ << std::endl;
 	me = book1D(*dqmStore_, (*massHypothesisEntry)->dqmDirectory_, meName.data(), meName.data(), 50, 0., 250.);
 	(*massHypothesisEntry)->hMassGenVsRecDecayModes_[leg1genDecayMode][leg1recDecayMode][leg2genDecayMode][leg2recDecayMode] = me;
       }
