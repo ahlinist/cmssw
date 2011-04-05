@@ -39,9 +39,15 @@ from TauAnalysis.RecoTools.muTauPairZmumuHypothesis_cff import *
 # the hypothesis being that the pair of muons results from a Z --> mu+ mu- decay
 #
 from TauAnalysis.RecoTools.diMuPairZmumuHypothesis_cff import *
+#
+# produce collection of primary event vertex candidates
+# selected by requiring sum(trackPt) > 10 GeV
+#
+from TauAnalysis.RecoTools.vertexMultiplicityReweight_cfi import selectedPrimaryVerticesTrackPtSumGt10
 
 producePatTupleZtoMuTauSpecific = cms.Sequence(
-    patMuonsMuScleFitCorrectedMomentum + selectPatMuons + selectPatMuonsLooseIsolation
+    selectedPrimaryVerticesTrackPtSumGt10
+   + patMuonsMuScleFitCorrectedMomentum + selectPatMuons + selectPatMuonsLooseIsolation
    + selectPatElectrons
    + selectPatTaus + selectPatTausForMuTau
    + selectPatJets 
