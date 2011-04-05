@@ -39,7 +39,6 @@ def getNewConfigFileName(configFile = None, cfgdir = None, sample = None,
 _JOB_OPTIONS_DEFAULTS = [
     ('maxEvents', -1),
     ('skipEvents', 0),
-    ('inputFileType', 'RECO/AOD'),
     ('isBatchMode', True),
     ('plotsOutputFileName', PLOT_FILES_PREFIX)
 ]
@@ -185,6 +184,10 @@ def prepareConfigFile(configFile = None, jobInfo = None, newConfigFile = None,
             raise ValueError("Event list file %s does not exist!" % eventList)
         full_path = os.path.abspath(eventList)
         jobOptions.append(('eventList', eventList))
+
+    # Check if we need to restrict input to AOD event content
+    if 'inputFileType' in sample_info:
+        jobOptions.append(('inputFileType', sample_info['inputFileType']))
 
     # Create new config file with specialization options added
     workingDirectory = os.getcwd()
