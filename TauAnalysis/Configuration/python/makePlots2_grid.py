@@ -8,12 +8,16 @@ import re
 import TauAnalysis.DQMTools.plotterStyleDefinitions_cfi as styles
 from TauAnalysis.Configuration.userRegistry import userSettings
 
-canvasSizeX_preference = 800
-canvasSizeY_preference = 600
-
-if os.environ['LOGNAME'] in userSettings:
-    canvasSizeX_preference = userSettings[os.environ['LOGNAME']]['global']['drawOptions']['canvasSizeX']
-    canvasSizeY_preference = userSettings[os.environ['LOGNAME']]['global']['drawOptions']['canvasSizeY']
+def getCanvasSizeX():
+    if os.environ['LOGNAME'] in userSettings:
+        return cms.int32(userSettings[os.environ['LOGNAME']]['global']['drawOptions']['canvasSizeX'])
+    else:
+        return cms.int32(800) # default value
+def getCanvasSizeY():
+    if os.environ['LOGNAME'] in userSettings:
+        return cms.int32(userSettings[os.environ['LOGNAME']]['global']['drawOptions']['canvasSizeY'])
+    else:
+        return cms.int32(600) # default value
 
 dqmHistPlotter_template = cms.EDAnalyzer("DQMHistPlotter",
     xAxes = cms.PSet(
@@ -54,8 +58,8 @@ dqmHistPlotter_template = cms.EDAnalyzer("DQMHistPlotter",
 
     drawJobs = cms.PSet(),
 
-    canvasSizeX = cms.int32(canvasSizeX_preference),
-    canvasSizeY = cms.int32(canvasSizeY_preference),
+    canvasSizeX = getCanvasSizeX(),
+    canvasSizeY = getCanvasSizeY(),
 
     outputFilePath = cms.string('./plots/')
 )
