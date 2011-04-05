@@ -35,5 +35,6 @@
   <use   name="AnalysisDataFormats/TauAnalysis"/>
   <use   name="TauAnalysis/CandidateTools"/>
   <use   name="TauAnalysis/BgEstimationTools"/>
+  <use   name="TauAnalysis/RecoTools"/>
   <use   name="root"/>
 </library>
