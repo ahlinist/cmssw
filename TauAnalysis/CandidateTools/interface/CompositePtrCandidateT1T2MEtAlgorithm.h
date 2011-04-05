@@ -37,7 +37,7 @@ class CompositePtrCandidateT1T2MEtAlgorithm
 
   CompositePtrCandidateT1T2MEtAlgorithm(const edm::ParameterSet& cfg)
   {
-    std::cout << "<CompositePtrCandidateT1T2MEtAlgorithm::CompositePtrCandidateT1T2MEtAlgorithm>:" << std::endl;
+    //std::cout << "<CompositePtrCandidateT1T2MEtAlgorithm::CompositePtrCandidateT1T2MEtAlgorithm>:" << std::endl;
 
     verbosity_ = cfg.getUntrackedParameter<int>("verbosity", 0);
     if ( cfg.exists("svFit") ) {
@@ -51,7 +51,7 @@ class CompositePtrCandidateT1T2MEtAlgorithm
 	copyCfgParameter<edm::InputTag>(cfg, "srcBeamSpot", cfgSVfitAlgorithm);
 	SVfitAlgorithm<T1,T2>* svFitAlgorithm = new SVfitAlgorithm<T1,T2>(cfgSVfitAlgorithm);
 	svFitAlgorithms_.insert(std::pair<std::string, SVfitAlgorithm<T1,T2>*>(*svFitAlgorithmName, svFitAlgorithm));
-	std::cout << "--> adding SVfit algorithm: name = " << (*svFitAlgorithmName) << std::endl;
+	//std::cout << "--> adding SVfit algorithm: name = " << (*svFitAlgorithmName) << std::endl;
       }
     }
     if ( cfg.exists("nSVfit") ) {
@@ -67,7 +67,7 @@ class CompositePtrCandidateT1T2MEtAlgorithm
 	std::string pluginType = cfg_algorithm.getParameter<std::string>("pluginType");
 	NSVfitAlgorithmBase* nSVfitAlgorithm = NSVfitAlgorithmPluginFactory::get()->create(pluginType, cfg_algorithm);
 	nSVfitAlgorithms_.insert(std::pair<std::string, NSVfitAlgorithmBase*>(*nSVfitAlgorithmName, nSVfitAlgorithm));
-	std::cout << "--> adding nSVfit algorithm: name = " << (*nSVfitAlgorithmName) << std::endl;
+	//std::cout << "--> adding nSVfit algorithm: name = " << (*nSVfitAlgorithmName) << std::endl;
       }
     }
     scaleFuncImprovedCollinearApprox_ = cfg.exists("scaleFuncImprovedCollinearApprox") ?
@@ -129,7 +129,7 @@ class CompositePtrCandidateT1T2MEtAlgorithm
 								 const std::string& recoMode, 
 								 bool doSVreco)
   {
-    std::cout << "<CompositePtrCandidateT1T2MEtAlgorithm::buildCompositePtrCandidate>:"<< std::endl;
+    //std::cout << "<CompositePtrCandidateT1T2MEtAlgorithm::buildCompositePtrCandidate>:"<< std::endl;
     //if ( !met.isNull() ) std::cout << " MET: pt = " << met->pt() << std::endl;
     //else                 std::cout << " MET: none." << std::endl;
 
@@ -177,7 +177,7 @@ class CompositePtrCandidateT1T2MEtAlgorithm
 	if ( pv ) {	  
 	  for ( typename std::map<std::string, NSVfitAlgorithmBase*>::const_iterator nSVfitAlgorithm = nSVfitAlgorithms_.begin();
 		nSVfitAlgorithm != nSVfitAlgorithms_.end(); ++nSVfitAlgorithm ) {
-	    std::cout << "--> running nSVfit algorithm: name = " << nSVfitAlgorithm->first << std::endl;
+	    //std::cout << "--> running nSVfit algorithm: name = " << nSVfitAlgorithm->first << std::endl;
 	    typedef edm::Ptr<reco::Candidate> CandidatePtr;
 	    typedef std::map<std::string, CandidatePtr> inputParticleMap;
 	    inputParticleMap inputParticles;
@@ -186,7 +186,7 @@ class CompositePtrCandidateT1T2MEtAlgorithm
 	    inputParticles.insert(std::pair<std::string, CandidatePtr>("met",  met));
 	    std::auto_ptr<NSVfitEventHypothesis> nSVfitHypothesis(nSVfitAlgorithm->second->fit(inputParticles, pv));
 	    compositePtrCandidate.addNSVfitSolution(nSVfitAlgorithm->first, *nSVfitHypothesis);
-	    std::cout << " done." << std::endl;
+	    //std::cout << " done." << std::endl;
 	  }
 	}
       }
@@ -407,8 +407,6 @@ class CompositePtrCandidateT1T2MEtAlgorithm
       std::cout << " pZetaVis = " << pZetaVis << std::endl;
       std::cout << " pZeta = " << pZeta << std::endl;
     }
-
-    //assert(pZetaVis >= 0.);
 
     compositePtrCandidate.setPzeta(pZeta);
     compositePtrCandidate.setPzetaVis(pZetaVis);
