@@ -10,26 +10,15 @@ import subprocess
 channel = 'ZtoMuTau_tauIdEff'
 configFile = 'skimTauIdEffSample_cfg.py'
 #jobId = getJobId(channel)
-jobId = '2011Feb03b'
+jobId = '2011Apr05'
 
-outputFilePath = '/user/v/veelken/CMSSW_3_8_x/skims/TauIdEffMeas/'
+outputFilePath = '/user/v/veelken/CMSSW_4_1_x/skims/TauIdEffMeas/'
 
 pfCandidateCollection = "particleFlow" # pile-up removal disabled
 #pfCandidateCollection = "pfNoPileUp"   # pile-up removal enabled
 
 samplesToAnalyze = [
     # modify in case you want to submit jobs for some of the samples only...
-    #'data_Mu_Run2010A_Nov4ReReco',
-    #'data_Mu_Run2010B_Nov4ReReco',
-    'Ztautau_powheg', 'Ztautau_powhegZ2',
-    #'ZtautauPU156bx',
-    #'Zmumu_pythia',
-    #'Zee_pythia',
-    #'DYmumuM2to10_pythia', 'DYmumuM10to20_pythia',
-    #'Zmumu_powheg', 'Zee_powheg',
-    #'PPmuXptGt20Mu10', 'PPmuXptGt20Mu15',
-    #'WplusJets_madgraph',
-    #'TTplusJets_madgraph'
 ]
 
 # Define what output file name a skimmed sample will have

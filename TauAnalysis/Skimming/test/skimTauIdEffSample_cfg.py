@@ -26,23 +26,19 @@ process.maxEvents = cms.untracked.PSet(
 
 process.source = cms.Source("PoolSource",
     fileNames = cms.untracked.vstring(
-        #'file:/data1/veelken/CMSSW_3_6_x/skims/Ztautau_1_1_sXK.root'
-        #'file:/data1/veelken/CMSSW_3_8_x/skims/AHtoMuTau/selEvents_AHtoMuTau_woBtag_runs145762to148058_RECO.root'
-        #'file:/data1/friis/PickMikesEvents/mikes_events_2010b_incomplete.root',
-        #'file:/data1/friis/PickMikesEvents/mikes_events_2010b_incomplete001.root'
-        'file:/data1/veelken/CMSSW_3_8_x/skims/test/mcDYttPU156bx_GEN_SIM_RECO_1_1_1VV.root'
+        'file:/data2/veelken/CMSSW_4_1_x/skims/ZtoMuTau/DYtautau_spring11_powhegZ2_1_1_XvY.root'
+        #'file:/data2/veelken/CMSSW_4_1_x/skims/ZtoMuTau/data2/veelken/CMSSW_4_1_x/skims/ZtoMuTau/data2011A_tauPlusX_AOD_1_1_MV9.root'
     )
 )
 
 isMC = True # use for MC
 ##isMC = False # use for Data
-##HLTprocessName = "HLT" # use for non-reprocessed MC samples and Data
-##HLTprocessName = "REDIGI36X" # use for Spring'10 reprocessed MC
-HLTprocessName = "REDIGI38XPU" # use for Fall'10 reprocessed MC with pile-up
-##HLTprocessName = "REDIGI38X" # use for Fall'10 reprocessed MC without pile-up
+##HLTprocessName = "HLT" # use for 2011 Data
+HLTprocessName = "REDIGI311X" # use for Spring'11 reprocessed MC
 pfCandidateCollection = "particleFlow" # pile-up removal disabled
 ##pfCandidateCollection = "pfNoPileUp" # pile-up removal enabled
 #--------------------------------------------------------------------------------
+
 #--------------------------------------------------------------------------------
 # define "hooks" for replacing configuration parameters
 # in case running jobs on the CERN batch system/grid
@@ -56,12 +52,11 @@ pfCandidateCollection = "particleFlow" # pile-up removal disabled
 
 #--------------------------------------------------------------------------------
 # define GlobalTag to be used for event reconstruction
-# (only relevant for HPS tau reconstruction algorithm)
 if isMC:
-    process.GlobalTag.globaltag = cms.string('START38_V14::All')
-else:   
-    process.GlobalTag.globaltag = cms.string('GR_R_38X_V15::All')
-#--------------------------------------------------------------------------------    
+    process.GlobalTag.globaltag = cms.string('START311_V2::All')
+else:
+    process.GlobalTag.globaltag = cms.string('GR_R_311_V2::All')
+#--------------------------------------------------------------------------------
 
 #--------------------------------------------------------------------------------
 # define skimming criteria
@@ -113,7 +108,6 @@ process.origFEVTSIMEventContent.outputCommands.extend(
 process.skimOutputModule = cms.OutputModule("PoolOutputModule",                                 
     process.origFEVTSIMEventContent,
     process.tauIdEffSampleEventSelection,
-    verbose = cms.untracked.bool(False),
     fileName = cms.untracked.string("tauIdEffSample_RECO.root")
 )
 
