@@ -212,7 +212,7 @@ RECO_SAMPLES = {
         'applyMuonIsolationEfficiencyCorrection' : True,
         'applyVertexMultiplicityReweighting' : True,
         'enableFakeRates' : True,
-        'hlt' : cms.InputTag("TriggerResults", "", "HLT")
+        'hlt' : cms.InputTag("TriggerResults", "", "REDIGI311X")
     },
     'WW' : {
         'datasetpath' : "/WWtoAnything_TuneZ2_7TeV-pythia6-tauola/Spring11-PU_S1_START311_V1G1-v1/AODSIM",
