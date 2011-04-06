@@ -90,11 +90,12 @@ def switchToData(process):
 				#  o diTauCandidateCollinearApproxHistManagerBinnedForMuTau
 				analyzerPluginsToRemove = [
 					"genPhaseSpaceEventInfoHistManager",
-					"genTauHistManager",	    
+					"genTauHistManager",
+					"cutFlowHistManagerGenMultiplicity",
 					"modelBinnerForMuTauGenTauLeptonPairAcc",
 					"modelBinnerForMuTauWrtGenTauLeptonPairAcc",
 					"modelBinnerForMuTauGenTauLeptonPairAcc3mZbins",
-                    "modelBinnerForMuTauWrtGenTauLeptonPairAcc3mZbins",
+					"modelBinnerForMuTauWrtGenTauLeptonPairAcc3mZbins",
 					"modelBinnerForMuTauCentralJetVetoWrtGenTauLeptonPairAcc",
 					"modelBinnerForMuTauCentralJetBtagWrtGenTauLeptonPairAcc",
 					"sysUncertaintyBinnerForMuTau",
