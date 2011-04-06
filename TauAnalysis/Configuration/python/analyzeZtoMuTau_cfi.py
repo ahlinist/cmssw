@@ -50,7 +50,7 @@ diTauCandidateNSVfitHistManagerForMuTau.pluginType = cms.string('PATMuTauPairNSV
 diTauCandidateNSVfitHistManagerForMuTau.diTauCandidateSource = cms.InputTag('selectedMuTauPairsPzetaDiffCumulative')
 diTauCandidateNSVfitHistManagerForMuTau.nSVfitEventHypotheses = cms.PSet(
     psKine_MEt_ptBalance       = cms.string('psKine_MEt_ptBalance'),
-    psKine_MEt_Track_ptBalance = cms.string('psKine_MEt_Track_ptBalance')
+    ##psKine_MEt_Track_ptBalance = cms.string('psKine_MEt_Track_ptBalance')
 )
 
 diTauCandidateNSVfitVtxMultiplicityBinGridHistManager = cms.PSet(
