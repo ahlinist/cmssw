@@ -14,6 +14,7 @@
 #include "DataFormats/Provenance/interface/ModuleDescription.h"
 #include "FWCore/Framework/interface/EventSetupProvider.h"
 #include "FWCore/Utilities/interface/Algorithms.h"
+#include "FWCore/MessageLogger/interface/ExceptionMessages.h"
 #include "FWCore/MessageLogger/interface/MessageLogger.h"
 #include "FWCore/Framework/interface/Actions.h"
 #include "FWCore/Utilities/interface/Exception.h"
@@ -42,11 +43,10 @@ namespace edm {
       status = duringLoop(event, es, ioController);
     }
     catch(cms::Exception& e) {
-      actions::ActionCodes action = (act_table_->find(e.rootCause()));
+      e.addContext("Calling the 'duringLoop' method of a looper");
+      actions::ActionCodes action = (act_table_->find(e.category()));
       if (action != actions::Rethrow) {
-        LogWarning(e.category())
-          << "An exception occurred in the looper, continuing with the next event\n"
-          << e.what();
+        edm::printCmsExceptionWarning("SkipEvent", e);
       }
       else {
         throw;
