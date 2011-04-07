@@ -13,7 +13,7 @@
 //
 // Original Author:  pts/45
 //         Created:  Tue May 13 12:23:34 CEST 2008
-// $Id: RPCMonitorEfficiency.cc,v 1.52 2011/03/07 08:20:50 carrillo Exp $
+// $Id: RPCMonitorEfficiency.cc,v 1.53 2011/03/09 10:04:52 carrillo Exp $
 //
 //
 
@@ -1846,7 +1846,7 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
 	    }	
 	    
 	    if(debug) std::cout<<"Filling txt file with roll and efficiency"<<std::endl;
-	    RollYEff<<name<<" "<<pinoeff<<" "<<pinoerr<<" "<<pinoexpected<<" "<<histoCLS->GetMean()<<std::endl;
+	    RollYEff<<name<<" "<<pinoeff<<" "<<pinoerr<<" "<<pinoexpected<<" "<<histoCLS->GetMean()<<" "<<histoCLS->Integral()<<std::endl;
 	    
 	    if(debug) std::cout<<" deleting profiles"<<std::endl;
 
