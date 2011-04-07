@@ -8,9 +8,9 @@
  * 
  * \author Christian Veelken, UC Davis
  *
- * \version $Revision: 1.12 $
+ * \version $Revision: 1.1 $
  *
- * $Id: PATElectronDump.h,v 1.12 2010/02/05 14:05:30 veelken Exp $
+ * $Id: PATElectronDump.h,v 1.1 2010/02/12 17:18:02 veelken Exp $
  *
  */
 
@@ -24,6 +24,8 @@
 
 #include "TauAnalysis/Core/interface/ObjectDumpBase.h"
 
+#include "TauAnalysis/RecoTools/interface/ParticlePFIsolationExtractor.h"
+
 class PATElectronDump : public ObjectDumpBase
 {
  public:  
@@ -36,8 +38,15 @@ class PATElectronDump : public ObjectDumpBase
  private:
   edm::InputTag patElectronSource_;
   edm::InputTag genParticleSource_;
+  edm::InputTag pfCandidateSrc_;
 
   std::vector<int> skipPdgIdsGenParticleMatch_;
+  
+  PATElectronPFIsolationExtractor* pfCombIsoExtractor_;
+  PATElectronPFIsolationExtractor* pfChargedHadronIsoExtractor_;
+  PATElectronPFIsolationExtractor* pfNeutralHadronIsoExtractor_;
+  PATElectronPFIsolationExtractor* pfPhotonIsoExtractor_;
+
 };
 
 #endif  
