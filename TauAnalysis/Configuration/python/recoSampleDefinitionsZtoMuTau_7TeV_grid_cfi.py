@@ -7,11 +7,11 @@ import TauAnalysis.DQMTools.plotterStyleDefinitions_cfi as styles
 # List of samples to run in the analysis
 SAMPLES_TO_ANALYZE = [
     'data_TauPlusX_Run2011A_PromptReco',
-    #'DYtautauM10to20_powheg',
-    #'Ztautau_powheg',
-    #'qqZll',
-    #'DYmumuM10to20_pythia',
-    #'Zmumu_powheg',
+    'DYtautauM10to20_powheg',
+    'Ztautau_powheg',
+    'qqZll',
+    'DYmumuM10to20_pythia',
+    'Zmumu_powheg',
     'PPmuXptGt20Mu15',
     'WplusJets_madgraph',
     'WW',
@@ -119,9 +119,9 @@ RECO_SAMPLES = {
         'hlt' : cms.InputTag("TriggerResults", "", "REDIGI311X")
     },
     'Ztautau_powheg' : {
-        'datasetpath' : "/DYToTauTau_M-20_CT10_TuneZ2_7TeV-powheg-pythia-tauola/Spring11-PU_S1_START311_V1G1-v1/GEN-SIM-RECO",
+        'datasetpath' : "/DYToTauTau_M-20_CT10_TuneZ2_7TeV-powheg-pythia-tauola/Spring11-PU_S1_START311_V1G1-v2/AODSIM",
         'dbs_url' :  "http://cmsdbsprod.cern.ch/cms_dbs_prod_global/servlet/DBSServlet",
-        'events_processed' : 1994719,
+        'events_processed' : 1995369,
         'skim_eff' : 1.0,
         'x_sec' : 1666*_picobarns,
         'legendEntry' : plotter.process_Ztautau.config_dqmHistPlotter.legendEntry.value(),
