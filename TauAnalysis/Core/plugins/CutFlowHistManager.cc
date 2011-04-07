@@ -10,6 +10,8 @@
 
 #include "SimDataFormats/PileupSummaryInfo/interface/PileupSummaryInfo.h"
 
+#include "TauAnalysis/CandidateTools/interface/generalAuxFunctions.h"
+
 #include <TAxis.h>
 
 #include <iostream>
@@ -61,6 +63,8 @@ void CutFlowHistManager::fillHistogramsImp(const edm::Event& evt, const edm::Eve
     evt.getByLabel(*srcEventSelFlag, evtSelFlag);
     evtSelFlags.push_back(*evtSelFlag);
   }
+
+  //std::cout << " evtSelFlags = " << format_vbool(evtSelFlags) << std::endl;
   
   int multiplicity = -1;
   if ( mode_ == kGen ) {
