@@ -399,8 +399,8 @@ drawJobConfigurator_ForElecTau.add(
     beforeCut = evtSelTauElectronVeto,
 	plots = [
 		drawJobConfigEntry(
-			meName = 'TauQuantities/TauDiscriminatorAgainstElectrons',
-			title = "Tau anti-Electron Discr. (after Charge(Tau) = +/-1 Cut)",
+			meName = 'TauQuantities/TauDiscriminatorAgainstElectronsTight',
+			title = "Tau tight anti-Electron Discr. (after Charge(Tau) = +/-1 Cut)",
 			xAxis = 'unlabeled',
 			name = "cutFlowControlPlots_tauAntiElectronDiscr_afterTauCharge"
 			),
@@ -440,7 +440,7 @@ drawJobConfigurator_ForElecTau.add(
 			name = "cutFlowControlPlots_tau_afterTauEcalCrackVeto"
 			),
 		drawJobConfigEntry(
-			meName = 'TauQuantities/TauDiscriminatorAgainstMuons',
+			meName = 'TauQuantities/TauDiscriminatorAgainstMuonsTight',
 			title = "Tau anti-muon Discr. (after Tau ECAL Crack Veto)",
 			xAxis = 'unlabeled',
 			name = "cutFlowControlPlots_tauAntiMuonDiscr_afterTauEcalCrackVeto"
