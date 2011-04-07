@@ -121,7 +121,8 @@ analyzeZtoElecTauEventsOS = cms.EDAnalyzer("GenericAnalyzer",
 
 analyzeZtoElecTauEventsSS = analyzeZtoElecTauEventsOS.clone(
 	name = cms.string('zElecTauAnalyzerSS'),
-	analysisSequence = elecTauAnalysisSequenceSS
+	analysisSequence = elecTauAnalysisSequenceSS,
+	eventDumps = cms.VPSet()
 )
 
 analyzeZtoElecTauSequence = cms.Sequence( analyzeZtoElecTauEventsOS * analyzeZtoElecTauEventsSS )
