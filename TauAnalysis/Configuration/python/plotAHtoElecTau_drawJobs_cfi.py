@@ -182,16 +182,16 @@ finalSamplePlots = [
 			name = "finalSamplePlots_pdgIdFinalStateGenParticleMatchingElectron"
 		),
 		drawJobConfigEntry(
-			meName = 'ElectronQuantities/ElectronParticleFlowIsoPtRel',
-			title = "Electron ECAL iso., Barrel (final Event sample)",
+			meName = 'ElectronQuantities/ElectronPFCombIsoPtRelBarrel',
+			title = "Electron comb. rel. PF iso., Barrel (final Event sample)",
 			xAxis = 'Pt',
-			name = "finalSamplePlots_electronEcalIsoBarrel"
+			name = "finalSamplePlots_electronCombPFIsoRelBarrel"
 		),
 		drawJobConfigEntry(
-			meName = 'ElectronQuantities/ElectronEcalIsoPtEndcap',
-			title = "Electron ECAL iso., Endcap (final Event sample)",
+			meName = 'ElectronQuantities/ElectronPFCombIsoPtRelEndcap',
+			title = "Electron comb. rel. PF iso., Endcap (final Event sample)",
 			xAxis = 'Pt',
-			name = "finalSamplePlots_electronEcalIsoEndcap"
+			name = "finalSamplePlots_electronCombPFIsoRelEndcap"
 		),
 		drawJobConfigEntry(
 			meName = 'TauQuantities/Tau#PAR#',
@@ -231,10 +231,10 @@ finalSamplePlots = [
 			name = "finalSamplePlots_tauJetRadius"
 		),
 		drawJobConfigEntry(
-			meName = 'TauQuantities/TauDiscriminatorTaNCfrQuarterPercent',
-			title = "TaNC output (fr = 0.25%) (final Event sample)",
+			meName = 'TauQuantities/TauDiscriminatorHPSloose',
+			title = "HPS loose output (final Event sample)",
 			xAxis = 'unlabeled',
-			name = "finalSamplePlots_tauDiscrTaNCfrQuarterPercent"
+			name = "finalSamplePlots_tauDiscrHPSloose"
 		),
 		drawJobConfigEntry(
 			meName = 'DiTauCandidateQuantities/DPhi12',
