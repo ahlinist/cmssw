@@ -199,8 +199,8 @@ void ElectronHistManager::bookHistogramsImp()
   hElectronMatchingFinalStateGenParticlePdgId_ = book1D("ElectronMatchingFinalStateGenParticlePdgId", "matching final-state gen. Particle PdgId", 26, -1.5, 24.5);
   
   hElectronTrackPt_ = book1D("ElectronTrackPt", "Electron Track P_{T}", 75, 0., 150.);
-  hElectronTrackIPxy_ = book1D("ElectronTrackIPxy", "Electron Track Impact Parameter (xy)", 100, -0.100, 0.100);
-  hElectronTrackIPz_ = book1D("ElectronTrackIPz", "Electron Track Impact Parameter (z)", 100, -1.0, 1.0);
+  hElectronTrackIPxy_ = book1D("ElectronTrackIPxy", "Electron Track Impact Parameter (xy)", 100, -0.10, 0.10);
+  hElectronTrackIPz_ = book1D("ElectronTrackIPz", "Electron Track Impact Parameter (z)", 100, -0.5, 0.5);
   
   hElectronSuperclEnOverTrackMomBarrel_ = book1D("ElectronSuperclEnOverTrackMomBarrel", "Electron (Barrel) #frac{E_{Supercluster}}{P_{Track}}", 50, 0., 5.);
   hElectronSuperclEnOverTrackMomEndcap_ = book1D("ElectronSuperclEnOverTrackMomEndcap", "Electron (Endcap) #frac{E_{Supercluster}}{P_{Track}}", 50, 0., 5.);
@@ -279,6 +279,7 @@ void ElectronHistManager::bookHistogramsImp()
   if ( makeConversionHistograms_ ) {
 	  hElectronConvRadius_ = book1D("ElectronConversionRadius","ElectronConversionRadius",50,0,40);
 	  hElectronConvDoca_ = book1D("ElectronConversionDoca","ElectronConversionDistanceOfClosestAppreach",50,0,1);
+	  hElectronConvEta_ = book1D("ElectronConversionEta","ElectronConversionEta",60,-3,3);
 	  hElectronConvDeltaCotTheta_ = book1D("ElectronConversionDeltaCotTheta","ElectronConversionDeltaCotTheta",50,0,0.5);
 	  hElectronMissExpInnerHits_ = book1D("ElectronMissingExpInnerHits","ElectronMissingExpInnerHits",5,0,4);
   }
@@ -552,8 +553,9 @@ void ElectronHistManager::fillElectronIsoHistograms(const pat::Electron& patElec
   //std::cout << " photonIso = " << patElectron.photonIso() << std::endl;
  
   //
-  // PF iso sumas are not currently embedded
+  // PF iso sums are not currently embedded
   //
+  /*
   hElectronParticleFlowIsoPt_->Fill(patElectron.particleIso(), weight);
   hElectronParticleFlowIsoPtRel_->Fill(patElectron.particleIso()/patElectron.pt(), weight);
   hElectronPFChargedHadronIsoPt_->Fill(patElectron.chargedHadronIso(), weight);
@@ -562,7 +564,8 @@ void ElectronHistManager::fillElectronIsoHistograms(const pat::Electron& patElec
   hElectronPFNeutralHadronIsoPtRel_->Fill(patElectron.neutralHadronIso()/patElectron.pt(), weight);
   hElectronPFGammaIsoPt_->Fill(patElectron.photonIso(), weight);
   hElectronPFGammaIsoPtRel_->Fill(patElectron.photonIso()/patElectron.pt(), weight);
- 
+  */
+
   if ( pfChargedHadronIsoExtractor_ ) {
 	  double pfChargedHadronIso = (*pfChargedHadronIsoExtractor_)(patElectron, pfCandidates);
 	  hElectronPFChargedHadronIsoPt_->Fill(pfChargedHadronIso, weight);
@@ -659,11 +662,13 @@ void ElectronHistManager::fillConversionHistograms(const pat::Electron& patElect
 	double dist = convInfo.dist();
 	double dcot = convInfo.dcot();
 	double convradius = convInfo.radiusOfConversion();
-	//math::XYZPoint convPoint = convInfo.pointOfConversion();
+	math::XYZPoint convPoint = convInfo.pointOfConversion();
+	double convPointEta = convPoint.eta();
             
 	hElectronConvDeltaCotTheta_->Fill(fabs(dcot),weight);
 	hElectronConvRadius_->Fill(fabs(convradius),weight);
 	hElectronConvDoca_->Fill(fabs(dist),weight);
+	hElectronConvEta_->Fill(convPointEta,weight);
 
 	// get number of expected inner hits
 	const reco::Track *elec_track = (const reco::Track*)(patElectron.gsfTrack().get());
