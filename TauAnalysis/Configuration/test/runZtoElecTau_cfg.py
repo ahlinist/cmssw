@@ -7,8 +7,7 @@ process = cms.Process('runZtoElecTau')
 # of electrons, muons and tau-jets with non-standard isolation cones
 process.load('Configuration/StandardSequences/Services_cff')
 process.load('FWCore/MessageService/MessageLogger_cfi')
-#process.MessageLogger.cerr.FwkReport.reportEvery = 100
-process.MessageLogger.cerr.FwkReport.reportEvery = 1
+process.MessageLogger.cerr.FwkReport.reportEvery = 100
 #process.MessageLogger.cerr.threshold = cms.untracked.string('INFO')
 #process.MessageLogger.suppressInfo = cms.untracked.vstring()
 process.MessageLogger.suppressWarning = cms.untracked.vstring("PATTriggerProducer",)
@@ -68,15 +67,13 @@ process.maxEvents = cms.untracked.PSet(
 
 process.source = cms.Source("PoolSource",
     fileNames = cms.untracked.vstring(
-	#'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/fall10/Ztautau/skimElecTau_1_1_6h9.root',
-        #'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/fall10/Ztautau/skimElecTau_2_1_LLB.root',
-        #'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/fall10/Ztautau/skimElecTau_3_1_oXg.root',
-        #'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/fall10/Ztautau/skimElecTau_4_1_pwH.root',
-        #'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/fall10/Ztautau/skimElecTau_5_1_EgY.root'
+		'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/fall10/Ztautau/skimElecTau_1_1_6h9.root',
+        'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/fall10/Ztautau/skimElecTau_2_1_LLB.root',
+        'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/fall10/Ztautau/skimElecTau_3_1_oXg.root',
+        'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/fall10/Ztautau/skimElecTau_4_1_pwH.root',
+        'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/fall10/Ztautau/skimElecTau_5_1_EgY.root'
         #'/store/relval/CMSSW_3_8_7/RelValZTT/GEN-SIM-RECO/START38_V13-v1/0016/26155577-92FC-DF11-8E56-001A92810A9A.root',
         #'/store/relval/CMSSW_3_8_7/RelValZTT/GEN-SIM-RECO/START38_V13-v1/0016/506F0476-92FC-DF11-8886-00304867C1BC.root',
-        #'file:/data2/friis/HiggsPickEvents/e_tau_2010B_partial.root'
-        'file:/data1/veelken/CMSSW_3_8_x/skims/ztt_events.root'                         
     )
     #skipBadFiles = cms.untracked.bool(True)
 )
@@ -105,6 +102,8 @@ from PhysicsTools.PatAlgos.tools.tauTools import *
 
 # comment-out to take new HPS + TaNC combined tau id. algorithm
 switchToPFTauHPSpTaNC(process)
+
+#switchToPFTauHPS(process)
 
 # disable preselection on of pat::Taus
 # (disabled also in TauAnalysis/RecoTools/python/patPFTauConfig_cfi.py ,
@@ -161,17 +160,27 @@ changeCut(process,"selectedPatElectronsForElecTauPt","pt > 15")
 changeCut(process,"selectedPatElectronsForElecTauIso",cms.double(0.08),"sumPtMaxEB")
 changeCut(process,"selectedPatElectronsForElecTauIso",cms.double(0.04),"sumPtMaxEE")
 
+changeCut(process,"selectedPatElectronsForElecTauIsoLooseIsolation",cms.double(0.25),"sumPtMax")
+
 #  electron conversion veto
 #  set deltaCot(theta) < 0.02 for real conversions
 changeCut(process,"selectedPatElectronsForElecTauConversionVeto",cms.double(0), attribute = "nConvPairMax")
-changeCut(process,"selectedPatElectronsForElecTauConversionVeto",cms.double(0.05), attribute = "cotThetaMax")
-changeCut(process,"selectedPatElectronsForElecTauConversionVeto",cms.double(0.1), attribute = "docaElecTrackMax")
+changeCut(process,"selectedPatElectronsForElecTauConversionVeto",cms.double(0.02), attribute = "cotThetaMax")
+changeCut(process,"selectedPatElectronsForElecTauConversionVeto",cms.double(0.02), attribute = "docaElecTrackMax")
 changeCut(process,"selectedPatElectronsForElecTauConversionVeto",cms.bool(True), attribute = "usePogMethod")
 changeCut(process,"selectedPatElectronsForElecTauConversionVeto",cms.bool(True), attribute = "doMissingHitsCut")
 changeCut(process,"selectedPatElectronsForElecTauConversionVeto",cms.bool(False), attribute = "doPixCut")
 
+changeCut(process,"selectedPatElectronsForElecTauConversionVetoLooseIsolation",cms.double(2), attribute = "nConvPairMax")
+changeCut(process,"selectedPatElectronsForElecTauConversionVetoLooseIsolation",cms.double(0.02), attribute = "cotThetaMax")
+changeCut(process,"selectedPatElectronsForElecTauConversionVetoLooseIsolation",cms.double(0.02), attribute = "docaElecTrackMax")
+changeCut(process,"selectedPatElectronsForElecTauConversionVetoLooseIsolation",cms.bool(True), attribute = "usePogMethod")
+changeCut(process,"selectedPatElectronsForElecTauConversionVetoLooseIsolation",cms.bool(True), attribute = "doMissingHitsCut")
+changeCut(process,"selectedPatElectronsForElecTauConversionVetoLooseIsolation",cms.bool(False), attribute = "doPixCut")
+
 # upper limit on tranverse impact parameter of electron track 
-changeCut(process, "selectedPatElectronsForElecTauTrkIP", 0.05, attribute = "IpMax")
+changeCut(process, "selectedPatElectronsForElecTauTrkIP", 0.02, attribute = "IpMax")
+changeCut(process, "selectedPatElectronsForElecTauTrkIPlooseIsolation", 0.02, attribute = "IpMax")
 
 #
 # hadronic tau decay selection
@@ -183,8 +192,13 @@ changeCut(process,"selectedPatTausForElecTauEta","abs(eta) < 2.3")
 #  Pt cut for taus
 changeCut(process,"selectedPatTausForElecTauPt","pt > 20")
 
+# remove tau ID lead track pt discriminant and add decay mode finding
+changeCut(process,"selectedPatTausLeadTrkPt",'tauID("decayModeFinding") > 0.5')
+changeCut(process,"selectedPatTausForElecTauLeadTrkPt",'tauID("decayModeFinding") > 0.5')
+
 # change tau ID to HPS loose
-changeCut(process, "selectedPatTausForElecTauTaNCdiscr", "tauID('byHPSloose') > 0.5")
+changeCut(process,"selectedPatTausTaNCdiscr","tauID('byHPSloose') > 0.5")
+changeCut(process,"selectedPatTausForElecTauTaNCdiscr","tauID('byHPSloose') > 0.5")
 
 #  1/3-prong track cut for taus
 changeCut(process,"selectedPatTausForElecTauProng","signalPFChargedHadrCands.size() = 1 | signalPFChargedHadrCands.size() = 3")
@@ -193,13 +207,14 @@ changeCut(process,"selectedPatTausForElecTauProng","signalPFChargedHadrCands.siz
 changeCut(process,"selectedPatTausForElecTauCharge","abs(charge) > 0.5 & abs(charge) < 1.5")
 
 #  electron veto for taus
-changeCut(process,"selectedPatTausForElecTauElectronVeto","leadPFCand().isNonnull() & leadPFCand().mva_e_pi() < -0.1 & hcalTotOverPLead() > 0.1")
+changeCut(process,"selectedPatTausForElecTauElectronVeto","tauID('againstElectronTight') > 0.5")
+changeCut(process,"selectedPatTausElectronVeto","tauID('againstElectronTight') > 0.5")
 
 # ECAl crack veto for taus 
 changeCut(process,"selectedPatTausForElecTauEcalCrackVeto",'abs(eta) < 1.460 | abs(eta) > 1.558')
 
 #  muon veto for taus
-changeCut(process,"selectedPatTausForElecTauMuonVeto",'tauID("againstMuonTight") > 0.5')
+changeCut(process,"selectedPatTausForElecTauMuonVeto",'tauID("againstMuonLoose") > 0.5')
 
 
 #
@@ -207,6 +222,9 @@ changeCut(process,"selectedPatTausForElecTauMuonVeto",'tauID("againstMuonTight")
 #
 
 # change lower limit on separation required between electron and tau-jet to dR > 0.5
+#
+# NOTE: this cut is NOT part of the EWK-10-013 analysis
+#
 changeCut(process, "selectedElecTauPairsAntiOverlapVeto", "dR12 > 0.5")
 changeCut(process, "selectedElecTauPairsAntiOverlapVetoLooseElectronIsolation", "dR12 > 0.5")
 
@@ -227,8 +245,15 @@ process.printEventContent = cms.EDAnalyzer("EventContentAnalyzer")
 process.filterFirstEvent = cms.EDFilter("EventCountFilter",
     numEvents = cms.int32(1)
 )
+process.n = cms.Path(process.filterFirstEvent + process.printEventContent)
 
-process.o = cms.Path(process.filterFirstEvent + process.printEventContent)
+process.o = cms.Path(process.dataQualityFilters)
+
+# Define a generic end path that filters the final events that a pool
+# output module can be hooked into if desired.
+process.filterFinalEvents = cms.EDFilter("BoolEventFilter",
+	src = cms.InputTag("isRecZtoElecTau")
+)
 
 process.p = cms.Path(
    process.producePatTupleZtoElecTauSpecific
@@ -237,9 +262,9 @@ process.p = cms.Path(
   + process.selectZtoElecTauEvents
   + process.analyzeZtoElecTauSequence
   + process.saveZtoElecTauPlots
+  + process.isRecZtoElecTau
+  + process.filterFinalEvents
 )
-
-process.q = cms.Path(process.dataQualityFilters)
 
 # Dummy do-nothing module to allow an empty path
 process.dummy = cms.EDProducer("DummyModule")
@@ -247,8 +272,8 @@ process.dummy = cms.EDProducer("DummyModule")
 process.endtasks = cms.EndPath(process.dummy)
 
 process.schedule = cms.Schedule(
+		process.n, 
 		process.o, 
-		process.q, 
 		process.p,
 		process.endtasks
 )
