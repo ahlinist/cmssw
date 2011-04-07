@@ -35,7 +35,7 @@ patElectronPFIsolationSelector = cms.PSet(
     pfCandidateSource = cms.InputTag('pfNoPileUp'),
 
     chargedHadronIso = cms.PSet(
-        ptMin = cms.double(1.0),        
+        ptMin = cms.double(0.5),        
         dRvetoCone = cms.double(-1.),
         dRisoCone = cms.double(0.4),
     ),
@@ -54,7 +54,7 @@ patElectronPFIsolationSelector = cms.PSet(
         dRisoCone = cms.double(0.4)
     ),
 
-    sumPtMaxEB = cms.double(0.09),
-    sumPtMaxEE = cms.double(0.06),
+    sumPtMaxEB = cms.double(0.08),
+    sumPtMaxEE = cms.double(0.04),
     sumPtMethod = cms.string("relative") # either "relative" or "absolute"
 )
