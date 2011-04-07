@@ -42,5 +42,9 @@ electronHistManager = cms.PSet(
 	makeIsoPtConeSizeDepHistograms = cms.bool(False),
 
 	makeConversionHistograms = cms.bool(False),
-	conversionPartnerTrackSrc = cms.InputTag("generalTracks")
+	conversionPartnerTrackSrc = cms.InputTag("generalTracks"),
+	
+	#  only necessary if making conversion histograms
+	isData = cms.bool(False),
+	dcsTag = cms.InputTag('scalersRawToDigi')
 )
