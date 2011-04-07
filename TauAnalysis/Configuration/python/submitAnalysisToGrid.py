@@ -104,8 +104,8 @@ def submitAnalysisToGrid(configFile = None, channel = None, samples = None,
             HLTprocessName = sample_info['hlt'].getProcessName()
         jobCustomizations.append("if hasattr(process, 'hltMu'):")
         jobCustomizations.append("    process.hltMu.selector.src = cms.InputTag('TriggerResults::%s')" % HLTprocessName)
-        jobCustomizations.append("process.patTrigger.processName = '%s'" % HLTprocessName)
-        jobCustomizations.append("process.patTriggerEvent.processName = '%s'" % HLTprocessName)
+        jobCustomizations.append("process.patTrigger.processName = cms.string('%s')" % HLTprocessName)
+        jobCustomizations.append("process.patTriggerEvent.processName = cms.string('%s')" % HLTprocessName)
         jobCustomizations.append("if hasattr(process, 'prePatProductionSequence') and hasattr(process, 'prePatProductionSequenceGen'):")
         jobCustomizations.append("    process.prePatProductionSequence.remove(process.prePatProductionSequenceGen)")
         if sample_info['type'] == 'Data':
@@ -114,6 +114,8 @@ def submitAnalysisToGrid(configFile = None, channel = None, samples = None,
             jobCustomizations.append("    delattr(process.ntupleProducer.sources, 'genJets')")
             jobCustomizations.append("    delattr(process.ntupleProducer.sources, 'genPhaseSpaceEventInfo')")
             jobCustomizations.append("    delattr(process.ntupleProducer.sources, 'genPileUpEventInfo')")
+        jobCustomizations.append("process.patDefaultSequence.replace(process.patTriggerEventSequence,")
+        jobCustomizations.append("                                   process.patTriggerSequence + process.patTriggerEventSequence)")
         #jobCustomizations.append("print process.dumpPython()")
         #--------------------------------------------------------------------    
             
