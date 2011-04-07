@@ -1277,7 +1277,7 @@ void VgNtuplizer::produce(edm::Event & e, const edm::EventSetup & es) {
     if ( jetHandle_.isValid() )
       for (View<pat::Jet>::const_iterator iJet = jetHandle_->begin(); iJet != jetHandle_->end(); ++iJet) {
 
-	std::cout << iJet->jecSetsAvailable() << std::endl;
+// 	std::cout << iJet->jecSetsAvailable() << std::endl;
 
 
 	/*
