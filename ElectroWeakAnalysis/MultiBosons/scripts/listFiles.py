@@ -12,7 +12,7 @@ def main(option, args):
     if len(args) == 0:
         ## offer a list of datasets
         myPath = _basePath
-        
+
         print "Available datasets in %s:" % myPath
         for d in os.listdir(myPath):
             if os.path.isdir(os.path.join(myPath, d)):
@@ -22,7 +22,7 @@ def main(option, args):
         myPath = os.path.join(myPath, myDir)
         if not os.path.isdir(myPath):
             raise RunTimeError, "Illegal dir `%s'!" % myPath
-        
+
         print "Available datasets in %s:" % myPath
         myDirs = []
         for d in os.listdir(myPath):
@@ -40,7 +40,7 @@ def main(option, args):
         myPath = os.path.join(myPath, myDir)
         if not os.path.isdir(myPath):
             raise RunTimeError, "Illegal dir `%s'!" % myPath
-        
+
         print "Available datasets in %s:" % myPath
         myDirs = []
         for d in os.listdir(myPath):
@@ -57,10 +57,10 @@ def main(option, args):
             myDir = sys.stdin.readline().strip()
         myPath = os.path.join(myPath, myDir)
         args.append(myPath)
-    
+
     rootRE = re.compile(".+\.root")
     fileNames = []
-    
+
     for myPath in args:
         if not os.path.isdir(myPath):
             raise RunTimeError, "Illegal dir `%s'!" % myPath
@@ -72,6 +72,9 @@ def main(option, args):
                 print "  Added %d files from %s ..." % (len(fileNames), root)
             ## sort by job number
             fileNames.sort(key = lambda f: int(f.split("_")[-3]) )
+
+    print "Enter an output file: "
+    myFile = sys.stdin.readline().strip()
 
     for f in fileNames:
         print "file:%s" % f
