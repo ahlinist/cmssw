@@ -36,6 +36,7 @@ void printTrackInfo(const edm::Ref<T>& track, const reco::Candidate::Point& vert
 {
   if ( isValidRef(track) ) {
     *stream << "  Pt = " << track->pt() << std::endl;
+    *stream << "  Theta = " << track->theta() << ", eta = " << track->eta() << std::endl;
     *stream << "  charge = " << track->charge() << std::endl;
     if ( printDxy ) *stream << "  dXY = " << track->dxy(vertex) << std::endl;
     if ( printDz  ) *stream << "  dZ = " << track->dz(vertex) << std::endl;
