@@ -433,7 +433,7 @@ elecTauAnalysisSequenceOS_woBtag = cms.VPSet(
             'triggerHistManagerForElecTau'
         ),
         replace = cms.vstring('electronHistManager.electronSource = selectedPatElectronsForElecTauPtCumulative',
-                              'electronHistManager.makeIsoPtConeSizeDepHistograms = True',
+			#'electronHistManager.makeIsoPtConeSizeDepHistograms = True',
                               'tauHistManager.tauSource = selectedPatTausForElecTauPtCumulative')
     ),
   
@@ -503,8 +503,9 @@ elecTauAnalysisSequenceOS_woBtag = cms.VPSet(
             'tauHistManager'
         ),
         replace = cms.vstring('electronHistManager.electronSource = selectedPatElectronsForElecTauTrkIPcumulative',
-                              'tauHistManager.tauSource = selectedPatTausForElecTauLeadTrkPtCumulative',
-                              'tauHistManager.makeIsoPtConeSizeDepHistograms = True')
+                              'tauHistManager.tauSource = selectedPatTausForElecTauLeadTrkPtCumulative'
+							  #'tauHistManager.makeIsoPtConeSizeDepHistograms = True'
+							  )
     ),
     cms.PSet(
         filter = cms.string('evtSelTauTaNCdiscr'),
@@ -517,8 +518,9 @@ elecTauAnalysisSequenceOS_woBtag = cms.VPSet(
             'tauHistManager'
         ),
         replace = cms.vstring('electronHistManager.electronSource = selectedPatElectronsForElecTauTrkIPcumulative',
-                              'tauHistManager.tauSource = selectedPatTausForElecTauTaNCdiscrCumulative',
-							  'tauHistManager.makeIsoPtConeSizeDepHistograms = True')
+                              'tauHistManager.tauSource = selectedPatTausForElecTauTaNCdiscrCumulative'
+							  #'tauHistManager.makeIsoPtConeSizeDepHistograms = True'
+							  )
     ),
     cms.PSet(
         filter = cms.string('evtSelTauProng'),
@@ -692,7 +694,7 @@ elecTauAnalysisSequenceOS_woBtag = cms.VPSet(
 			'jetHistManager'
 		),
 		replace = cms.vstring(
-			'electronHistManager.electronSource = selectedPatElectronsiForElecTauTrkIPcumulative',
+			'electronHistManager.electronSource = selectedPatElectronsForElecTauTrkIPcumulative',
 			'tauHistManager.tauSource = selectedPatTausForElecTauElectronVetoCumulative',
 			'jetHistManager.jetSource = selectedPatJetsForAHtoElecTauAntiOverlapWithLeptonsVetoCumulative',
 			'diTauCandidateHistManagerForElecTau.diTauCandidateSource = selectedElecTauPairsForAHtoElecTauPzetaDiffCumulative',
@@ -933,7 +935,7 @@ elecTauAnalysisSequenceOS_wBtag = cms.VPSet(
             'triggerHistManagerForElecTau'
         ),
         replace = cms.vstring('electronHistManager.electronSource = selectedPatElectronsForElecTauPtCumulative',
-                              'electronHistManager.makeIsoPtConeSizeDepHistograms = True',
+			#'electronHistManager.makeIsoPtConeSizeDepHistograms = True',
                               'tauHistManager.tauSource = selectedPatTausForElecTauPtCumulative')
     ),
   
@@ -1003,8 +1005,9 @@ elecTauAnalysisSequenceOS_wBtag = cms.VPSet(
             'tauHistManager'
         ),
         replace = cms.vstring('electronHistManager.electronSource = selectedPatElectronsForElecTauTrkIPcumulative',
-                              'tauHistManager.tauSource = selectedPatTausForElecTauLeadTrkPtCumulative',
-                              'tauHistManager.makeIsoPtConeSizeDepHistograms = True')
+                              'tauHistManager.tauSource = selectedPatTausForElecTauLeadTrkPtCumulative'
+							  #'tauHistManager.makeIsoPtConeSizeDepHistograms = True'
+							  )
     ),
     cms.PSet(
         filter = cms.string('evtSelTauTaNCdiscr'),
@@ -1017,8 +1020,9 @@ elecTauAnalysisSequenceOS_wBtag = cms.VPSet(
             'tauHistManager'
         ),
         replace = cms.vstring('electronHistManager.electronSource = selectedPatElectronsForElecTauTrkIPcumulative',
-                              'tauHistManager.tauSource = selectedPatTausForElecTauTaNCdiscrCumulative',
-							  'tauHistManager.makeIsoPtConeSizeDepHistograms = True')
+                              'tauHistManager.tauSource = selectedPatTausForElecTauTaNCdiscrCumulative'
+							  #'tauHistManager.makeIsoPtConeSizeDepHistograms = True'
+							  )
     ),
     cms.PSet(
         filter = cms.string('evtSelTauProng'),
