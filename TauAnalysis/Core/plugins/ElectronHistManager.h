@@ -173,6 +173,7 @@ class ElectronHistManager : public HistManagerBase
   MonitorElement* hElectronPFGammaIsoPtCtrl_;
 
   MonitorElement* hElectronConvDoca_;
+  MonitorElement* hElectronConvEta_;
   MonitorElement* hElectronConvDeltaCotTheta_;
   MonitorElement* hElectronConvRadius_;
   MonitorElement* hElectronMissExpInnerHits_;
