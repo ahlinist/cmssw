@@ -280,12 +280,81 @@ userSettings = {
         }
     },
     'jkolb': {
-        'current' : 'Run09',
+        'current' : 'Run15',
         'jobs' : {
+			# fall10 MC with 156 BX PU, 2010 dataset (36/pb);  just run data; no electron iso
+            'Run16' : {
+                'ZtoElecTau' : {
+                    'analysisFilePath' : "/user/j/jkolb/elecTauAnalysis/fall10/AHtoElecTau/Run16/",
+                    'harvestingFilePath' : "/data/ndpc0/c/jkolb/TauResults",
+                    'tmpFilePath' : "/data/ndpc0/c/jkolb/TauResults/tmp/"
+                }
+            },
+			# fall10 MC with 156 BX PU, 2010 dataset (36/pb);  re-run data sample for match with Wisconsin
+            'Run15' : {
+                'ZtoElecTau' : {
+                    'analysisFilePath' : "/user/j/jkolb/elecTauAnalysis/fall10/AHtoElecTau/Run15/",
+                    'harvestingFilePath' : "/data/ndpc0/c/jkolb/TauResults",
+                    'tmpFilePath' : "/data/ndpc0/c/jkolb/TauResults/tmp/"
+                }
+            },
+			# fall10 MC with 156 BX PU, 2010 dataset (36/pb);  no Mt(e+MET) cut
+            'Run14' : {
+                'AHtoElecTau' : {
+                    'analysisFilePath' : "/user/j/jkolb/elecTauAnalysis/fall10/AHtoElecTau/Run14/",
+                    'harvestingFilePath' : "/data/ndpc0/c/jkolb/TauResults",
+                    'tmpFilePath' : "/data/ndpc0/c/jkolb/TauResults/tmp/"
+                }
+            },
+			# fall10 MC with PU, 2010 dataset (36/pb); same as Run12, but with systematics
+            'Run13' : {
+                'AHtoElecTau' : {
+                    'analysisFilePath' : "/user/j/jkolb/elecTauAnalysis/fall10/AHtoElecTau/Run13/",
+					'harvestingFilePath' : "/data/ndpc0/c/jkolb/TauResults/",
+                    'tmpFilePath' : "/data/ndpc0/c/jkolb/TauResults/tmp/"
+                },
+                'ZtoElecTau' : {
+                    'analysisFilePath' : "/user/j/jkolb/elecTauAnalysis/fall10/ZtoElecTau/Run13/",
+                    'harvestingFilePath' : "/data/ndpc0/c/jkolb/TauResults",
+                    'tmpFilePath' : "/data/ndpc0/c/jkolb/TauResults/tmp/"
+                },
+                'ZtoElecTau_bgEstTemplate' : {
+                    'analysisFilePath' : "/user/j/jkolb/elecTauAnalysis/fall10/ZtoElecTau/Run13/",
+                    'harvestingFilePath' : "/data/ndpc0/c/jkolb/TauResults",
+                    'tmpFilePath' : "/data/ndpc0/c/jkolb/TauResults/tmp/"
+                }
+            },
+			# fall10 MC with PU, 2010 dataset (36/pb); now using HPS loose
+            'Run12' : {
+                'AHtoElecTau' : {
+                    'analysisFilePath' : "/user/j/jkolb/elecTauAnalysis/fall10/AHtoElecTau/Run12/",
+					'harvestingFilePath' : "/data/ndpc0/c/jkolb/TauResults/",
+                    'tmpFilePath' : "/data/ndpc0/c/jkolb/TauResults/tmp/"
+                },
+                'ZtoElecTau' : {
+                    'analysisFilePath' : "/user/j/jkolb/elecTauAnalysis/fall10/ZtoElecTau/Run12/",
+                    'harvestingFilePath' : "/data/ndpc0/c/jkolb/TauResults",
+                    'tmpFilePath' : "/data/ndpc0/c/jkolb/TauResults/tmp/"
+                },
+                'ZtoElecTau_bgEstTemplate' : {
+                    'analysisFilePath' : "/user/j/jkolb/elecTauAnalysis/fall10/ZtoElecTau/Run12/",
+                    'harvestingFilePath' : "/data/ndpc0/c/jkolb/TauResults",
+                    'tmpFilePath' : "/data/ndpc0/c/jkolb/TauResults/tmp/"
+                }
+            },
+			# fall10 MC with PU, 2010 dataset (36/pb);  same as Run07, 
+			# with no DOCA, deltaCotTheta conversion cuts, but keep missingInnerHits cut
+            'Run11' : {
+                'ZtoElecTau' : {
+                    'analysisFilePath' : "/user/j/jkolb/elecTauAnalysis/fall10/ZtoElecTau/Run11/",
+                    'harvestingFilePath' : "/data/ndpc0/c/jkolb/TauResults",
+                    'tmpFilePath' : "/data/ndpc0/c/jkolb/TauResults/tmp/"
+                }
+            },
 			# fall10 MC with PU, 2010 dataset (36/pb);  same as Run07, with no Mt(e+MET) cut
             'Run10' : {
-                'ZtoElecTau' : {
-                    'analysisFilePath' : "/user/j/jkolb/elecTauAnalysis/fall10/ZtoElecTau/Run10/",
+                'AHtoElecTau' : {
+                    'analysisFilePath' : "/user/j/jkolb/elecTauAnalysis/fall10/AHtoElecTau/Run10/",
                     'harvestingFilePath' : "/data/ndpc0/c/jkolb/TauResults",
                     'tmpFilePath' : "/data/ndpc0/c/jkolb/TauResults/tmp/"
                 }
