@@ -75,3 +75,8 @@ std::string format_vunsigned(const std::vector<unsigned>& vu)
 {
   return format_vT(vu);
 }
+
+std::string format_vbool(const std::vector<bool>& vb)
+{
+  return format_vT(vb);
+}
