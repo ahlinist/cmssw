@@ -115,11 +115,11 @@ Processor::Processor(xdaq::ApplicationStub *s)
   fsm_.initialize<dqmevf::Processor>(this);
 
   //debug: set local logging
-  log4cplus::Logger & log_= getApplicationLogger();
 #ifdef DEBUG_EP
+  log4cplus::Logger & log_= getApplicationLogger();
   log_.removeAllAppenders ();
-  SharedAppenderPtr slaveAppenderPtr = SharedAppenderPtr(new SlaveAppender);
-  log_.addAppender(slaveAppenderPtr);
+  SharedAppenderPtr masterAppenderPtr = SharedAppenderPtr(new MasterAppender);
+  log_.addAppender(masterAppenderPtr);
   log_.setLogLevel(DEBUG_LOG_LEVEL);
 #endif
 

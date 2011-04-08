@@ -111,8 +111,8 @@ namespace dqmevf{
 
     //setup local logging
     log_.removeAllAppenders ();
-    SharedAppenderPtr slaveAppenderPtr = SharedAppenderPtr(new SlaveAppender);
     #ifdef DEBUG_EP
+    SharedAppenderPtr slaveAppenderPtr = SharedAppenderPtr(new SlaveAppender);
     log_.addAppender(slaveAppenderPtr);
     log_.setLogLevel(cfg_.logLevel);
     #endif

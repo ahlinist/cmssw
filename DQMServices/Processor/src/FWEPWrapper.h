@@ -84,7 +84,15 @@ namespace dqmevf{
 
   };
 
-//added to the message logger class
+  //added to the message logger class
+  class MasterAppender: public log4cplus::Appender {
+    void append(const log4cplus::spi::InternalLoggingEvent &event) {
+      std::cout <<"MASTER:"<< event.getMessage() <<std::endl;
+    }
+    void close(){};
+
+  };
+
   class SlaveAppender: public log4cplus::Appender {
     void append(const log4cplus::spi::InternalLoggingEvent &event) {
 	std::cout <<"SLAVE:"<< event.getMessage() <<std::endl;
