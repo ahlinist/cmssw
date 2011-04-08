@@ -112,8 +112,10 @@ namespace dqmevf{
     //setup local logging
     log_.removeAllAppenders ();
     SharedAppenderPtr slaveAppenderPtr = SharedAppenderPtr(new SlaveAppender);
+    #ifdef DEBUG_EP
     log_.addAppender(slaveAppenderPtr);
     log_.setLogLevel(cfg_.logLevel);
+    #endif
 
     LOG4CPLUS_INFO(log_,"Initialize CMSSW EventProcessor.");
     LOG4CPLUS_INFO(log_,"CMSSW_BASE:"<<getenv("CMSSW_BASE"));
