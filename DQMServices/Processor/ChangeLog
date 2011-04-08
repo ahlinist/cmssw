@@ -1,0 +1,10 @@
+2011-03-30
+        V00-09-01
+2011-03-09 Srecko Morovic <srecko.morovic@cern.ch>
+	V00-00-02
+	Prepared a version for testing in the Integration System
+2011-02-29 Srecko Morovic <srecko.morovic@cern.ch>
+	V00-00-01
+	Initial version of DQM Event Processor based on
+	evf::FUEventProcessor
+
