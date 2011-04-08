@@ -47,6 +47,7 @@
 
 #include <sys/mman.h>
 
+//#define DEBUG_EP 1
 
 using namespace dqmevf;
 using namespace cgicc;
@@ -112,7 +113,17 @@ Processor::Processor(xdaq::ApplicationStub *s)
   
   // bind relevant callbacks to finite state machine
   fsm_.initialize<dqmevf::Processor>(this);
-  
+
+  //debug: set local logging
+  log4cplus::Logger & log_= getApplicationLogger();
+#ifdef DEBUG_EP
+  log_.removeAllAppenders ();
+  SharedAppenderPtr slaveAppenderPtr = SharedAppenderPtr(new SlaveAppender);
+  log_.addAppender(slaveAppenderPtr);
+  log_.setLogLevel(DEBUG_LOG_LEVEL);
+#endif
+
+
   instance_=getApplicationDescriptor()->getInstance();
   LOG4CPLUS_INFO(getApplicationLogger(),"CMSSW_BASE:"<<getenv("CMSSW_BASE"));
 
