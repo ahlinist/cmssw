@@ -27,31 +27,40 @@ patMuons.usePV = cms.bool(False) # compute transverse impact parameter wrt. beam
 import HLTrigger.HLTfilters.hltHighLevel_cfi
 zmmHLTFilter = HLTrigger.HLTfilters.hltHighLevel_cfi.hltHighLevel.clone()
 zmmHLTFilter.TriggerResultsTag = cms.InputTag("TriggerResults", "", "HLT")
-<<<<<<< goldenZmmSelectionVBTFnoMuonIsolation_cfi.py
-zmmHLTFilter.HLTPaths = [ "HLT_Mu9", "HLT_Mu15_v1" ]
-=======
 zmmHLTFilter.HLTPaths = [ 'HLT_Mu15_v1', 'HLT_Mu15_v2', 'HLT_IsoMu15_v5', 'HLT_IsoMu17_v5', 'HLT_Mu24_v2' ]
->>>>>>> 1.9
 zmmHLTFilter.throw = cms.bool(False)
+
+# Vertex selection
+goodVertex = cms.EDFilter("VertexSelector",
+    src = cms.InputTag("offlinePrimaryVertices"),
+    cut = cms.string("(!isFake) & ndof > 3 & abs(z) < 15 & position.Rho < 2"),
+    filter = cms.bool(True)
+)
 
 # Cuts for both muons, no isolation cuts applied
 goodMuons = cms.EDFilter("PATMuonSelector",
   src = cms.InputTag("patMuons"),
-     cut = cms.string(
-           'pt > 20 & abs(eta) < 2.5 & isGlobalMuon & isTrackerMuon ' \
-                 + ' & innerTrack.hitPattern.numberOfValidTrackerHits > 10 & innerTrack.hitPattern.numberOfValidPixelHits > 0' \
-                 + ' & abs(dB)<0.2 & globalTrack.normalizedChi2 < 10' \
-                 + ' & globalTrack.hitPattern.numberOfValidMuonHits > 0 & numberOfMatches > 1'
-  ),
-  filter = cms.bool(True)
+    cut = cms.string(
+      'pt > 20 & abs(eta) < 2.5 & isGlobalMuon' \
+     + ' & innerTrack.hitPattern.numberOfValidTrackerHits > 9 & innerTrack.hitPattern.numberOfValidPixelHits > 0' \
+     + ' & abs(dB) < 0.2 & globalTrack.normalizedChi2 < 10' \
+     + ' & globalTrack.hitPattern.numberOfValidMuonHits > 0 & numberOfMatches > 1' 
+    ),
+    filter = cms.bool(True)
 )
 
 # Cuts for muon leg with isolation cut applied
-goodIsoMuons = cms.EDFilter("PATMuonSelector",
-    src = cms.InputTag("goodMuons"),
-    cut = cms.string('(isolationR03().sumPt+isolationR03().emEt+isolationR03().hadEt)<0.15*pt'),
-    filter = cms.bool(False),
+from TauAnalysis.RecoTools.patLeptonPFIsolationSelector_cfi import patMuonPFIsolationSelector
+goodIsoMuons = cms.EDFilter("PATMuonPFIsolationSelector",
+    patMuonPFIsolationSelector.clone(
+        sumPtMax = cms.double(0.06),
+    ),
+    src = cms.InputTag("goodMuons"),                          
+    filter = cms.bool(False)
 )
+goodIsoMuons.chargedHadronIso.dRisoCone = cms.double(0.6)
+goodIsoMuons.neutralHadronIso.dRisoCone = cms.double(0.6)
+goodIsoMuons.photonIso.dRisoCone = cms.double(0.6)
 
 # Produce combinations of good
 #  o muon+ + muon-
@@ -60,8 +69,7 @@ goodIsoMuons = cms.EDFilter("PATMuonSelector",
 # with a di-muon invariant mass within the Z mass-window
 goldenZmumuCandidatesGe0IsoMuons = cms.EDProducer("CandViewShallowCloneCombiner",
     checkCharge = cms.bool(True),
-#    cut = cms.string('mass > 60. & mass < 120. & charge = 0'),
-    cut = cms.string('charge = 0'),
+    cut = cms.string('mass > 60. & mass < 120. & charge = 0'),
     decay = cms.string("goodMuons@+ goodMuons@-")
 )
 
@@ -99,8 +107,8 @@ goodMuonIsolationTagAndProbeProducer = cms.EDProducer("MuonIsolationTagAndProbeP
 # Selection sequence
 goldenZmumuSelectionSequence = cms.Sequence(
      zmmHLTFilter
-    #* goodVertex
-    #* pfNoPileUpSequence
+    * goodVertex
+    * pfNoPileUpSequence
     * patMuons * goodMuons * goodIsoMuons
     * goldenZmumuCandidatesGe0IsoMuons * goldenZmumuCandidatesGe1IsoMuons * goldenZmumuCandidatesGe2IsoMuons
     * goodMuonFilter * goldenZmumuFilter
