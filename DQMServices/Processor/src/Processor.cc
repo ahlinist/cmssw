@@ -748,9 +748,7 @@ void Processor::spotlightWebPage(xgi::Input  *in, xgi::Output *out)
   *out << "</table>"                                                 << std::endl;
 
   *out << "<hr/>"                                                    << std::endl;
-  
   summaryWeb(in,out);
-
   *out << "</table>"                                                 << std::endl;
   
   *out << "<br><textarea rows=" << 10 << " cols=80 scroll=yes>"      << std::endl;
@@ -763,13 +761,11 @@ void Processor::spotlightWebPage(xgi::Input  *in, xgi::Output *out)
   *out << "</body>"                                                  << std::endl;
   *out << "</html>"                                                  << std::endl;
   pthread_mutex_unlock(&start_lock_);
-
 }
 
 //______________________________________________________________________________
 void Processor::summaryWeb(xgi::Input *in, xgi::Output *out)
 {
-  pthread_mutex_lock(&start_lock_);
   TriggerReportStatic * trs =0;
   if (trhSumAcc_)
     trs = trhSumAcc_->getPackedTriggerReportAsStruct();
@@ -814,10 +810,10 @@ void Processor::summaryWeb(xgi::Input *in, xgi::Output *out)
   //Module details printout from subprocess
   subWebRetriever(out,std::string("epModuleDescs"),subs_[0].pid(),-1,0);
 
+
   *out << "</td>" << std::endl;
   *out << "</tr>" << std::endl;
   *out << "</table>" << std::endl;
-  pthread_mutex_unlock(&start_lock_);
 }
 
 //______________________________________________________________________________
