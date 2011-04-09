@@ -75,9 +75,6 @@ cfgCentralJetEt20bTagCut = cms.PSet(
 ahToMuTauEventSelConfiguratorOS = eventSelFlagProdConfigurator(
     [ cfgGenPhaseSpaceCut,
       cfgTrigger,
-      cfgPrimaryEventVertex,
-      cfgPrimaryEventVertexQuality,
-      cfgPrimaryEventVertexPosition,
       cfgGlobalMuonCut,
       cfgMuonEtaCut,
       cfgMuonPtCut,
@@ -98,6 +95,9 @@ ahToMuTauEventSelConfiguratorOS = eventSelFlagProdConfigurator(
       cfgDiTauCandidateForAHtoMuTauMt1METcut,
       cfgDiTauCandidateForAHtoMuTauPzetaDiffCut,
       cfgDiTauCandidateForAHtoMuTauZeroChargeCut,
+      cfgPrimaryEventVertexForMuTau,
+      cfgPrimaryEventVertexQualityForMuTau,
+      cfgPrimaryEventVertexPositionForMuTau,
       cfgDiMuPairZmumuHypothesisVetoByLooseIsolation,
       cfgCentralJetEt20bTagVeto,
       cfgCentralJetEt20Cut,
@@ -123,11 +123,12 @@ isRecAHtoMuTauCentralJetVeto = cms.EDProducer("BoolEventSelFlagProducer",
     pluginType = cms.string('MultiBoolEventSelFlagSelector'),
     flags = cms.VInputTag(
         cms.InputTag('Trigger'),
-        cms.InputTag('primaryEventVertexPosition'),
         cms.InputTag('muonTrkIPcut', 'cumulative'),
         cms.InputTag('tauElectronVeto', 'cumulative'),
         cms.InputTag('diTauCandidateForAHtoMuTauZeroChargeCut', 'cumulative'),
+        cms.InputTag('primaryEventVertexPositionForMuTau'),                                           
         cms.InputTag('diMuPairZmumuHypothesisVetoByLooseIsolation'),
+        cms.InputTag('diMuPairDYmumuHypothesisVeto'),                           
         cms.InputTag('centralJetEt20bTagVeto', 'cumulative')
     )
 )
@@ -137,11 +138,12 @@ isRecAHtoMuTauCentralJetBtag = cms.EDProducer("BoolEventSelFlagProducer",
     pluginType = cms.string('MultiBoolEventSelFlagSelector'),
     flags = cms.VInputTag(
         cms.InputTag('Trigger'),
-        cms.InputTag('primaryEventVertexPosition'),
         cms.InputTag('muonTrkIPcut', 'cumulative'),
         cms.InputTag('tauElectronVeto', 'cumulative'),
         cms.InputTag('diTauCandidateForAHtoMuTauZeroChargeCut', 'cumulative'),
+        cms.InputTag('primaryEventVertexPositionForMuTau'),                                            
         cms.InputTag('diMuPairZmumuHypothesisVetoByLooseIsolation'),
+        cms.InputTag('diMuPairDYmumuHypothesisVeto'),                           
         cms.InputTag('centralJetEt20bTagCut', 'cumulative')
     )
 )
@@ -152,11 +154,12 @@ isRecAHtoMuTau = cms.EDProducer("BoolEventSelFlagProducer",
     flags = cms.VInputTag(
         cms.InputTag('Trigger'),
         cms.InputTag('genPhaseSpaceCut'),
-        cms.InputTag('primaryEventVertexPosition'),
         cms.InputTag('muonTrkIPcut', 'cumulative'),
         cms.InputTag('tauElectronVeto', 'cumulative'),
         cms.InputTag('diTauCandidateForAHtoMuTauZeroChargeCut', 'cumulative'),
+        cms.InputTag('primaryEventVertexPositionForMuTau'),                              
         cms.InputTag('diMuPairZmumuHypothesisVetoByLooseIsolation'),
+        cms.InputTag('diMuPairDYmumuHypothesisVeto')                           
     )
 )
 

@@ -50,7 +50,10 @@ eventSelectionReplacements = [
     [ evtSelMuonTrkIP, evtSelMuonTrkIPlooseIsolation ],
     [ evtSelDiTauCandidateForMuTauAntiOverlapVeto, evtSelDiTauCandidateForMuTauAntiOverlapVetoLooseMuonIsolation ],
     [ evtSelDiTauCandidateForMuTauMt1MET, evtSelDiTauCandidateForMuTauMt1METlooseMuonIsolation ],
-    [ evtSelDiTauCandidateForMuTauPzetaDiff, evtSelDiTauCandidateForMuTauPzetaDiffLooseMuonIsolation ]
+    [ evtSelDiTauCandidateForMuTauPzetaDiff, evtSelDiTauCandidateForMuTauPzetaDiffLooseMuonIsolation ],
+    [ evtSelPrimaryEventVertexForMuTau, evtSelPrimaryEventVertexForMuTauLooseMuonIsolation ],
+    [ evtSelPrimaryEventVertexQualityForMuTau, evtSelPrimaryEventVertexQualityForMuTauLooseMuonIsolation ],
+    [ evtSelPrimaryEventVertexPositionForMuTau, evtSelPrimaryEventVertexPositionForMuTauLooseMuonIsolation ]
 ]
 
 analyzeZtoMuTauEventsOS_factorizedWithoutMuonIsolation = analyzeZtoMuTauEventsOS.clone(

@@ -57,13 +57,30 @@ cfgDiTauCandidateForMuTauNonZeroChargeCutLooseMuonIsolation = cfgDiTauCandidateF
     src_individual = cms.InputTag('selectedMuTauPairsNonZeroChargeLooseMuonIsolationIndividual')
 )
 
+# selection of event vertex associated to tau-jet + "loosely" isolated muon pair
+cfgPrimaryEventVertexForMuTauLooseMuonIsolation = cfgPrimaryEventVertexForMuTau.clone(
+    pluginName = cms.string('primaryEventVertexForMuTauLooseMuonIsolation'),
+    src = cms.InputTag('selectedPrimaryVertexForMuTauLooseMuonIsolation')
+)    
+cfgPrimaryEventVertexQualityForMuTauLooseMuonIsolation = cfgPrimaryEventVertexQualityForMuTau.clone(
+    pluginName = cms.string('primaryEventVertexQualityForMuTauLooseMuonIsolation'),
+    src = cms.InputTag('selectedPrimaryVertexQualityForMuTauLooseMuonIsolation')
+)
+cfgPrimaryEventVertexPositionForMuTauLooseMuonIsolation = cfgPrimaryEventVertexPositionForMuTau.clone(
+    pluginName = cms.string('primaryEventVertexPositionForMuTauLooseMuonIsolation'),
+    src = cms.InputTag('selectedPrimaryVertexPositionForMuTauLooseMuonIsolation')
+)
+
 zToMuTauEventSelConfiguratorLooseMuonIsolationOS = eventSelFlagProdConfigurator(
     [ cfgMuonPFRelIsoCutLooseIsolation,
       cfgMuonTrkIPcutLooseIsolation,
       cfgDiTauCandidateForMuTauAntiOverlapVetoLooseMuonIsolation,
       cfgDiTauCandidateForMuTauMt1METcutLooseMuonIsolation,
       cfgDiTauCandidateForMuTauPzetaDiffCutLooseMuonIsolation,
-      cfgDiTauCandidateForMuTauZeroChargeCutLooseMuonIsolation ],
+      cfgDiTauCandidateForMuTauZeroChargeCutLooseMuonIsolation,
+      cfgPrimaryEventVertexForMuTauLooseMuonIsolation,
+      cfgPrimaryEventVertexQualityForMuTauLooseMuonIsolation,
+      cfgPrimaryEventVertexPositionForMuTauLooseMuonIsolation ],
     boolEventSelFlagProducer = "BoolEventSelFlagProducer",
     pyModuleName = __name__
 )

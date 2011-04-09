@@ -45,11 +45,6 @@ analyzeZtoMuTauEventsOS = cms.EDAnalyzer("GenericAnalyzer",
         # data-quality selection
         evtSelDataQuality,
 
-        # primary event vertex selection
-        evtSelPrimaryEventVertex,
-        evtSelPrimaryEventVertexQuality,
-        evtSelPrimaryEventVertexPosition,
-
         # muon candidate selection
         evtSelGlobalMuon,
         evtSelMuonEta,
@@ -77,8 +72,14 @@ analyzeZtoMuTauEventsOS = cms.EDAnalyzer("GenericAnalyzer",
         evtSelDiTauCandidateForMuTauZeroCharge,
         evtSelDiTauCandidateForMuTauNonZeroCharge,
 
-        # Z --> mu+ mu- hypothesis veto (based on combinations of muon pairs)
-        evtSelDiMuPairZmumuHypothesisVetoByLooseIsolation
+        # primary event vertex selection
+        evtSelPrimaryEventVertexForMuTau,
+        evtSelPrimaryEventVertexQualityForMuTau,
+        evtSelPrimaryEventVertexPositionForMuTau,                                     
+
+        # Z/gamma* --> mu+ mu- hypothesis veto (based on combinations of muon pairs)
+        evtSelDiMuPairZmumuHypothesisVetoByLooseIsolation,
+        evtSelDiMuPairDYmumuHypothesisVeto
     ),
   
     analyzers = cms.VPSet(
@@ -92,12 +93,13 @@ analyzeZtoMuTauEventsOS = cms.EDAnalyzer("GenericAnalyzer",
         diTauCandidateNSVfitHistManagerForMuTau,
         diTauCandidateNSVfitVtxMultiplicityBinGridHistManager,                                     
         diTauCandidateZmumuHypothesisHistManagerForMuTau,
-        muPairHistManagerByLooseIsolation,
+        vertexHistManager,
+        muPairHistManagerZmumuHypothesesByLooseIsolation,
+        muPairHistManagerDYmumuHypotheses,
         jetHistManager,
         caloMEtHistManager,
         pfMEtHistManager,
         particleMultiplicityHistManager,
-        vertexHistManager,
         triggerHistManagerForMuTau,
         cutFlowHistManagerGenMultiplicity,
         cutFlowHistManagerRecMultiplicity,                                     

@@ -68,6 +68,9 @@ eventSelectionReplacements = \
     [ evtSelDiTauCandidateForAHtoMuTauAntiOverlapVeto, evtSelDiTauCandidateForAHtoMuTauAntiOverlapVetoLooseMuonIsolation ],
     [ evtSelDiTauCandidateForAHtoMuTauMt1MET, evtSelDiTauCandidateForAHtoMuTauMt1METlooseMuonIsolation ],
     [ evtSelDiTauCandidateForAHtoMuTauPzetaDiff, evtSelDiTauCandidateForAHtoMuTauPzetaDiffLooseMuonIsolation ],
+    [ evtSelPrimaryEventVertexForMuTau, evtSelPrimaryEventVertexForMuTauLooseMuonIsolation ],
+    [ evtSelPrimaryEventVertexQualityForMuTau, evtSelPrimaryEventVertexQualityForMuTauLooseMuonIsolation ],
+    [ evtSelPrimaryEventVertexPositionForMuTau, evtSelPrimaryEventVertexPositionForMuTauLooseMuonIsolation ],
     [ evtSelNonCentralJetEt20bTag, evtSelNonCentralJetEt20bTagLooseMuonIsolation ],
     [ evtSelCentralJetEt20, evtSelCentralJetEt20LooseMuonIsolation ],
     [ evtSelCentralJetEt20bTag, evtSelCentralJetEt20bTagLooseMuonIsolation ] ]

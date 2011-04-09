@@ -40,6 +40,23 @@ evtSelDiTauCandidateForAHtoMuTauNonZeroChargeLooseMuonIsolation = evtSelDiTauCan
     src_individual = cms.InputTag('diTauCandidateForAHtoMuTauNonZeroChargeCutLooseMuonIsolation', 'individual')
 )
 
+# primary event vertex selection
+evtSelPrimaryEventVertexForMuTauLooseMuonIsolation = cms.PSet(
+    pluginName = cms.string('evtSelPrimaryEventVertexForMuTauLooseMuonIsolation'),
+    pluginType = cms.string('BoolEventSelector'),
+    src = cms.InputTag('primaryEventVertexForMuTauLooseMuonIsolation')
+)
+evtSelPrimaryEventVertexQualityForMuTauLooseMuonIsolation = cms.PSet(
+    pluginName = cms.string('evtSelPrimaryEventVertexQualityForMuTauLooseMuonIsolation'),
+    pluginType = cms.string('BoolEventSelector'),
+    src = cms.InputTag('primaryEventVertexQualityForMuTauLooseMuonIsolation')
+)
+evtSelPrimaryEventVertexPositionForMuTauLooseMuonIsolation = cms.PSet(
+    pluginName = cms.string('evtSelPrimaryEventVertexPositionForMuTauLooseMuonIsolation'),
+    pluginType = cms.string('BoolEventSelector'),
+    src = cms.InputTag('primaryEventVertexPositionForMuTauLooseMuonIsolation')
+)
+
 # central jet veto/b-jet candidate selection
 evtSelNonCentralJetEt20bTagLooseMuonIsolation = cms.PSet(
     pluginName = cms.string('evtSelNonCentralJetEt20bTag'),
@@ -120,6 +137,9 @@ inputTagReplacements = \
       "muTauPairZmumuHypothesesForAHtoMuTauLooseMuonIsolation" ],
     [ "muTauPairVisMassHypothesesForAHtoMuTau",
       "muTauPairVisMassHypothesesForAHtoMuTauLooseMuonIsolation" ],
+    [ "selectedPrimaryVertexForMuTau", "selectedPrimaryVertexForMuTauLooseMuonIsolation" ],
+    [ "selectedPrimaryVertexQualityForMuTau", "selectedPrimaryVertexQualityForMuTauLooseMuonIsolation" ],
+    [ "selectedPrimaryVertexPositionForMuTau", "selectedPrimaryVertexPositionForMuTauLooseMuonIsolation" ],
     [ "selectedPatJetsForAHtoMuTauAntiOverlapWithLeptonsVetoCumulative",
       "selectedPatJetsForAHtoMuTauAntiOverlapWithLeptonsVetoLooseMuonIsolationCumulative" ],
     [ "selectedPatJetsForAHtoMuTauBtagCumulative", "selectedPatJetsForAHtoMuTauBtagLooseMuonIsolationCumulative" ] ]
