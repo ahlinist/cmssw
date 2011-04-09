@@ -39,7 +39,32 @@ edm::InputTag getInputTag(const edm::ParameterSet& cfg, const char* parameter)
   return ( cfg.exists(parameter) ) ? cfg.getParameter<edm::InputTag>(parameter) : edm::InputTag();
 }
 
-GenericEventDump::GenericEventDump(const edm::ParameterSet& cfg): EventDumpBase(cfg)
+GenericEventDump::GenericEventDump(const edm::ParameterSet& cfg)
+  : EventDumpBase(cfg),
+    numRecoElectronsMatchingGenMuons_(0),
+    numRecoElectronsMatchingGenElectrons_(0),
+    numRecoElectronsMatchingGenTauJets_(0),
+    numRecoElectronsMatchingGenBottomQuarks_(0),
+    numRecoElectronsMatchingGenCharmQuarks_(0),
+    numRecoElectronsMatchingGenGluons_(0),
+    numRecoElectronsMatchingGenLightQuarks_(0),
+    numRecoElectronsUndeterminedGenMatch_(0),
+    numRecoMuonsMatchingGenMuons_(0),
+    numRecoMuonsMatchingGenElectrons_(0),
+    numRecoMuonsMatchingGenTauJets_(0),
+    numRecoMuonsMatchingGenBottomQuarks_(0),
+    numRecoMuonsMatchingGenCharmQuarks_(0),
+    numRecoMuonsMatchingGenGluons_(0),
+    numRecoMuonsMatchingGenLightQuarks_(0),
+    numRecoMuonsUndeterminedGenMatch_(0),
+    numRecoTauJetsMatchingGenMuons_(0),
+    numRecoTauJetsMatchingGenElectrons_(0),
+    numRecoTauJetsMatchingGenTauJets_(0),
+    numRecoTauJetsMatchingGenBottomQuarks_(0),
+    numRecoTauJetsMatchingGenCharmQuarks_(0),
+    numRecoTauJetsMatchingGenGluons_(0),
+    numRecoTauJetsMatchingGenLightQuarks_(0),
+    numRecoTauJetsUndeterminedGenMatch_(0)
 {
   //std::cout << "<GenericEventDump::GenericEventDump>:" << std::endl;
 
