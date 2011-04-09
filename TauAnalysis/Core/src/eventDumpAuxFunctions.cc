@@ -271,44 +271,40 @@ void printTrackIsolationInfo(const edm::Handle<reco::TrackCollection>& recoTrack
 }
 
 void printPFCandidateIsolationInfo(const edm::Handle<reco::PFCandidateCollection>& pfCandidates, std::string pfCandidateLabel,
-		const reco::Candidate::Vector& direction, double vetoConeSize, double isolationConeSize, double minPt,
-		std::ostream* stream)
+				   const reco::Candidate::Vector& direction, double vetoConeSize, double isolationConeSize, double minPt,
+				   std::ostream* stream)
 {
-	if ( !stream ) {
-		edm::LogError ("printPFCandidateIsolationInfo") << " stream = NULL --> skipping !!";
-		return;
-	}
+  if ( !stream ) {
+    edm::LogError ("printPFCandidateIsolationInfo") << " stream = NULL --> skipping !!";
+    return;
+  }
 
-	unsigned iPFCandidate = 0;
-	for ( reco::PFCandidateCollection::const_iterator pfCandidate = pfCandidates->begin(); 
-			pfCandidate != pfCandidates->end(); ++pfCandidate ) {
-		if ( pfCandidate->pt() > minPt ) {
-			double dR = reco::deltaR(*pfCandidate, direction);
-			if ( dR > vetoConeSize      &&
-					dR < isolationConeSize ) {
-				*stream << pfCandidateLabel << "(" << iPFCandidate << "):" << std::endl;
-				*stream << " dR = " << dR << std::endl;
-				*stream << " Pt = " << pfCandidate->pt() << std::endl;
-				*stream << " theta = " << pfCandidate->theta()*180./TMath::Pi() << std::endl;
-				*stream << " phi = " << pfCandidate->phi()*180./TMath::Pi() << std::endl;	
-				if( pfCandidate->particleId() == reco::PFCandidate::h )
-					*stream << " type = PF Charged Hadron" << std::endl;	
-				if( pfCandidate->particleId() == reco::PFCandidate::h0 )
-					*stream << " type = PF Neutral Hadron" << std::endl;	
-				if( pfCandidate->particleId() == reco::PFCandidate::e )
-					*stream << " type = PF Electron" << std::endl;	
-				if( pfCandidate->particleId() == reco::PFCandidate::gamma ) {
-					*stream << " type = PF Gamma" << std::endl;	
-				if( pfCandidate->particleId() == reco::PFCandidate::mu )
-					*stream << " type = PF Muon" << std::endl;	
-
-				++iPFCandidate;
-			}
-		}
+  unsigned iPFCandidate = 0;
+  for ( reco::PFCandidateCollection::const_iterator pfCandidate = pfCandidates->begin(); 
+	pfCandidate != pfCandidates->end(); ++pfCandidate ) {
+    if ( pfCandidate->pt() > minPt ) {
+      double dR = reco::deltaR(*pfCandidate, direction);
+      if ( dR > vetoConeSize      &&
+	   dR < isolationConeSize ) {
+	*stream << pfCandidateLabel << "(" << iPFCandidate << "):" << std::endl;
+	*stream << " dR = " << dR << std::endl;
+	*stream << " Pt = " << pfCandidate->pt() << std::endl;
+	*stream << " theta = " << pfCandidate->theta()*180./TMath::Pi() << std::endl;
+	*stream << " phi = " << pfCandidate->phi()*180./TMath::Pi() << std::endl;	
+	if( pfCandidate->particleId() == reco::PFCandidate::h )
+	  *stream << " type = PF Charged Hadron" << std::endl;	
+	if( pfCandidate->particleId() == reco::PFCandidate::h0 )
+	  *stream << " type = PF Neutral Hadron" << std::endl;	
+	if( pfCandidate->particleId() == reco::PFCandidate::e )
+	  *stream << " type = PF Electron" << std::endl;	
+	if( pfCandidate->particleId() == reco::PFCandidate::gamma ) {
+	  *stream << " type = PF Gamma" << std::endl;	
+	  if( pfCandidate->particleId() == reco::PFCandidate::mu )
+	    *stream << " type = PF Muon" << std::endl;	
+	  
+	  ++iPFCandidate;
 	}
+      }
+    }
+  }
 }
-
-//
-//-----------------------------------------------------------------------------------------------------------------------
-//
-
