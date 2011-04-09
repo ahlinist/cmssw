@@ -24,6 +24,9 @@ SAMPLES_TO_ANALYZE.extend([
     'A250', 'bbA250',
     'A300', 'bbA300',
     'A350', 'bbA350',
+    'A400', 'bbA400',
+    'A450', 'bbA450',
+    'A500', 'bbA500'
 ])
 
 # List of samples to include in the final level plots.  May include selections
@@ -42,7 +45,8 @@ SAMPLES_TO_PLOT = [
     'qcdSum',
     'WplusJets_madgraph',
     'TTplusJets_madgraph',
-    'Zmumu_powheg',
+    'VVsum',
+    'ZmumuSum',
     'ZtautauSum'
 ]
 
@@ -55,8 +59,11 @@ SAMPLES_TO_PRINT = copy.copy(SAMPLES_TO_PLOT)
 #SAMPLES_TO_PRINT.append('A180Sum')
 #SAMPLES_TO_PRINT.append('A200Sum')
 #SAMPLES_TO_PRINT.append('A250Sum')
-#SAMPLES_TO_PRINT.append('A250Sum')
+#SAMPLES_TO_PRINT.append('A300Sum')
 #SAMPLES_TO_PRINT.append('A350Sum')
+#SAMPLES_TO_PRINT.append('A400Sum')
+#SAMPLES_TO_PRINT.append('A450Sum')
+#SAMPLES_TO_PRINT.append('A500Sum')
 #SAMPLES_TO_PRINT.append('smBgSum')
 
 SAMPLE_DEFAULTS = ZtoMuTau.SAMPLE_DEFAULTS
@@ -89,7 +96,7 @@ RECO_SAMPLES = copy.deepcopy(ZtoMuTau.RECO_SAMPLES)
 AHtoMuTauSpecific_RECO_SAMPLES = {
     'A90' : {
         # Not skimmed
-        'datasetpath' : "/SUSYGluGluToHToTauTau_M-90_7TeV-pythia6-tauola/Fall10-E7TeV_ProbDist_2010Data_BX156_START38_V12-v1/GEN-SIM-RECO",
+        'datasetpath' : "/SUSYGluGluToHToTauTau_M-90_7TeV-pythia6-tauola/Spring11-PU_S1_START311_V1G1-v1/AODSIM",
         'dbs_url' :  "http://cmsdbsprod.cern.ch/cms_dbs_prod_global/servlet/DBSServlet",
         'events_processed' : 110000,
         'number_of_jobs' : 25,
@@ -106,12 +113,12 @@ AHtoMuTauSpecific_RECO_SAMPLES = {
         'applyMuonIsolationEfficiencyCorrection' : True,
         'applyVertexMultiplicityReweighting' : True,
         'enableSysUncertainties' : True,
-        'hlt' : cms.InputTag("TriggerResults", "", "REDIGI38XPU")
+        'hlt' : cms.InputTag("TriggerResults", "", "REDIGI311X")
 
     },
     'bbA90' : {
         # Not skimmed
-        'datasetpath' : "/SUSYBBHToTauTau_M-90_7TeV-pythia6-tauola/Fall10-E7TeV_ProbDist_2010Data_BX156_START38_V12-v1/GEN-SIM-RECO",
+        'datasetpath' : "/SUSYBBHToTauTau_M-90_7TeV-pythia6-tauola/Spring11-PU_S1_START311_V1G1-v1/AODSIM",
         'dbs_url' :  "http://cmsdbsprod.cern.ch/cms_dbs_prod_global/servlet/DBSServlet",
         'events_processed' : 110000,
         'number_of_jobs' : 25,
@@ -128,11 +135,11 @@ AHtoMuTauSpecific_RECO_SAMPLES = {
         'applyMuonIsolationEfficiencyCorrection' : True,
         'applyVertexMultiplicityReweighting' : True,
         'enableSysUncertainties' : True,
-        'hlt' : cms.InputTag("TriggerResults", "", "REDIGI38XPU")
+        'hlt' : cms.InputTag("TriggerResults", "", "REDIGI311X")
     },
     'A100' : {
         # Not skimmed
-        'datasetpath' : "/SUSYGluGluToHToTauTau_M-100_7TeV-pythia6-tauola/Fall10-E7TeV_ProbDist_2010Data_BX156_START38_V12-v1/GEN-SIM-RECO",
+        'datasetpath' : "/SUSYGluGluToHToTauTau_M-100_7TeV-pythia6-tauola/Spring11-PU_S1_START311_V1G1-v1/AODSIM",
         'dbs_url' :  "http://cmsdbsprod.cern.ch/cms_dbs_prod_global/servlet/DBSServlet",
         'events_processed' : 110000,
         'number_of_jobs' : 25,
@@ -149,11 +156,11 @@ AHtoMuTauSpecific_RECO_SAMPLES = {
         'applyMuonIsolationEfficiencyCorrection' : True,
         'applyVertexMultiplicityReweighting' : True,
         'enableSysUncertainties' : True,
-        'hlt' : cms.InputTag("TriggerResults", "", "REDIGI38XPU")
+        'hlt' : cms.InputTag("TriggerResults", "", "REDIGI311X")
     },
     'bbA100' : {
         # Not skimmed
-        'datasetpath' : "/SUSYBBHToTauTau_M-100_7TeV-pythia6-tauola/Fall10-E7TeV_ProbDist_2010Data_BX156_START38_V12-v1/GEN-SIM-RECO",
+        'datasetpath' : "/SUSYBBHToTauTau_M-100_7TeV-pythia6-tauola/Spring11-PU_S1_START311_V1G1-v1/AODSIM",
         'dbs_url' :  "http://cmsdbsprod.cern.ch/cms_dbs_prod_global/servlet/DBSServlet",
         'events_processed' : 110000,
         'number_of_jobs' : 25,
@@ -170,11 +177,11 @@ AHtoMuTauSpecific_RECO_SAMPLES = {
         'applyMuonIsolationEfficiencyCorrection' : True,
         'applyVertexMultiplicityReweighting' : True,
         'enableSysUncertainties' : True,
-        'hlt' : cms.InputTag("TriggerResults", "", "REDIGI38XPU")
+        'hlt' : cms.InputTag("TriggerResults", "", "REDIGI311X")
     },
     'A120' : {
         # Not skimmed
-        'datasetpath' : "/SUSYGluGluToHToTauTau_M-120_7TeV-pythia6-tauola/Fall10-E7TeV_ProbDist_2010Data_BX156_START38_V12-v1/GEN-SIM-RECO",
+        'datasetpath' : "/SUSYGluGluToHToTauTau_M-120_7TeV-pythia6-tauola/Spring11-PU_S1_START311_V1G1-v1/AODSIM",
         'dbs_url' :  "http://cmsdbsprod.cern.ch/cms_dbs_prod_global/servlet/DBSServlet",
         'events_processed' : 110000,
         'number_of_jobs' : 25,
@@ -192,11 +199,11 @@ AHtoMuTauSpecific_RECO_SAMPLES = {
         'applyMuonIsolationEfficiencyCorrection' : True,
         'applyVertexMultiplicityReweighting' : True,
         'enableSysUncertainties' : True,
-        'hlt' : cms.InputTag("TriggerResults", "", "REDIGI38XPU")
+        'hlt' : cms.InputTag("TriggerResults", "", "REDIGI311X")
     },
     'bbA120' : {
         # Not skimmed
-        'datasetpath' : "/SUSYBBHToTauTau_M-120_7TeV-pythia6-tauola/Fall10-E7TeV_ProbDist_2010Data_BX156_START38_V12-v1/GEN-SIM-RECO",
+        'datasetpath' : "/SUSYBBHToTauTau_M-120_7TeV-pythia6-tauola/Spring11-PU_S1_START311_V1G1-v1/AODSIM",
         'dbs_url' :  "http://cmsdbsprod.cern.ch/cms_dbs_prod_global/servlet/DBSServlet",
         'events_processed' : 110000,
         'number_of_jobs' : 25,
@@ -214,11 +221,11 @@ AHtoMuTauSpecific_RECO_SAMPLES = {
         'applyMuonIsolationEfficiencyCorrection' : True,
         'applyVertexMultiplicityReweighting' : True,
         'enableSysUncertainties' : True,
-        'hlt' : cms.InputTag("TriggerResults", "", "REDIGI38XPU")
+        'hlt' : cms.InputTag("TriggerResults", "", "REDIGI311X")
     },
     'A130' : {
         # Not skimmed
-        'datasetpath' : "/SUSYGluGluToHToTauTau_M-130_7TeV-pythia6-tauola/Fall10-E7TeV_ProbDist_2010Data_BX156_START38_V12-v1/GEN-SIM-RECO",
+        'datasetpath' : "/SUSYGluGluToHToTauTau_M-130_7TeV-pythia6-tauola/Spring11-PU_S1_START311_V1G1-v1/AODSIM",
         'dbs_url' :  "http://cmsdbsprod.cern.ch/cms_dbs_prod_global/servlet/DBSServlet",
         'events_processed' : 110000,
         'number_of_jobs' : 25,
@@ -236,11 +243,11 @@ AHtoMuTauSpecific_RECO_SAMPLES = {
         'applyMuonIsolationEfficiencyCorrection' : True,
         'applyVertexMultiplicityReweighting' : True,
         'enableSysUncertainties' : True,
-        'hlt' : cms.InputTag("TriggerResults", "", "REDIGI38XPU")
+        'hlt' : cms.InputTag("TriggerResults", "", "REDIGI311X")
     },
     'bbA130' : {
         # Not skimmed
-        'datasetpath' : "/SUSYBBHToTauTau_M-130_7TeV-pythia6-tauola/Fall10-E7TeV_ProbDist_2010Data_BX156_START38_V12-v1/GEN-SIM-RECO",
+        'datasetpath' : "/SUSYBBHToTauTau_M-130_7TeV-pythia6-tauola/Spring11-PU_S1_START311_V1G1-v1/AODSIM",
         'dbs_url' :  "http://cmsdbsprod.cern.ch/cms_dbs_prod_global/servlet/DBSServlet",
         'events_processed' : 110000,
         'number_of_jobs' : 25,
@@ -258,11 +265,11 @@ AHtoMuTauSpecific_RECO_SAMPLES = {
         'applyMuonIsolationEfficiencyCorrection' : True,
         'applyVertexMultiplicityReweighting' : True,
         'enableSysUncertainties' : True,
-        'hlt' : cms.InputTag("TriggerResults", "", "REDIGI38XPU")
+        'hlt' : cms.InputTag("TriggerResults", "", "REDIGI311X")
     },
     'A140' : {
         # Not skimmed
-        'datasetpath' : "/SUSYGluGluToHToTauTau_M-140_7TeV-pythia6-tauola/Fall10-E7TeV_ProbDist_2010Data_BX156_START38_V12-v1/GEN-SIM-RECO",
+        'datasetpath' : "/SUSYGluGluToHToTauTau_M-140_7TeV-pythia6-tauola/Spring11-PU_S1_START311_V1G1-v1/AODSIM",
         'dbs_url' :  "http://cmsdbsprod.cern.ch/cms_dbs_prod_global/servlet/DBSServlet",
         'events_processed' : 110000,
         'number_of_jobs' : 25,
@@ -280,11 +287,11 @@ AHtoMuTauSpecific_RECO_SAMPLES = {
         'applyMuonIsolationEfficiencyCorrection' : True,
         'applyVertexMultiplicityReweighting' : True,
         'enableSysUncertainties' : True,
-        'hlt' : cms.InputTag("TriggerResults", "", "REDIGI38XPU")
+        'hlt' : cms.InputTag("TriggerResults", "", "REDIGI311X")
     },
     'bbA140' : {
         # Not skimmed
-        'datasetpath' : "/SUSYBBHToTauTau_M-140_7TeV-pythia6-tauola/Fall10-E7TeV_ProbDist_2010Data_BX156_START38_V12-v1/GEN-SIM-RECO",
+        'datasetpath' : "/SUSYBBHToTauTau_M-140_7TeV-pythia6-tauola/Spring11-PU_S1_START311_V1G1-v1/AODSIM",
         'dbs_url' :  "http://cmsdbsprod.cern.ch/cms_dbs_prod_global/servlet/DBSServlet",
         'events_processed' : 110000,
         'number_of_jobs' : 25,
@@ -302,11 +309,11 @@ AHtoMuTauSpecific_RECO_SAMPLES = {
         'applyMuonIsolationEfficiencyCorrection' : True,
         'applyVertexMultiplicityReweighting' : True,
         'enableSysUncertainties' : True,
-        'hlt' : cms.InputTag("TriggerResults", "", "REDIGI38XPU")
+        'hlt' : cms.InputTag("TriggerResults", "", "REDIGI311X")
     },
     'A160' : {
         # Not skimmed
-        'datasetpath' : "/SUSYGluGluToHToTauTau_M-160_7TeV-pythia6-tauola/Fall10-E7TeV_ProbDist_2010Data_BX156_START38_V12-v1/GEN-SIM-RECO",
+        'datasetpath' : "/SUSYGluGluToHToTauTau_M-160_7TeV-pythia6-tauola/Spring11-PU_S1_START311_V1G1-v1/AODSIM",
         'dbs_url' :  "http://cmsdbsprod.cern.ch/cms_dbs_prod_global/servlet/DBSServlet",
         'events_processed' : 110000,
         'number_of_jobs' : 25,
@@ -323,11 +330,11 @@ AHtoMuTauSpecific_RECO_SAMPLES = {
         'applyMuonIsolationEfficiencyCorrection' : True,
         'applyVertexMultiplicityReweighting' : True,
         'enableSysUncertainties' : True,
-        'hlt' : cms.InputTag("TriggerResults", "", "REDIGI38XPU")
+        'hlt' : cms.InputTag("TriggerResults", "", "REDIGI311X")
     },
     'bbA160' : {
         # Not skimmed
-        'datasetpath' : "/SUSYBBHToTauTau_M-160_7TeV-pythia6-tauola/Fall10-E7TeV_ProbDist_2010Data_BX156_START38_V12-v1/GEN-SIM-RECO",
+        'datasetpath' : "/SUSYBBHToTauTau_M-160_7TeV-pythia6-tauola/Spring11-PU_S1_START311_V1G1-v1/AODSIM",
         'dbs_url' :  "http://cmsdbsprod.cern.ch/cms_dbs_prod_global/servlet/DBSServlet",
         'events_processed' : 110000,
         'number_of_jobs' : 25,
@@ -344,11 +351,11 @@ AHtoMuTauSpecific_RECO_SAMPLES = {
         'applyMuonIsolationEfficiencyCorrection' : True,
         'applyVertexMultiplicityReweighting' : True,
         'enableSysUncertainties' : True,
-        'hlt' : cms.InputTag("TriggerResults", "", "REDIGI38XPU")
+        'hlt' : cms.InputTag("TriggerResults", "", "REDIGI311X")
     },
     'A180' : {
         # Not skimmed
-        'datasetpath' : "/SUSYGluGluToHToTauTau_M-180_7TeV-pythia6-tauola/Fall10-E7TeV_ProbDist_2010Data_BX156_START38_V12-v1/GEN-SIM-RECO",
+        'datasetpath' : "/SUSYGluGluToHToTauTau_M-180_7TeV-pythia6-tauola/Spring11-PU_S1_START311_V1G1-v1/AODSIM",
         'dbs_url' :  "http://cmsdbsprod.cern.ch/cms_dbs_prod_global/servlet/DBSServlet",
         'events_processed' : 110000,
         'number_of_jobs' : 25,
@@ -365,11 +372,11 @@ AHtoMuTauSpecific_RECO_SAMPLES = {
         'applyMuonIsolationEfficiencyCorrection' : True,
         'applyVertexMultiplicityReweighting' : True,
         'enableSysUncertainties' : True,
-        'hlt' : cms.InputTag("TriggerResults", "", "REDIGI38XPU")
+        'hlt' : cms.InputTag("TriggerResults", "", "REDIGI311X")
     },
     'bbA180' : {
         # Not skimmed
-        'datasetpath' : "/SUSYBBHToTauTau_M-180_7TeV-pythia6-tauola/Fall10-E7TeV_ProbDist_2010Data_BX156_START38_V12-v1/GEN-SIM-RECO",
+        'datasetpath' : "/SUSYBBHToTauTau_M-180_7TeV-pythia6-tauola/Spring11-PU_S1_START311_V1G1-v1/AODSIM",
         'dbs_url' :  "http://cmsdbsprod.cern.ch/cms_dbs_prod_global/servlet/DBSServlet",
         'events_processed' : 110000,
         'number_of_jobs' : 25,
@@ -386,11 +393,11 @@ AHtoMuTauSpecific_RECO_SAMPLES = {
         'applyMuonIsolationEfficiencyCorrection' : True,
         'applyVertexMultiplicityReweighting' : True,
         'enableSysUncertainties' : True,
-        'hlt' : cms.InputTag("TriggerResults", "", "REDIGI38XPU")
+        'hlt' : cms.InputTag("TriggerResults", "", "REDIGI311X")
     },
     'A200' : {
         # Not skimmed
-        'datasetpath' : "/SUSYGluGluToHToTauTau_M-200_7TeV-pythia6-tauola/Fall10-E7TeV_ProbDist_2010Data_BX156_START38_V12-v1/GEN-SIM-RECO",
+        'datasetpath' : "/SUSYGluGluToHToTauTau_M-200_7TeV-pythia6-tauola/Spring11-PU_S1_START311_V1G1-v1/AODSIM",
         'dbs_url' :  "http://cmsdbsprod.cern.ch/cms_dbs_prod_global/servlet/DBSServlet",
         'events_processed' : 110000,
         'number_of_jobs' : 25,
@@ -407,11 +414,11 @@ AHtoMuTauSpecific_RECO_SAMPLES = {
         'applyMuonIsolationEfficiencyCorrection' : True,
         'applyVertexMultiplicityReweighting' : True,
         'enableSysUncertainties' : True,
-        'hlt' : cms.InputTag("TriggerResults", "", "REDIGI38XPU")
+        'hlt' : cms.InputTag("TriggerResults", "", "REDIGI311X")
     },
     'bbA200' : {
         # Not skimmed
-        'datasetpath' : "/SUSYBBHToTauTau_M-200_7TeV-pythia6-tauola/Fall10-E7TeV_ProbDist_2010Data_BX156_START38_V12-v1/GEN-SIM-RECO",
+        'datasetpath' : "/SUSYBBHToTauTau_M-200_7TeV-pythia6-tauola/Spring11-PU_S1_START311_V1G1-v1/AODSIM",
         'dbs_url' :  "http://cmsdbsprod.cern.ch/cms_dbs_prod_global/servlet/DBSServlet",
         'events_processed' : 110000,
         'number_of_jobs' : 25,
@@ -428,11 +435,11 @@ AHtoMuTauSpecific_RECO_SAMPLES = {
         'applyMuonIsolationEfficiencyCorrection' : True,
         'applyVertexMultiplicityReweighting' : True,
         'enableSysUncertainties' : True,
-        'hlt' : cms.InputTag("TriggerResults", "", "REDIGI38XPU")
+        'hlt' : cms.InputTag("TriggerResults", "", "REDIGI311X")
     },
     'A250' : {
         # Not skimmed
-        'datasetpath' : "/SUSYGluGluToHToTauTau_M-250_7TeV-pythia6-tauola/Fall10-E7TeV_ProbDist_2010Data_BX156_START38_V12-v1/GEN-SIM-RECO",
+        'datasetpath' : "/SUSYGluGluToHToTauTau_M-250_7TeV-pythia6-tauola/Spring11-PU_S1_START311_V1G1-v1/AODSIM",
         'dbs_url' :  "http://cmsdbsprod.cern.ch/cms_dbs_prod_global/servlet/DBSServlet",
         'events_processed' : 110000,
         'number_of_jobs' : 25,
@@ -449,11 +456,11 @@ AHtoMuTauSpecific_RECO_SAMPLES = {
         'applyMuonIsolationEfficiencyCorrection' : True,
         'applyVertexMultiplicityReweighting' : True,
         'enableSysUncertainties' : True,
-        'hlt' : cms.InputTag("TriggerResults", "", "REDIGI38XPU")
+        'hlt' : cms.InputTag("TriggerResults", "", "REDIGI311X")
     },
     'bbA250' : {
         # Not skimmed
-        'datasetpath' : "/SUSYBBHToTauTau_M-250_7TeV-pythia6-tauola/Fall10-E7TeV_ProbDist_2010Data_BX156_START38_V12-v1/GEN-SIM-RECO",
+        'datasetpath' : "/SUSYBBHToTauTau_M-250_7TeV-pythia6-tauola/Spring11-PU_S1_START311_V1G1-v1/AODSIM",
         'dbs_url' :  "http://cmsdbsprod.cern.ch/cms_dbs_prod_global/servlet/DBSServlet",
         'events_processed' : 110000,
         'number_of_jobs' : 25,
@@ -470,11 +477,11 @@ AHtoMuTauSpecific_RECO_SAMPLES = {
         'applyMuonIsolationEfficiencyCorrection' : True,
         'applyVertexMultiplicityReweighting' : True,
         'enableSysUncertainties' : True,
-        'hlt' : cms.InputTag("TriggerResults", "", "REDIGI38XPU")
+        'hlt' : cms.InputTag("TriggerResults", "", "REDIGI311X")
     },
     'A300' : {
         # Not skimmed
-        'datasetpath' : "/SUSYGluGluToHToTauTau_M-300_7TeV-pythia6-tauola/Fall10-E7TeV_ProbDist_2010Data_BX156_START38_V12-v1/GEN-SIM-RECO",
+        'datasetpath' : "/SUSYGluGluToHToTauTau_M-300_7TeV-pythia6-tauola/Spring11-PU_S1_START311_V1G1-v1/AODSIM",
         'dbs_url' :  "http://cmsdbsprod.cern.ch/cms_dbs_prod_global/servlet/DBSServlet",
         'events_processed' : 110000,
         'number_of_jobs' : 25,
@@ -491,11 +498,11 @@ AHtoMuTauSpecific_RECO_SAMPLES = {
         'applyMuonIsolationEfficiencyCorrection' : True,
         'applyVertexMultiplicityReweighting' : True,
         'enableSysUncertainties' : True,
-        'hlt' : cms.InputTag("TriggerResults", "", "REDIGI38XPU")
+        'hlt' : cms.InputTag("TriggerResults", "", "REDIGI311X")
     },
     'bbA300' : {
         # Not skimmed
-        'datasetpath' : "/SUSYBBHToTauTau_M-300_7TeV-pythia6-tauola/Fall10-E7TeV_ProbDist_2010Data_BX156_START38_V12-v1/GEN-SIM-RECO",
+        'datasetpath' : "/SUSYBBHToTauTau_M-300_7TeV-pythia6-tauola/Spring11-PU_S1_START311_V1G1-v1/AODSIM",
         'dbs_url' :  "http://cmsdbsprod.cern.ch/cms_dbs_prod_global/servlet/DBSServlet",
         'events_processed' : 110000,
         'number_of_jobs' : 25,
@@ -512,11 +519,11 @@ AHtoMuTauSpecific_RECO_SAMPLES = {
         'applyMuonIsolationEfficiencyCorrection' : True,
         'applyVertexMultiplicityReweighting' : True,
         'enableSysUncertainties' : True,
-        'hlt' : cms.InputTag("TriggerResults", "", "REDIGI38XPU")
+        'hlt' : cms.InputTag("TriggerResults", "", "REDIGI311X")
     },
     'A350' : {
         # Not skimmed
-        'datasetpath' : "/SUSYGluGluToHToTauTau_M-350_7TeV-pythia6-tauola/Fall10-E7TeV_ProbDist_2010Data_BX156_START38_V12-v1/GEN-SIM-RECO",
+        'datasetpath' : "/SUSYGluGluToHToTauTau_M-350_7TeV-pythia6-tauola/Spring11-PU_S1_START311_V1G1-v1/AODSIM",
         'dbs_url' :  "http://cmsdbsprod.cern.ch/cms_dbs_prod_global/servlet/DBSServlet",
         'events_processed' : 110000,
         'number_of_jobs' : 25,
@@ -533,11 +540,11 @@ AHtoMuTauSpecific_RECO_SAMPLES = {
         'applyMuonIsolationEfficiencyCorrection' : True,
         'applyVertexMultiplicityReweighting' : True,
         'enableSysUncertainties' : True,
-        'hlt' : cms.InputTag("TriggerResults", "", "REDIGI38XPU")
+        'hlt' : cms.InputTag("TriggerResults", "", "REDIGI311X")
     },
     'bbA350' : {
         # Not skimmed
-        'datasetpath' : "/SUSYBBHToTauTau_M-350_7TeV-pythia6-tauola/Fall10-E7TeV_ProbDist_2010Data_BX156_START38_V12-v1/GEN-SIM-RECO",
+        'datasetpath' : "/SUSYBBHToTauTau_M-350_7TeV-pythia6-tauola/Spring11-PU_S1_START311_V1G1-v1/AODSIM",
         'dbs_url' :  "http://cmsdbsprod.cern.ch/cms_dbs_prod_global/servlet/DBSServlet",
         'events_processed' : 110000,
         'number_of_jobs' : 25,
@@ -554,7 +561,133 @@ AHtoMuTauSpecific_RECO_SAMPLES = {
         'applyMuonIsolationEfficiencyCorrection' : True,
         'applyVertexMultiplicityReweighting' : True,
         'enableSysUncertainties' : True,
-        'hlt' : cms.InputTag("TriggerResults", "", "REDIGI38XPU")
+        'hlt' : cms.InputTag("TriggerResults", "", "REDIGI311X")
+    },
+    'A400' : {
+        # Not skimmed
+        'datasetpath' : "/SUSYGluGluToHToTauTau_M-400_7TeV-pythia6-tauola/Spring11-PU_S1_START311_V1G1-v1/AODSIM",
+        'dbs_url' :  "http://cmsdbsprod.cern.ch/cms_dbs_prod_global/servlet/DBSServlet",
+        'events_processed' : 110000,
+        'number_of_jobs' : 25,
+        'skim_eff' : 1.0,
+        'x_sec' : (                 # CV: cross-section * branching-ratio taken directly from Bari .root file
+                 1.*_femtobarns*0.1 # (gg -> A0)*(A0->tautau)
+           +     1.*_femtobarns*0.1 # (gg -> H0)*(H0->tautau)
+        ),
+        'legendEntry' : 'ggA(400) #rightarrow #tau^{+} #tau^{-}',
+        'type' : 'bsmMC',
+        'drawOption' : styles.drawOption_darkBlue_separate,
+        'applyZrecoilCorrection' : True,
+        'applyMuonTriggerEfficiencyCorrection' : True,
+        'applyMuonIsolationEfficiencyCorrection' : True,
+        'applyVertexMultiplicityReweighting' : True,
+        'enableSysUncertainties' : True,
+        'hlt' : cms.InputTag("TriggerResults", "", "REDIGI311X")
+    },
+    'bbA400' : {
+        # Not skimmed
+        'datasetpath' : "/SUSYBBHToTauTau_M-400_7TeV-pythia6-tauola/Spring11-PU_S1_START311_V1G1-v1/AODSIM",
+        'dbs_url' :  "http://cmsdbsprod.cern.ch/cms_dbs_prod_global/servlet/DBSServlet",
+        'events_processed' : 110000,
+        'number_of_jobs' : 25,
+        'skim_eff' : 1.0,
+        'x_sec' : (               # CV: cross-section * branching-ratio taken directly from Bari .root file
+               1.*_femtobarns*0.1 # (bb -> A0)*(A0->tautau)
+           +   1.*_femtobarns*0.1 # (bb -> H0)*(H0->tautau)
+        ),
+        'legendEntry' : 'bbA(400) #rightarrow #tau^{+} #tau^{-}',
+        'type' : 'bsmMC',
+        'drawOption' : styles.drawOption_darkBlue_separate,
+        'applyZrecoilCorrection' : True,
+        'applyMuonTriggerEfficiencyCorrection' : True,
+        'applyMuonIsolationEfficiencyCorrection' : True,
+        'applyVertexMultiplicityReweighting' : True,
+        'enableSysUncertainties' : True,
+        'hlt' : cms.InputTag("TriggerResults", "", "REDIGI311X")
+    },
+    'A450' : {
+        # Not skimmed
+        'datasetpath' : "/SUSYGluGluToHToTauTau_M-450_7TeV-pythia6-tauola/Spring11-PU_S1_START311_V1G1-v1/AODSIM",
+        'dbs_url' :  "http://cmsdbsprod.cern.ch/cms_dbs_prod_global/servlet/DBSServlet",
+        'events_processed' : 110000,
+        'number_of_jobs' : 25,
+        'skim_eff' : 1.0,
+        'x_sec' : (                 # CV: cross-section * branching-ratio taken directly from Bari .root file
+                 1.*_femtobarns*0.1 # (gg -> A0)*(A0->tautau)
+           +     1.*_femtobarns*0.1 # (gg -> H0)*(H0->tautau)
+        ),
+        'legendEntry' : 'ggA(450) #rightarrow #tau^{+} #tau^{-}',
+        'type' : 'bsmMC',
+        'drawOption' : styles.drawOption_darkBlue_separate,
+        'applyZrecoilCorrection' : True,
+        'applyMuonTriggerEfficiencyCorrection' : True,
+        'applyMuonIsolationEfficiencyCorrection' : True,
+        'applyVertexMultiplicityReweighting' : True,
+        'enableSysUncertainties' : True,
+        'hlt' : cms.InputTag("TriggerResults", "", "REDIGI311X")
+    },
+    'bbA450' : {
+        # Not skimmed
+        'datasetpath' : "/SUSYBBHToTauTau_M-450_7TeV-pythia6-tauola/Spring11-PU_S1_START311_V1G1-v1/AODSIM",
+        'dbs_url' :  "http://cmsdbsprod.cern.ch/cms_dbs_prod_global/servlet/DBSServlet",
+        'events_processed' : 217300,
+        'number_of_jobs' : 25,
+        'skim_eff' : 1.0,
+        'x_sec' : (               # CV: cross-section * branching-ratio taken directly from Bari .root file
+               1.*_femtobarns*0.1 # (bb -> A0)*(A0->tautau)
+           +   1.*_femtobarns*0.1 # (bb -> H0)*(H0->tautau)
+        ),
+        'legendEntry' : 'bbA(450) #rightarrow #tau^{+} #tau^{-}',
+        'type' : 'bsmMC',
+        'drawOption' : styles.drawOption_darkBlue_separate,
+        'applyZrecoilCorrection' : True,
+        'applyMuonTriggerEfficiencyCorrection' : True,
+        'applyMuonIsolationEfficiencyCorrection' : True,
+        'applyVertexMultiplicityReweighting' : True,
+        'enableSysUncertainties' : True,
+        'hlt' : cms.InputTag("TriggerResults", "", "REDIGI311X")
+    },
+    'A500' : {
+        # Not skimmed
+        'datasetpath' : "/SUSYGluGluToHToTauTau_M-500_7TeV-pythia6-tauola/Spring11-PU_S1_START311_V1G1-v1/AODSIM",
+        'dbs_url' :  "http://cmsdbsprod.cern.ch/cms_dbs_prod_global/servlet/DBSServlet",
+        'events_processed' : 110000,
+        'number_of_jobs' : 25,
+        'skim_eff' : 1.0,
+        'x_sec' : (                 # CV: cross-section * branching-ratio taken directly from Bari .root file
+                 1.*_femtobarns*0.1 # (gg -> A0)*(A0->tautau)
+           +     1.*_femtobarns*0.1 # (gg -> H0)*(H0->tautau)
+        ),
+        'legendEntry' : 'ggA(500) #rightarrow #tau^{+} #tau^{-}',
+        'type' : 'bsmMC',
+        'drawOption' : styles.drawOption_darkBlue_separate,
+        'applyZrecoilCorrection' : True,
+        'applyMuonTriggerEfficiencyCorrection' : True,
+        'applyMuonIsolationEfficiencyCorrection' : True,
+        'applyVertexMultiplicityReweighting' : True,
+        'enableSysUncertainties' : True,
+        'hlt' : cms.InputTag("TriggerResults", "", "REDIGI311X")
+    },
+    'bbA500' : {
+        # Not skimmed
+        'datasetpath' : "/SUSYBBHToTauTau_M-500_7TeV-pythia6-tauola/Spring11-PU_S1_START311_V1G1-v1/AODSIM",
+        'dbs_url' :  "http://cmsdbsprod.cern.ch/cms_dbs_prod_global/servlet/DBSServlet",
+        'events_processed' : 185060,
+        'number_of_jobs' : 25,
+        'skim_eff' : 1.0,
+        'x_sec' : (               # CV: cross-section * branching-ratio taken directly from Bari .root file
+               1.*_femtobarns*0.1 # (bb -> A0)*(A0->tautau)
+           +   1.*_femtobarns*0.1 # (bb -> H0)*(H0->tautau)
+        ),
+        'legendEntry' : 'bbA(500) #rightarrow #tau^{+} #tau^{-}',
+        'type' : 'bsmMC',
+        'drawOption' : styles.drawOption_darkBlue_separate,
+        'applyZrecoilCorrection' : True,
+        'applyMuonTriggerEfficiencyCorrection' : True,
+        'applyMuonIsolationEfficiencyCorrection' : True,
+        'applyVertexMultiplicityReweighting' : True,
+        'enableSysUncertainties' : True,
+        'hlt' : cms.InputTag("TriggerResults", "", "REDIGI311X")
     }
 }
 RECO_SAMPLES.update(AHtoMuTauSpecific_RECO_SAMPLES)
@@ -626,6 +759,24 @@ AHtoMutauSpecific_MERGE_SAMPLES = {
         'legendEntry' : 'A(350) #rightarrow #tau^{+} #tau^{-}',
         'type' : 'bsmMC',
         'drawOption' : RECO_SAMPLES['A350']['drawOption'],
+    },
+    'A400Sum' : {
+        'samples' : [ 'A400', 'bbA400' ],
+        'legendEntry' : 'A(400) #rightarrow #tau^{+} #tau^{-}',
+        'type' : 'bsmMC',
+        'drawOption' : RECO_SAMPLES['A400']['drawOption'],
+    },
+    'A450Sum' : {
+        'samples' : [ 'A450', 'bbA450' ],
+        'legendEntry' : 'A(450) #rightarrow #tau^{+} #tau^{-}',
+        'type' : 'bsmMC',
+        'drawOption' : RECO_SAMPLES['A450']['drawOption'],
+    },
+    'A500Sum' : {
+        'samples' : [ 'A500', 'bbA500' ],
+        'legendEntry' : 'A(500) #rightarrow #tau^{+} #tau^{-}',
+        'type' : 'bsmMC',
+        'drawOption' : RECO_SAMPLES['A500']['drawOption'],
     }
 }
 MERGE_SAMPLES.update(AHtoMutauSpecific_MERGE_SAMPLES)
