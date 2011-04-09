@@ -12,9 +12,9 @@
  *
  * \author Christian Veelken, UC Davis
  *
- * \version $Revision: 1.7 $
+ * \version $Revision: 1.8 $
  *
- * $Id: ParticlePFIsolationSelector.h,v 1.7 2011/02/10 16:33:32 jkolb Exp $
+ * $Id: ParticlePFIsolationSelector.h,v 1.8 2011/02/18 11:15:06 veelken Exp $
  *
  */
 
@@ -28,6 +28,9 @@
 #include "DataFormats/Candidate/interface/Particle.h"
 #include "DataFormats/ParticleFlowCandidate/interface/PFCandidate.h"
 #include "DataFormats/ParticleFlowCandidate/interface/PFCandidateFwd.h"
+#include "DataFormats/VertexReco/interface/Vertex.h"
+#include "DataFormats/VertexReco/interface/VertexFwd.h"
+#include "DataFormats/BeamSpot/interface/BeamSpot.h"
 #include "DataFormats/Math/interface/deltaR.h"
 
 #include "TauAnalysis/RecoTools/interface/ParticlePFIsolationExtractor.h"
@@ -50,6 +53,9 @@ class ParticlePFIsolationSelector
       cfgError_(0)
   {
     pfCandidateSrc_ = cfg.getParameter<edm::InputTag>("pfCandidateSource");
+
+    if ( cfg.exists("vertexSource")   ) vertexSrc_   = cfg.getParameter<edm::InputTag>("vertexSource");
+    if ( cfg.exists("beamSpotSource") ) beamSpotSrc_ = cfg.getParameter<edm::InputTag>("beamSpotSource");
     
     sumPtMin_ = cfg.exists("sumPtMin") ?
       cfg.getParameter<double>("sumPtMin") : -1.;
@@ -98,10 +104,24 @@ class ParticlePFIsolationSelector
       
       edm::Handle<reco::PFCandidateCollection> pfCandidates;
       evt.getByLabel(pfCandidateSrc_, pfCandidates);
+
+      const reco::VertexCollection* vertices = 0;
+      if ( vertexSrc_.label() != "" ) {
+	edm::Handle<reco::VertexCollection> vertexHandle;
+	evt.getByLabel(vertexSrc_, vertexHandle);
+	vertices = &(*vertexHandle);
+      }
+
+      const reco::BeamSpot* beamSpot = 0;
+      if ( beamSpotSrc_.label() != "" ) {
+	edm::Handle<reco::BeamSpot> beamSpotHandle;
+	evt.getByLabel(beamSpotSrc_, beamSpotHandle);
+	beamSpot = &(*beamSpotHandle);
+      }
       
       for ( typename collection::const_iterator isoParticleCandidate = isoParticleCandidates->begin();
 	    isoParticleCandidate != isoParticleCandidates->end(); ++isoParticleCandidate ) {
-	double sumPt = extractor_(*isoParticleCandidate, *pfCandidates);
+	double sumPt = extractor_(*isoParticleCandidate, *pfCandidates, vertices, beamSpot);
 	
 	// JK: need to fix for correct eta
 	double sumPtMax = ( isoParticleCandidate->eta() < 1.479 ) ? sumPtMaxEB_ : sumPtMaxEE_;
@@ -125,6 +145,8 @@ class ParticlePFIsolationSelector
     std::vector<const T*> selected_;
     
     edm::InputTag pfCandidateSrc_;
+    edm::InputTag vertexSrc_;
+    edm::InputTag beamSpotSrc_;
     
     ParticlePFIsolationExtractor<T> extractor_;
     

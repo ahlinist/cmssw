@@ -4,7 +4,7 @@
  *
  * \author Evan, UC Davis
  *
- * \version $Revision: 1.1 $
+ * \version $Revision: 1.2 $
  */
 
 #include <boost/shared_ptr.hpp>
@@ -16,6 +16,13 @@
 #include "FWCore/Framework/interface/EDProducer.h"
 #include "FWCore/Utilities/interface/InputTag.h"
 #include "FWCore/ParameterSet/interface/ParameterSet.h"
+
+#include "DataFormats/Candidate/interface/Particle.h"
+#include "DataFormats/ParticleFlowCandidate/interface/PFCandidate.h"
+#include "DataFormats/ParticleFlowCandidate/interface/PFCandidateFwd.h"
+#include "DataFormats/VertexReco/interface/Vertex.h"
+#include "DataFormats/VertexReco/interface/VertexFwd.h"
+#include "DataFormats/BeamSpot/interface/BeamSpot.h"
 
 #include "TauAnalysis/RecoTools/interface/ParticlePFIsolationExtractor.h"
 
@@ -30,17 +37,29 @@ class PATLeptonPFIsolationEmbedder : public edm::EDProducer {
     void produce(edm::Event& evt, const edm::EventSetup& es);
   private:
     edm::InputTag src_;
+
     std::string userInfoString_;
+  
     ParticlePFIsolationExtractor<PATType> extractor_;
+  
     edm::InputTag pfCandidateSrc_;
+
+    edm::InputTag vertexSrc_;
+    edm::InputTag beamSpotSrc_;
 };
 
 template<typename T>
 PATLeptonPFIsolationEmbedder<T>::PATLeptonPFIsolationEmbedder(
     const edm::ParameterSet& pset):extractor_(pset) {
   src_ = pset.getParameter<edm::InputTag>("src");
+
   userInfoString_ = pset.getParameter<std::string>("userFloatName");
+
   pfCandidateSrc_ = pset.getParameter<edm::InputTag>("pfCandidateSource");
+
+  if ( pset.exists("vertexSource")   ) vertexSrc_   = pset.getParameter<edm::InputTag>("vertexSource");
+  if ( pset.exists("beamSpotSource") ) beamSpotSrc_ = pset.getParameter<edm::InputTag>("beamSpotSource");
+  
   // Register product
   produces<std::vector<T> >();
 }
@@ -55,6 +74,20 @@ void PATLeptonPFIsolationEmbedder<T>::produce(edm::Event& evt,
   edm::Handle<reco::PFCandidateCollection> pfCandidates;
   evt.getByLabel(pfCandidateSrc_, pfCandidates);
 
+  const reco::VertexCollection* vertices = 0;
+  if ( vertexSrc_.label() != "" ) {
+    edm::Handle<reco::VertexCollection> vertexHandle;
+    evt.getByLabel(vertexSrc_, vertexHandle);
+    vertices = &(*vertexHandle);
+  }
+  
+  const reco::BeamSpot* beamSpot = 0;
+  if ( beamSpotSrc_.label() != "" ) {
+    edm::Handle<reco::BeamSpot> beamSpotHandle;
+    evt.getByLabel(beamSpotSrc_, beamSpotHandle);
+    beamSpot = &(*beamSpotHandle);
+  }
+
   std::auto_ptr<std::vector<T> > output(new std::vector<T>() );
   output->reserve(inputObjects->size());
 
@@ -62,7 +95,7 @@ void PATLeptonPFIsolationEmbedder<T>::produce(edm::Event& evt,
     const T& inputObject = (*inputObjects)[i];
     // Make a copy
     T outputObject = inputObject;
-    double sumPt = extractor_(outputObject, *pfCandidates);
+    double sumPt = extractor_(outputObject, *pfCandidates, vertices, beamSpot);
     outputObject.addUserFloat(userInfoString_, sumPt);
     output->push_back(outputObject);
   }
