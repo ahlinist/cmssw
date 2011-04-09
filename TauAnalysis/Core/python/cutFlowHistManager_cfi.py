@@ -7,9 +7,6 @@ cutFlowHistManager = cms.PSet(
     srcEventSelFlags = cms.VInputTag(
         cms.InputTag('Trigger'),
         cms.InputTag('dataQualityCutsPassed'),
-        cms.InputTag('primaryEventVertex'),
-        cms.InputTag('primaryEventVertexQuality'),
-        cms.InputTag('primaryEventVertexPosition'),
         cms.InputTag('globalMuonCut', 'cumulative'),
         cms.InputTag('muonEtaCut', 'cumulative'),
         cms.InputTag('muonPtCut', 'cumulative'),
@@ -27,9 +24,13 @@ cutFlowHistManager = cms.PSet(
         cms.InputTag('tauMuonVeto', 'cumulative'),
         cms.InputTag('tauElectronVeto', 'cumulative'),
         cms.InputTag('diTauCandidateForMuTauAntiOverlapVeto', 'cumulative'),
+        cms.InputTag('primaryEventVertexForMuTau'),
+        cms.InputTag('primaryEventVertexQualityForMuTau'),
+        cms.InputTag('primaryEventVertexPositionForMuTau'),
         cms.InputTag('diTauCandidateForMuTauMt1METcut', 'cumulative'),
         cms.InputTag('diTauCandidateForMuTauPzetaDiffCut', 'cumulative'),
         cms.InputTag('diMuPairZmumuHypothesisVetoByLooseIsolation'),
+        cms.InputTag('diMuPairDYmumuHypothesisVeto'),
         cms.InputTag('diTauCandidateForMuTauZeroChargeCut', 'cumulative')
     ),
     
