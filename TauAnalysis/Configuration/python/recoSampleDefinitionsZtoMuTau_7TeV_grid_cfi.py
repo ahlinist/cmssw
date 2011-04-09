@@ -39,8 +39,6 @@ SAMPLES_TO_PRINT.append('smSum')
 SAMPLE_DEFAULTS = {
     #'dbs_url' : "http://cmsdbsprod.cern.ch/cms_dbs_ph_analysis_02/servlet/DBSServlet",
     'dbs_url' : "http://cmsdbsprod.cern.ch/cms_dbs_prod_global/servlet/DBSServlet",
-    ##'conditions' : 'startup', # CV: temporarily disabled, because JEC uncertainties need 'START38_V14' tag
-                                #     while default tag for CMSSW_3_8_7 is 'START38_V13'
     'conditions' : 'START311_V2::All',
     'genPhaseSpaceCut' : '',
     'factorize' : False,
@@ -70,8 +68,8 @@ _picobarns =  1.0
 _femtobarns = 1.0e-3
 
 # Integrated luminosity to normalize
-##TARGET_LUMI = 200.0/_picobarns
-TARGET_LUMI = 36.15/_picobarns # for runs 132440 - 149442
+TARGET_LUMI =   5.1/_picobarns # for runs 160404 - 161312 ("golden" quality)
+TARGET_LUMI =  17.0/_picobarns # for runs 160404 - 161312 ("almost golden" quality)
 
 #--------------------------------------------------------------------------------
 # NOTE: cross-sections for W and Z production are scaled to next-to-leading order values
@@ -83,8 +81,9 @@ RECO_SAMPLES = {
     'data_TauPlusX_Run2011A_PromptReco' : {
         'datasetpath' : "/TauPlusX/Run2011A-PromptReco-v1/AOD",
         'dbs_url' :  "http://cmsdbsprod.cern.ch/cms_dbs_prod_global/servlet/DBSServlet",
-        'lumi_mask' : "/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions11/7TeV/Prompt/Cert_160404-161216_7TeV_PromptReco_Collisions11_JSON.txt",
-        'runselection' : "160404-161216",
+        #'lumi_mask' : "/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions11/7TeV/Prompt/Cert_160404-161312_7TeV_PromptReco_Collisions11_JSON.txt",
+        'lumi_mask' : "/afs/cern.ch/user/v/veelken/public/Cert_160404-161312_7TeV_PromptReco_Collisions11_Ztautau_JSON.txt",
+        'runselection' : "160404-161312",
         'number_of_jobs' : 500,
         'conditions' : 'GR_R_311_V2::All',
         'events_processed' : -1,
