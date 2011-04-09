@@ -2,6 +2,8 @@
 
 #include <TMath.h>
 
+const double epsilon = 0.01;
+
 std::vector<const reco::PFCandidate*> getPFCandidatesOfType(const reco::PFCandidateCollection& pfCandidates, 
 							    reco::PFCandidate::ParticleType pfParticleType)
 {
@@ -24,13 +26,15 @@ void getPileUpPFCandidates(const std::vector<const reco::PFCandidate*>& pfCandid
   std::vector<const reco::Vertex*> signalVertices;
   for ( std::vector<reco::TrackBaseRef>::const_iterator signalTrack = signalTracks.begin();
 	signalTrack != signalTracks.end(); ++signalTrack ) {
-    const reco::Vertex* signalVertex = findVertex(*signalTrack, vertices, deltaZ, bs);
-    if ( signalVertex != 0 ) signalVertices.push_back(signalVertex);
+    if ( signalTrack->isNonnull() && signalTrack->isAvailable() ) {
+      const reco::Vertex* signalVertex = findVertex(*signalTrack, vertices, deltaZ, bs);
+      if ( signalVertex != 0 ) signalVertices.push_back(signalVertex);
+    }
   }
 
   for ( std::vector<const reco::PFCandidate*>::const_iterator pfCandidate = pfCandidates.begin();
 	pfCandidate != pfCandidates.end(); ++pfCandidate ) {
-    if ( (*pfCandidate)->trackRef().isNonnull() ) {
+    if ( (*pfCandidate)->trackRef().isNonnull() && (*pfCandidate)->trackRef().isAvailable() ) {
       reco::TrackBaseRef pfCandidateTrack((*pfCandidate)->trackRef());
 
       const reco::Vertex* pfCandidateVertex = findVertex(pfCandidateTrack, vertices, deltaZ, bs);
@@ -60,12 +64,17 @@ const reco::Vertex* findVertex(const reco::TrackBaseRef& signalTrack, const reco
 
   const reco::Vertex* retVal = 0;
 
+  if ( !(signalTrack.isNonnull() && signalTrack.isAvailable()) ) return retVal;
+
 //--- find vertex associated to track
   for ( reco::VertexCollection::const_iterator vertex = vertices.begin();
 	vertex != vertices.end(); ++vertex ) {
     for ( reco::Vertex::trackRef_iterator vtxAssocTrack = vertex->tracks_begin();
-	  vtxAssocTrack != vertex->tracks_end(); ++vtxAssocTrack ) {
-      if ( (*vtxAssocTrack) == signalTrack ) {
+	  vtxAssocTrack != vertex->tracks_end(); ++vtxAssocTrack ) {      
+      if ( vtxAssocTrack->isNonnull() && vtxAssocTrack->isAvailable()                             && 
+	   TMath::Abs((*vtxAssocTrack)->eta() - signalTrack->eta()) < epsilon                     &&
+	   TMath::Abs((*vtxAssocTrack)->phi() - signalTrack->phi()) < epsilon                     &&
+	   TMath::Abs((*vtxAssocTrack)->pt()  - signalTrack->pt())  < (epsilon*signalTrack->pt()) ) {
 	retVal = &(*vertex);
 	break;
       }
