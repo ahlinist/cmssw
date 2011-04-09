@@ -1,13 +1,16 @@
 import FWCore.ParameterSet.Config as cms
 import copy
 
-# module to select candidates for "the primary event vertex".
-# Selection based on PhysicsTools/PatAlogos/plugins/PATSingleVertexSelector;
-# see https://twiki.cern.ch/twiki/bin/view/CMS/SWGuidePhysicsCutParser
+#--------------------------------------------------------------------------------
+# Select candidates for "the" event vertex.
+#
+# Selection based on PhysicsTools/PatAlogos/plugins/PATSingleVertexSelector.
+# See https://twiki.cern.ch/twiki/bin/view/CMS/SWGuidePhysicsCutParser
 # on how to use the cut-string
-
-# Note: offlinePrimaryVerticesWithBS collection is sorted
+#
+# NOTE: offlinePrimaryVerticesWithBS collection is sorted
 #       in order of decreasing sum of Pt of tracks fitted to each vertex
+#--------------------------------------------------------------------------------
 
 selectedPrimaryVertexQuality = cms.EDFilter("VertexSelector",
     src = cms.InputTag('offlinePrimaryVerticesWithBS'),
