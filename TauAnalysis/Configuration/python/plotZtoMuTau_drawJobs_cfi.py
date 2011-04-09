@@ -354,7 +354,7 @@ drawJobConfigurator_ZtoMuTauOS.add(
             name = "cutFlowControlPlots_tau_afterTauCharge"
         ),
         drawJobConfigEntry(
-            meName = 'TauQuantities/TauDiscriminatorAgainstMuons',
+            meName = 'TauQuantities/TauDiscriminatorAgainstMuonsTight',
             title = "Tau anti-Muon Discr. (after Charge(Tau) = +/-1 Cut)",
             xAxis = 'unlabeled',
             name = "cutFlowControlPlots_tauAntiMuonDiscr_afterTauCharge"
@@ -374,7 +374,7 @@ drawJobConfigurator_ZtoMuTauOS.add(
             name = "cutFlowControlPlots_tau_afterTauMuonVeto"
         ),
         drawJobConfigEntry(
-            meName = 'TauQuantities/TauDiscriminatorAgainstElectrons',
+            meName = 'TauQuantities/TauDiscriminatorAgainstElectronsLoose',
             title = "Tau anti-Electron Discr. (after Tau #mu-Veto Cut)",
             xAxis = 'unlabeled',
             name = "cutFlowControlPlots_tauAntiElectronDiscr_afterTauMuonVeto"
@@ -576,6 +576,12 @@ finalSamplePlots = [
         title = "M(Muon + Tau), SVfit method (final Event sample)",
         xAxis = 'Mass',
         name = "finalSamplePlots_mSVmethod"
+    ),
+    drawJobConfigEntry(
+        meName = 'DiTauCandidateNSVfitQuantities/psKine_MEt_ptBalance/Mass',
+        title = "M(Muon + Tau), NSVfit method (final Event sample)",
+        xAxis = 'Mass',
+        name = "finalSamplePlots_mNSVmethod"
     ),
     drawJobConfigEntry(
         meName = 'DiTauCandidateQuantities/Ht12MET',
