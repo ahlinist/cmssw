@@ -4,8 +4,13 @@ patMuonPFIsolationSelector = cms.PSet(
     # define particle-flow based isolation applied to muons in Z --> muon + tau-jet channel;
     # c.f. https://twiki.cern.ch/twiki/bin/view/CMS/Z2tautau2mujetFirstData#Default_event_selection
     
-    pfCandidateSource = cms.InputTag('pfNoPileUp'),
+    pfCandidateSource = cms.InputTag('particleFlow'),
 
+    # CV: configuration parameters 'vertexSource' and 'beamSpotSource'
+    #     need to be set if using deltaBeta pile-up corrections
+    vertexSource = cms.InputTag('offlinePrimaryVerticesWithBS'),
+    beamSpotSource = cms.InputTag('offlineBeamSpot'),
+        
     chargedHadronIso = cms.PSet(
         ptMin = cms.double(1.0),        
         dRvetoCone = cms.double(-1.),
@@ -27,7 +32,13 @@ patMuonPFIsolationSelector = cms.PSet(
     ),
 
     sumPtMax = cms.double(0.10),
-    sumPtMethod = cms.string("relative") # either "relative" or "absolute"
+    sumPtMethod = cms.string("relative"), # either "relative" or "absolute"
+
+    pileUpCorr = cms.PSet(
+        method = cms.string("deltaBeta"),
+        deltaZ = cms.double(0.2),
+        chargedToNeutralFactor = cms.double(0.5) # (pi+ + pi-)/pi0 ratio in QCD/min. bias events, as expected from IsoSpin symmetry
+    )
 )
 
 patElectronPFIsolationSelector = cms.PSet(
