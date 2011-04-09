@@ -25,26 +25,6 @@ cfgTrigger = cms.PSet(
     hltAcceptPaths = cms.vstring('HLT_Mu9')
 )
 
-# primary event vertex selection
-cfgPrimaryEventVertex = cms.PSet(
-    pluginName = cms.string('primaryEventVertex'),
-    pluginType = cms.string('VertexMinEventSelector'),
-    src = cms.InputTag('offlinePrimaryVerticesWithBS'),
-    minNumber = cms.uint32(1)
-)
-cfgPrimaryEventVertexQuality = cms.PSet(
-    pluginName = cms.string('primaryEventVertexQuality'),
-    pluginType = cms.string('VertexMinEventSelector'),
-    src = cms.InputTag('selectedPrimaryVertexQuality'),
-    minNumber = cms.uint32(1)
-)
-cfgPrimaryEventVertexPosition = cms.PSet(
-    pluginName = cms.string('primaryEventVertexPosition'),
-    pluginType = cms.string('VertexMinEventSelector'),
-    src = cms.InputTag('selectedPrimaryVertexPosition'),
-    minNumber = cms.uint32(1)
-)
-
 # muon candidate selection
 cfgGlobalMuonCut = cms.PSet(
     pluginName = cms.string('globalMuonCut'),
@@ -203,6 +183,26 @@ cfgDiTauCandidateForMuTauPzetaDiffCut = cms.PSet(
     minNumber = cms.uint32(1)
 )
 
+# selection of event vertex associated to muon + tau-jet pair
+cfgPrimaryEventVertexForMuTau = cms.PSet(
+    pluginName = cms.string('primaryEventVertexForMuTau'),
+    pluginType = cms.string('VertexMinEventSelector'),
+    src = cms.InputTag('selectedPrimaryVertexForMuTau'),
+    minNumber = cms.uint32(1)
+)
+cfgPrimaryEventVertexQualityForMuTau = cms.PSet(
+    pluginName = cms.string('primaryEventVertexQualityForMuTau'),
+    pluginType = cms.string('VertexMinEventSelector'),
+    src = cms.InputTag('selectedPrimaryVertexQualityForMuTau'),
+    minNumber = cms.uint32(1)
+)
+cfgPrimaryEventVertexPositionForMuTau = cms.PSet(
+    pluginName = cms.string('primaryEventVertexPositionForMuTau'),
+    pluginType = cms.string('VertexMinEventSelector'),
+    src = cms.InputTag('selectedPrimaryVertexPositionForMuTau'),
+    minNumber = cms.uint32(1)
+)
+
 # "final" selection of di-tau candidates for "OppositeSign" signal region
 cfgDiTauCandidateForMuTauZeroChargeCut = cms.PSet(
     pluginName = cms.string('diTauCandidateForMuTauZeroChargeCut'),
@@ -223,10 +223,10 @@ cfgDiTauCandidateForMuTauNonZeroChargeCut = cms.PSet(
     minNumber = cms.uint32(1)
 )
 
-# veto events compatible with Z --> mu+ mu- hypothesis
+# veto events compatible with Z/gamma* --> mu+ mu- hypothesis
 # (two paths:two
 #   o two (loosely) isolated global muons of Pt > 10 GeV and opposite charge
-#   o two global muons of Pt > 10 GeV and opposite charge and invariant mass 80 < M(mu + mu) < 100 GeV)
+#   o two global muons of opposite charge and dR(mu+,mu-) < 1.0
 cfgDiMuPairZmumuHypothesisVetoByLooseIsolation = cms.PSet(
     pluginName = cms.string('diMuPairZmumuHypothesisVetoByLooseIsolation'),
     pluginType = cms.string('PATCandViewMaxEventSelector'),
@@ -235,12 +235,17 @@ cfgDiMuPairZmumuHypothesisVetoByLooseIsolation = cms.PSet(
     maxNumber = cms.uint32(0)
 )
 
+cfgDiMuPairDYmumuHypothesisVeto = cms.PSet(
+    pluginName = cms.string('diMuPairDYmumuHypothesisVeto'),
+    pluginType = cms.string('PATCandViewMaxEventSelector'),
+    src = cms.InputTag('selectedDiMuPairDYmumuHypotheses'),
+    #systematics = cms.vstring(muonSystematics.keys()),
+    maxNumber = cms.uint32(0)
+)
+
 zToMuTauEventSelConfiguratorOS = eventSelFlagProdConfigurator(
     [ cfgGenPhaseSpaceCut,
-      cfgTrigger,
-      cfgPrimaryEventVertex,
-      cfgPrimaryEventVertexQuality,
-      cfgPrimaryEventVertexPosition,
+      cfgTrigger,      
       cfgGlobalMuonCut,
       cfgMuonEtaCut,
       cfgMuonPtCut,
@@ -261,7 +266,11 @@ zToMuTauEventSelConfiguratorOS = eventSelFlagProdConfigurator(
       cfgDiTauCandidateForMuTauMt1METcut,
       cfgDiTauCandidateForMuTauPzetaDiffCut,
       cfgDiTauCandidateForMuTauZeroChargeCut,
-      cfgDiMuPairZmumuHypothesisVetoByLooseIsolation ],
+      cfgPrimaryEventVertexForMuTau,
+      cfgPrimaryEventVertexQualityForMuTau,
+      cfgPrimaryEventVertexPositionForMuTau,
+      cfgDiMuPairZmumuHypothesisVetoByLooseIsolation,
+      cfgDiMuPairDYmumuHypothesisVeto ],
     boolEventSelFlagProducer = "BoolEventSelFlagProducer",
     pyModuleName = __name__
 )
@@ -283,11 +292,12 @@ isRecZtoMuTau = cms.EDProducer("BoolEventSelFlagProducer",
     pluginType = cms.string('MultiBoolEventSelFlagSelector'),
     flags = cms.VInputTag(
         cms.InputTag('Trigger'),
-        cms.InputTag('primaryEventVertexPosition'),
         cms.InputTag('muonTrkIPcut', 'cumulative'),
         cms.InputTag('tauElectronVeto', 'cumulative'),
         cms.InputTag('diTauCandidateForMuTauZeroChargeCut', 'cumulative'),
-        cms.InputTag('diMuPairZmumuHypothesisVetoByLooseIsolation')
+        cms.InputTag('primaryEventVertexPositionForMuTau'),                           
+        cms.InputTag('diMuPairZmumuHypothesisVetoByLooseIsolation'),
+        cms.InputTag('diMuPairDYmumuHypothesisVeto')                           
     )
 )
 

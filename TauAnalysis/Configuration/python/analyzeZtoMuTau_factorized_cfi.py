@@ -48,6 +48,23 @@ evtSelDiTauCandidateForMuTauNonZeroChargeLooseMuonIsolation = evtSelDiTauCandida
     src_individual = cms.InputTag('diTauCandidateForMuTauNonZeroChargeCutLooseMuonIsolation', 'individual')
 )
 
+# primary event vertex selection
+evtSelPrimaryEventVertexForMuTauLooseMuonIsolation = cms.PSet(
+    pluginName = cms.string('evtSelPrimaryEventVertexForMuTauLooseMuonIsolation'),
+    pluginType = cms.string('BoolEventSelector'),
+    src = cms.InputTag('primaryEventVertexForMuTauLooseMuonIsolation')
+)
+evtSelPrimaryEventVertexQualityForMuTauLooseMuonIsolation = cms.PSet(
+    pluginName = cms.string('evtSelPrimaryEventVertexQualityForMuTauLooseMuonIsolation'),
+    pluginType = cms.string('BoolEventSelector'),
+    src = cms.InputTag('primaryEventVertexQualityForMuTauLooseMuonIsolation')
+)
+evtSelPrimaryEventVertexPositionForMuTauLooseMuonIsolation = cms.PSet(
+    pluginName = cms.string('evtSelPrimaryEventVertexPositionForMuTauLooseMuonIsolation'),
+    pluginType = cms.string('BoolEventSelector'),
+    src = cms.InputTag('primaryEventVertexPositionForMuTauLooseMuonIsolation')
+)
+
 #--------------------------------------------------------------------------------
 # define event print-out
 #--------------------------------------------------------------------------------
@@ -75,8 +92,14 @@ inputTagReplacements = [
     [ "selectedMuTauPairsAntiOverlapVetoCumulative", "selectedMuTauPairsAntiOverlapVetoLooseMuonIsolationCumulative" ],
     [ "selectedMuTauPairsMt1METcumulative", "selectedMuTauPairsMt1METlooseMuonIsolationCumulative" ],
     [ "selectedMuTauPairsPzetaDiffCumulative", "selectedMuTauPairsPzetaDiffLooseMuonIsolationCumulative" ],
+    [ "selectedMuTauPairsZeroChargeCumulative", "selectedMuTauPairsZeroChargeLooseMuonIsolationCumulative" ],
+    [ "selectedMuTauPairsNonZeroChargeCumulative", "selectedMuTauPairsNonZeroChargeLooseMuonIsolationCumulative" ],
     [ "muTauPairZmumuHypotheses", "muTauPairZmumuHypothesesLooseMuonIsolation" ],
-    [ "muTauPairVisMassHypotheses", "muTauPairVisMassHypothesesLooseMuonIsolation" ]
+    [ "muTauPairVisMassHypotheses", "muTauPairVisMassHypothesesLooseMuonIsolation" ],
+    [ "selectedPrimaryVertexForMuTau", "selectedPrimaryVertexForMuTauLooseMuonIsolation" ],
+    [ "selectedPrimaryVertexQualityForMuTau", "selectedPrimaryVertexQualityForMuTauLooseMuonIsolation" ],
+    [ "selectedPrimaryVertexPositionForMuTau", "selectedPrimaryVertexPositionForMuTauLooseMuonIsolation" ],
+    [ "selectedPrimaryVertexHighestPtTrackSumForMuTau", "selectedPrimaryVertexHighestPtTrackSumForMuTauLooseMuonIsolation" ]
 ]
 
 muTauAnalysisSequenceOS_factorizedWithoutMuonIsolation = copy.deepcopy(muTauAnalysisSequenceOS)

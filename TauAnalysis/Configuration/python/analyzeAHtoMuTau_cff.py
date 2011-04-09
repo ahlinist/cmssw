@@ -45,11 +45,6 @@ analyzeAHtoMuTauEventsOS_woBtag = cms.EDAnalyzer("GenericAnalyzer",
         # data-quality selection
         evtSelDataQuality,
 
-        # primary event vertex selection
-        evtSelPrimaryEventVertex,
-        evtSelPrimaryEventVertexQuality,
-        evtSelPrimaryEventVertexPosition,
-
         # muon candidate selection
         evtSelGlobalMuon,
         evtSelMuonEta,
@@ -77,8 +72,14 @@ analyzeAHtoMuTauEventsOS_woBtag = cms.EDAnalyzer("GenericAnalyzer",
         evtSelDiTauCandidateForAHtoMuTauZeroCharge,
         evtSelDiTauCandidateForAHtoMuTauNonZeroCharge,
 
-        # Z --> mu+ mu- hypothesis veto (based on combinations of muon pairs)
+        # primary event vertex selection
+        evtSelPrimaryEventVertexForMuTau,
+        evtSelPrimaryEventVertexQualityForMuTau,
+        evtSelPrimaryEventVertexPositionForMuTau,
+
+        # Z/gamma* --> mu+ mu- hypothesis veto (based on combinations of muon pairs)
         evtSelDiMuPairZmumuHypothesisVetoByLooseIsolation,
+        evtSelDiMuPairDYmumuHypothesisVeto,                                             
 
         # central jet veto/b-jet candidate selection
         evtSelNonCentralJetEt20bTag,
