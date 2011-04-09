@@ -56,7 +56,7 @@ selectedDiMuPairZmumuHypothesesByLooseIsolation = cms.EDFilter("PATDiMuPairSelec
     filter = cms.bool(False)
 )
 
-produceDiMuPairs = cms.Sequence(
+produceDiMuPairsZmumuHypotheses = cms.Sequence(
     selectedPatMuonsForZmumuHypotheses
    * allDiMuPairZmumuHypothesesByLooseIsolation * selectedDiMuPairZmumuHypothesesByLooseIsolation
 )
