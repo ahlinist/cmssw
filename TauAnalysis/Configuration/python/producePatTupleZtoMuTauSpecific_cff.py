@@ -29,6 +29,10 @@ from TauAnalysis.RecoTools.patMetSelection_cff import *
 from TauAnalysis.CandidateTools.muTauPairProduction_cff import *
 from TauAnalysis.CandidateTools.diTauPairSelectionAllKinds_cff import *
 #
+# produce collections of event vertices matching selected muon + tau-jet pairs
+#
+from TauAnalysis.RecoTools.recoVertexSelectionForMuTau_cff import *
+#
 # produce data-formats providing information about compatibility
 # of an muon + tau-jet pair with the hypothesis
 # of being an muon pair resulting from a Z --> mu+ mu- decay
@@ -36,9 +40,10 @@ from TauAnalysis.CandidateTools.diTauPairSelectionAllKinds_cff import *
 from TauAnalysis.RecoTools.muTauPairZmumuHypothesis_cff import *
 #
 # produce combinations of muon + muon pairs,
-# the hypothesis being that the pair of muons results from a Z --> mu+ mu- decay
+# the hypothesis being that the pair of muons results from a Z/gamma* --> mu+ mu- decay
 #
 from TauAnalysis.RecoTools.diMuPairZmumuHypothesis_cff import *
+from TauAnalysis.RecoTools.diMuPairDYmumuHypothesis_cff import *
 #
 # produce collection of primary event vertex candidates
 # selected by requiring sum(trackPt) > 10 GeV
@@ -53,6 +58,7 @@ producePatTupleZtoMuTauSpecific = cms.Sequence(
    + selectPatJets 
    + produceMuTauPairsAll
    + selectMuTauPairs + selectMuTauPairsLooseMuonIsolation
+   + selectPrimaryVertexForMuTauAll
    + produceMuTauPairZmumuHypotheses
-   + produceDiMuPairs
+   + produceDiMuPairsZmumuHypotheses + produceDiMuPairsDYmumuHypotheses
 )
