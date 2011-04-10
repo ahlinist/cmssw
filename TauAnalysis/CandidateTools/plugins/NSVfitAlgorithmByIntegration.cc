@@ -15,16 +15,19 @@
 
 using namespace SVfit_namespace;
 
-double g(double* x, size_t dim, void* param)
+namespace 
 {
-  double nll = NSVfitAlgorithmBase::gNSVfitAlgorithm->nll(x, (double*)param);
-  double retVal = TMath::Exp(-nll);
-  static long callCounter = 0;
-  //if ( (callCounter % 10000) == 0 ) 
-  //  std::cout << "<g> (call = " << callCounter << "):" 
-  //	        << " nll = " << nll << " --> returning retVal = " << retVal << std::endl;
-  ++callCounter;
-  return retVal;
+  double g(double* x, size_t dim, void* param)
+  {
+    double nll = NSVfitAlgorithmBase::gNSVfitAlgorithm->nll(x, (const double*)param);
+    double retVal = TMath::Exp(-nll);
+    static long callCounter = 0;
+    //if ( (callCounter % 10000) == 0 ) 
+    //  std::cout << "<g> (call = " << callCounter << "):" 
+    //	        << " nll = " << nll << " --> returning retVal = " << retVal << std::endl;
+    ++callCounter;
+    return retVal;
+  }
 }
 
 NSVfitAlgorithmByIntegration::NSVfitAlgorithmByIntegration(const edm::ParameterSet& cfg)
@@ -131,7 +134,7 @@ NSVfitAlgorithmByIntegration::NSVfitAlgorithmByIntegration(const edm::ParameterS
     const fitParameterReplacementType* fitParameterReplacement = fitParameterReplacements_[iMassParameter];
     massParForReplacements_->setLowerLimit(iMassParameter, fitParameterReplacement->iterLowerLimit_);
     massParForReplacements_->setUpperLimit(iMassParameter, fitParameterReplacement->iterUpperLimit_);
-    massParForReplacements_->setStepSize(iMassParameter,   fitParameterReplacement->iterStepSize_);
+    massParForReplacements_->setStepSize(iMassParameter, fitParameterReplacement->iterStepSize_);
   }
 }
 
@@ -166,18 +169,18 @@ void NSVfitAlgorithmByIntegration::beginJob()
 
   numDimensions_ = 0;
 
-  for ( std::vector<fitParameterType>::const_iterator fitParameter = fitParameters_.begin();
+  for ( std::vector<NSVfitParameter>::const_iterator fitParameter = fitParameters_.begin();
 	fitParameter != fitParameters_.end(); ++fitParameter ) {
     bool isReplaced = false;
     for ( std::vector<fitParameterReplacementType*>::const_iterator fitParameterReplacement = fitParameterReplacements_.begin();
 	  fitParameterReplacement != fitParameterReplacements_.end(); ++fitParameterReplacement ) {
-      if ( fitParameter->idx_ == (*fitParameterReplacement)->idxToReplace_ ) isReplaced = true;
+      if ( fitParameter->index() == (*fitParameterReplacement)->idxToReplace_ ) isReplaced = true;
     }
     
     if ( !isReplaced ) {
-      fitParameterByIntegrationType fitParameterByIntegration(&(*fitParameter));
-      fitParameterByIntegration.idxByIntegration_ = numDimensions_;
-      fitParametersByIntegration_.push_back(fitParameterByIntegration);
+      NSVfitParameterMappingType fitParameterMapping(&(*fitParameter));
+      fitParameterMapping.idxByIntegration_ = numDimensions_;
+      fitParameterMappings_.push_back(fitParameterMapping);
       ++numDimensions_;
     }
   }
@@ -232,10 +235,10 @@ void NSVfitAlgorithmByIntegration::fitImp() const
   }
 
   for ( unsigned iDimension = 0; iDimension < numDimensions_; ++iDimension ) {
-    xl_[iDimension] = fitParametersByIntegration_[iDimension].base_->lowerLimit_; 
-    xu_[iDimension] = fitParametersByIntegration_[iDimension].base_->upperLimit_;
-    //std::cout << " fitParameter #" << iDimension << " (" << fitParametersByIntegration_[iDimension].base_->name_ << ":" 
-    //	        << fitParametersByIntegration_[iDimension].base_->type_ << "):"
+    xl_[iDimension] = fitParameterMappings_[iDimension].base_->LowerLimit(); 
+    xu_[iDimension] = fitParameterMappings_[iDimension].base_->UpperLimit();
+    //std::cout << " fitParameter #" << iDimension << " (" << fitParameterMappings_[iDimension].base_->Name() << ":" 
+    //	        << fitParameterMappings_[iDimension].base_->Type() << "):"
     //	        << " xl = " << xl_[iDimension] << ", xu = " << xu_[iDimension] << std::endl;
   }
 
@@ -388,7 +391,7 @@ bool NSVfitAlgorithmByIntegration::isResonance(const std::string& resonanceName)
   return isResonance;
 }
 
-NSVfitAlgorithmBase::fitParameterType* NSVfitAlgorithmByIntegration::getFitParameter(const std::string& token)
+NSVfitParameter* NSVfitAlgorithmByIntegration::getFitParameter(const std::string& token)
 {
   size_t posSeparator = token.find(".");
   if ( posSeparator == std::string::npos || posSeparator == (token.length() - 1) ) {
@@ -407,11 +410,11 @@ NSVfitAlgorithmBase::fitParameterType* NSVfitAlgorithmByIntegration::getFitParam
   return NSVfitAlgorithmBase::getFitParameter(name, type);
 }
 
-double NSVfitAlgorithmByIntegration::nll(double* x, double* param) const
+double NSVfitAlgorithmByIntegration::nll(const double* x, const double* param) const
 {
 //--- copy fitParameter
   for ( unsigned iDimension = 0; iDimension < numDimensions_; ++iDimension ) {
-    fitParameterValues_[fitParametersByIntegration_[iDimension].base_->idx_] = x[iDimension];
+    fitParameterValues_[fitParameterMappings_[iDimension].base_->index()] = x[iDimension];
   }
 
 //--- set additional fitParameters according to mass parameter values
@@ -426,8 +429,8 @@ double NSVfitAlgorithmByIntegration::nll(double* x, double* param) const
 //--- check if fitParameter is within limits;
 //    return probability zero if not
     double fitParameterValue = formula->Eval(param[(*fitParameterReplacement)->idxMassParameter_]);
-    if ( fitParameterValue >= fitParameterLimits_[(*fitParameterReplacement)->idxToReplace_].first  &&
-	 fitParameterValue <= fitParameterLimits_[(*fitParameterReplacement)->idxToReplace_].second ) {
+    if ( fitParameterValue >= fitParameters_[(*fitParameterReplacement)->idxToReplace_].LowerLimit() &&
+	 fitParameterValue <= fitParameters_[(*fitParameterReplacement)->idxToReplace_].UpperLimit() ) {
       fitParameterValues_[(*fitParameterReplacement)->idxToReplace_] = fitParameterValue;
     } else {
       return std::numeric_limits<float>::max();

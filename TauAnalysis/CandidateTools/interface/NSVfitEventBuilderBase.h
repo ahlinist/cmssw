@@ -8,9 +8,9 @@
  *
  * \author Christian Veelken, UC Davis
  *
- * \version $Revision: 1.4 $
+ * \version $Revision: 1.5 $
  *
- * $Id: NSVfitEventBuilderBase.h,v 1.4 2011/03/23 17:46:39 veelken Exp $
+ * $Id: NSVfitEventBuilderBase.h,v 1.5 2011/03/25 14:34:30 veelken Exp $
  *
  */
 
@@ -44,7 +44,7 @@ class NSVfitEventBuilderBase : public NSVfitBuilderBase
   typedef std::map<std::string, CandidatePtr> inputParticleMap;
   virtual NSVfitEventHypothesis* build(const inputParticleMap&, const reco::Vertex*) const;
 
-  virtual void applyFitParameter(NSVfitEventHypothesis*, double*) const;
+  virtual void applyFitParameter(NSVfitEventHypothesis*, const double*) const;
 
   virtual void print(std::ostream&) const;
 

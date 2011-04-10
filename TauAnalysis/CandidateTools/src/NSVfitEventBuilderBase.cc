@@ -1,6 +1,6 @@
 #include "TauAnalysis/CandidateTools/interface/NSVfitEventBuilderBase.h"
 
-#include "TauAnalysis/CandidateTools/interface/nSVfitParameter.h"
+#include "TauAnalysis/CandidateTools/interface/NSVfitParameter.h"
 
 NSVfitEventBuilderBase::NSVfitEventBuilderBase(const edm::ParameterSet& cfg)
   : NSVfitBuilderBase(cfg),
@@ -125,7 +125,7 @@ NSVfitEventHypothesis* NSVfitEventBuilderBase::build(const inputParticleMap& inp
   return eventHypothesis;
 }
 
-void NSVfitEventBuilderBase::applyFitParameter(NSVfitEventHypothesis* eventHypothesis, double* param) const
+void NSVfitEventBuilderBase::applyFitParameter(NSVfitEventHypothesis* eventHypothesis, const double* param) const
 {
   if ( doEventVertexRefit_ ) {
     double pvShiftX = param[idxFitParameter_pvShiftX_];

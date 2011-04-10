@@ -1,7 +1,7 @@
 #include "TauAnalysis/CandidateTools/interface/NSVfitTauDecayBuilderBase.h"
 #include "TauAnalysis/CandidateTools/interface/NSVfitSingleParticleTrackExtractor.h"
 #include "AnalysisDataFormats/TauAnalysis/interface/NSVfitTauToHadHypothesis.h"
-#include "TauAnalysis/CandidateTools/interface/nSVfitParameter.h"
+#include "TauAnalysis/CandidateTools/interface/NSVfitParameter.h"
 
 /** \class NSVfitTauToHadBuilder
  *
@@ -11,9 +11,9 @@
  *
  * \author Evan Friis, Christian Veelken; UC Davis
  *
- * \version $Revision: 1.17 $
+ * \version $Revision: 1.18 $
  *
- * $Id: NSVfitTauToHadBuilder.cc,v 1.17 2011/03/31 15:01:48 veelken Exp $
+ * $Id: NSVfitTauToHadBuilder.cc,v 1.18 2011/03/31 16:31:33 veelken Exp $
  *
  */
 
@@ -70,7 +70,7 @@ class NSVfitTauToHadBuilder : public NSVfitTauDecayBuilderBase
     return hypothesis;
   }
 
-  void applyFitParameter(NSVfitSingleParticleHypothesisBase* hypothesis, double* param) const
+  void applyFitParameter(NSVfitSingleParticleHypothesisBase* hypothesis, const double* param) const
   {
     NSVfitTauDecayBuilderBase::applyFitParameter(hypothesis, param);
 

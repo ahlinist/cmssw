@@ -10,31 +10,6 @@ using namespace SVfit_namespace;
 
 const NSVfitAlgorithmBase* NSVfitAlgorithmBase::gNSVfitAlgorithm = 0;
 
-typedef std::pair<double, double> pdouble;
-std::vector<pdouble> NSVfitAlgorithmBase::fitParameterLimits_;
-
-void initializeFitParameterLimits(std::vector<pdouble>& limits)
-{
-  limits.resize(nSVfit_namespace::kNu_phi_lab + 1);
-  limits[nSVfit_namespace::kPV_shiftX]             = pdouble(         -1.,          +1.); // cm
-  limits[nSVfit_namespace::kPV_shiftY]             = pdouble(         -1.,          +1.); // cm
-  limits[nSVfit_namespace::kPV_shiftZ]             = pdouble(        -10.,         +10.); // cm
-  limits[nSVfit_namespace::kTau_visEnFracX]        = pdouble(          0.,           1.); // dimensionless
-  limits[nSVfit_namespace::kTau_phi_lab]           = pdouble(-TMath::Pi(), +TMath::Pi()); // rad
-  limits[nSVfit_namespace::kTau_decayDistance_lab] = pdouble(        -4.,            1.); // sigmas
-  limits[nSVfit_namespace::kTau_nuInvMass]         = pdouble(          0.,           0.); // depends on decay: mMau - mVis
-  limits[nSVfit_namespace::kTau_pol]               = pdouble(         -1.,          +1.); // -1: left-handed, +1: right-handed
-  limits[nSVfit_namespace::kTauVM_theta_rho]       = pdouble(          0.,  TMath::Pi()); // rad
-  limits[nSVfit_namespace::kTauVM_mass2_rho]       = pdouble(square(chargedPionMass +   neutralPionMass), tauLeptonMass2); // GeV^2
-  limits[nSVfit_namespace::kTauVM_theta_a1]        = pdouble(          0.,  TMath::Pi()); // rad
-  limits[nSVfit_namespace::kTauVM_theta_a1r]       = pdouble(          0.,  TMath::Pi()); // rad
-  limits[nSVfit_namespace::kTauVM_phi_a1r]         = pdouble(-TMath::Pi(), +TMath::Pi()); // rad
-  limits[nSVfit_namespace::kTauVM_mass2_a1]        = pdouble(square(chargedPionMass + 2*neutralPionMass), tauLeptonMass2); // GeV^2
-  limits[nSVfit_namespace::kLep_shiftEn]           = pdouble(          0.,          10.); // relative to measured lepton energy
-  limits[nSVfit_namespace::kNu_energy_lab]         = pdouble(          0.,        1.e+3); // GeV
-  limits[nSVfit_namespace::kNu_phi_lab]            = pdouble(          0.,  TMath::Pi()); // rad
-}
-
 NSVfitAlgorithmBase::NSVfitAlgorithmBase(const edm::ParameterSet& cfg)
   : currentEventHypothesis_(0),
     fitParameterCounter_(0)
@@ -47,8 +22,6 @@ NSVfitAlgorithmBase::NSVfitAlgorithmBase(const edm::ParameterSet& cfg)
 
   verbosity_ = cfg.exists("verbosity") ?
     cfg.getParameter<int>("verbosity") : 0;
-
-  initializeFitParameterLimits(fitParameterLimits_);
 }
 
 NSVfitAlgorithmBase::~NSVfitAlgorithmBase()
@@ -87,32 +60,37 @@ void NSVfitAlgorithmBase::requestFitParameter(const std::string& name, int type,
     return;
   }
 
-  fitParameterType* fitParameter = getFitParameter(name, type);
+  NSVfitParameter* fitParameter = getFitParameter(name, type);
 
   if ( !fitParameter ) {
-    fitParameterType newFitParameter;
-    newFitParameter.name_ = name;
-    newFitParameter.type_ = type;
-    assert(type >= 0 && type < (int)fitParameterLimits_.size());
-    newFitParameter.lowerLimit_ = fitParameterLimits_[type].first;
-    newFitParameter.upperLimit_ = fitParameterLimits_[type].second;
-    newFitParameter.idx_ = fitParameterCounter_;
+    assert(type >= 0 && type <= nSVfit_namespace::kNu_phi_lab);
+    NSVfitParameter newFitParameter(fitParameterCounter_, name, type);
     fitParameters_.push_back(newFitParameter);
     fitParameter = &fitParameters_.back();
     ++fitParameterCounter_;
   }
 
-  fitParameter->usedBy_.push_back(requester);
+  fitParameter->regUsedBy(requester);
 }
 
-NSVfitAlgorithmBase::fitParameterType* NSVfitAlgorithmBase::getFitParameter(const std::string& name, int type)
+NSVfitParameter* NSVfitAlgorithmBase::getFitParameter(const std::string& name, int type)
 {
-  fitParameterType* retVal = 0;
+  NSVfitParameter* retVal = 0;
 
-  for ( std::vector<fitParameterType>::iterator fitParameter = fitParameters_.begin();
+  for ( std::vector<NSVfitParameter>::iterator fitParameter = fitParameters_.begin();
 	fitParameter != fitParameters_.end(); ++fitParameter ) {
-    if ( fitParameter->name_ == name && fitParameter->type_ == type ) retVal = &(*fitParameter);
+    if ( fitParameter->Name() == name && fitParameter->Type() == type ) retVal = &(*fitParameter);
   }
+  
+  return retVal;
+}
+
+NSVfitParameter* NSVfitAlgorithmBase::getFitParameter(int idx)
+{
+  assert(idx >= 0 && idx < (int)fitParameters_.size());
+
+  NSVfitParameter* retVal = &fitParameters_[idx];
+  assert(retVal && retVal->index() == idx);
 
   return retVal;
 }
@@ -136,7 +114,7 @@ NSVfitEventHypothesis* NSVfitAlgorithmBase::fit(const inputParticleMap& inputPar
   return currentEventHypothesis_;
 }
 
-double NSVfitAlgorithmBase::nll(double* x, double* param) const
+double NSVfitAlgorithmBase::nll(const double* x, const double* param) const
 {
   eventModel_->builder_->applyFitParameter(currentEventHypothesis_, x);
   return eventModel_->nll(currentEventHypothesis_);

@@ -8,15 +8,16 @@
  *
  * \author Christian Veelken, UC Davis
  *
- * \version $Revision: 1.11 $
+ * \version $Revision: 1.1 $
  *
- * $Id: NSVfitEventBuilder.h,v 1.11 2011/01/18 16:41:35 friis Exp $
+ * $Id: NSVfitEventBuilder.h,v 1.1 2011/02/27 16:45:16 veelken Exp $
  *
  */
 
 #include "FWCore/ParameterSet/interface/ParameterSet.h"
 
 #include "TauAnalysis/CandidateTools/interface/NSVfitEventBuilderBase.h"
+#include "TauAnalysis/CandidateTools/interface/NSVfitAlgorithmBase.h"
 
 #include "AnalysisDataFormats/TauAnalysis/interface/NSVfitEventHypothesis.h"
 
@@ -27,6 +28,15 @@ class NSVfitEventBuilder : public NSVfitEventBuilderBase
     : NSVfitEventBuilderBase(cfg)
   {}
   ~NSVfitEventBuilder() {}
+
+  void beginJob(NSVfitAlgorithmBase*);
+
+  typedef edm::Ptr<reco::Candidate> CandidatePtr;
+  typedef std::map<std::string, CandidatePtr> inputParticleMap;
+  NSVfitEventHypothesis* build(const inputParticleMap&, const reco::Vertex*) const;
+  
+ private:
+  NSVfitAlgorithmBase* algorithm_;
 };
 
 #endif
