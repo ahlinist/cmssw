@@ -6,7 +6,7 @@ ptHisto = cms.PSet(
   max = cms.untracked.double(300),
   nbins = cms.untracked.int32(300),
   name = cms.untracked.string("Pt"),
-  description = cms.untracked.string("p_{T} [GeV/c];P_{#perp} [GeV/c];N per 1 GeV/c"),
+  description = cms.untracked.string("p_{T} [GeV/c];p_{T} [GeV/c];N per 1 GeV/c"),
   plotquantity = cms.untracked.string("pt")
 )
 
