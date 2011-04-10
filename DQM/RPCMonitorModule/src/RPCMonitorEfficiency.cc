@@ -93,7 +93,27 @@ public:
 
   TH2F * signal_bxbarrel;
   TH2F * signal_bxendcap;
+
+  //Cesare
+  TH1F * EndcapEffTot;
+  TH1F * EffBarrelRoll;
+  TH1F * HitDen;
+  TH1F * CSCDen;
+  TH1F * EfficiencyPerLayer;
+  TH1F * StatisticsPerLayer;
   
+  TH1F * ExpLayerWm2;  
+  TH1F * ExpLayerWm1;
+  TH1F * ExpLayerW0;
+  TH1F * ExpLayerW1;
+  TH1F * ExpLayerW2;
+
+  TH1F * ObsLayerWm2;
+  TH1F * ObsLayerWm1;
+  TH1F * ObsLayerW0;
+  TH1F * ObsLayerW1;
+  TH1F * ObsLayerW2;
+
   //Endcap
 
   //Paper
@@ -593,6 +613,13 @@ private:
   bool barrel; 
   std::vector<unsigned int> blacklist;
   std::vector<unsigned int> IntegralMuographyRawIdsVector[48];
+
+ //Cesare
+  std::ofstream RollBeff;
+  std::ofstream RollEeff;
+  std::ofstream EffChamEndcap;
+  std::ofstream EffBarrelStrip;
+  std::ofstream EffEndcapStrip;
 };
 
 int rollY(std::string shortname,std::map<int,std::string> rollNames){
@@ -666,6 +693,13 @@ RPCMonitorEfficiency::RPCMonitorEfficiency(const edm::ParameterSet& iConfig){
   RollYEff.open("rollYeff.txt");
   rollZeroEff.open("rollZeroEff.txt");
   rollZeroPrediction.open("rollZeroPrediction.txt");
+
+ //Cesare
+  RollBeff.open("RollBarrelEffStat.txt");
+  RollEeff.open("RollEndcapEffStat.txt");
+  EffBarrelStrip.open("EffBarrelStrip.txt");
+  EffEndcapStrip.open("EffEndcapStrip.txt");
+  EffChamEndcap.open("EffChamEndcap.txt");
 }
 
 
@@ -732,6 +766,27 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
   Ca7 = new TCanvas("Ca7","ResidualsEndCap",800,600);
   Ca8 = new TCanvas("Ca8","DistBorders",800,600);
   Ca9 = new TCanvas("Ca9","MeanResiduals",400,300);
+
+  //Cesare
+  EffBarrelRoll = new TH1F ("EffBarrelRoll","Efficiency Roll by Roll For All The Barrel",54,-7,101);
+  EndcapEffTot = new TH1F ("EndcapEffTot","Efficiency chamber by chamber",54,-7,101);
+  HitDen = new TH1F ("HitDen","HitDen", 500, 0, 500);
+  CSCDen = new TH1F ("CSCDen","CSCDen", 250, 0, 250);
+  EfficiencyPerLayer = new TH1F("EfficiencyPerLayer","Efficiency per Layer",6,0.5,6.5);
+  StatisticsPerLayer = new TH1F("StatisticsPerLayer","Statistics per Layer",6,0.5,6.5);
+
+  ExpLayerWm2 = new TH1F ("ExpLayerWm2","Expected Wheel - 2",6,0.5,6.5);
+  ExpLayerWm1 = new TH1F ("ExpLayerWm1","Expected Wheel - 1",6,0.5,6.5);
+  ExpLayerW0 = new TH1F ("ExpLayerW0","Expected Wheel 0",6,0.5,6.5);
+  ExpLayerW1 = new TH1F ("ExpLayerW1","Expected Wheel 1",6,0.5,6.5);
+  ExpLayerW2 = new TH1F ("ExpLayerW2","Expected Wheel 2",6,0.5,6.5);
+
+  ObsLayerWm2 = new TH1F ("ObsLayerWm2","Observed Wheel - 2",6,0.5,6.5);
+  ObsLayerWm1 = new TH1F ("ObsLayerWm1","Observed Wheel - 1",6,0.5,6.5);
+  ObsLayerW0 = new TH1F ("ObsLayerW0","Observed Wheel 0",6,0.5,6.5);
+  ObsLayerW1 = new TH1F ("ObsLayerW1","Observed Wheel 1",6,0.5,6.5);
+  ObsLayerW2 = new TH1F ("ObsLayerW2","Observed Wheel 2",6,0.5,6.5);
+
   
   bxendcap= new TH2F ("BXEndCap","BX Distribution for the End Cap",51,-5.0,5.0,51,0.,4.);
   bxbarrel= new TH2F ("BXBarrel","BX Distribution for the Barrel",51,-5.0,5.0,51,0.,4.);
@@ -1744,6 +1799,13 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
 	  
 	  //if(debug) std::cout <<folder<<"/"<<name<<std::endl;
 
+	  //Cesare
+          float effRoll =0;
+          float errEffRoll = 0;
+          float DT_Int = 0;
+	  float RPCpoints = 0; 
+          float MeanCLSRollBarrel = 0;
+
 	  int NumberMasked=0;
 	  int NumberWithOutPrediction=0;
 	  double p = 0;
@@ -1843,10 +1905,19 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
 	    if(pinoexpected != 0){
 	      pinoeff = (pinoobserved/pinoexpected)*100;
 	      pinoerr = 100.*sqrt((pinoobserved/pinoexpected)*(1.-(pinoobserved/pinoexpected))/pinoexpected);
-	    }	
-	    
+	    }
+
 	    if(debug) std::cout<<"Filling txt file with roll and efficiency"<<std::endl;
-	    RollYEff<<name<<" "<<pinoeff<<" "<<pinoerr<<" "<<pinoexpected<<" "<<histoCLS->GetMean()<<" "<<histoCLS->Integral()<<std::endl;
+	    RollYEff<<name<<" "<<pinoeff<<" "<<pinoerr<<" "<<pinoexpected<<" "<<histoCLS->GetMean()<<" ";
+
+	    int nBins = histoCLS->GetSize();
+	    for(int i=1; i<(nBins-1); i++){
+			double probCLS = histoCLS->Integral(i,(nBins-1))/histoCLS->Integral(1,(nBins-1));
+			//std::cout<<histoCLS->Integral(i,(nBins-1))<<" "<<probCLS<<std::endl;
+			RollYEff<<probCLS<<" ";
+			}
+	    
+	    RollYEff<<std::endl;
 	    
 	    if(debug) std::cout<<" deleting profiles"<<std::endl;
 
@@ -1921,6 +1992,38 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
 	    
 	    efftxt<<name<<"  "<<rpcId.rawId();
 
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+            DT_Int = float(histoDT->Integral());
+	    RPCpoints = float(histoRPC->Integral());
+
+            if(DT_Int != 0 ){
+              if(!IsBadRoll(rpcId.rawId(),blacklist)){
+            	effRoll = float(histoRPC->Integral())/float(histoDT->Integral());
+                errEffRoll = (sqrt(effRoll*(1-effRoll)/DT_Int));
+                EffBarrelRoll->Fill(100*effRoll);}
+	    }
+            
+            float effRollNOBL = 100*(float(histoRPC->Integral())/float(histoDT->Integral()));
+            
+            HitDen->Fill(DT_Int);
+
+            MeanCLSRollBarrel = histoCLS->GetMean();
+            
+            RollBeff<<rpcId.rawId()<<" "<<name<<" "<<effRollNOBL<<" "<<RPCpoints<<" "<<DT_Int<<" "<<MeanCLSRollBarrel<<std::endl;
+
+            EffBarrelStrip<<rpcId.rawId()<<" "<<name<<" "; 
+            for(int i=1;i<=nstrips;i++){
+		 double occStrip = histoRPC->GetBinContent(i);
+		 double expStrip = histoDT->GetBinContent(i);
+		 double effStrip = 0;
+		 if(expStrip != 0) effStrip = 100*occStrip/expStrip;
+            	 EffBarrelStrip<<" "<<occStrip<<" "<<expStrip<<" "<<effStrip;
+             }
+            EffBarrelStrip<<std::endl;
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
 	    if(debug) std::cout<<"Before the loop for the strips profiles"<<std::endl;
 
 	    for(int i=1;i<=nstrips;++i){
@@ -1988,7 +2091,7 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
 	    if(NumberStripsPointed!=0){
 	      if(!IsBadRoll(rpcId.rawId(),blacklist)){
 		DoubleGapBarrel->Fill(doublegapeff);
-		CentralEffBarrel->Fill(pinoeff);
+		CentralEffBarrel->Fill(pinoeff); //distribution with fiducial region
 		EffBarrel->Fill(averageeff);
 	      }else{
 		DoubleGapBarrel_black->Fill(doublegapeff);
@@ -2249,12 +2352,13 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
 	    else if(rpcId.station()==3) layer = 5;
 	    else if(rpcId.station()==4) layer = 6;
 
+//Cesare
 	    if(!IsBadRoll(rpcId.rawId(),blacklist)){
-	      if(wheel==-2){ExsectorEffWm2->Fill(sector,p); OcsectorEffWm2->Fill(sector,o); sectorCLSWm2[sector]->Add(histoCLS);layerCLSWm2[layer]->Add(histoCLS);}
-	      else if(wheel==-1){ExsectorEffWm1->Fill(sector,p); OcsectorEffWm1->Fill(sector,o); sectorCLSWm1[sector]->Add(histoCLS);layerCLSWm1[layer]->Add(histoCLS);}
-	      else if(wheel==0){ExsectorEffW0->Fill(sector,p); OcsectorEffW0->Fill(sector,o); sectorCLSW0[sector]->Add(histoCLS);layerCLSW0[layer]->Add(histoCLS);}
-	      else if(wheel==1){ExsectorEffW1->Fill(sector,p); OcsectorEffW1->Fill(sector,o); sectorCLSW1[sector]->Add(histoCLS);layerCLSW1[layer]->Add(histoCLS);}
-	      else if(wheel==2){ExsectorEffW2->Fill(sector,p); OcsectorEffW2->Fill(sector,o); sectorCLSW2[sector]->Add(histoCLS);layerCLSW2[layer]->Add(histoCLS);}
+	      if(wheel==-2){ExsectorEffWm2->Fill(sector,p); OcsectorEffWm2->Fill(sector,o); ExpLayerWm2->Fill(layer, p); ObsLayerWm2->Fill(layer, o); sectorCLSWm2[sector]->Add(histoCLS);layerCLSWm2[layer]->Add(histoCLS);}
+	      else if(wheel==-1){ExsectorEffWm1->Fill(sector,p); OcsectorEffWm1->Fill(sector,o); ExpLayerWm1->Fill(layer, p); ObsLayerWm1->Fill(layer, o); sectorCLSWm1[sector]->Add(histoCLS);layerCLSWm1[layer]->Add(histoCLS);}
+	      else if(wheel==0){ExsectorEffW0->Fill(sector,p); OcsectorEffW0->Fill(sector,o); ExpLayerW0->Fill(layer, p); ObsLayerW0->Fill(layer, o); sectorCLSW0[sector]->Add(histoCLS);layerCLSW0[layer]->Add(histoCLS);}
+	      else if(wheel==1){ExsectorEffW1->Fill(sector,p); OcsectorEffW1->Fill(sector,o); ExpLayerW1->Fill(layer, p); ObsLayerW1->Fill(layer, o); sectorCLSW1[sector]->Add(histoCLS);layerCLSW1[layer]->Add(histoCLS);}
+	      else if(wheel==2){ExsectorEffW2->Fill(sector,p); OcsectorEffW2->Fill(sector,o); ExpLayerW2->Fill(layer, p); ObsLayerW2->Fill(layer, o); sectorCLSW2[sector]->Add(histoCLS);layerCLSW2[layer]->Add(histoCLS);}
 	    }else{
 	      if(debug) std::cout<<"blacklist skeeping roll "<<rpcId<<std::endl;
 	    }
@@ -2743,6 +2847,9 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
 
 
 	  //if(debug) std::cout <<folder<<"/"<<name<<std::endl;
+
+	  //Cesare
+          float MeanCLSRollNOBL = 0;
 	  
 	  int NumberMasked=0;
 	  int NumberWithOutPrediction=0;
@@ -2910,6 +3017,26 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
 		}
 	      }
 	    }
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////
+	    //Cesare
+            CSCDen->Fill(pinoexpected);
+
+            float pinoeffNOBL = (pinoobserved/pinoexpected)*100.;
+            MeanCLSRollNOBL = histoCLS->GetMean();
+            RollEeff<<rpcId.rawId()<<" "<<name<<" "<<pinoeffNOBL<<" "<<pinoobserved<<" "<<pinoexpected<<" "<<MeanCLSRollNOBL<<std::endl;
+
+            EffEndcapStrip<<rpcId.rawId()<<" "<<name<<" "; 
+            for(int i=1;i<=nstrips;i++){
+		 double occStrip = histoRPC->GetBinContent(i);
+		 double expStrip = histoCSC->GetBinContent(i);
+		 double effStrip = 0;
+		 if(expStrip != 0) effStrip = 100*occStrip/expStrip;
+            	 EffEndcapStrip<<" "<<occStrip<<" "<<expStrip<<" "<<effStrip;
+             }
+            EffEndcapStrip<<std::endl;
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////
 	    
 	    if(pinoexpected != 0){
 	      pinoeff = (pinoobserved/pinoexpected)*100.;
@@ -2917,7 +3044,16 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
 	    }	
 
 	    if(debug) std::cout<<"Filling txt file with roll and efficiency"<<std::endl;
-	    RollYEff<<name<<" "<<pinoeff<<" "<<pinoerr<<" "<<pinoexpected<<" "<<histoCLS->GetMean()<<std::endl;
+	    RollYEff<<name<<" "<<pinoeff<<" "<<pinoerr<<" "<<pinoexpected<<" "<<histoCLS->GetMean()<<" ";
+
+	    int nBins = histoCLS->GetSize();
+	    for(int i=1; i<(nBins-1); i++){
+			double probCLS = histoCLS->Integral(i,(nBins-1))/histoCLS->Integral(1,(nBins-1));
+			//std::cout<<histoCLS->Integral(i,(nBins-1))<<" "<<probCLS<<std::endl;
+			RollYEff<<probCLS<<" ";
+			}
+	    
+	    RollYEff<<std::endl;
 	    
 	    if(debug) std::cout<<" deleting profiles"<<std::endl;
 
@@ -3715,7 +3851,7 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
   TH1F * EfficiencyPerChamberNumber = new TH1F("EfficiencyPerChamberNumber","Efficiency per Chamber Number (All Rings and Disks)",36,0.5,36.5);
 
   float eff,N,err;
-  
+  int occCham = 0;
   int k =0; 
 
   for(k=1;k<=36;k++){
@@ -3731,6 +3867,10 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
     if(HasBadRoll(1,1,2,k,blacklist)){GregD1R2_black->SetBinContent(k,eff); GregD1R2_black->SetBinError(k,err);}
     else{GregD1R2->SetBinContent(k,eff); GregD1R2->SetBinError(k,err);}
     HeightVsEffR2->Fill(eff,h);
+    //Cesare
+    if(eff != 0) EndcapEffTot->Fill(100*eff);
+    occCham = OcGregD1R2->GetBinContent(k);
+    EffChamEndcap<<"D1R2"<<" "<<k<<" "<<eff<<" "<<err<<" "<<occCham<<" "<<N<<std::endl;
     
     err=0; eff=0; N=ExGregD1R3->GetBinContent(k);
     acumulatedexpected = N + acumulatedexpected;
@@ -3739,6 +3879,10 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
     if(HasBadRoll(1,1,3,k,blacklist)){GregD1R3_black->SetBinContent(k,eff); GregD1R3_black->SetBinError(k,err);}
     else{GregD1R3->SetBinContent(k,eff); GregD1R3->SetBinError(k,err);}
     HeightVsEffR3->Fill(eff,h);
+    //Cesare
+    if(eff != 0) EndcapEffTot->Fill(100*eff);
+    occCham = OcGregD1R3->GetBinContent(k);
+    EffChamEndcap<<"D1R3"<<" "<<k<<" "<<eff<<" "<<err<<" "<<occCham<<" "<<N<<std::endl;
     
     err=0; eff=0; N=ExGregD2R2->GetBinContent(k);
     acumulatedexpected = N + acumulatedexpected;
@@ -3747,6 +3891,10 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
     if(HasBadRoll(1,2,2,k,blacklist)){GregD2R2_black->SetBinContent(k,eff); GregD2R2_black->SetBinError(k,err);}
     else{GregD2R2->SetBinContent(k,eff); GregD2R2->SetBinError(k,err);}
     HeightVsEffR2->Fill(eff,h);
+    //Cesare
+    if(eff != 0) EndcapEffTot->Fill(100*eff);
+    occCham = OcGregD2R2->GetBinContent(k);
+    EffChamEndcap<<"D2R2"<<" "<<k<<" "<<eff<<" "<<err<<" "<<occCham<<" "<<N<<std::endl;
 
     err=0; eff=0; N=ExGregD2R3->GetBinContent(k);
     acumulatedexpected = N + acumulatedexpected;
@@ -3755,6 +3903,10 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
     if(HasBadRoll(1,2,3,k,blacklist)){GregD2R3_black->SetBinContent(k,eff); GregD2R3_black->SetBinError(k,err);}
     else{GregD2R3->SetBinContent(k,eff); GregD2R3->SetBinError(k,err);}
     HeightVsEffR3->Fill(eff,h);
+    //Cesare
+    if(eff != 0) EndcapEffTot->Fill(100*eff);
+    occCham = OcGregD2R3->GetBinContent(k);
+    EffChamEndcap<<"D2R3"<<" "<<k<<" "<<eff<<" "<<err<<" "<<occCham<<" "<<N<<std::endl;
 
     err=0; eff=0; N=ExGregD3R2->GetBinContent(k);
     acumulatedexpected = N + acumulatedexpected;
@@ -3763,6 +3915,10 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
     if(HasBadRoll(1,3,2,k,blacklist)){GregD3R2_black->SetBinContent(k,eff); GregD3R2_black->SetBinError(k,err);}
     else{GregD3R2->SetBinContent(k,eff); GregD3R2->SetBinError(k,err);}
     HeightVsEffR2->Fill(eff,h);
+    //Cesare
+    if(eff != 0) EndcapEffTot->Fill(100*eff);
+    occCham = OcGregD3R2->GetBinContent(k);
+    EffChamEndcap<<"D3R2"<<" "<<k<<" "<<eff<<" "<<err<<" "<<occCham<<" "<<N<<std::endl;
 
     err=0; eff=0; N=ExGregD3R3->GetBinContent(k);
     acumulatedexpected = N + acumulatedexpected;
@@ -3771,6 +3927,10 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
     if(HasBadRoll(1,3,3,k,blacklist)){GregD3R3_black->SetBinContent(k,eff); GregD3R3_black->SetBinError(k,err);}
     else{GregD3R3->SetBinContent(k,eff); GregD3R3->SetBinError(k,err);}
     HeightVsEffR3->Fill(eff,h);
+    //Cesare
+    if(eff != 0) EndcapEffTot->Fill(100*eff);
+    occCham = OcGregD3R3->GetBinContent(k);
+    EffChamEndcap<<"D3R3"<<" "<<k<<" "<<eff<<" "<<err<<" "<<occCham<<" "<<N<<std::endl;
 
     //Negative EndCap
 
@@ -3781,6 +3941,10 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
     if(HasBadRoll(-1,1,2,k,blacklist)){GregDm1R2_black->SetBinContent(k,eff); GregDm1R2_black->SetBinError(k,err);}
     else{GregDm1R2->SetBinContent(k,eff); GregDm1R2->SetBinError(k,err);}
     HeightVsEffR2->Fill(eff,h);
+    //Cesare
+    if(eff != 0) EndcapEffTot->Fill(100*eff);
+    occCham = OcGregDm1R2->GetBinContent(k);
+    EffChamEndcap<<"Dm1R2"<<" "<<k<<" "<<eff<<" "<<err<<" "<<occCham<<" "<<N<<std::endl;
     
     err=0; eff=0; N=ExGregDm1R3->GetBinContent(k);
     acumulatedexpected = N + acumulatedexpected;
@@ -3789,6 +3953,10 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
     if(HasBadRoll(-1,1,3,k,blacklist)){GregDm1R3_black->SetBinContent(k,eff); GregDm1R3_black->SetBinError(k,err);}
     else{GregDm1R3->SetBinContent(k,eff); GregDm1R3->SetBinError(k,err);}
     HeightVsEffR3->Fill(eff,h);
+    //Cesare
+    if(eff != 0) EndcapEffTot->Fill(100*eff);
+    occCham = OcGregDm1R3->GetBinContent(k);
+    EffChamEndcap<<"Dm1R3"<<" "<<k<<" "<<eff<<" "<<err<<" "<<occCham<<" "<<N<<std::endl;
     
     err=0; eff=0; N=ExGregDm2R2->GetBinContent(k);
     acumulatedexpected = N + acumulatedexpected;
@@ -3797,6 +3965,10 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
     if(HasBadRoll(-1,2,2,k,blacklist)){GregDm2R2_black->SetBinContent(k,eff); GregDm2R2_black->SetBinError(k,err);}
     else{GregDm2R2->SetBinContent(k,eff); GregDm2R2->SetBinError(k,err);}
     HeightVsEffR2->Fill(eff,h);
+    //Cesare
+    if(eff != 0) EndcapEffTot->Fill(100*eff);
+    occCham = OcGregDm2R2->GetBinContent(k);
+    EffChamEndcap<<"Dm2R2"<<" "<<k<<" "<<eff<<" "<<err<<" "<<occCham<<" "<<N<<std::endl;
 
     err=0; eff=0; N=ExGregDm2R3->GetBinContent(k);
     acumulatedexpected = N + acumulatedexpected;
@@ -3805,6 +3977,10 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
     if(HasBadRoll(-1,2,3,k,blacklist)){GregDm2R3_black->SetBinContent(k,eff); GregDm2R3_black->SetBinError(k,err);}
     else{GregDm2R3->SetBinContent(k,eff); GregDm2R3->SetBinError(k,err);}
     HeightVsEffR3->Fill(eff,h);
+    //Cesare
+    if(eff != 0) EndcapEffTot->Fill(100*eff);
+    occCham = OcGregDm2R3->GetBinContent(k);
+    EffChamEndcap<<"Dm2R3"<<" "<<k<<" "<<eff<<" "<<err<<" "<<occCham<<" "<<N<<std::endl;
 
     err=0; eff=0; N=ExGregDm3R2->GetBinContent(k);
     acumulatedexpected = N + acumulatedexpected;
@@ -3813,6 +3989,10 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
     if(HasBadRoll(-1,3,2,k,blacklist)){GregDm3R2_black->SetBinContent(k,eff); GregDm3R2_black->SetBinError(k,err);}
     else{GregDm3R2->SetBinContent(k,eff); GregDm3R2->SetBinError(k,err);}
     HeightVsEffR2->Fill(eff,h);
+    //Cesare
+    if(eff != 0) EndcapEffTot->Fill(100*eff);
+    occCham = OcGregDm3R2->GetBinContent(k);
+    EffChamEndcap<<"Dm3R2"<<" "<<k<<" "<<eff<<" "<<err<<" "<<occCham<<" "<<N<<std::endl;
 
     err=0; eff=0; N=ExGregDm3R3->GetBinContent(k);
     acumulatedexpected = N + acumulatedexpected;
@@ -3821,6 +4001,10 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
     if(HasBadRoll(-1,3,3,k,blacklist)){GregDm3R3_black->SetBinContent(k,eff); GregDm3R3_black->SetBinError(k,err);}
     else{GregDm3R3->SetBinContent(k,eff); GregDm3R3->SetBinError(k,err);}
     HeightVsEffR3->Fill(eff,h);
+    //Cesare
+    if(eff != 0) EndcapEffTot->Fill(100*eff);
+    occCham = OcGregDm3R3->GetBinContent(k);
+    EffChamEndcap<<"Dm3R3"<<" "<<k<<" "<<eff<<" "<<err<<" "<<occCham<<" "<<N<<std::endl;
 
     if(acumulatedexpected!=0){ 
       eff = acumulatedobserved/acumulatedexpected; err=sqrt(eff*(1-eff)/acumulatedexpected);
@@ -3828,6 +4012,203 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
       std::cout<<acumulatedobserved<<" "<<acumulatedexpected<<" "<<eff<<" "<<err<<std::endl;
     }
   }
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+  //Cesare
+
+    TH1F * EfficiencyPerDisk = new TH1F("EfficiencyPerDisk","Efficiency per Disk",8,0.5,8.5);
+
+    float exgDm3 = ExGregDm3R2->Integral()+ExGregDm3R3->Integral(); float obgDm3 = OcGregDm3R2->Integral()+OcGregDm3R3->Integral();
+    float effDm3 = obgDm3/exgDm3; float errDm3 = sqrt(effDm3*(1-effDm3)/exgDm3);
+    EfficiencyPerDisk->GetXaxis()->SetBinLabel(2,"Dm3");
+    //EfficiencyPerDisk->SetBinContent(2,EffDm3->GetMean());
+    EfficiencyPerDisk->SetBinContent(2,100*effDm3);
+    EfficiencyPerDisk->SetBinError(2,100*errDm3);
+
+    float exgDm2 = ExGregDm2R2->Integral()+ExGregDm2R3->Integral(); float obgDm2 = OcGregDm2R2->Integral()+OcGregDm2R3->Integral();
+    float effDm2 = obgDm2/exgDm2; float errDm2 = sqrt(effDm2*(1-effDm2)/exgDm2);
+    EfficiencyPerDisk->GetXaxis()->SetBinLabel(3,"Dm2");
+    //EfficiencyPerDisk->SetBinContent(3,EffDm2->GetMean());
+    EfficiencyPerDisk->SetBinContent(3,100*effDm2);
+    EfficiencyPerDisk->SetBinError(3,100*errDm2);
+
+    float exgDm1 = ExGregDm1R2->Integral()+ExGregDm1R3->Integral(); float obgDm1 = OcGregDm1R2->Integral()+OcGregDm1R3->Integral();
+    float effDm1 = obgDm1/exgDm1; float errDm1 = sqrt(effDm1*(1-effDm1)/exgDm1);
+    EfficiencyPerDisk->GetXaxis()->SetBinLabel(4,"Dm1");
+    //EfficiencyPerDisk->SetBinContent(4,EffDm1->GetMean());
+    EfficiencyPerDisk->SetBinContent(4,100*effDm1);
+    EfficiencyPerDisk->SetBinError(4,100*errDm1);
+
+    float exgD1 = ExGregD1R2->Integral()+ExGregD1R3->Integral(); float obgD1 = OcGregD1R2->Integral()+OcGregD1R3->Integral();
+    float effD1 = obgD1/exgD1; float errD1 = sqrt(effD1*(1-effD1)/exgD1);
+    EfficiencyPerDisk->GetXaxis()->SetBinLabel(5,"D1");
+    //EfficiencyPerDisk->SetBinContent(5,EffD1->GetMean());
+    EfficiencyPerDisk->SetBinContent(5,100*effD1);
+    EfficiencyPerDisk->SetBinError(5,100*errD1);
+
+    float exgD2 = ExGregD2R2->Integral()+ExGregD2R3->Integral(); float obgD2 = OcGregD2R2->Integral()+OcGregD2R3->Integral();
+    float effD2 = obgD2/exgD2; float errD2 = sqrt(effD2*(1-effD2)/exgD2);
+    EfficiencyPerDisk->GetXaxis()->SetBinLabel(6,"D2");
+    //EfficiencyPerDisk->SetBinContent(6,EffD2->GetMean());
+    EfficiencyPerDisk->SetBinContent(6,100*effD2);
+    EfficiencyPerDisk->SetBinError(6,100*errD2);
+
+    float exgD3 = ExGregD3R2->Integral()+ExGregD3R3->Integral(); float obgD3 = OcGregD3R2->Integral()+OcGregD3R3->Integral();
+    float effD3 = obgD3/exgD3; float errD3 = sqrt(effD3*(1-effD3)/exgD3);
+    EfficiencyPerDisk->GetXaxis()->SetBinLabel(7,"D3");
+    //EfficiencyPerDisk->SetBinContent(7,EffD3->GetMean());
+    EfficiencyPerDisk->SetBinContent(7,100*effD3);
+    EfficiencyPerDisk->SetBinError(7,100*errD3);
+
+    EfficiencyPerDisk->GetXaxis()->SetBinLabel(1,"Dm4");
+
+    EfficiencyPerDisk->GetXaxis()->SetBinLabel(8,"D4");
+
+    EfficiencyPerDisk->Write();
+
+
+    TH1F * EfficiencyPerStation = new TH1F("EfficiencyPerStation","Efficiency per Station",4,0.5,4.5);
+
+    float exgS3 = ExGregDm3R2->Integral()+ExGregDm3R3->Integral()+ExGregD3R2->Integral()+ExGregD3R3->Integral(); 
+    float obgS3 = OcGregDm3R2->Integral()+OcGregDm3R3->Integral()+OcGregD3R2->Integral()+OcGregD3R3->Integral();
+    float effS3 = obgS3/exgS3; float errS3 = sqrt(effS3*(1-effS3)/exgS3);
+    EfficiencyPerStation->GetXaxis()->SetBinLabel(3,"S3");
+    EfficiencyPerStation->SetBinContent(3,100*effS3);
+    EfficiencyPerStation->SetBinError(3,100*errS3);
+
+    float exgS2 = ExGregDm2R2->Integral()+ExGregDm2R3->Integral()+ExGregD2R2->Integral()+ExGregD2R3->Integral(); 
+    float obgS2 = OcGregDm2R2->Integral()+OcGregDm2R3->Integral()+OcGregD2R2->Integral()+OcGregD2R3->Integral();
+    float effS2 = obgS2/exgS2; float errS2 = sqrt(effS2*(1-effS2)/exgS2);
+    EfficiencyPerStation->GetXaxis()->SetBinLabel(2,"S2");
+    EfficiencyPerStation->SetBinContent(2,100*effS2);
+    EfficiencyPerStation->SetBinError(2,100*errS2);
+
+    float exgS1 = ExGregDm1R2->Integral()+ExGregDm1R3->Integral()+ExGregD1R2->Integral()+ExGregD1R3->Integral(); 
+    float obgS1 = OcGregDm1R2->Integral()+OcGregDm1R3->Integral()+OcGregD1R2->Integral()+OcGregD1R3->Integral();
+    float effS1 = obgS1/exgS1; float errS1 = sqrt(effS1*(1-effS1)/exgS1);
+    EfficiencyPerStation->GetXaxis()->SetBinLabel(1,"S1");
+    EfficiencyPerStation->SetBinContent(1,100*effS1);
+    EfficiencyPerStation->SetBinError(1,100*errS1);
+
+    EfficiencyPerStation->GetXaxis()->SetBinLabel(4,"S4");
+
+    EfficiencyPerStation->Write();
+
+
+    TH1F * EfficiencyPerStationRing = new TH1F("EfficiencyPerStationRing","Efficiency per Station",8,0.5,8.5);
+
+    float exgS3R2 = ExGregDm3R2->Integral()+ExGregD3R2->Integral(); 
+    float obgS3R2 = OcGregDm3R2->Integral()+OcGregD3R2->Integral();
+    float effS3R2 = obgS3R2/exgS3R2; float errS3R2 = sqrt(effS3R2*(1-effS3R2)/exgS3R2);
+    EfficiencyPerStationRing->GetXaxis()->SetBinLabel(5,"S3R2");
+    EfficiencyPerStationRing->SetBinContent(5,100*effS3R2);
+    EfficiencyPerStationRing->SetBinError(5,100*errS3R2);
+
+    float exgS3R3 = ExGregDm3R3->Integral()+ExGregD3R3->Integral(); 
+    float obgS3R3 = OcGregDm3R3->Integral()+OcGregD3R3->Integral();
+    float effS3R3 = obgS3R3/exgS3R3; float errS3R3 = sqrt(effS3R3*(1-effS3R3)/exgS3R3);
+    EfficiencyPerStationRing->GetXaxis()->SetBinLabel(6,"S3R3");
+    EfficiencyPerStationRing->SetBinContent(6,100*effS3R3);
+    EfficiencyPerStationRing->SetBinError(6,100*errS3R3);
+
+    float exgS2R2 = ExGregDm2R2->Integral()+ExGregD2R2->Integral(); 
+    float obgS2R2 = OcGregDm2R2->Integral()+OcGregD2R2->Integral();
+    float effS2R2 = obgS2R2/exgS2R2; float errS2R2 = sqrt(effS2R2*(1-effS2R2)/exgS2R2);
+    EfficiencyPerStationRing->GetXaxis()->SetBinLabel(3,"S2R2");
+    EfficiencyPerStationRing->SetBinContent(3,100*effS2R2);
+    EfficiencyPerStationRing->SetBinError(3,100*errS2R2);
+
+    float exgS2R3 = ExGregDm3R3->Integral()+ExGregD3R3->Integral(); 
+    float obgS2R3 = OcGregDm3R3->Integral()+OcGregD3R3->Integral();
+    float effS2R3 = obgS2R3/exgS2R3; float errS2R3 = sqrt(effS2R3*(1-effS2R3)/exgS2R3);
+    EfficiencyPerStationRing->GetXaxis()->SetBinLabel(4,"S2R3");
+    EfficiencyPerStationRing->SetBinContent(4,100*effS2R3);
+    EfficiencyPerStationRing->SetBinError(4,100*errS2R3);
+
+    float exgS1R2 = ExGregDm1R2->Integral()+ExGregD1R2->Integral(); 
+    float obgS1R2 = OcGregDm1R2->Integral()+OcGregD1R2->Integral();
+    float effS1R2 = obgS1R2/exgS1R2; float errS1R2 = sqrt(effS1R2*(1-effS1R2)/exgS1R2);
+    EfficiencyPerStationRing->GetXaxis()->SetBinLabel(1,"S1R2");
+    EfficiencyPerStationRing->SetBinContent(1,100*effS1R2);
+    EfficiencyPerStationRing->SetBinError(1,100*errS1R2);
+
+    float exgS1R3 = ExGregDm1R3->Integral()+ExGregD1R3->Integral(); 
+    float obgS1R3 = OcGregDm1R3->Integral()+OcGregD1R3->Integral();
+    float effS1R3 = obgS1R3/exgS1R3; float errS1R3 = sqrt(effS1R3*(1-effS1R3)/exgS1R3);
+    EfficiencyPerStationRing->GetXaxis()->SetBinLabel(2,"S1R3");
+    EfficiencyPerStationRing->SetBinContent(2,100*effS1R3);
+    EfficiencyPerStationRing->SetBinError(2,100*errS1R3);
+
+    EfficiencyPerStationRing->GetXaxis()->SetBinLabel(7,"S4R2");
+    EfficiencyPerStationRing->GetXaxis()->SetBinLabel(8,"S4R3");
+
+    EfficiencyPerStationRing->Write();
+
+
+    float Exp[7];
+    float Obs[7];
+    float Eff[7];
+    float Err[7];
+
+    for(int k=1; k<=6; k++){
+        Exp[k] = ExpLayerWm2->GetBinContent(k)+ExpLayerWm1->GetBinContent(k)+ExpLayerW0->GetBinContent(k)+ExpLayerW1->GetBinContent(k)+ExpLayerW2->GetBinContent(k);
+        Obs[k] = ObsLayerWm2->GetBinContent(k)+ObsLayerWm1->GetBinContent(k)+ObsLayerW0->GetBinContent(k)+ObsLayerW1->GetBinContent(k)+ObsLayerW2->GetBinContent(k);
+        if(Exp[k] != 0) {
+          Eff[k] = Obs[k]/Exp[k];
+          Err[k] = sqrt(Eff[k]*(1-Eff[k])/Exp[k]);
+        }
+	std::cout<<ExpLayerWm2->GetBinContent(k)<<" "<<ExpLayerWm1->GetBinContent(k)<<" "<<ExpLayerW0->GetBinContent(k)<<" "<<ExpLayerW1->GetBinContent(k)<<" "<<ExpLayerW2->GetBinContent(k)<<std::endl;
+	std::cout<<Exp[k]<<" "<<Obs[k]<<" "<<Eff[k]<<std::endl;
+    }
+     
+    EfficiencyPerLayer->GetXaxis()->SetBinLabel(1,"Layer 1");
+    EfficiencyPerLayer->SetBinContent(1,100*Eff[1]);
+    EfficiencyPerLayer->SetBinError(1,100*Err[1]);
+
+    EfficiencyPerLayer->GetXaxis()->SetBinLabel(2,"Layer 2");
+    EfficiencyPerLayer->SetBinContent(2,100*Eff[2]);
+    EfficiencyPerLayer->SetBinError(2,100*Err[2]);
+
+    EfficiencyPerLayer->GetXaxis()->SetBinLabel(3,"Layer 3");
+    EfficiencyPerLayer->SetBinContent(3,100*Eff[3]);
+    EfficiencyPerLayer->SetBinError(3,100*Err[3]);
+
+    EfficiencyPerLayer->GetXaxis()->SetBinLabel(4,"Layer 4");
+    EfficiencyPerLayer->SetBinContent(4,100*Eff[4]);
+    EfficiencyPerLayer->SetBinError(4,100*Err[4]);
+
+    EfficiencyPerLayer->GetXaxis()->SetBinLabel(5,"Layer 5");
+    EfficiencyPerLayer->SetBinContent(5,100*Eff[5]);
+    EfficiencyPerLayer->SetBinError(5,100*Err[5]);
+
+    EfficiencyPerLayer->GetXaxis()->SetBinLabel(6,"Layer 6");
+    EfficiencyPerLayer->SetBinContent(6,100*Eff[6]);
+    EfficiencyPerLayer->SetBinError(6,100*Err[6]);
+
+    EfficiencyPerLayer->SetMinimum(90);
+    EfficiencyPerLayer->Write();
+
+    StatisticsPerLayer->GetXaxis()->SetBinLabel(1,"Layer 1");
+    StatisticsPerLayer->SetBinContent(1,Exp[1]);
+
+    StatisticsPerLayer->GetXaxis()->SetBinLabel(2,"Layer 2");
+    StatisticsPerLayer->SetBinContent(2,Exp[2]);
+
+    StatisticsPerLayer->GetXaxis()->SetBinLabel(3,"Layer 3");
+    StatisticsPerLayer->SetBinContent(3,Exp[3]);
+
+    StatisticsPerLayer->GetXaxis()->SetBinLabel(4,"Layer 4");
+    StatisticsPerLayer->SetBinContent(4,Exp[4]);
+
+    StatisticsPerLayer->GetXaxis()->SetBinLabel(5,"Layer 5");
+    StatisticsPerLayer->SetBinContent(5,Exp[5]);
+
+    StatisticsPerLayer->GetXaxis()->SetBinLabel(6,"Layer 6");
+    StatisticsPerLayer->SetBinContent(6,Exp[6]);
+
+    StatisticsPerLayer->Write();
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
   //Just one number for Negative EndCap
 
@@ -3881,6 +4262,7 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
   std::cout<<"Doing Summary per disk"<<std::endl;
   
   TH1F * EfficiencyPerRing = new TH1F("EfficiencyPerRing","Efficiency per Ring in the whole endcap",12,0.5,12.5);
+  TH1F * StatisticsPerRing = new TH1F("StatisticsPerRing","Statistics per Ring in the whole endcap",12,0.5,12.5);
   
   float exg = ExGregDm3R3->Integral(); float obg = OcGregDm3R3->Integral();
   eff = obg/exg; err = sqrt(eff*(1-eff)/exg);
@@ -3890,6 +4272,9 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
   EfficiencyPerRing->GetXaxis()->SetBinLabel(1,"RE-3/3");
   EfficiencyPerRing->SetBinContent(1,eff);
   EfficiencyPerRing->SetBinError(1,err);
+
+  StatisticsPerRing->GetXaxis()->SetBinLabel(1,"RE-3/3");
+  StatisticsPerRing->SetBinContent(1,exg);
   
   exg = ExGregDm3R2->Integral(); obg = OcGregDm3R2->Integral(); eff = obg/exg; err = sqrt(eff*(1-eff)/exg);
   std::cout<<"Disk -3 Ring 2 expected "<<exg<<" observed "<<obg<<" eff "<<eff<<"+/-"<<err<<std::endl;
@@ -3898,12 +4283,18 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
   EfficiencyPerRing->SetBinContent(2,eff);
   EfficiencyPerRing->SetBinError(2,err);
 
+  StatisticsPerRing->GetXaxis()->SetBinLabel(2,"RE-3/2");
+  StatisticsPerRing->SetBinContent(2,exg);
+
   exg = ExGregDm2R3->Integral(); obg = OcGregDm2R3->Integral(); eff = obg/exg; err = sqrt(eff*(1-eff)/exg);
   std::cout<<"Disk -2 Ring 3 expected "<<exg<<" observed "<<obg<<" eff "<<eff<<"+/-"<<err<<std::endl;
   std::cout<<"Disk_-2_Ring_3 "<<eff<<" "<<err<<std::endl;
   EfficiencyPerRing->GetXaxis()->SetBinLabel(3,"RE-2/3");
   EfficiencyPerRing->SetBinContent(3,eff);
   EfficiencyPerRing->SetBinError(3,err);
+
+  StatisticsPerRing->GetXaxis()->SetBinLabel(3,"RE-2/3");
+  StatisticsPerRing->SetBinContent(3,exg);
 
   exg = ExGregDm2R2->Integral(); obg = OcGregDm2R2->Integral(); eff = obg/exg; err = sqrt(eff*(1-eff)/exg);
   std::cout<<"Disk -2 Ring 2 expected "<<exg<<" observed "<<obg<<" eff "<<eff<<"+/-"<<err<<std::endl;
@@ -3912,6 +4303,9 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
   EfficiencyPerRing->SetBinContent(4,eff);
   EfficiencyPerRing->SetBinError(4,err);
 
+  StatisticsPerRing->GetXaxis()->SetBinLabel(4,"RE-2/2");
+  StatisticsPerRing->SetBinContent(4,exg);
+
   exg = ExGregDm1R3->Integral(); obg = OcGregDm1R3->Integral(); eff = obg/exg; err = sqrt(eff*(1-eff)/exg);
   std::cout<<"Disk -1 Ring 3 expected "<<exg<<" observed "<<obg<<" eff "<<eff<<"+/-"<<err<<std::endl;
   std::cout<<"Disk_-1_Ring_3 "<<eff<<" "<<err<<std::endl;
@@ -3919,12 +4313,18 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
   EfficiencyPerRing->SetBinContent(5,eff);
   EfficiencyPerRing->SetBinError(5,err);
 
+  StatisticsPerRing->GetXaxis()->SetBinLabel(5,"RE-1/3");
+  StatisticsPerRing->SetBinContent(5,exg);
+
   exg = ExGregDm1R2->Integral(); obg = OcGregDm1R2->Integral(); eff = obg/exg; err = sqrt(eff*(1-eff)/exg);
   std::cout<<"Disk -1 Ring 2 expected "<<exg<<" observed "<<obg<<" eff "<<eff<<"+/-"<<err<<std::endl;
   std::cout<<"Disk_-1_Ring_2 "<<eff<<" "<<err<<std::endl;
   EfficiencyPerRing->GetXaxis()->SetBinLabel(6,"RE-1/2");
   EfficiencyPerRing->SetBinContent(6,eff);
   EfficiencyPerRing->SetBinError(6,err);
+
+  StatisticsPerRing->GetXaxis()->SetBinLabel(6,"RE-1/2");
+  StatisticsPerRing->SetBinContent(6,exg);
     
   exg = ExGregD1R3->Integral(); obg = OcGregD1R3->Integral(); eff = obg/exg; err = sqrt(eff*(1-eff)/exg);
   std::cout<<"Disk 1 Ring 3 expected "<<exg<<" observed "<<obg<<" eff "<<eff<<"+/-"<<err<<std::endl;
@@ -3933,12 +4333,18 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
   EfficiencyPerRing->SetBinContent(7,eff);
   EfficiencyPerRing->SetBinError(7,err);
 
+  StatisticsPerRing->GetXaxis()->SetBinLabel(7,"RE+1/3");
+  StatisticsPerRing->SetBinContent(7,exg);
+
   exg = ExGregD1R2->Integral(); obg = OcGregD1R2->Integral(); eff = obg/exg; err = sqrt(eff*(1-eff)/exg);
   std::cout<<"Disk 1 Ring 2 expected "<<exg<<" observed "<<obg<<" eff "<<eff<<"+/-"<<err<<std::endl;
   std::cout<<"Disk_1_Ring_2 "<<eff<<" "<<err<<std::endl;
   EfficiencyPerRing->GetXaxis()->SetBinLabel(8,"RE+1/2");
   EfficiencyPerRing->SetBinContent(8,eff);
   EfficiencyPerRing->SetBinError(8,err);
+
+  StatisticsPerRing->GetXaxis()->SetBinLabel(8,"RE+1/2");
+  StatisticsPerRing->SetBinContent(8,exg);
   
   exg = ExGregD2R3->Integral(); obg = OcGregD2R3->Integral(); eff = obg/exg; err = sqrt(eff*(1-eff)/exg);
   std::cout<<"Disk 2 Ring 3 expected "<<exg<<" observed "<<obg<<" eff "<<eff<<"+/-"<<err<<std::endl;
@@ -3947,12 +4353,18 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
   EfficiencyPerRing->SetBinContent(9,eff);
   EfficiencyPerRing->SetBinError(9,err);
 
+  StatisticsPerRing->GetXaxis()->SetBinLabel(9,"RE+2/3");
+  StatisticsPerRing->SetBinContent(9,exg);
+
   exg = ExGregD2R2->Integral(); obg = OcGregD2R2->Integral(); eff = obg/exg; err = sqrt(eff*(1-eff)/exg);
   std::cout<<"Disk 2 Ring 2 expected "<<exg<<" observed "<<obg<<" eff "<<eff<<"+/-"<<err<<std::endl;
   std::cout<<"Disk_2_Ring_2 "<<eff<<" "<<err<<std::endl;
   EfficiencyPerRing->GetXaxis()->SetBinLabel(10,"RE+2/2");
   EfficiencyPerRing->SetBinContent(10,eff);
   EfficiencyPerRing->SetBinError(10,err);
+
+  StatisticsPerRing->GetXaxis()->SetBinLabel(10,"RE+2/2");
+  StatisticsPerRing->SetBinContent(10,exg);
 
   exg = ExGregD3R3->Integral(); obg = OcGregD3R3->Integral(); eff = obg/exg; err = sqrt(eff*(1-eff)/exg);
   std::cout<<"Disk 3 Ring 3 expected "<<exg<<" observed "<<obg<<" eff "<<eff<<"+/-"<<err<<std::endl;
@@ -3961,12 +4373,18 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
   EfficiencyPerRing->SetBinContent(11,eff);
   EfficiencyPerRing->SetBinError(11,err);
 
+  StatisticsPerRing->GetXaxis()->SetBinLabel(11,"RE+3/3");
+  StatisticsPerRing->SetBinContent(11,exg);
+
   exg = ExGregD3R2->Integral(); obg = OcGregD3R2->Integral(); eff = obg/exg; err = sqrt(eff*(1-eff)/exg);
   std::cout<<"Disk 3 Ring 2 expected "<<exg<<" observed "<<obg<<" eff "<<eff<<"+/-"<<err<<std::endl;
   std::cout<<"Disk_3_Ring_2 "<<eff<<" "<<err<<std::endl;
   EfficiencyPerRing->GetXaxis()->SetBinLabel(12,"RE+3/2");
   EfficiencyPerRing->SetBinContent(12,eff);
   EfficiencyPerRing->SetBinError(12,err);
+
+  StatisticsPerRing->GetXaxis()->SetBinLabel(12,"RE+3/2");
+  StatisticsPerRing->SetBinContent(12,exg);
   
   
   for(k=1;k<=12;k++){
@@ -5171,6 +5589,9 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
   //Ca5->SetBottomMargin(0.3);
   Ca5->SaveAs("Greg/EfficiencyPerRing.png"); EfficiencyPerRing->Write();
   Ca5->Clear();
+
+  StatisticsPerRing->Draw();
+  StatisticsPerRing->Write();
   
   HeightVsEffR2->Draw(); HeightVsEffR2->GetXaxis()->SetTitle("Efficiency");HeightVsEffR2->GetYaxis()->SetTitle("Height(R units)"); HeightVsEffR2->GetYaxis()->SetRangeUser(-1.,1.); HeightVsEffR2->GetXaxis()->SetRangeUser(0.,1.);
   HeightVsEffR2->SetMarkerColor(4);
@@ -6350,6 +6771,25 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
 
  Ca1->Close();
 
+ //Cesare
+ EffBarrelRoll->Write();
+ HitDen->Write();
+ CSCDen->Write();
+ EndcapEffTot->Write();
+
+ ExpLayerWm2->Write();
+ ExpLayerWm1->Write();
+ ExpLayerW0->Write();
+ ExpLayerW1->Write();
+ ExpLayerW2->Write();
+
+ ObsLayerWm2->Write();
+ ObsLayerWm1->Write();
+ ObsLayerW0->Write();
+ ObsLayerW1->Write();
+ ObsLayerW2->Write();
+ //
+
  MeanResiduals11->Write();
  MeanResiduals->Write();
  RMSResiduals11->Write();
@@ -6450,6 +6890,20 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
  ExGregD2R3->Write();
  ExGregD3R2->Write();
  ExGregD3R3->Write();
+
+ OcGregDm1R2->Write();
+ OcGregDm1R3->Write();
+ OcGregDm2R2->Write();
+ OcGregDm2R3->Write();
+ OcGregDm3R2->Write();
+ OcGregDm3R3->Write();
+
+ ExGregDm1R2->Write();
+ ExGregDm1R3->Write();
+ ExGregDm2R2->Write();
+ ExGregDm2R3->Write();
+ ExGregDm3R2->Write();
+ ExGregDm3R3->Write();
 
  EffDistroDm3->Write();  
  EffDistroDm2->Write();
@@ -6628,6 +7082,14 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
  theFileOut->Write();
  theFileOut->Close();
  theFile->Close();
+
+ //Cesare
+ RollBeff.close();
+ RollEeff.close();
+ EffBarrelStrip.close();
+ EffEndcapStrip.close();
+ EffChamEndcap.close();
+ //
 
  efftxt.close();
  alignment.close();
