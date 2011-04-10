@@ -8,9 +8,9 @@
  *
  * \author Christian Veelken, UC Davis
  *
- * \version $Revision: 1.12 $
+ * \version $Revision: 1.13 $
  *
- * $Id: NSVfitAlgorithmBase.h,v 1.12 2011/03/25 14:35:17 veelken Exp $
+ * $Id: NSVfitAlgorithmBase.h,v 1.13 2011/03/28 17:00:27 friis Exp $
  *
  */
 
@@ -27,7 +27,7 @@
 #include "TauAnalysis/CandidateTools/interface/NSVfitResonanceLikelihood.h"
 #include "TauAnalysis/CandidateTools/interface/NSVfitSingleParticleLikelihood.h"
 #include "TauAnalysis/CandidateTools/interface/NSVfitEventBuilderBase.h"
-#include "TauAnalysis/CandidateTools/interface/nSVfitParameter.h"
+#include "TauAnalysis/CandidateTools/interface/NSVfitParameter.h"
 #include "TauAnalysis/CandidateTools/interface/NSVfitTrackService.h"
 
 #include "AnalysisDataFormats/TauAnalysis/interface/NSVfitEventHypothesis.h"
@@ -48,17 +48,8 @@ class NSVfitAlgorithmBase
 
   virtual void requestFitParameter(const std::string&, int, const std::string&);
 
-  struct fitParameterType
-  {
-    std::string name_;
-    int type_;
-    std::vector<std::string> usedBy_; // list of SingleParticle likelihoods depending on this fitParameter
-    double lowerLimit_;
-    double upperLimit_;
-    int idx_;
-  };
-
-  virtual fitParameterType* getFitParameter(const std::string&, int);
+  virtual NSVfitParameter* getFitParameter(const std::string&, int);
+  virtual NSVfitParameter* getFitParameter(int);
 
   virtual void print(std::ostream&) const {}
 
@@ -66,7 +57,7 @@ class NSVfitAlgorithmBase
   typedef std::map<std::string, CandidatePtr> inputParticleMap;
   virtual NSVfitEventHypothesis* fit(const inputParticleMap&, const reco::Vertex*) const;
 
-  virtual double nll(double*, double*) const;
+  virtual double nll(const double*, const double*) const;
 
   static const NSVfitAlgorithmBase* gNSVfitAlgorithm;
 
@@ -281,13 +272,10 @@ class NSVfitAlgorithmBase
   const edm::EventSetup* currentEventSetup_;
   mutable NSVfitEventHypothesis* currentEventHypothesis_;
 
-  std::vector<fitParameterType> fitParameters_;
+  mutable std::vector<NSVfitParameter> fitParameters_;
   int fitParameterCounter_;
 
   int verbosity_;
-
-  typedef std::pair<double, double> pdouble;
-  static std::vector<pdouble> fitParameterLimits_;
 };
 
 #include "FWCore/PluginManager/interface/PluginFactory.h"

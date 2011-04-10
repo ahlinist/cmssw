@@ -8,9 +8,9 @@
  *
  * \author Christian Veelken, UC Davis
  *
- * \version $Revision: 1.2 $
+ * \version $Revision: 1.3 $
  *
- * $Id: NSVfitAlgorithmByIntegration.h,v 1.2 2011/03/06 11:31:11 veelken Exp $
+ * $Id: NSVfitAlgorithmByIntegration.h,v 1.3 2011/03/09 18:26:31 veelken Exp $
  *
  */
 
@@ -48,7 +48,7 @@ class NSVfitAlgorithmByIntegration : public NSVfitAlgorithmBase
 
   void print(std::ostream&) const {}
 
-  double nll(double*, double*) const;
+  double nll(const double*, const double*) const;
 
  protected:
   void fitImp() const;
@@ -58,27 +58,27 @@ class NSVfitAlgorithmByIntegration : public NSVfitAlgorithmBase
   bool isDaughter(const std::string&);
   bool isResonance(const std::string&);
   
-  NSVfitAlgorithmBase::fitParameterType* getFitParameter(const std::string&);
+  NSVfitParameter* getFitParameter(const std::string&);
+  
+  struct NSVfitParameterMappingType
+  {
+    NSVfitParameterMappingType(const NSVfitParameter* base)
+      : base_(base)
+    {}
+    const NSVfitParameter* base_;
+    int idxByIntegration_;
+  };
+
+  std::vector<NSVfitParameterMappingType> fitParameterMappings_;
 
   edm::RunNumber_t currentRunNumber_;
   edm::LuminosityBlockNumber_t currentLumiSectionNumber_;
   edm::EventNumber_t currentEventNumber_;
 
-  struct fitParameterByIntegrationType
-  {
-    fitParameterByIntegrationType(const NSVfitAlgorithmBase::fitParameterType* base)
-      : base_(base)
-    {}
-    const NSVfitAlgorithmBase::fitParameterType* base_;
-    int idxByIntegration_;
-  };
-
-  std::vector<fitParameterByIntegrationType> fitParametersByIntegration_;
-
   struct replaceParBase
   {
     virtual void beginJob(NSVfitAlgorithmByIntegration*) {}
-    virtual double operator()(double*) const = 0;
+    virtual double operator()(const double*) const = 0;
     int iPar_;
   };
 
@@ -86,9 +86,9 @@ class NSVfitAlgorithmByIntegration : public NSVfitAlgorithmBase
   {
     void beginJob(NSVfitAlgorithmByIntegration* algorithm)
     {
-      idx_ = algorithm->getFitParameter(fitParameterName_)->idx_;
+      idx_ = algorithm->getFitParameter(fitParameterName_)->index();
     }
-    double operator()(double* param) const { return param[idx_]; }
+    double operator()(const double* param) const { return param[idx_]; }
     std::string fitParameterName_;
     int idx_;
   };
@@ -102,7 +102,7 @@ class NSVfitAlgorithmByIntegration : public NSVfitAlgorithmBase
     {
       delete valueExtractor_;
     }
-    double operator()(double* param) const { return value_; }
+    double operator()(const double* param) const { return value_; }
     std::string resonanceName_;
     NSVfitResonanceHypothesis* resonanceHypothesis_;
     StringObjectFunction<NSVfitResonanceHypothesis>* valueExtractor_;
@@ -124,12 +124,12 @@ class NSVfitAlgorithmByIntegration : public NSVfitAlgorithmBase
     }
     void beginJob(NSVfitAlgorithmByIntegration* algorithm)
     {
-      NSVfitAlgorithmBase::fitParameterType* fitParameterToReplace = algorithm->getFitParameter(toReplace_);
+      NSVfitParameter* fitParameterToReplace = algorithm->getFitParameter(toReplace_);
       if ( !fitParameterToReplace ) {
 	throw cms::Exception("fitParameterReplacementType::beginJob")
 	  << " No fitParameter of name = " << toReplace_ << " defined !!";
       }
-      idxToReplace_ = fitParameterToReplace->idx_;
+      idxToReplace_ = fitParameterToReplace->index();
 
       for ( std::vector<replaceParBase*>::iterator par = parForReplacements_.begin();
 	    par != parForReplacements_.end(); ++par ) {

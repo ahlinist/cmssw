@@ -8,9 +8,9 @@
  *
  * \author Christian Veelken, UC Davis
  *
- * \version $Revision: 1.2 $
+ * \version $Revision: 1.3 $
  *
- * $Id: NSVfitResonanceBuilderBase.h,v 1.2 2011/02/28 10:46:38 veelken Exp $
+ * $Id: NSVfitResonanceBuilderBase.h,v 1.3 2011/03/03 13:04:47 veelken Exp $
  *
  */
 
@@ -39,7 +39,7 @@ class NSVfitResonanceBuilderBase : public NSVfitBuilderBase
   typedef std::map<std::string, CandidatePtr> inputParticleMap;
   virtual NSVfitResonanceHypothesis* build(const inputParticleMap&) const;
 
-  virtual void applyFitParameter(NSVfitResonanceHypothesis*, double*) const;
+  virtual void applyFitParameter(NSVfitResonanceHypothesis*, const double*) const;
 
   virtual void print(std::ostream&) const;
 

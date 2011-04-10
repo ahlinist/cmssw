@@ -46,8 +46,7 @@ void NSVfitResonanceBuilderBase::beginEvent(const edm::Event& evt, const edm::Ev
   }
 }
 
-NSVfitResonanceHypothesis* NSVfitResonanceBuilderBase::build(
-    const inputParticleMap& inputParticles) const
+NSVfitResonanceHypothesis* NSVfitResonanceBuilderBase::build(const inputParticleMap& inputParticles) const
 {
   NSVfitResonanceHypothesis* resonanceHypothesis = new NSVfitResonanceHypothesis();
 
@@ -74,7 +73,7 @@ NSVfitResonanceHypothesis* NSVfitResonanceBuilderBase::build(
   return resonanceHypothesis;
 }
 
-void NSVfitResonanceBuilderBase::applyFitParameter(NSVfitResonanceHypothesis* resonanceHypothesis, double* params) const
+void NSVfitResonanceBuilderBase::applyFitParameter(NSVfitResonanceHypothesis* resonanceHypothesis, const double* params) const
 {
   for ( unsigned iDaughterBuilder = 0; iDaughterBuilder < numDaughterBuilders_; ++iDaughterBuilder ) {
     daughterBuilders_[iDaughterBuilder]->applyFitParameter(&resonanceHypothesis->daughters_[iDaughterBuilder], params);

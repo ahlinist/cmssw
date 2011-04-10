@@ -6,9 +6,9 @@
 
 int NSVfitBuilderBase::getFitParameterIdx(NSVfitAlgorithmBase* algorithm, const std::string& name, int type, bool isOptional)
 {
-  NSVfitAlgorithmBase::fitParameterType* fitParameter = algorithm->getFitParameter(name, type);
+  NSVfitParameter* fitParameter = algorithm->getFitParameter(name, type);
   if ( fitParameter ) {
-    return fitParameter->idx_;
+    return fitParameter->index();
   } else {
     if ( isOptional ) return -1;
     else throw cms::Exception("NSVfitBuilderBase::getFitParameterIdx")
