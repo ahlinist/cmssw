@@ -463,6 +463,7 @@ elecTauEventDump = cms.PSet(
     genEventInfoSource = cms.InputTag('generator'),
     
     electronSource = cms.InputTag('cleanPatElectrons'),
+    pfCandidateSource = cms.InputTag('pfNoPileUp'),
     tauSource = cms.InputTag('selectedPatTausForElecTauPtCumulative'),
     diTauCandidateSource = cms.InputTag('allElecTauPairs'),
 	svFitAlgorithms = cms.VPSet(
@@ -483,6 +484,7 @@ elecTauEventDump = cms.PSet(
     pfMEtSource = cms.InputTag('patPFMETs'),
     genMEtSource = cms.InputTag('genMetTrue'),
 
+    dcsTag = cms.InputTag("scalersRawToDigi"),
     #output = cms.string("elecTauEventDump.txt"),
     output = cms.string("std::cout"),
 
