@@ -84,6 +84,7 @@ class NSVfitEventHypothesis
   friend class NSVfitEventBuilderBase;
   template<typename T_type> friend class NSVfitProducerT;
   friend class NSVfitAlgorithmByIntegration;
+  friend class NSVfitAlgorithmByLikelihoodMaximization;
 
  private:
 
