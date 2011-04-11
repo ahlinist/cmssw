@@ -47,7 +47,7 @@ patElectronPFIsolationSelector = cms.PSet(
 
     chargedHadronIso = cms.PSet(
         ptMin = cms.double(0.5),        
-        dRvetoCone = cms.double(-1.),
+        dRvetoCone = cms.double(0.001),  # "sanity" check, to match Wisconsin's selection
         dRisoCone = cms.double(0.4),
     ),
 
