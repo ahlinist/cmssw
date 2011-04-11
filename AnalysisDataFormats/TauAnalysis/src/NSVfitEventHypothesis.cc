@@ -11,12 +11,12 @@ NSVfitEventHypothesis::NSVfitEventHypothesis(const NSVfitEventHypothesis& bluePr
     eventVertexPositionErr_(bluePrint.eventVertexPositionErr_),
     eventVertexPositionShift_(bluePrint.eventVertexPositionShift_),
     eventVertexIsValid_(bluePrint.eventVertexIsValid_),
-    resonances_(bluePrint.resonances_),
-    histMassResults_((TH1*)bluePrint.histMassResults_->Clone())
+    resonances_(bluePrint.resonances_)
 {
   for (unsigned int i = 0; i < resonances_.size(); i++) {
     resonances_[i].setEventHypothesis(this);
   }
+  if ( bluePrint.histMassResults_.get() != 0 ) histMassResults_ = std::auto_ptr<TH1>((TH1*)bluePrint.histMassResults_->Clone());
 }
 
 NSVfitEventHypothesis& NSVfitEventHypothesis::operator =(const NSVfitEventHypothesis& bluePrint)
@@ -35,6 +35,6 @@ NSVfitEventHypothesis& NSVfitEventHypothesis::operator =(const NSVfitEventHypoth
   for (unsigned int i = 0; i < resonances_.size(); i++) {
     resonances_[i].setEventHypothesis(this);
   }
-  histMassResults_ = std::auto_ptr<TH1>((TH1*)bluePrint.histMassResults_->Clone());
+  if ( bluePrint.histMassResults_.get() != 0 ) histMassResults_ = std::auto_ptr<TH1>((TH1*)bluePrint.histMassResults_->Clone());
   return (*this);
 }
