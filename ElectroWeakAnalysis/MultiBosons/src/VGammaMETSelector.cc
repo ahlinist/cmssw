@@ -14,7 +14,7 @@ VGammaMETSelector::VGammaMETSelector( const edm::ParameterSet& conf ) {
 	conf.getParameter<double>("minMET")
        );
 
-  if( conf.exists("cutToIgnore") )
+  if( conf.exists("cutsToIgnore") )
     setIgnoredCuts( conf.getParameter<std::vector<std::string> >("cutsToIgnore") );
   
   retInternal_ = getBitTemplate();

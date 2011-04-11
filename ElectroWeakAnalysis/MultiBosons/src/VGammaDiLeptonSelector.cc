@@ -28,7 +28,7 @@ VGammaDiLeptonSelector::VGammaDiLeptonSelector( const edm::ParameterSet& conf ) 
         << "This should have been thrown previously!!!" << std::endl;
   } // end of switch(version_)
 
-  if( conf.exists("cutToIgnore") )
+  if( conf.exists("cutsToIgnore") )
     setIgnoredCuts( conf.getParameter<std::vector<std::string> >("cutsToIgnore") );
 
   retInternal_ = getBitTemplate();

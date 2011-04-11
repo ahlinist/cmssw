@@ -17,7 +17,7 @@ VGammaElectronSelector::VGammaElectronSelector( const edm::ParameterSet& conf ) 
 	conf.getParameter<double>("maxEta")
        );
 
-  if( conf.exists("cutToIgnore") )
+  if( conf.exists("cutsToIgnore") )
     setIgnoredCuts( conf.getParameter<std::vector<std::string> >("cutsToIgnore") );
   
   retInternal_ = getBitTemplate();
