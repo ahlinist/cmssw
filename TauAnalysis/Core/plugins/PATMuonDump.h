@@ -8,9 +8,9 @@
  * 
  * \author Christian Veelken, UC Davis
  *
- * \version $Revision: 1.1 $
+ * \version $Revision: 1.2 $
  *
- * $Id: PATMuonDump.h,v 1.1 2010/02/12 17:18:02 veelken Exp $
+ * $Id: PATMuonDump.h,v 1.2 2011/02/18 11:32:31 veelken Exp $
  *
  */
 
@@ -37,6 +37,8 @@ class PATMuonDump : public ObjectDumpBase
  private:
   edm::InputTag patMuonSource_;
   edm::InputTag genParticleSource_;
+  edm::InputTag vertexSource_;
+  edm::InputTag beamSpotSource_;
 
   std::vector<int> skipPdgIdsGenParticleMatch_;
 
