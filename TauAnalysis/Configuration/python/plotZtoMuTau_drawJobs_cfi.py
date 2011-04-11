@@ -44,36 +44,14 @@ drawJobConfigurator_ZtoMuTauOS = drawJobConfigurator(
 #--------------------------------------------------------------------------------
 
 drawJobConfigurator_ZtoMuTauOS.add(
-    afterCut = evtSelPrimaryEventVertex,
-    beforeCut = evtSelPrimaryEventVertexQuality,
-    plot = drawJobConfigEntry(
-        meName = 'VertexQuantities/VertexChi2Prob',
-        title = "P(#Chi^{2}_{vtx} (after primary Event Vertex Cut)",
-        xAxis = 'prob',
-        name = "cutFlowControlPlots_vertexChi2Prob_afterPrimaryEventVertex"
-    )
-)
-
-drawJobConfigurator_ZtoMuTauOS.add(
-    afterCut = evtSelPrimaryEventVertexQuality,
-    beforeCut = evtSelPrimaryEventVertexPosition,
-    plot = drawJobConfigEntry(
-        meName = 'VertexQuantities/VertexZ',
-        title = "z_{vtx} (after primary Event Vertex quality Cut)",
-        xAxis = 'posZ',
-        name = "cutFlowControlPlots_vertexZ_afterPrimaryEventVertexQuality"
-    )
-)
-
-drawJobConfigurator_ZtoMuTauOS.add(
-    afterCut = evtSelPrimaryEventVertexPosition,
+    afterCut = evtSelDataQuality,
     beforeCut = evtSelGlobalMuon,
     plot = drawJobConfigEntry(
         meName = 'MuonQuantities/Muon#PAR#',
         PAR = [ 'Pt', 'Eta', 'Phi' ],
-        title = "Muon (after primary Event Vertex position Cut)",
+        title = "Muon (after Data quality)",
         xAxis = '#PAR#',
-        name = "cutFlowControlPlots_muon_afterPrimaryEventVertexPosition"
+        name = "cutFlowControlPlots_muon_afterDataQuality"
     )
 )
 
@@ -394,13 +372,35 @@ drawJobConfigurator_ZtoMuTauOS.add(
 )
 
 drawJobConfigurator_ZtoMuTauOS.add(
-    afterCut = evtSelDiTauCandidateForMuTauAntiOverlapVeto,
+    afterCut = evtSelPrimaryEventVertexForMuTau,
+    beforeCut = evtSelPrimaryEventVertexQualityForMuTau,
+    plot = drawJobConfigEntry(
+        meName = 'VertexQuantities/VertexChi2Prob',
+        title = "P(#Chi^{2}_{vtx} (after primary Event Vertex Cut)",
+        xAxis = 'prob',
+        name = "cutFlowControlPlots_vertexChi2Prob_afterPrimaryEventVertex"
+    )
+)
+
+drawJobConfigurator_ZtoMuTauOS.add(
+    afterCut = evtSelPrimaryEventVertexQualityForMuTau,
+    beforeCut = evtSelPrimaryEventVertexPositionForMuTau,
+    plot = drawJobConfigEntry(
+        meName = 'VertexQuantities/VertexZ',
+        title = "z_{vtx} (after primary Event Vertex quality Cut)",
+        xAxis = 'posZ',
+        name = "cutFlowControlPlots_vertexZ_afterPrimaryEventVertexQuality"
+    )
+)
+
+drawJobConfigurator_ZtoMuTauOS.add(
+    afterCut = evtSelPrimaryEventVertexPositionForMuTau,
     beforeCut = evtSelDiTauCandidateForMuTauMt1MET,
     plot = drawJobConfigEntry(
         meName = 'DiTauCandidateQuantities/Mt1MET',
-        title = "M_{T}(Muon + MET) (after diTau anti-Overlap Veto)",
+        title = "M_{T}(Muon + MET) (after primary Event Vertex position Cut)",
         xAxis = 'Mt',
-        name = "cutFlowControlPlots_mtMuonMET_afterAntiOverlapVeto"
+        name = "cutFlowControlPlots_mtMuonMET_afterPrimaryEventVertexPosition"
     )
 )
 
@@ -415,25 +415,36 @@ drawJobConfigurator_ZtoMuTauOS.add(
     )
 )
 
-##drawJobConfigurator_ZtoMuTauOS.add(
-##    afterCut = evtSelDiTauCandidateForMuTauPzetaDiff,
-##    beforeCut = evtSelDiMuPairZmumuHypothesisVetoByLooseIsolation,
-##    plot = drawJobConfigEntry(
-##	meName = 'DiMuZmumuHypothesisByLooseIsolationQuantities/DiTauCandidateCharge',
-##        title = "Charge(iso. Muon + iso. Muon) (after P_{#zeta} Cut)",
-##        xAxis = 'unlabeled',
-##        name = "cutFlowControlPlots_diMuonCharge_afterPzetaDiff"
-##    )
-##)
+drawJobConfigurator_ZtoMuTauOS.add(
+    afterCut = evtSelDiTauCandidateForMuTauPzetaDiff,
+    beforeCut = evtSelDiMuPairZmumuHypothesisVetoByLooseIsolation,
+    plot = drawJobConfigEntry(
+	meName = 'DiMuonFromZmumuQuantities/DiTauCandidateCharge',
+        title = "Charge(iso. Muon + iso. Muon) (after P_{#zeta} Cut)",
+        xAxis = 'unlabeled',
+        name = "cutFlowControlPlots_diMuonCharge_afterPzetaDiff"
+    )
+)
+
+drawJobConfigurator_ZtoMuTauOS.add(
+    afterCut = evtSelDiMuPairZmumuHypothesisVetoByLooseIsolation,
+    beforeCut = evtSelDiMuPairDYmumuHypothesisVeto,
+    plot = drawJobConfigEntry(
+        meName = 'DiMuonFromDYmumuQuantities/DiTauCandidateCharge',
+        title = "Charge(iso. Muon + nearby Muon) (after Z #rightarrow #mu^{+} #mu^{-} hypothesis Veto)",
+        xAxis = 'unlabeled',
+        name = "cutFlowControlPlots_diMuonCharge_afterZmumuHypothesisVeto"
+    )
+)
 
 drawJobConfigurator_ZtoMuTauOS.add(
     afterCut = evtSelDiMuPairZmumuHypothesisVetoByLooseIsolation,
     beforeCut = evtSelDiTauCandidateForMuTauZeroCharge,
     plot = drawJobConfigEntry(
         meName = 'DiTauCandidateQuantities/DiTauCandidateCharge',
-        title = "Charge(Muon + Tau) (after Z #rightarrow #mu^{+} #mu^{-} hypothesis Veto)",
+        title = "Charge(Muon + Tau) (after #gamma^{*} #rightarrow #mu^{+} #mu^{-} hypothesis Veto)",
         xAxis = 'unlabeled',
-        name = "cutFlowControlPlots_diTauCharge_afterZmumuHypothesisVeto"
+        name = "cutFlowControlPlots_diTauCharge_afterDYmumuHypothesisVeto"
     )
 )
 
