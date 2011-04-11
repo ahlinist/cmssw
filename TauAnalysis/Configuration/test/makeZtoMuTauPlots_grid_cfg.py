@@ -13,7 +13,7 @@ process = cms.Process('makeZtoMuTauPlots')
 process.load("TauAnalysis.Configuration.dumpZtoMuTau_grid_cff")
 
 channel = 'ZtoMuTau'
-overrideJobId(channel, '2011Feb01_HPSloose')
+overrideJobId(channel, '2011Apr09_HPSloose')
 inputFilePath = getHarvestingFilePath(channel)
 jobId = getJobId(channel)
 
