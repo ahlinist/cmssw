@@ -129,6 +129,7 @@ nSVfitResonanceLikelihoodPtBalance = cms.PSet(
     parameter = cms.PSet(
         x = cms.string('mass')
     ),
+    power = cms.double(1.0),  
     verbosity = cms.int32(0)     
 )
 
