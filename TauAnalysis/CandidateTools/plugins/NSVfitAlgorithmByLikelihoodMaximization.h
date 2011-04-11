@@ -8,9 +8,9 @@
  *
  * \author Christian Veelken, UC Davis
  *
- * \version $Revision: 1.3 $
+ * \version $Revision: 1.1 $
  *
- * $Id: NSVfitAlgorithmByLikelihoodMaximization.h,v 1.3 2011/03/09 18:26:31 veelken Exp $
+ * $Id: NSVfitAlgorithmByLikelihoodMaximization.h,v 1.1 2011/04/10 14:46:47 veelken Exp $
  *
  */
 
@@ -28,7 +28,16 @@ namespace nSVfit_namespace
   class NSVfitObjectiveFunctionAdapter
   {
    public:
-    double operator()(const double* x) const { return NSVfitAlgorithmBase::gNSVfitAlgorithm->nll(x, 0); }
+    double operator()(const double* x) const 
+    { 
+      double nll = NSVfitAlgorithmBase::gNSVfitAlgorithm->nll(x, 0);
+      static long callCounter = 0;
+      //if ( (callCounter % 10000) == 0 ) 
+	std::cout << "<operator()> (call = " << callCounter << "):" 
+		  << " nll = " << nll << std::endl;
+      ++callCounter;
+      return nll;
+    }
   };
 }
 
