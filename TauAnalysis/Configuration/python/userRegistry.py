@@ -250,10 +250,26 @@ userSettings = {
     },
     'veelken': {
         'current' : {
-            'ZtoMuTau'          : '2011Apr05_HPSloose',
-            'ZtoMuTau_tauIdEff' : '2011Apr05_HPSloose'
+            'ZtoMuTau'          : '2011Apr09_HPSloose',
+            'ZtoMuTau_tauIdEff' : '2011Apr09_HPSloose'
         },
         'jobs' : {
+            '2011Apr09_HPSloose' : {
+                'ZtoMuTau' : {
+                    'analysisFilePath' : "/castor/cern.ch/user/v/veelken/CMSSW_4_1_x/plots/ZtoMuTau/",
+                    'harvestingFilePath' : "/data1/veelken/CMSSW_4_1_x/plots/ZtoMuTau/",
+                    'tmpFilePath' : "/data2/veelken/tmp/ZtoMuTau/",
+                    'jobId' : "2011Apr09_HPSloose",
+                    'batchHarvest' : "/castor/cern.ch/user/v/veelken/CMSSW_4_1_x/harvesting/ZtoMuTau/2011Apr09_HPSloose"
+                },
+                'ZtoMuTau_tauIdEff' : {
+                    'analysisFilePath' : "/castor/cern.ch/user/v/veelken/CMSSW_4_1_x/skims/TauIdEffMeas/",
+                    'harvestingFilePath' : "/data2/veelken/CMSSW_4_1_x/skims/ZtoMuTau_tauIdEff/",
+                    'tmpFilePath' : "/data1/veelken/tmp/ZtoMuTau_tauIdEff/",
+                    # Directory containing selected events
+                    'pickevents' : "/castor/cern.ch/user/v/veelken/CMSSW_4_1_x/skims/TauIdEffMeas/"
+                }
+            },
             '2011Apr05_HPSloose' : {
                 'ZtoMuTau' : {
                     'analysisFilePath' : "/castor/cern.ch/user/v/veelken/CMSSW_4_1_x/plots/ZtoMuTau/",
@@ -261,13 +277,6 @@ userSettings = {
                     'tmpFilePath' : "/data2/veelken/tmp/ZtoMuTau/",
                     'jobId' : "2011Apr05_HPSloose",
                     'batchHarvest' : "/castor/cern.ch/user/v/veelken/CMSSW_4_1_x/harvesting/ZtoMuTau/2011Apr05_HPSloose"
-                },
-                'ZtoMuTau_tauIdEff' : {
-                    'analysisFilePath' : "/castor/cern.ch/user/v/veelken/CMSSW_4_1_x/skims/TauIdEffMeas/",
-                    'harvestingFilePath' : "/data2/veelken/CMSSW_4_1_x/skims/ZtoMuTau_tauIdEff/",
-                    'tmpFilePath' : "/data1/veelken/tmp/ZtoMuTau_tauIdEff/",
-                    # Directory containing selected events
-                    'pickevents' : '/castor/cern.ch/user/f/friis/fixme_delete/'
                 }
             }
         },
@@ -517,7 +526,7 @@ userSettings = {
                      # Directory containing selected events
                     #'pickevents' : '/castor/cern.ch/user/f/friis/fixme_delete/'
                 },
-               'ZtoMuTau_bgEstTemplate' : {
+                'ZtoMuTau_bgEstTemplate' : {
                     'analysisFilePath' : "/castor/cern.ch/user/l/lusito/CMSSW_3_8_x/plots15feb/ZtoMuTau_bgEstTemplate/",
                     'harvestingFilePath' : "/tmp/lusito/CMSSW_3_8_x/plots15feb/ZtoMuTau_bgEstTemplate_tmp/",
                     'tmpFilePath' : "/tmp/lusito/CMSSW_3_8_x/plots15feb/ZtoMuTau_bgEstTemplate/",
