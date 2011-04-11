@@ -145,10 +145,7 @@ bool ZMuMuGammaSelector::passes_Fsr2011Apr11(
   }
 
   // Apply cut 1. maximum near muon HCAL isolation
-  LogDebug("HcalIso") << "nearMuon->hcalIso: " << nearMuon->hcalIso();
-  LogDebug("HcalIso") << "nearMuon->isolationR03().hadEt: " << nearMuon->isolationR03().hadEt;
-//   if (nearMuon->hcalIso() < cut("maxNearMuonHcalIso", double()) ||
-  if (nearMuon->isolationR03().hadEt < cut("maxNearMuonHcalIso", double()) ||
+  if (nearMuon->hcalIso() < cut("maxNearMuonHcalIso", double()) ||
       ignoreCut("maxNearMuonHcalIso")
       )
     passCut(ret, "maxNearMuonHcalIso");
@@ -174,7 +171,7 @@ bool ZMuMuGammaSelector::passes_Fsr2011Apr11(
                              photonTrackIsoSlope_ * photon->pt();
 
   // Check if the near muon was included.
-  if (nearMuon->pt() >= photonTrackIso && drNear < 0.4)
+  if (photonTrackIso >= nearMuon->pt() && drNear < 0.4)
     // Remove the near muon.
     photonTrackIso -= nearMuon->pt();
 
