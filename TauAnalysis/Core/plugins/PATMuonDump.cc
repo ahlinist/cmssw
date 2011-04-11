@@ -9,6 +9,9 @@
 #include "DataFormats/ParticleFlowCandidate/interface/PFCandidate.h"
 #include "DataFormats/ParticleFlowCandidate/interface/PFCandidateFwd.h"
 #include "DataFormats/PatCandidates/interface/Muon.h"
+#include "DataFormats/VertexReco/interface/Vertex.h"
+#include "DataFormats/VertexReco/interface/VertexFwd.h"
+#include "DataFormats/BeamSpot/interface/BeamSpot.h"
 
 #include "TauAnalysis/Core/interface/eventDumpAuxFunctions.h"
 #include "TauAnalysis/Core/interface/eventAuxFunctions.h"
@@ -20,6 +23,8 @@ PATMuonDump::PATMuonDump(const edm::ParameterSet& cfg)
   : ObjectDumpBase(cfg),
     patMuonSource_(cfg.getParameter<edm::InputTag>("muonSource")),
     genParticleSource_(cfg.getParameter<edm::InputTag>("genParticleSource")),
+    vertexSource_(cfg.getParameter<edm::InputTag>("vertexSource")),
+    beamSpotSource_(cfg.getParameter<edm::InputTag>("beamSpotSource")),
     pfIsolationExtractor_(0)
 {
   typedef std::vector<int> vint;
@@ -54,6 +59,20 @@ void PATMuonDump::print(const edm::Event& evt, const edm::EventSetup& es) const
   edm::Handle<reco::GenParticleCollection> genParticles;
   if( genParticleSource_.label() != "") evt.getByLabel(genParticleSource_, genParticles);
 
+  const reco::VertexCollection* vertices = 0;
+  if ( vertexSource_.label() != "" ) {
+    edm::Handle<reco::VertexCollection> vertexHandle;
+    evt.getByLabel(vertexSource_, vertexHandle);
+    vertices = &(*vertexHandle);
+  }
+  
+  const reco::BeamSpot* beamSpot = 0;
+  if ( beamSpotSource_.label() != "" ) {
+    edm::Handle<reco::BeamSpot> beamSpotHandle;
+    evt.getByLabel(beamSpotSource_, beamSpotHandle);
+    beamSpot = &(*beamSpotHandle);
+  }
+
   unsigned iMuon = 0;
   for ( pat::MuonCollection::const_iterator patMuon = patMuons->begin(); 
 	patMuon != patMuons->end(); ++patMuon ) {
@@ -86,7 +105,7 @@ void PATMuonDump::print(const edm::Event& evt, const edm::EventSetup& es) const
     if ( pfIsolationExtractor_ ) {
       edm::Handle<reco::PFCandidateCollection> pfCandidates;
       evt.getByLabel(pfIsoCandSource_, pfCandidates);
-      *outputStream_ << " pfIso = " << (*pfIsolationExtractor_)(*patMuon, *pfCandidates) << std::endl;
+      *outputStream_ << " pfIso = " << (*pfIsolationExtractor_)(*patMuon, *pfCandidates, vertices, beamSpot) << std::endl;
     }
     *outputStream_ << " vertex" << std::endl;
     printVertexInfo(patMuon->vertex(), outputStream_);
