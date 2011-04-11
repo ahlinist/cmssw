@@ -314,7 +314,7 @@ photonSelection_Fsr2011Apr11 = cms.PSet(
     cutsToIgnore = cms.vstring("ecalIsolation"),
 )
 
-photonSelections_Fsr2011Apr11_PixelMatchVeto = cms.PSet(
+photonSelection_Fsr2011Apr11_PixelMatchVeto = cms.PSet(
     version = cms.string("Fsr2011Apr11"),
     ## 1. maximum super cluster pseudo-rapidity absolute value
     maxAbsEtaSC = cms.double(2.5),

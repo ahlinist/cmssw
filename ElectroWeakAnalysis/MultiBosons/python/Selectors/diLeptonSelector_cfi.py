@@ -39,3 +39,14 @@ diMuonSelection_Fsr2011Apr11 = cms.PSet(
     ## 3. maximum invariant mass
     maxMass = cms.double(80),
 )
+
+diMuonSelection_Fsr2011Apr11_PixelMatchVeto = cms.PSet(
+    version = cms.string("Fsr2011Apr11"),
+    ## 1. total charge
+    charge = cms.int32(0),
+    ## 2. minimum invariant mass
+    minMass = cms.double(40),
+    ## 3. maximum invariant mass
+    maxMass = cms.double(85),
+)
+
