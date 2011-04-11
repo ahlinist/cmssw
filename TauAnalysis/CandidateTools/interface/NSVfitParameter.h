@@ -5,6 +5,7 @@
 
 #include <vector>
 #include <string>
+#include <cmath>
 
 namespace nSVfit_namespace
 {
@@ -30,7 +31,7 @@ class NSVfitParameter
 {
  public:
   NSVfitParameter(int, const std::string&, int, double, double, double, double, bool = false);
-  NSVfitParameter(int, const std::string&, int);
+  NSVfitParameter(int, const std::string&, int, bool = false);
 
   void regUsedBy(const std::string& requester) { usedBy_.push_back(requester); }
 
@@ -50,9 +51,12 @@ class NSVfitParameter
   double UpperLimit() const { return upperLimit_; }
 
   bool IsFixed() const { return isFixed_; }
-  bool IsDoubleBound() const { return (!TMath::IsNaN(lowerLimit_) && !TMath::IsNaN(upperLimit_)); }
-  bool HasLowerLimit() const { return (!TMath::IsNaN(lowerLimit_)); }
-  bool HasUpperLimit() const { return (!TMath::IsNaN(upperLimit_)); }
+  bool IsDoubleBound() const { return (!isnan(lowerLimit_) && !isnan(upperLimit_)); } // CMSSW_4_1_x version
+  bool HasLowerLimit() const { return (!isnan(lowerLimit_)); }
+  bool HasUpperLimit() const { return (!isnan(upperLimit_)); }
+  //bool IsDoubleBound() const { return (!TMath::IsNaN(lowerLimit_) && !TMath::IsNaN(upperLimit_)); } // CMSSW_4_2_x version
+  //bool HasLowerLimit() const { return (!TMath::IsNaN(lowerLimit_)); }
+  //bool HasUpperLimit() const { return (!TMath::IsNaN(upperLimit_)); }
 
   int index() const { return idx_; }
 
@@ -91,5 +95,7 @@ class NSVfitParameter
 };
 
 std::ostream& operator<<(std::ostream&, const NSVfitParameter&); 
+
+std::string get_name_incl_type(const std::string&, int);
 
 #endif
