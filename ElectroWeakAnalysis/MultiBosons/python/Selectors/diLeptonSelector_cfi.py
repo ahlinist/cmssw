@@ -30,3 +30,12 @@ diLepton_zgamma_selection = cms.PSet(trigSrc = cms.InputTag("patTriggerEvent"),
                                      electronId2 = electronSelections.Jul012010_selection.copy()
                                      )
 
+diMuonSelection_Fsr2011Apr11 = cms.PSet(
+    version = cms.string("Fsr2011Apr11"),
+    ## 1. total charge
+    charge = cms.int32(0),
+    ## 2. minimum invariant mass
+    minMass = cms.double(40),
+    ## 3. maximum invariant mass
+    maxMass = cms.double(80),
+)

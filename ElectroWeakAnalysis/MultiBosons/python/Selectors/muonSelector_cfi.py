@@ -44,8 +44,23 @@ Jun262010_jpsi_selection = cms.PSet(version = cms.string("Jun262010_jpsi"),
                                     maxChi2 = cms.double(5),
                                     minChambers = cms.uint32(0),  # not used in this selection!!
                                     minStations = cms.uint32(1),  # not used in this selection!!
-                                    minP = cms.double(2), 
+                                    minP = cms.double(2),
                                     minPt = cms.double(0),
                                     maxEta = cms.double(2.4),
                                     maxRelIso = cms.double(0.15)
                                     )
+
+FsrApr082011_selection = cms.PSet(
+    version = cms.string("FsrApr082011"),
+    isGlobalMuon = cms.bool(True),
+    maxNormChi2 = cms.double(10),
+    minMuonHits = cms.uint32(1),
+    isTrackerMuon = cms.bool(True),
+    minMatches = cms.uint32(2),
+    minTkHits = cms.uint32(11),
+    minPixelHits = cms.uint32(1),
+    maxAbsTrackDxyBS = cms.double(0.2),
+    maxTrackIso = cms.double(3),
+    minPt = cms.double(10),
+    maxAbsEta = cms.double(2.4),
+)
