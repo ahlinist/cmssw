@@ -115,7 +115,9 @@ process.p = cms.Path(
     process.selectionSequence
 )
 
-process.options.wantSummary = True
+process.options.wantSummary = False
+
+ZMuMuGammaSelection.cutsToIgnore = cms.vstring("photonTrackIso")
 
 if __name__ == "__main__": import user
 
