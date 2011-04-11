@@ -8,9 +8,9 @@
  * 
  * \author Christian Veelken, UC Davis
  *
- * \version $Revision: 1.5 $
+ * \version $Revision: 1.6 $
  *
- * $Id: ParticlePFIsolationExtractor.h,v 1.5 2011/04/05 13:27:58 veelken Exp $
+ * $Id: ParticlePFIsolationExtractor.h,v 1.6 2011/04/09 10:50:22 veelken Exp $
  *
  */
 
@@ -117,8 +117,6 @@ class ParticlePFIsolationExtractor
   double operator()(const T& lepton, const reco::PFCandidateCollection& pfCandidates,
 		    const reco::VertexCollection* vertices = 0, const reco::BeamSpot* beamSpot = 0)
   {
-    //std::cout << "<ParticlePFIsolationExtractor::operator()>:" << std::endl;
-
     std::vector<const reco::PFCandidate*> pfChargedHadrons, pfNeutralHadrons, pfPhotons;
     if ( addChargedHadronIso_   || 
 	 methodPUcorr_ != kNone ) pfChargedHadrons = getPFCandidatesOfType(pfCandidates, reco::PFCandidate::h);
@@ -141,29 +139,21 @@ class ParticlePFIsolationExtractor
       getPileUpPFCandidates(pfChargedHadrons, signalTracks, *vertices, deltaZ_, *beamSpot, pfNoPileUpChargedHadrons, pfPileUpChargedHadrons);
 
       if ( methodPUcorr_ == kBeta ) {
-	//std::cout << "applying beta correction..." << std::endl;
 	double pfNoPileUpChargedHadronIsoSumPt = pfChargedHadronIso_->compSumPt(pfNoPileUpChargedHadrons, lepton.p4());
 	double pfPileUpChargedHadronIsoSumPt   = pfChargedHadronIso_->compSumPt(pfPileUpChargedHadrons, lepton.p4());
 	sumPt = pfNoPileUpChargedHadronIsoSumPt;
-
-	//std::cout << " pfNoPileUpChargedHadronIsoSumPt = " << pfNoPileUpChargedHadronIsoSumPt << std::endl;
-	//std::cout << " pfPileUpChargedHadronIsoSumPt = " << pfPileUpChargedHadronIsoSumPt << std::endl;
-
+	
 	double pfNeutralIsoCorrFactor = ( pfPileUpChargedHadronIsoSumPt > 0. ) ? 
 	  (pfNoPileUpChargedHadronIsoSumPt/(pfNoPileUpChargedHadronIsoSumPt + pfPileUpChargedHadronIsoSumPt)) : 1.0;
-	//std::cout << " pfNeutralIsoCorrFactor = " << pfNeutralIsoCorrFactor << std::endl;
 	
 	if ( pfNeutralHadronIso_ ) sumPt += pfNeutralHadronIso_->compSumPt(pfNeutralHadrons, lepton.p4())*pfNeutralIsoCorrFactor;
 	if ( pfPhotonIso_        ) sumPt += pfPhotonIso_->compSumPt(pfPhotons, lepton.p4())*pfNeutralIsoCorrFactor;
-	//std::cout << "--> sumPt = " << sumPt << std::endl;
       } else if ( methodPUcorr_ == kDeltaBeta ) {
-	//std::cout << "applying deltaBeta correction..." << std::endl;
 	sumPt = pfChargedHadronIso_->compSumPt(pfNoPileUpChargedHadrons, lepton.p4());
-	//std::cout << "pfNoPileUpChargedHadronIsoSumPt = " << sumPt << std::endl;
-
+	
 	double sumPtNeutralIsoSumPt  = 0.;
 	double sumPtNeutralIsoPUcorr = 0.;
-      
+	
 	if ( pfNeutralHadronIso_ ) {
 	  sumPtNeutralIsoSumPt += pfNeutralHadronIso_->compSumPt(pfNeutralHadrons, lepton.p4());
 	  sumPtNeutralIsoPUcorr += pfNeutralHadronIsoPUcorr_->compSumPt(pfPileUpChargedHadrons, lepton.p4());
@@ -173,12 +163,8 @@ class ParticlePFIsolationExtractor
 	  sumPtNeutralIsoSumPt += pfPhotonIso_->compSumPt(pfPhotons, lepton.p4());
 	  sumPtNeutralIsoPUcorr += pfPhotonIsoPUcorr_->compSumPt(pfPileUpChargedHadrons, lepton.p4());
 	}
-
-	//std::cout << " sumPtNeutralIsoSumPt = " << sumPtNeutralIsoSumPt << std::endl;
-	//std::cout << " sumPtNeutralIsoPUcorr = " << sumPtNeutralIsoPUcorr << std::endl;
-
+	
 	sumPt += TMath::Max(sumPtNeutralIsoSumPt - chargedToNeutralFactor_*sumPtNeutralIsoPUcorr, 0.); 
-	//std::cout << "--> sumPt = " << sumPt << std::endl;
       } else assert(0);
     }
 
