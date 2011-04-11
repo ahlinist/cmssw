@@ -69,7 +69,7 @@ def submitAnalysisToGrid(configFile = None, channel = None, samples = None,
         print "Submitting ", sample
 
         sample_info = samples['RECO_SAMPLES'][sample]
-        
+
         # Make job info
         jobInfo = {
             'channel' : channel,
@@ -88,7 +88,7 @@ def submitAnalysisToGrid(configFile = None, channel = None, samples = None,
             input_files = inputFileMap(sample)
             if input_files is None:
                 print "Warning: No special input files specified for sample%s, using default." % sample
-        output_file = None        
+        output_file = None
         if outputFileMap is not None:
             output_file = outputFileMap(channel, sample, jobId)
 
@@ -117,8 +117,8 @@ def submitAnalysisToGrid(configFile = None, channel = None, samples = None,
         jobCustomizations.append("process.patDefaultSequence.replace(process.patTriggerEventSequence,")
         jobCustomizations.append("                                   process.patTriggerSequence + process.patTriggerEventSequence)")
         #jobCustomizations.append("print process.dumpPython()")
-        #--------------------------------------------------------------------    
-            
+        #--------------------------------------------------------------------
+
         prepareConfigFile(
           configFile = configFile, jobInfo = jobInfo, newConfigFile = newConfigFile,
           sample_infos = samples,
