@@ -49,8 +49,13 @@ diTauCandidateNSVfitHistManagerForMuTau.pluginName = cms.string('diTauCandidateN
 diTauCandidateNSVfitHistManagerForMuTau.pluginType = cms.string('PATMuTauPairNSVfitHistManager')
 diTauCandidateNSVfitHistManagerForMuTau.diTauCandidateSource = cms.InputTag('selectedMuTauPairsPzetaDiffCumulative')
 diTauCandidateNSVfitHistManagerForMuTau.nSVfitEventHypotheses = cms.PSet(
-    psKine_MEt_ptBalance       = cms.string('psKine_MEt_ptBalance'),
+    ##psKine_MEt_ptBalance       = cms.string('psKine_MEt_ptBalance'),
     ##psKine_MEt_Track_ptBalance = cms.string('psKine_MEt_Track_ptBalance')
+    psKine_MEt_pow05ptBalance_int = cms.string('psKine_MEt_pow05ptBalance_int'),
+    psKine_MEt_pow10ptBalance_int = cms.string('psKine_MEt_pow10ptBalance_int'),
+    psKine_MEt_pow15ptBalance_int = cms.string('psKine_MEt_pow15ptBalance_int'),
+    psKine_MEt_pow20ptBalance_int = cms.string('psKine_MEt_pow20ptBalance_int'),
+    psKine_MEt_pow10ptBalance_fit = cms.string('psKine_MEt_pow10ptBalance_fit'),
 )
 
 diTauCandidateNSVfitVtxMultiplicityBinGridHistManager = cms.PSet(
@@ -518,6 +523,8 @@ muTauEventDump = cms.PSet(
     muTauZmumuHypothesisSource = cms.InputTag('muTauPairZmumuHypotheses'),
     diMuZmumuHypothesisSource = cms.InputTag('allDiMuPairZmumuHypothesesByLooseIsolation'),
     pfCandidateSource = cms.InputTag('particleFlow'),
+    vertexSource = cms.InputTag('selectedPrimaryVertexHighestPtTrackSumForMuTauLooseMuonIsolation'),
+    beamSpotSource = cms.InputTag('offlineBeamSpot'),
     jetSource = cms.InputTag('patJets'),
     caloMEtSource = cms.InputTag('patMETs'),
     pfMEtSource = cms.InputTag('patPFMETs'),
