@@ -20,15 +20,20 @@ ZMuMuGammaSelector::ZMuMuGammaSelector( const edm::ParameterSet& conf ) {
       init_Fsr2011Apr11(
         // 1. maximum near muon HCAL isolation
         conf.getParameter<double>("maxNearMuonHcalIso"),
-        // 2. maximum far muon ECAL isolation
+        // 2. maximum far muon tracker isolation
+        conf.getParameter<double>("maxFarMuonTrackIso"),
+        // 3. maximum far muon ECAL isolation
         conf.getParameter<double>("maxFarMuonEcalIso"),
-        // 3. maximum Delta R distance between the photon and the near muon
+        // 4. maximum photon tracker isolation (near muon removed) = const + slope * pt
+        conf.getParameter<double>("photonTrackIsoConst"),
+        conf.getParameter<double>("photonTrackIsoSlope"),
+        // 5. maximum Delta R distance between the photon and the near muon
         conf.getParameter<double>("maxDeltaRNear"),
-        // 4. minimum far muon transverse momentum
+        // 6. minimum far muon transverse momentum
         conf.getParameter<double>("minFarMuonPt"),
-        // 5. minimum invariant mass
+        // 7. minimum invariant mass
         conf.getParameter<double>("minMass"),
-        // 6. maximum invariant mass
+        // 8. maximum invariant mass
         conf.getParameter<double>("maxMass")
       );
       break;
@@ -38,7 +43,7 @@ ZMuMuGammaSelector::ZMuMuGammaSelector( const edm::ParameterSet& conf ) {
         << "This should have been thrown previously!!!" << std::endl;
   } // end of switch(version_)
 
-  if( conf.exists("cutToIgnore") )
+  if( conf.exists("cutsToIgnore") )
     setIgnoredCuts( conf.getParameter<std::vector<std::string> >("cutsToIgnore") );
 
   retInternal_ = getBitTemplate();
@@ -47,20 +52,30 @@ ZMuMuGammaSelector::ZMuMuGammaSelector( const edm::ParameterSet& conf ) {
 void ZMuMuGammaSelector::init_Fsr2011Apr11(
   // 1. maximum near muon HCAL isolation
   const double& maxNearMuonHcalIso,
-  // 2. maximum far muon ECAL isolation
+  // 2. maximum far muon tracker isolation
+  const double& maxFarMuonTrackIso,
+  // 3. maximum far muon ECAL isolation
   const double& maxFarMuonEcalIso,
-  // 3. maximum Delta R distance between the photon and the near muon
+  // 4. maximum photon tracker isolation (near muon removed) = const + slope * pt
+  const double& photonTrackIsoConst,
+  const double& photonTrackIsoSlope,
+  // 5. maximum Delta R distance between the photon and the near muon
   const double& maxDeltaRNear,
-  // 4. minimum far muon transverse momentum
+  // 6. minimum far muon transverse momentum
   const double& minFarMuonPt,
-  // 5. minimum invariant mass
+  // 7. minimum invariant mass
   const double& minMass,
-  // 6. maximum invariant mass
+  // 8. maximum invariant mass
   const double& maxMass
 ) {
+  photonTrackIsoConst_ = photonTrackIsoConst;
+  photonTrackIsoSlope_ = photonTrackIsoSlope;
+
   push_back("inclusive");
   push_back("maxNearMuonHcalIso", maxNearMuonHcalIso);
+  push_back("maxFarMuonTrackIso", maxFarMuonTrackIso);
   push_back("maxFarMuonEcalIso", maxFarMuonEcalIso);
+  push_back("photonTrackIso");
   push_back("maxDeltaRNear", maxDeltaRNear);
   push_back("minFarMuonPt", minFarMuonPt);
   push_back("minMass", minMass);
@@ -68,7 +83,9 @@ void ZMuMuGammaSelector::init_Fsr2011Apr11(
 
   set("inclusive");
   set("maxNearMuonHcalIso");
+  set("maxFarMuonTrackIso");
   set("maxFarMuonEcalIso");
+  set("photonTrackIso");
   set("maxDeltaRNear");
   set("minFarMuonPt");
   set("minMass");
@@ -137,35 +154,56 @@ bool ZMuMuGammaSelector::passes_Fsr2011Apr11(
     passCut(ret, "maxNearMuonHcalIso");
   else return false;
 
-  // Apply cut 2. maximum far muon ECAL isolation
+  // Apply cut 2. maximum far muon tracker isolation
+  if (farMuon->trackIso() < cut("maxFarMuonTrackIso", double()) ||
+      ignoreCut("maxFarMuonTrackIso")
+      )
+    passCut(ret, "maxFarMuonTrackIso");
+  else return false;
+
+  // Apply cut 3. maximum far muon ECAL isolation
   if (farMuon->ecalIso() < cut("maxFarMuonEcalIso", double()) ||
       ignoreCut("maxFarMuonEcalIso")
       )
     passCut(ret, "maxFarMuonEcalIso");
   else return false;
 
-  // Apply cut 3. maximum Delta R distance between the photon and the near muon
+  // Apply cut 4. maximum photon tracker isolation (near muon removed)
+  double photonTrackIso = photon->trackIso();
+  double maxPhotonTrackIso = photonTrackIsoConst_ +
+                             photonTrackIsoSlope_ * photon->pt();
+
+  // Check if the near muon was included.
+  if (nearMuon->pt() >= photonTrackIso && drNear < 0.4)
+    // Remove the near muon.
+    photonTrackIso -= nearMuon->pt();
+
+  if (photonTrackIso < maxPhotonTrackIso || ignoreCut("photonTrackIso") )
+    passCut(ret, "photonTrackIso");
+  else return false;
+
+  // Apply cut 5. maximum Delta R distance between the photon and the near muon
   if (drNear < cut("maxDeltaRNear", double()) ||
       ignoreCut("maxDeltaRNear")
       )
     passCut(ret, "maxDeltaRNear");
   else return false;
 
-  // Apply cut 4. minimum far muon transverse momentum
+  // Apply cut 6. minimum far muon transverse momentum
   if (farMuon->pt() > cut("minFarMuonPt", double()) ||
       ignoreCut("minFarMuonPt")
       )
     passCut(ret, "minFarMuonPt");
   else return false;
 
-  // Apply cut 5. minimum invariant mass
+  // Apply cut 7. minimum invariant mass
   if (mmgCand.mass() > cut("minMass", double()) ||
       ignoreCut("minMass")
       )
     passCut(ret, "minMass");
   else return false;
 
-  // Apply cut 6. maximum invariant mass
+  // Apply cut 8. maximum invariant mass
   if (mmgCand.mass() < cut("maxMass", double()) ||
       ignoreCut("maxMass")
       )

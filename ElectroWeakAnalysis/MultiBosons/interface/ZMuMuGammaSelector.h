@@ -23,21 +23,27 @@ class ZMuMuGammaSelector : public Selector<reco::CompositeCandidate> {
 
   private:
     version version_;
+    double photonTrackIsoConst_, photonTrackIsoSlope_;
 
     bool passes_Fsr2011Apr11( const reco::CompositeCandidate& mmgCand,
                               pat::strbitset& ret);
     void init_Fsr2011Apr11(
       // 1. maximum near muon HCAL isolation
       const double& maxNearMuonHcalIso,
-      // 2. maximum far muon ECAL isolation
+      // 2. maximum far muon tracker isolation
+      const double& maxFarMuonTrackIso,
+      // 3. maximum far muon ECAL isolation
       const double& maxFarMuonEcalIso,
-      // 3. maximum Delta R distance between the photon and the near muon
+      // 4. maximum photon tracker isolation (near muon removed) = const + slope * pt
+      const double& photonTrackIsoConst,
+      const double& photonTrackIsoSlope,
+      // 5. maximum Delta R distance between the photon and the near muon
       const double& maxDeltaRNear,
-      // 4. minimum far muon transverse momentum
+      // 6. minimum far muon transverse momentum
       const double& minFarMuonPt,
-      // 5. minimum invariant mass
+      // 7. minimum invariant mass
       const double& minMass,
-      // 6. maximum invariant mass
+      // 8. maximum invariant mass
       const double& maxMass
     );
 
