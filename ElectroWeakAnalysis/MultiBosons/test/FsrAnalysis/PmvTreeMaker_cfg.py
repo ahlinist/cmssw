@@ -25,8 +25,6 @@ process.MessageLogger.cerr.INFO.limit = 100
 #process.MessageLogger.debugModules = ["selectedZMuMuGammas"]
 #process.MessageLogger.cerr.threshold = "DEBUG"
 
-
-
 process.source = cms.Source("PoolSource",
     fileNames = cms.untracked.vstring() + options.inputFiles
 )
@@ -41,19 +39,16 @@ process.TFileService = cms.Service("TFileService",
 
 
 from ElectroWeakAnalysis.MultiBosons.Selectors.muonSelector_cfi \
-    import FsrApr082011_selection as muonSelection
+    import muonSelection_FsrApr082011_PixelMatchVeto as muonSelection
 
 from ElectroWeakAnalysis.MultiBosons.Selectors.diLeptonSelector_cfi \
-    import diMuonSelection_Fsr2011Apr11 as diMuonSelection
+    import diMuonSelection_Fsr2011Apr11_PixelMatchVeto as diMuonSelection
 
 from ElectroWeakAnalysis.MultiBosons.Selectors.photonSelector_cfi \
-    import photonSelection_Fsr2011Apr11 as photonSelection
+    import photonSelection_Fsr2011Apr11_PixelMatchVeto as photonSelection
 
 from ElectroWeakAnalysis.MultiBosons.Selectors.ZMuMuGammaSelector_cfi \
-    import ZMuMuGammaSelection_Fsr2011Apr11 as ZMuMuGammaSelection
-
-#from ElectroWeakAnalysis.MultiBosons.Selectors.muonSelector_cfi \
-    #import Sep062010_selection as muonSelection
+    import ZMuMuGammaSelection_Fsr2011Apr11_PixelMatchVeto as ZMuMuGammaSelection
 
 process.selectedMuons = cms.EDFilter("VGammaMuonFilter",
     filterParams = muonSelection,
@@ -106,60 +101,18 @@ process.selectedZMuMuGammas = cms.EDFilter("ZMuMuGammaFilter",
     verbosity = cms.untracked.uint32(2)
 )
 
-#process.selectedMuonPtrs = cms.EDFilter("VGammaPatMuonPtrSelector",
-    #muonSelection,
-    #src = cms.InputTag("cleanPatMuonsTriggerMatch","","PAT"),
-    #filter = cms.bool(False)
-#)
-
-process.countsBefore = cms.EDAnalyzer("CandViewCountAnalyzer",
-    nbins = cms.untracked.uint32(10),
-    histograms = cms.untracked.VPSet(
-        cms.PSet( src = cms.untracked.InputTag("cleanPatMuonsTriggerMatch") ),
-        cms.PSet( src = cms.untracked.InputTag("cleanPatPhotonsTriggerMatch") ),
-    )
+process.selectionSequence = cms.Sequence(
+    process.selectedMuons *
+    process.goodDiMuons *
+    process.selectedDiMuons *
+    process.goodPhotons *
+    process.selectedPhotons *
+    process.goodZMuMuGammas *
+    process.selectedZMuMuGammas
 )
-
-process.countsAfter = cms.EDAnalyzer("CandViewCountAnalyzer",
-    nbins = cms.untracked.uint32(10),
-    histograms = cms.untracked.VPSet(
-        cms.PSet( src = cms.untracked.InputTag("selectedMuons") ),
-        cms.PSet( src = cms.untracked.InputTag("selectedPhotons") ),
-        cms.PSet( src = cms.untracked.InputTag("selectedDiMuons") ),
-        cms.PSet( src = cms.untracked.InputTag("selectedZMuMuGammas") ),
-    )
-)
-
-
-from ElectroWeakAnalysis.MultiBosons.Histogramming.muonHistos_cfi import muonHistos
-from ElectroWeakAnalysis.MultiBosons.Histogramming.photonHistos_cfi import photonHistos
-from ElectroWeakAnalysis.MultiBosons.Histogramming.leafKineHistos_cff import *
-from ElectroWeakAnalysis.MultiBosons.Histogramming.isoHistos_cff import *
-
-process.allMuonsHistos = muonHistos.clone(
-    src = "cleanPatMuonsTriggerMatch",
-    #histograms = (leafKineHistos + isoHistos).copy(),
-    histograms = (leafKineHistos).copy(),
-)
-
-process.selectedMuonsHistos = process.allMuonsHistos.clone(src = "selectedMuons")
-
-process.allPhotonsHistos = photonHistos.clone(
-    src = "cleanPatPhotonsTriggerMatch",
-    histograms = (leafKineHistos).copy(),
-)
-
-process.selectedPhotonsHistos = process.allPhotonsHistos.clone(src = "selectedPhotons")
 
 process.p = cms.Path(
-    process.allMuonsHistos +
-    process.allPhotonsHistos +
-    process.countsBefore +
-    process.selectedMuons * process.selectedMuonsHistos *
-    process.goodDiMuons * process.selectedDiMuons +
-    process.goodPhotons * process.selectedPhotons * process.selectedPhotonsHistos *
-    process.goodZMuMuGammas * process.selectedZMuMuGammas *
-    process.countsAfter
+    process.selectionSequence
 )
 
 process.options.wantSummary = True
