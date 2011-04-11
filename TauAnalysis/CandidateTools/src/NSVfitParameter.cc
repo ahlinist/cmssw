@@ -28,12 +28,15 @@ NSVfitParameter::NSVfitParameter(int idx, const std::string& name, int type,
 {
   if ( !(type >= 0 && type <= nSVfit_namespace::kNu_phi_lab) ) throw cms::Exception("NSVfitParameter")
        << "Invalid type = " << type << " !!\n";
+
+  reset();
 }
 
-NSVfitParameter::NSVfitParameter(int idx, const std::string& name, int type)
+NSVfitParameter::NSVfitParameter(int idx, const std::string& name, int type, bool isFixed)
   : idx_(idx),
     name_(name),
-    type_(type)
+    type_(type),
+    isFixed_(isFixed)
 {
   if ( !defaultValues_initialized_ ) initializeDefaultValues();
 
@@ -43,15 +46,21 @@ NSVfitParameter::NSVfitParameter(int idx, const std::string& name, int type)
   initialValue_ = defaultInitialValues_[type];
   lowerLimit_ = defaultLimits_[type].first;
   upperLimit_ = defaultLimits_[type].second;
-  stepSize_ = defaultStepSizes_[type];     
+  stepSize_ = defaultStepSizes_[type]; 
+
+  reset();
 }
 
 void NSVfitParameter::dump(std::ostream& stream) const 
 {
-  stream << "param #" << idx_ << "(name = " << name_ << "): value = " << value_ << std::endl;
+  stream << "param #" << idx_ << "(name = " << get_name_incl_type(name_, type_) << "): value = " << value_ << std::endl;
   stream << " initialValue = " << initialValue_ << " +/- " << stepSize_ << ","
-	 << " limits = {" <<  lowerLimit_ << ", " << upperLimit_ << "}" << ","
-	 << " isFixed = " << isFixed_ << std::endl;
+	 << " limits = {" <<  lowerLimit_ << ", " << upperLimit_ << "}";
+  if      ( IsFixed()       ) stream << ", isFixed"; 
+  else if ( IsDoubleBound() ) stream << ", isDoubleBound"; 
+  else if ( HasLowerLimit() ) stream << ", hasLowerLimit"; 
+  else if ( HasUpperLimit() ) stream << ", hasUpperLimit"; 
+  stream << std::endl;
 }
 
 // Friend helpers for print functions
@@ -59,6 +68,31 @@ std::ostream& operator<<(std::ostream& stream, const NSVfitParameter& param)
 {
   param.dump(stream);
   return stream;
+}
+
+std::string get_name_incl_type(const std::string& name, int type)
+{
+  std::string retVal = name;
+  retVal.append("::");
+  if      ( type == nSVfit_namespace::kPV_shiftX             ) retVal.append("PV_shiftX");
+  else if ( type == nSVfit_namespace::kPV_shiftY             ) retVal.append("PV_shiftY");
+  else if ( type == nSVfit_namespace::kPV_shiftZ             ) retVal.append("PV_shiftZ");
+  else if ( type == nSVfit_namespace::kTau_visEnFracX        ) retVal.append("visEnFracX");
+  else if ( type == nSVfit_namespace::kTau_phi_lab           ) retVal.append("phi_lab");
+  else if ( type == nSVfit_namespace::kTau_decayDistance_lab ) retVal.append("decayDistance_lab");
+  else if ( type == nSVfit_namespace::kTau_nuInvMass         ) retVal.append("nuInvMass");
+  else if ( type == nSVfit_namespace::kTau_pol               ) retVal.append("pol");
+  else if ( type == nSVfit_namespace::kTauVM_theta_rho       ) retVal.append("theta_rho");
+  else if ( type == nSVfit_namespace::kTauVM_mass2_rho       ) retVal.append("mass2_rho");
+  else if ( type == nSVfit_namespace::kTauVM_theta_a1        ) retVal.append("theta_a1");
+  else if ( type == nSVfit_namespace::kTauVM_theta_a1r       ) retVal.append("theta_a1r");
+  else if ( type == nSVfit_namespace::kTauVM_phi_a1r         ) retVal.append("phi_a1r");
+  else if ( type == nSVfit_namespace::kTauVM_mass2_a1        ) retVal.append("mass2_a1");
+  else if ( type == nSVfit_namespace::kLep_shiftEn           ) retVal.append("shiftEn");
+  else if ( type == nSVfit_namespace::kNu_energy_lab         ) retVal.append("energy_lab");
+  else if ( type == nSVfit_namespace::kNu_phi_lab            ) retVal.append("phi_lab");
+  else retVal.append("undefined");
+  return retVal;
 }
 
 //
