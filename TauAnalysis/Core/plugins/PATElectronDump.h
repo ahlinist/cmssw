@@ -8,9 +8,9 @@
  * 
  * \author Christian Veelken, UC Davis
  *
- * \version $Revision: 1.1 $
+ * \version $Revision: 1.2 $
  *
- * $Id: PATElectronDump.h,v 1.1 2010/02/12 17:18:02 veelken Exp $
+ * $Id: PATElectronDump.h,v 1.2 2011/04/07 09:34:26 jkolb Exp $
  *
  */
 
@@ -39,6 +39,8 @@ class PATElectronDump : public ObjectDumpBase
   edm::InputTag patElectronSource_;
   edm::InputTag genParticleSource_;
   edm::InputTag pfCandidateSrc_;
+  edm::InputTag vertexSource_;
+  edm::InputTag beamSpotSource_;
 
   std::vector<int> skipPdgIdsGenParticleMatch_;
   
