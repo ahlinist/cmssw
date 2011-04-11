@@ -92,10 +92,10 @@ void NSVfitAlgorithmByLikelihoodMaximization::fitImp() const
 	    << " #constrainedParameters = " << (minimizer_->NDim() - minimizer_->NFree()) << std::endl;
   minimizer_->Minimize();
   minimizer_->PrintResults();
-std::cout << "break-point 1 reached" << std::endl;
+
 //--- set best-fit parameters in event, resonance and particle hypotheses
   eventModel_->builder_->applyFitParameter(currentEventHypothesis_, minimizer_->X());
-std::cout << "break-point 2 reached" << std::endl;
+
 //--- get Minimizer status code, check if solution is valid:
 //
 //    1: Covariance matrix was made positive definite
@@ -104,16 +104,13 @@ std::cout << "break-point 2 reached" << std::endl;
 //    4: Reached maximum number of function calls before reaching convergence
 //    5: Any other failure
 //
-std::cout << "break-point 3 reached" << std::endl;
+
   int fitStatus = minimizer_->Status();
   bool isValidSolution = (fitStatus == 0);
   for ( edm::OwnVector<NSVfitResonanceHypothesis>::iterator resonanceHypothesis = currentEventHypothesis_->resonances_.begin();
 	resonanceHypothesis != currentEventHypothesis_->resonances_.end(); ++resonanceHypothesis ) {
-std::cout << "break-point 4 reached" << std::endl;
     resonanceHypothesis->isValidSolution_ = isValidSolution;
-std::cout << "break-point 5 reached" << std::endl;
   }
-std::cout << "break-point 6 reached" << std::endl;
 }
 
 double NSVfitAlgorithmByLikelihoodMaximization::nll(const double* x, const double* param) const
