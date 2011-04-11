@@ -8,7 +8,7 @@ from TauAnalysis.RecoTools.tools.eventSelFlagProdConfigurator import *
 # select ttbar + jets background enriched event sample
 #--------------------------------------------------------------------------------
 
-#--------------------------------------------------------------------------------  
+#--------------------------------------------------------------------------------
 # produce collection of pat::Muons
 #--------------------------------------------------------------------------------
 
@@ -29,7 +29,7 @@ muonSelConfiguratorBgEstTTplusJetsEnriched = objSelConfigurator(
 
 selectMuonsBgEstTTplusJetsEnriched = muonSelConfiguratorBgEstTTplusJetsEnriched.configure(pyNameSpace = locals())
 
-#--------------------------------------------------------------------------------  
+#--------------------------------------------------------------------------------
 # produce collection of muon + tau-jet combinations
 #--------------------------------------------------------------------------------
 
@@ -44,26 +44,26 @@ muTauPairsBgEstTTplusJetsEnriched = allMuTauPairs.clone(
 produceMuTauPairsBgEstTTplusJetsEnriched = cms.Sequence(muTauPairsBgEstTTplusJetsEnriched)
 
 muTauPairsBgEstTTplusJetsEnrichedZeroCharge = cms.EDFilter("PATMuTauPairSelector",
-    src = cms.InputTag('muTauPairsBgEstTTplusJetsEnriched'),                                                   
+    src = cms.InputTag('muTauPairsBgEstTTplusJetsEnriched'),
     cut = cms.string('abs(charge) < 0.5'),
     filter = cms.bool(False)
 )
 
 selectMuTauPairsBgEstTTplusJetsEnriched = cms.Sequence(muTauPairsBgEstTTplusJetsEnrichedZeroCharge)
 
-#--------------------------------------------------------------------------------  
+#--------------------------------------------------------------------------------
 # produce collection of pat::Jets
 #--------------------------------------------------------------------------------
 
 jetsBgEstTTplusJetsEnrichedAntiOverlapWithLeptonsVeto = cms.EDFilter("PATJetAntiOverlapSelector",
-    src = cms.InputTag("patJets"),                                                                  
+    src = cms.InputTag("patJets"),
     srcNotToBeFiltered = cms.VInputTag(
         "selectedPatElectronsTrkCumulative",
         "muonsBgEstTTplusJetsEnrichedPFRelIsoCumulative",
         "selectedPatTausForMuTauMuonVetoCumulative"
     ),
     dRmin = cms.double(0.7),
-    filter = cms.bool(False)                                           
+    filter = cms.bool(False)
 )
 
 jetsBgEstTTplusJetsEnrichedEta24 = cms.EDFilter("PATJetSelector",
@@ -97,7 +97,7 @@ selectJetsBgEstTTplusJetsEnriched = cms.Sequence(
    + jetsBgEstTTplusJetsEnrichedEt60
 )
 
-#--------------------------------------------------------------------------------  
+#--------------------------------------------------------------------------------
 # produce boolean event selection flags
 #--------------------------------------------------------------------------------
 
@@ -162,7 +162,7 @@ evtSelConfiguratorBgEstTTplusJetsEnriched = eventSelFlagProdConfigurator(
 
 selectEventsBgEstTTplusJetsEnriched = evtSelConfiguratorBgEstTTplusJetsEnriched.configure()
 
-#--------------------------------------------------------------------------------  
+#--------------------------------------------------------------------------------
 # apply event selection criteria; fill histograms
 #--------------------------------------------------------------------------------
 
@@ -210,16 +210,16 @@ dataBinnerBgEstTTplusJetsEnriched = copy.deepcopy(dataBinner)
 dataBinnerBgEstTTplusJetsEnriched.pluginName = cms.string('dataBinnerBgEstTTplusJetsEnriched')
 
 analyzeEventsBgEstTTplusJetsEnriched = cms.EDAnalyzer("GenericAnalyzer",
-  
-    name = cms.string('BgEstTemplateAnalyzer_TTplusJetsEnriched'), 
-                            
+
+    name = cms.string('BgEstTemplateAnalyzer_TTplusJetsEnriched'),
+
     filters = cms.VPSet(
         evtSelGenPhaseSpace,
         evtSelTrigger,
         evtSelDataQuality,
-        evtSelPrimaryEventVertex,
-        evtSelPrimaryEventVertexQuality,
-        evtSelPrimaryEventVertexPosition,
+        evtSelPrimaryEventVertexForMuTau,
+        evtSelPrimaryEventVertexQualityForMuTau,
+        evtSelPrimaryEventVertexPositionForMuTau,
         evtSelGlobalMuon,
         evtSelMuonEta,
         evtSelMuonPt,
@@ -268,7 +268,7 @@ analyzeEventsBgEstTTplusJetsEnriched = cms.EDAnalyzer("GenericAnalyzer",
             src = cms.InputTag('jetEt60BgEstTTplusJetsEnriched')
         )
     ),
-  
+
     analyzers = cms.VPSet(
         muonHistManagerBgEstTTplusJetsEnriched,
         tauHistManagerBgEstTTplusJetsEnriched,
@@ -282,9 +282,9 @@ analyzeEventsBgEstTTplusJetsEnriched = cms.EDAnalyzer("GenericAnalyzer",
     ),
 
     eventDumps = cms.VPSet(),
-   
+
     analysisSequence = cms.VPSet(
-    
+
         # generator level phase-space selection
         # (NOTE: (1) to be used in case of Monte Carlo samples
         #            overlapping in simulated phase-space only !!
@@ -342,7 +342,7 @@ analyzeEventsBgEstTTplusJetsEnriched = cms.EDAnalyzer("GenericAnalyzer",
         cms.PSet(
             filter = cms.string('muonVbTfIdCutBgEstTTplusJetsEnriched'),
             title = cms.string('Muon VBTF id.'),
-        ),        
+        ),
         cms.PSet(
             filter = cms.string('muonPFRelIsoCutBgEstTTplusJetsEnriched'),
             title = cms.string('Muon iso.')
@@ -409,14 +409,14 @@ analyzeEventsBgEstTTplusJetsEnriched = cms.EDAnalyzer("GenericAnalyzer",
 
 analysisSequenceBgEstTTplusJetsEnriched = cms.Sequence(analyzeEventsBgEstTTplusJetsEnriched)
 
-#--------------------------------------------------------------------------------  
+#--------------------------------------------------------------------------------
 # define (final) analysis sequence
 #--------------------------------------------------------------------------------
 
 bgEstTTplusJetsEnrichedAnalysisSequence = cms.Sequence(
     selectMuonsBgEstTTplusJetsEnriched
    + produceMuTauPairsBgEstTTplusJetsEnriched + selectMuTauPairsBgEstTTplusJetsEnriched
-   + selectJetsBgEstTTplusJetsEnriched 
+   + selectJetsBgEstTTplusJetsEnriched
    + selectEventsBgEstTTplusJetsEnriched
    + analysisSequenceBgEstTTplusJetsEnriched
 )
