@@ -27,16 +27,16 @@ PATElectronDump::PATElectronDump(const edm::ParameterSet& cfg)
 	patElectronSource_(cfg.getParameter<edm::InputTag>("electronSource")),
 	genParticleSource_(cfg.getParameter<edm::InputTag>("genParticleSource")),
 	pfCandidateSrc_(cfg.getParameter<edm::InputTag>("pfCandidateSource")),
-    dcsTag_(cfg.getParameter<edm::InputTag>("dcsTag"))
+    dcsTag_(cfg.getParameter<edm::InputTag>("dcsTag")),
+    pfChargedHadronIsoExtractor_(0),
+    pfNeutralHadronIsoExtractor_(0),
+    pfPhotonIsoExtractor_(0),
+    pfCombIsoExtractor_(0)
 {
 	typedef std::vector<int> vint;
 	skipPdgIdsGenParticleMatch_ = ( cfg.exists("skipPdgIdsGenParticleMatch") ) ?
 		cfg.getParameter<vint>("skipPdgIdsGenParticleMatch") : vint();
 
-    pfChargedHadronIsoExtractor_ = 0;
-    pfNeutralHadronIsoExtractor_ = 0;
-    pfPhotonIsoExtractor_ = 0;
-    pfCombIsoExtractor_ = 0;
 	if ( pfCandidateSrc_.label() != "") {
 		if ( cfg.exists("pfChargedHadronIsoExtractor") ) {
 			edm::ParameterSet cfgPFChargedHadronIsoExtractor = cfg.getParameter<edm::ParameterSet>("pfChargedHadronIsoExtractor");
@@ -80,6 +80,20 @@ void PATElectronDump::print(const edm::Event& evt, const edm::EventSetup& es) co
 
     edm::Handle<reco::GenParticleCollection> genParticles;
     if( genParticleSource_.label() != "") evt.getByLabel(genParticleSource_, genParticles);
+    
+    const reco::VertexCollection* vertices = 0;
+    if ( vertexSource_.label() != "" ) {
+        edm::Handle<reco::VertexCollection> vertexHandle;
+        evt.getByLabel(vertexSource_, vertexHandle);
+        vertices = &(*vertexHandle);
+    }
+
+    const reco::BeamSpot* beamSpot = 0;
+    if ( beamSpotSource_.label() != "" ) {
+        edm::Handle<reco::BeamSpot> beamSpotHandle;
+        evt.getByLabel(beamSpotSource_, beamSpotHandle);
+        beamSpot = &(*beamSpotHandle);
+    }
 
     unsigned iElectron = 0;
     for ( pat::ElectronCollection::const_iterator patElectron = patElectrons->begin(); 
@@ -115,22 +129,22 @@ void PATElectronDump::print(const edm::Event& evt, const edm::EventSetup& es) co
 
         // print PF isolation info, if requested
         if ( pfChargedHadronIsoExtractor_ ) {
-            double pfChargedHadronIso = (*pfChargedHadronIsoExtractor_)(*patElectron, *pfCandidates);
+            double pfChargedHadronIso = (*pfChargedHadronIsoExtractor_)(*patElectron, *pfCandidates, vertices, beamSpot);
             *outputStream_ << " pfChargedHadronIsoSum/pt = " << pfChargedHadronIso << "/" << patElectron->pt() 
                 << " = " << pfChargedHadronIso/patElectron->pt() << std::endl;
         }
         if ( pfNeutralHadronIsoExtractor_ ) {
-            double pfNeutralHadronIso = (*pfNeutralHadronIsoExtractor_)(*patElectron, *pfCandidates);
+            double pfNeutralHadronIso = (*pfNeutralHadronIsoExtractor_)(*patElectron, *pfCandidates, vertices, beamSpot);
             *outputStream_ << " pfNeutralHadronIsoSum/pt = " << pfNeutralHadronIso << "/" << patElectron->pt()
                 << " = " << pfNeutralHadronIso/patElectron->pt() << std::endl;
         }
         if ( pfPhotonIsoExtractor_ ) {
-            double pfPhotonIso = (*pfPhotonIsoExtractor_)(*patElectron, *pfCandidates);
+            double pfPhotonIso = (*pfPhotonIsoExtractor_)(*patElectron, *pfCandidates, vertices, beamSpot);
             *outputStream_ << " pfPhotonIsoSum/pt = " << pfPhotonIso << "/" << patElectron->pt() 
                 << " = " << pfPhotonIso/patElectron->pt() << std::endl;
         }
         if ( pfCombIsoExtractor_ ) {
-            double pfCombIso = (*pfCombIsoExtractor_)(*patElectron, *pfCandidates);
+            double pfCombIso = (*pfCombIsoExtractor_)(*patElectron, *pfCandidates, vertices, beamSpot);
             *outputStream_ << " pfCombIsoSum/pt = " << pfCombIso << "/" << patElectron->pt() 
                 << " = " << pfCombIso/patElectron->pt() << std::endl;
         }
@@ -172,9 +186,7 @@ void PATElectronDump::print(const edm::Event& evt, const edm::EventSetup& es) co
                 << " conv radius = " << convInfo.radiusOfConversion() << std::endl
                 << " Missing exp inner hits = " << nMissExpHits << std::endl;
         }
-
     }
-
     *outputStream_ << std::endl;
 }
 
