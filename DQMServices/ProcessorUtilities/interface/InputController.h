@@ -2,8 +2,7 @@
 #define EVF_INPUTCONTROLLER_H
 
 
-#include "toolbox/lang/Class.h"
-#include "xdata/InfoSpace.h"
+//#include "toolbox/lang/Class.h"
 #include <string>
 
 
@@ -44,7 +43,7 @@ namespace dqmevf
     }
   };
 
-  class InputController : public toolbox::lang::Class
+  class InputController
   {
     public:
       InputController(const std::string &);
