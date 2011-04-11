@@ -7,7 +7,10 @@ Harvest AHtoMu tau plots on LXBATCH
 '''
 
 from TauAnalysis.Configuration.tools.harvestingLXBatch import \
-        make_harvest_scripts, castor_source, crabdir_sources, \
+        make_harvest_scripts
+
+from TauAnalysis.Configuration.tools.harvesting import \
+        castor_source, crabdir_sources, \
         clean_by_crab_id
 
 import TauAnalysis.Configuration.userRegistry as reg
@@ -16,28 +19,7 @@ import glob
 
 channel = 'AHtoMuTau'
 
-#reg.overrideJobId(channel, 'Run35SYS')
-#reg.overrideJobId(channel, 'Run33FR')
-#reg.overrideJobId(channel, 'Run33')
-#reg.overrideJobId(channel, 'Run40')
-#reg.overrideJobId(channel, 'Run37sysTanc')
-#reg.overrideJobId(channel, 'Run37sys')
-#reg.overrideJobId(channel, 'Run39FR')
-#reg.overrideJobId(channel, 'Run44plain')
-#reg.overrideJobId(channel, 'Run44')
-#reg.overrideJobId(channel, 'Run44FR')
-#reg.overrideJobId(channel, 'Run39plain')
-#reg.overrideJobId(channel, 'Run37skimForMike')
-#reg.overrideJobId(channel, 'Run42OldTaNCfinal')
-#reg.overrideJobId(channel, 'Run42OldTaNC')
-#reg.overrideJobId(channel, 'Run45plain')
-#reg.overrideJobId(channel, 'Run45')
-reg.overrideJobId(channel, 'Run39FR')
-#reg.overrideJobId(channel, 'Run45FR')
-
-#for id in ['Run39FRTanc', 'Run39plainTanc', 'Run45FRTanc', 'Run45plainTanc']:
-for id in ['Run39FRTanc']:
-#for id in ['Run45']:
+for id in ['RunSVTestApr04']:
     reg.overrideJobId(channel, id)
     analysisFilePath = reg.getAnalysisFilePath(channel)
     harvestingFilePath = reg.getHarvestingFilePath(channel)
