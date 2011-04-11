@@ -6,36 +6,6 @@ userSettings = {
         'current' : 'Run29',
         # List of runs
         'jobs' : {
-            'Run29' : {
-                'AHtoMuTau' : {
-                    'analysisFilePath' : '/user/s/squires/tau_3_8_7/',
-                    'harvestingFilePath' : "/data2/squires/",
-                    'tmpFilePath' : "/data2/squires/tmp/",
-                    'pickevents' : '/data2/squires/Run29'
-                }
-            },
-            'Run32' : {
-                'AHtoMuTau' : {
-                    # The output directory on castor
-                    'analysisFilePath' : '/user/f/squires/Run32/',
-                    # The output directory for the plots
-                    'harvestingFilePath' : "/data1/squires/",
-                    'tmpFilePath' : "/data2/squires/tmp/",
-                    'pickevents' : '/data1/squires/Run26',
-                }
-            },
-            'Run32onskim' : {
-                'AHtoMuTau' : {
-                    # The output directory on castor
-                    'analysisFilePath' : '/castor/cern.ch/user/f/squires/Run32onskim/',
-                    # The output directory for the plots
-                    'harvestingFilePath' : "/data1/squires/",
-                    'tmpFilePath' : "/data2/squires/tmp/",
-                    'pickevents' : '/castor/cern.ch/user/f/squires/Run32harvest/',
-                    'skimPath' : '/castor/cern.ch/user/f/squires/Run32harvest/',
-                }
-            },
-
         },
         'global' : {
             'drawOptions' : {
@@ -46,199 +16,24 @@ userSettings = {
     },
     'friis' : {
         # The job ID to use per default.
-        'current' : 'Run32onskim',
+        'current' : 'RunSVTestApr01',
         # List of runs
         'jobs' : {
-            'Run31' : {
+            'RunSVTestApr01' : {
                 'AHtoMuTau' : {
-                    'analysisFilePath' : '/user/f/friis/Run31/',
-                    'harvestingFilePath' : "/data1/friis/",
-                    'tmpFilePath' : "/data2/friis/tmp/",
-                    'pickevents' : '/data1/friis/Run26'
+                    'analysisFilePath' : "/castor/cern.ch/user/f/friis/RunSVTestApr01/",
+                    'harvestingFilePath' : "/data2/friis/RunSVTestApr01",
+                    'batchHarvest' : "/castor/cern.ch/user/f/friis/RunSVTestApr01_harvest/"
                 }
             },
-            # Loose skim
-            'Run32' : {
+            'RunSVTestApr04' : {
                 'AHtoMuTau' : {
-                    # The output directory on castor
-                    'analysisFilePath' : '/castor/cern.ch/user/f/friis/Run32/',
-                    #'analysisFilePath' : '/castor/cern.ch/user/f/friis/Run32/',
-                    # The output directory for the plots
-                    'harvestingFilePath' : "/data1/friis/",
-                    'tmpFilePath' : "/data2/friis/tmp/",
-                    # Where to store the harvested histograms on lxbatch
-                    'batchHarvest' : "/castor/cern.ch/user/f/friis/Run32harvest/",
-                }
-            },
-            'Run32onskim' : {
-                'AHtoMuTau' : {
-                    # The output directory on castor
-                    'analysisFilePath' : '/castor/cern.ch/user/f/friis/Run32onskim/',
-                    # The output directory for the plots
-                    'harvestingFilePath' : "/data1/friis/",
-                    'tmpFilePath' : "/data2/friis/tmp/",
-                    'batchHarvest' : '/castor/cern.ch/user/f/friis/Run32onskimTmp/',
-                    # The source that paroduced the skim
-                    'skimSource' : 'Run32',
-                }
-            },
-            'Run33' : {
-                'AHtoMuTau' : {
-                    # The output directory on castor
-                    'analysisFilePath' : '/castor/cern.ch/user/f/friis/Run33/',
-                    # The output directory for the plots
-                    'harvestingFilePath' : "/data1/friis/",
-                    'tmpFilePath' : "/data2/friis/tmp/",
-                    'batchHarvest' :  '/castor/cern.ch/user/f/friis/Run33harvest/',
-                    # The source that paroduced the skim
-                    'skimSource' : 'Run32',
-                }
-            },
-            'Run33FR' : {
-                'AHtoMuTau' : {
-                    # The output directory on castor
-                    'analysisFilePath' : '/castor/cern.ch/user/f/friis/Run33FR/',
-                    # The output directory for the plots
-                    'harvestingFilePath' : "/data1/friis/",
-                    'tmpFilePath' : "/data2/friis/tmp/",
-                    'batchHarvest' :  '/castor/cern.ch/user/f/friis/Run33FRharvest/',
-                    # The source that paroduced the skim
-                    'skimSource' : 'Run32',
-                    # Just for testing
-                    'pickevents' : '/data1/friis/Run26',
-                }
-            },
-            'Run33SYS' : {
-                'AHtoMuTau' : {
-                    # The output directory on castor
-                    'analysisFilePath' : '/castor/cern.ch/user/f/friis/Run33SYS/',
-                    # The output directory for the plots
-                    'harvestingFilePath' : "/data1/friis/",
-                    #'harvestingFilePath' : "/tmp/friis/",
-                    'tmpFilePath' : "/data2/friis/tmp/",
-                    'batchHarvest' : '/castor/cern.ch/user/f/friis/Run33SYSharvest/',
-                    # The job ID of the skim producer
-                    'skimSource' : 'Run32',
-                }
-            },
-            # Another skim, only with Loose TaNC and Muon Iso turned off
-            'Run35' : {
-                'AHtoMuTau' : {
-                    # The output directory on castor
-                    'analysisFilePath' : '/castor/cern.ch/user/f/friis/Run35/',
-                    #'analysisFilePath' : '/castor/cern.ch/user/f/friis/Run32/',
-                    # The output directory for the plots
-                    'harvestingFilePath' : "/data1/friis/",
-                    'tmpFilePath' : "/data2/friis/tmp/",
-                    # Where to store the harvested histograms on lxbatch
-                    'batchHarvest' : "/castor/cern.ch/user/f/friis/Run35harvest/",
-                }
-            },
-            # Rerunning the merging in a separate job
-            'Run35A' : {
-                'AHtoMuTau' : {
-                    # The output directory on castor
-                    'analysisFilePath' : '/castor/cern.ch/user/f/friis/Run35/',
-                    #'analysisFilePath' : '/castor/cern.ch/user/f/friis/Run32/',
-                    # The output directory for the plots
-                    'harvestingFilePath' : "/data1/friis/",
-                    'tmpFilePath' : "/data2/friis/tmp/",
-                    # Where to store the harvested histograms on lxbatch
-                    'batchHarvest' : "/castor/cern.ch/user/f/friis/Run35Aharvest/",
-                }
-            },
-            'Run35SYS' : {
-                'AHtoMuTau' : {
-                    # The output directory on castor
-                    'analysisFilePath' : '/castor/cern.ch/user/f/friis/Run35SYS/',
-                    #'analysisFilePath' : '/castor/cern.ch/user/f/friis/Run32/',
-                    # The output directory for the plots
+                    'analysisFilePath' : "/castor/cern.ch/user/f/friis/RunSVTestApr04/",
                     'harvestingFilePath' : "/data2/friis/",
-                    'tmpFilePath' : "/data2/friis/tmp/",
-                    # Where to store the harvested histograms on lxbatch
-                    'batchHarvest' : "/castor/cern.ch/user/f/friis/Run35SYSharvest/",
-                    'skimSource' : 'Run35',
+                    'batchHarvest' : "/castor/cern.ch/user/f/friis/RunSVTestApr04_harvest/",
+                    'skimSource' : "RunSVTestApr01"
                 }
-            },
-            'Run35SYSloose' : {
-                'AHtoMuTau' : {
-                    # The output directory on castor
-                    'analysisFilePath' : '/castor/cern.ch/user/f/friis/Run35SYSloose/',
-                    #'analysisFilePath' : '/castor/cern.ch/user/f/friis/Run32/',
-                    # The output directory for the plots
-                    'harvestingFilePath' : "/data2/friis/",
-                    'tmpFilePath' : "/data2/friis/tmp/",
-                    # Where to store the harvested histograms on lxbatch
-                    'batchHarvest' : "/castor/cern.ch/user/f/friis/Run35SYSlooseharvest/",
-                    'skimSource' : 'Run35',
-                }
-            },
-            'Run35SYStight' : {
-                'AHtoMuTau' : {
-                    # The output directory on castor
-                    'analysisFilePath' : '/castor/cern.ch/user/f/friis/Run35SYStight/',
-                    #'analysisFilePath' : '/castor/cern.ch/user/f/friis/Run32/',
-                    # The output directory for the plots
-                    'harvestingFilePath' : "/data2/friis/",
-                    'tmpFilePath' : "/data2/friis/tmp/",
-                    # Where to store the harvested histograms on lxbatch
-                    'batchHarvest' : "/castor/cern.ch/user/f/friis/Run35SYStightharvest/",
-                    'skimSource' : 'Run35',
-                }
-            },
-            'Run35test' : {
-                'AHtoMuTau' : {
-                    # The output directory on castor
-                    'analysisFilePath' : '/castor/cern.ch/user/f/friis/Run35test/',
-                    #'analysisFilePath' : '/castor/cern.ch/user/f/friis/Run32/',
-                    # The output directory for the plots
-                    'harvestingFilePath' : "/data2/friis/",
-                    'tmpFilePath' : "/data2/friis/tmp/",
-                    # Where to store the harvested histograms on lxbatch
-                    'batchHarvest' : "/castor/cern.ch/user/f/friis/Run35testharvest/",
-                    'skimSource' : 'Run35',
-                }
-            },
-            # Rerun, with tau ID | or'red with loose and lead track pt off
-            'Run36' : {
-                'AHtoMuTau' : {
-                    # The output directory on castor
-                    'analysisFilePath' : '/castor/cern.ch/user/f/friis/Run36/',
-                    #'analysisFilePath' : '/castor/cern.ch/user/f/friis/Run32/',
-                    # The output directory for the plots
-                    'harvestingFilePath' : "/data2/friis/",
-                    'tmpFilePath' : "/data2/friis/tmp/",
-                    # Where to store the harvested histograms on lxbatch
-                    'batchHarvest' : "/castor/cern.ch/user/f/friis/Run36harvest/",
-                }
-            },
-            # Rerun final?, with MT cut loosened to work with Mike's
-            'Run37' : {
-                'AHtoMuTau' : {
-                    # The output directory on castor
-                    'analysisFilePath' : '/castor/cern.ch/user/f/friis/Run37/',
-                    #'analysisFilePath' : '/castor/cern.ch/user/f/friis/Run32/',
-                    # The output directory for the plots
-                    'harvestingFilePath' : "/data2/friis/",
-                    'tmpFilePath' : "/data2/friis/tmp/",
-                    # Where to store the harvested histograms on lxbatch
-                    'batchHarvest' : "/castor/cern.ch/user/f/friis/Run37harvest/",
-                }
-            },
-            # Run with final? analysis cuts, but with tau ID turned off for fake
-            # rate.
-            'Run39' : {
-                'AHtoMuTau' : {
-                    # The output directory on castor
-                    'analysisFilePath' : '/castor/cern.ch/user/f/friis/Run39/',
-                    #'analysisFilePath' : '/castor/cern.ch/user/f/friis/Run32/',
-                    # The output directory for the plots
-                    'harvestingFilePath' : "/data2/friis/",
-                    'tmpFilePath' : "/data2/friis/tmp/",
-                    # Where to store the harvested histograms on lxbatch
-                    'batchHarvest' : "/castor/cern.ch/user/f/friis/Run39harvest/",
-                }
-            },
+            }
         },
         'global' : {
             'drawOptions' : {
@@ -266,8 +61,28 @@ userSettings = {
                     'analysisFilePath' : "/castor/cern.ch/user/v/veelken/CMSSW_4_1_x/skims/TauIdEffMeas/",
                     'harvestingFilePath' : "/data2/veelken/CMSSW_4_1_x/skims/ZtoMuTau_tauIdEff/",
                     'tmpFilePath' : "/data1/veelken/tmp/ZtoMuTau_tauIdEff/",
-                    # Directory containing selected events
-                    'pickevents' : "/castor/cern.ch/user/v/veelken/CMSSW_4_1_x/skims/TauIdEffMeas/"
+                     # Directory containing selected events
+                    'pickevents' : '/castor/cern.ch/user/v/veelken/CMSSW_3_8_x/skims/harvesting/',
+                    'batchHarvest' : "/castor/cern.ch/user/v/veelken/CMSSW_3_8_x/skims/harvesting/"
+                }
+            },
+            '2011Feb01_HPSloose' : {
+                'ZtoMuTau' : {
+                    'analysisFilePath' : "/user/v/veelken/CMSSW_3_8_x/plots/ZtoMuTau/",
+                    'harvestingFilePath' : "/data1/veelken/CMSSW_3_8_x/plots/ZtoMuTau/",
+                    'tmpFilePath' : "/data2/veelken/tmp/ZtoMuTau/",
+                    'jobId' : "2011Feb01_HPSloose",
+                    'batchHarvest' : "/castor/cern.ch/user/v/veelken/CMSSW_3_8_x/skims/harvesting/ZtoMuTau/2011Feb01_HPSloose"
+                },
+            },
+            '2011Jan30' : {
+                'ZtoMuTau_tauIdEff' : {
+                    'analysisFilePath' : "/castor/cern.ch/user/v/veelken/CMSSW_3_8_x/skims/TauIdEffMeas/",
+                    'harvestingFilePath' : "/data1/veelken/CMSSW_3_8_x/skims/ZtoMuTau_tauIdEff/",
+                    'tmpFilePath' : "/data1/veelken/tmp/ZtoMuTau_tauIdEff/",
+                     # Directory containing selected events
+                    'pickevents' : '/castor/cern.ch/user/v/veelken/CMSSW_3_8_x/skims/harvesting/',
+                    'batchHarvest' : "/castor/cern.ch/user/v/veelken/CMSSW_3_8_x/skims/harvesting/"
                 }
             },
             '2011Apr05_HPSloose' : {
@@ -351,7 +166,7 @@ userSettings = {
                     'tmpFilePath' : "/data/ndpc0/c/jkolb/TauResults/tmp/"
                 }
             },
-			# fall10 MC with PU, 2010 dataset (36/pb);  same as Run07, 
+			# fall10 MC with PU, 2010 dataset (36/pb);  same as Run07,
 			# with no DOCA, deltaCotTheta conversion cuts, but keep missingInnerHits cut
             'Run11' : {
                 'ZtoElecTau' : {
@@ -532,11 +347,11 @@ userSettings = {
                     'tmpFilePath' : "/tmp/lusito/CMSSW_3_8_x/plots15feb/ZtoMuTau_bgEstTemplate/",
                      # Directory containing selected events
                     #'pickevents' : '/castor/cern.ch/user/f/friis/fixme_delete/'
-                } 
-            } 
+                }
+            }
           }
         }
-    
+
     }
 
 def mine():
