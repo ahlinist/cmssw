@@ -72,7 +72,7 @@ class VGammaPhotonSelector : public Selector<pat::Photon> {
 	     const double& maxEta
 	     );
 
-    void Fsr2011Apr11Init(
+    void init_Fsr2011Apr11(
       // 1. maximum super cluster pseudo-rapidity absolute value
       const double& maxAbsEtaSC,
       // 2. exclude EB EE transition region |eta| in [1.4442, 1.566]
@@ -83,7 +83,10 @@ class VGammaPhotonSelector : public Selector<pat::Photon> {
       const bool& excludeWeirdSeverity,
       // 5. super cluster seed severity level != EcalSeverityLevelAlgo::kBad=5
       const bool& excludeBadSeverity,
-      // 6. minimum transverse momentum
+      // 6. maximum ecal isolation = const + slope * pt
+      const double& ecalIsoConst,
+      const double& ecalIsoSlope,
+      // 7. minimum transverse momentum
       const double& minPt
     );
 

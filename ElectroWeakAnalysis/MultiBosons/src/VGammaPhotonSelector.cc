@@ -44,7 +44,7 @@ VGammaPhotonSelector::VGammaPhotonSelector( const edm::ParameterSet& conf ) {
           );
       break;
     case Fsr2011Apr11:
-      Fsr2011Apr11Init(
+      init_Fsr2011Apr11(
         // 1. maximum super cluster pseudo-rapidity absolute value
         conf.getParameter<double>("maxAbsEtaSC"),
         // 2. exclude EB EE transition region |eta| in [1.4442, 1.566]
@@ -55,7 +55,10 @@ VGammaPhotonSelector::VGammaPhotonSelector( const edm::ParameterSet& conf ) {
         int( conf.getParameter<bool>("excludeWeirdSeverity") ? 1 : 0),
         // 5. super cluster seed severity level != EcalSeverityLevelAlgo::kBad=5
         int( conf.getParameter<bool>("excludeBadSeverity") ? 1 : 0),
-        // 6. minimum transverse momentum
+        // 6. maximum ecal isolation = const + slope * pt
+        conf.getParameter<double>("ecalIsoConst"),
+        conf.getParameter<double>("ecalIsoSlope"),
+        // 7. minimum transverse momentum
         conf.getParameter<double>("minPt")
       );
       break;
@@ -65,7 +68,7 @@ VGammaPhotonSelector::VGammaPhotonSelector( const edm::ParameterSet& conf ) {
         << "This should have been thrown previously!!!" << std::endl;
   } // end of switch(version_)
 
-  if( conf.exists("cutToIgnore") )
+  if( conf.exists("cutsToIgnore") )
     setIgnoredCuts( conf.getParameter<std::vector<std::string> >("cutsToIgnore") );
 
   retInternal_ = getBitTemplate();
@@ -142,7 +145,7 @@ void VGammaPhotonSelector::init(/*const version& v,*/
 }
 
 
-void VGammaPhotonSelector::Fsr2011Apr11Init(
+void VGammaPhotonSelector::init_Fsr2011Apr11(
       // 1. maximum super cluster pseudo-rapidity absolute value
       const double& maxAbsEtaSC,
       // 2. exclude EB EE transition region |eta| in [1.4442, 1.566]
@@ -153,15 +156,22 @@ void VGammaPhotonSelector::Fsr2011Apr11Init(
       const bool& excludeWeirdSeverity,
       // 5. super cluster seed severity level != EcalSeverityLevelAlgo::kBad=5
       const bool& excludeBadSeverity,
-      // 6. minimum transverse momentum
+      // 6. maximum ecal isolation < const + slope * pt
+      const double& ecalIsoConst,
+      const double& ecalIsoSlope,
+      // 7. minimum transverse momentum
       const double& minPt
 ) {
+  barJurECALIsoConst_ = endJurECALIsoConst_ = ecalIsoConst;
+  barJurECALIsoSlope_ = endJurECALIsoSlope_ = ecalIsoSlope;
+
   push_back("inclusive");
   push_back("maxAbsEtaSC", maxAbsEtaSC);
   push_back("excludeEBEEGap", excludeEBEEGap);
   push_back("excludeOutOfTimeReco", excludeOutOfTimeReco);
   push_back("excludeWeirdSeverity", excludeWeirdSeverity);
   push_back("excludeBadSeverity", excludeBadSeverity);
+  push_back("ecalIsolation");
   push_back("minPt", minPt);
 
   set("inclusive");
@@ -170,26 +180,9 @@ void VGammaPhotonSelector::Fsr2011Apr11Init(
   set("excludeOutOfTimeReco");
   set("excludeWeirdSeverity");
   set("excludeBadSeverity");
+  set("ecalIsolation");
   set("minPt");
-} // end of VGammaPhotonSelector::Fsr2011Apr11Init(...)
-
-// bool VGammaPhotonSelector::operator()( const pat::Photon & pho,
-// 				       edm::EventBase const & evt,
-// 				       pat::strbitset & ret ) {
-//   switch (version_) {
-//   case Jul022010:
-//     return Jul022010Cuts(pho, ret);
-//     break;
-//   case Jul022010_poter:
-//     return Jul022010_poterCuts(pho, ret);
-//     break;
-//   case Jul022010_poterrel:
-//     return Jul022010_poterrelCuts(pho, ret);
-//   default:
-//     break;
-//   }
-//   return false;
-// }
+} // end of VGammaPhotonSelector::init_Fsr2011Apr11(...)
 
 bool VGammaPhotonSelector::operator()( const pat::Photon & pho,
 				       pat::strbitset &  ret) {
@@ -336,14 +329,12 @@ bool VGammaPhotonSelector::Fsr2011Apr11Cuts( const pat::Photon& photon,
 
   // 1. maximum super cluster pseudo-rapidity absolute value
   double scEta = photon.superCluster()->eta();
-  if (fabs(scEta) < cut("maxAbsEtaSC", double()) ||
-      ignoreCut("maxAbsEtaSC")
-      )
+  if (fabs(scEta) < cut("maxAbsEtaSC", double()) || ignoreCut("maxAbsEtaSC") )
     passCut(ret, "maxAbsEtaSC");
   else return false;
 
   // 2. exclude EB EE transition region |eta| in [1.4442, 1.566]
-  if ( fabs(scEta) < 1.4442 || 1.566 < fabs(scEta) ||
+  if (fabs(scEta) < 1.4442 || 1.566 < fabs(scEta) ||
       cut("excludeEBEEGap", int()) == 0 ||
       ignoreCut("excludeEBEEGap")
       )
@@ -371,14 +362,21 @@ bool VGammaPhotonSelector::Fsr2011Apr11Cuts( const pat::Photon& photon,
   // 5. super cluster seed severity level != EcalSeverityLevelAlgo::kBad=5
   if (sLevel != EcalSeverityLevelAlgo::kBad ||
       cut("excludeBadSeverity", int()) == 0 ||
-      ignoreCut("excludeBadSeverity")
+      ignoreCut("excludeBadSeverity") 
       )
     passCut(ret, "excludeBadSeverity");
   else return false;
 
-  // 6. minimum transverse momentum
-  if (photon.pt() > cut("minPt", double()) ||
-      ignoreCut("minPt") )
+  // 6. maximum ecal isolation = const + slope * pt
+  double maxEcalIso = barJurECALIsoConst_ + barJurECALIsoSlope_ * photon.pt();
+  if (photon.pt() > cut("ecalIsolation", double()) ||
+      ignoreCut("ecalIsolation")
+      )
+    passCut(ret, "ecalIsolation");
+  else return false;
+
+  // 7. minimum transverse momentum
+  if (photon.pt() > cut("minPt", double()) || ignoreCut("minPt") )
     passCut(ret, "minPt");
   else return false;
 
