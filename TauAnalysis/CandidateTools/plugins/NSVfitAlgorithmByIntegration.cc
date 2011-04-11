@@ -21,11 +21,11 @@ namespace
   {
     double nll = NSVfitAlgorithmBase::gNSVfitAlgorithm->nll(x, (const double*)param);
     double retVal = TMath::Exp(-nll);
-    static long callCounter = 0;
+    //static long callCounter = 0;
     //if ( (callCounter % 10000) == 0 ) 
     //  std::cout << "<g> (call = " << callCounter << "):" 
     //	        << " nll = " << nll << " --> returning retVal = " << retVal << std::endl;
-    ++callCounter;
+    //++callCounter;
     return retVal;
   }
 }
