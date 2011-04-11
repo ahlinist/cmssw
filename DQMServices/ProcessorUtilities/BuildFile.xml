@@ -1,5 +1,6 @@
+<use   name="DQMServices/Core"/>
 <use   name="FWCore/ServiceRegistry"/>
-<use   name="xdaq"/>
+<use   name="curl"/>
 <export>
   <lib   name="1"/>
 </export>
