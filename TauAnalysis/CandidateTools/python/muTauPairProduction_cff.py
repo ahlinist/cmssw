@@ -117,9 +117,9 @@ allMuTauPairs = cms.EDProducer("PATMuTauPairProducer",
         ##        numSamplings = cms.int32(-1)
         ##    )
     ),
-    nSVfit = cms.PSet(                               
-        psKine_MEt_ptBalance = cms.PSet(
-            config    = nSVfitConfig,
+    nSVfit = cms.PSet(
+        psKine_MEt_pow10ptBalance_int = cms.PSet(
+            config    =  nSVfitConfig,
             algorithm = cms.PSet(
                 pluginName = cms.string("nSVfitAlgorithmByIntegration"),
                 pluginType = cms.string("NSVfitAlgorithmByIntegration"),                                    
@@ -137,10 +137,40 @@ allMuTauPairs = cms.EDProducer("PATMuTauPairProducer",
                     numCalls = cms.uint32(10000)                             
                 )
             )
-        )                           
-    ),
+        )
+    ),                           
     scaleFuncImprovedCollinearApprox = cms.string('1'),
     verbosity = cms.untracked.int32(0)
+)
+
+allMuTauPairs.nSVfit.psKine_MEt_pow05ptBalance_int = copy.deepcopy(allMuTauPairs.nSVfit.psKine_MEt_pow10ptBalance_int)
+allMuTauPairs.nSVfit.psKine_MEt_pow05ptBalance_int.config.event.resonances.A.likelihoodFunctions = cms.VPSet(
+    nSVfitResonanceLikelihoodPtBalance.clone(
+        power = cms.double(0.5)                         
+    )
+)
+allMuTauPairs.nSVfit.psKine_MEt_pow15ptBalance_int = copy.deepcopy(allMuTauPairs.nSVfit.psKine_MEt_pow10ptBalance_int)
+allMuTauPairs.nSVfit.psKine_MEt_pow15ptBalance_int.config.event.resonances.A.likelihoodFunctions = cms.VPSet(
+    nSVfitResonanceLikelihoodPtBalance.clone(
+        power = cms.double(1.5)                         
+    )
+)
+allMuTauPairs.nSVfit.psKine_MEt_pow20ptBalance_int = copy.deepcopy(allMuTauPairs.nSVfit.psKine_MEt_pow10ptBalance_int)
+allMuTauPairs.nSVfit.psKine_MEt_pow20ptBalance_int.config.event.resonances.A.likelihoodFunctions = cms.VPSet(
+    nSVfitResonanceLikelihoodPtBalance.clone(
+        power = cms.double(2.0)                         
+    )
+)
+
+allMuTauPairs.nSVfit.psKine_MEt_pow10ptBalance_fit = copy.deepcopy(allMuTauPairs.nSVfit.psKine_MEt_pow10ptBalance_int)
+allMuTauPairs.nSVfit.psKine_MEt_pow10ptBalance_fit.algorithm = cms.PSet(
+    pluginName = cms.string("nSVfitAlgorithmByLikelihoodMaximization"),
+    pluginType = cms.string("NSVfitAlgorithmByLikelihoodMaximization"),                                    
+    minimizer  = cms.vstring("Minuit2", "Migrad"),
+    #minimizer  = cms.vstring("GSLMultiMin", "conjugatefr"),
+    #minimizer  = cms.vstring("GSLMultiMin", "SteepestDescent"),
+    maxObjFunctionCalls_ = cms.uint32(5000),  
+    verbosity = cms.int32(1)
 )
 
 ##allMuTauPairs.nSVfit.psKine_MEt_Track_ptBalance = copy.deepcopy(allMuTauPairs.nSVfit.psKine_MEt_ptBalance)

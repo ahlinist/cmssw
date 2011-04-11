@@ -42,12 +42,13 @@ NSVfitAlgorithmByLikelihoodMaximization::~NSVfitAlgorithmByLikelihoodMaximizatio
 
 void NSVfitAlgorithmByLikelihoodMaximization::fitImp() const
 {
-  //std::cout << "<NSVfitAlgorithmByLikelihoodMaximization::fitImp>:" << std::endl;
+  std::cout << "<NSVfitAlgorithmByLikelihoodMaximization::fitImp>:" << std::endl;
+  std::cout << " #fitParameter = " << fitParameters_.size() << std::endl;
+
+  minimizer_->Clear();
 
   minimizer_->SetPrintLevel(3);
   // Make sure the variables are sorted by index 
-  std::sort(fitParameters_.begin(), fitParameters_.end());  
-  minimizer_->SetVariables(fitParameters_.begin(), fitParameters_.end());
   ROOT::Math::Functor toMinimize(objectiveFunctionAdapter_, fitParameters_.size());
   minimizer_->SetFunction(toMinimize);
   minimizer_->SetMaxFunctionCalls(maxObjFunctionCalls_);
@@ -60,8 +61,6 @@ void NSVfitAlgorithmByLikelihoodMaximization::fitImp() const
 //   (objective function is log-likelihood function)
   minimizer_->SetErrorDef(0.5); 
 
-  idxObjFunctionCall_ = 0;
-
 //--- disable fitParameter limits for azimuthal angles ("cyclic" variables)
 //    by setting upper and lower limits to "non-a-number" (NaN)
   idxFitParametersPhi_.clear();
@@ -71,20 +70,32 @@ void NSVfitAlgorithmByLikelihoodMaximization::fitImp() const
     if ( fitParameterType == nSVfit_namespace::kTau_phi_lab   ||
 	 fitParameterType == nSVfit_namespace::kTauVM_phi_a1r ||
 	 fitParameterType == nSVfit_namespace::kNu_phi_lab    ) { 
-      double limit_disabled = std::numeric_limits<double>::quiet_NaN(); // CMSSSW_4_1_x version
-      //double limit_disabled = TMath::QuietNaN();                      // CMSSSW_4_2_x version
+      double limit_disabled = std::numeric_limits<float>::quiet_NaN(); // CMSSSW_4_1_x version
+      //double limit_disabled = TMath::QuietNaN();                     // CMSSSW_4_2_x version
       fitParameter->setLowerLimit(limit_disabled);
       fitParameter->setUpperLimit(limit_disabled);
       idxFitParametersPhi_.push_back(fitParameter->index());
     }
+
+    fitParameter->reset();
+
+    fitParameter->dump(std::cout);
   }
   
+  std::sort(fitParameters_.begin(), fitParameters_.end());  
+  minimizer_->SetVariables(fitParameters_.begin(), fitParameters_.end());
+
+  idxObjFunctionCall_ = 0;
+
+  std::cout << "--> starting ROOT::Math::Minimizer::Minimize..." << std::endl;
+  std::cout << " #freeParameters = " << minimizer_->NFree() << "," 
+	    << " #constrainedParameters = " << (minimizer_->NDim() - minimizer_->NFree()) << std::endl;
   minimizer_->Minimize();
   minimizer_->PrintResults();
-
+std::cout << "break-point 1 reached" << std::endl;
 //--- set best-fit parameters in event, resonance and particle hypotheses
   eventModel_->builder_->applyFitParameter(currentEventHypothesis_, minimizer_->X());
-
+std::cout << "break-point 2 reached" << std::endl;
 //--- get Minimizer status code, check if solution is valid:
 //
 //    1: Covariance matrix was made positive definite
@@ -93,12 +104,16 @@ void NSVfitAlgorithmByLikelihoodMaximization::fitImp() const
 //    4: Reached maximum number of function calls before reaching convergence
 //    5: Any other failure
 //
+std::cout << "break-point 3 reached" << std::endl;
   int fitStatus = minimizer_->Status();
   bool isValidSolution = (fitStatus == 0);
   for ( edm::OwnVector<NSVfitResonanceHypothesis>::iterator resonanceHypothesis = currentEventHypothesis_->resonances_.begin();
 	resonanceHypothesis != currentEventHypothesis_->resonances_.end(); ++resonanceHypothesis ) {
+std::cout << "break-point 4 reached" << std::endl;
     resonanceHypothesis->isValidSolution_ = isValidSolution;
+std::cout << "break-point 5 reached" << std::endl;
   }
+std::cout << "break-point 6 reached" << std::endl;
 }
 
 double NSVfitAlgorithmByLikelihoodMaximization::nll(const double* x, const double* param) const
