@@ -262,7 +262,7 @@ def enableFactorization_runZtoMuTau(process):
 def enableFactorization_makeZtoMuTauPlots_grid2(
     process,
     factorizationSequenceName = "loadAndFactorizeZtoMuTauSamples",
-    samplesToFactorize = [ 'InclusivePPmuX', 'PPmuXptGt20Mu10', 'PPmuXptGt20Mu15' ],
+    samplesToFactorize = [ 'PPmuXptGt20Mu15' ],
     relevantMergedSamples = [ 'qcdSum', 'smBgSum', 'smSum' ],
     mergedToRecoSampleDict = {},
     mergedSampleAdderModule = lambda sample: 'addZtoMuTau_%s' % (sample)):
@@ -304,7 +304,8 @@ def enableFactorization_makeZtoMuTauPlots_grid2(
         'evtSelPrimaryEventVertexPositionForMuTau',
         'evtSelDiTauCandidateForMuTauMt1MET',
         'evtSelDiTauCandidateForMuTauPzetaDiff',
-        'evtSelDiMuPairZmumuHypothesisVetoByLooseIsolation'
+        'evtSelDiMuPairZmumuHypothesisVetoByLooseIsolation',
+        'evtSelDiMuPairDYmumuHypothesisVeto'
     ]
 
     evtSelZtoMuTau_factorizedLooseOS = evtSelZtoMuTau_factorizedLoose \
@@ -1094,6 +1095,7 @@ def enableFactorization_makeAHtoMuTauPlots_grid2(
         'evtSelDiTauCandidateForAHtoMuTauMt1MET',
         'evtSelDiTauCandidateForAHtoMuTauPzetaDiff',
         'evtSelDiMuPairZmumuHypothesisVetoByLooseIsolation',
+        'evtSelDiMuPairDYmumuHypothesisVeto'
     ]
 
     loose_cuts_woBtag = loose_cuts_base \
@@ -1252,7 +1254,8 @@ def enableFactorization_makeAHtoMuTauPlots_grid(
         process.evtSelPrimaryEventVertexPositionForMuTau,
         process.evtSelDiTauCandidateForAHtoMuTauMt1MET,
         process.evtSelDiTauCandidateForAHtoMuTauPzetaDiff,
-        process.evtSelDiMuPairZmumuHypothesisVetoByLooseIsolation
+        process.evtSelDiMuPairZmumuHypothesisVetoByLooseIsolation,
+        process.evtSelDiMuPairDYmumuHypothesisVeto
     ]
 
     # Make specialized cases for the w/ w/o btag cases
