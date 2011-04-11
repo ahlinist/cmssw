@@ -12,7 +12,7 @@ from TauAnalysis.Skimming.goldenZmmSelectionVBTFnoMuonIsolation_cfi import *
 
 goodMuonsBgEstZbbEnriched = goodMuons.clone(
     filter = cms.bool(False)
-)    
+)
 
 goodIsoMuonsBgEstZbbEnriched = goodIsoMuons.clone(
     chargedHadronIso = goodIsoMuons.chargedHadronIso.clone(
@@ -35,8 +35,8 @@ goodIsoMuPlusBgEstZbbEnriched = cms.EDFilter("PATMuonSelector",
 )
 
 goodIsoMuMinusBgEstZbbEnriched = goodIsoMuPlusBgEstZbbEnriched.clone(
-    cut = cms.string('charge < -0.5'),  
-)    
+    cut = cms.string('charge < -0.5'),
+)
 
 
 selectMuonsBgEstZbbEnriched = cms.Sequence(
@@ -46,23 +46,23 @@ selectMuonsBgEstZbbEnriched = cms.Sequence(
 
 goldenZmumuCandidatesBgEstZbbEnriched = goldenZmumuCandidatesGe2IsoMuons.clone(
     decay = cms.string("goodIsoMuonsBgEstZbbEnriched@+ goodIsoMuonsBgEstZbbEnriched@-")
-)    
-    
+)
+
 selectDiMuPairsBgEstZbbEnriched = cms.Sequence(goldenZmumuCandidatesBgEstZbbEnriched)
 
-#--------------------------------------------------------------------------------  
+#--------------------------------------------------------------------------------
 # produce collection of pat::Jets used for central jet veto
 # (in order to reject QCD di-jet events)
 #--------------------------------------------------------------------------------
 
 jetsBgEstZbbEnrichedAntiOverlapWithLeptonsVeto = cms.EDFilter("PATJetAntiOverlapSelector",
-    src = cms.InputTag("patJets"),                                                                  
+    src = cms.InputTag("patJets"),
     srcNotToBeFiltered = cms.VInputTag(
         "selectedPatElectronsTrkCumulative",
         "goodIsoMuonsBgEstZbbEnriched"
     ),
     dRmin = cms.double(0.7),
-    filter = cms.bool(False)                                           
+    filter = cms.bool(False)
 )
 
 jetsBgEstZbbEnrichedEta24 = cms.EDFilter("PATJetSelector",
@@ -89,7 +89,7 @@ selectJetsBgEstZbbEnriched = cms.Sequence(
    + jetsBgEstZbbEnrichedEt20bTag
 )
 
-#--------------------------------------------------------------------------------  
+#--------------------------------------------------------------------------------
 # produce boolean event selection flags
 #--------------------------------------------------------------------------------
 
@@ -105,7 +105,7 @@ cfgGoodIsoMuPlusBgEstZbbEnriched = cms.PSet(
 cfgGoodIsoMuMinusBgEstZbbEnriched = cfgGoodIsoMuPlusBgEstZbbEnriched.clone(
     pluginName = cms.string('goodIsoMuMinusBgEstZbbEnriched'),
     src = cms.InputTag('goodIsoMuMinusBgEstZbbEnriched')
-)    
+)
 
 cfgGoldenZmumuCandidatesBgEstZbbEnriched = cms.PSet(
     pluginName = cms.string('goldenZmumuCandidatesBgEstZbbEnriched'),
@@ -124,17 +124,17 @@ cfgJetsBgEstZbbEnrichedAntiOverlapWithLeptonsVeto = cms.PSet(
 cfgJetsBgEstZbbEnrichedEta24 = cfgJetsBgEstZbbEnrichedAntiOverlapWithLeptonsVeto.clone(
     pluginName = cms.string('jetsBgEstZbbEnrichedEta24'),
     src = cms.InputTag('jetsBgEstZbbEnrichedEta24')
-)    
+)
 
 cfgJetsBgEstZbbEnrichedEt20 = cfgJetsBgEstZbbEnrichedAntiOverlapWithLeptonsVeto.clone(
     pluginName = cms.string('jetsBgEstZbbEnrichedEt20'),
     src = cms.InputTag('jetsBgEstZbbEnrichedEt20')
-)    
+)
 
 cfgJetsBgEstZbbEnrichedEt20bTag = cfgJetsBgEstZbbEnrichedAntiOverlapWithLeptonsVeto.clone(
     pluginName = cms.string('jetsBgEstZbbEnrichedEt20bTag'),
     src = cms.InputTag('jetsBgEstZbbEnrichedEt20bTag')
-)    
+)
 
 evtSelConfiguratorBgEstZbbEnriched = eventSelFlagProdConfigurator(
     [ cfgGoodIsoMuPlusBgEstZbbEnriched,
@@ -150,7 +150,7 @@ evtSelConfiguratorBgEstZbbEnriched = eventSelFlagProdConfigurator(
 
 selectEventsBgEstZbbEnriched = evtSelConfiguratorBgEstZbbEnriched.configure()
 
-#--------------------------------------------------------------------------------  
+#--------------------------------------------------------------------------------
 # apply event selection criteria; fill histograms
 #--------------------------------------------------------------------------------
 
@@ -180,19 +180,19 @@ jetHistManagerBgEstZbbEnriched = cms.PSet(
 
 dataBinnerBgEstZbbEnriched = dataBinner.clone(
     pluginName = cms.string('dataBinnerBgEstZbbEnriched')
-)    
+)
 
 analyzeEventsBgEstZbbEnriched = cms.EDAnalyzer("GenericAnalyzer",
-  
-    name = cms.string('BgEstTemplateAnalyzer_ZmumuJetMisIdEnriched'), 
-                            
+
+    name = cms.string('BgEstTemplateAnalyzer_ZmumuJetMisIdEnriched'),
+
     filters = cms.VPSet(
         evtSelGenPhaseSpace,
         evtSelTrigger,
         evtSelDataQuality,
-        evtSelPrimaryEventVertex,
-        evtSelPrimaryEventVertexQuality,
-        evtSelPrimaryEventVertexPosition,
+        evtSelPrimaryEventVertexForMuTau,
+        evtSelPrimaryEventVertexQualityForMuTau,
+        evtSelPrimaryEventVertexPositionForMuTau,
         cms.PSet(
             pluginName = cms.string('goodIsoMuPlusBgEstZbbEnriched'),
             pluginType = cms.string('BoolEventSelector'),
@@ -212,7 +212,7 @@ analyzeEventsBgEstZbbEnriched = cms.EDAnalyzer("GenericAnalyzer",
             pluginName = cms.string('jetsBgEstZbbEnrichedAntiOverlapWithLeptonsVeto'),
             pluginType = cms.string('BoolEventSelector'),
             src = cms.InputTag('jetsBgEstZbbEnrichedAntiOverlapWithLeptonsVeto')
-        ),                                                     
+        ),
         cms.PSet(
             pluginName = cms.string('jetsBgEstZbbEnrichedEta24'),
             pluginType = cms.string('BoolEventSelector'),
@@ -227,23 +227,23 @@ analyzeEventsBgEstZbbEnriched = cms.EDAnalyzer("GenericAnalyzer",
             pluginName = cms.string('jetsBgEstZbbEnrichedEt20bTag'),
             pluginType = cms.string('BoolEventSelector'),
             src = cms.InputTag('jetsBgEstZbbEnrichedEt20bTag')
-        )        
+        )
     ),
-  
+
     analyzers = cms.VPSet(
         muPlusHistManagerBgEstZbbEnriched,
         muMinusHistManagerBgEstZbbEnriched,
         diMuPairHistManager,
         jetHistManagerBgEstZbbEnriched,
         caloMEtHistManager,
-	pfMEtHistManager,                                                                             
+	pfMEtHistManager,
         dataBinnerBgEstZbbEnriched
     ),
 
     eventDumps = cms.VPSet(),
-   
+
     analysisSequence = cms.VPSet(
-    
+
         # generator level phase-space selection
         # (NOTE: (1) to be used in case of Monte Carlo samples
         #            overlapping in simulated phase-space only !!
@@ -282,7 +282,7 @@ analyzeEventsBgEstZbbEnriched = cms.EDAnalyzer("GenericAnalyzer",
             filter = cms.string('goodIsoMuMinusBgEstZbbEnriched'),
             title = cms.string('good iso. Muon-')
         ),
-        cms.PSet(                                                     
+        cms.PSet(
             filter = cms.string('goldenZmumuCandidatesBgEstZbbEnriched'),
             title = cms.string('60 < M (Muon-Pair) < 120 GeV')
         ),
@@ -292,8 +292,8 @@ analyzeEventsBgEstZbbEnriched = cms.EDAnalyzer("GenericAnalyzer",
                 'muMinusHistManagerBgEstZbbEnriched',
                 'diMuPairHistManager',
                 'jetHistManagerBgEstZbbEnriched'
-            )                                                     
-        ),                                                     
+            )
+        ),
         cms.PSet(
             filter = cms.string('jetsBgEstZbbEnrichedEt20'),
             title = cms.string('one E_{T} > 20 GeV Jet')
@@ -314,14 +314,14 @@ analyzeEventsBgEstZbbEnriched = cms.EDAnalyzer("GenericAnalyzer",
             ),
             replace = cms.vstring(
                 'jetHistManagerBgEstZbbEnriched.jetSource = jetsBgEstZbbEnrichedEt20bTag'
-            )                                                     
+            )
         )
     )
 )
 
 analysisSequenceBgEstZbbEnriched = cms.Sequence(analyzeEventsBgEstZbbEnriched)
 
-#--------------------------------------------------------------------------------  
+#--------------------------------------------------------------------------------
 # define (final) analysis sequence
 #--------------------------------------------------------------------------------
 
