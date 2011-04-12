@@ -152,7 +152,7 @@ xoap::MessageReference StateMachine::commandCallback(xoap::MessageReference msg)
     return reply;
   }
   catch (toolbox::fsm::exception::Exception & e) {
-    XCEPT_RETHROW(xoap::exception::Exception,"invalid command.",e);
+    XCEPT_RETHROW(xoap::exception::Exception,std::string("invalid command.")+e.what(),e);
   }	
 }
 
