@@ -9,13 +9,13 @@
 
 namespace nSVfit_namespace
 {
-  enum fitParameter { 
+  enum fitParameter {
     // fit parameters related to shifts of primary event vertex
     kPV_shiftX, kPV_shiftY, kPV_shiftZ,
     // fit parameters specific to tau decays
-    kTau_visEnFracX, kTau_phi_lab, kTau_decayDistance_lab, kTau_nuInvMass, kTau_pol, 
-    kTauVM_theta_rho, kTauVM_mass2_rho, 
-    kTauVM_theta_a1, kTauVM_theta_a1r, kTauVM_phi_a1r, kTauVM_mass2_a1, 
+    kTau_visEnFracX, kTau_phi_lab, kTau_decayDistance_lab, kTau_nuInvMass, kTau_pol,
+    kTauVM_theta_rho, kTauVM_mass2_rho,
+    kTauVM_theta_a1, kTauVM_theta_a1r, kTauVM_phi_a1r, kTauVM_mass2_a1,
     // fit parameters specific to electrons, muons not originating from tau decays
     kLep_shiftEn,
     // fit parameters specific to neutrinos (not originating from tau decays)
@@ -27,7 +27,9 @@ namespace ROOT { namespace Math {
   class Minimizer;
 }}
 
-class NSVfitParameter 
+std::string get_name_incl_type(const std::string&, int);
+
+class NSVfitParameter
 {
  public:
   NSVfitParameter(int, const std::string&, int, double, double, double, double, bool = false);
@@ -40,10 +42,12 @@ class NSVfitParameter
   void setStepSize(double stepSize) { stepSize_ = stepSize; }
   void setLowerLimit(double lowerLimit) { lowerLimit_ = lowerLimit; }
   void setUpperLimit(double upperLimit) { upperLimit_ = upperLimit; }
-  
+
   void reset() { value_ = initialValue_; }
 
   const std::string& Name() const { return name_; }
+  std::string UniqueName() const { return get_name_incl_type(Name(), Type()); }
+
   int Type() const { return type_; }
   double Value() const { return value_; }
   double StepSize() const { return stepSize_; }
@@ -62,7 +66,7 @@ class NSVfitParameter
 
   // Add predicate to sort by index, to ensure the variables get added
   // correctly.
-  bool operator<(const NSVfitParameter& other) const 
+  bool operator<(const NSVfitParameter& other) const
   {
     return index() < other.index();
   }
@@ -73,7 +77,7 @@ class NSVfitParameter
  protected:
   static void initializeDefaultValues();
   static std::vector<double> defaultInitialValues_;
-  typedef std::pair<double, double> pdouble; 
+  typedef std::pair<double, double> pdouble;
   static std::vector<pdouble> defaultLimits_;
   static std::vector<double> defaultStepSizes_;
   static bool defaultValues_initialized_;
@@ -94,8 +98,7 @@ class NSVfitParameter
   std::vector<std::string> usedBy_; // list of SingleParticle likelihoods depending on this fitParameter
 };
 
-std::ostream& operator<<(std::ostream&, const NSVfitParameter&); 
+std::ostream& operator<<(std::ostream&, const NSVfitParameter&);
 
-std::string get_name_incl_type(const std::string&, int);
 
 #endif
