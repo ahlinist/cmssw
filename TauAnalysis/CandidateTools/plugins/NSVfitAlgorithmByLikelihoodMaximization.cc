@@ -30,12 +30,12 @@ NSVfitAlgorithmByLikelihoodMaximization::NSVfitAlgorithmByLikelihoodMaximization
       << " Configuration parameter 'minimizer' has invalid format !!\n";
   }
   minimizer_ = ROOT::Math::Factory::CreateMinimizer(minimizer_vstring[0], minimizer_vstring[1]);
-  
+
   maxObjFunctionCalls_ = ( cfg.exists("maxObjFunctionCalls") ) ?
     cfg.getParameter<unsigned>("maxObjFunctionCalls") : defaultMaxObjFunctionCalls;
 }
 
-NSVfitAlgorithmByLikelihoodMaximization::~NSVfitAlgorithmByLikelihoodMaximization() 
+NSVfitAlgorithmByLikelihoodMaximization::~NSVfitAlgorithmByLikelihoodMaximization()
 {
   delete minimizer_;
 }
@@ -48,18 +48,18 @@ void NSVfitAlgorithmByLikelihoodMaximization::fitImp() const
   minimizer_->Clear();
 
   minimizer_->SetPrintLevel(3);
-  // Make sure the variables are sorted by index 
+  // Make sure the variables are sorted by index
   ROOT::Math::Functor toMinimize(objectiveFunctionAdapter_, fitParameters_.size());
   minimizer_->SetFunction(toMinimize);
   minimizer_->SetMaxFunctionCalls(maxObjFunctionCalls_);
 
 //--- set Minuit strategy = 2, in order to get reliable error estimates:
 //    http://www-cdf.fnal.gov/physics/statistics/recommendations/minuit.html
-  minimizer_->SetStrategy(2);   
+  minimizer_->SetStrategy(2);
 
 //--- compute uncertainties for increase of objective function by 0.5 wrt. minimum
 //   (objective function is log-likelihood function)
-  minimizer_->SetErrorDef(0.5); 
+  minimizer_->SetErrorDef(0.5);
 
 //--- disable fitParameter limits for azimuthal angles ("cyclic" variables)
 //    by setting upper and lower limits to "non-a-number" (NaN)
@@ -69,7 +69,7 @@ void NSVfitAlgorithmByLikelihoodMaximization::fitImp() const
     int fitParameterType = fitParameter->Type();
     if ( fitParameterType == nSVfit_namespace::kTau_phi_lab   ||
 	 fitParameterType == nSVfit_namespace::kTauVM_phi_a1r ||
-	 fitParameterType == nSVfit_namespace::kNu_phi_lab    ) { 
+	 fitParameterType == nSVfit_namespace::kNu_phi_lab    ) {
       double limit_disabled = std::numeric_limits<float>::quiet_NaN(); // CMSSSW_4_1_x version
       //double limit_disabled = TMath::QuietNaN();                     // CMSSSW_4_2_x version
       fitParameter->setLowerLimit(limit_disabled);
@@ -81,14 +81,18 @@ void NSVfitAlgorithmByLikelihoodMaximization::fitImp() const
 
     fitParameter->dump(std::cout);
   }
-  
-  std::sort(fitParameters_.begin(), fitParameters_.end());  
-  minimizer_->SetVariables(fitParameters_.begin(), fitParameters_.end());
+
+  std::sort(fitParameters_.begin(), fitParameters_.end());
+  //int variablesAdded = minimizer_->SetVariables(
+  //    fitParameters_.begin(), fitParameters_.end());
+  int variablesAdded = setupVariables(fitParameters_.begin(),
+      fitParameters_.end());
 
   idxObjFunctionCall_ = 0;
 
   std::cout << "--> starting ROOT::Math::Minimizer::Minimize..." << std::endl;
-  std::cout << " #freeParameters = " << minimizer_->NFree() << "," 
+  std::cout << " #builtParameters = " << variablesAdded << ", ";
+  std::cout << " #freeParameters = " << minimizer_->NFree() << ","
 	    << " #constrainedParameters = " << (minimizer_->NDim() - minimizer_->NFree()) << std::endl;
   minimizer_->Minimize();
   minimizer_->PrintResults();
@@ -115,7 +119,7 @@ void NSVfitAlgorithmByLikelihoodMaximization::fitImp() const
 
 double NSVfitAlgorithmByLikelihoodMaximization::nll(const double* x, const double* param) const
 {
-  if ( verbosity_ ) { 
+  if ( verbosity_ ) {
     std::cout << "<NSVfitAlgorithmByLikelihoodMaximization::nll>:" << std::endl;
     std::cout << " idxObjFunctionCall = " << idxObjFunctionCall_ << std::endl;
     for ( std::vector<NSVfitParameter>::iterator fitParameter = fitParameters_.begin();
