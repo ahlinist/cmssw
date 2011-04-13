@@ -88,6 +88,7 @@ class NSVfitSingleParticleHypothesisBase
 	   << " eta = " << p4_.eta() << ", phi = " << p4_.phi() << std::endl;
     stream << " p4_fitted: Pt = " << p4_fitted().pt() << ","
 	   << " eta = " << p4_fitted().eta() << ", phi = " << p4_fitted().phi() << std::endl;
+    stream << "(x = " << (p4_.energy()/p4_fitted().energy()) << ")" << std::endl;
     stream << " #tracks = " << tracks_.size() << std::endl;
   }
 
