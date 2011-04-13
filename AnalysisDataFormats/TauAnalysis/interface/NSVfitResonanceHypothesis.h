@@ -63,6 +63,12 @@ class NSVfitResonanceHypothesis
     stream << "<NSVfitResonanceHypothesis::print>:" << std::endl;
     stream << " name = " << name_ << std::endl;
     stream << " barcode = " << barcode_ << std::endl;
+    stream << " p4: Pt = " << p4_.pt() << ","
+	   << " eta = " << p4_.eta() << ", phi = " << p4_.phi() << std::endl;
+    stream << " p4_fitted: Pt = " << p4_fitted().pt() << ","
+	   << " eta = " << p4_fitted().eta() << ", phi = " << p4_fitted().phi() << std::endl;
+    stream << "--> mass = " << mass_ << " + " << massErrUp_ << " - " << massErrDown_ << std::endl;
+    stream << " isValidSolution = " << isValidSolution_ << std::endl;
     for ( edm::OwnVector<NSVfitSingleParticleHypothesisBase>::const_iterator daughter = daughters_.begin();
           daughter != daughters_.end(); ++daughter ) {
       daughter->print(stream);
