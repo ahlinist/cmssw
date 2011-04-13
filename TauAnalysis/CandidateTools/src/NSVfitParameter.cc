@@ -53,7 +53,8 @@ NSVfitParameter::NSVfitParameter(int idx, const std::string& name, int type, boo
 
 void NSVfitParameter::dump(std::ostream& stream) const 
 {
-  stream << "param #" << idx_ << "(name = " << get_name_incl_type(name_, type_) << "): value = " << value_ << std::endl;
+  stream << "param #" << idx_ << "(name = " << get_name_incl_type(name_, type_) << "):" 
+	 << " value = " << value_ << " + " << errUp_ << " - " << errDown_ << std::endl;
   stream << " initialValue = " << initialValue_ << " +/- " << stepSize_ << ","
 	 << " limits = {" <<  lowerLimit_ << ", " << upperLimit_ << "}";
   if      ( IsFixed()       ) stream << ", isFixed"; 
