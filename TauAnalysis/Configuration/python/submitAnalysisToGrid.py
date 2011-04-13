@@ -99,6 +99,9 @@ def submitAnalysisToGrid(configFile = None, channel = None, samples = None,
         jobCustomizations.append("    process.ntupleOutputModule.fileName = '%s'" % output_file)
         jobCustomizations.append("if hasattr(process, 'skimOutputModule'):")
         jobCustomizations.append("    process.skimOutputModule.fileName = '%s'" % output_file)
+        jobCustomizations.append("if hasattr(process, 'saveZtoMuTau_tauIdEffPlots'):")
+        jobCustomizations.append("    process.saveZtoMuTau_tauIdEffPlots.outputFileName = '%s'" % \
+                                 ("plots_ZtoMuTau_tauIdEff_%s_%s.root" % (sample, jobId)))
         HLTprocessName = 'HLT'
         if 'hlt' in sample_info.keys():
             HLTprocessName = sample_info['hlt'].getProcessName()
@@ -114,8 +117,9 @@ def submitAnalysisToGrid(configFile = None, channel = None, samples = None,
             jobCustomizations.append("    delattr(process.ntupleProducer.sources, 'genJets')")
             jobCustomizations.append("    delattr(process.ntupleProducer.sources, 'genPhaseSpaceEventInfo')")
             jobCustomizations.append("    delattr(process.ntupleProducer.sources, 'genPileUpEventInfo')")
-        jobCustomizations.append("process.patDefaultSequence.replace(process.patTriggerEventSequence,")
-        jobCustomizations.append("                                   process.patTriggerSequence + process.patTriggerEventSequence)")
+        jobCustomizations.append("if hasattr(process, 'patTriggerEventSequence') and hasattr(process, 'patTriggerSequence'):")
+        jobCustomizations.append("    process.patDefaultSequence.replace(process.patTriggerEventSequence,")
+        jobCustomizations.append("                                       process.patTriggerSequence + process.patTriggerEventSequence)")
         #jobCustomizations.append("print process.dumpPython()")
         #--------------------------------------------------------------------
 
