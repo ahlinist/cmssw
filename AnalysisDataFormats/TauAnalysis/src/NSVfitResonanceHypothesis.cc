@@ -13,7 +13,8 @@ NSVfitResonanceHypothesis::NSVfitResonanceHypothesis(const NSVfitResonanceHypoth
     massMean_(bluePrint.massMean_),
     massMedian_(bluePrint.massMedian_),
     massMaximum_(bluePrint.massMaximum_),
-    massMaxInterpol_(bluePrint.massMaxInterpol_)
+    massMaxInterpol_(bluePrint.massMaxInterpol_),
+    isValidSolution_(bluePrint.isValidSolution_)
 {
   for (unsigned int i = 0; i < daughters_.size(); i++) {
     daughters_[i].setMother(this);
@@ -28,8 +29,9 @@ NSVfitResonanceHypothesis& NSVfitResonanceHypothesis::operator =(const NSVfitRes
   p4_ = bluePrint.p4_;
   dp4_ = bluePrint.dp4_;
   daughters_ = bluePrint.daughters_;
-  for (unsigned int i = 0; i < daughters_.size(); i++) {
-    daughters_[i].setMother(this);
+  unsigned numDaughters = daughters_.size();
+  for ( unsigned iDaughter = 0; iDaughter < numDaughters; iDaughter++ ) {
+    daughters_[iDaughter].setMother(this);
   }
   mass_ = bluePrint.mass_;
   massErrUp_ = bluePrint.massErrUp_;
@@ -38,6 +40,7 @@ NSVfitResonanceHypothesis& NSVfitResonanceHypothesis::operator =(const NSVfitRes
   massMedian_ = bluePrint.massMedian_;
   massMaximum_ = bluePrint.massMaximum_;
   massMaxInterpol_ = bluePrint.massMaxInterpol_;
+  isValidSolution_ = bluePrint.isValidSolution_;
   return (*this);
 }
 
