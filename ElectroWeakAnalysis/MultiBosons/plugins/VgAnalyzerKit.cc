@@ -310,13 +310,27 @@ VgAnalyzerKit::VgAnalyzerKit(const edm::ParameterSet& ps) : verbosity_(0), helpe
     tree_->Branch("jetPhi", jetPhi_, "jetPhi[nJet]/F");
     tree_->Branch("jetMass", jetMass_, "jetMass[nJet]/F");
     tree_->Branch("jetEt", jetEt_, "jetEt[nJet]/F");
-    tree_->Branch("jetenergyFractionHadronic", jetenergyFractionHadronic_, "jetenergyFractionHadronic[nJet]/F");
-    tree_->Branch("jetemEnergyFraction", jetemEnergyFraction_, "jetemEnergyFraction[nJet]/F");
-    tree_->Branch("jetfHPD", jetfHPD_, "jetfHPD[nJet]/F");
-    tree_->Branch("jetN60", jetN60_, "jetN60[nJet]/I");
-    tree_->Branch("jetN90", jetN90_, "jetN90[nJet]/I");
+    tree_->Branch("jetpartonFlavour", jetpartonFlavour_, "jetpartonFlavour[nJet]/I");
+    tree_->Branch("jetRawPt", jetRawPt_, "jetRawPt[nJet]/F");
+    tree_->Branch("jetRawEn", jetRawEn_, "jetRawEn[nJet]/F");
+    tree_->Branch("jetCharge", jetCharge_, "jetCharge[nJet]/F");
+    //tree_->Branch("jetenergyFractionHadronic", jetenergyFractionHadronic_, "jetenergyFractionHadronic[nJet]/F");
+    //tree_->Branch("jetemEnergyFraction", jetemEnergyFraction_, "jetemEnergyFraction[nJet]/F");
+    //tree_->Branch("jetfHPD", jetfHPD_, "jetfHPD[nJet]/F");
+    //tree_->Branch("jetN60", jetN60_, "jetN60[nJet]/I");
+    //tree_->Branch("jetN90", jetN90_, "jetN90[nJet]/I");
+    tree_->Branch("jetNeutralEmEnergy", jetNeutralEmEnergy_, "jetNeutralEmEnergy[nJet]/F");
+    tree_->Branch("jetNeutralEmEnergyFraction", jetNeutralEmEnergyFraction_, "jetNeutralEmEnergyFraction[nJet]/F");
+    tree_->Branch("jetNeutralHadronEnergy", jetNeutralHadronEnergy_, "jetNeutralHadronEnergy[nJet]/F");
+    tree_->Branch("jetNeutralHadronEnergyFraction", jetNeutralHadronEnergyFraction_, "jetNeutralHadronEnergyFraction[nJet]/F");
+    tree_->Branch("jetNConstituents", jetNConstituents_, "jetNConstituents[nJet]/I");
+    tree_->Branch("jetChargedEmEnergy", jetChargedEmEnergy_, "jetChargedEmEnergy[nJet]/F");
+    tree_->Branch("jetChargedEmEnergyFraction", jetChargedEmEnergyFraction_, "jetChargedEmEnergyFraction[nJet]/F");
+    tree_->Branch("jetChargedHadronEnergy", jetChargedHadronEnergy_, "jetChargedHadronEnergy[nJet]/F");
+    tree_->Branch("jetChargedHadronEnergyFraction", jetChargedHadronEnergyFraction_, "jetChargedHadronEnergyFraction[nJet]/F");
+    tree_->Branch("jetChargedMuEnergy", jetChargedMuEnergy_, "jetChargedMuEnergy[nJet]/F");
+    tree_->Branch("jetChargedMuEnergyFraction", jetChargedMuEnergyFraction_, "jetChargedMuEnergyFraction[nJet]/F");
     if (doGenParticles_) {
-      tree_->Branch("jetGenIndex", jetGenIndex_, "jetGenIndex[nJet]/I");
       tree_->Branch("jetGenJetIndex", jetGenJetIndex_, "jetGenJetIndex[nJet]/I");
       tree_->Branch("jetGenJetEn", jetGenJetEn_, "jetGenJetEn[nJet]/F");
       tree_->Branch("jetGenJetPt", jetGenJetPt_, "jetGenJetPt[nJet]/F");
@@ -326,10 +340,6 @@ VgAnalyzerKit::VgAnalyzerKit(const edm::ParameterSet& ps) : verbosity_(0), helpe
       tree_->Branch("jetGenPartonID", jetGenPartonID_, "jetGenPartonID[nJet]/I");
       tree_->Branch("jetGenPartonMomID", jetGenPartonMomID_, "jetGenPartonMomID[nJet]/I");
     }
-    tree_->Branch("jetpartonFlavour", jetpartonFlavour_, "jetpartonFlavour[nJet]/I");
-    tree_->Branch("jetRawPt", jetRawPt_, "jetRawPt[nJet]/F");
-    tree_->Branch("jetRawEn", jetRawEn_, "jetRawEn[nJet]/F");
-    tree_->Branch("jetCharge", jetCharge_, "jetCharge[nJet]/F");
   }
   // Zee candiate
   tree_->Branch("nZee", &nZee_, "nZee/I");
@@ -1810,19 +1820,28 @@ fabs(ip->pdgId())<=14) || ip->pdgId()==22))) {
 	jetMass_[nJet_]   = iJet->mass();
 	jetCharge_[nJet_] = iJet->jetCharge();
 	jetEt_[nJet_]     = iJet->et();
-	//jetRawPt_[nJet_]  = (*iJet).correctedJet("RAW").pt();
-	//jetRawEn_[nJet_]  = (*iJet).correctedJet("RAW").energy();
 	jetRawPt_[nJet_]  = (*iJet).correctedJet("Uncorrected").pt();
 	jetRawEn_[nJet_]  = (*iJet).correctedJet("Uncorrected").energy();
 	jetpartonFlavour_[nJet_] = iJet->partonFlavour();
 
 	// Jet Id related
-	jetfHPD_[nJet_] = iJet->jetID().fHPD;
-	jetN60_[nJet_]  = iJet->n60();
-	jetN90_[nJet_]  = iJet->n90();
-
-	jetenergyFractionHadronic_[nJet_] = iJet->energyFractionHadronic();
-	jetemEnergyFraction_[nJet_] = iJet->emEnergyFraction();
+	jetNeutralEmEnergy_[nJet_]         = iJet->neutralEmEnergy();
+        jetNeutralEmEnergyFraction_[nJet_] = iJet->neutralEmEnergyFraction();
+	jetNeutralHadronEnergy_[nJet_]     = iJet->neutralHadronEnergy();
+	jetNeutralHadronEnergyFraction_[nJet_] = iJet->neutralHadronEnergyFraction();
+	jetNConstituents_[nJet_]           = iJet->nConstituents();
+	jetChargedEmEnergy_[nJet_]         = iJet->chargedEmEnergy();
+	jetChargedEmEnergyFraction_[nJet_] = iJet->chargedEmEnergyFraction();
+	jetChargedHadronEnergy_[nJet_]     = iJet->chargedHadronEnergy();
+	jetChargedHadronEnergyFraction_[nJet_] = iJet->chargedHadronEnergyFraction();
+	jetChargedMuEnergy_[nJet_]	   = iJet->chargedMuEnergy();
+	jetChargedMuEnergyFraction_[nJet_] = iJet->chargedMuEnergyFraction();
+	
+	//jetfHPD_[nJet_] = iJet->jetID().fHPD;
+	//jetN60_[nJet_]  = iJet->n60();
+	//jetN90_[nJet_]  = iJet->n90();
+	//jetenergyFractionHadronic_[nJet_] = iJet->energyFractionHadronic();
+	//jetemEnergyFraction_[nJet_] = iJet->emEnergyFraction();
 
 	jetGenJetIndex_[nJet_] = -1;
 	jetGenJetEn_[nJet_] = -1.0;
