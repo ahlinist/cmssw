@@ -10,7 +10,7 @@ import subprocess
 channel = 'ZtoMuTau_tauIdEff'
 configFile = 'skimTauIdEffSample_cfg.py'
 #jobId = getJobId(channel)
-jobId = '2011Apr05'
+jobId = '2011Apr09_HPSloose'
 
 outputFilePath = '/user/v/veelken/CMSSW_4_1_x/skims/TauIdEffMeas/'
 
