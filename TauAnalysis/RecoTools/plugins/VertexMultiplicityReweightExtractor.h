@@ -1,5 +1,5 @@
-#ifndef TauAnalysis_RecoTools_VertexMultiplicityReweightProducer_h
-#define TauAnalysis_RecoTools_VertexMultiplicityReweightProducer_h
+#ifndef TauAnalysis_RecoTools_VertexMultiplicityReweightExtractor_h
+#define TauAnalysis_RecoTools_VertexMultiplicityReweightExtractor_h
 
 /** \class VertexMultiplicityReweightProducer
  *
@@ -19,23 +19,30 @@
  *
  */
 
-#include "FWCore/Framework/interface/EDProducer.h"
 #include "FWCore/Framework/interface/Event.h"
-#include "FWCore/Framework/interface/EventSetup.h"
 #include "FWCore/ParameterSet/interface/ParameterSet.h"
+#include "FWCore/Utilities/interface/InputTag.h"
+
+#include "CommonTools/Utils/interface/StringObjectFunction.h"
 
 #include "TauAnalysis/BgEstimationTools/interface/ObjValExtractorBase.h"
 
-class VertexMultiplicityReweightProducer : public edm::EDProducer 
+#include <TFile.h>
+#include <TH1.h>
+
+class VertexMultiplicityReweightExtractor : public ObjValExtractorBase
 {
  public:
-  explicit VertexMultiplicityReweightProducer(const edm::ParameterSet&);
-  ~VertexMultiplicityReweightProducer();
+  explicit VertexMultiplicityReweightExtractor(const edm::ParameterSet&);
+  ~VertexMultiplicityReweightExtractor();
 
-  void produce(edm::Event&, const edm::EventSetup&);
+  double operator()(const edm::Event&) const;
 
  private:
-  ObjValExtractorBase* extractor_;
+  edm::InputTag src_;
+  
+  TFile* inputFile_;
+  TH1* lut_;
 };
 
 #endif
