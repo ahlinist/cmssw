@@ -51,11 +51,13 @@ diTauCandidateNSVfitHistManagerForMuTau.diTauCandidateSource = cms.InputTag('sel
 diTauCandidateNSVfitHistManagerForMuTau.nSVfitEventHypotheses = cms.PSet(
     ##psKine_MEt_ptBalance       = cms.string('psKine_MEt_ptBalance'),
     ##psKine_MEt_Track_ptBalance = cms.string('psKine_MEt_Track_ptBalance')
-    psKine_MEt_pow05ptBalance_int = cms.string('psKine_MEt_pow05ptBalance_int'),
-    psKine_MEt_pow10ptBalance_int = cms.string('psKine_MEt_pow10ptBalance_int'),
-    psKine_MEt_pow15ptBalance_int = cms.string('psKine_MEt_pow15ptBalance_int'),
-    psKine_MEt_pow20ptBalance_int = cms.string('psKine_MEt_pow20ptBalance_int'),
-    psKine_MEt_pow10ptBalance_fit = cms.string('psKine_MEt_pow10ptBalance_fit'),
+    ##psKine_MEt_pow05ptBalance_int = cms.string('psKine_MEt_pow05ptBalance_int'),
+    ##psKine_MEt_pow10ptBalance_int = cms.string('psKine_MEt_pow10ptBalance_int'),
+    ##psKine_MEt_pow15ptBalance_int = cms.string('psKine_MEt_pow15ptBalance_int'),
+    ##psKine_MEt_pow20ptBalance_int = cms.string('psKine_MEt_pow20ptBalance_int'),
+    psKine_fit = cms.string('psKine_fit'),
+    psKine_MEt_fit = cms.string('psKine_MEt_fit'),
+    psKine_MEt_pow10ptBalance_fit = cms.string('psKine_MEt_pow10ptBalance_fit')
 )
 
 diTauCandidateNSVfitVtxMultiplicityBinGridHistManager = cms.PSet(
@@ -494,6 +496,9 @@ muTauEventDump = cms.PSet(
     diTauCandidateSource = cms.InputTag('allMuTauPairs'),
     svFitAlgorithms = cms.VPSet(
         cms.PSet(
+            name = cms.string("psKine")
+        ),
+        cms.PSet(
             name = cms.string("psKine_MEt")
         ),
         cms.PSet(
@@ -505,6 +510,11 @@ muTauEventDump = cms.PSet(
         ##),
         ##cms.PSet(
         ##    name = cms.string("psKine_MEt_Track_ptBalance")
+    ),
+    nSVfitAlgorithms = cms.vstring(
+        "psKine_fit",
+        "psKine_MEt_fit",
+        "psKine_MEt_pow10ptBalance_fit"
     ),
     ##annotations = cms.VPSet(
     ##    cms.PSet(
