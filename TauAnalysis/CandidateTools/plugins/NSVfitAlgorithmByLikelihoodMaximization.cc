@@ -42,12 +42,13 @@ NSVfitAlgorithmByLikelihoodMaximization::~NSVfitAlgorithmByLikelihoodMaximizatio
 
 void NSVfitAlgorithmByLikelihoodMaximization::fitImp() const
 {
-  std::cout << "<NSVfitAlgorithmByLikelihoodMaximization::fitImp>:" << std::endl;
-  std::cout << " #fitParameter = " << fitParameters_.size() << std::endl;
+  //std::cout << "<NSVfitAlgorithmByLikelihoodMaximization::fitImp>:" << std::endl;
+  //std::cout << " #fitParameter = " << fitParameters_.size() << std::endl;
 
   minimizer_->Clear();
 
-  minimizer_->SetPrintLevel(3);
+  //minimizer_->SetPrintLevel(3);
+  minimizer_->SetPrintLevel(-1);
   // Make sure the variables are sorted by index
   ROOT::Math::Functor toMinimize(objectiveFunctionAdapter_, fitParameters_.size());
   minimizer_->SetFunction(toMinimize);
@@ -78,27 +79,33 @@ void NSVfitAlgorithmByLikelihoodMaximization::fitImp() const
     }
 
     fitParameter->reset();
-
-    fitParameter->dump(std::cout);
   }
 
   std::sort(fitParameters_.begin(), fitParameters_.end());
-  //int variablesAdded = minimizer_->SetVariables(
-  //    fitParameters_.begin(), fitParameters_.end());
-  int variablesAdded = setupVariables(fitParameters_.begin(),
-      fitParameters_.end());
+  setupVariables(fitParameters_.begin(), fitParameters_.end());
 
   idxObjFunctionCall_ = 0;
 
-  std::cout << "--> starting ROOT::Math::Minimizer::Minimize..." << std::endl;
-  std::cout << " #builtParameters = " << variablesAdded << ", ";
-  std::cout << " #freeParameters = " << minimizer_->NFree() << ","
-	    << " #constrainedParameters = " << (minimizer_->NDim() - minimizer_->NFree()) << std::endl;
+  if ( verbosity_ ) {
+    std::cout << "--> starting ROOT::Math::Minimizer::Minimize..." << std::endl;
+    std::cout << " #freeParameters = " << minimizer_->NFree() << ","
+  	      << " #constrainedParameters = " << (minimizer_->NDim() - minimizer_->NFree()) << std::endl;
+  }
   minimizer_->Minimize();
-  minimizer_->PrintResults();
+  if ( verbosity_ ) minimizer_->PrintResults();
 
 //--- set best-fit parameters in event, resonance and particle hypotheses
-  eventModel_->builder_->applyFitParameter(currentEventHypothesis_, minimizer_->X());
+  const double* bestFitParameterValues = minimizer_->X();
+  const double* bestFitParameterErrors = minimizer_->Errors();
+
+  eventModel_->builder_->applyFitParameter(currentEventHypothesis_, bestFitParameterValues);
+
+  for ( std::vector<NSVfitParameter>::iterator fitParameter = fitParameters_.begin();
+	fitParameter != fitParameters_.end(); ++fitParameter ) {
+    fitParameter->setValue(bestFitParameterValues[fitParameter->index()]);
+    fitParameter->setErrUp(bestFitParameterErrors[fitParameter->index()]);
+    fitParameter->setErrDown(bestFitParameterErrors[fitParameter->index()]);
+  }
 
 //--- get Minimizer status code, check if solution is valid:
 //
@@ -110,11 +117,50 @@ void NSVfitAlgorithmByLikelihoodMaximization::fitImp() const
 //
 
   int fitStatus = minimizer_->Status();
+  //std::cout << " fitStatus = " << fitStatus << std::endl;
   bool isValidSolution = (fitStatus == 0);
-  for ( edm::OwnVector<NSVfitResonanceHypothesis>::iterator resonanceHypothesis = currentEventHypothesis_->resonances_.begin();
-	resonanceHypothesis != currentEventHypothesis_->resonances_.end(); ++resonanceHypothesis ) {
-    resonanceHypothesis->isValidSolution_ = isValidSolution;
+  for ( edm::OwnVector<NSVfitResonanceHypothesis>::iterator resonance = currentEventHypothesis_->resonances_.begin();
+	resonance != currentEventHypothesis_->resonances_.end(); ++resonance ) {
+    resonance->isValidSolution_ = isValidSolution;
+    setMassResults(*resonance);
   }
+
+  if ( verbosity_ ) currentEventHypothesis_->print(std::cout);
+}
+
+void NSVfitAlgorithmByLikelihoodMaximization::setMassResults(NSVfitResonanceHypothesis& resonance) const
+{
+  resonance.massMean_        = 0.;
+  resonance.massMedian_      = 0.;
+  resonance.massMaximum_     = 0.;
+  resonance.massMaxInterpol_ = 0.;
+  
+  resonance.mass_ = resonance.p4_fitted().mass();
+  
+  double massRelErrUp2   = 0.;
+  double massRelErrDown2 = 0.;
+  for ( edm::OwnVector<NSVfitSingleParticleHypothesisBase>::iterator daughter = resonance.daughters_.begin();
+	daughter != resonance.daughters_.end(); ++daughter ) {
+    const std::string daughterName = daughter->name();
+    if ( getFitParameter(daughterName, nSVfit_namespace::kTau_visEnFracX) != 0 ) {
+      NSVfitParameter* fitParameter = getFitParameter(daughterName, nSVfit_namespace::kTau_visEnFracX);
+      massRelErrUp2   += square(0.5*fitParameter->ErrUp()/fitParameter->Value());
+      massRelErrDown2 += square(0.5*fitParameter->ErrDown()/fitParameter->Value());
+    } else if ( getFitParameter(daughterName, nSVfit_namespace::kLep_shiftEn) != 0 ) {
+      NSVfitParameter* fitParameter = getFitParameter(daughterName, nSVfit_namespace::kLep_shiftEn);
+      massRelErrUp2   += square(0.5*fitParameter->ErrUp()/(1. + fitParameter->Value()));
+      massRelErrDown2 += square(0.5*fitParameter->ErrDown()/(1. + fitParameter->Value()));
+    } else if ( getFitParameter(daughterName, nSVfit_namespace::kNu_energy_lab) != 0 ) {
+      edm::LogWarning ("setMassResults") 
+	<< " Support for fitParameter type = Nu_energy_lab not implemented yet !!";
+    } else assert(0);
+  }
+  
+  resonance.massErrUp_   = resonance.mass_*TMath::Sqrt(massRelErrUp2);
+  resonance.massErrDown_ = resonance.mass_*TMath::Sqrt(massRelErrDown2);
+
+  //std::cout << "--> setting mass = " << resonance.mass_ 
+  //	      << " + " << resonance.massErrUp_ << " - " << resonance.massErrDown_ << std::endl;
 }
 
 double NSVfitAlgorithmByLikelihoodMaximization::nll(const double* x, const double* param) const
