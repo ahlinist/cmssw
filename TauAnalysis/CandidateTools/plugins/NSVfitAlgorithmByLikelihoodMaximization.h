@@ -8,9 +8,9 @@
  *
  * \author Christian Veelken, UC Davis
  *
- * \version $Revision: 1.2 $
+ * \version $Revision: 1.3 $
  *
- * $Id: NSVfitAlgorithmByLikelihoodMaximization.h,v 1.2 2011/04/11 09:13:16 veelken Exp $
+ * $Id: NSVfitAlgorithmByLikelihoodMaximization.h,v 1.3 2011/04/12 12:02:29 friis Exp $
  *
  */
 
@@ -34,8 +34,8 @@ namespace nSVfit_namespace
       double nll = NSVfitAlgorithmBase::gNSVfitAlgorithm->nll(x, 0);
       static long callCounter = 0;
       //if ( (callCounter % 10000) == 0 )
-	std::cout << "<operator()> (call = " << callCounter << "):"
-		  << " nll = " << nll << std::endl;
+      //  std::cout << "<operator()> (call = " << callCounter << "):"
+      //	    << " nll = " << nll << std::endl;
       ++callCounter;
       return nll;
     }
@@ -54,6 +54,8 @@ class NSVfitAlgorithmByLikelihoodMaximization : public NSVfitAlgorithmBase
 
  protected:
   void fitImp() const;
+
+  void setMassResults(NSVfitResonanceHypothesis&) const;
 
   ROOT::Math::Minimizer* minimizer_;
   nSVfit_namespace::NSVfitObjectiveFunctionAdapter objectiveFunctionAdapter_;
@@ -74,34 +76,34 @@ class NSVfitAlgorithmByLikelihoodMaximization : public NSVfitAlgorithmBase
         << std::endl;
     }
     unsigned int ivar = 0;
-    for (VarIter vitr = begin; vitr != end; ++vitr) {
+    for ( VarIter vitr = begin; vitr != end; ++vitr ) {
       bool iret = false;
-      if (vitr->IsFixed()) {
-        std::cout << "Adding fixed variable: \"" << vitr->UniqueName()
-          << "\" " << std::endl;
+      if ( vitr->IsFixed() ) {
+        //std::cout << "Adding fixed variable: \"" << vitr->UniqueName()
+        //          << "\" " << std::endl;
         iret = minimizer_->SetFixedVariable(ivar, vitr->UniqueName(), vitr->Value());
-      } else if (vitr->IsDoubleBound()) {
-        std::cout << "Adding double bound variable: \""
-          << vitr->UniqueName() << "\" " << std::endl;
+      } else if ( vitr->IsDoubleBound() ) {
+        //std::cout << "Adding double bound variable: \""
+        //          << vitr->UniqueName() << "\" " << std::endl;
         iret = minimizer_->SetLimitedVariable(ivar, vitr->UniqueName(),
             vitr->Value(), vitr->StepSize(),
             vitr->LowerLimit(), vitr->UpperLimit());
-      } else if (vitr->HasLowerLimit()) {
-        std::cout << "Adding lower limited variable: "
-          << vitr->UniqueName() << std::endl;
+      } else if ( vitr->HasLowerLimit() ) {
+        //std::cout << "Adding lower limited variable: "
+        //          << vitr->UniqueName() << std::endl;
         iret = minimizer_->SetLowerLimitedVariable(ivar, vitr->UniqueName(),
             vitr->Value(), vitr->StepSize(), vitr->LowerLimit());
-      } else if (vitr->HasUpperLimit()) {
-        std::cout << "Adding upper limited variable: "
-          << vitr->UniqueName() << std::endl;
+      } else if ( vitr->HasUpperLimit() ) {
+        //std::cout << "Adding upper limited variable: "
+        //          << vitr->UniqueName() << std::endl;
         iret = minimizer_->SetUpperLimitedVariable(ivar, vitr->UniqueName(),
             vitr->Value(), vitr->StepSize(), vitr->UpperLimit());
       } else {
-        std::cout << "Adding unbound variable: " << vitr->UniqueName() << std::endl;
+        //std::cout << "Adding unbound variable: " << vitr->UniqueName() << std::endl;
         iret = minimizer_->SetVariable( ivar, vitr->UniqueName(), vitr->Value(),
             vitr->StepSize());
       }
-      if (iret) {
+      if ( iret ) {
         ivar++;
       } else {
         throw cms::Exception("BadVariableConfig")
