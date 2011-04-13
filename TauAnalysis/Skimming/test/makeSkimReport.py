@@ -4,9 +4,9 @@ import os
 import shlex
 import subprocess
 
-crabFilePath = "/data1/veelken/CMSSW_3_8_x/crab/Skimming/"
+crabFilePath = "/data1/veelken/CMSSW_4_1_x/crab/Skimming/"
 
-jobId = "2011Feb03b"
+jobId = "2011Apr09"
 
 #cmsswSkimPath = "muonCaloTauSkimPath"
 cmsswSkimPath = "muonPFTauShrinkingConeSkimPath"

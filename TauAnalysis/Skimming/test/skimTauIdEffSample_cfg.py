@@ -88,7 +88,7 @@ configurePrePatProduction(process, pfCandidateCollection = pfCandidateCollection
 from TauAnalysis.TauIdEfficiency.tools.configurePatTupleProductionTauIdEffMeasSpecific import *
 
 patTupleConfig = configurePatTupleProductionTauIdEffMeasSpecific(
-    process, hltProcess = HLTprocessName, addGenInfo = isMC, applyZrecoilCorrection = False)
+    process, hltProcess = HLTprocessName, addGenInfo = isMC, applyZrecoilCorrection = False, runSVfit = False)
 #--------------------------------------------------------------------------------
 
 process.p = cms.Path(
@@ -115,7 +115,46 @@ process.options = cms.untracked.PSet(
     wantSummary = cms.untracked.bool(True)
 )
 
-process.o = cms.EndPath(process.skimOutputModule)
+# count events passing different skimming paths
+
+process.DQMStore = cms.Service("DQMStore")
+
+process.allEventCounts = cms.EDAnalyzer("DQMEventCounter",
+    dqmDirectory = cms.string("EventCounts"),
+    meName = cms.string("numEventsProcessed")
+)
+process.p += process.allEventCounts
+
+process.passedMuonCaloTauSkimPath = process.allEventCounts.clone(
+    meName = cms.string("numEventsPassedMuonCaloTauSkimPath")
+)
+process.muonCaloTauSkimPath += process.passedMuonCaloTauSkimPath
+
+process.passedMuonPFTauFixedConeSkimPath = process.allEventCounts.clone(
+    meName = cms.string("numEventsPassedMuonPFTauFixedConeSkimPath")
+)
+process.muonPFTauFixedConeSkimPath += process.passedMuonPFTauFixedConeSkimPath
+
+process.passedMuonPFTauShrinkingConeSkimPath = process.allEventCounts.clone(
+    meName = cms.string("numEventsPassedMuonPFTauShrinkingConeSkimPath")
+)
+process.muonPFTauShrinkingConeSkimPath += process.passedMuonPFTauShrinkingConeSkimPath
+
+process.passedMuonPFTauHPSskimPath = process.allEventCounts.clone(
+    meName = cms.string("numEventsPassedMuonPFTauHPSskimPath")
+)
+process.muonPFTauHPSskimPath += process.passedMuonPFTauHPSskimPath
+
+process.passedMuonPFTauHPSpTaNCskimPath = process.allEventCounts.clone(
+    meName = cms.string("numEventsPassedMuonPFTauHPSpTaNCskimPath")
+)
+process.muonPFTauHPSpTaNCskimPath += process.passedMuonPFTauHPSpTaNCskimPath
+
+process.saveZtoMuTau_tauIdEffPlots = cms.EDAnalyzer("DQMSimpleFileSaver",
+    outputFileName = cms.string('plotsZtoMuTau_tauIdEff.root')
+)
+
+process.o = cms.EndPath(process.skimOutputModule + process.saveZtoMuTau_tauIdEffPlots)
 
 # define order in which different paths are run
 process.schedule = cms.Schedule(
