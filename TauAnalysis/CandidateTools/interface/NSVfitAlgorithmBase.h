@@ -8,9 +8,9 @@
  *
  * \author Christian Veelken, UC Davis
  *
- * \version $Revision: 1.13 $
+ * \version $Revision: 1.14 $
  *
- * $Id: NSVfitAlgorithmBase.h,v 1.13 2011/03/28 17:00:27 friis Exp $
+ * $Id: NSVfitAlgorithmBase.h,v 1.14 2011/04/10 14:46:47 veelken Exp $
  *
  */
 
@@ -48,8 +48,8 @@ class NSVfitAlgorithmBase
 
   virtual void requestFitParameter(const std::string&, int, const std::string&);
 
-  virtual NSVfitParameter* getFitParameter(const std::string&, int);
-  virtual NSVfitParameter* getFitParameter(int);
+  virtual NSVfitParameter* getFitParameter(const std::string&, int) const;
+  virtual NSVfitParameter* getFitParameter(int) const;
 
   virtual void print(std::ostream&) const {}
 
