@@ -463,7 +463,7 @@ void GenericEventDump::printJetInfo(const edm::Event& evt) const
     for ( pat::JetCollection::const_iterator patJet = patJets->begin(); 
 	  patJet != patJets->end(); ++patJet ) {
 
-      if ( !patJet->et() > 10. ) continue;
+      if ( !patJet->pt() > 10. ) continue;
 
       *outputStream_ << "Jet(" << iJet << "):" << std::endl;
       *outputStream_ << " Et = " << patJet->et() << std::endl;
@@ -609,8 +609,8 @@ void GenericEventDump::printMissingEtInfo(const edm::Event& evt) const
   
   if ( doGenInfo_ ) {
     
-    printJetMatchingInfo_i(evt, edm::InputTag("ak5PFJets"), genJetSource_, *outputStream_, "PFJet");
-    printJetMatchingInfo_i(evt, edm::InputTag("ak5CaloJets"), genJetSource_, *outputStream_, "CaloJet");
+    //printJetMatchingInfo_i(evt, edm::InputTag("ak5PFJets"), genJetSource_, *outputStream_, "PFJet");
+    //printJetMatchingInfo_i(evt, edm::InputTag("ak5CaloJets"), genJetSource_, *outputStream_, "CaloJet");
     
     edm::Handle<edm::View<reco::GenParticle> > genParticleCollection;
     evt.getByLabel(genParticleSource_, genParticleCollection);
