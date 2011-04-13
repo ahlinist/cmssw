@@ -311,14 +311,28 @@ protected:
   Float_t  jetPhi_[maxP];
   Float_t  jetMass_[maxP];
   Float_t  jetEt_[maxP];
+  Float_t  jetRawPt_[maxP];
+  Float_t  jetRawEn_[maxP];
+  Float_t  jetCharge_[maxP];
+  Int_t    jetpartonFlavour_[maxP];
+  Float_t  jetNeutralEmEnergy_[maxP];
+  Float_t  jetNeutralEmEnergyFraction_[maxP];
+  Float_t  jetNeutralHadronEnergy_[maxP];
+  Float_t  jetNeutralHadronEnergyFraction_[maxP];
+  Int_t    jetNConstituents_[maxP];
+  Float_t  jetChargedEmEnergy_[maxP];
+  Float_t  jetChargedEmEnergyFraction_[maxP];
+  Float_t  jetChargedHadronEnergy_[maxP];
+  Float_t  jetChargedHadronEnergyFraction_[maxP];
+  Float_t  jetChargedMuEnergy_[maxP];
+  Float_t  jetChargedMuEnergyFraction_[maxP];
   Float_t  jetmaxEInEmTowers_[maxP];
   Float_t  jetmaxEInHadTowers_[maxP];
   Float_t  jetenergyFractionHadronic_[maxP];
   Float_t  jetemEnergyFraction_[maxP];
-  Float_t	 jetfHPD_[maxP];
-  Int_t	 jetN60_[maxP] ;
-  Int_t	 jetN90_[maxP] ;
-  Int_t    jetGenIndex_[maxP];
+  Float_t  jetfHPD_[maxP];
+  Int_t	   jetN60_[maxP] ;
+  Int_t	   jetN90_[maxP] ;
   Int_t    jetGenJetIndex_[maxP];
   Float_t  jetGenJetEn_[maxP];
   Float_t  jetGenJetPt_[maxP];
@@ -327,10 +341,6 @@ protected:
   Float_t  jetGenJetMass_[maxP];
   Int_t    jetGenPartonID_[maxP];
   Int_t    jetGenPartonMomID_[maxP];
-  Int_t    jetpartonFlavour_[maxP];
-  Float_t  jetRawPt_[maxP];
-  Float_t  jetRawEn_[maxP];
-  Float_t  jetCharge_[maxP];
 
   // Zee candidate
   Int_t    nZee_;
