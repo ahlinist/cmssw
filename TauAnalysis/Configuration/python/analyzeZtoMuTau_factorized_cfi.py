@@ -49,19 +49,13 @@ evtSelDiTauCandidateForMuTauNonZeroChargeLooseMuonIsolation = evtSelDiTauCandida
 )
 
 # primary event vertex selection
-evtSelPrimaryEventVertexForMuTauLooseMuonIsolation = cms.PSet(
-    pluginName = cms.string('evtSelPrimaryEventVertexForMuTauLooseMuonIsolation'),
-    pluginType = cms.string('BoolEventSelector'),
+evtSelPrimaryEventVertexForMuTauLooseMuonIsolation = evtSelPrimaryEventVertexForMuTau.clone(
     src = cms.InputTag('primaryEventVertexForMuTauLooseMuonIsolation')
 )
-evtSelPrimaryEventVertexQualityForMuTauLooseMuonIsolation = cms.PSet(
-    pluginName = cms.string('evtSelPrimaryEventVertexQualityForMuTauLooseMuonIsolation'),
-    pluginType = cms.string('BoolEventSelector'),
+evtSelPrimaryEventVertexQualityForMuTauLooseMuonIsolation = evtSelPrimaryEventVertexQualityForMuTau.clone(
     src = cms.InputTag('primaryEventVertexQualityForMuTauLooseMuonIsolation')
 )
-evtSelPrimaryEventVertexPositionForMuTauLooseMuonIsolation = cms.PSet(
-    pluginName = cms.string('evtSelPrimaryEventVertexPositionForMuTauLooseMuonIsolation'),
-    pluginType = cms.string('BoolEventSelector'),
+evtSelPrimaryEventVertexPositionForMuTauLooseMuonIsolation = evtSelPrimaryEventVertexPositionForMuTau.clone(
     src = cms.InputTag('primaryEventVertexPositionForMuTauLooseMuonIsolation')
 )
 
