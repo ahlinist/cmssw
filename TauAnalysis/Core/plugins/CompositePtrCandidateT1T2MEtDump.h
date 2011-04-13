@@ -8,9 +8,9 @@
  * 
  * \author Christian Veelken, UC Davis
  *
- * \version $Revision: 1.3 $
+ * \version $Revision: 1.4 $
  *
- * $Id: CompositePtrCandidateT1T2MEtDump.h,v 1.3 2010/09/02 11:33:45 veelken Exp $
+ * $Id: CompositePtrCandidateT1T2MEtDump.h,v 1.4 2010/12/02 11:00:53 veelken Exp $
  *
  */
 
@@ -49,6 +49,8 @@ class CompositePtrCandidateT1T2MEtDump : public ObjectDumpBase
   };
   std::vector<svFitAlgorithmType> svFitAlgorithms_;
   
+  vstring nSVfitAlgorithms_;
+
   struct annotationType
   {
     annotationType(const edm::ParameterSet& cfg)

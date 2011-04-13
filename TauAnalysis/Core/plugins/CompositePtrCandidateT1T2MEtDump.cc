@@ -37,6 +37,8 @@ CompositePtrCandidateT1T2MEtDump<T1,T2>::CompositePtrCandidateT1T2MEtDump(const 
     }
   }
 
+  if ( cfg.exists("nSVfitAlgorithms") ) nSVfitAlgorithms_ = cfg.getParameter<vstring>("nSVfitAlgorithms");
+
   if ( cfg.exists("annotations") ) {
     typedef std::vector<edm::ParameterSet> vParameterSet;
     vParameterSet cfgAnnotations = cfg.getParameter<vParameterSet>("annotations");
@@ -143,6 +145,14 @@ void CompositePtrCandidateT1T2MEtDump<T1,T2>::print(const edm::Event& evt, const
 	const SVfitDiTauSolution* solution = diTauCandidate->svFitSolution(svFitAlgorithm->algorithmName_, *polarizationHypothesis);
 	if ( solution ) *outputStream_ << (*solution);	
       }
+    }
+    for ( vstring::const_iterator nSVfitAlgorithm = nSVfitAlgorithms_.begin();
+	  nSVfitAlgorithm != nSVfitAlgorithms_.end(); ++nSVfitAlgorithm ) {
+      *outputStream_ << "NSVfit algorithm = " << (*nSVfitAlgorithm) << ":" << std::endl;
+      int errorFlag = 0;
+      const NSVfitEventHypothesis* hypothesis = diTauCandidate->nSVfitSolution(*nSVfitAlgorithm, &errorFlag);
+      if ( hypothesis ) hypothesis->print(*outputStream_);
+      else *outputStream_ << " NA" << std::endl;
     }
     for ( typename std::vector<annotationType*>::const_iterator annotation = annotations_.begin();
 	  annotation != annotations_.end(); ++annotation ) {
