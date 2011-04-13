@@ -73,7 +73,7 @@ void NSVfitAlgorithmBase::requestFitParameter(const std::string& name, int type,
   fitParameter->regUsedBy(requester);
 }
 
-NSVfitParameter* NSVfitAlgorithmBase::getFitParameter(const std::string& name, int type)
+NSVfitParameter* NSVfitAlgorithmBase::getFitParameter(const std::string& name, int type) const
 {
   NSVfitParameter* retVal = 0;
 
@@ -85,7 +85,7 @@ NSVfitParameter* NSVfitAlgorithmBase::getFitParameter(const std::string& name, i
   return retVal;
 }
 
-NSVfitParameter* NSVfitAlgorithmBase::getFitParameter(int idx)
+NSVfitParameter* NSVfitAlgorithmBase::getFitParameter(int idx) const
 {
   assert(idx >= 0 && idx < (int)fitParameters_.size());
 
