@@ -1912,7 +1912,11 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
 
 	    int nBins = histoCLS->GetSize();
 	    for(int i=1; i<(nBins-1); i++){
-			double probCLS = histoCLS->Integral(i,(nBins-1))/histoCLS->Integral(1,(nBins-1));
+			double numCLS = histoCLS->Integral(i,(nBins-1));
+			double denCLS = histoCLS->Integral(1,(nBins-1));
+			double probCLS = 0;
+			if(denCLS != 0) probCLS = numCLS/denCLS;
+			else probCLS = -1;
 			//std::cout<<histoCLS->Integral(i,(nBins-1))<<" "<<probCLS<<std::endl;
 			RollYEff<<probCLS<<" ";
 			}
@@ -3048,7 +3052,11 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
 
 	    int nBins = histoCLS->GetSize();
 	    for(int i=1; i<(nBins-1); i++){
-			double probCLS = histoCLS->Integral(i,(nBins-1))/histoCLS->Integral(1,(nBins-1));
+			double numCLS = histoCLS->Integral(i,(nBins-1));
+			double denCLS = histoCLS->Integral(1,(nBins-1));
+			double probCLS = 0;
+			if(denCLS != 0) probCLS = numCLS/denCLS;
+			else probCLS = -1;
 			//std::cout<<histoCLS->Integral(i,(nBins-1))<<" "<<probCLS<<std::endl;
 			RollYEff<<probCLS<<" ";
 			}
