@@ -39,6 +39,8 @@ class NSVfitParameter
 
   void setInitialValue(double initialValue) { initialValue_ = initialValue; }
   void setValue(double value) { value_ = value; }
+  void setErrUp(double errUp) { errUp_ = errUp; }
+  void setErrDown(double errDown) { errDown_ = errDown; }
   void setStepSize(double stepSize) { stepSize_ = stepSize; }
   void setLowerLimit(double lowerLimit) { lowerLimit_ = lowerLimit; }
   void setUpperLimit(double upperLimit) { upperLimit_ = upperLimit; }
@@ -49,7 +51,11 @@ class NSVfitParameter
   std::string UniqueName() const { return get_name_incl_type(Name(), Type()); }
 
   int Type() const { return type_; }
+
   double Value() const { return value_; }
+  double ErrUp() const { return errUp_; }
+  double ErrDown() const { return errDown_; }
+
   double StepSize() const { return stepSize_; }
   double LowerLimit() const { return lowerLimit_; }
   double UpperLimit() const { return upperLimit_; }
@@ -88,6 +94,8 @@ class NSVfitParameter
   int type_;
 
   double value_;
+  double errUp_;
+  double errDown_;
 
   double initialValue_;
   double lowerLimit_;
