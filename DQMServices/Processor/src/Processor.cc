@@ -229,7 +229,7 @@ void Processor::makeStaticInfo()
   using namespace utils;
   std::ostringstream ost;
   mDiv(&ost,"ve");
-  ost<< "Revision: V00-00-00 (" << edm::getReleaseVersion() <<")";
+  ost<< "Revision: V01-00-05 (" << edm::getReleaseVersion() <<")";
   cDiv(&ost);
 
   mDiv(&ost,"cl");
