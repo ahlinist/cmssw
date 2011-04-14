@@ -1,7 +1,7 @@
 import FWCore.ParameterSet.Config as cms
 import copy
 
-isData = 0
+isData = 1
 useMuonSkim = 0
 hltType = "HLT"
 #hltType = "REDIGI38X"
@@ -29,7 +29,7 @@ process.MessageLogger.cerr.threshold = 'INFO'
 process.options   = cms.untracked.PSet( wantSummary = cms.untracked.bool(True) )
 
 process.configurationMetadata = cms.untracked.PSet(
-    version = cms.untracked.string('$Revision: 1.12 $'),
+    version = cms.untracked.string('$Revision: 1.13 $'),
     annotation = cms.untracked.string('reco nevts:1'),
     name = cms.untracked.string('PyReleaseValidation')
 )
@@ -44,7 +44,10 @@ if(isData):
   process.source = cms.Source("PoolSource",
     fileNames = cms.untracked.vstring(
 #      '/store/data/Run2010A/MinimumBias/RAW/v1/000/144/114/9AB9A0B1-F1B3-DF11-BCBF-001D09F24FEC.root'
-	'/store/data/Run2010B/Jet/RAW/v1/000/149/181/326E0028-28E2-DF11-8EF5-001D09F2546F.root'
+#	'/store/data/Run2010B/Jet/RAW/v1/000/149/181/326E0028-28E2-DF11-8EF5-001D09F2546F.root'
+#	'rfio:/castor/cern.ch/user/s/slehti/TauTriggerEfficiencyMeasurementData/pickevents_Ztautau_MikeOct2010_Mu_Run2010A-v1_RAW.root'
+#	'rfio:/castor/cern.ch/user/s/slehti/TauTriggerEfficiencyMeasurementData/pickevents_Mu_pflow_tau_Run2010AB_TTEffMuSkim_cmssw399.root'
+	'rfio:/castor/cern.ch/user/s/swanson/muTau_HLT-AOD.root'
     )
   )
 else:
@@ -120,13 +123,28 @@ if(useMuonSkim):
     TTEffSkimSelection = cms.vstring('muonFilter','tauFilter')
 
 # Output definition
+process.FEVTEventContent.outputCommands.append('drop *_*_*_TTEffSkim')
+process.FEVTEventContent.outputCommands.append('drop *_*_*_RECO')
 process.FEVTEventContent.outputCommands.append('keep edmHepMCProduct_*_*_*')
 process.FEVTEventContent.outputCommands.append('keep recoGenParticles_*_*_*')
 process.FEVTEventContent.outputCommands.append('keep *_TTEffPFTausSelected_*_*')
 process.FEVTEventContent.outputCommands.append('keep *_TTEffPFTauDiscriminationByLeadingTrackFinding_*_*')
 process.FEVTEventContent.outputCommands.append('keep *_TTEffPFTauDiscriminationByIsolation_*_*')
 process.FEVTEventContent.outputCommands.append('keep *_TTEffPFTauDiscriminationAgainstMuon_*_*')
-process.FEVTEventContent.outputCommands.append('keep *')
+process.FEVTEventContent.outputCommands.append('keep *_offlinePrimaryVertices_*_*')
+process.FEVTEventContent.outputCommands.append('keep *_elecpreid_*_*')
+process.FEVTEventContent.outputCommands.append('keep *_particleFlow_*_*')
+process.FEVTEventContent.outputCommands.append('keep *_ak5PFJets_*_*')
+process.FEVTEventContent.outputCommands.append('keep *_generalTracks_*_*')
+process.FEVTEventContent.outputCommands.append('keep *_hltHbhereco_*_*')
+process.FEVTEventContent.outputCommands.append('keep recoMuons_*_*_*')
+process.FEVTEventContent.outputCommands.append('keep recoPFBlocks_*_*_*')
+process.FEVTEventContent.outputCommands.append('keep L1GctJetCands_*_*_*')
+process.FEVTEventContent.outputCommands.append('keep HcalNoiseSummary_*_*_*')
+process.FEVTEventContent.outputCommands.append('keep recoPFMETs_*_*_*')
+process.FEVTEventContent.outputCommands.append('keep *_l1extraParticles_*_*')
+process.FEVTEventContent.outputCommands.append('keep L1GlobalTriggerReadoutRecord_*_*_*')
+#process.FEVTEventContent.outputCommands.append('keep *')
 process.output = cms.OutputModule("PoolOutputModule",
     splitLevel = cms.untracked.int32(0),
     outputCommands = process.FEVTEventContent.outputCommands,
