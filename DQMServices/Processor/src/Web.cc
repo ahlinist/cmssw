@@ -3,6 +3,13 @@
 using namespace std;
 using namespace dqmevf;
 
+void Web::setJCLogURL(std::string prochost, std::string procpid) {
+  JCLogURL_ = prochost.substr(0,prochost.rfind(':'));
+  cout << JCLogURL_ << endl;
+  JCLogURL_+= ":9999/urn:xdaq-application:lid=10/ProcLog?log=/tmp/xdaqjcPID";
+  JCLogURL_+= procpid + ".log";
+}
+
 void Web::importStaticJS(std::ostringstream *out, std::string uri) {
 
 *out << endl;
@@ -318,7 +325,9 @@ importStaticJS(out,uri);
 *out << "      <tr>"<<endl;
 *out << "        <!-- icon -->"<<endl;
 *out << "        <td align=\"left\">"<<endl;
-*out << "	   <img id=\"icon\" align=\"middle\" src=\"/evf/images/metal029.jpg\" alt=\"main\" width=\"64\" height=\"64\">"<<endl;
+*out << "        <a href=\""<< JCLogURL_ << "\">"<<endl;
+*out << "	   <img id=\"icon\" align=\"middle\" src=\"/evf/images/metal029.jpg\" alt=\"main\" width=\"64\" height=\"64\">" << endl;
+*out << "        </a>"<<endl;
 *out << "        </td>"<<endl;
 *out << "        <!-- Application info -->"<<endl;
 *out << "        <td align=\"middle\">"<<endl;
