@@ -763,8 +763,6 @@ void Processor::spotlightWebPage(xgi::Input  *in, xgi::Output *out)
   *out << "</table>"                                                 << std::endl;
   
   *out << "<br><textarea rows=" << 10 << " cols=80 scroll=yes>"      << std::endl;
-  //todo read and cache cfg through pipe
-//  *out << configStringCopy_.value_                                   << std::endl;
 
   *out << friendlyPythonCfg_                                         << std::endl;
   *out << "</textarea><P>"                                           << std::endl;
@@ -780,48 +778,50 @@ void Processor::summaryWeb(xgi::Input *in, xgi::Output *out)
   TriggerReportStatic * trs =0;
   if (trhSumAcc_)
     trs = trhSumAcc_->getPackedTriggerReportAsStruct();
-  if (!trs || trs->trigPathsInMenu==0) {
-    *out << "<td>HLT Report not yet received</td>" << std::endl;
-    return;
-  }
+
   *out << "<table>"                                        		<< std::endl;
   *out << "<tr valign=\"top\">"                          		<< std::endl;
-  *out << "<td>" 							<< std::endl;
-  // trigger summary table
-  *out << "<table border=1 bgcolor=\"#CFCFCF\">" << std::endl;
-  *out << "  <tr>"							<< std::endl;
-  *out << "    <th colspan=7>"					<< std::endl;
-  *out << "      Trigger Summary up to LS " << lastReceivedTrLs_      << std::endl;
-  *out << "    </th>"							<< std::endl;
-  *out << "  </tr>"							<< std::endl;
-  *out << "  <tr >"							<< std::endl;
-  *out << "    <th >Path</th>"					<< std::endl;
-  *out << "    <th >Exec</th>"					<< std::endl;
-  *out << "    <th >Pass</th>"					<< std::endl;
-  *out << "    <th >Fail</th>"					<< std::endl;
-  *out << "    <th >Except</th>"					<< std::endl;
-  *out << "  </tr>"							<< std::endl;
-  for(int i=0; i<trs->trigPathsInMenu; i++) {
-    PathSummaryStatic * pss = &(trs->trigPathSummaries[i]);
-    *out << "  <tr>" 							<< std::endl;
-    *out << "    <td>"<< std::string(pss->name) << "</td>"	<< std::endl;
-    *out << "    <td>" <<pss->timesRun << "</td>"			<< std::endl;
-    *out << "    <td>" << pss->timesPassed << "</td>"			<< std::endl;
-    *out << "    <td >" << pss->timesFailed << "</td>"		<< std::endl;
-    *out << "    <td ";
-    if(pss->timesExcept !=0)
-      *out << "bgcolor=\"red\""		      			<< std::endl;
-    *out << ">" << pss->timesExcept << "</td>"			<< std::endl;
-    *out << "  </tr >"						<< std::endl;
-  }
-  *out << "</table>" << std::endl;
 
+  if (!trs || trs->trigPathsInMenu==0) {
+    *out << "<td>HLT Report not yet received</td>" << std::endl;
+  }
+  else {
+    // trigger summary table
+    *out << "<td>" 							<< std::endl;
+    *out << "<table border=1 bgcolor=\"#CFCFCF\">" 			<< std::endl;
+    *out << "  <tr>"							<< std::endl;
+    *out << "    <th colspan=7>"					<< std::endl;
+    *out << "      Trigger Summary up to LS " << lastReceivedTrLs_      << std::endl;
+    *out << "    </th>"							<< std::endl;
+    *out << "  </tr>"							<< std::endl;
+    *out << "  <tr >"							<< std::endl;
+    *out << "    <th >Path</th>"					<< std::endl;
+    *out << "    <th >Exec</th>"					<< std::endl;
+    *out << "    <th >Pass</th>"					<< std::endl;
+    *out << "    <th >Fail</th>"					<< std::endl;
+    *out << "    <th >Except</th>"					<< std::endl;
+    *out << "  </tr>"							<< std::endl;
+    for(int i=0; i<trs->trigPathsInMenu; i++) {
+      PathSummaryStatic * pss = &(trs->trigPathSummaries[i]);
+      *out << "  <tr>" 							<< std::endl;
+      *out << "    <td>"<< std::string(pss->name) << "</td>"	<< std::endl;
+      *out << "    <td>" <<pss->timesRun << "</td>"			<< std::endl;
+      *out << "    <td>" << pss->timesPassed << "</td>"			<< std::endl;
+      *out << "    <td >" << pss->timesFailed << "</td>"		<< std::endl;
+      *out << "    <td ";
+      if(pss->timesExcept !=0)
+	*out << "bgcolor=\"red\""		      			<< std::endl;
+      *out << ">" << pss->timesExcept << "</td>"			<< std::endl;
+      *out << "  </tr >"						<< std::endl;
+    }
+    *out << "</table>" << std::endl;
+    *out << "</td>" 							<< std::endl;
+  }
 
   *out << "<td>" << std::endl;
   //Module details printout from subprocess
-  subWebRetriever(out,std::string("epModuleDescs"),subs_[0].pid(),-1,0);
-
-
+  if (subs_.size())
+    subWebRetriever(out,std::string("epModuleDescs"),subs_[0].pid(),-1,0);
   *out << "</td>" << std::endl;
   *out << "</tr>" << std::endl;
   *out << "</table>" << std::endl;
@@ -1090,7 +1090,8 @@ void Processor::subWebRetriever(xgi::Output *out, std::string method, pid_t chil
    subs_[i].postMon(msg1);
    MsgBuf msg(MAX_MSG_SIZE,MSQS_MESSAGE_TYPE_WEB);
    bool done = false;
-   std::vector<char *>pieces;
+   vector<char *>pieces;
+   vector<unsigned> pieceSizes;
 
    int sizecount=0;
    //read back
@@ -1111,21 +1112,22 @@ void Processor::subWebRetriever(xgi::Output *out, std::string method, pid_t chil
      char *buf= new char[nbytes];
      read(anonymousPipe_[PIPE_READ],buf,nbytes);
      pieces.push_back(buf);
+     pieceSizes.push_back(nbytes);
      sizecount+=nbytes;
    }
 
    //try to cache ("passthrough")
    if (tryToCache) {
      if (method=="epModuleDescs") {
-       bool success = epModuleDescs_.cacheNew(pieces,sizecount);
+       bool success = epModuleDescs_.cacheNew(pieces,pieceSizes,sizecount);
        if (success) epModuleDescs_.fill(out);
      }
      else if (method=="epModuleIndex") {
-       /*bool success =*/ epModuleIndex_.cacheNew(pieces,sizecount);
+       /*bool success =*/ epModuleIndex_.cacheNew(pieces,pieceSizes,sizecount);
        /*if (success)*/ epModuleIndex_.fill(out,par1);
      }
      else if (method=="epStateIndex") {
-       /*bool success =*/ epStateIndex_.cacheNew(pieces,sizecount);
+       /*bool success =*/ epStateIndex_.cacheNew(pieces,pieceSizes,sizecount);
        /*if (success)*/ epStateIndex_.fill(out,par1);
      }
    }
@@ -1708,13 +1710,13 @@ void Processor::localLog(std::string m)
 
 //helper stuff->will be moved somewhere
 //______________________________________________________________________________
-bool Processor::epStringIndexT::cacheNew(std::vector<char*> pieces, int bsize) {
+bool Processor::epStringIndexT::cacheNew(std::vector<char*> pieces, std::vector<unsigned> pieceSizes, int bsize) {
 
 	if (!bsize || !pieces.size()) return false;
 	cached=false;
 	std::string buf;
 	for(unsigned int j = 0; j < pieces.size(); j++)
-		buf+=std::string(pieces[j]);
+		buf+=std::string(pieces[j],pieceSizes[j]);
 	
 	boost::char_separator<char> sep(";");
 	boost::tokenizer<boost::char_separator<char> > tokens(buf, sep);
