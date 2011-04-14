@@ -210,6 +210,9 @@ Processor::Processor(xdaq::ApplicationStub *s)
   semaphore_ = 0;
   makeStaticInfo();
   webHelper_ = new Web();
+  ostringstream pidstr;
+  pidstr << getpid();
+  webHelper_->setJCLogURL( getApplicationDescriptor()->getContextDescriptor()->getURL(), pidstr.str() );
 }
 
 
