@@ -293,7 +293,6 @@ namespace dqmevf{
     modNames_.push_back("DQM");
     //map for matching name to integer
     for (unsigned int i=0;i<modNames_.size();i++) modNameMap_[modNames_[i]]=i;
-    pthread_mutex_unlock(&readout_lock_);
 
     //setup initial trigger report
     edm::TriggerReport tr;
@@ -301,6 +300,8 @@ namespace dqmevf{
     trh_.formatReportTable(tr);
 
     epInitialized_ = true;
+    pthread_mutex_unlock(&readout_lock_);
+
     LOG4CPLUS_INFO(log_," edm::EventProcessor configuration finished.");
     return;
   }
@@ -312,9 +313,6 @@ namespace dqmevf{
     //if not initialized, end with success
     stopCalled_=true;
     if (!epInitialized_) return edm::EventProcessor::epOther;
-
-    //pthread_mutex_lock(&readout_lock_);
-    //pthread_mutex_unlock(&readout_lock_);
 
     edm::event_processor::State st = evtProcessor_->getState();
     
@@ -542,8 +540,8 @@ void FWEPWrapper::detachDqmFromShm() throw (dqmevf::Exception)
   
   //printout module descriptions to master process
   void FWEPWrapper::moduleDescs(xgi::Input *in, xgi::Output *out) {
-  
-     if (!descs_.size()) return;
+     if (!descs_.size() || !epInitialized_) return;
+
      evf::ModuleWebRegistry *mwr = 0;
      edm::ServiceRegistry::Operate operate(evtProcessor_->getToken());
      try {
@@ -598,7 +596,6 @@ void FWEPWrapper::detachDqmFromShm() throw (dqmevf::Exception)
 	 
     }
     *out << "</table>" << std::endl;
-  
   }
   
   //______________________________________________________________________________
@@ -983,8 +980,9 @@ bool FWEPWrapper::monitorReceiver(toolbox::task::WorkLoop *)
 	      out << "Error 404!" << std::endl;
 	    }
           pthread_mutex_unlock(&readout_lock_);
-
-	  bytesToSend = out.str().size()+1;//0 terminator added
+	  if (!out.str().size()) bytesToSend=0;
+	  else
+	    bytesToSend = out.str().size()+1;//0 terminator added
 	  unsigned int cycle = 0;
 	  if(bytesToSend==0)
 	    {

@@ -306,11 +306,11 @@ namespace dqmevf
 	    void fill (xgi::Output * out) {
 		    *out << holder;
 	    }
-	    bool cacheNew(std::vector<char*> pieces, int bcount) {
+	    bool cacheNew(std::vector<char*> pieces, std::vector<unsigned> pieceSizes, int bcount) {
 		    if (bcount==0 || !pieces.size()) return false;
 		    holder = std::string();
 		    for(unsigned int j = 0; j < pieces.size(); j++){
-			    holder+=std::string(pieces[j]);
+			    holder+=std::string(pieces[j],pieceSizes[j]);
 		    }
 		    cached=true;
 		    return cached;
@@ -337,7 +337,7 @@ namespace dqmevf
 		    else
 		    *out << holder[idxAskedFor];
 	    }
-	    bool cacheNew(std::vector<char*> pieces, int bcount);
+	    bool cacheNew(std::vector<char*> pieces, std::vector<unsigned> pieceSizes, int bcount);
 	    
     };
     epStringIndexT  epModuleIndex_;
