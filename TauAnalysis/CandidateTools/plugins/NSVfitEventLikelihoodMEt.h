@@ -8,15 +8,13 @@
  *
  * \author Evan Friis, Christian Veelken; UC Davis
  *
- * \version $Revision: 1.1 $
+ * \version $Revision: 1.2 $
  *
- * $Id: NSVfitEventLikelihoodMEt.h,v 1.1 2011/02/27 16:45:16 veelken Exp $
+ * $Id: NSVfitEventLikelihoodMEt.h,v 1.2 2011/03/03 13:04:47 veelken Exp $
  *
  */
 
 #include "FWCore/ParameterSet/interface/ParameterSet.h"
-
-#include "DataFormats/Common/interface/Handle.h"
 
 #include "TauAnalysis/CandidateTools/interface/NSVfitEventLikelihood.h"
 
@@ -36,6 +34,8 @@ class NSVfitEventLikelihoodMEt : public NSVfitEventLikelihood
   double operator()(const NSVfitEventHypothesis*) const;
 
  private:
+  double power_;
+
   TFormula* parSigma_;
   TFormula* parBias_;
 
