@@ -9,9 +9,9 @@
  * 
  * \author Christian Veelken, UC Davis
  *
- * \version $Revision: 1.3 $
+ * \version $Revision: 1.4 $
  *
- * $Id: PATLeptonTrackExtractor.h,v 1.3 2010/09/02 11:30:07 veelken Exp $
+ * $Id: PATLeptonTrackExtractor.h,v 1.4 2010/11/20 17:07:05 veelken Exp $
  *
  */
 
@@ -23,14 +23,14 @@
 
 #include "DataFormats/Candidate/interface/Candidate.h"
 
+// prevent generic template instance from being called
 template <typename T>
 class PATLeptonTrackExtractor
 {
  public:
   const reco::Track* operator()(const T& lepton) const
   {
-    //std::cout << "<PATLeptonTrackExtractor::operator()>:" << std::endl;
-    return lepton.track().get();
+    assert(0);
   }
 };
 
@@ -42,8 +42,18 @@ class PATLeptonTrackExtractor<pat::Electron>
  public:
   const reco::Track* operator()(const pat::Electron& electron) const
   {
-    //std::cout << "<PATLeptonTrackExtractor<pat::Electron>::operator()>:" << std::endl;
     return electron.gsfTrack().get();
+  }
+};
+
+// add template specialization for pat::Muons
+template <>
+class PATLeptonTrackExtractor<pat::Muon>
+{
+ public:
+  const reco::Track* operator()(const pat::Muon& muon) const
+  {
+    return muon.track().get();
   }
 };
 
@@ -67,13 +77,14 @@ class PATLeptonTrackExtractor<pat::Tau>
 
 // add dummy template specialization for the generic
 // particle Candidate case
+// CV: template instance for generic particle Candidates is deprecated
+//     and has only been added for backwards compatibility (2011/04/15)
 template <>
 class PATLeptonTrackExtractor<reco::Candidate>
 {
  public:
   const reco::Track* operator()(const reco::Candidate& candidate) const
   {
-    //std::cout << "<PATLeptonTrackExtractor<reco::Candidate>::operator()>:" << std::endl;
     return 0;
   }
 };
