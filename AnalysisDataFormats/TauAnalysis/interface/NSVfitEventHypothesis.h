@@ -41,7 +41,7 @@ class NSVfitEventHypothesis
   /// missing transverse momentum before fit
   /// and fitted value of missing transverse momentum
   reco::Candidate::LorentzVector p4MEt() const { return p4MEt_; }
-  reco::Candidate::LorentzVector p4MEt_fitted() const { return (p4MEt_ - dp4_); }
+  reco::Candidate::LorentzVector dp4MEt_fitted() const { return (p4MEt_ - dp4_); }
 
   /// access to position of primary event vertex (tau lepton production vertex);
   /// refitted by NSVfit algorithm after excluding from fit tracks associated to tau lepton decay products
