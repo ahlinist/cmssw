@@ -1,6 +1,7 @@
 import FWCore.ParameterSet.Config as cms
 
 from TrackingTools.TransientTrack.TransientTrackBuilder_cfi import *
+from RecoMET.METProducers.METSigParams_cfi import *
 
 nSVfitTrackService = cms.Service("NSVfitTrackService")
 
@@ -147,6 +148,19 @@ nSVfitEventLikelihoodMEt = cms.PSet(
         perpSigma = cms.string("6.85*(1 - 0.00547*x)"),
         perpBias = cms.string("0.")
     ),
+    power = cms.double(1.0), 
+    verbosity = cms.int32(0)
+)
+
+nSVfitEventLikelihoodMEt2 = cms.PSet(
+    pluginName = cms.string("nSVfitEventLikelihoodMEt2"),
+    pluginType = cms.string("NSVfitEventLikelihoodMEt2"),
+    srcPFJets = cms.InputTag('ak5PFJets'),
+    srcPFCandidates = cms.InputTag('particleFlow'),
+    resolution = METSignificance_params,
+    dRoverlapPFJet = cms.double(0.3),
+    dRoverlapPFCandidate = cms.double(0.1),
+    power = cms.double(1.0), 
     verbosity = cms.int32(0)
 )
 
