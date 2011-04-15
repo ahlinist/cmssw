@@ -55,9 +55,26 @@ diTauCandidateNSVfitHistManagerForMuTau.nSVfitEventHypotheses = cms.PSet(
     ##psKine_MEt_pow10ptBalance_int = cms.string('psKine_MEt_pow10ptBalance_int'),
     ##psKine_MEt_pow15ptBalance_int = cms.string('psKine_MEt_pow15ptBalance_int'),
     ##psKine_MEt_pow20ptBalance_int = cms.string('psKine_MEt_pow20ptBalance_int'),
+    
     psKine_fit = cms.string('psKine_fit'),
-    psKine_MEt_fit = cms.string('psKine_MEt_fit'),
-    psKine_MEt_pow10ptBalance_fit = cms.string('psKine_MEt_pow10ptBalance_fit')
+    
+    psKine_pow10MEt_fit = cms.string('psKine_pow10MEt_fit'),
+    psKine_pow20MEt_fit = cms.string('psKine_pow20MEt_fit'),
+    psKine_pow40MEt_fit = cms.string('psKine_pow40MEt_fit'),
+
+    psKine_pow10MEt2_fit = cms.string('psKine_pow10MEt2_fit'),
+    psKine_pow20MEt2_fit = cms.string('psKine_pow20MEt2_fit'),
+    psKine_pow40MEt2_fit = cms.string('psKine_pow40MEt2_fit'),
+    
+    psKine_pow10MEt_pow10ptBalance_fit = cms.string('psKine_pow10MEt_pow10ptBalance_fit'),
+    
+    psKine_pow10MEt2_pow10ptBalance_fit = cms.string('psKine_pow10MEt2_pow10ptBalance_fit'),
+    psKine_pow20MEt2_pow10ptBalance_fit = cms.string('psKine_pow20MEt2_pow10ptBalance_fit'),
+    psKine_pow40MEt2_pow10ptBalance_fit = cms.string('psKine_pow40MEt2_pow10ptBalance_fit'),
+    
+    psKine_pow10MEt2_pow05ptBalance_fit = cms.string('psKine_pow10MEt2_pow05ptBalance_fit'),
+    psKine_pow10MEt2_pow15ptBalance_fit = cms.string('psKine_pow10MEt2_pow15ptBalance_fit'),
+    psKine_pow10MEt2_pow20ptBalance_fit = cms.string('psKine_pow10MEt2_pow20ptBalance_fit')
 )
 
 diTauCandidateNSVfitVtxMultiplicityBinGridHistManager = cms.PSet(
@@ -513,8 +530,8 @@ muTauEventDump = cms.PSet(
     ),
     nSVfitAlgorithms = cms.vstring(
         "psKine_fit",
-        "psKine_MEt_fit",
-        "psKine_MEt_pow10ptBalance_fit"
+        "psKine_pow10MEt_fit",
+        "psKine_pow10MEt_pow10ptBalance_fit"
     ),
     ##annotations = cms.VPSet(
     ##    cms.PSet(
@@ -539,6 +556,8 @@ muTauEventDump = cms.PSet(
     caloMEtSource = cms.InputTag('patMETs'),
     pfMEtSource = cms.InputTag('patPFMETs'),
     genMEtSource = cms.InputTag('genMetTrue'),
+
+    dcsTag = cms.InputTag("scalersRawToDigi"),
 
     #output = cms.string("muTauEventDump.txt"),
     output = cms.string("std::cout"),
