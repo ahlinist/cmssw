@@ -5,12 +5,15 @@
   <use   name="CommonTools/Utils"/>
   <use   name="DataFormats/Candidate"/>
   <use   name="DataFormats/CLHEP"/>
+  <use   name="DataFormats/JetReco"/>
+  <use   name="DataFormats/ParticleFlowCandidate"/>
   <use   name="DQMServices/Core"/>
   <use   name="FWCore/Framework"/>
   <use   name="FWCore/MessageLogger"/>
   <use   name="FWCore/ParameterSet"/>
   <use   name="FWCore/PluginManager"/>
   <use   name="FWCore/Utilities"/>
+  <use   name="RecoMET/METAlgorithms"/>
   <use   name="TrackingTools/TrajectoryState"/>
   <use   name="TrackingTools/TransientTrack"/>
   <use   name="TrackingTools/Records"/>
