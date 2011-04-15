@@ -24,7 +24,7 @@ process.MessageLogger.suppressWarning = cms.untracked.vstring(
 process.load('Configuration/StandardSequences/GeometryIdeal_cff')
 process.load('Configuration/StandardSequences/MagneticField_cff')
 process.load('Configuration/StandardSequences/FrontierConditions_GlobalTag_cff')
-process.GlobalTag.globaltag = cms.string('START38_V14::All')
+process.GlobalTag.globaltag = cms.string('START311_V2::All')
 
 # import particle data table
 # needed for print-out of generator level information
@@ -80,16 +80,23 @@ process.maxEvents = cms.untracked.PSet(
 process.source = cms.Source(
     "PoolSource",
     fileNames = cms.untracked.vstring(
-        'file:/data1/veelken/CMSSW_3_8_x/skims/test/mcWplusJetsPU156bx_1_1_LO9.root'
+        'file:/data2/veelken/CMSSW_4_1_x/skims/ZtoMuTau/DYtautau_spring11_powhegZ2_1_1_XvY.root'
+        #'file:/data2/veelken/CMSSW_4_1_x/skims/ZtoMuTau/data2011A_tauPlusX_AOD_1_1_MV9.root'
+        #'file:/data2/veelken/CMSSW_4_1_x/skims/ZtoMuTau/PPmuXptGt20Mu15_aodsim_1_1_K9X.root'
     )
     #skipBadFiles = cms.untracked.bool(True)
 )
 
+##HLTprocessName = "HLT" # use for 2011 Data
+HLTprocessName = "REDIGI311X" # use for Spring'11 reprocessed MC
+
 #--------------------------------------------------------------------------------
 # import utility function for configuring PAT trigger matching
 from PhysicsTools.PatAlgos.tools.trigTools import switchOnTrigger
-switchOnTrigger(process, hltProcess = 'HLT', outputModule = '')
+switchOnTrigger(process, hltProcess = HLTprocessName, outputModule = '')
 process.patTrigger.addL1Algos = cms.bool(True)
+from TauAnalysis.Configuration.cfgOptionMethods import _setTriggerProcess
+_setTriggerProcess(process, cms.InputTag("TriggerResults", "", HLTprocessName))
 #--------------------------------------------------------------------------------
 
 #--------------------------------------------------------------------------------
@@ -454,3 +461,7 @@ if disableReRunningTaus:
 #print process.dumpPython()
 print "Disabling MUON SCALE CORRECTION"
 process.patMuonsMuScleFitCorrectedMomentum.doApplyCorrection = cms.bool(False)
+
+# restrict input to AOD event content
+from TauAnalysis.Configuration.tools.switchToAOD import switchToAOD
+switchToAOD(process)
