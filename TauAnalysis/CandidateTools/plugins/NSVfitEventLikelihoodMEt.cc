@@ -22,6 +22,9 @@ NSVfitEventLikelihoodMEt::NSVfitEventLikelihoodMEt(const edm::ParameterSet& cfg)
     qY_(0.),
     qT_(0.)
 {
+  power_ = ( cfg.exists("power") ) ?
+    cfg.getParameter<double>("power") : 1.0;
+
   edm::ParameterSet cfgResolution = cfg.getParameter<edm::ParameterSet>("resolution");
   parSigma_  = new TFormula("parSigma",  cfgResolution.getParameter<std::string>("parSigma").data());
   parBias_   = new TFormula("parBias",   cfgResolution.getParameter<std::string>("parBias").data());
@@ -79,45 +82,24 @@ double NSVfitEventLikelihoodMEt::operator()(const NSVfitEventHypothesis* hypothe
     projSinPhi = (qY_/qT_);
   } 
 
-  double metPx = hypothesis->p4MEt().px();
-  double metPy = hypothesis->p4MEt().py();
+  double pxResidual_fitted = hypothesis->dp4MEt_fitted().px();
+  double pyResidual_fitted = hypothesis->dp4MEt_fitted().py();
   if ( this->verbosity_ ) {
-    std::cout << "metPx = " << metPx << std::endl;
-    std::cout << "metPy = " << metPy << std::endl;
+    std::cout << "pxResidual_fitted = " << pxResidual_fitted << std::endl;
+    std::cout << "pyResidual_fitted = " << pyResidual_fitted << std::endl;
   }
 
-  double metPar  = (metPx*projCosPhi + metPy*projSinPhi);
-  double metPerp = (metPx*projSinPhi - metPy*projCosPhi);
+  double parResidual_fitted  = (pxResidual_fitted*projCosPhi + pyResidual_fitted*projSinPhi) - parBias;
+  double perpResidual_fitted = (pxResidual_fitted*projSinPhi - pyResidual_fitted*projCosPhi) - perpBias;
   if ( this->verbosity_ ) {
-    std::cout << " metPar  = " << metPar  << std::endl;
-    std::cout << " metPerp = " << metPerp << std::endl;
+    std::cout << " parResidual_fitted  = " << parResidual_fitted  << std::endl;
+    std::cout << " perpResidual_fitted = " << perpResidual_fitted << std::endl;
   }
 
-  double metPx_fitted = hypothesis->p4MEt_fitted().px();
-  double metPy_fitted = hypothesis->p4MEt_fitted().py();
-  if ( this->verbosity_ ) {
-    std::cout << "metPx_fitted = " << metPx_fitted << std::endl;
-    std::cout << "metPy_fitted = " << metPy_fitted << std::endl;
-  }
-
-  double metPar_fitted  = (metPx_fitted*projCosPhi + metPy_fitted*projSinPhi);
-  double metPerp_fitted = (metPx_fitted*projSinPhi - metPy_fitted*projCosPhi);
-  if ( this->verbosity_ ) {
-    std::cout << " metPar_fitted  = " << metPar_fitted  << std::endl;
-    std::cout << " metPerp_fitted = " << metPerp_fitted << std::endl;
-  }
-
-  double parResidual  = (metPar  - metPar_fitted ) - parBias;
-  double perpResidual = (metPerp - metPerp_fitted) - perpBias;
-  if ( this->verbosity_ ) {
-    std::cout << " parResidual  = " << parResidual  << std::endl;
-    std::cout << " perpResidual = " << perpResidual << std::endl;
-  }
-
-  double nll = -(logGaussian(parResidual, parSigma) + logGaussian(perpResidual, perpSigma));
+  double nll = -(logGaussian(parResidual_fitted, parSigma) + logGaussian(perpResidual_fitted, perpSigma));
   if ( this->verbosity_ ) std::cout << "--> nll = " << nll << std::endl;
 
-  return nll;
+  return power_*nll;
 }
 
 #include "FWCore/Framework/interface/MakerMacros.h"
