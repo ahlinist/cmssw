@@ -8,9 +8,9 @@
  * 
  * \author Christian Veelken, UC Davis
  *
- * \version $Revision: 1.3 $
+ * \version $Revision: 1.4 $
  *
- * $Id: PATElectronDump.h,v 1.3 2011/04/11 09:54:48 veelken Exp $
+ * $Id: PATElectronDump.h,v 1.4 2011/04/12 09:12:24 jkolb Exp $
  *
  */
 
@@ -49,7 +49,6 @@ class PATElectronDump : public ObjectDumpBase
   PATElectronPFIsolationExtractor* pfChargedHadronIsoExtractor_;
   PATElectronPFIsolationExtractor* pfNeutralHadronIsoExtractor_;
   PATElectronPFIsolationExtractor* pfPhotonIsoExtractor_;
-
 };
 
 #endif  
