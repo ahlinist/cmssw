@@ -99,6 +99,7 @@ ahToMuTauEventSelConfiguratorOS = eventSelFlagProdConfigurator(
       cfgPrimaryEventVertexQualityForMuTau,
       cfgPrimaryEventVertexPositionForMuTau,
       cfgDiMuPairZmumuHypothesisVetoByLooseIsolation,
+      cfgDiMuPairDYmumuHypothesisVeto,
       cfgCentralJetEt20bTagVeto,
       cfgCentralJetEt20Cut,
       cfgCentralJetEt20bTagCut ],
