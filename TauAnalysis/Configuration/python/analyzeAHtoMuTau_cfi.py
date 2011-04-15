@@ -60,12 +60,18 @@ diTauCandidateZmumuHypothesisHistManagerForMuTau.pluginType = cms.string('ZllHyp
 diTauCandidateZmumuHypothesisHistManagerForMuTau.ZllHypothesisSource = cms.InputTag('muTauPairZmumuHypotheses')
 diTauCandidateZmumuHypothesisHistManagerForMuTau.dqmDirectory_store = cms.string('DiTauCandidateZmumuHypothesisQuantities')
 
-# import config for Zmumu veto histogram manager
-muPairHistManagerByLooseIsolation = diTauCandidateHistManager.clone(
-    pluginName = cms.string('muPairHistManagerByLooseIsolation'),
+# import config for Z/gamma* --> mu+ mu- veto histogram manager
+muPairHistManagerZmumuHypothesesByLooseIsolation = diTauCandidateHistManager.clone(
+    pluginName = cms.string('muPairHistManagerZmumuHypothesesByLooseIsolation'),
     pluginType = cms.string('PATDiMuPairHistManager'),
     diTauCandidateSource = cms.InputTag('allDiMuPairZmumuHypothesesByLooseIsolation'),
-    dqmDirectory_store = cms.string('DiMuZmumuHypothesisByLooseIsolationQuantities')
+    dqmDirectory_store = cms.string('DiMuonFromZmumuQuantities')
+)
+muPairHistManagerDYmumuHypotheses = diTauCandidateHistManager.clone(
+    pluginName = cms.string('muPairHistManagerDYmumuHypotheses'),
+    pluginType = cms.string('PATDiMuPairHistManager'),
+    diTauCandidateSource = cms.InputTag('allDiMuPairDYmumuHypotheses'),
+    dqmDirectory_store = cms.string('DiMuonFromDYmumuQuantities')
 )
 
 # import config for central jet veto histogram manager
@@ -476,7 +482,7 @@ muTauAnalysisSequenceOS_woBtag = cms.VPSet(
     cms.PSet(
         analyzers = cms.vstring(
             'muonHistManager',
-            'tauHistManager'
+            'tauHistManager',
             'triggerHistManagerForMuTau'
         ),
         replace = cms.vstring(
@@ -790,7 +796,6 @@ muTauAnalysisSequenceOS_woBtag = cms.VPSet(
             'diTauCandidateHistManagerForMuTau',
 	    'diTauCandidateSVfitHistManagerForMuTau',
             'diTauCandidateNSVfitHistManagerForMuTau',
-            'diTauCandidateNSVfitVtxMultiplicityBinGridHistManager',
             'muPairHistManagerDYmumuHypotheses'
         ),
         replace = cms.vstring(
