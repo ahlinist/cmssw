@@ -23,15 +23,15 @@
 #include <TMath.h>
 
 PATElectronDump::PATElectronDump(const edm::ParameterSet& cfg)
-	: ObjectDumpBase(cfg),
-	patElectronSource_(cfg.getParameter<edm::InputTag>("electronSource")),
-	genParticleSource_(cfg.getParameter<edm::InputTag>("genParticleSource")),
-	pfCandidateSrc_(cfg.getParameter<edm::InputTag>("pfCandidateSource")),
+  : ObjectDumpBase(cfg),
+    patElectronSource_(cfg.getParameter<edm::InputTag>("electronSource")),
+    genParticleSource_(cfg.getParameter<edm::InputTag>("genParticleSource")),
+    pfCandidateSrc_(cfg.getParameter<edm::InputTag>("pfCandidateSource")),
     dcsTag_(cfg.getParameter<edm::InputTag>("dcsTag")),
+    pfCombIsoExtractor_(0),
     pfChargedHadronIsoExtractor_(0),
     pfNeutralHadronIsoExtractor_(0),
-    pfPhotonIsoExtractor_(0),
-    pfCombIsoExtractor_(0)
+    pfPhotonIsoExtractor_(0)
 {
 	typedef std::vector<int> vint;
 	skipPdgIdsGenParticleMatch_ = ( cfg.exists("skipPdgIdsGenParticleMatch") ) ?
