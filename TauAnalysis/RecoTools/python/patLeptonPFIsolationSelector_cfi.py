@@ -37,7 +37,7 @@ patMuonPFIsolationSelector = cms.PSet(
     pileUpCorr = cms.PSet(
         method = cms.string("deltaBeta"),
         deltaZ = cms.double(0.2),
-        chargedToNeutralFactor = cms.double(0.5) # (pi+ + pi-)/pi0 ratio in QCD/min. bias events, as expected from IsoSpin symmetry
+        chargedToNeutralFactor = cms.double(0.38) # (pi+ + pi-)/pi0 ratio in QCD/min. bias events
     )
 )
 

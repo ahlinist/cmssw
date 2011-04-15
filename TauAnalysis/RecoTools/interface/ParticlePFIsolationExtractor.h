@@ -8,9 +8,9 @@
  * 
  * \author Christian Veelken, UC Davis
  *
- * \version $Revision: 1.6 $
+ * \version $Revision: 1.7 $
  *
- * $Id: ParticlePFIsolationExtractor.h,v 1.6 2011/04/09 10:50:22 veelken Exp $
+ * $Id: ParticlePFIsolationExtractor.h,v 1.7 2011/04/11 10:00:02 veelken Exp $
  *
  */
 
@@ -30,7 +30,7 @@
 #include "DataFormats/BeamSpot/interface/BeamSpot.h"
 #include "DataFormats/Math/interface/deltaR.h"
 
-#include "TauAnalysis/RecoTools/interface/PATLeptonTrackRefVectorExtractor.h"
+#include "TauAnalysis/RecoTools/interface/PATLeptonTrackVectorExtractor.h"
 #include "TauAnalysis/RecoTools/interface/pfCandAuxFunctions.h"
 
 #include <TMath.h>
@@ -83,7 +83,7 @@ class ParticlePFIsolationExtractor
 	<< "Invalid Configuration parameter method = " << method_string << "!!\n";
       
       if ( methodPUcorr_ != kNone ) {
-	trackExtractor_ = new PATLeptonTrackRefVectorExtractor<T>();
+	trackExtractor_ = new PATLeptonTrackVectorExtractor<T>();
 	
 	deltaZ_ = cfgPUcorr.getParameter<double>("deltaZ");
 	if ( methodPUcorr_ == kDeltaBeta ) chargedToNeutralFactor_ = cfgPUcorr.getParameter<double>("chargedToNeutralFactor");
@@ -133,10 +133,13 @@ class ParticlePFIsolationExtractor
       if ( vertices == 0 || beamSpot == 0 ) throw cms::Exception("ParticlePFIsolationExtractor")
 	<< "Pile-up correction Method = 'deltaBeta' requires Vertex collection and BeamSpot !!\n";
 
-      std::vector<reco::TrackBaseRef> signalTracks = (*trackExtractor_)(lepton);
+      std::vector<const reco::Track*> signalTracks = (*trackExtractor_)(lepton);
+      //std::cout << " #signalTracks = " << signalTracks.size() << std::endl;
 
       std::vector<const reco::PFCandidate*> pfNoPileUpChargedHadrons, pfPileUpChargedHadrons;
       getPileUpPFCandidates(pfChargedHadrons, signalTracks, *vertices, deltaZ_, *beamSpot, pfNoPileUpChargedHadrons, pfPileUpChargedHadrons);
+      //std::cout << " #pfNoPileUpChargedHadrons = " << pfNoPileUpChargedHadrons.size() << std::endl;
+      //std::cout << " #pfPileUpChargedHadrons = " << pfPileUpChargedHadrons.size() << std::endl;
 
       if ( methodPUcorr_ == kBeta ) {
 	double pfNoPileUpChargedHadronIsoSumPt = pfChargedHadronIso_->compSumPt(pfNoPileUpChargedHadrons, lepton.p4());
@@ -149,8 +152,13 @@ class ParticlePFIsolationExtractor
 	if ( pfNeutralHadronIso_ ) sumPt += pfNeutralHadronIso_->compSumPt(pfNeutralHadrons, lepton.p4())*pfNeutralIsoCorrFactor;
 	if ( pfPhotonIso_        ) sumPt += pfPhotonIso_->compSumPt(pfPhotons, lepton.p4())*pfNeutralIsoCorrFactor;
       } else if ( methodPUcorr_ == kDeltaBeta ) {
-	sumPt = pfChargedHadronIso_->compSumPt(pfNoPileUpChargedHadrons, lepton.p4());
-	
+	double pfNoPileUpChargedHadronIsoSumPt = pfChargedHadronIso_->compSumPt(pfNoPileUpChargedHadrons, lepton.p4());
+	//double pfPileUpChargedHadronIsoSumPt   = pfChargedHadronIso_->compSumPt(pfPileUpChargedHadrons, lepton.p4());	
+	sumPt = pfNoPileUpChargedHadronIsoSumPt;
+
+	//std::cout << "pfNoPileUpChargedHadrons = " << pfNoPileUpChargedHadronIsoSumPt << std::endl;
+	//std::cout << "pfPileUpChargedHadronIsoSumPt = " << pfPileUpChargedHadronIsoSumPt << std::endl;
+
 	double sumPtNeutralIsoSumPt  = 0.;
 	double sumPtNeutralIsoPUcorr = 0.;
 	
@@ -163,8 +171,9 @@ class ParticlePFIsolationExtractor
 	  sumPtNeutralIsoSumPt += pfPhotonIso_->compSumPt(pfPhotons, lepton.p4());
 	  sumPtNeutralIsoPUcorr += pfPhotonIsoPUcorr_->compSumPt(pfPileUpChargedHadrons, lepton.p4());
 	}
-	
-	sumPt += TMath::Max(sumPtNeutralIsoSumPt - chargedToNeutralFactor_*sumPtNeutralIsoPUcorr, 0.); 
+	//std::cout << "sumPtNeutralIsoSumPt = " << sumPtNeutralIsoSumPt << std::endl;
+	//std::cout << "sumPtNeutralIsoPUcorr = " << sumPtNeutralIsoPUcorr << std::endl;
+	sumPt += TMath::Max(sumPtNeutralIsoSumPt - 0.5*chargedToNeutralFactor_*sumPtNeutralIsoPUcorr, 0.); 
       } else assert(0);
     }
 
@@ -269,7 +278,7 @@ class ParticlePFIsolationExtractor
   int methodPUcorr_;
   double deltaZ_;
   double chargedToNeutralFactor_;
-  PATLeptonTrackRefVectorExtractor<T>* trackExtractor_;			  
+  PATLeptonTrackVectorExtractor<T>* trackExtractor_;			  
   pfIsoConfigType* pfNeutralHadronIsoPUcorr_;
   pfIsoConfigType* pfPhotonIsoPUcorr_;  
 };
