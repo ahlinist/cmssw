@@ -13,7 +13,7 @@
 //
 // Original Author:  Sudhir_Malik
 //         Created:  Fri Mar 13 09:52:17 CDT 2009
-// $Id: PATValidation_Photon.cc,v 1.9 2010/04/17 07:42:28 kfjack Exp $
+// $Id: PATValidation_Photon.cc,v 1.10 2010/08/09 09:32:28 kfjack Exp $
 //
 //
 
@@ -630,8 +630,8 @@ PATValidation_Photon::analyze(const edm::Event& iEvent, const edm::EventSetup& i
 */         
   
         me_zPVFromTracks_[type]->Fill ( conversions[iConv]->zOfPrimaryVertexFromTracks());
-        std::vector<reco::TrackRef> tracks = conversions[iConv]->tracks();
-
+        //std::vector<reco::TrackRef> tracks = conversions[iConv]->tracks();
+	std::vector<edm::RefToBase<reco::Track> > tracks = conversions[iConv]->tracks();
          
         float px=0;
         float py=0;
@@ -854,7 +854,8 @@ PATValidation_Photon::analyze(const edm::Event& iEvent, const edm::EventSetup& i
 */         
   
         me_pat_zPVFromTracks_[type]->Fill ( conversions[iConv]->zOfPrimaryVertexFromTracks());
-        std::vector<reco::TrackRef> tracks = conversions[iConv]->tracks();
+        //std::vector<reco::TrackRef> tracks = conversions[iConv]->tracks();
+	std::vector<edm::RefToBase<reco::Track> > tracks = conversions[iConv]->tracks();
 
          
         float px=0;
