@@ -24,6 +24,9 @@
 #include "AnalysisDataFormats/TauAnalysis/interface/MEtTopology.h"
 #include "AnalysisDataFormats/TauAnalysis/interface/MEtTopologyFwd.h"
 
+#include "AnalysisDataFormats/TauAnalysis/interface/HtRatio.h"
+#include "AnalysisDataFormats/TauAnalysis/interface/HtRatioFwd.h"
+
 #include "DataFormats/Common/interface/AssociationVector.h"
 #include "DataFormats/Common/interface/RefProd.h"
 #include "DataFormats/Common/interface/Ref.h"
@@ -246,5 +249,11 @@ namespace {
     edm::Wrapper<MEtTopology> dummyMEtTopologyWrapper;
     MEtTopologyCollection dummyMEtTopologyCollection;
     edm::Wrapper<MEtTopologyCollection> dummyMEtTopologyCollectionWrapper;
+
+	/// create dictionaries for HtRatio objects
+	HtRatio dummyHtRatio;
+	edm::Wrapper<HtRatio> dymmyHtRatioWrapper;
+	HtRatioCollection dummyHtRatioCollection;
+	edm::Wrapper<HtRatioCollection> dummyHtRatioCollectionWrapper;
   };
 }

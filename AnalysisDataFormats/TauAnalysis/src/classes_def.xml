@@ -180,4 +180,11 @@
   <class name="std::vector<MEtTopology>"/>
   <class name="edm::Wrapper<MEtTopology>"/>
   <class name="edm::Wrapper<std::vector<MEtTopology> >"/>
+
+
+  <!-- create dictionaries for HtRatio objects -->
+  <class name="HtRatio"/>
+  <class name="std::vector<HtRatio>"/>
+  <class name="edm::Wrapper<HtRatio>"/>
+  <class name="edm::Wrapper<std::vector<HtRatio> >"/> 
 </lcgdict>
