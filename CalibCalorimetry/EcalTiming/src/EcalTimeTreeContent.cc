@@ -63,6 +63,9 @@ void setBranchAddresses(TTree* chain, EcalTimeTreeContent& treeVars)
     chain -> SetBranchAddress("superClusterX",         treeVars.superClusterX);
     chain -> SetBranchAddress("superClusterY",         treeVars.superClusterY);
     chain -> SetBranchAddress("superClusterZ",         treeVars.superClusterZ);
+    chain -> SetBranchAddress("superClusterVertexX",         treeVars.superClusterVertexX);
+    chain -> SetBranchAddress("superClusterVertexY",         treeVars.superClusterVertexY);
+    chain -> SetBranchAddress("superClusterVertexZ",         treeVars.superClusterVertexZ);
 
     chain -> SetBranchAddress("nClustersInSuperCluster",    treeVars.nClustersInSuperCluster);
     chain -> SetBranchAddress("clusterIndexInSuperCluster", treeVars.clusterIndexInSuperCluster);
@@ -560,6 +563,9 @@ void setBranches(TTree* chain, EcalTimeTreeContent& treeVars)
     chain -> Branch("superClusterX",         treeVars.superClusterX,                 "superClusterX[nSuperClusters]/F");
     chain -> Branch("superClusterY",         treeVars.superClusterY,                 "superClusterY[nSuperClusters]/F");
     chain -> Branch("superClusterZ",         treeVars.superClusterZ,                 "superClusterZ[nSuperClusters]/F");
+    chain -> Branch("superClusterVertexX",         treeVars.superClusterVertexX,                 "superClusterVertexX[nSuperClusters]/F");
+    chain -> Branch("superClusterVertexY",         treeVars.superClusterVertexY,                 "superClusterVertexY[nSuperClusters]/F");
+    chain -> Branch("superClusterVertexZ",         treeVars.superClusterVertexZ,                 "superClusterVertexZ[nSuperClusters]/F");
 
     chain -> Branch("nClustersInSuperCluster",    treeVars.nClustersInSuperCluster,       "nClustersInSuperCluster[nSuperClusters]/I");
     chain -> Branch("clusterIndexInSuperCluster", treeVars.clusterIndexInSuperCluster, "clusterIndexInSuperCluster[nSuperClusters]/I");
@@ -1076,6 +1082,9 @@ void initializeBranches(TTree* chain, EcalTimeTreeContent& treeVars)
     treeVars.superClusterX[i] = 0.;
     treeVars.superClusterY[i] = 0.;
     treeVars.superClusterZ[i] = 0.;
+    treeVars.superClusterVertexX[i] = 0.;
+    treeVars.superClusterVertexY[i] = 0.;
+    treeVars.superClusterVertexZ[i] = 0.;
     
     treeVars.nClustersInSuperCluster[i] = 0;
     treeVars.clusterIndexInSuperCluster[i] = 0;
