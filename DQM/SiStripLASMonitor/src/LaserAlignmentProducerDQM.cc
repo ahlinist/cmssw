@@ -98,7 +98,8 @@ void LaserAlignmentProducerDQM::beginJob() {
   }
   // create and cd into new folder
   theDqmStore->setCurrentFolder(folderName+"/EventInfo");
-  reportSummaryMapSiStripLAS = theDqmStore->book2D( "reportSummaryMap", "SiStrip LAS Summary Map", 5, 0, 5, nBeams, 0, nBeams);
+  reportSummaryMapSiStripLAS = theDqmStore->book2D( "reportSummaryMap", 
+						    "SiStrip LAS Summary Map", 5, 0, 5, nBeams, 0, nBeams);
   reportSummaryMapSiStripLAS->setBinLabel(1,"AL"    ,1);
   reportSummaryMapSiStripLAS->setBinLabel(2,"TEC+R4",1);
   reportSummaryMapSiStripLAS->setBinLabel(3,"TEC+R6",1);
@@ -109,6 +110,9 @@ void LaserAlignmentProducerDQM::beginJob() {
     labelBuilder << "BEAM" << beam;
     reportSummaryMapSiStripLAS->setBinLabel( beam+1, labelBuilder.str(), 2); 
   }
+  // reportSummary
+  reportSummarySiStripLAS = theDqmStore->bookFloat( "reportSummary");
+  if(reportSummarySiStripLAS) reportSummarySiStripLAS->Fill(0./0.);
 }
 ///
 void LaserAlignmentProducerDQM::analyze( const edm::Event& aEvent, const edm::EventSetup& aSetup ) {
@@ -148,10 +152,16 @@ void LaserAlignmentProducerDQM::analyze( const edm::Event& aEvent, const edm::Ev
     }
   } // end of loop all input products
   // fille reportSummaryMap
+  bool diskBeamEmpty = false;
+  float nDiskBeamEmpty = 0.;
   for( int beam = 0; beam < 8; ++beam){
     // AL
     double atContent = 0.;
     for( int i = 0; i < 22; ++i){
+      if( nSignalsAT->getBinContent( i, beam+1) == 0){
+	 diskBeamEmpty = true;
+	++nDiskBeamEmpty;
+	}	
       atContent += nSignalsAT->getBinContent( i, beam+1);
     }
     reportSummaryMapSiStripLAS->setBinContent( 1, beam+1, atContent/21.); 
@@ -161,6 +171,10 @@ void LaserAlignmentProducerDQM::analyze( const edm::Event& aEvent, const edm::Ev
     double tecMR4Content = 0.;
     double tecMR6Content = 0.;
     for( int disk = 0; disk < 9; ++disk){
+      if( nSignalsTECPlusR4 ->getBinContent( disk, beam+1) == 0){ diskBeamEmpty = true; ++nDiskBeamEmpty;}
+      if( nSignalsTECPlusR6 ->getBinContent( disk, beam+1) == 0){ diskBeamEmpty = true; ++nDiskBeamEmpty;}
+      if( nSignalsTECMinusR4->getBinContent( disk, beam+1) == 0){ diskBeamEmpty = true; ++nDiskBeamEmpty;}
+      if( nSignalsTECMinusR4->getBinContent( disk, beam+1) == 0){ diskBeamEmpty = true; ++nDiskBeamEmpty;}
       tecPR4Content += nSignalsTECPlusR4 ->getBinContent( disk, beam+1);
       tecPR6Content += nSignalsTECPlusR6 ->getBinContent( disk, beam+1);
       tecMR4Content += nSignalsTECMinusR4->getBinContent( disk, beam+1);
@@ -171,6 +185,8 @@ void LaserAlignmentProducerDQM::analyze( const edm::Event& aEvent, const edm::Ev
     reportSummaryMapSiStripLAS->setBinContent( 4, beam+1, tecMR4Content/9.);  
     reportSummaryMapSiStripLAS->setBinContent( 5, beam+1, tecMR6Content/9.);
   }
+  // fill reportSummary
+  reportSummarySiStripLAS->Fill((464.-nDiskBeamEmpty)/(464.));
 }
 //
 void LaserAlignmentProducerDQM::endJob() {
