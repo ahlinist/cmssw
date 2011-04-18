@@ -68,6 +68,9 @@ struct EcalTimeTreeContent
   float superClusterX[MAXSC];
   float superClusterY[MAXSC];
   float superClusterZ[MAXSC];
+  float superClusterVertexX[MAXSC];
+  float superClusterVertexY[MAXSC];
+  float superClusterVertexZ[MAXSC];
 
   int nClustersInSuperCluster[MAXSC];  
   int clusterIndexInSuperCluster[MAXSC];

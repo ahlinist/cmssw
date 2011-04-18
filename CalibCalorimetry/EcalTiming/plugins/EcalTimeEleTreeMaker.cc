@@ -14,7 +14,7 @@ Implementation:
 // Skeleton Derived from an example by:  
 // Authors:                              Giovanni Franzoni (UMN)
 //         Created:  Mo Apr 18 5:46:22 CEST 2008
-// $Id: EcalTimeEleTreeMaker.cc,v 1.5 2011/04/18 10:03:32 franzoni Exp $
+// $Id: EcalTimeEleTreeMaker.cc,v 1.1 2011/04/18 21:38:57 franzoni Exp $
 //
 //
 
@@ -281,7 +281,6 @@ void EcalTimeEleTreeMaker::dumpBarrelClusterInfo (const CaloGeometry * theGeomet
   const EcalIntercalibConstantMap& icalMap = ical->getMap();
   float adcToGeV = float(agc->getEBValue());
   
-  
   /////////////////////////////////////////////////////////////////////////////////////////////
   //  loop on electrons in event and extract SC from it
   for(reco::GsfElectronCollection::const_iterator eleIt = theElectrons->begin();
@@ -297,7 +296,6 @@ void EcalTimeEleTreeMaker::dumpBarrelClusterInfo (const CaloGeometry * theGeomet
       // myTreeVariables_.nBarrelSuperClusters = theBarrelSuperClusters->size () ;
       myTreeVariables_.nSuperClusters       +=1;
       myTreeVariables_.nBarrelSuperClusters +=1;
-
 
       if(!eleIt->isEB()) {
 	//	std::cout << "this ele is NOT in EB " << std::endl;
@@ -318,6 +316,9 @@ void EcalTimeEleTreeMaker::dumpBarrelClusterInfo (const CaloGeometry * theGeomet
       myTreeVariables_.superClusterX[numberOfSuperClusters] = sclus. position ().x () ;
       myTreeVariables_.superClusterY[numberOfSuperClusters] = sclus. position ().y () ;
       myTreeVariables_.superClusterZ[numberOfSuperClusters] = sclus. position ().z () ;
+      myTreeVariables_.superClusterVertexX[numberOfSuperClusters] = eleIt->trackPositionAtVtx().x() ;
+      myTreeVariables_.superClusterVertexY[numberOfSuperClusters] = eleIt->trackPositionAtVtx().y() ;
+      myTreeVariables_.superClusterVertexZ[numberOfSuperClusters] = eleIt->trackPositionAtVtx().z() ;
       myTreeVariables_.superClusterRawEnergy[numberOfSuperClusters] = sclus. rawEnergy () ;
       myTreeVariables_.superClusterPhiWidth[numberOfSuperClusters] = sclus. phiWidth () ;
       myTreeVariables_.superClusterEtaWidth[numberOfSuperClusters] = sclus. etaWidth () ;
@@ -587,6 +588,9 @@ void EcalTimeEleTreeMaker::dumpEndcapClusterInfo (const CaloGeometry * theGeomet
       myTreeVariables_.superClusterX[numberOfSuperClusters] = sclus. position ().x () ;
       myTreeVariables_.superClusterY[numberOfSuperClusters] = sclus. position ().y () ;
       myTreeVariables_.superClusterZ[numberOfSuperClusters] = sclus. position ().z () ;
+      myTreeVariables_.superClusterVertexX[numberOfSuperClusters] = eleIt->trackPositionAtVtx().x() ;
+      myTreeVariables_.superClusterVertexY[numberOfSuperClusters] = eleIt->trackPositionAtVtx().y() ;
+      myTreeVariables_.superClusterVertexZ[numberOfSuperClusters] = eleIt->trackPositionAtVtx().z() ;
       myTreeVariables_.superClusterRawEnergy[numberOfSuperClusters] = sclus. rawEnergy () ;
       myTreeVariables_.superClusterPhiWidth[numberOfSuperClusters] = sclus. phiWidth () ;
       myTreeVariables_.superClusterEtaWidth[numberOfSuperClusters] = sclus. etaWidth () ;
