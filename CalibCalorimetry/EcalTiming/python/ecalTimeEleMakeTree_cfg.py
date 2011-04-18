@@ -126,119 +126,11 @@ process.ecalTimeEleTree.endcapClusterShapeAssociationCollection = cms.InputTag("
 
 
 
-#
-#################################################################################################
-#################################################################################################
-####    P r e p a r a t i o n      o f    t h e    P A T    O b j e c t s   f r o m    A O D  ###
-#################################################################################################
-#
-### pat sequences to be loaded:
-#process.load("PhysicsTools.PatAlgos.patSequences_cff")
-#
-##
-### %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-### MET creation     <=== WARNING: YOU MAY WANT TO MODIFY THIS PART OF THE CODE       %%%%%%%%%%%%%
-###                                specify the names of the MET collections that you need here %%%%
-###                                                                                             #%%
-### if you don't specify anything the default MET is the raw Calo MET                           #%%
-#process.caloMET = process.patMETs.clone(                                                       #%%
-#            metSource = cms.InputTag("met","","RECO"),
-#                        addTrigMatch = cms.bool(False),
-#                        addMuonCorrections = cms.bool(False),
-#                        addGenMET = cms.bool(False),
-#                    )
-#process.tcMET = process.patMETs.clone(                                                         #%%
-#            metSource = cms.InputTag("tcMet","","RECO"),
-#                        addTrigMatch = cms.bool(False),
-#                        addMuonCorrections = cms.bool(False),
-#                        addGenMET = cms.bool(False),
-#                    )
-#process.pfMET = process.patMETs.clone(                                                         #%%
-#            metSource = cms.InputTag("pfMet","","RECO"),
-#                        addTrigMatch = cms.bool(False),
-#                        addMuonCorrections = cms.bool(False),
-#                        addGenMET = cms.bool(False),
-#                    )
-### specify here what you want to have on the plots! <===== MET THAT YOU WANT ON THE PLOTS  %%%%%%%
-#myMetCollection   = 'caloMET'
-#myPfMetCollection =   'pfMET'
-#myTcMetCollection =   'tcMET'
-#
-### specify here what you want to have on the plots! <===== MET THAT YOU WANT ON THE PLOTS  %%%%%%%
-### myDesiredMetCollection = 'layer1RawCaloMETs'
-### modify the sequence of the MET creation:                                                    #%%
-#process.makePatMETs = cms.Sequence(process.caloMET*process.tcMET*process.pfMET)
-#
-# ## GF changed here: more than one pat done here
-### %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-### modify the final pat sequence: keep only electrons + METS (muons are needed for met corrections)
-#process.load("RecoEgamma.EgammaIsolationAlgos.egammaIsolationSequence_cff")
-##process.patElectronIsolation = cms.Sequence(process.egammaIsolationSequence)
-#
-#process.patElectrons.isoDeposits = cms.PSet()
-#process.patElectrons.userIsolation = cms.PSet()
-#process.patElectrons.addElectronID = cms.bool(True)
-#process.patElectrons.electronIDSources = cms.PSet(
-#        simpleEleId95relIso= cms.InputTag("simpleEleId95relIso"),
-#            simpleEleId90relIso= cms.InputTag("simpleEleId90relIso"),
-#            simpleEleId85relIso= cms.InputTag("simpleEleId85relIso"),
-#            simpleEleId80relIso= cms.InputTag("simpleEleId80relIso"),
-#            simpleEleId70relIso= cms.InputTag("simpleEleId70relIso"),
-#            simpleEleId60relIso= cms.InputTag("simpleEleId60relIso"),
-#            simpleEleId95cIso= cms.InputTag("simpleEleId95cIso"),
-#            simpleEleId90cIso= cms.InputTag("simpleEleId90cIso"),
-#            simpleEleId85cIso= cms.InputTag("simpleEleId85cIso"),
-#            simpleEleId80cIso= cms.InputTag("simpleEleId80cIso"),
-#            simpleEleId70cIso= cms.InputTag("simpleEleId70cIso"),
-#            simpleEleId60cIso= cms.InputTag("simpleEleId60cIso"),
-#            )
-###
-#process.patElectrons.addGenMatch = cms.bool(False)
-#process.patElectrons.embedGenMatch = cms.bool(False)
-#process.patElectrons.usePV = cms.bool(False)
-###
-##process.load("ElectroWeakAnalysis.WENu.simpleEleIdSequence_cff")
-##  difference between data and MC
-## JM ==> set to TRUE to tell the ID that it is data
-## JM ==> or set to talse if it's MC
-#process.simpleEleId95relIso.dataMagneticFieldSetUp = cms.bool(True)
-#process.simpleEleId90relIso.dataMagneticFieldSetUp = cms.bool(True)
-#process.simpleEleId85relIso.dataMagneticFieldSetUp = cms.bool(True)
-#process.simpleEleId80relIso.dataMagneticFieldSetUp = cms.bool(True)
-#process.simpleEleId70relIso.dataMagneticFieldSetUp = cms.bool(True)
-#process.simpleEleId60relIso.dataMagneticFieldSetUp = cms.bool(True)
-#process.simpleEleId95cIso.dataMagneticFieldSetUp = cms.bool(True)
-#process.simpleEleId90cIso.dataMagneticFieldSetUp = cms.bool(True)
-#process.simpleEleId85cIso.dataMagneticFieldSetUp = cms.bool(True)
-#process.simpleEleId80cIso.dataMagneticFieldSetUp = cms.bool(True)
-#process.simpleEleId70cIso.dataMagneticFieldSetUp = cms.bool(True)
-#process.simpleEleId60cIso.dataMagneticFieldSetUp = cms.bool(True)
-#
-#process.patElectronIDs = cms.Sequence(process.simpleEleIdSequence)
-##process.makePatElectrons = cms.Sequence(process.patElectronIDs*process.patElectrons)
-## process.makePatMuons may be needed depending on how you calculate the MET
-##process.makePatCandidates = cms.Sequence(process.makePatElectrons+process.makePatMETs)
-##process.patDefaultSequence = cms.Sequence(process.makePatCandidates)
-#
-
-
-
-
-
-
-
-
-
 process.dumpEvContent = cms.EDAnalyzer("EventContentAnalyzer")
 
 process.maxEvents = cms.untracked.PSet(input = cms.untracked.int32(1000))
 
 process.p = cms.Path(
-    #process.patDefaultSequence *
-    process.multi5x5BasicClustersTimePi0Barrel *
-    process.multi5x5BasicClustersTimePi0Endcap *
-    process.multi5x5SuperClustersTimePi0Barrel *
-    process.multi5x5SuperClustersTimePi0Endcap *
     # process.dumpEvContent  *
     process.ecalTimeEleTree
     )
