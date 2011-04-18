@@ -6,8 +6,8 @@
 #define MAXSC 100
 #define MAXC 100
 #define MAXXTAL 250
-#define MAXXTALINC 9
-#define MAXVTX 5
+#define MAXXTALINC 25
+#define MAXVTX 40
 #define MAXHCALRECHITS 100
 #define MAXCALOTOWERS 100
 #define MAXMU 20
