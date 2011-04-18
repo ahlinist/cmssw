@@ -388,7 +388,8 @@ def setupWorkspace(dataTree,mcTree,ws,output,options):
                                     'Quadratic par2 Term for aTGC polynomial description',
                                     ROOT.RooArgSet(obs),ws.data('p4_bin_pt'+str(i)))
          nExpectedSignal = ROOT.RooFormulaVar('nExpectedSignal'+str(i),'The expected number of signal events in (h3,h4) in bins',
-                                              '(@3(@0) + @4(@0)*@1 + @5(@0)*@2 + @6(@0)*@1*@2 + @7(@0)*@1*@1 + @8(@0)*@2*@2)',
+                                              '(@3(@0) + @4(@0)*@1 + @5(@0)*@2 + @6(@0)*@1*@2 + @7(@0)*@1*@1 + @8(@0)*@2*@2)'+
+                                              '*(@3(@0) + @4(@0)*@1 + @5(@0)*@2 + @6(@0)*@1*@2 + @7(@0)*@1*@1 + @8(@0)*@2*@2 > 0)',
                                               ROOT.RooArgList(obs,par1,par2,polyC,polyP_0,polyP_1,polyP_2,polyP_3,polyP_4))
          #getattr(ws,'import')(polyC)
          #getattr(ws,'import')(polyP_0)
