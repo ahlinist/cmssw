@@ -11,9 +11,9 @@
  *
  * \author Christian Veelken, UC Davis
  *
- * \version $Revision: 1.2 $
+ * \version $Revision: 1.1 $
  *
- * $Id: NSVfitEventLikelihoodMEt2.h,v 1.2 2011/03/03 13:04:47 veelken Exp $
+ * $Id: NSVfitEventLikelihoodMEt2.h,v 1.1 2011/04/15 16:51:24 veelken Exp $
  *
  */
 
@@ -29,6 +29,7 @@
 #include "DataFormats/JetReco/interface/PFJetCollection.h"
 
 #include "TauAnalysis/CandidateTools/interface/NSVfitEventLikelihood.h"
+#include "TauAnalysis/CandidateTools/interface/PFMEtSignInterface.h"
 
 #include "AnalysisDataFormats/TauAnalysis/interface/NSVfitEventHypothesis.h"
 
@@ -49,21 +50,10 @@ class NSVfitEventLikelihoodMEt2 : public NSVfitEventLikelihood
   double operator()(const NSVfitEventHypothesis*) const;
 
  private:
-  template <typename T>
-  void addPFMEtSignObjects(std::vector<metsig::SigInputObj>&, const std::list<const T*>&) const;
 
   double power_;
 
-  edm::InputTag srcPFJets_;
-  edm::InputTag srcPFCandidates_;
-
-  std::list<const reco::PFJet*> pfJetList_;
-  std::list<const reco::PFCandidate*> pfCandidateList_;
-
-  metsig::SignAlgoResolutions* pfMEtResolution_;
-
-  double dRoverlapPFJet_;
-  double dRoverlapPFCandidate_;
+  PFMEtSignInterface* pfMEtSign_;
 
   mutable TMatrixD pfMEtCovInverse_;
 };

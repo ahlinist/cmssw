@@ -14,6 +14,7 @@
 <use   name="DataFormats/VertexReco"/>
 <use   name="AnalysisDataFormats/TauAnalysis"/>
 <use   name="PhysicsTools/JetMCUtils"/>
+<use   name="RecoMET/METAlgorithms"/> 
 <use   name="RecoVertex/VertexPrimitives"/>
 <use   name="RecoVertex/KalmanVertexFit"/>
 <use   name="TrackingTools/TransientTrack"/>

@@ -5,6 +5,7 @@ from TauAnalysis.CandidateTools.tools.objProdConfigurator import *
 from TauAnalysis.CandidateTools.resolutions_cfi import *
 from TauAnalysis.CandidateTools.svFitAlgorithm_cfi import *
 from TauAnalysis.CandidateTools.nSVfitAlgorithmDiTau_cfi import *
+from RecoMET.METProducers.METSigParams_cfi import *
 
 svFitLikelihoodMuTauPairKinematicsPhaseSpace = copy.deepcopy(svFitLikelihoodDiTauKinematicsPhaseSpace)
 svFitLikelihoodMuTauPairKinematicsPhaseSpace.pluginType = "SVfitLikelihoodMuTauPairKinematics"
@@ -63,7 +64,7 @@ allMuTauPairs = cms.EDProducer("PATMuTauPairProducer",
     srcBeamSpot = cms.InputTag("offlineBeamSpot"),
     srcGenParticles = cms.InputTag('genParticles'),
     recoMode = cms.string(""),
-    doSVreco = cms.bool(True),
+    doSVreco = cms.bool(True),                               
     svFit = cms.PSet(
         psKine = cms.PSet(
             likelihoodFunctions = cms.VPSet(
@@ -119,11 +120,19 @@ allMuTauPairs = cms.EDProducer("PATMuTauPairProducer",
     ),
     nSVfit = cms.PSet(),
     scaleFuncImprovedCollinearApprox = cms.string('1'),
+    doPFMEtSign = cms.bool(True),                           
+    pfMEtSign = cms.PSet(
+        srcPFJets = cms.InputTag('ak5PFJets'),
+        srcPFCandidates = cms.InputTag('particleFlow'),
+        resolution = METSignificance_params,
+        dRoverlapPFJet = cms.double(0.3),
+        dRoverlapPFCandidate = cms.double(0.1)
+    ),                   
     verbosity = cms.untracked.int32(0)
 )
                               
 nSVfitMuTauPair_template = cms.PSet(
-    config    =  nSVfitConfig,
+    config    = nSVfitConfig,
     algorithm = cms.PSet(
         pluginName = cms.string("nSVfitAlgorithmByIntegration"),
         pluginType = cms.string("NSVfitAlgorithmByIntegration"),                                    
@@ -175,15 +184,8 @@ allMuTauPairs.nSVfit.psKine_fit.algorithm = cms.PSet(
     verbosity = cms.int32(0)
 )
 
-allMuTauPairs.nSVfit.psKine_pow10MEt_fit = copy.deepcopy(nSVfitMuTauPair_template)
+allMuTauPairs.nSVfit.psKine_pow10MEt_fit = copy.deepcopy(allMuTauPairs.nSVfit.psKine_fit)
 allMuTauPairs.nSVfit.psKine_pow10MEt_fit.config.event.resonances.A.likelihoodFunctions = cms.VPSet()
-allMuTauPairs.nSVfit.psKine_pow10MEt_fit.algorithm = cms.PSet(
-    pluginName = cms.string("nSVfitAlgorithmByLikelihoodMaximization"),
-    pluginType = cms.string("NSVfitAlgorithmByLikelihoodMaximization"),                                    
-    minimizer  = cms.vstring("Minuit2", "Migrad"),
-    maxObjFunctionCalls_ = cms.uint32(5000),  
-    verbosity = cms.int32(0)
-)
 allMuTauPairs.nSVfit.psKine_pow20MEt_fit = copy.deepcopy(allMuTauPairs.nSVfit.psKine_pow10MEt_fit)
 allMuTauPairs.nSVfit.psKine_pow20MEt_fit.config.event.likelihoodFunctions = cms.VPSet(
     nSVfitEventLikelihoodMEt.clone(
@@ -212,16 +214,9 @@ allMuTauPairs.nSVfit.psKine_pow40MEt2_fit.config.event.likelihoodFunctions = cms
     )
 )
 
-allMuTauPairs.nSVfit.psKine_pow10MEt_pow10ptBalance_fit = copy.deepcopy(nSVfitMuTauPair_template)
-allMuTauPairs.nSVfit.psKine_pow10MEt_pow10ptBalance_fit.algorithm = cms.PSet(
-    pluginName = cms.string("nSVfitAlgorithmByLikelihoodMaximization"),
-    pluginType = cms.string("NSVfitAlgorithmByLikelihoodMaximization"),                                    
-    minimizer  = cms.vstring("Minuit2", "Migrad"),
-    #minimizer  = cms.vstring("GSLMultiMin", "conjugatefr"),
-    #minimizer  = cms.vstring("GSLMultiMin", "SteepestDescent"),
-    maxObjFunctionCalls_ = cms.uint32(5000),  
-    verbosity = cms.int32(0)
-)
+allMuTauPairs.nSVfit.psKine_pow10MEt_pow10ptBalance_fit = copy.deepcopy(allMuTauPairs.nSVfit.psKine_pow10MEt_fit)
+allMuTauPairs.nSVfit.psKine_pow10MEt_pow10ptBalance_fit.config.event.resonances.A.likelihoodFunctions = \
+  cms.VPSet(nSVfitResonanceLikelihoodPtBalance)
 allMuTauPairs.nSVfit.psKine_pow10MEt2_pow10ptBalance_fit = copy.deepcopy(allMuTauPairs.nSVfit.psKine_pow10MEt_pow10ptBalance_fit)
 allMuTauPairs.nSVfit.psKine_pow10MEt2_pow10ptBalance_fit.config.event.likelihoodFunctions = cms.VPSet(nSVfitEventLikelihoodMEt2)
 allMuTauPairs.nSVfit.psKine_pow20MEt2_pow10ptBalance_fit = copy.deepcopy(allMuTauPairs.nSVfit.psKine_pow10MEt2_pow10ptBalance_fit)
@@ -272,6 +267,10 @@ muTauPairProdConfigurator = objProdConfigurator(
 )
 
 produceMuTauPairs = muTauPairProdConfigurator.configure(pyNameSpace = locals())
+
+allMuTauPairsPFtype1MET = copy.deepcopy(allMuTauPairs)
+allMuTauPairsPFtype1MET.srcMET = cms.InputTag('patPFtype1METs')
+produceMuTauPairs += allMuTauPairsPFtype1MET
 
 # define additional collections of muon + tau-jet candidates
 # with loose track and ECAL isolation applied on muon leg

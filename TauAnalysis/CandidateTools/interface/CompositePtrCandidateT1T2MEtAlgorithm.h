@@ -15,6 +15,7 @@
 #include "DataFormats/HepMCCandidate/interface/GenParticle.h"
 #include "DataFormats/METReco/interface/MET.h"
 
+#include "TauAnalysis/CandidateTools/interface/PFMEtSignInterface.h"
 #include "TauAnalysis/CandidateTools/interface/SVfitAlgorithm.h"
 #include "TauAnalysis/CandidateTools/interface/NSVfitAlgorithmBase.h"
 #include "TauAnalysis/CandidateTools/interface/candidateAuxFunctions.h"
@@ -36,10 +37,17 @@ class CompositePtrCandidateT1T2MEtAlgorithm
  public:
 
   CompositePtrCandidateT1T2MEtAlgorithm(const edm::ParameterSet& cfg)
+    : pfMEtSign_(0)
   {
     //std::cout << "<CompositePtrCandidateT1T2MEtAlgorithm::CompositePtrCandidateT1T2MEtAlgorithm>:" << std::endl;
 
     verbosity_ = cfg.getUntrackedParameter<int>("verbosity", 0);
+
+    if ( cfg.exists("pfMEtSign") ) {
+      edm::ParameterSet cfgPFMEtSign = cfg.getParameter<edm::ParameterSet>("pfMEtSign");
+      pfMEtSign_ = new PFMEtSignInterface(cfgPFMEtSign);
+    }
+
     if ( cfg.exists("svFit") ) {
       edm::ParameterSet cfgSVfit = cfg.getParameter<edm::ParameterSet>("svFit");	
       std::vector<std::string> svFitAlgorithmNames = cfgSVfit.getParameterNamesForType<edm::ParameterSet>();
@@ -88,10 +96,17 @@ class CompositePtrCandidateT1T2MEtAlgorithm
 
   ~CompositePtrCandidateT1T2MEtAlgorithm() 
   {
+    delete pfMEtSign_;
+
     for ( typename std::map<std::string, SVfitAlgorithm<T1,T2>*>::iterator it = svFitAlgorithms_.begin();
 	  it != svFitAlgorithms_.end(); ++it ) {
       delete it->second;
     }
+    for ( typename std::map<std::string, NSVfitAlgorithmBase*>::iterator it = nSVfitAlgorithms_.begin();
+	  it != nSVfitAlgorithms_.end(); ++it ) {
+      delete it->second;
+    }
+
     delete scaleFunc_;  
   }
 
@@ -109,6 +124,8 @@ class CompositePtrCandidateT1T2MEtAlgorithm
 
   void beginEvent(edm::Event& evt, const edm::EventSetup& es)
   {
+    if ( pfMEtSign_ ) pfMEtSign_->beginEvent(evt, es);
+
     for ( typename std::map<std::string, SVfitAlgorithm<T1,T2>*>::iterator svFitAlgorithm = svFitAlgorithms_.begin();
 	  svFitAlgorithm != svFitAlgorithms_.end(); ++svFitAlgorithm ) {
       svFitAlgorithm->second->beginEvent(evt, es);
@@ -127,7 +144,7 @@ class CompositePtrCandidateT1T2MEtAlgorithm
                                                                  const reco::BeamSpot* beamSpot,
                                                                  const TransientTrackBuilder* trackBuilder,
 								 const std::string& recoMode, 
-								 bool doSVreco)
+								 bool doSVreco, bool doPFMEtSign)
   {
     //std::cout << "<CompositePtrCandidateT1T2MEtAlgorithm::buildCompositePtrCandidate>:"<< std::endl;
     //if ( !met.isNull() ) std::cout << " MET: pt = " << met->pt() << std::endl;
@@ -161,6 +178,14 @@ class CompositePtrCandidateT1T2MEtAlgorithm
       compositePtrCandidate.setDPhi2MET(TMath::Abs(normalizedPhi(leg2->phi() - met->phi())));
 
       compZeta(compositePtrCandidate, leg1->p4(), leg2->p4(), met->px(), met->py());
+
+//--- compute (PF)MEt significance matrix
+      if ( doPFMEtSign && pfMEtSign_ ) {
+	std::list<const reco::Candidate*> daughterHypothesesList;
+	daughterHypothesesList.push_back(leg1.get());
+	daughterHypothesesList.push_back(leg2.get());
+	compositePtrCandidate.setMEtSignMatrix((*pfMEtSign_)(daughterHypothesesList));
+      }
 
 //--- SV method computation (if we have the PV and beamspot)
       if ( doSVreco ) {
@@ -452,9 +477,10 @@ class CompositePtrCandidateT1T2MEtAlgorithm
 
   int verbosity_;
   std::string scaleFuncImprovedCollinearApprox_;
-  TF1* scaleFunc_;
+  PFMEtSignInterface* pfMEtSign_;
   std::map<std::string, SVfitAlgorithm<T1,T2>*> svFitAlgorithms_;
   std::map<std::string, NSVfitAlgorithmBase*> nSVfitAlgorithms_;
+  TF1* scaleFunc_;
   typedef std::vector<int> vint;
   vint genParticleMatchPdgId_;
 };

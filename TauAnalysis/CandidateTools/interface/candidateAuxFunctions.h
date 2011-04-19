@@ -45,7 +45,6 @@ reco::Candidate::LorentzVector boostToRestFrame(const reco::Candidate::LorentzVe
 std::string getGenTauDecayMode(const reco::GenParticle*);
 
 TVector2 getDiTauBisectorDirection(const reco::Candidate::LorentzVector& leg1P4, const reco::Candidate::LorentzVector& leg2P4); 
-void computeMEtProjection(const reco::PFCandidateCollection&, const TVector2&, double&, double&, double&);
 
 std::string getTauDecayModeName(int);
 
