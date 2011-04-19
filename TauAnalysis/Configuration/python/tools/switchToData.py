@@ -21,8 +21,15 @@ def switchToData(process):
 		process.dataQualityFilters._seq = process.dataQualityFilters._seq * process.hltPhysicsDeclared
 		process.dataQualityFilters._seq = process.dataQualityFilters._seq * process.dcsstatus
 
+	# apply L2/L3 residual jet energy corrections
+	# (for improved Data and Monte-Carlo agreement)
+	if hasattr(process, "pfMEtType1and2corrected"):
+		setattr(process.pfMEtType1and2corrected, "corrector", cms.string('ak5PFL2L3Residual'))	
+
 	if hasattr(process, "patPFMETs"):
 		process.patPFMETs.addGenMET = cms.bool(False)
+	if hasattr(process, "patPFtype1METs"):
+		process.patPFtype1METs.addGenMET = cms.bool(False)
 
 	# remove modules from pre-PAT production running on genParticles
 	if hasattr(process, "producePrePat"):
