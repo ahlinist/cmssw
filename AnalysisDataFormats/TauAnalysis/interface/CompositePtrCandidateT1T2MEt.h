@@ -12,9 +12,9 @@
  *          Michal Bluj,
  *          Christian Veelken
  *
- * \version $Revision: 1.24 $
+ * \version $Revision: 1.25 $
  *
- * $Id: CompositePtrCandidateT1T2MEt.h,v 1.24 2011/02/21 13:08:52 veelken Exp $
+ * $Id: CompositePtrCandidateT1T2MEt.h,v 1.25 2011/03/25 14:32:18 veelken Exp $
  *
  */
 
@@ -32,6 +32,8 @@
 #include "AnalysisDataFormats/TauAnalysis/interface/NSVfitEventHypothesis.h"
 #include "AnalysisDataFormats/TauAnalysis/interface/tauAnalysisAuxFunctions.h"
 
+#include <TMatrixD.h>
+
 template<typename T1, typename T2>
 class CompositePtrCandidateT1T2MEt : public reco::LeafCandidate 
 {
@@ -42,15 +44,24 @@ class CompositePtrCandidateT1T2MEt : public reco::LeafCandidate
  public:
 
   /// default constructor
-  CompositePtrCandidateT1T2MEt() {}
+  CompositePtrCandidateT1T2MEt()
+    : metSignMatrix_(2,2)
+  {}
 
   /// constructor with MEt
   CompositePtrCandidateT1T2MEt(const T1Ptr leg1, const T2Ptr leg2, const reco::CandidatePtr met)
-    : leg1_(leg1), leg2_(leg2), met_(met) {}
+    : leg1_(leg1), 
+      leg2_(leg2), 
+      met_(met), 
+      metSignMatrix_(2,2)  
+  {}
 
   /// constructor without MEt
   CompositePtrCandidateT1T2MEt(const T1Ptr leg1, const T2Ptr leg2)
-    : leg1_(leg1), leg2_(leg2) {}
+    : leg1_(leg1), 
+      leg2_(leg2), 
+      metSignMatrix_(2,2) 
+  {}
 
   /// destructor
   ~CompositePtrCandidateT1T2MEt() {}
@@ -107,6 +118,7 @@ class CompositePtrCandidateT1T2MEt : public reco::LeafCandidate
 
   /// access to missing transverse momentum
   const MEtPtr& met() const { return met_; }
+  const TMatrixD& metSignMatrix() const { return metSignMatrix_; }
 
   // get sum of charge of visible decay products
   // (not need to declare it in CompositePtrCandidateT1T2MEt; 
@@ -274,6 +286,10 @@ class CompositePtrCandidateT1T2MEt : public reco::LeafCandidate
   void setDecayVertexPosLeg1gen(const reco::Candidate::Point& pos) { decayVertexPosLeg1gen_ = pos; }
   void setDecayVertexPosLeg2gen(const reco::Candidate::Point& pos) { decayVertexPosLeg2gen_ = pos; }
 
+  /// set (PF)MEt significance matrix
+  /// (see CMS AN-10/400 for description of the (PF)MEt significance computation)
+  void setMEtSignMatrix(const TMatrixD& covMatrix2by2) { metSignMatrix_ = covMatrix2by2; }
+
   /// set four-momentum of visible decay products
   void setP4Vis(const reco::Candidate::LorentzVector& p4) { p4Vis_ = p4; } 
   /// set four-momentum and scaling factors for momenta of visible decay products
@@ -335,7 +351,7 @@ class CompositePtrCandidateT1T2MEt : public reco::LeafCandidate
   /// references/pointers to decay products
   T1Ptr leg1_;
   T2Ptr leg2_;
-  MEtPtr met_;
+  MEtPtr met_; 
 
   /// flag indicating which algorithm was used 
   /// to compute four-momentum of diTau candidate
@@ -352,6 +368,10 @@ class CompositePtrCandidateT1T2MEt : public reco::LeafCandidate
   reco::Candidate::Point primaryVertexPosGen_;
   reco::Candidate::Point decayVertexPosLeg1gen_;
   reco::Candidate::Point decayVertexPosLeg2gen_;
+
+  /// (PF)MEt significance matrix
+  /// (see CMS AN-10/400 for description of the (PF)MEt significance computation)
+  TMatrixD metSignMatrix_;
 
   /// four-momentum of visible decay products
   reco::Candidate::LorentzVector p4Vis_;
