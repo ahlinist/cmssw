@@ -12,9 +12,9 @@
  *          Michal Bluj,
  *          Christian Veelken
  *
- * \version $Revision: 1.25 $
+ * \version $Revision: 1.26 $
  *
- * $Id: CompositePtrCandidateT1T2MEt.h,v 1.25 2011/03/25 14:32:18 veelken Exp $
+ * $Id: CompositePtrCandidateT1T2MEt.h,v 1.26 2011/04/19 08:14:39 veelken Exp $
  *
  */
 
@@ -45,7 +45,8 @@ class CompositePtrCandidateT1T2MEt : public reco::LeafCandidate
 
   /// default constructor
   CompositePtrCandidateT1T2MEt()
-    : metSignMatrix_(2,2)
+    : metSignMatrix_(2,2),
+      hasMEtSignMatrix_(false)
   {}
 
   /// constructor with MEt
@@ -53,14 +54,16 @@ class CompositePtrCandidateT1T2MEt : public reco::LeafCandidate
     : leg1_(leg1), 
       leg2_(leg2), 
       met_(met), 
-      metSignMatrix_(2,2)  
+      metSignMatrix_(2,2),
+      hasMEtSignMatrix_(false) 
   {}
 
   /// constructor without MEt
   CompositePtrCandidateT1T2MEt(const T1Ptr leg1, const T2Ptr leg2)
     : leg1_(leg1), 
       leg2_(leg2), 
-      metSignMatrix_(2,2) 
+      metSignMatrix_(2,2),
+      hasMEtSignMatrix_(false) 
   {}
 
   /// destructor
@@ -118,6 +121,7 @@ class CompositePtrCandidateT1T2MEt : public reco::LeafCandidate
 
   /// access to missing transverse momentum
   const MEtPtr& met() const { return met_; }
+  bool hasMEtSignMatrix() const { return hasMEtSignMatrix_; }
   const TMatrixD& metSignMatrix() const { return metSignMatrix_; }
 
   // get sum of charge of visible decay products
@@ -288,7 +292,11 @@ class CompositePtrCandidateT1T2MEt : public reco::LeafCandidate
 
   /// set (PF)MEt significance matrix
   /// (see CMS AN-10/400 for description of the (PF)MEt significance computation)
-  void setMEtSignMatrix(const TMatrixD& covMatrix2by2) { metSignMatrix_ = covMatrix2by2; }
+  void setMEtSignMatrix(const TMatrixD& covMatrix2by2) 
+  { 
+    metSignMatrix_ = covMatrix2by2; 
+    hasMEtSignMatrix_ = true;
+  }
 
   /// set four-momentum of visible decay products
   void setP4Vis(const reco::Candidate::LorentzVector& p4) { p4Vis_ = p4; } 
@@ -372,6 +380,7 @@ class CompositePtrCandidateT1T2MEt : public reco::LeafCandidate
   /// (PF)MEt significance matrix
   /// (see CMS AN-10/400 for description of the (PF)MEt significance computation)
   TMatrixD metSignMatrix_;
+  bool hasMEtSignMatrix_;
 
   /// four-momentum of visible decay products
   reco::Candidate::LorentzVector p4Vis_;
