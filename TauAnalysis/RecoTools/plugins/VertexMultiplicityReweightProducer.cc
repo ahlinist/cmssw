@@ -5,6 +5,8 @@ VertexMultiplicityReweightProducer::VertexMultiplicityReweightProducer(const edm
 {
   std::string pluginType = "VertexMultiplicityReweightExtractor";
   extractor_ = ObjValExtractorPluginFactory::get()->create(pluginType, cfg);
+
+  produces<double>("");
 }
 
 VertexMultiplicityReweightProducer::~VertexMultiplicityReweightProducer() 
