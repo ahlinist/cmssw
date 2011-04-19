@@ -65,7 +65,7 @@ int main(int argc, char* argv[])
       return 1;
    }
    
-   std::string className( vm[kClassNameOpt].as<std::string>());
+   std::string className(vm[kClassNameOpt].as<std::string>());
    
    AutoLibraryLoader::enable();
 

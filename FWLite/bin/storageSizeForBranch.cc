@@ -85,8 +85,8 @@ int main(int argc, char* argv[])
       return 1;
    }
    
-   std::string branchName( vm[kBranchNameOpt].as<std::string>());
-   std::string fileName( vm[kFileNameOpt].as<std::string>());
+   std::string branchName(vm[kBranchNameOpt].as<std::string>());
+   std::string fileName(vm[kFileNameOpt].as<std::string>());
    
    TFile* file = TFile::Open(fileName.c_str());
    if (0 == file) {
