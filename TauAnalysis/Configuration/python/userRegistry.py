@@ -92,12 +92,28 @@ userSettings = {
         }
     },
     'jkolb': {
-        'current' : 'Run15',
+        'current' : 'Run18',
         'jobs' : {
-			# fall10 MC with 156 BX PU, 2010 dataset (36/pb);  just run data; no electron iso
+			# fall10 MC with 156 BX PU, 2010 dataset (36/pb); study for tau electron rejection
+            'Run19' : {
+                'ZtoElecTau' : {
+                    'analysisFilePath' : "/user/j/jkolb/elecTauAnalysis/fall10/ZtoElecTau/Run19/",
+                    'harvestingFilePath' : "/data/ndpc0/c/jkolb/TauResults",
+                    'tmpFilePath' : "/data/ndpc0/c/jkolb/TauResults/tmp/"
+                }
+            },
+			# fall10 MC with 156 BX PU, 2010 dataset (36/pb); study for tau electron rejection
+            'Run18' : {
+                'ZtoElecTau' : {
+                    'analysisFilePath' : "/user/j/jkolb/elecTauAnalysis/fall10/ZtoElecTau/Run18/",
+                    'harvestingFilePath' : "/data/ndpc0/c/jkolb/TauResults",
+                    'tmpFilePath' : "/data/ndpc0/c/jkolb/TauResults/tmp/"
+                }
+            },
+			# fall10 MC with 156 BX PU, 2010 dataset (36/pb); no electron PF iso, for PF study
             'Run16' : {
                 'ZtoElecTau' : {
-                    'analysisFilePath' : "/user/j/jkolb/elecTauAnalysis/fall10/AHtoElecTau/Run16/",
+                    'analysisFilePath' : "/user/j/jkolb/elecTauAnalysis/fall10/ZtoElecTau/Run16/",
                     'harvestingFilePath' : "/data/ndpc0/c/jkolb/TauResults",
                     'tmpFilePath' : "/data/ndpc0/c/jkolb/TauResults/tmp/"
                 }
@@ -105,7 +121,7 @@ userSettings = {
 			# fall10 MC with 156 BX PU, 2010 dataset (36/pb);  re-run data sample for match with Wisconsin
             'Run15' : {
                 'ZtoElecTau' : {
-                    'analysisFilePath' : "/user/j/jkolb/elecTauAnalysis/fall10/AHtoElecTau/Run15/",
+                    'analysisFilePath' : "/user/j/jkolb/elecTauAnalysis/fall10/ZtoElecTau/Run15/",
                     'harvestingFilePath' : "/data/ndpc0/c/jkolb/TauResults",
                     'tmpFilePath' : "/data/ndpc0/c/jkolb/TauResults/tmp/"
                 }
