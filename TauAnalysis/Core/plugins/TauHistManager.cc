@@ -179,6 +179,10 @@ void TauHistManager::bookHistogramsImp()
   hTauMatchingGenTauDecayMode_ = book1D("TauMatchingGenTauDecayMode", "matching gen. Tau decay mode", 20, -0.5, 19.5);
   setAxisLabelsGenTauDecayMode(hTauMatchingGenTauDecayMode_->getTH1()->GetXaxis());
 
+  hTauLeadPFChargedHadCandRefValidity_ = book1D("LeadPfChargedHadValidity","Ref for Leading PF charged hadron is valid",2,-0.5,1.5);
+  hTauLeadKfTrkRefValidity_ = book1D("LeadKfTrkRefIsValid","KF Track Ref of lead trk is Valid",2,-0.5,1.5);
+  hTauLeadGsfTrkRefValidity_ = book1D("LeadGsfTrkRefIsValid","GSF Track Ref of lead trk is Valid",2,-0.5,1.5);
+
   hTauNumTracksSignalCone_ = book1D("TauNumTracksSignalCone", "Tracks in Signal Cone", 10, -0.5, 9.5);
   hTauNumTracksIsoCone_ = book1D("TauNumTracksIsoCone", "Tracks in Isolation Cone", 20, -0.5, 19.5);
 
@@ -528,6 +532,12 @@ void TauHistManager::fillHistogramsImp(const edm::Event& evt, const edm::EventSe
 
     hTauNumTracksSignalCone_->Fill(patTau->signalPFChargedHadrCands().size(), weight);
     hTauNumTracksIsoCone_->Fill(patTau->isolationTracks().size(), weight);
+
+    hTauLeadPFChargedHadCandRefValidity_ ->Fill( isValidRef( patTau->leadPFChargedHadrCand() ) );
+    if( isValidRef( patTau->leadPFChargedHadrCand() ) ) {
+        hTauLeadKfTrkRefValidity_->Fill( isValidRef( patTau->leadPFChargedHadrCand()->trackRef() ) );
+        hTauLeadGsfTrkRefValidity_->Fill( isValidRef( patTau->leadPFChargedHadrCand()->gsfTrackRef() ) );
+    }
 
     if ( isValidRef(patTau->leadPFChargedHadrCand()) && isValidRef(patTau->leadPFChargedHadrCand()->trackRef()) ) {
       hTauLeadTrkPt_->Fill(patTau->leadPFChargedHadrCand()->trackRef()->pt(), weight);

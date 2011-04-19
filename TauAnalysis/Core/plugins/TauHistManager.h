@@ -121,6 +121,10 @@ class TauHistManager : public HistManagerBase
 
   vint skipPdgIdsGenParticleMatch_;
 
+  MonitorElement* hTauLeadPFChargedHadCandRefValidity_;
+  MonitorElement* hTauLeadKfTrkRefValidity_;
+  MonitorElement* hTauLeadGsfTrkRefValidity_;
+
   MonitorElement* hTauNumTracksSignalCone_;
   MonitorElement* hTauNumTracksIsoCone_;
 
