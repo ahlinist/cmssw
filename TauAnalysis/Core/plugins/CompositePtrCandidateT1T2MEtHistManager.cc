@@ -19,6 +19,7 @@
 
 #include <TMath.h>
 #include <TVector2.h>
+#include <TVectorD.h>
 
 const double epsilon = 0.01;
 
@@ -55,9 +56,6 @@ CompositePtrCandidateT1T2MEtHistManager<T1,T2>::CompositePtrCandidateT1T2MEtHist
   visMassHypothesisSrc_ = ( cfg.exists("visMassHypothesisSource") ) ?  
     cfg.getParameter<edm::InputTag>("visMassHypothesisSource") : edm::InputTag();
   //std::cout << " visMassHypothesisSrc = " << visMassHypothesisSrc_ << std::endl;
-
-  makeMEtProjResolutionHistograms_ = ( cfg.exists("makeMEtProjResolutionHistograms") ) ?
-    cfg.getParameter<bool>("makeMEtProjResolutionHistograms") : false;
 
   diTauLeg1WeightExtractors_ = getTauJetWeightExtractors<T1>(cfg, "diTauLeg1WeightSource");
   diTauLeg2WeightExtractors_ = getTauJetWeightExtractors<T2>(cfg, "diTauLeg2WeightSource");
@@ -182,24 +180,19 @@ void CompositePtrCandidateT1T2MEtHistManager<T1,T2>::bookHistogramsImp()
 
   hCDFmethodMass_ = book1D("CDFmethodMass", "CDF Method Mass", 50, 0., 250.);
 
-  if ( makeMEtProjResolutionHistograms_ ) {
-//--- book MET resolution histograms
-
-    hMETresXvsSumEt_ = book2D("METresXvsSumEt", "MET X resolution", 80, -20., 20., 50, 0., 500.);
-    hMETresYvsSumEt_ = book2D("METresYvsSumEt", "MET Y resolution", 80, -20., 20., 50, 0., 500.);
-
-    hMETresParMuonvsSumEt_ = book2D("METresParMuonvsSumEt", "MET resolution parallel to leg_{1}", 80, -20., 20., 50, 0., 500.);
-    hMETresPerpMuonvsSumEt_ = book2D("METresPerpMuonvsSumEt", "MET resolution perp. to leg_{1}", 80, -20., 20., 50, 0., 500.);
-    hMETresParDiTauvsSumPpar_ = book2D("METresParDiTauvsSumPpar", "MET resolution parallel to diTau", 80, -20., 20., 50, 0., 500.);
-    hMETresPerpDiTauvsSumPperp_ = book2D("METresPerpDiTauvsSumPperp", "MET resolution perp. to diTau", 80, -20., 20., 50, 0., 500.);
-  }
+  hEvMETresParGenDiTau_ = book1D("EvMETresParGenDiTau", "MET resolution parallel gen. diTau", 100, -50., 50.);
+  hEvMETresPerpGenDiTau_ = book1D("EvMETresPerpGenDiTau", "MET resolution perp. gen. diTau", 50, -0.01, 50.);
+  hDtMETresParGenDiTau_ = book1D("DtMETresParGenDiTau", "MET resolution parallel gen. diTau", 100, -50., 50.);
+  hDtMETresPerpGenDiTau_ = book1D("DtMETresPerpGenDiTau", "MET resolution perp. gen. diTau", 50, -0.01, 50.);  
   
   hMt12MET_ = book1D("Mt12MET", "Mass_{T 1,2,MET}", 50, 0., 250.);
   
   hMt1MET_ = book1D("Mt1MET", "Mass_{T 1,MET}", 40, 0., 200.);
   hPt1MET_ = book1D("Pt1MET", "P_{T}^{T 1,MET}", 40, 0., 200.);
+  hMt1METvisMassRatio_ = book1D("Mt1METvisMassRatio", "Mass_{T 1,MET} / Visible Mass", 100, -5.01, +5.01);
   hMt2MET_ = book1D("Mt2MET", "Mass_{T 2,MET}", 40, 0., 200.);
   hPt2MET_ = book1D("Pt2MET", "P_{T}^{T 2,MET}", 40, 0., 200.);
+  hMt2METvisMassRatio_ = book1D("Mt2METvisMassRatio", "Mass_{T 2,MET} / Visible Mass", 100, -5.01, +5.01);
   
   hHt12MET_ = book1D("Ht12MET", "P_{T}^{1} + P_{T}^{2} + MET", 50, 0., 250.);
 
@@ -215,6 +208,7 @@ void CompositePtrCandidateT1T2MEtHistManager<T1,T2>::bookHistogramsImp()
 
   hPzetaCorr_ = book2D("PzetaCorr", "P_{#zeta} vs. P_{#zeta}^{vis}", 10, 0., 50., 14, -20., 50.);
   hPzetaDiff_ = book1D("PzetaDiff", "P_{#zeta} - 1.5*P_{#zeta}^{vis}", 40, -100., +100.);
+  hPzetaDiffMEtSignRatio_ = book1D("PzetaDiffMEtSignRatio", "(P_{#zeta} - 1.5*P_{#zeta}^{vis}) / MET sign.", 100, -5.01, +5.01);
 
   hPzetaDiffVsDPhi12_ = 
     book2D("PzetaDiffVsDPhi12",  "P_{#zeta} - 1.5*P_{#zeta}^{vis} vs. #Delta#phi_{1,2}", 36, -epsilon, TMath::Pi() + epsilon, 20, -100., +100.);
@@ -298,6 +292,19 @@ void fillGenTauHistograms(MonitorElement* hGenTauPlusDecayAngleLepton,
   }
 }
      
+void fillMEtResolutionHistograms(const reco::Candidate::LorentzVector& p4RecMEt, const reco::Candidate::LorentzVector& p4GenMEt,
+				 double projCosPhi, double projSinPhi, 
+				 MonitorElement* hResPar, MonitorElement* hResPerp, double weight)
+{
+  reco::Candidate::LorentzVector residual = p4RecMEt - p4GenMEt;
+  	  
+  double resPar  = residual.px()*projCosPhi + residual.py()*projSinPhi;
+  double resPerp = TMath::Abs(residual.px()*projSinPhi - residual.py()*projCosPhi);
+	  
+  hResPar->Fill(resPar, weight);
+  hResPerp->Fill(resPerp, weight);
+}
+
 template<typename T1, typename T2>
 void CompositePtrCandidateT1T2MEtHistManager<T1,T2>::fillHistogramsImp(const edm::Event& evt, const edm::EventSetup& es, double evtWeight)
 {  
@@ -401,40 +408,19 @@ void CompositePtrCandidateT1T2MEtHistManager<T1,T2>::fillHistogramsImp(const edm
     hDiTauCandidateCharge_->Fill(diTauCandidate->charge(), weight);
     hDiTauCandidateMass_->Fill(diTauCandidate->mass(), weight);
 
-    if ( makeMEtProjResolutionHistograms_ && diTauCandidate->met().isNonnull() ) {
-//--- fill MET resolution histograms
-      reco::Candidate::LorentzVector residualMET = diTauCandidate->p4InvisGen() - diTauCandidate->met()->p4();
-      
-      double sumEt = diTauCandidate->met()->sumEt();       
-      //std::cout << "sumEt = " << sumEt << std::endl;
+    if ( diTauCandidate->p4gen().pt() > 10. && diTauCandidate->met().isNonnull() ) {
+      double projCosPhi = TMath::Cos(diTauCandidate->p4gen().phi());
+      double projSinPhi = TMath::Sin(diTauCandidate->p4gen().phi());
 
-      const reco::Candidate::LorentzVector& leg1P4 = diTauCandidate->leg1()->p4();
-      double leg1CosPhi = TMath::Cos(leg1P4.phi());
-      double leg1SinPhi = TMath::Sin(leg1P4.phi());
+      if ( dynamic_cast<const pat::MET*>(diTauCandidate->met().get()) != 0 ) {
+	const pat::MET* patMEt = dynamic_cast<const pat::MET*>(diTauCandidate->met().get());
+	if ( patMEt->genMET() ) 
+	  fillMEtResolutionHistograms(diTauCandidate->met()->p4(), patMEt->genMET()->p4(), projCosPhi, projSinPhi,
+				      hEvMETresParGenDiTau_, hEvMETresPerpGenDiTau_, weight);	
+      }
 
-      const reco::Candidate::LorentzVector& leg2P4 = diTauCandidate->leg2()->p4();
-            
-//--- make unit vector bisecting tau lepton "legs"
-//    and project difference between "true" generated and reconstructed MET
-//    in direction parallel and perpendicular to that vector
-      TVector2 diTauDirection = getDiTauBisectorDirection(leg1P4, leg2P4);
-      double diTauCosPhi = diTauDirection.X();
-      double diTauSinPhi = diTauDirection.Y();
-
-      double metSumEt, metSumP_par, metSumP_perp;
-      computeMEtProjection(*pfCandidates, diTauDirection, metSumEt, metSumP_par, metSumP_perp);
-      //std::cout << "metSumEt = " << metSumEt << std::endl;
-      //std::cout << "metSumP_par = " << metSumP_par << std::endl;
-      //std::cout << "metSumP_perp = " << metSumP_perp << std::endl;
-      
-      hMETresXvsSumEt_->Fill(residualMET.px(), sumEt);
-      hMETresYvsSumEt_->Fill(residualMET.py(), sumEt);
-
-      hMETresParMuonvsSumEt_->Fill((residualMET.px()*leg1CosPhi + residualMET.py()*leg1SinPhi), sumEt);
-      hMETresPerpMuonvsSumEt_->Fill((residualMET.px()*leg1SinPhi - residualMET.py()*leg1CosPhi), sumEt);
-      
-      hMETresParDiTauvsSumPpar_->Fill((residualMET.px()*diTauCosPhi + residualMET.py()*diTauSinPhi), metSumP_par);
-      hMETresPerpDiTauvsSumPperp_->Fill((residualMET.px()*diTauSinPhi - residualMET.py()*diTauCosPhi), metSumP_perp);
+      fillMEtResolutionHistograms(diTauCandidate->met()->p4(), diTauCandidate->p4InvisGen(), projCosPhi, projSinPhi,
+				  hDtMETresParGenDiTau_, hDtMETresPerpGenDiTau_, weight);
     }
 
     hLeg1PtVsLeg2Pt_->Fill(diTauCandidate->leg1()->pt(), diTauCandidate->leg2()->pt(), weight);
@@ -517,6 +503,10 @@ void CompositePtrCandidateT1T2MEtHistManager<T1,T2>::fillHistogramsImp(const edm
     hPt1MET_->Fill(diTauCandidate->pt1MET(), weight);
     hMt2MET_->Fill(diTauCandidate->mt2MET(), weight);
     hPt2MET_->Fill(diTauCandidate->pt2MET(), weight);
+    if ( visMass > 0. ) {
+      hMt2METvisMassRatio_->Fill(getBoundedValue(diTauCandidate->mt1MET()/visMass, -5.0, +5.0), weight);
+      hMt2METvisMassRatio_->Fill(getBoundedValue(diTauCandidate->mt2MET()/visMass, -5.0, +5.0), weight);
+    }
 
     if ( diTauCandidate->leg1().isNonnull() && diTauCandidate->leg2().isNonnull() && diTauCandidate->met().isNonnull() ) {
       hHt12MET_->Fill(diTauCandidate->leg1()->pt() + diTauCandidate->leg2()->pt() + diTauCandidate->met()->pt(), weight);
@@ -533,7 +523,22 @@ void CompositePtrCandidateT1T2MEtHistManager<T1,T2>::fillHistogramsImp(const edm
     hDPhi1METvsDPhi2MET_->Fill(diTauCandidate->dPhi1MET(), diTauCandidate->dPhi2MET(), weight);
 
     hPzetaCorr_->Fill(diTauCandidate->pZetaVis(), diTauCandidate->pZeta(), weight);
-    hPzetaDiff_->Fill(diTauCandidate->pZeta() - 1.5*diTauCandidate->pZetaVis(), weight);
+    double pZetaDiff = diTauCandidate->pZeta() - 1.5*diTauCandidate->pZetaVis();
+    hPzetaDiff_->Fill(pZetaDiff, weight);
+    if ( TMath::Abs(diTauCandidate->metSignMatrix().Determinant()) > 1.e-4 ) {
+      double zetaX = TMath::Cos(diTauCandidate->leg1()->phi()) + TMath::Sin(diTauCandidate->leg2()->phi());
+      double zetaY = TMath::Sin(diTauCandidate->leg1()->phi()) + TMath::Sin(diTauCandidate->leg2()->phi());
+      double zetaR = TMath::Sqrt(zetaX*zetaX + zetaY*zetaY);
+      if ( zetaR > 0. ) {
+	zetaX /= zetaR;
+	zetaY /= zetaR;
+      }
+      TVectorD zeta(2);
+      zeta(0) = zetaX;
+      zeta(1) = zetaY;
+      double projMEtSign = zeta*(diTauCandidate->metSignMatrix()*zeta);
+      if ( projMEtSign != 0. ) hPzetaDiffMEtSignRatio_->Fill(getBoundedValue(pZetaDiff/projMEtSign, -5.0, +5.0), weight);
+    }
 
     hPzetaDiffVsDPhi12_->Fill(diTauCandidate->dPhi12(), diTauCandidate->pZeta() - 1.5*diTauCandidate->pZetaVis(), weight);
     hPzetaDiffVsMt1MET_->Fill(diTauCandidate->mt1MET(), diTauCandidate->pZeta() - 1.5*diTauCandidate->pZetaVis(), weight);
