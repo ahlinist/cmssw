@@ -192,3 +192,15 @@ void setAxisLabelsRecTauDecayMode(TAxis* axis)
   setAxisLabel(axis, reco::PFTauDecayMode::tauDecay3ChargedPion4PiZero);
   setAxisLabel(axis, reco::PFTauDecayMode::tauDecayOther);
 }
+
+//
+//-----------------------------------------------------------------------------------------------------------------------
+//
+
+double getBoundedValue(double value, double min, double max)
+{
+  double retVal = value;
+  if ( retVal < min ) retVal = min;
+  if ( retVal > max ) retVal = max;
+  return retVal;
+}

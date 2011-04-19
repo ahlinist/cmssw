@@ -60,7 +60,9 @@ double compDecayEigenTime(double, double);
 void fillHistogramGenMatch(MonitorElement*, double, const reco::Candidate::LorentzVector&, 
 			   const reco::GenParticleCollection&, const std::vector<int>&, double);
 
-void setAxisLabelsGenTauDecayMode(TAxis* axis);
-void setAxisLabelsRecTauDecayMode(TAxis* axis);
+void setAxisLabelsGenTauDecayMode(TAxis*);
+void setAxisLabelsRecTauDecayMode(TAxis*);
+
+double getBoundedValue(double, double, double);
 
 #endif

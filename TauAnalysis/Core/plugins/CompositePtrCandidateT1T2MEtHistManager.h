@@ -103,13 +103,10 @@ class CompositePtrCandidateT1T2MEtHistManager : public HistManagerBase
   MonitorElement* hDiTauCandidateCharge_;
   MonitorElement* hDiTauCandidateMass_;
 
-  // MET resolutions
-  MonitorElement* hMETresXvsSumEt_;
-  MonitorElement* hMETresYvsSumEt_;
-  MonitorElement* hMETresParMuonvsSumEt_;
-  MonitorElement* hMETresPerpMuonvsSumEt_;
-  MonitorElement* hMETresParDiTauvsSumPpar_;
-  MonitorElement* hMETresPerpDiTauvsSumPperp_;
+  MonitorElement* hEvMETresParGenDiTau_;
+  MonitorElement* hEvMETresPerpGenDiTau_;
+  MonitorElement* hDtMETresParGenDiTau_;
+  MonitorElement* hDtMETresPerpGenDiTau_;
 
   MonitorElement* hLeg1PtVsLeg2Pt_;
   MonitorElement* hLeg1EtaVsLeg2Eta_;
@@ -144,8 +141,10 @@ class CompositePtrCandidateT1T2MEtHistManager : public HistManagerBase
 
   MonitorElement* hMt1MET_;
   MonitorElement* hPt1MET_;
+  MonitorElement* hMt1METvisMassRatio_;
   MonitorElement* hMt2MET_;
   MonitorElement* hPt2MET_;
+  MonitorElement* hMt2METvisMassRatio_;
 
   MonitorElement* hHt12MET_;
 
@@ -162,6 +161,7 @@ class CompositePtrCandidateT1T2MEtHistManager : public HistManagerBase
 
   MonitorElement* hPzetaCorr_;
   MonitorElement* hPzetaDiff_;
+  MonitorElement* hPzetaDiffMEtSignRatio_;
   
   MonitorElement* hPzetaDiffVsDPhi12_;
   MonitorElement* hPzetaDiffVsMt1MET_;
