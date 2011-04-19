@@ -18,6 +18,59 @@ from TauAnalysis.RecoTools.patLeptonSelection_cff import *
 #
 from TauAnalysis.RecoTools.patJetSelection_cff import *
 #
+# produce collection of (PF)MET objects with type-I jet corrections applied
+#
+ak5PFJetsAntiOverlapWithLeptonsVeto = cms.EDFilter("PFJetAntiOverlapSelector",
+    src = cms.InputTag('ak5PFJets'),                                                
+    srcNotToBeFiltered = cms.VInputTag(
+        "selectedPatElectronsTrkIPcumulative",
+        "selectedPatMuonsTrkIPcumulative",
+        "selectedPatTausProngCumulative"
+    ),                                                           
+    dRmin = cms.double(0.5),
+    filter = cms.bool(False)                                           
+)
+
+#from PhysicsTools.PFCandProducer.pfType1MET_cff import *
+#from JetMETCorrections.Configuration.JetCorrectionServices_cff import *
+#pfType1MET.inputUncorMetLabel = cms.InputTag('pfRawMET')
+#pfType1MET.inputUncorJetsTag = cms.InputTag('ak5PFJetsAntiOverlapWithLeptonsVeto')
+#pfType1MET.corrector = cms.string("ak5PFL2L3")
+
+pfUnclusteredCandidates = cms.EDFilter("PFCandidateAntiOverlapSelector",
+    src = cms.InputTag('particleFlow'),  
+    srcNotToBeFiltered = cms.VInputTag(
+        "selectedPatElectronsTrkIPcumulative",
+        "selectedPatMuonsTrkIPcumulative",
+        "selectedPatTausProngCumulative",
+        "ak5PFJetsAntiOverlapWithLeptonsVeto"                                             
+    ),
+    dRmin = cms.double(0.5),
+    filter = cms.bool(False)                                           
+)                                     
+
+from JetMETCorrections.Type1MET.MetType1Corrections_cff import metJESCorAK5PFJet
+from JetMETCorrections.Configuration.JetCorrectionServices_cff import *
+pfMEtType1and2corrected = metJESCorAK5PFJet.clone(
+    inputUncorJetsLabel = cms.string('ak5PFJets'),
+    metType = cms.string("PFMET"),
+    inputUncorMetLabel = cms.string('pfMet'),
+    jetPTthreshold = cms.double(10.0),
+    useTypeII = cms.bool(True),
+    UscaleA = cms.double(1.5),
+    UscaleB = cms.double(0.0),
+    UscaleC = cms.double(0.0),
+    inputUncorUnlusteredLabel = cms.untracked.InputTag('pfUnclusteredCandidates'),
+    corrector = cms.string('ak5PFL2L3')
+)
+
+from PhysicsTools.PatAlgos.producersLayer1.metProducer_cfi import *
+patPFtype1METs = patMETs.clone(
+    metSource = cms.InputTag('pfMEtType1and2corrected'),
+    addMuonCorrections = cms.bool(False),
+    genMETSource = cms.InputTag('genMetTrue')
+)    
+#
 # produce collections of pat::(Calo)MET objects
 # passing different selection criteria
 #
@@ -55,7 +108,8 @@ producePatTupleZtoMuTauSpecific = cms.Sequence(
    + patMuonsMuScleFitCorrectedMomentum + selectPatMuons + selectPatMuonsLooseIsolation
    + selectPatElectrons
    + selectPatTaus + selectPatTausForMuTau
-   + selectPatJets 
+   + selectPatJets
+   + ak5PFJetsAntiOverlapWithLeptonsVeto + pfUnclusteredCandidates + pfMEtType1and2corrected + patPFtype1METs
    + produceMuTauPairsAll
    + selectMuTauPairs + selectMuTauPairsLooseMuonIsolation
    + selectPrimaryVertexForMuTauAll
