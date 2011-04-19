@@ -525,7 +525,7 @@ void CompositePtrCandidateT1T2MEtHistManager<T1,T2>::fillHistogramsImp(const edm
     hPzetaCorr_->Fill(diTauCandidate->pZetaVis(), diTauCandidate->pZeta(), weight);
     double pZetaDiff = diTauCandidate->pZeta() - 1.5*diTauCandidate->pZetaVis();
     hPzetaDiff_->Fill(pZetaDiff, weight);
-    if ( TMath::Abs(diTauCandidate->metSignMatrix().Determinant()) > 1.e-4 ) {
+    if ( diTauCandidate->hasMEtSignMatrix() && TMath::Abs(diTauCandidate->metSignMatrix().Determinant()) > 1.e-4 ) {
       double zetaX = TMath::Cos(diTauCandidate->leg1()->phi()) + TMath::Sin(diTauCandidate->leg2()->phi());
       double zetaY = TMath::Sin(diTauCandidate->leg1()->phi()) + TMath::Sin(diTauCandidate->leg2()->phi());
       double zetaR = TMath::Sqrt(zetaX*zetaX + zetaY*zetaY);
