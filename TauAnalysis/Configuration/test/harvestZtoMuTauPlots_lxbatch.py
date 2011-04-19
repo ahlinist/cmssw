@@ -16,7 +16,7 @@ from TauAnalysis.Configuration.tools.harvesting import castor_source, clean_by_c
 
 channel = 'ZtoMuTau'
 
-reg.overrideJobId(channel, '2011Apr09_HPSloose')
+#reg.overrideJobId(channel, '2011Apr09_HPSloose')
 
 analysisFilePath = reg.getAnalysisFilePath(channel)
 harvestingFilePath = reg.getHarvestingFilePath(channel)
