@@ -45,10 +45,19 @@ userSettings = {
     },
     'veelken': {
         'current' : {
-            'ZtoMuTau'          : '2011Apr09_HPSloose',
+            'ZtoMuTau'          : '2011Apr18',
             'ZtoMuTau_tauIdEff' : '2011Apr09_HPSloose'
         },
         'jobs' : {
+            '2011Apr18' : {
+                'ZtoMuTau' : {
+                    'analysisFilePath' : "/castor/cern.ch/user/v/veelken/CMSSW_4_1_x/plots/ZtoMuTau/",
+                    'harvestingFilePath' : "/data1/veelken/CMSSW_4_1_x/plots/ZtoMuTau/",
+                    'tmpFilePath' : "/data2/veelken/tmp/ZtoMuTau/",
+                    'jobId' : "2011Apr18",
+                    'batchHarvest' : "/castor/cern.ch/user/v/veelken/CMSSW_4_1_x/harvesting/ZtoMuTau/2011Apr18/"
+                },
+            },
             '2011Apr09_HPSloose' : {
                 'ZtoMuTau' : {
                     'analysisFilePath' : "/castor/cern.ch/user/v/veelken/CMSSW_4_1_x/plots/ZtoMuTau/",
@@ -61,28 +70,7 @@ userSettings = {
                     'analysisFilePath' : "/castor/cern.ch/user/v/veelken/CMSSW_4_1_x/skims/TauIdEffMeas/",
                     'harvestingFilePath' : "/data2/veelken/CMSSW_4_1_x/skims/ZtoMuTau_tauIdEff/",
                     'tmpFilePath' : "/data1/veelken/tmp/ZtoMuTau_tauIdEff/",
-                     # Directory containing selected events
-                    'pickevents' : '/castor/cern.ch/user/v/veelken/CMSSW_3_8_x/skims/harvesting/',
-                    'batchHarvest' : "/castor/cern.ch/user/v/veelken/CMSSW_3_8_x/skims/harvesting/"
-                }
-            },
-            '2011Feb01_HPSloose' : {
-                'ZtoMuTau' : {
-                    'analysisFilePath' : "/user/v/veelken/CMSSW_3_8_x/plots/ZtoMuTau/",
-                    'harvestingFilePath' : "/data1/veelken/CMSSW_3_8_x/plots/ZtoMuTau/",
-                    'tmpFilePath' : "/data2/veelken/tmp/ZtoMuTau/",
-                    'jobId' : "2011Feb01_HPSloose",
-                    'batchHarvest' : "/castor/cern.ch/user/v/veelken/CMSSW_3_8_x/skims/harvesting/ZtoMuTau/2011Feb01_HPSloose"
-                },
-            },
-            '2011Jan30' : {
-                'ZtoMuTau_tauIdEff' : {
-                    'analysisFilePath' : "/castor/cern.ch/user/v/veelken/CMSSW_3_8_x/skims/TauIdEffMeas/",
-                    'harvestingFilePath' : "/data1/veelken/CMSSW_3_8_x/skims/ZtoMuTau_tauIdEff/",
-                    'tmpFilePath' : "/data1/veelken/tmp/ZtoMuTau_tauIdEff/",
-                     # Directory containing selected events
-                    'pickevents' : '/castor/cern.ch/user/v/veelken/CMSSW_3_8_x/skims/harvesting/',
-                    'batchHarvest' : "/castor/cern.ch/user/v/veelken/CMSSW_3_8_x/skims/harvesting/"
+                    'batchHarvest' : "/castor/cern.ch/user/v/veelken/CMSSW_4_1_x/harvesting/ZtoMuTau_tauIdEff/2011Apr09_HPSloose/"
                 }
             },
             '2011Apr05_HPSloose' : {
