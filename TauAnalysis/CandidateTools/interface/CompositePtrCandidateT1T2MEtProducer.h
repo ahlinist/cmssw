@@ -12,9 +12,9 @@
  *          Michal Bluj,
  *          Christian Veelken
  *
- * \version $Revision: 1.19 $
+ * \version $Revision: 1.20 $
  *
- * $Id: CompositePtrCandidateT1T2MEtProducer.h,v 1.19 2010/11/10 16:43:57 veelken Exp $
+ * $Id: CompositePtrCandidateT1T2MEtProducer.h,v 1.20 2011/01/19 10:12:48 veelken Exp $
  *
  */
 
@@ -71,6 +71,7 @@ class CompositePtrCandidateT1T2MEtProducer : public edm::EDProducer
     : moduleLabel_(cfg.getParameter<std::string>("@module_label")),
       algorithm_(cfg), 
       doSVreco_(false), 
+      doPFMEtSign_(false), 
       cfgError_(0)
   {
     //std::cout << "<CompositePtrCandidateT1T2MEtProducer::CompositePtrCandidateT1T2MEtProducer>:" << std::endl;
@@ -103,13 +104,17 @@ class CompositePtrCandidateT1T2MEtProducer : public edm::EDProducer
 //--- check that InputTag for MET collection has been defined,
 //    in case it is needed for the reconstruction mode 
 //    specified in the configuration parameter set
-    if ( srcMET_.label() == "" && recoMode_ != "" ) {
+    if ( srcMET_.label() == "" && recoMode_ != "" ) {      
       edm::LogError ("ConfigError") 
 	<< " Configuration Parameter srcMET undefined," 
 	<< " needed for recoMode = " << recoMode_ << " !!";
       cfgError_ = 1;
     }
 
+    if ( srcMET_.label() != "" ) {
+      doPFMEtSign_ = ( cfg.exists("doPFMEtSign") ) ? cfg.getParameter<bool>("doPFMEtSign") : true;
+    }
+    
     if ( srcMET_.label() != "" && srcBeamSpot_.label() != "" && srcPV_.label() != "" ) {
       doSVreco_ = ( cfg.exists("doSVreco") ) ? cfg.getParameter<bool>("doSVreco") : true;
     } else if ( recoMode_ == "secondaryVertexFit" ) {
@@ -221,7 +226,7 @@ class CompositePtrCandidateT1T2MEtProducer : public edm::EDProducer
 
 	CompositePtrCandidateT1T2MEt<T1,T2> compositePtrCandidate = 
 	  algorithm_.buildCompositePtrCandidate(diTauCandidateRef->leg1(), diTauCandidateRef->leg2(), correctedMEtPtr, genParticles, 
-						pv, beamSpot, trackBuilder, recoMode_, doSVreco_);
+						pv, beamSpot, trackBuilder, recoMode_, doSVreco_, doPFMEtSign_);
 
 	//std::cout << "mass(SVfit) **after** Z-recoil correction = " 
 	//	    << compositePtrCandidate.svFitSolution("psKine_MEt_ptBalance")->mass() << std::endl;
@@ -302,7 +307,7 @@ class CompositePtrCandidateT1T2MEtProducer : public edm::EDProducer
 	  
 	  CompositePtrCandidateT1T2MEt<T1,T2> compositePtrCandidate = 
 	    algorithm_.buildCompositePtrCandidate(leadingLeg1Ptr, leadingLeg2Ptr, metPtr, genParticles, 
-						  pv, beamSpot, trackBuilder, recoMode_, doSVreco_);
+						  pv, beamSpot, trackBuilder, recoMode_, doSVreco_, doPFMEtSign_);
 	  compositePtrCandidateCollection->push_back(compositePtrCandidate);
 	} else {
 	  if ( verbosity_ >= 1 ) {
@@ -333,7 +338,7 @@ class CompositePtrCandidateT1T2MEtProducer : public edm::EDProducer
 	  
 	    CompositePtrCandidateT1T2MEt<T1,T2> compositePtrCandidate = 
 	      algorithm_.buildCompositePtrCandidate(leg1Ptr, leg2Ptr, metPtr, genParticles, 
-						    pv, beamSpot, trackBuilder, recoMode_, doSVreco_);
+						    pv, beamSpot, trackBuilder, recoMode_, doSVreco_, doPFMEtSign_);
 	    compositePtrCandidateCollection->push_back(compositePtrCandidate);
 	  }
 	}
@@ -362,6 +367,7 @@ class CompositePtrCandidateT1T2MEtProducer : public edm::EDProducer
   edm::InputTag srcBeamSpot_;
   std::string recoMode_;
   bool doSVreco_;
+  bool doPFMEtSign_;
   edm::InputTag srcReRecoDiTauObjects_;
   edm::InputTag srcReRecoDiTauToMEtAssociations_;
   int verbosity_;
