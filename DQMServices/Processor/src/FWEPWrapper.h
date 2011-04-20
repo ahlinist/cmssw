@@ -107,6 +107,7 @@ namespace dqmevf{
     //
     edm::EventProcessor             *evtProcessor_;
     bool                             epInitialized_;
+    bool                             epCreated_;
 	  
   public:
 
