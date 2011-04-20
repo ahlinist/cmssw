@@ -155,6 +155,7 @@ selectEventsBgEstZbbEnriched = evtSelConfiguratorBgEstZbbEnriched.configure()
 #--------------------------------------------------------------------------------
 
 from TauAnalysis.Configuration.analyzeZtoMuTau_cfi import *
+from TauAnalysis.BgEstimationTools.selectZtoMuTauEventVertex_cff import *
 from TauAnalysis.Core.candidateHistManager_cfi import *
 
 muPlusHistManagerBgEstZbbEnriched = muonHistManager.clone(
