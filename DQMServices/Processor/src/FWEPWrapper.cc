@@ -48,6 +48,7 @@ namespace dqmevf{
   FWEPWrapper::FWEPWrapper(log4cplus::Logger &log)
     : evtProcessor_(0)
     , epInitialized_(false)
+    , epCreated_(false)
     , inputControllerReg_(0)
     , msService_(0)
     , serviceToken_()
@@ -208,7 +209,12 @@ namespace dqmevf{
     }
     catch (...) {std::cout << "Unknown Exception\n";}
 
-    //now, service setup
+    pthread_mutex_lock(&readout_lock_); 
+    epCreated_=true;
+    pthread_mutex_unlock(&readout_lock_); 
+
+
+    //service setup section
     
     //test rerouting of fwk logging to log4cplus
     edm::LogInfo("FWEPWrapper")<<"started MessageLogger Service.";
@@ -853,14 +859,10 @@ bool FWEPWrapper::monitorReceiverAux(toolbox::task::WorkLoop *)
 	  data->ms  = 0;
 	}
 	data->dqm=0;
-	//data->trp            = scalersUpdates_;
-	pthread_mutex_unlock(&readout_lock_);
 
-	//this is invoked periodically, exit check
-	//if(exitOnError_.value_)
-	{
-	  //if(data->Ms == edm::event_processor::sStopping ||
-	  if(data->Ms == edm::event_processor::sError) 
+	//exit check
+	if(epCreated_)
+	  if (evtProcessor_->getState() == edm::event_processor::sError) 
 	  {
 	    pthread_mutex_lock(&stop_lock_);
 	    cout << "Processor found in error state - will exit...\n";
@@ -868,8 +870,8 @@ bool FWEPWrapper::monitorReceiverAux(toolbox::task::WorkLoop *)
 	    exit(EXIT_FAILURE);
 	    /* no need to unlock mutex after exit :-)*/
 	  }
+	pthread_mutex_unlock(&readout_lock_);
 
-	}
 	if (!(stopCalled_ && cfg_.detachTimeout>0))
 	  cfg_.sub->postSlaveSup(msg1);
 	usleep(100000);
