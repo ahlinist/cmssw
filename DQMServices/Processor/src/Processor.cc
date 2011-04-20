@@ -326,8 +326,11 @@ void Processor::spawnChild(unsigned int i) {
   bool rets = fwepWrapper_.enableSlaveAndWait();
 
   //finish parent class transition in child (maybe not required)
-  try{
-    if (!rets) fsm_.fireFailed("error",this);
+  try {
+    if (!rets) {
+      fsm_.fireFailed("error",this);
+      exit(EXIT_FAILURE);
+    }
     else fsm_.fireEvent("EnableDone",this);
   }
   catch (xcept::Exception &e)
