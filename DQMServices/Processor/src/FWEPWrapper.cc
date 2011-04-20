@@ -83,7 +83,14 @@ namespace dqmevf{
   void FWEPWrapper::init(WrapperConfig & newCfg)
   {
     using namespace std;
-    
+  
+   if (newCfg.idleRestartTime!=0) {
+     clock_gettime(CLOCK_REALTIME, &maxWaitTime);
+     maxWaitTime.tv_sec += newCfg.idleRestartTime;
+   }
+   else maxWaitTime.tv_sec=0;
+
+
     //init locking objects
     int retval;
     retval = pthread_mutex_init(&readout_lock_,0);
@@ -861,7 +868,7 @@ bool FWEPWrapper::monitorReceiverAux(toolbox::task::WorkLoop *)
 	data->dqm=0;
 
 	//exit check
-	if(epCreated_)
+	if(epCreated_) {
 	  if (evtProcessor_->getState() == edm::event_processor::sError) 
 	  {
 	    pthread_mutex_lock(&stop_lock_);
@@ -870,6 +877,16 @@ bool FWEPWrapper::monitorReceiverAux(toolbox::task::WorkLoop *)
 	    exit(EXIT_FAILURE);
 	    /* no need to unlock mutex after exit :-)*/
 	  }
+	}
+	//timeout exit check if not processed at least one event
+	if (maxWaitTime.tv_sec!=0 && data->nbp==0) {
+	  timespec tsnew;
+	  clock_gettime(CLOCK_REALTIME, &tsnew);
+	  if (tsnew.tv_sec > maxWaitTime.tv_sec) {
+	    cout << "event not processed for configured time of " << cfg_.idleRestartTime <<". Exiting"<< endl; 
+	    exit(EXIT_FAILURE);
+	  }
+	}
 	pthread_mutex_unlock(&readout_lock_);
 
 	if (!(stopCalled_ && cfg_.detachTimeout>0))

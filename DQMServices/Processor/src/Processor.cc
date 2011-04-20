@@ -72,6 +72,7 @@ Processor::Processor(xdaq::ApplicationStub *s)
   , superSleepSec_(1)
   , monSleepSec_(1)
   , lsTimeOut_(100000000) //usec
+  , idleRestartTime_(0)
   , timeoutOnStop_(10)
   , detachTimeout_(0)
   , msgQueueOffset_(0)
@@ -162,6 +163,7 @@ Processor::Processor(xdaq::ApplicationStub *s)
   ispace->fireItemAvailable("timeoutOnStop",        &timeoutOnStop_               );
   ispace->fireItemAvailable("detachTimeout",        &detachTimeout_               );
   ispace->fireItemAvailable("lsTimeOutUsec",        &lsTimeOut_                   );
+  ispace->fireItemAvailable("idleRestartTime",        &idleRestartTime_           );
 
   detachedRunning_=false;
   ispace->fireItemAvailable("detachedRunning",      &detachedRunning_             );
@@ -396,6 +398,7 @@ void Processor::reconfigureEP() {
   wCfg_.timeoutOnStop=timeoutOnStop_.value_;
   wCfg_.monitorSleepSec=monSleepSec_.value_;
   wCfg_.lsTimeOut = lsTimeOut_.value_;
+  wCfg_.idleRestartTime = (int)(idleRestartTime_.value_);
   wCfg_.instance = getApplicationDescriptor()->getInstance();
   wCfg_.hasSharedMemory = hasShMem_.value_;
   wCfg_.hasModuleWebRegistry = hasModuleWebRegistry_.value_;
