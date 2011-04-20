@@ -43,6 +43,7 @@ public:
   void        fillCandHist(int mode);
   void        MCstudy();
   void        acceptance();
+  void        UpsGun_acceptance();
   void        PathStudy();
   void        GenStudy();
   bool        isPathPreScaled(TString path);
