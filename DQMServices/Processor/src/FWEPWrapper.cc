@@ -401,6 +401,7 @@ namespace dqmevf{
     if (timedOut) {
         //try again next time
     	inputControllerReg_->untrapSource("HTTPInputSource");
+	std::cout << " INPUT SOURCE LOCK TIMED OUT!\n";
 	return true;
     }
     
