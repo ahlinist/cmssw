@@ -308,6 +308,7 @@ selectEventsBgEstZmumuEnriched = evtSelConfiguratorBgEstZmumuEnriched.configure(
 #--------------------------------------------------------------------------------
 
 from TauAnalysis.Configuration.analyzeZtoMuTau_cfi import *
+from TauAnalysis.BgEstimationTools.selectZtoMuTauEventVertex_cff import *
 from TauAnalysis.BgEstimationTools.tauIdEffZtoMuTauHistManager_cfi import *
 
 muonHistManagerBgEstZmumuEnriched = copy.deepcopy(muonHistManager)

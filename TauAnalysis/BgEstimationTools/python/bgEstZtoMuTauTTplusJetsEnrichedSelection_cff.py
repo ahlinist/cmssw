@@ -167,6 +167,7 @@ selectEventsBgEstTTplusJetsEnriched = evtSelConfiguratorBgEstTTplusJetsEnriched.
 #--------------------------------------------------------------------------------
 
 from TauAnalysis.Configuration.analyzeZtoMuTau_cfi import *
+from TauAnalysis.BgEstimationTools.selectZtoMuTauEventVertex_cff import *
 
 muonHistManagerBgEstTTplusJetsEnriched = copy.deepcopy(muonHistManager)
 muonHistManagerBgEstTTplusJetsEnriched.pluginName = cms.string('muonHistManagerBgEstTTplusJetsEnriched')

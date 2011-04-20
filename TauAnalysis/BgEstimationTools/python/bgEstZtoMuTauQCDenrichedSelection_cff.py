@@ -155,6 +155,7 @@ selectEventsBgEstQCDenriched = evtSelConfiguratorBgEstQCDenriched.configure()
 #--------------------------------------------------------------------------------
 
 from TauAnalysis.Configuration.analyzeZtoMuTau_cfi import *
+from TauAnalysis.BgEstimationTools.selectZtoMuTauEventVertex_cff import *
 
 muonHistManagerBgEstQCDenriched = copy.deepcopy(muonHistManager)
 muonHistManagerBgEstQCDenriched.pluginName = cms.string('muonHistManagerBgEstQCDenriched')
