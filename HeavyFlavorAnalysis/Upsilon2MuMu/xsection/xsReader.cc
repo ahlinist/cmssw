@@ -1,6 +1,7 @@
 #include "xsReader.hh"
 #include <vector>
 #include "TRandom.h"
+#include "TLorentzRotation.h"
 #define MMUON 0.10566
 #define MKAON 0.49368
 
@@ -14,14 +15,38 @@ const int  xsReader::fNy;
 // ----------------------------------------------------------------------
 xsReader::xsReader(TChain *tree, TString evtClassName): treeReaderXS(tree, evtClassName) {
   cout << "--> xsReader> This is the start ..." << endl;
-  fpJSON = new JSON("/shome/bora/root/json/json_147196_149442");
+  //fpJSON = new JSON("/shome/bora/root/json/json_147196_149442");  // Run2010B
+  //fpJSON = new JSON("/shome/bora/root/json/json_140042_144114");  // Run2010A
+  fpJSON = new JSON("/shome/bora/root/json/json_146240_147116");  // Run2010B HLTDoubleMu0
+
   //// Ups(1S) Binning
+  /*fPTbin[0] = 0.; fPTbin[1] = 1.; fPTbin[2] = 2.; fPTbin[3] = 3.; fPTbin[4] = 4.; fPTbin[5] = 5.; fPTbin[6] = 6.;
+  fPTbin[7] = 7.; fPTbin[8] = 8.; fPTbin[9] = 9.; fPTbin[10] = 10.; fPTbin[11] = 11.; fPTbin[12] = 12.; fPTbin[13] = 13.;
+  fPTbin[14] = 14.; fPTbin[15] = 15.; fPTbin[16] = 16.; fPTbin[17] = 17.; fPTbin[18] = 18.; fPTbin[19] = 19.; 
+  fPTbin[20] = 20.; fPTbin[21] = 21.; fPTbin[22] = 22.; fPTbin[23] = 23.; fPTbin[24] = 24.; fPTbin[25] = 25.; 
+  fPTbin[26] = 26.; fPTbin[27] = 27.; fPTbin[28] = 28.; fPTbin[29] = 29.; fPTbin[30] = 30.; fPTbin[31] = 31.; 
+  fPTbin[32] = 32.; fPTbin[33] = 33.; fPTbin[34] = 34.; fPTbin[35] = 35.; fPTbin[36] = 36.; fPTbin[37] = 37.;
+  fPTbin[38] = 38.; fPTbin[39] = 39.; fPTbin[40] = 40.; fPTbin[41] = 41.; fPTbin[42] = 42.; fPTbin[43] = 43.;
+  fPTbin[44] = 44.; fPTbin[45] = 45.; fPTbin[46] = 46.; fPTbin[47] = 47.; fPTbin[48] = 48.; fPTbin[49] = 49.;
+  fPTbin[50] = 50.;
+    
+  fYbin[0] = 0.; fYbin[1] = 0.1; fYbin[2] = 0.2; fYbin[3] = 0.3; fYbin[4] = 0.4; fYbin[5] = 0.5; fYbin[6] = 0.6;
+  fYbin[7] = 0.7; fYbin[8] = 0.8; fYbin[9] = 0.9; fYbin[10] = 1.0; fYbin[11] = 1.1; fYbin[12] = 1.2; fYbin[13] = 1.3;
+  fYbin[14] = 1.4; fYbin[15] = 1.5; fYbin[16] = 1.6; fYbin[17] = 1.7; fYbin[18] = 1.8; fYbin[19] = 1.9; fYbin[20] = 2.0;
+  fYbin[21] = 2.1; fYbin[22] = 2.2; fYbin[23] = 2.3; fYbin[24] = 2.4;
+  */
+  
   fPTbin[0] = 0.; fPTbin[1] = 0.5; fPTbin[2] = 1.; fPTbin[3] = 1.5; fPTbin[4] = 2.; fPTbin[5] = 3.; fPTbin[6] = 4.;
   fPTbin[7] = 5.; fPTbin[8] = 6.; fPTbin[9] = 7.; fPTbin[10] = 8.; fPTbin[11] = 9.; fPTbin[12] = 10.; fPTbin[13] = 11.;
   fPTbin[14] = 12.; fPTbin[15] = 13.; fPTbin[16] = 14.; fPTbin[17] = 15.; fPTbin[18] = 16.; fPTbin[19] = 18.; 
   fPTbin[20] = 20.; fPTbin[21] = 22.; fPTbin[22] = 25.; fPTbin[23] = 30.; fPTbin[24] = 50.; 
-  fYbin[0] = 0.; fYbin[1] = 0.4; fYbin[2] = 0.8; fYbin[3] = 1.2; fYbin[4] = 1.6; fYbin[5] = 2.0; fYbin[6] = 2.4;
   
+  fYbin[0] = 0.; fYbin[1] = 0.4; fYbin[2] = 0.8; fYbin[3] = 1.2; fYbin[4] = 1.6; fYbin[5] = 2.; fYbin[6] = 2.4;
+   
+  //fPTbin[0] = 0.; fPTbin[1] = 1.; fPTbin[2] = 2.; fPTbin[3] = 3.; fPTbin[4] = 4.; fPTbin[5] = 5.; fPTbin[6] = 6.;
+  //fPTbin[7] = 7.; fPTbin[8] = 8.; fPTbin[9] = 9.; fPTbin[10] = 10.; fPTbin[11] = 12.; fPTbin[12] = 14.; fPTbin[13] = 17.;
+  //fPTbin[14] = 20.; fPTbin[15] = 30.;
+  //fYbin[0] = 0.; fYbin[1] = 0.5; fYbin[2] = 1.0; fYbin[3] = 1.5; fYbin[4] = 2.0;
   
   ///// PidTables MC -- TrackerMuonArbitrated 
   fPidTableMuIDPos = new PidTable("../tnp/PidTables/MC/Jpsi/MuID/CowboyVeto/TrackerMuonArbitrated/PtMmbPos-jpsi.tma.nb.dat");
@@ -29,12 +54,30 @@ xsReader::xsReader(TChain *tree, TString evtClassName): treeReaderXS(tree, evtCl
   fPidTableTrigPos = new PidTable("../tnp/PidTables/MC/Jpsi/Trig/CowboyVeto/PtMmbPos-jpsi.tma.nb.dat");    
   fPidTableTrigNeg = new PidTable("../tnp/PidTables/MC/Jpsi/Trig/CowboyVeto/PtMmbNeg-jpsi.tma.nb.dat"); 
   
+  ///// PidTables MC -- Global and Tracker 
+  //fPidTableMuIDPos = new PidTable("../tnp/PidTables/MC/Jpsi/MuID/CowboyVeto/PtMmbPos-jpsi.dat");
+  //fPidTableMuIDNeg = new PidTable("../tnp/PidTables/MC/Jpsi/MuID/CowboyVeto/PtMmbNeg-jpsi.dat");
+  //fPidTableTrigPos = new PidTable("../tnp/PidTables/MC/Jpsi/Trig/CowboyVeto/PtMmbPos-jpsi.dat");    
+  //fPidTableTrigNeg = new PidTable("../tnp/PidTables/MC/Jpsi/Trig/CowboyVeto/PtMmbNeg-jpsi.dat");   
+  
   
   ///// PidTables DATA -- TrackerMuonArbitrated 
   //fPidTableMuIDPos = new PidTable("../tnp/PidTables/DATA/Jpsi/MuID/CowboyVeto/TrackerMuonArbitrated/PtMmbPos-jpsi.tma.nb.dat");
   //fPidTableMuIDNeg = new PidTable("../tnp/PidTables/DATA/Jpsi/MuID/CowboyVeto/TrackerMuonArbitrated/PtMmbNeg-jpsi.tma.nb.dat");
   //fPidTableTrigPos = new PidTable("../tnp/PidTables/DATA/Jpsi/Trig/MuOnia/CowboyVeto/PtMmbPos-jpsi.tma.nb.dat");    
   //fPidTableTrigNeg = new PidTable("../tnp/PidTables/DATA/Jpsi/Trig/MuOnia/CowboyVeto/PtMmbNeg-jpsi.tma.nb.dat"); 
+  
+  ///// PidTables DATA -- Global and Tracker 
+  //fPidTableMuIDPos = new PidTable("../tnp/PidTables/DATA/Jpsi/MuID/CowboyVeto/PtMmbPos-jpsi.dat");
+  //fPidTableMuIDNeg = new PidTable("../tnp/PidTables/DATA/Jpsi/MuID/CowboyVeto/PtMmbNeg-jpsi.dat");
+  //fPidTableTrigPos = new PidTable("../tnp/PidTables/DATA/Jpsi/Trig/MuOnia/CowboyVeto/PtMmbPos-jpsi.dat");    
+  //fPidTableTrigNeg = new PidTable("../tnp/PidTables/DATA/Jpsi/Trig/MuOnia/CowboyVeto/PtMmbNeg-jpsi.dat");   
+  
+  ///// PidTables DATA Run2010A -- TrakerMuonArbitrated -- HLTDoubleMu0
+  //fPidTableTrigPos = new PidTable("../tnp/PidTables/DATA/Jpsi/Trig/MuOnia/CowboyVeto/PtMmbPos-jpsi.runA.tma.nb.dat");    
+  //fPidTableTrigNeg = new PidTable("../tnp/PidTables/DATA/Jpsi/Trig/MuOnia/CowboyVeto/PtMmbNeg-jpsi.runA.tma.nb.dat");   
+  
+  
   
 }
 // ----------------------------------------------------------------------
@@ -54,19 +97,21 @@ void xsReader::eventProcessing() {
     if ( !fpJSON->good(fRun, fLS) ) goto end;
   }
   
+  
   ////// Trigger Check Study
   // candidateSelection(2);
   //if ( 0 != fpCand  ){
   //   trigEffCheck();
   //}
   
-  GenStudy();
+  //GenStudy();
   
   if ( MODE == 1  ) {
-    acceptance();
-    preSelEff();
+    UpsGun_acceptance();
+    //acceptance();
+    //preSelEff();
   }
-  
+  /*
   if ( !MuIDCheck() ) goto end;
   if ( isPathPreScaled(HLTPATH) ) goto end;
   if ( !isPathFired_Match(HLTPATH,HLTLABEL) ) goto end;
@@ -79,7 +124,7 @@ void xsReader::eventProcessing() {
   
   if ( 0 != fgCand && MODE == 1 ) MCstudy(); 
   fpHistFile->cd();
-  
+  */
   end:
   freePointers();  
   
@@ -419,37 +464,199 @@ void xsReader::PathStudy(){
   for (int a = 0; a < NHLT ; ++a) {
     if ( fpEvt->fHLTNames[a] ==  HLTPATH  && fpEvt->fHLTResult[a] == 1 ) {
       n++;
-      //cout << " Fired !!!   "   << fpEvt->fHLTNames[a] << endl;
+      cout << " Fired !!!   "   << fpEvt->fHLTNames[a] << endl;
       
-      // for (int c = 0; c < NHLT ; ++c) {
-      //if ( fpEvt->fHLTResult[c] == 1 ) cout  << fpEvt->fHLTNames[c] << endl;
-      //}
+      for (int c = 0; c < NHLT ; ++c) {
+	if ( fpEvt->fHLTResult[c] == 1 ) cout  << fpEvt->fHLTNames[c] << endl;
+      }
       
       for (int b = 0; b < NHLT ; ++b) {
 	if (  fpEvt->fHLTNames[b] ==  HLTPATH1  &&  fpEvt->fHLTResult[b] == 1 ) m15++;
 	if (  fpEvt->fHLTNames[b] ==  HLTPATH2  &&  fpEvt->fHLTResult[b] == 1 ) m13++;
 	if (  fpEvt->fHLTNames[b] ==  HLTPATH3  &&  fpEvt->fHLTResult[b] == 1 ) m11++;
-	if (  fpEvt->fHLTNames[b] == "HLT_HT160U_v1" &&  fpEvt->fHLTResult[b] == 1 ) v1++;
-	if (  fpEvt->fHLTNames[b] == "HLT_HT160U_v2" &&  fpEvt->fHLTResult[b] == 1 ) v2++;
-	if (  fpEvt->fHLTNames[b] == "HLT_HT160U_v3" &&  fpEvt->fHLTResult[b] == 1 ) v3++;
+	if (  fpEvt->fHLTNames[b] == "HLT_Mu9" &&  fpEvt->fHLTResult[b] == 1 ) v1++;
+	if (  fpEvt->fHLTNames[b] == "HLT_Mu11" &&  fpEvt->fHLTResult[b] == 1 ) v2++;
+	//if (  fpEvt->fHLTNames[b] == "HLT_HT160U_v3" &&  fpEvt->fHLTResult[b] == 1 ) v3++;
       }
     }
   }
   
-  ((TH1D*)fpHistFile->Get("hTriggerStudy"))->GetXaxis()->SetBinLabel(2, Form("HLT_DoubleMu0_Quarkonium_v1"));
-  ((TH1D*)fpHistFile->Get("hTriggerStudy"))->GetXaxis()->SetBinLabel(4, Form("HLT_Mu15_v1"));
-  ((TH1D*)fpHistFile->Get("hTriggerStudy"))->GetXaxis()->SetBinLabel(6, Form("HLT_Mu13_v1"));
-  ((TH1D*)fpHistFile->Get("hTriggerStudy"))->GetXaxis()->SetBinLabel(8, Form("HLT_Mu11"));
-  ((TH1D*)fpHistFile->Get("hTriggerStudy"))->GetXaxis()->SetBinLabel(10, Form("HLT_HT160U_v1"));
-  ((TH1D*)fpHistFile->Get("hTriggerStudy"))->GetXaxis()->SetBinLabel(12, Form("HLT_HT160U_v2"));
-  ((TH1D*)fpHistFile->Get("hTriggerStudy"))->GetXaxis()->SetBinLabel(14, Form("HLT_HT160U_v3"));
+  ((TH1D*)fpHistFile->Get("hTriggerStudy"))->GetXaxis()->SetBinLabel(2, Form("HLT_DoubleMu0"));
+  ((TH1D*)fpHistFile->Get("hTriggerStudy"))->GetXaxis()->SetBinLabel(4, Form("HLT_Mu3"));
+  ((TH1D*)fpHistFile->Get("hTriggerStudy"))->GetXaxis()->SetBinLabel(6, Form("HLT_Mu5"));
+  ((TH1D*)fpHistFile->Get("hTriggerStudy"))->GetXaxis()->SetBinLabel(8, Form("HLT_Mu7"));
+  ((TH1D*)fpHistFile->Get("hTriggerStudy"))->GetXaxis()->SetBinLabel(10, Form("HLT_Mu9"));
+  ((TH1D*)fpHistFile->Get("hTriggerStudy"))->GetXaxis()->SetBinLabel(12, Form("HLT_Mu11"));
+  //((TH1D*)fpHistFile->Get("hTriggerStudy"))->GetXaxis()->SetBinLabel(14, Form("HLT_HT160U_v3"));
   ((TH1D*)fpHistFile->Get("hTriggerStudy"))->AddBinContent(2, n);
   ((TH1D*)fpHistFile->Get("hTriggerStudy"))->AddBinContent(4, m15);  
   ((TH1D*)fpHistFile->Get("hTriggerStudy"))->AddBinContent(6, m13); 
   ((TH1D*)fpHistFile->Get("hTriggerStudy"))->AddBinContent(8, m11);
   ((TH1D*)fpHistFile->Get("hTriggerStudy"))->AddBinContent(10, v1);  
   ((TH1D*)fpHistFile->Get("hTriggerStudy"))->AddBinContent(12, v2); 
-  ((TH1D*)fpHistFile->Get("hTriggerStudy"))->AddBinContent(14, v3);  
+  //((TH1D*)fpHistFile->Get("hTriggerStudy"))->AddBinContent(14, v3);  
+  
+}
+
+void xsReader::UpsGun_acceptance(){
+  
+  TGenCand *gCand(0); TAnaTrack *pTrack(0); 
+  TGenCand *gDau1(0); TGenCand *gDau2(0);  
+  double pt, rapidity; bool fill = false; 
+  bool ups = false; bool mu1 = false; bool mu2 = false; 
+  double pt1(-1.), pt2(-1.);
+  double eta1(-99.), eta2(-99);
+  int index1(-99), index2(-99);
+  double w1(-99), w2(-99), w3(-99), w4(-99), w5(-99);
+  TLorentzVector genCand; TAnaMuon *pMuon;
+  TGenCand *g2Cand; TGenCand *g2Cand_; TGenCand *gUps; TGenCand *gMu1; TGenCand *gMu2;
+  int m(0);
+  double E=3500; double pz = sqrt(E*E - 0.938272*0.938272);
+  TLorentzVector h1; h1.SetPxPyPzE(0,0,pz,E);
+  TLorentzVector h2; h2.SetPxPyPzE(0,0,-pz,E);
+  int mp;  
+  TLorentzVector genMuPlus;
+  Float_t cosThetaStarHel;
+  TVector3 zCS;
+  Float_t cosThetaStarCS;
+
+  //fpEvt->dumpGenBlock();
+  //cout << " fpEvt->nGenCands() = " << fpEvt->nGenCands() << endl;
+  for (int iG = 0; iG < fpEvt->nGenCands(); ++iG) {
+    gCand = fpEvt->getGenCand(iG);
+    if ( gCand->fID == RESTYPE && gCand->fStatus == 2 ) {
+      ups = true;
+      gUps = fpEvt->getGenCand(iG);
+    }
+    if ( gCand->fID == -13 && gCand->fStatus == 1 ) {
+      mu1 = true;
+      gMu1 = fpEvt->getGenCand(iG);
+    }
+    if ( gCand->fID == 13 && gCand->fStatus == 1 ) {
+      mu2 = true;
+      gMu2 = fpEvt->getGenCand(iG);
+      
+      if ( ups ) {
+	genCand.SetPtEtaPhiE(gUps->fP.Perp(),gUps->fP.Eta(),gUps->fP.Phi(),gUps->fP.Energy());
+	TLorentzRotation boost(-genCand.BoostVector()); // For different Polarizations
+      
+	// calculate cosTheta Helicity
+	genMuPlus.SetPtEtaPhiM(gMu2->fP.Perp(), gMu2->fP.Eta(), gMu2->fP.Phi(), 0.106);
+	genMuPlus *= boost;
+	cosThetaStarHel = genMuPlus.Vect().Dot(genCand.Vect())/(genMuPlus.Vect().Mag()*genCand.Vect().Mag());
+	
+	// calculate cosTheta CS
+	h1.SetPxPyPzE(0,0,pz,E);
+	h2.SetPxPyPzE(0,0,-pz,E);
+	h1*=boost;
+	h2*=boost;
+	zCS = ( h1.Vect().Unit() - h2.Vect().Unit() ).Unit();
+	cosThetaStarCS = genMuPlus.Vect().Dot(zCS)/genMuPlus.Vect().Mag();
+	
+	w1 = 1;
+	w2 = 1 + cosThetaStarHel*cosThetaStarHel;
+	w3 = 1 - cosThetaStarHel*cosThetaStarHel;
+	w4 = 1 + cosThetaStarCS*cosThetaStarCS;
+	w5 = 1 - cosThetaStarCS*cosThetaStarCS;
+	
+	//cout << " cosThetaStarCS = " << cosThetaStarCS <<  " cosThetaStarHel = "  << cosThetaStarHel << endl;
+	//cout << " w1 = " << w1 << " w2 = "  << w2 << " w3 = " << w3 << " w4 = " << w4 << " w5 = " << w5 << endl;
+	
+      }
+    }
+  }
+  
+  
+  if ( ups ){
+    genCand.SetPtEtaPhiE(gUps->fP.Perp(),gUps->fP.Eta(),gUps->fP.Phi(),gUps->fP.Energy());
+    
+    ((TH1D*)fpHistFile->Get(Form("UG_UpsMass_%.1dS",UPSTYPE)))->Fill(genCand.M());
+    ((TH1D*)fpHistFile->Get(Form("UG_UpsPt_%.1dS",UPSTYPE)))->Fill(gUps->fP.Perp());
+    ((TH1D*)fpHistFile->Get(Form("UG_UpsRapidity_%.1dS",UPSTYPE)))->Fill(genCand.Rapidity());
+    
+    if ( (gUps->fP.Perp() <= PTCAND) && (fabs(genCand.Rapidity()) <= RAPCAND) ){
+      if ( genCand.Rapidity() >= 0 ) {
+	((TH2D*)fpHistFile->Get(Form("UG_AllGenRes_%.1dS",UPSTYPE)))->Fill(genCand.Rapidity(), gUps->fP.Perp(), w1);
+	((TH2D*)fpHistFile->Get(Form("UG_AllGenRes_HelPl_%.1dS",UPSTYPE)))->Fill(genCand.Rapidity(), gUps->fP.Perp(), w2);
+	((TH2D*)fpHistFile->Get(Form("UG_AllGenRes_HelMi_%.1dS",UPSTYPE)))->Fill(genCand.Rapidity(), gUps->fP.Perp(), w3);
+	((TH2D*)fpHistFile->Get(Form("UG_AllGenRes_CSPl_%.1dS",UPSTYPE)))->Fill(genCand.Rapidity(), gUps->fP.Perp(), w4);
+	((TH2D*)fpHistFile->Get(Form("UG_AllGenRes_CSMi_%.1dS",UPSTYPE)))->Fill(genCand.Rapidity(), gUps->fP.Perp(), w5);
+      }
+      if ( genCand.Rapidity() < 0 ) {
+	((TH2D*)fpHistFile->Get(Form("UG_AllGenRes_%.1dS",UPSTYPE)))->Fill(-genCand.Rapidity(), gUps->fP.Perp(), w1);
+	((TH2D*)fpHistFile->Get(Form("UG_AllGenRes_HelPl_%.1dS",UPSTYPE)))->Fill(-genCand.Rapidity(), gUps->fP.Perp(), w2);
+	((TH2D*)fpHistFile->Get(Form("UG_AllGenRes_HelMi_%.1dS",UPSTYPE)))->Fill(-genCand.Rapidity(), gUps->fP.Perp(), w3);
+	((TH2D*)fpHistFile->Get(Form("UG_AllGenRes_CSPl_%.1dS",UPSTYPE)))->Fill(-genCand.Rapidity(), gUps->fP.Perp(), w4);
+	((TH2D*)fpHistFile->Get(Form("UG_AllGenRes_CSMi_%.1dS",UPSTYPE)))->Fill(-genCand.Rapidity(), gUps->fP.Perp(), w5);	
+      }
+    }
+  
+    if ( mu1 && mu2 ){
+      pt1 = gMu1->fP.Perp();
+      eta1 = gMu1->fP.Eta();
+      pt2 = gMu2->fP.Perp();
+      eta2 = gMu2->fP.Eta();
+      ((TH1D*)fpHistFile->Get(Form("UG_MuonPt_%.1dS",UPSTYPE)))->Fill(pt1);
+      ((TH1D*)fpHistFile->Get(Form("UG_MuonPt_%.1dS",UPSTYPE)))->Fill(pt2);
+      ((TH1D*)fpHistFile->Get(Form("UG_MuonEta_%.1dS",UPSTYPE)))->Fill(eta1);
+      ((TH1D*)fpHistFile->Get(Form("UG_MuonEta_%.1dS",UPSTYPE)))->Fill(eta2);
+      
+      if ( pt1 > pt2 ){
+	((TH2D*)fpHistFile->Get(Form("UpsVsLMu_pt_%.1dS",UPSTYPE)))->Fill(gUps->fP.Perp(),pt1);
+	((TH2D*)fpHistFile->Get(Form("UpsVsSMu_pt_%.1dS",UPSTYPE)))->Fill(gUps->fP.Perp(),pt2);
+	((TH2D*)fpHistFile->Get(Form("LMuVsSMu_pt_%.1dS",UPSTYPE)))->Fill(pt1,pt2);
+	if ( TMath::Abs(genCand.Rapidity()) <= 1.2  ){
+	  ((TH2D*)fpHistFile->Get(Form("UpsVsLMu_pt_LoRap_%.1dS",UPSTYPE)))->Fill(gUps->fP.Perp(),pt1);
+	  ((TH2D*)fpHistFile->Get(Form("UpsVsSMu_pt_LoRap_%.1dS",UPSTYPE)))->Fill(gUps->fP.Perp(),pt2);
+	  ((TH2D*)fpHistFile->Get(Form("LMuVsSMu_pt_LoRap_%.1dS",UPSTYPE)))->Fill(pt1,pt2);
+	}
+	if ( TMath::Abs(genCand.Rapidity()) > 1.2  ){
+	  ((TH2D*)fpHistFile->Get(Form("UpsVsLMu_pt_HiRap_%.1dS",UPSTYPE)))->Fill(gUps->fP.Perp(),pt1);
+	  ((TH2D*)fpHistFile->Get(Form("UpsVsSMu_pt_HiRap_%.1dS",UPSTYPE)))->Fill(gUps->fP.Perp(),pt2);
+	  ((TH2D*)fpHistFile->Get(Form("LMuVsSMu_pt_HiRap_%.1dS",UPSTYPE)))->Fill(pt1,pt2);
+	}
+      }
+      
+      if ( pt1 < pt2 ){
+	((TH2D*)fpHistFile->Get(Form("UpsVsLMu_pt_%.1dS",UPSTYPE)))->Fill(gUps->fP.Perp(),pt2);
+	((TH2D*)fpHistFile->Get(Form("UpsVsSMu_pt_%.1dS",UPSTYPE)))->Fill(gUps->fP.Perp(),pt1);
+	((TH2D*)fpHistFile->Get(Form("LMuVsSMu_pt_%.1dS",UPSTYPE)))->Fill(pt2,pt1);
+	if ( TMath::Abs(genCand.Rapidity()) <= 1.2  ){
+	  ((TH2D*)fpHistFile->Get(Form("UpsVsLMu_pt_LoRap_%.1dS",UPSTYPE)))->Fill(gUps->fP.Perp(),pt2);
+	  ((TH2D*)fpHistFile->Get(Form("UpsVsSMu_pt_LoRap_%.1dS",UPSTYPE)))->Fill(gUps->fP.Perp(),pt1);
+	  ((TH2D*)fpHistFile->Get(Form("LMuVsSMu_pt_LoRap_%.1dS",UPSTYPE)))->Fill(pt2,pt1);
+	}
+	if ( TMath::Abs(genCand.Rapidity()) > 1.2  ){
+	  ((TH2D*)fpHistFile->Get(Form("UpsVsLMu_pt_HiRap_%.1dS",UPSTYPE)))->Fill(gUps->fP.Perp(),pt2);
+	  ((TH2D*)fpHistFile->Get(Form("UpsVsSMu_pt_HiRap_%.1dS",UPSTYPE)))->Fill(gUps->fP.Perp(),pt1);
+	  ((TH2D*)fpHistFile->Get(Form("LMuVsSMu_pt_HiRap_%.1dS",UPSTYPE)))->Fill(pt2,pt1);
+	}
+      }      
+      
+      if ((pt1 >= PTLO) && (pt2 >= PTLO) && (eta1 >= ETALO) && (eta2 >= ETALO) && (eta1 <= ETAHI) && (eta2 <= ETAHI) && (pt1 <= PTHI) && (pt2 <= PTHI) ){
+	fill = true;
+	if ( ((TMath::Abs(eta1) <= ETABARREL) && (pt1 < PTBARREL)) || ((TMath::Abs(eta2) <= ETABARREL) && (pt2 < PTBARREL)) ){
+	  fill = false;
+	}
+      }
+    }
+    if ( fill ){
+      if ( genCand.Rapidity() >= 0 ) {
+	((TH2D*)fpHistFile->Get(Form("UG_RecoGenRes_%.1dS",UPSTYPE)))->Fill(genCand.Rapidity(), gUps->fP.Perp(), w1);
+	((TH2D*)fpHistFile->Get(Form("UG_RecoGenRes_HelPl_%.1dS",UPSTYPE)))->Fill(genCand.Rapidity(), gUps->fP.Perp(), w2);
+	((TH2D*)fpHistFile->Get(Form("UG_RecoGenRes_HelMi_%.1dS",UPSTYPE)))->Fill(genCand.Rapidity(), gUps->fP.Perp(), w3);
+	((TH2D*)fpHistFile->Get(Form("UG_RecoGenRes_CSPl_%.1dS",UPSTYPE)))->Fill(genCand.Rapidity(), gUps->fP.Perp(), w4);
+	((TH2D*)fpHistFile->Get(Form("UG_RecoGenRes_CSMi_%.1dS",UPSTYPE)))->Fill(genCand.Rapidity(), gUps->fP.Perp(), w5);	
+      }
+      if ( genCand.Rapidity() < 0 ) {
+	((TH2D*)fpHistFile->Get(Form("UG_RecoGenRes_%.1dS",UPSTYPE)))->Fill(-genCand.Rapidity(), gUps->fP.Perp(), w1);
+	((TH2D*)fpHistFile->Get(Form("UG_RecoGenRes_HelPl_%.1dS",UPSTYPE)))->Fill(-genCand.Rapidity(), gUps->fP.Perp(), w2);
+	((TH2D*)fpHistFile->Get(Form("UG_RecoGenRes_HelMi_%.1dS",UPSTYPE)))->Fill(-genCand.Rapidity(), gUps->fP.Perp(), w3);
+	((TH2D*)fpHistFile->Get(Form("UG_RecoGenRes_CSPl_%.1dS",UPSTYPE)))->Fill(-genCand.Rapidity(), gUps->fP.Perp(), w4);
+	((TH2D*)fpHistFile->Get(Form("UG_RecoGenRes_CSMi_%.1dS",UPSTYPE)))->Fill(-genCand.Rapidity(), gUps->fP.Perp(), w5);
+      }
+    }
+  }
   
 }
 
@@ -468,6 +675,10 @@ void xsReader::acceptance(){
     gCand = fpEvt->getGenCand(iG);
     if ( gCand->fID == RESTYPE && gCand->fStatus == 2 ){
       genCand.SetPtEtaPhiE(gCand->fP.Perp(),gCand->fP.Eta(),gCand->fP.Phi(),gCand->fP.Energy());
+      ((TH1D*)fpHistFile->Get(Form("fl10_UpsMass_%.1dS",UPSTYPE)))->Fill(genCand.M());
+      ((TH1D*)fpHistFile->Get(Form("fl10_UpsPt_%.1dS",UPSTYPE)))->Fill(gCand->fP.Perp());
+      ((TH1D*)fpHistFile->Get(Form("fl10_UpsRapidity_%.1dS",UPSTYPE)))->Fill(genCand.Rapidity());
+      
       if ( (gCand->fP.Perp() <= PTCAND) && (fabs(genCand.Rapidity()) <= RAPCAND) ){
 	if ( genCand.Rapidity() >= 0 ) ((TH2D*)fpHistFile->Get(Form("AllGenRes_%.1dS",UPSTYPE)))->Fill(genCand.Rapidity(), gCand->fP.Perp());
 	if ( genCand.Rapidity() < 0 ) ((TH2D*)fpHistFile->Get(Form("AllGenRes_%.1dS",UPSTYPE)))->Fill(-genCand.Rapidity(), gCand->fP.Perp());
@@ -500,6 +711,45 @@ void xsReader::acceptance(){
 	} 
 	
 	if ( match1 && match2 ){
+	  
+	  ((TH1D*)fpHistFile->Get(Form("fl10_MuonPt_%.1dS",UPSTYPE)))->Fill(pt1);
+	  ((TH1D*)fpHistFile->Get(Form("fl10_MuonPt_%.1dS",UPSTYPE)))->Fill(pt2);
+	  ((TH1D*)fpHistFile->Get(Form("fl10_MuonEta_%.1dS",UPSTYPE)))->Fill(eta1);
+	  ((TH1D*)fpHistFile->Get(Form("fl10_MuonEta_%.1dS",UPSTYPE)))->Fill(eta2);
+	  
+	  if ( pt1 > pt2 ){
+	    ((TH2D*)fpHistFile->Get(Form("UpsVsLMu_pt_%.1dS",UPSTYPE)))->Fill(gCand->fP.Perp(),pt1);
+	    ((TH2D*)fpHistFile->Get(Form("UpsVsSMu_pt_%.1dS",UPSTYPE)))->Fill(gCand->fP.Perp(),pt2);
+	    ((TH2D*)fpHistFile->Get(Form("LMuVsSMu_pt_%.1dS",UPSTYPE)))->Fill(pt1,pt2);
+	    if ( TMath::Abs(genCand.Rapidity()) <= 1.2  ){
+	      ((TH2D*)fpHistFile->Get(Form("UpsVsLMu_pt_LoRap_%.1dS",UPSTYPE)))->Fill(gCand->fP.Perp(),pt1);
+	      ((TH2D*)fpHistFile->Get(Form("UpsVsSMu_pt_LoRap_%.1dS",UPSTYPE)))->Fill(gCand->fP.Perp(),pt2);
+	      ((TH2D*)fpHistFile->Get(Form("LMuVsSMu_pt_LoRap_%.1dS",UPSTYPE)))->Fill(pt1,pt2);
+	    }
+	    if ( TMath::Abs(genCand.Rapidity()) > 1.2  ){
+	      ((TH2D*)fpHistFile->Get(Form("UpsVsLMu_pt_HiRap_%.1dS",UPSTYPE)))->Fill(gCand->fP.Perp(),pt1);
+	      ((TH2D*)fpHistFile->Get(Form("UpsVsSMu_pt_HiRap_%.1dS",UPSTYPE)))->Fill(gCand->fP.Perp(),pt2);
+	      ((TH2D*)fpHistFile->Get(Form("LMuVsSMu_pt_HiRap_%.1dS",UPSTYPE)))->Fill(pt1,pt2);
+	    }
+	  }
+	  
+	  if ( pt1 < pt2 ){
+	    ((TH2D*)fpHistFile->Get(Form("UpsVsLMu_pt_%.1dS",UPSTYPE)))->Fill(gCand->fP.Perp(),pt2);
+	    ((TH2D*)fpHistFile->Get(Form("UpsVsSMu_pt_%.1dS",UPSTYPE)))->Fill(gCand->fP.Perp(),pt1);
+	    ((TH2D*)fpHistFile->Get(Form("LMuVsSMu_pt_%.1dS",UPSTYPE)))->Fill(pt2,pt1);
+	    if ( TMath::Abs(genCand.Rapidity()) <= 1.2  ){
+	      ((TH2D*)fpHistFile->Get(Form("UpsVsLMu_pt_LoRap_%.1dS",UPSTYPE)))->Fill(gCand->fP.Perp(),pt2);
+	      ((TH2D*)fpHistFile->Get(Form("UpsVsSMu_pt_LoRap_%.1dS",UPSTYPE)))->Fill(gCand->fP.Perp(),pt1);
+	      ((TH2D*)fpHistFile->Get(Form("LMuVsSMu_pt_LoRap_%.1dS",UPSTYPE)))->Fill(pt2,pt1);
+	    }
+	    if ( TMath::Abs(genCand.Rapidity()) > 1.2  ){
+	      ((TH2D*)fpHistFile->Get(Form("UpsVsLMu_pt_HiRap_%.1dS",UPSTYPE)))->Fill(gCand->fP.Perp(),pt2);
+	      ((TH2D*)fpHistFile->Get(Form("UpsVsSMu_pt_HiRap_%.1dS",UPSTYPE)))->Fill(gCand->fP.Perp(),pt1);
+	      ((TH2D*)fpHistFile->Get(Form("LMuVsSMu_pt_HiRap_%.1dS",UPSTYPE)))->Fill(pt2,pt1);
+	    }
+	  }      
+	  
+	  
 	  if ((pt1 >= PTLO) && (pt2 >= PTLO) && (eta1 >= ETALO) && (eta2 >= ETALO) && (eta1 <= ETAHI) && (eta2 <= ETAHI) && (pt1 <= PTHI) && (pt2 <= PTHI) ){
 	    ////////
 	    if ( ((TMath::Abs(eta1) <= ETABARREL) && (pt1 < PTBARREL)) || ((TMath::Abs(eta2) <= ETABARREL) && (pt2 < PTBARREL)) ){
@@ -1284,6 +1534,50 @@ void xsReader::bookHist() {
   k = new TH2D(Form("RecoGenRes_%1.dS", UPSTYPE), Form("RecoGenRes_%1.dS", UPSTYPE), fNy, fYbin, fNpt, fPTbin); 
   ((TH2D*)fpHistFile->Get(Form("AllGenRes_%.1dS", UPSTYPE)))->Sumw2();
   ((TH2D*)fpHistFile->Get(Form("RecoGenRes_%.1dS", UPSTYPE)))->Sumw2();
+  h = new TH1D(Form("fl10_UpsRapidity_%.1dS", UPSTYPE), Form("fl10_UpsRapidity_%.1dS", UPSTYPE), 60, -3., 3.);
+  h = new TH1D(Form("fl10_UpsMass_%.1dS", UPSTYPE), Form("fl10_UpsMass_%.1dS", UPSTYPE), 50, 9., 10.);
+  h = new TH1D(Form("fl10_UpsPt_%.1dS", UPSTYPE), Form("fl10_UpsPt_%.1dS", UPSTYPE), 100, 0., 50.);
+  h = new TH1D(Form("fl10_MuonPt_%.1dS", UPSTYPE), Form("fl10_MuonPt_%.1dS", UPSTYPE), 100, 0., 100.);
+  h = new TH1D(Form("fl10_MuonEta_%.1dS", UPSTYPE), Form("fl10_MuonEta_%.1dS", UPSTYPE), 80, -4., 4.);  
+    
+  // Upsilon Gun Acceptance Histograms
+  k = new TH2D(Form("UG_AllGenRes_%1.dS",  UPSTYPE), Form("UG_AllGenRes_%1.dS", UPSTYPE), fNy, fYbin, fNpt, fPTbin); 
+  k = new TH2D(Form("UG_RecoGenRes_%1.dS", UPSTYPE), Form("UG_RecoGenRes_%1.dS", UPSTYPE), fNy, fYbin, fNpt, fPTbin); 
+  k = new TH2D(Form("UG_AllGenRes_HelPl_%1.dS",  UPSTYPE), Form("UG_AllGenRes_HelPl_%1.dS", UPSTYPE), fNy, fYbin, fNpt, fPTbin); 
+  k = new TH2D(Form("UG_RecoGenRes_HelPl_%1.dS", UPSTYPE), Form("UG_RecoGenRes_HelPl_%1.dS", UPSTYPE), fNy, fYbin, fNpt, fPTbin);
+  k = new TH2D(Form("UG_AllGenRes_HelMi_%1.dS",  UPSTYPE), Form("UG_AllGenRes_HelMi_%1.dS", UPSTYPE), fNy, fYbin, fNpt, fPTbin); 
+  k = new TH2D(Form("UG_RecoGenRes_HelMi_%1.dS", UPSTYPE), Form("UG_RecoGenRes_HelMi_%1.dS", UPSTYPE), fNy, fYbin, fNpt, fPTbin);  
+  k = new TH2D(Form("UG_AllGenRes_CSPl_%1.dS",  UPSTYPE), Form("UG_AllGenRes_CSPl_%1.dS", UPSTYPE), fNy, fYbin, fNpt, fPTbin); 
+  k = new TH2D(Form("UG_RecoGenRes_CSPl_%1.dS", UPSTYPE), Form("UG_RecoGenRes_CSPl_%1.dS", UPSTYPE), fNy, fYbin, fNpt, fPTbin);
+  k = new TH2D(Form("UG_AllGenRes_CSMi_%1.dS",  UPSTYPE), Form("UG_AllGenRes_CSMi_%1.dS", UPSTYPE), fNy, fYbin, fNpt, fPTbin); 
+  k = new TH2D(Form("UG_RecoGenRes_CSMi_%1.dS", UPSTYPE), Form("UG_RecoGenRes_CSMi_%1.dS", UPSTYPE), fNy, fYbin, fNpt, fPTbin);   
+  ((TH2D*)fpHistFile->Get(Form("UG_AllGenRes_%.1dS", UPSTYPE)))->Sumw2();
+  ((TH2D*)fpHistFile->Get(Form("UG_RecoGenRes_%.1dS", UPSTYPE)))->Sumw2();
+  ((TH2D*)fpHistFile->Get(Form("UG_AllGenRes_HelPl_%.1dS", UPSTYPE)))->Sumw2();
+  ((TH2D*)fpHistFile->Get(Form("UG_RecoGenRes_HelPl_%.1dS", UPSTYPE)))->Sumw2();  
+  ((TH2D*)fpHistFile->Get(Form("UG_AllGenRes_HelMi_%.1dS", UPSTYPE)))->Sumw2();
+  ((TH2D*)fpHistFile->Get(Form("UG_RecoGenRes_HelMi_%.1dS", UPSTYPE)))->Sumw2();  
+  ((TH2D*)fpHistFile->Get(Form("UG_AllGenRes_CSPl_%.1dS", UPSTYPE)))->Sumw2();
+  ((TH2D*)fpHistFile->Get(Form("UG_RecoGenRes_CSPl_%.1dS", UPSTYPE)))->Sumw2();  
+  ((TH2D*)fpHistFile->Get(Form("UG_AllGenRes_CSMi_%.1dS", UPSTYPE)))->Sumw2();
+  ((TH2D*)fpHistFile->Get(Form("UG_RecoGenRes_CSMi_%.1dS", UPSTYPE)))->Sumw2();  
+  
+  h = new TH1D(Form("UG_UpsRapidity_%.1dS", UPSTYPE), Form("UG_UpsRapidity_%.1dS", UPSTYPE), 60, -3., 3.);
+  h = new TH1D(Form("UG_UpsMass_%.1dS", UPSTYPE), Form("UG_UpsMass_%.1dS", UPSTYPE), 50, 9., 10.);
+  h = new TH1D(Form("UG_UpsPt_%.1dS", UPSTYPE), Form("UG_UpsPt_%.1dS", UPSTYPE), 100, 0., 50.);
+  h = new TH1D(Form("UG_MuonPt_%.1dS", UPSTYPE), Form("UG_MuonPt_%.1dS", UPSTYPE), 100, 0., 100.);
+  h = new TH1D(Form("UG_MuonEta_%.1dS", UPSTYPE), Form("UG_MuonEta_%.1dS", UPSTYPE), 80, -4., 4.);
+  
+  // Acceptance Control Histograms
+  k = new TH2D(Form("UpsVsLMu_pt_%1.dS", UPSTYPE), Form("UpsVsLMu_pt_%1.dS", UPSTYPE), 70, 0., 35., 70, 0., 35.);
+  k = new TH2D(Form("UpsVsLMu_pt_LoRap_%1.dS", UPSTYPE), Form("UpsVsLMu_pt_LoRap_%1.dS", UPSTYPE), 70, 0., 35., 70, 0., 35.);
+  k = new TH2D(Form("UpsVsLMu_pt_HiRap_%1.dS", UPSTYPE), Form("UpsVsLMu_pt_HiRap_%1.dS", UPSTYPE), 70, 0., 35., 70, 0., 35.);
+  k = new TH2D(Form("UpsVsSMu_pt_%1.dS", UPSTYPE), Form("UpsVsSMu_pt_%1.dS", UPSTYPE), 70, 0., 35., 70, 0., 35.);
+  k = new TH2D(Form("UpsVsSMu_pt_LoRap_%1.dS", UPSTYPE), Form("UpsVsSMu_pt_LoRap_%1.dS", UPSTYPE), 70, 0., 35., 70, 0., 35.);
+  k = new TH2D(Form("UpsVsSMu_pt_HiRap_%1.dS", UPSTYPE), Form("UpsVsSMu_pt_HiRap_%1.dS", UPSTYPE), 70, 0., 35., 70, 0., 35.); 
+  k = new TH2D(Form("LMuVsSMu_pt_%1.dS", UPSTYPE), Form("LMuVsSMu_pt_%1.dS", UPSTYPE), 70, 0., 35., 70, 0., 35.);
+  k = new TH2D(Form("LMuVsSMu_pt_LoRap_%1.dS", UPSTYPE), Form("LMuVsSMu_pt_LoRap_%1.dS", UPSTYPE), 70, 0., 35., 70, 0., 35.);
+  k = new TH2D(Form("LMuVsSMu_pt_HiRap_%1.dS", UPSTYPE), Form("LMuVsSMu_pt_HiRap_%1.dS", UPSTYPE), 70, 0., 35., 70, 0., 35.);  
   
   // PreSel Eff
   k = new TH2D(Form("PreSel_afterVtx_%.1dS",UPSTYPE), Form("PreSel_afterVtx_%1.dS", UPSTYPE), fNy, fYbin, fNpt, fPTbin);

@@ -62,7 +62,7 @@ public:
   void ReadHistogramsDATA1(TFile *f, const char *s1 = "UpsilonMass",  const char *s5 = "MuIDEff_1S", 
 		      const char *s8 = "TrigEff_1S", const char *binning = "mt,pt-eta");
   
-  
+  void ReadHistogramsDATA2(TFile *f,  const char *binning = "mt,pt-eta");  
   
   void readPidTables(const char *sample = "jpsi");
 
