@@ -196,6 +196,7 @@ namespace dqmevf
     xdata::UnsignedInteger32         superSleepSec_;
     xdata::UnsignedInteger32         monSleepSec_;
     xdata::UnsignedInteger32         lsTimeOut_;
+    xdata::UnsignedInteger32         idleRestartTime_;
     xdata::UnsignedInteger32         timeoutOnStop_;
     xdata::UnsignedInteger32         detachTimeout_;
     xdata::UnsignedInteger32         msgQueueOffset_;

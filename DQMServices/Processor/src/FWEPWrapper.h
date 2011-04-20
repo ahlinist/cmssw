@@ -39,7 +39,7 @@
 //boost
 
 #include <sys/sem.h>
-
+#include <time.h>
 
 namespace dqmevf{
 
@@ -65,7 +65,8 @@ namespace dqmevf{
 	  int runNumber;
 	  int timeoutOnStop;
 	  int monitorSleepSec;
-	  int lsTimeOut; 
+	  int lsTimeOut;
+	  int idleRestartTime; 
 	
 	  unsigned int nbSubProcesses; 
 	  int anonymousPipe_[2];
@@ -108,7 +109,8 @@ namespace dqmevf{
     edm::EventProcessor             *evtProcessor_;
     bool                             epInitialized_;
     bool                             epCreated_;
-	  
+    timespec maxWaitTime;
+
   public:
 
     FWEPWrapper(log4cplus::Logger &);
