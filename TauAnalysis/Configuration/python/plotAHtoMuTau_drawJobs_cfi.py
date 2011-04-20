@@ -49,36 +49,14 @@ drawJobConfigurator_AHtoMuTau = drawJobConfigurator(
 #--------------------------------------------------------------------------------
 
 drawJobConfigurator_AHtoMuTau.add(
-    afterCut = evtSelPrimaryEventVertex,
-    beforeCut = evtSelPrimaryEventVertexQuality,
-    plot = drawJobConfigEntry(
-        meName = 'VertexQuantities/VertexChi2Prob',
-        title = "P(#Chi^{2}_{vtx} (after primary Event Vertex Cut)",
-        xAxis = 'prob',
-        name = "cutFlowControlPlots_vertexChi2Prob_afterPrimaryEventVertex"
-    )
-)
-
-drawJobConfigurator_AHtoMuTau.add(
-    afterCut = evtSelPrimaryEventVertexQuality,
-    beforeCut = evtSelPrimaryEventVertexPosition,
-    plot = drawJobConfigEntry(
-        meName = 'VertexQuantities/VertexZ',
-        title = "z_{vtx} (after primary Event Vertex quality Cut)",
-        xAxis = 'posZ',
-        name = "cutFlowControlPlots_vertexZ_afterPrimaryEventVertexQuality"
-    )
-)
-
-drawJobConfigurator_AHtoMuTau.add(
-    afterCut = evtSelPrimaryEventVertexPosition,
+    afterCut = evtSelDataQuality,
     beforeCut = evtSelGlobalMuon,
     plot = drawJobConfigEntry(
         meName = 'MuonQuantities/Muon#PAR#',
         PAR = [ 'Pt', 'Eta', 'Phi' ],
-        title = "Muon (after primary Event Vertex position Cut)",
+        title = "Muon (after Data quality)",
         xAxis = '#PAR#',
-        name = "cutFlowControlPlots_muon_afterPrimaryEventVertexPosition"
+        name = "cutFlowControlPlots_muon_afterDataQuality"
     )
 )
 
@@ -399,13 +377,35 @@ drawJobConfigurator_AHtoMuTau.add(
 )
 
 drawJobConfigurator_AHtoMuTau.add(
-    afterCut = evtSelDiTauCandidateForAHtoMuTauAntiOverlapVeto,
+    afterCut = evtSelPrimaryEventVertexForMuTau,
+    beforeCut = evtSelPrimaryEventVertexQualityForMuTau,
+    plot = drawJobConfigEntry(
+        meName = 'VertexQuantities/VertexChi2Prob',
+        title = "P(#Chi^{2}_{vtx} (after primary Event Vertex Cut)",
+        xAxis = 'prob',
+        name = "cutFlowControlPlots_vertexChi2Prob_afterPrimaryEventVertex"
+    )
+)
+
+drawJobConfigurator_AHtoMuTau.add(
+    afterCut = evtSelPrimaryEventVertexQualityForMuTau,
+    beforeCut = evtSelPrimaryEventVertexPositionForMuTau,
+    plot = drawJobConfigEntry(
+        meName = 'VertexQuantities/VertexZ',
+        title = "z_{vtx} (after primary Event Vertex quality Cut)",
+        xAxis = 'posZ',
+        name = "cutFlowControlPlots_vertexZ_afterPrimaryEventVertexQuality"
+    )
+)
+
+drawJobConfigurator_AHtoMuTau.add(
+    afterCut = evtSelPrimaryEventVertexPositionForMuTau,
     beforeCut = evtSelDiTauCandidateForAHtoMuTauMt1MET,
     plot = drawJobConfigEntry(
         meName = 'DiTauCandidateQuantities/Mt1MET',
-        title = "M_{T}(Muon + MET) (after diTau anti-Overlap Veto)",
+        title = "M_{T}(Muon + MET) (after primary Event Vertex position Cut)",
         xAxis = 'Mt',
-        name = "cutFlowControlPlots_mtMuonMET_afterAntiOverlapVeto"
+        name = "cutFlowControlPlots_mtMuonMET_afterPrimaryEventVertexPosition"
     )
 )
 
