@@ -203,7 +203,7 @@ namespace dqmevf{
     catch (cms::Exception e) {
       std::cout << "Exception creating edm:EventProcessor: \n";
       std::cout << e.explainSelf() << std::endl;
-      exit(EXIT_SUCCESS);
+      exit(EXIT_FAILURE);
       //report failed, or shutdown..
     }
     catch (...) {std::cout << "Unknown Exception\n";}
@@ -268,7 +268,9 @@ namespace dqmevf{
       inputControllerReg_->publish(&evfSourceVars_);
       pthread_mutex_lock(&ep_guard_lock_);
       startScalersWorkLoop();
+      std::cout << "waiting to init scalers workloop...";
       pthread_cond_wait(&cond_, &ep_guard_lock_);
+      std::cout << "done\n";
     }  
 
     pthread_mutex_lock(&readout_lock_); 
@@ -299,10 +301,14 @@ namespace dqmevf{
     evtProcessor_->getTriggerReport(tr);
     trh_.formatReportTable(tr);
 
+    if (evtProcessor_->getState() == edm::event_processor::sError) {
+      cout << "FWK EP in Error state after construction and initial setup. Exiting";
+      exit(EXIT_FAILURE);
+    }
     epInitialized_ = true;
     pthread_mutex_unlock(&readout_lock_);
-
     LOG4CPLUS_INFO(log_," edm::EventProcessor configuration finished.");
+    cout << "initialized EP\n";
     return;
   }
 
@@ -444,11 +450,12 @@ bool FWEPWrapper::enableSlave()
 {
   try {    
     evtProcessor_->beginJob();
+    cout << "beginJob finished..";
     attachDqmToShm();//todo:detach on error
     int sc = 0;
     evtProcessor_->clearCounters();
     evtProcessor_->declareRunNumber(cfg_.runNumber);
-    
+
     ::sleep(1);
     evtProcessor_->runAsync();
     sc = evtProcessor_->statusAsync();
@@ -457,26 +464,25 @@ bool FWEPWrapper::enableSlave()
     std::ostringstream oss;
     oss << "EventProcessor::runAsync returned status code " << sc;
       errorLog_ = oss.str();
-      //localLog(errorLog_);
+      cout << errorLog_ << endl;
       return false;
     }
 
   }
   catch(cms::Exception &e) {
      errorLog_ = (std::string)e.explainSelf();
-     //localLog(errorLog_);
-     exit(EXIT_SUCCESS);
+     cout << errorLog_ << endl;
+     exit(EXIT_FAILURE);
      return false;
-  }    
+  }
   catch(std::exception &e) {
      errorLog_ = (std::string)e.what();
-
-     //localLog(errorLog_);
+     cout << "std::exception "<< errorLog_ << endl;
      return false;
   }
   catch(...) {
     errorLog_ = "Unknown Exception";
-    //localLog(errorLog_);
+     cout << errorLog_ << endl;
     return false;
   }
   return true;
@@ -486,14 +492,17 @@ bool FWEPWrapper::enableSlave()
 bool FWEPWrapper::enableSlaveAndWait() {
 
 	bool retval=0;
-	try {
-	  retval = enableSlave();
-	}
-	catch (...) {}
+	retval = enableSlave();
 
 	//todo:start workloops before (so that master knows about failures)?
 	while(retval && evtProcessor_->getState()!= edm::event_processor::sRunning){
-	    LOG4CPLUS_INFO(log_,"waiting for edm::EventProcessor to start before enabling workloops");
+	    cout << "waiting for edm::EventProcessor to start before enabling workloops";
+
+	    if (evtProcessor_->getState()== edm::event_processor::sError) {
+		cout << "failure to startup FWK EventProcessor";
+		exit(EXIT_FAILURE);
+	    }
+
 	    ::sleep(1);
 	}
 	return retval;
