@@ -330,6 +330,7 @@ namespace dqmevf{
   edm::EventProcessor::StatusCode FWEPWrapper::stop()
   {
     //if not initialized, end with success
+    std::cout << " Slave: stopping\n";
     stopCalled_=true;
     if (!epInitialized_) return edm::EventProcessor::epOther;
 
@@ -343,6 +344,7 @@ namespace dqmevf{
 	    if (evtProcessor_->getState()== edm::event_processor::sRunning) {
 		    if (cfg_.detachTimeout>0) cfg_.timeoutOnStop=cfg_.detachTimeout;
 		    rc = evtProcessor_->stopAsync(cfg_.timeoutOnStop);
+                    cout << "stopAsync called\n";
 	    }
 	    unsigned int stepMsec=100000;//0.1s
 	    unsigned int remainingMsec=cfg_.timeoutOnStop*1000+stepMsec;
@@ -362,6 +364,7 @@ namespace dqmevf{
 	    
 	    if(rc == edm::EventProcessor::epSuccess) {
 	      if (remainingMsec>=stepMsec)
+                cout << "executing endJob\n";
 	        evtProcessor_->endJob();
 	      epInitialized_ = false;
 	    }
@@ -374,6 +377,7 @@ namespace dqmevf{
             //}
     }
     catch(cms::Exception &e) {
+	    cout << "esception stopping: " << e.explainSelf() << endl;
 	    XCEPT_RAISE(dqmevf::Exception,e.explainSelf());
     }    
     catch(std::exception &e) {
@@ -469,9 +473,10 @@ bool FWEPWrapper::enableSlave()
     int sc = 0;
     evtProcessor_->clearCounters();
     evtProcessor_->declareRunNumber(cfg_.runNumber);
-
+    cout << "declared run number "<< cfg_.runNumber << endl;
     ::sleep(1);
     evtProcessor_->runAsync();
+    cout << "runAsync executed\n";
     sc = evtProcessor_->statusAsync();
     
     if(sc != 0) {
