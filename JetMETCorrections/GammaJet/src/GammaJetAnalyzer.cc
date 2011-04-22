@@ -13,7 +13,7 @@
 //
 // Original Author:  Daniele del Re
 //         Created:  Thu Sep 13 16:00:15 CEST 2007
-// $Id: GammaJetAnalyzer.cc,v 1.48 2011/02/23 17:07:28 delre Exp $
+// $Id: GammaJetAnalyzer.cc,v 1.49 2011/03/28 10:16:06 delre Exp $
 //
 //
 
@@ -417,7 +417,7 @@ GammaJetAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
 
    if (!hltTriggerResultHandle.isValid())
    {
-     std::cout << "invalid handle for HLT TriggerResults" << std::endl;
+     //     std::cout << "invalid handle for HLT TriggerResults" << std::endl;
    }
    else
    {
@@ -457,7 +457,8 @@ GammaJetAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
    genpt = 0.;
    
    if( isMC ) {
-     
+
+   
      //   genpt = *genEventScale;   
      if (hEventInfo->binningValues().size() > 0)
        genpt = hEventInfo->binningValues()[0];
@@ -603,150 +604,153 @@ GammaJetAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
        }
      }
 
-
      //----- Figure out the particle decays in tracker volume BEGIN ------
 
+     // Associate grandParents to GenParticles
+	 map<const GenParticle*, const SimTrack*> decayedSims;
+	 map<const SimTrack*, const GenParticle*> decayedGens;
+	 map<const SimTrack*, const SimTrack*> promptParent; // daughter->mother
+	 map<const SimTrack*, set<const SimTrack*> > promptDecays; // m->ds
+	 map<const SimTrack*, const SimVertex*> promptVertex; // daughter->vertex
      if (_debug)
        cout << Form("Figuring out the particle decays for event %d", event)
         << endl << flush;
-
-     // Vertices only return trackID of their parent SimTrack
-     // Figure out the mapping from trackID to SimTrack
-     map<unsigned int, const SimTrack*> trackMap;
-     for (SimTrackContainer::const_iterator iSim = simTracks->begin();
-        iSim != simTracks->end(); ++iSim) {
-       if (!iSim->noVertex()) {
-         assert(trackMap.find(iSim->trackId())==trackMap.end());
-         trackMap[iSim->trackId()] = &(*iSim);
+     if( simTracks_h.isValid() )
+       {
+	 // Vertices only return trackID of their parent SimTrack
+	 // Figure out the mapping from trackID to SimTrack
+	 map<unsigned int, const SimTrack*> trackMap;
+	 
+	 for (SimTrackContainer::const_iterator iSim = simTracks->begin();
+	      iSim != simTracks->end(); ++iSim) {
+	   cout << iSim->trackId() << endl;
+	   if (!iSim->noVertex()) {
+	     cout << iSim->trackId() << endl;
+	     assert(trackMap.find(iSim->trackId())==trackMap.end());
+	     cout << iSim->trackId() << endl;
+	     trackMap[iSim->trackId()] = &(*iSim);
+	   }
+	 }
+	 
+	 if (_debug)
+	   cout << "Found mapping TrackID->ParentSimTrack" << endl << flush;
+	 
+	 // Find all SimTracks that come from decays before the ECAL
+	 // and find their parent SimTracks
+	 
+	 for (SimTrackContainer::const_iterator iSim = simTracks->begin();
+	      iSim != simTracks->end(); ++iSim) {
+	   
+	   if (!iSim->noVertex()) {
+	     
+	     // Find the parent vertex and see if it classifies as an early decay
+	     // Exclude the primary vertex (noParent)
+	     SimVertex const& vtx = (*simVertices)[iSim->vertIndex()];
+	     if (!vtx.noParent() && vtx.position().Rho() < 129 &&
+		 fabs(vtx.position().z()) < 304) {
+	       
+	       // Find parent SimParticle that produced this vertex
+	       // vtx->parentIndex is NOT a vector index :( so use trackMap
+	       assert(trackMap.find(vtx.parentIndex())!=trackMap.end());
+	       const SimTrack* p = trackMap[vtx.parentIndex()];
+	       promptParent[&(*iSim)] = p;
+	       promptDecays[p].insert(&(*iSim));
+	       //promptVertex[p] = &vtx;
+	       promptVertex[&(*iSim)] = &vtx;
+	     } // early decay
+	   } // has vertex
+	 } // for simTracks
+	 
+	 if (_debug)
+	   cout << "Found mapping DaughterSimTracks<-(Vertex)->ParentSimTrack"
+		<< endl << flush;
+	 
+	 // Find grandparent SimTracks all the way up the chain
+	 map<const SimTrack*, const SimTrack*> chainParents;// g.daughter->grandma
+	 map<const SimTrack*, set<const SimTrack*> > chainDecays; // gm->gds
+	 
+	 for (map<const SimTrack*, const SimTrack*>::const_iterator iSim
+		= promptParent.begin(); iSim != promptParent.end(); ++iSim) {
+	   
+	   // Check that the SimTrack has no daughters itself (=grandchild)
+	   if (promptDecays.find(iSim->first)==promptDecays.end()) {
+	     // Find the first SimTrack in the parentage chain (=grandparent)
+	     const SimTrack *p = iSim->second;
+	     while (promptParent.find(p) != promptParent.end())
+	       p = promptParent[p];
+	     chainParents[iSim->first] = p;
+	     chainDecays[p].insert(iSim->first);
+	   } // is grandchild
+	 } // for promptParent
+	 
+	 if (_debug)
+	   cout << "Found mapping GrandDaughterSimTracks<->GrandParentSimTrack"
+		<< " (i.e. identified decay chains)" << endl << flush;
+	 
+	 // Prune the decay chains to enrich useful information:
+	 // - truncate (electron) brems
+	 // - truncate non-primary photon conversions
+	 
+	 for (map<const SimTrack*, set<const SimTrack*> >::const_iterator iSim
+		= chainDecays.begin(); iSim != chainDecays.end(); ++iSim) {
+	   
+	   // iteratively go down the chain and remove decays
+	   pruneKids(iSim->first, promptDecays, promptParent, promptVertex, 0);
+	 }
+	 
+	 if (_debug)
+	   cout << "Pruned the decay chains" << endl << flush;
+	 	 
+	 for (map<const SimTrack*, set<const SimTrack*> >::const_iterator iSim
+		= chainDecays.begin(); iSim != chainDecays.end(); ++iSim) {
+	   
+	   if (iSim->first->noGenpart()) {
+	     if (_debug)
+	       cout << Form("Error: no GenPart found for %d (%1.3g)",
+			    iSim->first->type(),
+			    iSim->first->momentum().pt()) << endl;
+	     //assert(!iSim->first->noGenpart());
+	     continue;
+	   }
+	   
+	   // Make sure the decay chain wasn't already pruned out
+	   if (promptDecays.find(iSim->first)!=promptDecays.end() &&
+	       promptDecays[iSim->first].size()!=0) {
+	     
+	     // NB: genpartIndex offset by 1
+	     const GenParticle* iGen =
+	       &(*genParticles)[iSim->first->genpartIndex()-1];
+	     assert(iGen->pdgId()==iSim->first->type());
+	     decayedSims[iGen] = iSim->first;
+	     decayedGens[iSim->first] = iGen;
+	   }
+	 } // for chainParents 
+	 
+	 if (_debug)
+	   cout << "Found mappings GrandParentSimTracks<->GenParticles" << endl;
+	 
+	 // Save the particles (conversion) for the primary photon
+	 for (map<const GenParticle*, const SimTrack*>::const_iterator iGen
+		= decayedSims.begin(); iGen != decayedSims.end(); ++iGen) {
+	   
+	   const GenParticle *p = iGen->first;
+	   if (p->pdgId()==22 && p->mother()->status()==3
+	       && p->mother()->pdgId()==22) {
+	     
+	     if (_debug)
+	       cout << "Decay chain for primary photon Gen id 22:" << endl;
+	     bool saved = printChildren(decayedSims[p], promptDecays,
+					promptVertex, 0, true);
+	     if (saved && mapMC.find(p)!=mapMC.end()) {
+	       statusMC[mapMC[p]] *= -1;
+	     }
+	   } // is primary photon
+	 } // for iGen 
        }
-     }
-
-     if (_debug)
-       cout << "Found mapping TrackID->ParentSimTrack" << endl << flush;
-
-     // Find all SimTracks that come from decays before the ECAL
-     // and find their parent SimTracks
-     map<const SimTrack*, const SimTrack*> promptParent; // daughter->mother
-     map<const SimTrack*, set<const SimTrack*> > promptDecays; // m->ds
-     map<const SimTrack*, const SimVertex*> promptVertex; // daughter->vertex
-
-     for (SimTrackContainer::const_iterator iSim = simTracks->begin();
-        iSim != simTracks->end(); ++iSim) {
-    
-       if (!iSim->noVertex()) {
-      
-         // Find the parent vertex and see if it classifies as an early decay
-         // Exclude the primary vertex (noParent)
-         SimVertex const& vtx = (*simVertices)[iSim->vertIndex()];
-         if (!vtx.noParent() && vtx.position().Rho() < 129 &&
-        fabs(vtx.position().z()) < 304) {
-        
-        // Find parent SimParticle that produced this vertex
-        // vtx->parentIndex is NOT a vector index :( so use trackMap
-        assert(trackMap.find(vtx.parentIndex())!=trackMap.end());
-        const SimTrack* p = trackMap[vtx.parentIndex()];
-        promptParent[&(*iSim)] = p;
-        promptDecays[p].insert(&(*iSim));
-        //promptVertex[p] = &vtx;
-        promptVertex[&(*iSim)] = &vtx;
-         } // early decay
-       } // has vertex
-     } // for simTracks
-
      
      if (_debug)
-       cout << "Found mapping DaughterSimTracks<-(Vertex)->ParentSimTrack"
-        << endl << flush;
-
-     // Find grandparent SimTracks all the way up the chain
-     map<const SimTrack*, const SimTrack*> chainParents;// g.daughter->grandma
-     map<const SimTrack*, set<const SimTrack*> > chainDecays; // gm->gds
-
-     for (map<const SimTrack*, const SimTrack*>::const_iterator iSim
-         = promptParent.begin(); iSim != promptParent.end(); ++iSim) {
-    
-       // Check that the SimTrack has no daughters itself (=grandchild)
-       if (promptDecays.find(iSim->first)==promptDecays.end()) {
-         // Find the first SimTrack in the parentage chain (=grandparent)
-         const SimTrack *p = iSim->second;
-         while (promptParent.find(p) != promptParent.end())
-         p = promptParent[p];
-         chainParents[iSim->first] = p;
-         chainDecays[p].insert(iSim->first);
-       } // is grandchild
-     } // for promptParent
-
-     if (_debug)
-       cout << "Found mapping GrandDaughterSimTracks<->GrandParentSimTrack"
-          << " (i.e. identified decay chains)" << endl << flush;
-
-     // Prune the decay chains to enrich useful information:
-     // - truncate (electron) brems
-     // - truncate non-primary photon conversions
-
-     for (map<const SimTrack*, set<const SimTrack*> >::const_iterator iSim
-         = chainDecays.begin(); iSim != chainDecays.end(); ++iSim) {
-
-       // iteratively go down the chain and remove decays
-       pruneKids(iSim->first, promptDecays, promptParent, promptVertex, 0);
-     }
-
-     if (_debug)
-       cout << "Pruned the decay chains" << endl << flush;
-
-     // Associate grandParents to GenParticles
-     map<const GenParticle*, const SimTrack*> decayedSims;
-     map<const SimTrack*, const GenParticle*> decayedGens;
-
-     for (map<const SimTrack*, set<const SimTrack*> >::const_iterator iSim
-          = chainDecays.begin(); iSim != chainDecays.end(); ++iSim) {
-    
-       if (iSim->first->noGenpart()) {
-         if (_debug)
-         cout << Form("Error: no GenPart found for %d (%1.3g)",
-                    iSim->first->type(),
-                    iSim->first->momentum().pt()) << endl;
-         //assert(!iSim->first->noGenpart());
-         continue;
-       }
-    
-       // Make sure the decay chain wasn't already pruned out
-       if (promptDecays.find(iSim->first)!=promptDecays.end() &&
-         promptDecays[iSim->first].size()!=0) {
-      
-         // NB: genpartIndex offset by 1
-         const GenParticle* iGen =
-         &(*genParticles)[iSim->first->genpartIndex()-1];
-         assert(iGen->pdgId()==iSim->first->type());
-         decayedSims[iGen] = iSim->first;
-         decayedGens[iSim->first] = iGen;
-       }
-     } // for chainParents 
-
-     if (_debug)
-       cout << "Found mappings GrandParentSimTracks<->GenParticles" << endl;
-
-     // Save the particles (conversion) for the primary photon
-     for (map<const GenParticle*, const SimTrack*>::const_iterator iGen
-         = decayedSims.begin(); iGen != decayedSims.end(); ++iGen) {
-
-       const GenParticle *p = iGen->first;
-       if (p->pdgId()==22 && p->mother()->status()==3
-         && p->mother()->pdgId()==22) {
-
-         if (_debug)
-         cout << "Decay chain for primary photon Gen id 22:" << endl;
-         bool saved = printChildren(decayedSims[p], promptDecays,
-                       promptVertex, 0, true);
-         if (saved && mapMC.find(p)!=mapMC.end()) {
-            statusMC[mapMC[p]] *= -1;
-         }
-       } // is primary photon
-     } // for iGen 
-
-     if (_debug)
        cout << "Found mappings for primary photon (if any)" << endl;
-       
+     
      //----- Figure out the particle decays in tracker volume END ------
 
      for (GenJetCollection::const_iterator it = jetsgenakt5->begin(); 
@@ -760,324 +764,328 @@ GammaJetAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
 	 etaJetGen_akt5[nJetGen_akt5] = it->eta();	 
 	 phiJetGen_akt5[nJetGen_akt5] = it->phi();    
 	 
-	 // Extra variables for PFlow
-	 Int_t nMuonsGen = 0;
-	 TLorentzVector p4MuonsGen;
-	 
-	 Int_t nElectronsGen = 0;
-	 TLorentzVector p4ElectronsGen;
-	 
-	 Int_t nPhotonsGen = 0;
-	 TLorentzVector p4PhotonsGen;
-	 
-	 Int_t nTracksGen = 0;
-	 TLorentzVector p4TracksGen;
-	 
-	 Int_t nNeutralHadronsGen = 0;
-	 TLorentzVector p4NeutralHadronsGen;
-	 
-	 Int_t nHFHadronsGen = 0;
-	 TLorentzVector p4HFHadronsGen;
-	 
-	 Int_t nHFEMGen = 0;
-	 TLorentzVector p4HFEMGen;
-	 
-	 Int_t nNeutronsGen = 0;
-	 TLorentzVector p4NeutronsGen;
-	 
-	 Int_t nK0LGen = 0;
-	 TLorentzVector p4K0LGen;
-	 
-	 Int_t nK0SGen = 0;
-	 TLorentzVector p4K0SGen;
-	 
-	 Int_t nLambdasGen = 0;
-	 TLorentzVector p4LambdasGen;
-	 
-	 Int_t nCsiGen = 0;
-	 TLorentzVector p4CsiGen;
-	 
-	 Int_t nOtherNeutralHadronsGen = 0;
-	 TLorentzVector p4OtherNeutralHadronsGen;
-	 
-	 
-	 vector<const GenParticle*> jetParticles = it->getGenConstituents();
-	 vector<const GenParticle*> shortPtcls;
-	 
-	 //----- Select the particle decays in tracker volume BEGIN ------      
-	 
-	 const int ijet = it - jetsgenakt5->begin();
-	 if (_debug)
-	   cout << Form("Found mappings GenParticles<->GrandParentSimTracks"
-			" for jet %d of pT=%1.3f eta=%1.3g",
-			ijet, it->pt(), it->eta())
-		<< endl << flush;
-	 
-	 // Print out decay chains for this jet iteratively
-	 // NB: this method will also save the SIM particles when asked
-	 for (vector< const GenParticle* >::const_iterator iGen
-		= jetParticles.begin(); iGen != jetParticles.end(); ++iGen) {
-	   
-	   if (_debug)
-	     cout << Form("Gen id %d (pT=%1.3g GeV, eta=%1.3g)",
-			  (*iGen)->pdgId(), (*iGen)->pt(), (*iGen)->eta());
-	   
-	   if (decayedSims.find(*iGen) != decayedSims.end()) {
+	 if( simTracks_h.isValid() )
+	   {
+	     // Extra variables for PFlow
+	     Int_t nMuonsGen = 0;
+	     TLorentzVector p4MuonsGen;
 	     
-	     if (_debug)
-	       cout << " decay chain:" << endl;
-	     assert((*iGen)->pdgId()==decayedSims[*iGen]->type());
-	     bool saved = printChildren(decayedSims[*iGen],
-					promptDecays, promptVertex, 0,
-					(ijet<2 ? true : false)); // save to file?
-	     if (saved && mapMC.find(*iGen)!=mapMC.end()) {
-	       //assert(statusMC[mapMC[*iGen]]!=2);
-	       //assert(mapMC.find(*iGen)!=mapMC.end());
-	       statusMC[mapMC[*iGen]] *= -1;
-	     }
-	   }
-	   else
-	     if (_debug)
-	       cout << endl;
-	 }
-	 
-	 //----- Select out the particle decays in tracker volume END------
-	 
-	 // Sum up the different types of GenParticle energy
-	 for (vector< const GenParticle* >::iterator iPart = jetParticles.begin();
-	      iPart != jetParticles.end(); ++iPart) {
-	   
-	   Int_t partPdgId = (*iPart)->pdgId();
-	   // Convert particle momentum to normal TLorentzVector, wrong type :(
-	   math::XYZTLorentzVectorD const& p4t = (*iPart)->p4();
-	   TLorentzVector p4(p4t.px(), p4t.py(), p4t.pz(), p4t.energy());
-	   
-	   if (fabs(partPdgId)==13) { //muons
-	     nMuonsGen += 1;
-	     p4MuonsGen += p4;
-	   } else if (fabs(partPdgId)==11) { //electrons
-	     if( fabs((*iPart)->eta())<2.5) { //tracker acceptance
-	       nElectronsGen += 1;
-	       p4ElectronsGen += p4;
-	     } else if( fabs((*iPart)->eta())<3. ) { //if no track, they're just photons
-	       nPhotonsGen += 1;
-	       p4PhotonsGen += p4;
-	     } else { //HFEM in HF 
-	       nHFEMGen += 1;
-	       p4HFEMGen += p4;
-	     }
-	   } else if ((*iPart)->charge() != 0) { // charged hadrons
-	     if( fabs((*iPart)->eta())<2.5) { //tracker acceptance
-	       nTracksGen += 1;
-	       p4TracksGen += p4;
-	     } else { //if no track, they're just hadrons
-	       if( fabs((*iPart)->eta())<3. ) { //HCAL acceptance
-		 nNeutralHadronsGen += 1;
-		 p4NeutralHadronsGen += p4;
-	       } else { //HF
-		 nHFHadronsGen += 1;
-		 p4HFHadronsGen += p4;
-	       }
-	     } //if no track
-	   } else if (partPdgId==22) { //photons
-	     if( fabs((*iPart)->eta())<3.) { //tracker acceptance
-	       nPhotonsGen += 1;
-	       p4PhotonsGen += p4;
-	       //save photons and later check for conversions:
-	       //photon conversions switched OFF!
-	       //shortPtcls.push_back(*iPart); //(only if eta<3)
-	     } else {
-	       nHFEMGen += 1;
-	       p4HFEMGen += p4;
-	     }
-	   } else if ((fabs(partPdgId) != 12) && (fabs(partPdgId) != 14)
-		      && (fabs(partPdgId) != 16)) { // veto neutrinos
+	     Int_t nElectronsGen = 0;
+	     TLorentzVector p4ElectronsGen;
 	     
-	     if( fabs((*iPart)->eta())<3. ) {
-	       nNeutralHadronsGen += 1;
-	       p4NeutralHadronsGen += p4;
-	     } else {
-	       nHFHadronsGen += 1;
-	       p4HFHadronsGen += p4;
-	     }
+	     Int_t nPhotonsGen = 0;
+	     TLorentzVector p4PhotonsGen;
 	     
-	     // Decay K0S and Lambda later and correct fractions
-	     if (abs(partPdgId)==310 || abs(partPdgId)==3122)
-	       shortPtcls.push_back(*iPart);
+	     Int_t nTracksGen = 0;
+	     TLorentzVector p4TracksGen;
 	     
-	     //save single neutral hadron components
-	     if( abs(partPdgId)==2112 ) { //neutrons
-	       nNeutronsGen += 1;
-	       p4NeutronsGen += p4;
-	     } else if( abs(partPdgId)==130 ) { //K0L's
-	       nK0LGen += 1;
-	       p4K0LGen += p4;
-	     } else if( abs(partPdgId)==310 ) { //K0S's
-	       nK0SGen += 1;
-	       p4K0SGen += p4;
-	     } else if( abs(partPdgId)==3122 ) { //lambda's
-	       nLambdasGen += 1;
-	       p4LambdasGen += p4;
-	     } else if( abs(partPdgId)==3322 ) { //csi's
-	       nCsiGen += 1;
-	       p4CsiGen += p4;
-	     } else { //not much else
-	       nOtherNeutralHadronsGen += 1;
-	       p4OtherNeutralHadronsGen += p4;
-	     }
+	     Int_t nNeutralHadronsGen = 0;
+	     TLorentzVector p4NeutralHadronsGen;
 	     
-	   } //if neutral hadrons
-	   
-	 } //for jetParticles
-	 
-	 // ------------------ BEGIN short decays (photons, K0S's and lambdas)
-	 
-	 for (vector<const GenParticle*>::const_iterator iGen = shortPtcls.begin();
-	      iGen != shortPtcls.end(); ++iGen) {
-	   
-	   // Check if GenParticle corresponds to a decayed SimTrack
-	   if (decayedSims.find(*iGen) != decayedSims.end()) {
+	     Int_t nHFHadronsGen = 0;
+	     TLorentzVector p4HFHadronsGen;
 	     
-	     // Check that the SimTrack Decay products were stored
-	     const SimTrack *trk = decayedSims[*iGen];
-	     if (promptDecays.find(trk) != promptDecays.end()) {
+	     Int_t nHFEMGen = 0;
+	     TLorentzVector p4HFEMGen;
+	     
+	     Int_t nNeutronsGen = 0;
+	     TLorentzVector p4NeutronsGen;
+	     
+	     Int_t nK0LGen = 0;
+	     TLorentzVector p4K0LGen;
+	     
+	     Int_t nK0SGen = 0;
+	     TLorentzVector p4K0SGen;
+	     
+	     Int_t nLambdasGen = 0;
+	     TLorentzVector p4LambdasGen;
+	     
+	     Int_t nCsiGen = 0;
+	     TLorentzVector p4CsiGen;
+	     
+	     Int_t nOtherNeutralHadronsGen = 0;
+	     TLorentzVector p4OtherNeutralHadronsGen;
+	     
+	     
+	     vector<const GenParticle*> jetParticles = it->getGenConstituents();
+	     vector<const GenParticle*> shortPtcls;
+	     
+	     //----- Select the particle decays in tracker volume BEGIN ------      
+	     
+	     const int ijet = it - jetsgenakt5->begin();
+	     if( simTracks_h.isValid() ){
+	       if (_debug)
+		 cout << Form("Found mappings GenParticles<->GrandParentSimTracks"
+			      " for jet %d of pT=%1.3f eta=%1.3g",
+			      ijet, it->pt(), it->eta())
+		      << endl << flush;
 	       
-	       // Convert track momentum to normal TLorentzVector, wrong type :(
-	       math::XYZTLorentzVectorD const& p4t = (*iGen)->p4();
-	       TLorentzVector p4mom(p4t.px(), p4t.py(), p4t.pz(), p4t.energy());
-	       if ((*iGen)->pdgId()==22) {
-		 nPhotonsGen -= 1;
-		 p4PhotonsGen -= p4mom;
-	       }
-	       else {
-		 if( fabs((*iGen)->eta())<3. ) {
-		   nNeutralHadronsGen -= 1;
-		   p4NeutralHadronsGen -= p4mom;
-		 } else {
-		   nHFHadronsGen -= 1;
-		   p4HFHadronsGen -= p4mom;
-		 }
-	       }
-	       
-	       set<const SimTrack*> const& kids = promptDecays.find(trk)->second;
-	       
-	       for (set<const SimTrack*>::const_iterator iSim = kids.begin();
-		    iSim != kids.end(); ++iSim) {
+	       // Print out decay chains for this jet iteratively
+	       // NB: this method will also save the SIM particles when asked
+	       for (vector< const GenParticle* >::const_iterator iGen
+		      = jetParticles.begin(); iGen != jetParticles.end(); ++iGen) {
 		 
-		 // Convert track momentum to normal TLorentzVector, wrong type :(
-		 math::XYZTLorentzVectorD const& p4t = (*iSim)->momentum();
-		 TLorentzVector p4(p4t.px(), p4t.py(), p4t.pz(), p4t.energy());
+		 if (_debug)
+		   cout << Form("Gen id %d (pT=%1.3g GeV, eta=%1.3g)",
+				(*iGen)->pdgId(), (*iGen)->pt(), (*iGen)->eta());
 		 
-		 const SimVertex *vtx = promptVertex[*iSim];
-		 
-		 double vertR = vtx->position().Rho();
-		 double vertZ = vtx->position().z();
-		 //double trkEta = trk->momentum().eta();
-		 bool decayedBeforeCalo =  ((vertR < 129.) && ( vertZ < 304.));
-		 
-		 // Check if the decay happened early enough for the
-		 // charged track to be reconstructed
-		 bool decayTrackable = (vertR < 30. && fabs(p4.Eta()) < 2.5
-					&& (*iSim)->charge() != 0 && p4.Pt() > 0.075);
-		 
-		 if (decayedBeforeCalo && (*iSim)->type()==111) { //pizeros
-		   if( fabs(p4.Eta())<3. ) {
-		     nPhotonsGen += 2;  //both
-		     p4PhotonsGen += p4;
-		   } else {
-		     nHFEMGen += 2;  //both
-		     p4HFEMGen += p4;
+		 if (decayedSims.find(*iGen) != decayedSims.end()) {
+		   
+		   if (_debug)
+		     cout << " decay chain:" << endl;
+		   assert((*iGen)->pdgId()==decayedSims[*iGen]->type());
+		   bool saved = printChildren(decayedSims[*iGen],
+					      promptDecays, promptVertex, 0,
+					      (ijet<2 ? true : false)); // save to file?
+		   if (saved && mapMC.find(*iGen)!=mapMC.end()) {
+		     //assert(statusMC[mapMC[*iGen]]!=2);
+		     //assert(mapMC.find(*iGen)!=mapMC.end());
+		     statusMC[mapMC[*iGen]] *= -1;
 		   }
 		 }
-		 else if (decayTrackable) {
-		   if( fabs((*iSim)->type())==11 ) { //electrons
-		     nElectronsGen += 1;
-		     p4ElectronsGen += p4;
-		   } else {
-		     nTracksGen += 1;
-		     p4TracksGen += p4;
+		 else
+		   if (_debug)
+		     cout << endl;
+	       }
+	     }
+	     //----- Select out the particle decays in tracker volume END------
+	     
+	     // Sum up the different types of GenParticle energy
+	     for (vector< const GenParticle* >::iterator iPart = jetParticles.begin();
+		  iPart != jetParticles.end(); ++iPart) {
+	       
+	       Int_t partPdgId = (*iPart)->pdgId();
+	       // Convert particle momentum to normal TLorentzVector, wrong type :(
+	       math::XYZTLorentzVectorD const& p4t = (*iPart)->p4();
+	       TLorentzVector p4(p4t.px(), p4t.py(), p4t.pz(), p4t.energy());
+	       
+	       if (fabs(partPdgId)==13) { //muons
+		 nMuonsGen += 1;
+		 p4MuonsGen += p4;
+	       } else if (fabs(partPdgId)==11) { //electrons
+		 if( fabs((*iPart)->eta())<2.5) { //tracker acceptance
+		   nElectronsGen += 1;
+		   p4ElectronsGen += p4;
+		 } else if( fabs((*iPart)->eta())<3. ) { //if no track, they're just photons
+		   nPhotonsGen += 1;
+		   p4PhotonsGen += p4;
+		 } else { //HFEM in HF 
+		   nHFEMGen += 1;
+		   p4HFEMGen += p4;
+		 }
+	       } else if ((*iPart)->charge() != 0) { // charged hadrons
+		 if( fabs((*iPart)->eta())<2.5) { //tracker acceptance
+		   nTracksGen += 1;
+		   p4TracksGen += p4;
+		 } else { //if no track, they're just hadrons
+		   if( fabs((*iPart)->eta())<3. ) { //HCAL acceptance
+		     nNeutralHadronsGen += 1;
+		     p4NeutralHadronsGen += p4;
+		   } else { //HF
+		     nHFHadronsGen += 1;
+		     p4HFHadronsGen += p4;
 		   }
+		 } //if no track
+	       } else if (partPdgId==22) { //photons
+		 if( fabs((*iPart)->eta())<3.) { //tracker acceptance
+		   nPhotonsGen += 1;
+		   p4PhotonsGen += p4;
+		   //save photons and later check for conversions:
+		   //photon conversions switched OFF!
+		   //shortPtcls.push_back(*iPart); //(only if eta<3)
 		 } else {
-		   //if( (*iGen)->pdgId()==22 ) { //photons //BEFORE: wrong??
-		   if( (*iSim)->type()==22 || fabs((*iSim)->type())==11 ) { //photons or electrons
-		     if( fabs(p4.Eta())<3. ) {
-		       nPhotonsGen += 1;
-		       p4PhotonsGen += p4;
-		     } else {
-		       nHFEMGen += 1;
-		       p4HFEMGen += p4;
+		   nHFEMGen += 1;
+		   p4HFEMGen += p4;
+		 }
+	       } else if ((fabs(partPdgId) != 12) && (fabs(partPdgId) != 14)
+			  && (fabs(partPdgId) != 16)) { // veto neutrinos
+		 
+		 if( fabs((*iPart)->eta())<3. ) {
+		   nNeutralHadronsGen += 1;
+		   p4NeutralHadronsGen += p4;
+		 } else {
+		   nHFHadronsGen += 1;
+		   p4HFHadronsGen += p4;
+		 }
+		 
+		 // Decay K0S and Lambda later and correct fractions
+		 if (abs(partPdgId)==310 || abs(partPdgId)==3122)
+		   shortPtcls.push_back(*iPart);
+		 
+		 //save single neutral hadron components
+		 if( abs(partPdgId)==2112 ) { //neutrons
+		   nNeutronsGen += 1;
+		   p4NeutronsGen += p4;
+		 } else if( abs(partPdgId)==130 ) { //K0L's
+		   nK0LGen += 1;
+		   p4K0LGen += p4;
+		 } else if( abs(partPdgId)==310 ) { //K0S's
+		   nK0SGen += 1;
+		   p4K0SGen += p4;
+		 } else if( abs(partPdgId)==3122 ) { //lambda's
+		   nLambdasGen += 1;
+		   p4LambdasGen += p4;
+		 } else if( abs(partPdgId)==3322 ) { //csi's
+		   nCsiGen += 1;
+		   p4CsiGen += p4;
+		 } else { //not much else
+		   nOtherNeutralHadronsGen += 1;
+		   p4OtherNeutralHadronsGen += p4;
+	     }
+		 
+	       } //if neutral hadrons
+	       
+	     } //for jetParticles
+	     
+	     // ------------------ BEGIN short decays (photons, K0S's and lambdas)
+	     for (vector<const GenParticle*>::const_iterator iGen = shortPtcls.begin();
+		  iGen != shortPtcls.end(); ++iGen) {
+	       if( simTracks_h.isValid() ){
+		 
+		 // Check if GenParticle corresponds to a decayed SimTrack
+		 if (decayedSims.find(*iGen) != decayedSims.end()) {
+		   
+		   // Check that the SimTrack Decay products were stored
+		   const SimTrack *trk = decayedSims[*iGen];
+		   if (promptDecays.find(trk) != promptDecays.end()) {
+		     
+		     // Convert track momentum to normal TLorentzVector, wrong type :(
+		     math::XYZTLorentzVectorD const& p4t = (*iGen)->p4();
+		     TLorentzVector p4mom(p4t.px(), p4t.py(), p4t.pz(), p4t.energy());
+		     if ((*iGen)->pdgId()==22) {
+		       nPhotonsGen -= 1;
+		       p4PhotonsGen -= p4mom;
 		     }
-		   } else {
-		     if( fabs(p4.Eta())<3. ) {
-		       nNeutralHadronsGen += 1;
-		       p4NeutralHadronsGen += p4;
-		     } else {
-		       nHFHadronsGen += 1;
-		       p4HFHadronsGen += p4;
+		     else {
+		       if( fabs((*iGen)->eta())<3. ) {
+			 nNeutralHadronsGen -= 1;
+			 p4NeutralHadronsGen -= p4mom;
+		       } else {
+			 nHFHadronsGen -= 1;
+			 p4HFHadronsGen -= p4mom;
+		       }
 		     }
-		   } //if-else photons
-		 } //if-else decay trackable
+		     
+		     set<const SimTrack*> const& kids = promptDecays.find(trk)->second;
+		     
+		     for (set<const SimTrack*>::const_iterator iSim = kids.begin();
+			  iSim != kids.end(); ++iSim) {
+		       
+		       // Convert track momentum to normal TLorentzVector, wrong type :(
+		       math::XYZTLorentzVectorD const& p4t = (*iSim)->momentum();
+		       TLorentzVector p4(p4t.px(), p4t.py(), p4t.pz(), p4t.energy());
+		       
+		       const SimVertex *vtx = promptVertex[*iSim];
+		       
+		       double vertR = vtx->position().Rho();
+		       double vertZ = vtx->position().z();
+		       //double trkEta = trk->momentum().eta();
+		       bool decayedBeforeCalo =  ((vertR < 129.) && ( vertZ < 304.));
+		       
+		       // Check if the decay happened early enough for the
+		       // charged track to be reconstructed
+		       bool decayTrackable = (vertR < 30. && fabs(p4.Eta()) < 2.5
+					      && (*iSim)->charge() != 0 && p4.Pt() > 0.075);
+		       
+		       if (decayedBeforeCalo && (*iSim)->type()==111) { //pizeros
+			 if( fabs(p4.Eta())<3. ) {
+			   nPhotonsGen += 2;  //both
+			   p4PhotonsGen += p4;
+			 } else {
+			   nHFEMGen += 2;  //both
+			   p4HFEMGen += p4;
+			 }
+		       }
+		       else if (decayTrackable) {
+			 if( fabs((*iSim)->type())==11 ) { //electrons
+			   nElectronsGen += 1;
+			   p4ElectronsGen += p4;
+			 } else {
+			   nTracksGen += 1;
+			   p4TracksGen += p4;
+			 }
+		       } else {
+			 //if( (*iGen)->pdgId()==22 ) { //photons //BEFORE: wrong??
+			 if( (*iSim)->type()==22 || fabs((*iSim)->type())==11 ) { //photons or electrons
+			   if( fabs(p4.Eta())<3. ) {
+			     nPhotonsGen += 1;
+			     p4PhotonsGen += p4;
+			   } else {
+			     nHFEMGen += 1;
+			     p4HFEMGen += p4;
+			   }
+			 } else {
+			   if( fabs(p4.Eta())<3. ) {
+			     nNeutralHadronsGen += 1;
+			     p4NeutralHadronsGen += p4;
+			   } else {
+			     nHFHadronsGen += 1;
+			     p4HFHadronsGen += p4;
+			   }
+			 } //if-else photons
+		       } //if-else decay trackable
 	       } // for iSim loop on kids
-	     } // has promptDecays
-	   } // has decayedSims
-	 } // for iGen
+		   } // has promptDecays
+		 } // has decayedSims
+	       }
+	     } // for iGen
+	  
+	     // ------------------ END short decays
+	     
+	     const TLorentzVector *p = 0;
+	     
+	     nMuonsGen_akt5[nJetGen_akt5] = nMuonsGen;
+	     p = &p4MuonsGen;
+	     eMuonsGen_akt5[nJetGen_akt5] = p->E() / it->energy();
+	     
+	     nElectronsGen_akt5[nJetGen_akt5] = nElectronsGen;
+	     p = &p4ElectronsGen;
+	     eElectronsGen_akt5[nJetGen_akt5] = p->E() / it->energy();
+	     
+	     nPhotonsGen_akt5[nJetGen_akt5] = nPhotonsGen;
+	     p = &p4PhotonsGen;
+	     ePhotonsGen_akt5[nJetGen_akt5] = p->E() / it->energy();
+	     
+	     nTracksGen_akt5[nJetGen_akt5] = nTracksGen;
+	     p = &p4TracksGen;
+	     eTracksGen_akt5[nJetGen_akt5] = p->E() / it->energy();
+	     
+	     nNeutralHadronsGen_akt5[nJetGen_akt5] = nNeutralHadronsGen;
+	     p = &p4NeutralHadronsGen;
+	     eNeutralHadronsGen_akt5[nJetGen_akt5] = p->E() / it->energy();
+	     
+	     nHFHadronsGen_akt5[nJetGen_akt5] = nHFHadronsGen;
+	     p = &p4HFHadronsGen;
+	     eHFHadronsGen_akt5[nJetGen_akt5] = p->E() / it->energy();
+	     
+	     nHFEMGen_akt5[nJetGen_akt5] = nHFEMGen;
+	     p = &p4HFEMGen;
+	     eHFEMGen_akt5[nJetGen_akt5] = p->E() / it->energy();
+	     
+	     nNeutronsGen_akt5[nJetGen_akt5] = nNeutronsGen;
+	     p = &p4NeutronsGen;
+	     eNeutronsGen_akt5[nJetGen_akt5] = p->E() / it->energy();
+	     
+	     nK0LGen_akt5[nJetGen_akt5] = nK0LGen;
+	     p = &p4K0LGen;
+	     eK0LGen_akt5[nJetGen_akt5] = p->E() / it->energy();
+	     
+	     nK0SGen_akt5[nJetGen_akt5] = nK0SGen;
+	     p = &p4K0SGen;
+	     eK0SGen_akt5[nJetGen_akt5] = p->E() / it->energy();
+	     
+	     nLambdasGen_akt5[nJetGen_akt5] = nLambdasGen;
+	     p = &p4LambdasGen;
+	     eLambdasGen_akt5[nJetGen_akt5] = p->E() / it->energy();
 	 
-	 // ------------------ END short decays
-	 
-	 const TLorentzVector *p = 0;
-	 
-	 nMuonsGen_akt5[nJetGen_akt5] = nMuonsGen;
-	 p = &p4MuonsGen;
-	 eMuonsGen_akt5[nJetGen_akt5] = p->E() / it->energy();
-	 
-	 nElectronsGen_akt5[nJetGen_akt5] = nElectronsGen;
-	 p = &p4ElectronsGen;
-	 eElectronsGen_akt5[nJetGen_akt5] = p->E() / it->energy();
-	 
-	 nPhotonsGen_akt5[nJetGen_akt5] = nPhotonsGen;
-	 p = &p4PhotonsGen;
-	 ePhotonsGen_akt5[nJetGen_akt5] = p->E() / it->energy();
-	 
-	 nTracksGen_akt5[nJetGen_akt5] = nTracksGen;
-	 p = &p4TracksGen;
-	 eTracksGen_akt5[nJetGen_akt5] = p->E() / it->energy();
-	 
-	 nNeutralHadronsGen_akt5[nJetGen_akt5] = nNeutralHadronsGen;
-	 p = &p4NeutralHadronsGen;
-	 eNeutralHadronsGen_akt5[nJetGen_akt5] = p->E() / it->energy();
-	 
-	 nHFHadronsGen_akt5[nJetGen_akt5] = nHFHadronsGen;
-	 p = &p4HFHadronsGen;
-	 eHFHadronsGen_akt5[nJetGen_akt5] = p->E() / it->energy();
-	 
-	 nHFEMGen_akt5[nJetGen_akt5] = nHFEMGen;
-	 p = &p4HFEMGen;
-	 eHFEMGen_akt5[nJetGen_akt5] = p->E() / it->energy();
-	 
-	 nNeutronsGen_akt5[nJetGen_akt5] = nNeutronsGen;
-	 p = &p4NeutronsGen;
-	 eNeutronsGen_akt5[nJetGen_akt5] = p->E() / it->energy();
-	 
-	 nK0LGen_akt5[nJetGen_akt5] = nK0LGen;
-	 p = &p4K0LGen;
-	 eK0LGen_akt5[nJetGen_akt5] = p->E() / it->energy();
-	 
-	 nK0SGen_akt5[nJetGen_akt5] = nK0SGen;
-	 p = &p4K0SGen;
-	 eK0SGen_akt5[nJetGen_akt5] = p->E() / it->energy();
-	 
-	 nLambdasGen_akt5[nJetGen_akt5] = nLambdasGen;
-	 p = &p4LambdasGen;
-	 eLambdasGen_akt5[nJetGen_akt5] = p->E() / it->energy();
-	 
-	 nCsiGen_akt5[nJetGen_akt5] = nCsiGen;
-	 p = &p4CsiGen;
-	 eCsiGen_akt5[nJetGen_akt5] = p->E() / it->energy();
-	 
-	 nOtherNeutralHadronsGen_akt5[nJetGen_akt5] = nOtherNeutralHadronsGen;
-	 p = &p4OtherNeutralHadronsGen;
-	 eOtherNeutralHadronsGen_akt5[nJetGen_akt5] = p->E() / it->energy();
-	 
+	     nCsiGen_akt5[nJetGen_akt5] = nCsiGen;
+	     p = &p4CsiGen;
+	     eCsiGen_akt5[nJetGen_akt5] = p->E() / it->energy();
+	     
+	     nOtherNeutralHadronsGen_akt5[nJetGen_akt5] = nOtherNeutralHadronsGen;
+	     p = &p4OtherNeutralHadronsGen;
+	     eOtherNeutralHadronsGen_akt5[nJetGen_akt5] = p->E() / it->energy();
+	   }
 	 nJetGen_akt5++;
        } // if >genjetptthr
      } // gen_akt5
