@@ -164,7 +164,7 @@ protected:
   Float_t  pfMETSig_;
   // Electron
   Int_t    nEle_;
-  Int_t    eleTrg_[maxP][17];
+  Int_t    eleTrg_[maxP][21];
   Int_t    eleID_[maxP][12];
   Int_t    eleClass_[maxP];
   Int_t    eleCharge_[maxP];
@@ -224,7 +224,7 @@ protected:
 
   // Photon
   Int_t    nPho_;
-  Int_t    phoTrg_[maxP][13];
+  Int_t    phoTrg_[maxP][16];
   Bool_t   phoIsPhoton_[maxP];
   Float_t  phoE_[maxP];
   Float_t  phoEt_[maxP];
@@ -277,7 +277,7 @@ protected:
 
   // Muon
   Int_t    nMu_;
-  Int_t    muTrg_[maxP][16];
+  Int_t    muTrg_[maxP][26];
   Float_t  muEta_[maxP];
   Float_t  muPhi_[maxP];
   Int_t    muCharge_[maxP];
@@ -303,7 +303,7 @@ protected:
 
   // Jet
   Int_t    nJet_;
-  Int_t    jetTrg_[maxP][22];
+  Int_t    jetTrg_[maxP][31];
   Int_t    jetAlgo_[maxP];
   Float_t  jetEn_[maxP];
   Float_t  jetPt_[maxP];

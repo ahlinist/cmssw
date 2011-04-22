@@ -91,7 +91,7 @@ VgAnalyzerKit::VgAnalyzerKit(const edm::ParameterSet& ps) : verbosity_(0), helpe
   tree_->Branch("ttbit0", &ttbit0_, "ttbit0/I");
   tree_->Branch("nHLT", &nHLT_, "nHLT/I");
   tree_->Branch("HLT", HLT_, "HLT[nHLT]/I");
-  tree_->Branch("HLTIndex", HLTIndex_, "HLTIndex[106]/I");
+  tree_->Branch("HLTIndex", HLTIndex_, "HLTIndex[147]/I");
   tree_->Branch("nHFTowersP", &nHFTowersP_, "nHFTowersP/I");
   tree_->Branch("nHFTowersN", &nHFTowersN_, "nHFTowersN/I");
   tree_->Branch("nVtx", &nVtx_, "nVtx/I");
@@ -161,7 +161,7 @@ VgAnalyzerKit::VgAnalyzerKit(const edm::ParameterSet& ps) : verbosity_(0), helpe
   tree_->Branch("pfMETSig", &pfMETSig_, "pfMETSig/F");
   // Electron
   tree_->Branch("nEle", &nEle_, "nEle/I");
-  tree_->Branch("eleTrg", eleTrg_, "eleTrg[nEle][17]/I");
+  tree_->Branch("eleTrg", eleTrg_, "eleTrg[nEle][21]/I");
   tree_->Branch("eleID", eleID_, "eleID[nEle][12]/I");
   tree_->Branch("eleClass", eleClass_, "eleClass[nEle]/I");
   tree_->Branch("eleCharge", eleCharge_, "eleCharge[nEle]/I");
@@ -219,7 +219,7 @@ VgAnalyzerKit::VgAnalyzerKit(const edm::ParameterSet& ps) : verbosity_(0), helpe
   tree_->Branch("eleESProfileRear", eleESProfileRear_, "eleESProfileRear[nEle][123]/F");
   // Photon
   tree_->Branch("nPho", &nPho_, "nPho/I");
-  tree_->Branch("phoTrg", phoTrg_, "phoTrg[nPho][13]/I");
+  tree_->Branch("phoTrg", phoTrg_, "phoTrg[nPho][16]/I");
   tree_->Branch("phoIsPhoton", phoIsPhoton_, "phoIsPhoton[nPho]/O");
   tree_->Branch("phoE", phoE_, "phoE[nPho]/F");
   tree_->Branch("phoEt", phoEt_, "phoEt[nPho]/F");
@@ -275,7 +275,7 @@ VgAnalyzerKit::VgAnalyzerKit(const edm::ParameterSet& ps) : verbosity_(0), helpe
   tree_->Branch("phoESProfileRear", phoESProfileRear_, "phoESProfileRear[nPho][123]/F");
   // Muon
   tree_->Branch("nMu", &nMu_, "nMu/I");
-  tree_->Branch("muTrg", muTrg_, "muTrg[nMu][16]/I");
+  tree_->Branch("muTrg", muTrg_, "muTrg[nMu][26]/I");
   tree_->Branch("muEta", muEta_, "muEta[nMu]/F");
   tree_->Branch("muPhi", muPhi_, "muPhi[nMu]/F");
   tree_->Branch("muCharge", muCharge_, "muCharge[nMu]/I");
@@ -303,7 +303,7 @@ VgAnalyzerKit::VgAnalyzerKit(const edm::ParameterSet& ps) : verbosity_(0), helpe
   // Jet
   if (doStoreJets_) {
     tree_->Branch("nJet", &nJet_, "nJet/I");
-    tree_->Branch("jetTrg", jetTrg_, "jetTrg[nJet][22]/I");
+    tree_->Branch("jetTrg", jetTrg_, "jetTrg[nJet][31]/I");
     tree_->Branch("jetEn", jetEn_, "jetEn[nJet]/F");
     tree_->Branch("jetPt", jetPt_, "jetPt[nJet]/F");
     tree_->Branch("jetEta", jetEta_, "jetEta[nJet]/F");
@@ -744,8 +744,49 @@ fabs(ip->pdgId())<=14) || ip->pdgId()==22))) {
   //103: HLT_Photon26_CaloIdL_IsoVL_Photon18_CaloIdL_IsoVL_v1
   //104: HLT_Photon26_CaloIdL_IsoVL_Photon18_CaloIdL_IsoVL_v2
   //105: HLT_Photon26_CaloIdL_IsoVL_Photon18_R9Id_v1
-  
-  for (int a=0; a<106; a++)
+  //106: HLT_Jet30_v2
+  //107: HLT_Jet60_v2
+  //108: HLT_Jet80_v2
+  //109: HLT_Jet110_v2
+  //110: HLT_Jet150_v2
+  //111: HLT_Jet190_v2
+  //112: HLT_Jet240_v2
+  //113: HLT_Jet300_v1
+  //114: HLT_Jet370_v2
+  //115: HLT_Mu12_v2
+  //116: HLT_Mu15_v3
+  //117: HLT_Mu20_v2
+  //118: HLT_Mu24_v2
+  //119: HLT_Mu30_v2
+  //120: HLT_IsoMu12_v2
+  //121: HLT_IsoMu15_v6
+  //122: HLT_IsoMu17_v6
+  //123: HLT_IsoMu24_v2
+  //124: HLT_IsoMu30_v2
+  //125: HLT_DoubleMu6_v2
+  //126: HLT_DoubleMu7_v2
+  //127: HLT_Ele27_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_v3
+  //128: HLT_Ele32_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_v2
+  //129: HLT_Ele45_CaloIdVT_TrkIdT_v3
+  //130: HLT_Ele90_NoSpikeFilter_v3
+  //131: HLT_Ele17_CaloIdL_CaloIsoVL_Ele8_CaloIdL_CaloIsoVL_v3
+  //132: HLT_Ele17_CaloIdT_TrkIdVL_CaloIsoVL_TrkIsoVL_Ele8_CaloIdT_TrkIdVL_CaloIsoVL_TrkIsoVL_v3
+  //133: HLT_Ele17_CaloIdVT_CaloIsoVT_TrkIdT_TrkIsoVT_SC8_Mass30_v3
+  //134: HLT_Ele17_CaloIdL_CaloIsoVL_Ele15_HFL_v3
+  //135: HLT_Ele32_CaloIdL_CaloIsoVL_SC17_v3
+  //136: HLT_Photon30_CaloIdVL_v3
+  //137: HLT_Photon30_CaloIdVL_IsoL_v3
+  //138: HLT_Photon50_CaloIdVL_IsoL_v2
+  //139: HLT_Photon75_CaloIdVL_v3
+  //140: HLT_Photon75_CaloIdVL_IsoL_v3
+  //141: HLT_Photon20_R9Id_Photon18_R9Id_v3
+  //142: HLT_Photon26_IsoVL_Photon18_v3
+  //143: HLT_Photon26_IsoVL_Photon18_IsoVL_v3
+  //144: HLT_Photon26_CaloIdL_IsoVL_Photon18_v3
+  //145: HLT_Photon26_CaloIdL_IsoVL_Photon18_CaloIdL_IsoVL_v3
+  //146: HLT_Photon26_CaloIdL_IsoVL_Photon18_R9Id_v2
+
+  for (int a=0; a<147; a++)
     HLTIndex_[a] = -1;
  
   nHLT_ = 0;
@@ -863,6 +904,47 @@ fabs(ip->pdgId())<=14) || ip->pdgId()==22))) {
     else if (hlNames[i] == "HLT_Photon26_CaloIdL_IsoVL_Photon18_CaloIdL_IsoVL_v1")	HLTIndex_[103] = i;
     else if (hlNames[i] == "HLT_Photon26_CaloIdL_IsoVL_Photon18_CaloIdL_IsoVL_v2")	HLTIndex_[104] = i;
     else if (hlNames[i] == "HLT_Photon26_CaloIdL_IsoVL_Photon18_R9Id_v1")		HLTIndex_[105] = i;
+    else if (hlNames[i] == "HLT_Jet30_v2")		HLTIndex_[106] = i;
+    else if (hlNames[i] == "HLT_Jet60_v2")		HLTIndex_[107] = i;
+    else if (hlNames[i] == "HLT_Jet80_v2")		HLTIndex_[108] = i;
+    else if (hlNames[i] == "HLT_Jet110_v2")		HLTIndex_[109] = i;
+    else if (hlNames[i] == "HLT_Jet150_v2")		HLTIndex_[110] = i;
+    else if (hlNames[i] == "HLT_Jet190_v2")		HLTIndex_[111] = i;
+    else if (hlNames[i] == "HLT_Jet240_v2")		HLTIndex_[112] = i;
+    else if (hlNames[i] == "HLT_Jet300_v1")		HLTIndex_[113] = i;
+    else if (hlNames[i] == "HLT_Jet370_v2")		HLTIndex_[114] = i;
+    else if (hlNames[i] == "HLT_Mu12_v2")		HLTIndex_[115] = i;
+    else if (hlNames[i] == "HLT_Mu15_v3")		HLTIndex_[116] = i;
+    else if (hlNames[i] == "HLT_Mu20_v2")		HLTIndex_[117] = i;
+    else if (hlNames[i] == "HLT_Mu24_v2")		HLTIndex_[118] = i;
+    else if (hlNames[i] == "HLT_Mu30_v2")		HLTIndex_[119] = i;
+    else if (hlNames[i] == "HLT_IsoMu12_v2")		HLTIndex_[120] = i;
+    else if (hlNames[i] == "HLT_IsoMu15_v6")		HLTIndex_[121] = i;
+    else if (hlNames[i] == "HLT_IsoMu17_v6")		HLTIndex_[122] = i;
+    else if (hlNames[i] == "HLT_IsoMu24_v2")		HLTIndex_[123] = i;
+    else if (hlNames[i] == "HLT_IsoMu30_v2")		HLTIndex_[124] = i;
+    else if (hlNames[i] == "HLT_DoubleMu6_v2")		HLTIndex_[125] = i;
+    else if (hlNames[i] == "HLT_DoubleMu7_v2")		HLTIndex_[126] = i;
+    else if (hlNames[i] == "HLT_Ele27_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_v3")			HLTIndex_[127] = i;
+    else if (hlNames[i] == "HLT_Ele32_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_v2")			HLTIndex_[128] = i;
+    else if (hlNames[i] == "HLT_Ele45_CaloIdVT_TrkIdT_v3")					HLTIndex_[129] = i;
+    else if (hlNames[i] == "HLT_Ele90_NoSpikeFilter_v3")					HLTIndex_[130] = i;
+    else if (hlNames[i] == "HLT_Ele17_CaloIdL_CaloIsoVL_Ele8_CaloIdL_CaloIsoVL_v3")		HLTIndex_[131] = i;
+    else if (hlNames[i] == "HLT_Ele17_CaloIdT_TrkIdVL_CaloIsoVL_TrkIsoVL_Ele8_CaloIdT_TrkIdVL_CaloIsoVL_TrkIsoVL_v3")		HLTIndex_[132] = i;
+    else if (hlNames[i] == "HLT_Ele17_CaloIdVT_CaloIsoVT_TrkIdT_TrkIsoVT_SC8_Mass30_v3")	HLTIndex_[133] = i;
+    else if (hlNames[i] == "HLT_Ele17_CaloIdL_CaloIsoVL_Ele15_HFL_v3")				HLTIndex_[134] = i;
+    else if (hlNames[i] == "HLT_Ele32_CaloIdL_CaloIsoVL_SC17_v3")				HLTIndex_[135] = i;
+    else if (hlNames[i] == "HLT_Photon30_CaloIdVL_v3")					HLTIndex_[136] = i;
+    else if (hlNames[i] == "HLT_Photon30_CaloIdVL_IsoL_v3")				HLTIndex_[137] = i;
+    else if (hlNames[i] == "HLT_Photon50_CaloIdVL_IsoL_v2")				HLTIndex_[138] = i;
+    else if (hlNames[i] == "HLT_Photon75_CaloIdVL_v3")					HLTIndex_[139] = i;
+    else if (hlNames[i] == "HLT_Photon75_CaloIdVL_IsoL_v3")				HLTIndex_[140] = i;
+    else if (hlNames[i] == "HLT_Photon20_R9Id_Photon18_R9Id_v3")			HLTIndex_[141] = i;
+    else if (hlNames[i] == "HLT_Photon26_IsoVL_Photon18_v3")				HLTIndex_[142] = i;
+    else if (hlNames[i] == "HLT_Photon26_IsoVL_Photon18_IsoVL_v3")			HLTIndex_[143] = i;
+    else if (hlNames[i] == "HLT_Photon26_CaloIdL_IsoVL_Photon18_v3")			HLTIndex_[144] = i;
+    else if (hlNames[i] == "HLT_Photon26_CaloIdL_IsoVL_Photon18_CaloIdL_IsoVL_v3")	HLTIndex_[145] = i;
+    else if (hlNames[i] == "HLT_Photon26_CaloIdL_IsoVL_Photon18_R9Id_v2")		HLTIndex_[146] = i;
   }
 
   // Gen & PAT MET (caloMET)
@@ -944,6 +1026,10 @@ fabs(ip->pdgId())<=14) || ip->pdgId()==22))) {
   const TriggerObjectMatch *eleTriggerMatch15(triggerEvent->triggerObjectMatchResult("electronTriggerMatchHLTEle45CaloIdVTTrkIdTv2"));
   const TriggerObjectMatch *eleTriggerMatch16(triggerEvent->triggerObjectMatchResult("electronTriggerMatchHLTEle90NoSpikeFilterv1"));
   const TriggerObjectMatch *eleTriggerMatch17(triggerEvent->triggerObjectMatchResult("electronTriggerMatchHLTEle90NoSpikeFilterv2"));
+  const TriggerObjectMatch *eleTriggerMatch18(triggerEvent->triggerObjectMatchResult("electronTriggerMatchHLTEle27CaloIdVTCaloIsoTTrkIdTTrkIsoTv3"));
+  const TriggerObjectMatch *eleTriggerMatch19(triggerEvent->triggerObjectMatchResult("electronTriggerMatchHLTEle32CaloIdVTCaloIsoTTrkIdTTrkIsoTv2"));
+  const TriggerObjectMatch *eleTriggerMatch20(triggerEvent->triggerObjectMatchResult("electronTriggerMatchHLTEle45CaloIdVTTrkIdTv3"));
+  const TriggerObjectMatch *eleTriggerMatch21(triggerEvent->triggerObjectMatchResult("electronTriggerMatchHLTEle90NoSpikeFilterv3"));
 
   int nElePassCut = 0;
   nEle_ = 0;
@@ -972,6 +1058,10 @@ fabs(ip->pdgId())<=14) || ip->pdgId()==22))) {
       const TriggerObjectRef eleTrigRef15( matchHelper.triggerMatchObject( eleBaseRef, eleTriggerMatch15, e, *triggerEvent ) );
       const TriggerObjectRef eleTrigRef16( matchHelper.triggerMatchObject( eleBaseRef, eleTriggerMatch16, e, *triggerEvent ) );
       const TriggerObjectRef eleTrigRef17( matchHelper.triggerMatchObject( eleBaseRef, eleTriggerMatch17, e, *triggerEvent ) );
+      const TriggerObjectRef eleTrigRef18( matchHelper.triggerMatchObject( eleBaseRef, eleTriggerMatch18, e, *triggerEvent ) );
+      const TriggerObjectRef eleTrigRef19( matchHelper.triggerMatchObject( eleBaseRef, eleTriggerMatch19, e, *triggerEvent ) );
+      const TriggerObjectRef eleTrigRef20( matchHelper.triggerMatchObject( eleBaseRef, eleTriggerMatch20, e, *triggerEvent ) );
+      const TriggerObjectRef eleTrigRef21( matchHelper.triggerMatchObject( eleBaseRef, eleTriggerMatch21, e, *triggerEvent ) );
       eleTrg_[nEle_][0]  = (eleTrigRef1.isAvailable())  ? 1 : -99;
       eleTrg_[nEle_][1]  = (eleTrigRef2.isAvailable())  ? 1 : -99;
       eleTrg_[nEle_][2]  = (eleTrigRef3.isAvailable())  ? 1 : -99;
@@ -989,6 +1079,10 @@ fabs(ip->pdgId())<=14) || ip->pdgId()==22))) {
       eleTrg_[nEle_][14]  = (eleTrigRef15.isAvailable()) ? 1 : -99;
       eleTrg_[nEle_][15]  = (eleTrigRef16.isAvailable()) ? 1 : -99;
       eleTrg_[nEle_][16]  = (eleTrigRef17.isAvailable()) ? 1 : -99;
+      eleTrg_[nEle_][17]  = (eleTrigRef18.isAvailable()) ? 1 : -99;
+      eleTrg_[nEle_][18]  = (eleTrigRef19.isAvailable()) ? 1 : -99;
+      eleTrg_[nEle_][19]  = (eleTrigRef20.isAvailable()) ? 1 : -99;
+      eleTrg_[nEle_][20]  = (eleTrigRef21.isAvailable()) ? 1 : -99;
 
       //        new eID with correct isolations and conversion rejection, see https://twiki.cern.ch/twiki/bin/viewauth/CMS/SimpleCutBasedEleID
       //        The value map returns a double with the following meaning:
@@ -1185,6 +1279,10 @@ fabs(ip->pdgId())<=14) || ip->pdgId()==22))) {
   const TriggerObjectMatch *phoTriggerMatch11(triggerEvent->triggerObjectMatchResult("photonTriggerMatchHLTPhoton75CaloIdVLIsoLv2"));
   const TriggerObjectMatch *phoTriggerMatch12(triggerEvent->triggerObjectMatchResult("photonTriggerMatchHLTPhoton75CaloIdVLv1"));
   const TriggerObjectMatch *phoTriggerMatch13(triggerEvent->triggerObjectMatchResult("photonTriggerMatchHLTPhoton75CaloIdVLv2"));
+  const TriggerObjectMatch *phoTriggerMatch14(triggerEvent->triggerObjectMatchResult("photonTriggerMatchHLTHLTPhoton50CaloIdVLIsoLv2"));
+  const TriggerObjectMatch *phoTriggerMatch15(triggerEvent->triggerObjectMatchResult("photonTriggerMatchHLTPhoton75CaloIdVLIsoLv3"));
+  const TriggerObjectMatch *phoTriggerMatch16(triggerEvent->triggerObjectMatchResult("photonTriggerMatchHLTPhoton75CaloIdVLv3"));
+
 
   if ( photonHandle_.isValid() )
     for (View<pat::Photon>::const_iterator iPho = photonHandle_->begin(); iPho != photonHandle_->end(); ++iPho) {
@@ -1206,6 +1304,9 @@ fabs(ip->pdgId())<=14) || ip->pdgId()==22))) {
       const TriggerObjectRef phoTrigRef11( matchHelper.triggerMatchObject( phoBaseRef, phoTriggerMatch11, e, *triggerEvent ) );
       const TriggerObjectRef phoTrigRef12( matchHelper.triggerMatchObject( phoBaseRef, phoTriggerMatch12, e, *triggerEvent ) );
       const TriggerObjectRef phoTrigRef13( matchHelper.triggerMatchObject( phoBaseRef, phoTriggerMatch13, e, *triggerEvent ) );
+      const TriggerObjectRef phoTrigRef14( matchHelper.triggerMatchObject( phoBaseRef, phoTriggerMatch14, e, *triggerEvent ) );
+      const TriggerObjectRef phoTrigRef15( matchHelper.triggerMatchObject( phoBaseRef, phoTriggerMatch15, e, *triggerEvent ) );
+      const TriggerObjectRef phoTrigRef16( matchHelper.triggerMatchObject( phoBaseRef, phoTriggerMatch16, e, *triggerEvent ) );
       phoTrg_[nPho_][0] = (phoTrigRef1.isAvailable()) ? 1 : -99;
       phoTrg_[nPho_][1] = (phoTrigRef2.isAvailable()) ? 1 : -99;
       phoTrg_[nPho_][2] = (phoTrigRef3.isAvailable()) ? 1 : -99;
@@ -1219,6 +1320,9 @@ fabs(ip->pdgId())<=14) || ip->pdgId()==22))) {
       phoTrg_[nPho_][10] = (phoTrigRef11.isAvailable()) ? 1 : -99;
       phoTrg_[nPho_][11] = (phoTrigRef12.isAvailable()) ? 1 : -99;
       phoTrg_[nPho_][12] = (phoTrigRef13.isAvailable()) ? 1 : -99;
+      phoTrg_[nPho_][13] = (phoTrigRef14.isAvailable()) ? 1 : -99;
+      phoTrg_[nPho_][14] = (phoTrigRef15.isAvailable()) ? 1 : -99;
+      phoTrg_[nPho_][15] = (phoTrigRef16.isAvailable()) ? 1 : -99;
 
       phoIsPhoton_[nPho_] = iPho->isPhoton();
       phoE_[nPho_]   = iPho->energy();
@@ -1377,6 +1481,16 @@ fabs(ip->pdgId())<=14) || ip->pdgId()==22))) {
   const TriggerObjectMatch * muTriggerMatch14( triggerEvent->triggerObjectMatchResult( "muonTriggerMatchHLTIsoMu17v5" ) );
   const TriggerObjectMatch * muTriggerMatch15( triggerEvent->triggerObjectMatchResult( "muonTriggerMatchHLTIsoMu24v1" ) );
   const TriggerObjectMatch * muTriggerMatch16( triggerEvent->triggerObjectMatchResult( "muonTriggerMatchHLTIsoMu30v1" ) );
+  const TriggerObjectMatch * muTriggerMatch17( triggerEvent->triggerObjectMatchResult( "muonTriggerMatchHLTMu12v2" ) );
+  const TriggerObjectMatch * muTriggerMatch18( triggerEvent->triggerObjectMatchResult( "muonTriggerMatchHLTMu15v3" ) );
+  const TriggerObjectMatch * muTriggerMatch19( triggerEvent->triggerObjectMatchResult( "muonTriggerMatchHLTMu20v2" ) );
+  const TriggerObjectMatch * muTriggerMatch20( triggerEvent->triggerObjectMatchResult( "muonTriggerMatchHLTMu24v2" ) );
+  const TriggerObjectMatch * muTriggerMatch21( triggerEvent->triggerObjectMatchResult( "muonTriggerMatchHLTMu30v2" ) );
+  const TriggerObjectMatch * muTriggerMatch22( triggerEvent->triggerObjectMatchResult( "muonTriggerMatchHLTIsoMu12v2" ) );
+  const TriggerObjectMatch * muTriggerMatch23( triggerEvent->triggerObjectMatchResult( "muonTriggerMatchHLTIsoMu15v6" ) );
+  const TriggerObjectMatch * muTriggerMatch24( triggerEvent->triggerObjectMatchResult( "muonTriggerMatchHLTIsoMu17v6" ) );
+  const TriggerObjectMatch * muTriggerMatch25( triggerEvent->triggerObjectMatchResult( "muonTriggerMatchHLTIsoMu24v2" ) );
+  const TriggerObjectMatch * muTriggerMatch26( triggerEvent->triggerObjectMatchResult( "muonTriggerMatchHLTIsoMu30v2" ) );
 
   // Muon
   int nMuPassCut = 0;
@@ -1405,6 +1519,16 @@ fabs(ip->pdgId())<=14) || ip->pdgId()==22))) {
       const TriggerObjectRef muTrigRef14( matchHelper.triggerMatchObject( muBaseRef, muTriggerMatch14, e, *triggerEvent ) );
       const TriggerObjectRef muTrigRef15( matchHelper.triggerMatchObject( muBaseRef, muTriggerMatch15, e, *triggerEvent ) );
       const TriggerObjectRef muTrigRef16( matchHelper.triggerMatchObject( muBaseRef, muTriggerMatch16, e, *triggerEvent ) );
+      const TriggerObjectRef muTrigRef17( matchHelper.triggerMatchObject( muBaseRef, muTriggerMatch17, e, *triggerEvent ) );
+      const TriggerObjectRef muTrigRef18( matchHelper.triggerMatchObject( muBaseRef, muTriggerMatch18, e, *triggerEvent ) );
+      const TriggerObjectRef muTrigRef19( matchHelper.triggerMatchObject( muBaseRef, muTriggerMatch19, e, *triggerEvent ) );
+      const TriggerObjectRef muTrigRef20( matchHelper.triggerMatchObject( muBaseRef, muTriggerMatch20, e, *triggerEvent ) );
+      const TriggerObjectRef muTrigRef21( matchHelper.triggerMatchObject( muBaseRef, muTriggerMatch21, e, *triggerEvent ) );
+      const TriggerObjectRef muTrigRef22( matchHelper.triggerMatchObject( muBaseRef, muTriggerMatch22, e, *triggerEvent ) );
+      const TriggerObjectRef muTrigRef23( matchHelper.triggerMatchObject( muBaseRef, muTriggerMatch23, e, *triggerEvent ) );
+      const TriggerObjectRef muTrigRef24( matchHelper.triggerMatchObject( muBaseRef, muTriggerMatch24, e, *triggerEvent ) );
+      const TriggerObjectRef muTrigRef25( matchHelper.triggerMatchObject( muBaseRef, muTriggerMatch25, e, *triggerEvent ) );
+      const TriggerObjectRef muTrigRef26( matchHelper.triggerMatchObject( muBaseRef, muTriggerMatch26, e, *triggerEvent ) );
       muTrg_[nMu_][0] = (muTrigRef1.isAvailable()) ? 1 : -99;
       muTrg_[nMu_][1] = (muTrigRef2.isAvailable()) ? 1 : -99;
       muTrg_[nMu_][2] = (muTrigRef3.isAvailable()) ? 1 : -99;
@@ -1421,6 +1545,16 @@ fabs(ip->pdgId())<=14) || ip->pdgId()==22))) {
       muTrg_[nMu_][13] = (muTrigRef14.isAvailable()) ? 1 : -99;
       muTrg_[nMu_][14] = (muTrigRef15.isAvailable()) ? 1 : -99;
       muTrg_[nMu_][15] = (muTrigRef16.isAvailable()) ? 1 : -99;
+      muTrg_[nMu_][16] = (muTrigRef17.isAvailable()) ? 1 : -99;
+      muTrg_[nMu_][17] = (muTrigRef18.isAvailable()) ? 1 : -99;
+      muTrg_[nMu_][18] = (muTrigRef19.isAvailable()) ? 1 : -99;
+      muTrg_[nMu_][19] = (muTrigRef20.isAvailable()) ? 1 : -99;
+      muTrg_[nMu_][20] = (muTrigRef21.isAvailable()) ? 1 : -99;
+      muTrg_[nMu_][21] = (muTrigRef22.isAvailable()) ? 1 : -99;
+      muTrg_[nMu_][22] = (muTrigRef23.isAvailable()) ? 1 : -99;
+      muTrg_[nMu_][23] = (muTrigRef24.isAvailable()) ? 1 : -99;
+      muTrg_[nMu_][24] = (muTrigRef25.isAvailable()) ? 1 : -99;
+      muTrg_[nMu_][25] = (muTrigRef26.isAvailable()) ? 1 : -99;
 
       //       if (!iMu->isGlobalMuon()) continue;
       //       if (!iMu->isTrackerMuon()) continue;
@@ -1758,6 +1892,15 @@ fabs(ip->pdgId())<=14) || ip->pdgId()==22))) {
   const TriggerObjectMatch *jetTriggerMatch20(triggerEvent->triggerObjectMatchResult("jetTriggerMatchHLTJetJet190v1"));
   const TriggerObjectMatch *jetTriggerMatch21(triggerEvent->triggerObjectMatchResult("jetTriggerMatchHLTJetJet240v1"));
   const TriggerObjectMatch *jetTriggerMatch22(triggerEvent->triggerObjectMatchResult("jetTriggerMatchHLTJetJet3700v1"));
+  const TriggerObjectMatch *jetTriggerMatch23(triggerEvent->triggerObjectMatchResult("jetTriggerMatchHLTJetJet30v2"));
+  const TriggerObjectMatch *jetTriggerMatch24(triggerEvent->triggerObjectMatchResult("jetTriggerMatchHLTJetJet60v2"));
+  const TriggerObjectMatch *jetTriggerMatch25(triggerEvent->triggerObjectMatchResult("jetTriggerMatchHLTJetJet80v2"));
+  const TriggerObjectMatch *jetTriggerMatch26(triggerEvent->triggerObjectMatchResult("jetTriggerMatchHLTJetJet110v2"));
+  const TriggerObjectMatch *jetTriggerMatch27(triggerEvent->triggerObjectMatchResult("jetTriggerMatchHLTJetJet150v2"));
+  const TriggerObjectMatch *jetTriggerMatch28(triggerEvent->triggerObjectMatchResult("jetTriggerMatchHLTJetJet190v2"));
+  const TriggerObjectMatch *jetTriggerMatch29(triggerEvent->triggerObjectMatchResult("jetTriggerMatchHLTJetJet240v2"));
+  const TriggerObjectMatch *jetTriggerMatch30(triggerEvent->triggerObjectMatchResult("jetTriggerMatchHLTJetJet300v1"));
+  const TriggerObjectMatch *jetTriggerMatch31(triggerEvent->triggerObjectMatchResult("jetTriggerMatchHLTJetJet3700v2"));
 
   if (doStoreJets_) {
     nJet_ = 0;
@@ -1790,6 +1933,16 @@ fabs(ip->pdgId())<=14) || ip->pdgId()==22))) {
 	const TriggerObjectRef jetTrigRef20( matchHelper.triggerMatchObject( jetBaseRef, jetTriggerMatch20, e, *triggerEvent ) );
 	const TriggerObjectRef jetTrigRef21( matchHelper.triggerMatchObject( jetBaseRef, jetTriggerMatch21, e, *triggerEvent ) );
 	const TriggerObjectRef jetTrigRef22( matchHelper.triggerMatchObject( jetBaseRef, jetTriggerMatch22, e, *triggerEvent ) );
+        const TriggerObjectRef jetTrigRef23( matchHelper.triggerMatchObject( jetBaseRef, jetTriggerMatch23, e, *triggerEvent ) );
+        const TriggerObjectRef jetTrigRef24( matchHelper.triggerMatchObject( jetBaseRef, jetTriggerMatch24, e, *triggerEvent ) );
+        const TriggerObjectRef jetTrigRef25( matchHelper.triggerMatchObject( jetBaseRef, jetTriggerMatch25, e, *triggerEvent ) );
+        const TriggerObjectRef jetTrigRef26( matchHelper.triggerMatchObject( jetBaseRef, jetTriggerMatch26, e, *triggerEvent ) );
+        const TriggerObjectRef jetTrigRef27( matchHelper.triggerMatchObject( jetBaseRef, jetTriggerMatch27, e, *triggerEvent ) );
+        const TriggerObjectRef jetTrigRef28( matchHelper.triggerMatchObject( jetBaseRef, jetTriggerMatch28, e, *triggerEvent ) );
+        const TriggerObjectRef jetTrigRef29( matchHelper.triggerMatchObject( jetBaseRef, jetTriggerMatch29, e, *triggerEvent ) );
+        const TriggerObjectRef jetTrigRef30( matchHelper.triggerMatchObject( jetBaseRef, jetTriggerMatch30, e, *triggerEvent ) );
+        const TriggerObjectRef jetTrigRef31( matchHelper.triggerMatchObject( jetBaseRef, jetTriggerMatch31, e, *triggerEvent ) );
+
 	jetTrg_[nJet_][0] = (jetTrigRef1.isAvailable()) ? 1 : -99;
 	jetTrg_[nJet_][1] = (jetTrigRef2.isAvailable()) ? 1 : -99;
 	jetTrg_[nJet_][2] = (jetTrigRef3.isAvailable()) ? 1 : -99;
@@ -1812,6 +1965,15 @@ fabs(ip->pdgId())<=14) || ip->pdgId()==22))) {
 	jetTrg_[nJet_][19] = (jetTrigRef20.isAvailable()) ? 1 : -99;
 	jetTrg_[nJet_][20] = (jetTrigRef21.isAvailable()) ? 1 : -99;
 	jetTrg_[nJet_][21] = (jetTrigRef22.isAvailable()) ? 1 : -99;
+        jetTrg_[nJet_][22] = (jetTrigRef23.isAvailable()) ? 1 : -99;
+        jetTrg_[nJet_][23] = (jetTrigRef24.isAvailable()) ? 1 : -99;
+        jetTrg_[nJet_][24] = (jetTrigRef25.isAvailable()) ? 1 : -99;
+        jetTrg_[nJet_][25] = (jetTrigRef26.isAvailable()) ? 1 : -99;
+        jetTrg_[nJet_][26] = (jetTrigRef27.isAvailable()) ? 1 : -99;
+        jetTrg_[nJet_][27] = (jetTrigRef28.isAvailable()) ? 1 : -99;
+        jetTrg_[nJet_][28] = (jetTrigRef29.isAvailable()) ? 1 : -99;
+        jetTrg_[nJet_][29] = (jetTrigRef30.isAvailable()) ? 1 : -99;
+        jetTrg_[nJet_][30] = (jetTrigRef31.isAvailable()) ? 1 : -99;
 
 	jetEn_[nJet_]     = iJet->energy();
 	jetPt_[nJet_]     = iJet->pt();
