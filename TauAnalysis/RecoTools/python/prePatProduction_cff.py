@@ -23,6 +23,11 @@ from TauAnalysis.RecoTools.recoMuonIsolation_cfi import *
 from TauAnalysis.RecoTools.recoElectronIdentification_cfi import *
 from TauAnalysis.RecoTools.recoPFTauIdentification_cfi import *
 
+# produce collections of kT PFJets for dR = 0.6 needed for rho (FastJet) pile-up corrections
+from RecoJets.Configuration.RecoPFJets_cff import *
+kt6PFJets.Rho_EtaMax = cms.double(2.5)
+kt6PFJets.doRhoFastjet = True
+
 # produce collections of dR = 0.07 and dR = 0.15 fixed
 # and dR = 5.0/Et shrinking signal cone taus using latest tags;
 # produce tau id. discriminators (including TaNC = "Tau Neural Classifiers")
@@ -48,6 +53,7 @@ producePrePat = cms.Sequence(
    + pfAllChargedHadrons + pfAllNeutralHadrons + pfAllPhotons
    + recoElectronIsolation
    + recoMuonIsolation
+   + kt6PFJets 
    + PFTau
    # CV: discriminator against calo. muons currently disabled per default;
    #     add manually
