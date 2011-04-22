@@ -29,7 +29,7 @@ process.source = cms.Source("PoolSource",
 #'file:/cmsrm/pc18/pandolf/CMSSW_3_6_3/src/JetMETCorrections/GammaJet/test/events_136100.root'
 #'file:/cmsrm/pc21/emanuele/data/Pool/EG_Run2010A_RECO.root'
 #'file:/tmp/delre/Photon_RECO_Nov4ReReco_v2.root'
-'file:/tmp/delre/2E8275DD-29EC-DF11-ABF9-00237DA80CD2.root'
+'file:/cmsrm/pc23_2/emanuele/data/AOD_HWW_Spring11.root'
 )
 
 )
@@ -69,7 +69,7 @@ process.load('Configuration/StandardSequences/MagneticField_AutoFromDBCurrent_cf
 process.load('Configuration/StandardSequences/FrontierConditions_GlobalTag_cff')
 #process.load('Configuration/EventContent/EventContent_cff')
 #process.load('TrackingTools/Configuration/TrackingTools_cff')
-process.GlobalTag.globaltag = cms.string('START39_V8::All')
+process.GlobalTag.globaltag = cms.string('START311_V2::All')
 #process.GlobalTag.globaltag = cms.string('GR_R_38X_V14::All')
 #process.GlobalTag.globaltag = cms.string('GR_R_35X_V8::All')
 #process.GlobalTag.globaltag = cms.string('START36_V10::All')
