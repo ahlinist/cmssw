@@ -68,7 +68,7 @@ process.load('Configuration/StandardSequences/MagneticField_AutoFromDBCurrent_cf
 process.load('Configuration/StandardSequences/FrontierConditions_GlobalTag_cff')
 #process.load('Configuration/EventContent/EventContent_cff')
 #process.load('TrackingTools/Configuration/TrackingTools_cff')
-process.GlobalTag.globaltag = cms.string('GR_R_39X_V6::All')
+process.GlobalTag.globaltag = cms.string('GR_R_311_V2::All')
 #process.GlobalTag.globaltag = cms.string('GR_R_38X_V14::All')
 #process.GlobalTag.globaltag = cms.string('GR_R_35X_V8::All')
 #process.GlobalTag.globaltag = cms.string('START36_V10::All')
