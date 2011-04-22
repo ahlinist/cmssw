@@ -17,6 +17,8 @@ process.load("Geometry.CaloEventSetup.CaloGeometry_cfi")
 process.load("Geometry.TrackerGeometryBuilder.trackerGeometry_cfi")
 process.load("Geometry.TrackerNumberingBuilder.trackerNumberingGeometry_cfi")
 process.load("Geometry.CaloEventSetup.CaloTopology_cfi")
+process.load('Configuration/StandardSequences/Reconstruction_cff')
+
 
 
 
@@ -29,7 +31,8 @@ process.source = cms.Source("PoolSource",
 #'file:/cmsrm/pc18/pandolf/CMSSW_3_6_3/src/JetMETCorrections/GammaJet/test/events_136100.root'
 #'file:/cmsrm/pc21/emanuele/data/Pool/EG_Run2010A_RECO.root'
 #'file:/tmp/delre/Photon_RECO_Nov4ReReco_v2.root'
-'file:/cmsrm/pc23_2/emanuele/data/AOD_HWW_Spring11.root'
+#'file:/cmsrm/pc23_2/emanuele/data/AOD_HWW_Spring11.root'
+'/store/mc/Spring11/VBF_HToWWToLNuTauNu_M-250_7TeV-powheg-pythia6/AODSIM/PU_S1_START311_V1G1-v1/0024/206749B4-215E-E011-B94F-E0CB4E29C4D9.root'
 )
 
 )
@@ -101,6 +104,8 @@ process.metMuonJESCorAK5.inputUncorMetLabel = "corMetGlobalMuons"
  
 process.metCorSequence = cms.Sequence(process.metMuonJESCorAK5)
 
+process.ak5JetTracksAssociatorAtVertex.jets = cms.InputTag("ak5PFJets")
+process.myBtag = cms.Sequence(process.ak5JetTracksAssociatorAtVertex*process.btagging)
 
 process.myanalysis = cms.EDAnalyzer("GammaJetAnalyzer",
     debug = cms.bool(False),
@@ -145,8 +150,17 @@ process.myanalysis = cms.EDAnalyzer("GammaJetAnalyzer",
     Xsec = cms.double(1.)
 )
 
+process.load('RecoJets.JetProducers.kt4PFJets_cfi')
+process.kt6PFJets = process.kt4PFJets.clone( rParam = 0.6, doRhoFastjet = True )
+process.kt6PFJets.Rho_EtaMax = cms.double(2.5)
 
-process.p = cms.Path(process.monster*process.metCorSequence*process.myanalysis)
+process.p = cms.Path( process.monster * process.kt6PFJets * process.myBtag * process.metCorSequence * process.myanalysis )
 #process.p = cms.Path(process.monster*process.myanalysis)
 #process.p = cms.Path(process.ecalCleanClustering*process.recoJPTJets*process.myanalysis)
 #process.p = cms.Path(process.myanalysis)
+
+#process.AOD1 = cms.OutputModule("PoolOutputModule",
+#    fileName = cms.untracked.string('btag001.root')
+#)
+
+#process.endpath= cms.EndPath(process.AOD1)
