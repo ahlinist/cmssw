@@ -4,7 +4,7 @@
  *
  * \author Evan, UC Davis
  *
- * \version $Revision: 1.2 $
+ * \version $Revision: 1.3 $
  */
 
 #include <boost/shared_ptr.hpp>
@@ -46,6 +46,7 @@ class PATLeptonPFIsolationEmbedder : public edm::EDProducer {
 
     edm::InputTag vertexSrc_;
     edm::InputTag beamSpotSrc_;
+    edm::InputTag rhoFastJetSrc_;
 };
 
 template<typename T>
@@ -57,8 +58,9 @@ PATLeptonPFIsolationEmbedder<T>::PATLeptonPFIsolationEmbedder(
 
   pfCandidateSrc_ = pset.getParameter<edm::InputTag>("pfCandidateSource");
 
-  if ( pset.exists("vertexSource")   ) vertexSrc_   = pset.getParameter<edm::InputTag>("vertexSource");
-  if ( pset.exists("beamSpotSource") ) beamSpotSrc_ = pset.getParameter<edm::InputTag>("beamSpotSource");
+  if ( pset.exists("vertexSource")     ) vertexSrc_     = pset.getParameter<edm::InputTag>("vertexSource");
+  if ( pset.exists("beamSpotSource")   ) beamSpotSrc_   = pset.getParameter<edm::InputTag>("beamSpotSource");
+  if ( pset.exists("rhoFastJetSource") ) rhoFastJetSrc_ = pset.getParameter<edm::InputTag>("rhoFastJetSource");
   
   // Register product
   produces<std::vector<T> >();
@@ -88,6 +90,13 @@ void PATLeptonPFIsolationEmbedder<T>::produce(edm::Event& evt,
     beamSpot = &(*beamSpotHandle);
   }
 
+  double rhoFastJetCorrection = 0.;
+  if ( rhoFastJetSrc_.label() != "" ) {
+    edm::Handle<double> rhoFastJetHandle;
+    evt.getByLabel(rhoFastJetSrc_, rhoFastJetHandle);
+    rhoFastJetCorrection = (*rhoFastJetHandle);
+  }
+
   std::auto_ptr<std::vector<T> > output(new std::vector<T>() );
   output->reserve(inputObjects->size());
 
@@ -95,7 +104,7 @@ void PATLeptonPFIsolationEmbedder<T>::produce(edm::Event& evt,
     const T& inputObject = (*inputObjects)[i];
     // Make a copy
     T outputObject = inputObject;
-    double sumPt = extractor_(outputObject, *pfCandidates, vertices, beamSpot);
+    double sumPt = extractor_(outputObject, *pfCandidates, vertices, beamSpot, rhoFastJetCorrection);
     outputObject.addUserFloat(userInfoString_, sumPt);
     output->push_back(outputObject);
   }

@@ -10,6 +10,11 @@ patMuonPFIsolationSelector = cms.PSet(
     #     need to be set if using deltaBeta pile-up corrections
     vertexSource = cms.InputTag('offlinePrimaryVerticesWithBS'),
     beamSpotSource = cms.InputTag('offlineBeamSpot'),
+
+    # CV: configuration parameters 'rhoFastJetSource' and 'ueRhoOffset'
+    #     need to be set if using rho (FastJet) pile-up corrections
+    rhoFastJetSource = cms.InputTag('kt6PFJets', 'rho'),
+    ueRhoOffset = cms.double(0.69), # [GeV], average energy density due to underlying event
         
     chargedHadronIso = cms.PSet(
         ptMin = cms.double(1.0),        
@@ -36,6 +41,7 @@ patMuonPFIsolationSelector = cms.PSet(
 
     pileUpCorr = cms.PSet(
         method = cms.string("deltaBeta"),
+        ##method = cms.string("rho"),
         deltaZ = cms.double(0.2),
         chargedToNeutralFactor = cms.double(0.38) # (pi+ + pi-)/pi0 ratio in QCD/min. bias events
     )

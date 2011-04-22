@@ -12,9 +12,9 @@
  *
  * \author Christian Veelken, UC Davis
  *
- * \version $Revision: 1.8 $
+ * \version $Revision: 1.9 $
  *
- * $Id: ParticlePFIsolationSelector.h,v 1.8 2011/02/18 11:15:06 veelken Exp $
+ * $Id: ParticlePFIsolationSelector.h,v 1.9 2011/04/09 10:50:22 veelken Exp $
  *
  */
 
@@ -54,8 +54,9 @@ class ParticlePFIsolationSelector
   {
     pfCandidateSrc_ = cfg.getParameter<edm::InputTag>("pfCandidateSource");
 
-    if ( cfg.exists("vertexSource")   ) vertexSrc_   = cfg.getParameter<edm::InputTag>("vertexSource");
-    if ( cfg.exists("beamSpotSource") ) beamSpotSrc_ = cfg.getParameter<edm::InputTag>("beamSpotSource");
+    if ( cfg.exists("vertexSource")     ) vertexSrc_     = cfg.getParameter<edm::InputTag>("vertexSource");
+    if ( cfg.exists("beamSpotSource")   ) beamSpotSrc_   = cfg.getParameter<edm::InputTag>("beamSpotSource");
+    if ( cfg.exists("rhoFastJetSource") ) rhoFastJetSrc_ = cfg.getParameter<edm::InputTag>("rhoFastJetSource");
     
     sumPtMin_ = cfg.exists("sumPtMin") ?
       cfg.getParameter<double>("sumPtMin") : -1.;
@@ -118,10 +119,17 @@ class ParticlePFIsolationSelector
 	evt.getByLabel(beamSpotSrc_, beamSpotHandle);
 	beamSpot = &(*beamSpotHandle);
       }
+
+      double rhoFastJetCorrection = 0.;
+      if ( rhoFastJetSrc_.label() != "" ) {
+	edm::Handle<double> rhoFastJetHandle;
+	evt.getByLabel(rhoFastJetSrc_, rhoFastJetHandle);
+	rhoFastJetCorrection = (*rhoFastJetHandle);
+      }
       
       for ( typename collection::const_iterator isoParticleCandidate = isoParticleCandidates->begin();
 	    isoParticleCandidate != isoParticleCandidates->end(); ++isoParticleCandidate ) {
-	double sumPt = extractor_(*isoParticleCandidate, *pfCandidates, vertices, beamSpot);
+	double sumPt = extractor_(*isoParticleCandidate, *pfCandidates, vertices, beamSpot, rhoFastJetCorrection);
 	
 	// JK: need to fix for correct eta
 	double sumPtMax = ( isoParticleCandidate->eta() < 1.479 ) ? sumPtMaxEB_ : sumPtMaxEE_;
@@ -147,7 +155,8 @@ class ParticlePFIsolationSelector
     edm::InputTag pfCandidateSrc_;
     edm::InputTag vertexSrc_;
     edm::InputTag beamSpotSrc_;
-    
+    edm::InputTag rhoFastJetSrc_;
+
     ParticlePFIsolationExtractor<T> extractor_;
     
     double sumPtMin_;
