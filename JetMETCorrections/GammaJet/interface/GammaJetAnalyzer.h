@@ -290,6 +290,25 @@ TH2D* h2_n_vs_eta;
       Float_t ptDJet_pfakt5[100];
       Float_t rmsCandJet_pfakt5[100];
 
+      Float_t combinedSecondaryVertexBJetTags_pfakt5[100], 
+              combinedSecondaryVertexMVABJetTags_pfakt5[100],
+              jetBProbabilityBJetTags_pfakt5[100],
+              jetProbabilityBJetTags_pfakt5[100],
+              simpleSecondaryVertexHighEffBJetTags_pfakt5[100],
+              simpleSecondaryVertexHighPurBJetTags_pfakt5[100],
+              softMuonBJetTags_pfakt5[100],
+              softMuonByIP3dBJetTags_pfakt5[100],
+              softMuonByPtBJetTags_pfakt5[100],
+              softElectronBJetTags_pfakt5[100],
+              softElectronByIP3dBJetTags_pfakt5[100],
+              softElectronByPtBJetTags_pfakt5[100],
+              trackCountingHighPurBJetTags_pfakt5[100],
+              trackCountingHighEffBJetTags_pfakt5[100];
+
+      Float_t   rho;
+
+
+
       // Extra variables for PFlow studies
       Int_t nChargedHadrons_pfakt5[100];
       Int_t nPhotons_pfakt5[100];

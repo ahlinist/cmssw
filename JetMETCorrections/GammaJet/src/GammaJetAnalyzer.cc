@@ -13,7 +13,7 @@
 //
 // Original Author:  Daniele del Re
 //         Created:  Thu Sep 13 16:00:15 CEST 2007
-// $Id: GammaJetAnalyzer.cc,v 1.49 2011/03/28 10:16:06 delre Exp $
+// $Id: GammaJetAnalyzer.cc,v 1.50 2011/04/22 08:09:22 delre Exp $
 //
 //
 
@@ -115,6 +115,7 @@
 #include <set>
 #include <algorithm>
 
+#include "DataFormats/BTauReco/interface/JetTag.h"
 
 using namespace edm;
 using namespace reco;
@@ -238,6 +239,12 @@ GammaJetAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
    run = iEvent.id().run(); // unique ID - part 1
    event = iEvent.id().event(); // unique ID - part 2
 
+
+    // rho from fast jet
+    edm::Handle<double> rhoH;
+    //iEvent.getByLabel(edm::InputTag("kt6PFJets","rho","Iso"),rhoH); 
+    iEvent.getByLabel(edm::InputTag("kt6PFJets","rho"),rhoH); 
+    rho = *rhoH;
 
    Handle<GenEventInfoProduct> hEventInfo;
    if( isMC ) iEvent.getByLabel("generator", hEventInfo);
@@ -380,7 +387,38 @@ GammaJetAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
    iEvent.getByLabel("reducedEcalRecHitsEE", ecalhitsee);
    rhitsee = ecalhitsee.product(); // get a ptr to the product
 
-   // get geometry
+      edm::Handle<reco::JetTagCollection> combinedSecondaryVertexBJetTags,
+                                          combinedSecondaryVertexMVABJetTags,
+                                          jetBProbabilityBJetTags,
+                                          jetProbabilityBJetTags,
+                                          simpleSecondaryVertexHighEffBJetTags,
+                                          simpleSecondaryVertexHighPurBJetTags,
+                                          softMuonBJetTags,
+                                          softMuonByIP3dBJetTags,
+                                          softMuonByPtBJetTags,
+                                          softElectronBJetTags,
+                                          softElectronByIP3dBJetTags,
+                                          softElectronByPtBJetTags,
+                                          trackCountingHighPurBJetTags,
+                                          trackCountingHighEffBJetTags;
+
+      iEvent.getByLabel("combinedSecondaryVertexBJetTags", combinedSecondaryVertexBJetTags);
+      iEvent.getByLabel("combinedSecondaryVertexMVABJetTags", combinedSecondaryVertexMVABJetTags);
+      iEvent.getByLabel("jetBProbabilityBJetTags", jetBProbabilityBJetTags);
+      iEvent.getByLabel("jetProbabilityBJetTags", jetProbabilityBJetTags);
+      iEvent.getByLabel("simpleSecondaryVertexHighEffBJetTags", simpleSecondaryVertexHighEffBJetTags);
+      iEvent.getByLabel("simpleSecondaryVertexHighPurBJetTags", simpleSecondaryVertexHighPurBJetTags);
+      iEvent.getByLabel("softMuonBJetTags", softMuonBJetTags);
+      iEvent.getByLabel("softMuonByIP3dBJetTags", softMuonByIP3dBJetTags);
+      iEvent.getByLabel("softMuonByPtBJetTags", softMuonByPtBJetTags);
+//      iEvent.getByLabel("softElectronBJetTags", softElectronBJetTags);
+      iEvent.getByLabel("softElectronByIP3dBJetTags", softElectronByIP3dBJetTags);
+      iEvent.getByLabel("softElectronByPtBJetTags", softElectronByPtBJetTags);
+      iEvent.getByLabel("trackCountingHighPurBJetTags", trackCountingHighPurBJetTags);
+      iEvent.getByLabel("trackCountingHighEffBJetTags", trackCountingHighEffBJetTags);
+
+
+  // get geometry
    edm::ESHandle<CaloGeometry> geoHandle;
    //   iSetup.get<IdealGeometryRecord>().get(geoHandle);
    iSetup.get<CaloGeometryRecord>().get(geoHandle);
@@ -1631,6 +1669,23 @@ GammaJetAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
        p = &p4HFEM;
        eHFEM_pfakt5[nJet_pfakt5] = p->E() / it->energy();
        
+       // B tagging
+        int index = nJet_pfakt5;
+        combinedSecondaryVertexBJetTags_pfakt5[index] =  (*combinedSecondaryVertexBJetTags)[index].second ;
+        combinedSecondaryVertexMVABJetTags_pfakt5[index] =  (*combinedSecondaryVertexMVABJetTags)[index].second ;
+        jetBProbabilityBJetTags_pfakt5[index] =  (*jetBProbabilityBJetTags)[index].second ;
+        jetProbabilityBJetTags_pfakt5[index] =  (*jetProbabilityBJetTags)[index].second ;
+        simpleSecondaryVertexHighEffBJetTags_pfakt5[index] =  (*simpleSecondaryVertexHighEffBJetTags)[index].second ;
+        simpleSecondaryVertexHighPurBJetTags_pfakt5[index] =  (*simpleSecondaryVertexHighPurBJetTags)[index].second ;
+        softMuonBJetTags_pfakt5[index] =  (*softMuonBJetTags)[index].second ;
+        softMuonByIP3dBJetTags_pfakt5[index] =  (*softMuonByIP3dBJetTags)[index].second ;
+        softMuonByPtBJetTags_pfakt5[index] =  (*softMuonByPtBJetTags)[index].second ;
+        //softElectronBJetTags_pfakt5[index] =  (*softElectronBJetTags)[index].second ;
+        softElectronByIP3dBJetTags_pfakt5[index] =  (*softElectronByIP3dBJetTags)[index].second ;
+        softElectronByPtBJetTags_pfakt5[index] =  (*softElectronByPtBJetTags)[index].second;
+        trackCountingHighPurBJetTags_pfakt5[index] =  (*trackCountingHighPurBJetTags)[index].second ;
+        trackCountingHighEffBJetTags_pfakt5[index] =  (*trackCountingHighEffBJetTags)[index].second ;
+
        ++nJet_pfakt5;
        
      } // if >pfjetptthr     
@@ -1795,6 +1850,8 @@ GammaJetAnalyzer::beginJob()
   m_tree->Branch("run",&run,"run/I");
   m_tree->Branch("event",&event,"event/I");
 
+  m_tree->Branch("rho",&rho,"rho/F");
+
   // Problem: nMC==100 always, and sometimes last particle has very high pT
   // => could be losing interesting particles, even quarks/gluons (status==2)
   // hmmm, status==1 particles have pT less than ~4.5 GeV for pThat>500 => ok
@@ -1912,6 +1969,22 @@ GammaJetAnalyzer::beginJob()
   m_tree->Branch("phiJet_pfakt5",&phiJet_pfakt5,"phiJet_pfakt5[nJet_pfakt5]/F");
   m_tree->Branch("ptDJet_pfakt5",&ptDJet_pfakt5,"ptDJet_pfakt5[nJet_pfakt5]/F");
   m_tree->Branch("rmsCandJet_pfakt5",&rmsCandJet_pfakt5,"rmsCandJet_pfakt5[nJet_pfakt5]/F");
+
+
+  m_tree->Branch("combinedSecondaryVertexBJetTags", &combinedSecondaryVertexBJetTags_pfakt5, "combinedSecondaryVertexBJetTags[nJet_pfakt5]/F");
+  m_tree->Branch("combinedSecondaryVertexMVABJetTags", &combinedSecondaryVertexMVABJetTags_pfakt5, "combinedSecondaryVertexMVABJetTags[nJet_pfakt5]/F");
+  m_tree->Branch("jetBProbabilityBJetTags", &jetBProbabilityBJetTags_pfakt5, "jetBProbabilityBJetTags[nJet_pfakt5]/F");
+  m_tree->Branch("jetProbabilityBJetTags", &jetProbabilityBJetTags_pfakt5, "jetProbabilityBJetTags[nJet_pfakt5]/F");
+  m_tree->Branch("simpleSecondaryVertexHighEffBJetTags", &simpleSecondaryVertexHighEffBJetTags_pfakt5, "simpleSecondaryVertexHighEffBJetTags[nJet_pfakt5]/F");
+  m_tree->Branch("simpleSecondaryVertexHighPurBJetTags", &simpleSecondaryVertexHighPurBJetTags_pfakt5, "simpleSecondaryVertexHighPurBJetTags[nJet_pfakt5]/F");
+  m_tree->Branch("softMuonBJetTags", &softMuonBJetTags_pfakt5, "softMuonBJetTags[nJet_pfakt5]/F");
+  m_tree->Branch("softMuonByIP3dBJetTags", &softMuonByIP3dBJetTags_pfakt5, "softMuonByIP3dBJetTags[nJet_pfakt5]/F");
+  m_tree->Branch("softMuonByPtBJetTags", &softMuonByPtBJetTags_pfakt5, "softMuonByPtBJetTags[nJet_pfakt5]/F");
+  m_tree->Branch("softElectronByIP3dBJetTags", &softElectronByIP3dBJetTags_pfakt5, "softElectronByIP3dBJetTags[nJet_pfakt5]/F");
+  m_tree->Branch("softElectronByPtBJetTags", &softElectronByPtBJetTags_pfakt5, "softElectronByPtBJetTags[nJet_pfakt5]/F");
+  m_tree->Branch("trackCountingHighPurBJetTags", &trackCountingHighPurBJetTags_pfakt5, "trackCountingHighPurBJetTags[nJet_pfakt5]/F");
+  m_tree->Branch("trackCountingHighEffBJetTags", &trackCountingHighEffBJetTags_pfakt5, "trackCountingHighEffBJetTags[nJet_pfakt5]/F");
+
 
 //   // Extra variables for PFlow studies
   m_tree->Branch("nChargedHadrons_pfakt5",nChargedHadrons_pfakt5,"nChargedHadrons_pfakt5[nJet_pfakt5]/I");
