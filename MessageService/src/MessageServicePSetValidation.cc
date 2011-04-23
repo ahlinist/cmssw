@@ -202,7 +202,7 @@ suppressionLists ( ParameterSet const & pset )
 
 void 
 edm::service::MessageServicePSetValidation:: 
-vStringsCheck ( ParameterSet const & pset,std::string const & psetName ) 
+vStringsCheck ( ParameterSet const & pset,std::string const & /*psetName*/ ) 
 {
   vString vStrings = pset.getParameterNamesForType <vString> (false); 
   vString::const_iterator end = vStrings.end();
