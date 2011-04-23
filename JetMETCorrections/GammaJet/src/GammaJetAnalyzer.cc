@@ -13,7 +13,7 @@
 //
 // Original Author:  Daniele del Re
 //         Created:  Thu Sep 13 16:00:15 CEST 2007
-// $Id: GammaJetAnalyzer.cc,v 1.50 2011/04/22 08:09:22 delre Exp $
+// $Id: GammaJetAnalyzer.cc,v 1.51 2011/04/22 16:17:58 rahatlou Exp $
 //
 //
 
@@ -243,8 +243,10 @@ GammaJetAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
     // rho from fast jet
     edm::Handle<double> rhoH;
     //iEvent.getByLabel(edm::InputTag("kt6PFJets","rho","Iso"),rhoH); 
-    iEvent.getByLabel(edm::InputTag("kt6PFJets","rho"),rhoH); 
-    rho = *rhoH;
+    if( iEvent.getByLabel(edm::InputTag("kt6PFJets","rho"),rhoH) )
+      rho = *rhoH;
+    else 
+      rho = 0;
 
    Handle<GenEventInfoProduct> hEventInfo;
    if( isMC ) iEvent.getByLabel("generator", hEventInfo);
@@ -1669,23 +1671,47 @@ GammaJetAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
        p = &p4HFEM;
        eHFEM_pfakt5[nJet_pfakt5] = p->E() / it->energy();
        
-       // B tagging
-        int index = nJet_pfakt5;
-        combinedSecondaryVertexBJetTags_pfakt5[index] =  (*combinedSecondaryVertexBJetTags)[index].second ;
-        combinedSecondaryVertexMVABJetTags_pfakt5[index] =  (*combinedSecondaryVertexMVABJetTags)[index].second ;
-        jetBProbabilityBJetTags_pfakt5[index] =  (*jetBProbabilityBJetTags)[index].second ;
-        jetProbabilityBJetTags_pfakt5[index] =  (*jetProbabilityBJetTags)[index].second ;
-        simpleSecondaryVertexHighEffBJetTags_pfakt5[index] =  (*simpleSecondaryVertexHighEffBJetTags)[index].second ;
-        simpleSecondaryVertexHighPurBJetTags_pfakt5[index] =  (*simpleSecondaryVertexHighPurBJetTags)[index].second ;
-        softMuonBJetTags_pfakt5[index] =  (*softMuonBJetTags)[index].second ;
-        softMuonByIP3dBJetTags_pfakt5[index] =  (*softMuonByIP3dBJetTags)[index].second ;
-        softMuonByPtBJetTags_pfakt5[index] =  (*softMuonByPtBJetTags)[index].second ;
-        //softElectronBJetTags_pfakt5[index] =  (*softElectronBJetTags)[index].second ;
-        softElectronByIP3dBJetTags_pfakt5[index] =  (*softElectronByIP3dBJetTags)[index].second ;
-        softElectronByPtBJetTags_pfakt5[index] =  (*softElectronByPtBJetTags)[index].second;
-        trackCountingHighPurBJetTags_pfakt5[index] =  (*trackCountingHighPurBJetTags)[index].second ;
-        trackCountingHighEffBJetTags_pfakt5[index] =  (*trackCountingHighEffBJetTags)[index].second ;
 
+       int index = nJet_pfakt5;
+       combinedSecondaryVertexBJetTags_pfakt5[index] = -999.;
+       combinedSecondaryVertexMVABJetTags_pfakt5[index] = -999.;
+       jetBProbabilityBJetTags_pfakt5[index] = -999.;
+       jetProbabilityBJetTags_pfakt5[index] =  -999.;
+       simpleSecondaryVertexHighEffBJetTags_pfakt5[index] =  -999.;
+       simpleSecondaryVertexHighPurBJetTags_pfakt5[index] =  -999.;
+       softMuonBJetTags_pfakt5[index] =  -999.;
+       softMuonByIP3dBJetTags_pfakt5[index] =  -999.;
+       softMuonByPtBJetTags_pfakt5[index] =  -999.;
+       //softElectronBJetTags_pfakt5[index] =  (*softElectronBJetTags)[index].second ;
+       softElectronByIP3dBJetTags_pfakt5[index] =   -999.;
+       softElectronByPtBJetTags_pfakt5[index]     = -999.;    
+       trackCountingHighPurBJetTags_pfakt5[index] = -999.;
+       trackCountingHighEffBJetTags_pfakt5[index] = -999.;
+
+       if(it->pt() > 10. ){
+         // B tagging
+         //combinedSecondaryVertexBJetTags_pfakt5[index] =  (*combinedSecondaryVertexBJetTags)[index].second ;
+         //combinedSecondaryVertexMVABJetTags_pfakt5[index] =  (*combinedSecondaryVertexMVABJetTags)[index].second ;
+          jetBProbabilityBJetTags_pfakt5[index] =  (*jetBProbabilityBJetTags)[index].second ;
+          jetProbabilityBJetTags_pfakt5[index] =  (*jetProbabilityBJetTags)[index].second ;
+          simpleSecondaryVertexHighEffBJetTags_pfakt5[index] =  (*simpleSecondaryVertexHighEffBJetTags)[index].second ;
+          simpleSecondaryVertexHighPurBJetTags_pfakt5[index] =  (*simpleSecondaryVertexHighPurBJetTags)[index].second ;
+     
+          if( !softMuonBJetTags.isValid() || softMuonBJetTags->size() != pfjetsakt5->size() ) {
+            if(!softMuonBJetTags.isValid()) cout << "softMuonBJetTags not valid" << endl;
+            else   cout << "softMuonBJetTags: " << softMuonBJetTags->size() << " pfjetsakt5: " << pfjetsakt5->size() << endl;
+            cout << "jet index: " << index << endl;
+          } else {
+           softMuonBJetTags_pfakt5[index] =  (*softMuonBJetTags)[index].second ;
+          }
+          softMuonByIP3dBJetTags_pfakt5[index] =  (*softMuonByIP3dBJetTags)[index].second ;
+          softMuonByPtBJetTags_pfakt5[index] =  (*softMuonByPtBJetTags)[index].second ;
+          //softElectronBJetTags_pfakt5[index] =  (*softElectronBJetTags)[index].second ;
+          softElectronByIP3dBJetTags_pfakt5[index] =  (*softElectronByIP3dBJetTags)[index].second ;
+          softElectronByPtBJetTags_pfakt5[index] =  (*softElectronByPtBJetTags)[index].second;
+          trackCountingHighPurBJetTags_pfakt5[index] =  (*trackCountingHighPurBJetTags)[index].second ;
+          trackCountingHighEffBJetTags_pfakt5[index] =  (*trackCountingHighEffBJetTags)[index].second ;
+       }
        ++nJet_pfakt5;
        
      } // if >pfjetptthr     

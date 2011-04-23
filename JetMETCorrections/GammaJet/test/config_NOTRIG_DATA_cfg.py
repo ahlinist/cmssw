@@ -17,6 +17,8 @@ process.load("Geometry.CaloEventSetup.CaloGeometry_cfi")
 process.load("Geometry.TrackerGeometryBuilder.trackerGeometry_cfi")
 process.load("Geometry.TrackerNumberingBuilder.trackerNumberingGeometry_cfi")
 process.load("Geometry.CaloEventSetup.CaloTopology_cfi")
+process.load('Configuration/StandardSequences/Reconstruction_cff')
+
 
 
 
@@ -29,7 +31,9 @@ process.source = cms.Source("PoolSource",
 #'file:/cmsrm/pc18/pandolf/CMSSW_3_6_3/src/JetMETCorrections/GammaJet/test/events_136100.root'
 #'file:/cmsrm/pc21/emanuele/data/Pool/EG_Run2010A_RECO.root'
 #'file:/tmp/delre/Photon_RECO_Nov4ReReco_v2.root'
-'file:/tmp/delre/FA52A8DD-E00F-E011-AA1B-003048678BB8.root'
+#'file:/cmsrm/pc23_2/emanuele/data/AOD_HWW_Spring11.root'
+#'/store/mc/Spring11/VBF_HToWWToLNuTauNu_M-250_7TeV-powheg-pythia6/AODSIM/PU_S1_START311_V1G1-v1/0024/206749B4-215E-E011-B94F-E0CB4E29C4D9.root'
+'/store/data/Run2011A/Photon/AOD/PromptReco-v1/000/161/311/F245E761-C757-E011-87E4-001D09F34488.root'
 )
 
 )
@@ -58,6 +62,7 @@ process.monster = cms.EDFilter(
 )
 
 
+###########  EB SPIKE CLEANING BEGIN #####################
 
 process.load('Configuration/StandardSequences/Services_cff')
 process.load('Configuration/StandardSequences/GeometryExtended_cff')
@@ -69,12 +74,12 @@ process.load('Configuration/StandardSequences/FrontierConditions_GlobalTag_cff')
 #process.load('Configuration/EventContent/EventContent_cff')
 #process.load('TrackingTools/Configuration/TrackingTools_cff')
 process.GlobalTag.globaltag = cms.string('GR_R_311_V2::All')
-#process.GlobalTag.globaltag = cms.string('GR_R_38X_V14::All')
-#process.GlobalTag.globaltag = cms.string('GR_R_35X_V8::All')
-#process.GlobalTag.globaltag = cms.string('START36_V10::All')
 
 
+###########  EB SPIKE CLEANING END   #####################
 
+## produce JPT jets
+#process.load('RecoJets.Configuration.RecoJPTJets_cff')
 
 #############   Include the corrections ##########
 process.load("RecoMET.Configuration.RecoGenMET_cff")
@@ -86,6 +91,8 @@ process.ak5CaloL1Offset.useCondDB = False
 process.ak5PFL1Offset.useCondDB = False
 process.ak5JPTL1Offset.useCondDB = False
 
+
+
 process.metMuonJESCorAK5 = process.metJESCorAK5CaloJet.clone()
 process.metMuonJESCorAK5.inputUncorJetsLabel = "ak5CaloJets"
 process.metMuonJESCorAK5.corrector = "ak5CaloL2L3Residual"
@@ -95,6 +102,10 @@ process.metMuonJESCorAK5.inputUncorMetLabel = "corMetGlobalMuons"
  
 process.metCorSequence = cms.Sequence(process.metMuonJESCorAK5)
 
+process.ak5JetTracksAssociatorAtVertex.jets = cms.InputTag("ak5PFJets")
+process.myBtag = cms.Sequence(process.ak5JetTracksAssociatorAtVertex*process.btagging)
+process.softMuonTagInfos.jets =  cms.InputTag("ak5PFJets")
+process.softElectronTagInfos.jets =  cms.InputTag("ak5PFJets")
 
 process.myanalysis = cms.EDAnalyzer("GammaJetAnalyzer",
     debug = cms.bool(False),
@@ -103,15 +114,17 @@ process.myanalysis = cms.EDAnalyzer("GammaJetAnalyzer",
     genMet = cms.untracked.InputTag("genMetTrue"),
     met = cms.untracked.InputTag("met"),
     tracks = cms.untracked.InputTag("generalTracks"),
-    Photonsrc = cms.untracked.InputTag("photons"),
     Electronsrc = cms.untracked.InputTag("gsfElectrons"),
+    Photonsrc = cms.untracked.InputTag("photons"),
     recoCollection = cms.string('reducedEcalRecHitsEB'),
+
     JetCorrectionService_akt5 = cms.string('ak5CaloL1L2L3Residual'),
     JetCorrectionService_akt7 = cms.string('ak7CaloL2L3Residual'),
     JetCorrectionService_jptak5 = cms.string('ak5JPTL1L2L3Residual'),
     JetCorrectionService_jptak7 = cms.string('ak7JPTL2L3Residual'),
     JetCorrectionService_pfakt5 = cms.string('ak5PFL1L2L3Residual'),
     JetCorrectionService_pfakt7 = cms.string('ak7PFL2L3Residual'),
+
     jetskt4 = cms.untracked.InputTag("kt4CaloJets"),
     jetskt6 = cms.untracked.InputTag("kt6CaloJets"),
     jetsakt5 = cms.untracked.InputTag("ak5CaloJets"),
@@ -139,8 +152,12 @@ process.myanalysis = cms.EDAnalyzer("GammaJetAnalyzer",
     Xsec = cms.double(1.)
 )
 
+process.load('RecoJets.JetProducers.kt4PFJets_cfi')
+process.kt6PFJets = process.kt4PFJets.clone( rParam = 0.6, doRhoFastjet = True )
+process.kt6PFJets.Rho_EtaMax = cms.double(2.5)
 
-process.p = cms.Path(process.monster*process.ak5PFJetsL2L3Residual*process.metCorSequence*process.myanalysis)
+process.p = cms.Path( process.monster * process.ak5PFJetsL2L3Residual* process.kt6PFJets * process.myBtag * process.metCorSequence * process.myanalysis )
+#process.p = cms.Path( process.monster * process.ak5PFJetsL2L3Residual* process.kt6PFJets * process.metCorSequence * process.myanalysis )
 #process.p = cms.Path(process.monster*process.myanalysis)
 #process.p = cms.Path(process.ecalCleanClustering*process.recoJPTJets*process.myanalysis)
 #process.p = cms.Path(process.myanalysis)
