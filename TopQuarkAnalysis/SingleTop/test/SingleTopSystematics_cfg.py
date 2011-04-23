@@ -20,29 +20,16 @@ process.GlobalTag.globaltag = cms.string("START39_V9::All")
 #MC measurements from 36X
 process.load ("RecoBTag.PerformanceDB.PoolBTagPerformanceDBMC36X")
 process.load ("RecoBTag.PerformanceDB.BTagPerformanceDBMC36X")
-##Data measurements from Fall10
+##Measurements from Fall10
 process.load ("RecoBTag.PerformanceDB.BTagPerformanceDB1011")
 process.load ("RecoBTag.PerformanceDB.PoolBTagPerformanceDB1011")
-
-#Data measurements from Fall10
-#process.load ("RecoBTag.PerformanceDB.BTagPerformanceDB100426")
-#process.load ("RecoBTag.PerformanceDB.PoolBTagPerformanceDB100426")
-
 
 #process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(100) )
 process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(-1) )
 process.source = cms.Source ("PoolSource",
                              fileNames = cms.untracked.vstring (
 
-
-#'file:/tmp/oiorio/TSampleEleWJets_Old_PU_16_1_lOM.root',
-#'file:/tmp/oiorio/TSampleEleWJets_Old_PU_102_0_TPi.root',
-#'file:/tmp/oiorio/TSampleEleWJets_Old_PU_68_0_DGv.root',
-
-'file:/tmp/oiorio/TChannelEle.root'
-#'file:TSampleMuQCDMu_PF2PAT.root'
-#'file:/tmp/oiorio/TSampleEleTChannel_10_1_T2Y.root'
-#'file:/tmp/oiorio/TSampleEleWJets_89_1_oMj.root'
+'file:/tmp/oiorio/edmntuple_tchannel_big.root',
 
 
 ),
@@ -51,11 +38,6 @@ duplicateCheckMode = cms.untracked.string('noDuplicateCheck'),
 )
 
 
-#from WJets import *
-#from WJets_Old_PU import *
-
-#process.source.fileNames = WJets_Old_PU_EleT
-#process.source.fileNames = WJetsEleT
 
                            
 
@@ -64,7 +46,6 @@ systematics = cms.untracked.vstring("BTagUp","BTagDown","MisTagUp","MisTagDown",
 channelInfo = cms.PSet(
     crossSection = cms.untracked.double(20.93),
     channel = cms.untracked.string("TChannel"),
-#    originalEvents = cms.untracked.double(14800000),
     originalEvents = cms.untracked.double(480000),
     finalLumi = cms.untracked.double(14.5),
     MTWCut = cms.untracked.double(50.0),#Default 50.0 GeV
@@ -73,19 +54,17 @@ channelInfo = cms.PSet(
 
 
 #Part of the kin quantities:
-leptonsPt = cms.InputTag("nTupleElectrons","topElectronsPt"),  
-leptonsPz = cms.InputTag("nTupleElectrons","topElectronsPz"),  
-leptonsPhi = cms.InputTag("nTupleElectrons","topElectronsPhi"),  
-leptonsEta = cms.InputTag("nTupleElectrons","topElectronsEta"),  
-leptonsCharge = cms.InputTag("nTupleElectrons","topElectronsCharge"),  
+leptonsPz = cms.InputTag("nTupleElectrons","tightElectronsPz"),  
+leptonsPx = cms.InputTag("nTupleElectrons","tightElectronsPx"),  
+leptonsPy = cms.InputTag("nTupleElectrons","tightElectronsPy"),  
+leptonsEnergy = cms.InputTag("nTupleElectrons","tightElectronsE"),  
+leptonsCharge = cms.InputTag("nTupleElectrons","tightElectronsCharge"),  
 
-jetsEta = cms.InputTag("nTupleTopJetsPF","topJetsPFEta"),  
 jetsPx = cms.InputTag("nTupleTopJetsPF","topJetsPFPx"),  
 jetsPy = cms.InputTag("nTupleTopJetsPF","topJetsPFPy"),  
 jetsPz = cms.InputTag("nTupleTopJetsPF","topJetsPFPz"),  
-jetsPt = cms.InputTag("nTupleTopJetsPF","topJetsPFPt"),  
-
 jetsEnergy = cms.InputTag("nTupleTopJetsPF","topJetsPFE"),  
+
 jetsBTagAlgo = cms.InputTag("nTupleTopJetsPF","topJetsPFTrackCountingHighPur"),  
 jetsAntiBTagAlgo =  cms.InputTag("nTupleTopJetsPF","topJetsPFTrackCountingHighEff"),  
 jetsFlavour = cms.InputTag("nTupleTopJetsPF","topJetsPFFlavour"),   
@@ -103,23 +82,31 @@ UnclusteredMETPy = cms.InputTag("UnclusteredMETPF","UnclusteredMETPy"),
 
 )
 
-process.TFileService = cms.Service("TFileService", fileName = cms.string("plotsTChannelMu.root"))
+#Input
 
-from DataMu_B import *
-from DataEle_B import *
+#from TChannel import *
+#process.source.fileNames = TChannel_ntuple
 
-from SingleTopAnalyzers_cfi import *
+process.source.fileNames = cms.untracked.vstring("file:/tmp/oiorio/TChannelMerged.root")
+
+#Output
+
+process.TFileService = cms.Service("TFileService", fileName = cms.string("TChannel.root"))
 
 process.load("SingleTopAnalyzers_cfi")
-#process.source.fileNames = cms.untracked.vstring('file:/tmp/oiorio/TTBarOldEle.root')
-process.source.fileNames = DataMuT
-process.TFileService.fileName = "plotsDataMuVanilla.root"
+process.load("SingleTopRootPlizer_cfi")
+from SingleTopPSets_cfi import *
 
-
+process.TreesEle.channelInfo = TChannelEle
+process.TreesMu.channelInfo = TChannelMu
+process.PlotsEle.channelInfo = TChannelEle
+process.PlotsMu.channelInfo = TChannelMu
 
 
 process.PathSys = cms.Path(
-#    process.SystematicsAnalyzer
-#    process.PlotsTTBarOldEle
-    process.PlotsDataMu
+    process.PlotsMu +
+    process.PlotsEle +
+    process.TreesMu +
+    process.TreesEle
+
     )
