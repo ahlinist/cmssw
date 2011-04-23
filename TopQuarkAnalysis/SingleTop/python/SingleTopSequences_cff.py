@@ -1,12 +1,36 @@
 import FWCore.ParameterSet.Config as cms
 
-from TopQuarkAnalysis.SingleTop.SelectionCuts_top_group_control_samples_v3_cff import *
+from TopQuarkAnalysis.SingleTop.SelectionCuts_Skim_cff import *
 
 from PhysicsTools.HepMCCandAlgos.flavorHistoryPaths_cfi import *
 
 from PhysicsTools.PatAlgos.patSequences_cff import *
 
 from ElectroWeakAnalysis.WENu.simpleEleIdSequence_cff import *
+
+#from TopQuarkAnalysis.SingleTop.SingleTopNtuplizers_cff import nTupleTopJetsPF
+#from TopQuarkAnalysis.SingleTop.SingleTopNtuplizers_cff import nTuplePatMETsPF
+#from TopQuarkAnalysis.SingleTop.SingleTopNtuplizers_cff import nTupleElectrons
+#from TopQuarkAnalysis.SingleTop.SingleTopNtuplizers_cff import nTupleMuons
+#from TopQuarkAnalysis.SingleTop.SingleTopNtuplizers_cff import nTuplesSkim
+
+from TopQuarkAnalysis.SingleTop.SingleTopNtuplizers_cff import nTupleTopJetsPF
+from TopQuarkAnalysis.SingleTop.SingleTopNtuplizers_cff import nTuplePatMETsPF
+from TopQuarkAnalysis.SingleTop.SingleTopNtuplizers_cff import nTupleElectrons
+from TopQuarkAnalysis.SingleTop.SingleTopNtuplizers_cff import nTupleMuons
+from TopQuarkAnalysis.SingleTop.SingleTopNtuplizers_cff import nTuplesSkim
+
+from TopQuarkAnalysis.SingleTop.SingleTopNtuplizers_cff import nTupleAllElectrons
+from TopQuarkAnalysis.SingleTop.SingleTopNtuplizers_cff import nTupleAllMuons
+
+from TopQuarkAnalysis.SingleTop.SingleTopNtuplizers_cff import nTupleAllJets
+
+from TopQuarkAnalysis.SingleTop.SingleTopNtuplizers_cff import nTupleLooseElectrons
+from TopQuarkAnalysis.SingleTop.SingleTopNtuplizers_cff import nTupleLooseMuons
+
+
+nTuplePatMETsPF.src = cms.InputTag('patMETs')
+
 
 patElectronIDs = cms.Sequence(simpleEleIdSequence)
 electronIDSources = cms.PSet(
@@ -27,491 +51,54 @@ patElectronIDs = cms.Sequence(simpleEleIdSequence)
 patElectrons.usePV = cms.bool(False)
 patMuons.usePV = cms.bool(False)
 
+
+#In those paths the customized collections are produced
+
 basePath = cms.Sequence(
    preselectedMETs +
-   preselectedMuons +
+   looseMuons +
    PVFilterProducer +
-   preselectedElectrons +
    looseElectrons +
+   topJetsPF +
    UnclusteredMETPF +
-   PDFInfo
+   tightMuons +
+   tightElectrons +
+#  SingleTopMCProducer +
+   PDFInfo 
    )
 
 basePathData = cms.Sequence(
    preselectedMETs +
-   preselectedMuons +
+   looseMuons +
    PVFilterProducer +
-   preselectedElectrons +
    looseElectrons +
-   UnclusteredMETPF 
+   topJetsPF +
+   UnclusteredMETPF +
+   tightMuons +
+   tightElectrons 
+#  SingleTopMCProducer +
    )
 
+#Flavor history tools sequence
 flavorHistorySequence = cms.Sequence(
     cFlavorHistoryProducer *
     bFlavorHistoryProducer
     )
 
-##Muons Sequences
-
-baseMuonSequence = cms.Sequence(
-    hltFilter *
-    PVFilter *
-    HBHENoiseFilter *
-    preselectedJets *
-    topElectrons *
-    topElectronsForJets *
-    topMuonsForJets *
-    topJets *
-    topMuons *
-    countMuons *
-    countLeptons 
+#Selection step: require 1 high pt(threshold -10%) muon/electron and max 1 extra loose lepton, no isolation requirements.
+preselection = cms.Sequence(
+    hltFilter +
+    PVFilter +
+    countLeptons  
     )
 
-baseMuonSequencePF = cms.Sequence(
-    hltFilter *
-    PVFilter *
-    HBHENoiseFilter *
-    preselectedJets *
-    topElectrons *
-    topElectronsForJets *
-    topMuonsForJets *
-    topJetsPF *
-    topMuons *
-    countMuons *
-    countLeptons 
-    )
-
-baseMuonAntiIsoSequence = cms.Sequence(
-    hltFilter *
-    PVFilter *
-    vetoLeptonsIso *
-    topElectronsForJetsAntiIso *
-#    topMuonsForJetsAntiIso *
-    preselectedJets *
-    topElectronsAntiIso *
-    vetoElectronsAntiIso *
-    topMuonsAntiIso *
-    countMuonsAntiIso 
-    )
-##
-
-
-hltFilterEleSequence = cms.Sequence( hltFilterEle )
-
-
-##Electron sequences
-baseElectronSequence = cms.Sequence(
-    PVFilter *
-    HBHENoiseFilter *
-#    countLeptons *
-#    vetoLooseMuons *
-    topElectrons *
-    diElectrons *
-    vetoDiElectrons *
-    countElectrons *
-    preselectedJets *
-    topElectronsForJets *
-    topMuonsForJets *
-    topJets *
-    topMuons *
-    countLeptons 
-
-    )
-
-baseElectronSequencePF = cms.Sequence(
-    PVFilter *
-    HBHENoiseFilter *
-    #    countLeptons *
-#    vetoLooseMuons *
-    topElectrons *
-    diElectrons *
-    vetoDiElectrons *
-    countElectrons *
-    preselectedJets *
-    topElectronsForJets *
-    topMuonsForJets *
-    topJetsPF * 
-    topMuons *
-    countLeptons 
-
-    )
-
-
-
-baseElectronAntiIsoSequence = cms.Sequence(
-    PVFilter *
-    HBHENoiseFilter *
-    vetoLeptonsIso *
-    topElectronsAntiIso *
-    countElectronsAntiIso *
-    topElectronsForJetsAntiIso *
-    #electronIDAntiIso *
-    topMuonsAntiIso *
-    vetoMuonsAntiIso *
-    preselectedJets *
-    countLeptonsAntiIso
-    )
-
-baseElectronAntiIsoSequencePF = cms.Sequence(
-    PVFilter *
-    HBHENoiseFilter *
-    vetoLeptonsIso *
-    topElectronsAntiIso *
-    countElectronsAntiIso *
-    topElectronsForJetsAntiIso *
-    #electronIDAntiIso *
-    topMuonsAntiIso *
-    vetoMuonsAntiIso *
-    preselectedJets *
-    countLeptonsAntiIso
-    )
-
-
-###All leptons, same path for electrons and muons
-
-baseLeptonSequence = cms.Sequence(
-    countLeptons *
-    topMuons *
-    topElectrons * 
-    countLeptonsTight
-    )
-
-baseLeptonAntiIsoSequence = cms.Sequence(
-    topElectrons *
-    vetoLeptonsIso *
-    countLeptonsAntiIso 
-    )
-
-baseJetMETSequence = cms.Sequence(
-#Production
-    topJets *
-    bJets *
-    forwardJets 
-   )
-
-baseJetMETSequencePF= cms.Sequence(
-#Production
-    topJetsPF *
-    bJetsPF *
-    forwardJetsPF 
-   )
-
-baseJetMETAntiIsoSequence = cms.Sequence(
-#Production
-    topJetsAntiIso *
-    bJetsAntiIso *
-    antiBJetsAntiIso *
-    forwardJetsAntiIso 
-   )
-
-baseJetMETAntiIsoSequencePF = cms.Sequence(
-#Production
-    topJetsAntiIsoPF *
-    bJetsAntiIsoPF *
-    forwardJetsAntiIsoPF 
-   )
-
-baseJetMETAntiIsoSequencePF = cms.Sequence(
-#Production
-    topJetsAntiIsoPF *
-    bJetsAntiIsoPF *
-    forwardJetsAntiIsoPF 
-   )
-
-###Muon paths:
-
-IsoMuons = cms.Sequence(
-    baseMuonSequence +
-    baseJetMETSequence
-    )
-
-IsoMuonsPF = cms.Sequence(
-    baseMuonSequencePF *
-    baseJetMETSequencePF
-    )
-
-IsoMuonsSkimPF = cms.Sequence(
-    baseMuonSequencePF *
-    topJetsPF 
-    )
-
-AntiIsoMuons = cms.Sequence(
-    baseMuonAntiIsoSequence +
-    baseJetMETAntiIsoSequence
-    )
-
-AntiIsoMuonsSkimPF = cms.Sequence(
-    baseMuonAntiIsoSequence *
-    topJetsAntiIsoPF 
-    )
-
-###Electron paths
-IsoElectrons = cms.Sequence(
-    baseElectronSequence +
-    baseJetMETSequence
-    )
-
-IsoElectronsPF = cms.Sequence(
-    baseElectronSequence +
-    baseJetMETSequencePF
-    )
-
-IsoElectronsSkimPF = cms.Sequence(
-    baseElectronSequence *
-    topJetsPF
-    )
-
-AntiIsoElectrons = cms.Sequence(
-    baseElectronAntiIsoSequence +
-    baseJetMETAntiIsoSequence
-    )
-
-AntiIsoElectronsSkimPF = cms.Sequence(
-    baseElectronAntiIsoSequence +
-    topJetsAntiIsoPF  
-    )
-
-
-PathMuonsIso = cms.Sequence(
-    IsoMuons *
-    countJetsNonTTBar
-    )
-
-#AntiIso Paths
-PathMuonsAntiIso = cms.Sequence(
-    AntiIsoMuons *
-    countJetsNonTTBarAntiIso
-    )
-
-
-
-PathElectronsIso = cms.Sequence(
-    IsoElectrons *
-    countJetsNonTTBar
-    )
-
-#AntiIso Paths
-PathElectronsAntiIso = cms.Sequence(
-    AntiIsoElectrons *
-    countJetsNonTTBarAntiIso
-    )
-
-PathElectronsAntiIsoSkim = cms.Sequence(
-    AntiIsoElectrons *
-    topJetsAntiIsoPF
-    )
-
-
-###Tops Sequences
-allTops= cms.Sequence(
-    recoTops *
-    recoTChanEvents# *
-  #  boostedTops *
-  #  boostedForwardJets * 
-  #  boostedEvents
-    )
-
-allTopsPF = cms.Sequence(
-    recoTopsPF *
-    recoTChanEventsPF #*
-#    boostedTopsPF *
-#    boostedForwardJetsPF *
-#    boostedEventsPF
-    )
-
-allAntiIsoTops= cms.Sequence(
-    recoTopsAntiIso *
-    recoTChanEventsAntiIso #*
-#    boostedTopsAntiIsoTops *
-#    boostedForwardJetsAntiIsoTops *
-#    boostedEventsAntiIso
-    )
-
-allAntiIsoTopsPF= cms.Sequence(
-    recoTopsAntiIsoPF *
-    recoTChanEventsAntiIsoPF #*
-#    boostedEventsAntiIsoPF
-    #*
-#    boostedTopsAntiIsoTops *
-#    boostedForwardJetsAntiIsoTops
-    )
-
-allPseudoBJetsTops= cms.Sequence(
-    recoTopsWSamplePseudoBTags *
-    boostedTopsWSamplePseudoBTagsTops *
-    boostedForwardJetsWSamplePseudoBTagsTops 
-    )
-
-allPseudoBJetsAntiIsoTops= cms.Sequence(
-    recoTopsWSamplePseudoBTagsAntiIso *
-    boostedTopsWSamplePseudoBTagsAntiIsoTops *
-    boostedForwardJetsWSamplePseudoBTagsAntiIsoTops 
-    )
-
-
-TSampleMuonPF = cms.Sequence(
-    IsoMuonsPF *
-    countJetsPF *
-#    MTWFilterMuonsPF * 
-    countBTagsPF * 
-    countForwardJetsPF *
-    allTopsPF * 
-    singleTopObservablesTSamplePF #*
-    )
-
-
-TSampleMuon = cms.Sequence(
-    IsoMuons *
-    countJetsNonTTBar *
-    MTWFilterMuons * 
-    countBTags * 
-    countForwardJets * 
-    allTops *
-    singleTopObservablesTSample #*
-#    SingleTopWtransverseMassFilter
-    )
-
-WSampleMuon = cms.Sequence(
-    IsoMuons *
-    countJetsNonTTBar *
-    pseudoBJets * 
-    countWSamplePseudoBTags * 
-    countForwardJets * 
-    allPseudoBJetsTops *
-    singleTopObservablesWSample #*
-#    SingleTopWtransverseMassFilterWSample
-
-    )
-
-TTBarSampleMuon = cms.Sequence(
-    IsoMuons *
-    countBTags * 
-    countForwardJets * 
-    countJetsTTBar *
-    allTops *
-    singleTopObservablesTTBarSample #*
-#    SingleTopWtransverseMassFilterTTBarSample
-    )
-
-QCDSampleMuon = cms.Sequence(
-    AntiIsoMuons *
-    countJetsNonTTBarAntiIso *
-    bJetsAntiIso *
-    forwardJetsAntiIso *
-    countBTagsAntiIso *
-    countForwardJetsAntiIso *
-    allAntiIsoTops *
-    singleTopObservablesAntiIso
-    )
-
-QCDSampleMuonPF = cms.Sequence(
-    AntiIsoMuons *
-    baseJetMETAntiIsoSequencePF *    
-    countJetsNonTTBarAntiIsoPF *
-    bJetsAntiIsoPF *
-    forwardJetsAntiIsoPF *
-    countBTagsAntiIsoPF *
-    countForwardJetsAntiIsoPF * 
-    allAntiIsoTopsPF *
-    singleTopObservablesAntiIsoPF
-    )
-
-QCDSampleElectronPF = cms.Sequence(
-    AntiIsoElectrons *
-    baseJetMETAntiIsoSequencePF *    
-    countJetsNonTTBarAntiIsoPF *
-    bJetsAntiIsoPF *
-    forwardJetsAntiIsoPF *
-    countBTagsAntiIsoPF *
-    countForwardJetsAntiIsoPF *
-    allAntiIsoTopsPF *
-    singleTopObservablesAntiIsoPF
-    )
-
-
-
-QCDWSampleMuon = cms.Sequence(
-    AntiIsoMuons *
-    countJetsNonTTBarAntiIso *
-    pseudoBJetsAntiIso * 
-    countWSamplePseudoBTagsAntiIso * 
-    countForwardJetsAntiIso * 
-    allPseudoBJetsAntiIsoTops *
-    singleTopObservablesWSampleAntiIso 
-    )
-
-
-
-
-TSampleElectron = cms.Sequence(
-    IsoElectrons *
-    topMuons *
-    countJetsNonTTBar *
-    MTWFilterElectrons * 
-    countBTags * 
-    countForwardJets * 
-    allTops *
-    singleTopObservablesTSample #*
-#    SingleTopWtransverseMassFilter
-    )
-
-TSampleElectronPF = cms.Sequence(
-    IsoElectronsPF *
-    countJetsPF *
-#    MTWFilterElectronsPF * 
-    countBTagsPF * 
-    countForwardJetsPF * 
-    allTopsPF *
-    singleTopObservablesTSamplePF #*
-    )
-
-
-WSampleElectron = cms.Sequence(
-    IsoElectrons *
-    countJetsNonTTBar *
-    pseudoBJets * 
-    countWSamplePseudoBTags * 
-    countForwardJets * 
-    allPseudoBJetsTops *
-    singleTopObservablesWSample #*
-#    SingleTopWtransverseMassFilterWSample
-
-    )
-
-TTBarSampleElectron = cms.Sequence(
-    IsoElectrons *
-    countBTags * 
-    countForwardJets * 
-    countJetsTTBar *
-    allTops *
-    singleTopObservablesTTBarSample #*
-#    SingleTopWtransverseMassFilterTTBarSample
-    )
-
-QCDSampleElectron = cms.Sequence(
-    AntiIsoElectrons *
-    countJetsNonTTBarAntiIso *
-    bJetsAntiIso *
-    forwardJetsAntiIso *
-    countBTagsAntiIso *
-    countForwardJetsAntiIso *
-    allAntiIsoTops *
-    singleTopObservablesAntiIso
-    )
-
-
-QCDWSampleElectron = cms.Sequence(
-    AntiIsoElectrons *
-    countJetsNonTTBarAntiIso *
-    pseudoBJetsAntiIso * 
-    countWSamplePseudoBTagsAntiIso * 
-    countForwardJetsAntiIso * 
-    allPseudoBJetsAntiIsoTops *
-    singleTopObservablesWSampleAntiIso 
-    )
-
-
-
-
-
-
+#Selection step: require 1 high pt(threshold -10%) muon/electron and max 1 extra loose lepton, loose id requirements.
+#process.preselection(
+#    hltFilter +
+#    PVFilter +
+#    countLeptons  
+#    )
+
+#Ntuple production sequences:
+
+#!!!Work in progress!!!#

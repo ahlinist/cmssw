@@ -1,5 +1,5 @@
-#ifndef __SINGLETOP_SYST_DUMPER_H__
-#define __SINGLETOP_SYST_DUMPER_H__
+#ifndef __SINGLETOP_SYST_TREES_DUMPER_H__
+#define __SINGLETOP_SYST_TREES_DUMPER_H__
 
 /* \Class SingleTopSystematicsDumper
  *
@@ -86,10 +86,10 @@ using namespace reco;
 
 
 
-class SingleTopSystematicsDumper : public edm::EDAnalyzer {
+class SingleTopSystematicsTreesDumper : public edm::EDAnalyzer {
  public:
-  explicit SingleTopSystematicsDumper(const edm::ParameterSet&);
-  //  ~SingleTopSystematicsDumper();
+  explicit SingleTopSystematicsTreesDumper(const edm::ParameterSet&);
+  //  ~SingleTopSystematicsTreesDumper();
   
   
  private:
@@ -163,37 +163,43 @@ class SingleTopSystematicsDumper : public edm::EDAnalyzer {
   std::vector<math::XYZTLorentzVector> antibjets;
   
   //Base histograms 
-  map<string, TH1F*> CosThetaLJ;
-  map<string, TH1F*> ForwardJetEta;
-  map<string, TH1F*> MTW;
-  map<string, TH1F*> TopMass;
+  map<string, TTree*> trees;
+  map<string, TTree*> treesWSample;
+  /*  map<string, TTree*> ForwardJetEta;
+  map<string, TTree*> CosThetaLJ;
+  map<string, TTree*> MTW;
+  map<string, TTree*> TopMass;
   
-  map<string, TH1F*> CosThetaLJWSample;
-  map<string, TH1F*> ForwardJetEtaWSample;
-  map<string, TH1F*> MTWWSample;
-  map<string, TH1F*> TopMassWSample;
+  map<string, TTree*> CosThetaLJWSample;
+  map<string, TTree*> ForwardJetEtaWSample;
+  map<string, TTree*> MTWWSample;
+  map<string, TTree*> TopMassWSample;
 
   //Part for Asymmetry
 
-  map<string, TH1F*> CosThetaLJPlus;
-  map<string, TH1F*> ForwardJetEtaPlus;
-  map<string, TH1F*> MTWPlus;
-  map<string, TH1F*> TopMassPlus;
+  map<string, TTree*> CosThetaLJPlus;
+  map<string, TTree*> ForwardJetEtaPlus;
+  map<string, TTree*> MTWPlus;
+  map<string, TTree*> TopMassPlus;
   
-  map<string, TH1F*> CosThetaLJWSamplePlus;
-  map<string, TH1F*> ForwardJetEtaWSamplePlus;
-  map<string, TH1F*> MTWWSamplePlus;
-  map<string, TH1F*> TopMassWSamplePlus;
+  map<string, TTree*> CosThetaLJWSamplePlus;
+  map<string, TTree*> ForwardJetEtaWSamplePlus;
+  map<string, TTree*> MTWWSamplePlus;
+  map<string, TTree*> TopMassWSamplePlus;
 
-  map<string, TH1F*> CosThetaLJMinus;
-  map<string, TH1F*> ForwardJetEtaMinus;
-  map<string, TH1F*> MTWMinus;
-  map<string, TH1F*> TopMassMinus;
+  map<string, TTree*> CosThetaLJMinus;
+  map<string, TTree*> ForwardJetEtaMinus;
+  map<string, TTree*> MTWMinus;
+  map<string, TTree*> TopMassMinus;
 
-  map<string, TH1F*> CosThetaLJWSampleMinus;
-  map<string, TH1F*> ForwardJetEtaWSampleMinus;
-  map<string, TH1F*> MTWWSampleMinus;
-  map<string, TH1F*> TopMassWSampleMinus;
+  map<string, TTree*> CosThetaLJWSampleMinus;
+  map<string, TTree*> ForwardJetEtaWSampleMinus;
+  map<string, TTree*> MTWWSampleMinus;
+  map<string, TTree*> TopMassWSampleMinus;
+  */
+
+  double etaTree,etaTree2,cosTree,topMassTree,weightTree,mtwMassTree;
+  int runTree, eventTree,lumiTree,chargeTree;
 
  
 };

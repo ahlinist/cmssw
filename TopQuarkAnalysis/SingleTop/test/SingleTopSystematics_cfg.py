@@ -35,35 +35,38 @@ process.source = cms.Source ("PoolSource",
                              fileNames = cms.untracked.vstring (
 
 
-'file:/tmp/oiorio/TSampleEleWJets_Old_PU_16_1_lOM.root',
-'file:/tmp/oiorio/TSampleEleWJets_Old_PU_102_0_TPi.root',
-'file:/tmp/oiorio/TSampleEleWJets_Old_PU_68_0_DGv.root',
+#'file:/tmp/oiorio/TSampleEleWJets_Old_PU_16_1_lOM.root',
+#'file:/tmp/oiorio/TSampleEleWJets_Old_PU_102_0_TPi.root',
+#'file:/tmp/oiorio/TSampleEleWJets_Old_PU_68_0_DGv.root',
 
-#'file:TSampleMuQCDMu.root'
+'file:/tmp/oiorio/TChannelEle.root'
 #'file:TSampleMuQCDMu_PF2PAT.root'
 #'file:/tmp/oiorio/TSampleEleTChannel_10_1_T2Y.root'
 #'file:/tmp/oiorio/TSampleEleWJets_89_1_oMj.root'
 
+
 ),
-duplicateCheckMode = cms.untracked.string('noDuplicateCheck')
+duplicateCheckMode = cms.untracked.string('noDuplicateCheck'),
+#eventsToProcess = cms.untracked.VEventRange('1:19517967-1:19517969'),
 )
 
 
-from WJets import *
-from WJets_Old_PU import *
+#from WJets import *
+#from WJets_Old_PU import *
 
-process.source.fileNames = WJets_Old_PU_EleT
+#process.source.fileNames = WJets_Old_PU_EleT
 #process.source.fileNames = WJetsEleT
+
                            
-process.TFileService = cms.Service("TFileService", fileName = cms.string("plotsWJetsEleOldPU.root"))
 
 process.SystematicsAnalyzer = cms.EDAnalyzer('SingleTopSystematicsDumper',                              
 systematics = cms.untracked.vstring("BTagUp","BTagDown","MisTagUp","MisTagDown","JESUp","JESDown","UnclusteredMETUp","UnclusteredMETDown"),
 channelInfo = cms.PSet(
-    crossSection = cms.untracked.double(31314),
-    channel = cms.untracked.string("WJets"),
-    originalEvents = cms.untracked.double(14800000),
-    finalLumi = cms.untracked.double(15.),
+    crossSection = cms.untracked.double(20.93),
+    channel = cms.untracked.string("TChannel"),
+#    originalEvents = cms.untracked.double(14800000),
+    originalEvents = cms.untracked.double(480000),
+    finalLumi = cms.untracked.double(14.5),
     MTWCut = cms.untracked.double(50.0),#Default 50.0 GeV
     loosePtCut = cms.untracked.double(30.0),#Default 30.0 GeV
     ),
@@ -100,6 +103,23 @@ UnclusteredMETPy = cms.InputTag("UnclusteredMETPF","UnclusteredMETPy"),
 
 )
 
+process.TFileService = cms.Service("TFileService", fileName = cms.string("plotsTChannelMu.root"))
+
+from DataMu_B import *
+from DataEle_B import *
+
+from SingleTopAnalyzers_cfi import *
+
+process.load("SingleTopAnalyzers_cfi")
+#process.source.fileNames = cms.untracked.vstring('file:/tmp/oiorio/TTBarOldEle.root')
+process.source.fileNames = DataMuT
+process.TFileService.fileName = "plotsDataMuVanilla.root"
+
+
+
+
 process.PathSys = cms.Path(
-    process.SystematicsAnalyzer
+#    process.SystematicsAnalyzer
+#    process.PlotsTTBarOldEle
+    process.PlotsDataMu
     )

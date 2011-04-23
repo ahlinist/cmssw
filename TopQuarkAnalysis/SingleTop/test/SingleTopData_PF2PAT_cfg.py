@@ -34,7 +34,8 @@ print "test04 "
 #from Configuration.PyReleaseValidation.autoCond import autoCond
 #process.GlobalTag.globaltag = autoCond['startup']
 process.load("TopQuarkAnalysis.SingleTop.SingleTopSequences_cff") 
-process.load("SelectionCuts_top_group_control_samples_v3_cff")
+process.load("SelectionCuts_Skim_cff");
+
 
 print "test05 "
 
@@ -118,30 +119,8 @@ process.pathPreselection = cms.Path(
 
 print "test2.1 "
 
-process.preselectedMuons.src = cms.InputTag("selectedPatMuons")
-process.topMuons.src = cms.InputTag("selectedPatMuons")
-process.topMuonsAntiIso.src = cms.InputTag("selectedPatMuons")
-process.topMuonsForJets.src = cms.InputTag("selectedPatMuons")
-#process.topMuonsForJetsAntiIso.src = cms.InputTag("selectedPatMuons")
-process.topElectrons.src = cms.InputTag("selectedPatElectrons")
-process.topElectronsAntiIso.src = cms.InputTag("selectedPatElectrons")
-process.topElectronsForJets.src = cms.InputTag("selectedPatElectrons")
-process.topElectronsForJetsAntiIso.src = cms.InputTag("selectedPatElectrons")
-process.preselectedElectrons.src = cms.InputTag("selectedPatElectrons")
-process.looseElectrons.src = cms.InputTag("selectedPatElectrons")
-process.preselectedJets.src = cms.InputTag("selectedPatJets")
-process.topJetsPF.src = cms.InputTag("selectedPatJets")
-process.topJetsAntiIsoPF.src = cms.InputTag("selectedPatJets")
-process.UnclusteredMETPF.metSource = cms.InputTag("patMETs")
-process.UnclusteredMETPF.jetsSource = cms.InputTag("selectedPatJets")
-process.UnclusteredMETPF.electronsSource = cms.InputTag("selectedPatElectrons")
-process.UnclusteredMETPF.muonsSource = cms.InputTag("selectedPatMuons")
-process.nTuplePatMETsPF.src = cms.InputTag("patMETs")
-
-
-
-process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(1000) )
-#process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(-1) )
+#process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(1000) )
+process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(-1) )
 process.source = cms.Source ("PoolSource",
                              fileNames = cms.untracked.vstring (
 
@@ -166,9 +145,6 @@ duplicateCheckMode = cms.untracked.string('noDuplicateCheck')
 
 
 print "test3 "
-
-process.topJetsPF.ptCut = cms.untracked.double(20.)
-process.topJetsAntiIsoPF.ptCut = cms.untracked.double(20.)
 
 
 
@@ -205,162 +181,76 @@ process.WbbFilter = process.flavorHistoryFilter.clone(pathToSelect = cms.int32(5
 process.hltFilter.TriggerResultsTag = cms.InputTag("TriggerResults","","HLT")
 process.hltFilter.HLTPaths = mytrigs
 
-#process.bJetsPF = cms.EDProducer("SingleTopBJetsProducer",
-#                               src = cms.InputTag("topJetsPF"),
-##                               bThreshold = cms.untracked.double(-999),
-#                               veto = cms.untracked.bool(False),
-#                               )
-
-#process.forwardJetsPF = cms.EDProducer("SingleTopBJetsProducer",
-#                               src = cms.InputTag("topJetsPF"),
-# #                              bThreshold = cms.untracked.double(-999),
-#                               veto = cms.untracked.bool(True),
-#                               )
-
-#part for W + jets
-#process.PathWLight = cms.Path(
-#    process.WLightFilter 
-#    )
-#
-#process.PathWcc = cms.Path(
-#    process.WccFlter 
-#    )
-
-#process.PathWbb = cms.Path(
-#    process.WbbFilter 
-#    )
-
-#process.countJetsNonTTBarAntiIso.minNumber = cms.uint32(0)
-
-
 
 process.baseLeptonSequence = cms.Path(
-    process.basePathData
+    process.basePathData 
     )
 
-#Muon control samples
-
-
-process.PathTSampleMuonPF = cms.Path(
-    process.IsoMuonsSkimPF *
-    process.nTuplesSkim #*
-#    process.demo
-    )
-
-process.PathTSampleMuonPFQCD = cms.Path(
-    process.AntiIsoMuonsSkimPF *
-    process.nTuplesAntiIsoSkim #*
-#    process.demo
-    )
-
-###Electron control samples
-
-process.PathTSampleElectronPF = cms.Path(
-    process.IsoElectronsSkimPF *
-  #    process.TSampleElectronPF *
-    process.nTuplesSkim #*
-#    process.demo
+process.selection = cms.Path (
+    process.preselection +
+    process.nTuplesSkim
     )
 
 
-process.PathTSampleElectronPFQCD = cms.Path(
-    process.AntiIsoElectronsSkimPF *
-    process.nTuplesAntiIsoSkim #*
-#    process.demo
-)
-
-#    process.TSampleElectronAntiIso *
-#    process.QCDSampleElectron *
-#    process.QCDSampleElectronPF *
-#    process.PathElectronsAntiIso *
-#    )
+from TopQuarkAnalysis.SingleTop.SingleTopNtuplizers_cff import saveNTuplesSkimLoose
 from TopQuarkAnalysis.SingleTop.SingleTopNtuplizers_cff import saveNTuplesSkimMu
-from TopQuarkAnalysis.SingleTop.SingleTopNtuplizers_cff import saveNTuplesSkimEle
-from TopQuarkAnalysis.SingleTop.SingleTopNtuplizers_cff import saveNTuplesSkimMuAntiIso
-from TopQuarkAnalysis.SingleTop.SingleTopNtuplizers_cff import saveNTuplesSkimEleAntiIso
 
+savePatTupleSkimLoose = cms.untracked.vstring(
+    'drop *',
 
-#saveNTuplesSkimMu.append("keep *_topJetsPF_*_*")
+    'keep patMuons_selectedPatMuons_*_*',
+    'keep patElectrons_selectedPatElectrons_*_*',
+    'keep patJets_selectedPatJets_*_*',
+    'keep patMETs_patMETs_*_*',
+    'keep *_PVFilterProducer_*_*',
 
+    'keep patJets_topJetsPF_*_*',
+    'keep patMuons_looseMuons_*_*',
+    'keep patElectrons_looseElectrons_*_*',
+    'keep patMuons_tightMuons_*_*',
+    'keep patElectrons_tightElectrons_*_*',
 
+    'keep *_PDFInfo_*_*',
+  
+    'keep *_cFlavorHistoryProducer_*_*',
+    'keep *_bFlavorHistoryProducer_*_*',
+    )
 
+#saveNTuplesSkimLoose.append('keep *_preselectedMuons_*_*')
+#saveNTuplesSkimLoose.append('keep *_preselectedElectrons_*_*')
+#saveNTuplesSkimLoose.append('keep *_topMuons_*_*')
+#saveNTuplesSkimLoose.append('keep *_topElectrons_*_*')
 
 
 ## Output module configuration
-process.allControlSamples = cms.OutputModule("PoolOutputModule",
+process.singleTopNTuple = cms.OutputModule("PoolOutputModule",
 #                                fileName = cms.untracked.string('rfio:/CST/cern.ch/user/o/oiorio/SingleTop/SubSkims/WControlSamples1.root'),
-                   fileName = cms.untracked.string('test.root'),
-                                           
-     outputCommands = saveNTuplesSkimMu,
+#                   fileName = cms.untracked.Bstring('/tmp/oiorio/edmntuple_tchannel_big.root'),
+                   fileName = cms.untracked.string('edmntuple_Data.root'),
+                                             
+                   SelectEvents   = cms.untracked.PSet( SelectEvents = cms.vstring('selection')),
+                   outputCommands = saveNTuplesSkimLoose,
 )
 
+process.singleTopPatTuple = cms.OutputModule("PoolOutputModule",
+#                                fileName = cms.untracked.string('rfio:/CST/cern.ch/user/o/oiorio/SingleTop/SubSkims/WControlSamples1.root'),
+                   fileName = cms.untracked.string('pattuple_tchannel.root'),
 
-process.tSampleMu =  process.allControlSamples.clone(
-    fileName = cms.untracked.string('TSampleMuData_PF2PAT.root'),
-    
-    SelectEvents   = cms.untracked.PSet( SelectEvents = cms.vstring(
-    'PathTSampleMuonPF',
-#    'PathTSampleElectron',
-    )
-)
+
+                   SelectEvents   = cms.untracked.PSet( SelectEvents = cms.vstring('selection')),
+                   outputCommands = savePatTupleSkimLoose
 )
 
+process.singleTopNTupleMu = cms.OutputModule("PoolOutputModule",
+#                                fileName = cms.untracked.string('rfio:/CST/cern.ch/user/o/oiorio/SingleTop/SubSkims/WControlSamples1.root'),
+                   fileName = cms.untracked.string('/tmp/oiorio/test_ntuple_all.root'),
 
-process.tSampleMuAntiIso =  process.allControlSamples.clone(
-    fileName = cms.untracked.string('QCDSampleMuData_PF2PAT.root'),
-    SelectEvents   = cms.untracked.PSet( SelectEvents = cms.vstring(
-    'PathTSampleMuonPFQCD',
-#    'PathTSampleElectron',
-    )
-    ),
-    outputCommands = saveNTuplesSkimMuAntiIso,
+
+                   SelectEvents   = cms.untracked.PSet( SelectEvents = cms.vstring('selection')),
+                   outputCommands = saveNTuplesSkimMu
 )
 
-
-process.tSampleEleAntiIso =  process.allControlSamples.clone(
-    #    fileName = cms.untracked.string('QCDChanSampleEleCiso95.root'),
-#    fileName = cms.untracked.string('QCDSampleEleQCDBCToE_Pt80to170.root'),
-    fileName = cms.untracked.string('QCDSampleEleData_PF2PAT.root'),
- 
-    SelectEvents   = cms.untracked.PSet( SelectEvents = cms.vstring(
-    'PathTSampleElectronPFQCD',
-    )
-  ),
-                             
-    outputCommands = saveNTuplesSkimEleAntiIso,
-    #cms.untracked.vstring(
-    #'drop *',#
-
-#    'keep *_cFlavorHistoryProducer_*_*',
-#    'keep *_bFlavorHistoryProducer_*_*',#
-
-#    'keep *_singleTopObservablesAntiIsoPF_*_*',
-#    'keep floats_nTupleEventsAntiIsoPF_*_*',
-#    'keep floats_nTuplePatMETsPF_*_*',
-#    'keep floats_nTupleTopJetsPF_*_*',
-#    ),
-
-)
-
-process.tSampleEle =  process.allControlSamples.clone(
-#    fileName = cms.untracked.string('QCDChanSampleEleCiso95.root'),
-fileName = cms.untracked.string('TSampleEleData_PF2PAT.root'),
-    SelectEvents   = cms.untracked.PSet( SelectEvents = cms.vstring(
-#    'PathTSampleMuon',
-    'PathTSampleElectronPF',
-#    'PathWLight',
-#    'PathWbb',
-#    'PathWcc',
-   )
-),
-    outputCommands = saveNTuplesSkimEle,
-
-)
 process.outpath = cms.EndPath(
-#    process.out +
-#    process.tSampleMu + 
-#    process.tSampleMuAntiIso #+ 
-    process.tSampleEle +
-    process.tSampleEleAntiIso 
+    process.singleTopNTuple
     )
 
