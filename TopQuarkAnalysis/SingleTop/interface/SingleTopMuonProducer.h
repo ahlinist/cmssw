@@ -9,7 +9,7 @@
  * \Author A. Orso M. Iorio
  * 
  *
- *\version  $Id: SingleTopMuonProducer.h,v 1.1 2010/09/10 01:06:37 oiorio Exp $
+ *\version  $Id: SingleTopMuonProducer.h,v 1.1 2010/11/17 10:25:21 oiorio Exp $
  *
  *
 */
@@ -69,15 +69,15 @@
 
   class SingleTopMuonProducer : public edm::EDProducer {
 
-    public:
-
-      explicit SingleTopMuonProducer(const edm::ParameterSet & iConfig);
-      ~SingleTopMuonProducer();
-      virtual void produce(edm::Event & iEvent, const edm::EventSetup & iSetup);
+  public:
+    
+    explicit SingleTopMuonProducer(const edm::ParameterSet & iConfig);
+    ~SingleTopMuonProducer();
+    virtual void produce(edm::Event & iEvent, const edm::EventSetup & iSetup);
     //       static void fillDescriptions(edm::ConfigurationDescriptions & descriptions);
-    private:
+  private:
     typedef StringCutObjectSelector<pat::Muon> Selector;
-   
+    
     edm::InputTag src_,jetsSrc_;
     std::string cut_,id_;
     bool useJetVeto_;

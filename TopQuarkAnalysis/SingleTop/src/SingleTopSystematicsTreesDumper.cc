@@ -14,7 +14,7 @@
 #define MC_DEBUG 0 // 0=false   else -> dont process preselection
 #define C_DEBUG  0 // currently debuging
 
-#include "TopQuarkAnalysis/SingleTop/interface/SingleTopSystematicsDumper.h"
+#include "TopQuarkAnalysis/SingleTop/interface/SingleTopSystematicsTreesDumper.h"
 #include "FWCore/ServiceRegistry/interface/Service.h"
 #include "FWCore/Common/interface/TriggerNames.h"
 //#include "PhysicsTools/UtilAlgos/interface/TFileService.h"
@@ -30,7 +30,7 @@
 #include "CondFormats/JetMETObjects/interface/JetCorrectionUncertainty.h";
 #include "TopQuarkAnalysis/SingleTop/interface/EquationSolver.h"
 
-SingleTopSystematicsDumper::SingleTopSystematicsDumper(const edm::ParameterSet& iConfig)
+SingleTopSystematicsTreesDumper::SingleTopSystematicsTreesDumper(const edm::ParameterSet& iConfig)
 {
   //MCLightQuarkProducer   = iConfig.getParameter<InputTag>("MCLightQuarkProducer");
   systematics = iConfig.getUntrackedParameter<std::vector<std::string> >("systematics"); 
@@ -91,35 +91,35 @@ SingleTopSystematicsDumper::SingleTopSystematicsDumper(const edm::ParameterSet& 
     
     string syst = all_syst[i];
     
-    TopMass[syst] = SingleTopSystematics.make<TH1F>(("TopMass_"+syst+"_"+channel).c_str(),("TopMass_"+syst+"_"+channel).c_str(),400,0,400);
-    CosThetaLJ[syst] = SingleTopSystematics.make<TH1F>(("CosThetaLJ_"+syst+"_"+channel).c_str(),("CosThetaLJ_"+syst+"_"+channel).c_str(),100,-1,1);
-    ForwardJetEta[syst] = SingleTopSystematics.make<TH1F>(("ForwardJetEta_"+syst+"_"+channel).c_str(),("ForwardJetEta_"+syst+"_"+channel).c_str(),100,0,5);
-    MTW[syst] = SingleTopSystematics.make<TH1F>(("MTW_"+syst+"_"+channel).c_str(),("MTW_"+syst+"_"+channel).c_str(),200,0,200);
-    CosThetaLJWSample[syst] = SingleTopSystematics.make<TH1F>(("CosThetaLJWSample_"+syst+"_"+channel).c_str(),("CosThetaLJWSample_"+syst+"_"+channel).c_str(),100,-1,1);
-    ForwardJetEtaWSample[syst] = SingleTopSystematics.make<TH1F>(("ForwardJetEtaWSample_"+syst+"_"+channel).c_str(),("ForwardJetEtaWSample_"+syst+"_"+channel).c_str(),100,0,5);
-    MTWWSample[syst] = SingleTopSystematics.make<TH1F>(("MTWWSample_"+syst+"_"+channel).c_str(),("MTWWSample_"+syst+"_"+channel).c_str(),200,0,200);
-    TopMassWSample[syst] = SingleTopSystematics.make<TH1F>(("TopMassWSample_"+syst+"_"+channel).c_str(),("TopMassWSample_"+syst+"_"+channel).c_str(),400,0,400);
-
-    //Asymmetry
+    string treename = (channel+"_"+syst);
     
-    TopMassPlus[syst] = SingleTopSystematics.make<TH1F>(("TopMassPlus_"+syst+"_"+channel).c_str(),("TopMassPlus_"+syst+"_"+channel).c_str(),400,0,400);
-    CosThetaLJPlus[syst] = SingleTopSystematics.make<TH1F>(("CosThetaLJPlus_"+syst+"_"+channel).c_str(),("CosThetaLJPlus_"+syst+"_"+channel).c_str(),100,-1,1);
-    ForwardJetEtaPlus[syst] = SingleTopSystematics.make<TH1F>(("ForwardJetEtaPlus_"+syst+"_"+channel).c_str(),("ForwardJetEtaPlus_"+syst+"_"+channel).c_str(),100,0,5);
-    MTWPlus[syst] = SingleTopSystematics.make<TH1F>(("MTWPlus_"+syst+"_"+channel).c_str(),("MTWPlus_"+syst+"_"+channel).c_str(),400,0,400);
-    CosThetaLJWSamplePlus[syst] = SingleTopSystematics.make<TH1F>(("CosThetaLJWSamplePlus_"+syst+"_"+channel).c_str(),("CosThetaLJWSamplePlus_"+syst+"_"+channel).c_str(),100,-1,1);
-    ForwardJetEtaWSamplePlus[syst] = SingleTopSystematics.make<TH1F>(("ForwardJetEtaWSamplePlus_"+syst+"_"+channel).c_str(),("ForwardJetEtaWSamplePlus_"+syst+"_"+channel).c_str(),100,0,5);
-    MTWWSamplePlus[syst] = SingleTopSystematics.make<TH1F>(("MTWWSamplePlus_"+syst+"_"+channel).c_str(),("MTWWSamplePlus_"+syst+"_"+channel).c_str(),200,0,200);
-    TopMassWSamplePlus[syst] = SingleTopSystematics.make<TH1F>(("TopMassWSamplePlus_"+syst+"_"+channel).c_str(),("TopMassWSamplePlus_"+syst+"_"+channel).c_str(),400,0,400);
-
+    trees[syst] = new TTree(treename.c_str(),treename.c_str()); 
     
-    TopMassMinus[syst] = SingleTopSystematics.make<TH1F>(("TopMassMinus_"+syst+"_"+channel).c_str(),("TopMassMinus_"+syst+"_"+channel).c_str(),400,0,400);
-    CosThetaLJMinus[syst] = SingleTopSystematics.make<TH1F>(("CosThetaLJMinus_"+syst+"_"+channel).c_str(),("CosThetaLJMinus_"+syst+"_"+channel).c_str(),100,-1,1);
-    ForwardJetEtaMinus[syst] = SingleTopSystematics.make<TH1F>(("ForwardJetEtaMinus_"+syst+"_"+channel).c_str(),("ForwardJetEtaMinus_"+syst+"_"+channel).c_str(),100,0,5);
-    MTWMinus[syst] = SingleTopSystematics.make<TH1F>(("MTWMinus_"+syst+"_"+channel).c_str(),("MTWMinus_"+syst+"_"+channel).c_str(),200,0,200);
-    CosThetaLJWSampleMinus[syst] = SingleTopSystematics.make<TH1F>(("CosThetaLJWSampleMinus_"+syst+"_"+channel).c_str(),("CosThetaLJWSampleMinus_"+syst+"_"+channel).c_str(),100,-1,1);
-    ForwardJetEtaWSampleMinus[syst] = SingleTopSystematics.make<TH1F>(("ForwardJetEtaWSampleMinus_"+syst+"_"+channel).c_str(),("ForwardJetEtaWSampleMinus_"+syst+"_"+channel).c_str(),100,0,5);
-    MTWWSampleMinus[syst] = SingleTopSystematics.make<TH1F>(("MTWWSampleMinus_"+syst+"_"+channel).c_str(),("MTWWSampleMinus_"+syst+"_"+channel).c_str(),200,0,200);
-    TopMassWSampleMinus[syst] = SingleTopSystematics.make<TH1F>(("TopMassWSampleMinus_"+syst+"_"+channel).c_str(),("TopMassWSampleMinus_"+syst+"_"+channel).c_str(),400,0,400);
+    trees[syst]->Branch("eta",&etaTree);
+    trees[syst]->Branch("costhetalj",&cosTree);
+    trees[syst]->Branch("topMass",&topMassTree);
+    trees[syst]->Branch("mtwMass",&mtwMassTree);
+    
+    trees[syst]->Branch("charge",&chargeTree);
+    trees[syst]->Branch("runid",&runTree);
+    trees[syst]->Branch("lumiid",&lumiTree);
+    trees[syst]->Branch("eventid",&eventTree);
+    trees[syst]->Branch("weight",&weightTree);
+
+    treesWSample[syst] = new TTree((treename+"WSample").c_str(),(treename+"WSample").c_str()); 
+    
+    treesWSample[syst]->Branch("etaLowBTag",&etaTree);
+    treesWSample[syst]->Branch("etaHighBTag",&etaTree2);
+    treesWSample[syst]->Branch("costhetalj",&cosTree);
+    treesWSample[syst]->Branch("topMass",&topMassTree);
+    treesWSample[syst]->Branch("mtwMass",&mtwMassTree);
+    
+    treesWSample[syst]->Branch("charge",&chargeTree);
+    treesWSample[syst]->Branch("runid",&runTree);
+    treesWSample[syst]->Branch("lumiid",&lumiTree);
+    treesWSample[syst]->Branch("eventid",&eventTree);
+    treesWSample[syst]->Branch("weight",&weightTree);
+    
   }
 
 
@@ -134,7 +134,7 @@ SingleTopSystematicsDumper::SingleTopSystematicsDumper(const edm::ParameterSet& 
   //  cout<< "I work for now but I do nothing. But again, if you gotta do nothing, you better do it right. To prove my good will I will provide you with somse numbers later."<<endl;
 }
 
-void SingleTopSystematicsDumper::analyze(const Event& iEvent, const EventSetup& iSetup)
+void SingleTopSystematicsTreesDumper::analyze(const Event& iEvent, const EventSetup& iSetup)
 {
   
   iEvent.getByLabel(leptonsPz_,leptonsPz);
@@ -159,16 +159,6 @@ void SingleTopSystematicsDumper::analyze(const Event& iEvent, const EventSetup& 
   iSetup.get<BTagPerformanceRecord>().get("MISTAGTCHEL",perfHE);
   
   BinningPointByMap measurePoint;
-   
-  //    measurePoint.insert(BinningVariables::JetEt,950);
-  //   measurePoint.insert(BinningVariables::JetAbsEta,0.6);
-  
-  //   std::cout << "Is it OK? HPT Mistag " << perfHP->isResultOk(PerformanceResult::BTAGLEFF, measurePoint)
-  //     << " result at 200 GeV, 0,6 |eta| " << perfHP->getResult( PerformanceResult::BTAGLEFF, measurePoint)
-  //     << std::endl;
-   
-  //   measurePoint.reset();
-
    
   
   float metPx = 0; 
@@ -294,7 +284,6 @@ void SingleTopSystematicsDumper::analyze(const Event& iEvent, const EventSetup& 
       bool passesAntiBTag = jetsAntiBTagAlgo->at(i)<1.7;
       //bool passesAntiBTag = jetsBTagAlgo->at(i)<3.41;
       
-      
       if(passesPtCut && passesBTag) {
 	
 	bjets.push_back(jets.back()); 
@@ -385,23 +374,7 @@ void SingleTopSystematicsDumper::analyze(const Event& iEvent, const EventSetup& 
     //    cout << " test 1 " << endl;
     
     //W control Sample
-    
-    //    if( lowestBTagPosition > -1 && highestBTagPosition > -1 && jets.size()>=1 && loosejets.size() ==2 &&  bjets.size()==0 ){
     if( lowestBTagPosition > -1 && highestBTagPosition > -1 && jets.size() ==2 &&  bjets.size()==0 ){
-      
-      //      cout << " test 2 low " <<  lowestBTagPosition << " high "<< highestBTagPosition << " nleptons " << leptons.size() << endl;
-      
-      //      cout << " syst " <<syst_name <<" histo? "<< MTWWSample[syst_name] <<endl;
-      
-      MTWWSample[syst_name]->Fill(MTWValue,Weight);
-      if(leptonsCharge->at(0)>0)MTWWSamplePlus[syst_name]->Fill(MTWValue,Weight);
-      if(leptonsCharge->at(0)<0)MTWWSampleMinus[syst_name]->Fill(MTWValue,Weight);
-      if(MTWValue<MTWCut) continue;
-      
-      
-      //      if(highestBTagPosition == lowestBTagPosition)      cout << " test 3: loosejets size "<<jets.size() << " jets size "<<jets.size() << " highestB pos " << highestBTagPosition<< " lowestB pos " << lowestBTagPosition << " highestBTag "<< highestBTag << " lowestBTag  "<< lowestBTag<< endl;
-    //      cout << " test 3: loosejets size "<<loosejets.size() << " jets size "<<jets.size() << " highestB pos " << highestBTagPosition<< " lowestB pos " << lowestBTagPosition << endl;
-      
       if(highestBTagPosition == lowestBTagPosition)continue;
       
       math::XYZTLorentzVector top = top4Momentum(leptons.at(0),jets.at(highestBTagPosition),metPx,metPy);
@@ -410,27 +383,20 @@ void SingleTopSystematicsDumper::analyze(const Event& iEvent, const EventSetup& 
       
       float fCosThetaLJ =  cosThetaLJ(leptons.at(0),jets.at(lowestBTagPosition),top);
       
-      //cout << " test 4 " << endl;
-      
-      TopMassWSample[syst_name]->Fill(top.mass(),Weight);
-      CosThetaLJWSample[syst_name]->Fill(fCosThetaLJ,Weight);
-      ForwardJetEtaWSample[syst_name]->Fill(fabs(jets.at(0).eta()),Weight);
-      ForwardJetEtaWSample[syst_name]->Fill(fabs(jets.at(1).eta()),Weight);
-      
+      runTree = iEvent.eventAuxiliary().run();
+      lumiTree = iEvent.eventAuxiliary().luminosityBlock();
+      eventTree = iEvent.eventAuxiliary().event();
+      weightTree = Weight;
 
-      if(leptonsCharge->at(0)>0){
-	TopMassWSamplePlus[syst_name]->Fill(top.mass(),Weight);
-      CosThetaLJWSamplePlus[syst_name]->Fill(fCosThetaLJ,Weight);
-      ForwardJetEtaWSamplePlus[syst_name]->Fill(fabs(jets.at(0).eta()),Weight);
-      ForwardJetEtaWSamplePlus[syst_name]->Fill(fabs(jets.at(1).eta()),Weight);
-      }
+      //cout << " test 4 " << endl;
+      etaTree = fabs(jets.at(lowestBTagPosition).eta());
+      etaTree2 = fabs(jets.at(highestBTagPosition).eta());
+      cosTree = fCosThetaLJ;
+      topMassTree = top.mass();
+      mtwMassTree = MTWValue;
+      chargeTree = leptonsCharge->at(0);
       
-      if(leptonsCharge->at(0)<0){
-      TopMassWSampleMinus[syst_name]->Fill(top.mass(),Weight);
-      CosThetaLJWSampleMinus[syst_name]->Fill(fCosThetaLJ,Weight);
-      ForwardJetEtaWSampleMinus[syst_name]->Fill(fabs(jets.at(0).eta()),Weight);
-      ForwardJetEtaWSampleMinus[syst_name]->Fill(fabs(jets.at(1).eta()),Weight);
-      }
+      treesWSample[syst_name]->Fill();
     }
     
     //Signal sample
@@ -439,40 +405,34 @@ void SingleTopSystematicsDumper::analyze(const Event& iEvent, const EventSetup& 
       //      cout << " passes cuts pre-mtw, syst " << syst_name << " b tag weight " <<  BTagWeight<< " Weight " << Weight  <<endl;
       
       Weight*=BTagWeight;
-      
-      MTW[syst_name]->Fill(MTWValue,Weight);
-      if(leptonsCharge->at(0)>0)MTWPlus[syst_name]->Fill(MTWValue,Weight);
-      if(leptonsCharge->at(0)<0)MTWMinus[syst_name]->Fill(MTWValue,Weight);
-      if(MTWValue<MTWCut) continue;
-      
+
+
+            
       math::XYZTLorentzVector top = top4Momentum(leptons.at(0),bjets.at(0),metPx,metPy);
       float fCosThetaLJ =  cosThetaLJ(leptons.at(0), antibjets.at(0), top);
 
-      cout << " passes cuts pre-mtw, syst " << syst_name << " top mass "<< top.mass() << " cosTheta* "<< fCosThetaLJ << " fjetEta " << fabs(antibjets.at(0).eta()) << " top mass integral"  << TopMass[syst_name]->Integral() << " Forward jet eta integral  "<< ForwardJetEta[syst_name]->Integral()<< " CosThetaLJ integral " << CosThetaLJ[syst_name]->Integral()<< " Weight "  << Weight << " B Weight "<< BTagWeight <<endl;
+      runTree = iEvent.eventAuxiliary().run();
+      lumiTree = iEvent.eventAuxiliary().luminosityBlock();
+      eventTree = iEvent.eventAuxiliary().event();
+      weightTree = Weight;
+
+      //cout << " test 4 " << endl;
+      etaTree = fabs(antibjets.at(0).eta());
+      cosTree = fCosThetaLJ;
+      topMassTree = top.mass();
+      mtwMassTree = MTWValue;
+      chargeTree = leptonsCharge->at(0) ; 
+
+      trees[syst_name]->Fill();
+      //      cout << " passes cuts pre-mtw, syst " << syst_name << " top mass "<< top.mass() << " cosTheta* "<< fCosThetaLJ << " fjetEta " << fabs(antibjets.at(0).eta()) << " top mass integral"  << TopMass[syst_name]->Integral() << " Forward jet eta integral  "<< ForwardJetEta[syst_name]->Integral()<< " CosThetaLJ integral " << CosThetaLJ[syst_name]->Integral()<< " Weight "  << Weight << " B Weight "<< BTagWeight <<endl;
 
       
-      TopMass[syst_name]->Fill(top.mass(),Weight);
-      CosThetaLJ[syst_name]->Fill(fCosThetaLJ,Weight);
-      //      Weight=Weight/BTagWeight;
-      ForwardJetEta[syst_name]->Fill(fabs(antibjets.at(0).eta()),Weight);
-      
-      if(leptonsCharge->at(0)>0){
-	TopMassPlus[syst_name]->Fill(top.mass(),Weight);
-	CosThetaLJPlus[syst_name]->Fill(fCosThetaLJ,Weight);
-	ForwardJetEtaPlus[syst_name]->Fill(fabs(antibjets.at(0).eta()),Weight);
-      }
-      
-      if(leptonsCharge->at(0)<0){
-	TopMassMinus[syst_name]->Fill(top.mass(),Weight);
-	CosThetaLJMinus[syst_name]->Fill(fCosThetaLJ,Weight);
-	ForwardJetEtaMinus[syst_name]->Fill(fabs(antibjets.at(0).eta()),Weight);
-      }
     }
   }
 }
 
 
-float SingleTopSystematicsDumper::cosThetaLJ(math::XYZTLorentzVector lepton, math::XYZTLorentzVector jet, math::XYZTLorentzVector top){
+float SingleTopSystematicsTreesDumper::cosThetaLJ(math::XYZTLorentzVector lepton, math::XYZTLorentzVector jet, math::XYZTLorentzVector top){
   
   math::XYZTLorentzVector boostedLepton = ROOT::Math::VectorUtil::boost(lepton,top.BoostToCM());
   math::XYZTLorentzVector boostedJet = ROOT::Math::VectorUtil::boost(jet,top.BoostToCM());
@@ -481,12 +441,11 @@ float SingleTopSystematicsDumper::cosThetaLJ(math::XYZTLorentzVector lepton, mat
   
 }
 
-math::XYZTLorentzVector SingleTopSystematicsDumper::top4Momentum(math::XYZTLorentzVector lepton, math::XYZTLorentzVector jet, float metPx, float metPy){
+math::XYZTLorentzVector SingleTopSystematicsTreesDumper::top4Momentum(math::XYZTLorentzVector lepton, math::XYZTLorentzVector jet, float metPx, float metPy){
   return top4Momentum(lepton.px(),lepton.py(),lepton.pz(),lepton.energy(),jet.px(),jet.py(),jet.pz(),jet.energy(),metPx,metPy);
 }
 
-math::XYZTLorentzVector SingleTopSystematicsDumper::top4Momentum(float leptonPx, float leptonPy, float leptonPz, float leptonE, float jetPx, float jetPy, float jetPz,float jetE, float metPx, float metPy){
-  //float leptonP = sqrt( (leptonPx*leptonPx)+  (leptonPy*leptonPy) +  (leptonPz*leptonPz));
+math::XYZTLorentzVector SingleTopSystematicsTreesDumper::top4Momentum(float leptonPx, float leptonPy, float leptonPz, float leptonE, float jetPx, float jetPy, float jetPz,float jetE, float metPx, float metPy){
   float lepton_Pt = sqrt( (leptonPx*leptonPx)+  (leptonPy*leptonPy) );
   
   math::XYZTLorentzVector neutrino = NuMomentum(leptonPx,leptonPy,leptonPz,lepton_Pt,leptonE,metPx,metPy).at(0);
@@ -498,7 +457,7 @@ math::XYZTLorentzVector SingleTopSystematicsDumper::top4Momentum(float leptonPx,
   return top;  
 }
 
-std::vector<math::XYZTLorentzVector> SingleTopSystematicsDumper::NuMomentum(float leptonPx, float leptonPy, float leptonPz, float leptonPt, float leptonE, float metPx, float metPy ){
+std::vector<math::XYZTLorentzVector> SingleTopSystematicsTreesDumper::NuMomentum(float leptonPx, float leptonPy, float leptonPz, float leptonPt, float leptonE, float metPx, float metPy ){
 
     
   double  mW = 80.38;
@@ -646,7 +605,7 @@ std::vector<math::XYZTLorentzVector> SingleTopSystematicsDumper::NuMomentum(floa
 
 
 
-double SingleTopSystematicsDumper::BScaleFactor(string algo,string syst_name){
+double SingleTopSystematicsTreesDumper::BScaleFactor(string algo,string syst_name){
 
   double bcentral =0.9;  
   double berr = 0.15;
@@ -703,7 +662,7 @@ double SingleTopSystematicsDumper::BScaleFactor(string algo,string syst_name){
   return 0.9;
 }
 
-double SingleTopSystematicsDumper::MisTagScaleFactor(string algo,string syst_name,double sf, double eff, double sferr){
+double SingleTopSystematicsTreesDumper::MisTagScaleFactor(string algo,string syst_name,double sf, double eff, double sferr){
   double mistagcentral = sf;  
   double mistagerr = sferr;
   double tcheeff = eff;
@@ -741,7 +700,7 @@ double SingleTopSystematicsDumper::MisTagScaleFactor(string algo,string syst_nam
 }
 
 
-double SingleTopSystematicsDumper::jetUncertainty(double eta, double ptCorr, int flavour){
+double SingleTopSystematicsTreesDumper::jetUncertainty(double eta, double ptCorr, int flavour){
   jecUnc->setJetEta(eta); 
   jecUnc->setJetPt(ptCorr);
   double JetCorrection = jecUnc->getUncertainty(true); // In principle, boolean controls if uncertainty on +ve or -ve side is returned (asymmetric errors) but not yet implemented.
@@ -756,45 +715,45 @@ double SingleTopSystematicsDumper::jetUncertainty(double eta, double ptCorr, int
   return sqrt(JES_b*JES_b + JES_PU*JES_PU +JES_SW*JES_SW + JetCorrection*JetCorrection);
 }
 
-void SingleTopSystematicsDumper::endJob(){
+void SingleTopSystematicsTreesDumper::endJob(){
   
+  //part for rate systematics
+
   for(size_t i = 0; i < rate_systematics.size();++i){
     
     string syst = rate_systematics[i];
-    cout <<" topmasstest "<<  TopMass["noSyst"]->Integral()  << endl;
+    string treename = (channel+"_"+syst);
+    
+    trees[syst]->CopyAddresses(trees["noSyst"]);
+    treesWSample[syst]->CopyAddresses(treesWSample["noSyst"]);
 
-    cout<< " syst  "<< TopMass[syst]->Integral()  <<endl;
+    trees[syst]->CopyEntries(trees["noSyst"]); 
+    treesWSample[syst]->CopyEntries(trees["noSyst"]); 
     
-    TopMass[syst]->Add(TopMass["noSyst"]);
-    CosThetaLJ[syst]->Add(CosThetaLJ["noSyst"]); 
-    ForwardJetEta[syst]->Add(ForwardJetEta["noSyst"]); 
-    MTW[syst]->Add(MTW["noSyst"]); 
-    CosThetaLJWSample[syst]->Add(CosThetaLJWSample["noSyst"]); 
-    ForwardJetEtaWSample[syst]->Add(ForwardJetEtaWSample["noSyst"]); 
-    MTWWSample[syst]->Add(MTWWSample["noSyst"]); 
-    TopMassWSample[syst]->Add(TopMassWSample["noSyst"]); 
-    
-    //Asymmetry
-    
-    TopMassPlus[syst]->Add(TopMassPlus["noSyst"]); 
-    CosThetaLJPlus[syst]->Add(CosThetaLJPlus["noSyst"]); 
-    ForwardJetEtaPlus[syst]->Add(ForwardJetEtaPlus["noSyst"]); 
-    MTWPlus[syst]->Add(MTWPlus["noSyst"]); 
-    CosThetaLJWSamplePlus[syst]->Add(CosThetaLJWSamplePlus["noSyst"]); 
-    ForwardJetEtaWSamplePlus[syst]->Add(ForwardJetEtaWSamplePlus["noSyst"]); 
-    MTWWSamplePlus[syst]->Add(MTWWSamplePlus["noSyst"]); 
-    TopMassWSamplePlus[syst]->Add(TopMassWSamplePlus["noSyst"]); 
-    
-    TopMassMinus[syst]->Add(TopMassMinus["noSyst"]); 
-    CosThetaLJMinus[syst]->Add(CosThetaLJMinus["noSyst"]); 
-    ForwardJetEtaMinus[syst]->Add(ForwardJetEtaMinus["noSyst"]); 
-    MTWMinus[syst]->Add(MTWMinus["noSyst"]); 
-    CosThetaLJWSampleMinus[syst]->Add(CosThetaLJWSampleMinus["noSyst"]); 
-    ForwardJetEtaWSampleMinus[syst]->Add(ForwardJetEtaWSampleMinus["noSyst"]); 
-    MTWWSampleMinus[syst]->Add(MTWWSampleMinus["noSyst"]); 
-    TopMassWSampleMinus[syst]->Add(TopMassWSampleMinus["noSyst"]);
 
- 
+
+    //modify the weight by a constant factor    
+    double tmpWeight = 0;
+    double weightSF = 1.;
+
+    TBranch * b = trees["noSyst"]->GetBranch("weight");
+    int entries = b->GetEntries();
+    b->SetAddress(&tmpWeight);    
+
+    trees[syst]->GetBranch("weight")->Reset();
+    trees[syst]->GetBranch("weight")->SetAddress(&tmpWeight);
+    
+    for(int t =0; t < entries ; ++t){
+      b->GetEntry(t);
+      tmpWeight*=weightSF;
+      trees[syst]->GetBranch("weight")->Fill();
+    }
+    
+    b->SetAddress(&weightTree);
+    trees[syst]->GetBranch("weight")->SetAddress(&weightTree);
+    
+    //    cout<< " syst "<< syst<< " weights entries "<<  entries <<endl;
+
   }
 }
   
@@ -802,4 +761,4 @@ void SingleTopSystematicsDumper::endJob(){
 
 
 //define this as a plug-in
-DEFINE_FWK_MODULE(SingleTopSystematicsDumper);
+DEFINE_FWK_MODULE(SingleTopSystematicsTreesDumper);
