@@ -86,40 +86,8 @@ process.TFileService = cms.Service("TFileService",
     fileName = cms.string(options.outputFile)
 )
 
-
-from ElectroWeakAnalysis.MultiBosons.Selectors.muonSelector_cfi \
-    import muonSelection_FsrApr082011_PixelMatchVeto as muonSelection
-
-from ElectroWeakAnalysis.MultiBosons.Selectors.diLeptonSelector_cfi \
-    import diMuonSelection_Fsr2011Apr11_PixelMatchVeto as diMuonSelection
-
 from ElectroWeakAnalysis.MultiBosons.Selectors.photonSelector_cfi \
     import photonSelection_Fsr2011Apr11_PixelMatchVeto as photonSelection
-
-from ElectroWeakAnalysis.MultiBosons.Selectors.ZMuMuGammaSelector_cfi \
-    import ZMuMuGammaSelection_Fsr2011Apr11_PixelMatchVeto as ZMuMuGammaSelection
-
-process.selectedMuons = cms.EDFilter("VGammaMuonFilter",
-    filterParams = muonSelection,
-    src = cms.InputTag("cleanPatMuonsTriggerMatch","","PAT"),
-    filter = cms.bool(True),
-    verbosity = cms.untracked.uint32(2)
-)
-
-process.goodDiMuons = cms.EDProducer("CandViewShallowClonePtrCombiner",
-#process.goodDiMuons = cms.EDProducer("CandViewShallowCloneCombiner",
-    checkCharge = cms.bool(False),
-    cut = cms.string("mass > 0"), ## dummy cut
-    decay = cms.string("selectedMuons selectedMuons"),
-    roles = cms.vstring("muon1", "muon2")
-)
-
-process.selectedDiMuons = cms.EDFilter("VGammaDiLeptonFilter",
-    filterParams = diMuonSelection,
-    src = cms.InputTag("goodDiMuons"),
-    filter = cms.bool(True),
-    verbosity = cms.untracked.uint32(2)
-)
 
 process.selectedPhotons = cms.EDFilter("VGammaPhotonFilter",
     filterParams = photonSelection,
@@ -128,48 +96,11 @@ process.selectedPhotons = cms.EDFilter("VGammaPhotonFilter",
     verbosity = cms.untracked.uint32(2)
 )
 
-#process.vertexedDiMuons = cms.EDProducer("KalmanVertexFitCompositeCandProducer",
-    #src = cms.InputTag("selectedDiMuons")
-#)
-
-process.goodZMuMuGammas = cms.EDProducer("CandViewShallowClonePtrCombiner",
-    checkCharge = cms.bool(False),
-    cut = cms.string("mass > 0"), ## dummy cut
-    decay = cms.string("selectedDiMuons selectedPhotons"),
-    roles = cms.vstring("dimuon", "photon")
-)
-
-process.selectedZMuMuGammas = cms.EDFilter("ZMuMuGammaFilter",
-    filterParams = ZMuMuGammaSelection,
-    src = cms.InputTag("goodZMuMuGammas"),
-    filter = cms.bool(True),
-    verbosity = cms.untracked.uint32(2)
-)
-
 process.selectionSequence = cms.Sequence(
-    process.selectedMuons *
-    process.goodDiMuons *
-    process.selectedDiMuons *
-    process.selectedPhotons *
-    #process.vertexedDiMuons *
-    process.goodZMuMuGammas *
-    process.selectedZMuMuGammas
+    process.selectedPhotons
 )
 
-#process.mmgTree = cms.EDAnalyzer("MuMuGammaTreeMaker",
-    #photonSrc   = cms.untracked.InputTag("selectedPhotons"),
-    #muonSrc     = cms.untracked.InputTag("selectedMuons"),
-    #dimuonSrc   = cms.untracked.InputTag("selectedDiMuons"),
-    #beamSpotSrc = cms.untracked.InputTag("offlineBeamSpot"),
-    #primaryVertexSrc = cms.untracked.InputTag("offlinePrimaryVertices"),
-    #ebClusterSrc = cms.untracked.InputTag("islandBasicClusters", "islandBarrelBasicClusters"),
-    #ebRecHitsSrc = cms.untracked.InputTag("ecalRecHit", "EcalRecHitsEB"),
-    #eeRecHitsSrc = cms.untracked.InputTag("ecalRecHit", "EcalRecHitsEE"),
-    #genParticleSrc = cms.untracked.InputTag("prunedGenParticles"),
-    #isMC        = cms.untracked.bool(False),
-    #)
-
-process.load("ElectroWeakAnalysis.MultiBosons.FsrAnalysis.PmvTreeMaker_cfi")
+process.load("ElectroWeakAnalysis.MultiBosons.FsrAnalysis.HigagaPmvTreeMaker_cfi")
 
 process.pmvTree.isMC = options.isMC
 
