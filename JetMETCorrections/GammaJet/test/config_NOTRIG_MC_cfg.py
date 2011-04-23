@@ -106,6 +106,9 @@ process.metCorSequence = cms.Sequence(process.metMuonJESCorAK5)
 
 process.ak5JetTracksAssociatorAtVertex.jets = cms.InputTag("ak5PFJets")
 process.myBtag = cms.Sequence(process.ak5JetTracksAssociatorAtVertex*process.btagging)
+process.softMuonTagInfos.jets =  cms.InputTag("ak5PFJets")
+process.softElectronTagInfos.jets =  cms.InputTag("ak5PFJets")
+
 
 process.myanalysis = cms.EDAnalyzer("GammaJetAnalyzer",
     debug = cms.bool(False),
@@ -158,9 +161,3 @@ process.p = cms.Path( process.monster * process.kt6PFJets * process.myBtag * pro
 #process.p = cms.Path(process.monster*process.myanalysis)
 #process.p = cms.Path(process.ecalCleanClustering*process.recoJPTJets*process.myanalysis)
 #process.p = cms.Path(process.myanalysis)
-
-#process.AOD1 = cms.OutputModule("PoolOutputModule",
-#    fileName = cms.untracked.string('btag001.root')
-#)
-
-#process.endpath= cms.EndPath(process.AOD1)
