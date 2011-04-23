@@ -8,7 +8,6 @@
 //
 // Original Author:  M. Fischler
 //         Created:  Wed May 20 2009
-// $Id$
 //
 // Change log
 //
