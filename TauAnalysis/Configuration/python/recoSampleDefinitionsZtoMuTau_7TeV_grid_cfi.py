@@ -69,7 +69,8 @@ _femtobarns = 1.0e-3
 
 # Integrated luminosity to normalize
 #TARGET_LUMI =   5.1/_picobarns # for runs 160404 - 161312 ("golden" quality)
-TARGET_LUMI =  17.0/_picobarns # for runs 160404 - 161312 ("almost golden" quality)
+#TARGET_LUMI =  17.0/_picobarns # for runs 160404 - 161312 ("almost golden" quality)
+TARGET_LUMI =  15.5/_picobarns # for runs 160404 - 161312 ("almost golden" quality) corrected for ~90% PFTau trigger efficiency
 
 #--------------------------------------------------------------------------------
 # NOTE: cross-sections for W and Z production are scaled to next-to-leading order values
@@ -344,6 +345,26 @@ MERGE_SAMPLES = {
         'drawOption' : styles.drawOption_QCD
     }
 }
+MERGE_SAMPLES.update({
+    'A160Sum' : {
+        'samples' : [ 'A160', 'bbA160' ],
+        'legendEntry' : 'A(160) #rightarrow #tau^{+} #tau^{-}',
+        'type' : 'bsmMC',
+        'drawOption' : styles.drawOption_darkBlue_separate,
+            },
+    'A300Sum' : {
+        'samples' : [ 'A300', 'bbA300' ],
+        'legendEntry' : 'A(300) #rightarrow #tau^{+} #tau^{-}',
+        'type' : 'bsmMC',
+        'drawOption' : styles.drawOption_darkBlue_separate,
+            },
+    'A450Sum' : {
+        'samples' : [ 'A450', 'bbA450' ],
+        'legendEntry' : 'A(450) #rightarrow #tau^{+} #tau^{-}',
+        'type' : 'bsmMC',
+        'drawOption' : styles.drawOption_darkBlue_separate,
+    }
+})
 
 # List of all subsamples used in any plot job.
 # i.e. if qcdSum is included in samples to plot
