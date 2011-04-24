@@ -8,9 +8,9 @@
  * 
  * \author Christian Veelken, UC Davis
  *
- * \version $Revision: 1.8 $
+ * \version $Revision: 1.9 $
  *
- * $Id: ParticlePFIsolationExtractor.h,v 1.8 2011/04/15 16:56:40 veelken Exp $
+ * $Id: ParticlePFIsolationExtractor.h,v 1.9 2011/04/22 16:07:31 veelken Exp $
  *
  */
 
@@ -111,7 +111,7 @@ class ParticlePFIsolationExtractor
 	}
 
 	if ( methodPUcorr_ == kRho ) {	  
-	  ueRhoOffset_ = cfg.getParameter<double>("ueRhoOffset");
+	  ueRhoOffset_ = cfgPUcorr.getParameter<double>("ueRhoOffset");
 
 	  if ( !(pfChargedHadronIsoConeSize_ == pfNeutralHadronIsoConeSize_ && pfChargedHadronIsoConeSize_ == pfPhotonIsoConeSize_) ) 
 	    throw cms::Exception("ParticlePFIsolationExtractor")
