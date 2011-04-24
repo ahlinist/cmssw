@@ -152,7 +152,7 @@
  </LogicalPart>
  <LogicalPart name="PixelBarrelCapacitorFull" category="unspecified">
   <rSolid name="pixbarladderfull3:PixelBarrelCapacitorFull"/>
-  <rMaterial name="materials:Barium_Titanate"/>
+  <rMaterial name="trackermaterial:T_Barium_Titanate"/>
  </LogicalPart>
  <LogicalPart name="PixelBarrelCapacitorStripFull" category="unspecified">
   <rSolid name="pixbarladderfull3:PixelBarrelCapacitorStripFull"/>
