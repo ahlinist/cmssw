@@ -15,44 +15,52 @@ const int  xsReader::fNy;
 // ----------------------------------------------------------------------
 xsReader::xsReader(TChain *tree, TString evtClassName): treeReaderXS(tree, evtClassName) {
   cout << "--> xsReader> This is the start ..." << endl;
-  //fpJSON = new JSON("/shome/bora/root/json/json_147196_149442");  // Run2010B
+  fpJSON = new JSON("/shome/bora/root/json/json_147196_149442");  // Run2010B
   //fpJSON = new JSON("/shome/bora/root/json/json_140042_144114");  // Run2010A
-  fpJSON = new JSON("/shome/bora/root/json/json_146240_147116");  // Run2010B HLTDoubleMu0
+  //fpJSON = new JSON("/shome/bora/root/json/json_146240_147116");  // Run2010B HLTDoubleMu0
 
-  //// Ups(1S) Binning
-  /*fPTbin[0] = 0.; fPTbin[1] = 1.; fPTbin[2] = 2.; fPTbin[3] = 3.; fPTbin[4] = 4.; fPTbin[5] = 5.; fPTbin[6] = 6.;
-  fPTbin[7] = 7.; fPTbin[8] = 8.; fPTbin[9] = 9.; fPTbin[10] = 10.; fPTbin[11] = 11.; fPTbin[12] = 12.; fPTbin[13] = 13.;
-  fPTbin[14] = 14.; fPTbin[15] = 15.; fPTbin[16] = 16.; fPTbin[17] = 17.; fPTbin[18] = 18.; fPTbin[19] = 19.; 
-  fPTbin[20] = 20.; fPTbin[21] = 21.; fPTbin[22] = 22.; fPTbin[23] = 23.; fPTbin[24] = 24.; fPTbin[25] = 25.; 
-  fPTbin[26] = 26.; fPTbin[27] = 27.; fPTbin[28] = 28.; fPTbin[29] = 29.; fPTbin[30] = 30.; fPTbin[31] = 31.; 
-  fPTbin[32] = 32.; fPTbin[33] = 33.; fPTbin[34] = 34.; fPTbin[35] = 35.; fPTbin[36] = 36.; fPTbin[37] = 37.;
-  fPTbin[38] = 38.; fPTbin[39] = 39.; fPTbin[40] = 40.; fPTbin[41] = 41.; fPTbin[42] = 42.; fPTbin[43] = 43.;
-  fPTbin[44] = 44.; fPTbin[45] = 45.; fPTbin[46] = 46.; fPTbin[47] = 47.; fPTbin[48] = 48.; fPTbin[49] = 49.;
-  fPTbin[50] = 50.;
-    
-  fYbin[0] = 0.; fYbin[1] = 0.1; fYbin[2] = 0.2; fYbin[3] = 0.3; fYbin[4] = 0.4; fYbin[5] = 0.5; fYbin[6] = 0.6;
-  fYbin[7] = 0.7; fYbin[8] = 0.8; fYbin[9] = 0.9; fYbin[10] = 1.0; fYbin[11] = 1.1; fYbin[12] = 1.2; fYbin[13] = 1.3;
-  fYbin[14] = 1.4; fYbin[15] = 1.5; fYbin[16] = 1.6; fYbin[17] = 1.7; fYbin[18] = 1.8; fYbin[19] = 1.9; fYbin[20] = 2.0;
-  fYbin[21] = 2.1; fYbin[22] = 2.2; fYbin[23] = 2.3; fYbin[24] = 2.4;
-  */
-  
-  fPTbin[0] = 0.; fPTbin[1] = 0.5; fPTbin[2] = 1.; fPTbin[3] = 1.5; fPTbin[4] = 2.; fPTbin[5] = 3.; fPTbin[6] = 4.;
-  fPTbin[7] = 5.; fPTbin[8] = 6.; fPTbin[9] = 7.; fPTbin[10] = 8.; fPTbin[11] = 9.; fPTbin[12] = 10.; fPTbin[13] = 11.;
-  fPTbin[14] = 12.; fPTbin[15] = 13.; fPTbin[16] = 14.; fPTbin[17] = 15.; fPTbin[18] = 16.; fPTbin[19] = 18.; 
-  fPTbin[20] = 20.; fPTbin[21] = 22.; fPTbin[22] = 25.; fPTbin[23] = 30.; fPTbin[24] = 50.; 
-  
-  fYbin[0] = 0.; fYbin[1] = 0.4; fYbin[2] = 0.8; fYbin[3] = 1.2; fYbin[4] = 1.6; fYbin[5] = 2.; fYbin[6] = 2.4;
-   
+  //// Acceptance Binning
   //fPTbin[0] = 0.; fPTbin[1] = 1.; fPTbin[2] = 2.; fPTbin[3] = 3.; fPTbin[4] = 4.; fPTbin[5] = 5.; fPTbin[6] = 6.;
-  //fPTbin[7] = 7.; fPTbin[8] = 8.; fPTbin[9] = 9.; fPTbin[10] = 10.; fPTbin[11] = 12.; fPTbin[12] = 14.; fPTbin[13] = 17.;
-  //fPTbin[14] = 20.; fPTbin[15] = 30.;
-  //fYbin[0] = 0.; fYbin[1] = 0.5; fYbin[2] = 1.0; fYbin[3] = 1.5; fYbin[4] = 2.0;
+  //fPTbin[7] = 7.; fPTbin[8] = 8.; fPTbin[9] = 9.; fPTbin[10] = 10.; fPTbin[11] = 11.; fPTbin[12] = 12.; fPTbin[13] = 13.;
+  //fPTbin[14] = 14.; fPTbin[15] = 15.; fPTbin[16] = 16.; fPTbin[17] = 17.; fPTbin[18] = 18.; fPTbin[19] = 19.; 
+  //fPTbin[20] = 20.; fPTbin[21] = 21.; fPTbin[22] = 22.; fPTbin[23] = 23.; fPTbin[24] = 24.; fPTbin[25] = 25.; 
+  //fPTbin[26] = 26.; fPTbin[27] = 27.; fPTbin[28] = 28.; fPTbin[29] = 29.; fPTbin[30] = 30.; fPTbin[31] = 31.; 
+  //fPTbin[32] = 32.; fPTbin[33] = 33.; fPTbin[34] = 34.; fPTbin[35] = 35.; fPTbin[36] = 36.; fPTbin[37] = 37.;
+  //fPTbin[38] = 38.; fPTbin[39] = 39.; fPTbin[40] = 40.; fPTbin[41] = 41.; fPTbin[42] = 42.; fPTbin[43] = 43.;
+  //fPTbin[44] = 44.; fPTbin[45] = 45.; fPTbin[46] = 46.; fPTbin[47] = 47.; fPTbin[48] = 48.; fPTbin[49] = 49.;
+  //fPTbin[50] = 50.;
+  //fYbin[0] = 0.; fYbin[1] = 0.1; fYbin[2] = 0.2; fYbin[3] = 0.3; fYbin[4] = 0.4; fYbin[5] = 0.5; fYbin[6] = 0.6;
+  //fYbin[7] = 0.7; fYbin[8] = 0.8; fYbin[9] = 0.9; fYbin[10] = 1.0; fYbin[11] = 1.1; fYbin[12] = 1.2; fYbin[13] = 1.3;
+  //fYbin[14] = 1.4; fYbin[15] = 1.5; fYbin[16] = 1.6; fYbin[17] = 1.7; fYbin[18] = 1.8; fYbin[19] = 1.9; fYbin[20] = 2.0;
+  //fYbin[21] = 2.1; fYbin[22] = 2.2; fYbin[23] = 2.3; fYbin[24] = 2.4;
+  
+  //// Ups(1S) Binning
+  //fPTbin[0] = 0.; fPTbin[1] = 0.5; fPTbin[2] = 1.; fPTbin[3] = 1.5; fPTbin[4] = 2.; fPTbin[5] = 3.; fPTbin[6] = 4.;
+  //fPTbin[7] = 5.; fPTbin[8] = 6.; fPTbin[9] = 7.; fPTbin[10] = 8.; fPTbin[11] = 9.; fPTbin[12] = 10.; fPTbin[13] = 11.;
+  //fPTbin[14] = 12.; fPTbin[15] = 13.; fPTbin[16] = 14.; fPTbin[17] = 15.; fPTbin[18] = 16.; fPTbin[19] = 18.; 
+  //fPTbin[20] = 20.; fPTbin[21] = 22.; fPTbin[22] = 25.; fPTbin[23] = 30.; fPTbin[24] = 50.; 
+  //fYbin[0] = 0.; fYbin[1] = 0.4; fYbin[2] = 0.8; fYbin[3] = 1.2; fYbin[4] = 1.6; fYbin[5] = 2.; fYbin[6] = 2.4;
+  
+  //// Ups(2S) Binning
+  //fPTbin[0] = 0.; fPTbin[1] = 1.; fPTbin[2] = 2.; fPTbin[3] = 4.; fPTbin[4] = 6.; fPTbin[5] = 7.; fPTbin[6] = 8.;
+  //fPTbin[7] = 10.; fPTbin[8] = 12.; fPTbin[9] = 13.; fPTbin[10] = 14.; fPTbin[11] = 16.; fPTbin[12] = 18.; fPTbin[13] = 20.;
+  //fPTbin[14] = 22.; fPTbin[15] = 24.; fPTbin[16] = 27.; fPTbin[17] = 30.; fPTbin[18] = 50.; 
+  //fYbin[0] = 0.; fYbin[1] = 0.4; fYbin[2] = 0.8; fYbin[3] = 1.2; fYbin[4] = 1.6; fYbin[5] = 2.; fYbin[6] = 2.4;
+  
+  //// Ups(3S) Binning
+  fPTbin[0] = 0.; fPTbin[1] = 2.; fPTbin[2] = 4.; fPTbin[3] = 8.; fPTbin[4] = 10.; fPTbin[5] = 13.; fPTbin[6] = 16.;
+  fPTbin[7] = 20.; fPTbin[8] = 25.; fPTbin[9] = 30.; fPTbin[10] = 50.; 
+  fYbin[0] = 0.; fYbin[1] = 0.4; fYbin[2] = 0.8; fYbin[3] = 1.2; fYbin[4] = 1.6; fYbin[5] = 2.; fYbin[6] = 2.4;
+  
+  
+  ///// PidTable Tracking Efficiency for DATA
+  fPidTableTrckEff = new PidTable("PidTables/DATA/Upsilon/PtTrackEff.dat");
   
   ///// PidTables MC -- TrackerMuonArbitrated 
-  fPidTableMuIDPos = new PidTable("../tnp/PidTables/MC/Jpsi/MuID/CowboyVeto/TrackerMuonArbitrated/PtMmbPos-jpsi.tma.nb.dat");
-  fPidTableMuIDNeg = new PidTable("../tnp/PidTables/MC/Jpsi/MuID/CowboyVeto/TrackerMuonArbitrated/PtMmbNeg-jpsi.tma.nb.dat");
-  fPidTableTrigPos = new PidTable("../tnp/PidTables/MC/Jpsi/Trig/CowboyVeto/PtMmbPos-jpsi.tma.nb.dat");    
-  fPidTableTrigNeg = new PidTable("../tnp/PidTables/MC/Jpsi/Trig/CowboyVeto/PtMmbNeg-jpsi.tma.nb.dat"); 
+  //fPidTableMuIDPos = new PidTable("../tnp/PidTables/MC/Jpsi/MuID/CowboyVeto/TrackerMuonArbitrated/PtMmbPos-jpsi.tma.nb.dat");
+  //fPidTableMuIDNeg = new PidTable("../tnp/PidTables/MC/Jpsi/MuID/CowboyVeto/TrackerMuonArbitrated/PtMmbNeg-jpsi.tma.nb.dat");
+  //fPidTableTrigPos = new PidTable("../tnp/PidTables/MC/Jpsi/Trig/CowboyVeto/PtMmbPos-jpsi.tma.nb.dat");    
+  //fPidTableTrigNeg = new PidTable("../tnp/PidTables/MC/Jpsi/Trig/CowboyVeto/PtMmbNeg-jpsi.tma.nb.dat"); 
   
   ///// PidTables MC -- Global and Tracker 
   //fPidTableMuIDPos = new PidTable("../tnp/PidTables/MC/Jpsi/MuID/CowboyVeto/PtMmbPos-jpsi.dat");
@@ -62,10 +70,10 @@ xsReader::xsReader(TChain *tree, TString evtClassName): treeReaderXS(tree, evtCl
   
   
   ///// PidTables DATA -- TrackerMuonArbitrated 
-  //fPidTableMuIDPos = new PidTable("../tnp/PidTables/DATA/Jpsi/MuID/CowboyVeto/TrackerMuonArbitrated/PtMmbPos-jpsi.tma.nb.dat");
-  //fPidTableMuIDNeg = new PidTable("../tnp/PidTables/DATA/Jpsi/MuID/CowboyVeto/TrackerMuonArbitrated/PtMmbNeg-jpsi.tma.nb.dat");
-  //fPidTableTrigPos = new PidTable("../tnp/PidTables/DATA/Jpsi/Trig/MuOnia/CowboyVeto/PtMmbPos-jpsi.tma.nb.dat");    
-  //fPidTableTrigNeg = new PidTable("../tnp/PidTables/DATA/Jpsi/Trig/MuOnia/CowboyVeto/PtMmbNeg-jpsi.tma.nb.dat"); 
+  fPidTableMuIDPos = new PidTable("../tnp/PidTables/DATA/Jpsi/MuID/CowboyVeto/TrackerMuonArbitrated/PtMmbPos-jpsi.tma.nb.dat");
+  fPidTableMuIDNeg = new PidTable("../tnp/PidTables/DATA/Jpsi/MuID/CowboyVeto/TrackerMuonArbitrated/PtMmbNeg-jpsi.tma.nb.dat");
+  fPidTableTrigPos = new PidTable("../tnp/PidTables/DATA/Jpsi/Trig/MuOnia/CowboyVeto/PtMmbPos-jpsi.tma.nb.dat");    
+  fPidTableTrigNeg = new PidTable("../tnp/PidTables/DATA/Jpsi/Trig/MuOnia/CowboyVeto/PtMmbNeg-jpsi.tma.nb.dat"); 
   
   ///// PidTables DATA -- Global and Tracker 
   //fPidTableMuIDPos = new PidTable("../tnp/PidTables/DATA/Jpsi/MuID/CowboyVeto/PtMmbPos-jpsi.dat");
@@ -104,9 +112,8 @@ void xsReader::eventProcessing() {
   //   trigEffCheck();
   //}
   
-  //GenStudy();
-  
   if ( MODE == 1  ) {
+    //GenStudy(); // MuIdCheck, TrigCheck
     UpsGun_acceptance();
     //acceptance();
     //preSelEff();
@@ -161,6 +168,8 @@ void xsReader::GenStudy(){
   TAnaTrack *pTrack(0);
   bool match1 = false; bool match2 = false;
   bool muid1 = false; bool muid2 = false;
+  bool Leg1 = false; bool Leg2 = false;
+  int index1(-99), index2(-99);
   double pt1(-9), pt2(-9), eta1(-9), eta2(-9);
   for (int iG = 0; iG < fpEvt->nGenCands(); ++iG) {
     gCand = fpEvt->getGenCand(iG);
@@ -177,6 +186,7 @@ void xsReader::GenStudy(){
 	      if ( pTrack->fGenIndex == g2Cand->fNumber && !(match1) ) {
 		pt1 = pTrack->fPlab.Perp();
 		eta1 = pTrack->fPlab.Eta();
+		index1 = iR;
 		//cout << "    g2Cand->fNumber = " << g2Cand->fNumber << endl;
 		match1 = true;
 		if ((pTrack->fMuID & MUTYPE1) == MUTYPE1) muid1 = true;
@@ -186,8 +196,9 @@ void xsReader::GenStudy(){
 	      if ( pTrack->fGenIndex == g2Cand->fNumber  ) {
 		pt2 = pTrack->fPlab.Perp();
 		eta2 = pTrack->fPlab.Eta();
+		index2 = iR;
 		//cout << "g2Cand->fNumber = " << g2Cand->fNumber << endl;
-		match2 = true;
+	        match2 = true;
 		if ((pTrack->fMuID & MUTYPE1) == MUTYPE1) muid2 = true;
 		break;
 	      }	  
@@ -210,7 +221,50 @@ void xsReader::GenStudy(){
 	      ((TH2D*)fpHistFile->Get(Form("MuIDCheck_Deno_%.1dS",UPSTYPE)))->Fill(genCand.Rapidity(), gCand->fP.Perp());
 	      if ( muid1 && muid2 ) { 
 		((TH2D*)fpHistFile->Get(Form("MuIDCheck_Numa_%.1dS",UPSTYPE)))->Fill(genCand.Rapidity(),gCand->fP.Perp());
-		if ( isPathFired(HLTPATH) ) ((TH2D*)fpHistFile->Get(Form("TrigCheck_Numa_%.1dS",UPSTYPE)))->Fill(genCand.Rapidity(),gCand->fP.Perp());
+		if ( isPathFired(HLTPATH) ) {
+		  TString Label = HLTLABEL;
+		  TTrgObj *pTrig(0); TTrgObj *pTrig_(0); 
+		  int t(-1);
+		  TLorentzVector tagD;
+		  TAnaTrack *pTagD(0);
+		  pTagD = fpEvt->getRecTrack(index1);
+		  tagD.SetPtEtaPhiM(pTagD->fPlab.Pt(), pTagD->fPlab.Eta(), pTagD->fPlab.Phi(), MMUON);
+		  for (int s = 0; s < fpEvt->nTrgObj() ; ++s) {
+		    pTrig = fpEvt->getTrgObj(s);
+		    if ( !(Label.CompareTo(pTrig->fLabel)) ) {
+		      double tagD_dR = tagD.DeltaR(pTrig->fP);
+		      double tagD_dEta = TMath::Abs(pTagD->fPlab.Eta() - pTrig->fP.Eta());
+		      double tagD_dPhi = TMath::Abs(pTagD->fPlab.Phi() - pTrig->fP.Phi());
+		      if ( ( tagD_dPhi < DPHI ) && ( tagD_dEta < DETA )) {
+			Leg1 = true;				
+			//cout << " Leg1 matched to Double mu T.O.  " << endl;
+			t=s;
+			break;
+		      } 
+		    }
+		  }
+		  
+		  TLorentzVector probe;
+		  TAnaTrack *pProbe(0);
+		  pProbe = fpEvt->getRecTrack(index2);
+		  probe.SetPtEtaPhiM(pProbe->fPlab.Pt(), pProbe->fPlab.Eta(), pProbe->fPlab.Phi(), MMUON);
+		  for (int i = 0; i < fpEvt->nTrgObj() ; ++i) {
+		    if ( i == t ) continue;
+		    pTrig_ = fpEvt->getTrgObj(i);
+		    if ( !(Label.CompareTo(pTrig_->fLabel)) ) {
+		      double probe_dR = probe.DeltaR(pTrig_->fP);
+		      double probe_dEta = TMath::Abs(pProbe->fPlab.Eta() - pTrig_->fP.Eta());
+		      double probe_dPhi = TMath::Abs(pProbe->fPlab.Phi() - pTrig_->fP.Phi());
+		      if ( ( probe_dPhi < DPHI ) && ( probe_dEta < DETA )) {
+			Leg2 = true;
+			//cout << " Leg2 matched to Double mu T.O. " << endl;
+			break;
+		      }
+		    }
+		  }
+		  
+		  if ( Leg1 && Leg2 )((TH2D*)fpHistFile->Get(Form("TrigCheck_Numa_%.1dS",UPSTYPE)))->Fill(genCand.Rapidity(),gCand->fP.Perp());
+		}
 	      }
 	    }
 	    
@@ -218,13 +272,56 @@ void xsReader::GenStudy(){
 	      ((TH2D*)fpHistFile->Get(Form("MuIDCheck_Deno_%.1dS",UPSTYPE)))->Fill(-genCand.Rapidity(), gCand->fP.Perp());
 	      if ( muid1 && muid2 ) { 
 		((TH2D*)fpHistFile->Get(Form("MuIDCheck_Numa_%.1dS",UPSTYPE)))->Fill(-genCand.Rapidity(),gCand->fP.Perp());
-		if ( isPathFired(HLTPATH) ) ((TH2D*)fpHistFile->Get(Form("TrigCheck_Numa_%.1dS",UPSTYPE)))->Fill(-genCand.Rapidity(),gCand->fP.Perp());
+		if ( isPathFired(HLTPATH) ) {
+		  TString Label = HLTLABEL;
+		  TTrgObj *pTrig(0); TTrgObj *pTrig_(0); 
+		  int t(-1);
+		  TLorentzVector tagD;
+		  TAnaTrack *pTagD(0);
+		  pTagD = fpEvt->getRecTrack(index1);
+		  tagD.SetPtEtaPhiM(pTagD->fPlab.Pt(), pTagD->fPlab.Eta(), pTagD->fPlab.Phi(), MMUON);
+		  for (int s = 0; s < fpEvt->nTrgObj() ; ++s) {
+		    pTrig = fpEvt->getTrgObj(s);
+		    if ( !(Label.CompareTo(pTrig->fLabel)) ) {
+		      double tagD_dR = tagD.DeltaR(pTrig->fP);
+		      double tagD_dEta = TMath::Abs(pTagD->fPlab.Eta() - pTrig->fP.Eta());
+		      double tagD_dPhi = TMath::Abs(pTagD->fPlab.Phi() - pTrig->fP.Phi());
+		      if ( ( tagD_dPhi < DPHI ) && ( tagD_dEta < DETA )) {
+			Leg1 = true;				
+			//cout << " Leg1 matched to Double mu T.O.  " << endl;
+			t=s;
+			break;
+		      } 
+		    }
+		  }
+		  
+		  TLorentzVector probe;
+		  TAnaTrack *pProbe(0);
+		  pProbe = fpEvt->getRecTrack(index2);
+		  probe.SetPtEtaPhiM(pProbe->fPlab.Pt(), pProbe->fPlab.Eta(), pProbe->fPlab.Phi(), MMUON);
+		  for (int i = 0; i < fpEvt->nTrgObj() ; ++i) {
+		    if ( i == t ) continue;
+		    pTrig_ = fpEvt->getTrgObj(i);
+		    if ( !(Label.CompareTo(pTrig_->fLabel)) ) {
+		      double probe_dR = probe.DeltaR(pTrig_->fP);
+		      double probe_dEta = TMath::Abs(pProbe->fPlab.Eta() - pTrig_->fP.Eta());
+		      double probe_dPhi = TMath::Abs(pProbe->fPlab.Phi() - pTrig_->fP.Phi());
+		      if ( ( probe_dPhi < DPHI ) && ( probe_dEta < DETA )) {
+			Leg2 = true;
+			//cout << " Leg2 matched to Double mu T.O. " << endl;
+			break;
+		      }
+		    }
+		  }
+		  
+		  if ( Leg1 && Leg2 ) ((TH2D*)fpHistFile->Get(Form("TrigCheck_Numa_%.1dS",UPSTYPE)))->Fill(-genCand.Rapidity(),gCand->fP.Perp());
+		}
 	      }
 	    }
 	    
 	    match1 = false; match2 = false;
 	    muid1 = false; muid2 = false;
-	    
+	    Leg1 = false; Leg2 = false; 
 	  }
 	}
 	
@@ -641,19 +738,21 @@ void xsReader::UpsGun_acceptance(){
       }
     }
     if ( fill ){
-      if ( genCand.Rapidity() >= 0 ) {
-	((TH2D*)fpHistFile->Get(Form("UG_RecoGenRes_%.1dS",UPSTYPE)))->Fill(genCand.Rapidity(), gUps->fP.Perp(), w1);
-	((TH2D*)fpHistFile->Get(Form("UG_RecoGenRes_HelPl_%.1dS",UPSTYPE)))->Fill(genCand.Rapidity(), gUps->fP.Perp(), w2);
-	((TH2D*)fpHistFile->Get(Form("UG_RecoGenRes_HelMi_%.1dS",UPSTYPE)))->Fill(genCand.Rapidity(), gUps->fP.Perp(), w3);
-	((TH2D*)fpHistFile->Get(Form("UG_RecoGenRes_CSPl_%.1dS",UPSTYPE)))->Fill(genCand.Rapidity(), gUps->fP.Perp(), w4);
-	((TH2D*)fpHistFile->Get(Form("UG_RecoGenRes_CSMi_%.1dS",UPSTYPE)))->Fill(genCand.Rapidity(), gUps->fP.Perp(), w5);	
-      }
-      if ( genCand.Rapidity() < 0 ) {
-	((TH2D*)fpHistFile->Get(Form("UG_RecoGenRes_%.1dS",UPSTYPE)))->Fill(-genCand.Rapidity(), gUps->fP.Perp(), w1);
-	((TH2D*)fpHistFile->Get(Form("UG_RecoGenRes_HelPl_%.1dS",UPSTYPE)))->Fill(-genCand.Rapidity(), gUps->fP.Perp(), w2);
-	((TH2D*)fpHistFile->Get(Form("UG_RecoGenRes_HelMi_%.1dS",UPSTYPE)))->Fill(-genCand.Rapidity(), gUps->fP.Perp(), w3);
-	((TH2D*)fpHistFile->Get(Form("UG_RecoGenRes_CSPl_%.1dS",UPSTYPE)))->Fill(-genCand.Rapidity(), gUps->fP.Perp(), w4);
-	((TH2D*)fpHistFile->Get(Form("UG_RecoGenRes_CSMi_%.1dS",UPSTYPE)))->Fill(-genCand.Rapidity(), gUps->fP.Perp(), w5);
+      if ( (gUps->fP.Perp() <= PTCAND) && (fabs(genCand.Rapidity()) <= RAPCAND) ){
+	if ( genCand.Rapidity() >= 0 ) {
+	  ((TH2D*)fpHistFile->Get(Form("UG_RecoGenRes_%.1dS",UPSTYPE)))->Fill(genCand.Rapidity(), gUps->fP.Perp(), w1);
+	  ((TH2D*)fpHistFile->Get(Form("UG_RecoGenRes_HelPl_%.1dS",UPSTYPE)))->Fill(genCand.Rapidity(), gUps->fP.Perp(), w2);
+	  ((TH2D*)fpHistFile->Get(Form("UG_RecoGenRes_HelMi_%.1dS",UPSTYPE)))->Fill(genCand.Rapidity(), gUps->fP.Perp(), w3);
+	  ((TH2D*)fpHistFile->Get(Form("UG_RecoGenRes_CSPl_%.1dS",UPSTYPE)))->Fill(genCand.Rapidity(), gUps->fP.Perp(), w4);
+	  ((TH2D*)fpHistFile->Get(Form("UG_RecoGenRes_CSMi_%.1dS",UPSTYPE)))->Fill(genCand.Rapidity(), gUps->fP.Perp(), w5);	
+	}
+	if ( genCand.Rapidity() < 0 ) {
+	  ((TH2D*)fpHistFile->Get(Form("UG_RecoGenRes_%.1dS",UPSTYPE)))->Fill(-genCand.Rapidity(), gUps->fP.Perp(), w1);
+	  ((TH2D*)fpHistFile->Get(Form("UG_RecoGenRes_HelPl_%.1dS",UPSTYPE)))->Fill(-genCand.Rapidity(), gUps->fP.Perp(), w2);
+	  ((TH2D*)fpHistFile->Get(Form("UG_RecoGenRes_HelMi_%.1dS",UPSTYPE)))->Fill(-genCand.Rapidity(), gUps->fP.Perp(), w3);
+	  ((TH2D*)fpHistFile->Get(Form("UG_RecoGenRes_CSPl_%.1dS",UPSTYPE)))->Fill(-genCand.Rapidity(), gUps->fP.Perp(), w4);
+	  ((TH2D*)fpHistFile->Get(Form("UG_RecoGenRes_CSMi_%.1dS",UPSTYPE)))->Fill(-genCand.Rapidity(), gUps->fP.Perp(), w5);
+	}
       }
     }
   }
@@ -1416,7 +1515,8 @@ void xsReader::MCstudy(){
 void xsReader::calculateWeights(int mode){
   double effID1(-99); double effID2(-99);
   double effTR1(-99); double effTR2(-99);
-  double MuIdWeight(-99); double TrigWeight(-99);
+  double effTrck1(-99); double effTrck2(-99);
+  double MuIdWeight(-99); double TrigWeight(-99); double TrackWeight(-99); 
   TAnaCand *pCand;
   TLorentzVector Cand;
   
@@ -1426,18 +1526,23 @@ void xsReader::calculateWeights(int mode){
     if ( pl1->fQ > 0 ){
       effID1 = fPidTableMuIDPos->effD(pl1->fPlab.Perp(), pl1->fPlab.Eta(), 0.);
       effTR1 = fPidTableTrigPos->effD(pl1->fPlab.Perp(), pl1->fPlab.Eta(), 0.);
+      effTrck1 = fPidTableTrckEff->effD(pl1->fPlab.Perp(), pl1->fPlab.Eta(), 0.);
       
     } else if ( pl1->fQ < 0 ){
       effID1 = fPidTableMuIDNeg->effD(pl1->fPlab.Perp(), pl1->fPlab.Eta(), 0.);
       effTR1 = fPidTableTrigNeg->effD(pl1->fPlab.Perp(), pl1->fPlab.Eta(), 0.);
+      effTrck1 = fPidTableTrckEff->effD(pl1->fPlab.Perp(), pl1->fPlab.Eta(), 0.);
     }
     
     if ( pl2->fQ > 0 ){
       effID2 = fPidTableMuIDPos->effD(pl2->fPlab.Perp(), pl2->fPlab.Eta(), 0.);
       effTR2 = fPidTableTrigPos->effD(pl2->fPlab.Perp(), pl2->fPlab.Eta(), 0.);
+      effTrck2 = fPidTableTrckEff->effD(pl2->fPlab.Perp(), pl2->fPlab.Eta(), 0.);
+      
     }  else if ( pl2->fQ < 0 ){
       effID2 = fPidTableMuIDNeg->effD(pl2->fPlab.Perp(), pl2->fPlab.Eta(), 0.);
       effTR2 = fPidTableTrigNeg->effD(pl2->fPlab.Perp(), pl2->fPlab.Eta(), 0.);
+      effTrck2 = fPidTableTrckEff->effD(pl2->fPlab.Perp(), pl2->fPlab.Eta(), 0.);
     }
     
     //fWeight = 1/(effID1*effID2*effTR1*effTR2);
@@ -1446,9 +1551,11 @@ void xsReader::calculateWeights(int mode){
     
     MuIdWeight = effID1*effID2;
     TrigWeight = effTR1*effTR2;
+    TrackWeight = effTrck1*effTrck2;
     
     ((TH1D*)fpHistFile->Get(Form("MuIDEff_%.1dS,OverAll", UPSTYPE)))->Fill(MuIdWeight,1./MuIdWeight);
     ((TH1D*)fpHistFile->Get(Form("TrigEff_%.1dS,OverAll", UPSTYPE)))->Fill(TrigWeight,1./TrigWeight);
+    ((TH1D*)fpHistFile->Get(Form("TrackEff_%.1dS,OverAll", UPSTYPE)))->Fill(TrackWeight,1./TrackWeight);
     
     for ( int iy = 0; iy < fNy; ++iy ){
       for ( int ipt = 0; ipt < fNpt; ++ipt ){
@@ -1458,6 +1565,7 @@ void xsReader::calculateWeights(int mode){
 	    if ( ( fCandPt >= fPTbin[ipt] ) && ( fCandPt < fPTbin[ipt+1] ) ){
 	      ((TH1D*)fpHistFile->Get(Form("MuIDEff_%.1dS,rapidity%.1f_%.1f,pt%.1f_%.1f",UPSTYPE, fYbin[iy], fYbin[iy+1], fPTbin[ipt], fPTbin[ipt+1])))->Fill(MuIdWeight,1./MuIdWeight);
 	      ((TH1D*)fpHistFile->Get(Form("TrigEff_%.1dS,rapidity%.1f_%.1f,pt%.1f_%.1f",UPSTYPE, fYbin[iy], fYbin[iy+1], fPTbin[ipt], fPTbin[ipt+1])))->Fill(TrigWeight,1./TrigWeight);
+	      ((TH1D*)fpHistFile->Get(Form("TrackEff_%.1dS,rapidity%.1f_%.1f,pt%.1f_%.1f",UPSTYPE, fYbin[iy], fYbin[iy+1], fPTbin[ipt], fPTbin[ipt+1])))->Fill(TrackWeight,1./TrackWeight);
 	    }
 	  }
 	}
@@ -1468,6 +1576,7 @@ void xsReader::calculateWeights(int mode){
 	    if ( ( fCandPt >= fPTbin[ipt] ) && ( fCandPt < fPTbin[ipt+1] ) ){
 	      ((TH1D*)fpHistFile->Get(Form("MuIDEff_%.1dS,rapidity%.1f_%.1f,pt%.1f_%.1f",UPSTYPE, fYbin[iy], fYbin[iy+1], fPTbin[ipt], fPTbin[ipt+1])))->Fill(MuIdWeight,1./MuIdWeight);
 	      ((TH1D*)fpHistFile->Get(Form("TrigEff_%.1dS,rapidity%.1f_%.1f,pt%.1f_%.1f",UPSTYPE, fYbin[iy], fYbin[iy+1], fPTbin[ipt], fPTbin[ipt+1])))->Fill(TrigWeight,1./TrigWeight);
+	      ((TH1D*)fpHistFile->Get(Form("TrackEff_%.1dS,rapidity%.1f_%.1f,pt%.1f_%.1f",UPSTYPE, fYbin[iy], fYbin[iy+1], fPTbin[ipt], fPTbin[ipt+1])))->Fill(TrackWeight,1./TrackWeight);
 	    }
 	  }
 	}	
@@ -1528,18 +1637,18 @@ void xsReader::bookHist() {
   k = new TH2D("mmmbar,pt-eta", "mmbar,pt-eta", fNpt, fPTbin, fNy, fYbin);
   cout << "--> xsReader> bookHist> " << endl;
   
-  
   // Acceptance Histograms
-  k = new TH2D(Form("AllGenRes_%1.dS",  UPSTYPE), Form("AllGenRes_%1.dS", UPSTYPE), fNy, fYbin, fNpt, fPTbin); 
+  k = new TH2D(Form("AllGenRes_%1.dS",  UPSTYPE), Form("AllGenRes_%1.dS", UPSTYPE), fNy, fYbin, fNpt, fPTbin);
   k = new TH2D(Form("RecoGenRes_%1.dS", UPSTYPE), Form("RecoGenRes_%1.dS", UPSTYPE), fNy, fYbin, fNpt, fPTbin); 
   ((TH2D*)fpHistFile->Get(Form("AllGenRes_%.1dS", UPSTYPE)))->Sumw2();
   ((TH2D*)fpHistFile->Get(Form("RecoGenRes_%.1dS", UPSTYPE)))->Sumw2();
+  
   h = new TH1D(Form("fl10_UpsRapidity_%.1dS", UPSTYPE), Form("fl10_UpsRapidity_%.1dS", UPSTYPE), 60, -3., 3.);
   h = new TH1D(Form("fl10_UpsMass_%.1dS", UPSTYPE), Form("fl10_UpsMass_%.1dS", UPSTYPE), 50, 9., 10.);
   h = new TH1D(Form("fl10_UpsPt_%.1dS", UPSTYPE), Form("fl10_UpsPt_%.1dS", UPSTYPE), 100, 0., 50.);
   h = new TH1D(Form("fl10_MuonPt_%.1dS", UPSTYPE), Form("fl10_MuonPt_%.1dS", UPSTYPE), 100, 0., 100.);
   h = new TH1D(Form("fl10_MuonEta_%.1dS", UPSTYPE), Form("fl10_MuonEta_%.1dS", UPSTYPE), 80, -4., 4.);  
-    
+  
   // Upsilon Gun Acceptance Histograms
   k = new TH2D(Form("UG_AllGenRes_%1.dS",  UPSTYPE), Form("UG_AllGenRes_%1.dS", UPSTYPE), fNy, fYbin, fNpt, fPTbin); 
   k = new TH2D(Form("UG_RecoGenRes_%1.dS", UPSTYPE), Form("UG_RecoGenRes_%1.dS", UPSTYPE), fNy, fYbin, fNpt, fPTbin); 
@@ -1550,7 +1659,8 @@ void xsReader::bookHist() {
   k = new TH2D(Form("UG_AllGenRes_CSPl_%1.dS",  UPSTYPE), Form("UG_AllGenRes_CSPl_%1.dS", UPSTYPE), fNy, fYbin, fNpt, fPTbin); 
   k = new TH2D(Form("UG_RecoGenRes_CSPl_%1.dS", UPSTYPE), Form("UG_RecoGenRes_CSPl_%1.dS", UPSTYPE), fNy, fYbin, fNpt, fPTbin);
   k = new TH2D(Form("UG_AllGenRes_CSMi_%1.dS",  UPSTYPE), Form("UG_AllGenRes_CSMi_%1.dS", UPSTYPE), fNy, fYbin, fNpt, fPTbin); 
-  k = new TH2D(Form("UG_RecoGenRes_CSMi_%1.dS", UPSTYPE), Form("UG_RecoGenRes_CSMi_%1.dS", UPSTYPE), fNy, fYbin, fNpt, fPTbin);   
+  k = new TH2D(Form("UG_RecoGenRes_CSMi_%1.dS", UPSTYPE), Form("UG_RecoGenRes_CSMi_%1.dS", UPSTYPE), fNy, fYbin, fNpt, fPTbin); 
+  
   ((TH2D*)fpHistFile->Get(Form("UG_AllGenRes_%.1dS", UPSTYPE)))->Sumw2();
   ((TH2D*)fpHistFile->Get(Form("UG_RecoGenRes_%.1dS", UPSTYPE)))->Sumw2();
   ((TH2D*)fpHistFile->Get(Form("UG_AllGenRes_HelPl_%.1dS", UPSTYPE)))->Sumw2();
@@ -1590,7 +1700,7 @@ void xsReader::bookHist() {
   k = new TH2D(Form("MuIDCheck_before_%.1dS",UPSTYPE), Form("MuIDCheck_before_%1.dS", UPSTYPE), fNy, fYbin, fNpt, fPTbin);
   ((TH2D*)fpHistFile->Get(Form("MuIDCheck_after_%.1dS", UPSTYPE)))->Sumw2();
   ((TH2D*)fpHistFile->Get(Form("MuIDCheck_before_%.1dS", UPSTYPE)))->Sumw2();   
-  
+
   k = new TH2D(Form("MuIDCheck_Deno_%.1dS",UPSTYPE), Form("MuIDCheck_Deno_%1.dS", UPSTYPE), fNy, fYbin, fNpt, fPTbin);
   k = new TH2D(Form("MuIDCheck_Numa_%.1dS",UPSTYPE), Form("MuIDCheck_Numa_%1.dS", UPSTYPE), fNy, fYbin, fNpt, fPTbin);  
   k = new TH2D(Form("TrigCheck_Numa_%.1dS",UPSTYPE), Form("TrigCheck_Numa_%1.dS", UPSTYPE), fNy, fYbin, fNpt, fPTbin);  
@@ -1637,6 +1747,17 @@ void xsReader::bookHist() {
     }
   }  
   h = new TH1D(Form("TrigEff_%.1dS,OverAll", UPSTYPE), Form("TrigEff_%.1dS,OverAll", UPSTYPE), 100, 0., 1.);
+  
+  // Track Efficiency Histograms
+  for ( int iy = 0; iy < fNy; ++iy ){
+    for ( int ipt = 0; ipt < fNpt; ++ipt ){
+      h = new TH1D(Form("TrackEff_%.1dS,rapidity%.1f_%.1f,pt%.1f_%.1f", UPSTYPE, fYbin[iy], fYbin[iy+1], fPTbin[ipt], fPTbin[ipt+1]),
+		   Form("TrackEff_%.1dS,rapidity%.1f_%.1f,pt%.1f_%.1f", UPSTYPE, fYbin[iy], fYbin[iy+1], fPTbin[ipt], fPTbin[ipt+1]),
+		   100, 0., 1.);  
+      ((TH1D*)fpHistFile->Get(Form("TrackEff_%.1dS,rapidity%.1f_%.1f,pt%.1f_%.1f", UPSTYPE, fYbin[iy], fYbin[iy+1], fPTbin[ipt], fPTbin[ipt+1])))->Sumw2(); 
+    }
+  }  
+  h = new TH1D(Form("TrackEff_%.1dS,OverAll", UPSTYPE), Form("TrackEff_%.1dS,OverAll", UPSTYPE), 100, 0., 1.);
   
   // Analysis Efficiency Histograms
   for ( int iy = 0; iy < fNy; ++iy ){
@@ -1763,7 +1884,7 @@ void xsReader::bookHist() {
  
   // trigger study
   h = new TH1D("hTriggerStudy","Trigger Study", 20, 0., 20.);
-  
+ 
 }
 
 
@@ -1796,7 +1917,7 @@ void xsReader::readCuts(TString filename, int dump) {
     if (buffer[0] == '#') {continue;}
     if (buffer[0] == '/') {continue;}
     sscanf(buffer, "%s %f %s", CutName, &CutValue, SetName);
-
+    
     if (!strcmp(CutName, "TYPE")) {
       TYPE = int(CutValue); ok = 1;
       if (dump) cout << "TYPE:           " << TYPE << endl;
