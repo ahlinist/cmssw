@@ -91,7 +91,7 @@ process.source.fileNames = cms.untracked.vstring("file:/tmp/oiorio/TChannelMerge
 
 #Output
 
-process.TFileService = cms.Service("TFileService", fileName = cms.string("TChannel.root"))
+process.TFileService = cms.Service("TFileService", fileName = cms.string("/tmp/oiorio/TChannel.root"))
 
 process.load("SingleTopAnalyzers_cfi")
 process.load("SingleTopRootPlizer_cfi")
@@ -101,12 +101,11 @@ process.TreesEle.channelInfo = TChannelEle
 process.TreesMu.channelInfo = TChannelMu
 process.PlotsEle.channelInfo = TChannelEle
 process.PlotsMu.channelInfo = TChannelMu
-
+#process.TreesMu.systematics = cms.untracked.vstring();
 
 process.PathSys = cms.Path(
-    process.PlotsMu +
-    process.PlotsEle +
+#    process.PlotsMu +
+#    process.PlotsEle +
     process.TreesMu +
     process.TreesEle
-
-    )
+   )

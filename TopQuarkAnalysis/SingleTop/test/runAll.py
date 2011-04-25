@@ -4,17 +4,19 @@ import os,sys,re,shutil
 
 
 #Original config file
-f = open("SingleTopSystematics_New_cfg.py")
+fileName = "SingleTopSystematics_cfg.py"
 
 #Channels to include
 channels = [
-    "TChannel",
-    "TTBar",
+#    "TChannel",
+#    "TTBar",
 #    "WJets",
+    "Data",
 #    "Data",
     ]
 
-
+#Path to take data merged files
+dataPath = "file:/tmp/oiorio/"
 
 
 
@@ -30,9 +32,13 @@ def changeChannel(fileName,channelOld,channelNew):
         words = line.split()
         for word in words:
             if channelOld in word: 
-#                print " line old " + line
+                #                print " line old " + line
                 line = line.replace(word,word.replace(channelOld,channelNew))
-#                print " line new " + line
+                #                print " line new " + line
+        o.write(line)
+        
+    if channel == "Data":#Temporary inelegant solution due to the separation of mu/e: will fix it at some point
+        line = "process.source.fileNames = cms.untracked.vstring('"+dataPath+"DataMuMerged.root','"+dataPath+"DataEleMerged.root',)"
         o.write(line)
     o.close()
     return o
@@ -42,8 +48,10 @@ def changeChannel(fileName,channelOld,channelNew):
 #Channel in the original file
 startChannel = "TChannel"#channels[0]
 
+f= open(fileName)
+
 tmpName = "temp.py"
-shutil.copy("SingleTopSystematics_New_cfg.py",tmpName)
+shutil.copy(fileName,tmpName)
 
 for channel in channels:
 

@@ -5,7 +5,7 @@ import os,sys,re,shutil
 
 #Castor directory with all sub-directories:
 #inputDir = "/castor/cern.ch/user/o/oiorio/SingleTop/2011/MC2011/NewNtuples"
-inputDir ="/castor/cern.ch/user/o/oiorio/SingleTop/2011/Run2011/NewPatTuples/Mu"
+inputDir ="/castor/cern.ch/user/o/oiorio/SingleTop/2011/Run2011/NewPatTuples/Ele"
 
 #Original config file
 f = open("copyTemplate.py")
