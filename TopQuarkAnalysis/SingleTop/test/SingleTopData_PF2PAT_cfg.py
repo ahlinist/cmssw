@@ -15,21 +15,14 @@ process.options = cms.untracked.PSet(
 
 process.load("PhysicsTools.PFCandProducer.PF2PAT_cff")
 
-print "test02 "
+print "test "
 
 #process.load("Configuration.StandardSequences.MixingNoPileUp_cff")
 process.load("Configuration.StandardSequences.Geometry_cff")
 process.load("Configuration.StandardSequences.FrontierConditions_GlobalTag_cff")
 process.load("Configuration.StandardSequences.MagneticField_AutoFromDBCurrent_cff") ### real data
 
-print "test03 "
-
-#process.GlobalTag.globaltag = cms.string("GR_R_35X_V6::All")
-#process.GlobalTag.globaltag = cms.string('GR_R_38X_V11::All') #TAG FOR  382
-#process.GlobalTag.globaltag = cms.string("GR_R_38X_V11::All")
 process.GlobalTag.globaltag = cms.string('GR_R_311_V2::All')
-
-print "test04 "
 
 #from Configuration.PyReleaseValidation.autoCond import autoCond
 #process.GlobalTag.globaltag = autoCond['startup']
@@ -37,38 +30,15 @@ process.load("TopQuarkAnalysis.SingleTop.SingleTopSequences_cff")
 process.load("SelectionCuts_Skim_cff");
 
 
-print "test05 "
-
 # set the dB to the beamspot
 process.patMuons.usePV = cms.bool(False)
 process.patElectrons.usePV = cms.bool(False)
-
-print "test06 "
-
 
 # require physics declared
 process.load('HLTrigger.special.hltPhysicsDeclared_cfi')
 process.hltPhysicsDeclared.L1GtReadoutRecordTag = 'gtDigis'
 
-
-print "test003"
-
-
-print "test000 "
-
-
-
-print "test1 "
-
-
-print "test2 "
-
-
-#dummy output, to stay until jetTools get smart enough not to crash when not run on something that has not this module.
-
-#Seriously, I don't know whether it's my fault, but it's stupid that a simple function crashes BY DEFAULT if the config has no
-#module named out. Even if it is empty. Unfortunately when it is called by something like usePf2Pat I have no way to pass this parameter.
-#This is utterly moronic.
+#dummy output
 
 process.out = cms.OutputModule("PoolOutputModule",
                                fileName = cms.untracked.string('dummy.root'),
@@ -76,15 +46,6 @@ process.out = cms.OutputModule("PoolOutputModule",
                                )
 
 process.load("PhysicsTools.HepMCCandAlgos.flavorHistoryPaths_cfi")
-#process.cFlavorHistoryProducer.matchedSrc = cms.InputTag("antikt5GenJets")
-#process.bFlavorHistoryProducer.matchedSrc = cms.InputTag("antikt5GenJets")
-
-#process.PathFlavor = cms.Path(
-#    process.genParticlesForJets *
-#    process.ak5GenJets *
-#    process.cFlavorHistoryProducer *
-#    process.bFlavorHistoryProducer
-#    )
 
 #mytrigs=["HLT_Mu9"]
 mytrigs=["*"]
@@ -99,25 +60,16 @@ if mytrigs is not None :
 
 from PhysicsTools.PatAlgos.tools.pfTools import *
 
-
 postfix = ""
 jetAlgo="AK5"
 
-print "test2.1 "
 
 usePF2PAT(process,runPF2PAT=True, jetAlgo=jetAlgo, runOnMC=False, postfix=postfix)
 
-print "test2.1 "
-
 process.pathPreselection = cms.Path(
-#    process.recoJPTJets +
     process.patElectronIDs +
     getattr(process,"patPF2PATSequence"+postfix)
-#    process.patDefaultSequence +
-#    process.PF2PAT
     )
-
-print "test2.1 "
 
 #process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(1000) )
 process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(-1) )
@@ -125,27 +77,11 @@ process.source = cms.Source ("PoolSource",
                              fileNames = cms.untracked.vstring (
 
 #    'file:/tmp/oiorio/F81B1889-AF4B-DF11-85D3-001A64789DF4.root'
-#'rfio:/castor/cern.ch/user/g/giamman/singletop/sync/00012F91-72E5-DF11-A763-00261834B5F1.root'
-#'file:/tmp/oiorio/00012F91-72E5-DF11-A763-00261834B5F1.root'
 'file:/tmp/oiorio/EC0EE286-FA55-E011-B99B-003048F024F6.root'
-#'file:/tmp/oiorio/F81B1889-AF4B-DF11-85D3-001A64789DF4.root'
-#'rfio:    /castor/cern.ch/user/g/giamman/singletop/sync/F81B1889-AF4B-DF11-85D3-001A64789DF4.root',
-#    'file:/tmp/oiorio/TChanFile2_1_1_L7h.root',
-#    'file:/tmp/oiorio/TChanFile_1_1_xtA.root',
-#    'file:/tmp/oiorio/EMEnrichedFile_1_1_CWt.root',
-#   'file:/tmp/oiorio/WJets_File_Tauola_1_1_2nU.root',
 
 ),
 duplicateCheckMode = cms.untracked.string('noDuplicateCheck')
 )
-
-#process.preselectedJets.src = cms.InputTag("patJetsAK5PF")
-
-#process.bJets.cut = cms.string('bDiscriminator("trackCountingHighPurBJetTags") < 3.41 && (bDiscriminator("trackCountingHighEffBJetTags") > 1.7 || abs(eta) >2.5)')#process.
-
-
-print "test3 "
-
 
 
 process.demo = cms.EDAnalyzer('SimpleEventDumper',                              
@@ -216,12 +152,6 @@ savePatTupleSkimLoose = cms.untracked.vstring(
     'keep *_bFlavorHistoryProducer_*_*',
     )
 
-#saveNTuplesSkimLoose.append('keep *_preselectedMuons_*_*')
-#saveNTuplesSkimLoose.append('keep *_preselectedElectrons_*_*')
-#saveNTuplesSkimLoose.append('keep *_topMuons_*_*')
-#saveNTuplesSkimLoose.append('keep *_topElectrons_*_*')
-
-
 ## Output module configuration
 process.singleTopNTuple = cms.OutputModule("PoolOutputModule",
 #                                fileName = cms.untracked.string('rfio:/CST/cern.ch/user/o/oiorio/SingleTop/SubSkims/WControlSamples1.root'),
@@ -241,16 +171,9 @@ process.singleTopPatTuple = cms.OutputModule("PoolOutputModule",
                    outputCommands = savePatTupleSkimLoose
 )
 
-process.singleTopNTupleMu = cms.OutputModule("PoolOutputModule",
-#                                fileName = cms.untracked.string('rfio:/CST/cern.ch/user/o/oiorio/SingleTop/SubSkims/WControlSamples1.root'),
-                   fileName = cms.untracked.string('/tmp/oiorio/test_ntuple_all.root'),
-
-
-                   SelectEvents   = cms.untracked.PSet( SelectEvents = cms.vstring('selection')),
-                   outputCommands = saveNTuplesSkimMu
-)
 
 process.outpath = cms.EndPath(
-    process.singleTopNTuple
+    process.singleTopNTuple #+
+    #process.singleTopPatTuple
     )
 

@@ -3,7 +3,7 @@
 *
 *
 *
-*\version  $Id: SingleTopSystematicsDumper.cc,v 1.3 2011/04/01 16:20:06 oiorio Exp $ 
+*\version  $Id: SingleTopSystematicsTreesDumper.cc,v 1.1 2011/04/23 22:59:20 oiorio Exp $ 
 */
 // This analyzer dumps the histograms for all systematics listed in the cfg file 
 //
@@ -106,6 +106,34 @@ SingleTopSystematicsTreesDumper::SingleTopSystematicsTreesDumper(const edm::Para
     trees[syst]->Branch("eventid",&eventTree);
     trees[syst]->Branch("weight",&weightTree);
 
+    //Extra info
+    
+    trees[syst]->Branch("leptonPt",&lepPt);
+    trees[syst]->Branch("leptonPz",&lepPz);
+    trees[syst]->Branch("leptonPhi",&lepPhi);
+    
+    trees[syst]->Branch("fJetPt",&fJetPt);
+    trees[syst]->Branch("fJetE",&fJetE);
+    trees[syst]->Branch("fJetPz",&fJetPz);
+    trees[syst]->Branch("fJetPhi",&fJetPhi);
+    
+    trees[syst]->Branch("bJetPt",&bJetPt);
+    trees[syst]->Branch("bJetE",&bJetE);
+    trees[syst]->Branch("bJetPz",&bJetPz);
+    trees[syst]->Branch("bJetPhi",&bJetPhi);
+    
+    trees[syst]->Branch("metPt",&metPt);
+    trees[syst]->Branch("metPhi",&metPhi);
+    
+    trees[syst]->Branch("topPt",&topPt);
+    trees[syst]->Branch("topPhi",&topPhi);
+    trees[syst]->Branch("topPz",&topPz);
+    trees[syst]->Branch("topE",&topE);
+
+    trees[syst]->Branch("totalEnergy",&totalEnergy);
+    trees[syst]->Branch("totalMomentum",&totalMomentum);
+
+
     treesWSample[syst] = new TTree((treename+"WSample").c_str(),(treename+"WSample").c_str()); 
     
     treesWSample[syst]->Branch("etaLowBTag",&etaTree);
@@ -120,6 +148,35 @@ SingleTopSystematicsTreesDumper::SingleTopSystematicsTreesDumper(const edm::Para
     treesWSample[syst]->Branch("eventid",&eventTree);
     treesWSample[syst]->Branch("weight",&weightTree);
     
+    //Extra info
+
+    treesWSample[syst]->Branch("leptonPt",&lepPt);
+    treesWSample[syst]->Branch("leptonPz",&lepPz);
+    treesWSample[syst]->Branch("leptonPhi",&lepPhi);
+    
+    treesWSample[syst]->Branch("fJetPt",&fJetPt);
+    treesWSample[syst]->Branch("fJetE",&fJetE);
+    treesWSample[syst]->Branch("fJetPz",&fJetPz);
+    treesWSample[syst]->Branch("fJetPhi",&fJetPhi);
+    
+    treesWSample[syst]->Branch("bJetPt",&bJetPt);
+    treesWSample[syst]->Branch("bJetE",&bJetE);
+    treesWSample[syst]->Branch("bJetPz",&bJetPz);
+    treesWSample[syst]->Branch("bJetPhi",&bJetPhi);
+    
+    treesWSample[syst]->Branch("metPt",&metPt);
+    treesWSample[syst]->Branch("metPhi",&metPhi);
+    
+    treesWSample[syst]->Branch("topPt",&topPt);
+    treesWSample[syst]->Branch("topPhi",&topPhi);
+    treesWSample[syst]->Branch("topPz",&topPz);
+    treesWSample[syst]->Branch("topE",&topE);
+
+    treesWSample[syst]->Branch("totalEnergy",&totalEnergy);
+    treesWSample[syst]->Branch("totalMomentum",&totalMomentum);
+        
+
+
   }
 
 
@@ -395,6 +452,32 @@ void SingleTopSystematicsTreesDumper::analyze(const Event& iEvent, const EventSe
       topMassTree = top.mass();
       mtwMassTree = MTWValue;
       chargeTree = leptonsCharge->at(0);
+
+      lepPt = leptons.at(0).pt();
+      lepPz = leptons.at(0).pz();
+      lepPhi = leptons.at(0).phi();
+      
+      bJetPt = jets.at(highestBTagPosition).pt();
+      bJetE = jets.at(highestBTagPosition).energy();
+      bJetPz = jets.at(highestBTagPosition).pz();
+      bJetPhi = jets.at(highestBTagPosition).phi();
+
+      fJetPt = jets.at(lowestBTagPosition).pt();
+      fJetE = jets.at(lowestBTagPosition).energy();
+      fJetPz = jets.at(lowestBTagPosition).pz();
+      fJetPhi = jets.at(lowestBTagPosition).phi();
+
+      topPt = top.pt();
+      topE = top.energy();
+      topPz = top.pz();
+      topPhi = top.phi();
+      
+      totalEnergy = (top+jets.at(lowestBTagPosition)).energy();
+      totalMomentum = (top+jets.at(lowestBTagPosition)).P();
+      
+
+      metPt = METPt->at(0);
+      metPhi = METPhi->at(0);
       
       treesWSample[syst_name]->Fill();
     }
@@ -422,6 +505,32 @@ void SingleTopSystematicsTreesDumper::analyze(const Event& iEvent, const EventSe
       topMassTree = top.mass();
       mtwMassTree = MTWValue;
       chargeTree = leptonsCharge->at(0) ; 
+
+      lepPt = leptons.at(0).pt();
+      lepPz = leptons.at(0).pz();
+      lepPhi = leptons.at(0).phi();
+      
+      bJetPt = bjets.at(0).pt();
+      bJetE = bjets.at(0).energy();
+      bJetPz = bjets.at(0).pz();
+      bJetPhi = bjets.at(0).phi();
+
+      fJetPt = antibjets.at(0).pt();
+      fJetE = antibjets.at(0).energy();
+      fJetPz = antibjets.at(0).pz();
+      fJetPhi = antibjets.at(0).phi();
+
+      topPt = top.pt();
+      topE = top.energy();
+      topPz = top.pz();
+      topPhi = top.phi();
+      
+      totalEnergy = (top+antibjets.at(0)).energy();
+      totalMomentum = (top+antibjets.at(0)).P();
+      
+
+      metPt = METPt->at(0);
+      metPhi = METPhi->at(0);
 
       trees[syst_name]->Fill();
       //      cout << " passes cuts pre-mtw, syst " << syst_name << " top mass "<< top.mass() << " cosTheta* "<< fCosThetaLJ << " fjetEta " << fabs(antibjets.at(0).eta()) << " top mass integral"  << TopMass[syst_name]->Integral() << " Forward jet eta integral  "<< ForwardJetEta[syst_name]->Integral()<< " CosThetaLJ integral " << CosThetaLJ[syst_name]->Integral()<< " Weight "  << Weight << " B Weight "<< BTagWeight <<endl;

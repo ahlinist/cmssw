@@ -29,12 +29,14 @@ maxTightLeptons = cms.int32(1)
 minLooseLeptons = cms.int32(0)
 maxLooseLeptons = cms.int32(0)
 
-#Detailed request for number of leptons ( not used in standard analysis )
-minMuons = cms.uint32(1)
-maxMuons = cms.uint32(1)
 
-minElectrons = cms.uint32(1)
-maxElectrons = cms.uint32(1)
+
+#Detailed request for number of leptons ( not used in standard analysis )
+#minMuons = cms.uint32(1)
+#maxMuons = cms.uint32(1)
+
+#minElectrons = cms.uint32(1)
+#maxElectrons = cms.uint32(1)
 
 
 
