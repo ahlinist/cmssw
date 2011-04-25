@@ -5,6 +5,68 @@ from RecoMET.METProducers.METSigParams_cfi import *
 
 nSVfitTrackService = cms.Service("NSVfitTrackService")
 
+nSVfitTauDecayLikelihoodMC = cms.PSet(
+    pluginName = cms.string("nSVfitTauDecayLikelihoodMC"),
+    pluginType = cms.string("NSVfitTauDecayLikelihoodMC"),
+    decayModeParameters = cms.PSet(
+        electron = cms.PSet(
+            inputFileName = cms.FileInPath("TauAnalysis/CandidateTools/data/blah.root"),
+            wsName = cms.string(''),
+            pdfName = cms.string(''),
+            momName = cms.string(''),
+            momType = cms.string(''),
+            sepName = cms.string(''),
+            sepType = cms.string('')
+        ),
+        muon = cms.PSet(
+            inputFileName = cms.string(''),
+            wsName = cms.string(''),
+            pdfName = cms.string(''),
+            momName = cms.string(''),
+            momType = cms.string(''),
+            sepName = cms.string(''),
+            sepType = cms.string('')
+        ),
+        oneProngZeroPi0s = cms.PSet(
+            inputFileName = cms.string(''),
+            wsName = cms.string(''),
+            pdfName = cms.string(''),
+            momName = cms.string(''),
+            momType = cms.string(''),
+            sepName = cms.string(''),
+            sepType = cms.string('')
+        ),
+        oneProngGtZeroPi0s = cms.PSet(
+            inputFileName = cms.string(''),
+            wsName = cms.string(''),
+            pdfName = cms.string(''),
+            momName = cms.string(''),
+            momType = cms.string(''),
+            sepName = cms.string(''),
+            sepType = cms.string('')
+        ),
+        threeProngZeroPi0s = cms.PSet(
+            inputFileName = cms.string(''),
+            wsName = cms.string(''),
+            pdfName = cms.string(''),
+            momName = cms.string(''),
+            momType = cms.string(''),
+            sepName = cms.string(''),
+            sepType = cms.string('')
+        ),
+        other = cms.PSet(
+            inputFileName = cms.string(''),
+            wsName = cms.string(''),
+            pdfName = cms.string(''),
+            momName = cms.string(''),
+            momType = cms.string(''),
+            sepName = cms.string(''),
+            sepType = cms.string('')
+        )
+    ),
+    verbosity = cms.int32(0)  
+)
+
 nSVfitElectronLikelihoodPhaseSpace = cms.PSet(
     pluginName = cms.string("nSVfitTauToElecLikelihoodPhaseSpace"),
     pluginType = cms.string("NSVfitTauToElecLikelihoodPhaseSpace"),
@@ -14,6 +76,12 @@ nSVfitElectronLikelihoodPhaseSpace = cms.PSet(
 nSVfitElectronLikelihoodPolarization = cms.PSet(
     pluginName = cms.string("nSVfitTauToElecLikelihoodPolarization"),
     pluginType = cms.string("NSVfitTauToElecLikelihoodPolarization"),
+    verbosity = cms.int32(0)  
+)
+
+nSVfitElectronLikelihoodMC = nSVfitTauDecayLikelihoodMC.clone(
+    pluginName = cms.string("nSVfitTauToElecLikelihoodMC"),
+    pluginType = cms.string("NSVfitTauToElecLikelihoodMC"),
     verbosity = cms.int32(0)  
 )
 
@@ -39,6 +107,12 @@ nSVfitMuonLikelihoodPhaseSpace = cms.PSet(
 nSVfitMuonLikelihoodPolarization = cms.PSet(
     pluginName = cms.string("nSVfitTauToMuLikelihoodPolarization"),
     pluginType = cms.string("NSVfitTauToMuLikelihoodPolarization"),
+    verbosity = cms.int32(0)  
+)
+
+nSVfitMuonLikelihoodMC = nSVfitTauDecayLikelihoodMC.clone(
+    pluginName = cms.string("nSVfitTauToMuLikelihoodMC"),
+    pluginType = cms.string("NSVfitTauToMuLikelihoodMC"),
     verbosity = cms.int32(0)  
 )
 
@@ -88,6 +162,12 @@ nSVfitTauLikelihoodPolarization = cms.PSet(
             pMin = cms.double(0.05)
         )
     ),
+    verbosity = cms.int32(0)  
+)
+
+nSVfitTauToHadLikelihoodMC = nSVfitTauDecayLikelihoodMC.clone(
+    pluginName = cms.string("nSVfitTauToHadLikelihoodMC"),
+    pluginType = cms.string("NSVfitTauToHadLikelihoodMC"),
     verbosity = cms.int32(0)  
 )
 
