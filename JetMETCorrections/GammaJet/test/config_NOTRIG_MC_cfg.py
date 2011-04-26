@@ -32,7 +32,8 @@ process.source = cms.Source("PoolSource",
 #'file:/cmsrm/pc21/emanuele/data/Pool/EG_Run2010A_RECO.root'
 #'file:/tmp/delre/Photon_RECO_Nov4ReReco_v2.root'
 #'file:/cmsrm/pc23_2/emanuele/data/AOD_HWW_Spring11.root'
-'/store/mc/Spring11/VBF_HToWWToLNuTauNu_M-250_7TeV-powheg-pythia6/AODSIM/PU_S1_START311_V1G1-v1/0024/206749B4-215E-E011-B94F-E0CB4E29C4D9.root'
+#'/store/mc/Spring11/VBF_HToWWToLNuTauNu_M-250_7TeV-powheg-pythia6/AODSIM/PU_S1_START311_V1G1-v1/0024/206749B4-215E-E011-B94F-E0CB4E29C4D9.root'
+'/store/mc/Spring11/GluGluToHToGG_M-100_7TeV-powheg-pythia6/AODSIM/PU_S1_START311_V1G1-v1/0000/FE78A3B2-B04F-E011-95D7-0025B3E0638E.root'
 )
 
 )
@@ -157,7 +158,23 @@ process.load('RecoJets.JetProducers.kt4PFJets_cfi')
 process.kt6PFJets = process.kt4PFJets.clone( rParam = 0.6, doRhoFastjet = True )
 process.kt6PFJets.Rho_EtaMax = cms.double(2.5)
 
-process.p = cms.Path( process.monster * process.kt6PFJets * process.myBtag * process.metCorSequence * process.myanalysis )
+process.load('RecoJets.JetProducers.kt4CaloJets_cfi')
+process.kt6CaloJets = process.kt4CaloJets.clone( rParam = 0.6, doRhoFastjet = True )
+process.kt6CaloJets.Rho_EtaMax = cms.double(2.5)
+
+# re-reconstructing the primary vertices with the Deterministic Annealing (DA) vertex finder
+# from B. Mangano studies
+from RecoVertex.PrimaryVertexProducer.OfflinePrimaryVerticesDA_cfi import *
+import RecoVertex.PrimaryVertexProducer.OfflinePrimaryVerticesDA_cfi
+
+process.offlinePrimaryVerticesDA = RecoVertex.PrimaryVertexProducer.OfflinePrimaryVerticesDA_cfi.offlinePrimaryVerticesDA.clone()
+process.offlinePrimaryVerticesDA.useBeamConstraint = cms.bool(True)
+process.offlinePrimaryVerticesDA.TkClusParameters.TkDAClusParameters.Tmin = cms.double(4.)
+process.offlinePrimaryVerticesDA.TkClusParameters.TkDAClusParameters.vertexSize = cms.double(0.01) 
+
+
+
+process.p = cms.Path( process.monster * process.offlinePrimaryVerticesDA * process.kt6PFJets * process.kt6CaloJets * process.myBtag * process.metCorSequence * process.myanalysis )
 #process.p = cms.Path(process.monster*process.myanalysis)
 #process.p = cms.Path(process.ecalCleanClustering*process.recoJPTJets*process.myanalysis)
 #process.p = cms.Path(process.myanalysis)

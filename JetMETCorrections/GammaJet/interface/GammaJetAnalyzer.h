@@ -306,6 +306,7 @@ TH2D* h2_n_vs_eta;
               trackCountingHighEffBJetTags_pfakt5[100];
 
       Float_t   rho;
+      Float_t   rhoCalo;
 
 
 
