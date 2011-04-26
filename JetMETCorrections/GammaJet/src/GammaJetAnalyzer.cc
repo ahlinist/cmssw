@@ -13,7 +13,7 @@
 //
 // Original Author:  Daniele del Re
 //         Created:  Thu Sep 13 16:00:15 CEST 2007
-// $Id: GammaJetAnalyzer.cc,v 1.51 2011/04/22 16:17:58 rahatlou Exp $
+// $Id: GammaJetAnalyzer.cc,v 1.52 2011/04/23 11:41:47 rahatlou Exp $
 //
 //
 
@@ -247,6 +247,13 @@ GammaJetAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
       rho = *rhoH;
     else 
       rho = 0;
+
+    edm::Handle<double> rhocaloH;
+    //iEvent.getByLabel(edm::InputTag("kt6PFJets","rho","Iso"),rhoH); 
+    if( iEvent.getByLabel(edm::InputTag("kt6CaloJets","rho"),rhocaloH) )
+      rhoCalo = *rhocaloH;
+    else 
+      rhoCalo = 0;
 
    Handle<GenEventInfoProduct> hEventInfo;
    if( isMC ) iEvent.getByLabel("generator", hEventInfo);
@@ -1876,7 +1883,8 @@ GammaJetAnalyzer::beginJob()
   m_tree->Branch("run",&run,"run/I");
   m_tree->Branch("event",&event,"event/I");
 
-  m_tree->Branch("rho",&rho,"rho/F");
+  m_tree->Branch("rhoPF",&rho,"rhoPF/F");
+  m_tree->Branch("rhoCalo",&rhoCalo,"rhoCalo/F");
 
   // Problem: nMC==100 always, and sometimes last particle has very high pT
   // => could be losing interesting particles, even quarks/gluons (status==2)
