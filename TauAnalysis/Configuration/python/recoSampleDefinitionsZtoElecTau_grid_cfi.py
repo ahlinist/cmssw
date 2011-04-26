@@ -12,11 +12,11 @@ SAMPLES_TO_ANALYZE = [
 	#'Ztautau_PU156BX_D6T',
     'Zee_PU156BX_T3',
 	#'Zee_PU156BX_D6T_T3',
-	'PhotonPlusJets_Pt15to30_T3','PhotonPlusJets_Pt30to50_T3','PhotonPlusJets_Pt50to80_T3',
+    'PhotonPlusJets_Pt15to30_T3','PhotonPlusJets_Pt30to50_T3','PhotonPlusJets_Pt50to80_T3',
 	#'PhotonPlusJets_Pt15to30_PU156BX','PhotonPlusJets_Pt30to50_PU156BX','PhotonPlusJets_Pt50to80_PU156BX',
 	#'PhotonPlusJets_Pt15to30_PU156BX_T3','PhotonPlusJets_Pt30to50_PU156BX_T3','PhotonPlusJets_Pt50to80_PU156BX_T3',
-	'QCD_BCtoE_Pt20to30_PU156BX_T3','QCD_BCtoE_Pt30to80_PU156BX_T3','QCD_BCtoE_Pt80to170_PU156BX_T3',
-	'QCD_EM_Pt20to30_PU156BX_T3','QCD_EM_Pt30to80_PU156BX_T3','QCD_EM_Pt80to170_PU156BX_T3',
+    'QCD_BCtoE_Pt20to30_PU156BX_T3','QCD_BCtoE_Pt30to80_PU156BX_T3','QCD_BCtoE_Pt80to170_PU156BX_T3',
+    'QCD_EM_Pt20to30_PU156BX_T3','QCD_EM_Pt30to80_PU156BX_T3','QCD_EM_Pt80to170_PU156BX_T3',
     'TTbar_PU156BX_T3',
 	#'TTplusJets_PU156BX_T3',
     'WtoENu_PU156BX_T3','WtoTauNu_PU156BX_T3'
@@ -25,9 +25,9 @@ SAMPLES_TO_ANALYZE = [
 # List of samples to include in the final level plots.  May include selections
 # from the MERGE_SAMPLES defined at the bottom.
 SAMPLES_TO_PLOT = [
-	'data', 
+    'data', 
     'qcdSum', 
-	'photonPlusJetsSum',
+    'photonPlusJetsSum',
     'wPlusJetsSum',
     'TTbar_PU156BX_T3',
     'Zee_PU156BX_T3',
@@ -812,7 +812,7 @@ MERGE_SAMPLES = {
     },
     'qcdSum' : {
         'samples' : [
-			'QCD_BCtoE_Pt20to30_PU156BX_T3',
+                        'QCD_BCtoE_Pt20to30_PU156BX_T3',
 			'QCD_BCtoE_Pt30to80_PU156BX_T3',
 			'QCD_BCtoE_Pt80to170_PU156BX_T3',
 			'QCD_EM_Pt20to30_PU156BX_T3',
@@ -835,8 +835,8 @@ MERGE_SAMPLES = {
     },
     'wPlusJetsSum' : {
         'samples' : [
-            'WtoENu_PU156BX_T3',
-			'WtoTauNu_PU156BX_T3'
+                        'WtoENu_PU156BX_T3',
+                        'WtoTauNu_PU156BX_T3'
         ],
         'legendEntry' : plotter.process_WplusJets.config_dqmHistPlotter.legendEntry.value(),
         'type' : 'smMC', 
@@ -847,7 +847,7 @@ MERGE_SAMPLES = {
             'Zee_PU156BX_T3',
             'qcdSum',
             'wPlusJetsSum',
-			'photonPlusJetsSum',
+            'photonPlusJetsSum',
             'TTplusJets_PU156BX_T3'
         ],
         'legendEntry' : 'SM',
