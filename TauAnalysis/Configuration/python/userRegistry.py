@@ -354,7 +354,31 @@ userSettings = {
                 }
             }
           }
+        },
+        'lantonel': {
+        'current' : 'Run01',
+        
+        'jobs' : {
+           'Run01' : {
+                'ZtoElecTau_bgEstTemplate' : {
+                    'analysisFilePath' : "/afs/crc.nd.edu/user/l/lantonel/CMSSW_3_8_7_patch1/src/TauAnalysis/BgEstimationTools/test/",
+                    'harvestingFilePath' : "/afs/crc.nd.edu/user/l/lantonel/CMSSW_3_8_7_patch1/src/TauAnalysis/BgEstimationTools/test/",
+                    'tmpFilePath' : "/afs/crc.nd.edu/user/l/lantonel/CMSSW_3_8_7_patch1/src/TauAnalysis/BgEstimationTools/test/"
+                 },
+            }
+         },
+        
+        'global' : {
+            'drawOptions' : {
+                'canvasSizeX' : 800,
+                'canvasSizeY' : 640
+            },
+            'harvestScripts' : '/tmp/lantonel/harvest_scripts',
         }
+        
+        },    
+
+    
 
     }
 
