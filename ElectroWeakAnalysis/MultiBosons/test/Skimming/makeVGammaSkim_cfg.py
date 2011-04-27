@@ -119,21 +119,20 @@ if not options.isAOD:
         process.pi0Discriminator      *
         process.patPhotons
         )
-else:
-    process.patDefaultSequence.replace(process.patPhotons,
-        process.piZeroDiscriminators  *
-        process.pi0Discriminator      *
-        process.patPhotons
-        )
-    process.piZeroDiscriminators.preshClusterShapeProducer = cms.string('multi5x5PreshowerClusterShape')
-    process.piZeroDiscriminators.preshClusterShapeCollectionX = cms.string('multi5x5PreshowerXClustersShape')
-    process.piZeroDiscriminators.preshClusterShapeCollectionY = cms.string('multi5x5PreshowerYClustersShape')
-    
-
-
-process.patPhotons.userData.userFloats.src.append(
-    cms.InputTag("pi0Discriminator")
+    # this can be moved out of the if block when the pizero descrim. works in AOD
+    process.patPhotons.userData.userFloats.src.append(
+        cms.InputTag("pi0Discriminator")
     )
+# this is for later, Aris needs to fix a the pi-zero discriminator
+#else:
+#    process.patDefaultSequence.replace(process.patPhotons,
+#        process.piZeroDiscriminators  *
+#        process.pi0Discriminator      *
+#        process.patPhotons
+#        )
+#    process.piZeroDiscriminators.preshClusterShapeProducer = cms.string('multi5x5PreshowerClusterShape')
+#    process.piZeroDiscriminators.preshClusterShapeCollectionX = cms.string('multi5x5PreshowerXClustersShape')
+#    process.piZeroDiscriminators.preshClusterShapeCollectionY = cms.string('multi5x5PreshowerYClustersShape')
 
 ## Add electron user data
 process.load(basePath + "electronUserData_cfi")
