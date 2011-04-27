@@ -85,7 +85,7 @@ private:
       c->SetGridy();
       
       
-      if(o.name.find("reportSummaryMap") != std::string::npos)
+      if(o.name.find("SummaryMap") != std::string::npos)
 	{
         dqm::utils::reportSummaryMapPalette(obj);
 	return;
