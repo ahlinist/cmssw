@@ -87,7 +87,8 @@ def embedTriggerMatches(process, hltPaths):
     for path in hltPaths[target]:
       ## Get the module name, e.g. "cleanPatMuonsTriggerMatchHLTMu9"
       ##+ for target = "cleanPatMuons" and path = "HLT_Mu9"
-      moduleLabel = baseName.lower() + "TriggerMatch" + path.replace("_", "")
+      ## L. Gray 27.4.2011 add in change to deal with versioned triggers
+      moduleLabel = baseName.lower() + "TriggerMatch" + path.replace("_", "").replace("v*","")
       setattr(process,
         moduleLabel,
         triggerMatchTemplate.clone(
