@@ -56,7 +56,6 @@
 <use   name="RecoJets/JetAssociationAlgorithms"/>
 <use   name="MagneticField/Records"/>
 <use   name="TrackingTools/Records"/>
-<use   name="PhysicsTools/EcalAnomalousEventFilter"/>
 <use   name="CalibCalorimetry/EcalTPGTools"/>
 <flags   EDM_PLUGIN="1"/>
 <export>

@@ -366,12 +366,15 @@ int simpleDRfilter::etaToBoundary(const std::vector<reco::Jet> &jetTVec){
 
   int isClose = 0;
 
+  int cntOrder10 = 0;
   for(unsigned int ij=0; ij<jetTVec.size(); ij++){
 
      double recoJetEta = jetTVec[ij].eta();
 
-     if( std::abs(recoJetEta)>cracksHBHEdef_[0] && std::abs(recoJetEta)<cracksHBHEdef_[1] ) isClose =1;
-     if( std::abs(recoJetEta)>cracksHEHFdef_[0] && std::abs(recoJetEta)<cracksHEHFdef_[1] ) isClose =2;
+     if( std::abs(recoJetEta)>cracksHBHEdef_[0] && std::abs(recoJetEta)<cracksHBHEdef_[1] ) isClose += (cntOrder10*10 + 1);
+     if( std::abs(recoJetEta)>cracksHEHFdef_[0] && std::abs(recoJetEta)<cracksHEHFdef_[1] ) isClose += (cntOrder10*10 + 2);
+ 
+     if( isClose/pow(10, cntOrder10) >=3 ) cntOrder10 = isClose/10 + 1;
   }
 
   return isClose;
@@ -379,6 +382,7 @@ int simpleDRfilter::etaToBoundary(const std::vector<reco::Jet> &jetTVec){
 }
 
 
+// Cache all jets that are close to the MET within a dphi of dPhiCutVal
 int simpleDRfilter::dPhiToMETfunc(const std::vector<reco::Jet> &jetTVec, const double &dPhiCutVal, std::vector<reco::Jet> &closeToMETjetsVec){
 
   closeToMETjetsVec.clear();
@@ -392,17 +396,18 @@ int simpleDRfilter::dPhiToMETfunc(const std::vector<reco::Jet> &jetTVec, const d
      double deltaPhi = std::abs(reco::deltaPhi( jet.phi(), (*met)[0].phi() ) );
      if( deltaPhi > dPhiCutVal ) continue;
 
+     closeToMETjetsVec.push_back(jetTVec[ii]);
+
      if( deltaPhi < minDphi ){
         minDphi = deltaPhi;
         minIdx = ii;
      }
   }
 
-  if( minIdx == -1 ) return 0;
+//  if( minIdx == -1 ) return 0;
+//  closeToMETjetsVec.push_back(jetTVec[minIdx]);
 
-  closeToMETjetsVec.push_back(jetTVec[minIdx]);
-
-  return 1;
+  return (int)closeToMETjetsVec.size();
 }
 
 
@@ -416,7 +421,8 @@ int simpleDRfilter::dRtoMaskedChnsEvtFilterFunc(const std::vector<reco::Jet> &je
 
      std::map<double, DetId> dummy;
      int isPerJetClose = isCloseToBadEcalChannel(jet, dRCutVal, chnStatus, dummy);
-     if( isPerJetClose ){ isClose = 1; break; }
+//     if( isPerJetClose ){ isClose = 1; break; }
+     if( isPerJetClose ){ isClose ++; }
   }
 
   return isClose;
