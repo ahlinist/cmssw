@@ -51,6 +51,7 @@ def embedTriggerMatches(process, hltPaths):
     pathNames      = cms.vstring( "dummyPathName" ),
     collectionTags = cms.vstring( "*" ),
     #maxDPtRel = cms.double( 0.5 ),
+    matchedCuts = cms.string('path('')'),
     maxDeltaR = cms.double( 0.3 ),
     resolveAmbiguities    = cms.bool( True ),
     resolveByMatchQuality = cms.bool( True )
@@ -91,7 +92,8 @@ def embedTriggerMatches(process, hltPaths):
         moduleLabel,
         triggerMatchTemplate.clone(
           src = target,
-          pathNames = [path]
+          pathNames = [path],
+          matchedCuts = cms.string('path("'+path+'")'),
           )
         )
       module = getattr(process, moduleLabel)

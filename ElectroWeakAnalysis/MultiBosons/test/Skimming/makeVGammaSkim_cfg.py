@@ -31,6 +31,7 @@ options = copy.deepcopy(defaultOptions)
 #options.jobType = "testRealData"
 #options.jobType = "testJetRealData"
 #options.jobType = "testMC"
+#options.jobType = "testMC414"
 
 ## Parse (command-line) arguments - this overrides the options given above
 applyJobOptions(options)
