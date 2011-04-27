@@ -90,7 +90,7 @@ void XS_B(){
 
 void XS_Ratio(){
 
-  TFile *f = new TFile("XSection_1Sbin.root");
+  TFile *f = new TFile("XSection_50mbin_douRap_3Sbin.root");
   TH1D *S1;
   S1 = (TH1D*)gFile->Get("S1YieldPt");
   TH1D *S2;
@@ -142,7 +142,7 @@ void XS_Ratio(){
 
 void XS_Total(){
 
-  TFile *f = new TFile("XSection.root");
+  TFile *f = new TFile("XSection_douRap_3Sbin.root");
   TH1D *S1;
   S1 = (TH1D*)gFile->Get("S1YieldEta");
   TH1D *S2;
@@ -162,12 +162,29 @@ void XS_Total(){
   cout << " Y(1S) Xsection = "  << s1 << endl;
   cout << " Y(2S) Xsection = "  << s2 << endl;
   cout << " Y(3S) Xsection = "  << s3 << endl;
+  
+  S1->SetMarkerColor(3); S2->SetMarkerColor(4); S3->SetMarkerColor(5); 
+  S1->SetLineColor(3); S2->SetLineColor(4); S3->SetLineColor(5);
+  
+  TCanvas *c1 = new TCanvas("c1","c1",1200,600); 
+  S1->SetMinimum(0.);
+  S1->Draw("p");
+  S2->Draw("psame");
+  S3->Draw("psame");
+  legg = new TLegend(0.3,0.6,0.7,0.9);
+  legg->SetHeader("XSection Vs Rapidity  For Ups(nS)");
+  legge = legg->AddEntry(S1, "Y(1S)","p"); legge->SetTextColor(kBlack);
+  legge = legg->AddEntry(S2, "Y(2S)","p"); legge->SetTextColor(kBlack);
+  legge = legg->AddEntry(S3, "Y(3S)","p"); legge->SetTextColor(kBlack);
+  legg->Draw();
 
+  
+  
 }
 
 void XS_Totalv2(){
 
-  TFile *f = new TFile("XSection.root");
+  TFile *f = new TFile("XSection_douRap_3Sbin.root");
   TH1D *S1;
   S1 = (TH1D*)gFile->Get("S1YieldPt");
   TH1D *S2;
