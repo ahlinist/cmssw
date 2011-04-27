@@ -32,7 +32,13 @@ matchHltPaths = {
     "cleanPatMuons"   :     """
                             HLT_Mu9
                             HLT_Mu11
-                            HLT_Mu15_v1
+                            HLT_Mu15_v*
+                            HLT_Mu17_v*
+                            HLT_Mu24_v*
+                            HLT_Mu30_v*
+                            HLT_IsoMu17_v*
+                            HLT_IsoMu24_v*
+                            HLT_IsoMu30_v*
                             """.split(),
 
     "cleanPatTaus"    :     """

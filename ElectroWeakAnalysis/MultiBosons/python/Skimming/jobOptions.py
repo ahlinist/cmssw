@@ -236,6 +236,33 @@ def applyJobOptions(options):
     jobOptions.skimType = "Muon"
     jobOptions.wantSummary = True
 
+  elif options.jobType == "MUPHPromptReco414":
+    jobOptions.globalTag = "GR_P_V17::All"
+    jobOptions.isRealData = True
+    jobOptions.use35XInput = False
+    jobOptions.maxEvents = -1
+    jobOptions.skimType = "MuonPhoton"
+    jobOptions.wantSummary = True
+    jobOptions.isAOD=True
+
+  elif options.jobType == "MUPHReReco414":
+    jobOptions.globalTag = "GR_R_311_V2::All"
+    jobOptions.isRealData = True
+    jobOptions.use35XInput = False
+    jobOptions.maxEvents = -1
+    jobOptions.skimType = "MuonPhoton"
+    jobOptions.wantSummary = True
+    jobOptions.isAOD=True
+
+  elif options.jobType == "MUPHMCSpring11":
+    jobOptions.globalTag = "START311_V2:All"
+    jobOptions.isRealData = False
+    jobOptions.use35XInput = False
+    jobOptions.maxEvents = -1
+    jobOptions.skimType = "MuonPhoton"
+    jobOptions.wantSummary = True
+    jobOptions.isAOD=True
+
   elif options.jobType == "EPHPromptReco38X":
     jobOptions.globalTag = "GR10_P_V9::All"
     jobOptions.isRealData = True
