@@ -26,6 +26,11 @@ options.register("use35XInput",
     VarParsing.multiplicity.singleton, # singleton or list
     VarParsing.varType.bool,           # bool, string, int, or float
     "Is this 35X data?")
+options.register("isAOD",
+    False,
+    VarParsing.multiplicity.singleton, # singleton or list
+    VarParsing.varType.bool,           # bool, string, int, or float
+    "Is this AOD data or RECO?")
 options.register("outEvents",
     -1,
     VarParsing.multiplicity.singleton, # singleton or list
