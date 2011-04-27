@@ -17,8 +17,8 @@ import FWCore.ParameterSet.Config as cms
 from PhysicsTools.PatAlgos.patTemplate_cfg import *
 
 ## Spring10 MC was produced with CMSS_3_5_6 - make sure we can run on it
-from PhysicsTools.PatAlgos.tools.cmsswVersionTools import *
-run36xOn35xInput(process, genJets = "ak5GenJets")
+#from PhysicsTools.PatAlgos.tools.cmsswVersionTools import *
+#run36xOn35xInput(process, genJets = "ak5GenJets")
 
 ## Add non-default MET flavors
 from PhysicsTools.PatAlgos.tools.metTools import *
@@ -36,6 +36,10 @@ process.ZEEGammaPath   = cms.Path(process.patDefaultSequence * process.ZEEGammaS
 process.ZMuMuGammaPath = cms.Path(process.patDefaultSequence * process.ZMuMuGammaSequence)
 process.ZInvisibleGammaPath = cms.Path(process.patDefaultSequence * process.ZInvisibleGammaSequence)
 
+process.evca = cms.EDAnalyzer('EventContentAnalyzer')
+
+process.patDefaultSequence = cms.Sequence(process.patDefaultSequence + process.evca)
+
 ## PAT Trigger
 process.load("PhysicsTools.PatAlgos.triggerLayer1.triggerProducer_cff")
 from PhysicsTools.PatAlgos.tools.trigTools import *
@@ -43,11 +47,11 @@ switchOnTrigger(process)
 switchOnTriggerMatchEmbedding(process)
 
 ## This is the global tag for the Spring10 MC
-process.GlobalTag.globaltag = cms.string('START3X_V26::All')
+process.GlobalTag.globaltag = cms.string('START311_V2::All')
 
 ## Input
-#fileNamePrefix = "rfio:/castor/cern.ch/cms/store/relval/CMSSW_3_5_7/RelValZMM/GEN-SIM-RECO/START3X_V26-v1/0012/"
-fileNamePrefix = "dcap://cmsdca.fnal.gov:24137/pnfs/fnal.gov/usr/cms/WAX/11/store/mc/Spring10/ZJets-madgraph/GEN-SIM-RECO/START3X_V26_S09-v1/0013/"
+fileNamePrefix = "rfio:/castor/cern.ch/cms/store/relval/CMSSW_4_1_4/RelValZMM/GEN-SIM-RECO/START311_V2-v1/0013/"
+#fileNamePrefix = "dcap://cmsdca.fnal.gov:24137/pnfs/fnal.gov/usr/cms/WAX/11/store/mc/Spring10/ZJets-madgraph/GEN-SIM-RECO/START3X_V26_S09-v1/0013/"
 #fileList = """
 #10B71379-4549-DF11-9D80-003048D15D22.root
 #34FD3B1D-6949-DF11-9529-0018F3D09612.root
@@ -57,7 +61,7 @@ fileNamePrefix = "dcap://cmsdca.fnal.gov:24137/pnfs/fnal.gov/usr/cms/WAX/11/stor
 #F6369161-4749-DF11-8D77-003048678B8E.root
 #""".split()
 fileList = """
-4C6A688E-3947-DF11-942E-0030487D710F.root
+40E72E1E-8F60-E011-A5A1-002618FDA211.root
 """.split()
 process.source.fileNames = [fileNamePrefix + file for file in fileList]
 

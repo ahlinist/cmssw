@@ -8,10 +8,10 @@ pathPrefix = "file:" + castorDir + "/"
 filelist = os.popen("ls " + castorDir).read().split()[:10]
 
 process.inputs = cms.PSet (
-    fileNames = cms.vstring(          "file:/afs/cern.ch/cms/cit/veverka/vgamma/skims/CMSSW_3_6_3/src/ElectroWeakAnalysis/MultiBosons/test/Skimming/MuonPhotonSkim_numEvent10.root")
+    fileNames = cms.vstring(          "file:/scratch/lgray/CMSSW_4_1_4/src/ElectroWeakAnalysis/MultiBosons/test/Skimming/VGammaPAT_MuonPhotonSkim_testMC414_100outEvents.root")
 )
 
-process.inputs.fileNames = [pathPrefix + file for file in filelist]
+#process.inputs.fileNames = [pathPrefix + file for file in filelist]
 
 
 
@@ -33,8 +33,8 @@ process.SelectorConfig = sw_commissioning_selection.copy()
 
 process.SelectorConfig.cutsToIgnore.extend([
     "ZEEGamma",
-    "ZMuMuGamma",
-    #"WMuNuGamma",
+    #"ZMuMuGamma",
+    "WMuNuGamma",
     "WENuGamma",
     "ZInvisibleGamma",
 ])
@@ -53,44 +53,44 @@ from ElectroWeakAnalysis.MultiBosons.Histogramming.photonHistos_cfi import photo
 from ElectroWeakAnalysis.MultiBosons.Histogramming.mmgHistos_cfi import mmgHistos
 from ElectroWeakAnalysis.MultiBosons.Histogramming.zGammaSpecialHistos_cff import zGammaSpecialHistos
 
-# process.ZMuMuGamma = cms.PSet(
-#     muonHistos = cms.PSet(src = cms.InputTag(muonHistos.src.value() ),
-#                           histograms = muonHistos.histograms.copy(),
-#                           outputDirectory = cms.string('ZMuMuGamma/Muons'),
+process.ZMuMuGamma = cms.PSet(
+    muonHistos = cms.PSet(src = cms.InputTag(muonHistos.src.value() ),
+                          histograms = muonHistos.histograms.copy(),
+                          outputDirectory = cms.string('ZMuMuGamma/Muons'),
+                          eventWeight = cms.double(1.0)
+                          ),
+    photonHistos = cms.PSet(src = cms.InputTag(photonHistos.src.value()),
+                            histograms = photonHistos.histograms.copy(),
+                            outputDirectory = cms.string('ZMuMuGamma/Photons'),
+                            eventWeight = cms.double(1.0)
+                            ),
+    ZMuMuGammaHistos = cms.PSet(src = cms.InputTag(mmgHistos.src.value()),
+                                specializedHistograms = zGammaSpecialHistos.copy(),
+                                histograms = mmgHistos.histograms.copy(),
+                                outputDirectory = cms.string('ZMuMuGamma'),
+                                eventWeight = cms.double(1.0)
+                                )
+    
+    )
+
+#process.WMuNuGamma = cms.PSet(
+#   muonHistos = cms.PSet(src = cms.InputTag(muonHistos.src.value() ),
+#                         histograms = muonHistos.histograms.copy(),
+#                         outputDirectory = cms.string('WMuNuGamma/Muons'),
+#                         eventWeight = cms.double(1.0)
+#                         ),
+#   photonHistos = cms.PSet(src = cms.InputTag(photonHistos.src.value()),
+#                           histograms = photonHistos.histograms.copy(),
+#                           outputDirectory = cms.string('WMuNuGamma/Photons'),
 #                           eventWeight = cms.double(1.0)
 #                           ),
-#     photonHistos = cms.PSet(src = cms.InputTag(photonHistos.src.value()),
-#                             histograms = photonHistos.histograms.copy(),
-#                             outputDirectory = cms.string('ZMuMuGamma/Photons'),
-#                             eventWeight = cms.double(1.0)
-#                             ),
-#     ZMuMuGammaHistos = cms.PSet(src = cms.InputTag(mmgHistos.src.value()),
-#                                 specializedHistograms = zGammaSpecialHistos.copy(),
-#                                 histograms = mmgHistos.histograms.copy(),
-#                                 outputDirectory = cms.string('ZMuMuGamma'),
-#                                 eventWeight = cms.double(1.0)
-#                                 )
+#   WMuNuGammaHistos = cms.PSet(src = cms.InputTag(mmgHistos.src.value()),
+#                               histograms = mmgHistos.histograms.copy(),
+#                               outputDirectory = cms.string('WMuNuGamma'),
+#                               eventWeight = cms.double(1.0)
+#                               )
 #
-#     )
-
-process.WMuNuGamma = cms.PSet(
-   muonHistos = cms.PSet(src = cms.InputTag(muonHistos.src.value() ),
-                         histograms = muonHistos.histograms.copy(),
-                         outputDirectory = cms.string('WMuNuGamma/Muons'),
-                         eventWeight = cms.double(1.0)
-                         ),
-   photonHistos = cms.PSet(src = cms.InputTag(photonHistos.src.value()),
-                           histograms = photonHistos.histograms.copy(),
-                           outputDirectory = cms.string('WMuNuGamma/Photons'),
-                           eventWeight = cms.double(1.0)
-                           ),
-   WMuNuGammaHistos = cms.PSet(src = cms.InputTag(mmgHistos.src.value()),
-                               histograms = mmgHistos.histograms.copy(),
-                               outputDirectory = cms.string('WMuNuGamma'),
-                               eventWeight = cms.double(1.0)
-                               )
-
-   )
+#   )
 
 if __name__ == "__main__": import user
 #process.inputs.fileNames = ["file:../test/Skimming/VGammaSkim_v2.root"]
