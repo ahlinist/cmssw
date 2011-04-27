@@ -206,3 +206,48 @@ void XS_Totalv2(){
   cout << " Y(3S) Xsection = "  << s3 << endl;
 
 }
+
+void XS_pt(){
+
+  TFile *f = new TFile("XSection_1Sbin.root");
+  TH1D *S1;
+  S1 = (TH1D*)gFile->Get("S1YieldPt");
+  TFile *f1 = new TFile("XSection_2Sbin.root");
+  TH1D *S2;
+  S2 = (TH1D*)gFile->Get("S2YieldPt");
+  TFile *f2 = new TFile("XSection_3Sbin.root");
+  TH1D *S3;
+  S3 = (TH1D*)gFile->Get("S3YieldPt");
+    
+  double s1(0.), s2(0.), s3(0.);
+  for (int i = 1; i <= S1->GetNbinsX(); ++i) {
+    s1 += S1->GetBinContent(i)*S1->GetBinWidth(i);
+  }
+  for (int i = 1; i <= S2->GetNbinsX(); ++i) {
+    s2 += S2->GetBinContent(i)*S2->GetBinWidth(i);
+  }
+  for (int i = 1; i <= S3->GetNbinsX(); ++i) {
+    s3 += S3->GetBinContent(i)*S3->GetBinWidth(i);
+  }
+  
+  cout << " Y(1S) Xsection = "  << s1 << endl;
+  cout << " Y(2S) Xsection = "  << s2 << endl;
+  cout << " Y(3S) Xsection = "  << s3 << endl;
+  
+  S1->SetMarkerColor(3); S2->SetMarkerColor(4); S3->SetMarkerColor(5); 
+  S1->SetLineColor(3); S2->SetLineColor(4); S3->SetLineColor(5);
+  
+  TCanvas *c1 = new TCanvas("c1","c1",1200,600); 
+  S1->SetMinimum(0.);
+  S1->Draw("pE");
+  S2->Draw("psameE");
+  S3->Draw("psameE");
+  legg = new TLegend(0.3,0.6,0.7,0.9);
+  legg->SetHeader("XSection Vs Pt  For Ups(nS)");
+  legge = legg->AddEntry(S1, "Y(1S)","p"); legge->SetTextColor(kBlack);
+  legge = legg->AddEntry(S2, "Y(2S)","p"); legge->SetTextColor(kBlack);
+  legge = legg->AddEntry(S3, "Y(3S)","p"); legge->SetTextColor(kBlack);
+  legg->Draw();
+
+  
+}
