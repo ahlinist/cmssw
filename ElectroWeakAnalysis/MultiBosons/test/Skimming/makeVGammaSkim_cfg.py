@@ -112,12 +112,25 @@ if not options.isRealData:
         cms.InputTag("photonGenMatch", "grandMotherStatus"),
         ])
 
-process.patDefaultSequence.replace(process.patPhotons,
-    process.preshowerClusterShape *
-    process.piZeroDiscriminators  *
-    process.pi0Discriminator      *
-    process.patPhotons
-    )
+if not options.isAOD:
+    process.patDefaultSequence.replace(process.patPhotons,
+        process.preshowerClusterShape *
+        process.piZeroDiscriminators  *
+        process.pi0Discriminator      *
+        process.patPhotons
+        )
+else:
+    process.patDefaultSequence.replace(process.patPhotons,
+        process.piZeroDiscriminators  *
+        process.pi0Discriminator      *
+        process.patPhotons
+        )
+    process.piZeroDiscriminators.preshClusterShapeProducer = cms.string('multi5x5PreshowerClusterShape')
+    process.piZeroDiscriminators.preshClusterShapeCollectionX = cms.string('multi5x5PreshowerXClustersShape')
+    process.piZeroDiscriminators.preshClusterShapeCollectionY = cms.string('multi5x5PreshowerYClustersShape')
+    
+
+
 process.patPhotons.userData.userFloats.src.append(
     cms.InputTag("pi0Discriminator")
     )
