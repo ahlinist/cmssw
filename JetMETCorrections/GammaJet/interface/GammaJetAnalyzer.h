@@ -186,6 +186,8 @@ TH2D* h2_n_vs_eta;
       Float_t timePhot[40];
       Float_t e4SwissCrossPhot[40];
       Int_t hasPixelSeedPhot[40];
+      Int_t hasMatchedConvPhot[40];
+      Int_t hasMatchedPromptElePhot[40];
 
       // Default PAT photon ID variables
       Bool_t pid_isEM[40];
@@ -196,6 +198,11 @@ TH2D* h2_n_vs_eta;
       Float_t pid_HoverE[40]; // Hadronic / EM
       Float_t pid_hlwTrack[40]; // Hollow cone track isolation
       Float_t pid_etawid[40]; // eta width
+      Float_t pid_jurECAL03[40]; // jurassic ECAL isolation
+      Float_t pid_twrHCAL03[40]; // Tower-based HCAL isolation
+      Float_t pid_hlwTrack03[40]; // Hollow cone track isolation
+      Float_t pid_hlwTrack03NoDz[40]; // Hollow cone track isolation
+      Float_t pid_hlwTrackNoDz[40]; // Hollow cone track isolation
      
       Float_t ptiso004Phot[40];
       Int_t ntrkiso004Phot[40];

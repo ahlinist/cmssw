@@ -13,7 +13,7 @@
 //
 // Original Author:  Daniele del Re
 //         Created:  Thu Sep 13 16:00:15 CEST 2007
-// $Id: GammaJetAnalyzer.cc,v 1.52 2011/04/23 11:41:47 rahatlou Exp $
+// $Id: GammaJetAnalyzer.cc,v 1.53 2011/04/26 23:02:55 rahatlou Exp $
 //
 //
 
@@ -116,6 +116,12 @@
 #include <algorithm>
 
 #include "DataFormats/BTauReco/interface/JetTag.h"
+#include "RecoEgamma/EgammaIsolationAlgos/interface/PhotonTkIsolation.h"
+#include "DataFormats/BeamSpot/interface/BeamSpot.h"
+#include "RecoEgamma/EgammaTools/interface/ConversionTools.h"
+#include "DataFormats/EgammaCandidates/interface/ConversionFwd.h"
+#include "DataFormats/EgammaCandidates/interface/Conversion.h"
+
 
 using namespace edm;
 using namespace reco;
@@ -292,6 +298,15 @@ GammaJetAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
    //Handle<vector<Vertex> > VertexHandle;
    iEvent.getByLabel("offlinePrimaryVertices", VertexHandle);
    //iEvent.getByLabel(Vertexsrc_, VertexHandle);
+
+    reco::BeamSpot vertexBeamSpot;
+    edm::Handle<reco::BeamSpot> recoBeamSpotHandle;
+    iEvent.getByLabel("offlineBeamSpot",recoBeamSpotHandle);
+    vertexBeamSpot = *recoBeamSpotHandle;
+    
+   edm::Handle<reco::ConversionCollection> hConversions;
+   iEvent.getByLabel("trackerOnlyConversions", hConversions);
+
 
 
    // get photons
@@ -1167,6 +1182,42 @@ GammaJetAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
      nvertex++;
    }
    
+
+
+    // compute track isolation w/o dz cut
+    float isolationtrackThresholdA = 0.0;
+    float TrackConeOuterRadiusA    = 0.4;
+    float TrackConeInnerRadiusA    = 0.04;
+    float isolationtrackEtaSliceA  = 0.015;
+    float longImpactParameterA     = 99999.;
+    float transImpactParameterA    = 0.1;
+    float isolationtrackThresholdB = 0.0;
+    float TrackConeOuterRadiusB    = 0.3;
+    float TrackConeInnerRadiusB    = 0.04;
+    float isolationtrackEtaSliceB  = 0.015;
+    float longImpactParameterB     = 99999.;
+    float transImpactParameterB    = 0.1;
+
+   PhotonTkIsolation tkIsoCone04( TrackConeOuterRadiusA,
+                                  TrackConeInnerRadiusA,
+        isolationtrackEtaSliceA,
+        isolationtrackThresholdA,
+        longImpactParameterA,
+        transImpactParameterA,
+        tracks.product(),
+        math::XYZPoint(vertexBeamSpot.x0(),vertexBeamSpot.y0(),vertexBeamSpot.z0()) );
+        
+   PhotonTkIsolation tkIsoCone03( TrackConeOuterRadiusB,
+                                  TrackConeInnerRadiusB,
+        isolationtrackEtaSliceB,
+        isolationtrackThresholdB,
+        longImpactParameterB,
+        transImpactParameterB,
+        tracks.product(),
+        math::XYZPoint(vertexBeamSpot.x0(),vertexBeamSpot.y0(),vertexBeamSpot.z0()) );
+        
+
+
    // Loop over reco photons
    
    for (PhotonCollection::const_iterator it = PhotonHandle->begin(); 
@@ -1184,6 +1235,15 @@ GammaJetAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
      etascPhot[nPhot] = it->superCluster()->eta();	 
      phiscPhot[nPhot] = it->superCluster()->phi();	      
      hasPixelSeedPhot[nPhot] = it->hasPixelSeed();
+
+
+     reco::ConversionRef conv = 
+       ConversionTools::matchedConversion(*(it->superCluster()),hConversions,vertexBeamSpot.position());
+     hasMatchedConvPhot[nPhot] = conv.isNonnull();
+
+     hasMatchedPromptElePhot[nPhot]    = ConversionTools::hasMatchedPromptElectron(it->superCluster(), 
+                                          ElectronHandle, hConversions, vertexBeamSpot.position());
+
      
      const Ptr<CaloCluster> theSeed = it->superCluster()->seed(); 
      
@@ -1212,6 +1272,13 @@ GammaJetAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
      pid_HoverE[nPhot] = it->hadronicOverEm();
      pid_hlwTrack[nPhot] = it->trkSumPtHollowConeDR04();//isolationHollowTrkCone
      pid_etawid[nPhot] = it->sigmaIetaIeta();//sqrt(it->covEtaEta());
+     pid_hlwTrackNoDz[nPhot] = tkIsoCone04.getPtTracks( &(*it) );
+
+     pid_jurECAL03[nPhot] = it->ecalRecHitSumEtConeDR03();//isolationEcalRecHit
+     pid_twrHCAL03[nPhot] = it->hcalTowerSumEtConeDR03();//isolationHcalRecHit
+     pid_hlwTrack03[nPhot] = it->trkSumPtHollowConeDR03();//isolationHollowTrkCone
+     pid_hlwTrack03NoDz[nPhot] = tkIsoCone03.getPtTracks( &(*it) );
+
 
      // fill default ID variables from
      // https://twiki.cern.ch/twiki/bin/view/CMS/PhotonIDAnalysis for 31X
@@ -1911,6 +1978,8 @@ GammaJetAnalyzer::beginJob()
   m_tree->Branch("timePhot",&timePhot,"timePhot[nPhot]/F");
   m_tree->Branch("e4SwissCrossPhot",&e4SwissCrossPhot,"e4SwissCrossPhot[nPhot]/F");
   m_tree->Branch("hasPixelSeedPhot",&hasPixelSeedPhot,"hasPixelSeedPhot[nPhot]/I");
+  m_tree->Branch("hasMatchedPromptElePhot",&hasMatchedPromptElePhot,"hasMatchedPromptElePhot[nPhot]/I");
+  m_tree->Branch("hasMatchedConvPhot",&hasMatchedConvPhot,"hasMatchedConvPhot[nPhot]/I");
 
   // Default photon ID
   m_tree->Branch("pid_isEM",&pid_isEM,"pid_isEM[nPhot]/O");
@@ -1920,7 +1989,13 @@ GammaJetAnalyzer::beginJob()
   m_tree->Branch("pid_twrHCAL",&pid_twrHCAL,"pid_twrHCAL[nPhot]/F");
   m_tree->Branch("pid_HoverE",&pid_HoverE,"pid_HoverE[nPhot]/F");
   m_tree->Branch("pid_hlwTrack",&pid_hlwTrack,"pid_hlwTarck[nPhot]/F");
+  m_tree->Branch("pid_hlwTrackNoDz",&pid_hlwTrackNoDz,"pid_hlwTrackNoDz[nPhot]/F");
   m_tree->Branch("pid_etawid",&pid_etawid,"pid_etawid[nPhot]/F");
+
+  m_tree->Branch("pid_jurECAL03",&pid_jurECAL03,"pid_jurECAL03[nPhot]/F");
+  m_tree->Branch("pid_twrHCAL03",&pid_twrHCAL03,"pid_twrHCAL03[nPhot]/F");
+  m_tree->Branch("pid_hlwTrack03",&pid_hlwTrack03,"pid_hlwTrack03[nPhot]/F");
+  m_tree->Branch("pid_hlwTrack03NoDz",&pid_hlwTrack03NoDz,"pid_hlwTrack03NoDz[nPhot]/F");
 
   m_tree->Branch("ptiso004Phot",&ptiso004Phot,"ptiso004Phot[nPhot]/F");
   m_tree->Branch("ntrkiso004Phot",&ntrkiso004Phot,"ntrkiso004Phot[nPhot]/I");
