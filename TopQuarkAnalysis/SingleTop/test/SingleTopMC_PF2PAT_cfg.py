@@ -167,7 +167,7 @@ savePatTupleSkimLoose = cms.untracked.vstring(
 process.singleTopNTuple = cms.OutputModule("PoolOutputModule",
 #                                fileName = cms.untracked.string('rfio:/CST/cern.ch/user/o/oiorio/SingleTop/SubSkims/WControlSamples1.root'),
 #                   fileName = cms.untracked.Bstring('/tmp/oiorio/edmntuple_tchannel_big.root'),
-                   fileName = cms.untracked.string('edmntuple_TTBar.root'),
+                   fileName = cms.untracked.string('edmntuple_TChannel.root'),
                                              
                    SelectEvents   = cms.untracked.PSet( SelectEvents = cms.vstring('selection')),
                    outputCommands = saveNTuplesSkimLoose,
