@@ -326,14 +326,16 @@
  <Rotation name="RABS90" thetaX="90*deg" phiX="180*deg" thetaY="90*deg" phiY="90*deg" thetaZ="180*deg" phiZ="-90*deg"/>
  <Rotation name="RABS180B" thetaX="90*deg" phiX="0*deg" thetaY="90*deg" phiY="-90*deg" thetaZ="180*deg" phiZ="0*deg" />
  <Rotation name="R090" thetaX="90*deg" phiX="90*deg" thetaY="90*deg" phiY="180*deg" thetaZ="0*deg" phiZ="0*deg" />
- <Rotation name="RM1298" thetaX="90*deg" phiX="0*deg" thetaY="86.20004*deg" phiY="90*deg" thetaZ="3.79996*deg" phiZ="-90*deg" />
+ <Rotation name="RM1298" thetaX="90*deg" phiX="0*deg" thetaY="90*deg-[escon:ESWaferTilt]" phiY="90*deg" thetaZ="[escon:ESWaferTilt]" phiZ="-90*deg" />
  <Rotation name="RM1299" thetaX="0*deg" phiX="0*deg" thetaY="90*deg" phiY="180*deg" thetaZ="90*deg" phiZ="-90*deg" />
- <Rotation name="RM1300A" thetaX="86.20004*deg" phiX="90*deg" thetaY="90*deg" phiY="180*deg" thetaZ="3.79996*deg" phiZ="-90*deg" />
+ <Rotation name="RM1300A" thetaX="90*deg-[escon:ESWaferTilt]" phiX="90*deg" thetaY="90*deg" phiY="180*deg" thetaZ="[escon:ESWaferTilt]" phiZ="-90*deg" />
   
 </RotationSection>
 
  <Algorithm name="ecal:DDEcalPreshowerAlgo">
     <rParent name="esalgo:SF"/>
+
+    
 
     <Vector name="IQUAD_MAX" type="numeric" nEntries="20">
       5,7,10,11,13,13,14,15,16,17,17,17,18,19,19,19,19,19,19,19

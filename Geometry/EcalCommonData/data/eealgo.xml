@@ -87,8 +87,13 @@
 
    <Numeric name="EEnSCquad" value="78"/>
 
+   <Numeric name="EEzFront" value="[eecon:EEzFront]"/>
+
 <!-- EESCCtrs gives positions of centres of front and rear SC faces in CMS coordinates -->
-<!-- Column headings for EESCCtrs vector                                               -->
+<!-- Column headings for EESCCtrs vector                                       
+     Z positions are assuming front of EE env screen (EEzFront) is at 3172mm from IP-->
+<!-- This correction to 3172 is made in the C++ code
+ -->
 <!-- IX  IY   Xfront         Xrear        Yfront       Yrear        Zfront       Zrear -->
     <Vector name="EESCCtrs" type="numeric" nEntries="624">
       1,  3,  73.99*mm,     79.436*mm,  367.857*mm,  395.056*mm, 3183.583*mm, 3529.157*mm,
@@ -210,6 +215,12 @@
       5, 4,  62.75022625*mm,  56.52935125*mm,  27.39645*mm,  32.234145*mm, 109.7042475*mm,-110.1567525*mm,
       5, 5,  62.75161125*mm,  56.53161125*mm,  56.525305*mm, 62.744865*mm, 109.6143925*mm,-110.2118725*mm
    </Vector>
+
+
+<!-- Z offset for crystals inside alveolus -->
+   <Numeric name="EECryZOff" value="21.0*mm"/>
+
+
   </Algorithm>
 
 </DDDefinition>
