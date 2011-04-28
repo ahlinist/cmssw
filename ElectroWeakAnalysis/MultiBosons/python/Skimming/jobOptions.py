@@ -237,7 +237,7 @@ def applyJobOptions(options):
     jobOptions.wantSummary = True
 
   elif options.jobType == "MUPHPromptReco414":
-    jobOptions.globalTag = "GR_P_V17::All"
+    jobOptions.globalTag = "GR_R_311_V2::All"
     jobOptions.isRealData = True
     jobOptions.use35XInput = False
     jobOptions.maxEvents = -1
