@@ -28,7 +28,7 @@ void HtRatioAlgorithm::computeHtRatio(HtRatio& htRatio,
   for ( jetCollectionType::const_iterator iJet = jets.begin(); iJet != jets.end(); ++iJet ) 
     sumJetPt += iJet->pt();
   
-  double Ratio = tauPt/(tauPt + sumJetPt);
+  double Ratio = tauPt/sumJetPt;
   
   if ( verbosity_ ) {
 	std::cout << "<HtRatioAlgorithm::computeHtRatio>:" << std::endl;
