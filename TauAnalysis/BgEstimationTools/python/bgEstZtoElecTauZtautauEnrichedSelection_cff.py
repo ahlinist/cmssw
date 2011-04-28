@@ -5,7 +5,7 @@ from TauAnalysis.CandidateTools.tools.objSelConfigurator import *
 from TauAnalysis.RecoTools.tools.eventSelFlagProdConfigurator import *
 
 #--------------------------------------------------------------------------------
-# select Z --> e+ e- background enriched event sample
+# select signal enriched event sample
 #--------------------------------------------------------------------------------
 
 #--------------------------------------------------------------------------------  
@@ -311,9 +311,9 @@ cfgTauPtCutBgEstZtautauEnriched = copy.deepcopy(cfgTauPtCut)
 cfgTauPtCutBgEstZtautauEnriched.pluginName = cms.string('tauPtCutBgEstZtautauEnriched')
 cfgTauPtCutBgEstZtautauEnriched.src_cumulative = cms.InputTag('tausBgEstZtautauEnrichedPtCumulative')
 
-cfgTauLeadTrkCutBgEstZtautauEnriched = copy.deepcopy(cfgTauLeadTrkCut)
-cfgTauLeadTrkCutBgEstZtautauEnriched.pluginName = cms.string('tauLeadTrkCutBgEstZtautauEnriched')
-cfgTauLeadTrkCutBgEstZtautauEnriched.src_cumulative = cms.InputTag('tausBgEstZtautauEnrichedLeadTrkCumulative')
+## cfgTauLeadTrkCutBgEstZtautauEnriched = copy.deepcopy(cfgTauLeadTrkCut)
+## cfgTauLeadTrkCutBgEstZtautauEnriched.pluginName = cms.string('tauLeadTrkCutBgEstZtautauEnriched')
+## cfgTauLeadTrkCutBgEstZtautauEnriched.src_cumulative = cms.InputTag('tausBgEstZtautauEnrichedLeadTrkCumulative')
 
 cfgTauLeadTrkPtCutBgEstZtautauEnriched = copy.deepcopy(cfgTauLeadTrkPtCut)
 cfgTauLeadTrkPtCutBgEstZtautauEnriched.pluginName = cms.string('tauLeadTrkPtCutBgEstZtautauEnriched')
@@ -375,7 +375,8 @@ cfgElecTauPairZeeHypothesisVetoBgEstZtautauEnriched.src = cms.InputTag('selected
 
 
 evtSelConfiguratorBgEstZtautauEnriched = eventSelFlagProdConfigurator(
-    [ cfgTriggerBgEst,
+    [ cfgGenPhaseSpaceCut,
+      cfgTriggerBgEst,
       cfgPrimaryEventVertexBgEst,
       cfgPrimaryEventVertexQualityBgEst,
       cfgPrimaryEventVertexPositionBgEst,
@@ -441,7 +442,7 @@ analyzeEventsBgEstZtautauEnriched = cms.EDAnalyzer("GenericAnalyzer",
     name = cms.string('BgEstTemplateAnalyzer_ZtautauEnriched'), 
 
     filters = cms.VPSet(
-        #evtSelGenPhaseSpace,
+        evtSelGenPhaseSpace,
         evtSelTrigger,
         evtSelPrimaryEventVertex,
         evtSelPrimaryEventVertexQuality,
@@ -593,10 +594,10 @@ analyzeEventsBgEstZtautauEnriched = cms.EDAnalyzer("GenericAnalyzer",
         #           - otherwise the script submitToBatch.csh for submission of cmsRun jobs
         #            to the CERN batch system will not work !!)
 
-##         cms.PSet(
-##             filter = cms.string('evtSelGenPhaseSpace'),
-##             title = cms.string('gen. Phase-Space')
-##         ),
+        cms.PSet(
+            filter = cms.string('genPhaseSpaceCut'),
+            title = cms.string('gen. Phase-Space')
+        ),
         cms.PSet(
             analyzers = cms.vstring('electronHistManagerForElecTauBgEstZtautauEnriched',
                                     'tauHistManagerForElecTauBgEstZtautauEnriched',
