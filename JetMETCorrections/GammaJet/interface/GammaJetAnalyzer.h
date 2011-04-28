@@ -78,6 +78,7 @@ class GammaJetAnalyzer : public edm::EDAnalyzer {
 TH1F* h1_hbherh_detid;
 TH1F* h1_etaPhot;
 TH2D* h2_n_vs_eta;
+      edm::InputTag puSummaryInfo_;
       edm::InputTag MCTruthCollection_; 
       edm::InputTag triggerTag_;
       edm::InputTag Vertexsrc_;
@@ -451,5 +452,14 @@ TH2D* h2_n_vs_eta;
       
       int nHLT;
       std::map<std::string, int> hltTriggers;
+
+      int pu_n;
+      int pu_bunchcrossing;
+      float pu_zpos[50];
+      float pu_sumpt_lowpt[50];
+      float pu_sumpt_highpt[50];
+      float pu_ntrks_lowpt[50];
+      float pu_ntrks_highpt[50];
+
 };
 

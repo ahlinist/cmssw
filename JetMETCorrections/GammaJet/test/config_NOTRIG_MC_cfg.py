@@ -114,6 +114,7 @@ process.softElectronTagInfos.jets =  cms.InputTag("ak5PFJets")
 process.myanalysis = cms.EDAnalyzer("GammaJetAnalyzer",
     debug = cms.bool(False),
     recoProducer = cms.string('ecalRecHit'),
+    PUSummaryInfoCollection = cms.InputTag("addPileupInfo"),
     MCTruthCollection = cms.untracked.InputTag("source"),
     genMet = cms.untracked.InputTag("genMetTrue"),
     met = cms.untracked.InputTag("met"),
@@ -173,8 +174,13 @@ process.offlinePrimaryVerticesDA.TkClusParameters.TkDAClusParameters.Tmin = cms.
 process.offlinePrimaryVerticesDA.TkClusParameters.TkDAClusParameters.vertexSize = cms.double(0.01) 
 
 
+# high purity tracks
+process.highPurityTracks = cms.EDFilter("TrackSelector",
+    src = cms.InputTag("generalTracks"),
+    cut = cms.string('quality("highPurity")')
+)
 
-process.p = cms.Path( process.monster * process.offlinePrimaryVerticesDA * process.kt6PFJets * process.kt6CaloJets * process.myBtag * process.metCorSequence * process.myanalysis )
+process.p = cms.Path( process.monster * process.offlinePrimaryVerticesDA * process.highPurityTracks * process.kt6PFJets * process.kt6CaloJets * process.myBtag * process.metCorSequence * process.myanalysis )
 #process.p = cms.Path(process.monster*process.myanalysis)
 #process.p = cms.Path(process.ecalCleanClustering*process.recoJPTJets*process.myanalysis)
 #process.p = cms.Path(process.myanalysis)
