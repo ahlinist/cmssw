@@ -13,7 +13,7 @@
 //
 // Original Author:  Daniele del Re
 //         Created:  Thu Sep 13 16:00:15 CEST 2007
-// $Id: GammaJetAnalyzer.cc,v 1.53 2011/04/26 23:02:55 rahatlou Exp $
+// $Id: GammaJetAnalyzer.cc,v 1.54 2011/04/27 23:54:32 rahatlou Exp $
 //
 //
 
@@ -121,6 +121,7 @@
 #include "RecoEgamma/EgammaTools/interface/ConversionTools.h"
 #include "DataFormats/EgammaCandidates/interface/ConversionFwd.h"
 #include "DataFormats/EgammaCandidates/interface/Conversion.h"
+#include "SimDataFormats/PileupSummaryInfo/interface/PileupSummaryInfo.h"
 
 
 using namespace edm;
@@ -156,6 +157,7 @@ GammaJetAnalyzer::GammaJetAnalyzer(const edm::ParameterSet& iConfig)
     h1_etaPhot = new TH1F("etaPhot", "", 50, -5.5, 5.5);
     h2_n_vs_eta = new TH2D("n_vs_eta", "", 10, 0., 2.5, 1000, 0., 1000.);
   _debug = iConfig.getParameter<bool>("debug");
+  puSummaryInfo_ = iConfig.getParameter<edm::InputTag>("PUSummaryInfoCollection");
   MCTruthCollection_ = iConfig.getUntrackedParameter<edm::InputTag>("MCTruthCollection");
   triggerTag_ = iConfig.getUntrackedParameter<edm::InputTag>("TriggerTag");
   trackTags_ = iConfig.getUntrackedParameter<edm::InputTag>("tracks");
@@ -292,6 +294,9 @@ GammaJetAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
    iSetup.get<IdealMagneticFieldRecord>().get(magneticField);
    const  MagneticField *mField = magneticField.product();
    bfield = mField->inTesla(GlobalPoint(0.,0.,0.)).z();
+
+   Handle<TrackCollection> tracksHP;
+   iEvent.getByLabel("highPurityTracks",tracksHP);
 
    // get primary vertices
    Handle<VertexCollection> VertexHandle;
@@ -441,6 +446,22 @@ GammaJetAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
       iEvent.getByLabel("trackCountingHighPurBJetTags", trackCountingHighPurBJetTags);
       iEvent.getByLabel("trackCountingHighEffBJetTags", trackCountingHighEffBJetTags);
 
+      edm::Handle<std::vector<PileupSummaryInfo> > pileupHandle;
+      if( isMC ) iEvent.getByLabel(puSummaryInfo_, pileupHandle);
+       pu_n = 0;
+      if( pileupHandle.isValid() ) {
+  
+         PileupSummaryInfo pileup = (*pileupHandle.product())[0];
+  
+         pu_n = pileup.getPU_NumInteractions();
+         //pu_bunchcrossing = pileup.getBunchCrossing();
+         int sv = pu_n< 50 ? pu_n : 50;
+         copy( pileup.getPU_zpositions().begin(), pileup.getPU_zpositions().begin()+sv, pu_zpos );
+         copy( pileup.getPU_sumpT_lowpT().begin(), pileup.getPU_sumpT_lowpT().begin()+sv, pu_sumpt_lowpt );
+         copy( pileup.getPU_sumpT_highpT().begin(), pileup.getPU_sumpT_highpT().begin()+sv, pu_sumpt_highpt );
+         copy( pileup.getPU_ntrks_lowpT().begin(), pileup.getPU_ntrks_lowpT().begin()+sv, pu_ntrks_lowpt );
+         copy( pileup.getPU_ntrks_highpT().begin(), pileup.getPU_ntrks_highpT().begin()+sv, pu_ntrks_highpt );
+      }
 
   // get geometry
    edm::ESHandle<CaloGeometry> geoHandle;
@@ -1204,7 +1225,7 @@ GammaJetAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
         isolationtrackThresholdA,
         longImpactParameterA,
         transImpactParameterA,
-        tracks.product(),
+        tracksHP.product(),
         math::XYZPoint(vertexBeamSpot.x0(),vertexBeamSpot.y0(),vertexBeamSpot.z0()) );
         
    PhotonTkIsolation tkIsoCone03( TrackConeOuterRadiusB,
@@ -1213,7 +1234,7 @@ GammaJetAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
         isolationtrackThresholdB,
         longImpactParameterB,
         transImpactParameterB,
-        tracks.product(),
+        tracksHP.product(),
         math::XYZPoint(vertexBeamSpot.x0(),vertexBeamSpot.y0(),vertexBeamSpot.z0()) );
         
 
@@ -1967,6 +1988,16 @@ GammaJetAnalyzer::beginJob()
   m_tree->Branch("eMC  ",&eMC  ,"eMC[nMC]/F");
   m_tree->Branch("etaMC",&etaMC,"etaMC[nMC]/F");
   m_tree->Branch("phiMC",&phiMC,"phiMC[nMC]/F");
+
+
+  m_tree->Branch("pu_n", &pu_n, "pu_n/I");
+  //m_tree->Branch("pu_bunchcrossing", &pu_bunchcrossing, "pu_bunchcrossing/I");
+  m_tree->Branch("pu_zpos", &pu_zpos, "pu_zpos[pu_n]/F");
+  m_tree->Branch("pu_sumpt_lowpt", &pu_sumpt_lowpt, "pu_sumpt_lowpt[pu_n]/F");
+  m_tree->Branch("pu_sumpt_highpt", &pu_sumpt_highpt, "pu_sumpt_highpt[pu_n]/F");
+  m_tree->Branch("pu_ntrks_lowpt", &pu_ntrks_lowpt, "pu_ntrks_lowpt[pu_n]/F");
+  m_tree->Branch("pu_ntrks_highpt", &pu_ntrks_highpt, "pu_ntrks_highpt[pu_n]/F");
+
 
   m_tree->Branch("nPhot",&nPhot,"nPhot/I");
   m_tree->Branch("ptPhot ",&ptPhot ,"ptPhot[nPhot]/F");
