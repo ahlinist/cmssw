@@ -21,17 +21,15 @@ from TauAnalysis.CandidateTools.tauNuPairSelection_cfi import *
 from TauAnalysis.RecoTools.tauRecoilEnergy_cff import *
 #produce collections for met topology
 from TauAnalysis.CandidateTools.metTopology_cfi import *
-
+#produce collections for HT-ratio
+from TauAnalysis.CandidateTools.htRatio_cfi import *
 
 producePatTupleWtoTauNuSpecific = cms.Sequence(
     selectPatTausForWTauNu
-    +selectPatTausForWTauNuLooseIsolation
     +selectPatSelJetsForWTauNu
-    +selectPatMETs
     +selectPatPFMETs
     +produceTauNuPairs
     +selectTauNuPairs
-    +selectTauNuPairsLooseIsolation
     +produceTauRecoilEnergy
     +selectMEtTopology
     +patMuonsMuScleFitCorrectedMomentum 
@@ -39,4 +37,6 @@ producePatTupleWtoTauNuSpecific = cms.Sequence(
     +selectPatElectrons    
     +selectPatTaus
     +selectPatJets
+    +produceHtRatio
+    +selectHtRatio
 )
