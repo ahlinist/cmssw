@@ -173,7 +173,6 @@ process.offlinePrimaryVerticesDA.useBeamConstraint = cms.bool(True)
 process.offlinePrimaryVerticesDA.TkClusParameters.TkDAClusParameters.Tmin = cms.double(4.)
 process.offlinePrimaryVerticesDA.TkClusParameters.TkDAClusParameters.vertexSize = cms.double(0.01) 
 
-
 # high purity tracks
 process.highPurityTracks = cms.EDFilter("TrackSelector",
     src = cms.InputTag("generalTracks"),
