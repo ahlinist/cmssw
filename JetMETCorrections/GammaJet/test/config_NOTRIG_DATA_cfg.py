@@ -111,6 +111,7 @@ process.myanalysis = cms.EDAnalyzer("GammaJetAnalyzer",
     debug = cms.bool(False),
     recoProducer = cms.string('ecalRecHit'),
     MCTruthCollection = cms.untracked.InputTag("source"),
+    PUSummaryInfoCollection = cms.InputTag("addPileupInfo"),
     genMet = cms.untracked.InputTag("genMetTrue"),
     met = cms.untracked.InputTag("met"),
     tracks = cms.untracked.InputTag("generalTracks"),
@@ -156,7 +157,29 @@ process.load('RecoJets.JetProducers.kt4PFJets_cfi')
 process.kt6PFJets = process.kt4PFJets.clone( rParam = 0.6, doRhoFastjet = True )
 process.kt6PFJets.Rho_EtaMax = cms.double(2.5)
 
-process.p = cms.Path( process.monster * process.ak5PFJetsL2L3Residual* process.kt6PFJets * process.myBtag * process.metCorSequence * process.myanalysis )
+process.load('RecoJets.JetProducers.kt4CaloJets_cfi')
+process.kt6CaloJets = process.kt4CaloJets.clone( rParam = 0.6, doRhoFastjet = True )
+process.kt6CaloJets.Rho_EtaMax = cms.double(2.5)
+
+# re-reconstructing the primary vertices with the Deterministic Annealing (DA) vertex finder
+# from B. Mangano studies
+from RecoVertex.PrimaryVertexProducer.OfflinePrimaryVerticesDA_cfi import *
+import RecoVertex.PrimaryVertexProducer.OfflinePrimaryVerticesDA_cfi
+
+process.offlinePrimaryVerticesDA = RecoVertex.PrimaryVertexProducer.OfflinePrimaryVerticesDA_cfi.offlinePrimaryVerticesDA.clone()
+process.offlinePrimaryVerticesDA.useBeamConstraint = cms.bool(True)
+process.offlinePrimaryVerticesDA.TkClusParameters.TkDAClusParameters.Tmin = cms.double(4.)
+process.offlinePrimaryVerticesDA.TkClusParameters.TkDAClusParameters.vertexSize = cms.double(0.01) 
+
+# high purity tracks
+process.highPurityTracks = cms.EDFilter("TrackSelector",
+    src = cms.InputTag("generalTracks"),
+    cut = cms.string('quality("highPurity")')
+)
+
+process.p = cms.Path( process.monster * process.offlinePrimaryVerticesDA * process.highPurityTracks * process.kt6PFJets * process.kt6CaloJets * process.myBtag * process.metCorSequence * process.myanalysis )
+#process.p = cms.Path( process.monster * process.offlinePrimaryVerticesDA * process.kt6PFJets * process.kt6CaloJets * process.myBtag * process.metCorSequence * process.myanalysis )
+#process.p = cms.Path( process.monster * process.ak5PFJetsL2L3Residual* process.kt6PFJets * process.myBtag * process.metCorSequence * process.myanalysis )
 #process.p = cms.Path( process.monster * process.ak5PFJetsL2L3Residual* process.kt6PFJets * process.metCorSequence * process.myanalysis )
 #process.p = cms.Path(process.monster*process.myanalysis)
 #process.p = cms.Path(process.ecalCleanClustering*process.recoJPTJets*process.myanalysis)
