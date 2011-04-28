@@ -6,14 +6,15 @@ process = cms.Process('runWtoTauNu')
 
 process.load('Configuration/StandardSequences/Services_cff')
 process.load('FWCore/MessageService/MessageLogger_cfi')
-process.MessageLogger.cerr.FwkReport.reportEvery = 1
+process.MessageLogger.cerr.FwkReport.reportEvery = 2000
 
 #load geometry
 process.load('Configuration/StandardSequences/GeometryIdeal_cff')
 process.load('Configuration/StandardSequences/MagneticField_cff')
 process.load('Configuration/StandardSequences/Reconstruction_cff')
 process.load('Configuration/StandardSequences/FrontierConditions_GlobalTag_cff')
-process.GlobalTag.globaltag = cms.string('START38_V14::All')
+#process.GlobalTag.globaltag = cms.string('START38_V14::All')
+process.GlobalTag.globaltag = cms.string('START39_V8::All')
 
 # import particle data table, needed for print-out of generator level information
 process.load("SimGeneral.HepPDTESSource.pythiapdt_cfi")
@@ -48,8 +49,8 @@ from TauAnalysis.Configuration.recoSampleDefinitionsWtoTauNu_cfi import *
 #process.add_( cms.Service("PrintLoadingPlugins") )
 #---------------------------------------------------------------------------------
 
-#process.patTrigger.processName = 'HLT2'
-#process.patTriggerEvent.processName = "HLT2"
+process.patTrigger.processName = 'REDIGI39X'
+process.patTriggerEvent.processName = "REDIGI39X"
 
 process.DQMStore = cms.Service("DQMStore")
 
@@ -69,17 +70,16 @@ process.source = cms.Source("PoolSource",
 
 
 #    'file:final_events_WtoTauNu_data_BTau_Run2010B_Nov4ReReco_RunPileup_79_1_AZq.root'
-       'file:final_events_WtoTauNu_data_BTau_Run2010B_Nov4ReReco_RunPileup_78_1_4t7.root' # 
+#       'file:final_events_WtoTauNu_data_BTau_Run2010B_Nov4ReReco_RunPileup_78_1_4t7.root' # 
 #       'file:final_events_WtoTauNu_data_BTau_Run2010B_Nov4ReReco_RunPileup_126_1_DMx.root'
 #       'file:final_events_WtoTauNu_data_BTau_Run2010B_Nov4ReReco_RunPileup_127_1_nPN.root'
-    #Wmunu
-#    'rfio:/castor/cern.ch/user/a/abdollah/HLT/TrigEfficiency/testRAWRECO_MU/TauHLTOutput_Fall10_9_1_pBK.root'
-    
-    #Ztautau
-#    'rfio:/castor/cern.ch/user/a/abdollah/HLT/TrigEfficiency/Ztautau/TauHLTOutput_Fall10_9_1_2bX.root'
+#       'rfio:/castor/cern.ch/user/l/liis/CMSSW_38X/Histograms/Pileup/run6/final_events_WtoTauNu_Wtaunu_RunPileup_168_1_AXy.root'
+#       'rfio:/castor/cern.ch/user/l/liis/CMSSW_38X/Histograms/Pileup/run6/final_events_WtoTauNu_Wtaunu_RunPileup_105_1_ome.root'
+#       'rfio:/castor/cern.ch/user/l/liis/CMSSW_38X/Histograms/Pileup/run6/final_events_WtoTauNu_Wtaunu_RunPileup_9_1_hsf.root'    
 
-    
-    )
+#       'rfio:/castor/cern.ch/user/l/liis/CMSSW_39X/PreselEvents/final_events_WtoTauNu_Wtaunu_Run02_144_1_oCQ.root'
+       'rfio:/castor/cern.ch/user/l/liis/CMSSW_39X/TestAOD/aodSkim_1_1_LYl.root'
+       )
     #skipBadFiles = cms.untracked.bool(True)
 )
 
@@ -131,24 +131,25 @@ replaceMETforTauNu(process, cms.InputTag('patMETs'),cms.InputTag('patPFMETs'))
 #--------------------------------------------------------------------------------
 # import utility function for changing cut values
 from TauAnalysis.Configuration.tools.changeCut import changeCut
-changeCut(process,"selectedPatTausTaNCdiscr","tauID('byHPSmedium') > -0.5") #inactivate TaNC
-
+#tau selection
 changeCut(process,"selectedPatTausForWTauNuEta21","abs(eta) < 2.3")
-changeCut(process,"selectedPatTausForWTauNuEcalIso","tauID('byHPSmedium') > 0.5")
-changeCut(process,"selectedPatTausForWTauNuTrkIso","tauID('byHPSmedium') > 0.5")
-changeCut(process,"selectedPatTausForWTauNuPt20","pt > 30")
+changeCut(process,"selectedPatTausForWTauNuPt20","pt() > 30")
+changeCut(process,"selectedPatTausForWTauNuLeadTrk","pt > 30")#"tauID('decayModeFinding') > 0.5")
+
+changeCut(process,"selectedPatTausForWTauNuLeadTrkPt","pt > 30")#leadPFChargedHadrCand().isNonnull() & leadPFChargedHadrCand().pt() > 15.")
+changeCut(process,"selectedPatTausForWTauNuElectronVeto","tauID('againstElectronTight') > -0.5")
 changeCut(process,"selectedPatTausForWTauNuMuonVeto","tauID('againstMuonTight') > 0.5")
-changeCut(process,"selectedPatTausForWTauNuLeadTrkPt","tauID('decayModeFinding') > 0.5")
-changeCut(process,"selectedPatTausForWTauNuElectronVeto","tauID('againstElectronTight') > 0.5")
-changeCut(process,"selectedPatTausForWTauNuEcalCrackVeto","abs(eta) > 0.018 && (abs(eta)<0.423 || abs(eta)>0.461) && (abs(eta)<0.770 || abs(eta)>0.806) && (abs(eta)<1.127 || abs(eta)>1.163) && (abs(eta)<1.460 || abs(eta)>1.558)")
+changeCut(process,"selectedPatTausForWTauNuEmFraction","emFraction < 1.9")
+changeCut(process,"selectedPatTausForWTauNuIso","tauID('byHPSmedium') > 0.5")
 
 #electron selection
 changeCut(process,"selectedPatElectronsTightId","electronID('eidLoose') > 0.5")
-#"(abs(superCluster.eta) < 1.479 & electronID('eidRobustLoose') > 0 & eSuperClusterOverP < 1.05 & eSuperClusterOverP > 0.95) | (abs(superCluster.eta) > 1.479 & electronID('eidRobustLoose') > 0 & eSuperClusterOverP < 1.12 & eSuperClusterOverP > 0.95)")
 changeCut(process,"selectedPatElectronsEta21","abs(eta) < 2.4")
+changeCut(process,"selectedPatElectronsPt15","pt > 45")
 
 #muon selection
 changeCut(process,"selectedPatMuonsEta21","abs(eta) < 2.4")
+changeCut(process,"selectedPatMuonsPt15","pt > 15")
 process.patMuonPFIsolationSelector.sumPtMax = cms.double(0.2)
 #-----------------------------------------------------------------------------------
 
@@ -164,6 +165,8 @@ process.filterFinalEvents = cms.EDFilter("BoolEventFilter",
                                          src = cms.InputTag("isRecWtoTauNu")
                                          )
 
+process.o = cms.Path(process.filterFirstEvent + process.printEventContent)
+
 process.p = cms.Path( 
     process.producePatTupleWtoTauNuSpecific
 #    +process.printGenParticleList # print-out of generator level particles
@@ -171,8 +174,9 @@ process.p = cms.Path(
     +process.selectWtoTauNuEvents
     +process.analyzeWtoTauNuEvents
     +process.saveWtoTauNuPlots 
-#    +process.filterFinalEvents
+    +process.filterFinalEvents
 )
+
 
 # Dummy do-nothing module to allow an empty path
 process.dummy = cms.EDProducer("DummyModule")
@@ -180,10 +184,10 @@ process.dummy = cms.EDProducer("DummyModule")
 process.endtasks = cms.EndPath(process.dummy)
 
 process.schedule = cms.Schedule(
+#       process.o,
        process.p,
        process.endtasks
        )
-
 #--------------------------------------------------------------------------------
 # import utility function for factorization
 from TauAnalysis.Configuration.tools.factorizationTools import enableFactorization_runWtoTauNu
@@ -210,9 +214,8 @@ if hasattr(process, "disableEventDump"):
 #--------------------------------------------------------------------------------
 # disable accessing generator level information if running on data
 from TauAnalysis.Configuration.tools.switchToData import switchToData
-switchToData(process)
+#switchToData(process)
 #--------------------------------------------------------------------------------
-
 process.producePatTupleAll = cms.Sequence(process.producePatTuple + process.producePatTupleWtoTauNuSpecific)
 
 # define "hook" for enabling/disabling production of PAT-tuple event content,
@@ -222,5 +225,10 @@ process.producePatTupleAll = cms.Sequence(process.producePatTuple + process.prod
 if not hasattr(process, "isBatchMode"):   
     process.p.replace(process.producePatTupleWtoTauNuSpecific, process.producePatTuple+process.producePatTupleWtoTauNuSpecific)
 #--------------------------------------------------------------------------------
+##replace reco->aod.
+from TauAnalysis.Configuration.tools.aodTools import *
+switchToAOD(process)
+##--------------------------------------------------------------------------------  
+
 # print-out all python configuration parameter information
 #print process.dumpPython()
