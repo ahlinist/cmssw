@@ -7,7 +7,7 @@ cfgTrigger = cms.PSet(
     pluginName = cms.string('Trigger'),
     pluginType = cms.string('PATTriggerEventSelector'),
     src = cms.InputTag('patTriggerEvent'),
-    hltAcceptPaths = cms.vstring('HLT_SingleIsoTau20_Trk15_MET25_v4')
+    hltAcceptPaths = cms.vstring('HLT_SingleIsoTau20_Trk15_MET25_v3','HLT_SingleIsoTau20_Trk15_MET25_v4')
     )
 #cfgTrigger = cms.PSet(
 #    pluginName = cms.string('PseudoTrigger'),
@@ -52,26 +52,12 @@ cfgTauPtCut = cms.PSet(
     minNumber = cms.uint32(1)
 )
 
-cfgMetPt = cms.PSet(
-    pluginName = cms.string('metPtCut'),
-    pluginType = cms.string('PATCandViewMinEventSelector'),
-    src = cms.InputTag('selectedPatMETsPt15'),
+cfgHtRatioCut = cms.PSet(
+    pluginName = cms.string('htRatio'),
+    pluginType = cms.string('HtRatioMinEventSelector'),
+    src = cms.InputTag('selectedHtRatio'),
     minNumber = cms.uint32(1)
-)
-
-cfgCentralJetVeto1 = cms.PSet(
-    pluginName = cms.string('centralJetVeto1'),
-    pluginType = cms.string('PATCandViewMaxEventSelector'),
-    src = cms.InputTag('selectedPatJetsEt20ForWTauNuCumulative'),
-    maxNumber = cms.uint32(0)
     )
-cfgCentralJetVeto2 = cms.PSet(
-    pluginName = cms.string('centralJetVeto2'),
-    pluginType = cms.string('PATCandViewMaxEventSelector'),
-    src = cms.InputTag('selectedPatJetsEtL20ForWTauNuCumulative'),
-    maxNumber = cms.uint32(1)
-    )
-
 
 cfgPFMetPt = cms.PSet(
     pluginName = cms.string('PFmetPtCut'),
@@ -96,19 +82,12 @@ cfgTauLeadTrkPt = cms.PSet(
     minNumber = cms.uint32(1)
 )
 
-cfgTauEcalIso = cms.PSet(
-    pluginName = cms.string('tauEcalIso'),
-    pluginType = cms.string('PATCandViewMinEventSelector'),
-    src_cumulative = cms.InputTag('selectedPatTausForWTauNuEcalIsoCumulative'),
-    src_individual = cms.InputTag('selectedPatTausForWTauNuEcalIsoIndividual'),
-    minNumber = cms.uint32(1)
-)
 
-cfgTauTrkIso = cms.PSet(
-    pluginName = cms.string('tauTrkIso'),
+cfgTauIso = cms.PSet(
+    pluginName = cms.string('tauIso'),
     pluginType = cms.string('PATCandViewMinEventSelector'),
-    src_cumulative = cms.InputTag('selectedPatTausForWTauNuTrkIsoCumulative'),
-    src_individual = cms.InputTag('selectedPatTausForWTauNuTrkIsoIndividual'),
+    src_cumulative = cms.InputTag('selectedPatTausForWTauNuIsoCumulative'),
+    src_individual = cms.InputTag('selectedPatTausForWTauNuIsoIndividual'),
     minNumber = cms.uint32(1)
 )
 
@@ -126,7 +105,15 @@ cfgTauElectronVeto = cms.PSet(
     src_cumulative = cms.InputTag('selectedPatTausForWTauNuElectronVetoCumulative'),
     src_individual = cms.InputTag('selectedPatTausForWTauNuElectronVetoIndividual'),
     minNumber = cms.uint32(1)
-    )
+)
+
+cfgTauEmFraction = cms.PSet(
+    pluginName = cms.string('tauEmFraction'),
+    pluginType = cms.string('PATCandViewMinEventSelector'),
+    src_cumulative = cms.InputTag('selectedPatTausForWTauNuEmFractionCumulative'),
+    src_individual = cms.InputTag('selectedPatTausForWTauNuEmFractionIndividual'),
+    minNumber = cms.uint32(1)
+)
 
 cfgTauEcalCrackVeto = cms.PSet(
     pluginName = cms.string('tauEcalCrackVeto'),
@@ -152,17 +139,17 @@ cfgTauChargeCut = cms.PSet(
     minNumber = cms.uint32(1)
 )
 
-# veto events containing additional central jets with Et > 10 GeV                                       
-cfgCentralJetVeto = cms.PSet(
-    pluginName = cms.string('centralJetVeto'),
+# veto events containing additional electron with Et > 15 GeV                                       
+cfgElectronVeto = cms.PSet(
+    pluginName = cms.string('electronVeto'),
     pluginType = cms.string('PATCandViewMaxEventSelector'),
     src = cms.InputTag('selectedPatElectronsPt15Cumulative'), 
     maxNumber = cms.uint32(0)                                                      
 )
 
-# Recoil jet energy cut
-cfgRecoilEnergyFromCaloTowersCut = cms.PSet(
-    pluginName = cms.string('recoilEnergyFromCaloTowersCut'),
+# veto events containing additional muons with Et > 15 GeC
+cfgMuonVeto = cms.PSet(
+    pluginName = cms.string('muonVeto'),
     pluginType = cms.string('PATCandViewMaxEventSelector'),
     src = cms.InputTag('selectedPatMuonsPFRelIsoCumulative'),
     maxNumber = cms.uint32(0)
@@ -172,7 +159,7 @@ cfgRecoilEnergyFromCaloTowersCut = cms.PSet(
 cfgMetTopologyCut = cms.PSet(
     pluginName = cms.string('metTopologyCut'),
     pluginType = cms.string('MEtTopologyMinEventSelector'),
-    src = cms.InputTag('selectedMEtTopology025'),
+    src = cms.InputTag('selectedMEtTopology05'),
     minNumber = cms.uint32(1)
     )
 
@@ -185,21 +172,19 @@ wToTauNuEventSelConfigurator = eventSelFlagProdConfigurator(
     cfgPrimaryEventVertexPosition,
     cfgTauEtaCut,
     cfgTauPtCut,
-    cfgPFMetPt,
-    cfgMetPt,
     cfgTauLeadTrk,
     cfgTauLeadTrkPt,
-    cfgTauEcalIso,
-    cfgTauTrkIso,
+    cfgTauMuonVeto,
+    cfgMuonVeto,
+    cfgTauElectronVeto,
+    cfgTauEmFraction,
+    cfgElectronVeto,
+    cfgTauIso,
     cfgTauProngCut,
     cfgTauChargeCut,
-    cfgTauMuonVeto,
-    cfgTauElectronVeto,
     cfgTauEcalCrackVeto,
-    cfgCentralJetVeto,
-    cfgRecoilEnergyFromCaloTowersCut,
-    cfgCentralJetVeto1,
-    cfgCentralJetVeto2,
+    cfgPFMetPt,
+    cfgHtRatioCut,
     cfgMetTopologyCut
     ],
     boolEventSelFlagProducer = "BoolEventSelFlagProducer",
@@ -212,16 +197,16 @@ isRecWtoTauNu = cms.EDProducer("BoolEventSelFlagProducer",
                                pluginName = cms.string('isRecWtoTauNu'),
                                pluginType = cms.string('MultiBoolEventSelFlagSelector'),
                                flags = cms.VInputTag(
-#    cms.InputTag('Trigger'),
+    cms.InputTag('Trigger'),
     cms.InputTag('primaryEventVertex'),
     cms.InputTag('primaryEventVertexQuality'),
     cms.InputTag('primaryEventVertexPosition'),
+#    cms.InputTag('tauLeadTrkPtCut', 'cumulative')
+    cms.InputTag('tauEcalCrackVeto','cumulative'),
+    cms.InputTag('muonVeto'),
+    cms.InputTag('electronVeto'),
     cms.InputTag('PFmetPtCut'),
-    cms.InputTag('tauEcalCrackVeto', 'cumulative'),
-    cms.InputTag('centralJetVeto'),
-    cms.InputTag('recoilEnergyFromCaloTowersCut'),
-    cms.InputTag('centralJetVeto1'),
-    cms.InputTag('centralJetVeto2'),
+    cms.InputTag('htRatio'),
     cms.InputTag('metTopologyCut')
     )
                                )
