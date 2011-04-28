@@ -437,67 +437,39 @@ selectPatTausForDiTau = cms.Sequence(selectPatTausForDiTau1st * selectPatTausFor
 
 # define collections of pat::(PF)Taus used in W->tau-jet + nu channel
 selectedPatTausForWTauNuEta21.cut = selectedPatTausEta23.cut
-selectedPatTausForWTauNuPt20.cut = cms.string("pt > 25. & pt < 60.")
+selectedPatTausForWTauNuPt20.cut = cms.string("pt > 30.")
 selectedPatTausForWTauNuLeadTrk.cut = selectedPatTausLeadTrk.cut
-selectedPatTausForWTauNuLeadTrkPt.cut = cms.string('leadTrack().isNonnull() & leadTrack().pt() > 20.')
-selectedPatTausForWTauNuTaNCdiscr.cut = cms.string('tauID("byTaNCfrQuarterPercent") > -1.e+3')
-selectedPatTausForWTauNuEcalIso.cut = selectedPatTausForWTauNuTaNCdiscr.cut
-selectedPatTausForWTauNuTrkIso.cut = selectedPatTausForWTauNuTaNCdiscr.cut
+selectedPatTausForWTauNuLeadTrkPt.cut = cms.string('leadTrack().isNonnull() & leadTrack().pt() > 15.')
+selectedPatTausForWTauNuIso.cut = cms.string("tauID('byHPSmedium') > 0.5")
 selectedPatTausForWTauNuProng.cut = selectedPatTausProng.cut
 selectedPatTausForWTauNuCharge.cut = selectedPatTausCharge.cut
 selectedPatTausForWTauNuMuonVeto.cut = selectedPatTausMuonVeto.cut
 selectedPatTausForWTauNuElectronVeto.cut = selectedPatTausElectronVeto.cut
+selectedPatTausForWTauNuEmFraction.cut = cms.string("emFraction < 0.90")
+
 selectedPatTausForWTauNuEcalCrackVeto.cut = selectedPatTausEcalCrackVeto.cut
+
+
+
+
 
 patTauSelConfiguratorForWTauNu = objSelConfigurator(
     [ selectedPatTausForWTauNuEta21,
       selectedPatTausForWTauNuPt20,
       selectedPatTausForWTauNuLeadTrk,
       selectedPatTausForWTauNuLeadTrkPt,
-      selectedPatTausForWTauNuTaNCdiscr,
-      selectedPatTausForWTauNuEcalIso,
-      selectedPatTausForWTauNuTrkIso,
-      selectedPatTausForWTauNuProng,
-      selectedPatTausForWTauNuCharge,
       selectedPatTausForWTauNuMuonVeto,
       selectedPatTausForWTauNuElectronVeto,
+      selectedPatTausForWTauNuEmFraction,
+      selectedPatTausForWTauNuIso,
+      selectedPatTausForWTauNuProng,
+      selectedPatTausForWTauNuCharge,
       selectedPatTausForWTauNuEcalCrackVeto ],
     src = "cleanPatTaus",
     pyModuleName = __name__,
     doSelIndividual = True
 )
 selectPatTausForWTauNu = patTauSelConfiguratorForWTauNu.configure(pyNameSpace = locals())
-
-# loose isolation selection
-selectedPatTausForWTauNuLeadTrkPtLooseIsolation.cut = cms.string("leadTrack().isNonnull() & leadTrack().pt() > 15.")
-selectedPatTausForWTauNuTaNCdiscrLooseIsolation.cut = cms.string("leadTrack().isNonnull() & leadTrack().pt() > 15.")
-selectedPatTausForWTauNuEcalIsoLooseIsolation.cut = selectedPatTausForWTauNuTaNCdiscrLooseIsolation.cut
-selectedPatTausForWTauNuTrkIsoLooseIsolation.cut = selectedPatTausForWTauNuTaNCdiscrLooseIsolation.cut
-selectedPatTausForWTauNuProngLooseIsolation.cut = selectedPatTausForWTauNuTrkIsoLooseIsolation.cut
-selectedPatTausForWTauNuChargeLooseIsolation.cut = selectedPatTausForWTauNuTrkIsoLooseIsolation.cut
-selectedPatTausForWTauNuMuonVetoLooseIsolation.cut = selectedPatTausForWTauNuTrkIsoLooseIsolation.cut
-selectedPatTausForWTauNuElectronVetoLooseIsolation.cut = selectedPatTausForWTauNuTrkIsoLooseIsolation.cut
-selectedPatTausForWTauNuEcalCrackVetoLooseIsolation.cut = selectedPatTausForWTauNuTrkIsoLooseIsolation.cut
-
-patTauSelConfiguratorForWTauNuLooseIsolation = objSelConfigurator(
-    [ selectedPatTausForWTauNuEta21,
-      selectedPatTausForWTauNuPt20,
-      selectedPatTausForWTauNuLeadTrk,
-      selectedPatTausForWTauNuLeadTrkPtLooseIsolation,
-      selectedPatTausForWTauNuTaNCdiscrLooseIsolation,
-      selectedPatTausForWTauNuEcalIsoLooseIsolation,
-      selectedPatTausForWTauNuTrkIsoLooseIsolation,
-      selectedPatTausForWTauNuProngLooseIsolation,
-      selectedPatTausForWTauNuChargeLooseIsolation,
-      selectedPatTausForWTauNuMuonVetoLooseIsolation,
-      selectedPatTausForWTauNuElectronVetoLooseIsolation,
-      selectedPatTausForWTauNuEcalCrackVetoLooseIsolation ],
-    src = "cleanPatTaus",
-    pyModuleName = __name__,
-    doSelIndividual = True
-)
-
-selectPatTausForWTauNuLooseIsolation = patTauSelConfiguratorForWTauNuLooseIsolation.configure(pyNameSpace = locals())
 
 producePatSelLeptons = cms.Sequence (
     selectPatElectrons + selectPatElectronsLooseIsolation
@@ -506,5 +478,5 @@ producePatSelLeptons = cms.Sequence (
    + selectPatElectronsForElecTau + selectPatElectronsForElecTauLooseIsolation
    + selectPatElectronsForElecMu + selectPatElectronsForElecMuLooseIsolation
    + selectPatTausForElecTau + selectPatTausForMuTau + selectPatTausForDiTau
-   + selectPatTausForWTauNu +selectPatTausForWTauNuLooseIsolation
+   + selectPatTausForWTauNu 
 )
