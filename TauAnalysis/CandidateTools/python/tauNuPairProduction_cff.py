@@ -24,8 +24,5 @@ allTauNuPairs = cms.EDProducer("PATTauNuPairProducer",
     verbosity = cms.untracked.int32(0)
 )
 
-allTauNuPairsLooseIsolation = allTauNuPairs.clone(
-    srcVisDecayProducts = cms.InputTag('selectedPatTausForWTauNuEcalCrackVetoLooseIsolationCumulative')
-)
 
-produceTauNuPairs = cms.Sequence(allTauNuPairs * allTauNuPairsLooseIsolation)
+produceTauNuPairs = cms.Sequence(allTauNuPairs)
