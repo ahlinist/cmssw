@@ -2,8 +2,14 @@
 <DDDefinition xmlns="http://www.cern.ch/cms/DDL" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.cern.ch/cms/DDL ../../../DetectorDescription/Schema/DDLSchema.xsd">
 
 <ConstantsSection label="escon.xml" eval="true">
+
+<!--
   <Constant name="ECAL_Z" value="314.4*cm"/>
   <Constant name="PRESH_Z" value="295.7*cm"/>
+-->
+
+  <Constant name="ESWaferTilt" value="3.79996*deg"/>
+
   <Constant name="PRE_ETA_MIN" value="1.653"/>
   <Constant name="PRE_ETA_MAX" value="2.61"/>
   <Constant name="PRE_AL_DISC" value="6*cm"/>
@@ -63,7 +69,7 @@
                                         [P21]+[P22]+[P23]+[P24]+[P25]+[P26]+[P27]+[P28]+[P29]"/>
 
   <!-- Constants for construction of the overall EREG -->
-  <Constant name="PRESH_Z_OFFSET" value="297.23*cm+[PRESH_Z_TOTAL]/2"/>
+  <Constant name="PRESH_Z_OFFSET" value="[eecon:ESFrontZ] + [PRESH_Z_TOTAL]/2"/>
   <Constant name="PRESH_MID_Z" value="1.8*cm"/>
   <Constant name="PRESH_RMAX_BACK" value="[R_MAX]"/>
   <Constant name="PRESH_RMAX_FRONT" value="[R_MAX]-9*cm"/> 

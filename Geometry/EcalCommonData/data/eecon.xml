@@ -28,7 +28,21 @@
 
 <Constant name="EEzMagF"     value="-16*mm"/>
 
-<Constant name="EEFarZ"     value="3991.0*mm"/>
+
+<!-- ESFrontZ controls the absolute position with no B field
+     of all the ES and EE. All z's drive off this value      -->
+
+<Constant name="ESFrontZ"         value=" 2972.3*mm"/>
+
+<Constant name="ESFrontToEEFrontinZ"     value=" 199.7*mm"/>
+<Constant name="ESFrontToESRingFrontinZ" value=" 101.7*mm"/>
+
+<Constant name="EEFrontToNeckinZ"       value=" 739.5*mm"/>
+<Constant name="EEFrontToBackinZ"       value=" 819.0*mm"/>
+
+<Constant name="EEzFront"    value="[ESFrontZ] + [ESFrontToEEFrontinZ]"/>
+
+<Constant name="EEFarZ"     value="[EEzFront] + [EEFrontToBackinZ]"/>
 <Constant name="EEFarZC"    value="[EEFarZ]  + [EEzMagF]"/>
 <Constant name="EBRMin"     value="1238.0*mm"/>
 <Constant name="EBRMax"     value="1775.0*mm"/>
@@ -46,18 +60,18 @@
 <Constant name="EEBPPLC"          value=" 160*mm"/>
 
 
+
 <Constant name="EEdz"        value=" 209.00*mm"/>
 <Constant name="EErMin1"     value=" 305.00*mm"/>
 <Constant name="EErMin2"     value=" 350.00*mm"/>
 <Constant name="EErMax1"     value="1561.90*mm"/>
 <Constant name="EErMax2"     value="1715.0*mm"/>
-<Constant name="EEzFront"    value="3172.00*mm"/>
 <Constant name="EEzOff"      value="[EEzFront] + [EEdz]"/>
 <Constant name="EEzBack"     value="[EEzOff]   + [EEdz]"/>
 <Constant name="EEzBackBack" value="[EEzBack]  + [EEBackPlateThick]"/>
 
 <Constant name="EErNeck"    value="1690.00*mm"/>
-<Constant name="EEzNeck"    value="3911.50*mm"/>
+<Constant name="EEzNeck"    value="[EEzFront] + [EEFrontToNeckinZ]"/>
 <Constant name="EEzNeckC"   value="[EEzNeck] + [EEzMagF]"/>
 
 <!-- Preshower support cone -->
@@ -105,7 +119,7 @@ make cone not as big because it does not fit into inner moderator
 <Constant name="ESConeO5Plus"   value="[ESConeO5] + [ESPlus]"/>
 <Constant name="ESConeO4Plus"   value="[ESConeO4] + [ESPlus]"/>
 
-<Constant name="ESRingZFront"   value="3074*mm"/>
+<Constant name="ESRingZFront"   value="[ESFrontZ] + [ESFrontToESRingFrontinZ]"/>
 <Constant name="ESRingZThick"   value="  14*mm"/>
 <Constant name="ESRingIR"       value=" 288*mm"/>
 <Constant name="ESRingOR"       value=" 311*mm"/>
