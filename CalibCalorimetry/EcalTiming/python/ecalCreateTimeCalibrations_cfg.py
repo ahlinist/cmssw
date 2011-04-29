@@ -3,8 +3,16 @@ import FWCore.ParameterSet.Config as cms
 process = cms.Process("EcalCreateTimeCalibrations")
 
 # Global Tag -- for original timing calibrations
-#process.load("Configuration.StandardSequences.FrontierConditions_GlobalTag_cff")
-#process.GlobalTag.globaltag = 'FT_R_39X_V4A::All'
+process.load("Configuration.StandardSequences.FrontierConditions_GlobalTag_cff")
+process.GlobalTag.globaltag = 'GR_R_43_V1::All'
+
+process.GlobalTag.toGet = cms.VPSet(
+  cms.PSet(record = cms.string("EcalTimeOffsetConstantRcd"),
+           tag = cms.string("EcalTimeOffsetConstant_v01_offline"),
+           connect = cms.untracked.string("frontier://FrontierProd/CMS_COND_43X_ECAL")
+          )
+)
+
 
 process.MessageLogger = cms.Service("MessageLogger",
     cout = cms.untracked.PSet(threshold = cms.untracked.string('INFO')),
@@ -21,7 +29,7 @@ process.TFileService = cms.Service("TFileService",
 process.createTimeCalibs = cms.EDAnalyzer("EcalCreateTimeCalibrations",
   OutputFileName = cms.string("file:converted1.root"),
   FileNameStart = cms.string("ecalCreateTimeCalibs"),
-  SubtractDBcalibs = cms.bool(False),
+  SubtractDBcalibs = cms.bool(True),
   BxIncludeExclude = cms.string("-1"),
   OrbitIncludeExclude = cms.string("-1"),
   TriggerBitIncludeExclude = cms.string("-1"),
@@ -157,16 +165,16 @@ process.createTimeCalibs = cms.EDAnalyzer("EcalCreateTimeCalibrations",
                                #'file:/data/scooper/data/EcalTimeTree/2011A/EcalTimeTree_987654_74_1_sjx.root',
                                #'file:/data/scooper/data/EcalTimeTree/2011A/EcalTimeTree_987654_74_2_xMC.root',
                                #'file:/data/scooper/data/EcalTimeTree/2011A/EcalTimeTree_987654_79_2_UlL.root',
-                               #'file:/data/scooper/data/EcalTimeTree/2011A/EcalTimeTree_987654_80_2_ijB.root',
-                               #'file:/data/scooper/data/EcalTimeTree/2011A/EcalTimeTree_987654_81_1_mnP.root',
-                               #'file:/data/scooper/data/EcalTimeTree/2011A/EcalTimeTree_987654_82_2_cAN.root',
-                               #'file:/data/scooper/data/EcalTimeTree/2011A/EcalTimeTree_987654_83_1_j3P.root',
-                               #'file:/data/scooper/data/EcalTimeTree/2011A/EcalTimeTree_987654_84_2_x10.root',
-                               #'file:/data/scooper/data/EcalTimeTree/2011A/EcalTimeTree_987654_86_1_zM0.root',
-                               #'file:/data/scooper/data/EcalTimeTree/2011A/EcalTimeTree_987654_86_2_xhe.root',
-                               #'file:/data/scooper/data/EcalTimeTree/2011A/EcalTimeTree_987654_87_1_3Ph.root',
-                               #'file:/data/scooper/data/EcalTimeTree/2011A/EcalTimeTree_987654_88_1_8A9.root',
-                               #'file:/data/scooper/data/EcalTimeTree/2011A/EcalTimeTree_987654_89_2_ny8.root',
+                               'file:/data/scooper/data/EcalTimeTree/2011A/EcalTimeTree_987654_80_2_ijB.root',
+                               'file:/data/scooper/data/EcalTimeTree/2011A/EcalTimeTree_987654_81_1_mnP.root',
+                               'file:/data/scooper/data/EcalTimeTree/2011A/EcalTimeTree_987654_82_2_cAN.root',
+                               'file:/data/scooper/data/EcalTimeTree/2011A/EcalTimeTree_987654_83_1_j3P.root',
+                               'file:/data/scooper/data/EcalTimeTree/2011A/EcalTimeTree_987654_84_2_x10.root',
+                               'file:/data/scooper/data/EcalTimeTree/2011A/EcalTimeTree_987654_86_1_zM0.root',
+                               'file:/data/scooper/data/EcalTimeTree/2011A/EcalTimeTree_987654_86_2_xhe.root',
+                               'file:/data/scooper/data/EcalTimeTree/2011A/EcalTimeTree_987654_87_1_3Ph.root',
+                               'file:/data/scooper/data/EcalTimeTree/2011A/EcalTimeTree_987654_88_1_8A9.root',
+                               'file:/data/scooper/data/EcalTimeTree/2011A/EcalTimeTree_987654_89_2_ny8.root',
                                'file:/data/scooper/data/EcalTimeTree/2011A/EcalTimeTree_987654_90_1_Wsc.root',
                                'file:/data/scooper/data/EcalTimeTree/2011A/EcalTimeTree_987654_91_2_yZA.root',
                                'file:/data/scooper/data/EcalTimeTree/2011A/EcalTimeTree_987654_93_2_k9W.root',

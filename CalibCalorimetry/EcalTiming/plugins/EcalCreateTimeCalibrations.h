@@ -16,7 +16,7 @@ Implementation:
 //
 // Authors:                              Seth Cooper (Minnesota)
 //         Created:  Tu Apr 26  10:46:22 CEST 2011
-// $Id: $
+// $Id: EcalCreateTimeCalibrations.h,v 1.1 2011/04/29 13:37:02 scooper Exp $
 //
 //
 
@@ -81,6 +81,7 @@ class EcalCreateTimeCalibrations : public edm::EDAnalyzer {
                 void set(edm::EventSetup const&);
 
                 edm::ESHandle<EcalTimeCalibConstants> origTimeCalibConstHandle;
+                edm::ESHandle<EcalTimeOffsetConstant> origTimeOffsetConstHandle;
                 std::vector<std::string> inputFiles_;
                 std::string fileName_; // beginning of file name of XML calib constants, txt output, etc.
                 TChain* myInputTree_;

@@ -13,7 +13,7 @@ Implementation:
 //
 // Authors:                              Seth Cooper (Minnesota)
 //         Created:  Tu Apr 26  10:46:22 CEST 2011
-// $Id: $
+// $Id: EcalCreateTimeCalibrations.cc,v 1.1 2011/04/29 13:37:03 scooper Exp $
 //
 //
 
@@ -26,6 +26,7 @@ Implementation:
 #include "FWCore/MessageLogger/interface/MessageLogger.h"
 
 #include "CondFormats/DataRecord/interface/EcalTimeCalibConstantsRcd.h"
+#include "CondFormats/DataRecord/interface/EcalTimeOffsetConstantRcd.h"
 #include "CondTools/Ecal/interface/EcalTimeCalibConstantsXMLTranslator.h"
 #include "CondTools/Ecal/interface/EcalTimeCalibErrorsXMLTranslator.h"
 #include "CondTools/Ecal/interface/EcalTimeOffsetXMLTranslator.h"
@@ -545,7 +546,6 @@ EcalCreateTimeCalibrations::analyze(edm::Event const& evt, edm::EventSetup const
   timeOffsetConstant.setEBValue(-1*cryCalibAvg);
   timeOffsetConstant.setEEValue(-1*cryCalibAvg);
 
-  //TODO at the end
   if(subtractDBcalibs_)
   {
     set(es);
@@ -582,6 +582,11 @@ EcalCreateTimeCalibrations::analyze(edm::Event const& evt, edm::EventSetup const
       timeCalibConstants[det.rawId()]-=itimeconstOrig;
     }
 
+    // get orig time offsets
+    float ebOffsetConstOld = origTimeOffsetConstHandle->getEBValue();
+    float eeOffsetConstOld = origTimeOffsetConstHandle->getEEValue();
+    timeOffsetConstant.setEBValue(-1*cryCalibAvg-ebOffsetConstOld);
+    timeOffsetConstant.setEEValue(-1*cryCalibAvg-eeOffsetConstOld);
   }
 
 
@@ -631,6 +636,7 @@ EcalCreateTimeCalibrations::analyze(edm::Event const& evt, edm::EventSetup const
 void EcalCreateTimeCalibrations::set(edm::EventSetup const& eventSetup)
 {
   eventSetup.get<EcalTimeCalibConstantsRcd>().get(origTimeCalibConstHandle);
+  eventSetup.get<EcalTimeOffsetConstantRcd>().get(origTimeOffsetConstHandle);
 }
 
 void EcalCreateTimeCalibrations::beginRun(edm::EventSetup const& eventSetup)
