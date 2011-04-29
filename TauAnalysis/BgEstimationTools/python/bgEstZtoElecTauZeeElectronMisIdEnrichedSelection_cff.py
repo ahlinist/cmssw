@@ -341,7 +341,7 @@ analyzeEventsBgEstZeeElectronMisIdEnriched = cms.EDAnalyzer("GenericAnalyzer",
     name = cms.string('BgEstTemplateAnalyzer_ZeeElectronMisIdEnriched'), 
 
     filters = cms.VPSet(
-#        evtSelGenPhaseSpace,
+        evtSelGenPhaseSpace,
         evtSelTrigger,
         evtSelPrimaryEventVertex,
         evtSelPrimaryEventVertexQuality,
@@ -484,7 +484,10 @@ analyzeEventsBgEstZeeElectronMisIdEnriched = cms.EDAnalyzer("GenericAnalyzer",
         #        (2) genPhaseSpaceCut needs to be **always** the first entry in the list of cuts
         #           - otherwise the script submitToBatch.csh for submission of cmsRun jobs
         #            to the CERN batch system will not work !!)
-
+        cms.PSet(
+            filter = cms.string('genPhaseSpaceCut'),
+            title = cms.string('gen. Phase-Space')
+        ),
         cms.PSet(
             filter = cms.string('evtSelTrigger'),
             title = cms.string('Trigger')
@@ -574,8 +577,7 @@ analyzeEventsBgEstZeeElectronMisIdEnriched = cms.EDAnalyzer("GenericAnalyzer",
         ),
         cms.PSet(
             filter = cms.string('tauTaNCdiscrCutBgEstZeeElectronMisIdEnriched'),
-            #title = cms.string('Tau TaNC by 0.5% (off)'),
-            title = cms.string('Tau TaNC by Loose Isolation'),            
+            title = cms.string('Tau ID byHPSloose'),            
         ),
         cms.PSet(
             analyzers = cms.vstring('electronHistManagerForElecTauBgEstZeeElectronMisIdEnriched',
@@ -667,7 +669,7 @@ analyzeEventsBgEstZeeElectronMisIdEnriched = cms.EDAnalyzer("GenericAnalyzer",
         ),          
         cms.PSet(
             filter = cms.string('diTauCandidateZeeHypothesisVetoBgEstZeeElectronMisIdEnriched'),
-            title = cms.string('no 2nd OS, loosely-isolated electron (inverted)')
+            title = cms.string('no 2nd OS, loosely-isolated e- (inverted)')
          ),
 
         cms.PSet(

@@ -86,7 +86,8 @@ tausBgEstQCDenrichedLeadTrkPt = copy.deepcopy(tausBgEstZtautauEnrichedLeadTrkPt)
 
 # require tau candidate to pass TaNC discriminator
 tausBgEstQCDenrichedTaNCdiscr = copy.deepcopy(tausBgEstZtautauEnrichedTaNCdiscr)
-#tausBgEstQCDenrichedTaNCdiscr.cut = cms.string('tauID("byLooseIsolation") > 0.5')
+tausBgEstQCDenrichedTaNCdiscr.cut = cms.string('tauID("byHPSvloose") > 0.5 & tauID("byHPSmedium") < 0.5')
+
 #tausBgEstQCDenrichedTaNCdiscr.cut = cms.string('tauID("byTaNCfrOnePercent") > 0.5')
 
 # require tau candidate to have either one or three tracks within signal cone
@@ -344,7 +345,7 @@ analyzeEventsBgEstQCDenriched = cms.EDAnalyzer("GenericAnalyzer",
     name = cms.string('BgEstTemplateAnalyzer_QCDenriched'), 
 
     filters = cms.VPSet(
-#        evtSelGenPhaseSpace,
+        evtSelGenPhaseSpace,
         evtSelTrigger,
         evtSelPrimaryEventVertex,
         evtSelPrimaryEventVertexQuality,
@@ -487,10 +488,10 @@ analyzeEventsBgEstQCDenriched = cms.EDAnalyzer("GenericAnalyzer",
         #        (2) genPhaseSpaceCut needs to be **always** the first entry in the list of cuts
         #           - otherwise the script submitToBatch.csh for submission of cmsRun jobs
         #            to the CERN batch system will not work !!)
-##         cms.PSet(
-##             filter = cms.string('evtSelGenPhaseSpace'),
-##             title = cms.string('gen. Phase-Space')
-##         ),
+        cms.PSet(
+            filter = cms.string('genPhaseSpaceCut'),
+            title = cms.string('gen. Phase-Space')
+        ),
         cms.PSet(
             filter = cms.string('evtSelTrigger'),
             title = cms.string('Trigger')
@@ -581,7 +582,7 @@ analyzeEventsBgEstQCDenriched = cms.EDAnalyzer("GenericAnalyzer",
         cms.PSet(
             filter = cms.string('tauTaNCdiscrCutBgEstQCDenriched'),
 #            title = cms.string('Tau TaNC by 1%'),
-            title = cms.string('Tau TaNC by Loose Isolation'),            
+            title = cms.string('Tau TaNC by Very Loose Isolation'),            
         ),
         cms.PSet(
             analyzers = cms.vstring('electronHistManagerForElecTauBgEstQCDenriched',
