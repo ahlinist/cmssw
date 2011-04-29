@@ -13,7 +13,7 @@
 //
 // Original Author:  Daniele del Re
 //         Created:  Thu Sep 13 16:00:15 CEST 2007
-// $Id: GammaJetAnalyzer.cc,v 1.54 2011/04/27 23:54:32 rahatlou Exp $
+// $Id: GammaJetAnalyzer.cc,v 1.55 2011/04/28 23:12:11 rahatlou Exp $
 //
 //
 
@@ -1256,7 +1256,9 @@ GammaJetAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
      etascPhot[nPhot] = it->superCluster()->eta();	 
      phiscPhot[nPhot] = it->superCluster()->phi();	      
      hasPixelSeedPhot[nPhot] = it->hasPixelSeed();
-
+     isEBPhot[nPhot] = it->isEB();
+     isEEPhot[nPhot] = it->isEE();
+     isEBEEGapPhot[nPhot] = it->isEBEEGap();
 
      reco::ConversionRef conv = 
        ConversionTools::matchedConversion(*(it->superCluster()),hConversions,vertexBeamSpot.position());
@@ -2003,6 +2005,8 @@ GammaJetAnalyzer::beginJob()
   m_tree->Branch("ptPhot ",&ptPhot ,"ptPhot[nPhot]/F");
   m_tree->Branch("ePhot  ",&ePhot  ,"ePhot[nPhot]/F");
   m_tree->Branch("escPhot  ",&escPhot  ,"escPhot[nPhot]/F");
+  m_tree->Branch("etascPhot  ",&etascPhot  ,"etascPhot[nPhot]/F");
+  m_tree->Branch("phiscPhot  ",&phiscPhot  ,"phiscPhot[nPhot]/F");
   m_tree->Branch("eseedPhot  ",&eseedPhot  ,"eseedPhot[nPhot]/F");
   m_tree->Branch("etaPhot",&etaPhot,"etaPhot[nPhot]/F");
   m_tree->Branch("phiPhot",&phiPhot,"phiPhot[nPhot]/F");
@@ -2011,6 +2015,9 @@ GammaJetAnalyzer::beginJob()
   m_tree->Branch("hasPixelSeedPhot",&hasPixelSeedPhot,"hasPixelSeedPhot[nPhot]/I");
   m_tree->Branch("hasMatchedPromptElePhot",&hasMatchedPromptElePhot,"hasMatchedPromptElePhot[nPhot]/I");
   m_tree->Branch("hasMatchedConvPhot",&hasMatchedConvPhot,"hasMatchedConvPhot[nPhot]/I");
+  m_tree->Branch("isEBPhot",&isEBPhot, "isEBPhot/O");
+  m_tree->Branch("isEEPhot",&isEEPhot, "isEEPhot/O");
+  m_tree->Branch("isEBEEGapPhot",&isEBEEGapPhot, "isEBEEGapPhot/O");
 
   // Default photon ID
   m_tree->Branch("pid_isEM",&pid_isEM,"pid_isEM[nPhot]/O");

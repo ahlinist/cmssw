@@ -189,6 +189,9 @@ TH2D* h2_n_vs_eta;
       Int_t hasPixelSeedPhot[40];
       Int_t hasMatchedConvPhot[40];
       Int_t hasMatchedPromptElePhot[40];
+      bool isEBPhot[40];
+      bool isEEPhot[40];
+      bool isEBEEGapPhot[40];
 
       // Default PAT photon ID variables
       Bool_t pid_isEM[40];
