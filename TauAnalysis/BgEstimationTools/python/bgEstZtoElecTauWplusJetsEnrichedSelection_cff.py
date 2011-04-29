@@ -5,7 +5,7 @@ from TauAnalysis.CandidateTools.tools.objSelConfigurator import *
 from TauAnalysis.RecoTools.tools.eventSelFlagProdConfigurator import *
 
 #--------------------------------------------------------------------------------
-# select Z --> e+ e- background enriched event sample
+# select W --> l nu background enriched event sample
 #--------------------------------------------------------------------------------
 
 from TauAnalysis.BgEstimationTools.bgEstZtoElecTauZtautauEnrichedSelection_cff import *
@@ -76,7 +76,7 @@ tausBgEstWplusJetsEnrichedLeadTrkPt = copy.deepcopy(tausBgEstZtautauEnrichedLead
 
 # require tau candidate to pass TaNC discriminator
 tausBgEstWplusJetsEnrichedTaNCdiscr = copy.deepcopy(tausBgEstZtautauEnrichedTaNCdiscr)
-#tausBgEstWplusJetsEnrichedTaNCdiscr.cut = cms.string('tauID("byLooseIsolation") > 0.5')
+tausBgEstWplusJetsEnrichedTaNCdiscr.cut = cms.string('tauID("byHPSvloose") > 0.5 & tauID("byHPSmedium") < 0.5')
 #tausBgEstWplusJetsEnrichedTaNCdiscr.cut = cms.string('tauID("byTaNCfrOnePercent") > 0.5')
 
 
@@ -341,7 +341,7 @@ analyzeEventsBgEstWplusJetsEnriched = cms.EDAnalyzer("GenericAnalyzer",
     name = cms.string('BgEstTemplateAnalyzer_WplusJetsEnriched'), 
 
     filters = cms.VPSet(
-#        evtSelGenPhaseSpace,
+        evtSelGenPhaseSpace,
         evtSelTrigger,
         evtSelPrimaryEventVertex,
         evtSelPrimaryEventVertexQuality,
@@ -500,10 +500,10 @@ analyzeEventsBgEstWplusJetsEnriched = cms.EDAnalyzer("GenericAnalyzer",
         #        (2) genPhaseSpaceCut needs to be **always** the first entry in the list of cuts
         #           - otherwise the script submitToBatch.csh for submission of cmsRun jobs
         #            to the CERN batch system will not work !!)
-##         cms.PSet(
-##             filter = cms.string('evtSelGenPhaseSpace'),
-##             title = cms.string('gen. Phase-Space')
-##         ),
+        cms.PSet(
+            filter = cms.string('genPhaseSpaceCut'),
+            title = cms.string('gen. Phase-Space')
+        ),
         cms.PSet(
             filter = cms.string('evtSelTrigger'),
             title = cms.string('Trigger')
@@ -603,7 +603,7 @@ analyzeEventsBgEstWplusJetsEnriched = cms.EDAnalyzer("GenericAnalyzer",
         ),
         cms.PSet(
             filter = cms.string('tauTaNCdiscrCutBgEstWplusJetsEnriched'),
-            title = cms.string('Tau TaNC by Loose Isolation'),
+            title = cms.string('Tau ID by HPS Very Loose'),
             #title = cms.string('Tau TaNC by 1%'),            
         ),        
         cms.PSet(
