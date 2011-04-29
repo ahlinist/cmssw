@@ -11,7 +11,7 @@
 //
 // Original Author:  Seth COOPER
 //         Created:  Wed Sep 30 16:29:33 CEST 2009
-// $Id$
+// $Id: EcalCreateTTAvgTimes.cc,v 1.1 2010/01/08 21:34:04 scooper Exp $
 //
 //
 
@@ -492,10 +492,10 @@ const std::pair<double,double> EcalCreateTTAvgTimes::computeUnweightedMeanAndSig
   {
     sigma2/=times.size();
     double sigma=sqrt(sigma2);
-    return std::make_pair<double,double>(mean,sigma);
+    return std::pair<double,double>(mean,sigma);
   }
 
-  return std::make_pair<double,double>(0.,-100.);
+  return std::pair<double,double>(0.,-100.);
 }
 
 // ------------ method to compute weighted mean and sigma  ------------------------------
@@ -517,10 +517,10 @@ const std::pair<double,double> EcalCreateTTAvgTimes::computeWeightedMeanAndSigma
   {
     mean/=sigma;  // mean = SUM(t/s^2)/SUM(1/s^2)
     sigma=sqrt(1/sigma);
-    return std::make_pair<double,double>(mean,sigma);
+    return std::pair<double,double>(mean,sigma);
   }
 
-  return std::make_pair<double,double>(0.,-100.);
+  return std::pair<double,double>(0.,-100.);
 }
 
 // ------------ method called once each job just before starting event loop  ------------
