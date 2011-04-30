@@ -223,7 +223,7 @@ make cone not as big because it does not fit into inner moderator
 <Constant name="EESRingZ1"   value="[EEzBackBack] +  2*[EEBPPOR]"/>
 <Constant name="EESRingZ2"   value="[EESRingZ1]   +  18.0*mm"/>
 <Constant name="EESRingZ3"   value="[EESRingZ2]             "/>
-<Constant name="EESRingZ4"   value="[EEzNeck]     -  40.0*mm"/>
+<Constant name="EESRingZ4"   value="[EEzNeck]     -  40.0*mm - 5.0*mm"/>
 <Constant name="EESRingZ5"   value="[EESRingZ4]             "/>
 <Constant name="EESRingZ6"   value="[EEzNeck]               "/>
 <Constant name="EESRingZ7"   value="[EESRingZ6]             "/>
