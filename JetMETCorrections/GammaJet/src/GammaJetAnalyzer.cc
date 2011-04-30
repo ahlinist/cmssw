@@ -13,7 +13,7 @@
 //
 // Original Author:  Daniele del Re
 //         Created:  Thu Sep 13 16:00:15 CEST 2007
-// $Id: GammaJetAnalyzer.cc,v 1.55 2011/04/28 23:12:11 rahatlou Exp $
+// $Id: GammaJetAnalyzer.cc,v 1.56 2011/04/29 09:41:51 rahatlou Exp $
 //
 //
 
@@ -2015,9 +2015,9 @@ GammaJetAnalyzer::beginJob()
   m_tree->Branch("hasPixelSeedPhot",&hasPixelSeedPhot,"hasPixelSeedPhot[nPhot]/I");
   m_tree->Branch("hasMatchedPromptElePhot",&hasMatchedPromptElePhot,"hasMatchedPromptElePhot[nPhot]/I");
   m_tree->Branch("hasMatchedConvPhot",&hasMatchedConvPhot,"hasMatchedConvPhot[nPhot]/I");
-  m_tree->Branch("isEBPhot",&isEBPhot, "isEBPhot/O");
-  m_tree->Branch("isEEPhot",&isEEPhot, "isEEPhot/O");
-  m_tree->Branch("isEBEEGapPhot",&isEBEEGapPhot, "isEBEEGapPhot/O");
+  m_tree->Branch("isEBPhot",&isEBPhot, "isEBPhot[nPhot]/O");
+  m_tree->Branch("isEEPhot",&isEEPhot, "isEEPhot[nPhot]/O");
+  m_tree->Branch("isEBEEGapPhot",&isEBEEGapPhot, "isEBEEGapPhot[nPhot]/O");
 
   // Default photon ID
   m_tree->Branch("pid_isEM",&pid_isEM,"pid_isEM[nPhot]/O");
