@@ -13,7 +13,7 @@ Implementation:
 //
 // Authors:                              Seth Cooper (Minnesota)
 //         Created:  Tu Apr 26  10:46:22 CEST 2011
-// $Id: EcalCreateTimeCalibrations.cc,v 1.1 2011/04/29 13:37:03 scooper Exp $
+// $Id: EcalCreateTimeCalibrations.cc,v 1.2 2011/04/29 14:41:35 scooper Exp $
 //
 //
 
@@ -98,7 +98,6 @@ EcalCreateTimeCalibrations::EcalCreateTimeCalibrations(const edm::ParameterSet& 
   genIncludeExcludeVectors(inRuns_,runIncludeVector,runExcludeVector);
 
   produce_ = true;
-  ttEtaBins_ = {-85, -80, -75, -70, -65, -60, -55, -50, -45, -40, -35, -30, -25, -20, -15, -10, -5, 0, 1, 6, 11, 16, 21, 26, 31, 36, 41, 46, 51, 56, 61, 66, 71, 76, 81, 86 };
   initEBHists(fileService_);
   initEEHists(fileService_);
 }
@@ -669,18 +668,25 @@ void EcalCreateTimeCalibrations::initEBHists(edm::Service<TFileService>& fileSer
   ampProfileMapEB_ = fileService_->make<TProfile2D>("ampProfileMapEB","amp profile map [ADC];i#phi;i#eta",360,1.,361.,172,-86,86);
   ampProfileEB_ = fileService_->make<TProfile>("ampProfileEB","Average amplitude in cry [ADC];hashedIndex",61200,0,61200);
   sigmaHistEB_ = fileService_->make<TH1F>("sigmaCalibsEB"," Sigma of calib distributions EB [ns]",100,0,1);
+  //=============Special Bins for TT and Modules borders=============================
+  double ttEtaBins[36] = {-85, -80, -75, -70, -65, -60, -55, -50, -45, -40, -35, -30, -25, -20, -15, -10, -5, 0, 1, 6, 11, 16, 21, 26, 31, 36, 41, 46, 51, 56, 61, 66, 71, 76, 81, 86 };
+  // double modEtaBins[10]={-85, -65, -45, -25, 0, 1, 26, 46, 66, 86};
+  double ttPhiBins[73];
+  double modPhiBins[19];
+  double timingBins[79];
+  double highEBins[11];
   for (int i = 0; i < 79; ++i)
   {
-    timingBins_[i]=-7.+double(i)*14./78.;
+    timingBins[i]=-7.+double(i)*14./78.;
     if (i<73)
     {
-      ttPhiBins_[i]=1+5*i;
+      ttPhiBins[i]=1+5*i;
       if ( i < 19) 
       {
-        modPhiBins_[i]=1+20*i;
+        modPhiBins[i]=1+20*i;
         if (i < 11)
         {
-          highEBins_[i]=10.+double(i)*20.;
+          highEBins[i]=10.+double(i)*20.;
         }
       }
     }
@@ -689,7 +695,7 @@ void EcalCreateTimeCalibrations::initEBHists(edm::Service<TFileService>& fileSer
   calibMapEB_->Sumw2();
   sigmaMapEB_ = fileService_->make<TH2F>("sigmaDiffMapEB","Sigma of time calib diff map EB [ns];i#phi;i#eta",360,1.,361.,172,-86,86);
   calibErrorMapEB_ = fileService_->make<TH2F>("calibDiffErrorMapEB","Error of time calib diff map EB [ns];i#phi;i#eta",360,1.,361.,172,-86,86);
-  calibTTMapEB_ = fileService_->make<TProfile2D>("calibDiffTTMapEB","time calib diff map EB (TT) [ns];i#phi;i#eta",360/5,ttPhiBins_,35, ttEtaBins_);
+  calibTTMapEB_ = fileService_->make<TProfile2D>("calibDiffTTMapEB","time calib diff map EB (TT) [ns];i#phi;i#eta",360/5,ttPhiBins,35, ttEtaBins);
   TFileDirectory cryDirEB = fileService_->mkdir("crystalTimingHistsEB");
   EBDetId det;
   for(int hi=0; hi < 61200; ++hi)
