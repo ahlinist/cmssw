@@ -16,7 +16,7 @@ Implementation:
 //
 // Authors:                              Seth Cooper (Minnesota)
 //         Created:  Tu Apr 26  10:46:22 CEST 2011
-// $Id: EcalCreateTimeCalibrations.h,v 1.1 2011/04/29 13:37:02 scooper Exp $
+// $Id: EcalCreateTimeCalibrations.h,v 1.2 2011/04/29 14:41:35 scooper Exp $
 //
 //
 
@@ -123,13 +123,6 @@ class EcalCreateTimeCalibrations : public edm::EDAnalyzer {
                 TProfile2D* ampProfileMapEB_;
                 TProfile* ampProfileEB_;
                 TH1F* sigmaHistEB_;
-                //=============Special Bins for TT and Modules borders=============================
-                double ttEtaBins_[36];
-                // double modEtaBins[10]={-85, -65, -45, -25, 0, 1, 26, 46, 66, 86};
-                double ttPhiBins_[73];
-                double modPhiBins_[19];
-                double timingBins_[79];
-                double highEBins_[11];
                 TH2F* calibMapEB_;
                 TH2F* sigmaMapEB_;
                 TH2F* calibErrorMapEB_;
