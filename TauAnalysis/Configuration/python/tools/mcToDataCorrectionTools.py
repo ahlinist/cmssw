@@ -472,6 +472,42 @@ def applyZrecoilCorrection_runZtoElecTau(process):
     if hasattr(process, "pfMEtHistManagerTemplateFit"):
         process.pfMEtHistManagerTemplateFit.expectUniqueMEt = cms.bool(False)
 
+def applyZrecoilCorrection_runZtoElecTau_bgEstTemplate(process):
+
+    _applyZllRecoilCorrection(process,
+                              "produceElecTauPairsAll", 'allElecTauPairs',
+                              "ZllRecoilCorrectionElecTauPair",
+                              [ "analyzeZtoElecTauSequence" ])
+    _applyZllRecoilCorrection(process,
+                              "produceElecTauPairsBgEstZeeJetMisIdEnriched", 'elecTauPairsBgEstZeeJetMisIdEnriched',
+                              "ZllRecoilCorrectionElecTauPair",
+                              [ "analysisSequenceBgEstZeeJetMisIdEnriched" ])
+    _applyZllRecoilCorrection(process,
+                              "produceElecTauPairsBgEstZeeElectronMisIdEnriched", 'elecTauPairsBgEstZeeElectronMisIdEnriched',
+                              "ZllRecoilCorrectionElecTauPair",
+                              [ "analysisSequenceBgEstZeeElectronMisIdEnriched" ])
+    _applyZllRecoilCorrection(process,
+                              "produceElecTauPairsBgEstQCDenriched", 'elecTauPairsBgEstQCDenriched',
+                              "ZllRecoilCorrectionElecTauPair",
+                              [ "analysisSequenceBgEstQCDenriched" ])
+    _applyZllRecoilCorrection(process,
+                              "produceElecTauPairsBgEstWplusJetsEnriched", 'elecTauPairsBgEstWplusJetsEnriched',
+                              "ZllRecoilCorrectionElecTauPair",
+                              [ "analysisSequenceBgEstWplusJetsEnriched" ])
+    _applyZllRecoilCorrection(process,
+                              "produceElecTauPairsBgEstPhotonPlusJetsEnriched", 'elecTauPairsBgEstPhotonPlusJetsEnriched',
+                              "ZllRecoilCorrectionElecTauPair",
+                              [ "analysisSequenceBgEstPhotonPlusJetsEnriched" ])
+
+
+
+    # disable warnings in MET histogram managers
+    # that num. MET objects != 1
+    if hasattr(process, "caloMEtHistManagerTemplateFit"):
+        process.caloMEtHistManagerTemplateFit.expectUniqueMEt = cms.bool(False)
+    if hasattr(process, "pfMEtHistManagerTemplateFit"):
+        process.pfMEtHistManagerTemplateFit.expectUniqueMEt = cms.bool(False)
+
 def applyZrecoilCorrection_runAHtoElecTau(process):
 
     _applyZllRecoilCorrection(process,
@@ -497,6 +533,16 @@ def _addEventWeightZtoElecTau(process, srcEventWeight, applyAfterFilterName = "*
         ],
         srcEventWeight, applyAfterFilterName)
 
+def _addEventWeightZtoElecTau_bgEstTemplate(process, srcEventWeight, applyAfterFilterName = "*"):
+
+    _addEventWeight(process,
+                    [ "analyzeEventsBgEstQCDenriched",
+                      "analyzeEventsBgEstPhotonPlusJetsEnriched",
+                      "analyzeEventsBgEstWplusJetsEnriched",
+                      "analyzeEventsBgEstZeeJetMisIdEnriched",
+                      "analyzeEventsBgEstZeeElectronMisIdEnriched" ],
+                    srcEventWeight, applyAfterFilterName)
+
 def applyElectronTriggerEfficiencyCorrection_runZtoElecTau(process):
 
     process.load("TauAnalysis.RecoTools.electronTriggerEfficiencyCorrection_cfi")
@@ -505,6 +551,12 @@ def applyElectronTriggerEfficiencyCorrection_runZtoElecTau(process):
           * process.electronTriggerEfficiencyCorrection
 
     _addEventWeightZtoElecTau(process, "electronTriggerEfficiencyCorrection", applyAfterFilterName = "evtSelTrigger")
+
+def applyElectronTriggerEfficiencyCorrection_runZtoElecTau_bgEstTemplate(process):
+
+    applyElectronTriggerEfficiencyCorrection_runZtoElecTau(process)
+
+    _addEventWeightZtoElecTau_bgEstTemplate(process, "electronTriggerEfficiencyCorrection", applyAfterFilterName = "evtSelTrigger")
 
 def applyElectronIsolationEfficiencyCorrection_runZtoElecTau(process):
 
@@ -515,6 +567,26 @@ def applyElectronIsolationEfficiencyCorrection_runZtoElecTau(process):
 
     _addEventWeightZtoElecTau(process, "electronIsolationEfficiencyCorrection", applyAfterFilterName = "evtSelElectronIso")
 
+def applyElectronIsolationEfficiencyCorrection_runZtoElecTau_bgEstTemplate(process):
+
+    applyElectronIsolationEfficiencyCorrection_runZtoElecTau(process)
+
+    _addEventWeight(process,
+	            [ "analyzeEventsBgEstQCDenriched" ],
+	            "electronIsolationEfficiencyCorrection", applyAfterFilterName = "electronIsoCutBgEstQCDenriched")
+    _addEventWeight(process,
+                    [ "analyzeEventsBgEstPhotonPlusJetsEnriched" ],
+	            "electronIsolationEfficiencyCorrection", applyAfterFilterName = "electronIsoCutBgEstPhotonPlusJetsEnriched")
+    _addEventWeight(process,
+                    [ "analyzeEventsBgEstWplusJetsEnriched" ],
+	            "electronIsolationEfficiencyCorrection", applyAfterFilterName = "electronIsoCutBgEstWplusJetsEnriched")
+    _addEventWeight(process,
+	            [ "analyzeEventsBgEstZeeJetMisIdEnriched" ],
+	            "electronIsolationEfficiencyCorrection", applyAfterFilterName = "electronIsoCutBgEstZeeJetMisIdEnriched")
+    _addEventWeight(process,
+	            [ "analyzeEventsBgEstZeeElectronMisIdEnriched" ],
+	            "electronIsolationEfficiencyCorrection", applyAfterFilterName = "electronIsoCutBgEstZeeElectronMisIdEnriched")
+
 def applyVertexMultiplicityReweighting_runZtoElecTau(process):
 
     process.load("TauAnalysis.RecoTools.vertexMultiplicityReweight_cfi")
@@ -523,6 +595,12 @@ def applyVertexMultiplicityReweighting_runZtoElecTau(process):
           * process.selectedPrimaryVerticesTrackPtSumGt10 * process.vertexMultiplicityReweight
 
     _addEventWeightZtoElecTau(process, "vertexMultiplicityReweight")
+
+def applyVertexMultiplicityReweighting_runZtoElecTau_bgEstTemplate(process):
+
+    applyVertexMultiplicityReweighting_runZtoElecTau(process)
+
+    _addEventWeightZtoElecTau_bgEstTemplate(process, "vertexMultiplicityReweight")
 
 def _addEventWeighAHtoElecTau(process, srcEventWeight, applyAfterFilterName = "*"):
 
