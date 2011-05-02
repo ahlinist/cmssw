@@ -33,7 +33,10 @@ def submitAnalysisToGrid(configFile = None, channel = None, samples = None,
                          enableEventDumps = False,
                          enableFakeRates = False,
                          processName = None,
-                         saveFinalEvents = False):
+                         saveFinalEvents = False,
+                         outsideCERN = False,
+                         useCastor = True     
+                         ):
     """
     Submit analysis job (event selection, filling of histogram)
     via crab
@@ -76,6 +79,9 @@ def submitAnalysisToGrid(configFile = None, channel = None, samples = None,
             'sample' : sample,
             'id' : jobId
         }
+
+        #if outsideCERN:
+        #    configFile = "%s_cfg.py"% (channel)
 
         newConfigFile = getNewConfigFileName(configFile, cfgdir, sample, jobId, label = "@Grid")
 
@@ -167,6 +173,14 @@ def submitAnalysisToGrid(configFile = None, channel = None, samples = None,
             'SE_white_list' : sample_info['SE_white_list'],
             'SE_black_list' : sample_info['SE_black_list']
         }
+
+        if outsideCERN:
+            crabOptions['use_server'] = 0
+            crabOptions['scheduler'] = 'condor'
+
+        if not useCastor:
+            crabOptions['return_data'] = 1
+            crabOptions['copy_data'] = 0        
 
         submitToGrid(newConfigFile, jobInfo, crabOptions,
                      create=create, submit=submit, cfgdir=cfgdir)
