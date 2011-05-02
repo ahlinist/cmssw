@@ -44,6 +44,9 @@
 #include "Geometry/CaloGeometry/interface/CaloSubdetectorGeometry.h"
 #include "Geometry/EcalAlgo/interface/EcalPreshowerGeometry.h"
 
+// PileupSummaryInfo
+#include "SimDataFormats/PileupSummaryInfo/interface/PileupSummaryInfo.h"
+
 using namespace std;
 using namespace pat;
 using namespace edm;
@@ -107,6 +110,8 @@ VgAnalyzerKit::VgAnalyzerKit(const edm::ParameterSet& ps) : verbosity_(0), helpe
     tree_->Branch("pdf", pdf_, "pdf[7]/F");
     tree_->Branch("pthat", &pthat_, "pthat/F");
     tree_->Branch("processID", &processID_, "processID/F");
+    tree_->Branch("bunchXing", &bunchXing_, "bunchXing/I");
+    tree_->Branch("numInteractions", &numInteractions_, "numInteractions/I");
     // genParticle
     tree_->Branch("nMC", &nMC_, "nMC/I");
     tree_->Branch("mcPID", mcPID, "mcPID[nMC]/I");
@@ -552,6 +557,17 @@ void VgAnalyzerKit::produce(edm::Event & e, const edm::EventSetup & es) {
     }
 
     processID_ = genEventScale->signalProcessID();
+  }
+
+  // PileupSummaryInfo
+  if (!isData_) {
+    Handle<std::vector< PileupSummaryInfo > >  PupInfo;
+    e.getByLabel("addPileupInfo", PupInfo);
+    std::vector<PileupSummaryInfo>::const_iterator PVI;
+    for(PVI = PupInfo->begin(); PVI != PupInfo->end(); ++PVI) {
+      bunchXing_ = PVI->getBunchCrossing();
+      numInteractions_ = PVI->getPU_NumInteractions();
+    }
   }
 
   // GenParticle
