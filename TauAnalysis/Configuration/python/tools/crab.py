@@ -65,6 +65,27 @@ def lfns(crab_dir):
     print "Parsed %i files in %s, and skipped %i since they had no events." % (
         count, crab_dir, skipped_files)
 
+
+#jamie - function to get the names of the files to be merged from the stdout file instead of the job report
+def lfns_stdout(crab_dir):
+    res_dir = crab_dir+"/res/"
+    for file in os.listdir(res_dir):
+        if "stdout" not in file:
+            continue
+        for line in open(res_dir+file):
+            if "output" in line:
+                continue
+            if "lrwxrwxrwx" in line:
+                continue
+            if "-rw-r--r--" in line:
+                continue
+            if "tarring" in line:
+                continue
+            if "plots" in line:
+                #print line.rstrip('\n')
+                yield res_dir+line.rstrip('\n')
+     
+
 def map_lfn_to_castor(lfn):
     return '/castor/cern.ch' + lfn
 

@@ -71,6 +71,7 @@ def clean_by_crab_id(file_infos):
 def crabdir_source(directory):
     print "Getting list of files from crab dir:", directory
     crab_files = list(crab.map_lfns_to_castor(crab.lfns(directory)))
+
     good_ids = set(get_crab_id(file) for file in crab_files)
     # Get good crab 'ids' - a tuple of the crab job, retry, and random code
     # Figure out what castor directory we are in so we can get all the
@@ -84,6 +85,21 @@ def crabdir_source(directory):
             if get_crab_id(file_info['file']) in good_ids:
                 yield file_info
 
+
+#jamie - added function to get the input file names from the stdout file in the crab directory
+def crabdir_source_stdout(directory):
+    print "Getting list of files from crab dir:", directory
+    crab_files = list(crab.lfns_stdout(directory))
+
+    print "getting all files"
+    if crab_files:
+        for file in crab_files:
+            #print file
+            yield file
+
+
+
+                
 def crabdir_sources(*directories):
     for directory in directories:
         for file_info in crabdir_source(directory):
