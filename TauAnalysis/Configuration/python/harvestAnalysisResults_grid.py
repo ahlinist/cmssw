@@ -13,7 +13,9 @@ def harvestAnalysisResults(channel = None, samples = None, inputFilePath = None,
                            tmpFilePath = None,
                            # Pre-scale and factorize samples
                            ana_defs = None, plot_defs = None, plotters = None,
-                           use_job_report = False):
+                           use_job_report = False,
+                           useCastor = False
+                           ):
 
     # check that channel, samples, inputFilePath, outputFilePath, tmpFilePath and jobId
     # parameters are defined and non-empty
@@ -56,12 +58,27 @@ def harvestAnalysisResults(channel = None, samples = None, inputFilePath = None,
     else:
         print "Using job reports to find output files"
         for sample in samples['SAMPLES_TO_ANALYZE']:
-            crab_dir = os.path.join(
-                'crab', 'crabdir_run%s_%s_%s' % (channel, sample, jobId))
-            print "Getting output files from:", crab_dir
-            files_and_times.extend(
-                (None, file['path']) 
-                for file in harvest_tools.crabdir_source(crab_dir))
+            crab_dir = ''
+            if useCastor:
+                crab_dir = os.path.join(
+                    'crab', 'crabdir_run%s_%s_%s' % (channel, sample, jobId))
+
+                print "Getting output files from:", crab_dir
+                files_and_times.extend(
+                    (None, file['path']) 
+                    for file in harvest_tools.crabdir_source(crab_dir))
+
+            else:
+
+                crab_dir = os.path.join(
+                    'crab', 'crabdir_%s_%s_%s' % (channel, sample, jobId))
+
+                print "Getting output files from:", crab_dir
+                files_and_times.extend(
+                    (None, file) 
+                    for file in harvest_tools.crabdir_source_stdout(crab_dir))
+                
+
 
     plot_harvest_jobs = []
     skim_harvest_jobs = []
@@ -70,9 +87,17 @@ def harvestAnalysisResults(channel = None, samples = None, inputFilePath = None,
         print "Finding input files for", sample
         output_file = "harvested_%s_%s_%s.root" % (channel, sample, jobId)
         output_path = os.path.join(outputFilePath, output_file)
-        files_to_merge = list(
-            'rfio:%s' % file for time, file in files_and_times
-            if file.find('plots_%s_%s_%s_' % (channel, sample, jobId)) != -1)
+        files_to_merge = list()
+        if useCastor:
+            files_to_merge = list(
+                'rfio:%s' % file for time, file in files_and_times
+                if file.find('plots_%s_%s_%s_' % (channel, sample, jobId)) != -1)
+        else:
+            files_to_merge = list(
+                '%s' % file for time, file in files_and_times
+                if file.find('plots_%s_%s_%s_' % (channel, sample, jobId)) != -1)
+
+
         plot_harvest_jobs.append( (sample, output_path, files_to_merge) )
         # Get final event skims that need to be merged
         event_files_to_merge = list(
