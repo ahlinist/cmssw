@@ -98,6 +98,8 @@ protected:
   Float_t  pdf_[7];
   Float_t  pthat_;
   Float_t  processID_;
+  Int_t    bunchXing_;
+  Int_t    numInteractions_;
   Int_t    nHLT_;
   Int_t    HLT_[maxP];
   Int_t    HLTIndex_[200];

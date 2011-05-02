@@ -19,6 +19,7 @@
 <use   name="PhysicsTools/PatAlgos"/>
 <use   name="RecoEcal/EgammaCoreTools"/>
 <use   name="RecoEgamma/EgammaTools"/>
+<use   name="SimDataFormats/PileupSummaryInfo"/>
 <flags   EDM_PLUGIN="1"/>
 <export>
 </export>
