@@ -25,7 +25,7 @@ NSVfitTauDecayLikelihoodMC<T>::NSVfitTauDecayLikelihoodMC(const edm::ParameterSe
   : NSVfitSingleParticleLikelihood(cfg),
     currentDecayModeParameter_(0)
 {
-  //std::cout << "<NSVfitTauDecayLikelihoodMC::NSVfitTauDecayLikelihoodMC>:" << std::endl;
+  if ( this->verbosity_ ) std::cout << "<NSVfitTauDecayLikelihoodMC::NSVfitTauDecayLikelihoodMC>:" << std::endl;
   
   std::map<int, std::string> supportedTauDecayModes;
   supportedTauDecayModes[kElectron]        = "electron";
@@ -43,6 +43,8 @@ NSVfitTauDecayLikelihoodMC<T>::NSVfitTauDecayLikelihoodMC(const edm::ParameterSe
       edm::ParameterSet cfgDecayMode = cfgDecayModes.getParameter<edm::ParameterSet>(tauDecayMode->second);
 
       edm::FileInPath inputFileName = cfgDecayMode.getParameter<edm::FileInPath>("inputFileName");
+      if ( this->verbosity_ ) std::cout << "--> reading RooFitWorkSpace from file = " << inputFileName.fullPath() << "..." << std::endl;
+
       std::string wsName = cfgDecayMode.getParameter<std::string>("wsName");
       std::string pdfName = cfgDecayMode.getParameter<std::string>("pdfName");
       std::string momName = cfgDecayMode.getParameter<std::string>("momName");
@@ -50,6 +52,13 @@ NSVfitTauDecayLikelihoodMC<T>::NSVfitTauDecayLikelihoodMC(const edm::ParameterSe
       std::string sepName = cfgDecayMode.getParameter<std::string>("sepName");
       std::string sepType = cfgDecayMode.getParameter<std::string>("sepType");
 
+      if ( this->verbosity_ ) {
+	std::cout << " wsName  = " << wsName.data() << std::endl;
+	std::cout << " pdfName = " << pdfName.data() << std::endl;
+	std::cout << " momName = " << momName.data() << ", momType = " << momType.data() << std::endl;
+	std::cout << " sepName = " << sepName.data() << ", sepType = " << sepType.data() << std::endl;
+      }
+      
       decayModeEntryType* newDecayModeEntry = new decayModeEntryType();
 
       if      ( momType == "pt"     ) newDecayModeEntry->momType_ = kPt;
@@ -71,6 +80,13 @@ NSVfitTauDecayLikelihoodMC<T>::NSVfitTauDecayLikelihoodMC(const edm::ParameterSe
       newDecayModeEntry->decayPdf_ = ws->pdf(pdfName.data());
       newDecayModeEntry->mom_ = ws->var(momName.data());
       newDecayModeEntry->sep_ = ws->var(sepName.data());
+
+      if ( this->verbosity_ ) {
+	ws->Print();
+	std::cout << " decayPdf = " << newDecayModeEntry->decayPdf_ << std::endl;
+	std::cout << " mom      = " << newDecayModeEntry->mom_ << std::endl;
+	std::cout << " sep      = " << newDecayModeEntry->sep_ << std::endl;
+      }
       
       decayModeParameters_.insert(std::pair<int, decayModeEntryType*>(tauDecayMode->first, newDecayModeEntry));
       
@@ -94,6 +110,28 @@ NSVfitTauDecayLikelihoodMC<T>::~NSVfitTauDecayLikelihoodMC()
 
 template <typename T>
 void NSVfitTauDecayLikelihoodMC<T>::beginJob(NSVfitAlgorithmBase* algorithm)
+{
+  assert(0); // force template specializations for pat::Electrons/pat::Muons/pat::Taus to be used
+}
+
+template <>
+void NSVfitTauDecayLikelihoodMC<pat::Electron>::beginJob(NSVfitAlgorithmBase* algorithm)
+{
+  algorithm->requestFitParameter(prodParticleLabel_, nSVfit_namespace::kTau_visEnFracX, pluginName_);
+  algorithm->requestFitParameter(prodParticleLabel_, nSVfit_namespace::kTau_phi_lab,    pluginName_);
+  algorithm->requestFitParameter(prodParticleLabel_, nSVfit_namespace::kTau_nuInvMass,  pluginName_);
+}
+
+template <>
+void NSVfitTauDecayLikelihoodMC<pat::Muon>::beginJob(NSVfitAlgorithmBase* algorithm)
+{
+  algorithm->requestFitParameter(prodParticleLabel_, nSVfit_namespace::kTau_visEnFracX, pluginName_);
+  algorithm->requestFitParameter(prodParticleLabel_, nSVfit_namespace::kTau_phi_lab,    pluginName_);
+  algorithm->requestFitParameter(prodParticleLabel_, nSVfit_namespace::kTau_nuInvMass,  pluginName_);
+}
+
+template <>
+void NSVfitTauDecayLikelihoodMC<pat::Tau>::beginJob(NSVfitAlgorithmBase* algorithm)
 {
   algorithm->requestFitParameter(prodParticleLabel_, nSVfit_namespace::kTau_visEnFracX, pluginName_);
   algorithm->requestFitParameter(prodParticleLabel_, nSVfit_namespace::kTau_phi_lab,    pluginName_);
