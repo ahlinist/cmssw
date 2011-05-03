@@ -50,7 +50,7 @@ void wTauNuEventDump::print(const edm::Event& iEvent, const edm::EventSetup& iSe
     iEvent.getByLabel(genParticleSource_, genParticleCollection);
     edm::Handle<reco::GenJetCollection> genTauJetCollection;
     iEvent.getByLabel(genTauJetSource_, genTauJetCollection);
-    printGenParticleInfo(*genParticleCollection, *genTauJetCollection, outputStream_);
+	//    printGenParticleInfo(*genParticleCollection, *genTauJetCollection, outputStream_);
     
     edm::Handle<edm::View<reco::GenJet> > genJetCollection;
     iEvent.getByLabel("ak5GenJets", genJetCollection);
@@ -87,7 +87,7 @@ void wTauNuEventDump::print(const edm::Event& iEvent, const edm::EventSetup& iSe
 
   printMissingEtInfo(iEvent);
 
-  printJetInfo(iEvent);  
+  //  printJetInfo(iEvent);  
 }
 
 #include "FWCore/Framework/interface/MakerMacros.h"
