@@ -6,7 +6,8 @@ import TauAnalysis.DQMTools.plotterStyleDefinitions_cfi as styles
 
 # List of samples to run in the analysis
 SAMPLES_TO_ANALYZE = [
-    'data_TauPlusX_Run2011A_PromptReco',
+    'data_TauPlusX_Run2011A_PromptReco_v1',
+    'data_TauPlusX_Run2011A_PromptReco_v2',
     'DYtautauM10to20_powheg',
     'Ztautau_powheg',
     'qqZll',
@@ -79,11 +80,10 @@ TARGET_LUMI =  15.5/_picobarns # for runs 160404 - 161312 ("almost golden" quali
 #--------------------------------------------------------------------------------
 
 RECO_SAMPLES = {
-    'data_TauPlusX_Run2011A_PromptReco' : {
+    'data_TauPlusX_Run2011A_PromptReco_v1' : {
         'datasetpath' : "/TauPlusX/Run2011A-PromptReco-v1/AOD",
         'dbs_url' :  "http://cmsdbsprod.cern.ch/cms_dbs_prod_global/servlet/DBSServlet",
-        #'lumi_mask' : "/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions11/7TeV/Prompt/Cert_160404-161312_7TeV_PromptReco_Collisions11_JSON.txt",
-        'lumi_mask' : "/afs/cern.ch/user/v/veelken/public/Cert_160404-161312_7TeV_PromptReco_Collisions11_Ztautau_JSON.txt",
+        'lumi_mask' : "/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions11/7TeV/Prompt/Cert_160404-163369_7TeV_PromptReco_Collisions11_JSON.txt",
         'runselection' : "160404-161312",
         'number_of_jobs' : 500,
         'conditions' : 'GR_R_311_V2::All',
@@ -93,10 +93,30 @@ RECO_SAMPLES = {
         'drawOption' : styles.drawOption_Data,
         'hlt_paths' : {
             'HLT_IsoMu12_LooseIsoPFTau10_v1' : '160431:MIN-161016:MAX',  # period A           
-            'HLT_IsoMu12_LooseIsoPFTau10_v2' : '161216:MIN-161312:MAX',  # period B
+            'HLT_IsoMu12_LooseIsoPFTau10_v2' : '161216:MIN-163261:MAX',  # period B
             'HLT_Mu15_LooseIsoPFTau20_v1'    : '160431:MIN-161016:MAX',  # period A           
-            'HLT_Mu15_LooseIsoPFTau20_v2'    : '161216:MIN-161312:MAX'   # period B
-            
+            'HLT_Mu15_LooseIsoPFTau20_v2'    : '161216:MIN-163261:MAX'   # period B
+        },
+        'enableSysUncertainties' : False,
+        'enableFakeRates' : True,
+        'hlt' : cms.InputTag("TriggerResults", "", "HLT")
+    },
+    'data_TauPlusX_Run2011A_PromptReco_v2' : {
+        'datasetpath' : "/TauPlusX/Run2011A-PromptReco-v2/AOD",
+        'dbs_url' :  "http://cmsdbsprod.cern.ch/cms_dbs_prod_global/servlet/DBSServlet",
+        'lumi_mask' : "/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions11/7TeV/Prompt/Cert_160404-163369_7TeV_PromptReco_Collisions11_JSON.txt",
+        'runselection' : "160404-161312",
+        'number_of_jobs' : 500,
+        'conditions' : 'GR_R_311_V2::All',
+        'events_processed' : -1,
+        'skim_eff' : 1.0,
+        'type' : 'Data',
+        'drawOption' : styles.drawOption_Data,
+        'hlt_paths' : {             
+            'HLT_IsoMu12_LooseIsoPFTau10_v2' : '161216:MIN-163261:MAX',  # period B
+            'HLT_IsoMu12_LooseIsoPFTau10_v4' : '163269:MIN-163402:MAX',  # period C
+            'HLT_Mu15_LooseIsoPFTau20_v2'    : '161216:MIN-163261:MAX',  # period B
+            'HLT_Mu15_LooseIsoPFTau20_v4'    : '163269:MIN-163402:MAX'   # period C
         },
         'enableSysUncertainties' : False,
         'enableFakeRates' : True,
@@ -280,7 +300,8 @@ RECO_SAMPLES = {
 MERGE_SAMPLES = {
     'data' : {
         'samples' : [
-            'data_TauPlusX_Run2011A_PromptReco',
+            'data_TauPlusX_Run2011A_PromptReco_v1',
+            'data_TauPlusX_Run2011A_PromptReco_v2',
         ],
         'legendEntry' : 'DATA',
         'type' : 'Data',
