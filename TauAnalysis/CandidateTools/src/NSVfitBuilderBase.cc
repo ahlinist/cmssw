@@ -12,7 +12,7 @@ int NSVfitBuilderBase::getFitParameterIdx(NSVfitAlgorithmBase* algorithm, const 
   } else {
     if ( isOptional ) return -1;
     else throw cms::Exception("NSVfitBuilderBase::getFitParameterIdx")
-      << " No fitParameter for name = " << name << ", type = " << type << " defined !!\n"
-      << " --> Please check if there is a likelihood which constrains this fitParameter.\n";
+      << " No fitParameter = " << get_name_incl_type(name, type) << " defined !!\n"
+      << "--> Please check if there is a likelihood which constrains this fitParameter.\n";
   }
 }
