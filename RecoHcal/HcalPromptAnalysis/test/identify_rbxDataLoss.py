@@ -1,9 +1,23 @@
+###################################################
+# FWLite script for identifying LS
+# associated with and start time of RBX data loss
+#
+# Author : Jim Hirschauer (jhirsch@fnal.gov)
+#
+# Execute:
+# python identify_rbxDataLoss.py --run 163337 HBM14 HBM10
+# python identify_rbxDataLoss.py --run 163270 HBM18 --skip_to_ls 690 694
+#
+# More details:
+# https://twiki.cern.ch/twiki/bin/view/CMS/HcalPFGRecipes#Find_associated_LS_and_starting
+# https://twiki.cern.ch/twiki/bin/view/CMS/HcalRBXDataLossHistory
+###################################################
+
 import sys
 import time
 import optparse
 import commands
 
-from ROOT import TFile, TH1F, TH2F, TProfile
 from DataFormats.FWLite import Events, Handle
 
 ##############################################
@@ -16,12 +30,17 @@ parser.add_option ('--run', dest='runnum', type='int',
                    default = '-1',
                    help="Run number")
 
+parser.add_option ('--ds', dest='dataset', type='string',
+                   default = 'Jet',
+                   help="which Run2011A-PromptReco-v2 RECO dataset to use (Jet,MuEG, etc.)")
+
 parser.add_option ('--skip_to_ls', dest='skip_to_ls', type='int', nargs = 2,
                    default = '-1',
                    help="LS range")
 
 options, args = parser.parse_args()
 
+dataset = options.dataset 
 runnum = options.runnum
 skip_to_ls = options.skip_to_ls
 if runnum < 0: print "Please enter run number with run option '--run 163337'.  Exiting."
@@ -43,8 +62,8 @@ else:
 # Get Files
 ############################################################
 
-#dataset = "/Jet/Run2011A-PromptReco-v2/RECO"
-dataset = "/MuEG/Run2011A-PromptReco-v2/RECO"
+dataset = "/"+dataset
+dataset += "/Run2011A-PromptReco-v2/RECO"
 
 command_string = 'dbs --search --query="find file where dataset='+dataset+' and run='+str(runnum)+'"'
 
@@ -71,16 +90,13 @@ print ""
 if len(tempfiles) == 0: print "No files found.  Exiting."; sys.exit()
 
 
-#tempfiles2 = ['/store/data/Run2011A/Jet/RECO/PromptReco-v2/000/163/337/F86615A2-2370-E011-B5F3-0019DB2F3F9A.root',
+#tempfiles = [
+#'/store/data/Run2011A/Jet/RECO/PromptReco-v2/000/163/337/F86615A2-2370-E011-B5F3-0019DB2F3F9A.root',
 #'/store/data/Run2011A/Jet/RECO/PromptReco-v2/000/163/337/B4994D64-2670-E011-AB58-003048F024F6.root',
 #'/store/data/Run2011A/Jet/RECO/PromptReco-v2/000/163/337/A28C8D20-1270-E011-B98D-003048D2BE12.root',
 #'/store/data/Run2011A/Jet/RECO/PromptReco-v2/000/163/337/5A5F9CD5-2270-E011-92D1-001617E30CD4.root',
 #'/store/data/Run2011A/Jet/RECO/PromptReco-v2/000/163/337/0C09D722-1270-E011-B532-003048F118C2.root'
 #]
-
-#print tempfiles2
-#print tempfilesnTotal = 0
-
 
 cernRecoString = 'rfio:/castor/cern.ch/cms/'
 #cernExpString = 'rfio://castorcms/?svcClass=t0express&path=/castor/cern.ch/cms'
@@ -114,16 +130,12 @@ def getRBXfromPHI(iphi):
 # Main function that gets RBX name (e.g. HBM10)
 # from eta, phi, dep
 def getHBHERBX(ieta, iphi, idep):
-    idet  = -99
-    iside = -99
-    irbx  = -99
+    idet  = -99; iside = -99; irbx  = -99
 
-    if ieta < 0:
-        iside = "M"
-        ieta = -1*ieta
-    else:
-        iside = "P"
+    if ieta < 0: iside = "M"
+    else: iside = "P"
 
+    ieta = abs(ieta)
 
     if ieta <= 14 and idep == 1  : idet = "HB"
     elif ieta == 15 and idep <= 2: idet = "HB"
@@ -134,15 +146,10 @@ def getHBHERBX(ieta, iphi, idep):
     elif ieta <= 28 and idep <= 3: idet = "HE"
     else: idet = False
 
-    
     irbx = getRBXfromPHI(iphi)
 
-
-    if not idet:
-        return False
-    else:
-        return idet+iside+str(irbx)
-    
+    if not idet: return False
+    else: return idet+iside+str(irbx)
 
 # For speed make dictionary that maps eta, phi, dep to RBX name
 # (e.g. HBM10)
@@ -160,8 +167,6 @@ for ieta in range(-28,29):
             if triplet:
                 rechit_to_rbx_dict[ ieta , iphi , idep ] = triplet
 
-
-
 ############################################################
 # Get data from files
 ############################################################
@@ -173,14 +178,12 @@ print "Done reading files."
 hbherhHandle = Handle("edm::SortedCollection<HBHERecHit,edm::StrictWeakOrdering<HBHERecHit>>")
 hbherhLabel = ("hbhereco")
 
-
 ############################################################
 # Event loop
 ############################################################
 
 nEvent = 0
 missing_dictionary = False
-
 
 print "Starting event loop.  Processing %i events." % events.size()
 
@@ -192,7 +195,6 @@ for event in events:
         print "record:",nEvent,"Run:",event.object().id().run(),\
               "event:",event.object().id().event()
 
-
     ls = int(event.object().luminosityBlock())
     if skip_to_ls > 0:
         if ls < skip_to_ls[0] or ls > skip_to_ls[1] : continue
@@ -201,7 +203,6 @@ for event in events:
     tmp_rbx_list = []
     for rbx in rbx_list: tmp_rbx_list.append(rbx)
     
-        
     # Get rechits
     event.getByLabel(hbherhLabel,hbherhHandle)    
     hbherhs = hbherhHandle.product()
@@ -219,7 +220,6 @@ for event in events:
         # Once RBX list is empty, we have found data from each RBX in an event
         # and we can stop checking.
         if len(tmp_rbx_list) == 0: break
-
 
     # I've looked through all rechits, check if there are RBXes with no data in the event:
     if len(tmp_rbx_list) != 0:
@@ -245,9 +245,8 @@ for event in events:
                     missing_sub_dictionary[(rbx,ls)] = set([unix_time])
                 else:
                     missing_sub_dictionary[(rbx,ls)].add(unix_time)
-                    
+
     #if nEvent > 5000: break
-                
 
 print "Done with event loop.  Processed %i events." % nEvent
 print "\n"
