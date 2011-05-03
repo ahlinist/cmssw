@@ -69,9 +69,7 @@ _picobarns =  1.0
 _femtobarns = 1.0e-3
 
 # Integrated luminosity to normalize
-#TARGET_LUMI =   5.1/_picobarns # for runs 160404 - 161312 ("golden" quality)
-#TARGET_LUMI =  17.0/_picobarns # for runs 160404 - 161312 ("almost golden" quality)
-TARGET_LUMI =  15.5/_picobarns # for runs 160404 - 161312 ("almost golden" quality) corrected for ~90% PFTau trigger efficiency
+TARGET_LUMI = 0.90*41.6/_picobarns # for runs 160404 - 163369 ("golden" quality) corrected for ~90% PFTau trigger efficiency
 
 #--------------------------------------------------------------------------------
 # NOTE: cross-sections for W and Z production are scaled to next-to-leading order values
