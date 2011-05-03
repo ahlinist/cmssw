@@ -5,10 +5,11 @@
   <use   name="FWCore/MessageLogger"/>
   <use   name="FWCore/PluginManager"/>
   <use   name="FWCore/ParameterSet"/>
+  <use   name="FWCore/Utilities"/>
   <use   name="PhysicsTools/RooStatsCms"/>
   <use   name="TauAnalysis/DQMTools"/>
   <use   name="TauAnalysis/FittingTools"/>
-  <use   name="root"/>
+  <use   name="rootcore"/>
   <use   name="roofit"/>
   <use   name="lhapdf"/>
 </library>
