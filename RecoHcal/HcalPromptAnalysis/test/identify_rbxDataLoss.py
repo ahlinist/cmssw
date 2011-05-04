@@ -1,4 +1,4 @@
-###################################################
+##################################################
 # FWLite script for identifying LS
 # associated with and start time of RBX data loss
 #
@@ -24,23 +24,23 @@ from DataFormats.FWLite import Events, Handle
 # Get options
 ##############################################
 
-parser = optparse.OptionParser("usage: %prog [options] HBM14 HBM10\n")
+parser = optparse.OptionParser("usage: python %prog [options] [RBXes]\n  e.g. python identify_rbxDataLoss.py --run 163270 --skip_to_ls 690 694 --ds /Jet/Run2011A-PromptReco-v2/RECO HBM18 HEP01 ")
 
-parser.add_option ('--run', dest='runnum', type='int',
+parser.add_option ('--run', dest='runnum', type='int', metavar="",
                    default = '-1',
-                   help="Run number")
+                   help="run number")
 
 parser.add_option ('--ds', dest='dataset', type='string',
-                   default = 'Jet',
-                   help="which Run2011A-PromptReco-v2 RECO dataset to use (Jet,MuEG, etc.)")
+                   default = '/Jet/Run2011A-PromptReco-v2/RECO',
+                   help="dataset to process\n (%default)")
 
 parser.add_option ('--skip_to_ls', dest='skip_to_ls', type='int', nargs = 2,
                    default = '-1',
-                   help="LS range")
+                   help="LS range to process (All)")
 
 options, args = parser.parse_args()
 
-dataset = options.dataset 
+dataset = options.dataset
 runnum = options.runnum
 skip_to_ls = options.skip_to_ls
 if runnum < 0: print "Please enter run number with run option '--run 163337'.  Exiting."
@@ -62,10 +62,37 @@ else:
 # Get Files
 ############################################################
 
-dataset = "/"+dataset
-dataset += "/Run2011A-PromptReco-v2/RECO"
+def findFiles(runnum, dataset):
+    command_string = 'dbs --search --query="find file where dataset='+dataset+' and run='+str(runnum)+'"'
+    print ""
+    print "Finding files via DBS: ", command_string
+    print ""
+    dbs_out = commands.getoutput(command_string).split("\n")
 
-command_string = 'dbs --search --query="find file where dataset='+dataset+' and run='+str(runnum)+'"'
+    # skip first 4 lines of dbs output
+    tempfiles = []
+    print "Files are:"
+    for iline in range(4,len(dbs_out)):
+        tempfiles.append(str(dbs_out[iline]))
+        print str(dbs_out[iline])
+    print ""
+    return tempfiles
+
+
+
+tempfiles = findFiles(runnum, dataset)
+
+if len(tempfiles) == 0 and dataset == "/Jet/Run2011A-PromptReco-v2/RECO":
+    dataset
+    print "No files found in /Jet/Run2011A-PromptReco-v2/RECO.  Trying v1."
+
+    dataset = "/Jet/Run2011A-PromptReco-v1/RECO"
+    tempfiles = findFiles(runnum, dataset)
+
+    if len(tempfiles) == 0:
+        print "No files found in /Jet/Run2011A-PromptReco-v2/RECO or -v1."
+        print "Please specify dataset with --ds option.  Exiting."
+        sys.exit()
 
 print "Searching for RBX data loss"
 print "  in RBXes =",
@@ -73,22 +100,6 @@ for rbx in rbx_list: print rbx,
 print ""
 print "  in run =", runnum
 print "  in dataset =", dataset
-
-print ""
-print "Finding files via DBS: ", command_string
-print ""
-dbs_out = commands.getoutput(command_string).split("\n")
-
-# skip first 4 lines of dbs output
-tempfiles = []
-print "Files are:"
-for iline in range(4,len(dbs_out)):
-    tempfiles.append(str(dbs_out[iline]))
-    print str(dbs_out[iline])
-print ""
-
-if len(tempfiles) == 0: print "No files found.  Exiting."; sys.exit()
-
 
 #tempfiles = [
 #'/store/data/Run2011A/Jet/RECO/PromptReco-v2/000/163/337/F86615A2-2370-E011-B5F3-0019DB2F3F9A.root',
@@ -162,7 +173,7 @@ for ieta in range(-28,29):
         for idep in range(1,4):
             triplet = getHBHERBX(ieta, iphi, idep)
             if triplet[0] == -99 or triplet[1] == -99 or triplet[2] == -99:
-                print "Broke"
+                print "Unexpected problem making map.  Exiting."
                 sys.exit()
             if triplet:
                 rechit_to_rbx_dict[ ieta , iphi , idep ] = triplet
@@ -171,10 +182,11 @@ for ieta in range(-28,29):
 # Get data from files
 ############################################################
 
-print "Reading files."
+
+print ""
+print "Reading files.  This may take awhile."
 events = Events (files)
-print "Done reading files."
- 
+
 hbherhHandle = Handle("edm::SortedCollection<HBHERecHit,edm::StrictWeakOrdering<HBHERecHit>>")
 hbherhLabel = ("hbhereco")
 
@@ -187,6 +199,9 @@ missing_dictionary = False
 
 print "Starting event loop.  Processing %i events." % events.size()
 
+
+ls_analyzed = set([])
+
 for event in events:
     nEvent += 1
     #    if nEvent < 3400: continue
@@ -196,8 +211,11 @@ for event in events:
               "event:",event.object().id().event()
 
     ls = int(event.object().luminosityBlock())
+    
     if skip_to_ls > 0:
         if ls < skip_to_ls[0] or ls > skip_to_ls[1] : continue
+
+    ls_analyzed.add(ls)
 
     # Copy rbx_list once for each event
     tmp_rbx_list = []
@@ -232,18 +250,23 @@ for event in events:
             missing_dictionary = {}
             missing_sub_dictionary = {}
 
-        # loop over rbxes w/ no entries:
+        # loop over rbxes that reported no rechits in the event:
         for rbx in tmp_rbx_list:
+            # get the time
             unix_time = int(event.object().time().unixTime())
             if rbx not in missing_dictionary:
-                # if the rbx has no dictionary entry, create it.
+                # if the rbx has no dictionary entries, create them:
                 missing_dictionary[rbx] = set([ls])
                 missing_sub_dictionary[(rbx,ls)] = set([unix_time])
             else:
+                # if it has a main dictionary entry add the LS
                 missing_dictionary[rbx].add(ls)
+                # now check to see if the LS is entered in the sub-dictionary of times:
                 if (rbx, ls) not in missing_sub_dictionary:
+                    # if not create it
                     missing_sub_dictionary[(rbx,ls)] = set([unix_time])
                 else:
+                    # if so, add it
                     missing_sub_dictionary[(rbx,ls)].add(unix_time)
 
     #if nEvent > 5000: break
@@ -253,18 +276,18 @@ print "\n"
 
 # Print out results
 if missing_dictionary :
-    print "Instances of RBX data loss:"
-    print "\n"
-    print "RBX     #LS     LS range        Start time (GMT)"  
-    print "---     ---     --------        ----------------"
+    print "Summary of RBX data loss instances:"
+    print "   RBX     #LS     LS range        Start time (GMT)"  
+    print "   ---     ---     --------        ----------------"
     for rbx, ls_set in missing_dictionary.iteritems():
 
-        # Make LS set into list and sort.
+        # Make LS set into list so that you can sort it:
         ls_list   = []
-        for ls   in ls_set  : ls_list  .append(ls  )
+        for ls in ls_set : ls_list.append( ls )
         ls_list.sort()
         
-        # Make "rdl instances" out of contiguous groups of LS's :
+        # Separate contiguous groups of LS's into "rdl instances",
+        # Put in a dictionary:
         rdl_instances = {}
         i_inst = 0
         iLS = 0
@@ -277,14 +300,15 @@ if missing_dictionary :
                     i_inst += 1
             iLS += 1
 
-        # Loop over individual instances of data loss and print info
+        # Loop over individual instances of data loss in the new dictionary and print info
         for j_inst, inst_ls_list in rdl_instances.iteritems():
 
-            # Get starting time:
+            # Get starting unix time from sub dictionary:
             time_list = []
             time_set = missing_sub_dictionary[(rbx,inst_ls_list[0])]
             for utime in time_set: time_list.append(utime)
             time_list.sort()
+            # Put time in human readable form:
             t0 = time.gmtime(time_list[0])
             if t0.tm_min < 10: str_min = "0"+str(t0.tm_min)
             else: str_min = str(t0.tm_min)
@@ -292,10 +316,45 @@ if missing_dictionary :
             else: str_sec = str(t0.tm_sec)
             str_t0 = str(t0.tm_mon)+"/"+str(t0.tm_mday)+" "+str(t0.tm_hour)+":"+str_min+":"+str_sec
             # print info
-            print "%s   %i       [%i,%i]         %s" % (rbx, len(inst_ls_list), inst_ls_list[0], inst_ls_list[len(inst_ls_list)-1], str_t0)
+            print "   %s   %i       [%i,%i]         %s" % (rbx, len(inst_ls_list), inst_ls_list[0], inst_ls_list[len(inst_ls_list)-1], str_t0)
                    
 else:
-    print "No problem RBXes found."
+    print "   No problem RBXes found."
+
+print ""
+print "Summary of LS analyzed:"
+# Print LS's analyzed:
+ls_analyzed_list   = []
+for ls in ls_analyzed : ls_analyzed_list.append( ls )
+ls_analyzed_list.sort()
+
+if skip_to_ls > 0:
+    print "   User specified to only analyze LS range [%i,%i]." % (skip_to_ls[0], skip_to_ls[1])
+    
+print "   Analyzed %i LS in range [%i,%i]."  % (len(ls_analyzed_list),ls_analyzed_list[0],ls_analyzed_list[len(ls_analyzed_list)-1])
+
+
+
+# Find skipped LS:
+
+nLS = len(ls_analyzed_list)
+
+# Make list of expected LS based on range of analyzed LS:
+skipped_ls = []
+for iLS in range(ls_analyzed_list[0],ls_analyzed_list[nLS-1]+1):
+    skipped_ls.append(iLS)
+
+# Remove analyzed LS from list of expected.  Remainder were missed:
+for ls in ls_analyzed_list:
+    skipped_ls.remove(ls)
+
+print "   LS in this range with no events were: ",  skipped_ls
+print "   Please take care if data loss occurred at beginning or end of run;"
+print "   this script would completely miss LS before %i and after %i for " % (ls_analyzed_list[0],ls_analyzed_list[nLS-1])
+print "   which there were no events in the %s dataset" % dataset
+
+
+
 
 
   
