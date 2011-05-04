@@ -49,6 +49,8 @@ Implementation:
 #include "RecoEcal/EgammaCoreTools/interface/EcalClusterLazyTools.h"
 #include "RecoEcal/EgammaCoreTools/interface/EcalClusterTools.h"
 #include "RecoLocalCalo/EcalRecAlgos/interface/EcalSeverityLevelAlgo.h"
+#include "RecoLocalCalo/EcalRecAlgos/interface/EcalSeverityLevelAlgoRcd.h"
+#include "RecoEcal/EgammaCoreTools/interface/EcalTools.h"
 #include "CondFormats/DataRecord/interface/EcalChannelStatusRcd.h"
 
 namespace vgamma {
@@ -68,7 +70,7 @@ namespace vgamma {
     virtual void produce(edm::Event&, const edm::EventSetup&);
 
     // ----------member data ---------------------------
-    template <typename UserDataType>
+    template <typename UserDataType>      
     void putMap(edm::Event & iEvent,
                 edm::Handle<edm::View<EgammaType> >& egammas,
                 std::vector<UserDataType>& vUserData,
@@ -85,7 +87,7 @@ namespace vgamma {
   template <typename EgammaType>
   EgammaUserDataProducer<EgammaType>::EgammaUserDataProducer (
     const edm::ParameterSet& iConfig
-    ):
+    ):    
     src_(iConfig.getParameter<edm::InputTag>("src")),
     ebRecHits_(iConfig.getParameter<edm::InputTag>("ebRecHits")),
     eeRecHits_(iConfig.getParameter<edm::InputTag>("eeRecHits"))
@@ -165,11 +167,16 @@ namespace vgamma {
     edm::Handle<EcalRecHitCollection> eeRecHits;
     edm::Handle<EcalRecHitCollection> ebRecHits;
     edm::ESHandle<EcalChannelStatus> channelStatus;
+    edm::ESHandle<EcalSeverityLevelAlgo> severityAlgo;
 
     iEvent.getByLabel(src_, egammas);
     iEvent.getByLabel(ebRecHits_, ebRecHits);
     iEvent.getByLabel(eeRecHits_, eeRecHits);
     iSetup.get<EcalChannelStatusRcd>().get(channelStatus);
+    iSetup.get<EcalSeverityLevelAlgoRcd>().get(severityAlgo);
+    
+
+    //Setup EcalSeverityAlgo
 
 
     EcalClusterLazyTools lazyTools(iEvent, iSetup, ebRecHits_, eeRecHits_);
@@ -295,11 +302,10 @@ namespace vgamma {
         outOfTimeChi2 = rh->outOfTimeChi2();
         chi2          = rh->chi2();
         recoFlag      = rh->recoFlag();
-        severityLevel = EcalSeverityLevelAlgo::severityLevel(id, recHits,
-                                                             *channelStatus);
-        swissCross    = EcalSeverityLevelAlgo::swissCross(id, recHits);
-        E1OverE9      = EcalSeverityLevelAlgo::E1OverE9(id, recHits);
-	E2overE9      = EcalSeverityLevelAlgo::E2overE9(id, recHits);
+        severityLevel = severityAlgo->severityLevel(id, recHits);
+        swissCross    = EcalTools::swissCross(id, recHits,0.0);
+        //E1OverE9      = EcalSeverityLevelAlgo::E1OverE9(id, recHits);
+	//E2overE9      = EcalSeverityLevelAlgo::E2overE9(id, recHits);
       } else {
         LogWarning("SpikeCleaningVariables") << "Didn't find seed rechit!" << endl;
       }
