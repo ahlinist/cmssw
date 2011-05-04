@@ -236,30 +236,37 @@ for event in events:
     nEvent += 1
     #    if nEvent < 3400: continue
     # print stuff
+    ls = int(event.object().luminosityBlock())
     if nEvent%1000==1:
         print "record:",nEvent,"Run:",event.object().id().run(),\
-              "event:",event.object().id().event()
+              "event:",event.object().id().event(),\
+              "ls:", ls
 
-    ls = int(event.object().luminosityBlock())
 
-    if ls in ls_analyzed and not doStartTime: continue
-    
     if skip_to_ls > 0:
         if ls < skip_to_ls[0] or ls > skip_to_ls[1] : continue
 
     ls_analyzed.add(ls)
 
     # Check whether LS can be skipped:
-    if doStartTime:
+    if not doStartTime:
         if missing_dictionary:
+            #            print "missing_dictionary exists."
             skip = True
             for rbx in rbx_list:
                 if rbx not in missing_dictionary:
+                    #       print rbx, "is not in missing_dictionary. do not skip"
                     skip = False
                 elif ls not in missing_dictionary[rbx]:
+                    #                    print "ls is not in missing_dictionary[rbx]. do not skip"
                     skip = False
-
+                    #                else:
+                    #                    print "ls is already in missing_dictionary[rbx].  skip"
             if skip : continue
+            #        else:
+            #            print "missing_dictionary does NOT exist. do not skip"
+
+#    print "Not skipping."
         
                     
 
