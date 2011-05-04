@@ -38,14 +38,19 @@ parser.add_option ('--skip_to_ls', dest='skip_to_ls', type='int', nargs = 2,
                    default = '-1',
                    help="LS range to process (All)")
 
+parser.add_option ('--noStartTime', dest='doStartTime', action="store_false",
+                   default = 'True',
+                   help="do not try to get start time w/ 1 sec precision. faster.")
+
 options, args = parser.parse_args()
 
+doStartTime = options.doStartTime
 dataset = options.dataset
 runnum = options.runnum
 skip_to_ls = options.skip_to_ls
 if runnum < 0: print "Please enter run number with run option '--run 163337'.  Exiting."
 
-rbx_list = []
+tmp_rbx_list = []
 if len(args) == 0:
     print "Searching for RBX data loss in ANY RBX."
     print "This is not well tested.  You'll have better luck inputing the RBX names (e.g. HBM10) you want."
@@ -53,10 +58,32 @@ if len(args) == 0:
     for irbx in range(1,19):
         for idet in ["HB","HE"]:
             for iside in ["M","P"]:
-                rbx_list.append(idet+iside+str(irbx))
+                tmp_rbx_list.append(idet+iside+str(irbx))
 else:
     for arg in args:
-        rbx_list.append(arg)
+        tmp_rbx_list.append(arg)
+
+# Make sure that RBXes are labeled as HBM09 instead of HBM9
+
+rbx_list = []
+for rbx in tmp_rbx_list:
+    det = 0; side = 0; num = 0
+    if len(rbx.split("M")) > 1:
+        det = rbx.split("M")[0]
+        side = "M"
+        num = rbx.split("M")[1]        
+    elif len(rbx.split("P")) > 1:
+        det = rbx.split("P")[0]
+        side = "P"
+        num = rbx.split("P")[1]
+    else:
+        print "Unexpected RBX name. Exiting."
+        sys.exit()
+
+    # this has the same effect for num = "09" and "9":
+
+    if int(num) < 10: rbx = det+side+"0"+str(int(num))
+    rbx_list.append(rbx)
 
 ############################################################
 # Get Files
@@ -158,9 +185,11 @@ def getHBHERBX(ieta, iphi, idep):
     else: idet = False
 
     irbx = getRBXfromPHI(iphi)
-
+    # Add "0" to numbers < 10"
+    if irbx >= 10: irbx_str = str(irbx)
+    else : irbx_str = "0"+str(irbx)
     if not idet: return False
-    else: return idet+iside+str(irbx)
+    else: return idet+iside+irbx_str
 
 # For speed make dictionary that maps eta, phi, dep to RBX name
 # (e.g. HBM10)
@@ -201,6 +230,7 @@ print "Starting event loop.  Processing %i events." % events.size()
 
 
 ls_analyzed = set([])
+ls_found = {}
 
 for event in events:
     nEvent += 1
@@ -211,13 +241,28 @@ for event in events:
               "event:",event.object().id().event()
 
     ls = int(event.object().luminosityBlock())
+
+    if ls in ls_analyzed and not doStartTime: continue
     
     if skip_to_ls > 0:
         if ls < skip_to_ls[0] or ls > skip_to_ls[1] : continue
 
     ls_analyzed.add(ls)
 
-    # Copy rbx_list once for each event
+    # Check whether LS can be skipped:
+    if doStartTime:
+        if missing_dictionary:
+            skip = True
+            for rbx in rbx_list:
+                if rbx not in missing_dictionary:
+                    skip = False
+                elif ls not in missing_dictionary[rbx]:
+                    skip = False
+
+            if skip : continue
+        
+                    
+
     tmp_rbx_list = []
     for rbx in rbx_list: tmp_rbx_list.append(rbx)
     
@@ -226,13 +271,11 @@ for event in events:
     hbherhs = hbherhHandle.product()
     
     # loop over rechits
-    for rh in  hbherhs:
+    for rh in hbherhs:
         # skip ieta=29 for now
         if abs(rh.id().ieta()) == 29: continue
         # Get RBX for rechit
         rbx = rechit_to_rbx_dict[rh.id().ieta(), rh.id().iphi(), rh.id().depth()]
-        if ls == 692 and rbx == "HBM18":
-            print "692, HBM18 =", rh.id().ieta(), rh.id().iphi(), rh.id().depth()
         # Remove RBX from list of RBXes if it's there.
         if tmp_rbx_list.count(rbx) > 0: tmp_rbx_list.remove(rbx)
         # Once RBX list is empty, we have found data from each RBX in an event
@@ -269,14 +312,14 @@ for event in events:
                     # if so, add it
                     missing_sub_dictionary[(rbx,ls)].add(unix_time)
 
-    #if nEvent > 5000: break
+        #    if nEvent > 10: break
 
 print "Done with event loop.  Processed %i events." % nEvent
 print "\n"
 
 # Print out results
 if missing_dictionary :
-    print "Summary of RBX data loss instances:"
+    print "Summary of RBX data loss instances in run %i:" % runnum
     print "   RBX     #LS     LS range        Start time (GMT)"  
     print "   ---     ---     --------        ----------------"
     for rbx, ls_set in missing_dictionary.iteritems():
