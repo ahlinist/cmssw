@@ -45,17 +45,17 @@ userSettings = {
     },
     'veelken': {
         'current' : {
-            'ZtoMuTau'          : '2011Apr18',
+            'ZtoMuTau'          : '2011Apr19',
             'ZtoMuTau_tauIdEff' : '2011Apr09_HPSloose'
         },
         'jobs' : {
-            '2011Apr18' : {
+            '2011Apr19' : {
                 'ZtoMuTau' : {
                     'analysisFilePath' : "/castor/cern.ch/user/v/veelken/CMSSW_4_1_x/plots/ZtoMuTau/",
                     'harvestingFilePath' : "/data1/veelken/CMSSW_4_1_x/plots/ZtoMuTau/",
                     'tmpFilePath' : "/data2/veelken/tmp/ZtoMuTau/",
-                    'jobId' : "2011Apr18",
-                    'batchHarvest' : "/castor/cern.ch/user/v/veelken/CMSSW_4_1_x/harvesting/ZtoMuTau/2011Apr18/"
+                    'jobId' : "2011Apr19",
+                    'batchHarvest' : "/castor/cern.ch/user/v/veelken/CMSSW_4_1_x/harvesting/ZtoMuTau/2011Apr19/"
                 },
             },
             '2011Apr09_HPSloose' : {
