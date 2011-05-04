@@ -31,6 +31,7 @@
 #include "RecoEcal/EgammaCoreTools/interface/EcalClusterTools.h"
 #include "DataFormats/EgammaCandidates/interface/PhotonPi0DiscriminatorAssociation.h"
 #include "RecoLocalCalo/EcalRecAlgos/interface/EcalSeverityLevelAlgo.h"
+#include "RecoLocalCalo/EcalRecAlgos/interface/EcalSeverityLevelAlgoRcd.h"
 #include "CondFormats/DataRecord/interface/EcalChannelStatusRcd.h"
 #include "DataFormats/PatCandidates/interface/TriggerEvent.h"
 #include "PhysicsTools/PatUtils/interface/TriggerHelper.h"
@@ -433,6 +434,10 @@ void VgAnalyzerKit::produce(edm::Event & e, const edm::EventSetup & es) {
   // get the channel status from the DB
   edm::ESHandle<EcalChannelStatus> chStatus;
   es.get<EcalChannelStatusRcd>().get(chStatus);
+
+  // get the severity status from the DB
+  edm::ESHandle<EcalSeverityLevelAlgo> severityStatus;
+  es.get<EcalSeverityLevelAlgoRcd>().get(severityStatus);
 
   // PAT Trigger
   edm::Handle< TriggerEvent > triggerEvent;
@@ -1244,16 +1249,16 @@ fabs(ip->pdgId())<=14) || ip->pdgId()==22))) {
         if ( eleebrhit != EBReducedRecHits->end() ) { 
 	   eleSeedTime_[nEle_] = eleebrhit->time(); 
            eleRecoFlag_[nEle_] = eleebrhit->recoFlag();
-           eleSeverity_[nEle_] = EcalSeverityLevelAlgo::severityLevel( eleSeedDetId, (*EBReducedRecHits), *chStatus );
-	   eleE2overE9_[nEle_] = EcalSeverityLevelAlgo::E2overE9( eleSeedDetId, (*EBReducedRecHits));
+           eleSeverity_[nEle_] = severityStatus->severityLevel( eleSeedDetId, (*EBReducedRecHits) );
+	   //eleE2overE9_[nEle_] = EcalSeverityLevelAlgo::E2overE9( eleSeedDetId, (*EBReducedRecHits));
 	}
       } else if ( EEReducedRecHits.isValid() ) {
         EcalRecHitCollection::const_iterator eleeerhit = EEReducedRecHits->find(eleSeedDetId);
         if ( eleeerhit != EEReducedRecHits->end() ) { 
 	   eleSeedTime_[nEle_] = eleeerhit->time(); 
            eleRecoFlag_[nEle_] = eleeerhit->recoFlag();
-           eleSeverity_[nEle_] = EcalSeverityLevelAlgo::severityLevel( eleSeedDetId, (*EEReducedRecHits), *chStatus );
-	   eleE2overE9_[nEle_] = EcalSeverityLevelAlgo::E2overE9( eleSeedDetId, (*EEReducedRecHits));
+           eleSeverity_[nEle_] = severityStatus->severityLevel( eleSeedDetId, (*EEReducedRecHits) );
+	   //eleE2overE9_[nEle_] = EcalSeverityLevelAlgo::E2overE9( eleSeedDetId, (*EEReducedRecHits));
 	}
       }
 
@@ -1393,16 +1398,16 @@ fabs(ip->pdgId())<=14) || ip->pdgId()==22))) {
         if ( ebrhit != EBReducedRecHits->end() ) { 
 	   phoSeedTime_[nPho_] = ebrhit->time();
            phoRecoFlag_[nPho_] = ebrhit->recoFlag();
-           phoSeverity_[nPho_] = EcalSeverityLevelAlgo::severityLevel( phoSeedDetId, (*EBReducedRecHits), *chStatus );
-	   phoE2overE9_[nPho_] = EcalSeverityLevelAlgo::E2overE9( phoSeedDetId, (*EBReducedRecHits));
+           phoSeverity_[nPho_] = severityStatus->severityLevel( phoSeedDetId, (*EBReducedRecHits));
+	   //phoE2overE9_[nPho_] = EcalSeverityLevelAlgo::E2overE9( phoSeedDetId, (*EBReducedRecHits));
         }
       } else if ( EEReducedRecHits.isValid() ) {
         EcalRecHitCollection::const_iterator eerhit = EEReducedRecHits->find(phoSeedDetId);
         if ( eerhit != EEReducedRecHits->end() ) { 
 	   phoSeedTime_[nPho_] = eerhit->time(); 
            phoRecoFlag_[nPho_] = eerhit->recoFlag();
-           phoSeverity_[nPho_] = EcalSeverityLevelAlgo::severityLevel( phoSeedDetId, (*EEReducedRecHits), *chStatus );
-	   phoE2overE9_[nPho_] = EcalSeverityLevelAlgo::E2overE9( phoSeedDetId, (*EEReducedRecHits));
+           phoSeverity_[nPho_] = severityStatus->severityLevel( phoSeedDetId, (*EEReducedRecHits) );
+	   //phoE2overE9_[nPho_] = EcalSeverityLevelAlgo::E2overE9( phoSeedDetId, (*EEReducedRecHits));
 	}
       }
 
