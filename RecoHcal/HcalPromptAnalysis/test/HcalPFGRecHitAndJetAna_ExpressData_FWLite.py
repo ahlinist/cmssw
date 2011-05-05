@@ -127,10 +127,6 @@ for event in events:
             h_rh_hbp.Fill(hbheene)
         elif hbheeta < 0 and hbheeta >=-15:
             h_rh_hbm.Fill(hbheene)
-        elif hbheeta > 15 :
-            h_rh_hep.Fill(hbheene)
-        elif hbheeta < -15 :
-            h_rh_hem.Fill(hbheene)
         elif hbheeta == 16 and (hbhedep == 1 or hbhedep == 2):
             h_rh_hbp.Fill(hbheene)
         elif hbheeta == -16 and (hbhedep == 1 or hbhedep == 2):
@@ -138,6 +134,10 @@ for event in events:
         elif hbheeta == 16 and hbhedep == 3:
             h_rh_hep.Fill(hbheene)
         elif hbheeta == -16 and hbhedep == 3:
+            h_rh_hem.Fill(hbheene)
+        elif hbheeta > 16 :
+            h_rh_hep.Fill(hbheene)
+        elif hbheeta < -16 :
             h_rh_hem.Fill(hbheene)
         else:
             print "Unaccounted for HBHE rechit eta, dep =",hbheeta, hbhedep
