@@ -113,6 +113,8 @@ VgAnalyzerKit::VgAnalyzerKit(const edm::ParameterSet& ps) : verbosity_(0), helpe
   tree_->Branch("nTrk", &nTrk_, "nTrk/I");
   tree_->Branch("nGoodTrk", &nGoodTrk_, "nGoodTrk/I");
   tree_->Branch("IsTracksGood", &IsTracksGood_, "IsTracksGood/I");
+  tree_->Branch("rho", &rho_, "rho/F");
+  tree_->Branch("sigma", &sigma_, "sigma/F");
   if (doGenParticles_) {
     tree_->Branch("pdf", pdf_, "pdf[7]/F");
     tree_->Branch("pthat", &pthat_, "pthat/F");
@@ -593,6 +595,15 @@ void VgAnalyzerKit::produce(edm::Event & e, const edm::EventSetup & es) {
       nBX_ += 1;
     }
   }
+
+  // Rho correction
+  edm::Handle<double> rhoHandle;
+  e.getByLabel(rhoLabel_, rhoHandle);
+  rho_ = *(rhoHandle.product());
+
+  edm::Handle<double> sigmaHandle;
+  e.getByLabel(sigmaLabel_, sigmaHandle);
+  sigma_ = *(sigmaHandle.product());
 
   // GenParticle
   // cout << "VgAnalyzerKit: produce: GenParticle... " << endl;

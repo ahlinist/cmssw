@@ -104,6 +104,8 @@ protected:
   Int_t    nBX_;
   Int_t    nPU_[maxP];
   Int_t    BXPU_[maxP];
+  Float_t  rho_;
+  Float_t  sigma_;
   Int_t    nHLT_;
   Int_t    HLT_[maxP];
   Int_t    HLTIndex_[200];
