@@ -31,7 +31,7 @@
 #include "RecoEcal/EgammaCoreTools/interface/EcalClusterTools.h"
 #include "DataFormats/EgammaCandidates/interface/PhotonPi0DiscriminatorAssociation.h"
 #include "RecoLocalCalo/EcalRecAlgos/interface/EcalSeverityLevelAlgo.h"
-#include "RecoLocalCalo/EcalRecAlgos/interface/EcalSeverityLevelAlgoRcd.h"
+//#include "RecoLocalCalo/EcalRecAlgos/interface/EcalSeverityLevelAlgoRcd.h"
 #include "CondFormats/DataRecord/interface/EcalChannelStatusRcd.h"
 #include "DataFormats/PatCandidates/interface/TriggerEvent.h"
 #include "PhysicsTools/PatUtils/interface/TriggerHelper.h"
@@ -47,6 +47,9 @@
 
 // PileupSummaryInfo
 #include "SimDataFormats/PileupSummaryInfo/interface/PileupSummaryInfo.h"
+
+// Isolation
+#include "RecoEgamma/EgammaIsolationAlgos/plugins/EgammaTowerIsolationProducer.h"
 
 using namespace std;
 using namespace pat;
@@ -69,6 +72,9 @@ VgAnalyzerKit::VgAnalyzerKit(const edm::ParameterSet& ps) : verbosity_(0), helpe
   tracklabel_     = ps.getParameter<InputTag>("TrackLabel");
   tcMETlabel_     = ps.getParameter<InputTag>("tcMETLabel");
   pfMETlabel_     = ps.getParameter<InputTag>("pfMETLabel");
+  puInfoLabel_    = ps.getParameter<InputTag>("puInfoLabel");
+  rhoLabel_       = ps.getParameter<InputTag>("rhoLabel");
+  sigmaLabel_     = ps.getParameter<InputTag>("sigmaLabel");
 
   leadingElePtCut_ = ps.getParameter<double>("LeadingElePtCut");
   leadingMuPtCut_  = ps.getParameter<double>("LeadingMuPtCut");
@@ -111,8 +117,9 @@ VgAnalyzerKit::VgAnalyzerKit(const edm::ParameterSet& ps) : verbosity_(0), helpe
     tree_->Branch("pdf", pdf_, "pdf[7]/F");
     tree_->Branch("pthat", &pthat_, "pthat/F");
     tree_->Branch("processID", &processID_, "processID/F");
-    tree_->Branch("bunchXing", &bunchXing_, "bunchXing/I");
-    tree_->Branch("numInteractions", &numInteractions_, "numInteractions/I");
+    tree_->Branch("nBX", nBX_, "nBX/I");
+    tree_->Branch("nPU", nPU_, "nPU[nBX]/I");
+    tree_->Branch("BXPU", BXPU_, "BXPU[nBX]/I");
     // genParticle
     tree_->Branch("nMC", &nMC_, "nMC/I");
     tree_->Branch("mcPID", mcPID, "mcPID[nMC]/I");
@@ -214,12 +221,16 @@ VgAnalyzerKit::VgAnalyzerKit(const edm::ParameterSet& ps) : verbosity_(0), helpe
   tree_->Branch("eleIsoTrkDR03", eleIsoTrkDR03_, "eleIsoTrkDR03[nEle]/F");
   tree_->Branch("eleIsoEcalDR03", eleIsoEcalDR03_, "eleIsoEcalDR03[nEle]/F");
   tree_->Branch("eleIsoHcalDR03", eleIsoHcalDR03_, "eleIsoHcalDR03[nEle]/F");
+  tree_->Branch("eleIsoHcalSolidDR03", eleIsoHcalSolidDR03_, "eleIsoHcalSolidDR03[nEle]/F");
   tree_->Branch("eleIsoTrkDR04", eleIsoTrkDR04_, "eleIsoTrkDR04[nEle]/F");
   tree_->Branch("eleIsoEcalDR04", eleIsoEcalDR04_, "eleIsoEcalDR04[nEle]/F");
   tree_->Branch("eleIsoHcalDR04", eleIsoHcalDR04_, "eleIsoHcalDR04[nEle]/F");
-  tree_->Branch("eleConvDist_", eleConvDist_, "eleConvDist_[nEle]/F");
-  tree_->Branch("eleConvDcot_", eleConvDcot_, "eleConvDcot_[nEle]/F");
-  tree_->Branch("eleConvRadius_", eleConvRadius_, "eleConvRadius_[nEle]/F");
+  tree_->Branch("eleIsoHcalSolidDR04", eleIsoHcalSolidDR04_, "eleIsoHcalSolidDR04[nEle]/F");
+  tree_->Branch("eleConvDist", eleConvDist_, "eleConvDist[nEle]/F");
+  tree_->Branch("eleConvDcot", eleConvDcot_, "eleConvDcot[nEle]/F");
+  tree_->Branch("eleConvRadius", eleConvRadius_, "eleConvRadius[nEle]/F");
+  tree_->Branch("eleConvFlag", eleConvFlag_, "eleConvFlag[nEle]/I");
+  tree_->Branch("eleConvMissinghit", eleConvMissinghit_, "eleConvMissinghit[nEle]/I");
   tree_->Branch("eleESRatio", eleESRatio_, "eleESRatio[nEle]/F");
   tree_->Branch("eleESProfileFront", eleESProfileFront_, "eleESProfileFront[nEle][123]/F");
   tree_->Branch("eleESProfileRear", eleESProfileRear_, "eleESProfileRear[nEle][123]/F");
@@ -239,12 +250,14 @@ VgAnalyzerKit::VgAnalyzerKit(const edm::ParameterSet& ps) : verbosity_(0), helpe
   tree_->Branch("phoNTrkHollowDR03", phoNTrkHollowDR03_, "phoNTrkHollowDR03[nPho]/I");
   tree_->Branch("phoEcalIsoDR03", phoEcalIsoDR03_, "phoEcalIsoDR03[nPho]/F");
   tree_->Branch("phoHcalIsoDR03", phoHcalIsoDR03_, "phoHcalIsoDR03[nPho]/F");
+  tree_->Branch("phoHcalIsoSolidDR03", phoHcalIsoSolidDR03_, "phoHcalIsoSolidDR03[nPho]/F");
   tree_->Branch("phoTrkIsoSolidDR04", phoTrkIsoSolidDR04_, "phoTrkIsoSolidDR04[nPho]/F");
   tree_->Branch("phoTrkIsoHollowDR04", phoTrkIsoHollowDR04_, "phoTrkIsoHollowDR04[nPho]/F");
   tree_->Branch("phoNTrkSolidDR04", phoNTrkSolidDR04_, "phoNTrkSolidDR04[nPho]/I");
   tree_->Branch("phoNTrkHollowDR04", phoNTrkHollowDR04_, "phoNTrkHollowDR04[nPho]/I");
   tree_->Branch("phoEcalIsoDR04", phoEcalIsoDR04_, "phoEcalIsoDR04[nPho]/F");
   tree_->Branch("phoHcalIsoDR04", phoHcalIsoDR04_, "phoHcalIsoDR04[nPho]/F");
+  tree_->Branch("phoHcalIsoSolidDR04", phoHcalIsoSolidDR04_, "phoHcalIsoSolidDR04[nPho]/F");
   tree_->Branch("phoHoverE", phoHoverE_, "phoHoverE[nPho]/F");
   tree_->Branch("phoSigmaEtaEta", phoSigmaEtaEta_, "phoSigmaEtaEta[nPho]/F");
   tree_->Branch("phoSigmaIEtaIEta", phoSigmaIEtaIEta_, "phoSigmaIEtaIEta[nPho]/F");
@@ -436,8 +449,8 @@ void VgAnalyzerKit::produce(edm::Event & e, const edm::EventSetup & es) {
   es.get<EcalChannelStatusRcd>().get(chStatus);
 
   // get the severity status from the DB
-  edm::ESHandle<EcalSeverityLevelAlgo> severityStatus;
-  es.get<EcalSeverityLevelAlgoRcd>().get(severityStatus);
+  //edm::ESHandle<EcalSeverityLevelAlgo> severityStatus;
+  //es.get<EcalSeverityLevelAlgoRcd>().get(severityStatus);
 
   // PAT Trigger
   edm::Handle< TriggerEvent > triggerEvent;
@@ -566,12 +579,18 @@ void VgAnalyzerKit::produce(edm::Event & e, const edm::EventSetup & es) {
 
   // PileupSummaryInfo
   if (!isData_) {
-    Handle<std::vector< PileupSummaryInfo > >  PupInfo;
-    e.getByLabel("addPileupInfo", PupInfo);
+    Handle<std::vector< PileupSummaryInfo > >  PUInfo;
+    e.getByLabel(puInfoLabel_, PUInfo);
+
     std::vector<PileupSummaryInfo>::const_iterator PVI;
-    for(PVI = PupInfo->begin(); PVI != PupInfo->end(); ++PVI) {
-      bunchXing_ = PVI->getBunchCrossing();
-      numInteractions_ = PVI->getPU_NumInteractions();
+
+    nBX_ = 0;
+    for(PVI = PUInfo->begin(); PVI != PUInfo->end(); ++PVI) {
+
+      nPU_[nBX_] = PVI->getPU_NumInteractions();
+      BXPU_[nBX_] = PVI->getBunchCrossing();
+
+      nBX_ += 1;
     }
   }
 
@@ -1028,6 +1047,13 @@ fabs(ip->pdgId())<=14) || ip->pdgId()==22))) {
       pfMETSig_    = iPFMET->significance();
   }
 
+  // Get the hcal hits
+  edm::Handle<CaloTowerCollection> towerHandle;
+  e.getByLabel("towerMaker", towerHandle);
+  const CaloTowerCollection* towers = towerHandle.product();
+  EgammaTowerIsolation myHcalIsoDR03(0.3, 0., 0, -1, towers);
+  EgammaTowerIsolation myHcalIsoDR04(0.4, 0., 0, -1, towers);
+
   // Electron
   // cout << "VgAnalyzerKit: produce: Electron ..." << endl;
   const TriggerObjectMatch *eleTriggerMatch1(triggerEvent->triggerObjectMatchResult("photonTriggerMatchHLTPhoton10L1R"));
@@ -1214,19 +1240,27 @@ fabs(ip->pdgId())<=14) || ip->pdgId()==22))) {
         }
       }
 
+      const reco::SuperCluster* eleSC = &(*(iEle->superCluster()));
+
       eleIsoTrkDR03_[nEle_]  = iEle->dr03TkSumPt();
       eleIsoEcalDR03_[nEle_] = iEle->dr03EcalRecHitSumEt();
       eleIsoHcalDR03_[nEle_] = iEle->dr03HcalTowerSumEt();
+      eleIsoHcalSolidDR03_[nEle_] = myHcalIsoDR03.getTowerEtSum(eleSC);
 
       eleIsoTrkDR04_[nEle_]  = iEle->dr04TkSumPt();
       eleIsoEcalDR04_[nEle_] = iEle->dr04EcalRecHitSumEt();
       eleIsoHcalDR04_[nEle_] = iEle->dr04HcalTowerSumEt();
+      eleIsoHcalSolidDR04_[nEle_] = myHcalIsoDR04.getTowerEtSum(eleSC);
 
       eleSigmaEtaEta_[nEle_] = iEle->sigmaEtaEta();
       
       eleConvDist_[nEle_]    = iEle->convDist();
       eleConvDcot_[nEle_]    = iEle->convDcot();
       eleConvRadius_[nEle_]  = iEle->convRadius();
+      eleConvFlag_[nEle_]    = iEle->convFlags();
+      const reco::Track *eleTrk = (const reco::Track*)(iEle->gsfTrack().get());  
+      const reco::HitPattern& p_inner = eleTrk->trackerExpectedHitsInner(); 
+      eleConvMissinghit_[nEle_] = p_inner.numberOfHits();
 
       const reco::CaloClusterPtr eleSeed = (*iEle).superCluster()->seed();
 
@@ -1249,7 +1283,9 @@ fabs(ip->pdgId())<=14) || ip->pdgId()==22))) {
         if ( eleebrhit != EBReducedRecHits->end() ) { 
 	   eleSeedTime_[nEle_] = eleebrhit->time(); 
            eleRecoFlag_[nEle_] = eleebrhit->recoFlag();
-           eleSeverity_[nEle_] = severityStatus->severityLevel( eleSeedDetId, (*EBReducedRecHits) );
+	   eleSeverity_[nEle_] = EcalSeverityLevelAlgo::severityLevel( eleSeedDetId, (*EBReducedRecHits), *chStatus );
+	   eleE2overE9_[nEle_] = EcalSeverityLevelAlgo::E2overE9( eleSeedDetId, (*EBReducedRecHits));
+           //eleSeverity_[nEle_] = severityStatus->severityLevel( eleSeedDetId, (*EBReducedRecHits) );
 	   //eleE2overE9_[nEle_] = EcalSeverityLevelAlgo::E2overE9( eleSeedDetId, (*EBReducedRecHits));
 	}
       } else if ( EEReducedRecHits.isValid() ) {
@@ -1257,7 +1293,9 @@ fabs(ip->pdgId())<=14) || ip->pdgId()==22))) {
         if ( eleeerhit != EEReducedRecHits->end() ) { 
 	   eleSeedTime_[nEle_] = eleeerhit->time(); 
            eleRecoFlag_[nEle_] = eleeerhit->recoFlag();
-           eleSeverity_[nEle_] = severityStatus->severityLevel( eleSeedDetId, (*EEReducedRecHits) );
+	   eleSeverity_[nEle_] = EcalSeverityLevelAlgo::severityLevel( eleSeedDetId, (*EEReducedRecHits), *chStatus );
+	   eleE2overE9_[nEle_] = EcalSeverityLevelAlgo::E2overE9( eleSeedDetId, (*EEReducedRecHits));
+           //eleSeverity_[nEle_] = severityStatus->severityLevel( eleSeedDetId, (*EEReducedRecHits) );
 	   //eleE2overE9_[nEle_] = EcalSeverityLevelAlgo::E2overE9( eleSeedDetId, (*EEReducedRecHits));
 	}
       }
@@ -1352,13 +1390,15 @@ fabs(ip->pdgId())<=14) || ip->pdgId()==22))) {
       phoEta_[nPho_] = iPho->eta();
       phoPhi_[nPho_] = iPho->phi();
 
-      phoR9_[nPho_]               = iPho->r9();
+      const reco::SuperCluster* phoSC = &(*(iPho->superCluster()));
+
       phoTrkIsoSolidDR03_[nPho_]  = iPho->trkSumPtSolidConeDR03();
       phoTrkIsoHollowDR03_[nPho_] = iPho->trkSumPtHollowConeDR03();
       phoNTrkSolidDR03_[nPho_]    = iPho->nTrkSolidConeDR03();
       phoNTrkHollowDR03_[nPho_]   = iPho->nTrkHollowConeDR03();
       phoEcalIsoDR03_[nPho_]      = iPho->ecalRecHitSumEtConeDR03();
       phoHcalIsoDR03_[nPho_]      = iPho->hcalTowerSumEtConeDR03();
+      phoHcalIsoSolidDR03_[nPho_] = myHcalIsoDR03.getTowerEtSum(phoSC);
 
       phoTrkIsoSolidDR04_[nPho_]  = iPho->trkSumPtSolidConeDR04();
       phoTrkIsoHollowDR04_[nPho_] = iPho->trkSumPtHollowConeDR04();
@@ -1366,9 +1406,11 @@ fabs(ip->pdgId())<=14) || ip->pdgId()==22))) {
       phoNTrkHollowDR04_[nPho_]   = iPho->nTrkHollowConeDR04();
       phoEcalIsoDR04_[nPho_]      = iPho->ecalRecHitSumEtConeDR04();
       phoHcalIsoDR04_[nPho_]      = iPho->hcalTowerSumEtConeDR04();
+      phoHcalIsoSolidDR04_[nPho_] = myHcalIsoDR04.getTowerEtSum(phoSC);
 
       phoHoverE_[nPho_]        = iPho->hadronicOverEm();
       phoSigmaEtaEta_[nPho_]   = iPho->sigmaEtaEta();
+      phoR9_[nPho_]            = iPho->r9();
 
       phoOverlap_[nPho_] = (int) iPho->hasOverlaps("electrons");
       phohasPixelSeed_[nPho_] = (int) iPho->hasPixelSeed();
@@ -1398,7 +1440,9 @@ fabs(ip->pdgId())<=14) || ip->pdgId()==22))) {
         if ( ebrhit != EBReducedRecHits->end() ) { 
 	   phoSeedTime_[nPho_] = ebrhit->time();
            phoRecoFlag_[nPho_] = ebrhit->recoFlag();
-           phoSeverity_[nPho_] = severityStatus->severityLevel( phoSeedDetId, (*EBReducedRecHits));
+	   phoSeverity_[nPho_] = EcalSeverityLevelAlgo::severityLevel( phoSeedDetId, (*EBReducedRecHits), *chStatus );
+	   phoE2overE9_[nPho_] = EcalSeverityLevelAlgo::E2overE9( phoSeedDetId, (*EBReducedRecHits));
+           //phoSeverity_[nPho_] = severityStatus->severityLevel( phoSeedDetId, (*EBReducedRecHits));
 	   //phoE2overE9_[nPho_] = EcalSeverityLevelAlgo::E2overE9( phoSeedDetId, (*EBReducedRecHits));
         }
       } else if ( EEReducedRecHits.isValid() ) {
@@ -1406,7 +1450,9 @@ fabs(ip->pdgId())<=14) || ip->pdgId()==22))) {
         if ( eerhit != EEReducedRecHits->end() ) { 
 	   phoSeedTime_[nPho_] = eerhit->time(); 
            phoRecoFlag_[nPho_] = eerhit->recoFlag();
-           phoSeverity_[nPho_] = severityStatus->severityLevel( phoSeedDetId, (*EEReducedRecHits) );
+	   phoSeverity_[nPho_] = EcalSeverityLevelAlgo::severityLevel( phoSeedDetId, (*EEReducedRecHits), *chStatus );
+	   phoE2overE9_[nPho_] = EcalSeverityLevelAlgo::E2overE9( phoSeedDetId, (*EEReducedRecHits));
+           //phoSeverity_[nPho_] = severityStatus->severityLevel( phoSeedDetId, (*EEReducedRecHits) );
 	   //phoE2overE9_[nPho_] = EcalSeverityLevelAlgo::E2overE9( phoSeedDetId, (*EEReducedRecHits));
 	}
       }
