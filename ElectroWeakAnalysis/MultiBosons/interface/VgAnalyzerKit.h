@@ -196,6 +196,7 @@ protected:
   Float_t  elePin_[maxP];
   Float_t  elePout_[maxP];
   Float_t  eleBrem_[maxP];
+  Float_t  elenBrem_[maxP];
   Float_t  eledEtaAtVtx_[maxP];
   Float_t  eledPhiAtVtx_[maxP];
   Float_t  eleSigmaEtaEta_[maxP];
