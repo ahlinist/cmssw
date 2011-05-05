@@ -200,6 +200,7 @@ VgAnalyzerKit::VgAnalyzerKit(const edm::ParameterSet& ps) : verbosity_(0), helpe
   tree_->Branch("elePin", elePin_, "elePin[nEle]/F");
   tree_->Branch("elePout", elePout_, "elePout[nEle]/F");
   tree_->Branch("eleBrem", eleBrem_, "eleBrem[nEle]/F");
+  tree_->Branch("elenBrem", elenBrem_, "elenBrem[nEle]/I");
   tree_->Branch("eledEtaAtVtx", eledEtaAtVtx_, "eledEtaAtVtx[nEle]/F");
   tree_->Branch("eledPhiAtVtx", eledPhiAtVtx_, "eledPhiAtVtx[nEle]/F");
   tree_->Branch("eleSigmaEtaEta", eleSigmaEtaEta_, "eleSigmaEtaEta[nEle]/F");
@@ -1191,10 +1192,11 @@ fabs(ip->pdgId())<=14) || ip->pdgId()==22))) {
       eleHoverE_[nEle_]  = iEle->hadronicOverEm();
       eleEoverP_[nEle_]  = iEle->eSuperClusterOverP();
 
-      elePin_[nEle_]  = iEle->trackMomentumAtVtx().R();
-      elePout_[nEle_] = iEle->trackMomentumOut().R();
-
-      eleBrem_[nEle_] = (elePin_[nEle_] - elePout_[nEle_]) / elePin_[nEle_];
+      elePin_[nEle_]   = iEle->trackMomentumAtVtx().R();
+      elePout_[nEle_]  = iEle->trackMomentumOut().R();
+      //eleBrem_[nEle_] = (elePin_[nEle_] - elePout_[nEle_]) / elePin_[nEle_];
+      eleBrem_[nEle_]  = iEle->fbrem();
+      elenBrem_[nEle_] = iEle->numberOfBrems();
 
       eledEtaAtVtx_[nEle_] = iEle->deltaEtaSuperClusterTrackAtVtx();
       eledPhiAtVtx_[nEle_] = iEle->deltaPhiSuperClusterTrackAtVtx();
