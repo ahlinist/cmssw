@@ -13,7 +13,7 @@ Implementation:
 //
 // Authors:                              Seth Cooper (Minnesota)
 //         Created:  Tu Apr 26  10:46:22 CEST 2011
-// $Id: EcalCreateTimeCalibrations.cc,v 1.4 2011/05/05 12:49:53 scooper Exp $
+// $Id: EcalCreateTimeCalibrations.cc,v 1.5 2011/05/05 13:03:45 scooper Exp $
 //
 //
 
@@ -358,14 +358,14 @@ EcalCreateTimeCalibrations::analyze(edm::Event const& evt, edm::EventSetup const
       {
         //cryDirEEM->cd();
         cryTimingHistsEEM_[x-1][y-1]->Write();
-        hitsPerCryHistEEM_->SetBinContent(hashedIndex+1,cryCalib.timingEvents.size());
+        hitsPerCryHistEEM_->SetBinContent(hashedIndex-EBDetId::kSizeForDenseIndexing+1,cryCalib.timingEvents.size());
         hitsPerCryMapEEM_->Fill(x,y,cryCalib.timingEvents.size());
       }
       else
       {
         //cryDirEEP->cd();
         cryTimingHistsEEP_[x-1][y-1]->Write();
-        hitsPerCryHistEEP_->SetBinContent(hashedIndex+1,cryCalib.timingEvents.size());
+        hitsPerCryHistEEP_->SetBinContent(hashedIndex-EBDetId::kSizeForDenseIndexing+1,cryCalib.timingEvents.size());
         hitsPerCryMapEEP_->Fill(x,y,cryCalib.timingEvents.size());
       }
 
