@@ -20,6 +20,7 @@
 <use   name="RecoEcal/EgammaCoreTools"/>
 <use   name="RecoEgamma/EgammaTools"/>
 <use   name="SimDataFormats/PileupSummaryInfo"/>
+<use   name="RecoEgamma/EgammaIsolationAlgos"/>
 <flags   EDM_PLUGIN="1"/>
 <export>
 </export>

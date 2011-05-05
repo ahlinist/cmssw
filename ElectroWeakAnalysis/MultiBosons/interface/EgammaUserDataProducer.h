@@ -49,8 +49,8 @@ Implementation:
 #include "RecoEcal/EgammaCoreTools/interface/EcalClusterLazyTools.h"
 #include "RecoEcal/EgammaCoreTools/interface/EcalClusterTools.h"
 #include "RecoLocalCalo/EcalRecAlgos/interface/EcalSeverityLevelAlgo.h"
-#include "RecoLocalCalo/EcalRecAlgos/interface/EcalSeverityLevelAlgoRcd.h"
-#include "RecoEcal/EgammaCoreTools/interface/EcalTools.h"
+//#include "RecoLocalCalo/EcalRecAlgos/interface/EcalSeverityLevelAlgoRcd.h"
+//#include "RecoEcal/EgammaCoreTools/interface/EcalTools.h"
 #include "CondFormats/DataRecord/interface/EcalChannelStatusRcd.h"
 
 namespace vgamma {
@@ -167,13 +167,13 @@ namespace vgamma {
     edm::Handle<EcalRecHitCollection> eeRecHits;
     edm::Handle<EcalRecHitCollection> ebRecHits;
     edm::ESHandle<EcalChannelStatus> channelStatus;
-    edm::ESHandle<EcalSeverityLevelAlgo> severityAlgo;
+    //edm::ESHandle<EcalSeverityLevelAlgo> severityAlgo;
 
     iEvent.getByLabel(src_, egammas);
     iEvent.getByLabel(ebRecHits_, ebRecHits);
     iEvent.getByLabel(eeRecHits_, eeRecHits);
     iSetup.get<EcalChannelStatusRcd>().get(channelStatus);
-    iSetup.get<EcalSeverityLevelAlgoRcd>().get(severityAlgo);
+    //iSetup.get<EcalSeverityLevelAlgoRcd>().get(severityAlgo);
     
 
     //Setup EcalSeverityAlgo
@@ -302,8 +302,8 @@ namespace vgamma {
         outOfTimeChi2 = rh->outOfTimeChi2();
         chi2          = rh->chi2();
         recoFlag      = rh->recoFlag();
-        severityLevel = severityAlgo->severityLevel(id, recHits);
-        swissCross    = EcalTools::swissCross(id, recHits,0.0);
+        //severityLevel = severityAlgo->severityLevel(id, recHits);
+        //swissCross    = EcalTools::swissCross(id, recHits,0.0);
         //E1OverE9      = EcalSeverityLevelAlgo::E1OverE9(id, recHits);
 	//E2overE9      = EcalSeverityLevelAlgo::E2overE9(id, recHits);
       } else {
