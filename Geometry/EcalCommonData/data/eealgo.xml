@@ -42,7 +42,7 @@
    <Numeric name="EESCAFront"  value="145.98*mm - 0.01*mm"/>  <!-- Taper = 1.80deg -->
    <Numeric name="EESCAWall"   value="0.200*mm"/> <!-- SC wall thickness -->
 
-   <Numeric name="EEiLength" value="9*mm"/>
+   <Numeric name="EEiLength" value="2*mm"/>
    <Numeric name="EEiXYOff"  value="-2.2*mm"/>
 
 <!-- Endcap supercrystal: size of rear housing -->
