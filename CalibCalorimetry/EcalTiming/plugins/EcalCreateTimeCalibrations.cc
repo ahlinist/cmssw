@@ -13,7 +13,7 @@ Implementation:
 //
 // Authors:                              Seth Cooper (Minnesota)
 //         Created:  Tu Apr 26  10:46:22 CEST 2011
-// $Id: EcalCreateTimeCalibrations.cc,v 1.3 2011/05/02 08:55:23 scooper Exp $
+// $Id: EcalCreateTimeCalibrations.cc,v 1.4 2011/05/05 12:49:53 scooper Exp $
 //
 //
 
@@ -80,10 +80,10 @@ EcalCreateTimeCalibrations::EcalCreateTimeCalibrations(const edm::ParameterSet& 
 
   edm::LogInfo("EcalCreateTimeCalibrations") << "Running with options: "
     << "avgTimeMin: " << avgTimeMin_ << " avgTimeMax: " << avgTimeMax_
-    << " minAmpEB: " << minHitAmpEB_ << " minHitAmpEE: " << minHitAmpEE_
+    << " minHitAmpEB: " << minHitAmpEB_ << " minHitAmpEE: " << minHitAmpEE_
     << " maxSwissCrossNoise (EB): " << maxSwissCrossNoise_
     << " maxHitTimeEB: " << maxHitTimeEB_ << " minHitTimeEB: " << minHitTimeEB_
-    << " maxHitTimeEE: " << maxHitTimeEE_ << " minHitTimeEB: " << minHitTimeEE_
+    << " maxHitTimeEE: " << maxHitTimeEE_ << " minHitTimeEE: " << minHitTimeEE_
     << " inTrig: " << inTrig_ << " inTTrig: " << inTTrig_ << " inLumi: " << inLumis_
     << " inBxs: " << inBxs_ << " inRuns: " << inRuns_ << " inOrbits: " << inOrbits_;
 
