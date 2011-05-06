@@ -77,7 +77,6 @@ def applyJobOptions(options):
     jobOptions.inputFiles = [
       "/store/data/Run2011A/SingleMu/AOD/PromptReco-v2/"+
       file for file in """
-      000/163/737/BE694CDA-7D74-E011-80E5-003048F118E0.root
       000/163/664/BA4E582E-3374-E011-AB7D-0030487C6A66.root
       000/163/664/8E33DE82-1374-E011-89AE-003048D2C01E.root
       000/163/664/8AA8987F-1374-E011-AC71-000423D98B6C.root
