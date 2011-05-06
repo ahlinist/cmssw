@@ -31,12 +31,6 @@ ak5PFJetsAntiOverlapWithLeptonsVeto = cms.EDFilter("PFJetAntiOverlapSelector",
     filter = cms.bool(False)                                           
 )
 
-#from PhysicsTools.PFCandProducer.pfType1MET_cff import *
-#from JetMETCorrections.Configuration.JetCorrectionServices_cff import *
-#pfType1MET.inputUncorMetLabel = cms.InputTag('pfRawMET')
-#pfType1MET.inputUncorJetsTag = cms.InputTag('ak5PFJetsAntiOverlapWithLeptonsVeto')
-#pfType1MET.corrector = cms.string("ak5PFL2L3")
-
 pfUnclusteredCandidates = cms.EDFilter("PFCandidateAntiOverlapSelector",
     src = cms.InputTag('particleFlow'),  
     srcNotToBeFiltered = cms.VInputTag(
@@ -52,7 +46,7 @@ pfUnclusteredCandidates = cms.EDFilter("PFCandidateAntiOverlapSelector",
 from JetMETCorrections.Type1MET.MetType1Corrections_cff import metJESCorAK5PFJet
 from JetMETCorrections.Configuration.JetCorrectionServices_cff import *
 pfMEtType1and2corrected = metJESCorAK5PFJet.clone(
-    inputUncorJetsLabel = cms.string('ak5PFJets'),
+    inputUncorJetsLabel = cms.string('ak5PFJetsAntiOverlapWithLeptonsVeto'),
     metType = cms.string("PFMET"),
     inputUncorMetLabel = cms.string('pfMet'),
     jetPTthreshold = cms.double(10.0),
