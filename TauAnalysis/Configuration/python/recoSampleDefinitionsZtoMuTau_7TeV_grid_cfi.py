@@ -81,7 +81,7 @@ RECO_SAMPLES = {
     'data_TauPlusX_Run2011A_PromptReco_v1' : {
         'datasetpath' : "/TauPlusX/Run2011A-PromptReco-v1/AOD",
         'dbs_url' :  "http://cmsdbsprod.cern.ch/cms_dbs_prod_global/servlet/DBSServlet",
-        'lumi_mask' : "/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions11/7TeV/Prompt/Cert_160404-163369_7TeV_PromptReco_Collisions11_JSON.txt",
+        'lumi_mask' : "/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions11/7TeV/Prompt/Cert_160404-163757_7TeV_PromptReco_Collisions11_JSON.txt",
         'runselection' : "160329-161312",
         'number_of_jobs' : 500,
         'conditions' : 'GR_R_311_V2::All',
@@ -102,8 +102,8 @@ RECO_SAMPLES = {
     'data_TauPlusX_Run2011A_PromptReco_v2' : {
         'datasetpath' : "/TauPlusX/Run2011A-PromptReco-v2/AOD",
         'dbs_url' :  "http://cmsdbsprod.cern.ch/cms_dbs_prod_global/servlet/DBSServlet",
-        'lumi_mask' : "/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions11/7TeV/Prompt/Cert_160404-163369_7TeV_PromptReco_Collisions11_JSON.txt",
-        'runselection' : "162718-163796",
+        'lumi_mask' : "/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions11/7TeV/Prompt/Cert_160404-163757_7TeV_PromptReco_Collisions11_JSON.txt",
+        'runselection' : "162718-163757",
         'number_of_jobs' : 500,
         'conditions' : 'GR_R_311_V2::All',
         'events_processed' : -1,
@@ -112,9 +112,9 @@ RECO_SAMPLES = {
         'drawOption' : styles.drawOption_Data,
         'hlt_paths' : {             
             'HLT_IsoMu12_LooseIsoPFTau10_v2' : '161216:MIN-163261:MAX',  # period B
-            'HLT_IsoMu12_LooseIsoPFTau10_v4' : '163269:MIN-163402:MAX',  # period C
+            'HLT_IsoMu12_LooseIsoPFTau10_v4' : '163269:MIN-163757:MAX',  # period C
             'HLT_Mu15_LooseIsoPFTau20_v2'    : '161216:MIN-163261:MAX',  # period B
-            'HLT_Mu15_LooseIsoPFTau20_v4'    : '163269:MIN-163402:MAX'   # period C
+            'HLT_Mu15_LooseIsoPFTau20_v4'    : '163269:MIN-163757:MAX'   # period C
         },
         'enableSysUncertainties' : False,
         'enableFakeRates' : True,
