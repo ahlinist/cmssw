@@ -10,7 +10,7 @@ process.MessageLogger.cerr.threshold = cms.untracked.string('INFO')
 process.load("Configuration.StandardSequences.Geometry_cff")
 process.load("Configuration.StandardSequences.MagneticField_cff")
 process.load('Configuration/StandardSequences/FrontierConditions_GlobalTag_cff')
-process.GlobalTag.globaltag = cms.string('START38_V13::All')
+process.GlobalTag.globaltag = cms.string('GR_P_V16::All')
 
 process.maxEvents = cms.untracked.PSet(
     input = cms.untracked.int32(-1)
@@ -47,7 +47,7 @@ process.selectedTaNCtaus = cms.EDFilter("PFTauSelector",
     src = cms.InputTag('hpsTancTaus'),
     discriminators = cms.VPSet(
         cms.PSet(
-            discriminator = cms.InputTag("hpsTancTausDiscriminationByVLooseIsolation"),
+            discriminator = cms.InputTag("hpsTancTausDiscriminationByTancVLoose"),
             selectionCut = cms.double(0.5)
         )
     ),
@@ -58,7 +58,7 @@ process.selectedHPStaus = cms.EDFilter("PFTauSelector",
     src = cms.InputTag('hpsTancTaus'),
     discriminators = cms.VPSet(
         cms.PSet(
-            discriminator = cms.InputTag("hpsTancTausDiscriminationByTancVLoose"),
+            discriminator = cms.InputTag("hpsTancTausDiscriminationByVLooseIsolation"),
             selectionCut = cms.double(0.5)
         )
     ),
