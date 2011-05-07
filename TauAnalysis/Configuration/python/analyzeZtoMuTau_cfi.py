@@ -59,7 +59,10 @@ diTauCandidateNSVfitHistManagerForMuTau.nSVfitEventHypotheses = cms.PSet(
 
     psKine_MEt_fit = cms.string('psKine_MEt_fit'),
     psKine_MEt2_fit = cms.string('psKine_MEt2_fit'),
-    mcKineDeltaRall_MEt2_fit = cms.string('mcKineDeltaRall_MEt2_fit'),
+    ##mcKineDeltaRall_MEt2_fit = cms.string('mcKineDeltaRall_MEt2_fit'),
+    ##mcKineDeltaRsel_MEt2_fit = cms.string('mcKineDeltaRsel_MEt2_fit'),
+    mcKineAngleAll_MEt2_fit = cms.string('mcKineAngleAll_MEt2_fit'),
+    mcKineAngleSel_MEt2_fit = cms.string('mcKineAngleSel_MEt2_fit'),
     
     psKine_MEt2_pow05ptBalance_fit = cms.string('psKine_MEt2_pow05ptBalance_fit'),
     psKine_MEt2_pow10ptBalance_fit = cms.string('psKine_MEt2_pow10ptBalance_fit')
