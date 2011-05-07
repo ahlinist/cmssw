@@ -35,7 +35,11 @@ SAMPLES_TO_ANALYZE = [
     'WW',
     'WZ',
     'ZZ',
-    'TTplusJets_madgraph'
+    'TTplusJets_madgraph',
+    'A130', 'bbA130',
+    'A200', 'bbA200',
+    'A300', 'bbA300',
+    'A450', 'bbA450'
 ]
 
 print analysisFilePath
