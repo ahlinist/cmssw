@@ -13,9 +13,9 @@
  *
  * \author Christian Veelken, UC Davis
  *
- * \version $Revision: 1.2 $
+ * \version $Revision: 1.1 $
  *
- * $Id: NSVfitTauDecayLikelihoodMC.h,v 1.2 2011/03/24 12:01:41 veelken Exp $
+ * $Id: NSVfitTauDecayLikelihoodMC.h,v 1.1 2011/04/25 14:29:51 veelken Exp $
  *
  */
 
@@ -52,7 +52,7 @@ class NSVfitTauDecayLikelihoodMC : public NSVfitSingleParticleLikelihood
     RooAbsPdf* decayPdf_;
     RooRealVar* mom_;
     int momType_;
-    RooRealVar* sep_;
+    RooRealVar* sepTimesMom_;
     int sepType_;
   };
 

@@ -18,8 +18,8 @@ nSVfitElectronLikelihoodPolarization = cms.PSet(
     verbosity = cms.int32(0)  
 )
 
-nSVfitElectronLikelihoodMC_pt_dR_all = nSVfitTauDecayLikelihoodMC_pt_dR_all.clone(
-    pluginName = cms.string("nSVfitTauToElecLikelihoodMC_pt_dR_all"),
+nSVfitElectronLikelihoodMC_energy_angle_all = nSVfitTauDecayLikelihoodMC_energy_angle_all.clone(
+    pluginName = cms.string("nSVfitTauToElecLikelihoodMC_energy_angle_all"),
     pluginType = cms.string("NSVfitTauToElecLikelihoodMC"),
     verbosity = cms.int32(0)  
 )
@@ -49,8 +49,8 @@ nSVfitMuonLikelihoodPolarization = cms.PSet(
     verbosity = cms.int32(0)  
 )
 
-nSVfitMuonLikelihoodMC_pt_dR_all = nSVfitTauDecayLikelihoodMC_pt_dR_all.clone(
-    pluginName = cms.string("nSVfitTauToMuLikelihoodMC_pt_dR_all"),
+nSVfitMuonLikelihoodMC_energy_angle_all = nSVfitTauDecayLikelihoodMC_energy_angle_all.clone(
+    pluginName = cms.string("nSVfitTauToMuLikelihoodMC_energy_angle_all"),
     pluginType = cms.string("NSVfitTauToMuLikelihoodMC"),
     verbosity = cms.int32(0)  
 )
@@ -104,8 +104,8 @@ nSVfitTauLikelihoodPolarization = cms.PSet(
     verbosity = cms.int32(0)  
 )
 
-nSVfitTauToHadLikelihoodMC_pt_dR_all = nSVfitTauDecayLikelihoodMC_pt_dR_all.clone(
-    pluginName = cms.string("nSVfitTauToHadLikelihoodMC_pt_dR_all"),
+nSVfitTauToHadLikelihoodMC_energy_angle_all = nSVfitTauDecayLikelihoodMC_energy_angle_all.clone(
+    pluginName = cms.string("nSVfitTauToHadLikelihoodMC_energy_angle_all"),
     pluginType = cms.string("NSVfitTauToHadLikelihoodMC"),
     verbosity = cms.int32(0)  
 )

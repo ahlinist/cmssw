@@ -49,14 +49,14 @@ NSVfitTauDecayLikelihoodMC<T>::NSVfitTauDecayLikelihoodMC(const edm::ParameterSe
       std::string pdfName = cfgDecayMode.getParameter<std::string>("pdfName");
       std::string momName = cfgDecayMode.getParameter<std::string>("momName");
       std::string momType = cfgDecayMode.getParameter<std::string>("momType");
-      std::string sepName = cfgDecayMode.getParameter<std::string>("sepName");
+      std::string sepTimesMomName = cfgDecayMode.getParameter<std::string>("sepTimesMomName");
       std::string sepType = cfgDecayMode.getParameter<std::string>("sepType");
 
       if ( this->verbosity_ ) {
-	std::cout << " wsName  = " << wsName.data() << std::endl;
+	std::cout << " wsName = " << wsName.data() << std::endl;
 	std::cout << " pdfName = " << pdfName.data() << std::endl;
 	std::cout << " momName = " << momName.data() << ", momType = " << momType.data() << std::endl;
-	std::cout << " sepName = " << sepName.data() << ", sepType = " << sepType.data() << std::endl;
+	std::cout << " sepTimesMomName = " << sepTimesMomName.data() << ", sepType = " << sepType.data() << std::endl;
       }
       
       decayModeEntryType* newDecayModeEntry = new decayModeEntryType();
@@ -77,22 +77,22 @@ NSVfitTauDecayLikelihoodMC<T>::NSVfitTauDecayLikelihoodMC(const edm::ParameterSe
 	<< " Failed to find file = " << inputFileName.fullPath() << " !!\n";
 
       RooWorkspace* ws = (RooWorkspace*)inputFile->Get(wsName.data());
-      newDecayModeEntry->decayPdf_ = ws->pdf(pdfName.data());
       newDecayModeEntry->mom_ = ws->var(momName.data());
-      newDecayModeEntry->sep_ = ws->var(sepName.data());
+      newDecayModeEntry->sepTimesMom_ = ws->var(sepTimesMomName.data());
+      newDecayModeEntry->decayPdf_ = ws->pdf(pdfName.data());
 
       if ( this->verbosity_ ) {
 	ws->Print();
 	std::cout << " decayPdf = " << newDecayModeEntry->decayPdf_ << std::endl;
-	std::cout << " mom      = " << newDecayModeEntry->mom_ << std::endl;
-	std::cout << " sep      = " << newDecayModeEntry->sep_ << std::endl;
+	std::cout << " mom = " << newDecayModeEntry->mom_ << std::endl;
+	std::cout << " sepTimesMom = " << newDecayModeEntry->sepTimesMom_ << std::endl;
       }
       
       decayModeParameters_.insert(std::pair<int, decayModeEntryType*>(tauDecayMode->first, newDecayModeEntry));
       
       delete inputFile;
 
-      if ( !(newDecayModeEntry->decayPdf_ && newDecayModeEntry->mom_ && newDecayModeEntry->sep_) )
+      if ( !(newDecayModeEntry->decayPdf_ && newDecayModeEntry->mom_ && newDecayModeEntry->sepTimesMom_) )
 	throw cms::Exception("NSVfitTauDecayLikelihoodMC")
 	  << " Failed to read RooFit workspace for decay mode = " << tauDecayMode->second << " !!" << std::endl;
     }
@@ -206,7 +206,7 @@ double NSVfitTauDecayLikelihoodMC<T>::operator()(const NSVfitSingleParticleHypot
     else assert(0);
 
     currentDecayModeParameter_->mom_->setVal(momValue);
-    currentDecayModeParameter_->sep_->setVal(sepValue);
+    currentDecayModeParameter_->sepTimesMom_->setVal(momValue*sepValue);
 
     prob = currentDecayModeParameter_->decayPdf_->getVal();
   } else {
