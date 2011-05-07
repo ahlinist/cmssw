@@ -365,18 +365,24 @@ MERGE_SAMPLES = {
     }
 }
 MERGE_SAMPLES.update({
-    'A160Sum' : {
-        'samples' : [ 'A160', 'bbA160' ],
-        'legendEntry' : 'A(160) #rightarrow #tau^{+} #tau^{-}',
+    'A130Sum' : {
+        'samples' : [ 'A130', 'bbA130' ],
+        'legendEntry' : 'A(130) #rightarrow #tau^{+} #tau^{-}',
         'type' : 'bsmMC',
         'drawOption' : styles.drawOption_darkBlue_separate,
-            },
+    },
+    'A200Sum' : {
+        'samples' : [ 'A200', 'bbA200' ],
+        'legendEntry' : 'A(200) #rightarrow #tau^{+} #tau^{-}',
+        'type' : 'bsmMC',
+        'drawOption' : styles.drawOption_darkBlue_separate,
+    },
     'A300Sum' : {
         'samples' : [ 'A300', 'bbA300' ],
         'legendEntry' : 'A(300) #rightarrow #tau^{+} #tau^{-}',
         'type' : 'bsmMC',
         'drawOption' : styles.drawOption_darkBlue_separate,
-            },
+    },
     'A450Sum' : {
         'samples' : [ 'A450', 'bbA450' ],
         'legendEntry' : 'A(450) #rightarrow #tau^{+} #tau^{-}',
