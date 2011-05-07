@@ -4,7 +4,7 @@
  *
  * \author Evan, UC Davis
  *
- * \version $Revision: 1.3 $
+ * \version $Revision: 1.4 $
  */
 
 #include <boost/shared_ptr.hpp>
@@ -90,11 +90,11 @@ void PATLeptonPFIsolationEmbedder<T>::produce(edm::Event& evt,
     beamSpot = &(*beamSpotHandle);
   }
 
-  double rhoFastJetCorrection = 0.;
+  double rhoFastJetCorrection = -1.;
   if ( rhoFastJetSrc_.label() != "" ) {
     edm::Handle<double> rhoFastJetHandle;
     evt.getByLabel(rhoFastJetSrc_, rhoFastJetHandle);
-    rhoFastJetCorrection = (*rhoFastJetHandle);
+    if ( rhoFastJetHandle.isValid() ) rhoFastJetCorrection = (*rhoFastJetHandle);
   }
 
   std::auto_ptr<std::vector<T> > output(new std::vector<T>() );
