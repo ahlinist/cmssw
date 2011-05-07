@@ -8,9 +8,9 @@
  * 
  * \author Christian Veelken, UC Davis
  *
- * \version $Revision: 1.9 $
+ * \version $Revision: 1.10 $
  *
- * $Id: ParticlePFIsolationExtractor.h,v 1.9 2011/04/22 16:07:31 veelken Exp $
+ * $Id: ParticlePFIsolationExtractor.h,v 1.10 2011/04/24 13:21:30 veelken Exp $
  *
  */
 
@@ -193,6 +193,9 @@ class ParticlePFIsolationExtractor
 	//std::cout << "sumPtNeutralIsoPUcorr = " << sumPtNeutralIsoPUcorr << std::endl;
 	sumPt += TMath::Max(sumPtNeutralIsoSumPt - 0.5*chargedToNeutralFactor_*sumPtNeutralIsoPUcorr, 0.); 
       } else if ( methodPUcorr_ == kRho ) {
+	if ( rhoFastJetCorrection == -1. ) throw cms::Exception("ParticlePFIsolationExtractor")
+	  << "Pile-up correction Method = 'rho' requires rhoFastJetCorrection !!\n";
+
 	if ( addChargedHadronIso_ ) sumPt += pfChargedHadronIso_->compSumPt(pfChargedHadrons, lepton.p4());
 	if ( addNeutralHadronIso_ ) sumPt += pfNeutralHadronIso_->compSumPt(pfNeutralHadrons, lepton.p4());
 	if ( addPhotonIso_        ) sumPt += pfPhotonIso_->compSumPt(pfPhotons, lepton.p4());

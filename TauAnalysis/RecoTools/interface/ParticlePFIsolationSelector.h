@@ -12,9 +12,9 @@
  *
  * \author Christian Veelken, UC Davis
  *
- * \version $Revision: 1.9 $
+ * \version $Revision: 1.10 $
  *
- * $Id: ParticlePFIsolationSelector.h,v 1.9 2011/04/09 10:50:22 veelken Exp $
+ * $Id: ParticlePFIsolationSelector.h,v 1.10 2011/04/22 16:07:32 veelken Exp $
  *
  */
 
@@ -120,11 +120,11 @@ class ParticlePFIsolationSelector
 	beamSpot = &(*beamSpotHandle);
       }
 
-      double rhoFastJetCorrection = 0.;
+      double rhoFastJetCorrection = -1.;
       if ( rhoFastJetSrc_.label() != "" ) {
 	edm::Handle<double> rhoFastJetHandle;
 	evt.getByLabel(rhoFastJetSrc_, rhoFastJetHandle);
-	rhoFastJetCorrection = (*rhoFastJetHandle);
+	if ( rhoFastJetHandle.isValid() ) rhoFastJetCorrection = (*rhoFastJetHandle);
       }
       
       for ( typename collection::const_iterator isoParticleCandidate = isoParticleCandidates->begin();
