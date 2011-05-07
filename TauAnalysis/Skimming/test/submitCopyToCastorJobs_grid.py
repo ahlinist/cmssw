@@ -32,10 +32,14 @@ samples = {
     ##    'dbsName' : "/DYToTauTau_M-10To20_CT10_TuneZ2_7TeV-powheg-pythia-tauola/Spring11-PU_S1_START311_V1G1-v2/AODSIM",
     ##    'type'    : "MC"
     ##},
-    'WplusJets_madgraph_aodsim' : {
-        'dbsName' : "/WJetsToLNu_TuneZ2_7TeV-madgraph-tauola/Spring11-PU_S1_START311_V1G1-v1/AODSIM",
+    ##'WplusJets_madgraph_aodsim' : {
+    ##    'dbsName' : "/WJetsToLNu_TuneZ2_7TeV-madgraph-tauola/Spring11-PU_S1_START311_V1G1-v1/AODSIM",
+    ##    'type'    : "MC"
+    ##},
+    'PPmuXptGt20Mu15_aodsim' : {
+        'dbsName' : "/QCD_Pt-20_MuEnrichedPt-15_TuneZ2_7TeV-pythia6/Spring11-PU_S1_START311_V1G1-v1/AODSIM",
         'type'    : "MC"
-    },
+    }
 }
 
 castorFilePath = "/castor/cern.ch/user/v/veelken/CMSSW_4_1_x/skims/ZtoMuTau/"
@@ -110,7 +114,7 @@ storage_element = srm-cms.cern.ch
 storage_path = /srm/managerv2?SFN=/castor/cern.ch
 user_remote_dir = USER_REMOTE_DIR
 
-[EDG]
+[GRID]
 
 se_black_list = T2_US_Nebraska
 """
