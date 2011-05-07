@@ -17,12 +17,11 @@ samplesToAnalyze = [
 import copy
 samplesToAnalyze = copy.deepcopy(recoSampleDefinitionsZtoMuTau_7TeV['SAMPLES_TO_ANALYZE'])
 samplesToAnalyze.extend([
-    'A160', 'bbA160',
+    'A130', 'bbA130',
+    'A200', 'bbA200',
     'A300', 'bbA300',
     'A450', 'bbA450'
 ])
-
-samplesToAnalyze = [ 'data_TauPlusX_Run2011A_PromptReco' ]
 
 #enableSystematics = True
 enableSystematics = False
