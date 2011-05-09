@@ -31,7 +31,6 @@ process.source = cms.Source ("PoolSource",
 
 'file:/tmp/oiorio/edmntuple_tchannel_big.root',
 
-
 ),
 duplicateCheckMode = cms.untracked.string('noDuplicateCheck'),
 #eventsToProcess = cms.untracked.VEventRange('1:19517967-1:19517969'),
@@ -54,15 +53,24 @@ channelInfo = cms.PSet(
 
 
 #Part of the kin quantities:
-leptonsPz = cms.InputTag("nTupleElectrons","tightElectronsPz"),  
-leptonsPx = cms.InputTag("nTupleElectrons","tightElectronsPx"),  
-leptonsPy = cms.InputTag("nTupleElectrons","tightElectronsPy"),  
+leptonsEta = cms.InputTag("nTupleElectrons","tightElectronsEta"),  
+leptonsPt = cms.InputTag("nTupleElectrons","tightElectronsPt"),  
+leptonsPhi = cms.InputTag("nTupleElectrons","tightElectronsPhi"),  
 leptonsEnergy = cms.InputTag("nTupleElectrons","tightElectronsE"),  
 leptonsCharge = cms.InputTag("nTupleElectrons","tightElectronsCharge"),  
+leptonsRelIso = cms.InputTag("nTupleElectrons","tightElectronsRelIso"),  
+leptonsID = cms.InputTag("nTupleElectrons","tightElectronsSimpleEleId95cIso"),  
 
-jetsPx = cms.InputTag("nTupleTopJetsPF","topJetsPFPx"),  
-jetsPy = cms.InputTag("nTupleTopJetsPF","topJetsPFPy"),  
-jetsPz = cms.InputTag("nTupleTopJetsPF","topJetsPFPz"),  
+leptonsFlavour = cms.untracked.string("electron"),
+
+
+looseMuonsRelIso = cms.InputTag("looseElectrons","looseElectronsRelIso"),  
+looseElectronsRelIso = cms.InputTag("looseMuons","looseMuonsRelIso"),  
+
+
+jetsPt = cms.InputTag("nTupleTopJetsPF","topJetsPFPt"),  
+jetsPhi = cms.InputTag("nTupleTopJetsPF","topJetsPFPhi"),  
+jetsEta = cms.InputTag("nTupleTopJetsPF","topJetsPFEta"),  
 jetsEnergy = cms.InputTag("nTupleTopJetsPF","topJetsPFE"),  
 
 jetsBTagAlgo = cms.InputTag("nTupleTopJetsPF","topJetsPFTrackCountingHighPur"),  
@@ -87,11 +95,11 @@ UnclusteredMETPy = cms.InputTag("UnclusteredMETPF","UnclusteredMETPy"),
 #from TChannel import *
 #process.source.fileNames = TChannel_ntuple
 
-process.source.fileNames = cms.untracked.vstring("file:/tmp/oiorio/TChannelMerged.root")
+process.source.fileNames = cms.untracked.vstring("file:TChannelMerged.root")
 
 #Output
 
-process.TFileService = cms.Service("TFileService", fileName = cms.string("/tmp/oiorio/TChannel.root"))
+process.TFileService = cms.Service("TFileService", fileName = cms.string("TChannel.root"))
 
 process.load("SingleTopAnalyzers_cfi")
 process.load("SingleTopRootPlizer_cfi")

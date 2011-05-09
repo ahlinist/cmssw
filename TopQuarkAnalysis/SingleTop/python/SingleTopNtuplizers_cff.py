@@ -15,31 +15,23 @@ nTupleTopJetsPF = cms.EDProducer(
     tag = cms.untracked.string("TrackCountingHighEff"),
     quantity = cms.untracked.string("bDiscriminator('trackCountingHighEffBJetTags')")
     ),
-    #4-momentum
-#    cms.PSet(
-#    tag = cms.untracked.string("Pt"),
-#    quantity = cms.untracked.string("pt")
-#    ),
+##    4-momentum
     cms.PSet(
-    tag = cms.untracked.string("Px"),
-    quantity = cms.untracked.string("px")
+    tag = cms.untracked.string("Pt"),
+    quantity = cms.untracked.string("pt")
     ),
     cms.PSet(
-    tag = cms.untracked.string("Py"),
-    quantity = cms.untracked.string("py")
+    tag = cms.untracked.string("Eta"),
+    quantity = cms.untracked.string("eta")
     ),
     cms.PSet(
-    tag = cms.untracked.string("Pz"),
-    quantity = cms.untracked.string("pz")
+    tag = cms.untracked.string("Phi"),
+    quantity = cms.untracked.string("phi")
     ),
     cms.PSet(
     tag = cms.untracked.string("E"),
     quantity = cms.untracked.string("energy")
     ),
-#    cms.PSet(
-#    tag = cms.untracked.string("Eta"),
-#    quantity = cms.untracked.string("eta")
-#    ),
     #Flavour
     cms.PSet(
     tag = cms.untracked.string("Flavour"),
@@ -81,16 +73,16 @@ nTupleElectrons = cms.EDProducer(
     variables = cms.VPSet(
     #4-momentum
     cms.PSet(
-    tag = cms.untracked.string("Px"),
-    quantity = cms.untracked.string("px")
+    tag = cms.untracked.string("Pt"),
+    quantity = cms.untracked.string("pt")
     ),
     cms.PSet(
-    tag = cms.untracked.string("Py"),
-    quantity = cms.untracked.string("py")
+    tag = cms.untracked.string("Eta"),
+    quantity = cms.untracked.string("eta")
     ),
     cms.PSet(
-    tag = cms.untracked.string("Pz"),
-    quantity = cms.untracked.string("pz")
+    tag = cms.untracked.string("Phi"),
+    quantity = cms.untracked.string("phi")
     ),
     cms.PSet(
     tag = cms.untracked.string("E"),
@@ -109,11 +101,11 @@ nTupleElectrons = cms.EDProducer(
     #ID and other parameters
     cms.PSet(
     tag = cms.untracked.string("SimpleEleId70cIso"),
-    quantity = cms.untracked.string("test_bit(electronID('simpleEleId70cIso'),5)")
+    quantity = cms.untracked.string("electronID('simpleEleId70cIso')")
     ),
     cms.PSet(
     tag = cms.untracked.string("SimpleEleId95cIso"),
-    quantity = cms.untracked.string("test_bit(electronID('simpleEleId95cIso'),5)")
+    quantity = cms.untracked.string("electronID('simpleEleId95cIso')")
     ),
 #    cms.PSet(
 #    tag = cms.untracked.string("SuperClusterEta"),
@@ -138,16 +130,16 @@ nTupleMuons = nTupleElectrons.clone(
     #4-momentum
     #4-momentum
     cms.PSet(
-    tag = cms.untracked.string("Px"),
-    quantity = cms.untracked.string("px")
+    tag = cms.untracked.string("Pt"),
+    quantity = cms.untracked.string("pt")
     ),
     cms.PSet(
-    tag = cms.untracked.string("Py"),
-    quantity = cms.untracked.string("py")
+    tag = cms.untracked.string("Eta"),
+    quantity = cms.untracked.string("eta")
     ),
     cms.PSet(
-    tag = cms.untracked.string("Pz"),
-    quantity = cms.untracked.string("pz")
+    tag = cms.untracked.string("Phi"),
+    quantity = cms.untracked.string("phi")
     ),
     cms.PSet(
     tag = cms.untracked.string("E"),
@@ -195,16 +187,16 @@ nTupleLooseMuons = nTupleMuons.clone(
     #4-momentum
     #4-momentum
     cms.PSet(
-    tag = cms.untracked.string("Px"),
-    quantity = cms.untracked.string("px")
+    tag = cms.untracked.string("Pt"),
+    quantity = cms.untracked.string("pt")
     ),
     cms.PSet(
-    tag = cms.untracked.string("Py"),
-    quantity = cms.untracked.string("py")
+    tag = cms.untracked.string("Eta"),
+    quantity = cms.untracked.string("eta")
     ),
     cms.PSet(
-    tag = cms.untracked.string("Pz"),
-    quantity = cms.untracked.string("pz")
+    tag = cms.untracked.string("Phi"),
+    quantity = cms.untracked.string("phi")
     ),
     cms.PSet(
     tag = cms.untracked.string("E"),
@@ -221,27 +213,27 @@ nTupleLooseMuons = nTupleMuons.clone(
     quantity = cms.untracked.string("(isolationR03.sumPt + isolationR03.emEt + isolationR03.hadEt)/pt")
     ),
     #ID and other parameters
-    cms.PSet(
-    tag = cms.untracked.string("IsGlobalMuonPromptTight"),
-    quantity = cms.untracked.string("muonID('GlobalMuonPromptTight')")
-    ),
-    cms.PSet(
-    tag = cms.untracked.string("IsGlobalMuon"),
-    quantity = cms.untracked.string("isGlobalMuon")
-    ),
-    cms.PSet(
-    tag = cms.untracked.string("IsTrackerMuon"),
-    quantity = cms.untracked.string("isTrackerMuon")
-    ),
+#    cms.PSet(
+#    tag = cms.untracked.string("IsGlobalMuonPromptTight"),
+#    quantity = cms.untracked.string("muonID('GlobalMuonPromptTight')")
+#    ),
+#    cms.PSet(
+#    tag = cms.untracked.string("IsGlobalMuon"),
+#    quantity = cms.untracked.string("isGlobalMuon")
+#    ),
+#    cms.PSet(
+#    tag = cms.untracked.string("IsTrackerMuon"),
+#    quantity = cms.untracked.string("isTrackerMuon")
+#    ),
     cms.PSet(
     tag = cms.untracked.string("AbsoluteDB"),
     quantity = cms.untracked.string("dB")
     ),
-#    cms .PSet(
-#    tag = cms.untracked.string("TrackerValidInnerHits"),
-#    quantity = cms.untracked.string("innerTrack.numberOfValidHits")
-#    ),
-
+    #    cms .PSet(
+    #    tag = cms.untracked.string("TrackerValidInnerHits"),
+    #    quantity = cms.untracked.string("innerTrack.numberOfValidHits")
+    #    ),
+    
     )
     )
 
@@ -258,16 +250,16 @@ nTupleLooseElectrons = nTupleElectrons.clone(
     variables = cms.VPSet(
     #4-momentum
     cms.PSet(
-    tag = cms.untracked.string("Px"),
-    quantity = cms.untracked.string("px")
+    tag = cms.untracked.string("Pt"),
+    quantity = cms.untracked.string("pt")
     ),
     cms.PSet(
-    tag = cms.untracked.string("Py"),
-    quantity = cms.untracked.string("py")
+    tag = cms.untracked.string("Eta"),
+    quantity = cms.untracked.string("eta")
     ),
     cms.PSet(
-    tag = cms.untracked.string("Pz"),
-    quantity = cms.untracked.string("pz")
+    tag = cms.untracked.string("Phi"),
+    quantity = cms.untracked.string("phi")
     ),
     cms.PSet(
     tag = cms.untracked.string("E"),
@@ -286,26 +278,24 @@ nTupleLooseElectrons = nTupleElectrons.clone(
     #ID and other parameters
     cms.PSet(
     tag = cms.untracked.string("SimpleEleId70cIso"),
-    quantity = cms.untracked.string("test_bit(electronID('simpleEleId70cIso'),5)")
+    quantity = cms.untracked.string("electronID('simpleEleId70cIso')")
     ),
     cms.PSet(
     tag = cms.untracked.string("SimpleEleId95cIso"),
-    quantity = cms.untracked.string("test_bit(electronID('simpleEleId95cIso'),5)")
+    quantity = cms.untracked.string("electronID('simpleEleId95cIso')")
     ),
-    cms.PSet(
-    tag = cms.untracked.string("SuperClusterEta"),
-    quantity = cms.untracked.string("superCluster.eta")
-    ),
+#    cms.PSet(
+#    tag = cms.untracked.string("SuperClusterEta"),
+#    quantity = cms.untracked.string("superCluster.eta")
+#    ),
     cms.PSet(
     tag = cms.untracked.string("AbsoluteDB"),
     quantity = cms.untracked.string("dB")
     ),
-    cms.PSet(
-    tag = cms.untracked.string("TrackerExpectedInnerHits"),
-    quantity = cms.untracked.string("gsfTrack().trackerExpectedHitsInner.numberOfHits")
-    ),
-    
-
+#    cms.PSet(
+#    tag = cms.untracked.string("TrackerExpectedInnerHits"),
+#    quantity = cms.untracked.string("gsfTrack().trackerExpectedHitsInner.numberOfHits")
+#    ),
     )
     )
 
@@ -313,6 +303,12 @@ nTupleAllElectrons = nTupleLooseElectrons.clone(
     src = cms.InputTag("selectedPatElectrons"),
     lazyParser = cms.untracked.bool(True),
     prefix = cms.untracked.string("allElectrons"),
+    )
+
+nTupleZVetoElectrons = nTupleLooseElectrons.clone(
+    src = cms.InputTag("zVetoElectrons"),
+    lazyParser = cms.untracked.bool(True),
+    prefix = cms.untracked.string("zVetoElectrons"),
     )
 
 nTupleAllJets = nTupleTopJetsPF.clone(
@@ -331,16 +327,16 @@ nTupleAllJets = nTupleTopJetsPF.clone(
     ),
     #4-momentum
     cms.PSet(
-    tag = cms.untracked.string("Px"),
-    quantity = cms.untracked.string("px")
+    tag = cms.untracked.string("Pt"),
+    quantity = cms.untracked.string("pt")
     ),
     cms.PSet(
-    tag = cms.untracked.string("Py"),
-    quantity = cms.untracked.string("py")
+    tag = cms.untracked.string("Eta"),
+    quantity = cms.untracked.string("eta")
     ),
     cms.PSet(
-    tag = cms.untracked.string("Pz"),
-    quantity = cms.untracked.string("pz")
+    tag = cms.untracked.string("Phi"),
+    quantity = cms.untracked.string("phi")
     ),
     cms.PSet(
     tag = cms.untracked.string("E"),
@@ -352,31 +348,31 @@ nTupleAllJets = nTupleTopJetsPF.clone(
     quantity = cms.untracked.string("partonFlavour")
     ),
     #ID 
-    cms.PSet(
-    tag = cms.untracked.string("NumberOfDaughters"),
-    quantity = cms.untracked.string("numberOfDaughters")
-    ),
-    cms.PSet(
-    tag = cms.untracked.string("ChargedMultiplicity"),
-    quantity = cms.untracked.string("chargedMultiplicity")
-    ),
-    cms.PSet(
-    tag = cms.untracked.string("ChargedHadronEnergyFraction"),
-    quantity = cms.untracked.string("chargedHadronEnergyFraction")
-    ),
-    cms.PSet(
-    tag = cms.untracked.string("ChargedEmEnergyFraction"),
-    quantity = cms.untracked.string("chargedEmEnergyFraction")
-    ),
-    cms.PSet(
-    tag = cms.untracked.string("NeutralHadronEnergyFraction"),
-    quantity = cms.untracked.string("neutralHadronEnergyFraction")
-    ),
-    cms.PSet(
-    tag = cms.untracked.string("NeutralEmEnergyFraction"),
-    quantity = cms.untracked.string("neutralEmEnergyFraction")
-    ),
-    #JEC factor to uncorrected jet
+#    cms.PSet(
+#    tag = cms.untracked.string("NumberOfDaughters"),
+#    quantity = cms.untracked.string("numberOfDaughters")
+#    ),
+#    cms.PSet(
+#    tag = cms.untracked.string("ChargedMultiplicity"),
+#    quantity = cms.untracked.string("chargedMultiplicity")
+#    ),
+#    cms.PSet(
+#    tag = cms.untracked.string("ChargedHadronEnergyFraction"),
+ #   quantity = cms.untracked.string("chargedHadronEnergyFraction")
+ #   ),
+ #   cms.PSet(
+ #   tag = cms.untracked.string("ChargedEmEnergyFraction"),
+ #   quantity = cms.untracked.string("chargedEmEnergyFraction")
+ #   ),
+ #   cms.PSet(
+ #   tag = cms.untracked.string("NeutralHadronEnergyFraction"),
+ #   quantity = cms.untracked.string("neutralHadronEnergyFraction")
+ #   ),
+ #   cms.PSet(
+ #   tag = cms.untracked.string("NeutralEmEnergyFraction"),
+ #   quantity = cms.untracked.string("neutralEmEnergyFraction")
+ #   ),
+ #   #JEC factor to uncorrected jet
     cms.PSet(
     tag = cms.untracked.string("JetCorrTotal"),
     quantity = cms.untracked.string("jecFactor('Uncorrected')")
@@ -413,18 +409,13 @@ singleTopMCNeutrinos = cms.EDProducer(
     ),
 
         cms.PSet(
-    tag = cms.untracked.string("Px"),
-    quantity = cms.untracked.string("px")
+    tag = cms.untracked.string("Pt"),
+    quantity = cms.untracked.string("pt")
     ),
 
         cms.PSet(
-    tag = cms.untracked.string("Py"),
-    quantity = cms.untracked.string("py")
-    ),
-
-        cms.PSet(
-    tag = cms.untracked.string("Pz"),
-    quantity = cms.untracked.string("pz")
+    tag = cms.untracked.string("Phi"),
+    quantity = cms.untracked.string("phi")
     ),
 
         cms.PSet(
@@ -451,17 +442,15 @@ singleTopMCBQuark = singleTopMCNeutrinos.clone( src = cms.InputTag("MCTruthParti
 nTuplesSkim = cms.Sequence(
     nTupleTopJetsPF +
     nTupleAllJets +
-    #nTupleBJetsPF *
-    #nTupleForwardJetsPF *
     nTuplePatMETsPF +
     nTupleAllElectrons +
     nTupleAllMuons +
     nTupleLooseElectrons +
     nTupleLooseMuons +
     nTupleElectrons +
+    nTupleZVetoElectrons +
     nTupleMuons
     )
-
 
 saveNTuplesSkim = cms.untracked.vstring(
     'drop *',
@@ -487,6 +476,8 @@ saveNTuplesSkimLoose = cms.untracked.vstring(saveNTuplesSkim)
 saveNTuplesSkimMu.append('keep floats_nTupleMuons_*_*')
 saveNTuplesSkimEle.append('keep floats_nTupleElectrons_*_*')
 
+
+##Skimmed Ntuple
 saveNTuplesSkimLoose.append('keep floats_nTupleMuons_*_*')
 saveNTuplesSkimLoose.append('keep floats_nTupleElectrons_*_*')
 
@@ -495,5 +486,8 @@ saveNTuplesSkimLoose.append('keep floats_nTupleAllElectrons_*_*')
 
 saveNTuplesSkimLoose.append('keep floats_nTupleLooseMuons_*_*')
 saveNTuplesSkimLoose.append('keep floats_nTupleLooseElectrons_*_*')
+saveNTuplesSkimLoose.append('keep floats_nTupleZVetoElectrons_*_*')
+
+saveNTuplesSkimLoose.append('keep *_TriggerResults_*_*')
 
 

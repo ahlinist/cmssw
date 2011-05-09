@@ -1,47 +1,15 @@
 <use   name="roofit"/>
 <use   name="roostats"/>
-<bin   name="fitWIso" file="FitWTransverseMassDataMuIso.cpp">
-  <use   name="FWCore/Framework"/>
-  <use   name="FWCore/Utilities"/>
-  <use   name="FWCore/FWLite"/>
-  <use   name="DataFormats/FWLite"/>
-  <use   name="DataFormats/Common"/>
-  <use   name="FWCore/ParameterSet"/>
-  <use   name="root"/>
-  <use   name="rootrflx"/>
-  <use   name="hepmc"/>
-  <use   name="PhysicsTools/UtilAlgos"/>
-  <use   name="CommonTools/UtilAlgos"/>
-  <use   name="PhysicsTools/CandUtils"/>
-  <use   name="DataFormats/PatCandidates"/>
-</bin>
-<bin   name="fitWAntiIso" file="FitWTransverseMassDataMuAntiIso.cpp">
-  <use   name="FWCore/Framework"/>
-  <use   name="FWCore/Utilities"/>
-  <use   name="FWCore/FWLite"/>
-  <use   name="DataFormats/FWLite"/>
-  <use   name="DataFormats/Common"/>
-  <use   name="FWCore/ParameterSet"/>
-  <use   name="root"/>
-  <use   name="rootrflx"/>
-  <use   name="hepmc"/>
-  <use   name="PhysicsTools/UtilAlgos"/>
-  <use   name="CommonTools/UtilAlgos"/>
-  <use   name="PhysicsTools/CandUtils"/>
-  <use   name="DataFormats/PatCandidates"/>
-</bin>
-<bin   name="fits2D" file="fits2D.cpp">
-  <use   name="FWCore/Framework"/>
-  <use   name="FWCore/Utilities"/>
-  <use   name="FWCore/FWLite"/>
-  <use   name="DataFormats/FWLite"/>
-  <use   name="DataFormats/Common"/>
-  <use   name="FWCore/ParameterSet"/>
-  <use   name="root"/>
-  <use   name="rootrflx"/>
-  <use   name="hepmc"/>
-  <use   name="PhysicsTools/UtilAlgos"/>
-  <use   name="CommonTools/UtilAlgos"/>
-  <use   name="PhysicsTools/CandUtils"/>
-  <use   name="DataFormats/PatCandidates"/>
-</bin>
+<use   name="FWCore/Framework"/>
+<use   name="FWCore/Utilities"/>
+<use   name="FWCore/FWLite"/>
+<use   name="DataFormats/FWLite"/>
+<use   name="DataFormats/Common"/>
+<use   name="FWCore/ParameterSet"/>
+<use   name="root"/>
+<use   name="rootrflx"/>
+<use   name="hepmc"/>
+<use   name="PhysicsTools/UtilAlgos"/>
+<use   name="CommonTools/UtilAlgos"/>
+<use   name="PhysicsTools/CandUtils"/>
+<use   name="DataFormats/PatCandidates"/>

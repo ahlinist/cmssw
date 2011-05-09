@@ -6,7 +6,7 @@ from PhysicsTools.HepMCCandAlgos.flavorHistoryPaths_cfi import *
 
 from PhysicsTools.PatAlgos.patSequences_cff import *
 
-from ElectroWeakAnalysis.WENu.simpleEleIdSequence_cff import *
+from TopQuarkAnalysis.SingleTop.simpleEleIdSequence_cff import *
 
 #from TopQuarkAnalysis.SingleTop.SingleTopNtuplizers_cff import nTupleTopJetsPF
 #from TopQuarkAnalysis.SingleTop.SingleTopNtuplizers_cff import nTuplePatMETsPF
@@ -27,6 +27,7 @@ from TopQuarkAnalysis.SingleTop.SingleTopNtuplizers_cff import nTupleAllJets
 
 from TopQuarkAnalysis.SingleTop.SingleTopNtuplizers_cff import nTupleLooseElectrons
 from TopQuarkAnalysis.SingleTop.SingleTopNtuplizers_cff import nTupleLooseMuons
+from TopQuarkAnalysis.SingleTop.SingleTopNtuplizers_cff import nTupleZVetoElectrons
 
 
 nTuplePatMETsPF.src = cms.InputTag('patMETs')
@@ -59,6 +60,7 @@ basePath = cms.Sequence(
    looseMuons +
    PVFilterProducer +
    looseElectrons +
+   zVetoElectrons +
    topJetsPF +
    UnclusteredMETPF +
    tightMuons +
@@ -72,6 +74,7 @@ basePathData = cms.Sequence(
    looseMuons +
    PVFilterProducer +
    looseElectrons +
+   zVetoElectrons +
    topJetsPF +
    UnclusteredMETPF +
    tightMuons +
@@ -85,14 +88,14 @@ flavorHistorySequence = cms.Sequence(
     bFlavorHistoryProducer
     )
 
-#Selection step: require 1 high pt(threshold -10%) muon/electron and max 1 extra loose lepton, no isolation requirements.
+#Selection step: require 1 high pt muon/electron
 preselection = cms.Sequence(
     hltFilter +
     PVFilter +
     countLeptons  
     )
 
-#Selection step: require 1 high pt(threshold -10%) muon/electron and max 1 extra loose lepton, loose id requirements.
+#Selection step: require 1 high pt muon/electron
 #process.preselection(
 #    hltFilter +
 #    PVFilter +

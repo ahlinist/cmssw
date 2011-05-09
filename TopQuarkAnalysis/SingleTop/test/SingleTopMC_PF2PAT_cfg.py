@@ -81,8 +81,8 @@ process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(-1) )
 process.source = cms.Source ("PoolSource",
                              fileNames = cms.untracked.vstring (
 
-'rfio:/castor/cern.ch/user/g/giamman/singletop/sync/00012F91-72E5-DF11-A763-00261834B5F1.root'
-#'file:/tmp/oiorio/00012F91-72E5-DF11-A763-00261834B5F1.root'
+#'rfio:/castor/cern.ch/user/g/giamman/singletop/sync/00012F91-72E5-DF11-A763-00261834B5F1.root'
+'file:/tmp/oiorio/00012F91-72E5-DF11-A763-00261834B5F1.root'
 #'file:/tmp/oiorio/WJetsNewFile_1_1_Vuo.root'
 #'file:/tmp/oiorio/F81B1889-AF4B-DF11-85D3-001A64789DF4.root'
 #'rfio:    /castor/cern.ch/user/g/giamman/singletop/sync/F81B1889-AF4B-DF11-85D3-001A64789DF4.root',
@@ -167,7 +167,7 @@ savePatTupleSkimLoose = cms.untracked.vstring(
 process.singleTopNTuple = cms.OutputModule("PoolOutputModule",
 #                                fileName = cms.untracked.string('rfio:/CST/cern.ch/user/o/oiorio/SingleTop/SubSkims/WControlSamples1.root'),
 #                   fileName = cms.untracked.Bstring('/tmp/oiorio/edmntuple_tchannel_big.root'),
-                   fileName = cms.untracked.string('edmntuple_TChannel.root'),
+                   fileName = cms.untracked.string('/tmp/oiorio/edmntuple_TChannel.root'),
                                              
                    SelectEvents   = cms.untracked.PSet( SelectEvents = cms.vstring('selection')),
                    outputCommands = saveNTuplesSkimLoose,

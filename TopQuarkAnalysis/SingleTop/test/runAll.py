@@ -5,14 +5,19 @@ import os,sys,re,shutil
 
 #Original config file
 fileName = "SingleTopSystematics_cfg.py"
+#fileName = "SingleTopSystematics_split_cfg.py"
 
 #Channels to include
 channels = [
 #    "TChannel",
 #    "TTBar",
-#    "WJets",
-    "Data",
+    "WJets",
 #    "Data",
+#    "Wc_wc_",
+#    "Vqq_wbb_",
+#    "Vqq_wcc_",
+#    "WJets_wbb_",
+#    "WJets_wcc_",
     ]
 
 #Path to take data merged files
@@ -62,7 +67,7 @@ for channel in channels:
     command = 'nohup cmsRun ./' + channel+'_cfg.py > /tmp/oiorio/'+channel+'.log &'
 
     print command
-    os.system(command ) 
+#    os.system(command ) 
 #    os.system("bg") 
 #    os.system('rm '+channel+'_cfg.py' ) 
 
