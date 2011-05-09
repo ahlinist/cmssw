@@ -32,7 +32,6 @@ process.skimwall = cms.OutputModule("PoolOutputModule",
 process.skimwall.fileName = "/tmp/oiorio/TChannelMerged.root"
 #process.skimwall.fileName = "/castor/cern.ch/user/o/oiorio/SingleTop/2011/MC2011/NewNtuples/Merged/TChannelMerged.root"
 
-
 #Save the skims
 #process.outpath = cms.EndPath( process.skimlight + process.skimwcc + process.skimwbb )
 process.outpath = cms.EndPath( process.skimwall)

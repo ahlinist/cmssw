@@ -6,7 +6,7 @@
  * \Authors A. Orso M. Iorio
  * 
  * Produces systematics histograms out of a standard Single Top n-tuple 
- * \ version $Id: SingleTopSystematicsTreesDumper.h,v 1.1 2011/04/23 22:59:19 oiorio Exp $
+ * \ version $Id: SingleTopSystematicsTreesDumper.h,v 1.2 2011/04/25 23:52:56 oiorio Exp $
  */
 
 
@@ -97,17 +97,17 @@ class SingleTopSystematicsTreesDumper : public edm::EDAnalyzer {
   virtual void endJob();
   //void  EventInfo();
 
-  math::XYZTLorentzVector top4Momentum(float leptonPx, float leptonPy, float leptonPz,float leptonE, float jetPx, float jetPy, float jetPz,float jetE, float metPx, float metPy);
+  math::PtEtaPhiELorentzVector top4Momentum(float leptonPx, float leptonPy, float leptonPz,float leptonE, float jetPx, float jetPy, float jetPz,float jetE, float metPx, float metPy);
 
-  math::XYZTLorentzVector top4Momentum(math::XYZTLorentzVector lepton, math::XYZTLorentzVector jet, float metPx, float metPy);
-  std::vector<math::XYZTLorentzVector> NuMomentum(float leptonPx, float leptonPy, float leptonPz, float leptonPt, float leptonE, float metPx, float metPy );
+  math::PtEtaPhiELorentzVector top4Momentum(math::PtEtaPhiELorentzVector lepton, math::PtEtaPhiELorentzVector jet, float metPx, float metPy);
+  math::XYZTLorentzVector NuMomentum(float leptonPx, float leptonPy, float leptonPz, float leptonPt, float leptonE, float metPx, float metPy );
 
-
-  float cosThetaLJ(math::XYZTLorentzVector lepton, math::XYZTLorentzVector jet, math::XYZTLorentzVector top);
+  
+  float cosThetaLJ(math::PtEtaPhiELorentzVector lepton, math::PtEtaPhiELorentzVector jet, math::PtEtaPhiELorentzVector top);
 
   double BScaleFactor(string algo,string syst_name); 
   double MisTagScaleFactor(string algo,string syst_name,double sf, double eff, double sferr);
-  double jetUncertainty(double eta, double ptCorr, int flavor);
+  double jetUncertainty(double eta, double ptCorr, int flavour);
   
   string rootFileName;
 
@@ -115,24 +115,48 @@ class SingleTopSystematicsTreesDumper : public edm::EDAnalyzer {
 
   edm::ParameterSet channelInfo;
   std::string channel;
-  double crossSection,originalEvents,finalLumi,MTWCut; 
+  double crossSection,originalEvents,finalLumi,MTWCut,RelIsoCut; 
   edm::Event*   iEvent;
   
   double loosePtCut ;
   //  std::vector<float> leptonsPt,leptonsPhi,leptonsPz,leptonsEta,jetsPt,jetsPx,jetsPy,jetsPz,jetsEta,jetEnergy,jetsBTagAlgo,jetsAntiBTagAlgo,METPt,METPhi;
   
   //InputTags
-  edm::InputTag leptonsPx_,leptonsPy_,leptonsPz_,leptonsEnergy_,leptonsCharge_,jetsPx_,jetsPy_,jetsPz_,jetsEnergy_,jetsBTagAlgo_,jetsCorrTotal_,jetsAntiBTagAlgo_,METPt_,METPhi_,jetsFlavour_,UnclMETPx_,UnclMETPy_;
+  edm::InputTag leptonsPt_,
+    leptonsPhi_,
+    leptonsEta_,
+    leptonsEnergy_,
+    leptonsCharge_,
+    leptonsRelIso_,
+    leptonsID_,
+    looseElectronsRelIso_,
+    looseMuonsRelIso_,
+    jetsPt_,
+    jetsPhi_,
+    jetsEta_,
+    jetsEnergy_,
+    jetsBTagAlgo_,
+    jetsCorrTotal_,
+    jetsAntiBTagAlgo_,
+    METPt_,
+    METPhi_,
+    jetsFlavour_,
+    UnclMETPx_,
+    UnclMETPy_;
 
   // Handles
-  edm::Handle<std::vector<float> > leptonsPx,
-   leptonsPy,
-   leptonsPz,
+  edm::Handle<std::vector<float> > leptonsPt,
+   leptonsPhi,
+   leptonsEta,
    leptonsEnergy,
    leptonsCharge,
-   jetsPz,
-   jetsPx,
-   jetsPy,
+   leptonsRelIso,
+   looseElectronsRelIso,
+   looseMuonsRelIso,
+   leptonsID,
+   jetsEta,
+   jetsPt,
+   jetsPhi,
    jetsEnergy,
    jetsBTagAlgo,
    jetsAntiBTagAlgo,
@@ -140,8 +164,9 @@ class SingleTopSystematicsTreesDumper : public edm::EDAnalyzer {
    jetsCorrTotal,
    METPhi,
    METPt;
-  
+
   edm::Handle< double > UnclMETPx,UnclMETPy;
+  std::string leptonsFlavour_;  
 
 
   //Part for BTagging payloads
@@ -156,15 +181,20 @@ class SingleTopSystematicsTreesDumper : public edm::EDAnalyzer {
 
   //Vectors definition  
   
-  std::vector<math::XYZTLorentzVector> leptons;
-  std::vector<math::XYZTLorentzVector> jets;
-  std::vector<math::XYZTLorentzVector> loosejets;
-  std::vector<math::XYZTLorentzVector> bjets;
-  std::vector<math::XYZTLorentzVector> antibjets;
+  std::vector<math::PtEtaPhiELorentzVector> leptons,
+    jets,
+    loosejets,
+    bjets,
+    antibjets;
   
   //Base histograms 
   map<string, TTree*> trees;
   map<string, TTree*> treesWSample;
+  
+  double bTagThreshold;
+  size_t bScanSteps;
+  bool doBScan_,doQCD_;
+  map<string, TTree*> treesScan[10];
   /*  map<string, TTree*> ForwardJetEta;
   map<string, TTree*> CosThetaLJ;
   map<string, TTree*> MTW;

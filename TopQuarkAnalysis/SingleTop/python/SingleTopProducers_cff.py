@@ -14,6 +14,12 @@ looseElectrons = cms.EDFilter("PATElectronSelector",
   cut = cms.string('pt >  20 & abs(eta) < 2.4'),
 )
 
+#electrons for z veto part
+zVetoElectrons = cms.EDFilter("PATElectronSelector",
+  src = cms.InputTag("selectedPatElectrons"),
+  cut = cms.string('pt >  20 & abs(eta) < 2.4'),
+)
+
 preselectedJets = cms.EDFilter("PATJetSelector",
   src = cms.InputTag("selectedPatJets"),
   cut = cms.string('pt >  30 & abs(eta) < 5.0'),
