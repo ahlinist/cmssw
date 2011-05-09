@@ -5,6 +5,6 @@ SITE=`dbs search --query="find site where dataset like $1" --url=http://cmsdbspr
 
 for a in $FILES 
 do
-  lcg-cp --verbose -U srmv2 "srm://"$SITE":8443/srm/managerv2?SFN="$3$a  "file:$2/${a##*/}"
+  echo lcg-cp --verbose -U srmv2 "srm://"$SITE":8443/srm/managerv2?SFN="$3$a  "file:$2/${a##*/}"
 done
 
