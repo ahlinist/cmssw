@@ -16,7 +16,7 @@ Implementation:
 //
 // Authors:                              Seth Cooper (Minnesota)
 //         Created:  Tu Apr 26  10:46:22 CEST 2011
-// $Id: EcalCreateTimeCalibrations.h,v 1.2 2011/04/29 14:41:35 scooper Exp $
+// $Id: EcalCreateTimeCalibrations.h,v 1.3 2011/05/02 08:55:23 scooper Exp $
 //
 //
 
@@ -89,6 +89,7 @@ class EcalCreateTimeCalibrations : public edm::EDAnalyzer {
                 EcalTimeTreeContent treeVars_;
                 int numTotalCrys_;
                 // For selection cuts
+                bool disableGlobalShift_;
                 bool subtractDBcalibs_;
                 std::string inBxs_, inOrbits_, inTrig_, inTTrig_, inLumis_, inRuns_;
                 float avgTimeMin_, avgTimeMax_;
