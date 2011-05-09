@@ -13,7 +13,7 @@ Implementation:
 //
 // Authors:                              Seth Cooper (Minnesota)
 //         Created:  Tu Apr 26  10:46:22 CEST 2011
-// $Id: EcalCreateTimeCalibrations.cc,v 1.5 2011/05/05 13:03:45 scooper Exp $
+// $Id: EcalCreateTimeCalibrations.cc,v 1.6 2011/05/05 15:01:46 scooper Exp $
 //
 //
 
@@ -45,6 +45,7 @@ EcalCreateTimeCalibrations::EcalCreateTimeCalibrations(const edm::ParameterSet& 
   inputFiles_ (ps.getParameter<std::vector<std::string> >("InputFileNames")),
   fileName_ (ps.getParameter<std::string>("FileNameStart")),
   numTotalCrys_ (EBDetId::kSizeForDenseIndexing+EEDetId::kSizeForDenseIndexing),
+  disableGlobalShift_ (ps.getParameter<bool>("ZeroGlobalOffset")),
   subtractDBcalibs_ (ps.getParameter<bool>("SubtractDBcalibs")),
   inBxs_ (ps.getParameter<std::string>("BxIncludeExclude")),
   inOrbits_ (ps.getParameter<std::string>("OrbitIncludeExclude")),
@@ -85,7 +86,8 @@ EcalCreateTimeCalibrations::EcalCreateTimeCalibrations(const edm::ParameterSet& 
     << " maxHitTimeEB: " << maxHitTimeEB_ << " minHitTimeEB: " << minHitTimeEB_
     << " maxHitTimeEE: " << maxHitTimeEE_ << " minHitTimeEE: " << minHitTimeEE_
     << " inTrig: " << inTrig_ << " inTTrig: " << inTTrig_ << " inLumi: " << inLumis_
-    << " inBxs: " << inBxs_ << " inRuns: " << inRuns_ << " inOrbits: " << inOrbits_;
+    << " inBxs: " << inBxs_ << " inRuns: " << inRuns_ << " inOrbits: " << inOrbits_
+    << " subtractDBcalibs? " << subtractDBcalibs_ << " noGlobalShift? " << disableGlobalShift_;
 
   setBranchAddresses(myInputTree_,treeVars_);
 
@@ -608,6 +610,34 @@ EcalCreateTimeCalibrations::analyze(edm::Event const& evt, edm::EventSetup const
   timeOffsetConstant.setEBValue(originalOffsetEB+originalCalibAvg-cryCalibAvg);
   timeOffsetConstant.setEEValue(originalOffsetEE+originalCalibAvg-cryCalibAvg);
 
+  if(disableGlobalShift_)
+  {
+    timeOffsetConstant.setEBValue(0);
+    timeOffsetConstant.setEEValue(0);
+
+    for(int hash=0; hash < numTotalCrys_; ++hash)
+    {
+      DetId det = 0;
+      bool isEB = true;
+      if(hash >= EBDetId::kSizeForDenseIndexing)
+        isEB = false;
+
+      if(isEB)
+      {
+        det = EBDetId::unhashIndex(hash);
+        if(det==EBDetId())
+          continue;
+        timeCalibConstants[det.rawId()]+=originalOffsetEB+originalCalibAvg-cryCalibAvg;
+      }
+      else
+      {
+        det = EEDetId::unhashIndex(hash-EBDetId::kSizeForDenseIndexing);
+        if(det==EEDetId())
+          continue;
+        timeCalibConstants[det.rawId()]+=originalOffsetEE+originalCalibAvg-cryCalibAvg;
+      }
+    }
+  }
 
 
   //Write XML files
