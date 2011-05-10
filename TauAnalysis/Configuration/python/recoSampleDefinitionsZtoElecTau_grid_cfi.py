@@ -10,26 +10,16 @@ SAMPLES_TO_ANALYZE = [
     'data_TauPlusX_Run2011A_PR_v2',
     #'data_TauPlusElec_Run2011A_PR_T3',
     'data_TauPlusX_Run2011A_PR_nonGolden',
-    #'Ztautau_powheg',
     'Ztautau_powheg_T3',
-    #'DYtautauM10to20_powheg',
     'DYtautauM10to20_powheg_T3',
     'qqZll',
-    #'Zee_powheg',
     'Zee_powheg_T3',
-    #'DYeeM10to20_pythia',
     'DYeeM10to20_pythia_T3',
-    #'PhotonPlusJets_Pt15to30','PhotonPlusJets_Pt30to50','PhotonPlusJets_Pt50to80',
 	'PhotonPlusJets_Pt15to30_T3','PhotonPlusJets_Pt30to50_T3','PhotonPlusJets_Pt50to80_T3',
-    #'QCD_BCtoE_Pt20to30','QCD_BCtoE_Pt30to80','QCD_BCtoE_Pt80to170',
 	'QCD_BCtoE_Pt20to30_T3','QCD_BCtoE_Pt30to80_T3','QCD_BCtoE_Pt80to170_T3',
-    #'QCD_EM_Pt20to30','QCD_EM_Pt30to80','QCD_EM_Pt80to170',
 	'QCD_EM_Pt20to30_T3','QCD_EM_Pt30to80_T3','QCD_EM_Pt80to170_T3',
-    #'TTplusJets_madgraph',
     'TTplusJets_madgraph_T3',
-    #'WplusJets_madgraph',
     'WplusJets_madgraph_T3',
-    #'WW','WZ','ZZ',
     'WW_T3','WZ_T3','ZZ_T3',
 ] 
 
@@ -40,12 +30,10 @@ SAMPLES_TO_PLOT = [
     'qcdSum', 
     'photonPlusJetsSum',
     'WplusJets_madgraph_T3',
-    #'TTplusJets_madgraph',
+    'TTplusJets_madgraph',
     'ZeeSum',
     'ZtautauSum',
-    #'VVsum',
-    #'Ztautau_powheg',
-    #'Zee_powheg',
+    'VVsum',
 ]
 
 SAMPLES_TO_PRINT = copy.copy(SAMPLES_TO_PLOT)
@@ -63,13 +51,13 @@ SAMPLE_DEFAULTS = {
     'inputFileType' : 'AOD',
     'hlt_paths' : [ 'HLT_IsoEle12_PFTau15_v3','HLT_Ele12_SW_TighterEleId_L1R_v2'],
     'SE_white_list' : '',
-    'SE_black_list' : 'ccsrm.in2p3.fr',
+    'SE_black_list' : 'ccsrm.in2p3.fr,msu.ru',
 	'disableDuplicateCheck' : True,
-    'applyZrecoilCorrection' : True,
-	'applyElectronTriggerEfficiencyCorrection' : True,
-	'applyElectronIsolationEfficiencyCorrection' : True,
+    'applyZrecoilCorrection' : False,
+	'applyElectronTriggerEfficiencyCorrection' : False,
+	'applyElectronIsolationEfficiencyCorrection' : False,
 	'applyMuonTriggerEfficiencyCorrection' : False,
-	'applyVertexMultiplicityReweighting' : False,
+	'applyVertexMultiplicityReweighting' : True,
 	'hlt' : cms.InputTag("TriggerResults", "", "HLT")
 }
 
@@ -81,8 +69,7 @@ _picobarns =  1.0
 _femtobarns = 1.0e-3
 
 # Integrated luminosity to normalize
-#TARGET_LUMI = (200.0)/_picobarns
-TARGET_LUMI = (55.3)/_picobarns 
+TARGET_LUMI = (164)/_picobarns 
 
 #--------------------------------------------------------------------------------
 # NOTE: cross-sections for W and Z production are scaled to next-to-leading order values
@@ -99,6 +86,7 @@ RECO_SAMPLES = {
         'type' : 'Data',
         'drawOption' : styles.drawOption_Data,
         'enableSysUncertainties' : False,
+	    'applyVertexMultiplicityReweighting' : False,
         'applyElectronTriggerEfficiencyCorrection' : False,
         'applyElectronIsolationEfficiencyCorrection' : False,
         'applyZrecoilCorrection' : False,
@@ -106,14 +94,15 @@ RECO_SAMPLES = {
             'HLT_Ele15_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_LooseIsoPFTau15_v1'				: '160431:MIN-161016:MAX'
         }
     },
-    'data_TauPlusX_Run2011A_PR_v1' : {  # 14.5/pb  160431-161312
+    'data_TauPlusX_Run2011A_PR_v1' : {  # 5.1/pb  160431-161016
         'datasetpath' : '/TauPlusX/Run2011A-PromptReco-v1/AOD', 
         'lumi_mask' : '/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions11/7TeV/Prompt/Cert_160404-163369_7TeV_PromptReco_Collisions11_JSON.txt',
         'conditions' : 'GR_P_V17::All',
-        'number_of_jobs' : 50,
+        'number_of_jobs' : 20,
         'type' : 'Data',
         'drawOption' : styles.drawOption_Data,
         'enableSysUncertainties' : False,
+	    'applyVertexMultiplicityReweighting' : False,
         'applyElectronTriggerEfficiencyCorrection' : False,
         'applyElectronIsolationEfficiencyCorrection' : False,
         'applyZrecoilCorrection' : False,
@@ -122,32 +111,34 @@ RECO_SAMPLES = {
             'HLT_Ele15_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_LooseIsoPFTau15_v2'     : '161217:MIN-163261:MAX'
             }
         },
-    'data_TauPlusX_Run2011A_PR_v2' : {  # 28.9/pb  162718-163369
+    'data_TauPlusX_Run2011A_PR_v2' : {  # 147.7/pb  162803-163757
         'datasetpath' : '/TauPlusX/Run2011A-PromptReco-v2/AOD', 
-        'lumi_mask' : '/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions11/7TeV/Prompt/Cert_160404-163369_7TeV_PromptReco_Collisions11_JSON.txt',
+        'lumi_mask' : '/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions11/7TeV/Prompt/Cert_160404-163757_7TeV_PromptReco_Collisions11_JSON.txt',
         'conditions' : 'GR_P_V17::All',
-        'number_of_jobs' : 100,
+        'number_of_jobs' : 200,
         'type' : 'Data',
         'drawOption' : styles.drawOption_Data,
         'enableSysUncertainties' : False,
+	    'applyVertexMultiplicityReweighting' : False,
         'applyElectronTriggerEfficiencyCorrection' : False,
         'applyElectronIsolationEfficiencyCorrection' : False,
         'applyZrecoilCorrection' : False,
         'hlt_paths' : {
             'HLT_Ele15_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_LooseIsoPFTau15_v1'     : '160431:MIN-161016:MAX',
             'HLT_Ele15_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_LooseIsoPFTau15_v2'     : '161217:MIN-163261:MAX',
-            'HLT_Ele15_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_LooseIsoPFTau15_v4'     : '163269:MIN-163402:MAX'
+            'HLT_Ele15_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_LooseIsoPFTau15_v4'     : '163269:MIN-163757:MAX'
             #'HLT_Ele15_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_LooseIsoPFTau15_v*' : '160431:MIN-163402:MAX'
             }
         },
-    'data_TauPlusX_Run2011A_PR_nonGolden' : { # 11.9/pb 161217-161312
+    'data_TauPlusX_Run2011A_PR_nonGolden' : { # 11.9/pb 161217-161312   
         'datasetpath' : '/TauPlusX/Run2011A-PromptReco-v1/AOD',
         'lumi_mask' : '/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions11/7TeV/Prompt/Cert_161079-161352_7TeV_PromptReco_Collisions11_JSON_noESpbl_v2.txt',
         'conditions' : 'GR_P_V16::All',
-        'number_of_jobs' : 100,
+        'number_of_jobs' : 30,
         'type' : 'Data',
         'drawOption' : styles.drawOption_Data,
         'enableSysUncertainties' : False,
+	    'applyVertexMultiplicityReweighting' : False,
         'applyElectronTriggerEfficiencyCorrection' : False,
         'applyElectronIsolationEfficiencyCorrection' : False,
         'applyZrecoilCorrection' : False,
@@ -165,9 +156,6 @@ RECO_SAMPLES = {
         'type' : plotter.process_Ztautau.config_dqmHistPlotter.type.value(),
         'drawOption' : styles.drawOption_Ztautau,
         'applyZrecoilCorrection' : True,
-        'applyElectronTriggerEfficiencyCorrection' : True,
-        'applyElectronIsolationEfficiencyCorrection' : True,
-        'applyVertexMultiplicityReweighting' : True,
         'hlt' : cms.InputTag("TriggerResults", "", "REDIGI311X")
     },
     'DYtautauM10to20_powheg_T3' : {
@@ -181,9 +169,6 @@ RECO_SAMPLES = {
         'type' : plotter.process_Ztautau.config_dqmHistPlotter.type.value(),
         'drawOption' : styles.drawOption_Ztautau,
         'applyZrecoilCorrection' : True,
-        'applyElectronTriggerEfficiencyCorrection' : True,
-        'applyElectronIsolationEfficiencyCorrection' : True,
-        'applyVertexMultiplicityReweighting' : False,
         'hlt' : cms.InputTag("TriggerResults", "", "REDIGI311X")
     },
     'Ztautau_powheg' : {
@@ -195,9 +180,6 @@ RECO_SAMPLES = {
         'type' : plotter.process_Ztautau.config_dqmHistPlotter.type.value(),
         'drawOption' : styles.drawOption_Ztautau,
         'applyZrecoilCorrection' : True,
-        'applyElectronTriggerEfficiencyCorrection' : True,
-        'applyElectronIsolationEfficiencyCorrection' : True,
-        'applyVertexMultiplicityReweighting' : True,
         'hlt' : cms.InputTag("TriggerResults", "", "REDIGI311X")
     },
     'Ztautau_powheg_T3' : {
@@ -211,9 +193,6 @@ RECO_SAMPLES = {
         'type' : plotter.process_Ztautau.config_dqmHistPlotter.type.value(),
         'drawOption' : styles.drawOption_Ztautau,
         'applyZrecoilCorrection' : True,
-        'applyElectronTriggerEfficiencyCorrection' : True,
-        'applyElectronIsolationEfficiencyCorrection' : True,
-        'applyVertexMultiplicityReweighting' : False,
         'hlt' : cms.InputTag("TriggerResults", "", "REDIGI311X")
     },
     'qqZll' : {
@@ -226,8 +205,18 @@ RECO_SAMPLES = {
         'type' : plotter.process_Ztautau.config_dqmHistPlotter.type.value(),
         'drawOption' : styles.drawOption_Ztautau,
         'applyZrecoilCorrection' : True,
-        'applyElectronTriggerEfficiencyCorrection' : True,
-        'applyElectronIsolationEfficiencyCorrection' : True,
+        'hlt' : cms.InputTag("TriggerResults", "", "REDIGI311X")
+    }, 
+    'qqZll_T3' : {
+        'datasetpath' : "",
+        'dbs_url' :  "https://cmsdbsprod.cern.ch:8443/cms_dbs_ph_analysis_01_writer/servlet/DBSServlet",
+        'events_processed' : 738233,
+        'skim_eff' : 1.0,
+        'x_sec' : 36.*_picobarns,
+        'legendEntry' : plotter.process_Ztautau.config_dqmHistPlotter.legendEntry.value(),
+        'type' : plotter.process_Ztautau.config_dqmHistPlotter.type.value(),
+        'drawOption' : styles.drawOption_Ztautau,
+        'applyZrecoilCorrection' : True,
         'hlt' : cms.InputTag("TriggerResults", "", "REDIGI311X")
     }, 
     'DYeeM10to20_pythia' : {
@@ -239,9 +228,6 @@ RECO_SAMPLES = {
         'type' : plotter.process_Zee.config_dqmHistPlotter.type.value(),
         'drawOption' : styles.drawOption_Zee,
         'applyZrecoilCorrection' : True,
-        'applyElectronTriggerEfficiencyCorrection' : True,
-        'applyElectronIsolationEfficiencyCorrection' : True,
-        'applyVertexMultiplicityReweighting' : True,
         'hlt' : cms.InputTag("TriggerResults", "", "REDIGI311X")
     },
     'DYeeM10to20_pythia_T3' : {
@@ -255,9 +241,6 @@ RECO_SAMPLES = {
         'type' : plotter.process_Zee.config_dqmHistPlotter.type.value(),
         'drawOption' : styles.drawOption_Zee,
         'applyZrecoilCorrection' : True,
-        'applyElectronTriggerEfficiencyCorrection' : True,
-        'applyElectronIsolationEfficiencyCorrection' : True,
-        'applyVertexMultiplicityReweighting' : False,
         'hlt' : cms.InputTag("TriggerResults", "", "REDIGI311X")
     },
     'Zee_powheg' : {
@@ -269,9 +252,6 @@ RECO_SAMPLES = {
         'type' : plotter.process_Zee.config_dqmHistPlotter.type.value(),
         'drawOption' : styles.drawOption_Zee,
         'applyZrecoilCorrection' : True,
-        'applyElectronTriggerEfficiencyCorrection' : True,
-        'applyElectronIsolationEfficiencyCorrection' : True,
-        'applyVertexMultiplicityReweighting' : True,
         'hlt' : cms.InputTag("TriggerResults", "", "REDIGI311X")
     },
     'Zee_powheg_T3' : {
@@ -285,14 +265,10 @@ RECO_SAMPLES = {
         'type' : plotter.process_Zee.config_dqmHistPlotter.type.value(),
         'drawOption' : styles.drawOption_Zee,
         'applyZrecoilCorrection' : True,
-        'applyElectronTriggerEfficiencyCorrection' : True,
-        'applyElectronIsolationEfficiencyCorrection' : True,
-        'applyVertexMultiplicityReweighting' : False,
         'hlt' : cms.InputTag("TriggerResults", "", "REDIGI311X")
     },
     'WplusJets_madgraph' : {
         'datasetpath' : "/WJetsToLNu_TuneZ2_7TeV-madgraph-tauola/Spring11-PU_S1_START311_V1G1-v1/AODSIM",
-        'dbs_url' :  "http://cmsdbsprod.cern.ch/cms_dbs_prod_global/servlet/DBSServlet",
         'events_processed' : 15110974,
         'skim_eff' : 1.0,
         'x_sec' : 31314*_picobarns,
@@ -300,9 +276,6 @@ RECO_SAMPLES = {
         'type' : plotter.process_WplusJets.config_dqmHistPlotter.type.value(),
         'drawOption' : styles.drawOption_WplusJets,
         'applyZrecoilCorrection' : False,
-        'applyElectronTriggerEfficiencyCorrection' : True,
-        'applyElectronIsolationEfficiencyCorrection' : True,
-        'applyVertexMultiplicityReweighting' : True,
         'hlt' : cms.InputTag("TriggerResults", "", "REDIGI311X")
     },
     'WplusJets_madgraph_T3' : {
@@ -316,14 +289,10 @@ RECO_SAMPLES = {
         'type' : plotter.process_WplusJets.config_dqmHistPlotter.type.value(),
         'drawOption' : styles.drawOption_WplusJets,
         'applyZrecoilCorrection' : False,
-        'applyElectronTriggerEfficiencyCorrection' : True,
-        'applyElectronIsolationEfficiencyCorrection' : True,
-        'applyVertexMultiplicityReweighting' : False,
         'hlt' : cms.InputTag("TriggerResults", "", "REDIGI311X")
     },
     'WW' : {
         'datasetpath' : "/WWtoAnything_TuneZ2_7TeV-pythia6-tauola/Spring11-PU_S1_START311_V1G1-v1/AODSIM",
-        'dbs_url' :  "http://cmsdbsprod.cern.ch/cms_dbs_prod_global/servlet/DBSServlet",
         'events_processed' : 2061760,
         'skim_eff' : 1.0,
         'x_sec' : 43.0*_picobarns, # NLO cross-section from https://twiki.cern.ch/twiki/bin/viewauth/CMS/StandardModelCrossSections
@@ -331,9 +300,6 @@ RECO_SAMPLES = {
         'type' : plotter.process_VV.config_dqmHistPlotter.type.value(),
         'drawOption' : styles.drawOption_VV,
         'applyZrecoilCorrection' : False,
-        'applyElectronTriggerEfficiencyCorrection' : True,
-        'applyElectronIsolationEfficiencyCorrection' : True,
-        'applyVertexMultiplicityReweighting' : True,
         'hlt' : cms.InputTag("TriggerResults", "", "REDIGI311X")
     },
     'WW_T3' : {
@@ -347,14 +313,10 @@ RECO_SAMPLES = {
         'type' : plotter.process_VV.config_dqmHistPlotter.type.value(),
         'drawOption' : styles.drawOption_VV,
         'applyZrecoilCorrection' : False,
-        'applyElectronTriggerEfficiencyCorrection' : True,
-        'applyElectronIsolationEfficiencyCorrection' : True,
-        'applyVertexMultiplicityReweighting' : False,
         'hlt' : cms.InputTag("TriggerResults", "", "REDIGI311X")
     },
   'WZ' : {
         'datasetpath' : "/WZtoAnything_TuneZ2_7TeV-pythia6-tauola/Spring11-PU_S1_START311_V1G1-v1/AODSIM",
-        'dbs_url' :  "http://cmsdbsprod.cern.ch/cms_dbs_prod_global/servlet/DBSServlet",
         'events_processed' : 2108416,
         'skim_eff' : 1.0,
         'x_sec' : 18.2*_picobarns, # NLO cross-section from https://twiki.cern.ch/twiki/bin/viewauth/CMS/StandardModelCrossSections
@@ -362,9 +324,6 @@ RECO_SAMPLES = {
         'type' : plotter.process_VV.config_dqmHistPlotter.type.value(),
         'drawOption' : styles.drawOption_VV,
         'applyZrecoilCorrection' : False,
-        'applyElectronTriggerEfficiencyCorrection' : True,
-        'applyElectronIsolationEfficiencyCorrection' : True,
-        'applyVertexMultiplicityReweighting' : True,
         'hlt' : cms.InputTag("TriggerResults", "", "REDIGI311X")
     },
   'WZ_T3' : {
@@ -378,14 +337,10 @@ RECO_SAMPLES = {
         'type' : plotter.process_VV.config_dqmHistPlotter.type.value(),
         'drawOption' : styles.drawOption_VV,
         'applyZrecoilCorrection' : False,
-        'applyElectronTriggerEfficiencyCorrection' : True,
-        'applyElectronIsolationEfficiencyCorrection' : True,
-        'applyVertexMultiplicityReweighting' : False,
         'hlt' : cms.InputTag("TriggerResults", "", "REDIGI311X")
     },
     'ZZ' : {
         'datasetpath' : "/ZZtoAnything_TuneZ2_7TeV-pythia6-tauola/Spring11-PU_S1_START311_V1G1-v1/AODSIM",
-        'dbs_url' :  "http://cmsdbsprod.cern.ch/cms_dbs_prod_global/servlet/DBSServlet",
         'events_processed' : 2108608,
         'skim_eff' : 1.0,
         'x_sec' : 5.9*_picobarns, # NLO cross-section from https://twiki.cern.ch/twiki/bin/viewauth/CMS/StandardModelCrossSections
@@ -393,9 +348,6 @@ RECO_SAMPLES = {
         'type' : plotter.process_VV.config_dqmHistPlotter.type.value(),
         'drawOption' : styles.drawOption_VV,
         'applyZrecoilCorrection' : False,
-        'applyElectronTriggerEfficiencyCorrection' : True,
-        'applyElectronIsolationEfficiencyCorrection' : True,
-        'applyVertexMultiplicityReweighting' : True,
         'hlt' : cms.InputTag("TriggerResults", "", "REDIGI311X")
     },
     'ZZ_T3' : {
@@ -409,23 +361,16 @@ RECO_SAMPLES = {
         'type' : plotter.process_VV.config_dqmHistPlotter.type.value(),
         'drawOption' : styles.drawOption_VV,
         'applyZrecoilCorrection' : False,
-        'applyElectronTriggerEfficiencyCorrection' : True,
-        'applyElectronIsolationEfficiencyCorrection' : True,
-        'applyVertexMultiplicityReweighting' : False,
         'hlt' : cms.InputTag("TriggerResults", "", "REDIGI311X")
     },
     'TTplusJets_madgraph' : {
         'datasetpath' : "/TTJets_TuneZ2_7TeV-madgraph-tauola/Spring11-PU_S1_START311_V1G1-v1/AODSIM",
-        'dbs_url' :  "http://cmsdbsprod.cern.ch/cms_dbs_prod_global/servlet/DBSServlet",
         'events_processed' : 1164208,
         'skim_eff' : 1.0,
         'x_sec' : 157.5*_picobarns, # NLO cross-section from https://twiki.cern.ch/twiki/bin/viewauth/CMS/StandardModelCrossSections
         'legendEntry' : plotter.process_TTplusJets.config_dqmHistPlotter.legendEntry.value(),
         'type' : plotter.process_TTplusJets.config_dqmHistPlotter.type.value(),
         'drawOption' : styles.drawOption_TTplusJets,
-        'applyElectronTriggerEfficiencyCorrection' : True,
-        'applyElectronIsolationEfficiencyCorrection' : True,
-        'applyVertexMultiplicityReweighting' : True,
         'hlt' : cms.InputTag("TriggerResults", "", "REDIGI311X")
     },
     'TTplusJets_madgraph_T3' : {
@@ -438,9 +383,6 @@ RECO_SAMPLES = {
         'legendEntry' : plotter.process_TTplusJets.config_dqmHistPlotter.legendEntry.value(),
         'type' : plotter.process_TTplusJets.config_dqmHistPlotter.type.value(),
         'drawOption' : styles.drawOption_TTplusJets,
-        'applyElectronTriggerEfficiencyCorrection' : True,
-        'applyElectronIsolationEfficiencyCorrection' : True,
-        'applyVertexMultiplicityReweighting' : False,
         'hlt' : cms.InputTag("TriggerResults", "", "REDIGI311X")
     },
     'PhotonPlusJets_Pt15to30' : {
@@ -449,10 +391,6 @@ RECO_SAMPLES = {
         'skim_eff' : 1.0,
 		'factorize' : True,
         'x_sec' : 171700*_picobarns, 
-        'applyZrecoilCorrection' : False,
-        'applyElectronTriggerEfficiencyCorrection' : True,
-        'applyElectronIsolationEfficiencyCorrection' : True,
-        'applyVertexMultiplicityReweighting' : True,
         'legendEntry' : plotter.process_gammaPlusJets.config_dqmHistPlotter.legendEntry.value(),
         'type' : plotter.process_gammaPlusJets.config_dqmHistPlotter.type.value(),
         'drawOption' : styles.drawOption_gammaPlusJets,
@@ -466,10 +404,6 @@ RECO_SAMPLES = {
         'skim_eff' : 22531./1025840,
         'factorize' : True,
         'x_sec' : 171700*_picobarns, 
-        'applyZrecoilCorrection' : False,
-        'applyElectronTriggerEfficiencyCorrection' : True,
-        'applyElectronIsolationEfficiencyCorrection' : True,
-        'applyVertexMultiplicityReweighting' : False,
         'legendEntry' : plotter.process_gammaPlusJets.config_dqmHistPlotter.legendEntry.value(),
         'type' : plotter.process_gammaPlusJets.config_dqmHistPlotter.type.value(),
         'drawOption' : styles.drawOption_gammaPlusJets,
@@ -481,10 +415,6 @@ RECO_SAMPLES = {
         'skim_eff' : 1.0,
 		'factorize' : True,
         'x_sec' : 16690*_picobarns, 
-        'applyZrecoilCorrection' : False,
-        'applyElectronTriggerEfficiencyCorrection' : True,
-        'applyElectronIsolationEfficiencyCorrection' : True,
-        'applyVertexMultiplicityReweighting' : True,
         'legendEntry' : plotter.process_gammaPlusJets.config_dqmHistPlotter.legendEntry.value(),
         'type' : plotter.process_gammaPlusJets.config_dqmHistPlotter.type.value(),
         'drawOption' : styles.drawOption_gammaPlusJets,
@@ -498,10 +428,6 @@ RECO_SAMPLES = {
         'skim_eff' : 34061./1025480,
         'factorize' : True,
         'x_sec' : 16690*_picobarns, 
-        'applyZrecoilCorrection' : False,
-        'applyElectronTriggerEfficiencyCorrection' : True,
-        'applyElectronIsolationEfficiencyCorrection' : True,
-        'applyVertexMultiplicityReweighting' : False,
         'legendEntry' : plotter.process_gammaPlusJets.config_dqmHistPlotter.legendEntry.value(),
         'type' : plotter.process_gammaPlusJets.config_dqmHistPlotter.type.value(),
         'drawOption' : styles.drawOption_gammaPlusJets,
@@ -513,10 +439,6 @@ RECO_SAMPLES = {
         'skim_eff' : 1.0,
 		'factorize' : True,
         'x_sec' : 2722*_picobarns, 
-        'applyZrecoilCorrection' : False,
-        'applyElectronTriggerEfficiencyCorrection' : True,
-        'applyElectronIsolationEfficiencyCorrection' : True,
-        'applyVertexMultiplicityReweighting' : True,
         'legendEntry' : plotter.process_gammaPlusJets.config_dqmHistPlotter.legendEntry.value(),
         'type' : plotter.process_gammaPlusJets.config_dqmHistPlotter.type.value(),
         'drawOption' : styles.drawOption_gammaPlusJets,
@@ -530,10 +452,6 @@ RECO_SAMPLES = {
         'skim_eff' : 36691./1025840,
         'factorize' : True,
         'x_sec' : 2722*_picobarns, 
-        'applyZrecoilCorrection' : False,
-        'applyElectronTriggerEfficiencyCorrection' : True,
-        'applyElectronIsolationEfficiencyCorrection' : True,
-        'applyVertexMultiplicityReweighting' : False,
         'legendEntry' : plotter.process_gammaPlusJets.config_dqmHistPlotter.legendEntry.value(),
         'type' : plotter.process_gammaPlusJets.config_dqmHistPlotter.type.value(),
         'drawOption' : styles.drawOption_gammaPlusJets,
@@ -545,10 +463,6 @@ RECO_SAMPLES = {
         'skim_eff' : 1,
 		'factorize' : True,
         'x_sec' : 236000000*0.00056*_picobarns, 
-        'applyZrecoilCorrection' : False,
-        'applyElectronTriggerEfficiencyCorrection' : True,
-        'applyElectronIsolationEfficiencyCorrection' : True,
-        'applyVertexMultiplicityReweighting' : True,
         'legendEntry' : plotter.process_QCD_BCtoE_Pt20to30.config_dqmHistPlotter.legendEntry.value(),
         'type' : plotter.process_QCD_BCtoE_Pt20to30.config_dqmHistPlotter.type.value(),
         'drawOption' : styles.drawOption_QCD,
@@ -562,10 +476,6 @@ RECO_SAMPLES = {
         'skim_eff' : 237477./2243439,
         'factorize' : True,
         'x_sec' : 236000000*0.00056*_picobarns, 
-        'applyZrecoilCorrection' : False,
-        'applyElectronTriggerEfficiencyCorrection' : True,
-        'applyElectronIsolationEfficiencyCorrection' : True,
-        'applyVertexMultiplicityReweighting' : False,
         'legendEntry' : plotter.process_QCD_BCtoE_Pt20to30.config_dqmHistPlotter.legendEntry.value(),
         'type' : plotter.process_QCD_BCtoE_Pt20to30.config_dqmHistPlotter.type.value(),
         'drawOption' : styles.drawOption_QCD,
@@ -577,10 +487,6 @@ RECO_SAMPLES = {
         'skim_eff' : 1,
 		'factorize' : True,
         'x_sec' : 59480000*0.0023*_picobarns, 
-        'applyZrecoilCorrection' : False,
-        'applyElectronTriggerEfficiencyCorrection' : True,
-        'applyElectronIsolationEfficiencyCorrection' : True,
-        'applyVertexMultiplicityReweighting' : True,
         'legendEntry' : plotter.process_QCD_BCtoE_Pt30to80.config_dqmHistPlotter.legendEntry.value(),
         'type' : plotter.process_QCD_BCtoE_Pt30to80.config_dqmHistPlotter.type.value(),
         'drawOption' : styles.drawOption_QCD,
@@ -594,10 +500,6 @@ RECO_SAMPLES = {
         'skim_eff' : 228156./1995502,
         'factorize' : True,
         'x_sec' : 59480000*0.0023*_picobarns, 
-        'applyZrecoilCorrection' : False,
-        'applyElectronTriggerEfficiencyCorrection' : True,
-        'applyElectronIsolationEfficiencyCorrection' : True,
-        'applyVertexMultiplicityReweighting' : False,
         'legendEntry' : plotter.process_QCD_BCtoE_Pt30to80.config_dqmHistPlotter.legendEntry.value(),
         'type' : plotter.process_QCD_BCtoE_Pt30to80.config_dqmHistPlotter.type.value(),
         'drawOption' : styles.drawOption_QCD,
@@ -609,10 +511,6 @@ RECO_SAMPLES = {
         'skim_eff' : 1.0,
 		'factorize' : True,
         'x_sec' : 900000*0.0104*_picobarns, 
-        'applyZrecoilCorrection' : False,
-        'applyElectronTriggerEfficiencyCorrection' : True,
-        'applyElectronIsolationEfficiencyCorrection' : True,
-        'applyVertexMultiplicityReweighting' : True,
         'legendEntry' : plotter.process_QCD_BCtoE_Pt80to170.config_dqmHistPlotter.legendEntry.value(),
         'type' : plotter.process_QCD_BCtoE_Pt80to170.config_dqmHistPlotter.type.value(),
         'drawOption' : styles.drawOption_QCD,
@@ -626,10 +524,6 @@ RECO_SAMPLES = {
         'skim_eff' : 58871./1043390,
         'factorize' : True,
         'x_sec' : 900000*0.0104*_picobarns, 
-        'applyZrecoilCorrection' : False,
-        'applyElectronTriggerEfficiencyCorrection' : True,
-        'applyElectronIsolationEfficiencyCorrection' : True,
-        'applyVertexMultiplicityReweighting' : False,
         'legendEntry' : plotter.process_QCD_BCtoE_Pt80to170.config_dqmHistPlotter.legendEntry.value(),
         'type' : plotter.process_QCD_BCtoE_Pt80to170.config_dqmHistPlotter.type.value(),
         'drawOption' : styles.drawOption_QCD,
@@ -641,10 +535,6 @@ RECO_SAMPLES = {
         'skim_eff' : 1.0,
 		'factorize' : True,
         'x_sec' : 236000000*0.0104*_picobarns, 
-        'applyZrecoilCorrection' : False,
-        'applyElectronTriggerEfficiencyCorrection' : True,
-        'applyElectronIsolationEfficiencyCorrection' : True,
-        'applyVertexMultiplicityReweighting' : True,
         'legendEntry' : plotter.process_QCD_EMenriched_Pt20to30.config_dqmHistPlotter.legendEntry.value(),
         'type' : plotter.process_QCD_EMenriched_Pt20to30.config_dqmHistPlotter.type.value(),
         'drawOption' : styles.drawOption_QCD,
@@ -658,10 +548,6 @@ RECO_SAMPLES = {
         'skim_eff' : 434178./36136246,
         'factorize' : True,
         'x_sec' : 236000000*0.0104*_picobarns, 
-        'applyZrecoilCorrection' : False,
-        'applyElectronTriggerEfficiencyCorrection' : True,
-        'applyElectronIsolationEfficiencyCorrection' : True,
-        'applyVertexMultiplicityReweighting' : False,
         'legendEntry' : plotter.process_QCD_EMenriched_Pt20to30.config_dqmHistPlotter.legendEntry.value(),
         'type' : plotter.process_QCD_EMenriched_Pt20to30.config_dqmHistPlotter.type.value(),
         'drawOption' : styles.drawOption_QCD,
@@ -673,10 +559,6 @@ RECO_SAMPLES = {
         'skim_eff' : 1.0,
 		'factorize' : True,
         'x_sec' : 59480000*0.065*_picobarns, 
-        'applyZrecoilCorrection' : False,
-        'applyElectronTriggerEfficiencyCorrection' : True,
-        'applyElectronIsolationEfficiencyCorrection' : True,
-        'applyVertexMultiplicityReweighting' : True,
         'legendEntry' : plotter.process_QCD_EMenriched_Pt30to80.config_dqmHistPlotter.legendEntry.value(),
         'type' : plotter.process_QCD_EMenriched_Pt30to80.config_dqmHistPlotter.type.value(),
         'drawOption' : styles.drawOption_QCD,
@@ -690,10 +572,6 @@ RECO_SAMPLES = {
         'skim_eff' : 736277./70708892,
         'factorize' : True,
         'x_sec' : 59480000*0.065*_picobarns, 
-        'applyZrecoilCorrection' : False,
-        'applyElectronTriggerEfficiencyCorrection' : True,
-        'applyElectronIsolationEfficiencyCorrection' : True,
-        'applyVertexMultiplicityReweighting' : False,
         'legendEntry' : plotter.process_QCD_EMenriched_Pt30to80.config_dqmHistPlotter.legendEntry.value(),
         'type' : plotter.process_QCD_EMenriched_Pt30to80.config_dqmHistPlotter.type.value(),
         'drawOption' : styles.drawOption_QCD,
@@ -705,10 +583,6 @@ RECO_SAMPLES = {
         'skim_eff' : 1.0,
         'factorize' : True,
         'x_sec' : 900000*0.155*_picobarns, 
-        'applyZrecoilCorrection' : False,
-        'applyElectronTriggerEfficiencyCorrection' : True,
-        'applyElectronIsolationEfficiencyCorrection' : True,
-        'applyVertexMultiplicityReweighting' : True,
         'legendEntry' : plotter.process_QCD_EMenriched_Pt80to170.config_dqmHistPlotter.legendEntry.value(),
         'type' : plotter.process_QCD_EMenriched_Pt80to170.config_dqmHistPlotter.type.value(),
         'drawOption' : styles.drawOption_QCD,
@@ -722,10 +596,6 @@ RECO_SAMPLES = {
         'skim_eff' : 74205./8069591,
         'factorize' : True,
         'x_sec' : 900000*0.155*_picobarns, 
-        'applyZrecoilCorrection' : False,
-        'applyElectronTriggerEfficiencyCorrection' : True,
-        'applyElectronIsolationEfficiencyCorrection' : True,
-        'applyVertexMultiplicityReweighting' : False,
         'legendEntry' : plotter.process_QCD_EMenriched_Pt80to170.config_dqmHistPlotter.legendEntry.value(),
         'type' : plotter.process_QCD_EMenriched_Pt80to170.config_dqmHistPlotter.type.value(),
         'drawOption' : styles.drawOption_QCD,
