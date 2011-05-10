@@ -187,6 +187,8 @@ def _setInputFileType(process, filetype, **kwargs):
             process.p.replace(patTupleProductionSequence, process.producePatTupleAll)
         if filetype == 'AOD':
             switchToAOD.switchToAOD(process)
+    if filetype == 'PATTuple':
+        switchToAOD.switchToAOD(process)
 
 @_requires(inputs=['Data', 'smMC', 'smSumMC', 'bsmMC',])
 def _setIsData(process, type, **kwargs):
