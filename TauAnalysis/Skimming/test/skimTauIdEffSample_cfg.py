@@ -8,7 +8,7 @@ process = cms.Process("skimTauIdEffSample")
 
 process.load('Configuration/StandardSequences/Services_cff')
 process.load('FWCore/MessageService/MessageLogger_cfi')
-process.MessageLogger.cerr.FwkReport.reportEvery = 1000
+process.MessageLogger.cerr.FwkReport.reportEvery = 1
 #process.MessageLogger.cerr.threshold = cms.untracked.string('INFO')
 process.load('Configuration/StandardSequences/GeometryIdeal_cff')
 process.load('Configuration/StandardSequences/MagneticField_cff')
@@ -26,15 +26,15 @@ process.maxEvents = cms.untracked.PSet(
 
 process.source = cms.Source("PoolSource",
     fileNames = cms.untracked.vstring(
-        'file:/data2/veelken/CMSSW_4_1_x/skims/ZtoMuTau/DYtautau_spring11_powhegZ2_1_1_XvY.root'
+         'file:/nfs/data4/verzetti/SingleMuPromptRecoV2_1_1_EUI.root'
         #'file:/data2/veelken/CMSSW_4_1_x/skims/ZtoMuTau/data2/veelken/CMSSW_4_1_x/skims/ZtoMuTau/data2011A_tauPlusX_AOD_1_1_MV9.root'
     )
 )
 
-isMC = True # use for MC
-##isMC = False # use for Data
-##HLTprocessName = "HLT" # use for 2011 Data
-HLTprocessName = "REDIGI311X" # use for Spring'11 reprocessed MC
+##isMC = True # use for MC
+isMC = False # use for Data
+HLTprocessName = "HLT" # use for 2011 Data
+#HLTprocessName = "REDIGI311X" # use for Spring'11 reprocessed MC
 pfCandidateCollection = "particleFlow" # pile-up removal disabled
 ##pfCandidateCollection = "pfNoPileUp" # pile-up removal enabled
 #--------------------------------------------------------------------------------
@@ -55,7 +55,7 @@ pfCandidateCollection = "particleFlow" # pile-up removal disabled
 if isMC:
     process.GlobalTag.globaltag = cms.string('START311_V2::All')
 else:
-    process.GlobalTag.globaltag = cms.string('GR_R_311_V2::All')
+    process.GlobalTag.globaltag = cms.string('GR_P_V14::All')
 #--------------------------------------------------------------------------------
 
 #--------------------------------------------------------------------------------
@@ -91,6 +91,36 @@ patTupleConfig = configurePatTupleProductionTauIdEffMeasSpecific(
     process, hltProcess = HLTprocessName, addGenInfo = isMC, applyZrecoilCorrection = False, runSVfit = False)
 #--------------------------------------------------------------------------------
 
+#------------------------------------------------------------------------------------------------------------------------
+#                                   Put the correct jet energy correction
+#------------------------------------------------------------------------------------------------------------------------
+#process.load('JetMETCorrections.Configuration.DefaultJEC_cff')
+#from CondCore.DBCommon.CondDBSetup_cfi import *
+process.load('CondCore.DBCommon.CondDBSetup_cfi')
+process.jec = cms.ESSource("PoolDBESSource",
+                           process.CondDBSetup,
+                           ## DBParameters = cms.PSet(
+                           ##     messageLevel = cms.untracked.int32(0)
+                           ##     ),
+                           ## timetype = cms.string('runnumber'),
+                           toGet = cms.VPSet(
+                               cms.PSet(record = cms.string("JetCorrectionsRecord"),
+                                        tag = cms.string("JetCorrectorParametersCollection_Jec10V3_AK5Calo"),#JetCorrectorParametersCollection_Jec11_V1_AK5Calo
+                                        label=cms.untracked.string("AK5Calo")),
+                               cms.PSet(record = cms.string("JetCorrectionsRecord"),
+                                        tag = cms.string("JetCorrectorParametersCollection_Jec10V3_AK5PF"),
+                                        label=cms.untracked.string("AK5PF")),                                   
+                               cms.PSet(record = cms.string("JetCorrectionsRecord"),
+                                        tag = cms.string("JetCorrectorParametersCollection_Jec10V3_AK5PFchs"),
+                                        label=cms.untracked.string("AK5PF"))
+                               ),
+                           ## here you add as many jet types as you need (AK5Calo, AK5JPT, AK7PF, AK7Calo, KT4PF, KT4Calo, KT6PF, KT6Calo)
+                           connect = cms.string('sqlite_file:/afs/cern.ch/user/m/mverzett/public/Jec10V3.db')
+                           #connect = cms.string("frontier://FrontierPrep/CMS_COND_PHYSICSTOOLS")
+                           )
+process.es_prefer_jec = cms.ESPrefer('PoolDBESSource','jec')
+#-------------------------------------------------------------------------------------------------------------------------
+
 process.p = cms.Path(
      process.prePatProductionSequence
    + process.patDefaultSequence
@@ -108,7 +138,7 @@ process.origFEVTSIMEventContent.outputCommands.extend(
 process.skimOutputModule = cms.OutputModule("PoolOutputModule",                                 
     process.origFEVTSIMEventContent,
     process.tauIdEffSampleEventSelection,
-    fileName = cms.untracked.string("tauIdEffSample_RECO.root")
+    fileName = cms.untracked.string("testOutput/tauIdEffSample_RECO_relval.root")
 )
 
 process.options = cms.untracked.PSet(
@@ -151,13 +181,21 @@ process.passedMuonPFTauHPSpTaNCskimPath = process.allEventCounts.clone(
 process.muonPFTauHPSpTaNCskimPath += process.passedMuonPFTauHPSpTaNCskimPath
 
 process.saveZtoMuTau_tauIdEffPlots = cms.EDAnalyzer("DQMSimpleFileSaver",
-    outputFileName = cms.string('plotsZtoMuTau_tauIdEff.root')
+    outputFileName = cms.string('testOutput/plotsZtoMuTau_tauIdEff_relval.root')
 )
+
+#-------------------------------------------------------------------------------------------------------------------------
+#                                          Counting Events For self babysitting
+#-------------------------------------------------------------------------------------------------------------------------
+process.totalEventsProcessed = cms.EDProducer("EventCountProducer")
+process.counterPath = cms.Path(process.totalEventsProcessed)
+#-------------------------------------------------------------------------------------------------------------------------
 
 process.o = cms.EndPath(process.skimOutputModule + process.saveZtoMuTau_tauIdEffPlots)
 
 # define order in which different paths are run
 process.schedule = cms.Schedule(
+    process.counterPath,
     process.p,
     process.muonCaloTauSkimPath,
     process.muonPFTauFixedConeSkimPath,
@@ -169,3 +207,5 @@ process.schedule = cms.Schedule(
 
 # print-out all python configuration parameter information
 #print process.dumpPython()
+#processDumpFile = open('oldDump.py' , 'w')
+#print >> processDumpFile, process.dumpPython()
