@@ -196,8 +196,8 @@ double NSVfitTauDecayLikelihoodMC<T>::operator()(const NSVfitSingleParticleHypot
 
   if ( currentDecayModeParameter_ ) {
     double momValue = 0.;
-    if      ( currentDecayModeParameter_->momType_ == kPt     ) momValue = hypothesis->p4().pt();
-    else if ( currentDecayModeParameter_->momType_ == kEnergy ) momValue = hypothesis->p4().energy();
+    if      ( currentDecayModeParameter_->momType_ == kPt     ) momValue = hypothesis->p4_fitted().pt();
+    else if ( currentDecayModeParameter_->momType_ == kEnergy ) momValue = hypothesis->p4_fitted().energy();
     else assert(0);
 
     double sepValue = 0.;
