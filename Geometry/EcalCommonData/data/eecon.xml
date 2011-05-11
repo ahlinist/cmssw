@@ -34,7 +34,7 @@
 
 <Constant name="ESFrontZ"         value=" 2972.3*mm + 4.7*mm"/>
 
-<Constant name="ESFrontToEEFrontinZ"     value=" 199.7*mm"/>
+<Constant name="ESFrontToEEFrontinZ"     value=" 199.7*mm + 0.3*mm"/>
 <Constant name="ESFrontToESRingFrontinZ" value=" 101.7*mm"/>
 
 <Constant name="EEFrontToNeckinZ"       value=" 739.5*mm - 5.0*mm"/>
