@@ -166,8 +166,10 @@ void CompositePtrCandidateT1T2MEtNSVfitHistManager<T1,T2>::bookHistogramsImp()
       book1D(*dqmStore_, dqmDirectory, "MassDPhi160to170", "MassDPhi160to170", 100, 0., 500.);
     (*massHypothesisEntry)->hMassDPhi140to160_ =
       book1D(*dqmStore_, dqmDirectory, "MassDPhi140to160", "MassDPhi140to160", 100, 0., 500.);
-    (*massHypothesisEntry)->hMassDPhiLt140_ =
-      book1D(*dqmStore_, dqmDirectory, "MassDPhiLt140", "MassDPhiLt140",       100, 0., 500.);
+    (*massHypothesisEntry)->hMassDPhi120to140_ =
+      book1D(*dqmStore_, dqmDirectory, "MassDPhi120to140", "MassDPhi120to140", 100, 0., 500.);
+    (*massHypothesisEntry)->hMassDPhiLt120_ =
+      book1D(*dqmStore_, dqmDirectory, "MassDPhiLt120", "MassDPhiLt120",       100, 0., 500.);
     (*massHypothesisEntry)->hDPhi_ = book1D(*dqmStore_, dqmDirectory, "DPhi", "DPhi", 36, -epsilon, TMath::Pi() + epsilon);
   }
 
@@ -388,7 +390,8 @@ void CompositePtrCandidateT1T2MEtNSVfitHistManager<T1,T2>::fillHistogramsImp(con
       else if ( dPhi > 170. ) (*massHypothesisEntry)->hMassDPhi170to175_->Fill(recMass, weight);
       else if ( dPhi > 160. ) (*massHypothesisEntry)->hMassDPhi160to170_->Fill(recMass, weight);
       else if ( dPhi > 140. ) (*massHypothesisEntry)->hMassDPhi140to160_->Fill(recMass, weight);
-      else                    (*massHypothesisEntry)->hMassDPhiLt140_->Fill(recMass, weight);
+      else if ( dPhi > 120. ) (*massHypothesisEntry)->hMassDPhi120to140_->Fill(recMass, weight);
+      else                    (*massHypothesisEntry)->hMassDPhiLt120_->Fill(recMass, weight);
       (*massHypothesisEntry)->hDPhi_->Fill(diTauCandidate->dPhi12(), weight);
 
       std::string leg1genDecayMode = genDecayMode(*diTauCandidate->leg1());

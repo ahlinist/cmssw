@@ -87,7 +87,8 @@ class CompositePtrCandidateT1T2MEtNSVfitHistManager : public HistManagerBase
     MonitorElement* hMassDPhi170to175_;
     MonitorElement* hMassDPhi160to170_;
     MonitorElement* hMassDPhi140to160_;
-    MonitorElement* hMassDPhiLt140_;
+    MonitorElement* hMassDPhi120to140_;
+    MonitorElement* hMassDPhiLt120_;
     MonitorElement* hDPhi_;
     
     typedef std::map<std::string, std::map<std::string, MonitorElement*> > decayModeMapType;
