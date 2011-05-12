@@ -90,7 +90,7 @@ flavorHistorySequence = cms.Sequence(
 
 #Selection step: require 1 high pt muon/electron
 preselection = cms.Sequence(
-    hltFilter +
+#    hltFilter +
     PVFilter +
     countLeptons  
     )

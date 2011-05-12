@@ -96,6 +96,7 @@ UnclusteredMETPy = cms.InputTag("UnclusteredMETPF","UnclusteredMETPy"),
 #process.source.fileNames = TChannel_ntuple
 
 process.source.fileNames = cms.untracked.vstring("file:TChannelMerged.root")
+process.source.fileNames = cms.untracked.vstring("file:/tmp/oiorio/edmntuple_TChannel_noMeta.root")
 
 #Output
 

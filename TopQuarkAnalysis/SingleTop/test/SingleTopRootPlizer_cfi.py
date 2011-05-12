@@ -25,8 +25,8 @@ leptonsEnergy = cms.InputTag("nTupleElectrons","tightElectronsE"),
 leptonsCharge = cms.InputTag("nTupleElectrons","tightElectronsCharge"),  
 leptonsRelIso = cms.InputTag("nTupleElectrons","tightElectronsRelIso"),  
 
-looseMuonsRelIso = cms.InputTag("nTupleLooseElectrons","looseElectronsRelIso"),  
-looseElectronsRelIso = cms.InputTag("nTupleLooseMuons","looseMuonsRelIso"),  
+looseElectronsRelIso = cms.InputTag("nTupleLooseElectrons","looseElectronsRelIso"),  
+looseMuonsRelIso = cms.InputTag("nTupleLooseMuons","looseMuonsRelIso"),  
 
 leptonsFlavour = cms.untracked.string("electron"),
 
