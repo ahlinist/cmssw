@@ -3,7 +3,7 @@
 *
 *
 *
-*\version  $Id: SingleTopSystematicsTreesDumper.cc,v 1.2 2011/04/25 23:53:39 oiorio Exp $ 
+*\version  $Id: SingleTopSystematicsTreesDumper.cc,v 1.3 2011/05/09 02:20:50 oiorio Exp $ 
 */
 // This analyzer dumps the histograms for all systematics listed in the cfg file 
 //
@@ -480,8 +480,11 @@ void SingleTopSystematicsTreesDumper::analyze(const Event& iEvent, const EventSe
       if(leptonRelIso>RelIsoCut)continue;
       if(leptonsFlavour_ == "electron"  ) {
 	if(leptonsID->size()==0)cout<< "warning requiring ele id of collection which has no entries! Check the leptonsFlavour parameter "<<endl;
+	cout << " debug flavour "<< leptonsFlavour_ <<" leptons ID " << leptonsID->at(i)<<endl;
 	float leptonID = leptonsID->at(i);
-	if (!(leptonID==5 || leptonID ==7))continue;}
+	if (!(leptonID==5 || leptonID ==7))continue;
+	
+      }
       
       float leptonPt = leptonsPt->at(i);
       float leptonPhi = leptonsPhi->at(i);
@@ -500,10 +503,11 @@ void SingleTopSystematicsTreesDumper::analyze(const Event& iEvent, const EventSe
       double metPt = sqrt(metPx*metPx+metPy*metPy);
       MTWValue =  sqrt((leptons.at(0).pt()+metPt)*(leptons.at(0).pt()+metPt)  -(leptons.at(0).px()+metPx)*(leptons.at(0).px()+metPx) -(leptons.at(0).py()+metPy)*(leptons.at(0).py()+metPy));
     }
-
     if(leptonsFlavour_=="muon") if((looseMuonsRelIso->size( )+ looseElectronsRelIso->size())>1) continue;//Loose muons size always >=1 due to presence of tight muon 
-    if(leptonsFlavour_=="electron") if((looseMuonsRelIso->size( ))>0) continue;//Electrons +1 loose muon vetoed. Loose electron veto is replaced by z veto (not done here yet)
-
+    if(leptonsFlavour_=="electron"){
+      cout << " debug flavour "<< leptonsFlavour_ <<" loose Muon size " << looseMuonsRelIso->size()<< " leptons size "<< leptons.size()<<" jets size " << jets.size() <<" b-jets size "<< bjets.size()<<" antibjets size "<< antibjets.size() <<endl;
+      if((looseMuonsRelIso->size())>0) continue;//Electrons +1 loose muon vetoed. Loose electron veto is replaced by z veto (not done here yet)
+    }
     //W control Sample
     if( lowestBTagPosition > -1 && highestBTagPosition > -1 && jets.size() ==2 &&  bjets.size()==0 ){
       if(highestBTagPosition == lowestBTagPosition)continue;
@@ -600,7 +604,8 @@ void SingleTopSystematicsTreesDumper::analyze(const Event& iEvent, const EventSe
       metPhi = METPhi->at(0);
 
       trees[syst_name]->Fill();
-      //      cout << " passes cuts pre-mtw, syst " << syst_name << " top mass "<< top.mass() << " cosTheta* "<< fCosThetaLJ << " fjetEta " << fabs(antibjets.at(0).eta()) << " top mass integral"  << TopMass[syst_name]->Integral() << " Forward jet eta integral  "<< ForwardJetEta[syst_name]->Integral()<< " CosThetaLJ integral " << CosThetaLJ[syst_name]->Integral()<< " Weight "  << Weight << " B Weight "<< BTagWeight <<endl;
+
+      if(leptonsFlavour_ =="electron" )cout << " passes cuts pre-mtw, syst " << syst_name << " top mass "<< top.mass() << " cosTheta* "<< fCosThetaLJ << " fjetEta " << fabs(antibjets.at(0).eta()) << " Weight "  << Weight << " B Weight "<< BTagWeight <<endl;
       
     }
 
@@ -975,7 +980,6 @@ void SingleTopSystematicsTreesDumper::endJob(){
       treesScan[step][syst]->CopyAddresses(treesScan[step]["noSyst"]); 
       treesScan[step][syst]->CopyEntries(treesScan[step]["noSyst"]); 
     }
-    
     
     //modify the weight by a constant factor    
     double tmpWeight = 0;
