@@ -13,7 +13,7 @@ Implementation:
 //
 // Authors:                              Seth Cooper (Minnesota)
 //         Created:  Tu Apr 26  10:46:22 CEST 2011
-// $Id: EcalCreateTimeCalibrations.cc,v 1.6 2011/05/05 15:01:46 scooper Exp $
+// $Id: EcalCreateTimeCalibrations.cc,v 1.7 2011/05/09 13:23:15 scooper Exp $
 //
 //
 
@@ -140,17 +140,20 @@ EcalCreateTimeCalibrations::analyze(edm::Event const& evt, edm::EventSetup const
     {
       for(int cryInBC=0; cryInBC < treeVars_.nXtalsInCluster[bCluster]; cryInBC++)
       {
-        sumTime += treeVars_.xtalInBCTime[bCluster][cryInBC];
-        numCrys++;
+        // loose amplitude cut on crys to use for event timing
+        if(treeVars_.xtalInBCAmplitudeADC[bCluster][cryInBC] > 12)
+        {
+          sumTime += treeVars_.xtalInBCTime[bCluster][cryInBC];
+          numCrys++;
+        }
       }
     }
-    //debug
-    //cout << "Number of EB crys in event: " << numEBcrys << endl;
 
     //XXX: Event cuts
-    if(sumTime/numCrys > avgTimeMax_ || sumTime/numCrys < avgTimeMin_)
+    float avgEvtTime = numCrys > 0 ? sumTime/numCrys : 0;
+    if(avgEvtTime > avgTimeMax_ || avgEvtTime < avgTimeMin_ || avgEvtTime==0)
     {
-      //cout << "Average event time: " << sumTime/numCrys  << " so event rejected." << endl;
+      //std::cout << "Average event time: " << avgEvtTime  << " so event rejected." << std::endl;
       continue;
     }
     // check BX, orbit, lumi, run, L1 tech/phys triggers
@@ -282,7 +285,7 @@ EcalCreateTimeCalibrations::analyze(edm::Event const& evt, edm::EventSetup const
   //Loop over all the crys
   for(int hashedIndex=0; hashedIndex < numTotalCrys_; ++hashedIndex)
   {
-    EcalCrystalTimingCalibration cryCalib;
+    EcalCrystalTimingCalibration* cryCalib;
     int ieta = 0;
     int iphi = 0;
     int x = 0;
@@ -299,7 +302,7 @@ EcalCreateTimeCalibrations::analyze(edm::Event const& evt, edm::EventSetup const
         continue;
       ieta = det.ieta();
       iphi = det.iphi();
-      cryCalib = *(ebCryCalibs[hashedIndex]);
+      cryCalib = ebCryCalibs[hashedIndex];
     }
     else
     {
@@ -309,19 +312,19 @@ EcalCreateTimeCalibrations::analyze(edm::Event const& evt, edm::EventSetup const
       x = det.ix();
       y = det.iy();
       zside = det.zside();
-      cryCalib = *(eeCryCalibs[hashedIndex-EBDetId::kSizeForDenseIndexing]);
+      cryCalib = eeCryCalibs[hashedIndex-EBDetId::kSizeForDenseIndexing];
     }
 
     //XXX: Filter events at default 0.5*meanE threshold
-    cryCalib.filterOutliers();
+    cryCalib->filterOutliers();
     
     //numPointsErasedHist_->Fill(numPointsErased);
     //chiSquaredTotalHist_->Fill(cryCalib.totalChi2);
-    double p1 = cryCalib.mean;
-    double p1err = cryCalib.meanE;
+    double p1 = cryCalib->mean;
+    double p1err = cryCalib->meanE;
     
     //Write cryTimingHists
-    std::vector<EcalTimingEvent> times = cryCalib.timingEvents;
+    std::vector<EcalTimingEvent> times = cryCalib->timingEvents;
     for(std::vector<EcalTimingEvent>::const_iterator timeItr = times.begin();
         timeItr != times.end(); ++timeItr)
     {
@@ -329,6 +332,7 @@ EcalCreateTimeCalibrations::analyze(edm::Event const& evt, edm::EventSetup const
       if(isEB)
       {
         cryTimingHistsEB_[hashedIndex]->Fill(timeItr->time,weight);
+
         //expectedStatPresHistEB_->Fill(sqrt(1/expectedPresSumEB));
         //expectedStatPresVsObservedMeanErrHistEB_->Fill(sigmaM,sqrt(1/expectedPresSumEB));
       }
@@ -351,8 +355,8 @@ EcalCreateTimeCalibrations::analyze(edm::Event const& evt, edm::EventSetup const
     {
       //cryDirEB->cd();
       cryTimingHistsEB_[hashedIndex]->Write();
-      hitsPerCryHistEB_->SetBinContent(hashedIndex+1,cryCalib.timingEvents.size());
-      hitsPerCryMapEB_->Fill(iphi,ieta,cryCalib.timingEvents.size());
+      hitsPerCryHistEB_->SetBinContent(hashedIndex+1,cryCalib->timingEvents.size());
+      hitsPerCryMapEB_->Fill(iphi,ieta,cryCalib->timingEvents.size());
     }
     else
     {
@@ -360,20 +364,20 @@ EcalCreateTimeCalibrations::analyze(edm::Event const& evt, edm::EventSetup const
       {
         //cryDirEEM->cd();
         cryTimingHistsEEM_[x-1][y-1]->Write();
-        hitsPerCryHistEEM_->SetBinContent(hashedIndex-EBDetId::kSizeForDenseIndexing+1,cryCalib.timingEvents.size());
-        hitsPerCryMapEEM_->Fill(x,y,cryCalib.timingEvents.size());
+        hitsPerCryHistEEM_->SetBinContent(hashedIndex-EBDetId::kSizeForDenseIndexing+1,cryCalib->timingEvents.size());
+        hitsPerCryMapEEM_->Fill(x,y,cryCalib->timingEvents.size());
       }
       else
       {
         //cryDirEEP->cd();
         cryTimingHistsEEP_[x-1][y-1]->Write();
-        hitsPerCryHistEEP_->SetBinContent(hashedIndex-EBDetId::kSizeForDenseIndexing+1,cryCalib.timingEvents.size());
-        hitsPerCryMapEEP_->Fill(x,y,cryCalib.timingEvents.size());
+        hitsPerCryHistEEP_->SetBinContent(hashedIndex-EBDetId::kSizeForDenseIndexing+1,cryCalib->timingEvents.size());
+        hitsPerCryMapEEP_->Fill(x,y,cryCalib->timingEvents.size());
       }
 
     }
 
-    if(p1err < 0.5 && p1err > 0)
+    if(p1err < 0.5 && p1err > 0 && cryCalib->timingEvents.size() >= 10)
     {
       cryCalibAvg+=p1;
       if(isEB)
@@ -415,13 +419,13 @@ EcalCreateTimeCalibrations::analyze(edm::Event const& evt, edm::EventSetup const
       if(isEB)
       {
         hashesToCalibrateToZeroEB.push_back(hashedIndex);
-        fileStreamProb << "EB Cry ( " << cryCalib.timingEvents.size() << " events) was calibrated to avg: " << ieta <<", " << iphi << ", hash: " << hashedIndex
+        fileStreamProb << "EB Cry ( " << cryCalib->timingEvents.size() << " events) was calibrated to avg: " << ieta <<", " << iphi << ", hash: " << hashedIndex
           << "\t Calib: " << p1 << "\t Error: " << p1err << std::endl;
       }
       else
       {
         hashesToCalibrateToZeroEE.push_back(hashedIndex-EBDetId::kSizeForDenseIndexing);
-        fileStreamProb << "EE Cry ( " << cryCalib.timingEvents.size() << " events) was calibrated to avg: " << ieta <<", " << iphi << ", hash: " << hashedIndex-61200
+        fileStreamProb << "EE Cry ( " << cryCalib->timingEvents.size() << " events) was calibrated to avg: " << ieta <<", " << iphi << ", hash: " << hashedIndex-61200
           << "\t Calib: " << p1 << "\t Error: " << p1err << std::endl;
       }
     }
@@ -432,25 +436,25 @@ EcalCreateTimeCalibrations::analyze(edm::Event const& evt, edm::EventSetup const
       //calibsVsErrorsEB_->Fill(p1err, p1 > 0 ? p1 : -1*p1);
       calibErrorHistEB_->Fill(p1err);
       calibErrorMapEB_->Fill(iphi,ieta,p1err);
-      sigmaHistEB_->Fill(cryCalib.stdDev);
-      sigmaMapEB_->Fill(iphi,ieta,cryCalib.stdDev);
+      sigmaHistEB_->Fill(cryCalib->stdDev);
+      sigmaMapEB_->Fill(iphi,ieta,cryCalib->stdDev);
     }
     else
     {
-      sigmaHistEE_->Fill(cryCalib.stdDev);
+      sigmaHistEE_->Fill(cryCalib->stdDev);
       if(zside < 0)
       {
         //calibsVsErrorsEEM->Fill(p1err, p1 > 0 ? p1 : -1*p1);
         calibErrorHistEEM_->Fill(p1err);
         calibErrorMapEEM_->Fill(x,y,p1err);
-        sigmaMapEEM_->Fill(x,y,cryCalib.stdDev);
+        sigmaMapEEM_->Fill(x,y,cryCalib->stdDev);
       }
       else
       {
         //calibsVsErrorsEEP->Fill(p1err, p1 > 0 ? p1 : -1*p1);
         calibErrorHistEEP_->Fill(p1err);
         calibErrorMapEEP_->Fill(x,y,p1err);
-        sigmaMapEEP_->Fill(x,y,cryCalib.stdDev);
+        sigmaMapEEP_->Fill(x,y,cryCalib->stdDev);
       }
     }
   }
@@ -465,14 +469,17 @@ EcalCreateTimeCalibrations::analyze(edm::Event const& evt, edm::EventSetup const
   numCrysCalibrated = hashesToCalibrateNormallyEB.size()+hashesToCalibrateNormallyEE.size();
   if(numCrysCalibrated > 0)
     cryCalibAvg/=numCrysCalibrated;
-  //cryCalibAvg-= 2.0833; // Global phase shift
 
   float originalCryCalibsEB[EBDetId::kSizeForDenseIndexing];
   float originalCryCalibsEE[EEDetId::kSizeForDenseIndexing];
+  for(int i=0; i < EBDetId::kSizeForDenseIndexing ; ++i)
+    originalCryCalibsEB[i] = 0;
+  for(int i=0; i < EEDetId::kSizeForDenseIndexing ; ++i)
+    originalCryCalibsEE[i] = 0;
   float originalOffsetEB = 0;
   float originalOffsetEE = 0;
-  // avg original calibs
   float originalCalibAvg = 0;
+  // avg original calibs
   if(subtractDBcalibs_)
     set(es);
   // Loop over all crys
@@ -517,15 +524,15 @@ EcalCreateTimeCalibrations::analyze(edm::Event const& evt, edm::EventSetup const
     else
       originalCryCalibsEE[hashedIndex-EBDetId::kSizeForDenseIndexing]=0;
   }
-  originalCalibAvg/=numTotalCrys_;
-
+  
   if(subtractDBcalibs_)
   {
+    originalCalibAvg/=numTotalCrys_;
     // get orig time offsets
     originalOffsetEB = origTimeOffsetConstHandle->getEBValue();
     originalOffsetEE = origTimeOffsetConstHandle->getEEValue();
   }
-
+  
 
   //Loop over all the crys to calibrate normally -- EB
   for(std::vector<int>::const_iterator hashItr = hashesToCalibrateNormallyEB.begin();
@@ -534,14 +541,20 @@ EcalCreateTimeCalibrations::analyze(edm::Event const& evt, edm::EventSetup const
     EBDetId det = EBDetId::unhashIndex(*hashItr);
     if(det==EBDetId())
       continue;
-    EcalCrystalTimingCalibration cryCalib = *(ebCryCalibs[*hashItr]);
+    int hashedIndex = *hashItr;
+    EcalCrystalTimingCalibration cryCalib = *(ebCryCalibs[hashedIndex]);
     // Make timing calibs
     //definition: -<RECO_i>_evt+oldConst_i-<oldConst>_cry+<<RECO_i>evt>cry
     //               -p1                                    cryCalibAvg
     double recoAvg = cryCalib.mean;
     double p1err = cryCalib.meanE;
+    double p1 = 0;
     // Make it so we can add calib to reco time
-    double p1 = -1*recoAvg+originalCryCalibsEB[*hashItr]-originalCalibAvg+cryCalibAvg;
+    if(disableGlobalShift_)
+      p1 = -1*recoAvg+originalCryCalibsEB[*hashItr]+originalOffsetEB;
+    else
+      p1 = -1*recoAvg+originalCryCalibsEB[*hashItr]-originalCalibAvg+cryCalibAvg;
+
     fileStream << "EB\t" << *hashItr << "\t" << p1 << "\t\t" << p1err << std::endl;
     //Store in timeCalibration container
     EcalTimeCalibConstant tcConstant = p1;
@@ -561,8 +574,13 @@ EcalCreateTimeCalibrations::analyze(edm::Event const& evt, edm::EventSetup const
     // Make timing calibs
     double recoAvg = cryCalib.mean;
     double p1err = cryCalib.meanE;
+    double p1 = 0;
     // Make it so we can add calib to reco time
-    double p1 = -1*recoAvg+originalCryCalibsEE[*hashItr]-originalCalibAvg+cryCalibAvg;
+    if(disableGlobalShift_)
+      p1 = -1*recoAvg+originalCryCalibsEE[*hashItr]+originalOffsetEE;
+    else
+      p1 = -1*recoAvg+originalCryCalibsEE[*hashItr]-originalCalibAvg+cryCalibAvg;
+
     fileStream << "EE\t" << *hashItr << "\t" << p1 << "\t\t" << p1err << std::endl;
     //Store in timeCalibration container
     EcalTimeCalibConstant tcConstant = p1;
@@ -581,7 +599,11 @@ EcalCreateTimeCalibrations::analyze(edm::Event const& evt, edm::EventSetup const
     if(det==EBDetId())
       continue;
     //Store in timeCalibration container
-    double p1 = originalCryCalibsEB[*hashItr]-originalCalibAvg+cryCalibAvg;
+    double p1 = 0;
+    if(disableGlobalShift_)
+      p1 = originalCryCalibsEB[*hashItr]+originalOffsetEB;
+    else
+      p1 = originalCryCalibsEB[*hashItr]-originalCalibAvg+cryCalibAvg;
     double p1err = 999;
     EcalTimeCalibConstant tcConstant = p1;
     EcalTimeCalibError tcError = p1err;
@@ -597,7 +619,11 @@ EcalCreateTimeCalibrations::analyze(edm::Event const& evt, edm::EventSetup const
     if(det==EEDetId())
       continue;
     //Store in timeCalibration container
-    double p1 = originalCryCalibsEE[*hashItr]-originalCalibAvg+cryCalibAvg;
+    double p1 = 0;
+    if(disableGlobalShift_)
+      p1 = originalCryCalibsEE[*hashItr]+originalOffsetEE;
+    else
+      p1 = originalCryCalibsEE[*hashItr]-originalCalibAvg+cryCalibAvg;
     double p1err = 999;
     EcalTimeCalibConstant tcConstant = p1;
     EcalTimeCalibError tcError = p1err;
@@ -607,36 +633,15 @@ EcalCreateTimeCalibrations::analyze(edm::Event const& evt, edm::EventSetup const
   }
 
   // global time offset
-  timeOffsetConstant.setEBValue(originalOffsetEB+originalCalibAvg-cryCalibAvg);
-  timeOffsetConstant.setEEValue(originalOffsetEE+originalCalibAvg-cryCalibAvg);
-
   if(disableGlobalShift_)
   {
     timeOffsetConstant.setEBValue(0);
     timeOffsetConstant.setEEValue(0);
-
-    for(int hash=0; hash < numTotalCrys_; ++hash)
-    {
-      DetId det = 0;
-      bool isEB = true;
-      if(hash >= EBDetId::kSizeForDenseIndexing)
-        isEB = false;
-
-      if(isEB)
-      {
-        det = EBDetId::unhashIndex(hash);
-        if(det==EBDetId())
-          continue;
-        timeCalibConstants[det.rawId()]+=originalOffsetEB+originalCalibAvg-cryCalibAvg;
-      }
-      else
-      {
-        det = EEDetId::unhashIndex(hash-EBDetId::kSizeForDenseIndexing);
-        if(det==EEDetId())
-          continue;
-        timeCalibConstants[det.rawId()]+=originalOffsetEE+originalCalibAvg-cryCalibAvg;
-      }
-    }
+  }
+  else
+  {
+    timeOffsetConstant.setEBValue(originalOffsetEB+originalCalibAvg-cryCalibAvg);
+    timeOffsetConstant.setEEValue(originalOffsetEE+originalCalibAvg-cryCalibAvg);
   }
 
 
