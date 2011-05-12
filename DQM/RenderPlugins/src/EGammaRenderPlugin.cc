@@ -23,11 +23,11 @@ public:
       // egamma filter
       if ( o.name.find( "Egamma/") == std::string::npos )
         return false;
-           
+
       // electrons
       if ( o.name.find( "/Electrons/Ele") != std::string::npos )
         return true;
-           
+
       // photons
 
       if (o.name.find( "PhotonAnalyzer/" ) == std::string::npos)
@@ -59,12 +59,12 @@ public:
       if ( o.name.find( "/Electrons/Ele") != std::string::npos )
        {
         TH1 * histo = dynamic_cast<TH1*>(o.object) ;
-        assert(histo) ;
-        
+        if (!histo) return ;
+
         TString histo_option = histo->GetOption() ;
         if ((histo_option.Contains("ELE_LOGY")==kTRUE)&&(histo->GetMaximum()>0))
         { c->SetLogy(1) ; }
-         
+
         if ( dynamic_cast<TH2*>(o.object) )
          {
           gStyle->SetPalette(1) ;
@@ -74,10 +74,10 @@ public:
          { gStyle->SetOptStat(110) ; }
         else // TH1
          { gStyle->SetOptStat(111110) ; }
-        
+
         return ;
        }
-             
+
       // photons
       if( dynamic_cast<TH2F*>( o.object ) )
       {
@@ -97,11 +97,11 @@ public:
   virtual void postDraw( TCanvas *c, const VisDQMObject &o, const VisDQMImgInfo & )
     {
       c->cd();
-      
+
       // electrons : do nothing
       if ( o.name.find( "/Electrons/Ele") != std::string::npos )
        { return ; }
-             
+
       // photons
       if( dynamic_cast<TH1F*>( o.object ) )
       {
@@ -159,11 +159,11 @@ private:
 
   void preDrawTProfile( TCanvas *c, const VisDQMObject &o )
     {
-    
+
       c->cd();
       TProfile* obj = dynamic_cast<TProfile*>( o.object );
       assert( obj );
-         
+
       gStyle->SetOptStat("em");
 
     }
@@ -172,7 +172,7 @@ private:
     {
       TH1F* obj = dynamic_cast<TH1F*>( o.object );
       assert( obj );
-      
+
       //gStyle->SetOptStat(11);
       obj->SetMinimum(0);
 
