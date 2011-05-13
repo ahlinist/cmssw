@@ -13,7 +13,7 @@
 //
 // Original Author:  Chi Nhan Nguyen
 //         Created:  Wed Oct  1 13:04:54 CEST 2008
-// $Id: TTEffAnalyzer.cc,v 1.51 2011/01/10 14:56:23 slehti Exp $
+// $Id: TTEffAnalyzer.cc,v 1.52 2011/05/13 10:10:01 slehti Exp $
 //
 //
 
@@ -37,6 +37,7 @@ TTEffAnalyzer::TTEffAnalyzer(const edm::ParameterSet& iConfig):
   MCTaus_(iConfig.getParameter<edm::InputTag>("MCTauCollection")),
   MCParticles_(iConfig.getParameter<edm::InputTag>("GenParticleCollection")),
   PFTauMuonRej_(iConfig.getParameter<edm::InputTag>("PFTauMuonRejectionCollection")),
+  PFTauElectronRej_(iConfig.getParameter<edm::InputTag>("PFTauElectronRejectionCollection")),
   rootFile_(iConfig.getParameter<std::string>("outputFileName")),
   _hltFlag(new bool[512]),
   MCMatchingCone(iConfig.getParameter<double>("MCMatchingCone"))
@@ -177,6 +178,10 @@ TTEffAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
        if(!thePFTauDiscriminatorAgainstMuon.isValid()) {
          edm::LogWarning("TTEffAnalyzer")<<"No DiscriminatorAgainstMuon with label "<<PFTauMuonRej_<<" found!"<<endl;
        }
+       iEvent.getByLabel(PFTauElectronRej_,thePFTauDiscriminatorAgainstElectron);
+       if(!thePFTauDiscriminatorAgainstElectron.isValid()) {
+         edm::LogWarning("TTEffAnalyzer")<<"No DiscriminatorAgainstElectron with label "<<PFTauElectronRej_<<" found!"<<endl;
+       }
        
 	 
        iEvent.getByLabel(MCTaus_, mcTaus);
@@ -296,6 +301,14 @@ using namespace reco;
       PFMuonMatch = 0;
     }
   }
+  if(thePFTauDiscriminatorAgainstElectron.isValid()){
+    const PFTauDiscriminator & ds = *(thePFTauDiscriminatorAgainstElectron.product());
+    if (ds[thisTauRef]>0.5) {
+      PFElectronMatch = 1;
+    } else {
+      PFElectronMatch = 0;
+    }
+  }
    
   MCMatch = 0;
   if(mcTaus.isValid()){
@@ -411,6 +424,14 @@ using namespace reco;
 	    PFMuonMatch = 0;
 	  }
 	}
+        if(thePFTauDiscriminatorAgainstElectron.isValid()){
+          const PFTauDiscriminator & ds = *(thePFTauDiscriminatorAgainstElectron.product());
+          if (ds[thisTauRef]>0.5) {
+            PFElectronMatch = 1;
+          } else {
+            PFElectronMatch = 0;
+          }
+        }
 
 	if(thisTauRef->leadPFChargedHadrCand().isNonnull()) PFInvPt = 1./thisTauRef->leadPFChargedHadrCand()->pt();
 	// Fill common variables

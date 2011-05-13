@@ -65,7 +65,7 @@ else:
 
 process.load('Configuration/StandardSequences/FrontierConditions_GlobalTag_cff')
 if (isData):
-    process.GlobalTag.globaltag = 'GR_R_311_V2::All'
+    process.GlobalTag.globaltag = 'GR_R_311_V4::All'
 #    process.GlobalTag.globaltag = 'TESTL1_GR_P::All'
 else:
     process.GlobalTag.globaltag = 'START311_V2A::All'
@@ -83,7 +83,8 @@ process.TTEffAnalysis = cms.EDAnalyzer("TTEffAnalyzer",
         DoMCTauEfficiency       = cms.bool(False), #if true: per MCTau cand; default is false: per offline tau cand
         LoopingOver	        = cms.InputTag("TTEffPFTausSelected"),
         PFTauIsoCollection      = cms.InputTag("TTEffPFTauDiscriminationByIsolation"),
-        PFTauMuonRejectionCollection      = cms.InputTag("TTEffPFTauDiscriminationAgainstMuon"),
+        PFTauMuonRejectionCollection     = cms.InputTag("TTEffPFTauDiscriminationAgainstMuon"),
+	PFTauElectronRejectionCollection = cms.InputTag("TTEffPFTauDiscriminationAgainstElectron"),
 
 	HLTMETSource		= cms.InputTag("hltMet"),
 	METSource		= cms.InputTag("pfMet"),
@@ -159,6 +160,15 @@ process.TTEffAnalysisHLTPFTauTight.l25JetSource = cms.InputTag("hltPFTauTagInfo"
 process.TTEffAnalysisHLTPFTauTight.l25PtCutSource = cms.InputTag("hltPFTausTightCone")
 process.TTEffAnalysisHLTPFTauTight.HLTPFTau = cms.bool(True)
 
+process.TTEffAnalysisHLTPFTauTightHPS = process.TTEffAnalysis.clone()
+process.TTEffAnalysisHLTPFTauTightHPS.LoopingOver = cms.InputTag("hpsPFTauProducer")
+process.TTEffAnalysisHLTPFTauTightHPS.PFTauIsoCollection = cms.InputTag("hpsPFTauDiscriminationByVLooseIsolation")
+process.TTEffAnalysisHLTPFTauTightHPS.PFTauMuonRejectionCollection = cms.InputTag("hpsPFTauDiscriminationByTightMuonRejection")
+process.TTEffAnalysisHLTPFTauTightHPS.PFTauElectronRejectionCollection = cms.InputTag("hpsPFTauDiscriminationByMediumElectronRejection")
+process.TTEffAnalysisHLTPFTauTightHPS.outputFileName = cms.string("tteffAnalysis-hltpftautight-hpspftau.root");
+process.TTEffAnalysisHLTPFTauTightHPS.l25JetSource = cms.InputTag("hltPFTauTagInfo")
+process.TTEffAnalysisHLTPFTauTightHPS.l25PtCutSource = cms.InputTag("hltPFTausTightCone")
+process.TTEffAnalysisHLTPFTauTightHPS.HLTPFTau = cms.bool(True)
 
 process.TauMCProducer = cms.EDProducer("HLTTauMCProducer",
 GenParticles  = cms.untracked.InputTag("genParticles"),
@@ -189,7 +199,7 @@ process.runTTEffAna += process.TTEffAnalysisL1Tau
 process.runTTEffAna += process.TTEffAnalysisL1Cen
 process.runTTEffAna += process.TTEffAnalysisHLTPFTau
 process.runTTEffAna += process.TTEffAnalysisHLTPFTauTight
-
+process.runTTEffAna += process.TTEffAnalysisHLTPFTauTightHPS
 
 process.o1 = cms.OutputModule("PoolOutputModule",
     outputCommands = cms.untracked.vstring("keep *"),

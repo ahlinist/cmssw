@@ -13,7 +13,7 @@
 //
 // Original Author:  Chi Nhan Nguyen
 //         Created:  Wed Oct  1 13:04:54 CEST 2008
-// $Id: TTEffAnalyzer.h,v 1.41 2011/01/03 12:59:37 slehti Exp $
+// $Id: TTEffAnalyzer.h,v 1.42 2011/01/10 14:56:23 slehti Exp $
 //
 //
 
@@ -85,7 +85,7 @@ class TTEffAnalyzer : public edm::EDAnalyzer {
       bool DoMCTauEfficiency_;
       edm::InputTag HLTResultsSource;
       edm::TriggerNames _triggerNames;
-      edm::InputTag  PFTaus_,PFTauIso_,MCTaus_,MCParticles_,PFTauMuonRej_; //Path to analyze
+      edm::InputTag  PFTaus_,PFTauIso_,MCTaus_,MCParticles_,PFTauMuonRej_,PFTauElectronRej_; //Path to analyze
       std::string rootFile_;
 
       int _HltEvtCnt;
@@ -94,6 +94,7 @@ class TTEffAnalyzer : public edm::EDAnalyzer {
       edm::Handle<PFTauCollection> PFTaus;
       edm::Handle<PFTauDiscriminator> thePFTauDiscriminatorByIsolation;
       edm::Handle<PFTauDiscriminator> thePFTauDiscriminatorAgainstMuon;
+      edm::Handle<PFTauDiscriminator> thePFTauDiscriminatorAgainstElectron;
       edm::Handle<std::vector<LorentzVector> > mcTaus;
       edm::Handle<reco::GenParticleCollection> mcParticles;
 
