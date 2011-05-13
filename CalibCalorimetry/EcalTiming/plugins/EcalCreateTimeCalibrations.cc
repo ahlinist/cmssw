@@ -13,7 +13,7 @@ Implementation:
 //
 // Authors:                              Seth Cooper (Minnesota)
 //         Created:  Tu Apr 26  10:46:22 CEST 2011
-// $Id: EcalCreateTimeCalibrations.cc,v 1.7 2011/05/09 13:23:15 scooper Exp $
+// $Id: EcalCreateTimeCalibrations.cc,v 1.8 2011/05/12 08:18:42 scooper Exp $
 //
 //
 
@@ -601,9 +601,7 @@ EcalCreateTimeCalibrations::analyze(edm::Event const& evt, edm::EventSetup const
     //Store in timeCalibration container
     double p1 = 0;
     if(disableGlobalShift_)
-      p1 = originalCryCalibsEB[*hashItr]+originalOffsetEB;
-    else
-      p1 = originalCryCalibsEB[*hashItr]-originalCalibAvg+cryCalibAvg;
+      p1 = originalCryCalibsEB[*hashItr]+originalOffsetEB-cryCalibAvg;
     double p1err = 999;
     EcalTimeCalibConstant tcConstant = p1;
     EcalTimeCalibError tcError = p1err;
@@ -621,9 +619,7 @@ EcalCreateTimeCalibrations::analyze(edm::Event const& evt, edm::EventSetup const
     //Store in timeCalibration container
     double p1 = 0;
     if(disableGlobalShift_)
-      p1 = originalCryCalibsEE[*hashItr]+originalOffsetEE;
-    else
-      p1 = originalCryCalibsEE[*hashItr]-originalCalibAvg+cryCalibAvg;
+      p1 = originalCryCalibsEE[*hashItr]+originalOffsetEE-cryCalibAvg;
     double p1err = 999;
     EcalTimeCalibConstant tcConstant = p1;
     EcalTimeCalibError tcError = p1err;
