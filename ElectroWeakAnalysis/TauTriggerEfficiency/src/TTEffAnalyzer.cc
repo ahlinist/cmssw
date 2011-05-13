@@ -13,7 +13,7 @@
 //
 // Original Author:  Chi Nhan Nguyen
 //         Created:  Wed Oct  1 13:04:54 CEST 2008
-// $Id: TTEffAnalyzer.cc,v 1.50 2011/01/03 12:59:38 slehti Exp $
+// $Id: TTEffAnalyzer.cc,v 1.51 2011/01/10 14:56:23 slehti Exp $
 //
 //
 
@@ -363,8 +363,9 @@ using namespace reco;
   PFClusterDrRMS = rms[2];
 
   // HCAL+ECAL energies and fractions
-  const reco::PFTauTagInfoRef& tauTagInfo = thisTauRef->pfTauTagInfoRef();
-  const reco::PFJetRef& tauJet = tauTagInfo->pfjetRef();
+////  const reco::PFTauTagInfoRef& tauTagInfo = thisTauRef->pfTauTagInfoRef();
+////  const reco::PFJetRef& tauJet = tauTagInfo->pfjetRef();
+  const reco::PFJetRef& tauJet = thisTauRef->jetRef();
   pfJetChargedEmEnergy             = tauJet->chargedEmEnergy();
   pfJetChargedEmEnergyFraction     = tauJet->chargedEmEnergyFraction();
   pfJetChargedHadronEnergy         = tauJet->chargedHadronEnergy();

@@ -1,7 +1,7 @@
 import FWCore.ParameterSet.Config as cms
 import copy
 
-isData = 1
+isData = 0
 useMuonSkim = 0
 hltType = "HLT"
 #hltType = "REDIGI38X"
@@ -29,7 +29,7 @@ process.MessageLogger.cerr.threshold = 'INFO'
 process.options   = cms.untracked.PSet( wantSummary = cms.untracked.bool(True) )
 
 process.configurationMetadata = cms.untracked.PSet(
-    version = cms.untracked.string('$Revision: 1.13 $'),
+    version = cms.untracked.string('$Revision: 1.14 $'),
     annotation = cms.untracked.string('reco nevts:1'),
     name = cms.untracked.string('PyReleaseValidation')
 )
@@ -144,6 +144,7 @@ process.FEVTEventContent.outputCommands.append('keep HcalNoiseSummary_*_*_*')
 process.FEVTEventContent.outputCommands.append('keep recoPFMETs_*_*_*')
 process.FEVTEventContent.outputCommands.append('keep *_l1extraParticles_*_*')
 process.FEVTEventContent.outputCommands.append('keep L1GlobalTriggerReadoutRecord_*_*_*')
+process.FEVTEventContent.outputCommands.append('keep recoBeamSpot_*_*_*')
 #process.FEVTEventContent.outputCommands.append('keep *')
 process.output = cms.OutputModule("PoolOutputModule",
     splitLevel = cms.untracked.int32(0),
