@@ -29,7 +29,8 @@ process.MessageLogger.cerr.TTEffAnalyzer = cms.untracked.PSet(limit = cms.untrac
 # process.MessageLogger.cerr.threshold = cms.untracked.string("WARNING") # print LogWarnings and above
 
 process.options = cms.untracked.PSet(
-    wantSummary = cms.untracked.bool(True)
+#    wantSummary = cms.untracked.bool(True)
+    wantSummary = cms.untracked.bool(False)
 )
 
 #Mike needs Calo Geometry

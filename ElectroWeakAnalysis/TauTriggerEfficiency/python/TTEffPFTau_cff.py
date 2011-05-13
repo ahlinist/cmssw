@@ -1,6 +1,11 @@
 import FWCore.ParameterSet.Config as cms
 import copy
 
+from RecoTauTag.RecoTau.RecoTauPiZeroProducer_cfi import ak5PFJetsRecoTauPiZeros
+#TTEffak5PFJetsRecoTauPiZeros = ak5PFJetsRecoTauPiZeros.clone()
+
+from RecoTauTag.Configuration.RecoPFTauTag_cff import *
+
 from RecoJets.JetAssociationProducers.ic5PFJetTracksAssociatorAtVertex_cfi import ic5PFJetTracksAssociatorAtVertex
 TTEffak5PFJetTracksAssociatorAtVertex = ic5PFJetTracksAssociatorAtVertex.clone()
 TTEffak5PFJetTracksAssociatorAtVertex.jets = cms.InputTag("ak5PFJets")
@@ -10,7 +15,7 @@ TTEffPFTauTagInfoProducer.tkminPt = cms.double(0.5)
 TTEffPFTauTagInfoProducer.ChargedHadrCand_tkminPt = cms.double(0.5)
 TTEffPFTauTagInfoProducer.PFJetTracksAssociatorProducer = cms.InputTag("TTEffak5PFJetTracksAssociatorAtVertex")
 
-from RecoTauTag.Configuration.FixedConePFTaus_cfi import fixedConePFTauProducer
+from RecoTauTag.Configuration.FixedConePFTaus_cff import fixedConePFTauProducer
 TTEffFixedConePFTauProducer = copy.deepcopy(fixedConePFTauProducer)
 TTEffFixedConePFTauProducer.PFTauTagInfoProducer = cms.InputTag("TTEffPFTauTagInfoProducer")
 
@@ -59,8 +64,11 @@ TTEffPFTauDiscriminationAgainstMuon.PFTauProducer = cms.InputTag('TTEffPFTausSel
 TTEffPFTauDiscriminationAgainstMuon.Prediscriminants.leadTrack.Producer = cms.InputTag('TTEffPFTauDiscriminationByLeadingTrackFinding')
 
 TTEffPFTau = cms.Sequence(
+	PFTau *
         TTEffak5PFJetTracksAssociatorAtVertex *
         TTEffPFTauTagInfoProducer *
+#	recoTauCommonSequence *
+	ak5PFJetsRecoTauPiZeros *
         TTEffFixedConePFTauProducer *
         TTEffPFTauDiscriminationByLeadingPionPtCut *
         TTEffPFTausSelected *
