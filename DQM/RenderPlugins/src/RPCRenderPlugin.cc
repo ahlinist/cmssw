@@ -25,7 +25,7 @@ public:
       if  (o.name.find( "RPC/RPCEfficiency" ) != std::string::npos ) return true;
       if  (o.name.find( "RPC/FEDIntegrity" ) != std::string::npos ) return true;
       if  (o.name.find("RPC/EventInfo") != std::string::npos) return true;      
-
+      if  (o.name.find("RPC/AllHits") != std::string::npos) return true; 
       return false;
     }
 
