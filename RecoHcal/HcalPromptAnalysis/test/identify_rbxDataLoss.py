@@ -19,6 +19,7 @@ import optparse
 import commands
 
 from DataFormats.FWLite import Events, Handle
+from ROOT import TH1F, TH2F, TFile
 
 ##############################################
 # Get options
@@ -34,6 +35,10 @@ parser.add_option ('--ds', dest='dataset', type='string',
                    default = '/Jet/Run2011A-PromptReco-v2/RECO',
                    help="dataset to process\n (%default)")
 
+parser.add_option ('--f', dest='infile', type='string',
+                   default = '0',
+                   help="Use this input file instead of finding data in castor")
+
 parser.add_option ('--skip_to_ls', dest='skip_to_ls', type='int', nargs = 2,
                    default = '-1',
                    help="LS range to process (All)")
@@ -42,8 +47,14 @@ parser.add_option ('--noStartTime', dest='doStartTime', action="store_false",
                    default = 'True',
                    help="do not try to get start time w/ 1 sec precision. faster.")
 
+parser.add_option ('--doHists', dest='doHists', action="store_true",
+                   default = 'False',
+                   help="Make root file containing hists for debugging.")
+
 options, args = parser.parse_args()
 
+doHists = options.doHists
+infile = options.infile
 doStartTime = options.doStartTime
 dataset = options.dataset
 runnum = options.runnum
@@ -63,8 +74,7 @@ else:
     for arg in args:
         tmp_rbx_list.append(arg)
 
-# Make sure that RBXes are labeled as HBM09 instead of HBM9
-
+# Make sure that RBXes are labeled as HBM09 instead of HBM9, for instance
 rbx_list = []
 for rbx in tmp_rbx_list:
     det = 0; side = 0; num = 0
@@ -80,9 +90,9 @@ for rbx in tmp_rbx_list:
         print "Unexpected RBX name. Exiting."
         sys.exit()
 
-    # this has the same effect for num = "09" and "9":
-
+    # this line has the same effect for num = "09" and "9":
     if int(num) < 10: rbx = det+side+"0"+str(int(num))
+    
     rbx_list.append(rbx)
 
 ############################################################
@@ -106,43 +116,42 @@ def findFiles(runnum, dataset):
     return tempfiles
 
 
-
-tempfiles = findFiles(runnum, dataset)
-
-if len(tempfiles) == 0 and dataset == "/Jet/Run2011A-PromptReco-v2/RECO":
-    dataset
-    print "No files found in /Jet/Run2011A-PromptReco-v2/RECO.  Trying v1."
-
-    dataset = "/Jet/Run2011A-PromptReco-v1/RECO"
-    tempfiles = findFiles(runnum, dataset)
-
-    if len(tempfiles) == 0:
-        print "No files found in /Jet/Run2011A-PromptReco-v2/RECO or -v1."
-        print "Please specify dataset with --ds option.  Exiting."
-        sys.exit()
-
 print "Searching for RBX data loss"
 print "  in RBXes =",
 for rbx in rbx_list: print rbx,
-print ""
 print "  in run =", runnum
-print "  in dataset =", dataset
 
-#tempfiles = [
-#'/store/data/Run2011A/Jet/RECO/PromptReco-v2/000/163/337/F86615A2-2370-E011-B5F3-0019DB2F3F9A.root',
-#'/store/data/Run2011A/Jet/RECO/PromptReco-v2/000/163/337/B4994D64-2670-E011-AB58-003048F024F6.root',
-#'/store/data/Run2011A/Jet/RECO/PromptReco-v2/000/163/337/A28C8D20-1270-E011-B98D-003048D2BE12.root',
-#'/store/data/Run2011A/Jet/RECO/PromptReco-v2/000/163/337/5A5F9CD5-2270-E011-92D1-001617E30CD4.root',
-#'/store/data/Run2011A/Jet/RECO/PromptReco-v2/000/163/337/0C09D722-1270-E011-B532-003048F118C2.root'
-#]
 
-cernRecoString = 'rfio:/castor/cern.ch/cms/'
-#cernExpString = 'rfio://castorcms/?svcClass=t0express&path=/castor/cern.ch/cms'
-#fnalString = 'dcap://cmsdca.fnal.gov:24136/pnfs/fnal.gov/usr/cms/WAX/11'
-prefix = cernRecoString
 files = []
-for tempfile in tempfiles:
-    files.append(prefix+tempfile)
+if infile != "0":
+    files.append(infile)
+    print "  in file =", infile
+else:
+    tempfiles = findFiles(runnum, dataset)
+
+    if len(tempfiles) == 0 and dataset == "/Jet/Run2011A-PromptReco-v2/RECO":
+        dataset
+        print "No files found in /Jet/Run2011A-PromptReco-v2/RECO.  Trying v1."
+
+        dataset = "/Jet/Run2011A-PromptReco-v1/RECO"
+        tempfiles = findFiles(runnum, dataset)
+
+        if len(tempfiles) == 0:
+            print "No files found in /Jet/Run2011A-PromptReco-v2/RECO or -v1."
+            print "Please specify dataset with --ds option.  Exiting."
+            sys.exit()
+
+    print "  in dataset =", dataset
+
+
+    cernRecoString = 'rfio:/castor/cern.ch/cms/'
+    #cernExpString = 'rfio://castorcms/?svcClass=t0express&path=/castor/cern.ch/cms'
+    #fnalString = 'dcap://cmsdca.fnal.gov:24136/pnfs/fnal.gov/usr/cms/WAX/11'
+    prefix = cernRecoString
+
+    for tempfile in tempfiles:
+        files.append(prefix+tempfile)
+        
 
 ############################################################
 # Make map from (ieta, iphi, depth) to (detector, side, irbx)
@@ -175,13 +184,12 @@ def getHBHERBX(ieta, iphi, idep):
 
     ieta = abs(ieta)
 
-    if ieta <= 14 and idep == 1  : idet = "HB"
+    if   ieta <= 14 and idep == 1: idet = "HB"
     elif ieta == 15 and idep <= 2: idet = "HB"
     elif ieta == 16 and idep <= 2: idet = "HB"
-    elif ieta == 16 and idep == 3: idet = "HE"
     elif ieta == 17 and idep == 1: idet = "HE"
-    elif ieta <= 26 and idep <= 2: idet = "HE"
-    elif ieta <= 28 and idep <= 3: idet = "HE"
+    elif ieta <= 28 and ieta >= 18 and idep <= 2: idet = "HE"
+    elif (ieta == 28 or ieta == 27 or ieta == 16) and idep == 3: idet = "HE"
     else: idet = False
 
     irbx = getRBXfromPHI(iphi)
@@ -201,11 +209,17 @@ for ieta in range(-28,29):
     for iphi in range(1,73):
         for idep in range(1,4):
             triplet = getHBHERBX(ieta, iphi, idep)
-            if triplet[0] == -99 or triplet[1] == -99 or triplet[2] == -99:
-                print "Unexpected problem making map.  Exiting."
-                sys.exit()
             if triplet:
                 rechit_to_rbx_dict[ ieta , iphi , idep ] = triplet
+
+############################################################
+# Set up hists, if requested
+############################################################
+if doHists:
+    hists = {}
+    hists["nevt_v_ls"] = TH1F("nevt_v_ls","nevt_v_ls",1001, -0.5, 1000.5)
+    hists["occ"]         = TH2F("occ","occ", 61, -30.5, 30.5, 73, -0.5, 72.5)
+
 
 ############################################################
 # Get data from files
@@ -225,6 +239,7 @@ hbherhLabel = ("hbhereco")
 
 nEvent = 0
 missing_dictionary = False
+found_dictionary = {}
 
 print "Starting event loop.  Processing %i events." % events.size()
 
@@ -234,41 +249,35 @@ ls_found = {}
 
 for event in events:
     nEvent += 1
-    #    if nEvent < 3400: continue
-    # print stuff
     ls = int(event.object().luminosityBlock())
     if nEvent%1000==1:
         print "record:",nEvent,"Run:",event.object().id().run(),\
               "event:",event.object().id().event(),\
               "ls:", ls
 
-
     if skip_to_ls > 0:
         if ls < skip_to_ls[0] or ls > skip_to_ls[1] : continue
 
     ls_analyzed.add(ls)
-
+    if doHists:
+        hists["nevt_v_ls"].Fill(ls)
+        if ls not in hists: hists[ls] = TH2F("h"+str(ls),"h"+str(ls), 61, -30.5, 30.5, 73, -0.5, 72.5)
+        
     # Check whether LS can be skipped:
     if not doStartTime:
         if missing_dictionary:
-            #            print "missing_dictionary exists."
             skip = True
             for rbx in rbx_list:
                 if rbx not in missing_dictionary:
-                    #       print rbx, "is not in missing_dictionary. do not skip"
                     skip = False
                 elif ls not in missing_dictionary[rbx]:
-                    #                    print "ls is not in missing_dictionary[rbx]. do not skip"
                     skip = False
-                    #                else:
-                    #                    print "ls is already in missing_dictionary[rbx].  skip"
+                if rbx not in found_dictionary:
+                    skip = False
+                elif ls not in found_dictionary[rbx]:
+                    skip = False
             if skip : continue
-            #        else:
-            #            print "missing_dictionary does NOT exist. do not skip"
 
-#    print "Not skipping."
-        
-                    
 
     tmp_rbx_list = []
     for rbx in rbx_list: tmp_rbx_list.append(rbx)
@@ -276,15 +285,27 @@ for event in events:
     # Get rechits
     event.getByLabel(hbherhLabel,hbherhHandle)    
     hbherhs = hbherhHandle.product()
-    
+
     # loop over rechits
+    #    found = False
     for rh in hbherhs:
         # skip ieta=29 for now
         if abs(rh.id().ieta()) == 29: continue
         # Get RBX for rechit
+        if doHists and rh.id().depth() == 1:
+            hists[ls].Fill(rh.id().ieta(),rh.id().iphi())
+            hists["occ"].Fill(rh.id().ieta(),rh.id().iphi())
+
         rbx = rechit_to_rbx_dict[rh.id().ieta(), rh.id().iphi(), rh.id().depth()]
+        
         # Remove RBX from list of RBXes if it's there.
-        if tmp_rbx_list.count(rbx) > 0: tmp_rbx_list.remove(rbx)
+        if tmp_rbx_list.count(rbx) == 1:
+            tmp_rbx_list.remove(rbx)            
+            if rbx not in found_dictionary: found_dictionary[rbx] = set([ls])
+            else: found_dictionary[rbx].add(ls)
+            
+        elif tmp_rbx_list.count(rbx) > 1: print "RBX in list > 1 time.  Problem.  Exiting."; sys.exit()
+
         # Once RBX list is empty, we have found data from each RBX in an event
         # and we can stop checking.
         if len(tmp_rbx_list) == 0: break
@@ -319,13 +340,38 @@ for event in events:
                     # if so, add it
                     missing_sub_dictionary[(rbx,ls)].add(unix_time)
 
-        #    if nEvent > 10: break
 
 print "Done with event loop.  Processed %i events." % nEvent
 print "\n"
 
-# Print out results
+
+# Clean up missing_dictionary by removing ls that were found and recorded
+# in found_dictionary:
+
+if missing_dictionary : print missing_dictionary
+print found_dictionary
+
+bad_rbxs = False
 if missing_dictionary :
+    for rbx, ls_set in found_dictionary.iteritems():
+        if rbx in missing_dictionary:
+            for ls in ls_set:
+                if ls in missing_dictionary[rbx]: missing_dictionary[rbx].remove(ls)
+            
+    # If ls_set is empty after removals, remove rbx for dict all together:
+    rbx_to_remove = []
+    for rbx, ls_set in missing_dictionary.iteritems():
+        if len(ls_set) == 0: rbx_to_remove.append(rbx)
+        else: bad_rbxs = True
+
+    for rbx in rbx_to_remove: del missing_dictionary[rbx]
+
+
+if missing_dictionary : print missing_dictionary
+print found_dictionary
+
+# Print output 
+if bad_rbxs:
     print "Summary of RBX data loss instances in run %i:" % runnum
     print "   RBX     #LS     LS range        Start time (GMT)"  
     print "   ---     ---     --------        ----------------"
@@ -403,12 +449,21 @@ print "   Please take care if data loss occurred at beginning or end of run;"
 print "   this script would completely miss LS before %i and after %i for " % (ls_analyzed_list[0],ls_analyzed_list[nLS-1])
 print "   which there were no events in the %s dataset" % dataset
 
+##############################
+# Write Output ROOT file
+##############################
+if doHists:
+    outfile = "hists_"+str(runnum)
+    if len(rbx_list) > 5:
+        outfile += "_many"
+    else:
+        for rbx in rbx_list: outfile += "_"+rbx
 
+    outfile += ".root"
 
-
-
-  
+    toutfile = TFile(outfile,"recreate")
+    
+    for hist in hists.values():
+        hist.Write()
         
-
-
-
+    toutfile.Close()
