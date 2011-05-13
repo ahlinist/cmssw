@@ -63,6 +63,11 @@ TTEffPFTauDiscriminationAgainstMuon = copy.deepcopy(pfRecoTauDiscriminationAgain
 TTEffPFTauDiscriminationAgainstMuon.PFTauProducer = cms.InputTag('TTEffPFTausSelected')
 TTEffPFTauDiscriminationAgainstMuon.Prediscriminants.leadTrack.Producer = cms.InputTag('TTEffPFTauDiscriminationByLeadingTrackFinding')
 
+from RecoTauTag.RecoTau.PFRecoTauDiscriminationAgainstElectron_cfi import pfRecoTauDiscriminationAgainstElectron                                                                                   
+TTEffPFTauDiscriminationAgainstElectron = copy.deepcopy(pfRecoTauDiscriminationAgainstElectron)
+TTEffPFTauDiscriminationAgainstElectron.PFTauProducer = cms.InputTag('TTEffPFTausSelected')
+TTEffPFTauDiscriminationAgainstElectron.Prediscriminants.leadTrack.Producer = cms.InputTag('TTEffPFTauDiscriminationByLeadingTrackFinding')
+
 TTEffPFTau = cms.Sequence(
 	PFTau *
         TTEffak5PFJetTracksAssociatorAtVertex *
@@ -74,6 +79,7 @@ TTEffPFTau = cms.Sequence(
         TTEffPFTausSelected *
         TTEffPFTauDiscriminationByLeadingTrackFinding *
         TTEffPFTauDiscriminationByIsolation *
-        TTEffPFTauDiscriminationAgainstMuon
+        TTEffPFTauDiscriminationAgainstMuon *
+	TTEffPFTauDiscriminationAgainstElectron
 )
 
