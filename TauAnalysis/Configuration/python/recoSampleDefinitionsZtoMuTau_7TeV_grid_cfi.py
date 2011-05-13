@@ -6,7 +6,9 @@ import TauAnalysis.DQMTools.plotterStyleDefinitions_cfi as styles
 
 # List of samples to run in the analysis
 SAMPLES_TO_ANALYZE = [
-    'data_TauPlusX_Run2011A_PromptReco_v1',
+    #'data_TauPlusX_Run2011A_PromptReco_v1',
+    'data_Mu_Run2011A_PromptReco_v1',
+    'data_Mu_Run2011A_PromptReco_v2',
     'data_TauPlusX_Run2011A_PromptReco_v2',
     'DYtautauM10to20_powheg',
     'Ztautau_powheg',
@@ -99,12 +101,49 @@ RECO_SAMPLES = {
         'enableFakeRates' : True,
         'hlt' : cms.InputTag("TriggerResults", "", "HLT")
     },
+    'data_Mu_Run2011A_PromptReco_v1' : {
+        'datasetpath' : '/SingleMu/Run2011A-PromptReco-v1/AOD',
+        'dbs_url' :  "http://cmsdbsprod.cern.ch/cms_dbs_prod_global/servlet/DBSServlet",
+        'lumi_mask' : "/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions11/7TeV/Prompt/Cert_160404-163757_7TeV_PromptReco_Collisions11_JSON.txt",
+        'runselection' : "160329-161312",
+        'number_of_jobs' : 500,
+        'conditions' : 'GR_R_311_V2::All',
+        'events_processed' : -1,
+        'skim_eff' : 1.0,
+        'type' : 'Data',
+        'drawOption' : styles.drawOption_Data,
+        'hlt_paths' : {
+            'HLT_IsoMu12_v1' : '160431:MIN-163261:MAX'
+        },
+        'enableSysUncertainties' : False,
+        'enableFakeRates' : True,
+        'hlt' : cms.InputTag("TriggerResults", "", "HLT")
+    },
+    'data_Mu_Run2011A_PromptReco_v2' : {
+        'datasetpath' : '/SingleMu/Run2011A-PromptReco-v2/AOD',
+        'dbs_url' :  "http://cmsdbsprod.cern.ch/cms_dbs_prod_global/servlet/DBSServlet",
+        'lumi_mask' : "/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions11/7TeV/Prompt/Cert_160404-163757_7TeV_PromptReco_Collisions11_JSON.txt",
+        'runselection' : "162718-163261",
+        'number_of_jobs' : 500,
+        'conditions' : 'GR_R_311_V2::All',
+        'events_processed' : -1,
+        'skim_eff' : 1.0,
+        'type' : 'Data',
+        'drawOption' : styles.drawOption_Data,
+        'hlt_paths' : {
+            'HLT_IsoMu12_v1' : '160431:MIN-163261:MAX'
+        },
+        'enableSysUncertainties' : False,
+        'enableFakeRates' : True,
+        'hlt' : cms.InputTag("TriggerResults", "", "HLT")
+    },
     'data_TauPlusX_Run2011A_PromptReco_v2' : {
         'datasetpath' : "/TauPlusX/Run2011A-PromptReco-v2/AOD",
         'dbs_url' :  "http://cmsdbsprod.cern.ch/cms_dbs_prod_global/servlet/DBSServlet",
         'lumi_mask' : "/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions11/7TeV/Prompt/Cert_160404-163757_7TeV_PromptReco_Collisions11_JSON.txt",
-        'runselection' : "162718-163757",
-        'number_of_jobs' : 500,
+        #'runselection' : "162718-163757",
+        'runselection' : "163269-163757",
+        'number_of_jobs' : 1000,
         'conditions' : 'GR_R_311_V2::All',
         'events_processed' : -1,
         'skim_eff' : 1.0,
@@ -203,7 +242,7 @@ RECO_SAMPLES = {
         'datasetpath' : "/QCD_Pt-20_MuEnrichedPt-15_TuneZ2_7TeV-pythia6/Spring11-PU_S1_START311_V1G1-v1/AODSIM",
         'dbs_url' :  "http://cmsdbsprod.cern.ch/cms_dbs_prod_global/servlet/DBSServlet",
         'events_processed' : 29434562,
-        'number_of_jobs' : 1000,
+        'number_of_jobs' : 2500,
         'skim_eff' : 1.0,
         'x_sec' : 0.2966*_millibarns*2.855e-4, # x-sec * gen filter efficiency
         'legendEntry' : plotter.process_PPmuXptGt20.config_dqmHistPlotter.legendEntry.value(),
@@ -220,6 +259,7 @@ RECO_SAMPLES = {
         'datasetpath' : "/WJetsToLNu_TuneZ2_7TeV-madgraph-tauola/Spring11-PU_S1_START311_V1G1-v1/AODSIM",
         'dbs_url' :  "http://cmsdbsprod.cern.ch/cms_dbs_prod_global/servlet/DBSServlet",
         'events_processed' : 15110974,
+        'number_of_jobs' : 1000,
         'skim_eff' : 1.0,
         'x_sec' : 31314*_picobarns,
         'legendEntry' : plotter.process_WplusJets.config_dqmHistPlotter.legendEntry.value(),
@@ -298,7 +338,9 @@ RECO_SAMPLES = {
 MERGE_SAMPLES = {
     'data' : {
         'samples' : [
-            'data_TauPlusX_Run2011A_PromptReco_v1',
+            #'data_TauPlusX_Run2011A_PromptReco_v1',
+            'data_Mu_Run2011A_PromptReco_v1',
+            'data_Mu_Run2011A_PromptReco_v2',
             'data_TauPlusX_Run2011A_PromptReco_v2',
         ],
         'legendEntry' : 'DATA',
