@@ -6,7 +6,7 @@ from RecoTauTag.RecoTau.PFRecoTauDiscriminationByIsolation_cfi import *
 from RecoTauTag.RecoTau.PFRecoTauDiscriminationByTrackIsolationUsingLeadingPion_cfi import *
 from RecoTauTag.RecoTau.TauDiscriminatorTools import *
 
-from RecoTauTag.Configuration.ShrinkingConePFTaus_cfi import *
+from RecoTauTag.Configuration.ShrinkingConePFTaus_cff import *
 looseShrikingConePFTaus = copy.deepcopy(shrinkingConePFTauProducer)
 looseShrikingConePFTaus.LeadPFCand_minPt = cms.double(3.0)
 
