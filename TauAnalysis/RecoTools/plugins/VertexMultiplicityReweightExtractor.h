@@ -15,7 +15,7 @@
  *
  * \version $Revision: 1.1 $
  *
- * $Id: VertexMultiplicityReweightProducer.h,v 1.1 2010/11/22 16:17:36 veelken Exp $
+ * $Id: VertexMultiplicityReweightExtractor.h,v 1.1 2011/04/13 17:05:13 veelken Exp $
  *
  */
 
@@ -43,6 +43,9 @@ class VertexMultiplicityReweightExtractor : public ObjValExtractorBase
   
   TFile* inputFile_;
   TH1* lut_;
+
+  enum { kUndefined, kGenLevel, kRecLevel };
+  int type_;
 };
 
 #endif
