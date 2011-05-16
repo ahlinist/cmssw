@@ -9,19 +9,24 @@ fileName = "SingleTopSystematics_cfg.py"
 
 #Channels to include
 channels = [
-#    "TChannel",
-#    "TTBar",
+    "TChannel",
+    "TTBar",
     "WJets",
-#    "Data",
-#    "Wc_wc_",
-#    "Vqq_wbb_",
-#    "Vqq_wcc_",
-#    "WJets_wbb_",
-#    "WJets_wcc_",
+    "WJets_wlight",
+    "WJets_wcc",
+    "WJets_wbb",
+    "Data",
+    "Wc_wc",
+    "Vqq_wbb",
+    "Vqq_wcc",
     ]
 
 #Path to take data merged files
 dataPath = "file:/tmp/oiorio/"
+
+#Choose if you want to run or just prepare the configuration files
+mode = ""
+mode = "cmsRun"
 
 
 
@@ -43,7 +48,9 @@ def changeChannel(fileName,channelOld,channelNew):
         o.write(line)
         
     if channel == "Data":#Temporary inelegant solution due to the separation of mu/e: will fix it at some point
-        line = "process.source.fileNames = cms.untracked.vstring('"+dataPath+"DataMuMerged.root','"+dataPath+"DataEleMerged.root',)"
+        #        line = "process.source.fileNames = cms.untracked.vstring('"+dataPath+"DataMuMerged.root','"+dataPath+"DataEleMerged.root',)"
+        #        line = "process.source.fileNames = cms.untracked.vstring('"+dataPath+"DataMuMerged.root',)"
+        line = "process.source.fileNames = cms.untracked.vstring('"+dataPath+"Mu_v1Merged.root','"+dataPath+"Mu_v2Merged.root','"+dataPath+"Ele_v1Merged.root','"+dataPath+"Ele_v2Merged.root',)"
         o.write(line)
     o.close()
     return o
@@ -67,7 +74,9 @@ for channel in channels:
     command = 'nohup cmsRun ./' + channel+'_cfg.py > /tmp/oiorio/'+channel+'.log &'
 
     print command
-#    os.system(command ) 
+
+    if mode == "cmsRun":
+        os.system(command ) 
 #    os.system("bg") 
 #    os.system('rm '+channel+'_cfg.py' ) 
 

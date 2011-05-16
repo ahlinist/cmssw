@@ -3,7 +3,7 @@
 *
 *
 *
-*\version  $Id: SingleTopSystematicsTreesDumper.cc,v 1.3 2011/05/09 02:20:50 oiorio Exp $ 
+*\version  $Id: SingleTopSystematicsTreesDumper.cc,v 1.4 2011/05/12 16:35:59 oiorio Exp $ 
 */
 // This analyzer dumps the histograms for all systematics listed in the cfg file 
 //
@@ -82,14 +82,14 @@ SingleTopSystematicsTreesDumper::SingleTopSystematicsTreesDumper(const edm::Para
   jetsCorrTotal_ =  iConfig.getParameter< edm::InputTag >("jetsCorrTotal");
 
   doBScan_  =  iConfig.getUntrackedParameter< bool >("doBScan",false); 
-  doQCD_  =  iConfig.getUntrackedParameter< bool >("doQCD",false); 
+  doQCD_  =  iConfig.getUntrackedParameter< bool >("doQCD",true); 
   //  jetsPF_ =  iConfig.getParameter< edm::InputTag >("patJets");
   
   systematics.push_back("noSyst");
   
   Service<TFileService> fs;
 
-  bScanSteps =10*doBScan_;
+  bScanSteps =1*doBScan_;
   bTagThreshold =3.41;
 
   TFileDirectory SingleTopSystematics = fs->mkdir( "systematics_histograms" );
@@ -106,6 +106,7 @@ SingleTopSystematicsTreesDumper::SingleTopSystematicsTreesDumper(const edm::Para
     string syst = all_syst[i];
     
     string treename = (channel+"_"+syst);
+    string treenameQCD = (channel+"_"+syst+"QCD");
     
     trees[syst] = new TTree(treename.c_str(),treename.c_str()); 
     
@@ -125,6 +126,7 @@ SingleTopSystematicsTreesDumper::SingleTopSystematicsTreesDumper(const edm::Para
     trees[syst]->Branch("leptonPt",&lepPt);
     trees[syst]->Branch("leptonPz",&lepPz);
     trees[syst]->Branch("leptonPhi",&lepPhi);
+    trees[syst]->Branch("leptonRelIso",&lepRelIso);
     
     trees[syst]->Branch("fJetPt",&fJetPt);
     trees[syst]->Branch("fJetE",&fJetE);
@@ -167,6 +169,7 @@ SingleTopSystematicsTreesDumper::SingleTopSystematicsTreesDumper(const edm::Para
     treesWSample[syst]->Branch("leptonPt",&lepPt);
     treesWSample[syst]->Branch("leptonPz",&lepPz);
     treesWSample[syst]->Branch("leptonPhi",&lepPhi);
+    treesWSample[syst]->Branch("leptonRelIso",&lepRelIso);
     
     treesWSample[syst]->Branch("fJetPt",&fJetPt);
     treesWSample[syst]->Branch("fJetE",&fJetE);
@@ -185,11 +188,50 @@ SingleTopSystematicsTreesDumper::SingleTopSystematicsTreesDumper(const edm::Para
     treesWSample[syst]->Branch("topPhi",&topPhi);
     treesWSample[syst]->Branch("topPz",&topPz);
     treesWSample[syst]->Branch("topE",&topE);
-
+    
     treesWSample[syst]->Branch("totalEnergy",&totalEnergy);
     treesWSample[syst]->Branch("totalMomentum",&totalMomentum);
-  }
 
+    //QCD
+
+    treesQCD[syst] = new TTree(treenameQCD.c_str(),treenameQCD.c_str()); 
+    
+    treesQCD[syst]->Branch("eta",&etaTree);
+    treesQCD[syst]->Branch("costhetalj",&cosTree);
+    treesQCD[syst]->Branch("topMass",&topMassTree);
+    treesQCD[syst]->Branch("mtwMass",&mtwMassTree);
+    treesQCD[syst]->Branch("leptonRelIso",&lepRelIso);
+    
+
+
+    treesQCD[syst]->Branch("charge",&chargeTree);
+    treesQCD[syst]->Branch("runid",&runTree);
+    treesQCD[syst]->Branch("lumiid",&lumiTree);
+    treesQCD[syst]->Branch("eventid",&eventTree);
+    treesQCD[syst]->Branch("weight",&weightTree);
+
+    //W Sample QCD
+
+    treesWSampleQCD[syst] = new TTree((treename+"WSampleQCD").c_str(),(treename+"WSampleQCD").c_str()); 
+    
+    treesWSampleQCD[syst]->Branch("etaLowBTag",&etaTree);
+    treesWSampleQCD[syst]->Branch("etaHighBTag",&etaTree2);
+    treesWSampleQCD[syst]->Branch("costhetalj",&cosTree);
+    treesWSampleQCD[syst]->Branch("topMass",&topMassTree);
+    treesWSampleQCD[syst]->Branch("mtwMass",&mtwMassTree);
+    treesWSampleQCD[syst]->Branch("leptonRelIso",&lepRelIso);
+    
+
+    treesWSampleQCD[syst]->Branch("charge",&chargeTree);
+    treesWSampleQCD[syst]->Branch("runid",&runTree);
+    treesWSampleQCD[syst]->Branch("lumiid",&lumiTree);
+    treesWSampleQCD[syst]->Branch("eventid",&eventTree);
+    treesWSampleQCD[syst]->Branch("weight",&weightTree);
+
+    //W Sample    
+
+  }
+  
   for(size_t i = 0; i < systematics.size();++i){
     
     string syst = systematics[i];
@@ -203,12 +245,14 @@ SingleTopSystematicsTreesDumper::SingleTopSystematicsTreesDumper(const edm::Para
       string sstep = ssstep.str();
       treesScan[step][syst] = new TTree((treename+"_step_"+sstep).c_str(),(treename+"_step_"+sstep).c_str()); 
 
-      
       treesScan[step][syst]->Branch("etaLowBTag",&etaTree);
       treesScan[step][syst]->Branch("etaHighBTag",&etaTree2);
       treesScan[step][syst]->Branch("costhetalj",&cosTree);
       treesScan[step][syst]->Branch("topMass",&topMassTree);
       treesScan[step][syst]->Branch("mtwMass",&mtwMassTree);
+      
+      treesScan[step][syst]->Branch("highBTag",&highBTagTree);
+      treesScan[step][syst]->Branch("lowBTag",&lowBTagTree);
       
       treesScan[step][syst]->Branch("charge",&chargeTree);
       treesScan[step][syst]->Branch("runid",&runTree);
@@ -218,9 +262,7 @@ SingleTopSystematicsTreesDumper::SingleTopSystematicsTreesDumper(const edm::Para
       
     }
   }
-
-
-
+  
   JEC_PATH = "CondFormats/JetMETObjects/data/";
   fip = edm::FileInPath(JEC_PATH+"Spring10_Uncertainty_AK5PF.txt");
   jecUnc = new JetCorrectionUncertainty(fip.fullPath());
@@ -260,6 +302,11 @@ void SingleTopSystematicsTreesDumper::analyze(const Event& iEvent, const EventSe
   iSetup.get<BTagPerformanceRecord>().get("MISTAGTCHPT",perfHP);
   iSetup.get<BTagPerformanceRecord>().get("MISTAGTCHEL",perfHE);
   
+
+
+  iSetup.get<BTagPerformanceRecord>().get("MISTAGTCHPT",perfHP);
+  iSetup.get<BTagPerformanceRecord>().get("MISTAGTCHEL",perfHE);
+  
   BinningPointByMap measurePoint;
    
   
@@ -283,6 +330,8 @@ void SingleTopSystematicsTreesDumper::analyze(const Event& iEvent, const EventSe
   double BTagWeightTTSample = 1;
   double Weight = 1;
   double MTWValue =0;
+  double MTWValueQCD =0;
+  double RelIsoQCDCut = 0.1;
   
   float ptCut = 30;  
   if(channel=="Data")WeightLumi=1;
@@ -308,8 +357,9 @@ void SingleTopSystematicsTreesDumper::analyze(const Event& iEvent, const EventSe
     //    double TCHE_MisTag = 1.0; //DummyValues, to be changed in the next part of the code
     
     //    cout << " TCHP_BTag should be 0.9 "<< TCHP_BTag <<endl;    
-    
+      
     leptons.clear();
+    leptonsQCD.clear();
     jets.clear();
     bjets.clear();
     antibjets.clear();
@@ -320,11 +370,11 @@ void SingleTopSystematicsTreesDumper::analyze(const Event& iEvent, const EventSe
     metPy = metPyTmp;
 
     
-    int lowestBTagPosition=-1;
-    double lowestBTag = 99999;
+    int lowBTagTreePosition=-1;
+    lowBTagTree = 99999;
     
-    int highestBTagPosition=-1;
-    double highestBTag = -9999;
+    int highBTagTreePosition=-1;
+    highBTagTree = -9999;
 
 
     if(syst_name == "UnclusteredMETUp"){
@@ -350,6 +400,53 @@ void SingleTopSystematicsTreesDumper::analyze(const Event& iEvent, const EventSe
     //    cout << " test 0 " << endl;
     //Loops to apply systematics on jets-leptons
     
+    if(doQCD_){
+      for(size_t i = 0;i<nLeptons;++i){
+	//   float leptonPx = cos(leptonsPhi->at(i))* leptonsPt->at(i);
+	//   float leptonPy = sin(leptonsPhi->at(i))* leptonsPt->at(i);
+	
+	float leptonRelIso = leptonsRelIso->at(i);
+	lepRelIso = leptonRelIso;
+	if(leptonRelIso < RelIsoQCDCut )continue;
+	
+	float leptonPt = leptonsPt->at(i);
+	float leptonPhi = leptonsPhi->at(i);
+	float leptonEta = leptonsEta->at(i);
+	//      float leptonPt = sqrt(leptonPx*leptonPx + leptonPy*leptonPy);
+	
+	//      float leptonP = sqrt( (leptonPt*leptonPt) + (leptonPz*leptonPz));
+	float leptonE = leptonsEnergy->at(i);
+	leptonsQCD.push_back(math::PtEtaPhiELorentzVector(leptonPt,leptonEta,leptonPhi,leptonE));
+      }
+      //leptons.clear();
+    }
+    
+    for(size_t i = 0;i<nLeptons;++i){
+      
+      //cout << "test lepton flavour "<< leptonsFlavour_ <<endl;
+      float leptonRelIso = leptonsRelIso->at(i);
+      lepRelIso = leptonRelIso;
+      if(leptonRelIso>RelIsoCut)continue;
+      if(leptonsFlavour_ == "electron"  ) {
+	if(leptonsID->size()==0)cout<< "warning requiring ele id of collection which has no entries! Check the leptonsFlavour parameter "<<endl;
+	//	cout << " debug flavour "<< leptonsFlavour_ <<" leptons ID " << leptonsID->at(i)<<endl;
+	float leptonID = leptonsID->at(i);
+	if (!(leptonID==5 || leptonID ==7))continue;
+	
+      }
+      
+      float leptonPt = leptonsPt->at(i);
+      float leptonPhi = leptonsPhi->at(i);
+      float leptonEta = leptonsEta->at(i);
+      //      float leptonPt = sqrt(leptonPx*leptonPx + leptonPy*leptonPy);
+      
+      //      float leptonP = sqrt( (leptonPt*leptonPt) + (leptonPz*leptonPz));
+      float leptonE = leptonsEnergy->at(i);
+      leptons.push_back(math::PtEtaPhiELorentzVector(leptonPt,leptonEta,leptonPhi,leptonE));
+    }
+    
+    //Part of the effective selection and filling
+    if(leptons.size()!=1 && (leptonsQCD.size()!=1 && doQCD_) )return;
     
     for(size_t i = 0;i<nJets;++i){
       //eta = jetsEta->at(i);
@@ -388,7 +485,7 @@ void SingleTopSystematicsTreesDumper::analyze(const Event& iEvent, const EventSe
       if(passesPtCut && passesBTag) {
 	
 	bjets.push_back(jets.back()); 
-
+	
 	if(abs(flavour)==4) BTagWeight*=TCHP_CTag ;
 	if(abs(flavour)==5) BTagWeight*=TCHP_BTag ;
 	if(abs(flavour)<4 && abs(flavour)>0){
@@ -405,7 +502,6 @@ void SingleTopSystematicsTreesDumper::analyze(const Event& iEvent, const EventSe
 	  
 	  BTagWeight*=  MisTagScaleFactor("TCHP_L",syst_name,SF,eff,SFErr);
 	  measurePoint.reset();
-	  
 	  //	  cout <<" jet "<< i <<" passes direct btag, flavour "<< abs(flavour)<< " b weight " << BTagWeight << " eff "<<  eff<<" SF "<< SF << " sf unc "<< SFErr <<endl;
 	}
 	//	cout <<" jet "<< i <<" passes direct btag, flavour "<< abs(flavour)<< " b weight " << BTagWeight << endl;
@@ -435,94 +531,104 @@ void SingleTopSystematicsTreesDumper::analyze(const Event& iEvent, const EventSe
       }
       
       //      if(!passesLoosePtCut)continue;
-      if(passesPtCut && jetsAntiBTagAlgo->at(i) > highestBTag){
-	highestBTag=jetsAntiBTagAlgo->at(i);
-	highestBTagPosition=jets.size()-1;
+      if(passesPtCut && jetsBTagAlgo->at(i) > highBTagTree){
+	highBTagTree=jetsBTagAlgo->at(i);
+	highBTagTreePosition=jets.size()-1;
       } 
       
       //if(!passesPtCut)continue;
-      if(passesPtCut && jetsAntiBTagAlgo->at(i) < lowestBTag){
-	lowestBTag=jetsAntiBTagAlgo->at(i);
-	lowestBTagPosition=jets.size()-1;
+      if(passesPtCut && jetsBTagAlgo->at(i) < lowBTagTree){
+	lowBTagTree=jetsBTagAlgo->at(i);
+	lowBTagTreePosition=jets.size()-1;
       }
-    }
-  
-
-
-    if(doQCD_){
-
-      for(size_t i = 0;i<nLeptons;++i){
-      //   float leptonPx = cos(leptonsPhi->at(i))* leptonsPt->at(i);
-      //   float leptonPy = sin(leptonsPhi->at(i))* leptonsPt->at(i);
-	
-	float leptonRelIso = leptonsRelIso->at(i);
-	if(leptonRelIso<RelIsoCut)continue;
-	
-	float leptonPt = leptonsPt->at(i);
-	float leptonPhi = leptonsPhi->at(i);
-	float leptonEta = leptonsEta->at(i);
-	//      float leptonPt = sqrt(leptonPx*leptonPx + leptonPy*leptonPy);
-	
-	//      float leptonP = sqrt( (leptonPt*leptonPt) + (leptonPz*leptonPz));
-	float leptonE = leptonsEnergy->at(i);
-	leptons.push_back(math::PtEtaPhiELorentzVector(leptonPt,leptonEta,leptonPhi,leptonE));
-      }
-      
-      leptons.clear();
-    }
-
-
-
-    for(size_t i = 0;i<nLeptons;++i){
-      
-      //cout << "test lepton flavour "<< leptonsFlavour_ <<endl;
-      float leptonRelIso = leptonsRelIso->at(i);
-      if(leptonRelIso>RelIsoCut)continue;
-      if(leptonsFlavour_ == "electron"  ) {
-	if(leptonsID->size()==0)cout<< "warning requiring ele id of collection which has no entries! Check the leptonsFlavour parameter "<<endl;
-	cout << " debug flavour "<< leptonsFlavour_ <<" leptons ID " << leptonsID->at(i)<<endl;
-	float leptonID = leptonsID->at(i);
-	if (!(leptonID==5 || leptonID ==7))continue;
-	
-      }
-      
-      float leptonPt = leptonsPt->at(i);
-      float leptonPhi = leptonsPhi->at(i);
-      float leptonEta = leptonsEta->at(i);
-      //      float leptonPt = sqrt(leptonPx*leptonPx + leptonPy*leptonPy);
-      
-      //      float leptonP = sqrt( (leptonPt*leptonPt) + (leptonPz*leptonPz));
-      float leptonE = leptonsEnergy->at(i);
-      leptons.push_back(math::PtEtaPhiELorentzVector(leptonPt,leptonEta,leptonPhi,leptonE));
     }
     
-    //Part of the effective selection and filling
-    if(leptons.size()!=1)return;
+
     
-    if(leptons.size()==1){
-      double metPt = sqrt(metPx*metPx+metPy*metPy);
-      MTWValue =  sqrt((leptons.at(0).pt()+metPt)*(leptons.at(0).pt()+metPt)  -(leptons.at(0).px()+metPx)*(leptons.at(0).px()+metPx) -(leptons.at(0).py()+metPy)*(leptons.at(0).py()+metPy));
+
+    if (doQCD_){
+      //      cout << " qcd lep size " <<leptonsQCD.size()<< " non qcd lep size" <<looseMuonsRelIso->size()+ looseElectronsRelIso->size()<< endl;
+      if(leptonsQCD.size()==1 ){
+	//&& (looseMuonsRelIso->size()+ looseElectronsRelIso->size())==0){
+	metPt = sqrt(metPx*metPx+metPy*metPy);
+	MTWValueQCD =  sqrt((leptonsQCD.at(0).pt()+metPt)*(leptonsQCD.at(0).pt()+metPt)  -(leptonsQCD.at(0).px()+metPx)*(leptonsQCD.at(0).px()+metPx) -(leptonsQCD.at(0).py()+metPy)*(leptonsQCD.at(0).py()+metPy));
+	
+
+	if( jets.size()==2 && bjets.size()==1 && antibjets.size()==1){
+	  
+	  Weight*=BTagWeight;
+	  
+	  math::PtEtaPhiELorentzVector top = top4Momentum(leptonsQCD.at(0),bjets.at(0),metPx,metPy);
+	  float fCosThetaLJ =  cosThetaLJ(leptonsQCD.at(0), antibjets.at(0), top);
+	  
+	  runTree = iEvent.eventAuxiliary().run();
+	  lumiTree = iEvent.eventAuxiliary().luminosityBlock();
+	  eventTree = iEvent.eventAuxiliary().event();
+	  weightTree = Weight;
+	  
+	  etaTree = fabs(antibjets.at(0).eta());
+	  cosTree = fCosThetaLJ;
+	  topMassTree = top.mass();
+	  mtwMassTree = MTWValueQCD;
+	  chargeTree = leptonsCharge->at(0) ; 
+	  
+	  treesQCD[syst_name]->Fill();
+
+	}
+
+	
+	if( lowBTagTreePosition > -1 && highBTagTreePosition > -1 && jets.size() ==2 &&  bjets.size()==0 ){
+	  if(highBTagTreePosition == lowBTagTreePosition)continue;
+	  
+	  math::PtEtaPhiELorentzVector top = top4Momentum(leptonsQCD.at(0),jets.at(highBTagTreePosition),metPx,metPy);
+	  
+	  float fCosThetaLJ =  cosThetaLJ(leptonsQCD.at(0),jets.at(lowBTagTreePosition),top);
+	  
+	  runTree = iEvent.eventAuxiliary().run();
+	  lumiTree = iEvent.eventAuxiliary().luminosityBlock();
+	  eventTree = iEvent.eventAuxiliary().event();
+	  weightTree = Weight;
+	  
+	  etaTree = fabs(jets.at(lowBTagTreePosition).eta());
+	  etaTree2 = fabs(jets.at(highBTagTreePosition).eta());
+	  cosTree = fCosThetaLJ;
+	  topMassTree = top.mass();
+	  mtwMassTree = MTWValueQCD;
+	  chargeTree = leptonsCharge->at(0);
+	  
+	  treesWSampleQCD[syst_name]->Fill();
+
+	}
+      }
+      //      cout << "inside doqcd 4 "<<endl;
+      
     }
-    if(leptonsFlavour_=="muon") if((looseMuonsRelIso->size( )+ looseElectronsRelIso->size())>1) continue;//Loose muons size always >=1 due to presence of tight muon 
+
+    if(leptons.size()!=1)continue;
+    
+    metPt = sqrt(metPx*metPx+metPy*metPy);
+    MTWValue =  sqrt((leptons.at(0).pt()+metPt)*(leptons.at(0).pt()+metPt)  -(leptons.at(0).px()+metPx)*(leptons.at(0).px()+metPx) -(leptons.at(0).py()+metPy)*(leptons.at(0).py()+metPy));
+    
+    if(leptonsFlavour_=="muon") if( (leptons.size() == 1 && (looseMuonsRelIso->size( )+ looseElectronsRelIso->size())>1))   continue;//Loose muons size always >=1 due to presence of tight muon 
     if(leptonsFlavour_=="electron"){
-      cout << " debug flavour "<< leptonsFlavour_ <<" loose Muon size " << looseMuonsRelIso->size()<< " leptons size "<< leptons.size()<<" jets size " << jets.size() <<" b-jets size "<< bjets.size()<<" antibjets size "<< antibjets.size() <<endl;
       if((looseMuonsRelIso->size())>0) continue;//Electrons +1 loose muon vetoed. Loose electron veto is replaced by z veto (not done here yet)
     }
+    
     //W control Sample
-    if( lowestBTagPosition > -1 && highestBTagPosition > -1 && jets.size() ==2 &&  bjets.size()==0 ){
-      if(highestBTagPosition == lowestBTagPosition)continue;
+    if( lowBTagTreePosition > -1 && highBTagTreePosition > -1 && jets.size() ==2 &&  bjets.size()==0 ){
+      if(highBTagTreePosition == lowBTagTreePosition)continue;
       
-      math::PtEtaPhiELorentzVector top = top4Momentum(leptons.at(0),jets.at(highestBTagPosition),metPx,metPy);
+      math::PtEtaPhiELorentzVector top = top4Momentum(leptons.at(0),jets.at(highBTagTreePosition),metPx,metPy);
       
-      float fCosThetaLJ =  cosThetaLJ(leptons.at(0),jets.at(lowestBTagPosition),top);
+      float fCosThetaLJ =  cosThetaLJ(leptons.at(0),jets.at(lowBTagTreePosition),top);
       
       runTree = iEvent.eventAuxiliary().run();
       lumiTree = iEvent.eventAuxiliary().luminosityBlock();
       eventTree = iEvent.eventAuxiliary().event();
       weightTree = Weight;
 
-      etaTree = fabs(jets.at(lowestBTagPosition).eta());
-      etaTree2 = fabs(jets.at(highestBTagPosition).eta());
+      etaTree = fabs(jets.at(lowBTagTreePosition).eta());
+      etaTree2 = fabs(jets.at(highBTagTreePosition).eta());
       cosTree = fCosThetaLJ;
       topMassTree = top.mass();
       mtwMassTree = MTWValue;
@@ -532,23 +638,23 @@ void SingleTopSystematicsTreesDumper::analyze(const Event& iEvent, const EventSe
       lepPz = leptons.at(0).pz();
       lepPhi = leptons.at(0).phi();
       
-      bJetPt = jets.at(highestBTagPosition).pt();
-      bJetE = jets.at(highestBTagPosition).energy();
-      bJetPz = jets.at(highestBTagPosition).pz();
-      bJetPhi = jets.at(highestBTagPosition).phi();
+      bJetPt = jets.at(highBTagTreePosition).pt();
+      bJetE = jets.at(highBTagTreePosition).energy();
+      bJetPz = jets.at(highBTagTreePosition).pz();
+      bJetPhi = jets.at(highBTagTreePosition).phi();
 
-      fJetPt = jets.at(lowestBTagPosition).pt();
-      fJetE = jets.at(lowestBTagPosition).energy();
-      fJetPz = jets.at(lowestBTagPosition).pz();
-      fJetPhi = jets.at(lowestBTagPosition).phi();
+      fJetPt = jets.at(lowBTagTreePosition).pt();
+      fJetE = jets.at(lowBTagTreePosition).energy();
+      fJetPz = jets.at(lowBTagTreePosition).pz();
+      fJetPhi = jets.at(lowBTagTreePosition).phi();
 
       topPt = top.pt();
       topE = top.energy();
       topPz = top.pz();
       topPhi = top.phi();
       
-      totalEnergy = (top+jets.at(lowestBTagPosition)).energy();
-      totalMomentum = (top+jets.at(lowestBTagPosition)).P();
+      totalEnergy = (top+jets.at(lowBTagTreePosition)).energy();
+      totalMomentum = (top+jets.at(lowBTagTreePosition)).P();
       
 
       metPt = METPt->at(0);
@@ -556,7 +662,7 @@ void SingleTopSystematicsTreesDumper::analyze(const Event& iEvent, const EventSe
       
       treesWSample[syst_name]->Fill();
     }
-    
+        
     //Signal sample
     if( jets.size()==2 && bjets.size()==1 && antibjets.size()==1){
       
@@ -612,19 +718,19 @@ void SingleTopSystematicsTreesDumper::analyze(const Event& iEvent, const EventSe
     //B-tag scanned sample
     if(doBScan_){
       if( jets.size()==2 && antibjets.size()==1){
-	if( lowestBTagPosition > -1 && highestBTagPosition > -1 && jets.size() ==2 &&  bjets.size()==0 ){
-	  if(highestBTagPosition == lowestBTagPosition)continue;
+	if( lowBTagTreePosition > -1 && highBTagTreePosition > -1 && jets.size() ==2 /*&&  bjets.size()==0 */){
+	  if(highBTagTreePosition == lowBTagTreePosition)continue;
 	  for( size_t step = 1; step <= bScanSteps; ++step){
-	    if(highestBTag < (bTagThreshold-(step*0.141)))continue;
+	    //    if(highBTagTree < (bTagThreshold-(step*1.41)))continue;
 	    
 	    //      cout << " passes cuts pre-mtw, syst " << syst_name << " b tag weight " <<  BTagWeight<< " Weight " << Weight  <<endl;
 	    
 	    Weight*=BTagWeight;
-	    math::PtEtaPhiELorentzVector top = top4Momentum(leptons.at(0),jets.at(highestBTagPosition),metPx,metPy);
+	    math::PtEtaPhiELorentzVector top = top4Momentum(leptons.at(0),jets.at(highBTagTreePosition),metPx,metPy);
 	    
 	    //      cout << " test 3 " << endl;
 	    
-	    float fCosThetaLJ =  cosThetaLJ(leptons.at(0),jets.at(lowestBTagPosition),top);
+	    float fCosThetaLJ =  cosThetaLJ(leptons.at(0),jets.at(lowBTagTreePosition),top);
 	    
 	    runTree = iEvent.eventAuxiliary().run();
 	    lumiTree = iEvent.eventAuxiliary().luminosityBlock();
@@ -632,8 +738,8 @@ void SingleTopSystematicsTreesDumper::analyze(const Event& iEvent, const EventSe
 	    weightTree = Weight;
 	    
 	    //cout << " test 4 " << endl;
-	    etaTree = fabs(jets.at(lowestBTagPosition).eta());
-	    etaTree2 = fabs(jets.at(highestBTagPosition).eta());
+	    etaTree = fabs(jets.at(lowBTagTreePosition).eta());
+	    etaTree2 = fabs(jets.at(highBTagTreePosition).eta());
 	    cosTree = fCosThetaLJ;
 	    topMassTree = top.mass();
 	    mtwMassTree = MTWValue;
@@ -643,28 +749,29 @@ void SingleTopSystematicsTreesDumper::analyze(const Event& iEvent, const EventSe
 	    lepPz = leptons.at(0).pz();
 	    lepPhi = leptons.at(0).phi();
 	    
-	    bJetPt = jets.at(highestBTagPosition).pt();
-	    bJetE = jets.at(highestBTagPosition).energy();
-	    bJetPz = jets.at(highestBTagPosition).pz();
-	    bJetPhi = jets.at(highestBTagPosition).phi();
+	    bJetPt = jets.at(highBTagTreePosition).pt();
+	    bJetE = jets.at(highBTagTreePosition).energy();
+	    bJetPz = jets.at(highBTagTreePosition).pz();
+	    bJetPhi = jets.at(highBTagTreePosition).phi();
 	    
-	    fJetPt = jets.at(lowestBTagPosition).pt();
-	    fJetE = jets.at(lowestBTagPosition).energy();
-	    fJetPz = jets.at(lowestBTagPosition).pz();
-	    fJetPhi = jets.at(lowestBTagPosition).phi();
+	    fJetPt = jets.at(lowBTagTreePosition).pt();
+	    fJetE = jets.at(lowBTagTreePosition).energy();
+	    fJetPz = jets.at(lowBTagTreePosition).pz();
+	    fJetPhi = jets.at(lowBTagTreePosition).phi();
 	    
 	    topPt = top.pt();
 	    topE = top.energy();
 	    topPz = top.pz();
 	    topPhi = top.phi();
 	    
-	    totalEnergy = (top+jets.at(lowestBTagPosition)).energy();
-	    totalMomentum = (top+jets.at(lowestBTagPosition)).P();
+	    totalEnergy = (top+jets.at(lowBTagTreePosition)).energy();
+	    totalMomentum = (top+jets.at(lowBTagTreePosition)).P();
 	    
 	    
 	    metPt = METPt->at(0);
 	    metPhi = METPhi->at(0);
 	    */
+	    //	    cout << " high b tag "<< highBTagTree<< " top mass "<< topMassTree << endl;
 	    treesScan[step-1][syst_name]->Fill();            
 	  }
 	}
@@ -966,9 +1073,10 @@ void SingleTopSystematicsTreesDumper::endJob(){
   //part for rate systematics
 
   for(size_t i = 0; i < rate_systematics.size();++i){
-    
     string syst = rate_systematics[i];
     string treename = (channel+"_"+syst);
+
+    cout<< " endjob"  << syst<< " 0 "<<endl;
     
     trees[syst]->CopyAddresses(trees["noSyst"]);
     treesWSample[syst]->CopyAddresses(treesWSample["noSyst"]);
@@ -976,22 +1084,31 @@ void SingleTopSystematicsTreesDumper::endJob(){
     trees[syst]->CopyEntries(trees["noSyst"]); 
     treesWSample[syst]->CopyEntries(trees["noSyst"]); 
     
-    for(size_t step = 0; step < bScanSteps;++step){
+
+        cout<< " endjob"  << syst<< " 1 "<<endl;
+
+    /*  for(size_t step = 0; step < bScanSteps;++step){
       treesScan[step][syst]->CopyAddresses(treesScan[step]["noSyst"]); 
       treesScan[step][syst]->CopyEntries(treesScan[step]["noSyst"]); 
     }
+    */
     
     //modify the weight by a constant factor    
     double tmpWeight = 0;
     double weightSF = 1.;
-
+    
     TBranch * b = trees["noSyst"]->GetBranch("weight");
     int entries = b->GetEntries();
     b->SetAddress(&tmpWeight);    
+
+
+    cout<< " endjob"  << syst<< " 2 "<<endl;
     
     trees[syst]->GetBranch("weight")->Reset();
     trees[syst]->GetBranch("weight")->SetAddress(&tmpWeight);
     
+
+    cout<< " endjob"  << syst<< " 3 "<<endl;
     
     for(int t =0; t < entries ; ++t){
       b->GetEntry(t);
@@ -1000,8 +1117,12 @@ void SingleTopSystematicsTreesDumper::endJob(){
       
     }
     
+
+    
     b->SetAddress(&weightTree);
     trees[syst]->GetBranch("weight")->SetAddress(&weightTree);
+    
+
     
     //    cout<< " syst "<< syst<< " weights entries "<<  entries <<endl;
 

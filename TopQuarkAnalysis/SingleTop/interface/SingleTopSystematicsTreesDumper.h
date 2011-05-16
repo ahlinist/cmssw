@@ -6,7 +6,7 @@
  * \Authors A. Orso M. Iorio
  * 
  * Produces systematics histograms out of a standard Single Top n-tuple 
- * \ version $Id: SingleTopSystematicsTreesDumper.h,v 1.2 2011/04/25 23:52:56 oiorio Exp $
+ * \ version $Id: SingleTopSystematicsTreesDumper.h,v 1.3 2011/05/09 02:20:50 oiorio Exp $
  */
 
 
@@ -182,6 +182,7 @@ class SingleTopSystematicsTreesDumper : public edm::EDAnalyzer {
   //Vectors definition  
   
   std::vector<math::PtEtaPhiELorentzVector> leptons,
+    leptonsQCD,
     jets,
     loosejets,
     bjets,
@@ -190,6 +191,9 @@ class SingleTopSystematicsTreesDumper : public edm::EDAnalyzer {
   //Base histograms 
   map<string, TTree*> trees;
   map<string, TTree*> treesWSample;
+
+  map<string, TTree*> treesQCD;
+  map<string, TTree*> treesWSampleQCD;
   
   double bTagThreshold;
   size_t bScanSteps;
@@ -228,11 +232,11 @@ class SingleTopSystematicsTreesDumper : public edm::EDAnalyzer {
   map<string, TTree*> TopMassWSampleMinus;
   */
 
-  double etaTree,etaTree2,cosTree,topMassTree,weightTree,mtwMassTree;
+  double etaTree,etaTree2,cosTree,topMassTree,weightTree,mtwMassTree,lowBTagTree,highBTagTree;
   int runTree, eventTree,lumiTree,chargeTree;
 
   
-  double lepPt,lepPz,lepPhi,fJetPhi,fJetPt,fJetPz,fJetE,bJetPt,bJetPz,bJetPhi,bJetE,metPt,metPhi,topPt,topPhi,topPz,topE,totalEnergy,totalMomentum;
+  double lepPt,lepPz,lepPhi,lepRelIso,fJetPhi,fJetPt,fJetPz,fJetE,bJetPt,bJetPz,bJetPhi,bJetE,metPt,metPhi,topPt,topPhi,topPz,topE,totalEnergy,totalMomentum;
 
   
  

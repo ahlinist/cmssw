@@ -24,7 +24,7 @@ process.load ("RecoBTag.PerformanceDB.BTagPerformanceDBMC36X")
 process.load ("RecoBTag.PerformanceDB.BTagPerformanceDB1011")
 process.load ("RecoBTag.PerformanceDB.PoolBTagPerformanceDB1011")
 
-#process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(100) )
+#process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(1000) )
 process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(-1) )
 process.source = cms.Source ("PoolSource",
                              fileNames = cms.untracked.vstring (
@@ -95,12 +95,12 @@ UnclusteredMETPy = cms.InputTag("UnclusteredMETPF","UnclusteredMETPy"),
 #from TChannel import *
 #process.source.fileNames = TChannel_ntuple
 
-process.source.fileNames = cms.untracked.vstring("file:TChannelMerged.root")
-process.source.fileNames = cms.untracked.vstring("file:/tmp/oiorio/edmntuple_TChannel_noMeta.root")
+process.source.fileNames = cms.untracked.vstring("file:/tmp/oiorio/TChannelMerged.root")
+#process.source.fileNames = cms.untracked.vstring("file:/tmp/oiorio/edmntuple_TChannel_noMeta.root")
 
 #Output
 
-process.TFileService = cms.Service("TFileService", fileName = cms.string("TChannel.root"))
+process.TFileService = cms.Service("TFileService", fileName = cms.string("/tmp/oiorio/TChannel_Scan.root"))
 
 process.load("SingleTopAnalyzers_cfi")
 process.load("SingleTopRootPlizer_cfi")
