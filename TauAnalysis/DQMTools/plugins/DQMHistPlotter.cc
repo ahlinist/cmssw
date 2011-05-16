@@ -142,6 +142,9 @@ void drawHistogram(const histoDrawEntry& histogram, bool& isFirstHistogram, std:
 {
   std::string drawOption = ( isFirstHistogram ) ? histogram.second : std::string(histogram.second).append("same");
 
+  // EK suppress axis
+  drawOption = std::string("A").append(drawOption);
+
 //--- if stacked histogram is drawn as shaded pattern on transparent background
 //    add a white histogram underneath, in order to "clear" drawing area
 //    and avoid "interference" of shaded patterns of different histograms
@@ -157,7 +160,8 @@ void drawHistogram(const histoDrawEntry& histogram, bool& isFirstHistogram, std:
   }
 
   histogram.first->Draw(drawOption.data());
-  histogram.first->Draw("axissame");
+  // EK - we will draw the axis manually at the end.
+  //histogram.first->Draw("axissame");
 
   isFirstHistogram = false;
 }
@@ -1020,7 +1024,7 @@ std::string getIndOutputFileName(const std::string& outputFilePath, const std::s
       std::string(outputFilePath).append("/").append(modIndOutputFileName) : modIndOutputFileName;
     //std::cout << " fullFileName = " << fullFileName << std::endl;
   } else {
-    edm::LogError("getIndOutputFileName") 
+    edm::LogError("getIndOutputFileName")
       << " Failed to decode indOutputFileName = " << indOutputFileName << " --> skipping !!";
   }
 
@@ -1189,7 +1193,7 @@ void DQMHistPlotter::endJob()
     const cfgEntryAxisY* yAxisConfig = findCfgDef<cfgEntryAxisY>(drawJob->yAxis_, yAxes_, "yAxis", drawJobName);
     const cfgEntryLegend* legendConfig = findCfgDef<cfgEntryLegend>(drawJob->legend_, legends_, "legend", drawJobName);
     if ( xAxisConfig == NULL || yAxisConfig == NULL || legendConfig == NULL ) {
-      edm::LogError ("endJob") 
+      edm::LogError ("endJob")
         << " Failed to access information needed by drawJob = " << drawJobName
         << " --> histograms will NOT be plotted !!";
       return;
@@ -1210,7 +1214,7 @@ void DQMHistPlotter::endJob()
           findCfgDef<cfgEntryDrawOption>(drawOption->drawOptionEntry_, drawOptionEntries_, "drawOptionEntry", drawJobName);
       const cfgEntryProcess* processConfig = findCfgDef<cfgEntryProcess>(drawOption->process_, processes_, "process", drawJobName);
       if ( drawOptionConfig == NULL || processConfig == NULL ) {
-        edm::LogError ("endJob") 
+        edm::LogError ("endJob")
 	  << " Failed to access information needed by drawJob = " << drawJobName
           << " --> histograms will NOT be plotted !!";
         return;
@@ -1301,6 +1305,7 @@ void DQMHistPlotter::endJob()
 //    3. individual Standard Model processes
 //    4. individual beyond the Standard Model processes
 //    5. data
+
     bool isFirstHistogram = true;
     drawHistograms(smSumUncertaintyHistogramList, isFirstHistogram, histogramsToDelete);
     drawHistograms(smSumHistogramList, isFirstHistogram, histogramsToDelete);
@@ -1315,6 +1320,10 @@ void DQMHistPlotter::endJob()
     drawHistograms(bsmProcessHistogramList, isFirstHistogram, histogramsToDelete);
     drawHistograms(dataHistogramList, isFirstHistogram, histogramsToDelete);
 
+    if (histogramsToDelete.size()) {
+      histogramsToDelete[0]->SetStats(0);
+      histogramsToDelete[0]->Draw("axissame");
+    }
     legend.Draw();
 
     for ( std::vector<TPaveText>::iterator label = labels.begin();
@@ -1326,7 +1335,7 @@ void DQMHistPlotter::endJob()
 
     canvas.Update();
     //pad.Update();
- 
+
     if ( indOutputFileName_ != "" ) {
       std::string fullFileName = getIndOutputFileName(outputFilePath_, indOutputFileName_, drawJob->name_full_);
       if ( fullFileName != "" ) canvas.Print(fullFileName.data());
@@ -1343,7 +1352,7 @@ void DQMHistPlotter::endJob()
       if ( isCompatibleBinning(histogram_data, histogram_mcSMsum) ) {
         std::string histogramName_ratio = std::string(histogram_data->GetName()).append("ToMCsmSumRatio");
         TH1* histogram_ratio = (TH1*)histogram_data->Clone(histogramName_ratio.data());
-      
+
         std::string histogramName_mcSMsumErr = std::string(histogram_mcSMsum->GetName()).append("Err");
         TH1* histogram_mcSMsumErr = (TH1*)histogram_mcSMsum->Clone(histogramName_mcSMsumErr.data());
 
@@ -1358,7 +1367,7 @@ void DQMHistPlotter::endJob()
           if ( binContent_mcSMsum != 0 ) {
             histogram_ratio->SetBinContent(iBinX, binContent_data/binContent_mcSMsum);
             histogram_ratio->SetBinError(iBinX, binError_data/binContent_mcSMsum);
-             
+
             histogram_mcSMsumErr->SetBinContent(iBinX, 1.);
             histogram_mcSMsumErr->SetBinError(iBinX, binError_mcSMsum/binContent_mcSMsum);
           }
@@ -1371,10 +1380,10 @@ void DQMHistPlotter::endJob()
         histogram_mcSMsumErr->SetFillColor(396);
         histogram_mcSMsumErr->SetMarkerColor(396);
         histogram_mcSMsumErr->Draw("e2");
-   
+
         histogram_ratio->SetMarkerStyle(20);
         histogram_ratio->SetMarkerColor(1);
-        histogram_ratio->SetMarkerSize(1.2); 
+        histogram_ratio->SetMarkerSize(1.2);
         histogram_ratio->Draw("e1psame");
 
         TLegend legend_ratio(0.60, 0.74, 0.29, 0.14, "", "brNDC");
@@ -1393,7 +1402,7 @@ void DQMHistPlotter::endJob()
               fullFileName.replace(pos_dot, 1, "_diff.");
               canvas.Print(fullFileName.data());
             } else {
-              edm::LogError("endJob") 
+              edm::LogError("endJob")
                 << " Failed to determine output file format for Data/Simulation ratio plot --> skipping !!";
             }
           }
@@ -1404,7 +1413,7 @@ void DQMHistPlotter::endJob()
         delete histogram_ratio;
         delete histogram_mcSMsumErr;
       } else {
-	edm::LogError ("endJob") 
+	edm::LogError ("endJob")
 	  << " Incompatible binning of histograms for Data and Simulation"
           << " --> ratio will NOT be plotted !!";
       }
