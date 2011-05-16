@@ -2,6 +2,8 @@ import FWCore.ParameterSet.Config as cms
 
 TreesEle = cms.EDAnalyzer('SingleTopSystematicsTreesDumper',                              
 systematics = cms.untracked.vstring("BTagUp","BTagDown","MisTagUp","MisTagDown","JESUp","JESDown","UnclusteredMETUp","UnclusteredMETDown"),
+#systematics = cms.untracked.vstring("")
+doBScan = cms.untracked.bool(True),
 rateSystematics = cms.untracked.vstring("WLightRate","TTBarRate","WqqRate","WqRate"),
 leptonsID = cms.InputTag("nTupleElectrons","tightElectronsSimpleEleId95cIso"),  
 
@@ -53,14 +55,13 @@ UnclusteredMETPy = cms.InputTag("UnclusteredMETPF","UnclusteredMETPy"),
 TreesMu = TreesEle.clone(
     channelInfo = cms.PSet(
         crossSection = cms.untracked.double(20.93),
-            channel = cms.untracked.string("TChannel"),
+        channel = cms.untracked.string("TChannel"),
         #    originalEvents = cms.untracked.double(14800000),
-            originalEvents = cms.untracked.double(480000),
-            finalLumi = cms.untracked.double(14.5),
-            MTWCut = cms.untracked.double(40.0),#Default 50.0 GeV
+        originalEvents = cms.untracked.double(480000),
+        finalLumi = cms.untracked.double(14.5),
+        MTWCut = cms.untracked.double(40.0),#Default 50.0 GeV
         RelIsoCut = cms.untracked.double(0.05),
-            ),
-
+        ),
     leptonsEta = cms.InputTag("nTupleMuons","tightMuonsEta"),  
     leptonsPt = cms.InputTag("nTupleMuons","tightMuonsPt"),  
     leptonsPhi = cms.InputTag("nTupleMuons","tightMuonsPhi"),  
