@@ -94,7 +94,7 @@ process.patPhotons.userData.userInts.src = egammaUserDataInts(
 process.load("RecoEcal.EgammaClusterProducers.preshowerClusterShape_cfi")
 process.load("EgammaAnalysis.PhotonIDProducers.piZeroDiscriminators_cfi")
 ## Needed for 42x
-process.load("RecoLocalCalo.EcalRecAlgos.EcalSeverityLevelESProducer_cfi")
+# process.load("RecoLocalCalo.EcalRecAlgos.EcalSeverityLevelESProducer_cfi")
 
 process.load("ElectroWeakAnalysis.MultiBosons.Skimming.pi0Discriminator_cfi")
 
@@ -304,6 +304,8 @@ else:
     if not options.applyCollisionDataCleaningToMC \
         and repr(process.skimFilterSequence) != repr(cms.Sequence()):
         process.skimFilterSequence.remove(process.goodCollisionDataSequence)
+        print "removed collision data cleaning"
+        print "skimFilterSequence = ", process.skimFilterSequence
     process.defaultSequence = cms.Sequence(
         process.skimFilterSequence +
         process.prunedGenParticles *
