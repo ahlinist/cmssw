@@ -13,7 +13,7 @@
 //
 // Original Author:  pts/45
 //         Created:  Tue May 13 12:23:34 CEST 2008
-// $Id: RPCMonitorEfficiency.cc,v 1.53 2011/03/09 10:04:52 carrillo Exp $
+// $Id: RPCMonitorEfficiency.cc,v 1.56 2011/04/13 16:09:20 calabria Exp $
 //
 //
 
@@ -1026,17 +1026,17 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
   sectorEffW1= new TH1F ("AzimutalDistroW1","Efficiency per Sector Wheel 1",12,0.5,12.5);
   sectorEffW2= new TH1F ("AzimutalDistroW2","Efficiency per Sector Wheel 2",12,0.5,12.5);
 
-  OcsectorEffWm2= new TH1F ("AzimutalDistroWm2","Occupancy per Sector Wheel -2",12,0.5,12.5);
-  OcsectorEffWm1= new TH1F ("AzimutalDistroWm1","Occupancy per Sector Wheel -1",12,0.5,12.5);
-  OcsectorEffW0= new TH1F ("AzimutalDistroW0","Ocuppancy per Sector Wheel 0",12,0.5,12.5);
-  OcsectorEffW1= new TH1F ("AzimutalDistroW1","Ocuppancy per Sector Wheel 1",12,0.5,12.5);
-  OcsectorEffW2= new TH1F ("AzimutalDistroW2","Ocupancy per Sector Wheel 2",12,0.5,12.5);
+  OcsectorEffWm2= new TH1F ("OcAzimutalDistroWm2","Occupancy per Sector Wheel -2",12,0.5,12.5);
+  OcsectorEffWm1= new TH1F ("OcAzimutalDistroWm1","Occupancy per Sector Wheel -1",12,0.5,12.5);
+  OcsectorEffW0= new TH1F ("OcAzimutalDistroW0","Ocuppancy per Sector Wheel 0",12,0.5,12.5);
+  OcsectorEffW1= new TH1F ("OcAzimutalDistroW1","Ocuppancy per Sector Wheel 1",12,0.5,12.5);
+  OcsectorEffW2= new TH1F ("OcAzimutalDistroW2","Ocupancy per Sector Wheel 2",12,0.5,12.5);
 
-  ExsectorEffWm2= new TH1F ("AzimutalDistroWm2","Expected per Sector Wheel -2",12,0.5,12.5);
-  ExsectorEffWm1= new TH1F ("AzimutalDistroWm1","Expected per Sector Wheel -1",12,0.5,12.5);
-  ExsectorEffW0= new TH1F ("AzimutalDistroW0","Expected per Sector Wheel 0",12,0.5,12.5);
-  ExsectorEffW1= new TH1F ("AzimutalDistroW1","Expected per Sector Wheel 1",12,0.5,12.5);
-  ExsectorEffW2= new TH1F ("AzimutalDistroW2","Expected per Sector Wheel 2",12,0.5,12.5);
+  ExsectorEffWm2= new TH1F ("ExAzimutalDistroWm2","Expected per Sector Wheel -2",12,0.5,12.5);
+  ExsectorEffWm1= new TH1F ("ExAzimutalDistroWm1","Expected per Sector Wheel -1",12,0.5,12.5);
+  ExsectorEffW0= new TH1F ("ExAzimutalDistroW0","Expected per Sector Wheel 0",12,0.5,12.5);
+  ExsectorEffW1= new TH1F ("ExAzimutalDistroW1","Expected per Sector Wheel 1",12,0.5,12.5);
+  ExsectorEffW2= new TH1F ("ExAzimutalDistroW2","Expected per Sector Wheel 2",12,0.5,12.5);
   
   GregD1R2= new TH1F ("GregDistroD1R2","Efficiency for Station 1 Ring 2",36,0.5,36.5);
   GregD1R3= new TH1F ("GregDistroD1R3","Efficiency for Station 1 Ring 3",36,0.5,36.5);
