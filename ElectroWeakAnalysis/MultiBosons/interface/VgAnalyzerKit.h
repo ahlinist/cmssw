@@ -173,7 +173,8 @@ protected:
   // Electron
   Int_t    nEle_;
   Int_t    eleTrg_[maxP][21];
-  Int_t    eleID_[maxP][12];
+  Int_t    eleID_[maxP][30];
+  Float_t  eleIDLH_[maxP];
   Int_t    eleClass_[maxP];
   Int_t    eleCharge_[maxP];
   Float_t  eleEn_[maxP];
@@ -234,6 +235,10 @@ protected:
   Float_t  eleESRatio_[maxP];
   Float_t  eleESProfileFront_[maxP][123];
   Float_t  eleESProfileRear_[maxP][123];
+  Float_t  elePV2D_[maxP];
+  Float_t  elePV3D_[maxP];
+  Float_t  eleBS2D_[maxP];
+  Float_t  eleBS3D_[maxP];
 
   // Photon
   Int_t    nPho_;
@@ -315,6 +320,10 @@ protected:
   Int_t    muNumberOfValidMuonHits_[maxP];
   Int_t    muStations_[maxP];
   Int_t    muChambers_[maxP];
+  Float_t  muPV2D_[maxP];
+  Float_t  muPV3D_[maxP];
+  Float_t  muBS2D_[maxP];
+  Float_t  muBS3D_[maxP];
 
   // Jet
   Int_t    nJet_;

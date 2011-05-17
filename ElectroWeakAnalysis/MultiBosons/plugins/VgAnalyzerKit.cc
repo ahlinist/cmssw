@@ -119,7 +119,7 @@ VgAnalyzerKit::VgAnalyzerKit(const edm::ParameterSet& ps) : verbosity_(0), helpe
     tree_->Branch("pdf", pdf_, "pdf[7]/F");
     tree_->Branch("pthat", &pthat_, "pthat/F");
     tree_->Branch("processID", &processID_, "processID/F");
-    tree_->Branch("nBX", nBX_, "nBX/I");
+    tree_->Branch("nBX", &nBX_, "nBX/I");
     tree_->Branch("nPU", nPU_, "nPU[nBX]/I");
     tree_->Branch("BXPU", BXPU_, "BXPU[nBX]/I");
     // genParticle
@@ -177,7 +177,8 @@ VgAnalyzerKit::VgAnalyzerKit(const edm::ParameterSet& ps) : verbosity_(0), helpe
   // Electron
   tree_->Branch("nEle", &nEle_, "nEle/I");
   tree_->Branch("eleTrg", eleTrg_, "eleTrg[nEle][21]/I");
-  tree_->Branch("eleID", eleID_, "eleID[nEle][12]/I");
+  tree_->Branch("eleID", eleID_, "eleID[nEle][30]/I");
+  tree_->Branch("eleIDLH", eleIDLH_, "eleIDLH[nEle]/F");
   tree_->Branch("eleClass", eleClass_, "eleClass[nEle]/I");
   tree_->Branch("eleCharge", eleCharge_, "eleCharge[nEle]/I");
   tree_->Branch("eleEn", eleEn_, "eleEn[nEle]/F");
@@ -237,6 +238,10 @@ VgAnalyzerKit::VgAnalyzerKit(const edm::ParameterSet& ps) : verbosity_(0), helpe
   tree_->Branch("eleESRatio", eleESRatio_, "eleESRatio[nEle]/F");
   tree_->Branch("eleESProfileFront", eleESProfileFront_, "eleESProfileFront[nEle][123]/F");
   tree_->Branch("eleESProfileRear", eleESProfileRear_, "eleESProfileRear[nEle][123]/F");
+  tree_->Branch("elePV2D", elePV2D_, "elePV2D[nEle]/F");
+  tree_->Branch("elePV3D", elePV3D_, "elePV3D[nEle]/F");
+  tree_->Branch("eleBS2D", eleBS2D_, "eleBS2D[nEle]/F");
+  tree_->Branch("eleBS3D", eleBS3D_, "eleBS3D[nEle]/F");
   // Photon
   tree_->Branch("nPho", &nPho_, "nPho/I");
   tree_->Branch("phoTrg", phoTrg_, "phoTrg[nPho][16]/I");
@@ -322,6 +327,10 @@ VgAnalyzerKit::VgAnalyzerKit(const edm::ParameterSet& ps) : verbosity_(0), helpe
   tree_->Branch("muNumberOfValidMuonHits", muNumberOfValidMuonHits_, "muNumberOfValidMuonHits[nMu]/I");
   tree_->Branch("muStations", muStations_, "muStations[nMu]/I");
   tree_->Branch("muChambers", muChambers_, "muChambers[nMu]/I");
+  tree_->Branch("muPV2D", muPV2D_, "muPV2D[nMu]/F");
+  tree_->Branch("muPV3D", muPV3D_, "muPV3D[nMu]/F");
+  tree_->Branch("muBS2D", muBS2D_, "muBS2D[nMu]/F");
+  tree_->Branch("muBS3D", muBS3D_, "muBS3D[nMu]/F");
   // Jet
   if (doStoreJets_) {
     tree_->Branch("nJet", &nJet_, "nJet/I");
@@ -1143,7 +1152,8 @@ fabs(ip->pdgId())<=14) || ip->pdgId()==22))) {
       eleTrg_[nEle_][19]  = (eleTrigRef20.isAvailable()) ? 1 : -99;
       eleTrg_[nEle_][20]  = (eleTrigRef21.isAvailable()) ? 1 : -99;
 
-      //        new eID with correct isolations and conversion rejection, see https://twiki.cern.ch/twiki/bin/viewauth/CMS/SimpleCutBasedEleID
+      //        new eID with correct isolations and conversion rejection
+      //	https://twiki.cern.ch/twiki/bin/viewauth/CMS/SimpleCutBasedEleID
       //        The value map returns a double with the following meaning:
       //        0: fails
       //	1: passes electron ID only
@@ -1153,8 +1163,21 @@ fabs(ip->pdgId())<=14) || ip->pdgId()==22))) {
       //	5: passes conversion rejection and ID
       //	6: passes conversion rejection and Isolation
       //	7: passes the whole selection
+      //
+      //        CIC
+      //        https://twiki.cern.ch/twiki/bin/view/CMSPublic/SWGuideCategoryBasedElectronID
+      //        The value map returns a double with the following meaning:
+      //        0 - no cut passed
+      //        1 - eID cuts passed
+      //        2 - iso cuts passed
+      //        4 - conversion rejection
+      //        8 - ip cut
+      //        To check eId results:
+      //        eID+Iso+ConversionRejection+IP -> ((eleID_[nEle_][] &15) == 15)
+      //        Iso only -> ((eleID_[nEle_][] & 2) == 2)
+      //        eID+ConversionRejection+IP -> ((eleID_[nEle_][] & 13) == 13)
 
-      for (int i=0; i<12; ++i) eleID_[nEle_][i] = -1;
+      for (int i=0; i<30; ++i) eleID_[nEle_][i] = -1;
 
       // ID sources are following, numbers are simbolic and correspond to WEnu signal efficiency.
       // 0  simpleEleId60cIso
@@ -1169,6 +1192,24 @@ fabs(ip->pdgId())<=14) || ip->pdgId()==22))) {
       // 9  simpleEleId85relIso
       // 10 simpleEleId90relIso
       // 11 simpleEleId95relIso
+      // 12 eidVeryLoose
+      // 13 eidLoose
+      // 14 eidMedium
+      // 15 eidTight
+      // 16 eidSuperTight
+      // 17 eidHyperTight1
+      // 18 eidHyperTight2
+      // 19 eidHyperTight3
+      // 20 eidHyperTight4
+      // 21 eidVeryLooseMC
+      // 22 eidLooseMC
+      // 23 eidMediumMC
+      // 24 eidTightMC
+      // 25 eidSuperTightMC
+      // 26 eidHyperTight1Mc
+      // 27 eidHyperTight2MC
+      // 28 eidHyperTight3MC
+      // 29 eidHyperTight4MC
       eleID_[nEle_][0] = int (iEle->electronID("simpleEleId60cIso"));
       eleID_[nEle_][1] = int (iEle->electronID("simpleEleId70cIso"));
       eleID_[nEle_][2] = int (iEle->electronID("simpleEleId80cIso"));
@@ -1181,6 +1222,8 @@ fabs(ip->pdgId())<=14) || ip->pdgId()==22))) {
       eleID_[nEle_][9] = int (iEle->electronID("simpleEleId85relIso"));
       eleID_[nEle_][10]= int (iEle->electronID("simpleEleId90relIso"));
       eleID_[nEle_][11]= int (iEle->electronID("simpleEleId95relIso"));
+
+      eleIDLH_[nEle_] = iEle->electronID("eidLikelihoodExt");
 
       eleClass_[nEle_]   = iEle->classification();
       eleCharge_[nEle_]  = iEle->charge();
@@ -1318,6 +1361,11 @@ fabs(ip->pdgId())<=14) || ip->pdgId()==22))) {
         eleESProfileFront_[nEle_][a] = getESProfileFront(iEle, e, es)[a];
         eleESProfileRear_[nEle_][a] = getESProfileRear(iEle, e, es)[a];
       }
+
+      elePV2D_[nEle_] = iEle->dB(pat::Electron::PV2D);
+      elePV3D_[nEle_] = iEle->dB(pat::Electron::PV3D);
+      eleBS2D_[nEle_] = iEle->dB(pat::Electron::BS2D);
+      eleBS3D_[nEle_] = iEle->dB(pat::Electron::BS3D);
 
       nEle_++;
     }
@@ -1665,6 +1713,11 @@ fabs(ip->pdgId())<=14) || ip->pdgId()==22))) {
         muNumberOfValidMuonHits_[nMu_] = trkr->hitPattern().numberOfValidMuonHits();
   	muChi2NDF_[nMu_] = trkr->normalizedChi2();
       }
+
+      muPV2D_[nMu_] = iMu->dB(pat::Muon::PV2D);
+      muPV3D_[nMu_] = iMu->dB(pat::Muon::PV3D);
+      muBS2D_[nMu_] = iMu->dB(pat::Muon::BS2D);
+      muBS3D_[nMu_] = iMu->dB(pat::Muon::BS3D);
 
       muEta_[nMu_] = iMu->eta();
       muPhi_[nMu_] = iMu->phi();
