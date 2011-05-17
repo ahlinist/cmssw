@@ -1,2 +1,5 @@
 *Dict.h
 *.swp
+*.out
+*.err
+*.root
