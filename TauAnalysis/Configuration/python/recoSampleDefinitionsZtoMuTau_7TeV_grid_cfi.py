@@ -132,6 +132,7 @@ RECO_SAMPLES = {
         'drawOption' : styles.drawOption_Data,
         'hlt_paths' : {
             'HLT_IsoMu12_v1' : '160431:MIN-163261:MAX'
+            'HLT_IsoMu17_v6' : '163270:MIN-163869:MAX'
         },
         'enableSysUncertainties' : False,
         'enableFakeRates' : True,
