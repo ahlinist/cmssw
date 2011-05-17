@@ -95,6 +95,11 @@ options.register("skimFSR",
                  VarParsing.multiplicity.singleton, # singleton or list
                  VarParsing.varType.bool,         # bool, string, int, or float
                  "Do you want to skim for pythia FSR?")
+options.register("addRho",
+                 True, # default value
+                 VarParsing.multiplicity.singleton, # singleton or list
+                 VarParsing.varType.bool,         # bool, string, int, or float
+                 "Add rho from FastJet for pile-up corrected calo isolations?")
 
 ## setup tags
 options.setupTags (tag = 'of_%d',
