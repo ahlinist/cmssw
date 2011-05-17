@@ -7,11 +7,11 @@ muonsCountFilter = cms.EDFilter("CandViewCountFilter",
 
 goodLooseMuons = cms.EDFilter("MuonViewRefSelector",
     src = cms.InputTag("muons"),
-    cut = cms.string("""
-            pt > 10 &
-            (isGlobalMuon | isTrackerMuon) &
-            abs(innerTrack().dxy) < 1.0
-            """),
+    cut = cms.string(""" pt > 10 &
+                         abs(eta) < 2.4 &
+                         isGlobalMuon &
+                         isTrackerMuon &
+                         abs( innerTrack().dxy ) < 2.0 """),
     filter = cms.bool(True)
     )
 
@@ -22,13 +22,13 @@ goodLooseMuonsCountFilter = cms.EDFilter("CandViewCountFilter",
 
 goodTightMuons = goodLooseMuons.clone(
     src = "goodLooseMuons",
-    cut = "pt > 15"
+    cut = "pt > 20"
     )
 
-goodDimuons = cms.EDProducer("CandViewShallowClonePtrCombiner",
+goodDimuons = cms.EDProducer("CandViewShallowCloneCombiner",
     decay = cms.string("goodTightMuons goodLooseMuons"),
     checkCharge = cms.bool(False),
-    cut = cms.string("20 < mass")
+    cut = cms.string("30 < mass")
     )
 
 goodDimuonsFilter = cms.EDFilter("CandViewCountFilter",
@@ -37,8 +37,9 @@ goodDimuonsFilter = cms.EDFilter("CandViewCountFilter",
     )
 
 dimuonSkimFilterSequence = cms.Sequence(
-    muonsCountFilter +
-    (goodLooseMuons + goodLooseMuonsCountFilter) *
+    muonsCountFilter *
+    goodLooseMuons *
+    goodLooseMuonsCountFilter *
     goodTightMuons *
     goodDimuons *
     goodDimuonsFilter
