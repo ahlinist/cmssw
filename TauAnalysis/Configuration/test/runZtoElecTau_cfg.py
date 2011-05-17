@@ -10,11 +10,16 @@ process.load('FWCore/MessageService/MessageLogger_cfi')
 process.MessageLogger.cerr.FwkReport.reportEvery = 100
 #process.MessageLogger.cerr.threshold = cms.untracked.string('INFO')
 #process.MessageLogger.suppressInfo = cms.untracked.vstring()
-process.MessageLogger.suppressWarning = cms.untracked.vstring("PATTriggerProducer",)
+process.MessageLogger.suppressWarning = cms.untracked.vstring(
+    "PATTriggerProducer",
+    "PATElecTauPairProducer",
+    "analyzeAHtoElecTauEventsOS",
+    "analyzeAHtoElecTauEventsSS"
+)
 process.load('Configuration/StandardSequences/GeometryIdeal_cff')
 process.load('Configuration/StandardSequences/MagneticField_cff')
 process.load('Configuration/StandardSequences/FrontierConditions_GlobalTag_cff')
-process.GlobalTag.globaltag = cms.string('START38_V14::All')
+process.GlobalTag.globaltag = cms.string('START310_V4::All')
 
 # import particle data table
 # needed for print-out of generator level information
@@ -32,10 +37,6 @@ process.load("TauAnalysis.RecoTools.filterDataQuality_cfi")
 # import sequence for filling of histograms, cut-flow table
 # and of run + event number pairs for events passing event selection
 process.load("TauAnalysis.Configuration.analyzeZtoElecTau_cff")
-
-# import configuration parameters for submission of jobs to CERN batch system
-# (running over skimmed samples stored on CASTOR)
-from TauAnalysis.Configuration.recoSampleDefinitionsZtoElecTau_cfi import *
 #--------------------------------------------------------------------------------
 
 #--------------------------------------------------------------------------------
@@ -66,16 +67,11 @@ process.maxEvents = cms.untracked.PSet(
 )
 
 process.source = cms.Source("PoolSource",
-    fileNames = cms.untracked.vstring(
-		'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/fall10/Ztautau/skimElecTau_1_1_6h9.root',
-        'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/fall10/Ztautau/skimElecTau_2_1_LLB.root',
-        'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/fall10/Ztautau/skimElecTau_3_1_oXg.root',
-        'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/fall10/Ztautau/skimElecTau_4_1_pwH.root',
-        'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/fall10/Ztautau/skimElecTau_5_1_EgY.root'
-        #'/store/relval/CMSSW_3_8_7/RelValZTT/GEN-SIM-RECO/START38_V13-v1/0016/26155577-92FC-DF11-8E56-001A92810A9A.root',
-        #'/store/relval/CMSSW_3_8_7/RelValZTT/GEN-SIM-RECO/START38_V13-v1/0016/506F0476-92FC-DF11-8886-00304867C1BC.root',
-    )
-    #skipBadFiles = cms.untracked.bool(True)
+  fileNames = cms.untracked.vstring(
+    '/store/relval/CMSSW_4_1_3/RelValZTT/GEN-SIM-RECO/START311_V2-v1/0037/286D4A6C-C651-E011-B6AC-001A92971BBA.root',
+    '/store/relval/CMSSW_4_1_3/RelValZTT/GEN-SIM-RECO/START311_V2-v1/0038/18CCFD66-5A52-E011-A4BC-00304867918A.root'
+  )
+  #skipBadFiles = cms.untracked.bool(True)
 )
 
 #--------------------------------------------------------------------------------
@@ -154,7 +150,7 @@ changeCut(process,"selectedPatElectronsForElecTauId","(abs(superCluster.eta) < 1
 changeCut(process,"selectedPatElectronsForElecTauEta","abs(eta) < 2.1")
 
 #  electron pt
-changeCut(process,"selectedPatElectronsForElecTauPt","pt > 15")
+changeCut(process,"selectedPatElectronsForElecTauPt","pt > 18")
 
 #  PF combinded relative isolation
 changeCut(process,"selectedPatElectronsForElecTauIso",cms.double(0.08),"sumPtMaxEB")
@@ -193,7 +189,9 @@ changeCut(process,"selectedPatTausForElecTauEta","abs(eta) < 2.3")
 changeCut(process,"selectedPatTausForElecTauPt","pt > 20")
 
 # remove tau ID lead track pt discriminant and add decay mode finding
+changeCut(process,"selectedPatTausLeadTrk",'tauID("decayModeFinding") > -0.5')
 changeCut(process,"selectedPatTausLeadTrkPt",'tauID("decayModeFinding") > 0.5')
+changeCut(process,"selectedPatTausForElecTauLeadTrk",'tauID("decayModeFinding") > -0.5')
 changeCut(process,"selectedPatTausForElecTauLeadTrkPt",'tauID("decayModeFinding") > 0.5')
 
 # change tau ID to HPS loose
@@ -214,7 +212,7 @@ changeCut(process,"selectedPatTausElectronVeto","tauID('againstElectronTight') >
 changeCut(process,"selectedPatTausForElecTauEcalCrackVeto",'abs(eta) < 1.460 | abs(eta) > 1.558')
 
 #  muon veto for taus
-changeCut(process,"selectedPatTausForElecTauMuonVeto",'tauID("againstMuonLoose") > 0.5')
+changeCut(process,"selectedPatTausForElecTauMuonVeto",'tauID("againstMuonTight") > 0.5')
 
 
 #
@@ -319,7 +317,8 @@ from TauAnalysis.Configuration.tools.sysUncertaintyTools import enableSysUncerta
 # disable event-dump output
 # in order to reduce size of log-files
 if hasattr(process, "disableEventDump"):
-    process.analyzeZtoElecTauEvents.eventDumps = cms.VPSet()
+    process.analyzeZtoElecTauEventsOS.eventDumps = cms.VPSet()
+    process.analyzeZtoElecTauEventsSS.eventDumps = cms.VPSet()
 #--------------------------------------------------------------------------------
 
 #--------------------------------------------------------------------------------
@@ -337,8 +336,8 @@ process.producePatTupleAll = cms.Sequence(process.producePatTuple + process.prod
 # depending on whether RECO/AOD or PAT-tuples are used as input for analysis
 #
 #__#patTupleProduction#
-if not hasattr(process, "isBatchMode"):
-    process.p.replace(process.producePatTupleZtoElecTauSpecific, process.producePatTuple + process.producePatTupleZtoElecTauSpecific)
+#if not hasattr(process, "isBatchMode"):
+#    process.p.replace(process.producePatTupleZtoElecTauSpecific, process.producePatTuple + process.producePatTupleZtoElecTauSpecific)
 #--------------------------------------------------------------------------------
 
 # print-out all python configuration parameter information
