@@ -40,7 +40,7 @@ _CRAB_DEFAULTS = {
     'return_data' : 0,
     'copy_data' : 1,
     'use_server' : 1,
-    'scheduler' : 'glidein', 
+    'scheduler' : 'glite', 
     'storage_element' : 'srm-cms.cern.ch',
     'storage_path' : '/srm/managerv2?SFN=/castor/cern.ch',
     'publish_data' : 0,

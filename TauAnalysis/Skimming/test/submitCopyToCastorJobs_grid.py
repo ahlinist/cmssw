@@ -94,7 +94,7 @@ crab_template = """
 [CRAB]
 
 jobtype = cmssw
-scheduler = glidein
+scheduler = glite
 use_server = 1
 
 [CMSSW]
