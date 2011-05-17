@@ -24,7 +24,7 @@ process.load('Configuration/StandardSequences/GeometryIdeal_cff')
 process.load('Configuration/StandardSequences/MagneticField_cff')
 process.load('Configuration/StandardSequences/Reconstruction_cff')
 process.load('Configuration/StandardSequences/FrontierConditions_GlobalTag_cff')
-process.GlobalTag.globaltag = cms.string('START38_V12::All')
+process.GlobalTag.globaltag = cms.string('START311_V2::All')
 
 #--------------------------------------------------------------------------------
 # import sequences for PAT-tuple production
@@ -74,110 +74,12 @@ process.maxEvents = cms.untracked.PSet(
 
 process.source = cms.Source("PoolSource",
     fileNames = cms.untracked.vstring(
-		'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/fall10/Ztautau/skimElecTau_1_1_6h9.root',
-		'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/fall10/Ztautau/skimElecTau_2_1_LLB.root',
-		'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/fall10/Ztautau/skimElecTau_3_1_oXg.root',
-		'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/fall10/Ztautau/skimElecTau_4_1_pwH.root',
-		'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/fall10/Ztautau/skimElecTau_5_1_EgY.root'
-		#'/store/relval/CMSSW_3_8_7/RelValZTT/GEN-SIM-RECO/START38_V13-v1/0016/26155577-92FC-DF11-8E56-001A92810A9A.root',
-		#'/store/relval/CMSSW_3_8_7/RelValZTT/GEN-SIM-RECO/START38_V13-v1/0016/506F0476-92FC-DF11-8886-00304867C1BC.root',
-		#'/store/relval/CMSSW_3_8_7/RelValZTT/GEN-SIM-RECO/START38_V13-v1/0017/6262925F-9DFC-DF11-B9EF-0026189438BA.root',
-		#'/store/relval/CMSSW_3_8_7/RelValZTT/GEN-SIM-RECO/START38_V13-v1/0017/AA64EF7B-93FC-DF11-AB92-001A92971BC8.root'
-        #'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/fall10/PhotonPlusJets_Pt15to30/skimElecTau_1_1_sTP.root',
-        #'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/fall10/PhotonPlusJets_Pt15to30/skimElecTau_2_1_Y94.root',
-        #'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/fall10/PhotonPlusJets_Pt15to30/skimElecTau_3_1_W3i.root',
-        #'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/fall10/PhotonPlusJets_Pt15to30/skimElecTau_4_2_Cf1.root',
-        #'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/fall10/PhotonPlusJets_Pt15to30/skimElecTau_5_1_Uwo.root'
+		'/store/relval/CMSSW_4_1_3/RelValZTT/GEN-SIM-RECO/START311_V2-v1/0037/286D4A6C-C651-E011-B6AC-001A92971BBA.root',
+		'/store/relval/CMSSW_4_1_3/RelValZTT/GEN-SIM-RECO/START311_V2-v1/0038/18CCFD66-5A52-E011-A4BC-00304867918A.root'
 	)
     #skipBadFiles = cms.untracked.bool(True)    
 )
 
-
-#--------------------------------------------------------------------------------
-#  make cut changes
-from TauAnalysis.Configuration.tools.changeCut import changeCut
-
-#
-# electron selection
-#
-
-#  VBTF WP80 electron ID
-changeCut(process,"selectedPatElectronsForElecTauId","(abs(superCluster.eta) < 1.479 & abs(deltaEtaSuperClusterTrackAtVtx) < 0.004 & abs(deltaPhiSuperClusterTrackAtVtx) < 0.06 & hcalOverEcal < 0.04 & sigmaIetaIeta < 0.01) | (abs(superCluster.eta) > 1.479 & abs(deltaEtaSuperClusterTrackAtVtx) < 0.007 & abs(deltaPhiSuperClusterTrackAtVtx) <0.03 & hcalOverEcal < 0.025 & sigmaIetaIeta < 0.03)")
-
-#  electron eta range
-changeCut(process,"selectedPatElectronsForElecTauEta","abs(eta) < 2.1")
-
-#  electron pt
-changeCut(process,"selectedPatElectronsForElecTauPt","pt > 15")
-
-#  PF relative iso
-changeCut(process,"selectedPatElectronsForElecTauIso",cms.double(0.08),"sumPtMaxEB")
-changeCut(process,"selectedPatElectronsForElecTauIso",cms.double(0.04),"sumPtMaxEE")
-
-#  electron conversion veto
-changeCut(process,"selectedPatElectronsForElecTauConversionVeto",cms.double(0), attribute = "nConvPairMax")
-changeCut(process,"selectedPatElectronsForElecTauConversionVeto",cms.double(0.02), attribute = "cotThetaMax")
-changeCut(process,"selectedPatElectronsForElecTauConversionVeto",cms.double(0.1), attribute = "docaElecTrackMax")
-changeCut(process,"selectedPatElectronsForElecTauConversionVeto",cms.bool(True), attribute = "usePogMethod")
-changeCut(process,"selectedPatElectronsForElecTauConversionVeto",cms.bool(True), attribute = "doMissingHitsCut")
-changeCut(process,"selectedPatElectronsForElecTauConversionVeto",cms.bool(False), attribute = "doPixCut")
-
-#  electron track IP_xy cut
-changeCut(process,"selectedPatElectronsForElecTauTrkIP",cms.double(0.05),"IpMax")
-
-#
-# hadronic tau decay selection
-#
-
-#  eta cut for taus
-changeCut(process,"selectedPatTausForElecTauEta","abs(eta) < 2.3")
-
-#  Pt cut for taus
-changeCut(process,"selectedPatTausForElecTauPt","pt > 20")
-
-# change track pt cut to decay mode finding
-changeCut(process,"selectedPatTausLeadTrkPt",'tauID("leadingTrackFinding") > 0.5')
-changeCut(process,"selectedPatTausForElecTauLeadTrkPt",'tauID("leadingTrackFinding") > 0.5')
-
-#  put tau ID at HPS loose
-changeCut(process,"selectedPatTausTaNCdiscr",'tauID("byHPSloose") > 0.5')
-changeCut(process,"selectedPatTausForElecTauTaNCdiscr",'tauID("byHPSloose") > 0.5')
-
-#  1/3-prong track cut for taus
-changeCut(process,"selectedPatTausForElecTauProng","signalPFChargedHadrCands.size() = 1 | signalPFChargedHadrCands.size() = 3")
-
-#  charge = +/-1 cut for taus
-changeCut(process,"selectedPatTausForElecTauCharge","abs(charge) > 0.5 & abs(charge) < 1.5")
-
-#  electron veto for taus
-changeCut(process,"selectedPatTausForElecTauElectronVeto",'tauID("againstElectronTight")')
-
-# ECAl crack veto for taus 
-changeCut(process,"selectedPatTausForElecTauEcalCrackVeto",'abs(eta) < 1.460 | abs(eta) > 1.558')
-
-#  muon veto for taus
-changeCut(process,"selectedPatTausForElecTauMuonVeto",'tauID("againstMuonTight") > 0.5')
-
-#
-# di-tau pair selection
-#
-
-#  elec/tau overlap cut
-changeCut(process,"selectedElecTauPairsForAHtoElecTauAntiOverlapVeto","dR12 > 0.5")
-changeCut(process,"selectedElecTauPairsForAHtoElecTauAntiOverlapVetoLooseElectronIsolation", "dR12 > 0.5")
-
-#  transverse mass of electron + MET
-changeCut(process,"selectedElecTauPairsForAHtoElecTauMt1MET","mt1MET < 40.")
-changeCut(process,"selectedElecTauPairsForAHtoElecTauMt1METlooseElectronIsolation", "mt1MET < 40.")
-
-# enable cut on Pzeta variable
-changeCut(process, "selectedElecTauPairsForAHtoElecTauPzetaDiff", "(pZeta - 1.5*pZetaVis) > -1000.")
-changeCut(process, "selectedElecTauPairsForAHtoElecTauPzetaDiffLooseElectronIsolation", "(pZeta - 1.5*pZetaVis) > -1000.")
-
-# change isolation treshold for second electron used in di-electron veto to 0.30 * electron Pt
-changeCut(process, "selectedPatElectronsForZeeHypothesesLoosePFRelIso", 0.30, "sumPtMax")
-
-#--------------------------------------------------------------------------------
 
 #--------------------------------------------------------------------------------
 # import utility function for switching pat::Tau input
@@ -209,13 +111,13 @@ from PhysicsTools.PatAlgos.tools.jetTools import *
 # uncomment to replace caloJets by pfJets
 switchJetCollection(process, jetCollection = cms.InputTag("ak5PFJets"), 
 		doBTagging = True, outputModule = "")
+process.patJetCorrections.remove(process.patJetCorrFactors)
 #--------------------------------------------------------------------------------
 
 #--------------------------------------------------------------------------------
 # import utility function for configuring PAT trigger matching
 from PhysicsTools.PatAlgos.tools.trigTools import switchOnTrigger
 switchOnTrigger(process, hltProcess = 'HLT', outputModule = '')
-#switchOnTrigger(process, hltProcess = 'REDIGI38X', outputModule = '')
 process.patTrigger.addL1Algos = cms.bool(True)
 #--------------------------------------------------------------------------------
 
@@ -237,6 +139,104 @@ metTools.replaceMETforDiTaus(process, cms.InputTag('patMETs'), cms.InputTag('pat
 from TauAnalysis.RecoTools.patLeptonSelection_cff import patMuonSelConfigurator
 setattr(patMuonSelConfigurator, "src", "patMuons" )
 process.selectPatMuons = patMuonSelConfigurator.configure(process = process)
+#--------------------------------------------------------------------------------
+
+#--------------------------------------------------------------------------------
+#  make cut changes
+from TauAnalysis.Configuration.tools.changeCut import changeCut
+
+#
+# electron selection
+#
+
+#  VBTF WP80 electron ID
+changeCut(process,"selectedPatElectronsForElecTauId","(abs(superCluster.eta) < 1.479 & abs(deltaEtaSuperClusterTrackAtVtx) < 0.004 & abs(deltaPhiSuperClusterTrackAtVtx) < 0.06 & hcalOverEcal < 0.04 & sigmaIetaIeta < 0.01) | (abs(superCluster.eta) > 1.479 & abs(deltaEtaSuperClusterTrackAtVtx) < 0.007 & abs(deltaPhiSuperClusterTrackAtVtx) <0.03 & hcalOverEcal < 0.025 & sigmaIetaIeta < 0.03)")
+
+#  electron anti-crack cut: cut on track, not SC, to match Wisconsin
+changeCut(process,"selectedPatElectronsForElecTauAntiCrackCut","abs(eta) < 1.442 | abs(eta) > 1.566")
+
+#  electron eta range
+changeCut(process,"selectedPatElectronsForElecTauEta","abs(eta) < 2.1")
+
+#  electron pt
+changeCut(process,"selectedPatElectronsForElecTauPt","pt > 18")
+
+#  PF relative iso
+changeCut(process,"selectedPatElectronsForElecTauIso",cms.double(0.08),"sumPtMaxEB")
+changeCut(process,"selectedPatElectronsForElecTauIso",cms.double(0.04),"sumPtMaxEE")
+changeCut(process,"selectedPatElectronsForElecTauIsoLooseIsolation",cms.double(0.3),"sumPtMax")
+
+#  electron conversion veto
+changeCut(process,"selectedPatElectronsForElecTauConversionVeto",cms.double(0), attribute = "nConvPairMax")
+changeCut(process,"selectedPatElectronsForElecTauConversionVeto",cms.double(0.02), attribute = "cotThetaMax")
+changeCut(process,"selectedPatElectronsForElecTauConversionVeto",cms.double(0.02), attribute = "docaElecTrackMax")
+changeCut(process,"selectedPatElectronsForElecTauConversionVeto",cms.bool(True), attribute = "usePogMethod")
+changeCut(process,"selectedPatElectronsForElecTauConversionVeto",cms.bool(True), attribute = "doMissingHitsCut")
+changeCut(process,"selectedPatElectronsForElecTauConversionVeto",cms.bool(False), attribute = "doPixCut")
+
+changeCut(process,"selectedPatElectronsForElecTauConversionVetoLooseIsolation",cms.double(2), attribute = "nConvPairMax")
+changeCut(process,"selectedPatElectronsForElecTauConversionVetoLooseIsolation",cms.double(0.02), attribute = "cotThetaMax")
+changeCut(process,"selectedPatElectronsForElecTauConversionVetoLooseIsolation",cms.double(0.02), attribute = "docaElecTrackMax")
+changeCut(process,"selectedPatElectronsForElecTauConversionVetoLooseIsolation",cms.bool(True), attribute = "usePogMethod")
+changeCut(process,"selectedPatElectronsForElecTauConversionVetoLooseIsolation",cms.bool(True), attribute = "doMissingHitsCut")
+changeCut(process,"selectedPatElectronsForElecTauConversionVetoLooseIsolation",cms.bool(False), attribute = "doPixCut")
+
+#  electron track IP_xy cut
+changeCut(process,"selectedPatElectronsForElecTauTrkIP",cms.double(0.02),"IpMax")
+changeCut(process, "selectedPatElectronsForElecTauTrkIPlooseIsolation", 0.02, attribute = "IpMax")
+
+#
+# hadronic tau decay selection
+#
+
+#  eta cut for taus
+changeCut(process,"selectedPatTausForElecTauEta","abs(eta) < 2.3")
+
+#  Pt cut for taus
+changeCut(process,"selectedPatTausForElecTauPt","pt > 20")
+
+# decay mode finding
+changeCut(process,"selectedPatTausLeadTrk",'tauID("decayModeFinding") > 0.5')
+changeCut(process,"selectedPatTausForElecTauDecayModeFinding",'tauID("decayModeFinding") > 0.5')
+
+# decay mode finding
+changeCut(process,"selectedPatTausLeadTrkPt",'tauID("leadingTrackPtCut") > 0.5')
+changeCut(process,"selectedPatTausForElecTauLeadTrkPt",'tauID("leadingTrackPtCut") > 0.5')
+
+#  put tau ID at HPS loose
+changeCut(process,"selectedPatTausTaNCdiscr",'tauID("byHPSloose") > 0.5')
+changeCut(process,"selectedPatTausForElecTauTaNCdiscr",'tauID("byHPSloose") > 0.5')
+
+#  electron veto for taus
+changeCut(process,"selectedPatTausForElecTauElectronVeto",'tauID("againstElectronTight")')
+process.hpsPFTauDiscriminationByTightElectronRejection.ApplyCut_EcalCrackCut = cms.bool(False)
+process.hpsPFTauDiscriminationByTightElectronRejection.BremCombined_HOP = cms.double(0.08)
+
+# ECAl crack veto for taus 
+changeCut(process,"selectedPatTausForElecTauEcalCrackVeto",'abs(eta) < 1.460 | abs(eta) > 1.558')
+
+#  muon veto for taus
+changeCut(process,"selectedPatTausForElecTauMuonVeto",'tauID("againstMuonTight") > 0.5')
+
+#
+# di-tau pair selection
+#
+
+#  elec/tau overlap cut
+changeCut(process,"selectedElecTauPairsForAHtoElecTauAntiOverlapVeto","dR12 > 0.5")
+changeCut(process,"selectedElecTauPairsForAHtoElecTauAntiOverlapVetoLooseElectronIsolation", "dR12 > 0.5")
+
+#  transverse mass of electron + MET
+changeCut(process,"selectedElecTauPairsForAHtoElecTauMt1MET","mt1MET < 4000.")
+changeCut(process,"selectedElecTauPairsForAHtoElecTauMt1METlooseElectronIsolation", "mt1MET < 4000.")
+
+# enable cut on Pzeta variable
+changeCut(process, "selectedElecTauPairsForAHtoElecTauPzetaDiff", "(pZeta - 1.5*pZetaVis) > -20.")
+changeCut(process, "selectedElecTauPairsForAHtoElecTauPzetaDiffLooseElectronIsolation", "(pZeta - 1.5*pZetaVis) > -20.")
+
+# change isolation treshold for second electron used in di-electron veto to 0.30 * electron Pt
+changeCut(process, "selectedPatElectronsForZeeHypothesesLoosePFRelIso", 0.30, "sumPtMax")
+
 #--------------------------------------------------------------------------------
 
 # before starting to process 1st event, print event content
@@ -316,7 +316,7 @@ from TauAnalysis.Configuration.tools.mcToDataCorrectionTools import applyElectro
 #--------------------------------------------------------------------------------
 # disable event-dump output
 # in order to reduce size of log-files
-process.disableEventDump = cms.PSet()
+#process.disableEventDump = cms.PSet()
 if hasattr(process, "disableEventDump"):
 	process.analyzeAHtoElecTauEventsOS_wBtag.eventDumps = cms.VPSet()
 	process.analyzeAHtoElecTauEventsOS_woBtag.eventDumps = cms.VPSet()
@@ -352,8 +352,8 @@ process.producePatTupleAll = cms.Sequence(process.producePatTuple + process.prod
 # depending on whether RECO/AOD or PAT-tuples are used as input for analysis
 #
 #__#patTupleProduction#
-if not hasattr(process, "isBatchMode"):
-    process.p.replace(process.producePatTupleAHtoElecTauSpecific, process.producePatTuple + process.producePatTupleAHtoElecTauSpecific)
+#if not hasattr(process, "isBatchMode"):
+#    process.p.replace(process.producePatTupleAHtoElecTauSpecific, process.producePatTuple + process.producePatTupleAHtoElecTauSpecific)
 #--------------------------------------------------------------------------------
 
 # print-out all python configuration parameter information
