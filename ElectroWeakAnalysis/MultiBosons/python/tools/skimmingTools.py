@@ -109,15 +109,16 @@ def embedTriggerMatches(process, hltPaths):
       process.patTriggerMatchEmbedder = cms.Sequence(targetTriggerMatch)
     else:
       process.patTriggerMatchEmbedder += targetTriggerMatch
-  # for target in hltPaths.keys(): <--------------------------------------------------
+  # for target in hltPaths.keys(): <-------------------------------------------
   process.patTriggerSequence = cms.Sequence(
     process.patTrigger *
     process.patTriggerMatcher *
     process.patTriggerEvent *
     process.patTriggerMatchEmbedder
   )
-# def embedTriggerMatches(process, hltPaths): <---------------------------------------
+# def embedTriggerMatches(process, hltPaths): <--------------------------------
 
+###############################################################################
 def addPhotonReReco(process):
     """Include the photon re-reco sequence in the patDefaultSequence
     See https://hypernews.cern.ch/HyperNews/CMS/get/egamma/960.html
@@ -140,3 +141,23 @@ def addPhotonReReco(process):
     process.patDefaultSequence = cms.Sequence(process.photonReReco*
                                               process.patDefaultSequence)
 # def addPhotonReReco(process): <-----------------------------------------------------
+
+
+###############################################################################
+def addRhoFromFastJet(process, after):
+    """Add rho from FastJet for pile-up corrected isolation"""
+
+    ## Load and configure the producer
+    process.load('RecoJets.JetProducers.kt4PFJets_cfi')
+    process.kt6PFJets = process.kt4PFJets.clone( rParam = 0.6,
+                                                 doRhoFastjet = True )
+    process.kt6PFJets.Rho_EtaMax = cms.double(2.5)
+
+    ## Append it to the processing sequence after the sequence `after'
+    after *= process.kt6PFJets
+
+    ## Add ot the the output
+    process.out.outputCommands.append( "keep *_*_rho_*" )
+    process.out.outputCommands.append( "keep *_*_sigma_*" )
+# def addRhoFromFastJet(process, before): <------------------------------------
+

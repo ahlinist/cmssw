@@ -93,7 +93,8 @@ process.patPhotons.userData.userInts.src = egammaUserDataInts(
 
 process.load("RecoEcal.EgammaClusterProducers.preshowerClusterShape_cfi")
 process.load("EgammaAnalysis.PhotonIDProducers.piZeroDiscriminators_cfi")
-process.load("RecoLocalCalo.EcalRecAlgos.EcalSeverityLevelESProducer_cfi")
+## Needed for 42x
+#process.load("RecoLocalCalo.EcalRecAlgos.EcalSeverityLevelESProducer_cfi")
 
 process.load("ElectroWeakAnalysis.MultiBosons.Skimming.pi0Discriminator_cfi")
 
@@ -229,14 +230,17 @@ elif options.skimType == "Dimuon":
     if not options.ignoreSkimFilter:
         process.load(basePath + "dimuonSkimFilterSequence_cff")
         process.skimFilterSequence += process.dimuonSkimFilterSequence
-    ## Add the photon re-reco.
-    addPhotonReReco(process)
-    ## Now change the photon reco to much looser settings.
-    process.photonCore.minSCEt = 2.0
-    process.photons.minSCEtBarrel = 2.0
-    process.photons.minSCEtEndcap = 2.0
-    process.photons.maxHoverEBarrel = 10.0
-    process.photons.maxHoverEEndcap = 10.0
+
+    if not options.isAOD:
+        ## Add the photon re-reco.
+        addPhotonReReco(process)
+        ## Now change the photon reco to much looser settings.
+        process.photonCore.minSCEt = 2.0
+        process.photons.minSCEtBarrel = 2.0
+        process.photons.minSCEtEndcap = 2.0
+        process.photons.maxHoverEBarrel = 10.0
+        process.photons.maxHoverEEndcap = 10.0
+
     ## Remove the pi0 discriminator
     ## (currently doesn't work with extremely loose photons)
     ## FIXME: make the pi0Discriminator work for these weird photons too
@@ -252,13 +256,14 @@ elif options.skimType == "Dimuon":
     ## Add more photon-related event content (super clusters, clusters)
     vgEventContent.extraSkimEventContent += \
         vgEventContent.vgExtraPhotonEventContent
-    ## Add island basic clusters to the sequence and event content
-    process.load("RecoEcal.EgammaClusterProducers.islandBasicClusters_cfi")
-    process.patDefaultSequence = cms.Sequence(
-       process.islandBasicClusters *
-       process.patDefaultSequence
-    )
-    vgEventContent.extraSkimEventContent.append("keep *_islandBasicClusters_*_*")
+    if not options.isAOD:
+        ## Add island basic clusters to the sequence and event content
+        process.load("RecoEcal.EgammaClusterProducers.islandBasicClusters_cfi")
+        process.patDefaultSequence = cms.Sequence(
+          process.islandBasicClusters *
+          process.patDefaultSequence
+        )
+        vgEventContent.extraSkimEventContent.append("keep *_islandBasicClusters_*_*")
 
 elif options.skimType == "Jet":
     removeTriggerPathsForAllBut(matchHltPaths, ["cleanPatJets"])
@@ -371,6 +376,9 @@ else:
                                                    process.defaultSequence*
                                                    process.pythiaPartonShowerFsrSequence)
 # if options.isRealData <-----------------------------------------------------
+
+if options.addRho:
+    addRhoFromFastJet(process, after=process.skimFilterSequence)
 
 process.WENuGammaPath  = cms.Path(
     process.defaultSequence * process.WENuGammaSequence
