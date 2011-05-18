@@ -332,3 +332,52 @@ photonSelection_Fsr2011Apr11_PixelMatchVeto = cms.PSet(
     ## 7. minimum transverse momentum
     minPt = cms.double(5)
 )
+
+
+photonSelection_egammaTight2011May6 = cms.PSet(
+    version = cms.string("Jul022010_poter"),
+    BarrelJurrasicECALIsoConst = cms.double(4.2),
+    BarrelJurrasicECALIsoSlope = cms.double(0.006),
+    BarrelTowerHCALIsoConst = cms.double(2.2),
+    BarrelTowerHCALIsoSlope = cms.double(0.0025),
+    BarrelMaxHadronicOverEm = cms.double(0.05),
+    BarrelHollowConeTrkIsoConst = cms.double(2),
+    BarrelHollowConeTrkIsoSlope = cms.double(0.001),
+    BarrelMaxSigmaIetaIeta = cms.double(0.013),
+    EndcapJurrasicECALIsoConst = cms.double(4.2),
+    EndcapJurrasicECALIsoSlope = cms.double(0.006),
+    EndcapTowerHCALIsoConst = cms.double(2.2),
+    EndcapTowerHCALIsoSlope = cms.double(0.0025),
+    EndcapMaxHadronicOverEm = cms.double(0.05),
+    EndcapHollowConeTrkIsoConst = cms.double(2),
+    EndcapHollowConeTrkIsoSlope = cms.double(0.001),
+    EndcapMaxSigmaIetaIeta = cms.double(0.03),
+    minPt = cms.double(20),
+    maxEta = cms.double(2.5)
+    )
+
+
+photonSelection_veryLoose2011May11 = photonSelection_egammaTight2011May6.clone(
+    ignoreCuts = cms.vstring( "PassSigmaIetaIeta" )
+)
+
+## Relax all the cuts by 50%
+for cut in """BarrelJurrasicECALIsoConst
+              BarrelJurrasicECALIsoSlope
+              BarrelTowerHCALIsoConst
+              BarrelTowerHCALIsoSlope
+              BarrelMaxHadronicOverEm
+              BarrelHollowConeTrkIsoConst
+              BarrelHollowConeTrkIsoSlope
+              EndcapJurrasicECALIsoConst
+              EndcapJurrasicECALIsoSlope
+              EndcapTowerHCALIsoConst
+              EndcapTowerHCALIsoSlope
+              EndcapMaxHadronicOverEm
+              EndcapHollowConeTrkIsoConst
+              EndcapHollowConeTrkIsoSlope""".split():
+    default = getattr( photonSelection_egammaTight2011May6, cut )
+    setattr( photonSelection_veryLoose2011May11,
+             cut,
+             1.5 * default.value() )
+
