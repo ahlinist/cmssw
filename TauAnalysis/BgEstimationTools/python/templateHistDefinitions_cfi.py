@@ -15,9 +15,10 @@ from TauAnalysis.BgEstimationTools.tools.drawTemplateHistConfigurator import dra
 from TauAnalysis.Configuration.makePlots2_grid import dqmHistPlotter_template
 from TauAnalysis.Configuration.recoSampleDefinitionsZtoMuTau_7TeV_grid_cfi import recoSampleDefinitionsZtoMuTau_7TeV
 from TauAnalysis.Configuration.recoSampleDefinitionsZtoElecTau_grid_cfi import recoSampleDefinitionsZtoElecTau
+from TauAnalysis.Configuration.recoSampleDefinitionsWtoTauNu_grid_cfi import recoSampleDefinitionsWtoTauNu_grid
 from TauAnalysis.Configuration.plotZtoMuTau_drawJobs_cfi import plots_ZtoMuTau
 from TauAnalysis.Configuration.plotZtoElecTau_drawJobs_cfi import plots_ZtoElecTau
-
+from TauAnalysis.Configuration.plotWtoTauNu_drawJobs_cfi import plots_WtoTauNu
 #--------------------------------------------------------------------------------
 # define observable to be used as template
 # and histogram binning options
@@ -500,3 +501,191 @@ plotHistZtoElecTauStacked = dqmHistPlotter_template.clone(
     outputFilePath = cms.string('./plots/'),
     indOutputFileName = cms.string(''),
 )
+
+#----------------------------------------------------------------------------------------------
+# make objects specific to W->tau nu channel
+#--------------------------------------------------------------------------------------------
+plotHistWtoTauNu = cms.EDAnalyzer("DQMHistPlotter",
+     processes = cms.PSet(
+          bgEstData = cms.PSet(
+              dqmDirectory = cms.string(''),
+              legendEntry = plotBgEstData.legendEntry,
+              type = cms.string('Data')
+              ),
+          bgEstMC_pure = cms.PSet(
+             dqmDirectory = cms.string(''),
+             legendEntry = plotBgEstMC_pure.legendEntry,
+             type = cms.string('smMC')
+             ),
+          bgEstMC_smSum = cms.PSet(
+             dqmDirectory = cms.string(''),
+             legendEntry = plotBgEstMC_smSum.legendEntry,
+             type = cms.string('smSumMC')
+             ),
+          analysis = cms.PSet(
+              dqmDirectory = cms.string(''),
+              legendEntry = plotAnalysisMC_pure.legendEntry,
+              type = cms.string('smMC')
+              )
+          ),
+                                  
+        xAxes = cms.PSet(
+            Mt = copy.deepcopy(xAxis_transMass)
+            ),
+                                  
+        yAxes = cms.PSet(
+            numEntries_linear = copy.deepcopy(yAxis_numEntries_linear),
+            numEntries_log = copy.deepcopy(yAxis_numEntries_log)
+            ),
+                                  
+       legends = cms.PSet(
+            regular = cms.PSet(
+                 posX = cms.double(0.45),
+                 posY = cms.double(0.69),
+                 sizeX = cms.double(0.44),
+                 sizeY = cms.double(0.20),
+                 header = cms.string(''),
+                 option = cms.string('brNDC'),
+                 borderSize = cms.int32(0),
+                 fillColor = cms.int32(0)
+                 )
+            ),
+
+            labels = cms.PSet(
+                 mcNormScale = copy.deepcopy(label_mcNormScale)
+                 ),
+
+            drawOptionEntries = cms.PSet(
+                    bgEstData = copy.deepcopy(drawOption_black_eff),
+                    bgEstMC_pure = copy.deepcopy(drawOption_green_eff),
+                    bgEstMC_smSum = copy.deepcopy(drawOption_lightBlue_eff),
+                    analysis = copy.deepcopy(drawOption_red_eff),
+                ),
+
+            drawJobs = cms.PSet(),
+
+           canvasSizeX = cms.int32(800),
+           canvasSizeY = cms.int32(640),
+
+           outputFilePath = cms.string('./plots/'),
+           indOutputFileName = cms.string('')
+                                  )                                  
+         
+
+def configurePlotWtoTauNuIntegrated(meName_data, meName_mc, meName_compatibility,
+                                    plotName, plotTitle,
+                                    outputFileName):
+    drawTemplateHistConfiguratorWtoTauNuIntegrated = drawTemplateHistConfigurator(
+        template = drawJobTemplateHistIntegrated.clone(
+        labels = cms.vstring('ksProb')
+        )
+        )
+    drawTemplateHistConfiguratorWtoTauNuIntegrated.add(
+        meNames = [ meName_data, meName_mc ],
+        name = plotName,
+        title = plotTitle
+        )
+    plotHistWtoTauNuIntegrated = plotHistWtoTauNu.clone(
+        labels = cms.PSet(
+           ksProb = label_mcNormScale.clone(
+               text = cms.vstring('KS prob.: %f1.2'),
+               meName = cms.string(meName_compatibility)
+               )
+           ),
+        drawJobs = drawTemplateHistConfiguratorWtoTauNuIntegrated.configure(),
+        indOutputFileName = cms.string(outputFileName)
+        )
+    
+    return plotHistWtoTauNuIntegrated
+
+plotWtoTauNuStacked_template = plots_WtoTauNu.clone(
+    plots = cms.PSet(
+    dqmMonitorElements = cms.vstring(''),
+    processes = cms.vstring(
+    'Wtaunu',
+    'Wmunu',
+    'Wenu',
+    'Ztautau',
+    'QCD',
+    'Data'
+    )
+    ),
+    stack = cms.vstring(
+    'Wtaunu',
+    'Wmunu',
+    'Wenu',
+    'Ztautau',
+    'QCD'
+    )
+    )
+
+plotHistWtoTauNuStacked = dqmHistPlotter_template.clone(
+    processes = cms.PSet(
+    Wtaunu = cms.PSet(
+                   dqmDirectory = cms.string(''),
+                            legendEntry = cms.string(recoSampleDefinitionsWtoTauNu_grid['ALL_SAMPLES']['Wtaunu']['legendEntry']),
+                            type = cms.string(recoSampleDefinitionsWtoTauNu_grid['ALL_SAMPLES']['Wtaunu']['type'])
+                   ),
+    Wenu = cms.PSet(
+                  dqmDirectory = cms.string(''),
+                            legendEntry = cms.string(recoSampleDefinitionsWtoTauNu_grid['ALL_SAMPLES']['Wenu']['legendEntry']),
+                            type = cms.string(recoSampleDefinitionsWtoTauNu_grid['ALL_SAMPLES']['Wenu']['type'])
+                        ),
+    Wmunu = cms.PSet(
+                dqmDirectory = cms.string(''),
+                            legendEntry = cms.string(recoSampleDefinitionsWtoTauNu_grid['ALL_SAMPLES']['Wmunu']['legendEntry']),
+                            type = cms.string(recoSampleDefinitionsWtoTauNu_grid['ALL_SAMPLES']['Wmunu']['type'])
+                        ),
+    Ztautau = cms.PSet(
+                  dqmDirectory = cms.string(''),
+                            legendEntry = cms.string(recoSampleDefinitionsWtoTauNu_grid['ALL_SAMPLES']['Ztautau']['legendEntry']),
+                            type = cms.string(recoSampleDefinitionsWtoTauNu_grid['ALL_SAMPLES']['Ztautau']['type'])
+                    ),    
+    QCD = cms.PSet(
+                dqmDirectory = cms.string(''),
+                            legendEntry = cms.string(recoSampleDefinitionsWtoTauNu_grid['ALL_SAMPLES']['QCD']['legendEntry']),
+                            type = cms.string(recoSampleDefinitionsWtoTauNu_grid['ALL_SAMPLES']['QCD']['type'])
+                        ),
+    Data = cms.PSet(
+                dqmDirectory = cms.string(''),
+                            legendEntry = cms.string(recoSampleDefinitionsWtoTauNu_grid['ALL_SAMPLES']['data']['legendEntry']),
+                            type = cms.string(recoSampleDefinitionsWtoTauNu_grid['ALL_SAMPLES']['data']['type'])
+                        )
+                ),
+    legends = cms.PSet(
+    regular = legend_regular.clone(
+                posX = cms.double(0.66),
+                            posY = cms.double(0.62),
+                            sizeX = cms.double(0.23),
+                            sizeY = cms.double(0.27)
+                        )
+                ),
+    labels = cms.PSet(
+    mcNormScale = dqmHistPlotter_template.labels.mcNormScale.clone(
+                posX = cms.double(0.17),
+                            posY = cms.double(0.74),
+                            sizeX = cms.double(0.16),
+                            sizeY = cms.double(0.15),
+                            textSize = cms.double(0.035),
+                            textAlign = cms.int32(12),
+                            text = cms.vstring(
+                    'CMS Preliminary',
+                                    'L = 36.2pb^{-1}',
+                                    '#sqrt{s}=7TeV'
+                                )
+                        )
+                ),
+    drawOptionSets = cms.PSet(
+            default = cms.PSet(
+                Ztautau = recoSampleDefinitionsWtoTauNu_grid['ALL_SAMPLES']['Ztautau']['drawOption'],
+                Wtaunu = recoSampleDefinitionsWtoTauNu_grid['ALL_SAMPLES']['Wtaunu']['drawOption'],
+                Wmunu = recoSampleDefinitionsWtoTauNu_grid['ALL_SAMPLES']['Wmunu']['drawOption'],
+                Wenu = recoSampleDefinitionsWtoTauNu_grid['ALL_SAMPLES']['Wenu']['drawOption'],
+                QCD = recoSampleDefinitionsWtoTauNu_grid['ALL_SAMPLES']['QCD']['drawOption'],
+                Data = recoSampleDefinitionsWtoTauNu_grid['ALL_SAMPLES']['data']['drawOption']
+                )
+            ),
+    drawJobs = cms.PSet(),
+    outputFilePath = cms.string('./plots/'),
+    indOutputFileName = cms.string(''),
+    )
