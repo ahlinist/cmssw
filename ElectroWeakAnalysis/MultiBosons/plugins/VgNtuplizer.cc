@@ -491,7 +491,7 @@ void VgNtuplizer::produce(edm::Event & e, const edm::EventSetup & es) {
                                          << endl;
       }
       if ( triggerEvent->path(HLTIndexPath[i]) ) {
-	std::cout << HLTIndexPath[i] << " found!" << std:endl;
+	//std::cout << HLTIndexPath[i] << " found!" << std:endl;
         HLTIndex_[i] = triggerEvent->path( HLTIndexPath[i] )->index();
       }
     } // for (size_t i=0; i<HLTIndexPath.size(); ++i)
