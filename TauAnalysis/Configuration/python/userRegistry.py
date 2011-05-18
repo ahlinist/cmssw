@@ -92,12 +92,57 @@ userSettings = {
         }
     },
     'jkolb': {
-        'current' : 'Run18',
+        'current' : 'Run24',
         'jobs' : {
-			# fall10 MC with 156 BX PU, 2010 dataset (36/pb); study for tau electron rejection
+            # Spring11 data + MC: 165/pb  -- electron pt cut to 18 GeV
+            'Run24' : {
+                'AHtoElecTau' : {
+                    'analysisFilePath' : "/user/j/jkolb/TauResults/Run24/",
+                    'harvestingFilePath' : "/data/ndpc0/c/jkolb/TauResults",
+                    'tmpFilePath' : "/data/ndpc0/c/jkolb/TauResults/tmp/"
+                }
+            },
+            # Spring11 data + MC: xxx/pb  -- add deltaBeta PU correction, removed Mt(e+MET) cut, added PzetaDiff, added vertexMult reweight with custom LUT
+            'Run23' : {
+                'AHtoElecTau' : {
+                    'analysisFilePath' : "/user/j/jkolb/TauResults/Run23/AHtoElecTau/",
+                    'harvestingFilePath' : "/data/ndpc0/c/jkolb/TauResults",
+                    'tmpFilePath' : "/data/ndpc0/c/jkolb/TauResults/tmp/"
+                }
+            },
+            # Spring11 data + MC: xx/pb  -- run mu+tau for tau ID
+            'Run22' : {
+                'AHtoMuTau' : {
+                    'analysisFilePath' : "/user/j/jkolb/elecTauAnalysis/spring11/AHtoMuTau/Run22/",
+                    'harvestingFilePath' : "/data/ndpc0/c/jkolb/TauResults",
+                    'tmpFilePath' : "/data/ndpc0/c/jkolb/TauResults/tmp2/"
+                },
+                'ZtoMuTau' : {
+                    'analysisFilePath' : "/user/j/jkolb/ZtoMuTau/Run22/",
+                    'harvestingFilePath' : "/data/ndpc0/c/jkolb/TauResults",
+                    'tmpFilePath' : "/data/ndpc2/b/jkolb/harvestMuTau/"
+                }
+            },
+            # Spring11 data + MC: 55/pb  -- turned off vertex multiplicity re-weighting
+            'Run21' : {
+                'AHtoElecTau' : {
+                    'analysisFilePath' : "/user/j/jkolb/elecTauAnalysis/spring11/AHtoElecTau/Run21/",
+                    'harvestingFilePath' : "/data/ndpc0/c/jkolb/TauResults",
+                    'tmpFilePath' : "/data/ndpc0/c/jkolb/TauResults/tmp/"
+                }
+            },
+            # Spring11 data + MC: 21/pb  -- poor data/MC aggreement
+            'Run20' : {
+                'AHtoElecTau' : {
+                    'analysisFilePath' : "/user/j/jkolb/elecTauAnalysis/spring11/AHtoElecTau/Run20/",
+                    'harvestingFilePath' : "/data/ndpc0/c/jkolb/TauResults",
+                    'tmpFilePath' : "/data/ndpc0/c/jkolb/TauResults/tmp/"
+                }
+            },
+			# spring11 3_11 Z MC; study for tau electron rejection
             'Run19' : {
                 'ZtoElecTau' : {
-                    'analysisFilePath' : "/user/j/jkolb/elecTauAnalysis/fall10/ZtoElecTau/Run19/",
+                    'analysisFilePath' : "/user/j/jkolb/elecTauAnalysis/spring11/ZtoElecTau/Run19/",
                     'harvestingFilePath' : "/data/ndpc0/c/jkolb/TauResults",
                     'tmpFilePath' : "/data/ndpc0/c/jkolb/TauResults/tmp/"
                 }
@@ -106,6 +151,14 @@ userSettings = {
             'Run18' : {
                 'ZtoElecTau' : {
                     'analysisFilePath' : "/user/j/jkolb/elecTauAnalysis/fall10/ZtoElecTau/Run18/",
+                    'harvestingFilePath' : "/data/ndpc0/c/jkolb/TauResults",
+                    'tmpFilePath' : "/data/ndpc0/c/jkolb/TauResults/tmp/"
+                }
+            },
+			# first run of 2011 data and MC
+            'Run17' : {
+                'AHtoElecTau' : {
+                    'analysisFilePath' : "/user/j/jkolb/elecTauAnalysis/spring11/AHtoElecTau/Run17/",
                     'harvestingFilePath' : "/data/ndpc0/c/jkolb/TauResults",
                     'tmpFilePath' : "/data/ndpc0/c/jkolb/TauResults/tmp/"
                 }
@@ -168,130 +221,6 @@ userSettings = {
                     'analysisFilePath' : "/user/j/jkolb/elecTauAnalysis/fall10/ZtoElecTau/Run12/",
                     'harvestingFilePath' : "/data/ndpc0/c/jkolb/TauResults",
                     'tmpFilePath' : "/data/ndpc0/c/jkolb/TauResults/tmp/"
-                }
-            },
-			# fall10 MC with PU, 2010 dataset (36/pb);  same as Run07,
-			# with no DOCA, deltaCotTheta conversion cuts, but keep missingInnerHits cut
-            'Run11' : {
-                'ZtoElecTau' : {
-                    'analysisFilePath' : "/user/j/jkolb/elecTauAnalysis/fall10/ZtoElecTau/Run11/",
-                    'harvestingFilePath' : "/data/ndpc0/c/jkolb/TauResults",
-                    'tmpFilePath' : "/data/ndpc0/c/jkolb/TauResults/tmp/"
-                }
-            },
-			# fall10 MC with PU, 2010 dataset (36/pb);  same as Run07, with no Mt(e+MET) cut
-            'Run10' : {
-                'AHtoElecTau' : {
-                    'analysisFilePath' : "/user/j/jkolb/elecTauAnalysis/fall10/AHtoElecTau/Run10/",
-                    'harvestingFilePath' : "/data/ndpc0/c/jkolb/TauResults",
-                    'tmpFilePath' : "/data/ndpc0/c/jkolb/TauResults/tmp/"
-                }
-            },
-			# fall10 MC with PU, 2010 dataset (36/pb);  same as Run07, with no conversion cut
-            'Run09' : {
-                'ZtoElecTau' : {
-                    'analysisFilePath' : "/user/j/jkolb/elecTauAnalysis/fall10/ZtoElecTau/Run09/",
-                    'harvestingFilePath' : "/data/ndpc0/c/jkolb/TauResults",
-                    'tmpFilePath' : "/data/ndpc0/c/jkolb/TauResults/tmp/"
-                }
-            },
-			# fall10 MC with PU, 2010 dataset (36/pb);  same as Run07, but allowing 1 missing inner hit
-			#(conclusions: stick with zero missing inner hits (Run07) )
-            'Run08' : {
-                'ZtoElecTau' : {
-                    'analysisFilePath' : "/user/j/jkolb/elecTauAnalysis/fall10/ZtoElecTau/Run08/",
-                    'harvestingFilePath' : "/data/ndpc0/c/jkolb/TauResults",
-                    'tmpFilePath' : "/data/ndpc0/c/jkolb/TauResults/tmp/"
-                }
-            },
-			# fall10 MC with PU, 2010 dataset (36/pb);  new conversion veto, data event cleaning
-			# AH files do not have full conversion plots
-            'Run07' : {
-                'AHtoElecTau' : {
-                    'analysisFilePath' : "/user/j/jkolb/elecTauAnalysis/fall10/AHtoElecTau/Run07/",
-					'harvestingFilePath' : "/data/ndpc0/c/jkolb/TauResults/",
-                    'tmpFilePath' : "/data/ndpc0/c/jkolb/TauResults/tmp/"
-                },
-                'ZtoElecTau' : {
-                    'analysisFilePath' : "/user/j/jkolb/elecTauAnalysis/fall10/ZtoElecTau/Run07/",
-                    'harvestingFilePath' : "/data/ndpc0/c/jkolb/TauResults",
-                    'tmpFilePath' : "/data/ndpc0/c/jkolb/TauResults/tmp/"
-                }
-            },
-			# fall10 MC with PU, 2010 dataset (36/pb);  fixed bug in tau electron rejection, everything looks OK
-            'Run06' : {
-                'AHtoElecTau' : {
-                    'analysisFilePath' : "/user/j/jkolb/elecTauAnalysis/fall10/AHtoElecTau/Run06/",
-					'harvestingFilePath' : "/data/ndpc0/c/jkolb/TauResults/",
-                    'tmpFilePath' : "/data/ndpc0/c/jkolb/TauResults/tmp/"
-                },
-                'ZtoElecTau' : {
-                    'analysisFilePath' : "/user/j/jkolb/elecTauAnalysis/fall10/ZtoElecTau/Run06/",
-                    'harvestingFilePath' : "/data/ndpc0/c/jkolb/TauResults",
-                    'tmpFilePath' : "/data/ndpc0/c/jkolb/TauResults/tmp/"
-                }
-            },
-			# fall10 MC with PU, 2010 dataset (36/pb);  fixing bug in tau electron/muon/ECAL-crack veto,
-			# and reducing number of histograms
-            'Run05' : {
-                'AHtoElecTau' : {
-                    'analysisFilePath' : "/user/j/jkolb/elecTauAnalysis/fall10/AHtoElecTau/Run05/",
-					'harvestingFilePath' : "/data/ndpc0/c/jkolb/TauResults/",
-                    'tmpFilePath' : "/data/ndpc0/c/jkolb/TauResults/tmp/"
-                },
-                'ZtoElecTau' : {
-                    'analysisFilePath' : "/user/j/jkolb/elecTauAnalysis/fall10/ZtoElecTau/Run05/",
-                    'harvestingFilePath' : "/data/ndpc0/c/jkolb/TauResults",
-                    'tmpFilePath' : "/data/ndpc0/c/jkolb/TauResults/tmp/"
-                }
-            },
-			# fall10 MC with PU, 2010 dataset (36/pb)
-            'Run04' : {
-                'AHtoElecTau' : {
-                    'analysisFilePath' : "/user/j/jkolb/elecTauAnalysis/fall10/AHtoElecTau/Run04/",
-					'harvestingFilePath' : "/data/ndpc0/c/jkolb/TauResults/",
-                    'tmpFilePath' : "/data/ndpc0/c/jkolb/TauResults/tmp/"
-                },
-                'ZtoElecTau' : {
-                    'analysisFilePath' : "/user/j/jkolb/elecTauAnalysis/fall10/ZtoElecTau/Run04/",
-                    'harvestingFilePath' : "/data/ndpc0/c/jkolb/TauResults",
-                    'tmpFilePath' : "/data/ndpc0/c/jkolb/TauResults/tmp/"
-                }
-            },
-            'Run03' : {
-                'AHtoElecTau' : {
-                    'analysisFilePath' : "/user/j/jkolb/elecTauAnalysis/fall10/AHtoElecTau/Run03/",
-                    'harvestingFilePath' : "/data/ndpc2/b/jkolb/ZtoElecTauAnalysis/fall10/AHtoElecTau/harvested/Run03/",
-                    'tmpFilePath' : "/data/ndpc2/b/jkolb/ZtoElecTauAnalysis/fall10/AHtoElecTau/harvested/Run03/tmp/"
-                },
-                'ZtoElecTau' : {
-                    'analysisFilePath' : "/user/j/jkolb/elecTauAnalysis/fall10/ZtoElecTau/Run03/",
-                    'harvestingFilePath' : "/data/ndpc2/b/jkolb/ZtoElecTauAnalysis/fall10/ZtoElecTau/Run03/",
-                    'tmpFilePath' : "/data/ndpc2/b/jkolb/ZtoElecTauAnalysis/fall10/ZtoElecTau/Run03/tmp/"
-                }
-            },
-            'Run02' : {
-                'AHtoElecTau' : {
-                    'analysisFilePath' : "/user/j/jkolb/elecTauAnalysis/fall10/AHtoElecTau/Run02",
-                    'harvestingFilePath' : "/data/ndpc2/b/jkolb/ZtoElecTauAnalysis/fall10/analysis/harvested/",
-                    'tmpFilePath' : "/data/ndpc2/b/jkolb/ZtoElecTauAnalysis/fall10/analysis/harvested/tmp"
-                },
-                'ZtoElecTau' : {
-                    'analysisFilePath' : "/user/j/jkolb/elecTauAnalysis/fall10/stdCuts/",
-                    'harvestingFilePath' : "/data/ndpc2/b/jkolb/ZtoElecTauAnalysis/fall10/analysis/harvested/stdCuts",
-                    'tmpFilePath' : "/data/ndpc2/b/jkolb/ZtoElecTauAnalysis/fall10/analysis/harvested/stdCuts"
-                }
-            },
-            'Run01' : {
-                'AHtoElecTau' : {
-                    'analysisFilePath' : "/user/j/jkolb/elecTauAnalysis/fall10/AHtoElecTau/",
-                    'harvestingFilePath' : "/data/ndpc2/b/jkolb/ZtoElecTauAnalysis/fall10/analysis/harvested/stdCuts",
-                    'tmpFilePath' : "/data/ndpc2/b/jkolb/ZtoElecTauAnalysis/fall10/analysis/harvested/stdCuts",
-                },
-                'ZtoElecTau' : {
-                    'analysisFilePath' : "/user/j/jkolb/elecTauAnalysis/fall10/stdCuts/",
-                    'harvestingFilePath' : "/data/ndpc2/b/jkolb/ZtoElecTauAnalysis/fall10/analysis/harvested/stdCuts",
-                    'tmpFilePath' : "/data/ndpc2/b/jkolb/ZtoElecTauAnalysis/fall10/analysis/harvested/stdCuts",
                 }
             }
         },
