@@ -112,7 +112,7 @@ bool ZMuMuGammaSelector::passes_Fsr2011Apr11(
   pat::strbitset & ret
   )
 {
-  LogDebug("Daughter") << "Entering"
+  LogDebug("Daughter") << "Entering";
 
   ret.set(false);
   setIgnored(ret);
@@ -120,7 +120,7 @@ bool ZMuMuGammaSelector::passes_Fsr2011Apr11(
   // 0. all mmgCands
   passCut(ret, "inclusive");
 
-  LogDebug("Daughter") << "Extract the daughters"
+  LogDebug("Daughter") << "Extract the daughters";
 
   // Extract the daughters
   const pat::Photon * photon;
