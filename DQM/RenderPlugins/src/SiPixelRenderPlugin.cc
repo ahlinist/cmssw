@@ -2,8 +2,8 @@
   \file SiPixelRenderPlugin
   \brief Display Plugin for Pixel DQM Histograms
   \author P.Merkel
-  \version $Revision: 1.44 $
-  \date $Date: 2011/01/12 13:07:55 $
+  \version $Revision: 1.45 $
+  \date $Date: 2011/03/18 14:45:15 $
 */
 
 #include "VisMonitoring/DQMServer/interface/DQMRenderPlugin.h"
@@ -550,6 +550,9 @@ void preDrawTH2( TCanvas *, const VisDQMObject &o )
 	  TLine tl33; tl33.SetLineColor(4); tl33.DrawLine(27.,25.,29.,25.); //little boxes
 	  TLine tl34; tl34.SetLineColor(4); tl34.DrawLine(27.,27.,29.,27.); //little boxes
 	}  
+        //Look at last filled bin (above -0.99) and use to zoom in on plot 
+        float currentX = (float) obj->GetBinCenter(obj->FindLastBinAbove(-0.99))+1.;
+        obj->GetXaxis()->SetRangeUser(0.,currentX);
       }
 
 }
