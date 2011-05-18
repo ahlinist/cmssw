@@ -93,8 +93,11 @@ triggerHistManagerForElecTau.l1Bits = cms.vstring(
 )
 
 triggerHistManagerForElecTau.hltPaths = cms.vstring(    
-	'HLT_Ele10_SW_L1R',
-	'HLT_Ele12_SW_TightEleIdIsol_L1R'
+	'HLT_Ele15_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_LooseIsoPFTau15_v1',
+	'HLT_Ele15_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_LooseIsoPFTau15_v2',
+	'HLT_Ele15_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_LooseIsoPFTau15_v4',
+    'HLT_IsoEle12_PFTau15_v3',
+    'HLT_Ele12_SW_TighterEleId_L1R_v2'
 )
 
 # import config for binning results
@@ -237,15 +240,17 @@ evtSelCentralJetEt20bTag = cms.PSet(
 # define event print-out
 #--------------------------------------------------------------------------------
 elecTauEventDump_woBtag = elecTauEventDump.clone(
-	diTauCandidateSource = cms.InputTag('selectedElecTauPairsForAHtoElecTauPzetaDiffCumulative'),
+	diTauCandidateSource = cms.InputTag('selectedElecTauPairsForAHtoElecTauZeroChargeCumulative'),
 	elecTauZeeHypothesisSource = cms.InputTag('elecTauPairZeeHypothesesForAHtoElecTau'),
-	triggerConditions = cms.vstring("evtSelNonCentralJetEt20bTag: passed_cumulative")
+	pfCandidateSource = cms.InputTag(''),
+	triggerConditions = cms.vstring("evtSelDiTauCandidateForAHtoElecTauZeroCharge: passed_cumulative")
 )
 
-elecTauEventDump_woBtag = elecTauEventDump.clone(
-	diTauCandidateSource = cms.InputTag('selectedElecTauPairsForAHtoElecTauPzetaDiffCumulative'),
+elecTauEventDump_wBtag = elecTauEventDump.clone(
+	diTauCandidateSource = cms.InputTag('selectedElecTauPairsForAHtoElecTauZeroChargeCumulative'),
 	elecTauZeeHypothesisSource = cms.InputTag('elecTauPairZeeHypothesesForAHtoElecTau'),
-	triggerConditions = cms.vstring("evtSelCentralJetEt20bTag: passed_cumulative")
+	pfCandidateSource = cms.InputTag(''),
+	triggerConditions = cms.vstring("evtSelDiTauCandidateForAHtoElecTauZeroCharge: passed_cumulative")
 )
 
 #--------------------------------------------------------------------------------
@@ -260,7 +265,7 @@ elecTauAnalysisSequenceOS_woBtag = cms.VPSet(
             'genPhaseSpaceEventInfoHistManager',
             'electronHistManager',
             'tauHistManager',
-            'caloMEtHistManager',
+            #'caloMEtHistManager',
             'pfMEtHistManager',
             'vertexHistManager',
             'triggerHistManagerForElecTau'
@@ -293,12 +298,12 @@ elecTauAnalysisSequenceOS_woBtag = cms.VPSet(
     ),
     cms.PSet(
         analyzers = cms.vstring(
-            'electronHistManager',
-            'tauHistManager',
-            'caloMEtHistManager',
-            'pfMEtHistManager',
-            'vertexHistManager',
-            'triggerHistManagerForElecTau'
+            #'electronHistManager',
+            #'tauHistManager',
+            #'caloMEtHistManager',
+            #'pfMEtHistManager',
+            'vertexHistManager'
+            #'triggerHistManagerForElecTau'
         )
     ),
 
@@ -330,11 +335,11 @@ elecTauAnalysisSequenceOS_woBtag = cms.VPSet(
     ),
     cms.PSet(
         analyzers = cms.vstring(
-            'electronHistManager',
-            'tauHistManager',
-            'caloMEtHistManager',
-            'pfMEtHistManager',
-            'vertexHistManager',
+            'electronHistManager'
+            #'tauHistManager',
+            #'caloMEtHistManager',
+            #'pfMEtHistManager',
+            #'vertexHistManager',
         )
     ),
 
@@ -346,11 +351,11 @@ elecTauAnalysisSequenceOS_woBtag = cms.VPSet(
     ),
     cms.PSet(
         analyzers = cms.vstring(
-            'electronHistManager',
-            'tauHistManager',
-            'caloMEtHistManager',
-            'pfMEtHistManager',
-            'vertexHistManager'
+            'electronHistManager'
+            #'tauHistManager',
+            #'caloMEtHistManager',
+            #'pfMEtHistManager',
+            #'vertexHistManager'
         ),
         replace = cms.vstring('electronHistManager.electronSource = selectedPatElectronsForElecTauIdCumulative')
     ),
@@ -372,15 +377,13 @@ elecTauAnalysisSequenceOS_woBtag = cms.VPSet(
     ),
     cms.PSet(
         analyzers = cms.vstring(
-            'electronHistManager',
-            'tauHistManager',
-            'vertexHistManager'
+            'electronHistManager'
         ),
         replace = cms.vstring('electronHistManager.electronSource = selectedPatElectronsForElecTauEtaCumulative')
     ),
     cms.PSet(
         filter = cms.string('evtSelElectronPt'),
-        title = cms.string('Pt(Electron) > 15 GeV'),
+        title = cms.string('Pt(Electron) > 18 GeV'),
         saveRunLumiSectionEventNumbers = cms.vstring('')
     ),
     cms.PSet(
@@ -427,10 +430,10 @@ elecTauAnalysisSequenceOS_woBtag = cms.VPSet(
         analyzers = cms.vstring(
             'electronHistManager',
             'tauHistManager',
-            'caloMEtHistManager',
+            #'caloMEtHistManager',
             'pfMEtHistManager',
-            'vertexHistManager',
-            'triggerHistManagerForElecTau'
+            'vertexHistManager'
+            #'triggerHistManagerForElecTau'
         ),
         replace = cms.vstring('electronHistManager.electronSource = selectedPatElectronsForElecTauPtCumulative',
 			#'electronHistManager.makeIsoPtConeSizeDepHistograms = True',
@@ -455,8 +458,7 @@ elecTauAnalysisSequenceOS_woBtag = cms.VPSet(
     ),
     cms.PSet(
         analyzers = cms.vstring(
-            'electronHistManager',
-            'vertexHistManager'
+            'electronHistManager'
         ),
         replace = cms.vstring('electronHistManager.electronSource = selectedPatElectronsForElecTauConversionVetoCumulative')
     ),
@@ -469,37 +471,37 @@ elecTauAnalysisSequenceOS_woBtag = cms.VPSet(
         analyzers = cms.vstring(
             'electronHistManager',
             'tauHistManager',
-            'caloMEtHistManager',
+            #'caloMEtHistManager',
             'pfMEtHistManager',
-            'vertexHistManager',
-            'triggerHistManagerForElecTau'
+            'vertexHistManager'
+            #'triggerHistManagerForElecTau'
         ),
         replace = cms.vstring('electronHistManager.electronSource = selectedPatElectronsForElecTauTrkIPcumulative')
     ),
-  
+    # 
     # selection of tau-jet candidate (id.)
     # produced in hadronic tau decay
     cms.PSet(
-        filter = cms.string('evtSelTauLeadTrk'),
-        title = cms.string('Tau lead. Track find.'),
+        filter = cms.string('evtSelTauDecayModeFinding'),
+        title = cms.string('Tau decay mode find.'),
         saveRunLumiSectionEventNumbers = cms.vstring('')
     ),
     cms.PSet(
         analyzers = cms.vstring(
             'electronHistManager',
-			'tauHistManager'
+    		'tauHistManager'
         ),
         replace = cms.vstring('electronHistManager.electronSource = selectedPatElectronsForElecTauTrkIPcumulative',
-                              'tauHistManager.tauSource = selectedPatTausForElecTauLeadTrkCumulative')
+                              'tauHistManager.tauSource = selectedPatTausForElecTauDecayModeFindingCumulative')
     ),
     cms.PSet(
         filter = cms.string('evtSelTauLeadTrkPt'),
-        title = cms.string('Tau lead. Track Pt'),
+        title = cms.string('Tau decay mode finding'),
         saveRunLumiSectionEventNumbers = cms.vstring('')
     ),
     cms.PSet(
         analyzers = cms.vstring(
-            'electronHistManager',
+            #'electronHistManager',
             'tauHistManager'
         ),
         replace = cms.vstring('electronHistManager.electronSource = selectedPatElectronsForElecTauTrkIPcumulative',
@@ -508,46 +510,46 @@ elecTauAnalysisSequenceOS_woBtag = cms.VPSet(
 							  )
     ),
     cms.PSet(
-        filter = cms.string('evtSelTauTaNCdiscr'),
+        filter = cms.string('evtSelTauIso'),
         title = cms.string('Tau ID (HPS loose)'),
         saveRunLumiSectionEventNumbers = cms.vstring('')
     ),
     cms.PSet(
         analyzers = cms.vstring(
-            'electronHistManager',
+            #'electronHistManager',
             'tauHistManager'
         ),
         replace = cms.vstring('electronHistManager.electronSource = selectedPatElectronsForElecTauTrkIPcumulative',
-                              'tauHistManager.tauSource = selectedPatTausForElecTauTaNCdiscrCumulative'
+                              'tauHistManager.tauSource = selectedPatTausForElecTauIsoCumulative'
 							  #'tauHistManager.makeIsoPtConeSizeDepHistograms = True'
 							  )
     ),
-    cms.PSet(
-        filter = cms.string('evtSelTauProng'),
-        title = cms.string('Tau 1||3-Prong'),
-        saveRunLumiSectionEventNumbers = cms.vstring('')
-    ),
-    cms.PSet(
-        analyzers = cms.vstring(
-            'electronHistManager',
-            'tauHistManager'
-        ),
-        replace = cms.vstring('electronHistManager.electronSource = selectedPatElectronsForElecTauTrkIPcumulative',
-                              'tauHistManager.tauSource = selectedPatTausForElecTauProngCumulative')
-    ),
-    cms.PSet(
-        filter = cms.string('evtSelTauCharge'),
-        title = cms.string('Charge(Tau) = +/-1'),
-        saveRunLumiSectionEventNumbers = cms.vstring('')
-    ),
-    cms.PSet(
-        analyzers = cms.vstring(
-            'electronHistManager',
-            'tauHistManager'
-        ),
-        replace = cms.vstring('electronHistManager.electronSource = selectedPatElectronsForElecTauTrkIPcumulative',
-                              'tauHistManager.tauSource = selectedPatTausForElecTauChargeCumulative')
-    ),    
+    #cms.PSet(
+    #    filter = cms.string('evtSelTauProng'),
+    #    title = cms.string('Tau 1||3-Prong'),
+    #    saveRunLumiSectionEventNumbers = cms.vstring('')
+    #),
+    #cms.PSet(
+    #    analyzers = cms.vstring(
+    #        #'electronHistManager',
+    #        'tauHistManager'
+    #    ),
+    #    replace = cms.vstring('electronHistManager.electronSource = selectedPatElectronsForElecTauTrkIPcumulative',
+    #                          'tauHistManager.tauSource = selectedPatTausForElecTauProngCumulative')
+    #),
+    #cms.PSet(
+    #    filter = cms.string('evtSelTauCharge'),
+    #    title = cms.string('Charge(Tau) = +/-1'),
+    #    saveRunLumiSectionEventNumbers = cms.vstring('')
+    #),
+    #cms.PSet(
+    #    analyzers = cms.vstring(
+    #        'electronHistManager',
+    #        'tauHistManager'
+    #    ),
+    #    replace = cms.vstring('electronHistManager.electronSource = selectedPatElectronsForElecTauTrkIPcumulative',
+    #                          'tauHistManager.tauSource = selectedPatTausForElecTauChargeCumulative')
+    #),    
     cms.PSet(
         filter = cms.string('evtSelTauElectronVeto'),
         title = cms.string('Tau e-Veto'),
@@ -555,7 +557,7 @@ elecTauAnalysisSequenceOS_woBtag = cms.VPSet(
     ),
     cms.PSet(
         analyzers = cms.vstring(
-            'electronHistManager',
+            #'electronHistManager',
             'tauHistManager'
         ),
         replace = cms.vstring('electronHistManager.electronSource = selectedPatElectronsForElecTauTrkIPcumulative',
@@ -568,7 +570,7 @@ elecTauAnalysisSequenceOS_woBtag = cms.VPSet(
     ),
     cms.PSet(
         analyzers = cms.vstring(
-            'electronHistManager',
+            #'electronHistManager',
             'tauHistManager'
         ),
         replace = cms.vstring(
@@ -584,10 +586,10 @@ elecTauAnalysisSequenceOS_woBtag = cms.VPSet(
         analyzers = cms.vstring(
             'electronHistManager',
             'tauHistManager',
-            'caloMEtHistManager',
+            #'caloMEtHistManager',
             'pfMEtHistManager',
-            'vertexHistManager',
-            'triggerHistManagerForElecTau'
+            #'vertexHistManager',
+            #'triggerHistManagerForElecTau'
         ),
         replace = cms.vstring(
 			'electronHistManager.electronSource = selectedPatElectronsForElecTauTrkIPcumulative',
@@ -597,7 +599,7 @@ elecTauAnalysisSequenceOS_woBtag = cms.VPSet(
     #selection of electron + tau-jet combinations
     cms.PSet(
         filter = cms.string('evtSelDiTauCandidateForAHtoElecTauAntiOverlapVeto'),
-        title = cms.string('dR(Electron-Tau) > 0.7'),
+        title = cms.string('dR(Electron-Tau) > 0.5'),
         saveRunLumiSectionEventNumbers = cms.vstring('')
     ),
     cms.PSet(
@@ -605,10 +607,10 @@ elecTauAnalysisSequenceOS_woBtag = cms.VPSet(
             'electronHistManager',
             'tauHistManager',
 			'diTauCandidateHistManagerForElecTau',
-            'caloMEtHistManager',
+            #'caloMEtHistManager',
             'pfMEtHistManager',
-            'vertexHistManager',
-            'triggerHistManagerForElecTau'
+            #'vertexHistManager',
+            #'triggerHistManagerForElecTau'
         ),
         replace = cms.vstring('electronHistManager.electronSource = selectedPatElectronsForElecTauTrkIPcumulative',
                               'tauHistManager.tauSource = selectedPatTausForElecTauMuonVetoCumulative',
@@ -616,7 +618,7 @@ elecTauAnalysisSequenceOS_woBtag = cms.VPSet(
     ),
     cms.PSet(
         filter = cms.string('evtSelDiTauCandidateForAHtoElecTauMt1MET'),
-        title = cms.string('M_{T}(Electron-MET) < 50 GeV'),
+        title = cms.string('M_{T}(Electron-MET) < 40 GeV'),
         saveRunLumiSectionEventNumbers = cms.vstring('')
     ),
     cms.PSet(
@@ -745,7 +747,7 @@ elecTauAnalysisSequenceOS_wBtag = cms.VPSet(
             'genPhaseSpaceEventInfoHistManager',
             'electronHistManager',
             'tauHistManager',
-            'caloMEtHistManager',
+            #'caloMEtHistManager',
             'pfMEtHistManager',
             'vertexHistManager',
             'triggerHistManagerForElecTau'
@@ -759,12 +761,6 @@ elecTauAnalysisSequenceOS_wBtag = cms.VPSet(
     ),
     cms.PSet(
         analyzers = cms.vstring(
-            'genPhaseSpaceEventInfoHistManager',
-            'electronHistManager',
-            'tauHistManager',
-            'caloMEtHistManager',
-            'pfMEtHistManager',
-            'vertexHistManager',
             'triggerHistManagerForElecTau'
         )
     ),
@@ -777,13 +773,24 @@ elecTauAnalysisSequenceOS_wBtag = cms.VPSet(
     ),
     cms.PSet(
         analyzers = cms.vstring(
-            'genPhaseSpaceEventInfoHistManager',
-            'electronHistManager',
-            'tauHistManager',
-            'caloMEtHistManager',
-            'pfMEtHistManager',
-            'vertexHistManager',
-            'triggerHistManagerForElecTau'
+            'vertexHistManager'
+        )
+    ),
+  
+    # data quality control
+    cms.PSet(
+        filter = cms.string('evtSelDataQuality'),
+        title = cms.string('Data Quality'),
+        saveRunLumiSectionEventNumbers = cms.vstring('')
+    ),
+    cms.PSet(
+        analyzers = cms.vstring(
+            #'electronHistManager',
+            #'tauHistManager',
+            #'caloMEtHistManager',
+            #'pfMEtHistManager',
+            'vertexHistManager'
+            #'triggerHistManagerForElecTau'
         )
     ),
 
@@ -816,10 +823,10 @@ elecTauAnalysisSequenceOS_wBtag = cms.VPSet(
     cms.PSet(
         analyzers = cms.vstring(
             'electronHistManager',
-            'tauHistManager',
-            'caloMEtHistManager',
-            'pfMEtHistManager',
-            'vertexHistManager',
+            #'tauHistManager',
+            #'caloMEtHistManager',
+            #'pfMEtHistManager',
+            #'vertexHistManager',
             'triggerHistManagerForElecTau'
         )
     ),
@@ -832,11 +839,11 @@ elecTauAnalysisSequenceOS_wBtag = cms.VPSet(
     ),
     cms.PSet(
         analyzers = cms.vstring(
-            'electronHistManager',
-            'tauHistManager',
-            'caloMEtHistManager',
-            'pfMEtHistManager',
-            'vertexHistManager'
+            'electronHistManager'
+            #'tauHistManager',
+            #'caloMEtHistManager',
+            #'pfMEtHistManager',
+            #'vertexHistManager'
         ),
         replace = cms.vstring('electronHistManager.electronSource = selectedPatElectronsForElecTauIdCumulative')
     ),
@@ -847,11 +854,11 @@ elecTauAnalysisSequenceOS_wBtag = cms.VPSet(
     ),
     cms.PSet(
         analyzers = cms.vstring(
-            'electronHistManager',
-            'tauHistManager',
-            'caloMEtHistManager',
-            'pfMEtHistManager',
-            'vertexHistManager'
+            'electronHistManager'
+            #'tauHistManager',
+            #'caloMEtHistManager',
+            #'pfMEtHistManager',
+            #'vertexHistManager'
         ),
         replace = cms.vstring('electronHistManager.electronSource = selectedPatElectronsForElecTauAntiCrackCutCumulative')
     ),
@@ -864,24 +871,24 @@ elecTauAnalysisSequenceOS_wBtag = cms.VPSet(
         analyzers = cms.vstring(
             'electronHistManager',
             'tauHistManager',
-            'caloMEtHistManager',
-            'pfMEtHistManager',
-            'vertexHistManager'
+            #'caloMEtHistManager',
+            #'pfMEtHistManager',
+            #'vertexHistManager'
         ),
         replace = cms.vstring('electronHistManager.electronSource = selectedPatElectronsForElecTauEtaCumulative')
     ),
     cms.PSet(
         filter = cms.string('evtSelElectronPt'),
-        title = cms.string('Pt(Electron) > 15 GeV'),
+        title = cms.string('Pt(Electron) > 18 GeV'),
         saveRunLumiSectionEventNumbers = cms.vstring('')
     ),
     cms.PSet(
         analyzers = cms.vstring(
             'electronHistManager',
             'tauHistManager',
-            'caloMEtHistManager',
-            'pfMEtHistManager',
-            'vertexHistManager',
+            #'caloMEtHistManager',
+            #'pfMEtHistManager',
+            #'vertexHistManager',
             'triggerHistManagerForElecTau'
         ),
         replace = cms.vstring('electronHistManager.electronSource = selectedPatElectronsForElecTauPtCumulative')
@@ -895,11 +902,11 @@ elecTauAnalysisSequenceOS_wBtag = cms.VPSet(
     ),
     cms.PSet(
         analyzers = cms.vstring(
-            'electronHistManager',
-            'tauHistManager',
-            'caloMEtHistManager',
-            'pfMEtHistManager',
-            'vertexHistManager'
+            #'electronHistManager',
+            'tauHistManager'
+            #'caloMEtHistManager',
+            #'pfMEtHistManager'
+            #'vertexHistManager'
         ),
         replace = cms.vstring('electronHistManager.electronSource = selectedPatElectronsForElecTauPtCumulative',
                               'tauHistManager.tauSource = selectedPatTausForElecTauAntiOverlapWithElectronsVetoCumulative')
@@ -911,11 +918,11 @@ elecTauAnalysisSequenceOS_wBtag = cms.VPSet(
     ),
     cms.PSet(
         analyzers = cms.vstring(
-            'electronHistManager',
-            'tauHistManager',
-            'caloMEtHistManager',
-            'pfMEtHistManager',
-            'vertexHistManager'
+            #'electronHistManager',
+            'tauHistManager'
+            #'caloMEtHistManager',
+            #'pfMEtHistManager',
+            #'vertexHistManager'
         ),
         replace = cms.vstring('electronHistManager.electronSource = selectedPatElectronsForElecTauPtCumulative',
                               'tauHistManager.tauSource = selectedPatTausForElecTauEtaCumulative')
@@ -929,7 +936,7 @@ elecTauAnalysisSequenceOS_wBtag = cms.VPSet(
         analyzers = cms.vstring(
             'electronHistManager',
             'tauHistManager',
-            'caloMEtHistManager',
+            #'caloMEtHistManager',
             'pfMEtHistManager',
             'vertexHistManager',
             'triggerHistManagerForElecTau'
@@ -957,8 +964,8 @@ elecTauAnalysisSequenceOS_wBtag = cms.VPSet(
     ),
     cms.PSet(
         analyzers = cms.vstring(
-            'electronHistManager',
-            'tauHistManager'
+            'vertexHistManager',
+            'electronHistManager'
         ),
         replace = cms.vstring('electronHistManager.electronSource = selectedPatElectronsForElecTauConversionVetoCumulative')
     ),
@@ -971,10 +978,10 @@ elecTauAnalysisSequenceOS_wBtag = cms.VPSet(
         analyzers = cms.vstring(
             'electronHistManager',
             'tauHistManager',
-            'caloMEtHistManager',
+            #'caloMEtHistManager',
             'pfMEtHistManager',
             'vertexHistManager',
-            'triggerHistManagerForElecTau'
+            #'triggerHistManagerForElecTau'
         ),
         replace = cms.vstring('electronHistManager.electronSource = selectedPatElectronsForElecTauTrkIPcumulative')
     ),
@@ -982,26 +989,25 @@ elecTauAnalysisSequenceOS_wBtag = cms.VPSet(
     # selection of tau-jet candidate (id.)
     # produced in hadronic tau decay
     cms.PSet(
-        filter = cms.string('evtSelTauLeadTrk'),
-        title = cms.string('Tau lead. Track find.'),
+        filter = cms.string('evtSelTauDecayModeFinding'),
+        title = cms.string('Tau decay mode find.'),
         saveRunLumiSectionEventNumbers = cms.vstring('')
     ),
     cms.PSet(
         analyzers = cms.vstring(
             'electronHistManager',
-			'tauHistManager'
+    		'tauHistManager'
         ),
         replace = cms.vstring('electronHistManager.electronSource = selectedPatElectronsForElecTauTrkIPcumulative',
-                              'tauHistManager.tauSource = selectedPatTausForElecTauLeadTrkCumulative')
+                              'tauHistManager.tauSource = selectedPatTausForElecTauDecayModeFindingCumulative')
     ),
     cms.PSet(
         filter = cms.string('evtSelTauLeadTrkPt'),
-        title = cms.string('Tau lead. Track Pt'),
+        title = cms.string('Tau decay mode finding'),
         saveRunLumiSectionEventNumbers = cms.vstring('')
     ),
     cms.PSet(
         analyzers = cms.vstring(
-            'electronHistManager',
             'tauHistManager'
         ),
         replace = cms.vstring('electronHistManager.electronSource = selectedPatElectronsForElecTauTrkIPcumulative',
@@ -1010,46 +1016,44 @@ elecTauAnalysisSequenceOS_wBtag = cms.VPSet(
 							  )
     ),
     cms.PSet(
-        filter = cms.string('evtSelTauTaNCdiscr'),
+        filter = cms.string('evtSelTauIso'),
         title = cms.string('Tau ID (HPS loose)'),
         saveRunLumiSectionEventNumbers = cms.vstring('')
     ),
     cms.PSet(
         analyzers = cms.vstring(
-            'electronHistManager',
             'tauHistManager'
         ),
         replace = cms.vstring('electronHistManager.electronSource = selectedPatElectronsForElecTauTrkIPcumulative',
-                              'tauHistManager.tauSource = selectedPatTausForElecTauTaNCdiscrCumulative'
+                              'tauHistManager.tauSource = selectedPatTausForElecTauIsoCumulative'
 							  #'tauHistManager.makeIsoPtConeSizeDepHistograms = True'
 							  )
     ),
-    cms.PSet(
-        filter = cms.string('evtSelTauProng'),
-        title = cms.string('Tau 1||3-Prong'),
-        saveRunLumiSectionEventNumbers = cms.vstring('')
-    ),
-    cms.PSet(
-        analyzers = cms.vstring(
-            'electronHistManager',
-            'tauHistManager'
-        ),
-        replace = cms.vstring('electronHistManager.electronSource = selectedPatElectronsForElecTauTrkIPcumulative',
-                              'tauHistManager.tauSource = selectedPatTausForElecTauProngCumulative')
-    ),
-    cms.PSet(
-        filter = cms.string('evtSelTauCharge'),
-        title = cms.string('Charge(Tau) = +/-1'),
-        saveRunLumiSectionEventNumbers = cms.vstring('')
-    ),
-    cms.PSet(
-        analyzers = cms.vstring(
-            'electronHistManager',
-            'tauHistManager'
-        ),
-        replace = cms.vstring('electronHistManager.electronSource = selectedPatElectronsForElecTauTrkIPcumulative',
-                              'tauHistManager.tauSource = selectedPatTausForElecTauChargeCumulative')
-    ),    
+    #cms.PSet(
+    #    filter = cms.string('evtSelTauProng'),
+    #    title = cms.string('Tau 1||3-Prong'),
+    #    saveRunLumiSectionEventNumbers = cms.vstring('')
+    #),
+    #cms.PSet(
+    #    analyzers = cms.vstring(
+    #        'tauHistManager'
+    #    ),
+    #    replace = cms.vstring('electronHistManager.electronSource = selectedPatElectronsForElecTauTrkIPcumulative',
+    #                          'tauHistManager.tauSource = selectedPatTausForElecTauProngCumulative')
+    #),
+    #cms.PSet(
+    #    filter = cms.string('evtSelTauCharge'),
+    #    title = cms.string('Charge(Tau) = +/-1'),
+    #    saveRunLumiSectionEventNumbers = cms.vstring('')
+    #),
+    #cms.PSet(
+    #    analyzers = cms.vstring(
+    #        'electronHistManager',
+    #        'tauHistManager'
+    #    ),
+    #    replace = cms.vstring('electronHistManager.electronSource = selectedPatElectronsForElecTauTrkIPcumulative',
+    #                          'tauHistManager.tauSource = selectedPatTausForElecTauChargeCumulative')
+    #),    
     cms.PSet(
         filter = cms.string('evtSelTauElectronVeto'),
         title = cms.string('Tau e-Veto'),
@@ -1057,7 +1061,6 @@ elecTauAnalysisSequenceOS_wBtag = cms.VPSet(
     ),
     cms.PSet(
         analyzers = cms.vstring(
-            'electronHistManager',
             'tauHistManager'
         ),
         replace = cms.vstring('electronHistManager.electronSource = selectedPatElectronsForElecTauTrkIPcumulative',
@@ -1070,7 +1073,6 @@ elecTauAnalysisSequenceOS_wBtag = cms.VPSet(
     ),
     cms.PSet(
         analyzers = cms.vstring(
-            'electronHistManager',
             'tauHistManager'
         ),
         replace = cms.vstring('electronHistManager.electronSource = selectedPatElectronsForElecTauTrkIPcumulative',
@@ -1084,11 +1086,11 @@ elecTauAnalysisSequenceOS_wBtag = cms.VPSet(
     cms.PSet(
         analyzers = cms.vstring(
             'electronHistManager',
-            'tauHistManager',
-            'caloMEtHistManager',
-            'pfMEtHistManager',
-            'vertexHistManager',
-            'triggerHistManagerForElecTau'
+            'tauHistManager'
+            #'caloMEtHistManager',
+            #'pfMEtHistManager',
+            #'vertexHistManager',
+            #'triggerHistManagerForElecTau'
         ),
         replace = cms.vstring(
 			'electronHistManager.electronSource = selectedPatElectronsForElecTauTrkIPcumulative',
@@ -1098,7 +1100,7 @@ elecTauAnalysisSequenceOS_wBtag = cms.VPSet(
     #selection of electron + tau-jet combinations
     cms.PSet(
         filter = cms.string('evtSelDiTauCandidateForAHtoElecTauAntiOverlapVeto'),
-        title = cms.string('dR(Electron-Tau) > 0.7'),
+        title = cms.string('dR(Electron-Tau) > 0.5'),
         saveRunLumiSectionEventNumbers = cms.vstring('')
     ),
     cms.PSet(
@@ -1107,9 +1109,9 @@ elecTauAnalysisSequenceOS_wBtag = cms.VPSet(
             'tauHistManager',
 			'diTauCandidateHistManagerForElecTau',
             'caloMEtHistManager',
-            'pfMEtHistManager',
-            'vertexHistManager',
-            'triggerHistManagerForElecTau'
+            'pfMEtHistManager'
+            #'vertexHistManager',
+            #'triggerHistManagerForElecTau'
         ),
         replace = cms.vstring('electronHistManager.electronSource = selectedPatElectronsForElecTauTrkIPcumulative',
                               'tauHistManager.tauSource = selectedPatTausForElecTauMuonVetoCumulative',
@@ -1117,7 +1119,7 @@ elecTauAnalysisSequenceOS_wBtag = cms.VPSet(
     ),
     cms.PSet(
         filter = cms.string('evtSelDiTauCandidateForAHtoElecTauMt1MET'),
-        title = cms.string('M_{T}(Electron-MET) < 50 GeV'),
+        title = cms.string('M_{T}(Electron-MET) < 40 GeV'),
         saveRunLumiSectionEventNumbers = cms.vstring('')
     ),
     cms.PSet(
@@ -1265,7 +1267,12 @@ elecTauAnalysisSequenceSS_woBtag = cms.VPSet(
     ),
     cms.PSet(
         filter = cms.string('evtSelTrigger'),
-        title = cms.string('Electron Trigger'),
+        title = cms.string('Trigger'),
+        saveRunLumiSectionEventNumbers = cms.vstring('')
+    ),
+    cms.PSet(
+        filter = cms.string('evtSelDataQuality'),
+        title = cms.string('Data Quality'),
         saveRunLumiSectionEventNumbers = cms.vstring('')
     ),
     cms.PSet(
@@ -1300,7 +1307,7 @@ elecTauAnalysisSequenceSS_woBtag = cms.VPSet(
     ),
     cms.PSet(
         filter = cms.string('evtSelElectronPt'),
-        title = cms.string('Pt(Electron) > 15 GeV'),
+        title = cms.string('Pt(Electron) > 18 GeV'),
         saveRunLumiSectionEventNumbers = cms.vstring('')
     ),
     cms.PSet(
@@ -1334,30 +1341,30 @@ elecTauAnalysisSequenceSS_woBtag = cms.VPSet(
         saveRunLumiSectionEventNumbers = cms.vstring('')
     ),
     cms.PSet(
-        filter = cms.string('evtSelTauLeadTrk'),
-        title = cms.string('Tau lead. Track find.'),
+        filter = cms.string('evtSelTauDecayModeFinding'),
+        title = cms.string('Tau decay mode find.'),
         saveRunLumiSectionEventNumbers = cms.vstring('')
     ),
     cms.PSet(
         filter = cms.string('evtSelTauLeadTrkPt'),
-        title = cms.string('Tau lead. Track Pt'),
+        title = cms.string('Tau decay mode finding'),
         saveRunLumiSectionEventNumbers = cms.vstring('')
     ),
     cms.PSet(
-        filter = cms.string('evtSelTauTaNCdiscr'),
+        filter = cms.string('evtSelTauIso'),
         title = cms.string('Tau ID (HPS loose)'),
         saveRunLumiSectionEventNumbers = cms.vstring('')
     ),
-    cms.PSet(
-        filter = cms.string('evtSelTauProng'),
-        title = cms.string('Tau 1||3-Prong'),
-        saveRunLumiSectionEventNumbers = cms.vstring('')
-    ),
-    cms.PSet(
-        filter = cms.string('evtSelTauCharge'),
-        title = cms.string('Charge(Tau) = +/-1'),
-        saveRunLumiSectionEventNumbers = cms.vstring('')
-    ),
+    #cms.PSet(
+    #    filter = cms.string('evtSelTauProng'),
+    #    title = cms.string('Tau 1||3-Prong'),
+    #    saveRunLumiSectionEventNumbers = cms.vstring('')
+    #),
+    #cms.PSet(
+    #    filter = cms.string('evtSelTauCharge'),
+    #    title = cms.string('Charge(Tau) = +/-1'),
+    #    saveRunLumiSectionEventNumbers = cms.vstring('')
+    #),
     cms.PSet(
         filter = cms.string('evtSelTauElectronVeto'),
         title = cms.string('Tau e-Veto'),
@@ -1375,12 +1382,12 @@ elecTauAnalysisSequenceSS_woBtag = cms.VPSet(
     ),
     cms.PSet(
         filter = cms.string('evtSelDiTauCandidateForAHtoElecTauAntiOverlapVeto'),
-        title = cms.string('dR(Electron-Tau) > 0.7'),
+        title = cms.string('dR(Electron-Tau) > 0.5'),
         saveRunLumiSectionEventNumbers = cms.vstring('')
     ),
     cms.PSet(
         filter = cms.string('evtSelDiTauCandidateForAHtoElecTauMt1MET'),
-        title = cms.string('M_{T}(Electron-MET) < 50 GeV'),
+        title = cms.string('M_{T}(Electron-MET) < 40 GeV'),
         saveRunLumiSectionEventNumbers = cms.vstring('')
     ),
     cms.PSet(
@@ -1436,7 +1443,12 @@ elecTauAnalysisSequenceSS_wBtag = cms.VPSet(
     ),
     cms.PSet(
         filter = cms.string('evtSelTrigger'),
-        title = cms.string('Electron Trigger'),
+        title = cms.string('Trigger'),
+        saveRunLumiSectionEventNumbers = cms.vstring('')
+    ),
+    cms.PSet(
+        filter = cms.string('evtSelDataQuality'),
+        title = cms.string('Data Quality'),
         saveRunLumiSectionEventNumbers = cms.vstring('')
     ),
     cms.PSet(
@@ -1471,7 +1483,7 @@ elecTauAnalysisSequenceSS_wBtag = cms.VPSet(
     ),
     cms.PSet(
         filter = cms.string('evtSelElectronPt'),
-        title = cms.string('Pt(Electron) > 15 GeV'),
+        title = cms.string('Pt(Electron) > 18 GeV'),
         saveRunLumiSectionEventNumbers = cms.vstring('')
     ),
     cms.PSet(
@@ -1505,30 +1517,30 @@ elecTauAnalysisSequenceSS_wBtag = cms.VPSet(
         saveRunLumiSectionEventNumbers = cms.vstring('')
     ),
     cms.PSet(
-        filter = cms.string('evtSelTauLeadTrk'),
+        filter = cms.string('evtSelTauDecayModeFinding'),
         title = cms.string('Tau lead. Track find.'),
         saveRunLumiSectionEventNumbers = cms.vstring('')
     ),
     cms.PSet(
         filter = cms.string('evtSelTauLeadTrkPt'),
-        title = cms.string('Tau lead. Track Pt'),
+        title = cms.string('Tau decay mode finding'),
         saveRunLumiSectionEventNumbers = cms.vstring('')
     ),
     cms.PSet(
-        filter = cms.string('evtSelTauTaNCdiscr'),
+        filter = cms.string('evtSelTauIso'),
         title = cms.string('Tau ID (HPS loose)'),
         saveRunLumiSectionEventNumbers = cms.vstring('')
     ),
-    cms.PSet(
-        filter = cms.string('evtSelTauProng'),
-        title = cms.string('Tau 1||3-Prong'),
-        saveRunLumiSectionEventNumbers = cms.vstring('')
-    ),
-    cms.PSet(
-        filter = cms.string('evtSelTauCharge'),
-        title = cms.string('Charge(Tau) = +/-1'),
-        saveRunLumiSectionEventNumbers = cms.vstring('')
-    ),
+    #cms.PSet(
+    #    filter = cms.string('evtSelTauProng'),
+    #    title = cms.string('Tau 1||3-Prong'),
+    #    saveRunLumiSectionEventNumbers = cms.vstring('')
+    #),
+    #cms.PSet(
+    #    filter = cms.string('evtSelTauCharge'),
+    #    title = cms.string('Charge(Tau) = +/-1'),
+    #    saveRunLumiSectionEventNumbers = cms.vstring('')
+    #),
     cms.PSet(
         filter = cms.string('evtSelTauElectronVeto'),
         title = cms.string('Tau e-Veto'),
@@ -1546,12 +1558,12 @@ elecTauAnalysisSequenceSS_wBtag = cms.VPSet(
     ),
     cms.PSet(
         filter = cms.string('evtSelDiTauCandidateForAHtoElecTauAntiOverlapVeto'),
-        title = cms.string('dR(Electron-Tau) > 0.7'),
+        title = cms.string('dR(Electron-Tau) > 0.5'),
         saveRunLumiSectionEventNumbers = cms.vstring('')
     ),
     cms.PSet(
         filter = cms.string('evtSelDiTauCandidateForAHtoElecTauMt1MET'),
-        title = cms.string('M_{T}(Electron-MET) < 50 GeV'),
+        title = cms.string('M_{T}(Electron-MET) < 40 GeV'),
         saveRunLumiSectionEventNumbers = cms.vstring('')
     ),
     cms.PSet(
