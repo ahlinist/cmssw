@@ -20,7 +20,12 @@ cfgTrigger = cms.PSet(
     pluginName = cms.string('Trigger'),
     pluginType = cms.string('PATTriggerEventSelector'),
     src = cms.InputTag('patTriggerEvent'),
-	hltAcceptPaths = cms.vstring('HLT_Ele10_SW_L1R','HLT_Ele12_SW_TightEleIdIsol_L1R')
+	hltAcceptPaths = cms.vstring(
+        'HLT_Ele10_SW_L1R',
+        'HLT_Ele10_SW_L1R_v2',
+        'HLT_Ele12_SW_TightEleIdIsol_L1R',
+        'HLT_Ele12_SW_TighterEleId_L1R_v2'
+    )
 )
 
 # primary event vertex selection
@@ -126,11 +131,11 @@ cfgTauPtCut = cms.PSet(
 	systematics = cms.vstring(tauSystematics.keys()),
     minNumber = cms.uint32(1)
 )
-cfgTauLeadTrkCut = cms.PSet(
-    pluginName = cms.string('tauLeadTrkCut'),
+cfgTauDecayModeFindingCut = cms.PSet(
+    pluginName = cms.string('tauDecayModeFindingCut'),
     pluginType = cms.string('PATCandViewMinEventSelector'),
-    src_cumulative = cms.InputTag('selectedPatTausForElecTauLeadTrkCumulative'),
-    src_individual = cms.InputTag('selectedPatTausForElecTauLeadTrkIndividual'),
+    src_cumulative = cms.InputTag('selectedPatTausForElecTauDecayModeFindingCumulative'),
+    src_individual = cms.InputTag('selectedPatTausForElecTauDecayModeFindingIndividual'),
 	systematics = cms.vstring(tauSystematics.keys()),
     minNumber = cms.uint32(1)
 )
@@ -142,11 +147,11 @@ cfgTauLeadTrkPtCut = cms.PSet(
 	systematics = cms.vstring(tauSystematics.keys()),
     minNumber = cms.uint32(1)
 )
-cfgTauTaNCdiscrCut = cms.PSet(
-    pluginName = cms.string('tauTaNCdiscrCut'),
+cfgTauIsoCut = cms.PSet(
+    pluginName = cms.string('tauIsoCut'),
     pluginType = cms.string('PATCandViewMinEventSelector'),
-    src_cumulative = cms.InputTag('selectedPatTausForElecTauTaNCdiscrCumulative'),
-    src_individual = cms.InputTag('selectedPatTausForElecTauTaNCdiscrIndividual'),
+    src_cumulative = cms.InputTag('selectedPatTausForElecTauIsoCumulative'),
+    src_individual = cms.InputTag('selectedPatTausForElecTauIsoIndividual'),
 	systematics = cms.vstring(tauSystematics.keys()),
     minNumber = cms.uint32(1)
 )
@@ -271,9 +276,9 @@ zToElecTauEventSelConfiguratorOS = eventSelFlagProdConfigurator(
       cfgTauAntiOverlapWithElectronsVeto,
       cfgTauEtaCut,
       cfgTauPtCut,
-      cfgTauLeadTrkCut,
+      cfgTauDecayModeFindingCut,
       cfgTauLeadTrkPtCut,
-      cfgTauTaNCdiscrCut,
+      cfgTauIsoCut,
       cfgTauProngCut,
       cfgTauChargeCut,
       cfgTauElectronVeto,

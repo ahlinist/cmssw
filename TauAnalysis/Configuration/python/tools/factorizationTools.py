@@ -555,9 +555,9 @@ def enableFactorization_makeZtoElecTauPlots_grid2(
     # of the analysis, **after** applying factorization of electron isolation efficiency
     evtSelZtoElecTau_factorizedLoose = [
         'evtSelElectronTrkIP',
-        'evtSelTauLeadTrk',
+        'evtSelTauDecayModeFinding',
         'evtSelTauLeadTrkPt',
-        'evtSelTauTaNCdiscr',
+        'evtSelTauIso',
         'evtSelTauProng',
         'evtSelTauCharge',
         'evtSelTauElectronVeto',
@@ -692,11 +692,9 @@ def enableFactorization_makeAHtoElecTauPlots_grid2(
     # of the analysis, **after** applying factorization of electron isolation efficiency
     loose_cuts_base = [
         'evtSelElectronTrkIP',
-        'evtSelTauLeadTrk',
+        'evtSelTauDecayModeFinding',
         'evtSelTauLeadTrkPt',
-        'evtSelTauTaNCdiscr',
-        'evtSelTauProng',
-        'evtSelTauCharge',
+        'evtSelTauIso',
         'evtSelTauElectronVeto',
         'evtSelTauEcalCrackVeto',
         'evtSelTauMuonVeto',
