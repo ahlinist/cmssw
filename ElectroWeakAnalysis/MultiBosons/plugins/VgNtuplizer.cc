@@ -428,9 +428,9 @@ void VgNtuplizer::produce(edm::Event & e, const edm::EventSetup & es) {
   HLTIndexPath[8] = "HLT_Mu9";
   HLTIndexPath[9] = "HLT_Mu11";
   HLTIndexPath[10] = "HLT_Mu13";
-  HLTIndexPath[11] = "HLT_Mu13_v1";
+  HLTIndexPath[11] = "HLT_Mu13_v*";
   HLTIndexPath[12] = "HLT_Mu15";
-  HLTIndexPath[13] = "HLT_Mu15_v1";
+  HLTIndexPath[13] = "HLT_Mu15_v*";
   HLTIndexPath[14] = "HLT_DoubleMu3";
   HLTIndexPath[15] = "HLT_DoubleMu3_v2";
   HLTIndexPath[16] = "HLT_DoubleMu5_v1";
@@ -467,15 +467,21 @@ void VgNtuplizer::produce(edm::Event & e, const edm::EventSetup & es) {
   HLTIndexPath[47] = "HLT_DoubleEle15_SW_L1R_v1";
   HLTIndexPath[48] = "HLT_DoublePhoton17_L1R";
   HLTIndexPath[49] = "HLT_Photon10_L1R";
+  HLTIndexPath[50] = "HLT_IsoMu15_v*";
+  HLTIndexPath[51] = "HLT_IsoMu17_v*";
+  HLTIndexPath[52] = "HLT_IsoMu24_v*";
+  HLTIndexPath[53] = "HLT_IsoMu30_v*";
+  HLTIndexPath[54] = "HLT_Mu24_v*";
+  HLTIndexPath[55] = "HLT_Mu30_v*";
 
-  for (int i=0; i<50; ++i) HLTIndex_[i] = -1;
+  for (int i=0; i<56; ++i) HLTIndex_[i] = -1;
 
   nHLT_ = 0;
   if (saveHLTInfo_) {
     const TriggerPathCollection &trgPaths = *triggerEvent->paths();
     nHLT_ = trgPaths.size();
     for (size_t i=0; i<trgPaths.size(); ++i) {
-      HLT_[i] = trgPaths[i].wasAccept() == true ? 1 : 0;
+      HLT_[i] = (trgPaths[i].wasAccept() == true  && trgPaths[i].prescale() == 1) ? 1 : 0;
     }
 
     for (size_t i=0; i<HLTIndexPath.size(); ++i) {
@@ -485,6 +491,7 @@ void VgNtuplizer::produce(edm::Event & e, const edm::EventSetup & es) {
                                          << endl;
       }
       if ( triggerEvent->path(HLTIndexPath[i]) ) {
+	std::cout << HLTIndexPath[i] << " found!" << std:endl;
         HLTIndex_[i] = triggerEvent->path( HLTIndexPath[i] )->index();
       }
     } // for (size_t i=0; i<HLTIndexPath.size(); ++i)
@@ -963,9 +970,16 @@ void VgNtuplizer::produce(edm::Event & e, const edm::EventSetup & es) {
       muTrg_[nMu_][0] = (iMu->triggerObjectMatchesByPath("HLT_Mu9").size()) ? 1 : -99;
       muTrg_[nMu_][1] = (iMu->triggerObjectMatchesByPath("HLT_Mu11").size()) ? 1 : -99;
       muTrg_[nMu_][2] = (iMu->triggerObjectMatchesByPath("HLT_Mu13").size()) ? 1 : -99;
-      muTrg_[nMu_][3] = (iMu->triggerObjectMatchesByPath("HLT_Mu13_v1").size()) ? 1 : -99;
+      muTrg_[nMu_][3] = (iMu->triggerObjectMatchesByPath("HLT_Mu13_v*").size()) ? 1 : -99;
       muTrg_[nMu_][4] = (iMu->triggerObjectMatchesByPath("HLT_Mu15").size()) ? 1 : -99;
-      muTrg_[nMu_][5] = (iMu->triggerObjectMatchesByPath("HLT_Mu15_v1").size()) ? 1 : -99;
+      muTrg_[nMu_][5] = (iMu->triggerObjectMatchesByPath("HLT_Mu15_v*").size()) ? 1 : -99;
+      muTrg_[nMu_][6] = (iMu->triggerObjectMatchesByPath("HLT_Mu15_v*").size()) ? 1 : -99;
+      muTrg_[nMu_][7] = (iMu->triggerObjectMatchesByPath("HLT_Mu17_v*").size()) ? 1 : -99;
+      muTrg_[nMu_][8] = (iMu->triggerObjectMatchesByPath("HLT_Mu24_v*").size()) ? 1 : -99;
+      muTrg_[nMu_][9] = (iMu->triggerObjectMatchesByPath("HLT_Mu30_v*").size()) ? 1 : -99;
+      muTrg_[nMu_][10] = (iMu->triggerObjectMatchesByPath("HLT_IsoMu17_v*").size()) ? 1 : -99;
+      muTrg_[nMu_][11] = (iMu->triggerObjectMatchesByPath("HLT_IsoMu24_v*").size()) ? 1 : -99;
+      muTrg_[nMu_][12] = (iMu->triggerObjectMatchesByPath("HLT_IsoMu30_v*").size()) ? 1 : -99;
 
       //       if (!iMu->isGlobalMuon()) continue;
       //       if (!iMu->isTrackerMuon()) continue;
@@ -1318,8 +1332,8 @@ void VgNtuplizer::produce(edm::Event & e, const edm::EventSetup & es) {
 
 	//std::cout << iJet->correctedJet("RAW").pt() << ' ' << iJet->correctedJet("RAW").energy() << std::endl;
 
-	jetRawPt_[nJet_]  = (*iJet).correctedJet("RAW").pt();
-	jetRawEn_[nJet_]  = (*iJet).correctedJet("RAW").energy();
+	jetRawPt_[nJet_]  = (*iJet).correctedJet("L1Offset").pt();
+	jetRawEn_[nJet_]  = (*iJet).correctedJet("L1Offset").energy();
 	jetpartonFlavour_[nJet_] = iJet->partonFlavour();
 
 	// Jet Id related
