@@ -98,7 +98,8 @@
 
 
 ################ Higaga ##################
-DATASET=GJets_TuneD6T_HT-40To100-madgraph_Winter10
+# DATASET=GJets_TuneD6T_HT-40To100-madgraph_Winter10
+DATASET=GluGluToHToGG_M-120_7TeV-powheg-pythia6_Winter10
 TOTAL_SECTIONS=8
 # SECTION=3
 #     python -i HigagaPmvTreeMaker_cfg.py \
@@ -109,7 +110,7 @@ for SECTION in `seq $TOTAL_SECTIONS`; do
         inputFiles_load=files_${DATASET}.dat \
         isMC=True \
         maxEvents=-1 \
-        outputFile=/wntmp/veverka/pmvTree_${DATASET}_V3 \
+        outputFile=/wntmp/veverka/pmvTree_${DATASET}_V4 \
         totalSections=$TOTAL_SECTIONS \
         section=$SECTION \
         >& /wntmp/veverka/pmv_${DATASET}_${SECTION}of${TOTAL_SECTIONS}.out &

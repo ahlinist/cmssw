@@ -13,6 +13,33 @@ process.inputs = cms.PSet (
 
 #process.inputs.fileNames = [pathPrefix + file for file in filelist]
 
+process.inputs.fileNames = """file:/mnt/tier2/store/user/veverka/Zgamma/ElectronPhotonVGammaSkim/a81f4ee10ef188fe6a5700e98d7864f7/VGammaPAT_ElectronPhotonSkim_1_1_jGh.root
+    file:/mnt/tier2/store/user/veverka/Zgamma/ElectronPhotonVGammaSkim/a81f4ee10ef188fe6a5700e98d7864f7/VGammaPAT_ElectronPhotonSkim_2_1_p2n.root
+    file:/mnt/tier2/store/user/veverka/Zgamma/ElectronPhotonVGammaSkim/a81f4ee10ef188fe6a5700e98d7864f7/VGammaPAT_ElectronPhotonSkim_3_1_Hcz.root
+    file:/mnt/tier2/store/user/veverka/Zgamma/ElectronPhotonVGammaSkim/a81f4ee10ef188fe6a5700e98d7864f7/VGammaPAT_ElectronPhotonSkim_4_1_jHi.root
+    file:/mnt/tier2/store/user/veverka/Zgamma/ElectronPhotonVGammaSkim/a81f4ee10ef188fe6a5700e98d7864f7/VGammaPAT_ElectronPhotonSkim_5_1_EJd.root
+    file:/mnt/tier2/store/user/veverka/Zgamma/ElectronPhotonVGammaSkim/a81f4ee10ef188fe6a5700e98d7864f7/VGammaPAT_ElectronPhotonSkim_6_1_R31.root
+    file:/mnt/tier2/store/user/veverka/Zgamma/ElectronPhotonVGammaSkim/a81f4ee10ef188fe6a5700e98d7864f7/VGammaPAT_ElectronPhotonSkim_7_1_seT.root
+    file:/mnt/tier2/store/user/veverka/Zgamma/ElectronPhotonVGammaSkim/a81f4ee10ef188fe6a5700e98d7864f7/VGammaPAT_ElectronPhotonSkim_8_1_0rV.root
+    file:/mnt/tier2/store/user/veverka/Zgamma/ElectronPhotonVGammaSkim/a81f4ee10ef188fe6a5700e98d7864f7/VGammaPAT_ElectronPhotonSkim_9_1_Y9D.root
+    file:/mnt/tier2/store/user/veverka/Zgamma/ElectronPhotonVGammaSkim/a81f4ee10ef188fe6a5700e98d7864f7/VGammaPAT_ElectronPhotonSkim_10_1_XUJ.root
+    file:/mnt/tier2/store/user/veverka/Zgamma/ElectronPhotonVGammaSkim/a81f4ee10ef188fe6a5700e98d7864f7/VGammaPAT_ElectronPhotonSkim_11_1_Dbl.root
+    file:/mnt/tier2/store/user/veverka/Zgamma/ElectronPhotonVGammaSkim/a81f4ee10ef188fe6a5700e98d7864f7/VGammaPAT_ElectronPhotonSkim_12_1_CzG.root
+    file:/mnt/tier2/store/user/veverka/Zgamma/ElectronPhotonVGammaSkim/a81f4ee10ef188fe6a5700e98d7864f7/VGammaPAT_ElectronPhotonSkim_13_1_v94.root
+    file:/mnt/tier2/store/user/veverka/Zgamma/ElectronPhotonVGammaSkim/a81f4ee10ef188fe6a5700e98d7864f7/VGammaPAT_ElectronPhotonSkim_14_1_GQb.root
+    file:/mnt/tier2/store/user/veverka/Zgamma/ElectronPhotonVGammaSkim/a81f4ee10ef188fe6a5700e98d7864f7/VGammaPAT_ElectronPhotonSkim_15_1_taJ.root
+    file:/mnt/tier2/store/user/veverka/Zgamma/ElectronPhotonVGammaSkim/a81f4ee10ef188fe6a5700e98d7864f7/VGammaPAT_ElectronPhotonSkim_16_1_PbT.root
+    file:/mnt/tier2/store/user/veverka/Zgamma/ElectronPhotonVGammaSkim/a81f4ee10ef188fe6a5700e98d7864f7/VGammaPAT_ElectronPhotonSkim_17_1_IxC.root
+    file:/mnt/tier2/store/user/veverka/Zgamma/ElectronPhotonVGammaSkim/a81f4ee10ef188fe6a5700e98d7864f7/VGammaPAT_ElectronPhotonSkim_18_1_kzh.root
+    file:/mnt/tier2/store/user/veverka/Zgamma/ElectronPhotonVGammaSkim/a81f4ee10ef188fe6a5700e98d7864f7/VGammaPAT_ElectronPhotonSkim_19_1_bhf.root
+    file:/mnt/tier2/store/user/veverka/Zgamma/ElectronPhotonVGammaSkim/a81f4ee10ef188fe6a5700e98d7864f7/VGammaPAT_ElectronPhotonSkim_20_1_1qu.root
+    file:/mnt/tier2/store/user/veverka/Zgamma/ElectronPhotonVGammaSkim/a81f4ee10ef188fe6a5700e98d7864f7/VGammaPAT_ElectronPhotonSkim_21_1_PJd.root
+    file:/mnt/tier2/store/user/veverka/Zgamma/ElectronPhotonVGammaSkim/a81f4ee10ef188fe6a5700e98d7864f7/VGammaPAT_ElectronPhotonSkim_22_1_g5x.root
+    file:/mnt/tier2/store/user/veverka/Zgamma/ElectronPhotonVGammaSkim/a81f4ee10ef188fe6a5700e98d7864f7/VGammaPAT_ElectronPhotonSkim_23_1_D5M.root
+    file:/mnt/tier2/store/user/veverka/Zgamma/ElectronPhotonVGammaSkim/a81f4ee10ef188fe6a5700e98d7864f7/VGammaPAT_ElectronPhotonSkim_24_1_3K4.root
+    file:/mnt/tier2/store/user/veverka/Zgamma/ElectronPhotonVGammaSkim/a81f4ee10ef188fe6a5700e98d7864f7/VGammaPAT_ElectronPhotonSkim_25_1_9YP.root
+    file:/mnt/tier2/store/user/veverka/Zgamma/ElectronPhotonVGammaSkim/a81f4ee10ef188fe6a5700e98d7864f7/VGammaPAT_ElectronPhotonSkim_26_1_iPq.root
+    """.split()
 
 
 process.outputs = cms.PSet (
@@ -46,6 +73,11 @@ process.SelectorConfig.maxDeltaRPhotonNearLepton = 0.5
 process.SelectorConfig.minLeptonPhotonDeltaR = -1.
 ## End of Wgamma FSR changes
 
+process.SelectorConfig.cutsToIgnore = cms.vstring(#"ZEEGamma",
+                                                  "ZMuMuGamma",
+                                                  "WMuNuGamma",
+                                                  "WENuGamma",
+                                                  "ZInvisibleGamma")
 
 ## Create the histogram definitions for the FWLite program
 from ElectroWeakAnalysis.MultiBosons.Histogramming.muonHistos_cfi import muonHistos
@@ -70,7 +102,7 @@ process.ZMuMuGamma = cms.PSet(
                                 outputDirectory = cms.string('ZMuMuGamma'),
                                 eventWeight = cms.double(1.0)
                                 )
-    
+
     )
 
 #process.WMuNuGamma = cms.PSet(
