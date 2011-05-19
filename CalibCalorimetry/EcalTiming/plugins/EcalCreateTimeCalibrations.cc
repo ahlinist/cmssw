@@ -13,7 +13,7 @@ Implementation:
 //
 // Authors:                              Seth Cooper (Minnesota)
 //         Created:  Tu Apr 26  10:46:22 CEST 2011
-// $Id: EcalCreateTimeCalibrations.cc,v 1.8 2011/05/12 08:18:42 scooper Exp $
+// $Id: EcalCreateTimeCalibrations.cc,v 1.9 2011/05/13 15:30:52 scooper Exp $
 //
 //
 
@@ -562,6 +562,9 @@ EcalCreateTimeCalibrations::analyze(edm::Event const& evt, edm::EventSetup const
     uint32_t rawId = EBDetId::unhashIndex(*hashItr);
     timeCalibConstants[rawId] = tcConstant;
     timeCalibErrors[rawId] = tcError;
+    // Fill hists
+    calibAfterSubtractionHistEB_->Fill(p1);
+    calibAfterSubtractionMapEB_->Fill(det.iphi(),det.ieta(),p1);
   }
   //Loop over all the crys to calibrate normally -- EE
   for(std::vector<int>::const_iterator hashItr = hashesToCalibrateNormallyEE.begin();
@@ -588,6 +591,18 @@ EcalCreateTimeCalibrations::analyze(edm::Event const& evt, edm::EventSetup const
     uint32_t rawId = EEDetId::unhashIndex(*hashItr);
     timeCalibConstants[rawId] = tcConstant;
     timeCalibErrors[rawId] = tcError;
+    // Fill hists
+    calibAfterSubtractionHistEE_->Fill(p1);
+    if(det.zside() > 0)
+    {
+      calibAfterSubtractionHistEEP_->Fill(p1);
+      calibAfterSubtractionMapEEP_->Fill(det.ix(),det.iy(),p1);
+    }
+    else
+    {
+      calibAfterSubtractionHistEEM_->Fill(p1);
+      calibAfterSubtractionMapEEM_->Fill(det.ix(),det.iy(),p1);
+    }
   }
   
   fileStream.close();
@@ -608,6 +623,9 @@ EcalCreateTimeCalibrations::analyze(edm::Event const& evt, edm::EventSetup const
     uint32_t rawId = det.rawId();
     timeCalibConstants[rawId] = tcConstant;
     timeCalibErrors[rawId] = tcError;
+    // Fill hists
+    calibAfterSubtractionHistEB_->Fill(p1);
+    calibAfterSubtractionMapEB_->Fill(det.iphi(),det.ieta(),p1);
   }
   // calibrate uncalibratable crys -- EE
   for(std::vector<int>::const_iterator hashItr = hashesToCalibrateToZeroEE.begin();
@@ -626,6 +644,18 @@ EcalCreateTimeCalibrations::analyze(edm::Event const& evt, edm::EventSetup const
     uint32_t rawId = EEDetId::unhashIndex(*hashItr);
     timeCalibConstants[rawId] = tcConstant;
     timeCalibErrors[rawId] = tcError;
+    // Fill hists
+    calibAfterSubtractionHistEE_->Fill(p1);
+    if(det.zside() > 0)
+    {
+      calibAfterSubtractionHistEEP_->Fill(p1);
+      calibAfterSubtractionMapEEP_->Fill(det.ix(),det.iy(),p1);
+    }
+    else
+    {
+      calibAfterSubtractionHistEEM_->Fill(p1);
+      calibAfterSubtractionMapEEM_->Fill(det.ix(),det.iy(),p1);
+    }
   }
 
   // global time offset
@@ -705,6 +735,7 @@ void EcalCreateTimeCalibrations::endJob()
 void EcalCreateTimeCalibrations::initEBHists(edm::Service<TFileService>& fileService_)
 {
   calibHistEB_ = fileService_->make<TH1F>("timingCalibDiffEB","timingCalib diff EB [ns]",2000,-100,100);
+  calibAfterSubtractionHistEB_ = fileService_->make<TH1F>("timingCalibsAfterSubtractionEB","timingCalib EB (after subtraction) [ns]",2000,-100,100);
   calibErrorHistEB_ = fileService_->make<TH1F>("calibDiffErrorEB","timingCalibDiffError EB [ns]",500,0,5);
   calibHistEB_->Sumw2();
   calibErrorHistEB_->Sumw2();
@@ -744,6 +775,7 @@ void EcalCreateTimeCalibrations::initEBHists(edm::Service<TFileService>& fileSer
     }
   } 
   calibMapEB_ = fileService_->make<TH2F>("calibDiffMapEB","time calib diff map EB [ns];i#phi;i#eta",360,1.,361.,172,-86,86);
+  calibAfterSubtractionMapEB_ = fileService_->make<TH2F>("calibMapAfterSubtractionEB","time calib map EB (after subtraction) (after subtraction) (after subtraction) (after subtraction) (after subtraction) (after subtraction) (after subtraction) (after subtraction) (after subtraction) [ns];i#phi;i#eta",360,1.,361.,172,-86,86);
   calibMapEB_->Sumw2();
   sigmaMapEB_ = fileService_->make<TH2F>("sigmaDiffMapEB","Sigma of time calib diff map EB [ns];i#phi;i#eta",360,1.,361.,172,-86,86);
   calibErrorMapEB_ = fileService_->make<TH2F>("calibDiffErrorMapEB","Error of time calib diff map EB [ns];i#phi;i#eta",360,1.,361.,172,-86,86);
@@ -767,6 +799,7 @@ void EcalCreateTimeCalibrations::initEBHists(edm::Service<TFileService>& fileSer
 void EcalCreateTimeCalibrations::initEEHists(edm::Service<TFileService>& fileService_)
 {
   calibHistEE_ = fileService_->make<TH1F>("timingCalibDiffsEE","timingCalibDiffs EE [ns]",2000,-100,100);
+  calibAfterSubtractionHistEE_ = fileService_->make<TH1F>("timingCalibsAfterSubtractionEE","timingCalibs EE (after subtraction) [ns]",2000,-100,100);
   calibErrorHistEE_ = fileService_->make<TH1F>("timingCalibDiffErrorEE","timingCalibDiffError EE [ns]",500,0,5);
   calibHistEE_->Sumw2();
   calibErrorHistEE_->Sumw2();
@@ -809,6 +842,8 @@ void EcalCreateTimeCalibrations::initEEHists(edm::Service<TFileService>& fileSer
   errorOnMeanVsNumEvtsHist_->Sumw2();
   calibHistEEM_ = fileService_->make<TH1F>("timingCalibDiffsEEM","timingCalibDiffs EEM [ns]",500,-25,25);
   calibHistEEP_ = fileService_->make<TH1F>("timingCalibDiffsEEP","timingCalibDiffs EEP [ns]",500,-25,25);
+  calibAfterSubtractionHistEEM_ = fileService_->make<TH1F>("timingCalibsAfterSubtractionEEM","timingCalibs EEM (after subtraction) [ns]",500,-25,25);
+  calibAfterSubtractionHistEEP_ = fileService_->make<TH1F>("timingCalibsAfterSubtractionEEP","timingCalibs EEP (after subtraction) [ns]",500,-25,25);
   calibErrorHistEEM_ = fileService_->make<TH1F>("calibDiffErrorEEM","timingCalibDiffError EEM [ns]",250,0,5);
   calibErrorHistEEP_ = fileService_->make<TH1F>("calibDiffErrorEEP","timingCalibDiffError EEP [ns]",250,0,5);
   calibHistEEM_->Sumw2();
@@ -816,7 +851,9 @@ void EcalCreateTimeCalibrations::initEEHists(edm::Service<TFileService>& fileSer
   calibErrorHistEEM_->Sumw2();
   calibErrorHistEEP_->Sumw2();
   calibMapEEM_ = fileService_->make<TH2F>("calibDiffMapEEM","time calib diff map EEM",100,1,101,100,1,101);
-  calibMapEEP_ = fileService_->make<TH2F>("calibDiffMapEEP","time calib diff map EEP",100,1,101,100,1,101);
+  calibMapEEM_ = fileService_->make<TH2F>("calibDiffMapEEM","time calib diff map EEM",100,1,101,100,1,101);
+  calibAfterSubtractionMapEEP_ = fileService_->make<TH2F>("calibMapAfterSubtractionEEP","time calib map EEP (after subtraction) [ns]",100,1,101,100,1,101);
+  calibAfterSubtractionMapEEM_ = fileService_->make<TH2F>("calibMapAfterSubtractionEEP","time calib map EEM (after subtraction) [ns]",100,1,101,100,1,101);
   calibMapEEM_->Sumw2();
   calibMapEEP_->Sumw2();
   sigmaMapEEM_ = fileService_->make<TH2F>("sigmaMapEEM","Sigma of time calib diff map EEM [ns];ix;iy",100,1.,101.,100,1,101);
