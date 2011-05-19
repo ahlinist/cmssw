@@ -49,15 +49,9 @@ if options.maxEvents >= 0:
 ## Global tag
 process.GlobalTag.globaltag = options.globalTag
 
-
-## Remove MC matching and apply cleaning if we run on data
-## (No need to remove pfMET and tcMET explicitly if this is done first
-if options.isRealData:
-    removeMCMatching(process)
-
-## Add non-default MET flavors
-addPfMET(process , 'PF')
-addTcMET(process , 'TC')
+# apply mods to photon MC matching (match to all pdgids, fakes) -- lgray 18/05/2011
+process.photonMatch.mcPdgId = cms.vint32(22,11,111,113,211,221,1,2,3,4,5,21)
+process.photonMatch.checkCharge = cms.bool(False)
 
 ## Spring10 MC was produced with CMSS_3_5_6 - make sure we can run on it
 if options.use35XInput:
@@ -72,6 +66,12 @@ process.selectedPatMuons.cut = cms.string("isGlobalMuon | isTrackerMuon")
 
 ## Reject soft jets to reduce event content
 process.selectedPatJets.cut = cms.string("pt > 30")
+
+# I don't know why this dies if I do it later.... -- lgray 18/05/2011
+if options.isRealData:    
+    ## Remove MC matching and apply cleaning if we run on data
+    ## (No need to remove pfMET and tcMET explicitly if this is done first
+    removeMCMatching(process)
 
 ## Overlap of photons and electrons
 ##+ Set to True to remove overlapping photons from the event, False to embed
@@ -97,22 +97,6 @@ process.load("EgammaAnalysis.PhotonIDProducers.piZeroDiscriminators_cfi")
 process.load("RecoLocalCalo.EcalRecAlgos.EcalSeverityLevelESProducer_cfi")
 
 process.load("ElectroWeakAnalysis.MultiBosons.Skimming.pi0Discriminator_cfi")
-
-if not options.isRealData:
-    process.photonGenMatch = cms.EDProducer("PhotonGenMatchUserDataProducer",
-        src = cms.InputTag("photons"),
-        match = cms.InputTag("photonMatch")
-        )
-    process.patDefaultSequence.replace(process.patPhotons,
-        process.photonGenMatch *
-        process.patPhotons
-        )
-    process.patPhotons.userData.userInts.src.extend([
-        cms.InputTag("photonGenMatch", "motherPdgId"),
-        cms.InputTag("photonGenMatch", "motherStatus"),
-        cms.InputTag("photonGenMatch", "grandMotherPdgId"),
-        cms.InputTag("photonGenMatch", "grandMotherStatus"),
-        ])
 
 if not options.isAOD:
     process.patDefaultSequence.replace(process.patPhotons,
@@ -292,7 +276,7 @@ embedTriggerMatches(process, matchHltPaths)
 
 process.load(basePath + "VGammaSkimSequences_cff")
 
-if options.isRealData:
+if options.isRealData:    
     process.defaultSequence = cms.Sequence(
         process.skimFilterSequence +
         process.patDefaultSequence
@@ -311,6 +295,30 @@ else:
         process.prunedGenParticles *
         process.patDefaultSequence
     )
+    #add in gen level photon user data
+    process.photonGenMatch = cms.EDProducer("PhotonGenMatchUserDataProducer",
+        src = cms.InputTag("photons"),
+        match = cms.InputTag("photonMatch")
+        )
+    process.patDefaultSequence.replace(process.patPhotons,
+        process.photonGenMatch *
+        process.patPhotons
+        )
+    process.patPhotons.userData.userInts.src.extend([
+        cms.InputTag("photonGenMatch", "motherPdgId"),
+        cms.InputTag("photonGenMatch", "motherStatus"),
+        cms.InputTag("photonGenMatch", "grandMotherPdgId"),
+        cms.InputTag("photonGenMatch", "grandMotherStatus"),
+        ])
+
+    # set all MC matchers to use the PRUNED gen particles -- lgray 18/05/2011
+    process.muonMatch.matched = cms.InputTag("prunedGenParticles")
+    process.electronMatch.matched = cms.InputTag("prunedGenParticles")
+    process.tauMatch.matched = cms.InputTag("prunedGenParticles")
+    process.photonMatch.matched = cms.InputTag("prunedGenParticles")
+    process.patJetPartons.src = cms.InputTag("prunedGenParticles")
+    process.patJetPartonMatch.matched = cms.InputTag("prunedGenParticles")    
+    
     ## Add parton shower related filters (prevent ISR/FSR double-counting)
     ##+ "POWHEG parton shower" means actually Pythia parton shower in Pythia
     ##+ hadronization run on top of POWHEG.
@@ -379,6 +387,10 @@ else:
                                                    process.pythiaPartonShowerFsrSequence)
 # if options.isRealData <-----------------------------------------------------
 
+## Add non-default MET flavors, now that we've configured everything
+addPfMET(process , 'PF')
+addTcMET(process , 'TC')
+
 if options.addRho:
     addRhoFromFastJet(process, after=process.skimFilterSequence)
 
@@ -401,8 +413,9 @@ process.ZInvisibleGammaPath = cms.Path(
 ## Output configuration (add event content, select events, output file name)
 process.out.outputCommands += vgEventContent.extraSkimEventContent
 
-if not options.isRealData:
+if not options.isRealData:    
     process.out.outputCommands += ["keep *_prunedGenParticles_*_PAT"]
+    process.out.outputCommands += ["keep *_addPileupInfo_*_*"] #store pileup description in case of MC, all reprocessings
 
 if options.skimType == "Jet":
     process.out.outputCommands += ["drop *_photonCore_*_RECO",

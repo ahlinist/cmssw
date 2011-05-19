@@ -52,6 +52,22 @@ def applyJobOptions(options):
     jobOptions.use35XInput = False
     jobOptions.wantSummary = False
     jobOptions.skimType = "MuonPhoton"
+  elif options.jobType == "testMC42X":
+    jobOptions.outEvents = 100
+    jobOptions.inputFiles = [
+      "/store/relval/CMSSW_4_2_3/RelValZMM/GEN-SIM-RECO/START42_V12-v2/" +
+      file for file in """
+      0062/10F19058-767B-E011-9392-001A92810A96.root
+      0062/1EE45FED-617B-E011-A1DC-00304867901A.root
+      """.split()
+      ]
+    jobOptions.globalTag = "START42_V12::All"
+    jobOptions.reportEvery = 1
+    jobOptions.isRealData = False
+    jobOptions.isAOD = True
+    jobOptions.use35XInput = False
+    jobOptions.wantSummary = False
+    jobOptions.skimType = "MuonPhoton"    
   elif options.jobType == "testPOWHEG":
     jobOptions.maxEvents = -1
     jobOptions.inputFiles = [
