@@ -132,13 +132,44 @@ process.patElectrons.userData.userInts.src = egammaUserDataInts(
     moduleName = "electronUserData"
     )
 
-## Add electron official electron ID from the Egamma / VBTF
+## Add electron official electron ID from the Egamma / VBTF, CiC, Likelihood
+process.load("RecoEgamma.ElectronIdentification.cutsInCategoriesElectronIdentificationV06_DataTuning_cfi")
+process.load("RecoEgamma.ElectronIdentification.cutsInCategoriesElectronIdentificationV06_cfi")
+process.load("RecoEgamma.ElectronIdentification.electronIdLikelihoodExt_cfi")
 process.load("ElectroWeakAnalysis.WENu.simpleEleIdSequence_cff")
-process.patDefaultSequence.replace(process.patElectrons,
-    process.simpleEleIdSequence * process.patElectrons
+process.CiCEleIdSequence = cms.Sequence(
+    process.eidVeryLoose +
+    process.eidLoose +
+    process.eidMedium +
+    process.eidTight +
+    process.eidSuperTight +
+    process.eidHyperTight1 +
+    process.eidHyperTight2 +
+    process.eidHyperTight3 +
+    process.eidHyperTight4 +
+    process.eidVeryLooseMC +
+    process.eidLooseMC +
+    process.eidMediumMC +
+    process.eidTightMC +
+    process.eidSuperTightMC +
+    process.eidHyperTight1MC +
+    process.eidHyperTight2MC +
+    process.eidHyperTight3MC +
+    process.eidHyperTight4MC
     )
+process.LHEleIdSequence = cms.Sequence(process.eidLikelihoodExt)
+
+process.patDefaultSequence.replace(
+    process.patElectrons,
+    ( process.simpleEleIdSequence +
+      process.CiCEleIdSequence +
+      process.LHEleIdSequence ) *
+    process.patElectrons
+    )
+
 process.patElectrons.addElectronID = cms.bool(True)
 process.patElectrons.electronIDSources = cms.PSet(
+    #simple cut based
     simpleEleId95relIso = cms.InputTag("simpleEleId95relIso"),
     simpleEleId90relIso = cms.InputTag("simpleEleId90relIso"),
     simpleEleId85relIso = cms.InputTag("simpleEleId85relIso"),
@@ -151,6 +182,28 @@ process.patElectrons.electronIDSources = cms.PSet(
     simpleEleId80cIso   = cms.InputTag("simpleEleId80cIso"),
     simpleEleId70cIso   = cms.InputTag("simpleEleId70cIso"),
     simpleEleId60cIso   = cms.InputTag("simpleEleId60cIso"),
+    #CiC
+    eidVeryLoose        = cms.InputTag("eidVeryLoose"),
+    eidLoose            = cms.InputTag("eidLoose"),
+    eidMedium           = cms.InputTag("eidMedium"),
+    eidTight            = cms.InputTag("eidTight"),
+    eidSuperTight       = cms.InputTag("eidSuperTight"),
+    eidHyperTight1      = cms.InputTag("eidHyperTight1"),
+    eidHyperTight2      = cms.InputTag("eidHyperTight2"),
+    eidHyperTight3      = cms.InputTag("eidHyperTight3"),
+    eidHyperTight4      = cms.InputTag("eidHyperTight4"),    
+    #CiC MC tuning
+    eidVeryLooseMC      = cms.InputTag("eidVeryLooseMC"),
+    eidLooseMC          = cms.InputTag("eidLooseMC"),
+    eidMediumMC         = cms.InputTag("eidMediumMC"),
+    eidTightMC          = cms.InputTag("eidTightMC"),
+    eidSuperTightMC     = cms.InputTag("eidSuperTightMC"),
+    eidHyperTight1MC    = cms.InputTag("eidHyperTight1MC"),
+    eidHyperTight2MC    = cms.InputTag("eidHyperTight2MC"),
+    eidHyperTight3MC    = cms.InputTag("eidHyperTight3MC"),
+    eidHyperTight4MC    = cms.InputTag("eidHyperTight4MC"),
+    #LH
+    eidLikelihoodExt    = cms.InputTag("eidLikelihoodExt"),
     )
 
 ## PAT Trigger
@@ -158,8 +211,6 @@ process.load("PhysicsTools.PatAlgos.triggerLayer1.triggerProducer_cff")
 switchOnTrigger(process)
 process.patTrigger.processName = options.hltProcessName
 process.patTriggerEvent.processName = options.hltProcessName
-
-
 
 ## Drop matched target collections from the event content to only keep the trigger matched versions
 for collection in matchHltPaths.keys():
