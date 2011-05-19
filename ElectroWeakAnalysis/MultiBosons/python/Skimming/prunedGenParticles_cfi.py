@@ -15,8 +15,20 @@ prunedGenParticles = cms.EDProducer("GenParticlePruner",
     "++keep              abs(pdgId) = 15 & pt > 3 & abs(eta) < 3.1",
     "++keep status = 1 & abs(pdgId) = 16 & pt > 3 & abs(eta) < 3.1",
     "++keep status = 1 &     pdgId  = 22 & pt > 3 & abs(eta) < 3.1",
+    ## Keep all possible photon fakes, 8 GeV cut to help with rate
+    "++keep status = 1 &     pdgId  = 21 & pt > 8 & abs(eta) < 3.1",
+    "++keep status = 3 &     pdgId  = 21 & pt > 8 & abs(eta) < 3.1",
+    "++keep status = 2 &     pdgId  = 111 & pt > 8 & abs(eta) < 3.1",
+    "++keep status = 2 &     pdgId  = 113 & pt > 8 & abs(eta) < 3.1",
+    "++keep status = 1 & abs(pdgId) = 211 & pt > 8 & abs(eta) < 3.1",
+    "++keep status = 2 &     pdgId  = 221 & pt > 8 & abs(eta) < 3.1",
+    "++keep status = 1 & abs(pdgId) = 1 & pt > 8 & abs(eta) < 3.1",
+    "++keep status = 1 & abs(pdgId) = 2 & pt > 8 & abs(eta) < 3.1",
+    "++keep status = 1 & abs(pdgId) = 3 & pt > 8 & abs(eta) < 3.1",
+    "++keep status = 1 & abs(pdgId) = 4 & pt > 8 & abs(eta) < 3.1",
+    "++keep status = 1 & abs(pdgId) = 5 & pt > 8 & abs(eta) < 3.1",    
     ## Drop all the soft and out of acceptance particles
-    "drop pt < 1.5 | abs(eta) > 5"
+    "drop (status = 1 | status = 2) & (pt < 1.5 | abs(eta) > 5)"
   )
 )
 
