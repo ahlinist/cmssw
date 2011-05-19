@@ -15,6 +15,7 @@
 
 // system include files
 #include <memory>
+#include <fstream>
 
 // user include files
 #include "FWCore/Framework/interface/EventSetup.h"
@@ -151,6 +152,8 @@ private:
 // To be used before a bug fix
   std::vector<DetId> avoidDuplicateVec;
   int setEvtRecHitstatus(const double &tpValCut, const int &chnStatus, const int &towerTest);
+
+  ofstream *outFile;
 
 };
 
@@ -352,7 +355,14 @@ bool EcalDeadCellEventFilter::filter(edm::Event& iEvent, const edm::EventSetup& 
 
   if(debug_ ){
      int evtstatusABS = abs(evtTagged);
-     printf("\nrun : %4d  event : %10d  lumi : %4d  evtTPstatus  ABS : %d  13 : % 2d\n", run, event, ls, evtstatusABS, evtTagged);
+     printf("\nrun : %8d  event : %10d  lumi : %4d  evtTPstatus  ABS : %d  13 : % 2d\n", run, event, ls, evtstatusABS, evtTagged);
+  }
+
+  if( !pass ){
+     char outStr[200];
+     int evtstatusABS = abs(evtTagged);
+     sprintf(outStr, "run : %8d  event : %10d  lumi : %4d  evtTPstatus  ABS : %d  13 : % 2d", run, event, ls, evtstatusABS, evtTagged);
+     (*outFile) <<outStr<<std::endl;
   }
 
   return pass;
@@ -363,10 +373,13 @@ bool EcalDeadCellEventFilter::filter(edm::Event& iEvent, const edm::EventSetup& 
 void EcalDeadCellEventFilter::beginJob() {
   evtProcessedCnt = 0;
   totFilteredCnt = 0;
+  
+  outFile = new ofstream("./filteredEventsTP.txt");
 }
 
 // ------------ method called once each job just after ending the event loop  ------------
 void EcalDeadCellEventFilter::endJob() {
+  outFile->close();
 }
 
 // ------------ method called once each run just before starting event loop  ------------
