@@ -479,7 +479,7 @@ int simpleDRfilter::getChannelStatusMaps(){
         const EBDetId detid = EBDetId( ieta, iphi, EBDetId::ETAPHIMODE );
         EcalChannelStatus::const_iterator chit = ecalStatus->find( detid );
 // refer https://twiki.cern.ch/twiki/bin/viewauth/CMS/EcalChannelStatus
-        int status = ( chit != ecalStatus->end() ) ? chit->getStatusCode() : -1; 
+        int status = ( chit != ecalStatus->end() ) ? chit->getStatusCode() & 0x1F : -1; 
 
         const CaloSubdetectorGeometry*  subGeom = geometry->getSubdetectorGeometry (detid);
         const CaloCellGeometry*        cellGeom = subGeom->getGeometry (detid);
@@ -506,7 +506,7 @@ int simpleDRfilter::getChannelStatusMaps(){
 
            const EEDetId detid = EEDetId( ix, iy, iz, EEDetId::XYMODE );
            EcalChannelStatus::const_iterator chit = ecalStatus->find( detid );
-           int status = ( chit != ecalStatus->end() ) ? chit->getStatusCode() : -1;
+           int status = ( chit != ecalStatus->end() ) ? chit->getStatusCode() & 0x1F : -1;
 
            const CaloSubdetectorGeometry*  subGeom = geometry->getSubdetectorGeometry (detid);
            const CaloCellGeometry*        cellGeom = subGeom->getGeometry (detid);
