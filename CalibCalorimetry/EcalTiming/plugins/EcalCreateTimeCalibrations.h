@@ -16,7 +16,7 @@ Implementation:
 //
 // Authors:                              Seth Cooper (Minnesota)
 //         Created:  Tu Apr 26  10:46:22 CEST 2011
-// $Id: EcalCreateTimeCalibrations.h,v 1.3 2011/05/02 08:55:23 scooper Exp $
+// $Id: EcalCreateTimeCalibrations.h,v 1.4 2011/05/09 13:23:15 scooper Exp $
 //
 //
 
@@ -113,6 +113,7 @@ class EcalCreateTimeCalibrations : public edm::EDAnalyzer {
 
                 // hists EB
                 TH1F* calibHistEB_;
+                TH1F* calibAfterSubtractionHistEB_;
                 TH1F* calibErrorHistEB_;
                 TH2F* calibsVsErrors_;
                 TH1F* expectedStatPresHistEB_;
@@ -125,12 +126,14 @@ class EcalCreateTimeCalibrations : public edm::EDAnalyzer {
                 TProfile* ampProfileEB_;
                 TH1F* sigmaHistEB_;
                 TH2F* calibMapEB_;
+                TH2F* calibAfterSubtractionMapEB_;
                 TH2F* sigmaMapEB_;
                 TH2F* calibErrorMapEB_;
                 TProfile2D* calibTTMapEB_;
                 TH1F* cryTimingHistsEB_[61200];
                 // hists EE
                 TH1F* calibHistEE_;
+                TH1F* calibAfterSubtractionHistEE_;
                 TH1F* calibErrorHistEE_;
                 TH2F* calibsVsErrorsEE_;
                 //TH2F* calibMapEE_;
@@ -168,10 +171,14 @@ class EcalCreateTimeCalibrations : public edm::EDAnalyzer {
                 TH2F* errorOnMeanVsNumEvtsHistEE_;
                 TH1F* calibHistEEM_;
                 TH1F* calibHistEEP_;
+                TH1F* calibAfterSubtractionHistEEM_;
+                TH1F* calibAfterSubtractionHistEEP_;
                 TH1F* calibErrorHistEEM_;
                 TH1F* calibErrorHistEEP_;
                 TH2F* calibMapEEM_;
                 TH2F* calibMapEEP_;
+                TH2F* calibAfterSubtractionMapEEM_;
+                TH2F* calibAfterSubtractionMapEEP_;
                 TH2F* sigmaMapEEM_;
                 TH2F* sigmaMapEEP_;
                 TH2F* calibErrorMapEEM_;
