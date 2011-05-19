@@ -359,10 +359,7 @@ bool EcalDeadCellEventFilter::filter(edm::Event& iEvent, const edm::EventSetup& 
   }
 
   if( !pass ){
-     char outStr[200];
-     int evtstatusABS = abs(evtTagged);
-     sprintf(outStr, "run : %8d  event : %10d  lumi : %4d  evtTPstatus  ABS : %d  13 : % 2d", run, event, ls, evtstatusABS, evtTagged);
-     (*outFile) <<outStr<<std::endl;
+     (*outFile) <<run<<":"<<ls<<":"<<event<<std::endl;
   }
 
   return pass;
