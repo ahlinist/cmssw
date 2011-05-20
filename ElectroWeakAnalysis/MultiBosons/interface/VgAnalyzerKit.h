@@ -315,6 +315,9 @@ protected:
   Bool_t   muID_[maxP][6];
   Float_t  muD0_[maxP];
   Float_t  muDz_[maxP];
+  Float_t  muPVD0_[maxP];
+  Float_t  muPVDz_[maxP];
+  Float_t  muTrkdPt_[maxP];
   Int_t    muNumberOfValidTrkHits_[maxP];
   Int_t    muNumberOfValidPixelHits_[maxP];
   Int_t    muNumberOfValidMuonHits_[maxP];
