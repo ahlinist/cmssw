@@ -322,6 +322,9 @@ VgAnalyzerKit::VgAnalyzerKit(const edm::ParameterSet& ps) : verbosity_(0), helpe
   // [0]: AllArbitrated, [1]: GlobalMuonPromptTight, [2]: TMLSLoose, [3]: TMLSTight, [4]: TM2DCompatLoose, [5]: TM2DCompatTight
   tree_->Branch("muD0", muD0_, "muD0[nMu]/F");
   tree_->Branch("muDz", muDz_, "muDz[nMu]/F");
+  tree_->Branch("muPVD0", muPVD0_, "muPVD0[nMu]/F");
+  tree_->Branch("muPVDz", muPVDz_, "muPVDz[nMu]/F");
+  tree_->Branch("muTrkdPt", muTrkdPt_, "muTrkdPt[nMu]/F");
   tree_->Branch("muNumberOfValidTrkHits", muNumberOfValidTrkHits_, "muNumberOfValidTrkHits[nMu]/I");
   tree_->Branch("muNumberOfValidPixelHits", muNumberOfValidPixelHits_, "muNumberOfValidPixelHits[nMu]/I");
   tree_->Branch("muNumberOfValidMuonHits", muNumberOfValidMuonHits_, "muNumberOfValidMuonHits[nMu]/I");
@@ -1704,6 +1707,8 @@ fabs(ip->pdgId())<=14) || ip->pdgId()==22))) {
 	muNumberOfValidPixelHits_[nMu_] = -99;
 	muNumberOfValidMuonHits_[nMu_] = -99;
 	muChi2NDF_[nMu_] = -99;
+	muPVD0_[nMu_] = - 99;
+ 	muPVDz_[nMu_] = - 99;
       } 
       else {
         muD0_[nMu_] = trkr->dxy(beamSpotHandle->position());
@@ -1712,7 +1717,13 @@ fabs(ip->pdgId())<=14) || ip->pdgId()==22))) {
         muNumberOfValidPixelHits_[nMu_] = trkr->hitPattern().numberOfValidPixelHits();
         muNumberOfValidMuonHits_[nMu_] = trkr->hitPattern().numberOfValidMuonHits();
   	muChi2NDF_[nMu_] = trkr->normalizedChi2();
+        muPVD0_[nMu_] = trkr->dxy((*recVtxs)[0].position());
+        muPVDz_[nMu_] = trkr->dz((*recVtxs)[0].position());
       }
+      if (iMu->track().isNull())
+	muTrkdPt_[nMu_] = -99;
+      else
+	muTrkdPt_[nMu_] = iMu->track()->ptError();
 
       muPV2D_[nMu_] = iMu->dB(pat::Muon::PV2D);
       muPV3D_[nMu_] = iMu->dB(pat::Muon::PV3D);
