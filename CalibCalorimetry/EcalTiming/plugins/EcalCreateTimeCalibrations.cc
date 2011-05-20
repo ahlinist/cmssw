@@ -13,7 +13,7 @@ Implementation:
 //
 // Authors:                              Seth Cooper (Minnesota)
 //         Created:  Tu Apr 26  10:46:22 CEST 2011
-// $Id: EcalCreateTimeCalibrations.cc,v 1.10 2011/05/19 14:15:16 scooper Exp $
+// $Id: EcalCreateTimeCalibrations.cc,v 1.11 2011/05/20 13:20:03 scooper Exp $
 //
 //
 
@@ -851,11 +851,11 @@ void EcalCreateTimeCalibrations::initEEHists(edm::Service<TFileService>& fileSer
   calibErrorHistEEM_->Sumw2();
   calibErrorHistEEP_->Sumw2();
   calibMapEEM_ = fileService_->make<TH2F>("calibDiffMapEEM","time calib diff map EEM",100,1,101,100,1,101);
-  calibMapEEM_ = fileService_->make<TH2F>("calibDiffMapEEM","time calib diff map EEM",100,1,101,100,1,101);
+  calibMapEEM_->Sumw2();
+  calibMapEEP_ = fileService_->make<TH2F>("calibDiffMapEEP","time calib diff map EEP",100,1,101,100,1,101);
+  calibMapEEP_->Sumw2();
   calibAfterSubtractionMapEEP_ = fileService_->make<TH2F>("calibMapAfterSubtractionEEP","time calib map EEP (after subtraction) [ns]",100,1,101,100,1,101);
   calibAfterSubtractionMapEEM_ = fileService_->make<TH2F>("calibMapAfterSubtractionEEM","time calib map EEM (after subtraction) [ns]",100,1,101,100,1,101);
-  calibMapEEM_->Sumw2();
-  calibMapEEP_->Sumw2();
   sigmaMapEEM_ = fileService_->make<TH2F>("sigmaMapEEM","Sigma of time calib diff map EEM [ns];ix;iy",100,1.,101.,100,1,101);
   sigmaMapEEP_ = fileService_->make<TH2F>("sigmaMapEEP","Sigma of time calib diff map EEP [ns];ix;iy",100,1.,101.,100,1,101);
   calibErrorMapEEM_ = fileService_->make<TH2F>("calibErrorMapEEM","Error of time calib diff map EEM [ns];ix;iy",100,1.,101.,100,1,101);
