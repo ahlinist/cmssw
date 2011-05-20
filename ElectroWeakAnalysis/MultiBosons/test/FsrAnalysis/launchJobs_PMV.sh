@@ -14,18 +14,19 @@
 # ##################### DATA #########################
 # for DATASET in Mu_Run2010A-Dec22ReReco_v1 \
 #     Mu_Run2010B-DiLeptonMu-Dec22ReReco_v2
-# do
-#     nohup cmsRun PmvTreeMaker_cfg.py \
-#         inputFiles_clear \
-#         inputFiles_load=files_${DATASET}.dat \
-#         isMC=False \
-#         maxEvents=-1 \
-#         outputFile=/wntmp/veverka/pmvTree_${DATASET}_V3 \
-#         >& /wntmp/veverka/pmv_${DATASET}_json.out &
-# done
-#
-#
-#
+for DATASET in ZMu-May10ReReco
+do
+    nohup cmsRun PmvTreeMaker_cfg.py \
+        inputFiles_clear \
+        inputFiles_load=files_${DATASET}.dat \
+        isMC=False \
+        maxEvents=-1 \
+        outputFile=/wntmp/veverka/pmvTree_${DATASET}_V4 \
+        >& /wntmp/veverka/pmv_${DATASET}_json.out &
+done
+
+
+
 # ###################### SMALL MC ####################
 # for DATASET in QCD_Pt-20_MuEnrichedPt-15_Winter10 \
 #     TTJets_TuneZ2-madgraph-Winter10 \
@@ -99,21 +100,21 @@
 
 ################ Higaga ##################
 # DATASET=GJets_TuneD6T_HT-40To100-madgraph_Winter10
-DATASET=GluGluToHToGG_M-120_7TeV-powheg-pythia6_Winter10
-TOTAL_SECTIONS=8
-# SECTION=3
-#     python -i HigagaPmvTreeMaker_cfg.py \
-for SECTION in `seq $TOTAL_SECTIONS`; do
-    nohup cmsRun HigagaPmvTreeMaker_cfg.py \
-        print \
-        inputFiles_clear \
-        inputFiles_load=files_${DATASET}.dat \
-        isMC=True \
-        maxEvents=-1 \
-        outputFile=/wntmp/veverka/pmvTree_${DATASET}_V4 \
-        totalSections=$TOTAL_SECTIONS \
-        section=$SECTION \
-        >& /wntmp/veverka/pmv_${DATASET}_${SECTION}of${TOTAL_SECTIONS}.out &
-done
+# DATASET=GluGluToHToGG_M-120_7TeV-powheg-pythia6_Winter10
+# TOTAL_SECTIONS=8
+# # SECTION=3
+# #     python -i HigagaPmvTreeMaker_cfg.py \
+# for SECTION in `seq $TOTAL_SECTIONS`; do
+#     nohup cmsRun HigagaPmvTreeMaker_cfg.py \
+#         print \
+#         inputFiles_clear \
+#         inputFiles_load=files_${DATASET}.dat \
+#         isMC=True \
+#         maxEvents=-1 \
+#         outputFile=/wntmp/veverka/pmvTree_${DATASET}_V4 \
+#         totalSections=$TOTAL_SECTIONS \
+#         section=$SECTION \
+#         >& /wntmp/veverka/pmv_${DATASET}_${SECTION}of${TOTAL_SECTIONS}.out &
+# done
 
 
