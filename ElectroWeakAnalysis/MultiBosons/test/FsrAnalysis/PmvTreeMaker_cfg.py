@@ -38,9 +38,9 @@ options.setupTags(tag = "job%d",
 
 ## setup any defaults you want
 options.maxEvents = 10 # -1 means all events
-options.inputFiles = ["file:/uscmst1b_scratch/lpc1/3DayLifetime/veverka/mu/VGammaSkim_LyonSyncTest_Dec22ReReco_v2_DimuonSkim_1_of_4.root"]
+#options.inputFiles = ["file:/uscmst1b_scratch/lpc1/3DayLifetime/veverka/mu/VGammaSkim_LyonSyncTest_Dec22ReReco_v2_DimuonSkim_1_of_4.root"]
 options.outputFile = "pmvTree.root"
-
+options.jsonFile = "Cert_160404-163869_7TeV_PromptReco_Collisions11_JSON_MuonPhys.txt"
 
 ## get and parse the command line arguments
 options.parseArguments()
@@ -55,6 +55,9 @@ process.options = cms.untracked.PSet( wantSummary = cms.untracked.bool(False) )
 process.MessageLogger.cerr.FwkReport.reportEvery = 100
 ## Enable LogInfo
 process.MessageLogger.cerr.INFO.limit = 100
+## Enable LogDebug
+### Remember to recompile with:
+### scramv1 b USER_CXXFLAGS="-g\ -D=EDM_ML_DEBUG"
 #process.MessageLogger.debugModules = ["pmvTree"]
 #process.MessageLogger.cerr.threshold = "DEBUG"
 

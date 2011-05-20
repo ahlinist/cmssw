@@ -47,7 +47,8 @@ for line in genBranches:
     )
 
 ## shorthand for the muon expression
-muon = lambda i: "daughter('dimuon').daughter('muon%d').masterClonePtr." % i
+muon = lambda i: "daughter('dimuon').masterClonePtr." +\
+                 "daughter('muon%d').masterClonePtr." % i
 
 muonCalEnergyBranches = """Em em
     EmMax emMax

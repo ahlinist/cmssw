@@ -112,33 +112,33 @@ bool ZMuMuGammaSelector::passes_Fsr2011Apr11(
   pat::strbitset & ret
   )
 {
-  LogDebug("Daughter") << "Entering";
-
   ret.set(false);
   setIgnored(ret);
 
   // 0. all mmgCands
   passCut(ret, "inclusive");
 
-  LogDebug("Daughter") << "Extract the daughters";
-
   // Extract the daughters
   const pat::Photon * photon;
-  const reco::CompositeCandidate * dimuon;
+//   const reco::CompositeCandidate * dimuon;
   const pat::Muon * muon1;
   const pat::Muon * muon2;
   const pat::Muon * nearMuon;
   const pat::Muon * farMuon;
 
   // TODO add some checks whether Ptrs are valid
-  LogDebug("Daughter") << "";
-  photon = (const pat::Photon*) mmgCand.daughter("photon")->masterClonePtr().get();
-  LogDebug("Daughter") << "";
-  dimuon = (const reco::CompositeCandidate*) mmgCand.daughter("dimuon");
-  LogDebug("Daughter") << "";
-  muon1 = (const pat::Muon*) dimuon->daughter("muon1")->masterClonePtr().get();
-  LogDebug("Daughter") << "";
-  muon2 = (const pat::Muon*) dimuon->daughter("muon2")->masterClonePtr().get();
+  photon = dynamic_cast<const pat::Photon*>( mmgCand.daughter("photon")->masterClonePtr().get() );
+
+  LogDebug("Daughter") << "Extracting dimuon";
+  const reco::CompositeCandidate & dimuon =
+    dynamic_cast<const reco::CompositeCandidate&>(
+      *mmgCand.daughter("dimuon")->masterClonePtr().get()
+    );
+
+  LogDebug("Daughter") << "Extracting muon1";
+  muon1 = dynamic_cast<const pat::Muon*>( dimuon.daughter("muon1")->masterClonePtr().get() );
+  LogDebug("Daughter") << "Extracting muon2";
+  muon2 = dynamic_cast<const pat::Muon*>( dimuon.daughter("muon2")->masterClonePtr().get() );
 
   // Decide which muon is near and which is far
   DeltaR<pat::Muon, pat::Photon> deltaR;
@@ -152,7 +152,6 @@ bool ZMuMuGammaSelector::passes_Fsr2011Apr11(
     nearMuon = muon2; farMuon  = muon1; drNear = dr2;
   }
 
-  LogDebug("Daughter") << "";
   // Apply cut 1. maximum near muon HCAL isolation
   if (nearMuon->hcalIso() < cut("maxNearMuonHcalIso", double()) ||
       ignoreCut("maxNearMuonHcalIso")
@@ -188,7 +187,6 @@ bool ZMuMuGammaSelector::passes_Fsr2011Apr11(
     passCut(ret, "photonTrackIso");
   else return false;
 
-  LogDebug("Daughter") << "";
   // Apply cut 5. maximum Delta R distance between the photon and the near muon
   if (drNear < cut("maxDeltaRNear", double()) ||
       ignoreCut("maxDeltaRNear")
@@ -217,6 +215,5 @@ bool ZMuMuGammaSelector::passes_Fsr2011Apr11(
     passCut(ret, "maxMass");
   else return false;
 
-  LogDebug("Daughter") << "Done.";
   return  (bool) ret;
 } // ZMuMuGammaSelector::passes_Fsr2011Apr11Cuts(...)
