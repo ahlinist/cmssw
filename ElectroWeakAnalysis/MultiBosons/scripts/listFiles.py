@@ -74,10 +74,15 @@ def main(option, args):
             fileNames.sort(key = lambda f: int(f.split("_")[-3]) )
 
     print "Enter an output file: "
-    myFile = sys.stdin.readline().strip()
+    myFileName = sys.stdin.readline().strip()
 
-    for f in fileNames:
-        print "file:%s" % f
+    if len(myFileName) != 0:
+        myFile = open(myFileName, 'w')
+
+        for f in fileNames:
+            myFile.write( "file:%s\n" % f )
+
+        myFile.close()
 
 if __name__ == "__main__":
     import user
