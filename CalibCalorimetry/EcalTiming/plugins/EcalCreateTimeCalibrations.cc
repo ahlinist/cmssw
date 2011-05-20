@@ -13,7 +13,7 @@ Implementation:
 //
 // Authors:                              Seth Cooper (Minnesota)
 //         Created:  Tu Apr 26  10:46:22 CEST 2011
-// $Id: EcalCreateTimeCalibrations.cc,v 1.9 2011/05/13 15:30:52 scooper Exp $
+// $Id: EcalCreateTimeCalibrations.cc,v 1.10 2011/05/19 14:15:16 scooper Exp $
 //
 //
 
@@ -853,7 +853,7 @@ void EcalCreateTimeCalibrations::initEEHists(edm::Service<TFileService>& fileSer
   calibMapEEM_ = fileService_->make<TH2F>("calibDiffMapEEM","time calib diff map EEM",100,1,101,100,1,101);
   calibMapEEM_ = fileService_->make<TH2F>("calibDiffMapEEM","time calib diff map EEM",100,1,101,100,1,101);
   calibAfterSubtractionMapEEP_ = fileService_->make<TH2F>("calibMapAfterSubtractionEEP","time calib map EEP (after subtraction) [ns]",100,1,101,100,1,101);
-  calibAfterSubtractionMapEEM_ = fileService_->make<TH2F>("calibMapAfterSubtractionEEP","time calib map EEM (after subtraction) [ns]",100,1,101,100,1,101);
+  calibAfterSubtractionMapEEM_ = fileService_->make<TH2F>("calibMapAfterSubtractionEEM","time calib map EEM (after subtraction) [ns]",100,1,101,100,1,101);
   calibMapEEM_->Sumw2();
   calibMapEEP_->Sumw2();
   sigmaMapEEM_ = fileService_->make<TH2F>("sigmaMapEEM","Sigma of time calib diff map EEM [ns];ix;iy",100,1.,101.,100,1,101);
