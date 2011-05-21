@@ -13,7 +13,7 @@
 //
 // Original Author:  Daniele del Re
 //         Created:  Thu Sep 13 16:00:15 CEST 2007
-// $Id: GammaJetAnalyzer.cc,v 1.6 2011/05/19 10:52:29 meridian Exp $
+// $Id: GammaJetAnalyzer.cc,v 1.7 2011/05/21 12:14:35 meridian Exp $
 //
 //
 
@@ -330,6 +330,7 @@ GammaJetAnalyzer::GammaJetAnalyzer(const edm::ParameterSet& iConfig)
   trackTags_ = iConfig.getUntrackedParameter<edm::InputTag>("tracks");
   Vertexsrc_ = iConfig.getUntrackedParameter<edm::InputTag>("vertices");
   Photonsrc_ = iConfig.getUntrackedParameter<edm::InputTag>("Photonsrc");
+  Conversionsrc_ = iConfig.getUntrackedParameter<edm::InputTag>("Conversionsrc");
   Electronsrc_ = iConfig.getUntrackedParameter<edm::InputTag>("Electronsrc");
   Jetsrckt4_ = iConfig.getUntrackedParameter<edm::InputTag>("jetskt4");
   Jetsrckt6_ = iConfig.getUntrackedParameter<edm::InputTag>("jetskt6");
@@ -511,7 +512,7 @@ GammaJetAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
     vertexBeamSpot = *recoBeamSpotHandle;
     
    edm::Handle<reco::ConversionCollection> hConversions;
-   iEvent.getByLabel("trackerOnlyConversions", hConversions);
+   iEvent.getByLabel(Conversionsrc_, hConversions);
 
    // get photons
    Handle<PhotonCollection>  PhotonHandle;
