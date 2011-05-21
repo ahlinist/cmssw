@@ -13,7 +13,7 @@
 //
 // Original Author:  Daniele del Re
 //         Created:  Thu Sep 13 16:00:15 CEST 2007
-// $Id: GammaJetAnalyzer.cc,v 1.56 2011/04/29 09:41:51 rahatlou Exp $
+// $Id: GammaJetAnalyzer.cc,v 1.6 2011/05/19 10:52:29 meridian Exp $
 //
 //
 
@@ -111,6 +111,11 @@
 #include "TLorentzVector.h"
 #include "TRegexp.h"
 #include "TString.h"
+#include "TVector3.h"
+
+//For HggVertexAnalysis
+#include "Analysis/VertexAnalysis/interface/PhotonInfo.h"
+#include "JetMETCorrections/GammaJet/interface/GlobalVertexInfo.h"
 
 #include <set>
 #include <algorithm>
@@ -123,6 +128,11 @@
 #include "DataFormats/EgammaCandidates/interface/Conversion.h"
 #include "SimDataFormats/PileupSummaryInfo/interface/PileupSummaryInfo.h"
 
+//For BeamHALO
+#include "DataFormats/METReco/interface/BeamHaloSummary.h"
+#include "DataFormats/MuonReco/interface/Muon.h"
+#include "DataFormats/MuonReco/interface/MuonFwd.h"
+#include "DataFormats/MuonReco/interface/MuonTimeExtra.h"
 
 using namespace edm;
 using namespace reco;
@@ -150,6 +160,163 @@ inline double GammaJetAnalyzer::oplus(double a, double b) {
 inline double GammaJetAnalyzer::fixEMF(double emf, double eta) {
   return (fabs(eta)<=3.0 ? emf : 0.5*(1+emf));
 }
+
+//used for E2E9 value calculations
+inline float GammaJetAnalyzer::recHitE( const  DetId id,  const EcalRecHitCollection &recHits )
+{
+  if ( id == DetId(0) ) {
+    return 0;
+  } else {
+    EcalRecHitCollection::const_iterator it = recHits.find( id );
+    if ( it != recHits.end() ) return (*it).energy();
+  }
+  return 0;
+}
+
+
+inline float GammaJetAnalyzer::recHitE( const DetId id, const EcalRecHitCollection & recHits,int di, int dj )
+{
+  // in the barrel:   di = dEta   dj = dPhi
+  // in the endcap:   di = dX     dj = dY
+
+  DetId nid;
+  if( id.subdetId() == EcalBarrel) nid = EBDetId::offsetBy( id, di, dj );
+  else if( id.subdetId() == EcalEndcap) nid = EEDetId::offsetBy( id, di, dj );
+
+  return ( nid == DetId(0) ? 0 : recHitE( nid, recHits ) );
+}
+
+
+
+inline float GammaJetAnalyzer::recHitApproxEt(  const DetId id,  const EcalRecHitCollection &recHits )
+{
+  // for the time being works only for the barrel
+  if ( id.subdetId() == EcalBarrel ) {
+    return recHitE( id, recHits ) / cosh( EBDetId::approxEta( id ) );
+  }
+  return 0;
+}
+
+
+float GammaJetAnalyzer::GetE2OverE9( const DetId id, const EcalRecHitCollection & recHits)
+{ ///////////start calculating e2/e9
+  ////http://cmslxr.fnal.gov/lxr/source/RecoLocalCalo/EcalRecAlgos/src/EcalSeverityLevelAlgo.cc#240
+  // compute e2overe9
+  //   | | | |
+  //   +-+-+-+
+  //   | |1|2|
+  //   +-+-+-+
+  //   | | | |
+  //   1 - input hit,  2 - highest energy hit in a 3x3 around 1
+  //   rechit 1 must have E_t > recHitEtThreshold
+  //   rechit 2 must have E_t > recHitEtThreshold2
+  //   function returns value of E2/E9 centered around 1 (E2=energy of hits 1+2) if energy of 1>2
+  //   if energy of 2>1 and KillSecondHit is set to true, function returns value of E2/E9 centered around 2
+  //   *provided* that 1 is the highest energy hit in a 3x3 centered around 2, otherwise, function returns 0
+  
+float recHitEtThreshold = 10.0;
+float recHitEtThreshold2 = 1.0;
+bool avoidIeta85=false;
+bool KillSecondHit=true;
+
+if ( id.subdetId() == EcalBarrel ) {
+  EBDetId ebId( id );
+  // avoid recHits at |eta|=85 where one side of the neighbours is missing
+  if ( abs(ebId.ieta())==85 && avoidIeta85) return 0;
+  // select recHits with Et above recHitEtThreshold
+  float e1 = recHitE( id, recHits );
+  float ete1=recHitApproxEt( id, recHits );
+  // check that rechit E_t is above threshold
+  if (ete1 < std::min(recHitEtThreshold,recHitEtThreshold2) ) return 0;
+  if (ete1 < recHitEtThreshold && !KillSecondHit ) return 0;
+
+  float e2=-1;
+  float ete2=0;
+  float s9 = 0;
+  // coordinates of 2nd hit relative to central hit
+  int e2eta=0;
+  int e2phi=0;
+
+  // LOOP OVER 3x3 ARRAY CENTERED AROUND HIT 1
+  for ( int deta = -1; deta <= +1; ++deta ) {
+    for ( int dphi = -1; dphi <= +1; ++dphi ) {
+      // compute 3x3 energy
+      float etmp=recHitE( id, recHits, deta, dphi );
+      s9 += etmp;
+      EBDetId idtmp=EBDetId::offsetBy(id,deta,dphi);
+      float eapproxet=recHitApproxEt( idtmp, recHits );
+      // remember 2nd highest energy deposit (above threshold) in 3x3 array
+      if (etmp>e2 && eapproxet>recHitEtThreshold2 && !(deta==0 && dphi==0)) {
+	e2=etmp;
+	ete2=eapproxet;
+	e2eta=deta;
+	e2phi=dphi;
+      }
+    }
+  }
+
+  if ( e1 == 0 )  return 0;
+  // return 0 if 2nd hit is below threshold
+  if ( e2 == -1 ) return 0;
+  // compute e2/e9 centered around 1st hit
+  float e2nd=e1+e2;
+  float e2e9=0;
+
+  if (s9!=0) e2e9=e2nd/s9;
+  // if central hit has higher energy than 2nd hit
+  //  return e2/e9 if 1st hit is above E_t threshold
+  if (e1 > e2 && ete1>recHitEtThreshold) return e2e9;
+  // if second hit has higher energy than 1st hit
+  if ( e2 > e1 ) {
+    // return 0 if user does not want to flag 2nd hit, or
+    // hits are below E_t thresholds - note here we
+    // now assume the 2nd hit to be the leading hit.
+
+    if (!KillSecondHit || ete2<recHitEtThreshold || ete1<recHitEtThreshold2) {
+      return 0;
+    }
+    else {
+      // LOOP OVER 3x3 ARRAY CENTERED AROUND HIT 2
+      float s92nd=0;
+      float e2nd_prime=0;
+      int e2prime_eta=0;
+      int e2prime_phi=0;
+
+      EBDetId secondid=EBDetId::offsetBy(id,e2eta,e2phi);
+
+      for ( int deta = -1; deta <= +1; ++deta ) {
+	for ( int dphi = -1; dphi <= +1; ++dphi ) {
+
+	  // compute 3x3 energy
+	  float etmp=recHitE( secondid, recHits, deta, dphi );
+	  s92nd += etmp;
+
+	  if (etmp>e2nd_prime && !(deta==0 && dphi==0)) {
+	    e2nd_prime=etmp;
+	    e2prime_eta=deta;
+	    e2prime_phi=dphi;
+	  }
+	}
+      }
+      // if highest energy hit around E2 is not the same as the input hit, return 0;
+      if (!(e2prime_eta==-e2eta && e2prime_phi==-e2phi))
+	{
+	  return 0;
+	}
+      // compute E2/E9 around second hit
+      float e2e9_2=0;
+      if (s92nd!=0) e2e9_2=e2nd/s92nd;
+      //   return the value of E2/E9 calculated around 2nd hit
+      return e2e9_2;
+    }
+  }
+ } else if ( id.subdetId() == EcalEndcap ) {
+  // only used for EB at the moment
+  return 0;
+ }
+return 0;
+}
+
 
 GammaJetAnalyzer::GammaJetAnalyzer(const edm::ParameterSet& iConfig)
 {
@@ -196,9 +363,43 @@ GammaJetAnalyzer::GammaJetAnalyzer(const edm::ParameterSet& iConfig)
   jptjetnmin_ = iConfig.getParameter<int>("jptjetnmin");
   Xsec_ = iConfig.getParameter<double>("Xsec");
   jetID_ = new reco::helper::JetIDHelper(iConfig.getParameter<ParameterSet>("JetIDParams"));
+  dumpBeamHaloInformations_=iConfig.getUntrackedParameter<bool>("dumpBeamHaloInformations",false);
+  dumpAKT5Jets_=iConfig.getUntrackedParameter<bool>("dumpAKT5Jets",false);
+  dumpAKT7Jets_=iConfig.getUntrackedParameter<bool>("dumpAKT7Jets",false);
+  
+  dumpJPTAKT5Jets_=iConfig.getUntrackedParameter<bool>("dumpJPTAKT5Jets",false);
+  dumpJPTAKT7Jets_=iConfig.getUntrackedParameter<bool>("dumpJPTAKT7Jets",false);
+  
+  dumpPFAKT5Jets_=iConfig.getUntrackedParameter<bool>("dumpPFAKT5Jets",true);
+  dumpPFAKT7Jets_=iConfig.getUntrackedParameter<bool>("dumpPFAKTyJets",true);
+  
+  dumpKT4Jets_=iConfig.getUntrackedParameter<bool>("dumpKT4Jets",false);
+  dumpKT6Jets_=iConfig.getUntrackedParameter<bool>("dumpKT4Jets",false);
+
   aHLTNames = new std::vector<std::string>;
   aHLTResults = new std::vector<bool>;
- 
+
+  //Vertex analysis inizialization
+  vtxPar.fixTkIndex=1;
+  vtxPar.rescaleTkPtByError=0;
+  vtxPar.trackCountThr=0;
+  vtxPar.highPurityOnly=0;
+  vtxPar.maxD0Signif=999.;
+  vtxPar.maxDzSignif=999.;
+  vtxPar.removeTracksInCone=1;
+  vtxPar.coneSize=0.05;
+  vtxPar.sigmaPix=0.06;
+  vtxPar.sigmaTib=0.67;
+  vtxPar.sigmaTob=2.04;
+  vtxPar.sigmaFwd1=0.18;
+  vtxPar.sigmaFwd2=0.61;
+  vtxPar.sigmaFwd3=0.99;
+
+  vtxAna=  new HggVertexAnalyzer(vtxPar);
+  vtxAnaFromConv= new HggVertexFromConversions(vtxPar);
+  rankVariables.push_back("ptbal"), rankVariables.push_back("ptasym"), rankVariables.push_back("logsumpt2");
+
+
 }
 
 
@@ -207,12 +408,12 @@ GammaJetAnalyzer::~GammaJetAnalyzer()
 
    // do anything here that needs to be done at desctruction time
    // (e.g. close files, deallocate resources etc.)
-   TFile* file_prova = TFile::Open("prova.root", "recreate");
-   file_prova->cd();
-   h1_hbherh_detid->Write();
-   h1_etaPhot->Write();
-   h2_n_vs_eta->Write();
-   file_prova->Close();
+   //TFile* file_prova = TFile::Open("prova.root", "recreate");
+   //file_prova->cd();
+   //h1_hbherh_detid->Write();
+   //h1_etaPhot->Write();
+   //h2_n_vs_eta->Write();
+   //file_prova->Close();
 
 }
 
@@ -251,14 +452,14 @@ GammaJetAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
     // rho from fast jet
     edm::Handle<double> rhoH;
     //iEvent.getByLabel(edm::InputTag("kt6PFJets","rho","Iso"),rhoH); 
-    if( iEvent.getByLabel(edm::InputTag("kt6PFJets","rho"),rhoH) )
+    if( iEvent.getByLabel(edm::InputTag("kt6PFJetsForIso","rho"),rhoH) )
       rho = *rhoH;
     else 
       rho = 0;
 
     edm::Handle<double> rhocaloH;
     //iEvent.getByLabel(edm::InputTag("kt6PFJets","rho","Iso"),rhoH); 
-    if( iEvent.getByLabel(edm::InputTag("kt6CaloJets","rho"),rhocaloH) )
+    if( iEvent.getByLabel(edm::InputTag("kt6CaloJetsForIso","rho"),rhocaloH) )
       rhoCalo = *rhocaloH;
     else 
       rhoCalo = 0;
@@ -312,8 +513,6 @@ GammaJetAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
    edm::Handle<reco::ConversionCollection> hConversions;
    iEvent.getByLabel("trackerOnlyConversions", hConversions);
 
-
-
    // get photons
    Handle<PhotonCollection>  PhotonHandle;
    iEvent.getByLabel(Photonsrc_, PhotonHandle);
@@ -328,27 +527,36 @@ GammaJetAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
 
    // get calo jet collection
    Handle<CaloJetCollection> jetsakt5;
-   iEvent.getByLabel(Jetsrcakt5_, jetsakt5);
+   if (dumpAKT5Jets_)
+     iEvent.getByLabel(Jetsrcakt5_, jetsakt5);
    Handle<CaloJetCollection> jetsakt7;
-   iEvent.getByLabel(Jetsrcakt7_, jetsakt7);
+   if (dumpAKT7Jets_)
+     iEvent.getByLabel(Jetsrcakt7_, jetsakt7);
    Handle<CaloJetCollection> jetskt4;
-   iEvent.getByLabel(Jetsrckt4_, jetskt4);
+   if (dumpKT4Jets_)
+     iEvent.getByLabel(Jetsrckt4_, jetskt4);
    Handle<CaloJetCollection> jetskt6;
-   iEvent.getByLabel(Jetsrckt6_, jetskt6);
+   if (dumpKT6Jets_)
+     iEvent.getByLabel(Jetsrckt6_, jetskt6);
 
    // get JPT collection
    Handle<JPTJetCollection> jptjetsak5;
-   iEvent.getByLabel(JetJPTsrcak5_, jptjetsak5);
+   if (dumpJPTAKT5Jets_)
+     iEvent.getByLabel(JetJPTsrcak5_, jptjetsak5);
 
    // get PF jets collection
    Handle<PFJetCollection> pfjetskt4;
+   if (dumpKT4Jets_)
    iEvent.getByLabel(JetPFsrckt4_, pfjetskt4);
    Handle<PFJetCollection> pfjetsakt5;
-   iEvent.getByLabel(JetPFsrcakt5_, pfjetsakt5);
+   if (dumpPFAKT5Jets_)
+     iEvent.getByLabel(JetPFsrcakt5_, pfjetsakt5);
    Handle<PFJetCollection> pfjetsakt7;
-   iEvent.getByLabel(JetPFsrcakt7_, pfjetsakt7);
+   if (dumpPFAKT7Jets_)
+     iEvent.getByLabel(JetPFsrcakt7_, pfjetsakt7);
    Handle<PFJetCollection> pfjetskt6;
-   iEvent.getByLabel(JetPFsrckt6_, pfjetskt6);
+   if (dumpKT6Jets_)
+     iEvent.getByLabel(JetPFsrckt6_, pfjetskt6);
 
    //get jet correctors
    const JetCorrector* corrector_akt5 = JetCorrector::getJetCorrector (JetCorrector_akt5_, iSetup);
@@ -357,13 +565,13 @@ GammaJetAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
  
    // get gen jet collection
    Handle<GenJetCollection> jetsgenkt4;
-   if( isMC ) iEvent.getByLabel(JetGensrckt4_, jetsgenkt4);
+   if( isMC && dumpKT4Jets_ ) iEvent.getByLabel(JetGensrckt4_, jetsgenkt4);
    Handle<GenJetCollection> jetsgenkt6;
-   if( isMC ) iEvent.getByLabel(JetGensrckt6_, jetsgenkt6);
+   if( isMC && dumpKT6Jets_ ) iEvent.getByLabel(JetGensrckt6_, jetsgenkt6);
    Handle<GenJetCollection> jetsgenakt5;
-   if( isMC ) iEvent.getByLabel(JetGensrcakt5_, jetsgenakt5);
+   if( isMC && (dumpAKT5Jets_ || dumpJPTAKT5Jets_ || dumpPFAKT5Jets_) ) iEvent.getByLabel(JetGensrcakt5_, jetsgenakt5);
    Handle<GenJetCollection> jetsgenakt7;
-   if( isMC ) iEvent.getByLabel(JetGensrcakt7_, jetsgenakt7);
+   if( isMC && (dumpAKT7Jets_ || dumpJPTAKT7Jets_ || dumpPFAKT7Jets_) ) iEvent.getByLabel(JetGensrcakt7_, jetsgenakt7);
 
    // get caloMET
    Handle<CaloMETCollection> calomethandle;
@@ -498,12 +706,12 @@ GammaJetAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
    edm::Handle<edm::TriggerResults> hltTriggerResultHandle;
    iEvent.getByLabel(triggerTag_, hltTriggerResultHandle);
 
-   if (!hltTriggerResultHandle.isValid())
-   {
-     //     std::cout << "invalid handle for HLT TriggerResults" << std::endl;
-   }
-   else
-   {
+//    if (!hltTriggerResultHandle.isValid())
+//    {
+//      //     std::cout << "invalid handle for HLT TriggerResults" << std::endl;
+//    }
+//    else
+//    {
 
      edm::TriggerNames HLTNames;
 //   HLTNames.init(*hltTriggerResultHandle);
@@ -511,26 +719,33 @@ GammaJetAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
      std::string tempnames;
      hltCount = hltTriggerResultHandle->size();
      //std::cout << "hltTriggerResult->size(): " << hltCount << std::endl;
+     std::vector<TRegexp> reg;
+     reg.push_back(TRegexp(TString(".*Photon.*")));
+     reg.push_back(TRegexp(TString(".*Ele.*")));
+     reg.push_back(TRegexp(TString(".*MET.*")));
+     reg.push_back(TRegexp(TString(".*cosmic.*")));
+     reg.push_back(TRegexp(TString(".*Cosmic.*")));
+     reg.push_back(TRegexp(TString(".*halo.*")));
+     reg.push_back(TRegexp(TString(".*Halo.*")));
 
-      for (int i = 0 ; i != hltCount; ++i) {
-
+     for (int i = 0 ; i != hltCount; ++i) {
 
         TString hltName_tstr(HLTNames.triggerName(i));
         std::string hltName_str(HLTNames.triggerName(i));
-        TRegexp reg("Photon");
-
-        if ( hltName_tstr.Contains(reg) ) {
-
-          aHLTNames->push_back(hltName_str);
-          aHLTResults->push_back(hltTriggerResultHandle->accept(i));
-
-
-        }
+	
+	for (unsigned int ireg=0;ireg<reg.size();ireg++)
+	  {
+	    if ( hltName_tstr.Contains(reg[ireg]) ) 
+	      {
+		aHLTNames->push_back(hltName_str);
+		aHLTResults->push_back(hltTriggerResultHandle->accept(i));
+	      }
+	  }
      } // for i
 
      hltNamesLen = tempnames.length();
 
-   } // HLT isValid
+//    } // HLT isValid
 
 
 //--------------------------------------------------------------------------------------------------------------------------------------
@@ -546,6 +761,8 @@ GammaJetAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
      if (hEventInfo->binningValues().size() > 0)
        genpt = hEventInfo->binningValues()[0];
 
+     genProcessId=hEventInfo->signalProcessID();
+     genQScale=hEventInfo->qScale();
      // Figure out the true vertex from the partons:
      // Each event has exactly eight partons (status==3);
      // 0-1: incoming protons (pdgId==2212),
@@ -656,36 +873,41 @@ GammaJetAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
      //const double genjetptthr = 5.; // already implicit in GenJet reco
      //const int genjetnmin = 4;
      // Loop over gen Jets
-
-     for (GenJetCollection::const_iterator it = jetsgenkt4->begin(); 
-        it != jetsgenkt4->end(); ++it) {
-
-       if (nJetGen_kt4>=100) {cout << "number of gen jets kt 04 is larger than 100. Skipping" << endl; continue;}
-       if (nJetGen_kt4 < genjetnmin_ || it->pt() > genjetptthr_) {
-
-         ptJetGen_kt4[nJetGen_kt4] = it->pt();
-         eJetGen_kt4[nJetGen_kt4] = it->energy();	 
-         etaJetGen_kt4[nJetGen_kt4] = it->eta();	 
-         phiJetGen_kt4[nJetGen_kt4] = it->phi();	      
-         
-         nJetGen_kt4++;
+     if (dumpKT4Jets_)
+       {
+	 for (GenJetCollection::const_iterator it = jetsgenkt4->begin(); 
+	      it != jetsgenkt4->end(); ++it) {
+	   
+	   if (nJetGen_kt4>=100) {cout << "number of gen jets kt 04 is larger than 100. Skipping" << endl; continue;}
+	   if (nJetGen_kt4 < genjetnmin_ || it->pt() > genjetptthr_) {
+	     
+	     ptJetGen_kt4[nJetGen_kt4] = it->pt();
+	     eJetGen_kt4[nJetGen_kt4] = it->energy();	 
+	     etaJetGen_kt4[nJetGen_kt4] = it->eta();	 
+	     phiJetGen_kt4[nJetGen_kt4] = it->phi();	      
+	     
+	     nJetGen_kt4++;
+	   }
+	 }
        }
-     }
 
-     for (GenJetCollection::const_iterator it = jetsgenkt6->begin(); 
-        it != jetsgenkt6->end(); ++it) {
-
-       if (nJetGen_kt6>=100) {cout << "number of gen jets kt 06 is larger than 100. Skipping" << endl; continue;}
-       if (nJetGen_kt6 < genjetnmin_ || it->pt() > genjetptthr_) {
-
-         ptJetGen_kt6[nJetGen_kt6] = it->pt();
-         eJetGen_kt6[nJetGen_kt6] = it->energy();	 
-         etaJetGen_kt6[nJetGen_kt6] = it->eta();	 
-         phiJetGen_kt6[nJetGen_kt6] = it->phi();	      
-         
-         nJetGen_kt6++;
+     if (dumpKT6Jets_)
+       {
+	 for (GenJetCollection::const_iterator it = jetsgenkt6->begin(); 
+	      it != jetsgenkt6->end(); ++it) {
+	   
+	   if (nJetGen_kt6>=100) {cout << "number of gen jets kt 06 is larger than 100. Skipping" << endl; continue;}
+	   if (nJetGen_kt6 < genjetnmin_ || it->pt() > genjetptthr_) {
+	     
+	     ptJetGen_kt6[nJetGen_kt6] = it->pt();
+	     eJetGen_kt6[nJetGen_kt6] = it->energy();	 
+	     etaJetGen_kt6[nJetGen_kt6] = it->eta();	 
+	     phiJetGen_kt6[nJetGen_kt6] = it->phi();	      
+	     
+	     nJetGen_kt6++;
+	   }
+	 }
        }
-     }
 
      //----- Figure out the particle decays in tracker volume BEGIN ------
 
@@ -836,356 +1058,360 @@ GammaJetAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
      
      //----- Figure out the particle decays in tracker volume END ------
 
-     for (GenJetCollection::const_iterator it = jetsgenakt5->begin(); 
-	  it != jetsgenakt5->end(); ++it) {
-       
-       if (nJetGen_akt5>=100) {cout << "number of gen jets kt 05 is larger than 100. Skipping" << endl; continue;}
-       if (nJetGen_akt5 < genjetnmin_ || it->pt() > genjetptthr_) {
-	 
-	 ptJetGen_akt5[nJetGen_akt5] = it->pt();	 
-	 eJetGen_akt5[nJetGen_akt5] = it->energy();	 
-	 etaJetGen_akt5[nJetGen_akt5] = it->eta();	 
-	 phiJetGen_akt5[nJetGen_akt5] = it->phi();    
-	 
-	 if( simTracks_h.isValid() )
-	   {
-	     // Extra variables for PFlow
-	     Int_t nMuonsGen = 0;
-	     TLorentzVector p4MuonsGen;
+     if( dumpAKT5Jets_ || dumpJPTAKT5Jets_ || dumpPFAKT5Jets_ )
+       {
+	 for (GenJetCollection::const_iterator it = jetsgenakt5->begin(); 
+	      it != jetsgenakt5->end(); ++it) {
+	   
+	   if (nJetGen_akt5>=100) {cout << "number of gen jets kt 05 is larger than 100. Skipping" << endl; continue;}
+	   if (nJetGen_akt5 < genjetnmin_ || it->pt() > genjetptthr_) {
 	     
-	     Int_t nElectronsGen = 0;
-	     TLorentzVector p4ElectronsGen;
+	     ptJetGen_akt5[nJetGen_akt5] = it->pt();	 
+	     eJetGen_akt5[nJetGen_akt5] = it->energy();	 
+	     etaJetGen_akt5[nJetGen_akt5] = it->eta();	 
+	     phiJetGen_akt5[nJetGen_akt5] = it->phi();    
 	     
-	     Int_t nPhotonsGen = 0;
-	     TLorentzVector p4PhotonsGen;
-	     
-	     Int_t nTracksGen = 0;
-	     TLorentzVector p4TracksGen;
-	     
-	     Int_t nNeutralHadronsGen = 0;
-	     TLorentzVector p4NeutralHadronsGen;
-	     
-	     Int_t nHFHadronsGen = 0;
-	     TLorentzVector p4HFHadronsGen;
-	     
-	     Int_t nHFEMGen = 0;
-	     TLorentzVector p4HFEMGen;
-	     
-	     Int_t nNeutronsGen = 0;
-	     TLorentzVector p4NeutronsGen;
-	     
-	     Int_t nK0LGen = 0;
-	     TLorentzVector p4K0LGen;
-	     
-	     Int_t nK0SGen = 0;
-	     TLorentzVector p4K0SGen;
-	     
-	     Int_t nLambdasGen = 0;
-	     TLorentzVector p4LambdasGen;
-	     
-	     Int_t nCsiGen = 0;
-	     TLorentzVector p4CsiGen;
-	     
-	     Int_t nOtherNeutralHadronsGen = 0;
-	     TLorentzVector p4OtherNeutralHadronsGen;
-	     
-	     
-	     vector<const GenParticle*> jetParticles = it->getGenConstituents();
-	     vector<const GenParticle*> shortPtcls;
-	     
-	     //----- Select the particle decays in tracker volume BEGIN ------      
-	     
-	     const int ijet = it - jetsgenakt5->begin();
-	     if( simTracks_h.isValid() ){
-	       if (_debug)
-		 cout << Form("Found mappings GenParticles<->GrandParentSimTracks"
-			      " for jet %d of pT=%1.3f eta=%1.3g",
-			      ijet, it->pt(), it->eta())
-		      << endl << flush;
-	       
-	       // Print out decay chains for this jet iteratively
-	       // NB: this method will also save the SIM particles when asked
-	       for (vector< const GenParticle* >::const_iterator iGen
-		      = jetParticles.begin(); iGen != jetParticles.end(); ++iGen) {
+	     if( simTracks_h.isValid() )
+	       {
+		 // Extra variables for PFlow
+		 Int_t nMuonsGen = 0;
+		 TLorentzVector p4MuonsGen;
 		 
-		 if (_debug)
-		   cout << Form("Gen id %d (pT=%1.3g GeV, eta=%1.3g)",
-				(*iGen)->pdgId(), (*iGen)->pt(), (*iGen)->eta());
+		 Int_t nElectronsGen = 0;
+		 TLorentzVector p4ElectronsGen;
 		 
-		 if (decayedSims.find(*iGen) != decayedSims.end()) {
+		 Int_t nPhotonsGen = 0;
+		 TLorentzVector p4PhotonsGen;
+		 
+		 Int_t nTracksGen = 0;
+		 TLorentzVector p4TracksGen;
+		 
+		 Int_t nNeutralHadronsGen = 0;
+		 TLorentzVector p4NeutralHadronsGen;
+		 
+		 Int_t nHFHadronsGen = 0;
+		 TLorentzVector p4HFHadronsGen;
+		 
+		 Int_t nHFEMGen = 0;
+		 TLorentzVector p4HFEMGen;
+	     
+		 Int_t nNeutronsGen = 0;
+		 TLorentzVector p4NeutronsGen;
+		 
+		 Int_t nK0LGen = 0;
+		 TLorentzVector p4K0LGen;
+		 
+		 Int_t nK0SGen = 0;
+		 TLorentzVector p4K0SGen;
+		 
+		 Int_t nLambdasGen = 0;
+		 TLorentzVector p4LambdasGen;
+		 
+		 Int_t nCsiGen = 0;
+		 TLorentzVector p4CsiGen;
+		 
+		 Int_t nOtherNeutralHadronsGen = 0;
+		 TLorentzVector p4OtherNeutralHadronsGen;
+		 
+		 
+		 vector<const GenParticle*> jetParticles = it->getGenConstituents();
+		 vector<const GenParticle*> shortPtcls;
+		 
+		 //----- Select the particle decays in tracker volume BEGIN ------      
+		 
+		 const int ijet = it - jetsgenakt5->begin();
+		 if( simTracks_h.isValid() ){
+		   if (_debug)
+		     cout << Form("Found mappings GenParticles<->GrandParentSimTracks"
+				  " for jet %d of pT=%1.3f eta=%1.3g",
+				  ijet, it->pt(), it->eta())
+			  << endl << flush;
 		   
-		   if (_debug)
-		     cout << " decay chain:" << endl;
-		   assert((*iGen)->pdgId()==decayedSims[*iGen]->type());
-		   bool saved = printChildren(decayedSims[*iGen],
-					      promptDecays, promptVertex, 0,
-					      (ijet<2 ? true : false)); // save to file?
-		   if (saved && mapMC.find(*iGen)!=mapMC.end()) {
-		     //assert(statusMC[mapMC[*iGen]]!=2);
-		     //assert(mapMC.find(*iGen)!=mapMC.end());
-		     statusMC[mapMC[*iGen]] *= -1;
+		   // Print out decay chains for this jet iteratively
+		   // NB: this method will also save the SIM particles when asked
+		   for (vector< const GenParticle* >::const_iterator iGen
+			  = jetParticles.begin(); iGen != jetParticles.end(); ++iGen) {
+		     
+		     if (_debug)
+		       cout << Form("Gen id %d (pT=%1.3g GeV, eta=%1.3g)",
+				    (*iGen)->pdgId(), (*iGen)->pt(), (*iGen)->eta());
+		     
+		     if (decayedSims.find(*iGen) != decayedSims.end()) {
+		       
+		       if (_debug)
+			 cout << " decay chain:" << endl;
+		       assert((*iGen)->pdgId()==decayedSims[*iGen]->type());
+		       bool saved = printChildren(decayedSims[*iGen],
+						  promptDecays, promptVertex, 0,
+						  (ijet<2 ? true : false)); // save to file?
+		       if (saved && mapMC.find(*iGen)!=mapMC.end()) {
+			 //assert(statusMC[mapMC[*iGen]]!=2);
+			 //assert(mapMC.find(*iGen)!=mapMC.end());
+			 statusMC[mapMC[*iGen]] *= -1;
+		       }
+		 }
+		     else
+		       if (_debug)
+			 cout << endl;
 		   }
 		 }
-		 else
-		   if (_debug)
-		     cout << endl;
-	       }
-	     }
-	     //----- Select out the particle decays in tracker volume END------
-	     
-	     // Sum up the different types of GenParticle energy
-	     for (vector< const GenParticle* >::iterator iPart = jetParticles.begin();
-		  iPart != jetParticles.end(); ++iPart) {
-	       
-	       Int_t partPdgId = (*iPart)->pdgId();
-	       // Convert particle momentum to normal TLorentzVector, wrong type :(
-	       math::XYZTLorentzVectorD const& p4t = (*iPart)->p4();
-	       TLorentzVector p4(p4t.px(), p4t.py(), p4t.pz(), p4t.energy());
-	       
-	       if (fabs(partPdgId)==13) { //muons
-		 nMuonsGen += 1;
-		 p4MuonsGen += p4;
-	       } else if (fabs(partPdgId)==11) { //electrons
-		 if( fabs((*iPart)->eta())<2.5) { //tracker acceptance
-		   nElectronsGen += 1;
-		   p4ElectronsGen += p4;
-		 } else if( fabs((*iPart)->eta())<3. ) { //if no track, they're just photons
-		   nPhotonsGen += 1;
-		   p4PhotonsGen += p4;
-		 } else { //HFEM in HF 
-		   nHFEMGen += 1;
-		   p4HFEMGen += p4;
-		 }
-	       } else if ((*iPart)->charge() != 0) { // charged hadrons
-		 if( fabs((*iPart)->eta())<2.5) { //tracker acceptance
-		   nTracksGen += 1;
-		   p4TracksGen += p4;
-		 } else { //if no track, they're just hadrons
-		   if( fabs((*iPart)->eta())<3. ) { //HCAL acceptance
-		     nNeutralHadronsGen += 1;
-		     p4NeutralHadronsGen += p4;
-		   } else { //HF
-		     nHFHadronsGen += 1;
-		     p4HFHadronsGen += p4;
-		   }
-		 } //if no track
-	       } else if (partPdgId==22) { //photons
-		 if( fabs((*iPart)->eta())<3.) { //tracker acceptance
-		   nPhotonsGen += 1;
-		   p4PhotonsGen += p4;
-		   //save photons and later check for conversions:
-		   //photon conversions switched OFF!
+		 //----- Select out the particle decays in tracker volume END------
+		 
+		 // Sum up the different types of GenParticle energy
+		 for (vector< const GenParticle* >::iterator iPart = jetParticles.begin();
+		      iPart != jetParticles.end(); ++iPart) {
+		   
+		   Int_t partPdgId = (*iPart)->pdgId();
+		   // Convert particle momentum to normal TLorentzVector, wrong type :(
+		   math::XYZTLorentzVectorD const& p4t = (*iPart)->p4();
+		   TLorentzVector p4(p4t.px(), p4t.py(), p4t.pz(), p4t.energy());
+		   
+		   if (fabs(partPdgId)==13) { //muons
+		     nMuonsGen += 1;
+		     p4MuonsGen += p4;
+		   } else if (fabs(partPdgId)==11) { //electrons
+		     if( fabs((*iPart)->eta())<2.5) { //tracker acceptance
+		       nElectronsGen += 1;
+		       p4ElectronsGen += p4;
+		     } else if( fabs((*iPart)->eta())<3. ) { //if no track, they're just photons
+		       nPhotonsGen += 1;
+		       p4PhotonsGen += p4;
+		     } else { //HFEM in HF 
+		       nHFEMGen += 1;
+		       p4HFEMGen += p4;
+		     }
+		   } else if ((*iPart)->charge() != 0) { // charged hadrons
+		     if( fabs((*iPart)->eta())<2.5) { //tracker acceptance
+		       nTracksGen += 1;
+		       p4TracksGen += p4;
+		     } else { //if no track, they're just hadrons
+		       if( fabs((*iPart)->eta())<3. ) { //HCAL acceptance
+			 nNeutralHadronsGen += 1;
+			 p4NeutralHadronsGen += p4;
+		       } else { //HF
+			 nHFHadronsGen += 1;
+			 p4HFHadronsGen += p4;
+		       }
+		     } //if no track
+		   } else if (partPdgId==22) { //photons
+		     if( fabs((*iPart)->eta())<3.) { //tracker acceptance
+		       nPhotonsGen += 1;
+		       p4PhotonsGen += p4;
+		       //save photons and later check for conversions:
+		       //photon conversions switched OFF!
 		   //shortPtcls.push_back(*iPart); //(only if eta<3)
-		 } else {
-		   nHFEMGen += 1;
-		   p4HFEMGen += p4;
-		 }
-	       } else if ((fabs(partPdgId) != 12) && (fabs(partPdgId) != 14)
-			  && (fabs(partPdgId) != 16)) { // veto neutrinos
+		     } else {
+		       nHFEMGen += 1;
+		       p4HFEMGen += p4;
+		     }
+		   } else if ((fabs(partPdgId) != 12) && (fabs(partPdgId) != 14)
+			      && (fabs(partPdgId) != 16)) { // veto neutrinos
+		     
+		     if( fabs((*iPart)->eta())<3. ) {
+		       nNeutralHadronsGen += 1;
+		       p4NeutralHadronsGen += p4;
+		     } else {
+		       nHFHadronsGen += 1;
+		       p4HFHadronsGen += p4;
+		     }
+		     
+		     // Decay K0S and Lambda later and correct fractions
+		     if (abs(partPdgId)==310 || abs(partPdgId)==3122)
+		       shortPtcls.push_back(*iPart);
+		     
+		     //save single neutral hadron components
+		     if( abs(partPdgId)==2112 ) { //neutrons
+		       nNeutronsGen += 1;
+		       p4NeutronsGen += p4;
+		     } else if( abs(partPdgId)==130 ) { //K0L's
+		       nK0LGen += 1;
+		       p4K0LGen += p4;
+		     } else if( abs(partPdgId)==310 ) { //K0S's
+		       nK0SGen += 1;
+		       p4K0SGen += p4;
+		     } else if( abs(partPdgId)==3122 ) { //lambda's
+		       nLambdasGen += 1;
+		       p4LambdasGen += p4;
+		     } else if( abs(partPdgId)==3322 ) { //csi's
+		       nCsiGen += 1;
+		       p4CsiGen += p4;
+		     } else { //not much else
+		       nOtherNeutralHadronsGen += 1;
+		       p4OtherNeutralHadronsGen += p4;
+		     }
 		 
-		 if( fabs((*iPart)->eta())<3. ) {
-		   nNeutralHadronsGen += 1;
-		   p4NeutralHadronsGen += p4;
-		 } else {
-		   nHFHadronsGen += 1;
-		   p4HFHadronsGen += p4;
-		 }
-		 
-		 // Decay K0S and Lambda later and correct fractions
-		 if (abs(partPdgId)==310 || abs(partPdgId)==3122)
-		   shortPtcls.push_back(*iPart);
-		 
-		 //save single neutral hadron components
-		 if( abs(partPdgId)==2112 ) { //neutrons
-		   nNeutronsGen += 1;
-		   p4NeutronsGen += p4;
-		 } else if( abs(partPdgId)==130 ) { //K0L's
-		   nK0LGen += 1;
-		   p4K0LGen += p4;
-		 } else if( abs(partPdgId)==310 ) { //K0S's
-		   nK0SGen += 1;
-		   p4K0SGen += p4;
-		 } else if( abs(partPdgId)==3122 ) { //lambda's
-		   nLambdasGen += 1;
-		   p4LambdasGen += p4;
-		 } else if( abs(partPdgId)==3322 ) { //csi's
-		   nCsiGen += 1;
-		   p4CsiGen += p4;
-		 } else { //not much else
-		   nOtherNeutralHadronsGen += 1;
-		   p4OtherNeutralHadronsGen += p4;
-	     }
-		 
-	       } //if neutral hadrons
-	       
-	     } //for jetParticles
-	     
-	     // ------------------ BEGIN short decays (photons, K0S's and lambdas)
-	     for (vector<const GenParticle*>::const_iterator iGen = shortPtcls.begin();
-		  iGen != shortPtcls.end(); ++iGen) {
-	       if( simTracks_h.isValid() ){
-		 
-		 // Check if GenParticle corresponds to a decayed SimTrack
-		 if (decayedSims.find(*iGen) != decayedSims.end()) {
+		   } //if neutral hadrons
 		   
-		   // Check that the SimTrack Decay products were stored
-		   const SimTrack *trk = decayedSims[*iGen];
-		   if (promptDecays.find(trk) != promptDecays.end()) {
+		 } //for jetParticles
+	     
+		 // ------------------ BEGIN short decays (photons, K0S's and lambdas)
+		 for (vector<const GenParticle*>::const_iterator iGen = shortPtcls.begin();
+		      iGen != shortPtcls.end(); ++iGen) {
+		   if( simTracks_h.isValid() ){
 		     
-		     // Convert track momentum to normal TLorentzVector, wrong type :(
-		     math::XYZTLorentzVectorD const& p4t = (*iGen)->p4();
-		     TLorentzVector p4mom(p4t.px(), p4t.py(), p4t.pz(), p4t.energy());
-		     if ((*iGen)->pdgId()==22) {
-		       nPhotonsGen -= 1;
-		       p4PhotonsGen -= p4mom;
-		     }
-		     else {
-		       if( fabs((*iGen)->eta())<3. ) {
-			 nNeutralHadronsGen -= 1;
-			 p4NeutralHadronsGen -= p4mom;
-		       } else {
-			 nHFHadronsGen -= 1;
-			 p4HFHadronsGen -= p4mom;
-		       }
-		     }
-		     
-		     set<const SimTrack*> const& kids = promptDecays.find(trk)->second;
-		     
-		     for (set<const SimTrack*>::const_iterator iSim = kids.begin();
-			  iSim != kids.end(); ++iSim) {
+		     // Check if GenParticle corresponds to a decayed SimTrack
+		     if (decayedSims.find(*iGen) != decayedSims.end()) {
 		       
-		       // Convert track momentum to normal TLorentzVector, wrong type :(
-		       math::XYZTLorentzVectorD const& p4t = (*iSim)->momentum();
-		       TLorentzVector p4(p4t.px(), p4t.py(), p4t.pz(), p4t.energy());
-		       
-		       const SimVertex *vtx = promptVertex[*iSim];
-		       
-		       double vertR = vtx->position().Rho();
-		       double vertZ = vtx->position().z();
-		       //double trkEta = trk->momentum().eta();
-		       bool decayedBeforeCalo =  ((vertR < 129.) && ( vertZ < 304.));
-		       
-		       // Check if the decay happened early enough for the
-		       // charged track to be reconstructed
-		       bool decayTrackable = (vertR < 30. && fabs(p4.Eta()) < 2.5
-					      && (*iSim)->charge() != 0 && p4.Pt() > 0.075);
-		       
-		       if (decayedBeforeCalo && (*iSim)->type()==111) { //pizeros
-			 if( fabs(p4.Eta())<3. ) {
-			   nPhotonsGen += 2;  //both
-			   p4PhotonsGen += p4;
-			 } else {
-			   nHFEMGen += 2;  //both
-			   p4HFEMGen += p4;
+		       // Check that the SimTrack Decay products were stored
+		       const SimTrack *trk = decayedSims[*iGen];
+		       if (promptDecays.find(trk) != promptDecays.end()) {
+			 
+			 // Convert track momentum to normal TLorentzVector, wrong type :(
+			 math::XYZTLorentzVectorD const& p4t = (*iGen)->p4();
+			 TLorentzVector p4mom(p4t.px(), p4t.py(), p4t.pz(), p4t.energy());
+			 if ((*iGen)->pdgId()==22) {
+			   nPhotonsGen -= 1;
+			   p4PhotonsGen -= p4mom;
 			 }
-		       }
-		       else if (decayTrackable) {
-			 if( fabs((*iSim)->type())==11 ) { //electrons
-			   nElectronsGen += 1;
-			   p4ElectronsGen += p4;
-			 } else {
-			   nTracksGen += 1;
-			   p4TracksGen += p4;
+			 else {
+			   if( fabs((*iGen)->eta())<3. ) {
+			     nNeutralHadronsGen -= 1;
+			     p4NeutralHadronsGen -= p4mom;
+			   } else {
+			     nHFHadronsGen -= 1;
+			     p4HFHadronsGen -= p4mom;
+			   }
 			 }
-		       } else {
-			 //if( (*iGen)->pdgId()==22 ) { //photons //BEFORE: wrong??
-			 if( (*iSim)->type()==22 || fabs((*iSim)->type())==11 ) { //photons or electrons
-			   if( fabs(p4.Eta())<3. ) {
-			     nPhotonsGen += 1;
-			     p4PhotonsGen += p4;
-			   } else {
-			     nHFEMGen += 1;
-			     p4HFEMGen += p4;
+			 
+			 set<const SimTrack*> const& kids = promptDecays.find(trk)->second;
+			 
+			 for (set<const SimTrack*>::const_iterator iSim = kids.begin();
+			      iSim != kids.end(); ++iSim) {
+			   
+			   // Convert track momentum to normal TLorentzVector, wrong type :(
+			   math::XYZTLorentzVectorD const& p4t = (*iSim)->momentum();
+			   TLorentzVector p4(p4t.px(), p4t.py(), p4t.pz(), p4t.energy());
+			   
+			   const SimVertex *vtx = promptVertex[*iSim];
+			   
+			   double vertR = vtx->position().Rho();
+			   double vertZ = vtx->position().z();
+			   //double trkEta = trk->momentum().eta();
+			   bool decayedBeforeCalo =  ((vertR < 129.) && ( vertZ < 304.));
+		       
+			   // Check if the decay happened early enough for the
+			   // charged track to be reconstructed
+			   bool decayTrackable = (vertR < 30. && fabs(p4.Eta()) < 2.5
+						  && (*iSim)->charge() != 0 && p4.Pt() > 0.075);
+			   
+			   if (decayedBeforeCalo && (*iSim)->type()==111) { //pizeros
+			     if( fabs(p4.Eta())<3. ) {
+			       nPhotonsGen += 2;  //both
+			       p4PhotonsGen += p4;
+			     } else {
+			       nHFEMGen += 2;  //both
+			       p4HFEMGen += p4;
+			     }
 			   }
-			 } else {
-			   if( fabs(p4.Eta())<3. ) {
-			     nNeutralHadronsGen += 1;
-			     p4NeutralHadronsGen += p4;
+			   else if (decayTrackable) {
+			     if( fabs((*iSim)->type())==11 ) { //electrons
+			       nElectronsGen += 1;
+			       p4ElectronsGen += p4;
+			     } else {
+			       nTracksGen += 1;
+			       p4TracksGen += p4;
+			     }
 			   } else {
-			     nHFHadronsGen += 1;
-			     p4HFHadronsGen += p4;
-			   }
-			 } //if-else photons
-		       } //if-else decay trackable
-	       } // for iSim loop on kids
-		   } // has promptDecays
-		 } // has decayedSims
-	       }
-	     } // for iGen
+			     //if( (*iGen)->pdgId()==22 ) { //photons //BEFORE: wrong??
+			     if( (*iSim)->type()==22 || fabs((*iSim)->type())==11 ) { //photons or electrons
+			       if( fabs(p4.Eta())<3. ) {
+				 nPhotonsGen += 1;
+				 p4PhotonsGen += p4;
+			       } else {
+				 nHFEMGen += 1;
+				 p4HFEMGen += p4;
+			       }
+			     } else {
+			       if( fabs(p4.Eta())<3. ) {
+				 nNeutralHadronsGen += 1;
+				 p4NeutralHadronsGen += p4;
+			       } else {
+				 nHFHadronsGen += 1;
+				 p4HFHadronsGen += p4;
+			       }
+			     } //if-else photons
+			   } //if-else decay trackable
+			 } // for iSim loop on kids
+		       } // has promptDecays
+		     } // has decayedSims
+		   }
+		 } // for iGen
 	  
-	     // ------------------ END short decays
+		 // ------------------ END short decays
+		 
+		 const TLorentzVector *p = 0;
 	     
-	     const TLorentzVector *p = 0;
-	     
-	     nMuonsGen_akt5[nJetGen_akt5] = nMuonsGen;
-	     p = &p4MuonsGen;
-	     eMuonsGen_akt5[nJetGen_akt5] = p->E() / it->energy();
-	     
-	     nElectronsGen_akt5[nJetGen_akt5] = nElectronsGen;
-	     p = &p4ElectronsGen;
-	     eElectronsGen_akt5[nJetGen_akt5] = p->E() / it->energy();
-	     
-	     nPhotonsGen_akt5[nJetGen_akt5] = nPhotonsGen;
-	     p = &p4PhotonsGen;
-	     ePhotonsGen_akt5[nJetGen_akt5] = p->E() / it->energy();
-	     
-	     nTracksGen_akt5[nJetGen_akt5] = nTracksGen;
-	     p = &p4TracksGen;
-	     eTracksGen_akt5[nJetGen_akt5] = p->E() / it->energy();
-	     
-	     nNeutralHadronsGen_akt5[nJetGen_akt5] = nNeutralHadronsGen;
-	     p = &p4NeutralHadronsGen;
-	     eNeutralHadronsGen_akt5[nJetGen_akt5] = p->E() / it->energy();
-	     
-	     nHFHadronsGen_akt5[nJetGen_akt5] = nHFHadronsGen;
-	     p = &p4HFHadronsGen;
-	     eHFHadronsGen_akt5[nJetGen_akt5] = p->E() / it->energy();
-	     
-	     nHFEMGen_akt5[nJetGen_akt5] = nHFEMGen;
-	     p = &p4HFEMGen;
-	     eHFEMGen_akt5[nJetGen_akt5] = p->E() / it->energy();
-	     
-	     nNeutronsGen_akt5[nJetGen_akt5] = nNeutronsGen;
-	     p = &p4NeutronsGen;
-	     eNeutronsGen_akt5[nJetGen_akt5] = p->E() / it->energy();
-	     
-	     nK0LGen_akt5[nJetGen_akt5] = nK0LGen;
-	     p = &p4K0LGen;
-	     eK0LGen_akt5[nJetGen_akt5] = p->E() / it->energy();
-	     
-	     nK0SGen_akt5[nJetGen_akt5] = nK0SGen;
-	     p = &p4K0SGen;
-	     eK0SGen_akt5[nJetGen_akt5] = p->E() / it->energy();
-	     
-	     nLambdasGen_akt5[nJetGen_akt5] = nLambdasGen;
-	     p = &p4LambdasGen;
-	     eLambdasGen_akt5[nJetGen_akt5] = p->E() / it->energy();
-	 
-	     nCsiGen_akt5[nJetGen_akt5] = nCsiGen;
-	     p = &p4CsiGen;
-	     eCsiGen_akt5[nJetGen_akt5] = p->E() / it->energy();
-	     
-	     nOtherNeutralHadronsGen_akt5[nJetGen_akt5] = nOtherNeutralHadronsGen;
-	     p = &p4OtherNeutralHadronsGen;
-	     eOtherNeutralHadronsGen_akt5[nJetGen_akt5] = p->E() / it->energy();
-	   }
-	 nJetGen_akt5++;
-       } // if >genjetptthr
-     } // gen_akt5
-     
+		 nMuonsGen_akt5[nJetGen_akt5] = nMuonsGen;
+		 p = &p4MuonsGen;
+		 eMuonsGen_akt5[nJetGen_akt5] = p->E() / it->energy();
+		 
+		 nElectronsGen_akt5[nJetGen_akt5] = nElectronsGen;
+		 p = &p4ElectronsGen;
+		 eElectronsGen_akt5[nJetGen_akt5] = p->E() / it->energy();
+		 
+		 nPhotonsGen_akt5[nJetGen_akt5] = nPhotonsGen;
+		 p = &p4PhotonsGen;
+		 ePhotonsGen_akt5[nJetGen_akt5] = p->E() / it->energy();
+		 
+		 nTracksGen_akt5[nJetGen_akt5] = nTracksGen;
+		 p = &p4TracksGen;
+		 eTracksGen_akt5[nJetGen_akt5] = p->E() / it->energy();
+		 
+		 nNeutralHadronsGen_akt5[nJetGen_akt5] = nNeutralHadronsGen;
+		 p = &p4NeutralHadronsGen;
+		 eNeutralHadronsGen_akt5[nJetGen_akt5] = p->E() / it->energy();
+		 
+		 nHFHadronsGen_akt5[nJetGen_akt5] = nHFHadronsGen;
+		 p = &p4HFHadronsGen;
+		 eHFHadronsGen_akt5[nJetGen_akt5] = p->E() / it->energy();
+		 
+		 nHFEMGen_akt5[nJetGen_akt5] = nHFEMGen;
+		 p = &p4HFEMGen;
+		 eHFEMGen_akt5[nJetGen_akt5] = p->E() / it->energy();
+		 
+		 nNeutronsGen_akt5[nJetGen_akt5] = nNeutronsGen;
+		 p = &p4NeutronsGen;
+		 eNeutronsGen_akt5[nJetGen_akt5] = p->E() / it->energy();
+		 
+		 nK0LGen_akt5[nJetGen_akt5] = nK0LGen;
+		 p = &p4K0LGen;
+		 eK0LGen_akt5[nJetGen_akt5] = p->E() / it->energy();
+		 
+		 nK0SGen_akt5[nJetGen_akt5] = nK0SGen;
+		 p = &p4K0SGen;
+		 eK0SGen_akt5[nJetGen_akt5] = p->E() / it->energy();
+		 
+		 nLambdasGen_akt5[nJetGen_akt5] = nLambdasGen;
+		 p = &p4LambdasGen;
+		 eLambdasGen_akt5[nJetGen_akt5] = p->E() / it->energy();
+		 
+		 nCsiGen_akt5[nJetGen_akt5] = nCsiGen;
+		 p = &p4CsiGen;
+		 eCsiGen_akt5[nJetGen_akt5] = p->E() / it->energy();
+		 
+		 nOtherNeutralHadronsGen_akt5[nJetGen_akt5] = nOtherNeutralHadronsGen;
+		 p = &p4OtherNeutralHadronsGen;
+		 eOtherNeutralHadronsGen_akt5[nJetGen_akt5] = p->E() / it->energy();
+	       }
+	     nJetGen_akt5++;
+	   } // if >genjetptthr
+	 } // gen_akt5
+       }
 
-     for (GenJetCollection::const_iterator it = jetsgenakt7->begin(); 
-	  it != jetsgenakt7->end(); ++it) {
-       
-       if (nJetGen_akt7>=100) {cout << "number of gen jets antikt 07 is larger than 100. Skipping" << endl; continue;}
-       ptJetGen_akt7[nJetGen_akt7] = it->pt();	 
-       eJetGen_akt7[nJetGen_akt7] = it->energy();	 
-       etaJetGen_akt7[nJetGen_akt7] = it->eta();	 
-       phiJetGen_akt7[nJetGen_akt7] = it->phi();	      
-       
-       nJetGen_akt7++;
-     }
-     
+     if( dumpAKT7Jets_ || dumpJPTAKT7Jets_ || dumpPFAKT7Jets_ )
+       {     
+	 for (GenJetCollection::const_iterator it = jetsgenakt7->begin(); 
+	      it != jetsgenakt7->end(); ++it) {
+	   
+	   if (nJetGen_akt7>=100) {cout << "number of gen jets antikt 07 is larger than 100. Skipping" << endl; continue;}
+	   ptJetGen_akt7[nJetGen_akt7] = it->pt();	 
+	   eJetGen_akt7[nJetGen_akt7] = it->energy();	 
+	   etaJetGen_akt7[nJetGen_akt7] = it->eta();	 
+	   phiJetGen_akt7[nJetGen_akt7] = it->phi();	      
+	   
+	   nJetGen_akt7++;
+	 }
+       }
    } //if(isMC)
    
      // Get the primary vertex coordinates
@@ -1239,9 +1465,190 @@ GammaJetAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
         
 
 
-   // Loop over reco photons
-   
+    float isolationtrackThresholdA_newOpt = 0.0;
+    float TrackConeOuterRadiusA_newOpt    = 0.4;
+    float TrackConeInnerRadiusA_newOpt    = 0.02;
+    float isolationtrackEtaSliceA_newOpt  = 0.0;
+    float longImpactParameterA_newOpt     = 1.0;
+    float transImpactParameterA_newOpt    = 0.1;
+    float isolationtrackThresholdB_newOpt = 0.0;
+    float TrackConeOuterRadiusB_newOpt    = 0.3;
+    float TrackConeInnerRadiusB_newOpt    = 0.02;
+    float isolationtrackEtaSliceB_newOpt  = 0.0;
+    float longImpactParameterB_newOpt     = 1.0;
+    float transImpactParameterB_newOpt    = 0.1;
+
+   PhotonTkIsolation tkIsoCone04_newOpt( TrackConeOuterRadiusA_newOpt,
+                                  TrackConeInnerRadiusA_newOpt,
+        isolationtrackEtaSliceA_newOpt,
+        isolationtrackThresholdA_newOpt,
+        longImpactParameterA_newOpt,
+        transImpactParameterA_newOpt,
+        tracks.product(),
+        math::XYZPoint(vertexBeamSpot.x0(),vertexBeamSpot.y0(),vertexBeamSpot.z0()) );
+        
+   PhotonTkIsolation tkIsoCone03_newOpt( TrackConeOuterRadiusB_newOpt,
+                                  TrackConeInnerRadiusB_newOpt,
+        isolationtrackEtaSliceB_newOpt,
+        isolationtrackThresholdB_newOpt,
+        longImpactParameterB_newOpt,
+        transImpactParameterB_newOpt,
+        tracks.product(),
+        math::XYZPoint(vertexBeamSpot.x0(),vertexBeamSpot.y0(),vertexBeamSpot.z0()) );
+
+   // Loop over reco photons to identify photons for vertex selection
+//   std::cout << "============= Vertex Analysis" << std::endl;
+   std::vector<PhotonInfo> photonsForVertexComputation;
    for (PhotonCollection::const_iterator it = PhotonHandle->begin(); 
+	it != PhotonHandle->end(); ++it) 
+     {
+       //pass preselection cuts
+       
+//        bool hasMatchedPromptEle = ConversionTools::hasMatchedPromptElectron(it->superCluster(), 
+// 									    ElectronHandle, hConversions, vertexBeamSpot.position());
+//        if (hasMatchedPromptEle)
+// 	 continue;
+       
+       if(  it->pt()<20.  || ( fabs(it->superCluster()->eta())>1.4442 && fabs(it->superCluster()->eta())<1.566 ) || fabs(it->superCluster()->eta()) >2.5)
+	 {
+// 	   std::cout << "Photon skipped because of acceptance " << std::endl;
+	   continue;         
+	 }
+       bool isEB = it->isEB(); 
+
+
+       if( it->ecalRecHitSumEtConeDR03() >= 8. || ((isEB && it->sigmaIetaIeta()>0.013) || (!isEB && it->sigmaIetaIeta()>0.031))  || it->hadronicOverEm() > 0.15 ) 
+	 {
+// 	   std::cout << "Photon skipped because of preselection" << std::endl;
+	   continue;         
+	 }
+
+
+
+       reco::ConversionRef conv = 
+	 ConversionTools::matchedConversion(*(it->superCluster()),hConversions,vertexBeamSpot.position());
+       if (conv.isNonnull())
+	 {
+	   
+	   reco::Vertex vtx=conv->conversionVertex();
+	   photonsForVertexComputation.push_back(PhotonInfo(it - PhotonHandle->begin(),
+							    TVector3(it->superCluster()->position().x(),it->superCluster()->position().y(),it->superCluster()->position().z()),
+							    TVector3(vertexBeamSpot.x0(),vertexBeamSpot.y0(),vertexBeamSpot.z0()),
+							    TVector3(vtx.x(), vtx.y(), vtx.z()),
+							    it->energy(),
+							    it->isEB(),
+							    conv->nTracks(),
+							    conv->conversionVertex().isValid(),
+							    TMath::Prob(vtx.chi2(), vtx.ndof()),
+							    -999.));
+	   
+	 }
+       else
+	 {
+	   photonsForVertexComputation.push_back(PhotonInfo(it - PhotonHandle->begin(),
+							    TVector3(it->superCluster()->position().x(),it->superCluster()->position().y(),it->superCluster()->position().z()),
+							    TVector3(vertexBeamSpot.x0(),vertexBeamSpot.y0(),vertexBeamSpot.z0()),
+							    TVector3(-999.,-999.,-999),
+							    it->energy(),
+							    it->isEB(),
+							    -999.,
+							    0,
+							    -999.,
+							    -999.));
+	 }
+}
+       
+
+
+  //Vertex Analysis	   						 
+
+   for(int ii=0; ii<nvertex; ++ii) 
+     {
+       vrank[ii]=-1;
+       vptbal[ii]=-9999.;
+       vptasym[ii]=-9999.;
+       vlogsumpt2[ii]=-9999.;
+     }
+   std::vector<int> rankprod;  
+//        std::cout << "Preselected " << photonsForVertexComputation.size() << " photons " << std::endl;
+  //Prepare vertex information
+  if (photonsForVertexComputation.size()>=2)
+    {
+      GlobalVertexInfo aVtx;
+      aVtx.fillInfo(iEvent,iSetup);     
+
+      //Run HggVertexAnalysis
+      vtxAna->analyze(aVtx,photonsForVertexComputation[0],photonsForVertexComputation[1]);
+      //Choiche of the vertex
+      // preselect vertices : all vertices
+      std::vector<int> preselAll;
+      for(int i=0; i<aVtx.nvtx() ; i++) {
+	preselAll.push_back(i); 
+      }
+
+
+      float zconv = 0; 
+      float dzconv = 0;
+      std::vector<int> preselConv;
+
+        if ( (photonsForVertexComputation[0].isAConversion() || photonsForVertexComputation[1].isAConversion() ) )  {
+	  
+          if (photonsForVertexComputation[0].isAConversion()  && !photonsForVertexComputation[1].isAConversion() ){
+            zconv  = vtxAnaFromConv->vtxZ(photonsForVertexComputation[0]);
+            dzconv = vtxAnaFromConv->vtxdZ(photonsForVertexComputation[0]);
+          }
+	  
+          if (photonsForVertexComputation[1].isAConversion() && !photonsForVertexComputation[0].isAConversion()){
+            zconv  = vtxAnaFromConv->vtxZ(photonsForVertexComputation[1]);
+            dzconv = vtxAnaFromConv->vtxdZ(photonsForVertexComputation[1]);
+          }
+	  
+          if ( photonsForVertexComputation[0].isAConversion() && photonsForVertexComputation[1].isAConversion()){
+            float z1  = vtxAnaFromConv->vtxZ(photonsForVertexComputation[0]);
+            float dz1 = vtxAnaFromConv->vtxdZ(photonsForVertexComputation[0]);
+            
+            float z2  = vtxAnaFromConv->vtxZ(photonsForVertexComputation[1]);
+            float dz2 = vtxAnaFromConv->vtxdZ(photonsForVertexComputation[1]);
+            
+            zconv  = sqrt ( 1./(1./dz1/dz1 + 1./dz2/dz2 )*(z1/dz1/dz1 + z2/dz2/dz2) ) ;  // weighted average
+            dzconv = sqrt( 1./(1./dz1/dz1 + 1./dz2/dz2)) ;
+          }
+	  
+	  // preselect vertices : only vertices in a window zconv +/- dzconv
+
+	  for(int i=0; i < aVtx.nvtx(); i++) {
+	    //	    std::cout << "zconv " << zconv << " fabs(zconv - aVtx.vtxz(i) ) " << fabs(zconv - aVtx.vtxz(i) ) << " dzconv " << dzconv << std::endl;
+	    if ( fabs(zconv - aVtx.vtxz(i) ) < dzconv ) 
+              preselConv.push_back(i); 
+          }
+	  
+        }
+
+	// preselection 
+	if ( preselConv.size()==0 ) 
+          vtxAna->preselection(preselAll);
+        else 
+	  {
+	    //	    std::cout << "&&&&&& Using conversions " << preselConv.size()  << " vertices instead of " <<  preselAll.size() << std::endl;
+	    vtxAna->preselection(preselConv);
+	  }
+
+ 	rankprod = vtxAna->rankprod(rankVariables);
+// 	cout << "Ranks product" << endl;
+// 	cout << "best vertex " << rankprod[0] << endl;
+	//Filling 
+	for(int ii=0; ii<aVtx.nvtx(); ++ii) {
+		int vtxrank = find(rankprod.begin(), rankprod.end(), ii) - rankprod.begin();
+// 		cout << "vertx " << ii << " rank " << vtxrank << " " << vtxAna->ptbal(ii) << " " << vtxAna->ptasym(ii) << " " << vtxAna->logsumpt2(ii) << endl;
+		vrank[ii]=vtxrank;
+		vptbal[ii]=vtxAna->ptbal(ii);
+		vptasym[ii]=vtxAna->ptasym(ii);
+		vlogsumpt2[ii]=vtxAna->logsumpt2(ii);
+	}
+	
+    }
+  
+  for (PhotonCollection::const_iterator it = PhotonHandle->begin(); 
 	it != PhotonHandle->end(); ++it) {
      
      if (it->energy()<3.) continue;
@@ -1250,11 +1657,15 @@ GammaJetAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
      ptPhot[nPhot] = it->pt();
      ePhot[nPhot] = it->energy();	 
      escPhot[nPhot] = it->superCluster()->energy();	 
+     escRawPhot[nPhot] = it->superCluster()->rawEnergy();	 
      eseedPhot[nPhot] = it->superCluster()->seed()->energy();	 
      etaPhot[nPhot] = it->eta();	 
      phiPhot[nPhot] = it->phi();	      
      etascPhot[nPhot] = it->superCluster()->eta();	 
      phiscPhot[nPhot] = it->superCluster()->phi();	      
+     xscPhot[nPhot] = it->superCluster()->position().x();	 
+     yscPhot[nPhot] = it->superCluster()->position().y();	      
+     zscPhot[nPhot] = it->superCluster()->position().z();	      
      hasPixelSeedPhot[nPhot] = it->hasPixelSeed();
      isEBPhot[nPhot] = it->isEB();
      isEEPhot[nPhot] = it->isEE();
@@ -1264,13 +1675,51 @@ GammaJetAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
        ConversionTools::matchedConversion(*(it->superCluster()),hConversions,vertexBeamSpot.position());
      hasMatchedConvPhot[nPhot] = conv.isNonnull();
 
+     isValidVtxConvPhot[nPhot] = 0;
+     nTracksConvPhot[nPhot]                    =   0; 
+     pairInvariantMassConvPhot[nPhot]          =   -9999.; 
+     pairCotThetaSeparationConvPhot[nPhot]     =   -9999.; 
+     pairMomentum_xConvPhot[nPhot]             =   -9999.; 
+     pairMomentum_yConvPhot[nPhot]             =   -9999.; 
+     pairMomentum_zConvPhot[nPhot]             =   -9999.; 
+     chi2ConvPhot[nPhot]                       =   -9999.; 
+     nDofConvPhot[nPhot]                       =   -9999.; 
+     conv_vxConvPhot[nPhot]                    =   -9999.; 
+     conv_vyConvPhot[nPhot]                    =   -9999.; 
+     conv_vzConvPhot[nPhot]                    =   -9999.; 
+     eOverPConvPhot[nPhot]                     =   -9999.; 
+     distOfMinimumApproachConvPhot[nPhot]      =   -9999.; 
+     dPhiTracksAtVtxConvPhot[nPhot]            =   -9999.; 
+//      dPhiTracksAtEcalConvPhot[nPhot]           =   -9999.; 
+//      dEtaTracksAtEcalConvPhot[nPhot]           =   -9999.; 
+
+     if ( conv.isNonnull() ){
+       isValidVtxConvPhot[nPhot] = conv->conversionVertex().isValid();
+       nTracksConvPhot[nPhot]                    = conv->nTracks();
+       pairInvariantMassConvPhot[nPhot]          = conv->pairInvariantMass();
+       pairCotThetaSeparationConvPhot[nPhot]     = conv->pairCotThetaSeparation();
+       pairMomentum_xConvPhot[nPhot]             = conv->pairMomentum().x();
+       pairMomentum_yConvPhot[nPhot]             = conv->pairMomentum().y();
+       pairMomentum_zConvPhot[nPhot]             = conv->pairMomentum().z();
+       chi2ConvPhot[nPhot]                       = conv->conversionVertex().chi2();
+       nDofConvPhot[nPhot]                       = conv->conversionVertex().ndof();
+       conv_vxConvPhot[nPhot]                    = conv->conversionVertex().x();
+       conv_vyConvPhot[nPhot]                    = conv->conversionVertex().y();
+       conv_vzConvPhot[nPhot]                    = conv->conversionVertex().z();
+       eOverPConvPhot[nPhot]                     = conv->EoverP();
+       distOfMinimumApproachConvPhot[nPhot]      = conv->distOfMinimumApproach();
+       dPhiTracksAtVtxConvPhot[nPhot]            = conv->dPhiTracksAtVtx();
+//        dPhiTracksAtEcalConvPhot[nPhot]           = conv->dPhiTracksAtEcal();
+//        dEtaTracksAtEcalConvPhot[nPhot]           = conv->dEtaTracksAtEcal();
+     }
+
      hasMatchedPromptElePhot[nPhot]    = ConversionTools::hasMatchedPromptElectron(it->superCluster(), 
                                           ElectronHandle, hConversions, vertexBeamSpot.position());
 
      
      const Ptr<CaloCluster> theSeed = it->superCluster()->seed(); 
      
-     const EBRecHitCollection* rechits = ( fabs(it->eta())<1.479 ) ? rhitseb : rhitsee;
+     const EBRecHitCollection* rechits = ( it->isEB()) ? rhitseb : rhitsee;
 
      // photon ID (spike ID) related info:
      // timing:
@@ -1280,7 +1729,7 @@ GammaJetAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
      if(maxRH.second) timePhot[nPhot] = (float)seedRH->time();
      else timePhot[nPhot] = 0;
      // swiss cross:
-     e4SwissCrossPhot[nPhot] = (fabs(it->eta())>=1.479) ? 0. :
+     e4SwissCrossPhot[nPhot] = (!it->isEB()) ? 0. :
        ( EcalClusterTools::eLeft( *theSeed, &(*rechits), topology ) +
 	 EcalClusterTools::eRight( *theSeed, &(*rechits), topology ) +
 	 EcalClusterTools::eTop( *theSeed, &(*rechits), topology ) +
@@ -1289,7 +1738,10 @@ GammaJetAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
      double ptiso004(0.), ptiso035(0.), ptiso04(0.);
      int ntrkiso004(0), ntrkiso035(0), ntrkiso04(0);
 
+
+
      // Fill default photon ID variables
+     
      pid_jurECAL[nPhot] = it->ecalRecHitSumEtConeDR04();//isolationEcalRecHit
      pid_twrHCAL[nPhot] = it->hcalTowerSumEtConeDR04();//isolationHcalRecHit
      pid_HoverE[nPhot] = it->hadronicOverEm();
@@ -1297,17 +1749,49 @@ GammaJetAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
      pid_etawid[nPhot] = it->sigmaIetaIeta();//sqrt(it->covEtaEta());
      pid_hlwTrackNoDz[nPhot] = tkIsoCone04.getPtTracks( &(*it) );
 
+
      pid_jurECAL03[nPhot] = it->ecalRecHitSumEtConeDR03();//isolationEcalRecHit
      pid_twrHCAL03[nPhot] = it->hcalTowerSumEtConeDR03();//isolationHcalRecHit
      pid_hlwTrack03[nPhot] = it->trkSumPtHollowConeDR03();//isolationHollowTrkCone
      pid_hlwTrack03NoDz[nPhot] = tkIsoCone03.getPtTracks( &(*it) );
 
+     //Best ranked vertex iso variables
+     if (rankprod.size()!=0 && rankprod[0]!=0)
+       {
+	 reco::Photon bestRankVtxPhot((*it));
+	 bestRankVtxPhot.setVertex(reco::Vertex::Point((*VertexHandle)[rankprod[0]].x(),(*VertexHandle)[rankprod[0]].y(),(*VertexHandle)[rankprod[0]].z()));
+	 pid_hlwTrackBestRank[nPhot] = tkIsoCone04_newOpt.getPtTracks( &bestRankVtxPhot );
+	 pid_hlwTrack03BestRank[nPhot] = tkIsoCone03_newOpt.getPtTracks( &bestRankVtxPhot );
+       }
+     else
+       {
+	 pid_hlwTrackBestRank[nPhot] = tkIsoCone04_newOpt.getPtTracks( &(*it) );
+	 pid_hlwTrack03BestRank[nPhot] = tkIsoCone03_newOpt.getPtTracks( &(*it) );
+       }     
+
+     //Worst vtx iso variables
+     float maximumTrkIso03=-99999.;
+     float maximumTrkIso04=-99999.;
+     for (unsigned int ivtx=0;ivtx<VertexHandle->size();++ivtx)
+       {
+	 reco::Photon aPhot((*it));
+	 aPhot.setVertex(reco::Vertex::Point((*VertexHandle)[ivtx].x(),(*VertexHandle)[ivtx].y(),(*VertexHandle)[ivtx].z()));
+	 float trkIso=tkIsoCone04_newOpt.getPtTracks( &aPhot );
+	 if (trkIso>maximumTrkIso04)
+	   {
+	     maximumTrkIso03=tkIsoCone03_newOpt.getPtTracks( &aPhot );
+	     maximumTrkIso04=trkIso;
+	   }
+       }
+ 
+     pid_hlwTrackWorstVtx[nPhot] = maximumTrkIso04;
+     pid_hlwTrack03WorstVtx[nPhot] = maximumTrkIso03;
 
      // fill default ID variables from
      // https://twiki.cern.ch/twiki/bin/view/CMS/PhotonIDAnalysis for 31X
      // (followed from https://twiki.cern.ch/twiki/bin/view/CMS/PhotonID)
      // using reco equivalents to pat::Photon methods
-     if (abs(etaPhot[nPhot]) < 1.479) {
+     if (it->isEB()) {
 
        pid_isEM[nPhot] =    (pid_jurECAL[nPhot]  < 5 + 0.15*ptPhot[nPhot] &&
 			     pid_twrHCAL[nPhot]  < 5 &&
@@ -1441,7 +1925,10 @@ GammaJetAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
        sEtaPhiPhot[nPhot]=-100.;
        sPhiPhiPhot[nPhot]=-100.;
      }
-     E1Phot[nPhot] = SCseed->energy();//-100.;
+     E1Phot[nPhot] = maxRH.second;//-100.;
+     E2OverE9Phot[nPhot]=-99.;
+     if (it->isEB())
+       E2OverE9Phot[nPhot] = GetE2OverE9(seedCrystalId,*rechits);
      E9Phot[nPhot] = it->e3x3();//-100.;
      E25Phot[nPhot] = it->e5x5();//-100.;
 
@@ -1465,393 +1952,442 @@ GammaJetAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
      }
 
      ieleassocPhot[nPhot] = -999; 
+     pid_deltaRToTrackPhot[nPhot] = 99.; 
 
+
+     double minDR = 1000.;       
+     
+     const reco::GsfElectron* bestMatchedPromptEle=0;
+     for (GsfElectronCollection::const_iterator itElectron = ElectronHandle->begin();
+	  itElectron != ElectronHandle->end(); ++itElectron) {
+       
+
+       if (itElectron->superCluster() != it->superCluster())
+	 continue;
+       
+       if (itElectron->pt()<2.5)
+	 continue;
+       if (itElectron->gsfTrack()->trackerExpectedHitsInner().numberOfHits()>0)
+	 continue;
+       
+//        reco::ConversionRef conv = 
+// 	 ConversionTools::matchedConversion(*itElectron,hConversions,vertexBeamSpot.position());
+       
+//        if (conv.isNonnull())
+// 	 continue;
+       
+       float deta=itElectron->deltaEtaSuperClusterTrackAtVtx(); 
+       float dphi=itElectron->deltaPhiSuperClusterTrackAtVtx(); 
+       float DR = sqrt ( deta*deta + dphi*dphi);
+       if (DR<minDR)
+	 {
+	   minDR=DR;
+	   bestMatchedPromptEle = &(*itElectron);
+	 }
+       
+     }
+     
+     
+    if(bestMatchedPromptEle)
+       {
+	 ieleassocPhot[nPhot] = nElePhot;
+	 pid_deltaRToTrackPhot[nPhot] = minDR; 
+      
+	 pid_jurECALElePhot[nElePhot] = bestMatchedPromptEle->dr03EcalRecHitSumEt(); 
+	 pid_twrHCALElePhot[nElePhot] = bestMatchedPromptEle->dr03HcalTowerSumEt(); 
+	 pid_HoverEElePhot[nElePhot] = bestMatchedPromptEle->hadronicOverEm(); 
+	 pid_hlwTrackElePhot[nElePhot] = bestMatchedPromptEle->dr03TkSumPt(); 
+	 pid_etawidElePhot[nElePhot] = bestMatchedPromptEle->sigmaIetaIeta(); 
+	 pid_dphivtxElePhot[nElePhot] = bestMatchedPromptEle->deltaPhiSuperClusterTrackAtVtx(); 
+	 pid_detavtxElePhot[nElePhot] = bestMatchedPromptEle->deltaEtaSuperClusterTrackAtVtx(); 
+	 pid_mishitsElePhot[nElePhot] = bestMatchedPromptEle->gsfTrack()->trackerExpectedHitsInner().numberOfHits(); 
+	 ConversionInfo convInfo = convFinder.getConversionInfo(*bestMatchedPromptEle,tracks, bfield);      
+	 pid_distElePhot[nElePhot] = (convInfo.dist() == -9999.? 9999:convInfo.dist());
+	 pid_dcotElePhot[nElePhot] = (convInfo.dcot() == -9999.? 9999:convInfo.dcot());
+	 pid_ptElePhot[nElePhot] = bestMatchedPromptEle->gsfTrack()->pt(); 
+
+	 nElePhot++;       
+       }	 
      ++nPhot;
+  }
     
-   }
+  
+  
+  
 
-   for (GsfElectronCollection::const_iterator itElectron = ElectronHandle->begin();
-	itElectron != ElectronHandle->end(); ++itElectron) {
- 
-     double minDR = 1000.;
-     int minid = -999;
 
-     for (int iphot=0; iphot<nPhot; iphot++){
-       double deta = delta_eta(itElectron->superCluster()->eta(),etascPhot[iphot]);
-       double dphi = delta_phi(itElectron->superCluster()->phi(),phiscPhot[iphot]);
-       double DR = sqrt ( deta*deta + dphi*dphi);
-       if(DR<minDR) {
-	 minDR = DR;
-	 minid = iphot;
-       }
-     }
-     
-     if(minDR<0.1){
-       ieleassocPhot[minid] = nElePhot;
-       pid_jurECALElePhot[nElePhot] = itElectron->dr03EcalRecHitSumEt(); 
-       pid_twrHCALElePhot[nElePhot] = itElectron->dr03HcalTowerSumEt(); 
-       pid_HoverEElePhot[nElePhot] = itElectron->hadronicOverEm(); 
-       pid_hlwTrackElePhot[nElePhot] = itElectron->dr03TkSumPt(); 
-       pid_etawidElePhot[nElePhot] = itElectron->sigmaIetaIeta(); 
-       pid_dphivtxElePhot[nElePhot] = itElectron->deltaPhiSuperClusterTrackAtVtx(); 
-       pid_detavtxElePhot[nElePhot] = itElectron->deltaEtaSuperClusterTrackAtVtx(); 
-       pid_mishitsElePhot[nElePhot] = itElectron->gsfTrack()->trackerExpectedHitsInner().numberOfHits(); 
-       ConversionInfo convInfo = convFinder.getConversionInfo(*itElectron,tracks, bfield);      
-       pid_distElePhot[nElePhot] = (convInfo.dist() == -9999.? 9999:convInfo.dist());
-       pid_dcotElePhot[nElePhot] = (convInfo.dcot() == -9999.? 9999:convInfo.dcot());
-       pid_ptElePhot[nElePhot] = sqrt(itElectron->gsfTrack()->pt()); 
-
-       nElePhot++;       
-
-     }	 
-     
-   }
-   
-   for (CaloJetCollection::const_iterator it = jetskt4->begin(); 
-	 it != jetskt4->end(); ++it) {
-     
-     if (nJet_kt4>=100) {cout << "number of reco jets kt 04 is larger than 100. Skipping" << endl; continue;}
-     if (it->pt() > calojetptthr_) {
-
-       ptJet_kt4[nJet_kt4] = it->pt();
-       eJet_kt4[nJet_kt4] = it->energy();	 
-       etaJet_kt4[nJet_kt4] = it->eta();	 
-       phiJet_kt4[nJet_kt4] = it->phi();
+  if (dumpKT4Jets_)
+    {
+      for (CaloJetCollection::const_iterator it = jetskt4->begin(); 
+	   it != jetskt4->end(); ++it) {
+	
+	if (nJet_kt4>=100) {cout << "number of reco jets kt 04 is larger than 100. Skipping" << endl; continue;}
+	if (it->pt() > calojetptthr_) {
+	  
+	  ptJet_kt4[nJet_kt4] = it->pt();
+	  eJet_kt4[nJet_kt4] = it->energy();	 
+	  etaJet_kt4[nJet_kt4] = it->eta();	 
+	  phiJet_kt4[nJet_kt4] = it->phi();
        //emfJet_kt4[nJet_kt4] = it->emEnergyFraction();	      
-       emfJet_kt4[nJet_kt4] = fixEMF(it->emEnergyFraction(), it->eta());
-
-       nJet_kt4++;
-     }
-   }
+	  emfJet_kt4[nJet_kt4] = fixEMF(it->emEnergyFraction(), it->eta());
+	  
+	  nJet_kt4++;
+	}
+      }
+    }
    
-   for (CaloJetCollection::const_iterator it = jetskt6->begin(); 
-	 it != jetskt6->end(); ++it) {
-     
-     if (nJet_kt6>=100) {cout << "number of reco jets kt 06 is larger than 100. Skipping" << endl; continue;}
-     if (it->pt() > calojetptthr_) {
-       
-       ptJet_kt6[nJet_kt6] = it->pt(); 
-       eJet_kt6[nJet_kt6] = it->energy();	 
-       etaJet_kt6[nJet_kt6] = it->eta();	 
-       phiJet_kt6[nJet_kt6] = it->phi();	      
-       //emfJet_kt6[nJet_kt6] = it->emEnergyFraction();     
-       emfJet_kt6[nJet_kt6] = fixEMF(it->emEnergyFraction(), it->eta());
+  if (dumpKT6Jets_)
+    {
+      for (CaloJetCollection::const_iterator it = jetskt6->begin(); 
+	   it != jetskt6->end(); ++it) {
+	
+	if (nJet_kt6>=100) {cout << "number of reco jets kt 06 is larger than 100. Skipping" << endl; continue;}
+	if (it->pt() > calojetptthr_) {
+	  
+	  ptJet_kt6[nJet_kt6] = it->pt(); 
+	  eJet_kt6[nJet_kt6] = it->energy();	 
+	  etaJet_kt6[nJet_kt6] = it->eta();	 
+	  phiJet_kt6[nJet_kt6] = it->phi();	      
+	  //emfJet_kt6[nJet_kt6] = it->emEnergyFraction();     
+	  emfJet_kt6[nJet_kt6] = fixEMF(it->emEnergyFraction(), it->eta());
+	  
+	  nJet_kt6++;
+	}
+      }
+    }
 
-       nJet_kt6++;
-     }
-   }
+  if (dumpAKT5Jets_)
+    {
+      for (CaloJetCollection::const_iterator it = jetsakt5->begin(); 
+	   it != jetsakt5->end(); ++it) {
+	
+	if (nJet_akt5>=100) {cout << "number of reco jets akt 05 is larger than 100. Skipping" << endl; continue;}
+	if (it->pt() > calojetptthr_) {
+	  //        jetID_->calculate(iEvent, *it);
+	  
+	  ptJet_akt5[nJet_akt5] = it->pt();	 
+	  
+	  // Jet Energy Scale Corrections on-the-fly     
+	  CaloJet  correctedJet = *it;
+	  //double scale = corrector_akt5->correction(it->p4());
+	  edm::RefToBase<reco::Jet> jetRef(edm::Ref<CaloJetCollection>(jetsakt5,nJet_akt5));
+	  double scale = corrector_akt5->correction(*it,jetRef,iEvent,iSetup);
+	  correctedJet.scaleEnergy(scale);
+	  ptCorrJet_akt5[nJet_akt5] = correctedJet.pt();
+	  
+	  eJet_akt5[nJet_akt5] = it->energy();	 
+	  etaJet_akt5[nJet_akt5] = it->eta();	 
+	  phiJet_akt5[nJet_akt5] = it->phi();	      
+	  //emfJet_akt5[nJet_akt5] = it->emEnergyFraction();
+	  emfJet_akt5[nJet_akt5] = fixEMF(it->emEnergyFraction(), it->eta());
+	  //        n90Jet_akt5[nJet_akt5] = jetID_->hitsInN90();	      
+	  //        n90HitsJet_akt5[nJet_akt5] = jetID_->n90Hits();	      
+	  //        fHPDJet_akt5[nJet_akt5] = jetID_->fHPD();	      
+	  //        fRBXJet_akt5[nJet_akt5] = jetID_->fRBX();	      
+	  
+	  nJet_akt5++;
+	}
+      }
+    }
 
-   for (CaloJetCollection::const_iterator it = jetsakt5->begin(); 
-	it != jetsakt5->end(); ++it) {
-     
-     if (nJet_akt5>=100) {cout << "number of reco jets akt 05 is larger than 100. Skipping" << endl; continue;}
-     if (it->pt() > calojetptthr_) {
-//        jetID_->calculate(iEvent, *it);
-
-       ptJet_akt5[nJet_akt5] = it->pt();	 
-
-       // Jet Energy Scale Corrections on-the-fly     
-       CaloJet  correctedJet = *it;
-       //double scale = corrector_akt5->correction(it->p4());
-       edm::RefToBase<reco::Jet> jetRef(edm::Ref<CaloJetCollection>(jetsakt5,nJet_akt5));
-       double scale = corrector_akt5->correction(*it,jetRef,iEvent,iSetup);
-       correctedJet.scaleEnergy(scale);
-       ptCorrJet_akt5[nJet_akt5] = correctedJet.pt();
-
-       eJet_akt5[nJet_akt5] = it->energy();	 
-       etaJet_akt5[nJet_akt5] = it->eta();	 
-       phiJet_akt5[nJet_akt5] = it->phi();	      
-       //emfJet_akt5[nJet_akt5] = it->emEnergyFraction();
-       emfJet_akt5[nJet_akt5] = fixEMF(it->emEnergyFraction(), it->eta());
-//        n90Jet_akt5[nJet_akt5] = jetID_->hitsInN90();	      
-//        n90HitsJet_akt5[nJet_akt5] = jetID_->n90Hits();	      
-//        fHPDJet_akt5[nJet_akt5] = jetID_->fHPD();	      
-//        fRBXJet_akt5[nJet_akt5] = jetID_->fRBX();	      
-       
-       nJet_akt5++;
-     }
-   }
-
-   for (CaloJetCollection::const_iterator it = jetsakt7->begin(); 
-	it != jetsakt7->end(); ++it) {
-     
-     if (nJet_akt7>=100) {cout << "number of reco jets akt 07 is larger than 100. Skipping" << endl; continue;}
-     if (it->pt() > calojetptthr_) {
-       //       jetID_->calculate(iEvent, *it);
-       ptJet_akt7[nJet_akt7] = it->pt();	 
- 
-       // Jet Energy Scale Corrections on-the-fly     
-       CaloJet  correctedJet = *it;
-       //double scale = corrector_akt5->correction(it->p4());
-       edm::RefToBase<reco::Jet> jetRef(edm::Ref<CaloJetCollection>(jetsakt7,nJet_akt7));
-       double scale = corrector_akt5->correction(*it,jetRef,iEvent,iSetup);
-       correctedJet.scaleEnergy(scale);
-       ptCorrJet_akt7[nJet_akt7] = correctedJet.pt();
-
-       eJet_akt7[nJet_akt7] = it->energy();	 
-       etaJet_akt7[nJet_akt7] = it->eta();	 
-       phiJet_akt7[nJet_akt7] = it->phi();	      
-       //emfJet_akt7[nJet_akt7] = it->emEnergyFraction();
-       emfJet_akt7[nJet_akt7] = fixEMF(it->emEnergyFraction(), it->eta());     
-//        n90Jet_akt7[nJet_akt7] = jetID_->hitsInN90();	      
-//        n90HitsJet_akt7[nJet_akt7] = jetID_->n90Hits();	      
-//        fHPDJet_akt7[nJet_akt7] = jetID_->fHPD();	      
-//        fRBXJet_akt7[nJet_akt7] = jetID_->fRBX();	      
-       
-       nJet_akt7++;
-     }
-   }
+  if (dumpAKT7Jets_)
+    {
+      for (CaloJetCollection::const_iterator it = jetsakt7->begin(); 
+	   it != jetsakt7->end(); ++it) {
+	
+	if (nJet_akt7>=100) {cout << "number of reco jets akt 07 is larger than 100. Skipping" << endl; continue;}
+	if (it->pt() > calojetptthr_) {
+	  //       jetID_->calculate(iEvent, *it);
+	  ptJet_akt7[nJet_akt7] = it->pt();	 
+	  
+	  // Jet Energy Scale Corrections on-the-fly     
+	  CaloJet  correctedJet = *it;
+	  //double scale = corrector_akt5->correction(it->p4());
+	  edm::RefToBase<reco::Jet> jetRef(edm::Ref<CaloJetCollection>(jetsakt7,nJet_akt7));
+	  double scale = corrector_akt5->correction(*it,jetRef,iEvent,iSetup);
+	  correctedJet.scaleEnergy(scale);
+	  ptCorrJet_akt7[nJet_akt7] = correctedJet.pt();
+	  
+	  eJet_akt7[nJet_akt7] = it->energy();	 
+	  etaJet_akt7[nJet_akt7] = it->eta();	 
+	  phiJet_akt7[nJet_akt7] = it->phi();	      
+	  //emfJet_akt7[nJet_akt7] = it->emEnergyFraction();
+	  emfJet_akt7[nJet_akt7] = fixEMF(it->emEnergyFraction(), it->eta());     
+	  //        n90Jet_akt7[nJet_akt7] = jetID_->hitsInN90();	      
+	  //        n90HitsJet_akt7[nJet_akt7] = jetID_->n90Hits();	      
+	  //        fHPDJet_akt7[nJet_akt7] = jetID_->fHPD();	      
+	  //        fRBXJet_akt7[nJet_akt7] = jetID_->fRBX();	      
+	  
+	  nJet_akt7++;
+	}
+      }
+    }
    
-   for (JPTJetCollection::const_iterator it = jptjetsak5->begin(); 
-	it != jptjetsak5->end(); ++it) {
-     
-     if (nJet_jptak5>=100) {cout << "number of reco jets jptakt 05 is larger than 100. Skipping" << endl; continue;}
-     if (nJet_jptak5 < jptjetnmin_ || it->pt() > jptjetptthr_) {
-       
-       // Jet Energy Scale Corrections on-the-fly     
-       JPTJet  correctedJet = *it;
-       //double scale = corrector_jptak5->correction(it->p4());
-       edm::RefToBase<reco::Jet> jetRef(edm::Ref<JPTJetCollection>(jptjetsak5,nJet_jptak5));
-       double scale = corrector_jptak5->correction(*it,jetRef,iEvent,iSetup);
-       correctedJet.scaleEnergy(scale);
-       ptCorrJet_jptak5[nJet_jptak5] = correctedJet.pt();
+  if (dumpJPTAKT5Jets_)
+    {
+      for (JPTJetCollection::const_iterator it = jptjetsak5->begin(); 
+	   it != jptjetsak5->end(); ++it) {
+	
+	if (nJet_jptak5>=100) {cout << "number of reco jets jptakt 05 is larger than 100. Skipping" << endl; continue;}
+	if (nJet_jptak5 < jptjetnmin_ || it->pt() > jptjetptthr_) {
+	  
+	  // Jet Energy Scale Corrections on-the-fly     
+	  JPTJet  correctedJet = *it;
+	  //double scale = corrector_jptak5->correction(it->p4());
+	  edm::RefToBase<reco::Jet> jetRef(edm::Ref<JPTJetCollection>(jptjetsak5,nJet_jptak5));
+	  double scale = corrector_jptak5->correction(*it,jetRef,iEvent,iSetup);
+	  correctedJet.scaleEnergy(scale);
+	  ptCorrJet_jptak5[nJet_jptak5] = correctedJet.pt();
+	  
+	  ptJet_jptak5[nJet_jptak5] = it->pt();	 
+	  eJet_jptak5[nJet_jptak5] = it->energy();	 
+	  etaJet_jptak5[nJet_jptak5] = it->eta();	 
+	  phiJet_jptak5[nJet_jptak5] = it->phi();	      
+	  //emfJet_jptak5[nJet_jptak5] = fixEMF(it->emEnergyFraction(), it->eta());
+	  
+	  nJet_jptak5++;
+	}
+      }
+    }
 
-       ptJet_jptak5[nJet_jptak5] = it->pt();	 
-       eJet_jptak5[nJet_jptak5] = it->energy();	 
-       etaJet_jptak5[nJet_jptak5] = it->eta();	 
-       phiJet_jptak5[nJet_jptak5] = it->phi();	      
-       //emfJet_jptak5[nJet_jptak5] = fixEMF(it->emEnergyFraction(), it->eta());
-       
-       nJet_jptak5++;
-     }
-   }
-   
-   for (PFJetCollection::const_iterator it = pfjetskt4->begin(); 
-	it != pfjetskt4->end(); ++it) {
-     
-     if (nJet_pfkt4>=100) {cout << "number of reco jets pfkt4 is larger than 100. Skipping" << endl; continue;}
-     if (nJet_pfkt4 < pfjetnmin_ || it->pt() > pfjetptthr_) {
-       
-       ptJet_pfkt4[nJet_pfkt4] = it->pt();
-       eJet_pfkt4[nJet_pfkt4] = it->energy();	 
-       etaJet_pfkt4[nJet_pfkt4] = it->eta();	 
-       phiJet_pfkt4[nJet_pfkt4] = it->phi();	      
-       
-       nJet_pfkt4++;
-     }
-   }
+  if (dumpKT4Jets_)
+    {
+      for (PFJetCollection::const_iterator it = pfjetskt4->begin(); 
+	   it != pfjetskt4->end(); ++it) {
+	
+	if (nJet_pfkt4>=100) {cout << "number of reco jets pfkt4 is larger than 100. Skipping" << endl; continue;}
+	if (nJet_pfkt4 < pfjetnmin_ || it->pt() > pfjetptthr_) {
+	  
+	  ptJet_pfkt4[nJet_pfkt4] = it->pt();
+	  eJet_pfkt4[nJet_pfkt4] = it->energy();	 
+	  etaJet_pfkt4[nJet_pfkt4] = it->eta();	 
+	  phiJet_pfkt4[nJet_pfkt4] = it->phi();	      
+	  
+	  nJet_pfkt4++;
+	}
+      }
+    }
 
-   for (PFJetCollection::const_iterator it = pfjetsakt5->begin(); 
-	it != pfjetsakt5->end(); ++it) {
-     
-     if (nJet_pfakt5>=100) {cout << "number of reco jets pfakt5 is larger than 100. Skipping" << endl; continue;}
-     if (nJet_pfakt5 < pfjetnmin_ || it->pt() > pfjetptthr_) {
-       
-       ptJet_pfakt5[nJet_pfakt5] = it->pt();
-       eJet_pfakt5[nJet_pfakt5] = it->energy();	 
-       etaJet_pfakt5[nJet_pfakt5] = it->eta();	 
-       phiJet_pfakt5[nJet_pfakt5] = it->phi();	      
-       
-       // Jet Energy Scale Corrections on-the-fly     
-       PFJet  correctedJet = *it;
-       //double scale = corrector_pfakt5->correction(it->p4());
-       edm::RefToBase<reco::Jet> jetRef(edm::Ref<PFJetCollection>(pfjetsakt5,nJet_pfakt5));
-       double scale = corrector_pfakt5->correction(*it,jetRef,iEvent,iSetup);
-       correctedJet.scaleEnergy(scale);
-       ptCorrJet_pfakt5[nJet_pfakt5] = correctedJet.pt();
-       
-       // Extra variables for PFlow studies
-       Int_t nChargedHadrons = 0;
-       Int_t nPhotons = 0;
-       Int_t nNeutralHadrons = 0;
-       Int_t nElectrons = 0;
-       Int_t nMuons = 0;
-       Int_t nHFHadrons = 0;
-       Int_t nHFEM = 0;
-       
-       TLorentzVector p4ChargedHadrons;
-       TLorentzVector p4Photons;
-       TLorentzVector p4NeutralHadrons;
-       TLorentzVector p4Electrons;
-       TLorentzVector p4Muons;
-       TLorentzVector p4HFHadrons;
-       TLorentzVector p4HFEM;
-       
-       vector<PFCandidatePtr> pfCandidates = it->getPFConstituents();
-       
-       float sumPt_cands=0.;
-       float sumPt2_cands=0.;
-       float rms_cands=0.;
-       
-       for (vector<PFCandidatePtr>::const_iterator jt = pfCandidates.begin();
-	    jt != pfCandidates.end(); ++jt) {
-	 
-	 PFCandidate::ParticleType id = (*jt)->particleId();
-	 // Convert particle momentum to normal TLorentzVector, wrong type :(
-	 math::XYZTLorentzVectorD const& p4t = (*jt)->p4();
-	 TLorentzVector p4(p4t.px(), p4t.py(), p4t.pz(), p4t.energy());
-	 TLorentzVector jetp4;
-       jetp4.SetPtEtaPhiE(it->pt(), it->eta(), it->phi(), it->energy());
-       if(p4.Pt()!=0){
-	 sumPt_cands += p4.Pt();
-	 sumPt2_cands += (p4.Pt()*p4.Pt());
-	 //float deltaR = it->p4().DeltaR(p4);
-	 float deltaR = jetp4.DeltaR(p4);
-	 rms_cands += (p4.Pt()*p4.Pt()*deltaR*deltaR);
-       }
+  if (dumpAKT5Jets_)
+    {
+      for (PFJetCollection::const_iterator it = pfjetsakt5->begin(); 
+	   it != pfjetsakt5->end(); ++it) {
+	
+	if (nJet_pfakt5>=100) {cout << "number of reco jets pfakt5 is larger than 100. Skipping" << endl; continue;}
+	if (nJet_pfakt5 < pfjetnmin_ || it->pt() > pfjetptthr_) {
+	  
+	  ptJet_pfakt5[nJet_pfakt5] = it->pt();
+	  eJet_pfakt5[nJet_pfakt5] = it->energy();	 
+	  etaJet_pfakt5[nJet_pfakt5] = it->eta();	 
+	  phiJet_pfakt5[nJet_pfakt5] = it->phi();	      
+	  
+	  // Jet Energy Scale Corrections on-the-fly     
+	  PFJet  correctedJet = *it;
+	  //double scale = corrector_pfakt5->correction(it->p4());
+	  edm::RefToBase<reco::Jet> jetRef(edm::Ref<PFJetCollection>(pfjetsakt5,nJet_pfakt5));
+	  double scale = corrector_pfakt5->correction(*it,jetRef,iEvent,iSetup);
+	  correctedJet.scaleEnergy(scale);
+	  ptCorrJet_pfakt5[nJet_pfakt5] = correctedJet.pt();
+	  
+	  // Extra variables for PFlow studies
+	  Int_t nChargedHadrons = 0;
+	  Int_t nPhotons = 0;
+	  Int_t nNeutralHadrons = 0;
+	  Int_t nElectrons = 0;
+	  Int_t nMuons = 0;
+	  Int_t nHFHadrons = 0;
+	  Int_t nHFEM = 0;
+	  
+	  TLorentzVector p4ChargedHadrons;
+	  TLorentzVector p4Photons;
+	  TLorentzVector p4NeutralHadrons;
+	  TLorentzVector p4Electrons;
+	  TLorentzVector p4Muons;
+	  TLorentzVector p4HFHadrons;
+	  TLorentzVector p4HFEM;
+	  
+	  vector<PFCandidatePtr> pfCandidates = it->getPFConstituents();
+	  
+	  float sumPt_cands=0.;
+	  float sumPt2_cands=0.;
+	  float rms_cands=0.;
+	  
+	  for (vector<PFCandidatePtr>::const_iterator jt = pfCandidates.begin();
+	       jt != pfCandidates.end(); ++jt) {
+	    
+	    PFCandidate::ParticleType id = (*jt)->particleId();
+	    // Convert particle momentum to normal TLorentzVector, wrong type :(
+	    math::XYZTLorentzVectorD const& p4t = (*jt)->p4();
+	    TLorentzVector p4(p4t.px(), p4t.py(), p4t.pz(), p4t.energy());
+	    TLorentzVector jetp4;
+	    jetp4.SetPtEtaPhiE(it->pt(), it->eta(), it->phi(), it->energy());
+	    if(p4.Pt()!=0){
+	      sumPt_cands += p4.Pt();
+	      sumPt2_cands += (p4.Pt()*p4.Pt());
+	      //float deltaR = it->p4().DeltaR(p4);
+	      float deltaR = jetp4.DeltaR(p4);
+	      rms_cands += (p4.Pt()*p4.Pt()*deltaR*deltaR);
+	    }
 
-	 // Store PFCandidates for two leading jets
-	 
-	 if (id==PFCandidate::h) { // charged hadrons
-	   nChargedHadrons += 1;
-	   p4ChargedHadrons += p4;
-	 }
-	 if (id==PFCandidate::e) { // electrons
-	   nElectrons += 1;
-	   p4Electrons += p4;
-	 }
-	 if (id==PFCandidate::mu) { // muons
-	   nMuons += 1;
-	   p4Muons += p4;
-	 }
-	 if (id==PFCandidate::gamma) { // photons
-	   nPhotons += 1;
-	   p4Photons += p4;
-	 }
-	 if (id==PFCandidate::h0) { // neutral hadrons
-	   nNeutralHadrons += 1;
-	   p4NeutralHadrons += p4;
-	 }
-	 if (id==PFCandidate::h_HF) { // HF hadrons
-	   nHFHadrons += 1;
-	   p4HFHadrons += p4;
-	 }
-	 if (id==PFCandidate::egamma_HF) { // HF EM clusters
-	   nHFEM += 1;
-	   p4HFEM += p4;
-	 }
-
-       } //for PFCandidates
+	    // Store PFCandidates for two leading jets
+	    
+	    if (id==PFCandidate::h) { // charged hadrons
+	      nChargedHadrons += 1;
+	      p4ChargedHadrons += p4;
+	    }
+	    if (id==PFCandidate::e) { // electrons
+	      nElectrons += 1;
+	      p4Electrons += p4;
+	    }
+	    if (id==PFCandidate::mu) { // muons
+	      nMuons += 1;
+	      p4Muons += p4;
+	    }
+	    if (id==PFCandidate::gamma) { // photons
+	      nPhotons += 1;
+	      p4Photons += p4;
+	    }
+	    if (id==PFCandidate::h0) { // neutral hadrons
+	      nNeutralHadrons += 1;
+	      p4NeutralHadrons += p4;
+	    }
+	    if (id==PFCandidate::h_HF) { // HF hadrons
+	      nHFHadrons += 1;
+	      p4HFHadrons += p4;
+	    }
+	    if (id==PFCandidate::egamma_HF) { // HF EM clusters
+	      nHFEM += 1;
+	      p4HFEM += p4;
+	    }
+	    
+	  } //for PFCandidates
 
 
-       ptDJet_pfakt5[nJet_pfakt5] = sqrt( sumPt2_cands )/sumPt_cands;
-       rmsCandJet_pfakt5[nJet_pfakt5] = rms_cands/sumPt2_cands;
+	  ptDJet_pfakt5[nJet_pfakt5] = sqrt( sumPt2_cands )/sumPt_cands;
+	  rmsCandJet_pfakt5[nJet_pfakt5] = rms_cands/sumPt2_cands;
+	  
+	  
+	  const TLorentzVector *p = 0;
+	  
+	  nChargedHadrons_pfakt5[nJet_pfakt5] =  nChargedHadrons;
+	  p = &p4ChargedHadrons;
+	  eChargedHadrons_pfakt5[nJet_pfakt5] = p->E() / it->energy();
+	  
+	  nElectrons_pfakt5[nJet_pfakt5] =  nElectrons;
+	  p = &p4Electrons;
+	  eElectrons_pfakt5[nJet_pfakt5] = p->E() / it->energy();
+	  
+	  nMuons_pfakt5[nJet_pfakt5] =  nMuons;
+	  p = &p4Muons;
+	  eMuons_pfakt5[nJet_pfakt5] = p->E() / it->energy();
+	  
+	  nPhotons_pfakt5[nJet_pfakt5] =  nPhotons;
+	  p = &p4Photons;
+	  ePhotons_pfakt5[nJet_pfakt5] = p->E() / it->energy();
+	  
+	  nNeutralHadrons_pfakt5[nJet_pfakt5] =  nNeutralHadrons;
+	  p = &p4NeutralHadrons;
+	  eNeutralHadrons_pfakt5[nJet_pfakt5] = p->E() / it->energy();
+	  
+	  nHFHadrons_pfakt5[nJet_pfakt5] =  nHFHadrons;
+	  p = &p4HFHadrons;
+	  eHFHadrons_pfakt5[nJet_pfakt5] = p->E() / it->energy();
+	  
+	  nHFEM_pfakt5[nJet_pfakt5] =  nHFEM;
+	  p = &p4HFEM;
+	  eHFEM_pfakt5[nJet_pfakt5] = p->E() / it->energy();
+	  
+	  
+	  int index = nJet_pfakt5;
+	  combinedSecondaryVertexBJetTags_pfakt5[index] = -999.;
+	  combinedSecondaryVertexMVABJetTags_pfakt5[index] = -999.;
+	  jetBProbabilityBJetTags_pfakt5[index] = -999.;
+	  jetProbabilityBJetTags_pfakt5[index] =  -999.;
+	  simpleSecondaryVertexHighEffBJetTags_pfakt5[index] =  -999.;
+	  simpleSecondaryVertexHighPurBJetTags_pfakt5[index] =  -999.;
+	  softMuonBJetTags_pfakt5[index] =  -999.;
+	  softMuonByIP3dBJetTags_pfakt5[index] =  -999.;
+	  softMuonByPtBJetTags_pfakt5[index] =  -999.;
+	  //softElectronBJetTags_pfakt5[index] =  (*softElectronBJetTags)[index].second ;
+	  softElectronByIP3dBJetTags_pfakt5[index] =   -999.;
+	  softElectronByPtBJetTags_pfakt5[index]     = -999.;    
+	  trackCountingHighPurBJetTags_pfakt5[index] = -999.;
+	  trackCountingHighEffBJetTags_pfakt5[index] = -999.;
+	  
+	  if(it->pt() > 10. ){
+	    // B tagging
+	    //combinedSecondaryVertexBJetTags_pfakt5[index] =  (*combinedSecondaryVertexBJetTags)[index].second ;
+	    //combinedSecondaryVertexMVABJetTags_pfakt5[index] =  (*combinedSecondaryVertexMVABJetTags)[index].second ;
+	    jetBProbabilityBJetTags_pfakt5[index] =  (*jetBProbabilityBJetTags)[index].second ;
+	    jetProbabilityBJetTags_pfakt5[index] =  (*jetProbabilityBJetTags)[index].second ;
+	    simpleSecondaryVertexHighEffBJetTags_pfakt5[index] =  (*simpleSecondaryVertexHighEffBJetTags)[index].second ;
+	    simpleSecondaryVertexHighPurBJetTags_pfakt5[index] =  (*simpleSecondaryVertexHighPurBJetTags)[index].second ;
+	    
+	    if( !softMuonBJetTags.isValid() || softMuonBJetTags->size() != pfjetsakt5->size() ) {
+	      if(!softMuonBJetTags.isValid()) cout << "softMuonBJetTags not valid" << endl;
+	      else   cout << "softMuonBJetTags: " << softMuonBJetTags->size() << " pfjetsakt5: " << pfjetsakt5->size() << endl;
+	      cout << "jet index: " << index << endl;
+	    } else {
+	      softMuonBJetTags_pfakt5[index] =  (*softMuonBJetTags)[index].second ;
+	    }
+	    softMuonByIP3dBJetTags_pfakt5[index] =  (*softMuonByIP3dBJetTags)[index].second ;
+	    softMuonByPtBJetTags_pfakt5[index] =  (*softMuonByPtBJetTags)[index].second ;
+	    //softElectronBJetTags_pfakt5[index] =  (*softElectronBJetTags)[index].second ;
+	    softElectronByIP3dBJetTags_pfakt5[index] =  (*softElectronByIP3dBJetTags)[index].second ;
+	    softElectronByPtBJetTags_pfakt5[index] =  (*softElectronByPtBJetTags)[index].second;
+	    trackCountingHighPurBJetTags_pfakt5[index] =  (*trackCountingHighPurBJetTags)[index].second ;
+	    trackCountingHighEffBJetTags_pfakt5[index] =  (*trackCountingHighEffBJetTags)[index].second ;
+	  }
+	  ++nJet_pfakt5;
+	  
+	} // if >pfjetptthr     
+      } // pfakt5
+    }
+  
+  if (dumpPFAKT7Jets_)
+    {
+      for (PFJetCollection::const_iterator it = pfjetsakt7->begin(); 
+	   it != pfjetsakt7->end(); ++it) {
+	
+	if (nJet_pfakt7>=100) {cout << "number of reco jets pfakt7 is larger than 100. Skipping" << endl; continue;}
+	if (nJet_pfakt7 < pfjetnmin_ || it->pt() > pfjetptthr_) {
+	  
+	  ptJet_pfakt7[nJet_pfakt7] = it->pt();
+	  eJet_pfakt7[nJet_pfakt7] = it->energy();	 
+	  etaJet_pfakt7[nJet_pfakt7] = it->eta();	 
+	  phiJet_pfakt7[nJet_pfakt7] = it->phi();	      
+	  
+	  // Jet Energy Scale Corrections on-the-fly     
+	  PFJet  correctedJet = *it;
+	  //double scale = corrector_pfakt5->correction(it->p4());
+	  edm::RefToBase<reco::Jet> jetRef(edm::Ref<PFJetCollection>(pfjetsakt7,nJet_pfakt7));
+	  double scale = corrector_pfakt5->correction(*it,jetRef,iEvent,iSetup);
+	  correctedJet.scaleEnergy(scale);
+	  ptCorrJet_pfakt7[nJet_pfakt7] = correctedJet.pt();
+	  
+	  ++nJet_pfakt7;
+	  
+	} 
+      }
+    }
 
-       
-       const TLorentzVector *p = 0;
-       
-       nChargedHadrons_pfakt5[nJet_pfakt5] =  nChargedHadrons;
-       p = &p4ChargedHadrons;
-       eChargedHadrons_pfakt5[nJet_pfakt5] = p->E() / it->energy();
-       
-       nElectrons_pfakt5[nJet_pfakt5] =  nElectrons;
-       p = &p4Electrons;
-       eElectrons_pfakt5[nJet_pfakt5] = p->E() / it->energy();
-       
-       nMuons_pfakt5[nJet_pfakt5] =  nMuons;
-       p = &p4Muons;
-       eMuons_pfakt5[nJet_pfakt5] = p->E() / it->energy();
-       
-       nPhotons_pfakt5[nJet_pfakt5] =  nPhotons;
-       p = &p4Photons;
-       ePhotons_pfakt5[nJet_pfakt5] = p->E() / it->energy();
-       
-       nNeutralHadrons_pfakt5[nJet_pfakt5] =  nNeutralHadrons;
-       p = &p4NeutralHadrons;
-       eNeutralHadrons_pfakt5[nJet_pfakt5] = p->E() / it->energy();
-       
-       nHFHadrons_pfakt5[nJet_pfakt5] =  nHFHadrons;
-       p = &p4HFHadrons;
-       eHFHadrons_pfakt5[nJet_pfakt5] = p->E() / it->energy();
-       
-       nHFEM_pfakt5[nJet_pfakt5] =  nHFEM;
-       p = &p4HFEM;
-       eHFEM_pfakt5[nJet_pfakt5] = p->E() / it->energy();
-       
-
-       int index = nJet_pfakt5;
-       combinedSecondaryVertexBJetTags_pfakt5[index] = -999.;
-       combinedSecondaryVertexMVABJetTags_pfakt5[index] = -999.;
-       jetBProbabilityBJetTags_pfakt5[index] = -999.;
-       jetProbabilityBJetTags_pfakt5[index] =  -999.;
-       simpleSecondaryVertexHighEffBJetTags_pfakt5[index] =  -999.;
-       simpleSecondaryVertexHighPurBJetTags_pfakt5[index] =  -999.;
-       softMuonBJetTags_pfakt5[index] =  -999.;
-       softMuonByIP3dBJetTags_pfakt5[index] =  -999.;
-       softMuonByPtBJetTags_pfakt5[index] =  -999.;
-       //softElectronBJetTags_pfakt5[index] =  (*softElectronBJetTags)[index].second ;
-       softElectronByIP3dBJetTags_pfakt5[index] =   -999.;
-       softElectronByPtBJetTags_pfakt5[index]     = -999.;    
-       trackCountingHighPurBJetTags_pfakt5[index] = -999.;
-       trackCountingHighEffBJetTags_pfakt5[index] = -999.;
-
-       if(it->pt() > 10. ){
-         // B tagging
-         //combinedSecondaryVertexBJetTags_pfakt5[index] =  (*combinedSecondaryVertexBJetTags)[index].second ;
-         //combinedSecondaryVertexMVABJetTags_pfakt5[index] =  (*combinedSecondaryVertexMVABJetTags)[index].second ;
-          jetBProbabilityBJetTags_pfakt5[index] =  (*jetBProbabilityBJetTags)[index].second ;
-          jetProbabilityBJetTags_pfakt5[index] =  (*jetProbabilityBJetTags)[index].second ;
-          simpleSecondaryVertexHighEffBJetTags_pfakt5[index] =  (*simpleSecondaryVertexHighEffBJetTags)[index].second ;
-          simpleSecondaryVertexHighPurBJetTags_pfakt5[index] =  (*simpleSecondaryVertexHighPurBJetTags)[index].second ;
-     
-          if( !softMuonBJetTags.isValid() || softMuonBJetTags->size() != pfjetsakt5->size() ) {
-            if(!softMuonBJetTags.isValid()) cout << "softMuonBJetTags not valid" << endl;
-            else   cout << "softMuonBJetTags: " << softMuonBJetTags->size() << " pfjetsakt5: " << pfjetsakt5->size() << endl;
-            cout << "jet index: " << index << endl;
-          } else {
-           softMuonBJetTags_pfakt5[index] =  (*softMuonBJetTags)[index].second ;
-          }
-          softMuonByIP3dBJetTags_pfakt5[index] =  (*softMuonByIP3dBJetTags)[index].second ;
-          softMuonByPtBJetTags_pfakt5[index] =  (*softMuonByPtBJetTags)[index].second ;
-          //softElectronBJetTags_pfakt5[index] =  (*softElectronBJetTags)[index].second ;
-          softElectronByIP3dBJetTags_pfakt5[index] =  (*softElectronByIP3dBJetTags)[index].second ;
-          softElectronByPtBJetTags_pfakt5[index] =  (*softElectronByPtBJetTags)[index].second;
-          trackCountingHighPurBJetTags_pfakt5[index] =  (*trackCountingHighPurBJetTags)[index].second ;
-          trackCountingHighEffBJetTags_pfakt5[index] =  (*trackCountingHighEffBJetTags)[index].second ;
-       }
-       ++nJet_pfakt5;
-       
-     } // if >pfjetptthr     
-   } // pfakt5
-   
-   for (PFJetCollection::const_iterator it = pfjetsakt7->begin(); 
-	 it != pfjetsakt7->end(); ++it) {
-     
-     if (nJet_pfakt7>=100) {cout << "number of reco jets pfakt7 is larger than 100. Skipping" << endl; continue;}
-     if (nJet_pfakt7 < pfjetnmin_ || it->pt() > pfjetptthr_) {
-
-       ptJet_pfakt7[nJet_pfakt7] = it->pt();
-       eJet_pfakt7[nJet_pfakt7] = it->energy();	 
-       etaJet_pfakt7[nJet_pfakt7] = it->eta();	 
-       phiJet_pfakt7[nJet_pfakt7] = it->phi();	      
-     
-       // Jet Energy Scale Corrections on-the-fly     
-       PFJet  correctedJet = *it;
-       //double scale = corrector_pfakt5->correction(it->p4());
-       edm::RefToBase<reco::Jet> jetRef(edm::Ref<PFJetCollection>(pfjetsakt7,nJet_pfakt7));
-       double scale = corrector_pfakt5->correction(*it,jetRef,iEvent,iSetup);
-       correctedJet.scaleEnergy(scale);
-       ptCorrJet_pfakt7[nJet_pfakt7] = correctedJet.pt();
-
-       ++nJet_pfakt7;
-
-     } 
-   }
-
-   for (PFJetCollection::const_iterator it = pfjetskt6->begin(); 
-	it != pfjetskt6->end(); ++it) {
-     
-     if (nJet_pfkt6>=100) {cout << "number of reco jets pfkt6 is larger than 100. Skipping" << endl; continue;}
-     if (nJet_pfkt6 < pfjetnmin_ || it->pt() > pfjetptthr_) {
-       
-       ptJet_pfkt6[nJet_pfkt6] = it->pt();
-       eJet_pfkt6[nJet_pfkt6] = it->energy();	 
-       etaJet_pfkt6[nJet_pfkt6] = it->eta();	 
-       phiJet_pfkt6[nJet_pfkt6] = it->phi();	      
-       
-       nJet_pfkt6++;
-     }
-   }
+  if (dumpKT6Jets_)
+    {
+      for (PFJetCollection::const_iterator it = pfjetskt6->begin(); 
+	   it != pfjetskt6->end(); ++it) {
+	
+	if (nJet_pfkt6>=100) {cout << "number of reco jets pfkt6 is larger than 100. Skipping" << endl; continue;}
+	if (nJet_pfkt6 < pfjetnmin_ || it->pt() > pfjetptthr_) {
+	  
+	  ptJet_pfkt6[nJet_pfkt6] = it->pt();
+	  eJet_pfkt6[nJet_pfkt6] = it->energy();	 
+	  etaJet_pfkt6[nJet_pfkt6] = it->eta();	 
+	  phiJet_pfkt6[nJet_pfkt6] = it->phi();	      
+	  
+	  nJet_pfkt6++;
+	}
+      }
+    }
    
    // Fill caloMET
    
@@ -1945,6 +2481,161 @@ GammaJetAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
      
    } //if is MC
    
+   if (dumpBeamHaloInformations_)
+     {
+       edm::Handle<BeamHaloSummary> TheBeamHaloSummary ;
+       iEvent.getByLabel("BeamHaloSummary", TheBeamHaloSummary) ;
+
+
+       isBeamHaloIDTightPass    = false;
+       isBeamHaloIDLoosePass    = false;
+
+       isBeamHaloEcalLoosePass   = false;
+       isBeamHaloHcalLoosePass   = false;
+       isBeamHaloCSCLoosePass    = false;
+       isBeamHaloGlobalLoosePass = false;
+
+       isBeamHaloEcalTightPass   = false;
+       isBeamHaloHcalTightPass   = false;
+       isBeamHaloCSCTightPass    = false;
+       isBeamHaloGlobalTightPass = false;
+
+
+       isSmellsLikeHalo_Tag  = false;
+       isLooseHalo_Tag       = false;
+       isTightHalo_Tag       = false;
+       isExtremeTightHalo_Tag = false;
+
+
+       if(TheBeamHaloSummary.isValid()) {
+	 const BeamHaloSummary TheSummary = (*TheBeamHaloSummary.product() );
+
+	 if(TheSummary.EcalLooseHaloId())isBeamHaloEcalLoosePass   = true;
+	 if(TheSummary.HcalLooseHaloId())isBeamHaloHcalLoosePass   = true;
+
+	 if(TheSummary.EcalTightHaloId())isBeamHaloEcalTightPass   = true;
+	 if(TheSummary.HcalTightHaloId())isBeamHaloHcalTightPass   = true;
+
+	 if(TheSummary.CSCLooseHaloId())isBeamHaloCSCLoosePass    = true;
+	 if(TheSummary.CSCTightHaloId())isBeamHaloCSCTightPass    = true;
+
+	 if(TheSummary.GlobalLooseHaloId())isBeamHaloGlobalLoosePass = true;
+	 if(TheSummary.GlobalTightHaloId())isBeamHaloGlobalTightPass = true;
+
+	 if(TheSummary.EventSmellsLikeHalo())isSmellsLikeHalo_Tag = true;
+	 if(TheSummary.LooseId())isLooseHalo_Tag = true;
+	 if(TheSummary.TightId())isTightHalo_Tag = true;
+	 if(TheSummary.ExtremeTightId())isExtremeTightHalo_Tag = true;
+
+
+	 if( TheSummary.EcalLooseHaloId()  && TheSummary.HcalLooseHaloId() &&
+	     TheSummary.CSCLooseHaloId()   && TheSummary.GlobalLooseHaloId() )
+	   isBeamHaloIDLoosePass = true;
+
+	 if( TheSummary.EcalTightHaloId()  && TheSummary.HcalTightHaloId() &&
+	     TheSummary.CSCTightHaloId()   && TheSummary.GlobalTightHaloId() )
+	   isBeamHaloIDTightPass = true;
+
+       }//not empty
+
+
+       edm::Handle<reco::MuonCollection> muonHandle;
+       iEvent.getByLabel("muons",muonHandle);
+
+       nMuons = 0;
+       for(int x=0;x < min((int) muonHandle->size(),200); x++)
+	 {
+	   muon_pt[x]  = (*muonHandle)[x].pt();
+	   muon_energy[x]  = (*muonHandle)[x].energy();
+	   muon_px[x]  = (*muonHandle)[x].px();
+	   muon_py[x]  = (*muonHandle)[x].py();
+	   muon_pz[x]  = (*muonHandle)[x].pz();
+	   muon_phi[x] = (*muonHandle)[x].phi();
+	   muon_eta[x] = (*muonHandle)[x].eta();
+	   muon_charge[x] = (*muonHandle)[x].charge();
+	   muon_vx[x]  = (*muonHandle)[x].vx();
+	   muon_vy[x]  = (*muonHandle)[x].vy();
+	   muon_vz[x]  = (*muonHandle)[x].vz();
+	   
+	   //tia's stuff
+	   muon_isGlobalMuon[x] =     (*muonHandle)[x].isGlobalMuon();
+	   muon_isTrackerMuon[x] =    (*muonHandle)[x].isTrackerMuon();
+	   muon_isStandAloneMuon[x] = (*muonHandle)[x].isStandAloneMuon();
+	   
+
+	   //FIXME: Seems needed  top and bottom referene point, but not sure how to do that !!!
+	   reco::TrackRef moTrkref;
+	   if((muon_isGlobalMuon[x]) || (muon_isTrackerMuon[x])){
+	     moTrkref = (*muonHandle)[x].innerTrack();
+	     muon_InnerTrack_isNonnull[x] = (*muonHandle)[x].innerTrack().isNonnull();
+	   }
+	   else{
+	     moTrkref = (*muonHandle)[x].outerTrack();
+	     muon_OuterTrack_isNonnull[x] =   (*muonHandle)[x].outerTrack().isNonnull();
+	   }
+	   //For StandAlone
+	   muon_OuterPoint_x[x]=0.0;
+	   muon_OuterPoint_y[x]=0.0;
+	   muon_OuterPoint_z[x]=0.0;
+	   //For Global,Tracker
+	   muon_InnerPoint_x[x]=0.0;
+	   muon_InnerPoint_y[x]=0.0;
+	   muon_InnerPoint_z[x]=0.0;
+	   
+	   if((muon_OuterTrack_isNonnull[x])){//stand-alone
+	     muon_OuterPoint_x[x]= moTrkref->referencePoint().x();
+	     muon_OuterPoint_y[x]= moTrkref->referencePoint().y();
+	     muon_OuterPoint_z[x]= moTrkref->referencePoint().z();
+	   }
+	   if(muon_InnerTrack_isNonnull[x]){//global,tracker
+	     muon_InnerPoint_x[x]= moTrkref->referencePoint().x();
+	     muon_InnerPoint_y[x]= moTrkref->referencePoint().y();
+	     muon_InnerPoint_z[x]= moTrkref->referencePoint().z();
+	   }
+	   nMuons++;
+	 }
+
+       //cosmic muon
+       edm::Handle<reco::MuonCollection>cosmicMuonHandle;
+       iEvent.getByLabel("muonsFromCosmics",cosmicMuonHandle);
+       const reco::MuonCollection & cosmicMuons = *cosmicMuonHandle;
+
+       nCosmicMuons=0;
+       for(int x=0;x < min((int)cosmicMuons.size(),200);x++){
+
+	 cosmicmuon_pt[x]  = cosmicMuons[x].pt();
+	 cosmicmuon_energy[x]  = cosmicMuons[x].energy();
+	 cosmicmuon_px[x]  = cosmicMuons[x].px();
+	 cosmicmuon_py[x]  = cosmicMuons[x].py();
+	 cosmicmuon_pz[x]  = cosmicMuons[x].pz();
+	 cosmicmuon_phi[x] = cosmicMuons[x].phi();
+	 cosmicmuon_eta[x] = cosmicMuons[x].eta();
+	 cosmicmuon_charge[x] = cosmicMuons[x].charge();
+
+	 //tia's stuff
+	 cosmicmuon_isGlobalMuon[x] =     cosmicMuons[x].isGlobalMuon();
+	 cosmicmuon_isTrackerMuon[x] =    cosmicMuons[x].isTrackerMuon();
+	 cosmicmuon_isStandAloneMuon[x] = cosmicMuons[x].isStandAloneMuon();
+
+
+	 reco::TrackRef cmoTrkref = cosmicMuons[x].outerTrack();
+	 cosmicmuon_OuterTrack_isNonnull[x] = cosmicMuons[x].outerTrack().isNonnull();
+	 
+	 cosmicmuon_OuterPoint_x[x]=0.0;
+	 cosmicmuon_OuterPoint_y[x]=0.0;
+	 cosmicmuon_OuterPoint_z[x]=0.0;
+	 // standalone muon variables
+	 if(cosmicmuon_OuterTrack_isNonnull[x]){
+	   cosmicmuon_OuterPoint_x[x]= cmoTrkref->referencePoint().x();
+	   cosmicmuon_OuterPoint_y[x]= cmoTrkref->referencePoint().y();
+	   cosmicmuon_OuterPoint_z[x]= cmoTrkref->referencePoint().z();
+	 }
+
+
+	 nCosmicMuons++;
+       }//end of for loop
+
+     }
    
    //event++;  
    m_tree->Fill();
@@ -1964,6 +2655,8 @@ GammaJetAnalyzer::beginJob()
   m_tree = new TTree ("pippo","Analysis tree") ;
   //  m_tree->SetAutoSave (10000000) ;
   m_tree->Branch("genpt",&genpt,"genpt/F");
+  m_tree->Branch("genProcessId",&genProcessId,"genProcessId/I");
+  m_tree->Branch("genQScale",&genQScale,"genQScale/F");
 
   m_tree->Branch("isMC",&isMC,"isMC/O");
   m_tree->Branch("store",&store,"store/I");
@@ -2005,8 +2698,12 @@ GammaJetAnalyzer::beginJob()
   m_tree->Branch("ptPhot ",&ptPhot ,"ptPhot[nPhot]/F");
   m_tree->Branch("ePhot  ",&ePhot  ,"ePhot[nPhot]/F");
   m_tree->Branch("escPhot  ",&escPhot  ,"escPhot[nPhot]/F");
+  m_tree->Branch("escRawPhot  ",&escRawPhot  ,"escRawPhot[nPhot]/F");
   m_tree->Branch("etascPhot  ",&etascPhot  ,"etascPhot[nPhot]/F");
   m_tree->Branch("phiscPhot  ",&phiscPhot  ,"phiscPhot[nPhot]/F");
+  m_tree->Branch("xscPhot  ",&xscPhot  ,"xscPhot[nPhot]/F");
+  m_tree->Branch("yscPhot  ",&yscPhot  ,"yscPhot[nPhot]/F");
+  m_tree->Branch("zscPhot  ",&zscPhot  ,"zscPhot[nPhot]/F");
   m_tree->Branch("eseedPhot  ",&eseedPhot  ,"eseedPhot[nPhot]/F");
   m_tree->Branch("etaPhot",&etaPhot,"etaPhot[nPhot]/F");
   m_tree->Branch("phiPhot",&phiPhot,"phiPhot[nPhot]/F");
@@ -2019,6 +2716,24 @@ GammaJetAnalyzer::beginJob()
   m_tree->Branch("isEEPhot",&isEEPhot, "isEEPhot[nPhot]/O");
   m_tree->Branch("isEBEEGapPhot",&isEBEEGapPhot, "isEBEEGapPhot[nPhot]/O");
 
+  m_tree->Branch("ntracksConvPhot",nTracksConvPhot,"nTracksConvPhot[nPhot]/I");
+  m_tree->Branch("isValidVtxConvPhot",isValidVtxConvPhot,"isValidVtxConvPhot[nPhot]/O");
+  m_tree->Branch("pairInvmassConvPhot",pairInvariantMassConvPhot,"pairInvariantMassConvPhot[nPhot]/F");
+  m_tree->Branch("pairCotThetaSeperationConvPhot",pairCotThetaSeparationConvPhot,"pairCotThetaSeparationConvPhot[nPhot]/F");
+  m_tree->Branch("pairmomentumXConvPhot",pairMomentum_xConvPhot,"pairMomentum_xConvPhot[nPhot]/F");
+  m_tree->Branch("pairmomentumYConvPhot",pairMomentum_yConvPhot,"pairMomentum_yConvPhot[nPhot]/F");
+  m_tree->Branch("pairmomentumZConvPhot",pairMomentum_zConvPhot,"pairMomentum_zConvPhot[nPhot]/F");
+  m_tree->Branch("chi2ConvPhot",chi2ConvPhot,"chi2ConvPhot[nPhot]/F");
+  m_tree->Branch("nDofConvPhot",nDofConvPhot,"nDofConvPhot[nPhot]/F");
+  m_tree->Branch("eOverPConvPhot",eOverPConvPhot,"eOverPConvPhot[nPhot]/F");
+  m_tree->Branch("convVxConvPhot",conv_vxConvPhot,"conv_vxConvPhot[nPhot]/F");
+  m_tree->Branch("convVyConvPhot",conv_vyConvPhot,"conv_vyConvPhot[nPhot]/F");
+  m_tree->Branch("convVzConvPhot",conv_vzConvPhot,"conv_vzConvPhot[nPhot]/F");
+  m_tree->Branch("distOfMinimumApproachConvPhot",distOfMinimumApproachConvPhot,"distOfMinimumApproachConvPhot[nPhot]/F");
+  m_tree->Branch("dPhiTracksAtVtxConvPhot",dPhiTracksAtVtxConvPhot,"dPhiTracksAtVtxConvPhot[nPhot]/F");
+//   m_tree->Branch("dPhiTracksAtEcalConvPhot",dPhiTracksAtEcalConvPhot,"dPhiTracksAtEcalConvPhot[nPhot]/F");
+//   m_tree->Branch("dEtaTracksAtEcalConvPhot",dEtaTracksAtEcalConvPhot,"dEtaTracksAtEcalConvPhot[nPhot]/F");
+
   // Default photon ID
   m_tree->Branch("pid_isEM",&pid_isEM,"pid_isEM[nPhot]/O");
   m_tree->Branch("pid_isLoose",&pid_isLoose,"pid_isLoose[nPhot]/O");
@@ -2028,12 +2743,16 @@ GammaJetAnalyzer::beginJob()
   m_tree->Branch("pid_HoverE",&pid_HoverE,"pid_HoverE[nPhot]/F");
   m_tree->Branch("pid_hlwTrack",&pid_hlwTrack,"pid_hlwTarck[nPhot]/F");
   m_tree->Branch("pid_hlwTrackNoDz",&pid_hlwTrackNoDz,"pid_hlwTrackNoDz[nPhot]/F");
+  m_tree->Branch("pid_hlwTrackBestRank",&pid_hlwTrackBestRank,"pid_hlwTrackBestRank[nPhot]/F");
+  m_tree->Branch("pid_hlwTrackWorstVtx",&pid_hlwTrackWorstVtx,"pid_hlwTrackWorstVtx[nPhot]/F");
   m_tree->Branch("pid_etawid",&pid_etawid,"pid_etawid[nPhot]/F");
 
   m_tree->Branch("pid_jurECAL03",&pid_jurECAL03,"pid_jurECAL03[nPhot]/F");
   m_tree->Branch("pid_twrHCAL03",&pid_twrHCAL03,"pid_twrHCAL03[nPhot]/F");
   m_tree->Branch("pid_hlwTrack03",&pid_hlwTrack03,"pid_hlwTrack03[nPhot]/F");
   m_tree->Branch("pid_hlwTrack03NoDz",&pid_hlwTrack03NoDz,"pid_hlwTrack03NoDz[nPhot]/F");
+  m_tree->Branch("pid_hlwTrack03BestRank",&pid_hlwTrack03BestRank,"pid_hlwTrack03BestRank[nPhot]/F");
+  m_tree->Branch("pid_hlwTrack03WorstVtx",&pid_hlwTrack03WorstVtx,"pid_hlwTrack03WorstVtx[nPhot]/F");
 
   m_tree->Branch("ptiso004Phot",&ptiso004Phot,"ptiso004Phot[nPhot]/F");
   m_tree->Branch("ntrkiso004Phot",&ntrkiso004Phot,"ntrkiso004Phot[nPhot]/I");
@@ -2052,9 +2771,11 @@ GammaJetAnalyzer::beginJob()
   m_tree->Branch("sEtaPhiPhot",&sEtaPhiPhot,"sEtaPhiPhot[nPhot]/F");
   m_tree->Branch("sPhiPhiPhot",&sPhiPhiPhot,"sPhiPhiPhot[nPhot]/F");
   m_tree->Branch("E1Phot",&E1Phot,"E1Phot[nPhot]/F");
+  m_tree->Branch("E2OverE9Phot",&E2OverE9Phot,"E2OverE9Phot[nPhot]/F");
   m_tree->Branch("E9Phot",&E9Phot,"E9Phot[nPhot]/F");
   m_tree->Branch("E25Phot",&E25Phot,"E25Phot[nPhot]/F");
   m_tree->Branch("ieleassocPhot",&ieleassocPhot,"ieleassocPhot[nPhot]/I");
+  m_tree->Branch("pid_deltaRToTrackPhot",&pid_deltaRToTrackPhot,"pid_deltaRToTrackPhot[nPhot]/F");
 
   m_tree->Branch("nElePhot",&nElePhot,"nElePhot/I");
   m_tree->Branch("pid_jurECALElePhot ",&pid_jurECALElePhot ,"pid_jurECALElePhot[nElePhot]/F");
@@ -2069,186 +2790,215 @@ GammaJetAnalyzer::beginJob()
   m_tree->Branch("pid_dcotElePhot ",&pid_dcotElePhot ,"pid_dcotElePhot[nElePhot]/F");
   m_tree->Branch("pid_ptElePhot ",&pid_ptElePhot ,"pid_ptElePhot[nElePhot]/F");
 
-  m_tree->Branch("nJet_akt5",&nJet_akt5,"nJet_akt5/I");
-  m_tree->Branch("ptJet_akt5 ",&ptJet_akt5 ,"ptJet_akt5[nJet_akt5]/F");
-  m_tree->Branch("ptCorrJet_akt5 ",&ptCorrJet_akt5 ,"ptCorrJet_akt5[nJet_akt5]/F");
-  m_tree->Branch("eJet_akt5  ",&eJet_akt5  ,"eJet_akt5[nJet_akt5]/F");
-  m_tree->Branch("etaJet_akt5",&etaJet_akt5,"etaJet_akt5[nJet_akt5]/F");
-  m_tree->Branch("phiJet_akt5",&phiJet_akt5,"phiJet_akt5[nJet_akt5]/F");
-  m_tree->Branch("emfJet_akt5",&emfJet_akt5,"emfJet_akt5[nJet_akt5]/F");
-  m_tree->Branch("n90Jet_akt5",&n90Jet_akt5,"n90Jet_akt5[nJet_akt5]/F");
-  m_tree->Branch("n90HitsJet_akt5",&n90HitsJet_akt5,"n90HitsJet_akt5[nJet_akt5]/F");
-  m_tree->Branch("fHPDJet_akt5",&fHPDJet_akt5,"fHPDJet_akt5[nJet_akt5]/F");
-  m_tree->Branch("fRBXJet_akt5",&fRBXJet_akt5,"fRBXJet_akt5[nJet_akt5]/F");
+  if (dumpAKT5Jets_)
+    {
+      m_tree->Branch("nJet_akt5",&nJet_akt5,"nJet_akt5/I");
+      m_tree->Branch("ptJet_akt5 ",&ptJet_akt5 ,"ptJet_akt5[nJet_akt5]/F");
+      m_tree->Branch("ptCorrJet_akt5 ",&ptCorrJet_akt5 ,"ptCorrJet_akt5[nJet_akt5]/F");
+      m_tree->Branch("eJet_akt5  ",&eJet_akt5  ,"eJet_akt5[nJet_akt5]/F");
+      m_tree->Branch("etaJet_akt5",&etaJet_akt5,"etaJet_akt5[nJet_akt5]/F");
+      m_tree->Branch("phiJet_akt5",&phiJet_akt5,"phiJet_akt5[nJet_akt5]/F");
+      m_tree->Branch("emfJet_akt5",&emfJet_akt5,"emfJet_akt5[nJet_akt5]/F");
+      m_tree->Branch("n90Jet_akt5",&n90Jet_akt5,"n90Jet_akt5[nJet_akt5]/F");
+      m_tree->Branch("n90HitsJet_akt5",&n90HitsJet_akt5,"n90HitsJet_akt5[nJet_akt5]/F");
+      m_tree->Branch("fHPDJet_akt5",&fHPDJet_akt5,"fHPDJet_akt5[nJet_akt5]/F");
+      m_tree->Branch("fRBXJet_akt5",&fRBXJet_akt5,"fRBXJet_akt5[nJet_akt5]/F");
+    }
 
-  m_tree->Branch("nJet_akt7",&nJet_akt7,"nJet_akt7/I");
-  m_tree->Branch("ptJet_akt7 ",&ptJet_akt7 ,"ptJet_akt7[nJet_akt7]/F");
-  m_tree->Branch("ptCorrJet_akt7 ",&ptCorrJet_akt7 ,"ptCorrJet_akt7[nJet_akt5]/F");
-  m_tree->Branch("eJet_akt7  ",&eJet_akt7  ,"eJet_akt7[nJet_akt7]/F");
-  m_tree->Branch("etaJet_akt7",&etaJet_akt7,"etaJet_akt7[nJet_akt7]/F");
-  m_tree->Branch("phiJet_akt7",&phiJet_akt7,"phiJet_akt7[nJet_akt7]/F");
-  m_tree->Branch("emfJet_akt7",&emfJet_akt7,"emfJet_akt7[nJet_akt7]/F");
-  m_tree->Branch("n90Jet_akt7",&n90Jet_akt7,"n90Jet_akt7[nJet_akt7]/F");
-  m_tree->Branch("n90HitsJet_akt7",&n90HitsJet_akt7,"n90HitsJet_akt7[nJet_akt7]/F");
-  m_tree->Branch("fHPDJet_akt7",&fHPDJet_akt7,"fHPDJet_akt7[nJet_akt7]/F");
-  m_tree->Branch("fRBXJet_akt7",&fRBXJet_akt7,"fRBXJet_akt7[nJet_akt7]/F");
+  if (dumpAKT7Jets_)
+    {
+      m_tree->Branch("nJet_akt7",&nJet_akt7,"nJet_akt7/I");
+      m_tree->Branch("ptJet_akt7 ",&ptJet_akt7 ,"ptJet_akt7[nJet_akt7]/F");
+      m_tree->Branch("ptCorrJet_akt7 ",&ptCorrJet_akt7 ,"ptCorrJet_akt7[nJet_akt5]/F");
+      m_tree->Branch("eJet_akt7  ",&eJet_akt7  ,"eJet_akt7[nJet_akt7]/F");
+      m_tree->Branch("etaJet_akt7",&etaJet_akt7,"etaJet_akt7[nJet_akt7]/F");
+      m_tree->Branch("phiJet_akt7",&phiJet_akt7,"phiJet_akt7[nJet_akt7]/F");
+      m_tree->Branch("emfJet_akt7",&emfJet_akt7,"emfJet_akt7[nJet_akt7]/F");
+      m_tree->Branch("n90Jet_akt7",&n90Jet_akt7,"n90Jet_akt7[nJet_akt7]/F");
+      m_tree->Branch("n90HitsJet_akt7",&n90HitsJet_akt7,"n90HitsJet_akt7[nJet_akt7]/F");
+      m_tree->Branch("fHPDJet_akt7",&fHPDJet_akt7,"fHPDJet_akt7[nJet_akt7]/F");
+      m_tree->Branch("fRBXJet_akt7",&fRBXJet_akt7,"fRBXJet_akt7[nJet_akt7]/F");
+    }
 
+  if (dumpJPTAKT5Jets_)
+    {
+      m_tree->Branch("nJet_jptak5",&nJet_jptak5,"nJet_jptak5/I");
+      m_tree->Branch("ptJet_jptak5 ",&ptJet_jptak5 ,"ptJet_jptak5[nJet_jptak5]/F");
+      m_tree->Branch("ptCorrJet_jptak5 ",&ptCorrJet_jptak5 ,"ptCorrJet_jptak5[nJet_jptak5]/F");
+      m_tree->Branch("eJet_jptak5  ",&eJet_jptak5  ,"eJet_jptak5[nJet_jptak5]/F");
+      m_tree->Branch("etaJet_jptak5",&etaJet_jptak5,"etaJet_jptak5[nJet_jptak5]/F");
+      m_tree->Branch("phiJet_jptak5",&phiJet_jptak5,"phiJet_jptak5[nJet_jptak5]/F");
+      m_tree->Branch("emfJet_jptak5",&emfJet_jptak5,"emfJet_jptak5[nJet_jptak5]/F");
+    }
 
-  m_tree->Branch("nJet_jptak5",&nJet_jptak5,"nJet_jptak5/I");
-  m_tree->Branch("ptJet_jptak5 ",&ptJet_jptak5 ,"ptJet_jptak5[nJet_jptak5]/F");
-  m_tree->Branch("ptCorrJet_jptak5 ",&ptCorrJet_jptak5 ,"ptCorrJet_jptak5[nJet_jptak5]/F");
-  m_tree->Branch("eJet_jptak5  ",&eJet_jptak5  ,"eJet_jptak5[nJet_jptak5]/F");
-  m_tree->Branch("etaJet_jptak5",&etaJet_jptak5,"etaJet_jptak5[nJet_jptak5]/F");
-  m_tree->Branch("phiJet_jptak5",&phiJet_jptak5,"phiJet_jptak5[nJet_jptak5]/F");
-  m_tree->Branch("emfJet_jptak5",&emfJet_jptak5,"emfJet_jptak5[nJet_jptak5]/F");
+  if (dumpKT4Jets_)
+    {
+      m_tree->Branch("nJet_pfkt4",&nJet_pfkt4,"nJet_pfkt4/I");
+      m_tree->Branch("ptJet_pfkt4 ",&ptJet_pfkt4 ,"ptJet_pfkt4[nJet_pfkt4]/F");
+      m_tree->Branch("eJet_pfkt4  ",&eJet_pfkt4  ,"eJet_pfkt4[nJet_pfkt4]/F");
+      m_tree->Branch("etaJet_pfkt4",&etaJet_pfkt4,"etaJet_pfkt4[nJet_pfkt4]/F");
+      m_tree->Branch("phiJet_pfkt4",&phiJet_pfkt4,"phiJet_pfkt4[nJet_pfkt4]/F");
+    }
 
-  m_tree->Branch("nJet_pfkt4",&nJet_pfkt4,"nJet_pfkt4/I");
-  m_tree->Branch("ptJet_pfkt4 ",&ptJet_pfkt4 ,"ptJet_pfkt4[nJet_pfkt4]/F");
-  m_tree->Branch("eJet_pfkt4  ",&eJet_pfkt4  ,"eJet_pfkt4[nJet_pfkt4]/F");
-  m_tree->Branch("etaJet_pfkt4",&etaJet_pfkt4,"etaJet_pfkt4[nJet_pfkt4]/F");
-  m_tree->Branch("phiJet_pfkt4",&phiJet_pfkt4,"phiJet_pfkt4[nJet_pfkt4]/F");
-
-  m_tree->Branch("nJet_pfakt5",&nJet_pfakt5,"nJet_pfakt5/I");
-  m_tree->Branch("ptJet_pfakt5 ",&ptJet_pfakt5 ,"ptJet_pfakt5[nJet_pfakt5]/F");
-  m_tree->Branch("ptCorrJet_pfakt5 ",&ptCorrJet_pfakt5 ,"ptCorrJet_pfakt5[nJet_pfakt5]/F");
-  m_tree->Branch("eJet_pfakt5  ",&eJet_pfakt5  ,"eJet_pfakt5[nJet_pfakt5]/F");
-  m_tree->Branch("etaJet_pfakt5",&etaJet_pfakt5,"etaJet_pfakt5[nJet_pfakt5]/F");
-  m_tree->Branch("phiJet_pfakt5",&phiJet_pfakt5,"phiJet_pfakt5[nJet_pfakt5]/F");
-  m_tree->Branch("ptDJet_pfakt5",&ptDJet_pfakt5,"ptDJet_pfakt5[nJet_pfakt5]/F");
-  m_tree->Branch("rmsCandJet_pfakt5",&rmsCandJet_pfakt5,"rmsCandJet_pfakt5[nJet_pfakt5]/F");
-
-
-  m_tree->Branch("combinedSecondaryVertexBJetTags", &combinedSecondaryVertexBJetTags_pfakt5, "combinedSecondaryVertexBJetTags[nJet_pfakt5]/F");
-  m_tree->Branch("combinedSecondaryVertexMVABJetTags", &combinedSecondaryVertexMVABJetTags_pfakt5, "combinedSecondaryVertexMVABJetTags[nJet_pfakt5]/F");
-  m_tree->Branch("jetBProbabilityBJetTags", &jetBProbabilityBJetTags_pfakt5, "jetBProbabilityBJetTags[nJet_pfakt5]/F");
-  m_tree->Branch("jetProbabilityBJetTags", &jetProbabilityBJetTags_pfakt5, "jetProbabilityBJetTags[nJet_pfakt5]/F");
-  m_tree->Branch("simpleSecondaryVertexHighEffBJetTags", &simpleSecondaryVertexHighEffBJetTags_pfakt5, "simpleSecondaryVertexHighEffBJetTags[nJet_pfakt5]/F");
-  m_tree->Branch("simpleSecondaryVertexHighPurBJetTags", &simpleSecondaryVertexHighPurBJetTags_pfakt5, "simpleSecondaryVertexHighPurBJetTags[nJet_pfakt5]/F");
-  m_tree->Branch("softMuonBJetTags", &softMuonBJetTags_pfakt5, "softMuonBJetTags[nJet_pfakt5]/F");
-  m_tree->Branch("softMuonByIP3dBJetTags", &softMuonByIP3dBJetTags_pfakt5, "softMuonByIP3dBJetTags[nJet_pfakt5]/F");
-  m_tree->Branch("softMuonByPtBJetTags", &softMuonByPtBJetTags_pfakt5, "softMuonByPtBJetTags[nJet_pfakt5]/F");
-  m_tree->Branch("softElectronByIP3dBJetTags", &softElectronByIP3dBJetTags_pfakt5, "softElectronByIP3dBJetTags[nJet_pfakt5]/F");
-  m_tree->Branch("softElectronByPtBJetTags", &softElectronByPtBJetTags_pfakt5, "softElectronByPtBJetTags[nJet_pfakt5]/F");
-  m_tree->Branch("trackCountingHighPurBJetTags", &trackCountingHighPurBJetTags_pfakt5, "trackCountingHighPurBJetTags[nJet_pfakt5]/F");
-  m_tree->Branch("trackCountingHighEffBJetTags", &trackCountingHighEffBJetTags_pfakt5, "trackCountingHighEffBJetTags[nJet_pfakt5]/F");
+  if (dumpPFAKT5Jets_)
+    {
+      m_tree->Branch("nJet_pfakt5",&nJet_pfakt5,"nJet_pfakt5/I");
+      m_tree->Branch("ptJet_pfakt5 ",&ptJet_pfakt5 ,"ptJet_pfakt5[nJet_pfakt5]/F");
+      m_tree->Branch("ptCorrJet_pfakt5 ",&ptCorrJet_pfakt5 ,"ptCorrJet_pfakt5[nJet_pfakt5]/F");
+      m_tree->Branch("eJet_pfakt5  ",&eJet_pfakt5  ,"eJet_pfakt5[nJet_pfakt5]/F");
+      m_tree->Branch("etaJet_pfakt5",&etaJet_pfakt5,"etaJet_pfakt5[nJet_pfakt5]/F");
+      m_tree->Branch("phiJet_pfakt5",&phiJet_pfakt5,"phiJet_pfakt5[nJet_pfakt5]/F");
+      m_tree->Branch("ptDJet_pfakt5",&ptDJet_pfakt5,"ptDJet_pfakt5[nJet_pfakt5]/F");
+      m_tree->Branch("rmsCandJet_pfakt5",&rmsCandJet_pfakt5,"rmsCandJet_pfakt5[nJet_pfakt5]/F");
 
 
-//   // Extra variables for PFlow studies
-  m_tree->Branch("nChargedHadrons_pfakt5",nChargedHadrons_pfakt5,"nChargedHadrons_pfakt5[nJet_pfakt5]/I");
-  m_tree->Branch("nPhotons_pfakt5",       nPhotons_pfakt5,       "nPhotons_pfakt5[nJet_pfakt5]/I");
-  m_tree->Branch("nMuons_pfakt5",         nMuons_pfakt5,         "nMuons_pfakt5[nJet_pfakt5]/I");
-  m_tree->Branch("nElectrons_pfakt5",     nElectrons_pfakt5,     "nElectrons_pfakt5[nJet_pfakt5]/I");
-  m_tree->Branch("nNeutralHadrons_pfakt5",nNeutralHadrons_pfakt5,"nNeutralHadrons_pfakt5[nJet_pfakt5]/I");
-  m_tree->Branch("nHFHadrons_pfakt5",     nHFHadrons_pfakt5,     "nHFHadrons_pfakt5[nJet_pfakt5]/I");
-  m_tree->Branch("nHFEM_pfakt5",     nHFEM_pfakt5,     "nHFEM_pfakt5[nJet_pfakt5]/I");
+      m_tree->Branch("combinedSecondaryVertexBJetTags", &combinedSecondaryVertexBJetTags_pfakt5, "combinedSecondaryVertexBJetTags[nJet_pfakt5]/F");
+      m_tree->Branch("combinedSecondaryVertexMVABJetTags", &combinedSecondaryVertexMVABJetTags_pfakt5, "combinedSecondaryVertexMVABJetTags[nJet_pfakt5]/F");
+      m_tree->Branch("jetBProbabilityBJetTags", &jetBProbabilityBJetTags_pfakt5, "jetBProbabilityBJetTags[nJet_pfakt5]/F");
+      m_tree->Branch("jetProbabilityBJetTags", &jetProbabilityBJetTags_pfakt5, "jetProbabilityBJetTags[nJet_pfakt5]/F");
+      m_tree->Branch("simpleSecondaryVertexHighEffBJetTags", &simpleSecondaryVertexHighEffBJetTags_pfakt5, "simpleSecondaryVertexHighEffBJetTags[nJet_pfakt5]/F");
+      m_tree->Branch("simpleSecondaryVertexHighPurBJetTags", &simpleSecondaryVertexHighPurBJetTags_pfakt5, "simpleSecondaryVertexHighPurBJetTags[nJet_pfakt5]/F");
+      m_tree->Branch("softMuonBJetTags", &softMuonBJetTags_pfakt5, "softMuonBJetTags[nJet_pfakt5]/F");
+      m_tree->Branch("softMuonByIP3dBJetTags", &softMuonByIP3dBJetTags_pfakt5, "softMuonByIP3dBJetTags[nJet_pfakt5]/F");
+      m_tree->Branch("softMuonByPtBJetTags", &softMuonByPtBJetTags_pfakt5, "softMuonByPtBJetTags[nJet_pfakt5]/F");
+      m_tree->Branch("softElectronByIP3dBJetTags", &softElectronByIP3dBJetTags_pfakt5, "softElectronByIP3dBJetTags[nJet_pfakt5]/F");
+      m_tree->Branch("softElectronByPtBJetTags", &softElectronByPtBJetTags_pfakt5, "softElectronByPtBJetTags[nJet_pfakt5]/F");
+      m_tree->Branch("trackCountingHighPurBJetTags", &trackCountingHighPurBJetTags_pfakt5, "trackCountingHighPurBJetTags[nJet_pfakt5]/F");
+      m_tree->Branch("trackCountingHighEffBJetTags", &trackCountingHighEffBJetTags_pfakt5, "trackCountingHighEffBJetTags[nJet_pfakt5]/F");
+      
 
-  m_tree->Branch("eChargedHadrons_pfakt5",eChargedHadrons_pfakt5,"eChargedHadrons_pfakt5[nJet_pfakt5]/F");
-  m_tree->Branch("ePhotons_pfakt5",ePhotons_pfakt5,"ePhotons_pfakt5[nJet_pfakt5]/F");
-  m_tree->Branch("eMuons_pfakt5",eMuons_pfakt5,"eMuons_pfakt5[nJet_pfakt5]/F");
-  m_tree->Branch("eElectrons_pfakt5",eElectrons_pfakt5,"eElectrons_pfakt5[nJet_pfakt5]/F");
-  m_tree->Branch("eNeutralHadrons_pfakt5",eNeutralHadrons_pfakt5,"eNeutralHadrons_pfakt5[nJet_pfakt5]/F");
-  m_tree->Branch("eHFHadrons_pfakt5",eHFHadrons_pfakt5,"eHFHadrons_pfakt5[nJet_pfakt5]/F");
-  m_tree->Branch("eHFEM_pfakt5",eHFEM_pfakt5,"eHFEM_pfakt5[nJet_pfakt5]/F");
+      //   // Extra variables for PFlow studies
+      m_tree->Branch("nChargedHadrons_pfakt5",nChargedHadrons_pfakt5,"nChargedHadrons_pfakt5[nJet_pfakt5]/I");
+      m_tree->Branch("nPhotons_pfakt5",       nPhotons_pfakt5,       "nPhotons_pfakt5[nJet_pfakt5]/I");
+      m_tree->Branch("nMuons_pfakt5",         nMuons_pfakt5,         "nMuons_pfakt5[nJet_pfakt5]/I");
+      m_tree->Branch("nElectrons_pfakt5",     nElectrons_pfakt5,     "nElectrons_pfakt5[nJet_pfakt5]/I");
+      m_tree->Branch("nNeutralHadrons_pfakt5",nNeutralHadrons_pfakt5,"nNeutralHadrons_pfakt5[nJet_pfakt5]/I");
+      m_tree->Branch("nHFHadrons_pfakt5",     nHFHadrons_pfakt5,     "nHFHadrons_pfakt5[nJet_pfakt5]/I");
+      m_tree->Branch("nHFEM_pfakt5",     nHFEM_pfakt5,     "nHFEM_pfakt5[nJet_pfakt5]/I");
+      
+      m_tree->Branch("eChargedHadrons_pfakt5",eChargedHadrons_pfakt5,"eChargedHadrons_pfakt5[nJet_pfakt5]/F");
+      m_tree->Branch("ePhotons_pfakt5",ePhotons_pfakt5,"ePhotons_pfakt5[nJet_pfakt5]/F");
+      m_tree->Branch("eMuons_pfakt5",eMuons_pfakt5,"eMuons_pfakt5[nJet_pfakt5]/F");
+      m_tree->Branch("eElectrons_pfakt5",eElectrons_pfakt5,"eElectrons_pfakt5[nJet_pfakt5]/F");
+      m_tree->Branch("eNeutralHadrons_pfakt5",eNeutralHadrons_pfakt5,"eNeutralHadrons_pfakt5[nJet_pfakt5]/F");
+      m_tree->Branch("eHFHadrons_pfakt5",eHFHadrons_pfakt5,"eHFHadrons_pfakt5[nJet_pfakt5]/F");
+      m_tree->Branch("eHFEM_pfakt5",eHFEM_pfakt5,"eHFEM_pfakt5[nJet_pfakt5]/F");
+    }
 
+  if (dumpPFAKT7Jets_)
+    {
+      m_tree->Branch("nJet_pfakt7",&nJet_pfakt7,"nJet_pfakt7/I");
+      m_tree->Branch("ptJet_pfakt7 ",&ptJet_pfakt7 ,"ptJet_pfakt7[nJet_pfakt7]/F");
+      m_tree->Branch("ptCorrJet_pfakt7 ",&ptCorrJet_pfakt7 ,"ptCorrJet_pfakt7[nJet_pfakt7]/F");
+      m_tree->Branch("eJet_pfakt7  ",&eJet_pfakt7  ,"eJet_pfakt7[nJet_pfakt7]/F");
+      m_tree->Branch("etaJet_pfakt7",&etaJet_pfakt7,"etaJet_pfakt7[nJet_pfakt7]/F");
+      m_tree->Branch("phiJet_pfakt7",&phiJet_pfakt7,"phiJet_pfakt7[nJet_pfakt7]/F");
+    }
 
-  m_tree->Branch("nJet_pfakt7",&nJet_pfakt7,"nJet_pfakt7/I");
-  m_tree->Branch("ptJet_pfakt7 ",&ptJet_pfakt7 ,"ptJet_pfakt7[nJet_pfakt7]/F");
-  m_tree->Branch("ptCorrJet_pfakt7 ",&ptCorrJet_pfakt7 ,"ptCorrJet_pfakt7[nJet_pfakt7]/F");
-  m_tree->Branch("eJet_pfakt7  ",&eJet_pfakt7  ,"eJet_pfakt7[nJet_pfakt7]/F");
-  m_tree->Branch("etaJet_pfakt7",&etaJet_pfakt7,"etaJet_pfakt7[nJet_pfakt7]/F");
-  m_tree->Branch("phiJet_pfakt7",&phiJet_pfakt7,"phiJet_pfakt7[nJet_pfakt7]/F");
+  if (dumpKT6Jets_)
+    {
+      m_tree->Branch("nJet_pfkt6",&nJet_pfkt6,"nJet_pfkt6/I");
+      m_tree->Branch("ptJet_pfkt6 ",&ptJet_pfkt6 ,"ptJet_pfkt6[nJet_pfkt6]/F");
+      m_tree->Branch("eJet_pfkt6  ",&eJet_pfkt6  ,"eJet_pfkt6[nJet_pfkt6]/F");
+      m_tree->Branch("etaJet_pfkt6",&etaJet_pfkt6,"etaJet_pfkt6[nJet_pfkt6]/F");
+      m_tree->Branch("phiJet_pfkt6",&phiJet_pfkt6,"phiJet_pfkt6[nJet_pfkt6]/F");
+    }
 
-  m_tree->Branch("nJet_pfkt6",&nJet_pfkt6,"nJet_pfkt6/I");
-  m_tree->Branch("ptJet_pfkt6 ",&ptJet_pfkt6 ,"ptJet_pfkt6[nJet_pfkt6]/F");
-  m_tree->Branch("eJet_pfkt6  ",&eJet_pfkt6  ,"eJet_pfkt6[nJet_pfkt6]/F");
-  m_tree->Branch("etaJet_pfkt6",&etaJet_pfkt6,"etaJet_pfkt6[nJet_pfkt6]/F");
-  m_tree->Branch("phiJet_pfkt6",&phiJet_pfkt6,"phiJet_pfkt6[nJet_pfkt6]/F");
+  if (dumpAKT5Jets_ || dumpJPTAKT5Jets_ || dumpPFAKT5Jets_)
+    {
+      m_tree->Branch("nJetGen_akt5",&nJetGen_akt5,"nJetGen_akt5/I");
+      m_tree->Branch("ptJetGen_akt5 ",&ptJetGen_akt5,
+		     "ptJetGen_akt5[nJetGen_akt5]/F");
+      m_tree->Branch("eJetGen_akt5  ",&eJetGen_akt5,
+		     "eJetGen_akt5[nJetGen_akt5]/F");
+      m_tree->Branch("etaJetGen_akt5",&etaJetGen_akt5,
+		     "etaJetGen_akt5[nJetGen_akt5]/F");
+      m_tree->Branch("phiJetGen_akt5",&phiJetGen_akt5,
+		     "phiJetGen_akt5[nJetGen_akt5]/F");
 
+      //   // Extra variables for PFlow studies
+      m_tree->Branch("nMuonsGen_akt5", nMuonsGen_akt5,
+		     "nMuonsGen_akt5[nJetGen_akt5]/I");
+      m_tree->Branch("nElectronsGen_akt5", nElectronsGen_akt5,
+		     "nElectronsGen_akt5[nJetGen_akt5]/I");
+      m_tree->Branch("nPhotonsGen_akt5", nPhotonsGen_akt5,
+		     "nPhotonsGen_akt5[nJetGen_akt5]/I");
+      m_tree->Branch("nTracksGen_akt5", nTracksGen_akt5,
+		     "nTracksGen_akt5[nJetGen_akt5]/I");
+      m_tree->Branch("nNeutralHadronsGen_akt5", nNeutralHadronsGen_akt5,
+		     "nNeutralHadronsGen_akt5[nJetGen_akt5]/I");
+      m_tree->Branch("nHFHadronsGen_akt5", nHFHadronsGen_akt5,
+		     "nHFHadronsGen_akt5[nJetGen_akt5]/I");
+      m_tree->Branch("nHFEMGen_akt5", nHFEMGen_akt5,
+		     "nHFEMGen_akt5[nJetGen_akt5]/I");
+      
+      m_tree->Branch("nNeutronsGen_akt5", nNeutronsGen_akt5,
+		     "nNeutronsGen_akt5[nJetGen_akt5]/I");
+      m_tree->Branch("nK0LGen_akt5", nK0LGen_akt5,
+		     "nK0LGen_akt5[nJetGen_akt5]/I");
+      m_tree->Branch("nK0SGen_akt5", nK0SGen_akt5,
+		     "nK0SGen_akt5[nJetGen_akt5]/I");
+      m_tree->Branch("nLambdasGen_akt5", nLambdasGen_akt5,
+		     "nLambdasGen_akt5[nJetGen_akt5]/I");
+      m_tree->Branch("nCsiGen_akt5", nCsiGen_akt5,
+		     "nCsiGen_akt5[nJetGen_akt5]/I");
+      m_tree->Branch("nOtherNeutralHadronsGen_akt5", nOtherNeutralHadronsGen_akt5,
+		     "nOtherNeutralHadronsGen_akt5[nJetGen_akt5]/I");
+      
+      m_tree->Branch("eMuonsGen_akt5", eMuonsGen_akt5,
+		     "eMuonsGen_akt5[nJetGen_akt5]/F");
+      m_tree->Branch("eElectronsGen_akt5", eElectronsGen_akt5,
+		     "eElectronsGen_akt5[nJetGen_akt5]/F");
+      m_tree->Branch("ePhotonsGen_akt5", ePhotonsGen_akt5,
+		     "ePhotonsGen_akt5[nJetGen_akt5]/F");
+      m_tree->Branch("eTracksGen_akt5", eTracksGen_akt5,
+		     "eTracksGen_akt5[nJetGen_akt5]/F");
+      m_tree->Branch("eNeutralHadronsGen_akt5", eNeutralHadronsGen_akt5,
+		     "eNeutralHadronsGen_akt5[nJetGen_akt5]/F");
+      m_tree->Branch("eHFHadronsGen_akt5", eHFHadronsGen_akt5,
+		     "eHFHadronsGen_akt5[nJetGen_akt5]/F");
+      m_tree->Branch("eHFEMGen_akt5", eHFEMGen_akt5,
+		     "eHFEMGen_akt5[nJetGen_akt5]/F");
+      
+      m_tree->Branch("eNeutronsGen_akt5", eNeutronsGen_akt5,
+		     "eNeutronsGen_akt5[nJetGen_akt5]/F");
+      m_tree->Branch("eK0LGen_akt5", eK0LGen_akt5,
+		     "eK0LGen_akt5[nJetGen_akt5]/F");
+      m_tree->Branch("eK0SGen_akt5", eK0SGen_akt5,
+		     "eK0SGen_akt5[nJetGen_akt5]/F");
+      m_tree->Branch("eLambdasGen_akt5", eLambdasGen_akt5,
+		     "eLambdasGen_akt5[nJetGen_akt5]/F");
+      m_tree->Branch("eCsiGen_akt5", eCsiGen_akt5,
+		     "eCsiGen_akt5[nJetGen_akt5]/F");
+      m_tree->Branch("eOtherNeutralHadronsGen_akt5", eOtherNeutralHadronsGen_akt5,
+		     "eOtherNeutralHadronsGen_akt5[nJetGen_akt5]/F");
+    }
 
-  m_tree->Branch("nJetGen_akt5",&nJetGen_akt5,"nJetGen_akt5/I");
-  m_tree->Branch("ptJetGen_akt5 ",&ptJetGen_akt5,
-		 "ptJetGen_akt5[nJetGen_akt5]/F");
-  m_tree->Branch("eJetGen_akt5  ",&eJetGen_akt5,
-		 "eJetGen_akt5[nJetGen_akt5]/F");
-  m_tree->Branch("etaJetGen_akt5",&etaJetGen_akt5,
-		 "etaJetGen_akt5[nJetGen_akt5]/F");
-  m_tree->Branch("phiJetGen_akt5",&phiJetGen_akt5,
-		 "phiJetGen_akt5[nJetGen_akt5]/F");
+  if (dumpAKT7Jets_ || dumpJPTAKT7Jets_ || dumpPFAKT7Jets_)
+    {
+      m_tree->Branch("nJetGen_akt7",&nJetGen_akt7,"nJetGen_akt7/I");
+      m_tree->Branch("ptJetGen_akt7 ",&ptJetGen_akt7 ,"ptJetGen_akt7[nJetGen_akt7]/F");
+      m_tree->Branch("eJetGen_akt7  ",&eJetGen_akt7  ,"eJetGen_akt7[nJetGen_akt7]/F");
+      m_tree->Branch("etaJetGen_akt7",&etaJetGen_akt7,"etaJetGen_akt7[nJetGen_akt7]/F");
+      m_tree->Branch("phiJetGen_akt7",&phiJetGen_akt7,"phiJetGen_akt7[nJetGen_akt7]/F");
+    }
+  if (dumpKT4Jets_)
+    {
+      m_tree->Branch("nJetGen_kt4",&nJetGen_kt4,"nJetGen_kt4/I");
+      m_tree->Branch("ptJetGen_kt4 ",&ptJetGen_kt4 ,"ptJetGen_kt4[nJetGen_kt4]/F");
+      m_tree->Branch("eJetGen_kt4  ",&eJetGen_kt4  ,"eJetGen_kt4[nJetGen_kt4]/F");
+      m_tree->Branch("etaJetGen_kt4",&etaJetGen_kt4,"etaJetGen_kt4[nJetGen_kt4]/F");
+      m_tree->Branch("phiJetGen_kt4",&phiJetGen_kt4,"phiJetGen_kt4[nJetGen_kt4]/F");
+    }
 
-//   // Extra variables for PFlow studies
-  m_tree->Branch("nMuonsGen_akt5", nMuonsGen_akt5,
-		 "nMuonsGen_akt5[nJetGen_akt5]/I");
-  m_tree->Branch("nElectronsGen_akt5", nElectronsGen_akt5,
-		 "nElectronsGen_akt5[nJetGen_akt5]/I");
-  m_tree->Branch("nPhotonsGen_akt5", nPhotonsGen_akt5,
-		 "nPhotonsGen_akt5[nJetGen_akt5]/I");
-  m_tree->Branch("nTracksGen_akt5", nTracksGen_akt5,
-		 "nTracksGen_akt5[nJetGen_akt5]/I");
-  m_tree->Branch("nNeutralHadronsGen_akt5", nNeutralHadronsGen_akt5,
-		 "nNeutralHadronsGen_akt5[nJetGen_akt5]/I");
-  m_tree->Branch("nHFHadronsGen_akt5", nHFHadronsGen_akt5,
-		 "nHFHadronsGen_akt5[nJetGen_akt5]/I");
-  m_tree->Branch("nHFEMGen_akt5", nHFEMGen_akt5,
-		 "nHFEMGen_akt5[nJetGen_akt5]/I");
-
-  m_tree->Branch("nNeutronsGen_akt5", nNeutronsGen_akt5,
-		 "nNeutronsGen_akt5[nJetGen_akt5]/I");
-  m_tree->Branch("nK0LGen_akt5", nK0LGen_akt5,
-		 "nK0LGen_akt5[nJetGen_akt5]/I");
-  m_tree->Branch("nK0SGen_akt5", nK0SGen_akt5,
-		 "nK0SGen_akt5[nJetGen_akt5]/I");
-  m_tree->Branch("nLambdasGen_akt5", nLambdasGen_akt5,
-		 "nLambdasGen_akt5[nJetGen_akt5]/I");
-  m_tree->Branch("nCsiGen_akt5", nCsiGen_akt5,
-		 "nCsiGen_akt5[nJetGen_akt5]/I");
-  m_tree->Branch("nOtherNeutralHadronsGen_akt5", nOtherNeutralHadronsGen_akt5,
-		 "nOtherNeutralHadronsGen_akt5[nJetGen_akt5]/I");
-
-  m_tree->Branch("eMuonsGen_akt5", eMuonsGen_akt5,
-		 "eMuonsGen_akt5[nJetGen_akt5]/F");
-  m_tree->Branch("eElectronsGen_akt5", eElectronsGen_akt5,
-		 "eElectronsGen_akt5[nJetGen_akt5]/F");
-  m_tree->Branch("ePhotonsGen_akt5", ePhotonsGen_akt5,
-		 "ePhotonsGen_akt5[nJetGen_akt5]/F");
-  m_tree->Branch("eTracksGen_akt5", eTracksGen_akt5,
-		 "eTracksGen_akt5[nJetGen_akt5]/F");
-  m_tree->Branch("eNeutralHadronsGen_akt5", eNeutralHadronsGen_akt5,
-		 "eNeutralHadronsGen_akt5[nJetGen_akt5]/F");
-  m_tree->Branch("eHFHadronsGen_akt5", eHFHadronsGen_akt5,
-		 "eHFHadronsGen_akt5[nJetGen_akt5]/F");
-  m_tree->Branch("eHFEMGen_akt5", eHFEMGen_akt5,
-		 "eHFEMGen_akt5[nJetGen_akt5]/F");
-
-  m_tree->Branch("eNeutronsGen_akt5", eNeutronsGen_akt5,
-		 "eNeutronsGen_akt5[nJetGen_akt5]/F");
-  m_tree->Branch("eK0LGen_akt5", eK0LGen_akt5,
-		 "eK0LGen_akt5[nJetGen_akt5]/F");
-  m_tree->Branch("eK0SGen_akt5", eK0SGen_akt5,
-		 "eK0SGen_akt5[nJetGen_akt5]/F");
-  m_tree->Branch("eLambdasGen_akt5", eLambdasGen_akt5,
-		 "eLambdasGen_akt5[nJetGen_akt5]/F");
-  m_tree->Branch("eCsiGen_akt5", eCsiGen_akt5,
-		 "eCsiGen_akt5[nJetGen_akt5]/F");
-  m_tree->Branch("eOtherNeutralHadronsGen_akt5", eOtherNeutralHadronsGen_akt5,
-		 "eOtherNeutralHadronsGen_akt5[nJetGen_akt5]/F");
-
-  m_tree->Branch("nJetGen_akt7",&nJetGen_akt7,"nJetGen_akt7/I");
-  m_tree->Branch("ptJetGen_akt7 ",&ptJetGen_akt7 ,"ptJetGen_akt7[nJetGen_akt7]/F");
-  m_tree->Branch("eJetGen_akt7  ",&eJetGen_akt7  ,"eJetGen_akt7[nJetGen_akt7]/F");
-  m_tree->Branch("etaJetGen_akt7",&etaJetGen_akt7,"etaJetGen_akt7[nJetGen_akt7]/F");
-  m_tree->Branch("phiJetGen_akt7",&phiJetGen_akt7,"phiJetGen_akt7[nJetGen_akt7]/F");
-
-  m_tree->Branch("nJetGen_kt4",&nJetGen_kt4,"nJetGen_kt4/I");
-  m_tree->Branch("ptJetGen_kt4 ",&ptJetGen_kt4 ,"ptJetGen_kt4[nJetGen_kt4]/F");
-  m_tree->Branch("eJetGen_kt4  ",&eJetGen_kt4  ,"eJetGen_kt4[nJetGen_kt4]/F");
-  m_tree->Branch("etaJetGen_kt4",&etaJetGen_kt4,"etaJetGen_kt4[nJetGen_kt4]/F");
-  m_tree->Branch("phiJetGen_kt4",&phiJetGen_kt4,"phiJetGen_kt4[nJetGen_kt4]/F");
-
-  m_tree->Branch("nJetGen_kt6",&nJetGen_kt6,"nJetGen_kt6/I");
-  m_tree->Branch("ptJetGen_kt6 ",&ptJetGen_kt6 ,"ptJetGen_kt6[nJetGen_kt6]/F");
-  m_tree->Branch("eJetGen_kt6  ",&eJetGen_kt6  ,"eJetGen_kt6[nJetGen_kt6]/F");
-  m_tree->Branch("etaJetGen_kt6",&etaJetGen_kt6,"etaJetGen_kt6[nJetGen_kt6]/F");
-  m_tree->Branch("phiJetGen_kt6",&phiJetGen_kt6,"phiJetGen_kt6[nJetGen_kt6]/F");
+  if (dumpKT6Jets_)
+    {
+      m_tree->Branch("nJetGen_kt6",&nJetGen_kt6,"nJetGen_kt6/I");
+      m_tree->Branch("ptJetGen_kt6 ",&ptJetGen_kt6 ,"ptJetGen_kt6[nJetGen_kt6]/F");
+      m_tree->Branch("eJetGen_kt6  ",&eJetGen_kt6  ,"eJetGen_kt6[nJetGen_kt6]/F");
+      m_tree->Branch("etaJetGen_kt6",&etaJetGen_kt6,"etaJetGen_kt6[nJetGen_kt6]/F");
+      m_tree->Branch("phiJetGen_kt6",&phiJetGen_kt6,"phiJetGen_kt6[nJetGen_kt6]/F");
+    }
 
 
   // pz,eta always zero, px,py redundant
@@ -2304,6 +3054,10 @@ GammaJetAnalyzer::beginJob()
   m_tree->Branch("vntracks",&vntracks,"vntracks[nvertex]/F");
   m_tree->Branch("vchi2",&vchi2,"vchi2[nvertex]/F");
   m_tree->Branch("vndof",&vndof,"vndof[nvertex]/F");
+  m_tree->Branch("vptbal",&vptbal,"vptbal[nvertex]/F");
+  m_tree->Branch("vptasym",&vptasym,"vptasym[nvertex]/F");
+  m_tree->Branch("vlogsumpt2",&vlogsumpt2,"vlogsumpt2[nvertex]/F");
+  m_tree->Branch("vrank",&vrank,"vrank[nvertex]/I");
 
   // Set trigger bits of interest
   nHLT = 13;
@@ -2331,6 +3085,68 @@ GammaJetAnalyzer::beginJob()
   m_tree->Branch("HLTNames",&aHLTNames);
   m_tree->Branch("HLTResults",&aHLTResults);
   //m_tree->Branch("HLTResults",&aHLTResults,"HLTResults[nHLT]/O");
+
+  if (dumpBeamHaloInformations_)
+    {
+      m_tree->Branch("isBeamHaloGlobalLoosePass",&isBeamHaloGlobalLoosePass,"isBeamHaloGlobalLoosePass/O");
+      m_tree->Branch("isBeamHaloGlobalTightPass",&isBeamHaloGlobalTightPass,"isBeamHaloGloablTightPass/O");
+      m_tree->Branch("isBeamHaloHcalLoosePass",&isBeamHaloHcalLoosePass,"isBeamHaloHcalLoosePass/O");
+      m_tree->Branch("isBeamHaloHcalTightPass",&isBeamHaloHcalTightPass,"isBeamHaloHcalTightPass/O");
+      m_tree->Branch("isBeamHaloCSCLoosePass",&isBeamHaloCSCLoosePass,"isBeamHaloCSCLoosePass/O");
+      m_tree->Branch("isBeamHaloCSCTightPass",&isBeamHaloCSCTightPass,"isBeamHaloCSCTightPass/O");
+      m_tree->Branch("isBeamHaloEcalLoosePass",&isBeamHaloEcalLoosePass,"isBeamHaloEcalLoosePass/O");
+      m_tree->Branch("isBeamHaloEcalTightPass",&isBeamHaloEcalTightPass,"isBeamHaloEcalTightPass/O");
+      m_tree->Branch("isBeamHaloIDTightPass",&isBeamHaloIDTightPass,"isBeamHaloIDTightPass/O");
+      m_tree->Branch("isBeamHaloIDLoosePass",&isBeamHaloIDLoosePass,"isBeamHaloIDLoosePass/O");
+      m_tree->Branch("isSmellsLikeHalo_Tag",&isSmellsLikeHalo_Tag, "isSmellsLikeHalo_Tag/O");
+      m_tree->Branch("isLooseHalo_Tag",&isLooseHalo_Tag, "isLooseHalo_Tag/O");
+      m_tree->Branch("isTightHalo_Tag",&isTightHalo_Tag, "isTightHalo_Tag/O");
+      m_tree->Branch("isExtremeTightHalo_Tag",&isExtremeTightHalo_Tag, "isExtremeTightHalo_Tag/O");
+
+      m_tree->Branch("nMuons",&nMuons,"nMuons/I");
+      m_tree->Branch("Muon_px",muon_px,"muon_px[nMuons]/F");
+      m_tree->Branch("Muon_py",muon_py,"muon_py[nMuons]/F");
+      m_tree->Branch("Muon_pz",muon_pz,"muon_pz[nMuons]/F");
+      m_tree->Branch("Muon_vx",muon_vx,"muon_vx[nMuons]/F");
+      m_tree->Branch("Muon_vy",muon_vy,"muon_vy[nMuons]/F");
+      m_tree->Branch("Muon_vz",muon_vz,"muon_vz[nMuons]/F");
+      m_tree->Branch("Muon_pt",muon_pt,"muon_pt[nMuons]/F");
+      m_tree->Branch("Muon_eta",muon_eta,"muon_eta[nMuons]/F");
+      m_tree->Branch("Muon_phi",muon_phi,"muon_phi[nMuons]/F");
+      m_tree->Branch("Muon_energy",muon_energy,"muon_energy[nMuons]/F");
+      m_tree->Branch("Muon_charge",muon_charge,"muon_charge[nMuons]/F");
+      m_tree->Branch("Muon_isGlobalMuon",muon_isGlobalMuon,"muon_isGlobalMuon[nMuons]/O");
+      m_tree->Branch("Muon_isTrackerMuon",muon_isTrackerMuon,"muon_isTrackerMuon[nMuons]/O");
+      m_tree->Branch("Muon_isStandAloneMuon",muon_isStandAloneMuon,"muon_isStandAloneMuon[nMuons]/O");
+      m_tree->Branch("Muon_InnerTrack_isNonnull",muon_InnerTrack_isNonnull,"muon_InnerTrack_isNonnull[nMuons]/O");
+      m_tree->Branch("Muon_OuterTrack_isNonnull",muon_OuterTrack_isNonnull,"muon_OuterTrack_isNonnull[nMuons]/O");
+      m_tree->Branch("Muon_OuterPoint_x",muon_OuterPoint_x,"muon_OuterPoint_x[nMuons]/F");
+      m_tree->Branch("Muon_OuterPoint_y",muon_OuterPoint_y,"muon_OuterPoint_y[nMuons]/F");
+      m_tree->Branch("Muon_OuterPoint_z",muon_OuterPoint_z,"muon_OuterPoint_z[nMuons]/F");
+      //for Global,Tracker muon
+      m_tree->Branch("Muon_InnerPoint_x",muon_InnerPoint_x,"muon_InnerPoint_x[nMuons]/F");
+      m_tree->Branch("Muon_InnerPoint_y",muon_InnerPoint_y,"muon_InnerPoint_y[nMuons]/F");
+      m_tree->Branch("Muon_InnerPoint_z",muon_InnerPoint_z,"muon_InnerPoint_z[nMuons]/F");
+
+      m_tree->Branch("nCosmicMuons",&nCosmicMuons,"nCosmicMuons/I");
+      m_tree->Branch("CosmicMuon_px",cosmicmuon_px,"cosmicmuon_px[nCosmicMuons]/F");
+      m_tree->Branch("CosmicMuon_py",cosmicmuon_py,"cosmicmuon_py[nCosmicMuons]/F");
+      m_tree->Branch("CosmicMuon_pz",cosmicmuon_pz,"cosmicmuon_pz[nCosmicMuons]/F");
+      m_tree->Branch("CosmicMuon_pt",cosmicmuon_pt,"cosmicmuon_pt[nCosmicMuons]/F");
+      m_tree->Branch("CosmicMuon_eta",cosmicmuon_eta,"cosmicmuon_eta[nCosmicMuons]/F");
+      m_tree->Branch("CosmicMuon_phi",cosmicmuon_phi,"cosmicmuon_phi[nCosmicMuons]/F");
+      m_tree->Branch("CosmicMuon_energy",cosmicmuon_energy,"cosmicmuon_energy[nCosmicMuons]/F");
+      m_tree->Branch("CosmicMuon_charge",cosmicmuon_charge,"cosmicmuon_charge[nCosmicMuons]/F");
+      m_tree->Branch("CosmicMuon_isGlobalMuon",cosmicmuon_isGlobalMuon,"cosmicmuon_isGlobalMuon[nCosmicMuons]/O");
+      m_tree->Branch("CosmicMuon_isTrackerMuon",cosmicmuon_isTrackerMuon,"cosmicmuon_isTrackerMuon[nCosmicMuons]/O");
+      m_tree->Branch("CosmicMuon_isStandAloneMuon",cosmicmuon_isStandAloneMuon,"cosmicmuon_isStandAloneMuon[nCosmicMuons]/O");
+      m_tree->Branch("CosmicMuon_InnerTrack_isNonnull",cosmicmuon_InnerTrack_isNonnull,"cosmicmuon_InnerTrack_isNonnull[nCosmicMuons]/O");
+      m_tree->Branch("CosmicMuon_OuterTrack_isNonnull",cosmicmuon_OuterTrack_isNonnull,"cosmicmuon_OuterTrack_isNonnull[nCosmicMuons]/O");
+      m_tree->Branch("CosmicMuon_OuterPoint_x",cosmicmuon_OuterPoint_x,"cosmicmuon_OuterPoint_x[nCosmicMuons]/F");
+      m_tree->Branch("CosmicMuon_OuterPoint_y",cosmicmuon_OuterPoint_y,"cosmicmuon_OuterPoint_y[nCosmicMuons]/F");
+      m_tree->Branch("CosmicMuon_OuterPoint_z",cosmicmuon_OuterPoint_z,"cosmicmuon_OuterPoint_z[nCosmicMuons]/F");
+    }
+
 
   m_tree->Branch("Xsec",  &Xsec_, "Xsec/D");
 

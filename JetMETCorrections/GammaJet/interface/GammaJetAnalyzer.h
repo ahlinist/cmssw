@@ -15,6 +15,15 @@
 
 #include "RecoJets/JetProducers/interface/JetIDHelper.h"
 
+//For HggVertexAnalysis
+#include "Analysis/VertexAnalysis/interface/HggVertexAnalyzer.h"
+#include "Analysis/VertexAnalysis/interface/HggVertexFromConversions.h"
+#include "Analysis/VertexAnalysis/interface/VertexAlgoParameters.h"
+
+#include "DataFormats/EcalRecHit/interface/EcalRecHitCollections.h"
+#include "DataFormats/EcalDetId/interface/EBDetId.h"
+#include "DataFormats/EcalDetId/interface/EEDetId.h"
+
 #include "TH1.h"
 #include "TH2D.h"
 #include "TFile.h"
@@ -54,6 +63,15 @@ class GammaJetAnalyzer : public edm::EDAnalyzer {
       inline double oplus(double a, double b);
       // fix EMF in HF
       inline double fixEMF(double emf, double eta);
+
+      inline float recHitE( const  DetId id,  const EcalRecHitCollection &recHits );
+
+      inline float recHitE( const DetId id, const EcalRecHitCollection & recHits,int di, int dj );
+
+      inline float recHitApproxEt(  const DetId id,  const EcalRecHitCollection &recHits );
+
+
+      float GetE2OverE9( const DetId id, const EcalRecHitCollection & recHits);
 
       // Method for iterative printing of decay chains
       bool printChildren(const SimTrack* p, 
@@ -153,8 +171,11 @@ TH2D* h2_n_vs_eta;
       Float_t vntracks[100];
       Float_t vchi2[100];
       Float_t vndof[100];
-
- 
+      Float_t vptbal[100];
+      Float_t vptasym[100];
+      Float_t vlogsumpt2[100];
+      Int_t vrank[100];
+      
       // Vertex distribution at MC truth level
       Float_t vxMC;
       Float_t vyMC;
@@ -174,21 +195,46 @@ TH2D* h2_n_vs_eta;
       Float_t phiMC[nMaxMC];
 
       Float_t genpt;
+      Int_t genProcessId;
+      Float_t genQScale;
 
       Int_t nPhot;
       Float_t ptPhot[40];
       Float_t ePhot[40];
       Float_t eseedPhot[40];
       Float_t escPhot[40];
+      Float_t escRawPhot[40];
       Float_t etaPhot[40];
       Float_t phiPhot[40];
       Float_t etascPhot[40];
       Float_t phiscPhot[40];
+      Float_t xscPhot[40];
+      Float_t yscPhot[40];
+      Float_t zscPhot[40];
       Float_t timePhot[40];
       Float_t e4SwissCrossPhot[40];
       Int_t hasPixelSeedPhot[40];
       Int_t hasMatchedConvPhot[40];
       Int_t hasMatchedPromptElePhot[40];
+      //For ConvertedPhotons
+      Bool_t isValidVtxConvPhot[40];
+      Int_t nTracksConvPhot[40];
+      Float_t pairInvariantMassConvPhot[40];
+      Float_t pairCotThetaSeparationConvPhot[40];
+      Float_t pairMomentum_xConvPhot[40];
+      Float_t pairMomentum_yConvPhot[40];
+      Float_t pairMomentum_zConvPhot[40];
+      Float_t chi2ConvPhot[40];
+      Float_t nDofConvPhot[40];
+      Float_t eOverPConvPhot[40];
+      Float_t conv_vxConvPhot[40];
+      Float_t conv_vyConvPhot[40];
+      Float_t conv_vzConvPhot[40];
+      Float_t distOfMinimumApproachConvPhot[40];
+      Float_t dPhiTracksAtVtxConvPhot[40]; 
+/*       Float_t dPhiTracksAtEcalConvPhot[40]; */
+/*       Float_t dEtaTracksAtEcalConvPhot[40]; */
+      
       bool isEBPhot[40];
       bool isEEPhot[40];
       bool isEBEEGapPhot[40];
@@ -207,6 +253,10 @@ TH2D* h2_n_vs_eta;
       Float_t pid_hlwTrack03[40]; // Hollow cone track isolation
       Float_t pid_hlwTrack03NoDz[40]; // Hollow cone track isolation
       Float_t pid_hlwTrackNoDz[40]; // Hollow cone track isolation
+      Float_t pid_hlwTrackBestRank[40]; // Hollow cone track isolation
+      Float_t pid_hlwTrack03BestRank[40]; // Hollow cone track isolation
+      Float_t pid_hlwTrackWorstVtx[40]; // Hollow cone track isolation
+      Float_t pid_hlwTrack03WorstVtx[40]; // Hollow cone track isolation
      
       Float_t ptiso004Phot[40];
       Int_t ntrkiso004Phot[40];
@@ -223,10 +273,12 @@ TH2D* h2_n_vs_eta;
       Float_t sEtaPhiPhot[40];
       Float_t sPhiPhiPhot[40];
       Float_t E1Phot[40];
+      Float_t E2OverE9Phot[40];
       Float_t E9Phot[40];
       Float_t E25Phot[40];
       Int_t ieleassocPhot[40];
-
+      Float_t pid_deltaRToTrackPhot[40];
+      
       Int_t nElePhot;
       Float_t pid_jurECALElePhot[40]; 
       Float_t pid_twrHCALElePhot[40]; 
@@ -449,8 +501,88 @@ TH2D* h2_n_vs_eta;
       Int_t    hltNamesLen;
       Int_t    hltCount;
 
+      bool dumpAKT5Jets_;
+      bool dumpAKT7Jets_;
+
+      bool dumpJPTAKT5Jets_;
+      bool dumpJPTAKT7Jets_;
+
+      bool dumpPFAKT5Jets_;
+      bool dumpPFAKT7Jets_;
+
+      bool dumpKT4Jets_;
+      bool dumpKT6Jets_;
+
+      //************** FOR BEAM HALO STUDIES ****************//
+
+      bool dumpBeamHaloInformations_;
+      //BeamHaloSummary
+      bool isBeamHaloIDTightPass;
+      bool isBeamHaloIDLoosePass;
+
+      bool isBeamHaloEcalLoosePass;
+      bool isBeamHaloHcalLoosePass;
+      bool isBeamHaloCSCLoosePass;
+      bool isBeamHaloGlobalLoosePass;
+
+      bool isBeamHaloEcalTightPass;
+      bool isBeamHaloHcalTightPass;
+      bool isBeamHaloCSCTightPass;
+      bool isBeamHaloGlobalTightPass;
+
+      bool isSmellsLikeHalo_Tag;
+      bool isLooseHalo_Tag;
+      bool isTightHalo_Tag;
+      bool isExtremeTightHalo_Tag;
+
+      //muon variables
+
+      Int_t nMuons;
+      Float_t muon_pt[200];
+      Float_t muon_px[200];
+      Float_t muon_py[200];
+      Float_t muon_pz[200];
+      Float_t muon_vx[200];
+      Float_t muon_vy[200];
+      Float_t muon_vz[200];
+      Float_t muon_energy[200];
+      Float_t muon_charge[200];
+      Float_t muon_eta[200];
+      Float_t muon_phi[200];
+      Bool_t  muon_isGlobalMuon[200];
+      Bool_t  muon_isTrackerMuon[200];
+      Bool_t  muon_isStandAloneMuon[200];
+      bool  muon_InnerTrack_isNonnull[200];
+      bool  muon_OuterTrack_isNonnull[200];
+      float muon_OuterPoint_x[200];
+      float muon_OuterPoint_y[200];
+      float muon_OuterPoint_z[200];
+      float muon_InnerPoint_x[200];
+      float muon_InnerPoint_y[200];
+      float muon_InnerPoint_z[200];
+
+      
+      //cosmicmuon variables
+      Int_t nCosmicMuons;
+      Float_t cosmicmuon_pt[200];
+      Float_t cosmicmuon_px[200];
+      Float_t cosmicmuon_py[200];
+      Float_t cosmicmuon_pz[200];
+      Float_t cosmicmuon_energy[200];
+      Float_t cosmicmuon_charge[200];
+      Float_t cosmicmuon_eta[200];
+      Float_t cosmicmuon_phi[200];
+      Bool_t  cosmicmuon_isGlobalMuon[200];
+      Bool_t  cosmicmuon_isTrackerMuon[200];
+      Bool_t  cosmicmuon_isStandAloneMuon[200];
+      bool  cosmicmuon_InnerTrack_isNonnull[200];
+      bool  cosmicmuon_OuterTrack_isNonnull[200];
+      Float_t cosmicmuon_OuterPoint_x[200];
+      Float_t cosmicmuon_OuterPoint_y[200];
+      Float_t cosmicmuon_OuterPoint_z[200];
+
       std::vector<std::string>*  aHLTNames;
-      //bool     aHLTResults[MAXHLTBITS];
+      //Bool_t     aHLTResults[MAXHLTBITS];
       std::vector<bool>*  aHLTResults;
       
       int nHLT;
@@ -464,5 +596,9 @@ TH2D* h2_n_vs_eta;
       float pu_ntrks_lowpt[50];
       float pu_ntrks_highpt[50];
 
+      HggVertexAnalyzer* vtxAna;
+      HggVertexFromConversions* vtxAnaFromConv;
+      VertexAlgoParameters vtxPar;
+      std::vector<std::string> rankVariables;
 };
 

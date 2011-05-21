@@ -32,6 +32,7 @@
 <use   name="RecoEgamma/EgammaTools"/>
 <use   name="JetMETCorrections/Objects"/>
 <use   name="DataFormats/L1GlobalTrigger"/>
+<use   name="Analysis/VertexAnalysis"/>
 <use   name="DataFormats/L1GlobalMuonTrigger"/>
 <use   name="MyAnalysis/IsolationTools"/>
 <use   name="DataFormats/PatCandidates"/>
