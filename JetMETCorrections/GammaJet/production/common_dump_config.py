@@ -1,4 +1,4 @@
-# $Id: common_dump_config.py,v 1.5 2011/05/18 15:41:05 meridian Exp $
+# $Id: common_dump_config.py,v 1.6 2011/05/21 12:08:17 meridian Exp $
 #
 #  common configuration to dump ntuples in MC and data
 #    all changes affecting the path and additional modules msut be done here
@@ -125,6 +125,7 @@ process.myanalysis = cms.EDAnalyzer("GammaJetAnalyzer",
     tracks = cms.untracked.InputTag("generalTracks"),
     Electronsrc = cms.untracked.InputTag("gsfElectrons"),
     Photonsrc = cms.untracked.InputTag("photons"),
+    Conversionsrc = cms.untracked.InputTag("allConversions"),
     recoCollection = cms.string('reducedEcalRecHitsEB'),
     JetCorrectionService_akt5 = cms.string('ak5CaloL1L2L3'),
     JetCorrectionService_akt7 = cms.string('ak7CaloL2L3'),
