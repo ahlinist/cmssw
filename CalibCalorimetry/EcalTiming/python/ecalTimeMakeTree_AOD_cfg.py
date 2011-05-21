@@ -54,8 +54,8 @@ process.multi5x5BasicClustersTimePi0Barrel =  RecoEcal.EgammaClusterProducers.mu
     endcapHitProducer = cms.string('reducedEcalRecHitsEE'),
     endcapHitCollection = cms.string(''),
     
-    IslandBarrelSeedThr = cms.double(0.5),   # barrelSeedThreshold
-    IslandEndcapSeedThr = cms.double(1.0),   # endcapSeedThreshold
+    IslandBarrelSeedThr = cms.double(1.5),   # barrelSeedThreshold
+    IslandEndcapSeedThr = cms.double(2.5),   # endcapSeedThreshold
 
     barrelClusterCollection = cms.string('multi5x5BarrelBasicClusters'),
     endcapClusterCollection = cms.string('multi5x5EndcapBasicClusters'),
@@ -83,8 +83,8 @@ process.multi5x5BasicClustersTimePi0Endcap =  RecoEcal.EgammaClusterProducers.mu
     endcapHitProducer = cms.string('reducedEcalRecHitsEE'),
     endcapHitCollection = cms.string(''),
 
-    IslandBarrelSeedThr = cms.double(0.5),              # endcapSeedThreshold
-    IslandEndcapSeedThr = cms.double(1.0),             # barrelSeedThreshold
+    IslandBarrelSeedThr = cms.double(1.5),              # endcapSeedThreshold
+    IslandEndcapSeedThr = cms.double(2.5),             # barrelSeedThreshold
 
     barrelClusterCollection = cms.string('multi5x5BarrelBasicClusters'),
     endcapClusterCollection = cms.string('multi5x5EndcapBasicClusters'),
@@ -125,7 +125,7 @@ process.ecalTimeTree.fileName = 'EcalTimeTree'
 process.ecalTimeTree.barrelEcalRecHitCollection = cms.InputTag("reducedEcalRecHitsEB","")
 process.ecalTimeTree.endcapEcalRecHitCollection = cms.InputTag("reducedEcalRecHitsEE","")
 process.ecalTimeTree.muonCollection = cms.InputTag("muons")
-process.ecalTimeTree.runNum = 108645
+process.ecalTimeTree.runNum = 999999
 # gfworks: replathese names
 process.ecalTimeTree.barrelSuperClusterCollection = cms.InputTag("multi5x5SuperClustersTimePi0Barrel","multi5x5BarrelSuperClusters")
 process.ecalTimeTree.endcapSuperClusterCollection = cms.InputTag("multi5x5SuperClustersTimePi0Endcap","multi5x5EndcapSuperClusters")
@@ -178,6 +178,3 @@ process.source = cms.Source(
      )
                   )
     )
-
-
-
