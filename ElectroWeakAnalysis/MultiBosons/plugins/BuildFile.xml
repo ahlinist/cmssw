@@ -13,6 +13,7 @@
 <use   name="FWCore/ParameterSet"/>
 <use   name="Geometry/CaloGeometry"/>
 <use   name="Geometry/EcalAlgo"/>
+<use   name="HLTrigger/HLTcore"/>
 <use   name="MagneticField/Engine"/>
 <use   name="MagneticField/Records"/>
 <use   name="PhysicsTools/FWLite"/>
