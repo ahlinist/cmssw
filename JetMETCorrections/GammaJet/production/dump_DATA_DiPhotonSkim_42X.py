@@ -1,5 +1,5 @@
 #
-# $Id: dump_DATA_DiPhotonSkim_42X.py,v 1.1 2011/05/21 12:16:25 meridian Exp $
+# $Id: dump_DATA_DiPhotonSkim_42X.py,v 1.1 2011/05/21 16:13:53 rahatlou Exp $
 #
 #  configuration to dump ntuples in data
 #   the only diff should be for jetmet corrections
@@ -22,20 +22,25 @@ handle.close()
 #Switch for diPhoton Skim
 
 diPhotonSkim=True
-
+skim2010=True
 if (diPhotonSkim!=True):
     process.p = cms.Path(process.analysisSequence)
 else:
     process.load('Configuration.Skimming.PDWG_DiPhoton_SD_cff')
-    
     process.CaloIdIsoPath = cms.Path( process.CaloIdIsoPhotonPairsFilter * process.analysisSequence)
     process.R9IdPath = cms.Path( process.R9IdPhotonPairsFilter * process.analysisSequence)
-    process.schedule = cms.Schedule(process.CaloIdIsoPath, process.R9IdPath)
+    if (skim2010==False):
+        process.schedule = cms.Schedule(process.CaloIdIsoPath, process.R9IdPath)
+    else:
+        process.DiPhotonHltFilter.HLTPaths = ["HLT_DoublePhoton*"]
+        process.hltDiPhotonCaloIdIsoObjectProducer.triggerName = cms.string("HLT_DoublePhoton.*")
+        process.schedule = cms.Schedule(process.CaloIdIsoPath)
+                                   
 
 ## DO NOT CHANGE THE PATH HERE! New modules should be added ONLY in the common configuration 
 #  only paramaters should be changes for data and MC
 process.source.fileNames = cms.untracked.vstring(
-'file:/cmshome/meridian/data/Photon_42_v4_AOD.root'
+    'file:/cmshome/meridian/data/Photon_42_2010ReReco_AOD.root'
 )
 
 process.maxEvents = cms.untracked.PSet(
