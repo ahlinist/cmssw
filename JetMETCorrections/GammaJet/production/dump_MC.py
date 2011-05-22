@@ -1,5 +1,5 @@
 #
-# $Id: dump_MC.py,v 1.3 2011/05/18 15:41:05 meridian Exp $
+# $Id: dump_MC.py,v 1.1 2011/05/21 15:50:15 rahatlou Exp $
 #
 #  configuration to dump ntuples in MC
 #   the only diff should be for jetmet corrections
@@ -27,11 +27,12 @@ process.source.fileNames = cms.untracked.vstring(
 #    'file:/cmsrm/pc24_2/meridian/data/GluGluToHToGG_M-115_7TeV-powheg-pythia6_AODSIM.root'
 #   '/store/mc/Spring11/DiPhotonJets_7TeV-madgraph/AODSIM/PU_S1_START311_V1G1-v1/0000/0013CD5B-186F-E011-A93E-00A0D1EEF4F8.root'
 #'file:MC-41xv10/90E5F7D6-1E56-E011-9D93-001D096D8916_DESY.root'
+#'/store/mc/Summer11/GluGluToHToGG_M-115_7TeV-powheg-pythia6/AODSIM/PU_S3_START42_V11-v2/0000/842C8A8B-967F-E011-90C4-E0CB4E55363A.root'
 'file:/cmshome/rahatlou/414p4-Hgg/src/JetMETCorrections/PaoloGammaJet/test/MC-41xv10/90E5F7D6-1E56-E011-9D93-001D096D8916_DESY.root'
 )
 
 process.maxEvents = cms.untracked.PSet(
-    input = cms.untracked.int32(1000)
+    input = cms.untracked.int32(10000)
 )
 
 # Global tag#
