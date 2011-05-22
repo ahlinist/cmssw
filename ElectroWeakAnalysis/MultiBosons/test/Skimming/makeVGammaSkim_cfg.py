@@ -18,6 +18,14 @@ from ElectroWeakAnalysis.MultiBosons.Skimming.options import options as defaultO
 from ElectroWeakAnalysis.MultiBosons.tools.skimmingTools import *
 
 
+## Load standard sequences needed for photon re-reco
+process.load('Configuration.StandardSequences.Services_cff')
+process.load('Configuration.StandardSequences.MagneticField_38T_cff')
+process.load('Configuration.StandardSequences.Geometry_cff')
+process.load('Configuration.StandardSequences.Reconstruction_cff')
+process.load('Configuration.StandardSequences.FrontierConditions_GlobalTag_cff')
+process.load('RecoEgamma.EgammaPhotonProducers.conversionTracks_cff')
+
 ## See link below for the definition of the selection
 ## https://twiki.cern.ch/twiki/bin/view/CMS/VGammaFirstPaper#Vgamma_Group_skims
 skimVersion = 3  # Do we need this?
@@ -68,7 +76,7 @@ process.selectedPatMuons.cut = cms.string("isGlobalMuon | isTrackerMuon")
 process.selectedPatJets.cut = cms.string("pt > 30")
 
 # I don't know why this dies if I do it later.... -- lgray 18/05/2011
-if options.isRealData:    
+if options.isRealData:
     ## Remove MC matching and apply cleaning if we run on data
     ## (No need to remove pfMET and tcMET explicitly if this is done first
     removeMCMatching(process)
@@ -78,18 +86,27 @@ if options.isRealData:
 ##+ embed the overlap information
 process.cleanPatPhotons.checkOverlaps.electrons.requireNoOverlaps = False
 
+## Add conversion tools for electron and photon user data
+process.load(basePath + "conversionTools_cfi")
+process.patDefaultSequence = cms.Sequence(
+    process.conversionTools *
+    process.patDefaultSequence
+)
+
 ## Add photon user data
 ## TODO: rename photon(electron)UserData to photon(electron)ClusterShape
 process.load(basePath + "photonUserData_cfi")
-process.patDefaultSequence.replace(process.patPhotons,
-    process.photonUserData * process.patPhotons
+process.patDefaultSequence.replace( process.patPhotons,
+    process.photonUserData *
+    process.patPhotons
     )
 process.patPhotons.userData.userFloats.src = egammaUserDataFloats(
     moduleName = "photonUserData"
-    )
+    ) + [ cms.InputTag( "conversionTools", "deltaRToTrack" ) ]
 process.patPhotons.userData.userInts.src = egammaUserDataInts(
     moduleName = "photonUserData"
-    )
+    ) + [ cms.InputTag( "conversionTools", "passElectronVeto" ),
+          cms.InputTag( "conversionTools", "hasMatchedConversion" ), ]
 
 process.load("RecoEcal.EgammaClusterProducers.preshowerClusterShape_cfi")
 process.load("EgammaAnalysis.PhotonIDProducers.piZeroDiscriminators_cfi")
@@ -122,15 +139,16 @@ if not options.isAOD:
 
 ## Add electron user data
 process.load(basePath + "electronUserData_cfi")
-process.patDefaultSequence.replace(process.patElectrons,
-    process.electronUserData * process.patElectrons
+process.patDefaultSequence.replace( process.patElectrons,
+    process.electronUserData *
+    process.patElectrons
     )
 process.patElectrons.userData.userFloats.src = egammaUserDataFloats(
     moduleName = "electronUserData"
     )
 process.patElectrons.userData.userInts.src = egammaUserDataInts(
     moduleName = "electronUserData"
-    )
+    )+ [ cms.InputTag("conversionTools", "passConversionVeto") ]
 
 ## Add electron official electron ID from the Egamma / VBTF, CiC, Likelihood
 process.load("RecoEgamma.ElectronIdentification.cutsInCategoriesElectronIdentificationV06_DataTuning_cfi")
@@ -157,6 +175,7 @@ process.CiCEleIdSequence = cms.Sequence(
     process.eidHyperTight3MC +
     process.eidHyperTight4MC
     )
+
 process.LHEleIdSequence = cms.Sequence(process.eidLikelihoodExt)
 
 process.patDefaultSequence.replace(
@@ -220,7 +239,6 @@ vgEventContent.extraSkimEventContent.append(
     "drop patTriggerObjectsedmAssociation_patTriggerEvent_*_*"
     )
 
-
 ## HLT trigger
 process.load(basePath + "hltFilter_cfi")
 process.hltFilter.TriggerResultsTag = \
@@ -283,14 +301,12 @@ elif options.skimType == "Dimuon":
                    process.piZeroDiscriminators,
                    process.pi0Discriminator]:
         process.patDefaultSequence.remove( module )
+    
     while cms.InputTag("pi0Discriminator") in process.patPhotons.userData.userFloats.src:
         process.patPhotons.userData.userFloats.src.remove(
             cms.InputTag("pi0Discriminator")
             )
 
-    ## Add more photon-related event content (super clusters, clusters)
-    vgEventContent.extraSkimEventContent += \
-        vgEventContent.vgExtraPhotonEventContent
     if not options.isAOD:
         ## Add island basic clusters to the sequence and event content
         process.load("RecoEcal.EgammaClusterProducers.islandBasicClusters_cfi")
@@ -299,6 +315,14 @@ elif options.skimType == "Dimuon":
           process.patDefaultSequence
         )
         vgEventContent.extraSkimEventContent.append("keep *_islandBasicClusters_*_*")
+
+        ## Add track and electron seed multiplicities (for PMV closure investigation)
+        process.load(basePath + 'multiplicitySequence_cff')
+        process.patDefaultSequence +=  process.multiplicitySequence
+
+    ## Add more photon-related event content (super clusters, clusters)
+    vgEventContent.extraSkimEventContent += \
+        vgEventContent.vgExtraPhotonEventContent
 
 elif options.skimType == "Jet":
     removeTriggerPathsForAllBut(matchHltPaths, ["cleanPatJets"])
@@ -329,20 +353,27 @@ process.load(basePath + "VGammaSkimSequences_cff")
 
 if options.isRealData:    
     process.defaultSequence = cms.Sequence(
-        process.skimFilterSequence +
+        process.skimFilterSequence *
         process.patDefaultSequence
     )
 else:
     process.primaryVertexFilterPath = cms.Path(process.primaryVertexFilter)
     process.noScrapingPath = cms.Path(process.noScraping)
     process.load(basePath + "prunedGenParticles_cfi")
+    if options.relaxGenParticlePruning == True:
+        # Relax the gen particle pruning (for PMV closure investigation)
+        process.prunedGenParticles.select.append(
+            'keep status = 1 & pt > 0.5 & abs(eta) < 3.1'
+        )
     if not options.applyCollisionDataCleaningToMC \
         and repr(process.skimFilterSequence) != repr(cms.Sequence()):
-        process.skimFilterSequence.remove(process.goodCollisionDataSequence)
+        process.skimFilterSequence.remove( process.hltPhysicsDeclared )
+        process.skimFilterSequence.remove( process.noScraping )
+        process.skimFilterSequence.remove( process.primaryVertexFilter )
         print "removed collision data cleaning"
         print "skimFilterSequence = ", process.skimFilterSequence
     process.defaultSequence = cms.Sequence(
-        process.skimFilterSequence +
+        process.skimFilterSequence *
         process.prunedGenParticles *
         process.patDefaultSequence
     )
@@ -454,8 +485,12 @@ process.WMuNuGammaPath = cms.Path(
 process.ZEEGammaPath   = cms.Path(
     process.defaultSequence * process.ZEEGammaSequence
     )
+
+#process.eca = cms.EDAnalyzer("EventContentAnalyzer")
+
 process.ZMuMuGammaPath = cms.Path(
-    process.defaultSequence * process.ZMuMuGammaSequence
+    process.defaultSequence * process.ZMuMuGammaSequence #*  process.eca
+
     )
 process.ZInvisibleGammaPath = cms.Path(
     process.defaultSequence * process.ZInvisibleGammaSequence
@@ -464,7 +499,10 @@ process.ZInvisibleGammaPath = cms.Path(
 ## Output configuration (add event content, select events, output file name)
 process.out.outputCommands += vgEventContent.extraSkimEventContent
 
-if not options.isRealData:    
+## Drop all per product per event metadata.
+#process.out.dropMetaData = cms.untracked.string("ALL")
+
+if not options.isRealData:
     process.out.outputCommands += ["keep *_prunedGenParticles_*_PAT"]
     process.out.outputCommands += ["keep *_addPileupInfo_*_*"] #store pileup description in case of MC, all reprocessings
 
@@ -504,6 +542,11 @@ if str(process.skimFilterPath) == "None":
 # process.testPhotonReRecoPath = cms.Path(process.defaultSequence *
 #                                         process.testPhotonReRecoSequence)
 
+#process.MessageLogger.cerr.INFO.limit = 100
+#process.MessageLogger.debugModules = ["conversionTools"]
+#process.MessageLogger.cerr.threshold = "DEBUG"
+
+process.out.dropMetaData = cms.untracked.string('ALL')
 
 ## Add tab completion + history during inspection
 if __name__ == "__main__": import user

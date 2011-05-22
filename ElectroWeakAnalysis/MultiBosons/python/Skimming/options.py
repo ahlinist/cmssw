@@ -100,6 +100,17 @@ options.register("addRho",
                  VarParsing.multiplicity.singleton, # singleton or list
                  VarParsing.varType.bool,         # bool, string, int, or float
                  "Add rho from FastJet for pile-up corrected calo isolations?")
+options.register("options",
+                 "", # default value
+                 VarParsing.multiplicity.list, # singleton or list
+                 VarParsing.varType.string,         # bool, string, int, or float
+                 'What command line options should be applied?\n' +\
+                 'Aggregates options in one for e.g. loading from file / crab')
+options.register("relaxGenParticlePruning",
+                 False, # default value
+                 VarParsing.multiplicity.singleton, # singleton or list
+                 VarParsing.varType.bool,         # bool, string, int, or float
+                 "Relax the gen particle pruning cuts?")
 
 ## setup tags
 options.setupTags (tag = 'of_%d',

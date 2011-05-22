@@ -12,6 +12,9 @@ def applyJobOptions(options):
   To be called after options.parseArguments()
   """
   options.parseArguments()
+  
+  ## Attach the options.options to the command line arguments
+  if options.options: sys.argv += options.options
 
   ## Attach the crabOptions to the command line arguments
   if options.crabOptions: sys.argv += options.crabOptions.split(",")

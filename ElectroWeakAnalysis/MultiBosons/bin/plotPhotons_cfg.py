@@ -9,7 +9,7 @@ process.inputs = cms.PSet (
 #         '/Volumes/MyBook/Data/TTbar/shyft_35x_v3/ljmet_1.root'
 #         'file:zmm_pat.root'
 #         'file:/tmp/veverka/tmp.YPPUW29322/CMSSW_3_6_2/src/PhysicsTools/SelectorUtils/bin/wm_pat.root'
-  "file:VGammaSkim_testPOWHEG_numEvent100.root"
+  "file:test_pr4_DimuonSkim_10outEvents.root"
         )
 )
 
@@ -28,7 +28,7 @@ process.photonHistos = cms.PSet(
       cms.PSet(
         itemsToPlot = cms.untracked.int32(-1),
         min = cms.untracked.double(-5),
-        max = cms.untracked.double(5),
+        max = cms.untracked.double1(5),
         nbins = cms.untracked.int32(100),
         name = cms.untracked.string("seedTime"),
         description = cms.untracked.string("Photons:seed time (ns):events / bin"),
@@ -128,17 +128,6 @@ process.photonHistos = cms.PSet(
       ),
       cms.PSet(
         itemsToPlot = cms.untracked.int32(-1),
-        min = cms.untracked.double(0),
-        max = cms.untracked.double(2),
-        nbins = cms.untracked.int32(100),
-        name = cms.untracked.string("pi0Discriminator"),
-        description = cms.untracked.string("#pi_{0} discriminator"),
-        plotquantity = cms.untracked.string(
-          'userFloat("pi0Discriminator")'
-          )
-      ),
-      cms.PSet(
-        itemsToPlot = cms.untracked.int32(-1),
         min = cms.untracked.double(-1000),
         max = cms.untracked.double(1000),
         nbins = cms.untracked.int32(2000),
@@ -157,6 +146,39 @@ process.photonHistos = cms.PSet(
         description = cms.untracked.string("grand mom pid"),
         plotquantity = cms.untracked.string(
           'userInt("photonGenMatch:grandMotherPdgId")'
+          )
+      ),
+      cms.PSet(
+        itemsToPlot = cms.untracked.int32(-1),
+        min = cms.untracked.double(0),
+        max = cms.untracked.double(5),
+        nbins = cms.untracked.int32(100),
+        name = cms.untracked.string("deltaRToTrack"),
+        description = cms.untracked.string("deltaRToTrack"),
+        plotquantity = cms.untracked.string(
+          'userFloat("conversionTools:deltaRToTrack")'
+          )
+      ),
+      cms.PSet(
+        itemsToPlot = cms.untracked.int32(-1),
+        min = cms.untracked.double(-1.5),
+        max = cms.untracked.double(2.5),
+        nbins = cms.untracked.int32(4),
+        name = cms.untracked.string("passElectronVeto"),
+        description = cms.untracked.string("passElectronVeto"),
+        plotquantity = cms.untracked.string(
+          'userInt("conversionTools:passElectronVeto")'
+          )
+      ),
+      cms.PSet(
+        itemsToPlot = cms.untracked.int32(-1),
+        min = cms.untracked.double(-1.5),
+        max = cms.untracked.double(2.5),
+        nbins = cms.untracked.int32(4),
+        name = cms.untracked.string("hasMatchedConversion"),
+        description = cms.untracked.string("hasMatchedConversion"),
+        plotquantity = cms.untracked.string(
+          'userInt("conversionTools:hasMatchedConversion")'
           )
       ),
     ],
