@@ -1,7 +1,8 @@
 extraConversionEventContent = [
     'keep *_photonCore_*_*',
     'keep *_conversions_*_*',
-    'keep *_trackerOnlyConversions_*_*',
+    'keep *_allConversions_*_*',  ## 42x onwards
+    #'keep *_trackerOnlyConversions_*_*', ## up until 41x
     'keep *_ckfInOutTracksFromConversions_*_*',
     'keep *_ckfOutInTracksFromConversions_*_*',
     ]
@@ -10,13 +11,17 @@ vgExtraPhotonEventContent = [
     'keep *_photons_*_*',
     'keep *_photonCore_*_*',
     'keep *_conversions_*_*',
-    'keep *_trackerOnlyConversions_*_*',
+    'keep *_allConversions_*_*',  ## 42x onwards
+    #'keep *_trackerOnlyConversions_*_*', ## up until 41x
     'keep *_ckfInOutTracksFromConversions_*_*',
     'keep *_ckfOutInTracksFromConversions_*_*',
     'keep *_*5x5SuperClusters*_*_*',
     'keep *_multi5x5BasicClusters_*Endcap*_*',
     'keep *_hybridSuperClusters_*_*',
     'keep *_correctedHybridSuperClusters_*_*',
+    'keep *_trackMultiplicities*_*_*',
+    'keep *_gsfTrackMultiplicities*_*_*',
+    'keep *_electronSeedMultiplicity*_*_*',
     ]
 
 vgExtraAnalyzerKitEventContent = [

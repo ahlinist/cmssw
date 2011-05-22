@@ -125,13 +125,6 @@ def addPhotonReReco(process):
     and
     https://hypernews.cern.ch/HyperNews/CMS/get/egamma/958/1/1/1/1/1/1/1/1/1/1/1.html
     """
-    process.load('Configuration.StandardSequences.Services_cff')
-    process.load('Configuration.StandardSequences.MagneticField_38T_cff')
-    process.load('Configuration.StandardSequences.Geometry_cff')
-    process.load('Configuration.StandardSequences.Reconstruction_cff')
-    process.load('Configuration.StandardSequences.FrontierConditions_GlobalTag_cff')
-    process.load('RecoEgamma.EgammaPhotonProducers.conversionTracks_cff')
-
     process.photonReReco = cms.Sequence(process.ckfTracksFromConversions *
                                         process.conversionSequence *
                                         process.photonSequence *
