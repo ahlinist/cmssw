@@ -21,8 +21,8 @@
 
 #include <iostream>
 
-#define MAX_VERTICES 100
-#define MAX_TRACKS 1500
+#define MAX_VERTICES 500
+#define MAX_TRACKS 5000
 
 class GlobalVertexInfo : public VertexInfoAdapter
 {
