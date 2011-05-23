@@ -2,8 +2,8 @@
   \file SiStripRenderPlugin
   \brief Display Plugin for SiStrip DQM Histograms
   \author S. Dutta
-  \version $Revision: 1.37 $
-  \date $Date: 2011/03/13 19:03:52 $
+  \version $Revision: 1.38 $
+  \date $Date: 2011/03/15 16:06:45 $
 */
 
 #include "VisMonitoring/DQMServer/interface/DQMRenderPlugin.h"
@@ -208,7 +208,7 @@ private:
       if( o.name.find( "Summary_MeanNumberOfDigis" )  != std::string::npos)
       {
         obj->SetStats( kFALSE );
-        obj->SetMaximum(10.0);
+        obj->SetMaximum(12.0);
         obj->SetMinimum(-0.1);
         return;
       }
@@ -402,6 +402,7 @@ private:
     float ymax = obj->GetMaximum()*1.2;
 
     // FOR PP
+    /*
     float TIBLimit1 = 5000.0;
     float TOBLimit1 = 5500.0;
     float TIDLimit1 = 1000.0;
@@ -411,7 +412,18 @@ private:
     float TOBLimit2 = 1000.0;
     float TIDLimit2 = 300.0;
     float TECLimit2 = 1200.0;
-    
+    */
+
+    float TIBLimit1 = 10000.0;
+    float TOBLimit1 = 11000.0;
+    float TIDLimit1 = 2000.0;
+    float TECLimit1 = 10000.0;
+
+    float TIBLimit2 = 2000.0;
+    float TOBLimit2 = 2000.0;
+    float TIDLimit2 = 600.0;
+    float TECLimit2 = 2400.0;
+
     /* FOR HI
     float TIBLimit1 = 70000.0;
     float TOBLimit1 = 70000.0;
