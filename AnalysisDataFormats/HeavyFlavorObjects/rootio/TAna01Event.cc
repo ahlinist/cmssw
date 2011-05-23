@@ -134,7 +134,7 @@ void TAna01Event::Clear(Option_t *option) {
   TAnaCand *pCand;
   for (int i = 0; i < fnCandidates; i++) {
     pCand = getCand(i);
-    pCand->clear();
+    pCand->~TAnaCand(); // call destructor, not only clear(). Prevents memleak due to std::vector
   }
   fCandidates->Clear(option);
   fnCandidates = 0;
