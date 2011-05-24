@@ -92,9 +92,9 @@ RECO_SAMPLES = {
         'type' : 'Data',
         'drawOption' : styles.drawOption_Data,
         'hlt_paths' : {
-            'HLT_IsoMu12_LooseIsoPFTau10_v1' : '160431:MIN-161016:MAX',  # period A           
+            'HLT_IsoMu12_LooseIsoPFTau10_v1' : '160431:MIN-161016:MAX',  # period A
             'HLT_IsoMu12_LooseIsoPFTau10_v2' : '161216:MIN-163261:MAX',  # period B
-            'HLT_Mu15_LooseIsoPFTau20_v1'    : '160431:MIN-161016:MAX',  # period A           
+            'HLT_Mu15_LooseIsoPFTau20_v1'    : '160431:MIN-161016:MAX',  # period A
             'HLT_Mu15_LooseIsoPFTau20_v2'    : '161216:MIN-163261:MAX'   # period B
         },
         'enableSysUncertainties' : False,
@@ -131,7 +131,7 @@ RECO_SAMPLES = {
         'type' : 'Data',
         'drawOption' : styles.drawOption_Data,
         'hlt_paths' : {
-            'HLT_IsoMu12_v1' : '160431:MIN-163261:MAX'
+            'HLT_IsoMu12_v1' : '160431:MIN-163261:MAX',
             'HLT_IsoMu17_v6' : '163270:MIN-163869:MAX'
         },
         'enableSysUncertainties' : False,
@@ -150,7 +150,7 @@ RECO_SAMPLES = {
         'skim_eff' : 1.0,
         'type' : 'Data',
         'drawOption' : styles.drawOption_Data,
-        'hlt_paths' : {             
+        'hlt_paths' : {
             'HLT_IsoMu12_LooseIsoPFTau10_v2' : '161216:MIN-163261:MAX',  # period B
             'HLT_IsoMu12_LooseIsoPFTau10_v4' : '163269:MIN-163869:MAX',  # period C
             'HLT_Mu15_LooseIsoPFTau20_v2'    : '161216:MIN-163261:MAX',  # period B
@@ -352,14 +352,14 @@ MERGE_SAMPLES = {
         'samples' : [
            'DYtautauM10to20_powheg',
             'Ztautau_powheg',
-            'qqZll' 
+            'qqZll'
         ],
         'legendEntry' : plotter.process_Ztautau.config_dqmHistPlotter.legendEntry.value(),
         'type' : plotter.process_Ztautau.config_dqmHistPlotter.type.value(),
         'drawOption' : styles.drawOption_Ztautau
     },
     'ZmumuSum' : {
-        'samples' : [            
+        'samples' : [
             'DYmumuM10to20_pythia',
             'Zmumu_powheg'
         ],
