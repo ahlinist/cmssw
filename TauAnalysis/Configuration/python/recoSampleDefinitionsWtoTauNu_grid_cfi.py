@@ -7,7 +7,7 @@ import TauAnalysis.DQMTools.plotterStyleDefinitions_cfi as styles
 
 # List of samples to run in the analysis
 SAMPLES_TO_ANALYZE = [
-	'data_BTau_Run2010B_Dec22ReReco',
+	'data',
 	'Wtaunu',
 	'Wenu',
 	'Wmunu',
@@ -16,7 +16,7 @@ SAMPLES_TO_ANALYZE = [
 	]
 
 SAMPLES_TO_PLOT = [
-	'data_BTau_Run2010B_Dec22ReReco',
+	'data',
 	'Wmunu',
 	'Wenu',
 	'Ztautau',
@@ -59,7 +59,7 @@ _femtobarns = 1.0e-3
 TARGET_LUMI = 18.355
 
 RECO_SAMPLES = {
-	'data_BTau_Run2010B_Dec22ReReco':
+	'data':
 		{
 		'datasetpath' : '/BTau/Run2010B-Dec22ReReco_v1/AOD',
 		'lumi_mask' : "/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions10/7TeV//Reprocessing/Cert_136033-149442_7TeV_Dec22ReReco_Collisions10_JSON.txt",
