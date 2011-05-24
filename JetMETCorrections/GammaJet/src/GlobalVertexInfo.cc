@@ -2,8 +2,10 @@
 
 void GlobalVertexInfo::fillInfo(const edm::Event& iEvent, const edm::EventSetup& iSetup) 
 {
-  //Dump tracks
-  tk_p4->Clear();
+  vtx_xyz.clear();
+  tk_p4.clear();
+
+  //Dump tracks  
   tk_n = 0;
   edm::Handle<reco::TrackCollection> tkH;
   iEvent.getByLabel("generalTracks", tkH);
@@ -13,8 +15,10 @@ void GlobalVertexInfo::fillInfo(const edm::Event& iEvent, const edm::EventSetup&
       break;
     }
     reco::TrackRef tk(tkH, i);
-    new ((*tk_p4)[tk_n]) TLorentzVector();
-    ((TLorentzVector *)tk_p4->At(tk_n))->SetXYZT(tk->px(), tk->py(), tk->pz(), tk->p());
+    //    new ((*tk_p4)[tk_n]) TLorentzVector();
+    TLorentzVector a;
+    a.SetXYZT(tk->px(), tk->py(), tk->pz(), tk->p());
+    tk_p4.push_back(a);
     tk_pterr[tk_n] = tk->ptError();
     tk_quality[tk_n] = tk->qualityMask();
     tk_n++;
@@ -25,16 +29,18 @@ void GlobalVertexInfo::fillInfo(const edm::Event& iEvent, const edm::EventSetup&
   vtx_tkind.clear();
   vtx_tkweight.clear();
   vtx_n = 0;
-  vtx_xyz->Clear();
+
   for(unsigned int i=0; i<vtxH->size(); i++) {
     if (vtx_n >= MAX_VERTICES) {
       std::cout << "GlobeVertex: WARNING TOO MANY VERTEX: " << vtxH->size() << " (allowed " << MAX_VERTICES << ")" << std::endl;
       break;
     }
+    //    std::cout << "vtx" << i << std::endl;
     reco::VertexRef vtx(vtxH, i);
     // Any cut on vertex?? gCUT ??  
-    new((*vtx_xyz)[vtx_n]) TVector3();
-    ((TVector3 *) vtx_xyz->At(vtx_n))->SetXYZ(vtx->x(), vtx->y(), vtx->z());
+    TVector3 a;
+    a.SetXYZ(vtx->x(), vtx->y(), vtx->z());
+    vtx_xyz.push_back(a);
     vtx_ntks[vtx_n] = vtx->tracksSize();
       
     std::vector<reco::TrackBaseRef>::const_iterator tk;
