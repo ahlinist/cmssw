@@ -35,6 +35,9 @@
 #include "RecoEgamma/EgammaTools/interface/ConversionFinder.h"
 #include "RecoLocalCalo/EcalRecAlgos/interface/EcalSeverityLevelAlgo.h"
 #include "SimDataFormats/GeneratorProducts/interface/GenEventInfoProduct.h"
+#include "SimDataFormats/PileupSummaryInfo/interface/PileupSummaryInfo.h"
+
+#include "ElectroWeakAnalysis/MultiBosons/interface/TriggerHelpers.h"
 
 #include "ElectroWeakAnalysis/MultiBosons/interface/VgNtuplizer.h"
 
@@ -57,6 +60,9 @@ VgNtuplizer::VgNtuplizer(const edm::ParameterSet& ps) : verbosity_(0), helper_(p
   vtxlabel_       = ps.getParameter<InputTag>("VtxLabel");
   tcMETlabel_     = ps.getParameter<InputTag>("tcMETLabel");
   pfMETlabel_     = ps.getParameter<InputTag>("pfMETLabel");
+
+  rhoLabel_       = ps.getParameter<InputTag>("RhoLabel");
+  sigmaLabel_     = ps.getParameter<InputTag>("SigmaLabel");
 
   leadingElePtCut_ = ps.getParameter<double>("LeadingElePtCut");
   leadingMuPtCut_  = ps.getParameter<double>("LeadingMuPtCut");
@@ -87,10 +93,15 @@ VgNtuplizer::VgNtuplizer(const edm::ParameterSet& ps) : verbosity_(0), helper_(p
   tree_->Branch("vtxNTrk", vtxNTrk_, "vtxNTrk[nVtx]/I");
   tree_->Branch("vtxNDF", vtxNDF_, "vtxNDF[nVtx]/I");
   tree_->Branch("vtxD0", vtxD0_, "vtxD0[nVtx]/F");
+  tree_->Branch("rho", &rho_, "rho/F");
+  tree_->Branch("sigma", &sigma_, "sigma/F");
   if (doGenParticles_) {
     tree_->Branch("pdf", pdf_, "pdf[7]/F");
     tree_->Branch("pthat", &pthat_, "pthat/F");
     tree_->Branch("processID", &processID_, "processID/F");
+    tree_->Branch("nBX", &nBX_, "nBX/I");
+    tree_->Branch("nPU", nPU_, "nPU[nBX]/I");
+    tree_->Branch("BXPU", BXPU_, "BXPU[nBX]/I");
     // genParticle
     tree_->Branch("nMC", &nMC_, "nMC/I");
     tree_->Branch("mcPID", mcPID, "mcPID[nMC]/I");
@@ -416,7 +427,7 @@ void VgNtuplizer::produce(edm::Event & e, const edm::EventSetup & es) {
   // cout << "VgAnalyzerKit: produce: HLT ... " << endl;
 
   // Indicate the index of interesting HLT bits. Even CMS has different HLT table for different runs, we can still use the correct HLT bit
-  std::map<unsigned, std::string> HLTIndexPath;
+  std::map<unsigned, std::string> HLTIndexPath;  
   HLTIndexPath[0] = "HLT_Jet15U";
   HLTIndexPath[1] = "HLT_Jet30U";
   HLTIndexPath[2] = "HLT_Jet50U";
@@ -480,9 +491,12 @@ void VgNtuplizer::produce(edm::Event & e, const edm::EventSetup & es) {
   if (saveHLTInfo_) {
     const TriggerPathCollection &trgPaths = *triggerEvent->paths();
     nHLT_ = trgPaths.size();
-    for (size_t i=0; i<trgPaths.size(); ++i) {
-      HLT_[i] = (trgPaths[i].wasAccept() == true  && trgPaths[i].prescale() == 1) ? 1 : 0;
+    for (size_t i=0; i<trgPaths.size(); ++i) {      
+      HLT_[i] = (trgPaths[i].wasAccept() == true  && 
+		 trgPaths[i].prescale() == 1) ? 1 : 0;
     }
+    HLT_[nHLT_++] = 0; // a safe place for non-found triggers to point at, increment size.
+    
 
     for (size_t i=0; i<HLTIndexPath.size(); ++i) {
       if ( HLTIndexPath.find(i) == HLTIndexPath.end() ) {
@@ -490,9 +504,16 @@ void VgNtuplizer::produce(edm::Event & e, const edm::EventSetup & es) {
                                          << "an interesting HLT path!"
                                          << endl;
       }
-      if ( triggerEvent->path(HLTIndexPath[i]) ) {
-	//std::cout << HLTIndexPath[i] << " found!" << std:endl;
-        HLTIndex_[i] = triggerEvent->path( HLTIndexPath[i] )->index();
+      if ( vgamma::path(HLTIndexPath[i],*triggerEvent,0,false) ) {
+	//std::cout << HLTIndexPath[i] << " found!" << std::endl;
+	int HLTidx = vgamma::pathIndex(HLTIndexPath[i],*triggerEvent,0);
+        HLTIndex_[i] = ( HLTidx != -1 ? HLTidx : nHLT_ - 1 ) ;
+      } else {
+	/*std::cout << "Requested HLT "
+		  <<"path: " << HLTIndexPath[i] 
+		  << " not found!" << std::endl;*/
+	HLTIndex_[i] = nHLT_-1;
+	
       }
     } // for (size_t i=0; i<HLTIndexPath.size(); ++i)
   } // if (saveHLTInfo_)
@@ -533,7 +554,32 @@ void VgNtuplizer::produce(edm::Event & e, const edm::EventSetup & es) {
       pthat_ = (pdfInfoHandle->hasBinningValues() ? pdfInfoHandle->binningValues()[0] : 0);
       // cout << "Got pThat info..." << endl;
     }
+        
+    processID_ = pdfInfoHandle->signalProcessID();
+
+    Handle<std::vector< PileupSummaryInfo > >  PUInfo;
+    e.getByLabel(puInfoLabel_, PUInfo);
+
+    std::vector<PileupSummaryInfo>::const_iterator PVI;
+
+    nBX_ = 0;
+    for(PVI = PUInfo->begin(); PVI != PUInfo->end(); ++PVI) {
+
+      nPU_[nBX_] = PVI->getPU_NumInteractions();
+      BXPU_[nBX_] = PVI->getBunchCrossing();
+
+      nBX_ += 1;
+    }
   }
+
+  // Rho correction
+  edm::Handle<double> rhoHandle;
+  e.getByLabel(rhoLabel_, rhoHandle);
+  rho_ = *(rhoHandle.product());
+
+  edm::Handle<double> sigmaHandle;
+  e.getByLabel(sigmaLabel_, sigmaHandle);
+  sigma_ = *(sigmaHandle.product());
 
   // GenParticle
   // cout << "VgNtuplizer: produce: GenParticle... " << endl;
@@ -743,6 +789,29 @@ void VgNtuplizer::produce(edm::Event & e, const edm::EventSetup & es) {
       eleID_[nEle_][9] = int (iEle->electronID("simpleEleId85relIso"));
       eleID_[nEle_][10]= int (iEle->electronID("simpleEleId90relIso"));
       eleID_[nEle_][11]= int (iEle->electronID("simpleEleId95relIso"));
+      // CiC Data tunes
+      eleID_[nEle_][12] = int (iEle->electronID("eidVeryLoose"));
+      eleID_[nEle_][13] = int (iEle->electronID("eidLoose"));
+      eleID_[nEle_][14] = int (iEle->electronID("eidMedium"));
+      eleID_[nEle_][15] = int (iEle->electronID("eidTight"));
+      eleID_[nEle_][16] = int (iEle->electronID("eidSuperTight"));
+      eleID_[nEle_][17] = int (iEle->electronID("eidHyperTight1"));
+      eleID_[nEle_][18] = int (iEle->electronID("eidHyperTight2"));
+      eleID_[nEle_][19] = int (iEle->electronID("eidHyperTight3"));
+      eleID_[nEle_][20] = int (iEle->electronID("eidHyperTight4"));
+      // CiC MC Tunes
+      eleID_[nEle_][21] = int (iEle->electronID("eidVeryLooseMC"));
+      eleID_[nEle_][22] = int (iEle->electronID("eidLooseMC"));
+      eleID_[nEle_][23] = int (iEle->electronID("eidMediumMC"));
+      eleID_[nEle_][24] = int (iEle->electronID("eidTightMC"));
+      eleID_[nEle_][25] = int (iEle->electronID("eidSuperTightMC"));
+      eleID_[nEle_][26] = int (iEle->electronID("eidHyperTight1MC"));
+      eleID_[nEle_][27] = int (iEle->electronID("eidHyperTight2MC"));
+      eleID_[nEle_][28] = int (iEle->electronID("eidHyperTight3MC"));
+      eleID_[nEle_][29] = int (iEle->electronID("eidHyperTight4MC"));
+      // Likelihood 
+      eleID_[nEle_][30]= int (iEle->electronID("eidLikelihoodExt"));
+
       // cout << "Got Electron Ids" << std::endl;
 
       // cout << "Get Electron Stuff 1" << std::endl;
@@ -967,20 +1036,31 @@ void VgNtuplizer::produce(edm::Event & e, const edm::EventSetup & es) {
 
       if (iMu->pt() > leadingMuPtCut_) nMuPassCut++;
 
-      muTrg_[nMu_][0] = (iMu->triggerObjectMatchesByPath("HLT_Mu9").size()) ? 1 : -99;
-      muTrg_[nMu_][1] = (iMu->triggerObjectMatchesByPath("HLT_Mu11").size()) ? 1 : -99;
-      muTrg_[nMu_][2] = (iMu->triggerObjectMatchesByPath("HLT_Mu13").size()) ? 1 : -99;
-      muTrg_[nMu_][3] = (iMu->triggerObjectMatchesByPath("HLT_Mu13_v*").size()) ? 1 : -99;
-      muTrg_[nMu_][4] = (iMu->triggerObjectMatchesByPath("HLT_Mu15").size()) ? 1 : -99;
-      muTrg_[nMu_][5] = (iMu->triggerObjectMatchesByPath("HLT_Mu15_v*").size()) ? 1 : -99;
-      muTrg_[nMu_][6] = (iMu->triggerObjectMatchesByPath("HLT_Mu15_v*").size()) ? 1 : -99;
-      muTrg_[nMu_][7] = (iMu->triggerObjectMatchesByPath("HLT_Mu17_v*").size()) ? 1 : -99;
-      muTrg_[nMu_][8] = (iMu->triggerObjectMatchesByPath("HLT_Mu24_v*").size()) ? 1 : -99;
-      muTrg_[nMu_][9] = (iMu->triggerObjectMatchesByPath("HLT_Mu30_v*").size()) ? 1 : -99;
-      muTrg_[nMu_][10] = (iMu->triggerObjectMatchesByPath("HLT_IsoMu17_v*").size()) ? 1 : -99;
-      muTrg_[nMu_][11] = (iMu->triggerObjectMatchesByPath("HLT_IsoMu24_v*").size()) ? 1 : -99;
-      muTrg_[nMu_][12] = (iMu->triggerObjectMatchesByPath("HLT_IsoMu30_v*").size()) ? 1 : -99;
-
+      muTrg_[nMu_][0] = ( iMu->triggerObjectMatchesByPath("HLT_Mu9").size() && 
+			  vgamma::path("HLT_Mu9",*triggerEvent) ) ? 1 : -99;
+      muTrg_[nMu_][1] = ( iMu->triggerObjectMatchesByPath("HLT_Mu11").size() && 
+			  vgamma::path("HLT_Mu11",*triggerEvent) ) ? 1 : -99;
+      muTrg_[nMu_][2] = ( iMu->triggerObjectMatchesByPath("HLT_Mu13").size() && 
+			  vgamma::path("HLT_Mu13",*triggerEvent) ) ? 1 : -99;
+      muTrg_[nMu_][3] = ( iMu->triggerObjectMatchesByPath("HLT_Mu13_v*").size() && 
+			  vgamma::path("HLT_Mu13_v*",*triggerEvent) ) ? 1 : -99;
+      muTrg_[nMu_][4] = ( iMu->triggerObjectMatchesByPath("HLT_Mu15").size() && 
+			  vgamma::path("HLT_Mu15",*triggerEvent) ) ? 1 : -99;      
+      muTrg_[nMu_][5] = ( iMu->triggerObjectMatchesByPath("HLT_Mu15_v*").size() && 
+			  vgamma::path("HLT_Mu15_v*",*triggerEvent) ) ? 1 : -99;
+      muTrg_[nMu_][6] = ( iMu->triggerObjectMatchesByPath("HLT_Mu17_v*").size() && 
+			  vgamma::path("HLT_Mu17_v*",*triggerEvent) ) ? 1 : -99;
+      muTrg_[nMu_][7] = ( iMu->triggerObjectMatchesByPath("HLT_Mu24_v*").size() && 
+			  vgamma::path("HLT_Mu24_v*",*triggerEvent) ) ? 1 : -99;
+      muTrg_[nMu_][8] = ( iMu->triggerObjectMatchesByPath("HLT_Mu30_v*").size() && 
+			  vgamma::path("HLT_Mu30_v*",*triggerEvent) ) ? 1 : -99;
+      muTrg_[nMu_][9] = ( iMu->triggerObjectMatchesByPath("HLT_IsoMu17_v*").size() && 
+			  vgamma::path("HLT_IsoMu17_v*",*triggerEvent) ) ? 1 : -99;
+      muTrg_[nMu_][10] = ( iMu->triggerObjectMatchesByPath("HLT_IsoMu24_v*").size() && 
+			   vgamma::path("HLT_IsoMu24_v*",*triggerEvent) ) ? 1 : -99;
+      muTrg_[nMu_][11] = ( iMu->triggerObjectMatchesByPath("HLT_IsoMu30_v*").size() && 
+			   vgamma::path("HLT_IsoMu30_v*",*triggerEvent) ) ? 1 : -99;
+      
       //       if (!iMu->isGlobalMuon()) continue;
       //       if (!iMu->isTrackerMuon()) continue;
       //       if (iMu->globalTrack().isNull()) continue;
