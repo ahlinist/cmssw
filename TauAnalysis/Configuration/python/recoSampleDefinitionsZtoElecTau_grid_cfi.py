@@ -862,7 +862,7 @@ RECO_SAMPLES = {
         'type' : plotter.process_QCD_EMenriched_Pt80to170.config_dqmHistPlotter.type.value(),
         'drawOption' : styles.drawOption_QCD,
         'hlt' : cms.InputTag("TriggerResults", "", "REDIGI311X")
-    }
+    },
     'QCD_EM_Pt80to170_Pat' : {
         'datasetpath' : "/QCD_Pt-80to170_EMEnriched_TuneZ2_7TeV-pythia6/lantonel-patSkim_413_v1-c9dbc6c7165a3d4f1d089077c1253e67/USER",
         'dbs_url' :  "https://cmsdbsprod.cern.ch:8443/cms_dbs_ph_analysis_01_writer/servlet/DBSServlet",
