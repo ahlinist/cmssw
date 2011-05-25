@@ -13,20 +13,20 @@ TAN_BETA = 30
 # List of samples to run in the analysis
 SAMPLES_TO_ANALYZE = copy.deepcopy(ZtoElecTau.SAMPLES_TO_ANALYZE)
 SAMPLES_TO_ANALYZE.extend([
-    'A90',  'bbA90',
-    'A100', 'bbA100',
-    'A120', 'bbA120',
-    'A130', 'bbA130',
-    'A140', 'bbA140',
-    'A160', 'bbA160',
-    'A180', 'bbA180',
-    'A200', 'bbA200',
-    'A250', 'bbA250',
-    'A300', 'bbA300',
-    'A350', 'bbA350',
-    'A400', 'bbA400',
-    'A450', 'bbA450',
-    'A500', 'bbA500',
+    'A90_T3',  'bbA90_T3',
+    'A100_T3', 'bbA100_T3',
+    'A120_T3', 'bbA120_T3',
+    'A130_T3', 'bbA130_T3',
+    'A140_T3', 'bbA140_T3',
+    'A160_T3', 'bbA160_T3',
+    'A180_T3', 'bbA180_T3',
+    'A200_T3', 'bbA200_T3',
+    'A250_T3', 'bbA250_T3',
+    'A300_T3', 'bbA300_T3',
+    'A350_T3', 'bbA350_T3',
+    'A400_T3', 'bbA400_T3',
+    'A450_T3', 'bbA450_T3',
+    'A500_T3', 'bbA500_T3',
 ])
 
 # List of samples to include in the final level plots.  May include selections
@@ -36,7 +36,7 @@ SAMPLES_TO_PLOT = [
     #'A90Sum',
     #'A100Sum',
     #'A120Sum',
-    'A130Sum',
+    #'A130Sum',
     #'A140Sum',
     #'A160Sum',
 	#'A180Sum',
@@ -52,6 +52,9 @@ SAMPLES_TO_PLOT = [
 ]
 
 SAMPLES_TO_PRINT = copy.copy(SAMPLES_TO_PLOT)
+#SAMPLES_TO_PRINT.append('VVsum')
+#SAMPLES_TO_PRINT.append('TTplusJets_madgraph_T3')
+#SAMPLES_TO_PRINT.append('qqZll')
 #SAMPLES_TO_PRINT.append('qqZtautau')
 #SAMPLES_TO_PRINT.append('A90Sum')
 #SAMPLES_TO_PRINT.append('A100Sum')
@@ -107,11 +110,22 @@ AHtoElecTauSpecific_RECO_SAMPLES = {
         'legendEntry' : 'ggA(90) #rightarrow #tau^{+} #tau^{-}',
         'type' : 'bsmMC',
         'drawOption' : styles.drawOption_darkBlue_separate,
-        'applyZrecoilCorrection' : False,
-        'applyElectronTriggerEfficiencyCorrection' : True,
-        'applyElectronIsolationEfficiencyCorrection' : True,
-        'applyVertexMultiplicityReweighting' : False,
-        'enableSysUncertainties' : True,
+        'hlt' : cms.InputTag("TriggerResults", "", "REDIGI311X")
+
+    },
+    'A90_T3' : {
+        'datasetpath' : "/SUSYGluGluToHToTauTau_M-90_7TeV-pythia6-tauola/jkolb-skimElecTau_413_v1-6fd04f37b659c56b3728197f46d1dabb/USER",
+        'dbs_url' : "https://cmsdbsprod.cern.ch:8443/cms_dbs_ph_analysis_01_writer/servlet/DBSServlet",
+        'events_processed' : 110000,
+        'number_of_jobs' : 10,
+        'skim_eff' : 11265./110000.,
+        'x_sec' : (
+             174296.*_femtobarns*0.120567 # (gg -> h0)*(h0->tautau)
+           + 191745.*_femtobarns*0.119765 # (gg -> A0)*(A0->tautau)
+        ),
+        'legendEntry' : 'ggA(90) #rightarrow #tau^{+} #tau^{-}',
+        'type' : 'bsmMC',
+        'drawOption' : styles.drawOption_darkBlue_separate,
         'hlt' : cms.InputTag("TriggerResults", "", "REDIGI311X")
 
     },
@@ -129,11 +143,21 @@ AHtoElecTauSpecific_RECO_SAMPLES = {
         'legendEntry' : 'bbA(90) #rightarrow #tau^{+} #tau^{-}',
         'type' : 'bsmMC',
         'drawOption' : styles.drawOption_darkBlue_separate,
-        'applyZrecoilCorrection' : False,
-        'applyElectronTriggerEfficiencyCorrection' : True,
-        'applyElectronIsolationEfficiencyCorrection' : True,
-        'applyVertexMultiplicityReweighting' : False,
-        'enableSysUncertainties' : True,
+        'hlt' : cms.InputTag("TriggerResults", "", "REDIGI311X")
+    },
+    'bbA90_T3' : {
+        'datasetpath' : "/SUSYBBHToTauTau_M-90_7TeV-pythia6-tauola/jkolb-skimElecTau_413_v1-6fd04f37b659c56b3728197f46d1dabb/USER",
+        'dbs_url' : "https://cmsdbsprod.cern.ch:8443/cms_dbs_ph_analysis_01_writer/servlet/DBSServlet",
+        'events_processed' : 110000,
+        'number_of_jobs' : 10,
+        'skim_eff' : 11658./110000.,
+        'x_sec' : (
+             319247.*_femtobarns*0.120567 # (bb -> h0)*(h0->tautau)
+           + 320295.*_femtobarns*0.119765 # (bb -> A0)*(A0->tautau)
+        ),
+        'legendEntry' : 'bbA(90) #rightarrow #tau^{+} #tau^{-}',
+        'type' : 'bsmMC',
+        'drawOption' : styles.drawOption_darkBlue_separate,
         'hlt' : cms.InputTag("TriggerResults", "", "REDIGI311X")
     },
     'A100' : {
@@ -150,11 +174,21 @@ AHtoElecTauSpecific_RECO_SAMPLES = {
         'legendEntry' : 'ggA(100) #rightarrow #tau^{+} #tau^{-}',
         'type' : 'bsmMC',
         'drawOption' : styles.drawOption_darkBlue_separate,
-        'applyZrecoilCorrection' : False,
-        'applyElectronTriggerEfficiencyCorrection' : True,
-        'applyElectronIsolationEfficiencyCorrection' : True,
-        'applyVertexMultiplicityReweighting' : False,
-        'enableSysUncertainties' : True,
+        'hlt' : cms.InputTag("TriggerResults", "", "REDIGI311X")
+    },
+    'A100_T3' : {
+        'datasetpath' : "/SUSYGluGluToHToTauTau_M-100_7TeV-pythia6-tauola/jkolb-skimElecTau_413_v1-6fd04f37b659c56b3728197f46d1dabb/USER",
+        'dbs_url' : "https://cmsdbsprod.cern.ch:8443/cms_dbs_ph_analysis_01_writer/servlet/DBSServlet",
+        'events_processed' : 110000,
+        'number_of_jobs' : 10,
+        'skim_eff' : 12367./110000.,
+        'x_sec' : (
+             102490.*_femtobarns*0.122705 # (gg -> h0)*(h0->tautau)
+           + 113695.*_femtobarns*0.121864 # (gg -> A0)*(A0->tautau)
+        ),
+        'legendEntry' : 'ggA(100) #rightarrow #tau^{+} #tau^{-}',
+        'type' : 'bsmMC',
+        'drawOption' : styles.drawOption_darkBlue_separate,
         'hlt' : cms.InputTag("TriggerResults", "", "REDIGI311X")
     },
     'bbA100' : {
@@ -171,11 +205,21 @@ AHtoElecTauSpecific_RECO_SAMPLES = {
         'legendEntry' : 'bbA(100) #rightarrow #tau^{+} #tau^{-}',
         'type' : 'bsmMC',
         'drawOption' : styles.drawOption_darkBlue_separate,
-        'applyZrecoilCorrection' : False,
-        'applyElectronTriggerEfficiencyCorrection' : True,
-        'applyElectronIsolationEfficiencyCorrection' : True,
-        'applyVertexMultiplicityReweighting' : False,
-        'enableSysUncertainties' : True,
+        'hlt' : cms.InputTag("TriggerResults", "", "REDIGI311X")
+    },
+    'bbA100_T3' : {
+        'datasetpath' : "/SUSYBBHToTauTau_M-100_7TeV-pythia6-tauola/jkolb-skimElecTau_413_v1-6fd04f37b659c56b3728197f46d1dabb/USER",
+        'dbs_url' : "https://cmsdbsprod.cern.ch:8443/cms_dbs_ph_analysis_01_writer/servlet/DBSServlet",
+        'events_processed' : 110000,
+        'number_of_jobs' : 10,
+        'skim_eff' : 13056./110000.,
+        'x_sec' : (
+             234065.*_femtobarns*0.122705 # (bb -> h0)*(h0->tautau)
+           + 235007.*_femtobarns*0.121864 # (bb -> A0)*(A0->tautau)
+        ),
+        'legendEntry' : 'bbA(100) #rightarrow #tau^{+} #tau^{-}',
+        'type' : 'bsmMC',
+        'drawOption' : styles.drawOption_darkBlue_separate,
         'hlt' : cms.InputTag("TriggerResults", "", "REDIGI311X")
     },
     'A120' : {
@@ -193,11 +237,22 @@ AHtoElecTauSpecific_RECO_SAMPLES = {
         'legendEntry' : 'ggA(120) #rightarrow #tau^{+} #tau^{-}',
         'type' : 'bsmMC',
         'drawOption' : styles.drawOption_darkBlue_separate,
-        'applyZrecoilCorrection' : False,
-        'applyElectronTriggerEfficiencyCorrection' : True,
-        'applyElectronIsolationEfficiencyCorrection' : True,
-        'applyVertexMultiplicityReweighting' : False,
-        'enableSysUncertainties' : True,
+        'hlt' : cms.InputTag("TriggerResults", "", "REDIGI311X")
+    },
+    'A120_T3' : {
+        'datasetpath' : "/SUSYGluGluToHToTauTau_M-120_7TeV-pythia6-tauola/jkolb-skimElecTau_413_v1-6fd04f37b659c56b3728197f46d1dabb/USER",
+        'dbs_url' : "https://cmsdbsprod.cern.ch:8443/cms_dbs_ph_analysis_01_writer/servlet/DBSServlet",
+        'events_processed' : 110000,
+        'number_of_jobs' : 10,
+        'skim_eff' : 14962./110000,
+        'x_sec' : (
+              36542.*_femtobarns*0.126386 # (gg -> h0)*(h0->tautau)
+           +  48111.*_femtobarns*0.125494 # (gg -> A0)*(A0->tautau)
+           +  20248.*_femtobarns*0.128313 # (gg -> H0)*(H0->tautau)
+        ),
+        'legendEntry' : 'ggA(120) #rightarrow #tau^{+} #tau^{-}',
+        'type' : 'bsmMC',
+        'drawOption' : styles.drawOption_darkBlue_separate,
         'hlt' : cms.InputTag("TriggerResults", "", "REDIGI311X")
     },
     'bbA120' : {
@@ -215,11 +270,22 @@ AHtoElecTauSpecific_RECO_SAMPLES = {
         'legendEntry' : 'bbA(120) #rightarrow #tau^{+} #tau^{-}',
         'type' : 'bsmMC',
         'drawOption' : styles.drawOption_darkBlue_separate,
-        'applyZrecoilCorrection' : False,
-        'applyElectronTriggerEfficiencyCorrection' : True,
-        'applyElectronIsolationEfficiencyCorrection' : True,
-        'applyVertexMultiplicityReweighting' : False,
-        'enableSysUncertainties' : True,
+        'hlt' : cms.InputTag("TriggerResults", "", "REDIGI311X")
+    },
+    'bbA120_T3' : {
+        'datasetpath' : "/SUSYBBHToTauTau_M-120_7TeV-pythia6-tauola/jkolb-skimElecTau_413_v1-6fd04f37b659c56b3728197f46d1dabb/USER",
+        'dbs_url' : "https://cmsdbsprod.cern.ch:8443/cms_dbs_ph_analysis_01_writer/servlet/DBSServlet",
+        'events_processed' : 110000,
+        'number_of_jobs' : 10,
+        'skim_eff' : 15418./110000.,
+        'x_sec' : (
+             126929.*_femtobarns*0.126386 # (bb -> h0)*(h0->tautau)
+           + 133125.*_femtobarns*0.125494 # (bb -> A0)*(A0->tautau)
+           +   5801.*_femtobarns*0.129316 # (bb -> H0)*(H0->tautau)
+        ),
+        'legendEntry' : 'bbA(120) #rightarrow #tau^{+} #tau^{-}',
+        'type' : 'bsmMC',
+        'drawOption' : styles.drawOption_darkBlue_separate,
         'hlt' : cms.InputTag("TriggerResults", "", "REDIGI311X")
     },
     'A130' : {
@@ -237,11 +303,22 @@ AHtoElecTauSpecific_RECO_SAMPLES = {
         'legendEntry' : 'ggA(130) #rightarrow #tau^{+} #tau^{-}',
         'type' : 'bsmMC',
         'drawOption' : styles.drawOption_lightBlue_separate,
-        'applyZrecoilCorrection' : False,
-        'applyElectronTriggerEfficiencyCorrection' : True,
-        'applyElectronIsolationEfficiencyCorrection' : True,
-        'applyVertexMultiplicityReweighting' : False,
-        'enableSysUncertainties' : True,
+        'hlt' : cms.InputTag("TriggerResults", "", "REDIGI311X")
+    },
+    'A130_T3' : {
+        'datasetpath' : "/SUSYGluGluToHToTauTau_M-130_7TeV-pythia6-tauola/jkolb-skimElecTau_413_v1-eae887ba91c6c27e2f0c00f8aee7bf0a/USER",
+        'dbs_url' : "https://cmsdbsprod.cern.ch:8443/cms_dbs_ph_analysis_01_writer/servlet/DBSServlet",
+        'events_processed' : 110000,
+        'number_of_jobs' : 20,
+        'skim_eff' : 15712./110000.,
+        'x_sec' : (
+               6595.*_femtobarns*0.126317 # (gg -> h0)*(h0->tautau)
+           +  32421.*_femtobarns*0.127088 # (gg -> A0)*(A0->tautau)
+           +  33870.*_femtobarns*0.128313 # (gg -> H0)*(H0->tautau)
+        ),
+        'legendEntry' : 'ggA(130) #rightarrow #tau^{+} #tau^{-}',
+        'type' : 'bsmMC',
+        'drawOption' : styles.drawOption_lightBlue_separate,
         'hlt' : cms.InputTag("TriggerResults", "", "REDIGI311X")
     },
     'bbA130' : {
@@ -259,11 +336,22 @@ AHtoElecTauSpecific_RECO_SAMPLES = {
         'legendEntry' : 'bbA(130) #rightarrow #tau^{+} #tau^{-}',
         'type' : 'bsmMC',
         'drawOption' : styles.drawOption_darkBlue_separate,
-        'applyZrecoilCorrection' : False,
-        'applyElectronTriggerEfficiencyCorrection' : True,
-        'applyElectronIsolationEfficiencyCorrection' : True,
-        'applyVertexMultiplicityReweighting' : False,
-        'enableSysUncertainties' : True,
+        'hlt' : cms.InputTag("TriggerResults", "", "REDIGI311X")
+    },
+    'bbA130_T3' : {
+        'datasetpath' : "/SUSYBBHToTauTau_M-130_7TeV-pythia6-tauola/jkolb-skimElecTau_413_v1-eae887ba91c6c27e2f0c00f8aee7bf0a/USER",
+        'dbs_url' : "https://cmsdbsprod.cern.ch:8443/cms_dbs_ph_analysis_01_writer/servlet/DBSServlet",
+        'events_processed' : 110000,
+        'number_of_jobs' : 10,
+        'skim_eff' : 16549./110000.,
+        'x_sec' : (
+              37150.*_femtobarns*0.126317 # (bb -> h0)*(h0->tautau)
+           + 102366.*_femtobarns*0.127088 # (bb -> A0)*(A0->tautau)
+           +  65807.*_femtobarns*0.128313 # (bb -> H0)*(H0->tautau)
+        ),
+        'legendEntry' : 'bbA(130) #rightarrow #tau^{+} #tau^{-}',
+        'type' : 'bsmMC',
+        'drawOption' : styles.drawOption_darkBlue_separate,
         'hlt' : cms.InputTag("TriggerResults", "", "REDIGI311X")
     },
     'A140' : {
@@ -281,11 +369,22 @@ AHtoElecTauSpecific_RECO_SAMPLES = {
         'legendEntry' : 'ggA(140) #rightarrow #tau^{+} #tau^{-}',
         'type' : 'bsmMC',
         'drawOption' : styles.drawOption_darkBlue_separate,
-        'applyZrecoilCorrection' : False,
-        'applyElectronTriggerEfficiencyCorrection' : True,
-        'applyElectronIsolationEfficiencyCorrection' : True,
-        'applyVertexMultiplicityReweighting' : False,
-        'enableSysUncertainties' : True,
+        'hlt' : cms.InputTag("TriggerResults", "", "REDIGI311X")
+    },
+    'A140_T3' : {
+        'datasetpath' : "/SUSYGluGluToHToTauTau_M-140_7TeV-pythia6-tauola/jkolb-skimElecTau_413_v1-6fd04f37b659c56b3728197f46d1dabb/USER",
+        'dbs_url' : "https://cmsdbsprod.cern.ch:8443/cms_dbs_ph_analysis_01_writer/servlet/DBSServlet",
+        'events_processed' : 110000,
+        'number_of_jobs' : 10,
+        'skim_eff' : 16783./110000.,
+        'x_sec' : (
+               8877.*_femtobarns*0.121431 # (gg -> h0)*(h0->tautau)
+           +  22263.*_femtobarns*0.128566 # (gg -> A0)*(A0->tautau)
+           +  24328.*_femtobarns*0.129151 # (gg -> H0)*(H0->tautau)
+        ),
+        'legendEntry' : 'ggA(140) #rightarrow #tau^{+} #tau^{-}',
+        'type' : 'bsmMC',
+        'drawOption' : styles.drawOption_darkBlue_separate,
         'hlt' : cms.InputTag("TriggerResults", "", "REDIGI311X")
     },
     'bbA140' : {
@@ -303,11 +402,22 @@ AHtoElecTauSpecific_RECO_SAMPLES = {
         'legendEntry' : 'bbA(140) #rightarrow #tau^{+} #tau^{-}',
         'type' : 'bsmMC',
         'drawOption' : styles.drawOption_darkBlue_separate,
-        'applyZrecoilCorrection' : False,
-        'applyElectronTriggerEfficiencyCorrection' : True,
-        'applyElectronIsolationEfficiencyCorrection' : True,
-        'applyVertexMultiplicityReweighting' : False,
-        'enableSysUncertainties' : True,
+        'hlt' : cms.InputTag("TriggerResults", "", "REDIGI311X")
+    },
+    'bbA140_T3' : {
+        'datasetpath' : "/SUSYBBHToTauTau_M-140_7TeV-pythia6-tauola/jkolb-skimElecTau_413_v1-6fd04f37b659c56b3728197f46d1dabb/USER",
+        'dbs_url' : "https://cmsdbsprod.cern.ch:8443/cms_dbs_ph_analysis_01_writer/servlet/DBSServlet",
+        'events_processed' : 110000,
+        'number_of_jobs' : 10,
+        'skim_eff' : 17674./110000.,
+        'x_sec' : (
+               4948.*_femtobarns*0.121432 # (bb -> h0)*(h0->tautau)
+           +  79702.*_femtobarns*0.128566 # (bb -> A0)*(A0->tautau)
+           +  75246.*_femtobarns*0.129151 # (bb -> H0)*(H0->tautau)
+        ),
+        'legendEntry' : 'bbA(140) #rightarrow #tau^{+} #tau^{-}',
+        'type' : 'bsmMC',
+        'drawOption' : styles.drawOption_darkBlue_separate,
         'hlt' : cms.InputTag("TriggerResults", "", "REDIGI311X")
     },
     'A160' : {
@@ -324,11 +434,21 @@ AHtoElecTauSpecific_RECO_SAMPLES = {
         'legendEntry' : 'ggA(160) #rightarrow #tau^{+} #tau^{-}',
         'type' : 'bsmMC',
         'drawOption' : styles.drawOption_darkBlue_separate,
-        'applyZrecoilCorrection' : False,
-        'applyElectronTriggerEfficiencyCorrection' : True,
-        'applyElectronIsolationEfficiencyCorrection' : True,
-        'applyVertexMultiplicityReweighting' : False,
-        'enableSysUncertainties' : True,
+        'hlt' : cms.InputTag("TriggerResults", "", "REDIGI311X")
+    },
+    'A160_T3' : {
+        'datasetpath' : "/SUSYGluGluToHToTauTau_M-160_7TeV-pythia6-tauola/jkolb-skimElecTau_413_v1-6fd04f37b659c56b3728197f46d1dabb/USER",
+        'dbs_url' :  "http://cmsdbsprod.cern.ch/cms_dbs_prod_global/servlet/DBSServlet",
+        'events_processed' : 110000,
+        'number_of_jobs' : 25,
+        'skim_eff' : 18389./110000.,
+        'x_sec' : (
+              11094.*_femtobarns*0.131234 # (gg -> A0)*(A0->tautau)
+           +  11977.*_femtobarns*0.131575 # (gg -> H0)*(H0->tautau)
+        ),
+        'legendEntry' : 'ggA(160) #rightarrow #tau^{+} #tau^{-}',
+        'type' : 'bsmMC',
+        'drawOption' : styles.drawOption_darkBlue_separate,
         'hlt' : cms.InputTag("TriggerResults", "", "REDIGI311X")
     },
     'bbA160' : {
@@ -345,11 +465,21 @@ AHtoElecTauSpecific_RECO_SAMPLES = {
         'legendEntry' : 'bbA(160) #rightarrow #tau^{+} #tau^{-}',
         'type' : 'bsmMC',
         'drawOption' : styles.drawOption_darkBlue_separate,
-        'applyZrecoilCorrection' : False,
-        'applyElectronTriggerEfficiencyCorrection' : True,
-        'applyElectronIsolationEfficiencyCorrection' : True,
-        'applyVertexMultiplicityReweighting' : False,
-        'enableSysUncertainties' : True,
+        'hlt' : cms.InputTag("TriggerResults", "", "REDIGI311X")
+    },
+    'bbA160_T3' : {
+        'datasetpath' : "/SUSYBBHToTauTau_M-160_7TeV-pythia6-tauola/jkolb-skimElecTau_413_v1-6fd04f37b659c56b3728197f46d1dabb/USER",
+        'dbs_url' : "https://cmsdbsprod.cern.ch:8443/cms_dbs_ph_analysis_01_writer/servlet/DBSServlet",
+        'events_processed' : 110000,
+        'number_of_jobs' : 10,
+        'skim_eff' : 19435./110000.,
+        'x_sec' : (
+               1118.*_femtobarns*0.131234 # (bb -> A0)*(A0->tautau)
+           +  50997.*_femtobarns*0.131575 # (bb -> H0)*(H0->tautau)
+        ),
+        'legendEntry' : 'bbA(160) #rightarrow #tau^{+} #tau^{-}',
+        'type' : 'bsmMC',
+        'drawOption' : styles.drawOption_darkBlue_separate,
         'hlt' : cms.InputTag("TriggerResults", "", "REDIGI311X")
     },
     'A180' : {
@@ -366,11 +496,21 @@ AHtoElecTauSpecific_RECO_SAMPLES = {
         'legendEntry' : 'ggA(180) #rightarrow #tau^{+} #tau^{-}',
         'type' : 'bsmMC',
         'drawOption' : styles.drawOption_violett_separate,
-        'applyZrecoilCorrection' : False,
-        'applyElectronTriggerEfficiencyCorrection' : True,
-        'applyElectronIsolationEfficiencyCorrection' : True,
-        'applyVertexMultiplicityReweighting' : False,
-        'enableSysUncertainties' : True,
+        'hlt' : cms.InputTag("TriggerResults", "", "REDIGI311X")
+    },
+    'A180_T3' : {
+        'datasetpath' : "",
+        'dbs_url' : "https://cmsdbsprod.cern.ch:8443/cms_dbs_ph_analysis_01_writer/servlet/DBSServlet",
+        'events_processed' : 110000,
+        'number_of_jobs' : 25,
+        'skim_eff' : 1.0,
+        'x_sec' : (
+               5907.*_femtobarns*0.133061 # (gg -> A0)*(A0->tautau)
+           +   6388.*_femtobarns*0.133826 # (gg -> H0)*(H0->tautau)
+        ),
+        'legendEntry' : 'ggA(180) #rightarrow #tau^{+} #tau^{-}',
+        'type' : 'bsmMC',
+        'drawOption' : styles.drawOption_violett_separate,
         'hlt' : cms.InputTag("TriggerResults", "", "REDIGI311X")
     },
     'bbA180' : {
@@ -387,11 +527,21 @@ AHtoElecTauSpecific_RECO_SAMPLES = {
         'legendEntry' : 'bbA(180) #rightarrow #tau^{+} #tau^{-}',
         'type' : 'bsmMC',
         'drawOption' : styles.drawOption_darkBlue_separate,
-        'applyZrecoilCorrection' : False,
-        'applyElectronTriggerEfficiencyCorrection' : True,
-        'applyElectronIsolationEfficiencyCorrection' : True,
-        'applyVertexMultiplicityReweighting' : False,
-        'enableSysUncertainties' : True,
+        'hlt' : cms.InputTag("TriggerResults", "", "REDIGI311X")
+    },
+    'bbA180_T3' : {
+        'datasetpath' : "",
+        'dbs_url' : "https://cmsdbsprod.cern.ch:8443/cms_dbs_ph_analysis_01_writer/servlet/DBSServlet",
+        'events_processed' : 110000,
+        'number_of_jobs' : 25,
+        'skim_eff' : 1.0,
+        'x_sec' : (
+              32261.*_femtobarns*0.133061 # (bb -> A0)*(A0->tautau)
+           +  32063.*_femtobarns*0.133826 # (bb -> H0)*(H0->tautau)
+        ),
+        'legendEntry' : 'bbA(180) #rightarrow #tau^{+} #tau^{-}',
+        'type' : 'bsmMC',
+        'drawOption' : styles.drawOption_darkBlue_separate,
         'hlt' : cms.InputTag("TriggerResults", "", "REDIGI311X")
     },
     'A200' : {
@@ -408,11 +558,21 @@ AHtoElecTauSpecific_RECO_SAMPLES = {
         'legendEntry' : 'ggA(200) #rightarrow #tau^{+} #tau^{-}',
         'type' : 'bsmMC',
         'drawOption' : styles.drawOption_darkBlue_separate,
-        'applyZrecoilCorrection' : False,
-        'applyElectronTriggerEfficiencyCorrection' : True,
-        'applyElectronIsolationEfficiencyCorrection' : True,
-        'applyVertexMultiplicityReweighting' : False,
-        'enableSysUncertainties' : True,
+        'hlt' : cms.InputTag("TriggerResults", "", "REDIGI311X")
+    },
+    'A200_T3' : {
+        'datasetpath' : "",
+        'dbs_url' : "https://cmsdbsprod.cern.ch:8443/cms_dbs_ph_analysis_01_writer/servlet/DBSServlet",
+        'events_processed' : 110000,
+        'number_of_jobs' : 25,
+        'skim_eff' : 1.0,
+        'x_sec' : (
+               3318.*_femtobarns*0.134295 # (gg -> A0)*(A0->tautau)
+           +   3665.*_femtobarns*0.135591 # (gg -> H0)*(H0->tautau)
+        ),
+        'legendEntry' : 'ggA(200) #rightarrow #tau^{+} #tau^{-}',
+        'type' : 'bsmMC',
+        'drawOption' : styles.drawOption_darkBlue_separate,
         'hlt' : cms.InputTag("TriggerResults", "", "REDIGI311X")
     },
     'bbA200' : {
@@ -429,11 +589,21 @@ AHtoElecTauSpecific_RECO_SAMPLES = {
         'legendEntry' : 'bbA(200) #rightarrow #tau^{+} #tau^{-}',
         'type' : 'bsmMC',
         'drawOption' : styles.drawOption_darkBlue_separate,
-        'applyZrecoilCorrection' : False,
-        'applyElectronTriggerEfficiencyCorrection' : True,
-        'applyElectronIsolationEfficiencyCorrection' : True,
-        'applyVertexMultiplicityReweighting' : False,
-        'enableSysUncertainties' : True,
+        'hlt' : cms.InputTag("TriggerResults", "", "REDIGI311X")
+    },
+    'bbA200_T3' : {
+        'datasetpath' : "",
+        'dbs_url' : "https://cmsdbsprod.cern.ch:8443/cms_dbs_ph_analysis_01_writer/servlet/DBSServlet",
+        'events_processed' : 110000,
+        'number_of_jobs' : 25,
+        'skim_eff' : 1.0,
+        'x_sec' : (
+              21202.*_femtobarns*0.134295 # (bb -> A0)*(A0->tautau)
+           +  21128.*_femtobarns*0.135591 # (bb -> H0)*(H0->tautau)
+        ),
+        'legendEntry' : 'bbA(200) #rightarrow #tau^{+} #tau^{-}',
+        'type' : 'bsmMC',
+        'drawOption' : styles.drawOption_darkBlue_separate,
         'hlt' : cms.InputTag("TriggerResults", "", "REDIGI311X")
     },
     'A250' : {
@@ -450,11 +620,21 @@ AHtoElecTauSpecific_RECO_SAMPLES = {
         'legendEntry' : 'ggA(250) #rightarrow #tau^{+} #tau^{-}',
         'type' : 'bsmMC',
         'drawOption' : styles.drawOption_darkBlue_separate,
-        'applyZrecoilCorrection' : False,
-        'applyElectronTriggerEfficiencyCorrection' : True,
-        'applyElectronIsolationEfficiencyCorrection' : True,
-        'applyVertexMultiplicityReweighting' : False,
-        'enableSysUncertainties' : True,
+        'hlt' : cms.InputTag("TriggerResults", "", "REDIGI311X")
+    },
+    'A250_T3' : {
+        'datasetpath' : "",
+        'dbs_url' : "https://cmsdbsprod.cern.ch:8443/cms_dbs_ph_analysis_01_writer/servlet/DBSServlet",
+        'events_processed' : 110000,
+        'number_of_jobs' : 25,
+        'skim_eff' : 1.0,
+        'x_sec' : (
+                923.*_femtobarns*0.135441 # (gg -> A0)*(A0->tautau)
+           +   1101.*_femtobarns*0.139024 # (gg -> H0)*(H0->tautau)
+        ),
+        'legendEntry' : 'ggA(250) #rightarrow #tau^{+} #tau^{-}',
+        'type' : 'bsmMC',
+        'drawOption' : styles.drawOption_darkBlue_separate,
         'hlt' : cms.InputTag("TriggerResults", "", "REDIGI311X")
     },
     'bbA250' : {
@@ -471,11 +651,21 @@ AHtoElecTauSpecific_RECO_SAMPLES = {
         'legendEntry' : 'bbA(250) #rightarrow #tau^{+} #tau^{-}',
         'type' : 'bsmMC',
         'drawOption' : styles.drawOption_darkBlue_separate,
-        'applyZrecoilCorrection' : False,
-        'applyElectronTriggerEfficiencyCorrection' : True,
-        'applyElectronIsolationEfficiencyCorrection' : True,
-        'applyVertexMultiplicityReweighting' : False,
-        'enableSysUncertainties' : True,
+        'hlt' : cms.InputTag("TriggerResults", "", "REDIGI311X")
+    },
+    'bbA250_T3' : {
+        'datasetpath' : "",
+        'dbs_url' : "https://cmsdbsprod.cern.ch:8443/cms_dbs_ph_analysis_01_writer/servlet/DBSServlet",
+        'events_processed' : 110000,
+        'number_of_jobs' : 25,
+        'skim_eff' : 1.0,
+        'x_sec' : (
+               8432.*_femtobarns*0.135441 # (bb -> A0)*(A0->tautau)
+           +   8414.*_femtobarns*0.139024 # (bb -> H0)*(H0->tautau)
+        ),
+        'legendEntry' : 'bbA(250) #rightarrow #tau^{+} #tau^{-}',
+        'type' : 'bsmMC',
+        'drawOption' : styles.drawOption_darkBlue_separate,
         'hlt' : cms.InputTag("TriggerResults", "", "REDIGI311X")
     },
     'A300' : {
@@ -492,11 +682,21 @@ AHtoElecTauSpecific_RECO_SAMPLES = {
         'legendEntry' : 'ggA(300) #rightarrow #tau^{+} #tau^{-}',
         'type' : 'bsmMC',
         'drawOption' : styles.drawOption_darkBlue_separate,
-        'applyZrecoilCorrection' : False,
-        'applyElectronTriggerEfficiencyCorrection' : True,
-        'applyElectronIsolationEfficiencyCorrection' : True,
-        'applyVertexMultiplicityReweighting' : False,
-        'enableSysUncertainties' : True,
+        'hlt' : cms.InputTag("TriggerResults", "", "REDIGI311X")
+    },
+    'A300_T3' : {
+        'datasetpath' : "",
+        'dbs_url' : "https://cmsdbsprod.cern.ch:8443/cms_dbs_ph_analysis_01_writer/servlet/DBSServlet",
+        'events_processed' : 110000,
+        'number_of_jobs' : 25,
+        'skim_eff' : 1.0,
+        'x_sec' : (
+                286.*_femtobarns*0.131076 # (gg -> A0)*(A0->tautau)
+           +    387.*_femtobarns*0.139620 # (gg -> H0)*(H0->tautau)
+        ),
+        'legendEntry' : 'ggA(300) #rightarrow #tau^{+} #tau^{-}',
+        'type' : 'bsmMC',
+        'drawOption' : styles.drawOption_darkBlue_separate,
         'hlt' : cms.InputTag("TriggerResults", "", "REDIGI311X")
     },
     'bbA300' : {
@@ -513,11 +713,21 @@ AHtoElecTauSpecific_RECO_SAMPLES = {
         'legendEntry' : 'bbA(300) #rightarrow #tau^{+} #tau^{-}',
         'type' : 'bsmMC',
         'drawOption' : styles.drawOption_darkBlue_separate,
-        'applyZrecoilCorrection' : False,
-        'applyElectronTriggerEfficiencyCorrection' : True,
-        'applyElectronIsolationEfficiencyCorrection' : True,
-        'applyVertexMultiplicityReweighting' : False,
-        'enableSysUncertainties' : True,
+        'hlt' : cms.InputTag("TriggerResults", "", "REDIGI311X")
+    },
+    'bbA300_T3' : {
+        'datasetpath' : "",
+        'dbs_url' : "https://cmsdbsprod.cern.ch:8443/cms_dbs_ph_analysis_01_writer/servlet/DBSServlet",
+        'events_processed' : 110000,
+        'number_of_jobs' : 25,
+        'skim_eff' : 1.0,
+        'x_sec' : (
+               3752.*_femtobarns*0.131076 # (bb -> A0)*(A0->tautau)
+           +   3736.*_femtobarns*0.139620 # (bb -> H0)*(H0->tautau)
+        ),
+        'legendEntry' : 'bbA(300) #rightarrow #tau^{+} #tau^{-}',
+        'type' : 'bsmMC',
+        'drawOption' : styles.drawOption_darkBlue_separate,
         'hlt' : cms.InputTag("TriggerResults", "", "REDIGI311X")
     },
     'A350' : {
@@ -534,11 +744,21 @@ AHtoElecTauSpecific_RECO_SAMPLES = {
         'legendEntry' : 'ggA(350) #rightarrow #tau^{+} #tau^{-}',
         'type' : 'bsmMC',
         'drawOption' : styles.drawOption_darkBlue_separate,
-        'applyZrecoilCorrection' : False,
-        'applyElectronTriggerEfficiencyCorrection' : True,
-        'applyElectronIsolationEfficiencyCorrection' : True,
-        'applyVertexMultiplicityReweighting' : False,
-        'enableSysUncertainties' : True,
+        'hlt' : cms.InputTag("TriggerResults", "", "REDIGI311X")
+    },
+    'A350_T3' : {
+        'datasetpath' : "",
+        'dbs_url' : "https://cmsdbsprod.cern.ch:8443/cms_dbs_ph_analysis_01_writer/servlet/DBSServlet",
+        'events_processed' : 110000,
+        'number_of_jobs' : 25,
+        'skim_eff' : 1.0,
+        'x_sec' : (
+                 84.*_femtobarns*0.117009 # (gg -> A0)*(A0->tautau)
+           +    121.*_femtobarns*0.133089 # (gg -> H0)*(H0->tautau)
+        ),
+        'legendEntry' : 'ggA(350) #rightarrow #tau^{+} #tau^{-}',
+        'type' : 'bsmMC',
+        'drawOption' : styles.drawOption_darkBlue_separate,
         'hlt' : cms.InputTag("TriggerResults", "", "REDIGI311X")
     },
     'bbA350' : {
@@ -555,11 +775,21 @@ AHtoElecTauSpecific_RECO_SAMPLES = {
         'legendEntry' : 'bbA(350) #rightarrow #tau^{+} #tau^{-}',
         'type' : 'bsmMC',
         'drawOption' : styles.drawOption_darkBlue_separate,
-        'applyZrecoilCorrection' : False,
-        'applyElectronTriggerEfficiencyCorrection' : True,
-        'applyElectronIsolationEfficiencyCorrection' : True,
-        'applyVertexMultiplicityReweighting' : False,
-        'enableSysUncertainties' : True,
+        'hlt' : cms.InputTag("TriggerResults", "", "REDIGI311X")
+    },
+    'bbA350_T3' : {
+        'datasetpath' : "",
+        'dbs_url' : "https://cmsdbsprod.cern.ch:8443/cms_dbs_ph_analysis_01_writer/servlet/DBSServlet",
+        'events_processed' : 110000,
+        'number_of_jobs' : 25,
+        'skim_eff' : 1.0,
+        'x_sec' : (
+               1830.*_femtobarns*0.117009 # (bb -> A0)*(A0->tautau)
+           +   1829.*_femtobarns*0.133089 # (bb -> H0)*(H0->tautau)
+        ),
+        'legendEntry' : 'bbA(350) #rightarrow #tau^{+} #tau^{-}',
+        'type' : 'bsmMC',
+        'drawOption' : styles.drawOption_darkBlue_separate,
         'hlt' : cms.InputTag("TriggerResults", "", "REDIGI311X")
     },
     'A400' : {
@@ -576,11 +806,21 @@ AHtoElecTauSpecific_RECO_SAMPLES = {
         'legendEntry' : 'ggA(400) #rightarrow #tau^{+} #tau^{-}',
         'type' : 'bsmMC',
         'drawOption' : styles.drawOption_darkBlue_separate,
-        'applyZrecoilCorrection' : False,
-        'applyElectronTriggerEfficiencyCorrection' : True,
-        'applyElectronIsolationEfficiencyCorrection' : True,
-        'applyVertexMultiplicityReweighting' : False,
-        'enableSysUncertainties' : True,
+        'hlt' : cms.InputTag("TriggerResults", "", "REDIGI311X")
+    },
+    'A400_T3' : {
+        'datasetpath' : "",
+        'dbs_url' : "https://cmsdbsprod.cern.ch:8443/cms_dbs_ph_analysis_01_writer/servlet/DBSServlet",
+        'events_processed' : 110000,
+        'number_of_jobs' : 25,
+        'skim_eff' : 1.0,
+        'x_sec' : (                 # CV: cross-section * branching-ratio taken directly from Bari .root file
+                 1.*_femtobarns*0.1 # (gg -> A0)*(A0->tautau)
+           +     1.*_femtobarns*0.1 # (gg -> H0)*(H0->tautau)
+        ),
+        'legendEntry' : 'ggA(400) #rightarrow #tau^{+} #tau^{-}',
+        'type' : 'bsmMC',
+        'drawOption' : styles.drawOption_darkBlue_separate,
         'hlt' : cms.InputTag("TriggerResults", "", "REDIGI311X")
     },
     'bbA400' : {
@@ -597,11 +837,21 @@ AHtoElecTauSpecific_RECO_SAMPLES = {
         'legendEntry' : 'bbA(400) #rightarrow #tau^{+} #tau^{-}',
         'type' : 'bsmMC',
         'drawOption' : styles.drawOption_darkBlue_separate,
-        'applyZrecoilCorrection' : False,
-        'applyElectronTriggerEfficiencyCorrection' : True,
-        'applyElectronIsolationEfficiencyCorrection' : True,
-        'applyVertexMultiplicityReweighting' : False,
-        'enableSysUncertainties' : True,
+        'hlt' : cms.InputTag("TriggerResults", "", "REDIGI311X")
+    },
+    'bbA400_T3' : {
+        'datasetpath' : "",
+        'dbs_url' : "https://cmsdbsprod.cern.ch:8443/cms_dbs_ph_analysis_01_writer/servlet/DBSServlet",
+        'events_processed' : 110000,
+        'number_of_jobs' : 25,
+        'skim_eff' : 1.0,
+        'x_sec' : (               # CV: cross-section * branching-ratio taken directly from Bari .root file
+               1.*_femtobarns*0.1 # (bb -> A0)*(A0->tautau)
+           +   1.*_femtobarns*0.1 # (bb -> H0)*(H0->tautau)
+        ),
+        'legendEntry' : 'bbA(400) #rightarrow #tau^{+} #tau^{-}',
+        'type' : 'bsmMC',
+        'drawOption' : styles.drawOption_darkBlue_separate,
         'hlt' : cms.InputTag("TriggerResults", "", "REDIGI311X")
     },
     'A450' : {
@@ -618,11 +868,21 @@ AHtoElecTauSpecific_RECO_SAMPLES = {
         'legendEntry' : 'ggA(450) #rightarrow #tau^{+} #tau^{-}',
         'type' : 'bsmMC',
         'drawOption' : styles.drawOption_darkBlue_separate,
-        'applyZrecoilCorrection' : False,
-        'applyElectronTriggerEfficiencyCorrection' : True,
-        'applyElectronIsolationEfficiencyCorrection' : True,
-        'applyVertexMultiplicityReweighting' : False,
-        'enableSysUncertainties' : True,
+        'hlt' : cms.InputTag("TriggerResults", "", "REDIGI311X")
+    },
+    'A450_T3' : {
+        'datasetpath' : "",
+        'dbs_url' : "https://cmsdbsprod.cern.ch:8443/cms_dbs_ph_analysis_01_writer/servlet/DBSServlet",
+        'events_processed' : 110000,
+        'number_of_jobs' : 25,
+        'skim_eff' : 1.0,
+        'x_sec' : (                 # CV: cross-section * branching-ratio taken directly from Bari .root file
+                 1.*_femtobarns*0.1 # (gg -> A0)*(A0->tautau)
+           +     1.*_femtobarns*0.1 # (gg -> H0)*(H0->tautau)
+        ),
+        'legendEntry' : 'ggA(450) #rightarrow #tau^{+} #tau^{-}',
+        'type' : 'bsmMC',
+        'drawOption' : styles.drawOption_darkBlue_separate,
         'hlt' : cms.InputTag("TriggerResults", "", "REDIGI311X")
     },
     'bbA450' : {
@@ -639,11 +899,21 @@ AHtoElecTauSpecific_RECO_SAMPLES = {
         'legendEntry' : 'bbA(450) #rightarrow #tau^{+} #tau^{-}',
         'type' : 'bsmMC',
         'drawOption' : styles.drawOption_darkBlue_separate,
-        'applyZrecoilCorrection' : False,
-        'applyElectronTriggerEfficiencyCorrection' : True,
-        'applyElectronIsolationEfficiencyCorrection' : True,
-        'applyVertexMultiplicityReweighting' : False,
-        'enableSysUncertainties' : True,
+        'hlt' : cms.InputTag("TriggerResults", "", "REDIGI311X")
+    },
+    'bbA450_T3' : {
+        'datasetpath' : "",
+        'dbs_url' : "https://cmsdbsprod.cern.ch:8443/cms_dbs_ph_analysis_01_writer/servlet/DBSServlet",
+        'events_processed' : 217300,
+        'number_of_jobs' : 25,
+        'skim_eff' : 1.0,
+        'x_sec' : (               # CV: cross-section * branching-ratio taken directly from Bari .root file
+               1.*_femtobarns*0.1 # (bb -> A0)*(A0->tautau)
+           +   1.*_femtobarns*0.1 # (bb -> H0)*(H0->tautau)
+        ),
+        'legendEntry' : 'bbA(450) #rightarrow #tau^{+} #tau^{-}',
+        'type' : 'bsmMC',
+        'drawOption' : styles.drawOption_darkBlue_separate,
         'hlt' : cms.InputTag("TriggerResults", "", "REDIGI311X")
     },
     'A500' : {
@@ -660,11 +930,21 @@ AHtoElecTauSpecific_RECO_SAMPLES = {
         'legendEntry' : 'ggA(500) #rightarrow #tau^{+} #tau^{-}',
         'type' : 'bsmMC',
         'drawOption' : styles.drawOption_darkBlue_separate,
-        'applyZrecoilCorrection' : False,
-        'applyElectronTriggerEfficiencyCorrection' : True,
-        'applyElectronIsolationEfficiencyCorrection' : True,
-        'applyVertexMultiplicityReweighting' : False,
-        'enableSysUncertainties' : True,
+        'hlt' : cms.InputTag("TriggerResults", "", "REDIGI311X")
+    },
+    'A500_T3' : {
+        'datasetpath' : "",
+        'dbs_url' : "https://cmsdbsprod.cern.ch:8443/cms_dbs_ph_analysis_01_writer/servlet/DBSServlet",
+        'events_processed' : 110000,
+        'number_of_jobs' : 25,
+        'skim_eff' : 1.0,
+        'x_sec' : (                 # CV: cross-section * branching-ratio taken directly from Bari .root file
+                 1.*_femtobarns*0.1 # (gg -> A0)*(A0->tautau)
+           +     1.*_femtobarns*0.1 # (gg -> H0)*(H0->tautau)
+        ),
+        'legendEntry' : 'ggA(500) #rightarrow #tau^{+} #tau^{-}',
+        'type' : 'bsmMC',
+        'drawOption' : styles.drawOption_darkBlue_separate,
         'hlt' : cms.InputTag("TriggerResults", "", "REDIGI311X")
     },
     'bbA500' : {
@@ -681,11 +961,21 @@ AHtoElecTauSpecific_RECO_SAMPLES = {
         'legendEntry' : 'bbA(500) #rightarrow #tau^{+} #tau^{-}',
         'type' : 'bsmMC',
         'drawOption' : styles.drawOption_darkBlue_separate,
-        'applyZrecoilCorrection' : False,
-        'applyElectronTriggerEfficiencyCorrection' : True,
-        'applyElectronIsolationEfficiencyCorrection' : True,
-        'applyVertexMultiplicityReweighting' : False,
-        'enableSysUncertainties' : True,
+        'hlt' : cms.InputTag("TriggerResults", "", "REDIGI311X")
+    },
+    'bbA500_T3' : {
+        'datasetpath' : "",
+        'dbs_url' : "https://cmsdbsprod.cern.ch:8443/cms_dbs_ph_analysis_01_writer/servlet/DBSServlet",
+        'events_processed' : 185060,
+        'number_of_jobs' : 25,
+        'skim_eff' : 1.0,
+        'x_sec' : (               # CV: cross-section * branching-ratio taken directly from Bari .root file
+               1.*_femtobarns*0.1 # (bb -> A0)*(A0->tautau)
+           +   1.*_femtobarns*0.1 # (bb -> H0)*(H0->tautau)
+        ),
+        'legendEntry' : 'bbA(500) #rightarrow #tau^{+} #tau^{-}',
+        'type' : 'bsmMC',
+        'drawOption' : styles.drawOption_darkBlue_separate,
         'hlt' : cms.InputTag("TriggerResults", "", "REDIGI311X")
     }
 }
@@ -694,88 +984,88 @@ RECO_SAMPLES.update(AHtoElecTauSpecific_RECO_SAMPLES)
 MERGE_SAMPLES = copy.deepcopy(ZtoElecTau.MERGE_SAMPLES)
 AHtoElecTauSpecific_MERGE_SAMPLES = {
     'A90Sum' : {
-        'samples' : [ 'A90', 'bbA90' ],
+        'samples' : [ 'A90_T3', 'bbA90_T3' ],
         'legendEntry' : 'A(90) #rightarrow #tau^{+} #tau^{-}',
         'type' : 'bsmMC',
-        'drawOption' : RECO_SAMPLES['A90']['drawOption'],
+        'drawOption' : RECO_SAMPLES['A90_T3']['drawOption'],
     },
     'A100Sum' : {
-        'samples' : [ 'A100', 'bbA100' ],
+        'samples' : [ 'A100_T3', 'bbA100_T3' ],
         'legendEntry' : 'A(100) #rightarrow #tau^{+} #tau^{-}',
         'type' : 'bsmMC',
-        'drawOption' : RECO_SAMPLES['A100']['drawOption'],
+        'drawOption' : RECO_SAMPLES['A100_T3']['drawOption'],
     },
     'A120Sum' : {
-        'samples' : [ 'A120', 'bbA120' ],
+        'samples' : [ 'A120_T3', 'bbA120_T3' ],
         'legendEntry' : 'A(120) #rightarrow #tau^{+} #tau^{-}',
         'type' : 'bsmMC',
-        'drawOption' : RECO_SAMPLES['A120']['drawOption'],
+        'drawOption' : RECO_SAMPLES['A120_T3']['drawOption'],
     },
     'A130Sum' : {
-        'samples' : [ 'A130', 'bbA130' ],
+        'samples' : [ 'A130_T3', 'bbA130_T3' ],
         'legendEntry' : 'A(130) #rightarrow #tau^{+} #tau^{-}',
         'type' : 'bsmMC',
-        'drawOption' : RECO_SAMPLES['A130']['drawOption'],
+        'drawOption' : RECO_SAMPLES['A130_T3']['drawOption'],
     },
     'A140Sum' : {
-        'samples' : [ 'A140', 'bbA140' ],
+        'samples' : [ 'A140_T3', 'bbA140_T3' ],
         'legendEntry' : 'A(140) #rightarrow #tau^{+} #tau^{-}',
         'type' : 'bsmMC',
-        'drawOption' : RECO_SAMPLES['A140']['drawOption'],
+        'drawOption' : RECO_SAMPLES['A140_T3']['drawOption'],
     },
     'A160Sum' : {
-        'samples' : [ 'A160', 'bbA160' ],
+        'samples' : [ 'A160_T3', 'bbA160_T3' ],
         'legendEntry' : 'A(160) #rightarrow #tau^{+} #tau^{-}',
         'type' : 'bsmMC',
-        'drawOption' : RECO_SAMPLES['A160']['drawOption'],
+        'drawOption' : RECO_SAMPLES['A160_T3']['drawOption'],
     },
     'A180Sum' : {
-        'samples' : [ 'A180', 'bbA180' ],
+        'samples' : [ 'A180_T3', 'bbA180_T3' ],
         'legendEntry' : 'A(180) #rightarrow #tau^{+} #tau^{-}',
         'type' : 'bsmMC',
-        'drawOption' : RECO_SAMPLES['A180']['drawOption'],
+        'drawOption' : RECO_SAMPLES['A180_T3']['drawOption'],
     },
     'A200Sum' : {
-        'samples' : [ 'A200', 'bbA200' ],
+        'samples' : [ 'A200_T3', 'bbA200_T3' ],
         'legendEntry' : 'A(200) #rightarrow #tau^{+} #tau^{-}',
         'type' : 'bsmMC',
-        'drawOption' : RECO_SAMPLES['A200']['drawOption'],
+        'drawOption' : RECO_SAMPLES['A200_T3']['drawOption'],
     },
     'A250Sum' : {
-        'samples' : [ 'A250', 'bbA250' ],
+        'samples' : [ 'A250_T3', 'bbA250_T3' ],
         'legendEntry' : 'A(250) #rightarrow #tau^{+} #tau^{-}',
         'type' : 'bsmMC',
-        'drawOption' : RECO_SAMPLES['A250']['drawOption'],
+        'drawOption' : RECO_SAMPLES['A250_T3']['drawOption'],
     },
     'A300Sum' : {
-        'samples' : [ 'A300', 'bbA300' ],
+        'samples' : [ 'A300_T3', 'bbA300_T3' ],
         'legendEntry' : 'A(300) #rightarrow #tau^{+} #tau^{-}',
         'type' : 'bsmMC',
-        'drawOption' : RECO_SAMPLES['A300']['drawOption'],
+        'drawOption' : RECO_SAMPLES['A300_T3']['drawOption'],
     },
     'A350Sum' : {
-        'samples' : [ 'A350', 'bbA350' ],
+        'samples' : [ 'A350_T3', 'bbA350_T3' ],
         'legendEntry' : 'A(350) #rightarrow #tau^{+} #tau^{-}',
         'type' : 'bsmMC',
-        'drawOption' : RECO_SAMPLES['A350']['drawOption'],
+        'drawOption' : RECO_SAMPLES['A350_T3']['drawOption'],
     },
     'A400Sum' : {
-        'samples' : [ 'A400', 'bbA450' ],
+        'samples' : [ 'A400_T3', 'bbA450_T3' ],
         'legendEntry' : 'A(400) #rightarrow #tau^{+} #tau^{-}',
         'type' : 'bsmMC',
-        'drawOption' : RECO_SAMPLES['A400']['drawOption'],
+        'drawOption' : RECO_SAMPLES['A400_T3']['drawOption'],
     },
     'A450Sum' : {
-        'samples' : [ 'A450', 'bbA450' ],
+        'samples' : [ 'A450_T3', 'bbA450_T3' ],
         'legendEntry' : 'A(450) #rightarrow #tau^{+} #tau^{-}',
         'type' : 'bsmMC',
-        'drawOption' : RECO_SAMPLES['A450']['drawOption'],
+        'drawOption' : RECO_SAMPLES['A450_T3']['drawOption'],
     },
     'A500Sum' : {
-        'samples' : [ 'A500', 'bbA500' ],
+        'samples' : [ 'A500_T3', 'bbA500_T3' ],
         'legendEntry' : 'A(500) #rightarrow #tau^{+} #tau^{-}',
         'type' : 'bsmMC',
-        'drawOption' : RECO_SAMPLES['A500']['drawOption'],
+        'drawOption' : RECO_SAMPLES['A500_T3']['drawOption'],
     }
 }
 MERGE_SAMPLES.update(AHtoElecTauSpecific_MERGE_SAMPLES)
