@@ -24,7 +24,7 @@ process.load ("RecoBTag.PerformanceDB.BTagPerformanceDBMC36X")
 process.load ("RecoBTag.PerformanceDB.BTagPerformanceDB1011")
 process.load ("RecoBTag.PerformanceDB.PoolBTagPerformanceDB1011")
 
-#process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(1000) )
+#process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(2000) )
 process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(-1) )
 process.source = cms.Source ("PoolSource",
                              fileNames = cms.untracked.vstring (
@@ -38,59 +38,6 @@ duplicateCheckMode = cms.untracked.string('noDuplicateCheck'),
 
 
 
-                           
-
-process.SystematicsAnalyzer = cms.EDAnalyzer('SingleTopSystematicsDumper',                              
-systematics = cms.untracked.vstring("BTagUp","BTagDown","MisTagUp","MisTagDown","JESUp","JESDown","UnclusteredMETUp","UnclusteredMETDown"),
-channelInfo = cms.PSet(
-    crossSection = cms.untracked.double(20.93),
-    channel = cms.untracked.string("TChannel"),
-    originalEvents = cms.untracked.double(480000),
-    finalLumi = cms.untracked.double(14.5),
-    MTWCut = cms.untracked.double(50.0),#Default 50.0 GeV
-    loosePtCut = cms.untracked.double(30.0),#Default 30.0 GeV
-    ),
-
-
-#Part of the kin quantities:
-leptonsEta = cms.InputTag("nTupleElectrons","tightElectronsEta"),  
-leptonsPt = cms.InputTag("nTupleElectrons","tightElectronsPt"),  
-leptonsPhi = cms.InputTag("nTupleElectrons","tightElectronsPhi"),  
-leptonsEnergy = cms.InputTag("nTupleElectrons","tightElectronsE"),  
-leptonsCharge = cms.InputTag("nTupleElectrons","tightElectronsCharge"),  
-leptonsRelIso = cms.InputTag("nTupleElectrons","tightElectronsRelIso"),  
-leptonsID = cms.InputTag("nTupleElectrons","tightElectronsSimpleEleId95cIso"),  
-
-leptonsFlavour = cms.untracked.string("electron"),
-
-
-looseMuonsRelIso = cms.InputTag("looseElectrons","looseElectronsRelIso"),  
-looseElectronsRelIso = cms.InputTag("looseMuons","looseMuonsRelIso"),  
-
-
-jetsPt = cms.InputTag("nTupleTopJetsPF","topJetsPFPt"),  
-jetsPhi = cms.InputTag("nTupleTopJetsPF","topJetsPFPhi"),  
-jetsEta = cms.InputTag("nTupleTopJetsPF","topJetsPFEta"),  
-jetsEnergy = cms.InputTag("nTupleTopJetsPF","topJetsPFE"),  
-
-jetsBTagAlgo = cms.InputTag("nTupleTopJetsPF","topJetsPFTrackCountingHighPur"),  
-jetsAntiBTagAlgo =  cms.InputTag("nTupleTopJetsPF","topJetsPFTrackCountingHighEff"),  
-jetsFlavour = cms.InputTag("nTupleTopJetsPF","topJetsPFFlavour"),   
-
-jetsCorrTotal = cms.InputTag("nTupleTopJetsPF","topJetsPFJetCorrTotal"),   
-
-METPhi = cms.InputTag("nTuplePatMETsPF","patMETsPFPhi"),
-METPt = cms.InputTag("nTuplePatMETsPF","patMETsPFPt"),
-
-UnclusteredMETPx = cms.InputTag("UnclusteredMETPF","UnclusteredMETPx"),
-UnclusteredMETPy = cms.InputTag("UnclusteredMETPF","UnclusteredMETPy"),
-
-
-#patJets = cms.InputTag("topJetsPF"),
-
-)
-
-#Input
 
 #from TChannel import *
 #process.source.fileNames = TChannel_ntuple
@@ -100,7 +47,7 @@ process.source.fileNames = cms.untracked.vstring("file:/tmp/oiorio/TChannelMerge
 
 #Output
 
-process.TFileService = cms.Service("TFileService", fileName = cms.string("/tmp/oiorio/TChannel_Scan.root"))
+process.TFileService = cms.Service("TFileService", fileName = cms.string("/tmp/oiorio/TChannel.root"))
 
 process.load("SingleTopAnalyzers_cfi")
 process.load("SingleTopRootPlizer_cfi")
@@ -112,9 +59,27 @@ process.PlotsEle.channelInfo = TChannelEle
 process.PlotsMu.channelInfo = TChannelMu
 #process.TreesMu.systematics = cms.untracked.vstring();
 
-process.PathSys = cms.Path(
-#    process.PlotsMu +
-#    process.PlotsEle +
-    process.TreesMu +
-    process.TreesEle
-   )
+
+channel_instruction = "channel_instruction" #SWITCH_INSTRUCTION
+
+if channel_instruction == "all":
+    process.PathSys = cms.Path(
+        #    process.PlotsMu +
+        #    process.PlotsEle +
+        process.TreesMu +
+        process.TreesEle
+        )
+
+if channel_instruction == "mu":
+    process.PathSysMu = cms.Path(
+        #    process.PlotsMu +
+        #    process.PlotsEle +
+        process.TreesMu 
+        )
+
+if channel_instruction == "ele":
+    process.PathSysEle = cms.Path(
+        #    process.PlotsMu +
+        #    process.PlotsEle +
+        process.TreesEle
+        )

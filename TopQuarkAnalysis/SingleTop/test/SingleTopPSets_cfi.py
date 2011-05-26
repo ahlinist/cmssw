@@ -19,8 +19,55 @@ TChannelEle = cms.PSet(
     MTWCut = cms.untracked.double(40.0),#Default 50.0 GeV
     )
 
+tWChanMu = cms.PSet(
+        crossSection = cms.untracked.double(10.6),
+            channel = cms.untracked.string("tWChan"),
+            originalEvents = cms.untracked.double(494961),
+            finalLumi = cms.untracked.double(191.091),
+            MTWCut = cms.untracked.double(40.0),#Default 50.0 GeV
+            RelIsoCut = cms.untracked.double(0.05),
+            )
 
+tWChanEle = cms.PSet(
+        crossSection = cms.untracked.double(10.6),
+            channel = cms.untracked.string("tWChan"),
+            finalLumi = cms.untracked.double(191.091),
+            originalEvents = cms.untracked.double(494961),
+            )
+
+sChanMu = cms.PSet(
+            crossSection = cms.untracked.double(1.533),
+                        channel = cms.untracked.string("sChan"),
+                        originalEvents = cms.untracked.double(494967),
+                        finalLumi = cms.untracked.double(191.091),
+                        MTWCut = cms.untracked.double(40.0),#Default 50.0 GeV
+                        RelIsoCut = cms.untracked.double(0.05),
+                        )
+
+sChanEle = cms.PSet(
+            crossSection = cms.untracked.double(1.533),
+                        channel = cms.untracked.string("sChan"),
+                        finalLumi = cms.untracked.double(191.091),
+                        originalEvents = cms.untracked.double(494967),
+                        )
   
+
+ZJetsMu = cms.PSet(
+    crossSection = cms.untracked.double(2321),
+    channel = cms.untracked.string("ZJets"),
+    finalLumi = cms.untracked.double(191.091),
+    originalEvents = cms.untracked.double(2595097),
+    MTWCut = cms.untracked.double(40.0),#Default 50.0 GeV
+    RelIsoCut = cms.untracked.double(0.05),
+)
+
+
+ZJetsEle = cms.PSet(
+    crossSection = cms.untracked.double(2321),
+    channel = cms.untracked.string("ZJets"),
+    finalLumi = cms.untracked.double(191.091),
+    originalEvents = cms.untracked.double(2595097),
+    )
 
 WJetsMu = cms.PSet(
     crossSection = cms.untracked.double(31314),
@@ -42,7 +89,7 @@ WJetsEle = cms.PSet(
 
 
 WJets_wlightMu = cms.PSet(
-    crossSection = cms.untracked.double(31314),
+    crossSection = cms.untracked.double(24170),
     channel = cms.untracked.string("WJets_wlight"),
     finalLumi = cms.untracked.double(191.091),
     originalEvents = cms.untracked.double(14800000),
@@ -52,7 +99,7 @@ WJets_wlightMu = cms.PSet(
 
 
 WJets_wlightEle = cms.PSet(
-    crossSection = cms.untracked.double(31314),
+    crossSection = cms.untracked.double(24170),
     channel = cms.untracked.string("WJets_wlight"),
     finalLumi = cms.untracked.double(191.091),
     originalEvents = cms.untracked.double(14800000),
@@ -61,7 +108,7 @@ WJets_wlightEle = cms.PSet(
 
 
 WJets_wccMu = cms.PSet(
-    crossSection = cms.untracked.double(31314),
+    crossSection = cms.untracked.double(24170),
     channel = cms.untracked.string("WJets_wcc"),
     finalLumi = cms.untracked.double(191.091),
     originalEvents = cms.untracked.double(14800000),
@@ -71,26 +118,22 @@ WJets_wccMu = cms.PSet(
 
 
 WJets_wccEle = cms.PSet(
-    crossSection = cms.untracked.double(31314),
+    crossSection = cms.untracked.double(24170),
     channel = cms.untracked.string("WJets_wcc"),
     finalLumi = cms.untracked.double(191.091),
     originalEvents = cms.untracked.double(14800000),
     )
-  
-
 
 WJets_wbbMu = cms.PSet(
-    crossSection = cms.untracked.double(31314),
+    crossSection = cms.untracked.double(24170),
     channel = cms.untracked.string("WJets_wbb"),
     finalLumi = cms.untracked.double(191.091),
     originalEvents = cms.untracked.double(14800000),
     MTWCut = cms.untracked.double(40.0),#Default 50.0 GeV
     RelIsoCut = cms.untracked.double(0.05),
     )
-
-
 WJets_wbbEle = cms.PSet(
-    crossSection = cms.untracked.double(31314),
+    crossSection = cms.untracked.double(24170),
     channel = cms.untracked.string("WJets_wbb"),
     finalLumi = cms.untracked.double(191.091),
     originalEvents = cms.untracked.double(14800000),

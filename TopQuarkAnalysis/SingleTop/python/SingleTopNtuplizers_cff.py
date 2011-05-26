@@ -9,13 +9,23 @@ nTupleTopJetsPF = cms.EDProducer(
     cms.PSet(
     #B-Tagging
     tag = cms.untracked.string("TrackCountingHighPur"),
-    quantity = cms.untracked.string("bDiscriminator('trackCountingHighPurBJetTags')")
+    quantity = cms.untracked.string("bDiscriminator('trackCountingHighPurBJetTags')"),
     ),
     cms.PSet(
     tag = cms.untracked.string("TrackCountingHighEff"),
     quantity = cms.untracked.string("bDiscriminator('trackCountingHighEffBJetTags')")
     ),
-##    4-momentum
+    cms.PSet(
+    tag = cms.untracked.string("SecondaryVertexHighEffBJetTags"),
+    quantity = cms.untracked.string("bDiscriminator('simpleSecondaryVertexHighEffBJetTags')"),
+    ),
+    cms.PSet(
+    tag = cms.untracked.string("SecondaryVertexHighPurBJetTags"),
+    quantity = cms.untracked.string("bDiscriminator('simpleSecondaryVertexHighPurBJetTags')"),
+    ),
+
+    
+    ##    4-momentum
     cms.PSet(
     tag = cms.untracked.string("Pt"),
     quantity = cms.untracked.string("pt")
@@ -106,6 +116,18 @@ nTupleElectrons = cms.EDProducer(
     cms.PSet(
     tag = cms.untracked.string("SimpleEleId95cIso"),
     quantity = cms.untracked.string("electronID('simpleEleId95cIso')")
+    ),
+    cms.PSet(
+    tag = cms.untracked.string("eidRobustLoose"),
+    quantity = cms.untracked.string("electronID('eidRobustLoose')")
+    ),
+    cms.PSet(
+    tag = cms.untracked.string("eidRobustTight"),
+    quantity = cms.untracked.string("electronID('eidRobustTight')")
+    ),
+    cms.PSet(
+    tag = cms.untracked.string("eidRobustHighEnergy"),
+    quantity = cms.untracked.string("electronID('eidRobustHighEnergy')")
     ),
 #    cms.PSet(
 #    tag = cms.untracked.string("SuperClusterEta"),
@@ -277,6 +299,18 @@ nTupleLooseElectrons = nTupleElectrons.clone(
     ),
     #ID and other parameters
     cms.PSet(
+    tag = cms.untracked.string("eidRobustLoose"),
+    quantity = cms.untracked.string("electronID('eidRobustLoose')")
+    ),
+    cms.PSet(
+    tag = cms.untracked.string("eidRobustTight"),
+    quantity = cms.untracked.string("electronID('eidRobustTight')")
+    ),
+    cms.PSet(
+    tag = cms.untracked.string("eidRobustHighEnergy"),
+    quantity = cms.untracked.string("electronID('eidRobustHighEnergy')")
+    ),
+    cms.PSet(
     tag = cms.untracked.string("SimpleEleId70cIso"),
     quantity = cms.untracked.string("electronID('simpleEleId70cIso')")
     ),
@@ -324,6 +358,14 @@ nTupleAllJets = nTupleTopJetsPF.clone(
     cms.PSet(
     tag = cms.untracked.string("TrackCountingHighEff"),
     quantity = cms.untracked.string("bDiscriminator('trackCountingHighEffBJetTags')")
+    ),
+    cms.PSet(
+    tag = cms.untracked.string("SecondaryVertexHighEffBJetTags"),
+    quantity = cms.untracked.string("bDiscriminator('simpleSecondaryVertexHighEffBJetTags')"),
+    ),
+    cms.PSet(
+    tag = cms.untracked.string("SecondaryVertexHighPurBJetTags"),
+    quantity = cms.untracked.string("bDiscriminator('simpleSecondaryVertexHighPurBJetTags')"),
     ),
     #4-momentum
     cms.PSet(
