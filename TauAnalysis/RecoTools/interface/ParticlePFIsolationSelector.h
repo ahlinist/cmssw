@@ -12,9 +12,9 @@
  *
  * \author Christian Veelken, UC Davis
  *
- * \version $Revision: 1.10 $
+ * \version $Revision: 1.12 $
  *
- * $Id: ParticlePFIsolationSelector.h,v 1.10 2011/04/22 16:07:32 veelken Exp $
+ * $Id: ParticlePFIsolationSelector.h,v 1.12 2011/05/26 19:01:58 lantonel Exp $
  *
  */
 
@@ -58,11 +58,11 @@ class ParticlePFIsolationSelector
     if ( cfg.exists("beamSpotSource")   ) beamSpotSrc_   = cfg.getParameter<edm::InputTag>("beamSpotSource");
     if ( cfg.exists("rhoFastJetSource") ) rhoFastJetSrc_ = cfg.getParameter<edm::InputTag>("rhoFastJetSource");
     
-    sumPtMin_ = cfg.exists("sumPtMin") ?
-      cfg.getParameter<double>("sumPtMin") : -1.;
-    
+
     sumPtMaxEB_ = -1;
     sumPtMaxEE_ = -1;
+    sumPtMinEB_ = -1;
+    sumPtMinEE_ = -1;
 
 
     if( cfg.exists("sumPtMinEB") && cfg.exists("sumPtMinEE") ) {
@@ -73,12 +73,8 @@ class ParticlePFIsolationSelector
       sumPtMinEB_ = cfg.getParameter<double>("sumPtMin");
       sumPtMinEE_ = cfg.getParameter<double>("sumPtMin");
     }
-    else {
-      edm::LogError("ParticlePFIsolationSelector")
-	<< " Configuration must specify ( sumPtMinEB AND sumPtMinEE ) OR sumPtMin ";
-      cfgError_ = 1;
-    }
-        
+
+
     if( cfg.exists("sumPtMaxEB") && cfg.exists("sumPtMaxEE") ) {
       sumPtMaxEB_ = cfg.getParameter<double>("sumPtMaxEB");
       sumPtMaxEE_ = cfg.getParameter<double>("sumPtMaxEE");
