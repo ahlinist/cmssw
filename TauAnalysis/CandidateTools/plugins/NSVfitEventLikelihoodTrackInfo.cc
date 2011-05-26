@@ -8,6 +8,7 @@ using namespace SVfit_namespace;
 NSVfitEventLikelihoodTrackInfo::NSVfitEventLikelihoodTrackInfo(const edm::ParameterSet& cfg)
   : NSVfitEventLikelihood(cfg)
 {
+  if ( this->verbosity_ ) std::cout << "<NSVfitEventLikelihoodTrackInfo::ctor>:" << std::endl;
 // nothing to be done yet...
 }
 
@@ -16,8 +17,9 @@ NSVfitEventLikelihoodTrackInfo::~NSVfitEventLikelihoodTrackInfo()
 // nothing to be done yet...
 }
 
-void NSVfitEventLikelihoodTrackInfo::beginJob(NSVfitAlgorithmBase* algorithm) const 
+void NSVfitEventLikelihoodTrackInfo::beginJob(NSVfitAlgorithmBase* algorithm)
 {
+  std::cout << "NSVfitEventLikelihoodTrackInfo: Requesting to fit the PV" << std::endl;
   algorithm->requestFitParameter("*", nSVfit_namespace::kPV_shiftX, pluginName_);
   algorithm->requestFitParameter("*", nSVfit_namespace::kPV_shiftY, pluginName_);
   algorithm->requestFitParameter("*", nSVfit_namespace::kPV_shiftZ, pluginName_);
@@ -33,7 +35,7 @@ double NSVfitEventLikelihoodTrackInfo::operator()(const NSVfitEventHypothesis* h
   if ( this->verbosity_ ) std::cout << "<NSVfitEventLikelihoodTrackInfo::operator()>:" << std::endl;
 
   double nll = 0.;
-  if ( hypothesis->eventVertexSVrefittedIsValid() ) 
+  if ( hypothesis->eventVertexSVrefittedIsValid() )
     nll -= logGaussianNd(hypothesis->eventVertexShiftSVrefitted(), hypothesis->eventVertexErrSVrefitted());
   if ( this->verbosity_ ) std::cout << "--> nll = " << nll << std::endl;
 

@@ -11,9 +11,9 @@
  *
  * \author Christian Veelken, UC Davis
  *
- * \version $Revision: 1.1 $
+ * \version $Revision: 1.2 $
  *
- * $Id: NSVfitEventLikelihoodMEt2.h,v 1.1 2011/04/15 16:51:24 veelken Exp $
+ * $Id: NSVfitEventLikelihoodMEt2.h,v 1.2 2011/04/19 08:16:12 veelken Exp $
  *
  */
 
@@ -43,7 +43,7 @@ class NSVfitEventLikelihoodMEt2 : public NSVfitEventLikelihood
   NSVfitEventLikelihoodMEt2(const edm::ParameterSet&);
   ~NSVfitEventLikelihoodMEt2();
 
-  void beginJob(NSVfitAlgorithmBase*) const;
+  void beginJob(NSVfitAlgorithmBase*);
   void beginEvent(const edm::Event&, const edm::EventSetup&);
   void beginCandidate(const NSVfitEventHypothesis*) const;
 

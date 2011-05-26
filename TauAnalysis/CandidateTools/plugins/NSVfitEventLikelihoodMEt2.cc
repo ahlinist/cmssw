@@ -34,7 +34,7 @@ NSVfitEventLikelihoodMEt2::~NSVfitEventLikelihoodMEt2()
   delete pfMEtSign_;
 }
 
-void NSVfitEventLikelihoodMEt2::beginJob(NSVfitAlgorithmBase* algorithm) const 
+void NSVfitEventLikelihoodMEt2::beginJob(NSVfitAlgorithmBase* algorithm)
 {
   algorithm->requestFitParameter("allTauDecays", nSVfit_namespace::kTau_visEnFracX, pluginName_);
   algorithm->requestFitParameter("allTauDecays", nSVfit_namespace::kTau_phi_lab,    pluginName_);
@@ -51,7 +51,7 @@ void NSVfitEventLikelihoodMEt2::beginEvent(const edm::Event& evt, const edm::Eve
 void NSVfitEventLikelihoodMEt2::beginCandidate(const NSVfitEventHypothesis* hypothesis) const
 {
   if ( this->verbosity_ ) std::cout << "<NSVfitEventLikelihoodMEt2::beginCandidate>:" << std::endl;
-  
+
   std::list<const reco::Candidate*> daughterHypothesesList;
   for ( edm::OwnVector<NSVfitResonanceHypothesis>::const_iterator resonance = hypothesis->resonances().begin();
 	resonance != hypothesis->resonances().end(); ++resonance ) {
@@ -89,14 +89,14 @@ double NSVfitEventLikelihoodMEt2::operator()(const NSVfitEventHypothesis* hypoth
   //    (cf. CMS AN-10/400, page 1)
   double chi2 = residual_fitted*(pfMEtCovInverse_*residual_fitted);
   double prob = TMath::Prob(chi2, 2);
-  
+
   double nll = 0.;
   if ( prob > 0. ) {
     nll = -TMath::Log(prob);
   } else {
     nll = std::numeric_limits<float>::max();
   }
-  
+
   if ( this->verbosity_ ) std::cout << "--> nll = " << nll << std::endl;
 
   return power_*nll;
