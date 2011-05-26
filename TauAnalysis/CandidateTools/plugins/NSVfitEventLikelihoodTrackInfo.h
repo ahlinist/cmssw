@@ -3,15 +3,15 @@
 
 /** \class NSVfitEventLikelihoodTrackInfo
  *
- * Plugin for computing likelihood for position of primary event vertex 
- * refitted after excluding tracks of particles produced in tau lepton decays 
+ * Plugin for computing likelihood for position of primary event vertex
+ * refitted after excluding tracks of particles produced in tau lepton decays
  * to be compatible with reconstructed tau lepton decay kinematics
  *
  * \author Evan Friis, Christian Veelken; UC Davis
  *
- * \version $Revision: 1.1 $
+ * \version $Revision: 1.2 $
  *
- * $Id: NSVfitEventLikelihoodTrackInfo.h,v 1.1 2011/03/23 17:46:39 veelken Exp $
+ * $Id: NSVfitEventLikelihoodTrackInfo.h,v 1.2 2011/03/25 14:34:30 veelken Exp $
  *
  */
 
@@ -27,7 +27,7 @@ class NSVfitEventLikelihoodTrackInfo : public NSVfitEventLikelihood
   NSVfitEventLikelihoodTrackInfo(const edm::ParameterSet&);
   ~NSVfitEventLikelihoodTrackInfo();
 
-  void beginJob(NSVfitAlgorithmBase*) const; 
+  void beginJob(NSVfitAlgorithmBase*);
 
   double operator()(const NSVfitEventHypothesis*) const;
 };
