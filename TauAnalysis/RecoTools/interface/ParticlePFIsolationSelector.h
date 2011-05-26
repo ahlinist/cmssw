@@ -63,17 +63,36 @@ class ParticlePFIsolationSelector
     
     sumPtMaxEB_ = -1;
     sumPtMaxEE_ = -1;
-    if ( cfg.exists("sumPtMax") ) {
-      sumPtMaxEB_ = cfg.getParameter<double>("sumPtMax");
-      sumPtMaxEE_ = cfg.getParameter<double>("sumPtMax");
-    } else if( cfg.exists("sumPtMaxEB") && cfg.exists("sumPtMaxEE") ) {
+
+
+    if( cfg.exists("sumPtMinEB") && cfg.exists("sumPtMinEE") ) {
+      sumPtMinEB_ = cfg.getParameter<double>("sumPtMinEB");
+      sumPtMinEE_ = cfg.getParameter<double>("sumPtMinEE");
+    } 
+    else if (cfg.exists("sumPtMin")) {
+      sumPtMinEB_ = cfg.getParameter<double>("sumPtMin");
+      sumPtMinEE_ = cfg.getParameter<double>("sumPtMin");
+    }
+    else {
+      edm::LogError("ParticlePFIsolationSelector")
+	<< " Configuration must specify ( sumPtMinEB AND sumPtMinEE ) OR sumPtMin ";
+      cfgError_ = 1;
+    }
+        
+    if( cfg.exists("sumPtMaxEB") && cfg.exists("sumPtMaxEE") ) {
       sumPtMaxEB_ = cfg.getParameter<double>("sumPtMaxEB");
       sumPtMaxEE_ = cfg.getParameter<double>("sumPtMaxEE");
-    } else {
+    } 
+    else if (cfg.exists("sumPtMax")) {
+      sumPtMaxEB_ = cfg.getParameter<double>("sumPtMax");
+      sumPtMaxEE_ = cfg.getParameter<double>("sumPtMax");
+    }
+    else {
       edm::LogError("ParticlePFIsolationSelector")
 	<< " Configuration must specify ( sumPtMaxEB AND sumPtMaxEE ) OR sumPtMax ";
       cfgError_ = 1;
     }
+
     
     if ( cfg.exists("sumPtMethod") ) {
       std::string sumPtMethod_string = cfg.getParameter<std::string>("sumPtMethod");
@@ -120,26 +139,29 @@ class ParticlePFIsolationSelector
 	beamSpot = &(*beamSpotHandle);
       }
 
-      double rhoFastJetCorrection = -1.;
+      double rhoFastJetCorrection = 0.;
       if ( rhoFastJetSrc_.label() != "" ) {
 	edm::Handle<double> rhoFastJetHandle;
 	evt.getByLabel(rhoFastJetSrc_, rhoFastJetHandle);
-	if ( rhoFastJetHandle.isValid() ) rhoFastJetCorrection = (*rhoFastJetHandle);
+	rhoFastJetCorrection = (*rhoFastJetHandle);
       }
       
+
+
       for ( typename collection::const_iterator isoParticleCandidate = isoParticleCandidates->begin();
 	    isoParticleCandidate != isoParticleCandidates->end(); ++isoParticleCandidate ) {
 	double sumPt = extractor_(*isoParticleCandidate, *pfCandidates, vertices, beamSpot, rhoFastJetCorrection);
 	
-	// JK: need to fix for correct eta
+	// need to fix for correct eta
 	double sumPtMax = ( isoParticleCandidate->eta() < 1.479 ) ? sumPtMaxEB_ : sumPtMaxEE_;
-	
+	double sumPtMin = ( isoParticleCandidate->eta() < 1.479 ) ? sumPtMinEB_ : sumPtMinEE_;
+
 	if ( sumPtMethod_ == kAbsoluteIso ) {
-	  if ( sumPtMin_ > 0. && sumPt  < sumPtMin_ ) continue;
+	  if ( sumPtMin > 0. && sumPt  < sumPtMin ) continue;
 	  if ( sumPtMax  > 0. && sumPt  > sumPtMax  ) continue;
 	} else if ( sumPtMethod_ == kRelativeIso ) {
 	  double relIso = ( isoParticleCandidate->pt() > 1. ) ? (sumPt/isoParticleCandidate->pt()) : sumPt;
-	  if ( sumPtMin_ > 0. && relIso < sumPtMin_ ) continue;
+	  if ( sumPtMin > 0. && relIso < sumPtMin ) continue;
 	  if ( sumPtMax  > 0. && relIso > sumPtMax  ) continue;
 	}
 	
@@ -158,11 +180,12 @@ class ParticlePFIsolationSelector
     edm::InputTag rhoFastJetSrc_;
 
     ParticlePFIsolationExtractor<T> extractor_;
-    
-    double sumPtMin_;
+
+    double sumPtMinEB_;
+    double sumPtMinEE_;
     double sumPtMaxEB_;
-    double sumPtMaxEE_;
-    
+    double sumPtMaxEE_;    
+        
     enum { kAbsoluteIso, kRelativeIso };
     int sumPtMethod_;
     
