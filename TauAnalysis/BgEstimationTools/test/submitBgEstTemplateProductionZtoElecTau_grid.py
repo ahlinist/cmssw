@@ -11,19 +11,16 @@ outputFilePath = getAnalysisFilePath(channel)
 jobId = getJobId(channel)
 
 
-## samplesToAnalyze = [
-##     # modify in case you want to submit crab jobs for some of the samples only...
-##     'data_EG_Run2010A_Nov4ReReco_T3'
-
-    
-##     #'Ztautau_PU156BX_T3','Zee_PU156BX_T3',
-## ]
+#samplesToAnalyze = [
+     # modify in case you want to submit crab jobs for some of the samples only...
+ #  'Zee_powheg_T3'
+#]
 
 # Submit analysis jobs to the grid;
 # disable estimation of systematic uncertainties for all samples except Ztautau
 submitAnalysisToGrid(configFile = configFile, channel = channel,
                      samples = recoSampleDefinitionsZtoElecTau, outputFilePath = outputFilePath, jobId = jobId,
-                     #samplesToAnalyze = samplesToAnalyze,
+ #                    samplesToAnalyze = samplesToAnalyze,
                      outsideCERN = True,
                      useCastor = False, 
                      disableFactorization = True, disableSysUncertainties = True)
