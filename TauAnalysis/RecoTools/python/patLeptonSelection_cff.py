@@ -297,11 +297,11 @@ selectPatTaus = patTauSelConfigurator.configure(pyNameSpace = locals())
 selectedPatTausForElecTauAntiOverlapWithElectronsVeto.dRmin = cms.double(0.3)
 selectedPatTausForElecTauEta.cut = selectedPatTausEta23.cut
 selectedPatTausForElecTauPt.cut = selectedPatTausPt20.cut
-selectedPatTausForElecTauLeadTrk.cut = selectedPatTausLeadTrk.cut
+selectedPatTausForElecTauDecayModeFinding.cut = cms.string('tauID("decayModeFinding") > 0.5')
 selectedPatTausForElecTauLeadTrkPt.cut = selectedPatTausLeadTrkPt.cut
-selectedPatTausForElecTauTaNCdiscr.cut = cms.string('tauID("byHPSloose") > 0.5')
-selectedPatTausForElecTauProng.cut = selectedPatTausProng.cut
-selectedPatTausForElecTauCharge.cut = selectedPatTausCharge.cut
+selectedPatTausForElecTauIso.cut = cms.string('tauID("byHPSloose") > 0.5')
+#selectedPatTausForElecTauProng.cut = selectedPatTausProng.cut
+#selectedPatTausForElecTauCharge.cut = selectedPatTausCharge.cut
 selectedPatTausForElecTauElectronVeto.cut = cms.string('tauID("againstElectronTight") > 0.5')
 selectedPatTausForElecTauEcalCrackVeto.cut =  selectedPatTausEcalCrackVeto.cut
 selectedPatTausForElecTauMuonVeto.cut = selectedPatTausMuonVeto.cut
@@ -310,11 +310,11 @@ patTauSelConfiguratorForElecTau = objSelConfigurator(
     [ selectedPatTausForElecTauAntiOverlapWithElectronsVeto,
       selectedPatTausForElecTauEta,
       selectedPatTausForElecTauPt,
-      selectedPatTausForElecTauLeadTrk,
+      selectedPatTausForElecTauDecayModeFinding,
       selectedPatTausForElecTauLeadTrkPt,
-      selectedPatTausForElecTauTaNCdiscr,
-      selectedPatTausForElecTauProng,
-      selectedPatTausForElecTauCharge,
+      selectedPatTausForElecTauIso,
+      #selectedPatTausForElecTauProng,
+      #selectedPatTausForElecTauCharge,
       selectedPatTausForElecTauElectronVeto,
       selectedPatTausForElecTauEcalCrackVeto,
       selectedPatTausForElecTauMuonVeto ],

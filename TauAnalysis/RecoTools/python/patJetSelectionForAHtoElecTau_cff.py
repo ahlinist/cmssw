@@ -27,7 +27,7 @@ selectedPatJetsForAHtoElecTauAntiOverlapWithLeptonsVeto = cms.EDFilter("PATJetAn
     srcNotToBeFiltered = cms.VInputTag(
         "selectedPatElectronsForElecTauTrkIPcumulative",
         "selectedPatMuonsTrkIPcumulative",
-        "selectedPatTausForElecTauProngCumulative"
+        "selectedPatTausForElecTauMuonVetoCumulative"
     ),                                                           
     dRmin = cms.double(0.7),
     filter = cms.bool(False)                                           
