@@ -78,7 +78,7 @@ process.source = cms.Source ("PoolSource",
 
 #    'file:/tmp/oiorio/F81B1889-AF4B-DF11-85D3-001A64789DF4.root'
 'file:/tmp/oiorio/EC0EE286-FA55-E011-B99B-003048F024F6.root'
-
+#'file:/tmp/oiorio/D0B32FD9-6D87-E011-8572-003048678098.root'
 ),
 duplicateCheckMode = cms.untracked.string('noDuplicateCheck')
 )

@@ -32,11 +32,16 @@ from TopQuarkAnalysis.SingleTop.SingleTopNtuplizers_cff import nTupleZVetoElectr
 
 nTuplePatMETsPF.src = cms.InputTag('patMETs')
 
+from RecoEgamma.ElectronIdentification.electronIdSequence_cff import *
 
-patElectronIDs = cms.Sequence(simpleEleIdSequence)
+patElectronIDs = cms.Sequence(simpleEleIdSequence +
+                              eIdSequence)
 electronIDSources = cms.PSet(
     simpleEleId70cIso = cms.InputTag("simpleEleId70cIso"),
     simpleEleId95cIso = cms.InputTag("simpleEleId95cIso"),
+    eidRobustLoose= cms.InputTag("eidRobustLoose"),
+    eidRobustTight= cms.InputTag("eidRobustTight"),
+    eidRobustHighEnergy= cms.InputTag("eidRobustHighEnergy")
     ) 
 
 #cFlavorHistoryProducer.matchedSrc = cms.InputTag("antikt5GenJets")
@@ -45,7 +50,6 @@ electronIDSources = cms.PSet(
 patElectrons.addElectronID = cms.bool(True)
 patElectrons.electronIDSources = electronIDSources
 
-patElectronIDs = cms.Sequence(simpleEleIdSequence)
 
 #makeNewPatElectrons = cms.Sequence(patElectronIDs * patElectronIsolation * patElectrons)
 

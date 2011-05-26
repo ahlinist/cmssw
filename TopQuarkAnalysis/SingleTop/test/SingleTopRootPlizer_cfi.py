@@ -2,9 +2,16 @@ import FWCore.ParameterSet.Config as cms
 
 TreesEle = cms.EDAnalyzer('SingleTopSystematicsTreesDumper',                              
 systematics = cms.untracked.vstring("BTagUp","BTagDown","MisTagUp","MisTagDown","JESUp","JESDown","UnclusteredMETUp","UnclusteredMETDown"),
-#systematics = cms.untracked.vstring("")
+#systematics = cms.untracked.vstring(""),
 doBScan = cms.untracked.bool(True),
-rateSystematics = cms.untracked.vstring("WLightRate","TTBarRate","WqqRate","WqRate"),
+#rateSystematics = cms.untracked.vstring("WLightRate","TTBarRate","WqqRate","WqRate"),
+rateSystematics = cms.untracked.vstring("WLightRateUp",
+                                        "WLightRateDown",
+                                        "TTBarRateUp",
+                                        "TTBarRateDown",
+                                        "WHFRateUp",
+                                        "WHFRateDown"),
+#rateSystematics = cms.untracked.vstring(""),
 leptonsID = cms.InputTag("nTupleElectrons","tightElectronsSimpleEleId95cIso"),  
 
 channelInfo = cms.PSet(

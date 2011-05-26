@@ -6,7 +6,7 @@
  * \Authors A. Orso M. Iorio
  * 
  * Produces systematics histograms out of a standard Single Top n-tuple 
- * \ version $Id: SingleTopSystematicsTreesDumper.h,v 1.3 2011/05/09 02:20:50 oiorio Exp $
+ * \ version $Id: SingleTopSystematicsTreesDumper.h,v 1.4 2011/05/16 07:38:05 oiorio Exp $
  */
 
 
@@ -199,6 +199,7 @@ class SingleTopSystematicsTreesDumper : public edm::EDAnalyzer {
   size_t bScanSteps;
   bool doBScan_,doQCD_;
   map<string, TTree*> treesScan[10];
+  map<string, TTree*> treesScanQCD[10];
   /*  map<string, TTree*> ForwardJetEta;
   map<string, TTree*> CosThetaLJ;
   map<string, TTree*> MTW;
@@ -236,7 +237,7 @@ class SingleTopSystematicsTreesDumper : public edm::EDAnalyzer {
   int runTree, eventTree,lumiTree,chargeTree;
 
   
-  double lepPt,lepPz,lepPhi,lepRelIso,fJetPhi,fJetPt,fJetPz,fJetE,bJetPt,bJetPz,bJetPhi,bJetE,metPt,metPhi,topPt,topPhi,topPz,topE,totalEnergy,totalMomentum;
+  double lepPt,lepEta,lepPhi,lepRelIso,fJetPhi,fJetPt,fJetEta,fJetE,bJetPt,bJetEta,bJetPhi,bJetE,metPt,metPhi,topPt,topPhi,topEta,topE,totalEnergy,totalMomentum;
 
   
  
