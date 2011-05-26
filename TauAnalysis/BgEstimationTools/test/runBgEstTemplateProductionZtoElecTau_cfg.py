@@ -2,7 +2,7 @@ import FWCore.ParameterSet.Config as cms
 import copy
 import os
 
-process = cms.Process('prodBgEstTemplateProductionZtoElecTau')
+process = cms.Process('bgEstTemplateProductionZtoElecTau')
 
 # import of standard configurations for RECOnstruction
 # of electrons, muons and tau-jets with non-standard isolation cones
@@ -17,7 +17,7 @@ process.load('Configuration/StandardSequences/GeometryIdeal_cff')
 process.load('Configuration/StandardSequences/MagneticField_cff')
 process.load('Configuration/StandardSequences/Reconstruction_cff')
 process.load('Configuration/StandardSequences/FrontierConditions_GlobalTag_cff')
-process.GlobalTag.globaltag = cms.string('START38_V14::All')
+process.GlobalTag.globaltag = cms.string('START311_V2::All')
 
 #--------------------------------------------------------------------------------
 # import sequences for PAT-tuple production
@@ -36,44 +36,44 @@ process.saveZtoElecTauPlots = cms.EDAnalyzer("DQMSimpleFileSaver",
 )
 
 process.maxEvents = cms.untracked.PSet(
-    #input = cms.untracked.int32(-1) 
-    input = cms.untracked.int32(1000)    
+    input = cms.untracked.int32(-1) 
+    #input = cms.untracked.int32(10)    
 )
 
 process.source = cms.Source("PoolSource",
-    fileNames = cms.untracked.vstring(
+    #fileNames = cms.untracked.vstring("file:/afs/crc.nd.edu/user/l/lantonel/CMSSW_4_1_3/src/TauAnalysis/BgEstimationTools/test/patTuple.root"),
+                           fileNames = cms.untracked.vstring()
+    #skipEvents=cms.untracked.uint32(1421)
 
-    )
+                            
     #skipBadFiles = cms.untracked.bool(True) 
 )
+
+process.options = cms.untracked.PSet( SkipEvent = cms.untracked.vstring('ProductNotFound') )
 
 #--------------------------------------------------------------------------------
 #  directories pointing to different input samples stored at the ND Tier 3
 #--------------------------------------------------------------------------------
 
-#dir="/pscratch/ndcms/bestman/storage/cms/store/user/jkolb/DYToTauTau_M-20_TuneZ2_7TeV-pythia6-tauola/skimElecTau_385_v1/0ddb8cbebd1c6c83ded328371cc1c32b/"
-#dir="/pscratch/ndcms/bestman/storage/cms/store/user/jkolb/DYToEE_M-20_TuneZ2_7TeV-pythia6/skimElecTau_385_v1/0ddb8cbebd1c6c83ded328371cc1c32b/"
+
+#dir = "/pscratch/ndcms/bestman/storage/cms/store/user/jkolb/DYToTauTau_M-20_CT10_TuneZ2_7TeV-powheg-pythia-tauola/skimElecTau_413_v2/eae887ba91c6c27e2f0c00f8aee7bf0a/"
+
+#dir = "/pscratch/ndcms/bestman/storage/cms/store/user/jkolb/DYToEE_M-10To20_TuneZ2_7TeV-pythia6/skimElecTau_413_v1/eae887ba91c6c27e2f0c00f8aee7bf0a/"
+#dir = "/pscratch/ndcms/bestman/storage/cms/store/user/lantonel/DYToEE_M-20_CT10_TuneZ2_7TeV-powheg-pythia/patSkim_413_v1/c9dbc6c7165a3d4f1d089077c1253e67/"
 
 
-#dir="/pscratch/ndcms/bestman/storage/cms/store/user/jkolb/EG/skimElecTau_385_v3/f555ceec0d7f274eb20b4abf4dbe76f7/"
-#dir="/pscratch/ndcms/bestman/storage/cms/store/user/jkolb/Electron/skimElecTau_387_v1/f555ceec0d7f274eb20b4abf4dbe76f7/"
 
-#dir="/pscratch/ndcms/bestman/storage/cms/store/user/jkolb/QCD_Pt-30to80_EMEnriched_TuneZ2_7TeV-pythia6/skimElecTau_385_v3/c7ae91f3f823bf7a101c2a0b38387496/"
-#dir="/pscratch/ndcms/bestman/storage/cms/store/user/jkolb/WToENu_TuneZ2_7TeV-pythia6/skimElecTau_385_v1/0ddb8cbebd1c6c83ded328371cc1c32b/"
-#dir="/pscratch/ndcms/bestman/storage/cms/store/user/jkolb/G_Pt_30to50_TuneZ2_7TeV_pythia6/skimElecTau_385_v2/c7ae91f3f823bf7a101c2a0b38387496/"
-
-
-############ PILE UP SAMPLES
-
-dir = "/pscratch/ndcms/bestman/storage/cms/store/user/jkolb/DYToEE_M-20_TuneZ2_7TeV-pythia6/skimElecTau_387_v1/f555ceec0d7f274eb20b4abf4dbe76f7/"
-#dir = "/pscratch/ndcms/bestman/storage/cms/store/user/jkolb/DYToTauTau_M-20_TuneZ2_7TeV-pythia6-tauola/skimElecTau_387_PU_v2/f555ceec0d7f274eb20b4abf4dbe76f7/"
+#dir = "/pscratch/ndcms/bestman/storage/cms/store/user/jkolb/TauPlusX/skimElecTau_413_v1/eae887ba91c6c27e2f0c00f8aee7bf0a/"
+#dir = "/pscratch/ndcms/bestman/storage/cms/store/user/jkolb/WJetsToLNu_TuneZ2_7TeV-madgraph-tauola/skimElecTau_413_v1/eae887ba91c6c27e2f0c00f8aee7bf0a/"
 
 #--------------------------------------------------------------------------------
 
 
-for file in os.listdir(dir):
-    process.source.fileNames.extend(cms.untracked.vstring('file:' + dir + file))
+#for file in os.listdir(dir):
+#    process.source.fileNames.extend(cms.untracked.vstring('file:' + dir + file))
  
+
+from TauAnalysis.RecoTools.recoVertexSelection_cff import *
 
 
 # import utility function for managing pat::Jets
@@ -113,25 +113,60 @@ process.cleanPatTaus.preselection = cms.string('')
 
 
 #--------------------------------------------------------------------------------
+process.patJetCorrections.remove(process.patJetCorrFactors)
+process.patJets.jetCorrFactorsSource = cms.VInputTag()
+process.patJets.addJetCorrFactors = cms.bool(False)
+#--------------------------------------------------------------------------------
 
+#--------------------------------------------------------------------------------
+#  do not produce momentum-corrected muons
+## from TauAnalysis.RecoTools.patLeptonSelection_cff import patMuonSelConfigurator
+## setattr(patMuonSelConfigurator, "src", "patMuons" )
+## process.selectPatMuons = patMuonSelConfigurator.configure(process = process)
+#--------------------------------------------------------------------------------
+
+#--------------------------------------------------------------------------------
+from RecoEgamma.EgammaIsolationAlgos.eleIsoDepositEcalFromHits_cff import *
+process.eleIsoDepositEcalFromHits.ExtractorPSet.endcapEcalHits = cms.InputTag("reducedEcalRecHitsEE","")
+process.eleIsoDepositEcalFromHits.ExtractorPSet.barrelEcalHits = cms.InputTag("reducedEcalRecHitsEB","")
+
+#--------------------------------------------------------------------------------
+
+from PhysicsTools.PatAlgos.tools.trigTools import switchOnTrigger
+switchOnTrigger(process, hltProcess = 'REDIGI311X', outputModule = '')
+
+#--------------------------------------------------------------------------------
+
+#from TauAnalysis.Configuration.tools.switchToData import switchToData
+#switchToData(process)
+
+
+from TauAnalysis.Configuration.tools.changeCut import changeCut
+
+process.load('TauAnalysis.BgEstimationTools.bgEstZtoElecTauZtautauEnrichedSelection_cff')
+
+
+## changeCut(process,"selectedPatElectronsForElecTauConversionVeto",cms.bool(True), attribute = "usePogMethod")
+## changeCut(process,"selectedPatElectronsForElecTauConversionVeto",cms.bool(True), attribute = "doMissingHitsCut")
+## changeCut(process,"selectedPatElectronsForElecTauConversionVeto",cms.bool(False), attribute = "doPixCut")
 
 
 process.load('TauAnalysis.BgEstimationTools.bgEstZtoElecTauWplusJetsEnrichedSelection_cff')
 process.load('TauAnalysis.BgEstimationTools.bgEstZtoElecTauPhotonPlusJetsEnrichedSelection_cff')
-process.load('TauAnalysis.BgEstimationTools.bgEstZtoElecTauZtautauEnrichedSelection_cff')
 process.load('TauAnalysis.BgEstimationTools.bgEstZtoElecTauQCDenrichedSelection_cff')
 process.load('TauAnalysis.BgEstimationTools.bgEstZtoElecTauZeeJetMisIdEnrichedSelection_cff')
 process.load('TauAnalysis.BgEstimationTools.bgEstZtoElecTauZeeElectronMisIdEnrichedSelection_cff')
 
 
-saveEvents = cms.OutputModule("PoolOutputModule",
-    fileName = cms.untracked.string('test_output.root')
-)
+## saveEvents = cms.OutputModule("PoolOutputModule",
+##     fileName = cms.untracked.string('test_output.root')
+## )
 
 
 process.p = cms.Path(
-    process.producePatTuple
-    + process.producePatTupleZtoElecTauSpecific
+    #process.selectPrimaryVertex
+    #+ process.producePatTuple
+    process.producePatTupleZtoElecTauSpecific
     + process.bgEstZtautauEnrichedAnalysisSequence
     + process.bgEstWplusJetsEnrichedAnalysisSequence
     + process.bgEstPhotonPlusJetsEnrichedAnalysisSequence
