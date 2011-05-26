@@ -714,12 +714,6 @@ analyzeEventsBgEstWplusJetsEnriched = cms.EDAnalyzer("GenericAnalyzer",
 
 )
 
-saveEvents = cms.OutputModule("PoolOutputModule",
-    fileName = cms.untracked.string('test_output.root')
-)
-
-
-
 
 #--------------------------------------------------------------------------------  
 # define (final) analysis sequence
