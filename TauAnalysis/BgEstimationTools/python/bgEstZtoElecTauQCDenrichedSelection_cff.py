@@ -28,10 +28,10 @@ electronsBgEstQCDenrichedEta = copy.deepcopy(electronsBgEstZtautauEnrichedEta)
 electronsBgEstQCDenrichedPt = copy.deepcopy(electronsBgEstZtautauEnrichedPt)
 
 electronsBgEstQCDenrichedIso = copy.deepcopy(electronsBgEstZtautauEnrichedIso)
-electronsBgEstQCDenrichedIso.sumPtMinEB = cms.double(0.09)
-electronsBgEstQCDenrichedIso.sumPtMaxEB = cms.double(0.15)
-electronsBgEstQCDenrichedIso.sumPtMinEE = cms.double(0.06)
-electronsBgEstQCDenrichedIso.sumPtMaxEE = cms.double(0.15)
+electronsBgEstQCDenrichedIso.sumPtMinEB = cms.double(0.15)
+electronsBgEstQCDenrichedIso.sumPtMaxEB = cms.double(0.3)
+electronsBgEstQCDenrichedIso.sumPtMinEE = cms.double(0.15)
+electronsBgEstQCDenrichedIso.sumPtMaxEE = cms.double(0.3)
 
 
 # require electron to not be from a photon conversion 
@@ -690,11 +690,6 @@ analyzeEventsBgEstQCDenriched = cms.EDAnalyzer("GenericAnalyzer",
     )
 
 )
-
-saveEvents = cms.OutputModule("PoolOutputModule",
-    fileName = cms.untracked.string('test_output.root')
-)
-
 
 
 
