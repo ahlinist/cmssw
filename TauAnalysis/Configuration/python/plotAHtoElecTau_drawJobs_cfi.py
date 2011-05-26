@@ -162,165 +162,183 @@ drawJobConfigurator_AHtoElecTau_wBtag.add(
 
 
 finalSamplePlots = [
-		drawJobConfigEntry(
-			meName = 'ElectronQuantities/Electron#PAR#',
-			PAR = [ 'Pt', 'Eta', 'Phi' ],
-			title = "Electron (final Event sample)",
-			xAxis = '#PAR#',
-			name = "finalSamplePlots_electron"
-		),
-		drawJobConfigEntry(
-			meName = 'ElectronQuantities/ElectronMatchingGenParticlePdgId',
-			title = "PdgId of gen. Particle matching Electron (final Event sample)",
-			xAxis = 'PdgId',
-			name = "finalSamplePlots_pdgIdGenParticleMatchingElectron"
-		),
-		drawJobConfigEntry(
-			meName = 'ElectronQuantities/ElectronMatchingFinalStateGenParticlePdgId',
-			title = "PdgId of final-state gen. Particle matching Electron (final Event sample)",
-			xAxis = 'PdgId',
-			name = "finalSamplePlots_pdgIdFinalStateGenParticleMatchingElectron"
-		),
-		drawJobConfigEntry(
-			meName = 'ElectronQuantities/ElectronPFCombIsoPtRelBarrel',
-			title = "Electron comb. rel. PF iso., Barrel (final Event sample)",
-			xAxis = 'Pt',
-			name = "finalSamplePlots_electronCombPFIsoRelBarrel"
-		),
-		drawJobConfigEntry(
-			meName = 'ElectronQuantities/ElectronPFCombIsoPtRelEndcap',
-			title = "Electron comb. rel. PF iso., Endcap (final Event sample)",
-			xAxis = 'Pt',
-			name = "finalSamplePlots_electronCombPFIsoRelEndcap"
-		),
-		drawJobConfigEntry(
-			meName = 'TauQuantities/Tau#PAR#',
-			PAR = [ 'Pt', 'Eta', 'Phi' ],
-			title = "Tau (final Event sample)",
-			xAxis = '#PAR#',
-			name = "finalSamplePlots_tau"
-		),
-		drawJobConfigEntry(
-			meName = 'TauQuantities/TauMatchingGenParticlePdgId',
-			title = "PdgId of gen. Particle matching Tau (final Event sample)",
-			xAxis = 'PdgId',
-			name = "finalSamplePlots_pdgIdGenParticleMatchingTau"
-		),
-		drawJobConfigEntry(
-			meName = 'TauQuantities/TauMatchingFinalStateGenParticlePdgId',
-			title = "PdgId of final-state gen. Particle matching Tau (final Event sample)",
-			xAxis = 'PdgId',
-			name = "finalSamplePlots_pdgIdFinalStateGenParticleMatchingTau"
-		),
-		drawJobConfigEntry(
-			meName = 'TauQuantities/TauLeadTrkPt',
-			title = "Tau lead. Track Pt (final Event sample)",
-			xAxis = 'Pt',
-			name = "finalSamplePlots_tauLeadTrkPt"
-		),
-		drawJobConfigEntry(
-			meName = 'TauQuantities/TauNumTracksSignalCone',
-			title = "Tau Tracks in Signal Cone (final Event sample)",
-			xAxis = 'unlabeled',
-			name = "finalSamplePlots_tauNumTracksSignalCone"
-		),
-		drawJobConfigEntry(
-			meName = 'TauQuantities/TauJetRadius',
-			title = "Tau Jet Radius (final Event sample)",
-			xAxis = 'unlabeled',
-			name = "finalSamplePlots_tauJetRadius"
-		),
-		drawJobConfigEntry(
-			meName = 'TauQuantities/TauDiscriminatorHPSloose',
-			title = "HPS loose output (final Event sample)",
-			xAxis = 'unlabeled',
-			name = "finalSamplePlots_tauDiscrHPSloose"
-		),
-		drawJobConfigEntry(
-			meName = 'DiTauCandidateQuantities/DPhi12',
-			title = "#Delta#phi(Electron-Tau) (final Event sample)",
-			xAxis = 'dPhi',
-			name = "finalSamplePlots_dPhiElectronTau"
-		),
         drawJobConfigEntry(
-            meName = 'CaloMEtQuantities/MEtPt',
-            title = "CaloMET (final Event sample)",
-            xAxis = 'Pt',
-            name = "finalSamplePlots_caloMEt"
-        ),  
+            meName = 'ElectronQuantities/Electron#PAR#',
+            PAR = [ 'Pt', 'Eta', 'Phi' ],
+            title = "Electron (final Event sample)",
+            xAxis = '#PAR#',
+            name = "finalSamplePlots_electron"
+            ),
         drawJobConfigEntry(
-            meName = 'PFMEtQuantities/MEtPt',
-            title = "PFMET (final Event sample)",
+            meName = 'ElectronQuantities/ElectronMatchingGenParticlePdgId',
+            title = "PdgId of gen. Particle matching Electron (final Event sample)",
+            xAxis = 'PdgId',
+            name = "finalSamplePlots_pdgIdGenParticleMatchingElectron"
+            ),
+        drawJobConfigEntry(
+            meName = 'ElectronQuantities/ElectronMatchingFinalStateGenParticlePdgId',
+            title = "PdgId of final-state gen. Particle matching Electron (final Event sample)",
+            xAxis = 'PdgId',
+            name = "finalSamplePlots_pdgIdFinalStateGenParticleMatchingElectron"
+            ),
+        drawJobConfigEntry(
+            meName = 'ElectronQuantities/ElectronPFCombIsoPtRelBarrel',
+            title = "Electron comb. rel. PF iso., Barrel (final Event sample)",
             xAxis = 'Pt',
-            name = "finalSamplePlots_pfMEt"
-        ), 
-		drawJobConfigEntry(
-			meName = 'DiTauCandidateQuantities/PzetaDiff',
-			title = "P_{#zeta} - 1.5*P_{#zeta}^{vis} (final Event sample)",
-			xAxis = 'GeV',
-			name = "finalSamplePlots_PzetaDiff"
-		),
-		drawJobConfigEntry(
-			meName = 'DiTauCandidateQuantities/Mt1MET',
-			title = "M_{T}(Electron + MET) (final Event sample)",
-			xAxis = 'Mt',
-			name = "finalSamplePlots_mtElectronMET"
-		),
-		drawJobConfigEntry(
-			meName = 'DiTauCandidateQuantities/Mt2MET',
-			title = "M_{T}(Tau + MET) (final Event sample)",
-			xAxis = 'Mt',
-			name = "finalSamplePlots_mtTauMET"
-		),
-		drawJobConfigEntry(
-			meName = 'DiTauCandidateQuantities/Mt12MET',
-			title = "M_{T}(Electron + Tau + MET) (final Event sample)",
-			xAxis = 'Mt',
-			name = "finalSamplePlots_mtElectronTauMET"
-		),
-		drawJobConfigEntry(
-				meName = 'DiTauCandidateQuantities/VisMass',
-				title = "M_{vis}(Electron + Tau) (final Event sample)",
-				xAxis = 'Mass',
-				name = "finalSamplePlots_mVisible"
-				),
-		drawJobConfigEntry(
-				meName = 'DiTauCandidateQuantities/CDFmethodMass',
-				title = "M(Electron + Tau), CDF method (final Event sample)",
-				xAxis = 'Mass',
-				name = "finalSamplePlots_mCDFmethod"
-				),
-		drawJobConfigEntry(
-				meName = 'DiTauCandidateQuantities/CollinearApproxMass',
-				title = "M(Electron + Tau), collinear Approx. (final Event sample)",
-				xAxis = 'Mass',
-				name = "finalSamplePlots_mCollApprox"
-				),
-		drawJobConfigEntry(
-				meName = 'DiTauCandidateSVfitQuantities/psKine_MEt_ptBalance/Mass',
-				title = "M(Electron + Tau), SVfit method (final Event sample)",
-				xAxis = 'Mass',
-				name = "finalSamplePlots_mSVmethod"
-				),
-		drawJobConfigEntry(
-				meName = 'DiTauCandidateQuantities/Ht12MET',
-				title = "#Sigma H_{T}(Electron + Tau + MET) (final Event sample)",
-				xAxis = 'Mass',
-				name = "finalSamplePlots_ht"
-				),
-		drawJobConfigEntry(
-				meName = 'JetQuantities/BtagDisc_trackCountingHighEffBJetTags',
-				title = "Jet b-Tag Discr. (final Event sample)",
-				xAxis = 'unlabeled',
-				name = "finalSamplePlots_jetBtagDiscr"
-				),
-		drawJobConfigEntry(
-				meName = 'JetQuantities/NumJets',
-				title = "Num. Jets with b-Tag (final Event sample)",
-				xAxis = 'unlabeled',
-				name = "finalSamplePlots_numBtagJets"
-				)
-	]
+            name = "finalSamplePlots_electronCombPFIsoRelBarrel"
+            ),
+        drawJobConfigEntry(
+            meName = 'ElectronQuantities/ElectronPFCombIsoPtRelEndcap',
+            title = "Electron comb. rel. PF iso., Endcap (final Event sample)",
+            xAxis = 'Pt',
+            name = "finalSamplePlots_electronCombPFIsoRelEndcap"
+            ),
+        drawJobConfigEntry( 
+            meName = 'ElectronQuantities/ElectronConversionRadius', 
+            title = "Vertex radius of best conv. pair (final event sample)", 
+            xAxis = 'posX', 
+            name = "finalSamplePlots_electronConvRadius" 
+            ), 
+        drawJobConfigEntry( 
+            meName = 'ElectronQuantities/ElectronConversionDoca', 
+            title = "DOCA of best conv. pair (final event sample)", 
+            xAxis = 'posX', 
+            name = "finalSamplePlots_electronConvDOCA" 
+            ), 
+        drawJobConfigEntry( 
+            meName = 'ElectronQuantities/ElectronConversionDeltaCotTheta', 
+            title = "#DeltaCot(#theta) of best conv. pair (final event sample)", 
+            xAxis = 'unlabeled', 
+            name = "finalSamplePlots_electronConvDeltaCotTheta" 
+            ), 
+        drawJobConfigEntry( 
+            meName = 'ElectronQuantities/ElectronMissingExpInnerHits', 
+            title = "Electron missing inner hits (final event sample)", 
+            xAxis = 'unlabeled', 
+            name = "finalSamplePlots_electronMissingInnerHits" 
+            ), 
+        drawJobConfigEntry(
+            meName = 'TauQuantities/Tau#PAR#',
+            PAR = [ 'Pt', 'Eta', 'Phi' ],
+            title = "Tau (final Event sample)",
+            xAxis = '#PAR#',
+            name = "finalSamplePlots_tau"
+            ),
+        drawJobConfigEntry(
+            meName = 'TauQuantities/TauMatchingGenParticlePdgId',
+            title = "PdgId of gen. Particle matching Tau (final Event sample)",
+            xAxis = 'PdgId',
+            name = "finalSamplePlots_pdgIdGenParticleMatchingTau"
+            ),
+        drawJobConfigEntry(
+            meName = 'TauQuantities/TauMatchingFinalStateGenParticlePdgId',
+            title = "PdgId of final-state gen. Particle matching Tau (final Event sample)",
+            xAxis = 'PdgId',
+            name = "finalSamplePlots_pdgIdFinalStateGenParticleMatchingTau"
+            ),
+        drawJobConfigEntry(
+                meName = 'TauQuantities/TauLeadTrkPt',
+                title = "Tau lead. Track Pt (final Event sample)",
+                xAxis = 'Pt',
+                name = "finalSamplePlots_tauLeadTrkPt"
+                ),
+        drawJobConfigEntry(
+                meName = 'TauQuantities/TauNumTracksSignalCone',
+                title = "Tau Tracks in Signal Cone (final Event sample)",
+                xAxis = 'unlabeled',
+                name = "finalSamplePlots_tauNumTracksSignalCone"
+                ),
+        drawJobConfigEntry(
+                meName = 'TauQuantities/TauJetRadius',
+                title = "Tau Jet Radius (final Event sample)",
+                xAxis = 'unlabeled',
+                name = "finalSamplePlots_tauJetRadius"
+                ),
+        drawJobConfigEntry(
+                meName = 'DiTauCandidateQuantities/DPhi12',
+                title = "#Delta#phi(Electron-Tau) (final Event sample)",
+                xAxis = 'dPhi',
+                name = "finalSamplePlots_dPhiElectronTau"
+                ),
+        drawJobConfigEntry(
+                meName = 'DiTauCandidateQuantities/PzetaDiff',
+                title = "P_{#zeta} - 1.5*P_{#zeta}^{vis} (final Event sample)",
+                xAxis = 'GeV',
+                name = "finalSamplePlots_PzetaDiff"
+                ),
+        drawJobConfigEntry(
+                meName = 'DiTauCandidateQuantities/Mt1MET',
+                title = "M_{T}(Electron + MET) (final Event sample)",
+                xAxis = 'Mt',
+                name = "finalSamplePlots_mtElectronMET"
+                ),
+        drawJobConfigEntry(
+                meName = 'DiTauCandidateQuantities/Mt2MET',
+                title = "M_{T}(Tau + MET) (final Event sample)",
+                xAxis = 'Mt',
+                name = "finalSamplePlots_mtTauMET"
+                ),
+        drawJobConfigEntry(
+                meName = 'DiTauCandidateQuantities/Mt12MET',
+                title = "M_{T}(Electron + Tau + MET) (final Event sample)",
+                xAxis = 'Mt',
+                name = "finalSamplePlots_mtElectronTauMET"
+                ),
+        drawJobConfigEntry(
+                meName = 'DiTauCandidateQuantities/VisMass',
+                title = "M_{vis}(Electron + Tau) (final Event sample)",
+                xAxis = 'Mass',
+                name = "finalSamplePlots_mVisible"
+                ),
+        drawJobConfigEntry(
+                meName = 'DiTauCandidateQuantities/CDFmethodMass',
+                title = "M(Electron + Tau), CDF method (final Event sample)",
+                xAxis = 'Mass',
+                name = "finalSamplePlots_mCDFmethod"
+                ),
+        drawJobConfigEntry(
+                meName = 'DiTauCandidateQuantities/CollinearApproxMass',
+                title = "M(Electron + Tau), collinear Approx. (final Event sample)",
+                xAxis = 'Mass',
+                name = "finalSamplePlots_mCollApprox"
+                ),
+        drawJobConfigEntry(
+                meName = 'DiTauCandidateSVfitQuantities/psKine_MEt_ptBalance/Mass',
+                title = "M(Electron + Tau), SVfit method (final Event sample)",
+                xAxis = 'Mass',
+                name = "finalSamplePlots_mSVmethod"
+                ),
+        drawJobConfigEntry(
+                meName = 'DiTauCandidateQuantities/Ht12MET',
+                title = "#Sigma H_{T}(Electron + Tau + MET) (final Event sample)",
+                xAxis = 'Mass',
+                name = "finalSamplePlots_ht"
+                ),
+        drawJobConfigEntry(
+                meName = 'CaloMEtQuantities/MEtPt',
+                title = "CaloMET (final Event sample)",
+                xAxis = 'Pt',
+                name = "finalSamplePlots_caloMEt"
+                ),  
+        drawJobConfigEntry(
+                meName = 'PFMEtQuantities/MEtPt',
+                title = "PFMET (final Event sample)",
+                xAxis = 'Pt',
+                name = "finalSamplePlots_pfMEt"
+                ), 
+        drawJobConfigEntry(
+                meName = 'JetQuantities/BtagDisc_trackCountingHighEffBJetTags',
+                title = "Jet b-Tag Discr. (final Event sample)",
+                xAxis = 'unlabeled',
+                name = "finalSamplePlots_jetBtagDiscr"
+                ),
+        drawJobConfigEntry(
+                meName = 'JetQuantities/NumJets',
+                title = "Num. Jets with b-Tag (final Event sample)",
+                xAxis = 'unlabeled',
+                name = "finalSamplePlots_numBtagJets"
+                )
+        ]
 
 drawJobConfigurator_AHtoElecTau_woBtag.add(
     afterCut = evtSelDiTauCandidateForAHtoElecTauZeroCharge,
