@@ -490,13 +490,14 @@ plotHistZtoElecTauStacked = dqmHistPlotter_template.clone(
     ),
     drawOptionSets = cms.PSet(
         default = cms.PSet(
-            Ztautau = recoSampleDefinitionsZtoElecTau['ALL_SAMPLES']['Ztautau_PU156BX_T3']['drawOption'],
-            Zee = recoSampleDefinitionsZtoElecTau['ALL_SAMPLES']['Zee_PU156BX_T3']['drawOption'],
-            WplusJets = recoSampleDefinitionsZtoElecTau['ALL_SAMPLES']['wPlusJetsSum']['drawOption'],
+            Ztautau = recoSampleDefinitionsZtoElecTau['ALL_SAMPLES']['ZtautauSum']['drawOption'],
+            Zee = recoSampleDefinitionsZtoElecTau['ALL_SAMPLES']['ZeeSum']['drawOption'],
+            WplusJets = recoSampleDefinitionsZtoElecTau['ALL_SAMPLES']['WplusJets_madgraph_Pat']['drawOption'],
+            PhotonPlusJets = recoSampleDefinitionsZtoElecTau['ALL_SAMPLES']['photonPlusJetsSum']['drawOption'],
+            QCD = recoSampleDefinitionsZtoElecTau['ALL_SAMPLES']['qcdSum']['drawOption'],
+            Data = recoSampleDefinitionsZtoElecTau['ALL_SAMPLES']['data']['drawOption'],
             #TTplusJets = recoSampleDefinitionsZtoElecTau['ALL_SAMPLES']['TTplusJets_madgraph']['drawOption'],
             #diBoson = recoSampleDefinitionsZtoElecTau['ALL_SAMPLES']['VVsum']['drawOption'],
-            QCD = recoSampleDefinitionsZtoElecTau['ALL_SAMPLES']['qcdSum']['drawOption'],
-            Data = recoSampleDefinitionsZtoElecTau['ALL_SAMPLES']['data']['drawOption']
         )
     ),
     drawJobs = cms.PSet(),
