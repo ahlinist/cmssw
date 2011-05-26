@@ -71,11 +71,11 @@ analyzeAHtoElecTauEventsOS_woBtag = cms.EDAnalyzer("GenericAnalyzer",
         evtSelTauAntiOverlapWithElectronsVeto,
         evtSelTauEta,
         evtSelTauPt,
-        evtSelTauLeadTrk,
+        evtSelTauDecayModeFinding,
         evtSelTauLeadTrkPt,
-		evtSelTauTaNCdiscr,
-        evtSelTauProng,
-        evtSelTauCharge,
+		evtSelTauIso,
+        #evtSelTauProng,
+        #evtSelTauCharge,
         evtSelTauElectronVeto,
         evtSelTauEcalCrackVeto,
         evtSelTauMuonVeto,
@@ -122,7 +122,7 @@ analyzeAHtoElecTauEventsOS_woBtag = cms.EDAnalyzer("GenericAnalyzer",
 	),                                     
 
     eventDumps = cms.VPSet(
-        elecTauEventDump
+        elecTauEventDump_woBtag
     ),
    
     analysisSequence = elecTauAnalysisSequenceOS_woBtag,
@@ -142,18 +142,22 @@ analyzeAHtoElecTauEventsOS_wBtag = analyzeAHtoElecTauEventsOS_woBtag.clone(
 
     name = cms.string('ahElecTauAnalyzerOS_wBtag'),
     eventDumps = cms.VPSet(
+        elecTauEventDump_wBtag
     ),
-
     analysisSequence = elecTauAnalysisSequenceOS_wBtag
 )
 
 analyzeAHtoElecTauEventsSS_woBtag = analyzeAHtoElecTauEventsOS_woBtag.clone(
     name = cms.string('ahElecTauAnalyzerSS_woBtag'),
+    eventDumps = cms.VPSet(
+    ),
     analysisSequence = elecTauAnalysisSequenceSS_woBtag
 )
 
 analyzeAHtoElecTauEventsSS_wBtag = analyzeAHtoElecTauEventsOS_wBtag.clone(
     name = cms.string('ahElecTauAnalyzerSS_wBtag'),
+    eventDumps = cms.VPSet(
+    ),
     analysisSequence = elecTauAnalysisSequenceSS_wBtag
 )
 
