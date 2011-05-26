@@ -58,12 +58,11 @@ def configureDQMDumpFilterStatisticsTable(dqmDirectoriesProcess, dqmDirectoryFil
     return module
 
 dqmDirectoriesProcess = {
-    'Ztautau'        : 'Ztautau_PU156BX_T3',
-    'Zee'            : 'Zee_PU156BX_T3',
-    'WplusJets'      : 'wPlusJetsSum',
+    'Ztautau'        : 'ZtautauSum',
+    'Zee'            : 'ZeeSum',
+    'WplusJets'      : 'WplusJets_madgraph_T3',
     'QCD'            : 'qcdSum',
     'PhotonPlusJets' : 'photonPlusJetsSum',
-    'TTbar'          : 'TTbar_PU156BX_T3',    
     'Data'           : 'data'
 }    
 
