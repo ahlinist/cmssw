@@ -238,41 +238,41 @@ drawJobConfigurator_ForElecTau.add(
 )
 
 drawJobConfigurator_ForElecTau.add(
-    afterCut = evtSelElectronIso,
-    beforeCut = evtSelElectronConversionVeto,
-	plots = [
-		drawJobConfigEntry(
-			meName = 'ElectronQuantities/Electron#PAR#',
-            PAR = [ 'Pt', 'Eta', 'Phi' ],
-			title = "#PAR# (after Electron iso. Cut)",
-			xAxis = '#PAR#',
-			name = "cutFlowControlPlots_electron_afterElectronIso"
-			),
-		drawJobConfigEntry(
-			meName = 'ElectronQuantities/ElectronConversionRadius',
-			title = "Vertex radius of best conv. pair (after Electron iso. Cut)",
-			xAxis = 'posX',
-			name = "cutFlowControlPlots_electronConvRadius_afterElectronIso"
-			),
-		drawJobConfigEntry(
-			meName = 'ElectronQuantities/ElectronConversionDoca',
-			title = "DOCA of best conv. pair (after Electron iso. Cut)",
-			xAxis = 'posX',
-			name = "cutFlowControlPlots_electronConvDOCA_afterElectronIso"
-			),
-		drawJobConfigEntry(
-			meName = 'ElectronQuantities/ElectronConversionDeltaCotTheta',
-			title = "#DeltaCot(#theta) of best conv. pair (after Electron iso. Cut)",
-			xAxis = 'unlabeled',
-			name = "cutFlowControlPlots_electronConvDeltaCotTheta_afterElectronIso"
-			),
-		drawJobConfigEntry(
-			meName = 'ElectronQuantities/ElectronMissingExpInnerHits',
-			title = " Missing inner hits (after Electron iso. Cut)",
-			xAxis = 'unlabeled',
-			name = "cutFlowControlPlots_electronMissingInnerHits_afterElectronIso"
-			)
-		]
+        afterCut = evtSelElectronIso,
+        beforeCut = evtSelElectronConversionVeto,
+        plots = [
+            drawJobConfigEntry(
+                meName = 'ElectronQuantities/Electron#PAR#',
+                PAR = [ 'Pt', 'Eta', 'Phi' ],
+                title = "#PAR# (after Electron iso. Cut)",
+                xAxis = '#PAR#',
+                name = "cutFlowControlPlots_electron_afterElectronIso"
+                ),
+            drawJobConfigEntry(
+                meName = 'ElectronQuantities/ElectronConversionRadius',
+                title = "Vertex radius of best conv. pair (after Electron iso. Cut)",
+                xAxis = 'posX',
+                name = "cutFlowControlPlots_electronConvRadius_afterElectronIso"
+                ),
+            drawJobConfigEntry(
+                meName = 'ElectronQuantities/ElectronConversionDoca',
+                title = "DOCA of best conv. pair (after Electron iso. Cut)",
+                xAxis = 'posX',
+                name = "cutFlowControlPlots_electronConvDOCA_afterElectronIso"
+                ),
+            drawJobConfigEntry(
+                meName = 'ElectronQuantities/ElectronConversionDeltaCotTheta',
+                title = "#DeltaCot(#theta) of best conv. pair (after Electron iso. Cut)",
+                xAxis = 'unlabeled',
+                name = "cutFlowControlPlots_electronConvDeltaCotTheta_afterElectronIso"
+                ),
+            drawJobConfigEntry(
+                meName = 'ElectronQuantities/ElectronMissingExpInnerHits',
+                title = " Missing inner hits (after Electron iso. Cut)",
+                xAxis = 'unlabeled',
+                name = "cutFlowControlPlots_electronMissingInnerHits_afterElectronIso"
+                )
+            ]
 )
 
 drawJobConfigurator_ForElecTau.add(
@@ -289,7 +289,7 @@ drawJobConfigurator_ForElecTau.add(
 
 drawJobConfigurator_ForElecTau.add(
     afterCut = evtSelElectronTrkIP,
-    beforeCut = evtSelTauLeadTrk,
+    beforeCut = evtSelTauDecayModeFinding,
     plots = [
         drawJobConfigEntry(
         	meName = 'ElectronQuantities/Electron#PAR#',
@@ -304,50 +304,50 @@ drawJobConfigurator_ForElecTau.add(
             title = "Tau (after Electron Track IP_{xy} Cut)",
             xAxis = '#PAR#',
             name = "cutFlowControlPlots_tau_afterElectronTrkIP"
-        ),
-        drawJobConfigEntry(
-            meName = 'TauQuantities/TauLeadTrkPt',
-            title = "Tau lead. Track Pt (after Electron Track IP_{xy} Cut)",
-            xAxis = 'Pt',
-            name = "cutFlowControlPlots_tauLeadTrkPt_afterElectronTrkIP"
         )
     ]
 )
 
 drawJobConfigurator_ForElecTau.add(
-    afterCut = evtSelTauLeadTrk,
+    afterCut = evtSelTauDecayModeFinding,
     beforeCut = evtSelTauLeadTrkPt,
-    plots = [
-        drawJobConfigEntry(
-            meName = 'TauQuantities/Tau#PAR#',
-            PAR = [ 'Pt', 'Eta', 'Phi' ],
-            title = "Tau (after Tau lead. Track Cut)",
-            xAxis = '#PAR#',
-            name = "cutFlowControlPlots_tau_afterTauLeadTrk"
-        ),
+	plots = [
         drawJobConfigEntry(
             meName = 'TauQuantities/TauLeadTrkPt',
-            title = "Tau lead. Track Pt (after Tau lead. Track Cut)",
+            title = "Tau lead. Track Pt (after Tau decay mode finding)",
             xAxis = 'Pt',
-            name = "cutFlowControlPlots_tauLeadTrkPt_afterTauLeadTrk"
-        )
-    ]
+            name = "cutFlowControlPlots_tauLeadTrkPt_afterTauDecayModeFinding"
+        ),
+		drawJobConfigEntry(
+			meName = 'TauQuantities/Tau#PAR#',
+			PAR = [ 'Pt', 'Eta', 'Phi' ],
+			title = "Tau (after Tau decay mode finding)",
+			xAxis = '#PAR#',
+			name = "cutFlowControlPlots_tau_afterTauDecayModeFinding"
+		)
+	]
 )
 
 drawJobConfigurator_ForElecTau.add(
     afterCut = evtSelTauLeadTrkPt,
-    beforeCut = evtSelTauTaNCdiscr,
+    beforeCut = evtSelTauIso,
 	plots = [
 		drawJobConfigEntry(
 			meName = 'TauQuantities/TauDiscriminatorHPSloose',
-			title = "Tau ID output (HPS loose, after Tau lead. Track Pt Cut)",
+			title = "Tau ID output (HPS loose, after Tau lead track Pt Cut)",
 			xAxis = 'unlabeled',
 			name = "cutFlowControlPlots_tauDiscrHPSloose_afterTauLeadTrkPt"
 			),
 		drawJobConfigEntry(
+			meName = 'TauQuantities/TauDiscriminatorHPSmedium',
+			title = "Tau ID output (HPS medium, after Tau lead track Pt Cut)",
+			xAxis = 'unlabeled',
+			name = "cutFlowControlPlots_tauDiscrHPSmedium_afterTauLeadTrkPt"
+			),
+		drawJobConfigEntry(
 			meName = 'TauQuantities/Tau#PAR#',
 			PAR = [ 'Pt', 'Eta', 'Phi' ],
-			title = "Tau (after Tau lead. Track Pt Cut)",
+			title = "Tau (after Tau lead track Pt Cut)",
 			xAxis = '#PAR#',
 			name = "cutFlowControlPlots_tau_afterTauLeadTrkPt"
 			)
@@ -355,61 +355,21 @@ drawJobConfigurator_ForElecTau.add(
 )
 
 drawJobConfigurator_ForElecTau.add(
-    afterCut = evtSelTauTaNCdiscr,
-    beforeCut = evtSelTauProng,
-	plots = [
-		drawJobConfigEntry(
-			meName = 'TauQuantities/TauNumSignalPFChargedHadrons',
-			title = "Num PF charged hadrons in Tau signal region (after Tau ID cut)",
-			xAxis = 'unlabeled',
-			name = "cutFlowControlPlots_tauProngs_afterTauDiscrHPSloose"
-			),
-		drawJobConfigEntry(
-			meName = 'TauQuantities/Tau#PAR#',
-			PAR = [ 'Pt', 'Eta', 'Phi' ],
-			title = "Tau (after Tau ID cut)",
-			xAxis = '#PAR#',
-			name = "cutFlowControlPlots_tau_afterTauDiscrHPSloose"
-			)
-	]
-)
-
-drawJobConfigurator_ForElecTau.add(
-    afterCut = evtSelTauProng,
-    beforeCut = evtSelTauCharge,
-	plots = [
-		drawJobConfigEntry(
-			meName = 'TauQuantities/TauCharge',
-			title = "Tau Charge (#Sigma Track Charge in Signal Cone, after Tau 1-Prong||3-Prong Cut)",
-			xAxis = 'unlabeled',
-			name = "cutFlowControlPlots_tauCharge_afterTauProng"
-			),
-		drawJobConfigEntry(
-			meName = 'TauQuantities/Tau#PAR#',
-			PAR = [ 'Pt', 'Eta', 'Phi' ],
-			title = "Tau (after Tau Tau 1-Prong||3-Prong Cut)",
-			xAxis = '#PAR#',
-			name = "cutFlowControlPlots_tau_afterTauProng"
-			)
-	]
-)
-
-drawJobConfigurator_ForElecTau.add(
-    afterCut = evtSelTauCharge,
+    afterCut = evtSelTauIso,
     beforeCut = evtSelTauElectronVeto,
 	plots = [
 		drawJobConfigEntry(
 			meName = 'TauQuantities/TauDiscriminatorAgainstElectronsTight',
-			title = "Tau tight anti-Electron Discr. (after Charge(Tau) = +/-1 Cut)",
+			title = "Tau tight anti-Electron Discr. (after Tau ID)",
 			xAxis = 'unlabeled',
-			name = "cutFlowControlPlots_tauAntiElectronDiscr_afterTauCharge"
+			name = "cutFlowControlPlots_tauAntiElectronDiscr_afterTauIso"
 			),
 		drawJobConfigEntry(
 			meName = 'TauQuantities/Tau#PAR#',
 			PAR = [ 'Pt', 'Eta', 'Phi' ],
-			title = "Tau (after Charge(Tau) = +/-1 Cut)",
+			title = "Tau (after Tau ID)",
 			xAxis = '#PAR#',
-			name = "cutFlowControlPlots_tau_afterTauCharge"
+			name = "cutFlowControlPlots_tau_afterTauIso"
 			)
 	]
 )
