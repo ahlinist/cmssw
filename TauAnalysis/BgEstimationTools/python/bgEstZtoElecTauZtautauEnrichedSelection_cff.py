@@ -12,8 +12,8 @@ from TauAnalysis.RecoTools.tools.eventSelFlagProdConfigurator import *
 # produce collection of good vertices
 #--------------------------------------------------------------------------------
 
-from TauAnalysis.RecoTools.recoVertexSelection_cff import *
-selectPrimaryVertexBgEst = cms.Sequence(selectPrimaryVertex)
+## from TauAnalysis.RecoTools.recoVertexSelection_cff import *
+## selectPrimaryVertexBgEst = cms.Sequence(selectPrimaryVertex)
 
 
 #--------------------------------------------------------------------------------  
@@ -40,6 +40,9 @@ electronsBgEstZtautauEnrichedIso = copy.deepcopy(selectedPatElectronsForElecTauI
 
 # require electron to not be from a photon conversion
 electronsBgEstZtautauEnrichedConversionVeto = copy.deepcopy(selectedPatElectronsForElecTauConversionVeto)
+electronsBgEstZtautauEnrichedConversionVeto.usePogMethod = cms.bool(True)
+electronsBgEstZtautauEnrichedConversionVeto.doMissingHitsCut = cms.bool(True)
+electronsBgEstZtautauEnrichedConversionVeto.doPixCut = cms.bool(False)
 
 # require track of electron candidate to have small transverse impact parameter
 # (in order to veto electrons resulting from b-quark decays)
@@ -222,41 +225,6 @@ from TauAnalysis.Configuration.selectZtoElecTau_cff import *
 
 # trigger selection
 cfgTriggerBgEst = copy.deepcopy(cfgTrigger)
-
-
-#uncomment when running over data
-## cfgTriggerBgEst.config = cms.VPSet(
-##     cms.PSet(
-##     hltAcceptPath = cms.string('HLT_Ele12_SW_TighterEleIdIsol_L1R_v1'),
-##     runrange = cms.EventRange(147196, 1, 148058, 0)
-##     ),
-##     cms.PSet(
-##     hltAcceptPath = cms.string('HLT_Ele12_SW_TightEleIdIsol_L1R'),
-##     runrange = cms.EventRange(146428, 1, 147195, 0)
-##     ),
-##     cms.PSet(
-##     hltAcceptPath = cms.string('HLT_IsoEle12_PFTau15_v2'),
-##     runrange = cms.EventRange(149069, 1, 149275, 0)
-##     ),
-##     cms.PSet(
-##     hltAcceptPath = cms.string('HLT_IsoEle12_PFTau15_v3'),
-##     runrange = cms.EventRange(148276, 1, 149442, 0)
-##     ),
-##     cms.PSet(
-##     hltAcceptPath = cms.string('HLT_IsoEle12_PFTau15_v1'),
-##     runrange = cms.EventRange(148108, 1, 149067, 0)
-##     ),
-##     cms.PSet(
-##     hltAcceptPath = cms.string('HLT_Ele10_LW_EleId_L1R'),
-##     runrange = cms.EventRange(132440, 1, 141955, 0)
-##     ),
-##     cms.PSet(
-##     hltAcceptPath = cms.string('HLT_Ele10_SW_EleId_L1R'),
-##     runrange = cms.EventRange(141956, 1, 146427, 0)
-##     )
-## )
-
-
 
 
 # primary event vertex selection
@@ -826,9 +794,6 @@ analyzeEventsBgEstZtautauEnriched = cms.EDAnalyzer("GenericAnalyzer",
 
 )
 
-saveEvents = cms.OutputModule("PoolOutputModule",
-    fileName = cms.untracked.string('test_output.root')
-)
 
 
 
@@ -839,8 +804,8 @@ saveEvents = cms.OutputModule("PoolOutputModule",
 
 bgEstZtautauEnrichedAnalysisSequence = cms.Sequence(
 
-    selectPrimaryVertexBgEst
-    + selectElectronsBgEstZtautauEnriched
+    #selectPrimaryVertexBgEst
+     selectElectronsBgEstZtautauEnriched
     + selectTausBgEstZtautauEnriched
     + produceElecTauPairsBgEstZtautauEnriched
     + selectElecTauPairsBgEstZtautauEnriched
