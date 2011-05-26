@@ -51,6 +51,9 @@ patElectronPFIsolationSelector = cms.PSet(
     
     pfCandidateSource = cms.InputTag('pfNoPileUp'),
 
+    vertexSource = cms.InputTag('offlinePrimaryVerticesWithBS'),
+    beamSpotSource = cms.InputTag('offlineBeamSpot'),
+    
     chargedHadronIso = cms.PSet(
         ptMin = cms.double(0.5),        
         dRvetoCone = cms.double(0.001),  # "sanity" check, to match Wisconsin's selection
@@ -73,5 +76,11 @@ patElectronPFIsolationSelector = cms.PSet(
 
     sumPtMaxEB = cms.double(0.08),
     sumPtMaxEE = cms.double(0.04),
-    sumPtMethod = cms.string("relative") # either "relative" or "absolute"
+    sumPtMethod = cms.string("relative"), # either "relative" or "absolute"
+    
+    pileUpCorr = cms.PSet(
+        method = cms.string("deltaBeta"),
+        deltaZ = cms.double(0.2),
+        chargedToNeutralFactor = cms.double(0.38) # (pi+ + pi-)/pi0 ratio in QCD/min. bias events
+    )
 )

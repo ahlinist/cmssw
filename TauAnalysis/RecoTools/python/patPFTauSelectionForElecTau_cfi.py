@@ -22,11 +22,23 @@ selectedPatTausForElecTauPt = copy.deepcopy(selectedPatTausPt20)
 # (track of Pt > 1. GeV within matching cone of size dR = 0.2 around jet-axis)
 selectedPatTausForElecTauLeadTrk = copy.deepcopy(selectedPatTausLeadTrk)
 
+# preform decay mode reconstruction
+selectedPatTausForElecTauDecayModeFinding = cms.EDFilter("PATTauSelector",
+    cut = cms.string('tauID("decayModeFinding") > 0.5'),
+    filter = cms.bool(False)
+)
+
 # require leading track of tau candidate to have Pt > 5. GeV
 selectedPatTausForElecTauLeadTrkPt = copy.deepcopy(selectedPatTausLeadTrkPt)
 
 # require tau candidate to pass TaNC discriminator
 selectedPatTausForElecTauTaNCdiscr = copy.deepcopy(selectedPatTausTaNCdiscr)
+
+# require tau candidate to pass HPS/TaNC isolation discriminator
+selectedPatTausForElecTauIso = cms.EDFilter("PATTauSelector",
+    cut = cms.string('tauID("byHPSloose") > 0.5'),
+    filter = cms.bool(False)
+)
 
 # require tau candidate to have either one or three tracks within signal cone
 selectedPatTausForElecTauProng = copy.deepcopy(selectedPatTausProng)
