@@ -16,7 +16,12 @@ branches = """mmgMass mass
     mmMass           daughter("dimuon").mass
     phoPt            daughter("photon").pt
     phoEta           daughter("photon").eta
+    phoPhi           daughter("photon").phi
+    phoR9            daughter("photon").masterClonePtr.r9
     phoIsEB          daughter("photon").masterClonePtr.isEB
+    phoDeltaRToTrack  daughter("photon").masterClonePtr.userFloat('conversionTools:deltaRToTrack')
+    phoPassElectronVeto daughter("photon").masterClonePtr.userInt('conversionTools:passElectronVeto')
+    phoHasMatchedConversion daughter("photon").masterClonePtr.userInt('conversionTools:hasMatchedConversion')
     phoHasPixelMatch daughter("photon").masterClonePtr.hasPixelSeed
     phoSigmaIetaIeta daughter("photon").masterClonePtr.sigmaIetaIeta""".split("\n")
 
@@ -36,7 +41,7 @@ for line in genBranches:
     pmvTree.variables.append(
         cms.PSet(
             tag = cms.untracked.string(tag),
-            quantity = cms.untracked.PSet(
+            conditionalQuantity = cms.untracked.PSet(
                 ifCondition = cms.untracked.string(
                     'daughter("photon").masterClonePtr.genParticlesSize > 0'
                 ),
@@ -50,35 +55,92 @@ for line in genBranches:
 muon = lambda i: "daughter('dimuon').masterClonePtr." +\
                  "daughter('muon%d').masterClonePtr." % i
 
-muonCalEnergyBranches = """Em em
-    EmMax emMax
-    Had had""".split("\n")
+var = lambda t, q: cms.PSet( tag      = cms.untracked.string(t),
+                             quantity = cms.untracked.string(q) )
 
-for line in muonCalEnergyBranches:
-    tag, var = line.split()
-    pmvTree.variables.extend([
-        cms.PSet(
-            tag = cms.untracked.string("mu%dCalEnergy%s" % (i, tag)),
-            quantity = cms.untracked.PSet(
-                ifCondition = cms.untracked.string(muon(i) + "isEnergyValid"),
-                thenQuantity = cms.untracked.string(muon(i) + "calEnergy." + \
-                                                    var),
-                elseQuantity = cms.untracked.string("-1"),
-            )
-        ) for i in range(1,3)
-    ])
+def condVar (iTag, iIf, iThen, iElse):
+    return cms.PSet( tag = cms.untracked.string(iTag),
+                     conditionalQuantity = cms.untracked.PSet(
+                          ifCondition = cms.untracked.string(iIf),
+                          thenQuantity = cms.untracked.string(iThen),
+                          elseQuantity = cms.untracked.string(iElse),
+                      ) )
+
+def muVar(i, iTag, iQuantity):
+    return var( 'mu%i%s' % (i, iTag),
+                muon(i) + iQuantity   )
+
+def muCondVar(i, iTag, iIf, iThen, iElse):
+    return condVar(
+        'mu%i%s' % (i, iTag),
+        iIf,
+        muon(i) + iThen,
+        iElse
+    )
+
+def muCalEnergy(i, iTag, iQuantity):
+    return muCondVar( i,
+                      "CalEnergy" + iTag,
+                      muon(i) + "isEnergyValid",
+                      'calEnergy.' + iQuantity,
+                      '-1' )
+
+
+#muonCalEnergyBranches = """Em em
+    #EmMax emMax
+    #Had had""".split("\n")
+
+#for line in muonCalEnergyBranches:
+    #tag, var = line.split()
+    #pmvTree.variables.extend([
+        #cms.PSet(
+            #tag = cms.untracked.string("mu%dCalEnergy%s" % (i, tag)),
+            #conditionalQuantity = cms.untracked.PSet(
+                #ifCondition = cms.untracked.string(muon(i) + "isEnergyValid"),
+                #thenQuantity = cms.untracked.string(muon(i) + "calEnergy." + \
+                                                    #var),
+                #elseQuantity = cms.untracked.string("-1"),
+            #)
+        #) for i in range(1,3)
+    #])
+
 pmvTree.variables.extend([
-    cms.PSet(
-        tag = cms.untracked.string("minDEta"),
-        quantity = cms.untracked.string("""
-            min(abs(daughter("dimuon").daughter(0).eta-daughter("photon").eta),
-                abs(daughter("dimuon").daughter(1).eta-daughter("photon").eta))
-        """)
+    muVar( 1, 'Pt' , 'pt'  ),
+    muVar( 2, 'Pt' , 'pt'  ),
+    muVar( 1, 'Eta', 'eta' ),
+    muVar( 2, 'Eta', 'eta' ),
+    muVar( 1, 'Phi', 'phi' ),
+    muVar( 2, 'Phi', 'phi' ),
+    muVar( 1, 'TrackChi2', 'track.chi2' ),
+    muVar( 2, 'TrackChi2', 'track.chi2' ),
+    muVar( 1, 'TrackNormalizedChi2', 'track.normalizedChi2' ),
+    muVar( 2, 'TrackNormalizedChi2', 'track.normalizedChi2' ),
+    var( 'mu1DeltaR',
+         '''deltaR( daughter("dimuon").masterClonePtr.daughter("muon1").eta,
+                    daughter("dimuon").masterClonePtr.daughter("muon1").phi,
+                    daughter("photon").eta,
+                    daughter("photon").phi )''' ),
+    var( 'mu2DeltaR',
+         '''deltaR( daughter("dimuon").masterClonePtr.daughter("muon1").eta,
+                    daughter("dimuon").masterClonePtr.daughter("muon2").phi,
+                    daughter("photon").eta,
+                    daughter("photon").phi )''' ),
+    muCalEnergy( 1, 'Em'   , 'em'    ),
+    muCalEnergy( 2, 'Em'   , 'em'    ),
+    muCalEnergy( 1, 'EmMax', 'emMax' ),
+    muCalEnergy( 2, 'EmMax', 'emMax' ),
+    muCalEnergy( 1, 'Had'  , 'had'   ),
+    muCalEnergy( 2, 'Had'  , 'had'   ),
+    
+    var( "minDEta",
+         """
+          min(abs(daughter("dimuon").daughter(0).eta-daughter("photon").eta),
+              abs(daughter("dimuon").daughter(1).eta-daughter("photon").eta))
+         """
     ),
 
-    cms.PSet(
-        tag = cms.untracked.string("minDeltaR"),
-        quantity = cms.untracked.string("""
+    var( "minDeltaR",
+         """
             min( deltaR( daughter("dimuon").daughter(0).eta,
                          daughter("dimuon").daughter(0).phi,
                          daughter("photon").eta,
@@ -90,12 +152,11 @@ pmvTree.variables.extend([
                          daughter("photon").phi
                          )
                  )
-        """)
+         """
     ),
 
-    cms.PSet(
-        tag = cms.untracked.string("minDPhi"),
-        quantity = cms.untracked.string("""
+    var( "minDPhi",
+         """
             min( abs( deltaPhi( daughter("dimuon").daughter(0).phi,
                                 daughter("photon").phi
                                 )
@@ -105,21 +166,14 @@ pmvTree.variables.extend([
                                 )
                       )
                  )
-        """)
+        """
     ),
 
-
-    #cms.PSet(
-        #tag = cms.untracked.string("iphiy"),
-        #quantity = cms.untracked.PSet(
-            #ifCondition = cms.untracked.string("daughter('photon').masterClonePtr.isEB"),
-            #thenQuantity = cms.untracked.string(
-                #"daughter('photon').masterClonePtr.superCluster.seed.seed.iphi"
-            #),
-            #elseQuantity = cms.untracked.string(
-                #"daughter('photon').masterClonePtr.superCluster.seed.seed.iy"
-            #),
-        #)
-    #),
-
+    var( 'kRatio',
+         '''( 91.1876 * 91.1876 -
+                daughter("dimuon").mass * daughter("dimuon").mass ) /
+            ( mass * mass -
+                daughter("dimuon").mass * daughter("dimuon").mass )
+         ''' 
+    )
 ])
