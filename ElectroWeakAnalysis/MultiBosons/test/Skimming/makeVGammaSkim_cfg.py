@@ -258,6 +258,11 @@ process.skimFilterSequence = cms.Sequence(
     process.hltFilter +
     process.goodCollisionDataSequence
     ) # Extend below
+
+#add in DA Vertices
+if options.useDAVertices:
+    switchOnDAVertices(process,after=process.skimFilterSequence)
+
 process.skimFilterPath = cms.Path(process.skimFilterSequence)
 
 if options.skimType == "MuonPhoton":

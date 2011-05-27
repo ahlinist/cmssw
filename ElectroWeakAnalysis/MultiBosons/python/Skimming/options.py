@@ -100,6 +100,11 @@ options.register("addRho",
                  VarParsing.multiplicity.singleton, # singleton or list
                  VarParsing.varType.bool,         # bool, string, int, or float
                  "Add rho from FastJet for pile-up corrected calo isolations?")
+options.register("useDAVertices",
+                 True, # default value
+                 VarParsing.multiplicity.singleton, # singleton or list
+                 VarParsing.varType.bool,         # bool, string, int, or float
+                 "Switch offline vertex collection to DA Vertices?")
 options.register("options",
                  "", # default value
                  VarParsing.multiplicity.list, # singleton or list
