@@ -44,11 +44,11 @@ parser.add_option ('--skip_to_ls', dest='skip_to_ls', type='int', nargs = 2,
                    help="LS range to process (All)")
 
 parser.add_option ('--noStartTime', dest='doStartTime', action="store_false",
-                   default = 'True',
+                   default = True,
                    help="do not try to get start time w/ 1 sec precision. faster.")
 
 parser.add_option ('--doHists', dest='doHists', action="store_true",
-                   default = 'False',
+                   default = False,
                    help="Make root file containing hists for debugging.")
 
 options, args = parser.parse_args()
@@ -215,10 +215,13 @@ for ieta in range(-28,29):
 ############################################################
 # Set up hists, if requested
 ############################################################
+
 if doHists:
+    print "Making histograms"
     hists = {}
     hists["nevt_v_ls"] = TH1F("nevt_v_ls","nevt_v_ls",1001, -0.5, 1000.5)
-    hists["occ"]         = TH2F("occ","occ", 61, -30.5, 30.5, 73, -0.5, 72.5)
+    hists["occ"]       = TH2F("occ","occ", 61, -30.5, 30.5, 73, -0.5, 72.5)
+    
 
 
 ############################################################
@@ -261,8 +264,10 @@ for event in events:
     ls_analyzed.add(ls)
     if doHists:
         hists["nevt_v_ls"].Fill(ls)
-        if ls not in hists: hists[ls] = TH2F("h"+str(ls),"h"+str(ls), 61, -30.5, 30.5, 73, -0.5, 72.5)
-        
+        # Fill occupancy histo for each ls, not tested
+        #        if "h"+str(ls) not in hists:
+        #            hists["h"+str(ls)]    = TH2F("h"+str(ls),"h"+str(ls), 61, -30.5, 30.5, 73, -0.5, 72.5)
+
     # Check whether LS can be skipped:
     if not doStartTime:
         if missing_dictionary:
@@ -293,7 +298,7 @@ for event in events:
         if abs(rh.id().ieta()) == 29: continue
         # Get RBX for rechit
         if doHists and rh.id().depth() == 1:
-            hists[ls].Fill(rh.id().ieta(),rh.id().iphi())
+            #            hists["h"+str(ls)].Fill( rh.id().ieta(), rh.id().iphi() )
             hists["occ"].Fill(rh.id().ieta(),rh.id().iphi())
 
         rbx = rechit_to_rbx_dict[rh.id().ieta(), rh.id().iphi(), rh.id().depth()]
@@ -348,9 +353,6 @@ print "\n"
 # Clean up missing_dictionary by removing ls that were found and recorded
 # in found_dictionary:
 
-if missing_dictionary : print missing_dictionary
-print found_dictionary
-
 bad_rbxs = False
 if missing_dictionary :
     for rbx, ls_set in found_dictionary.iteritems():
@@ -366,9 +368,6 @@ if missing_dictionary :
 
     for rbx in rbx_to_remove: del missing_dictionary[rbx]
 
-
-if missing_dictionary : print missing_dictionary
-print found_dictionary
 
 # Print output 
 if bad_rbxs:
@@ -462,8 +461,9 @@ if doHists:
     outfile += ".root"
 
     toutfile = TFile(outfile,"recreate")
-    
+
     for hist in hists.values():
         hist.Write()
         
+
     toutfile.Close()
