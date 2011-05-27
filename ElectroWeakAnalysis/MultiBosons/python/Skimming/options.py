@@ -101,7 +101,7 @@ options.register("addRho",
                  VarParsing.varType.bool,         # bool, string, int, or float
                  "Add rho from FastJet for pile-up corrected calo isolations?")
 options.register("useDAVertices",
-                 True, # default value
+                 False, # default value, only True in 41X
                  VarParsing.multiplicity.singleton, # singleton or list
                  VarParsing.varType.bool,         # bool, string, int, or float
                  "Switch offline vertex collection to DA Vertices?")
