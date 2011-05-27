@@ -12,9 +12,9 @@
  *          Michal Bluj,
  *          Christian Veelken
  *
- * \version $Revision: 1.20 $
+ * \version $Revision: 1.21 $
  *
- * $Id: CompositePtrCandidateT1T2MEtProducer.h,v 1.20 2011/01/19 10:12:48 veelken Exp $
+ * $Id: CompositePtrCandidateT1T2MEtProducer.h,v 1.21 2011/04/19 08:16:11 veelken Exp $
  *
  */
 
@@ -134,7 +134,7 @@ class CompositePtrCandidateT1T2MEtProducer : public edm::EDProducer
 
   void beginJob()
   {
-    algorithm_.beginJob();
+    algorithm_.beginJob(doSVreco_);
   }
 
   void produce(edm::Event& evt, const edm::EventSetup& es)
@@ -190,7 +190,7 @@ class CompositePtrCandidateT1T2MEtProducer : public edm::EDProducer
 //--- pass edm::Event and edm::EventSetup to SVfit algorithm
 //    (needed by likelihood plugins for initialization of TransientTrackBuilder 
 //     and to retrieve BeamSpot and genParticle collection from the event)
-    algorithm_.beginEvent(evt, es);
+    algorithm_.beginEvent(evt, es, doSVreco_, doPFMEtSign_);
 
     std::auto_ptr<CompositePtrCandidateCollection> compositePtrCandidateCollection(new CompositePtrCandidateCollection());
 

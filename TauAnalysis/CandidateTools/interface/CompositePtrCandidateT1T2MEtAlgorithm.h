@@ -92,6 +92,7 @@ class CompositePtrCandidateT1T2MEtAlgorithm
 	//std::cout << "--> adding nSVfit algorithm: name = " << (*nSVfitAlgorithmName) << std::endl;
       }
     }
+
     scaleFuncImprovedCollinearApprox_ = cfg.exists("scaleFuncImprovedCollinearApprox") ?
       cfg.getParameter<std::string>("scaleFuncImprovedCollinearApprox") : "1";
     /// compute the scale factor to weight the diTau mass
@@ -124,29 +125,33 @@ class CompositePtrCandidateT1T2MEtAlgorithm
     delete scaleFunc_;
   }
 
-  void beginJob()
+  void beginJob(bool doSVreco)
   {
-    for ( typename std::map<std::string, SVfitAlgorithm<T1,T2>*>::iterator svFitAlgorithm = svFitAlgorithms_.begin();
-	  svFitAlgorithm != svFitAlgorithms_.end(); ++svFitAlgorithm ) {
-      svFitAlgorithm->second->beginJob();
-    }
-    for ( typename std::map<std::string, NSVfitAlgorithmBase*>::iterator nSVfitAlgorithm = nSVfitAlgorithms_.begin();
-	  nSVfitAlgorithm != nSVfitAlgorithms_.end(); ++nSVfitAlgorithm ) {
-      nSVfitAlgorithm->second->beginJob();
+    if ( doSVreco ) {
+      for ( typename std::map<std::string, SVfitAlgorithm<T1,T2>*>::iterator svFitAlgorithm = svFitAlgorithms_.begin();
+	    svFitAlgorithm != svFitAlgorithms_.end(); ++svFitAlgorithm ) {
+	svFitAlgorithm->second->beginJob();
+      }
+      for ( typename std::map<std::string, NSVfitAlgorithmBase*>::iterator nSVfitAlgorithm = nSVfitAlgorithms_.begin();
+	    nSVfitAlgorithm != nSVfitAlgorithms_.end(); ++nSVfitAlgorithm ) {
+	nSVfitAlgorithm->second->beginJob();
+      }
     }
   }
 
-  void beginEvent(edm::Event& evt, const edm::EventSetup& es)
+  void beginEvent(edm::Event& evt, const edm::EventSetup& es, bool doSVreco, bool doPFMEtSign)
   {
-    if ( pfMEtSign_ ) pfMEtSign_->beginEvent(evt, es);
+    if ( doPFMEtSign && pfMEtSign_ ) pfMEtSign_->beginEvent(evt, es);
 
-    for ( typename std::map<std::string, SVfitAlgorithm<T1,T2>*>::iterator svFitAlgorithm = svFitAlgorithms_.begin();
-	  svFitAlgorithm != svFitAlgorithms_.end(); ++svFitAlgorithm ) {
-      svFitAlgorithm->second->beginEvent(evt, es);
-    }
-    for ( typename std::map<std::string, NSVfitAlgorithmBase*>::iterator nSVfitAlgorithm = nSVfitAlgorithms_.begin();
-	  nSVfitAlgorithm != nSVfitAlgorithms_.end(); ++nSVfitAlgorithm ) {
-      nSVfitAlgorithm->second->beginEvent(evt, es);
+    if ( doSVreco ) {
+      for ( typename std::map<std::string, SVfitAlgorithm<T1,T2>*>::iterator svFitAlgorithm = svFitAlgorithms_.begin();
+	    svFitAlgorithm != svFitAlgorithms_.end(); ++svFitAlgorithm ) {
+	svFitAlgorithm->second->beginEvent(evt, es);
+      }
+      for ( typename std::map<std::string, NSVfitAlgorithmBase*>::iterator nSVfitAlgorithm = nSVfitAlgorithms_.begin();
+	    nSVfitAlgorithm != nSVfitAlgorithms_.end(); ++nSVfitAlgorithm ) {
+	nSVfitAlgorithm->second->beginEvent(evt, es);
+      }
     }
   }
 
