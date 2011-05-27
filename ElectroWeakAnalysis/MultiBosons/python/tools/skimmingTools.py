@@ -87,7 +87,7 @@ def embedTriggerMatches(process, hltPaths):
     for path in hltPaths[target]:
       ## Get the module name, e.g. "cleanPatMuonsTriggerMatchHLTMu9"
       ##+ for target = "cleanPatMuons" and path = "HLT_Mu9"
-      ## L. Gray 27.4.2011 add in change to deal with versioned triggers
+      ## L. Gray 27.4.2011 add in change to deal with versioned triggers      
       moduleLabel = baseName.lower() + "TriggerMatch" + path.replace("_", "").replace("v*","")
       setattr(process,
         moduleLabel,
@@ -154,3 +154,14 @@ def addRhoFromFastJet(process, after):
     process.out.outputCommands.append( "keep *_*_sigma_*" )
 # def addRhoFromFastJet(process, before): <------------------------------------
 
+###############################################################################
+def switchOnDAVertices(process, after):
+    """Switch On Deterministic Annealing Vertices"""
+
+    ## Load and configure the producer
+    process.load('RecoVertex.PrimaryVertexProducer.OfflinePrimaryVerticesDA_cfi')
+    process.offlinePrimaryVertices = process.offlinePrimaryVerticesDA.clone()
+    process.offlinePrimaryVertices.TkClusParameters.TkDAClusParameters.Tmin = cms.double(4.)
+    process.offlinePrimaryVertices.TkClusParameters.vertexSize = cms.double(0.01)
+    after *= process.offlinePrimaryVertices
+# def switchOnDAVertices(process, after): <------------------------------------
