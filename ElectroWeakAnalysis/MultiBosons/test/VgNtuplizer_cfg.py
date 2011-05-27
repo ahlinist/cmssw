@@ -13,7 +13,7 @@ options.setupTags (tag = '%d', ifCond = 'totalSections > 0', tagArg = 'section')
 ## setup any defaults you want
 #options.outputFile = 'vgtree.root'
 options.outputFile = 'vgtree.root'
-#inputDir = "/hdfs/store/user/lgray/SingleMu/Run2011A-v2/e1d9c80e015666f76e1af789462cb36a/"
+#inputDir = "/hdfs/store/user/lgray/SingleMu/Run2011A-PRV4-42X-v2/f1c3aea799451450bbb7732cb714d91d/"
 #options.inputFiles=",".join(["file:" + os.path.join(inputDir, f) for f in os.listdir(inputDir)])
 options.inputFiles=[]
 options.maxEvents = -1 # -1 means all events
@@ -41,7 +41,7 @@ process.maxEvents = cms.untracked.PSet(
 process.source = cms.Source("PoolSource",
                             fileNames = cms.untracked.vstring(options.inputFiles),
                             noEventSort = cms.untracked.bool(True),
-                            lumisToProcess = cms.untracked.VLuminosityBlockRange()
+#                            lumisToProcess = cms.untracked.VLuminosityBlockRange()
                             )
 
 #process.source.lumisToProcess = [ str(a) for a in thelist.getCMSSWString().split(',') ] 
