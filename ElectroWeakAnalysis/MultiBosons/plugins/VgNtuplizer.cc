@@ -61,6 +61,8 @@ VgNtuplizer::VgNtuplizer(const edm::ParameterSet& ps) : verbosity_(0), helper_(p
   tcMETlabel_     = ps.getParameter<InputTag>("tcMETLabel");
   pfMETlabel_     = ps.getParameter<InputTag>("pfMETLabel");
 
+  puInfoLabel_    = ps.getParameter<InputTag>("PUInfoLabel");
+
   rhoLabel_       = ps.getParameter<InputTag>("RhoLabel");
   sigmaLabel_     = ps.getParameter<InputTag>("SigmaLabel");
 
