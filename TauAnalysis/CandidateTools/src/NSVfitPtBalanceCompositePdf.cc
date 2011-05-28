@@ -19,30 +19,6 @@
 #include "TVectorD.h"
 #include "TMath.h"
 
-/*
-double NSVfitPtBalanceCompositePdf::PdfInfo::getVal(
-    double scaledPt, double mass) const {
-  assert(xVar_);
-  assert(mass_);
-  assert(pdf_);
-  xVar_->setVal(scaledPt);
-  mass_->setVal(mass);
-  return pdf_->getVal(normalizationVariable_.get());
-}
-
-void NSVfitPtBalanceCompositePdf::PdfInfo::print(std::ostream& stream) const {
-  stream << "<NSVfitPtBalanceCompositePdf::PdfInfo::print>";
-  stream << " PDF: " << pdf_ << std::endl;
-  stream << " xVar: " << xVar_ << std::endl;
-  stream << " mass: " << mass_ << std::endl;
-  stream << " normVars: " << normalizationVariable_ << std::endl;
-  //pdf_->Print("v");
-  //xVar_->Print("v");
-  //mass_->Print("v");
-}
-*/
-
-
 NSVfitPtBalanceCompositePdf::~NSVfitPtBalanceCompositePdf() { }
 
 NSVfitPtBalanceCompositePdf::NSVfitPtBalanceCompositePdf(
@@ -51,6 +27,9 @@ NSVfitPtBalanceCompositePdf::NSVfitPtBalanceCompositePdf(
   phiBinning_ = NULL;
 
   verbosity_ = pset.exists("verbosity") ? pset.getParameter<int>("verbosity") : 0;
+
+  interpolate_ = pset.exists("interpolate") ?
+    pset.getParameter<bool>("interpolate") : false;
 
   if (verbosity_)
     std::cout << "<NSVfitPtBalanceCompositePdf::NSVfitPtBalanceCompositePdf>"
@@ -226,6 +205,10 @@ double NSVfitPtBalanceCompositePdf::operator()(
     containingBin = 0;
   if (containingBin > maxBin)
     containingBin = maxBin;
+
+  if (!interpolate_) {
+    return pdfs_[containingBin].getVal(pt, mass);
+  }
 
   double centerOfBin = phiBinning_->binCenter(containingBin);
   int otherBin  = (deltaPhi > centerOfBin) ? containingBin + 1 : containingBin - 1;
