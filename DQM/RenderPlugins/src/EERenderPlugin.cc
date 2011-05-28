@@ -1,12 +1,12 @@
-// $Id: EERenderPlugin.cc,v 1.164 2010/08/12 09:16:38 emanuele Exp $
+// $Id: EERenderPlugin.cc,v 1.165 2010/10/04 11:04:03 dellaric Exp $
 
 /*!
   \file EERenderPlugin
   \brief Display Plugin for Quality Histograms
   \author G. Della Ricca
   \author B. Gobbo
-  \version $Revision: 1.164 $
-  \date $Date: 2010/08/12 09:16:38 $
+  \version $Revision: 1.165 $
+  \date $Date: 2010/10/04 11:04:03 $
 */
 
 #include "VisMonitoring/DQMServer/interface/DQMRenderPlugin.h"
@@ -478,8 +478,8 @@ private:
         gPad->SetGridy();
         obj->GetXaxis()->SetNdivisions(10, kFALSE);
         obj->GetYaxis()->SetNdivisions(10, kFALSE);
-        obj->SetMinimum(25.);
-        obj->SetMaximum(75.);
+        obj->SetMinimum(45.);
+        obj->SetMaximum(55.);
         
         gStyle->SetPalette(1);
         obj->SetContour(255);
