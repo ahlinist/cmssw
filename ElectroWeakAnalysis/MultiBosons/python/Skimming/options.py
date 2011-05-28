@@ -116,6 +116,12 @@ options.register("relaxGenParticlePruning",
                  VarParsing.multiplicity.singleton, # singleton or list
                  VarParsing.varType.bool,         # bool, string, int, or float
                  "Relax the gen particle pruning cuts?")
+options.register("hasPileup",
+                 False, # default value
+                 VarParsing.multiplicity.singleton, # singleton or list
+                 VarParsing.varType.bool,         # bool, string, int, or float
+                 'Does this MC sample have pileup?')
+
 
 ## setup tags
 options.setupTags (tag = 'of_%d',

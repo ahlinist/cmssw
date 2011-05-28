@@ -165,3 +165,13 @@ def switchOnDAVertices(process, after):
     process.offlinePrimaryVertices.TkClusParameters.vertexSize = cms.double(0.01)
     after *= process.offlinePrimaryVertices
 # def switchOnDAVertices(process, after): <------------------------------------
+
+###############################################################################
+def switchOnPileupReweighting(process, after):
+    """Calculate the pile-up reweighting factor from data"""
+    
+    ## Load and configure the producer
+    process.load('ElectroWeakAnalysis.MultiBosons.Skimming.PUWeightProducer_cff')    
+    after *= process.pileupweight
+# def switchOnDAVertices(process, after): <------------------------------------
+
