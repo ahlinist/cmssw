@@ -8,9 +8,9 @@
  *
  * \author Christian Veelken, UC Davis
  *
- * \version $Revision: 1.14 $
+ * \version $Revision: 1.15 $
  *
- * $Id: NSVfitAlgorithmBase.h,v 1.14 2011/04/10 14:46:47 veelken Exp $
+ * $Id: NSVfitAlgorithmBase.h,v 1.15 2011/04/13 17:06:47 veelken Exp $
  *
  */
 
@@ -163,7 +163,7 @@ class NSVfitAlgorithmBase
 	    likelihood != likelihoods_.end(); ++likelihood ) {
 	(*likelihood)->beginCandidate(hypothesis);
       }
-      const edm::OwnVector<NSVfitSingleParticleHypothesisBase> daughterHypotheses = hypothesis->daughters();
+      const edm::OwnVector<NSVfitSingleParticleHypothesisBase>& daughterHypotheses = hypothesis->daughters();
       assert(daughterHypotheses.size() == numDaughters_);
       for ( unsigned iDaughter = 0; iDaughter < numDaughters_; ++iDaughter ) {
 	daughters_[iDaughter]->beginCandidate(&daughterHypotheses[iDaughter]);
@@ -176,7 +176,7 @@ class NSVfitAlgorithmBase
 	    likelihood != likelihoods_.end(); ++likelihood ) {
 	retVal += (**likelihood)(hypothesis);
       }
-      const edm::OwnVector<NSVfitSingleParticleHypothesisBase> daughterHypotheses = hypothesis->daughters();
+      const edm::OwnVector<NSVfitSingleParticleHypothesisBase>& daughterHypotheses = hypothesis->daughters();
       assert(daughterHypotheses.size() == numDaughters_);
       for ( unsigned iDaughter = 0; iDaughter < numDaughters_; ++iDaughter ) {
 	retVal += daughters_[iDaughter]->nll(&daughterHypotheses[iDaughter]);
@@ -237,7 +237,7 @@ class NSVfitAlgorithmBase
 	    likelihood != likelihoods_.end(); ++likelihood ) {
 	(*likelihood)->beginCandidate(hypothesis);
       }
-      const edm::OwnVector<NSVfitResonanceHypothesis> resonanceHypotheses = hypothesis->resonances();
+      const edm::OwnVector<NSVfitResonanceHypothesis>& resonanceHypotheses = hypothesis->resonances();
       assert(resonanceHypotheses.size() == numResonances_);
       for ( unsigned iResonance = 0; iResonance < numResonances_; ++iResonance ) {
 	resonances_[iResonance]->beginCandidate(&resonanceHypotheses[iResonance]);
@@ -250,7 +250,7 @@ class NSVfitAlgorithmBase
 	    likelihood != likelihoods_.end(); ++likelihood ) {
 	retVal += (**likelihood)(hypothesis);
       }
-      const edm::OwnVector<NSVfitResonanceHypothesis> resonanceHypotheses = hypothesis->resonances();
+      const edm::OwnVector<NSVfitResonanceHypothesis>& resonanceHypotheses = hypothesis->resonances();
       assert(resonanceHypotheses.size() == numResonances_);
       for ( unsigned iResonance = 0; iResonance < numResonances_; ++iResonance ) {
 	retVal += resonances_[iResonance]->nll(&resonanceHypotheses[iResonance]);
