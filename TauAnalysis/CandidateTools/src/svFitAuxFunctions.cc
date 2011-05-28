@@ -134,9 +134,17 @@ namespace SVfit_namespace {
     //std::cout << "<tauP4>:" << std::endl;
 
     // NB: tauDirection must be a unit vector !
-    reco::Candidate::Vector tauMomentum = tauDirection*tauMomentumLabFrame;
-    reco::Candidate::LorentzVector tauP4LabFrame = reco::Candidate::LorentzVector(
-      math::PtEtaPhiMLorentzVector(tauMomentum.rho(), tauMomentum.eta(), tauMomentum.phi(), tauLeptonMass));
+    //reco::Candidate::Vector tauMomentum = tauDirection*tauMomentumLabFrame;
+
+    reco::Candidate::LorentzVector tauP4LabFrame =
+      reco::Candidate::LorentzVector(
+          tauDirection.x()*tauMomentumLabFrame,
+          tauDirection.y()*tauMomentumLabFrame,
+          tauDirection.z()*tauMomentumLabFrame,
+          TMath::Sqrt(tauMomentumLabFrame*tauMomentumLabFrame
+            + tauLeptonMass*tauLeptonMass));
+
+      //math::PtEtaPhiMLorentzVector(tauMomentum.rho(), tauMomentum.eta(), tauMomentum.phi(), tauLeptonMass));
     //std::cout << "--> tauMomentum: E = " << tauP4LabFrame.energy() << ","
     //          << " eta = " << tauP4LabFrame.eta() << ", phi = " << tauP4LabFrame.phi()*180./TMath::Pi() << ","
     //          << " mass = " << tauP4LabFrame.mass() << std::endl;
@@ -197,7 +205,7 @@ namespace SVfit_namespace {
 //--- determine whether visible tau decay products come from a tau- or a tau+ decay;
 //    depending on whether the tau lepton has positive or negative charge,
 //    the following convention is used to relate the "handed-ness" of the tau to its polarization:
-//   o Tau lepton:   
+//   o Tau lepton:
 //       Left-handed  = -1
 //       Right-handed = +1
 //   o Polarization:
