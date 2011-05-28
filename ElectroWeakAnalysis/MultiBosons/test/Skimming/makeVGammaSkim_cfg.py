@@ -365,6 +365,8 @@ else:
     process.primaryVertexFilterPath = cms.Path(process.primaryVertexFilter)
     process.noScrapingPath = cms.Path(process.noScraping)
     process.load(basePath + "prunedGenParticles_cfi")
+    if options.hasPileup:
+        switchOnPileupReweighting(process,process.skimFilterSequence)
     if options.relaxGenParticlePruning == True:
         # Relax the gen particle pruning (for PMV closure investigation)
         process.prunedGenParticles.select.append(
@@ -380,8 +382,8 @@ else:
     process.defaultSequence = cms.Sequence(
         process.skimFilterSequence *
         process.prunedGenParticles *
-        process.patDefaultSequence
-    )
+        process.patDefaultSequence )
+    
     #add in gen level photon user data
     process.photonGenMatch = cms.EDProducer("PhotonGenMatchUserDataProducer",
         src = cms.InputTag("photons"),
@@ -509,7 +511,8 @@ process.out.outputCommands += vgEventContent.extraSkimEventContent
 
 if not options.isRealData:
     process.out.outputCommands += ["keep *_prunedGenParticles_*_PAT"]
-    process.out.outputCommands += ["keep *_addPileupInfo_*_*"] #store pileup description in case of MC, all reprocessings
+    process.out.outputCommands += ["keep *_addPileupInfo_*_*"]
+    process.out.outputCommands += ["keep *_pileupweight_*_*"] #store pileup description in case of MC, all reprocessings
 
 if options.skimType == "Jet":
     process.out.outputCommands += ["drop *_photonCore_*_RECO",
