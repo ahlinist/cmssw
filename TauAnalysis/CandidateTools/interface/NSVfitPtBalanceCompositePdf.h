@@ -35,20 +35,10 @@ class NSVfitPtBalanceCompositePdf {
     double operator()(double scaledPt, double mass, double deltaPhi) const;
 
   private:
-
-    /*
-    struct PdfInfo {
-      RooAbsPdf* pdf_;
-      RooRealVar* xVar_;
-      RooRealVar* mass_;
-      boost::shared_ptr<RooArgSet> normalizationVariable_;
-      double getVal(double scaledPt, double mass) const;
-      void print(std::ostream& stream) const;
-    };
-    */
-
     RooBinning* phiBinning_;
     std::vector<NSVfitCachingPdfWrapper> pdfs_;
+
+    bool interpolate_;
 
     int verbosity_;
 };
