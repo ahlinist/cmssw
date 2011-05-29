@@ -20,8 +20,7 @@ const double epsilon = 1.e-4;
 
 NSVfitEventLikelihoodMEt2::NSVfitEventLikelihoodMEt2(const edm::ParameterSet& cfg)
   : NSVfitEventLikelihood(cfg),
-    pfMEtSign_(0),
-    pfMEtCovInverse_(2,2)
+    pfMEtSign_(0)
 {
   power_ = ( cfg.exists("power") ) ?
     cfg.getParameter<double>("power") : 1.0;
@@ -63,7 +62,12 @@ void NSVfitEventLikelihoodMEt2::beginCandidate(const NSVfitEventHypothesis* hypo
 
   TMatrixD pfMEtCov = (*pfMEtSign_)(daughterHypothesesList);
 
-  pfMEtCovInverse_ = pfMEtCov.Invert();
+  TMatrixD pfMEtCovInverseTemp = pfMEtCov.Invert();
+
+  pfMEtCovInverse_(0, 0) = pfMEtCovInverseTemp(0, 0);
+  pfMEtCovInverse_(1, 0) = pfMEtCovInverseTemp(1, 0);
+  pfMEtCovInverse_(0, 1) = pfMEtCovInverseTemp(0, 1);
+  pfMEtCovInverse_(1, 1) = pfMEtCovInverseTemp(1, 1);
 }
 
 double NSVfitEventLikelihoodMEt2::operator()(const NSVfitEventHypothesis* hypothesis) const
@@ -75,19 +79,20 @@ double NSVfitEventLikelihoodMEt2::operator()(const NSVfitEventHypothesis* hypoth
 //
   if ( this->verbosity_ ) std::cout << "<NSVfitEventLikelihoodMEt2::operator()>:" << std::endl;
 
-  TVectorD residual_fitted(2);
-  residual_fitted(0) = hypothesis->dp4MEt_fitted().px();
-  residual_fitted(1) = hypothesis->dp4MEt_fitted().py();
+  residual_fitted_(0) = hypothesis->dp4MEt_fitted().px();
+  residual_fitted_(1) = hypothesis->dp4MEt_fitted().py();
+
   if ( this->verbosity_ ) {
-    std::cout << " pxResidual_fitted = " << residual_fitted(0) << std::endl;
-    std::cout << " pyResidual_fitted = " << residual_fitted(1) << std::endl;
+    std::cout << " pxResidual_fitted = " << residual_fitted_(0) << std::endl;
+    std::cout << " pyResidual_fitted = " << residual_fitted_(1) << std::endl;
   }
 
   // CV: in case pfMEt resolution are accurately modeled,
   //     residual*cov^-1*residual is expected to be distributed
   //     like a chi^2 with 2 degrees of freedom
   //    (cf. CMS AN-10/400, page 1)
-  double chi2 = residual_fitted*(pfMEtCovInverse_*residual_fitted);
+  //double chi2 = residual_fitted*(pfMEtCovInverse_*residual_fitted);
+  double chi2 = ROOT::Math::Similarity(residual_fitted_, pfMEtCovInverse_);
   double prob = TMath::Prob(chi2, 2);
 
   double nll = 0.;
