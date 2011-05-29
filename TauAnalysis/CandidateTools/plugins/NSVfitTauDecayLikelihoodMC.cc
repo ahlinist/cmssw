@@ -26,7 +26,7 @@ NSVfitTauDecayLikelihoodMC<T>::NSVfitTauDecayLikelihoodMC(const edm::ParameterSe
     currentDecayModeParameter_(0)
 {
   if ( this->verbosity_ ) std::cout << "<NSVfitTauDecayLikelihoodMC::NSVfitTauDecayLikelihoodMC>:" << std::endl;
-  
+
   std::map<int, std::string> supportedTauDecayModes;
   supportedTauDecayModes[kElectron]        = "electron";
   supportedTauDecayModes[kMuon]            = "muon";
@@ -58,14 +58,14 @@ NSVfitTauDecayLikelihoodMC<T>::NSVfitTauDecayLikelihoodMC(const edm::ParameterSe
 	std::cout << " momName = " << momName.data() << ", momType = " << momType.data() << std::endl;
 	std::cout << " sepTimesMomName = " << sepTimesMomName.data() << ", sepType = " << sepType.data() << std::endl;
       }
-      
+
       decayModeEntryType* newDecayModeEntry = new decayModeEntryType();
 
       if      ( momType == "pt"     ) newDecayModeEntry->momType_ = kPt;
       else if ( momType == "energy" ) newDecayModeEntry->momType_ = kEnergy;
       else throw cms::Exception("NSVfitTauDecayLikelihoodMC")
 	<< " Invalid Configuration Parameter 'momType' = " << momType << " !!\n";
-      
+
       if      ( sepType == "dR"     ) newDecayModeEntry->sepType_ = kEtaPhi;
       else if ( sepType == "angle"  ) newDecayModeEntry->sepType_ = kAngle;
       else throw cms::Exception("NSVfitTauDecayLikelihoodMC")
@@ -77,25 +77,31 @@ NSVfitTauDecayLikelihoodMC<T>::NSVfitTauDecayLikelihoodMC(const edm::ParameterSe
 	<< " Failed to find file = " << inputFileName.fullPath() << " !!\n";
 
       RooWorkspace* ws = (RooWorkspace*)inputFile->Get(wsName.data());
-      newDecayModeEntry->mom_ = ws->var(momName.data());
-      newDecayModeEntry->sepTimesMom_ = ws->var(sepTimesMomName.data());
-      newDecayModeEntry->decayPdf_ = ws->pdf(pdfName.data());
+      RooRealVar* momentum = ws->var(momName.data());
+      RooRealVar* sepTimesMom = ws->var(sepTimesMomName.data());
+      RooAbsPdf* decayPdf = ws->pdf(pdfName.data());
 
       if ( this->verbosity_ ) {
 	ws->Print();
-	std::cout << " decayPdf = " << newDecayModeEntry->decayPdf_ << std::endl;
-	std::cout << " mom = " << newDecayModeEntry->mom_ << std::endl;
-	std::cout << " sepTimesMom = " << newDecayModeEntry->sepTimesMom_ << std::endl;
+	std::cout << " decayPdf = " << decayPdf << std::endl;
+	std::cout << " mom = " << momentum << std::endl;
+	std::cout << " sepTimesMom = " << sepTimesMom << std::endl;
 	std::cout << std::endl;
       }
-      
-      decayModeParameters_.insert(std::pair<int, decayModeEntryType*>(tauDecayMode->first, newDecayModeEntry));
-      
-      delete inputFile;
 
-      if ( !(newDecayModeEntry->decayPdf_ && newDecayModeEntry->mom_ && newDecayModeEntry->sepTimesMom_) )
+      if ( !(decayPdf && momentum && sepTimesMom) )
 	throw cms::Exception("NSVfitTauDecayLikelihoodMC")
 	  << " Failed to read RooFit workspace for decay mode = " << tauDecayMode->second << " !!" << std::endl;
+
+      newDecayModeEntry->decayPdf_ = NSVfitCachingPdfWrapper(
+          decayPdf, sepTimesMom, momentum,
+          250, sepTimesMom->getMin(), sepTimesMom->getMax(),
+          500, momentum->getMin(), momentum->getMax());
+
+      decayModeParameters_.insert(std::pair<int, decayModeEntryType*>(tauDecayMode->first, newDecayModeEntry));
+
+      delete inputFile;
+
     }
   }
 }
@@ -143,13 +149,13 @@ void NSVfitTauDecayLikelihoodMC<pat::Tau>::beginJob(NSVfitAlgorithmBase* algorit
 //
 
 template <typename T>
-int NSVfitTauDecayLikelihoodMC<T>::getDecayMode(const T* candidate) const 
+int NSVfitTauDecayLikelihoodMC<T>::getDecayMode(const T* candidate) const
 {
   assert(0); // force template specializations for pat::Electrons/pat::Muons/pat::Taus to be used
 }
 
 template<>
-int NSVfitTauDecayLikelihoodMC<pat::Electron>::getDecayMode(const pat::Electron* electron) const 
+int NSVfitTauDecayLikelihoodMC<pat::Electron>::getDecayMode(const pat::Electron* electron) const
 {
   return kElectron;
 }
@@ -179,9 +185,9 @@ template <typename T>
 void NSVfitTauDecayLikelihoodMC<T>::beginCandidate(const NSVfitSingleParticleHypothesisBase* hypothesis)
 {
   int currentDecayMode = getDecayMode(dynamic_cast<const T*>(hypothesis->particle().get()));
-  if ( decayModeParameters_.find(currentDecayMode) != decayModeParameters_.end() ) 
+  if ( decayModeParameters_.find(currentDecayMode) != decayModeParameters_.end() )
     currentDecayModeParameter_ = decayModeParameters_.find(currentDecayMode)->second;
-  else if ( decayModeParameters_.find(kOther) != decayModeParameters_.end() ) 
+  else if ( decayModeParameters_.find(kOther) != decayModeParameters_.end() )
     currentDecayModeParameter_ = decayModeParameters_.find(kOther)->second;
   else {
     edm::LogWarning ("NSVfitTauDecayLikelihoodMC::beginCandidate")
@@ -206,10 +212,11 @@ double NSVfitTauDecayLikelihoodMC<T>::operator()(const NSVfitSingleParticleHypot
     else if ( currentDecayModeParameter_->sepType_ == kAngle  ) sepValue = angle(hypothesis->p4(), hypothesis->dp4_fitted());
     else assert(0);
 
-    currentDecayModeParameter_->mom_->setVal(momValue);
-    currentDecayModeParameter_->sepTimesMom_->setVal(momValue*sepValue);
+    //currentDecayModeParameter_->mom_->setVal(momValue);
+    //currentDecayModeParameter_->sepTimesMom_->setVal(momValue*sepValue);
 
-    prob = currentDecayModeParameter_->decayPdf_->getVal();
+    prob = currentDecayModeParameter_->decayPdf_.getVal(
+        momValue*sepValue, momValue);
   } else {
     prob = 0.5;
   }
@@ -218,14 +225,14 @@ double NSVfitTauDecayLikelihoodMC<T>::operator()(const NSVfitSingleParticleHypot
   if ( prob > 0. ) {
     nll = -TMath::Log(prob);
   } else {
-    if ( prob < 0. ) 
+    if ( prob < 0. )
       edm::LogWarning ("NSVfitTauDecayLikelihoodMC::operator()")
 	<< " Unphysical solution: prob = " << prob << " --> returning very large negative number !!";
     nll = std::numeric_limits<float>::max();
   }
 
   if ( this->verbosity_ ) std::cout << "--> nll = " << nll << std::endl;
-  
+
   return nll;
 }
 
