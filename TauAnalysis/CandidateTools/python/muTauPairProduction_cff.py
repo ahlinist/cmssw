@@ -217,19 +217,19 @@ allMuTauPairs.nSVfit.mcKineAngleAll_MEt2_fit.config.event.resonances.A.daughters
     )
 )
 
-##allMuTauPairs.nSVfit.mcKineAngleSel_MEt2_fit = copy.deepcopy(allMuTauPairs.nSVfit.psKine_MEt2_fit)
-##allMuTauPairs.nSVfit.mcKineAngleSel_MEt2_fit.config.event.resonances.A.daughters.leg1.likelihoodFunctions = cms.VPSet(
-##    nSVfitTauDecayLikelihoodMC_energy_angle_selected.clone(
-##        pluginName = cms.string("nSVfitTauToMuLikelihoodMC"),
-##        pluginType = cms.string("NSVfitTauToMuLikelihoodMC")
-##    )
-##)
-##allMuTauPairs.nSVfit.mcKineAngleSel_MEt2_fit.config.event.resonances.A.daughters.leg2.likelihoodFunctions = cms.VPSet(
-##    nSVfitTauDecayLikelihoodMC_energy_angle_selected.clone(
-##        pluginName = cms.string("nSVfitTauToHadLikelihoodMC"),
-##        pluginType = cms.string("NSVfitTauToHadLikelihoodMC")
-##    )
-##)
+allMuTauPairs.nSVfit.mcKineAngleSel_MEt2_fit = copy.deepcopy(allMuTauPairs.nSVfit.psKine_MEt2_fit)
+allMuTauPairs.nSVfit.mcKineAngleSel_MEt2_fit.config.event.resonances.A.daughters.leg1.likelihoodFunctions = cms.VPSet(
+    nSVfitTauDecayLikelihoodMC_energy_angle_selected.clone(
+        pluginName = cms.string("nSVfitTauToMuLikelihoodMC"),
+        pluginType = cms.string("NSVfitTauToMuLikelihoodMC")
+    )
+)
+allMuTauPairs.nSVfit.mcKineAngleSel_MEt2_fit.config.event.resonances.A.daughters.leg2.likelihoodFunctions = cms.VPSet(
+    nSVfitTauDecayLikelihoodMC_energy_angle_selected.clone(
+        pluginName = cms.string("nSVfitTauToHadLikelihoodMC"),
+        pluginType = cms.string("NSVfitTauToHadLikelihoodMC")
+    )
+)
 #--------------------------------------------------------------------------------
 
 #--------------------------------------------------------------------------------
