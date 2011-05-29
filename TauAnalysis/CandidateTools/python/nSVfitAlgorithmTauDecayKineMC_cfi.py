@@ -128,29 +128,29 @@ nSVfitTauDecayLikelihoodMC_energy_angle_all = cms.PSet(
     verbosity = cms.int32(0)  
 )
 
-## nSVfitTauDecayLikelihoodMC_energy_angle_selected = copy.deepcopy(nSVfitTauDecayLikelihoodMC_energy_angle_all)
-## nSVfitTauDecayLikelihoodMC_energy_angle_selected.decayModeParameters.electron.inputFileName = \
-##   cms.FileInPath("TauAnalysis/CandidateTools/data/mcTauDecayKine_Electron_Muon_leg1_angle_selected_ws_prefit.root")
-## nSVfitTauDecayLikelihoodMC_energy_angle_selected.decayModeParameters.electron.pdfName = \
-##   cms.string('pdf_Electron_Muon_AllMom_leg1VisInvisAngleLab_leg1_angle_selected1')
-## nSVfitTauDecayLikelihoodMC_energy_angle_selected.decayModeParameters.muon.inputFileName = \
-##   cms.FileInPath("TauAnalysis/CandidateTools/data/mcTauDecayKine_Electron_Muon_leg1_angle_selected_ws_prefit.root")
-## nSVfitTauDecayLikelihoodMC_energy_angle_selected.decayModeParameters.muon.pdfName = \
-##   cms.string('pdf_Electron_Muon_AllMom_leg1VisInvisAngleLab_leg1_angle_selected1')
-## nSVfitTauDecayLikelihoodMC_energy_angle_selected.decayModeParameters.oneProngZeroPi0s.inputFileName = \
-##   cms.FileInPath("TauAnalysis/CandidateTools/data/mcTauDecayKine_OneProng0Pi0_leg2_angle_selected_ws_prefit.root")
-## nSVfitTauDecayLikelihoodMC_energy_angle_selected.decayModeParameters.oneProngZeroPi0s.pdfName = \
-##   cms.string('pdf_OneProng0Pi0_AllMom_leg2VisInvisAngleLab_leg2_angle_selected1')
-## nSVfitTauDecayLikelihoodMC_energy_angle_selected.decayModeParameters.oneProngGtZeroPi0s.inputFileName = \
-##   cms.FileInPath("TauAnalysis/CandidateTools/data/mcTauDecayKine_OneProngGt0Pi0_leg2_angle_selected_ws_prefit.root")
-## nSVfitTauDecayLikelihoodMC_energy_angle_selected.decayModeParameters.oneProngGtZeroPi0s.pdfName = \
-##   cms.string('pdf_OneProngGt0Pi0_AllMom_leg2VisInvisAngleLab_leg2_angle_selected1')
-## nSVfitTauDecayLikelihoodMC_energy_angle_selected.decayModeParameters.threeProngZeroPi0s.inputFileName = \
-##   cms.FileInPath("TauAnalysis/CandidateTools/data/mcTauDecayKine_ThreeProng0Pi0_leg2_angle_selected_ws_prefit.root")
-## nSVfitTauDecayLikelihoodMC_energy_angle_selected.decayModeParameters.threeProngZeroPi0s.pdfName = \
-##   cms.string('pdf_ThreeProng0Pi0_AllMom_leg2VisInvisAngleLab_leg2_angle_selected1')
-## nSVfitTauDecayLikelihoodMC_energy_angle_selected.decayModeParameters.other.inputFileName = \
-##   cms.FileInPath("TauAnalysis/CandidateTools/data/mcTauDecayKine_OneProngGt0Pi0_leg2_angle_selected_ws_prefit.root")
-## nSVfitTauDecayLikelihoodMC_energy_angle_selected.decayModeParameters.other.pdfName = \
-##   cms.string('pdf_OneProngGt0Pi0_AllMom_leg2VisInvisAngleLab_leg2_angle_selected1')
+nSVfitTauDecayLikelihoodMC_energy_angle_selected = copy.deepcopy(nSVfitTauDecayLikelihoodMC_energy_angle_all)
+nSVfitTauDecayLikelihoodMC_energy_angle_selected.decayModeParameters.electron.inputFileName = \
+  cms.FileInPath("TauAnalysis/CandidateTools/data/mcTauDecayKine_Electron_Muon_leg1_angle_selected_ws_prefit.root")
+nSVfitTauDecayLikelihoodMC_energy_angle_selected.decayModeParameters.electron.pdfName = \
+  cms.string('pdf_Electron_Muon_AllMom_leg1VisInvisAngleLab_leg1_angle_selected1')
+nSVfitTauDecayLikelihoodMC_energy_angle_selected.decayModeParameters.muon.inputFileName = \
+  cms.FileInPath("TauAnalysis/CandidateTools/data/mcTauDecayKine_Electron_Muon_leg1_angle_selected_ws_prefit.root")
+nSVfitTauDecayLikelihoodMC_energy_angle_selected.decayModeParameters.muon.pdfName = \
+  cms.string('pdf_Electron_Muon_AllMom_leg1VisInvisAngleLab_leg1_angle_selected1')
+nSVfitTauDecayLikelihoodMC_energy_angle_selected.decayModeParameters.oneProngZeroPi0s.inputFileName = \
+  cms.FileInPath("TauAnalysis/CandidateTools/data/mcTauDecayKine_OneProng0Pi0_leg2_angle_selected_ws_prefit.root")
+nSVfitTauDecayLikelihoodMC_energy_angle_selected.decayModeParameters.oneProngZeroPi0s.pdfName = \
+  cms.string('pdf_OneProng0Pi0_AllMom_leg2VisInvisAngleLab_leg2_angle_selected1')
+nSVfitTauDecayLikelihoodMC_energy_angle_selected.decayModeParameters.oneProngGtZeroPi0s.inputFileName = \
+  cms.FileInPath("TauAnalysis/CandidateTools/data/mcTauDecayKine_OneProngGt0Pi0_leg2_angle_selected_ws_prefit.root")
+nSVfitTauDecayLikelihoodMC_energy_angle_selected.decayModeParameters.oneProngGtZeroPi0s.pdfName = \
+  cms.string('pdf_OneProngGt0Pi0_AllMom_leg2VisInvisAngleLab_leg2_angle_selected1')
+nSVfitTauDecayLikelihoodMC_energy_angle_selected.decayModeParameters.threeProngZeroPi0s.inputFileName = \
+  cms.FileInPath("TauAnalysis/CandidateTools/data/mcTauDecayKine_ThreeProng0Pi0_leg2_angle_selected_ws_prefit.root")
+nSVfitTauDecayLikelihoodMC_energy_angle_selected.decayModeParameters.threeProngZeroPi0s.pdfName = \
+  cms.string('pdf_ThreeProng0Pi0_AllMom_leg2VisInvisAngleLab_leg2_angle_selected1')
+nSVfitTauDecayLikelihoodMC_energy_angle_selected.decayModeParameters.other.inputFileName = \
+  cms.FileInPath("TauAnalysis/CandidateTools/data/mcTauDecayKine_OneProngGt0Pi0_leg2_angle_selected_ws_prefit.root")
+nSVfitTauDecayLikelihoodMC_energy_angle_selected.decayModeParameters.other.pdfName = \
+  cms.string('pdf_OneProngGt0Pi0_AllMom_leg2VisInvisAngleLab_leg2_angle_selected1')
 #--------------------------------------------------------------------------------
