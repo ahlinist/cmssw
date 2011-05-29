@@ -23,7 +23,7 @@ void NSVfitTauToHadLikelihoodPhaseSpace::beginJob(NSVfitAlgorithmBase* algorithm
   algorithm->requestFitParameter(prodParticleLabel_, nSVfit_namespace::kTau_phi_lab,    pluginName_);
 }
 
-double NSVfitTauToHadLikelihoodPhaseSpace::operator()(const NSVfitSingleParticleHypothesisBase* hypothesis) const
+double NSVfitTauToHadLikelihoodPhaseSpace::operator()(const NSVfitSingleParticleHypothesis* hypothesis) const
 {
 //--- compute negative log-likelihood for tau lepton decay "leg"
 //    to be compatible with three-body decay,

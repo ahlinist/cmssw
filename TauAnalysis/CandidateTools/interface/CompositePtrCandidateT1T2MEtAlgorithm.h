@@ -79,6 +79,7 @@ class CompositePtrCandidateT1T2MEtAlgorithm
 	edm::ParameterSet cfg_event = cfg_config.getParameter<edm::ParameterSet>("event");
 	edm::ParameterSet cfg_algorithm = cfgNSVfitAlgorithm.getParameter<edm::ParameterSet>("algorithm");
 	cfg_algorithm.addParameter<edm::ParameterSet>("event", cfg_event);
+	cfg_algorithm.addParameter<std::string>("pluginName", *nSVfitAlgorithmName);
 	std::string pluginType = cfg_algorithm.getParameter<std::string>("pluginType");
 	NSVfitAlgorithmBase* nSVfitAlgorithm = NSVfitAlgorithmPluginFactory::get()->create(pluginType, cfg_algorithm);
         try {
@@ -228,8 +229,8 @@ class CompositePtrCandidateT1T2MEtAlgorithm
 	    inputParticles.insert(std::pair<std::string, CandidatePtr>("leg1", leg1));
 	    inputParticles.insert(std::pair<std::string, CandidatePtr>("leg2", leg2));
 	    inputParticles.insert(std::pair<std::string, CandidatePtr>("met",  met));
-	    std::auto_ptr<NSVfitEventHypothesis> nSVfitHypothesis(nSVfitAlgorithm->second->fit(inputParticles, pv));
-	    compositePtrCandidate.addNSVfitSolution(nSVfitAlgorithm->first, *nSVfitHypothesis);
+	    std::auto_ptr<NSVfitEventHypothesisBase> nSVfitHypothesis(nSVfitAlgorithm->second->fit(inputParticles, pv));
+	    compositePtrCandidate.addNSVfitSolution(nSVfitHypothesis);
 	    //std::cout << " done." << std::endl;
 	  }
 	}

@@ -52,14 +52,17 @@ void NSVfitEventLikelihoodMEt2::beginCandidate(const NSVfitEventHypothesis* hypo
   if ( this->verbosity_ ) std::cout << "<NSVfitEventLikelihoodMEt2::beginCandidate>:" << std::endl;
 
   std::list<const reco::Candidate*> daughterHypothesesList;
-  for ( edm::OwnVector<NSVfitResonanceHypothesis>::const_iterator resonance = hypothesis->resonances().begin();
-	resonance != hypothesis->resonances().end(); ++resonance ) {
-    for ( edm::OwnVector<NSVfitSingleParticleHypothesisBase>::const_iterator daughter = resonance->daughters().begin();
-	  daughter != resonance->daughters().end(); ++daughter ) {
+
+  size_t numResonances = hypothesis->numResonances();
+  for ( size_t iResonance = 0; iResonance < numResonances; ++iResonance ) {
+    const NSVfitResonanceHypothesis* resonance = hypothesis->resonance(iResonance);
+    size_t numDaughters = resonance->numDaughters();
+    for ( size_t iDaughter = 0; iDaughter < numDaughters; ++iDaughter ) {
+      const NSVfitSingleParticleHypothesis* daughter = resonance->daughter(iDaughter);
       daughterHypothesesList.push_back(daughter->particle().get());
     }
   }
-
+  
   TMatrixD pfMEtCov = (*pfMEtSign_)(daughterHypothesesList);
 
   TMatrixD pfMEtCovInverseTemp = pfMEtCov.Invert();

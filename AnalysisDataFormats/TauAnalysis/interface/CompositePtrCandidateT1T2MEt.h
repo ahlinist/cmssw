@@ -12,9 +12,9 @@
  *          Michal Bluj,
  *          Christian Veelken
  *
- * \version $Revision: 1.26 $
+ * \version $Revision: 1.27 $
  *
- * $Id: CompositePtrCandidateT1T2MEt.h,v 1.26 2011/04/19 08:14:39 veelken Exp $
+ * $Id: CompositePtrCandidateT1T2MEt.h,v 1.27 2011/04/19 12:05:37 veelken Exp $
  *
  */
 
@@ -26,10 +26,11 @@
 #include "DataFormats/Candidate/interface/LeafCandidate.h" 
 #include "DataFormats/METReco/interface/MET.h"
 #include "DataFormats/Common/interface/Ptr.h"
+#include "DataFormats/Common/interface/OwnVector.h"
 
 #include "AnalysisDataFormats/TauAnalysis/interface/SVfitDiTauSolution.h"
 #include "AnalysisDataFormats/TauAnalysis/interface/SVfitLegSolution.h"
-#include "AnalysisDataFormats/TauAnalysis/interface/NSVfitEventHypothesis.h"
+#include "AnalysisDataFormats/TauAnalysis/interface/NSVfitEventHypothesisBase.h"
 #include "AnalysisDataFormats/TauAnalysis/interface/tauAnalysisAuxFunctions.h"
 
 #include <TMatrixD.h>
@@ -247,13 +248,19 @@ class CompositePtrCandidateT1T2MEt : public reco::LeafCandidate
 
     return svFitSolution;
   }
-  bool hasNSVFitSolutions() const { return (nSVfitSolutionMap_.begin() != nSVfitSolutionMap_.end()); }
-  const NSVfitEventHypothesis* nSVfitSolution(const std::string& algorithm, int* errorFlag = 0) const
+  bool hasNSVFitSolutions() const { return (nSVfitSolutions_.begin() != nSVfitSolutions_.end()); }
+  const NSVfitEventHypothesisBase* nSVfitSolution(const std::string& algorithm, int* errorFlag = 0) const
   {
-    std::map<std::string, NSVfitEventHypothesis>::const_iterator nSVfitSolution = nSVfitSolutionMap_.find(algorithm);
-    if ( nSVfitSolution != nSVfitSolutionMap_.end() ) {
-      return &nSVfitSolution->second;
-    } else {
+    const NSVfitEventHypothesisBase* retVal = 0;
+    for ( edm::OwnVector<NSVfitEventHypothesisBase>::const_iterator nSVfitSolution = nSVfitSolutions_.begin();
+	  nSVfitSolution != nSVfitSolutions_.end(); ++nSVfitSolution ) {
+      if ( nSVfitSolution->name() == algorithm ) {
+	retVal = &(*nSVfitSolution);
+	break;
+      }
+    }
+
+    if ( !retVal ) {
       if ( errorFlag ) {
 	(*errorFlag) = 1;
       } else {
@@ -261,16 +268,17 @@ class CompositePtrCandidateT1T2MEt : public reco::LeafCandidate
 	  << " No nSVfit solution defined for algorithm = " << algorithm << " !!";
 	std::cout << "available = { " << std::endl;
 	bool isFirst = true;
-	for ( std::map<std::string, NSVfitEventHypothesis>::const_iterator algorithm = nSVfitSolutionMap_.begin();
-	      algorithm != nSVfitSolutionMap_.end(); ++algorithm ) {
+	for ( edm::OwnVector<NSVfitEventHypothesisBase>::const_iterator nSVfitSolution = nSVfitSolutions_.begin();
+	      nSVfitSolution != nSVfitSolutions_.end(); ++nSVfitSolution ) {
 	  if ( !isFirst ) std::cout << ", ";
-	  std::cout << algorithm->first;
+	  std::cout << nSVfitSolution->name();
 	  isFirst = false;
 	}
 	std::cout << " }" << std::endl;
       }
-      return 0;
     }
+    
+    return retVal;
   }
 
  private:
@@ -351,9 +359,9 @@ class CompositePtrCandidateT1T2MEt : public reco::LeafCandidate
   {
     svFitSolutionMap_[algorithm].insert(std::pair<std::string, SVfitDiTauSolution>(polarizationHypothesisName, solution));
   }
-  void addNSVfitSolution(const std::string& algorithm, const NSVfitEventHypothesis& solution)
+  void addNSVfitSolution(std::auto_ptr<NSVfitEventHypothesisBase> solution)
   {
-    nSVfitSolutionMap_.insert(std::pair<std::string, NSVfitEventHypothesis>(algorithm, solution));
+    nSVfitSolutions_.push_back(solution);
   }
 
   /// references/pointers to decay products
@@ -426,7 +434,7 @@ class CompositePtrCandidateT1T2MEt : public reco::LeafCandidate
   /// solutions of secondary vertex based mass reconstruction algorithm
   typedef std::map<std::string, SVfitDiTauSolution> SVfitAlgorithmSolutionType;
   std::map<std::string, SVfitAlgorithmSolutionType> svFitSolutionMap_; // first key = algorithmName, second key = polarizationHypothesis
-  std::map<std::string, NSVfitEventHypothesis> nSVfitSolutionMap_; // key = algorithmName
+  edm::OwnVector<NSVfitEventHypothesisBase> nSVfitSolutions_;
 };
 
 #include "DataFormats/PatCandidates/interface/Electron.h"

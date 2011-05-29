@@ -8,9 +8,9 @@
  *
  * \author Christian Veelken, UC Davis
  *
- * \version $Revision: 1.1 $
+ * \version $Revision: 1.2 $
  *
- * $Id: NSVfitEventBuilder.h,v 1.1 2011/02/27 16:45:16 veelken Exp $
+ * $Id: NSVfitEventBuilder.h,v 1.2 2011/04/10 14:46:47 veelken Exp $
  *
  */
 
@@ -19,11 +19,12 @@
 #include "TauAnalysis/CandidateTools/interface/NSVfitEventBuilderBase.h"
 #include "TauAnalysis/CandidateTools/interface/NSVfitAlgorithmBase.h"
 
-#include "AnalysisDataFormats/TauAnalysis/interface/NSVfitEventHypothesis.h"
+#include "AnalysisDataFormats/TauAnalysis/interface/NSVfitEventHypothesisBase.h"
 
 class NSVfitEventBuilder : public NSVfitEventBuilderBase
 {
  public:
+
   NSVfitEventBuilder(const edm::ParameterSet& cfg) 
     : NSVfitEventBuilderBase(cfg)
   {}
@@ -36,6 +37,7 @@ class NSVfitEventBuilder : public NSVfitEventBuilderBase
   NSVfitEventHypothesis* build(const inputParticleMap&, const reco::Vertex*) const;
   
  private:
+
   NSVfitAlgorithmBase* algorithm_;
 };
 

@@ -1,4 +1,4 @@
-#include "TauAnalysis/CandidateTools/interface/NSVfitTauDecayBuilderBase.h"
+#include "TauAnalysis/CandidateTools/interface/NSVfitTauDecayBuilder.h"
 #include "TauAnalysis/CandidateTools/interface/NSVfitSingleParticleTrackExtractor.h"
 #include "AnalysisDataFormats/TauAnalysis/interface/NSVfitTauToHadHypothesis.h"
 #include "TauAnalysis/CandidateTools/interface/NSVfitParameter.h"
@@ -11,9 +11,9 @@
  *
  * \author Evan Friis, Christian Veelken; UC Davis
  *
- * \version $Revision: 1.18 $
+ * \version $Revision: 1.19 $
  *
- * $Id: NSVfitTauToHadBuilder.cc,v 1.18 2011/03/31 16:31:33 veelken Exp $
+ * $Id: NSVfitTauToHadBuilder.cc,v 1.19 2011/04/10 14:46:47 veelken Exp $
  *
  */
 
@@ -25,16 +25,16 @@
 
 using namespace nSVfit_namespace;
 
-class NSVfitTauToHadBuilder : public NSVfitTauDecayBuilderBase
+class NSVfitTauToHadBuilder : public NSVfitTauDecayBuilder
 {
  public:
   NSVfitTauToHadBuilder(const edm::ParameterSet& cfg)
-    : NSVfitTauDecayBuilderBase(cfg)
+    : NSVfitTauDecayBuilder(cfg)
   {}
   
   void beginJob(NSVfitAlgorithmBase* algorithm) 
   {
-    NSVfitTauDecayBuilderBase::beginJob(algorithm);
+    NSVfitTauDecayBuilder::beginJob(algorithm);
 
     idxFitParameter_thetaVMrho_ = getFitParameterIdx(algorithm, prodParticleLabel_, nSVfit_namespace::kTauVM_theta_rho, true);
     idxFitParameter_mass2VMrho_ = getFitParameterIdx(algorithm, prodParticleLabel_, nSVfit_namespace::kTauVM_mass2_rho, true);
@@ -46,7 +46,7 @@ class NSVfitTauToHadBuilder : public NSVfitTauDecayBuilderBase
     //if ( verbosity_ ) print(std::cout);
   }
 
-  NSVfitSingleParticleHypothesisBase* build(const NSVfitTauDecayBuilderBase::inputParticleMap& inputParticles) const 
+  NSVfitSingleParticleHypothesis* build(const NSVfitTauDecayBuilder::inputParticleMap& inputParticles) const 
   {
     inputParticleMap::const_iterator particlePtr = inputParticles.find(prodParticleLabel_);
     assert(particlePtr != inputParticles.end());
@@ -54,7 +54,7 @@ class NSVfitTauToHadBuilder : public NSVfitTauDecayBuilderBase
     NSVfitTauToHadHypothesis* hypothesis = new NSVfitTauToHadHypothesis(particlePtr->second, prodParticleLabel_, barcodeCounter_);
     ++barcodeCounter_;
 
-    NSVfitTauDecayBuilderBase::initialize(hypothesis, particlePtr->second.get());
+    NSVfitTauDecayBuilder::initialize(hypothesis, particlePtr->second.get());
 
     // Three prong case: check if we can fit a reconstructed vertex.
     const std::vector<const reco::Track*>& tracks = hypothesis->tracks();
@@ -70,9 +70,9 @@ class NSVfitTauToHadBuilder : public NSVfitTauDecayBuilderBase
     return hypothesis;
   }
 
-  void applyFitParameter(NSVfitSingleParticleHypothesisBase* hypothesis, const double* param) const
+  void applyFitParameter(NSVfitSingleParticleHypothesis* hypothesis, const double* param) const
   {
-    NSVfitTauDecayBuilderBase::applyFitParameter(hypothesis, param);
+    NSVfitTauDecayBuilder::applyFitParameter(hypothesis, param);
 
     NSVfitTauToHadHypothesis* hypothesis_T = dynamic_cast<NSVfitTauToHadHypothesis*>(hypothesis);
     assert(hypothesis_T);
@@ -104,7 +104,7 @@ class NSVfitTauToHadBuilder : public NSVfitTauDecayBuilderBase
 
   void print(std::ostream& stream) const 
   {
-    NSVfitTauDecayBuilderBase::print(stream);
+    NSVfitTauDecayBuilder::print(stream);
     stream << " idxFitParameter_thetaVMrho = " << idxFitParameter_thetaVMrho_ << std::endl;
     stream << " idxFitParameter_mass2VMrho = " << idxFitParameter_mass2VMrho_ << std::endl;
     stream << " idxFitParameter_thetaVMa1 = " << idxFitParameter_thetaVMa1_ << std::endl;

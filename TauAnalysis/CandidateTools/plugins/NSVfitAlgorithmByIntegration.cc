@@ -228,7 +228,9 @@ void NSVfitAlgorithmByIntegration::fitImp() const
 	  par != (*fitParameterReplacement)->parForReplacements_.end(); ++par ) {
       replaceParByResonanceHypothesis* par_resonance = dynamic_cast<replaceParByResonanceHypothesis*>(*par);
       if ( par_resonance ) {
-	const NSVfitResonanceHypothesis* resonance = currentEventHypothesis_->resonance(par_resonance->resonanceName_);
+	const NSVfitResonanceHypothesis* resonance = 
+	  dynamic_cast<const NSVfitResonanceHypothesis*>(
+            currentEventHypothesis_->NSVfitEventHypothesisBase::resonance(par_resonance->resonanceName_));
 	par_resonance->value_ = (*par_resonance->valueExtractor_)(*resonance);
       }
     }
@@ -288,19 +290,29 @@ void NSVfitAlgorithmByIntegration::fitImp() const
 
     massParForReplacements_->next();
   }
+/*
+
+  CV: TO-DO !!!
+
+  NSVfitEventHypothesisByIntegration* persistentEventHypothesis = new NSVfitEventHypothesisByIntegration(currentEventHypothesis_);
+  delete currentEventHypothesis_;
 
 //--- set central values and uncertainties on reconstructed masses
   for ( unsigned iMassParameter = 0; iMassParameter < numMassParameters_; ++iMassParameter ) {  
     const std::string& resonanceName = eventModel_->resonances_[iMassParameter]->resonanceName_;
-    NSVfitResonanceHypothesis* resonance = const_cast<NSVfitResonanceHypothesis*>(currentEventHypothesis_->resonance(resonanceName));
+    NSVfitResonanceHypothesisByIntegration* resonance = 
+      const_cast<NSVfitResonanceHypothesisByIntegration*>(persistentEventHypothesis->resonance(resonanceName));
     setMassResults(resonance, histResults, iMassParameter);
   }
 
-  currentEventHypothesis_->histMassResults_ = std::auto_ptr<TH1>(histResults);
+  persistentEventHypothesis->histMassResults_ = std::auto_ptr<TH1>(histResults);
+ 
+  currentEventHypothesis_ = persistentEventHypothesis;
+ */
 }
 
 void NSVfitAlgorithmByIntegration::setMassResults(
-       NSVfitResonanceHypothesis* resonance, const TH1* histMassResults, unsigned iDimension) const
+       NSVfitResonanceHypothesisByIntegration* resonance, const TH1* histMassResults, unsigned iDimension) const
 {
   const TH1* histMassResult1d = 0;
   if      ( histMassResults->GetDimension() == 1 ) histMassResult1d = histMassResults;

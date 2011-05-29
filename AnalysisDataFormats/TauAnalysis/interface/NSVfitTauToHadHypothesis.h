@@ -9,6 +9,7 @@
 class NSVfitTauToHadHypothesis : public NSVfitTauDecayHypothesis
 {
  public:
+
   NSVfitTauToHadHypothesis() {}
   NSVfitTauToHadHypothesis(const edm::Ptr<reco::Candidate>& particle, const std::string& name, int barcode)
     : NSVfitTauDecayHypothesis(particle, name, barcode)
@@ -37,6 +38,7 @@ class NSVfitTauToHadHypothesis : public NSVfitTauDecayHypothesis
   friend class NSVfitTauToHadBuilder;
 
  private:
+
   /// decay angles and masses of intermediate vector-meson resonances
   double decay_angle_VMrho_;
   double mass2_VMrho_;

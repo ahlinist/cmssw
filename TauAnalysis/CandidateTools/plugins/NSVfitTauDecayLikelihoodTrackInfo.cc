@@ -9,6 +9,8 @@
 #include "TauAnalysis/CandidateTools/interface/NSVfitAlgorithmBase.h"
 #include "TauAnalysis/CandidateTools/interface/svFitAuxFunctions.h"
 
+#include "AnalysisDataFormats/TauAnalysis/interface/NSVfitTauDecayHypothesis.h"
+
 using namespace SVfit_namespace;
 
 unsigned defaultMinNumHits      =  5;
@@ -58,10 +60,13 @@ void NSVfitTauDecayLikelihoodTrackInfo::beginEvent(const edm::Event& evt, const 
   }
 }
 
-void NSVfitTauDecayLikelihoodTrackInfo::beginCandidate(const NSVfitSingleParticleHypothesisBase* hypothesis)
+void NSVfitTauDecayLikelihoodTrackInfo::beginCandidate(const NSVfitSingleParticleHypothesis* hypothesis)
 {
   //std::cout << "<NSVfitTauDecayLikelihoodTrackInfo::beginCandidate>:" << std::endl;
   //std::cout << " trackBuilder = " << trackBuilder_ << std::endl;
+
+  const NSVfitTauDecayHypothesis* hypothesis_T = dynamic_cast<const NSVfitTauDecayHypothesis*>(hypothesis);
+  assert(hypothesis_T != 0);
 
   selectedTracks_.clear();
 
@@ -69,7 +74,7 @@ void NSVfitTauDecayLikelihoodTrackInfo::beginCandidate(const NSVfitSingleParticl
     std::cout << "<NSVfitTauDecayLikelihoodTrackInfo>::beginCandidate"
       << std::endl;
 
-  const std::vector<const reco::Track*>& tracks = hypothesis->tracks();
+  const std::vector<const reco::Track*>& tracks = hypothesis_T->tracks();
   for ( std::vector<const reco::Track*>::const_iterator track = tracks.begin();
 	track != tracks.end(); ++track ) {
     if (this->verbosity_)
@@ -131,7 +136,7 @@ double backwardsPenaltyTerm(const reco::Candidate::Vector& flight, const reco::C
   return penalty;
 }
 
-double NSVfitTauDecayLikelihoodTrackInfo::operator()(const NSVfitSingleParticleHypothesisBase* hypothesis) const
+double NSVfitTauDecayLikelihoodTrackInfo::operator()(const NSVfitSingleParticleHypothesis* hypothesis) const
 {
 //--- compute negative log-likelihood for tracks of tau lepton decay "leg"
 //    to be compatible with originating from hypothetic secondary (tau lepton decay) vertex
@@ -142,6 +147,9 @@ double NSVfitTauDecayLikelihoodTrackInfo::operator()(const NSVfitSingleParticleH
 
   if ( this->verbosity_ )
     std::cout << "<NSVfitTauDecayLikelihoodTrackInfo::operator()>:" << std::endl;
+
+  const NSVfitTauDecayHypothesis* hypothesis_T = dynamic_cast<const NSVfitTauDecayHypothesis*>(hypothesis);
+  assert(hypothesis_T != 0);
 
   double nll = 0.;
 
@@ -162,9 +170,9 @@ double NSVfitTauDecayLikelihoodTrackInfo::operator()(const NSVfitSingleParticleH
 	std::cout << "--> computing linear approximation of helix track extrapolation..." << std::endl;
 
       AlgebraicVector3 direction;
-      direction(0) = hypothesis->p4().px()/hypothesis->p4().P();
-      direction(1) = hypothesis->p4().py()/hypothesis->p4().P();
-      direction(2) = hypothesis->p4().pz()/hypothesis->p4().P();
+      direction(0) = hypothesis_T->p4().px()/hypothesis_T->p4().P();
+      direction(1) = hypothesis_T->p4().py()/hypothesis_T->p4().P();
+      direction(2) = hypothesis_T->p4().pz()/hypothesis_T->p4().P();
 
       AlgebraicVector3 refPoint = pvPosition_;
 
@@ -182,12 +190,12 @@ double NSVfitTauDecayLikelihoodTrackInfo::operator()(const NSVfitSingleParticleH
     for ( std::vector<SVfit::track::TrackExtrapolation>::const_iterator selectedTrackInfo = selectedTrackInfo_.begin();
 	  selectedTrackInfo != selectedTrackInfo_.end(); ++selectedTrackInfo ) {
 
-      double trackLL = selectedTrackInfo->logLikelihood(hypothesis->decayVertexPos());
+      double trackLL = selectedTrackInfo->logLikelihood(hypothesis_T->decayVertexPos());
       if ( this->verbosity_ ) {
         AlgebraicVector3 displacement =
           selectedTrackInfo->displacementFromTrack(
-              hypothesis->decayVertexPos());
-	std::cout << " SV is: " << hypothesis->decayVertexPos() << std::endl;
+              hypothesis_T->decayVertexPos());
+	std::cout << " SV is: " << hypothesis_T->decayVertexPos() << std::endl;
 	std::cout << " displacement is: "
           << displacement << " mag: " << ROOT::Math::Mag(displacement)
           << " approx track error: "
@@ -202,9 +210,9 @@ double NSVfitTauDecayLikelihoodTrackInfo::operator()(const NSVfitSingleParticleH
       std::cout << "--> computing distance to (hypothetic) tau decay vertex using full helix extrapolation of track..." << std::endl;
     for ( std::vector<reco::TransientTrack>::const_iterator selectedTrack = selectedTracks_.begin();
 	  selectedTrack != selectedTracks_.end(); ++selectedTrack ) {
-      SVfit::track::TrackExtrapolation selectedTrackInfo(*selectedTrack, hypothesis->decayVertexPos());
+      SVfit::track::TrackExtrapolation selectedTrackInfo(*selectedTrack, hypothesis_T->decayVertexPos());
 
-      AlgebraicVector3 displacement = hypothesis->decayVertexPos() - selectedTrackInfo.dcaPosition();
+      AlgebraicVector3 displacement = hypothesis_T->decayVertexPos() - selectedTrackInfo.dcaPosition();
 
       nll -= selectedTrackInfo.logLikelihoodFromDisplacement(displacement);
     }
@@ -212,17 +220,17 @@ double NSVfitTauDecayLikelihoodTrackInfo::operator()(const NSVfitSingleParticleH
 
   if ( useLifetimeConstraint_ ) {
     double lifeTimeConstraintLL = logExponentialDecay(
-        hypothesis->decayDistance(), hypothesis->p4().P());
+        hypothesis_T->decayDistance(), hypothesis_T->p4().P());
     if (this->verbosity_) {
-      std::cout << " flight distance: " << hypothesis->decayDistance()
-        << " p: " << hypothesis->p4().P()
+      std::cout << " flight distance: " << hypothesis_T->decayDistance()
+        << " p: " << hypothesis_T->p4().P()
         << " flight NLL " << -lifeTimeConstraintLL << std::endl;
     }
     nll -= lifeTimeConstraintLL;
   }
 
 //--- add a penalty term in case the SV is 'behind' the PV
-  nll += backwardsPenaltyTerm(hypothesis->flightPath(), hypothesis->p4(), this->verbosity_);
+  nll += backwardsPenaltyTerm(hypothesis_T->flightPath(), hypothesis_T->p4(), this->verbosity_);
 
   if ( this->verbosity_ )
     std::cout << "--> total nll = " << nll << std::endl;

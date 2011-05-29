@@ -3,10 +3,13 @@
 #include "AnalysisDataFormats/TauAnalysis/interface/CompositePtrCandidateT1T2MEtFwd.h"
 #include "AnalysisDataFormats/TauAnalysis/interface/SVfitDiTauSolution.h"
 #include "AnalysisDataFormats/TauAnalysis/interface/SVfitLegSolution.h"
+#include "AnalysisDataFormats/TauAnalysis/interface/NSVfitEventHypothesisBase.h"
 #include "AnalysisDataFormats/TauAnalysis/interface/NSVfitEventHypothesis.h"
+#include "AnalysisDataFormats/TauAnalysis/interface/NSVfitResonanceHypothesisBase.h"
 #include "AnalysisDataFormats/TauAnalysis/interface/NSVfitResonanceHypothesis.h"
 #include "AnalysisDataFormats/TauAnalysis/interface/NSVfitSingleParticleHypothesisBase.h"
 #include "AnalysisDataFormats/TauAnalysis/interface/NSVfitTauToLepHypothesis.h"
+#include "AnalysisDataFormats/TauAnalysis/interface/NSVfitTauToHadHypothesisBase.h"
 #include "AnalysisDataFormats/TauAnalysis/interface/NSVfitTauToHadHypothesis.h"
 
 #include "AnalysisDataFormats/TauAnalysis/interface/ZllHypothesisT1T2.h"
@@ -92,17 +95,25 @@ namespace {
     std::map<std::string, SVfitWtauNuSolution> dummySVfitWtauNuSolutionMap;
     std::map<std::string, std::map<std::string, SVfitWtauNuSolution> > dummySVfitWtauNuSolutionMapMap;
 
+    NSVfitEventHypothesisBase dummyNSVfitEventHypothesisBase;
     NSVfitEventHypothesis dummyNSVfitEventHypothesis;
+    NSVfitResonanceHypothesisBase dummyNSVfitResonanceHypothesisBase;
     NSVfitResonanceHypothesis dummyNSVfitResonanceHypothesis;
     NSVfitSingleParticleHypothesisBase dummyNSVfitSingleParticleHypothesisBase;
+    NSVfitTauToElecHypothesisBase dummyNSVfitTauToElecHypothesisBase;
     NSVfitTauToElecHypothesis dummyNSVfitTauToElecHypothesis;
+    NSVfitTauToMuHypothesisBase dummyNSVfitTauToMuHypothesisBase;
     NSVfitTauToMuHypothesis dummyNSVfitTauToMuHypothesis;
+    NSVfitTauToHadHypothesisBase dummyNSVfitTauToHadHypothesisBase;
     NSVfitTauToHadHypothesis dummyNSVfitTauToHadHypothesis;
+    std::vector<NSVfitEventHypothesisBase> dummyNSVfitEventHypothesisBaseCollection;
     std::vector<NSVfitEventHypothesis> dummyNSVfitEventHypothesisCollection;
-    std::map<std::string, NSVfitEventHypothesis> dummyNSVfitEventHypothesisMap;
+    edm::Wrapper<std::vector<NSVfitEventHypothesisBase> > dummyNSVfitEventHypothesisBaseCollectionWrapper;
     edm::Wrapper<std::vector<NSVfitEventHypothesis> > dummyNSVfitEventHypothesisCollectionWrapper;
-    std::vector<NSVfitResonanceHypothesis*> dummyNSVfitResonanceHypothesisPtrCollection;
-    edm::OwnVector<NSVfitResonanceHypothesis, edm::ClonePolicy<NSVfitResonanceHypothesis> > dummyNSVfitResonanceHypothesisOwnVector;
+    std::vector<NSVfitEventHypothesisBase*> dummyNSVfitEventHypothesisBasePtrCollection;
+    edm::OwnVector<NSVfitEventHypothesisBase, edm::ClonePolicy<NSVfitEventHypothesisBase> > dummyNSVfitEventHypothesisBaseOwnVector;
+    std::vector<NSVfitResonanceHypothesisBase*> dummyNSVfitResonanceHypothesisBasePtrCollection;
+    edm::OwnVector<NSVfitResonanceHypothesisBase, edm::ClonePolicy<NSVfitResonanceHypothesisBase> > dummyNSVfitResonanceHypothesisBaseOwnVector;
     std::auto_ptr<TH1> dummyTH1Ptr;
     std::vector<NSVfitSingleParticleHypothesisBase*> dummyNSVfitSingleParticleHypothesisBasePtrCollection;
     edm::OwnVector<NSVfitSingleParticleHypothesisBase, edm::ClonePolicy<NSVfitSingleParticleHypothesisBase> >  dummyNSVfitSingleParticleHypothesisBaseOwnVector;
