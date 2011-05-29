@@ -10,21 +10,26 @@
  *
  */
 
-#include "AnalysisDataFormats/TauAnalysis/interface/NSVfitSingleParticleHypothesisBase.h"
+#include "AnalysisDataFormats/TauAnalysis/interface/NSVfitSingleParticleHypothesis.h"
+#include "AnalysisDataFormats/TauAnalysis/interface/NSVfitTauDecayHypothesisBase.h"
 
-class NSVfitTauDecayHypothesis : public NSVfitSingleParticleHypothesisBase
+class NSVfitTauDecayHypothesis : public NSVfitSingleParticleHypothesis, public NSVfitTauDecayHypothesisBase
 {
  public:
+
   NSVfitTauDecayHypothesis() {}
   NSVfitTauDecayHypothesis(const edm::Ptr<reco::Candidate>& particle,
       const std::string& name, int barcode)
-    : NSVfitSingleParticleHypothesisBase(particle, name, barcode) 
+    : NSVfitTauDecayHypothesisBase(particle, name, barcode) 
   {}
   ~NSVfitTauDecayHypothesis() {}
   // Copy constructors
   NSVfitTauDecayHypothesis(const NSVfitTauDecayHypothesis&);
   virtual NSVfitTauDecayHypothesis* clone() const { return new NSVfitTauDecayHypothesis(*this); }
   virtual NSVfitTauDecayHypothesis& operator=(const NSVfitTauDecayHypothesis&);
+
+  /// collection of tracks associated to reco::Candidate
+  virtual const std::vector<const reco::Track*>& tracks() const { return tracks_; }
 
   /// momenta of visible (electron/muon) and invisible (neutrinos)
   /// decay products in tau lepton rest-frame
@@ -54,9 +59,13 @@ class NSVfitTauDecayHypothesis : public NSVfitSingleParticleHypothesisBase
   /// tau lepton polarization
   double polarization() const { return polarization_; }
 
-  friend class NSVfitTauDecayBuilderBase;
+  friend class NSVfitTauDecayBuilder;
 
  protected:
+
+  /// collection of tracks associated to reco::Candidate
+  std::vector<const reco::Track*> tracks_; // transient data-member
+
   /// momenta of visible (electron/muon) and invisible (neutrinos)
   /// decay products in tau lepton rest-frame
   reco::Candidate::LorentzVector p4invis_rf_;
@@ -76,9 +85,6 @@ class NSVfitTauDecayHypothesis : public NSVfitSingleParticleHypothesisBase
   AlgebraicVector3 decayVertexPos_;
   reco::Candidate::Vector flightPath_;
   double decayDistance_;
-
-  /// tau lepton hadronic decay mode
-  int decayMode_;
 
   /// tau lepton polarization
   double polarization_;

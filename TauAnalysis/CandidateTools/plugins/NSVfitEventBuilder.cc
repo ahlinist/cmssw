@@ -22,14 +22,14 @@ void setFitParameterStepSize(NSVfitAlgorithmBase* algorithm, int fitParameterIdx
 
 NSVfitEventHypothesis* NSVfitEventBuilder::build(const inputParticleMap& inputParticles, const reco::Vertex* eventVertex) const
 {
-  NSVfitEventHypothesis* eventHypothesis = NSVfitEventBuilderBase::build(inputParticles, eventVertex);
+  NSVfitEventHypothesis* event = NSVfitEventBuilderBase::build(inputParticles, eventVertex);
 
 //--- set fitParameter step-size according to estimated uncertainty on vertex position
   double pvPositionXerr, pvPositionYerr, pvPositionZerr;
-  if ( eventHypothesis->eventVertexSVrefittedIsValid() ) {
-    pvPositionXerr = TMath::Sqrt(eventHypothesis->eventVertexErrSVrefitted().Diagonal()(0));
-    pvPositionYerr = TMath::Sqrt(eventHypothesis->eventVertexErrSVrefitted().Diagonal()(1));
-    pvPositionZerr = TMath::Sqrt(eventHypothesis->eventVertexErrSVrefitted().Diagonal()(2));
+  if ( event->eventVertexSVrefittedIsValid() ) {
+    pvPositionXerr = TMath::Sqrt(event->eventVertexErrSVrefitted().Diagonal()(0));
+    pvPositionYerr = TMath::Sqrt(event->eventVertexErrSVrefitted().Diagonal()(1));
+    pvPositionZerr = TMath::Sqrt(event->eventVertexErrSVrefitted().Diagonal()(2));
   } else {
     pvPositionXerr = 0.0050; // 50 microns
     pvPositionYerr = 0.0050; // 50 microns
@@ -40,7 +40,7 @@ NSVfitEventHypothesis* NSVfitEventBuilder::build(const inputParticleMap& inputPa
   setFitParameterStepSize(algorithm_, idxFitParameter_pvShiftY_, 0.25*pvPositionYerr);
   setFitParameterStepSize(algorithm_, idxFitParameter_pvShiftZ_, 0.25*pvPositionZerr);
   
-  return eventHypothesis;
+  return event;
 }
 
 #include "FWCore/Framework/interface/MakerMacros.h"

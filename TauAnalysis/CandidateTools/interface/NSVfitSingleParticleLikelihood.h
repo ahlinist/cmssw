@@ -8,9 +8,9 @@
  *
  * \author Christian Veelken, UC Davis
  *
- * \version $Revision: 1.2 $
+ * \version $Revision: 1.3 $
  *
- * $Id: NSVfitSingleParticleLikelihood.h,v 1.2 2011/02/27 17:00:34 veelken Exp $
+ * $Id: NSVfitSingleParticleLikelihood.h,v 1.3 2011/02/28 10:46:38 veelken Exp $
  *
  */
 
@@ -20,7 +20,7 @@
 
 #include "TauAnalysis/CandidateTools/interface/NSVfitLikelihoodBase.h"
 
-#include "AnalysisDataFormats/TauAnalysis/interface/NSVfitSingleParticleHypothesisBase.h"
+#include "AnalysisDataFormats/TauAnalysis/interface/NSVfitSingleParticleHypothesis.h"
 
 #include <string>
 #include <iostream>
@@ -34,9 +34,9 @@ class NSVfitSingleParticleLikelihood : public NSVfitLikelihoodBase
   {}
   virtual ~NSVfitSingleParticleLikelihood() {}
 
-  virtual void beginCandidate(const NSVfitSingleParticleHypothesisBase*) {}
+  virtual void beginCandidate(const NSVfitSingleParticleHypothesis*) {}
 
-  virtual double operator()(const NSVfitSingleParticleHypothesisBase*) const = 0;
+  virtual double operator()(const NSVfitSingleParticleHypothesis*) const = 0;
 
  protected:
   std::string prodParticleLabel_;

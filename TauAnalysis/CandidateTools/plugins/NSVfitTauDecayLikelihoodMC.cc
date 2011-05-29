@@ -182,7 +182,7 @@ int NSVfitTauDecayLikelihoodMC<pat::Tau>::getDecayMode(const pat::Tau* tau) cons
 //
 
 template <typename T>
-void NSVfitTauDecayLikelihoodMC<T>::beginCandidate(const NSVfitSingleParticleHypothesisBase* hypothesis)
+void NSVfitTauDecayLikelihoodMC<T>::beginCandidate(const NSVfitSingleParticleHypothesis* hypothesis)
 {
   int currentDecayMode = getDecayMode(dynamic_cast<const T*>(hypothesis->particle().get()));
   if ( decayModeParameters_.find(currentDecayMode) != decayModeParameters_.end() )
@@ -197,7 +197,7 @@ void NSVfitTauDecayLikelihoodMC<T>::beginCandidate(const NSVfitSingleParticleHyp
 }
 
 template <typename T>
-double NSVfitTauDecayLikelihoodMC<T>::operator()(const NSVfitSingleParticleHypothesisBase* hypothesis) const
+double NSVfitTauDecayLikelihoodMC<T>::operator()(const NSVfitSingleParticleHypothesis* hypothesis) const
 {
   double prob = 0.;
 

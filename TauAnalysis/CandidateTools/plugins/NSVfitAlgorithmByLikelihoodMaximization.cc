@@ -119,8 +119,10 @@ void NSVfitAlgorithmByLikelihoodMaximization::fitImp() const
   int fitStatus = minimizer_->Status();
   //std::cout << " fitStatus = " << fitStatus << std::endl;
   bool isValidSolution = (fitStatus == 0);
-  for ( edm::OwnVector<NSVfitResonanceHypothesis>::iterator resonance = currentEventHypothesis_->resonances_.begin();
-	resonance != currentEventHypothesis_->resonances_.end(); ++resonance ) {
+  size_t numResonances = currentEventHypothesis_->numResonances();
+  for ( size_t iResonance = 0; iResonance < numResonances; ++iResonance ) {
+    NSVfitResonanceHypothesis* resonance = 
+      dynamic_cast<NSVfitResonanceHypothesis*>(currentEventHypothesis_->resonance(iResonance));
     resonance->isValidSolution_ = isValidSolution;
     setMassResults(*resonance);
   }

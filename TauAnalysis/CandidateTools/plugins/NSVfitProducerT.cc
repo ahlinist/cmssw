@@ -167,15 +167,15 @@ void NSVfitProducerT<T>::produce(edm::Event& evt, const edm::EventSetup& es)
 }
 
 #include "AnalysisDataFormats/TauAnalysis/interface/NSVfitEventHypothesis.h"
-//#include "AnalysisDataFormats/TauAnalysis/interface/NSVfitEventHypothesisByIntegration.h"
+#include "AnalysisDataFormats/TauAnalysis/interface/NSVfitEventHypothesisByIntegration.h"
 
 typedef NSVfitProducerT<NSVfitEventHypothesis> NSVfitProducer;
-//typedef NSVfitProducerT<NSVfitEventHypothesisByIntegration> NSVfitProducerByIntegration;
+typedef NSVfitProducerT<NSVfitEventHypothesisByIntegration> NSVfitProducerByIntegration;
 
 #include "FWCore/Framework/interface/MakerMacros.h"
 
 DEFINE_FWK_MODULE(NSVfitProducer);
-//DEFINE_FWK_MODULE(NSVfitProducerByIntegration);
+DEFINE_FWK_MODULE(NSVfitProducerByIntegration);
 
 
 

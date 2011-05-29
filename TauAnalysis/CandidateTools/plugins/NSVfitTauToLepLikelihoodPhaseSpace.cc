@@ -33,7 +33,7 @@ void NSVfitTauToLepLikelihoodPhaseSpace<T>::beginJob(NSVfitAlgorithmBase* algori
 }
 
 template <typename T>
-double NSVfitTauToLepLikelihoodPhaseSpace<T>::operator()(const NSVfitSingleParticleHypothesisBase* hypothesis) const
+double NSVfitTauToLepLikelihoodPhaseSpace<T>::operator()(const NSVfitSingleParticleHypothesis* hypothesis) const
 {
 //--- compute negative log-likelihood for tau lepton decay "leg"
 //    to be compatible with three-body decay,
@@ -44,7 +44,8 @@ double NSVfitTauToLepLikelihoodPhaseSpace<T>::operator()(const NSVfitSingleParti
 //          K. Nakamura et al. (Particle Data Group), J. Phys. G 37, 075021 (2010);
 //          formula 38.20b
 //
-  const NSVfitTauToLepHypothesis<T>* hypothesis_T = dynamic_cast<const NSVfitTauToLepHypothesis<T>*>(hypothesis);
+  const NSVfitTauToLepHypothesis<T, NSVfitTauDecayHypothesis>* hypothesis_T = 
+    dynamic_cast<const NSVfitTauToLepHypothesis<T, NSVfitTauDecayHypothesis>*>(hypothesis);
   assert(hypothesis_T != 0);
 
   if ( this->verbosity_ ) std::cout << "<NSVfitTauToLepLikelihoodPhaseSpace::operator()>:" << std::endl;

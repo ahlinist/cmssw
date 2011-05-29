@@ -1,4 +1,4 @@
-#include "TauAnalysis/CandidateTools/interface/NSVfitTauDecayBuilderBase.h"
+#include "TauAnalysis/CandidateTools/interface/NSVfitTauDecayBuilder.h"
 #include "TauAnalysis/CandidateTools/interface/NSVfitSingleParticleTrackExtractor.h"
 #include "AnalysisDataFormats/TauAnalysis/interface/NSVfitTauToLepHypothesis.h"
 #include "TauAnalysis/CandidateTools/interface/NSVfitParameter.h"
@@ -12,38 +12,39 @@
  *
  * \author Evan Friis, Christian Veelken; UC Davis
  *
- * \version $Revision: 1.13 $
+ * \version $Revision: 1.14 $
  *
- * $Id: NSVfitTauToLepBuilder.cc,v 1.13 2011/03/31 16:31:33 veelken Exp $
+ * $Id: NSVfitTauToLepBuilder.cc,v 1.14 2011/04/10 14:46:47 veelken Exp $
  *
  */
 
 template<typename T>
-class NSVfitTauToLepBuilder : public NSVfitTauDecayBuilderBase 
+class NSVfitTauToLepBuilder : public NSVfitTauDecayBuilder 
 {
  public:
   NSVfitTauToLepBuilder(const edm::ParameterSet& cfg)
-    : NSVfitTauDecayBuilderBase(cfg)
+    : NSVfitTauDecayBuilder(cfg)
   {}
 
   void beginJob(NSVfitAlgorithmBase* algorithm) 
   {
-    NSVfitTauDecayBuilderBase::beginJob(algorithm);
+    NSVfitTauDecayBuilder::beginJob(algorithm);
 
     idxFitParameter_nuInvMass_ = getFitParameterIdx(algorithm, prodParticleLabel_, nSVfit_namespace::kTau_nuInvMass);
 
     //if ( verbosity_ ) print(std::cout);
   }
 
-  NSVfitSingleParticleHypothesisBase* build(const NSVfitTauDecayBuilderBase::inputParticleMap& inputParticles) const 
+  NSVfitSingleParticleHypothesis* build(const NSVfitTauDecayBuilder::inputParticleMap& inputParticles) const 
   {
     inputParticleMap::const_iterator particlePtr = inputParticles.find(prodParticleLabel_);
     assert(particlePtr != inputParticles.end());
 
-    NSVfitTauToLepHypothesis<T>* hypothesis = new NSVfitTauToLepHypothesis<T>(particlePtr->second, prodParticleLabel_, barcodeCounter_);
+    NSVfitTauToLepHypothesis<T, NSVfitTauDecayHypothesis>* hypothesis = 
+      new NSVfitTauToLepHypothesis<T, NSVfitTauDecayHypothesis>(particlePtr->second, prodParticleLabel_, barcodeCounter_);
     ++barcodeCounter_;
 
-    NSVfitTauDecayBuilderBase::initialize(hypothesis, particlePtr->second.get());
+    NSVfitTauDecayBuilder::initialize(hypothesis, particlePtr->second.get());
 
     return hypothesis;
   }

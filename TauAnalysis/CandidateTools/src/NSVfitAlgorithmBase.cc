@@ -95,7 +95,7 @@ NSVfitParameter* NSVfitAlgorithmBase::getFitParameter(int idx) const
   return retVal;
 }
 
-NSVfitEventHypothesis* NSVfitAlgorithmBase::fit(const inputParticleMap& inputParticles, const reco::Vertex* eventVertex) const
+NSVfitEventHypothesisBase* NSVfitAlgorithmBase::fit(const inputParticleMap& inputParticles, const reco::Vertex* eventVertex) const
 {
   // beginEvent should always be called before fit(...)
   assert(currentEventSetup_);
@@ -104,6 +104,7 @@ NSVfitEventHypothesis* NSVfitAlgorithmBase::fit(const inputParticleMap& inputPar
   trackService_->setup(*currentEventSetup_, eventVertex->position());
 
   currentEventHypothesis_ = eventModel_->builder_->build(inputParticles, eventVertex);
+  currentEventHypothesis_->name_ = pluginName_;
 
   eventModel_->beginCandidate(currentEventHypothesis_);
 
@@ -120,7 +121,7 @@ double NSVfitAlgorithmBase::nll(const double* x, const double* param) const
   return eventModel_->nll(currentEventHypothesis_);
 }
 
-void NSVfitAlgorithmBase::setMassResults(NSVfitResonanceHypothesis* resonance, double value, double errUp, double errDown) const
+void NSVfitAlgorithmBase::setMassResults(NSVfitResonanceHypothesisBase* resonance, double value, double errUp, double errDown) const
 {
   resonance->mass_ = value;
   resonance->massErrUp_ = errUp;

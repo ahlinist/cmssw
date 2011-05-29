@@ -13,9 +13,9 @@
  *
  * \author Christian Veelken, UC Davis
  *
- * \version $Revision: 1.2 $
+ * \version $Revision: 1.3 $
  *
- * $Id: NSVfitTauDecayLikelihoodMC.h,v 1.2 2011/05/07 08:57:22 veelken Exp $
+ * $Id: NSVfitTauDecayLikelihoodMC.h,v 1.3 2011/05/29 16:19:31 friis Exp $
  *
  */
 
@@ -37,9 +37,9 @@ class NSVfitTauDecayLikelihoodMC : public NSVfitSingleParticleLikelihood
   ~NSVfitTauDecayLikelihoodMC();
 
   void beginJob(NSVfitAlgorithmBase*);
-  void beginCandidate(const NSVfitSingleParticleHypothesisBase*);
-
-  double operator()(const NSVfitSingleParticleHypothesisBase*) const;
+  void beginCandidate(const NSVfitSingleParticleHypothesis*);
+  
+  double operator()(const NSVfitSingleParticleHypothesis*) const;
 
  private:
   int getDecayMode(const T*) const;

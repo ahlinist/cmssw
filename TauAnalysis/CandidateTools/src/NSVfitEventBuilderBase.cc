@@ -2,6 +2,8 @@
 
 #include "TauAnalysis/CandidateTools/interface/NSVfitParameter.h"
 
+#include "AnalysisDataFormats/TauAnalysis/interface/NSVfitTauDecayHypothesis.h"
+
 NSVfitEventBuilderBase::NSVfitEventBuilderBase(const edm::ParameterSet& cfg)
   : NSVfitBuilderBase(cfg),
     numResonanceBuilders_(0),
@@ -68,84 +70,83 @@ NSVfitEventHypothesis* NSVfitEventBuilderBase::build(const inputParticleMap& inp
   inputParticleMap::const_iterator metPtr = inputParticles.find("met");
   assert(metPtr != inputParticles.end());
 
-  NSVfitEventHypothesis* eventHypothesis = new NSVfitEventHypothesis(metPtr->second);
+  NSVfitEventHypothesis* event = new NSVfitEventHypothesis(metPtr->second);
 
   reco::Candidate::LorentzVector p4(0,0,0,0);
 
   for ( std::vector<NSVfitResonanceBuilderBase*>::const_iterator resonanceBuilder = resonanceBuilders_.begin();
 	resonanceBuilder != resonanceBuilders_.end(); ++resonanceBuilder ) {
-    NSVfitResonanceHypothesis* resonanceHypothesis = (*resonanceBuilder)->build(inputParticles);
-    resonanceHypothesis->setEventHypothesis(eventHypothesis);
+    NSVfitResonanceHypothesis* resonance = (*resonanceBuilder)->build(inputParticles);
+    resonance->setEventHypothesis(event);
 
-    p4 += resonanceHypothesis->p4();
+    p4 += resonance->p4();
 
-    eventHypothesis->resonances_.push_back(resonanceHypothesis);
+    event->resonances_.push_back(resonance);
   }
 
-  eventHypothesis->p4_ = p4;
+  event->p4_ = p4;
 
-  eventHypothesis->eventVertexIsValid_ = false;
+  event->eventVertexIsValid_ = false;
 
 //--- refit primary event vertex, excluding tracks of tau decay products
   if ( doEventVertexRefit_ ) {
     std::vector<const reco::Track*> svTracks;
-    const edm::OwnVector<NSVfitResonanceHypothesis>& resonances = eventHypothesis->resonances();
-    for ( edm::OwnVector<NSVfitResonanceHypothesis>::const_iterator resonance = resonances.begin();
-	  resonance != resonances.end(); ++resonance ) {
-      const edm::OwnVector<NSVfitSingleParticleHypothesisBase>& daughters = resonance->daughters();
-      for ( edm::OwnVector<NSVfitSingleParticleHypothesisBase>::const_iterator daughter = daughters.begin();
-	    daughter != daughters.end(); ++daughter ) {
-	if ( daughter->hasDecayVertex() )
-	  svTracks.insert(svTracks.begin(), daughter->tracks().begin(), daughter->tracks().end());
+    size_t numResonances = event->numResonances();
+    for ( size_t iResonance = 0; iResonance < numResonances; ++iResonance ) {
+      NSVfitResonanceHypothesis* resonance = event->resonance(iResonance);
+      size_t numDaughters = resonance->numDaughters();
+      for ( size_t iDaughter = 0; iDaughter < numDaughters; ++iDaughter ) {
+	const NSVfitSingleParticleHypothesis* daughter = resonance->daughter(iDaughter);
+	const NSVfitTauDecayHypothesis* tauDecayProducts = dynamic_cast<const NSVfitTauDecayHypothesis*>(daughter);
+	if ( tauDecayProducts && tauDecayProducts->hasDecayVertex() )
+	  svTracks.insert(svTracks.begin(), tauDecayProducts->tracks().begin(), tauDecayProducts->tracks().end());
       }
     }
 
     TransientVertex eventVertex_refitted = eventVertexRefitAlgorithm_->refit(eventVertex, &svTracks);
     if ( eventVertex_refitted.isValid() ) {
-      eventHypothesis->eventVertexPosition_(0) = eventVertex_refitted.position().x();
-      eventHypothesis->eventVertexPosition_(1) = eventVertex_refitted.position().y();
-      eventHypothesis->eventVertexPosition_(2) = eventVertex_refitted.position().z();
-      eventHypothesis->eventVertexPositionErr_ = eventVertex_refitted.positionError().matrix_new();
+      event->eventVertexPosition_(0) = eventVertex_refitted.position().x();
+      event->eventVertexPosition_(1) = eventVertex_refitted.position().y();
+      event->eventVertexPosition_(2) = eventVertex_refitted.position().z();
+      event->eventVertexPositionErr_ = eventVertex_refitted.positionError().matrix_new();
       // CV: need to add protection against case that primary event vertex is not valid <-- FIXME ?
-      eventHypothesis->eventVertexIsValid_ = true;
+      event->eventVertexIsValid_ = true;
     }
   } else {
     // Otherwise just take the position of the PV from the event.
     // Leave the errors @ 0.
-    eventHypothesis->eventVertexPosition_(0) = eventVertex->position().x();
-    eventHypothesis->eventVertexPosition_(1) = eventVertex->position().y();
-    eventHypothesis->eventVertexPosition_(2) = eventVertex->position().z();
+    event->eventVertexPosition_(0) = eventVertex->position().x();
+    event->eventVertexPosition_(1) = eventVertex->position().y();
+    event->eventVertexPosition_(2) = eventVertex->position().z();
     // CV: need to add protection against case that primary event vertex is not valid <-- FIXME ?
-    eventHypothesis->eventVertexIsValid_ = true;
+    event->eventVertexIsValid_ = true;
   }
 
-  eventHypothesis->barcode_ = barcodeCounter_;
+  event->barcode_ = barcodeCounter_;
   ++barcodeCounter_;
 
-  return eventHypothesis;
+  return event;
 }
 
-void NSVfitEventBuilderBase::applyFitParameter(NSVfitEventHypothesis* eventHypothesis, const double* param) const
+void NSVfitEventBuilderBase::applyFitParameter(NSVfitEventHypothesis* event, const double* param) const
 {
   if ( doEventVertexRefit_ ) {
     double pvShiftX = param[idxFitParameter_pvShiftX_];
     double pvShiftY = param[idxFitParameter_pvShiftY_];
     double pvShiftZ = param[idxFitParameter_pvShiftZ_];
-    eventHypothesis->eventVertexPositionShift_ = AlgebraicVector3(pvShiftX, pvShiftY, pvShiftZ);
-  }
-
-  for ( unsigned iResonanceBuilder = 0; iResonanceBuilder < numResonanceBuilders_; ++iResonanceBuilder ) {
-    resonanceBuilders_[iResonanceBuilder]->applyFitParameter(&eventHypothesis->resonances_[iResonanceBuilder], param);
+    event->eventVertexPositionShift_ = AlgebraicVector3(pvShiftX, pvShiftY, pvShiftZ);
   }
 
   reco::Candidate::LorentzVector dp4(0,0,0,0);
 
-  for ( edm::OwnVector<NSVfitResonanceHypothesis>::const_iterator resonance = eventHypothesis->resonances_.begin();
-	resonance != eventHypothesis->resonances_.end(); ++resonance ) {
+  for ( unsigned iResonanceBuilder = 0; iResonanceBuilder < numResonanceBuilders_; ++iResonanceBuilder ) {
+    NSVfitResonanceHypothesis* resonance = event->resonance(iResonanceBuilder);
+    resonanceBuilders_[iResonanceBuilder]->applyFitParameter(resonance, param);
+
     dp4 += resonance->dp4_fitted();
   }
 
-  eventHypothesis->dp4_ = dp4;
+  event->dp4_ = dp4;
 }
 
 void NSVfitEventBuilderBase::print(std::ostream& stream) const

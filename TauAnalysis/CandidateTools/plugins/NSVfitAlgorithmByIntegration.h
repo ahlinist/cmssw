@@ -8,9 +8,9 @@
  *
  * \author Christian Veelken, UC Davis
  *
- * \version $Revision: 1.3 $
+ * \version $Revision: 1.4 $
  *
- * $Id: NSVfitAlgorithmByIntegration.h,v 1.3 2011/03/09 18:26:31 veelken Exp $
+ * $Id: NSVfitAlgorithmByIntegration.h,v 1.4 2011/04/10 14:46:47 veelken Exp $
  *
  */
 
@@ -26,8 +26,8 @@
 #include "TauAnalysis/CandidateTools/interface/NSVfitAlgorithmBase.h"
 #include "TauAnalysis/CandidateTools/interface/IndepCombinatoricsGeneratorT.h"
 
-#include "AnalysisDataFormats/TauAnalysis/interface/NSVfitEventHypothesis.h"
-#include "AnalysisDataFormats/TauAnalysis/interface/NSVfitResonanceHypothesis.h"
+#include "AnalysisDataFormats/TauAnalysis/interface/NSVfitEventHypothesisByIntegration.h"
+#include "AnalysisDataFormats/TauAnalysis/interface/NSVfitResonanceHypothesisByIntegration.h"
 
 #include <gsl/gsl_monte.h>
 #include <gsl/gsl_monte_vegas.h>
@@ -53,7 +53,7 @@ class NSVfitAlgorithmByIntegration : public NSVfitAlgorithmBase
  protected:
   void fitImp() const;
 
-  void setMassResults(NSVfitResonanceHypothesis*, const TH1*, unsigned) const;
+  void setMassResults(NSVfitResonanceHypothesisByIntegration*, const TH1*, unsigned) const;
 
   bool isDaughter(const std::string&);
   bool isResonance(const std::string&);

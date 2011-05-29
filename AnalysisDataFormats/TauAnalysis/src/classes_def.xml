@@ -40,19 +40,30 @@
   <class name="std::map<std::string, SVfitWtauNuSolution>"/>
   <class name="std::map<std::string, std::map<std::string, SVfitWtauNuSolution> >"/>
 
+  <class name="NSVfitEventHypothesisBase"/>
   <class name="NSVfitEventHypothesis"/>
+  <class name="NSVfitResonanceHypothesisBase"/>
   <class name="NSVfitResonanceHypothesis"/>
-  <class name="NSVfitSingleParticleHypothesisBase">
+  <class name="NSVfitSingleParticleHypothesisBase"/>
+  <class name="NSVfitSingleParticleHypothesis"/>
+  <class name="NSVfitTauDecayHypothesisBase"/>
+  <class name="NSVfitTauDecayHypothesis">
     <field name="tracks_" transient="true"/>
   </class>
-  <class name="NSVfitTauToLepHypothesis<pat::Electron>"/>
-  <class name="NSVfitTauToLepHypothesis<pat::Muon>"/>
+  <class name="NSVfitTauToLepHypothesis<pat::Electron, NSVfitTauDecayHypothesisBase>"/>
+  <class name="NSVfitTauToLepHypothesis<pat::Electron, NSVfitTauDecayHypothesis>"/>
+  <class name="NSVfitTauToLepHypothesis<pat::Muon, NSVfitTauDecayHypothesisBase>"/>
+  <class name="NSVfitTauToLepHypothesis<pat::Muon, NSVfitTauDecayHypothesis>"/>
+  <class name="NSVfitTauToHadHypothesisBase"/>
   <class name="NSVfitTauToHadHypothesis"/>
+  <class name="std::vector<NSVfitEventHypothesisBase>"/>
   <class name="std::vector<NSVfitEventHypothesis>"/>
-  <class name="std::map<std::string, NSVfitEventHypothesis>"/>
+  <class name="edm::Wrapper<std::vector<NSVfitEventHypothesisBase> >"/>
   <class name="edm::Wrapper<std::vector<NSVfitEventHypothesis> >"/>
-  <class name="std::vector<NSVfitResonanceHypothesis*>"/>
-  <class name="edm::OwnVector<NSVfitResonanceHypothesis, edm::ClonePolicy<NSVfitResonanceHypothesis> >"/>
+  <class name="std::vector<NSVfitEventHypothesisBase*>"/>
+  <class name="edm::OwnVector<NSVfitEventHypothesisBase, edm::ClonePolicy<NSVfitEventHypothesisBase> >"/>
+  <class name="std::vector<NSVfitResonanceHypothesisBase*>"/>
+  <class name="edm::OwnVector<NSVfitResonanceHypothesisBase, edm::ClonePolicy<NSVfitResonanceHypothesisBase> >"/>
   <class name="std::auto_ptr<TH1>"/>
   <class name="std::vector<NSVfitSingleParticleHypothesisBase*>"/>
   <class name="edm::OwnVector<NSVfitSingleParticleHypothesisBase, edm::ClonePolicy<NSVfitSingleParticleHypothesisBase> >"/>
