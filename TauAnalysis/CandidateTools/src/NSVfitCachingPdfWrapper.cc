@@ -5,6 +5,7 @@
 #include "RooAbsPdf.h"
 #include "RooRealVar.h"
 #include "RooArgSet.h"
+#include "RooMsgService.h"
 
 NSVfitCachingPdfWrapper::NSVfitCachingPdfWrapper(RooAbsPdf* pdf,
     RooRealVar* x, RooRealVar* y,
@@ -19,6 +20,7 @@ NSVfitCachingPdfWrapper::NSVfitCachingPdfWrapper(RooAbsPdf* pdf,
   isValid_ = true;
   normalizationVariable_.reset(new RooArgSet(*x_, "toIntegrate"));
   initializeCache(nXBins, xLow, xHigh, nYBins, yLow, yHigh);
+  RooMsgService::instance().setGlobalKillBelow(RooFit::FATAL) ;
 }
 
 NSVfitCachingPdfWrapper::NSVfitCachingPdfWrapper(RooAbsPdf* pdf,
@@ -62,6 +64,13 @@ void NSVfitCachingPdfWrapper::initializeCache(
 }
 
 double NSVfitCachingPdfWrapper::getVal(double x, double y) const {
+  // Dont' let nans get to the Interpolate function, it will crash.
+  if (isnan(x)) {
+    return x;
+  }
+  if (isnan(y))
+    return y;
+
   // Don't actually go past limits
   x = std::max(x, xLow_);
   x = std::min(x, xHigh_);
