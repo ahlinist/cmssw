@@ -13,15 +13,16 @@
  *
  * \author Christian Veelken, UC Davis
  *
- * \version $Revision: 1.1 $
+ * \version $Revision: 1.2 $
  *
- * $Id: NSVfitTauDecayLikelihoodMC.h,v 1.1 2011/04/25 14:29:51 veelken Exp $
+ * $Id: NSVfitTauDecayLikelihoodMC.h,v 1.2 2011/05/07 08:57:22 veelken Exp $
  *
  */
 
 #include "FWCore/ParameterSet/interface/ParameterSet.h"
 
 #include "TauAnalysis/CandidateTools/interface/NSVfitSingleParticleLikelihood.h"
+#include "TauAnalysis/CandidateTools/interface/NSVfitCachingPdfWrapper.h"
 
 #include "AnalysisDataFormats/TauAnalysis/interface/NSVfitSingleParticleHypothesisBase.h"
 
@@ -37,7 +38,7 @@ class NSVfitTauDecayLikelihoodMC : public NSVfitSingleParticleLikelihood
 
   void beginJob(NSVfitAlgorithmBase*);
   void beginCandidate(const NSVfitSingleParticleHypothesisBase*);
-  
+
   double operator()(const NSVfitSingleParticleHypothesisBase*) const;
 
  private:
@@ -49,10 +50,8 @@ class NSVfitTauDecayLikelihoodMC : public NSVfitSingleParticleLikelihood
 
   struct decayModeEntryType
   {
-    RooAbsPdf* decayPdf_;
-    RooRealVar* mom_;
+    NSVfitCachingPdfWrapper decayPdf_;
     int momType_;
-    RooRealVar* sepTimesMom_;
     int sepType_;
   };
 
