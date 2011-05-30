@@ -20,12 +20,13 @@ class NSVfitTauDecayHypothesis : public NSVfitSingleParticleHypothesis, public N
   NSVfitTauDecayHypothesis() {}
   NSVfitTauDecayHypothesis(const edm::Ptr<reco::Candidate>& particle,
       const std::string& name, int barcode)
-    : NSVfitTauDecayHypothesisBase(particle, name, barcode) 
-  {}
+    : NSVfitSingleParticleHypothesisBase(particle, name, barcode)
+  {
+    p4_ = particle->p4();
+  }
   ~NSVfitTauDecayHypothesis() {}
   // Copy constructors
   NSVfitTauDecayHypothesis(const NSVfitTauDecayHypothesis&);
-  virtual NSVfitTauDecayHypothesis* clone() const { return new NSVfitTauDecayHypothesis(*this); }
   virtual NSVfitTauDecayHypothesis& operator=(const NSVfitTauDecayHypothesis&);
 
   /// collection of tracks associated to reco::Candidate
@@ -51,10 +52,6 @@ class NSVfitTauDecayHypothesis : public NSVfitSingleParticleHypothesis, public N
   const AlgebraicVector3& decayVertexPos() const { return decayVertexPos_; }
   const reco::Candidate::Vector& flightPath() const { return flightPath_; }
   double decayDistance() const { return decayDistance_; }
-
-  /// tau lepton hadronic decay mode
-  /// (as defined in DataFormats/TauReco/interface/PFTauDecayMode.h)
-  int decayMode() const { return decayMode_; }
 
   /// tau lepton polarization
   double polarization() const { return polarization_; }

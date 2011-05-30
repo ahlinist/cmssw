@@ -28,11 +28,9 @@ class NSVfitSingleParticleHypothesis : virtual public NSVfitSingleParticleHypoth
       p4_(particle->p4())
   {}
   NSVfitSingleParticleHypothesis(const NSVfitSingleParticleHypothesis&);
-  virtual ~NSVfitSingleParticleHypothesis() {}
+  ~NSVfitSingleParticleHypothesis() {}
 
-  virtual NSVfitSingleParticleHypothesis* clone() const { return new NSVfitSingleParticleHypothesis(*this); }
-
-  virtual NSVfitSingleParticleHypothesis& operator=(const NSVfitSingleParticleHypothesis&);
+  NSVfitSingleParticleHypothesis& operator=(const NSVfitSingleParticleHypothesis&);
 
   const NSVfitResonanceHypothesis* mother() const { return mother_; }
   void setMother(const NSVfitResonanceHypothesis* mother) 
@@ -46,7 +44,7 @@ class NSVfitSingleParticleHypothesis : virtual public NSVfitSingleParticleHypoth
   const reco::Candidate::LorentzVector& p4_fitted() const { return p4_fitted_; }
   const reco::Candidate::LorentzVector& dp4_fitted() const { return dp4_; }
 
-  virtual void print(std::ostream& stream) const
+  void print(std::ostream& stream) const
   {
     stream << "<NSVfitSingleParticleHypothesis::print>:" << std::endl;
     stream << " name = " << name_ << std::endl;

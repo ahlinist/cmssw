@@ -13,20 +13,14 @@ class NSVfitSingleParticleHypothesisBase
 {
  public:
 
-  NSVfitSingleParticleHypothesisBase() {}
-  NSVfitSingleParticleHypothesisBase(const std::string& name, int barcode)
-    : name_(name),
-      barcode_(barcode)
-  {}
-  NSVfitSingleParticleHypothesisBase(const edm::Ptr<reco::Candidate>& particle, const std::string& name, int barcode)
-    : name_(name),
-      barcode_(barcode),
-      particle_(particle)
-  {}
+  NSVfitSingleParticleHypothesisBase();
+  NSVfitSingleParticleHypothesisBase(const std::string&, int);
+  NSVfitSingleParticleHypothesisBase(const edm::Ptr<reco::Candidate>&, const std::string&, int);
   NSVfitSingleParticleHypothesisBase(const NSVfitSingleParticleHypothesisBase&);
   virtual ~NSVfitSingleParticleHypothesisBase() {}
 
-  virtual NSVfitSingleParticleHypothesisBase* clone() const { return new NSVfitSingleParticleHypothesisBase(*this); }
+  virtual NSVfitSingleParticleHypothesisBase* clone() const = 0;
+  virtual NSVfitSingleParticleHypothesisBase* reduceToBase() const = 0;
 
   virtual NSVfitSingleParticleHypothesisBase& operator=(const NSVfitSingleParticleHypothesisBase&);
 

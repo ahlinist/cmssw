@@ -99,7 +99,6 @@ namespace {
     NSVfitEventHypothesis dummyNSVfitEventHypothesis;
     NSVfitResonanceHypothesisBase dummyNSVfitResonanceHypothesisBase;
     NSVfitResonanceHypothesis dummyNSVfitResonanceHypothesis;
-    NSVfitSingleParticleHypothesisBase dummyNSVfitSingleParticleHypothesisBase;
     NSVfitTauToElecHypothesisBase dummyNSVfitTauToElecHypothesisBase;
     NSVfitTauToElecHypothesis dummyNSVfitTauToElecHypothesis;
     NSVfitTauToMuHypothesisBase dummyNSVfitTauToMuHypothesisBase;
