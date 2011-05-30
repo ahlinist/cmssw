@@ -127,7 +127,9 @@ void NSVfitAlgorithmByLikelihoodMaximization::fitImp() const
     setMassResults(*resonance);
   }
 
-  if ( verbosity_ ) currentEventHypothesis_->print(std::cout);
+  fittedEventHypothesis_ = currentEventHypothesis_;
+
+  if ( verbosity_ ) fittedEventHypothesis_->print(std::cout);
 }
 
 void NSVfitAlgorithmByLikelihoodMaximization::setMassResults(NSVfitResonanceHypothesis& resonance) const

@@ -8,9 +8,9 @@
  *
  * \author Christian Veelken, UC Davis
  *
- * \version $Revision: 1.16 $
+ * \version $Revision: 1.17 $
  *
- * $Id: NSVfitAlgorithmBase.h,v 1.16 2011/05/28 09:19:35 friis Exp $
+ * $Id: NSVfitAlgorithmBase.h,v 1.17 2011/05/29 17:58:22 veelken Exp $
  *
  */
 
@@ -53,6 +53,9 @@ class NSVfitAlgorithmBase
 
   virtual void print(std::ostream&) const {}
 
+  // NOTE: fit method creates a new object of type NSVfitEventHypothesisBase (or derrived class);
+  //       ownership of this object is held by calling code
+  //      --> calling code needs to take-care of deleting this object, in order to avoid memory leak
   typedef edm::Ptr<reco::Candidate> CandidatePtr;
   typedef std::map<std::string, CandidatePtr> inputParticleMap;
   virtual NSVfitEventHypothesisBase* fit(const inputParticleMap&, const reco::Vertex*) const;
@@ -267,6 +270,7 @@ class NSVfitAlgorithmBase
   edm::Service<NSVfitTrackService> trackService_;
   const edm::EventSetup* currentEventSetup_;
   mutable NSVfitEventHypothesis* currentEventHypothesis_;
+  mutable NSVfitEventHypothesisBase* fittedEventHypothesis_;
 
   mutable std::vector<NSVfitParameter> fitParameters_;
   int fitParameterCounter_;
