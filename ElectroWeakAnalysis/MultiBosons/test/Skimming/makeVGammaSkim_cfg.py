@@ -81,6 +81,9 @@ if options.isRealData:
     ## (No need to remove pfMET and tcMET explicitly if this is done first
     removeMCMatching(process)
 
+#add extra isolations to account for pileup in analysis
+addIsoForPU(process)
+
 ## Overlap of photons and electrons
 ##+ Set to True to remove overlapping photons from the event, False to embed
 ##+ embed the overlap information
