@@ -103,10 +103,10 @@ process.patDefaultSequence.replace( process.patPhotons,
     process.photonUserData *
     process.patPhotons
     )
-process.patPhotons.userData.userFloats.src = egammaUserDataFloats(
+process.patPhotons.userData.userFloats.src += egammaUserDataFloats(
     moduleName = "photonUserData"
     ) + [ cms.InputTag( "conversionTools", "deltaRToTrack" ) ]
-process.patPhotons.userData.userInts.src = egammaUserDataInts(
+process.patPhotons.userData.userInts.src += egammaUserDataInts(
     moduleName = "photonUserData"
     ) + [ cms.InputTag( "conversionTools", "passElectronVeto" ),
           cms.InputTag( "conversionTools", "hasMatchedConversion" ), ]
@@ -146,10 +146,10 @@ process.patDefaultSequence.replace( process.patElectrons,
     process.electronUserData *
     process.patElectrons
     )
-process.patElectrons.userData.userFloats.src = egammaUserDataFloats(
+process.patElectrons.userData.userFloats.src += egammaUserDataFloats(
     moduleName = "electronUserData"
     )
-process.patElectrons.userData.userInts.src = egammaUserDataInts(
+process.patElectrons.userData.userInts.src += egammaUserDataInts(
     moduleName = "electronUserData"
     )+ [ cms.InputTag("conversionTools", "passConversionVeto") ]
 
