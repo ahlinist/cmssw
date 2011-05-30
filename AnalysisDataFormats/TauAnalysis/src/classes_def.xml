@@ -50,10 +50,10 @@
   <class name="NSVfitTauDecayHypothesis">
     <field name="tracks_" transient="true"/>
   </class>
-  <class name="NSVfitTauToLepHypothesis<pat::Electron, NSVfitTauDecayHypothesisBase>"/>
-  <class name="NSVfitTauToLepHypothesis<pat::Electron, NSVfitTauDecayHypothesis>"/>
-  <class name="NSVfitTauToLepHypothesis<pat::Muon, NSVfitTauDecayHypothesisBase>"/>
-  <class name="NSVfitTauToLepHypothesis<pat::Muon, NSVfitTauDecayHypothesis>"/>
+  <class name="NSVfitTauToLepHypothesisBase<pat::Electron>"/>
+  <class name="NSVfitTauToLepHypothesis<pat::Electron>"/>
+  <class name="NSVfitTauToLepHypothesisBase<pat::Muon>"/>
+  <class name="NSVfitTauToLepHypothesis<pat::Muon>"/>
   <class name="NSVfitTauToHadHypothesisBase"/>
   <class name="NSVfitTauToHadHypothesis"/>
   <class name="std::vector<NSVfitEventHypothesisBase>"/>

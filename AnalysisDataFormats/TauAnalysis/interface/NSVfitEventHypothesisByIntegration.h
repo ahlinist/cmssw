@@ -2,6 +2,7 @@
 #define AnalysisDataFormats_TauAnalysis_NSVfitEventHypothesisByIntegration_h
 
 #include "AnalysisDataFormats/TauAnalysis/interface/NSVfitEventHypothesisBase.h"
+#include "AnalysisDataFormats/TauAnalysis/interface/NSVfitResonanceHypothesisByIntegration.h"
 
 #include <TH1.h>
 
@@ -15,13 +16,24 @@ class NSVfitEventHypothesisByIntegration : public NSVfitEventHypothesisBase
     : NSVfitEventHypothesisBase(met)
   {}
   NSVfitEventHypothesisByIntegration(const NSVfitEventHypothesisByIntegration&);
+  NSVfitEventHypothesisByIntegration(const NSVfitEventHypothesisBase&);
   virtual ~NSVfitEventHypothesisByIntegration() {}
 
   virtual NSVfitEventHypothesisByIntegration* clone() const { return new NSVfitEventHypothesisByIntegration(*this); }
 
   virtual NSVfitEventHypothesisByIntegration& operator=(const NSVfitEventHypothesisByIntegration&);
 
+  /// fit hypotheses of lepton resonances
+  NSVfitResonanceHypothesisByIntegration* resonance(size_t idx) { 
+    return dynamic_cast<NSVfitResonanceHypothesisByIntegration*>(&resonances_[idx]); 
+  }
+  const NSVfitResonanceHypothesisByIntegration* resonance(size_t idx) const { 
+    return dynamic_cast<const NSVfitResonanceHypothesisByIntegration*>(&resonances_[idx]); 
+  }
+
   const TH1* histMassResults() const { return histMassResults_.get(); }
+
+  friend class NSVfitAlgorithmByIntegration;
 
  private:
 

@@ -12,6 +12,7 @@ class NSVfitResonanceHypothesisByIntegration : public NSVfitResonanceHypothesisB
  public:
   NSVfitResonanceHypothesisByIntegration() {}
   NSVfitResonanceHypothesisByIntegration(const NSVfitResonanceHypothesisByIntegration&);
+  NSVfitResonanceHypothesisByIntegration(const NSVfitResonanceHypothesisBase&);
   virtual ~NSVfitResonanceHypothesisByIntegration() {}
 
   virtual NSVfitResonanceHypothesisByIntegration* clone() const { return new NSVfitResonanceHypothesisByIntegration(*this); }
