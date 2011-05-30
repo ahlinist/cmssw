@@ -239,7 +239,7 @@ def addIsoForPU(process):
     process.patElectrons.userData.userFloats.src.append( cms.InputTag('eleTrackIsoPUDR03') )
     process.patElectrons.userData.userFloats.src.append( cms.InputTag('eleTrackIsoPUDR04') )
     process.patElectrons.userData.userFloats.src.append( cms.InputTag('eleHcalTowerIsoPUDR04') )
-    process.makePatElectrons.replace(process.patElectrons,cms.Sequence(process.patElectronIsolation+process.patElectrons))
+    process.patDefaultSequence.replace(process.patElectrons,cms.Sequence(process.patElectronIsolation+process.patElectrons))
     
     #change default patPhoton Isolation
     process.gamIsoDepositTkPU = process.gamIsoDepositTk.clone()    
@@ -301,6 +301,6 @@ def addIsoForPU(process):
     process.patPhotons.userData.userFloats.src.append( cms.InputTag('gamTrackIsoPUDR03') )
     process.patPhotons.userData.userFloats.src.append( cms.InputTag('gamTrackIsoPUDR04') )
     process.patPhotons.userData.userFloats.src.append( cms.InputTag('gamHcalTowerIsoPUDR04') )
-    process.makePatPhotons.replace(process.patPhotons,cms.Sequence(process.patPhotonIsolation+process.patPhotons))
+    process.patDefaultSequence.replace(process.patPhotons,cms.Sequence(process.patPhotonIsolation+process.patPhotons))
 # def switchToIsoForPU(process, after): <------------------------------------
 
