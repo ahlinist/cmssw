@@ -55,12 +55,11 @@ diTauCandidateNSVfitHistManagerForMuTau.pluginType = cms.string('PATMuTauPairNSV
 diTauCandidateNSVfitHistManagerForMuTau.diTauCandidateSource = cms.InputTag('selectedMuTauPairsPzetaDiffCumulative')
 diTauCandidateNSVfitHistManagerForMuTau.nSVfitEventHypotheses = cms.PSet(
     psKine_fit = cms.string('psKine_fit'),
-    mcKineDeltaRall_fit = cms.string('mcKineDeltaRall_fit'),
 
     psKine_MEt_fit = cms.string('psKine_MEt_fit'),
     psKine_MEt2_fit = cms.string('psKine_MEt2_fit'),
-    ##mcKineDeltaRall_MEt2_fit = cms.string('mcKineDeltaRall_MEt2_fit'),
-    ##mcKineDeltaRsel_MEt2_fit = cms.string('mcKineDeltaRsel_MEt2_fit'),
+    mcKineDeltaRall_MEt2_fit = cms.string('mcKineDeltaRall_MEt2_fit'),
+    mcKineDeltaRsel_MEt2_fit = cms.string('mcKineDeltaRsel_MEt2_fit'),
     mcKineAngleAll_MEt2_fit = cms.string('mcKineAngleAll_MEt2_fit'),
     mcKineAngleSel_MEt2_fit = cms.string('mcKineAngleSel_MEt2_fit'),
     
