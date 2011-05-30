@@ -290,25 +290,21 @@ void NSVfitAlgorithmByIntegration::fitImp() const
 
     massParForReplacements_->next();
   }
-/*
 
-  CV: TO-DO !!!
-
-  NSVfitEventHypothesisByIntegration* persistentEventHypothesis = new NSVfitEventHypothesisByIntegration(currentEventHypothesis_);
-  delete currentEventHypothesis_;
+  NSVfitEventHypothesisByIntegration* persistentEventHypothesis = new NSVfitEventHypothesisByIntegration(*currentEventHypothesis_);
+  persistentEventHypothesis->histMassResults_ = std::auto_ptr<TH1>(histResults);
 
 //--- set central values and uncertainties on reconstructed masses
   for ( unsigned iMassParameter = 0; iMassParameter < numMassParameters_; ++iMassParameter ) {  
     const std::string& resonanceName = eventModel_->resonances_[iMassParameter]->resonanceName_;
-    NSVfitResonanceHypothesisByIntegration* resonance = 
-      const_cast<NSVfitResonanceHypothesisByIntegration*>(persistentEventHypothesis->resonance(resonanceName));
-    setMassResults(resonance, histResults, iMassParameter);
+    NSVfitResonanceHypothesisBase* resonance = 
+      const_cast<NSVfitResonanceHypothesisBase*>(persistentEventHypothesis->NSVfitEventHypothesisBase::resonance(resonanceName));
+    setMassResults(dynamic_cast<NSVfitResonanceHypothesisByIntegration*>(resonance), histResults, iMassParameter);
   }
 
-  persistentEventHypothesis->histMassResults_ = std::auto_ptr<TH1>(histResults);
+  delete currentEventHypothesis_;
  
-  currentEventHypothesis_ = persistentEventHypothesis;
- */
+  fittedEventHypothesis_ = persistentEventHypothesis;
 }
 
 void NSVfitAlgorithmByIntegration::setMassResults(

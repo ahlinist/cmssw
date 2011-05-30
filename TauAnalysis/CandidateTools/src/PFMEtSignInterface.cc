@@ -105,7 +105,7 @@ void removePFJetOverlaps(std::list<const reco::PFJet*>& pfJets,
 	  objectNotToBeFiltered != objectsNotToBeFiltered.end() && !isOverlap; ++objectNotToBeFiltered ) {
       if ( deltaR((*pfJet)->p4(), (*objectNotToBeFiltered)->p4()) < dRoverlapPFJet ) isOverlap = true;
     }
-    
+
     const reco::Jet::Constituents pfJetConstituents = (*pfJet)->getJetConstituents();
     for ( reco::Jet::Constituents::const_iterator pfJetConstituent = pfJetConstituents.begin();
 	  pfJetConstituent != pfJetConstituents.end() && !isOverlap; ++pfJetConstituent ) {
@@ -114,7 +114,7 @@ void removePFJetOverlaps(std::list<const reco::PFJet*>& pfJets,
 	if ( deltaR((*pfJetConstituent)->p4(), (*objectNotToBeFiltered)->p4()) < dRoverlapPFCandidate ) isOverlap = true;
       }
     }
-    
+
     if ( isOverlap ) pfJet = pfJets.erase(pfJet);
     else ++pfJet;
   }

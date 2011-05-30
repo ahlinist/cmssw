@@ -44,8 +44,7 @@ double NSVfitTauToLepLikelihoodPhaseSpace<T>::operator()(const NSVfitSingleParti
 //          K. Nakamura et al. (Particle Data Group), J. Phys. G 37, 075021 (2010);
 //          formula 38.20b
 //
-  const NSVfitTauToLepHypothesis<T, NSVfitTauDecayHypothesis>* hypothesis_T = 
-    dynamic_cast<const NSVfitTauToLepHypothesis<T, NSVfitTauDecayHypothesis>*>(hypothesis);
+  const NSVfitTauToLepHypothesis<T>* hypothesis_T = dynamic_cast<const NSVfitTauToLepHypothesis<T>*>(hypothesis);
   assert(hypothesis_T != 0);
 
   if ( this->verbosity_ ) std::cout << "<NSVfitTauToLepLikelihoodPhaseSpace::operator()>:" << std::endl;

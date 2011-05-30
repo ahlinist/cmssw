@@ -112,7 +112,7 @@ NSVfitEventHypothesisBase* NSVfitAlgorithmBase::fit(const inputParticleMap& inpu
 
   fitImp();
 
-  return currentEventHypothesis_;
+  return fittedEventHypothesis_;
 }
 
 double NSVfitAlgorithmBase::nll(const double* x, const double* param) const

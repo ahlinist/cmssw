@@ -12,9 +12,9 @@
  *
  * \author Evan Friis, Christian Veelken; UC Davis
  *
- * \version $Revision: 1.14 $
+ * \version $Revision: 1.15 $
  *
- * $Id: NSVfitTauToLepBuilder.cc,v 1.14 2011/04/10 14:46:47 veelken Exp $
+ * $Id: NSVfitTauToLepBuilder.cc,v 1.15 2011/05/29 17:58:22 veelken Exp $
  *
  */
 
@@ -40,8 +40,8 @@ class NSVfitTauToLepBuilder : public NSVfitTauDecayBuilder
     inputParticleMap::const_iterator particlePtr = inputParticles.find(prodParticleLabel_);
     assert(particlePtr != inputParticles.end());
 
-    NSVfitTauToLepHypothesis<T, NSVfitTauDecayHypothesis>* hypothesis = 
-      new NSVfitTauToLepHypothesis<T, NSVfitTauDecayHypothesis>(particlePtr->second, prodParticleLabel_, barcodeCounter_);
+    NSVfitTauToLepHypothesis<T>* hypothesis = 
+      new NSVfitTauToLepHypothesis<T>(particlePtr->second, prodParticleLabel_, barcodeCounter_);
     ++barcodeCounter_;
 
     NSVfitTauDecayBuilder::initialize(hypothesis, particlePtr->second.get());

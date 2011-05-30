@@ -49,7 +49,10 @@ void NSVfitEventLikelihoodMEt2::beginEvent(const edm::Event& evt, const edm::Eve
 
 void NSVfitEventLikelihoodMEt2::beginCandidate(const NSVfitEventHypothesis* hypothesis) const
 {
-  if ( this->verbosity_ ) std::cout << "<NSVfitEventLikelihoodMEt2::beginCandidate>:" << std::endl;
+  if ( this->verbosity_ ) {
+    std::cout << "<NSVfitEventLikelihoodMEt2::beginCandidate>:" << std::endl;
+    std::cout << " hypothesis = " << hypothesis << std::endl;
+  }
 
   std::list<const reco::Candidate*> daughterHypothesesList;
 
@@ -80,7 +83,10 @@ double NSVfitEventLikelihoodMEt2::operator()(const NSVfitEventHypothesis* hypoth
 //
 //    NB: MET likelihood is split into perp/par components along (leptonic) leg1 of the diTau object
 //
-  if ( this->verbosity_ ) std::cout << "<NSVfitEventLikelihoodMEt2::operator()>:" << std::endl;
+  if ( this->verbosity_ ) {
+    std::cout << "<NSVfitEventLikelihoodMEt2::operator()>:" << std::endl;
+    std::cout << " hypothesis = " << hypothesis << std::endl;
+  }
 
   residual_fitted_(0) = hypothesis->dp4MEt_fitted().px();
   residual_fitted_(1) = hypothesis->dp4MEt_fitted().py();
