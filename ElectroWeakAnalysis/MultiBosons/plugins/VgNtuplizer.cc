@@ -196,11 +196,14 @@ VgNtuplizer::VgNtuplizer(const edm::ParameterSet& ps) : verbosity_(0), helper_(p
     tree_->Branch("eleGenMomPt", eleGenMomPt_, "eleGenMomPt[nEle]/F");
   }
   tree_->Branch("eleIsoTrkDR03", eleIsoTrkDR03_, "eleIsoTrkDR03[nEle]/F");
+  tree_->Branch("eleIsoVtxTrkDR03", eleIsoVtxTrkDR03_, "eleIsoVtxTrkDR03[nEle]/F");
   tree_->Branch("eleIsoEcalDR03", eleIsoEcalDR03_, "eleIsoEcalDR03[nEle]/F");
   tree_->Branch("eleIsoHcalDR03", eleIsoHcalDR03_, "eleIsoHcalDR03[nEle]/F");
   tree_->Branch("eleIsoTrkDR04", eleIsoTrkDR04_, "eleIsoTrkDR04[nEle]/F");
+  tree_->Branch("eleIsoVtxTrkDR04", eleIsoVtxTrkDR04_, "eleIsoVtxTrkDR04[nEle]/F");
   tree_->Branch("eleIsoEcalDR04", eleIsoEcalDR04_, "eleIsoEcalDR04[nEle]/F");
   tree_->Branch("eleIsoHcalDR04", eleIsoHcalDR04_, "eleIsoHcalDR04[nEle]/F");
+  tree_->Branch("eleIsoHcalSolidDR04", eleIsoHcalSolidDR04_, "eleIsoHcalSolidDR04[nEle]/F");
   // Photon
   tree_->Branch("nPho", &nPho_, "nPho/I");
   tree_->Branch("phoTrg", phoTrg_, "phoTrg[nPho][50]/I");
@@ -213,16 +216,19 @@ VgNtuplizer::VgNtuplizer(const edm::ParameterSet& ps) : verbosity_(0), helper_(p
   tree_->Branch("phoR9", phoR9_, "phoR9[nPho]/F");
   tree_->Branch("phoTrkIsoSolidDR03", phoTrkIsoSolidDR03_, "phoTrkIsoSolidDR03[nPho]/F");
   tree_->Branch("phoTrkIsoHollowDR03", phoTrkIsoHollowDR03_, "phoTrkIsoHollowDR03[nPho]/F");
+  tree_->Branch("phoTrkIsoVtxDR03", phoTrkIsoVtxDR03_, "phoTrkIsoVtxDR03[nPho]/F");
   tree_->Branch("phoNTrkSolidDR03", phoNTrkSolidDR03_, "phoNTrkSolidDR03[nPho]/I");
   tree_->Branch("phoNTrkHollowDR03", phoNTrkHollowDR03_, "phoNTrkHollowDR03[nPho]/I");
   tree_->Branch("phoEcalIsoDR03", phoEcalIsoDR03_, "phoEcalIsoDR03[nPho]/F");
   tree_->Branch("phoHcalIsoDR03", phoHcalIsoDR03_, "phoHcalIsoDR03[nPho]/F");
   tree_->Branch("phoTrkIsoSolidDR04", phoTrkIsoSolidDR04_, "phoTrkIsoSolidDR04[nPho]/F");
   tree_->Branch("phoTrkIsoHollowDR04", phoTrkIsoHollowDR04_, "phoTrkIsoHollowDR04[nPho]/F");
+  tree_->Branch("phoTrkIsoVtxDR04", phoTrkIsoVtxDR04_, "phoTrkIsoVtxDR04[nPho]/F");
   tree_->Branch("phoNTrkSolidDR04", phoNTrkSolidDR04_, "phoNTrkSolidDR04[nPho]/I");
   tree_->Branch("phoNTrkHollowDR04", phoNTrkHollowDR04_, "phoNTrkHollowDR04[nPho]/I");
   tree_->Branch("phoEcalIsoDR04", phoEcalIsoDR04_, "phoEcalIsoDR04[nPho]/F");
   tree_->Branch("phoHcalIsoDR04", phoHcalIsoDR04_, "phoHcalIsoDR04[nPho]/F");
+  tree_->Branch("phoHcalIsoSolidDR04", phoHcalIsoSolidDR04_, "phoHcalIsoSolidDR04[nPho]/F");
   tree_->Branch("phoHoverE", phoHoverE_, "phoHoverE[nPho]/F");
   tree_->Branch("phoSigmaEtaEta", phoSigmaEtaEta_, "phoSigmaEtaEta[nPho]/F");
   tree_->Branch("phoSigmaIEtaIEta", phoSigmaIEtaIEta_, "phoSigmaIEtaIEta[nPho]/F");
@@ -862,6 +868,11 @@ void VgNtuplizer::produce(edm::Event & e, const edm::EventSetup & es) {
       eleCaloPos_[nEle_][2] = iEle->trackPositionAtCalo().z();
       // cout << "Get Electron TK Stuff 1" << std::endl;
 
+      //pile-up safe isolations
+      eleIsoVtxTrkDR03_[nEle_] = iEle->userFloat("eleTrackIsoPUDR03");
+      eleIsoVtxTrkDR04_[nEle_] = iEle->userFloat("eleTrackIsoPUDR04");
+      eleIsoHcalSolidDR04_[nEle_] = iEle->userFloat("eleHcalTowerIsoPUDR04");
+
       // Gen Particle
       eleGenIndex_[nEle_] = -1;
       int EleGenIndex = 0;
@@ -954,6 +965,11 @@ void VgNtuplizer::produce(edm::Event & e, const edm::EventSetup & es) {
       phoNTrkHollowDR04_[nPho_]   = iPho->nTrkHollowConeDR04();
       phoEcalIsoDR04_[nPho_]      = iPho->ecalRecHitSumEtConeDR04();
       phoHcalIsoDR04_[nPho_]      = iPho->hcalTowerSumEtConeDR04();
+
+      //pile-up safe isolations
+      phoTrkIsoVtxDR03_[nPho_] = iPho->userFloat("gamTrackIsoPUDR03");
+      phoTrkIsoVtxDR04_[nPho_] = iPho->userFloat("gamTrackIsoPUDR04");
+      phoHcalIsoSolidDR04_[nPho_] = iPho->userFloat("gamHcalTowerIsoPUDR04");
 
       phoHoverE_[nPho_]        = iPho->hadronicOverEm();
       phoSigmaEtaEta_[nPho_]   = iPho->sigmaEtaEta();
