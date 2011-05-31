@@ -1,7 +1,7 @@
 // Class:      L25and3TauEfficiencyAnalyzer
 // Original Author:  Eduardo Luiggi, modified by Sho Maruyama
 //         Created:  Fri Apr  4 16:37:44 CDT 2008
-// $Id: L25and3TauEfficiencyAnalyzer.h,v 1.6 2011/01/17 23:31:08 eluiggi Exp $
+// $Id: L25and3TauEfficiencyAnalyzer.h,v 1.7 2011/02/02 14:57:09 eluiggi Exp $
 #include <memory>
 #include "FWCore/Framework/interface/Frameworkfwd.h"
 #include "FWCore/Framework/interface/EDAnalyzer.h"
@@ -44,7 +44,6 @@ virtual void fill(const edm::Event&, const reco::Particle&);
       float l25Phi;
       float l25Eta;
       float l25Pt;
-      char l25Depth;
       char leadDepth1;
       char leadDepth2;
       float minDR;
@@ -66,10 +65,20 @@ virtual void fill(const edm::Event&, const reco::Particle&);
       float l25PhiLdgLoose;
       float l25PtLdgLoose;
       
+      bool matchedToL2Jet;
+      bool foundTracksInJet;
+      bool matchedToHLTPFTau;
+      bool tauTagHasTracks;
+      bool l25PFTauLeadTrkIsValid;
+      
       bool l25DefDisc_Trk5_IsoPtMin1_Ntrk0;
       bool l25DefDisc_Trk5_IsoPtMin1_Ntrk1;
       bool l25DefDisc_Trk5_IsoPtMin1_5_Ntrk0;
       bool l25DefDisc_Trk5_IsoPtMin1_5_Ntrk1;
       bool l25DefDisc_Trk5_IsoPtMin2_Ntrk0;
+  
+     unsigned int NMatchedToL2;
+     unsigned int NJetsWithTracks;
+      
 
 };

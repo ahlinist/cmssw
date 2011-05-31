@@ -15,16 +15,21 @@ TTEffPFTauTagInfoProducer.tkminPt = cms.double(0.5)
 TTEffPFTauTagInfoProducer.ChargedHadrCand_tkminPt = cms.double(0.5)
 TTEffPFTauTagInfoProducer.PFJetTracksAssociatorProducer = cms.InputTag("TTEffak5PFJetTracksAssociatorAtVertex")
 
-from RecoTauTag.Configuration.FixedConePFTaus_cff import fixedConePFTauProducer
-TTEffFixedConePFTauProducer = copy.deepcopy(fixedConePFTauProducer)
-TTEffFixedConePFTauProducer.PFTauTagInfoProducer = cms.InputTag("TTEffPFTauTagInfoProducer")
+#from RecoTauTag.Configuration.FixedConePFTaus_cff import fixedConePFTauProducer
+#TTEffFixedConePFTauProducer = copy.deepcopy(fixedConePFTauProducer)
+#TTEffFixedConePFTauProducer.PFTauTagInfoProducer = cms.InputTag("TTEffPFTauTagInfoProducer")
+
+from RecoTauTag.Configuration.ShrinkingConePFTaus_cfi import shrinkingConePFTauProducer
+TTEffShrinkingConePFTauProducer = copy.deepcopy(shrinkingConePFTauProducer)
+TTEffShrinkingConePFTauProducer.PFTauTagInfoProducer = cms.InputTag("TTEffPFTauTagInfoProducer")
 
 from RecoTauTag.RecoTau.PFRecoTauDiscriminationByLeadingPionPtCut_cfi import *
 from RecoTauTag.RecoTau.TauDiscriminatorTools import noPrediscriminants
 TTEffPFTauDiscriminationByLeadingPionPtCut = cms.EDProducer("PFRecoTauDiscriminationByLeadingObjectPtCut",
 
     # Tau collection to discriminate
-    PFTauProducer = cms.InputTag('TTEffFixedConePFTauProducer'),
+    #PFTauProducer = cms.InputTag('TTEffFixedConePFTauProducer'),
+    PFTauProducer = cms.InputTag('TTEffShrinkingConePFTauProducer'),
 
     # no pre-reqs for this cut
     Prediscriminants = noPrediscriminants,
@@ -36,7 +41,8 @@ TTEffPFTauDiscriminationByLeadingPionPtCut = cms.EDProducer("PFRecoTauDiscrimina
 )
 
 TTEffPFTausSelected = cms.EDFilter("PFTauSelector",
-    src = cms.InputTag("TTEffFixedConePFTauProducer"),
+    #src = cms.InputTag("TTEffFixedConePFTauProducer"),
+    src = cms.InputTag("TTEffShrinkingConePFTauProducer"),
     discriminators = cms.VPSet(
         cms.PSet(
           discriminator=cms.InputTag("TTEffPFTauDiscriminationByLeadingPionPtCut"),
@@ -63,9 +69,10 @@ TTEffPFTauDiscriminationAgainstMuon = copy.deepcopy(pfRecoTauDiscriminationAgain
 TTEffPFTauDiscriminationAgainstMuon.PFTauProducer = cms.InputTag('TTEffPFTausSelected')
 TTEffPFTauDiscriminationAgainstMuon.Prediscriminants.leadTrack.Producer = cms.InputTag('TTEffPFTauDiscriminationByLeadingTrackFinding')
 
-from RecoTauTag.RecoTau.PFRecoTauDiscriminationAgainstElectron_cfi import pfRecoTauDiscriminationAgainstElectron                                                                                   
+#copying the Discriminator against Electron
+from RecoTauTag.RecoTau.PFRecoTauDiscriminationAgainstElectron_cfi import pfRecoTauDiscriminationAgainstElectron
 TTEffPFTauDiscriminationAgainstElectron = copy.deepcopy(pfRecoTauDiscriminationAgainstElectron)
-TTEffPFTauDiscriminationAgainstElectron.PFTauProducer = cms.InputTag('TTEffPFTausSelected')
+TTEffPFTauDiscriminationAgainstElectron.PFTauProducer = 'TTEffPFTausSelected'
 TTEffPFTauDiscriminationAgainstElectron.Prediscriminants.leadTrack.Producer = cms.InputTag('TTEffPFTauDiscriminationByLeadingTrackFinding')
 
 TTEffPFTau = cms.Sequence(
@@ -74,7 +81,8 @@ TTEffPFTau = cms.Sequence(
         TTEffPFTauTagInfoProducer *
 #	recoTauCommonSequence *
 	ak5PFJetsRecoTauPiZeros *
-        TTEffFixedConePFTauProducer *
+#        TTEffFixedConePFTauProducer *
+        TTEffShrinkingConePFTauProducer *
         TTEffPFTauDiscriminationByLeadingPionPtCut *
         TTEffPFTausSelected *
         TTEffPFTauDiscriminationByLeadingTrackFinding *

@@ -13,7 +13,7 @@
 //
 // Original Author:  Chi Nhan Nguyen
 //         Created:  Wed Oct  1 13:04:54 CEST 2008
-// $Id: TTEffAnalyzer.cc,v 1.52 2011/05/13 10:10:01 slehti Exp $
+// $Id: TTEffAnalyzer.cc,v 1.53 2011/05/13 12:00:17 slehti Exp $
 //
 //
 
@@ -183,6 +183,10 @@ TTEffAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
          edm::LogWarning("TTEffAnalyzer")<<"No DiscriminatorAgainstElectron with label "<<PFTauElectronRej_<<" found!"<<endl;
        }
        
+       iEvent.getByLabel(PFTauElectronRej_,thePFTauDiscriminatorAgainstElectron);
+       if(!thePFTauDiscriminatorAgainstElectron.isValid()) {
+         edm::LogWarning("TTEffAnalyzer")<<"No DiscriminatorAgainstElectron with label "<<PFTauElectronRej_<<" found!"<<endl;
+       }
 	 
        iEvent.getByLabel(MCTaus_, mcTaus);
        iEvent.getByLabel(MCParticles_, mcParticles);
@@ -310,6 +314,15 @@ using namespace reco;
     }
   }
    
+  if(thePFTauDiscriminatorAgainstElectron.isValid()){
+    const PFTauDiscriminator & ds = *(thePFTauDiscriminatorAgainstElectron.product());
+    if (ds[thisTauRef]>0.5) {
+      PFElectronMatch = 1;
+    } else {
+      PFElectronMatch = 0;
+    }
+  }
+
   MCMatch = 0;
   if(mcTaus.isValid()){
     for(unsigned int k = 0 ; k < mcTaus->size(); k++){
@@ -433,6 +446,15 @@ using namespace reco;
           }
         }
 
+  	if(thePFTauDiscriminatorAgainstElectron.isValid()){
+  	  const PFTauDiscriminator & ds = *(thePFTauDiscriminatorAgainstElectron.product());
+  	  if (ds[thisTauRef]>0.5) {
+  	    PFElectronMatch = 1;
+  	  } else {
+  	    PFElectronMatch = 0;
+  	  }
+  	}
+	
 	if(thisTauRef->leadPFChargedHadrCand().isNonnull()) PFInvPt = 1./thisTauRef->leadPFChargedHadrCand()->pt();
 	// Fill common variables
 	fillLV(PFTaus->at(k).p4());
@@ -442,8 +464,6 @@ using namespace reco;
 	PFIsoSum = PFTaus->at(k).isolationPFChargedHadrCandsPtSum();
 	PFEnergy = PFTaus->at(k).energy();
 	
-//	PFElectronMatch =
-
 	std::vector<double> rms;
 	clusterShape(PFTaus->at(k), rms);
 	PFClusterEtaRMS = rms[0];
