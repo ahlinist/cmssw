@@ -10,6 +10,8 @@
 #include "DataFormats/VertexReco/interface/Vertex.h"
 #include "TMath.h"
 
+#include <DataFormats/PatCandidates/interface/Jet.h>
+
 #include <vector>
 
 //__________________________________________________________________________________________________
@@ -38,6 +40,17 @@ LeptonVetoSelector::LeptonVetoSelector(const edm::ParameterSet& pset) :
    defineVariable("bestIsoElec");
    defineVariable("bestIsoMuon");
 
+   if (invertVeto_) {
+     defineVariable("Electron1Pt");
+     defineVariable("Muon1Pt");
+     defineVariable("Electron1Eta");
+     defineVariable("Muon1Eta");
+     defineVariable("Electron1Phi");
+     defineVariable("Muon1Phi");
+     defineVariable("Electron1DR");
+     defineVariable("Muon1DR");
+     defineVariable("MuonMTW");
+   }
 
 }
 
@@ -69,6 +82,31 @@ bool LeptonVetoSelector::select(const edm::Event& event) const {
   double currIso = 0.;
   double bestIsoElec = 10.;
   double bestIsoMuon = 10.;
+  double ElectronPt[3] = {-10.,-10.,-10.};
+  double MuonPt[3] = {-10.,-10.,-10.};
+  double ElectronEta[3] = {-10.,-10.,-10.};
+  double MuonEta [3] = {-10.,-10.,-10.};
+  double ElectronPhi [3] = {-10.,-10.,-10.};
+  double MuonPhi [3] = {-10.,-10.,-10.};
+  double ElectronDR [3] = {-10.,-10.,-10.};
+  double MuonDR [3] = {-10.,-10.,-10.};
+  double MTW=0;
+
+
+  math::PtEtaPhiMLorentzVector mhtvec(0.0, 0.0, 0.0, 0.0);
+
+  edm::Handle <edm::View<pat::Jet> >jets;
+  if ( !event.getByLabel("patJetsAK5PF",jets) ) {
+    std::cout<<"Could not extract tag muon cands with input tag " 
+	     << "patJetsAK5PF"<<std::endl;
+  }
+  else (event.getByLabel("patJetsAK5PF",jets) );
+
+
+  for (edm::View<pat::Jet>::const_iterator jet= jets->begin(); jet!=jets->end(); ++jet){
+        if (jet->pt() < 30. || fabs(jet->eta()) > 5.) continue;
+        mhtvec -= jet->p4();
+  }
 
   //
   // electrons
@@ -133,6 +171,25 @@ bool LeptonVetoSelector::select(const edm::Event& event) const {
       if( currIso > eleIso_ ) continue;
     }
   
+    if (nElectrons<3){
+      ElectronPt[nElectrons] = ie->pt();
+      ElectronEta[nElectrons] = ie->eta();
+      ElectronPhi[nElectrons] = ie->phi();
+      double DR = 9999.;
+      double minDR = 9999.;
+      for (edm::View<pat::Jet>::const_iterator jet= jets->begin(); jet!=jets->end(); ++jet){
+	if ( jet->pt()>30 ){//&& jet->emEnergyFraction()<0.9 ){
+	  DR = deltaR( ie->eta(), ie->phi(), jet->eta(), jet->phi());
+	  if(DR < minDR && DR > 0.05) {
+	    //if(DR < minDR) {
+	    minDR = DR;
+	  } 
+	}
+      } //end dr calculation
+      
+
+      ElectronDR[nMuons] = minDR;
+    }
 
     LogDebug("LeptonVetoSelector") << "Isolated electron found";
     ++nElectrons;
@@ -191,7 +248,14 @@ bool LeptonVetoSelector::select(const edm::Event& event) const {
 	  }
 	*/
 	currIso = (im->chargedHadronIso()+im->photonIso()+im->neutralHadronIso()) / im->pt();
+	if(currIso < bestIsoMuon) bestIsoMuon = currIso;
 	if(currIso > muonIsoPF_) continue;
+
+	/*
+	  for inversion tests only:
+	if(currIso > bestIsoMuon) bestIsoMuon = currIso;
+	if(currIso < muonIsoPF_) continue;
+	*/
 
       } else {
       //only Reco:
@@ -202,12 +266,48 @@ bool LeptonVetoSelector::select(const edm::Event& event) const {
 	continue;
     }
 
+    if (nMuons<3){
+      MuonPt[nMuons] = im->pt();
+      MuonEta[nMuons] = im->eta();
+      MuonPhi[nMuons] = im->phi();
+
+
+
+      double DR = 9999.;
+      double minDR = 9999.;
+      for (edm::View<pat::Jet>::const_iterator jet= jets->begin(); jet!=jets->end(); ++jet){
+	if ( jet->pt()>30 ){//&& jet->emEnergyFraction()<0.9 ){
+	  DR = deltaR( im->eta(), im->phi(), jet->eta(), jet->phi());
+	  if(DR < minDR && DR > 0.05) {
+	    //if(DR < minDR) {
+	    minDR = DR;
+	  } 
+	}
+      } //end dr calculation
+      
+
+      MuonDR[nMuons] = minDR;
+      double DPMuMHT = reco::deltaPhi(im->phi(), mhtvec.phi());
+      MTW = sqrt(2 * im->pt() * mhtvec.pt() * (1 - cos(DPMuMHT )) );
+    }
+
     LogDebug("LeptonVetoSelector") << "Isolated muon found";
     ++nMuons;
 
   }
   setVariable("nMuons", nMuons);
-  setVariable("bestIsoMuon", bestIsoMuon);
+  setVariable("bestIsoMuon", bestIsoMuon); 
+  if (invertVeto_){
+    setVariable("Muon1Pt", MuonPt[0]);
+    setVariable("Muon1Eta", MuonEta[0]);
+    setVariable("Muon1Phi", MuonPhi[0]);
+    setVariable("Electron1Pt", ElectronPt[0]);
+    setVariable("Electron1Eta", ElectronEta[0]);
+    setVariable("Electron1Phi", ElectronPhi[0]);
+    setVariable("Muon1DR", MuonDR[0]);
+    setVariable("Electron1DR", ElectronDR[0]);
+    setVariable("MuonMTW", MTW);
+  }
   
 
   // Selection
@@ -220,7 +320,8 @@ bool LeptonVetoSelector::select(const edm::Event& event) const {
     return true;
   }
   else{
-    if ( (nElectrons +  nMuons + nTaus) == 1 && nTaus ==0 ) return true;
+    if ( (nElectrons +  nMuons + nTaus) == 1 && nTaus ==0 && nElectrons == 0 ) return true;
+    //    if ( (nElectrons +  nMuons + nTaus) == 1 && nTaus ==0 ) return true;
   }
   return false;
 }
