@@ -19,7 +19,7 @@ TTEffPFTauTagInfoProducer.PFJetTracksAssociatorProducer = cms.InputTag("TTEffak5
 #TTEffFixedConePFTauProducer = copy.deepcopy(fixedConePFTauProducer)
 #TTEffFixedConePFTauProducer.PFTauTagInfoProducer = cms.InputTag("TTEffPFTauTagInfoProducer")
 
-from RecoTauTag.Configuration.ShrinkingConePFTaus_cfi import shrinkingConePFTauProducer
+from RecoTauTag.Configuration.ShrinkingConePFTaus_cff import shrinkingConePFTauProducer
 TTEffShrinkingConePFTauProducer = copy.deepcopy(shrinkingConePFTauProducer)
 TTEffShrinkingConePFTauProducer.PFTauTagInfoProducer = cms.InputTag("TTEffPFTauTagInfoProducer")
 
