@@ -13,7 +13,7 @@
 //
 // Original Author:  Chi Nhan Nguyen
 //         Created:  Wed Oct  1 13:04:54 CEST 2008
-// $Id: TTEffAnalyzer.h,v 1.42 2011/01/10 14:56:23 slehti Exp $
+// $Id: TTEffAnalyzer.h,v 1.43 2011/05/13 12:00:16 slehti Exp $
 //
 //
 
@@ -87,6 +87,7 @@ class TTEffAnalyzer : public edm::EDAnalyzer {
       edm::TriggerNames _triggerNames;
       edm::InputTag  PFTaus_,PFTauIso_,MCTaus_,MCParticles_,PFTauMuonRej_,PFTauElectronRej_; //Path to analyze
       std::string rootFile_;
+      std::vector<edm::InputTag> PFTauDiscriminators_;
 
       int _HltEvtCnt;
       bool *_hltFlag;
@@ -95,6 +96,7 @@ class TTEffAnalyzer : public edm::EDAnalyzer {
       edm::Handle<PFTauDiscriminator> thePFTauDiscriminatorByIsolation;
       edm::Handle<PFTauDiscriminator> thePFTauDiscriminatorAgainstMuon;
       edm::Handle<PFTauDiscriminator> thePFTauDiscriminatorAgainstElectron;
+      std::vector<edm::Handle<PFTauDiscriminator> > thePFTauDiscriminators;
       edm::Handle<std::vector<LorentzVector> > mcTaus;
       edm::Handle<reco::GenParticleCollection> mcParticles;
 
@@ -108,6 +110,7 @@ class TTEffAnalyzer : public edm::EDAnalyzer {
       float pfJetNeutralEmEnergy, pfJetNeutralEmEnergyFraction, pfJetNeutralHadronEnergy, pfJetNeutralHadronEnergyFraction;
       float PFSignalSumPt,PFIsoNTrks,PFIsoTrkNHits,PFIsoTrkChi2,PFIsoTrkPt;
       double MCMatchingCone;
+      int* discriminators;
       L1TauEfficiencyAnalyzer _L1analyzer;
       L2TauEfficiencyAnalyzer _L2analyzer;
       L25and3TauEfficiencyAnalyzer _L25and3analyzer;
