@@ -1,7 +1,7 @@
 // Class:      L25and3TauEfficiencyAnalyzer
 // Original Author:  Eduardo Luiggi, modified by Sho Maruyama
 //         Created:  Fri Apr  4 16:37:44 CDT 2008
-// $Id: L25and3TauEfficiencyAnalyzer.cc,v 1.10 2011/03/30 15:01:36 slehti Exp $
+// $Id: L25and3TauEfficiencyAnalyzer.cc,v 1.11 2011/05/31 05:29:30 eluiggi Exp $
 #include "ElectroWeakAnalysis/TauTriggerEfficiency/interface/L25and3TauEfficiencyAnalyzer.h"
 #include "FWCore/MessageLogger/interface/MessageLogger.h"
 #include "DataFormats/VertexReco/interface/Vertex.h"
@@ -176,6 +176,7 @@ void L25and3TauEfficiencyAnalyzer::fill(const edm::Event& iEvent, const LorentzV
       }
       
       else{
+/*
       	cout.precision(3);									    
         cout << "Number of TauTag Jets\t" << nTauTags << endl;
         cout << "TauTagInfoTracks \n";
@@ -183,7 +184,7 @@ void L25and3TauEfficiencyAnalyzer::fill(const edm::Event& iEvent, const LorentzV
         for(unsigned int trkIt = 0; trkIt < chargedHads.size(); trkIt++){											 
      	  cout << trkIt << "\t Trk Pt " << chargedHads.at(trkIt)->pt()
      	       << "\t DeltaR " << deltaR(*(theMatchedPFTauTag.pfjetRef()),*(chargedHads.at(trkIt)))
-     	       << "\t Chi2 " << chargedHads.at(trkIt)->trackRef()->chi2()
+    	       << "\t Chi2 " << chargedHads.at(trkIt)->trackRef()->chi2()
      	       << "\t Chi2/NdF " << chargedHads.at(trkIt)->trackRef()->normalizedChi2()
      	       << "\t Hits " << chargedHads.at(trkIt)->trackRef()->numberOfValidHits()
      	       << "\t PxlHits " << chargedHads.at(trkIt)->trackRef()->hitPattern().numberOfValidPixelHits()
@@ -220,6 +221,7 @@ void L25and3TauEfficiencyAnalyzer::fill(const edm::Event& iEvent, const LorentzV
      	       << "\t dz " << theHQTracks->at(trkIt).dz(theVertexPosition)
      	       << "\n";
       	}
+*/
       }
  
 /*
