@@ -13,7 +13,7 @@
 //
 // Original Author:  Chi Nhan Nguyen
 //         Created:  Wed Oct  1 13:04:54 CEST 2008
-// $Id: TTEffAnalyzer.cc,v 1.53 2011/05/13 12:00:17 slehti Exp $
+// $Id: TTEffAnalyzer.cc,v 1.54 2011/05/31 05:29:30 eluiggi Exp $
 //
 //
 
@@ -39,6 +39,7 @@ TTEffAnalyzer::TTEffAnalyzer(const edm::ParameterSet& iConfig):
   PFTauMuonRej_(iConfig.getParameter<edm::InputTag>("PFTauMuonRejectionCollection")),
   PFTauElectronRej_(iConfig.getParameter<edm::InputTag>("PFTauElectronRejectionCollection")),
   rootFile_(iConfig.getParameter<std::string>("outputFileName")),
+  PFTauDiscriminators_(iConfig.getParameter<std::vector<edm::InputTag> >("PFTauDiscriminators")),
   _hltFlag(new bool[512]),
   MCMatchingCone(iConfig.getParameter<double>("MCMatchingCone"))
 {
@@ -111,6 +112,11 @@ TTEffAnalyzer::TTEffAnalyzer(const edm::ParameterSet& iConfig):
   _TTEffTree->Branch("PFMuonMatch", &PFMuonMatch, "PFMuonMatch/I");  
   _TTEffTree->Branch("PFElectronMatch", &PFElectronMatch, "PFElectronMatch/I");
 
+  discriminators = new int[PFTauDiscriminators_.size()];                                                                                  
+  for(size_t i = 0; i < PFTauDiscriminators_.size(); ++i) {                                                                               
+    _TTEffTree->Branch(PFTauDiscriminators_[i].label().c_str(), &discriminators[i], (PFTauDiscriminators_[i].label()+"/I").c_str());      
+  }
+
   _TTEffTree->Branch("PFJetChargedEmEnergy",             &pfJetChargedEmEnergy);
   _TTEffTree->Branch("PFJetChargedEmEnergyFraction",     &pfJetChargedEmEnergyFraction);
   _TTEffTree->Branch("PFJetChargedHadronEnergy",         &pfJetChargedHadronEnergy);
@@ -182,10 +188,17 @@ TTEffAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
        if(!thePFTauDiscriminatorAgainstElectron.isValid()) {
          edm::LogWarning("TTEffAnalyzer")<<"No DiscriminatorAgainstElectron with label "<<PFTauElectronRej_<<" found!"<<endl;
        }
-       
+/*       
        iEvent.getByLabel(PFTauElectronRej_,thePFTauDiscriminatorAgainstElectron);
        if(!thePFTauDiscriminatorAgainstElectron.isValid()) {
          edm::LogWarning("TTEffAnalyzer")<<"No DiscriminatorAgainstElectron with label "<<PFTauElectronRej_<<" found!"<<endl;
+       }
+*/
+       thePFTauDiscriminators.clear();                                                                                                    
+       for(size_t i = 0; i < PFTauDiscriminators_.size(); ++i){                                                                           
+                edm::Handle<PFTauDiscriminator> thePFTauDiscriminator;                                                                    
+                iEvent.getByLabel(PFTauDiscriminators_[i],thePFTauDiscriminator);                                                         
+                thePFTauDiscriminators.push_back(thePFTauDiscriminator);                                                                  
        }
 	 
        iEvent.getByLabel(MCTaus_, mcTaus);

@@ -40,9 +40,10 @@ process.load('Configuration/StandardSequences/GeometryPilot2_cff')
 if(isData):
     process.source = cms.Source("PoolSource",
 	fileNames = cms.untracked.vstring(
-	"/store/user/luiggi/MinimumBias/TTEffSkimRun2011A_GoldenPlusESIgnoredJSON/a6b050dc4acb87f74e46528e006dff64/TTEffSkim_1_1_Zd8.root",
-	"/store/user/luiggi/MinimumBias/TTEffSkimRun2011A_GoldenPlusESIgnoredJSON/a6b050dc4acb87f74e46528e006dff64/TTEffSkim_2_1_IA6.root",
-	"/store/user/luiggi/MinimumBias/TTEffSkimRun2011A_GoldenPlusESIgnoredJSON/a6b050dc4acb87f74e46528e006dff64/TTEffSkim_3_1_I9j.root"
+	"file:TTEffSkim.root"
+#	"/store/user/luiggi/MinimumBias/TTEffSkimRun2011A_GoldenPlusESIgnoredJSON/a6b050dc4acb87f74e46528e006dff64/TTEffSkim_1_1_Zd8.root",
+#	"/store/user/luiggi/MinimumBias/TTEffSkimRun2011A_GoldenPlusESIgnoredJSON/a6b050dc4acb87f74e46528e006dff64/TTEffSkim_2_1_IA6.root",
+#	"/store/user/luiggi/MinimumBias/TTEffSkimRun2011A_GoldenPlusESIgnoredJSON/a6b050dc4acb87f74e46528e006dff64/TTEffSkim_3_1_I9j.root"
 	)
     )
 else:
@@ -76,6 +77,7 @@ process.TTEffAnalysis = cms.EDAnalyzer("TTEffAnalyzer",
         PFTauIsoCollection      = cms.InputTag("TTEffPFTauDiscriminationByIsolation"),
         PFTauMuonRejectionCollection     = cms.InputTag("TTEffPFTauDiscriminationAgainstMuon"),
 	PFTauElectronRejectionCollection = cms.InputTag("TTEffPFTauDiscriminationAgainstElectron"),
+	PFTauDiscriminators     = cms.VInputTag(),
 
 	HLTMETSource		= cms.InputTag("hltMet"),
 	METSource		= cms.InputTag("pfMet"),
@@ -156,6 +158,14 @@ process.TTEffAnalysisHLTPFTauTightHPS.LoopingOver = cms.InputTag("hpsPFTauProduc
 process.TTEffAnalysisHLTPFTauTightHPS.PFTauIsoCollection = cms.InputTag("hpsPFTauDiscriminationByVLooseIsolation")
 process.TTEffAnalysisHLTPFTauTightHPS.PFTauMuonRejectionCollection = cms.InputTag("hpsPFTauDiscriminationByTightMuonRejection")
 process.TTEffAnalysisHLTPFTauTightHPS.PFTauElectronRejectionCollection = cms.InputTag("hpsPFTauDiscriminationByMediumElectronRejection")
+process.TTEffAnalysisHLTPFTauTightHPS.PFTauDiscriminators = cms.VInputTag(
+    cms.InputTag("hpsPFTauDiscriminationByTightMuonRejection"),
+    cms.InputTag("hpsPFTauDiscriminationByMediumElectronRejection"),
+    cms.InputTag("hpsPFTauDiscriminationByTightIsolation"),
+    cms.InputTag("hpsPFTauDiscriminationByMediumIsolation"),
+    cms.InputTag("hpsPFTauDiscriminationByLooseIsolation"),
+    cms.InputTag("hpsPFTauDiscriminationByVLooseIsolation")
+)
 process.TTEffAnalysisHLTPFTauTightHPS.outputFileName = cms.string("tteffAnalysis-hltpftautight-hpspftau.root");
 process.TTEffAnalysisHLTPFTauTightHPS.l25JetSource = cms.InputTag("hltPFTauTagInfo")
 process.TTEffAnalysisHLTPFTauTightHPS.l25PtCutSource = cms.InputTag("hltPFTausTightCone")
@@ -184,30 +194,30 @@ else:
         process.hltPhysicsDeclared+
 	process.TauMCProducer
     ) 
-process.runTTEffAna += process.TTEffPFTau
+#process.runTTEffAna += process.TTEffPFTau
 process.runTTEffAna += process.TTEffAnalysis
 process.runTTEffAna += process.TTEffAnalysisL1Tau
 process.runTTEffAna += process.TTEffAnalysisL1Cen
 process.runTTEffAna += process.TTEffAnalysisHLTPFTau
-process.runTTEffAna += process.TTEffAnalysisHLTPFTauTight
+#process.runTTEffAna += process.TTEffAnalysisHLTPFTauTight
 process.runTTEffAna += process.TTEffAnalysisHLTPFTauTightHPS
 
-#process.o1 = cms.OutputModule("PoolOutputModule",
-#    outputCommands = cms.untracked.vstring("keep *"),
-#    fileName = cms.untracked.string('cmssw.root')
-#)
-#process.outpath = cms.EndPath(process.o1)
+process.o1 = cms.OutputModule("PoolOutputModule",
+    outputCommands = cms.untracked.vstring("keep *"),
+    fileName = cms.untracked.string('cmssw.root')
+)
+process.outpath = cms.EndPath(process.o1)
 
-#process.HLTPFTauSequence+= process.hltPFTausTightCone
+process.HLTPFTauSequence+= process.hltPFTausTightCone
 process.schedule = cms.Schedule(process.DoHLTJets,
-				process.DoHltMuon,
+#				process.DoHltMuon,
 				process.DoHLTPhoton,
 				process.DoHLTElectron,
 				process.DoHLTTau,
 				process.DoHLTMinBiasPixelTracks,
 				process.runMETCleaning,
-				process.runTTEffAna#,
-#				process.outpath
+				process.runTTEffAna
+#				,process.outpath
 )
 
 if (isData):  # replace all instances of "rawDataCollector" with "source" in In$
