@@ -13,7 +13,7 @@
 //
 // Original Author:  Daniele del Re
 //         Created:  Thu Sep 13 16:00:15 CEST 2007
-// $Id: GammaJetAnalyzer.cc,v 1.7 2011/05/21 12:14:35 meridian Exp $
+// $Id: GammaJetAnalyzer.cc,v 1.59 2011/05/21 16:13:53 rahatlou Exp $
 //
 //
 
@@ -657,21 +657,28 @@ GammaJetAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
 
       edm::Handle<std::vector<PileupSummaryInfo> > pileupHandle;
       if( isMC ) iEvent.getByLabel(puSummaryInfo_, pileupHandle);
-       pu_n = 0;
-      if( pileupHandle.isValid() ) {
-  
-         PileupSummaryInfo pileup = (*pileupHandle.product())[0];
-  
-         pu_n = pileup.getPU_NumInteractions();
-         //pu_bunchcrossing = pileup.getBunchCrossing();
-         int sv = pu_n< 50 ? pu_n : 50;
-         copy( pileup.getPU_zpositions().begin(), pileup.getPU_zpositions().begin()+sv, pu_zpos );
-         copy( pileup.getPU_sumpT_lowpT().begin(), pileup.getPU_sumpT_lowpT().begin()+sv, pu_sumpt_lowpt );
-         copy( pileup.getPU_sumpT_highpT().begin(), pileup.getPU_sumpT_highpT().begin()+sv, pu_sumpt_highpt );
-         copy( pileup.getPU_ntrks_lowpT().begin(), pileup.getPU_ntrks_lowpT().begin()+sv, pu_ntrks_lowpt );
-         copy( pileup.getPU_ntrks_highpT().begin(), pileup.getPU_ntrks_highpT().begin()+sv, pu_ntrks_highpt );
-      }
-
+      pu_n = 0;
+      
+      if( pileupHandle.isValid() ) 
+	{
+	  std::vector<PileupSummaryInfo>::const_iterator PVI;
+	  
+	  for(PVI = pileupHandle->begin(); PVI != pileupHandle->end(); ++PVI) 
+	    {
+	      
+	      if(PVI->getBunchCrossing() != 0) 
+		continue;
+	      
+	      pu_n = PVI->getPU_NumInteractions();
+	      //pu_bunchcrossing = PVI->getBunchCrossing();
+	      int sv = pu_n< 50 ? pu_n : 50;
+	      copy( PVI->getPU_zpositions().begin(), PVI->getPU_zpositions().begin()+sv, pu_zpos );
+	      copy( PVI->getPU_sumpT_lowpT().begin(), PVI->getPU_sumpT_lowpT().begin()+sv, pu_sumpt_lowpt );
+	      copy( PVI->getPU_sumpT_highpT().begin(), PVI->getPU_sumpT_highpT().begin()+sv, pu_sumpt_highpt );
+	      copy( PVI->getPU_ntrks_lowpT().begin(), PVI->getPU_ntrks_lowpT().begin()+sv, pu_ntrks_lowpt );
+	      copy( PVI->getPU_ntrks_highpT().begin(), PVI->getPU_ntrks_highpT().begin()+sv, pu_ntrks_highpt );
+	    }
+	}
   // get geometry
    edm::ESHandle<CaloGeometry> geoHandle;
    //   iSetup.get<IdealGeometryRecord>().get(geoHandle);
@@ -1497,8 +1504,10 @@ GammaJetAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
         tracks.product(),
         math::XYZPoint(vertexBeamSpot.x0(),vertexBeamSpot.y0(),vertexBeamSpot.z0()) );
 
+   std::vector<int> rankprod;  
    // Loop over reco photons to identify photons for vertex selection
 //   std::cout << "============= Vertex Analysis" << std::endl;
+
    std::vector<PhotonInfo> photonsForVertexComputation;
    for (PhotonCollection::const_iterator it = PhotonHandle->begin(); 
 	it != PhotonHandle->end(); ++it) 
@@ -1560,7 +1569,6 @@ GammaJetAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
 }
        
 
-
   //Vertex Analysis	   						 
 
    for(int ii=0; ii<nvertex; ++ii) 
@@ -1570,16 +1578,18 @@ GammaJetAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
        vptasym[ii]=-9999.;
        vlogsumpt2[ii]=-9999.;
      }
-   std::vector<int> rankprod;  
+
 //        std::cout << "Preselected " << photonsForVertexComputation.size() << " photons " << std::endl;
   //Prepare vertex information
-  if (photonsForVertexComputation.size()>=2)
+   if (photonsForVertexComputation.size()>=2)
     {
       GlobalVertexInfo aVtx;
       aVtx.fillInfo(iEvent,iSetup);     
 
       //Run HggVertexAnalysis
       vtxAna->analyze(aVtx,photonsForVertexComputation[0],photonsForVertexComputation[1]);
+
+
       //Choiche of the vertex
       // preselect vertices : all vertices
       std::vector<int> preselAll;
@@ -1648,7 +1658,7 @@ GammaJetAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
 	}
 	
     }
-  
+ 
   for (PhotonCollection::const_iterator it = PhotonHandle->begin(); 
 	it != PhotonHandle->end(); ++it) {
      
