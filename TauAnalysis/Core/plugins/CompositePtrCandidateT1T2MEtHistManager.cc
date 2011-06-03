@@ -20,6 +20,7 @@
 #include <TMath.h>
 #include <TVector2.h>
 #include <TVectorD.h>
+#include <TMatrixD.h>
 
 const double epsilon = 0.01;
 
@@ -37,7 +38,8 @@ bool matchesGenCandidatePair(const CompositePtrCandidateT1T2MEt<T1,T2>& composit
 
 template<typename T1, typename T2>
 CompositePtrCandidateT1T2MEtHistManager<T1,T2>::CompositePtrCandidateT1T2MEtHistManager(const edm::ParameterSet& cfg)
-  : HistManagerBase(cfg)
+  : HistManagerBase(cfg),
+    pfMEtCovInverse_(2, 2)
 {
   //std::cout << "<CompositePtrCandidateT1T2MEtHistManager::CompositePtrCandidateT1T2MEtHistManager>:" << std::endl;
 
@@ -209,6 +211,7 @@ void CompositePtrCandidateT1T2MEtHistManager<T1,T2>::bookHistogramsImp()
   hPzetaCorr_ = book2D("PzetaCorr", "P_{#zeta} vs. P_{#zeta}^{vis}", 20, 0., 200., 40., -200., +200.);
   hPzetaDiff_ = book1D("PzetaDiff", "P_{#zeta} - 1.5*P_{#zeta}^{vis}", 40, -100., +100.);
   hPzetaDiffMEtSignRatio_ = book1D("PzetaDiffMEtSignRatio", "(P_{#zeta} - 1.5*P_{#zeta}^{vis}) / MET sign.", 100, -5.01, +5.01);
+  hMEtSignProb_ = book1D("MEtSignProb", "Probability of (gen. MET - rec. MET)/sigmaMET", 102., -0.01, 1.01);
 
   hPzetaDiffVsDPhi12_ = 
     book2D("PzetaDiffVsDPhi12",  "P_{#zeta} - 1.5*P_{#zeta}^{vis} vs. #Delta#phi_{1,2}", 36, -epsilon, TMath::Pi() + epsilon, 20, -100., +100.);
@@ -538,6 +541,28 @@ void CompositePtrCandidateT1T2MEtHistManager<T1,T2>::fillHistogramsImp(const edm
       zeta(1) = zetaY;
       double projMEtSign = zeta*(diTauCandidate->metSignMatrix()*zeta);
       if ( projMEtSign != 0. ) hPzetaDiffMEtSignRatio_->Fill(getBoundedValue(pZetaDiff/projMEtSign, -5.0, +5.0), weight);
+      if ( dynamic_cast<const pat::MET*>(diTauCandidate->met().get()) != 0 ) {
+	const pat::MET* patMEt = dynamic_cast<const pat::MET*>(diTauCandidate->met().get());
+	if ( patMEt->genMET() ) {
+	  pfMEtCovInverse_ = diTauCandidate->metSignMatrix();
+	  pfMEtCovInverse_.Invert();
+	  pfMEtCovInverseS_(0, 0) = pfMEtCovInverse_(0, 0);
+	  pfMEtCovInverseS_(1, 0) = pfMEtCovInverse_(1, 0);
+	  pfMEtCovInverseS_(0, 1) = pfMEtCovInverse_(0, 1);
+	  pfMEtCovInverseS_(1, 1) = pfMEtCovInverse_(1, 1);
+
+	  residualS_(0) = patMEt->genMET()->px() - patMEt->px();
+	  residualS_(1) = patMEt->genMET()->py() - patMEt->py();
+
+	  // CV: in case pfMEt resolution are accurately modeled,
+	  //     residual*cov^-1*residual is expected to be distributed
+	  //     like a chi^2 with 2 degrees of freedom
+	  //    (cf. CMS AN-10/400, page 1)
+	  double chi2 = ROOT::Math::Similarity(residualS_, pfMEtCovInverseS_);
+	  double prob = TMath::Prob(chi2, 2);
+	  hMEtSignProb_->Fill(getBoundedValue(prob, 0., 1.0), weight);
+	}
+      }
     }
 
     hPzetaDiffVsDPhi12_->Fill(diTauCandidate->dPhi12(), diTauCandidate->pZeta() - 1.5*diTauCandidate->pZetaVis(), weight);
