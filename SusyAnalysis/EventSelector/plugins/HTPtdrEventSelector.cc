@@ -43,7 +43,7 @@ bool HTPtdrEventSelector::select(const edm::Event& event) const {
    // Sum over jet Ets (with cut on min. pt)
    float myHT = uncorrType_ == pat::MET::uncorrMAXN ? metHandle->front().et() : metHandle->front().uncorrectedPt(
             uncorrType_);
-   for (size_t i = 1; i < std::min(static_cast<size_t> (4), jetHandle->size()); ++i) {
+   for (unsigned int i = 1; i < std::min(static_cast<unsigned int> (4), jetHandle->size()); ++i) {
       if ((*jetHandle)[i].pt() > minPt_ && (*jetHandle)[i].eta() < maxEta_)
          myHT += (*jetHandle)[i].et();
    }
