@@ -120,6 +120,7 @@ protected:
   Int_t    vtxNTrk_[150];
   Int_t    vtxNDF_[150];
   Float_t  vtxD0_[150];
+  Int_t    nGoodVtx_;
   Int_t    IsVtxGood_;
   Int_t    nTrk_;
   Int_t    nGoodTrk_;
@@ -176,7 +177,7 @@ protected:
   Float_t  pfMETSig_;
   // Electron
   Int_t    nEle_;
-  Int_t    eleTrg_[maxP][23];
+  Int_t    eleTrg_[maxP][25];
   Int_t    eleID_[maxP][30];
   Float_t  eleIDLH_[maxP];
   Int_t    eleClass_[maxP];
@@ -246,7 +247,7 @@ protected:
 
   // Photon
   Int_t    nPho_;
-  Int_t    phoTrg_[maxP][19];
+  Int_t    phoTrg_[maxP][8];
   Bool_t   phoIsPhoton_[maxP];
   Float_t  phoE_[maxP];
   Float_t  phoEt_[maxP];
@@ -308,6 +309,9 @@ protected:
   Float_t  muPt_[maxP];
   Float_t  muPz_[maxP];
   Int_t    muGenIndex_[maxP];
+  Int_t    muGenGMomPID_[maxP];
+  Int_t    muGenMomPID_[maxP];
+  Float_t  muGenMomPt_[maxP];
   Float_t  muIsoTrk_[maxP];
   Float_t  muIsoCalo_[maxP];
   Float_t  muIsoEcal_[maxP];
@@ -321,7 +325,11 @@ protected:
   Float_t  muDz_[maxP];
   Float_t  muPVD0_[maxP];
   Float_t  muPVDz_[maxP];
+  Float_t  muValidFraction_[maxP];
   Float_t  muTrkdPt_[maxP];
+  Int_t    muNumberOfHits_[maxP];
+  Int_t    muNumberOfValidHits_[maxP];
+  Int_t    muNumberOfInactiveHits_[maxP];
   Int_t    muNumberOfValidTrkHits_[maxP];
   Int_t    muNumberOfValidPixelHits_[maxP];
   Int_t    muNumberOfValidMuonHits_[maxP];
@@ -334,7 +342,7 @@ protected:
 
   // Jet
   Int_t    nJet_;
-  Int_t    jetTrg_[maxP][40];
+  Int_t    jetTrg_[maxP][49];
   Int_t    jetAlgo_[maxP];
   Float_t  jetEn_[maxP];
   Float_t  jetPt_[maxP];
