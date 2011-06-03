@@ -14,6 +14,8 @@
 
 #include "AnalysisDataFormats/TauAnalysis/interface/CompositePtrCandidateT1T2MEt.h"
 
+#include <TMatrixD.h>
+
 #include <vector>
 #include <string>
 
@@ -162,6 +164,13 @@ class CompositePtrCandidateT1T2MEtHistManager : public HistManagerBase
   MonitorElement* hPzetaCorr_;
   MonitorElement* hPzetaDiff_;
   MonitorElement* hPzetaDiffMEtSignRatio_;
+  MonitorElement* hMEtSignProb_;
+
+  // CV: auxiliary data-members for computing pfMetSignificance probability
+  //    ( made temporary variables data-members to avoid continous memory allocation/deallocation )
+  TMatrixD pfMEtCovInverse_;
+  mutable ROOT::Math::SMatrix<double, 2, 2> pfMEtCovInverseS_;
+  mutable ROOT::Math::SVector<double, 2> residualS_;
   
   MonitorElement* hPzetaDiffVsDPhi12_;
   MonitorElement* hPzetaDiffVsMt1MET_;
