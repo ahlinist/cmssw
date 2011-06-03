@@ -8,14 +8,18 @@
 #include "DataFormats/PatCandidates/interface/Electron.h"
 #include "DataFormats/PatCandidates/interface/Muon.h"
 #include "DataFormats/PatCandidates/interface/Tau.h"
+#include "DataFormats/Candidate/interface/Candidate.h" 
 
 #include "PhysicsTools/JetMCUtils/interface/JetMCTag.h"
 
 #include "AnalysisDataFormats/TauAnalysis/interface/CompositePtrCandidateT1T2MEt.h"
 #include "AnalysisDataFormats/TauAnalysis/interface/CompositePtrCandidateT1T2MEtFwd.h"
-#include "AnalysisDataFormats/TauAnalysis/interface/NSVfitEventHypothesis.h"
-#include "AnalysisDataFormats/TauAnalysis/interface/NSVfitEventHypothesisFwd.h"
-#include "AnalysisDataFormats/TauAnalysis/interface/NSVfitResonanceHypothesis.h"
+#include "AnalysisDataFormats/TauAnalysis/interface/NSVfitEventHypothesisBase.h"
+#include "AnalysisDataFormats/TauAnalysis/interface/NSVfitEventHypothesisBaseFwd.h"
+#include "AnalysisDataFormats/TauAnalysis/interface/NSVfitEventHypothesisByIntegration.h"
+#include "AnalysisDataFormats/TauAnalysis/interface/NSVfitResonanceHypothesisBase.h"
+#include "AnalysisDataFormats/TauAnalysis/interface/NSVfitResonanceHypothesisByIntegration.h"
+#include "AnalysisDataFormats/TauAnalysis/interface/NSVfitSingleParticleHypothesisBase.h"
 
 #include "DataFormats/Math/interface/deltaR.h"
 
@@ -302,32 +306,39 @@ void CompositePtrCandidateT1T2MEtNSVfitHistManager<T1,T2>::fillHistogramsImp(con
     for ( typename std::vector<massHypothesisEntryType*>::iterator massHypothesisEntry = massHypothesisEntries_.begin();
 	  massHypothesisEntry != massHypothesisEntries_.end(); ++massHypothesisEntry ) {
 
-      const NSVfitEventHypothesis* matchedEventHypothesis = 0;
-
+      const NSVfitEventHypothesisBase* matchedEventHypothesis = 0;
       if ( (*massHypothesisEntry)->nSVfitEventHypothesisName_ != "" ) {
 	matchedEventHypothesis = diTauCandidate->nSVfitSolution((*massHypothesisEntry)->nSVfitEventHypothesisName_);
       } else if ( (*massHypothesisEntry)->nSVfitEventHypothesisSrc_.label() != "" ) {
-	edm::Handle<NSVfitEventHypothesisCollection> nSVfitEventHypotheses;
+	edm::Handle<NSVfitEventHypothesisBaseCollection> nSVfitEventHypotheses;
 	evt.getByLabel((*massHypothesisEntry)->nSVfitEventHypothesisSrc_, nSVfitEventHypotheses);
-
-	for ( NSVfitEventHypothesisCollection::const_iterator nSVfitEventHypothesis = nSVfitEventHypotheses->begin();
+	
+	for ( NSVfitEventHypothesisBaseCollection::const_iterator nSVfitEventHypothesis = nSVfitEventHypotheses->begin();
 	      nSVfitEventHypothesis != nSVfitEventHypotheses->end(); ++nSVfitEventHypothesis ) {
+	  
+	  size_t numResonances = nSVfitEventHypothesis->numResonances();   
+	  assert(numResonances == 1);
+	  const NSVfitResonanceHypothesisBase* resonance = nSVfitEventHypothesis->resonance(0);
+	  
+	  if ( !resonance->isValidSolution() ) continue;
+	  
+	  size_t numDaughters = resonance->numDaughters();   
+	  assert(numDaughters == 2);
+	  const NSVfitSingleParticleHypothesisBase* daughter1 = resonance->daughter(0);
+	  const NSVfitSingleParticleHypothesisBase* daughter2 = resonance->daughter(1);
+	  
+	  const reco::Candidate::LorentzVector& p4Daughter1 = daughter1->particle()->p4();
+          const reco::Candidate::LorentzVector& p4Daughter2 = daughter2->particle()->p4();
 
-	  const edm::OwnVector<NSVfitResonanceHypothesis>& resonanceHypotheses = nSVfitEventHypothesis->resonances();
-	  assert(resonanceHypotheses.size() == 1);
-	  if ( !resonanceHypotheses[0].isValidSolution() ) continue;
-	  const edm::OwnVector<NSVfitSingleParticleHypothesisBase>& daughterHypotheses = resonanceHypotheses[0].daughters();
-	  assert(daughterHypotheses.size() == 2);
-
-	  //std::cout << "nSVfit leg1: Pt = " << daughterHypotheses[0].p4().pt() << ","
-	  //	      << " eta = " << daughterHypotheses[0].p4().eta() << ", phi = " << daughterHypotheses[0].p4().phi() << std::endl;
-	  //std::cout << "nSVfit leg2: Pt = " << daughterHypotheses[1].p4().pt() << ","
-	  //	      << " eta = " << daughterHypotheses[1].p4().eta() << ", phi = " << daughterHypotheses[1].p4().phi() << std::endl;
-
-	  if ( (deltaR(diTauCandidate->leg1()->p4(), daughterHypotheses[0].p4()) < epsilon &&
-		deltaR(diTauCandidate->leg2()->p4(), daughterHypotheses[1].p4()) < epsilon) ||
-	       (deltaR(diTauCandidate->leg1()->p4(), daughterHypotheses[1].p4()) < epsilon &&
-		deltaR(diTauCandidate->leg2()->p4(), daughterHypotheses[0].p4()) < epsilon) ) {
+	  //std::cout << "nSVfit leg1: Pt = " << p4Daughter1.pt() << "," 
+	  //	      << " eta = " << p4Daughter1.eta() << ", phi = " << p4Daughter1.phi() << std::endl;
+	  //std::cout << "nSVfit leg1: Pt = " << p4Daughter2.pt() << "," 
+	  //	      << " eta = " << p4Daughter2.eta() << ", phi = " << p4Daughter2.phi() << std::endl;
+	  
+	  if ( (deltaR(diTauCandidate->leg1()->p4(), p4Daughter1) < epsilon &&
+		deltaR(diTauCandidate->leg2()->p4(), p4Daughter2) < epsilon) ||
+	       (deltaR(diTauCandidate->leg1()->p4(), p4Daughter2) < epsilon &&
+		deltaR(diTauCandidate->leg2()->p4(), p4Daughter1) < epsilon) ) {
 	    matchedEventHypothesis = &(*nSVfitEventHypothesis);
 	    break;
 	  }
@@ -339,9 +350,9 @@ void CompositePtrCandidateT1T2MEtNSVfitHistManager<T1,T2>::fillHistogramsImp(con
 	  << " Failed to match diTauCandidate to NSVfitEventHypothesis object --> skipping !!";
 	continue;
       }
-
-      const NSVfitResonanceHypothesis& nSVfitResonanceHypothesis = matchedEventHypothesis->resonances()[0];
-      double recMass = nSVfitResonanceHypothesis.mass();
+      
+      const NSVfitResonanceHypothesisBase* nSVfitResonanceHypothesis = matchedEventHypothesis->resonance(0);
+      double recMass = nSVfitResonanceHypothesis->mass();
       double genMass = diTauCandidate->p4gen().mass();
 
       (*massHypothesisEntry)->hMass_->Fill(recMass, weight);
@@ -359,23 +370,31 @@ void CompositePtrCandidateT1T2MEtNSVfitHistManager<T1,T2>::fillHistogramsImp(con
 			      recMass, diTauCandidate->leg2()->p4(), *genParticles, pdgIdsJet_,      weight);
       }
 
-      (*massHypothesisEntry)->hMassMedian_->Fill(nSVfitResonanceHypothesis.mass_median(), weight);
-      (*massHypothesisEntry)->hMassMean_->Fill(nSVfitResonanceHypothesis.mass_mean(), weight);
-      (*massHypothesisEntry)->hMassMaximum_->Fill(nSVfitResonanceHypothesis.mass_maximum(), weight);
-      (*massHypothesisEntry)->hMassMaxInterpol_->Fill(nSVfitResonanceHypothesis.mass_maxInterpol(), weight);
+      if ( dynamic_cast<const NSVfitResonanceHypothesisByIntegration*>(nSVfitResonanceHypothesis) ) {
+	const NSVfitResonanceHypothesisByIntegration* nSVfitResonanceHypothesis_byIntegration = 
+	  dynamic_cast<const NSVfitResonanceHypothesisByIntegration*>(nSVfitResonanceHypothesis);
+	(*massHypothesisEntry)->hMassMedian_->Fill(nSVfitResonanceHypothesis_byIntegration->mass_median(), weight);
+	(*massHypothesisEntry)->hMassMean_->Fill(nSVfitResonanceHypothesis_byIntegration->mass_mean(), weight);
+	(*massHypothesisEntry)->hMassMaximum_->Fill(nSVfitResonanceHypothesis_byIntegration->mass_maximum(), weight);
+	(*massHypothesisEntry)->hMassMaxInterpol_->Fill(nSVfitResonanceHypothesis_byIntegration->mass_maxInterpol(), weight);
+      }
 
-      double sigma = ( recMass > genMass ) ?
-	nSVfitResonanceHypothesis.massErrUp() : nSVfitResonanceHypothesis.massErrDown();
+      double sigma = ( recMass > genMass ) ? 
+	nSVfitResonanceHypothesis->massErrUp() : nSVfitResonanceHypothesis->massErrDown();
       if ( sigma != 0. ) (*massHypothesisEntry)->hMassPull_->Fill((recMass - genMass)/sigma, weight);
-
-      if ( matchedEventHypothesis->histMassResults() ) {
-	const TH1* histMassResults = matchedEventHypothesis->histMassResults();
-	double integral = histMassResults->Integral();
-	if ( integral > 0. )
-	  fillHistogramMassResult((*massHypothesisEntry)->hMassSumNormalized_, (*massHypothesisEntry)->dqmDirectory_,
-				  "MassSumNormalized", histMassResults, weight/integral);
-	fillHistogramMassResult((*massHypothesisEntry)->hMassSum_, (*massHypothesisEntry)->dqmDirectory_,
-				"MassSum", histMassResults, weight);
+      
+      if ( dynamic_cast<const NSVfitEventHypothesisByIntegration*>(matchedEventHypothesis) ) {
+	const NSVfitEventHypothesisByIntegration* matchedEventHypothesis_byIntegration = 
+	  dynamic_cast<const NSVfitEventHypothesisByIntegration*>(matchedEventHypothesis);
+	if ( matchedEventHypothesis_byIntegration->histMassResults() ) {
+	  const TH1* histMassResults = matchedEventHypothesis_byIntegration->histMassResults();
+	  double integral = histMassResults->Integral();
+	  if ( integral > 0. ) 
+	    fillHistogramMassResult((*massHypothesisEntry)->hMassSumNormalized_, (*massHypothesisEntry)->dqmDirectory_,
+				    "MassSumNormalized", histMassResults, weight/integral);
+	  fillHistogramMassResult((*massHypothesisEntry)->hMassSum_, (*massHypothesisEntry)->dqmDirectory_,
+				  "MassSum", histMassResults, weight);
+	}
       }
 
       double hadRecoilPt = (diTauCandidate->p4Vis() + diTauCandidate->met()->p4()).pt();
