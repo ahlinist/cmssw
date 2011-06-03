@@ -13,7 +13,7 @@ import copy
 # Depending on whether the muons pass the isolation cut or not, the two muons are marked as "tag" and "probe".
 #--------------------------------------------------------------------------------
 
-from PhysicsTools.PFCandProducer.pfNoPileUp_cff import *
+#from PhysicsTools.PFCandProducer.pfNoPileUp_cff import *
 
 from PhysicsTools.PatAlgos.producersLayer1.muonProducer_cfi import patMuons
 patMuons.addGenMatch = cms.bool(False)
@@ -24,7 +24,7 @@ patMuons.usePV = cms.bool(False) # compute transverse impact parameter wrt. beam
 import HLTrigger.HLTfilters.hltHighLevel_cfi
 zmmHLTFilter = HLTrigger.HLTfilters.hltHighLevel_cfi.hltHighLevel.clone()
 zmmHLTFilter.TriggerResultsTag = cms.InputTag("TriggerResults", "", "HLT")
-zmmHLTFilter.HLTPaths = [ "HLT_Mu9", "HLT_Mu15_v1", "HLT_Mu15_v2" ]
+zmmHLTFilter.HLTPaths = [ "HLT_Mu9", "HLT_Mu15_v1", "HLT_Mu15_v2", "HLT_IsoMu17_v5", "HLT_IsoMu17_v7", "HLT_DoubleMu7_v1", "HLT_DoubleMu7_v2", "HLT_Mu13_Mu8_v2", "HLT_Mu17_Mu8_v2" ]
 zmmHLTFilter.throw = cms.bool(False)
 
 # Cuts for both muons, no isolation cuts applied
