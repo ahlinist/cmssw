@@ -11,9 +11,9 @@
  *
  * \author Christian Veelken, UC Davis
  *
- * \version $Revision: 1.3 $
+ * \version $Revision: 1.4 $
  *
- * $Id: NSVfitEventLikelihoodMEt2.h,v 1.3 2011/05/26 13:06:36 friis Exp $
+ * $Id: NSVfitEventLikelihoodMEt2.h,v 1.4 2011/05/29 16:19:10 friis Exp $
  *
  */
 
@@ -34,6 +34,7 @@
 #include "AnalysisDataFormats/TauAnalysis/interface/NSVfitEventHypothesis.h"
 
 #include <TMatrixD.h>
+#include <TVectorD.h>
 
 #include <list>
 
@@ -55,13 +56,12 @@ class NSVfitEventLikelihoodMEt2 : public NSVfitEventLikelihood
 
   PFMEtSignInterface* pfMEtSign_;
 
-  //mutable TMatrixD pfMEtCovInverse_;
+  mutable TMatrixD pfMEtCov_;
+  mutable double   pfMEtCovDet_;
+  mutable TMatrixD pfMEtCovInverse_;
+  mutable TVectorD residual_fitted_;
 
-  mutable ROOT::Math::SMatrix<double, 2, 2> pfMEtCovInverse_;
-
-  // Vector which holds the current residual.  We make this a member to prevent
-  // excessive memory allocations.
-  mutable ROOT::Math::SVector<double, 2> residual_fitted_;
+  mutable double   nllConstTerm_;
 };
 
 #endif
