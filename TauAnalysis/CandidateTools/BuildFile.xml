@@ -21,6 +21,7 @@
 <use   name="TrackingTools/Records"/>
 <use   name="TrackingTools/TrajectoryState"/>
 <use   name="root"/>
+<use   name="rootcintex"/>
 <use   name="roofit"/>
 <use   name="rootminuit"/>
 <use   name="rootminuit2"/>
