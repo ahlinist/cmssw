@@ -3,7 +3,6 @@
 <use   name="DQMServices/Core"/>
 <use   name="TauAnalysis/DQMTools"/>
 <use   name="rootcore"/>
-<use   name="rootcintex"/>
 <use   name="roofit"/>
 <use   name="rootgraphics"/>
 <use   name="xerces-c"/>
