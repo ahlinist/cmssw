@@ -9,9 +9,9 @@
  *
  * \author Evan Friis, Christian Veelken; UC Davis
  *
- * \version $Revision: 1.4 $
+ * \version $Revision: 1.5 $
  *
- * $Id: SVfitLegTrackExtractor.h,v 1.4 2011/03/31 15:00:38 veelken Exp $
+ * $Id: SVfitLegTrackExtractor.h,v 1.5 2011/03/31 16:31:33 veelken Exp $
  *
  */
 
@@ -93,6 +93,8 @@ class SVfitLegTrackExtractor<pat::Tau>
     for ( unsigned iChargedHadron = 0; iChargedHadron < numChargedHadrons; ++iChargedHadron ) {
       if ( isValidRef(signalChargedHadrons.at(iChargedHadron)->trackRef()) ) 
 	tracks.push_back(reco::TrackBaseRef(signalChargedHadrons.at(iChargedHadron)->trackRef()));
+      else if ( isValidRef(signalChargedHadrons.at(iChargedHadron)->gsfTrackRef()) ) 
+	tracks.push_back(reco::TrackBaseRef(signalChargedHadrons.at(iChargedHadron)->gsfTrackRef()));
     }
     //std::cout << "--> tracks.size = " << tracks.size() << std::endl;
     return tracks;
