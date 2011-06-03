@@ -150,7 +150,7 @@ void CompositePtrCandidateT1T2MEtDump<T1,T2>::print(const edm::Event& evt, const
 	  nSVfitAlgorithm != nSVfitAlgorithms_.end(); ++nSVfitAlgorithm ) {
       *outputStream_ << "NSVfit algorithm = " << (*nSVfitAlgorithm) << ":" << std::endl;
       int errorFlag = 0;
-      const NSVfitEventHypothesis* hypothesis = diTauCandidate->nSVfitSolution(*nSVfitAlgorithm, &errorFlag);
+      const NSVfitEventHypothesisBase* hypothesis = diTauCandidate->nSVfitSolution(*nSVfitAlgorithm, &errorFlag);
       if ( hypothesis ) hypothesis->print(*outputStream_);
       else *outputStream_ << " NA" << std::endl;
     }
