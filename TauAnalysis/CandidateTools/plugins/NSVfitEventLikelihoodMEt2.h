@@ -11,9 +11,9 @@
  *
  * \author Christian Veelken, UC Davis
  *
- * \version $Revision: 1.4 $
+ * \version $Revision: 1.5 $
  *
- * $Id: NSVfitEventLikelihoodMEt2.h,v 1.4 2011/05/29 16:19:10 friis Exp $
+ * $Id: NSVfitEventLikelihoodMEt2.h,v 1.5 2011/06/03 18:17:32 veelken Exp $
  *
  */
 
@@ -59,9 +59,16 @@ class NSVfitEventLikelihoodMEt2 : public NSVfitEventLikelihood
   mutable TMatrixD pfMEtCov_;
   mutable double   pfMEtCovDet_;
   mutable TMatrixD pfMEtCovInverse_;
-  mutable TVectorD residual_fitted_;
 
-  mutable double   nllConstTerm_;
+  mutable double pfMEtCovInverse00_;
+  mutable double pfMEtCovInverse01_;
+  mutable double pfMEtCovInverse10_;
+  mutable double pfMEtCovInverse11_;
+
+  mutable double residual_fitted0_;
+  mutable double residual_fitted1_;
+
+  mutable double nllConstTerm_;
 };
 
 #endif
