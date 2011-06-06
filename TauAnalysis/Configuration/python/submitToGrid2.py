@@ -39,7 +39,7 @@ _CRAB_DEFAULTS = {
     'total_number' : -1,
     'return_data' : 0,
     'copy_data' : 1,
-    'use_server' : 1,
+    'use_server' : 0,
     'scheduler' : 'glite', 
     'storage_element' : 'srm-cms.cern.ch',
     'storage_path' : '/srm/managerv2?SFN=/castor/cern.ch',
