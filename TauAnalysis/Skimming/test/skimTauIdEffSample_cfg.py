@@ -8,7 +8,7 @@ process = cms.Process("skimTauIdEffSample")
 
 process.load('Configuration/StandardSequences/Services_cff')
 process.load('FWCore/MessageService/MessageLogger_cfi')
-process.MessageLogger.cerr.FwkReport.reportEvery = 1
+process.MessageLogger.cerr.FwkReport.reportEvery = 10000
 #process.MessageLogger.cerr.threshold = cms.untracked.string('INFO')
 process.load('Configuration/StandardSequences/GeometryIdeal_cff')
 process.load('Configuration/StandardSequences/MagneticField_cff')
@@ -21,7 +21,7 @@ process.load("TauAnalysis.TauIdEfficiency.filterTauIdEffSample_cfi")
 from Configuration.EventContent.EventContent_cff import *
 
 process.maxEvents = cms.untracked.PSet(
-    input = cms.untracked.int32(-1)
+    input = cms.untracked.int32(3)
 )
 
 process.source = cms.Source("PoolSource",
@@ -115,7 +115,7 @@ process.jec = cms.ESSource("PoolDBESSource",
                                         label=cms.untracked.string("AK5PF"))
                                ),
                            ## here you add as many jet types as you need (AK5Calo, AK5JPT, AK7PF, AK7Calo, KT4PF, KT4Calo, KT6PF, KT6Calo)
-                           connect = cms.string('sqlite_file:/afs/cern.ch/user/m/mverzett/public/Jec10V3.db')
+                           connect = cms.string('sqlite_fip:TauAnalysis/Configuration/data/Jec10V3.db')
                            #connect = cms.string("frontier://FrontierPrep/CMS_COND_PHYSICSTOOLS")
                            )
 process.es_prefer_jec = cms.ESPrefer('PoolDBESSource','jec')
@@ -132,7 +132,7 @@ process.p = cms.Path(
 process.load("Configuration.EventContent.EventContent_cff")
 process.origFEVTSIMEventContent = copy.deepcopy(process.FEVTSIMEventContent)
 process.origFEVTSIMEventContent.outputCommands.extend(
-    cms.untracked.vstring('drop *_*_*_%s' % process.name_())
+    cms.untracked.vstring('drop *_*_*_%s' % process.name_(),'keep edmMergeableCounter_*_*_*')
 )    
 
 process.skimOutputModule = cms.OutputModule("PoolOutputModule",                                 
@@ -193,6 +193,12 @@ process.counterPath = cms.Path(process.totalEventsProcessed)
 
 process.o = cms.EndPath(process.skimOutputModule + process.saveZtoMuTau_tauIdEffPlots)
 
+import TauAnalysis.Configuration.pathModifiers as pathModifiers
+
+#Removes Sys*Up collections, case insensitive
+pathModifiers.PathRemover(process.p,['sys','up'],True)
+pathModifiers.PathRemover(process.p,['sys','down'],True)
+ 
 # define order in which different paths are run
 process.schedule = cms.Schedule(
     process.counterPath,
@@ -207,5 +213,5 @@ process.schedule = cms.Schedule(
 
 # print-out all python configuration parameter information
 #print process.dumpPython()
-#processDumpFile = open('oldDump.py' , 'w')
-#print >> processDumpFile, process.dumpPython()
+processDumpFile = open('SkimDump.py' , 'w')
+print >> processDumpFile, process.dumpPython()
