@@ -94,7 +94,7 @@ tausBgEstZtautauEnrichedLeadTrk = copy.deepcopy(selectedPatTausForElecTauLeadTrk
 tausBgEstZtautauEnrichedLeadTrkPt = copy.deepcopy(selectedPatTausForElecTauLeadTrkPt)
 
 # require tau candidate to pass TaNC discriminator
-tausBgEstZtautauEnrichedTaNCdiscr = copy.deepcopy(selectedPatTausForElecTauTaNCdiscr)
+tausBgEstZtautauEnrichedIso = copy.deepcopy(selectedPatTausForElecTauIso)
 
 # require tau candidate to have either one or three tracks within signal cone
 tausBgEstZtautauEnrichedProng = copy.deepcopy(selectedPatTausForElecTauProng)
@@ -120,7 +120,7 @@ tauSelConfiguratorBgEstZtautauEnriched = objSelConfigurator(
       tausBgEstZtautauEnrichedPt,
 #      tausBgEstZtautauEnrichedLeadTrk,
       tausBgEstZtautauEnrichedLeadTrkPt,
-      tausBgEstZtautauEnrichedTaNCdiscr,
+      tausBgEstZtautauEnrichedIso,
       tausBgEstZtautauEnrichedProng,
       tausBgEstZtautauEnrichedCharge,
       tausBgEstZtautauEnrichedElectronVeto,
@@ -287,9 +287,9 @@ cfgTauLeadTrkPtCutBgEstZtautauEnriched = copy.deepcopy(cfgTauLeadTrkPtCut)
 cfgTauLeadTrkPtCutBgEstZtautauEnriched.pluginName = cms.string('tauLeadTrkPtCutBgEstZtautauEnriched')
 cfgTauLeadTrkPtCutBgEstZtautauEnriched.src_cumulative = cms.InputTag('tausBgEstZtautauEnrichedLeadTrkPtCumulative')
 
-cfgTauTaNCdiscrCutBgEstZtautauEnriched = copy.deepcopy(cfgTauTaNCdiscrCut)
-cfgTauTaNCdiscrCutBgEstZtautauEnriched.pluginName = cms.string('tauTaNCdiscrCutBgEstZtautauEnriched')
-cfgTauTaNCdiscrCutBgEstZtautauEnriched.src_cumulative = cms.InputTag('tausBgEstZtautauEnrichedTaNCdiscrCumulative')
+cfgTauIsoCutBgEstZtautauEnriched = copy.deepcopy(cfgTauIsoCut)
+cfgTauIsoCutBgEstZtautauEnriched.pluginName = cms.string('tauIsoCutBgEstZtautauEnriched')
+cfgTauIsoCutBgEstZtautauEnriched.src_cumulative = cms.InputTag('tausBgEstZtautauEnrichedIsoCumulative')
 
 cfgTauProngCutBgEstZtautauEnriched = copy.deepcopy(cfgTauProngCut)
 cfgTauProngCutBgEstZtautauEnriched.pluginName = cms.string('tauProngCutBgEstZtautauEnriched')
@@ -360,7 +360,7 @@ evtSelConfiguratorBgEstZtautauEnriched = eventSelFlagProdConfigurator(
       cfgTauPtCutBgEstZtautauEnriched,
       #cfgTauLeadTrkCutBgEstZtautauEnriched,
       cfgTauLeadTrkPtCutBgEstZtautauEnriched,
-      cfgTauTaNCdiscrCutBgEstZtautauEnriched,
+      cfgTauIsoCutBgEstZtautauEnriched,
       cfgTauProngCutBgEstZtautauEnriched,
       cfgTauChargeCutBgEstZtautauEnriched,
       cfgTauElectronVetoBgEstZtautauEnriched,
@@ -484,9 +484,9 @@ analyzeEventsBgEstZtautauEnriched = cms.EDAnalyzer("GenericAnalyzer",
             src = cms.InputTag('tauLeadTrkPtCutBgEstZtautauEnriched','cumulative')
         ),  
         cms.PSet(
-            pluginName = cms.string('tauTaNCdiscrCutBgEstZtautauEnriched'),
+            pluginName = cms.string('tauIsoCutBgEstZtautauEnriched'),
             pluginType = cms.string('BoolEventSelector'),
-            src = cms.InputTag('tauTaNCdiscrCutBgEstZtautauEnriched','cumulative')
+            src = cms.InputTag('tauIsoCutBgEstZtautauEnriched','cumulative')
         ),
         cms.PSet(
             pluginName = cms.string('tauProngCutBgEstZtautauEnriched'),
@@ -678,7 +678,7 @@ analyzeEventsBgEstZtautauEnriched = cms.EDAnalyzer("GenericAnalyzer",
                                   )
         ),
         cms.PSet(
-            filter = cms.string('tauTaNCdiscrCutBgEstZtautauEnriched'),
+            filter = cms.string('tauIsoCutBgEstZtautauEnriched'),
             title = cms.string('Tau TaNC by Loose Isolation'),
 #            title = cms.string('Tau TaNC by 0.5%'),
         ),
@@ -686,7 +686,7 @@ analyzeEventsBgEstZtautauEnriched = cms.EDAnalyzer("GenericAnalyzer",
             analyzers = cms.vstring('electronHistManagerForElecTauBgEstZtautauEnriched',
                                     'tauHistManagerForElecTauBgEstZtautauEnriched',
                                     ),
-            replace = cms.vstring('tauHistManagerForElecTauBgEstZtautauEnriched.tauSource = tausBgEstZtautauEnrichedTaNCdiscrCumulative')
+            replace = cms.vstring('tauHistManagerForElecTauBgEstZtautauEnriched.tauSource = tausBgEstZtautauEnrichedIsoCumulative')
         ),  
         
         cms.PSet(

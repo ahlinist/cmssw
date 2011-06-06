@@ -73,9 +73,9 @@ tausBgEstZeeElectronMisIdEnrichedPt = copy.deepcopy(tausBgEstZtautauEnrichedPt)
 tausBgEstZeeElectronMisIdEnrichedLeadTrkPt = copy.deepcopy(tausBgEstZtautauEnrichedLeadTrkPt)
 
 # require tau candidate to pass TaNC discriminator
-tausBgEstZeeElectronMisIdEnrichedTaNCdiscr = copy.deepcopy(tausBgEstZtautauEnrichedTaNCdiscr)
-#tausBgEstZeeElectronMisIdEnrichedTaNCdiscr.cut = cms.string('tauID("byMediumIsolation") > -1')
-#tausBgEstZeeElectronMisIdEnrichedTaNCdiscr.cut = cms.string('tauID("byTaNCfrHalfPercent") > -1')
+tausBgEstZeeElectronMisIdEnrichedIso = copy.deepcopy(tausBgEstZtautauEnrichedIso)
+#tausBgEstZeeElectronMisIdEnrichedIso.cut = cms.string('tauID("byMediumIsolation") > -1')
+#tausBgEstZeeElectronMisIdEnrichedIso.cut = cms.string('tauID("byTaNCfrHalfPercent") > -1')
 
 
 # require tau candidate to have either one or three tracks within signal cone
@@ -108,7 +108,7 @@ tauSelConfiguratorBgEstZeeElectronMisIdEnriched = objSelConfigurator(
       tausBgEstZeeElectronMisIdEnrichedEta,
       tausBgEstZeeElectronMisIdEnrichedPt,
       tausBgEstZeeElectronMisIdEnrichedLeadTrkPt,
-      tausBgEstZeeElectronMisIdEnrichedTaNCdiscr,
+      tausBgEstZeeElectronMisIdEnrichedIso,
       tausBgEstZeeElectronMisIdEnrichedProng,
       tausBgEstZeeElectronMisIdEnrichedCharge,
       tausBgEstZeeElectronMisIdEnrichedElectronVeto,
@@ -237,9 +237,9 @@ cfgTauLeadTrkPtCutBgEstZeeElectronMisIdEnriched = copy.deepcopy(cfgTauLeadTrkPtC
 cfgTauLeadTrkPtCutBgEstZeeElectronMisIdEnriched.pluginName = cms.string('tauLeadTrkPtCutBgEstZeeElectronMisIdEnriched')
 cfgTauLeadTrkPtCutBgEstZeeElectronMisIdEnriched.src_cumulative = cms.InputTag('tausBgEstZeeElectronMisIdEnrichedLeadTrkPtCumulative')
 
-cfgTauTaNCdiscrCutBgEstZeeElectronMisIdEnriched = copy.deepcopy(cfgTauTaNCdiscrCutBgEstZtautauEnriched)
-cfgTauTaNCdiscrCutBgEstZeeElectronMisIdEnriched.pluginName = cms.string('tauTaNCdiscrCutBgEstZeeElectronMisIdEnriched')
-cfgTauTaNCdiscrCutBgEstZeeElectronMisIdEnriched.src_cumulative = cms.InputTag('tausBgEstZeeElectronMisIdEnrichedTaNCdiscrCumulative')
+cfgTauIsoCutBgEstZeeElectronMisIdEnriched = copy.deepcopy(cfgTauIsoCutBgEstZtautauEnriched)
+cfgTauIsoCutBgEstZeeElectronMisIdEnriched.pluginName = cms.string('tauIsoCutBgEstZeeElectronMisIdEnriched')
+cfgTauIsoCutBgEstZeeElectronMisIdEnriched.src_cumulative = cms.InputTag('tausBgEstZeeElectronMisIdEnrichedIsoCumulative')
 
 cfgTauProngCutBgEstZeeElectronMisIdEnriched = copy.deepcopy(cfgTauProngCutBgEstZtautauEnriched)
 cfgTauProngCutBgEstZeeElectronMisIdEnriched.pluginName = cms.string('tauProngCutBgEstZeeElectronMisIdEnriched')
@@ -297,7 +297,7 @@ evtSelConfiguratorBgEstZeeElectronMisIdEnriched = eventSelFlagProdConfigurator(
       cfgTauEtaCutBgEstZeeElectronMisIdEnriched,
       cfgTauPtCutBgEstZeeElectronMisIdEnriched,
       cfgTauLeadTrkPtCutBgEstZeeElectronMisIdEnriched,
-      cfgTauTaNCdiscrCutBgEstZeeElectronMisIdEnriched,
+      cfgTauIsoCutBgEstZeeElectronMisIdEnriched,
       cfgTauProngCutBgEstZeeElectronMisIdEnriched,
       cfgTauChargeCutBgEstZeeElectronMisIdEnriched,
       cfgTauElectronVetoBgEstZeeElectronMisIdEnriched,
@@ -409,9 +409,9 @@ analyzeEventsBgEstZeeElectronMisIdEnriched = cms.EDAnalyzer("GenericAnalyzer",
             src = cms.InputTag('tauLeadTrkPtCutBgEstZeeElectronMisIdEnriched','cumulative')
         ),  
         cms.PSet(
-            pluginName = cms.string('tauTaNCdiscrCutBgEstZeeElectronMisIdEnriched'),
+            pluginName = cms.string('tauIsoCutBgEstZeeElectronMisIdEnriched'),
             pluginType = cms.string('BoolEventSelector'),
-            src = cms.InputTag('tauTaNCdiscrCutBgEstZeeElectronMisIdEnriched','cumulative')
+            src = cms.InputTag('tauIsoCutBgEstZeeElectronMisIdEnriched','cumulative')
         ),
         cms.PSet(
             pluginName = cms.string('tauProngCutBgEstZeeElectronMisIdEnriched'),
@@ -576,14 +576,14 @@ analyzeEventsBgEstZeeElectronMisIdEnriched = cms.EDAnalyzer("GenericAnalyzer",
                                   'tauHistManagerForElecTauBgEstZeeElectronMisIdEnriched.tauSource = tausBgEstZeeElectronMisIdEnrichedLeadTrkPtCumulative')
         ),
         cms.PSet(
-            filter = cms.string('tauTaNCdiscrCutBgEstZeeElectronMisIdEnriched'),
+            filter = cms.string('tauIsoCutBgEstZeeElectronMisIdEnriched'),
             title = cms.string('Tau ID byHPSloose'),            
         ),
         cms.PSet(
             analyzers = cms.vstring('electronHistManagerForElecTauBgEstZeeElectronMisIdEnriched',
                                     'tauHistManagerForElecTauBgEstZeeElectronMisIdEnriched',
                                     ),
-            replace = cms.vstring('tauHistManagerForElecTauBgEstZeeElectronMisIdEnriched.tauSource = tausBgEstZeeElectronMisIdEnrichedTaNCdiscrCumulative')
+            replace = cms.vstring('tauHistManagerForElecTauBgEstZeeElectronMisIdEnriched.tauSource = tausBgEstZeeElectronMisIdEnrichedIsoCumulative')
         ),         
         cms.PSet(
             filter = cms.string('tauProngCutBgEstZeeElectronMisIdEnriched'),
