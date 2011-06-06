@@ -17,7 +17,8 @@ events_per_job          = 1000
 
 # Example for multiple output file retrieval, this probably doesn't
 # work if output is going to SE
-output_file             = tteffAnalysis-hltcalotau-pftau.root, tteffAnalysis-hltpftau-pftau.root, tteffAnalysis-hltpftautight-pftau.root, tteffAnalysis-l1tau.root, tteffAnalysis-l1cen.root
+#output_file             = tteffAnalysis-hltcalotau-pftau.root, tteffAnalysis-hltpftau-pftau.root, tteffAnalysis-hltpftautight-pftau.root, tteffAnalysis-l1tau.root, tteffAnalysis-l1cen.root
+output_file		= tteffAnalysis-hltcalotau-hpspftau.root, tteffAnalysis-hltpftautight-hpspftau.root, tteffAnalysis-hltpftau-pftau.root
 
 dbs_url 		= https://cmsdbsprod.cern.ch:8443/cms_dbs_ph_analysis_02_writer/servlet/DBSServlet
 
