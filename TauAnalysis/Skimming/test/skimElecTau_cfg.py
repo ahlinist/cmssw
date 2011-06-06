@@ -7,10 +7,13 @@ from TauAnalysis.Skimming.EventContent_cff import *
 process.load('FWCore/MessageService/MessageLogger_cfi')
 process.MessageLogger.cerr.FwkReport.reportEvery = 5000
 process.MessageLogger.cerr.threshold = cms.untracked.string('INFO')
+process.MessageLogger.suppressWarning = cms.untracked.vstring(
+        "dummyFilter"
+)
 process.load("Configuration.StandardSequences.Geometry_cff")
 process.load("Configuration.StandardSequences.MagneticField_cff")
 process.load('Configuration/StandardSequences/FrontierConditions_GlobalTag_cff')
-process.GlobalTag.globaltag = cms.string('GR_P_V16::All')
+process.GlobalTag.globaltag = cms.string('GR_R_42_V13::All')
 
 process.maxEvents = cms.untracked.PSet(
     input = cms.untracked.int32(-1)
@@ -18,7 +21,8 @@ process.maxEvents = cms.untracked.PSet(
 
 process.source = cms.Source("PoolSource",
     fileNames = cms.untracked.vstring(
-		'rfio:/castor/cern.ch/cms/store/relval/CMSSW_3_8_5/RelValZEE/GEN-SIM-RECO/MC_38Y_V12-v1/0040/406EA972-22D2-DF11-9052-002618943918.root'
+        '/store/relval/CMSSW_4_2_3/RelValZTT/GEN-SIM-RECO/START42_V12-v2/0062/4CEA9C47-287B-E011-BAB7-00261894396B.root',
+        '/store/relval/CMSSW_4_2_3/RelValZTT/GEN-SIM-RECO/START42_V12-v2/0062/A0DB0D50-1E7B-E011-AE93-003048678B0E.root'
     )
 )
 
@@ -133,14 +137,14 @@ elecTauEventSelection = cms.untracked.PSet(
 #--------------------------------------------------------------------------------
 
 process.dummyFilter = cms.EDFilter("HLTHighLevel",
-     TriggerResultsTag = cms.InputTag("TriggerResults","",process.name_()),
+     TriggerResultsTag = cms.InputTag("TriggerResults","","HLT"),
      HLTPaths = cms.vstring(''),# provide list of HLT paths (or patterns) you want
      eventSetupPathsKey = cms.string(''), # not empty => use read paths from AlCaRecoTriggerBitsRcd via this key
      andOr = cms.bool(True),   # how to deal with multiple triggers: True (OR) accept if ANY is true, False (AND) accept if ALL are true
      throw = cms.bool(True)    # throw exception on unknown path names
 )
-
-process.p = cms.Path(process.dummyFilter)
+process.printEventContent = cms.EDAnalyzer("EventContentAnalyzer")
+#process.p = cms.Path(process.printEventContent+process.dummyFilter)
 
 #--------------------------------------------------------------------------------
 # save events passing either the electron + TaNC tau or electron + HPS tau selection
