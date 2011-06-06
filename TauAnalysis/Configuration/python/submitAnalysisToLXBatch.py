@@ -16,6 +16,7 @@ def submitAnalysisToLXBatch(configFile = None, channel = None, samples = None,
                             cfgdir = 'lxbatch',
                             inputFileMap = None, outputFileMap = None,
                             outputDirectory = None,
+                            queue = '1nd',
                             enableEventDumps = False,
                             enableFakeRates = False,
                             processName = None,
@@ -192,7 +193,7 @@ def submitAnalysisToLXBatch(configFile = None, channel = None, samples = None,
                 with open(bsub_script_file, 'w') as bsub_script:
                     bsub_script.write(script)
                 # Add this bsub to our submission script
-                submit_file.write("bsub -q 1nd < %s\n" % bsub_script_file)
+                submit_file.write("bsub -q %s < %s\n" % (queue, bsub_script_file))
 
         print len(tmp_files)
         garbage = tmp_files - relevant_files
