@@ -7,8 +7,8 @@ import TauAnalysis.DQMTools.plotterStyleDefinitions_cfi as styles
 # List of samples to run in the analysis
 SAMPLES_TO_ANALYZE = [
     #'data_TauPlusX_Run2011A_PromptReco_v1',
-    'data_Mu_Run2011A_PromptReco_v1',
-    'data_Mu_Run2011A_PromptReco_v2',
+    'data_SingleMu_Run2011A_PromptReco_v1',
+    'data_SingleMu_Run2011A_PromptReco_v2',
     'data_TauPlusX_Run2011A_PromptReco_v2',
     'DYtautauM10to20_powheg',
     'Ztautau_powheg',
@@ -101,7 +101,7 @@ RECO_SAMPLES = {
         'enableFakeRates' : True,
         'hlt' : cms.InputTag("TriggerResults", "", "HLT")
     },
-    'data_Mu_Run2011A_PromptReco_v1' : {
+    'data_SingleMu_Run2011A_PromptReco_v1' : {
         'datasetpath' : '/SingleMu/Run2011A-PromptReco-v1/AOD',
         'dbs_url' :  "http://cmsdbsprod.cern.ch/cms_dbs_prod_global/servlet/DBSServlet",
         'lumi_mask' : "/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions11/7TeV/Prompt/Cert_160404-163869_7TeV_PromptReco_Collisions11_JSON.txt",
@@ -119,7 +119,7 @@ RECO_SAMPLES = {
         'enableFakeRates' : True,
         'hlt' : cms.InputTag("TriggerResults", "", "HLT")
     },
-    'data_Mu_Run2011A_PromptReco_v2' : {
+    'data_SingleMu_Run2011A_PromptReco_v2' : {
         'datasetpath' : '/SingleMu/Run2011A-PromptReco-v2/AOD',
         'dbs_url' :  "http://cmsdbsprod.cern.ch/cms_dbs_prod_global/servlet/DBSServlet",
         'lumi_mask' : "/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions11/7TeV/Prompt/Cert_160404-163869_7TeV_PromptReco_Collisions11_JSON.txt",
@@ -340,8 +340,8 @@ MERGE_SAMPLES = {
     'data' : {
         'samples' : [
             #'data_TauPlusX_Run2011A_PromptReco_v1',
-            'data_Mu_Run2011A_PromptReco_v1',
-            'data_Mu_Run2011A_PromptReco_v2',
+            'data_SingleMu_Run2011A_PromptReco_v1',
+            'data_SingleMu_Run2011A_PromptReco_v2',
             'data_TauPlusX_Run2011A_PromptReco_v2',
         ],
         'legendEntry' : 'DATA',
