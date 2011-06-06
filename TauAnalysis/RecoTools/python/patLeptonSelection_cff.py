@@ -90,14 +90,14 @@ selectedPatElectronsForElecTauIso.sumPtMaxEB = cms.double(0.08)
 selectedPatElectronsForElecTauIso.sumPtMaxEE = cms.double(0.04)
 selectedPatElectronsForElecTauIso.sumPtMethod = cms.string("relative")
 selectedPatElectronsForElecTauIso.pfCandidateSource = cms.InputTag('pfNoPileUp')
-selectedPatElectronsForElecTauConversionVeto.cotThetaMax = cms.double(0.05)
-selectedPatElectronsForElecTauConversionVeto.docaElecTrackMax = cms.double(0.1)
-selectedPatElectronsForElecTauConversionVeto.dRElecTrackMax = cms.double(0.1)
-selectedPatElectronsForElecTauConversionVeto.doPixCut = cms.bool(True)
-selectedPatElectronsForElecTauConversionVeto.doMissingHitsCut = cms.bool(False)
-selectedPatElectronsForElecTauConversionVeto.nConvPairMax = cms.double(1)
+selectedPatElectronsForElecTauConversionVeto.cotThetaMax = cms.double(0.02)
+selectedPatElectronsForElecTauConversionVeto.docaElecTrackMax = cms.double(0.02)
+selectedPatElectronsForElecTauConversionVeto.dRElecTrackMax = cms.double(0.02)
+selectedPatElectronsForElecTauConversionVeto.doPixCut = cms.bool(False)
+selectedPatElectronsForElecTauConversionVeto.doMissingHitsCut = cms.bool(True)
+selectedPatElectronsForElecTauConversionVeto.nConvPairMax = cms.double(0)
 selectedPatElectronsForElecTauConversionVeto.useConversionColl = cms.bool(False)
-selectedPatElectronsForElecTauConversionVeto.usePogMethod = cms.bool(False)
+selectedPatElectronsForElecTauConversionVeto.usePogMethod = cms.bool(True)
 selectedPatElectronsForElecTauTrkIP.vertexSource = selectedPatElectronsTrkIP.vertexSource
 selectedPatElectronsForElecTauTrkIP.IpMax = cms.double(0.05)
 
@@ -120,8 +120,9 @@ selectPatElectronsForElecTau = patElectronSelConfiguratorForElecTau.configure(py
 selectedPatElectronsForElecTauIsoLooseIsolation.sumPtMax = cms.double(0.25)
 selectedPatElectronsForElecTauTrkIPlooseIsolation.IpMax = selectedPatElectronsForElecTauTrkIP.IpMax
 
-selectedPatElectronsForElecTauConversionVetoLooseIsolation.nTrkMax = cms.double(10)
-selectedPatElectronsForElecTauConversionVetoLooseIsolation.doPixCut = cms.bool(True)
+selectedPatElectronsForElecTauConversionVetoLooseIsolation.nTrkMax = cms.double(1)
+selectedPatElectronsForElecTauConversionVetoLooseIsolation.doPixCut = cms.bool(False)
+selectedPatElectronsForElecTauConversionVetoLooseIsolation.doMissingHitsCut = cms.bool(False)
 
 patElectronSelConfiguratorForElecTauLooseIsolation = objSelConfigurator(
     [ selectedPatElectronsForElecTauId,
