@@ -1,10 +1,10 @@
 import FWCore.ParameterSet.Config as cms
 import copy
 
-isData = True
+isData = False
 #pftau = 0
-hltType = "HLT"
-#hltType = "REDIGI38X"
+#hltType = "HLT"
+hltType = "REDIGI38X"
 
 process = cms.Process("TTEff")
 
@@ -50,6 +50,7 @@ else:
     process.source = cms.Source("PoolSource",
 	fileNames = cms.untracked.vstring(
 	"file:TTEffSkim.root"
+#	"file:/tmp/slehti/skim_1.root"
 	)
     )
 
@@ -57,10 +58,10 @@ process.load("ElectroWeakAnalysis.TauTriggerEfficiency.TTEffPFTau_cff")
 
 process.load('Configuration/StandardSequences/FrontierConditions_GlobalTag_cff')
 if (isData):
-    process.GlobalTag.globaltag = 'GR_H_V16::All'
+    process.GlobalTag.globaltag = 'GR_H_V17::All'
 #    process.GlobalTag.globaltag = 'TESTL1_GR_P::All'
 else:
-    process.GlobalTag.globaltag = 'START311_V2A::All'
+    process.GlobalTag.globaltag = 'START41_V0::All'
     #process.GlobalTag.globaltag = 'MC_38Y_V14::All'
 process.GlobalTag.connect   = 'frontier://FrontierProd/CMS_COND_31X_GLOBALTAG'
 process.GlobalTag.pfnPrefix = cms.untracked.string('frontier://FrontierProd/')
@@ -179,6 +180,12 @@ process.TTEffAnalysisHLTPFTauTightHPS.l25JetSource = cms.InputTag("hltPFTauTagIn
 process.TTEffAnalysisHLTPFTauTightHPS.l25PtCutSource = cms.InputTag("hltPFTausTightCone")                                                     
 process.TTEffAnalysisHLTPFTauTightHPS.HLTPFTau = cms.bool(True)
 
+process.TTEffAnalysisHLTPFTauHPS = process.TTEffAnalysisHLTCaloTauHPS.clone()
+process.TTEffAnalysisHLTPFTauHPS.outputFileName = cms.string("tteffAnalysis-hltpftau-hpspftau.root");
+process.TTEffAnalysisHLTPFTauTightHPS.l25JetSource = cms.InputTag("hltPFTauTagInfo")
+process.TTEffAnalysisHLTPFTauTightHPS.l25PtCutSource = cms.InputTag("hltPFTaus")
+process.TTEffAnalysisHLTPFTauTightHPS.HLTPFTau = cms.bool(True)
+
 process.TauMCProducer = cms.EDProducer("HLTTauMCProducer",
 GenParticles  = cms.untracked.InputTag("genParticles"),
        ptMinTau      = cms.untracked.double(3),
@@ -206,16 +213,17 @@ else:
 #process.runTTEffAna += process.TTEffAnalysis
 #process.runTTEffAna += process.TTEffAnalysisL1Tau
 #process.runTTEffAna += process.TTEffAnalysisL1Cen
-process.runTTEffAna += process.TTEffAnalysisHLTPFTau
+#process.runTTEffAna += process.TTEffAnalysisHLTPFTau
 #process.runTTEffAna += process.TTEffAnalysisHLTPFTauTight
 process.runTTEffAna += process.TTEffAnalysisHLTPFTauTightHPS
 process.runTTEffAna += process.TTEffAnalysisHLTCaloTauHPS
+process.runTTEffAna += process.TTEffAnalysisHLTPFTauHPS
 
-process.o1 = cms.OutputModule("PoolOutputModule",
-    outputCommands = cms.untracked.vstring("keep *"),
-    fileName = cms.untracked.string('cmssw.root')
-)
-process.outpath = cms.EndPath(process.o1)
+#process.o1 = cms.OutputModule("PoolOutputModule",
+#    outputCommands = cms.untracked.vstring("keep *"),
+#    fileName = cms.untracked.string('cmssw.root')
+#)
+#process.outpath = cms.EndPath(process.o1)
 
 process.HLTPFTauSequence+= process.hltPFTausTightCone
 process.schedule = cms.Schedule(process.DoHLTJets,
