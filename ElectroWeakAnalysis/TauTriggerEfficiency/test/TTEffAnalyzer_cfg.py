@@ -1,10 +1,10 @@
 import FWCore.ParameterSet.Config as cms
 import copy
 
-isData = False
+isData = True
 #pftau = 0
-#hltType = "HLT"
-hltType = "REDIGI38X"
+hltType = "HLT"
+#hltType = "REDIGI38X"
 
 process = cms.Process("TTEff")
 
@@ -79,6 +79,10 @@ process.TTEffAnalysis = cms.EDAnalyzer("TTEffAnalyzer",
         PFTauMuonRejectionCollection     = cms.InputTag("TTEffPFTauDiscriminationAgainstMuon"),
 	PFTauElectronRejectionCollection = cms.InputTag("TTEffPFTauDiscriminationAgainstElectron"),
 	PFTauDiscriminators     = cms.VInputTag(),
+
+	MuonSource		= cms.InputTag("muons"),
+	MuonPtMin		= cms.double(0.),
+	MuonEtaMax		= cms.double(5.),
 
 	HLTMETSource		= cms.InputTag("hltMet"),
 	METSource		= cms.InputTag("pfMet"),

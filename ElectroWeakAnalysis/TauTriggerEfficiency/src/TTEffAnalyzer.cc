@@ -13,7 +13,7 @@
 //
 // Original Author:  Chi Nhan Nguyen
 //         Created:  Wed Oct  1 13:04:54 CEST 2008
-// $Id: TTEffAnalyzer.cc,v 1.54 2011/05/31 05:29:30 eluiggi Exp $
+// $Id: TTEffAnalyzer.cc,v 1.55 2011/06/01 21:40:25 slehti Exp $
 //
 //
 
@@ -138,6 +138,7 @@ TTEffAnalyzer::TTEffAnalyzer(const edm::ParameterSet& iConfig):
   _METanalyzer.Setup(iConfig,_TTEffTree);
   _PFMHTanalyzer.Setup(iConfig,_TTEffTree);
   _HLTJetAnalyzer.Setup(iConfig,_TTEffTree);
+  _MuonAnalyzer.Setup(iConfig,_TTEffTree);
 }
 
 TTEffAnalyzer::~TTEffAnalyzer()
@@ -231,6 +232,7 @@ void TTEffAnalyzer::loop(const edm::Event& iEvent,const edm::EventSetup& iSetup,
     _METanalyzer.fill(iEvent,iSetup);
     _PFMHTanalyzer.fill(iEvent,iSetup);
     _HLTJetAnalyzer.fill(iEvent,iSetup);
+    _MuonAnalyzer.fill(iEvent,iSetup);
 
     // Finally, fill the entry to tree
     _TTEffTree->Fill();
