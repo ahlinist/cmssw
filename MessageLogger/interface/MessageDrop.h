@@ -63,6 +63,9 @@
 // 11  mf 11/29/10	Snapshot method to preare for invalidation of the   
 //			pointers used to hold module context.  Supports 
 //			surviving throws that cause objects to go out of scope.
+//
+// 12  fwyzard 7/6/11   Add support for discarding LogError-level messages
+//                      on a per-module basis (needed at HLT)
 
 // user include files
 
@@ -97,6 +100,7 @@ public:
   static bool debugEnabled;                             // change log 8
   static bool infoEnabled;                              // change log 8
   static bool warningEnabled;                           // change log 8
+  static bool errorEnabled;                             // change log 8, 12
   static unsigned char messageLoggerScribeIsRunning;	// change log 7
   static edm::Exception * ex_p;				// change log 4
   static bool debugAlwaysSuppressed;			// change log 9
