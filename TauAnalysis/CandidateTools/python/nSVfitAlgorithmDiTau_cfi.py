@@ -12,22 +12,9 @@ nSVfitElectronLikelihoodPhaseSpace = cms.PSet(
     verbosity = cms.int32(0)  
 )
 
-nSVfitElectronLikelihoodPolarization = cms.PSet(
-    pluginName = cms.string("nSVfitTauToElecLikelihoodPolarization"),
-    pluginType = cms.string("NSVfitTauToElecLikelihoodPolarization"),
-    verbosity = cms.int32(0)  
-)
-
 nSVfitElectronLikelihoodMC_energy_angle_all = nSVfitTauDecayLikelihoodMC_energy_angle_all.clone(
     pluginName = cms.string("nSVfitTauToElecLikelihoodMC_energy_angle_all"),
     pluginType = cms.string("NSVfitTauToElecLikelihoodMC"),
-    verbosity = cms.int32(0)  
-)
-
-nSVfitElectronLikelihoodTrackInfo = cms.PSet(
-    pluginName = cms.string("nSVfitTauToElecLikelihoodTrackInfo"),
-    pluginType = cms.string("NSVfitTauDecayLikelihoodTrackInfo"),
-    useLifetimeConstraint = cms.bool(True),
     verbosity = cms.int32(0)  
 )
 
@@ -43,22 +30,9 @@ nSVfitMuonLikelihoodPhaseSpace = cms.PSet(
     verbosity = cms.int32(0)  
 )
 
-nSVfitMuonLikelihoodPolarization = cms.PSet(
-    pluginName = cms.string("nSVfitTauToMuLikelihoodPolarization"),
-    pluginType = cms.string("NSVfitTauToMuLikelihoodPolarization"),
-    verbosity = cms.int32(0)  
-)
-
 nSVfitMuonLikelihoodMC_energy_angle_all = nSVfitTauDecayLikelihoodMC_energy_angle_all.clone(
     pluginName = cms.string("nSVfitTauToMuLikelihoodMC_energy_angle_all"),
     pluginType = cms.string("NSVfitTauToMuLikelihoodMC"),
-    verbosity = cms.int32(0)  
-)
-
-nSVfitMuonLikelihoodTrackInfo = cms.PSet(
-    pluginName = cms.string("nSVfitTauToMuonLikelihoodTrackInfo"),
-    pluginType = cms.string("NSVfitTauDecayLikelihoodTrackInfo"),
-    useLifetimeConstraint = cms.bool(True),
     verbosity = cms.int32(0)  
 )
 
@@ -74,46 +48,9 @@ nSVfitTauLikelihoodPhaseSpace = cms.PSet(
     verbosity = cms.int32(0)  
 )
 
-nSVfitTauLikelihoodPolarization = cms.PSet(
-    pluginName = cms.string("nSVfitTauToHadLikelihoodPolarization"),
-    pluginType = cms.string("NSVfitTauToHadLikelihoodPolarization"),
-    ##mapRecToGenTauDecayModes = cms.PSet(
-    ##    fileName = cms.string("/afs/cern.ch/user/v/veelken/public/plotsAHtoMuTau.root"),
-    ##    meName = cms.string('DQMData/ahMuTauAnalyzer_woBtag/afterEvtSelNonCentralJetEt20bTag/TauQuantities/TauRecVsGenDecayMode')
-    ##),
-    decayModeParameters = cms.PSet(
-        oneProngZeroPi0s = cms.PSet(
-            pMin = cms.double(0.05)
-        ),
-        oneProngOnePi0 = cms.PSet(
-            xSigma = cms.string("0.014"),
-            xBias = cms.string("0.000"),
-            pMin = cms.double(0.05)
-        ),
-        oneProngTwoPi0s = cms.PSet(
-            xSigma = cms.string("0.013"),
-            xBias = cms.string("0.000"),
-            pMin = cms.double(0.05)
-        ),
-        threeProngZeroPi0s = cms.PSet(
-            xSigma = cms.string("0.018"),
-            xBias = cms.string("0.000"),
-            pMin = cms.double(0.05)
-        )
-    ),
-    verbosity = cms.int32(0)  
-)
-
 nSVfitTauToHadLikelihoodMC_energy_angle_all = nSVfitTauDecayLikelihoodMC_energy_angle_all.clone(
     pluginName = cms.string("nSVfitTauToHadLikelihoodMC_energy_angle_all"),
     pluginType = cms.string("NSVfitTauToHadLikelihoodMC"),
-    verbosity = cms.int32(0)  
-)
-
-nSVfitTauLikelihoodTrackInfo = cms.PSet(
-    pluginName = cms.string("nSVfitTauToHadLikelihoodTrackInfo"),
-    pluginType = cms.string("NSVfitTauDecayLikelihoodTrackInfo"),
-    useLifetimeConstraint = cms.bool(True),
     verbosity = cms.int32(0)  
 )
 
@@ -123,52 +60,15 @@ nSVfitTauToHadBuilder = cms.PSet(
     verbosity = cms.int32(0)  
 )
 
-nSVfitResonanceLikelihoodPtBalance = cms.PSet(
-    pluginName = cms.string("nSVFitResonanceLikelihoodPtBalance"),
-    pluginType = cms.string("NSVfitResonanceLikelihoodPtBalance"),
-    # define parameters for muon leg
-    leg1 = cms.PSet(
-        smear = cms.string("4.4 + 0.036*x"),
-        gaussFrac = cms.string("0.93"),
-        turnOnWidth = cms.string("0.19 + (-0.0016*x) + (5.27e-6*x*x) + (-6.0e-9*x*x*x)"),
-        turnOnThreshold = cms.string("1.355 + 0.379*x"),
-        gammaShape = cms.string("2"),
-        gammaScale = cms.string("x/4"),
-        overallNorm = cms.string("2")
-    ),
-    # define parameters for tau leg
-    leg2 = cms.PSet(
-        smear = cms.string("6.3 + 0.019*x"),
-        gaussFrac = cms.string("0.93"),
-        turnOnWidth = cms.string("0.23 + (-0.0022*x) + (7.91e-6*x*x) + (-9.4e-9*x*x*x)"),
-        turnOnThreshold = cms.string("2.2 + 0.365*x"),
-        gammaShape = cms.string("2"),
-        gammaScale = cms.string("x/4"),
-        overallNorm = cms.string("2")
-    ),
-    parameter = cms.PSet(
-        x = cms.string('mass')
-    ),
-    power = cms.double(1.0),  
-    verbosity = cms.int32(0)     
-)
+nSVfitResonanceLikelihoodLogM = cms.PSet(
+    pluginName = cms.string("nSVfitResonanceLikelihoodLogM"),
+    pluginType = cms.string("NSVfitResonanceLikelihoodMassPenalty"),
+    penaltyFactor = cms.double(1.0)
+)    
 
 nSVfitResonanceBuilder = cms.PSet(
     pluginName = cms.string("nSVfitResonanceBuilder"),
     pluginType = cms.string("NSVfitResonanceBuilder")
-)
-
-nSVfitEventLikelihoodMEt = cms.PSet(
-    pluginName = cms.string("nSVfitEventLikelihoodMEt"),
-    pluginType = cms.string("NSVfitEventLikelihoodMEt"),
-    resolution = cms.PSet(
-        parSigma = cms.string("7.54*(1 - 0.00542*x)"),
-        parBias = cms.string("-0.96"),
-        perpSigma = cms.string("6.85*(1 - 0.00547*x)"),
-        perpBias = cms.string("0.")
-    ),
-    power = cms.double(1.0), 
-    verbosity = cms.int32(0)
 )
 
 nSVfitEventLikelihoodMEt2 = cms.PSet(
@@ -189,7 +89,7 @@ nSVfitEventBuilder = cms.PSet(
     srcBeamSpot = cms.InputTag("offlineBeamSpot")
 )
 
-nSVfitConfig = cms.PSet(
+nSVfitConfig_template = cms.PSet(
     event = cms.PSet(
         resonances = cms.PSet(
             A = cms.PSet(
@@ -205,19 +105,19 @@ nSVfitConfig = cms.PSet(
                         builder = nSVfitTauToHadBuilder
                     )
                 ),
-                likelihoodFunctions = cms.VPSet(nSVfitResonanceLikelihoodPtBalance),
+                likelihoodFunctions = cms.VPSet(nSVfitResonanceLikelihoodLogM),
                 builder = nSVfitResonanceBuilder
             )
         ),
         srcMEt = cms.InputTag('patPFMETs'),
         srcPrimaryVertex = cms.InputTag("offlinePrimaryVerticesWithBS"),
-        likelihoodFunctions = cms.VPSet(nSVfitEventLikelihoodMEt),
+        likelihoodFunctions = cms.VPSet(nSVfitEventLikelihoodMEt2),
         builder = nSVfitEventBuilder
     )
 )    
 
-nSVfitProducer = cms.EDProducer("NSVfitProducer",
-    config    = nSVfitConfig,
+nSVfitProducerByIntegration = cms.EDProducer("NSVfitProducerByIntegration",
+    config    = nSVfitConfig_template,
     algorithm = cms.PSet(
         pluginName = cms.string("nSVfitAlgorithmByIntegration"),
         pluginType = cms.string("NSVfitAlgorithmByIntegration"),                                    
@@ -232,8 +132,22 @@ nSVfitProducer = cms.EDProducer("NSVfitProducer",
         ),
         vegasOptions = cms.PSet(
             numCalls = cms.uint32(10000)                             
-        )
+        ),
+        verbosity = cms.int32(0)                                         
     ),
     dRmin = cms.double(0.3),
     instanceLabel = cms.string("")                           
-)                                
+)
+
+nSVfitProducerByLikelihoodMaximization = cms.EDProducer("NSVfitProducer",
+    config    = nSVfitConfig_template,
+    algorithm = cms.PSet(
+        pluginName = cms.string("nSVfitAlgorithmByLikelihoodMaximization"),
+        pluginType = cms.string("NSVfitAlgorithmByLikelihoodMaximization"),                                    
+        minimizer  = cms.vstring("Minuit2", "Migrad"),
+        maxObjFunctionCalls = cms.uint32(5000),  
+        verbosity = cms.int32(0)
+    ),
+    dRmin = cms.double(0.3),
+    instanceLabel = cms.string("")                                                           
+)

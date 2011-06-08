@@ -13,7 +13,6 @@
 #include "DataFormats/METReco/interface/MET.h"
 #include "DataFormats/Common/interface/Ptr.h"
 
-#include "TauAnalysis/CandidateTools/interface/SVfitAlgorithmWtauNu.h"
 #include "TauAnalysis/CandidateTools/interface/generalAuxFunctions.h"
 
 #include <TMath.h>
@@ -29,51 +28,18 @@ class CompositePtrCandidateTMEtAlgorithm
   CompositePtrCandidateTMEtAlgorithm(const edm::ParameterSet& cfg)
   {
     verbosity_ = cfg.getUntrackedParameter<int>("verbosity", 0);
-    if ( cfg.exists("svFit") ) {
-      edm::ParameterSet cfgSVfit = cfg.getParameter<edm::ParameterSet>("svFit");	
-      std::vector<std::string> svFitAlgorithmNames = cfgSVfit.getParameterNamesForType<edm::ParameterSet>();
-      for ( std::vector<std::string>::const_iterator svFitAlgorithmName = svFitAlgorithmNames.begin();
-	    svFitAlgorithmName != svFitAlgorithmNames.end(); ++svFitAlgorithmName ) {
-	edm::ParameterSet cfgSVfitAlgorithm = cfgSVfit.getParameter<edm::ParameterSet>(*svFitAlgorithmName);
-	cfgSVfitAlgorithm.addParameter<std::string>("name", *svFitAlgorithmName);
-	copyCfgParameter<edm::InputTag>(cfg, "srcPrimaryVertex", cfgSVfitAlgorithm);
-	copyCfgParameter<edm::InputTag>(cfg, "srcBeamSpot", cfgSVfitAlgorithm);
-	SVfitAlgorithmWtauNu<T>* svFitAlgorithm = new SVfitAlgorithmWtauNu<T>(cfgSVfitAlgorithm);
-	svFitAlgorithms_.insert(std::pair<std::string, SVfitAlgorithmWtauNu<T>*>(*svFitAlgorithmName, svFitAlgorithm));
-	//std::cout << "--> adding SVfit algorithm: name = " << (*svFitAlgorithmName) << std::endl;
-      }
-    }
   }
   ~CompositePtrCandidateTMEtAlgorithm() 
-  {
-    for ( typename std::map<std::string, SVfitAlgorithmWtauNu<T>*>::iterator it = svFitAlgorithms_.begin();
-	  it != svFitAlgorithms_.end(); ++it ) {
-      delete it->second;
-    }
-  }
+  {}
 
   void beginJob()
-  {
-    for ( typename std::map<std::string, SVfitAlgorithmWtauNu<T>*>::iterator svFitAlgorithm = svFitAlgorithms_.begin();
-	  svFitAlgorithm != svFitAlgorithms_.end(); ++svFitAlgorithm ) {
-      svFitAlgorithm->second->beginJob();
-    }
-  }
+  {}
 
   void beginEvent(edm::Event& evt, const edm::EventSetup& es)
-  {
-    for ( typename std::map<std::string, SVfitAlgorithmWtauNu<T>*>::iterator svFitAlgorithm = svFitAlgorithms_.begin();
-	  svFitAlgorithm != svFitAlgorithms_.end(); ++svFitAlgorithm ) {
-      svFitAlgorithm->second->beginEvent(evt, es);
-    }
-  }
+  {}
 
   CompositePtrCandidateTMEt<T> buildCompositePtrCandidate(const TPtr visDecayProducts, 
-							  const MEtPtr met,
-							  const reco::Vertex* pv,
-							  const reco::BeamSpot* beamSpot,
-							  const TransientTrackBuilder* trackBuilder,
-							  bool doSVreco)
+							  const MEtPtr met)
   {
     CompositePtrCandidateTMEt<T> compositePtrCandidate(visDecayProducts, met);
   
@@ -91,18 +57,6 @@ class CompositePtrCandidateTMEtAlgorithm
     compositePtrCandidate.setMt(compMt(visDecayProducts->p4(), met->px(), met->py()));
     compositePtrCandidate.setDPhi(TMath::Abs(normalizedPhi(visDecayProducts->phi() - met->phi())));
     
-//--- SV method computation (if we have the PV and beamspot)
-    if ( pv && beamSpot && trackBuilder && doSVreco ) {
-      for ( typename std::map<std::string, SVfitAlgorithmWtauNu<T>*>::const_iterator svFitAlgorithm = svFitAlgorithms_.begin();
-	    svFitAlgorithm != svFitAlgorithms_.end(); ++svFitAlgorithm ) {
-	std::vector<SVfitWtauNuSolution> svFitSolutions = svFitAlgorithm->second->fit(compositePtrCandidate);
-	for ( std::vector<SVfitWtauNuSolution>::const_iterator svFitSolution = svFitSolutions.begin();
-	      svFitSolution != svFitSolutions.end(); ++svFitSolution ) {
-	  compositePtrCandidate.addSVfitSolution(svFitAlgorithm->first, *svFitSolution);
-	}
-      }
-    }
-
     return compositePtrCandidate;
   }
 
@@ -123,7 +77,6 @@ class CompositePtrCandidateTMEtAlgorithm
   }
 
   int verbosity_;
-  std::map<std::string, SVfitAlgorithmWtauNu<T>*> svFitAlgorithms_;
 };
 
 #endif 

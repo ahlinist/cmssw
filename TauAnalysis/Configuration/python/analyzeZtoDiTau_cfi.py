@@ -35,11 +35,15 @@ diTauCandidateCollinearApproxHistManagerForDiTau.pluginName = cms.string('diTauC
 diTauCandidateCollinearApproxHistManagerForDiTau.pluginType = cms.string('PATDiTauPairCollinearApproxHistManager')
 diTauCandidateCollinearApproxHistManagerForDiTau.diTauCandidateSource = cms.InputTag('selectedDiTauPairsZeroChargeCumulative')
 
-from TauAnalysis.Core.diTauCandidateSVfitHistManager_cfi import *
-diTauCandidateSVfitHistManagerForDiTau = copy.deepcopy(diTauCandidateSVfitHistManager)
-diTauCandidateSVfitHistManagerForDiTau.pluginName = cms.string('diTauCandidateSVfitHistManagerForDiTau')
-diTauCandidateSVfitHistManagerForDiTau.pluginType = cms.string('PATDiTauPairSVfitHistManager')
-diTauCandidateSVfitHistManagerForDiTau.diTauCandidateSource = cms.InputTag('selectedDiTauPairsZeroChargeCumulative')
+from TauAnalysis.Core.diTauCandidateNSVfitHistManager_cfi import *
+diTauCandidateNSVfitHistManagerForDiTau = copy.deepcopy(diTauCandidateNSVfitHistManager)
+diTauCandidateNSVfitHistManagerForDiTau.pluginName = cms.string('diTauCandidateNSVfitHistManagerForDiTau')
+diTauCandidateNSVfitHistManagerForDiTau.pluginType = cms.string('PATDiTauPairNSVfitHistManager')
+diTauCandidateNSVfitHistManagerForDiTau.diTauCandidateSource = cms.InputTag('selectedDiTauPairsZeroChargeCumulative')
+diTauCandidateNSVfitHistManagerForDiTau.nSVfitEventHypotheses = cms.PSet(
+    psKine_MEt_logM_fit = cms.string('psKine_MEt_logM_fit'),
+    psKine_MEt_logM_int = cms.string('psKine_MEt_logM_int')
+)
 
 # import config for missing-Et histogram managers
 from TauAnalysis.Core.caloMEtHistManager_cfi import *
@@ -325,10 +329,9 @@ diTauEventDump = cms.PSet(
     muonSource = cms.InputTag('cleanPatMuons'),
     tauSource = cms.InputTag('selectedPatTausForDiTau2ndElectronVetoCumulative'),
     diTauCandidateSource = cms.InputTag('selectedDiTauPairsZeroChargeCumulative'),
-    svFitAlgorithms = cms.VPSet(
-        cms.PSet(
-            name = cms.string("psKine_MEt_ptBalance")
-        )
+    nSVfitAlgorithms = cms.vstring(
+        'psKine_MEt_logM_fit',
+        'psKine_MEt_logM_int'
     ),
     jetSource = cms.InputTag('selectedPatJetsForZtoDiTauAntiOverlapWithLeptonsVetoCumulative'),
     caloMEtSource = cms.InputTag('patMETs'),
@@ -811,7 +814,7 @@ diTauAnalysisSequence = cms.VPSet(
             'tauHistManager2',
             'diTauCandidateHistManagerForDiTau',
             'diTauCandidateCollinearApproxHistManagerForDiTau',
-            'diTauCandidateSVfitHistManagerForDiTau',
+            'diTauCandidateNSVfitHistManagerForDiTau',
             'jetHistManagerForDiTau',
             'caloMEtHistManager',
             'pfMEtHistManager',
@@ -823,7 +826,7 @@ diTauAnalysisSequence = cms.VPSet(
             'tauHistManager2.tauSource = selectedPatTausForDiTau2ndElectronVetoCumulative',
             'diTauCandidateHistManagerForDiTau.diTauCandidateSource = selectedDiTauPairsZeroChargeCumulative',
             'diTauCandidateCollinearApproxHistManagerForDiTau.diTauCandidateSource = selectedDiTauPairsZeroChargeCumulative',
-            'diTauCandidateSVfitHistManagerForDiTau.diTauCandidateSource = selectedDiTauPairsZeroChargeCumulative',
+            'diTauCandidateNSVfitHistManagerForDiTau.diTauCandidateSource = selectedDiTauPairsZeroChargeCumulative',
             'jetHistManagerForDiTau.jetSource = selectedPatJetsForZtoDiTauAntiOverlapWithLeptonsVetoCumulative'
         )
     ),
@@ -842,7 +845,7 @@ diTauAnalysisSequence = cms.VPSet(
             'tauHistManager2',
             'diTauCandidateHistManagerForDiTau',
             'diTauCandidateCollinearApproxHistManagerForDiTau',
-            'diTauCandidateSVfitHistManagerForDiTau',
+            'diTauCandidateNSVfitHistManagerForDiTau',
             'jetHistManagerForDiTau',
             'caloMEtHistManager',
             'pfMEtHistManager',
@@ -854,7 +857,7 @@ diTauAnalysisSequence = cms.VPSet(
             'tauHistManager2.tauSource = selectedPatTausForDiTau2ndElectronVetoCumulative',
             'diTauCandidateHistManagerForDiTau.diTauCandidateSource = selectedDiTauPairsPzetaDiffCumulative',
             'diTauCandidateCollinearApproxHistManagerForDiTau.diTauCandidateSource = selectedDiTauPairsPzetaDiffCumulative',
-            'diTauCandidateSVfitHistManagerForDiTau.diTauCandidateSource = selectedDiTauPairsPzetaDiffCumulative',
+            'diTauCandidateNSVfitHistManagerForDiTau.diTauCandidateSource = selectedDiTauPairsPzetaDiffCumulative',
             'jetHistManagerForDiTau.jetSource = selectedPatJetsForZtoDiTauAntiOverlapWithLeptonsVetoCumulative'
         )
     )

@@ -92,7 +92,7 @@ sysUncertaintyHistManagerForMuTauLooseMuonIsolation = sysUncertaintyHistManagerF
             )
         ),
         cms.PSet(
-            config = diTauCandidateSVfitHistManagerForMuTau,
+            config = diTauCandidateNSVfitHistManagerForMuTau,
             systematics = cms.PSet(
                 diTauCandidateSource = getSysUncertaintyParameterSets(
                     [ muTauPairSystematicsLooseMuonIsolation ]

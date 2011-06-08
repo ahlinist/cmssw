@@ -21,23 +21,9 @@ CompositePtrCandidateT1T2MEtDump<T1,T2>::CompositePtrCandidateT1T2MEtDump(const 
     diTauCandidateSource_(cfg.getParameter<edm::InputTag>("diTauCandidateSource")),
     genParticleSource_(cfg.getParameter<edm::InputTag>("genParticleSource"))
 {
-  if ( cfg.exists("svFitAlgorithms") ) {
-    typedef std::vector<edm::ParameterSet> vParameterSet;
-    vParameterSet cfgSVfitAlgorithms = cfg.getParameter<vParameterSet>("svFitAlgorithms");
-    for ( vParameterSet::const_iterator cfgSVfitAlgorithm = cfgSVfitAlgorithms.begin();
-	  cfgSVfitAlgorithm != cfgSVfitAlgorithms.end(); ++cfgSVfitAlgorithm ) {
-      svFitAlgorithmType svfitAlgorithm;
-      svfitAlgorithm.algorithmName_ = cfgSVfitAlgorithm->getParameter<std::string>("name");    
-      if ( cfgSVfitAlgorithm->exists("polarizationHypotheses") ) {
-	svfitAlgorithm.polarizationHypotheses_ = cfgSVfitAlgorithm->getParameter<vstring>("polarizationHypotheses");
-      } else {
-	svfitAlgorithm.polarizationHypotheses_.push_back(std::string("Unknown"));
-      }
-      svFitAlgorithms_.push_back(svfitAlgorithm);
-    }
+  if ( cfg.exists("nSVfitAlgorithms") ) {
+    nSVfitAlgorithms_ = cfg.getParameter<vstring>("nSVfitAlgorithms");
   }
-
-  if ( cfg.exists("nSVfitAlgorithms") ) nSVfitAlgorithms_ = cfg.getParameter<vstring>("nSVfitAlgorithms");
 
   if ( cfg.exists("annotations") ) {
     typedef std::vector<edm::ParameterSet> vParameterSet;
@@ -135,16 +121,6 @@ void CompositePtrCandidateT1T2MEtDump<T1,T2>::print(const edm::Event& evt, const
     if( genParticleSource_.label() != "") {
       *outputStream_ << " dR(leg1, nu1) = " << compDeltaRlegNu(diTauCandidate->leg1()->p4(), *genParticles) << std::endl;
       *outputStream_ << " dR(leg2, nu2) = " << compDeltaRlegNu(diTauCandidate->leg2()->p4(), *genParticles) << std::endl;
-    }
-    for ( typename std::vector<svFitAlgorithmType>::const_iterator svFitAlgorithm = svFitAlgorithms_.begin();
-	  svFitAlgorithm != svFitAlgorithms_.end(); ++svFitAlgorithm ) {
-      for ( vstring::const_iterator polarizationHypothesis = svFitAlgorithm->polarizationHypotheses_.begin();
-	    polarizationHypothesis != svFitAlgorithm->polarizationHypotheses_.end(); ++polarizationHypothesis ) {
-	*outputStream_ << "SVfit algorithm = " << svFitAlgorithm->algorithmName_ << "," 
-		       << " polarization = " << (*polarizationHypothesis) << ":" << std::endl;
-	const SVfitDiTauSolution* solution = diTauCandidate->svFitSolution(svFitAlgorithm->algorithmName_, *polarizationHypothesis);
-	if ( solution ) *outputStream_ << (*solution);	
-      }
     }
     for ( vstring::const_iterator nSVfitAlgorithm = nSVfitAlgorithms_.begin();
 	  nSVfitAlgorithm != nSVfitAlgorithms_.end(); ++nSVfitAlgorithm ) {
