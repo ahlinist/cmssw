@@ -33,6 +33,7 @@ namespace evf {
 			    edm::Timestamp& tstamp, 
 			    FEDRawDataCollection*& data);
     
+    void processOneEvent(edm::EventPrincipal const& eventPrincipal, edm::EventID& eID, FEDRawDataCollection*& data);
     
   private:
     //

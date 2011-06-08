@@ -10,6 +10,7 @@
 #include "FWCore/Framework/interface/EventPrincipal.h"
 #include "FWCore/Framework/interface/InputSourceDescription.h"
 #include "FWCore/Utilities/interface/TypeID.h"
+#include "DataFormats/Provenance/interface/EventID.h"
 #include "DataFormats/Common/interface/BasicHandle.h"
 #include "DataFormats/Common/interface/ConvertHandle.h"
 #include "FWCore/Sources/interface/VectorInputSourceFactory.h"
@@ -46,24 +47,22 @@ SecondaryProducer::~SecondaryProducer()
   
 //______________________________________________________________________________
 int SecondaryProducer::fillRawData(edm::EventID& eID,
-				    edm::Timestamp& tstamp, 
+				    edm::Timestamp&, 
 				    FEDRawDataCollection*& data)
 { 
+  secInput_->loopSequential(1, boost::bind(&SecondaryProducer::processOneEvent, this, _1, boost::ref(eID), boost::ref(data)));
+  return 1;
+}
+
+void SecondaryProducer::processOneEvent(edm::EventPrincipal const& eventPrincipal, edm::EventID& eID, FEDRawDataCollection*& data) {
   typedef  FEDRawDataCollection TC;
   typedef edm::Wrapper<TC> WTC;
   
-  VectorInputSource::EventPrincipalVector result;
-  secInput_->readMany(1,result);
-  
-  EventPrincipal *p  =&**result.begin();
-  unsigned int irun  =p->id().run();
-  unsigned int ilumi  =p->id().luminosityBlock();
-  unsigned int ievent=p->id().event();
   //std::cout << "run "   << p->id().run()
   //          << " event "<< p->id().event()<<std::endl;
-  eID = EventID(irun, ilumi, ievent);
+  eID = eventPrincipal.id();
 
-  BasicHandle bh = p->getByType(TypeID(typeid(TC)));
+  BasicHandle bh = eventPrincipal. getByType(TypeID(typeid(TC)));
   assert(bh.isValid());
   if(!(bh.interface()->dynamicTypeInfo() == typeid(TC))) {
     handleimpl::throwConvertTypeError(typeid(TC), bh.interface()->dynamicTypeInfo());
@@ -74,9 +73,7 @@ int SecondaryProducer::fillRawData(edm::EventID& eID,
   //    auto_ptr<TC> thing(new TC(*tp));
   //data = *tp;
   
-  data=new FEDRawDataCollection(*tp);
-  
-  return 1;
+  data = new FEDRawDataCollection(*tp);
 }
 
 //______________________________________________________________________________
