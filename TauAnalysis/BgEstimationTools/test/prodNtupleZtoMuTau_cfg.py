@@ -118,7 +118,7 @@ process.ntupleProducer = cms.EDAnalyzer("ObjValNtupleProducer",
             value = cms.string("p4Vis.mass")
         ),
         diTauInvMass = extractor_template.clone(
-            value = cms.string("svFitSolution(0).p4.mass")
+            value = cms.string("nSVfitSolution('psKine_MEt_logM_fit').resonance(0).mass")
         ),
 
         # tau. id. variables

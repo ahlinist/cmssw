@@ -1,8 +1,7 @@
 
 #include "AnalysisDataFormats/TauAnalysis/interface/CompositePtrCandidateT1T2MEt.h"
 #include "AnalysisDataFormats/TauAnalysis/interface/CompositePtrCandidateT1T2MEtFwd.h"
-#include "AnalysisDataFormats/TauAnalysis/interface/SVfitDiTauSolution.h"
-#include "AnalysisDataFormats/TauAnalysis/interface/SVfitLegSolution.h"
+
 #include "AnalysisDataFormats/TauAnalysis/interface/NSVfitEventHypothesisBase.h"
 #include "AnalysisDataFormats/TauAnalysis/interface/NSVfitEventHypothesis.h"
 #include "AnalysisDataFormats/TauAnalysis/interface/NSVfitResonanceHypothesisBase.h"
@@ -17,7 +16,6 @@
 
 #include "AnalysisDataFormats/TauAnalysis/interface/CompositePtrCandidateTMEt.h"
 #include "AnalysisDataFormats/TauAnalysis/interface/CompositePtrCandidateTMEtFwd.h"
-#include "AnalysisDataFormats/TauAnalysis/interface/SVfitWtauNuSolution.h"
 
 #include "AnalysisDataFormats/TauAnalysis/interface/PATLeptonRecoilEnergy.h"
 #include "AnalysisDataFormats/TauAnalysis/interface/PATLeptonRecoilEnergyFwd.h"
@@ -80,21 +78,8 @@ namespace {
     /// as these dictionaries are not yet created in DataFormats/TrackReco/src/classes.h (DataFormats/GsfTrackReco/src/classes.h)
     edm::Ptr<reco::Track> dummyTrackPtr;
     edm::Ptr<reco::GsfTrack> dummyGsfTrackPtr;
-    
-    /// create dictionaries for SVfit solution objects
-    SVfitDiTauSolution dummySVfitDiTauSolution;
-    std::vector<SVfitDiTauSolution> dummySVfitDiTauSolutionCollection;
-    std::vector<SVfitLegSolution> dummySVfitLegSolutionCollection;
-    std::map<std::string, double> dummySVfitDiTauSolutionLogLikeMap;
-    std::map<std::string, std::map<std::string, double> > dummySVfitDiTauSolutionLogLikeMapMap;
-    std::map<std::string, SVfitDiTauSolution> dummySVfitDiTauSolutionMap;
-    std::map<std::string, std::map<std::string, SVfitDiTauSolution> > dummySVfitDiTauSolutionMapMap;
 
-    SVfitWtauNuSolution dummySVfitWtauNuSolution;
-    std::vector<SVfitWtauNuSolution> dummySVfitWtauNuSolutionCollection;
-    std::map<std::string, SVfitWtauNuSolution> dummySVfitWtauNuSolutionMap;
-    std::map<std::string, std::map<std::string, SVfitWtauNuSolution> > dummySVfitWtauNuSolutionMapMap;
-
+    /// create dictionaries for NSVfit solution data-formats
     NSVfitEventHypothesisBase dummyNSVfitEventHypothesisBase;
     NSVfitEventHypothesis dummyNSVfitEventHypothesis;
     NSVfitResonanceHypothesisBase dummyNSVfitResonanceHypothesisBase;

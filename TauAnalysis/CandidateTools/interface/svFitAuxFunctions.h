@@ -9,9 +9,6 @@
 #include "DataFormats/Candidate/interface/Candidate.h"
 #include "DataFormats/JetReco/interface/GenJet.h"
 
-#include "AnalysisDataFormats/TauAnalysis/interface/SVfitDiTauSolution.h"
-#include "AnalysisDataFormats/TauAnalysis/interface/SVfitLegSolution.h"
-
 namespace SVfit_namespace
 {
   //-----------------------------------------------------------------------------
@@ -101,31 +98,6 @@ namespace SVfit_namespace
   /// Compute the tau four vector given the tau direction and momentum
   reco::Candidate::LorentzVector tauP4(const reco::Candidate::Vector&, double);
 
-  /// Auxiliary functions to determine if one or two neutrinos are produced in tau lepton decay;
-  /// in case only one neutrino is produced, the resulting neutrino system is massless,
-  /// while a neutrino system of in general non-zero invariant mass is produced in the two neutrino case
-  template <typename T>
-  inline bool isMasslessNuSystem()
-  {
-    // massless neutrino system produced in hadronic tau --> X + nu decays;
-    // use this implementation for the generic particle Candidate case
-    return true;
-  }
-
-  template <>
-  inline bool isMasslessNuSystem<pat::Electron>()
-  {
-    // neutrino system of in general non-zero mass produced in tau --> electron nu nu decays
-    return false;
-  }
-
-  template <>
-  inline bool isMasslessNuSystem<pat::Muon>()
-  {
-    // neutrino system of in general non-zero mass produced in tau --> muon nu nu decays
-    return false;
-  }
-
   /// Compute logarithm of Gaussion probability density function
   /// in one/N dimensions
   double logGaussian(double, double);
@@ -214,17 +186,6 @@ namespace SVfit_namespace
       - 0.5*TMath::Log(det)
       - 0.5*(ROOT::Math::Dot(residual, covInverse*residual));
   }
-
-
-  /// Determine sign of tau lepton polarization
-  /// (depending on handedness and charge, i.e. whether the tau lepton is a tau+ or a tau-)
-  double getTauLeptonPolarization(SVfitLegSolution::polarizationHypothesisType, double);
-
-/*
-  /// Determine sign of tau lepton polarization
-  /// (depending on handedness and charge, i.e. whether the tau lepton is a tau+ or a tau-)
-  double getTauLeptonPolarization(double, double);
- */
 }
 
 #endif

@@ -9,9 +9,9 @@
  * 
  * \authors Christian Veelken
  *
- * \version $Revision: 1.3 $
+ * \version $Revision: 1.4 $
  *
- * $Id: CompositePtrCandidateTMEtProducer.h,v 1.3 2010/09/28 11:23:28 jkolb Exp $
+ * $Id: CompositePtrCandidateTMEtProducer.h,v 1.4 2011/02/21 13:07:09 veelken Exp $
  *
  */
 
@@ -36,9 +36,6 @@
 
 #include "TauAnalysis/CandidateTools/interface/CompositePtrCandidateTMEtAlgorithm.h"
 
-#include "DataFormats/VertexReco/interface/VertexFwd.h"
-#include "DataFormats/VertexReco/interface/Vertex.h"
-#include "DataFormats/BeamSpot/interface/BeamSpot.h"
 #include "DataFormats/METReco/interface/MET.h"
 
 #include <string>
@@ -58,15 +55,8 @@ class CompositePtrCandidateTMEtProducer : public edm::EDProducer
   {
     srcVisDecayProducts_ = cfg.getParameter<edm::InputTag>("srcVisDecayProducts");
     srcMET_ = cfg.getParameter<edm::InputTag>("srcMET");
-    srcPV_ = ( cfg.exists("srcPrimaryVertex") ) ? cfg.getParameter<edm::InputTag>("srcPrimaryVertex") : edm::InputTag();
-    srcBeamSpot_ = ( cfg.exists("srcBeamSpot") ) ? cfg.getParameter<edm::InputTag>("srcBeamSpot") : edm::InputTag();
+
     verbosity_ = cfg.getUntrackedParameter<int>("verbosity", 0);
-
-    if ( srcMET_.label() != "" && srcBeamSpot_.label() != "" && srcPV_.label() != "" ) {
-      doSVreco_ = ( cfg.exists("doSVreco") ) ? cfg.getParameter<bool>("doSVreco") : true;
-    } 
-
-    //std::cout << " doSVreco = " << doSVreco_ << std::endl;
 
     produces<CompositePtrCandidateCollection>("");
   }
@@ -88,32 +78,6 @@ class CompositePtrCandidateTMEtProducer : public edm::EDProducer
     edm::Handle<MEtView> metCollection;
     pf::fetchCollection(metCollection, srcMET_, evt);
 
-    // Get primary vertex
-    const reco::Vertex* pv = NULL;
-    if ( srcPV_.label() != "" ) {
-       edm::Handle<reco::VertexCollection> pvs;
-       pf::fetchCollection(pvs, srcPV_, evt);
-       pv = &((*pvs)[0]);
-    }
-
-    // Get beamspot
-    const reco::BeamSpot* beamSpot = NULL;
-    if ( srcBeamSpot_.label() != "" ) {
-       edm::Handle<reco::BeamSpot> beamSpotHandle;
-       pf::fetchCollection(beamSpotHandle, srcBeamSpot_, evt);
-       beamSpot = beamSpotHandle.product();
-    }
-
-    const TransientTrackBuilder* trackBuilder = NULL;
-    if ( doSVreco_ ) {
-       edm::ESHandle<TransientTrackBuilder> myTransientTrackBuilder;
-       es.get<TransientTrackRecord>().get("TransientTrackBuilder", myTransientTrackBuilder);
-       trackBuilder = myTransientTrackBuilder.product();
-       if ( !trackBuilder ) {
-	 edm::LogError ("produce") << " Failed to access TransientTrackBuilder !!";
-       }
-    }
-
 //--- check that there is exactly one MET object in the event
 //    (missing transverse momentum is an **event level** quantity)
     MEtPtr metPtr;
@@ -128,9 +92,6 @@ class CompositePtrCandidateTMEtProducer : public edm::EDProducer
       return;
     }
 
-//--- pass edm::Event and edm::EventSetup to SVfit algorithm
-//    (needed by likelihood plugins for initialization of TransientTrackBuilder 
-//     and to retrieve BeamSpot and genParticle collection from the event)
     algorithm_.beginEvent(evt, es);
 
     std::auto_ptr<CompositePtrCandidateCollection> compositePtrCandidateCollection(new CompositePtrCandidateCollection());
@@ -140,7 +101,7 @@ class CompositePtrCandidateTMEtProducer : public edm::EDProducer
       TPtr visDecayProductsPtr = visDecayProductsCollection->ptrAt(idxVisDecayProducts);
       
       CompositePtrCandidateTMEt<T> compositePtrCandidate = 
-	algorithm_.buildCompositePtrCandidate(visDecayProductsPtr, metPtr, pv, beamSpot, trackBuilder, doSVreco_);
+	algorithm_.buildCompositePtrCandidate(visDecayProductsPtr, metPtr);
       compositePtrCandidateCollection->push_back(compositePtrCandidate);
     }
 
@@ -154,9 +115,7 @@ class CompositePtrCandidateTMEtProducer : public edm::EDProducer
   
   edm::InputTag srcVisDecayProducts_;
   edm::InputTag srcMET_;
-  edm::InputTag srcPV_;
-  edm::InputTag srcBeamSpot_;
-  bool doSVreco_;
+
   int verbosity_;
 };
 

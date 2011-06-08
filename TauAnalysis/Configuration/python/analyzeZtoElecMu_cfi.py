@@ -25,11 +25,15 @@ diTauCandidateHistManagerForElecMu.pluginType = cms.string('PATElecMuPairHistMan
 diTauCandidateHistManagerForElecMu.diTauCandidateSource = cms.InputTag('allElecMuPairs')
 diTauCandidateHistManagerForElecMu.visMassHypothesisSource = cms.InputTag('')
 
-from TauAnalysis.Core.diTauCandidateSVfitHistManager_cfi import *
-diTauCandidateSVfitHistManagerForElecMu = copy.deepcopy(diTauCandidateSVfitHistManager)
-diTauCandidateSVfitHistManagerForElecMu.pluginName = cms.string('diTauCandidateSVfitHistManagerForElecMu')
-diTauCandidateSVfitHistManagerForElecMu.pluginType = cms.string('PATElecMuPairSVfitHistManager')
-diTauCandidateSVfitHistManagerForElecMu.diTauCandidateSource = cms.InputTag('allElecMuPairs')
+from TauAnalysis.Core.diTauCandidateNSVfitHistManager_cfi import *
+diTauCandidateNSVfitHistManagerForElecMu = copy.deepcopy(diTauCandidateNSVfitHistManager)
+diTauCandidateNSVfitHistManagerForElecMu.pluginName = cms.string('diTauCandidateNSVfitHistManagerForElecMu')
+diTauCandidateNSVfitHistManagerForElecMu.pluginType = cms.string('PATElecMuPairNSVfitHistManager')
+diTauCandidateNSVfitHistManagerForElecMu.diTauCandidateSource = cms.InputTag('allElecMuPairs')
+diTauCandidateNSVfitHistManagerForElecMu.nSVfitEventHypotheses = cms.PSet(
+    psKine_MEt_logM_fit = cms.string('psKine_MEt_logM_fit'),
+    psKine_MEt_logM_int = cms.string('psKine_MEt_logM_int')
+)
 
 from TauAnalysis.Core.diTauCandidateZllHypothesisHistManager_cfi import *
 diTauCandidateZmumuHypothesisHistManagerForElecMu = copy.deepcopy(ZllHypothesisHistManager)
@@ -95,6 +99,7 @@ elecMuHistManagers = cms.vstring( 'electronHistManager',
                                   'muonHistManager',
                                   'tauHistManager',
                                   'diTauCandidateHistManagerForElecMu',
+                                  'diTauCandidateNSVfitHistManagerForElecMu',
                                   'caloMEtHistManager',
                                   'pfMEtHistManager',
                                   'jetHistManager',
@@ -654,6 +659,7 @@ elecMuAnalysisSequence = cms.VPSet(
         replace = cms.vstring('electronHistManager.electronSource = selectedPatElectronsTrkCumulative',
                               'muonHistManager.muonSource = selectedPatMuonsPionVetoCumulative',
                               'diTauCandidateHistManagerForElecMu.diTauCandidateSource = selectedElecMuPairsDPhiCumulative',
+                              'diTauCandidateNSVfitHistManagerForElecMu.diTauCandidateSource = selectedElecMuPairsDPhiCumulative',
                               #'jetHistManager.jetSource = selectedPatJetsBtagCumulative',
                               'pfMEtHistManager.metSource = selectedMETMaxCumulative')
     ),
@@ -669,6 +675,7 @@ elecMuAnalysisSequence = cms.VPSet(
         replace = cms.vstring('electronHistManager.electronSource = selectedPatElectronsTrkCumulative',
                               'muonHistManager.muonSource = selectedPatMuonsPionVetoCumulative',
                               'diTauCandidateHistManagerForElecMu.diTauCandidateSource = selectedElecMuPairsDPhiCumulative',
+                              'diTauCandidateNSVfitHistManagerForElecMu.diTauCandidateSource = selectedElecMuPairsDPhiCumulative',
                               'pfMEtHistManager.metSource = selectedMETMaxCumulative')
     ),
     cms.PSet(
@@ -681,6 +688,7 @@ elecMuAnalysisSequence = cms.VPSet(
         replace = cms.vstring('electronHistManager.electronSource = selectedPatElectronsTrkCumulative',
                               'muonHistManager.muonSource = selectedPatMuonsPionVetoCumulative',
                               'diTauCandidateHistManagerForElecMu.diTauCandidateSource = selectedElecMuPairsDPhiCumulative',
+                              'diTauCandidateNSVfitHistManagerForElecMu.diTauCandidateSource = selectedElecMuPairsDPhiCumulative',
                               'pfMEtHistManager.metSource = selectedMETMaxCumulative')
     ),
     cms.PSet(
@@ -693,6 +701,7 @@ elecMuAnalysisSequence = cms.VPSet(
         replace = cms.vstring('electronHistManager.electronSource = selectedPatElectronsTrkCumulative',
                               'muonHistManager.muonSource = selectedPatMuonsPionVetoCumulative',
                               'diTauCandidateHistManagerForElecMu.diTauCandidateSource = selectedElecMuPairsDPhiCumulative',
+                              'diTauCandidateNSVfitHistManagerForElecMu.diTauCandidateSource = selectedElecMuPairsDPhiCumulative',
                               'pfMEtHistManager.metSource = selectedMETMaxCumulative',
                               'jetHistManager.jetSource = selectedPatJetsBtagCumulative')
     ),
@@ -706,6 +715,7 @@ elecMuAnalysisSequence = cms.VPSet(
         replace = cms.vstring('electronHistManager.electronSource = selectedPatElectronsTrkCumulative',
                               'muonHistManager.muonSource = selectedPatMuonsPionVetoCumulative',
                               'diTauCandidateHistManagerForElecMu.diTauCandidateSource = selectedElecMuPairsDPhiCumulative',
+                              'diTauCandidateNSVfitHistManagerForElecMu.diTauCandidateSource = selectedElecMuPairsDPhiCumulative',
                               'pfMEtHistManager.metSource = selectedMETMaxCumulative',
                               'jetHistManager.jetSource = selectedPatJetsBtagCumulative')
     )

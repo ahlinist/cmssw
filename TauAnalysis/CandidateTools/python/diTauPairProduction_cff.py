@@ -1,27 +1,11 @@
 import FWCore.ParameterSet.Config as cms
 import copy
 
-from TauAnalysis.CandidateTools.svFitAlgorithm_cfi import *
-
-svFitLikelihoodDiTauPairKinematicsPhaseSpace = copy.deepcopy(svFitLikelihoodDiTauKinematicsPhaseSpace)
-svFitLikelihoodDiTauPairKinematicsPhaseSpace.pluginType = "SVfitLikelihoodDiTauPairKinematics"
-svFitLikelihoodDiTauPairKinematicsPhaseSpace.leg1.pluginType = "SVfitTauLikelihoodPhaseSpace"
-svFitLikelihoodDiTauPairKinematicsPhaseSpace.leg2.pluginType = "SVfitTauLikelihoodPhaseSpace"
-
-svFitLikelihoodDiTauPairKinematicsPolarized = copy.deepcopy(svFitLikelihoodDiTauKinematicsPolarized)
-svFitLikelihoodDiTauPairKinematicsPolarized.pluginType = "SVfitLikelihoodDiTauPairKinematics"
-svFitLikelihoodDiTauPairKinematicsPolarized.leg2.pluginType = "SVfitTauLikelihoodPolarization"
-svFitLikelihoodDiTauPairKinematicsPolarized.leg1 = svFitLikelihoodDiTauPairKinematicsPolarized.leg2
-
-svFitLikelihoodDiTauPairMEt = copy.deepcopy(svFitLikelihoodDiTauMEt)
-svFitLikelihoodDiTauPairMEt.pluginType = cms.string("SVfitLikelihoodDiTauPairMEt")
-
-svFitLikelihoodDiTauPairPtBalance = copy.deepcopy(svFitLikelihoodDiTauPtBalance)
-svFitLikelihoodDiTauPairPtBalance.pluginType = cms.string("SVfitLikelihoodDiTauPairPtBalance")
-
-svFitLikelihoodDiTauPairZprod = copy.deepcopy(svFitLikelihoodDiTauProdZ0)
-svFitLikelihoodDiTauPairZprod.pluginType = cms.string("SVfitLikelihoodDiTauPairProd")
-svFitLikelihoodDiTauPairZprod.process = cms.string("Z0")
+from TauAnalysis.CandidateTools.tools.objProdConfigurator import *
+from TauAnalysis.CandidateTools.resolutions_cfi import *
+from TauAnalysis.CandidateTools.nSVfitAlgorithmDiTau_cfi import *
+from TauAnalysis.CandidateTools.nSVfitAlgorithmTauDecayKineMC_cfi import *
+from RecoMET.METProducers.METSigParams_cfi import *
 
 #--------------------------------------------------------------------------------
 # produce combinations of tau-jet + tau-jet pairs
@@ -264,37 +248,53 @@ selectedDiTauPairs2ndTauElectronVetoIndividual = selectedDiTauPairs1stTauElectro
 selectedDiTauPairs2ndTauElectronVetoCumulative = selectedDiTauPairs1stTauElectronVetoCumulative.clone(
     srcLeg2 = cms.InputTag('selectedPatTausForDiTau2ndElectronVetoCumulative'),
     doSVreco = cms.bool(True),
-    svFit = cms.PSet(
-        psKine = cms.PSet(
-            likelihoodFunctions = cms.VPSet(
-                svFitLikelihoodDiTauPairKinematicsPhaseSpace         
-            ),
-            estUncertainties = cms.PSet(
-                numSamplings = cms.int32(-1)
-            )
-        ),
-        psKine_MEt = cms.PSet(
-            likelihoodFunctions = cms.VPSet(
-                svFitLikelihoodDiTauPairKinematicsPhaseSpace,
-                svFitLikelihoodDiTauPairMEt
-            ),
-            estUncertainties = cms.PSet(
-                numSamplings = cms.int32(-1)
-            )
-        ),
-        psKine_MEt_ptBalance = cms.PSet(
-            likelihoodFunctions = cms.VPSet(
-                svFitLikelihoodDiTauPairKinematicsPhaseSpace,
-                svFitLikelihoodDiTauPairMEt,
-                svFitLikelihoodDiTauPairPtBalance
-            ),
-            estUncertainties = cms.PSet(
-                #numSamplings = cms.int32(1000)
-                numSamplings = cms.int32(-1)
-            )
+    nSVfit = cms.PSet()
+)
+
+#--------------------------------------------------------------------------------
+# configure (new) SVfit algorithm
+# (using combination of PS + MET likelihoods + logM regularization term
+#  to reconstruct mass of tau lepton pair, as described in CMS AN-11-165)
+selectedDiTauPairs2ndTauElectronVetoCumulative.nSVfit.psKine_MEt_logM_fit = cms.PSet()
+selectedDiTauPairs2ndTauElectronVetoCumulative.nSVfit.psKine_MEt_logM_fit.config = copy.deepcopy(nSVfitConfig_template)
+selectedDiTauPairs2ndTauElectronVetoCumulative.nSVfit.psKine_MEt_logM_fit.config.event.resonances.A.daughters.leg1 = cms.PSet(
+    src = selectedDiTauPairs2ndTauElectronVetoCumulative.srcLeg1,
+    likelihoodFunctions = cms.VPSet(nSVfitTauLikelihoodPhaseSpace),
+    builder = nSVfitTauToHadBuilder
+)
+selectedDiTauPairs2ndTauElectronVetoCumulative.nSVfit.psKine_MEt_logM_fit.config.event.resonances.A.daughters.leg2 = cms.PSet(
+    src = selectedDiTauPairs2ndTauElectronVetoCumulative.srcLeg2,
+    likelihoodFunctions = cms.VPSet(nSVfitTauLikelihoodPhaseSpace),
+    builder = nSVfitTauToHadBuilder
+)
+selectedDiTauPairs2ndTauElectronVetoCumulative.nSVfit.psKine_MEt_logM_fit.algorithm = cms.PSet(
+    pluginName = cms.string("nSVfitAlgorithmByLikelihoodMaximization"),
+    pluginType = cms.string("NSVfitAlgorithmByLikelihoodMaximization"),                                    
+    minimizer  = cms.vstring("Minuit2", "Migrad"),
+    maxObjFunctionCalls = cms.uint32(5000),  
+    verbosity = cms.int32(0)
+)
+
+selectedDiTauPairs2ndTauElectronVetoCumulative.nSVfit.psKine_MEt_logM_int = cms.PSet()
+selectedDiTauPairs2ndTauElectronVetoCumulative.nSVfit.psKine_MEt_logM_int.config = \
+  selectedDiTauPairs2ndTauElectronVetoCumulative.nSVfit.psKine_MEt_logM_fit.config
+selectedDiTauPairs2ndTauElectronVetoCumulative.nSVfit.psKine_MEt_logM_int.algorithm = cms.PSet(
+    pluginName = cms.string("nSVfitAlgorithmByIntegration"),
+    pluginType = cms.string("NSVfitAlgorithmByIntegration"),                                    
+    parameters = cms.PSet(
+        mass_A = cms.PSet(
+            min = cms.double(20.),
+            max = cms.double(750.),
+            stepSize = cms.double(5.),                                                            
+            replace = cms.string("leg1.x"),
+            by = cms.string("(A.p4.mass/mass_A)*(A.p4.mass/mass_A)/leg2.x")
         )
+    ),
+    vegasOptions = cms.PSet(
+        numCalls = cms.uint32(10000)                             
     )
 )
+#--------------------------------------------------------------------------------
 
 # define additional collections of tau-jet + tau-jet candidates
 # with loose lead. track Pt, track isolation and ECAL isolation applied on second leg
@@ -371,16 +371,14 @@ selectedDiTauPairs2ndTauElectronVetoLooseIndividual = selectedDiTauPairs2ndTauEl
 selectedDiTauPairs2ndTauElectronVetoLooseCumulative = selectedDiTauPairs2ndTauElectronVetoCumulative.clone(
     srcLeg2 = cms.InputTag('selectedPatTausForDiTau2ndElectronVetoLooseCumulative'),
     doSVreco = cms.bool(True),
-    svFit = cms.PSet(
-        psKine = selectedDiTauPairs2ndTauElectronVetoCumulative.svFit.psKine,
-        psKine_MEt = selectedDiTauPairs2ndTauElectronVetoCumulative.svFit.psKine_MEt,
-        psKine_MEt_ptBalance = selectedDiTauPairs2ndTauElectronVetoCumulative.svFit.psKine_MEt_ptBalance,        
-        polKine = selectedDiTauPairs2ndTauElectronVetoCumulative.svFit.psKine,
-        polKine_MEt = selectedDiTauPairs2ndTauElectronVetoCumulative.svFit.psKine_MEt,
-        polKine_MEt_ptBalance = selectedDiTauPairs2ndTauElectronVetoCumulative.svFit.psKine_MEt_ptBalance
-        #polKine_MEt_ptBalance_Zprod = selectedDiTauPairs2ndTauElectronVetoCumulative.svFit.psKine_MEt_ptBalance
-    )
+    nSVfit = cms.PSet()
 )
+
+selectedDiTauPairs2ndTauElectronVetoLooseCumulative.nSVfit = copy.deepcopy(selectedDiTauPairs2ndTauElectronVetoCumulative.nSVfit)
+selectedDiTauPairs2ndTauElectronVetoLooseCumulative.nSVfit.psKine_MEt_logM_fit.config.event.resonances.A.daughters.leg2.src = \
+  selectedDiTauPairs2ndTauElectronVetoLooseCumulative.srcLeg2
+selectedDiTauPairs2ndTauElectronVetoLooseCumulative.nSVfit.psKine_MEt_logM_int.config.event.resonances.A.daughters.leg2.src = \
+  selectedDiTauPairs2ndTauElectronVetoLooseCumulative.srcLeg2
 
 produceDiTauPairs = cms.Sequence(
     allDiTauPairs

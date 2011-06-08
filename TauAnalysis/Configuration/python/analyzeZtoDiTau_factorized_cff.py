@@ -36,17 +36,10 @@ analyzeZtoDiTauSequence_factorizedTight2ndTau = cms.Sequence(analyzeZtoDiTauEven
 #
 #--------------------------------------------------------------------------------
 
-diTauCandidateSVfitHistManagerForDiTau_factorizedLoose2ndTau = diTauCandidateSVfitHistManagerForDiTau.clone(
-    SVfitAlgorithms = cms.VPSet(
-        cms.PSet(
-            name = cms.string("psKine")
-        ),
-        cms.PSet(
-            name = cms.string("psKine_MEt")
-        ),
-        cms.PSet(
-            name = cms.string("psKine_MEt_ptBalance")
-        )
+diTauCandidateNSVfitHistManagerForDiTau_factorizedLoose2ndTau = diTauCandidateNSVfitHistManagerForDiTau.clone(
+    nSVfitEventHypotheses = cms.PSet(
+        psKine_MEt_logM_fit = cms.string('psKine_MEt_logM_fit'),
+        psKine_MEt_logM_int = cms.string('psKine_MEt_logM_int')
     )
 )    
 
@@ -72,7 +65,7 @@ replaceEventSelections(analyzeZtoDiTauEvents_factorizedLoose2ndTau,
 )
 analyzeZtoDiTauEvents_factorizedLoose2ndTau.analysisSequence = diTauAnalysisSequence_factorizedLoose2ndTau
 replaceAnalyzerModules(analyzeZtoDiTauEvents_factorizedLoose2ndTau,
-    [ [ diTauCandidateSVfitHistManagerForDiTau, diTauCandidateSVfitHistManagerForDiTau_factorizedLoose2ndTau ] ]
+    [ [ diTauCandidateNSVfitHistManagerForDiTau, diTauCandidateNSVfitHistManagerForDiTau_factorizedLoose2ndTau ] ]
 )                       
 
 analyzeZtoDiTauSequence_factorizedLoose2ndTau = cms.Sequence(analyzeZtoDiTauEvents_factorizedLoose2ndTau)

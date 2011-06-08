@@ -54,7 +54,6 @@ class CompositePtrCandidateTMEtHistManager : public HistManagerBase
 
   MonitorElement* hNuTauCandidateDPhi_;
   MonitorElement* hNuTauCandidateMt_;
-  MonitorElement* hNuTauCandidateMtBySVfit_;
   
   MonitorElement* hMEtVsTauPt_;
 };

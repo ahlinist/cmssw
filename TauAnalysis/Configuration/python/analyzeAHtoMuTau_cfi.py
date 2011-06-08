@@ -37,20 +37,14 @@ diTauCandidateHistManagerForMuTau.pluginType = cms.string('PATMuTauPairHistManag
 diTauCandidateHistManagerForMuTau.diTauCandidateSource = cms.InputTag('selectedMuTauPairsForAHtoMuTauZeroChargeCumulative')
 diTauCandidateHistManagerForMuTau.visMassHypothesisSource = cms.InputTag('')
 
-from TauAnalysis.Core.diTauCandidateSVfitHistManager_cfi import *
-diTauCandidateSVfitHistManagerForMuTau = copy.deepcopy(diTauCandidateSVfitHistManager)
-diTauCandidateSVfitHistManagerForMuTau.pluginName = cms.string('diTauCandidateSVfitHistManagerForMuTau')
-diTauCandidateSVfitHistManagerForMuTau.pluginType = cms.string('PATMuTauPairSVfitHistManager')
-diTauCandidateSVfitHistManagerForMuTau.diTauCandidateSource = diTauCandidateHistManagerForMuTau.diTauCandidateSource
-
 from TauAnalysis.Core.diTauCandidateNSVfitHistManager_cfi import *
 diTauCandidateNSVfitHistManagerForMuTau = copy.deepcopy(diTauCandidateNSVfitHistManager)
 diTauCandidateNSVfitHistManagerForMuTau.pluginName = cms.string('diTauCandidateNSVfitHistManagerForMuTau')
 diTauCandidateNSVfitHistManagerForMuTau.pluginType = cms.string('PATMuTauPairNSVfitHistManager')
 diTauCandidateNSVfitHistManagerForMuTau.diTauCandidateSource = cms.InputTag('selectedMuTauPairsForAHtoMuTauPzetaDiffCumulative')
 diTauCandidateNSVfitHistManagerForMuTau.nSVfitEventHypotheses = cms.PSet(
-    psKine_MEt_ptBalance       = cms.string('psKine_MEt_ptBalance'),
-    psKine_MEt_Track_ptBalance = cms.string('psKine_MEt_Track_ptBalance')
+    psKine_MEt_logM_fit = cms.string('psKine_MEt_logM_fit'),
+    psKine_MEt_logM_int = cms.string('psKine_MEt_logM_int')
 )
 
 from TauAnalysis.Core.diTauCandidateZllHypothesisHistManager_cfi import *
@@ -190,7 +184,7 @@ sysUncertaintyHistManagerForMuTau = cms.PSet(
             )
         ),
         cms.PSet(
-            config = diTauCandidateSVfitHistManagerForMuTau,
+            config = diTauCandidateNSVfitHistManagerForMuTau,
             systematics = cms.PSet(
                 diTauCandidateSource = getSysUncertaintyParameterSets(
                     [ muTauPairSystematics ]
@@ -224,7 +218,7 @@ diTauLeg1ChargeBinGridHistManager = cms.PSet(
     ),
     histManagers = cms.VPSet(
         diTauCandidateHistManagerForMuTau,
-        diTauCandidateSVfitHistManagerForMuTau
+        diTauCandidateNSVfitHistManagerForMuTau
     ),
     dqmDirectory_store = cms.string('diTauLeg1ChargeBinnedHistograms')
 )
@@ -769,7 +763,7 @@ muTauAnalysisSequenceOS_woBtag = cms.VPSet(
             'muonHistManager',
             'tauHistManager',
             'diTauCandidateHistManagerForMuTau',
-            'diTauCandidateSVfitHistManagerForMuTau',
+            'diTauCandidateNSVfitHistManagerForMuTau',
             'diTauCandidateZmumuHypothesisHistManagerForMuTau',
             'muPairHistManagerZmumuHypothesesByLooseIsolation',
             'muPairHistManagerDYmumuHypotheses',
@@ -779,7 +773,7 @@ muTauAnalysisSequenceOS_woBtag = cms.VPSet(
             'muonHistManager.muonSource = selectedPatMuonsTrkIPcumulative',
             'tauHistManager.tauSource = selectedPatTausForMuTauElectronVetoCumulative',
             'diTauCandidateHistManagerForMuTau.diTauCandidateSource = selectedMuTauPairsForAHtoMuTauPzetaDiffCumulative',
-            'diTauCandidateSVfitHistManagerForMuTau.diTauCandidateSource = selectedMuTauPairsForAHtoMuTauPzetaDiffCumulative',
+            'diTauCandidateNSVfitHistManagerForMuTau.diTauCandidateSource = selectedMuTauPairsForAHtoMuTauPzetaDiffCumulative',
             'muPairHistManagerZmumuHypothesesByLooseIsolation.diTauCandidateSource = selectedDiMuPairZmumuHypothesesByLooseIsolation',
             'jetHistManager.jetSource = selectedPatJetsForAHtoMuTauAntiOverlapWithLeptonsVetoCumulative'
         )
@@ -794,7 +788,6 @@ muTauAnalysisSequenceOS_woBtag = cms.VPSet(
             'muonHistManager',
             'tauHistManager',
             'diTauCandidateHistManagerForMuTau',
-	    'diTauCandidateSVfitHistManagerForMuTau',
             'diTauCandidateNSVfitHistManagerForMuTau',
             'muPairHistManagerDYmumuHypotheses'
         ),
@@ -803,7 +796,7 @@ muTauAnalysisSequenceOS_woBtag = cms.VPSet(
             'tauHistManager.tauSource = selectedPatTausForMuTauElectronVetoCumulative',
             'diTauCandidateHistManagerForMuTau.diTauCandidateSource = selectedMuTauPairsForAHtoMuTauPzetaDiffCumulative',
             'diTauCandidateHistManagerForMuTau.visMassHypothesisSource = muTauPairVisMassHypotheses',
-            'diTauCandidateSVfitHistManagerForMuTau.diTauCandidateSource = selectedMuTauPairsForAHtoMuTauPzetaDiffCumulative',
+            'diTauCandidateNSVfitHistManagerForMuTau.diTauCandidateSource = selectedMuTauPairsForAHtoMuTauPzetaDiffCumulative',
             'muPairHistManagerDYmumuHypotheses.diTauCandidateSource = selectedDiMuPairDYmumuHypotheses'            
         )
     ),
@@ -820,7 +813,7 @@ muTauAnalysisSequenceOS_woBtag = cms.VPSet(
             'muonHistManager',
             'tauHistManager',
             'diTauCandidateHistManagerForMuTau',
-            'diTauCandidateSVfitHistManagerForMuTau',
+            'diTauCandidateNSVfitHistManagerForMuTau',
             'jetHistManager'
         ),
         replace = cms.vstring(
@@ -828,7 +821,7 @@ muTauAnalysisSequenceOS_woBtag = cms.VPSet(
             'tauHistManager.tauSource = selectedPatTausForMuTauElectronVetoCumulative',
             'diTauCandidateHistManagerForMuTau.diTauCandidateSource = selectedMuTauPairsForAHtoMuTauPzetaDiffCumulative',
             'diTauCandidateHistManagerForMuTau.visMassHypothesisSource = muTauPairVisMassHypothesesForAHtoMuTau',
-            'diTauCandidateSVfitHistManagerForMuTau.diTauCandidateSource = selectedMuTauPairsForAHtoMuTauPzetaDiffCumulative',
+            'diTauCandidateNSVfitHistManagerForMuTau.diTauCandidateSource = selectedMuTauPairsForAHtoMuTauPzetaDiffCumulative',
             'jetHistManager.jetSource = selectedPatJetsForAHtoMuTauAntiOverlapWithLeptonsVetoCumulative'
         )
     ),
@@ -846,7 +839,6 @@ muTauAnalysisSequenceOS_woBtag = cms.VPSet(
             'muonHistManager',
             'tauHistManager',
             'diTauCandidateHistManagerForMuTau',
-            'diTauCandidateSVfitHistManagerForMuTau',
             'diTauCandidateNSVfitHistManagerForMuTau',
             'diTauCandidateZmumuHypothesisHistManagerForMuTau',
             'diTauLeg1ChargeBinGridHistManager',
@@ -867,7 +859,6 @@ muTauAnalysisSequenceOS_woBtag = cms.VPSet(
             'tauHistManager.tauSource = selectedPatTausForMuTauElectronVetoCumulative',
             'diTauCandidateHistManagerForMuTau.diTauCandidateSource = selectedMuTauPairsForAHtoMuTauZeroChargeCumulative',
             'diTauCandidateHistManagerForMuTau.visMassHypothesisSource = muTauPairVisMassHypothesesForAHtoMuTau',
-            'diTauCandidateSVfitHistManagerForMuTau.diTauCandidateSource = selectedMuTauPairsForAHtoMuTauZeroChargeCumulative',
             'diTauCandidateNSVfitHistManagerForMuTau.diTauCandidateSource = selectedMuTauPairsForAHtoMuTauZeroChargeCumulative',
             'diTauCandidateZmumuHypothesisHistManagerForMuTau.ZllHypothesisSource = muTauPairZmumuHypothesesForAHtoMuTau',
             'vertexHistManager.vertexSource = selectedPrimaryVertexHighestPtTrackSumForMuTau',
@@ -1304,7 +1295,6 @@ muTauAnalysisSequenceOS_wBtag = cms.VPSet(
             'muonHistManager.muonSource = selectedPatMuonsTrkIPcumulative',
             'tauHistManager.tauSource = selectedPatTausForMuTauElectronVetoCumulative',
             'diTauCandidateHistManagerForMuTau.diTauCandidateSource = selectedMuTauPairsForAHtoMuTauPzetaDiffCumulative',
-            'diTauCandidateSVfitHistManagerForMuTau.diTauCandidateSource = selectedMuTauPairsForAHtoMuTauPzetaDiffCumulative',
             'muPairHistManagerZmumuHypothesesByLooseIsolation.diTauCandidateSource = allDiMuPairZmumuHypothesesByLooseIsolation'
         )
     ),
@@ -1320,7 +1310,7 @@ muTauAnalysisSequenceOS_wBtag = cms.VPSet(
             'muonHistManager',
             'tauHistManager',
             'diTauCandidateHistManagerForMuTau',
-            'diTauCandidateSVfitHistManagerForMuTau',
+            'diTauCandidateNSVfitHistManagerForMuTau',
             'diTauCandidateZmumuHypothesisHistManagerForMuTau',
             'muPairHistManagerZmumuHypothesesByLooseIsolation',
             'muPairHistManagerDYmumuHypotheses',
@@ -1330,7 +1320,7 @@ muTauAnalysisSequenceOS_wBtag = cms.VPSet(
             'muonHistManager.muonSource = selectedPatMuonsTrkIPcumulative',
             'tauHistManager.tauSource = selectedPatTausForMuTauElectronVetoCumulative',
             'diTauCandidateHistManagerForMuTau.diTauCandidateSource = selectedMuTauPairsForAHtoMuTauPzetaDiffCumulative',
-            'diTauCandidateSVfitHistManagerForMuTau.diTauCandidateSource = selectedMuTauPairsForAHtoMuTauPzetaDiffCumulative',
+            'diTauCandidateNSVfitHistManagerForMuTau.diTauCandidateSource = selectedMuTauPairsForAHtoMuTauPzetaDiffCumulative',
             'muPairHistManagerByLooseIsolation.diTauCandidateSource = selectedDiMuPairZmumuHypothesesByLooseIsolation',
             'jetHistManager.jetSource = selectedPatJetsForAHtoMuTauAntiOverlapWithLeptonsVetoCumulative'
         )
@@ -1367,7 +1357,7 @@ muTauAnalysisSequenceOS_wBtag = cms.VPSet(
             'muonHistManager',
             'tauHistManager',
             'diTauCandidateHistManagerForMuTau',
-            'diTauCandidateSVfitHistManagerForMuTau',
+            'diTauCandidateNSVfitHistManagerForMuTau',
             'jetHistManager'
         ),
         replace = cms.vstring(
@@ -1375,7 +1365,7 @@ muTauAnalysisSequenceOS_wBtag = cms.VPSet(
             'tauHistManager.tauSource = selectedPatTausForMuTauElectronVetoCumulative',
             'diTauCandidateHistManagerForMuTau.diTauCandidateSource = selectedMuTauPairsForAHtoMuTauPzetaDiffCumulative',
             'diTauCandidateHistManagerForMuTau.visMassHypothesisSource = muTauPairVisMassHypothesesForAHtoMuTau',
-            'diTauCandidateSVfitHistManagerForMuTau.diTauCandidateSource = selectedMuTauPairsForAHtoMuTauPzetaDiffCumulative',
+            'diTauCandidateNSVfitHistManagerForMuTau.diTauCandidateSource = selectedMuTauPairsForAHtoMuTauPzetaDiffCumulative',
             'jetHistManager.jetSource = selectedPatJetsForAHtoMuTauBtagCumulative'
         )
     ),
@@ -1393,7 +1383,6 @@ muTauAnalysisSequenceOS_wBtag = cms.VPSet(
             'muonHistManager',
             'tauHistManager',
             'diTauCandidateHistManagerForMuTau',
-            'diTauCandidateSVfitHistManagerForMuTau',
             'diTauCandidateNSVfitHistManagerForMuTau',
             'diTauCandidateZmumuHypothesisHistManagerForMuTau',
             'diTauLeg1ChargeBinGridHistManager',
@@ -1414,7 +1403,6 @@ muTauAnalysisSequenceOS_wBtag = cms.VPSet(
             'tauHistManager.tauSource = selectedPatTausForMuTauElectronVetoCumulative',
             'diTauCandidateHistManagerForMuTau.diTauCandidateSource = selectedMuTauPairsForAHtoMuTauZeroChargeCumulative',
             'diTauCandidateHistManagerForMuTau.visMassHypothesisSource = muTauPairVisMassHypothesesForAHtoMuTau',
-            'diTauCandidateSVfitHistManagerForMuTau.diTauCandidateSource = selectedMuTauPairsForAHtoMuTauZeroChargeCumulative',
             'diTauCandidateNSVfitHistManagerForMuTau.diTauCandidateSource = selectedMuTauPairsForAHtoMuTauZeroChargeCumulative',
             'diTauCandidateZmumuHypothesisHistManagerForMuTau.ZllHypothesisSource = muTauPairZmumuHypothesesForAHtoMuTau',
             'vertexHistManager.vertexSource = selectedPrimaryVertexHighestPtTrackSumForMuTau',
@@ -1576,7 +1564,6 @@ muTauAnalysisSequenceSS_woBtag = cms.VPSet(
             'muonHistManager',
             'tauHistManager',
             'diTauCandidateHistManagerForMuTau',
-            'diTauCandidateSVfitHistManagerForMuTau',
             'diTauCandidateNSVfitHistManagerForMuTau',
             'diTauCandidateZmumuHypothesisHistManagerForMuTau',
             'diTauLeg1ChargeBinGridHistManager',
@@ -1593,7 +1580,6 @@ muTauAnalysisSequenceSS_woBtag = cms.VPSet(
             'tauHistManager.tauSource = selectedPatTausForMuTauElectronVetoCumulative',
             'diTauCandidateHistManagerForMuTau.diTauCandidateSource = selectedMuTauPairsForAHtoMuTauNonZeroChargeCumulative',
             'diTauCandidateHistManagerForMuTau.visMassHypothesisSource = muTauPairVisMassHypothesesForAHtoMuTau',
-            'diTauCandidateSVfitHistManagerForMuTau.diTauCandidateSource = selectedMuTauPairsForAHtoMuTauNonZeroChargeCumulative',
             'diTauCandidateNSVfitHistManagerForMuTau.diTauCandidateSource = selectedMuTauPairsForAHtoMuTauNonZeroChargeCumulative',
             'diTauCandidateZmumuHypothesisHistManagerForMuTau.ZllHypothesisSource = muTauPairZmumuHypothesesForAHtoMuTau',
             'vertexHistManager.vertexSource = selectedPrimaryVertexHighestPtTrackSumForMuTau',
@@ -1760,7 +1746,6 @@ muTauAnalysisSequenceSS_wBtag = cms.VPSet(
             'muonHistManager',
             'tauHistManager',
             'diTauCandidateHistManagerForMuTau',
-            'diTauCandidateSVfitHistManagerForMuTau',
             'diTauCandidateNSVfitHistManagerForMuTau',
             'diTauCandidateZmumuHypothesisHistManagerForMuTau',
             'vertexHistManager',
@@ -1776,7 +1761,6 @@ muTauAnalysisSequenceSS_wBtag = cms.VPSet(
             'tauHistManager.tauSource = selectedPatTausForMuTauElectronVetoCumulative',
             'diTauCandidateHistManagerForMuTau.diTauCandidateSource = selectedMuTauPairsForAHtoMuTauNonZeroChargeCumulative',
             'diTauCandidateHistManagerForMuTau.visMassHypothesisSource = muTauPairVisMassHypothesesForAHtoMuTau',
-            'diTauCandidateSVfitHistManagerForMuTau.diTauCandidateSource = selectedMuTauPairsForAHtoMuTauNonZeroChargeCumulative',
             'diTauCandidateNSVfitHistManagerForMuTau.diTauCandidateSource = selectedMuTauPairsForAHtoMuTauNonZeroChargeCumulative',
             'diTauCandidateZmumuHypothesisHistManagerForMuTau.ZllHypothesisSource = muTauPairZmumuHypothesesForAHtoMuTau',
             'vertexHistManager.vertexSource = selectedPrimaryVertexHighestPtTrackSumForMuTau',

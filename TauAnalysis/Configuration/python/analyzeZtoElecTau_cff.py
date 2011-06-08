@@ -85,22 +85,22 @@ analyzeZtoElecTauEventsOS = cms.EDAnalyzer("GenericAnalyzer",
         electronHistManager,
         tauHistManager,
         diTauCandidateHistManagerForElecTau,
-        diTauCandidateSVfitHistManagerForElecTau,                                     
+        diTauCandidateNSVfitHistManagerForElecTau,                                     
         diTauCandidateZeeHypothesisHistManagerForElecTau,
-		elecPairHistManagerByLooseIsolation,
+	elecPairHistManagerByLooseIsolation,
         jetHistManager,
         caloMEtHistManager,
         pfMEtHistManager,
         particleMultiplicityHistManager,
         vertexHistManager,
         triggerHistManagerForElecTau,
-		dataBinner
+	dataBinner
     ),
 
     analyzers_systematic = cms.VPSet(
-		sysUncertaintyHistManagerForElecTau,
-		sysUncertaintyBinnerForElecTauEff
-	),
+        sysUncertaintyHistManagerForElecTau,
+	sysUncertaintyBinnerForElecTauEff
+    ),
 
     eventDumps = cms.VPSet(
         elecTauEventDump

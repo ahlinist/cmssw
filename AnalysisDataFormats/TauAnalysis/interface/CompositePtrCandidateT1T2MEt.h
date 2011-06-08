@@ -12,9 +12,9 @@
  *          Michal Bluj,
  *          Christian Veelken
  *
- * \version $Revision: 1.27 $
+ * \version $Revision: 1.28 $
  *
- * $Id: CompositePtrCandidateT1T2MEt.h,v 1.27 2011/04/19 12:05:37 veelken Exp $
+ * $Id: CompositePtrCandidateT1T2MEt.h,v 1.28 2011/05/29 17:54:35 veelken Exp $
  *
  */
 
@@ -28,8 +28,6 @@
 #include "DataFormats/Common/interface/Ptr.h"
 #include "DataFormats/Common/interface/OwnVector.h"
 
-#include "AnalysisDataFormats/TauAnalysis/interface/SVfitDiTauSolution.h"
-#include "AnalysisDataFormats/TauAnalysis/interface/SVfitLegSolution.h"
 #include "AnalysisDataFormats/TauAnalysis/interface/NSVfitEventHypothesisBase.h"
 #include "AnalysisDataFormats/TauAnalysis/interface/tauAnalysisAuxFunctions.h"
 
@@ -213,41 +211,7 @@ class CompositePtrCandidateT1T2MEt : public reco::LeafCandidate
     return out;
   }
 
-  bool hasSVFitSolutions() const { return (svFitSolutionMap_.begin() != svFitSolutionMap_.end()); }
-  const SVfitDiTauSolution* svFitSolution(const std::string& algorithm, 
-					  const std::string& polarizationHypothesisName = "", int* errorFlag = 0) const
-  {
-    std::string polHypoName_expanded = ( polarizationHypothesisName != "" ) ? polarizationHypothesisName : "Unknown";
-
-    const SVfitDiTauSolution* svFitSolution =
-      TauAnalysis_namespace::findMapElement<std::string, std::string, SVfitDiTauSolution>
-      (svFitSolutionMap_, algorithm, polHypoName_expanded);
-    
-    if ( !svFitSolution ) {
-      if ( errorFlag ) {
-	(*errorFlag) = 1;
-      } else {
-	edm::LogError ("CompositePtrCandidateT1T2MEt::svFitSolution") 
-	  << " No SVfit solution defined for algorithm = " << algorithm << "," 
-    	  << " polarizationHypothesis = " << polHypoName_expanded << " !!";
-	std::cout << "available: " << std::endl;
-	for ( std::map<std::string, SVfitAlgorithmSolutionType>::const_iterator algorithm = svFitSolutionMap_.begin();
-	      algorithm != svFitSolutionMap_.end(); ++algorithm ) {
-	  std::cout << " for algorithmName = " << algorithm->first << ": polarizationHypothesis = { ";
-	  bool isFirst = true;
-	  for ( SVfitAlgorithmSolutionType::const_iterator polHypothesis = algorithm->second.begin();
-		polHypothesis != algorithm->second.end(); ++polHypothesis ) {
-	    if ( !isFirst ) std::cout << ", ";
-	    std::cout << polHypothesis->first;
-	    isFirst = false;
-	  }
-	  std::cout << " }" << std::endl;
-	}
-      }
-    }
-
-    return svFitSolution;
-  }
+  /// get Mtautau solutions reconstructed by NSVfit algorithm
   bool hasNSVFitSolutions() const { return (nSVfitSolutions_.begin() != nSVfitSolutions_.end()); }
   const NSVfitEventHypothesisBase* nSVfitSolution(const std::string& algorithm, int* errorFlag = 0) const
   {
@@ -355,10 +319,6 @@ class CompositePtrCandidateT1T2MEt : public reco::LeafCandidate
   void setPzeta(double pZeta) { pZeta_ = pZeta; }
   void setPzetaVis(double pZetaVis) { pZetaVis_ = pZetaVis; }
 
-  void addSVfitSolution(const std::string& algorithm, const std::string& polarizationHypothesisName, const SVfitDiTauSolution& solution)
-  {
-    svFitSolutionMap_[algorithm].insert(std::pair<std::string, SVfitDiTauSolution>(polarizationHypothesisName, solution));
-  }
   void addNSVfitSolution(std::auto_ptr<NSVfitEventHypothesisBase> solution)
   {
     nSVfitSolutions_.push_back(solution);
@@ -431,9 +391,7 @@ class CompositePtrCandidateT1T2MEt : public reco::LeafCandidate
   double pZeta_;
   double pZetaVis_;
 
-  /// solutions of secondary vertex based mass reconstruction algorithm
-  typedef std::map<std::string, SVfitDiTauSolution> SVfitAlgorithmSolutionType;
-  std::map<std::string, SVfitAlgorithmSolutionType> svFitSolutionMap_; // first key = algorithmName, second key = polarizationHypothesis
+  /// Mtautau solutions reconstructed by NSVfit algorithm
   edm::OwnVector<NSVfitEventHypothesisBase> nSVfitSolutions_;
 };
 
@@ -448,6 +406,5 @@ typedef CompositePtrCandidateT1T2MEt<pat::Tau, pat::Tau> PATDiTauPair;
 typedef CompositePtrCandidateT1T2MEt<pat::Electron, pat::Muon> PATElecMuPair;
 typedef CompositePtrCandidateT1T2MEt<pat::Electron, pat::Electron> PATDiElecPair;
 typedef CompositePtrCandidateT1T2MEt<pat::Muon, pat::Muon> PATDiMuPair;
-
 
 #endif

@@ -26,20 +26,7 @@
   <class name="edm::Ptr<reco::Track>"/>
   <class name="edm::Ptr<reco::GsfTrack>"/>
 
-  <!-- create dictionaries for SVfit solution objects -->
-  <class name="SVfitDiTauSolution"/>
-  <class name="std::vector<SVfitDiTauSolution>"/>
-  <class name="std::map<std::string, double>"/>
-  <class name="std::map<std::string, std::map<std::string, double> >"/>
-  <class name="std::map<std::string, SVfitDiTauSolution>"/>
-  <class name="std::map<std::string, std::map<std::string, SVfitDiTauSolution> >"/>
-  <class name="SVfitLegSolution"/>
-  <class name="std::vector<SVfitLegSolution>"/>
-  <class name="SVfitWtauNuSolution"/>
-  <class name="std::vector<SVfitWtauNuSolution>"/>
-  <class name="std::map<std::string, SVfitWtauNuSolution>"/>
-  <class name="std::map<std::string, std::map<std::string, SVfitWtauNuSolution> >"/>
-
+  <!-- create dictionaries for NSVfit solution data-formats -->
   <class name="NSVfitEventHypothesisBase"/>
   <class name="NSVfitEventHypothesis"/>
   <class name="NSVfitResonanceHypothesisBase"/>

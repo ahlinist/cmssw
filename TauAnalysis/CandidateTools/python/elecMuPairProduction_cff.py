@@ -1,24 +1,11 @@
 import FWCore.ParameterSet.Config as cms
 import copy
 
-from TauAnalysis.CandidateTools.svFitAlgorithm_cfi import *
-
-svFitLikelihoodElecMuPairKinematicsPhaseSpace = copy.deepcopy(svFitLikelihoodDiTauKinematicsPhaseSpace)
-svFitLikelihoodElecMuPairKinematicsPhaseSpace.pluginType = "SVfitLikelihoodElecMuPairKinematics"
-svFitLikelihoodElecMuPairKinematicsPhaseSpace.leg1.pluginType = "SVfitElectronLikelihoodPhaseSpace"
-svFitLikelihoodElecMuPairKinematicsPhaseSpace.leg2.pluginType = "SVfitMuonLikelihoodPhaseSpace"
-
-svFitLikelihoodElecMuPairMEt = copy.deepcopy(svFitLikelihoodDiTauMEt)
-svFitLikelihoodElecMuPairMEt.pluginType = cms.string("SVfitLikelihoodElecMuPairMEt")
-
-svFitLikelihoodElecMuPairTrackInfo = copy.deepcopy(svFitLikelihoodTrackInfo)
-svFitLikelihoodElecMuPairTrackInfo.pluginType = "SVfitLikelihoodElecMuPairTrackInfo"
-svFitLikelihoodElecMuPairTrackInfo.leg1.pluginType = "SVfitElectronLikelihoodTrackInfo"
-svFitLikelihoodElecMuPairTrackInfo.leg2.pluginType = "SVfitMuonLikelihoodTrackInfo"
-
-svFitLikelihoodElecMuPairPtBalance = copy.deepcopy(svFitLikelihoodDiTauPtBalance)
-svFitLikelihoodElecMuPairPtBalance.pluginType = cms.string("SVfitLikelihoodElecMuPairPtBalance")
-
+from TauAnalysis.CandidateTools.tools.objProdConfigurator import *
+from TauAnalysis.CandidateTools.resolutions_cfi import *
+from TauAnalysis.CandidateTools.nSVfitAlgorithmDiTau_cfi import *
+from TauAnalysis.CandidateTools.nSVfitAlgorithmTauDecayKineMC_cfi import *
+from RecoMET.METProducers.METSigParams_cfi import *
 
 #--------------------------------------------------------------------------------
 # produce combinations of electron + muons pairs
@@ -35,41 +22,56 @@ allElecMuPairs = cms.EDProducer("PATElecMuPairProducer",
     srcGenParticles = cms.InputTag('genParticles'),                                  
     recoMode = cms.string(""),
     doSVreco = cms.bool(True),                          
-    svFit = cms.PSet(
-        psKine = cms.PSet(
-            likelihoodFunctions = cms.VPSet(
-                svFitLikelihoodElecMuPairKinematicsPhaseSpace         
-            ),
-            estUncertainties = cms.PSet(
-                numSamplings = cms.int32(-1)
-            )
-        ),
-        psKine_MEt = cms.PSet(
-            likelihoodFunctions = cms.VPSet(
-                svFitLikelihoodElecMuPairKinematicsPhaseSpace,
-                svFitLikelihoodElecMuPairMEt
-            ),
-            estUncertainties = cms.PSet(
-                numSamplings = cms.int32(-1)
-            )
-        ),
-        psKine_MEt_ptBalance = cms.PSet(
-            likelihoodFunctions = cms.VPSet(
-                svFitLikelihoodElecMuPairKinematicsPhaseSpace,
-                svFitLikelihoodElecMuPairMEt,
-                svFitLikelihoodElecMuPairPtBalance
-            ),
-            estUncertainties = cms.PSet(
-                #numSamplings = cms.int32(1000)
-                numSamplings = cms.int32(-1)
-            )
-        )
-    ),                                      
+    nSVfit = cms.PSet(),                            
     scaleFuncImprovedCollinearApprox = cms.string('1'),                            
     verbosity = cms.untracked.int32(0)
 )
 
-produceElecMuPairs = cms.Sequence( allElecMuPairs )
+#--------------------------------------------------------------------------------
+# configure (new) SVfit algorithm
+# (using combination of PS + MET likelihoods + logM regularization term
+#  to reconstruct mass of tau lepton pair, as described in CMS AN-11-165)
+allElecMuPairs.nSVfit.psKine_MEt_logM_fit = cms.PSet()
+allElecMuPairs.nSVfit.psKine_MEt_logM_fit.config = copy.deepcopy(nSVfitConfig_template)
+allElecMuPairs.nSVfit.psKine_MEt_logM_fit.config.event.resonances.A.daughters.leg1 = cms.PSet(
+    src = allElecMuPairs.srcLeg1,
+    likelihoodFunctions = cms.VPSet(nSVfitElectronLikelihoodPhaseSpace),
+    builder = nSVfitTauToElecBuilder
+)
+allElecMuPairs.nSVfit.psKine_MEt_logM_fit.config.event.resonances.A.daughters.leg2 = cms.PSet(
+    src = allElecMuPairs.srcLeg2,
+    likelihoodFunctions = cms.VPSet(nSVfitMuonLikelihoodPhaseSpace),
+    builder = nSVfitTauToMuBuilder
+)
+allElecMuPairs.nSVfit.psKine_MEt_logM_fit.algorithm = cms.PSet(
+    pluginName = cms.string("nSVfitAlgorithmByLikelihoodMaximization"),
+    pluginType = cms.string("NSVfitAlgorithmByLikelihoodMaximization"),                                    
+    minimizer  = cms.vstring("Minuit2", "Migrad"),
+    maxObjFunctionCalls = cms.uint32(5000),  
+    verbosity = cms.int32(0)
+)
+
+allElecMuPairs.nSVfit.psKine_MEt_logM_int = cms.PSet()
+allElecMuPairs.nSVfit.psKine_MEt_logM_int.config = allElecMuPairs.nSVfit.psKine_MEt_logM_fit.config
+allElecMuPairs.nSVfit.psKine_MEt_logM_int.algorithm = cms.PSet(
+    pluginName = cms.string("nSVfitAlgorithmByIntegration"),
+    pluginType = cms.string("NSVfitAlgorithmByIntegration"),                                    
+    parameters = cms.PSet(
+        mass_A = cms.PSet(
+            min = cms.double(20.),
+            max = cms.double(750.),
+            stepSize = cms.double(5.),                                                            
+            replace = cms.string("leg1.x"),
+            by = cms.string("(A.p4.mass/mass_A)*(A.p4.mass/mass_A)/leg2.x")
+        )
+    ),
+    vegasOptions = cms.PSet(
+        numCalls = cms.uint32(10000)                             
+    )
+)
+#--------------------------------------------------------------------------------
+
+produceElecMuPairs = cms.Sequence(allElecMuPairs)
 
 # define additional collections of electron + muon candidates
 # with loose track and ECAL isolation applied on electron leg
@@ -89,8 +91,8 @@ allElecMuPairsLooseElectronIsolation = cms.EDProducer("PATElecMuPairProducer",
     verbosity = cms.untracked.int32(0)
 )
 
-produceElecMuPairsLooseElectronIsolation = cms.Sequence( allElecMuPairsLooseElectronIsolation )
+produceElecMuPairsLooseElectronIsolation = cms.Sequence(allElecMuPairsLooseElectronIsolation)
 
-produceElecMuPairsAll = cms.Sequence( produceElecMuPairs * produceElecMuPairsLooseElectronIsolation )
+produceElecMuPairsAll = cms.Sequence(produceElecMuPairs * produceElecMuPairsLooseElectronIsolation)
 
 

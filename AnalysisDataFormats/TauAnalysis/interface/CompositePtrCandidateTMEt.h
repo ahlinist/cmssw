@@ -9,9 +9,9 @@
  * 
  * \authors Christian Veelken
  *
- * \version $Revision: 1.2 $
+ * \version $Revision: 1.3 $
  *
- * $Id: CompositePtrCandidateTMEt.h,v 1.2 2011/02/19 13:31:59 veelken Exp $
+ * $Id: CompositePtrCandidateTMEt.h,v 1.3 2011/02/21 13:08:23 veelken Exp $
  *
  */
 
@@ -22,9 +22,6 @@
 #include "DataFormats/Candidate/interface/LeafCandidate.h" 
 #include "DataFormats/METReco/interface/MET.h"
 #include "DataFormats/Common/interface/Ptr.h"
-
-#include "AnalysisDataFormats/TauAnalysis/interface/SVfitWtauNuSolution.h"
-#include "AnalysisDataFormats/TauAnalysis/interface/SVfitLegSolution.h"
 
 template<typename T>
 class CompositePtrCandidateTMEt : public reco::LeafCandidate 
@@ -62,34 +59,6 @@ class CompositePtrCandidateTMEt : public reco::LeafCandidate
   /// clone  object
   CompositePtrCandidateTMEt<T>* clone() const { return new CompositePtrCandidateTMEt<T>(*this); }
 
-  bool hasSVFitSolutions() const { return (svFitSolutionMap_.begin() != svFitSolutionMap_.end()); }
-  const SVfitWtauNuSolution* svFitSolution(const std::string& algorithm, int* errorFlag = 0) const
-  {
-    std::map<std::string, SVfitWtauNuSolution>::const_iterator svFitSolution = svFitSolutionMap_.find(algorithm);
-    
-    if ( svFitSolution != svFitSolutionMap_.end() ) {
-      return &svFitSolution->second;
-    } else {      
-      if ( errorFlag ) {
-	(*errorFlag) = 1;
-      } else {
-	edm::LogError ("CompositePtrCandidateTMEt::svFitSolution") 
-	  << " No SVfit solution defined for algorithm = " << algorithm << " !!";
-	std::cout << "available: algorithmName = { " << std::endl;
-        bool isFirst = true;
-	for ( std::map<std::string, SVfitWtauNuSolution>::const_iterator algorithm = svFitSolutionMap_.begin();
-	      algorithm != svFitSolutionMap_.end(); ++algorithm ) {
-          if ( !isFirst ) std::cout << ", ";
-	  std::cout << algorithm->first;
-	  isFirst = false;
-	}
-	std::cout << " }" << std::endl;
-      }
-
-      return 0;
-    }
-  }
-
  private:
   
   /// allow only CompositePtrCandidateTMEtAlgorithm to change values of data-members
@@ -101,11 +70,6 @@ class CompositePtrCandidateTMEt : public reco::LeafCandidate
   /// and missing transverse momentum
   void setDPhi(double dPhi) { dPhi_ = dPhi; }
 
-  void addSVfitSolution(const std::string& algorithm, const SVfitWtauNuSolution& solution)
-  {
-    svFitSolutionMap_.insert(std::pair<std::string, SVfitWtauNuSolution>(algorithm, solution));
-  }
-
   /// references/pointers to decay products and missing transverse momentum
   TPtr visDecayProducts_;
   MEtPtr met_;
@@ -115,9 +79,6 @@ class CompositePtrCandidateTMEt : public reco::LeafCandidate
   /// acoplanarity angle (angle in transverse plane) between visible decay products
   /// and missing transverse momentum
   double dPhi_;
-
-   /// solutions of secondary vertex based mass reconstruction algorithm
-  std::map<std::string, SVfitWtauNuSolution> svFitSolutionMap_; // key = algorithmName
 };
 
 #include "DataFormats/PatCandidates/interface/Tau.h"

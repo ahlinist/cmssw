@@ -54,9 +54,9 @@ void NSVfitAlgorithmBase::requestFitParameter(const std::string& name, int type,
   if ( name == "allTauDecays" ||
        name == "allLeptons"   ||
        name == "allNeutrinos" ) {
-    edm::LogWarning ("NSVfitAlgorithmBase::requestFitParameter")
-      << " Value = " << name << " not supported yet"
-      << " --> relying on SingleParticleLikelihood plugins to initialize fitParameter for now.";
+    //edm::LogWarning ("NSVfitAlgorithmBase::requestFitParameter")
+    //  << " Value = " << name << " not supported yet"
+    //  << " --> relying on SingleParticleLikelihood plugins to initialize fitParameter for now.";
     return;
   }
 

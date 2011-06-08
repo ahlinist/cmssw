@@ -212,9 +212,9 @@ diTauCandidateHistManagerBgEstWplusJetsEnriched.pluginName = cms.string('diTauCa
 diTauCandidateHistManagerBgEstWplusJetsEnriched.diTauCandidateSource = cms.InputTag('muTauPairsBgEstWplusJetsEnrichedMt1MET')
 diTauCandidateHistManagerBgEstWplusJetsEnriched.visMassHypothesisSource = cms.InputTag('')
 
-diTauCandidateSVfitHistManagerBgEstWplusJetsEnriched = copy.deepcopy(diTauCandidateSVfitHistManagerForMuTau)
-diTauCandidateSVfitHistManagerBgEstWplusJetsEnriched.pluginName = cms.string('diTauCandidateSVfitHistManagerBgEstWplusJetsEnriched')
-diTauCandidateSVfitHistManagerBgEstWplusJetsEnriched.diTauCandidateSource = diTauCandidateHistManagerBgEstWplusJetsEnriched.diTauCandidateSource
+diTauCandidateNSVfitHistManagerBgEstWplusJetsEnriched = copy.deepcopy(diTauCandidateNSVfitHistManagerForMuTau)
+diTauCandidateNSVfitHistManagerBgEstWplusJetsEnriched.pluginName = cms.string('diTauCandidateNSVfitHistManagerBgEstWplusJetsEnriched')
+diTauCandidateNSVfitHistManagerBgEstWplusJetsEnriched.diTauCandidateSource = diTauCandidateHistManagerBgEstWplusJetsEnriched.diTauCandidateSource
 
 caloMEtHistManagerBgEstWplusJetsEnriched = copy.deepcopy(caloMEtHistManager)
 caloMEtHistManagerBgEstWplusJetsEnriched.pluginName = cms.string('caloMEtHistManagerBgEstWplusJetsEnriched')
@@ -309,7 +309,7 @@ analyzeEventsBgEstWplusJetsEnriched = cms.EDAnalyzer("GenericAnalyzer",
         muonHistManagerBgEstWplusJetsEnriched,
         tauHistManagerBgEstWplusJetsEnriched,
         diTauCandidateHistManagerBgEstWplusJetsEnriched,
-        diTauCandidateSVfitHistManagerBgEstWplusJetsEnriched,
+        diTauCandidateNSVfitHistManagerBgEstWplusJetsEnriched,
         caloMEtHistManagerBgEstWplusJetsEnriched,
 	pfMEtHistManagerBgEstWplusJetsEnriched,
         jetHistManagerBgEstWplusJetsEnriched,
@@ -408,11 +408,11 @@ analyzeEventsBgEstWplusJetsEnriched = cms.EDAnalyzer("GenericAnalyzer",
                 'muonHistManagerBgEstWplusJetsEnriched',
                 'tauHistManagerBgEstWplusJetsEnriched',
                 'diTauCandidateHistManagerBgEstWplusJetsEnriched',
-                'diTauCandidateSVfitHistManagerBgEstWplusJetsEnriched'
+                'diTauCandidateNSVfitHistManagerBgEstWplusJetsEnriched'
             ),
             replace = cms.vstring(
                 'diTauCandidateHistManagerBgEstWplusJetsEnriched.diTauCandidateSource = muTauPairsBgEstWplusJetsEnriched',
-                'diTauCandidateSVfitHistManagerBgEstWplusJetsEnriched.diTauCandidateSource = muTauPairsBgEstWplusJetsEnriched'
+                'diTauCandidateNSVfitHistManagerBgEstWplusJetsEnriched.diTauCandidateSource = muTauPairsBgEstWplusJetsEnriched'
             )
         ),
         cms.PSet(
@@ -424,7 +424,7 @@ analyzeEventsBgEstWplusJetsEnriched = cms.EDAnalyzer("GenericAnalyzer",
                 'muonHistManagerBgEstWplusJetsEnriched',
                 'tauHistManagerBgEstWplusJetsEnriched',
                 'diTauCandidateHistManagerBgEstWplusJetsEnriched',
-                'diTauCandidateSVfitHistManagerBgEstWplusJetsEnriched'
+                'diTauCandidateNSVfitHistManagerBgEstWplusJetsEnriched'
             )
         ),
         cms.PSet(
@@ -447,7 +447,7 @@ analyzeEventsBgEstWplusJetsEnriched = cms.EDAnalyzer("GenericAnalyzer",
                 'muonHistManagerBgEstWplusJetsEnriched',
                 'tauHistManagerBgEstWplusJetsEnriched',
                 'diTauCandidateHistManagerBgEstWplusJetsEnriched',
-                'diTauCandidateSVfitHistManagerBgEstWplusJetsEnriched',
+                'diTauCandidateNSVfitHistManagerBgEstWplusJetsEnriched',
                 'pfMEtHistManagerBgEstWplusJetsEnriched',
                 'caloMEtHistManagerBgEstWplusJetsEnriched',
                 'jetHistManagerBgEstWplusJetsEnriched',
