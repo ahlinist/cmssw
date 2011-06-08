@@ -1,0 +1,8 @@
+V6
+- Added scEt, phoHoE, pileup.*
+- use golden JSON 165542 for data
+- use golden JSON 165542 for pileup reweighting
+V7
+- Added HoE and isolatins
+- Sync'ed PMV tree for mumugamma, gamma+jet and gamma+gamma final states
+- Updated Ph
