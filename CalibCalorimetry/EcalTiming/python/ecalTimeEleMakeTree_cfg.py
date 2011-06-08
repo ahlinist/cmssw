@@ -112,7 +112,7 @@ process.multi5x5SuperClustersTimePi0Endcap =  RecoEcal.EgammaClusterProducers.mu
 process.load("CalibCalorimetry.EcalTiming.ecalTimeEleTree_cfi")
 process.ecalTimeEleTree.fileName = 'EcalTimeTree'
 process.ecalTimeEleTree.muonCollection = cms.InputTag("muons")
-process.ecalTimeEleTree.runNum = 108645
+process.ecalTimeEleTree.runNum = 999999
 # gfworks: replathese names
 process.ecalTimeEleTree.barrelSuperClusterCollection = cms.InputTag("multi5x5SuperClustersTimePi0Barrel","multi5x5BarrelSuperClusters")
 process.ecalTimeEleTree.endcapSuperClusterCollection = cms.InputTag("multi5x5SuperClustersTimePi0Endcap","multi5x5EndcapSuperClusters")
