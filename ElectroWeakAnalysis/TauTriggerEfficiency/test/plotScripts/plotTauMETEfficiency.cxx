@@ -593,7 +593,7 @@ void plotTauMETEfficiency(){
 
 //  	plot(TriggerCuts("HLT_SingleIsoTau20_Trk15_MET20",20,15,20,false));
 //  	plot(TriggerCuts("HLT_SingleIsoTau20_Trk15_MET25",20,15,25,false));
-	plot(TriggerCuts("HLT_SingleIsoPFTau35_Trk20",25,15,0,true));
+	plot(TriggerCuts("HLT_SingleIsoPFTau35_Trk20",35,20,0,true));
 /*
   	plot(TriggerCuts("HLT_SingleIsoPFTau35_Trk20_MET45",35,20,45,true));
 	plot(TriggerCuts("HLT_SingleIsoPFTau35_Trk20_MET50",35,20,50,true));
