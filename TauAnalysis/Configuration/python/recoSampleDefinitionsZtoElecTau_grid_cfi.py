@@ -5,11 +5,13 @@ import TauAnalysis.Configuration.plotterProcessDefinitions_cfi as plotter
 import TauAnalysis.DQMTools.plotterStyleDefinitions_cfi as styles
 
 # List of samples to run in the analysis
-## SAMPLES_TO_ANALYZE = [
+SAMPLES_TO_ANALYZE = [
+    'data_TauPlusX_Run2011A_May10ReReco_T3',
+    'data_TauPlusX_Run2011A_PR_v4',
 ##     'data_TauPlusX_Run2011A_PR_v1',
 ##     'data_TauPlusX_Run2011A_PR_v2',
 ##     'data_TauPlusX_Run2011A_PR_nonGolden',
-##     'Ztautau_powheg_T3',
+    'Ztautau_powheg_T3',
 ##     'DYtautauM10to20_powheg_T3',
 ##     'qqZll',
 ##     'Zee_powheg_T3',
@@ -20,19 +22,19 @@ import TauAnalysis.DQMTools.plotterStyleDefinitions_cfi as styles
 ##     'TTplusJets_madgraph_T3',
 ##     'WplusJets_madgraph_T3',
 ##     'WW_T3','WZ_T3','ZZ_T3',
-## ] 
+] 
 
-SAMPLES_TO_ANALYZE = [
-     #'data_TauPlusElec_Run2011A_PR_Pat',
-     'Ztautau_powheg_Pat',
-     'DYtautauM10to20_powheg_Pat',
-     'Zee_powheg_Pat',
-     'DYeeM10to20_pythia_Pat',
-     'PhotonPlusJets_Pt15to30_Pat','PhotonPlusJets_Pt30to50_Pat','PhotonPlusJets_Pt50to80_Pat',
-     'QCD_BCtoE_Pt20to30_Pat','QCD_BCtoE_Pt30to80_Pat','QCD_BCtoE_Pt80to170_Pat',
-     'QCD_EM_Pt20to30_Pat','QCD_EM_Pt30to80_Pat','QCD_EM_Pt80to170_Pat',
-     'WplusJets_madgraph_Pat',
-]
+##SAMPLES_TO_ANALYZE = [
+##     'data_TauPlusElec_Run2011A_PR_Pat',
+##     'Ztautau_powheg_Pat',
+##     'DYtautauM10to20_powheg_Pat',
+##     'Zee_powheg_Pat',
+##     'DYeeM10to20_pythia_Pat',
+##     'PhotonPlusJets_Pt15to30_Pat','PhotonPlusJets_Pt30to50_Pat','PhotonPlusJets_Pt50to80_Pat',
+##     'QCD_BCtoE_Pt20to30_Pat','QCD_BCtoE_Pt30to80_Pat','QCD_BCtoE_Pt80to170_Pat',
+##     'QCD_EM_Pt20to30_Pat','QCD_EM_Pt30to80_Pat','QCD_EM_Pt80to170_Pat',
+##     'WplusJets_madgraph_Pat',
+##]
 
 
 # List of samples to include in the final level plots.  May include selections
@@ -62,7 +64,8 @@ SAMPLE_DEFAULTS = {
     'lumi_mask' : '',
     'runselection' : '',
     'inputFileType' : 'AOD',
-    'hlt_paths' : [ 'HLT_IsoEle12_PFTau15_v3','HLT_Ele12_SW_TighterEleId_L1R_v2'],
+    ##'hlt_paths' : [ 'HLT_IsoEle12_PFTau15_v3','HLT_Ele12_SW_TighterEleId_L1R_v2'],  ## for 4_1_X, spring11
+    'hlt_paths' : [ 'HLT_Ele15_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_LooseIsoPFTau20_v2'],    ## for 4_2_X, summer11
     'SE_white_list' : '',
     'SE_black_list' : 'msu.ru',
     'disableDuplicateCheck' : False,
@@ -91,7 +94,7 @@ TARGET_LUMI = (203)/_picobarns
 #--------------------------------------------------------------------------------
 
 RECO_SAMPLES = {
-    'data_TauPlusElec_Run2011A_PR_T3' : {   # 147.7/pb
+    'data_TauPlusElec_Run2011A_PR_T3' : {   # 147.8/pb 162803-163757
         'datasetpath' : '/TauPlusX/jkolb-skimElecTau_413_v2-56283d7e938fe4e229d293a654f59050/USER',
         'dbs_url' : "https://cmsdbsprod.cern.ch:8443/cms_dbs_ph_analysis_01_writer/servlet/DBSServlet",
         'conditions' : 'GR_P_V16::All',
@@ -110,7 +113,7 @@ RECO_SAMPLES = {
             'HLT_Ele15_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_LooseIsoPFTau15_v4'     : '163269:MIN-163757:MAX'
         }
     },
-    'data_TauPlusElec_Run2011A_PR_Pat' : {   # 5.1/pb
+    'data_TauPlusElec_Run2011A_PR_Pat' : {   # 147.8/pb
         'datasetpath' : '/TauPlusX/lantonel-patSkim_413_v5-b9ca0e2cc8621659caa5eafa9d155b85/USER',
         'dbs_url' : "https://cmsdbsprod.cern.ch:8443/cms_dbs_ph_analysis_01_writer/servlet/DBSServlet",
         'conditions' : 'GR_P_V16::All',
@@ -184,6 +187,43 @@ RECO_SAMPLES = {
             'HLT_Ele15_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_LooseIsoPFTau15_v2'     : '161217:MIN-163261:MAX',
             'HLT_Ele15_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_LooseIsoPFTau15_v4'     : '163269:MIN-163869:MAX'
         }
+    },
+    'data_TauPlusX_Run2011A_PR_v4' : {  # 145/pb  165071-165970
+        'datasetpath' : '/TauPlusX/Run2011A-PromptReco-v4/AOD', 
+        'lumi_mask' : '/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification//Collisions11/7TeV/Prompt/Cert_160404-165970_7TeV_PromptReco_Collisions11_JSON.txt',
+        'conditions' : 'GR_P_V20::All',
+        'number_of_jobs' : 80,
+        'type' : 'Data',
+        'drawOption' : styles.drawOption_Data,
+        'enableSysUncertainties' : False,
+	    'applyVertexMultiplicityReweighting' : False,
+        'applyElectronTriggerEfficiencyCorrection' : False,
+        'applyElectronIsolationEfficiencyCorrection' : False,
+        'applyZrecoilCorrection' : False,
+        'hlt_paths' : {
+            'HLT_Ele15_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_LooseIsoPFTau20_v6'     : '165071:MIN-165633:MAX',
+            'HLT_Ele15_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_LooseIsoPFTau20_v8'     : '165970:MIN-900000:MAX'
+        }
+    },
+    'data_TauPlusX_Run2011A_May10ReReco_T3' : {  #204.2/pb 160329-163869
+        'datasetpath' : '/TauPlusX/jkolb-skimElecTau_423_May10ReReco_v3-2da1106465614f2b4aae43c293e2ca66/USER', 
+        'dbs_url' :  "https://cmsdbsprod.cern.ch:8443/cms_dbs_ph_analysis_01_writer/servlet/DBSServlet",
+        'lumi_mask' : '/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification//Collisions11/7TeV/Reprocessing/Cert_160404-163869_7TeV_May10ReReco_Collisions11_JSON.txt',
+        'skim_eff' : 1407306./12485249.,
+        'conditions' : 'GR_R_42_V14::All',
+        'number_of_jobs' : 50,
+        'type' : 'Data',
+        'drawOption' : styles.drawOption_Data,
+        'enableSysUncertainties' : False,
+	    'applyVertexMultiplicityReweighting' : False,
+        'applyElectronTriggerEfficiencyCorrection' : False,
+        'applyElectronIsolationEfficiencyCorrection' : False,
+        'applyZrecoilCorrection' : False,
+        'hlt_paths' : {
+            'HLT_Ele15_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_LooseIsoPFTau15_v1'     : '160431:MIN-161016:MAX',
+            'HLT_Ele15_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_LooseIsoPFTau15_v2'     : '161217:MIN-163261:MAX',
+            'HLT_Ele15_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_LooseIsoPFTau15_v4'     : '163269:MIN-163869:MAX'
+            }
     },
     'DYtautauM10to20_powheg' : {
         'datasetpath' : "/DYToTauTau_M-10To20_CT10_TuneZ2_7TeV-powheg-pythia-tauola/Spring11-PU_S1_START311_V1G1-v2/AODSIM",
@@ -356,7 +396,7 @@ RECO_SAMPLES = {
     'WplusJets_madgraph_T3' : {
         'datasetpath' : "/WJetsToLNu_TuneZ2_7TeV-madgraph-tauola/jkolb-skimElecTau_413_v1-eae887ba91c6c27e2f0c00f8aee7bf0a/USER",
         'dbs_url' :  "https://cmsdbsprod.cern.ch:8443/cms_dbs_ph_analysis_01_writer/servlet/DBSServlet",
-        'number_of_jobs' : 100,
+        'number_of_jobs' : 40,
         'events_processed' : 15110974,
         'skim_eff' : 738862./15110974,
         'x_sec' : 31314*_picobarns,
@@ -390,7 +430,7 @@ RECO_SAMPLES = {
     'WW_T3' : {
         'datasetpath' : "/WWtoAnything_TuneZ2_7TeV-pythia6-tauola/jkolb-skimElecTau_413_v1-eae887ba91c6c27e2f0c00f8aee7bf0a/USER",
         'dbs_url' :  "https://cmsdbsprod.cern.ch:8443/cms_dbs_ph_analysis_01_writer/servlet/DBSServlet",
-        'number_of_jobs' : 50,
+        'number_of_jobs' : 20,
         'events_processed' : 2061760,
         'skim_eff' : 193655./2061760,
         'x_sec' : 43.0*_picobarns, # NLO cross-section from https://twiki.cern.ch/twiki/bin/viewauth/CMS/StandardModelCrossSections
@@ -424,7 +464,7 @@ RECO_SAMPLES = {
     'WZ_T3' : {
         'datasetpath' : "/WZtoAnything_TuneZ2_7TeV-pythia6-tauola/jkolb-skimElecTau_413_v1-eae887ba91c6c27e2f0c00f8aee7bf0a/USER",
         'dbs_url' :  "https://cmsdbsprod.cern.ch:8443/cms_dbs_ph_analysis_01_writer/servlet/DBSServlet",
-        'number_of_jobs' : 50,
+        'number_of_jobs' : 20,
         'events_processed' : 2108416,
         'skim_eff' : 152293./2108416,
         'x_sec' : 18.2*_picobarns, # NLO cross-section from https://twiki.cern.ch/twiki/bin/viewauth/CMS/StandardModelCrossSections
@@ -458,7 +498,7 @@ RECO_SAMPLES = {
     'ZZ_T3' : {
         'datasetpath' : "/ZZtoAnything_TuneZ2_7TeV-pythia6-tauola/jkolb-skimElecTau_413_v1-eae887ba91c6c27e2f0c00f8aee7bf0a/USER",
         'dbs_url' :  "https://cmsdbsprod.cern.ch:8443/cms_dbs_ph_analysis_01_writer/servlet/DBSServlet",
-        'number_of_jobs' : 50,
+        'number_of_jobs' : 20,
         'events_processed' : 2108608,
         'skim_eff' : 151802./2108608,
         'x_sec' : 5.9*_picobarns, # NLO cross-section from https://twiki.cern.ch/twiki/bin/viewauth/CMS/StandardModelCrossSections
