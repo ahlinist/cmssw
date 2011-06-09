@@ -28,26 +28,6 @@ cfgTrigger = cms.PSet(
     )
 )
 
-# primary event vertex selection
-cfgPrimaryEventVertex = cms.PSet(
-    pluginName = cms.string('primaryEventVertex'),
-    pluginType = cms.string('VertexMinEventSelector'),
-    src = cms.InputTag('selectedPrimaryVertexHighestPtTrackSum'),
-    minNumber = cms.uint32(1)
-)
-cfgPrimaryEventVertexQuality = cms.PSet(
-    pluginName = cms.string('primaryEventVertexQuality'),
-    pluginType = cms.string('VertexMinEventSelector'),
-    src = cms.InputTag('selectedPrimaryVertexQuality'),
-    minNumber = cms.uint32(1)
-)
-cfgPrimaryEventVertexPosition = cms.PSet(
-    pluginName = cms.string('primaryEventVertexPosition'),
-    pluginType = cms.string('VertexMinEventSelector'),
-    src = cms.InputTag('selectedPrimaryVertexPosition'),
-    minNumber = cms.uint32(1)
-)
-
 # electron candidate selection
 cfgElectronIdCut = cms.PSet(
     pluginName = cms.string('electronIdCut'),
@@ -155,22 +135,6 @@ cfgTauIsoCut = cms.PSet(
 	systematics = cms.vstring(tauSystematics.keys()),
     minNumber = cms.uint32(1)
 )
-cfgTauProngCut = cms.PSet(
-    pluginName = cms.string('tauProngCut'),
-    pluginType = cms.string('PATCandViewMinEventSelector'),
-    src_cumulative = cms.InputTag('selectedPatTausForElecTauProngCumulative'),
-    src_individual = cms.InputTag('selectedPatTausForElecTauProngIndividual'),
-	systematics = cms.vstring(tauSystematics.keys()),
-    minNumber = cms.uint32(1)
-)
-cfgTauChargeCut = cms.PSet(
-    pluginName = cms.string('tauChargeCut'),
-    pluginType = cms.string('PATCandViewMinEventSelector'),
-	src_cumulative = cms.InputTag('selectedPatTausForElecTauChargeCumulative'),
-    src_individual = cms.InputTag('selectedPatTausForElecTauChargeIndividual'),
-	systematics = cms.vstring(tauSystematics.keys()),
-    minNumber = cms.uint32(1)
-)
 cfgTauElectronVeto = cms.PSet(
     pluginName = cms.string('tauElectronVeto'),
     pluginType = cms.string('PATCandViewMinEventSelector'),
@@ -223,6 +187,25 @@ cfgDiTauCandidateForElecTauPzetaDiffCut = cms.PSet(
     minNumber = cms.uint32(1)
 )
 
+## selection of vertex associated with elec + tau
+cfgPrimaryEventVertexForElecTau = cms.PSet(
+    pluginName = cms.string('primaryEventVertexForElecTau'),
+    pluginType = cms.string('VertexMinEventSelector'),
+    src = cms.InputTag('selectedPrimaryVertexForElecTau'),
+    minNumber = cms.uint32(1)
+)
+cfgPrimaryEventVertexQualityForElecTau = cms.PSet(
+    pluginName = cms.string('primaryEventVertexQualityForElecTau'),
+    pluginType = cms.string('VertexMinEventSelector'),
+    src = cms.InputTag('selectedPrimaryVertexQualityForElecTau'),
+    minNumber = cms.uint32(1)
+)
+cfgPrimaryEventVertexPositionForElecTau = cms.PSet(
+    pluginName = cms.string('primaryEventVertexPositionForElecTau'),
+    pluginType = cms.string('VertexMinEventSelector'),
+    src = cms.InputTag('selectedPrimaryVertexPositionForElecTau'),
+    minNumber = cms.uint32(1)
+)
 #  defines opposite-sign (OS) workflow
 cfgDiTauCandidateForElecTauZeroChargeCut = cms.PSet(
     pluginName = cms.string('diTauCandidateForElecTauZeroChargeCut'),
@@ -263,9 +246,6 @@ cfgDiElecPairZeeHypothesisVetoByLooseIsolation = cms.PSet(
 zToElecTauEventSelConfiguratorOS = eventSelFlagProdConfigurator(
     [ cfgGenPhaseSpaceCut,
 	  cfgTrigger,
-      cfgPrimaryEventVertex,
-      cfgPrimaryEventVertexQuality,
-      cfgPrimaryEventVertexPosition,
       cfgElectronIdCut,
       cfgElectronAntiCrackCut,
       cfgElectronEtaCut,
@@ -279,8 +259,6 @@ zToElecTauEventSelConfiguratorOS = eventSelFlagProdConfigurator(
       cfgTauDecayModeFindingCut,
       cfgTauLeadTrkPtCut,
       cfgTauIsoCut,
-      cfgTauProngCut,
-      cfgTauChargeCut,
       cfgTauElectronVeto,
       cfgTauEcalCrackVeto,
       cfgTauMuonVeto,
@@ -288,6 +266,9 @@ zToElecTauEventSelConfiguratorOS = eventSelFlagProdConfigurator(
       cfgDiTauCandidateForElecTauMt1METCut,
       cfgDiTauCandidateForElecTauPzetaDiffCut,
       cfgDiTauCandidateForElecTauZeroChargeCut,
+      cfgPrimaryEventVertexForElecTau,
+      cfgPrimaryEventVertexQualityForElecTau,
+      cfgPrimaryEventVertexPositionForElecTau,
       cfgDiElecPairZeeHypothesisVetoByLooseIsolation ],
     boolEventSelFlagProducer = "BoolEventSelFlagProducer",
     pyModuleName = __name__
@@ -311,9 +292,9 @@ isRecZtoElecTau = cms.EDProducer("BoolEventSelFlagProducer",
     flags = cms.VInputTag(
         cms.InputTag('Trigger'),
         cms.InputTag('genPhaseSpaceCut'),
-        cms.InputTag('primaryEventVertexPosition'),
+        cms.InputTag('primaryEventVertexPositionForElecTau'),
         cms.InputTag('electronTrkIPcut', 'cumulative'),
-        cms.InputTag('tauElectronVeto', 'cumulative'),
+        cms.InputTag('tauMuonVeto', 'cumulative'),
         cms.InputTag('diTauCandidateForElecTauZeroChargeCut', 'cumulative'),
         cms.InputTag('diElecPairZeeHypothesisVetoByLooseIsolation'),
     )

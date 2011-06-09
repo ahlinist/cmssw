@@ -53,11 +53,6 @@ analyzeAHtoElecTauEventsOS_woBtag = cms.EDAnalyzer("GenericAnalyzer",
 		# data quality (scraping beam veto, etc)
 		evtSelDataQuality,
         
-        # primary event vertex selection
-        evtSelPrimaryEventVertex,
-        evtSelPrimaryEventVertexQuality,
-        evtSelPrimaryEventVertexPosition,
-        
         # electron candidate selection
         evtSelElectronId,
         evtSelElectronAntiCrack,
@@ -87,6 +82,11 @@ analyzeAHtoElecTauEventsOS_woBtag = cms.EDAnalyzer("GenericAnalyzer",
         evtSelDiTauCandidateForAHtoElecTauZeroCharge,
         evtSelDiTauCandidateForAHtoElecTauNonZeroCharge,
 
+        # primary event vertex selection
+        evtSelPrimaryEventVertexForElecTau,
+        evtSelPrimaryEventVertexQualityForElecTau,
+        evtSelPrimaryEventVertexPositionForElecTau,
+        
 		# veto events compatible with Z --> e+ e- hypothesis
 		# (based on the precense of an opposite-sign, loosely isolated electron	 
 		evtSelDiElecPairZeeHypothesisVetoByLooseIsolation,
