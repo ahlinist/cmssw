@@ -1,6 +1,6 @@
 import FWCore.ParameterSet.Config as cms
 
-pmvTree = cms.EDAnalyzer("TreeMaker",
+pmvTree = cms.EDAnalyzer("CandViewTreeMaker",
   name  = cms.untracked.string("pmv"),
   title = cms.untracked.string("pixel match veto TreeMaker tree"),
   src   = cms.InputTag("selectedPhotons"),
@@ -12,13 +12,23 @@ pmvTree = cms.EDAnalyzer("TreeMaker",
 
 branches = """phoPt            pt
     phoEta           eta
+    phoPhi           phi
+    phoR9            r9
     phoIsEB          isEB
+    phoHoE           hadronicOverEm
+    scEt             superCluster.energy*sin(superCluster.position.theta)
+    phoDeltaRToTrack  userFloat('conversionTools:deltaRToTrack')
+    phoPassElectronVeto userInt('conversionTools:passElectronVeto')
+    phoHasMatchedConversion userInt('conversionTools:hasMatchedConversion')
     phoHasPixelMatch hasPixelSeed
     phoSigmaIetaIeta sigmaIetaIeta
-    phoHoE           hadronicOverEm
     phoTrackIso      trackIso
     phoEcalIso       ecalIso
-    phoHcalIso       hcalIso""".split("\n")
+    phoHcalIso       hcalIso
+    phoMomPdgId      userInt('photonGenMatch:motherPdgId')
+    phoMomStatus     userInt('photonGenMatch:motherStatus')
+    phoGMomPdgId     userInt('photonGenMatch:grandMotherPdgId')
+    phoGMomStatus    userInt('photonGenMatch:grandMotherStatus')""".split("\n")
 
 genBranches =  """phoPdgId genParticle.pdgId""".split("\n")
 
@@ -36,7 +46,7 @@ for line in genBranches:
     pmvTree.variables.append(
         cms.PSet(
             tag = cms.untracked.string(tag),
-            quantity = cms.untracked.PSet(
+            conditionalQuantity = cms.untracked.PSet(
                 ifCondition = cms.untracked.string(
                     'genParticlesSize > 0'
                 ),

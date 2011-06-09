@@ -1,8 +1,8 @@
 import FWCore.ParameterSet.Config as cms
 
-pmvTree = cms.EDAnalyzer("PmvTreeMaker",
-  name  = cms.untracked.string("pmv"),
-  title = cms.untracked.string("pixel match veto TreeMaker tree"),
+tree = cms.EDAnalyzer("PmvTreeMaker",
+  name  = cms.untracked.string("mmg"),
+  title = cms.untracked.string("Z->mumugamma FSR analysis tree"),
   src              = cms.InputTag("selectedZMuMuGammas"),
   primaryVertexSrc = cms.InputTag("offlinePrimaryVertices"),
   genParticleSrc   = cms.InputTag("prunedGenParticles"),
@@ -56,13 +56,16 @@ for line in genBranches:
         )
     )
 
+#------------------------------------------------------------------------------
 ## shorthand for the muon expression
 muon = lambda i: "daughter('dimuon').masterClonePtr." +\
                  "daughter('muon%d').masterClonePtr." % i
 
+#------------------------------------------------------------------------------
 var = lambda t, q: cms.PSet( tag      = cms.untracked.string(t),
                              quantity = cms.untracked.string(q) )
 
+#------------------------------------------------------------------------------
 def condVar (iTag, iIf, iThen, iElse):
     return cms.PSet( tag = cms.untracked.string(iTag),
                      conditionalQuantity = cms.untracked.PSet(
@@ -71,10 +74,12 @@ def condVar (iTag, iIf, iThen, iElse):
                           elseQuantity = cms.untracked.string(iElse),
                       ) )
 
+#------------------------------------------------------------------------------
 def muVar(i, iTag, iQuantity):
     return var( 'mu%i%s' % (i, iTag),
                 muon(i) + iQuantity   )
 
+#------------------------------------------------------------------------------
 def muCondVar(i, iTag, iIf, iThen, iElse):
     return condVar(
         'mu%i%s' % (i, iTag),
@@ -83,6 +88,7 @@ def muCondVar(i, iTag, iIf, iThen, iElse):
         iElse
     )
 
+#------------------------------------------------------------------------------
 def muCalEnergy(i, iTag, iQuantity):
     return muCondVar( i,
                       "CalEnergy" + iTag,
@@ -90,6 +96,24 @@ def muCalEnergy(i, iTag, iQuantity):
                       'calEnergy.' + iQuantity,
                       '-1' )
 
+
+#------------------------------------------------------------------------------
+def muNearVar(iTag, iQuantity):
+    return condVar(
+        iTag  = 'muNear' + iTag,
+        iIf   = deltaR(1) + ' < ' + deltaR(2),
+        iThen = muon(1) + iQuantity,
+        iElse = muon(2) + iQuantity,
+    )
+
+#------------------------------------------------------------------------------
+def muFarVar(iTag, iQuantity):
+    return condVar(
+        iTag  = 'muFar' + iTag,
+        iIf   = deltaR(1) + ' > ' + deltaR(2),
+        iThen = muon(1) + iQuantity,
+        iElse = muon(2) + iQuantity,
+    )
 
 #muonCalEnergyBranches = """Em em
     #EmMax emMax
@@ -136,7 +160,7 @@ pmvTree.variables.extend([
     muCalEnergy( 2, 'EmMax', 'emMax' ),
     muCalEnergy( 1, 'Had'  , 'had'   ),
     muCalEnergy( 2, 'Had'  , 'had'   ),
-    
+
     var( "minDEta",
          """
           min(abs(daughter("dimuon").daughter(0).eta-daughter("photon").eta),
@@ -179,6 +203,13 @@ pmvTree.variables.extend([
                 daughter("dimuon").mass * daughter("dimuon").mass ) /
             ( mass * mass -
                 daughter("dimuon").mass * daughter("dimuon").mass )
-         ''' 
-    )
+         '''
+    ),
+
+    muNearVar( 'Pt' , 'pt'  ),
+    muNearVar( 'Eta', 'eta' ),
+    muNearVar( 'Phi', 'phi' ),
+    muFarVar ( 'Pt' , 'pt'  ),
+    muFarVar ( 'Eta', 'eta' ),
+    muFarVar ( 'Phi', 'phi' ),
 ])
