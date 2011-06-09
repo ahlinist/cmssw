@@ -78,7 +78,7 @@ process.source = cms.Source("PoolSource",
 # import utility function for configuring PAT trigger matching
 from PhysicsTools.PatAlgos.tools.trigTools import switchOnTrigger
 switchOnTrigger(process, hltProcess = 'HLT', outputModule = '')
-process.patTrigger.addL1Algos = cms.bool(True)
+#process.patTrigger.addL1Algos = cms.bool(True)
 #--------------------------------------------------------------------------------
 
 #--------------------------------------------------------------------------------
