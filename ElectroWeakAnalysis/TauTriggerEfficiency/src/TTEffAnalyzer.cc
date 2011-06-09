@@ -13,7 +13,7 @@
 //
 // Original Author:  Chi Nhan Nguyen
 //         Created:  Wed Oct  1 13:04:54 CEST 2008
-// $Id: TTEffAnalyzer.cc,v 1.56 2011/06/07 20:18:04 slehti Exp $
+// $Id: TTEffAnalyzer.cc,v 1.57 2011/06/09 07:16:08 slehti Exp $
 //
 //
 
@@ -328,7 +328,12 @@ using namespace reco;
       PFElectronMatch = 0;
     }
   }
-   
+
+  for(size_t iDiscr = 0; iDiscr < PFTauDiscriminators_.size(); ++iDiscr) {
+	const PFTauDiscriminator & ds = *(thePFTauDiscriminators[iDiscr].product());
+	discriminators[iDiscr] = ds[thisTauRef];
+  }
+/*   
   if(thePFTauDiscriminatorAgainstElectron.isValid()){
     const PFTauDiscriminator & ds = *(thePFTauDiscriminatorAgainstElectron.product());
     if (ds[thisTauRef]>0.5) {
@@ -337,7 +342,7 @@ using namespace reco;
       PFElectronMatch = 0;
     }
   }
-
+*/
   MCMatch = 0;
   if(mcTaus.isValid()){
     for(unsigned int k = 0 ; k < mcTaus->size(); k++){
@@ -462,7 +467,7 @@ using namespace reco;
             PFElectronMatch = 0;
           }
         }
-
+/*
   	if(thePFTauDiscriminatorAgainstElectron.isValid()){
   	  const PFTauDiscriminator & ds = *(thePFTauDiscriminatorAgainstElectron.product());
   	  if (ds[thisTauRef]>0.5) {
@@ -471,7 +476,7 @@ using namespace reco;
   	    PFElectronMatch = 0;
   	  }
   	}
-	
+*/	
 	if(thisTauRef->leadPFChargedHadrCand().isNonnull()) PFInvPt = 1./thisTauRef->leadPFChargedHadrCand()->pt();
 	// Fill common variables
 	fillLV(PFTaus->at(k).p4());
