@@ -41,11 +41,6 @@ analyzeZtoElecTauEventsOS = cms.EDAnalyzer("GenericAnalyzer",
 		# scraping-beam, etc. veto
         evtSelDataQuality,
 
-        # primary event vertex selection
-        evtSelPrimaryEventVertex,
-        evtSelPrimaryEventVertexQuality,
-        evtSelPrimaryEventVertexPosition,
-        
         # electron candidate selection
         evtSelElectronId,
         evtSelElectronAntiCrack,
@@ -75,6 +70,11 @@ analyzeZtoElecTauEventsOS = cms.EDAnalyzer("GenericAnalyzer",
         evtSelDiTauCandidateForElecTauZeroCharge,
         evtSelDiTauCandidateForElecTauNonZeroCharge,
 
+        # primary event vertex selection
+        evtSelPrimaryEventVertexForElecTau,
+        evtSelPrimaryEventVertexQualityForElecTau,
+        evtSelPrimaryEventVertexPositionForElecTau,
+        
         # veto events compatible with Z --> e+ e- hypothesis
         evtSelDiElecPairZeeHypothesisVetoByLooseIsolation
     ),
@@ -91,7 +91,7 @@ analyzeZtoElecTauEventsOS = cms.EDAnalyzer("GenericAnalyzer",
         jetHistManager,
         caloMEtHistManager,
         pfMEtHistManager,
-        particleMultiplicityHistManager,
+        #particleMultiplicityHistManager,
         vertexHistManager,
         triggerHistManagerForElecTau,
 	dataBinner
