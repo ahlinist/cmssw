@@ -50,7 +50,7 @@ Jun262010_jpsi_selection = cms.PSet(version = cms.string("Jun262010_jpsi"),
                                     maxRelIso = cms.double(0.15)
                                     )
 
-FsrApr082011_selection = cms.PSet(
+muonSelection_FsrApr082011 = cms.PSet(
     version = cms.string("FsrApr082011"),
     isGlobalMuon = cms.bool(True),
     maxNormChi2 = cms.double(10),
