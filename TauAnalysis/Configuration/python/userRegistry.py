@@ -100,8 +100,16 @@ userSettings = {
         }
     },
     'jkolb': {
-        'current' : 'Run24',
+        'current' : 'Run25',
         'jobs' : {
+            # Spring11 data + MC: may10 rereco + PR -- move to 4_2_X
+            'Run25' : {
+                'AHtoElecTau' : {
+                    'analysisFilePath' : "/user/j/jkolb/TauResults/Run25/",
+                    'harvestingFilePath' : "/data/ndpc0/c/jkolb/TauResults",
+                    'tmpFilePath' : "/data/ndpc0/c/jkolb/TauResults/tmp/"
+                }
+            },
             # Spring11 data + MC: 165/pb  -- electron pt cut to 18 GeV
             'Run24' : {
                 'AHtoElecTau' : {
