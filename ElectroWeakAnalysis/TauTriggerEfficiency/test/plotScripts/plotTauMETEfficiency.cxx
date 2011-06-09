@@ -18,6 +18,8 @@ bool hplusMC = false;
 bool Run2011A = true;
 //bool Run2011A = false;
 
+Float_t text_size = 0.04;
+
 struct TriggerCuts {
 	TriggerCuts(TString n,double t, double l, double M, bool pf){
 		name = n;
@@ -126,10 +128,10 @@ void plot(TriggerCuts triggerCuts){
 	if(Run2011A){
           plotter = new Plotter(tteffAnalysis_muTau_HLT_AOD_Run2011A_cmssw416_V00_07_03_hltpftautight_hpspftau());
 //          plotter2 = new Plotter(tteffAnalysis_Mu_pflow_tau_Run2010AB_cmssw413_V00_07_01_hltpftautight());
-	plotter2 = new Plotter(tteffAnalysis_muTau_HLT_AOD_Run2011A_cmssw416_V00_07_03_hltpftautight_hpspftau());
-          fig1legend = "Data: Run2011A";
+	  plotter2 = new Plotter(tteffAnalysis_DYToTauTau_20_TuneZ2_7TeV_pythia6_tauola_cmssw416_V00_07_04_hltpftautight_hpspftau());
+          fig1legend = "Data: Run2011A Ztautau";
 //          fig2legend = "Data: Run2010AB";
-	  fig2legend = "Data: Run2011A Ztautau";
+	  fig2legend = "MC: pythia6 Ztautau";
           fileNamePrefix = "Data2011";
 	  if(!triggerCuts.isPFTau()) {
 		plotter = new Plotter(tteffAnalysis_SingleMu_Run2011A_v1_cmssw413_V00_07_01_hltcalotau());
@@ -269,11 +271,21 @@ TFile* fOUT = new TFile("histos.root","RECREATE");
         fig2->SetMarkerColor(kRed);
         fig2->SetMarkerStyle(22);
         fig2->Draw("Psame");
-        TLegend* leg = new TLegend(0.6,0.2,0.9,0.4);
+        TLegend* leg = new TLegend(0.20,0.7,0.55,0.85);
+	leg->SetFillColor(0);
         leg->AddEntry(fig1,fig1legend,"p");
         leg->AddEntry(fig2,fig2legend,"p");
         leg->Draw();
-        gPad->SaveAs(plotDir+fileNamePrefix+"_HLTTau_PFTauEt"+suffix);
+	TLatex* tex = new TLatex(8.,1.0,triggerCuts.name);
+	tex->SetTextSize(text_size);
+	tex->SetLineWidth(2);
+	tex->Draw();
+	TLatex* tex = new TLatex(70.,0.9,"CMS");
+        tex->SetTextSize(text_size);
+        tex->SetLineWidth(2);
+        tex->Draw();
+	gPad->SaveAs(plotDir+fileNamePrefix+"_HLTTau_PFTauEt"+suffix);
+
 fOUT->cd();
 fig1->SetName("TauLeg");
 fig1->SetTitle(triggerCuts.name);
@@ -282,13 +294,13 @@ fig1->Write();
 fig2->SetName("TauLegZtautau");
 fig2->SetTitle(triggerCuts.name);
 fig2->Write();
-/*
+
 /////////////////////////////////////////////////////////////////////////////////////////
 
 // As a function of eta
         plotter->SetXTitle("PF#tau eta");
         plotter2->SetXTitle("PF#tau eta");
-
+/*
         plotter->SetYTitle("Level-1 tau efficiency");
         plotter->SetFileName(plotDir+"TauMET_L1Eff_PFTauEta"+suffix);
         TGraphAsymmErrors* fig1 = plotter->DrawHistogram("PFTauEta>>hnum(25,-2.5,2.5)",L1Cut,L1Denom);
@@ -352,13 +364,37 @@ fig2->Write();
         leg->AddEntry(fig2,fig2legend,"p");
         leg->Draw();
         gPad->SaveAs(plotDir+fileNamePrefix+"_TauMET_L3Eff_PFTauEta"+suffix);
+*/
+	plotter->SetYTitle("HLTTau efficiency");
+        TGraphAsymmErrors* fig1 = plotter->DrawHistogram("PFTauEta>>hnum(25,-2.5,2.5)",TauTot,pfTauSelection);
+        TGraphAsymmErrors* fig2 = plotter2->DrawHistogram("PFTauEta>>hnum(25,-2.5,2.5)",TauTot,pfTauSelection);
+        fig1->SetMinimum(0);
+        fig1->SetMaximum(1.1);
+        fig1->Draw("PAE");
+        fig2->SetMarkerColor(kRed);
+        fig2->SetMarkerStyle(22);  
+        fig2->Draw("Psame");
+	TLegend* leg = new TLegend(0.20,0.7,0.55,0.85);
+	leg->SetFillColor(0);
+        leg->AddEntry(fig1,fig1legend,"p");
+        leg->AddEntry(fig2,fig2legend,"p");
+        leg->Draw();
+	TLatex* tex = new TLatex(-2.5,1.0,triggerCuts.name);
+	tex->SetTextSize(text_size);
+        tex->SetLineWidth(2);
+        tex->Draw();
+	TLatex* tex = new TLatex(1.4,0.9,"CMS");
+        tex->SetTextSize(text_size);
+        tex->SetLineWidth(2);
+        tex->Draw();
+        gPad->SaveAs(plotDir+fileNamePrefix+"_HLTTau_PFTauEta"+suffix);
 
 /////////////////////////////////////////////////////////////////////////////////////////
 
 // As a function of phi
         plotter->SetXTitle("PF#tau phi");
         plotter2->SetXTitle("PF#tau phi");
-
+/*
         plotter->SetYTitle("Level-1 tau efficiency");
         plotter->SetFileName(plotDir+"TauMET_L1Eff_PFTauPhi"+suffix);
         TGraphAsymmErrors* fig1 = plotter->DrawHistogram("PFTauPhi>>hnum(25,-3.14,3.14)",L1Cut,L1Denom);
@@ -423,6 +459,30 @@ fig2->Write();
         leg->Draw();
         gPad->SaveAs(plotDir+fileNamePrefix+"_TauMET_L3Eff_PFTauPhi"+suffix);
 */
+        plotter->SetYTitle("HLTTau efficiency");
+        TGraphAsymmErrors* fig1 = plotter->DrawHistogram("PFTauEta>>hnum(25,-3.14,3.14)",TauTot,pfTauSelection);
+        TGraphAsymmErrors* fig2 = plotter2->DrawHistogram("PFTauEta>>hnum(25,-3.14,3.14)",TauTot,pfTauSelection);
+        fig1->SetMinimum(0);
+        fig1->SetMaximum(1.1);
+        fig1->Draw("PAE");
+        fig2->SetMarkerColor(kRed);
+        fig2->SetMarkerStyle(22);
+        fig2->Draw("Psame");
+	TLegend* leg = new TLegend(0.20,0.7,0.55,0.85);
+	leg->SetFillColor(0);
+        leg->AddEntry(fig1,fig1legend,"p");
+        leg->AddEntry(fig2,fig2legend,"p");
+        leg->Draw();
+        TLatex* tex = new TLatex(-2.7,1.0,triggerCuts.name);
+	tex->SetTextSize(text_size);
+        tex->SetLineWidth(2);
+        tex->Draw();
+	TLatex* tex = new TLatex(1.3,0.9,"CMS");
+        tex->SetTextSize(text_size);
+        tex->SetLineWidth(2);
+        tex->Draw();
+        gPad->SaveAs(plotDir+fileNamePrefix+"_HLTTau_PFTauPhi"+suffix);
+/*
 /////////////////////////////////////////////////////////////////////////////////////////
 
 // As a function of MET
@@ -593,7 +653,7 @@ void plotTauMETEfficiency(){
 
 //  	plot(TriggerCuts("HLT_SingleIsoTau20_Trk15_MET20",20,15,20,false));
 //  	plot(TriggerCuts("HLT_SingleIsoTau20_Trk15_MET25",20,15,25,false));
-	plot(TriggerCuts("HLT_SingleIsoPFTau35_Trk20",35,20,0,true));
+	plot(TriggerCuts("IsoPFTau35_Trk20",35,20,0,true));
 /*
   	plot(TriggerCuts("HLT_SingleIsoPFTau35_Trk20_MET45",35,20,45,true));
 	plot(TriggerCuts("HLT_SingleIsoPFTau35_Trk20_MET50",35,20,50,true));
