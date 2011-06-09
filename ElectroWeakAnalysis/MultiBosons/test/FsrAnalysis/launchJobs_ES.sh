@@ -1,34 +1,34 @@
-##################### DATA #########################
-# for DATASET in ZMu-May10ReReco-42X-v3
-for DATASET in ZMu-May10ReReco-42X-v3\
-    ZMu-PromptSkim-v4_42X-v5 \
-    PromptReco-v4_FNAL_42X-v3
-do
-    nohup cmsRun energyScaleTree_cfg.py \
-        inputFiles_clear \
-        inputFiles_load=files_${DATASET}.dat \
-        jsonFile=Cert_160404-165970_7TeV_PromptReco_Collisions11_JSON.txt \
-        isMC=False \
-        maxEvents=-1 \
-        outputFile=/wntmp/veverka/esTree_${DATASET}_V1 \
-        >& /wntmp/veverka/es_${DATASET}.out &
-done
-
-
-
-# ###################### SMALL MC ####################
-#
-# for DATASET in WToMuNu_TuneZ2_7TeV-pythia6_Summer11_RECO_42X-v4
+# ##################### DATA #########################
+# # for DATASET in ZMu-May10ReReco-42X-v3
+# for DATASET in ZMu-May10ReReco-42X-v3\
+#     ZMu-PromptSkim-v4_42X-v5 \
+#     PromptReco-v4_FNAL_42X-v3
 # do
 #     nohup cmsRun energyScaleTree_cfg.py \
 #         inputFiles_clear \
 #         inputFiles_load=files_${DATASET}.dat \
-#         isMC=True \
+#         jsonFile=Cert_160404-165970_7TeV_PromptReco_Collisions11_JSON.txt \
+#         isMC=False \
 #         maxEvents=-1 \
-#         outputFile=/wntmp/veverka/esTree_${DATASET}_V1 \
+#         outputFile=/wntmp/veverka/esTree_${DATASET}_V2 \
 #         >& /wntmp/veverka/es_${DATASET}.out &
 # done
-#
+
+
+
+###################### SMALL MC ####################
+
+for DATASET in WToMuNu_TuneZ2_7TeV-pythia6_Summer11_RECO_42X-v4
+do
+    nohup cmsRun energyScaleTree_cfg.py \
+        inputFiles_clear \
+        inputFiles_load=files_${DATASET}.dat \
+        isMC=True \
+        maxEvents=-1 \
+        outputFile=/wntmp/veverka/esTree_${DATASET}_V2 \
+        >& /wntmp/veverka/es_${DATASET}.out &
+done
+
 
 #G_Pt-15to3000_TuneZ2_Flat_7TeV_pythia6_Summer11_AOD_42X-v4
 
@@ -42,7 +42,7 @@ done
 #         inputFiles_load=files_${DATASET}.dat \
 #         isMC=True \
 #         maxEvents=-1 \
-#         outputFile=/wntmp/veverka/esTree_${DATASET}_V1 \
+#         outputFile=/wntmp/veverka/esTree_${DATASET}_V2 \
 #         totalSections=$TOTAL_SECTIONS \
 #         section=$SECTION \
 #         >& /wntmp/veverka/es_${DATASET}_${SECTION}of${TOTAL_SECTIONS}.out &
@@ -61,7 +61,7 @@ done
 #         inputFiles_load=files_${DATASET}.dat \
 #         isMC=True \
 #         maxEvents=-1 \
-#         outputFile=/wntmp/veverka/esTree_${DATASET}_V1 \
+#         outputFile=/wntmp/veverka/esTree_${DATASET}_V2 \
 #         totalSections=$TOTAL_SECTIONS \
 #         section=$SECTION \
 #         >& /wntmp/veverka/es_${DATASET}_${SECTION}of${TOTAL_SECTIONS}.out &
@@ -84,7 +84,7 @@ done
 #         inputFiles_load=files_${DATASET}.dat \
 #         isMC=True \
 #         maxEvents=-1 \
-#         outputFile=/wntmp/veverka/esTree_${DATASET}_V1 \
+#         outputFile=/wntmp/veverka/esTree_${DATASET}_V2 \
 #         totalSections=$TOTAL_SECTIONS \
 #         section=$SECTION \
 #         >& /wntmp/veverka/es_${DATASET}_${SECTION}of${TOTAL_SECTIONS}.out &
@@ -103,7 +103,7 @@ done
 #         inputFiles_load=files_${DATASET}.dat \
 #         isMC=True \
 #         maxEvents=100 \
-#         outputFile=/wntmp/veverka/esTree_${DATASET}_V1 \
+#         outputFile=/wntmp/veverka/esTree_${DATASET}_V2 \
 #         totalSections=$TOTAL_SECTIONS \
 #         section=$SECTION \
 #         >& /wntmp/veverka/es_${DATASET}_${SECTION}of${TOTAL_SECTIONS}.out &
