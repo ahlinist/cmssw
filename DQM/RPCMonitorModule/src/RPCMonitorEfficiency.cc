@@ -13,7 +13,7 @@
 //
 // Original Author:  pts/45
 //         Created:  Tue May 13 12:23:34 CEST 2008
-// $Id: RPCMonitorEfficiency.cc,v 1.56 2011/04/13 16:09:20 calabria Exp $
+// $Id: RPCMonitorEfficiency.cc,v 1.57 2011/05/17 09:23:58 carrillo Exp $
 //
 //
 
@@ -609,6 +609,8 @@ private:
   bool stat;
   double threshold;
   double fiducialcut;
+  double fiducialcutx;
+  double fiducialcuty;
   bool endcap;
   bool barrel; 
   std::vector<unsigned int> blacklist;
@@ -684,6 +686,8 @@ RPCMonitorEfficiency::RPCMonitorEfficiency(const edm::ParameterSet& iConfig){
   stat=iConfig.getUntrackedParameter<bool>("statistics",false);
   threshold=iConfig.getUntrackedParameter<double>("threshold");
   fiducialcut=iConfig.getUntrackedParameter<double>("fiducialcut",0.);
+  fiducialcutx=iConfig.getUntrackedParameter<double>("fiducialcutx",fiducialcut);
+  fiducialcuty=iConfig.getUntrackedParameter<double>("fiducialcuty",fiducialcut);
   endcap=iConfig.getUntrackedParameter<bool>("endcap");
   barrel=iConfig.getUntrackedParameter<bool>("barrel");
   BlackListFile  = iConfig.getUntrackedParameter<std::string>("BlackListFile","blacklist.dat"); 
@@ -1891,10 +1895,10 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
 	    }
 
 	    //ac[a hay que poner el fiducial cut en cm
-	    int firstxbin = int(0.1*nstrips*stripw+fiducialcut);
-	    int lastxbin = int(1.1*nstrips*stripw-fiducialcut);
-	    int firstybin = int(0.1*stripl+fiducialcut);
-	    int lastybin = int(1.1*stripl-fiducialcut);
+	    int firstxbin = int(0.1*nstrips*stripw+fiducialcutx);
+	    int lastxbin = int(1.1*nstrips*stripw-fiducialcutx);
+	    int firstybin = int(0.1*stripl+fiducialcuty);
+	    int lastybin = int(1.1*stripl-fiducialcuty);
 	    
 	    if(debug) std::cout<<" firstxbin "<<firstxbin<<" lastxbin "<<lastxbin;
 	    if(debug) std::cout<<" firstybin "<<firstybin<<" lastybin "<<lastybin;
@@ -2993,8 +2997,8 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
 	      histoPROX->SetBinError(i,erX);
 	    }
 
-	    int firstybin = int(0.1*stripl+fiducialcut);
-	    int lastybin = int(1.1*stripl-fiducialcut);
+	    int firstybin = int(0.1*stripl+fiducialcuty);
+	    int lastybin = int(1.1*stripl-fiducialcuty);
 
 	    float averageRollWidth = nstrips*stripw; //This is the roll with.
 	    const BoundPlane & RPCSurface = (*r)->surface();
@@ -3008,10 +3012,10 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
 	    for(int j=firstybin;j<=lastybin;j++){
 	      float y = j-stripl*0.6;
 	      float localRollWidth = averageRollWidth*(1+y/radiusCenterRoll);
-	      int firstxbin = int (0.6*averageRollWidth-localRollWidth*0.5+fiducialcut);
-	      int lastxbin  = int (0.6*averageRollWidth+localRollWidth*0.5-fiducialcut);
+	      int firstxbin = int (0.6*averageRollWidth-localRollWidth*0.5+fiducialcutx);
+	      int lastxbin  = int (0.6*averageRollWidth+localRollWidth*0.5-fiducialcutx);
 	      if(debug) std::cout<<" firstxbin "<<firstxbin<<" lastxbin "<<lastxbin<<" localRollWidth "<<localRollWidth
-				 <<" j "<<j<<" y "<<y<<" fiducial cut "<<fiducialcut<<std::endl;
+				 <<" j "<<j<<" y "<<y<<" fiducial cut x "<<fiducialcutx<<std::endl;
 	      for(int i=firstxbin;i<=lastxbin;i++){
 		pinoobserved = pinoobserved + histoRPC_2D->GetBinContent(i,j);	
 		pinoexpected = pinoexpected + histoCSC_2D->GetBinContent(i,j);
