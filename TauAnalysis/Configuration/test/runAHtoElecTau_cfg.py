@@ -74,12 +74,14 @@ process.maxEvents = cms.untracked.PSet(
 
 process.source = cms.Source("PoolSource",
     fileNames = cms.untracked.vstring(
-		'/store/relval/CMSSW_4_1_3/RelValZTT/GEN-SIM-RECO/START311_V2-v1/0037/286D4A6C-C651-E011-B6AC-001A92971BBA.root',
-		'/store/relval/CMSSW_4_1_3/RelValZTT/GEN-SIM-RECO/START311_V2-v1/0038/18CCFD66-5A52-E011-A4BC-00304867918A.root'
+        '/store/relval/CMSSW_4_2_3/RelValZTT/GEN-SIM-RECO/START42_V12-v2/0062/4CEA9C47-287B-E011-BAB7-00261894396B.root',
+        '/store/relval/CMSSW_4_2_3/RelValZTT/GEN-SIM-RECO/START42_V12-v2/0066/B6B51325-DA7B-E011-9E95-0018F3D096C6.root'
 	)
     #skipBadFiles = cms.untracked.bool(True)    
 )
 
+HLTprocessName = "HLT" # use for 2011 Data
+##HLTprocessName = "REDIGI311X" # use for Spring'11 reprocessed MC
 
 #--------------------------------------------------------------------------------
 # import utility function for switching pat::Tau input
@@ -112,13 +114,19 @@ from PhysicsTools.PatAlgos.tools.jetTools import *
 switchJetCollection(process, jetCollection = cms.InputTag("ak5PFJets"), 
 		doBTagging = True, outputModule = "")
 process.patJetCorrections.remove(process.patJetCorrFactors)
+process.producePatTupleZtoElecTauSpecific.remove(process.pfMEtType1and2corrected)
+process.producePatTupleZtoElecTauSpecific.remove(process.patPFtype1METs)
+process.producePatTupleAHtoElecTauSpecific.remove(process.pfMEtType1and2corrected)
+process.producePatTupleAHtoElecTauSpecific.remove(process.patPFtype1METs)
 #--------------------------------------------------------------------------------
 
 #--------------------------------------------------------------------------------
 # import utility function for configuring PAT trigger matching
 from PhysicsTools.PatAlgos.tools.trigTools import switchOnTrigger
-switchOnTrigger(process, hltProcess = 'HLT', outputModule = '')
-process.patTrigger.addL1Algos = cms.bool(True)
+switchOnTrigger(process, hltProcess = HLTprocessName, outputModule = '')
+#process.patTrigger.addL1Algos = cms.bool(True)
+from TauAnalysis.Configuration.cfgOptionMethods import _setTriggerProcess
+_setTriggerProcess(process, cms.InputTag("TriggerResults", "", HLTprocessName))
 #--------------------------------------------------------------------------------
 
 #--------------------------------------------------------------------------------
@@ -146,24 +154,33 @@ process.selectPatMuons = patMuonSelConfigurator.configure(process = process)
 from TauAnalysis.Configuration.tools.changeCut import changeCut
 
 #
+# update vertex sources
+#
+#changeCut(process,"selectedPatMuonsVbTfId",cms.InputTag("selectedPrimaryVertexQuality"),"vertexSource")
+#changeCut(process,"selectedPatMuonsTrkIP",cms.InputTag("selectedPrimaryVertexQuality"),"vertexSource")
+#changeCut(process,"selectedPatElectronsTrkIP",cms.InputTag("selectedPrimaryVertexQuality"),"vertexSource")
+#changeCut(process,"selectedPatElectronsTrkIPlooseIsolation",cms.InputTag("selectedPrimaryVertexQuality"),"vertexSource")
+#changeCut(process,"selectedPatElectronsForElecTauTrkIP",cms.InputTag("selectedPrimaryVertexQuality"),"vertexSource")
+#changeCut(process,"selectedPatElectronsForElecTauTrkIPlooseIsolation",cms.InputTag("selectedPrimaryVertexQuality"),"vertexSource")
+
+#
 # electron selection
 #
 
-#  VBTF WP80 electron ID
-changeCut(process,"selectedPatElectronsForElecTauId","(abs(superCluster.eta) < 1.479 & abs(deltaEtaSuperClusterTrackAtVtx) < 0.004 & abs(deltaPhiSuperClusterTrackAtVtx) < 0.06 & hcalOverEcal < 0.04 & sigmaIetaIeta < 0.01) | (abs(superCluster.eta) > 1.479 & abs(deltaEtaSuperClusterTrackAtVtx) < 0.007 & abs(deltaPhiSuperClusterTrackAtVtx) <0.03 & hcalOverEcal < 0.025 & sigmaIetaIeta < 0.03)")
-
-#  electron anti-crack cut: cut on track, not SC, to match Wisconsin
+#  VBTF WP80 electron ID (pt > 20); WP70 (15 < pt < 20)
+changeCut(process,'(abs(superCluster.eta) < 1.479 & pt > 20 & abs(deltaEtaSuperClusterTrackAtVtx) < 0.004 & abs(deltaPhiSuperClusterTrackAtVtx) < 0.06 & hcalOverEcal < 0.04 & sigmaIetaIeta < 0.01) | (abs(superCluster.eta) > 1.479 & pt > 20 & abs(deltaEtaSuperClusterTrackAtVtx) < 0.007 & abs(deltaPhiSuperClusterTrackAtVtx) <0.03 & hcalOverEcal < 0.025 & sigmaIetaIeta < 0.03) | (abs(superCluster.eta) < 1.479 & pt < 20 & abs(deltaEtaSuperClusterTrackAtVtx) < 0.004 & abs(deltaPhiSuperClusterTrackAtVtx) < 0.03 & hcalOverEcal < 0.025 & sigmaIetaIeta < 0.01 & (fbrem > 0.15 | (abs(superCluster.eta) < 1 & eSuperClusterOverP > 0.95) )) | (abs(superCluster.eta) > 1.479 & pt < 20 & abs(deltaEtaSuperClusterTrackAtVtx) < 0.005 & abs(deltaPhiSuperClusterTrackAtVtx) <0.02 & hcalOverEcal < 0.025 & sigmaIetaIeta < 0.03 & (fbrem > 0.15 | (abs(superCluster.eta) < 1 & eSuperClusterOverP > 0.95) ))')
+#  electron anti-crack cut
 changeCut(process,"selectedPatElectronsForElecTauAntiCrackCut","abs(eta) < 1.442 | abs(eta) > 1.566")
 
 #  electron eta range
 changeCut(process,"selectedPatElectronsForElecTauEta","abs(eta) < 2.1")
 
 #  electron pt
-changeCut(process,"selectedPatElectronsForElecTauPt","pt > 18")
+changeCut(process,"selectedPatElectronsForElecTauPt","pt > 15")
 
 #  PF relative iso
-changeCut(process,"selectedPatElectronsForElecTauIso",cms.double(0.08),"sumPtMaxEB")
-changeCut(process,"selectedPatElectronsForElecTauIso",cms.double(0.04),"sumPtMaxEE")
+changeCut(process,"selectedPatElectronsForElecTauIso",cms.double(0.013),"sumPtMaxEB")
+changeCut(process,"selectedPatElectronsForElecTauIso",cms.double(0.09),"sumPtMaxEE")
 changeCut(process,"selectedPatElectronsForElecTauIsoLooseIsolation",cms.double(0.3),"sumPtMax")
 
 #  electron conversion veto
@@ -182,8 +199,8 @@ changeCut(process,"selectedPatElectronsForElecTauConversionVetoLooseIsolation",c
 changeCut(process,"selectedPatElectronsForElecTauConversionVetoLooseIsolation",cms.bool(False), attribute = "doPixCut")
 
 #  electron track IP_xy cut
-changeCut(process,"selectedPatElectronsForElecTauTrkIP",cms.double(0.02),"IpMax")
-changeCut(process, "selectedPatElectronsForElecTauTrkIPlooseIsolation", 0.02, attribute = "IpMax")
+changeCut(process,"selectedPatElectronsForElecTauTrkIP",cms.double(0.045),"IpMax")
+changeCut(process, "selectedPatElectronsForElecTauTrkIPlooseIsolation", 0.045, attribute = "IpMax")
 
 #
 # hadronic tau decay selection
@@ -216,7 +233,7 @@ process.hpsPFTauDiscriminationByTightElectronRejection.BremCombined_HOP = cms.do
 changeCut(process,"selectedPatTausForElecTauEcalCrackVeto",'abs(eta) < 1.460 | abs(eta) > 1.558')
 
 #  muon veto for taus
-changeCut(process,"selectedPatTausForElecTauMuonVeto",'tauID("againstMuonTight") > 0.5')
+changeCut(process,"selectedPatTausForElecTauMuonVeto",'tauID("againstMuonLoose") > 0.5')
 
 #
 # di-tau pair selection
