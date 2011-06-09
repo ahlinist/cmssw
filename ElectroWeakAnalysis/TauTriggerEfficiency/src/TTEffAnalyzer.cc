@@ -13,7 +13,7 @@
 //
 // Original Author:  Chi Nhan Nguyen
 //         Created:  Wed Oct  1 13:04:54 CEST 2008
-// $Id: TTEffAnalyzer.cc,v 1.55 2011/06/01 21:40:25 slehti Exp $
+// $Id: TTEffAnalyzer.cc,v 1.56 2011/06/07 20:18:04 slehti Exp $
 //
 //
 
@@ -376,9 +376,11 @@ using namespace reco;
   const PFCandidateRefVector& theIsoCands = PFTaus->at(i).isolationPFChargedHadrCands();
   for(PFCandidateRefVector::const_iterator vIt = theIsoCands.begin(); vIt != theIsoCands.end(); ++vIt){
     const TrackRef theTrkRef = (*vIt)->trackRef();
-    PFIsoTrkChi2 = theTrkRef->chi2();
-    PFIsoTrkNHits = theTrkRef->numberOfValidHits();
-    PFIsoTrkPt = theTrkRef->pt();
+    if(theTrkRef.isNonnull()){
+      PFIsoTrkChi2 = theTrkRef->chi2();
+      PFIsoTrkNHits = theTrkRef->numberOfValidHits();
+      PFIsoTrkPt = theTrkRef->pt();
+    }
   }
   
   PFSignalSumPt = 0;
