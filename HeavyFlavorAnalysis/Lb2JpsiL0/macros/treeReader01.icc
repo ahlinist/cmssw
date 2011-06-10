@@ -3,7 +3,7 @@
 // ======================================================================
 
 // ----------------------------------------------------------------------
-treeReader01::treeReader01(TChain *chain, TString evtClassName) {
+treeReader01::treeReader01(TChain *chain, TString evtClassName) : fVerbose(0) {
   cout << "==> treeReader01: constructor..." << endl;
   if (chain == 0) {
     cout << "You need to pass a chain!" << endl;

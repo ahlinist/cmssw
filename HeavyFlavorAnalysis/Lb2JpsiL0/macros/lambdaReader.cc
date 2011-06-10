@@ -389,7 +389,7 @@ lambdaReader::CheckedLbCand lambdaReader::getCheckedLbCand(const TAnaCand *tac)
     // check if daughters point to something
     if (tac->fDau1 < 0 || tac->fDau2 < 0)
     {
-        if (fVerbose)  cout << "Problem: tac->fDau1: " << tac->fDau1 << " tac->fDau2: " << tac->fDau2
+        if (fVerbose > 4)  cout << "Problem: tac->fDau1: " << tac->fDau1 << " tac->fDau2: " << tac->fDau2
              << " Run: " << fRun << " Event: " << fEvent << " LS: " << fLS << " -- skipping " << endl;
         return ret;
     }
@@ -399,7 +399,7 @@ lambdaReader::CheckedLbCand lambdaReader::getCheckedLbCand(const TAnaCand *tac)
     ret.l0 = getCandId(tac,3122,1);
     if (ret.jp < 0 || ret.l0 < 0)
     {
-        cout << "Problem finding jp/l0: ret.jp: " << ret.jp << " ret.l0: " << ret.l0
+        if (fVerbose > 4) cout << "Problem finding jp/l0: ret.jp: " << ret.jp << " ret.l0: " << ret.l0
              << " Run: " << fRun << " Event: " << fEvent << " LS: " << fLS << " -- skipping " << endl;
         return ret;
     }
@@ -408,7 +408,7 @@ lambdaReader::CheckedLbCand lambdaReader::getCheckedLbCand(const TAnaCand *tac)
     TAnaCand *tacDau1 = fpEvt->getCand(tac->fDau1);
     if (tacDau1->fSig1 < 0 || tacDau1->fSig2 < 0)
     {
-        cout << "Problem: tacDau1->fSig1: " << tacDau1->fSig1 << " tacCur->fDaui->fSig2: " << tacDau1->fSig2
+        if (fVerbose > 4) cout << "Problem: tacDau1->fSig1: " << tacDau1->fSig1 << " tacCur->fDaui->fSig2: " << tacDau1->fSig2
              << " Run: " << fRun << " Event: " << fEvent << " LS: " << fLS << " -- skipping " << endl;
         return ret;
     }
@@ -416,7 +416,7 @@ lambdaReader::CheckedLbCand lambdaReader::getCheckedLbCand(const TAnaCand *tac)
     const TAnaTrack *tatDau1Sig2 = fpEvt->getSigTrack(tacDau1->fSig2);
     if (tatDau1Sig1->fIndex < 0 || tatDau1Sig2->fIndex < 0)
     {
-        cout << "Problem: tatDau1Sig1->fIndex: " << tatDau1Sig1->fIndex << " tatDau1Sig2->fIndex: " << tatDau1Sig2->fIndex
+        if (fVerbose > 4) cout << "Problem: tatDau1Sig1->fIndex: " << tatDau1Sig1->fIndex << " tatDau1Sig2->fIndex: " << tatDau1Sig2->fIndex
              << " Run: " << fRun << " Event: " << fEvent << " LS: " << fLS << " -- skipping " << endl;
         return ret;
     }
@@ -424,7 +424,7 @@ lambdaReader::CheckedLbCand lambdaReader::getCheckedLbCand(const TAnaCand *tac)
     TAnaCand *tacDau2 = fpEvt->getCand(tac->fDau2);
     if (tacDau2->fSig1 < 0 || tacDau2->fSig2 < 0)
     {
-        cout << "Problem: tacDau2->fSig1: " << tacDau2->fSig1 << " tacCur->fDaui->fSig2: " << tacDau2->fSig2
+        if (fVerbose > 4) cout << "Problem: tacDau2->fSig1: " << tacDau2->fSig1 << " tacCur->fDaui->fSig2: " << tacDau2->fSig2
              << " Run: " << fRun << " Event: " << fEvent << " LS: " << fLS << " -- skipping " << endl;
         return ret;
     }
@@ -432,7 +432,7 @@ lambdaReader::CheckedLbCand lambdaReader::getCheckedLbCand(const TAnaCand *tac)
     const TAnaTrack *tatDau2Sig2 = fpEvt->getSigTrack(tacDau2->fSig2);
     if (tatDau2Sig1->fIndex < 0 || tatDau2Sig2->fIndex < 0)
     {
-        cout << "Problem: tatDau2Sig1->fIndex: " << tatDau2Sig1->fIndex << " tatDau2Sig2->fIndex: " << tatDau2Sig2->fIndex
+        if (fVerbose > 4) cout << "Problem: tatDau2Sig1->fIndex: " << tatDau2Sig1->fIndex << " tatDau2Sig2->fIndex: " << tatDau2Sig2->fIndex
              << " Run: " << fRun << " Event: " << fEvent << " LS: " << fLS << " -- skipping " << endl;
         return ret;
     }
@@ -1033,6 +1033,8 @@ void lambdaReader::doHLTstuff()
     fHLTL1DMu0 = fHLTL2DMu0 = fHLTL2Mu0 = false;
     fHLTDMu6p5BarJp = fHLTDMu6p5JpDis = fHLTDMu6p5Jp = fHLTMu5L2Mu2Jpsi = fHLTMu5Tr2Jpsi = fHLTMu5Tr7Jpsi = false;
     fHLTpreDMu6p5BarJp = fHLTpreDMu6p5JpDis = fHLTpreDMu6p5Jp = fHLTpreMu5L2Mu2Jpsi = fHLTpreMu5Tr2Jpsi = fHLTpreMu5Tr7Jpsi = 0;
+    fHLTDMu10BarJp = fHLTDMu7JpDis = false;
+    fHLTpreDMu10BarJp = fHLTpreDMu7JpDis = 0;
     fHLTok = false;
     for(int i=0; i!=NHLT; i++)
     {
@@ -1089,7 +1091,9 @@ void lambdaReader::doHLTstuff()
 	    if ("HLT_Mu5_L2Mu0"          == name) fHLTL2Mu0 = true;
 	    // triggers from Run2011A v2 on
 	    if ("HLT_Dimuon6p5_Barrel_Jpsi_v1" == name) { fHLTDMu6p5BarJp = true; fHLTpreDMu6p5BarJp = prescale; }
+	    if ("HLT_Dimuon10_Jpsi_Barrel_v1" == name) { fHLTDMu10BarJp = true; fHLTpreDMu10BarJp = prescale; }
 	    if ("HLT_Dimuon6p5_Jpsi_Displaced_v1" == name)  { fHLTDMu6p5JpDis = true; fHLTpreDMu6p5JpDis = prescale; }
+	    if ("HLT_Dimuon7_Jpsi_Displaced_v1" == name)  { fHLTDMu7JpDis = true; fHLTpreDMu7JpDis = prescale; }
 	    if ("HLT_Dimuon6p5_Jpsi_v1" == name)  { fHLTDMu6p5Jp = true; fHLTpreDMu6p5Jp = prescale; }
 	    if ("HLT_Mu5_L2Mu2_Jpsi_v3" == name)  { fHLTMu5L2Mu2Jpsi = true; fHLTpreMu5L2Mu2Jpsi = prescale; }
 	    if ("HLT_Mu5_Track2_Jpsi_v2" == name)  { fHLTMu5Tr2Jpsi = true; fHLTpreMu5Tr2Jpsi = prescale; }
@@ -1152,10 +1156,11 @@ void lambdaReader::doTriggerMatching()
 	tto = fpEvt->getTrgObj(i);
 	if (fVerbose > 5) cout << "i: " << i << " ";
 	if (fVerbose > 5) tto->dump();
-	//cout << tto->fLabel << tto->fP.DeltaR(tlvMu1) << ":" << tto->fP.DeltaR(tlvMu2) << endl;
+	if (fRun >= 164924) cout << fRun << ": " << tto->fLabel << tto->fP.DeltaR(tlvMu1) << ":" << tto->fP.DeltaR(tlvMu2) << endl;
 	if ( (fRun <  160405 && tto->fLabel == "hltMu0TkMuJpsiTrackMassFiltered:HLT::")
 	  || (fRun >= 160405 && fRun < 163270 && tto->fLabel == "hltDoubleMu3QuarkoniumL3Filtered:HLT::")
-	  || (fRun >= 163270 && (tto->fLabel == "hltDimuon6p5JpsiDisplacedL3Filtered:HLT::" || tto->fLabel == "hltDimuon6p5JpsiL3Filtered:HLT::" || tto->fLabel == "hltDimuon6p5BarrelJpsiL3Filtered:HLT::")))
+	  || (fRun >= 163270 && fRun < 164237 && (tto->fLabel == "hltDimuon6p5JpsiDisplacedL3Filtered:HLT::" || tto->fLabel == "hltDimuon6p5JpsiL3Filtered:HLT::" || tto->fLabel == "hltDimuon6p5BarrelJpsiL3Filtered:HLT::"))
+	  || (fRun >= 164924 && (tto->fLabel == "hltJpsiDisplacedL3Filtered:HLT::" || tto->fLabel == "hltBarrelJpsiL3Filtered:HLT::")))
 	{
 	    const double deltaR1 = tto->fP.DeltaR(tlvMu1);
 	    const double deltaR2 = tto->fP.DeltaR(tlvMu2);
@@ -1267,7 +1272,7 @@ void lambdaReader::initVariables()
 void lambdaReader::fillHist()
 {
 
-    cout << "fillHist()" << endl;
+    if (fVerbose > 5) cout << "fillHist()" << endl;
     ((TH1D*)fpHistFile->Get("h1"))->Fill(fpEvt->nRecTracks());
 
     if (0 != fpCand1)
@@ -1565,6 +1570,8 @@ void lambdaReader::bookReducedTree()
     fTree->Branch("HLTMu5L2Mu2Jpsi", &fHLTMu5L2Mu2Jpsi, "HLTMu5L2Mu2Jpsi/O"); // Mu5_L2Mu2_Jpsi_v3
     fTree->Branch("HLTMu5Tr2Jpsi", &fHLTMu5Tr2Jpsi, "HLTMu5Tr2Jpsi/O"); // Mu5_Track2_Jpsi_v2
     fTree->Branch("HLTMu5Tr7Jpsi", &fHLTMu5Tr7Jpsi, "HLTMu5Tr7Jpsi/O"); // Mu7_Track7_Jpsi_v3
+    fTree->Branch("HLTDMu10BarJp", &fHLTDMu10BarJp, "HLTDMu10BarJp/O"); // Dimuon10_Barrel_Jpsi_v1
+    fTree->Branch("HLTDMu7JpDis", &fHLTDMu7JpDis, "HLTDMu7JpDis/O"); // Dimuon7_Jpsi_Displaced_v1
 
     fTree->Branch("HLTpreDMu6p5BarJp", &fHLTpreDMu6p5BarJp, "HLTpreDMu6p5BarJp/I"); // Dimuon6p5_Barrel_Jpsi_v1
     fTree->Branch("HLTpreDMu6p5JpDis", &fHLTpreDMu6p5JpDis, "HLTpreDMu6p5JpDis/I"); // Dimuon6p5_Jpsi_Displaced_v1
@@ -1572,6 +1579,8 @@ void lambdaReader::bookReducedTree()
     fTree->Branch("HLTpreMu5L2Mu2Jpsi", &fHLTpreMu5L2Mu2Jpsi, "HLTpreMu5L2Mu2Jpsi/I"); // Mu5_L2Mu2_Jpsi_v3
     fTree->Branch("HLTpreMu5Tr2Jpsi", &fHLTpreMu5Tr2Jpsi, "HLTpreMu5Tr2Jpsi/I"); // Mu5_Track2_Jpsi_v2
     fTree->Branch("HLTpreMu5Tr7Jpsi", &fHLTpreMu5Tr7Jpsi, "HLTpreMu5Tr7Jpsi/I"); // Mu7_Track7_Jpsi_v3
+    fTree->Branch("HLTpreDMu10BarJp", &fHLTpreDMu10BarJp, "HLTpreDMu10BarJp/I"); // Dimuon6p5_Barrel_Jpsi_v1
+    fTree->Branch("HLTpreDMu7JpDis", &fHLTpreDMu7JpDis, "HLTpreDMu7JpDis/I"); // Dimuon6p5_Jpsi_Displaced_v1
 
     fTree->Branch("HLTok", &fHLTok, "HLTok/O");
     fTree->Branch("HLTmatch", &fHLTmatch, "HLTmatch/O");
