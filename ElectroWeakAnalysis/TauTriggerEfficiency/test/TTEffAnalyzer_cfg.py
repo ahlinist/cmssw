@@ -160,20 +160,20 @@ process.TTEffAnalysisHLTPFTauTight.HLTPFTau = cms.bool(True)
 
 
 process.TTEffAnalysisHLTCaloTauHPS = process.TTEffAnalysis.clone()                                                                         
-process.TTEffAnalysisHLTCaloTauHPS.LoopingOver = cms.InputTag("hpsPFTauProducer")                                                          
-process.TTEffAnalysisHLTCaloTauHPS.PFTauIsoCollection = cms.InputTag("hpsPFTauDiscriminationByVLooseIsolation")                            
-process.TTEffAnalysisHLTCaloTauHPS.PFTauMuonRejectionCollection = cms.InputTag("hpsPFTauDiscriminationByTightMuonRejection")               
-process.TTEffAnalysisHLTCaloTauHPS.PFTauElectronRejectionCollection = cms.InputTag("hpsPFTauDiscriminationByMediumElectronRejection")      
+process.TTEffAnalysisHLTCaloTauHPS.LoopingOver = cms.InputTag("selectedhpsPFTauProducer")                                                          
+process.TTEffAnalysisHLTCaloTauHPS.PFTauIsoCollection = cms.InputTag("selectedhpsPFTauDiscriminationByVLooseIsolation")                            
+process.TTEffAnalysisHLTCaloTauHPS.PFTauMuonRejectionCollection = cms.InputTag("selectedhpsPFTauDiscriminationByTightMuonRejection")               
+process.TTEffAnalysisHLTCaloTauHPS.PFTauElectronRejectionCollection = cms.InputTag("selectedhpsPFTauDiscriminationByMediumElectronRejection")      
 process.TTEffAnalysisHLTCaloTauHPS.PFTauDiscriminators = cms.VInputTag(
-    cms.InputTag("hpsPFTauDiscriminationByLooseMuonRejection"),                                                                    
-    cms.InputTag("hpsPFTauDiscriminationByTightMuonRejection"),
-    cms.InputTag("hpsPFTauDiscriminationByLooseElectronRejection"),
-    cms.InputTag("hpsPFTauDiscriminationByMediumElectronRejection"),
-    cms.InputTag("hpsPFTauDiscriminationByTightElectronRejection"),
-    cms.InputTag("hpsPFTauDiscriminationByTightIsolation"),                                                                                   
-    cms.InputTag("hpsPFTauDiscriminationByMediumIsolation"),                                                                                  
-    cms.InputTag("hpsPFTauDiscriminationByLooseIsolation"),                                                                                   
-    cms.InputTag("hpsPFTauDiscriminationByVLooseIsolation")                                                                                   
+    cms.InputTag("selectedhpsPFTauDiscriminationByLooseMuonRejection"),                                                                    
+    cms.InputTag("selectedhpsPFTauDiscriminationByTightMuonRejection"),
+    cms.InputTag("selectedhpsPFTauDiscriminationByLooseElectronRejection"),
+    cms.InputTag("selectedhpsPFTauDiscriminationByMediumElectronRejection"),
+    cms.InputTag("selectedhpsPFTauDiscriminationByTightElectronRejection"),
+    cms.InputTag("selectedhpsPFTauDiscriminationByTightIsolation"),                                                                                   
+    cms.InputTag("selectedhpsPFTauDiscriminationByMediumIsolation"),                                                                                  
+    cms.InputTag("selectedhpsPFTauDiscriminationByLooseIsolation"),                                                                                   
+    cms.InputTag("selectedhpsPFTauDiscriminationByVLooseIsolation")                                                                                   
 )                                                                                                                                             
 process.TTEffAnalysisHLTCaloTauHPS.outputFileName = cms.string("tteffAnalysis-hltcalotau-hpspftau.root");                               
 process.TTEffAnalysisHLTCaloTauHPS.HLTPFTau = cms.bool(False)
@@ -214,6 +214,7 @@ else:
 	process.TauMCProducer
     ) 
 #process.runTTEffAna += process.TTEffPFTau
+process.runTTEffAna += process.TTEffHPSPFTau
 #process.runTTEffAna += process.TTEffAnalysis
 #process.runTTEffAna += process.TTEffAnalysisL1Tau
 #process.runTTEffAna += process.TTEffAnalysisL1Cen
@@ -238,7 +239,7 @@ process.schedule = cms.Schedule(process.DoHLTJets,
 				process.DoHLTMinBiasPixelTracks,
 				process.runMETCleaning,
 				process.runTTEffAna
-#				,process.outpath
+				,process.outpath
 )
 
 if (isData):  # replace all instances of "rawDataCollector" with "source" in In$

@@ -91,3 +91,64 @@ TTEffPFTau = cms.Sequence(
 	TTEffPFTauDiscriminationAgainstElectron
 )
 
+#### 
+
+from RecoTauTag.Configuration.HPSPFTaus_cff import *
+
+selectedhpsPFTauProducer = cms.EDFilter("PFTauSelector",
+    src = cms.InputTag("hpsPFTauProducer"),
+    discriminators = cms.VPSet(
+        cms.PSet(
+          discriminator=cms.InputTag("hpsPFTauDiscriminationByVLooseIsolation"),
+          selectionCut=cms.double(0.5)
+        )
+    ),
+    cut = cms.string('et > 15. && abs(eta) < 2.5')
+)
+
+selectedhpsPFTauDiscriminationByDecayModeFinding = copy.deepcopy(hpsPFTauDiscriminationByDecayModeFinding)
+selectedhpsPFTauDiscriminationByDecayModeFinding.PFTauProducer = cms.InputTag('selectedhpsPFTauProducer')
+#setTauSource(selectedhpsPFTauDiscriminationByDecayModeFinding, 'selectedhpsPFTauProducer')
+
+#requireDecayMode.decayMode.Producer = cms.InputTag('selectedhpsPFTauDiscriminationByDecayModeFinding')
+
+selectedhpsPFTauDiscriminationByVLooseIsolation = copy.deepcopy(hpsPFTauDiscriminationByVLooseIsolation)
+setTauSource(selectedhpsPFTauDiscriminationByVLooseIsolation, 'selectedhpsPFTauProducer')
+
+selectedhpsPFTauDiscriminationByLooseIsolation = copy.deepcopy(hpsPFTauDiscriminationByLooseIsolation)
+setTauSource(selectedhpsPFTauDiscriminationByLooseIsolation, 'selectedhpsPFTauProducer')
+
+selectedhpsPFTauDiscriminationByMediumIsolation = copy.deepcopy(hpsPFTauDiscriminationByMediumIsolation)
+setTauSource(selectedhpsPFTauDiscriminationByMediumIsolation, 'selectedhpsPFTauProducer')
+
+selectedhpsPFTauDiscriminationByTightIsolation = copy.deepcopy(hpsPFTauDiscriminationByTightIsolation)
+setTauSource(selectedhpsPFTauDiscriminationByTightIsolation, 'selectedhpsPFTauProducer')
+
+selectedhpsPFTauDiscriminationByLooseElectronRejection = copy.deepcopy(hpsPFTauDiscriminationByLooseElectronRejection)
+setTauSource(selectedhpsPFTauDiscriminationByLooseElectronRejection, 'selectedhpsPFTauProducer')
+
+selectedhpsPFTauDiscriminationByMediumElectronRejection = copy.deepcopy(hpsPFTauDiscriminationByMediumElectronRejection)
+setTauSource(selectedhpsPFTauDiscriminationByMediumElectronRejection, 'selectedhpsPFTauProducer')
+
+selectedhpsPFTauDiscriminationByTightElectronRejection = copy.deepcopy(hpsPFTauDiscriminationByTightElectronRejection)
+setTauSource(selectedhpsPFTauDiscriminationByTightElectronRejection, 'selectedhpsPFTauProducer')
+
+selectedhpsPFTauDiscriminationByLooseMuonRejection = copy.deepcopy(hpsPFTauDiscriminationByLooseMuonRejection)
+setTauSource(selectedhpsPFTauDiscriminationByLooseMuonRejection, 'selectedhpsPFTauProducer')
+
+selectedhpsPFTauDiscriminationByTightMuonRejection = copy.deepcopy(hpsPFTauDiscriminationByTightMuonRejection)        
+setTauSource(selectedhpsPFTauDiscriminationByTightMuonRejection, 'selectedhpsPFTauProducer')
+
+TTEffHPSPFTau = cms.Sequence(
+	selectedhpsPFTauProducer *
+	selectedhpsPFTauDiscriminationByDecayModeFinding *
+	selectedhpsPFTauDiscriminationByVLooseIsolation *
+	selectedhpsPFTauDiscriminationByLooseIsolation *
+	selectedhpsPFTauDiscriminationByMediumIsolation *
+	selectedhpsPFTauDiscriminationByTightIsolation *
+	selectedhpsPFTauDiscriminationByLooseElectronRejection *
+	selectedhpsPFTauDiscriminationByMediumElectronRejection *
+	selectedhpsPFTauDiscriminationByTightElectronRejection *
+	selectedhpsPFTauDiscriminationByLooseMuonRejection *
+	selectedhpsPFTauDiscriminationByTightMuonRejection
+)
