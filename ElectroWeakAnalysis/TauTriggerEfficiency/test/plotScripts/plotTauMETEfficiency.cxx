@@ -51,7 +51,7 @@ void plot(TriggerCuts triggerCuts){
 	cout << "Trigger " << triggerCuts.name << endl;
 
 //	TCut pfTauSelection = "PFTauEt > 15 && abs(PFTauEta) < 2.4 && (PFTauProng == 1 || PFTauProng == 3) && PFTauInvPt < 1/5. && PFMuonMatch == 1 && PFTauIsoSum < 1. && PFTauIso > 0.5";
-	TCut pfTauSelection = "PFTauEt > 15 && abs(PFTauEta) < 2.4 && (PFTauProng == 1 || PFTauProng == 3) && PFTauInvPt < 1/5. && PFMuonMatch == 1 && PFTauIsoSum < 1. && hpsPFTauDiscriminationByVLooseIsolation > 0.5";
+	TCut pfTauSelection = "PFTauEt > 15 && abs(PFTauEta) < 2.4 && PFMuonMatch == 1 && PFElectronMatch == 1 && hpsPFTauDiscriminationByVLooseIsolation > 0.5";
 //	TCut l1Selection  = "((L1TauVeto==0 && L1IsolationRegions_2GeV>=7 && L1JetEt>20) || (!(L1TauVeto==0 && L1IsolationRegions_2GeV>=7) && L1JetEt > 30)) && hasMatchedL1Jet";
 	TCut l1Selection  = "((L1TauVeto==0 && L1IsolationRegions_2GeV>=7 && L1JetEt>32) || (!(L1TauVeto==0 && L1IsolationRegions_2GeV>=7) && L1JetEt > 40)) && hasMatchedL1Jet";
 //	TCut l1Selection  = "((L1TauVeto==0 && L1IsolationRegions_2GeV>=7 && L1JetEt>40) || (!(L1TauVeto==0 && L1IsolationRegions_2GeV>=7) && L1JetEt > 60)) && hasMatchedL1Jet";
@@ -105,8 +105,8 @@ void plot(TriggerCuts triggerCuts){
 
 
 //	Plotter* plotter = new Plotter(filename,"TTEffTree");
-	Plotter* plotter = new Plotter(tteffAnalysis_muTau_HLT_AOD_Run2011A_cmssw416_V00_07_03_hltpftautight_hpspftau());
-	Plotter* plotter2 = new Plotter(tteffAnalysis_muTau_HLT_AOD_Run2011A_cmssw416_V00_07_03_hltpftautight_hpspftau());
+	Plotter* plotter = new Plotter(tteffAnalysis_muTau_HLT_AOD_Run2011A_cmssw416_V00_07_05_hltpftautight_hpspftau());
+	Plotter* plotter2 = new Plotter(tteffAnalysis_muTau_HLT_AOD_Run2011A_cmssw416_V00_07_05_hltpftautight_hpspftau());
 
 
 	TString fig1legend = "Data: Run2010AB";
@@ -126,9 +126,9 @@ void plot(TriggerCuts triggerCuts){
 	}
 
 	if(Run2011A){
-          plotter = new Plotter(tteffAnalysis_muTau_HLT_AOD_Run2011A_cmssw416_V00_07_03_hltpftautight_hpspftau());
+          plotter = new Plotter(tteffAnalysis_muTau_HLT_AOD_Run2011A_cmssw416_V00_07_05_hltpftautight_hpspftau());
 //          plotter2 = new Plotter(tteffAnalysis_Mu_pflow_tau_Run2010AB_cmssw413_V00_07_01_hltpftautight());
-	  plotter2 = new Plotter(tteffAnalysis_DYToTauTau_20_TuneZ2_7TeV_pythia6_tauola_cmssw416_V00_07_04_hltpftautight_hpspftau());
+	  plotter2 = new Plotter(tteffAnalysis_DYToTauTau_20_TuneZ2_7TeV_pythia6_tauola_cmssw416_V00_07_05_hltpftautight_hpspftau());
           fig1legend = "Data: Run2011A Ztautau";
 //          fig2legend = "Data: Run2010AB";
 	  fig2legend = "MC: pythia6 Ztautau";
