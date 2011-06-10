@@ -239,7 +239,7 @@ process.schedule = cms.Schedule(process.DoHLTJets,
 				process.DoHLTMinBiasPixelTracks,
 				process.runMETCleaning,
 				process.runTTEffAna
-				,process.outpath
+#				,process.outpath
 )
 
 if (isData):  # replace all instances of "rawDataCollector" with "source" in In$
