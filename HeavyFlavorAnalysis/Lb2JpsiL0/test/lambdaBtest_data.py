@@ -30,7 +30,7 @@ process.load("RecoVertex.BeamSpotProducer.BeamSpot_cfi")
 process.load("Configuration.StandardSequences.FrontierConditions_GlobalTag_cff")
 #process.GlobalTag.globaltag = "GR10_P_V9::All"
 #process.GlobalTag.globaltag = "FT_R_38X_V14A::All"
-process.GlobalTag.globaltag = "GR_P_V17::All"
+process.GlobalTag.globaltag = "GR_P_V19::All"
 
 
 # ----------------------------------------------------------------------
@@ -53,11 +53,16 @@ process.source = cms.Source(
 #	'/store/data/Run2011A/MuOnia/AOD/PromptReco-v1/000/161/312/E2414F32-E457-E011-8CF9-001617C3B710.root',
 #	'/store/data/Run2011A/MuOnia/AOD/PromptReco-v1/000/161/312/D407945E-ED57-E011-A36D-003048F0258C.root',
 #	'/store/data/Run2011A/MuOnia/AOD/PromptReco-v1/000/161/312/CEB587EC-F057-E011-B9DC-001617E30E2C.root'
-	 '/store/data/Run2011A/MuOnia/AOD/PromptReco-v2/000/164/235/1AB785FF-B679-E011-A07F-0030487C8CB6.root',
-         '/store/data/Run2011A/MuOnia/AOD/PromptReco-v2/000/164/234/881E513E-B479-E011-89A9-0030487C635A.root',
-	 '/store/data/Run2011A/MuOnia/AOD/PromptReco-v2/000/164/232/E6AC8859-B179-E011-B5F4-0030487CD6E6.root',
-	 '/store/data/Run2011A/MuOnia/AOD/PromptReco-v2/000/164/224/A09611CB-A479-E011-99E8-0030487A18A4.root',
-	 '/store/data/Run2011A/MuOnia/AOD/PromptReco-v2/000/163/869/B4C142A1-D377-E011-8C23-00304879BAB2.root'
+#	 '/store/data/Run2011A/MuOnia/AOD/PromptReco-v2/000/164/235/1AB785FF-B679-E011-A07F-0030487C8CB6.root',
+#         '/store/data/Run2011A/MuOnia/AOD/PromptReco-v2/000/164/234/881E513E-B479-E011-89A9-0030487C635A.root',
+#	 '/store/data/Run2011A/MuOnia/AOD/PromptReco-v2/000/164/232/E6AC8859-B179-E011-B5F4-0030487CD6E6.root',
+#	 '/store/data/Run2011A/MuOnia/AOD/PromptReco-v2/000/164/224/A09611CB-A479-E011-99E8-0030487A18A4.root',
+#	 '/store/data/Run2011A/MuOnia/AOD/PromptReco-v2/000/163/869/B4C142A1-D377-E011-8C23-00304879BAB2.root'
+	 '/store/data/Run2011A/MuOnia/AOD/PromptReco-v4/000/166/021/524336D3-DE8B-E011-88A0-0030487D0D3A.root',
+	 '/store/data/Run2011A/MuOnia/AOD/PromptReco-v4/000/165/999/C654DA41-838B-E011-9596-000423D996C8.root',
+   '/store/data/Run2011A/MuOnia/AOD/PromptReco-v4/000/165/993/FC0DA45F-7A8B-E011-ABB7-0019B9F705A3.root',
+   '/store/data/Run2011A/MuOnia/AOD/PromptReco-v4/000/165/993/FAF47820-288B-E011-97A2-0019B9F730D2.root'
+
     )
     )
 

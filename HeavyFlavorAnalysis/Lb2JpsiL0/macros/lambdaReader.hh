@@ -221,6 +221,8 @@ public:
     bool fHLTL1DMu0, fHLTL2DMu0, fHLTL2Mu0;
     bool fHLTDMu6p5BarJp, fHLTDMu6p5JpDis, fHLTDMu6p5Jp, fHLTMu5L2Mu2Jpsi, fHLTMu5Tr2Jpsi, fHLTMu5Tr7Jpsi;
     int fHLTpreDMu6p5BarJp, fHLTpreDMu6p5JpDis, fHLTpreDMu6p5Jp, fHLTpreMu5L2Mu2Jpsi, fHLTpreMu5Tr2Jpsi, fHLTpreMu5Tr7Jpsi;
+    bool fHLTDMu10BarJp, fHLTDMu7JpDis;
+    int fHLTpreDMu10BarJp, fHLTpreDMu7JpDis;
     bool fHLTok;
 
     bool fHLTmatch;
