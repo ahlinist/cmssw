@@ -1,7 +1,10 @@
-import os
-import subprocess
 import copy
+import os
+import re
+import shlex
 import string
+import subprocess
+import time
 
 _CRAB_TEMPLATE = string.Template('''
 [CRAB]
@@ -90,13 +93,55 @@ def submitToGrid(configFile, jobInfo, crabOptions,
     crabFile.write(_CRAB_TEMPLATE.substitute(fullCrabOptions))
     crabFile.close()
 
+    numJobsCreated = None
+
     if create:
         crabCreateCommand = "crab -create -cfg " + crabFilePath
         print crabCreateCommand
-        subprocess.call(crabCreateCommand, shell = True)
+        subprocess.call(crabCreateCommand, shell = True)        
+        crabStatusCommand = "crab -status -c %s" % ui_working_dir
+        print crabStatusCommand
+        subprocess.call(crabStatusCommand, shell = True)  
+
     if submit:
-        crabSubmitCommand = "crab -submit -c " + ui_working_dir
-        subprocess.call(crabSubmitCommand, shell = True)
-        crabStatusCommand = "crab -status -c " + ui_working_dir
-        subprocess.call(crabStatusCommand, shell = True)
+        # Check number of jobs created by crab
+        crabStatusCommand = "crab -status -c %s" % ui_working_dir
+        retval = subprocess.Popen(shlex.split(crabStatusCommand), stdout = subprocess.PIPE)
+        #retval.wait()
+        # CV: retval.wait() sometimes makes computer wait forever...
+        #     wait fixed time (30 seconds) instead and hope that 'crab -status' has finished by then
+        time.sleep(30)
+        lines = retval.stdout.readlines()
+        regExpr = re.compile("Log file is (?P<logFileName>\S*)")
+        logFileName = None
+        for line in lines:
+            regExprMatch = regExpr.match(line)
+            if regExprMatch is not None:
+                logFileName = str(regExprMatch.group('logFileName'))
+        print "logFileName = %s" % logFileName
+        if not logFileName:
+            raise ValueError('Failed to find crab log-file !!')
+        logFile = open(logFileName, "r")
+        lines = logFile.readlines()
+        regExpr = re.compile("\s*>>>>>>>>> (?P<numJobsCreated>\d*) Jobs Created\s*")
+        for line in lines:
+            regExprMatch = regExpr.match(line)
+            if regExprMatch is not None:
+                numJobsCreated = int(regExprMatch.group('numJobsCreated'))
+        print "numJobsCreated = %i" % numJobsCreated
+        if not numJobsCreated:
+            raise ValueError('Failed to determine number of crab jobs created !!')
+        
+        # Submit crab jobs in groups of 500 jobs
+        # (500 = maximum number of jobs crab can handle in case jobs are submitted without using crab server)
+        numJobsPerSubmit = 500
+        for jobIndex in range(1 + (numJobsCreated - 1)/numJobsPerSubmit):
+            crabSubmitCommand = "crab -submit %i-%i -c %s" % \
+              (1 + jobIndex*numJobsPerSubmit, min((jobIndex + 1)*numJobsPerSubmit, numJobsCreated), ui_working_dir)
+            print crabSubmitCommand
+            subprocess.call(crabSubmitCommand, shell = True)
+            crabStatusCommand = "crab -status %i-%i -c %s" % \
+              (1 + jobIndex*numJobsPerSubmit, min((jobIndex + 1)*numJobsPerSubmit, numJobsCreated), ui_working_dir)
+            print crabStatusCommand
+            subprocess.call(crabStatusCommand, shell = True)
 
