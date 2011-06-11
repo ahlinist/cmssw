@@ -58,9 +58,10 @@ allElecTauPairs.nSVfit.psKine_MEt_logM_int.algorithm = cms.PSet(
     pluginType = cms.string("NSVfitAlgorithmByIntegration"),                                    
     parameters = cms.PSet(
         mass_A = cms.PSet(
-            min = cms.double(20.),
-            max = cms.double(750.),
-            stepSize = cms.double(5.),                                                            
+            min = cms.double(5.),
+            max = cms.double(2000.),
+            stepSizeFactor = cms.double(1.025),
+            minStepSize = cms.double(2.5),
             replace = cms.string("leg1.x"),
             by = cms.string("(A.p4.mass/mass_A)*(A.p4.mass/mass_A)/leg2.x")
         )

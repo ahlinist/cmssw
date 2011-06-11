@@ -51,7 +51,8 @@ NSVfitAlgorithmByIntegration::NSVfitAlgorithmByIntegration(const edm::ParameterS
     replacement->name_ = (*replacementName);
     replacement->iterLowerLimit_ = cfg_replacement.getParameter<double>("min");
     replacement->iterUpperLimit_ = cfg_replacement.getParameter<double>("max");
-    replacement->iterStepSize_ = cfg_replacement.getParameter<double>("stepSize");
+    replacement->iterStepSizeFactor_ = cfg_replacement.getParameter<double>("stepSizeFactor");
+    replacement->iterMinStepSize_ = cfg_replacement.getParameter<double>("minStepSize");
 
     std::string toReplace_string = cfg_replacement.getParameter<std::string>("replace");
     replacement->toReplace_ = toReplace_string;
@@ -128,14 +129,6 @@ NSVfitAlgorithmByIntegration::NSVfitAlgorithmByIntegration(const edm::ParameterS
 
   edm::ParameterSet cfg_vegas = cfg.getParameter<edm::ParameterSet>("vegasOptions");
   numCalls_ = cfg_vegas.getParameter<unsigned>("numCalls");
-
-  massParForReplacements_ = new IndepCombinatoricsGeneratorT<double>(numMassParameters_);
-  for ( unsigned iMassParameter = 0; iMassParameter < numMassParameters_; ++iMassParameter ) {
-    const fitParameterReplacementType* fitParameterReplacement = fitParameterReplacements_[iMassParameter];
-    massParForReplacements_->setLowerLimit(iMassParameter, fitParameterReplacement->iterLowerLimit_);
-    massParForReplacements_->setUpperLimit(iMassParameter, fitParameterReplacement->iterUpperLimit_);
-    massParForReplacements_->setStepSize(iMassParameter, fitParameterReplacement->iterStepSize_);
-  }
 }
 
 NSVfitAlgorithmByIntegration::~NSVfitAlgorithmByIntegration() 
@@ -166,6 +159,14 @@ void NSVfitAlgorithmByIntegration::beginJob()
 	fitParameterReplacement != fitParameterReplacements_.end(); ++fitParameterReplacement ) {
     (*fitParameterReplacement)->beginJob(this);
   } 
+
+  massParForReplacements_ = new IndepCombinatoricsGeneratorT<int>(numMassParameters_);
+  for ( unsigned iMassParameter = 0; iMassParameter < numMassParameters_; ++iMassParameter ) {
+    const fitParameterReplacementType* fitParameterReplacement = fitParameterReplacements_[iMassParameter];
+    massParForReplacements_->setLowerLimit(iMassParameter, 0);
+    massParForReplacements_->setUpperLimit(iMassParameter, fitParameterReplacement->gridPoints_->GetSize() - 1);
+    massParForReplacements_->setStepSize(iMassParameter, 1);
+  }
 
   numDimensions_ = 0;
 
@@ -208,16 +209,6 @@ void NSVfitAlgorithmByIntegration::beginEvent(const edm::Event& evt, const edm::
   currentEventNumber_ = evt.id().event();
 }
 
-void getBinning(const IndepCombinatoricsGeneratorT<double>& grid, unsigned iDimension, int& numBins, double& min, double& max)
-{
-  double lowerLimit = grid.lowerLimit(iDimension);
-  double upperLimit = grid.upperLimit(iDimension);
-  double stepSize   = grid.stepSize(iDimension);
-  numBins = 1 + (upperLimit - lowerLimit)/grid.stepSize(iDimension);
-  min = lowerLimit - 0.5*(stepSize*numBins - (upperLimit - lowerLimit));
-  max = min + numBins*stepSize;
-}
-
 void NSVfitAlgorithmByIntegration::fitImp() const
 {
   //std::cout << "<NSVfitAlgorithmByIntegration::fitImp>:" << std::endl;
@@ -252,16 +243,12 @@ void NSVfitAlgorithmByIntegration::fitImp() const
   histResultsName << pluginName_;
   histResultsName << "@" << currentRunNumber_ << ":" << currentLumiSectionNumber_ << ":" << currentEventNumber_;
   if ( numMassParameters_ == 1 ) {
-    int numBinsX;
-    double minX, maxX;
-    getBinning(*massParForReplacements_, 0, numBinsX, minX, maxX);
-    histResults = new TH1F(histResultsName.str().data(), histResultsName.str().data(), numBinsX, minX, maxX);
+    histResults = new TH1F(histResultsName.str().data(), histResultsName.str().data(), 
+			   fitParameterReplacements_[0]->numGridPoints_, fitParameterReplacements_[0]->resBinning_->GetArray());
   } else if ( numMassParameters_ == 2 ) {
-    int numBinsX, numBinsY;
-    double minX, maxX, minY, maxY;
-    getBinning(*massParForReplacements_, 0, numBinsX, minX, maxX);
-    getBinning(*massParForReplacements_, 1, numBinsY, minY, maxY);
-    histResults = new TH2F(histResultsName.str().data(), histResultsName.str().data(), numBinsX, minX, maxX, numBinsY, minY, maxY);    
+    histResults = new TH2F(histResultsName.str().data(), histResultsName.str().data(), 
+			   fitParameterReplacements_[0]->numGridPoints_, fitParameterReplacements_[0]->resBinning_->GetArray(),
+			   fitParameterReplacements_[1]->numGridPoints_, fitParameterReplacements_[1]->resBinning_->GetArray());
   } else {
     throw cms::Exception("NSVfitAlgorithmByIntegration::fitImp")
       << " Only fits in one or two dimensions supported yet "
@@ -271,15 +258,19 @@ void NSVfitAlgorithmByIntegration::fitImp() const
 
   while ( massParForReplacements_->isValid() ) {
 //--- set mass parameters
+    std::vector<double> massParameterValues;
     for ( unsigned iMassParameter = 0; iMassParameter < numMassParameters_; ++iMassParameter ) {
-      ((double*)integrand_->params)[iMassParameter] = (*massParForReplacements_)[iMassParameter];
+      int massParameterIdx = (*massParForReplacements_)[iMassParameter];
+      double massParameterValue = fitParameterReplacements_[iMassParameter]->gridPoints_->At(massParameterIdx);
+      ((double*)integrand_->params)[iMassParameter] = massParameterValue;
+      massParameterValues.push_back(massParameterValue);
     }
 
 //--- call VEGAS routine (part of GNU scientific library)
 //    to perform actual integration
     double p, pErr;
     gsl_monte_vegas_integrate(integrand_, xl_, xu_, numDimensions_, numCalls_, rnd_, workspace_, &p, &pErr);
-    //std::cout << "--> M = " << (*massParForReplacements_) << ": p = " << p << " +/- " << pErr << std::endl;
+    //std::cout << "--> M = " << format_vdouble(massParameterValues) << ": p = " << p << " +/- " << pErr << std::endl;
 
     if      ( numMassParameters_ == 1 ) histResults->Fill((*massParForReplacements_)[0], p);
     else if ( numMassParameters_ == 2 ) {
