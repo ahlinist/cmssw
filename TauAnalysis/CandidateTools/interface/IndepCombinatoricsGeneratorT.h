@@ -17,9 +17,9 @@
  *
  * \author Christian Veelken, UC Davis
  *
- * \version $Revision: 1.2 $
+ * \version $Revision: 1.3 $
  *
- * $Id: IndepCombinatoricsGeneratorT.h,v 1.2 2011/03/06 11:31:11 veelken Exp $
+ * $Id: IndepCombinatoricsGeneratorT.h,v 1.3 2011/03/09 18:26:31 veelken Exp $
  *
  */
 
@@ -55,34 +55,17 @@ class IndepCombinatoricsGeneratorT
     lowerLimits_[idx] = lowerLimit;
     isFirst_ = true;
   }
-  double lowerLimit(unsigned idx) const
-  {
-    checkInputParameter(idx, "lowerLimit");
-    return lowerLimits_[idx];
-  }
-
   void setUpperLimit(unsigned idx, const T& upperLimit) 
   {
     checkInputParameter(idx, "setUpperLimit");
     upperLimits_[idx] = upperLimit;
     isFirst_ = true;
   }
-  double upperLimit(unsigned idx) const
-  {
-    checkInputParameter(idx, "upperLimit");
-    return upperLimits_[idx];
-  }
-
   void setStepSize(unsigned idx, const T& stepSize) 
   {
     checkInputParameter(idx, "setStepSize");
     stepSizes_[idx] = stepSize;
     isFirst_ = true;
-  }
-  double stepSize(unsigned idx) const 
-  {
-    checkInputParameter(idx, "stepSize");
-    return stepSizes_[idx];
   }
 
   void reset() 

@@ -8,9 +8,9 @@
  *
  * \author Christian Veelken, UC Davis
  *
- * \version $Revision: 1.4 $
+ * \version $Revision: 1.5 $
  *
- * $Id: NSVfitAlgorithmByIntegration.h,v 1.4 2011/04/10 14:46:47 veelken Exp $
+ * $Id: NSVfitAlgorithmByIntegration.h,v 1.5 2011/05/29 17:58:22 veelken Exp $
  *
  */
 
@@ -33,6 +33,8 @@
 #include <gsl/gsl_monte_vegas.h>
 
 #include <TFormula.h>
+#include <TArrayF.h>
+#include <TMath.h>
 
 #include <vector>
 #include <string>
@@ -112,10 +114,14 @@ class NSVfitAlgorithmByIntegration : public NSVfitAlgorithmBase
   struct fitParameterReplacementType
   {    
     fitParameterReplacementType()
-      : replaceBy_(0)
+      : gridPoints_(0),
+	resBinning_(0),
+	replaceBy_(0)
     {}
     ~fitParameterReplacementType() 
     {
+      delete gridPoints_;
+      delete resBinning_;
       delete replaceBy_;
       for ( std::vector<replaceParBase*>::iterator it = parForReplacements_.begin();
 	    it != parForReplacements_.end(); ++it ) {
@@ -124,6 +130,28 @@ class NSVfitAlgorithmByIntegration : public NSVfitAlgorithmBase
     }
     void beginJob(NSVfitAlgorithmByIntegration* algorithm)
     {
+      std::vector<double> gridPoints_vector;
+      double gridPoint = iterLowerLimit_;
+      bool isGridComplete = false;
+      while ( !isGridComplete ) {
+	if ( gridPoint >= iterUpperLimit_ ) isGridComplete = true;
+	gridPoints_vector.push_back(gridPoint);
+	double stepSize = TMath::Max((iterStepSizeFactor_ - 1.)*gridPoint, iterMinStepSize_);
+	gridPoint += stepSize;	
+      }
+      
+      numGridPoints_ = gridPoints_vector.size();
+      gridPoints_ = new TArrayF(numGridPoints_);
+      resBinning_ = new TArrayF(numGridPoints_ + 1);
+      for ( int iGridPoint = 0; iGridPoint < numGridPoints_; ++iGridPoint ) {
+	double gridPoint = gridPoints_vector[iGridPoint];
+	(*gridPoints_)[iGridPoint] = gridPoint;
+	if   ( iGridPoint == 0 ) (*resBinning_)[0]          = gridPoint - 0.5*TMath::Abs(gridPoints_vector[1] - gridPoint);
+	else                     (*resBinning_)[iGridPoint] = 0.5*(gridPoints_vector[iGridPoint - 1] + gridPoint);
+	if   ( iGridPoint == (numGridPoints_ - 1) ) 
+	  (*resBinning_)[numGridPoints_] = gridPoint + 0.5*TMath::Abs(gridPoint - gridPoints_vector[iGridPoint - 1]);
+      }
+
       NSVfitParameter* fitParameterToReplace = algorithm->getFitParameter(toReplace_);
       if ( !fitParameterToReplace ) {
 	throw cms::Exception("fitParameterReplacementType::beginJob")
@@ -139,7 +167,11 @@ class NSVfitAlgorithmByIntegration : public NSVfitAlgorithmBase
     std::string name_;
     double iterLowerLimit_;
     double iterUpperLimit_;
-    double iterStepSize_;
+    double iterStepSizeFactor_;
+    double iterMinStepSize_;
+    int numGridPoints_;
+    TArrayF* gridPoints_;
+    TArrayF* resBinning_;
     std::string toReplace_;
     int idxToReplace_;
     TFormula* replaceBy_;
@@ -162,7 +194,7 @@ class NSVfitAlgorithmByIntegration : public NSVfitAlgorithmBase
   size_t numDimensions_;
 
   size_t numMassParameters_;
-  IndepCombinatoricsGeneratorT<double>* massParForReplacements_;
+  IndepCombinatoricsGeneratorT<int>* massParForReplacements_;
 };
 
 #endif
