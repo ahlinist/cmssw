@@ -1,70 +1,70 @@
 import FWCore.ParameterSet.Config as cms
 
-from TrackingTools.TransientTrack.TransientTrackBuilder_cfi import *
-from RecoMET.METProducers.METSigParams_cfi import *
-from TauAnalysis.CandidateTools.nSVfitAlgorithmTauDecayKineMC_cfi import *
+from TrackingTools.TransientTrack.TransientTrackBuilder_cfi import TransientTrackBuilderESProducer
+import RecoMET.METProducers.METSigParams_cfi as met_config
+import TauAnalysis.CandidateTools.nSVfitAlgorithmTauDecayKineMC_cfi as kineMC_config
 
 nSVfitTrackService = cms.Service("NSVfitTrackService")
 
 nSVfitElectronLikelihoodPhaseSpace = cms.PSet(
     pluginName = cms.string("nSVfitTauToElecLikelihoodPhaseSpace"),
     pluginType = cms.string("NSVfitTauToElecLikelihoodPhaseSpace"),
-    verbosity = cms.int32(0)  
+    verbosity = cms.int32(0)
 )
 
-nSVfitElectronLikelihoodMC_energy_angle_all = nSVfitTauDecayLikelihoodMC_energy_angle_all.clone(
+nSVfitElectronLikelihoodMC_energy_angle_all = kineMC_config.nSVfitTauDecayLikelihoodMC_energy_angle_all.clone(
     pluginName = cms.string("nSVfitTauToElecLikelihoodMC_energy_angle_all"),
     pluginType = cms.string("NSVfitTauToElecLikelihoodMC"),
-    verbosity = cms.int32(0)  
+    verbosity = cms.int32(0)
 )
 
 nSVfitTauToElecBuilder = cms.PSet(
     pluginName = cms.string("nSVfitTauToElecBuilder"),
     pluginType = cms.string("NSVfitTauToElecBuilder"),
-    verbosity = cms.int32(0)  
+    verbosity = cms.int32(0)
 )
 
 nSVfitMuonLikelihoodPhaseSpace = cms.PSet(
     pluginName = cms.string("nSVfitTauToMuLikelihoodPhaseSpace"),
     pluginType = cms.string("NSVfitTauToMuLikelihoodPhaseSpace"),
-    verbosity = cms.int32(0)  
+    verbosity = cms.int32(0)
 )
 
-nSVfitMuonLikelihoodMC_energy_angle_all = nSVfitTauDecayLikelihoodMC_energy_angle_all.clone(
+nSVfitMuonLikelihoodMC_energy_angle_all = kineMC_config.nSVfitTauDecayLikelihoodMC_energy_angle_all.clone(
     pluginName = cms.string("nSVfitTauToMuLikelihoodMC_energy_angle_all"),
     pluginType = cms.string("NSVfitTauToMuLikelihoodMC"),
-    verbosity = cms.int32(0)  
+    verbosity = cms.int32(0)
 )
 
 nSVfitTauToMuBuilder = cms.PSet(
     pluginName = cms.string("nSVfitTauToMuBuilder"),
     pluginType = cms.string("NSVfitTauToMuBuilder"),
-    verbosity = cms.int32(0)  
+    verbosity = cms.int32(0)
 )
 
 nSVfitTauLikelihoodPhaseSpace = cms.PSet(
     pluginName = cms.string("nSVfitTauToHadLikelihoodPhaseSpace"),
     pluginType = cms.string("NSVfitTauToHadLikelihoodPhaseSpace"),
-    verbosity = cms.int32(0)  
+    verbosity = cms.int32(0)
 )
 
-nSVfitTauToHadLikelihoodMC_energy_angle_all = nSVfitTauDecayLikelihoodMC_energy_angle_all.clone(
+nSVfitTauToHadLikelihoodMC_energy_angle_all = kineMC_config.nSVfitTauDecayLikelihoodMC_energy_angle_all.clone(
     pluginName = cms.string("nSVfitTauToHadLikelihoodMC_energy_angle_all"),
     pluginType = cms.string("NSVfitTauToHadLikelihoodMC"),
-    verbosity = cms.int32(0)  
+    verbosity = cms.int32(0)
 )
 
 nSVfitTauToHadBuilder = cms.PSet(
     pluginName = cms.string("nSVfitTauToHadBuilder"),
     pluginType = cms.string("NSVfitTauToHadBuilder"),
-    verbosity = cms.int32(0)  
+    verbosity = cms.int32(0)
 )
 
 nSVfitResonanceLikelihoodLogM = cms.PSet(
     pluginName = cms.string("nSVfitResonanceLikelihoodLogM"),
     pluginType = cms.string("NSVfitResonanceLikelihoodMassPenalty"),
     penaltyFactor = cms.double(1.0)
-)    
+)
 
 nSVfitResonanceBuilder = cms.PSet(
     pluginName = cms.string("nSVfitResonanceBuilder"),
@@ -76,10 +76,10 @@ nSVfitEventLikelihoodMEt2 = cms.PSet(
     pluginType = cms.string("NSVfitEventLikelihoodMEt2"),
     srcPFJets = cms.InputTag('ak5PFJets'),
     srcPFCandidates = cms.InputTag('particleFlow'),
-    resolution = METSignificance_params,
+    resolution = met_config.METSignificance_params,
     dRoverlapPFJet = cms.double(0.3),
     dRoverlapPFCandidate = cms.double(0.1),
-    power = cms.double(1.0), 
+    power = cms.double(1.0),
     verbosity = cms.int32(0)
 )
 
@@ -114,41 +114,41 @@ nSVfitConfig_template = cms.PSet(
         likelihoodFunctions = cms.VPSet(nSVfitEventLikelihoodMEt2),
         builder = nSVfitEventBuilder
     )
-)    
+)
 
 nSVfitProducerByIntegration = cms.EDProducer("NSVfitProducerByIntegration",
     config    = nSVfitConfig_template,
     algorithm = cms.PSet(
         pluginName = cms.string("nSVfitAlgorithmByIntegration"),
-        pluginType = cms.string("NSVfitAlgorithmByIntegration"),                                    
+        pluginType = cms.string("NSVfitAlgorithmByIntegration"),
         parameters = cms.PSet(
             mass_A = cms.PSet(
                 min = cms.double(5.),
-                max = cms.double(2000.),                                         
+                max = cms.double(2000.),
                 stepSizeFactor = cms.double(1.03), # nextM = max(stepSizeFactor*currentM, minStepSize)
-                minStepSize = cms.double(3.),      
+                minStepSize = cms.double(3.),
                 replace = cms.string("leg1.x"),
                 by = cms.string("(A.p4.mass/mass_A)*(A.p4.mass/mass_A)/leg2.x")
             )
         ),
         vegasOptions = cms.PSet(
-            numCalls = cms.uint32(10000)                             
+            numCalls = cms.uint32(10000)
         ),
-        verbosity = cms.int32(0)                                         
+        verbosity = cms.int32(0)
     ),
     dRmin = cms.double(0.3),
-    instanceLabel = cms.string("")                           
+    instanceLabel = cms.string("")
 )
 
 nSVfitProducerByLikelihoodMaximization = cms.EDProducer("NSVfitProducer",
     config    = nSVfitConfig_template,
     algorithm = cms.PSet(
         pluginName = cms.string("nSVfitAlgorithmByLikelihoodMaximization"),
-        pluginType = cms.string("NSVfitAlgorithmByLikelihoodMaximization"),                                    
+        pluginType = cms.string("NSVfitAlgorithmByLikelihoodMaximization"),
         minimizer  = cms.vstring("Minuit2", "Migrad"),
-        maxObjFunctionCalls = cms.uint32(5000),  
+        maxObjFunctionCalls = cms.uint32(5000),
         verbosity = cms.int32(0)
     ),
     dRmin = cms.double(0.3),
-    instanceLabel = cms.string("")                                                           
+    instanceLabel = cms.string("")
 )
