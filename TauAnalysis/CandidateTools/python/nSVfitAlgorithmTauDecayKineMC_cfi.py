@@ -48,7 +48,7 @@ nSVfitTauDecayLikelihoodMC_pt_dR_all = cms.PSet(
             pdfName = cms.string('pdf_OneProngGt0Pi0_AllMom_leg2VisInvisDeltaRLab_leg2_dR_all')
         )
     ),
-    verbosity = cms.int32(0)  
+    verbosity = cms.int32(0)
 )
 
 nSVfitTauDecayLikelihoodMC_pt_dR_selected = copy.deepcopy(nSVfitTauDecayLikelihoodMC_pt_dR_all)
@@ -125,7 +125,7 @@ nSVfitTauDecayLikelihoodMC_energy_angle_all = cms.PSet(
             pdfName = cms.string('pdf_OneProngGt0Pi0_AllMom_leg2VisInvisAngleLab_leg2_angle_all')
         )
     ),
-    verbosity = cms.int32(0)  
+    verbosity = cms.int32(0)
 )
 
 nSVfitTauDecayLikelihoodMC_energy_angle_selected = copy.deepcopy(nSVfitTauDecayLikelihoodMC_energy_angle_all)
