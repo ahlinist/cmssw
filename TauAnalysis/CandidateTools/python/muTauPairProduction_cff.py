@@ -22,16 +22,16 @@ allMuTauPairs = cms.EDProducer("PATMuTauPairProducer",
     srcGenParticles = cms.InputTag('genParticles'),
     recoMode = cms.string(""),
     doSVreco = cms.bool(True),
-    nSVfit = cms.PSet(),                  
+    nSVfit = cms.PSet(),
     scaleFuncImprovedCollinearApprox = cms.string('1'),
-    doPFMEtSign = cms.bool(True),                           
+    doPFMEtSign = cms.bool(True),
     pfMEtSign = cms.PSet(
         srcPFJets = cms.InputTag('ak5PFJets'),
         srcPFCandidates = cms.InputTag('particleFlow'),
         resolution = METSignificance_params,
         dRoverlapPFJet = cms.double(0.3),
         dRoverlapPFCandidate = cms.double(0.1)
-    ),                   
+    ),
     verbosity = cms.untracked.int32(0)
 )
 
@@ -53,9 +53,9 @@ allMuTauPairs.nSVfit.psKine_MEt_logM_fit.config.event.resonances.A.daughters.leg
 )
 allMuTauPairs.nSVfit.psKine_MEt_logM_fit.algorithm = cms.PSet(
     pluginName = cms.string("nSVfitAlgorithmByLikelihoodMaximization"),
-    pluginType = cms.string("NSVfitAlgorithmByLikelihoodMaximization"),                                    
+    pluginType = cms.string("NSVfitAlgorithmByLikelihoodMaximization"),
     minimizer  = cms.vstring("Minuit2", "Migrad"),
-    maxObjFunctionCalls = cms.uint32(5000),  
+    maxObjFunctionCalls = cms.uint32(5000),
     verbosity = cms.int32(0)
 )
 
@@ -63,7 +63,7 @@ allMuTauPairs.nSVfit.psKine_MEt_logM_int = cms.PSet()
 allMuTauPairs.nSVfit.psKine_MEt_logM_int.config = allMuTauPairs.nSVfit.psKine_MEt_logM_fit.config
 allMuTauPairs.nSVfit.psKine_MEt_logM_int.algorithm = cms.PSet(
     pluginName = cms.string("nSVfitAlgorithmByIntegration"),
-    pluginType = cms.string("NSVfitAlgorithmByIntegration"),                                    
+    pluginType = cms.string("NSVfitAlgorithmByIntegration"),
     parameters = cms.PSet(
         mass_A = cms.PSet(
             min = cms.double(5.),
@@ -75,7 +75,7 @@ allMuTauPairs.nSVfit.psKine_MEt_logM_int.algorithm = cms.PSet(
         )
     ),
     vegasOptions = cms.PSet(
-        numCalls = cms.uint32(10000)                             
+        numCalls = cms.uint32(10000)
     )
 )
 #--------------------------------------------------------------------------------
