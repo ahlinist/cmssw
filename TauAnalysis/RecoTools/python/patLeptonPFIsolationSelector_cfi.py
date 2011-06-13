@@ -13,7 +13,7 @@ patMuonPFIsolationSelector = cms.PSet(
 
     # CV: configuration parameters 'rhoFastJetSource' and 'ueRhoOffset'
     #     need to be set if using rho (FastJet) pile-up corrections
-    rhoFastJetSource = cms.InputTag('kt6PFJets', 'rho'),
+    #rhoFastJetSource = cms.InputTag('kt6PFJets', 'rho'),
         
     chargedHadronIso = cms.PSet(
         ptMin = cms.double(1.0),        
@@ -54,6 +54,10 @@ patElectronPFIsolationSelector = cms.PSet(
     vertexSource = cms.InputTag('offlinePrimaryVerticesWithBS'),
     beamSpotSource = cms.InputTag('offlineBeamSpot'),
     
+    # CV: configuration parameters 'rhoFastJetSource' and 'ueRhoOffset'
+    #     need to be set if using rho (FastJet) pile-up corrections
+    #rhoFastJetSource = cms.InputTag('kt6PFJets', 'rho'),
+        
     chargedHadronIso = cms.PSet(
         ptMin = cms.double(0.5),        
         dRvetoCone = cms.double(0.001),  # "sanity" check, to match Wisconsin's selection
