@@ -90,15 +90,6 @@ tausBgEstQCDenrichedIso.cut = cms.string('tauID("byHPSvloose") > 0.5 & tauID("by
 
 #tausBgEstQCDenrichedIso.cut = cms.string('tauID("byTaNCfrOnePercent") > 0.5')
 
-# require tau candidate to have either one or three tracks within signal cone
-tausBgEstQCDenrichedProng = copy.deepcopy(tausBgEstZtautauEnrichedProng)
-tausBgEstQCDenrichedProng.cut = cms.string("signalPFChargedHadrCands.size() != -1")
-
-# require tau candidate to have charge either +1 or -1
-# (computed as sum of charges of tracks within signal cone)
-tausBgEstQCDenrichedCharge = copy.deepcopy(tausBgEstZtautauEnrichedCharge)
-tausBgEstQCDenrichedCharge.cut = cms.string('abs(charge) > -1')
-
 # require tau candidate to pass electron veto
 tausBgEstQCDenrichedElectronVeto = copy.deepcopy(tausBgEstZtautauEnrichedElectronVeto)
 
@@ -116,8 +107,6 @@ tauSelConfiguratorBgEstQCDenriched = objSelConfigurator(
       tausBgEstQCDenrichedPt,
       tausBgEstQCDenrichedLeadTrkPt,
       tausBgEstQCDenrichedIso,
-      tausBgEstQCDenrichedProng,
-      tausBgEstQCDenrichedCharge,
       tausBgEstQCDenrichedElectronVeto,
       tausBgEstQCDenrichedEcalCrackVeto,
       tausBgEstQCDenrichedMuonVeto ],
@@ -246,14 +235,6 @@ cfgTauIsoCutBgEstQCDenriched = copy.deepcopy(cfgTauIsoCutBgEstZtautauEnriched)
 cfgTauIsoCutBgEstQCDenriched.pluginName = cms.string('tauIsoCutBgEstQCDenriched')
 cfgTauIsoCutBgEstQCDenriched.src_cumulative = cms.InputTag('tausBgEstQCDenrichedIsoCumulative')
 
-cfgTauProngCutBgEstQCDenriched = copy.deepcopy(cfgTauProngCutBgEstZtautauEnriched)
-cfgTauProngCutBgEstQCDenriched.pluginName = cms.string('tauProngCutBgEstQCDenriched')
-cfgTauProngCutBgEstQCDenriched.src_cumulative = cms.InputTag('tausBgEstQCDenrichedProngCumulative')
-
-cfgTauChargeCutBgEstQCDenriched = copy.deepcopy(cfgTauChargeCutBgEstZtautauEnriched)
-cfgTauChargeCutBgEstQCDenriched.pluginName = cms.string('tauChargeCutBgEstQCDenriched')
-cfgTauChargeCutBgEstQCDenriched.src_cumulative = cms.InputTag('tausBgEstQCDenrichedChargeCumulative')
-
 cfgTauElectronVetoBgEstQCDenriched = copy.deepcopy(cfgTauElectronVetoBgEstZtautauEnriched)
 cfgTauElectronVetoBgEstQCDenriched.pluginName = cms.string('tauElectronVetoBgEstQCDenriched')
 cfgTauElectronVetoBgEstQCDenriched.src_cumulative = cms.InputTag('tausBgEstQCDenrichedElectronVetoCumulative')
@@ -302,8 +283,6 @@ evtSelConfiguratorBgEstQCDenriched = eventSelFlagProdConfigurator(
       cfgTauPtCutBgEstQCDenriched,
       cfgTauLeadTrkPtCutBgEstQCDenriched,
       cfgTauIsoCutBgEstQCDenriched,
-      cfgTauProngCutBgEstQCDenriched,
-      cfgTauChargeCutBgEstQCDenriched,
       cfgTauElectronVetoBgEstQCDenriched,
       cfgTauEcalCrackVetoBgEstQCDenriched,
       cfgTauMuonVetoBgEstQCDenriched,
@@ -319,18 +298,15 @@ evtSelConfiguratorBgEstQCDenriched = eventSelFlagProdConfigurator(
 
 selectEventsBgEstQCDenriched = evtSelConfiguratorBgEstQCDenriched.configure()
 
-
 #--------------------------------------------------------------------------------  
 # apply event selection criteria; fill histograms
 #--------------------------------------------------------------------------------
 
 from TauAnalysis.Configuration.analyzeZtoElecTau_cff import *
 
-
 diTauCandidateHistManagerForElecTauBgEstQCDenriched = copy.deepcopy(diTauCandidateHistManagerForElecTauBgEstZtautauEnriched)
 diTauCandidateHistManagerForElecTauBgEstQCDenriched.pluginName = cms.string('diTauCandidateHistManagerForElecTauBgEstQCDenriched')
 diTauCandidateHistManagerForElecTauBgEstQCDenriched.diTauCandidateSource = cms.InputTag('elecTauPairsBgEstQCDenriched')
-
 
 electronHistManagerForElecTauBgEstQCDenriched = copy.deepcopy(electronHistManagerForElecTauBgEstZtautauEnriched)
 electronHistManagerForElecTauBgEstQCDenriched.pluginName = cms.string('electronHistManagerForElecTauBgEstQCDenriched')
@@ -338,7 +314,6 @@ electronHistManagerForElecTauBgEstQCDenriched.pluginName = cms.string('electronH
 tauHistManagerForElecTauBgEstQCDenriched = copy.deepcopy(tauHistManagerForElecTauBgEstZtautauEnriched)
 tauHistManagerForElecTauBgEstQCDenriched.pluginName = cms.string('tauHistManagerForElecTauBgEstQCDenriched')
 tauHistManagerForElecTauBgEstQCDenriched.jetSource = cms.InputTag('selectedPatJets')
-
 
 analyzeEventsBgEstQCDenriched = cms.EDAnalyzer("GenericAnalyzer",
 
@@ -416,16 +391,6 @@ analyzeEventsBgEstQCDenriched = cms.EDAnalyzer("GenericAnalyzer",
             pluginType = cms.string('BoolEventSelector'),
             src = cms.InputTag('tauIsoCutBgEstQCDenriched','cumulative')
         ),
-        cms.PSet(
-            pluginName = cms.string('tauProngCutBgEstQCDenriched'),
-            pluginType = cms.string('BoolEventSelector'),
-            src = cms.InputTag('tauProngCutBgEstQCDenriched','cumulative')
-        ),  
-        cms.PSet(
-            pluginName = cms.string('tauChargeCutBgEstQCDenriched'),
-            pluginType = cms.string('BoolEventSelector'),
-            src = cms.InputTag('tauChargeCutBgEstQCDenriched','cumulative')
-        ),  
         cms.PSet(
             pluginName = cms.string('tauElectronVetoBgEstQCDenriched'),
             pluginType = cms.string('BoolEventSelector'),
@@ -590,26 +555,6 @@ analyzeEventsBgEstQCDenriched = cms.EDAnalyzer("GenericAnalyzer",
                                     ),
             replace = cms.vstring('tauHistManagerForElecTauBgEstQCDenriched.tauSource = tausBgEstQCDenrichedIsoCumulative')
         ),         
-        cms.PSet(
-            filter = cms.string('tauProngCutBgEstQCDenriched'),
-            title = cms.string('Tau 1||3-Prong (off)'),
-        ),
-        cms.PSet(
-            analyzers = cms.vstring('electronHistManagerForElecTauBgEstQCDenriched',
-                                    'tauHistManagerForElecTauBgEstQCDenriched',
-                                    ),
-            replace = cms.vstring('tauHistManagerForElecTauBgEstQCDenriched.tauSource = tausBgEstQCDenrichedProngCumulative')
-        ),          
-        cms.PSet(
-            filter = cms.string('tauChargeCutBgEstQCDenriched'),
-            title = cms.string('Charge(Tau) = +/-1 (off)'),
-        ),
-        cms.PSet(
-            analyzers = cms.vstring('electronHistManagerForElecTauBgEstQCDenriched',
-                                    'tauHistManagerForElecTauBgEstQCDenriched',
-                                    ),
-            replace = cms.vstring('tauHistManagerForElecTauBgEstQCDenriched.tauSource = tausBgEstQCDenrichedChargeCumulative')
-        ),        
         cms.PSet(
             filter = cms.string('tauElectronVetoBgEstQCDenriched'),
             title = cms.string('Tau e-Veto'),

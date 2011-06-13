@@ -88,15 +88,6 @@ tausBgEstPhotonPlusJetsEnrichedIso = copy.deepcopy(tausBgEstZtautauEnrichedIso)
 tausBgEstPhotonPlusJetsEnrichedIso.cut = cms.string('tauID("byHPSvloose") > 0.5 & tauID("byHPSmedium") < 0.5')
 #tausBgEstPhotonPlusJetsEnrichedIso.cut = cms.string('tauID("byTaNCfrOnePercent") > 0.5')
 
-# require tau candidate to have either one or three tracks within signal cone
-tausBgEstPhotonPlusJetsEnrichedProng = copy.deepcopy(tausBgEstZtautauEnrichedProng)
-tausBgEstPhotonPlusJetsEnrichedProng.cut = cms.string("signalPFChargedHadrCands.size() != -1")
-
-# require tau candidate to have charge either +1 or -1
-# (computed as sum of charges of tracks within signal cone)
-tausBgEstPhotonPlusJetsEnrichedCharge = copy.deepcopy(tausBgEstZtautauEnrichedCharge)
-tausBgEstPhotonPlusJetsEnrichedCharge.cut = cms.string('abs(charge) > -1')
-
 # require tau candidate to pass electron veto
 tausBgEstPhotonPlusJetsEnrichedElectronVeto = copy.deepcopy(tausBgEstZtautauEnrichedElectronVeto)
 
@@ -106,16 +97,12 @@ tausBgEstPhotonPlusJetsEnrichedEcalCrackVeto = copy.deepcopy(tausBgEstZtautauEnr
 # require tau candidate to pass muon veto
 tausBgEstPhotonPlusJetsEnrichedMuonVeto = copy.deepcopy(tausBgEstZtautauEnrichedMuonVeto)
 
-
-
 tauSelConfiguratorBgEstPhotonPlusJetsEnriched = objSelConfigurator(
     [ tausBgEstPhotonPlusJetsEnrichedAntiOverlapWithElectronsVeto,
       tausBgEstPhotonPlusJetsEnrichedEta,
       tausBgEstPhotonPlusJetsEnrichedPt,
       tausBgEstPhotonPlusJetsEnrichedLeadTrkPt,
       tausBgEstPhotonPlusJetsEnrichedIso,
-      tausBgEstPhotonPlusJetsEnrichedProng,
-      tausBgEstPhotonPlusJetsEnrichedCharge,
       tausBgEstPhotonPlusJetsEnrichedElectronVeto,
       tausBgEstPhotonPlusJetsEnrichedEcalCrackVeto,
       tausBgEstPhotonPlusJetsEnrichedMuonVeto ],
@@ -250,14 +237,6 @@ cfgTauIsoCutBgEstPhotonPlusJetsEnriched = copy.deepcopy(cfgTauIsoCutBgEstZtautau
 cfgTauIsoCutBgEstPhotonPlusJetsEnriched.pluginName = cms.string('tauIsoCutBgEstPhotonPlusJetsEnriched')
 cfgTauIsoCutBgEstPhotonPlusJetsEnriched.src_cumulative = cms.InputTag('tausBgEstPhotonPlusJetsEnrichedIsoCumulative')
 
-cfgTauProngCutBgEstPhotonPlusJetsEnriched = copy.deepcopy(cfgTauProngCutBgEstZtautauEnriched)
-cfgTauProngCutBgEstPhotonPlusJetsEnriched.pluginName = cms.string('tauProngCutBgEstPhotonPlusJetsEnriched')
-cfgTauProngCutBgEstPhotonPlusJetsEnriched.src_cumulative = cms.InputTag('tausBgEstPhotonPlusJetsEnrichedProngCumulative')
-
-cfgTauChargeCutBgEstPhotonPlusJetsEnriched = copy.deepcopy(cfgTauChargeCutBgEstZtautauEnriched)
-cfgTauChargeCutBgEstPhotonPlusJetsEnriched.pluginName = cms.string('tauChargeCutBgEstPhotonPlusJetsEnriched')
-cfgTauChargeCutBgEstPhotonPlusJetsEnriched.src_cumulative = cms.InputTag('tausBgEstPhotonPlusJetsEnrichedChargeCumulative')
-
 cfgTauElectronVetoBgEstPhotonPlusJetsEnriched = copy.deepcopy(cfgTauElectronVetoBgEstZtautauEnriched)
 cfgTauElectronVetoBgEstPhotonPlusJetsEnriched.pluginName = cms.string('tauElectronVetoBgEstPhotonPlusJetsEnriched')
 cfgTauElectronVetoBgEstPhotonPlusJetsEnriched.src_cumulative = cms.InputTag('tausBgEstPhotonPlusJetsEnrichedElectronVetoCumulative')
@@ -313,8 +292,6 @@ evtSelConfiguratorBgEstPhotonPlusJetsEnriched = eventSelFlagProdConfigurator(
       cfgTauPtCutBgEstPhotonPlusJetsEnriched,
       cfgTauLeadTrkPtCutBgEstPhotonPlusJetsEnriched,
       cfgTauIsoCutBgEstPhotonPlusJetsEnriched,
-      cfgTauProngCutBgEstPhotonPlusJetsEnriched,
-      cfgTauChargeCutBgEstPhotonPlusJetsEnriched,
       cfgTauElectronVetoBgEstPhotonPlusJetsEnriched,
       cfgTauEcalCrackVetoBgEstPhotonPlusJetsEnriched,
       cfgTauMuonVetoBgEstPhotonPlusJetsEnriched,
@@ -331,13 +308,12 @@ evtSelConfiguratorBgEstPhotonPlusJetsEnriched = eventSelFlagProdConfigurator(
 
 selectEventsBgEstPhotonPlusJetsEnriched = evtSelConfiguratorBgEstPhotonPlusJetsEnriched.configure()
 
-
 #--------------------------------------------------------------------------------  
 # apply event selection criteria; fill histograms
 #--------------------------------------------------------------------------------
 
 from TauAnalysis.Configuration.analyzeZtoElecTau_cff import *
-
+from TauAnalysis.BgEstimationTools.selectZtoElecTauEventVertex_cff import *
 
 diTauCandidateHistManagerForElecTauBgEstPhotonPlusJetsEnriched = copy.deepcopy(diTauCandidateHistManagerForElecTauBgEstZtautauEnriched)
 diTauCandidateHistManagerForElecTauBgEstPhotonPlusJetsEnriched.pluginName = cms.string('diTauCandidateHistManagerForElecTauBgEstPhotonPlusJetsEnriched')
@@ -427,16 +403,6 @@ analyzeEventsBgEstPhotonPlusJetsEnriched = cms.EDAnalyzer("GenericAnalyzer",
             pluginName = cms.string('tauIsoCutBgEstPhotonPlusJetsEnriched'),
             pluginType = cms.string('BoolEventSelector'),
             src = cms.InputTag('tauIsoCutBgEstPhotonPlusJetsEnriched','cumulative')
-        ), 
-        cms.PSet(
-            pluginName = cms.string('tauProngCutBgEstPhotonPlusJetsEnriched'),
-            pluginType = cms.string('BoolEventSelector'),
-            src = cms.InputTag('tauProngCutBgEstPhotonPlusJetsEnriched','cumulative')
-        ),  
-        cms.PSet(
-            pluginName = cms.string('tauChargeCutBgEstPhotonPlusJetsEnriched'),
-            pluginType = cms.string('BoolEventSelector'),
-            src = cms.InputTag('tauChargeCutBgEstPhotonPlusJetsEnriched','cumulative')
         ), 
         cms.PSet(
             pluginName = cms.string('tauElectronVetoBgEstPhotonPlusJetsEnriched'),
@@ -610,26 +576,6 @@ analyzeEventsBgEstPhotonPlusJetsEnriched = cms.EDAnalyzer("GenericAnalyzer",
             replace = cms.vstring('tauHistManagerForElecTauBgEstPhotonPlusJetsEnriched.tauSource = tausBgEstPhotonPlusJetsEnrichedIsoCumulative')
         ),          
 
-        cms.PSet(
-            filter = cms.string('tauProngCutBgEstPhotonPlusJetsEnriched'),
-            title = cms.string('Tau 1||3-Prong (off)'),
-        ),
-        cms.PSet(
-            analyzers = cms.vstring('electronHistManagerForElecTauBgEstPhotonPlusJetsEnriched',
-                                    'tauHistManagerForElecTauBgEstPhotonPlusJetsEnriched',
-                                    ),
-            replace = cms.vstring('tauHistManagerForElecTauBgEstPhotonPlusJetsEnriched.tauSource = tausBgEstPhotonPlusJetsEnrichedProngCumulative')
-        ),          
-        cms.PSet(
-            filter = cms.string('tauChargeCutBgEstPhotonPlusJetsEnriched'),
-            title = cms.string('Charge(Tau) = +/-1 (off)'),
-        ),
-        cms.PSet(
-            analyzers = cms.vstring('electronHistManagerForElecTauBgEstPhotonPlusJetsEnriched',
-                                    'tauHistManagerForElecTauBgEstPhotonPlusJetsEnriched',
-                                    ),
-            replace = cms.vstring('tauHistManagerForElecTauBgEstPhotonPlusJetsEnriched.tauSource = tausBgEstPhotonPlusJetsEnrichedChargeCumulative')
-        ),           
         cms.PSet(
             filter = cms.string('tauElectronVetoBgEstPhotonPlusJetsEnriched'),
             title = cms.string('Tau e-Veto'),
