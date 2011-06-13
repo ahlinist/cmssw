@@ -18,13 +18,35 @@ from TauAnalysis.Configuration.plotZtoElecTau_drawJobs_cfi import \
 #--------------------------------------------------------------------------------
 
 drawJobConfigurator_AHtoElecTau.add(
-    afterCut = evtSelDiTauCandidateForAHtoElecTauAntiOverlapVeto,
+    afterCut = evtSelPrimaryEventVertexForElecTau,
+    beforeCut = evtSelPrimaryEventVertexQualityForElecTau,
+    plot = drawJobConfigEntry(
+        meName = 'VertexQuantities/VertexChi2Prob',
+        title = "P(#Chi^{2}_{vtx}) (after Common Electron+Tau Vertex)",
+        xAxis = 'prob',
+        name = "cutFlowControlPlots_vertexChi2Prob_afterPrimaryEventVertexForElecTau"
+    )
+)
+
+drawJobConfigurator_AHtoElecTau.add(
+    afterCut = evtSelPrimaryEventVertexQualityForElecTau,
+    beforeCut = evtSelPrimaryEventVertexPositionForElecTau,
+    plot = drawJobConfigEntry(
+        meName = 'VertexQuantities/VertexZ',
+        title = "z_{vtx} (after primary Event Vertex quality Cut)",
+        xAxis = 'posZ',
+        name = "cutFlowControlPlots_vertexZ_afterPrimaryEventVertexQualityForElecTau"
+    )
+)
+
+drawJobConfigurator_AHtoElecTau.add(
+    afterCut = evtSelPrimaryEventVertexPositionForElecTau,
     beforeCut = evtSelDiTauCandidateForAHtoElecTauMt1MET,
     plot = drawJobConfigEntry(
         meName = 'DiTauCandidateQuantities/Mt1MET',
-        title = "M_{T}(Electron + MET) (after diTau anti-Overlap Veto)",
+        title = "M_{T}(Electron + MET) (after primary Event Vertex position Cut)",
         xAxis = 'Mt',
-        name = "cutFlowControlPlots_mtElectronMET_afterAntiOverlapVeto"
+        name = "cutFlowControlPlots_mtElectronMET_afterPrimaryEventVertexPositionForElecTau"
     )
 )
 
