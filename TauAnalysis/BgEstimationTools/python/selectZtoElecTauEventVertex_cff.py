@@ -3,10 +3,10 @@ import FWCore.ParameterSet.Config as cms
 from TauAnalysis.RecoTools.tools.eventSelFlagProdConfigurator import *
 
 #--------------------------------------------------------------------------------
-# define event vertex selection criteria for Z --> muon + tau-jet channel
+# define event vertex selection criteria for Z --> electron + tau-jet channel
 #--------------------------------------------------------------------------------
 
-#print("NOTE: selectZtoMuTauEventVertex_cff.py is deprecated.")
+#print("NOTE: selectZtoElecTauEventVertex_cff.py is deprecated.")
 #print("      Please consider switching to new Analysis workflow.")
 
 # primary event vertex selection
@@ -29,7 +29,7 @@ cfgPrimaryEventVertexPosition = cms.PSet(
     minNumber = cms.uint32(1)
 )
 
-zToMuTauEventVertexSelConfigurator = eventSelFlagProdConfigurator(
+zToElecTauEventVertexSelConfigurator = eventSelFlagProdConfigurator(
     [ cfgPrimaryEventVertex,
       cfgPrimaryEventVertexQuality,
       cfgPrimaryEventVertexPosition ],
@@ -37,7 +37,7 @@ zToMuTauEventVertexSelConfigurator = eventSelFlagProdConfigurator(
     pyModuleName = __name__
 )
 
-produceEventVertexSelFlagsZtoMuTau = zToMuTauEventVertexSelConfigurator.configure()
+produceEventVertexSelFlagsZtoElecTau = zToElecTauEventVertexSelConfigurator.configure()
 
 evtSelPrimaryEventVertex = cms.PSet(
     pluginName = cms.string('evtSelPrimaryEventVertex'),
