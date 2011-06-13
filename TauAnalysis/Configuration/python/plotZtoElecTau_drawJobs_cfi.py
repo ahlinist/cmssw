@@ -48,39 +48,39 @@ drawJobConfigurator_ForElecTau = drawJobConfigurator(
 # (**before** quantity is cutted on)
 #--------------------------------------------------------------------------------
 
-drawJobConfigurator_ForElecTau.add(
-    afterCut = evtSelPrimaryEventVertex,
-    beforeCut = evtSelPrimaryEventVertexQuality,
-    plot = drawJobConfigEntry(
-        meName = 'VertexQuantities/VertexChi2Prob',
-        title = "P(#Chi^{2}_{vtx}) (after primary Event Vertex Cut)",
-        xAxis = 'prob',
-        name = "cutFlowControlPlots_vertexChi2Prob_afterPrimaryEventVertex"
-    )
-)
+## drawJobConfigurator_ForElecTau.add(
+##     afterCut = evtSelPrimaryEventVertex,
+##     beforeCut = evtSelPrimaryEventVertexQuality,
+##     plot = drawJobConfigEntry(
+##         meName = 'VertexQuantities/VertexChi2Prob',
+##         title = "P(#Chi^{2}_{vtx}) (after primary Event Vertex Cut)",
+##         xAxis = 'prob',
+##         name = "cutFlowControlPlots_vertexChi2Prob_afterPrimaryEventVertex"
+##     )
+## )
 
-drawJobConfigurator_ForElecTau.add(
-    afterCut = evtSelPrimaryEventVertexQuality,
-    beforeCut = evtSelPrimaryEventVertexPosition,
-    plot = drawJobConfigEntry(
-        meName = 'VertexQuantities/VertexZ',
-        title = "z_{vtx} (after primary Event Vertex quality Cut)",
-        xAxis = 'posZ',
-        name = "cutFlowControlPlots_vertexZ_afterPrimaryEventVertexQuality"
-    )
-)
+## drawJobConfigurator_ForElecTau.add(
+##     afterCut = evtSelPrimaryEventVertexQuality,
+##     beforeCut = evtSelPrimaryEventVertexPosition,
+##     plot = drawJobConfigEntry(
+##         meName = 'VertexQuantities/VertexZ',
+##         title = "z_{vtx} (after primary Event Vertex quality Cut)",
+##         xAxis = 'posZ',
+##         name = "cutFlowControlPlots_vertexZ_afterPrimaryEventVertexQuality"
+##     )
+## )
 
-drawJobConfigurator_ForElecTau.add(
-    afterCut = evtSelPrimaryEventVertexPosition,
-    beforeCut = evtSelElectronId,
-    plot = drawJobConfigEntry(
-        meName = 'ElectronQuantities/Electron#PAR#',
-        PAR = [ 'Pt', 'Eta', 'Phi' ],
-        title = "Electron (after primary Event Vertex position Cut)",
-        xAxis = '#PAR#',
-        name = "cutFlowControlPlots_electron_afterPrimaryEventVertexPosition"
-	)
-)    
+## drawJobConfigurator_ForElecTau.add(
+##     afterCut = evtSelPrimaryEventVertexPosition,
+##     beforeCut = evtSelElectronId,
+##     plot = drawJobConfigEntry(
+##         meName = 'ElectronQuantities/Electron#PAR#',
+##         PAR = [ 'Pt', 'Eta', 'Phi' ],
+##         title = "Electron (after primary Event Vertex position Cut)",
+##         xAxis = '#PAR#',
+##         name = "cutFlowControlPlots_electron_afterPrimaryEventVertexPosition"
+## 	)
+## )    
 
 drawJobConfigurator_ForElecTau.add(
     afterCut = evtSelElectronId,
