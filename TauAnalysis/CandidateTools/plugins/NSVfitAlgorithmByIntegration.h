@@ -8,9 +8,9 @@
  *
  * \author Christian Veelken, UC Davis
  *
- * \version $Revision: 1.5 $
+ * \version $Revision: 1.6 $
  *
- * $Id: NSVfitAlgorithmByIntegration.h,v 1.5 2011/05/29 17:58:22 veelken Exp $
+ * $Id: NSVfitAlgorithmByIntegration.h,v 1.6 2011/06/11 17:08:51 veelken Exp $
  *
  */
 
@@ -190,7 +190,11 @@ class NSVfitAlgorithmByIntegration : public NSVfitAlgorithmBase
   gsl_monte_function* integrand_;
   gsl_monte_vegas_state* workspace_;
   gsl_rng* rnd_;
-  unsigned numCalls_;
+  unsigned numCallsGridOpt_;
+  unsigned numCallsIntEval_;
+  double maxChi2_;
+  unsigned maxIntEvalIter_;
+  double precision_;
   size_t numDimensions_;
 
   size_t numMassParameters_;
