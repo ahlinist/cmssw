@@ -306,11 +306,11 @@ void NSVfitAlgorithmByIntegration::fitImp() const
 
     if ( p > pMax ) pMax = p;
 
-    if      ( numMassParameters_ == 1 ) histResults->Fill((*massParForReplacements_)[0], p);
+    if      ( numMassParameters_ == 1 ) histResults->Fill(massParameterValues[0], p);
     else if ( numMassParameters_ == 2 ) {
       TH2* histResults2d = dynamic_cast<TH2*>(histResults);
       assert(histResults2d);
-      histResults2d->Fill((*massParForReplacements_)[0], (*massParForReplacements_)[1], p);
+      histResults2d->Fill(massParameterValues[0], massParameterValues[1], p);
     } else assert(0);
 
     massParForReplacements_->next();
@@ -345,6 +345,11 @@ void NSVfitAlgorithmByIntegration::setMassResults(
   }
   assert(histMassResult1d);
 
+  //for ( int iBin = 1; iBin <= histMassResult1d->GetNbinsX(); ++iBin ) {
+  //  std::cout << " iBin " << iBin << " (" << histMassResult1d->GetBinCenter(iBin) <<  "):" 
+  //	        << " " << histMassResult1d->GetBinContent(iBin) << std::endl;
+  //}
+  
 //--- compute median, -1 sigma and +1 sigma limits on reconstructed mass
   if ( histMassResult1d->Integral() > 0. ) {
     Double_t q[3];
@@ -353,7 +358,7 @@ void NSVfitAlgorithmByIntegration::setMassResults(
     probSum[1] = 0.50;
     probSum[2] = 0.84;
     (const_cast<TH1*>(histMassResult1d))->GetQuantiles(3, q, probSum);
-
+    
     int binMaximum = histMassResult1d->GetMaximumBin();
     double massMaxInterpol = 0.;
     if ( binMaximum > 1 && binMaximum < histMassResult1d->GetNbinsX() ) {
@@ -377,6 +382,8 @@ void NSVfitAlgorithmByIntegration::setMassResults(
     } else {
       massMaxInterpol = histMassResult1d->GetBinCenter(binMaximum);
     }
+
+    //std::cout << "--> median = " << q[1] << ", maximum = " << histMassResult1d->GetBinCenter(binMaximum) << std::endl;
 
     NSVfitAlgorithmBase::setMassResults(resonance, q[1], TMath::Abs(q[2] - q[1]), TMath::Abs(q[1] - q[0]));
 
