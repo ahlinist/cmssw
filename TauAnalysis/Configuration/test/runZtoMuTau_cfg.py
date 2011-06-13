@@ -15,7 +15,7 @@ process.MessageLogger.suppressWarning = cms.untracked.vstring("PATTriggerProduce
 process.load('Configuration/StandardSequences/GeometryIdeal_cff')
 process.load('Configuration/StandardSequences/MagneticField_cff')
 process.load('Configuration/StandardSequences/FrontierConditions_GlobalTag_cff')
-process.GlobalTag.globaltag = cms.string('START38_V14::All')
+process.GlobalTag.globaltag = cms.string('START42_V12::All')
 
 # import particle data table
 # needed for print-out of generator level information
@@ -68,37 +68,26 @@ process.maxEvents = cms.untracked.PSet(
 )
 
 process.source = cms.Source("PoolSource",
-    fileNames = cms.untracked.vstring(
-        #'/store/relval/CMSSW_3_6_1/RelValZTT/GEN-SIM-RECO/START36_V7-v1/0021/F405BC9A-525D-DF11-AB96-002618943811.root',
-        #'/store/relval/CMSSW_3_6_1/RelValZTT/GEN-SIM-RECO/START36_V7-v1/0020/EE3E8F74-365D-DF11-AE3D-002618FDA211.root'
-        #'file:/data1/veelken/CMSSW_3_6_x/skims/Ztautau_1_1_sXK.root'
-        #'file:/data1/veelken/CMSSW_3_8_x/skims/AHtoMuTau/selEvents_AHtoMuTau_woBtag_runs145762to148058_RECO.root'
-        #'file:/data1/veelken/CMSSW_3_8_x/skims/test/mcDYttPU156bx_GEN_SIM_RECO_1_1_1VV.root'
-        #'file:/data1/friis/PickMikesEvents/mikes_events_2010a.root',
-        #'file:/data1/friis/PickMikesEvents/mikes_events_2010a001.root',
-        #'file:/data1/friis/PickMikesEvents/mikes_events_2010b.root',
-        #'file:/data1/friis/PickMikesEvents/mikes_events_2010b001.root',
-        #'file:/data1/friis/PickMikesEvents/mikes_events_2010b002.root'
-        #'rfio:/castor/cern.ch/user/v/veelken/CMSSW_3_6_x/skims/ZtoMuTau/test/Ztautau_1_1_sXK.root'
-        #'file:/tmp/veelken/Ztautau_1_1_sXK.root'
-        #'file:/data1/veelken/tmp/final_events_AHtoMuTau_ZtautauPOWHEG_Run32_51_0_ZW7.root'
-        #'file:/data2/debugMuon/final_events_AHtoMuTau_data_Mu_Run2010B_Nov4ReReco_RunOnOursJan16.root'
-        'file:/data2/veelken/CMSSW_3_8_x/skims/ZtoMuTau/mcZtautauPU156bx_pythia_1_1_xdF.root'
-        #'file:/data1/veelken/CMSSW_3_8_x/skims/ZtoMuTau/selEvents_ZtoMuTau_approval_2011Mar03_RECO.root'
-        #'file:/data1/veelken/CMSSW_3_8_x/skims/AHtoMuTau/selEvents_AHtoMuTau_HPSloose_2011Jan29_friis_RECO.root'
-        #'file:/data1/veelken/CMSSW_3_8_x/skims/AHtoMuTau/uwOnlyEvents_AHtoMuTau_HPSloose_2011Feb03_bachtis_RECO.root'
-        #'file:/data1/veelken/CMSSW_3_8_x/skims/test/mcZtautauPU156bx_pythiaZ2v3_1kEvents_1_1_F1c.root'
-        #'file:/data1/veelken/CMSSW_3_8_x/skims/ZtoMuTau/selEvents_ZtoMuTau_HPSloose_2011Feb03_veelken_RECO.root'
-        #'file:/data1/veelken/CMSSW_3_8_x/skims/ZtoMuTau/selEvents_ZtoMuTau_HPSloose_2011Feb03_veelken_twoOSglobalMuons_RECO.root'
-    )                            
+    fileNames = cms.untracked.vstring()
     #skipBadFiles = cms.untracked.bool(True)
+)
+
+from PhysicsTools.PatAlgos.tools.cmsswVersionTools import pickRelValInputFiles
+process.source = cms.Source("PoolSource",
+    fileNames = cms.untracked.vstring(
+    pickRelValInputFiles( cmsswVersion  = 'CMSSW_4_2_0_pre8'
+                        , relVal        = 'RelValTTbar'
+                        , globalTag     = 'START42_V7'
+                        , numberOfFiles = 1
+                        )
+    )
 )
 
 #--------------------------------------------------------------------------------
 # import utility function for configuring PAT trigger matching
 from PhysicsTools.PatAlgos.tools.trigTools import switchOnTrigger
 switchOnTrigger(process, hltProcess = 'HLT', outputModule = '')
-process.patTrigger.addL1Algos = cms.bool(True)
+process.patTrigger.addL1Algos = cms.bool(False)
 #--------------------------------------------------------------------------------
 
 #--------------------------------------------------------------------------------
