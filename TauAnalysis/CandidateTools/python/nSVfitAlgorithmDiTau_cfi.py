@@ -124,15 +124,19 @@ nSVfitProducerByIntegration = cms.EDProducer("NSVfitProducerByIntegration",
         parameters = cms.PSet(
             mass_A = cms.PSet(
                 min = cms.double(5.),
-                max = cms.double(2000.),
-                stepSizeFactor = cms.double(1.03), # nextM = max(stepSizeFactor*currentM, minStepSize)
-                minStepSize = cms.double(3.),
+                max = cms.double(2000.),                                         
+                stepSizeFactor = cms.double(1.025), # nextM = max(stepSizeFactor*currentM, minStepSize)
+                minStepSize = cms.double(2.5),      
                 replace = cms.string("leg1.x"),
                 by = cms.string("(A.p4.mass/mass_A)*(A.p4.mass/mass_A)/leg2.x")
             )
         ),
         vegasOptions = cms.PSet(
-            numCalls = cms.uint32(10000)
+            numCallsGridOpt = cms.uint32(1000),
+            numCallsIntEval = cms.uint32(10000),
+            maxChi2         = cms.double(2.),
+            maxIntEvalIter  = cms.uint32(5),                                          
+            precision       = cms.double(0.00001)
         ),
         verbosity = cms.int32(0)
     ),
