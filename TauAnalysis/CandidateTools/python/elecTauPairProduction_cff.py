@@ -23,8 +23,16 @@ allElecTauPairs = cms.EDProducer("PATElecTauPairProducer",
     recoMode = cms.string(""),
     doSVreco = cms.bool(True),                          
     nSVfit = cms.PSet(),
-    scaleFuncImprovedCollinearApprox = cms.string('1'),                             
-    verbosity = cms.untracked.int32(0),
+    scaleFuncImprovedCollinearApprox = cms.string('1'),                            
+    doPFMEtSign = cms.bool(True),
+    pfMEtSign = cms.PSet(
+        srcPFJets = cms.InputTag('ak5PFJets'),
+        srcPFCandidates = cms.InputTag('particleFlow'),
+        resolution = METSignificance_params,
+        dRoverlapPFJet = cms.double(0.3),
+        dRoverlapPFCandidate = cms.double(0.1)
+    ),
+    verbosity = cms.untracked.int32(0)
 )
 
 #--------------------------------------------------------------------------------
