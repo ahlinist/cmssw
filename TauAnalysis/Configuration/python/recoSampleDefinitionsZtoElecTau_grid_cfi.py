@@ -6,7 +6,8 @@ import TauAnalysis.DQMTools.plotterStyleDefinitions_cfi as styles
 
 # List of samples to run in the analysis
 SAMPLES_TO_ANALYZE = [
-    'data_TauPlusX_Run2011A_May10ReReco_T3',
+    #'data_TauPlusX_Run2011A_May10ReReco_T3',
+    'data_TauPlusX_Run2011A_May10ReReco',
     'data_TauPlusX_Run2011A_PR_v4',
 ##     'data_TauPlusX_Run2011A_PR_v1',
 ##     'data_TauPlusX_Run2011A_PR_v2',
@@ -85,7 +86,8 @@ _picobarns =  1.0
 _femtobarns = 1.0e-3
 
 # Integrated luminosity to normalize
-TARGET_LUMI = (203)/_picobarns 
+# 204 May10ReReco + 294 PromptReco
+TARGET_LUMI = (498)/_picobarns 
 
 #--------------------------------------------------------------------------------
 # NOTE: cross-sections for W and Z production are scaled to next-to-leading order values
@@ -188,11 +190,11 @@ RECO_SAMPLES = {
             'HLT_Ele15_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_LooseIsoPFTau15_v4'     : '163269:MIN-163869:MAX'
         }
     },
-    'data_TauPlusX_Run2011A_PR_v4' : {  # 145/pb  165071-165970
+    'data_TauPlusX_Run2011A_PR_v4' : {  # 294/pb  165071-166502
         'datasetpath' : '/TauPlusX/Run2011A-PromptReco-v4/AOD', 
-        'lumi_mask' : '/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification//Collisions11/7TeV/Prompt/Cert_160404-165970_7TeV_PromptReco_Collisions11_JSON.txt',
+        'lumi_mask' : '/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification//Collisions11/7TeV/Prompt/Cert_160404-166502_7TeV_PromptReco_Collisions11_JSON.txt',
         'conditions' : 'GR_P_V20::All',
-        'number_of_jobs' : 80,
+        'number_of_jobs' : 300,
         'type' : 'Data',
         'drawOption' : styles.drawOption_Data,
         'enableSysUncertainties' : False,
@@ -204,6 +206,24 @@ RECO_SAMPLES = {
             'HLT_Ele15_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_LooseIsoPFTau20_v6'     : '165071:MIN-165633:MAX',
             'HLT_Ele15_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_LooseIsoPFTau20_v8'     : '165970:MIN-900000:MAX'
         }
+    },
+    'data_TauPlusX_Run2011A_May10ReReco' : {  #204.2/pb 160329-163869
+        'datasetpath' : '/TauPlusX/Run2011A-May10ReReco-v1/AOD', 
+        'lumi_mask' : '/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification//Collisions11/7TeV/Reprocessing/Cert_160404-163869_7TeV_May10ReReco_Collisions11_JSON.txt',
+        'conditions' : 'GR_R_42_V14::All',
+        'number_of_jobs' : 150,
+        'type' : 'Data',
+        'drawOption' : styles.drawOption_Data,
+        'enableSysUncertainties' : False,
+	    'applyVertexMultiplicityReweighting' : False,
+        'applyElectronTriggerEfficiencyCorrection' : False,
+        'applyElectronIsolationEfficiencyCorrection' : False,
+        'applyZrecoilCorrection' : False,
+        'hlt_paths' : {
+            'HLT_Ele15_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_LooseIsoPFTau15_v1'     : '160431:MIN-161016:MAX',
+            'HLT_Ele15_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_LooseIsoPFTau15_v2'     : '161217:MIN-163261:MAX',
+            'HLT_Ele15_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_LooseIsoPFTau15_v4'     : '163269:MIN-163869:MAX'
+            }
     },
     'data_TauPlusX_Run2011A_May10ReReco_T3' : {  #204.2/pb 160329-163869
         'datasetpath' : '/TauPlusX/jkolb-skimElecTau_423_May10ReReco_v3-2da1106465614f2b4aae43c293e2ca66/USER', 
