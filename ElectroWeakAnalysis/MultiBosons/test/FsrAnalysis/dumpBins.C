@@ -4,7 +4,8 @@
 const char * hname = "pudist";*/
 // const char * fname = "pudist_160404-163869_7TeV_PromptReco_Collisions11_JSON.root";
 // const char * fname = "pudist_160404-165542_7TeV_PromptReco_Collisions11_JSON.root";
-const char * fname = "pudist_160404-165970_7TeV_PromptReco_Collisions11_JSON.root";
+// const char * fname = "pudist_160404-165970_7TeV_PromptReco_Collisions11_JSON.root";
+const char * fname = "pudist_165088-166502_7TeV_PromptReco_Collisions11.root";
 const char * hname = "pileup";
 TFile file(fname);
 TH1F * hist =  (TH1F*) file.Get(hname) ;
