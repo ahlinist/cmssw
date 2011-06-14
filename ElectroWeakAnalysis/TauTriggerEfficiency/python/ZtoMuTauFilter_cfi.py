@@ -35,12 +35,18 @@ muTauPairs = cms.EDProducer("DeltaRMinCandCombiner",
 )
 
 selectedMuTauPairs = cms.EDFilter("CandViewCountFilter",
-  src = cms.InputTag('elecTauPairs'),
+  src = cms.InputTag('muTauPairs'),
   minNumber = cms.uint32(1)                      
 )
 
-muTauSkimSequence = cms.Sequence(
-  ( selectedPFTaus +  selectedMuons)
-  * muTauPairs
-  * selectedMuTauPairs
+#muTauSkimSequence = cms.Sequence(
+#  ( selectedPFTaus +  selectedMuons)
+#  * muTauPairs
+#  * selectedMuTauPairs
+#)
+
+muTauFilter = cms.Path(
+        ( selectedPFTaus +  selectedMuons)
+        * muTauPairs
+        * selectedMuTauPairs
 )
