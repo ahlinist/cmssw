@@ -6,23 +6,20 @@ import TauAnalysis.DQMTools.plotterStyleDefinitions_cfi as styles
 
 # List of samples to run in the analysis
 SAMPLES_TO_ANALYZE = [
-    #'data_TauPlusX_Run2011A_May10ReReco_T3',
-    'data_TauPlusX_Run2011A_May10ReReco',
-    'data_TauPlusX_Run2011A_PR_v4',
-##     'data_TauPlusX_Run2011A_PR_v1',
-##     'data_TauPlusX_Run2011A_PR_v2',
-##     'data_TauPlusX_Run2011A_PR_nonGolden',
-    'Ztautau_powheg_T3',
-##     'DYtautauM10to20_powheg_T3',
-##     'qqZll',
-##     'Zee_powheg_T3',
-##     'DYeeM10to20_pythia_T3',
-##     'PhotonPlusJets_Pt15to30_T3','PhotonPlusJets_Pt30to50_T3','PhotonPlusJets_Pt50to80_T3',
-##     'QCD_BCtoE_Pt20to30_T3','QCD_BCtoE_Pt30to80_T3','QCD_BCtoE_Pt80to170_T3',
-##     'QCD_EM_Pt20to30_T3','QCD_EM_Pt30to80_T3','QCD_EM_Pt80to170_T3',
-##     'TTplusJets_madgraph_T3',
-##     'WplusJets_madgraph_T3',
-##     'WW_T3','WZ_T3','ZZ_T3',
+        'data_TauPlusX_Run2011A_May10ReReco_T3',
+        'data_TauPlusX_Run2011A_May10ReReco',
+        'data_TauPlusX_Run2011A_PR_v4',
+        'Ztautau_powheg_T3',
+        'DYtautauM10to20_powheg_T3',
+        'qqZll',
+        'Zee_powheg_T3',
+        'DYeeM10to20_pythia_T3',
+        'PhotonPlusJets_Pt15to30_T3','PhotonPlusJets_Pt30to50_T3','PhotonPlusJets_Pt50to80_T3',
+        'QCD_BCtoE_Pt20to30_T3','QCD_BCtoE_Pt30to80_T3','QCD_BCtoE_Pt80to170_T3',
+        'QCD_EM_Pt20to30_T3','QCD_EM_Pt30to80_T3','QCD_EM_Pt80to170_T3',
+        'TTplusJets_madgraph_T3',
+        'WplusJets_madgraph_T3',
+        'WW_T3','WZ_T3','ZZ_T3',
 ] 
 
 ##SAMPLES_TO_ANALYZE = [
@@ -44,7 +41,7 @@ SAMPLES_TO_PLOT = [
     'data', 
     'qcdSum', 
     'photonPlusJetsSum',
-    'WplusJets_madgraph_Pat',
+    'WplusJets_madgraph',
     #'TTplusJets_madgraph_Pat',
     #'VVsum',    
     'ZeeSum',
@@ -65,8 +62,8 @@ SAMPLE_DEFAULTS = {
     'lumi_mask' : '',
     'runselection' : '',
     'inputFileType' : 'AOD',
-    ##'hlt_paths' : [ 'HLT_IsoEle12_PFTau15_v3','HLT_Ele12_SW_TighterEleId_L1R_v2'],  ## for 4_1_X, spring11
-    'hlt_paths' : [ 'HLT_Ele15_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_LooseIsoPFTau20_v2'],    ## for 4_2_X, summer11
+    'hlt_paths' : [ 'HLT_IsoEle12_PFTau15_v3','HLT_Ele12_SW_TighterEleId_L1R_v2'],  ## for 4_1_X, spring11
+    ##'hlt_paths' : [ 'HLT_Ele15_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_LooseIsoPFTau20_v2'],    ## for 4_2_X, summer11
     'SE_white_list' : '',
     'SE_black_list' : 'msu.ru',
     'disableDuplicateCheck' : False,
