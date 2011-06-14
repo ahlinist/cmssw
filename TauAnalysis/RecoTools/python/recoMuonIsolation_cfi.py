@@ -6,9 +6,9 @@ import FWCore.ParameterSet.Config as cms
 #--------------------------------------------------------------------------------
 
 # for CMSSW_4_2_0_pre8 and higher
-from CommonTools.ParticleFlow.Isolation.pfMuonIsolation_cff import *
+#from CommonTools.ParticleFlow.Isolation.pfMuonIsolation_cff import *
 # for CMSSW_3_8_x and CMSSW_4_1_x release series
-#from PhysicsTools.PFCandProducer.Isolation.pfMuonIsolation_cff import *
+from PhysicsTools.PFCandProducer.Isolation.pfMuonIsolation_cff import *
 
 muonCollection = "muons"
 pfmuIsoDepositPFCandidates   = isoDepositReplace(muonCollection, "particleFlow")
