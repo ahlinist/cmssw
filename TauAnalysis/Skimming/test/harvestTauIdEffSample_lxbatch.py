@@ -10,7 +10,7 @@ from TauAnalysis.Configuration.tools.harvesting import castor_source, clean_by_c
 
 channel = 'ZtoMuTau_tauIdEff'
 
-reg.overrideJobId(channel, '2011Apr09_HPSloose')
+#reg.overrideJobId(channel, '2011Jun10')
 
 analysisFilePath = reg.getAnalysisFilePath(channel)
 harvestingFilePath = reg.getHarvestingFilePath(channel)
@@ -25,8 +25,8 @@ print analysisFilePath
 print tmpFilePath
 
 plot_regex = r"dont match anything"
-##skim_regex = r"tauIdEffSample_(?P<sample>\w+?)_%s_RECO_(?P<gridJob>\d*)(_(?P<gridTry>\d*))*_(?P<hash>[a-zA-Z0-9]*).root" % (jobId)
-skim_regex = r"tauIdEffSample_(?P<sample>\w+?)_%s_RECO_(?P<gridJob>\d*)(_(?P<gridTry>\d*))*_(?P<hash>[a-zA-Z0-9]*).root" % '2011Apr09'
+skim_regex = r"tauIdEffSample_(?P<sample>\w+?)_%s_RECO_(?P<gridJob>\d*)(_(?P<gridTry>\d*))*_(?P<hash>[a-zA-Z0-9]*).root" % (jobId)
+##skim_regex = r"tauIdEffSample_(?P<sample>\w+?)_%s_RECO_(?P<gridJob>\d*)(_(?P<gridTry>\d*))*_(?P<hash>[a-zA-Z0-9]*).root" % '2011Apr09'
 
 def matches_either(files):
     # Check if the file matches either of the regexes we are interested in.
@@ -36,9 +36,16 @@ def matches_either(files):
     skim_matcher = re.compile(skim_regex)
     for file in files:
         #print " unmatched file: %s" % file['path']
+        if len(SAMPLES_TO_ANALYZE) > 0:
+	  isFound = FALSE
+          for sample in SAMPLES_TO_ANALYZE:
+              if file.find(sample) != -1:
+                  isFound = TRUE
+          if not isFound:
+	    continue
         if plot_matcher.match(file['file']) or skim_matcher.match(file['file']):
             print "--> matched file: %s" % file['path']
-            yield file
+            yield file  
 
 def local_copy_mapper(sample):
     " Define where we want to copy the final output locally "
