@@ -27,7 +27,7 @@ PATElectronDump::PATElectronDump(const edm::ParameterSet& cfg)
     patElectronSource_(cfg.getParameter<edm::InputTag>("electronSource")),
     genParticleSource_(cfg.getParameter<edm::InputTag>("genParticleSource")),
     pfCandidateSrc_(cfg.getParameter<edm::InputTag>("pfCandidateSource")),
-    dcsTag_(cfg.getParameter<edm::InputTag>("dcsTag")),
+    //dcsTag_(cfg.getParameter<edm::InputTag>("dcsTag")),
     pfCombIsoExtractor_(0),
     pfChargedHadronIsoExtractor_(0),
     pfNeutralHadronIsoExtractor_(0),
@@ -80,7 +80,7 @@ void PATElectronDump::print(const edm::Event& evt, const edm::EventSetup& es) co
 
     edm::Handle<reco::GenParticleCollection> genParticles;
     if( genParticleSource_.label() != "") evt.getByLabel(genParticleSource_, genParticles);
-    
+
     const reco::VertexCollection* vertices = 0;
     if ( vertexSource_.label() != "" ) {
         edm::Handle<reco::VertexCollection> vertexHandle;
@@ -148,8 +148,11 @@ void PATElectronDump::print(const edm::Event& evt, const edm::EventSetup& es) co
             *outputStream_ << " pfCombIsoSum/pt = " << pfCombIso << "/" << patElectron->pt() 
                 << " = " << pfCombIso/patElectron->pt() << std::endl;
         }
-        if( pfCandidateSrc_.label() != "" ) 
-            printPFCandidateIsolationInfo(pfCandidates,"pfNoPileUp",patElectron->momentum(),0,0.4,-1,outputStream_);
+
+        // JK temporarily disabled; breaks something in 4_2_X 
+        //if( pfCandidateSrc_.label() != "" ) 
+        //    printPFCandidateIsolationInfo(pfCandidates,"pfNoPileUp",patElectron->momentum(),0,0.4,-1,outputStream_);
+
 
         *outputStream_ << " vertex" << std::endl;
         printVertexInfo(patElectron->vertex(), outputStream_);
@@ -157,36 +160,39 @@ void PATElectronDump::print(const edm::Event& evt, const edm::EventSetup& es) co
             *outputStream_ << "* matching gen. pdgId = " 
                 << getMatchingGenParticlePdgId(patElectron->p4(), *genParticles, &skipPdgIdsGenParticleMatch_) << std::endl;
         ++iElectron;
+        /*    
+
+CV: temporarility disabled (2011/04/09), 
+because code to dump photon conversion info causes segementation violation
 
         //  conversion info dump
+        edm::InputTag dcsTag("scalersRawToDigi");
         edm::Handle<DcsStatusCollection> dcsHandle;
+        evt.getByLabel(dcsTag, dcsHandle);
 
-        if( dcsTag_.label() != "" ) {
-            
-            edm::InputTag partnerTracksSrc("generalTracks");
-            edm::Handle<reco::TrackCollection> tracks;
-            evt.getByLabel(partnerTracksSrc,tracks);
+        edm::InputTag partnerTracksSrc("generalTracks");
+        edm::Handle<reco::TrackCollection> tracks;
+        evt.getByLabel(partnerTracksSrc,tracks);
 
-            evt.getByLabel(dcsTag_, dcsHandle);
+        float currentToBFieldScaleFactor = 2.09237036221512717e-04;
+        float current = (*dcsHandle)[0].magnetCurrent();
+        double evt_bField = current*currentToBFieldScaleFactor;
 
-            float currentToBFieldScaleFactor = 2.09237036221512717e-04;
-            float current = (*dcsHandle)[0].magnetCurrent();
-            double evt_bField = current*currentToBFieldScaleFactor;
+        ConversionFinder convFinder;
+        ConversionInfo convInfo = convFinder.getConversionInfo(*patElectron, tracks, evt_bField);
 
-            ConversionFinder convFinder;
-            ConversionInfo convInfo = convFinder.getConversionInfo(*patElectron, tracks, evt_bField);
+        const reco::Track *elec_track = (const reco::Track*)(patElectron->gsfTrack().get());
+        const reco::HitPattern& p_inner = elec_track->trackerExpectedHitsInner();
+        int nMissExpHits = p_inner.numberOfHits();
 
-            const reco::Track *elec_track = (const reco::Track*)(patElectron->gsfTrack().get());
-            const reco::HitPattern& p_inner = elec_track->trackerExpectedHitsInner();
-            int nMissExpHits = p_inner.numberOfHits();
-
-            *outputStream_ << " conversion info: " << std::endl
-                << " doca(partners) = " << convInfo.dist() << std::endl
-                << " dCot(theta_partners) = " << convInfo.dcot() << std::endl
-                << " conv radius = " << convInfo.radiusOfConversion() << std::endl
-                << " Missing exp inner hits = " << nMissExpHits << std::endl;
-        }
+         *outputStream_ << " conversion info: " << std::endl
+         << " doca(partners) = " << convInfo.dist() << std::endl
+         << " dCot(theta_partners) = " << convInfo.dcot() << std::endl
+         << " conv radius = " << convInfo.radiusOfConversion() << std::endl
+         << " Missing exp inner hits = " << nMissExpHits << std::endl;  
+         */
     }
+
     *outputStream_ << std::endl;
 }
 
