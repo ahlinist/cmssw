@@ -7,6 +7,8 @@ V7
 - Added HoE and isolatins
 - Sync'ed PMV tree for mumugamma, gamma+jet and gamma+gamma final states
 - Updated Photon (?)
+V8
+- use golden JSON 166502 for pileup reweighing
 
 == Energy Scale (ES) Trees ==
 V1

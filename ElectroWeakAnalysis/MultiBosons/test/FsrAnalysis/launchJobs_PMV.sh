@@ -1,15 +1,22 @@
+## Use golden JSON 166502 for pileup reweighing
+## Add PromptReco upto golden JSON 166502.
+## Add more data files that were extended with previously failed
+##+ jobs (ACDC)
+VERSION=8
+
 # ##################### DATA #########################
-# for DATASET in ZMu-May10ReReco-42X-v3
-# # for DATASET in ZMu-PromptSkim-v4_42X-v5 \
-# #     PromptReco-v4_FNAL_42X-v3
+# # for DATASET in ZMu-May10ReReco-42X-v3
+# for DATASET in ZMu-PromptSkim-v4_42X-v5 \
+#     PromptReco-v4_FNAL_42X-v3 \
+#     ZMu-May10ReReco-42X-v3
 # do
 #     nohup cmsRun PmvTreeMaker_cfg.py \
 #         inputFiles_clear \
 #         inputFiles_load=files_${DATASET}.dat \
-#         jsonFile=Cert_160404-165542_7TeV_PromptReco_Collisions11_JSON.txt \
+#         jsonFile=Cert_160404-166502_7TeV_Combined-May10ReReco-PromptReco.json \
 #         isMC=False \
 #         maxEvents=-1 \
-#         outputFile=/wntmp/veverka/pmvTree_${DATASET}_V7 \
+#         outputFile=/wntmp/veverka/pmvTree_${DATASET}_V${VERSION} \
 #         >& /wntmp/veverka/pmv_${DATASET}_json.out &
 # done
 #
@@ -24,7 +31,7 @@
 #         inputFiles_load=files_${DATASET}.dat \
 #         isMC=True \
 #         maxEvents=-1 \
-#         outputFile=/wntmp/veverka/pmvTree_${DATASET}_V7 \
+#         outputFile=/wntmp/veverka/pmvTree_${DATASET}_V${VERSION} \
 #         >& /wntmp/veverka/pmv_${DATASET}.out &
 # done
 #
@@ -33,6 +40,8 @@
 
 ###################### LARGE MC ##################
 DATASET=DYToMuMu_pythia6_AOD-42X-v4
+# DATASET=DYToMuMu_pythia6_v1_RECO-42X-v4
+# DATASET=DYToMuMu_pythia6_v2_RECO-42X-v4
 TOTAL_SECTIONS=8
 for SECTION in `seq $TOTAL_SECTIONS`; do
     nohup cmsRun PmvTreeMaker_cfg.py \
@@ -41,7 +50,7 @@ for SECTION in `seq $TOTAL_SECTIONS`; do
         inputFiles_load=files_${DATASET}.dat \
         isMC=True \
         maxEvents=-1 \
-        outputFile=/wntmp/veverka/pmvTree_${DATASET}_V7 \
+        outputFile=/wntmp/veverka/pmvTree_${DATASET}_V${VERSION} \
         totalSections=$TOTAL_SECTIONS \
         section=$SECTION \
         >& /wntmp/veverka/pmv_${DATASET}_${SECTION}of${TOTAL_SECTIONS}.out &
@@ -60,7 +69,7 @@ done
 #         inputFiles_load=files_${DATASET}.dat \
 #         isMC=True \
 #         maxEvents=-1 \
-#         outputFile=/wntmp/veverka/pmvTree_${DATASET}_V7 \
+#         outputFile=/wntmp/veverka/pmvTree_${DATASET}_V${VERSION} \
 #         totalSections=$TOTAL_SECTIONS \
 #         section=$SECTION \
 #         >& /wntmp/veverka/pmv_${DATASET}_${SECTION}of${TOTAL_SECTIONS}.out &
@@ -83,7 +92,7 @@ done
 #         inputFiles_load=files_${DATASET}.dat \
 #         isMC=True \
 #         maxEvents=-1 \
-#         outputFile=/wntmp/veverka/pmvTree_${DATASET}_V7 \
+#         outputFile=/wntmp/veverka/pmvTree_${DATASET}_V${VERSION} \
 #         totalSections=$TOTAL_SECTIONS \
 #         section=$SECTION \
 #         >& /wntmp/veverka/pmv_${DATASET}_${SECTION}of${TOTAL_SECTIONS}.out &
@@ -102,7 +111,7 @@ done
 #         inputFiles_load=files_${DATASET}.dat \
 #         isMC=True \
 #         maxEvents=100 \
-#         outputFile=/wntmp/veverka/pmvTree_${DATASET}_V7 \
+#         outputFile=/wntmp/veverka/pmvTree_${DATASET}_V${VERSION} \
 #         totalSections=$TOTAL_SECTIONS \
 #         section=$SECTION \
 #         >& /wntmp/veverka/pmv_${DATASET}_${SECTION}of${TOTAL_SECTIONS}.out &
