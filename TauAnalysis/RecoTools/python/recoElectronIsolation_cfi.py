@@ -11,7 +11,7 @@ from RecoEgamma.EgammaIsolationAlgos.eleHcalExtractorBlocks_cff import *
 
 from RecoEgamma.EgammaIsolationAlgos.eleIsoDepositTk_cff import *
 from RecoEgamma.EgammaIsolationAlgos.eleIsoDepositEcalFromHits_cff import *
-from RecoLocalCalo.EcalRecAlgos.EcalSeverityLevelESProducer_cfi import *
+#from RecoLocalCalo.EcalRecAlgos.EcalSeverityLevelESProducer_cfi import * # CV: for CMSSW_4_2_x and higher only
 
 #--------------------------------------------------------------------------------
 #
@@ -92,8 +92,10 @@ electronIsoDeposits = cms.Sequence( eleIsoDepositTk
 # compute particle flow based IsoDeposits
 # names and settings taken from 22X, to be tuned
 #--------------------------------------------------------------------------------
-
-from CommonTools.ParticleFlow.Isolation.pfElectronIsolation_cff import *
+# for CMSSW_4_2_0_pre8 and higher
+#from CommonTools.ParticleFlow.Isolation.pfElectronIsolation_cff import *
+# for CMSSW_3_8_x and CMSSW_4_1_x release series
+from PhysicsTools.PFCandProducer.Isolation.pfElectronIsolation_cff import *
 elctronCollection = "gsfElectrons"
 pfeleIsoDepositPFCandidates   = isoDepositReplace(elctronCollection,"particleFlow")
 pfeleIsoChDepositPFCandidates = isoDepositReplace(elctronCollection,"pfAllChargedHadrons")
