@@ -49,7 +49,7 @@ patMuonPFIsolationSelector = cms.PSet(
 
 patElectronPFIsolationSelector = cms.PSet(
     
-    pfCandidateSource = cms.InputTag('pfNoPileUp'),
+    pfCandidateSource = cms.InputTag('particleFlow'),
 
     vertexSource = cms.InputTag('offlinePrimaryVerticesWithBS'),
     beamSpotSource = cms.InputTag('offlineBeamSpot'),
