@@ -10,14 +10,28 @@ import subprocess
 channel = 'ZtoMuTau_tauIdEff'
 configFile = 'skimTauIdEffSample_cfg.py'
 #jobId = getJobId(channel)
-jobId = '2011May20'
+jobId = '2011Jun10'
 
-outputFilePath = '/castor/cern.ch/user/m/mverzett/tagprobe/skims/TauIdEffMeas_2011May13/'
+#outputFilePath = '/castor/cern.ch/user/m/mverzett/tagprobe/skims/TauIdEffMeas_2011May13/'
+outputFilePath = '/user/v/veelken/CMSSW_4_1_x/skims/TauIdEffMeas/'
 
 pfCandidateCollection = "particleFlow" # pile-up removal disabled
 #pfCandidateCollection = "pfNoPileUp"   # pile-up removal enabled
 
 samplesToAnalyze = [
+    #'data_SingleMu_Run2011A_PromptReco_v1',
+    #'data_SingleMu_Run2011A_PromptReco_v2',
+    #'DYtautauM10to20_powheg',
+    #'Ztautau_powheg',
+    #'qqZll',
+    #'DYmumuM10to20_pythia',
+    #'Zmumu_powheg',
+    'PPmuXptGt20Mu15',
+    'WplusJets_madgraph',
+    'WW',
+    'WZ',
+    'ZZ',
+    'TTplusJets_madgraph'
 ]
 
 # Define what output file name a skimmed sample will have

@@ -36,8 +36,12 @@ samples = {
     ##    'dbsName' : "/WJetsToLNu_TuneZ2_7TeV-madgraph-tauola/Spring11-PU_S1_START311_V1G1-v1/AODSIM",
     ##    'type'    : "MC"
     ##},
-    'PPmuXptGt20Mu15_aodsim' : {
-        'dbsName' : "/QCD_Pt-20_MuEnrichedPt-15_TuneZ2_7TeV-pythia6/Spring11-PU_S1_START311_V1G1-v1/AODSIM",
+    ##'PPmuXptGt20Mu15_aodsim' : {
+    ##    'dbsName' : "/QCD_Pt-20_MuEnrichedPt-15_TuneZ2_7TeV-pythia6/Spring11-PU_S1_START311_V1G1-v1/AODSIM",
+    ##    'type'    : "MC"
+    ##}
+    'Ztautau_winter10'  : {
+        'dbsName' : "/DYToTauTau_M-20_TuneZ2_7TeV-pythia6-tauola/Winter10-E7TeV_ProbDist_2010Data_BX156_START39_V8-v1/AODSIM",
         'type'    : "MC"
     }
 }
@@ -136,9 +140,9 @@ for sampleName, sampleOptions in samples.items():
    crabConfig = crabConfig.replace("DATASETPATH", sampleOptions['dbsName'])
    crabConfig = crabConfig.replace("PSET", cfgFileName)
    if sampleOptions['type'] == "Data":
-       crabConfig = crabConfig.replace("JOB_SPLIT_METHOD", "total_number_of_events = 1000")
-   elif sampleOptions['type'] == "MC":
        crabConfig = crabConfig.replace("JOB_SPLIT_METHOD", "lumis_per_job = 5")
+   elif sampleOptions['type'] == "MC":
+       crabConfig = crabConfig.replace("JOB_SPLIT_METHOD", "total_number_of_events = 1000")
    else:
        raise ValueError("Undefined sample type = %s !!" %sampleOptions['type'])
    crabConfig = crabConfig.replace("OUTPUT_FILE", rootFileName)
