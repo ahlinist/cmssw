@@ -1,11 +1,41 @@
-
-
 #ifndef TauAnalysis_RecoTools_NPATElectronConversionFinder_h
 #define TauAnalysis_RecoTools_NPATElectronConversionFinder_h
 
-// system include files
-#include <memory>
-#include <map>
+//-------------------------------------------------------------------------------------------
+//
+//  photon conversion veto for electron identification
+//  author: Jeff Kolb, 15 June 2011
+//
+//  This module selects electrons with the following logic:
+//    (minMissingInnerHits <= missingInnerHits <= maxMissingInnerHits ) &&
+//    (invertConversionVeto*NOT( minRxy <= Rxy && minFitProb <= fitProb && maxHitsBeforeVertex < hitsBeforeVertex ) )
+//
+//  python configuration parameters:
+//   1) maxMissingInnerHits 
+//      - maximum number of missing (expected) pixel hits
+//      - default = 0
+//   2) minMissingInnerHits 
+//      - minimum number of missing (expected) pixel hits
+//      - default = 0
+//   3) minRxy
+//      - minimum distance between vertex and beam in the transverse plane
+//      - default = 2.0cm
+//   4) minFitProb
+//      - minimum Chi^2 probability for conversion vertex fit
+//      - default = 1e-6
+//   5) maxHitsBeforeVertex
+//      - maximum number of hits associated with the electron between the vertex and beam 
+//      - default = 0
+//   5) invertConversionVeto
+//      - inverts selection based on (minRxy,minFitProb,maxHitsBeforeVertex)
+//      - does NOT affect missing inner hits selection
+//      - default is false
+//
+//  Using the default values for all parameters will reject electrons from conversion 
+//  according to the EGamma POG recommendations
+//
+//-------------------------------------------------------------------------------------------
+
 
 // user include files
 #include "FWCore/Framework/interface/Frameworkfwd.h"
@@ -15,35 +45,15 @@
 #include "FWCore/Framework/interface/ESHandle.h"
 #include "FWCore/ParameterSet/interface/ParameterSet.h"
 #include "FWCore/MessageLogger/interface/MessageLogger.h"
-#include "FWCore/ServiceRegistry/interface/Service.h"
 
-#include "CommonTools/UtilAlgos/interface/TFileService.h"
 #include "CommonTools/UtilAlgos/interface/ObjectSelector.h"
 
-#include "MagneticField/Engine/interface/MagneticField.h"
-#include "MagneticField/Records/interface/IdealMagneticFieldRecord.h"
-
-#include "DataFormats/Scalers/interface/DcsStatus.h"
 #include "DataFormats/TrackReco/interface/TrackFwd.h"
 #include "DataFormats/TrackReco/interface/TrackExtra.h"
 #include "DataFormats/TrackReco/interface/Track.h"
-#include "DataFormats/GsfTrackReco/interface/GsfTrackExtra.h"
 #include "DataFormats/PatCandidates/interface/Electron.h"
-#include "DataFormats/PatCandidates/interface/Photon.h"
-#include "DataFormats/EgammaCandidates/interface/Photon.h"
-#include "DataFormats/EgammaCandidates/interface/PhotonFwd.h"
-#include "DataFormats/EgammaCandidates/interface/Conversion.h"
-#include "DataFormats/EgammaCandidates/interface/ConversionFwd.h"
-#include "DataFormats/DetId/interface/DetId.h"
-#include "DataFormats/SiPixelDetId/interface/PXBDetId.h"
-#include "DataFormats/SiPixelDetId/interface/PXFDetId.h"
-#include "DataFormats/Math/interface/deltaR.h"
-#include "DataFormats/Math/interface/Vector3D.h" 
 
-#include "Math/GenVector/VectorUtil.h"
-#include "TLorentzVector.h"
 #include "TrackingTools/TransientTrack/interface/TransientTrack.h"
-
 
 class NPATElectronConversionFinderImp
 {
@@ -65,9 +75,11 @@ class NPATElectronConversionFinderImp
         std::vector<const pat::Electron*> selected_;
 
         int maxMissingInnerHits_;
+        int minMissingInnerHits_;
         double minRxy_;
         double minFitProb_;
         int maxHitsBeforeVertex_;
+        bool invertConversionVeto_;
 
 
 
