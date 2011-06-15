@@ -52,30 +52,18 @@ selectedPatElectronsForElecTauTrkIPlooseIsolation = copy.deepcopy(selectedPatEle
 
 # require electrons not to originate from photon conversions
 #
-# NOTE: EG POG method only pairs OS tracks, hence nConvPairMax is typically 0
-#       the old method( usePogMethod = False ) partners all tracks, therefore nConvPairMax is typically 1 
-#
-selectedPatElectronsForElecTauConversionVeto = cms.EDFilter("PATElectronConversionFinder",
-    trackSource = cms.InputTag('generalTracks'),
-    conversionSource = cms.InputTag('conversions'),
-	photonSource = cms.InputTag('photons'),
-	dcsTag = cms.InputTag('scalersRawToDigi'),
-	usePogMethod = cms.bool(True),
-    cotThetaMax = cms.double(0.05),
-	docaElecTrackMax = cms.double(0.1),
-    dRElecTrackMax = cms.double(0.1),
-    doPixCut = cms.bool(False),
-	doMissingHitsCut = cms.bool(True),
-    useConversionColl = cms.bool(False),
-    nConvPairMax = cms.double(1),
-	nConvPairMin = cms.double(0),
-	useOnlyOSPairs = cms.bool(False),
-	isData = cms.bool(False)
+selectedPatElectronsForElecTauConversionVeto = cms.EDFilter("NPATElectronConversionFinder",
+    maxMissingInnerHits = cms.int32(0),
+    minMissingInnerHits = cms.int32(0),
+    minRxy = cms.double(2.0),
+    minFitProb = cms.double(1e-6),
+    maxHitsBeforeVertex = cms.int32(0),
+    invertConversionVeto = cms.bool(False)
 )
 
 # loosen conversion rejection as part of loose isolation
 selectedPatElectronsForElecTauConversionVetoLooseIsolation = selectedPatElectronsForElecTauConversionVeto.clone(
-    nConvPairMax = cms.double(5),
-    nConvPairMin = cms.double(0)
+    maxMissingInnerHits = cms.int32(2),
+    invertConversionVeto = cms.bool(True)
 )
 

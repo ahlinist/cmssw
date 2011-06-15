@@ -144,7 +144,7 @@ from TauAnalysis.Configuration.tools.changeCut import changeCut
 #
 
 # VBTF WP80 electron ID
-changeCut(process,"selectedPatElectronsForElecTauId","(abs(superCluster.eta) < 1.479 & abs(deltaEtaSuperClusterTrackAtVtx) < 0.004 & abs(deltaPhiSuperClusterTrackAtVtx) < 0.06 & hcalOverEcal < 0.04 & sigmaIetaIeta < 0.01) | (abs(superCluster.eta) > 1.479 & abs(deltaEtaSuperClusterTrackAtVtx) < 0.007 & abs(deltaPhiSuperClusterTrackAtVtx) <0.03 & hcalOverEcal < 0.025 & sigmaIetaIeta < 0.03)")
+changeCut(process,"selectedPatElectronsForElecTauId","(abs(superCluster.eta) < 1.479 & pt > 20 & abs(deltaEtaSuperClusterTrackAtVtx) < 0.004 & abs(deltaPhiSuperClusterTrackAtVtx) < 0.06 & hcalOverEcal < 0.04 & sigmaIetaIeta < 0.01) | (abs(superCluster.eta) > 1.479 & pt > 20 & abs(deltaEtaSuperClusterTrackAtVtx) < 0.007 & abs(deltaPhiSuperClusterTrackAtVtx) <0.03 & hcalOverEcal < 0.025 & sigmaIetaIeta < 0.03) | (abs(superCluster.eta) < 1.479 & pt < 20 & abs(deltaEtaSuperClusterTrackAtVtx) < 0.004 & abs(deltaPhiSuperClusterTrackAtVtx) < 0.03 & hcalOverEcal < 0.025 & sigmaIetaIeta < 0.01 & (fbrem > 0.15 | (abs(superCluster.eta) < 1 & eSuperClusterOverP > 0.95) )) | (abs(superCluster.eta) > 1.479 & pt < 20 & abs(deltaEtaSuperClusterTrackAtVtx) < 0.005 & abs(deltaPhiSuperClusterTrackAtVtx) <0.02 & hcalOverEcal < 0.025 & sigmaIetaIeta < 0.03 & (fbrem > 0.15 | (abs(superCluster.eta) < 1 & eSuperClusterOverP > 0.95) ))")
 
 #  electron eta range
 changeCut(process,"selectedPatElectronsForElecTauEta","abs(eta) < 2.1")
@@ -159,20 +159,9 @@ changeCut(process,"selectedPatElectronsForElecTauIso",cms.double(0.04),"sumPtMax
 changeCut(process,"selectedPatElectronsForElecTauIsoLooseIsolation",cms.double(0.25),"sumPtMax")
 
 #  electron conversion veto
-#  set deltaCot(theta) < 0.02 for real conversions
-changeCut(process,"selectedPatElectronsForElecTauConversionVeto",cms.double(0), attribute = "nConvPairMax")
-changeCut(process,"selectedPatElectronsForElecTauConversionVeto",cms.double(0.02), attribute = "cotThetaMax")
-changeCut(process,"selectedPatElectronsForElecTauConversionVeto",cms.double(0.02), attribute = "docaElecTrackMax")
-changeCut(process,"selectedPatElectronsForElecTauConversionVeto",cms.bool(True), attribute = "usePogMethod")
-changeCut(process,"selectedPatElectronsForElecTauConversionVeto",cms.bool(True), attribute = "doMissingHitsCut")
-changeCut(process,"selectedPatElectronsForElecTauConversionVeto",cms.bool(False), attribute = "doPixCut")
-
-changeCut(process,"selectedPatElectronsForElecTauConversionVetoLooseIsolation",cms.double(2), attribute = "nConvPairMax")
-changeCut(process,"selectedPatElectronsForElecTauConversionVetoLooseIsolation",cms.double(0.02), attribute = "cotThetaMax")
-changeCut(process,"selectedPatElectronsForElecTauConversionVetoLooseIsolation",cms.double(0.02), attribute = "docaElecTrackMax")
-changeCut(process,"selectedPatElectronsForElecTauConversionVetoLooseIsolation",cms.bool(True), attribute = "usePogMethod")
-changeCut(process,"selectedPatElectronsForElecTauConversionVetoLooseIsolation",cms.bool(True), attribute = "doMissingHitsCut")
-changeCut(process,"selectedPatElectronsForElecTauConversionVetoLooseIsolation",cms.bool(False), attribute = "doPixCut")
+changeCut(process,"selectedPatElectronsForElecTauConversionVeto",cms.int32(0), attribute = "maxMissingInnerHits")
+changeCut(process,"selectedPatElectronsForElecTauConversionVetoLooseIsolation",cms.int32(2), attribute = "maxMissingInnerHits")
+changeCut(process,"selectedPatElectronsForElecTauConversionVetoLooseIsolation",cms.bool(True), attribute = "invertConversionVeto")
 
 # upper limit on tranverse impact parameter of electron track 
 changeCut(process, "selectedPatElectronsForElecTauTrkIP", 0.02, attribute = "IpMax")

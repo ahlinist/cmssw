@@ -90,14 +90,7 @@ selectedPatElectronsForElecTauIso.sumPtMaxEB = cms.double(0.013)
 selectedPatElectronsForElecTauIso.sumPtMaxEE = cms.double(0.09)
 selectedPatElectronsForElecTauIso.sumPtMethod = cms.string("relative")
 selectedPatElectronsForElecTauIso.pfCandidateSource = cms.InputTag('pfNoPileUp')
-selectedPatElectronsForElecTauConversionVeto.cotThetaMax = cms.double(0.02)
-selectedPatElectronsForElecTauConversionVeto.docaElecTrackMax = cms.double(0.02)
-selectedPatElectronsForElecTauConversionVeto.dRElecTrackMax = cms.double(0.02)
-selectedPatElectronsForElecTauConversionVeto.doPixCut = cms.bool(False)
-selectedPatElectronsForElecTauConversionVeto.doMissingHitsCut = cms.bool(True)
-selectedPatElectronsForElecTauConversionVeto.nConvPairMax = cms.double(0)
-selectedPatElectronsForElecTauConversionVeto.useConversionColl = cms.bool(False)
-selectedPatElectronsForElecTauConversionVeto.usePogMethod = cms.bool(True)
+selectedPatElectronsForElecTauConversionVeto.maxMissingInnerHits = cms.int32(0)
 selectedPatElectronsForElecTauTrkIP.vertexSource = selectedPatElectronsTrkIP.vertexSource
 selectedPatElectronsForElecTauTrkIP.IpMax = cms.double(0.045)
 #selectedPatElectronsForElecTauTrkIP.IpZMax = cms.double(0.2)
@@ -121,9 +114,8 @@ selectPatElectronsForElecTau = patElectronSelConfiguratorForElecTau.configure(py
 selectedPatElectronsForElecTauIsoLooseIsolation.sumPtMax = cms.double(0.25)
 selectedPatElectronsForElecTauTrkIPlooseIsolation.IpMax = selectedPatElectronsForElecTauTrkIP.IpMax
 
-selectedPatElectronsForElecTauConversionVetoLooseIsolation.nTrkMax = cms.double(1)
-selectedPatElectronsForElecTauConversionVetoLooseIsolation.doPixCut = cms.bool(False)
-selectedPatElectronsForElecTauConversionVetoLooseIsolation.doMissingHitsCut = cms.bool(False)
+selectedPatElectronsForElecTauConversionVetoLooseIsolation.maxMissingInnerHits = cms.int32(2)
+selectedPatElectronsForElecTauConversionVetoLooseIsolation.invertConversionVeto = cms.bool(True)
 
 patElectronSelConfiguratorForElecTauLooseIsolation = objSelConfigurator(
     [ selectedPatElectronsForElecTauId,

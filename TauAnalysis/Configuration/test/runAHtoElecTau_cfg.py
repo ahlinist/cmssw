@@ -184,19 +184,9 @@ changeCut(process,"selectedPatElectronsForElecTauIso",cms.double(0.09),"sumPtMax
 changeCut(process,"selectedPatElectronsForElecTauIsoLooseIsolation",cms.double(0.3),"sumPtMax")
 
 #  electron conversion veto
-changeCut(process,"selectedPatElectronsForElecTauConversionVeto",cms.double(0), attribute = "nConvPairMax")
-changeCut(process,"selectedPatElectronsForElecTauConversionVeto",cms.double(0.02), attribute = "cotThetaMax")
-changeCut(process,"selectedPatElectronsForElecTauConversionVeto",cms.double(0.02), attribute = "docaElecTrackMax")
-changeCut(process,"selectedPatElectronsForElecTauConversionVeto",cms.bool(True), attribute = "usePogMethod")
-changeCut(process,"selectedPatElectronsForElecTauConversionVeto",cms.bool(True), attribute = "doMissingHitsCut")
-changeCut(process,"selectedPatElectronsForElecTauConversionVeto",cms.bool(False), attribute = "doPixCut")
-
-changeCut(process,"selectedPatElectronsForElecTauConversionVetoLooseIsolation",cms.double(2), attribute = "nConvPairMax")
-changeCut(process,"selectedPatElectronsForElecTauConversionVetoLooseIsolation",cms.double(0.02), attribute = "cotThetaMax")
-changeCut(process,"selectedPatElectronsForElecTauConversionVetoLooseIsolation",cms.double(0.02), attribute = "docaElecTrackMax")
-changeCut(process,"selectedPatElectronsForElecTauConversionVetoLooseIsolation",cms.bool(True), attribute = "usePogMethod")
-changeCut(process,"selectedPatElectronsForElecTauConversionVetoLooseIsolation",cms.bool(False), attribute = "doMissingHitsCut")
-changeCut(process,"selectedPatElectronsForElecTauConversionVetoLooseIsolation",cms.bool(False), attribute = "doPixCut")
+changeCut(process,"selectedPatElectronsForElecTauConversionVeto",cms.int32(0), attribute = "maxMissingInnerHits")
+changeCut(process,"selectedPatElectronsForElecTauConversionVetoLooseIsolation",cms.int32(2), attribute = "maxMissingInnerHits")
+changeCut(process,"selectedPatElectronsForElecTauConversionVetoLooseIsolation",cms.bool(True), attribute = "invertConversionVeto")
 
 #  electron track IP_xy cut
 changeCut(process,"selectedPatElectronsForElecTauTrkIP",cms.double(0.045),"IpMax")
