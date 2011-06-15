@@ -8,6 +8,7 @@ from PhysicsTools.PatAlgos.patEventContent_cff import *
 #--------------------------------------------------------------------------------
 patTupleEventContent = cms.PSet(
     outputCommands = cms.untracked.vstring('drop *')
+    
 )
 
 #--------------------------------------------------------------------------------
@@ -41,6 +42,7 @@ patTupleEventContent.outputCommands.extend(
 		'keep *_photonCore_*_*',
 		'keep *_photons_*_*',
 		'keep *_conversions_*_*',
+		'keep *_*Conversion*_*_*',        
 		'keep *_ckfInOutTracksFromConversions_*_*',
 		'keep *_ckfOutInTracksFromConversions_*_*']
 )
@@ -51,7 +53,7 @@ patTupleEventContent.outputCommands.extend(
 patTupleEventContent.outputCommands.extend(
     [ 'keep *_pfAll*_*_*', 
       'keep *_particleFlow_*_*',
-	  'keep *_offlinePrimaryVerticesWithBS_*_*' ]
+	  'keep *_offlinePrimaryVertices*_*_*' ]
 )
 
 #--------------------------------------------------------------------------------
