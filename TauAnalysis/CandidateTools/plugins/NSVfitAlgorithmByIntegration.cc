@@ -260,35 +260,35 @@ void NSVfitAlgorithmByIntegration::fitImp() const
       << " and request support for more dimensions !!\n";
   }
 
+  std::vector<double> massParameterValues(numMassParameters_);
   double pMax = 0.;
-  
+  unsigned numMassParBelowThreshold = 0;
+  bool skipHighMassTail = false;
+
   while ( massParForReplacements_->isValid() ) {
+
 //--- set mass parameters
-    std::vector<double> massParameterValues;
     for ( unsigned iMassParameter = 0; iMassParameter < numMassParameters_; ++iMassParameter ) {
       int massParameterIdx = (*massParForReplacements_)[iMassParameter];
       double massParameterValue = fitParameterReplacements_[iMassParameter]->gridPoints_->At(massParameterIdx);
       ((double*)integrand_->params)[iMassParameter] = massParameterValue;
-      massParameterValues.push_back(massParameterValue);
+      massParameterValues[iMassParameter] = massParameterValue;
     }
 
 //--- call VEGAS routine (part of GNU scientific library)
 //    to perform actual integration
-    double p, pErr;
-    workspace_->stage = 0;
-    gsl_monte_vegas_integrate(integrand_, xl_, xu_, numDimensions_, 
-			      numCallsGridOpt_/workspace_->iterations, rnd_, workspace_, &p, &pErr);
-
-    double chi2 = -1.;
-
-    // CV: in order to reduce computing time, skip precise computation of integral
-    //     if in high mass tail and probability negligible anyway
-    if ( (p + TMath::Abs(3.*pErr)) > (pMax*precision_) ) {
-      workspace_->stage = 1;
-      unsigned iteration = 0;
+    double p    = 0.; 
+    double pErr = 0.;
+    if ( !skipHighMassTail ) {
+      workspace_->stage = 0;
+      gsl_monte_vegas_integrate(integrand_, xl_, xu_, numDimensions_, 
+				numCallsGridOpt_/workspace_->iterations, rnd_, workspace_, &p, &pErr);
+      
       // CV: repeat integration in case chi2 of estimated integral/uncertainty values
       //     indicates that result of integration cannot be trusted
       //    (up to maxIntEvalIter times in total)
+      unsigned iteration = 0;
+      double chi2 = -1.;
       do {
 	gsl_monte_vegas_integrate(integrand_, xl_, xu_, numDimensions_, 
 				  numCallsIntEval_/workspace_->iterations, rnd_, workspace_, &p, &pErr);
@@ -297,14 +297,20 @@ void NSVfitAlgorithmByIntegration::fitImp() const
 	chi2 = workspace_->chisq;
 	//std::cout << " chi2 = " << chi2 << std::endl;
       } while ( chi2 > maxChi2_ && iteration < maxIntEvalIter_ );	
-    } else {
-      //std::cout << " integral estimated to be negligible --> skipping integration." << std::endl;
+      
+      //std::cout << "--> M = " << format_vdouble(massParameterValues) << ": p = " << p << " +/- " << pErr 
+      //	        << " (chi2 = " << chi2 << ")" << std::endl;
+      
+      // CV: in order to reduce computing time, skip precise computation of integral
+      //     if in high mass tail and probability negligible anyway
+      if ( p > pMax ) pMax = p;
+      if ( pMax > 1.e-10 && (p + 3.*TMath::Abs(pErr)) < (pMax*precision_) ) ++numMassParBelowThreshold;
+      else numMassParBelowThreshold = 0;
+      if ( numMassParBelowThreshold >= 5 ) {
+	//std::cout << " integral estimated to be negligible --> skipping integration." << std::endl;
+	skipHighMassTail = true;
+      }
     }
-
-    //std::cout << "--> M = " << format_vdouble(massParameterValues) << ": p = " << p << " +/- " << pErr 
-    //	        << " (chi2 = " << chi2 << ")" << std::endl;
-
-    if ( p > pMax ) pMax = p;
 
     if      ( numMassParameters_ == 1 ) histResults->Fill(massParameterValues[0], p);
     else if ( numMassParameters_ == 2 ) {
