@@ -809,7 +809,7 @@ if _USE_BARI_XSEC:
         mssm_info = higgs_lookups.setdefault(
             (mass, TAN_BETA), mssm_xsec.query(mass, TAN_BETA))
         # Determine if samples is bb or glu-glu
-        production_mechanism = (match.group('isBB') and 'bbH' or 'ggF')
+        production_mechanism = (match.group('isBB') and 'santander' or 'ggF')
         # Compute the total cross section, using multiple higgs if necessary
         total_eff_xsec = 0.0
         for higgs_type in ['H', 'A', 'h']:
