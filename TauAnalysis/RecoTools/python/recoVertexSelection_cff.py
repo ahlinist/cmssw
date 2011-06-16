@@ -13,7 +13,7 @@ import copy
 #--------------------------------------------------------------------------------
 
 selectedPrimaryVertexQuality = cms.EDFilter("VertexSelector",
-    src = cms.InputTag('offlinePrimaryVerticesWithBS'),
+    src = cms.InputTag('offlinePrimaryVerticesDA'),
     cut = cms.string("isValid & ndof >= 4"),
     filter = cms.bool(False)                                          
 )
