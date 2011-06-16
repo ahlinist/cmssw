@@ -15,7 +15,7 @@ import copy
 #--------------------------------------------------------------------------------
 
 selectedPrimaryVertexForElecTau = cms.EDFilter("VertexByParticleMatchSelector",
-    src = cms.InputTag('offlinePrimaryVertices'),
+    src = cms.InputTag('offlinePrimaryVerticesDA'),
     srcParticles = cms.VInputTag(
         'selectedPatElectronsTrkIPcumulative',
         'selectedPatTausForElecTauMuonVetoCumulative',
