@@ -17,10 +17,7 @@ from SimGeneral.HepPDTESSource.pythiapdt_cfi import *
 
 #fix to the eta-phi distributions when using startup mc
 openhltL25TauPixelSeeds.RegionFactoryPSet.RegionPSet.originHalfLength = cms.double( 15.0 )
-#openhltL25TauPixelSeeds.RegionFactoryPSet.RegionPSet.originRadius = cms.double( 1.0 )
-hltPFTaus.LeadTrack_minPt = cms.double( 5.0 )
-hltPFTaus.LeadPFCand_minPt = cms.double( 5.0 )
-#TEMPORARY FIX to the maxElement problem (CMSSW_3_6_1_patch4)
-#openhltL25TauPixelSeeds.OrderedHitsFactoryPSet.maxElement = cms.uint32(0)
-#hltL1IsoSSEleRegPSG.OrderedHitsFactoryPSet.maxElement = cms.uint32(0)
-#hltL1NonIsoSSEleRegPSG.OrderedHitsFactoryPSet.maxElement = cms.uint32(0)
+### missing parameters
+hltParticleFlowRecHitECAL.thresh_Cleaning = cms.double( 2.0 )
+hltPFTauLooseIsolationDiscriminator.qualityCuts.primaryVertexSrc = cms.InputTag( "hltPixelVertices" )
+hltPFTauLooseIsolationDiscriminator.qualityCuts.pvFindingAlgo = cms.string("highestWeightForLeadTrack")
