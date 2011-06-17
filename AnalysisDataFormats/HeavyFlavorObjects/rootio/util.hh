@@ -58,6 +58,7 @@ double chi2Test(TH1*, TH1*, double& chi2, double& ndof, int constrain = 0);
 //    This function is equivalent to chi2Test() if the errors are sqrt(n_bin)
 double chi2TestErr(TH1*, TH1*, double& chi2, double& ndof, int constrain = 0);
 
+void average(double &av, double &error, int n, double *val, double *err); 
 
 // TGraph* scanParameter(int parnum, int nsig, TMinuit &a, void (*func)(int &, double *, double &, double *, int)); 
 
