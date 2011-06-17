@@ -1,6 +1,6 @@
 #include "CalibCalorimetry/EcalTiming/interface/EcalTimeTreeContent.h"
 
-bool EcalTimeTreeContent::trgVariables = true;
+bool EcalTimeTreeContent::trgVariables = false;
 bool EcalTimeTreeContent::muonVariables = false;
 bool EcalTimeTreeContent::ecalVariables = true;
 bool EcalTimeTreeContent::hcalVariables = false;
