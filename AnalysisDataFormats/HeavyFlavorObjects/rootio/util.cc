@@ -332,3 +332,30 @@ double chi2TestErr(TH1 *h1, TH1 *h2, double& chi2, double& ndof, int constrain) 
   return gamma;
 }
     
+// ----------------------------------------------------------------------
+void average(double &av, double &error, int n, double *val, double *verr) {
+
+  double e(0.), w8(0.), ave(0.), err(0.), sumW8(0.), sumAve(0.); 
+  for (int i = 0; i < n; ++i) {
+    //    cout << i << " " << val[i] << " +/- " << verr[i] << endl;
+
+    // -- calculate mean and error 
+    e = verr[i];
+    if (e > 0.) {
+      w8 = 1./(e*e);
+      sumW8  += w8;
+      sumAve += w8*val[i];
+    } else {
+      cout << "average: Error = 0 for " << val[i] << endl;
+      continue;
+    }
+  }
+  if (sumW8 > 0.) {
+    av = sumAve/sumW8;
+    error = 1./TMath::Sqrt(sumW8);
+  } else {
+    av = -99.;
+    error = -99.;
+  }
+
+}
