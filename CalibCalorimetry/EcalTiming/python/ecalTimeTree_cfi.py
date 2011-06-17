@@ -1,22 +1,19 @@
 import FWCore.ParameterSet.Config as cms
 
 ecalTimeTree = cms.EDAnalyzer("EcalTimeTreeMaker",
-    barrelEcalRecHitCollection = cms.InputTag("ecalRecHit","EcalRecHitsEB"),
-    endcapEcalRecHitCollection = cms.InputTag("ecalRecHit","EcalRecHitsEE"),
+    barrelEcalRecHitCollection = cms.InputTag("reducedEcalRecHitsEB",""),
+    endcapEcalRecHitCollection = cms.InputTag("reducedEcalRecHitsEE",""),
 
     useRaw = cms.untracked.bool(False),
 
     barrelEcalUncalibratedRecHitCollection = cms.InputTag("ecalRatioUncalibRecHit","EcalUncalibRecHitsEB"),
     endcapEcalUncalibratedRecHitCollection = cms.InputTag("ecalRatioUncalibRecHit","EcalUncalibRecHitsEE"),
 
-    # gf set correct cluster producrs
-    # gf here SC are used, switch to BC for us
+    # SUPER and BASIC cluster collections come from AOD (no longer in-house made 3x3's)
+    barrelBasicClusterCollection = cms.InputTag("hybridSuperClusters","hybridBarrelBasicClusters"),
+    endcapBasicClusterCollection = cms.InputTag("multi5x5BasicClusters","multi5x5EndcapBasicClusters"),
     barrelSuperClusterCollection = cms.InputTag("correctedHybridSuperClusters",""),
     endcapSuperClusterCollection = cms.InputTag("correctedMulti5x5SuperClustersWithPreshower",""),
-    barrelBasicClusterCollection = cms.InputTag("correctedHybridSuperClusters",""),
-    endcapBasicClusterCollection = cms.InputTag("correctedMulti5x5SuperClustersWithPreshower",""),
-    barrelClusterShapeAssociationCollection = cms.InputTag("hybridSuperClusters","hybridShapeAssoc"),
-    endcapClusterShapeAssociationCollection = cms.InputTag("multi5x5BasicClusters","multi5x5EndcapShapeAssoc"),
 
     vertexCollection  = cms.InputTag("offlinePrimaryVertices",""),
                                
