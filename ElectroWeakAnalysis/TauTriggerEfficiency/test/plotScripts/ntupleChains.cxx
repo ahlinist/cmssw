@@ -1380,109 +1380,213 @@ TChain* tteffAnalysis_DYToTauTau_20_TuneZ2_7TeV_pythia6_tauola_cmssw416_V00_07_0
 */
         return chain;
 }
-
-TChain* tteffAnalysis_DYToTauTau_20_TuneZ2_7TeV_pythia6_tauola_Winter10_cmssw416_V00_07_06_v3_hltcalotau_hpspftau() {
+TChain* tteffAnalysis_DYToTauTau_20_TuneZ2_7TeV_pythia6_tauola_Winter10_cmssw416_V00_07_06_v4_hltcalotau_hpspftau() {
 
         TChain* chain = new TChain("TTEffTree");
 
-        TString path = "/castor/cern.ch/user/s/slehti/TauTriggerEfficiencyMeasurementData/MC/tteffAnalysis_DYToTauTau_M_20_TuneZ2_7TeV_pythia6_tauola_Winter10_cmssw416_V00_07_06_v3/";
-        chain->AddFile(path + "tteffAnalysis-hltcalotau-hpspftau_10_1_JgS.root");
-        chain->AddFile(path + "tteffAnalysis-hltcalotau-hpspftau_11_1_8bj.root");
-        chain->AddFile(path + "tteffAnalysis-hltcalotau-hpspftau_12_1_6S9.root");
-        chain->AddFile(path + "tteffAnalysis-hltcalotau-hpspftau_13_2_5jp.root");
-        chain->AddFile(path + "tteffAnalysis-hltcalotau-hpspftau_14_1_uHi.root");
-        chain->AddFile(path + "tteffAnalysis-hltcalotau-hpspftau_15_1_Dg8.root");
-        chain->AddFile(path + "tteffAnalysis-hltcalotau-hpspftau_16_1_SP0.root");
-        chain->AddFile(path + "tteffAnalysis-hltcalotau-hpspftau_17_1_jBI.root");
-        chain->AddFile(path + "tteffAnalysis-hltcalotau-hpspftau_18_1_SY8.root");
-        chain->AddFile(path + "tteffAnalysis-hltcalotau-hpspftau_19_1_WCP.root");
-        chain->AddFile(path + "tteffAnalysis-hltcalotau-hpspftau_1_1_7v2.root");
-        chain->AddFile(path + "tteffAnalysis-hltcalotau-hpspftau_20_1_JhM.root");
-        chain->AddFile(path + "tteffAnalysis-hltcalotau-hpspftau_21_1_ofw.root");
-        chain->AddFile(path + "tteffAnalysis-hltcalotau-hpspftau_22_1_h8O.root");
-        chain->AddFile(path + "tteffAnalysis-hltcalotau-hpspftau_23_1_Tt3.root");
-        chain->AddFile(path + "tteffAnalysis-hltcalotau-hpspftau_24_1_Rr5.root");
-        chain->AddFile(path + "tteffAnalysis-hltcalotau-hpspftau_25_1_KBb.root");
-        chain->AddFile(path + "tteffAnalysis-hltcalotau-hpspftau_26_1_zOp.root");
-        chain->AddFile(path + "tteffAnalysis-hltcalotau-hpspftau_27_1_sMG.root");
-        chain->AddFile(path + "tteffAnalysis-hltcalotau-hpspftau_2_1_Tzk.root");
-        chain->AddFile(path + "tteffAnalysis-hltcalotau-hpspftau_3_1_pS6.root");
-        chain->AddFile(path + "tteffAnalysis-hltcalotau-hpspftau_4_1_swr.root");
-        chain->AddFile(path + "tteffAnalysis-hltcalotau-hpspftau_5_1_9t3.root");
-        chain->AddFile(path + "tteffAnalysis-hltcalotau-hpspftau_6_1_cMr.root");
-        chain->AddFile(path + "tteffAnalysis-hltcalotau-hpspftau_7_1_CIz.root");
-        chain->AddFile(path + "tteffAnalysis-hltcalotau-hpspftau_8_1_nQ3.root");
-        chain->AddFile(path + "tteffAnalysis-hltcalotau-hpspftau_9_1_LiR.root");
+        TString path = "/castor/cern.ch/user/s/slehti/TauTriggerEfficiencyMeasurementData/MC/tteffAnalysis_DYToTauTau_M_20_TuneZ2_7TeV_pythia6_tauola_Winter10_cmssw416_V00_07_06_v4/";
+        chain->AddFile(path + "tteffAnalysis-hltcalotau-hpspftau_10_1_kUu.root");
+        chain->AddFile(path + "tteffAnalysis-hltcalotau-hpspftau_11_1_hwc.root");
+        chain->AddFile(path + "tteffAnalysis-hltcalotau-hpspftau_12_1_xii.root");
+        chain->AddFile(path + "tteffAnalysis-hltcalotau-hpspftau_13_1_K9w.root");
+        chain->AddFile(path + "tteffAnalysis-hltcalotau-hpspftau_14_1_vD4.root");
+        chain->AddFile(path + "tteffAnalysis-hltcalotau-hpspftau_15_1_iRK.root");
+        chain->AddFile(path + "tteffAnalysis-hltcalotau-hpspftau_16_1_zHi.root");
+        chain->AddFile(path + "tteffAnalysis-hltcalotau-hpspftau_17_1_ZjT.root");
+        chain->AddFile(path + "tteffAnalysis-hltcalotau-hpspftau_18_1_b9o.root");
+        chain->AddFile(path + "tteffAnalysis-hltcalotau-hpspftau_19_1_ANE.root");
+        chain->AddFile(path + "tteffAnalysis-hltcalotau-hpspftau_1_1_ggy.root");
+        chain->AddFile(path + "tteffAnalysis-hltcalotau-hpspftau_20_1_YnB.root");
+        chain->AddFile(path + "tteffAnalysis-hltcalotau-hpspftau_21_1_ERh.root");
+        chain->AddFile(path + "tteffAnalysis-hltcalotau-hpspftau_22_1_qiX.root");
+        chain->AddFile(path + "tteffAnalysis-hltcalotau-hpspftau_23_1_d2Y.root");
+        chain->AddFile(path + "tteffAnalysis-hltcalotau-hpspftau_24_1_5d4.root");
+        chain->AddFile(path + "tteffAnalysis-hltcalotau-hpspftau_25_1_LmE.root");
+        chain->AddFile(path + "tteffAnalysis-hltcalotau-hpspftau_26_1_iyO.root");
+        chain->AddFile(path + "tteffAnalysis-hltcalotau-hpspftau_27_1_M7k.root");
+        chain->AddFile(path + "tteffAnalysis-hltcalotau-hpspftau_2_1_JEq.root");
+        chain->AddFile(path + "tteffAnalysis-hltcalotau-hpspftau_3_1_eQA.root");
+        chain->AddFile(path + "tteffAnalysis-hltcalotau-hpspftau_4_1_7F7.root");
+        chain->AddFile(path + "tteffAnalysis-hltcalotau-hpspftau_5_1_9NL.root");
+        chain->AddFile(path + "tteffAnalysis-hltcalotau-hpspftau_6_1_Ocj.root");
+        chain->AddFile(path + "tteffAnalysis-hltcalotau-hpspftau_7_1_v8a.root");
+        chain->AddFile(path + "tteffAnalysis-hltcalotau-hpspftau_8_1_Yyc.root");
+        chain->AddFile(path + "tteffAnalysis-hltcalotau-hpspftau_9_1_Kcm.root");
         return chain;
 }
 
-TChain* tteffAnalysis_DYToTauTau_20_TuneZ2_7TeV_pythia6_tauola_Winter10_cmssw416_V00_07_06_v3_hltpftau_hpspftau() {
+TChain* tteffAnalysis_DYToTauTau_20_TuneZ2_7TeV_pythia6_tauola_Winter10_cmssw416_V00_07_06_v4_hltpftau_hpspftau() {
 
         TChain* chain = new TChain("TTEffTree");
 
-        TString path = "/castor/cern.ch/user/s/slehti/TauTriggerEfficiencyMeasurementData/MC/tteffAnalysis_DYToTauTau_M_20_TuneZ2_7TeV_pythia6_tauola_Winter10_cmssw416_V00_07_06_v3/";
-        chain->AddFile(path + "tteffAnalysis-hltpftau-hpspftau_10_1_JgS.root");
-        chain->AddFile(path + "tteffAnalysis-hltpftau-hpspftau_11_1_8bj.root");
-        chain->AddFile(path + "tteffAnalysis-hltpftau-hpspftau_12_1_6S9.root");
-        chain->AddFile(path + "tteffAnalysis-hltpftau-hpspftau_13_2_5jp.root");
-        chain->AddFile(path + "tteffAnalysis-hltpftau-hpspftau_14_1_uHi.root");
-        chain->AddFile(path + "tteffAnalysis-hltpftau-hpspftau_15_1_Dg8.root");
-        chain->AddFile(path + "tteffAnalysis-hltpftau-hpspftau_16_1_SP0.root");
-        chain->AddFile(path + "tteffAnalysis-hltpftau-hpspftau_17_1_jBI.root");
-        chain->AddFile(path + "tteffAnalysis-hltpftau-hpspftau_18_1_SY8.root");
-        chain->AddFile(path + "tteffAnalysis-hltpftau-hpspftau_19_1_WCP.root");
-        chain->AddFile(path + "tteffAnalysis-hltpftau-hpspftau_1_1_7v2.root");
-        chain->AddFile(path + "tteffAnalysis-hltpftau-hpspftau_20_1_JhM.root");
-        chain->AddFile(path + "tteffAnalysis-hltpftau-hpspftau_21_1_ofw.root");
-        chain->AddFile(path + "tteffAnalysis-hltpftau-hpspftau_22_1_h8O.root");
-        chain->AddFile(path + "tteffAnalysis-hltpftau-hpspftau_23_1_Tt3.root");
-        chain->AddFile(path + "tteffAnalysis-hltpftau-hpspftau_24_1_Rr5.root");
-        chain->AddFile(path + "tteffAnalysis-hltpftau-hpspftau_25_1_KBb.root");
-        chain->AddFile(path + "tteffAnalysis-hltpftau-hpspftau_26_1_zOp.root");
-        chain->AddFile(path + "tteffAnalysis-hltpftau-hpspftau_27_1_sMG.root");
-        chain->AddFile(path + "tteffAnalysis-hltpftau-hpspftau_2_1_Tzk.root");
-        chain->AddFile(path + "tteffAnalysis-hltpftau-hpspftau_3_1_pS6.root");
-        chain->AddFile(path + "tteffAnalysis-hltpftau-hpspftau_4_1_swr.root");
-        chain->AddFile(path + "tteffAnalysis-hltpftau-hpspftau_5_1_9t3.root");
-        chain->AddFile(path + "tteffAnalysis-hltpftau-hpspftau_6_1_cMr.root");
-        chain->AddFile(path + "tteffAnalysis-hltpftau-hpspftau_7_1_CIz.root");
-        chain->AddFile(path + "tteffAnalysis-hltpftau-hpspftau_8_1_nQ3.root");
-        chain->AddFile(path + "tteffAnalysis-hltpftau-hpspftau_9_1_LiR.root");
+        TString path = "/castor/cern.ch/user/s/slehti/TauTriggerEfficiencyMeasurementData/MC/tteffAnalysis_DYToTauTau_M_20_TuneZ2_7TeV_pythia6_tauola_Winter10_cmssw416_V00_07_06_v4/";
+        chain->AddFile(path + "tteffAnalysis-hltpftau-hpspftau_10_1_kUu.root");
+        chain->AddFile(path + "tteffAnalysis-hltpftau-hpspftau_11_1_hwc.root");
+        chain->AddFile(path + "tteffAnalysis-hltpftau-hpspftau_12_1_xii.root");
+        chain->AddFile(path + "tteffAnalysis-hltpftau-hpspftau_13_1_K9w.root");
+        chain->AddFile(path + "tteffAnalysis-hltpftau-hpspftau_14_1_vD4.root");
+        chain->AddFile(path + "tteffAnalysis-hltpftau-hpspftau_15_1_iRK.root");
+        chain->AddFile(path + "tteffAnalysis-hltpftau-hpspftau_16_1_zHi.root");
+        chain->AddFile(path + "tteffAnalysis-hltpftau-hpspftau_17_1_ZjT.root");
+        chain->AddFile(path + "tteffAnalysis-hltpftau-hpspftau_18_1_b9o.root");
+        chain->AddFile(path + "tteffAnalysis-hltpftau-hpspftau_19_1_ANE.root");
+        chain->AddFile(path + "tteffAnalysis-hltpftau-hpspftau_1_1_ggy.root");
+        chain->AddFile(path + "tteffAnalysis-hltpftau-hpspftau_20_1_YnB.root");
+        chain->AddFile(path + "tteffAnalysis-hltpftau-hpspftau_21_1_ERh.root");
+        chain->AddFile(path + "tteffAnalysis-hltpftau-hpspftau_22_1_qiX.root");
+        chain->AddFile(path + "tteffAnalysis-hltpftau-hpspftau_23_1_d2Y.root");
+        chain->AddFile(path + "tteffAnalysis-hltpftau-hpspftau_24_1_5d4.root");
+        chain->AddFile(path + "tteffAnalysis-hltpftau-hpspftau_25_1_LmE.root");
+        chain->AddFile(path + "tteffAnalysis-hltpftau-hpspftau_26_1_iyO.root");
+        chain->AddFile(path + "tteffAnalysis-hltpftau-hpspftau_27_1_M7k.root");
+        chain->AddFile(path + "tteffAnalysis-hltpftau-hpspftau_2_1_JEq.root");
+        chain->AddFile(path + "tteffAnalysis-hltpftau-hpspftau_3_1_eQA.root");
+        chain->AddFile(path + "tteffAnalysis-hltpftau-hpspftau_4_1_7F7.root");
+        chain->AddFile(path + "tteffAnalysis-hltpftau-hpspftau_5_1_9NL.root");
+        chain->AddFile(path + "tteffAnalysis-hltpftau-hpspftau_6_1_Ocj.root");
+        chain->AddFile(path + "tteffAnalysis-hltpftau-hpspftau_7_1_v8a.root");
+        chain->AddFile(path + "tteffAnalysis-hltpftau-hpspftau_8_1_Yyc.root");
+        chain->AddFile(path + "tteffAnalysis-hltpftau-hpspftau_9_1_Kcm.root");
         return chain;
 }
 
-TChain* tteffAnalysis_DYToTauTau_20_TuneZ2_7TeV_pythia6_tauola_Winter10_cmssw416_V00_07_06_v3_hltpftautight_hpspftau() {
+TChain* tteffAnalysis_DYToTauTau_20_TuneZ2_7TeV_pythia6_tauola_Winter10_cmssw416_V00_07_06_v4_hltpftautight_hpspftau() {
 
         TChain* chain = new TChain("TTEffTree");
 
-        TString path = "/castor/cern.ch/user/s/slehti/TauTriggerEfficiencyMeasurementData/MC/tteffAnalysis_DYToTauTau_M_20_TuneZ2_7TeV_pythia6_tauola_Winter10_cmssw416_V00_07_06_v3/";
-        chain->AddFile(path + "tteffAnalysis-hltpftautight-hpspftau_10_1_JgS.root");
-        chain->AddFile(path + "tteffAnalysis-hltpftautight-hpspftau_11_1_8bj.root");
-        chain->AddFile(path + "tteffAnalysis-hltpftautight-hpspftau_12_1_6S9.root");
-        chain->AddFile(path + "tteffAnalysis-hltpftautight-hpspftau_13_2_5jp.root");
-        chain->AddFile(path + "tteffAnalysis-hltpftautight-hpspftau_14_1_uHi.root");
-        chain->AddFile(path + "tteffAnalysis-hltpftautight-hpspftau_15_1_Dg8.root");
-        chain->AddFile(path + "tteffAnalysis-hltpftautight-hpspftau_16_1_SP0.root");
-        chain->AddFile(path + "tteffAnalysis-hltpftautight-hpspftau_17_1_jBI.root");
-        chain->AddFile(path + "tteffAnalysis-hltpftautight-hpspftau_18_1_SY8.root");
-        chain->AddFile(path + "tteffAnalysis-hltpftautight-hpspftau_19_1_WCP.root");
-        chain->AddFile(path + "tteffAnalysis-hltpftautight-hpspftau_1_1_7v2.root");
-        chain->AddFile(path + "tteffAnalysis-hltpftautight-hpspftau_20_1_JhM.root");
-        chain->AddFile(path + "tteffAnalysis-hltpftautight-hpspftau_21_1_ofw.root");
-        chain->AddFile(path + "tteffAnalysis-hltpftautight-hpspftau_22_1_h8O.root");
-        chain->AddFile(path + "tteffAnalysis-hltpftautight-hpspftau_23_1_Tt3.root");
-        chain->AddFile(path + "tteffAnalysis-hltpftautight-hpspftau_24_1_Rr5.root");
-        chain->AddFile(path + "tteffAnalysis-hltpftautight-hpspftau_25_1_KBb.root");
-        chain->AddFile(path + "tteffAnalysis-hltpftautight-hpspftau_26_1_zOp.root");
-        chain->AddFile(path + "tteffAnalysis-hltpftautight-hpspftau_27_1_sMG.root");
-        chain->AddFile(path + "tteffAnalysis-hltpftautight-hpspftau_2_1_Tzk.root");
-        chain->AddFile(path + "tteffAnalysis-hltpftautight-hpspftau_3_1_pS6.root");
-        chain->AddFile(path + "tteffAnalysis-hltpftautight-hpspftau_4_1_swr.root");
-        chain->AddFile(path + "tteffAnalysis-hltpftautight-hpspftau_5_1_9t3.root");
-        chain->AddFile(path + "tteffAnalysis-hltpftautight-hpspftau_6_1_cMr.root");
-        chain->AddFile(path + "tteffAnalysis-hltpftautight-hpspftau_7_1_CIz.root");
-        chain->AddFile(path + "tteffAnalysis-hltpftautight-hpspftau_8_1_nQ3.root");
-        chain->AddFile(path + "tteffAnalysis-hltpftautight-hpspftau_9_1_LiR.root");
+        TString path = "/castor/cern.ch/user/s/slehti/TauTriggerEfficiencyMeasurementData/MC/tteffAnalysis_DYToTauTau_M_20_TuneZ2_7TeV_pythia6_tauola_Winter10_cmssw416_V00_07_06_v4/";
+        chain->AddFile(path + "tteffAnalysis-hltpftautight-hpspftau_10_1_kUu.root");
+        chain->AddFile(path + "tteffAnalysis-hltpftautight-hpspftau_11_1_hwc.root");
+        chain->AddFile(path + "tteffAnalysis-hltpftautight-hpspftau_12_1_xii.root");
+        chain->AddFile(path + "tteffAnalysis-hltpftautight-hpspftau_13_1_K9w.root");
+        chain->AddFile(path + "tteffAnalysis-hltpftautight-hpspftau_14_1_vD4.root");
+        chain->AddFile(path + "tteffAnalysis-hltpftautight-hpspftau_15_1_iRK.root");
+        chain->AddFile(path + "tteffAnalysis-hltpftautight-hpspftau_16_1_zHi.root");
+        chain->AddFile(path + "tteffAnalysis-hltpftautight-hpspftau_17_1_ZjT.root");
+        chain->AddFile(path + "tteffAnalysis-hltpftautight-hpspftau_18_1_b9o.root");
+        chain->AddFile(path + "tteffAnalysis-hltpftautight-hpspftau_19_1_ANE.root");
+        chain->AddFile(path + "tteffAnalysis-hltpftautight-hpspftau_1_1_ggy.root");
+        chain->AddFile(path + "tteffAnalysis-hltpftautight-hpspftau_20_1_YnB.root");
+        chain->AddFile(path + "tteffAnalysis-hltpftautight-hpspftau_21_1_ERh.root");
+        chain->AddFile(path + "tteffAnalysis-hltpftautight-hpspftau_22_1_qiX.root");
+        chain->AddFile(path + "tteffAnalysis-hltpftautight-hpspftau_23_1_d2Y.root");
+        chain->AddFile(path + "tteffAnalysis-hltpftautight-hpspftau_24_1_5d4.root");
+        chain->AddFile(path + "tteffAnalysis-hltpftautight-hpspftau_25_1_LmE.root");
+        chain->AddFile(path + "tteffAnalysis-hltpftautight-hpspftau_26_1_iyO.root");
+        chain->AddFile(path + "tteffAnalysis-hltpftautight-hpspftau_27_1_M7k.root");
+        chain->AddFile(path + "tteffAnalysis-hltpftautight-hpspftau_2_1_JEq.root");
+        chain->AddFile(path + "tteffAnalysis-hltpftautight-hpspftau_3_1_eQA.root");
+        chain->AddFile(path + "tteffAnalysis-hltpftautight-hpspftau_4_1_7F7.root");
+        chain->AddFile(path + "tteffAnalysis-hltpftautight-hpspftau_5_1_9NL.root");
+        chain->AddFile(path + "tteffAnalysis-hltpftautight-hpspftau_6_1_Ocj.root");
+        chain->AddFile(path + "tteffAnalysis-hltpftautight-hpspftau_7_1_v8a.root");
+        chain->AddFile(path + "tteffAnalysis-hltpftautight-hpspftau_8_1_Yyc.root");
+        chain->AddFile(path + "tteffAnalysis-hltpftautight-hpspftau_9_1_Kcm.root");
+        return chain;
+}
+
+TChain* tteffAnalysis_DYToTauTau_20_TuneZ2_7TeV_pythia6_tauola_Fall10_cmssw416_V00_07_06_v4_hltcalotau_hpspftau() {
+
+        TChain* chain = new TChain("TTEffTree");
+
+        TString path = "/castor/cern.ch/user/s/slehti/TauTriggerEfficiencyMeasurementData/MC/tteffAnalysis_DYToTauTau_M_20_TuneZ2_7TeV_pythia6_tauola_Fall10_cmssw416_V00_07_06_v4/";
+        chain->AddFile(path + "tteffAnalysis-hltcalotau-hpspftau_10_1_lmn.root");
+        chain->AddFile(path + "tteffAnalysis-hltcalotau-hpspftau_11_1_sGO.root");
+        chain->AddFile(path + "tteffAnalysis-hltcalotau-hpspftau_12_1_2sU.root");
+        chain->AddFile(path + "tteffAnalysis-hltcalotau-hpspftau_13_1_g2K.root");
+        chain->AddFile(path + "tteffAnalysis-hltcalotau-hpspftau_14_1_tH8.root");
+        chain->AddFile(path + "tteffAnalysis-hltcalotau-hpspftau_15_1_sYl.root");
+        chain->AddFile(path + "tteffAnalysis-hltcalotau-hpspftau_16_1_BEB.root");
+        chain->AddFile(path + "tteffAnalysis-hltcalotau-hpspftau_17_1_wbu.root");
+        chain->AddFile(path + "tteffAnalysis-hltcalotau-hpspftau_19_1_WZn.root");
+        chain->AddFile(path + "tteffAnalysis-hltcalotau-hpspftau_1_1_Xs7.root");
+        chain->AddFile(path + "tteffAnalysis-hltcalotau-hpspftau_20_1_z8k.root");
+        chain->AddFile(path + "tteffAnalysis-hltcalotau-hpspftau_21_1_lUy.root");
+        chain->AddFile(path + "tteffAnalysis-hltcalotau-hpspftau_22_1_VWk.root");
+        chain->AddFile(path + "tteffAnalysis-hltcalotau-hpspftau_23_1_2Qa.root");
+        chain->AddFile(path + "tteffAnalysis-hltcalotau-hpspftau_24_1_usm.root");
+        chain->AddFile(path + "tteffAnalysis-hltcalotau-hpspftau_25_1_mjv.root");
+        chain->AddFile(path + "tteffAnalysis-hltcalotau-hpspftau_26_1_528.root");
+        chain->AddFile(path + "tteffAnalysis-hltcalotau-hpspftau_27_1_dqh.root");
+        chain->AddFile(path + "tteffAnalysis-hltcalotau-hpspftau_28_1_02L.root");
+        chain->AddFile(path + "tteffAnalysis-hltcalotau-hpspftau_2_1_v3d.root");
+        chain->AddFile(path + "tteffAnalysis-hltcalotau-hpspftau_3_1_KpH.root");
+        chain->AddFile(path + "tteffAnalysis-hltcalotau-hpspftau_4_1_y9D.root");
+        chain->AddFile(path + "tteffAnalysis-hltcalotau-hpspftau_5_1_gwc.root");
+        chain->AddFile(path + "tteffAnalysis-hltcalotau-hpspftau_6_1_HPu.root");
+        chain->AddFile(path + "tteffAnalysis-hltcalotau-hpspftau_7_1_WwA.root");
+        chain->AddFile(path + "tteffAnalysis-hltcalotau-hpspftau_8_1_scK.root");
+        chain->AddFile(path + "tteffAnalysis-hltcalotau-hpspftau_9_1_sPg.root");
+        return chain;
+}
+
+TChain* tteffAnalysis_DYToTauTau_20_TuneZ2_7TeV_pythia6_tauola_Fall10_cmssw416_V00_07_06_v4_hltpftau_hpspftau() {
+
+        TChain* chain = new TChain("TTEffTree");
+
+        TString path = "/castor/cern.ch/user/s/slehti/TauTriggerEfficiencyMeasurementData/MC/tteffAnalysis_DYToTauTau_M_20_TuneZ2_7TeV_pythia6_tauola_Fall10_cmssw416_V00_07_06_v4/";
+        chain->AddFile(path + "tteffAnalysis-hltpftau-hpspftau_10_1_lmn.root");
+        chain->AddFile(path + "tteffAnalysis-hltpftau-hpspftau_11_1_sGO.root");
+        chain->AddFile(path + "tteffAnalysis-hltpftau-hpspftau_12_1_2sU.root");
+        chain->AddFile(path + "tteffAnalysis-hltpftau-hpspftau_13_1_g2K.root");
+        chain->AddFile(path + "tteffAnalysis-hltpftau-hpspftau_14_1_tH8.root");
+        chain->AddFile(path + "tteffAnalysis-hltpftau-hpspftau_15_1_sYl.root");
+        chain->AddFile(path + "tteffAnalysis-hltpftau-hpspftau_16_1_BEB.root");
+        chain->AddFile(path + "tteffAnalysis-hltpftau-hpspftau_17_1_wbu.root");
+        chain->AddFile(path + "tteffAnalysis-hltpftau-hpspftau_19_1_WZn.root");
+        chain->AddFile(path + "tteffAnalysis-hltpftau-hpspftau_1_1_Xs7.root");
+        chain->AddFile(path + "tteffAnalysis-hltpftau-hpspftau_20_1_z8k.root");
+        chain->AddFile(path + "tteffAnalysis-hltpftau-hpspftau_21_1_lUy.root");
+        chain->AddFile(path + "tteffAnalysis-hltpftau-hpspftau_22_1_VWk.root");
+        chain->AddFile(path + "tteffAnalysis-hltpftau-hpspftau_23_1_2Qa.root");
+        chain->AddFile(path + "tteffAnalysis-hltpftau-hpspftau_24_1_usm.root");
+        chain->AddFile(path + "tteffAnalysis-hltpftau-hpspftau_25_1_mjv.root");
+        chain->AddFile(path + "tteffAnalysis-hltpftau-hpspftau_26_1_528.root");
+        chain->AddFile(path + "tteffAnalysis-hltpftau-hpspftau_27_1_dqh.root");
+        chain->AddFile(path + "tteffAnalysis-hltpftau-hpspftau_28_1_02L.root");
+        chain->AddFile(path + "tteffAnalysis-hltpftau-hpspftau_2_1_v3d.root");
+        chain->AddFile(path + "tteffAnalysis-hltpftau-hpspftau_3_1_KpH.root");
+        chain->AddFile(path + "tteffAnalysis-hltpftau-hpspftau_4_1_y9D.root");
+        chain->AddFile(path + "tteffAnalysis-hltpftau-hpspftau_5_1_gwc.root");
+        chain->AddFile(path + "tteffAnalysis-hltpftau-hpspftau_6_1_HPu.root");
+        chain->AddFile(path + "tteffAnalysis-hltpftau-hpspftau_7_1_WwA.root");
+        chain->AddFile(path + "tteffAnalysis-hltpftau-hpspftau_8_1_scK.root");
+        chain->AddFile(path + "tteffAnalysis-hltpftau-hpspftau_9_1_sPg.root");
+        return chain;
+}
+
+TChain* tteffAnalysis_DYToTauTau_20_TuneZ2_7TeV_pythia6_tauola_Fall10_cmssw416_V00_07_06_v4_hltpftautight_hpspftau() {
+
+        TChain* chain = new TChain("TTEffTree");
+
+        TString path = "/castor/cern.ch/user/s/slehti/TauTriggerEfficiencyMeasurementData/MC/tteffAnalysis_DYToTauTau_M_20_TuneZ2_7TeV_pythia6_tauola_Fall10_cmssw416_V00_07_06_v4/";
+        chain->AddFile(path + "tteffAnalysis-hltpftautight-hpspftau_10_1_lmn.root");
+        chain->AddFile(path + "tteffAnalysis-hltpftautight-hpspftau_11_1_sGO.root");
+        chain->AddFile(path + "tteffAnalysis-hltpftautight-hpspftau_12_1_2sU.root");
+        chain->AddFile(path + "tteffAnalysis-hltpftautight-hpspftau_13_1_g2K.root");
+        chain->AddFile(path + "tteffAnalysis-hltpftautight-hpspftau_14_1_tH8.root");
+        chain->AddFile(path + "tteffAnalysis-hltpftautight-hpspftau_15_1_sYl.root");
+        chain->AddFile(path + "tteffAnalysis-hltpftautight-hpspftau_16_1_BEB.root");
+        chain->AddFile(path + "tteffAnalysis-hltpftautight-hpspftau_17_1_wbu.root");
+        chain->AddFile(path + "tteffAnalysis-hltpftautight-hpspftau_19_1_WZn.root");
+        chain->AddFile(path + "tteffAnalysis-hltpftautight-hpspftau_1_1_Xs7.root");
+        chain->AddFile(path + "tteffAnalysis-hltpftautight-hpspftau_20_1_z8k.root");
+        chain->AddFile(path + "tteffAnalysis-hltpftautight-hpspftau_21_1_lUy.root");
+        chain->AddFile(path + "tteffAnalysis-hltpftautight-hpspftau_22_1_VWk.root");
+        chain->AddFile(path + "tteffAnalysis-hltpftautight-hpspftau_23_1_2Qa.root");
+        chain->AddFile(path + "tteffAnalysis-hltpftautight-hpspftau_24_1_usm.root");
+        chain->AddFile(path + "tteffAnalysis-hltpftautight-hpspftau_25_1_mjv.root");
+        chain->AddFile(path + "tteffAnalysis-hltpftautight-hpspftau_26_1_528.root");
+        chain->AddFile(path + "tteffAnalysis-hltpftautight-hpspftau_27_1_dqh.root");
+        chain->AddFile(path + "tteffAnalysis-hltpftautight-hpspftau_28_1_02L.root");
+        chain->AddFile(path + "tteffAnalysis-hltpftautight-hpspftau_2_1_v3d.root");
+        chain->AddFile(path + "tteffAnalysis-hltpftautight-hpspftau_3_1_KpH.root");
+        chain->AddFile(path + "tteffAnalysis-hltpftautight-hpspftau_4_1_y9D.root");
+        chain->AddFile(path + "tteffAnalysis-hltpftautight-hpspftau_5_1_gwc.root");
+        chain->AddFile(path + "tteffAnalysis-hltpftautight-hpspftau_6_1_HPu.root");
+        chain->AddFile(path + "tteffAnalysis-hltpftautight-hpspftau_7_1_WwA.root");
+        chain->AddFile(path + "tteffAnalysis-hltpftautight-hpspftau_8_1_scK.root");
+        chain->AddFile(path + "tteffAnalysis-hltpftautight-hpspftau_9_1_sPg.root");
         return chain;
 }
 

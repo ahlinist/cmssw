@@ -128,7 +128,7 @@ void plot(TriggerCuts triggerCuts){
 	if(Run2011A){
           plotter = new Plotter(tteffAnalysis_muTau_HLT_AOD_Run2011A_cmssw416_V00_07_06_hltpftautight_hpspftau());
 //          plotter2 = new Plotter(tteffAnalysis_Mu_pflow_tau_Run2010AB_cmssw413_V00_07_01_hltpftautight());
-	  plotter2 = new Plotter(tteffAnalysis_DYToTauTau_20_TuneZ2_7TeV_pythia6_tauola_cmssw416_V00_07_06_hltpftautight_hpspftau());
+	  plotter2 = new Plotter(tteffAnalysis_DYToTauTau_20_TuneZ2_7TeV_pythia6_tauola_Winter10_cmssw416_V00_07_06_v4_hltpftautight_hpspftau());
           fig1legend = "Data: Run2011A Ztautau";
 //          fig2legend = "Data: Run2010AB";
 	  fig2legend = "MC: pythia6 Ztautau";
@@ -300,7 +300,7 @@ fig2->Write();
 // As a function of eta
         plotter->SetXTitle("PF#tau eta");
         plotter2->SetXTitle("PF#tau eta");
-/*
+
         plotter->SetYTitle("Level-1 tau efficiency");
         plotter->SetFileName(plotDir+"TauMET_L1Eff_PFTauEta"+suffix);
         TGraphAsymmErrors* fig1 = plotter->DrawHistogram("PFTauEta>>hnum(25,-2.5,2.5)",L1Cut,L1Denom);
@@ -364,7 +364,7 @@ fig2->Write();
         leg->AddEntry(fig2,fig2legend,"p");
         leg->Draw();
         gPad->SaveAs(plotDir+fileNamePrefix+"_TauMET_L3Eff_PFTauEta"+suffix);
-*/
+
 	plotter->SetYTitle("HLTTau efficiency");
         TGraphAsymmErrors* fig1 = plotter->DrawHistogram("PFTauEta>>hnum(25,-2.5,2.5)",TauTot,pfTauSelection);
         TGraphAsymmErrors* fig2 = plotter2->DrawHistogram("PFTauEta>>hnum(25,-2.5,2.5)",TauTot,pfTauSelection);
@@ -655,6 +655,7 @@ void plotTauMETEfficiency(){
 //  	plot(TriggerCuts("HLT_SingleIsoTau20_Trk15_MET25",20,15,25,false));
 	plot(TriggerCuts("IsoPFTau35_Trk20",35,20,0,true));
 //	plot(TriggerCuts("IsoPFTau35_Trk5",35,5,0,true));
+//	plot(TriggerCuts("IsoPFTau25_Trk5",25,5,0,true));
 /*
   	plot(TriggerCuts("HLT_SingleIsoPFTau35_Trk20_MET45",35,20,45,true));
 	plot(TriggerCuts("HLT_SingleIsoPFTau35_Trk20_MET50",35,20,50,true));
