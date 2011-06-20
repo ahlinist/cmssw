@@ -26,5 +26,6 @@ class NumSimPUExtractor : public ObjValExtractorBase {
   private:
     edm::InputTag src_;
     double minPt_;
+    bool outOfTime_;
 };
 #endif /* end of include guard: TauAnalysis_BgEstimationTools_plugins_NumSimPUExtractor_h */
