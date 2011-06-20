@@ -65,6 +65,9 @@
   <class name="edm::RefProd<PATDiElecPairCollection>"/>
   <class name="edm::Ptr<CompositePtrCandidateT1T2MEt<pat::Electron, pat::Electron> >"/>
 
+  <class name="VBFCompositePtrCandidateT1T2MEtEventT3<pat::Electron, pat::Electron, pat::Jet>"/>
+  <class name="std::vector<VBFCompositePtrCandidateT1T2MEtEventT3<pat::Electron, pat::Electron, pat::Jet> >"/>
+
   <!-- create dictionaries for PATMuPair objects -->
   <class name="CompositePtrCandidateT1T2MEt<pat::Muon, pat::Muon>"/>
   <class name="std::vector<CompositePtrCandidateT1T2MEt<pat::Muon, pat::Muon> >"/>
@@ -73,6 +76,9 @@
   <class name="edm::RefVector<PATDiMuPairCollection,PATDiMuPair,edm::refhelper::FindUsingAdvance<PATDiMuPairCollection,PATDiMuPair> >"/>
   <class name="edm::RefProd<PATDiMuPairCollection>"/>
   <class name="edm::Ptr<CompositePtrCandidateT1T2MEt<pat::Muon, pat::Muon> >"/>
+  
+  <class name="VBFCompositePtrCandidateT1T2MEtEventT3<pat::Muon, pat::Muon, pat::Jet>"/>
+  <class name="std::vector<VBFCompositePtrCandidateT1T2MEtEventT3<pat::Muon, pat::Muon, pat::Jet> >"/>
 
   <!-- create dictionaries for PATElecTauPair objects -->
   <class name="CompositePtrCandidateT1T2MEt<pat::Electron, pat::Tau>"/>
@@ -83,6 +89,9 @@
   <class name="edm::RefVector<PATElecTauPairCollection,PATElecTauPair,edm::refhelper::FindUsingAdvance<PATElecTauPairCollection,PATElecTauPair> >"/>
   <class name="edm::RefProd<PATElecTauPairCollection>"/>
   <class name="edm::Ptr<CompositePtrCandidateT1T2MEt<pat::Electron, pat::Tau> >"/>
+
+  <class name="VBFCompositePtrCandidateT1T2MEtEventT3<pat::Electron, pat::Tau, pat::Jet>"/>
+  <class name="std::vector<VBFCompositePtrCandidateT1T2MEtEventT3<pat::Electron, pat::Tau, pat::Jet> >"/>
 
   <!-- create dictionaries for ZllHypothesisElecTau objects -->
   <class name="ZllHypothesisElecTau"/>
@@ -100,6 +109,9 @@
   <class name="edm::RefProd<PATMuTauPairCollection>"/>
   <class name="edm::Ptr<CompositePtrCandidateT1T2MEt<pat::Muon, pat::Tau> >"/>
 
+  <class name="VBFCompositePtrCandidateT1T2MEtEventT3<pat::Muon, pat::Tau, pat::Jet>"/>
+  <class name="std::vector<VBFCompositePtrCandidateT1T2MEtEventT3<pat::Muon, pat::Tau, pat::Jet> >"/>
+
   <!-- create dictionaries for ZllHypothesisMuTau objects -->
   <class name="ZllHypothesisMuTau"/>
   <class name="std::vector<ZllHypothesisMuTau>"/>
@@ -116,6 +128,9 @@
   <class name="edm::RefProd<PATDiTauPairCollection>"/>
   <class name="edm::Ptr<CompositePtrCandidateT1T2MEt<pat::Tau, pat::Tau> >"/>
 
+  <class name="VBFCompositePtrCandidateT1T2MEtEventT3<pat::Tau, pat::Tau, pat::Jet>"/>
+  <class name="std::vector<VBFCompositePtrCandidateT1T2MEtEventT3<pat::Tau, pat::Tau, pat::Jet> >"/>
+
   <!-- create dictionaries for ZllHypothesisDiTau objects -->
   <class name="ZllHypothesisDiTau"/>
   <class name="std::vector<ZllHypothesisDiTau>"/>
@@ -131,6 +146,9 @@
   <class name="edm::RefVector<PATElecMuPairCollection,PATElecMuPair,edm::refhelper::FindUsingAdvance<PATElecMuPairCollection,PATElecMuPair> >"/>
   <class name="edm::RefProd<PATElecMuPairCollection>"/>
   <class name="edm::Ptr<CompositePtrCandidateT1T2MEt<pat::Electron, pat::Muon> >"/>
+
+  <class name="VBFCompositePtrCandidateT1T2MEtEventT3<pat::Electron, pat::Muon, pat::Jet>"/>
+  <class name="std::vector<VBFCompositePtrCandidateT1T2MEtEventT3<pat::Electron, pat::Muon, pat::Jet> >"/>  
 
   <!-- create dictionaries for ZllHypothesisElecMu objects -->
   <class name="ZllHypothesisElecMu"/>
