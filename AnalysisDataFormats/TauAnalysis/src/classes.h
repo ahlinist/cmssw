@@ -2,6 +2,9 @@
 #include "AnalysisDataFormats/TauAnalysis/interface/CompositePtrCandidateT1T2MEt.h"
 #include "AnalysisDataFormats/TauAnalysis/interface/CompositePtrCandidateT1T2MEtFwd.h"
 
+#include "AnalysisDataFormats/TauAnalysis/interface/VBFCompositePtrCandidateT1T2MEtEventT3.h"
+#include "AnalysisDataFormats/TauAnalysis/interface/VBFCompositePtrCandidateT1T2MEtEventT3Fwd.h"
+
 #include "AnalysisDataFormats/TauAnalysis/interface/NSVfitEventHypothesisBase.h"
 #include "AnalysisDataFormats/TauAnalysis/interface/NSVfitEventHypothesis.h"
 #include "AnalysisDataFormats/TauAnalysis/interface/NSVfitResonanceHypothesisBase.h"
@@ -114,6 +117,11 @@ namespace {
     edm::AssociationVector<edm::RefProd<PATDiElecPairCollection>, std::vector<int> > dummyPATDiElecPairToMEtAssociation;
     edm::Wrapper<edm::AssociationVector<edm::RefProd<PATDiElecPairCollection>, std::vector<int> > > dummyPATDiElecPairToMEtAssociationWrapper;
 
+    PATDiElecPairVBFEvent dummyPATDiElecPairVBFEvent;
+    edm::Wrapper<PATDiElecPairVBFEvent> dummyPATDiElecPairVBFEventWrapper;
+    PATDiElecPairVBFEventCollection dummyPATDiElecPairVBFEventCollection;
+    edm::Wrapper<PATDiElecPairVBFEventCollection> dummyPATDiElecPairVBFEventCollectionWrapper;
+    
     /// create dictionaries for PATDiMuPair objects
     PATDiMuPair dummyPATDiMuPair;
     edm::Wrapper<PATDiMuPair> dummyPATDiMuPairWrapper;
@@ -126,6 +134,11 @@ namespace {
     edm::AssociationVector<edm::RefProd<PATDiMuPairCollection>, std::vector<int> > dummyPATDiMuPairToMEtAssociation;
     edm::Wrapper<edm::AssociationVector<edm::RefProd<PATDiMuPairCollection>, std::vector<int> > > dummyPATDiMuPairToMEtAssociationWrapper;
 
+    PATDiMuPairVBFEvent dummyPATDiMuPairVBFEvent;
+    edm::Wrapper<PATDiMuPairVBFEvent> dummyPATDiMuPairVBFEventWrapper;
+    PATDiMuPairVBFEventCollection dummyPATDiMuPairVBFEventCollection;
+    edm::Wrapper<PATDiMuPairVBFEventCollection> dummyPATDiMuPairVBFEventCollectionWrapper;
+
     /// create dictionaries for PATElecTauPair objects
     PATElecTauPair dummyPATElecTauPair;
     edm::Wrapper<PATElecTauPair> dummyPATElecTauPairWrapper;
@@ -137,6 +150,11 @@ namespace {
     edm::Ptr<PATElecTauPair> dummyPATElecTauPairPtr;
     edm::AssociationVector<edm::RefProd<PATElecTauPairCollection>, std::vector<int> > dummyPATElecTauPairToMEtAssociation;
     edm::Wrapper<edm::AssociationVector<edm::RefProd<PATElecTauPairCollection>, std::vector<int> > > dummyPATElecTauPairToMEtAssociationWrapper;
+
+    PATElecTauPairVBFEvent dummyPATElecTauPairVBFEvent;
+    edm::Wrapper<PATElecTauPairVBFEvent> dummyPATElecTauPairVBFEventWrapper;
+    PATElecTauPairVBFEventCollection dummyPATElecTauPairVBFEventCollection;
+    edm::Wrapper<PATElecTauPairVBFEventCollection> dummyPATElecTauPairVBFEventCollectionWrapper;
 
     /// create dictionaries for ZllHypothesisElecTau objects
     ZllHypothesisElecTau dummyZllHypothesisElecTau;
@@ -159,6 +177,11 @@ namespace {
     edm::Ptr<PATMuTauPair> dummyPATMuTauPairPtr;
     edm::AssociationVector<edm::RefProd<PATMuTauPairCollection>, std::vector<int> > dummyPATMuTauPairToMEtAssociation;
     edm::Wrapper<edm::AssociationVector<edm::RefProd<PATMuTauPairCollection>, std::vector<int> > > dummyPATMuTauPairToMEtAssociationWrapper;
+
+    PATMuTauPairVBFEvent dummyPATMuTauPairVBFEvent;
+    edm::Wrapper<PATMuTauPairVBFEvent> dummyPATMuTauPairVBFEventWrapper;
+    PATMuTauPairVBFEventCollection dummyPATMuTauPairVBFEventCollection;
+    edm::Wrapper<PATMuTauPairVBFEventCollection> dummyPATMuTauPairVBFEventCollectionWrapper;
     
     /// create dictionaries for ZllHypothesisMuTau objects
     ZllHypothesisMuTau dummyZllHypothesisMuTau;
@@ -181,6 +204,11 @@ namespace {
     edm::Ptr<PATDiTauPair> dummyPATDiTauPairPtr;
     edm::AssociationVector<edm::RefProd<PATDiTauPairCollection>, std::vector<int> > dummyPATDiTauPairToMEtAssociation;
     edm::Wrapper<edm::AssociationVector<edm::RefProd<PATDiTauPairCollection>, std::vector<int> > > dummyPATDiTauPairToMEtAssociationWrapper;
+    
+    PATDiTauPairVBFEvent dummyPATDiTauPairVBFEvent;
+    edm::Wrapper<PATDiTauPairVBFEvent> dummyPATDiTauPairVBFEventWrapper;
+    PATDiTauPairVBFEventCollection dummyPATDiTauPairVBFEventCollection;
+    edm::Wrapper<PATDiTauPairVBFEventCollection> dummyPATDiTauPairVBFEventCollectionWrapper;
        
     /// create dictionaries for ZllHypothesisDiTau objects
     ZllHypothesisDiTau dummyZllHypothesisDiTau;
@@ -204,6 +232,11 @@ namespace {
     edm::AssociationVector<edm::RefProd<PATElecMuPairCollection>, std::vector<int> > dummyPATElecMuPairToMEtAssociation;
     edm::Wrapper<edm::AssociationVector<edm::RefProd<PATElecMuPairCollection>, std::vector<int> > > dummyPATElecMuPairToMEtAssociationWrapper;
 
+    PATElecMuPairVBFEvent dummyPATElecMuPairVBFEvent;
+    edm::Wrapper<PATElecMuPairVBFEvent> dummyPATElecMuPairVBFEventWrapper;
+    PATElecMuPairVBFEventCollection dummyPATElecMuPairVBFEventCollection;
+    edm::Wrapper<PATElecMuPairVBFEventCollection> dummyPATElecMuPairVBFEventCollectionWrapper;
+    
     /// create dictionaries for ZllHypothesisElecMu objects
     ZllHypothesisElecMu dummyZllHypothesisElecMu;
     edm::Wrapper<ZllHypothesisElecMu> dummyZllHypothesisElecMuWrapper;
