@@ -50,6 +50,7 @@ class VBFCompositePtrCandidateT1T2MEtEventT3Producer : public edm::EDProducer
 
     dEtaMinTagJet_       = cfg.getParameter<double>("dEtaMinTagJet");
     massMinTagJet_       = cfg.getParameter<double>("massMinTagJet");
+    dRmin12TagJet_       = cfg.getParameter<double>("dRmin12TagJet");
 
     etaMarginCentralJet_ = cfg.getParameter<double>("etaMarginCentralJet");
     dRmin12CentralJet_   = cfg.getParameter<double>("dRmin12CentralJet");
@@ -81,9 +82,15 @@ class VBFCompositePtrCandidateT1T2MEtEventT3Producer : public edm::EDProducer
 	    idxTagJet1 < numTagJets1; ++idxTagJet1 ) {
 	jetPtr tagJet1 = tagJetCollection->ptrAt(idxTagJet1);
 	
+	if ( deltaR(tagJet1->p4(), diTau->leg1()->p4()) < dRmin12TagJet_ ||
+	     deltaR(tagJet1->p4(), diTau->leg2()->p4()) < dRmin12TagJet_ ) continue;
+
 	for ( unsigned idxTagJet2 = idxTagJet1 + 1, numTagJets2 = tagJetCollection->size(); 
 	      idxTagJet2 < numTagJets2; ++idxTagJet2 ) {
 	  jetPtr tagJet2 = tagJetCollection->ptrAt(idxTagJet2);
+
+	  if ( deltaR(tagJet2->p4(), diTau->leg1()->p4()) < dRmin12TagJet_ ||
+	       deltaR(tagJet2->p4(), diTau->leg2()->p4()) < dRmin12TagJet_ ) continue;
 	  
 	  double tagJetEtaMin   = TMath::Min(tagJet1->eta(), tagJet2->eta());
 	  double tagJetEtaMax   = TMath::Max(tagJet1->eta(), tagJet2->eta());
@@ -139,6 +146,7 @@ class VBFCompositePtrCandidateT1T2MEtEventT3Producer : public edm::EDProducer
 
   double dEtaMinTagJet_;
   double massMinTagJet_;
+  double dRmin12TagJet_;
 
   double etaMarginCentralJet_; // minimum distance in eta of central jet to tag jets
   double dRmin12CentralJet_;   // minimum distance in dR  of central jet to leg1, leg2 of diTau
