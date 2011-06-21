@@ -50,6 +50,17 @@ namespace {
     edm::Wrapper<DiCandidatePair> dummyDiCandidatePairWrapper;
     DiCandidatePairCollection dummyDiCandidatePairCollection;
     edm::Wrapper<DiCandidatePairCollection> dummyDiCandidatePairCollectionWrapper;
+    edm::Ref<DiCandidatePairCollection> dummyDiCandidatePairRef;
+    edm::RefProd<DiCandidatePairCollection> dummyDiCandidatePairRefProd;
+    edm::RefVector<DiCandidatePairCollection> dummyDiCandidatePairRefVector;
+
+    DiCandidatePairVBFEvent dummyDiCandidatePairVBFEvent;
+    edm::Wrapper<DiCandidatePairVBFEvent> dummyDiCandidatePairVBFEventWrapper;
+    DiCandidatePairVBFEventCollection dummyDiCandidatePairVBFEventCollection;
+    edm::Wrapper<DiCandidatePairVBFEventCollection> dummyDiCandidatePairVBFEventCollectionWrapper;
+    edm::Ref<DiCandidatePairVBFEventCollection> dummyDiCandidatePairVBFEventRef;
+    edm::RefProd<DiCandidatePairVBFEventCollection> dummyDiCandidatePairVBFEventRefProd;
+    edm::RefVector<DiCandidatePairVBFEventCollection> dummyDiCandidatePairVBFEventRefVector;
 
     /// create dictionaries for 
     ///  o edm::Ptr<pat::Electron> 
@@ -121,6 +132,9 @@ namespace {
     edm::Wrapper<PATDiElecPairVBFEvent> dummyPATDiElecPairVBFEventWrapper;
     PATDiElecPairVBFEventCollection dummyPATDiElecPairVBFEventCollection;
     edm::Wrapper<PATDiElecPairVBFEventCollection> dummyPATDiElecPairVBFEventCollectionWrapper;
+    edm::Ref<PATDiElecPairVBFEventCollection> dummyPATDiElecPairVBFEventRef;
+    edm::RefProd<PATDiElecPairVBFEventCollection> dummyPATDiElecPairVBFEventRefProd;
+    edm::RefVector<PATDiElecPairVBFEventCollection> dummyPATDiElecPairVBFEventRefVector;
     
     /// create dictionaries for PATDiMuPair objects
     PATDiMuPair dummyPATDiMuPair;
@@ -138,6 +152,9 @@ namespace {
     edm::Wrapper<PATDiMuPairVBFEvent> dummyPATDiMuPairVBFEventWrapper;
     PATDiMuPairVBFEventCollection dummyPATDiMuPairVBFEventCollection;
     edm::Wrapper<PATDiMuPairVBFEventCollection> dummyPATDiMuPairVBFEventCollectionWrapper;
+    edm::Ref<PATDiMuPairVBFEventCollection> dummyPATDiMuPairVBFEventRef;
+    edm::RefProd<PATDiMuPairVBFEventCollection> dummyPATDiMuPairVBFEventRefProd;
+    edm::RefVector<PATDiMuPairVBFEventCollection> dummyPATDiMuPairVBFEventRefVector;
 
     /// create dictionaries for PATElecTauPair objects
     PATElecTauPair dummyPATElecTauPair;
@@ -155,6 +172,9 @@ namespace {
     edm::Wrapper<PATElecTauPairVBFEvent> dummyPATElecTauPairVBFEventWrapper;
     PATElecTauPairVBFEventCollection dummyPATElecTauPairVBFEventCollection;
     edm::Wrapper<PATElecTauPairVBFEventCollection> dummyPATElecTauPairVBFEventCollectionWrapper;
+    edm::Ref<PATElecTauPairVBFEventCollection> dummyPATElecTauPairVBFEventRef;
+    edm::RefProd<PATElecTauPairVBFEventCollection> dummyPATElecTauPairVBFEventRefProd;
+    edm::RefVector<PATElecTauPairVBFEventCollection> dummyPATElecTauPairVBFEventRefVector;
 
     /// create dictionaries for ZllHypothesisElecTau objects
     ZllHypothesisElecTau dummyZllHypothesisElecTau;
@@ -182,6 +202,9 @@ namespace {
     edm::Wrapper<PATMuTauPairVBFEvent> dummyPATMuTauPairVBFEventWrapper;
     PATMuTauPairVBFEventCollection dummyPATMuTauPairVBFEventCollection;
     edm::Wrapper<PATMuTauPairVBFEventCollection> dummyPATMuTauPairVBFEventCollectionWrapper;
+    edm::Ref<PATMuTauPairVBFEventCollection> dummyPATMuTauPairVBFEventRef;
+    edm::RefProd<PATMuTauPairVBFEventCollection> dummyPATMuTauPairVBFEventRefProd;
+    edm::RefVector<PATMuTauPairVBFEventCollection> dummyPATMuTauPairVBFEventRefVector;
     
     /// create dictionaries for ZllHypothesisMuTau objects
     ZllHypothesisMuTau dummyZllHypothesisMuTau;
@@ -209,7 +232,10 @@ namespace {
     edm::Wrapper<PATDiTauPairVBFEvent> dummyPATDiTauPairVBFEventWrapper;
     PATDiTauPairVBFEventCollection dummyPATDiTauPairVBFEventCollection;
     edm::Wrapper<PATDiTauPairVBFEventCollection> dummyPATDiTauPairVBFEventCollectionWrapper;
-       
+    edm::Ref<PATDiTauPairVBFEventCollection> dummyPATDiTauPairVBFEventCollectionRef;
+    edm::RefProd<PATDiTauPairVBFEventCollection> dummyPATDiTauPairVBFEventCollectionRefProd;
+    edm::RefVector<PATDiTauPairVBFEventCollection> dummyPATDiTauPairVBFEventCollectionRefVector;
+
     /// create dictionaries for ZllHypothesisDiTau objects
     ZllHypothesisDiTau dummyZllHypothesisDiTau;
     edm::Wrapper<ZllHypothesisDiTau> dummyZllHypothesisDiTauWrapper;
@@ -236,6 +262,9 @@ namespace {
     edm::Wrapper<PATElecMuPairVBFEvent> dummyPATElecMuPairVBFEventWrapper;
     PATElecMuPairVBFEventCollection dummyPATElecMuPairVBFEventCollection;
     edm::Wrapper<PATElecMuPairVBFEventCollection> dummyPATElecMuPairVBFEventCollectionWrapper;
+    edm::Ref<PATElecMuPairVBFEventCollection> dummyPATElecMuPairVBFEventRef;
+    edm::RefProd<PATElecMuPairVBFEventCollection> dummyPATElecMuPairVBFEventRefProd;
+    edm::RefVector<PATElecMuPairVBFEventCollection> dummyPATElecMuPairVBFEventRefVector;
     
     /// create dictionaries for ZllHypothesisElecMu objects
     ZllHypothesisElecMu dummyZllHypothesisElecMu;

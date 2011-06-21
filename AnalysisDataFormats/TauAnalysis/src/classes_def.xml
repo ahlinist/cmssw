@@ -4,6 +4,17 @@
   <class name="std::vector<CompositePtrCandidateT1T2MEt<reco::Candidate, reco::Candidate> >"/>
   <class name="edm::Wrapper<CompositePtrCandidateT1T2MEt<reco::Candidate, reco::Candidate>>"/>
   <class name="edm::Wrapper<std::vector<CompositePtrCandidateT1T2MEt<reco::Candidate, reco::Candidate> > >"/>
+  <class name="edm::Ref<DiCandidatePairCollection,DiCandidatePair,edm::refhelper::FindUsingAdvance<DiCandidatePairCollection,DiCandidatePair> >"/>
+  <class name="edm::RefVector<DiCandidatePairCollection,DiCandidatePair,edm::refhelper::FindUsingAdvance<DiCandidatePairCollection,DiCandidatePair> >"/>
+  <class name="edm::RefProd<DiCandidatePairCollection>"/>
+
+  <class name="VBFCompositePtrCandidateT1T2MEtEventT3<reco::Candidate, reco::Candidate, reco::Jet>"/>
+  <class name="edm::Wrapper<VBFCompositePtrCandidateT1T2MEtEventT3<reco::Candidate, reco::Candidate, reco::Jet> >"/>
+  <class name="std::vector<VBFCompositePtrCandidateT1T2MEtEventT3<reco::Candidate, reco::Candidate, reco::Jet> >"/>
+  <class name="edm::Wrapper<std::vector<VBFCompositePtrCandidateT1T2MEtEventT3<reco::Candidate, reco::Candidate, reco::Jet> > >"/>
+  <class name="edm::Ref<DiCandidatePairVBFEventCollection,DiCandidatePairVBFEvent,edm::refhelper::FindUsingAdvance<DiCandidatePairVBFEventCollection,DiCandidatePairVBFEvent> >"/>
+  <class name="edm::RefVector<DiCandidatePairVBFEventCollection,DiCandidatePairVBFEvent,edm::refhelper::FindUsingAdvance<DiCandidatePairVBFEventCollection,DiCandidatePairVBFEvent> >"/>
+  <class name="edm::RefProd<DiCandidatePairVBFEventCollection>"/>
 
   <!-- create dictionaries for edm::Ptr<pat::Electron>, edm::Ptr<pat::Muon>, edm::Ptr<pat::Tau>, edm::Ptr<pat::Jet> and edm::Ptr<pat::MET>
        as these dictionaries are not yet created in DataFormats/PatCandidates/src/classes.h -->
@@ -66,19 +77,30 @@
   <class name="edm::Ptr<CompositePtrCandidateT1T2MEt<pat::Electron, pat::Electron> >"/>
 
   <class name="VBFCompositePtrCandidateT1T2MEtEventT3<pat::Electron, pat::Electron, pat::Jet>"/>
+  <class name="edm::Wrapper<VBFCompositePtrCandidateT1T2MEtEventT3<pat::Electron, pat::Electron, pat::Jet> >"/>
   <class name="std::vector<VBFCompositePtrCandidateT1T2MEtEventT3<pat::Electron, pat::Electron, pat::Jet> >"/>
+  <class name="edm::Wrapper<std::vector<VBFCompositePtrCandidateT1T2MEtEventT3<pat::Electron, pat::Electron, pat::Jet> > >"/>
+  <class name="edm::Ref<PATDiElecPairVBFEventCollection,PATDiElecPairVBFEvent,edm::refhelper::FindUsingAdvance<PATDiElecPairVBFEventCollection,PATDiElecPairVBFEvent> >"/>
+  <class name="edm::RefVector<PATDiElecPairVBFEventCollection,PATDiElecPairVBFEvent,edm::refhelper::FindUsingAdvance<PATDiElecPairVBFEventCollection,PATDiElecPairVBFEvent> >"/>
+  <class name="edm::RefProd<PATDiElecPairVBFEventCollection>"/>
 
   <!-- create dictionaries for PATMuPair objects -->
   <class name="CompositePtrCandidateT1T2MEt<pat::Muon, pat::Muon>"/>
   <class name="std::vector<CompositePtrCandidateT1T2MEt<pat::Muon, pat::Muon> >"/>
   <class name="edm::Wrapper<CompositePtrCandidateT1T2MEt<pat::Muon, pat::Muon> >"/>
   <class name="edm::Wrapper<std::vector<CompositePtrCandidateT1T2MEt<pat::Muon, pat::Muon> > >"/>
+  <class name="edm::Ref<PATDiMuPairCollection,PATDiMuPair,edm::refhelper::FindUsingAdvance<PATDiMuPairCollection,PATDiMuPair> >"/>
   <class name="edm::RefVector<PATDiMuPairCollection,PATDiMuPair,edm::refhelper::FindUsingAdvance<PATDiMuPairCollection,PATDiMuPair> >"/>
   <class name="edm::RefProd<PATDiMuPairCollection>"/>
   <class name="edm::Ptr<CompositePtrCandidateT1T2MEt<pat::Muon, pat::Muon> >"/>
   
   <class name="VBFCompositePtrCandidateT1T2MEtEventT3<pat::Muon, pat::Muon, pat::Jet>"/>
+  <class name="edm::Wrapper<VBFCompositePtrCandidateT1T2MEtEventT3<pat::Muon, pat::Muon, pat::Jet> >"/>
   <class name="std::vector<VBFCompositePtrCandidateT1T2MEtEventT3<pat::Muon, pat::Muon, pat::Jet> >"/>
+  <class name="edm::Wrapper<std::vector<VBFCompositePtrCandidateT1T2MEtEventT3<pat::Muon, pat::Muon, pat::Jet> > >"/>
+  <class name="edm::Ref<PATDiMuPairVBFEventCollection,PATDiMuPairVBFEvent,edm::refhelper::FindUsingAdvance<PATDiMuPairVBFEventCollection,PATDiMuPairVBFEvent> >"/>
+  <class name="edm::RefVector<PATDiMuPairVBFEventCollection,PATDiMuPairVBFEvent,edm::refhelper::FindUsingAdvance<PATDiMuPairVBFEventCollection,PATDiMuPairVBFEvent> >"/>
+  <class name="edm::RefProd<PATDiMuPairVBFEventCollection>"/>
 
   <!-- create dictionaries for PATElecTauPair objects -->
   <class name="CompositePtrCandidateT1T2MEt<pat::Electron, pat::Tau>"/>
@@ -91,7 +113,12 @@
   <class name="edm::Ptr<CompositePtrCandidateT1T2MEt<pat::Electron, pat::Tau> >"/>
 
   <class name="VBFCompositePtrCandidateT1T2MEtEventT3<pat::Electron, pat::Tau, pat::Jet>"/>
+  <class name="edm::Wrapper<VBFCompositePtrCandidateT1T2MEtEventT3<pat::Electron, pat::Tau, pat::Jet> >"/>
   <class name="std::vector<VBFCompositePtrCandidateT1T2MEtEventT3<pat::Electron, pat::Tau, pat::Jet> >"/>
+  <class name="edm::Wrapper<std::vector<VBFCompositePtrCandidateT1T2MEtEventT3<pat::Electron, pat::Tau, pat::Jet> > >"/>
+  <class name="edm::Ref<PATElecTauPairVBFEventCollection,PATElecTauPairVBFEvent,edm::refhelper::FindUsingAdvance<PATElecTauPairVBFEventCollection,PATElecTauPairVBFEvent> >"/>
+  <class name="edm::RefVector<PATElecTauPairVBFEventCollection,PATElecTauPairVBFEvent,edm::refhelper::FindUsingAdvance<PATElecTauPairVBFEventCollection,PATElecTauPairVBFEvent> >"/>
+  <class name="edm::RefProd<PATElecTauPairVBFEventCollection>"/>
 
   <!-- create dictionaries for ZllHypothesisElecTau objects -->
   <class name="ZllHypothesisElecTau"/>
@@ -110,7 +137,12 @@
   <class name="edm::Ptr<CompositePtrCandidateT1T2MEt<pat::Muon, pat::Tau> >"/>
 
   <class name="VBFCompositePtrCandidateT1T2MEtEventT3<pat::Muon, pat::Tau, pat::Jet>"/>
+  <class name="edm::Wrapper<VBFCompositePtrCandidateT1T2MEtEventT3<pat::Muon, pat::Tau, pat::Jet> >"/>
   <class name="std::vector<VBFCompositePtrCandidateT1T2MEtEventT3<pat::Muon, pat::Tau, pat::Jet> >"/>
+  <class name="edm::Wrapper<std::vector<VBFCompositePtrCandidateT1T2MEtEventT3<pat::Muon, pat::Tau, pat::Jet> > >"/>
+  <class name="edm::Ref<PATMuTauPairVBFEventCollection,PATMuTauPairVBFEvent,edm::refhelper::FindUsingAdvance<PATMuTauPairVBFEventCollection,PATMuTauPairVBFEvent> >"/>
+  <class name="edm::RefVector<PATMuTauPairVBFEventCollection,PATMuTauPairVBFEvent,edm::refhelper::FindUsingAdvance<PATMuTauPairVBFEventCollection,PATMuTauPairVBFEvent> >"/>
+  <class name="edm::RefProd<PATMuTauPairVBFEventCollection>"/>
 
   <!-- create dictionaries for ZllHypothesisMuTau objects -->
   <class name="ZllHypothesisMuTau"/>
@@ -129,7 +161,12 @@
   <class name="edm::Ptr<CompositePtrCandidateT1T2MEt<pat::Tau, pat::Tau> >"/>
 
   <class name="VBFCompositePtrCandidateT1T2MEtEventT3<pat::Tau, pat::Tau, pat::Jet>"/>
+  <class name="edm::Wrapper<VBFCompositePtrCandidateT1T2MEtEventT3<pat::Tau, pat::Tau, pat::Jet> >"/>
   <class name="std::vector<VBFCompositePtrCandidateT1T2MEtEventT3<pat::Tau, pat::Tau, pat::Jet> >"/>
+  <class name="edm::Wrapper<std::vector<VBFCompositePtrCandidateT1T2MEtEventT3<pat::Tau, pat::Tau, pat::Jet> > >"/>
+  <class name="edm::Ref<PATDiTauPairVBFEventCollection,PATDiTauPairVBFEvent,edm::refhelper::FindUsingAdvance<PATDiTauPairVBFEventCollection,PATDiTauPairVBFEvent> >"/>
+  <class name="edm::RefVector<PATDiTauPairVBFEventCollection,PATDiTauPairVBFEvent,edm::refhelper::FindUsingAdvance<PATDiTauPairVBFEventCollection,PATDiTauPairVBFEvent> >"/>
+  <class name="edm::RefProd<PATDiTauPairVBFEventCollection>"/>
 
   <!-- create dictionaries for ZllHypothesisDiTau objects -->
   <class name="ZllHypothesisDiTau"/>
@@ -148,7 +185,12 @@
   <class name="edm::Ptr<CompositePtrCandidateT1T2MEt<pat::Electron, pat::Muon> >"/>
 
   <class name="VBFCompositePtrCandidateT1T2MEtEventT3<pat::Electron, pat::Muon, pat::Jet>"/>
+  <class name="edm::Wrapper<VBFCompositePtrCandidateT1T2MEtEventT3<pat::Electron, pat::Muon, pat::Jet> >"/>
   <class name="std::vector<VBFCompositePtrCandidateT1T2MEtEventT3<pat::Electron, pat::Muon, pat::Jet> >"/>  
+  <class name="edm::Wrapper<std::vector<VBFCompositePtrCandidateT1T2MEtEventT3<pat::Electron, pat::Muon, pat::Jet> > >"/>  
+  <class name="edm::Ref<PATElecMuPairVBFEventCollection,PATElecMuPairVBFEvent,edm::refhelper::FindUsingAdvance<PATElecMuPairVBFEventCollection,PATElecMuPairVBFEvent> >"/>
+  <class name="edm::RefVector<PATElecMuPairVBFEventCollection,PATElecMuPairVBFEvent,edm::refhelper::FindUsingAdvance<PATElecMuPairVBFEventCollection,PATElecMuPairVBFEvent> >"/>
+  <class name="edm::RefProd<PATElecMuPairVBFEventCollection>"/>
 
   <!-- create dictionaries for ZllHypothesisElecMu objects -->
   <class name="ZllHypothesisElecMu"/>

@@ -94,7 +94,7 @@ class VBFCompositePtrCandidateT1T2MEtEventT3 : public reco::LeafCandidate
   }
 
   /// get invariant mass of the tag jets
-    double mjj() const { return tagJetMass_; }
+  double mjj() const { return tagJetMass_; }
 
   /// get delta eta between tag jets
   double dEta() const { return tagJetEtaMax_ - tagJetEtaMin_; }
@@ -140,6 +140,7 @@ class VBFCompositePtrCandidateT1T2MEtEventT3 : public reco::LeafCandidate
 #include "DataFormats/PatCandidates/interface/Tau.h"
 #include "DataFormats/PatCandidates/interface/Jet.h"
 
+typedef VBFCompositePtrCandidateT1T2MEtEventT3<reco::Candidate, reco::Candidate, reco::Jet> DiCandidatePairVBFEvent;
 typedef VBFCompositePtrCandidateT1T2MEtEventT3<pat::Electron, pat::Tau, pat::Jet> PATElecTauPairVBFEvent;
 typedef VBFCompositePtrCandidateT1T2MEtEventT3<pat::Muon, pat::Tau, pat::Jet> PATMuTauPairVBFEvent;
 typedef VBFCompositePtrCandidateT1T2MEtEventT3<pat::Tau, pat::Tau, pat::Jet> PATDiTauPairVBFEvent;
