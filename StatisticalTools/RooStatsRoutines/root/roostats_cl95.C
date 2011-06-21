@@ -791,10 +791,23 @@ LimitResult CL95Calc::clm( Double_t ilum, Double_t slum,
 
       std::cout << "[roostats_clm]: generatin pseudo-data with bmean = " << bmean << std::endl;
       Int_t n = r.Poisson(bmean);
-      makeData( n );
-      std::cout << "[roostats_clm]: invoking CL95 with n = " << n << std::endl;
 
-      Double_t _pe = cl95( method );
+      // check if the limit for this n is already cached
+      Double_t _pe = -1.0;
+      std::map<Int_t,Double_t> cached_limit;
+      if (cached_limit.find(n)==cached_limit.end()){
+	
+	makeData( n );
+	std::cout << "[roostats_clm]: invoking CL95 with n = " << n << std::endl;
+	
+	_pe = cl95( method );
+	cached_limit[n] = _pe;
+      }
+      else{
+	std::cout << "[roostats_clm]: returning previously cached limit for n = " << n << std::endl;
+	_pe = cached_limit[n];
+      }
+
       pe.push_back(_pe);
       CLM += pe[i];
 
