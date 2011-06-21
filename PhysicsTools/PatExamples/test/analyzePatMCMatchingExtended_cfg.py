@@ -105,9 +105,10 @@ process.maxEvents.input = -1
 from PhysicsTools.PatAlgos.tools.cmsswVersionTools import pickRelValInputFiles
 process.source = cms.Source("PoolSource",
     fileNames = cms.untracked.vstring(
-    pickRelValInputFiles( cmsswVersion  = 'CMSSW_4_1_2'
-                        , relVal        = 'RelValJpsiMM' #RelValZMM
-                        , globalTag     = 'START311_V2'
+     pickRelValInputFiles( cmsswVersion  = 'CMSSW_4_2_0_pre8'
+                        #, relVal        =  'RelValZMM'
+                        ,relVal        =  'RelValJpsiMM'
+                        , globalTag     = 'START42_V7'
                         , numberOfFiles = 1
                         )
     )
