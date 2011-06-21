@@ -22,10 +22,22 @@ from TauAnalysis.RecoTools.muTauPairZmumuHypothesisForAHtoMuTau_cff import *
 # passing b-tagging discriminator
 #
 from TauAnalysis.RecoTools.patJetSelectionForAHtoMuTau_cff import *
+#
+# produce collections of forward/backward jets
+# characteristic for VBF Higgs --> tau+ tau- production
+#
+from TauAnalysis.RecoTools.patJetSelectionForVBF_cff import *
+#
+# produce collections of VBF Higgs --> tau+ tau- event hypotheses
+#
+from TauAnalysis.CandidateTools.vbfEventProductionForAHtoMuTau_cff import *
+from TauAnalysis.CandidateTools.vbfEventSelectionForAHtoMuTau_cff import *
 
 producePatTupleAHtoMuTauSpecific = cms.Sequence(
     producePatTupleZtoMuTauSpecific
    + selectMuTauPairsForAHtoMuTau + selectMuTauPairsForAHtoMuTauLooseMuonIsolation
    + produceMuTauPairZmumuHypothesesForAHtoMuTau + produceMuTauPairZmumuHypothesesForAHtoMuTauLooseMuonIsolation
-   + selectPatJetsForAHtoMuTau + selectPatJetsForAHtoMuTauLooseMuonIsolation
+   + selectPatJetsForAHtoMuTau + selectPatJetsForAHtoMuTauLooseMuonIsolation + selectPatJetsForVBF
+   + allVBFEventHypothesesForAHtoMuTau + allVBFEventHypothesesForAHtoMuTauLooseMuonIsolation
+   + selectVBFEventHypothesesForAHtoMuTau + selectVBFEventHypothesesForAHtoMuTauLooseMuonIsolation
 )
