@@ -45,7 +45,7 @@ class VBFCompositePtrCandidateT1T2MEtEventT3Producer : public edm::EDProducer
   explicit VBFCompositePtrCandidateT1T2MEtEventT3Producer(const edm::ParameterSet& cfg)
   {
     srcTagJets_          = cfg.getParameter<edm::InputTag>("srcTagJets");
-    srcCentralJets_      = cfg.getParameter<edm::InputTag>("srcCenralJets");
+    srcCentralJets_      = cfg.getParameter<edm::InputTag>("srcCentralJets");
     srcDiTaus_           = cfg.getParameter<edm::InputTag>("srcDiTaus");
 
     dEtaMinTagJet_       = cfg.getParameter<double>("dEtaMinTagJet");
@@ -129,7 +129,10 @@ class VBFCompositePtrCandidateT1T2MEtEventT3Producer : public edm::EDProducer
 		centralJets_sorted.push_back(centralJetCollection->ptrAt(centralJetIndex->second));
 	      }
 
-	      VBFEventType vbfEvent(tagJet1, tagJet2, diTau, centralJets_sorted);
+//--- sort tag jets in order of decreasing Pt  
+	      jetPtr highPtTagJet = ( tagJet1->pt() > tagJet2->pt() ) ? tagJet1 : tagJet2;
+	      jetPtr lowPtTagJet  = ( tagJet1->pt() > tagJet2->pt() ) ? tagJet2 : tagJet1;
+	      VBFEventType vbfEvent(highPtTagJet, lowPtTagJet, diTau, centralJets_sorted);
 	      vbfEventCollection->push_back(vbfEvent);
 	    }
 	  }

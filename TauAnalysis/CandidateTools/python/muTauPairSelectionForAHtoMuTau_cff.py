@@ -85,3 +85,4 @@ selectMuTauPairsForAHtoMuTauLooseMuonIsolationSS = \
 selectMuTauPairsForAHtoMuTauLooseMuonIsolation = cms.Sequence(
   selectMuTauPairsForAHtoMuTauLooseMuonIsolationOS * selectMuTauPairsForAHtoMuTauLooseMuonIsolationSS
 )
+
