@@ -3,7 +3,7 @@
 
 <ConstantsSection label="pixbar.xml" eval="true">
  <Constant name="zero"              value="0.0*fm"/>
- <Constant name="Rin1"              value="3.10*cm"/>
+ <Constant name="Rin1"              value="[cms:TrackBeamR1]"/>
  <Constant name="Rin2"              value="18.00*cm"/>
  <Constant name="Rin3"              value="18.50*cm"/>
  <Constant name="RinSupTubCab"      value="15.00*cm"/>
