@@ -67,11 +67,11 @@ SAMPLE_DEFAULTS = {
     'SE_white_list' : '',
     'SE_black_list' : 'msu.ru',
     'disableDuplicateCheck' : False,
-    'applyZrecoilCorrection' : False,
+    'applyZrecoilCorrection' : True,
     'applyElectronTriggerEfficiencyCorrection' : False,
     'applyElectronIsolationEfficiencyCorrection' : False,
     'applyMuonTriggerEfficiencyCorrection' : False,
-    'applyVertexMultiplicityReweighting' : False,
+    'applyVertexMultiplicityReweighting' : True,
     'hlt' : cms.InputTag("TriggerResults", "", "HLT")
 }
 
@@ -93,7 +93,7 @@ TARGET_LUMI = (498)/_picobarns
 #--------------------------------------------------------------------------------
 
 RECO_SAMPLES = {
-    'data_TauPlusElec_Run2011A_PR_T3' : {   # 147.8/pb 162803-163757
+    'data_TauPlusElec_Run2011A_PR_T3' : {   # 186/pb 162762-163869
         'datasetpath' : '/TauPlusX/jkolb-skimElecTau_413_v2-56283d7e938fe4e229d293a654f59050/USER',
         'dbs_url' : "https://cmsdbsprod.cern.ch:8443/cms_dbs_ph_analysis_01_writer/servlet/DBSServlet",
         'conditions' : 'GR_P_V16::All',
@@ -112,7 +112,7 @@ RECO_SAMPLES = {
             'HLT_Ele15_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_LooseIsoPFTau15_v4'     : '163269:MIN-163757:MAX'
         }
     },
-    'data_TauPlusElec_Run2011A_PR_Pat' : {   # 147.8/pb
+    'data_TauPlusElec_Run2011A_PR_Pat' : {   # 147.8/pb 162803-163757
         'datasetpath' : '/TauPlusX/lantonel-patSkim_413_v5-b9ca0e2cc8621659caa5eafa9d155b85/USER',
         'dbs_url' : "https://cmsdbsprod.cern.ch:8443/cms_dbs_ph_analysis_01_writer/servlet/DBSServlet",
         'conditions' : 'GR_P_V16::All',
@@ -149,7 +149,7 @@ RECO_SAMPLES = {
             'HLT_Ele15_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_LooseIsoPFTau15_v2'     : '161217:MIN-163261:MAX'
             }
         },
-    'data_TauPlusX_Run2011A_PR_v2' : {  # 147.7/pb  162803-163757 ---> 186/pb  162803-163869
+    'data_TauPlusX_Run2011A_PR_v2' : {  # 186/pb  162803-163869
         'datasetpath' : '/TauPlusX/Run2011A-PromptReco-v2/AOD', 
         'lumi_mask' : '/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions11/7TeV/Prompt/Cert_160404-163869_7TeV_PromptReco_Collisions11_JSON.txt',
         'conditions' : 'GR_P_V17::All',
@@ -187,9 +187,9 @@ RECO_SAMPLES = {
             'HLT_Ele15_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_LooseIsoPFTau15_v4'     : '163269:MIN-163869:MAX'
         }
     },
-    'data_TauPlusX_Run2011A_PR_v4' : {  # 294/pb  165071-166502
+    'data_TauPlusX_Run2011A_PR_v4' : {  # 702/pb  165071-166861
         'datasetpath' : '/TauPlusX/Run2011A-PromptReco-v4/AOD', 
-        'lumi_mask' : '/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification//Collisions11/7TeV/Prompt/Cert_160404-166502_7TeV_PromptReco_Collisions11_JSON.txt',
+        'lumi_mask' : '/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification//Collisions11/7TeV/Prompt/Cert_160404-166861_7TeV_PromptReco_Collisions11_JSON.txt',
         'conditions' : 'GR_P_V20::All',
         'number_of_jobs' : 300,
         'type' : 'Data',
