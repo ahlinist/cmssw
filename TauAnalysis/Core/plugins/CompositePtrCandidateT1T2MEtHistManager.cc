@@ -19,8 +19,6 @@
 
 #include <TMath.h>
 #include <TVector2.h>
-#include <TVectorD.h>
-#include <TMatrixD.h>
 
 const double epsilon = 0.01;
 
@@ -39,7 +37,9 @@ bool matchesGenCandidatePair(const CompositePtrCandidateT1T2MEt<T1,T2>& composit
 template<typename T1, typename T2>
 CompositePtrCandidateT1T2MEtHistManager<T1,T2>::CompositePtrCandidateT1T2MEtHistManager(const edm::ParameterSet& cfg)
   : HistManagerBase(cfg),
-    pfMEtCovInverse_(2, 2)
+    pfMEtCovInverse_(2, 2),
+    pfMEtCov_(2, 2),
+    pfMEtCovEigenvalues_(2)
 {
   //std::cout << "<CompositePtrCandidateT1T2MEtHistManager::CompositePtrCandidateT1T2MEtHistManager>:" << std::endl;
 
@@ -210,8 +210,12 @@ void CompositePtrCandidateT1T2MEtHistManager<T1,T2>::bookHistogramsImp()
 
   hPzetaCorr_ = book2D("PzetaCorr", "P_{#zeta} vs. P_{#zeta}^{vis}", 20, 0., 200., 40., -200., +200.);
   hPzetaDiff_ = book1D("PzetaDiff", "P_{#zeta} - 1.5*P_{#zeta}^{vis}", 40, -100., +100.);
+
   hPzetaDiffMEtSignRatio_ = book1D("PzetaDiffMEtSignRatio", "(P_{#zeta} - 1.5*P_{#zeta}^{vis}) / MET sign.", 100, -5.01, +5.01);
+
   hMEtSignProb_ = book1D("MEtSignProb", "Probability of (gen. MET - rec. MET)/sigmaMET", 102., -0.01, 1.01);
+  hMEtSignEigenValue1_ = book1D("MEtSignEigenValue1", "MET Sign. 1st Eigenvalue", 100., -0.01, 50.);
+  hMEtSignEigenValue2_ = book1D("MEtSignEigenValue2", "MEt Sign. 2nd Eigenvalue", 100., -0.01, 50.);
 
   hPzetaDiffVsDPhi12_ = 
     book2D("PzetaDiffVsDPhi12",  "P_{#zeta} - 1.5*P_{#zeta}^{vis} vs. #Delta#phi_{1,2}", 36, -epsilon, TMath::Pi() + epsilon, 20, -100., +100.);
@@ -561,6 +565,11 @@ void CompositePtrCandidateT1T2MEtHistManager<T1,T2>::fillHistogramsImp(const edm
 	  double chi2 = ROOT::Math::Similarity(residualS_, pfMEtCovInverseS_);
 	  double prob = TMath::Prob(chi2, 2);
 	  hMEtSignProb_->Fill(getBoundedValue(prob, 0., 1.0), weight);
+
+	  pfMEtCov_ = diTauCandidate->metSignMatrix();
+	  pfMEtCov_.EigenVectors(pfMEtCovEigenvalues_);
+	  hMEtSignEigenValue1_->Fill(pfMEtCovEigenvalues_(0), weight);
+	  hMEtSignEigenValue2_->Fill(pfMEtCovEigenvalues_(1), weight);
 	}
       }
     }
