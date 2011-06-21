@@ -40,4 +40,5 @@ patJetSelConfigurator = objSelConfigurator(
     pyModuleName = __name__,
     doSelIndividual = False
 )
+
 selectPatJets = patJetSelConfigurator.configure(pyNameSpace = locals())
