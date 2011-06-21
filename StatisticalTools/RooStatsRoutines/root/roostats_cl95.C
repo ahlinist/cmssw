@@ -1,7 +1,7 @@
 static const char* desc =
 "=====================================================================\n"
 "|                                                                    \n"
-"|\033[1m        roostats_cl95.C  version 1.08                 \033[0m\n"
+"|\033[1m        roostats_cl95.C  version 1.09                 \033[0m\n"
 "|                                                                    \n"
 "| Standard c++ routine for 95% C.L. limit calculation                \n"
 "| for cross section in a 'counting experiment'                       \n"
@@ -784,6 +784,7 @@ LimitResult CL95Calc::clm( Double_t ilum, Double_t slum,
 
   // throw pseudoexperiments
   if (nit <= 0)return _result;
+  std::map<Int_t,Double_t> cached_limit;
   for (Int_t i = 0; i < nit; i++)
     {
       // throw random nuisance parameter (bkg yield)
@@ -794,7 +795,6 @@ LimitResult CL95Calc::clm( Double_t ilum, Double_t slum,
 
       // check if the limit for this n is already cached
       Double_t _pe = -1.0;
-      std::map<Int_t,Double_t> cached_limit;
       if (cached_limit.find(n)==cached_limit.end()){
 	
 	makeData( n );
