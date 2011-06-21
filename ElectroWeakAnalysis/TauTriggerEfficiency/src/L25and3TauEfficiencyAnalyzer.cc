@@ -1,7 +1,7 @@
 // Class:      L25and3TauEfficiencyAnalyzer
 // Original Author:  Eduardo Luiggi, modified by Sho Maruyama
 //         Created:  Fri Apr  4 16:37:44 CDT 2008
-// $Id: L25and3TauEfficiencyAnalyzer.cc,v 1.11 2011/05/31 05:29:30 eluiggi Exp $
+// $Id: L25and3TauEfficiencyAnalyzer.cc,v 1.12 2011/06/01 21:51:42 slehti Exp $
 #include "ElectroWeakAnalysis/TauTriggerEfficiency/interface/L25and3TauEfficiencyAnalyzer.h"
 #include "FWCore/MessageLogger/interface/MessageLogger.h"
 #include "DataFormats/VertexReco/interface/Vertex.h"
@@ -53,6 +53,7 @@ void L25and3TauEfficiencyAnalyzer::Setup(const edm::ParameterSet& iConfig,TTree*
   l25tree->Branch("l25IsoTrkPt",&l25IsoTrkPt,"l25IsoTrkPt/F");
   l25tree->Branch("l25TrkIsoPtSum",&l25TrkIsoPtSum,"l25TrkIsoPtSum/F");
   l25tree->Branch("l25EcalIsoEtSum",&l25EcalIsoEtSum,"l25EcalIsoEtSum/F");
+  l25tree->Branch("l25NTrksIso",&l25NTrksIso,"l25NTrksIso/F");
   NMatchedToL2 = 0;
   NJetsWithTracks = 0;
 }
