@@ -37,6 +37,7 @@ from RecoEgamma.ElectronIdentification.electronIdSequence_cff import *
 patElectronIDs = cms.Sequence(simpleEleIdSequence +
                               eIdSequence)
 electronIDSources = cms.PSet(
+    simpleEleId60cIso = cms.InputTag("simpleEleId60cIso"),
     simpleEleId70cIso = cms.InputTag("simpleEleId70cIso"),
     simpleEleId95cIso = cms.InputTag("simpleEleId95cIso"),
     eidRobustLoose= cms.InputTag("eidRobustLoose"),

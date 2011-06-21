@@ -23,8 +23,6 @@ nTupleTopJetsPF = cms.EDProducer(
     tag = cms.untracked.string("SecondaryVertexHighPurBJetTags"),
     quantity = cms.untracked.string("bDiscriminator('simpleSecondaryVertexHighPurBJetTags')"),
     ),
-
-    
     ##    4-momentum
     cms.PSet(
     tag = cms.untracked.string("Pt"),
@@ -106,7 +104,7 @@ nTupleElectrons = cms.EDProducer(
     #Iso
     cms.PSet(
     tag = cms.untracked.string("RelIso"),
-    quantity = cms.untracked.string("(dr03TkSumPt + dr03EcalRecHitSumEt + dr03HcalTowerSumEt)/et")
+    quantity = cms.untracked.string("(dr03TkSumPt() + max(0., dr03EcalRecHitSumEt - 1.) + dr03HcalTowerSumEt)/et")
     ),
     #ID and other parameters
     cms.PSet(
@@ -114,19 +112,23 @@ nTupleElectrons = cms.EDProducer(
     quantity = cms.untracked.string("electronID('simpleEleId70cIso')")
     ),
     cms.PSet(
+    tag = cms.untracked.string("SimpleEleId60cIso"),
+    quantity = cms.untracked.string("electronID('simpleEleId60cIso')")
+    ),
+    cms.PSet(
     tag = cms.untracked.string("SimpleEleId95cIso"),
     quantity = cms.untracked.string("electronID('simpleEleId95cIso')")
     ),
     cms.PSet(
-    tag = cms.untracked.string("eidRobustLoose"),
+    tag = cms.untracked.string("EidRobustLoose"),
     quantity = cms.untracked.string("electronID('eidRobustLoose')")
     ),
     cms.PSet(
-    tag = cms.untracked.string("eidRobustTight"),
+    tag = cms.untracked.string("EidRobustTight"),
     quantity = cms.untracked.string("electronID('eidRobustTight')")
     ),
     cms.PSet(
-    tag = cms.untracked.string("eidRobustHighEnergy"),
+    tag = cms.untracked.string("EidRobustHighEnergy"),
     quantity = cms.untracked.string("electronID('eidRobustHighEnergy')")
     ),
 #    cms.PSet(
@@ -295,20 +297,24 @@ nTupleLooseElectrons = nTupleElectrons.clone(
     #Iso
     cms.PSet(
     tag = cms.untracked.string("RelIso"),
-    quantity = cms.untracked.string("(dr03TkSumPt + dr03EcalRecHitSumEt + dr03HcalTowerSumEt)/et")
+    quantity = cms.untracked.string("(dr03TkSumPt() + max(0., dr03EcalRecHitSumEt - 1.) + dr03HcalTowerSumEt)/et")
     ),
     #ID and other parameters
     cms.PSet(
-    tag = cms.untracked.string("eidRobustLoose"),
+    tag = cms.untracked.string("EidRobustLoose"),
     quantity = cms.untracked.string("electronID('eidRobustLoose')")
     ),
     cms.PSet(
-    tag = cms.untracked.string("eidRobustTight"),
+    tag = cms.untracked.string("EidRobustTight"),
     quantity = cms.untracked.string("electronID('eidRobustTight')")
     ),
     cms.PSet(
-    tag = cms.untracked.string("eidRobustHighEnergy"),
+    tag = cms.untracked.string("EidRobustHighEnergy"),
     quantity = cms.untracked.string("electronID('eidRobustHighEnergy')")
+    ),
+    cms.PSet(
+    tag = cms.untracked.string("SimpleEleId60cIso"),
+    quantity = cms.untracked.string("electronID('simpleEleId60cIso')")
     ),
     cms.PSet(
     tag = cms.untracked.string("SimpleEleId70cIso"),
