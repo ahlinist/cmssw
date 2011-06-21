@@ -4,36 +4,39 @@ import os,sys,re,shutil
 
 
 #Original config file
-fileName = "SingleTopSystematics_cfg.py"
+fileName = "SingleTopSystematicsWithTrigger_cfg.py"
+#fileName = "SingleTopSystematics_cfg.py"
 #fileName = "SingleTopSystematics_split_cfg.py"
 #fileName = "SingleTopNEvents_cfg.py"
 
 #Channels to include
 channels = [
-#    "TChannel",
-    "DataMu",
-    "DataEle",
-#    "Data",
-#    "TTBar",
-#    "ZJets",
-#    "tWChan",
-#    "sChan",
-#    "WJets_wlight",
-#    "WJets_wcc",
-#    "WJets_wbb",
-#    "WJets",
-#    "Data",
-#    "Wc_wc",
-#    "Vqq_wbb",
-#    "Vqq_wcc",
-    ]
+    "TChannel",
+#    "DataMu",
+#    "DataEle",
+    "TTBar",
+    "ZJets",
+    "ZJets_wlight",
+    "ZJets_wcc",
+    "ZJets_wbb",
+    "tWChan",
+    "sChan",
+    "WJets_wlight",
+    "WJets_wcc",
+    "Wjets_wbb",
+    "WJets",
+    "VV",
+   "Wc_wc",
+    "Vqq_wbb",
+    "Vqq_wcc",
+  ]
 
 #Path to take data merged files
 dataPath = "file:/tmp/oiorio/"
 
 #Choose if you want to run or just prepare the configuration files
 mode = ""
-mode = "cmsRun"
+#mode = "cmsRun"
 
 
 #Use mu , ele or both
@@ -45,7 +48,7 @@ channel_instruction = "all"
 def changeChannel(fileName,channelOld,channelNew,switch): 
     print " Channel test " + channelNew
     channelToReplace = channelNew
-    if channelNew=="DataMu" or channelNew == "DataEle":
+    if channelNew=="DataMu" or channelNew == "DataEle" or channelNew == "DataMuQCD" or channelNew =="DataEleQCD":
         channelToReplace = "Data"
         #if channelNew=="DataEle":
        # channelNew_2 = "Data"
@@ -73,11 +76,11 @@ def changeChannel(fileName,channelOld,channelNew,switch):
         #        line = "process.source.fileNames = cms.untracked.vstring('"+dataPath+"DataMuMerged.root','"+dataPath+"DataEleMerged.root',)"
         #        line = "process.source.fileNames = cms.untracked.vstring('"+dataPath+"DataMuMerged.root',)"
         #       line = "process.source.fileNames = cms.untracked.vstring('"+dataPath+"Mu_v1Merged.root','"+dataPath+"Mu_v2Merged.root','"+dataPath+"Ele_v1Merged.root','"+dataPath+"Ele_v2Merged.root',)"
-    if channelNew == "DataMu":
-        inputs = "process.source.fileNames = cms.untracked.vstring('"+dataPath+"Mu_v1Merged.root','"+dataPath+"Mu_v2Merged.root',)"
+    if channelNew == "DataMu" or channelNew == "DataMuQCD":
+        inputs = "process.source.fileNames = cms.untracked.vstring('"+dataPath+"MuMerged.root',)"
         o.write(inputs)
-    if channelNew == "DataEle":
-        inputs = "process.source.fileNames = cms.untracked.vstring('"+dataPath+"Ele_v1Merged.root','"+dataPath+"Ele_v2Merged.root',)"
+    if channelNew == "DataEle" or channelNew == "DataEleQCD":
+        inputs = "process.source.fileNames = cms.untracked.vstring('"+dataPath+"EleMerged.root',)"
         o.write(inputs)
     o.close()
     return o
@@ -96,8 +99,14 @@ for channel in channels:
 
     if channel == "DataMu":
         channel_instruction = "mu"
-    if channel == "DataEle":
+    elif channel == "DataEle":
         channel_instruction = "ele"
+    elif channel == "DataMuQCD":
+        channel_instruction = "muqcd"
+    elif channel == "DataEleQCD":
+        channel_instruction = "eleqcd"
+    else:
+        channel_instruction = "all"  
 
     channelOld = startChannel
     

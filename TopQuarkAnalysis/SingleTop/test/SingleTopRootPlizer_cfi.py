@@ -8,11 +8,11 @@ doBScan = cms.untracked.bool(True),
 rateSystematics = cms.untracked.vstring("WLightRateUp",
                                         "WLightRateDown",
                                         "TTBarRateUp",
-                                        "TTBarRateDown",
+                                        "Ttbarratedown ",
                                         "WHFRateUp",
                                         "WHFRateDown"),
 #rateSystematics = cms.untracked.vstring(""),
-leptonsID = cms.InputTag("nTupleElectrons","tightElectronsSimpleEleId95cIso"),  
+leptonsID = cms.InputTag("nTupleElectrons","tightElectronsSimpleEleId70cIso"),  
 
 channelInfo = cms.PSet(
     crossSection = cms.untracked.double(20.93),
@@ -75,7 +75,7 @@ TreesMu = TreesEle.clone(
     leptonsEnergy = cms.InputTag("nTupleMuons","tightMuonsE"),  
     leptonsCharge = cms.InputTag("nTupleMuons","tightMuonsCharge"),  
     leptonsRelIso = cms.InputTag("nTupleMuons","tightMuonsRelIso"),  
-    leptonsID = cms.InputTag("nTupleElectrons","tightElectronsSimpleEleId95cIso"),  
+    leptonsID = cms.InputTag("nTupleElectrons","tightElectronsSimpleEleId70cIso"),  
     leptonsFlavour = cms.untracked.string("muon"),
 
     

@@ -24,12 +24,12 @@ process.load("Configuration.StandardSequences.MagneticField_AutoFromDBCurrent_cf
 
 
 
-process.GlobalTag.globaltag = cms.string("START311_V2::All")
+#process.GlobalTag.globaltag = cms.string("START311_V2::All")
 
 print "test04 "
 
-#from Configuration.PyReleaseValidation.autoCond import autoCond
-#process.GlobalTag.globaltag = autoCond['startup']
+from Configuration.PyReleaseValidation.autoCond import autoCond
+process.GlobalTag.globaltag = autoCond['startup']
 process.load("TopQuarkAnalysis.SingleTop.SingleTopSequences_cff") 
 process.load("SelectionCuts_Skim_cff");
 
@@ -83,7 +83,7 @@ process.source = cms.Source ("PoolSource",
 
 #'rfio:/castor/cern.ch/user/g/giamman/singletop/sync/00012F91-72E5-DF11-A763-00261834B5F1.root'
 'file:/tmp/oiorio/00012F91-72E5-DF11-A763-00261834B5F1.root'
-#'file:/tmp/oiorio/WJetsNewFile_1_1_Vuo.root'
+#'file:/tmp/oiorio/TTBarNewFile_1_1_Vuo.root'
 #'file:/tmp/oiorio/F81B1889-AF4B-DF11-85D3-001A64789DF4.root'
 #'rfio:    /castor/cern.ch/user/g/giamman/singletop/sync/F81B1889-AF4B-DF11-85D3-001A64789DF4.root',
 
@@ -163,12 +163,16 @@ savePatTupleSkimLoose = cms.untracked.vstring(
     'keep *_bFlavorHistoryProducer_*_*',
     )
 
+saveNTuplesSkimLoose.append('keep *_selectedPatMuons_*_*')
+saveNTuplesSkimLoose.append('keep *_selectedPatElectrons_*_*')
+
+
 ## Output module configuration
 process.singleTopNTuple = cms.OutputModule("PoolOutputModule",
 #                                fileName = cms.untracked.string('rfio:/CST/cern.ch/user/o/oiorio/SingleTop/SubSkims/WControlSamples1.root'),
-#                   fileName = cms.untracked.Bstring('/tmp/oiorio/edmntuple_tchannel_big.root'),
-                   fileName = cms.untracked.string('edmntuple_Wc.root'),
-                                             
+                   fileName = cms.untracked.string('/tmp/oiorio/edmntuple_tchannel_big.root'),
+#                   fileName = cms.untracked.string('edmntuple_TTBar.root'),
+                                           
                    SelectEvents   = cms.untracked.PSet( SelectEvents = cms.vstring('selection')),
                    outputCommands = saveNTuplesSkimLoose,
 )

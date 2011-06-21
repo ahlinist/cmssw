@@ -141,6 +141,65 @@ WJets_wbbEle = cms.PSet(
   
 
 
+#Z
+
+
+ZJets_wlightMu = cms.PSet(
+    crossSection = cms.untracked.double(2321),
+    channel = cms.untracked.string("ZJets_wlight"),
+    finalLumi = cms.untracked.double(191.091),
+    originalEvents = cms.untracked.double(14800000),
+    MTWCut = cms.untracked.double(40.0),#Default 50.0 GeV
+    RelIsoCut = cms.untracked.double(0.05),
+    )
+
+
+ZJets_wlightEle = cms.PSet(
+    crossSection = cms.untracked.double(2321),
+    channel = cms.untracked.string("ZJets_wlight"),
+    finalLumi = cms.untracked.double(191.091),
+    originalEvents = cms.untracked.double(14800000),
+    )
+  
+
+
+ZJets_wccMu = cms.PSet(
+    crossSection = cms.untracked.double(2321),
+    channel = cms.untracked.string("ZJets_wcc"),
+    finalLumi = cms.untracked.double(191.091),
+    originalEvents = cms.untracked.double(14800000),
+    MTWCut = cms.untracked.double(40.0),#Default 50.0 GeV
+    RelIsoCut = cms.untracked.double(0.05),
+    )
+
+
+ZJets_wccEle = cms.PSet(
+    crossSection = cms.untracked.double(2321),
+    channel = cms.untracked.string("ZJets_wcc"),
+    finalLumi = cms.untracked.double(191.091),
+    originalEvents = cms.untracked.double(14800000),
+    )
+
+ZJets_wbbMu = cms.PSet(
+    crossSection = cms.untracked.double(2321),
+    channel = cms.untracked.string("ZJets_wbb"),
+    finalLumi = cms.untracked.double(191.091),
+    originalEvents = cms.untracked.double(14800000),
+    MTWCut = cms.untracked.double(40.0),#Default 50.0 GeV
+    RelIsoCut = cms.untracked.double(0.05),
+    )
+ZJets_wbbEle = cms.PSet(
+    crossSection = cms.untracked.double(2321),
+    channel = cms.untracked.string("ZJets_wbb"),
+    finalLumi = cms.untracked.double(191.091),
+    originalEvents = cms.untracked.double(14800000),
+    )
+  
+
+
+
+
+
 Vqq_wbbMu = cms.PSet(
     crossSection = cms.untracked.double(36),
     channel = cms.untracked.string("Vqq_wbb"),
@@ -201,11 +260,30 @@ Wc_wcEle = cms.PSet(
     )
   
 
+VVMu = cms.PSet(
+    crossSection = cms.untracked.double(4.8),
+    channel = cms.untracked.string("VV"),
+    finalLumi = cms.untracked.double(191.091),
+    originalEvents = cms.untracked.double(963356),
+    MTWCut = cms.untracked.double(40.0),#Default 50.0 GeV
+    RelIsoCut = cms.untracked.double(0.05),
+    )
+
+VVEle = cms.PSet(
+    crossSection = cms.untracked.double(4.8),
+    channel = cms.untracked.string("VV"),
+    finalLumi = cms.untracked.double(191.091),
+    originalEvents = cms.untracked.double(963356),
+    MTWCut = cms.untracked.double(50.0),#Default 50.0 GeV
+    RelIsoCut = cms.untracked.double(0.1)
+    )
+  
 
 TTBarMu = cms.PSet(
     crossSection = cms.untracked.double(150.),
     channel = cms.untracked.string("TTBar"),
-    originalEvents = cms.untracked.double(1100000),
+#    originalEvents = cms.untracked.double(1100000),
+    originalEvents = cms.untracked.double(1014208),
     finalLumi = cms.untracked.double(191.091),
     MTWCut = cms.untracked.double(40.0),#Default 50.0 GeV
     RelIsoCut = cms.untracked.double(0.05),
@@ -215,7 +293,8 @@ TTBarEle = cms.PSet(
     crossSection = cms.untracked.double(150.),
     channel = cms.untracked.string("TTBar"),
     finalLumi = cms.untracked.double(191.091),
-    originalEvents = cms.untracked.double(1100000),
+    originalEvents = cms.untracked.double(1014208),
+#    originalEvents = cms.untracked.double(1100000),
     )
     
 
