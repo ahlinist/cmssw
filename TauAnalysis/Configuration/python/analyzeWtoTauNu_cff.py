@@ -1,17 +1,18 @@
 import FWCore.ParameterSet.Config as cms
 from TauAnalysis.Configuration.analyzeWtoTauNu_cfi import *
 
-# define auxiliary service
-# for handling of systematic uncertainties
 from TauAnalysis.CandidateTools.sysErrDefinitions_cfi import *
-SysUncertaintyService = cms.Service("SysUncertaintyService",
-    weights = getSysUncertaintyParameterSets(
-        [ muonSystematics,
-          tauSystematics,
-          theorySystematics ]
-    )
-)
-
+sysUncertaintyService = cms.Service("SysUncertaintyService",
+                                   weights = getSysUncertaintyParameterSets(
+    []
+    ),
+       sources = cms.PSet(
+       isRecWtoTauNu = cms.vstring(
+           "sysTau*","",
+           "sysJet*",""
+           )
+       )
+                                    )
 analyzeWtoTauNuEvents = cms.EDAnalyzer("GenericAnalyzer",
   
     name = cms.string('wTauNuAnalyzer'), 
@@ -54,12 +55,25 @@ analyzeWtoTauNuEvents = cms.EDAnalyzer("GenericAnalyzer",
         metTopologyHistManager,
         tauNuCandidateHistManager,
         muonHistManager,
-        electronHistManager
+        electronHistManager,
+        dataBinner
     ),
 
+    analyzers_systematic = cms.VPSet(
+        sysUncertaintyBinnerForWTauNuEff
+    ),
     eventDumps = cms.VPSet(
         wTauNuEventDump
     ),
    
-    analysisSequence = wTauNuAnalysisSequence
-)
+    analysisSequence = wTauNuAnalysisSequence,
+    estimateSysUncertainties = cms.bool(False),
+    systematics = cms.vstring(
+       getSysUncertaintyNames(
+              [ tauSystematics,
+                jetSystematics,
+                metSystematicsForWtoTauNu,
+                htRatioSystematics ]
+              )
+       )
+                                       ) 
