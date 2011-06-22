@@ -13,7 +13,7 @@
 //
 // Original Author:  pts/45
 //         Created:  Tue May 13 12:23:34 CEST 2008
-// $Id: RPCMonitorEfficiency.cc,v 1.57 2011/05/17 09:23:58 carrillo Exp $
+// $Id: RPCMonitorEfficiency.cc,v 1.58 2011/06/09 16:23:16 carrillo Exp $
 //
 //
 
@@ -602,6 +602,7 @@ private:
   std::ofstream alignment;
   std::ofstream rollZeroEff;
   std::ofstream rollZeroPrediction;
+  std::ofstream database;
   std::string BlackListFile;
   bool prodimages;
   bool makehtml;
@@ -613,6 +614,7 @@ private:
   double fiducialcuty;
   bool endcap;
   bool barrel; 
+  bool SkipProblematicChambers;
   std::vector<unsigned int> blacklist;
   std::vector<unsigned int> IntegralMuographyRawIdsVector[48];
 
@@ -685,15 +687,18 @@ RPCMonitorEfficiency::RPCMonitorEfficiency(const edm::ParameterSet& iConfig){
   debug=iConfig.getUntrackedParameter<bool>("debug",false);
   stat=iConfig.getUntrackedParameter<bool>("statistics",false);
   threshold=iConfig.getUntrackedParameter<double>("threshold");
-  fiducialcut=iConfig.getUntrackedParameter<double>("fiducialcut",0.);
+  fiducialcut=iConfig.getUntrackedParameter<double>("fiducialcut",8.);
   fiducialcutx=iConfig.getUntrackedParameter<double>("fiducialcutx",fiducialcut);
   fiducialcuty=iConfig.getUntrackedParameter<double>("fiducialcuty",fiducialcut);
   endcap=iConfig.getUntrackedParameter<bool>("endcap");
   barrel=iConfig.getUntrackedParameter<bool>("barrel");
+  SkipProblematicChambers=iConfig.getUntrackedParameter<bool>("SkipProblematicChambers",true);
+
   BlackListFile  = iConfig.getUntrackedParameter<std::string>("BlackListFile","blacklist.dat"); 
 
   efftxt.open("RPCDetId_Eff.dat");
   alignment.open("Alignment.dat");
+  database.open("database.dat");
   RollYEff.open("rollYeff.txt");
   rollZeroEff.open("rollZeroEff.txt");
   rollZeroPrediction.open("rollZeroPrediction.txt");
@@ -1642,9 +1647,10 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
 	
 	std::string name = rpcsrv.name();
 	
-	if(rpcId.region()!=0 && abs(rpcId.station())==3 && rpcId.ring()==2 && rpcId.roll()==3) continue; //skiping rolls with problems with the extrapolation methodin the endcap RE+/-3_R2_C
-	if(rpcId.region()!=0 && abs(rpcId.station())==2 && rpcId.ring()==3 && rpcId.roll()==1) continue; //skiping rolls with problems with the extrapolation methodin the endcap RE+/-2_R2_A
-	
+	if(SkipProblematicChambers){
+	  if(rpcId.region()!=0 && abs(rpcId.station())==3 && rpcId.ring()==2 && rpcId.roll()==3 ) continue; //skiping rolls with problems with the extrapolation methodin the endcap RE+/-3_R2_C
+	  if(rpcId.region()!=0 && abs(rpcId.station())==2 && rpcId.ring()==3 && rpcId.roll()==1) continue; //skiping rolls with problems with the extrapolation methodin the endcap RE+/-2_R2_A
+	}
 
 	if(rpcId.region()==0 && barrel == false) continue;
 	if(rpcId.region()!=0 && endcap == false ) continue;
@@ -1913,19 +1919,42 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
 
 	    if(debug) std::cout<<"Filling txt file with roll and efficiency"<<std::endl;
 	    RollYEff<<name<<" "<<pinoeff<<" "<<pinoerr<<" "<<pinoexpected<<" "<<histoCLS->GetMean()<<" ";
-
+	    database<<name<<" "<<pinoeff<<" "<<pinoerr<<" "<<pinoexpected<<" "<<histoCLS->GetMean()<<" ";
+	    
 	    int nBins = histoCLS->GetSize();
 	    for(int i=1; i<(nBins-1); i++){
-			double numCLS = histoCLS->Integral(i,(nBins-1));
-			double denCLS = histoCLS->Integral(1,(nBins-1));
-			double probCLS = 0;
-			if(denCLS != 0) probCLS = numCLS/denCLS;
-			else probCLS = -1;
-			//std::cout<<histoCLS->Integral(i,(nBins-1))<<" "<<probCLS<<std::endl;
-			RollYEff<<probCLS<<" ";
-			}
-	    
+	      double numCLS = histoCLS->Integral(i,(nBins-1));
+	      double denCLS = histoCLS->Integral(1,(nBins-1));
+	      double probCLS = 0;
+	      if(denCLS != 0) probCLS = numCLS/denCLS;
+	      else probCLS = -1;
+	      RollYEff<<probCLS<<" ";
+	    }
+
 	    RollYEff<<std::endl;
+
+	    float integralCLS = histoCLS->Integral()+histoCLS->GetBinContent(11);
+	    for(int bin=1;bin<=11;bin++){
+	      if(integralCLS!=0){
+		double normCLS = histoCLS->GetBinContent(bin)/integralCLS;
+		database<<normCLS<<" ";
+	      }
+	      else{
+		database<<"-1 ";
+	      }
+	    }
+	    
+ 	    for(int strip = 1;strip<histoRealRPC->GetSize()-1;strip++){
+ 	      database<<histoRealRPC->GetBinContent(strip)<<" ";
+ 	    }
+	    
+	    if(histoRealRPC->GetSize()<=92){
+	      for(int extra = histoRealRPC->GetSize()-2;extra<90;extra++){
+		database<<"-1 ";
+	      }
+	    }
+	    
+	    database<<std::endl;
 	    
 	    if(debug) std::cout<<" deleting profiles"<<std::endl;
 
@@ -3053,20 +3082,41 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
 
 	    if(debug) std::cout<<"Filling txt file with roll and efficiency"<<std::endl;
 	    RollYEff<<name<<" "<<pinoeff<<" "<<pinoerr<<" "<<pinoexpected<<" "<<histoCLS->GetMean()<<" ";
+	    database<<name<<" "<<pinoeff<<" "<<pinoerr<<" "<<pinoexpected<<" "<<histoCLS->GetMean()<<" ";
 
 	    int nBins = histoCLS->GetSize();
 	    for(int i=1; i<(nBins-1); i++){
-			double numCLS = histoCLS->Integral(i,(nBins-1));
-			double denCLS = histoCLS->Integral(1,(nBins-1));
-			double probCLS = 0;
-			if(denCLS != 0) probCLS = numCLS/denCLS;
-			else probCLS = -1;
-			//std::cout<<histoCLS->Integral(i,(nBins-1))<<" "<<probCLS<<std::endl;
-			RollYEff<<probCLS<<" ";
-			}
+	      double numCLS = histoCLS->Integral(i,(nBins-1));
+	      double denCLS = histoCLS->Integral(1,(nBins-1));
+	      double probCLS = 0;
+	      if(denCLS != 0) probCLS = numCLS/denCLS;
+	      else probCLS = -1;
+	      //std::cout<<histoCLS->Integral(i,(nBins-1))<<" "<<probCLS<<std::endl;
+	      RollYEff<<probCLS<<" ";
+	    }
 	    
 	    RollYEff<<std::endl;
 	    
+	    float integralCLS = histoCLS->Integral()+histoCLS->GetBinContent(11);
+	    for(int bin=1;bin<=11;bin++){
+	      if(integralCLS!=0){
+		double normCLS = histoCLS->GetBinContent(bin)/integralCLS;
+		database<<normCLS<<" ";
+	      }
+	      else{
+		database<<"-1 ";
+	      }
+	    }
+	    
+	    for(int strip = 1;strip<histoRealRPC->GetSize();strip++){
+ 	      database<<histoRealRPC->GetBinContent(strip)<<" ";
+ 	    }
+ 	    for(int extra = histoRealRPC->GetSize()-1;extra<90;extra++){
+ 	      database<<"-1 ";
+	    }
+	    
+	    database<<std::endl;
+
 	    if(debug) std::cout<<" deleting profiles"<<std::endl;
 
 	    delete profileCSC_X;
@@ -7105,6 +7155,7 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
 
  efftxt.close();
  alignment.close();
+ database.close();
  RollYEff.close();
 
  delete Ca0;
