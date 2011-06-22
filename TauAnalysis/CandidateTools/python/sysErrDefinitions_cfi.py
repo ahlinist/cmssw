@@ -61,6 +61,20 @@ elecTauPairSystematicsLooseElectronIsolation = {
     "sysJetEnDown"          : cms.InputTag('allElecTauPairsLooseElectronIsolationSysJetEnDown')
 }
 
+tauNuPairSystematics = {
+    "sysTauJetEnUp"        : cms.InputTag('allTauNuPairsSysTauJetEnUp'),
+    "sysTauJetEnDown"      : cms.InputTag('allTauNuPairsSysTauJetEnDown'),
+    "sysJetEnUp"           : cms.InputTag('allTauNuPairsSysJetEnUp'),
+    "sysJetEnDown"         : cms.InputTag('allTauNuPairsSysJetEnDown')
+}
+
+htRatioSystematics = {
+    "sysTauJetEnUp"       : cms.InputTag('htRatiosSysTauJetEnUp'),
+    "sysTauJetEnDown"     : cms.InputTag('htRatiosSysTauJetEnDown'),
+    "sysJetEnUp"          : cms.InputTag('htRatiosSysJetEnUp'),
+    "sysJetEnDown"        : cms.InputTag('htRatiosSysJetEnDown')
+    }
+
 metSystematicsForZtoMuTau = {
     "sysMuonPtUp"           : cms.InputTag('patMETsSysMuonPtUp'),
     "sysMuonPtDown"         : cms.InputTag('patMETsSysMuonPtDown'),
@@ -94,6 +108,13 @@ metSystematicsForAHtoElecTau = {
     "sysJetEnUp"            : cms.InputTag('patMETsSysJetEnUp'),
     "sysJetEnDown"          : cms.InputTag('patMETsSysJetEnDown')
 }
+
+metSystematicsForWtoTauNu = {
+    "sysTauJetEnUp"        : cms.InputTag('smearedMETsysTauJetEnUp'),
+    "sysTauJetEnDown"      : cms.InputTag('smearedMETsysTauJetEnUp'),
+    "sysJetEnUp"           : cms.InputTag('smearedMETsysJetEnUp'),
+    "sysJetEnDown"         : cms.InputTag('smearedMETsysJetEnDown')
+    }
 
 jetSystematics = {   
     "sysJetEnUp"            : cms.InputTag('patJetsJECshiftUp'),
