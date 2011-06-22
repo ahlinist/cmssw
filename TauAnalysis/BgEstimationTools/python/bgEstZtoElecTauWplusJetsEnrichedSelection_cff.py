@@ -49,8 +49,10 @@ electronSelConfiguratorBgEstWplusJetsEnriched = objSelConfigurator(
     doSelIndividual = False
 )
 
+
 selectElectronsBgEstWplusJetsEnriched = electronSelConfiguratorBgEstWplusJetsEnriched.configure(pyNameSpace = locals())
-  
+
+   
 #--------------------------------------------------------------------------------  
 # produce collection of pat::Taus
 #--------------------------------------------------------------------------------
@@ -75,7 +77,7 @@ tausBgEstWplusJetsEnrichedLeadTrkPt = copy.deepcopy(tausBgEstZtautauEnrichedLead
 # require tau candidate to pass TaNC discriminator
 tausBgEstWplusJetsEnrichedIso = copy.deepcopy(tausBgEstZtautauEnrichedIso)
 tausBgEstWplusJetsEnrichedIso.cut = cms.string('tauID("byHPSvloose") > 0.5 & tauID("byHPSmedium") < 0.5')
-#tausBgEstWplusJetsEnrichedIso.cut = cms.string('tauID("byTaNCfrOnePercent") > 0.5')
+
 
 # require tau candidate to pass electron veto
 tausBgEstWplusJetsEnrichedElectronVeto = copy.deepcopy(tausBgEstZtautauEnrichedElectronVeto)
@@ -85,6 +87,8 @@ tausBgEstWplusJetsEnrichedEcalCrackVeto = copy.deepcopy(tausBgEstZtautauEnriched
 
 # require tau candidate to pass muon veto
 tausBgEstWplusJetsEnrichedMuonVeto = copy.deepcopy(tausBgEstZtautauEnrichedMuonVeto)
+
+
 
 tauSelConfiguratorBgEstWplusJetsEnriched = objSelConfigurator(
     [ tausBgEstWplusJetsEnrichedAntiOverlapWithElectronsVeto,
@@ -102,6 +106,7 @@ tauSelConfiguratorBgEstWplusJetsEnriched = objSelConfigurator(
 
 selectTausBgEstWplusJetsEnriched = tauSelConfiguratorBgEstWplusJetsEnriched.configure(pyNameSpace = locals())
 
+
 #--------------------------------------------------------------------------------  
 # produce collection of electron + tau-jet combinations
 #--------------------------------------------------------------------------------
@@ -118,10 +123,16 @@ produceElecTauPairsBgEstWplusJetsEnriched = cms.Sequence(elecTauPairsBgEstWplusJ
 ### selection
 
 elecTauPairsBgEstWplusJetsEnrichedAntiOverlapVeto = copy.deepcopy(elecTauPairsBgEstZtautauEnrichedAntiOverlapVeto)
+
+### !!!!! inverted cut
 elecTauPairsBgEstWplusJetsEnrichedMt1MET = copy.deepcopy(elecTauPairsBgEstZtautauEnrichedMt1MET)
-elecTauPairsBgEstWplusJetsEnrichedMt1MET.cut = cms.string('mt1MET > 40.')
+elecTauPairsBgEstWplusJetsEnrichedMt1MET.cut = cms.string('mt1MET > 60.')
+
+### !!!!! turned off
 elecTauPairsBgEstWplusJetsEnrichedPzetaDiff = copy.deepcopy(elecTauPairsBgEstZtautauEnrichedPzetaDiff)
-elecTauPairsBgEstWplusJetsEnrichedPzetaDiff.cut = cms.string('(pZeta - 1.5*pZetaVis) < -20.')
+elecTauPairsBgEstWplusJetsEnrichedPzetaDiff.cut = cms.string('(pZeta - 1.5*pZetaVis) > -2000.')
+
+### !!!!! turned off
 elecTauPairsBgEstWplusJetsEnrichedZeroCharge = copy.deepcopy(elecTauPairsBgEstZtautauEnrichedZeroCharge)
 elecTauPairsBgEstWplusJetsEnrichedZeroCharge.cut = cms.string('charge != 10')
 
@@ -246,7 +257,6 @@ cfgDiTauCandidateForElecTauMt1METCutBgEstWplusJetsEnriched = copy.deepcopy(cfgDi
 cfgDiTauCandidateForElecTauMt1METCutBgEstWplusJetsEnriched.pluginName = cms.string('diTauCandidateMt1METCutBgEstWplusJetsEnriched')
 cfgDiTauCandidateForElecTauMt1METCutBgEstWplusJetsEnriched.src_cumulative = cms.InputTag('elecTauPairsBgEstWplusJetsEnrichedMt1METcumulative')
 
-#!!!!!!!!!!!!!!!!!!!!!!!!!!!!! inverted cut
 cfgDiTauCandidateForElecTauPzetaDiffCutBgEstWplusJetsEnriched = copy.deepcopy(cfgDiTauCandidateForElecTauPzetaDiffCutBgEstZtautauEnriched)
 cfgDiTauCandidateForElecTauPzetaDiffCutBgEstWplusJetsEnriched.pluginName = cms.string('diTauCandidatePzetaDiffCutBgEstWplusJetsEnriched')
 cfgDiTauCandidateForElecTauPzetaDiffCutBgEstWplusJetsEnriched.src_cumulative = cms.InputTag('elecTauPairsBgEstWplusJetsEnrichedPzetaDiffCumulative')
@@ -289,11 +299,13 @@ evtSelConfiguratorBgEstWplusJetsEnriched = eventSelFlagProdConfigurator(
 
 selectEventsBgEstWplusJetsEnriched = evtSelConfiguratorBgEstWplusJetsEnriched.configure()
 
+
 #--------------------------------------------------------------------------------  
 # apply event selection criteria; fill histograms
 #--------------------------------------------------------------------------------
 
 from TauAnalysis.Configuration.analyzeZtoElecTau_cff import *
+
 
 diTauCandidateHistManagerForElecTauBgEstWplusJetsEnriched = copy.deepcopy(diTauCandidateHistManagerForElecTauBgEstZtautauEnriched)
 diTauCandidateHistManagerForElecTauBgEstWplusJetsEnriched.pluginName = cms.string('diTauCandidateHistManagerForElecTauBgEstWplusJetsEnriched')
@@ -304,7 +316,12 @@ electronHistManagerForElecTauBgEstWplusJetsEnriched.pluginName = cms.string('ele
 
 tauHistManagerForElecTauBgEstWplusJetsEnriched = copy.deepcopy(tauHistManagerForElecTauBgEstZtautauEnriched)
 tauHistManagerForElecTauBgEstWplusJetsEnriched.pluginName = cms.string('tauHistManagerForElecTauBgEstWplusJetsEnriched')
-tauHistManagerForElecTauBgEstWplusJetsEnriched.jetSource = cms.InputTag('selectedPatJets')
+tauHistManagerForElecTauBgEstWplusJetsEnriched.jetSource = cms.InputTag('cleanPatJets')
+
+diTauCandidateNSVfitHistManagerForElecTauBgEstWplusJetsEnriched = copy.deepcopy(diTauCandidateNSVfitHistManagerForElecTauBgEstZtautauEnriched)
+diTauCandidateNSVfitHistManagerForElecTauBgEstWplusJetsEnriched.pluginName = cms.string('diTauCandidateNSVfitHistManagerForElecTauBgEstWplusJetsEnriched')
+diTauCandidateNSVfitHistManagerForElecTauBgEstWplusJetsEnriched.diTauCandidateSource = cms.InputTag('elecTauPairsBgEstWplusJetsEnriched')
+
 
 analyzeEventsBgEstWplusJetsEnriched = cms.EDAnalyzer("GenericAnalyzer",
 
@@ -314,8 +331,7 @@ analyzeEventsBgEstWplusJetsEnriched = cms.EDAnalyzer("GenericAnalyzer",
         evtSelGenPhaseSpace,
         evtSelTrigger,
         evtSelPrimaryEventVertex,
-        evtSelPrimaryEventVertexQuality,
-        evtSelPrimaryEventVertexPosition,
+
 
         #start electron cuts
         
@@ -423,7 +439,6 @@ analyzeEventsBgEstWplusJetsEnriched = cms.EDAnalyzer("GenericAnalyzer",
             pluginType = cms.string('BoolEventSelector'),
             src = cms.InputTag('diTauCandidateMt1METCutBgEstWplusJetsEnriched','cumulative')
         ),
-        #!!!!!!!!!!!!!!!!!!!!!!!!!!!!! inverted cut        
         cms.PSet(
             pluginName = cms.string('diTauCandidatePzetaDiffCutBgEstWplusJetsEnriched'),
             pluginType = cms.string('BoolEventSelector'),
@@ -445,6 +460,7 @@ analyzeEventsBgEstWplusJetsEnriched = cms.EDAnalyzer("GenericAnalyzer",
 
     analyzers = cms.VPSet(
          diTauCandidateHistManagerForElecTauBgEstWplusJetsEnriched,
+         diTauCandidateNSVfitHistManagerForElecTauBgEstWplusJetsEnriched,         
          electronHistManagerForElecTauBgEstWplusJetsEnriched,
          tauHistManagerForElecTauBgEstWplusJetsEnriched,
     ),
@@ -471,14 +487,6 @@ analyzeEventsBgEstWplusJetsEnriched = cms.EDAnalyzer("GenericAnalyzer",
         cms.PSet(
             filter = cms.string('evtSelPrimaryEventVertex'),
             title = cms.string('Vertex exists')
-        ),
-        cms.PSet(
-            filter = cms.string('evtSelPrimaryEventVertexQuality'),
-            title = cms.string('p(chi2Vertex) > 0.01')
-        ),
-        cms.PSet(
-            filter = cms.string('evtSelPrimaryEventVertexPosition'),
-            title = cms.string('-25 < zVertex < +25 cm')
         ),
         cms.PSet(
             filter = cms.string('electronIdCutBgEstWplusJetsEnrichedMin'),
@@ -572,7 +580,6 @@ analyzeEventsBgEstWplusJetsEnriched = cms.EDAnalyzer("GenericAnalyzer",
                                     ),
             replace = cms.vstring('tauHistManagerForElecTauBgEstWplusJetsEnriched.tauSource = tausBgEstWplusJetsEnrichedIsoCumulative')
         ),             
-
         cms.PSet(
             filter = cms.string('tauElectronVetoBgEstWplusJetsEnriched'),
             title = cms.string('Tau e-Veto'),
@@ -599,9 +606,12 @@ analyzeEventsBgEstWplusJetsEnriched = cms.EDAnalyzer("GenericAnalyzer",
             analyzers = cms.vstring('electronHistManagerForElecTauBgEstWplusJetsEnriched',
                                     'tauHistManagerForElecTauBgEstWplusJetsEnriched',
                                     'diTauCandidateHistManagerForElecTauBgEstWplusJetsEnriched',
+                                    'diTauCandidateNSVfitHistManagerForElecTauBgEstWplusJetsEnriched',
                                     ),
             replace = cms.vstring('tauHistManagerForElecTauBgEstWplusJetsEnriched.tauSource = tausBgEstWplusJetsEnrichedMuonVetoCumulative',
-                                  'diTauCandidateHistManagerForElecTauBgEstWplusJetsEnriched.diTauCandidate = elecTauPairsBgEstWplusJetsEnrichedAntiOverlapVetoCumulative'
+                                  'diTauCandidateHistManagerForElecTauBgEstWplusJetsEnriched.diTauCandidateSource = elecTauPairsBgEstWplusJetsEnrichedAntiOverlapVetoCumulative',
+                                  'diTauCandidateNSVfitHistManagerForElecTauBgEstWplusJetsEnriched.diTauCandidateSource = elecTauPairsBgEstWplusJetsEnrichedAntiOverlapVetoCumulative'
+                                  
                                   )
         ),          
         #!!!!!!!!!!!!!!!!!!!!!!!!!!!!! inverted cut
@@ -613,17 +623,18 @@ analyzeEventsBgEstWplusJetsEnriched = cms.EDAnalyzer("GenericAnalyzer",
             analyzers = cms.vstring('electronHistManagerForElecTauBgEstWplusJetsEnriched',
                                     'tauHistManagerForElecTauBgEstWplusJetsEnriched',
                                     'diTauCandidateHistManagerForElecTauBgEstWplusJetsEnriched',
+                                    'diTauCandidateNSVfitHistManagerForElecTauBgEstWplusJetsEnriched',
                                     ),
         ),         
-        #!!!!!!!!!!!!!!!!!!!!!!!!!!!!! inverted cut        
         cms.PSet(
             filter = cms.string('diTauCandidatePzetaDiffCutBgEstWplusJetsEnriched'),
-            title = cms.string('Pzeta-1.5*Pzeta(vis) > -20 GeV (inverted)'),
+            title = cms.string('Pzeta-1.5*Pzeta(vis) > -20 GeV (off)'),
         ),
         cms.PSet(
             analyzers = cms.vstring('electronHistManagerForElecTauBgEstWplusJetsEnriched',
                                     'tauHistManagerForElecTauBgEstWplusJetsEnriched',
                                     'diTauCandidateHistManagerForElecTauBgEstWplusJetsEnriched',
+                                    'diTauCandidateNSVfitHistManagerForElecTauBgEstWplusJetsEnriched',
                                     ),
         ),          
         cms.PSet(
@@ -634,6 +645,7 @@ analyzeEventsBgEstWplusJetsEnriched = cms.EDAnalyzer("GenericAnalyzer",
             analyzers = cms.vstring('electronHistManagerForElecTauBgEstWplusJetsEnriched',
                                     'tauHistManagerForElecTauBgEstWplusJetsEnriched',
                                     'diTauCandidateHistManagerForElecTauBgEstWplusJetsEnriched',
+                                    'diTauCandidateNSVfitHistManagerForElecTauBgEstWplusJetsEnriched',
                                     ),
         ),         
         cms.PSet(
@@ -644,6 +656,7 @@ analyzeEventsBgEstWplusJetsEnriched = cms.EDAnalyzer("GenericAnalyzer",
             analyzers = cms.vstring('electronHistManagerForElecTauBgEstWplusJetsEnriched',
                                     'tauHistManagerForElecTauBgEstWplusJetsEnriched',
                                     'diTauCandidateHistManagerForElecTauBgEstWplusJetsEnriched',
+                                    'diTauCandidateNSVfitHistManagerForElecTauBgEstWplusJetsEnriched',
                                     ),
         ),
 
