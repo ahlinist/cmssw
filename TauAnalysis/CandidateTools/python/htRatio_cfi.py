@@ -1,5 +1,8 @@
 import FWCore.ParameterSet.Config as cms
 
+from TauAnalysis.CandidateTools.tools.objProdConfigurator import *
+from TauAnalysis.CandidateTools.tools.objSelConfigurator import *
+
 #--------------------------------------------------------------------------------
 # produce data-formats providing information 
 # about distribution of energy deposits in the event 
@@ -18,8 +21,25 @@ selectedHtRatio = cms.EDFilter("HtRatioSelector",
     filter = cms.bool(False)
 )
 
+selectedHtRatioLoose = cms.EDFilter("HtRatioSelector",
+    src = cms.InputTag('htRatios'),
+    cut = cms.string('Ratio() > 0.3'),
+    filter = cms.bool(False)
+)
 
+htRatioProdConfigurator = objProdConfigurator(
+    htRatios,
+    pyModuleName = __name__
+    )
 
-produceHtRatio = cms.Sequence(htRatios)
+produceHtRatio = htRatioProdConfigurator.configure(pyNameSpace = locals())
 
-selectHtRatio = cms.Sequence( selectedHtRatio )
+htRatioSelConfigurator = objSelConfigurator(
+    [  selectedHtRatioLoose,
+       selectedHtRatio ],
+    src = "htRatios",
+    pyModuleName = __name__,
+    doSelIndividual = False
+    )
+
+selectHtRatio = htRatioSelConfigurator.configure(pyNameSpace = locals())
