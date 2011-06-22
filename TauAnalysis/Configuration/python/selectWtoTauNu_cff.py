@@ -1,6 +1,7 @@
 import FWCore.ParameterSet.Config as cms
 
 from TauAnalysis.RecoTools.tools.eventSelFlagProdConfigurator import *
+from TauAnalysis.CandidateTools.sysErrDefinitions_cfi import *
 
 # trigger selection
 cfgTrigger = cms.PSet(
@@ -42,6 +43,7 @@ cfgTauEtaCut = cms.PSet(
     pluginType = cms.string('PATCandViewMinEventSelector'),
     src_cumulative = cms.InputTag('selectedPatTausForWTauNuEta21Cumulative'),
     src_individual = cms.InputTag('selectedPatTausForWTauNuEta21Individual'),
+    systematics = cms.vstring(tauSystematics.keys()),
     minNumber = cms.uint32(1)
 )
 cfgTauPtCut = cms.PSet(
@@ -49,20 +51,24 @@ cfgTauPtCut = cms.PSet(
     pluginType = cms.string('PATCandViewMinEventSelector'),
     src_cumulative = cms.InputTag('selectedPatTausForWTauNuPt20Cumulative'),
     src_individual = cms.InputTag('selectedPatTausForWTauNuPt20Individual'),
+    systematics = cms.vstring(tauSystematics.keys()),
     minNumber = cms.uint32(1)
 )
 
 cfgHtRatioCut = cms.PSet(
     pluginName = cms.string('htRatio'),
     pluginType = cms.string('HtRatioMinEventSelector'),
-    src = cms.InputTag('selectedHtRatio'),
+    src = cms.InputTag('selectedHtRatioCumulative'),
+    systematics = cms.vstring(htRatioSystematics.keys()),
     minNumber = cms.uint32(1)
     )
 
 cfgPFMetPt = cms.PSet(
     pluginName = cms.string('PFmetPtCut'),
     pluginType = cms.string('PATCandViewMinEventSelector'),
-    src = cms.InputTag('selectedPatPFMETsPt30'),
+#    src = cms.InputTag('selectedPatPFMETsPt45'),
+    src = cms.InputTag('selectedPatPFMETsPt30Cumulative'),
+    systematics = cms.vstring(metSystematicsForWtoTauNu.keys()),
     minNumber = cms.uint32(1)
 )
 
@@ -71,6 +77,7 @@ cfgTauLeadTrk = cms.PSet(
     pluginType = cms.string('PATCandViewMinEventSelector'),
     src_cumulative = cms.InputTag('selectedPatTausForWTauNuLeadTrkCumulative'),
     src_individual = cms.InputTag('selectedPatTausForWTauNuLeadTrkIndividual'),
+    systematics = cms.vstring(tauSystematics.keys()),
     minNumber = cms.uint32(1)
 )
 
@@ -79,6 +86,7 @@ cfgTauLeadTrkPt = cms.PSet(
     pluginType = cms.string('PATCandViewMinEventSelector'),
     src_cumulative = cms.InputTag('selectedPatTausForWTauNuLeadTrkPtCumulative'),
     src_individual = cms.InputTag('selectedPatTausForWTauNuLeadTrkPtIndividual'),
+    systematics = cms.vstring(tauSystematics.keys()),
     minNumber = cms.uint32(1)
 )
 
@@ -88,6 +96,7 @@ cfgTauIso = cms.PSet(
     pluginType = cms.string('PATCandViewMinEventSelector'),
     src_cumulative = cms.InputTag('selectedPatTausForWTauNuIsoCumulative'),
     src_individual = cms.InputTag('selectedPatTausForWTauNuIsoIndividual'),
+    systematics = cms.vstring(tauSystematics.keys()),
     minNumber = cms.uint32(1)
 )
 
@@ -96,6 +105,7 @@ cfgTauMuonVeto = cms.PSet(
     pluginType = cms.string('PATCandViewMinEventSelector'),
     src_cumulative = cms.InputTag('selectedPatTausForWTauNuMuonVetoCumulative'),
     src_individual = cms.InputTag('selectedPatTausForWTauNuMuonVetoIndividual'),
+    systematics = cms.vstring(tauSystematics.keys()),
     minNumber = cms.uint32(1)
 )
 
@@ -104,6 +114,7 @@ cfgTauElectronVeto = cms.PSet(
     pluginType = cms.string('PATCandViewMinEventSelector'),
     src_cumulative = cms.InputTag('selectedPatTausForWTauNuElectronVetoCumulative'),
     src_individual = cms.InputTag('selectedPatTausForWTauNuElectronVetoIndividual'),
+    systematics = cms.vstring(tauSystematics.keys()),
     minNumber = cms.uint32(1)
 )
 
@@ -112,6 +123,7 @@ cfgTauEmFraction = cms.PSet(
     pluginType = cms.string('PATCandViewMinEventSelector'),
     src_cumulative = cms.InputTag('selectedPatTausForWTauNuEmFractionCumulative'),
     src_individual = cms.InputTag('selectedPatTausForWTauNuEmFractionIndividual'),
+    systematics = cms.vstring(tauSystematics.keys()),
     minNumber = cms.uint32(1)
 )
 
@@ -120,6 +132,7 @@ cfgTauEcalCrackVeto = cms.PSet(
     pluginType = cms.string('PATCandViewMinEventSelector'),
     src_cumulative = cms.InputTag('selectedPatTausForWTauNuEcalCrackVetoCumulative'),
     src_individual = cms.InputTag('selectedPatTausForWTauNuEcalCrackVetoIndividual'),
+    systematics = cms.vstring(tauSystematics.keys()),
     minNumber = cms.uint32(1)
 )
 
@@ -128,6 +141,7 @@ cfgTauProngCut = cms.PSet(
     pluginType = cms.string('PATCandViewMinEventSelector'),
     src_cumulative = cms.InputTag('selectedPatTausForWTauNuProngCumulative'),
     src_individual = cms.InputTag('selectedPatTausForWTauNuProngIndividual'),
+    systematics = cms.vstring(tauSystematics.keys()),
     minNumber = cms.uint32(1)
 )
 
@@ -136,6 +150,7 @@ cfgTauChargeCut = cms.PSet(
     pluginType = cms.string('PATCandViewMinEventSelector'),
     src_cumulative = cms.InputTag('selectedPatTausForWTauNuChargeCumulative'),
     src_individual = cms.InputTag('selectedPatTausForWTauNuChargeIndividual'),
+    systematics = cms.vstring(tauSystematics.keys()),
     minNumber = cms.uint32(1)
 )
 
@@ -206,8 +221,8 @@ isRecWtoTauNu = cms.EDProducer("BoolEventSelFlagProducer",
     cms.InputTag('muonVeto'),
     cms.InputTag('electronVeto'),
     cms.InputTag('PFmetPtCut'),
-    cms.InputTag('htRatio'),
-    cms.InputTag('metTopologyCut')
+    cms.InputTag('htRatio')
+#    cms.InputTag('metTopologyCut')
     )
                                )
 
