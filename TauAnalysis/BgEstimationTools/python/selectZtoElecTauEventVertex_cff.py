@@ -13,7 +13,7 @@ from TauAnalysis.RecoTools.tools.eventSelFlagProdConfigurator import *
 cfgPrimaryEventVertex = cms.PSet(
     pluginName = cms.string('primaryEventVertex'),
     pluginType = cms.string('VertexMinEventSelector'),
-    src = cms.InputTag('offlinePrimaryVerticesWithBS'),
+    src = cms.InputTag('offlinePrimaryVerticesDA'),
     minNumber = cms.uint32(1)
 )
 cfgPrimaryEventVertexQuality = cms.PSet(
