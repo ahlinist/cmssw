@@ -28,6 +28,12 @@ process.load("TauAnalysis.Configuration.producePatTupleZtoElecTauSpecific_cff")
 process.load("TauAnalysis.Configuration.selectZtoElecTau_cff")
 process.load("TauAnalysis.RecoTools.filterDataQuality_cfi")
 
+process.load("FWCore.MessageLogger.MessageLogger_cfi")
+process.options = cms.untracked.PSet(
+ wantSummary = cms.untracked.bool( True )
+)
+#process.Timing = cms.Service("Timing")
+
 
 process.DQMStore = cms.Service("DQMStore")
 
@@ -36,16 +42,13 @@ process.saveZtoElecTauPlots = cms.EDAnalyzer("DQMSimpleFileSaver",
 )
 
 process.maxEvents = cms.untracked.PSet(
-    input = cms.untracked.int32(-1) 
-    #input = cms.untracked.int32(10)    
+    #input = cms.untracked.int32(-1) 
+    input = cms.untracked.int32(1000)    
 )
 
 process.source = cms.Source("PoolSource",
-    #fileNames = cms.untracked.vstring("file:/afs/crc.nd.edu/user/l/lantonel/CMSSW_4_1_3/src/TauAnalysis/BgEstimationTools/test/patTuple.root"),
-                           fileNames = cms.untracked.vstring()
+                          fileNames = cms.untracked.vstring()
     #skipEvents=cms.untracked.uint32(1421)
-
-                            
     #skipBadFiles = cms.untracked.bool(True) 
 )
 
@@ -56,21 +59,16 @@ process.options = cms.untracked.PSet( SkipEvent = cms.untracked.vstring('Product
 #--------------------------------------------------------------------------------
 
 
-#dir = "/pscratch/ndcms/bestman/storage/cms/store/user/jkolb/DYToTauTau_M-20_CT10_TuneZ2_7TeV-powheg-pythia-tauola/skimElecTau_413_v2/eae887ba91c6c27e2f0c00f8aee7bf0a/"
-
-#dir = "/pscratch/ndcms/bestman/storage/cms/store/user/jkolb/DYToEE_M-10To20_TuneZ2_7TeV-pythia6/skimElecTau_413_v1/eae887ba91c6c27e2f0c00f8aee7bf0a/"
-#dir = "/pscratch/ndcms/bestman/storage/cms/store/user/lantonel/DYToEE_M-20_CT10_TuneZ2_7TeV-powheg-pythia/patSkim_413_v1/c9dbc6c7165a3d4f1d089077c1253e67/"
-
-
-
+#dir = "/pscratch/ndcms/bestman/storage/cms/store/user/lantonel/DYToTauTau_M-20_CT10_TuneZ2_7TeV-powheg-pythia-tauola/patSkim_413_v3/c9dbc6c7165a3d4f1d089077c1253e67/"
+#dir = "/pscratch/ndcms/bestman/storage/cms/store/user/lantonel/DYToTauTau_M-20_CT10_TuneZ2_7TeV-powheg-pythia-tauola/patSkim_416_v1/bb744712881680cf83750ebaff93c394/"
 #dir = "/pscratch/ndcms/bestman/storage/cms/store/user/jkolb/TauPlusX/skimElecTau_413_v1/eae887ba91c6c27e2f0c00f8aee7bf0a/"
-#dir = "/pscratch/ndcms/bestman/storage/cms/store/user/jkolb/WJetsToLNu_TuneZ2_7TeV-madgraph-tauola/skimElecTau_413_v1/eae887ba91c6c27e2f0c00f8aee7bf0a/"
+dir = "/pscratch/ndcms/bestman/storage/cms/store/user/jkolb/DYToTauTau_M-20_CT10_TuneZ2_7TeV-powheg-pythia-tauola/skimElecTau_413_v2/eae887ba91c6c27e2f0c00f8aee7bf0a/"
 
 #--------------------------------------------------------------------------------
 
 
-#for file in os.listdir(dir):
-#    process.source.fileNames.extend(cms.untracked.vstring('file:' + dir + file))
+for file in os.listdir(dir):
+    process.source.fileNames.extend(cms.untracked.vstring('file:' + dir + file))
  
 
 from TauAnalysis.RecoTools.recoVertexSelection_cff import *
@@ -116,6 +114,9 @@ process.cleanPatTaus.preselection = cms.string('')
 process.patJetCorrections.remove(process.patJetCorrFactors)
 process.patJets.jetCorrFactorsSource = cms.VInputTag()
 process.patJets.addJetCorrFactors = cms.bool(False)
+process.producePatTupleZtoElecTauSpecific.remove(process.pfMEtType1and2corrected)
+process.producePatTupleZtoElecTauSpecific.remove(process.patPFtype1METs)
+
 #--------------------------------------------------------------------------------
 
 #--------------------------------------------------------------------------------
@@ -146,42 +147,37 @@ from TauAnalysis.Configuration.tools.changeCut import changeCut
 process.load('TauAnalysis.BgEstimationTools.bgEstZtoElecTauZtautauEnrichedSelection_cff')
 
 
-## changeCut(process,"selectedPatElectronsForElecTauConversionVeto",cms.bool(True), attribute = "usePogMethod")
-## changeCut(process,"selectedPatElectronsForElecTauConversionVeto",cms.bool(True), attribute = "doMissingHitsCut")
-## changeCut(process,"selectedPatElectronsForElecTauConversionVeto",cms.bool(False), attribute = "doPixCut")
-
-
+#process.load('TauAnalysis.BgEstimationTools.bgEstZtoElecTauPhotonPlusJetsEnrichedSelection_cff')
 process.load('TauAnalysis.BgEstimationTools.bgEstZtoElecTauWplusJetsEnrichedSelection_cff')
-process.load('TauAnalysis.BgEstimationTools.bgEstZtoElecTauPhotonPlusJetsEnrichedSelection_cff')
 process.load('TauAnalysis.BgEstimationTools.bgEstZtoElecTauQCDenrichedSelection_cff')
-process.load('TauAnalysis.BgEstimationTools.bgEstZtoElecTauZeeJetMisIdEnrichedSelection_cff')
 process.load('TauAnalysis.BgEstimationTools.bgEstZtoElecTauZeeElectronMisIdEnrichedSelection_cff')
 
 
-## saveEvents = cms.OutputModule("PoolOutputModule",
+## process.saveEvents = cms.OutputModule("PoolOutputModule",
 ##     fileName = cms.untracked.string('test_output.root')
 ## )
 
+from TauAnalysis.RecoTools.patLeptonSelection_cff import patMuonSelConfigurator
+setattr(patMuonSelConfigurator, "src", "cleanPatMuons" )
+process.selectPatMuons = patMuonSelConfigurator.configure(process = process)
+
 
 process.p = cms.Path(
-    #process.selectPrimaryVertex
-    #+ process.producePatTuple
-    process.producePatTupleZtoElecTauSpecific
+    process.producePatTuple
+    + process.producePatTupleZtoElecTauSpecific
+    + process.selectPrimaryVertex 
     + process.bgEstZtautauEnrichedAnalysisSequence
     + process.bgEstWplusJetsEnrichedAnalysisSequence
-    + process.bgEstPhotonPlusJetsEnrichedAnalysisSequence
     + process.bgEstZeeElectronMisIdEnrichedAnalysisSequence
-    + process.bgEstZeeJetMisIdEnrichedAnalysisSequence
     + process.bgEstQCDenrichedAnalysisSequence
-    #+ process.saveEvents
     + process.saveZtoElecTauPlots
 )
 
-process.q = cms.Path(process.dataQualityFilters)
+#process.q = cms.Path(process.dataQualityFilters)
 #process.end = cms.EndPath(process.saveEvents)
 
 #process.schedule = cms.Schedule(process.q, process.p, process.end)
-process.schedule = cms.Schedule(process.q, process.p)
+#process.schedule = cms.Schedule(process.q, process.p)
 
 
 # print-out all python configuration parameter information
