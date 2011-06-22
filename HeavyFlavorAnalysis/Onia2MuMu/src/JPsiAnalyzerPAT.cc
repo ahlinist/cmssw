@@ -13,7 +13,7 @@
 //
 // Original Author: Roberto Covarelli 
 //         Created:  Fri Oct  9 04:59:40 PDT 2009
-// $Id: JPsiAnalyzerPAT.cc,v 1.49 2011/03/29 12:06:27 covarell Exp $
+// $Id: JPsiAnalyzerPAT.cc,v 1.50 2011/04/01 16:11:02 covarell Exp $
 //
 // based on: Onia2MuMu package V00-11-00
 // changes done by: FT-HW
@@ -22,6 +22,7 @@
 #include <memory>
 #include <fstream>
 #include <ostream>
+#include <iostream>
 #include <math.h>
 
 // ROOT/Roofit include files
@@ -168,6 +169,7 @@ class JPsiAnalyzerPAT : public edm::EDAnalyzer {
       // -1 : event firing the corresponding trigger, 2 RECO muons matched to 2 HLT objects, NEGATIVE-charge muon matched to the tighter HLT object (usually a L3 muon)
       // 2 : event firing the corresponding trigger, 2 RECO muons matched to 2 HLT objects, both matched to the tighter HLT object (usually a L3 muon)
       // 3 : event firing the corresponding trigger but at least one RECO muon is not matched to the HLT objects 
+      std::map<std::string, int> mapTriggerNameToPrescaleFac_;
 
       Handle<pat::CompositeCandidateCollection > collAll;
       Handle<pat::CompositeCandidateCollection > collCalo;
@@ -203,7 +205,7 @@ class JPsiAnalyzerPAT : public edm::EDAnalyzer {
       bool           _storeAllMCEvents;
       bool           _isPromptMC;
 
-      InputTag      _triggerresults;
+      InputTag      _triggerresults;  
 
       vector<unsigned int>                     _thePassedCats[3];
       vector<const pat::CompositeCandidate*>   _thePassedCands[3];
@@ -214,7 +216,6 @@ class JPsiAnalyzerPAT : public edm::EDAnalyzer {
       unsigned int passedMuonSelectionCuts_;
       unsigned int passedTriggerMatch_;
       unsigned int passedTriggerResultsAnalyzer_;
-
 
       // limits 
       float JpsiMassMin;
@@ -233,16 +234,27 @@ class JPsiAnalyzerPAT : public edm::EDAnalyzer {
       int runtmp,lumitmp,count;
       int runmax,runmin;
 
+      //muon distance
+      PropagateToMuon prop1_, prop2_; 
+
       // Trigger Filter Studies
       edm::Handle< edm::TriggerResults> handleTriggerResults_;
       edm::InputTag tagTriggerResults_;
       HLTConfigProvider hltConfig_;
       bool hltConfigInit_;
-      std::vector<std::string> HLTbitNames_;
+      std::vector<std::string> HLTBitNames_;
+      std::vector<std::string> HLTBitNames_SingleMu;
+      std::vector<std::string> HLTLastFilterNames_SingleMu;
+      std::vector<std::string> HLTBitNames_DoubleMu;
+      std::vector<std::string> HLTLastFilterNames_DoubleMu;
+      std::vector<std::string> HLTBitNames_MuL2Mu;
+      std::vector<std::string> HLTLastFilterNames_MuL2Mu;
+      std::vector<std::string> HLTBitNames_MuTrack;
+      std::vector<std::string> HLTLastFilterNames_MuTrack;
+      std::vector<std::string> HLTBitNames_MuTkMu;
+      std::vector<std::string> HLTLastFilterNames_MuTkMu;
       std::map< std::string, std::string> mapTriggerToLastFilter_;
-
-      //muon distance
-      PropagateToMuon prop1_, prop2_; 
+      
 };    
       
 // constants, enums and typedefs
@@ -259,7 +271,7 @@ JPsiAnalyzerPAT::JPsiAnalyzerPAT(const edm::ParameterSet& iConfig):
   _treefilename(iConfig.getParameter<string>("treeFileName")),	
   _writeDataSet(iConfig.getParameter<bool>("writeDataSet")),
   _datasetname(iConfig.getParameter<string>("dataSetName")),
-  _triggerForDataset(iConfig.getParameter< vector<string> >("triggerForDataset")),
+  _triggerForDataset(iConfig.getParameter< vector<string> >("triggersForDataset")),
   _massMin(iConfig.getParameter<double>("massMin")),
   _massMax(iConfig.getParameter<double>("massMax")),
   _ptbinranges(iConfig.getParameter< vector<double> >("pTBinRanges")),	
@@ -280,9 +292,19 @@ JPsiAnalyzerPAT::JPsiAnalyzerPAT(const edm::ParameterSet& iConfig):
   _isMC(iConfig.getUntrackedParameter<bool>("isMC",false)),
   _storeAllMCEvents(iConfig.getUntrackedParameter<bool>("storeAllMCEvents",false)),
   _isPromptMC(iConfig.getUntrackedParameter<bool>("isPromptMC",false) ),
-  tagTriggerResults_(iConfig.getParameter<InputTag>("triggerResultsLabel")),
   prop1_(iConfig.getParameter<edm::ParameterSet>("propagatorStation1")),
-  prop2_(iConfig.getParameter<edm::ParameterSet>("propagatorStation2"))
+  prop2_(iConfig.getParameter<edm::ParameterSet>("propagatorStation2")),
+  tagTriggerResults_(iConfig.getParameter<InputTag>("triggerResultsLabel")),
+  HLTBitNames_SingleMu(iConfig.getParameter< vector<string> >("HLTBitNames_SingleMu")),
+  HLTLastFilterNames_SingleMu(iConfig.getParameter< vector<string> >("HLTLastFilterNames_SingleMu")),
+  HLTBitNames_DoubleMu(iConfig.getParameter< vector<string> >("HLTBitNames_DoubleMu")),
+  HLTLastFilterNames_DoubleMu(iConfig.getParameter< vector<string> >("HLTLastFilterNames_DoubleMu")),
+  HLTBitNames_MuL2Mu(iConfig.getParameter< vector<string> >("HLTBitNames_MuL2Mu")),
+  HLTLastFilterNames_MuL2Mu(iConfig.getParameter< vector<string> >("HLTLastFilterNames_MuL2Mu")),
+  HLTBitNames_MuTrack(iConfig.getParameter< vector<string> >("HLTBitNames_MuTrack")),
+  HLTLastFilterNames_MuTrack(iConfig.getParameter< vector<string> >("HLTLastFilterNames_MuTrack")),
+  HLTBitNames_MuTkMu(iConfig.getParameter< vector<string> >("HLTBitNames_MuTkMu")),
+  HLTLastFilterNames_MuTkMu(iConfig.getParameter< vector<string> >("HLTLastFilterNames_MuTkMu"))
 {
    //now do what ever initialization is needed
   nEvents = 0; 
@@ -298,108 +320,44 @@ JPsiAnalyzerPAT::JPsiAnalyzerPAT(const edm::ParameterSet& iConfig):
 
   if (_writeOutCands) theTextFile = new ofstream("passedCandidates.txt");
   
-  /* if (_JSON){
-    JSON = new ofstream("PseudoJSON.txt");
-    *JSON << "{";
-    }*/
-
-  // Add the Trigger you want to choose into HLTbitNames_
-  // Mu + Track Trigger
-  HLTbitNames_.push_back( "HLT_Mu0_Track0_Jpsi" );
-  HLTbitNames_.push_back( "HLT_Mu3_Track0_Jpsi" );
-  HLTbitNames_.push_back( "HLT_Mu5_Track0_Jpsi" );
-  HLTbitNames_.push_back( "HLT_Mu5_Track0_Jpsi_v2" );
-  //
-  HLTbitNames_.push_back( "HLT_Mu0_TkMu0_Jpsi" );
-  HLTbitNames_.push_back( "HLT_Mu3_TkMu0_Jpsi" );
-  HLTbitNames_.push_back( "HLT_Mu5_TkMu0_Jpsi" );
-  //
-  HLTbitNames_.push_back( "HLT_Mu0_TkMu0_OST_Jpsi" );
-  HLTbitNames_.push_back( "HLT_Mu3_TkMu0_OST_Jpsi" );
-  HLTbitNames_.push_back( "HLT_Mu5_TkMu0_OST_Jpsi" );
-  //
-  HLTbitNames_.push_back( "HLT_Mu0_TkMu0_OST_Jpsi_Tight_v1" );
-  HLTbitNames_.push_back( "HLT_Mu3_TkMu0_OST_Jpsi_Tight_v1" );
-  HLTbitNames_.push_back( "HLT_Mu5_TkMu0_OST_Jpsi_Tight_v1" );
-  //
-  HLTbitNames_.push_back( "HLT_Mu0_TkMu0_OST_Jpsi_Tight_v2" );
-  HLTbitNames_.push_back( "HLT_Mu3_TkMu0_OST_Jpsi_Tight_v2" );
-  HLTbitNames_.push_back( "HLT_Mu5_TkMu0_OST_Jpsi_Tight_v2" );
-  //
-  HLTbitNames_.push_back( "HLT_Mu0_TkMu0_OST_Jpsi_Tight_v3" );
-  HLTbitNames_.push_back( "HLT_Mu3_TkMu0_OST_Jpsi_Tight_v3" );
-  HLTbitNames_.push_back( "HLT_Mu5_TkMu0_OST_Jpsi_Tight_v3" );
-  //Mixed MuX + Track Trigger
-  HLTbitNames_.push_back( "HLT_Mu3_Track3_Jpsi" );
-  HLTbitNames_.push_back( "HLT_Mu3_Track3_Jpsi_v2" );
-  HLTbitNames_.push_back( "HLT_Mu3_Track5_Jpsi_v1" );
-  HLTbitNames_.push_back( "HLT_Mu3_Track5_Jpsi_v2" );
-  //Mixed MuX + L2Mu Trigger
-  HLTbitNames_.push_back( "HLT_Mu5_L2Mu0" );
-  // Double Muon Trigger
-  HLTbitNames_.push_back( "HLT_DoubleMu0" );
-  HLTbitNames_.push_back( "HLT_DoubleMu0_Quarkonium_v1" );
-  HLTbitNames_.push_back( "HLT_DoubleMu0_Quarkonium_LS_v1" );
-  HLTbitNames_.push_back( "HLT_L1DoubleMuOpen" );
-  HLTbitNames_.push_back( "HLT_L1DoubleMuOpen_Tight" );
-  HLTbitNames_.push_back( "HLT_DoubleMu3" );
-  // Single Muon Trigger
-  HLTbitNames_.push_back( "HLT_Mu3" );
-  HLTbitNames_.push_back( "HLT_Mu5" );
-  HLTbitNames_.push_back( "HLT_Mu7" );
-  HLTbitNames_.push_back( "HLT_Mu9" );
-  HLTbitNames_.push_back( "HLT_Mu11" );
-  for(std::vector<std::string>::iterator it = HLTbitNames_.begin(); it != HLTbitNames_.end(); ++it){
-      mapTriggerNameToIntFired_[*it] = -9999;
+  if (HLTBitNames_SingleMu.size() != HLTLastFilterNames_SingleMu.size()) std::cout << "WARNING: Trigger names and last filters do not match in size!" << std::endl;
+  std::vector<std::string>::iterator it2 = HLTLastFilterNames_SingleMu.begin();
+  for(std::vector<std::string>::iterator it = HLTBitNames_SingleMu.begin(); it != HLTBitNames_SingleMu.end(); ++it){
+    mapTriggerToLastFilter_[*it] = *it2;
+    ++it2;   HLTBitNames_.push_back(*it);
+  }
+  if (HLTBitNames_DoubleMu.size() != HLTLastFilterNames_DoubleMu.size()) std::cout << "WARNING: Trigger names and last filters do not match in size!" << std::endl;
+  it2 = HLTLastFilterNames_DoubleMu.begin();
+  for(std::vector<std::string>::iterator it = HLTBitNames_DoubleMu.begin(); it != HLTBitNames_DoubleMu.end(); ++it){
+    mapTriggerToLastFilter_[*it] = *it2;
+    ++it2;   HLTBitNames_.push_back(*it);
+  }
+  if (2*HLTBitNames_MuL2Mu.size() != HLTLastFilterNames_MuL2Mu.size()) std::cout << "WARNING: Trigger names and last filters do not match in size!" << std::endl;
+  it2 = HLTLastFilterNames_MuL2Mu.begin();
+  for(std::vector<std::string>::iterator it = HLTBitNames_MuL2Mu.begin(); it != HLTBitNames_MuL2Mu.end(); ++it){
+    std::string theName = *it;
+    mapTriggerToLastFilter_[theName] = *it2;
+    ++it2;   HLTBitNames_.push_back(theName);  
+    theName += "_special";
+    mapTriggerToLastFilter_[theName] = *it2;
+    ++it2;    
+  }
+  if (HLTBitNames_MuTrack.size() != HLTLastFilterNames_MuTrack.size()) std::cout << "WARNING: Trigger names and last filters do not match in size!" << std::endl;
+  it2 = HLTLastFilterNames_MuTrack.begin();
+  for(std::vector<std::string>::iterator it = HLTBitNames_MuTrack.begin(); it != HLTBitNames_MuTrack.end(); ++it){
+    mapTriggerToLastFilter_[*it] = *it2;
+    ++it2;   HLTBitNames_.push_back(*it);
+  }
+  if (HLTBitNames_MuTkMu.size() != HLTLastFilterNames_MuTkMu.size()) std::cout << "WARNING: Trigger names and last filters do not match in size!" << std::endl;
+  it2 = HLTLastFilterNames_MuTkMu.begin();
+  for(std::vector<std::string>::iterator it = HLTBitNames_MuTkMu.begin(); it != HLTBitNames_MuTkMu.end(); ++it){
+    mapTriggerToLastFilter_[*it] = *it2;
+    ++it2;  HLTBitNames_.push_back(*it);
   }
 
-// MAP your Trigger TO the last Filter used in the path
-// MuX + Track Trigger
-  mapTriggerToLastFilter_["HLT_Mu0_Track0_Jpsi"]="hltMu0TrackJpsiTrackMassFiltered";
-  mapTriggerToLastFilter_["HLT_Mu3_Track0_Jpsi"]="hltMu3TrackJpsiTrackMassFiltered";
-  mapTriggerToLastFilter_["HLT_Mu5_Track0_Jpsi"]="hltMu5TrackJpsiTrackMassFiltered";
-  mapTriggerToLastFilter_["HLT_Mu5_Track0_Jpsi_v2"]="hltMu5TrackJpsiTrackMassFiltered";
-//
-  mapTriggerToLastFilter_["HLT_Mu0_TkMu0_Jpsi"] = "hltMu0TkMuJpsiTkMuMassFiltered";
-  mapTriggerToLastFilter_["HLT_Mu3_TkMu0_Jpsi"] = "hltMu3TkMuJpsiTkMuMassFiltered";
-  mapTriggerToLastFilter_["HLT_Mu5_TkMu0_Jpsi"] = "hltMu5TkMuJpsiTkMuMassFiltered";
-//
-  mapTriggerToLastFilter_["HLT_Mu0_TkMu0_OST_Jpsi"] = "hltMu0TkMuJpsiTkMuMassFiltered";
-  mapTriggerToLastFilter_["HLT_Mu3_TkMu0_OST_Jpsi"] = "hltMu3TkMuJpsiTkMuMassFiltered";
-  mapTriggerToLastFilter_["HLT_Mu5_TkMu0_OST_Jpsi"] = "hltMu5TkMuJpsiTkMuMassFiltered";
-//
-  mapTriggerToLastFilter_["HLT_Mu0_TkMu0_OST_Jpsi_Tight_v1"] = "hltMu0TkMuJpsiTkMuMassFilteredTight";
-  mapTriggerToLastFilter_["HLT_Mu3_TkMu0_OST_Jpsi_Tight_v1"] = "hltMu3TkMuJpsiTkMuMassFilteredTight";
-  mapTriggerToLastFilter_["HLT_Mu5_TkMu0_OST_Jpsi_Tight_v1"] = "hltMu5TkMuJpsiTkMuMassFilteredTight";
-//
-  mapTriggerToLastFilter_["HLT_Mu0_TkMu0_OST_Jpsi_Tight_v2"] = "hltMu0TkMuJpsiTkMuMassFilteredTight";
-  mapTriggerToLastFilter_["HLT_Mu3_TkMu0_OST_Jpsi_Tight_v2"] = "hltMu3TkMuJpsiTkMuMassFilteredTight";
-  mapTriggerToLastFilter_["HLT_Mu5_TkMu0_OST_Jpsi_Tight_v2"] = "hltMu5TkMuJpsiTkMuMassFilteredTight";
-//
-  mapTriggerToLastFilter_["HLT_Mu0_TkMu0_OST_Jpsi_Tight_v3"] = "hltMu0TkMuJpsiTkMuMassFilteredTight";
-  mapTriggerToLastFilter_["HLT_Mu3_TkMu0_OST_Jpsi_Tight_v3"] = "hltMu3TkMuJpsiTkMuMassFilteredTight";
-  mapTriggerToLastFilter_["HLT_Mu5_TkMu0_OST_Jpsi_Tight_v3"] = "hltMu5TkMuJpsiTkMuMassFilteredTight";
-//
-  mapTriggerToLastFilter_["HLT_Mu3_Track3_Jpsi"]    = "hltMu3Track3JpsiTrackMassFiltered";
-  mapTriggerToLastFilter_["HLT_Mu3_Track3_Jpsi_v2"] = "hltMu3Track3JpsiTrackMassFiltered";
-  mapTriggerToLastFilter_["HLT_Mu3_Track5_Jpsi_v1"] = "hltMu3Track5JpsiTrackMassFiltered";
-  mapTriggerToLastFilter_["HLT_Mu3_Track5_Jpsi_v2"] = "hltMu3Track5JpsiTrackMassFiltered";
-//MuX + L2MuY triggers (SaveTag placed badly in configuration, need two last-filter tags)
-  mapTriggerToLastFilter_["HLT_Mu5_L2Mu0"] = "hltMu5L2Mu0L3Filtered5";
-  mapTriggerToLastFilter_["HLT_Mu5_L2Mu0_special"] = "hltDiMuonL2PreFiltered0";
-// Double Muon Trigger
-  mapTriggerToLastFilter_["HLT_DoubleMu0"]                  = "hltDiMuonL3PreFiltered0";
-  mapTriggerToLastFilter_["HLT_DoubleMu0_Quarkonium_v1"]    = "hltDoubleMu0QuarkoniumL3PreFiltered";
-  mapTriggerToLastFilter_["HLT_DoubleMu0_Quarkonium_LS_v1"] = "hltDoubleMu0QuarkoniumLSL3PreFiltered";
-  mapTriggerToLastFilter_["HLT_L1DoubleMuOpen"]             = "hltDoubleMuLevel1PathL1OpenFiltered";
-  mapTriggerToLastFilter_["HLT_L1DoubleMuOpen_Tight"]       = "hltL1DoubleMuOpenTightL1Filtered";
-  mapTriggerToLastFilter_["HLT_DoubleMu3"]                  = "hltDiMuonL3PreFiltered";
-// Single Muon Trigger
-  mapTriggerToLastFilter_["HLT_Mu3"]            = "hltSingleMu3L3Filtered3";
-  mapTriggerToLastFilter_["HLT_Mu5"]            = "hltSingleMu5L3Filtered5";
-  mapTriggerToLastFilter_["HLT_Mu7"]            = "hltSingleMu7L3Filtered7";
-  mapTriggerToLastFilter_["HLT_Mu9"]            = "hltSingleMu9L3Filtered9";
-  mapTriggerToLastFilter_["HLT_Mu11"]           = "hltSingleMu11L3Filtered11";
+  for(std::vector<std::string>::iterator it = HLTBitNames_.begin(); it != HLTBitNames_.end(); ++it){
+      mapTriggerNameToIntFired_[*it] = -9999;
+  }
 }
 
 
@@ -467,9 +425,10 @@ JPsiAnalyzerPAT::beginJob()
     // tree_->Branch("muNegPz",    &muNegPz,   "muNegPz/D");
 
     //add HLT Variables to TTree
-    for(std::vector< std::string >:: iterator it = HLTbitNames_.begin(); it != HLTbitNames_.end(); ++it){
+    for(std::vector< std::string >:: iterator it = HLTBitNames_.begin(); it != HLTBitNames_.end(); ++it){
         std::string hlt_name= *it;
         tree_->Branch(hlt_name.c_str(), &(mapTriggerNameToIntFired_[*it]), (hlt_name + "/I").c_str());
+	tree_->Branch((hlt_name+"_PreScale").c_str(), &(mapTriggerNameToPrescaleFac_[*it]), (hlt_name+"_PreScale" + "/I").c_str());
     }
 
     //add Generator Information
@@ -623,26 +582,6 @@ JPsiAnalyzerPAT::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup
    eventNb= iEvent.id().event() ;
    runNb=iEvent.id().run() ;
    lumiBlock= iEvent.luminosityBlock() ;
-
-   /* int Nrun=iEvent.id().run();
-   int lumi=iEvent.luminosityBlock();
-   if (Nrun>runmax) runmax=Nrun;     // this is only for printout at the end of job
-   if (Nrun<runmin) runmin=Nrun;
-   if (_JSON){                      // these lines write out a JSON file of runs analyzed
-     if (Nrun!=runtmp){
-       runtmp=Nrun; 
-       if (count == 0)  *JSON << " \"" << Nrun << "\" :[[" << lumi <<", ";
-       if (count!=0) *JSON << lumitmp <<"]],"<< " \"" << Nrun << "\" :[[" << lumi <<", ";
-       lumitmp=lumi;
-       count++;
-     }
-     if (lumi!=lumitmp) {
-       if (Nrun==runtmp && lumi!=lumitmp+1) {
-	 *JSON << lumitmp << "],["<< lumi << ", "; 
-       }
-       lumitmp=lumi;
-     }
-     }*/
 
    Handle<reco::VertexCollection> privtxs;
    iEvent.getByLabel("offlinePrimaryVertices", privtxs);
@@ -1254,6 +1193,9 @@ JPsiAnalyzerPAT::resetDSVariables(){
     for(std::map< std::string, int >::iterator clearIt= mapTriggerNameToIntFired_.begin(); clearIt != mapTriggerNameToIntFired_.end(); clearIt++){
         clearIt->second=0;
     }
+    for(std::map< std::string, int >::iterator clearIt= mapTriggerNameToPrescaleFac_.begin(); clearIt != mapTriggerNameToPrescaleFac_.end(); clearIt++){
+        clearIt->second=1;
+    }
 
     JpsiP->SetPtEtaPhiM(-999.,-999.,-999., 999.);
     muPosP->SetPtEtaPhiM(-999.,-999.,-999., 999.);
@@ -1374,12 +1316,12 @@ JPsiAnalyzerPAT::hltReport(const edm::Event &iEvent ,const edm::EventSetup& iSet
 
     std::map<std::string, bool> mapTriggernameToTriggerFired;
     std::map<std::string, unsigned int> mapTriggernameToHLTbit;
-    std::map<std::string, unsigned int> mapTriggerNameToPrescaleFac;
+    // std::map<std::string, unsigned int> mapTriggerNameToPrescaleFac;
 
-    for(std::vector<std::string>::const_iterator it= HLTbitNames_.begin(); it !=HLTbitNames_.end(); ++it){
+    for(std::vector<std::string>::const_iterator it= HLTBitNames_.begin(); it !=HLTBitNames_.end(); ++it){
         mapTriggernameToTriggerFired[*it]=false;
         mapTriggernameToHLTbit[*it]=1000;
-        mapTriggerNameToPrescaleFac[*it]=0;
+        // mapTriggerNameToPrescaleFac[*it]=0;
     }
 
     // HLTConfigProvider
@@ -1391,37 +1333,45 @@ JPsiAnalyzerPAT::hltReport(const edm::Event &iEvent ,const edm::EventSetup& iSet
 	unsigned int triggerIndex= hltConfig_.triggerIndex( it->first );
 	if (triggerIndex >= n) {
 	  //std::cout << "[JPsiAnalyzerPAT::hltReport] --- TriggerName " << it->first << " not available in config!" << std::endl;
-            }
+	}
 	else {
 	  it->second= triggerIndex;
-                //std::cout << "[JPsiAnalyzerPAT::hltReport] --- TriggerName " << it->first << " available in config!" << std::endl;
+	  //std::cout << "[JPsiAnalyzerPAT::hltReport] --- TriggerName " << it->first << " available in config!" << std::endl;
 	}
       }
     }
-
+    
     // Get Trigger Results
     try {
-    iEvent.getByLabel( tagTriggerResults_, handleTriggerResults_ );
-    //cout << "[JPsiAnalyzerPAT::hltReport] --- J/psi TriggerResult is present in current event" << endl;
+      iEvent.getByLabel( tagTriggerResults_, handleTriggerResults_ );
+      //cout << "[JPsiAnalyzerPAT::hltReport] --- J/psi TriggerResult is present in current event" << endl;
     }
     catch(...) {
-    //cout << "[JPsiAnalyzerPAT::hltReport] --- J/psi TriggerResults NOT present in current event" << endl;
+      //cout << "[JPsiAnalyzerPAT::hltReport] --- J/psi TriggerResults NOT present in current event" << endl;
     }
     if ( handleTriggerResults_.isValid() ){
-    //cout << "[JPsiAnalyzerPAT::hltReport] --- J/psi TriggerResults IS valid in current event" << endl;
-
-    // loop over Trigger Results to check if paths was fired
-    for(std::vector< std::string >::iterator itHLTNames= HLTbitNames_.begin(); itHLTNames != HLTbitNames_.end(); itHLTNames++){
-      const std::string triggerPathName =  *itHLTNames;
-      //std::cout << "[FloJPsiAnalyzer::hltReport] --- TriggerName --- TriggerName LOOP" << std::endl;
-
-      if ( mapTriggernameToHLTbit[triggerPathName] < 1000 && handleTriggerResults_->accept( mapTriggernameToHLTbit[triggerPathName] ) ){
+      //cout << "[JPsiAnalyzerPAT::hltReport] --- J/psi TriggerResults IS valid in current event" << endl;
+      
+      // loop over Trigger Results to check if paths was fired
+      for(std::vector< std::string >::iterator itHLTNames= HLTBitNames_.begin(); itHLTNames != HLTBitNames_.end(); itHLTNames++){
+	const std::string triggerPathName =  *itHLTNames;
+	//std::cout << "[FloJPsiAnalyzer::hltReport] --- TriggerName --- TriggerName LOOP" << std::endl;
+	
+	if ( mapTriggernameToHLTbit[triggerPathName] < 1000 ) {
+	  if (handleTriggerResults_->accept( mapTriggernameToHLTbit[triggerPathName] ) ){
           //std::cout << "[FloJPsiAnalyzer::hltReport] --- TriggerName " << triggerPathName << " fired!" << std::endl;
-          mapTriggerNameToIntFired_[triggerPathName] = 3;
+	    mapTriggerNameToIntFired_[triggerPathName] = 3;
+	  }
+
+	 //-------prescale factor------------
+	  if (!_isMC) {
+	    const std::pair<int,int> prescales(hltConfig_.prescaleValues(iEvent,iSetup,triggerPathName));
+	    //std::cout << "[FloJPsiAnalyzer::prescalvalues] --- TriggerName"<<triggerPathName<<" prescales first "<< prescales.first <<" prescales second "<< prescales.second <<std::endl;
+	    mapTriggerNameToPrescaleFac_[triggerPathName] = prescales.first * prescales.second;
+	  }
+	}
       }
-    }
-    }
-    else cout << "[JPsiAnalyzerPAT::hltReport] --- TriggerResults NOT valid in current event" << endl;
+    } else cout << "[JPsiAnalyzerPAT::hltReport] --- TriggerResults NOT valid in current event" << endl;
 }
 
 void
@@ -1449,16 +1399,8 @@ JPsiAnalyzerPAT::matchMuonToHlt(const pat::Muon* muon1, const pat::Muon* muon2)
         bool pass2 = mu2HLTMatches.size() > 0; 
 
         // treat "MuX_TrackX" Trigger separately: Match by Tracker collection: hltMuTrackJpsiCtfTrackCands
-        if (    triggerName == "HLT_Mu0_Track0_Jpsi" ||
-                triggerName == "HLT_Mu3_Track0_Jpsi" ||
-                triggerName == "HLT_Mu5_Track0_Jpsi" ||
-		triggerName == "HLT_Mu5_Track0_Jpsi_v2" ||
-
-                triggerName == "HLT_Mu3_Track3_Jpsi"    ||
-                triggerName == "HLT_Mu3_Track3_Jpsi_v2" ||
-                triggerName == "HLT_Mu3_Track5_Jpsi_v1" ||
-                triggerName == "HLT_Mu3_Track5_Jpsi_v2"     )
-        {
+	std::vector<std::string>::iterator theCheck = std::find(HLTBitNames_MuTrack.begin(),HLTBitNames_MuTrack.end(),triggerName);
+	if (theCheck != HLTBitNames_MuTrack.end()) {
                 bool matchedMu3[2] = {false, false}, matchedTrack[2] = {false, false};
                 for (unsigned k = 0; k < mu1HLTMatches.size(); ++k) {
 		    if (mu1HLTMatches[k].collection() == HLTL3MuCollName ) matchedMu3[0] = true;	     
@@ -1476,47 +1418,31 @@ JPsiAnalyzerPAT::matchMuonToHlt(const pat::Muon* muon1, const pat::Muon* muon2)
 		  mapTriggerNameToIntFired_[triggerName] = 2;
         }
 
-        // treat "MuX_TkMuX" Trigger separately: Match by Tracker collection:hltMuTkMuJpsiTrackerMuonCands
-        if (    triggerName == "HLT_Mu0_TkMu0_Jpsi" ||
-                triggerName == "HLT_Mu3_TkMu0_Jpsi" ||
-                triggerName == "HLT_Mu5_TkMu0_Jpsi" ||
-             //
-                triggerName == "HLT_Mu0_TkMu0_OST_Jpsi" ||
-                triggerName == "HLT_Mu3_TkMu0_OST_Jpsi" ||
-                triggerName == "HLT_Mu5_TkMu0_OST_Jpsi" ||
-             //
-                triggerName == "HLT_Mu0_TkMu0_OST_Jpsi_Tight_v1" ||
-                triggerName == "HLT_Mu3_TkMu0_OST_Jpsi_Tight_v1" ||
-                triggerName == "HLT_Mu5_TkMu0_OST_Jpsi_Tight_v1" ||
-//
-                triggerName == "HLT_Mu0_TkMu0_OST_Jpsi_Tight_v2" ||
-                triggerName == "HLT_Mu3_TkMu0_OST_Jpsi_Tight_v2" ||
-                triggerName == "HLT_Mu5_TkMu0_OST_Jpsi_Tight_v2" ||
-//
-                triggerName == "HLT_Mu0_TkMu0_OST_Jpsi_Tight_v3" ||
-                triggerName == "HLT_Mu3_TkMu0_OST_Jpsi_Tight_v3" ||
-                triggerName == "HLT_Mu5_TkMu0_OST_Jpsi_Tight_v3" )
-        {
-                bool matchedMu3[2] = {false, false}, matchedTrack[2] = {false, false};
-                for (unsigned k = 0; k < mu1HLTMatches.size(); ++k) {
-                    if (mu1HLTMatches[k].collection() == HLTL3MuCollName ) matchedMu3[0] = true;
-                    if (mu1HLTMatches[k].collection() == HLTTkMuCollName ) matchedTrack[0] = true;
-                }
-                for (unsigned k = 0; k < mu2HLTMatches.size(); ++k) {
-                    if (mu2HLTMatches[k].collection() == HLTL3MuCollName ) matchedMu3[1] = true;
-                    if (mu2HLTMatches[k].collection() == HLTTkMuCollName ) matchedTrack[1] = true;
-                }
-                if( matchedMu3[0] && matchedTrack[1] )
-		  mapTriggerNameToIntFired_[triggerName] = 1;
-		else if( matchedMu3[1] && matchedTrack[0] )
-		  mapTriggerNameToIntFired_[triggerName] = -1;
-		if( matchedMu3[0] && matchedTrack[1] && matchedMu3[1] && matchedTrack[0] )
-		  mapTriggerNameToIntFired_[triggerName] = 2;
-        }
+//         // treat "MuX_TkMuX" Trigger separately: Match by Tracker collection:hltMuTkMuJpsiTrackerMuonCands
+	theCheck = std::find(HLTBitNames_MuTkMu.begin(),HLTBitNames_MuTkMu.end(),triggerName);
+	if (theCheck != HLTBitNames_MuTkMu.end()) {
 
+	  bool matchedMu3[2] = {false, false}, matchedTrack[2] = {false, false};
+	  for (unsigned k = 0; k < mu1HLTMatches.size(); ++k) {
+	    if (mu1HLTMatches[k].collection() == HLTL3MuCollName ) matchedMu3[0] = true;
+	    if (mu1HLTMatches[k].collection() == HLTTkMuCollName ) matchedTrack[0] = true;
+	  }
+	  for (unsigned k = 0; k < mu2HLTMatches.size(); ++k) {
+	    if (mu2HLTMatches[k].collection() == HLTL3MuCollName ) matchedMu3[1] = true;
+	    if (mu2HLTMatches[k].collection() == HLTTkMuCollName ) matchedTrack[1] = true;
+	  }
+	  if( matchedMu3[0] && matchedTrack[1] )
+	    mapTriggerNameToIntFired_[triggerName] = 1;
+	  else if( matchedMu3[1] && matchedTrack[0] )
+	    mapTriggerNameToIntFired_[triggerName] = -1;
+	  if( matchedMu3[0] && matchedTrack[1] && matchedMu3[1] && matchedTrack[0] )
+	    mapTriggerNameToIntFired_[triggerName] = 2;
+        }
+	
 	// treat "MuX_L2MuX" Trigger separately: Match by L2 collection: hltL2MuonCandidates and on a different SaveTag'ed filter
-        if (    triggerName == "HLT_Mu5_L2Mu0"  )
-        {
+        theCheck = std::find(HLTBitNames_MuL2Mu.begin(),HLTBitNames_MuL2Mu.end(),triggerName);
+	if (theCheck != HLTBitNames_MuL2Mu.end()) {
+        
 	        std::string triggerNameSpecial = triggerName + "_special";
 		std::string hltLastFilterName2 = mapTriggerToLastFilter_[triggerNameSpecial];
 		
@@ -1528,8 +1454,7 @@ JPsiAnalyzerPAT::matchMuonToHlt(const pat::Muon* muon1, const pat::Muon* muon2)
                     if (mu1HLTMatches[k].collection() == HLTL3MuCollName ) matchedMu3[0] = true;
 		}
 		for (unsigned k = 0; k < mu1Level2Matches.size(); ++k) {
-                    if (mu1Level2Matches[k].collection() == HLTL2MuCollName ) matchedMu2[0] = true;
-                }
+                    if (mu1Level2Matches[k].collection() == HLTL2MuCollName ) matchedMu2[0] = true;                }
                 for (unsigned k = 0; k < mu2HLTMatches.size(); ++k) {
                     if (mu2HLTMatches[k].collection() == HLTL3MuCollName ) matchedMu3[1] = true;
 		}
@@ -1545,21 +1470,12 @@ JPsiAnalyzerPAT::matchMuonToHlt(const pat::Muon* muon1, const pat::Muon* muon2)
         }
 
         // All the other Paths match by last filter:
-        // double muon trigger:
-        if ( triggerName == "HLT_DoubleMu0"                     && pass1 == true && pass2 == true ) mapTriggerNameToIntFired_[triggerName] = 1;
-        if ( triggerName == "HLT_DoubleMu0_Quarkonium_v1"       && pass1 == true && pass2 == true ) mapTriggerNameToIntFired_[triggerName] = 1;
-        if ( triggerName == "HLT_DoubleMu0_Quarkonium_LS_v1"    && pass1 == true && pass2 == true ) mapTriggerNameToIntFired_[triggerName] = 1;
-        if ( triggerName == "HLT_L1DoubleMuOpen"                && pass1 == true && pass2 == true ) mapTriggerNameToIntFired_[triggerName] = 1;
-        if ( triggerName == "HLT_L1DoubleMuOpen_Tight"          && pass1 == true && pass2 == true ) mapTriggerNameToIntFired_[triggerName] = 1;
-        if ( triggerName == "HLT_DoubleMu3"                     && pass1 == true && pass2 == true ) mapTriggerNameToIntFired_[triggerName] = 1;
-
-        // single muon trigger:
-        if ( triggerName == "HLT_Mu3" && (pass1  == true || pass2 == true) ) mapTriggerNameToIntFired_[triggerName] = 1;
-        if ( triggerName == "HLT_Mu5" && (pass1  == true || pass2 == true) ) mapTriggerNameToIntFired_[triggerName] = 1;
-        if ( triggerName == "HLT_Mu7" && (pass1  == true || pass2 == true) ) mapTriggerNameToIntFired_[triggerName] = 1;
-        if ( triggerName == "HLT_Mu9" && (pass1  == true || pass2 == true) ) mapTriggerNameToIntFired_[triggerName] = 1;
-        if ( triggerName == "HLT_Mu11"&& (pass1  == true || pass2 == true) ) mapTriggerNameToIntFired_[triggerName] = 1;
+	theCheck = std::find(HLTBitNames_DoubleMu.begin(),HLTBitNames_DoubleMu.end(),triggerName);
+	if (theCheck != HLTBitNames_DoubleMu.end() && pass1 == true && pass2 == true ) mapTriggerNameToIntFired_[triggerName] = 1;
+	theCheck = std::find(HLTBitNames_SingleMu.begin(),HLTBitNames_SingleMu.end(),triggerName);
+	if (theCheck != HLTBitNames_SingleMu.end() && (pass1 == true || pass2 == true) ) mapTriggerNameToIntFired_[triggerName] = 1;
     }
+	
 }
 
 void 
