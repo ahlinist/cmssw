@@ -35,11 +35,11 @@ xsReader::xsReader(TChain *tree, TString evtClassName): treeReaderXS(tree, evtCl
   //fYbin[21] = 2.1; fYbin[22] = 2.2; fYbin[23] = 2.3; fYbin[24] = 2.4;
   
   //// Ups(1S) Binning
-  //fPTbin[0] = 0.; fPTbin[1] = 0.5; fPTbin[2] = 1.; fPTbin[3] = 1.5; fPTbin[4] = 2.; fPTbin[5] = 3.; fPTbin[6] = 4.;
-  //fPTbin[7] = 5.; fPTbin[8] = 6.; fPTbin[9] = 7.; fPTbin[10] = 8.; fPTbin[11] = 9.; fPTbin[12] = 10.; fPTbin[13] = 11.;
-  //fPTbin[14] = 12.; fPTbin[15] = 13.; fPTbin[16] = 14.; fPTbin[17] = 15.; fPTbin[18] = 16.; fPTbin[19] = 18.; 
-  //fPTbin[20] = 20.; fPTbin[21] = 22.; fPTbin[22] = 25.; fPTbin[23] = 30.; fPTbin[24] = 50.; 
-  //fYbin[0] = 0.; fYbin[1] = 0.4; fYbin[2] = 0.8; fYbin[3] = 1.2; fYbin[4] = 1.6; fYbin[5] = 2.; fYbin[6] = 2.4;
+  fPTbin[0] = 0.; fPTbin[1] = 0.5; fPTbin[2] = 1.; fPTbin[3] = 1.5; fPTbin[4] = 2.; fPTbin[5] = 3.; fPTbin[6] = 4.;
+  fPTbin[7] = 5.; fPTbin[8] = 6.; fPTbin[9] = 7.; fPTbin[10] = 8.; fPTbin[11] = 9.; fPTbin[12] = 10.; fPTbin[13] = 11.;
+  fPTbin[14] = 12.; fPTbin[15] = 13.; fPTbin[16] = 14.; fPTbin[17] = 15.; fPTbin[18] = 16.; fPTbin[19] = 18.; 
+  fPTbin[20] = 20.; fPTbin[21] = 22.; fPTbin[22] = 25.; fPTbin[23] = 30.; fPTbin[24] = 50.; 
+  fYbin[0] = 0.; fYbin[1] = 0.4; fYbin[2] = 0.8; fYbin[3] = 1.2; fYbin[4] = 1.6; fYbin[5] = 2.; fYbin[6] = 2.4;
   
   //// Ups(2S) Binning
   //fPTbin[0] = 0.; fPTbin[1] = 1.; fPTbin[2] = 2.; fPTbin[3] = 4.; fPTbin[4] = 6.; fPTbin[5] = 7.; fPTbin[6] = 8.;
@@ -48,10 +48,10 @@ xsReader::xsReader(TChain *tree, TString evtClassName): treeReaderXS(tree, evtCl
   //fYbin[0] = 0.; fYbin[1] = 0.4; fYbin[2] = 0.8; fYbin[3] = 1.2; fYbin[4] = 1.6; fYbin[5] = 2.; fYbin[6] = 2.4;
   
   //// Ups(3S) Binning
-  fPTbin[0] = 0.; fPTbin[1] = 2.; fPTbin[2] = 4.; fPTbin[3] = 8.; fPTbin[4] = 10.; fPTbin[5] = 13.; fPTbin[6] = 16.;
-  fPTbin[7] = 20.; fPTbin[8] = 25.; fPTbin[9] = 30.; fPTbin[10] = 50.; 
-  fYbin[0] = 0.; fYbin[1] = 0.4; fYbin[2] = 0.8; fYbin[3] = 1.2; fYbin[4] = 1.6; fYbin[5] = 2.; fYbin[6] = 2.4;
-  
+  //fPTbin[0] = 0.; fPTbin[1] = 2.; fPTbin[2] = 4.; fPTbin[3] = 8.; fPTbin[4] = 10.; fPTbin[5] = 13.; fPTbin[6] = 16.;
+  //fPTbin[7] = 20.; fPTbin[8] = 25.; fPTbin[9] = 30.; fPTbin[10] = 50.; 
+  //fYbin[0] = 0.; fYbin[1] = 0.2; fYbin[2] = 0.4; fYbin[3] = 0.6; fYbin[4] = 0.8; fYbin[5] = 1.; fYbin[6] = 1.2;
+  //fYbin[7] = 1.4; fYbin[8] = 1.6; fYbin[9] = 1.8; fYbin[10] = 2.; fYbin[11] = 2.2; fYbin[12] = 2.4;
   
   ///// PidTable Tracking Efficiency for DATA
   fPidTableTrckEff = new PidTable("PidTables/DATA/Upsilon/PtTrackEff.dat");
@@ -61,6 +61,10 @@ xsReader::xsReader(TChain *tree, TString evtClassName): treeReaderXS(tree, evtCl
   //fPidTableMuIDNeg = new PidTable("../tnp/PidTables/MC/Jpsi/MuID/CowboyVeto/TrackerMuonArbitrated/PtMmbNeg-jpsi.tma.nb.dat");
   //fPidTableTrigPos = new PidTable("../tnp/PidTables/MC/Jpsi/Trig/CowboyVeto/PtMmbPos-jpsi.tma.nb.dat");    
   //fPidTableTrigNeg = new PidTable("../tnp/PidTables/MC/Jpsi/Trig/CowboyVeto/PtMmbNeg-jpsi.tma.nb.dat"); 
+  /// Trig Eff with Ups(1S)
+  //fPidTableTrigPos = new PidTable("../tnp/PidTables/MC/Upsilon/Trig/PtMmbPos-upsilon.tma.nb.dat");    
+  //fPidTableTrigNeg = new PidTable("../tnp/PidTables/MC/Upsilon/Trig/PtMmbNeg-upsilon.tma.nb.dat");  
+  
   
   ///// PidTables MC -- Global and Tracker 
   //fPidTableMuIDPos = new PidTable("../tnp/PidTables/MC/Jpsi/MuID/CowboyVeto/PtMmbPos-jpsi.dat");
@@ -113,12 +117,13 @@ void xsReader::eventProcessing() {
   //}
   
   if ( MODE == 1  ) {
-    //GenStudy(); // MuIdCheck, TrigCheck
-    UpsGun_acceptance();
-    //acceptance();
-    //preSelEff();
+    Detectability();
+    GenStudy(); // MuIdCheck, TrigCheck
+    //UpsGun_acceptance();
+    acceptance();
+    preSelEff();
   }
-  /*
+  
   if ( !MuIDCheck() ) goto end;
   if ( isPathPreScaled(HLTPATH) ) goto end;
   if ( !isPathFired_Match(HLTPATH,HLTLABEL) ) goto end;
@@ -131,7 +136,7 @@ void xsReader::eventProcessing() {
   
   if ( 0 != fgCand && MODE == 1 ) MCstudy(); 
   fpHistFile->cd();
-  */
+  
   end:
   freePointers();  
   
@@ -156,6 +161,58 @@ void xsReader::freePointers(){
       Cands_TM.erase(Cands_TM.begin());
     }  
   
+}
+
+void xsReader::Detectability(){
+  
+  TGenCand *gCand(0); TAnaTrack *pTrack(0);
+  TGenCand *gDau1(0); TGenCand *gDau2(0);  
+  TLorentzVector genCand; 
+  TGenCand *g2Cand(0);
+  double pt(-9), eta(-9), p(-9);
+  for (int iG = 0; iG < fpEvt->nGenCands(); ++iG) {
+    gCand = fpEvt->getGenCand(iG);
+    if ( gCand->fID == RESTYPE && gCand->fStatus == 2 ){
+      genCand.SetPtEtaPhiE(gCand->fP.Perp(),gCand->fP.Eta(),gCand->fP.Phi(),gCand->fP.Energy());
+      gDau1 = fpEvt->getGenCand(gCand->fDau1);
+      gDau2 = fpEvt->getGenCand(gCand->fDau2);
+      for (int i = gCand->fDau1; i <= gCand->fDau2; ++i) {
+	g2Cand = fpEvt->getGenCand(i);
+	if (13 == TMath::Abs(g2Cand->fID)) {
+	  
+	  ((TH2D*)fpHistFile->Get("GenMuonYield_pt"))->Fill(g2Cand->fP.Eta(),g2Cand->fP.Pt());
+	  ((TH2D*)fpHistFile->Get("GenMuonYield_pt"))->GetXaxis()->SetTitle(Form("#eta^{#mu}"));
+	  ((TH2D*)fpHistFile->Get("GenMuonYield_pt"))->GetYaxis()->SetTitle(Form("P_{T}^{#mu}(GeV/c)"));
+	  
+	  ((TH2D*)fpHistFile->Get("GenMuonYield_p"))->Fill(g2Cand->fP.Eta(),g2Cand->fP.P());
+	  ((TH2D*)fpHistFile->Get("GenMuonYield_p"))->GetXaxis()->SetTitle(Form("#eta^{#mu}"));
+	  ((TH2D*)fpHistFile->Get("GenMuonYield_p"))->GetYaxis()->SetTitle(Form("P^{#mu}(GeV/c)"));	    
+	  
+	  for (int iR = 0; iR < fpEvt->nRecTracks(); ++iR) {
+	    pTrack = fpEvt->getRecTrack(iR);
+	    if ( pTrack->fGenIndex == g2Cand->fNumber  ) {
+	      p = g2Cand->fP.P();
+	      pt = g2Cand->fP.Pt();
+	      eta = g2Cand->fP.Eta();
+	      if ((pTrack->fMuID & MUTYPE1) == MUTYPE1){
+		
+		((TH2D*)fpHistFile->Get("RecoMuonYield_pt"))->Fill(eta,pt);
+		((TH2D*)fpHistFile->Get("RecoMuonYield_pt"))->GetXaxis()->SetTitle(Form("#eta^{#mu}"));
+		((TH2D*)fpHistFile->Get("RecoMuonYield_pt"))->GetYaxis()->SetTitle(Form("P_{T}^{#mu}(GeV/c)"));
+		
+		((TH2D*)fpHistFile->Get("RecoMuonYield_p"))->Fill(eta,p);
+		((TH2D*)fpHistFile->Get("RecoMuonYield_p"))->GetXaxis()->SetTitle(Form("#eta^{#mu}"));
+		((TH2D*)fpHistFile->Get("RecoMuonYield_p"))->GetYaxis()->SetTitle(Form("P^{#mu}(GeV/c)"));	  	
+		break;
+	      }
+	    }	
+	  }
+	
+	}
+	
+      }
+    }
+  }
 }
 
 void xsReader::GenStudy(){
@@ -1418,6 +1475,12 @@ void xsReader::fillCandHist(int mode) {
       }
     }
     
+    for ( int iy = 0; iy < fNy; ++iy ){
+      if ( ( fCandY >= fYbin[iy] ) && ( fCandY < fYbin[iy+1] ) ){
+	((TH1D*)fpHistFile->Get(Form("UpsilonMass,rapidity%.1f_%.1f,pt_all", fYbin[iy], fYbin[iy+1])))->Fill(fCandMass,fWeight);
+      }
+    }
+    
   }
   
   
@@ -1459,7 +1522,20 @@ void xsReader::fillCandHist(int mode) {
       }
     }
     
-    
+    for ( int iy = 0; iy < fNy; ++iy ){
+      if ( fCandY >= 0 ){
+	if ( ( fCandY >= fYbin[iy] ) && ( fCandY < fYbin[iy+1] ) ){
+	  ((TH1D*)fpHistFile->Get(Form("UpsilonMass,rapidity%.1f_%.1f,pt_all", fYbin[iy], fYbin[iy+1])))->Fill(fCandMass,fWeight);
+	}
+      }
+      
+      if ( fCandY < 0 ){
+	fCandY*=-1;
+	if ( ( fCandY >= fYbin[iy] ) && ( fCandY < fYbin[iy+1] ) ){
+	  ((TH1D*)fpHistFile->Get(Form("UpsilonMass,rapidity%.1f_%.1f,pt_all", fYbin[iy], fYbin[iy+1])))->Fill(fCandMass,fWeight);
+	}
+      }
+    }
     
   }
   
@@ -1789,6 +1865,9 @@ void xsReader::bookHist() {
   k = new TH2D("CandMuPt", "CandMuPt", 40, 0, 40., 40, 0., 40.);
   
   for ( int iy = 0; iy < fNy; ++iy ){
+    h = new TH1D(Form("UpsilonMass,rapidity%.1f_%.1f,pt_all", fYbin[iy], fYbin[iy+1]), 
+    		 Form("UpsilonMass,rapidity%.1f_%.1f,pt_all", fYbin[iy], fYbin[iy+1]), fBin, fMassLow, fMassHigh);		      
+    ((TH1D*)fpHistFile->Get(Form("UpsilonMass,rapidity%.1f_%.1f,pt_all",  fYbin[iy], fYbin[iy+1])))->Sumw2(); 
     for ( int ipt = 0; ipt < fNpt; ++ipt ){
       h = new TH1D(Form("UpsilonMass,rapidity%.1f_%.1f,pt%.1f_%.1f", fYbin[iy], fYbin[iy+1], fPTbin[ipt], fPTbin[ipt+1]),
 		   Form("UpsilonMass,rapidity%.1f_%.1f,pt%.1f_%.1f", fYbin[iy], fYbin[iy+1], fPTbin[ipt], fPTbin[ipt+1]),
@@ -1807,6 +1886,14 @@ void xsReader::bookHist() {
   h = new TH1D("DeltaPtoverPt_Muon", "DeltaPtoverPt_Muon", 50, -0.1, 0.1);
   h = new TH1D("DeltaEtaoverEta_Muon", "DeltaEtaoverEta_Muon", 50, -0.05, 0.05); 
   h = new TH1D("MaxDoca_Cand", "MaxDoca_Cand", 60, 0., 0.03); 
+  
+  
+  // Detectability() histograms
+  k = new TH2D("GenMuonYield_pt", "GenMuonYield_pt", 48, -2.4, 2.4, 20, 0, 10);
+  k = new TH2D("GenMuonYield_p", "GenMuonYield_p", 48, -2.4, 2.4, 20, 0, 10);
+  k = new TH2D("RecoMuonYield_pt", "RecoMuonYield_pt", 48, -2.4, 2.4, 20, 0, 10);
+  k = new TH2D("RecoMuonYield_p", "RecoMuonYield_p", 48, -2.4, 2.4, 20, 0, 10);  
+  
   
   
   //// Trigger Study
