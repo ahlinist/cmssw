@@ -69,10 +69,11 @@ dir = "/pscratch/ndcms/bestman/storage/cms/store/user/jkolb/DYToTauTau_M-20_CT10
 
 for file in os.listdir(dir):
     process.source.fileNames.extend(cms.untracked.vstring('file:' + dir + file))
- 
+#process.source.fileNames = cms.untracked.vstring(
+#    'file:/data2/veelken/CMSSW_4_1_x/skims/ZtoMuTau/DYtautau_spring11_powhegZ2_1_1_XvY.root'
+#)
 
-from TauAnalysis.RecoTools.recoVertexSelection_cff import *
-
+process.load("TauAnalysis.RecoTools.recoVertexSelectionForElecTau_cff")
 
 # import utility function for managing pat::Jets
 from PhysicsTools.PatAlgos.tools.jetTools import *
@@ -114,8 +115,8 @@ process.cleanPatTaus.preselection = cms.string('')
 process.patJetCorrections.remove(process.patJetCorrFactors)
 process.patJets.jetCorrFactorsSource = cms.VInputTag()
 process.patJets.addJetCorrFactors = cms.bool(False)
-process.producePatTupleZtoElecTauSpecific.remove(process.pfMEtType1and2corrected)
-process.producePatTupleZtoElecTauSpecific.remove(process.patPFtype1METs)
+#process.producePatTupleZtoElecTauSpecific.remove(process.pfMEtType1and2corrected)
+#process.producePatTupleZtoElecTauSpecific.remove(process.patPFtype1METs)
 
 #--------------------------------------------------------------------------------
 
@@ -165,7 +166,7 @@ process.selectPatMuons = patMuonSelConfigurator.configure(process = process)
 process.p = cms.Path(
     process.producePatTuple
     + process.producePatTupleZtoElecTauSpecific
-    + process.selectPrimaryVertex 
+    + process.selectPrimaryVertexForElecTau
     + process.bgEstZtautauEnrichedAnalysisSequence
     + process.bgEstWplusJetsEnrichedAnalysisSequence
     + process.bgEstZeeElectronMisIdEnrichedAnalysisSequence
