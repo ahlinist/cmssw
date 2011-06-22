@@ -16,16 +16,25 @@ selectedPatPFMETsPt25 = cms.EDFilter("PATMETSelector",
                                      )
 selectedPatPFMETsPt30 = cms.EDFilter("PATMETSelector",
                                         src = cms.InputTag("patPFMETs"),
-                                        cut = cms.string('pt > 30.'),
+                                        cut = cms.string('pt > 35.'),
+#                                     cut = cms.string('pt > 0.'),
                                         filter = cms.bool(False)
                                         )
-selectedPatPFMETsPt40 = cms.EDFilter("PATMETSelector",
+selectedPatPFMETsPt45 = cms.EDFilter("PATMETSelector",
                                         src = cms.InputTag("patPFMETs"),
-                                        cut = cms.string('pt > 40'),
+                                        cut = cms.string('pt > 45'),
                                         filter = cms.bool(False)
                                         )
 
-selectPatPFMETs = cms.Sequence(
-    selectedPatPFMETsPt25
-    *selectedPatPFMETsPt30
-    *selectedPatPFMETsPt40)
+
+patPFMETSelConfigurator = objSelConfigurator(
+    [ selectedPatPFMETsPt25,
+      selectedPatPFMETsPt30,
+      selectedPatPFMETsPt45 ],
+    src = 'patMETs',
+    pyModuleName = __name__,
+    doSelIndividual = False
+    )
+
+selectPatPFMETs = patPFMETSelConfigurator.configure(pyNameSpace = locals())
+
