@@ -39,10 +39,6 @@ process.load('Configuration/StandardSequences/GeometryPilot2_cff')
 
 process.source = cms.Source("PoolSource",
 	fileNames = cms.untracked.vstring(
-#	"file:/tmp/slehti/DYToTauTau_M_20_TuneZ2_7TeV_pythia6_tauola_Fall10_START38_V12_v1_GEN_SIM_RECO_10ev.root"
-#	"file:TTEffSkim.root"
-#	"file:/tmp/slehti/skim_1.root"
-       '/store/mc/Spring11/WZtoAnything_TuneZ2_7TeV-pythia6-tauola/AODSIM/PU_S1_START311_V1G1-v1/0011/F0F54048-4A50-E011-9CDE-003048D47792.root',
        '/store/mc/Spring11/WZtoAnything_TuneZ2_7TeV-pythia6-tauola/AODSIM/PU_S1_START311_V1G1-v1/0011/106AFBB1-2D50-E011-A529-00E0817918AD.root',
        '/store/mc/Spring11/WZtoAnything_TuneZ2_7TeV-pythia6-tauola/AODSIM/PU_S1_START311_V1G1-v1/0010/88EA5113-B04F-E011-9704-003048D45F48.root',
        '/store/mc/Spring11/WZtoAnything_TuneZ2_7TeV-pythia6-tauola/AODSIM/PU_S1_START311_V1G1-v1/0010/76C441E2-AB4F-E011-A71B-003048D45FE2.root',
@@ -210,9 +206,13 @@ process.runTTEffAna = cms.Path(
 
 process.load("ElectroWeakAnalysis.TauTriggerEfficiency.ZtoMuTauFilter_cfi")
 
+process.PurityCounterAllEvents   = cms.EDProducer("EventCountProducer")
+process.PurityCounterSavedEvents = cms.EDProducer("EventCountProducer")
+
+process.runTTEffAna += process.PurityCounterAllEvents
 #process.runTTEffAna += process.TTEffPFTau
 process.runTTEffAna += process.TTEffHPSPFTau
-#process.runTTEffAna += process.muTauFilterSequence
+process.runTTEffAna += process.muTauFilterSequence
 #process.runTTEffAna += process.TTEffAnalysis
 #process.runTTEffAna += process.TTEffAnalysisL1Tau
 #process.runTTEffAna += process.TTEffAnalysisL1Cen
@@ -221,6 +221,7 @@ process.runTTEffAna += process.TTEffHPSPFTau
 process.runTTEffAna += process.TTEffAnalysisHLTPFTauTightHPS
 #process.runTTEffAna += process.TTEffAnalysisHLTCaloTauHPS
 #process.runTTEffAna += process.TTEffAnalysisHLTPFTauHPS
+process.runTTEffAna += process.PurityCounterSavedEvents
 
 #process.o1 = cms.OutputModule("PoolOutputModule",
 #    outputCommands = cms.untracked.vstring("keep *"),
