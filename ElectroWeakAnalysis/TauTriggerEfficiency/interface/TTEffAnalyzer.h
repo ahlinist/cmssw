@@ -13,7 +13,7 @@
 //
 // Original Author:  Chi Nhan Nguyen
 //         Created:  Wed Oct  1 13:04:54 CEST 2008
-// $Id: TTEffAnalyzer.h,v 1.44 2011/06/01 21:40:25 slehti Exp $
+// $Id: TTEffAnalyzer.h,v 1.45 2011/06/07 20:18:03 slehti Exp $
 //
 //
 
@@ -83,7 +83,7 @@ class TTEffAnalyzer : public edm::EDAnalyzer {
       bool checkPos(const std::vector<math::XYZPoint>& CalPos, const math::XYZPoint& CandPos) const;
 
       // ----------member data ---------------------------
-      bool DoMCTauEfficiency_;
+      bool DoOfflineVariablesOnly_,DoMCTauEfficiency_;
       edm::InputTag HLTResultsSource;
       edm::TriggerNames _triggerNames;
       edm::InputTag  PFTaus_,PFTauIso_,MCTaus_,MCParticles_,PFTauMuonRej_,PFTauElectronRej_; //Path to analyze
@@ -112,12 +112,12 @@ class TTEffAnalyzer : public edm::EDAnalyzer {
       float PFSignalSumPt,PFIsoNTrks,PFIsoTrkNHits,PFIsoTrkChi2,PFIsoTrkPt;
       double MCMatchingCone;
       int* discriminators;
-      L1TauEfficiencyAnalyzer _L1analyzer;
-      L2TauEfficiencyAnalyzer _L2analyzer;
-      L25and3TauEfficiencyAnalyzer _L25and3analyzer;
-      METEfficiencyAnalyzer _METanalyzer;
-      PFMHTEfficiencyAnalyzer _PFMHTanalyzer;
-      HLTJetEfficiencyAnalyzer _HLTJetAnalyzer;
-      MuonAnalyzer _MuonAnalyzer;
+      L1TauEfficiencyAnalyzer* _L1analyzer;
+      L2TauEfficiencyAnalyzer* _L2analyzer;
+      L25and3TauEfficiencyAnalyzer* _L25and3analyzer;
+      METEfficiencyAnalyzer* _METanalyzer;
+      PFMHTEfficiencyAnalyzer* _PFMHTanalyzer;
+      HLTJetEfficiencyAnalyzer* _HLTJetAnalyzer;
+      MuonAnalyzer* _MuonAnalyzer;
 };
 

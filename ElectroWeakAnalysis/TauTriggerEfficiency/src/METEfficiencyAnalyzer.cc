@@ -23,6 +23,7 @@ METEfficiencyAnalyzer::~METEfficiencyAnalyzer(){}
 
 void METEfficiencyAnalyzer::Setup(const edm::ParameterSet& iConfig,TTree *trigtree)
 {
+	DoOfflineVariablesOnly_ = iConfig.getParameter<bool>("DoOfflineVariablesOnly");
 	HLTMETSource = iConfig.getParameter<edm::InputTag>("HLTMETSource");
 	METSource = iConfig.getParameter<edm::InputTag>("METSource");
 	MCSource  = iConfig.getParameter<edm::InputTag>("GenParticleCollection");
@@ -31,7 +32,9 @@ void METEfficiencyAnalyzer::Setup(const edm::ParameterSet& iConfig,TTree *trigtr
   	mettree = trigtree;
 
   	// Setup branches
-  	mettree->Branch("HLTMET", &hltMET);
+	if(!DoOfflineVariablesOnly_){
+  	  mettree->Branch("HLTMET", &hltMET);
+	}
 	mettree->Branch("MET",    &MET);
 	mettree->Branch("METphi", &METphi);
 	mettree->Branch("MCMET",  &mcMET);
@@ -47,11 +50,12 @@ void METEfficiencyAnalyzer::fill(const edm::Event& iEvent, const edm::EventSetup
 	METclean = 0;
 
 //
-	edm::Handle<reco::CaloMETCollection> hltmetHandle;
-        iEvent.getByLabel(HLTMETSource, hltmetHandle);
+	if(!DoOfflineVariablesOnly_){
+	  edm::Handle<reco::CaloMETCollection> hltmetHandle;
+          iEvent.getByLabel(HLTMETSource, hltmetHandle);
 
-	hltMET = (hltmetHandle->front() ).et();
-
+	  hltMET = (hltmetHandle->front() ).et();
+	}
 //
 
 	edm::Handle<reco::PFMETCollection> metHandle;

@@ -1,8 +1,8 @@
 import FWCore.ParameterSet.Config as cms
 import copy
 
-isData = True
-#pftau = 0
+# For MC only
+
 hltType = "HLT"
 #hltType = "REDIGI38X"
 
@@ -37,32 +37,29 @@ process.options = cms.untracked.PSet(
 process.load('Configuration/StandardSequences/GeometryPilot2_cff')
 
 
-if(isData):
-    process.source = cms.Source("PoolSource",
+process.source = cms.Source("PoolSource",
 	fileNames = cms.untracked.vstring(
-	"file:TTEffSkim.root"
-#	"/store/user/luiggi/MinimumBias/TTEffSkimRun2011A_GoldenPlusESIgnoredJSON/a6b050dc4acb87f74e46528e006dff64/TTEffSkim_1_1_Zd8.root",
-#	"/store/user/luiggi/MinimumBias/TTEffSkimRun2011A_GoldenPlusESIgnoredJSON/a6b050dc4acb87f74e46528e006dff64/TTEffSkim_2_1_IA6.root",
-#	"/store/user/luiggi/MinimumBias/TTEffSkimRun2011A_GoldenPlusESIgnoredJSON/a6b050dc4acb87f74e46528e006dff64/TTEffSkim_3_1_I9j.root"
-	)
-    )
-else:
-    process.source = cms.Source("PoolSource",
-	fileNames = cms.untracked.vstring(
-	"file:TTEffSkim.root"
+#	"file:/tmp/slehti/DYToTauTau_M_20_TuneZ2_7TeV_pythia6_tauola_Fall10_START38_V12_v1_GEN_SIM_RECO_10ev.root"
+#	"file:TTEffSkim.root"
 #	"file:/tmp/slehti/skim_1.root"
+       '/store/mc/Spring11/WZtoAnything_TuneZ2_7TeV-pythia6-tauola/AODSIM/PU_S1_START311_V1G1-v1/0011/F0F54048-4A50-E011-9CDE-003048D47792.root',
+       '/store/mc/Spring11/WZtoAnything_TuneZ2_7TeV-pythia6-tauola/AODSIM/PU_S1_START311_V1G1-v1/0011/106AFBB1-2D50-E011-A529-00E0817918AD.root',
+       '/store/mc/Spring11/WZtoAnything_TuneZ2_7TeV-pythia6-tauola/AODSIM/PU_S1_START311_V1G1-v1/0010/88EA5113-B04F-E011-9704-003048D45F48.root',
+       '/store/mc/Spring11/WZtoAnything_TuneZ2_7TeV-pythia6-tauola/AODSIM/PU_S1_START311_V1G1-v1/0010/76C441E2-AB4F-E011-A71B-003048D45FE2.root',
+       '/store/mc/Spring11/WZtoAnything_TuneZ2_7TeV-pythia6-tauola/AODSIM/PU_S1_START311_V1G1-v1/0010/44C4D221-A94F-E011-AFA2-0025B31E3C00.root',
+       '/store/mc/Spring11/WZtoAnything_TuneZ2_7TeV-pythia6-tauola/AODSIM/PU_S1_START311_V1G1-v1/0010/3E615713-B04F-E011-9643-00E08178C133.root',
+       '/store/mc/Spring11/WZtoAnything_TuneZ2_7TeV-pythia6-tauola/AODSIM/PU_S1_START311_V1G1-v1/0009/E8238961-734F-E011-833D-003048635E34.root',
+       '/store/mc/Spring11/WZtoAnything_TuneZ2_7TeV-pythia6-tauola/AODSIM/PU_S1_START311_V1G1-v1/0009/E61CD016-944F-E011-B97E-003048D47A54.root',
+       '/store/mc/Spring11/WZtoAnything_TuneZ2_7TeV-pythia6-tauola/AODSIM/PU_S1_START311_V1G1-v1/0009/C8BEAF0C-724F-E011-BC10-002481E14E00.root',
+       '/store/mc/Spring11/WZtoAnything_TuneZ2_7TeV-pythia6-tauola/AODSIM/PU_S1_START311_V1G1-v1/0009/C4BA1860-9A4F-E011-BFDA-002481E14FB0.root',
+       '/store/mc/Spring11/WZtoAnything_TuneZ2_7TeV-pythia6-tauola/AODSIM/PU_S1_START311_V1G1-v1/0009/B828B0D6-704F-E011-A7FA-00E08178C121.root'
 	)
-    )
+)
 
 process.load("ElectroWeakAnalysis.TauTriggerEfficiency.TTEffPFTau_cff")
 
 process.load('Configuration/StandardSequences/FrontierConditions_GlobalTag_cff')
-if (isData):
-    process.GlobalTag.globaltag = 'GR_H_V17::All'
-#    process.GlobalTag.globaltag = 'TESTL1_GR_P::All'
-else:
-    process.GlobalTag.globaltag = 'START41_V0::All'
-    #process.GlobalTag.globaltag = 'MC_38Y_V14::All'
+process.GlobalTag.globaltag = 'START41_V0::All'
 process.GlobalTag.connect   = 'frontier://FrontierProd/CMS_COND_31X_GLOBALTAG'
 process.GlobalTag.pfnPrefix = cms.untracked.string('frontier://FrontierProd/')
 print process.GlobalTag.globaltag
@@ -73,7 +70,7 @@ process.load('CommonTools/RecoAlgos/HBHENoiseFilterResultProducer_cfi')
 process.runMETCleaning = cms.Path(process.HBHENoiseFilterResultProducer)
 
 process.TTEffAnalysis = cms.EDAnalyzer("TTEffAnalyzer",
-	DoOfflineVariablesOnly  = cms.bool(True), #if true: no trigger info is saved
+	DoOfflineVariablesOnly  = cms.bool(True), #if true: no trigger info is saved 
         DoMCTauEfficiency       = cms.bool(False), #if true: per MCTau cand; default is false: per offline tau cand
         LoopingOver	        = cms.InputTag("TTEffPFTausSelected"),
         PFTauIsoCollection      = cms.InputTag("TTEffPFTauDiscriminationByIsolation"),
@@ -206,24 +203,24 @@ process.hltPhysicsDeclared.L1GtReadoutRecordTag = 'gtDigis'
 
 process.load("ElectroWeakAnalysis.TauTriggerEfficiency.TTEffPFTau_cff")
 
-if(isData):
-    process.runTTEffAna = cms.Path(
-    )
-else:
-    process.runTTEffAna = cms.Path(
+process.runTTEffAna = cms.Path(
         process.hltPhysicsDeclared+
 	process.TauMCProducer
-    ) 
+) 
+
+process.load("ElectroWeakAnalysis.TauTriggerEfficiency.ZtoMuTauFilter_cfi")
+
 #process.runTTEffAna += process.TTEffPFTau
 process.runTTEffAna += process.TTEffHPSPFTau
+#process.runTTEffAna += process.muTauFilterSequence
 #process.runTTEffAna += process.TTEffAnalysis
 #process.runTTEffAna += process.TTEffAnalysisL1Tau
 #process.runTTEffAna += process.TTEffAnalysisL1Cen
 #process.runTTEffAna += process.TTEffAnalysisHLTPFTau
 #process.runTTEffAna += process.TTEffAnalysisHLTPFTauTight
 process.runTTEffAna += process.TTEffAnalysisHLTPFTauTightHPS
-process.runTTEffAna += process.TTEffAnalysisHLTCaloTauHPS
-process.runTTEffAna += process.TTEffAnalysisHLTPFTauHPS
+#process.runTTEffAna += process.TTEffAnalysisHLTCaloTauHPS
+#process.runTTEffAna += process.TTEffAnalysisHLTPFTauHPS
 
 #process.o1 = cms.OutputModule("PoolOutputModule",
 #    outputCommands = cms.untracked.vstring("keep *"),
@@ -231,24 +228,10 @@ process.runTTEffAna += process.TTEffAnalysisHLTPFTauHPS
 #)
 #process.outpath = cms.EndPath(process.o1)
 
-process.HLTPFTauSequence+= process.hltPFTausTightCone
-process.schedule = cms.Schedule(process.DoHLTJets,
-#				process.DoHltMuon,
-				process.DoHLTPhoton,
-				process.DoHLTElectron,
-				process.DoHLTTau,
-				process.DoHLTMinBiasPixelTracks,
-				process.runMETCleaning,
-				process.runTTEffAna
-#				,process.outpath
+process.PFTau_step = cms.Path(process.PFTau)
+process.schedule = cms.Schedule(
+	process.PFTau_step,
+	process.runMETCleaning,
+	process.runTTEffAna
+#	,process.outpath
 )
-
-if (isData):  # replace all instances of "rawDataCollector" with "source" in In$
-    from FWCore.ParameterSet import Mixins
-    for module in process.__dict__.itervalues():
-        if isinstance(module, Mixins._Parameterizable):
-            for parameter in module.__dict__.itervalues():
-                if isinstance(parameter, cms.InputTag):
-                    if parameter.moduleLabel == 'rawDataCollector':
-                        parameter.moduleLabel = 'source'
-
