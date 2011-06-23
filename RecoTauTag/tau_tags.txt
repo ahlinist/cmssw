@@ -1,3 +1,3 @@
-V01-02-02      RecoTauTag/Configuration
-V01-02-03      RecoTauTag/RecoTau
-V01-02-00      RecoTauTag/TauTagTools
+RecoTauTag/Configuration                         V01-02-02      
+RecoTauTag/RecoTau                               V01-02-04      
+RecoTauTag/TauTagTools                           V01-02-00  
