@@ -13,7 +13,7 @@
 //
 // Original Author:  Chi Nhan Nguyen
 //         Created:  Wed Oct  1 13:04:54 CEST 2008
-// $Id: TTEffAnalyzer.cc,v 1.57 2011/06/09 07:16:08 slehti Exp $
+// $Id: TTEffAnalyzer.cc,v 1.58 2011/06/09 19:23:34 slehti Exp $
 //
 //
 
@@ -30,6 +30,7 @@
 using namespace std;
 
 TTEffAnalyzer::TTEffAnalyzer(const edm::ParameterSet& iConfig):
+  DoOfflineVariablesOnly_(iConfig.getParameter<bool>("DoOfflineVariablesOnly")),
   DoMCTauEfficiency_(iConfig.getParameter<bool>("DoMCTauEfficiency")),
   HLTResultsSource(iConfig.getParameter<edm::InputTag>("HltResults")),
   PFTaus_(iConfig.getParameter<edm::InputTag>("LoopingOver")),
@@ -132,18 +133,26 @@ TTEffAnalyzer::TTEffAnalyzer(const edm::ParameterSet& iConfig):
   _TTEffTree->Branch("MCTauEta", &MCTauEta, "MCTauEta/F");
   _TTEffTree->Branch("MCTauPhi", &MCTauPhi, "MCTauPhi/F");
 
-  _L1analyzer.Setup(iConfig,_TTEffTree);
-  _L2analyzer.Setup(iConfig,_TTEffTree);
-  _L25and3analyzer.Setup(iConfig,_TTEffTree);
-  _METanalyzer.Setup(iConfig,_TTEffTree);
-  _PFMHTanalyzer.Setup(iConfig,_TTEffTree);
-  _HLTJetAnalyzer.Setup(iConfig,_TTEffTree);
-  _MuonAnalyzer.Setup(iConfig,_TTEffTree);
+  if(!DoOfflineVariablesOnly_){
+    _L1analyzer = new L1TauEfficiencyAnalyzer();
+    _L2analyzer = new L2TauEfficiencyAnalyzer();
+    _L25and3analyzer  = new L25and3TauEfficiencyAnalyzer();
+    _PFMHTanalyzer = new PFMHTEfficiencyAnalyzer();
+    _HLTJetAnalyzer = new HLTJetEfficiencyAnalyzer();
+    _L1analyzer->Setup(iConfig,_TTEffTree);
+    _L2analyzer->Setup(iConfig,_TTEffTree);
+    _L25and3analyzer->Setup(iConfig,_TTEffTree);
+    _PFMHTanalyzer->Setup(iConfig,_TTEffTree); 
+    _HLTJetAnalyzer->Setup(iConfig,_TTEffTree);
+  }
+  _METanalyzer = new METEfficiencyAnalyzer();
+  _MuonAnalyzer = new MuonAnalyzer();
+  _METanalyzer->Setup(iConfig,_TTEffTree);
+  _MuonAnalyzer->Setup(iConfig,_TTEffTree);
 }
 
 TTEffAnalyzer::~TTEffAnalyzer()
 {
-
    // do anything here that needs to be done at desctruction time
    // (e.g. close files, deallocate resources etc.)
    delete[] _hltFlag;
@@ -223,16 +232,20 @@ void TTEffAnalyzer::loop(const edm::Event& iEvent,const edm::EventSetup& iSetup,
     // Fill common variables
     unsigned int i = particle - collection.begin();
     fill(*particle,i);
-    fillHLTinfo(iEvent);
+    if(!DoOfflineVariablesOnly_){
+      fillHLTinfo(iEvent);
+    }
 
     // Call individual analyzers
-    _L1analyzer.fill(iEvent,iSetup, *particle);
-    _L2analyzer.fill(iEvent,iSetup, *particle);
-    _L25and3analyzer.fill(iEvent, *particle);
-    _METanalyzer.fill(iEvent,iSetup);
-    _PFMHTanalyzer.fill(iEvent,iSetup);
-    _HLTJetAnalyzer.fill(iEvent,iSetup);
-    _MuonAnalyzer.fill(iEvent,iSetup);
+    if(!DoOfflineVariablesOnly_){
+      _L1analyzer->fill(iEvent,iSetup, *particle);
+      _L2analyzer->fill(iEvent,iSetup, *particle);
+      _L25and3analyzer->fill(iEvent, *particle);
+      _HLTJetAnalyzer->fill(iEvent,iSetup);
+      _PFMHTanalyzer->fill(iEvent,iSetup);
+    }
+    _METanalyzer->fill(iEvent,iSetup);
+    _MuonAnalyzer->fill(iEvent,iSetup);
 
     // Finally, fill the entry to tree
     _TTEffTree->Fill();
@@ -396,6 +409,8 @@ using namespace reco;
   }
 
   //PFElectronMatch = PFTaus->at(i).electronPreIDDecision();?
+
+  if(DoOfflineVariablesOnly_) return;
 
   /*
   //get RMS Values of Candidates

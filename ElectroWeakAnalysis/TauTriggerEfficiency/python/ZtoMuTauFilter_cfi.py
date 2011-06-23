@@ -50,3 +50,9 @@ muTauFilter = cms.Path(
         * muTauPairs
         * selectedMuTauPairs
 )
+
+muTauFilterSequence = cms.Sequence(
+        ( selectedPFTaus +  selectedMuons)
+        * muTauPairs
+        * selectedMuTauPairs
+)
