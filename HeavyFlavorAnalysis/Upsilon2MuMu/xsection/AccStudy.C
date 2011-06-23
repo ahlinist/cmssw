@@ -105,16 +105,50 @@ void Acceptance(){
 
 
 void UG_Acceptance(){
-
-  TFile *f = new TFile("Acc_1S_0_50.xsReader_1S.default.root");
+  
+  gStyle->SetOptStat(00000000000);
+  TFile *f = new TFile("Acc_1S_0_50.xsReader_1Sbin.default.root ");
   TH2D *UG_AllGenRes_1S;
   UG_AllGenRes_1S = (TH2D*)gFile->Get("UG_AllGenRes_1S");
   TH2D *UG_RecoGenRes_1S;
   UG_RecoGenRes_1S = (TH2D*)gFile->Get("UG_RecoGenRes_1S");
-  TH2D *Ratio = (TH2D*)UG_RecoGenRes_1S->Clone(); 
-  Ratio->SetName("Acceptance");
-  Ratio->Reset();
-    
+  TH2D *Ratio_1S = (TH2D*)UG_RecoGenRes_1S->Clone(); 
+  Ratio_1S->SetName("Acceptance");
+  Ratio_1S->Reset();
+  TH1D *Ratio_1S_1D;
+  Ratio_1S_1D = new TH1D("Acceptance", "Acceptance", 
+			  UG_RecoGenRes_1S->GetNbinsY(), UG_RecoGenRes_1S->GetYaxis()->GetXbins()->GetArray()
+			  );
+  
+  TFile *f1 = new TFile("Acc_2S_0_50.xsReader_1Sbin.default.root ");
+  TH2D *UG_AllGenRes_2S;
+  UG_AllGenRes_2S = (TH2D*)gFile->Get("UG_AllGenRes_2S");
+  TH2D *UG_RecoGenRes_2S;
+  UG_RecoGenRes_2S = (TH2D*)gFile->Get("UG_RecoGenRes_2S");
+  TH2D *Ratio_2S = (TH2D*)UG_RecoGenRes_2S->Clone(); 
+  Ratio_2S->SetName("Acceptance");
+  Ratio_2S->Reset();
+  TH1D *Ratio_2S_1D;
+  Ratio_2S_1D = new TH1D("Acceptance", "Acceptance", 
+			  UG_RecoGenRes_2S->GetNbinsY(), UG_RecoGenRes_2S->GetYaxis()->GetXbins()->GetArray()
+			  );
+  
+  TFile *f2 = new TFile("Acc_3S_0_50.xsReader_1Sbin.default.root ");
+  TH2D *UG_AllGenRes_3S;
+  UG_AllGenRes_3S = (TH2D*)gFile->Get("UG_AllGenRes_3S");
+  TH2D *UG_RecoGenRes_3S;
+  UG_RecoGenRes_3S = (TH2D*)gFile->Get("UG_RecoGenRes_3S");
+  TH2D *Ratio_3S = (TH2D*)UG_RecoGenRes_3S->Clone(); 
+  Ratio_3S->SetName("Acceptance");
+  Ratio_3S->Reset();
+  TH1D *Ratio_3S_1D;
+  Ratio_3S_1D = new TH1D("Acceptance", "Acceptance", 
+			  UG_RecoGenRes_3S->GetNbinsY(), UG_RecoGenRes_3S->GetYaxis()->GetXbins()->GetArray()
+			  );
+  
+  
+  
+  
   double bin_contentBefore(0); double bin_contentAfter(0); double bin_ratio(0.);
   for (int i = 1; i <= UG_RecoGenRes_1S->GetNbinsX(); ++i) {
     for (int j = 1; j <= UG_RecoGenRes_1S->GetNbinsY(); ++j){	
@@ -127,27 +161,146 @@ void UG_Acceptance(){
       if ( bin_contentBefore == 0 ) bin_ratio=0;
       if ( bin_contentBefore > 0 ) bin_ratio = bin_contentAfter / bin_contentBefore;
       cout << "bin_ratio = " << bin_ratio << endl;
-      Ratio->SetCellContent(i,j,bin_ratio);
+      Ratio_1S->SetCellContent(i,j,bin_ratio);
       bin_contentBefore=0;
       bin_contentAfter=0;
       bin_ratio=0;
     }
   }
   
+  for (int j = 1; j <= UG_RecoGenRes_1S->GetNbinsY(); ++j) {
+    for (int i = 1; i <= UG_RecoGenRes_1S->GetNbinsX() - 1; ++i){	
+      
+      bin_contentBefore += UG_AllGenRes_1S->GetCellContent(i,j);
+      bin_contentAfter += UG_RecoGenRes_1S->GetCellContent(i,j);
+      
+    }
+      
+    cout << "bin_contentAllGenRes = " << bin_contentBefore << endl;
+    cout << "bin_contentRecoGenRes = " << bin_contentAfter << endl;
+    if ( bin_contentBefore == 0 ) bin_ratio=0;
+    if ( bin_contentBefore > 0 ) bin_ratio = bin_contentAfter / bin_contentBefore;
+    cout << "bin_ratio = " << bin_ratio << endl;
+    Ratio_1S_1D->SetBinContent(j,bin_ratio);
+    bin_contentBefore=0;
+    bin_contentAfter=0;
+    bin_ratio=0;
+    
+  }
+  
+  for (int i = 1; i <= UG_RecoGenRes_2S->GetNbinsX(); ++i) {
+    for (int j = 1; j <= UG_RecoGenRes_2S->GetNbinsY(); ++j){	
+      
+      bin_contentBefore = UG_AllGenRes_2S->GetCellContent(i,j);
+      bin_contentAfter = UG_RecoGenRes_2S->GetCellContent(i,j);
+      
+      cout << "bin_contentAllGenRes = " << bin_contentBefore << endl;
+      cout << "bin_contentRecoGenRes = " << bin_contentAfter << endl;
+      if ( bin_contentBefore == 0 ) bin_ratio=0;
+      if ( bin_contentBefore > 0 ) bin_ratio = bin_contentAfter / bin_contentBefore;
+      cout << "bin_ratio = " << bin_ratio << endl;
+      Ratio_2S->SetCellContent(i,j,bin_ratio);
+      bin_contentBefore=0;
+      bin_contentAfter=0;
+      bin_ratio=0;
+    }
+  }
+  
+  for (int j = 1; j <= UG_RecoGenRes_2S->GetNbinsY(); ++j) {
+    for (int i = 1; i <= UG_RecoGenRes_2S->GetNbinsX() - 1; ++i){	
+      
+      bin_contentBefore += UG_AllGenRes_2S->GetCellContent(i,j);
+      bin_contentAfter += UG_RecoGenRes_2S->GetCellContent(i,j);
+      
+    }
+    
+    cout << "bin_contentAllGenRes = " << bin_contentBefore << endl;
+    cout << "bin_contentRecoGenRes = " << bin_contentAfter << endl;
+    if ( bin_contentBefore == 0 ) bin_ratio=0;
+    if ( bin_contentBefore > 0 ) bin_ratio = bin_contentAfter / bin_contentBefore;
+    cout << "bin_ratio = " << bin_ratio << endl;
+    Ratio_2S_1D->SetBinContent(j,bin_ratio);
+    bin_contentBefore=0;
+    bin_contentAfter=0;
+    bin_ratio=0;
+    
+  }
+ 
+  for (int i = 1; i <= UG_RecoGenRes_3S->GetNbinsX(); ++i) {
+    for (int j = 1; j <= UG_RecoGenRes_3S->GetNbinsY(); ++j){	
+      
+      bin_contentBefore = UG_AllGenRes_3S->GetCellContent(i,j);
+      bin_contentAfter = UG_RecoGenRes_3S->GetCellContent(i,j);
+      
+      cout << "bin_contentAllGenRes = " << bin_contentBefore << endl;
+      cout << "bin_contentRecoGenRes = " << bin_contentAfter << endl;
+      if ( bin_contentBefore == 0 ) bin_ratio=0;
+      if ( bin_contentBefore > 0 ) bin_ratio = bin_contentAfter / bin_contentBefore;
+      cout << "bin_ratio = " << bin_ratio << endl;
+      Ratio_3S->SetCellContent(i,j,bin_ratio);
+      bin_contentBefore=0;
+      bin_contentAfter=0;
+      bin_ratio=0;
+    }
+  }
+  
+  for (int j = 1; j <= UG_RecoGenRes_3S->GetNbinsY(); ++j) {
+    for (int i = 1; i <= UG_RecoGenRes_3S->GetNbinsX() - 1; ++i){	
+      
+      bin_contentBefore += UG_AllGenRes_3S->GetCellContent(i,j);
+      bin_contentAfter += UG_RecoGenRes_3S->GetCellContent(i,j);
+      
+    }
+    
+    cout << "bin_contentAllGenRes = " << bin_contentBefore << endl;
+    cout << "bin_contentRecoGenRes = " << bin_contentAfter << endl;
+    if ( bin_contentBefore == 0 ) bin_ratio=0;
+    if ( bin_contentBefore > 0 ) bin_ratio = bin_contentAfter / bin_contentBefore;
+    cout << "bin_ratio = " << bin_ratio << endl;
+    Ratio_3S_1D->SetBinContent(j,bin_ratio);
+    bin_contentBefore=0;
+    bin_contentAfter=0;
+    bin_ratio=0;
+    
+  }
+  
+  
+  
+  
   TCanvas *c1 = new TCanvas("c1","c1",1200,600); 
-  //c1->Divide(3,1); 
-  c1->cd(1);
-  //UG_AllGenRes_1S->Draw("colz");
-  //c1->cd(2);
-  //UG_RecoGenRes_1S->Draw("colz");
-  //c1->cd(3);
-  Ratio->Draw("colz");
-
+  Ratio_1S->Draw("colz");
+  TCanvas *c2 = new TCanvas("c2","c2",1200,600); 
+  Ratio_2S->Draw("colz");  
+  TCanvas *c3 = new TCanvas("c3","c3",1200,600); 
+  Ratio_3S->Draw("colz");  
+  TCanvas *c4 = new TCanvas("c4","c4",1200,600);
+  Ratio_1S_1D->SetMinimum(0.2);
+  Ratio_1S_1D->SetMaximum(0.8);
+  Ratio_1S_1D->SetMarkerStyle(22);
+  Ratio_1S_1D->SetMarkerColor(2);
+  Ratio_1S_1D->SetLineColor(2);
+  Ratio_1S_1D->Draw("p");
+  Ratio_2S_1D->SetMarkerStyle(23);
+  Ratio_2S_1D->SetMarkerColor(3);
+  Ratio_2S_1D->SetLineColor(3);
+  Ratio_2S_1D->Draw("psame");
+  Ratio_3S_1D->SetMarkerStyle(24);
+  Ratio_3S_1D->SetMarkerColor(4);
+  Ratio_3S_1D->SetLineColor(4);
+  Ratio_3S_1D->Draw("psame");
+  legg = new TLegend(0.6,0.4,0.8,0.7);
+  legg->SetFillStyle(0); legg->SetBorderSize(0); legg->SetTextSize(0.05); legg->SetTextFont(132); 
+  legg->SetHeader("    |y^{#Upsilon}| < 2.4");
+  legge = legg->AddEntry(Ratio_1S_1D,  "#Upsilon(1S)","p"); legge->SetTextColor(kRed);
+  legge = legg->AddEntry(Ratio_2S_1D,  "#Upsilon(2S)","p"); legge->SetTextColor(kGreen);
+  legge = legg->AddEntry(Ratio_3S_1D,  "#Upsilon(3S)","p"); legge->SetTextColor(kBlue);
+  legg->Draw();
+  
 }
 
 void UG_Acceptance_Pol(){
   
-  TFile *f = new TFile("Acc.xsReader_1S.default.root");
+  TFile *f = new TFile("Acc_1S_0_50.xsReader_1S.default.root");
   TH2D *UG_AllGenRes_HelPl_1S;
   UG_AllGenRes_HelPl_1S = (TH2D*)gFile->Get("UG_AllGenRes_HelPl_1S");
   TH2D *UG_RecoGenRes_HelPl_1S;
