@@ -1859,6 +1859,7 @@ void xsReader::bookHist() {
   h = new TH1D("CandRapidity", "CandRapidity", 80, -4, 4.);
   h = new TH1D("CandEta", "CandEta", 80, -4, 4.);
   h = new TH1D("UpsilonMass", "UpsilonMass", BIN, fMassLow, fMassHigh); 
+  ((TH1D*)fpHistFile->Get("UpsilonMass"))->Sumw2(); 
   h = new TH1D("SigMuEta", "SigMuEta", 80, -4, 4.);
   h = new TH1D("SigMuPt", "SigMuPt", 80, 0, 40.);
   k = new TH2D("SigMuEtaPt", "SigMuEtaPt", 48, -2.4, 2.4, 40, 0, 20);
