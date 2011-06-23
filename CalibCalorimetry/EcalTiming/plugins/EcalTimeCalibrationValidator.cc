@@ -94,7 +94,7 @@ EcalTimeCalibrationValidator::analyze(edm::Event const& evt, edm::EventSetup con
 
   for(int entry = startingEntry_; entry < nEntries; ++entry)
   {
-    if(maxEntries_ >= -1 && entry > startingEntry_+maxEntries_) break;
+    if(maxEntries_ >= 1 && entry > startingEntry_+maxEntries_) break;
 
     if(entry % 10000 == 0)
       edm::LogInfo("EcalTimeCalibrationValidator") << "Processing tree entry: " << entry;
