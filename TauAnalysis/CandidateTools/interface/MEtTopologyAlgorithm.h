@@ -13,6 +13,8 @@
 
 #include "AnalysisDataFormats/TauAnalysis/interface/MEtTopology.h"
 
+#include <vector>
+
 class MEtTopologyAlgorithm
 {
   typedef edm::View<reco::Candidate> energyDepositCollectionType;
@@ -22,11 +24,11 @@ class MEtTopologyAlgorithm
   MEtTopologyAlgorithm(const edm::ParameterSet&);
   ~MEtTopologyAlgorithm();
 
-  MEtTopology buildMEtTopology(const edm::Ptr<reco::MET>&, const energyDepositCollectionType&);
+  MEtTopology buildMEtTopology(const std::vector<energyDepositCollectionType>&);
 
  private:
 
-  void computeVproj(MEtTopology&, const edm::Ptr<reco::MET>&, const energyDepositCollectionType&);
+  void computeVproj(MEtTopology&, const std::vector<energyDepositCollectionType>&);
 
   double globalThreshold_;
   int verbosity_;

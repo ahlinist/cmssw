@@ -9,9 +9,9 @@
  * 
  * \authors Christian Veelken
  *
- * \version $Revision: 1.1 $
+ * \version $Revision: 1.2 $
  *
- * $Id: MEtTopologyProducer.h,v 1.1 2009/07/11 15:36:32 veelken Exp $
+ * $Id: MEtTopologyProducer.h,v 1.2 2010/09/28 11:23:28 jkolb Exp $
  *
  */
 
@@ -27,6 +27,8 @@
 
 #include "TauAnalysis/CandidateTools/interface/MEtTopologyAlgorithm.h"
 
+#include <vector>
+
 class MEtTopologyProducer : public edm::EDProducer 
 {
  public:
@@ -40,8 +42,8 @@ class MEtTopologyProducer : public edm::EDProducer
 
   MEtTopologyAlgorithm algorithm_;
   
-  edm::InputTag srcMET_;
-  edm::InputTag srcEnergyDeposits_;
+  typedef std::vector<edm::InputTag> vInputTag;
+  vInputTag srcEnergyDeposits_;
 };
 
 #endif
