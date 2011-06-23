@@ -1,5 +1,7 @@
 #include "TauAnalysis/CandidateTools/interface/MEtTopologyAlgorithm.h"
 
+#include <TMath.h>
+
 MEtTopologyAlgorithm::MEtTopologyAlgorithm(const edm::ParameterSet& cfg)
 {
   globalThreshold_ = cfg.getParameter<double>("globalThreshold");
@@ -11,37 +13,47 @@ MEtTopologyAlgorithm::~MEtTopologyAlgorithm()
 //--- nothing to be done yet...
 }
 
-MEtTopology MEtTopologyAlgorithm::buildMEtTopology(const edm::Ptr<reco::MET>& metPtr, const energyDepositCollectionType& energyDeposits)
+MEtTopology MEtTopologyAlgorithm::buildMEtTopology(const std::vector<energyDepositCollectionType>& energyDepositCollections)
 {
   MEtTopology metTopology;
 
-  computeVproj(metTopology, metPtr, energyDeposits);
+  computeVproj(metTopology, energyDepositCollections);
 
   return metTopology;
 }
 
 void MEtTopologyAlgorithm::computeVproj(MEtTopology& metTopology,
-					const edm::Ptr<reco::MET>& metPtr, const energyDepositCollectionType& energyDeposits)
+					const std::vector<energyDepositCollectionType>& energyDepositCollections)
 {
-  double metPhi = metPtr->phi();
+  reco::Candidate::LorentzVector metP4;
+  for ( std::vector<energyDepositCollectionType>::const_iterator energyDepositCollection = energyDepositCollections.begin();
+	energyDepositCollection != energyDepositCollections.end(); ++energyDepositCollection ) {
+    for ( energyDepositCollectionType::const_iterator energyDeposit = energyDepositCollection->begin();
+	  energyDeposit != energyDepositCollection->end(); ++energyDeposit ) {
+      if ( energyDeposit->et() > globalThreshold_ ) metP4 += energyDeposit->p4();
+    }
+  }
+  
+  double metPhi = metP4.phi();
 
-  double projAxisX = -cos(metPhi);
-  double projAxisY = -sin(metPhi);
+  double projAxisX = -TMath::Cos(metPhi);
+  double projAxisY = -TMath::Sin(metPhi);
 
   double Vparallel = 0.;
   double Vanti = 0.;
 
-  for ( energyDepositCollectionType::const_iterator energyDeposit = energyDeposits.begin();
-	energyDeposit != energyDeposits.end(); ++energyDeposit ) {
-
-    if ( energyDeposit->et() < globalThreshold_ ) continue;
-
-    double projection = energyDeposit->px()*projAxisX + energyDeposit->py()*projAxisY;
-
-    if ( projection > 0. )
-      Vparallel += projection;
-    else
-      Vanti += fabs(projection);
+  for ( std::vector<energyDepositCollectionType>::const_iterator energyDepositCollection = energyDepositCollections.begin();
+	energyDepositCollection != energyDepositCollections.end(); ++energyDepositCollection ) {
+    for ( energyDepositCollectionType::const_iterator energyDeposit = energyDepositCollection->begin();
+	  energyDeposit != energyDepositCollection->end(); ++energyDeposit ) {
+      if ( energyDeposit->et() > globalThreshold_ ) {	
+	double projection = energyDeposit->px()*projAxisX + energyDeposit->py()*projAxisY;     
+	if ( projection > 0. )
+	  Vparallel += projection;
+	else
+	  Vanti += fabs(projection);
+      }
+    }
   }
 
   if ( verbosity_ ) {

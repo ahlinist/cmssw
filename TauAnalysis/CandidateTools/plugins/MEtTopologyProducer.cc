@@ -16,8 +16,7 @@
 MEtTopologyProducer::MEtTopologyProducer(const edm::ParameterSet& cfg)
   : algorithm_(cfg)
 {
-  srcEnergyDeposits_ = cfg.getParameter<edm::InputTag>("srcEnergyDeposits");
-  srcMET_ = cfg.getParameter<edm::InputTag>("srcMET");
+  srcEnergyDeposits_ = cfg.getParameter<vInputTag>("srcEnergyDeposits");
 
   produces<MEtTopologyCollection>("");
 }
@@ -30,27 +29,16 @@ MEtTopologyProducer::~MEtTopologyProducer()
 void MEtTopologyProducer::produce(edm::Event& evt, const edm::EventSetup& es)
 {
   typedef edm::View<reco::Candidate> energyDepositCollectionType;
-  edm::Handle<energyDepositCollectionType> energyDeposits;
-  pf::fetchCollection(energyDeposits, srcEnergyDeposits_, evt);
-
-  typedef edm::View<reco::MET> metCollectionType;
-  edm::Handle<metCollectionType> metCollection;
-  pf::fetchCollection(metCollection, srcMET_, evt);
-
-//--- check that there is exactly one MET object in the event
-//    (missing transverse momentum is an **event level** quantity)
-  if ( metCollection->size() != 1 ) {
-    edm::LogError ("produce") << " Found " << metCollection->size() << " MET objects in collection = " << srcMET_ << ","
-			      << " --> MEtTopology collection will NOT be produced !!";
-    std::auto_ptr<MEtTopologyCollection> emptyMEtTopologyCollection(new MEtTopologyCollection());
-    evt.put(emptyMEtTopologyCollection);
-    return;
+  std::vector<energyDepositCollectionType> energyDepositCollections;
+  for ( vInputTag::const_iterator srcEnergyDeposit = srcEnergyDeposits_.begin();
+	srcEnergyDeposit != srcEnergyDeposits_.end(); ++srcEnergyDeposit ) {
+    edm::Handle<energyDepositCollectionType> energyDepositCollection;
+    pf::fetchCollection(energyDepositCollection, *srcEnergyDeposit, evt);
+    energyDepositCollections.push_back(*energyDepositCollection);
   }
-  
-  edm::Ptr<reco::MET> metPtr = metCollection->ptrAt(0);
 
   std::auto_ptr<MEtTopologyCollection> metTopologyCollection(new MEtTopologyCollection());
-  MEtTopology metTopology = algorithm_.buildMEtTopology(metPtr, *energyDeposits);
+  MEtTopology metTopology = algorithm_.buildMEtTopology(energyDepositCollections);
   metTopologyCollection->push_back(metTopology);
   evt.put(metTopologyCollection);
 }
