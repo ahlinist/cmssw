@@ -33,6 +33,7 @@ void METEfficiencyAnalyzer::Setup(const edm::ParameterSet& iConfig,TTree *trigtr
   	// Setup branches
   	mettree->Branch("HLTMET", &hltMET);
 	mettree->Branch("MET",    &MET);
+	mettree->Branch("METphi", &METphi);
 	mettree->Branch("MCMET",  &mcMET);
 	mettree->Branch("METclean", &METclean, "METclean/I");
 }
@@ -41,6 +42,7 @@ void METEfficiencyAnalyzer::fill(const edm::Event& iEvent, const edm::EventSetup
 
 	hltMET = 0.0;
 	MET    = 0.0;
+	METphi = -999;
 	mcMET  = 0.0;
 	METclean = 0;
 
@@ -56,7 +58,7 @@ void METEfficiencyAnalyzer::fill(const edm::Event& iEvent, const edm::EventSetup
 	iEvent.getByLabel(METSource, metHandle);
 
 	MET = (metHandle->front() ).et();
-
+	METphi = (metHandle->front() ).phi();
 //
 
 	edm::Handle<bool> metCleaningHandle;

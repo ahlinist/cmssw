@@ -40,7 +40,7 @@ class METEfficiencyAnalyzer {
         // Output tree and related variables
         TTree *mettree;
 
-	float hltMET,MET,mcMET;
+	float hltMET,MET,METphi,mcMET;
 	int METclean;
 };
 #endif
