@@ -78,6 +78,7 @@ from TauAnalysis.Core.particleMultiplicityHistManager_cfi import *
 
 # import config for primary event vertex histogram manager
 from TauAnalysis.Core.vertexHistManager_cfi import *
+vertexHistManager.vertexSource = cms.InputTag('offlinePrimaryVerticesDA')
 
 # import config for L1 & HLT histogram manager
 from TauAnalysis.Core.triggerHistManager_cfi import *
@@ -551,7 +552,7 @@ elecTauAnalysisSequenceOS_woBtag = cms.VPSet(
 			'diTauCandidateHistManagerForElecTau',
             #'caloMEtHistManager',
             'pfMEtHistManager'
-            #'vertexHistManager',
+            'vertexHistManager',
             #'triggerHistManagerForElecTau'
         ),
         replace = cms.vstring('electronHistManager.electronSource = selectedPatElectronsForElecTauTrkIPcumulative',
