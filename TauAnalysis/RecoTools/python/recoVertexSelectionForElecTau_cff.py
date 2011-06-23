@@ -17,7 +17,7 @@ import copy
 selectedPrimaryVertexForElecTau = cms.EDFilter("VertexByParticleMatchSelector",
     src = cms.InputTag('offlinePrimaryVerticesDA'),
     srcParticles = cms.VInputTag(
-        'selectedPatElectronsTrkIPcumulative',
+        'selectedPatElectronsForElecTauTrkIPcumulative',
         'selectedPatTausForElecTauMuonVetoCumulative',
     ),
     dZ = cms.double(0.2),                                         
@@ -60,7 +60,7 @@ selectPrimaryVertexForElecTau = cms.Sequence(
 
 selectedPrimaryVertexForElecTauLooseElectronIsolation = selectedPrimaryVertexForElecTau.clone(
     srcParticles = cms.VInputTag(
-        'selectedPatElectronsTrkIPlooseIsolationCumulative',
+        'selectedPatElectronsForElecTauTrkIPlooseIsolationCumulative',
         'selectedPatTausForElecTauMuonVetoCumulative',
     )
 )    
