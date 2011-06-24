@@ -172,10 +172,16 @@ TH2D* h2_n_vs_eta;
       Float_t vntracks[100];
       Float_t vchi2[100];
       Float_t vndof[100];
-      Float_t vptbal[100];
-      Float_t vptasym[100];
       Float_t vlogsumpt2[100];
-      Int_t vrank[100];
+
+      //Best vertex for each gammagamma Hypothesis
+      Int_t nPreselPhotonPairs;
+      Int_t indexPreselPhot1[20];
+      Int_t indexPreselPhot2[20];
+      Int_t vrankPhotonPairs[20];
+      Float_t vptbalPhotonPairs[20];
+      Float_t vptasymPhotonPairs[20];
+
       
       // Vertex distribution at MC truth level
       Float_t vxMC;
@@ -212,6 +218,9 @@ TH2D* h2_n_vs_eta;
       Float_t xscPhot[40];
       Float_t yscPhot[40];
       Float_t zscPhot[40];
+      Float_t xcaloPhot[40];
+      Float_t ycaloPhot[40];
+      Float_t zcaloPhot[40];
       Float_t timePhot[40];
       Float_t e4SwissCrossPhot[40];
       Int_t hasPixelSeedPhot[40];
@@ -254,10 +263,9 @@ TH2D* h2_n_vs_eta;
       Float_t pid_hlwTrack03[40]; // Hollow cone track isolation
       Float_t pid_hlwTrack03NoDz[40]; // Hollow cone track isolation
       Float_t pid_hlwTrackNoDz[40]; // Hollow cone track isolation
-      Float_t pid_hlwTrackBestRank[40]; // Hollow cone track isolation
-      Float_t pid_hlwTrack03BestRank[40]; // Hollow cone track isolation
-      Float_t pid_hlwTrackWorstVtx[40]; // Hollow cone track isolation
-      Float_t pid_hlwTrack03WorstVtx[40]; // Hollow cone track isolation
+      Float_t pid_hlwTrackForCiC[40][30]; // Hollow cone track isolation
+      Float_t pid_hlwTrack03ForCiC[40][30]; // Hollow cone track isolation
+
      
       Float_t ptiso004Phot[40];
       Int_t ntrkiso004Phot[40];

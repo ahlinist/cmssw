@@ -13,7 +13,7 @@
 //
 // Original Author:  Daniele del Re
 //         Created:  Thu Sep 13 16:00:15 CEST 2007
-// $Id: GammaJetAnalyzer.cc,v 1.59 2011/05/21 16:13:53 rahatlou Exp $
+// $Id: GammaJetAnalyzer.cc,v 1.60 2011/06/02 17:51:21 meridian Exp $
 //
 //
 
@@ -427,6 +427,7 @@ GammaJetAnalyzer::~GammaJetAnalyzer()
 void
 GammaJetAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
 {
+
    nMC = nPhot = nElePhot = nJet_akt5 = nJet_kt4 = nJet_kt6 = nJet_pfkt4 = nJet_pfakt5 = nJet_pfkt6 = nJetGen_kt4 = nJetGen_akt5 = nJetGen_kt6 = 0;
    nJet_jptak5  = 0;
    nJet_pfakt7 = nJet_akt7 = nJetGen_akt7 = 0;
@@ -658,7 +659,7 @@ GammaJetAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
       edm::Handle<std::vector<PileupSummaryInfo> > pileupHandle;
       if( isMC ) iEvent.getByLabel(puSummaryInfo_, pileupHandle);
       pu_n = 0;
-      
+
       if( pileupHandle.isValid() ) 
 	{
 	  std::vector<PileupSummaryInfo>::const_iterator PVI;
@@ -671,14 +672,18 @@ GammaJetAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
 	      
 	      pu_n = PVI->getPU_NumInteractions();
 	      //pu_bunchcrossing = PVI->getBunchCrossing();
-	      int sv = pu_n< 50 ? pu_n : 50;
-	      copy( PVI->getPU_zpositions().begin(), PVI->getPU_zpositions().begin()+sv, pu_zpos );
-	      copy( PVI->getPU_sumpT_lowpT().begin(), PVI->getPU_sumpT_lowpT().begin()+sv, pu_sumpt_lowpt );
-	      copy( PVI->getPU_sumpT_highpT().begin(), PVI->getPU_sumpT_highpT().begin()+sv, pu_sumpt_highpt );
-	      copy( PVI->getPU_ntrks_lowpT().begin(), PVI->getPU_ntrks_lowpT().begin()+sv, pu_ntrks_lowpt );
-	      copy( PVI->getPU_ntrks_highpT().begin(), PVI->getPU_ntrks_highpT().begin()+sv, pu_ntrks_highpt );
+	      int sv = PVI->getPU_zpositions().size() < 50 ? PVI->getPU_zpositions().size() : 50;
+	      for (int iPU=0;iPU<sv;++iPU)
+		{
+		  pu_zpos[iPU]=PVI->getPU_zpositions()[iPU];
+		  pu_sumpt_lowpt[iPU]=PVI->getPU_sumpT_lowpT()[iPU];
+		  pu_sumpt_highpt[iPU]=PVI->getPU_sumpT_highpT()[iPU];
+		  pu_ntrks_lowpt[iPU]=PVI->getPU_ntrks_lowpT()[iPU];
+		  pu_ntrks_highpt[iPU]=PVI->getPU_ntrks_highpT()[iPU];
+		}
 	    }
 	}
+
   // get geometry
    edm::ESHandle<CaloGeometry> geoHandle;
    //   iSetup.get<IdealGeometryRecord>().get(geoHandle);
@@ -759,7 +764,6 @@ GammaJetAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
 //--------------------------------------------------------------------------------------------------------------------------------------
 
    // Loop over MC truth
-
    genpt = 0.;
    
    if( isMC ) {
@@ -788,30 +792,48 @@ GammaJetAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
      // outgoing + ISR - incoming ~ 0 (couple of GeV)
      // Is the small discrepancy due to the virtual mass of the partons?
      set<int> mothers;
-     map<const GenParticle*, int> mapMC;
+     std::map<const GenParticle*, int> mapMC;
+
+     //Only for debugging purposes
+     std::map<const GenParticle*, int> indexMapMC;
+     int ipar=0;
 
      for (GenParticleCollection::const_iterator p = genParticles->begin();
           p != genParticles->end(); ++p) {
-       
+
+       if (_debug)
+	 {
+	   indexMapMC.insert(std::make_pair<const GenParticle*,int>(&(*p),ipar));
+	   ++ipar;
+	   if (p->pdgId()==22 && p->status()==1 && abs(p->mother()->pdgId())<=21)
+	     {
+	       std::cout << "FSR PHOTON FOUND " << nMC << "\t" << p->pdgId() << "\t" << p->status() << "\t" << p->p4().pt() << "\t" << p->numberOfDaughters() << "\t" << p->numberOfMothers();
+	       if (p->numberOfMothers()==1)
+		 std::cout << "\t" << indexMapMC[(const GenParticle*)(&(*p->mother()))] << "\t" << p->mother()->pdgId();
+	       std::cout << std::endl;
+	     }
+	 }
+
        if (nMC>=(nMaxMC-1)) {continue;}  // to reduce the root file size
        // need space for the mom, eventually
 
+       
        //int motherIDMC = -1;
        if (p->numberOfMothers() > 0) { 
          const Candidate * mom = p->mother();
          for (size_t j = 0; j != genParticles->size(); ++j) {
-         const Candidate * ref = &((*genParticles)[j]);
-         //if (mom->px() == ref->px() && mom->py() == ref->py()
-         //&& mom->pz() == ref->pz() && mom->status() == ref->status()
-         //&& mom->pdgId()==ref->pdgId()) {
-
+	   const Candidate * ref = &((*genParticles)[j]);
+	   //if (mom->px() == ref->px() && mom->py() == ref->py()
+	   //&& mom->pz() == ref->pz() && mom->status() == ref->status()
+	   //&& mom->pdgId()==ref->pdgId()) {
+	   
            //assert(mom==ref); // address of the candidate is the same?
            //above works in about 99.7% of events
-
-         if (mom==ref) {
-           motherIDMC[nMC] = j;
+	   
+	   if (mom==ref) {
+	     motherIDMC[nMC] = j;
            //motherIDMC = j;
-         }
+	   }
          }
        }
 
@@ -832,10 +854,12 @@ GammaJetAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
 
        // Neutral particles kept with >200 MeV (ECAL ZS threshold)
        // Charged particles kept with >75 MeV (tracking threshold)
-       if (p->status()==3 || (p->status()==1 && deltaR<1.0 &&
-                             (p->pt()>0.200 ||
-                             (p->charge()!=0 && p->pt()>0.075))) ) {
-
+       if (p->status()==3 || 
+	   (p->status()==1 && deltaR<0.8 && (p->pt()>0.200 || (p->charge()!=0 && p->pt()>0.075))) || 
+	   (p->pdgId()==22 && p->status()==1 && abs(p->mother()->pdgId())<=21 )  //to select also all FSR photons
+	   ){
+	 
+	 
          pdgIdMC[nMC] = p->pdgId();
          statusMC[nMC] = p->status();
          //massMC[nMC] = p->mass();
@@ -846,38 +870,44 @@ GammaJetAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
          
          mapMC[&(*p)] = nMC;
          ++nMC; 
-
+	 
          // if stable photon/electron, find parent
          if (p->status() == 1 && motherIDMC[nMC] != -1
              //&& (pdgIdMC[nMC] == kPhoton || pdgIdMC[nMC] == kElectron)) {//bug
              && (p->pdgId() == kPhoton || p->pdgId() == kElectron)) {
-             
+	   
            //const Candidate * mom = p->mother();
            const GenParticle *mom = (const GenParticle*)p->mother();
            if (mom->status() == 2
                && (mom->pdgId()<81 || mom->pdgId()>100) // remove MC internal 
                && mothers.find(motherIDMC[nMC]) == mothers.end()) {
-
-           mothers.insert(motherIDMC[nMC]);
-           
-           if (nMC>=nMaxMC) {continue;}  // to reduce the root file size
-           pdgIdMC[nMC] = mom->pdgId();
-           statusMC[nMC] = mom->status();
-           //massMC[nMC] = mom->mass();
-           ptMC[nMC] = mom->pt();
-           eMC[nMC] = mom->energy();
-           etaMC[nMC] = mom->eta();
-           phiMC[nMC] = mom->phi(); 
-
-           mapMC[mom] = nMC;
-           ++nMC; 
-         }
-         } // stable photon has parent
-       } // keep particle
-
-     } // loop particles
-
-
+	     
+	     mothers.insert(motherIDMC[nMC]);
+	     
+	     if (nMC>=nMaxMC) 
+	       {
+		 // std::cout << "No possibility to add  the mother" << std::endl;
+		 motherIDMC[nMC-1]=-1;
+		 continue;
+	       }  // to reduce the root file size
+	     //       std::cout << "Mother was not present. Fixing the decay tree" << std::endl;
+	       motherIDMC[nMC-1]=nMC;
+	       pdgIdMC[nMC] = mom->pdgId();
+	       statusMC[nMC] = mom->status();
+	       //massMC[nMC] = mom->mass();
+	       ptMC[nMC] = mom->pt();
+	       eMC[nMC] = mom->energy();
+	       etaMC[nMC] = mom->eta();
+	       phiMC[nMC] = mom->phi(); 
+	       
+	       mapMC[mom] = nMC;
+	       ++nMC; 
+	     
+	   } // stable photon has parent
+	 } // keep particle
+	   
+	 } // loop particles
+     }
      //const double genjetptthr = 5.; // already implicit in GenJet reco
      //const int genjetnmin = 4;
      // Loop over gen Jets
@@ -1455,21 +1485,23 @@ GammaJetAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
 
    PhotonTkIsolation tkIsoCone04( TrackConeOuterRadiusA,
                                   TrackConeInnerRadiusA,
-        isolationtrackEtaSliceA,
-        isolationtrackThresholdA,
-        longImpactParameterA,
-        transImpactParameterA,
-        tracksHP.product(),
-        math::XYZPoint(vertexBeamSpot.x0(),vertexBeamSpot.y0(),vertexBeamSpot.z0()) );
+				  isolationtrackEtaSliceA,
+				  isolationtrackThresholdA,
+				  longImpactParameterA,
+				  transImpactParameterA,
+				  tracksHP.product(),
+				  math::XYZPoint(vertexBeamSpot.x0(),vertexBeamSpot.y0(),vertexBeamSpot.z0())
+				  );
         
    PhotonTkIsolation tkIsoCone03( TrackConeOuterRadiusB,
                                   TrackConeInnerRadiusB,
-        isolationtrackEtaSliceB,
-        isolationtrackThresholdB,
-        longImpactParameterB,
-        transImpactParameterB,
-        tracksHP.product(),
-        math::XYZPoint(vertexBeamSpot.x0(),vertexBeamSpot.y0(),vertexBeamSpot.z0()) );
+				  isolationtrackEtaSliceB,
+				  isolationtrackThresholdB,
+				  longImpactParameterB,
+				  transImpactParameterB,
+				  tracksHP.product(),
+				  math::XYZPoint(vertexBeamSpot.x0(),vertexBeamSpot.y0(),vertexBeamSpot.z0())
+				  );
         
 
 
@@ -1506,30 +1538,35 @@ GammaJetAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
 
    std::vector<int> rankprod;  
    // Loop over reco photons to identify photons for vertex selection
-//   std::cout << "============= Vertex Analysis" << std::endl;
+   if (_debug)
+     std::cout << "============= Starting vertex Analysis =================" << std::endl;
 
-   std::vector<PhotonInfo> photonsForVertexComputation;
+   std::map<int,PhotonInfo> photonsForVertexComputation;
+   int iphot=0;
    for (PhotonCollection::const_iterator it = PhotonHandle->begin(); 
 	it != PhotonHandle->end(); ++it) 
      {
        //pass preselection cuts
        
-//        bool hasMatchedPromptEle = ConversionTools::hasMatchedPromptElectron(it->superCluster(), 
-// 									    ElectronHandle, hConversions, vertexBeamSpot.position());
-//        if (hasMatchedPromptEle)
-// 	 continue;
+       //        bool hasMatchedPromptEle = ConversionTools::hasMatchedPromptElectron(it->superCluster(), 
+       // 									    ElectronHandle, hConversions, vertexBeamSpot.position());
+       //        if (hasMatchedPromptEle)
+       // 	 continue;
        
-       if(  it->pt()<20.  || ( fabs(it->superCluster()->eta())>1.4442 && fabs(it->superCluster()->eta())<1.566 ) || fabs(it->superCluster()->eta()) >2.5)
+       if(  it->pt()<20.  || ( fabs(it->superCluster()->position().eta())>1.4442 && fabs(it->superCluster()->position().eta())<1.566 ) || fabs(it->superCluster()->position().eta()) >2.5)
 	 {
 // 	   std::cout << "Photon skipped because of acceptance " << std::endl;
+	   ++iphot;
 	   continue;         
 	 }
        bool isEB = it->isEB(); 
 
 
-       if( it->ecalRecHitSumEtConeDR03() >= 8. || ((isEB && it->sigmaIetaIeta()>0.013) || (!isEB && it->sigmaIetaIeta()>0.031))  || it->hadronicOverEm() > 0.15 ) 
+       //       if( it->ecalRecHitSumEtConeDR03() >= 8. || ((isEB && it->sigmaIetaIeta()>0.013) || (!isEB && it->sigmaIetaIeta()>0.031))  || it->hadronicOverEm() > 0.15 ) 
+       if( ((isEB && it->sigmaIetaIeta()>0.013) || (!isEB && it->sigmaIetaIeta()>0.03))  || it->hadronicOverEm() > 0.15 ) 
 	 {
 // 	   std::cout << "Photon skipped because of preselection" << std::endl;
+	   ++iphot;
 	   continue;         
 	 }
 
@@ -1541,125 +1578,186 @@ GammaJetAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
 	 {
 	   
 	   reco::Vertex vtx=conv->conversionVertex();
-	   photonsForVertexComputation.push_back(PhotonInfo(it - PhotonHandle->begin(),
-							    TVector3(it->superCluster()->position().x(),it->superCluster()->position().y(),it->superCluster()->position().z()),
-							    TVector3(vertexBeamSpot.x0(),vertexBeamSpot.y0(),vertexBeamSpot.z0()),
-							    TVector3(vtx.x(), vtx.y(), vtx.z()),
-							    it->energy(),
-							    it->isEB(),
-							    conv->nTracks(),
-							    conv->conversionVertex().isValid(),
-							    TMath::Prob(vtx.chi2(), vtx.ndof()),
-							    -999.));
+	   photonsForVertexComputation.insert(std::make_pair<int,PhotonInfo>(iphot,PhotonInfo(it - PhotonHandle->begin(),
+											      TVector3(it->superCluster()->position().x(),it->superCluster()->position().y(),it->superCluster()->position().z()),
+											      TVector3(vertexBeamSpot.x0(),vertexBeamSpot.y0(),vertexBeamSpot.z0()),
+											      TVector3(vtx.x(), vtx.y(), vtx.z()),
+											      it->energy(),
+											      it->isEB(),
+											      conv->nTracks(),
+											      conv->conversionVertex().isValid(),
+											      TMath::Prob(vtx.chi2(), vtx.ndof()),
+											      -999.) ) );
 	   
 	 }
        else
 	 {
-	   photonsForVertexComputation.push_back(PhotonInfo(it - PhotonHandle->begin(),
-							    TVector3(it->superCluster()->position().x(),it->superCluster()->position().y(),it->superCluster()->position().z()),
-							    TVector3(vertexBeamSpot.x0(),vertexBeamSpot.y0(),vertexBeamSpot.z0()),
-							    TVector3(-999.,-999.,-999),
-							    it->energy(),
-							    it->isEB(),
-							    -999.,
-							    0,
-							    -999.,
-							    -999.));
+	   photonsForVertexComputation.insert(std::make_pair<int,PhotonInfo>(iphot,PhotonInfo(it - PhotonHandle->begin(),
+											      TVector3(it->superCluster()->position().x(),it->superCluster()->position().y(),it->superCluster()->position().z()),
+											      TVector3(vertexBeamSpot.x0(),vertexBeamSpot.y0(),vertexBeamSpot.z0()),
+											      TVector3(-999.,-999.,-999),
+											      it->energy(),
+											      it->isEB(),
+											      -999.,
+											      0,
+											      -999.,
+											      -999.) ) );
+	   
+
 	 }
-}
-       
-
-  //Vertex Analysis	   						 
-
-   for(int ii=0; ii<nvertex; ++ii) 
-     {
-       vrank[ii]=-1;
-       vptbal[ii]=-9999.;
-       vptasym[ii]=-9999.;
-       vlogsumpt2[ii]=-9999.;
+       ++iphot;
      }
+	 
+   if (_debug)
+     std::cout << "Preselected " << photonsForVertexComputation.size() << " photons " << std::endl;
+   std::map<int,PhotonInfo>::const_iterator iphot1;
+   std::map<int,PhotonInfo>::const_iterator iphot2;
 
-//        std::cout << "Preselected " << photonsForVertexComputation.size() << " photons " << std::endl;
-  //Prepare vertex information
+   GlobalVertexInfo aVtx;
+   aVtx.fillInfo(iEvent,iSetup);     
+
+   nPreselPhotonPairs=0;
+
    if (photonsForVertexComputation.size()>=2)
-    {
-      GlobalVertexInfo aVtx;
-      aVtx.fillInfo(iEvent,iSetup);     
+     {
+       for (iphot1=photonsForVertexComputation.begin();iphot1!=(--photonsForVertexComputation.end());++iphot1)
+	 {
+	   iphot2=iphot1;
+	   ++iphot2;
+	   for (;iphot2!=photonsForVertexComputation.end();++iphot2)
+	     {
+	       if (nPreselPhotonPairs>19)
+		 {
+		   std::cout << "MAXIMUM NUMBER OF ALLOWED PHOTON PAIRS EXCEEDED!!" << std::endl;
+		   continue;
+	     }
+	       
+	       indexPreselPhot1[nPreselPhotonPairs]=(*iphot1).first;
+	       indexPreselPhot2[nPreselPhotonPairs]=(*iphot2).first;
+	       
 
-      //Run HggVertexAnalysis
-      vtxAna->analyze(aVtx,photonsForVertexComputation[0],photonsForVertexComputation[1]);
+	       //Vertex Analysis	   						 
+	       //    for(int ii=0; ii<nvertex; ++ii) 
+	       //      {
+	       //        vrank[ii]=-1;
+	       //        vptbal[ii]=-9999.;
+	       //        vptasym[ii]=-9999.;
+	       //        vlogsumpt2[ii]=-9999.;
+	       //      }
+	       
+	       
+	       //   //Prepare vertex information
+	       //    if (photonsForVertexComputation.size()>=2)
+	       //     {
+	       
+	       
+	       
+	       //Run HggVertexAnalysis
+	       vtxAna->analyze(aVtx,(*iphot1).second,(*iphot2).second);
+	       
+	       
+	       //Choiche of the vertex
+	       // preselect vertices : all vertices
+	       std::vector<int> preselAll;
+	       for(int i=0; i<aVtx.nvtx() ; i++) {
+		 preselAll.push_back(i); 
+	       }
+	       
+	       
+	       float zconv = 0; 
+	       float dzconv = 0;
+	       bool isConv = false;
+	       
+	       if ( ((*iphot1).second.isAConversion() || (*iphot2).second.isAConversion() ) )  {
+		 isConv=true;
+		 
+		 if ((*iphot1).second.isAConversion()  && !(*iphot2).second.isAConversion() ){
+		   zconv  = vtxAnaFromConv->vtxZ((*iphot1).second);
+		   dzconv = vtxAnaFromConv->vtxdZ((*iphot1).second);
+		 }
+		 
+		 if ((*iphot2).second.isAConversion() && !(*iphot1).second.isAConversion()){
+		   zconv  = vtxAnaFromConv->vtxZ((*iphot2).second);
+		   dzconv = vtxAnaFromConv->vtxdZ((*iphot2).second);
+		 }
+		 
+		 if ( (*iphot1).second.isAConversion() && (*iphot2).second.isAConversion()){
+		   float z1  = vtxAnaFromConv->vtxZ((*iphot1).second);
+		   float dz1 = vtxAnaFromConv->vtxdZ((*iphot1).second);
+		   
+		   float z2  = vtxAnaFromConv->vtxZ((*iphot2).second);
+		   float dz2 = vtxAnaFromConv->vtxdZ((*iphot2).second);
+		   
+		   zconv  = sqrt ( 1./(1./dz1/dz1 + 1./dz2/dz2 )*(z1/dz1/dz1 + z2/dz2/dz2) ) ;  // weighted average
+		   dzconv = sqrt( 1./(1./dz1/dz1 + 1./dz2/dz2)) ;
+		 }
+		 
+		 // preselect vertices : only vertices in a window zconv +/- dzconv
+		 // 	   for(int i=0; i < aVtx.nvtx(); i++) {
+		 // 	     //	    std::cout << "zconv " << zconv << " fabs(zconv - aVtx.vtxz(i) ) " << fabs(zconv - aVtx.vtxz(i) ) << " dzconv " << dzconv << std::endl;
+		 // 	     if ( fabs(zconv - aVtx.vtxz(i) ) < dzconv ) 
+		 // 	       preselConv.push_back(i); 
+		 // 	   }
+		 
+	       }
 
+	       // preselection 
+	       // 	if ( preselConv.size()==0 ) 
+	       //           vtxAna->preselection(preselAll);
+	       //         else 
+	       // 	  {
+	       // 	    //	    std::cout << "&&&&&& Using conversions " << preselConv.size()  << " vertices instead of " <<  preselAll.size() << std::endl;
+	       // 	    vtxAna->preselection(preselConv);
+	       // 	  }
+	       
+	       //  	rankprod = vtxAna->rankprod(rankVariables);
+	       
+	       
+	       std::vector<int> rankprodAll = vtxAna->rankprod(rankVariables);
+	       
+	       
+	       int iClosestConv = -1;
+	       float dminconv = 9999999;
+	       
+	       //Using here pt wrt sumpt2 (default) to assess diPhotonPt
+	       TLorentzVector dipho =  (*iphot1).second.p4(vx[0],vy[0],vz[0]) +  (*iphot2).second.p4(vx[0],vy[0],vz[0]);
+	       
+	       unsigned int nbest ;
+	       if (  dipho.Pt() < 30 ) nbest = 5;
+	       else nbest = 3;
+	       if (rankprodAll.size() < nbest ) nbest = rankprodAll.size();
+	       
+	       for (unsigned int ii = 0; ii < nbest; ii++ ){
+		 TVector3 vtxpos(vx[rankprodAll[ii]],vy[rankprodAll[ii]],vz[rankprodAll[ii]]);
+		 if ( isConv && fabs( vtxpos.Z()-zconv ) < dzconv && fabs(vtxpos.Z() - zconv ) < dminconv){
+		   iClosestConv = rankprodAll[ii];
+		   dminconv = fabs(vtxpos.Z()-zconv );
+		 }
+	       }
+	       
+	 
+	       std::vector<int> rankprod;
+	       //	 rankprod.clear();
+	       int bestVtx=-1;
+	       if (iClosestConv!=-1 ) 
+		 bestVtx = iClosestConv;
+	       else
+		 bestVtx = rankprodAll[0];
 
-      //Choiche of the vertex
-      // preselect vertices : all vertices
-      std::vector<int> preselAll;
-      for(int i=0; i<aVtx.nvtx() ; i++) {
-	preselAll.push_back(i); 
-      }
+	       if (_debug)
+		 cout << "best vertex for couple " << nPreselPhotonPairs << " iphot1 " << indexPreselPhot1[nPreselPhotonPairs] << " iphot2 " << indexPreselPhot2[nPreselPhotonPairs] 
+		      << " is " << bestVtx << " ptbal " << vtxAna->ptbal(bestVtx) << " ptasymm " << vtxAna->ptasym(bestVtx) <<  std::endl;
 
+	       //Filling 
+	       vrankPhotonPairs[nPreselPhotonPairs]=bestVtx;
+	       vptbalPhotonPairs[nPreselPhotonPairs]=vtxAna->ptbal(bestVtx);
+	       vptasymPhotonPairs[nPreselPhotonPairs]=vtxAna->ptasym(bestVtx);
+	       ++nPreselPhotonPairs;
+	 }
+	 }
+     } 
 
-      float zconv = 0; 
-      float dzconv = 0;
-      std::vector<int> preselConv;
-
-        if ( (photonsForVertexComputation[0].isAConversion() || photonsForVertexComputation[1].isAConversion() ) )  {
-	  
-          if (photonsForVertexComputation[0].isAConversion()  && !photonsForVertexComputation[1].isAConversion() ){
-            zconv  = vtxAnaFromConv->vtxZ(photonsForVertexComputation[0]);
-            dzconv = vtxAnaFromConv->vtxdZ(photonsForVertexComputation[0]);
-          }
-	  
-          if (photonsForVertexComputation[1].isAConversion() && !photonsForVertexComputation[0].isAConversion()){
-            zconv  = vtxAnaFromConv->vtxZ(photonsForVertexComputation[1]);
-            dzconv = vtxAnaFromConv->vtxdZ(photonsForVertexComputation[1]);
-          }
-	  
-          if ( photonsForVertexComputation[0].isAConversion() && photonsForVertexComputation[1].isAConversion()){
-            float z1  = vtxAnaFromConv->vtxZ(photonsForVertexComputation[0]);
-            float dz1 = vtxAnaFromConv->vtxdZ(photonsForVertexComputation[0]);
-            
-            float z2  = vtxAnaFromConv->vtxZ(photonsForVertexComputation[1]);
-            float dz2 = vtxAnaFromConv->vtxdZ(photonsForVertexComputation[1]);
-            
-            zconv  = sqrt ( 1./(1./dz1/dz1 + 1./dz2/dz2 )*(z1/dz1/dz1 + z2/dz2/dz2) ) ;  // weighted average
-            dzconv = sqrt( 1./(1./dz1/dz1 + 1./dz2/dz2)) ;
-          }
-	  
-	  // preselect vertices : only vertices in a window zconv +/- dzconv
-
-	  for(int i=0; i < aVtx.nvtx(); i++) {
-	    //	    std::cout << "zconv " << zconv << " fabs(zconv - aVtx.vtxz(i) ) " << fabs(zconv - aVtx.vtxz(i) ) << " dzconv " << dzconv << std::endl;
-	    if ( fabs(zconv - aVtx.vtxz(i) ) < dzconv ) 
-              preselConv.push_back(i); 
-          }
-	  
-        }
-
-	// preselection 
-	if ( preselConv.size()==0 ) 
-          vtxAna->preselection(preselAll);
-        else 
-	  {
-	    //	    std::cout << "&&&&&& Using conversions " << preselConv.size()  << " vertices instead of " <<  preselAll.size() << std::endl;
-	    vtxAna->preselection(preselConv);
-	  }
-
- 	rankprod = vtxAna->rankprod(rankVariables);
-// 	cout << "Ranks product" << endl;
-// 	cout << "best vertex " << rankprod[0] << endl;
-	//Filling 
-	for(int ii=0; ii<aVtx.nvtx(); ++ii) {
-		int vtxrank = find(rankprod.begin(), rankprod.end(), ii) - rankprod.begin();
-// 		cout << "vertx " << ii << " rank " << vtxrank << " " << vtxAna->ptbal(ii) << " " << vtxAna->ptasym(ii) << " " << vtxAna->logsumpt2(ii) << endl;
-		vrank[ii]=vtxrank;
-		vptbal[ii]=vtxAna->ptbal(ii);
-		vptasym[ii]=vtxAna->ptasym(ii);
-		vlogsumpt2[ii]=vtxAna->logsumpt2(ii);
-	}
-	
-    }
- 
-  for (PhotonCollection::const_iterator it = PhotonHandle->begin(); 
+   for (PhotonCollection::const_iterator it = PhotonHandle->begin(); 
 	it != PhotonHandle->end(); ++it) {
      
      if (it->energy()<3.) continue;
@@ -1670,13 +1768,26 @@ GammaJetAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
      escPhot[nPhot] = it->superCluster()->energy();	 
      escRawPhot[nPhot] = it->superCluster()->rawEnergy();	 
      eseedPhot[nPhot] = it->superCluster()->seed()->energy();	 
+
      etaPhot[nPhot] = it->eta();	 
      phiPhot[nPhot] = it->phi();	      
-     etascPhot[nPhot] = it->superCluster()->eta();	 
-     phiscPhot[nPhot] = it->superCluster()->phi();	      
+//      etascPhot[nPhot] = it->superCluster()->eta();	 
+//      phiscPhot[nPhot] = it->superCluster()->phi();	      
+//      xscPhot[nPhot] = it->superCluster()->position().x();	 
+//      yscPhot[nPhot] = it->superCluster()->position().y();	      
+//      zscPhot[nPhot] = it->superCluster()->position().z();	      
+
+     etascPhot[nPhot] = it->superCluster()->position().eta();	 
+     phiscPhot[nPhot] = it->superCluster()->position().phi();	      
+
      xscPhot[nPhot] = it->superCluster()->position().x();	 
      yscPhot[nPhot] = it->superCluster()->position().y();	      
      zscPhot[nPhot] = it->superCluster()->position().z();	      
+
+     xcaloPhot[nPhot] = it->caloPosition().x();	 
+     ycaloPhot[nPhot] = it->caloPosition().y();	      
+     zcaloPhot[nPhot] = it->caloPosition().z();	      
+
      hasPixelSeedPhot[nPhot] = it->hasPixelSeed();
      isEBPhot[nPhot] = it->isEB();
      isEEPhot[nPhot] = it->isEE();
@@ -1726,7 +1837,7 @@ GammaJetAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
 
      hasMatchedPromptElePhot[nPhot]    = ConversionTools::hasMatchedPromptElectron(it->superCluster(), 
                                           ElectronHandle, hConversions, vertexBeamSpot.position());
-
+     
      
      const Ptr<CaloCluster> theSeed = it->superCluster()->seed(); 
      
@@ -1766,42 +1877,20 @@ GammaJetAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
      pid_hlwTrack03[nPhot] = it->trkSumPtHollowConeDR03();//isolationHollowTrkCone
      pid_hlwTrack03NoDz[nPhot] = tkIsoCone03.getPtTracks( &(*it) );
 
-     //Best ranked vertex iso variables
-     if (rankprod.size()!=0 && rankprod[0]!=0)
-       {
-	 reco::Photon bestRankVtxPhot((*it));
-	 bestRankVtxPhot.setVertex(reco::Vertex::Point((*VertexHandle)[rankprod[0]].x(),(*VertexHandle)[rankprod[0]].y(),(*VertexHandle)[rankprod[0]].z()));
-	 pid_hlwTrackBestRank[nPhot] = tkIsoCone04_newOpt.getPtTracks( &bestRankVtxPhot );
-	 pid_hlwTrack03BestRank[nPhot] = tkIsoCone03_newOpt.getPtTracks( &bestRankVtxPhot );
-       }
-     else
-       {
-	 pid_hlwTrackBestRank[nPhot] = tkIsoCone04_newOpt.getPtTracks( &(*it) );
-	 pid_hlwTrack03BestRank[nPhot] = tkIsoCone03_newOpt.getPtTracks( &(*it) );
-       }     
-
-     //Worst vtx iso variables
-     float maximumTrkIso03=-99999.;
-     float maximumTrkIso04=-99999.;
+     //Dumping trackIsolation wrt vtx hypothesis 
      for (unsigned int ivtx=0;ivtx<VertexHandle->size();++ivtx)
        {
 	 reco::Photon aPhot((*it));
 	 aPhot.setVertex(reco::Vertex::Point((*VertexHandle)[ivtx].x(),(*VertexHandle)[ivtx].y(),(*VertexHandle)[ivtx].z()));
-	 float trkIso=tkIsoCone04_newOpt.getPtTracks( &aPhot );
-	 if (trkIso>maximumTrkIso04)
-	   {
-	     maximumTrkIso03=tkIsoCone03_newOpt.getPtTracks( &aPhot );
-	     maximumTrkIso04=trkIso;
-	   }
+	 pid_hlwTrackForCiC[nPhot][ivtx]=tkIsoCone04_newOpt.getPtTracks( &aPhot );
+	 pid_hlwTrack03ForCiC[nPhot][ivtx]=tkIsoCone03_newOpt.getPtTracks( &aPhot );
        }
  
-     pid_hlwTrackWorstVtx[nPhot] = maximumTrkIso04;
-     pid_hlwTrack03WorstVtx[nPhot] = maximumTrkIso03;
-
      // fill default ID variables from
      // https://twiki.cern.ch/twiki/bin/view/CMS/PhotonIDAnalysis for 31X
      // (followed from https://twiki.cern.ch/twiki/bin/view/CMS/PhotonID)
      // using reco equivalents to pat::Photon methods
+
      if (it->isEB()) {
 
        pid_isEM[nPhot] =    (pid_jurECAL[nPhot]  < 5 + 0.15*ptPhot[nPhot] &&
@@ -1918,7 +2007,7 @@ GammaJetAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
 
      // cluster shape variables
 
-     //     if (TMath::Abs(SCseed->eta())<1.47){
+     //     if (it->isEB()){
      if(maxRH.second) {
        Cluster2ndMoments moments = EcalClusterTools::cluster2ndMoments(*SCseed, *rechits);
        std::vector<float> etaphimoments = EcalClusterTools::localCovariances(*SCseed, &(*rechits), &(*topology));
@@ -1943,7 +2032,7 @@ GammaJetAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
      E9Phot[nPhot] = it->e3x3();//-100.;
      E25Phot[nPhot] = it->e5x5();//-100.;
 
-     if (_debug && fabs(SCseed->eta())<1.47 &&
+     if (_debug && it->isEB() &&
 	 fabs(it->maxEnergyXtal()-387)>1 && // weird bug in 31X?
 	 (fabs(sEtaEtaPhot[nPhot]-it->sigmaEtaEta())>1e-4 ||
 	  //fabs(E1Phot[nPhot]-it->maxEnergyXtal())>1e-4 ||
@@ -2021,7 +2110,6 @@ GammaJetAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
        }	 
      ++nPhot;
   }
-    
   
   
   
@@ -2491,7 +2579,6 @@ GammaJetAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
      phiMetGen2 = genmet2.phi();
      
    } //if is MC
-   
    if (dumpBeamHaloInformations_)
      {
        edm::Handle<BeamHaloSummary> TheBeamHaloSummary ;
@@ -2647,11 +2734,9 @@ GammaJetAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
        }//end of for loop
 
      }
-   
    //event++;  
    m_tree->Fill();
-   
-   }
+}
 
 // ------------ method called once each job just before starting event loop  ------------
 void 
@@ -2715,6 +2800,9 @@ GammaJetAnalyzer::beginJob()
   m_tree->Branch("xscPhot  ",&xscPhot  ,"xscPhot[nPhot]/F");
   m_tree->Branch("yscPhot  ",&yscPhot  ,"yscPhot[nPhot]/F");
   m_tree->Branch("zscPhot  ",&zscPhot  ,"zscPhot[nPhot]/F");
+  m_tree->Branch("xcaloPhot  ",&xcaloPhot  ,"xcaloPhot[nPhot]/F");
+  m_tree->Branch("ycaloPhot  ",&ycaloPhot  ,"ycaloPhot[nPhot]/F");
+  m_tree->Branch("zcaloPhot  ",&zcaloPhot  ,"zcaloPhot[nPhot]/F");
   m_tree->Branch("eseedPhot  ",&eseedPhot  ,"eseedPhot[nPhot]/F");
   m_tree->Branch("etaPhot",&etaPhot,"etaPhot[nPhot]/F");
   m_tree->Branch("phiPhot",&phiPhot,"phiPhot[nPhot]/F");
@@ -2754,16 +2842,14 @@ GammaJetAnalyzer::beginJob()
   m_tree->Branch("pid_HoverE",&pid_HoverE,"pid_HoverE[nPhot]/F");
   m_tree->Branch("pid_hlwTrack",&pid_hlwTrack,"pid_hlwTarck[nPhot]/F");
   m_tree->Branch("pid_hlwTrackNoDz",&pid_hlwTrackNoDz,"pid_hlwTrackNoDz[nPhot]/F");
-  m_tree->Branch("pid_hlwTrackBestRank",&pid_hlwTrackBestRank,"pid_hlwTrackBestRank[nPhot]/F");
-  m_tree->Branch("pid_hlwTrackWorstVtx",&pid_hlwTrackWorstVtx,"pid_hlwTrackWorstVtx[nPhot]/F");
+  m_tree->Branch("pid_hlwTrackForCiC",&pid_hlwTrackForCiC,"pid_hlwTrackBestRank[40][30]/F");
   m_tree->Branch("pid_etawid",&pid_etawid,"pid_etawid[nPhot]/F");
 
   m_tree->Branch("pid_jurECAL03",&pid_jurECAL03,"pid_jurECAL03[nPhot]/F");
   m_tree->Branch("pid_twrHCAL03",&pid_twrHCAL03,"pid_twrHCAL03[nPhot]/F");
   m_tree->Branch("pid_hlwTrack03",&pid_hlwTrack03,"pid_hlwTrack03[nPhot]/F");
   m_tree->Branch("pid_hlwTrack03NoDz",&pid_hlwTrack03NoDz,"pid_hlwTrack03NoDz[nPhot]/F");
-  m_tree->Branch("pid_hlwTrack03BestRank",&pid_hlwTrack03BestRank,"pid_hlwTrack03BestRank[nPhot]/F");
-  m_tree->Branch("pid_hlwTrack03WorstVtx",&pid_hlwTrack03WorstVtx,"pid_hlwTrack03WorstVtx[nPhot]/F");
+  m_tree->Branch("pid_hlwTrack03ForCiC",&pid_hlwTrack03ForCiC,"pid_hlwTrack03ForCiC[40][30]/F");
 
   m_tree->Branch("ptiso004Phot",&ptiso004Phot,"ptiso004Phot[nPhot]/F");
   m_tree->Branch("ntrkiso004Phot",&ntrkiso004Phot,"ntrkiso004Phot[nPhot]/I");
@@ -3065,10 +3151,14 @@ GammaJetAnalyzer::beginJob()
   m_tree->Branch("vntracks",&vntracks,"vntracks[nvertex]/F");
   m_tree->Branch("vchi2",&vchi2,"vchi2[nvertex]/F");
   m_tree->Branch("vndof",&vndof,"vndof[nvertex]/F");
-  m_tree->Branch("vptbal",&vptbal,"vptbal[nvertex]/F");
-  m_tree->Branch("vptasym",&vptasym,"vptasym[nvertex]/F");
   m_tree->Branch("vlogsumpt2",&vlogsumpt2,"vlogsumpt2[nvertex]/F");
-  m_tree->Branch("vrank",&vrank,"vrank[nvertex]/I");
+
+  m_tree->Branch("nPreselPhotonPairs",&nPreselPhotonPairs,"nPreselPhotonPairs/I");
+  m_tree->Branch("indexPreselPhot1",&indexPreselPhot1,"indexPreselPhot1[nPreselPhotonPairs]");
+  m_tree->Branch("indexPreselPhot2",&indexPreselPhot2,"indexPreselPhot2[nPreselPhotonPairs]");
+  m_tree->Branch("vrankPhotonPairs",&vrankPhotonPairs,"vrankPhotonPairs[nPreselPhotonPairs]/I");
+  m_tree->Branch("vptbalPhotonPairs",&vptbalPhotonPairs,"vptbalPhotonPairs[nPreselPhotonPairs]/F");
+  m_tree->Branch("vptasymPhotonPairs",&vptasymPhotonPairs,"vptasymPhotonPairs[nPreselPhotonPairs]/F");
 
   // Set trigger bits of interest
   nHLT = 13;
