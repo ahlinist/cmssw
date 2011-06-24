@@ -54,19 +54,20 @@ public:
     int getCheckedGenIndex(const int sigid);
 
     // helper functions
-    std::string stripOff(std::string instring, char symbol);
+  //    std::string stripOff(std::string instring, char symbol);
     void setKinematicVariables(TLorentzVector tlv, double &pt, double &eta, double &phi, double &rapidity);
 
     /*! Converts simple types to strings
       \param i variable to be converted
       \return string
       */
+  /*
     template <typename T> std::string toString(T i)
     {
 	std::ostringstream oss;
 	oss << i;
 	return oss.str();
-    };
+	}; */
 
     template <typename T> void setCut(T &var, std::string value)
     {

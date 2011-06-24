@@ -8,6 +8,7 @@
 #include <fstream>
 #include <stdexcept>
 #include <iomanip>
+#include "Lb2JpsiL0_utils.h"
 
 using std::cout;
 using std::endl;
@@ -17,19 +18,6 @@ using std::vector;
 // Run with: ./runTreeReaders -c chains/bg-test -D root -C cuts/lambdaEffReader.default.cuts
 //           ./runTreeReaders -f test.root
 // ----------------------------------------------------------------------
-
-/*! Strips off trailing characters from a string
-  /param instring String where characters should be cut off
-  /param symbol Symbol after which text should be cut off, including the symbol
-  /return remaining string
-  */
-std::string lambdaEffReader::stripOff(std::string instring, char symbol)
-{
-    std::string::iterator iter = std::find(instring.begin(), instring.end(), symbol);
-    std::string outstring;
-    std::copy(instring.begin(), iter, std::back_inserter(outstring));
-    return outstring;
-}
 
 //==========================================================================
 
@@ -542,8 +530,8 @@ void lambdaEffReader::readCuts(TString filename, int dump)
     while (std::getline(infile,strLine))
     {
         // strip off everything after a hash or a slash
-        strLine = stripOff(strLine, '#');
-        strLine = stripOff(strLine, '/');
+      strLine = stripOff(strLine, '#');
+      strLine = stripOff(strLine, '/');
         std::istringstream iss(strLine, std::istringstream::in);
         // intermediate storage of the entries
         std::string key, value;
