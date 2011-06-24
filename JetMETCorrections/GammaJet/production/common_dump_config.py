@@ -1,4 +1,4 @@
-# $Id: common_dump_config.py,v 1.6 2011/05/21 12:08:17 meridian Exp $
+# $Id: common_dump_config.py,v 1.2 2011/05/21 16:13:53 rahatlou Exp $
 #
 #  common configuration to dump ntuples in MC and data
 #    all changes affecting the path and additional modules msut be done here
@@ -162,16 +162,19 @@ process.myanalysis = cms.EDAnalyzer("GammaJetAnalyzer",
 )
 
 # compute rho with PF candidates
-process.load('RecoJets.JetProducers.kt4PFJets_cfi')
-process.kt6PFJets = process.kt4PFJets.clone( rParam = 0.6, doRhoFastjet = True,  doAreaFastjet = cms.bool(True), voronoiRfact = cms.double(0.9) )
+process.load('RecoJets.Configuration.RecoPFJets_cff')
+#process.kt6PFJets = process.kt4PFJets.clone( rParam = 0.6, doRhoFastjet = True,  doAreaFastjet = cms.bool(True), voronoiRfact = cms.double(0.9) )
+process.kt6PFJets = process.kt6PFJets.clone( rParam = 0.6, doRhoFastjet = True )
 
-process.load('RecoJets.JetProducers.kt4PFJets_cfi')
-process.kt6PFJetsForIso = process.kt4PFJets.clone( rParam = 0.6, doRhoFastjet = True,  doAreaFastjet = cms.bool(True), voronoiRfact = cms.double(0.9) )
+#process.load('RecoJets.JetProducers.kt6PFJets_cfi')
+#process.kt6PFJetsForIso = process.kt4PFJets.clone( rParam = 0.6, doRhoFastjet = True,  doAreaFastjet = cms.bool(True), voronoiRfact = cms.double(0.9) )
+process.kt6PFJetsForIso = process.kt6PFJets.clone( rParam = 0.6, doRhoFastjet = True )
 process.kt6PFJetsForIso.Rho_EtaMax = cms.double(2.5)
 
 # compute rho with calo towers
-process.load('RecoJets.JetProducers.kt4CaloJets_cfi')
-process.kt6CaloJetsForIso = process.kt4CaloJets.clone( rParam = 0.6, doRhoFastjet = True, doAreaFastjet = cms.bool(True), voronoiRfact = cms.double(0.9) )
+#process.load('RecoJets.JetProducers.kt6CaloJets_cfi')
+#process.kt6CaloJetsForIso = process.kt4CaloJets.clone( rParam = 0.6, doRhoFastjet = True, doAreaFastjet = cms.bool(True), voronoiRfact = cms.double(0.9) )
+process.kt6CaloJetsForIso = process.kt6CaloJets.clone( rParam = 0.6, doRhoFastjet = True )
 process.kt6CaloJetsForIso.Rho_EtaMax = cms.double(2.5)
 
 # re-reconstructing the primary vertices with the Deterministic Annealing (DA) vertex finder
