@@ -28,6 +28,12 @@ void NSVfitTauDecayBuilder::initialize(NSVfitTauDecayHypothesis* hypothesis, con
   hypothesis->p3Vis_unit_ = visCandidate->p4().Vect().Unit();
   hypothesis->visMass_ = visCandidate->mass();
 
+  // Add protection against zero mass.  If lower than the electron mass, set it
+  // to the electron mass.
+  if (hypothesis->visMass_ < 5.1e-4) {
+    hypothesis->visMass_ = 5.1e-4;
+  }
+
   // Set tau lepton decay mode
   hypothesis->decayMode_ = getDecayMode(visCandidate);
 
