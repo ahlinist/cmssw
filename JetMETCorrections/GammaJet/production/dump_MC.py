@@ -1,5 +1,5 @@
 #
-# $Id: dump_MC.py,v 1.1 2011/05/21 15:50:15 rahatlou Exp $
+# $Id: dump_MC.py,v 1.2 2011/05/22 12:57:08 meridian Exp $
 #
 #  configuration to dump ntuples in MC
 #   the only diff should be for jetmet corrections
@@ -19,6 +19,8 @@ cfo = imp.load_source("pycfg", filename, handle)
 process = cfo.process
 handle.close()
 
+is41X = True
+    
 process.p = cms.Path(process.analysisSequence)
 
 ## DO NOT CHANGE THE PATH HERE! New modules should be added ONLY in the common configuration 

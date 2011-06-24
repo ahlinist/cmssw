@@ -1,4 +1,4 @@
-# $Id: common_dump_config.py,v 1.2 2011/05/21 16:13:53 rahatlou Exp $
+# $Id: common_dump_config.py,v 1.3 2011/06/24 14:31:03 meridian Exp $
 #
 #  common configuration to dump ntuples in MC and data
 #    all changes affecting the path and additional modules msut be done here
@@ -15,6 +15,7 @@ process = cms.Process("myprocess")
 
 process.load("FWCore.MessageLogger.MessageLogger_cfi")
 
+is41X=False
 
 process.load("SimGeneral.HepPDTESSource.pythiapdt_cfi")
 process.load("PhysicsTools.HepMCCandAlgos.genParticleCandidates_cfi")
@@ -24,16 +25,12 @@ process.load("Geometry.TrackerGeometryBuilder.trackerGeometry_cfi")
 process.load("Geometry.TrackerNumberingBuilder.trackerNumberingGeometry_cfi")
 process.load("Geometry.CaloEventSetup.CaloTopology_cfi")
 process.load('Configuration/StandardSequences/Reconstruction_cff')
-
-
-
-
 #process.SimpleMemoryCheck = cms.Service("SimpleMemoryCheck")
 
 process.source = cms.Source("PoolSource",
     skipEvents = cms.untracked.uint32(0),
     fileNames = cms.untracked.vstring(
-'file:/cmsrm/pc24_2/meridian/data/GluGluToHToGG_M-115_7TeV-powheg-pythia6_AODSIM.root'
+    'file:/cmsrm/pc24_2/meridian/data/GluGluToHToGG_M-115_7TeV-powheg-pythia6_AODSIM.root'
 )
 
 )
@@ -182,10 +179,12 @@ process.kt6CaloJetsForIso.Rho_EtaMax = cms.double(2.5)
 from RecoVertex.PrimaryVertexProducer.OfflinePrimaryVerticesDA_cfi import *
 import RecoVertex.PrimaryVertexProducer.OfflinePrimaryVerticesDA_cfi
 
-process.offlinePrimaryVerticesDA = RecoVertex.PrimaryVertexProducer.OfflinePrimaryVerticesDA_cfi.offlinePrimaryVerticesDA.clone()
-process.offlinePrimaryVerticesDA.useBeamConstraint = cms.bool(True)
-process.offlinePrimaryVerticesDA.TkClusParameters.TkDAClusParameters.Tmin = cms.double(4.)
-process.offlinePrimaryVerticesDA.TkClusParameters.TkDAClusParameters.vertexSize = cms.double(0.01) 
+if (is41X):
+    print "ADDING DA VERTICES NOT DEFAULT IN 41X RELEASE"
+    process.offlinePrimaryVerticesDA = RecoVertex.PrimaryVertexProducer.OfflinePrimaryVerticesDA_cfi.offlinePrimaryVerticesDA.clone()
+    process.offlinePrimaryVerticesDA.useBeamConstraint = cms.bool(True)
+    process.offlinePrimaryVerticesDA.TkClusParameters.TkDAClusParameters.Tmin = cms.double(4.)
+    process.offlinePrimaryVerticesDA.TkClusParameters.TkDAClusParameters.vertexSize = cms.double(0.01) 
 
 # high purity tracks
 process.highPurityTracks = cms.EDFilter("TrackSelector",
@@ -193,4 +192,9 @@ process.highPurityTracks = cms.EDFilter("TrackSelector",
     cut = cms.string('quality("highPurity")')
 )
 
-process.analysisSequence = cms.Sequence( process.monster * process.offlinePrimaryVerticesDA * process.highPurityTracks * process.kt6PFJets * process.ak5PFJets *process.kt6PFJetsForIso * process.kt6CaloJetsForIso * process.myBtag * process.metCorSequence * process.myanalysis )
+process.analysisSequence = cms.Sequence( process.monster )
+if (is41X):
+    process.analysisSequence *= process.offlinePrimaryVerticesDA
+    process.myanalysis.vertices = cms.untracked.InputTag("offlinePrimaryVerticesDA")
+    
+process.analysisSequence *=  (process.highPurityTracks * process.kt6PFJets * process.ak5PFJets *process.kt6PFJetsForIso * process.kt6CaloJetsForIso * process.myBtag * process.metCorSequence * process.myanalysis)
