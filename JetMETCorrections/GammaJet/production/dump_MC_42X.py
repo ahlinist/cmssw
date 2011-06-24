@@ -1,5 +1,5 @@
 #
-# $Id: dump_MC_42X.py,v 1.1 2011/05/21 16:13:53 rahatlou Exp $
+# $Id: dump_MC_42X.py,v 1.2 2011/05/22 12:57:08 meridian Exp $
 #
 #  configuration to dump ntuples in MC
 #   the only diff should be for jetmet corrections
@@ -19,17 +19,21 @@ cfo = imp.load_source("pycfg", filename, handle)
 process = cfo.process
 handle.close()
 
+is41X = False
+
 process.p = cms.Path(process.analysisSequence)
 
 ## DO NOT CHANGE THE PATH HERE! New modules should be added ONLY in the common configuration 
 #  only paramaters should be changes for data and MC
 process.source.fileNames = cms.untracked.vstring(
-    '/store/mc/Summer11/GluGluToHToGG_M-115_7TeV-powheg-pythia6/AODSIM/PU_S3_START42_V11-v2/0000/842C8A8B-967F-E011-90C4-E0CB4E55363A.root'
+#    '/store/mc/Summer11/GluGluToHToGG_M-115_7TeV-powheg-pythia6/AODSIM/PU_S3_START42_V11-v2/0000/842C8A8B-967F-E011-90C4-E0CB4E55363A.root'
 #    'file:/cmsrm/pc24_2/meridian/data/GluGluToHToGG_M-115_7TeV-powheg-pythia6_AODSIM.root'
+#    'file:/shome/meridian/GJet_50To80_Summer11_PU_S3_START42_V11_AODSIM.root/shome/meridian/GluGluToHToGG_M-120_7TeV-powheg-pythia6_AODSIM_PU_S4_START42_V11.root'
+    'file:/shome/meridian/GJet_50To80_Summer11_PU_S3_START42_V11_AODSIM.root'
 )
 
 process.maxEvents = cms.untracked.PSet(
-    input = cms.untracked.int32(10000)
+    input = cms.untracked.int32(500)
 )
 
 # Global tag#
