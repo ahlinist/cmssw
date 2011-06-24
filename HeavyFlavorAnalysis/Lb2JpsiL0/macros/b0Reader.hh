@@ -1,5 +1,5 @@
-#ifndef GUARD_LAMBDAREADER_H
-#define GUARD_LAMBDAREADER_H
+#ifndef GUARD_B0READER_H
+#define GUARD_B0READER_H
 
 #include <iostream>
 #include <vector>
@@ -28,12 +28,13 @@
 #include "treeReader01.hh"
 #include "DecayMap.hh"
 
-class lambdaReader : public treeReader01
+
+class b0Reader : public treeReader01
 {
 
 public:
-    lambdaReader(TChain *tree, TString evtClassName);
-    ~lambdaReader();
+    b0Reader(TChain *tree, TString evtClassName);
+    ~b0Reader();
 
     struct CheckedLbCand
     {
@@ -63,17 +64,17 @@ public:
     bool checkCuts();
     void initVariables();
     void doGenLevelStuff();
-    bool doCandStuff(const CheckedLbCand &clc);
-    bool doCandFitStuff(const CheckedLbCand &clc);
-    bool doTruthMatchingLb(const TAnaTrack *Mu1, const TAnaTrack *Mu2, const TAnaTrack *Pi, const TAnaTrack *Pr, const TVector3 &vtx);
+    bool doCandStuff(const CheckedB0Cand &clc);
+    bool doCandFitStuff(const CheckedB0Cand &clc);
+    bool doTruthMatchingB0(const TAnaTrack *Mu1, const TAnaTrack *Mu2, const TAnaTrack *Pi1, const TAnaTrack *Pi2, const TVector3 &vtx);
     void doL1stuff();
     void doHLTstuff();
     void doTriggerMatching();
     void doEfficiencies();
-    bool compareCands(const CheckedLbCand clc1, const CheckedLbCand clc2);
+    bool compareCands(const CheckedB0Cand clc1, const CheckedB0Cand clc2);
     int  getSigId(const TAnaCand *tac, const int id, int pos);
     int  getCandId(const TAnaCand *tac, const int id, int pos);
-    CheckedLbCand getCheckedLbCand(const TAnaCand *tac);
+    CheckedB0Cand getCheckedB0Cand(const TAnaCand *tac);
     double square(double v) { return v*v; };
 
     template <typename T> void setCut(T &var, std::string value)
@@ -91,16 +92,14 @@ public:
     };
 
     // -- Cut values
-    int CUTLbCandidate, CUTLbCandidateFit;
+    int CUTB0Candidate, CUTB0CandidateFit;
     int CUTMuId1, CUTMuId2;  // mu ID
     double CUTptmuMin;       // min pt of both muons
     double CUTmjpWindow;     // mass window around jp PDG mass
     double CUTptjpMin;       // min pt of jp
 
-    double CUTml0Window;     // mass window around L0 PDG mass
-    double CUTptl0Min;       // min pt of jp
-    bool CUTptpGTptpi;       // require pT(p)>pT(pi)
-    double CUTptprMin;       // min pt of proton
+    double CUTmKsWindow;     // mass window around Ks PDG mass
+    double CUTptKsMin;       // min pt of jp
     double CUTptpiMin;       // min pt of pion
 
     bool CUTReadDecayMaps, CUTPrintDecayMaps; // read/print decay maps (only useful with MC)
@@ -112,62 +111,62 @@ public:
     TAnaCand    *fpCand1, *fpCand2;
 
     // -- Candidate variables
-    double fmlb, fml0, fmjp; // m
-    double fml0tlv, fmjptlv;
-    double fptlb, fptl0, fptjp; // pt
-    double fplb, fpl0, fpjp; // p
-    double fetalb, fetal0, fetajp; // eta
-    double fphilb, fphil0, fphijp; // phi
-    double fylb; // rapidity
-    double fptgenlb, fmgenlb, fphigenlb, fetagenlb, fygenlb;
+    double fmB0, fmKs, fmjp; // m
+    double fmKstlv, fmjptlv;
+    double fptB0, fptKs, fptjp; // pt
+    double fpB0, fpKs, fpjp; // p
+    double fetaB0, fetaKs, fetajp; // eta
+    double fphiB0, fphiKs, fphijp; // phi
+    double fyB0; // rapidity
+    double fptgenB0, fmgenB0, fphigenB0, fetagenB0, fygenB0;
 
-    double frpt1m, frpt2m, frptpr, frptpi; // kinematic variables of granddaughters
-    double freta1m, freta2m, fretapr, fretapi;
-    double frphi1m, frphi2m, frphipr, frphipi;
-    int    frq1m, frq2m, frqpr, frqpi;
+    double frpt1m, frpt2m, frptpi1, frptpi2; // kinematic variables of granddaughters
+    double freta1m, freta2m, fretapi1, fretapi2;
+    double frphi1m, frphi2m, frphipi1, frphipi2;
+    int    frq1m, frq2m, frqpi1, frqpi2;
     int    frid1m, frid2m; // muon id
 
-    // -- sig track variables, S is capitalized intentionally for better distinction to the reco-variants
-    double fSpt1m,  fSpt2m,  fSptpr, fSptpi;
+    // -- sig track variables, S is capi2talized intentionally for better distinction to the reco-variants
+    double fSpt1m,  fSpt2m,  fSptpi1, fSptpi2;
     double fSp1m,  fSp2m;
-    double fSeta1m, fSeta2m, fSetapr, fSetapi;
-    double fSphi1m, fSphi2m, fSphipr, fSphipi;
+    double fSeta1m, fSeta2m, fSetapi1, fSetapi2;
+    double fSphi1m, fSphi2m, fSphipi1, fSphipi2;
 
-    double fKshypo; // mass of proton as Ks
+    double fL0hypo; // mass of proton as Ks
 
-    double falphalb, falphal0; // alpha
-    double fptgangDRlb, fptgangDRl0; // ptgangDR
-    double fmaxdocalb, fmaxdocal0, fmaxdocajp; // maxdoca
+    double falphaB0, falphaKs; // alpha
+    double fptgangDRB0, fptgangDRKs; // ptgangDR
+    double fmaxdocaB0, fmaxdocaKs, fmaxdocajp; // maxdoca
 
     double fPvLip, fPvLipE, fPvLip2, fPvLipE2; // longitudianl I.P. for best and 2nd best vertex
 
-    double fd3lb, fd3l0, fd3jp;    // 3d distance
-    double fd3Elb, fd3El0, fd3Ejp;
-    double fct3dlb, fct3dlbE, fct3dl0, fct3dl0E; // ct3dau
-    double fctxylb, fctxylbE, fctxyl0, fctxyl0E; // ctxyau
-    double fbtlbx, fbtlby, fbtlbz; // beta vector
-    double fbtl0x, fbtl0y, fbtl0z;
-    double fvxl0, fvyl0, fvzl0, fvrl0;
-    double fvxlb, fvylb, fvzlb, fvrlb;
+    double fd3B0, fd3Ks, fd3jp;    // 3d distance
+    double fd3EB0, fd3EKs, fd3Ejp;
+    double fct3dB0, fct3dB0E, fct3dKs, fct3dKsE; // ct3dau
+    double fctxyB0, fctxyB0E, fctxyKs, fctxyKsE; // ctxyau
+    double fbtB0x, fbtB0y, fbtB0z; // beta vector
+    double fbtKsx, fbtKsy, fbtKsz;
+    double fvxKs, fvyKs, fvzKs, fvrKs;
+    double fvxB0, fvyB0, fvzB0, fvrB0;
 
-    double fdxylb, fdxyl0, fdxyjp; // 2d distance
-    double fdxyElb, fdxyEl0, fdxyEjp;
+    double fdxyB0, fdxyKs, fdxyjp; // 2d distance
+    double fdxyEB0, fdxyEKs, fdxyEjp;
 
-    double fchi2lb, fchi2l0, fchi2jp; // quality of vtx fit
-    double fndoflb, fndofl0, fndofjp;
-    double fproblb, fprobl0, fprobjp;
+    double fchi2B0, fchi2Ks, fchi2jp; // quality of vtx fit
+    double fndofB0, fndofKs, fndofjp;
+    double fprobB0, fprobKs, fprobjp;
 
-    double fchi21m, fchi22m, fchi2pr, fchi2pi; // quality of track fit
-    double fprob1m, fprob2m, fprobpr, fprobpi;
-    int    fndof1m, fndof2m, fndofpr, fndofpi;
-    int    fqual1m, fqual2m, fqualpr, fqualpi;
+    double fchi21m, fchi22m, fchi2pi1, fchi2pi2; // quality of track fit
+    double fprob1m, fprob2m, fprobpi1, fprobpi2;
+    int    fndof1m, fndof2m, fndofpi1, fndofpi2;
+    int    fqual1m, fqual2m, fqualpi1, fqualpi2;
 
-    double fipr1m, fipr2m, fiprpr, fiprpi; // ratio of ip and track angle
+    double fipr1m, fipr2m, fiprpi1, fiprpi2; // ratio of ip and track angle
     double farmQt, farmAl; // Armenteros variables
 
-    double fdRprpi, fdRmumu, fdRl0jp; // deltaR of pairs for convenience
+    double fdRpipi, fdRmumu, fdRKsjp; // deltaR of pairs for convenience
 
-    double fanglbl0; // angle between lb and l0 (from cands, not alpha)
+    double fangB0Ks; // angle between B0 and Ks (from cands, not alpha)
 
     int fnDaughters, fnGrandDaughters; // generator info
     int fmapRef1Gen, fmapRef2Gen;
@@ -176,18 +175,18 @@ public:
 
     // for genCand stuff
     TTree* fGenTree;
-    double fgmlb, fgmlbsw; // mass of lb from ppi and swapped mass hypotheses
-    double fgml0, fgml0sw;
-    double fgptpr, fgptpi, fgptmu1, fgptmu2, fgptl0;
-    double fgetapr, fgetapi, fgetamu1, fgetamu2;
-    double fgphipr, fgphipi, fgphimu1, fgphimu2;
-    double fgpmu1, fgpmu2, fgppr, fgppi, fgpl0;
-    double fgvxl0, fgvyl0, fgvzl0, fgvrl0, fgctl0;
-    double fgvxlb, fgvylb, fgvzlb, fgvrlb, fgctlb;
-    double fgptlb, fgetalb, fgylb;
-    double fgdRprpi, fgdRmumu, fgdRl0lb;
-    double fganprpi, fganmumu, fganl0lb, fganl0jp;
-    double fganl0mumin, fganl0muPt;
+    double fgmB0, fgmB0sw; // mass of B0 from ppi and swapped mass hypotheses
+    double fgmKs, fgmKssw;
+    double fgptpi1, fgptpi2, fgptmu1, fgptmu2, fgptKs;
+    double fgetapi1, fgetapi2, fgetamu1, fgetamu2;
+    double fgphipi1, fgphipi2, fgphimu1, fgphimu2;
+    double fgpmu1, fgpmu2, fgppi1, fgppi2, fgpKs;
+    double fgvxKs, fgvyKs, fgvzKs, fgvrKs, fgctKs;
+    double fgvxB0, fgvyB0, fgvzB0, fgvrB0, fgctB0;
+    double fgptB0, fgetaB0, fgyB0;
+    double fgdRpipi, fgdRmumu, fgdRKsB0;
+    double fganpipi, fganmumu, fganKsB0, fganKsjp;
+    double fganKsmumin, fganKsmuPt;
     int    fgnDaughters, fgnGrandDaughters; // no of daughters from gen truth
     int    fgmapRef1Gen, fgmapRef2Gen; // pointers to entries in decay maps
     int    fghasCand;
@@ -222,7 +221,7 @@ public:
 
     // Efficiencies
     double fEfficiency, fEffErr;
-    double fEffL0, fEffMu;
+    double fEffKs, fEffMu;
     double fEffMuId1, fEffMuTrk1, fEffMuTrg1, fEffMuId2, fEffMuTrk2, fEffMuTrg2;
     double fEffCuts;
 };

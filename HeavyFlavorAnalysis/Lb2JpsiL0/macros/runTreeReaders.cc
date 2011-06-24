@@ -14,6 +14,7 @@
 #include "TUnixSystem.h"
 
 #include "lambdaReader.hh"
+#include "b0Reader.hh"
 #include "lambdaEffReader.hh"
 
 using namespace std;
@@ -182,6 +183,7 @@ int main(int argc, char *argv[]) {
   treeReader01 *a = NULL;
   if (readerName == "lambdaReader") a = new lambdaReader(chain,TString(evtClassName));
   else if (readerName == "lambdaEffReader") a = new lambdaEffReader(chain,TString(evtClassName));
+  else if (readerName == "b0Reader") a = new b0Reader(chain,TString(evtClassName));
   else {
     cout << "please provide a class name to instantiate" << endl;
   }
