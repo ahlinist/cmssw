@@ -30,7 +30,7 @@ void MEtTopologyAlgorithm::computeVproj(MEtTopology& metTopology,
 	energyDepositCollection != energyDepositCollections.end(); ++energyDepositCollection ) {
     for ( energyDepositCollectionType::const_iterator energyDeposit = energyDepositCollection->begin();
 	  energyDeposit != energyDepositCollection->end(); ++energyDeposit ) {
-      if ( energyDeposit->et() > globalThreshold_ ) metP4 += energyDeposit->p4();
+      if ( energyDeposit->et() > globalThreshold_ ) metP4 -= energyDeposit->p4();
     }
   }
   
