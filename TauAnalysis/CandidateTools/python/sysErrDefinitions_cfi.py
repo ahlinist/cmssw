@@ -32,16 +32,16 @@ muTauPairSystematics = {
     "sysZllRecoilCorrectionDown" : cms.InputTag('allMuTauPairsZllRecoilCorrectedSysDown')
 }
 
-muTauPairVBFEventSystematics = {
-    "sysMuonPtUp"                : cms.InputTag('allVBFEventHypothesesForAHtoMuTauSysMuonPtUp'),
-    "sysMuonPtDown"              : cms.InputTag('allVBFEventHypothesesForAHtoMuTauSysMuonPtDown'),
-    "sysTauJetEnUp"              : cms.InputTag('allVBFEventHypothesesForAHtoMuTauSysTauJetEnUp'),
-    "sysTauJetEnDown"            : cms.InputTag('allVBFEventHypothesesForAHtoMuTauSysTauJetEnDown'),
-    "sysJetEnUp"                 : cms.InputTag('allVBFEventHypothesesForAHtoMuTauSysJetEnUp'),
-    "sysJetEnDown"               : cms.InputTag('allVBFEventHypothesesForAHtoMuTauSysJetEnDown'),
-    "sysZllRecoilCorrectionUp"   : cms.InputTag('allVBFEventHypothesesForAHtoMuTauZllRecoilCorrectedSysUp'),
-    "sysZllRecoilCorrectionDown" : cms.InputTag('allVBFEventHypothesesForAHtoMuTauZllRecoilCorrectedSysDown')
-}
+#muTauPairVBFEventSystematics = {
+#    "sysMuonPtUp"                : cms.InputTag('allVBFEventHypothesesForAHtoMuTauSysMuonPtUp'),
+#    "sysMuonPtDown"              : cms.InputTag('allVBFEventHypothesesForAHtoMuTauSysMuonPtDown'),
+#    "sysTauJetEnUp"              : cms.InputTag('allVBFEventHypothesesForAHtoMuTauSysTauJetEnUp'),
+#    "sysTauJetEnDown"            : cms.InputTag('allVBFEventHypothesesForAHtoMuTauSysTauJetEnDown'),
+#    "sysJetEnUp"                 : cms.InputTag('allVBFEventHypothesesForAHtoMuTauSysJetEnUp'),
+#    "sysJetEnDown"               : cms.InputTag('allVBFEventHypothesesForAHtoMuTauSysJetEnDown'),
+#    "sysZllRecoilCorrectionUp"   : cms.InputTag('allVBFEventHypothesesForAHtoMuTauZllRecoilCorrectedSysUp'),
+#    "sysZllRecoilCorrectionDown" : cms.InputTag('allVBFEventHypothesesForAHtoMuTauZllRecoilCorrectedSysDown')
+#}
 
 muTauPairSystematicsLooseMuonIsolation = {
     "sysMuonPtUp"                : cms.InputTag('allMuTauPairsLooseMuonIsolationSysMuonPtUp'),
