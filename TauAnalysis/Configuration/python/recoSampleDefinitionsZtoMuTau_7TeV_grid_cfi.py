@@ -8,10 +8,11 @@ import TauAnalysis.DQMTools.plotterStyleDefinitions_cfi as styles
 SAMPLES_TO_ANALYZE = [
     #'data_TauPlusX_Run2011A_PromptReco_v1',
     'data_SingleMu_Run2011A_PromptReco_v1',
-    'data_SingleMu_Run2011A_PromptReco_v2',
+    'data_SingleMu_Run2011A_PromptReco_v2ex',
     'data_TauPlusX_Run2011A_PromptReco_v2',
     'DYtautauM10to20_powheg',
     'Ztautau_powheg',
+    'Ztautau_winter10',
     'qqZll',
     'DYmumuM10to20_pythia',
     'Zmumu_powheg',
@@ -56,7 +57,8 @@ SAMPLE_DEFAULTS = {
     'runselection' : '',
     'hlt_paths' : [ 'HLT_Mu9' ],
     'SE_white_list' : '',
-    'SE_black_list' : 'T2_ES_IFCA',
+    #'SE_black_list' : 'T2_ES_IFCA',
+    'SE_black_list' : '',
     'disableDuplicateCheck' : False,
     'enableFakeRates' : False,
     'disableDuplicateCheck' : False,
@@ -120,6 +122,25 @@ RECO_SAMPLES = {
         'hlt' : cms.InputTag("TriggerResults", "", "HLT")
     },
     'data_SingleMu_Run2011A_PromptReco_v2' : {
+        'datasetpath' : '/SingleMu/Run2011A-PromptReco-v2/AOD',
+        'dbs_url' :  "http://cmsdbsprod.cern.ch/cms_dbs_prod_global/servlet/DBSServlet",
+        'lumi_mask' : "/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions11/7TeV/Prompt/Cert_160404-163869_7TeV_PromptReco_Collisions11_JSON.txt",
+        'runselection' : "162718-164236",
+        'number_of_jobs' : 500,
+        'conditions' : 'GR_R_311_V2::All',
+        'events_processed' : -1,
+        'skim_eff' : 1.0,
+        'type' : 'Data',
+        'drawOption' : styles.drawOption_Data,
+        'hlt_paths' : {
+            'HLT_IsoMu12_v1' : '160431:MIN-163261:MAX',
+            'HLT_IsoMu17_v6' : '163270:MIN-163869:MAX'
+        },
+        'enableSysUncertainties' : False,
+        'enableFakeRates' : True,
+        'hlt' : cms.InputTag("TriggerResults", "", "HLT")
+    },
+    'data_SingleMu_Run2011A_PromptReco_v2ex' : {
         'datasetpath' : '/SingleMu/Run2011A-PromptReco-v2/AOD',
         'dbs_url' :  "http://cmsdbsprod.cern.ch/cms_dbs_prod_global/servlet/DBSServlet",
         'lumi_mask' : "/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions11/7TeV/Prompt/Cert_160404-163869_7TeV_PromptReco_Collisions11_JSON.txt",
@@ -191,6 +212,23 @@ RECO_SAMPLES = {
         'applyMuonIsolationEfficiencyCorrection' : True,
 	'applyVertexMultiplicityReweighting' : True,
         'hlt' : cms.InputTag("TriggerResults", "", "REDIGI311X")
+    },
+    'Ztautau_winter10' : {
+        'datasetpath' : "/DYToTauTau_M-20_TuneZ2_7TeV-pythia6-tauola/Winter10-E7TeV_ProbDist_2010Data_BX156_START39_V8-v1/AODSIM",
+        'dbs_url' :  "http://cmsdbsprod.cern.ch/cms_dbs_prod_global/servlet/DBSServlet",
+        'events_processed' : 2057446,
+        'skim_eff' : 1.0,
+        'x_sec' : 1666*_picobarns,
+        ##'conditions' : 'START39_V9::All', # usage of CMSSW_3_9_x conditions in CMSSW_4_1_x causes run-time exception
+        'legendEntry' : plotter.process_Ztautau.config_dqmHistPlotter.legendEntry.value(),
+        'type' : 'Data', # define as data, because 'addPileupInfo' collection does not exist in CMSSW_3_9_x Monte Carlo
+        'drawOption' : styles.drawOption_Ztautau,
+        'applyZrecoilCorrection' : False,
+        'enableFakeRates' : False,
+        'applyMuonTriggerEfficiencyCorrection' : False,
+        'applyMuonIsolationEfficiencyCorrection' : False,
+	'applyVertexMultiplicityReweighting' : False,
+        'hlt' : cms.InputTag("TriggerResults", "", "REDIGI39X")
     },
     'qqZll' : {
         'datasetpath' : "/VQQJetsToLL_TuneD6T_7TeV-madgraph-tauola/Spring11-PU_S1_START311_V1G1-v1/AODSIM",
@@ -341,7 +379,7 @@ MERGE_SAMPLES = {
         'samples' : [
             #'data_TauPlusX_Run2011A_PromptReco_v1',
             'data_SingleMu_Run2011A_PromptReco_v1',
-            'data_SingleMu_Run2011A_PromptReco_v2',
+            'data_SingleMu_Run2011A_PromptReco_v2ex',
             'data_TauPlusX_Run2011A_PromptReco_v2',
         ],
         'legendEntry' : 'DATA',
