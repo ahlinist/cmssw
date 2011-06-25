@@ -21,6 +21,24 @@ selectedPatTagJetsForVBFEt20 = cms.EDFilter("PATJetSelector",
     filter = cms.bool(False)
 )
 
+# select forward/backward jets jets with Et > 30 GeV
+# (used for 3rd jet veto)
+selectedPatTagJetsForVBFEt30 = cms.EDFilter("PATJetSelector",
+    cut = cms.string('et > 30.'), 
+    filter = cms.bool(False)
+)
+
+patTagJetSelConfiguratorForVBF = objSelConfigurator(
+    [ selectedPatTagJetsForVBFEta99,
+      selectedPatTagJetsForVBFEt20,
+      selectedPatTagJetsForVBFEt30 ],
+    src = "patJets",
+    pyModuleName = __name__,
+    doSelIndividual = False
+)
+
+selectPatTagJetsForVBF = patTagJetSelConfiguratorForVBF.configure(pyNameSpace = locals())
+
 # select central jets
 selectedPatCentralJetsForVBFEta25 = cms.EDFilter("PATJetSelector",
     cut = cms.string('abs(eta) < 2.5'),
@@ -33,14 +51,14 @@ selectedPatCentralJetsForVBFEt15 = cms.EDFilter("PATJetSelector",
     filter = cms.bool(False)
 )
 
-patJetSelConfiguratorForVBF = objSelConfigurator(
-    [ selectedPatTagJetsForVBFEta99,
-      selectedPatTagJetsForVBFEt20,
-      selectedPatCentralJetsForVBFEta25,
+patCentralJetSelConfiguratorForVBF = objSelConfigurator(
+    [ selectedPatCentralJetsForVBFEta25,
       selectedPatCentralJetsForVBFEt15 ],
     src = "patJets",
     pyModuleName = __name__,
     doSelIndividual = False
 )
 
-selectPatJetsForVBF = patJetSelConfiguratorForVBF.configure(pyNameSpace = locals())
+selectCentralPatJetsForVBF = patCentralJetSelConfiguratorForVBF.configure(pyNameSpace = locals())
+
+selectPatJetsForVBF = cms.Sequence(selectPatTagJetsForVBF * selectCentralPatJetsForVBF)
