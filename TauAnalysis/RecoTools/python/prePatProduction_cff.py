@@ -32,9 +32,6 @@ kt6PFJets.doRhoFastjet = True
 # produce tau id. discriminators (including TaNC = "Tau Neural Classifiers")
 from RecoTauTag.Configuration.RecoPFTauTag_cff import *
 
-# produce tau id. efficiencies & fake-rates
-from RecoTauTag.TauAnalysisTools.PFTauEfficiencyAssociator_cfi import *
-
 # produce anti-kt collections of generator level jets
 from RecoJets.Configuration.GenJetParticles_cff import *
 from RecoJets.Configuration.RecoGenJets_cff import *
@@ -59,7 +56,6 @@ producePrePat = cms.Sequence(
    #+ recoTauHPSTancSequence
    #+ hpsTancTausDiscriminationAgainstCaloMuon
    #+ shrinkingConePFTauTancCVTransform
-   #+ associateTauFakeRates    
    + ewkTauId
    + genParticlesForJets + ak5GenJets 
    + metsignificance
