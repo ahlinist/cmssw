@@ -63,7 +63,7 @@ nSVfitTauToHadBuilder = cms.PSet(
 nSVfitResonanceLikelihoodLogM = cms.PSet(
     pluginName = cms.string("nSVfitResonanceLikelihoodLogM"),
     pluginType = cms.string("NSVfitResonanceLikelihoodMassPenalty"),
-    penaltyFactor = cms.double(1.0)
+    power = cms.double(1.0)
 )
 
 nSVfitResonanceBuilder = cms.PSet(

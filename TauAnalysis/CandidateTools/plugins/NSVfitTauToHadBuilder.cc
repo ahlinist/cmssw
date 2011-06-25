@@ -11,9 +11,9 @@
  *
  * \author Evan Friis, Christian Veelken; UC Davis
  *
- * \version $Revision: 1.19 $
+ * \version $Revision: 1.20 $
  *
- * $Id: NSVfitTauToHadBuilder.cc,v 1.19 2011/04/10 14:46:47 veelken Exp $
+ * $Id: NSVfitTauToHadBuilder.cc,v 1.20 2011/05/29 17:58:22 veelken Exp $
  *
  */
 
@@ -48,6 +48,8 @@ class NSVfitTauToHadBuilder : public NSVfitTauDecayBuilder
 
   NSVfitSingleParticleHypothesis* build(const NSVfitTauDecayBuilder::inputParticleMap& inputParticles) const 
   {
+    if ( this->verbosity_ ) std::cout << "<NSVfitTauToHadBuilder::build>:" << std::endl;
+
     inputParticleMap::const_iterator particlePtr = inputParticles.find(prodParticleLabel_);
     assert(particlePtr != inputParticles.end());
 
