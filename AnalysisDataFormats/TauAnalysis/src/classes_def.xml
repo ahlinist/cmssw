@@ -22,11 +22,13 @@
   <class name="edm::Ptr<pat::Muon>"/>
   <class name="edm::Ptr<pat::Tau>"/>
   <class name="edm::Ptr<pat::Jet>"/>
+  <class name="std::vector<edm::Ptr<pat::Jet> >"/>
 
   <!-- create dictionaries for edm::Ptr<reco::CaloJet> and edm::Ptr<reco::PFJet>
        as these dictionaries are not yet created in DataFormats/JetReco/src/classes.h -->
   <class name="edm::Ptr<reco::CaloJet>"/>
   <class name="edm::Ptr<reco::PFJet>"/>
+  <class name="std::vector<edm::Ptr<reco::Jet> >"/>
 
   <!-- create dictionaries for edm::Ptr<reco::GenParticle>
        as these dictionaries are not yet created in DataFormats/HepMCCandidate/src/classes.h -->

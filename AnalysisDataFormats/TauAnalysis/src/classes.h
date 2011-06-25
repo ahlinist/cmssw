@@ -73,6 +73,7 @@ namespace {
     edm::Ptr<pat::Muon> dummyPATMuonPtr;
     edm::Ptr<pat::Tau> dummyPATTauPtr;
     edm::Ptr<pat::Jet> dummyPATJetPtr;
+    std::vector<edm::Ptr<pat::Jet> > dummyPATJetPtrCollection;
 
     /// create dictionaries for 
     ///  o edm::Ptr<reco::CaloJet>
@@ -80,6 +81,7 @@ namespace {
     /// as these dictionaries are not yet created in DataFormats/JetReco/src/classes.h
     edm::Ptr<reco::CaloJet> dummyCaloJetPtr;
     edm::Ptr<reco::PFJet> dummyPFJetPtr;
+    std::vector<edm::Ptr<reco::Jet> > dummyJetPtrCollection;
 
     /// create dictionaries for
     ///  o edm::Ptr<reco::GenParticle>
