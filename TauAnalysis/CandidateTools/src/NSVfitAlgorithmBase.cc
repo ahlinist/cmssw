@@ -118,7 +118,9 @@ NSVfitEventHypothesisBase* NSVfitAlgorithmBase::fit(const inputParticleMap& inpu
 double NSVfitAlgorithmBase::nll(const double* x, const double* param) const
 {
   eventModel_->builder_->applyFitParameter(currentEventHypothesis_, x);
-  return eventModel_->nll(currentEventHypothesis_);
+  double nll = eventModel_->nll(currentEventHypothesis_);
+  if ( TMath::IsNaN(nll) ) nll = std::numeric_limits<float>::max();
+  return nll;
 }
 
 void NSVfitAlgorithmBase::setMassResults(NSVfitResonanceHypothesisBase* resonance, double value, double errUp, double errDown) const

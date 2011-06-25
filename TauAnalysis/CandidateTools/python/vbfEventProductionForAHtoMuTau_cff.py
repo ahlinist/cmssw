@@ -1,6 +1,8 @@
 import FWCore.ParameterSet.Config as cms
 import copy
 
+from TauAnalysis.CandidateTools.tools.objProdConfigurator import *
+
 #--------------------------------------------------------------------------------
 # produce VBF event hypotheses
 #--------------------------------------------------------------------------------
@@ -19,7 +21,24 @@ allVBFEventHypothesesForAHtoMuTau = cms.EDProducer("PATMuTauPairVBFEventProducer
     dRmin12CentralJet   = cms.double(0.5)
 )
 
-allVBFEventHypothesesForAHtoMuTauLooseMuonIsolation = allVBFEventHypothesesForAHtoMuTau.clone(
-    srcDiTaus           = cms.InputTag('selectedMuTauPairsForAHtoMuTauPzetaDiffLooseMuonIsolationCumulative')
+vbfEventProdConfiguratorForAHtoMuTau = objProdConfigurator(
+    allVBFEventHypothesesForAHtoMuTau,
+    pyModuleName = __name__
 )
+
+produceVBFEventHypothesesForAHtoMuTau = \
+  vbfEventProdConfiguratorForAHtoMuTau.configure(pyNameSpace = locals())
+
+allVBFEventHypothesesForAHtoMuTauLooseMuonIsolation = allVBFEventHypothesesForAHtoMuTau.clone(
+    srcDiTaus = cms.InputTag('selectedMuTauPairsForAHtoMuTauPzetaDiffLooseMuonIsolationCumulative')
+)
+
+vbfEventProdConfiguratorForAHtoMuTauLooseMuonIsolation = objProdConfigurator(
+    allVBFEventHypothesesForAHtoMuTauLooseMuonIsolation,
+    pyModuleName = __name__
+)
+
+produceVBFEventHypothesesForAHtoMuTauLooseMuonIsolation = \
+  vbfEventProdConfiguratorForAHtoMuTauLooseMuonIsolation.configure(pyNameSpace = locals())
+
 
