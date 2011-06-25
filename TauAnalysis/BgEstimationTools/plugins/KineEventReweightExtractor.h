@@ -9,9 +9,9 @@
  * 
  * \author Christian Veelken, UC Davis
  *
- * \version $Revision: 1.1 $
+ * \version $Revision: 1.2 $
  *
- * $Id: KineEventReweightExtractor.h,v 1.1 2009/10/14 14:02:38 veelken Exp $
+ * $Id: KineEventReweightExtractor.h,v 1.2 2009/11/28 15:53:08 veelken Exp $
  *
  */
 
@@ -21,6 +21,7 @@
 
 #include "TauAnalysis/BgEstimationTools/interface/ObjValExtractorBase.h"
 
+#include <TFile.h>
 #include <TH1.h>
 
 #include <string>
@@ -41,11 +42,11 @@ class KineEventReweightExtractor : public ObjValExtractorBase
  private:
  
 //--- configuration parameters
-  std::string fileName_;
-  std::string meName_;
+  TFile* inputFile_;
+  std::string lutName_;
 
 //--- look-up table of reweighting parameters
-  TH1* kineReweightLookupTable_;
+  TH1* lut_;
 
 //--- plugin to extract for each event
 //    value of kinematic variable used for reweighting 
