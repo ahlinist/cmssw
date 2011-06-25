@@ -72,6 +72,39 @@ cfgCentralJetEt20bTagCut = cms.PSet(
     minNumber = cms.uint32(1)
 )
 
+# VBF event selection
+cfgVBFEventTag = cms.PSet(
+    pluginName = cms.string('vbfTagCut'),
+    pluginType = cms.string('PATCandViewMinEventSelector'),
+    src_cumulative = cms.InputTag('selectedVBFEventHypothesesForAHtoMuTauTagJetOpposHemisphereCumulative'),
+    src_individual = cms.InputTag('selectedVBFEventHypothesesForAHtoMuTauTagJetOpposHemisphereIndividual'),
+    systematics = cms.vstring(jetSystematics.keys()),
+    minNumber = cms.uint32(1)
+)
+cfgVBFEventDEta35 = cms.PSet(
+    pluginName = cms.string('vbfDEta35Cut'),
+    pluginType = cms.string('PATCandViewMinEventSelector'),
+    src_cumulative = cms.InputTag('selectedVBFEventHypothesesForAHtoMuTauTagJetDEta35Cumulative'),
+    src_individual = cms.InputTag('selectedVBFEventHypothesesForAHtoMuTauTagJetDEta35Individual'),
+    systematics = cms.vstring(jetSystematics.keys()),
+    minNumber = cms.uint32(1)
+)
+cfgVBFEventMass350 = cms.PSet(
+    pluginName = cms.string('vbfMass350Cut'),
+    pluginType = cms.string('PATCandViewMinEventSelector'),
+    src_cumulative = cms.InputTag('selectedVBFEventHypothesesForAHtoMuTauTagJetMass350Cumulative'),
+    src_individual = cms.InputTag('selectedVBFEventHypothesesForAHtoMuTauTagJetMass350Individual'),
+    systematics = cms.vstring(jetSystematics.keys()),
+    minNumber = cms.uint32(1)
+)
+cfgVBF3rdTagJetVeto = cms.PSet(
+    pluginName = cms.string('vbf3rdTagJetVeto'),
+    pluginType = cms.string('PATCandViewMaxEventSelector'),
+    src = cms.InputTag('selectedPatTagJetsForVBFEt30Cumulative'),
+    systematics = cms.vstring(jetSystematics.keys()),
+    maxNumber = cms.uint32(2)
+)
+
 ahToMuTauEventSelConfiguratorOS = eventSelFlagProdConfigurator(
     [ cfgGenPhaseSpaceCut,
       cfgTrigger,
@@ -102,7 +135,11 @@ ahToMuTauEventSelConfiguratorOS = eventSelFlagProdConfigurator(
       cfgDiMuPairDYmumuHypothesisVeto,
       cfgCentralJetEt20bTagVeto,
       cfgCentralJetEt20Cut,
-      cfgCentralJetEt20bTagCut ],
+      cfgCentralJetEt20bTagCut,
+      cfgVBFEventTag,
+      cfgVBFEventDEta35,
+      cfgVBFEventMass350,
+      cfgVBF3rdTagJetVeto ],
     boolEventSelFlagProducer = "BoolEventSelFlagProducer",
     pyModuleName = __name__
 )
@@ -149,6 +186,21 @@ isRecAHtoMuTauCentralJetBtag = cms.EDProducer("BoolEventSelFlagProducer",
     )
 )
 
+isRecAHtoMuTauVBFtag = cms.EDProducer("BoolEventSelFlagProducer",
+    pluginName = cms.string('isRecAHtoMuTauVBFtag'),
+    pluginType = cms.string('MultiBoolEventSelFlagSelector'),
+    flags = cms.VInputTag(
+        cms.InputTag('Trigger'),
+        cms.InputTag('muonTrkIPcut', 'cumulative'),
+        cms.InputTag('tauElectronVeto', 'cumulative'),
+        cms.InputTag('diTauCandidateForAHtoMuTauZeroChargeCut', 'cumulative'),
+        cms.InputTag('primaryEventVertexPositionForMuTau'),                                            
+        cms.InputTag('diMuPairZmumuHypothesisVetoByLooseIsolation'),
+        cms.InputTag('diMuPairDYmumuHypothesisVeto'),                           
+        cms.InputTag('vbfMass350Cut', 'cumulative')
+    )
+)
+
 isRecAHtoMuTau = cms.EDProducer("BoolEventSelFlagProducer",
     pluginName = cms.string('isRecAHtoMuTauCentralJetBtag'),
     pluginType = cms.string('MultiBoolEventSelFlagSelector'),
@@ -168,5 +220,6 @@ selectAHtoMuTauEvents = cms.Sequence(
     produceEventSelFlagsAHtoMuTau
    * isRecAHtoMuTauCentralJetVeto
    * isRecAHtoMuTauCentralJetBtag
+   * isRecAHtoMuTauVBFtag
    * isRecAHtoMuTau
 )

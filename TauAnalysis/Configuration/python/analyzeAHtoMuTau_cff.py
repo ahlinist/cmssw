@@ -27,7 +27,13 @@ SysUncertaintyService = cms.Service("SysUncertaintyService",
             "sysTau*", "",
             "sysZllRecoilCorrection*", "",
             "sysJet*", ""
-        )
+        ),
+        isRecAHtoMuTauVBFtag = cms.vstring(
+            "sysMuon*", "",
+            "sysTau*", "",
+            "sysZllRecoilCorrection*", "",
+            "sysJet*", ""
+        )                                
     )
 )
 
@@ -84,7 +90,13 @@ analyzeAHtoMuTauEventsOS_woBtag = cms.EDAnalyzer("GenericAnalyzer",
         # central jet veto/b-jet candidate selection
         evtSelNonCentralJetEt20bTag,
         evtSelCentralJetEt20,
-        evtSelCentralJetEt20bTag
+        evtSelCentralJetEt20bTag,
+
+        # VBF event selection
+        evtSelVBFtag,
+        evtSelVBFdEta35,
+        evtSelVBFmass350,
+        evtSel3rdTagJetVeto
     ),
 
     analyzers = cms.VPSet(
@@ -99,6 +111,7 @@ analyzeAHtoMuTauEventsOS_woBtag = cms.EDAnalyzer("GenericAnalyzer",
         muPairHistManagerZmumuHypothesesByLooseIsolation,
         muPairHistManagerDYmumuHypotheses,
         jetHistManager,
+        vbfEventHistManagerForMuTau,                                             
         caloMEtHistManager,
         pfMEtHistManager,
         particleMultiplicityHistManager,
@@ -145,6 +158,28 @@ analyzeAHtoMuTauEventsOS_wBtag = analyzeAHtoMuTauEventsOS_woBtag.clone(
     ),
 
     analysisSequence = muTauAnalysisSequenceOS_wBtag
+)
+
+analyzeAHtoMuTauEventsOS_wVBFtag = analyzeAHtoMuTauEventsOS_woBtag.clone(
+
+    name = cms.string('ahMuTauAnalyzerOS_wVBFtag'),
+
+    eventDumps = cms.VPSet(
+        muTauEventDump_wVBFtag
+    ),
+
+    analysisSequence = muTauAnalysisSequenceOS_wVBFtag,
+
+    systematics = cms.vstring(
+        getSysUncertaintyNames(
+            [ muonSystematics,
+              tauSystematics,
+              muTauPairSystematics,
+              muTauPairVBFEventSystematics,
+              jetSystematics,
+              theorySystematics ]
+        )
+    )
 )
 
 analyzeAHtoMuTauEventsSS_woBtag = analyzeAHtoMuTauEventsOS_woBtag.clone(
