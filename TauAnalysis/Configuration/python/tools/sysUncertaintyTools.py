@@ -16,7 +16,7 @@ from TauAnalysis.RecoTools.patJetSelectionForAHtoElecTau_cff import \
 from TauAnalysis.RecoTools.patJetSelectionForVBF_cff import \
      patTagJetSelConfiguratorForVBF, patCentralJetSelConfiguratorForVBF
 from TauAnalysis.RecoTools.patJetSelectionForWTauNu_cff import patJetSelConfiguratorForWTauNu
-from TauAnalysis.RecoTools.patPFMetSelection_cff import patPFMETSelConfigurator
+#from TauAnalysis.RecoTools.patPFMetSelection_cff import patPFMETSelConfigurator
 
 from TauAnalysis.CandidateTools.muTauPairProduction_cff import \
      muTauPairProdConfigurator, muTauPairProdConfiguratorLooseMuonIsolation
