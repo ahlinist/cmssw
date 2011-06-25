@@ -175,7 +175,7 @@ analyzeAHtoMuTauEventsOS_wVBFtag = analyzeAHtoMuTauEventsOS_woBtag.clone(
             [ muonSystematics,
               tauSystematics,
               muTauPairSystematics,
-              muTauPairVBFEventSystematics,
+              #muTauPairVBFEventSystematics,
               jetSystematics,
               theorySystematics ]
         )

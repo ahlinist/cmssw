@@ -78,7 +78,7 @@ cfgVBFEventTag = cms.PSet(
     pluginType = cms.string('PATCandViewMinEventSelector'),
     src_cumulative = cms.InputTag('selectedVBFEventHypothesesForAHtoMuTauTagJetOpposHemisphereCumulative'),
     src_individual = cms.InputTag('selectedVBFEventHypothesesForAHtoMuTauTagJetOpposHemisphereIndividual'),
-    systematics = cms.vstring(jetSystematics.keys()),
+    #systematics = cms.vstring(jetSystematics.keys()),
     minNumber = cms.uint32(1)
 )
 cfgVBFEventDEta35 = cms.PSet(
@@ -86,7 +86,7 @@ cfgVBFEventDEta35 = cms.PSet(
     pluginType = cms.string('PATCandViewMinEventSelector'),
     src_cumulative = cms.InputTag('selectedVBFEventHypothesesForAHtoMuTauTagJetDEta35Cumulative'),
     src_individual = cms.InputTag('selectedVBFEventHypothesesForAHtoMuTauTagJetDEta35Individual'),
-    systematics = cms.vstring(jetSystematics.keys()),
+    #systematics = cms.vstring(jetSystematics.keys()),
     minNumber = cms.uint32(1)
 )
 cfgVBFEventMass350 = cms.PSet(
@@ -94,14 +94,14 @@ cfgVBFEventMass350 = cms.PSet(
     pluginType = cms.string('PATCandViewMinEventSelector'),
     src_cumulative = cms.InputTag('selectedVBFEventHypothesesForAHtoMuTauTagJetMass350Cumulative'),
     src_individual = cms.InputTag('selectedVBFEventHypothesesForAHtoMuTauTagJetMass350Individual'),
-    systematics = cms.vstring(jetSystematics.keys()),
+    #systematics = cms.vstring(jetSystematics.keys()),
     minNumber = cms.uint32(1)
 )
 cfgVBF3rdTagJetVeto = cms.PSet(
     pluginName = cms.string('vbf3rdTagJetVeto'),
     pluginType = cms.string('PATCandViewMaxEventSelector'),
     src = cms.InputTag('selectedPatTagJetsForVBFEt30Cumulative'),
-    systematics = cms.vstring(jetSystematics.keys()),
+    #systematics = cms.vstring(jetSystematics.keys()),
     maxNumber = cms.uint32(2)
 )
 

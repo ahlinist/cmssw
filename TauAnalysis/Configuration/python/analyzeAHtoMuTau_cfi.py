@@ -298,27 +298,27 @@ evtSelVBFtag = cms.PSet(
     pluginType = cms.string('BoolEventSelector'),
     src_cumulative = cms.InputTag('vbfTagCut', 'cumulative'),
     src_individual = cms.InputTag('vbfTagCut', 'individual'),
-    systematics = cms.vstring(muTauPairVBFEventSystematics.keys())
+    #systematics = cms.vstring(muTauPairVBFEventSystematics.keys())
 )
 evtSelVBFdEta35 = cms.PSet(
     pluginName = cms.string('evtSelVBFdEta35'),
     pluginType = cms.string('BoolEventSelector'),
     src_cumulative = cms.InputTag('vbfDEta35Cut', 'cumulative'),
     src_individual = cms.InputTag('vbfDEta35Cut', 'individual'),
-    systematics = cms.vstring(muTauPairVBFEventSystematics.keys())
+    #systematics = cms.vstring(muTauPairVBFEventSystematics.keys())
 )
 evtSelVBFmass350 = cms.PSet(
     pluginName = cms.string('evtSelVBFmass350'),
     pluginType = cms.string('BoolEventSelector'),
     src_cumulative = cms.InputTag('vbfMass350Cut', 'cumulative'),
     src_individual = cms.InputTag('vbfMass350Cut', 'individual'),
-    systematics = cms.vstring(muTauPairVBFEventSystematics.keys())
+    #systematics = cms.vstring(muTauPairVBFEventSystematics.keys())
 )
 evtSel3rdTagJetVeto = cms.PSet(
     pluginName = cms.string('evtSel3rdTagJetVeto'),
     pluginType = cms.string('BoolEventSelector'),
     src = cms.InputTag('vbf3rdTagJetVeto'),
-    systematics = cms.vstring(muTauPairVBFEventSystematics.keys())
+    #systematics = cms.vstring(muTauPairVBFEventSystematics.keys())
 )
 
 #--------------------------------------------------------------------------------

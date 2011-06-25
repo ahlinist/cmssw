@@ -8,8 +8,8 @@ from TauAnalysis.CandidateTools.tools.objProdConfigurator import *
 #--------------------------------------------------------------------------------
 
 allVBFEventHypothesesForAHtoMuTau = cms.EDProducer("PATMuTauPairVBFEventProducer",
-    srcTagJets          = cms.InputTag('selectedPatTagJetsForVBFEt20'),
-    srcCentralJets      = cms.InputTag('selectedPatCentralJetsForVBFEt15'),
+    srcTagJets          = cms.InputTag('selectedPatTagJetsForVBFEt20Cumulative'),
+    srcCentralJets      = cms.InputTag('selectedPatCentralJetsForVBFEt15Cumulative'),
                                        
     srcDiTaus           = cms.InputTag('selectedMuTauPairsForAHtoMuTauPzetaDiffCumulative'),
                                            

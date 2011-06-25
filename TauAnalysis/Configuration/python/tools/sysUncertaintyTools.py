@@ -13,10 +13,10 @@ from TauAnalysis.RecoTools.patJetSelectionForAHtoMuTau_cff import \
      patJetSelConfiguratorForAHtoMuTau, patJetSelConfiguratorForAHtoMuTauLooseMuonIsolation
 from TauAnalysis.RecoTools.patJetSelectionForAHtoElecTau_cff import \
      patJetSelConfiguratorForAHtoElecTau, patJetSelConfiguratorForAHtoElecTauLooseElectronIsolation
-from TauAnalysis.RecoTools.patJetSelectionForVBF_cff import \
-     patTagJetSelConfiguratorForVBF, patCentralJetSelConfiguratorForVBF
+#from TauAnalysis.RecoTools.patJetSelectionForVBF_cff import \
+#     patTagJetSelConfiguratorForVBF, patCentralJetSelConfiguratorForVBF
 from TauAnalysis.RecoTools.patJetSelectionForWTauNu_cff import patJetSelConfiguratorForWTauNu
-#from TauAnalysis.RecoTools.patPFMetSelection_cff import patPFMETSelConfigurator
+from TauAnalysis.RecoTools.patPFMetSelection_cff import patPFMETSelConfigurator
 
 from TauAnalysis.CandidateTools.muTauPairProduction_cff import \
      muTauPairProdConfigurator, muTauPairProdConfiguratorLooseMuonIsolation
@@ -828,11 +828,11 @@ def enableSysUncertainties_runAHtoMuTau(process):
     process.selectPatJetsForAHtoMuTauLooseMuonIsolation = \
       patJetSelConfiguratorForAHtoMuTauLooseMuonIsolation.configure(process = process)
 
-    setattr(patTagJetSelConfiguratorForVBF, "systematics", jetSystematics)
-    process.selectPatTagJetsForVBF = patTagJetSelConfiguratorForVBF.configure(process = process)
+    #setattr(patTagJetSelConfiguratorForVBF, "systematics", jetSystematics)
+    #process.selectPatTagJetsForVBF = patTagJetSelConfiguratorForVBF.configure(process = process)
 
-    setattr(patCentralJetSelConfiguratorForVBF, "systematics", jetSystematics)
-    process.selectPatCentralJetsForVBF = patCentralJetSelConfiguratorForVBF.configure(process = process)
+    #setattr(patCentralJetSelConfiguratorForVBF, "systematics", jetSystematics)
+    #process.selectPatCentralJetsForVBF = patCentralJetSelConfiguratorForVBF.configure(process = process)
 
     expSysUncertainties = getSysUncertaintyNames(
         [ muonSystematics,
