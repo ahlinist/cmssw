@@ -33,7 +33,7 @@ def _applyZllRecoilCorrection(process, diTauProductionSequenceName, diTauProduce
         for processAttrName in dir(process):
             processAttr = getattr(process, processAttrName)
             if isinstance(processAttr, cms.Sequence):
-				#print "--> Replacing InputTags in sequence:", processAttrName
+                #print "--> Replacing InputTags in sequence:", processAttrName
                 patutils.massSearchReplaceAnyInputTag(processAttr, cms.InputTag(diTauProducerModuleName),
                   cms.InputTag(configZllRecoilCorrection['diTauProducerModuleZllRecoilCorrectedName']))
 
