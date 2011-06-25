@@ -38,6 +38,6 @@ producePatTupleAHtoMuTauSpecific = cms.Sequence(
    + selectMuTauPairsForAHtoMuTau + selectMuTauPairsForAHtoMuTauLooseMuonIsolation
    + produceMuTauPairZmumuHypothesesForAHtoMuTau + produceMuTauPairZmumuHypothesesForAHtoMuTauLooseMuonIsolation
    + selectPatJetsForAHtoMuTau + selectPatJetsForAHtoMuTauLooseMuonIsolation + selectPatJetsForVBF
-   + allVBFEventHypothesesForAHtoMuTau + allVBFEventHypothesesForAHtoMuTauLooseMuonIsolation
+   + produceVBFEventHypothesesForAHtoMuTau + produceVBFEventHypothesesForAHtoMuTauLooseMuonIsolation
    + selectVBFEventHypothesesForAHtoMuTau + selectVBFEventHypothesesForAHtoMuTauLooseMuonIsolation
 )
