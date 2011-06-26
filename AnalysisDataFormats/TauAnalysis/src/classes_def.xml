@@ -16,12 +16,8 @@
   <class name="edm::RefVector<DiCandidatePairVBFEventCollection,DiCandidatePairVBFEvent,edm::refhelper::FindUsingAdvance<DiCandidatePairVBFEventCollection,DiCandidatePairVBFEvent> >"/>
   <class name="edm::RefProd<DiCandidatePairVBFEventCollection>"/>
 
-  <!-- create dictionaries for edm::Ptr<pat::Electron>, edm::Ptr<pat::Muon>, edm::Ptr<pat::Tau>, edm::Ptr<pat::Jet> and edm::Ptr<pat::MET>
+  <!-- create dictionaries for std::vector<edm::Ptr<pat::Jet> >
        as these dictionaries are not yet created in DataFormats/PatCandidates/src/classes.h -->
-  <class name="edm::Ptr<pat::Electron>"/>
-  <class name="edm::Ptr<pat::Muon>"/>
-  <class name="edm::Ptr<pat::Tau>"/>
-  <class name="edm::Ptr<pat::Jet>"/>
   <class name="std::vector<edm::Ptr<pat::Jet> >"/>
 
   <!-- create dictionaries for edm::Ptr<reco::CaloJet> and edm::Ptr<reco::PFJet>
