@@ -7,11 +7,7 @@ def addPFMet(process,correct=False):
     process.metJESCorAK5PFJet.jetPTthreshold = cms.double(10.0)
     process.metJESCorAK5PFJet.useTypeII = cms.bool(True)
 
-    # for CMSSW_4_2_0_pre8 and higher
-    #process.load("CommonTools.ParticleFlow.pfType1MET_cff")
-    # for CMSSW_3_8_x and CMSSW_4_1_x release series
-    process.load("PhysicsTools.PFCandProducer.pfType1MET_cff")
-    
+    process.load("CommonTools.ParticleFlow.pfType1MET_cff")
     process.patPFMETs = process.patMETs.clone()
     process.patPFMETs.addMuonCorrections = False
     process.patPFMETs.genMETSource = cms.InputTag('genMetTrue')
