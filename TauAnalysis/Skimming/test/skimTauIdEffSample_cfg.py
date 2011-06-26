@@ -53,9 +53,9 @@ pfCandidateCollection = "particleFlow" # pile-up removal disabled
 #--------------------------------------------------------------------------------
 # define GlobalTag to be used for event reconstruction
 if isMC:
-    process.GlobalTag.globaltag = cms.string('START311_V2::All')
+    process.GlobalTag.globaltag = cms.string('START42_V12::All')
 else:
-    process.GlobalTag.globaltag = cms.string('GR_P_V14::All')
+    process.GlobalTag.globaltag = cms.string('GR_R_42_V14::All')
 #--------------------------------------------------------------------------------
 
 #--------------------------------------------------------------------------------
@@ -98,26 +98,21 @@ patTupleConfig = configurePatTupleProductionTauIdEffMeasSpecific(
 #from CondCore.DBCommon.CondDBSetup_cfi import *
 process.load('CondCore.DBCommon.CondDBSetup_cfi')
 process.jec = cms.ESSource("PoolDBESSource",
-                           process.CondDBSetup,
-                           ## DBParameters = cms.PSet(
-                           ##     messageLevel = cms.untracked.int32(0)
-                           ##     ),
-                           ## timetype = cms.string('runnumber'),
-                           toGet = cms.VPSet(
-                               cms.PSet(record = cms.string("JetCorrectionsRecord"),
-                                        tag = cms.string("JetCorrectorParametersCollection_Jec10V3_AK5Calo"),#JetCorrectorParametersCollection_Jec11_V1_AK5Calo
-                                        label=cms.untracked.string("AK5Calo")),
-                               cms.PSet(record = cms.string("JetCorrectionsRecord"),
-                                        tag = cms.string("JetCorrectorParametersCollection_Jec10V3_AK5PF"),
-                                        label=cms.untracked.string("AK5PF")),                                   
-                               cms.PSet(record = cms.string("JetCorrectionsRecord"),
-                                        tag = cms.string("JetCorrectorParametersCollection_Jec10V3_AK5PFchs"),
-                                        label=cms.untracked.string("AK5PF"))
-                               ),
-                           ## here you add as many jet types as you need (AK5Calo, AK5JPT, AK7PF, AK7Calo, KT4PF, KT4Calo, KT6PF, KT6Calo)
-                           connect = cms.string('sqlite_fip:TauAnalysis/Configuration/data/Jec10V3.db')
-                           #connect = cms.string("frontier://FrontierPrep/CMS_COND_PHYSICSTOOLS")
-                           )
+    process.CondDBSetup,
+    toGet = cms.VPSet(
+      cms.PSet(record = cms.string("JetCorrectionsRecord"),
+               tag = cms.string("JetCorrectorParametersCollection_Jec10V3_AK5Calo"),
+               label=cms.untracked.string("AK5Calo")),
+      cms.PSet(record = cms.string("JetCorrectionsRecord"),
+               tag = cms.string("JetCorrectorParametersCollection_Jec10V3_AK5PF"),
+               label=cms.untracked.string("AK5PF")),                                   
+      cms.PSet(record = cms.string("JetCorrectionsRecord"),
+               tag = cms.string("JetCorrectorParametersCollection_Jec10V3_AK5PFchs"),
+               label=cms.untracked.string("AK5PF"))
+    ),
+    connect = cms.string('sqlite_fip:TauAnalysis/Configuration/data/Jec10V3.db')
+    #connect = cms.string("frontier://FrontierPrep/CMS_COND_PHYSICSTOOLS")
+)
 process.es_prefer_jec = cms.ESPrefer('PoolDBESSource','jec')
 #-------------------------------------------------------------------------------------------------------------------------
 
