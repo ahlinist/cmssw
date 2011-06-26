@@ -35,6 +35,8 @@ patMuonPFIsolationSelector = cms.PSet(
         dRisoCone = cms.double(0.4)
     ),
 
+    direction = cms.string('p4'),
+
     sumPtMax = cms.double(0.10),
     sumPtMethod = cms.string("relative"), # either "relative" or "absolute"
 
@@ -77,6 +79,8 @@ patElectronPFIsolationSelector = cms.PSet(
         dRvetoCone = cms.double(0.05),
         dRisoCone = cms.double(0.4)
     ),
+
+    direction = cms.string('p4'),
 
     sumPtMaxEB = cms.double(0.08),
     sumPtMaxEE = cms.double(0.04),

@@ -20,15 +20,20 @@ process.load("TauAnalysis.TauIdEfficiency.filterTauIdEffSample_cfi")
 # import definition of FEVT (RAW + RECO) event content
 from Configuration.EventContent.EventContent_cff import *
 
-process.maxEvents = cms.untracked.PSet(
-    input = cms.untracked.int32(3)
-)
-
+#--------------------------------------------------------------------------------
+from PhysicsTools.PatAlgos.tools.cmsswVersionTools import pickRelValInputFiles
 process.source = cms.Source("PoolSource",
     fileNames = cms.untracked.vstring(
-         'file:/nfs/data4/verzetti/SingleMuPromptRecoV2_1_1_EUI.root'
-        #'file:/data2/veelken/CMSSW_4_1_x/skims/ZtoMuTau/data2/veelken/CMSSW_4_1_x/skims/ZtoMuTau/data2011A_tauPlusX_AOD_1_1_MV9.root'
+    pickRelValInputFiles( cmsswVersion  = 'CMSSW_4_2_0_pre8'
+                        , relVal        = 'RelValTTbar'
+                        , globalTag     = 'START42_V7'
+                        , numberOfFiles = 1
+                        )
     )
+)
+
+process.maxEvents = cms.untracked.PSet(
+    input = cms.untracked.int32(3)
 )
 
 ##isMC = True # use for MC
@@ -190,9 +195,18 @@ process.o = cms.EndPath(process.skimOutputModule + process.saveZtoMuTau_tauIdEff
 
 import TauAnalysis.Configuration.pathModifiers as pathModifiers
 
-#Removes Sys*Up collections, case insensitive
-pathModifiers.PathRemover(process.p,['sys','up'],True)
-pathModifiers.PathRemover(process.p,['sys','down'],True)
+#Removes Sys*Up/Down collections, case insensitive
+pathModifiers.PathRemover(process.p, ['sys', 'up'], True)
+pathModifiers.PathRemover(process.p, ['sys', 'down'], True)
+
+#--------------------------------------------------------------------------------
+#
+# CV: do **not** apply HLT trigger conditions to CMSSW_4_1_x MC,
+#     weight simulated events by trigger efficiencies measured in Data instead
+#
+if isMC:
+    process.commonSkimSequence.remove(process.hltMu)
+#--------------------------------------------------------------------------------  
  
 # define order in which different paths are run
 process.schedule = cms.Schedule(

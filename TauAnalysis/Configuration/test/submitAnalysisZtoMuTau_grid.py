@@ -16,12 +16,12 @@ samplesToAnalyze = [
 
 import copy
 samplesToAnalyze = copy.deepcopy(recoSampleDefinitionsZtoMuTau_7TeV['SAMPLES_TO_ANALYZE'])
-samplesToAnalyze.extend([
-    'A130', 'bbA130',
-    'A200', 'bbA200',
-    'A300', 'bbA300',
-    'A450', 'bbA450'
-])
+#samplesToAnalyze.extend([
+#    'A130', 'bbA130',
+#    'A200', 'bbA200',
+#    'A300', 'bbA300',
+#    'A450', 'bbA450'
+#])
 
 #enableSystematics = True
 enableSystematics = False

@@ -378,34 +378,36 @@ void GenericEventDump::printEventTriggerInfo(const edm::Event& evt) const
     edm::Handle<L1GlobalTriggerObjectMapRecord> l1GtObjectMapRecord;
     evt.getByLabel(l1GtObjectMapRecordSource_, l1GtObjectMapRecord);
     
-    DecisionWord l1GtDecision = l1GtReadoutRecord->decisionWord();
-    const std::vector<L1GlobalTriggerObjectMap>& l1GtObjectMaps = l1GtObjectMapRecord->gtObjectMap();
+    if ( l1GtReadoutRecord.isValid() && l1GtObjectMapRecord.isValid() ) {
+      DecisionWord l1GtDecision = l1GtReadoutRecord->decisionWord();
+      const std::vector<L1GlobalTriggerObjectMap>& l1GtObjectMaps = l1GtObjectMapRecord->gtObjectMap();
 /*
-    for ( std::vector<L1GlobalTriggerObjectMap>::const_iterator l1GtObjectMap = l1GtObjectMaps.begin();
-      l1GtObjectMap != l1GtObjectMaps.end(); ++l1GtObjectMap ) {
-      std::string l1Bit_i = (*l1GtObjectMap).algoName();
-      std::cout << " l1Bit_i = " << l1Bit_i << std::endl;
-    }
- */
-    *outputStream_ << "L1 Trigger Decisions:" << std::endl;
-    
-    for ( vstring::const_iterator l1Bit = l1BitsToPrint_.begin();
-	  l1Bit != l1BitsToPrint_.end(); ++l1Bit ) {
-      bool isMatch = false;
       for ( std::vector<L1GlobalTriggerObjectMap>::const_iterator l1GtObjectMap = l1GtObjectMaps.begin();
-	    l1GtObjectMap != l1GtObjectMaps.end(); ++l1GtObjectMap ) {
-	std::string l1Bit_i = (*l1GtObjectMap).algoName();
-	if ( l1Bit_i == (*l1Bit) ) {
-	  int index = (*l1GtObjectMap).algoBitNumber();
-	  std::string l1TriggerDecision = ( l1GtDecision[index] ) ? "passed" : "failed";
-	  *outputStream_ << " " << (*l1Bit) << " " << l1TriggerDecision << std::endl;
-	  isMatch = true;
-	}
+        l1GtObjectMap != l1GtObjectMaps.end(); ++l1GtObjectMap ) {
+        std::string l1Bit_i = (*l1GtObjectMap).algoName();
+        std::cout << " l1Bit_i = " << l1Bit_i << std::endl;
       }
+ */
+      *outputStream_ << "L1 Trigger Decisions:" << std::endl;
+    
+      for ( vstring::const_iterator l1Bit = l1BitsToPrint_.begin();
+	    l1Bit != l1BitsToPrint_.end(); ++l1Bit ) {
+        bool isMatch = false;
+        for ( std::vector<L1GlobalTriggerObjectMap>::const_iterator l1GtObjectMap = l1GtObjectMaps.begin();
+	      l1GtObjectMap != l1GtObjectMaps.end(); ++l1GtObjectMap ) {
+    	  std::string l1Bit_i = (*l1GtObjectMap).algoName();
+	  if ( l1Bit_i == (*l1Bit) ) {
+	    int index = (*l1GtObjectMap).algoBitNumber();
+	    std::string l1TriggerDecision = ( l1GtDecision[index] ) ? "passed" : "failed";
+	    *outputStream_ << " " << (*l1Bit) << " " << l1TriggerDecision << std::endl;
+	    isMatch = true;
+	  }
+        }
       
-      if ( !isMatch ) {
-	edm::LogError ("printEventTriggerInfo") << " Undefined L1 bit = " << (*l1Bit) << " --> skipping !!";
-	continue;
+        if ( !isMatch ) {
+	  edm::LogError ("printEventTriggerInfo") << " Undefined L1 bit = " << (*l1Bit) << " --> skipping !!";
+	  continue;
+        }
       }
     }
   }
@@ -413,30 +415,31 @@ void GenericEventDump::printEventTriggerInfo(const edm::Event& evt) const
   if ( hltResultsSource_.label() != "" ) {
     edm::Handle<edm::TriggerResults> hltResults;
     evt.getByLabel(hltResultsSource_, hltResults);
-    
-    const edm::TriggerNames& triggerNames = evt.triggerNames(*hltResults);
+    if ( hltResults.isValid() ) {    
+      const edm::TriggerNames& triggerNames = evt.triggerNames(*hltResults);
 /*
-    for ( edm::TriggerNames::Strings::const_iterator triggerName = triggerNames.triggerNames().begin();
-          triggerName != triggerNames.triggerNames().end(); ++triggerName ) {
-      unsigned int index = triggerNames.triggerIndex(*triggerName);
-      if ( index < triggerNames.size() ) {
-        std::string triggerDecision = ( hltResults->accept(index) ) ? "passed" : "failed";
-    
-        std::cout << " triggerName = " << (*triggerName) << " " << triggerDecision << std::endl;
+      for ( edm::TriggerNames::Strings::const_iterator triggerName = triggerNames.triggerNames().begin();
+            triggerName != triggerNames.triggerNames().end(); ++triggerName ) {
+        unsigned int index = triggerNames.triggerIndex(*triggerName);
+        if ( index < triggerNames.size() ) {
+          std::string triggerDecision = ( hltResults->accept(index) ) ? "passed" : "failed";
+     
+          std::cout << " triggerName = " << (*triggerName) << " " << triggerDecision << std::endl;
+        }
       }
-    }
  */    
-    *outputStream_ << "HLT Decisions:" << std::endl;
+      *outputStream_ << "HLT Decisions:" << std::endl;
     
-    for ( std::vector<std::string>::const_iterator hltPath = hltPathsToPrint_.begin();
-	  hltPath != hltPathsToPrint_.end(); ++hltPath ) {
-      unsigned int index = triggerNames.triggerIndex(*hltPath);
-      if ( index < triggerNames.size() ) {
-	std::string hltDecision = ( hltResults->accept(index) ) ? "passed" : "failed";	
-	*outputStream_ << " " << (*hltPath) << " " << hltDecision << std::endl;
-      } else {
-	edm::LogError ("printEventTriggerInfo") << " Undefined trigger Path = " << (*hltPath) << " --> skipping !!";
-	continue;
+      for ( std::vector<std::string>::const_iterator hltPath = hltPathsToPrint_.begin();
+	    hltPath != hltPathsToPrint_.end(); ++hltPath ) {
+        unsigned int index = triggerNames.triggerIndex(*hltPath);
+        if ( index < triggerNames.size() ) {
+  	  std::string hltDecision = ( hltResults->accept(index) ) ? "passed" : "failed";	
+	  *outputStream_ << " " << (*hltPath) << " " << hltDecision << std::endl;
+        } else {
+	  edm::LogError ("printEventTriggerInfo") << " Undefined trigger Path = " << (*hltPath) << " --> skipping !!";
+	  continue;
+        }
       }
     }
     
