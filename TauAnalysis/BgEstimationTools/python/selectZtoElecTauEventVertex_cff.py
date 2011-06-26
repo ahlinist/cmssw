@@ -28,6 +28,12 @@ cfgPrimaryEventVertexPosition = cms.PSet(
     src = cms.InputTag('selectedPrimaryVertexPosition'),
     minNumber = cms.uint32(1)
 )
+cfgPrimaryEventVertexHighestPtTrackSum = cms.PSet(
+    pluginName = cms.string('primaryEventVertexHighestPtTrackSum'),
+    pluginType = cms.string('VertexMinEventSelector'),
+    src = cms.InputTag('selectedPrimaryVertexPosition'),
+    minNumber = cms.uint32(1)
+)
 
 zToElecTauEventVertexSelConfigurator = eventSelFlagProdConfigurator(
     [ cfgPrimaryEventVertex,
@@ -53,4 +59,10 @@ evtSelPrimaryEventVertexPosition = cms.PSet(
     pluginName = cms.string('evtSelPrimaryEventVertexPosition'),
     pluginType = cms.string('BoolEventSelector'),
     src = cms.InputTag('primaryEventVertexPosition')
+)
+
+evtSelPrimaryEventVertexHighestPtTrackSum = cms.PSet(
+    pluginName = cms.string('evtSelPrimaryEventVertexHighestPtTrackSum'),
+    pluginType = cms.string('BoolEventSelector'),
+    src = cms.InputTag('primaryEventVertexHighestPtTrackSum')
 )
