@@ -63,16 +63,8 @@ namespace {
     edm::RefVector<DiCandidatePairVBFEventCollection> dummyDiCandidatePairVBFEventRefVector;
 
     /// create dictionaries for 
-    ///  o edm::Ptr<pat::Electron> 
-    ///  o edm::Ptr<pat::Muon> 
-    ///  o edm::Ptr<pat::Tau>
-    ///  o edm::Ptr<pat::Jet>
-    ///  o edm::Ptr<pat::MET>
+    ///  o std::vector<edm::Ptr<pat::Jet> >
     /// as these dictionaries are not yet created in DataFormats/PatCandidates/src/classes.h
-    edm::Ptr<pat::Electron> dummyPATElectronPtr;
-    edm::Ptr<pat::Muon> dummyPATMuonPtr;
-    edm::Ptr<pat::Tau> dummyPATTauPtr;
-    edm::Ptr<pat::Jet> dummyPATJetPtr;
     std::vector<edm::Ptr<pat::Jet> > dummyPATJetPtrCollection;
 
     /// create dictionaries for 
