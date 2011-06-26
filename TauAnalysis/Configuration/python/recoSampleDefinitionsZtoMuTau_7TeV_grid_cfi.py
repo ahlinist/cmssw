@@ -6,21 +6,21 @@ import TauAnalysis.DQMTools.plotterStyleDefinitions_cfi as styles
 
 # List of samples to run in the analysis
 SAMPLES_TO_ANALYZE = [
-    #'data_TauPlusX_Run2011A_PromptReco_v1',
-    'data_SingleMu_Run2011A_PromptReco_v1',
-    'data_SingleMu_Run2011A_PromptReco_v2ex',
-    'data_TauPlusX_Run2011A_PromptReco_v2',
-    'DYtautauM10to20_powheg',
-    'Ztautau_powheg',
-    'Ztautau_winter10',
-    'qqZll',
-    'DYmumuM10to20_pythia',
-    'Zmumu_powheg',
+    'data_SingleMu_Run2011A_May10ReReco_v1ex',
+    'data_TauPlusX_Run2011A_May10ReReco_v1',
+    'data_TauPlusX_Run2011A_PromptReco_v4',
+    #'DYtautauM10to20_powheg',
+    'Ztautau_pythia',
+    #'Ztautau_powheg',
+    #'qqZll',
+    #'DYmumuM10to20_pythia',
+    'Zmumu_pythia',
+    #'Zmumu_powheg',
     'PPmuXptGt20Mu15',
     'WplusJets_madgraph',
-    'WW',
-    'WZ',
-    'ZZ',
+    #'WW',
+    #'WZ',
+    #'ZZ',
     'TTplusJets_madgraph'
 ]
 
@@ -28,7 +28,7 @@ SAMPLES_TO_ANALYZE = [
 # from the MERGE_SAMPLES defined at the bottom.
 SAMPLES_TO_PLOT = [
     'data',
-    'VVsum',
+    #'VVsum',
     'TTplusJets_madgraph',
     'ZmumuSum',
     'WplusJets_madgraph',
@@ -41,9 +41,8 @@ SAMPLES_TO_PRINT.append('smBgSum')
 SAMPLES_TO_PRINT.append('smSum')
 
 SAMPLE_DEFAULTS = {
-    #'dbs_url' : "http://cmsdbsprod.cern.ch/cms_dbs_ph_analysis_02/servlet/DBSServlet",
     'dbs_url' : "http://cmsdbsprod.cern.ch/cms_dbs_prod_global/servlet/DBSServlet",
-    'conditions' : 'START311_V2::All',
+    'conditions' : 'START42_V12::All',
     'genPhaseSpaceCut' : '',
     'factorize' : False,
     'applyZrecoilCorrection' : False,
@@ -73,7 +72,7 @@ _picobarns =  1.0
 _femtobarns = 1.0e-3
 
 # Integrated luminosity to normalize
-TARGET_LUMI = 0.90*41.6/_picobarns # for runs 160404 - 163369 ("golden" quality) corrected for ~90% PFTau trigger efficiency
+TARGET_LUMI = 0.90*869.1/_picobarns # for runs 160404 - 167496 ("golden" quality) corrected for ~90% PFTau trigger efficiency
 
 #--------------------------------------------------------------------------------
 # NOTE: cross-sections for W and Z production are scaled to next-to-leading order values
@@ -82,13 +81,13 @@ TARGET_LUMI = 0.90*41.6/_picobarns # for runs 160404 - 163369 ("golden" quality)
 #--------------------------------------------------------------------------------
 
 RECO_SAMPLES = {
-    'data_TauPlusX_Run2011A_PromptReco_v1' : {
-        'datasetpath' : "/TauPlusX/Run2011A-PromptReco-v1/AOD",
+    'data_TauPlusX_Run2011A_May10ReReco_v1' : {
+        'datasetpath' : "/TauPlusX/Run2011A-May10ReReco-v1/AOD",
         'dbs_url' :  "http://cmsdbsprod.cern.ch/cms_dbs_prod_global/servlet/DBSServlet",
-        'lumi_mask' : "/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions11/7TeV/Prompt/Cert_160404-163869_7TeV_PromptReco_Collisions11_JSON.txt",
-        'runselection' : "160329-161312",
+        'lumi_mask' : "/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions11/7TeV/Reprocessing/Cert_160404-163869_7TeV_May10ReReco_Collisions11_JSON.txt",
+        'runselection' : "160329-163869",
         'number_of_jobs' : 500,
-        'conditions' : 'GR_R_311_V2::All',
+        'conditions' : 'GR_R_42_V14::All',
         'events_processed' : -1,
         'skim_eff' : 1.0,
         'type' : 'Data',
@@ -96,95 +95,100 @@ RECO_SAMPLES = {
         'hlt_paths' : {
             'HLT_IsoMu12_LooseIsoPFTau10_v1' : '160431:MIN-161016:MAX',  # period A
             'HLT_IsoMu12_LooseIsoPFTau10_v2' : '161216:MIN-163261:MAX',  # period B
-            'HLT_Mu15_LooseIsoPFTau20_v1'    : '160431:MIN-161016:MAX',  # period A
-            'HLT_Mu15_LooseIsoPFTau20_v2'    : '161216:MIN-163261:MAX'   # period B
-        },
-        'enableSysUncertainties' : False,
-        'enableFakeRates' : True,
-        'hlt' : cms.InputTag("TriggerResults", "", "HLT")
-    },
-    'data_SingleMu_Run2011A_PromptReco_v1' : {
-        'datasetpath' : '/SingleMu/Run2011A-PromptReco-v1/AOD',
-        'dbs_url' :  "http://cmsdbsprod.cern.ch/cms_dbs_prod_global/servlet/DBSServlet",
-        'lumi_mask' : "/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions11/7TeV/Prompt/Cert_160404-163869_7TeV_PromptReco_Collisions11_JSON.txt",
-        'runselection' : "160329-161312",
-        'number_of_jobs' : 500,
-        'conditions' : 'GR_R_311_V2::All',
-        'events_processed' : -1,
-        'skim_eff' : 1.0,
-        'type' : 'Data',
-        'drawOption' : styles.drawOption_Data,
-        'hlt_paths' : {
-            'HLT_IsoMu12_v1' : '160431:MIN-163261:MAX'
-        },
-        'enableSysUncertainties' : False,
-        'enableFakeRates' : True,
-        'hlt' : cms.InputTag("TriggerResults", "", "HLT")
-    },
-    'data_SingleMu_Run2011A_PromptReco_v2' : {
-        'datasetpath' : '/SingleMu/Run2011A-PromptReco-v2/AOD',
-        'dbs_url' :  "http://cmsdbsprod.cern.ch/cms_dbs_prod_global/servlet/DBSServlet",
-        'lumi_mask' : "/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions11/7TeV/Prompt/Cert_160404-163869_7TeV_PromptReco_Collisions11_JSON.txt",
-        'runselection' : "162718-164236",
-        'number_of_jobs' : 500,
-        'conditions' : 'GR_R_311_V2::All',
-        'events_processed' : -1,
-        'skim_eff' : 1.0,
-        'type' : 'Data',
-        'drawOption' : styles.drawOption_Data,
-        'hlt_paths' : {
-            'HLT_IsoMu12_v1' : '160431:MIN-163261:MAX',
-            'HLT_IsoMu17_v6' : '163270:MIN-163869:MAX'
-        },
-        'enableSysUncertainties' : False,
-        'enableFakeRates' : True,
-        'hlt' : cms.InputTag("TriggerResults", "", "HLT")
-    },
-    'data_SingleMu_Run2011A_PromptReco_v2ex' : {
-        'datasetpath' : '/SingleMu/Run2011A-PromptReco-v2/AOD',
-        'dbs_url' :  "http://cmsdbsprod.cern.ch/cms_dbs_prod_global/servlet/DBSServlet",
-        'lumi_mask' : "/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions11/7TeV/Prompt/Cert_160404-163869_7TeV_PromptReco_Collisions11_JSON.txt",
-        'runselection' : "162718-163261",
-        'number_of_jobs' : 500,
-        'conditions' : 'GR_R_311_V2::All',
-        'events_processed' : -1,
-        'skim_eff' : 1.0,
-        'type' : 'Data',
-        'drawOption' : styles.drawOption_Data,
-        'hlt_paths' : {
-            'HLT_IsoMu12_v1' : '160431:MIN-163261:MAX',
-            'HLT_IsoMu17_v6' : '163270:MIN-163869:MAX'
-        },
-        'enableSysUncertainties' : False,
-        'enableFakeRates' : True,
-        'hlt' : cms.InputTag("TriggerResults", "", "HLT")
-    },
-    'data_TauPlusX_Run2011A_PromptReco_v2' : {
-        'datasetpath' : "/TauPlusX/Run2011A-PromptReco-v2/AOD",
-        'dbs_url' :  "http://cmsdbsprod.cern.ch/cms_dbs_prod_global/servlet/DBSServlet",
-        'lumi_mask' : "/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions11/7TeV/Prompt/Cert_160404-163869_7TeV_PromptReco_Collisions11_JSON.txt",
-        #'runselection' : "162718-163869",
-        'runselection' : "163269-163869",
-        'number_of_jobs' : 1000,
-        'conditions' : 'GR_R_311_V2::All',
-        'events_processed' : -1,
-        'skim_eff' : 1.0,
-        'type' : 'Data',
-        'drawOption' : styles.drawOption_Data,
-        'hlt_paths' : {
-            'HLT_IsoMu12_LooseIsoPFTau10_v2' : '161216:MIN-163261:MAX',  # period B
             'HLT_IsoMu12_LooseIsoPFTau10_v4' : '163269:MIN-163869:MAX',  # period C
+            'HLT_Mu15_LooseIsoPFTau20_v1'    : '160431:MIN-161016:MAX',  # period A
             'HLT_Mu15_LooseIsoPFTau20_v2'    : '161216:MIN-163261:MAX',  # period B
             'HLT_Mu15_LooseIsoPFTau20_v4'    : '163269:MIN-163869:MAX'   # period C
+            
         },
         'enableSysUncertainties' : False,
         'enableFakeRates' : True,
         'hlt' : cms.InputTag("TriggerResults", "", "HLT")
     },
-    'DYtautauM10to20_powheg' : {
-        'datasetpath' : "/DYToTauTau_M-10To20_CT10_TuneZ2_7TeV-powheg-pythia-tauola/Spring11-PU_S1_START311_V1G1-v2/AODSIM",
+    'data_SingleMu_Run2011A_May10ReReco_v1' : {
+        'datasetpath' : '/SingleMu/Run2011A-May10ReReco-v1/AOD',
         'dbs_url' :  "http://cmsdbsprod.cern.ch/cms_dbs_prod_global/servlet/DBSServlet",
-        'events_processed' : 1991426,
+        'lumi_mask' : "/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions11/7TeV/Reprocessing/Cert_160404-163869_7TeV_May10ReReco_Collisions11_JSON.txt",
+        'runselection' : "160329-163869",
+        'number_of_jobs' : 500,
+        'conditions' : 'GR_R_42_V14::All',
+        'events_processed' : -1,
+        'skim_eff' : 1.0,
+        'type' : 'Data',
+        'drawOption' : styles.drawOption_Data,
+        'hlt_paths' : {
+            'HLT_IsoMu12_v1' : '160431:MIN-163261:MAX',
+            'HLT_IsoMu17_v6' : '163270:MIN-163869:MAX',
+            'HLT_Mu24_v1'    : '160431:MIN-163261:MAX',
+            'HLT_Mu24_v2'    : '163270:MIN-163869:MAX',
+        },
+        'enableSysUncertainties' : False,
+        'enableFakeRates' : True,
+        'hlt' : cms.InputTag("TriggerResults", "", "HLT")
+    },
+    'data_SingleMu_Run2011A_May10ReReco_v1ex' : {
+        'datasetpath' : '/SingleMu/Run2011A-May10ReReco-v1/AOD',
+        'dbs_url' :  "http://cmsdbsprod.cern.ch/cms_dbs_prod_global/servlet/DBSServlet",
+        'lumi_mask' : "/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions11/7TeV/Reprocessing/Cert_160404-163869_7TeV_May10ReReco_Collisions11_JSON.txt",
+        'runselection' : "162718-163261",
+        'number_of_jobs' : 500,
+        'conditions' : 'GR_R_42_V14::All',
+        'events_processed' : -1,
+        'skim_eff' : 1.0,
+        'type' : 'Data',
+        'drawOption' : styles.drawOption_Data,
+        'hlt_paths' : {
+            'HLT_IsoMu12_v1' : '160431:MIN-163261:MAX',
+            'HLT_IsoMu17_v6' : '163270:MIN-163869:MAX'
+        },
+        'enableSysUncertainties' : False,
+        'enableFakeRates' : True,
+        'hlt' : cms.InputTag("TriggerResults", "", "HLT")
+    },
+    'data_TauPlusX_Run2011A_PromptReco_v4' : {
+        'datasetpath' : "/TauPlusX/Run2011A-PromptReco-v4/AOD",
+        'dbs_url' :  "http://cmsdbsprod.cern.ch/cms_dbs_prod_global/servlet/DBSServlet",
+        'lumi_mask' : "/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions11/7TeV/Prompt/Cert_160404-167151_7TeV_PromptReco_Collisions11_JSON.txt",
+        'runselection' : "165071-167496",
+        'number_of_jobs' : 1000,
+        'conditions' : 'GR_R_42_V14::All',
+        'events_processed' : -1,
+        'skim_eff' : 1.0,
+        'type' : 'Data',
+        'drawOption' : styles.drawOption_Data,
+        'hlt_paths' : {
+            'HLT_IsoMu15_LooseIsoPFTau15_v2' : '165088:MIN-165633:MAX',  # period D
+            'HLT_IsoMu15_LooseIsoPFTau20_v2' : '163269:MIN-163869:MAX',  # period E
+            'HLT_IsoMu15_LooseIsoPFTau20_v4' : '167078:MIN-167151:MAX'   # period F
+        },
+        'enableSysUncertainties' : False,
+        'enableFakeRates' : True,
+        'hlt' : cms.InputTag("TriggerResults", "", "HLT")
+    },
+    'data_SingleMu_Run2011A_PromptReco_v4' : {
+        'datasetpath' : "/SingleMu/Run2011A-PromptReco-v4/AOD",
+        'dbs_url' :  "http://cmsdbsprod.cern.ch/cms_dbs_prod_global/servlet/DBSServlet",
+        'lumi_mask' : "/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions11/7TeV/Prompt/Cert_160404-167151_7TeV_PromptReco_Collisions11_JSON.txt",
+        'runselection' : "165071-167496",
+        'number_of_jobs' : 1000,
+        'conditions' : 'GR_R_42_V14::All',
+        'events_processed' : -1,
+        'skim_eff' : 1.0,
+        'type' : 'Data',
+        'drawOption' : styles.drawOption_Data,
+        'hlt_paths' : {
+            'HLT_IsoMu17_v8'  : '165088:MIN-165633:MAX',
+            'HLT_IsoMu17_v9'  : '165970:MIN-167043:MAX',
+            'HLT_IsoMu17_v11' : '167078:MIN-167151:MAX'
+        },
+        'enableSysUncertainties' : False,
+        'enableFakeRates' : True,
+        'hlt' : cms.InputTag("TriggerResults", "", "HLT")
+    },
+    'Ztautau_pythia' : {
+        'datasetpath' : "/DYToTauTau_M-20_TuneZ2_7TeV-pythia6-tauola/Summer11-PU_S3_START42_V11-v2/AODSIM",
+        'dbs_url' :  "http://cmsdbsprod.cern.ch/cms_dbs_prod_global/servlet/DBSServlet",
+        'events_processed' : 2032536,
         'skim_eff' : 1.0,
         'x_sec' : 1666*_picobarns,
         'legendEntry' : plotter.process_Ztautau.config_dqmHistPlotter.legendEntry.value(),
@@ -195,7 +199,7 @@ RECO_SAMPLES = {
         'applyMuonTriggerEfficiencyCorrection' : True,
         'applyMuonIsolationEfficiencyCorrection' : True,
 	'applyVertexMultiplicityReweighting' : True,
-        'hlt' : cms.InputTag("TriggerResults", "", "REDIGI311X")
+        'hlt' : cms.InputTag("TriggerResults", "", "*")
     },
     'Ztautau_powheg' : {
         'datasetpath' : "/DYToTauTau_M-20_CT10_TuneZ2_7TeV-powheg-pythia-tauola/Spring11-PU_S1_START311_V1G1-v2/AODSIM",
@@ -211,24 +215,7 @@ RECO_SAMPLES = {
         'applyMuonTriggerEfficiencyCorrection' : True,
         'applyMuonIsolationEfficiencyCorrection' : True,
 	'applyVertexMultiplicityReweighting' : True,
-        'hlt' : cms.InputTag("TriggerResults", "", "REDIGI311X")
-    },
-    'Ztautau_winter10' : {
-        'datasetpath' : "/DYToTauTau_M-20_TuneZ2_7TeV-pythia6-tauola/Winter10-E7TeV_ProbDist_2010Data_BX156_START39_V8-v1/AODSIM",
-        'dbs_url' :  "http://cmsdbsprod.cern.ch/cms_dbs_prod_global/servlet/DBSServlet",
-        'events_processed' : 2057446,
-        'skim_eff' : 1.0,
-        'x_sec' : 1666*_picobarns,
-        ##'conditions' : 'START39_V9::All', # usage of CMSSW_3_9_x conditions in CMSSW_4_1_x causes run-time exception
-        'legendEntry' : plotter.process_Ztautau.config_dqmHistPlotter.legendEntry.value(),
-        'type' : 'Data', # define as data, because 'addPileupInfo' collection does not exist in CMSSW_3_9_x Monte Carlo
-        'drawOption' : styles.drawOption_Ztautau,
-        'applyZrecoilCorrection' : False,
-        'enableFakeRates' : False,
-        'applyMuonTriggerEfficiencyCorrection' : False,
-        'applyMuonIsolationEfficiencyCorrection' : False,
-	'applyVertexMultiplicityReweighting' : False,
-        'hlt' : cms.InputTag("TriggerResults", "", "REDIGI39X")
+        'hlt' : cms.InputTag("TriggerResults", "", "*")
     },
     'qqZll' : {
         'datasetpath' : "/VQQJetsToLL_TuneD6T_7TeV-madgraph-tauola/Spring11-PU_S1_START311_V1G1-v1/AODSIM",
@@ -243,23 +230,23 @@ RECO_SAMPLES = {
         'enableFakeRates' : True,
         'applyMuonTriggerEfficiencyCorrection' : True,
         'applyMuonIsolationEfficiencyCorrection' : True,
-        'hlt' : cms.InputTag("TriggerResults", "", "REDIGI311X")
+        'hlt' : cms.InputTag("TriggerResults", "", "*")
     },
-    'DYmumuM10to20_pythia' : {
-        'datasetpath' : "/DYToMuMu_M-10To20_TuneZ2_7TeV-pythia6/Spring11-PU_S1_START311_V1G1-v1/AODSIM",
+    'Zmumu_pythia' : {
+        'datasetpath' : "/DYToMuMu_M-10To20_TuneZ2_7TeV-pythia6/Summer11-PU_S3_START42_V11-v2/AODSIM",
         'dbs_url' :  "http://cmsdbsprod.cern.ch/cms_dbs_prod_global/servlet/DBSServlet",
-        'events_processed' : 2227840,
+        'events_processed' : 2192421,
         'skim_eff' : 1.0,
-        'x_sec' : 1.282*2659*_picobarns, # Z + jets correction factor for NLO/LO cross-sections = 1.282 (k-factor for mMuMu > 20 GeV)
+        'x_sec' : 1666*_picobarns,
         'legendEntry' : plotter.process_Zmumu.config_dqmHistPlotter.legendEntry.value(),
         'type' : plotter.process_Zmumu.config_dqmHistPlotter.type.value(),
         'drawOption' : styles.drawOption_Zmumu,
         'applyZrecoilCorrection' : False,
         'applyMuonTriggerEfficiencyCorrection' : True,
         'applyMuonIsolationEfficiencyCorrection' : True,
-        'enableFakeRates' : True,
         'applyVertexMultiplicityReweighting' : True,
-        'hlt' : cms.InputTag("TriggerResults", "", "REDIGI311X")
+        'enableFakeRates' : True,
+        'hlt' : cms.InputTag("TriggerResults", "", "*")
     },
     'Zmumu_powheg' : {
         'datasetpath' : "/DYToMuMu_M-20_CT10_TuneZ2_7TeV-powheg-pythia/Spring11-PU_S1_START311_V1G1-v1/AODSIM",
@@ -275,12 +262,12 @@ RECO_SAMPLES = {
         'applyMuonIsolationEfficiencyCorrection' : True,
         'applyVertexMultiplicityReweighting' : True,
         'enableFakeRates' : True,
-        'hlt' : cms.InputTag("TriggerResults", "", "REDIGI311X")
+        'hlt' : cms.InputTag("TriggerResults", "", "*")
     },
     'PPmuXptGt20Mu15' : {
-        'datasetpath' : "/QCD_Pt-20_MuEnrichedPt-15_TuneZ2_7TeV-pythia6/Spring11-PU_S1_START311_V1G1-v1/AODSIM",
+        'datasetpath' : "/QCD_Pt-20_MuEnrichedPt-15_TuneZ2_7TeV-pythia6/Summer11-PU_S4_START42_V11-v1/AODSIM",
         'dbs_url' :  "http://cmsdbsprod.cern.ch/cms_dbs_prod_global/servlet/DBSServlet",
-        'events_processed' : 29434562,
+        'events_processed' : 20416038,
         'number_of_jobs' : 2500,
         'skim_eff' : 1.0,
         'x_sec' : 0.2966*_millibarns*2.855e-4, # x-sec * gen filter efficiency
@@ -292,13 +279,13 @@ RECO_SAMPLES = {
         'applyVertexMultiplicityReweighting' : True,
         'enableFakeRates' : True,
         'factorize' : True,
-        'hlt' : cms.InputTag("TriggerResults", "", "REDIGI311X")
+        'hlt' : cms.InputTag("TriggerResults", "", "*")
     },
     'WplusJets_madgraph' : {
-        'datasetpath' : "/WJetsToLNu_TuneZ2_7TeV-madgraph-tauola/Spring11-PU_S1_START311_V1G1-v1/AODSIM",
+        'datasetpath' : "/WJetsToLNu_TuneZ2_7TeV-madgraph-tauola/Summer11-PU_S4_START42_V11-v1/AODSIM",
         'dbs_url' :  "http://cmsdbsprod.cern.ch/cms_dbs_prod_global/servlet/DBSServlet",
-        'events_processed' : 15110974,
-        'number_of_jobs' : 1000,
+        'events_processed' : 49527177,
+        'number_of_jobs' : 2500,
         'skim_eff' : 1.0,
         'x_sec' : 31314*_picobarns,
         'legendEntry' : plotter.process_WplusJets.config_dqmHistPlotter.legendEntry.value(),
@@ -309,7 +296,7 @@ RECO_SAMPLES = {
         'applyMuonIsolationEfficiencyCorrection' : True,
         'applyVertexMultiplicityReweighting' : True,
         'enableFakeRates' : True,
-        'hlt' : cms.InputTag("TriggerResults", "", "REDIGI311X")
+        'hlt' : cms.InputTag("TriggerResults", "", "*")
     },
     'WW' : {
         'datasetpath' : "/WWtoAnything_TuneZ2_7TeV-pythia6-tauola/Spring11-PU_S1_START311_V1G1-v1/AODSIM",
@@ -324,7 +311,7 @@ RECO_SAMPLES = {
         'applyMuonTriggerEfficiencyCorrection' : True,
         'applyMuonIsolationEfficiencyCorrection' : True,
         'applyVertexMultiplicityReweighting' : True,
-        'hlt' : cms.InputTag("TriggerResults", "", "REDIGI311X")
+        'hlt' : cms.InputTag("TriggerResults", "", "*")
     },
     'WZ' : {
         'datasetpath' : "/WZtoAnything_TuneZ2_7TeV-pythia6-tauola/Spring11-PU_S1_START311_V1G1-v1/AODSIM",
@@ -339,7 +326,7 @@ RECO_SAMPLES = {
         'applyMuonTriggerEfficiencyCorrection' : True,
         'applyMuonIsolationEfficiencyCorrection' : True,
         'applyVertexMultiplicityReweighting' : True,
-        'hlt' : cms.InputTag("TriggerResults", "", "REDIGI311X")
+        'hlt' : cms.InputTag("TriggerResults", "", "*")
     },
     'ZZ' : {
         'datasetpath' : "/ZZtoAnything_TuneZ2_7TeV-pythia6-tauola/Spring11-PU_S1_START311_V1G1-v1/AODSIM",
@@ -354,12 +341,12 @@ RECO_SAMPLES = {
         'applyMuonTriggerEfficiencyCorrection' : True,
         'applyMuonIsolationEfficiencyCorrection' : True,
         'applyVertexMultiplicityReweighting' : True,
-        'hlt' : cms.InputTag("TriggerResults", "", "REDIGI311X")
+        'hlt' : cms.InputTag("TriggerResults", "", "*")
     },
     'TTplusJets_madgraph' : {
-        'datasetpath' : "/TTJets_TuneZ2_7TeV-madgraph-tauola/Spring11-PU_S1_START311_V1G1-v1/AODSIM",
+        'datasetpath' : "/TTJets_TuneZ2_7TeV-madgraph-tauola/Summer11-PU_S4_START42_V11-v1/AODSIM",
         'dbs_url' :  "http://cmsdbsprod.cern.ch/cms_dbs_prod_global/servlet/DBSServlet",
-        'events_processed' : 1164208,
+        'events_processed' : 3701947,
         'skim_eff' : 1.0,
         'x_sec' : 157.5*_picobarns, # NLO cross-section from https://twiki.cern.ch/twiki/bin/viewauth/CMS/StandardModelCrossSections
         'legendEntry' : plotter.process_TTplusJets.config_dqmHistPlotter.legendEntry.value(),
@@ -369,7 +356,7 @@ RECO_SAMPLES = {
         'applyMuonIsolationEfficiencyCorrection' : True,
         'applyVertexMultiplicityReweighting' : True,
         'enableFakeRates' : True,
-        'hlt' : cms.InputTag("TriggerResults", "", "REDIGI311X")
+        'hlt' : cms.InputTag("TriggerResults", "", "*")
     }
 }
 
@@ -377,10 +364,9 @@ RECO_SAMPLES = {
 MERGE_SAMPLES = {
     'data' : {
         'samples' : [
-            #'data_TauPlusX_Run2011A_PromptReco_v1',
-            'data_SingleMu_Run2011A_PromptReco_v1',
-            'data_SingleMu_Run2011A_PromptReco_v2ex',
-            'data_TauPlusX_Run2011A_PromptReco_v2',
+            'data_SingleMu_Run2011A_May10ReReco_v1ex',
+            'data_TauPlusX_Run2011A_May10ReReco_v1',
+            'data_TauPlusX_Run2011A_PromptReco_v4'
         ],
         'legendEntry' : 'DATA',
         'type' : 'Data',
@@ -388,9 +374,9 @@ MERGE_SAMPLES = {
     },
     'ZtautauSum' : {
         'samples' : [
-           'DYtautauM10to20_powheg',
-            'Ztautau_powheg',
-            'qqZll'
+            'Ztautau_pythia',
+            #'Ztautau_powheg',
+            #'qqZll'
         ],
         'legendEntry' : plotter.process_Ztautau.config_dqmHistPlotter.legendEntry.value(),
         'type' : plotter.process_Ztautau.config_dqmHistPlotter.type.value(),
@@ -398,8 +384,8 @@ MERGE_SAMPLES = {
     },
     'ZmumuSum' : {
         'samples' : [
-            'DYmumuM10to20_pythia',
-            'Zmumu_powheg'
+            'Zmumu_pythia'
+            #'Zmumu_powheg'
         ],
         'legendEntry' : plotter.process_Zmumu.config_dqmHistPlotter.legendEntry.value(),
         'type' : plotter.process_Zmumu.config_dqmHistPlotter.type.value(),
@@ -428,7 +414,7 @@ MERGE_SAMPLES = {
             'ZmumuSum',
             'qcdSum',
             'WplusJetsSum_madgraph',
-            'VVsum',
+            #'VVsum',
             'TTplusJets_madgraph'
         ],
         'legendEntry' : 'SM',
