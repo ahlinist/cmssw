@@ -125,7 +125,8 @@ patTupleEventContent.outputCommands.extend(
 # required by triggerHistManager
 #--------------------------------------------------------------------------------
 patTupleEventContent.outputCommands.extend(
-     [ 'keep *_TriggerResults_*_*',
+     [ 'keep *_*Trigger*_*_*',
+       'keep *_*patTriggerEvent*_*_*',
        'keep *_hltGtDigis_*_*',
        'keep *_gtDigis_*_*',
        'keep *_hltL1GtObjectMap_*_*' ]
@@ -157,5 +158,6 @@ patTupleEventContent.outputCommands.extend(
 patTupleEventContent.outputCommands.extend(
     [ 'keep *_caloEventShapeVars_*_*',
       'keep *_pfEventShapeVars_*_*',
-	  'keep *_pfNoPileUp_*_*']
+      'keep *_pfNoPileUp_*_*',
+      'keep *_addPileupInfo_*_*']
 )
