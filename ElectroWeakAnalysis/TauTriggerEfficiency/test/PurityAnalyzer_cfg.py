@@ -21,7 +21,7 @@ process.maxEvents = cms.untracked.PSet(
 
 process.load("FWCore/MessageService/MessageLogger_cfi")
 process.MessageLogger.categories.append("TTEffAnalyzer")
-process.MessageLogger.cerr.FwkReport.reportEvery = 100 # print the event number for every 100th event
+####process.MessageLogger.cerr.FwkReport.reportEvery = 100 # print the event number for every 100th event
 process.MessageLogger.cerr.TTEffAnalyzer = cms.untracked.PSet(limit = cms.untracked.int32(100)) # print max 100 warnings from TTEffAnalyzer
 # process.MessageLogger.debugModules = cms.untracked.vstring("TTEffAnalyzer")
 # process.MessageLogger.cerr.threshold = cms.untracked.string("DEBUG")   # pring LogDebugs and above
@@ -73,6 +73,9 @@ process.TTEffAnalysis = cms.EDAnalyzer("TTEffAnalyzer",
         PFTauMuonRejectionCollection     = cms.InputTag("TTEffPFTauDiscriminationAgainstMuon"),
 	PFTauElectronRejectionCollection = cms.InputTag("TTEffPFTauDiscriminationAgainstElectron"),
 	PFTauDiscriminators     = cms.VInputTag(),
+	Counters		= cms.VInputTag(cms.InputTag("TTEffSkimCounterAllEvents"),
+				                cms.InputTag("TTEffSkimCounterSavedEvents")
+                                                ),
 
 	MuonSource		= cms.InputTag("muons"),
 	MuonPtMin		= cms.double(0.),
@@ -206,13 +209,14 @@ process.runTTEffAna = cms.Path(
 
 process.load("ElectroWeakAnalysis.TauTriggerEfficiency.ZtoMuTauFilter_cfi")
 
-process.PurityCounterAllEvents   = cms.EDProducer("EventCountProducer")
-process.PurityCounterSavedEvents = cms.EDProducer("EventCountProducer")
+process.TTEffSkimCounterAllEvents   = cms.EDProducer("EventCountProducer")
+process.TTEffSkimCounterSavedEvents = cms.EDProducer("EventCountProducer")
 
-process.runTTEffAna += process.PurityCounterAllEvents
+process.runTTEffAna += process.TTEffSkimCounterAllEvents
 #process.runTTEffAna += process.TTEffPFTau
 process.runTTEffAna += process.TTEffHPSPFTau
 process.runTTEffAna += process.muTauFilterSequence
+process.runTTEffAna += process.TTEffSkimCounterSavedEvents
 #process.runTTEffAna += process.TTEffAnalysis
 #process.runTTEffAna += process.TTEffAnalysisL1Tau
 #process.runTTEffAna += process.TTEffAnalysisL1Cen
@@ -221,7 +225,6 @@ process.runTTEffAna += process.muTauFilterSequence
 process.runTTEffAna += process.TTEffAnalysisHLTPFTauTightHPS
 #process.runTTEffAna += process.TTEffAnalysisHLTCaloTauHPS
 #process.runTTEffAna += process.TTEffAnalysisHLTPFTauHPS
-process.runTTEffAna += process.PurityCounterSavedEvents
 
 #process.o1 = cms.OutputModule("PoolOutputModule",
 #    outputCommands = cms.untracked.vstring("keep *"),
