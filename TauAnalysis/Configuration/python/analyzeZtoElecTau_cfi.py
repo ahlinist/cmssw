@@ -916,10 +916,10 @@ elecTauAnalysisSequenceOS = cms.VPSet(
         ),
 		replace = cms.vstring('electronHistManager.electronSource = selectedPatElectronsForElecTauTrkIPcumulative',
                               'tauHistManager.tauSource = selectedPatTausForElecTauMuonVetoCumulative',
-							  'diTauCandidateHistManagerForElecTau.visMassHypothesisSource = elecTauPairVisMassHypotheses',
-							  'elecPairHistManagerByLooseIsolation.diTauCandidateSource = selectedDiElecPairZeeHypothesesByLooseIsolation',
-							  'diTauCandidateNSVfitHistManagerForElecTau.diTauCandidateSource = selectedElecTauPairsPzetaDiffCumulative',
-                              'diTauCandidateZeeHypothesisHistManagerForElecTau.ZllHypothesisSource = selectedElecTauPairZeeHypotheses'
+                              'diTauCandidateHistManagerForElecTau.visMassHypothesisSource = elecTauPairVisMassHypotheses',
+                                      'elecPairHistManagerByLooseIsolation.diTauCandidateSource = selectedDiElecPairZeeHypothesesByLooseIsolation',
+                                      'diTauCandidateNSVfitHistManagerForElecTau.diTauCandidateSource = selectedElecTauPairsPzetaDiffCumulative',
+                                      'diTauCandidateZeeHypothesisHistManagerForElecTau.ZllHypothesisSource = selectedElecTauPairZeeHypotheses'
 		)
     ),
     cms.PSet(
@@ -932,8 +932,8 @@ elecTauAnalysisSequenceOS = cms.VPSet(
 			'genPhaseSpaceEventInfoHistManager',
 			'triggerHistManagerForElecTau',
 			'vertexHistManager',
-            'electronHistManager',
-            'tauHistManager',
+                        'electronHistManager',
+                        'tauHistManager',
 			'pfMEtHistManager',
 			'caloMEtHistManager',
 			'jetHistManager',
@@ -942,12 +942,12 @@ elecTauAnalysisSequenceOS = cms.VPSet(
 			'diTauCandidateNSVfitHistManagerForElecTau',
 			'dataBinner',
 			'sysUncertaintyBinnerForElecTauEff',
-            'diTauCandidateHistManagerForElecTau'
+                        'diTauCandidateHistManagerForElecTau'
         ),
         replace = cms.vstring('electronHistManager.electronSource = selectedPatElectronsForElecTauTrkIPcumulative',
                               'tauHistManager.tauSource = selectedPatTausForElecTauMuonVetoCumulative',
-							  'elecPairHistManagerByLooseIsolation.diTauCandidateSource = selectedDiElecPairZeeHypothesesByLooseIsolation',
-							  'diTauCandidateNSVfitHistManagerForElecTau.diTauCandidateSource = selectedElecTauPairsPzetaDiffCumulative',
+                              'elecPairHistManagerByLooseIsolation.diTauCandidateSource = selectedDiElecPairZeeHypothesesByLooseIsolation',
+                              'diTauCandidateNSVfitHistManagerForElecTau.diTauCandidateSource = selectedElecTauPairsPzetaDiffCumulative',
                               'diTauCandidateZeeHypothesisHistManagerForElecTau.ZllHypothesisSource = selectedElecTauPairZeeHypotheses',
                               'diTauCandidateHistManagerForElecTau.diTauCandidateSource = selectedElecTauPairsZeroChargeCumulative',
                               'diTauCandidateHistManagerForElecTau.visMassHypothesisSource = elecTauPairVisMassHypotheses'
