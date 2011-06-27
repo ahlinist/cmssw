@@ -99,14 +99,19 @@ double VertexMultiplicityReweightExtractor::operator()(const edm::Event& evt) co
 {
   //std::cout << "<VertexMultiplicityReweightExtractor::operator()>:" << std::endl;
 
-  double numPileUp = 0;
+  double numPileUp = -1.;
   if ( type_ == kGenLevel ) {
     typedef std::vector<PileupSummaryInfo> PileupSummaryInfoCollection;
-    edm::Handle<PileupSummaryInfoCollection> genPileUpInfo;
-    evt.getByLabel(src_, genPileUpInfo);
-    if ( genPileUpInfo->size() != 1 ) throw cms::Exception("VertexMultiplicityReweightExtractor") 
-      << " Failed to find unique PileupSummaryInfo object !!\n";
-    numPileUp = genPileUpInfo->front().getPU_NumInteractions();
+    edm::Handle<PileupSummaryInfoCollection> genPileUpInfos;
+    evt.getByLabel(src_, genPileUpInfos);
+    for ( PileupSummaryInfoCollection::const_iterator genPileUpInfo = genPileUpInfos->begin();
+	  genPileUpInfo != genPileUpInfos->end(); ++genPileUpInfo ) {
+      // CV: in-time PU is stored in getBunchCrossing = 0, 
+      //    cf. https://twiki.cern.ch/twiki/bin/viewauth/CMS/PileupInformation
+      if ( genPileUpInfo->getBunchCrossing() == 0 ) numPileUp = genPileUpInfo->getPU_NumInteractions();
+    }
+    if ( numPileUp == -1. ) throw cms::Exception("VertexMultiplicityReweightExtractor") 
+      << " Failed to find PileupSummaryInfo object for in-time Pile-up !!\n";
   } else if ( type_ == kRecLevel ) {
     edm::Handle<reco::VertexCollection> vertices;
     evt.getByLabel(src_, vertices);
