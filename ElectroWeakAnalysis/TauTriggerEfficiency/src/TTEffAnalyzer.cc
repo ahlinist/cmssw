@@ -13,7 +13,7 @@
 //
 // Original Author:  Chi Nhan Nguyen
 //         Created:  Wed Oct  1 13:04:54 CEST 2008
-// $Id: TTEffAnalyzer.cc,v 1.58 2011/06/09 19:23:34 slehti Exp $
+// $Id: TTEffAnalyzer.cc,v 1.59 2011/06/23 13:17:22 slehti Exp $
 //
 //
 
@@ -26,6 +26,8 @@
 #include "DataFormats/Common/interface/View.h"
 
 #include "DataFormats/Common/interface/TriggerResults.h"
+
+#include "DataFormats/Common/interface/MergeableCounter.h"
 
 using namespace std;
 
@@ -41,6 +43,7 @@ TTEffAnalyzer::TTEffAnalyzer(const edm::ParameterSet& iConfig):
   PFTauElectronRej_(iConfig.getParameter<edm::InputTag>("PFTauElectronRejectionCollection")),
   rootFile_(iConfig.getParameter<std::string>("outputFileName")),
   PFTauDiscriminators_(iConfig.getParameter<std::vector<edm::InputTag> >("PFTauDiscriminators")),
+  Counters_(iConfig.getParameter<std::vector<edm::InputTag> >("Counters")),
   _hltFlag(new bool[512]),
   MCMatchingCone(iConfig.getParameter<double>("MCMatchingCone"))
 {
@@ -530,6 +533,22 @@ TTEffAnalyzer::endJob() {
   //std::cout << "After close" << std::endl;
   //delete _TTEffTree;
   //std::cout << "After delete" << std::endl;
+}
+
+void TTEffAnalyzer::endLuminosityBlock(const edm::LuminosityBlock & lumi, const edm::EventSetup & setup) {
+   	// Counters
+	edm::Handle<edm::MergeableCounter> count;
+
+	h_counters = new TH1F("Counters","",Counters_.size(),0,Counters_.size());
+
+	std::cout << "Counters " << std::endl;
+	for(size_t i = 0; i < Counters_.size(); ++i){
+		lumi.getByLabel(Counters_[i], count);
+		std::cout << "    " << Counters_[i].label() << " " << count->value << std::endl;
+		h_counters->SetBinContent(i+1,count->value);
+		h_counters->GetXaxis()->SetBinLabel(i+1,(Counters_[i].label()).c_str());
+	}
+	h_counters->Write();
 }
 
 //define this as a plug-in

@@ -80,6 +80,9 @@ process.TTEffAnalysis = cms.EDAnalyzer("TTEffAnalyzer",
         PFTauMuonRejectionCollection     = cms.InputTag("TTEffPFTauDiscriminationAgainstMuon"),
 	PFTauElectronRejectionCollection = cms.InputTag("TTEffPFTauDiscriminationAgainstElectron"),
 	PFTauDiscriminators     = cms.VInputTag(),
+        Counters                = cms.VInputTag(cms.InputTag("TTEffSkimCounterAllEvents"),
+                                                cms.InputTag("TTEffSkimCounterSavedEvents")
+                                                ),
 
 	MuonSource		= cms.InputTag("muons"),
 	MuonPtMin		= cms.double(0.),

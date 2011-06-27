@@ -13,7 +13,7 @@
 //
 // Original Author:  Chi Nhan Nguyen
 //         Created:  Wed Oct  1 13:04:54 CEST 2008
-// $Id: TTEffAnalyzer.h,v 1.45 2011/06/07 20:18:03 slehti Exp $
+// $Id: TTEffAnalyzer.h,v 1.46 2011/06/23 13:17:22 slehti Exp $
 //
 //
 
@@ -48,6 +48,9 @@
 
 #include "DataFormats/HepMCCandidate/interface/GenParticle.h"
 
+#include "FWCore/Framework/interface/LuminosityBlock.h"
+#include "TH1F.h"
+
 //
 class TTEffAnalyzer : public edm::EDAnalyzer {
    public:
@@ -57,12 +60,14 @@ class TTEffAnalyzer : public edm::EDAnalyzer {
       TTree *_TTEffTree;
       TFile *_TTEffFile;
 
+      TH1F * h_counters; 
 
    private:
       typedef math::XYZTLorentzVector LorentzVector;
 
       virtual void beginJob() ;
       virtual void analyze(const edm::Event&, const edm::EventSetup&);
+      virtual void endLuminosityBlock(const edm::LuminosityBlock&, const edm::EventSetup&);
       virtual void endJob() ;
 
       template <class T> void loop(const edm::Event& iEvent,const edm::EventSetup& iSetup, const T& collection);
@@ -89,6 +94,7 @@ class TTEffAnalyzer : public edm::EDAnalyzer {
       edm::InputTag  PFTaus_,PFTauIso_,MCTaus_,MCParticles_,PFTauMuonRej_,PFTauElectronRej_; //Path to analyze
       std::string rootFile_;
       std::vector<edm::InputTag> PFTauDiscriminators_;
+      std::vector<edm::InputTag> Counters_;
 
       int _HltEvtCnt;
       bool *_hltFlag;
