@@ -96,17 +96,17 @@ from TauAnalysis.RecoTools.vertexMultiplicityReweight_cfi import selectedPrimary
 
 producePatTupleZtoElecTauSpecific = cms.Sequence(
     #selectedPrimaryVerticesTrackPtSumGt10 +
-	selectPatElectrons +
-	selectPatElectronsLooseIsolation +
-	selectPatElectronsForElecTau + selectPatElectronsForElecTauLooseIsolation +
-	selectPatTaus +
-	selectPatTausForElecTau +
+    selectPatElectrons +
+    selectPatElectronsLooseIsolation +
+    selectPatElectronsForElecTau + selectPatElectronsForElecTauLooseIsolation +
+    selectPatTaus +
+    selectPatTausForElecTau +
     selectPrimaryVertexForElecTauAll + 
-	selectPatMuons +
-	selectPatJets +
+    selectPatMuons +
+    selectPatJets +
     ak5PFJetsAntiOverlapWithLeptonsVeto + pfUnclusteredCandidates + pfMEtType1and2corrected + patPFtype1METs +
-	produceElecTauPairsAll+
-	selectElecTauPairs + selectElecTauPairsLooseElectronIsolation +
-	produceElecTauPairZeeHypotheses +
-	produceDiElecPairs
+    produceElecTauPairsAll+
+    selectElecTauPairs + selectElecTauPairsLooseElectronIsolation +
+    produceElecTauPairZeeHypotheses +
+    produceDiElecPairs
 )
