@@ -101,7 +101,7 @@ VgAnalyzerKit::VgAnalyzerKit(const edm::ParameterSet& ps) : verbosity_(0), helpe
   tree_->Branch("ttbit0", &ttbit0_, "ttbit0/I");
   tree_->Branch("nHLT", &nHLT_, "nHLT/I");
   tree_->Branch("HLT", HLT_, "HLT[nHLT]/I");
-  tree_->Branch("HLTIndex", HLTIndex_, "HLTIndex[172]/I");
+  tree_->Branch("HLTIndex", HLTIndex_, "HLTIndex[193]/I");
   tree_->Branch("HLTprescale", HLTprescale_, "HLTprescale[nHLT]/I");
   tree_->Branch("nHFTowersP", &nHFTowersP_, "nHFTowersP/I");
   tree_->Branch("nHFTowersN", &nHFTowersN_, "nHFTowersN/I");
@@ -178,7 +178,7 @@ VgAnalyzerKit::VgAnalyzerKit(const edm::ParameterSet& ps) : verbosity_(0), helpe
   tree_->Branch("pfMETSig", &pfMETSig_, "pfMETSig/F");
   // Electron
   tree_->Branch("nEle", &nEle_, "nEle/I");
-  tree_->Branch("eleTrg", eleTrg_, "eleTrg[nEle][25]/I");
+  tree_->Branch("eleTrg", eleTrg_, "eleTrg[nEle][29]/I");
   tree_->Branch("eleID", eleID_, "eleID[nEle][30]/I");
   tree_->Branch("eleIDLH", eleIDLH_, "eleIDLH[nEle]/F");
   tree_->Branch("eleClass", eleClass_, "eleClass[nEle]/I");
@@ -304,7 +304,7 @@ VgAnalyzerKit::VgAnalyzerKit(const edm::ParameterSet& ps) : verbosity_(0), helpe
   tree_->Branch("phoESProfileRear", phoESProfileRear_, "phoESProfileRear[nPho][123]/F");
   // Muon
   tree_->Branch("nMu", &nMu_, "nMu/I");
-  tree_->Branch("muTrg", muTrg_, "muTrg[nMu][32]/I");
+  tree_->Branch("muTrg", muTrg_, "muTrg[nMu][40]/I");
   tree_->Branch("muEta", muEta_, "muEta[nMu]/F");
   tree_->Branch("muPhi", muPhi_, "muPhi[nMu]/F");
   tree_->Branch("muCharge", muCharge_, "muCharge[nMu]/I");
@@ -347,7 +347,7 @@ VgAnalyzerKit::VgAnalyzerKit(const edm::ParameterSet& ps) : verbosity_(0), helpe
   // Jet
   if (doStoreJets_) {
     tree_->Branch("nJet", &nJet_, "nJet/I");
-    tree_->Branch("jetTrg", jetTrg_, "jetTrg[nJet][49]/I");
+    tree_->Branch("jetTrg", jetTrg_, "jetTrg[nJet][58]/I");
     tree_->Branch("jetEn", jetEn_, "jetEn[nJet]/F");
     tree_->Branch("jetPt", jetPt_, "jetPt[nJet]/F");
     tree_->Branch("jetEta", jetEta_, "jetEta[nJet]/F");
@@ -707,7 +707,7 @@ fabs(ip->pdgId())<=14) || ip->pdgId()==22))) {
   // cout << "VgAnalyzerKit: produce: HLT ... " << endl;
   // Indicate the index of interesting HLT bits. Even CMS has different HLT table for different runs, we can still use the correct HLT bit
 
-  for (int a=0; a<172; a++)
+  for (int a=0; a<193; a++)
     HLTIndex_[a] = -1;
  
   nHLT_ = 0;
@@ -893,6 +893,27 @@ fabs(ip->pdgId())<=14) || ip->pdgId()==22))) {
     else if (hlNames[i] == "HLT_Photon26_CaloIdL_IsoVL_Photon18_CaloIdL_IsoVL_v3")	HLTIndex_[169] = i;
     else if (hlNames[i] == "HLT_Photon26_CaloIdL_IsoVL_Photon18_CaloIdL_IsoVL_v4")	HLTIndex_[170] = i;
     else if (hlNames[i] == "HLT_Photon26_CaloIdL_IsoVL_Photon18_CaloIdL_IsoVL_v5")	HLTIndex_[171] = i;
+    else if (hlNames[i] == "HLT_Jet30_v6")	HLTIndex_[172] = i;
+    else if (hlNames[i] == "HLT_Jet60_v6")	HLTIndex_[173] = i;
+    else if (hlNames[i] == "HLT_Jet80_v6")	HLTIndex_[174] = i;
+    else if (hlNames[i] == "HLT_Jet110_v6")	HLTIndex_[175] = i;
+    else if (hlNames[i] == "HLT_Jet150_v6")	HLTIndex_[176] = i;
+    else if (hlNames[i] == "HLT_Jet190_v6")	HLTIndex_[177] = i;
+    else if (hlNames[i] == "HLT_Jet240_v6")	HLTIndex_[178] = i;
+    else if (hlNames[i] == "HLT_Jet300_v5")     HLTIndex_[179] = i;
+    else if (hlNames[i] == "HLT_Jet370_v6")	HLTIndex_[180] = i;
+    else if (hlNames[i] == "HLT_Mu24_v5")	HLTIndex_[181] = i;
+    else if (hlNames[i] == "HLT_Mu30_v5")	HLTIndex_[182] = i;
+    else if (hlNames[i] == "HLT_IsoMu17_v11")	HLTIndex_[183] = i;
+    else if (hlNames[i] == "HLT_IsoMu24_v7")	HLTIndex_[184] = i;
+    else if (hlNames[i] == "HLT_IsoMu30_v7")	HLTIndex_[185] = i;
+    else if (hlNames[i] == "HLT_Mu13_Mu8_v4")   HLTIndex_[186] = i;
+    else if (hlNames[i] == "HLT_Mu17_Mu8_v2")   HLTIndex_[187] = i;
+    else if (hlNames[i] == "HLT_Mu17_Mu8_v4")   HLTIndex_[188] = i;
+    else if (hlNames[i] == "HLT_Ele32_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_v5")		HLTIndex_[189] = i;
+    else if (hlNames[i] == "HLT_Ele27_WP80_PFMT50_v1")					HLTIndex_[190] = i;
+    else if (hlNames[i] == "HLT_Ele32_WP70_PFMT50_v1")					HLTIndex_[191] = i;
+    else if (hlNames[i] == "HLT_Ele17_CaloIdL_CaloIsoVL_Ele8_CaloIdL_CaloIsoVL_v6")	HLTIndex_[192] = i;
   }
 
   // Gen & PAT MET (caloMET)
@@ -989,6 +1010,10 @@ fabs(ip->pdgId())<=14) || ip->pdgId()==22))) {
   const TriggerObjectMatch *eleTriggerMatch23(triggerEvent->triggerObjectMatchResult("electronTriggerMatchHLTEle17CaloIdLCaloIsoVLEle8CaloIdLCaloIsoVLv3"));
   const TriggerObjectMatch *eleTriggerMatch24(triggerEvent->triggerObjectMatchResult("electronTriggerMatchHLTEle17CaloIdLCaloIsoVLEle8CaloIdLCaloIsoVLv4"));
   const TriggerObjectMatch *eleTriggerMatch25(triggerEvent->triggerObjectMatchResult("electronTriggerMatchHLTEle17CaloIdLCaloIsoVLEle8CaloIdLCaloIsoVLv5"));
+  const TriggerObjectMatch *eleTriggerMatch26(triggerEvent->triggerObjectMatchResult("electronTriggerMatchHLTEle32CaloIdVTCaloIsoTTrkIdTTrkIsoTv5"));
+  const TriggerObjectMatch *eleTriggerMatch27(triggerEvent->triggerObjectMatchResult("electronTriggerMatchHLTEle27WP80PFMT50v1"));
+  const TriggerObjectMatch *eleTriggerMatch28(triggerEvent->triggerObjectMatchResult("electronTriggerMatchHLTEle32WP70PFMT50v1"));
+  const TriggerObjectMatch *eleTriggerMatch29(triggerEvent->triggerObjectMatchResult("electronTriggerMatchHLTEle17CaloIdLCaloIsoVLEle8CaloIdLCaloIsoVLv6"));
 
   int nElePassCut = 0;
   nEle_ = 0;
@@ -1025,6 +1050,10 @@ fabs(ip->pdgId())<=14) || ip->pdgId()==22))) {
       const TriggerObjectRef eleTrigRef23( matchHelper.triggerMatchObject( eleBaseRef, eleTriggerMatch23, e, *triggerEvent ) );
       const TriggerObjectRef eleTrigRef24( matchHelper.triggerMatchObject( eleBaseRef, eleTriggerMatch24, e, *triggerEvent ) );
       const TriggerObjectRef eleTrigRef25( matchHelper.triggerMatchObject( eleBaseRef, eleTriggerMatch25, e, *triggerEvent ) );
+      const TriggerObjectRef eleTrigRef26( matchHelper.triggerMatchObject( eleBaseRef, eleTriggerMatch26, e, *triggerEvent ) );
+      const TriggerObjectRef eleTrigRef27( matchHelper.triggerMatchObject( eleBaseRef, eleTriggerMatch27, e, *triggerEvent ) );
+      const TriggerObjectRef eleTrigRef28( matchHelper.triggerMatchObject( eleBaseRef, eleTriggerMatch28, e, *triggerEvent ) );
+      const TriggerObjectRef eleTrigRef29( matchHelper.triggerMatchObject( eleBaseRef, eleTriggerMatch29, e, *triggerEvent ) );
       eleTrg_[nEle_][0]  = (eleTrigRef1.isAvailable())  ? 1 : -99;
       eleTrg_[nEle_][1]  = (eleTrigRef2.isAvailable())  ? 1 : -99;
       eleTrg_[nEle_][2]  = (eleTrigRef3.isAvailable())  ? 1 : -99;
@@ -1050,6 +1079,10 @@ fabs(ip->pdgId())<=14) || ip->pdgId()==22))) {
       eleTrg_[nEle_][22]  = (eleTrigRef23.isAvailable()) ? 1 : -99;
       eleTrg_[nEle_][23]  = (eleTrigRef24.isAvailable()) ? 1 : -99;
       eleTrg_[nEle_][24]  = (eleTrigRef25.isAvailable()) ? 1 : -99;
+      eleTrg_[nEle_][25]  = (eleTrigRef26.isAvailable()) ? 1 : -99;
+      eleTrg_[nEle_][26]  = (eleTrigRef27.isAvailable()) ? 1 : -99;
+      eleTrg_[nEle_][27]  = (eleTrigRef28.isAvailable()) ? 1 : -99;
+      eleTrg_[nEle_][28]  = (eleTrigRef29.isAvailable()) ? 1 : -99;
 
       //        new eID with correct isolations and conversion rejection
       //	https://twiki.cern.ch/twiki/bin/viewauth/CMS/SimpleCutBasedEleID
@@ -1459,7 +1492,6 @@ fabs(ip->pdgId())<=14) || ip->pdgId()==22))) {
   const TriggerObjectMatch * muTriggerMatch4( triggerEvent->triggerObjectMatchResult( "muonTriggerMatchHLTMu13v1" ) );
   const TriggerObjectMatch * muTriggerMatch5( triggerEvent->triggerObjectMatchResult( "muonTriggerMatchHLTMu15" ) );
   const TriggerObjectMatch * muTriggerMatch6( triggerEvent->triggerObjectMatchResult( "muonTriggerMatchHLTMu15v1" ) );
-
   const TriggerObjectMatch * muTriggerMatch7( triggerEvent->triggerObjectMatchResult( "muonTriggerMatchHLTMu24v1" ) );
   const TriggerObjectMatch * muTriggerMatch8( triggerEvent->triggerObjectMatchResult( "muonTriggerMatchHLTMu24v2" ) );
   const TriggerObjectMatch * muTriggerMatch9( triggerEvent->triggerObjectMatchResult( "muonTriggerMatchHLTMu24v3" ) );
@@ -1486,6 +1518,14 @@ fabs(ip->pdgId())<=14) || ip->pdgId()==22))) {
   const TriggerObjectMatch * muTriggerMatch30( triggerEvent->triggerObjectMatchResult( "muonTriggerMatchHLTDoubleMu7v2" ) );
   const TriggerObjectMatch * muTriggerMatch31( triggerEvent->triggerObjectMatchResult( "muonTriggerMatchHLTDoubleMu7v3" ) );
   const TriggerObjectMatch * muTriggerMatch32( triggerEvent->triggerObjectMatchResult( "muonTriggerMatchHLTMu13Mu8v2" ) );
+  const TriggerObjectMatch * muTriggerMatch33( triggerEvent->triggerObjectMatchResult( "muonTriggerMatchHLTMu24v5" ) );
+  const TriggerObjectMatch * muTriggerMatch34( triggerEvent->triggerObjectMatchResult( "muonTriggerMatchHLTMu30v5" ) );
+  const TriggerObjectMatch * muTriggerMatch35( triggerEvent->triggerObjectMatchResult( "muonTriggerMatchHLTIsoMu17v11" ) );
+  const TriggerObjectMatch * muTriggerMatch36( triggerEvent->triggerObjectMatchResult( "muonTriggerMatchHLTIsoMu24v7" ) );
+  const TriggerObjectMatch * muTriggerMatch37( triggerEvent->triggerObjectMatchResult( "muonTriggerMatchHLTIsoMu30v7" ) );
+  const TriggerObjectMatch * muTriggerMatch38( triggerEvent->triggerObjectMatchResult( "muonTriggerMatchHLTMu13Mu8v4" ) );
+  const TriggerObjectMatch * muTriggerMatch39( triggerEvent->triggerObjectMatchResult( "muonTriggerMatchHLTMu17Mu8v2" ) );
+  const TriggerObjectMatch * muTriggerMatch40( triggerEvent->triggerObjectMatchResult( "muonTriggerMatchHLTMu17Mu8v4" ) );
 
   // Muon
   int nMuPassCut = 0;
@@ -1531,6 +1571,14 @@ fabs(ip->pdgId())<=14) || ip->pdgId()==22))) {
       const TriggerObjectRef muTrigRef30( matchHelper.triggerMatchObject( muBaseRef, muTriggerMatch30, e, *triggerEvent ) );
       const TriggerObjectRef muTrigRef31( matchHelper.triggerMatchObject( muBaseRef, muTriggerMatch31, e, *triggerEvent ) );
       const TriggerObjectRef muTrigRef32( matchHelper.triggerMatchObject( muBaseRef, muTriggerMatch32, e, *triggerEvent ) );
+      const TriggerObjectRef muTrigRef33( matchHelper.triggerMatchObject( muBaseRef, muTriggerMatch33, e, *triggerEvent ) );
+      const TriggerObjectRef muTrigRef34( matchHelper.triggerMatchObject( muBaseRef, muTriggerMatch34, e, *triggerEvent ) );
+      const TriggerObjectRef muTrigRef35( matchHelper.triggerMatchObject( muBaseRef, muTriggerMatch35, e, *triggerEvent ) );
+      const TriggerObjectRef muTrigRef36( matchHelper.triggerMatchObject( muBaseRef, muTriggerMatch36, e, *triggerEvent ) );
+      const TriggerObjectRef muTrigRef37( matchHelper.triggerMatchObject( muBaseRef, muTriggerMatch37, e, *triggerEvent ) );
+      const TriggerObjectRef muTrigRef38( matchHelper.triggerMatchObject( muBaseRef, muTriggerMatch38, e, *triggerEvent ) );
+      const TriggerObjectRef muTrigRef39( matchHelper.triggerMatchObject( muBaseRef, muTriggerMatch39, e, *triggerEvent ) );
+      const TriggerObjectRef muTrigRef40( matchHelper.triggerMatchObject( muBaseRef, muTriggerMatch40, e, *triggerEvent ) );
       muTrg_[nMu_][0] = (muTrigRef1.isAvailable()) ? 1 : -99;
       muTrg_[nMu_][1] = (muTrigRef2.isAvailable()) ? 1 : -99;
       muTrg_[nMu_][2] = (muTrigRef3.isAvailable()) ? 1 : -99;
@@ -1563,6 +1611,14 @@ fabs(ip->pdgId())<=14) || ip->pdgId()==22))) {
       muTrg_[nMu_][29] = (muTrigRef30.isAvailable()) ? 1 : -99;
       muTrg_[nMu_][30] = (muTrigRef31.isAvailable()) ? 1 : -99;
       muTrg_[nMu_][31] = (muTrigRef32.isAvailable()) ? 1 : -99;
+      muTrg_[nMu_][32] = (muTrigRef33.isAvailable()) ? 1 : -99;
+      muTrg_[nMu_][33] = (muTrigRef34.isAvailable()) ? 1 : -99;
+      muTrg_[nMu_][34] = (muTrigRef35.isAvailable()) ? 1 : -99;
+      muTrg_[nMu_][35] = (muTrigRef36.isAvailable()) ? 1 : -99;
+      muTrg_[nMu_][36] = (muTrigRef37.isAvailable()) ? 1 : -99;
+      muTrg_[nMu_][37] = (muTrigRef38.isAvailable()) ? 1 : -99;
+      muTrg_[nMu_][38] = (muTrigRef39.isAvailable()) ? 1 : -99;
+      muTrg_[nMu_][39] = (muTrigRef40.isAvailable()) ? 1 : -99;
 
       //       if (!iMu->isGlobalMuon()) continue;
       //       if (!iMu->isTrackerMuon()) continue;
@@ -1964,6 +2020,15 @@ fabs(ip->pdgId())<=14) || ip->pdgId()==22))) {
   const TriggerObjectMatch *jetTriggerMatch47(triggerEvent->triggerObjectMatchResult("jetTriggerMatchHLTJet370v2"));
   const TriggerObjectMatch *jetTriggerMatch48(triggerEvent->triggerObjectMatchResult("jetTriggerMatchHLTJet370v3"));
   const TriggerObjectMatch *jetTriggerMatch49(triggerEvent->triggerObjectMatchResult("jetTriggerMatchHLTJet370v4"));
+  const TriggerObjectMatch *jetTriggerMatch50(triggerEvent->triggerObjectMatchResult("jetTriggerMatchHLTJet30v6"));
+  const TriggerObjectMatch *jetTriggerMatch51(triggerEvent->triggerObjectMatchResult("jetTriggerMatchHLTJet60v6"));
+  const TriggerObjectMatch *jetTriggerMatch52(triggerEvent->triggerObjectMatchResult("jetTriggerMatchHLTJet80v6"));
+  const TriggerObjectMatch *jetTriggerMatch53(triggerEvent->triggerObjectMatchResult("jetTriggerMatchHLTJet110v6"));
+  const TriggerObjectMatch *jetTriggerMatch54(triggerEvent->triggerObjectMatchResult("jetTriggerMatchHLTJet150v6"));
+  const TriggerObjectMatch *jetTriggerMatch55(triggerEvent->triggerObjectMatchResult("jetTriggerMatchHLTJet190v6"));
+  const TriggerObjectMatch *jetTriggerMatch56(triggerEvent->triggerObjectMatchResult("jetTriggerMatchHLTJet240v6"));
+  const TriggerObjectMatch *jetTriggerMatch57(triggerEvent->triggerObjectMatchResult("jetTriggerMatchHLTJet300v5"));
+  const TriggerObjectMatch *jetTriggerMatch58(triggerEvent->triggerObjectMatchResult("jetTriggerMatchHLTJet370v6"));
 
   if (doStoreJets_) {
     nJet_ = 0;
@@ -2023,6 +2088,15 @@ fabs(ip->pdgId())<=14) || ip->pdgId()==22))) {
         const TriggerObjectRef jetTrigRef47( matchHelper.triggerMatchObject( jetBaseRef, jetTriggerMatch47, e, *triggerEvent ) );
         const TriggerObjectRef jetTrigRef48( matchHelper.triggerMatchObject( jetBaseRef, jetTriggerMatch48, e, *triggerEvent ) );
         const TriggerObjectRef jetTrigRef49( matchHelper.triggerMatchObject( jetBaseRef, jetTriggerMatch49, e, *triggerEvent ) );
+        const TriggerObjectRef jetTrigRef50( matchHelper.triggerMatchObject( jetBaseRef, jetTriggerMatch50, e, *triggerEvent ) );
+        const TriggerObjectRef jetTrigRef51( matchHelper.triggerMatchObject( jetBaseRef, jetTriggerMatch51, e, *triggerEvent ) );
+        const TriggerObjectRef jetTrigRef52( matchHelper.triggerMatchObject( jetBaseRef, jetTriggerMatch52, e, *triggerEvent ) );
+        const TriggerObjectRef jetTrigRef53( matchHelper.triggerMatchObject( jetBaseRef, jetTriggerMatch53, e, *triggerEvent ) );
+        const TriggerObjectRef jetTrigRef54( matchHelper.triggerMatchObject( jetBaseRef, jetTriggerMatch54, e, *triggerEvent ) );
+        const TriggerObjectRef jetTrigRef55( matchHelper.triggerMatchObject( jetBaseRef, jetTriggerMatch55, e, *triggerEvent ) );
+        const TriggerObjectRef jetTrigRef56( matchHelper.triggerMatchObject( jetBaseRef, jetTriggerMatch56, e, *triggerEvent ) );
+        const TriggerObjectRef jetTrigRef57( matchHelper.triggerMatchObject( jetBaseRef, jetTriggerMatch57, e, *triggerEvent ) );
+        const TriggerObjectRef jetTrigRef58( matchHelper.triggerMatchObject( jetBaseRef, jetTriggerMatch58, e, *triggerEvent ) );
 
 	jetTrg_[nJet_][0] = (jetTrigRef1.isAvailable()) ? 1 : -99;
 	jetTrg_[nJet_][1] = (jetTrigRef2.isAvailable()) ? 1 : -99;
@@ -2073,6 +2147,15 @@ fabs(ip->pdgId())<=14) || ip->pdgId()==22))) {
         jetTrg_[nJet_][46] = (jetTrigRef47.isAvailable()) ? 1 : -99;
         jetTrg_[nJet_][47] = (jetTrigRef48.isAvailable()) ? 1 : -99;
         jetTrg_[nJet_][48] = (jetTrigRef49.isAvailable()) ? 1 : -99;
+        jetTrg_[nJet_][49] = (jetTrigRef50.isAvailable()) ? 1 : -99;
+        jetTrg_[nJet_][50] = (jetTrigRef51.isAvailable()) ? 1 : -99;
+        jetTrg_[nJet_][51] = (jetTrigRef52.isAvailable()) ? 1 : -99;
+        jetTrg_[nJet_][52] = (jetTrigRef53.isAvailable()) ? 1 : -99;
+        jetTrg_[nJet_][53] = (jetTrigRef54.isAvailable()) ? 1 : -99;
+        jetTrg_[nJet_][54] = (jetTrigRef55.isAvailable()) ? 1 : -99;
+        jetTrg_[nJet_][55] = (jetTrigRef56.isAvailable()) ? 1 : -99;
+        jetTrg_[nJet_][56] = (jetTrigRef57.isAvailable()) ? 1 : -99;
+        jetTrg_[nJet_][57] = (jetTrigRef58.isAvailable()) ? 1 : -99;
 
 	jetEn_[nJet_]     = iJet->energy();
 	jetPt_[nJet_]     = iJet->pt();
