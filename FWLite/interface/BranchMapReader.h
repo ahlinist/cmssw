@@ -44,7 +44,7 @@ namespace fwlite {
       virtual bool updateRun(Long_t runEntry) = 0;
       virtual bool updateMap() = 0;
       virtual edm::BranchID productToBranchID(const edm::ProductID& pid) = 0;
-      virtual const edm::BranchDescription productToBranch(const edm::ProductID& pid) = 0;
+      virtual const edm::BranchDescription& productToBranch(const edm::ProductID& pid) = 0;
       virtual const std::vector<edm::BranchDescription>& getBranchDescriptions() = 0;
 
       TFile* currentFile_;
@@ -73,7 +73,7 @@ namespace fwlite {
     bool updateEvent(Long_t eventEntry);
     bool updateLuminosityBlock(Long_t luminosityBlockEntry);
     bool updateRun(Long_t runEntry);
-    const edm::BranchDescription productToBranch(const edm::ProductID& pid);
+    const edm::BranchDescription& productToBranch(const edm::ProductID& pid);
     int getFileVersion(TFile* file);
     int getFileVersion() const { return  fileVersion_;}
 
