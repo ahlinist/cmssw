@@ -19,9 +19,8 @@ pfCandidateCollection = "particleFlow" # pile-up removal disabled
 #pfCandidateCollection = "pfNoPileUp"   # pile-up removal enabled
 
 samplesToAnalyze = [
-    'data_SingleMu_Run2011A_May10ReReco_v1ex',
-    'data_TauPlusX_Run2011A_May10ReReco_v1',
-    'data_TauPlusX_Run2011A_PromptReco_v4',
+    'data_SingleMu_Run2011A_May10ReReco_v1',
+    'data_SingleMu_Run2011A_PromptReco_v4',
     'Ztautau_pythia',
     'Zmumu_pythia',
     'PPmuXptGt20Mu15',

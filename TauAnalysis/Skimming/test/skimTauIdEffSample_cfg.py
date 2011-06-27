@@ -21,14 +21,9 @@ process.load("TauAnalysis.TauIdEfficiency.filterTauIdEffSample_cfi")
 from Configuration.EventContent.EventContent_cff import *
 
 #--------------------------------------------------------------------------------
-from PhysicsTools.PatAlgos.tools.cmsswVersionTools import pickRelValInputFiles
 process.source = cms.Source("PoolSource",
     fileNames = cms.untracked.vstring(
-    pickRelValInputFiles( cmsswVersion  = 'CMSSW_4_2_0_pre8'
-                        , relVal        = 'RelValTTbar'
-                        , globalTag     = 'START42_V7'
-                        , numberOfFiles = 1
-                        )
+        'file:/data2/friis/CMSSW_4_2_X/skims/06-27-MatthewsZTTEvents/crab_0_110627_082505/ZTTCands_merged_v1.root'
     )
 )
 
@@ -38,8 +33,8 @@ process.maxEvents = cms.untracked.PSet(
 
 ##isMC = True # use for MC
 isMC = False # use for Data
-HLTprocessName = "HLT" # use for 2011 Data
-#HLTprocessName = "REDIGI311X" # use for Spring'11 reprocessed MC
+#HLTprocessName = "HLT" # use for 2011 Data
+HLTprocessName = "HLT" # use for Summer'11 MC
 pfCandidateCollection = "particleFlow" # pile-up removal disabled
 ##pfCandidateCollection = "pfNoPileUp" # pile-up removal enabled
 #--------------------------------------------------------------------------------
@@ -220,7 +215,5 @@ process.schedule = cms.Schedule(
     process.o
 )
 
-# print-out all python configuration parameter information
-#print process.dumpPython()
-processDumpFile = open('SkimDump.py' , 'w')
+processDumpFile = open('skimTauIdEffSample.dump' , 'w')
 print >> processDumpFile, process.dumpPython()
