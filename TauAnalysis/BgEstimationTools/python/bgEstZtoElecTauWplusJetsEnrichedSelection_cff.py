@@ -330,7 +330,9 @@ analyzeEventsBgEstWplusJetsEnriched = cms.EDAnalyzer("GenericAnalyzer",
     filters = cms.VPSet(
         evtSelGenPhaseSpace,
         evtSelTrigger,
-        evtSelPrimaryEventVertex,
+        evtSelPrimaryEventVertexQuality,
+        evtSelPrimaryEventVertexPosition,        
+        evtSelPrimaryEventVertexHighestPtTrackSum,
 
 
         #start electron cuts
@@ -485,9 +487,17 @@ analyzeEventsBgEstWplusJetsEnriched = cms.EDAnalyzer("GenericAnalyzer",
             title = cms.string('Trigger')
         ),
         cms.PSet(
-            filter = cms.string('evtSelPrimaryEventVertex'),
-            title = cms.string('Vertex exists')
+            filter = cms.string('evtSelPrimaryEventVertexQuality'),
+            title = cms.string('Valid vertex with #dof >= 4')
         ),
+        cms.PSet(
+            filter = cms.string('evtSelPrimaryEventVertexPosition'),
+            title = cms.string('Vertex abs(z) < 24 & Rho < 2')
+        ),
+        cms.PSet(
+            filter = cms.string('evtSelPrimaryEventVertexHighestPtTrackSum'),
+            title = cms.string('Highest Pt Vertex')
+        ),        
         cms.PSet(
             filter = cms.string('electronIdCutBgEstWplusJetsEnrichedMin'),
             title = cms.string('Electron ID'),

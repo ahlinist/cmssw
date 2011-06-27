@@ -337,7 +337,9 @@ cfgElecTauPairZeeHypothesisVetoBgEstZtautauEnriched.src = cms.InputTag('selected
 evtSelConfiguratorBgEstZtautauEnriched = eventSelFlagProdConfigurator(
     [ cfgGenPhaseSpaceCut,
       cfgTriggerBgEst,
-      cfgPrimaryEventVertex,      
+      cfgPrimaryEventVertexQuality,
+      cfgPrimaryEventVertexPosition,      
+      cfgPrimaryEventVertexHighestPtTrackSum,
       cfgElectronIdCutBgEstZtautauEnriched,
       cfgElectronAntiCrackCutBgEstZtautauEnriched,
       cfgElectronEtaCutBgEstZtautauEnriched,
@@ -409,7 +411,9 @@ analyzeEventsBgEstZtautauEnriched = cms.EDAnalyzer("GenericAnalyzer",
     filters = cms.VPSet(
         evtSelGenPhaseSpace,
         evtSelTrigger,
-        evtSelPrimaryEventVertex,
+        evtSelPrimaryEventVertexQuality,
+        evtSelPrimaryEventVertexPosition,        
+        evtSelPrimaryEventVertexHighestPtTrackSum,
         #start electron cuts
         
         cms.PSet(
@@ -528,7 +532,7 @@ analyzeEventsBgEstZtautauEnriched = cms.EDAnalyzer("GenericAnalyzer",
          electronHistManagerForElecTauBgEstZtautauEnriched,
          tauHistManagerForElecTauBgEstZtautauEnriched,
          diTauCandidateNSVfitHistManagerForElecTauBgEstZtautauEnriched,
-#         vertexHistManagerForElecTauBgEstZtautauEnriched
+         vertexHistManagerForElecTauBgEstZtautauEnriched
     ),
 
     eventDumps = cms.VPSet(),
@@ -560,19 +564,21 @@ analyzeEventsBgEstZtautauEnriched = cms.EDAnalyzer("GenericAnalyzer",
             #saveRunLumiSectionEventNumbers = cms.vstring('passed_cumulative')
         ),
         cms.PSet(
-            analyzers = cms.vstring('electronHistManagerForElecTauBgEstZtautauEnriched',
-                                    'tauHistManagerForElecTauBgEstZtautauEnriched',
-#                                    'vertexHistManagerForElecTauBgEstZtautauEnriched'
-                                    ),
-        ),        
+            filter = cms.string('evtSelPrimaryEventVertexQuality'),
+            title = cms.string('Valid vertex with #dof >= 4')
+        ),
         cms.PSet(
-            filter = cms.string('evtSelPrimaryEventVertex'),
-            title = cms.string('Vertex exists')
+            filter = cms.string('evtSelPrimaryEventVertexPosition'),
+            title = cms.string('Vertex abs(z) < 24 & Rho < 2')
+        ),
+        cms.PSet(
+            filter = cms.string('evtSelPrimaryEventVertexHighestPtTrackSum'),
+            title = cms.string('Highest Pt Vertex')
         ),
         cms.PSet(
             analyzers = cms.vstring('electronHistManagerForElecTauBgEstZtautauEnriched',
                                     'tauHistManagerForElecTauBgEstZtautauEnriched',
-#                                    'vertexHistManagerForElecTauBgEstZtautauEnriched'
+                                    'vertexHistManagerForElecTauBgEstZtautauEnriched'
                                     ),
         ),         
         cms.PSet(
@@ -621,7 +627,6 @@ analyzeEventsBgEstZtautauEnriched = cms.EDAnalyzer("GenericAnalyzer",
                                     ),
             replace = cms.vstring('electronHistManagerForElecTauBgEstZtautauEnriched.electronSource = electronsBgEstZtautauEnrichedIsoCumulative')
         ),   
-        
         cms.PSet(
             filter = cms.string('electronConversionVetoBgEstZtautauEnriched'),
             title = cms.string('Electron Track conversion veto'),
@@ -632,7 +637,6 @@ analyzeEventsBgEstZtautauEnriched = cms.EDAnalyzer("GenericAnalyzer",
                                     ),
             replace = cms.vstring('electronHistManagerForElecTauBgEstZtautauEnriched.electronSource = electronsBgEstZtautauEnrichedConversionVetoCumulative')
         ), 
-        
         cms.PSet(
             filter = cms.string('electronTrkIPcutBgEstZtautauEnriched'),
             title = cms.string('Electron Track IP'),
@@ -696,7 +700,6 @@ analyzeEventsBgEstZtautauEnriched = cms.EDAnalyzer("GenericAnalyzer",
                                   'diTauCandidateNSVfitHistManagerForElecTauBgEstZtautauEnriched.diTauCandidateSource = elecTauPairsBgEstZtautauEnrichedAntiOverlapVetoCumulative'                                  
                                   )
         ), 
-        
         cms.PSet(
             filter = cms.string('diTauCandidateMt1METCutBgEstZtautauEnriched'),
             title = cms.string('M_{T}(Electron-MET) < 40 GeV'),
@@ -709,7 +712,6 @@ analyzeEventsBgEstZtautauEnriched = cms.EDAnalyzer("GenericAnalyzer",
                                     
                                     ),
         ),   
-        
         cms.PSet(
             filter = cms.string('diTauCandidatePzetaDiffCutBgEstZtautauEnriched'),
             title = cms.string('Pzeta-1.5*Pzeta(vis) > -20 GeV (off)'),
@@ -721,7 +723,6 @@ analyzeEventsBgEstZtautauEnriched = cms.EDAnalyzer("GenericAnalyzer",
                                     'diTauCandidateNSVfitHistManagerForElecTauBgEstZtautauEnriched'                                    
                                     ),
         ), 
-        
         cms.PSet(
             filter = cms.string('diTauCandidateZeroChargeCutBgEstZtautauEnriched'),
             title = cms.string('Charge(Electron+Tau) = 0'),
@@ -731,7 +732,7 @@ analyzeEventsBgEstZtautauEnriched = cms.EDAnalyzer("GenericAnalyzer",
                                     'tauHistManagerForElecTauBgEstZtautauEnriched',
                                     'diTauCandidateHistManagerForElecTauBgEstZtautauEnriched',
                                     'diTauCandidateNSVfitHistManagerForElecTauBgEstZtautauEnriched',
-#                                    'vertexHistManagerForElecTauBgEstZtautauEnriched',
+                                    'vertexHistManagerForElecTauBgEstZtautauEnriched',
                                     ),
         ),  
         cms.PSet(
@@ -744,7 +745,7 @@ analyzeEventsBgEstZtautauEnriched = cms.EDAnalyzer("GenericAnalyzer",
                                     'tauHistManagerForElecTauBgEstZtautauEnriched',
                                     'diTauCandidateHistManagerForElecTauBgEstZtautauEnriched',
                                     'diTauCandidateNSVfitHistManagerForElecTauBgEstZtautauEnriched',
-#                                    'vertexHistManagerForElecTauBgEstZtautauEnriched'
+                                    'vertexHistManagerForElecTauBgEstZtautauEnriched'
                                     ),
             #replace = cms.vstring('diTauCandidateHistManagerForElecTauBgEstZtautauEnriched.visMassHypothesisSource = allDiElecPairBgEstZtautauEnrichedZeeHypothesesByLooseIsolation')            
 
