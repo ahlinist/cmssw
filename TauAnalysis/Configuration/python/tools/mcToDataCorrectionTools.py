@@ -479,9 +479,13 @@ def applyZrecoilCorrection_runZtoElecTau_bgEstTemplate(process):
                               "ZllRecoilCorrectionElecTauPair",
                               [ "analyzeZtoElecTauSequence" ])
     _applyZllRecoilCorrection(process,
-                              "produceElecTauPairsBgEstZeeJetMisIdEnriched", 'elecTauPairsBgEstZeeJetMisIdEnriched',
+                              "produceElecTauPairsBgEstZtautauEnriched", 'elecTauPairsBgEstZtautauEnriched',
                               "ZllRecoilCorrectionElecTauPair",
-                              [ "analysisSequenceBgEstZeeJetMisIdEnriched" ])
+                              [ "analysisSequenceBgEstZtautauEnriched" ])    
+##     _applyZllRecoilCorrection(process,
+##                               "produceElecTauPairsBgEstZeeJetMisIdEnriched", 'elecTauPairsBgEstZeeJetMisIdEnriched',
+##                               "ZllRecoilCorrectionElecTauPair",
+##                               [ "analysisSequenceBgEstZeeJetMisIdEnriched" ])
     _applyZllRecoilCorrection(process,
                               "produceElecTauPairsBgEstZeeElectronMisIdEnriched", 'elecTauPairsBgEstZeeElectronMisIdEnriched',
                               "ZllRecoilCorrectionElecTauPair",
@@ -494,10 +498,10 @@ def applyZrecoilCorrection_runZtoElecTau_bgEstTemplate(process):
                               "produceElecTauPairsBgEstWplusJetsEnriched", 'elecTauPairsBgEstWplusJetsEnriched',
                               "ZllRecoilCorrectionElecTauPair",
                               [ "analysisSequenceBgEstWplusJetsEnriched" ])
-    _applyZllRecoilCorrection(process,
-                              "produceElecTauPairsBgEstPhotonPlusJetsEnriched", 'elecTauPairsBgEstPhotonPlusJetsEnriched',
-                              "ZllRecoilCorrectionElecTauPair",
-                              [ "analysisSequenceBgEstPhotonPlusJetsEnriched" ])
+##     _applyZllRecoilCorrection(process,
+##                               "produceElecTauPairsBgEstPhotonPlusJetsEnriched", 'elecTauPairsBgEstPhotonPlusJetsEnriched',
+##                               "ZllRecoilCorrectionElecTauPair",
+##                               [ "analysisSequenceBgEstPhotonPlusJetsEnriched" ])
 
 
 
@@ -536,10 +540,11 @@ def _addEventWeightZtoElecTau(process, srcEventWeight, applyAfterFilterName = "*
 def _addEventWeightZtoElecTau_bgEstTemplate(process, srcEventWeight, applyAfterFilterName = "*"):
 
     _addEventWeight(process,
-                    [ "analyzeEventsBgEstQCDenriched",
-                      "analyzeEventsBgEstPhotonPlusJetsEnriched",
+                    [ "analyzeEventsBgEstZtautauEnriched",
+                      "analyzeEventsBgEstQCDenriched",
+#                      "analyzeEventsBgEstPhotonPlusJetsEnriched",
                       "analyzeEventsBgEstWplusJetsEnriched",
-                      "analyzeEventsBgEstZeeJetMisIdEnriched",
+#                      "analyzeEventsBgEstZeeJetMisIdEnriched",
                       "analyzeEventsBgEstZeeElectronMisIdEnriched" ],
                     srcEventWeight, applyAfterFilterName)
 
@@ -572,17 +577,20 @@ def applyElectronIsolationEfficiencyCorrection_runZtoElecTau_bgEstTemplate(proce
     applyElectronIsolationEfficiencyCorrection_runZtoElecTau(process)
 
     _addEventWeight(process,
+                    [ "analyzeEventsBgEstZtautauEnriched" ],
+	            "electronIsolationEfficiencyCorrection", applyAfterFilterName = "electronIsoCutBgEstZtautauEnriched")
+    _addEventWeight(process,
 	            [ "analyzeEventsBgEstQCDenriched" ],
 	            "electronIsolationEfficiencyCorrection", applyAfterFilterName = "electronIsoCutBgEstQCDenriched")
-    _addEventWeight(process,
-                    [ "analyzeEventsBgEstPhotonPlusJetsEnriched" ],
-	            "electronIsolationEfficiencyCorrection", applyAfterFilterName = "electronIsoCutBgEstPhotonPlusJetsEnriched")
+##     _addEventWeight(process,
+##                     [ "analyzeEventsBgEstPhotonPlusJetsEnriched" ],
+## 	            "electronIsolationEfficiencyCorrection", applyAfterFilterName = "electronIsoCutBgEstPhotonPlusJetsEnriched")
     _addEventWeight(process,
                     [ "analyzeEventsBgEstWplusJetsEnriched" ],
 	            "electronIsolationEfficiencyCorrection", applyAfterFilterName = "electronIsoCutBgEstWplusJetsEnriched")
-    _addEventWeight(process,
-	            [ "analyzeEventsBgEstZeeJetMisIdEnriched" ],
-	            "electronIsolationEfficiencyCorrection", applyAfterFilterName = "electronIsoCutBgEstZeeJetMisIdEnriched")
+##     _addEventWeight(process,
+## 	            [ "analyzeEventsBgEstZeeJetMisIdEnriched" ],
+## 	            "electronIsolationEfficiencyCorrection", applyAfterFilterName = "electronIsoCutBgEstZeeJetMisIdEnriched")
     _addEventWeight(process,
 	            [ "analyzeEventsBgEstZeeElectronMisIdEnriched" ],
 	            "electronIsolationEfficiencyCorrection", applyAfterFilterName = "electronIsoCutBgEstZeeElectronMisIdEnriched")
