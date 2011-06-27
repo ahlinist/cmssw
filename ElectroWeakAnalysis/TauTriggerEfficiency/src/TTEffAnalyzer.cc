@@ -13,7 +13,7 @@
 //
 // Original Author:  Chi Nhan Nguyen
 //         Created:  Wed Oct  1 13:04:54 CEST 2008
-// $Id: TTEffAnalyzer.cc,v 1.60 2011/06/27 10:37:11 slehti Exp $
+// $Id: TTEffAnalyzer.cc,v 1.61 2011/06/27 11:26:29 slehti Exp $
 //
 //
 
@@ -538,20 +538,26 @@ TTEffAnalyzer::endJob() {
 void TTEffAnalyzer::endLuminosityBlock(const edm::LuminosityBlock & lumi, const edm::EventSetup & setup) {
    	// Counters
 	edm::Handle<edm::MergeableCounter> count;
-std::cout << "check lumiSection " << lumi.id() << endl;
-	stringstream lb;
-	lb << lumi.id();
 
-	h_counters = new TH1F("Counters",lb.str().c_str(),Counters_.size(),0,Counters_.size());
+//	stringstream lb;
+//	lb << lumi.id();
+
+	if( _TTEffFile->FindObjectAny("Counters") ){
+	  h_counters = (TH1F*)_TTEffFile->Get("Counters");
+	}else
+//	h_counters = new TH1F("Counters",lb.str().c_str(),Counters_.size(),0,Counters_.size());
+	h_counters = new TH1F("Counters","",Counters_.size(),0,Counters_.size());
 
 	std::cout << "Counters " << std::endl;
 	for(size_t i = 0; i < Counters_.size(); ++i){
 		lumi.getByLabel(Counters_[i], count);
 		std::cout << "    " << Counters_[i].label() << " " << count->value << std::endl;
-		h_counters->SetBinContent(i+1,count->value);
+		int value = count->value;
+		if(h_counters->GetEntries()) value += h_counters->GetBinContent(i+1);
+		h_counters->SetBinContent(i+1,value);
 		h_counters->GetXaxis()->SetBinLabel(i+1,(Counters_[i].label()).c_str());
 	}
-	h_counters->Write();
+	h_counters->Write("",TObject::kOverwrite);
 }
 
 //define this as a plug-in
