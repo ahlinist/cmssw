@@ -1,6 +1,6 @@
 //=====================================================================
 //                                                                    
-//      roostats_twobin.C                                     
+//      twobins.C                                     
 //                                                                    
 // Set up the model, compute limits and generate pseudoexperiments    
 // for a combination of two 'counting experiments'                    
@@ -54,7 +54,9 @@
 // na, nb       - observables
 // Na, Nb       - observed values
 // xsec         - POI
-// lumi, eff_a, eff_b, tau, bg_a, xsec_b             - nuisance parameters
+// bg_b         - data-driven nuisance parameter
+// xsec_bg_a    - constant (could be a nuisance parameter if uncertainty is not negligible)
+// lumi, eff_a, eff_b, tau                           - nuisance parameters
 // nom_lumi, nom_eff_a, nom_eff_b, nom_tau, nom_bg_a - best estimated values from auxillary measurements
 // d_lumi, d_eff_a, d_eff_b, d_tau, d_bg_a           - relative uncertainties from auxillary measurements
 //
@@ -63,7 +65,8 @@
 // mu_b = sig_b + bg_b            // 1 + 10
 // sig_a = lumi*xsec*eff_a        // 100*0.2*0.2
 // sig_b = lumi*xsec*eff_b        // 100*0.2*0.05
-// bg_b  = lumi*xsec_b            // 100*0.1
+// bg_a  = lumi*xsec_bg_a         // 100*0.05
+// bg_b                           // 10
 //
 // P(Na|mu_a)*P(Nb|mu_b)*PRODUCT[L(nom_X|X,d_X)]
 // 
@@ -100,8 +103,8 @@ using namespace RooStats;
 
 // declarations
 void TwoBinInstructional( void );
-void setConstants(RooWorkspace * w, RooStats::ModelConfig * mc);
-void setConstant(const RooArgSet * vars, Bool_t value );
+void SetConstants(RooWorkspace * w, RooStats::ModelConfig * mc);
+void SetConstant(const RooArgSet * vars, Bool_t value );
 
 // implementation
 void TwoBinInstructional( void ){
@@ -114,127 +117,146 @@ void TwoBinInstructional( void ){
   RooRandom::randomGenerator()->SetSeed(4357);
 
   // make model
-  RooWorkspace* ws = new RooWorkspace("ws");
-  ws->factory("Poisson::pdf_a(na[14,0,100],sum::mu_a(prod::sig_a(lumi[100,0,1000],xsec[0.2,0,2],eff_a[0.2,0,1]),bg_a[5,0,100],prod::tau_bg_b(tau[0,1],prod::bg_b(lumi,xsec_b[0.1,0,2]))))");
-  ws->factory("Poisson::pdf_b(nb[11,0,100],sum::mu_b(prod::sig_b(lumi,xsec,eff_b[0.05,0,1]), bg_b))");
-  ws->factory("Lognormal::l_lumi(lumi,nom_lumi[100,0,1000],sum::kappa_lumi(1,d_lumi[0.1]))");
-  ws->factory("Lognormal::l_eff_a(eff_a,nom_eff_a[0.20,0,1],sum::kappa_eff_a(1,d_eff_a[0.05]))");
-  ws->factory("Lognormal::l_eff_b(eff_b,nom_eff_b[0.05,0,1],sum::kappa_eff_b(1,d_eff_b[0.05]))");
-  ws->factory("Lognormal::l_tau(tau,nom_tau[0.50,0,1],sum::kappa_tau(1,d_tau[0.05]))");
-  ws->factory("Lognormal::l_bg_a(bg_a,nom_bg_a[5,0,100],sum::kappa_bg_a(1,d_bg_a[0.10]))");
-  ws->factory("PROD::model(pdf_a,pdf_b,l_lumi,l_eff_a,l_eff_b,l_tau,l_bg_a)");
+  RooWorkspace * pWs = new RooWorkspace("ws");
+
+  // derived from data
+  pWs->factory("xsec[0.2,0,2]"); // POI
+  pWs->factory("bg_b[10,0,50]");    // data driven nuisance
+
+  // predefined nuisances
+  pWs->factory("lumi[100,0,1000]");
+  pWs->factory("eff_a[0.2,0,1]");
+  pWs->factory("eff_b[0.05,0,1]");
+  pWs->factory("tau[0,1]");
+  pWs->factory("xsec_bg_a[0.05]"); // constant
+  pWs->var("xsec_bg_a")->setConstant(1);
+
+  // channel a (signal): lumi*xsec*eff_a + lumi*bg_a + tau*bg_b
+  pWs->factory("prod::sig_a(lumi,xsec,eff_a)");
+  pWs->factory("prod::bg_a(lumi,xsec_bg_a)");
+  pWs->factory("prod::tau_bg_b(tau, bg_b)");
+  pWs->factory("Poisson::pdf_a(na[14,0,100],sum::mu_a(sig_a,bg_a,tau_bg_b))");
+
+  // channel b (control): lumi*xsec*eff_b + bg_b
+  pWs->factory("prod::sig_b(lumi,xsec,eff_b)");
+  pWs->factory("Poisson::pdf_b(nb[11,0,100],sum::mu_b(sig_b,bg_b))");
+
+  // nuisance constraint terms (systematics)
+  pWs->factory("Lognormal::l_lumi(lumi,nom_lumi[100,0,1000],sum::kappa_lumi(1,d_lumi[0.1]))");
+  pWs->factory("Lognormal::l_eff_a(eff_a,nom_eff_a[0.20,0,1],sum::kappa_eff_a(1,d_eff_a[0.05]))");
+  pWs->factory("Lognormal::l_eff_b(eff_b,nom_eff_b[0.05,0,1],sum::kappa_eff_b(1,d_eff_b[0.05]))");
+  pWs->factory("Lognormal::l_tau(tau,nom_tau[0.50,0,1],sum::kappa_tau(1,d_tau[0.05]))");
+  //pWs->factory("Lognormal::l_bg_a(bg_a,nom_bg_a[0.05,0,1],sum::kappa_bg_a(1,d_bg_a[0.10]))");
+
+  // complete model PDF
+  pWs->factory("PROD::model(pdf_a,pdf_b,l_lumi,l_eff_a,l_eff_b,l_tau)");
+
+  // Now create sets of variables. Note that we could use the factory to
+  // create sets but in that case many of the sets would be duplicated
+  // when the ModelConfig objects are imported into the workspace. So,
+  // we create the sets outside the workspace, and only the needed ones
+  // will be automatically imported by ModelConfigs
 
   // observables
-  RooArgSet obs(*ws->var("na"), *ws->var("nb"), "obs");
+  RooArgSet obs(*pWs->var("na"), *pWs->var("nb"), "obs");
 
   // global observables
-  RooArgSet global_obs(*ws->var("nom_lumi"), *ws->var("nom_eff_a"), *ws->var("nom_eff_b"), 
-		       *ws->var("nom_tau"), *ws->var("nom_bg_a"),
-		       "global_obs");
+  RooArgSet globalObs(*pWs->var("nom_lumi"), *pWs->var("nom_eff_a"), *pWs->var("nom_eff_b"), 
+		      *pWs->var("nom_tau"),
+		      "global_obs");
 
   // parameters of interest
-  RooArgSet poi(*ws->var("xsec"), "poi");
+  RooArgSet poi(*pWs->var("xsec"), "poi");
 
   // nuisance parameters
-  RooArgSet nuis(*ws->var("lumi"), *ws->var("eff_a"), *ws->var("eff_b"), 
-		 *ws->var("tau"), *ws->var("bg_a"), *ws->var("xsec_b"),
-		 "nuis");
-  
-  // prior (for Bayesian calculation)
-  ws->factory("Uniform::prior(xsec)");
-  //ws->factory("PROD::prior(Uniform::prior_xsec(xsec),Uniform::prior_xsec_b(xsec_b))");
+  RooArgSet nuis(*pWs->var("lumi"), *pWs->var("eff_a"), *pWs->var("eff_b"), *pWs->var("tau"), "nuis");
+
+  // priors (for Bayesian calculation)
+  pWs->factory("Uniform::prior_xsec(xsec)"); // for parameter of interest
+  pWs->factory("Uniform::prior_bg_b(bg_b)"); // for data driven nuisance parameter
+  pWs->factory("PROD::prior(prior_xsec,prior_bg_b)"); // total prior
 
   // create data
-  ws->var("na")->setVal(14);
-  ws->var("nb")->setVal(11);
-  RooDataSet * data = new RooDataSet("data","",obs);
-  data->add(obs);
-  ws->import(*data);
-  //data->Print();
+  pWs->var("na")->setVal(14);
+  pWs->var("nb")->setVal(11);
+  RooDataSet * pData = new RooDataSet("data","",obs);
+  pData->add(obs);
+  pWs->import(*pData);
+  //pData->Print();
 
-  // alternative model config (signal+background)
-  ModelConfig* mcAlt = new ModelConfig("AltModel");
-  mcAlt->SetWorkspace(*ws);
-  mcAlt->SetPdf(*ws->pdf("model"));
-  mcAlt->SetPriorPdf(*ws->pdf("prior"));
-  mcAlt->SetParametersOfInterest(poi);
-  mcAlt->SetNuisanceParameters(nuis);
-  mcAlt->SetObservables(obs);
-  mcAlt->SetGlobalObservables(global_obs);
+  // signal+background model
+  ModelConfig * pSbModel = new ModelConfig("SbModel");
+  pSbModel->SetWorkspace(*pWs);
+  pSbModel->SetPdf(*pWs->pdf("model"));
+  pSbModel->SetPriorPdf(*pWs->pdf("prior"));
+  pSbModel->SetParametersOfInterest(poi);
+  pSbModel->SetNuisanceParameters(nuis);
+  pSbModel->SetObservables(obs);
+  pSbModel->SetGlobalObservables(globalObs);
 
   // set all but obs, poi and nuisance to const
-  setConstants(ws, mcAlt);
-  ws->import(*mcAlt);
+  SetConstants(pWs, pSbModel);
+  pWs->import(*pSbModel);
 
-  // null model config (background only)
+
+  // background-only model
   // use the same PDF as s+b, with xsec=0
-  //
   // POI value under the background hypothesis
-  Double_t poiValueForNullModel = 0.0;
-  ModelConfig* mcNull = new ModelConfig("NullModel");
-  RooArgSet null_poi("null_poi");
-  RooArgSet null_nuis(*ws->var("lumi"), *ws->var("tau"), *ws->var("bg_a"), *ws->var("xsec_b"), "null_nuis");
-  RooArgSet null_global_obs(*ws->var("nom_lumi"), *ws->var("nom_tau"), *ws->var("nom_bg_a"), "null_global_obs");
-  mcNull->SetWorkspace(*ws);
-  mcNull->SetPdf(*ws->pdf("model"));
-  mcNull->SetParametersOfInterest(null_poi);
-  mcNull->SetNuisanceParameters(null_nuis);
-  mcNull->SetObservables(obs);
-  mcNull->SetGlobalObservables(null_global_obs);
-  ws->import(*mcNull);
+  Double_t poiValueForBModel = 0.0;
+  ModelConfig* pBModel = new ModelConfig(*(RooStats::ModelConfig *)pWs->obj("SbModel"));
+  pBModel->SetName("BModel");
+  pBModel->SetWorkspace(*pWs);
+  pWs->import(*pBModel);
 
-  // find parameter point for global maximum with the full model (AltModel),
+
+  // find global maximum with the signal+background model
   // with conditional MLEs for nuisance parameters
   // and save the parameter point snapshot in the Workspace
-  RooAbsReal * nll = mcAlt->GetPdf()->createNLL(*data);
-  RooAbsReal * profile = nll->createProfile(RooArgSet());
-  profile->getVal(); // this will do fit and set POI and nuisance parameters to fitted values
-  RooArgSet * poiAndNuisance = new RooArgSet();
-  if(mcAlt->GetNuisanceParameters())
-    poiAndNuisance->add(*mcAlt->GetNuisanceParameters());
-  poiAndNuisance->add(*mcAlt->GetParametersOfInterest());
-  ws->defineSet("AltModelParameters", *poiAndNuisance);
-  ws->saveSnapshot("altModelFitParameters",*poiAndNuisance);
-  RooArgSet * altModelFitParams = (RooArgSet *)poiAndNuisance->snapshot();
+  //  - safer to keep a default name because some RooStats calculators
+  //    will anticipate it
+  RooAbsReal * pNll = pSbModel->GetPdf()->createNLL(*pData);
+  RooAbsReal * pProfile = pNll->createProfile(RooArgSet());
+  pProfile->getVal(); // this will do fit and set POI and nuisance parameters to fitted values
+  RooArgSet * pPoiAndNuisance = new RooArgSet();
+  if(pSbModel->GetNuisanceParameters())
+    pPoiAndNuisance->add(*pSbModel->GetNuisanceParameters());
+  pPoiAndNuisance->add(*pSbModel->GetParametersOfInterest());
   cout << "\nWill save these parameter points that correspond to the fit to data" << endl;
-  altModelFitParams->Print("v");
-  delete profile;
-  delete nll;
-  delete poiAndNuisance;
-  delete altModelFitParams;
+  pPoiAndNuisance->Print("v");
+  pSbModel->SetSnapshot(*pPoiAndNuisance);
+  delete pProfile;
+  delete pNll;
+  delete pPoiAndNuisance;
 
   // Find a parameter point for generating pseudo-data
   // with the background-only data.
   // Save the parameter point snapshot in the Workspace
-  nll = mcNull->GetPdf()->createNLL(*data);
-  profile = nll->createProfile(poi);
-  ((RooRealVar *)poi.first())->setVal(poiValueForNullModel);
-  profile->getVal(); // this will do fit and set nuisance parameters to profiled values
-  poiAndNuisance = new RooArgSet();
-  if(mcNull->GetNuisanceParameters())
-    poiAndNuisance->add(*mcNull->GetNuisanceParameters());
-  poiAndNuisance->add(*mcNull->GetParametersOfInterest());
-  ws->defineSet("parameterPointToGenerateData", *poiAndNuisance);
-  ws->saveSnapshot("parametersToGenerateData",*poiAndNuisance);
-  RooArgSet * paramsToGenerateData = (RooArgSet *)poiAndNuisance->snapshot();
+  pNll = pBModel->GetPdf()->createNLL(*pData);
+  pProfile = pNll->createProfile(poi);
+  ((RooRealVar *)poi.first())->setVal(poiValueForBModel);
+  pProfile->getVal(); // this will do fit and set nuisance parameters to profiled values
+  pPoiAndNuisance = new RooArgSet();
+  if(pBModel->GetNuisanceParameters())
+    pPoiAndNuisance->add(*pBModel->GetNuisanceParameters());
+  pPoiAndNuisance->add(*pBModel->GetParametersOfInterest());
   cout << "\nShould use these parameter points to generate pseudo data for bkg only" << endl;
-  paramsToGenerateData->Print("v");
-  delete profile;
-  delete nll;
-  delete poiAndNuisance;
-  delete paramsToGenerateData;
+  pPoiAndNuisance->Print("v");
+  pBModel->SetSnapshot(*pPoiAndNuisance);
+  delete pProfile;
+  delete pNll;
+  delete pPoiAndNuisance;
 
   // inspect workspace
-  ws->Print();
+  pWs->Print();
 
   // save workspace to file
-  ws->writeToFile("ws_twobin.root");
+  pWs->writeToFile("ws_twobin.root");
 
   // clean up
-  delete ws;
-  delete data;
-  delete mcAlt;
-  delete mcNull;
+  delete pWs;
+  delete pData;
+  delete pSbModel;
+  delete pBModel;
 
 } // ----- end of tutorial ----------------------------------------
 
@@ -242,7 +264,7 @@ void TwoBinInstructional( void ){
 
 // helper functions
 
-void setConstants(RooWorkspace * w, RooStats::ModelConfig * mc){
+void SetConstants(RooWorkspace * pWs, RooStats::ModelConfig * pMc){
   //
   // Fix all variables in the PDF except observables, POI and
   // nuisance parameters. Note that global observables are fixed.
@@ -250,52 +272,52 @@ void setConstants(RooWorkspace * w, RooStats::ModelConfig * mc){
   // to float separately.
   //
 
-  mc->SetWorkspace(*w);
+  pMc->SetWorkspace(*pWs);
 
-  RooAbsPdf * _pdf = mc->GetPdf(); // we do not own this
+  RooAbsPdf * pPdf = pMc->GetPdf(); // we do not own this
 
-  RooArgSet * _vars = _pdf->getVariables(); // we do own this
+  RooArgSet * pVars = pPdf->getVariables(); // we do own this
 
-  RooArgSet * _floated = new RooArgSet(*mc->GetObservables());
-  _floated->add(*mc->GetParametersOfInterest());
-  _floated->add(*mc->GetNuisanceParameters());
+  RooArgSet * pFloated = new RooArgSet(*pMc->GetObservables());
+  pFloated->add(*pMc->GetParametersOfInterest());
+  pFloated->add(*pMc->GetNuisanceParameters());
 
-  TIterator * iter = _vars->createIterator(); // we do own this
+  TIterator * pIter = pVars->createIterator(); // we do own this
 
-  for(TObject * _obj = iter->Next(); _obj; _obj = iter->Next() ){
-    std::string _name = _obj->GetName();
-    RooRealVar * _floated_obj = (RooRealVar *)_floated->find(_name.c_str());
-    if (_floated_obj){
-      ((RooRealVar *)_obj)->setConstant(kFALSE);
+  for(TObject * pObj = pIter->Next(); pObj; pObj = pIter->Next() ){
+    std::string _name = pObj->GetName();
+    RooRealVar * pFloatedObj = (RooRealVar *)pFloated->find(_name.c_str());
+    if (pFloatedObj){
+      ((RooRealVar *)pObj)->setConstant(kFALSE);
     }
     else{
-      ((RooRealVar *)_obj)->setConstant(kTRUE);
+      ((RooRealVar *)pObj)->setConstant(kTRUE);
     }
-    //_obj->Print();
+    //pObj->Print();
   }
 
-  delete iter;
-  delete _vars;
-  delete _floated;
+  delete pIter;
+  delete pVars;
+  delete pFloated;
 
   return;
 }
 
 
 
-void setConstant(const RooArgSet * vars, Bool_t value ){
+void SetConstant(const RooArgSet * vars, Bool_t value ){
   //
   // Set the constant attribute for all vars in the set
   //
 
-  TIterator * iter = vars->createIterator(); // we do own this
+  TIterator * pIter = vars->createIterator(); // we do own this
 
-  for(TObject * _obj = iter->Next(); _obj; _obj = iter->Next() ){
-    ((RooRealVar *)_obj)->setConstant(value);
-    //_obj->Print();
+  for(TObject * pObj = pIter->Next(); pObj; pObj = pIter->Next() ){
+    ((RooRealVar *)pObj)->setConstant(value);
+    //pObj->Print();
   }
 
-  delete iter;
+  delete pIter;
 
   return;
 }
