@@ -7,7 +7,7 @@ import TauAnalysis.DQMTools.plotterStyleDefinitions_cfi as styles
 # List of samples to run in the analysis
 SAMPLES_TO_ANALYZE = [
         'data_TauPlusX_Run2011A_May10ReReco_T3',
-        'data_TauPlusX_Run2011A_May10ReReco',
+        #'data_TauPlusX_Run2011A_May10ReReco',
         'data_TauPlusX_Run2011A_PR_v4',
         'Ztautau_powheg_T3',
         'DYtautauM10to20_powheg_T3',
@@ -189,9 +189,9 @@ RECO_SAMPLES = {
     },
     'data_TauPlusX_Run2011A_PR_v4' : {  # 702/pb  165071-166861
         'datasetpath' : '/TauPlusX/Run2011A-PromptReco-v4/AOD', 
-        'lumi_mask' : '/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification//Collisions11/7TeV/Prompt/Cert_160404-166861_7TeV_PromptReco_Collisions11_JSON.txt',
+        'lumi_mask' : '/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification//Collisions11/7TeV/Prompt/Cert_160404-167151_7TeV_PromptReco_Collisions11_JSON.txt',
         'conditions' : 'GR_P_V20::All',
-        'number_of_jobs' : 300,
+        'number_of_jobs' : 400,
         'type' : 'Data',
         'drawOption' : styles.drawOption_Data,
         'enableSysUncertainties' : False,
@@ -241,6 +241,24 @@ RECO_SAMPLES = {
             'HLT_Ele15_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_LooseIsoPFTau15_v2'     : '161217:MIN-163261:MAX',
             'HLT_Ele15_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_LooseIsoPFTau15_v4'     : '163269:MIN-163869:MAX'
             }
+    },
+    'data_TauPlusX_Run2011A_PR_v4_T3' : {  # 703/pb  165071-167283
+        'datasetpath' : '/TauPlusX/jkolb-skimElecTau_423_v1-48310d22b2ce244ac277cf431005fadd/USER', 
+        'lumi_mask' : '/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification//Collisions11/7TeV/Prompt/Cert_160404-167151_7TeV_PromptReco_Collisions11_JSON.txt',
+        'conditions' : 'GR_P_V20::All',
+        'skim_eff' : '4817397./11868838.',
+        'number_of_jobs' : 100,
+        'type' : 'Data',
+        'drawOption' : styles.drawOption_Data,
+        'enableSysUncertainties' : False,
+	    'applyVertexMultiplicityReweighting' : False,
+        'applyElectronTriggerEfficiencyCorrection' : False,
+        'applyElectronIsolationEfficiencyCorrection' : False,
+        'applyZrecoilCorrection' : False,
+        'hlt_paths' : {
+            'HLT_Ele15_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_LooseIsoPFTau20_v6'     : '165071:MIN-165633:MAX',
+            'HLT_Ele15_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_LooseIsoPFTau20_v8'     : '165970:MIN-900000:MAX'
+        }
     },
     'DYtautauM10to20_powheg' : {
         'datasetpath' : "/DYToTauTau_M-10To20_CT10_TuneZ2_7TeV-powheg-pythia-tauola/Spring11-PU_S1_START311_V1G1-v2/AODSIM",
