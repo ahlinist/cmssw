@@ -1,13 +1,14 @@
 //=====================================================================
 //                                                                    
-//      twobins.C                                     
+//      roostats_twobin.C                                     
+//
+//      version 1.0-rc1
 //                                                                    
-// Set up the model, compute limits and generate pseudoexperiments    
-// for a combination of two 'counting experiments'                    
-// in a signal and a background-dominated control regions,            
-// with systematic uncertainties                                      
+// Set up the model for a combination of two coupled 
+// 'counting experiments' in a signal and a background-dominated 
+// control regions, with systematic uncertainties                                      
 //                                                                    
-// Gena Kukartsev                                       
+// Authors: Gena Kukartsev, Fedor Ratnikov
 //                                                                    
 // May 2011                                                           
 //                                                                    
