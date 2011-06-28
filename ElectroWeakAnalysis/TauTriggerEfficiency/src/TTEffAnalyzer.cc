@@ -13,7 +13,7 @@
 //
 // Original Author:  Chi Nhan Nguyen
 //         Created:  Wed Oct  1 13:04:54 CEST 2008
-// $Id: TTEffAnalyzer.cc,v 1.61 2011/06/27 11:26:29 slehti Exp $
+// $Id: TTEffAnalyzer.cc,v 1.62 2011/06/27 13:03:23 slehti Exp $
 //
 //
 
@@ -152,6 +152,9 @@ TTEffAnalyzer::TTEffAnalyzer(const edm::ParameterSet& iConfig):
   _MuonAnalyzer = new MuonAnalyzer();
   _METanalyzer->Setup(iConfig,_TTEffTree);
   _MuonAnalyzer->Setup(iConfig,_TTEffTree);
+
+  h_counters = new TH1F("Counters","",Counters_.size(),0,Counters_.size());
+  h_counters->SetDirectory(_TTEffFile);
 }
 
 TTEffAnalyzer::~TTEffAnalyzer()
@@ -539,15 +542,6 @@ void TTEffAnalyzer::endLuminosityBlock(const edm::LuminosityBlock & lumi, const 
    	// Counters
 	edm::Handle<edm::MergeableCounter> count;
 
-//	stringstream lb;
-//	lb << lumi.id();
-
-	if( _TTEffFile->FindObjectAny("Counters") ){
-	  h_counters = (TH1F*)_TTEffFile->Get("Counters");
-	}else
-//	h_counters = new TH1F("Counters",lb.str().c_str(),Counters_.size(),0,Counters_.size());
-	h_counters = new TH1F("Counters","",Counters_.size(),0,Counters_.size());
-
 	std::cout << "Counters " << std::endl;
 	for(size_t i = 0; i < Counters_.size(); ++i){
 		lumi.getByLabel(Counters_[i], count);
@@ -557,7 +551,6 @@ void TTEffAnalyzer::endLuminosityBlock(const edm::LuminosityBlock & lumi, const 
 		h_counters->SetBinContent(i+1,value);
 		h_counters->GetXaxis()->SetBinLabel(i+1,(Counters_[i].label()).c_str());
 	}
-	h_counters->Write("",TObject::kOverwrite);
 }
 
 //define this as a plug-in
