@@ -499,11 +499,11 @@ AHtoElecTauSpecific_RECO_SAMPLES = {
         'hlt' : cms.InputTag("TriggerResults", "", "REDIGI311X")
     },
     'A180_T3' : {
-        'datasetpath' : "",
+        'datasetpath' : "/SUSYGluGluToHToTauTau_M-180_7TeV-pythia6-tauola/jkolb-skimElecTau_413_v1-0e9fbfe284acc4ebc772cd46085d7046/USER",
         'dbs_url' : "https://cmsdbsprod.cern.ch:8443/cms_dbs_ph_analysis_01_writer/servlet/DBSServlet",
         'events_processed' : 110000,
         'number_of_jobs' : 25,
-        'skim_eff' : 1.0,
+        'skim_eff' : 23551./110000.,
         'x_sec' : (
                5907.*_femtobarns*0.133061 # (gg -> A0)*(A0->tautau)
            +   6388.*_femtobarns*0.133826 # (gg -> H0)*(H0->tautau)
@@ -530,10 +530,10 @@ AHtoElecTauSpecific_RECO_SAMPLES = {
         'hlt' : cms.InputTag("TriggerResults", "", "REDIGI311X")
     },
     'bbA180_T3' : {
-        'datasetpath' : "",
+        'datasetpath' : "/SUSYBBHToTauTau_M-180_7TeV-pythia6-tauola/jkolb-skimElecTau_413_v1-0e9fbfe284acc4ebc772cd46085d7046/USER",
         'dbs_url' : "https://cmsdbsprod.cern.ch:8443/cms_dbs_ph_analysis_01_writer/servlet/DBSServlet",
         'events_processed' : 110000,
-        'number_of_jobs' : 25,
+        'number_of_jobs' : 24564./110000.,
         'skim_eff' : 1.0,
         'x_sec' : (
               32261.*_femtobarns*0.133061 # (bb -> A0)*(A0->tautau)
@@ -561,11 +561,11 @@ AHtoElecTauSpecific_RECO_SAMPLES = {
         'hlt' : cms.InputTag("TriggerResults", "", "REDIGI311X")
     },
     'A200_T3' : {
-        'datasetpath' : "",
+        'datasetpath' : "/SUSYGluGluToHToTauTau_M-200_7TeV-pythia6-tauola/jkolb-skimElecTau_413_v1-0e9fbfe284acc4ebc772cd46085d7046/USER",
         'dbs_url' : "https://cmsdbsprod.cern.ch:8443/cms_dbs_ph_analysis_01_writer/servlet/DBSServlet",
         'events_processed' : 110000,
         'number_of_jobs' : 25,
-        'skim_eff' : 1.0,
+        'skim_eff' : 25142./110000.,
         'x_sec' : (
                3318.*_femtobarns*0.134295 # (gg -> A0)*(A0->tautau)
            +   3665.*_femtobarns*0.135591 # (gg -> H0)*(H0->tautau)
@@ -592,11 +592,11 @@ AHtoElecTauSpecific_RECO_SAMPLES = {
         'hlt' : cms.InputTag("TriggerResults", "", "REDIGI311X")
     },
     'bbA200_T3' : {
-        'datasetpath' : "",
+        'datasetpath' : "/SUSYBBHToTauTau_M-200_7TeV-pythia6-tauola/jkolb-skimElecTau_413_v1-0e9fbfe284acc4ebc772cd46085d7046/USER",
         'dbs_url' : "https://cmsdbsprod.cern.ch:8443/cms_dbs_ph_analysis_01_writer/servlet/DBSServlet",
         'events_processed' : 110000,
         'number_of_jobs' : 25,
-        'skim_eff' : 1.0,
+        'skim_eff' : 25738./110000.,
         'x_sec' : (
               21202.*_femtobarns*0.134295 # (bb -> A0)*(A0->tautau)
            +  21128.*_femtobarns*0.135591 # (bb -> H0)*(H0->tautau)
@@ -623,11 +623,11 @@ AHtoElecTauSpecific_RECO_SAMPLES = {
         'hlt' : cms.InputTag("TriggerResults", "", "REDIGI311X")
     },
     'A250_T3' : {
-        'datasetpath' : "",
+        'datasetpath' : "/SUSYGluGluToHToTauTau_M-250_7TeV-pythia6-tauola/jkolb-skimElecTau_413_v1-0e9fbfe284acc4ebc772cd46085d7046/USER",
         'dbs_url' : "https://cmsdbsprod.cern.ch:8443/cms_dbs_ph_analysis_01_writer/servlet/DBSServlet",
         'events_processed' : 110000,
         'number_of_jobs' : 25,
-        'skim_eff' : 1.0,
+        'skim_eff' : 27315./110000.,
         'x_sec' : (
                 923.*_femtobarns*0.135441 # (gg -> A0)*(A0->tautau)
            +   1101.*_femtobarns*0.139024 # (gg -> H0)*(H0->tautau)
@@ -654,11 +654,11 @@ AHtoElecTauSpecific_RECO_SAMPLES = {
         'hlt' : cms.InputTag("TriggerResults", "", "REDIGI311X")
     },
     'bbA250_T3' : {
-        'datasetpath' : "",
+        'datasetpath' : "/SUSYBBHToTauTau_M-250_7TeV-pythia6-tauola/jkolb-skimElecTau_413_v1-0e9fbfe284acc4ebc772cd46085d7046/USER",
         'dbs_url' : "https://cmsdbsprod.cern.ch:8443/cms_dbs_ph_analysis_01_writer/servlet/DBSServlet",
         'events_processed' : 110000,
         'number_of_jobs' : 25,
-        'skim_eff' : 1.0,
+        'skim_eff' : 28504./110000.,
         'x_sec' : (
                8432.*_femtobarns*0.135441 # (bb -> A0)*(A0->tautau)
            +   8414.*_femtobarns*0.139024 # (bb -> H0)*(H0->tautau)
@@ -685,11 +685,11 @@ AHtoElecTauSpecific_RECO_SAMPLES = {
         'hlt' : cms.InputTag("TriggerResults", "", "REDIGI311X")
     },
     'A300_T3' : {
-        'datasetpath' : "",
+        'datasetpath' : "/SUSYGluGluToHToTauTau_M-300_7TeV-pythia6-tauola/jkolb-skimElecTau_413_v1-0e9fbfe284acc4ebc772cd46085d7046/USER",
         'dbs_url' : "https://cmsdbsprod.cern.ch:8443/cms_dbs_ph_analysis_01_writer/servlet/DBSServlet",
         'events_processed' : 110000,
         'number_of_jobs' : 25,
-        'skim_eff' : 1.0,
+        'skim_eff' : 29593./110000.,
         'x_sec' : (
                 286.*_femtobarns*0.131076 # (gg -> A0)*(A0->tautau)
            +    387.*_femtobarns*0.139620 # (gg -> H0)*(H0->tautau)
@@ -716,11 +716,11 @@ AHtoElecTauSpecific_RECO_SAMPLES = {
         'hlt' : cms.InputTag("TriggerResults", "", "REDIGI311X")
     },
     'bbA300_T3' : {
-        'datasetpath' : "",
+        'datasetpath' : "/SUSYBBHToTauTau_M-300_7TeV-pythia6-tauola/jkolb-skimElecTau_413_v1-0e9fbfe284acc4ebc772cd46085d7046/USER",
         'dbs_url' : "https://cmsdbsprod.cern.ch:8443/cms_dbs_ph_analysis_01_writer/servlet/DBSServlet",
         'events_processed' : 110000,
         'number_of_jobs' : 25,
-        'skim_eff' : 1.0,
+        'skim_eff' : 30340./110000.,
         'x_sec' : (
                3752.*_femtobarns*0.131076 # (bb -> A0)*(A0->tautau)
            +   3736.*_femtobarns*0.139620 # (bb -> H0)*(H0->tautau)
@@ -747,11 +747,11 @@ AHtoElecTauSpecific_RECO_SAMPLES = {
         'hlt' : cms.InputTag("TriggerResults", "", "REDIGI311X")
     },
     'A350_T3' : {
-        'datasetpath' : "",
+        'datasetpath' : "/SUSYGluGluToHToTauTau_M-350_7TeV-pythia6-tauola/jkolb-skimElecTau_413_v1-0e9fbfe284acc4ebc772cd46085d7046/USER",
         'dbs_url' : "https://cmsdbsprod.cern.ch:8443/cms_dbs_ph_analysis_01_writer/servlet/DBSServlet",
         'events_processed' : 110000,
         'number_of_jobs' : 25,
-        'skim_eff' : 1.0,
+        'skim_eff' : 30556./110000.,
         'x_sec' : (
                  84.*_femtobarns*0.117009 # (gg -> A0)*(A0->tautau)
            +    121.*_femtobarns*0.133089 # (gg -> H0)*(H0->tautau)
@@ -840,11 +840,11 @@ AHtoElecTauSpecific_RECO_SAMPLES = {
         'hlt' : cms.InputTag("TriggerResults", "", "REDIGI311X")
     },
     'bbA400_T3' : {
-        'datasetpath' : "",
+        'datasetpath' : "/SUSYBBHToTauTau_M-400_7TeV-pythia6-tauola/jkolb-skimElecTau_413_v1-0e9fbfe284acc4ebc772cd46085d7046/USER",
         'dbs_url' : "https://cmsdbsprod.cern.ch:8443/cms_dbs_ph_analysis_01_writer/servlet/DBSServlet",
         'events_processed' : 110000,
         'number_of_jobs' : 25,
-        'skim_eff' : 1.0,
+        'skim_eff' : 33594./110000.,
         'x_sec' : (               # CV: cross-section * branching-ratio taken directly from Bari .root file
                1.*_femtobarns*0.1 # (bb -> A0)*(A0->tautau)
            +   1.*_femtobarns*0.1 # (bb -> H0)*(H0->tautau)
@@ -871,11 +871,11 @@ AHtoElecTauSpecific_RECO_SAMPLES = {
         'hlt' : cms.InputTag("TriggerResults", "", "REDIGI311X")
     },
     'A450_T3' : {
-        'datasetpath' : "",
+        'datasetpath' : "/SUSYGluGluToHToTauTau_M-450_7TeV-pythia6-tauola/jkolb-skimElecTau_413_v1-0e9fbfe284acc4ebc772cd46085d7046/USER",
         'dbs_url' : "https://cmsdbsprod.cern.ch:8443/cms_dbs_ph_analysis_01_writer/servlet/DBSServlet",
         'events_processed' : 110000,
         'number_of_jobs' : 25,
-        'skim_eff' : 1.0,
+        'skim_eff' : 57602./110000.,
         'x_sec' : (                 # CV: cross-section * branching-ratio taken directly from Bari .root file
                  1.*_femtobarns*0.1 # (gg -> A0)*(A0->tautau)
            +     1.*_femtobarns*0.1 # (gg -> H0)*(H0->tautau)
@@ -902,11 +902,11 @@ AHtoElecTauSpecific_RECO_SAMPLES = {
         'hlt' : cms.InputTag("TriggerResults", "", "REDIGI311X")
     },
     'bbA450_T3' : {
-        'datasetpath' : "",
+        'datasetpath' : "/SUSYBBHToTauTau_M-450_7TeV-pythia6-tauola/jkolb-skimElecTau_413_v1-0e9fbfe284acc4ebc772cd46085d7046/USER",
         'dbs_url' : "https://cmsdbsprod.cern.ch:8443/cms_dbs_ph_analysis_01_writer/servlet/DBSServlet",
         'events_processed' : 217300,
         'number_of_jobs' : 25,
-        'skim_eff' : 1.0,
+        'skim_eff' : 68784./217300.,
         'x_sec' : (               # CV: cross-section * branching-ratio taken directly from Bari .root file
                1.*_femtobarns*0.1 # (bb -> A0)*(A0->tautau)
            +   1.*_femtobarns*0.1 # (bb -> H0)*(H0->tautau)
