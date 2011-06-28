@@ -400,7 +400,7 @@ void NSVfitAlgorithmByIntegration::setMassResults(
     resonance->massMedian_ = q[1];
     resonance->massMaximum_ = histMassResult1d->GetBinCenter(binMaximum);
     resonance->massMaxInterpol_ = massMaxInterpol;
-    resonance->isValidSolution_ = false;
+    resonance->isValidSolution_ = true;
     
     //std::cout << "<NSVfitAlgorithmByIntegration::setMassResults>:" << std::endl;
     //std::cout << "--> mass = " << resonance->mass_ << std::endl;
