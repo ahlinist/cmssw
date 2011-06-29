@@ -65,6 +65,12 @@ else:
 process.load('TauAnalysis.TauIdEfficiency.filterTauIdEffSample_cfi')
 
 process.hltMu.selector.src = cms.InputTag('TriggerResults::%s' % HLTprocessName)
+process.hltMu.selector.triggerPaths = cms.vstring(
+    'HLT_IsoMu12_v1',
+    'HLT_Mu15_v1', 'HLT_Mu15_v2',
+    'HLT_IsoMu17_v5', 'HLT_IsoMu17_v6', 'HLT_IsoMu17_v8', 'HLT_IsoMu17_v9', 'HLT_IsoMu17_v11',
+    'HLT_Mu24_v1', 'HLT_Mu24_v2'
+)
 
 if isMC:
     process.dataQualityFilters.remove(process.hltPhysicsDeclared)
@@ -150,11 +156,6 @@ process.allEventCounts = cms.EDAnalyzer("DQMEventCounter",
 )
 process.p += process.allEventCounts
 
-process.passedMuonCaloTauSkimPath = process.allEventCounts.clone(
-    meName = cms.string("numEventsPassedMuonCaloTauSkimPath")
-)
-process.muonCaloTauSkimPath += process.passedMuonCaloTauSkimPath
-
 process.passedMuonPFTauFixedConeSkimPath = process.allEventCounts.clone(
     meName = cms.string("numEventsPassedMuonPFTauFixedConeSkimPath")
 )
@@ -196,18 +197,33 @@ pathModifiers.PathRemover(process.p, ['sys', 'down'], True)
 
 #--------------------------------------------------------------------------------
 #
-# CV: do **not** apply HLT trigger conditions to CMSSW_4_1_x MC,
-#     weight simulated events by trigger efficiencies measured in Data instead
+# CV: do **not** apply HLT trigger conditions to CMSSW_4_1_x/CMSSW_4_2_x MC,
+#     to allow simulated events to be weighted by trigger efficiencies measured in Data instead
 #
 if isMC:
     process.commonSkimSequence.remove(process.hltMu)
+#--------------------------------------------------------------------------------  
+
+#--------------------------------------------------------------------------------
+#
+# CV: loosen Pt and eta cuts applied on tau-jet candidates
+#
+patPFTauSelectorsForTauIdEff = [
+    "selectedPatPFTausFixedConeForTauIdEff",
+    "selectedPatPFTausHPSForTauIdEff",
+    "selectedPatPFTausHPSpTaNCForTauIdEff",
+    "selectedPatPFTausShrinkingConeForTauIdEff"
+]
+for patPFTauSelectorForTauIdEff in patPFTauSelectorsForTauIdEff:
+    patPFTauSelectorModule = getattr(process, patPFTauSelectorForTauIdEff)
+    patPFTauSelectorModule.minJetPt = cms.double(15.0)
+    patPFTauSelectorModule.maxJetEta = cms.double(2.5)
 #--------------------------------------------------------------------------------  
  
 # define order in which different paths are run
 process.schedule = cms.Schedule(
     process.counterPath,
     process.p,
-    process.muonCaloTauSkimPath,
     process.muonPFTauFixedConeSkimPath,
     process.muonPFTauShrinkingConeSkimPath,
     process.muonPFTauHPSskimPath,
