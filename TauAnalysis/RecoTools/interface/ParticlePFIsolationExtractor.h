@@ -8,9 +8,9 @@
  * 
  * \author Christian Veelken, UC Davis
  *
- * \version $Revision: 1.11 $
+ * \version $Revision: 1.12 $
  *
- * $Id: ParticlePFIsolationExtractor.h,v 1.11 2011/05/07 09:02:42 veelken Exp $
+ * $Id: ParticlePFIsolationExtractor.h,v 1.12 2011/06/26 16:46:10 veelken Exp $
  *
  */
 
@@ -42,6 +42,7 @@ class ParticlePFIsolationExtractor
 {
  public:
   enum { kNone, kBeta, kDeltaBeta, kRho };
+  enum { kDirP4, kDirTrack };
   explicit ParticlePFIsolationExtractor(const edm::ParameterSet& cfg):
     pfChargedHadronIso_(0),
     addChargedHadronIso_(false),
@@ -52,7 +53,6 @@ class ParticlePFIsolationExtractor
     pfPhotonIso_(0),
     addPhotonIso_(false),
     pfPhotonIsoConeSize_(0.),
-    direction_(kDirP4),
     methodPUcorr_(kNone),
     trackExtractor_(0),
     pfNeutralHadronIsoPUcorr_(0),
@@ -77,14 +77,6 @@ class ParticlePFIsolationExtractor
       pfPhotonIso_ = new pfIsoConfigType(reco::PFCandidate::gamma, cfgPhotonIso);
       addPhotonIso_ = cfgPhotonIso.exists("add") ? cfgPhotonIso.getParameter<bool>("add") : true;
       pfPhotonIsoConeSize_ = cfgPhotonIso.getParameter<double>("dRisoCone");
-    }
-
-    if ( cfg.exists("direction") ) {
-      std::string direction_string = cfg.getParameter<std::string>("direction");
-      if      ( direction_string == "p4"    ) direction_ = kDirP4;
-      else if ( direction_string == "track" ) direction_ = kDirTrack;
-      else throw cms::Exception("ParticlePFIsolationExtractor")
-	<< "Invalid Configuration parameter direction = " << direction_string << "!!\n";
     }
 
     if ( cfg.exists("pileUpCorr") ) {
@@ -141,22 +133,32 @@ class ParticlePFIsolationExtractor
     delete pfPhotonIsoPUcorr_;
   }
 
-  double operator()(const T& lepton, const reco::PFCandidateCollection& pfCandidates,
+  
+  double operator()(const T& lepton, int direction,
+		    const reco::PFCandidateCollection& pfCandidates,
 		    const reco::VertexCollection* vertices = 0, const reco::BeamSpot* beamSpot = 0, double rhoFastJetCorrection = 0.)
   {
-    reco::Particle::Vector direction_vector;
-    if      ( direction_ == kDirP4    ) direction_vector = lepton.momentum();
-    else if ( direction_ == kDirTrack ) {
+    reco::Particle::Vector coneAxis;
+    if      ( direction == kDirP4    ) coneAxis = lepton.momentum();
+    else if ( direction == kDirTrack ) {
       const reco::Track* leadingTrack = 0;
       std::vector<const reco::Track*> signalTracks = (*trackExtractor_)(lepton);
       for ( std::vector<const reco::Track*>::const_iterator signalTrack = signalTracks.begin();
 	    signalTrack != signalTracks.end(); ++signalTrack ) {
 	if ( leadingTrack == 0 || (*signalTrack)->pt() > leadingTrack->pt() ) leadingTrack = (*signalTrack);
       }
-      if ( leadingTrack ) direction_vector = leadingTrack->momentum();
-      else                direction_vector = lepton.momentum();
-    } else assert(0);
+      if ( leadingTrack ) coneAxis = leadingTrack->momentum();
+      else                coneAxis = lepton.momentum();
+    } else throw cms::Exception("ParticlePFIsolationExtractor")
+	<< "Invalid function argument 'direction' = " << direction << " !!\n";
 
+    return this->operator()(lepton, coneAxis, pfCandidates, vertices, beamSpot, rhoFastJetCorrection);
+  }
+
+  double operator()(const T& lepton, const reco::Particle::Vector& coneAxis,
+		    const reco::PFCandidateCollection& pfCandidates,
+		    const reco::VertexCollection* vertices = 0, const reco::BeamSpot* beamSpot = 0, double rhoFastJetCorrection = 0.)
+  {
     std::vector<const reco::PFCandidate*> pfChargedHadrons, pfNeutralHadrons, pfPhotons;
     if ( addChargedHadronIso_   || 
 	 methodPUcorr_ != kNone ) pfChargedHadrons = getPFCandidatesOfType(pfCandidates, reco::PFCandidate::h);
@@ -166,9 +168,9 @@ class ParticlePFIsolationExtractor
     double sumPt = 0.;
     
     if ( methodPUcorr_ == kNone ) {
-      if ( addChargedHadronIso_ ) sumPt += pfChargedHadronIso_->compSumPt(pfChargedHadrons, direction_vector);
-      if ( addNeutralHadronIso_ ) sumPt += pfNeutralHadronIso_->compSumPt(pfNeutralHadrons, direction_vector);
-      if ( addPhotonIso_        ) sumPt += pfPhotonIso_->compSumPt(pfPhotons, direction_vector);
+      if ( addChargedHadronIso_ ) sumPt += pfChargedHadronIso_->compSumPt(pfChargedHadrons, coneAxis);
+      if ( addNeutralHadronIso_ ) sumPt += pfNeutralHadronIso_->compSumPt(pfNeutralHadrons, coneAxis);
+      if ( addPhotonIso_        ) sumPt += pfPhotonIso_->compSumPt(pfPhotons, coneAxis);
     } else {
       if ( vertices == 0 || beamSpot == 0 ) throw cms::Exception("ParticlePFIsolationExtractor")
 	<< "Pile-up correction Method = 'deltaBeta' requires Vertex collection and BeamSpot !!\n";
@@ -182,18 +184,18 @@ class ParticlePFIsolationExtractor
       //std::cout << " #pfPileUpChargedHadrons = " << pfPileUpChargedHadrons.size() << std::endl;
 
       if ( methodPUcorr_ == kBeta ) {
-	double pfNoPileUpChargedHadronIsoSumPt = pfChargedHadronIso_->compSumPt(pfNoPileUpChargedHadrons, direction_vector);
-	double pfPileUpChargedHadronIsoSumPt   = pfChargedHadronIso_->compSumPt(pfPileUpChargedHadrons, direction_vector);
+	double pfNoPileUpChargedHadronIsoSumPt = pfChargedHadronIso_->compSumPt(pfNoPileUpChargedHadrons, coneAxis);
+	double pfPileUpChargedHadronIsoSumPt   = pfChargedHadronIso_->compSumPt(pfPileUpChargedHadrons, coneAxis);
 	sumPt = pfNoPileUpChargedHadronIsoSumPt;
 	
 	double pfNeutralIsoCorrFactor = ( pfPileUpChargedHadronIsoSumPt > 0. ) ? 
 	  (pfNoPileUpChargedHadronIsoSumPt/(pfNoPileUpChargedHadronIsoSumPt + pfPileUpChargedHadronIsoSumPt)) : 1.0;
 	
-	if ( pfNeutralHadronIso_ ) sumPt += pfNeutralHadronIso_->compSumPt(pfNeutralHadrons, direction_vector)*pfNeutralIsoCorrFactor;
-	if ( pfPhotonIso_        ) sumPt += pfPhotonIso_->compSumPt(pfPhotons, direction_vector)*pfNeutralIsoCorrFactor;
+	if ( pfNeutralHadronIso_ ) sumPt += pfNeutralHadronIso_->compSumPt(pfNeutralHadrons, coneAxis)*pfNeutralIsoCorrFactor;
+	if ( pfPhotonIso_        ) sumPt += pfPhotonIso_->compSumPt(pfPhotons, coneAxis)*pfNeutralIsoCorrFactor;
       } else if ( methodPUcorr_ == kDeltaBeta ) {
-	double pfNoPileUpChargedHadronIsoSumPt = pfChargedHadronIso_->compSumPt(pfNoPileUpChargedHadrons, direction_vector);
-	//double pfPileUpChargedHadronIsoSumPt   = pfChargedHadronIso_->compSumPt(pfPileUpChargedHadrons, direction_vector);	
+	double pfNoPileUpChargedHadronIsoSumPt = pfChargedHadronIso_->compSumPt(pfNoPileUpChargedHadrons, coneAxis);
+	//double pfPileUpChargedHadronIsoSumPt   = pfChargedHadronIso_->compSumPt(pfPileUpChargedHadrons, coneAxis);	
 	sumPt = pfNoPileUpChargedHadronIsoSumPt;
 
 	//std::cout << "pfNoPileUpChargedHadrons = " << pfNoPileUpChargedHadronIsoSumPt << std::endl;
@@ -203,13 +205,13 @@ class ParticlePFIsolationExtractor
 	double sumPtNeutralIsoPUcorr = 0.;
 	
 	if ( pfNeutralHadronIso_ ) {
-	  sumPtNeutralIsoSumPt += pfNeutralHadronIso_->compSumPt(pfNeutralHadrons, direction_vector);
-	  sumPtNeutralIsoPUcorr += pfNeutralHadronIsoPUcorr_->compSumPt(pfPileUpChargedHadrons, direction_vector);
+	  sumPtNeutralIsoSumPt += pfNeutralHadronIso_->compSumPt(pfNeutralHadrons, coneAxis);
+	  sumPtNeutralIsoPUcorr += pfNeutralHadronIsoPUcorr_->compSumPt(pfPileUpChargedHadrons, coneAxis);
 	}
 	
 	if ( pfPhotonIso_ ) {
-	  sumPtNeutralIsoSumPt += pfPhotonIso_->compSumPt(pfPhotons, direction_vector);
-	  sumPtNeutralIsoPUcorr += pfPhotonIsoPUcorr_->compSumPt(pfPileUpChargedHadrons, direction_vector);
+	  sumPtNeutralIsoSumPt += pfPhotonIso_->compSumPt(pfPhotons, coneAxis);
+	  sumPtNeutralIsoPUcorr += pfPhotonIsoPUcorr_->compSumPt(pfPileUpChargedHadrons, coneAxis);
 	}
 	//std::cout << "sumPtNeutralIsoSumPt = " << sumPtNeutralIsoSumPt << std::endl;
 	//std::cout << "sumPtNeutralIsoPUcorr = " << sumPtNeutralIsoPUcorr << std::endl;
@@ -218,9 +220,9 @@ class ParticlePFIsolationExtractor
 	if ( rhoFastJetCorrection == -1. ) throw cms::Exception("ParticlePFIsolationExtractor")
 	  << "Pile-up correction Method = 'rho' requires rhoFastJetCorrection !!\n";
 
-	if ( addChargedHadronIso_ ) sumPt += pfChargedHadronIso_->compSumPt(pfChargedHadrons, direction_vector);
-	if ( addNeutralHadronIso_ ) sumPt += pfNeutralHadronIso_->compSumPt(pfNeutralHadrons, direction_vector);
-	if ( addPhotonIso_        ) sumPt += pfPhotonIso_->compSumPt(pfPhotons, direction_vector);
+	if ( addChargedHadronIso_ ) sumPt += pfChargedHadronIso_->compSumPt(pfChargedHadrons, coneAxis);
+	if ( addNeutralHadronIso_ ) sumPt += pfNeutralHadronIso_->compSumPt(pfNeutralHadrons, coneAxis);
+	if ( addPhotonIso_        ) sumPt += pfPhotonIso_->compSumPt(pfPhotons, coneAxis);
 	
 	//std::cout << "before rho FastJet correction: sumPt = " << sumPt << std::endl;
 
@@ -332,9 +334,6 @@ class ParticlePFIsolationExtractor
   pfIsoConfigType* pfPhotonIso_;
   bool addPhotonIso_;
   double pfPhotonIsoConeSize_;
-
-  enum { kDirP4, kDirTrack };
-  int direction_;
 
   int methodPUcorr_;
   double deltaZ_;
