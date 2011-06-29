@@ -16,16 +16,22 @@ void Yield(){
   TH2D *GenMuonYield_p;
   GenMuonYield_p = (TH2D*)gFile->Get("GenMuonYield_p");
    
-  TCanvas *c1 = new TCanvas("c1","c1",1200,600); 
+  TCanvas *c1 = new TCanvas("c1","c1",800,600);
+  RecoMuonYield_p->SetTitle("Reconstructed Arbitrated Tracker Muons from #Upsilon(1S)");
   RecoMuonYield_p->Draw("colz");
-    
-  TCanvas *c2 = new TCanvas("c2","c2",1200,600); 
-  RecoMuonYield_pt->Draw("colz");
+  c1->SaveAs("RecoMu_p.pdf");
   
-  TCanvas *c3 = new TCanvas("c3","c3",1200,600); 
+  TCanvas *c2 = new TCanvas("c2","c2",800,600); 
+  RecoMuonYield_pt->SetTitle("Reconstructed Arbitrated Tracker Muons from #Upsilon(1S)");
+  RecoMuonYield_pt->Draw("colz");
+  c2->SaveAs("RecoMu_pt.pdf");
+  
+  TCanvas *c3 = new TCanvas("c3","c3",800,600);
+  GenMuonYield_p->SetTitle("Generated Muons from #Upsilon(1S)");
   GenMuonYield_p->Draw("colz");
     
-  TCanvas *c4 = new TCanvas("c4","c4",1200,600); 
+  TCanvas *c4 = new TCanvas("c4","c4",800,600); 
+  GenMuonYield_pt->SetTitle("Generated Muons from #Upsilon(1S)");
   GenMuonYield_pt->Draw("colz");
    
   
@@ -44,10 +50,10 @@ void Eff(){
   TH2D *GenMuonYield_p;
   GenMuonYield_p = (TH2D*)gFile->Get("GenMuonYield_p");
   TH2D *Ratio_p = (TH2D*)GenMuonYield_p->Clone(); 
-  Ratio_p->SetName("Efficiency");
+  Ratio_p->SetTitle("Reconstruction Efficiency for Arbitrated Tracker Muons from #Upsilon(1S)");  
   Ratio_p->Reset();
   TH2D *Ratio_pt = (TH2D*)GenMuonYield_pt->Clone(); 
-  Ratio_pt->SetName("Efficiency");
+  Ratio_pt->SetTitle("Reconstruction Efficiency for Arbitrated Tracker Muons from #Upsilon(1S)");
   Ratio_pt->Reset();
     
   double bin_contentGen(0); double bin_contentReco(0); double bin_ratio(0.);
@@ -75,10 +81,11 @@ void Eff(){
     }
   }
 
-  TCanvas *c11 = new TCanvas("c11","c11",1200,600);
+  TCanvas *c11 = new TCanvas("c11","c11", 800,600);
   Ratio_p->Draw("colz");
-    
-  TCanvas *c12 = new TCanvas("c12","c12",1200,600); 
+  c11->SaveAs("Eff_p.pdf");
+  
+  TCanvas *c12 = new TCanvas("c12","c12", 800,600);
   Ratio_pt->Draw("colz");  
-    
+  c12->SaveAs("Eff_pt.pdf");  
 }
