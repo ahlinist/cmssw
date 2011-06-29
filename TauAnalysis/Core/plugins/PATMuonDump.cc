@@ -105,7 +105,8 @@ void PATMuonDump::print(const edm::Event& evt, const edm::EventSetup& es) const
     if ( pfIsolationExtractor_ ) {
       edm::Handle<reco::PFCandidateCollection> pfCandidates;
       evt.getByLabel(pfIsoCandSource_, pfCandidates);
-      *outputStream_ << " pfIso = " << (*pfIsolationExtractor_)(*patMuon, *pfCandidates, vertices, beamSpot) << std::endl;
+      *outputStream_ << " pfIso = " << (*pfIsolationExtractor_)(*patMuon, ParticlePFIsolationExtractor<pat::Muon>::kDirP4, 
+								*pfCandidates, vertices, beamSpot) << std::endl;
     }
     *outputStream_ << " vertex" << std::endl;
     printVertexInfo(patMuon->vertex(), outputStream_);
