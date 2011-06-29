@@ -13,7 +13,7 @@ Implementation:
 //
 // Authors:                              Seth Cooper (Minnesota)
 //         Created:  Tu Apr 26  10:46:22 CEST 2011
-// $Id: EcalCreateTimeCalibrations.cc,v 1.11 2011/05/20 13:20:03 scooper Exp $
+// $Id: EcalCreateTimeCalibrations.cc,v 1.12 2011/05/20 14:00:24 scooper Exp $
 //
 //
 
@@ -203,13 +203,21 @@ EcalCreateTimeCalibrations::analyze(edm::Event const& evt, edm::EventSetup const
           //cout << "DEBUG: " << hashedIndex << " cryTime: " << cryTime << " cryTimeError: " << cryTimeError << " cryAmp: " << cryAmp << endl;
           //FIXME
           cryTimeError = 1;
-          ebCryCalibs[hashedIndex]->insertEvent(cryAmp,cryTime,cryTimeError,false);
-          //SIC Use when we don't have time_error available
-          //ebCryCalibs[hashedIndex]->insertEvent(cryAmp,cryTime,35/(cryAmp/1.2),false);
-          ampProfileEB_->Fill(hashedIndex,cryAmp);
-          ampProfileMapEB_->Fill(iphi,ieta,cryAmp);
-          //if(cryTime > 33 || cryTime < -33)
-          //  cout << "Crystal: " << det << " event time is over/underflow: " << cryTime << endl;
+          EcalTimingEvent toInsert(cryAmp,cryTime,cryTimeError,false);
+          // duplicate checking
+          EcalCrystalTimingCalibration* cryCalib;
+          cryCalib = ebCryCalibs[hashedIndex];
+          std::vector<EcalTimingEvent> times = cryCalib->timingEvents;
+          if(find(times.begin(),times.end(),toInsert)==times.end())
+          {
+            ebCryCalibs[hashedIndex]->insertEvent(toInsert);
+            //SIC Use when we don't have time_error available
+            //ebCryCalibs[hashedIndex]->insertEvent(cryAmp,cryTime,35/(cryAmp/1.2),false);
+            ampProfileEB_->Fill(hashedIndex,cryAmp);
+            ampProfileMapEB_->Fill(iphi,ieta,cryAmp);
+            //if(cryTime > 33 || cryTime < -33)
+            //  cout << "Crystal: " << det << " event time is over/underflow: " << cryTime << endl;
+          }
         }
         else
         {
@@ -230,19 +238,27 @@ EcalCreateTimeCalibrations::analyze(edm::Event const& evt, edm::EventSetup const
           //std::cout << "STUPID DEBUG: EE CRY " << hashedIndex << " cryTime: " << cryTime << " cryTimeError: " << cryTimeError << " cryAmp: " << cryAmp << std::endl;
           //FIXME
           cryTimeError = 1;
-          eeCryCalibs[hashedIndex]->insertEvent(cryAmp,cryTime,cryTimeError,false);
+          EcalTimingEvent toInsert(cryAmp,cryTime,cryTimeError,false);
+          // duplicate checking
+          EcalCrystalTimingCalibration* cryCalib;
+          cryCalib = eeCryCalibs[hashedIndex];
+          std::vector<EcalTimingEvent> times = cryCalib->timingEvents;
+          if(find(times.begin(),times.end(),toInsert)==times.end())
+          {
+            eeCryCalibs[hashedIndex]->insertEvent(toInsert);
 
-          //SIC Use when we don't have time_error available
-          //eeCryCalibs[hashedIndex]->insertEvent(cryAmp,cryTime,35/(cryAmp/1.2),false);
-          if(det.zside() < 0)
-          {
-            ampProfileEEM_->Fill(hashedIndex,cryAmp);
-            ampProfileMapEEM_->Fill(ix,iy,cryAmp);
-          }
-          else
-          {
-            ampProfileEEP_->Fill(hashedIndex,cryAmp);
-            ampProfileMapEEP_->Fill(ix,iy,cryAmp);
+            //SIC Use when we don't have time_error available
+            //eeCryCalibs[hashedIndex]->insertEvent(cryAmp,cryTime,35/(cryAmp/1.2),false);
+            if(det.zside() < 0)
+            {
+              ampProfileEEM_->Fill(hashedIndex,cryAmp);
+              ampProfileMapEEM_->Fill(ix,iy,cryAmp);
+            }
+            else
+            {
+              ampProfileEEP_->Fill(hashedIndex,cryAmp);
+              ampProfileMapEEP_->Fill(ix,iy,cryAmp);
+            }
           }
         }
       }
