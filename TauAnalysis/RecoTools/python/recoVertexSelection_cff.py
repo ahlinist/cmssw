@@ -14,7 +14,8 @@ import copy
 
 selectedPrimaryVertexQuality = cms.EDFilter("VertexSelector",
     src = cms.InputTag('offlinePrimaryVerticesWithBS'),
-    cut = cms.string("isValid & ndof >= 4"),
+    cut = cms.string("isValid & ndof >= 7"), # CV: cut >= 4 if using 'offlinePrimaryVertices',
+                                             #         >= 7 if using 'offlinePrimaryVerticesWithBS' as input
     filter = cms.bool(False)                                          
 )
 
