@@ -492,7 +492,7 @@ void MuonHistManager::fillMuonIsoHistograms(const pat::Muon& patMuon, const reco
   hMuonPFGammaIsoPtRel_->Fill(patMuon.photonIso()/patMuon.pt(), weight);
 
   if ( pfCombIsoExtractor_ ) {
-    double pfCombIso = (*pfCombIsoExtractor_)(patMuon, pfCandidates);
+    double pfCombIso = (*pfCombIsoExtractor_)(patMuon, ParticlePFIsolationExtractor<pat::Muon>::kDirP4, pfCandidates);
     hMuonPFCombIsoPt_->Fill(pfCombIso, weight);
     hMuonPFCombIsoPtRel_->Fill(pfCombIso/patMuon.pt(), weight);
   }

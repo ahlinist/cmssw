@@ -129,22 +129,26 @@ void PATElectronDump::print(const edm::Event& evt, const edm::EventSetup& es) co
 
         // print PF isolation info, if requested
         if ( pfChargedHadronIsoExtractor_ ) {
-            double pfChargedHadronIso = (*pfChargedHadronIsoExtractor_)(*patElectron, *pfCandidates, vertices, beamSpot);
+            double pfChargedHadronIso = (*pfChargedHadronIsoExtractor_)(*patElectron, ParticlePFIsolationExtractor<pat::Electron>::kDirP4,
+									*pfCandidates, vertices, beamSpot);
             *outputStream_ << " pfChargedHadronIsoSum/pt = " << pfChargedHadronIso << "/" << patElectron->pt() 
                 << " = " << pfChargedHadronIso/patElectron->pt() << std::endl;
         }
         if ( pfNeutralHadronIsoExtractor_ ) {
-            double pfNeutralHadronIso = (*pfNeutralHadronIsoExtractor_)(*patElectron, *pfCandidates, vertices, beamSpot);
+            double pfNeutralHadronIso = (*pfNeutralHadronIsoExtractor_)(*patElectron, ParticlePFIsolationExtractor<pat::Electron>::kDirP4,
+									*pfCandidates, vertices, beamSpot);
             *outputStream_ << " pfNeutralHadronIsoSum/pt = " << pfNeutralHadronIso << "/" << patElectron->pt()
                 << " = " << pfNeutralHadronIso/patElectron->pt() << std::endl;
         }
         if ( pfPhotonIsoExtractor_ ) {
-            double pfPhotonIso = (*pfPhotonIsoExtractor_)(*patElectron, *pfCandidates, vertices, beamSpot);
+            double pfPhotonIso = (*pfPhotonIsoExtractor_)(*patElectron, ParticlePFIsolationExtractor<pat::Electron>::kDirP4,
+							  *pfCandidates, vertices, beamSpot);
             *outputStream_ << " pfPhotonIsoSum/pt = " << pfPhotonIso << "/" << patElectron->pt() 
                 << " = " << pfPhotonIso/patElectron->pt() << std::endl;
         }
         if ( pfCombIsoExtractor_ ) {
-            double pfCombIso = (*pfCombIsoExtractor_)(*patElectron, *pfCandidates, vertices, beamSpot);
+            double pfCombIso = (*pfCombIsoExtractor_)(*patElectron, ParticlePFIsolationExtractor<pat::Electron>::kDirP4,
+						      *pfCandidates, vertices, beamSpot);
             *outputStream_ << " pfCombIsoSum/pt = " << pfCombIso << "/" << patElectron->pt() 
                 << " = " << pfCombIso/patElectron->pt() << std::endl;
         }

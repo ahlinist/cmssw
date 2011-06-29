@@ -567,22 +567,26 @@ void ElectronHistManager::fillElectronIsoHistograms(const pat::Electron& patElec
   */
 
   if ( pfChargedHadronIsoExtractor_ ) {
-	  double pfChargedHadronIso = (*pfChargedHadronIsoExtractor_)(patElectron, pfCandidates);
+	  double pfChargedHadronIso = 
+	    (*pfChargedHadronIsoExtractor_)(patElectron, ParticlePFIsolationExtractor<pat::Electron>::kDirP4, pfCandidates);
 	  hElectronPFChargedHadronIsoPt_->Fill(pfChargedHadronIso, weight);
 	  hElectronPFChargedHadronIsoPtRel_->Fill(pfChargedHadronIso/patElectron.pt(), weight);
   }
   if ( pfNeutralHadronIsoExtractor_ ) {
-	  double pfNeutralHadronIso = (*pfNeutralHadronIsoExtractor_)(patElectron, pfCandidates);
+	  double pfNeutralHadronIso = 
+	    (*pfNeutralHadronIsoExtractor_)(patElectron, ParticlePFIsolationExtractor<pat::Electron>::kDirP4, pfCandidates);
 	  hElectronPFNeutralHadronIsoPt_->Fill(pfNeutralHadronIso, weight);
 	  hElectronPFNeutralHadronIsoPtRel_->Fill(pfNeutralHadronIso/patElectron.pt(), weight);
   }
   if ( pfPhotonIsoExtractor_ ) {
-	  double pfPhotonIso = (*pfPhotonIsoExtractor_)(patElectron, pfCandidates);
+	  double pfPhotonIso = 
+	    (*pfPhotonIsoExtractor_)(patElectron, ParticlePFIsolationExtractor<pat::Electron>::kDirP4, pfCandidates);
 	  hElectronPFGammaIsoPt_->Fill(pfPhotonIso, weight);
 	  hElectronPFGammaIsoPtRel_->Fill(pfPhotonIso/patElectron.pt(), weight);
   }
   if ( pfCombIsoExtractor_ ) {
-	  double pfCombIso = (*pfCombIsoExtractor_)(patElectron, pfCandidates);
+	  double pfCombIso = 
+	    (*pfCombIsoExtractor_)(patElectron, ParticlePFIsolationExtractor<pat::Electron>::kDirP4, pfCandidates);
 	  hElectronPFCombIsoPt_->Fill(pfCombIso, weight);
 	  hElectronPFCombIsoPtRel_->Fill(pfCombIso/patElectron.pt(), weight);
 
