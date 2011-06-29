@@ -28,4 +28,15 @@ class EcalTimingEvent
         expectedPrecision = 33/(amplitude/1.2);
     }
 
+    bool operator==(const EcalTimingEvent &first) const
+    {
+      // only check amp, time, sigmaT
+      if(first.amplitude==this->amplitude &&
+         first.time==this->time &&
+         first.sigmaTime==this->sigmaTime)
+        return true;
+
+      return false;
+    }
+
 };
