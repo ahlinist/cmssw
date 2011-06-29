@@ -51,12 +51,16 @@ void plot(TriggerCuts triggerCuts){
 	cout << "Trigger " << triggerCuts.name << endl;
 
 //	TCut pfTauSelection = "PFTauEt > 15 && abs(PFTauEta) < 2.4 && (PFTauProng == 1 || PFTauProng == 3) && PFTauInvPt < 1/5. && PFMuonMatch == 1 && PFTauIsoSum < 1. && PFTauIso > 0.5";
-	TCut pfTauSelection = "PFTauEt > 15 && abs(PFTauEta) < 2.4 && PFMuonMatch == 1 && PFElectronMatch == 1 && selectedhpsPFTauDiscriminationByVLooseIsolation > 0.5";
+//	TCut pfTauSelection = "PFTauEt > 15 && abs(PFTauEta) < 2.4 && PFMuonMatch == 1 && PFElectronMatch == 1 && selectedhpsPFTauDiscriminationByVLooseIsolation > 0.5";
+	TCut pfTauSelection = "PFTauEt > 15 && abs(PFTauEta) < 2.4 && selectedhpsPFTauDiscriminationByMediumElectronRejection > 0.5 && selectedhpsPFTauDiscriminationByTightMuonRejection > 0.5 && selectedhpsPFTauDiscriminationByVLooseIsolation > 0.5";
+//TCut pfTauSelection = "PFTauEt > 15 && abs(PFTauEta) < 2.4 && selectedhpsPFTauDiscriminationByMediumElectronRejection > 0.5 && selectedhpsPFTauDiscriminationByVLooseIsolation > 0.5";
 //	TCut l1Selection  = "((L1TauVeto==0 && L1IsolationRegions_2GeV>=7 && L1JetEt>20) || (!(L1TauVeto==0 && L1IsolationRegions_2GeV>=7) && L1JetEt > 30)) && hasMatchedL1Jet";
 	TCut l1Selection  = "((L1TauVeto==0 && L1IsolationRegions_2GeV>=7 && L1JetEt>32) || (!(L1TauVeto==0 && L1IsolationRegions_2GeV>=7) && L1JetEt > 40)) && hasMatchedL1Jet";
 //	TCut l1Selection  = "((L1TauVeto==0 && L1IsolationRegions_2GeV>=7 && L1JetEt>40) || (!(L1TauVeto==0 && L1IsolationRegions_2GeV>=7) && L1JetEt > 60)) && hasMatchedL1Jet";
 
-	TCut l1metSelection = TCut("L1MET>60");
+	TCut l1SelectionByL1Bits  = "L1_SingleTauJet52 || L1_SingleTauJet68";
+//l1Selection = l1SelectionByL1Bits;
+////	TCut l1metSelection = TCut("L1MET>60");
 //	TCut l1Selection  = l1Selection + l1metSelection;
 	TCut l2Selection  = "";
 	TCut l25Selection = "";
@@ -82,31 +86,37 @@ void plot(TriggerCuts triggerCuts){
 	TCut L1Cut	= pfTauSelection + l1Selection;
 //	TCut L1Cut      = pfTauSelection + l1Selection + l1metSelection;
 //	TCut L1Cut      = l1Selection;
+//	TCut L1Cut	= pfTauSelection + l1SelectionByL1Bits;
 	TCut METCut     = pfTauSelection + l2metSelection;
 	TCut L1METCut   = pfTauSelection + l1Selection + l2metSelection;
 	TCut L1Denom 	= pfTauSelection;
+	TCut L1CutByL1Bits = pfTauSelection + l1SelectionByL1Bits;
 
 	TCut L2Cut	= L1Cut + l2Selection;
 	TCut L2METCut	= L1Cut + l2Selection + l2metSelection;
 	TCut L2Denom	= L1Cut;
+	TCut L2CutByL1Bits = L1CutByL1Bits + l2Selection;
 
 	TCut L25Cut	= L2Cut + l25Selection;
 	TCut L25METCut	= L2Cut + l25Selection + l2metSelection;
 	TCut L25Denom	= L2Cut;
+	TCut L25CutByL1Bits = L2CutByL1Bits + l25Selection;
 
 	TCut L3Cut	= L25Cut + l3Selection;
 	TCut L3METCut	= L25Cut + l3Selection + l2metSelection;
 	TCut L3Denom	= L25Cut;
+	TCut L3CutByL1Bits = L25CutByL1Bits + l3Selection;
 
 	TCut TauTot     = pfTauSelection + l1Selection + l2Selection + l25Selection + l3Selection;
+	TCut TauTotByL1Bits = pfTauSelection + l1SelectionByL1Bits + l2Selection + l25Selection + l3Selection;
 
 //	TCut TauMETTot  = pfTauSelection + l1Selection + l2Selection + l25Selection + l3Selection + l2metSelection;
 	TCut TauMETTot  = l1Selection + l2Selection + l25Selection + l3Selection + l2metSelection;
 
 
 //	Plotter* plotter = new Plotter(filename,"TTEffTree");
-	Plotter* plotter = new Plotter(tteffAnalysis_muTau_HLT_AOD_Run2011A_cmssw416_V00_07_06_hltpftautight_hpspftau());
-	Plotter* plotter2 = new Plotter(tteffAnalysis_muTau_HLT_AOD_Run2011A_cmssw416_V00_07_06_hltpftautight_hpspftau());
+	Plotter* plotter;// = new Plotter(tteffAnalysis_muTau_HLT_AOD_Run2011A_cmssw416_V00_07_06_hltpftautight_hpspftau());
+	Plotter* plotter2;// = new Plotter(tteffAnalysis_muTau_HLT_AOD_Run2011A_cmssw416_V00_07_06_hltpftautight_hpspftau());
 
 
 	TString fig1legend = "Data: Run2010AB";
@@ -126,9 +136,11 @@ void plot(TriggerCuts triggerCuts){
 	}
 
 	if(Run2011A){
-          plotter = new Plotter(tteffAnalysis_muTau_HLT_AOD_Run2011A_cmssw416_V00_07_06_hltpftautight_hpspftau());
+//          plotter = new Plotter(tteffAnalysis_muTau_HLT_AOD_Run2011A_cmssw416_V00_07_06_hltpftautight_hpspftau());
+	  plotter = new Plotter(tteffAnalysis_SingleMu_Run2011A_Tau_May10ReReco_v1_RAW_RECO_TTEffSkim_cmssw424_v1_hltpftautight_hpspftau());
 //          plotter2 = new Plotter(tteffAnalysis_Mu_pflow_tau_Run2010AB_cmssw413_V00_07_01_hltpftautight());
 	  plotter2 = new Plotter(tteffAnalysis_DYToTauTau_20_TuneZ2_7TeV_pythia6_tauola_Winter10_cmssw416_V00_07_06_v4_hltpftautight_hpspftau());
+//	  plotter2 = new Plotter(res_hltpftautight_hpspftau());
           fig1legend = "Data: Run2011A Ztautau";
 //          fig2legend = "Data: Run2010AB";
 	  fig2legend = "MC: pythia6 Ztautau";
@@ -154,10 +166,10 @@ TFile* fOUT = new TFile("histos.root","RECREATE");
 //	plotter->SetSave(true);
 
 /////////////////////////////////////////////////////////////////////////////////////////
-
+/*
 	plotter->SetYTitle("Level-1 tau efficiency");
 	plotter->SetFileName(plotDir+"TauMET_L1Eff_PFTauEt"+suffix);
-	TGraphAsymmErrors* fig1 = plotter->DrawHistogram("PFTauEt>>hnum(25,0.,100.)",L1Cut,L1Denom);
+	TGraphAsymmErrors* fig1 = plotter->DrawHistogram("PFTauEt>>hnum(25,0.,100.)",L1CutByL1Bits,L1Denom);
 	TGraphAsymmErrors* fig2 = plotter2->DrawHistogram("PFTauEt>>hnum(25,0.,100.)",L1Cut,L1Denom);
         fig1->SetMinimum(0);
         fig1->SetMaximum(1.1);
@@ -218,7 +230,7 @@ TFile* fOUT = new TFile("histos.root","RECREATE");
         leg->AddEntry(fig2,fig2legend,"p");
         leg->Draw();
         gPad->SaveAs(plotDir+fileNamePrefix+"_TauMET_L3Eff_PFTauEt"+suffix);
-
+*/
 /////////////////////////////////////////////////////////////////////////////////////////
 /*
         plotter->SetYTitle("HLT MET efficiency");
@@ -261,10 +273,19 @@ TFile* fOUT = new TFile("histos.root","RECREATE");
         leg->Draw();
         gPad->SaveAs(plotDir+fileNamePrefix+"_TauMET_PFTauEt"+suffix);
 */
-        plotter->SetYTitle("HLTTau efficiency");
+//        float bins[] = {0., 20., 40., 60., 80., 100., 180.};
+        float bins[] = {0., 20., 40., 50., 60., 80., 100., 180.};
+        size_t nbins = sizeof(bins)/sizeof(float)-1;
+
+        TH1F *hnum = new TH1F("hnum", "hnum", nbins, bins);
+        TH1F *hden = new TH1F("hden", "hden", nbins, bins);
+
+        plotter->SetYTitle("Level-1+HLT Tau efficiency");
         plotter->SetFileName(plotDir+"HLTTau_PFTauEt"+suffix);
-        fig1 = plotter->DrawHistogram("PFTauEt>>hnum(25,0.,200.)",TauTot,pfTauSelection);
-        fig2 = plotter2->DrawHistogram("PFTauEt>>hnum(25,0.,200.)",TauTot,pfTauSelection);
+        //fig1 = plotter->DrawHistogram("PFTauEt>>hnum(10,0.,200.)",TauTot,pfTauSelection);
+        //fig2 = plotter2->DrawHistogram("PFTauEt>>hnum(10,0.,200.)",TauTot,pfTauSelection);
+        fig1 = plotter->DrawHistogram("PFTauEt>>hnum",TauTotByL1Bits,pfTauSelection);
+        fig2 = plotter2->DrawHistogram("PFTauEt>>hnum",TauTot,pfTauSelection);
         fig1->SetMinimum(0);
         fig1->SetMaximum(1.1);
         fig1->Draw("PAE");
@@ -276,15 +297,24 @@ TFile* fOUT = new TFile("histos.root","RECREATE");
         leg->AddEntry(fig1,fig1legend,"p");
         leg->AddEntry(fig2,fig2legend,"p");
         leg->Draw();
-	TLatex* tex = new TLatex(8.,1.0,triggerCuts.name);
+	TLatex* tex = new TLatex(105.,0.79,triggerCuts.name);
 	tex->SetTextSize(text_size);
 	tex->SetLineWidth(2);
 	tex->Draw();
-	TLatex* tex = new TLatex(70.,0.9,"CMS");
+	TLatex* tex = new TLatex(100.,1.0,"CMS Preliminary 2011");
+        tex->SetTextSize(text_size);
+        tex->SetLineWidth(2);
+        tex->Draw();
+        TLatex* tex = new TLatex(120.,0.92,"#sqrt{s} = 7 TeV");
+        tex->SetTextSize(text_size);
+        tex->SetLineWidth(2);
+        tex->Draw();
+        TLatex* tex = new TLatex(120.,0.86,"L_{int}=236 pb^{-1}");
         tex->SetTextSize(text_size);
         tex->SetLineWidth(2);
         tex->Draw();
 	gPad->SaveAs(plotDir+fileNamePrefix+"_HLTTau_PFTauEt"+suffix);
+        if(suffix != ".C") gPad->SaveAs(plotDir+fileNamePrefix+"_HLTTau_PFTauEt.C");
 
 fOUT->cd();
 fig1->SetName("TauLeg");
@@ -295,12 +325,29 @@ fig2->SetName("TauLegZtautau");
 fig2->SetTitle(triggerCuts.name);
 fig2->Write();
 
+/*
+        plotter->SetYTitle("N events pftauselection");                                                                                              
+        plotter->SetFileName(plotDir+"Nev_PFTauEt"+suffix);                                                                                
+        fig1 = plotter->DrawHistogram("PFTauEt>>hnum(10,0.,200.)",pfTauSelection);                                                     
+        fig1->SetMinimum(0);                                                                                                                  
+        fig1->SetMaximum(1.1);                                                                                                                
+        fig1->Draw("PAE");                                                                                                                    
+	gPad->SaveAs(plotDir+fileNamePrefix+"_Nev_PFTau_PFTauEt"+suffix);
+
+        plotter->SetYTitle("N events L1+HLT+pftauselection");                                                                                       $
+        plotter->SetFileName(plotDir+"Nev_PFTauEt"+suffix);                                                                                   
+        fig1 = plotter->DrawHistogram("PFTauEt>>hnum(10,0.,200.)",TauTot);                                                            
+        fig1->SetMinimum(0);                                                                                                                  
+        fig1->SetMaximum(1.1);                                                                                                                
+        fig1->Draw("PAE");                                                                                                                    
+        gPad->SaveAs(plotDir+fileNamePrefix+"_Nev_L1HLTPFTau_PFTauEt"+suffix);
+*/
 /////////////////////////////////////////////////////////////////////////////////////////
 
 // As a function of eta
         plotter->SetXTitle("PF#tau eta");
         plotter2->SetXTitle("PF#tau eta");
-
+/*
         plotter->SetYTitle("Level-1 tau efficiency");
         plotter->SetFileName(plotDir+"TauMET_L1Eff_PFTauEta"+suffix);
         TGraphAsymmErrors* fig1 = plotter->DrawHistogram("PFTauEta>>hnum(25,-2.5,2.5)",L1Cut,L1Denom);
@@ -364,8 +411,8 @@ fig2->Write();
         leg->AddEntry(fig2,fig2legend,"p");
         leg->Draw();
         gPad->SaveAs(plotDir+fileNamePrefix+"_TauMET_L3Eff_PFTauEta"+suffix);
-
-	plotter->SetYTitle("HLTTau efficiency");
+*/
+	plotter->SetYTitle("Level-1+HLT Tau efficiency");
         TGraphAsymmErrors* fig1 = plotter->DrawHistogram("PFTauEta>>hnum(25,-2.5,2.5)",TauTot,pfTauSelection);
         TGraphAsymmErrors* fig2 = plotter2->DrawHistogram("PFTauEta>>hnum(25,-2.5,2.5)",TauTot,pfTauSelection);
         fig1->SetMinimum(0);
@@ -379,6 +426,7 @@ fig2->Write();
         leg->AddEntry(fig1,fig1legend,"p");
         leg->AddEntry(fig2,fig2legend,"p");
         leg->Draw();
+/*
 	TLatex* tex = new TLatex(-2.5,1.0,triggerCuts.name);
 	tex->SetTextSize(text_size);
         tex->SetLineWidth(2);
@@ -387,6 +435,24 @@ fig2->Write();
         tex->SetTextSize(text_size);
         tex->SetLineWidth(2);
         tex->Draw();
+*/
+TLatex* tex = new TLatex(0.155,0.783,triggerCuts.name);
+tex->SetTextSize(text_size);
+tex->SetLineWidth(2);
+tex->Draw();
+TLatex* tex = new TLatex(0.,1.0,"CMS Preliminary 2011");
+tex->SetTextSize(text_size);
+tex->SetLineWidth(2);
+tex->Draw();
+TLatex* tex = new TLatex(0.525,0.92,"#sqrt{s} = 7 TeV");
+tex->SetTextSize(text_size);
+tex->SetLineWidth(2);
+tex->Draw();
+TLatex* tex = new TLatex(0.525,0.856,"L_{int}=236 pb^{-1}");
+tex->SetTextSize(text_size);
+tex->SetLineWidth(2);
+tex->Draw();
+
         gPad->SaveAs(plotDir+fileNamePrefix+"_HLTTau_PFTauEta"+suffix);
 
 /////////////////////////////////////////////////////////////////////////////////////////
@@ -459,7 +525,8 @@ fig2->Write();
         leg->Draw();
         gPad->SaveAs(plotDir+fileNamePrefix+"_TauMET_L3Eff_PFTauPhi"+suffix);
 */
-        plotter->SetYTitle("HLTTau efficiency");
+
+        plotter->SetYTitle("Level-1+HLT Tau efficiency");
         TGraphAsymmErrors* fig1 = plotter->DrawHistogram("PFTauEta>>hnum(25,-3.14,3.14)",TauTot,pfTauSelection);
         TGraphAsymmErrors* fig2 = plotter2->DrawHistogram("PFTauEta>>hnum(25,-3.14,3.14)",TauTot,pfTauSelection);
         fig1->SetMinimum(0);
@@ -473,6 +540,7 @@ fig2->Write();
         leg->AddEntry(fig1,fig1legend,"p");
         leg->AddEntry(fig2,fig2legend,"p");
         leg->Draw();
+/*
         TLatex* tex = new TLatex(-2.7,1.0,triggerCuts.name);
 	tex->SetTextSize(text_size);
         tex->SetLineWidth(2);
@@ -481,7 +549,25 @@ fig2->Write();
         tex->SetTextSize(text_size);
         tex->SetLineWidth(2);
         tex->Draw();
+*/
+TLatex* tex = new TLatex(0.178,0.781,triggerCuts.name);
+tex->SetTextSize(text_size);
+tex->SetLineWidth(2);
+tex->Draw();
+TLatex* tex = new TLatex(0.,1.0,"CMS Preliminary 2011");
+tex->SetTextSize(text_size);
+tex->SetLineWidth(2);
+tex->Draw();
+TLatex* tex = new TLatex(0.662,0.92,"#sqrt{s} = 7 TeV");
+tex->SetTextSize(text_size);
+tex->SetLineWidth(2);
+tex->Draw();
+TLatex* tex = new TLatex(0.662,0.859,"L_{int}=236 pb^{-1}");
+tex->SetTextSize(text_size);
+tex->SetLineWidth(2);
+tex->Draw();
         gPad->SaveAs(plotDir+fileNamePrefix+"_HLTTau_PFTauPhi"+suffix);
+
 /*
 /////////////////////////////////////////////////////////////////////////////////////////
 
@@ -565,7 +651,7 @@ fOUT->Close();
 
 /////////////////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////////
-
+/*
 	int nAllEvents    = plotter->GetNEvents(TCut(""));
 	int nL1Events     = plotter->GetNEvents(l1Selection);
 	int nL2Events     = plotter->GetNEvents(l1Selection + l2Selection);
@@ -597,18 +683,20 @@ cout << l3Selection.Print() << endl;
 	cout << triggerCuts.name << " L25 eff/event(no pftau selection)   = " << l25EffPerEvent << " " << l25EffPerEvent2 << endl;
 	cout << triggerCuts.name << " L3 eff/event (no pftau selection)   = " << l3EffPerEvent  << " " << l3EffPerEvent2 << endl;
 	cout << triggerCuts.name << " Total eff/event(no pftau selection) = " << totEffPerEvent << " " << totEffPerEvent2 << endl;
-
+*/
 if(Run2011A){
 
         int nAllEvents_pftau    = plotter->GetNEvents(pfTauSelection);
-        int nPassedTauMET_pftau = plotter->GetNEvents(pfTauSelection + l1Selection + l2Selection + l25Selection + l3Selection + l2metSelection);
+//        int nPassedTauMET_pftau = plotter->GetNEvents(pfTauSelection + l1Selection + l2Selection + l25Selection + l3Selection + l2metSelection);
+	int nPassedTauMET_pftau = plotter->GetNEvents(pfTauSelection + l1SelectionByL1Bits + l2Selection + l25Selection + l3Selection);
         int nAllEvents2_pftau    = plotter2->GetNEvents(pfTauSelection);
-        int nPassedTauMET2_pftau = plotter2->GetNEvents(pfTauSelection + l1Selection + l2Selection + l25Selection + l3Selection + l2metSelection);
+//        int nPassedTauMET2_pftau = plotter2->GetNEvents(pfTauSelection + l1Selection + l2Selection + l25Selection + l3Selection + l2metSelection);
+	int nPassedTauMET2_pftau = plotter2->GetNEvents(pfTauSelection + l1Selection + l2Selection + l25Selection + l3Selection);
         float totEffPerEvent_pftau  = float(nPassedTauMET_pftau)/nAllEvents_pftau;
         float totEffPerEvent2_pftau = float(nPassedTauMET2_pftau)/nAllEvents2_pftau;
 	cout << "All events (pftau selection)      = " << nAllEvents_pftau << " " << nAllEvents2_pftau << endl;
         cout << "Total eff/event (pftau selection) = " << totEffPerEvent_pftau << " " << totEffPerEvent2_pftau << endl;
-
+/*
 	int nAllEvents_MetCut    = plotter->GetNEvents(pfTauSelection + metSelection);
 	int nPassedTauMET_MetCut = plotter->GetNEvents(pfTauSelection + metSelection + l1Selection + l2Selection + l25Selection + l3Selection + l2metSelection);
         int nAllEvents2_MetCut    = plotter2->GetNEvents(pfTauSelection + metSelection);
@@ -616,10 +704,11 @@ if(Run2011A){
 	float totEffPerEvent_MetCut  = float(nPassedTauMET_MetCut)/nAllEvents_MetCut;
 	float totEffPerEvent2_MetCut = float(nPassedTauMET2_MetCut)/nAllEvents2_MetCut;
 	//cout << "Total eff/event (MET>70) = " << totEffPerEvent_MetCut << " " << totEffPerEvent2_MetCut << endl;
+*/
 }
-
+/*
 	TH1F* eff_mass = new TH1F("eff_mass","",2,0,2);
-/*	
+	
 	const unsigned N = 2;
 	float mass[N];
 	float eff[N];
