@@ -64,7 +64,7 @@ PATMuonIdSelectorImp::PATMuonIdSelectorImp(const edm::ParameterSet& cfg)
   }
 
   if ( cfg.exists("IPrefType") ) {
-    std::string IPrefType_string = cfg.getParameter<std::string>("IPtrackType");
+    std::string IPrefType_string = cfg.getParameter<std::string>("IPrefType");
     if      ( IPrefType_string == "beamSpot"  ) IPrefType_ = kBeamSpot;
     else if ( IPrefType_string == "vertex"    ) IPrefType_ = kVertex;
     else {
