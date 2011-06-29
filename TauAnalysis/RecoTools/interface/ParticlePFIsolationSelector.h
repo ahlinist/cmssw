@@ -12,9 +12,9 @@
  *
  * \author Christian Veelken, UC Davis
  *
- * \version $Revision: 1.12 $
+ * \version $Revision: 1.13 $
  *
- * $Id: ParticlePFIsolationSelector.h,v 1.12 2011/05/26 19:01:58 lantonel Exp $
+ * $Id: ParticlePFIsolationSelector.h,v 1.13 2011/05/26 19:25:53 lantonel Exp $
  *
  */
 
@@ -48,7 +48,8 @@ class ParticlePFIsolationSelector
   typedef std::vector<T> collection;
   
   explicit ParticlePFIsolationSelector(const edm::ParameterSet& cfg)
-    : extractor_(cfg),
+    : extractor_(cfg),     
+      direction_(ParticlePFIsolationExtractor<T>::kDirP4),
       sumPtMethod_(kAbsoluteIso),
       cfgError_(0)
   {
@@ -57,13 +58,19 @@ class ParticlePFIsolationSelector
     if ( cfg.exists("vertexSource")     ) vertexSrc_     = cfg.getParameter<edm::InputTag>("vertexSource");
     if ( cfg.exists("beamSpotSource")   ) beamSpotSrc_   = cfg.getParameter<edm::InputTag>("beamSpotSource");
     if ( cfg.exists("rhoFastJetSource") ) rhoFastJetSrc_ = cfg.getParameter<edm::InputTag>("rhoFastJetSource");
-    
+
+    if ( cfg.exists("direction") ) {
+      std::string direction_string = cfg.getParameter<std::string>("direction");
+      if      ( direction_string == "p4"    ) direction_ = ParticlePFIsolationExtractor<T>::kDirP4;
+      else if ( direction_string == "track" ) direction_ = ParticlePFIsolationExtractor<T>::kDirTrack;
+      else throw cms::Exception("ParticlePFIsolationSelector")
+	<< "Invalid Configuration parameter direction = " << direction_string << "!!\n";
+    }
 
     sumPtMaxEB_ = -1;
     sumPtMaxEE_ = -1;
     sumPtMinEB_ = -1;
     sumPtMinEE_ = -1;
-
 
     if( cfg.exists("sumPtMinEB") && cfg.exists("sumPtMinEE") ) {
       sumPtMinEB_ = cfg.getParameter<double>("sumPtMinEB");
@@ -73,7 +80,6 @@ class ParticlePFIsolationSelector
       sumPtMinEB_ = cfg.getParameter<double>("sumPtMin");
       sumPtMinEE_ = cfg.getParameter<double>("sumPtMin");
     }
-
 
     if( cfg.exists("sumPtMaxEB") && cfg.exists("sumPtMaxEE") ) {
       sumPtMaxEB_ = cfg.getParameter<double>("sumPtMaxEB");
@@ -88,7 +94,6 @@ class ParticlePFIsolationSelector
 	<< " Configuration must specify ( sumPtMaxEB AND sumPtMaxEE ) OR sumPtMax ";
       cfgError_ = 1;
     }
-
     
     if ( cfg.exists("sumPtMethod") ) {
       std::string sumPtMethod_string = cfg.getParameter<std::string>("sumPtMethod");
@@ -141,12 +146,10 @@ class ParticlePFIsolationSelector
 	evt.getByLabel(rhoFastJetSrc_, rhoFastJetHandle);
 	rhoFastJetCorrection = (*rhoFastJetHandle);
       }
-      
-
 
       for ( typename collection::const_iterator isoParticleCandidate = isoParticleCandidates->begin();
 	    isoParticleCandidate != isoParticleCandidates->end(); ++isoParticleCandidate ) {
-	double sumPt = extractor_(*isoParticleCandidate, *pfCandidates, vertices, beamSpot, rhoFastJetCorrection);
+	double sumPt = extractor_(*isoParticleCandidate, direction_, *pfCandidates, vertices, beamSpot, rhoFastJetCorrection);  
 	
 	// need to fix for correct eta
 	double sumPtMax = ( isoParticleCandidate->eta() < 1.479 ) ? sumPtMaxEB_ : sumPtMaxEE_;
@@ -176,6 +179,7 @@ class ParticlePFIsolationSelector
     edm::InputTag rhoFastJetSrc_;
 
     ParticlePFIsolationExtractor<T> extractor_;
+    int direction_;
 
     double sumPtMinEB_;
     double sumPtMinEE_;

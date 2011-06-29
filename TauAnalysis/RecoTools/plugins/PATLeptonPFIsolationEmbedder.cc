@@ -4,7 +4,7 @@
  *
  * \author Evan, UC Davis
  *
- * \version $Revision: 1.4 $
+ * \version $Revision: 1.5 $
  */
 
 #include <boost/shared_ptr.hpp>
@@ -30,38 +30,53 @@
 #include <string>
 
 template <typename PATType>
-class PATLeptonPFIsolationEmbedder : public edm::EDProducer {
-  public:
-    explicit PATLeptonPFIsolationEmbedder(const edm::ParameterSet &pset);
-    ~PATLeptonPFIsolationEmbedder() {};
-    void produce(edm::Event& evt, const edm::EventSetup& es);
-  private:
-    edm::InputTag src_;
+class PATLeptonPFIsolationEmbedder : public edm::EDProducer 
+{
+ public:
 
-    std::string userInfoString_;
+  explicit PATLeptonPFIsolationEmbedder(const edm::ParameterSet &pset);
+  ~PATLeptonPFIsolationEmbedder() {};
+  void produce(edm::Event& evt, const edm::EventSetup& es);
   
-    ParticlePFIsolationExtractor<PATType> extractor_;
+ private:
   
-    edm::InputTag pfCandidateSrc_;
+  edm::InputTag src_;
 
-    edm::InputTag vertexSrc_;
-    edm::InputTag beamSpotSrc_;
-    edm::InputTag rhoFastJetSrc_;
+  std::string userInfoString_;
+  
+  ParticlePFIsolationExtractor<PATType> extractor_;
+  int direction_;
+
+  edm::InputTag pfCandidateSrc_;
+
+  edm::InputTag vertexSrc_;
+  edm::InputTag beamSpotSrc_;
+  edm::InputTag rhoFastJetSrc_;
 };
 
 template<typename T>
-PATLeptonPFIsolationEmbedder<T>::PATLeptonPFIsolationEmbedder(
-    const edm::ParameterSet& pset):extractor_(pset) {
-  src_ = pset.getParameter<edm::InputTag>("src");
+PATLeptonPFIsolationEmbedder<T>::PATLeptonPFIsolationEmbedder(const edm::ParameterSet& cfg)
+  : extractor_(cfg),
+    direction_(ParticlePFIsolationExtractor<T>::kDirP4)
+{
+  src_ = cfg.getParameter<edm::InputTag>("src");
 
-  userInfoString_ = pset.getParameter<std::string>("userFloatName");
+  userInfoString_ = cfg.getParameter<std::string>("userFloatName");
 
-  pfCandidateSrc_ = pset.getParameter<edm::InputTag>("pfCandidateSource");
+  pfCandidateSrc_ = cfg.getParameter<edm::InputTag>("pfCandidateSource");
 
-  if ( pset.exists("vertexSource")     ) vertexSrc_     = pset.getParameter<edm::InputTag>("vertexSource");
-  if ( pset.exists("beamSpotSource")   ) beamSpotSrc_   = pset.getParameter<edm::InputTag>("beamSpotSource");
-  if ( pset.exists("rhoFastJetSource") ) rhoFastJetSrc_ = pset.getParameter<edm::InputTag>("rhoFastJetSource");
+  if ( cfg.exists("vertexSource")     ) vertexSrc_     = cfg.getParameter<edm::InputTag>("vertexSource");
+  if ( cfg.exists("beamSpotSource")   ) beamSpotSrc_   = cfg.getParameter<edm::InputTag>("beamSpotSource");
+  if ( cfg.exists("rhoFastJetSource") ) rhoFastJetSrc_ = cfg.getParameter<edm::InputTag>("rhoFastJetSource");
   
+  if ( cfg.exists("direction") ) {
+    std::string direction_string = cfg.getParameter<std::string>("direction");
+    if      ( direction_string == "p4"    ) direction_ = ParticlePFIsolationExtractor<T>::kDirP4;
+    else if ( direction_string == "track" ) direction_ = ParticlePFIsolationExtractor<T>::kDirTrack;
+    else throw cms::Exception("ParticlePFIsolationExtractor")
+      << "Invalid Configuration parameter direction = " << direction_string << "!!\n";
+  }
+
   // Register product
   produces<std::vector<T> >();
 }
@@ -104,7 +119,7 @@ void PATLeptonPFIsolationEmbedder<T>::produce(edm::Event& evt,
     const T& inputObject = (*inputObjects)[i];
     // Make a copy
     T outputObject = inputObject;
-    double sumPt = extractor_(outputObject, *pfCandidates, vertices, beamSpot, rhoFastJetCorrection);
+    double sumPt = extractor_(outputObject, direction_, *pfCandidates, vertices, beamSpot, rhoFastJetCorrection);
     outputObject.addUserFloat(userInfoString_, sumPt);
     output->push_back(outputObject);
   }
