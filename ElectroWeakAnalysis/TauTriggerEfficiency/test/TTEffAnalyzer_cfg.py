@@ -59,7 +59,7 @@ process.load("ElectroWeakAnalysis.TauTriggerEfficiency.TTEffPFTau_cff")
 
 process.load('Configuration/StandardSequences/FrontierConditions_GlobalTag_cff')
 if (isData):
-    process.GlobalTag.globaltag = 'GR_R_42_V13::All'
+    process.GlobalTag.globaltag = 'GR_H_V20::All'
 #    process.GlobalTag.globaltag = 'TESTL1_GR_P::All'
 else:
     process.GlobalTag.globaltag = 'START42_V12::All'
