@@ -218,12 +218,12 @@ void anaXS::loadFiles(const char *dir, int i) {
   
   // -- Upsilon merging
   if (0 == i) {
-    string ufile = fDirectory + string("/") + string("upsilon/101201.fl10.mm.ups1s.xsReader_1Sbin.tma.default.root");    
+    string ufile = fDirectory + string("/") + string("upsilon/101201.fl10.mm.ups1s.xsReader_1S.default.root");    
 
     fM[0] = new TFile(ufile.c_str()); lM[0] = 1.;
-    ufile = fDirectory + string("/") + string("upsilon/101201.fl10.mm.ups2s.xsReader_1Sbin.tma.default.root");
+    ufile = fDirectory + string("/") + string("upsilon/101201.fl10.mm.ups2s.xsReader_2S.default.root");
     fM[1] = new TFile(ufile.c_str()); lM[1] = 1.66; 
-    ufile = fDirectory + string("/") + string("upsilon/101201.fl10.mm.ups3s.xsReader_1Sbin.tma.default.root");
+    ufile = fDirectory + string("/") + string("upsilon/101201.fl10.mm.ups3s.xsReader_3S.default.root");
     fM[2] = new TFile(ufile.c_str()); lM[2] = 3.43; 
     cout << "Got the Files for Merging" << endl;
   }
@@ -275,9 +275,9 @@ void anaXS::loadFiles(const char *dir, int i) {
       ufile = fDirectory + string("/upsilon/UpsTagandprobe_10TeV_nocut.root");
       jfile = fDirectory + string("/jpsi/JpsiTagandprobe_10TeV_nocut.root");  
     } else if (40 == i) {
-      //ufile = fDirectory + string("/upsilon/101201.fl10.mm.COMBINED.xsReader_douRap_3Sbin.tma.default.root");
+      ufile = fDirectory + string("/upsilon/101201.fl10.mm.COMBINED.xsReader_deneme.default.root");
       afile = fDirectory + string("/upsilon/Acc_All_0_50.xsReader_1Sbin.default.root");
-      ufile = fDirectory + string("/upsilon/101201.fl10.mm.COMBINED.xsReader_1Sbin.tma.default.root");
+      //ufile = fDirectory + string("/upsilon/101201.fl10.mm.COMBINED.xsReader_1Sbin.tma.default.root");
       jfile = fDirectory + string("/upsilon/130211.nov4rereco_v2.dimuons.xsReader_Data_v2.default.root");
       //jfile = fDirectory + string("/upsilon/130211.nov4rereco_v2.dimuons.xsReader_1Sbin.tma.default.root");
      
@@ -655,7 +655,7 @@ void anaXS::combineAcceptanceFiles() {
 // ----------------------------------------------------------------------
 void anaXS::combineUpsilons() {
   
-  string ufile = fDirectory + string("/upsilon/101201.fl10.mm.COMBINED.xsReader_1Sbin.tma.default.root");
+  string ufile = fDirectory + string("/upsilon/101201.fl10.mm.COMBINED.xsReader_deneme.default.root");
   TFile *f = new TFile(ufile.c_str(), "RECREATE"); 
 
   fM[0]->cd();
@@ -980,19 +980,20 @@ void anaXS::makeAllMC(int channel) {
     init(fDirectory.c_str(), fMode);
     // -- fill histograms
     fSample = string("upsilon");
-    ReadHistograms(fM[0], "UpsilonMass", "AnaEff_1S", "AnaEff_2S", "AnaEff_3S", "MuIDEff_1S", "MuIDEff_2S", "MuIDEff_3S", "TrigEff_1S", "TrigEff_2S", "TrigEff_3S", "mt,pt-eta");
+    ReadHistograms(fM[0], "UpsilonMass", "AnaEff_1S", "AnaEff_2S", "AnaEff_3S", "MuIDEff_1S", "MuIDEff_2S", "MuIDEff_3S", "TrigEff_1S", "TrigEff_2S", "TrigEff_3S", "Pt_IntegratedMass", "Rapidity_IntegratedMass", "mt,pt-eta");
     
     // -- add backgrounds
     addBackground(fS1Vector, 0.3);
-    
+    addBackground_PtInt(fS12Vector, 0.3);
+    addBackground_RapInt(fS13Vector, 0.3);
     
     //Pull(1);
     
-    //FITUpsilon(1);
+    FITUpsilon(3); //3 for PtIntegrated plots, 4 for RapidityIntegrated plots
     //GetAnaEff();
     //GetPreSelEff();
     //GetMuIDEff(1);
-    GetTrigEff(1);
+    //GetTrigEff(1);
     //CorrectedYields(1);   // 1- FOR MC, 2 FOR DATA
     //PlotProjections(1);   // 1- FOR MC, 2 FOR DATA
         
@@ -3141,7 +3142,7 @@ void anaXS::ReadHistogramsDATA2(TFile *f,  const char *binning) {
   }
 }
 
-void anaXS::ReadHistograms(TFile *f, const char *s1, const char *s2, const char *s3, const char *s4, const char *s5, const char *s6, const char *s7, const char *s8, const char *s9, const char *s10, const char *binning) {  
+void anaXS::ReadHistograms(TFile *f, const char *s1, const char *s2, const char *s3, const char *s4, const char *s5, const char *s6, const char *s7, const char *s8, const char *s9, const char *s10, const char *s12, const char *s13, const char *binning) {  
   
   cout << "====> Reading histograms from " << f->GetName() << endl;
   
@@ -3155,6 +3156,7 @@ void anaXS::ReadHistograms(TFile *f, const char *s1, const char *s2, const char 
   int   n; 
   char searchString1[2000], searchString12[2000],  searchString2[2000] ,searchString3[2000], searchString4[2000], searchString5[2000] ;
   char searchString6[2000], searchString7[2000] ,searchString8[2000], searchString9[2000], searchString10[2000];
+  char searchString13[2000], searchString14[2000];
   char sp[] = "%"; 
   char sf[] = "f";
   sprintf(searchString1, "%s,rapidity%s%s_%s%s,pt%s%s_%s%s", s1, sp, sf, sp, sf, sp, sf, sp, sf); 
@@ -3162,9 +3164,6 @@ void anaXS::ReadHistograms(TFile *f, const char *s1, const char *s2, const char 
   
   sprintf(searchString1, "%s,rapidity%s%s_%s%s,pt_all", s1, sp, sf, sp, sf); 
   cout << "searchString1: " << searchString1 << endl;  
-  
-  sprintf(searchString12, "%s", s1); 
-  cout << "searchString12: " << searchString12 << endl;
   
   sprintf(searchString2, "%s,rapidity%s%s_%s%s,pt%s%s_%s%s", s2, sp, sf, sp, sf, sp, sf, sp, sf); 
   cout << "searchString2: " << searchString2 << endl;
@@ -3192,7 +3191,16 @@ void anaXS::ReadHistograms(TFile *f, const char *s1, const char *s2, const char 
 
   sprintf(searchString10, "%s,rapidity%s%s_%s%s,pt%s%s_%s%s", s10, sp, sf, sp, sf, sp, sf, sp, sf); 
   cout << "searchString10: " << searchString10 << endl;
-    
+  
+  sprintf(searchString12, "%s,rapidity%s%s_%s%s", s12, sp, sf, sp, sf); 
+  cout << "searchString12: " << searchString12 << endl; 
+  
+  sprintf(searchString13, "%s,pt%s%s_%s%s", s13, sp, sf, sp, sf); 
+  cout << "searchString13: " << searchString13 << endl; 
+  
+  sprintf(searchString14, "%s", s1); 
+  cout << "searchString14: " << searchString14 << endl;  
+  
   while ((key = (TKey*)next())) {
     n = -1; 
     obj = key->ReadObj();
@@ -3282,10 +3290,6 @@ void anaXS::ReadHistograms(TFile *f, const char *s1, const char *s2, const char 
 	cout << "--> : " << fTrueYield_3S->GetName() << ", # entries = " << fTrueYield_3S->GetSumOfWeights() << endl;
       }      
       
-      
-      
-
-      
     }
     
     if (obj->InheritsFrom(TH1D::Class())) {
@@ -3300,12 +3304,29 @@ void anaXS::ReadHistograms(TFile *f, const char *s1, const char *s2, const char 
 	
       }
       
-      if ( !strcmp(h1->GetName(),searchString12)) {
+      if ( !strcmp(h1->GetName(),searchString14)) {
+	cout << "s14: " << h1->GetName() << ", # entries = " << h1->Integral(1, h1->GetNbinsX()) << endl;
+	h2 = (TH1D*)h1->Clone(Form("s14:%s", h1->GetName()));
+	fS12Vector.push_back(*h2);
+	fS13Vector.push_back(*h2);
+      }
+      
+      // -- sample Pt_IntegratedMass
+      n = sscanf(h1->GetName(), searchString12, &etamin, &etamax);
+      if (n > 0) {
 	cout << "s12: " << h1->GetName() << ", # entries = " << h1->Integral(1, h1->GetNbinsX()) << endl;
 	h2 = (TH1D*)h1->Clone(Form("s12:%s", h1->GetName()));
-	fS1Vector.push_back(*h2);
-      } 
+	fS12Vector.push_back(*h2);
+      }      
       
+      // -- sample Rapidity_IntegratedMass
+      n = sscanf(h1->GetName(), searchString13, &ptmin, &ptmax);
+      if (n > 0) {
+	cout << "s13: " << h1->GetName() << ", # entries = " << h1->Integral(1, h1->GetNbinsX()) << endl;
+	h2 = (TH1D*)h1->Clone(Form("s13:%s", h1->GetName()));
+	fS13Vector.push_back(*h2);
+      }       
+
       // -- sample AnaEff_1S
       n = sscanf(h1->GetName(), searchString2, &etamin, &etamax, &ptmin, &ptmax);
       if (n > 0) {
@@ -3802,6 +3823,34 @@ void anaXS::addBackground(vector<TH1D> &vec, double sb, double p0, double p1) {
   f0->SetParameters(-0.5, 1.); 
   f0->SetParameters(1., 0.); 
   for (unsigned int i = 0; i < fS1Vector.size(); ++i) {
+    h = &(vec[i]);
+    s = h->Integral(1, h->GetNbinsX());  
+    h->FillRandom("f0", sb*s);
+  }
+
+}
+
+void anaXS::addBackground_RapInt(vector<TH1D> &vec, double sb, double p0, double p1) {  
+  TH1D *h;
+  int s; 
+
+  f0->SetParameters(-0.5, 1.); 
+  f0->SetParameters(1., 0.); 
+  for (unsigned int i = 0; i < fS13Vector.size(); ++i) {
+    h = &(vec[i]);
+    s = h->Integral(1, h->GetNbinsX());  
+    h->FillRandom("f0", sb*s);
+  }
+
+}
+
+void anaXS::addBackground_PtInt(vector<TH1D> &vec, double sb, double p0, double p1) {  
+  TH1D *h;
+  int s; 
+
+  f0->SetParameters(-0.5, 1.); 
+  f0->SetParameters(1., 0.); 
+  for (unsigned int i = 0; i < fS12Vector.size(); ++i) {
     h = &(vec[i]);
     s = h->Integral(1, h->GetNbinsX());  
     h->FillRandom("f0", sb*s);
@@ -8531,7 +8580,8 @@ void anaXS::setFunctionParameters(TH1D *h, TF1 *f, int mode) {
     f->FixParameter(3, 1.6);
     //f->SetParLimits(3, 1., 2.2);
     f->SetParLimits(4, 0, 10000000);
-    f->SetParLimits(5, 9.9, 10.1);
+    f->FixParameter(5, f->GetParameter(0) + 0.56);
+    //f->SetParLimits(5, 9.9, 10.1);
     f->SetParLimits(6, 0.06, 0.26);
     f->SetParLimits(7, 0, 10000000);
     f->SetParLimits(8, 0, 10000000);
