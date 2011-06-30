@@ -5,7 +5,7 @@
  *
  * \Authors M.Merola, A. Orso M. Iorio
  * 
- * \ version $Id: SingleTopAnalyzer.h,v 1.3 2010/03/18 11:34:07 oiorio Exp $
+ * \ version $Id: SingleTopTriggers.h,v 1.1 2011/06/21 17:18:51 oiorio Exp $
  */
 
 
@@ -93,6 +93,7 @@ class SingleTopTriggers : public edm::EDFilter {
   edm::InputTag hlTriggerResults_;
   bool init_;
   
+  std::vector<std::string> triggersList;
   bool isMC, electronTrigger, muonTrigger;
   int channel;
   

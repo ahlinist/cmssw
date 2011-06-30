@@ -47,7 +47,7 @@ process.source.fileNames = cms.untracked.vstring("file:/tmp/oiorio/TChannelMerge
 
 #Output
 
-process.TFileService = cms.Service("TFileService", fileName = cms.string("/tmp/oiorio/TChannel_b.root"))
+process.TFileService = cms.Service("TFileService", fileName = cms.string("/tmp/oiorio/TChannel_pt_bmode.root"))
 
 process.load("SingleTopAnalyzers_cfi")
 process.load("SingleTopRootPlizer_cfi")
@@ -63,49 +63,60 @@ process.PlotsMu.channelInfo = TChannelMu
 
 channel_instruction = "channel_instruction" #SWITCH_INSTRUCTION
 
-MC = False #TRIGGER_INSTRUCTION
-process.HLTFilterMu.isMC = MC
-process.HLTFilterEle.isMC = MC
+MC_instruction = False #TRIGGER_INSTRUCTION
+
+process.HLTFilterMu.isMC = MC_instruction
+process.HLTFilterEle.isMC = MC_instruction
+process.HLTFilterMuOrEle.isMC = MC_instruction
+process.HLTFilterMuOrEleMC.isMC = MC_instruction
     
-    
+if channel_instruction == "allmc":
+    process.PathSys = cms.Path(
+    #    process.PlotsMu +
+    #    process.PlotsEle +
+    process.HLTFilterMuOrEleMC *
+    process.TreesMu +
+    process.TreesEle
+    )
+
 if channel_instruction == "all":
     process.PathSys = cms.Path(
-        #    process.PlotsMu +
-        #    process.PlotsEle +
-        process.HLTFilterMuOrEle *
-        process.TreesMu +
-        process.TreesEle
-        )
+    #    process.PlotsMu +
+    #    process.PlotsEle +
+    process.HLTFilterMuOrEle *
+    process.TreesMu +
+    process.TreesEle
+    )
 
 if channel_instruction == "mu":
     process.PathSysMu = cms.Path(
-        #    process.PlotsMu +
-        #    process.PlotsEle +
-        process.HLTFilterMu *
-        process.TreesMu 
-        )
+    #    process.PlotsMu +
+    #    process.PlotsEle +
+    process.HLTFilterMu *
+    process.TreesMu 
+    )
 
 if channel_instruction == "ele":
     process.PathSysMu = cms.Path(
-        #    process.PlotsMu +
-        #    process.PlotsEle +
-        process.HLTFilterEle *
-        process.TreesEle 
-        )
+    #    process.PlotsMu +
+    #    process.PlotsEle +
+    process.HLTFilterEle *
+    process.TreesEle 
+    )
 
 if channel_instruction == "muqcd":
     process.PathSysMu = cms.Path(
-        #    process.PlotsMu +
-        #    process.PlotsEle +
-        process.HLTFilterMuQCD *
-        process.TreesMu 
-        )
+    #    process.PlotsMu +
+    #    process.PlotsEle +
+    process.HLTFilterMuQCD *
+    process.TreesMu 
+    )
 
 
 if channel_instruction == "eleqcd":
     process.PathSysEle = cms.Path(
-        #    process.PlotsMu +
-        #    process.PlotsEle +
-        process.HLTFilterEleQCD *
-        process.TreesEle
-        )
+    #    process.PlotsMu +
+    #    process.PlotsEle +
+    process.HLTFilterEleQCD *
+    process.TreesEle
+    )

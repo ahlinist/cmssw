@@ -50,7 +50,7 @@ countMuons = cms.EDFilter("PATCandViewCountFilter",
                           filter = cms.bool(True)
                           )
 
-countLeptons = cms.EDFilter("CandOrCounterNoOverlap",
+countLeptonsNoOverlap = cms.EDFilter("CandOrCounterNoOverlap",
                             
                             src1 = cms.InputTag("tightMuons"),
                             src2 = cms.InputTag("tightElectrons"),
@@ -63,4 +63,14 @@ countLeptons = cms.EDFilter("CandOrCounterNoOverlap",
 
                             minNumberLoose = cms.int32(1),
                             maxNumberLoose = cms.int32(9999),
+                            )
+
+
+countLeptons = cms.EDFilter("CandOrCounter",
+                            
+                            src1 = cms.InputTag("tightMuons"),
+                            src2 = cms.InputTag("tightElectrons"),
+                            
+                            minNumber = cms.int32(1),
+                            maxNumber = cms.int32(9999),
                             )

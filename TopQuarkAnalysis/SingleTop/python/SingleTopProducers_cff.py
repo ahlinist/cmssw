@@ -47,14 +47,14 @@ topJetsPF = cms.EDFilter("PATJetSelector",
 
 tightMuons = cms.EDFilter("PATMuonSelector",
                         preselection = cms.string(''),
-                        src = cms.InputTag("looseMuons"),
+                        src = cms.InputTag("selectedPatMuons"),
                         cut = cms.string(''),
                         checkOverlaps = cms.PSet(),
                         )
 
 tightElectrons = cms.EDFilter("PATElectronSelector",
                         preselection = cms.string(''),
-                        src = cms.InputTag("looseElectrons"),
+                        src = cms.InputTag("selectedPatElectrons"),
                         cut = cms.string(''),
                         checkOverlaps = cms.PSet(),
                          )
