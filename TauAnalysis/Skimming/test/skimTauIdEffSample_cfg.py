@@ -28,7 +28,7 @@ process.source = cms.Source("PoolSource",
 )
 
 process.maxEvents = cms.untracked.PSet(
-    input = cms.untracked.int32(3)
+    input = cms.untracked.int32(-1)
 )
 
 ##isMC = True # use for MC
@@ -94,7 +94,7 @@ configurePrePatProduction(process, pfCandidateCollection = pfCandidateCollection
 from TauAnalysis.TauIdEfficiency.tools.configurePatTupleProductionTauIdEffMeasSpecific import *
 
 patTupleConfig = configurePatTupleProductionTauIdEffMeasSpecific(
-    process, hltProcess = HLTprocessName, addGenInfo = isMC, applyZrecoilCorrection = False, runSVfit = False)
+    process, hltProcess = HLTprocessName, isMC = isMC, applyZrecoilCorrection = False, runSVfit = False)
 #--------------------------------------------------------------------------------
 
 #------------------------------------------------------------------------------------------------------------------------
@@ -133,7 +133,10 @@ process.p = cms.Path(
 process.load("Configuration.EventContent.EventContent_cff")
 process.origFEVTSIMEventContent = copy.deepcopy(process.FEVTSIMEventContent)
 process.origFEVTSIMEventContent.outputCommands.extend(
-    cms.untracked.vstring('drop *_*_*_%s' % process.name_(),'keep edmMergeableCounter_*_*_*')
+    cms.untracked.vstring(
+        'drop *_*_*_%s' % process.name_(),
+        'keep edmMergeableCounter_*_*_*'
+    )
 )    
 
 process.skimOutputModule = cms.OutputModule("PoolOutputModule",                                 
@@ -218,6 +221,7 @@ for patPFTauSelectorForTauIdEff in patPFTauSelectorsForTauIdEff:
     patPFTauSelectorModule = getattr(process, patPFTauSelectorForTauIdEff)
     patPFTauSelectorModule.minJetPt = cms.double(15.0)
     patPFTauSelectorModule.maxJetEta = cms.double(2.5)
+    patPFTauSelectorModule.applyECALcrackVeto = cms.bool(False)
 #--------------------------------------------------------------------------------  
  
 # define order in which different paths are run
@@ -233,3 +237,36 @@ process.schedule = cms.Schedule(
 
 processDumpFile = open('skimTauIdEffSample.dump' , 'w')
 print >> processDumpFile, process.dumpPython()
+
+#---------------------------------
+# CV: ONLY FOR TESTING !!!
+tauIdEffSampleEventSelection = cms.untracked.PSet( # CV: ONLY FOR TESTING !!!
+    SelectEvents = cms.untracked.PSet(
+        SelectEvents = cms.vstring(
+            'debugSkimPath'
+        )
+    )
+)
+process.skimOutputModule.SelectEvents = cms.untracked.PSet( # CV: ONLY FOR TESTING !!!
+    SelectEvents = cms.vstring('debugSkimPath')
+)
+process.skimOutputModule.fileName = cms.untracked.string(
+    "/data1/veelken/tmp/ZTTCands_matthew_C1fDebug.root"
+)
+process.zeroMuTauPairFilter = cms.EDFilter("PATCandViewCountFilter",
+    src = cms.InputTag('selectedMuPFTauHPSpTaNCpairsDzForTauIdEffCumulative'),
+    minNumber = cms.uint32(0),
+    maxNumber = cms.uint32(0)                                   
+)
+process.debugSkimPath = cms.Path(process.zeroMuTauPairFilter)
+process.o = cms.EndPath(process.skimOutputModule + process.saveZtoMuTau_tauIdEffPlots)
+process.schedule = cms.Schedule( # CV: ONLY FOR TESTING !!!
+    process.counterPath,
+    process.p,
+    process.debugSkimPath,
+    process.o
+)
+processDumpFile = open('skimTauIdEffSample.dump' , 'w')
+print >> processDumpFile, process.dumpPython()
+# CV: ONLY FOR TESTING !!!
+#---------------------------------
