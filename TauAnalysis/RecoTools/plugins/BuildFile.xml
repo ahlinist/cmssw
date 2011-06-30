@@ -21,6 +21,7 @@
   <use   name="DataFormats/DetId"/>
   <use   name="DataFormats/SiPixelDetId"/>
   <use   name="DataFormats/Math"/>
+  <use   name="SimDataFormats/PileupSummaryInfo"/>
   <use   name="PhysicsTools/IsolationAlgos"/>
   <use   name="PhysicsTools/PatUtils"/>
   <use   name="PhysicsTools/Utilities"/>
