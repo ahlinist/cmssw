@@ -61,7 +61,7 @@ public:
   void ReadHistogramsDATA0(TFile *f,  const char *s2 = "AnaEff_1S", const char *s3 = "AnaEff_2S", const char *s4 = "AnaEff_3S", const char *binning = "mt,pt-eta");
   
   void ReadHistogramsDATA1(TFile *f, const char *s1 = "UpsilonMass",  const char *s5 = "MuIDEff_1S", 
-		      const char *s8 = "TrigEff_1S", const char *s11 = "TrackEff_1S", const char *binning = "mt,pt-eta");
+		      const char *s8 = "TrigEff_1S", const char *s11 = "TrackEff_1S", const char *s12 = "Pt_IntegratedMass", const char *s13 = "Rapidity_IntegratedMass", const char *binning = "mt,pt-eta");
   
   void ReadHistogramsDATA2(TFile *f,  const char *binning = "mt,pt-eta");  
   
@@ -119,7 +119,7 @@ public:
 
   // -- vectors containing the fitted histograms: S1 =UpsilonMass, S2 =AnaEff_1S, S3 = AnaEff_2S, S4 = AnaEff_3S, 
   // S5 =MuIDEff_1S, S6 = MuIDEff_2S, S7 = MuIDEff_3S, S8 =TrigEff_1S, S9 = TrigEff_2S, S10 = TrigEff_3S
-  std::vector<TH1D> fS1Vector, fS2Vector, fS3Vector, fS4Vector, fS5Vector, fS6Vector, fS7Vector, fS8Vector, fS9Vector, fS10Vector , fS11Vector;
+  std::vector<TH1D> fS1Vector, fS2Vector, fS3Vector, fS4Vector, fS5Vector, fS6Vector, fS7Vector, fS8Vector, fS9Vector, fS10Vector , fS11Vector, fS12Vector, fS13Vector;
   
   //-- 2d histograms for the (fitted) event yields
   TH2D *fS1Yield, *fS2Yield, *fS3Yield, *fAllGenRes, *fRecoGenRes,  *fPreSelBefore, *fPreSelAfter, *fAllGenRes_2S, *fRecoGenRes_2S,  *fPreSelBefore_2S, *fPreSelAfter_2S, *fAllGenRes_3S, *fRecoGenRes_3S,  *fPreSelBefore_3S, *fPreSelAfter_3S, *fAnaEff, *fAnaEff_2S, *fAnaEff_3S, *fS1YieldCorrected, *fS2YieldCorrected, *fS3YieldCorrected, *fS1YieldComparison, *fS2YieldComparison, *fS3YieldComparison, *fAcceptance, *fAcceptance_2S, *fAcceptance_3S,  *fMuIDEff, *fMuIDEff_2, *fMuIDEff_3, *fTrigEff, *fTrigEff_2, *fTrigEff_3, *fPreSelEff, *fPreSelEff_2S, *fPreSelEff_3S, *falpha, *fn, *fTrueYield_1S, *fTrueYield_2S, *fTrueYield_3S, *fTrackEff;
