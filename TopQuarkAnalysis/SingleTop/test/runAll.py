@@ -11,32 +11,50 @@ fileName = "SingleTopSystematicsWithTrigger_cfg.py"
 
 #Channels to include
 channels = [
-    "TChannel",
-#    "DataMu",
-#    "DataEle",
-    "TTBar",
-    "ZJets",
-    "ZJets_wlight",
-    "ZJets_wcc",
-    "ZJets_wbb",
-    "tWChan",
-    "sChan",
-    "WJets_wlight",
-    "WJets_wcc",
-    "Wjets_wbb",
-    "WJets",
-    "VV",
-   "Wc_wc",
-    "Vqq_wbb",
-    "Vqq_wcc",
-  ]
+#
+  "DataMu",
+  "DataEle",
+  "DataMuQCD",
+  "DataEleQCD",
+#
+  "TChannel",
+#
+  "QCDMu",
+  "EMEnriched_30to80",
+  "EMEnriched_80to170",
+  "BCtoE_20to30",
+  "BCtoE_30to80",
+  "BCtoE_80to170",
+  "GJets_HT_40To100",
+  "GJets_HT_100To200",
+  "GJets_HT_200",
+
+  "TTBar",
+  
+   "ZJets",
+   "ZJets_wlight",
+   "ZJets_wcc",
+   "ZJets_wbb",
+   "tWChan ",
+   "sChan",
+
+  "WJets_wlight",
+  "WJets_wcc",
+  "WJets_wbb",
+  "WJets",
+  "Wc_wc",
+  "Vqq_wbb",
+  "Vqq_wcc",
+  "VV",
+
+   ]
 
 #Path to take data merged files
 dataPath = "file:/tmp/oiorio/"
 
 #Choose if you want to run or just prepare the configuration files
 mode = ""
-#mode = "cmsRun"
+mode = "cmsRun"
 
 
 #Use mu , ele or both
@@ -45,7 +63,7 @@ channel_instruction = "all"
 #Implementation:
 
 #Function to replace a sequence of characters channelOld to channelNew in a file 
-def changeChannel(fileName,channelOld,channelNew,switch): 
+def changeChannel(fileName,channelOld,channelNew,switch,isMC): 
     print " Channel test " + channelNew
     channelToReplace = channelNew
     if channelNew=="DataMu" or channelNew == "DataEle" or channelNew == "DataMuQCD" or channelNew =="DataEleQCD":
@@ -60,6 +78,11 @@ def changeChannel(fileName,channelOld,channelNew,switch):
             print line
             line = line.replace('"channel_instruction"','"'+switch+'"')
             print line
+        if "MC_instruction" in line and "False" in line:
+       #     if "False" in line:
+                print line
+                line = line.replace("False",isMC)
+                print line
         words = line.split()
         for word in words:
             if channelOld in word:  
@@ -97,6 +120,7 @@ shutil.copy(fileName,tmpName)
 
 for channel in channels:
 
+    isMC = "False"
     if channel == "DataMu":
         channel_instruction = "mu"
     elif channel == "DataEle":
@@ -105,14 +129,14 @@ for channel in channels:
         channel_instruction = "muqcd"
     elif channel == "DataEleQCD":
         channel_instruction = "eleqcd"
-    else:
-        channel_instruction = "all"  
-
+    else : 
+        channel_instruction = "allmc"   
+        isMC = "True"
     channelOld = startChannel
     
-    cfg_file = changeChannel(tmpName,channelOld,channel,channel_instruction)
+    cfg_file = changeChannel(tmpName,channelOld,channel,channel_instruction,isMC)
     command = 'nohup cmsRun ./' + channel+'_cfg.py > /tmp/oiorio/'+channel+'.log &'
-
+    
     print command
 
     if mode == "cmsRun":

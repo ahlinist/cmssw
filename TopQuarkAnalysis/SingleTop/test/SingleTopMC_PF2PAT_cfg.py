@@ -222,16 +222,22 @@ savePatTupleSkimLoose = cms.untracked.vstring(
 ## Output module configuration
 process.singleTopNTuple = cms.OutputModule("PoolOutputModule",
 #                                fileName = cms.untracked.string('rfio:/CST/cern.ch/user/o/oiorio/SingleTop/SubSkims/WControlSamples1.root'),
+<<<<<<< SingleTopMC_PF2PAT_cfg.py
+#                   fileName = cms.untracked.string('/tmp/oiorio/edmntuple_tchannel_big.root'),
+                   fileName = cms.untracked.string('edmntuple_HT-40To100.root'),
+                                           
+=======
 #                   fileName = cms.untracked.Bstring('/tmp/oiorio/edmntuple_tchannel_big.root'),
                    fileName = cms.untracked.string('edmntuple_WJets.root'),
                                              
+>>>>>>> 1.11
                    SelectEvents   = cms.untracked.PSet( SelectEvents = cms.vstring('selection')),
                    outputCommands = saveNTuplesSkimLoose,
 )
 
 process.singleTopPatTuple = cms.OutputModule("PoolOutputModule",
 #                                fileName = cms.untracked.string('rfio:/CST/cern.ch/user/o/oiorio/SingleTop/SubSkims/WControlSamples1.root'),
-                   fileName = cms.untracked.string('pattuple_tchannel.root'),
+                   fileName = cms.untracked.string('/tmp/oiorio/pattuple_tchannel.root'),
 
 
                    SelectEvents   = cms.untracked.PSet( SelectEvents = cms.vstring('selection')),
@@ -240,7 +246,7 @@ process.singleTopPatTuple = cms.OutputModule("PoolOutputModule",
 process.singleTopNTuple.dropMetaData = cms.untracked.string("ALL")
 
 process.outpath = cms.EndPath(
-    process.singleTopNTuple# +
+    process.singleTopNTuple # +
 #    process.singleTopPatTuple 
     )
 

@@ -112,6 +112,16 @@ getattr(process,"patPF2PATSequence"+postfix).replace(
     getattr(process,"pfNoElectron"+postfix),
     getattr(process,"pfNoElectron"+postfix)*process.kt6PFJets )
 
+#Muons
+applyPostfix(process,"isoValMuonWithNeutral",postfix).deposits[0].deltaR = cms.double(0.3)
+applyPostfix(process,"isoValMuonWithCharged",postfix).deposits[0].deltaR = cms.double(0.3)
+applyPostfix(process,"isoValMuonWithPhotons",postfix).deposits[0].deltaR = cms.double(0.3)
+#electrons
+applyPostfix(process,"isoValElectronWithNeutral",postfix).deposits[0].deltaR = cms.double(0.3)
+applyPostfix(process,"isoValElectronWithCharged",postfix).deposits[0].deltaR = cms.double(0.3)
+applyPostfix(process,"isoValElectronWithPhotons",postfix).deposits[0].deltaR = cms.double(0.3)
+
+
 process.pathPreselection = cms.Path(
 #    process.patElectronIDs +
     process.goodOfflinePrimaryVertices *
@@ -119,6 +129,9 @@ process.pathPreselection = cms.Path(
     getattr(process,"patPF2PATSequence"+postfix)
     )
 
+<<<<<<< SingleTopData_PF2PAT_cfg.py
+#process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(5706) )
+=======
 #getattr(process,"pfNoPileUp"+postfix).enable = True
 #getattr(process,"pfNoMuon"+postfix).enable = True
 #getattr(process,"pfNoElectron"+postfix).enable = True
@@ -126,12 +139,19 @@ process.pathPreselection = cms.Path(
 #Getattr (process,"pfNoJet"+postfix).enable = True 
 
 #process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(1000) )
+>>>>>>> 1.8
 process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(-1) )
 process.source = cms.Source ("PoolSource",
                              fileNames = cms.untracked.vstring (
+<<<<<<< SingleTopData_PF2PAT_cfg.py
+#    'file:/tmp/oiorio/F81B1889-AF4B-DF11-85D3-001A64789DF4.root'
+'file:/tmp/oiorio/F8DFDD84-4B56-E011-84BD-003048D2BE08.root',
+#'file:/tmp/oiorio/EC0EE286-FA55-E011-B99B-003048F024F6.root'
+=======
 'file:/tmp/oiorio/401AE9B7-F8A1-E011-93CB-003048F1C832.root',
 #'file:/tmp/oiorio/F81B1889-AF4B-DF11-85D3-001A64789DF4.root'
 #'file:/tmp/oiorio/EC0EE286-FA55-E011-B99B-003048F024F6.root'
+>>>>>>> 1.8
 #'file:/tmp/oiorio/D0B32FD9-6D87-E011-8572-003048678098.root'
 #'file:/tmp/oiorio/149E3017-B799-E011-9FA9-003048F118C2.root'
 ),
@@ -210,8 +230,13 @@ savePatTupleSkimLoose = cms.untracked.vstring(
 process.singleTopNTuple = cms.OutputModule("PoolOutputModule",
 #                                fileName = cms.untracked.string('rfio:/CST/cern.ch/user/o/oiorio/SingleTop/SubSkims/WControlSamples1.root'),
 #                   fileName = cms.untracked.Bstring('/tmp/oiorio/edmntuple_tchannel_big.root'),
+<<<<<<< SingleTopData_PF2PAT_cfg.py
+                   fileName = cms.untracked.string('edmntuple_Mu_v1.root'),
+#                   fileName = cms.untracked.string('/tmp/oiorio/edmntuple_Mu_v1.root'),
+=======
                    fileName = cms.untracked.string('/tmp/oiorio/edmntuple_DataEle_v4.root'),
 #                   fileName = cms.untracked.string('edmntuple_DataEle_v4.root'),
+>>>>>>> 1.8
                                              
                    SelectEvents   = cms.untracked.PSet( SelectEvents = cms.vstring('selection')),
                    outputCommands = saveNTuplesSkimLoose,
@@ -219,7 +244,8 @@ process.singleTopNTuple = cms.OutputModule("PoolOutputModule",
 
 process.singleTopPatTuple = cms.OutputModule("PoolOutputModule",
 #                                fileName = cms.untracked.string('rfio:/CST/cern.ch/user/o/oiorio/SingleTop/SubSkims/WControlSamples1.root'),
-                   fileName = cms.untracked.string('pattuple_tchannel.root'),
+#                   fileName = cms.untracked.string('pattuple_tchannel.root'),
+                   fileName = cms.untracked.string('/tmp/oiorio/pattuple_tchannel-2.root'),
 
 
                    SelectEvents   = cms.untracked.PSet( SelectEvents = cms.vstring('selection')),
