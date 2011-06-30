@@ -237,36 +237,3 @@ process.schedule = cms.Schedule(
 
 processDumpFile = open('skimTauIdEffSample.dump' , 'w')
 print >> processDumpFile, process.dumpPython()
-
-#---------------------------------
-# CV: ONLY FOR TESTING !!!
-tauIdEffSampleEventSelection = cms.untracked.PSet( # CV: ONLY FOR TESTING !!!
-    SelectEvents = cms.untracked.PSet(
-        SelectEvents = cms.vstring(
-            'debugSkimPath'
-        )
-    )
-)
-process.skimOutputModule.SelectEvents = cms.untracked.PSet( # CV: ONLY FOR TESTING !!!
-    SelectEvents = cms.vstring('debugSkimPath')
-)
-process.skimOutputModule.fileName = cms.untracked.string(
-    "/data1/veelken/tmp/ZTTCands_matthew_C1fDebug.root"
-)
-process.zeroMuTauPairFilter = cms.EDFilter("PATCandViewCountFilter",
-    src = cms.InputTag('selectedMuPFTauHPSpTaNCpairsDzForTauIdEffCumulative'),
-    minNumber = cms.uint32(0),
-    maxNumber = cms.uint32(0)                                   
-)
-process.debugSkimPath = cms.Path(process.zeroMuTauPairFilter)
-process.o = cms.EndPath(process.skimOutputModule + process.saveZtoMuTau_tauIdEffPlots)
-process.schedule = cms.Schedule( # CV: ONLY FOR TESTING !!!
-    process.counterPath,
-    process.p,
-    process.debugSkimPath,
-    process.o
-)
-processDumpFile = open('skimTauIdEffSample.dump' , 'w')
-print >> processDumpFile, process.dumpPython()
-# CV: ONLY FOR TESTING !!!
-#---------------------------------
