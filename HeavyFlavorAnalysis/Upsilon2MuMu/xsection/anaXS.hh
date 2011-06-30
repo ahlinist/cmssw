@@ -56,6 +56,7 @@ public:
 		      const char *s2 = "AnaEff_1S", const char *s3 = "AnaEff_2S", const char *s4 = "AnaEff_3S",
 		      const char *s5 = "MuIDEff_1S", const char *s6 = "MuIDEff_2S", const char *s7 = "MuIDEff_3S",
 		      const char *s8 = "TrigEff_1S", const char *s9 = "TrigEff_2S", const char *s10 = "TrigEff_3S",
+		      const char *s12 = "Pt_IntegratedMass", const char *s13 = "Rapidity_IntegratedMass",
 		      const char *binning = "mt,pt-eta");
   
   void ReadHistogramsDATA0(TFile *f,  const char *s2 = "AnaEff_1S", const char *s3 = "AnaEff_2S", const char *s4 = "AnaEff_3S", const char *binning = "mt,pt-eta");
@@ -68,6 +69,8 @@ public:
   void readPidTables(const char *sample = "jpsi");
 
   void addBackground(std::vector<TH1D> &vec, double s2b = 2., double p0 = 1., double p1 = 0.);
+  void addBackground_PtInt(std::vector<TH1D> &vec, double s2b = 2., double p0 = 1., double p1 = 0.);
+  void addBackground_RapInt(std::vector<TH1D> &vec, double s2b = 2., double p0 = 1., double p1 = 0.);
   void fitJpsi(int mode);
   void fitUpsilon(int mode);
   void FITUpsilon(int mode);
