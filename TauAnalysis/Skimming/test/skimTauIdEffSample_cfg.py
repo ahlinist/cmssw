@@ -222,6 +222,10 @@ for patPFTauSelectorForTauIdEff in patPFTauSelectorsForTauIdEff:
     patPFTauSelectorModule.minJetPt = cms.double(15.0)
     patPFTauSelectorModule.maxJetEta = cms.double(2.5)
     patPFTauSelectorModule.applyECALcrackVeto = cms.bool(False)
+    patPFTauSelectorModule.pfIsolation.chargedHadronIso.dRisoCone = cms.double(0.4)
+    patPFTauSelectorModule.pfIsolation.neutralHadronIso.dRisoCone = cms.double(0.)
+    patPFTauSelectorModule.pfIsolation.photonIso.dRisoCone = cms.double(0.4)
+    
 #--------------------------------------------------------------------------------  
  
 # define order in which different paths are run
