@@ -79,6 +79,9 @@ private:
   virtual void envSet(const edm::EventSetup&);
 
   // ----------member data ---------------------------
+
+  const bool            taggingMode_;
+
   bool debug_;
 
   bool doEEfilter_;
@@ -253,7 +256,8 @@ void EcalDeadCellEventFilter::loadEcalRecHits(edm::Event& iEvent, const edm::Eve
 //
 // constructors and destructor
 //
-EcalDeadCellEventFilter::EcalDeadCellEventFilter(const edm::ParameterSet& iConfig){
+EcalDeadCellEventFilter::EcalDeadCellEventFilter(const edm::ParameterSet& iConfig) : 
+  taggingMode_( iConfig.getParameter<bool>("taggingMode") ) {
 
   debug_= iConfig.getUntrackedParameter<bool>("debug",false);
 
@@ -287,6 +291,7 @@ EcalDeadCellEventFilter::EcalDeadCellEventFilter(const edm::ParameterSet& iConfi
 
   }
 
+  produces<bool>();
 }
 
 EcalDeadCellEventFilter::~EcalDeadCellEventFilter() {
@@ -362,8 +367,11 @@ bool EcalDeadCellEventFilter::filter(edm::Event& iEvent, const edm::EventSetup& 
      (*outFile) <<run<<":"<<ls<<":"<<event<<std::endl;
   }
 
-  return pass;
+  std::auto_ptr<bool> pOut( new bool(pass) ); 
+  iEvent.put( pOut );
 
+  if (taggingMode_) return true;
+  else return pass;
 }
 
 // ------------ method called once each job just before starting event loop  ------------
