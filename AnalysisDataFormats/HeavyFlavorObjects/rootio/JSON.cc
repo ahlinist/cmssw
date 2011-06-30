@@ -21,15 +21,18 @@ JSON::JSON(const char *fname, int verbose) {
     jsonFile.push_back(line); 
   }
 
-  
+  string::size_type p1;
+  string::size_type p2;
+  string::size_type p3;
+
   for (unsigned int i = 0; i < jsonFile.size(); ++i) {
-    string::size_type p1 = jsonFile[i].find("\""); 
-    string::size_type p2 = jsonFile[i].find("\"", p1+1); 
-    string::size_type p3 = jsonFile[i].find("]],", p2+1); 
+    p1 = jsonFile[i].find("\""); 
+    p2 = jsonFile[i].find("\"", p1+1); 
+    p3 = jsonFile[i].find("]],", p2+1); 
     while (p1 != string::npos && p2 != string::npos && p3 != string::npos) {
       string sRun = jsonFile[i].substr(p1+1, p2-p1-1); 
       string sLs  = jsonFile[i].substr(p2+3, p3-p2-1); 
-      // cout << "run: " << sRun << " -> LS: " << sLs << endl;
+      //      cout << "run: " << sRun << " -> LS: " << sLs << endl;
       int run = atoi(sRun.c_str());
       vector<string> sections = parseLS(sLs); 
 
@@ -38,13 +41,13 @@ JSON::JSON(const char *fname, int verbose) {
       for (unsigned int j = 0; j < sections.size(); ++j) {
 	lumisection = ls(sections[j]); 
 	runLS.push_back(lumisection); 
-	// cout << "  " << sections[j] << " -> " << lumisection.first << " ... " << lumisection.second << endl;
+	//	cout << "  " << sections[j] << " -> " << lumisection.first << " ... " << lumisection.second << endl;
       }
       fRunLsList.insert(make_pair(run, runLS)); 
      
-      p1 = jsonFile[i].find("\"", p3); 
+      p1 = jsonFile[i].find("\"", p3+1); 
       p2 = jsonFile[i].find("\"", p1+1); 
-      p3 = jsonFile[i].find("]],", p2+1); 
+      p3 = jsonFile[i].find("]]", p2+1); 
     }
   }
 
