@@ -1525,19 +1525,39 @@ void xsReader::fillCandHist(int mode) {
     for ( int iy = 0; iy < fNy; ++iy ){
       if ( fCandY >= 0 ){
 	if ( ( fCandY >= fYbin[iy] ) && ( fCandY < fYbin[iy+1] ) ){
-	  ((TH1D*)fpHistFile->Get(Form("UpsilonMass,rapidity%.1f_%.1f,pt_all", fYbin[iy], fYbin[iy+1])))->Fill(fCandMass,fWeight);
+	  ((TH1D*)fpHistFile->Get(Form("Pt_IntegratedMass,rapidity%.1f_%.1f", fYbin[iy], fYbin[iy+1])))->Fill(fCandMass,fWeight);
 	}
       }
       
       if ( fCandY < 0 ){
 	fCandY*=-1;
 	if ( ( fCandY >= fYbin[iy] ) && ( fCandY < fYbin[iy+1] ) ){
-	  ((TH1D*)fpHistFile->Get(Form("UpsilonMass,rapidity%.1f_%.1f,pt_all", fYbin[iy], fYbin[iy+1])))->Fill(fCandMass,fWeight);
+	  ((TH1D*)fpHistFile->Get(Form("Pt_IntegratedMass,rapidity%.1f_%.1f", fYbin[iy], fYbin[iy+1])))->Fill(fCandMass,fWeight);
+	}
+      }
+    }
+    
+    
+    for ( int ipt = 0; ipt < fNpt; ++ipt ){
+      if ( fCandY >= 0 ){
+	if ( ( fCandPt >= fPTbin[ipt] ) && ( fCandPt < fPTbin[ipt+1] ) ){
+	  ((TH1D*)fpHistFile->Get(Form("Rapidity_IntegratedMass,pt%.1f_%.1f", fPTbin[ipt], fPTbin[ipt+1])))->Fill(fCandMass,fWeight);
+	}
+      }
+      
+      if ( fCandY < 0 ){
+	fCandY*=-1;
+	if ( ( fCandPt >= fPTbin[ipt] ) && ( fCandPt < fPTbin[ipt+1] ) ){
+	  ((TH1D*)fpHistFile->Get(Form("Rapidity_IntegratedMass,pt%.1f_%.1f", fPTbin[ipt], fPTbin[ipt+1])))->Fill(fCandMass,fWeight);
 	}
       }
     }
     
   }
+  
+  
+  
+  
   
   
   
@@ -1866,15 +1886,21 @@ void xsReader::bookHist() {
   k = new TH2D("CandMuPt", "CandMuPt", 40, 0, 40., 40, 0., 40.);
   
   for ( int iy = 0; iy < fNy; ++iy ){
-    h = new TH1D(Form("UpsilonMass,rapidity%.1f_%.1f,pt_all", fYbin[iy], fYbin[iy+1]), 
-    		 Form("UpsilonMass,rapidity%.1f_%.1f,pt_all", fYbin[iy], fYbin[iy+1]), fBin, fMassLow, fMassHigh);		      
-    ((TH1D*)fpHistFile->Get(Form("UpsilonMass,rapidity%.1f_%.1f,pt_all",  fYbin[iy], fYbin[iy+1])))->Sumw2(); 
+    h = new TH1D(Form("Pt_IntegratedMass,rapidity%.1f_%.1f", fYbin[iy], fYbin[iy+1]), 
+    		 Form("Pt_IntegratedMass,rapidity%.1f_%.1f", fYbin[iy], fYbin[iy+1]), fBin, fMassLow, fMassHigh);	      
+    ((TH1D*)fpHistFile->Get(Form("Pt_IntegratedMass,rapidity%.1f_%.1f",  fYbin[iy], fYbin[iy+1])))->Sumw2(); 
     for ( int ipt = 0; ipt < fNpt; ++ipt ){
       h = new TH1D(Form("UpsilonMass,rapidity%.1f_%.1f,pt%.1f_%.1f", fYbin[iy], fYbin[iy+1], fPTbin[ipt], fPTbin[ipt+1]),
 		   Form("UpsilonMass,rapidity%.1f_%.1f,pt%.1f_%.1f", fYbin[iy], fYbin[iy+1], fPTbin[ipt], fPTbin[ipt+1]),
 		   fBin, fMassLow, fMassHigh);
       ((TH1D*)fpHistFile->Get(Form("UpsilonMass,rapidity%.1f_%.1f,pt%.1f_%.1f",  fYbin[iy], fYbin[iy+1], fPTbin[ipt], fPTbin[ipt+1])))->Sumw2(); 
     }	
+  }
+  
+  for ( int ipt = 0; ipt < fNpt; ++ipt ){
+    h = new TH1D(Form("Rapidity_IntegratedMass,pt%.1f_%.1f", fPTbin[ipt], fPTbin[ipt+1]), 
+		 Form("Rapidity_IntegratedMass,pt%.1f_%.1f", fPTbin[ipt], fPTbin[ipt+1]), fBin, fMassLow, fMassHigh);
+    ((TH1D*)fpHistFile->Get(Form("Rapidity_IntegratedMass,pt%.1f_%.1f",  fPTbin[ipt], fPTbin[ipt+1])))->Sumw2(); 
   }
   
   // MCstudy() histograms
