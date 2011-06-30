@@ -5,6 +5,7 @@ nTupleTopJetsPF = cms.EDProducer(
     src = cms.InputTag("topJetsPF"),
     lazyParser = cms.untracked.bool(True),
     prefix = cms.untracked.string("topJetsPF"),
+    
     variables = cms.VPSet(
     cms.PSet(
     #B-Tagging
@@ -106,6 +107,10 @@ nTupleElectrons = cms.EDProducer(
     tag = cms.untracked.string("RelIso"),
     quantity = cms.untracked.string("(dr03TkSumPt() + max(0., dr03EcalRecHitSumEt - 1.) + dr03HcalTowerSumEt)/et")
     ),
+    cms.PSet(
+    tag = cms.untracked.string("PFRelIso"),
+    quantity = cms.untracked.string('(chargedHadronIso+ neutralHadronIso + photonIso )/pt'),
+    ),
     #ID and other parameters
     cms.PSet(
     tag = cms.untracked.string("SimpleEleId70cIso"),
@@ -135,10 +140,10 @@ nTupleElectrons = cms.EDProducer(
 #    tag = cms.untracked.string("SuperClusterEta"),
 #    quantity = cms.untracked.string("superCluster.eta")
 #    ),
-#    cms.PSet(
-#    tag = cms.untracked.string("AbsoluteDB"),
-#    quantity = cms.untracked.string("dB")
-#    ),
+    cms.PSet(
+    tag = cms.untracked.string("AbsoluteDB"),
+    quantity = cms.untracked.string("dB"),
+    ),
 #    cms.PSet(
 #    tag = cms.untracked.string("TrackerExpectedInnerHits"),
 #    quantity = cms.untracked.string("gsfTrack().trackerExpectedHitsInner.numberOfHits")
@@ -179,6 +184,11 @@ nTupleMuons = nTupleElectrons.clone(
     tag = cms.untracked.string("RelIso"),
     quantity = cms.untracked.string("(isolationR03.sumPt + isolationR03.emEt + isolationR03.hadEt)/pt")
     ),
+    cms.PSet(
+    tag = cms.untracked.string("PFRelIso"),
+    quantity = cms.untracked.string('(chargedHadronIso+ neutralHadronIso + photonIso )/pt'),
+    ),
+
     #ID and other parameters
 #    cms.PSet(
 #    tag = cms.untracked.string("IsGlobalMuonPromptTight"),
@@ -192,10 +202,10 @@ nTupleMuons = nTupleElectrons.clone(
 #    tag = cms.untracked.string("IsTrackerMuon"),
 #    quantity = cms.untracked.string("isTrackerMuon")
 #    ),
-#    cms.PSet(
-#    tag = cms.untracked.string("AbsoluteDB"),
-#    quantity = cms.untracked.string("dB")
-#    ),
+    cms.PSet(
+    tag = cms.untracked.string("AbsoluteDB"),
+    quantity = cms.untracked.string("dB"),
+    ),
 #    cms .PSet(
 #    tag = cms.untracked.string("TrackerValidInnerHits"),
 #    quantity = cms.untracked.string("innerTrack.numberOfValidHits")
@@ -236,6 +246,11 @@ nTupleLooseMuons = nTupleMuons.clone(
     tag = cms.untracked.string("RelIso"),
     quantity = cms.untracked.string("(isolationR03.sumPt + isolationR03.emEt + isolationR03.hadEt)/pt")
     ),
+    cms.PSet(
+    tag = cms.untracked.string("PFRelIso"),
+    quantity = cms.untracked.string('(chargedHadronIso+ neutralHadronIso + photonIso )/pt'),
+    ),
+
     #ID and other parameters
 #    cms.PSet(
 #    tag = cms.untracked.string("IsGlobalMuonPromptTight"),
@@ -251,7 +266,7 @@ nTupleLooseMuons = nTupleMuons.clone(
 #    ),
     cms.PSet(
     tag = cms.untracked.string("AbsoluteDB"),
-    quantity = cms.untracked.string("dB")
+    quantity = cms.untracked.string("dB"),
     ),
     #    cms .PSet(
     #    tag = cms.untracked.string("TrackerValidInnerHits"),
@@ -299,6 +314,10 @@ nTupleLooseElectrons = nTupleElectrons.clone(
     tag = cms.untracked.string("RelIso"),
     quantity = cms.untracked.string("(dr03TkSumPt() + max(0., dr03EcalRecHitSumEt - 1.) + dr03HcalTowerSumEt)/et")
     ),
+    cms.PSet(
+    tag = cms.untracked.string("PFRelIso"),
+    quantity = cms.untracked.string('(chargedHadronIso+ neutralHadronIso + photonIso )/pt'),
+    ),
     #ID and other parameters
     cms.PSet(
     tag = cms.untracked.string("EidRobustLoose"),
@@ -330,7 +349,7 @@ nTupleLooseElectrons = nTupleElectrons.clone(
 #    ),
     cms.PSet(
     tag = cms.untracked.string("AbsoluteDB"),
-    quantity = cms.untracked.string("dB")
+    quantity = cms.untracked.string("dB"),
     ),
 #    cms.PSet(
 #    tag = cms.untracked.string("TrackerExpectedInnerHits"),

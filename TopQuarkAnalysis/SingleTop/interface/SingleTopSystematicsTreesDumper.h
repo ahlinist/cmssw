@@ -6,7 +6,7 @@
  * \Authors A. Orso M. Iorio
  * 
  * Produces systematics histograms out of a standard Single Top n-tuple 
- * \ version $Id: SingleTopSystematicsTreesDumper.h,v 1.5 2011/05/26 15:37:27 oiorio Exp $
+ * \ version $Id: SingleTopSystematicsTreesDumper.h,v 1.6 2011/06/21 17:18:51 oiorio Exp $
  */
 
 
@@ -171,7 +171,7 @@ class SingleTopSystematicsTreesDumper : public edm::EDAnalyzer {
   
   //Unclustered MET to take from the event
   edm::Handle< double > UnclMETPx,UnclMETPy;
-  std::string leptonsFlavour_;  
+  std::string leptonsFlavour_,mode_;  
 
   //Part for BTagging payloads
   edm::ESHandle<BtagPerformance> perfHP;
@@ -198,7 +198,7 @@ class SingleTopSystematicsTreesDumper : public edm::EDAnalyzer {
   map<string, TTree*> treesWSampleQCD;
   
   //Other variables definitions
-  double bTagThreshold;
+  double bTagThreshold,maxPtCut;
   size_t bScanSteps;
   bool doBScan_,doQCD_;
   //To be changed in 1 tree, now we keep 
@@ -214,7 +214,7 @@ class SingleTopSystematicsTreesDumper : public edm::EDAnalyzer {
     b_discriminator_value_antitag_algo2;
 
   //Variables to use as trees references
-  double etaTree,etaTree2,cosTree,topMassTree,weightTree,mtwMassTree,lowBTagTree,highBTagTree;
+  double etaTree,etaTree2,cosTree,topMassTree,weightTree,mtwMassTree,lowBTagTree,highBTagTree,maxPtTree,minPtTree;
   int runTree, eventTree,lumiTree,chargeTree,electronID,bJetFlavourTree;
   double lepPt,lepEta,lepPhi,lepRelIso,fJetPhi,fJetPt,fJetEta,fJetE,bJetPt,bJetEta,bJetPhi,bJetE,metPt,metPhi,topPt,topPhi,topEta,topE,totalEnergy,totalMomentum;
 

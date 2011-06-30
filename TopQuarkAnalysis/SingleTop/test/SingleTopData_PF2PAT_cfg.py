@@ -1,4 +1,6 @@
+print "t"
 import FWCore.ParameterSet.Config as cms
+
 
 process = cms.Process("SingleTop")
 
@@ -10,10 +12,15 @@ process.options = cms.untracked.PSet(
     FailPath = cms.untracked.vstring('ProductNotFound','Type Mismatch')
     )
 
+# Get a list of good primary vertices, in 42x, these are DAF vertices
+from PhysicsTools.SelectorUtils.pvSelector_cfi import pvSelector
+process.goodOfflinePrimaryVertices = cms.EDFilter(
+    "PrimaryVertexObjectFilter",
+    filterParams = pvSelector.clone( minNdof = cms.double(7.0), maxZ = cms.double(24.0) ),
+    src=cms.InputTag('offlinePrimaryVertices')
+    )
 
 # conditions ------------------------------------------------------------------
-
-process.load("PhysicsTools.PFCandProducer.PF2PAT_cff")
 
 print "test "
 
@@ -22,17 +29,12 @@ process.load("Configuration.StandardSequences.Geometry_cff")
 process.load("Configuration.StandardSequences.FrontierConditions_GlobalTag_cff")
 process.load("Configuration.StandardSequences.MagneticField_AutoFromDBCurrent_cff") ### real data
 
-process.GlobalTag.globaltag = cms.string('GR_R_311_V2::All')
+#process.GlobalTag.globaltag = cms.string('GR_R_311_V2::All')
 
-#from Configuration.PyReleaseValidation.autoCond import autoCond
-#process.GlobalTag.globaltag = autoCond['startup']
+from Configuration.PyReleaseValidation.autoCond import autoCond
+process.GlobalTag.globaltag = autoCond['startup']
 process.load("TopQuarkAnalysis.SingleTop.SingleTopSequences_cff") 
 process.load("SelectionCuts_Skim_cff");
-
-
-# set the dB to the beamspot
-process.patMuons.usePV = cms.bool(False)
-process.patElectrons.usePV = cms.bool(False)
 
 # require physics declared
 process.load('HLTrigger.special.hltPhysicsDeclared_cfi')
@@ -51,34 +53,87 @@ process.load("PhysicsTools.HepMCCandAlgos.flavorHistoryPaths_cfi")
 mytrigs=["*"]
 
 from HLTrigger.HLTfilters.hltHighLevel_cfi import *
-if mytrigs is not None :
-    process.hltSelection = hltHighLevel.clone(TriggerResultsTag = 'TriggerResults::HLT', HLTPaths = mytrigs)
-    process.hltSelection.throw = False
+#if mytrigs is not None :
+#    process.hltSelection = hltHighLevel.clone(TriggerResultsTag = 'TriggerResults::HLT', HLTPaths = mytrigs)
+#    process.hltSelection.throw = False
+
+#
+#    getattr(process,"pfNoElectron"+postfix)*process.kt6PFJets 
 
 
 
+# set the dB to the beamspot
+process.patMuons.usePV = cms.bool(False)
+process.patElectrons.usePV = cms.bool(False)
 
+
+# Configure PAT to use PF2PAT instead of AOD sources
+# this function will modify the PAT sequences. It is currently 
+# not possible to run PF2PAT+PAT and standart PAT at the same time
 from PhysicsTools.PatAlgos.tools.pfTools import *
-
 postfix = ""
-jetAlgo="AK5"
+usePF2PAT(process,runPF2PAT=True, jetAlgo='AK5', runOnMC=False, postfix=postfix)
+process.pfPileUp.Enable = True
+process.pfPileUp.checkClosestZVertex = cms.bool(False)
+process.pfPileUp.Vertices = cms.InputTag('goodOfflinePrimaryVertices')
+process.pfJets.doAreaFastjet = True
+process.pfJets.doRhoFastjet = False
 
 
-usePF2PAT(process,runPF2PAT=True, jetAlgo=jetAlgo, runOnMC=False, postfix=postfix)
+# Compute the mean pt per unit area (rho) from the
+# PFchs inputs
+from RecoJets.JetProducers.kt4PFJets_cfi import kt4PFJets
+process.kt6PFJets = kt4PFJets.clone(
+    rParam = cms.double(0.6),
+    src = cms.InputTag('pfNoElectron'+postfix),
+    doAreaFastjet = cms.bool(True),
+    doRhoFastjet = cms.bool(True),
+    voronoiRfact = cms.double(0.9)
+    )
+process.patJetCorrFactors.rho = cms.InputTag("kt6PFJets", "rho")
+
+#Muons
+applyPostfix(process,"isoValMuonWithNeutral",postfix).deposits[0].deltaR = cms.double(0.3)
+applyPostfix(process,"isoValMuonWithCharged",postfix).deposits[0].deltaR = cms.double(0.3)
+applyPostfix(process,"isoValMuonWithPhotons",postfix).deposits[0].deltaR = cms.double(0.3)
+#electrons
+applyPostfix(process,"isoValElectronWithNeutral",postfix).deposits[0].deltaR = cms.double(0.3)
+applyPostfix(process,"isoValElectronWithCharged",postfix).deposits[0].deltaR = cms.double(0.3)
+applyPostfix(process,"isoValElectronWithPhotons",postfix).deposits[0].deltaR = cms.double(0.3)
+
+#applyPostfix(process,"pfIsolatedMuons",postfix).combinedIsolationCut = cms.double(0.125)
+#applyPostfix(process,"pfIsolatedElectrons",postfix).combinedIsolationCut = cms.double(0.125)
+
+applyPostfix(process,"pfIsolatedMuons",postfix).combinedIsolationCut = cms.double(0.2)
+applyPostfix(process,"pfIsolatedElectrons",postfix).combinedIsolationCut = cms.double(0.2)
+
+# Add the PV selector and KT6 producer to the sequence
+getattr(process,"patPF2PATSequence"+postfix).replace(
+    getattr(process,"pfNoElectron"+postfix),
+    getattr(process,"pfNoElectron"+postfix)*process.kt6PFJets )
 
 process.pathPreselection = cms.Path(
-    process.patElectronIDs +
+#    process.patElectronIDs +
+    process.goodOfflinePrimaryVertices *
+    process.patElectronIDs *
     getattr(process,"patPF2PATSequence"+postfix)
     )
+
+#getattr(process,"pfNoPileUp"+postfix).enable = True
+#getattr(process,"pfNoMuon"+postfix).enable = True
+#getattr(process,"pfNoElectron"+postfix).enable = True
+#getattr(process,"pfNoTau"+postfix).enable = False
+#Getattr (process,"pfNoJet"+postfix).enable = True 
 
 #process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(1000) )
 process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(-1) )
 process.source = cms.Source ("PoolSource",
                              fileNames = cms.untracked.vstring (
-
-#    'file:/tmp/oiorio/F81B1889-AF4B-DF11-85D3-001A64789DF4.root'
-'file:/tmp/oiorio/EC0EE286-FA55-E011-B99B-003048F024F6.root'
+'file:/tmp/oiorio/401AE9B7-F8A1-E011-93CB-003048F1C832.root',
+#'file:/tmp/oiorio/F81B1889-AF4B-DF11-85D3-001A64789DF4.root'
+#'file:/tmp/oiorio/EC0EE286-FA55-E011-B99B-003048F024F6.root'
 #'file:/tmp/oiorio/D0B32FD9-6D87-E011-8572-003048678098.root'
+#'file:/tmp/oiorio/149E3017-B799-E011-9FA9-003048F118C2.root'
 ),
 duplicateCheckMode = cms.untracked.string('noDuplicateCheck')
 )
@@ -127,7 +182,6 @@ process.selection = cms.Path (
     process.nTuplesSkim
     )
 
-
 from TopQuarkAnalysis.SingleTop.SingleTopNtuplizers_cff import saveNTuplesSkimLoose
 from TopQuarkAnalysis.SingleTop.SingleTopNtuplizers_cff import saveNTuplesSkimMu
 
@@ -156,7 +210,8 @@ savePatTupleSkimLoose = cms.untracked.vstring(
 process.singleTopNTuple = cms.OutputModule("PoolOutputModule",
 #                                fileName = cms.untracked.string('rfio:/CST/cern.ch/user/o/oiorio/SingleTop/SubSkims/WControlSamples1.root'),
 #                   fileName = cms.untracked.Bstring('/tmp/oiorio/edmntuple_tchannel_big.root'),
-                   fileName = cms.untracked.string('edmntuple_DataMu_v1.root'),
+                   fileName = cms.untracked.string('/tmp/oiorio/edmntuple_DataEle_v4.root'),
+#                   fileName = cms.untracked.string('edmntuple_DataEle_v4.root'),
                                              
                    SelectEvents   = cms.untracked.PSet( SelectEvents = cms.vstring('selection')),
                    outputCommands = saveNTuplesSkimLoose,
@@ -174,6 +229,6 @@ process.singleTopNTuple.dropMetaData = cms.untracked.string("ALL")
 
 process.outpath = cms.EndPath(
     process.singleTopNTuple #+
-    #process.singleTopPatTuple
+#    process.singleTopPatTuple
     )
 

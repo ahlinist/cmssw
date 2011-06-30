@@ -13,6 +13,8 @@ rateSystematics = cms.untracked.vstring("WLightRateUp",
                                         "WHFRateDown"),
 #rateSystematics = cms.untracked.vstring(""),
 leptonsID = cms.InputTag("nTupleElectrons","tightElectronsSimpleEleId70cIso"),  
+#mode = cms.untracked.string("pt"),
+maxPtCut = cms.untracked.double("45"),
 
 channelInfo = cms.PSet(
     crossSection = cms.untracked.double(20.93),
