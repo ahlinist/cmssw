@@ -984,12 +984,12 @@ void anaXS::makeAllMC(int channel) {
     
     // -- add backgrounds
     addBackground(fS1Vector, 0.3);
-    addBackground_PtInt(fS12Vector, 0.3);
-    addBackground_RapInt(fS13Vector, 0.3);
+    //addBackground_PtInt(fS12Vector, 0.3);
+    //addBackground_RapInt(fS13Vector, 0.3);
     
     //Pull(1);
     
-    FITUpsilon(3); //3 for PtIntegrated plots, 4 for RapidityIntegrated plots
+    FITUpsilon(7); //5 for PtIntegrated plots, 6 for RapidityIntegrated plots
     //GetAnaEff();
     //GetPreSelEff();
     //GetMuIDEff(1);
@@ -1031,7 +1031,7 @@ void anaXS::makeAllDATA(int channel) {
     
     //table(fS1YieldPt, "anan");
     
-    FITUpsilon(3); //3 for PtIntegrated plots, 4 for RapidityIntegrated plots
+    FITUpsilon(1); //3 for PtIntegrated plots, 4 for RapidityIntegrated plots
     //GetAnaEff();
     //GetPreSelEff();
     //GetTrackEff();
@@ -3423,16 +3423,36 @@ void anaXS::ReadHistograms(TFile *f, const char *s1, const char *s2, const char 
 		      );  
   
   falpha = new TH2D("falpha", 
-		      Form("%s falpha", s1), 
-		      fHbinning->GetNbinsY(), fHbinning->GetYaxis()->GetXbins()->GetArray(),
-		      fHbinning->GetNbinsX(), fHbinning->GetXaxis()->GetXbins()->GetArray()
-		      );    
+		    Form("%s falpha", s1), 
+		    fHbinning->GetNbinsY(), fHbinning->GetYaxis()->GetXbins()->GetArray(),
+		    fHbinning->GetNbinsX(), fHbinning->GetXaxis()->GetXbins()->GetArray()
+		    );    
+  
+  falpha_1D_ptInt = new TH1D("falpha_1D_ptInt", 
+			     Form("%s falpha_1D_ptInt", s1), 
+			     fHbinning->GetNbinsY(), fHbinning->GetYaxis()->GetXbins()->GetArray()
+			     ); 
+  
+  falpha_1D_RapInt = new TH1D("falpha_1D_RapInt", 
+			     Form("%s falpha_1D_RapInt", s1), 
+			     fHbinning->GetNbinsX(), fHbinning->GetXaxis()->GetXbins()->GetArray()
+			     ); 
   
   fn = new TH2D("fn", 
-		      Form("%s fn", s1), 
-		      fHbinning->GetNbinsY(), fHbinning->GetYaxis()->GetXbins()->GetArray(),
-		      fHbinning->GetNbinsX(), fHbinning->GetXaxis()->GetXbins()->GetArray()
-		      );    
+		Form("%s fn", s1), 
+		fHbinning->GetNbinsY(), fHbinning->GetYaxis()->GetXbins()->GetArray(),
+		fHbinning->GetNbinsX(), fHbinning->GetXaxis()->GetXbins()->GetArray()
+		);    
+  
+  fn_1D_ptInt = new TH1D("fn_1D_ptInt", 
+			 Form("%s fn_1D_ptInt", s1), 
+			 fHbinning->GetNbinsY(), fHbinning->GetYaxis()->GetXbins()->GetArray()
+			 );    
+  
+  fn_1D_RapInt = new TH1D("fn_1D_RapInt", 
+			 Form("%s fn_1D_RapInt", s1), 
+			 fHbinning->GetNbinsX(), fHbinning->GetXaxis()->GetXbins()->GetArray()
+			 );   
   
   fAnaEff = new TH2D("fAnaEff", "fAnaEff", 
 		     fHbinning->GetNbinsY(), fHbinning->GetYaxis()->GetXbins()->GetArray(),
@@ -4290,7 +4310,7 @@ void anaXS::Pull(int mode){
       h4 = new TH1D(Form("PullError_1S_%s",frag.Data() ), Form("PullError_1S_%s",frag.Data() ), 100, 0., 100);
       
       for (unsigned int i = 0; i < 100; ++i) {
-	setFunctionParameters(H, f13, 6);
+	setFunctionParameters(H, f13, 6, 0);
 	H->Fit(f13, fopt.c_str());
 	status = 0;
 	cout << gMinuit->fCstatu.Data() << endl;
@@ -4342,7 +4362,7 @@ void anaXS::Pull(int mode){
 	  h->SetBinContent(i,content+gRandom->Gaus(0,sigma));
 	}
 	
-	setFunctionParameters(h, f13, 6);
+	setFunctionParameters(h, f13, 6, 0);
 	h->Fit(f13, fopt.c_str());
 	status = 0;
 	cout << gMinuit->fCstatu.Data() << endl;
@@ -4478,7 +4498,7 @@ void anaXS::Pull(int mode){
       h4 = new TH1D(Form("PullError_1S_%s",frag.Data() ), Form("PullError_1S_%s",frag.Data() ), 100, 0., 10.);
       
       for (unsigned int i = 0; i < 100; ++i) {
-	setFunctionParameters(H, f13, 6);
+	setFunctionParameters(H, f13, 6, 0);
 	H->Fit(f13, fopt.c_str());
 	status = 0;
 	cout << gMinuit->fCstatu.Data() << endl;
@@ -4549,7 +4569,7 @@ void anaXS::Pull(int mode){
 	integral_2S = f10->Integral(8.7,11.2)/h->GetBinWidth(1);	
 	
 	
-	setFunctionParameters(h, f13, 6);
+	setFunctionParameters(h, f13, 6, 0);
 	h->Fit(f13, fopt.c_str());
 	status = 0;
 	cout << gMinuit->fCstatu.Data() << endl;
@@ -4667,6 +4687,7 @@ void anaXS::FITUpsilon(int mode){
     double yield_3S(0.), yieldE_3S(0.);
     double alpha(0.), n(0.);
     double scale(1.033);
+    double YieldTot(0.);
     
     int    nbin;
     int fitted(0);
@@ -4681,8 +4702,6 @@ void anaXS::FITUpsilon(int mode){
     makeCanvas(1); 
     c1->Clear();
     
-    TFile *f = new TFile("Yield.root", "RECREATE");
-        
     for (unsigned int i = 0; i < fS1Vector.size(); ++i) {
       
       // -- positive charge
@@ -4690,7 +4709,7 @@ void anaXS::FITUpsilon(int mode){
       h = &(fS1Vector[i]);
       h->SetMinimum(0.); setTitles(h, "Mass_{#mu #mu} [GeV]", "Entries/Bin", 0.08, 0.9, 1.8, 0.07);
       if (h->GetSumOfWeights() > 10.) {
-	setFunctionParameters(h, f13, 6);
+	setFunctionParameters(h, f13, 6, 3);
 	h->Fit(f13, fopt.c_str());
 	status = 0;
 	cout << gMinuit->fCstatu.Data() << endl;
@@ -4766,6 +4785,7 @@ void anaXS::FITUpsilon(int mode){
 	cout << " Ups(1S) yield =  " << yield_1S << "+/-" << yieldE_1S  << endl;
 	alpha = f13->GetParameter(2);
 	n = f13->GetParameter(3);
+	YieldTot += yield_1S;
 	
 	// Ups 2S
 	f10->SetParameters( f13->GetParameter(5), f13->GetParameter(6), f13->GetParameter(2), f13->GetParameter(3), f13->GetParameter(7) );
@@ -4831,12 +4851,14 @@ void anaXS::FITUpsilon(int mode){
       c1->SaveAs(Form("%s/massfits_%s_%s.eps", fPtDirectory.c_str(), fSample.c_str(), frag.Data())); 
     }
     
+    TFile *f = new TFile("Yield.root", "RECREATE");
     fS1Yield->Write();
     fS2Yield->Write();
     fS3Yield->Write();
     falpha->Write();
     fn->Write();
     c1->Clear();
+    cout << "YieldTot = " << YieldTot << endl;
   }
   
   if ( mode == 2  ){
@@ -4883,7 +4905,7 @@ void anaXS::FITUpsilon(int mode){
 	  }
 	}
 	
-	setFunctionParameters(h, f6, 5); 
+	setFunctionParameters(h, f6, 5, 0); 
 	h->Fit(f6, fopt.c_str());
 	status = 0;
 	cout << gMinuit->fCstatu.Data() << endl;
@@ -4980,7 +5002,6 @@ void anaXS::FITUpsilon(int mode){
     makeCanvas(1); 
     c1->Clear();
     
-    TFile *f = new TFile("Sigma.root", "RECREATE");
     TH1D *hSigma1S = new TH1D("hSigma1S","hSigma1S", 7, -0.4, 2.4); 
     TH1D *hSigma2S = new TH1D("hSigma2S","hSigma2S", 7, -0.4, 2.4);
     
@@ -4990,7 +5011,7 @@ void anaXS::FITUpsilon(int mode){
       h = &(fS12Vector[i]);
       h->SetMinimum(0.); setTitles(h, "Mass_{#mu #mu} [GeV]", "Entries/Bin", 0.08, 0.9, 1.8, 0.07);
       if (h->GetSumOfWeights() > 10.) {
-	setFunctionParameters(h, f13, 6);
+	setFunctionParameters(h, f13, 6, 1);
 	h->Fit(f13, fopt.c_str());
 	status = 0;
 	cout << gMinuit->fCstatu.Data() << endl;
@@ -5064,8 +5085,8 @@ void anaXS::FITUpsilon(int mode){
 	if ( f13->GetParameter(4) > f13->GetParError(4) ) yieldE_1S = TMath::Abs(yieldE_1S);
 	if ( f13->GetParameter(4) < f13->GetParError(4) ) yieldE_1S = TMath::Sqrt(yield_1S);
 	cout << " Ups(1S) yield =  " << yield_1S << "+/-" << yieldE_1S  << endl;
-	alpha = f13->GetParameter(2);
-	n = f13->GetParameter(3);
+	//alpha = f13->GetParameter(2);
+	//n = f13->GetParameter(3);
 	sig1 = f13->GetParameter(1);
 	sigE1 = f13->GetParError(1);
 		
@@ -5123,6 +5144,7 @@ void anaXS::FITUpsilon(int mode){
       c1->SaveAs(Form("%s/massfits_%s_%s.eps", fPtDirectory.c_str(), fSample.c_str(), frag.Data())); 
     }
     
+    TFile *f = new TFile("SigmaDATA.root", "RECREATE");
     hSigma1S->Write();
     hSigma2S->Write();
     //c1->Clear();
@@ -5140,6 +5162,7 @@ void anaXS::FITUpsilon(int mode){
     double yield_3S(0.), yieldE_3S(0.);
     double alpha(0.), n(0.);
     double scale(1.033);
+    double YieldTot(0.);
     
     int    nbin;
     int fitted(0);
@@ -5160,7 +5183,7 @@ void anaXS::FITUpsilon(int mode){
       h = &(fS13Vector[i]);
       h->SetMinimum(0.); setTitles(h, "Mass_{#mu #mu} [GeV]", "Entries/Bin", 0.08, 0.9, 1.8, 0.07);
       if (h->GetSumOfWeights() > 10.) {
-	setFunctionParameters(h, f13, 6);
+	setFunctionParameters(h, f13, 6, 2);
 	h->Fit(f13, fopt.c_str());
 	status = 0;
 	cout << gMinuit->fCstatu.Data() << endl;
@@ -5236,7 +5259,8 @@ void anaXS::FITUpsilon(int mode){
 	cout << " Ups(1S) yield =  " << yield_1S << "+/-" << yieldE_1S  << endl;
 	alpha = f13->GetParameter(2);
 	n = f13->GetParameter(3);
-	
+	if ( i > 0 ) YieldTot += yield_1S;
+		
 	// Ups 2S
 	f10->SetParameters( f13->GetParameter(5), f13->GetParameter(6), f13->GetParameter(2), f13->GetParameter(3), f13->GetParameter(7) );
 	yield_2S  = f10->Integral(8.7,11.2)/h->GetBinWidth(1);
@@ -5284,2759 +5308,558 @@ void anaXS::FITUpsilon(int mode){
       c1->SaveAs(Form("%s/massfits_%s_%s.eps", fPtDirectory.c_str(), fSample.c_str(), frag.Data())); 
     }
     
+    cout << "YieldTot = " << YieldTot << endl;
     //c1->Clear();
   }
   
-
-}
-// ----------------------------------------------------------------------
-void anaXS::fitUpsilon(int mode) {  
-
-
-  if ( mode == 0 ){   // fit All three Upsilons with pol + Gaussians
-
-  //    o function for fitting
-  //    o do in there something about low statistics cases
-
-	int PRINT(1); 
-	double PRINTX(0.3);
-
-	TH1D *h; 
-
-	  //  string fopt("LLIEMQ"); 
-	string fopt("LLE"); 
-
-  	double pt, eta; 
-  	int    Q; 
-	
-  	double yield, yieldE; 
-  	int    nbin; 
-
-  	gStyle->SetOptStat(PRINT); 
-  	gStyle->SetOptFit(PRINT); 
-  	makeCanvas(1); 
-  	c1->Clear();
-  	c1->Divide(3,1); 
-  	//  for (int i = 1; i < 4; ++i) {
-  	for (unsigned int i = 0; i < fS1VectorPos.size(); ++i) {
-
-  		  // -- positive charge
-    		c1->cd(1); shrinkPad(0.15, 0.26); 
-    		h = &(fS1VectorPos[i]);
-    		h->SetMinimum(0.); setTitles(h, "m_{#mu #mu} [GeV]", "Entries/Bin", 0.08, 0.9, 1.8, 0.07);
-    		if (h->GetSumOfWeights() > 10.) {
-    		  setFunctionParameters(h, f2, 2); 
-    		  h->Fit(f2, fopt.c_str());
-    		  yield  = f2->GetParameter(0)/h->GetBinWidth(1);
-    		  yieldE = f2->GetParError(0)/h->GetBinWidth(1);
-    		} else {
-    		  h->Draw();
-    		  yield  = h->GetSumOfWeights();
-    		  yieldE = TMath::Sqrt(h->GetSumOfWeights());
-    		}
-    		if (PRINT) tl->DrawLatex(PRINTX, 0.85, Form("%4.1f", yield)); 
-    		cout << " --> " << h->GetName() << "  " << yield << "+/-" << yieldE << endl;
-
-    		getBinCenters(h->GetName(), eta, pt, Q); 
-    		nbin = fS1YieldPos->FindBin(eta, pt); 
-    		fS1YieldPos->SetBinContent(nbin, yield); 
-    		fS1YieldPos->SetBinError(nbin, yieldE); 
-		
-    		c1->Modified();
-    		c1->Update();
-		
-    		c1->cd(2); shrinkPad(0.15, 0.26); 
-    		h = &(fS2VectorPos[i]);
-    		h->SetMinimum(0.); setTitles(h, "m_{#mu t} [GeV]", "Entries/Bin", 0.08, 0.9, 1.8, 0.07);
-    		if (h->GetSumOfWeights() > 10.) {
-    		  setFunctionParameters(h, f2, 2); 
-    		  h->Fit(f2, fopt.c_str());
-    		  yield  = f2->GetParameter(0)/h->GetBinWidth(1);
-    		  yieldE = f2->GetParError(0)/h->GetBinWidth(1);
-    		} else {
-    		  h->Draw();
-    		  yield  = h->GetSumOfWeights();
-    		  yieldE = TMath::Sqrt(h->GetSumOfWeights());
-    		}
-		
- 		if (PRINT) tl->DrawLatex(PRINTX, 0.85, Form("%4.1f", yield)); 
-    		cout << " --> " << h->GetName() << "  " << yield << "+/-" << yieldE << endl;
-    		getBinCenters(h->GetName(), eta, pt, Q); 
-    		nbin = fS2YieldPos->FindBin(eta, pt); 
-    		fS2YieldPos->SetBinContent(nbin, yield); 
-    		fS2YieldPos->SetBinError(nbin, yieldE); 
-		
-    		c1->Modified();
-    		c1->Update();
-		
-    		c1->cd(3);  shrinkPad(0.15, 0.26); 
-    		h = &(fS3VectorPos[i]);
-    		h->SetMinimum(0.); setTitles(h, "m_{#mu #bar{#mu} } [GeV]", "Entries/Bin", 0.08, 0.9, 1.8, 0.07);
-    		if (h->GetSumOfWeights() > 10.) {
-    		  setFunctionParameters(h, f2, 2); 
-     	  	  h->Fit(f2, fopt.c_str());
-      	  	  yield  = f2->GetParameter(0)/h->GetBinWidth(1);
-      	  	  yieldE = f2->GetParError(0)/h->GetBinWidth(1);
-    		} else {
-      		  h->Draw();
-      		  yield  = h->GetSumOfWeights();
-      		  yieldE = TMath::Sqrt(h->GetSumOfWeights());
-    		}
-	
-    		if (PRINT) tl->DrawLatex(PRINTX, 0.85, Form("%4.1f", yield)); 
-    		cout << " --> " << h->GetName() << "  " << yield << "+/-" << yieldE << endl;
-    		getBinCenters(h->GetName(), eta, pt, Q); 
-    		nbin = fS3YieldPos->FindBin(eta, pt); 
-    		double mm = fS1YieldPos->GetBinContent(nbin); 
-    		double mmE= fS1YieldPos->GetBinError(nbin); 
-    		fS3YieldPos->SetBinContent(nbin, yield+mm); 
-    		fS3YieldPos->SetBinError(nbin, TMath::Sqrt(yieldE*yieldE + mmE*mmE)); 
-		
-   		TString frag(h->GetName()); 
-    		frag.ReplaceAll("s3:mmbar,", ""); 
-    		frag.ReplaceAll(",Q1", ""); 
-    		frag.ReplaceAll(".", ":"); 
-	
-    		c1->SaveAs(Form("%s/massfits-pos-%s-%s.eps", fPtDirectory.c_str(), fSample.c_str(), frag.Data())); 
-  	}
-  	
-  
-  		c1->Clear();
-  		c1->Divide(3,1); 
-  	for (unsigned int i = 0; i < fS1VectorNeg.size(); ++i) {
-
-  		  // -- negative charge
-    		c1->cd(1); shrinkPad(0.15, 0.26);  
-    		h = &(fS1VectorNeg[i]);
-    		h->SetMinimum(0.); setTitles(h, "m_{#mu #mu} [GeV]", "Entries/Bin", 0.08, 0.9, 1.8, 0.07);
-    		if (h->GetSumOfWeights() > 10.) {
-    		  setFunctionParameters(h, f2, 2); 
-    		  h->Fit(f2, fopt.c_str());
-    		  yield  = f2->GetParameter(0)/h->GetBinWidth(1);
-    		  yieldE = f2->GetParError(0)/h->GetBinWidth(1);
-    		} else {
-    	  	  h->Draw();
-    	  	  yield  = h->GetSumOfWeights();
-    	  	  yieldE = TMath::Sqrt(h->GetSumOfWeights());
-    		}
-	
-		if (PRINT) tl->DrawLatex(PRINTX, 0.85, Form("%4.1f", yield)); 
-    		cout << " --> " << h->GetName() << "  " << yield << "+/-" << yieldE << endl;
-    		getBinCenters(h->GetName(), eta, pt, Q); 
-    		nbin = fS1YieldNeg->FindBin(eta, pt); 
-    		fS1YieldNeg->SetBinContent(nbin, yield); 
-    		fS1YieldNeg->SetBinError(nbin, yieldE); 
-	
-    		c1->Modified();
-    		c1->Update();
-	
-    		c1->cd(2); shrinkPad(0.15, 0.26); 
-    		h = &(fS2VectorNeg[i]);
-    		h->SetMinimum(0.); setTitles(h, "m_{#mu t} [GeV]", "Entries/Bin", 0.08, 0.9, 1.8, 0.07);
-    		if (h->GetSumOfWeights() > 10.) {
-    	  	  setFunctionParameters(h, f2, 2); 
-    	  	  h->Fit(f2, fopt.c_str());
-    	    	  yield  = f2->GetParameter(0)/h->GetBinWidth(1);
-    	   	  yieldE = f2->GetParError(0)/h->GetBinWidth(1);
-    	 	} else {
-    	  	  h->Draw();
-    	   	  yield  = h->GetSumOfWeights();
-    	   	  yieldE = TMath::Sqrt(h->GetSumOfWeights());
-    		}
-	
-    		if (PRINT) tl->DrawLatex(PRINTX, 0.85, Form("%4.1f", yield)); 
-    		cout << " --> " << h->GetName() << "  " << yield << "+/-" << yieldE << endl;
-    		getBinCenters(h->GetName(), eta, pt, Q); 
-    		nbin = fS2YieldNeg->FindBin(eta, pt); 
-    		fS2YieldNeg->SetBinContent(nbin, yield); 
-    		fS2YieldNeg->SetBinError(nbin, yieldE); 
-	
-    		c1->cd(3);  shrinkPad(0.15, 0.26); 
-    		h = &(fS3VectorNeg[i]);
-    		h->SetMinimum(0.); setTitles(h, "m_{#mu #bar{#mu} } [GeV]", "Entries/Bin", 0.08, 0.9, 1.8, 0.07);
-    		if (h->GetSumOfWeights() > 10.) {
-    		  setFunctionParameters(h, f2, 2); 
-    	  	  h->Fit(f2, fopt.c_str());
-    	  	  yield  = f2->GetParameter(0)/h->GetBinWidth(1);
-    	  	  yieldE = f2->GetParError(0)/h->GetBinWidth(1);
-    		} else {
-    	  	  h->Draw();
-    	  	  yield  = h->GetSumOfWeights();
-    	  	  yieldE = TMath::Sqrt(h->GetSumOfWeights());
-    		}
-
-    		if (PRINT) tl->DrawLatex(PRINTX, 0.85, Form("%4.1f", yield)); 
-    		cout << " --> " << h->GetName() << "  " << yield << "+/-" << yieldE << endl;
-    		getBinCenters(h->GetName(), eta, pt, Q); 
-    		nbin = fS3YieldNeg->FindBin(eta, pt); 
-    		double mm = fS1YieldNeg->GetBinContent(nbin); 
-    		double mmE= fS1YieldNeg->GetBinError(nbin); 
-    		fS3YieldNeg->SetBinContent(nbin, yield+mm); 
-    		fS3YieldNeg->SetBinError(nbin, TMath::Sqrt(yieldE*yieldE + mmE*mmE)); 
-		
-		
-    		c1->Modified();
-    		c1->Update();
-	
-    		TString frag(h->GetName()); 
-    		frag.ReplaceAll("s3:mmbar,", ""); 
-    		frag.ReplaceAll(",Q-1", ""); 
-    		frag.ReplaceAll(".", ":"); 
-		
-    		c1->SaveAs(Form("%s/massfits-neg-%s-%s.eps", fPtDirectory.c_str(), fSample.c_str(), frag.Data())); 
-
-  	}
-
-  }
-  
-  if ( mode == 1 ){   // fit Upsilon(1S) with pol + CB
-
-  //    o function for fitting
-  //    o do in there something about low statistics cases
-
-	int PRINT(1); 
-	double PRINTX(0.3);
-
-	TH1D *h; 
-
-	  //  string fopt("LLIEMQ"); 
-	string fopt("LLE"); 
-
-  	double pt, eta; 
-  	int    Q; 
-	
-  	double yield, yieldE, width, widthE; 
-  	int    nbin;
-	int fitted(0);
-	 
-  	int status(0);
-	const char* Status;
-		
-	TH1D *hChisq_mm    = new TH1D("hChisq/ndof_mm"   , "hChisq/ndof_mm"   , 40, -20.,20.);
-	TH1D *hChisq_mt    = new TH1D("hChisq/ndof_mt"   , "hChisq/ndof_mt"   , 40, -20.,20.); 
-	TH1D *hChisq_mmbar = new TH1D("hChisq/ndof_mmbar", "hChisq/ndof_mmbar", 40, -20.,20.);
-	
- 	TH1D *hSigma_mm    = new TH1D("hSigma_mm"   , "hSigma_mm"   , 28, -0.14,0.14);
-	TH1D *hSigma_mt    = new TH1D("hSigma_mt"   , "hSigma_mt"   , 28, -0.14,0.14); 
-	TH1D *hSigma_mmbar = new TH1D("hSigma_mmbar", "hSigma_mmbar", 28, -0.14,0.14);
-	
- 	TH1D *hAlpha_mm    = new TH1D("hAlpha_mm"   , "hAlpha_mm"   , 30, -3.,3.);
-	TH1D *hAlpha_mt    = new TH1D("hAlpha_mt"   , "hAlpha_mt"   , 30, -3.,3.); 
-	TH1D *hAlpha_mmbar = new TH1D("hAlpha_mmbar", "hAlpha_mmbar", 30, -3.,3.);		
-	
- 	TH1D *hn_mm        = new TH1D("hn_mm"   , "hn_mm"   , 40, -4.,4.);
-	TH1D *hn_mt        = new TH1D("hn_mt"   , "hn_mt"   , 40, -4.,4.); 
-	TH1D *hn_mmbar     = new TH1D("hn_mmbar", "hn_mmbar", 40, -4.,4.);
-	
-  	gStyle->SetOptStat(PRINT); 
-  	gStyle->SetOptFit(PRINT); 
-  	makeCanvas(1); 
-  	c1->Clear();
-  	c1->Divide(3,1);
-	 
-  	for (unsigned int i = 0; i < fS1VectorPos.size(); ++i) {
-
-  		  // -- positive charge
-    		c1->cd(1); shrinkPad(0.15, 0.26); 
-    		h = &(fS1VectorPos[i]);
-    		h->SetMinimum(0.); setTitles(h, "m_{#mu #mu} [GeV]", "Entries/Bin", 0.08, 0.9, 1.8, 0.07);
-    		if (h->GetSumOfWeights() > 10.) {
-    		  setFunctionParameters(h, f6, 5); 
-    		  h->Fit(f6, fopt.c_str());
-		  status = 0;
-		  cout << gMinuit->fCstatu.Data() << endl;
-		  Status = gMinuit->fCstatu.Data();
-		  cout << Status[0] << endl;
-		  if ( Status[0] == 'S' || Status[0] == 'P' ){
-	   	   	status = 1;
-	      	  } else if ( Status[0] == 'F' ){ 
-	      		status = -1;
-		  }
-		  cout << status << endl;
-		  ///////////////
-		  if ( status == -1 || status == 0 ){
-			f6->SetParameters( f6->GetParameter(0), f6->GetParameter(1), f6->GetParameter(2), f6->GetParameter(3), f6->GetParameter(4) ,
-			f6->GetParameter(5), f6->GetParameter(6));
-			h->Fit(f6, fopt.c_str());
-		  }
-			
-		  cout << gMinuit->fCstatu.Data() << endl;
-		  Status = gMinuit->fCstatu.Data();
-		  cout << Status[0] << endl;
-			
-		  if ( Status[0] == 'S' || Status[0] == 'P' ){
-	   	    	status = 1;
-	      	  } else if ( Status[0] == 'F' ){ 
-	      		status = -1;
-		  }
-		  cout << status << endl;
-		  /////////////////////////	
-		  if ( status == 1 ){
-			hChisq_mm->Fill(status*(f6->GetChisquare()/f6->GetNDF()));
-			hSigma_mm->Fill(status*f6->GetParameter(1));
-			hAlpha_mm->Fill(status*f6->GetParameter(2));
-			hn_mm->Fill(status*f6->GetParameter(3));
-		  }
-		  f10->SetParameters( f6->GetParameter(0), f6->GetParameter(1), f6->GetParameter(2), f6->GetParameter(3), f6->GetParameter(4) );
-    		  yield  = f10->Integral(8.7,11.2)/h->GetBinWidth(1);
-    		  yieldE = TMath::Sqrt(yield);
-		  fitted = 1;
-    		} else {
-    		  h->Draw();
-    		  yield  = h->GetSumOfWeights();
-    		  yieldE = TMath::Sqrt(h->GetSumOfWeights());
-		  fitted = 0;
-    		}
-    		if (PRINT) tl->DrawLatex(PRINTX, 0.85, Form("%4.1f", yield)); 
-    		cout << " --> " << h->GetName() << "  " << yield << "+/-" << yieldE << endl;
-
-    		getBinCenters(h->GetName(), eta, pt, Q); 
-    		nbin = fS1YieldPos->FindBin(eta, pt); 
-    		fS1YieldPos->SetBinContent(nbin, yield); 
-    		fS1YieldPos->SetBinError(nbin, yieldE); 
-		
-    		c1->Modified();
-    		c1->Update();
-		
-    		c1->cd(2); shrinkPad(0.15, 0.26); 
-    		h = &(fS2VectorPos[i]);
-    		h->SetMinimum(0.); setTitles(h, "m_{#mu t} [GeV]", "Entries/Bin", 0.08, 0.9, 1.8, 0.07);
-    		if (h->GetSumOfWeights() > 10.) {
-    		  setFunctionParameters(h, f6, 5); 
-    		  h->Fit(f6, fopt.c_str());
-		  status = 0;
-		  cout << gMinuit->fCstatu.Data() << endl;
-		  Status = gMinuit->fCstatu.Data();
-		  cout << Status[0] << endl;
-		  if ( Status[0] == 'S' || Status[0] == 'P' ){
-	   	     	status = 1;
-	      	  } else if ( Status[0] == 'F' ){ 
-	      		status = -1;
-		  }
-		  cout << status << endl;
-		  ///////////////
-		  if ( status == -1 || status == 0 ){
-			f6->SetParameters( f6->GetParameter(0), f6->GetParameter(1), f6->GetParameter(2), f6->GetParameter(3), f6->GetParameter(4) ,
-			f6->GetParameter(5), f6->GetParameter(6));
-			h->Fit(f6, fopt.c_str());
-		  }
-		
-		  cout << gMinuit->fCstatu.Data() << endl;
-		  Status = gMinuit->fCstatu.Data();
-		  cout << Status[0] << endl;
-		
-		  if ( Status[0] == 'S' || Status[0] == 'P' ){
-	  	    	status = 1;
-	      	  } else if ( Status[0] == 'F' ){ 
-	      		status = -1;
-		  }
-		  cout << status << endl;
-		  /////////////////////////
-		  if ( status == 1 ){
-			hChisq_mt->Fill(status*(f6->GetChisquare()/f6->GetNDF()));
-			hSigma_mt->Fill(status*f6->GetParameter(1));
-			hAlpha_mt->Fill(status*f6->GetParameter(2));
-			hn_mt->Fill(status*f6->GetParameter(3));
-		  }
-		  f10->SetParameters( f6->GetParameter(0), f6->GetParameter(1), f6->GetParameter(2), f6->GetParameter(3), f6->GetParameter(4) );
-		  yield  = f10->Integral(8.7,11.2)/h->GetBinWidth(1);
-      		  yieldE = TMath::Sqrt(yield);
-      		  width  = f6->GetParameter(1); 
-      		  widthE = f6->GetParError(1); 
-      		  fitted = 1; 
-    		} else {
-    		  h->Draw();
-    		  yield  = h->GetSumOfWeights();
-    		  yieldE = TMath::Sqrt(h->GetSumOfWeights());
-		  fitted = 0;
-    		}
-		
- 		if (PRINT) tl->DrawLatex(PRINTX, 0.85, Form("%4.1f", yield)); 
-    		cout << " --> " << h->GetName() << "  " << yield << "+/-" << yieldE << endl;
-    		getBinCenters(h->GetName(), eta, pt, Q); 
-    		nbin = fS2YieldPos->FindBin(eta, pt); 
-    		fS2YieldPos->SetBinContent(nbin, yield); 
-    		fS2YieldPos->SetBinError(nbin, yieldE); 
-		
-    		c1->Modified();
-    		c1->Update();
-		
-    		c1->cd(3);  shrinkPad(0.15, 0.26); 
-    		h = &(fS3VectorPos[i]);
-    		h->SetMinimum(0.); setTitles(h, "m_{#mu #bar{#mu} } [GeV]", "Entries/Bin", 0.08, 0.9, 1.8, 0.07);
-    		if (h->GetSumOfWeights() > 10.) {
-    		  setFunctionParameters(h, f6, 5); 
-     	  	  h->Fit(f6, fopt.c_str());
-		  status = 0;
-		  cout << gMinuit->fCstatu.Data() << endl;
-		  Status = gMinuit->fCstatu.Data();
-		  cout << Status[0] << endl;
-		  if ( Status[0] == 'S' || Status[0] == 'P' ){
-	   	   	status = 1;
-	      	  } else if ( Status[0] == 'F' ){ 
-	      		status = -1;
-		  }
-		  cout << status << endl;
-		  ///////////////
-		  if ( status == -1 || status == 0 ){
-			f6->SetParameters( f6->GetParameter(0), f6->GetParameter(1), f6->GetParameter(2), f6->GetParameter(3), f6->GetParameter(4) ,
-			f6->GetParameter(5), f6->GetParameter(6));
-			h->Fit(f6, fopt.c_str());
-		  }
-		
-		  cout << gMinuit->fCstatu.Data() << endl;
-		  Status = gMinuit->fCstatu.Data();
-		  cout << Status[0] << endl;
-		
-		  if ( Status[0] == 'S' || Status[0] == 'P' ){
-	  	    	status = 1;
-	      	  } else if ( Status[0] == 'F' ){ 
-	      		status = -1;
-		  }
-		  cout << status << endl;
-		  /////////////////////////
-		  if ( status == 1 ){
-			hChisq_mmbar->Fill(status*(f6->GetChisquare()/f6->GetNDF()));
-			hSigma_mmbar->Fill(status*f6->GetParameter(1));
-			hAlpha_mmbar->Fill(status*f6->GetParameter(2));
-			hn_mmbar->Fill(status*f6->GetParameter(3));
-		  }		
-		  f10->SetParameters( f6->GetParameter(0), f6->GetParameter(1), f6->GetParameter(2), f6->GetParameter(3), f6->GetParameter(4) );
-		  yield  = f10->Integral(8.7,11.2)/h->GetBinWidth(1);
-      		  yieldE = TMath::Sqrt(yield);		
-      		  fitted = 1; 
-    		} else {
-      		  h->Draw();
-      		  yield  = h->GetSumOfWeights();
-      		  yieldE = TMath::Sqrt(h->GetSumOfWeights());
-		  fitted = 0;
-    		}
-	
-    		if (PRINT) tl->DrawLatex(PRINTX, 0.85, Form("%4.1f", yield)); 
-    		cout << " --> " << h->GetName() << "  " << yield << "+/-" << yieldE << endl;
-    		getBinCenters(h->GetName(), eta, pt, Q); 
-    		nbin = fS3YieldPos->FindBin(eta, pt); 
-    		double mm = fS1YieldPos->GetBinContent(nbin); 
-    		double mmE= fS1YieldPos->GetBinError(nbin); 
-    		fS3YieldPos->SetBinContent(nbin, yield+mm); 
-    		fS3YieldPos->SetBinError(nbin, TMath::Sqrt(yieldE*yieldE + mmE*mmE)); 
-		
-   		TString frag(h->GetName()); 
-    		frag.ReplaceAll("s3:mmbar,", ""); 
-    		frag.ReplaceAll(",Q1", ""); 
-    		frag.ReplaceAll(".", ":"); 
-	
-    		c1->SaveAs(Form("%s/massfits-pos-%s-%s.eps", fPtDirectory.c_str(), fSample.c_str(), frag.Data())); 
-  	}
-  	
-  
-  		c1->Clear();
-  		c1->Divide(3,1); 
-  	for (unsigned int i = 0; i < fS1VectorNeg.size(); ++i) {
-
-  		  // -- negative charge
-    		c1->cd(1); shrinkPad(0.15, 0.26);  
-    		h = &(fS1VectorNeg[i]);
-    		h->SetMinimum(0.); setTitles(h, "m_{#mu #mu} [GeV]", "Entries/Bin", 0.08, 0.9, 1.8, 0.07);
-    		if (h->GetSumOfWeights() > 10.) {
-    		  setFunctionParameters(h, f6, 5); 
-    		  h->Fit(f6, fopt.c_str());
-		  status = 0;
-		  cout << gMinuit->fCstatu.Data() << endl;
-		  Status = gMinuit->fCstatu.Data();
-		  cout << Status[0] << endl;
-		  if ( Status[0] == 'S' || Status[0] == 'P' ){
-	   	   	status = 1;
-	      	  } else if ( Status[0] == 'F' ){ 
-	      		status = -1;
-		  }
-		  cout << status << endl;
-		  ///////////////
-		  if ( status == -1 || status == 0 ){
-			f6->SetParameters( f6->GetParameter(0), f6->GetParameter(1), f6->GetParameter(2), f6->GetParameter(3), f6->GetParameter(4) ,
-			f6->GetParameter(5), f6->GetParameter(6));
-			h->Fit(f6, fopt.c_str());
-		  }
-		
-	  	  cout << gMinuit->fCstatu.Data() << endl;
-		  Status = gMinuit->fCstatu.Data();
-		  cout << Status[0] << endl;
-		
-		  if ( Status[0] == 'S' || Status[0] == 'P' ){
-	  	    	status = 1;
-	      	  } else if ( Status[0] == 'F' ){ 
-	      		status = -1;
-		  }
-		  cout << status << endl;
-		  /////////////////////////
-		  if ( status == 1 ){
-			hChisq_mm->Fill(status*(f6->GetChisquare()/f6->GetNDF()));
-			hSigma_mm->Fill(status*f6->GetParameter(1));
-			hAlpha_mm->Fill(status*f6->GetParameter(2));
-			hn_mm->Fill(status*f6->GetParameter(3));
-		  }		
-		  f10->SetParameters( f6->GetParameter(0), f6->GetParameter(1), f6->GetParameter(2), f6->GetParameter(3), f6->GetParameter(4) );
-		  yield  = f10->Integral(8.7,11.2)/h->GetBinWidth(1);
-      		  yieldE = TMath::Sqrt(yield);		
-    		} else {
-    	  	  h->Draw();
-    	  	  yield  = h->GetSumOfWeights();
-    	  	  yieldE = TMath::Sqrt(h->GetSumOfWeights());
-    		}
-	
-		if (PRINT) tl->DrawLatex(PRINTX, 0.85, Form("%4.1f", yield)); 
-    		cout << " --> " << h->GetName() << "  " << yield << "+/-" << yieldE << endl;
-    		getBinCenters(h->GetName(), eta, pt, Q); 
-    		nbin = fS1YieldNeg->FindBin(eta, pt); 
-    		fS1YieldNeg->SetBinContent(nbin, yield); 
-    		fS1YieldNeg->SetBinError(nbin, yieldE); 
-	
-    		c1->Modified();
-    		c1->Update();
-	
-    		c1->cd(2); shrinkPad(0.15, 0.26); 
-    		h = &(fS2VectorNeg[i]);
-    		h->SetMinimum(0.); setTitles(h, "m_{#mu t} [GeV]", "Entries/Bin", 0.08, 0.9, 1.8, 0.07);
-    		if (h->GetSumOfWeights() > 10.) {
-    	  	  setFunctionParameters(h, f6, 5); 
-    	  	  h->Fit(f6, fopt.c_str());
-		  status = 0;
-		  cout << gMinuit->fCstatu.Data() << endl;
-		  Status = gMinuit->fCstatu.Data();
-		  cout << Status[0] << endl;
-		if ( Status[0] == 'S' || Status[0] == 'P' ){
-	   	   	status = 1;
-	      	} else if ( Status[0] == 'F' ){ 
-	      		status = -1;
-		}
-		cout << status << endl;
-		///////////////
-		if ( status == -1 || status == 0 ){
-			f6->SetParameters( f6->GetParameter(0), f6->GetParameter(1), f6->GetParameter(2), f6->GetParameter(3), f6->GetParameter(4) ,
-			f6->GetParameter(5), f6->GetParameter(6));
-			h->Fit(f6, fopt.c_str());
-		}
-		
-		cout << gMinuit->fCstatu.Data() << endl;
-		Status = gMinuit->fCstatu.Data();
-		cout << Status[0] << endl;
-		
-		if ( Status[0] == 'S' || Status[0] == 'P' ){
-	  	    	status = 1;
-	      	} else if ( Status[0] == 'F' ){ 
-	      		status = -1;
-			}
-		cout << status << endl;
-		/////////////////////////
-		if ( status == 1 ){
-			hChisq_mt->Fill(status*(f6->GetChisquare()/f6->GetNDF()));
-			hSigma_mt->Fill(status*f6->GetParameter(1));
-			hAlpha_mt->Fill(status*f6->GetParameter(2));
-			hn_mt->Fill(status*f6->GetParameter(3));
-		}		
-		f10->SetParameters( f6->GetParameter(0), f6->GetParameter(1), f6->GetParameter(2), f6->GetParameter(3), f6->GetParameter(4) );
-		yield  = f10->Integral(8.7,11.2)/h->GetBinWidth(1);
-      		yieldE = TMath::Sqrt(yield);		
-      		width  = f6->GetParameter(1); 
-      		widthE = f6->GetParError(1); 
-		fitted = 1;  
-    	 	} else {
-    	  	  h->Draw();
-    	   	  yield  = h->GetSumOfWeights();
-    	   	  yieldE = TMath::Sqrt(h->GetSumOfWeights());
-		  fitted = 0;
-    		}
-	
-    		if (PRINT) tl->DrawLatex(PRINTX, 0.85, Form("%4.1f", yield)); 
-    		cout << " --> " << h->GetName() << "  " << yield << "+/-" << yieldE << endl;
-    		getBinCenters(h->GetName(), eta, pt, Q); 
-    		nbin = fS2YieldNeg->FindBin(eta, pt); 
-    		fS2YieldNeg->SetBinContent(nbin, yield); 
-    		fS2YieldNeg->SetBinError(nbin, yieldE); 
-	
-    		c1->cd(3);  shrinkPad(0.15, 0.26); 
-    		h = &(fS3VectorNeg[i]);
-    		h->SetMinimum(0.); setTitles(h, "m_{#mu #bar{#mu} } [GeV]", "Entries/Bin", 0.08, 0.9, 1.8, 0.07);
-    		if (h->GetSumOfWeights() > 10.) {
-    		  setFunctionParameters(h, f6, 5); 
-    	  	  h->Fit(f6, fopt.c_str());
-		  status = 0;
-		  cout << gMinuit->fCstatu.Data() << endl;
-		  Status = gMinuit->fCstatu.Data();
-		  cout << Status[0] << endl;
-		  if ( Status[0] == 'S' || Status[0] == 'P' ){
-	   	   	status = 1;
-	      	  } else if ( Status[0] == 'F' ){ 
-	      		status = -1;
-		  }
-		  cout << status << endl;
-		  ///////////////
-		  if ( status == -1 || status == 0 ){
-			f6->SetParameters( f6->GetParameter(0), f6->GetParameter(1), f6->GetParameter(2), f6->GetParameter(3), f6->GetParameter(4) ,
-			f6->GetParameter(5), f6->GetParameter(6));
-			h->Fit(f6, fopt.c_str());
-		  }
-		
-		  cout << gMinuit->fCstatu.Data() << endl;
-		  Status = gMinuit->fCstatu.Data();
-		  cout << Status[0] << endl;
-		
-		  if ( Status[0] == 'S' || Status[0] == 'P' ){
-	  	    	status = 1;
-	      	  } else if ( Status[0] == 'F' ){ 
-	      		status = -1;
-		  }
-		  cout << status << endl;
-		  /////////////////////////
-		  if ( status == 1 ){
-			hChisq_mmbar->Fill(status*(f6->GetChisquare()/f6->GetNDF()));
-			hSigma_mmbar->Fill(status*f6->GetParameter(1));
-			hAlpha_mmbar->Fill(status*f6->GetParameter(2));
-			hn_mmbar->Fill(status*f6->GetParameter(3));
-		  }		
-		  f10->SetParameters( f6->GetParameter(0), f6->GetParameter(1), f6->GetParameter(2), f6->GetParameter(3), f6->GetParameter(4) );
-		  yield  = f10->Integral(8.7,11.2)/h->GetBinWidth(1);
-      		  yieldE = TMath::Sqrt(yield);		
-      		  width  = f6->GetParameter(1); 
-      		  widthE = f6->GetParError(1); 
-		  fitted = 1;
-    		} else {
-    	  	  h->Draw();
-    	  	  yield  = h->GetSumOfWeights();
-    	  	  yieldE = TMath::Sqrt(h->GetSumOfWeights());
-		  fitted = 0;
-    		}
-
-    		if (PRINT) tl->DrawLatex(PRINTX, 0.85, Form("%4.1f", yield)); 
-    		cout << " --> " << h->GetName() << "  " << yield << "+/-" << yieldE << endl;
-    		getBinCenters(h->GetName(), eta, pt, Q); 
-    		nbin = fS3YieldNeg->FindBin(eta, pt); 
-    		double mm = fS1YieldNeg->GetBinContent(nbin); 
-    		double mmE= fS1YieldNeg->GetBinError(nbin); 
-    		fS3YieldNeg->SetBinContent(nbin, yield+mm); 
-    		fS3YieldNeg->SetBinError(nbin, TMath::Sqrt(yieldE*yieldE + mmE*mmE)); 
-		
-		
-    		c1->Modified();
-    		c1->Update();
-	
-    		TString frag(h->GetName()); 
-    		frag.ReplaceAll("s3:mmbar,", ""); 
-    		frag.ReplaceAll(",Q-1", ""); 
-    		frag.ReplaceAll(".", ":"); 
-		
-    		c1->SaveAs(Form("%s/massfits-neg-%s-%s.eps", fPtDirectory.c_str(), fSample.c_str(), frag.Data())); 
-
-  	}
-
-	TCanvas *c2 = new TCanvas("c2", "c2");
-  	c2->Clear();
-        c2->Divide(3,1);
-        gStyle->SetOptStat(1111111111);
-        c2->cd(1);  shrinkPad(0.1, 0.2);
-        hChisq_mm->Draw();
-        c2->cd(2);  shrinkPad(0.1, 0.2);	
-        hChisq_mt->Draw();
-        c2->cd(3);  shrinkPad(0.1, 0.2);	    
-        hChisq_mmbar->Draw();
-        c2->SaveAs("chi2_polCB.eps");
-	    
-        TCanvas *c3 = new TCanvas("c3", "c3");
-        c3->Clear();
-        c3->Divide(3,1);
-        gStyle->SetOptStat(1111111111);
-        c3->cd(1);  shrinkPad(0.1, 0.2);
-        hSigma_mm->Draw();
-        c3->cd(2);  shrinkPad(0.1, 0.2);
-        hSigma_mt->Draw();
-        c3->cd(3);  shrinkPad(0.1, 0.2);	    
-        hSigma_mmbar->Draw();
-        c3->SaveAs("Sigma_polCB.eps");	    	
-	    	
-        TCanvas *c4 = new TCanvas("c4", "c4");
-        c4->Clear();
-        c4->Divide(3,1);
-        gStyle->SetOptStat(1111111111);
-        c4->cd(1);  shrinkPad(0.1, 0.2);
-        hAlpha_mm->Draw();
-        c4->cd(2);  shrinkPad(0.1, 0.2);
-        hAlpha_mt->Draw();
-        c4->cd(3);  shrinkPad(0.1, 0.2);	    
-        hAlpha_mmbar->Draw();
-        c4->SaveAs("Alpha_polCB.eps");
-		
-        TCanvas *c5 = new TCanvas("c5", "c5");
-        c5->Clear();
-        c5->Divide(3,1);
-        gStyle->SetOptStat(1111111111);
-        c5->cd(1);  shrinkPad(0.1, 0.2);
-        hn_mm->Draw();
-        c5->cd(2);  shrinkPad(0.1, 0.2);
-        hn_mt->Draw();
-        c5->cd(3);  shrinkPad(0.1, 0.2);	    
-        hn_mmbar->Draw();
-        c5->SaveAs("n_polCB.eps");
-	
-  }
-  
-  if ( mode == 2 ){   // fit ALL Upsilons with pol + 3CB
-
-  //    o function for fitting
-  //    o do in there something about low statistics cases
-
-	int PRINT(1); 
-	double PRINTX(0.3);
-
-	TH1D *h; 
-
-	  //  string fopt("LLIEMQ"); 
-	string fopt("LLE"); 
-
-  	double pt, eta; 
-  	int    Q; 
-	
-  	double yield, yieldE, width, widthE; 
-  	int    nbin;
-	int fitted(0);
-	 
-  	int status(0);
-	const char* Status;
-	
-	int Npt = 6;
-	double PTbin[] = {0., 2., 3., 4., 5., 6., 15.};				
-								
-	int Neta = 5;					
-	double Etabin[] = {-2.4, -1.2, -0.4, 0.4, 1.2, 2.4};
-	
-	int bin(-1);
-	
-	TH2D *hmean1_pos_mm = new TH2D("hmean_pos_mm", "hmean1_pos_mm", Neta, Etabin, Npt, PTbin);
-	TH2D *hmean1_pos_mt = new TH2D("hmean1_pos_mt", "hmean1_pos_mt", Neta, Etabin, Npt, PTbin);
-	TH2D *hmean1_pos_mmbar = new TH2D("hmean1_pos_mmbar", "hmean1_pos_mmbar", Neta, Etabin, Npt, PTbin);
-	
-	TH2D *hmean2_pos_mm = new TH2D("hmean2_pos_mm", "hmean2_pos_mm", Neta, Etabin, Npt, PTbin);
-	TH2D *hmean2_pos_mt = new TH2D("hmean2_pos_mt", "hmean2_pos_mt", Neta, Etabin, Npt, PTbin);
-	TH2D *hmean2_pos_mmbar = new TH2D("hmean2_pos_mmbar", "hmean2_pos_mmbar", Neta, Etabin, Npt, PTbin);
-	
-	TH2D *hsigma1_pos_mm = new TH2D("hsigma1_pos_mm", "hsigma1_pos_mm", Neta, Etabin, Npt, PTbin);
-	TH2D *hsigma1_pos_mt = new TH2D("hsigma1_pos_mt", "hsigma1_pos_mt", Neta, Etabin, Npt, PTbin);
-	TH2D *hsigma1_pos_mmbar = new TH2D("hsigma_pos1_mmbar", "hsigma1_pos_mmbar", Neta, Etabin, Npt, PTbin);
-	
-	TH2D *hsigma2_pos_mm = new TH2D("hsigma2_pos_mm", "hsigma2_pos_mm", Neta, Etabin, Npt, PTbin);
-	TH2D *hsigma2_pos_mt = new TH2D("hsigma2_pos_mt", "hsigma2_pos_mt", Neta, Etabin, Npt, PTbin);
-	TH2D *hsigma2_pos_mmbar = new TH2D("hsigma2_pos_mmbar", "hsigma2_pos_mmbar", Neta, Etabin, Npt, PTbin);		
-	
-	TH2D *hratio12_pos_mm = new TH2D("hratio12_pos_mm", "hratio12_pos_mm", Neta, Etabin, Npt, PTbin);
-	TH2D *hratio12_pos_mt = new TH2D("hratio12_pos_mt", "hratio12_pos_mt", Neta, Etabin, Npt, PTbin);
-	TH2D *hratio12_pos_mmbar = new TH2D("hratio12_pos_mmbar", "hratio12_pos_mmbar", Neta, Etabin, Npt, PTbin);
-	
-	TH2D *hratio13_pos_mm = new TH2D("hratio13_pos_mm", "hratio13_pos_mm", Neta, Etabin, Npt, PTbin);
-	TH2D *hratio13_pos_mt = new TH2D("hratio13_pos_mt", "hratio13_pos_mt", Neta, Etabin, Npt, PTbin);
-	TH2D *hratio13_pos_mmbar = new TH2D("hratio13_pos_mmbar", "hratio13_pos_mmbar", Neta, Etabin, Npt, PTbin);
-
-
-
-	TH2D *hmean1_neg_mm = new TH2D("hmean_neg_mm", "hmean1_neg_mm", Neta, Etabin, Npt, PTbin);
-	TH2D *hmean1_neg_mt = new TH2D("hmean1_neg_mt", "hmean1_neg_mt", Neta, Etabin, Npt, PTbin);
-	TH2D *hmean1_neg_mmbar = new TH2D("hmean1_neg_mmbar", "hmean1_neg_mmbar", Neta, Etabin, Npt, PTbin);
-	
-	TH2D *hmean2_neg_mm = new TH2D("hmean2_neg_mm", "hmean2_neg_mm", Neta, Etabin, Npt, PTbin);
-	TH2D *hmean2_neg_mt = new TH2D("hmean2_neg_mt", "hmean2_neg_mt", Neta, Etabin, Npt, PTbin);
-	TH2D *hmean2_neg_mmbar = new TH2D("hmean2_neg_mmbar", "hmean2_neg_mmbar", Neta, Etabin, Npt, PTbin);
-	
-	TH2D *hsigma1_neg_mm = new TH2D("hsigma1_neg_mm", "hsigma1_neg_mm", Neta, Etabin, Npt, PTbin);
-	TH2D *hsigma1_neg_mt = new TH2D("hsigma1_neg_mt", "hsigma1_neg_mt", Neta, Etabin, Npt, PTbin);
-	TH2D *hsigma1_neg_mmbar = new TH2D("hsigma_neg1_mmbar", "hsigma1_neg_mmbar", Neta, Etabin, Npt, PTbin);
-	
-	TH2D *hsigma2_neg_mm = new TH2D("hsigma2_neg_mm", "hsigma2_neg_mm", Neta, Etabin, Npt, PTbin);
-	TH2D *hsigma2_neg_mt = new TH2D("hsigma2_neg_mt", "hsigma2_neg_mt", Neta, Etabin, Npt, PTbin);
-	TH2D *hsigma2_neg_mmbar = new TH2D("hsigma2_neg_mmbar", "hsigma2_neg_mmbar", Neta, Etabin, Npt, PTbin);		
-	
-	TH2D *hratio12_neg_mm = new TH2D("hratio12_neg_mm", "hratio12_neg_mm", Neta, Etabin, Npt, PTbin);
-	TH2D *hratio12_neg_mt = new TH2D("hratio12_neg_mt", "hratio12_neg_mt", Neta, Etabin, Npt, PTbin);
-	TH2D *hratio12_neg_mmbar = new TH2D("hratio12_neg_mmbar", "hratio12_neg_mmbar", Neta, Etabin, Npt, PTbin);
-	
-	TH2D *hratio13_neg_mm = new TH2D("hratio13_neg_mm", "hratio13_neg_mm", Neta, Etabin, Npt, PTbin);
-	TH2D *hratio13_neg_mt = new TH2D("hratio13_neg_mt", "hratio13_neg_mt", Neta, Etabin, Npt, PTbin);
-	TH2D *hratio13_neg_mmbar = new TH2D("hratio13_neg_mmbar", "hratio13_neg_mmbar", Neta, Etabin, Npt, PTbin);
-	
-	
-				
-	TH1D *hChisq_mm    = new TH1D("hChisq/ndof_mm"   , "hChisq/ndof_mm"   , 40, -20.,20.);
-	TH1D *hChisq_mt    = new TH1D("hChisq/ndof_mt"   , "hChisq/ndof_mt"   , 40, -20.,20.); 
-	TH1D *hChisq_mmbar = new TH1D("hChisq/ndof_mmbar", "hChisq/ndof_mmbar", 40, -20.,20.);
-	
-	
- 	TH1D *hSigma_mm    = new TH1D("hSigma_mm"   , "hSigma_mm"   , 28, -0.07,0.07);
-	TH1D *hSigma_mt    = new TH1D("hSigma_mt"   , "hSigma_mt"   , 28, -0.07,0.07); 
-	TH1D *hSigma_mmbar = new TH1D("hSigma_mmbar", "hSigma_mmbar", 28, -0.07,0.07);
-	
- 	TH1D *hAlpha_mm    = new TH1D("hAlpha_mm"   , "hAlpha_mm"   , 30, -3.,3.);
-	TH1D *hAlpha_mt    = new TH1D("hAlpha_mt"   , "hAlpha_mt"   , 30, -3.,3.); 
-	TH1D *hAlpha_mmbar = new TH1D("hAlpha_mmbar", "hAlpha_mmbar", 30, -3.,3.);		
-	
- 	TH1D *hn_mm        = new TH1D("hn_mm"   , "hn_mm"   , 40, -4.,4.);
-	TH1D *hn_mt        = new TH1D("hn_mt"   , "hn_mt"   , 40, -4.,4.); 
-	TH1D *hn_mmbar     = new TH1D("hn_mmbar", "hn_mmbar", 40, -4.,4.);
-	
-//  	gStyle->SetOptStat(PRINT); 
-//  	gStyle->SetOptFit(PRINT);
-  	gStyle->SetOptStat(0000000000000); 
-  	gStyle->SetOptFit(00000000000000);		 
-  	makeCanvas(1); 
-  	c1->Clear();
-  	c1->Divide(3,1);
-	 
-  	for (unsigned int i = 0; i < fS1VectorPos.size(); ++i) {
-
-  		  // -- positive charge
-    		c1->cd(1); shrinkPad(0.15, 0.26); 
-    		h = &(fS1VectorPos[i]);
-    		h->SetMinimum(0.); setTitles(h, "m_{#mu #mu} [GeV]", "Entries/Bin", 0.08, 0.9, 1.8, 0.07);
-    		if (h->GetSumOfWeights() > 10.) {
-    		  setFunctionParameters(h, f13, 6); 
-    		  h->Fit(f13, fopt.c_str());
-		  status = 0;
-		  cout << gMinuit->fCstatu.Data() << endl;
-		  Status = gMinuit->fCstatu.Data();
-		  cout << Status[0] << endl;
-		  if ( Status[0] == 'S' || Status[0] == 'P' ){
-	   	   	status = 1;
-	      	  } else if ( Status[0] == 'F' ){ 
-	      		status = -1;
-		  }
-		  cout << status << endl;
-		  ///////////////
-		  if ( status == -1 || status == 0 ){
-			f13->SetParameters( f13->GetParameter(0), f13->GetParameter(1), f13->GetParameter(2), f13->GetParameter(3), f13->GetParameter(4) ,
-			f13->GetParameter(5), f13->GetParameter(6));
-			h->Fit(f13, fopt.c_str());
-		  }
-			
-		  cout << gMinuit->fCstatu.Data() << endl;
-		  Status = gMinuit->fCstatu.Data();
-		  cout << Status[0] << endl;
-			
-		  if ( Status[0] == 'S' || Status[0] == 'P' ){
-	   	    	status = 1;
-	      	  } else if ( Status[0] == 'F' ){ 
-	      		status = -1;
-		  }
-		  cout << status << endl;
-		  /////////////////////////	
-		  if ( status == 1 ){
-			hChisq_mm->Fill(status*(f13->GetChisquare()/f13->GetNDF()));
-			hSigma_mm->Fill(status*f13->GetParameter(1));
-			hAlpha_mm->Fill(status*f13->GetParameter(2));
-			hn_mm->Fill(status*f13->GetParameter(3));
-			
-			///
-			getBinCenters(h->GetName(), eta, pt, Q);
-			bin = hmean1_pos_mm->FindBin(eta, pt);
-			hmean1_pos_mm->SetBinContent(bin, status*f13->GetParameter(0));
-			hmean2_pos_mm->SetBinContent(bin, status*f13->GetParameter(5));
-			hsigma1_pos_mm->SetBinContent(bin, status*f13->GetParameter(1));
-			hsigma2_pos_mm->SetBinContent(bin, status*f13->GetParameter(6));
-			hratio12_pos_mm->SetBinContent(bin, status*(f13->GetParameter(4)/f13->GetParameter(7)));
-			hratio13_pos_mm->SetBinContent(bin, status*(f13->GetParameter(4)/f13->GetParameter(8)));
-			///
-		  }
-		  f10->SetParameters( f13->GetParameter(0), f13->GetParameter(1), f13->GetParameter(2), f13->GetParameter(3), f13->GetParameter(4) );
-    		  yield  = f10->Integral(8.7,9.7)/h->GetBinWidth(1);
-    		  yieldE = TMath::Sqrt(yield);
-		  fitted = 1;
-    		} else {
-    		  h->Draw();
-    		  yield  = h->GetSumOfWeights();
-    		  yieldE = TMath::Sqrt(h->GetSumOfWeights());
-		  fitted = 0;
-    		}
-    		if (PRINT) tl->DrawLatex(PRINTX, 0.85, Form("%4.1f", yield)); 
-    		cout << " --> " << h->GetName() << "  " << yield << "+/-" << yieldE << endl;
-
-    		getBinCenters(h->GetName(), eta, pt, Q); 
-    		nbin = fS1YieldPos->FindBin(eta, pt); 
-    		fS1YieldPos->SetBinContent(nbin, yield); 
-    		fS1YieldPos->SetBinError(nbin, yieldE); 
-		
-    		c1->Modified();
-    		c1->Update();
-		
-    		c1->cd(2); shrinkPad(0.15, 0.26); 
-    		h = &(fS2VectorPos[i]);
-    		h->SetMinimum(0.); setTitles(h, "m_{#mu t} [GeV]", "Entries/Bin", 0.08, 0.9, 1.8, 0.07);
-    		if (h->GetSumOfWeights() > 10.) {
-    		  setFunctionParameters(h, f13, 6); 
-    		  h->Fit(f13, fopt.c_str());
-		  status = 0;
-		  cout << gMinuit->fCstatu.Data() << endl;
-		  Status = gMinuit->fCstatu.Data();
-		  cout << Status[0] << endl;
-		  if ( Status[0] == 'S' || Status[0] == 'P' ){
-	   	     	status = 1;
-	      	  } else if ( Status[0] == 'F' ){ 
-	      		status = -1;
-		  }
-		  cout << status << endl;
-		  ///////////////
-		  if ( status == -1 || status == 0 ){
-			f13->SetParameters( f13->GetParameter(0), f13->GetParameter(1), f13->GetParameter(2), f13->GetParameter(3), f13->GetParameter(4) ,
-			f13->GetParameter(5), f13->GetParameter(6));
-			h->Fit(f13, fopt.c_str());
-		  }
-		
-		  cout << gMinuit->fCstatu.Data() << endl;
-		  Status = gMinuit->fCstatu.Data();
-		  cout << Status[0] << endl;
-		
-		  if ( Status[0] == 'S' || Status[0] == 'P' ){
-	  	    	status = 1;
-	      	  } else if ( Status[0] == 'F' ){ 
-	      		status = -1;
-		  }
-		  cout << status << endl;
-		  /////////////////////////
-		  if ( status == 1 ){
-			hChisq_mt->Fill(status*(f13->GetChisquare()/f13->GetNDF()));
-			hSigma_mt->Fill(status*f13->GetParameter(1));
-			hAlpha_mt->Fill(status*f13->GetParameter(2));
-			hn_mt->Fill(status*f13->GetParameter(3));
-			
-			///
-			getBinCenters(h->GetName(), eta, pt, Q);
-			bin = hmean1_pos_mt->FindBin(eta, pt);
-			hmean1_pos_mt->SetBinContent(bin, status*f13->GetParameter(0));
-			hmean2_pos_mt->SetBinContent(bin, status*f13->GetParameter(5));
-			hsigma1_pos_mt->SetBinContent(bin, status*f13->GetParameter(1));
-			hsigma2_pos_mt->SetBinContent(bin, status*f13->GetParameter(6));
-			hratio12_pos_mt->SetBinContent(bin, status*(f13->GetParameter(4)/f13->GetParameter(7)));
-			hratio13_pos_mt->SetBinContent(bin, status*(f13->GetParameter(4)/f13->GetParameter(8)));
-			///
-			
-		  }
-		  f10->SetParameters( f13->GetParameter(0), f13->GetParameter(1), f13->GetParameter(2), f13->GetParameter(3), f13->GetParameter(4) );
-		  yield  = f10->Integral(8.7,9.7)/h->GetBinWidth(1);
-      		  yieldE = TMath::Sqrt(yield);
-      		  width  = f13->GetParameter(1); 
-      		  widthE = f13->GetParError(1); 
-      		  fitted = 1; 
-    		} else {
-    		  h->Draw();
-    		  yield  = h->GetSumOfWeights();
-    		  yieldE = TMath::Sqrt(h->GetSumOfWeights());
-		  fitted = 0;
-    		}
-		
- 		if (PRINT) tl->DrawLatex(PRINTX, 0.85, Form("%4.1f", yield)); 
-    		cout << " --> " << h->GetName() << "  " << yield << "+/-" << yieldE << endl;
-    		getBinCenters(h->GetName(), eta, pt, Q); 
-    		nbin = fS2YieldPos->FindBin(eta, pt); 
-    		fS2YieldPos->SetBinContent(nbin, yield); 
-    		fS2YieldPos->SetBinError(nbin, yieldE); 
-		
-    		c1->Modified();
-    		c1->Update();
-		
-    		c1->cd(3);  shrinkPad(0.15, 0.26); 
-    		h = &(fS3VectorPos[i]);
-    		h->SetMinimum(0.); setTitles(h, "m_{#mu #bar{#mu} } [GeV]", "Entries/Bin", 0.08, 0.9, 1.8, 0.07);
-    		if (h->GetSumOfWeights() > 10.) {
-    		  setFunctionParameters(h, f13, 6); 
-     	  	  h->Fit(f13, fopt.c_str());
-		  status = 0;
-		  cout << gMinuit->fCstatu.Data() << endl;
-		  Status = gMinuit->fCstatu.Data();
-		  cout << Status[0] << endl;
-		  if ( Status[0] == 'S' || Status[0] == 'P' ){
-	   	   	status = 1;
-	      	  } else if ( Status[0] == 'F' ){ 
-	      		status = -1;
-		  }
-		  cout << status << endl;
-		  ///////////////
-		  if ( status == -1 || status == 0 ){
-			f13->SetParameters( f13->GetParameter(0), f13->GetParameter(1), f13->GetParameter(2), f13->GetParameter(3), f13->GetParameter(4) ,
-			f13->GetParameter(5), f13->GetParameter(6));
-			h->Fit(f13, fopt.c_str());
-		  }
-		
-		  cout << gMinuit->fCstatu.Data() << endl;
-		  Status = gMinuit->fCstatu.Data();
-		  cout << Status[0] << endl;
-		
-		  if ( Status[0] == 'S' || Status[0] == 'P' ){
-	  	    	status = 1;
-	      	  } else if ( Status[0] == 'F' ){ 
-	      		status = -1;
-		  }
-		  cout << status << endl;
-		  /////////////////////////
-		  if ( status == 1 ){
-			hChisq_mmbar->Fill(status*(f13->GetChisquare()/f13->GetNDF()));
-			hSigma_mmbar->Fill(status*f13->GetParameter(1));
-			hAlpha_mmbar->Fill(status*f13->GetParameter(2));
-			hn_mmbar->Fill(status*f13->GetParameter(3));
-			
-			///
-			getBinCenters(h->GetName(), eta, pt, Q);
-			bin = hmean1_pos_mmbar->FindBin(eta, pt);
-			hmean1_pos_mmbar->SetBinContent(bin, status*f13->GetParameter(0));
-			hmean2_pos_mmbar->SetBinContent(bin, status*f13->GetParameter(5));
-			hsigma1_pos_mmbar->SetBinContent(bin, status*f13->GetParameter(1));
-			hsigma2_pos_mmbar->SetBinContent(bin, status*f13->GetParameter(6));
-			hratio12_pos_mmbar->SetBinContent(bin, status*(f13->GetParameter(4)/f13->GetParameter(7)));
-			hratio13_pos_mmbar->SetBinContent(bin, status*(f13->GetParameter(4)/f13->GetParameter(8)));
-			///
-			
-		  }		
-		  f10->SetParameters( f13->GetParameter(0), f13->GetParameter(1), f13->GetParameter(2), f13->GetParameter(3), f13->GetParameter(4) );
-		  yield  = f10->Integral(8.7,9.7)/h->GetBinWidth(1);
-      		  yieldE = TMath::Sqrt(yield);		
-      		  fitted = 1; 
-    		} else {
-      		  h->Draw();
-      		  yield  = h->GetSumOfWeights();
-      		  yieldE = TMath::Sqrt(h->GetSumOfWeights());
-		  fitted = 0;
-    		}
-	
-    		if (PRINT) tl->DrawLatex(PRINTX, 0.85, Form("%4.1f", yield)); 
-    		cout << " --> " << h->GetName() << "  " << yield << "+/-" << yieldE << endl;
-    		getBinCenters(h->GetName(), eta, pt, Q); 
-    		nbin = fS3YieldPos->FindBin(eta, pt); 
-    		double mm = fS1YieldPos->GetBinContent(nbin); 
-    		double mmE= fS1YieldPos->GetBinError(nbin); 
-    		fS3YieldPos->SetBinContent(nbin, yield+mm); 
-    		fS3YieldPos->SetBinError(nbin, TMath::Sqrt(yieldE*yieldE + mmE*mmE)); 
-		
-   		TString frag(h->GetName()); 
-    		frag.ReplaceAll("s3:mmbar,", ""); 
-    		frag.ReplaceAll(",Q1", ""); 
-    		frag.ReplaceAll(".", ":"); 
-	
-    		c1->SaveAs(Form("%s/massfits-pos-%s-%s.eps", fPtDirectory.c_str(), fSample.c_str(), frag.Data())); 
-  	}
-  	
-  
-  		c1->Clear();
-  		c1->Divide(3,1); 
-  	for (unsigned int i = 0; i < fS1VectorNeg.size(); ++i) {
-
-  		  // -- negative charge
-    		c1->cd(1); shrinkPad(0.15, 0.26);  
-    		h = &(fS1VectorNeg[i]);
-    		h->SetMinimum(0.); setTitles(h, "m_{#mu #mu} [GeV]", "Entries/Bin", 0.08, 0.9, 1.8, 0.07);
-    		if (h->GetSumOfWeights() > 10.) {
-    		  setFunctionParameters(h, f13, 6); 
-    		  h->Fit(f13, fopt.c_str());
-		  status = 0;
-		  cout << gMinuit->fCstatu.Data() << endl;
-		  Status = gMinuit->fCstatu.Data();
-		  cout << Status[0] << endl;
-		  if ( Status[0] == 'S' || Status[0] == 'P' ){
-	   	   	status = 1;
-	      	  } else if ( Status[0] == 'F' ){ 
-	      		status = -1;
-		  }
-		  cout << status << endl;
-		  ///////////////
-		  if ( status == -1 || status == 0 ){
-			f13->SetParameters( f13->GetParameter(0), f13->GetParameter(1), f13->GetParameter(2), f13->GetParameter(3), f13->GetParameter(4) ,
-			f13->GetParameter(5), f13->GetParameter(6));
-			h->Fit(f13, fopt.c_str());
-		  }
-		
-	  	  cout << gMinuit->fCstatu.Data() << endl;
-		  Status = gMinuit->fCstatu.Data();
-		  cout << Status[0] << endl;
-		
-		  if ( Status[0] == 'S' || Status[0] == 'P' ){
-	  	    	status = 1;
-	      	  } else if ( Status[0] == 'F' ){ 
-	      		status = -1;
-		  }
-		  cout << status << endl;
-		  /////////////////////////
-		  if ( status == 1 ){
-			hChisq_mm->Fill(status*(f13->GetChisquare()/f13->GetNDF()));
-			hSigma_mm->Fill(status*f13->GetParameter(1));
-			hAlpha_mm->Fill(status*f13->GetParameter(2));
-			hn_mm->Fill(status*f13->GetParameter(3));
-			
-			///
-			getBinCenters(h->GetName(), eta, pt, Q);
-			bin = hmean1_neg_mm->FindBin(eta, pt);
-			hmean1_neg_mm->SetBinContent(bin, status*f13->GetParameter(0));
-			hmean2_neg_mm->SetBinContent(bin, status*f13->GetParameter(5));
-			hsigma1_neg_mm->SetBinContent(bin, status*f13->GetParameter(1));
-			hsigma2_neg_mm->SetBinContent(bin, status*f13->GetParameter(6));
-			hratio12_neg_mm->SetBinContent(bin, status*(f13->GetParameter(4)/f13->GetParameter(7)));
-			hratio13_neg_mm->SetBinContent(bin, status*(f13->GetParameter(4)/f13->GetParameter(8)));
-			///
-			
-		  }		
-		  f10->SetParameters( f13->GetParameter(0), f13->GetParameter(1), f13->GetParameter(2), f13->GetParameter(3), f13->GetParameter(4) );
-		  yield  = f10->Integral(8.7,9.7)/h->GetBinWidth(1);
-      		  yieldE = TMath::Sqrt(yield);		
-    		} else {
-    	  	  h->Draw();
-    	  	  yield  = h->GetSumOfWeights();
-    	  	  yieldE = TMath::Sqrt(h->GetSumOfWeights());
-    		}
-	
-		if (PRINT) tl->DrawLatex(PRINTX, 0.85, Form("%4.1f", yield)); 
-    		cout << " --> " << h->GetName() << "  " << yield << "+/-" << yieldE << endl;
-    		getBinCenters(h->GetName(), eta, pt, Q); 
-    		nbin = fS1YieldNeg->FindBin(eta, pt); 
-    		fS1YieldNeg->SetBinContent(nbin, yield); 
-    		fS1YieldNeg->SetBinError(nbin, yieldE); 
-	
-    		c1->Modified();
-    		c1->Update();
-	
-    		c1->cd(2); shrinkPad(0.15, 0.26); 
-    		h = &(fS2VectorNeg[i]);
-    		h->SetMinimum(0.); setTitles(h, "m_{#mu t} [GeV]", "Entries/Bin", 0.08, 0.9, 1.8, 0.07);
-    		if (h->GetSumOfWeights() > 10.) {
-    	  	  setFunctionParameters(h, f13, 6); 
-    	  	  h->Fit(f13, fopt.c_str());
-		  status = 0;
-		  cout << gMinuit->fCstatu.Data() << endl;
-		  Status = gMinuit->fCstatu.Data();
-		  cout << Status[0] << endl;
-		if ( Status[0] == 'S' || Status[0] == 'P' ){
-	   	   	status = 1;
-	      	} else if ( Status[0] == 'F' ){ 
-	      		status = -1;
-		}
-		cout << status << endl;
-		///////////////
-		if ( status == -1 || status == 0 ){
-			f13->SetParameters( f13->GetParameter(0), f13->GetParameter(1), f13->GetParameter(2), f13->GetParameter(3), f13->GetParameter(4) ,
-			f13->GetParameter(5), f13->GetParameter(6));
-			h->Fit(f13, fopt.c_str());
-		}
-		
-		cout << gMinuit->fCstatu.Data() << endl;
-		Status = gMinuit->fCstatu.Data();
-		cout << Status[0] << endl;
-		
-		if ( Status[0] == 'S' || Status[0] == 'P' ){
-	  	    	status = 1;
-	      	} else if ( Status[0] == 'F' ){ 
-	      		status = -1;
-			}
-		cout << status << endl;
-		/////////////////////////
-		if ( status == 1 ){
-			hChisq_mt->Fill(status*(f13->GetChisquare()/f13->GetNDF()));
-			hSigma_mt->Fill(status*f13->GetParameter(1));
-			hAlpha_mt->Fill(status*f13->GetParameter(2));
-			hn_mt->Fill(status*f13->GetParameter(3));
-			
-			///
-			getBinCenters(h->GetName(), eta, pt, Q);
-			bin = hmean1_neg_mt->FindBin(eta, pt);
-			hmean1_neg_mt->SetBinContent(bin, status*f13->GetParameter(0));
-			hmean2_neg_mt->SetBinContent(bin, status*f13->GetParameter(5));
-			hsigma1_neg_mt->SetBinContent(bin, status*f13->GetParameter(1));
-			hsigma2_neg_mt->SetBinContent(bin, status*f13->GetParameter(6));
-			hratio12_neg_mt->SetBinContent(bin, status*(f13->GetParameter(4)/f13->GetParameter(7)));
-			hratio13_neg_mt->SetBinContent(bin, status*(f13->GetParameter(4)/f13->GetParameter(8)));
-			///
-			
-		}		
-		f10->SetParameters( f13->GetParameter(0), f13->GetParameter(1), f13->GetParameter(2), f13->GetParameter(3), f13->GetParameter(4) );
-		yield  = f10->Integral(8.7,9.7)/h->GetBinWidth(1);
-      		yieldE = TMath::Sqrt(yield);		
-      		width  = f13->GetParameter(1); 
-      		widthE = f13->GetParError(1); 
-		fitted = 1;  
-    	 	} else {
-    	  	  h->Draw();
-    	   	  yield  = h->GetSumOfWeights();
-    	   	  yieldE = TMath::Sqrt(h->GetSumOfWeights());
-		  fitted = 0;
-    		}
-	
-    		if (PRINT) tl->DrawLatex(PRINTX, 0.85, Form("%4.1f", yield)); 
-    		cout << " --> " << h->GetName() << "  " << yield << "+/-" << yieldE << endl;
-    		getBinCenters(h->GetName(), eta, pt, Q); 
-    		nbin = fS2YieldNeg->FindBin(eta, pt); 
-    		fS2YieldNeg->SetBinContent(nbin, yield); 
-    		fS2YieldNeg->SetBinError(nbin, yieldE); 
-	
-    		c1->cd(3);  shrinkPad(0.15, 0.26); 
-    		h = &(fS3VectorNeg[i]);
-    		h->SetMinimum(0.); setTitles(h, "m_{#mu #bar{#mu} } [GeV]", "Entries/Bin", 0.08, 0.9, 1.8, 0.07);
-    		if (h->GetSumOfWeights() > 10.) {
-    		  setFunctionParameters(h, f13, 6); 
-    	  	  h->Fit(f13, fopt.c_str());
-		  status = 0;
-		  cout << gMinuit->fCstatu.Data() << endl;
-		  Status = gMinuit->fCstatu.Data();
-		  cout << Status[0] << endl;
-		  if ( Status[0] == 'S' || Status[0] == 'P' ){
-	   	   	status = 1;
-	      	  } else if ( Status[0] == 'F' ){ 
-	      		status = -1;
-		  }
-		  cout << status << endl;
-		  ///////////////
-		  if ( status == -1 || status == 0 ){
-			f13->SetParameters( f13->GetParameter(0), f13->GetParameter(1), f13->GetParameter(2), f13->GetParameter(3), f13->GetParameter(4) ,
-			f13->GetParameter(5), f13->GetParameter(6));
-			h->Fit(f13, fopt.c_str());
-		  }
-		
-		  cout << gMinuit->fCstatu.Data() << endl;
-		  Status = gMinuit->fCstatu.Data();
-		  cout << Status[0] << endl;
-		
-		  if ( Status[0] == 'S' || Status[0] == 'P' ){
-	  	    	status = 1;
-	      	  } else if ( Status[0] == 'F' ){ 
-	      		status = -1;
-		  }
-		  cout << status << endl;
-		  /////////////////////////
-		  if ( status == 1 ){
-			hChisq_mmbar->Fill(status*(f13->GetChisquare()/f13->GetNDF()));
-			hSigma_mmbar->Fill(status*f13->GetParameter(1));
-			hAlpha_mmbar->Fill(status*f13->GetParameter(2));
-			hn_mmbar->Fill(status*f13->GetParameter(3));
-			
-			///
-			getBinCenters(h->GetName(), eta, pt, Q);
-			bin = hmean1_neg_mmbar->FindBin(eta, pt);
-			hmean1_neg_mmbar->SetBinContent(bin, status*f13->GetParameter(0));
-			hmean2_neg_mmbar->SetBinContent(bin, status*f13->GetParameter(5));
-			hsigma1_neg_mmbar->SetBinContent(bin, status*f13->GetParameter(1));
-			hsigma2_neg_mmbar->SetBinContent(bin, status*f13->GetParameter(6));
-			hratio12_neg_mmbar->SetBinContent(bin, status*(f13->GetParameter(4)/f13->GetParameter(7)));
-			hratio13_neg_mmbar->SetBinContent(bin, status*(f13->GetParameter(4)/f13->GetParameter(8)));
-			///
-			
-		  }		
-		  f10->SetParameters( f13->GetParameter(0), f13->GetParameter(1), f13->GetParameter(2), f13->GetParameter(3), f13->GetParameter(4) );
-		  yield  = f10->Integral(8.7,9.7)/h->GetBinWidth(1);
-      		  yieldE = TMath::Sqrt(yield);		
-      		  width  = f13->GetParameter(1); 
-      		  widthE = f13->GetParError(1); 
-		  fitted = 1;
-    		} else {
-    	  	  h->Draw();
-    	  	  yield  = h->GetSumOfWeights();
-    	  	  yieldE = TMath::Sqrt(h->GetSumOfWeights());
-		  fitted = 0;
-    		}
-
-    		if (PRINT) tl->DrawLatex(PRINTX, 0.85, Form("%4.1f", yield)); 
-    		cout << " --> " << h->GetName() << "  " << yield << "+/-" << yieldE << endl;
-    		getBinCenters(h->GetName(), eta, pt, Q); 
-    		nbin = fS3YieldNeg->FindBin(eta, pt); 
-    		double mm = fS1YieldNeg->GetBinContent(nbin); 
-    		double mmE= fS1YieldNeg->GetBinError(nbin); 
-    		fS3YieldNeg->SetBinContent(nbin, yield+mm); 
-    		fS3YieldNeg->SetBinError(nbin, TMath::Sqrt(yieldE*yieldE + mmE*mmE)); 
-		
-		
-    		c1->Modified();
-    		c1->Update();
-	
-    		TString frag(h->GetName()); 
-    		frag.ReplaceAll("s3:mmbar,", ""); 
-    		frag.ReplaceAll(",Q-1", ""); 
-    		frag.ReplaceAll(".", ":"); 
-		
-    		c1->SaveAs(Form("%s/massfits-neg-%s-%s.eps", fPtDirectory.c_str(), fSample.c_str(), frag.Data())); 
-
-  	}
-
-	TCanvas *c2 = new TCanvas("c2", "c2");
-  	c2->Clear();
-        c2->Divide(3,1);
-        gStyle->SetOptStat(1111111111);
-        c2->cd(1);  shrinkPad(0.1, 0.2);
-        hChisq_mm->Draw();
-        c2->cd(2);  shrinkPad(0.1, 0.2);	
-        hChisq_mt->Draw();
-        c2->cd(3);  shrinkPad(0.1, 0.2);	    
-        hChisq_mmbar->Draw();
-        c2->SaveAs("chi2_polCB.eps");
-	    
-        TCanvas *c3 = new TCanvas("c3", "c3");
-        c3->Clear();
-        c3->Divide(3,1);
-        gStyle->SetOptStat(1111111111);
-        c3->cd(1);  shrinkPad(0.1, 0.2);
-        hSigma_mm->Draw();
-        c3->cd(2);  shrinkPad(0.1, 0.2);
-        hSigma_mt->Draw();
-        c3->cd(3);  shrinkPad(0.1, 0.2);	    
-        hSigma_mmbar->Draw();
-        c3->SaveAs("Sigma_polCB.eps");	    	
-	    	
-        TCanvas *c4 = new TCanvas("c4", "c4");
-        c4->Clear();
-        c4->Divide(3,1);
-        gStyle->SetOptStat(1111111111);
-        c4->cd(1);  shrinkPad(0.1, 0.2);
-        hAlpha_mm->Draw();
-        c4->cd(2);  shrinkPad(0.1, 0.2);
-        hAlpha_mt->Draw();
-        c4->cd(3);  shrinkPad(0.1, 0.2);	    
-        hAlpha_mmbar->Draw();
-        c4->SaveAs("Alpha_polCB.eps");
-		
-        TCanvas *c5 = new TCanvas("c5", "c5");
-        c5->Clear();
-        c5->Divide(3,1);
-        gStyle->SetOptStat(1111111111);
-        c5->cd(1);  shrinkPad(0.1, 0.2);
-        hn_mm->Draw();
-        c5->cd(2);  shrinkPad(0.1, 0.2);
-        hn_mt->Draw();
-        c5->cd(3);  shrinkPad(0.1, 0.2);	    
-        hn_mmbar->Draw();
-        c5->SaveAs("n_polCB.eps");
-	
-	TCanvas *c6 = new TCanvas("c6", "c6");
-        c6->Clear();
-        c6->Divide(3,1);
-	hmean1_pos_mm->SetMinimum(9.41); hmean1_pos_mm->SetMaximum(9.51);
-	hmean1_pos_mt->SetMinimum(9.41); hmean1_pos_mt->SetMaximum(9.51);
-	hmean1_pos_mmbar->SetMinimum(9.41); hmean1_pos_mmbar->SetMaximum(9.51);
-        gStyle->SetOptStat(1111111111);
-        c6->cd(1);  shrinkPad(0.1, 0.2); gPad->SetRightMargin(0.15);
-	hmean1_pos_mm->SetStats(false);
-        hmean1_pos_mm->Draw("colz");
-        c6->cd(2);  shrinkPad(0.1, 0.2); gPad->SetRightMargin(0.15);
-	hmean1_pos_mt->SetStats(false);
-        hmean1_pos_mt->Draw("colz");
-        c6->cd(3);  shrinkPad(0.1, 0.2); gPad->SetRightMargin(0.15);
-	hmean1_pos_mmbar->SetStats(false);
-        hmean1_pos_mmbar->Draw("colz");
-        c6->SaveAs("mean1_pos.eps");	
-	
-	TCanvas *c7 = new TCanvas("c7", "c7");
-        c7->Clear();
-        c7->Divide(3,1);
-	hmean2_pos_mm->SetMinimum(9.9); hmean2_pos_mm->SetMaximum(10.1);
-	hmean2_pos_mt->SetMinimum(9.9); hmean2_pos_mt->SetMaximum(10.1);
-	hmean2_pos_mmbar->SetMinimum(9.9); hmean2_pos_mmbar->SetMaximum(10.1);
-        gStyle->SetOptStat(1111111111);
-        c7->cd(1);  shrinkPad(0.1, 0.2); gPad->SetRightMargin(0.15);
-	hmean2_pos_mm->SetStats(false);
-        hmean2_pos_mm->Draw("colz");
-        c7->cd(2);  shrinkPad(0.1, 0.2); gPad->SetRightMargin(0.15);
-	hmean2_pos_mt->SetStats(false);
-        hmean2_pos_mt->Draw("colz");
-        c7->cd(3);  shrinkPad(0.1, 0.2); gPad->SetRightMargin(0.15);
-	hmean2_pos_mmbar->SetStats(false);
-        hmean2_pos_mmbar->Draw("colz");
-        c7->SaveAs("mean2_pos.eps");	
-	
-	TCanvas *c8 = new TCanvas("c8", "c8");
-        c8->Clear();
-        c8->Divide(3,1);
-	hsigma1_pos_mm->SetMinimum(0.04); hsigma1_pos_mm->SetMaximum(0.14);
-	hsigma1_pos_mt->SetMinimum(0.04); hsigma1_pos_mt->SetMaximum(0.14);
-	hsigma1_pos_mmbar->SetMinimum(0.04); hsigma1_pos_mmbar->SetMaximum(0.14);
-        gStyle->SetOptStat(1111111111);
-        c8->cd(1);  shrinkPad(0.1, 0.2); gPad->SetRightMargin(0.15);
-	hsigma1_pos_mm->SetStats(false);
-        hsigma1_pos_mm->Draw("colz");
-        c8->cd(2);  shrinkPad(0.1, 0.2); gPad->SetRightMargin(0.15);
-	hsigma1_pos_mt->SetStats(false);
-        hsigma1_pos_mt->Draw("colz");
-        c8->cd(3);  shrinkPad(0.1, 0.2); gPad->SetRightMargin(0.15);
-	hsigma1_pos_mmbar->SetStats(false);
-        hsigma1_pos_mmbar->Draw("colz");
-        c8->SaveAs("sigma1_pos.eps");	
-	
-	TCanvas *c9 = new TCanvas("c9", "c9");
-        c9->Clear();
-        c9->Divide(3,1);
-	hsigma2_pos_mm->SetMinimum(0.06); hsigma2_pos_mm->SetMaximum(0.20);
-	hsigma2_pos_mt->SetMinimum(0.06); hsigma2_pos_mt->SetMaximum(0.20);
-	hsigma2_pos_mmbar->SetMinimum(0.06); hsigma2_pos_mmbar->SetMaximum(0.20);
-        gStyle->SetOptStat(1111111111);
-        c9->cd(1);  shrinkPad(0.1, 0.2); gPad->SetRightMargin(0.15);
-	hsigma2_pos_mm->SetStats(false);
-        hsigma2_pos_mm->Draw("colz");
-        c9->cd(2);  shrinkPad(0.1, 0.2); gPad->SetRightMargin(0.15);
-	hsigma2_pos_mt->SetStats(false);
-        hsigma2_pos_mt->Draw("colz");
-        c9->cd(3);  shrinkPad(0.1, 0.2); gPad->SetRightMargin(0.15);
-	hsigma2_pos_mmbar->SetStats(false);
-        hsigma2_pos_mmbar->Draw("colz");
-        c9->SaveAs("sigma2_pos.eps");
-	
-	TCanvas *c10 = new TCanvas("c10", "c10");
-        c10->Clear();
-        c10->Divide(3,1);
-	hratio12_pos_mm->SetMinimum(1.); hratio12_pos_mm->SetMaximum(6.);
-	hratio12_pos_mt->SetMinimum(1.); hratio12_pos_mt->SetMaximum(6.);
-	hratio12_pos_mmbar->SetMinimum(1.); hratio12_pos_mmbar->SetMaximum(6.);
-        gStyle->SetOptStat(1111111111);
-        c10->cd(1);  shrinkPad(0.1, 0.2); gPad->SetRightMargin(0.15);
-	hratio12_pos_mm->SetStats(false);
-        hratio12_pos_mm->Draw("colz");
-        c10->cd(2);  shrinkPad(0.1, 0.2); gPad->SetRightMargin(0.15);
-	hratio12_pos_mt->SetStats(false);
-        hratio12_pos_mt->Draw("colz");
-        c10->cd(3);  shrinkPad(0.1, 0.2); gPad->SetRightMargin(0.15);
-	hratio12_pos_mmbar->SetStats(false);
-        hratio12_pos_mmbar->Draw("colz");
-        c10->SaveAs("ratio12_pos.eps");
-	
-	TCanvas *c11 = new TCanvas("c11", "c11");
-        c11->Clear();
-        c11->Divide(3,1);
-	hratio13_pos_mm->SetMinimum(1.); hratio13_pos_mm->SetMaximum(15.);
-	hratio13_pos_mt->SetMinimum(1.); hratio13_pos_mt->SetMaximum(15.);
-	hratio13_pos_mmbar->SetMinimum(1.); hratio13_pos_mmbar->SetMaximum(15.);
-        gStyle->SetOptStat(1111111111);
-        c11->cd(1);  shrinkPad(0.1, 0.2); gPad->SetRightMargin(0.15);
-	hratio13_pos_mm->SetStats(false);
-        hratio13_pos_mm->Draw("colz");
-        c11->cd(2);  shrinkPad(0.1, 0.2); gPad->SetRightMargin(0.15);
-	hratio13_pos_mt->SetStats(false);
-        hratio13_pos_mt->Draw("colz");
-        c11->cd(3);  shrinkPad(0.1, 0.2); gPad->SetRightMargin(0.15);
-	hratio13_pos_mmbar->SetStats(false);
-        hratio13_pos_mmbar->Draw("colz");
-        c11->SaveAs("ratio13_pos.eps");			
-		
-	TCanvas *c12 = new TCanvas("c12", "c12");
-        c12->Clear();
-        c12->Divide(3,1);
-	hmean1_neg_mm->SetMinimum(9.41); hmean1_neg_mm->SetMaximum(9.51);
-	hmean1_neg_mt->SetMinimum(9.41); hmean1_neg_mt->SetMaximum(9.51);
-	hmean1_neg_mmbar->SetMinimum(9.41); hmean1_neg_mmbar->SetMaximum(9.51);
-        gStyle->SetOptStat(1111111111);
-        c12->cd(1);  shrinkPad(0.1, 0.2); gPad->SetRightMargin(0.15);
-	hmean1_neg_mm->SetStats(false);
-        hmean1_neg_mm->Draw("colz");
-        c12->cd(2);  shrinkPad(0.1, 0.2); gPad->SetRightMargin(0.15);
-	hmean1_neg_mt->SetStats(false);
-        hmean1_neg_mt->Draw("colz");
-        c12->cd(3);  shrinkPad(0.1, 0.2); gPad->SetRightMargin(0.15);
-	hmean1_neg_mmbar->SetStats(false);
-        hmean1_neg_mmbar->Draw("colz");
-        c12->SaveAs("mean1_neg.eps");	
-	
-	TCanvas *c13 = new TCanvas("c13", "c13");
-        c13->Clear();
-        c13->Divide(3,1);
-	hmean2_neg_mm->SetMinimum(9.9); hmean2_neg_mm->SetMaximum(10.1);
-	hmean2_neg_mt->SetMinimum(9.9); hmean2_neg_mt->SetMaximum(10.1);
-	hmean2_neg_mmbar->SetMinimum(9.9); hmean2_neg_mmbar->SetMaximum(10.1);
-        gStyle->SetOptStat(1111111111);
-        c13->cd(1);  shrinkPad(0.1, 0.2); gPad->SetRightMargin(0.15);
-	hmean2_neg_mm->SetStats(false);
-        hmean2_neg_mm->Draw("colz");
-        c13->cd(2);  shrinkPad(0.1, 0.2); gPad->SetRightMargin(0.15);
-	hmean2_neg_mt->SetStats(false);
-        hmean2_neg_mt->Draw("colz");
-        c13->cd(3);  shrinkPad(0.1, 0.2); gPad->SetRightMargin(0.15);
-	hmean2_neg_mmbar->SetStats(false);
-        hmean2_neg_mmbar->Draw("colz");
-        c13->SaveAs("mean2_neg.eps");	
-	
-	TCanvas *c14 = new TCanvas("c14", "c14");
-        c14->Clear();
-        c14->Divide(3,1);
-	hsigma1_neg_mm->SetMinimum(0.04); hsigma1_neg_mm->SetMaximum(0.14);
-	hsigma1_neg_mt->SetMinimum(0.04); hsigma1_neg_mt->SetMaximum(0.14);
-	hsigma1_neg_mmbar->SetMinimum(0.04); hsigma1_neg_mmbar->SetMaximum(0.14);
-        gStyle->SetOptStat(1111111111);
-        c14->cd(1);  shrinkPad(0.1, 0.2); gPad->SetRightMargin(0.15);
-	hsigma1_neg_mm->SetStats(false);
-        hsigma1_neg_mm->Draw("colz");
-        c14->cd(2);  shrinkPad(0.1, 0.2); gPad->SetRightMargin(0.15);
-	hsigma1_neg_mt->SetStats(false);
-        hsigma1_neg_mt->Draw("colz");
-        c14->cd(3);  shrinkPad(0.1, 0.2); gPad->SetRightMargin(0.15);
-	hsigma1_neg_mmbar->SetStats(false);
-        hsigma1_neg_mmbar->Draw("colz");
-        c14->SaveAs("sigma1_neg.eps");	
-	
-	TCanvas *c15 = new TCanvas("c15", "c15");
-        c15->Clear();
-        c15->Divide(3,1);
-	hsigma2_neg_mm->SetMinimum(0.06); hsigma2_neg_mm->SetMaximum(0.20);
-	hsigma2_neg_mt->SetMinimum(0.06); hsigma2_neg_mt->SetMaximum(0.20);
-	hsigma2_neg_mmbar->SetMinimum(0.06); hsigma2_neg_mmbar->SetMaximum(0.20);
-        gStyle->SetOptStat(1111111111);
-        c15->cd(1);  shrinkPad(0.1, 0.2); gPad->SetRightMargin(0.15);
-	hsigma2_neg_mm->SetStats(false);
-        hsigma2_neg_mm->Draw("colz");
-        c15->cd(2);  shrinkPad(0.1, 0.2); gPad->SetRightMargin(0.15);
-	hsigma2_neg_mt->SetStats(false);
-        hsigma2_neg_mt->Draw("colz");
-        c15->cd(3);  shrinkPad(0.1, 0.2); gPad->SetRightMargin(0.15);
-	hsigma2_neg_mmbar->SetStats(false);
-        hsigma2_neg_mmbar->Draw("colz");
-        c15->SaveAs("sigma2_neg.eps");
-	
-	TCanvas *c16 = new TCanvas("c16", "c16");
-        c16->Clear();
-        c16->Divide(3,1);
-	hratio12_neg_mm->SetMinimum(1.); hratio12_neg_mm->SetMaximum(6.);
-	hratio12_neg_mt->SetMinimum(1.); hratio12_neg_mt->SetMaximum(6.);
-	hratio12_neg_mmbar->SetMinimum(1.); hratio12_neg_mmbar->SetMaximum(6.);
-        gStyle->SetOptStat(1111111111);
-        c16->cd(1);  shrinkPad(0.1, 0.2); gPad->SetRightMargin(0.15);
-	hratio12_neg_mm->SetStats(false);
-        hratio12_neg_mm->Draw("colz");
-        c16->cd(2);  shrinkPad(0.1, 0.2); gPad->SetRightMargin(0.15);
-	hratio12_neg_mt->SetStats(false);
-        hratio12_neg_mt->Draw("colz");
-        c16->cd(3);  shrinkPad(0.1, 0.2); gPad->SetRightMargin(0.15);
-	hratio12_neg_mmbar->SetStats(false);
-        hratio12_neg_mmbar->Draw("colz");
-        c16->SaveAs("ratio12_neg.eps");
-	
-	TCanvas *c17 = new TCanvas("c17", "c17");
-        c17->Clear();
-        c17->Divide(3,1);
-	hratio13_neg_mm->SetMinimum(1.); hratio13_neg_mm->SetMaximum(15.);
-	hratio13_neg_mt->SetMinimum(1.); hratio13_neg_mt->SetMaximum(15.);
-	hratio13_neg_mmbar->SetMinimum(1.); hratio13_neg_mmbar->SetMaximum(15.);
-        gStyle->SetOptStat(1111111111);
-        c17->cd(1);  shrinkPad(0.1, 0.2); gPad->SetRightMargin(0.15);
-	hratio13_neg_mm->SetStats(false);
-        hratio13_neg_mm->Draw("colz");
-        c17->cd(2);  shrinkPad(0.1, 0.2); gPad->SetRightMargin(0.15);
-	hratio13_neg_mt->SetStats(false);
-        hratio13_neg_mt->Draw("colz");
-        c17->cd(3);  shrinkPad(0.1, 0.2); gPad->SetRightMargin(0.15);
-	hratio13_neg_mmbar->SetStats(false);
-        hratio13_neg_mmbar->Draw("colz");
-        c17->SaveAs("ratio13_neg.eps");			
-
-  }
-
-}
-
-// ----------------------------------------------------------------------
-void anaXS::fitJpsi(int mode) {  
-
-  if ( mode == 0 ){   // pol + Gauss	
-  
-    	int PRINT(1); 
-  	double PRINTX(0.3); 
-  	// -- FIXME: 
-  	//    o function for fitting
-
-  	TH1D *h; 
-
-  	//  string fopt("LLIEMQ"); 
-  	string fopt("LLE"); 
-
-  	double pt, eta; 
-  	int    Q; 
-
-  	double yield, yieldE, width, widthE; 
-  	int    nbin; 
-  	int fitted(0); 
-  	
-	int status(0);
-	const char* Status;
-	
-  	int MINFIT(20);
-	 
- 	TH1D *hChisq_mm    = new TH1D("hChisq/ndof_mm"   , "hChisq/ndof_mm"   , 40, -20.,20.);
-	TH1D *hChisq_mt    = new TH1D("hChisq/ndof_mt"   , "hChisq/ndof_mt"   , 40, -20.,20.); 
-	TH1D *hChisq_mmbar = new TH1D("hChisq/ndof_mmbar", "hChisq/ndof_mmbar", 40, -20.,20.);
-
-  	gStyle->SetOptStat(PRINT); 
-  	gStyle->SetOptFit(PRINT); 
-  	makeCanvas(1); 
-  	c1->Clear();
-  	c1->Divide(3,1); 
-  	// -- positive charge
-  	for (unsigned int i = 0; i < fS1VectorPos.size(); ++i) {
-  	  c1->cd(1);  shrinkPad(0.15, 0.26); 
-  	  h = &(fS1VectorPos[i]);
-  	  h->SetMinimum(0.); setTitles(h, "m_{#mu #mu} [GeV]", "Entries/Bin", 0.08, 0.9, 1.8, 0.07);
-  	  setFunctionParameters(h, f1, 1); 
-  	  if (h->GetSumOfWeights() > MINFIT) {
-  	    h->Fit(f1, fopt.c_str());
-	    cout << gMinuit->fCstatu.Data() << endl;
-	    Status = gMinuit->fCstatu.Data();
-	    cout << Status[0] << endl;
-	    if ( Status[0] == 'S' || Status[0] == 'P' ){
-	    	status = 1;
-	    } else if  ( Status[0] == 'F' ) { 
-	    	status = -1;
-	    	}
-	    cout << status << endl;
-	    hChisq_mm->Fill(status*(f1->GetChisquare()/f1->GetNDF()));
-  	    yield  = f1->GetParameter(0)/h->GetBinWidth(1);
-  	    yieldE = f1->GetParError(0)/h->GetBinWidth(1);
-  	    fitted = 1; 
-  	  } else {
-  	    h->Draw();
-  	    int ib = h->FindBin(3.1); 
-  	    yield  = h->Integral(ib - 0.2*h->GetNbinsX(),  ib + 0.2*h->GetNbinsX()); 
-  	    yield  -=h->Integral(h->GetNbinsX() - 0.2*h->GetNbinsX(), h->GetNbinsX()); 
-  	    yield  -=h->Integral(1, 0.2*h->GetNbinsX()); 
-  	    if (yield < 0) yield = 1.; 
-	
-      	yieldE =TMath::Sqrt(yield); 
-      	fitted = 0; 
-    	}
-
-    	cout << " --> " << fitted << " " << h->GetSumOfWeights() << " .. " << yield << "  " 
-		 << h->GetName() << "  " << yield << "+/-" << yieldE << endl;
-	    if (PRINT) tl->DrawLatex(PRINTX, 0.85, Form("%4.1f", yield)); 
-
-    	getBinCenters(h->GetName(), eta, pt, Q); 
-    	nbin = fS1YieldPos->FindBin(eta, pt); 
-    	fS1YieldPos->SetBinContent(nbin, yield); 
-    	fS1YieldPos->SetBinError(nbin, yieldE); 
-
-    	c1->cd(2);  shrinkPad(0.15, 0.26); 
-    	h = &(fS2VectorPos[i]);
-    	h->SetMinimum(0.); setTitles(h, "m_{#mu t} [GeV]", "Entries/Bin", 0.08, 0.9, 1.8, 0.07);
-    	setFunctionParameters(h, f1, 1); 
-    	if (h->GetSumOfWeights() > MINFIT) {
-    	  h->Fit(f1, fopt.c_str());
-	  cout << gMinuit->fCstatu.Data() << endl;
-	  Status = gMinuit->fCstatu.Data();
-	  cout << Status[0] << endl;
-	  if ( Status[0] == 'S' || Status[0] == 'P' ){
-	  	status = 1;
-	  } else if ( Status[0] == 'F' ) { 
-	    	status = -1;
-	    	}
-	  cout << status << endl;
-	  hChisq_mt->Fill(status*(f1->GetChisquare()/f1->GetNDF()));
-    	  yield  = f1->GetParameter(0)/h->GetBinWidth(1);
-    	  yieldE = f1->GetParError(0)/h->GetBinWidth(1);
-    	  width  = f1->GetParameter(2); 
-    	  widthE = f1->GetParError(2); 
-    	  fitted = 1; 
-    	} else {
-    	  int ib = h->FindBin(3.1); 
-    	  h->Draw();
-    	  yield  = h->Integral(ib - 0.2*h->GetNbinsX(),  ib + 0.2*h->GetNbinsX()); 
-    	  yieldE =TMath::Sqrt(yield); 
-    	  yield  -=h->Integral(h->GetNbinsX() - 0.2*h->GetNbinsX(), h->GetNbinsX()); 
-    	  yield  -=h->Integral(1, 0.2*h->GetNbinsX()); 
-    	  if (yield < 0) yield = 1.; 
-    	  width  = 0.030; 
-    	  width  = 0.010; 
-    	  fitted = 0; 
-    	}
+  if ( mode == 5 ){
     
-    	cout << " --> " << fitted << " " << h->GetSumOfWeights() << " .. " << yield << "  " 
-		 << h->GetName() << "  " << yield << "+/-" << yieldE << endl;
-    	if (PRINT) tl->DrawLatex(PRINTX, 0.85, Form("%4.1f", yield)); 
-
-    	getBinCenters(h->GetName(), eta, pt, Q); 
-    	nbin = fS2YieldPos->FindBin(eta, pt); 
-    	fS2YieldPos->SetBinContent(nbin, yield); 
-    	fS2YieldPos->SetBinError(nbin, yieldE); 
-
-    	c1->cd(3);  shrinkPad(0.15, 0.26); 
-    	h = &(fS3VectorPos[i]);
-    	h->SetMinimum(0.); setTitles(h, "m_{#mu #bar{#mu} } [GeV]", "Entries/Bin", 0.08, 0.9, 1.8, 0.07);
-    	setFunctionParameters(h, f1, 1); 
-    	if (h->GetSumOfWeights() > MINFIT) {
-    	  h->Fit(f1, fopt.c_str());
-	  cout << gMinuit->fCstatu.Data() << endl;
-	  Status = gMinuit->fCstatu.Data();
-	  cout << Status[0] << endl;
-	  if ( Status[0] == 'S' || Status[0] == 'P' ){
-	  	status = 1;
-	  } else if ( Status[0] == 'F' ){ 
-	  	status = -1;
-		}
-	  cout << status << endl;
-	  hChisq_mmbar->Fill(status*(f1->GetChisquare()/f1->GetNDF()));
-    	  yield  = f1->GetParameter(0)/h->GetBinWidth(1);
-    	  yieldE = f1->GetParError(0)/h->GetBinWidth(1);
-    	  fitted = 1; 
-    	} else {
-    	  h->Draw();
-    	  int ib = h->FindBin(3.1); 
-    	  yield  = h->Integral(ib - 0.2*h->GetNbinsX(),  ib + 0.2*h->GetNbinsX()); 
-    	  yield  -=h->Integral(h->GetNbinsX() - 0.2*h->GetNbinsX(), h->GetNbinsX()); 
-    	  yield  -=h->Integral(1, 0.2*h->GetNbinsX()); 
-    	  if (yield < 0) yield = 1.; 
-    	  yieldE =TMath::Sqrt(yield); 
-    	  fitted = 0; 
-    	}
-
-    	cout << " --> " << fitted << " " << h->GetSumOfWeights() << " .. " << yield << "  " 
-		 << h->GetName() << "  " << yield << "+/-" << yieldE << endl;
-    	if (PRINT) tl->DrawLatex(PRINTX, 0.85, Form("%4.1f", yield)); 
-
-   	 getBinCenters(h->GetName(), eta, pt, Q); 
-   	 nbin = fS3YieldPos->FindBin(eta, pt); 
-   	 double mm = fS1YieldPos->GetBinContent(nbin); 
-   	 double mmE= fS1YieldPos->GetBinError(nbin); 
-   	 fS3YieldPos->SetBinContent(nbin, yield+mm); 
-   	 fS3YieldPos->SetBinError(nbin, TMath::Sqrt(yieldE*yieldE + mmE*mmE)); 
-	
-    	c1->Update();
-   	c1->Draw();
-
-    	TString frag(h->GetName()); 
-   	frag.ReplaceAll("s3:mmbar,", ""); 
-  	frag.ReplaceAll(",Q1", ""); 
-  	frag.ReplaceAll(".", ":"); 
-
-  	  c1->SaveAs(Form("%s/massfits-pos-%s-%s.eps", fPtDirectory.c_str(), fSample.c_str(), frag.Data()));
-	  
-	   
-  	}
-
-
-  	c1->Clear();
-  	c1->Divide(3,1); 
-  	// -- negative charge
-  	for (unsigned int i = 0; i < fS1VectorNeg.size(); ++i) {
-  	  c1->cd(1);  shrinkPad(0.15, 0.26); 
-  	  h = &(fS1VectorNeg[i]);
-  	  h->SetMinimum(0.); setTitles(h, "m_{#mu #mu} [GeV]", "Entries/Bin", 0.08, 0.9, 1.8, 0.07);
-  	  setFunctionParameters(h, f1, 1); 
-  	  if (h->GetSumOfWeights() > MINFIT) {
-  	    h->Fit(f1, fopt.c_str());
-	    cout << gMinuit->fCstatu.Data() << endl;
-	    Status = gMinuit->fCstatu.Data();
-	    cout << Status[0] << endl;
-	    if ( Status[0] == 'S' || Status[0] == 'P' ){
-	    	status = 1;
-	    } else if ( Status[0] == 'F' ){ 
-	    	status = -1;
-		}
-	    cout << status << endl;
-	    hChisq_mm->Fill(status*(f1->GetChisquare()/f1->GetNDF()));
-  	    yield  = f1->GetParameter(0)/h->GetBinWidth(1);
-  	    yieldE = f1->GetParError(0)/h->GetBinWidth(1);
-  	  } else {
-  	    h->Draw();
-  	    int ib = h->FindBin(3.1); 
-  	    yield  = h->Integral(ib - 0.2*h->GetNbinsX(),  ib + 0.2*h->GetNbinsX()); 
-  	    yield  -=h->Integral(h->GetNbinsX() - 0.2*h->GetNbinsX(), h->GetNbinsX()); 
-  	    yield  -=h->Integral(1, 0.2*h->GetNbinsX()); 
-  	    if (yield < 0) yield = 1.; 
-  	    yieldE =TMath::Sqrt(yield); 
-  	  }
-  	  cout << " --> " << fitted << " " << h->GetSumOfWeights() << " .. " << yield << "  " 
-		 << h->GetName() << "  " << yield << "+/-" << yieldE << endl;
-	    if (PRINT) tl->DrawLatex(PRINTX, 0.85, Form("%4.1f", yield)); 
-	
-	    getBinCenters(h->GetName(), eta, pt, Q); 
-	    nbin = fS1YieldNeg->FindBin(eta, pt); 
-	    fS1YieldNeg->SetBinContent(nbin, yield); 
-	    fS1YieldNeg->SetBinError(nbin, yieldE); 
-	
-	    c1->cd(2);  shrinkPad(0.15, 0.26); 
-	    h = &(fS2VectorNeg[i]);
-	    h->SetMinimum(0.); setTitles(h, "m_{#mu t} [GeV]", "Entries/Bin", 0.08, 0.9, 1.8, 0.07);
-	    setFunctionParameters(h, f1, 1); 
-	    if (h->GetSumOfWeights() > MINFIT) {
-	      h->Fit(f1, fopt.c_str());
-	      cout << gMinuit->fCstatu.Data() << endl;
-	      Status = gMinuit->fCstatu.Data();
-	      cout << Status[0] << endl;
-	      if ( Status[0] == 'S' || Status[0] == 'P' ){
-	    	status = 1;
-	      } else if ( Status[0] == 'F' ){ 
-	      	status = -1;
-		}
-	      cout << status << endl;
-	      hChisq_mt->Fill(status*(f1->GetChisquare()/f1->GetNDF()));
-	      yield  = f1->GetParameter(0)/h->GetBinWidth(1);
-	      yieldE = f1->GetParError(0)/h->GetBinWidth(1);
-	      width  = f1->GetParameter(2); 
-	      widthE = f1->GetParError(2); 
-	    } else {
-	      h->Draw();
-	      int ib = h->FindBin(3.1); 
-	      yield  = h->Integral(ib - 0.2*h->GetNbinsX(),  ib + 0.2*h->GetNbinsX()); 
-	      yield  -=h->Integral(h->GetNbinsX() - 0.2*h->GetNbinsX(), h->GetNbinsX()); 
-	      yield  -=h->Integral(1, 0.2*h->GetNbinsX()); 
-	      if (yield < 0) yield = 1.; 
-	      yieldE =TMath::Sqrt(yield); 
-	      width  = 0.030; 
-	      widthE = 0.010; 
-    	    }
-
-  	  cout << " --> " << fitted << " " << h->GetSumOfWeights() << " .. " << yield << "  " 
-		 << h->GetName() << "  " << yield << "+/-" << yieldE << endl;
-	    if (PRINT) tl->DrawLatex(PRINTX, 0.85, Form("%4.1f", yield)); 
-
-	    getBinCenters(h->GetName(), eta, pt, Q); 
-	    nbin = fS2YieldNeg->FindBin(eta, pt); 
-	    fS2YieldNeg->SetBinContent(nbin, yield); 
-	    fS2YieldNeg->SetBinError(nbin, yieldE); 
-	
-	    c1->cd(3);  shrinkPad(0.15, 0.2); 
-	    h = &(fS3VectorNeg[i]);
-	    h->SetMinimum(0.); setTitles(h, "m_{#mu #bar{#mu} } [GeV]", "Entries/Bin", 0.08, 0.9, 1.8, 0.07);
-	    setFunctionParameters(h, f1, 1); 
-	    if (h->GetSumOfWeights() > MINFIT) {
-	      h->Fit(f1, fopt.c_str());
-	      cout << gMinuit->fCstatu.Data() << endl;
-	      Status = gMinuit->fCstatu.Data();
-	      cout << Status[0] << endl;
-	      if ( Status[0] == 'S' || Status[0] == 'P' ){
-	    	status = 1;
-	      } else  if ( Status[0] == 'F' ){ 
-	      	status = -1;
-		}
-	      cout << status << endl;
-	      hChisq_mmbar->Fill(status*(f1->GetChisquare()/f1->GetNDF()));
-	      yield  = f1->GetParameter(0)/h->GetBinWidth(1);
-	      yieldE = f1->GetParError(0)/h->GetBinWidth(1);
-	      fitted = 1; 
-	    } else {
-	      h->Draw();
-	      int ib = h->FindBin(3.1); 
-	      yield  = h->Integral(ib - 0.2*h->GetNbinsX(),  ib + 0.2*h->GetNbinsX()); 
-	      yield  -=h->Integral(h->GetNbinsX() - 0.2*h->GetNbinsX(), h->GetNbinsX()); 
-	      yield  -=h->Integral(1, 0.2*h->GetNbinsX()); 
-	      if (yield < 0) yield = 1.; 
-	      yieldE =TMath::Sqrt(yield); 
-	      fitted = 0; 
-	    }
-
-	    cout << " --> " << fitted << " " << h->GetSumOfWeights() << " .. " << yield << "  " 
-		 << h->GetName() << "  " << yield << "+/-" << yieldE << endl;
-	    if (PRINT) tl->DrawLatex(PRINTX, 0.85, Form("%4.1f", yield)); 
-
-	    getBinCenters(h->GetName(), eta, pt, Q); 
-	    nbin = fS3YieldNeg->FindBin(eta, pt); 
-	    double mm = fS1YieldNeg->GetBinContent(nbin); 
-	    double mmE= fS1YieldNeg->GetBinError(nbin); 
-	    fS3YieldNeg->SetBinContent(nbin, yield+mm); 
-	    fS3YieldNeg->SetBinError(nbin, TMath::Sqrt(yieldE*yieldE + mmE*mmE)); 
-	
-	    c1->Update();
-	    c1->Draw();
-	
-	    TString frag(h->GetName()); 
-	    frag.ReplaceAll("s3:mmbar,", ""); 
-	    frag.ReplaceAll(",Q-1", ""); 
-	    frag.ReplaceAll(".", ":"); 
-	
-	    c1->SaveAs(Form("%s/massfits-neg-%s-%s.eps", fPtDirectory.c_str(), fSample.c_str(), frag.Data()));
-	    
-	    TCanvas *c2 = new TCanvas("c2", "c2");
-  	    c2->Clear();
-  	    c2->Divide(3,1);
-	    gStyle->SetOptStat(1111111111);
-	    c2->cd(1);  shrinkPad(0.1, 0.2);
-	    hChisq_mm->Draw();
-	    c2->cd(2);  shrinkPad(0.1, 0.2);
-	    hChisq_mt->Draw();
-	    c2->cd(3);  shrinkPad(0.1, 0.2);	    
-	    hChisq_mmbar->Draw();
-	    c2->SaveAs(Form("chi2_polGaus.eps", fPtDirectory.c_str(), fSample.c_str(), frag.Data()));	     
-  	}
-
- 	 c0->Clear(); 
-
- 	 c0->Divide(2,2);
- 	 c0->cd(1);
- 	 fS1YieldPos->Draw("colz");
- 	 c0->cd(2);
- 	 fS2YieldPos->Draw("colz");
-
- 	 c0->cd(3);
- 	 fS1YieldNeg->Draw("colz");
- 	 c0->cd(4);
- 	 fS2YieldNeg->Draw("colz");	
-	  
-  }
-  
-  if ( mode == 1 ){   // pol + CB
-  
-  	int PRINT(1); 
-  	double PRINTX(0.3); 
-  	// -- FIXME: 
-  	//    o function for fitting
-
-  	TH1D *h; 
-
-  	//  string fopt("LLIEMQ"); 
-  	string fopt("LLE"); 
-
-  	double pt, eta; 
-  	int    Q; 
-	
-  	double yield, yieldE, width, widthE; 
-  	int    nbin; 
-  	int fitted(0);
-	 
-  	int status(0);
-	const char* Status;
-
-  	int MINFIT(20);
-	 
- 	TH1D *hChisq_mm    = new TH1D("hChisq/ndof_mm"   , "hChisq/ndof_mm"   , 40, -20.,20.);
-	TH1D *hChisq_mt    = new TH1D("hChisq/ndof_mt"   , "hChisq/ndof_mt"   , 40, -20.,20.); 
-	TH1D *hChisq_mmbar = new TH1D("hChisq/ndof_mmbar", "hChisq/ndof_mmbar", 40, -20.,20.);
-	
- 	TH1D *hSigma_mm    = new TH1D("hSigma_mm"   , "hSigma_mm"   , 20, -0.07,0.07);
-	TH1D *hSigma_mt    = new TH1D("hSigma_mt"   , "hSigma_mt"   , 20, -0.07,0.07); 
-	TH1D *hSigma_mmbar = new TH1D("hSigma_mmbar", "hSigma_mmbar", 20, -0.07,0.07);
-	
- 	TH1D *hAlpha_mm    = new TH1D("hAlpha_mm"   , "hAlpha_mm"   , 30, -3.,3.);
-	TH1D *hAlpha_mt    = new TH1D("hAlpha_mt"   , "hAlpha_mt"   , 30, -3.,3.); 
-	TH1D *hAlpha_mmbar = new TH1D("hAlpha_mmbar", "hAlpha_mmbar", 30, -3.,3.);		
-	
- 	TH1D *hn_mm        = new TH1D("hn_mm"   , "hn_mm"   , 40, -4.,4.);
-	TH1D *hn_mt        = new TH1D("hn_mt"   , "hn_mt"   , 40, -4.,4.); 
-	TH1D *hn_mmbar     = new TH1D("hn_mmbar", "hn_mmbar", 40, -4.,4.);
-		
-  	//gStyle->SetOptStat(PRINT); 
-  	//gStyle->SetOptFit(PRINT);
-  	gStyle->SetOptStat(0000000000000); 
-  	gStyle->SetOptFit(00000000000000);		 
-  	makeCanvas(1); 
-  	c1->Clear();
-  	c1->Divide(3,1); 
-  	// -- positive charge  
-  	for (unsigned int i = 0; i < fS1VectorPos.size(); ++i) {
-    		c1->cd(1);  shrinkPad(0.15, 0.26); 
-    		h = &(fS1VectorPos[i]);
-    		h->SetMinimum(0.); setTitles(h, "m_{#mu #mu} [GeV]", "Entries/Bin", 0.08, 0.9, 1.8, 0.07);
-    		setFunctionParameters(h, f6, 3); 
-    		if (h->GetSumOfWeights() > MINFIT) {
-    		  	h->Fit(f6, fopt.c_str());
-			status = 0;
-			cout << gMinuit->fCstatu.Data() << endl;
-			Status = gMinuit->fCstatu.Data();
-			cout << Status[0] << endl;
-		        if ( Status[0] == 'S' || Status[0] == 'P' ){
-	   		    	status = 1;
-	      		} else if ( Status[0] == 'F' ){ 
-	      			status = -1;
-				}
-			cout << status << endl;
-			///////////////
-			if ( status == -1 || status == 0 ){
-				f6->SetParameters( f6->GetParameter(0), f6->GetParameter(1), f6->GetParameter(2), f6->GetParameter(3), f6->GetParameter(4) ,
-				f6->GetParameter(5), f6->GetParameter(6));
-				h->Fit(f6, fopt.c_str());
-			}
-			
-			cout << gMinuit->fCstatu.Data() << endl;
-			Status = gMinuit->fCstatu.Data();
-			cout << Status[0] << endl;
-			
-			if ( Status[0] == 'S' || Status[0] == 'P' ){
-	   		    	status = 1;
-	      		} else if ( Status[0] == 'F' ){ 
-	      			status = -1;
-				}
-			cout << status << endl;
-			/////////////////////////	
-			if ( status == 1 ){
-				hChisq_mm->Fill(status*(f6->GetChisquare()/f6->GetNDF()));
-				hSigma_mm->Fill(status*f6->GetParameter(1));
-				hAlpha_mm->Fill(status*f6->GetParameter(2));
-				hn_mm->Fill(status*f6->GetParameter(3));
-			}
-			f10->SetParameters( f6->GetParameter(0), f6->GetParameter(1), f6->GetParameter(2), f6->GetParameter(3), f6->GetParameter(4) );
-			yield  = f10->Integral(2.8,3.4)/h->GetBinWidth(1);
-      			yieldE = TMath::Sqrt(yield);
-      			fitted = 1; 
-    		} else {
-    			h->Draw();
-   			int ib = h->FindBin(3.1); 
-      			yield  = h->Integral(ib - 0.2*h->GetNbinsX(),  ib + 0.2*h->GetNbinsX()); 
-      			yield  -=h->Integral(h->GetNbinsX() - 0.2*h->GetNbinsX(), h->GetNbinsX()); 
-      			yield  -=h->Integral(1, 0.2*h->GetNbinsX()); 
-     			if (yield < 0) yield = 1.; 
-
-      			yieldE =TMath::Sqrt(yield); 
-      			fitted = 0; 
-    		}
-		
-    		cout << " --> " << fitted << " " << h->GetSumOfWeights() << " .. " << yield << "  " 
-		 << h->GetName() << "  " << yield << "+/-" << yieldE << endl;
-		if (PRINT) tl->DrawLatex(PRINTX, 0.85, Form("%4.1f", yield)); 
-
-	        getBinCenters(h->GetName(), eta, pt, Q); 
-		nbin = fS1YieldPos->FindBin(eta, pt); 
-    	        fS1YieldPos->SetBinContent(nbin, yield); 
-   		fS1YieldPos->SetBinError(nbin, yieldE); 
-
-    		c1->cd(2);  shrinkPad(0.15, 0.26); 
-    		h = &(fS2VectorPos[i]);
-    		h->SetMinimum(0.); setTitles(h, "m_{#mu t} [GeV]", "Entries/Bin", 0.08, 0.9, 1.8, 0.07);
-    		setFunctionParameters(h, f6, 3); 
-   		if (h->GetSumOfWeights() > MINFIT) {
-      		h->Fit(f6, fopt.c_str());
-		status = 0;
-		cout << gMinuit->fCstatu.Data() << endl;
-		Status = gMinuit->fCstatu.Data();
-		cout << Status[0] << endl;
-		if ( Status[0] == 'S' || Status[0] == 'P' ){
-	   	   	status = 1;
-	      	} else if ( Status[0] == 'F' ){ 
-	      		status = -1;
-			}
-		cout << status << endl;
-		///////////////
-		if ( status == -1 || status == 0 ){
-			f6->SetParameters( f6->GetParameter(0), f6->GetParameter(1), f6->GetParameter(2), f6->GetParameter(3), f6->GetParameter(4) ,
-			f6->GetParameter(5), f6->GetParameter(6));
-			h->Fit(f6, fopt.c_str());
-		}
-		
-		cout << gMinuit->fCstatu.Data() << endl;
-		Status = gMinuit->fCstatu.Data();
-		cout << Status[0] << endl;
-		
-		if ( Status[0] == 'S' || Status[0] == 'P' ){
-	  	    	status = 1;
-	      	} else if ( Status[0] == 'F' ){ 
-	      		status = -1;
-			}
-		cout << status << endl;
-		/////////////////////////
-		if ( status == 1 ){
-			hChisq_mt->Fill(status*(f6->GetChisquare()/f6->GetNDF()));
-			hSigma_mt->Fill(status*f6->GetParameter(1));
-			hAlpha_mt->Fill(status*f6->GetParameter(2));
-			hn_mt->Fill(status*f6->GetParameter(3));
-		}
-		f10->SetParameters( f6->GetParameter(0), f6->GetParameter(1), f6->GetParameter(2), f6->GetParameter(3), f6->GetParameter(4) );
-		yield  = f10->Integral(2.8,3.4)/h->GetBinWidth(1);
-      		yieldE = TMath::Sqrt(yield);
-      		width  = f6->GetParameter(1); 
-      		widthE = f6->GetParError(1); 
-      		fitted = 1; 
-    		} else {
-      		int ib = h->FindBin(3.1); 
-      		h->Draw();
-      		yield  = h->Integral(ib - 0.2*h->GetNbinsX(),  ib + 0.2*h->GetNbinsX()); 
-      		yieldE =TMath::Sqrt(yield); 
-      		yield  -=h->Integral(h->GetNbinsX() - 0.2*h->GetNbinsX(), h->GetNbinsX()); 
-      		yield  -=h->Integral(1, 0.2*h->GetNbinsX()); 
-      		if (yield < 0) yield = 1.; 
-      		width  = 0.030; 
-      		width  = 0.010; 
-      		fitted = 0; 
-    		}	
-    		
-    		cout << " --> " << fitted << " " << h->GetSumOfWeights() << " .. " << yield << "  " 
-		 << h->GetName() << "  " << yield << "+/-" << yieldE << endl;
-	  	if (PRINT) tl->DrawLatex(PRINTX, 0.85, Form("%4.1f", yield)); 
-
-    		getBinCenters(h->GetName(), eta, pt, Q); 
-    		nbin = fS2YieldPos->FindBin(eta, pt); 
-    		fS2YieldPos->SetBinContent(nbin, yield); 
-    		fS2YieldPos->SetBinError(nbin, yieldE); 
-	
-    		c1->cd(3);  shrinkPad(0.15, 0.26); 
-    		h = &(fS3VectorPos[i]);
-    		h->SetMinimum(0.); setTitles(h, "m_{#mu #bar{#mu} } [GeV]", "Entries/Bin", 0.08, 0.9, 1.8, 0.07);
-    		setFunctionParameters(h, f6, 3); 
-    		if (h->GetSumOfWeights() > MINFIT) {
-      		h->Fit(f6, fopt.c_str());
-		status = 0;
-		cout << gMinuit->fCstatu.Data() << endl;
-		Status = gMinuit->fCstatu.Data();
-		cout << Status[0] << endl;
-		if ( Status[0] == 'S' || Status[0] == 'P' ){
-	   	   	status = 1;
-	      	} else if ( Status[0] == 'F' ){ 
-	      		status = -1;
-			}
-		cout << status << endl;
-		///////////////
-		if ( status == -1 || status == 0 ){
-			f6->SetParameters( f6->GetParameter(0), f6->GetParameter(1), f6->GetParameter(2), f6->GetParameter(3), f6->GetParameter(4) ,
-			f6->GetParameter(5), f6->GetParameter(6));
-			h->Fit(f6, fopt.c_str());
-		}
-		
-		cout << gMinuit->fCstatu.Data() << endl;
-		Status = gMinuit->fCstatu.Data();
-		cout << Status[0] << endl;
-		
-		if ( Status[0] == 'S' || Status[0] == 'P' ){
-	  	    	status = 1;
-	      	} else if ( Status[0] == 'F' ){ 
-	      		status = -1;
-			}
-		cout << status << endl;
-		/////////////////////////
-		if ( status == 1 ){
-			hChisq_mmbar->Fill(status*(f6->GetChisquare()/f6->GetNDF()));
-			hSigma_mmbar->Fill(status*f6->GetParameter(1));
-			hAlpha_mmbar->Fill(status*f6->GetParameter(2));
-			hn_mmbar->Fill(status*f6->GetParameter(3));
-		}		
-		f10->SetParameters( f6->GetParameter(0), f6->GetParameter(1), f6->GetParameter(2), f6->GetParameter(3), f6->GetParameter(4) );
-		yield  = f10->Integral(2.8,3.4)/h->GetBinWidth(1);
-      		yieldE = TMath::Sqrt(yield);		
-      		fitted = 1; 
-    		} else {
-    	 	h->Draw();
-      		int ib = h->FindBin(3.1); 
-      		yield  = h->Integral(ib - 0.2*h->GetNbinsX(),  ib + 0.2*h->GetNbinsX()); 
-      		yield  -=h->Integral(h->GetNbinsX() - 0.2*h->GetNbinsX(), h->GetNbinsX()); 
-      		yield  -=h->Integral(1, 0.2*h->GetNbinsX()); 
-      		if (yield < 0) yield = 1.; 
-      		yieldE =TMath::Sqrt(yield); 
-      		fitted = 0; 
-    		}	
-
-    		cout << " --> " << fitted << " " << h->GetSumOfWeights() << " .. " << yield << "  " 
-	 	<< h->GetName() << "  " << yield << "+/-" << yieldE << endl;
-    		if (PRINT) tl->DrawLatex(PRINTX, 0.85, Form("%4.1f", yield)); 
-
-    		getBinCenters(h->GetName(), eta, pt, Q); 
-    		nbin = fS3YieldPos->FindBin(eta, pt); 
-    		double mm = fS1YieldPos->GetBinContent(nbin); 
-    		double mmE= fS1YieldPos->GetBinError(nbin); 
-    		fS3YieldPos->SetBinContent(nbin, yield+mm); 
-    		fS3YieldPos->SetBinError(nbin, TMath::Sqrt(yieldE*yieldE + mmE*mmE)); 
-
-    		c1->Update();
-    		c1->Draw();
-
-    		TString frag(h->GetName()); 
-    		frag.ReplaceAll("s3:mmbar,", ""); 
-    		frag.ReplaceAll(",Q1", ""); 
-    		frag.ReplaceAll(".", ":"); 
-	
-    		c1->SaveAs(Form("%s/massfits-pos-%s-%s.eps", fPtDirectory.c_str(), fSample.c_str(), frag.Data())); 
-  		}
-
-
-  		c1->Clear();
-  		c1->Divide(3,1); 
-  		// -- negative charge
-  		for (unsigned int i = 0; i < fS1VectorNeg.size(); ++i) {
-    		c1->cd(1);  shrinkPad(0.15, 0.26); 
-    		h = &(fS1VectorNeg[i]);
-    		h->SetMinimum(0.); setTitles(h, "m_{#mu #mu} [GeV]", "Entries/Bin", 0.08, 0.9, 1.8, 0.07);
-    		setFunctionParameters(h, f6, 3); 
-    		if (h->GetSumOfWeights() > MINFIT) {
-    		h->Fit(f6, fopt.c_str());
-		status = 0;
-		cout << gMinuit->fCstatu.Data() << endl;
-		Status = gMinuit->fCstatu.Data();
-		cout << Status[0] << endl;
-		if ( Status[0] == 'S' || Status[0] == 'P' ){
-	   	   	status = 1;
-	      	} else if ( Status[0] == 'F' ){ 
-	      		status = -1;
-			}
-		cout << status << endl;
-		///////////////
-		if ( status == -1 || status == 0 ){
-			f6->SetParameters( f6->GetParameter(0), f6->GetParameter(1), f6->GetParameter(2), f6->GetParameter(3), f6->GetParameter(4) ,
-			f6->GetParameter(5), f6->GetParameter(6));
-			h->Fit(f6, fopt.c_str());
-		}
-		
-		cout << gMinuit->fCstatu.Data() << endl;
-		Status = gMinuit->fCstatu.Data();
-		cout << Status[0] << endl;
-		
-		if ( Status[0] == 'S' || Status[0] == 'P' ){
-	  	    	status = 1;
-	      	} else if ( Status[0] == 'F' ){ 
-	      		status = -1;
-			}
-		cout << status << endl;
-		/////////////////////////
-		if ( status == 1 ){
-			hChisq_mm->Fill(status*(f6->GetChisquare()/f6->GetNDF()));
-			hSigma_mm->Fill(status*f6->GetParameter(1));
-			hAlpha_mm->Fill(status*f6->GetParameter(2));
-			hn_mm->Fill(status*f6->GetParameter(3));
-		}		
-		f10->SetParameters( f6->GetParameter(0), f6->GetParameter(1), f6->GetParameter(2), f6->GetParameter(3), f6->GetParameter(4) );
-		yield  = f10->Integral(2.8,3.4)/h->GetBinWidth(1);
-      		yieldE = TMath::Sqrt(yield);		
-    		} else {
-      		h->Draw();
-      		int ib = h->FindBin(3.1); 
-      		yield  = h->Integral(ib - 0.2*h->GetNbinsX(),  ib + 0.2*h->GetNbinsX()); 
-      		yield  -=h->Integral(h->GetNbinsX() - 0.2*h->GetNbinsX(), h->GetNbinsX()); 
-      		yield  -=h->Integral(1, 0.2*h->GetNbinsX()); 
-      		if (yield < 0) yield = 1.; 
-      		yieldE =TMath::Sqrt(yield); 
-    		}
-    		cout << " --> " << fitted << " " << h->GetSumOfWeights() << " .. " << yield << "  " 
-	 	<< h->GetName() << "  " << yield << "+/-" << yieldE << endl;
-    		if (PRINT) tl->DrawLatex(PRINTX, 0.85, Form("%4.1f", yield)); 
-
-    		getBinCenters(h->GetName(), eta, pt, Q); 
-    		nbin = fS1YieldNeg->FindBin(eta, pt); 
-    		fS1YieldNeg->SetBinContent(nbin, yield); 
-    		fS1YieldNeg->SetBinError(nbin, yieldE); 
-
-    		c1->cd(2);  shrinkPad(0.15, 0.26); 
-    		h = &(fS2VectorNeg[i]);
-    		h->SetMinimum(0.); setTitles(h, "m_{#mu t} [GeV]", "Entries/Bin", 0.08, 0.9, 1.8, 0.07);
-    		setFunctionParameters(h, f6, 3); 
-    		if (h->GetSumOfWeights() > MINFIT) {
-    		h->Fit(f6, fopt.c_str());
-		status = 0;
-		cout << gMinuit->fCstatu.Data() << endl;
-		Status = gMinuit->fCstatu.Data();
-		cout << Status[0] << endl;
-		if ( Status[0] == 'S' || Status[0] == 'P' ){
-	   	   	status = 1;
-	      	} else if ( Status[0] == 'F' ){ 
-	      		status = -1;
-			}
-		cout << status << endl;
-		///////////////
-		if ( status == -1 || status == 0 ){
-			f6->SetParameters( f6->GetParameter(0), f6->GetParameter(1), f6->GetParameter(2), f6->GetParameter(3), f6->GetParameter(4) ,
-			f6->GetParameter(5), f6->GetParameter(6));
-			h->Fit(f6, fopt.c_str());
-		}
-		
-		cout << gMinuit->fCstatu.Data() << endl;
-		Status = gMinuit->fCstatu.Data();
-		cout << Status[0] << endl;
-		
-		if ( Status[0] == 'S' || Status[0] == 'P' ){
-	  	    	status = 1;
-	      	} else if ( Status[0] == 'F' ){ 
-	      		status = -1;
-			}
-		cout << status << endl;
-		/////////////////////////
-		if ( status == 1 ){
-			hChisq_mt->Fill(status*(f6->GetChisquare()/f6->GetNDF()));
-			hSigma_mt->Fill(status*f6->GetParameter(1));
-			hAlpha_mt->Fill(status*f6->GetParameter(2));
-			hn_mt->Fill(status*f6->GetParameter(3));
-		}		
-		f10->SetParameters( f6->GetParameter(0), f6->GetParameter(1), f6->GetParameter(2), f6->GetParameter(3), f6->GetParameter(4) );
-		yield  = f10->Integral(2.8,3.4)/h->GetBinWidth(1);
-      		yieldE = TMath::Sqrt(yield);		
-      		width  = f6->GetParameter(1); 
-      		widthE = f6->GetParError(1); 
-    		} else {
-      		h->Draw();
-      		int ib = h->FindBin(3.1); 
-      		yield  = h->Integral(ib - 0.2*h->GetNbinsX(),  ib + 0.2*h->GetNbinsX()); 
-      		yield  -=h->Integral(h->GetNbinsX() - 0.2*h->GetNbinsX(), h->GetNbinsX()); 
-      		yield  -=h->Integral(1, 0.2*h->GetNbinsX()); 
-      		if (yield < 0) yield = 1.; 
-      		yieldE =TMath::Sqrt(yield); 
-      		width  = 0.030; 
-      		widthE = 0.010; 
-    		}
-
-    		cout << " --> " << fitted << " " << h->GetSumOfWeights() << " .. " << yield << "  " 
-		 << h->GetName() << "  " << yield << "+/-" << yieldE << endl;
-    		if (PRINT) tl->DrawLatex(PRINTX, 0.85, Form("%4.1f", yield)); 
-
-    		getBinCenters(h->GetName(), eta, pt, Q); 
-    		nbin = fS2YieldNeg->FindBin(eta, pt); 
-    		fS2YieldNeg->SetBinContent(nbin, yield); 
-    		fS2YieldNeg->SetBinError(nbin, yieldE); 
-
-    		c1->cd(3);  shrinkPad(0.15, 0.2); 
-    		h = &(fS3VectorNeg[i]);
-    		h->SetMinimum(0.); setTitles(h, "m_{#mu #bar{#mu} } [GeV]", "Entries/Bin", 0.08, 0.9, 1.8, 0.07);
-    		setFunctionParameters(h, f6, 3); 
-    		if (h->GetSumOfWeights() > MINFIT) {
-      		h->Fit(f6, fopt.c_str());
-		status = 0;
-		cout << gMinuit->fCstatu.Data() << endl;
-		Status = gMinuit->fCstatu.Data();
-		cout << Status[0] << endl;
-		if ( Status[0] == 'S' || Status[0] == 'P' ){
-	   	   	status = 1;
-	      	} else if ( Status[0] == 'F' ){ 
-	      		status = -1;
-			}
-		cout << status << endl;
-		///////////////
-		if ( status == -1 || status == 0 ){
-			f6->SetParameters( f6->GetParameter(0), f6->GetParameter(1), f6->GetParameter(2), f6->GetParameter(3), f6->GetParameter(4) ,
-			f6->GetParameter(5), f6->GetParameter(6));
-			h->Fit(f6, fopt.c_str());
-		}
-		
-		cout << gMinuit->fCstatu.Data() << endl;
-		Status = gMinuit->fCstatu.Data();
-		cout << Status[0] << endl;
-		
-		if ( Status[0] == 'S' || Status[0] == 'P' ){
-	  	    	status = 1;
-	      	} else if ( Status[0] == 'F' ){ 
-	      		status = -1;
-			}
-		cout << status << endl;
-		/////////////////////////
-		if ( status == 1 ){
-			hChisq_mmbar->Fill(status*(f6->GetChisquare()/f6->GetNDF()));
-			hSigma_mmbar->Fill(status*f6->GetParameter(1));
-			hAlpha_mmbar->Fill(status*f6->GetParameter(2));
-			hn_mmbar->Fill(status*f6->GetParameter(3));
-		}		
-		f10->SetParameters( f6->GetParameter(0), f6->GetParameter(1), f6->GetParameter(2), f6->GetParameter(3), f6->GetParameter(4) );
-		yield  = f10->Integral(2.8,3.4)/h->GetBinWidth(1);
-      		yieldE = TMath::Sqrt(yield);		
-      		fitted = 1; 
-    		} else {
-      		h->Draw();
-      		int ib = h->FindBin(3.1); 
-      		yield  = h->Integral(ib - 0.2*h->GetNbinsX(),  ib + 0.2*h->GetNbinsX()); 
-      		yield  -=h->Integral(h->GetNbinsX() - 0.2*h->GetNbinsX(), h->GetNbinsX()); 
-      		yield  -=h->Integral(1, 0.2*h->GetNbinsX()); 
-     		if (yield < 0) yield = 1.; 
-     		yieldE =TMath::Sqrt(yield); 
-     		fitted = 0; 
-    		}
-
-    		cout << " --> " << fitted << " " << h->GetSumOfWeights() << " .. " << yield << "  " 
-	 	<< h->GetName() << "  " << yield << "+/-" << yieldE << endl;
-    		if (PRINT) tl->DrawLatex(PRINTX, 0.85, Form("%4.1f", yield)); 
-
-    		getBinCenters(h->GetName(), eta, pt, Q); 
-    		nbin = fS3YieldNeg->FindBin(eta, pt); 
-    		double mm = fS1YieldNeg->GetBinContent(nbin); 
-    		double mmE= fS1YieldNeg->GetBinError(nbin); 
-    		fS3YieldNeg->SetBinContent(nbin, yield+mm); 
-    		fS3YieldNeg->SetBinError(nbin, TMath::Sqrt(yieldE*yieldE + mmE*mmE)); 
-
-    		c1->Update();
-    		c1->Draw();
-	
-    		TString frag(h->GetName()); 
-    		frag.ReplaceAll("s3:mmbar,", ""); 
-    		frag.ReplaceAll(",Q-1", ""); 
-    		frag.ReplaceAll(".", ":"); 
-
-    		c1->SaveAs(Form("%s/massfits-neg-%s-%s.eps", fPtDirectory.c_str(), fSample.c_str(), frag.Data()));
-		
- 		}
-				 
-	        TCanvas *c2 = new TCanvas("c2", "c2");
-  	        c2->Clear();
-  	        c2->Divide(3,1);
-	        gStyle->SetOptStat(1111111111);
-	        c2->cd(1);  shrinkPad(0.1, 0.2);
-	        hChisq_mm->Draw();
-	        c2->cd(2);  shrinkPad(0.1, 0.2);
-	        hChisq_mt->Draw();
-	        c2->cd(3);  shrinkPad(0.1, 0.2);	    
-	        hChisq_mmbar->Draw();
-	        c2->SaveAs("chi2_polCB.eps");
-	    
-	        TCanvas *c3 = new TCanvas("c3", "c3");
-  	        c3->Clear();
-  	        c3->Divide(3,1);
-	        gStyle->SetOptStat(1111111111);
-	        c3->cd(1);  shrinkPad(0.1, 0.2);
-	        hSigma_mm->Draw();
-	        c3->cd(2);  shrinkPad(0.1, 0.2);
-	        hSigma_mt->Draw();
-	        c3->cd(3);  shrinkPad(0.1, 0.2);	    
-	        hSigma_mmbar->Draw();
-	        c3->SaveAs("Sigma_polCB.eps");	    	
-	    	
-	        TCanvas *c4 = new TCanvas("c4", "c4");
-  	        c4->Clear();
-  	        c4->Divide(3,1);
-	        gStyle->SetOptStat(1111111111);
-	        c4->cd(1);  shrinkPad(0.1, 0.2);
-	        hAlpha_mm->Draw();
-	        c4->cd(2);  shrinkPad(0.1, 0.2);
-	        hAlpha_mt->Draw();
-	        c4->cd(3);  shrinkPad(0.1, 0.2);	    
-	        hAlpha_mmbar->Draw();
-	        c4->SaveAs("Alpha_polCB.eps");
-		
-	        TCanvas *c5 = new TCanvas("c5", "c5");
-  	        c5->Clear();
-  	        c5->Divide(3,1);
-	        gStyle->SetOptStat(1111111111);
-	        c5->cd(1);  shrinkPad(0.1, 0.2);
-	        hn_mm->Draw();
-	        c5->cd(2);  shrinkPad(0.1, 0.2);
-	        hn_mt->Draw();
-	        c5->cd(3);  shrinkPad(0.1, 0.2);	    
-	        hn_mmbar->Draw();
-	        c5->SaveAs("n_polCB.eps");		
-
-  		c0->Clear(); 
-
-  		c0->Divide(2,2);
-  		c0->cd(1);
-  		fS1YieldPos->Draw("colz");
-  		c0->cd(2);
-  		fS2YieldPos->Draw("colz");
-	
-  		c0->cd(3);
-  		fS1YieldNeg->Draw("colz");
-  		c0->cd(4);
-  		fS2YieldNeg->Draw("colz");
-	
-  
-  }
-  
-  if ( mode == 2 ){   // pol + CB + Gaussian
-  
-  	int PRINT(1); 
-  	double PRINTX(0.3); 
-  	// -- FIXME: 
-  	//    o function for fitting
-
-  	TH1D *h; 
-
-  	//  string fopt("LLIEMQ"); 
-  	string fopt("LLE"); 
-
-  	double pt, eta; 
-  	int    Q; 
-	
-  	double yield, yieldE, width, widthE; 
-  	int    nbin; 
-  	int fitted(0); 
-  	
-	int status(0);
-	const char* Status;
-	
-  	int MINFIT(50);
-	 
- 	TH1D *hChisq_mm    = new TH1D("hChisq/ndof_mm"   , "hChisq/ndof_mm"   , 40, -20.,20.);
-	TH1D *hChisq_mt    = new TH1D("hChisq/ndof_mt"   , "hChisq/ndof_mt"   , 40, -20.,20.); 
-	TH1D *hChisq_mmbar = new TH1D("hChisq/ndof_mmbar", "hChisq/ndof_mmbar", 40, -20.,20.);
-	
-  	gStyle->SetOptStat(PRINT); 
-  	gStyle->SetOptFit(PRINT); 
-  	makeCanvas(1); 
-  	c1->Clear();
-  	c1->Divide(3,1); 
-  	// -- positive charge  
-  	for (unsigned int i = 0; i < fS1VectorPos.size(); ++i) {
-    		c1->cd(1);  shrinkPad(0.15, 0.26); 
-    		h = &(fS1VectorPos[i]);
-    		h->SetMinimum(0.); setTitles(h, "m_{#mu #mu} [GeV]", "Entries/Bin", 0.08, 0.9, 1.8, 0.07);
-    		setFunctionParameters(h, f12, 4); 
-    		if (h->GetSumOfWeights() > MINFIT) {
-    		  	h->Fit(f12, fopt.c_str());
-			cout << gMinuit->fCstatu.Data() << endl;
-			Status = gMinuit->fCstatu.Data();
-			cout << Status[0] << endl;
-			if ( Status[0] == 'S' || Status[0] == 'P' ){
-	   		   	status = 1;
-	      		} else  if ( Status[0] == 'F' ){ 
-	      			status = -1;
-				}
-			cout << status << endl;			
-			hChisq_mm->Fill(status*(f12->GetChisquare()/f12->GetNDF()));
-			f11->SetParameters( f12->GetParameter(0), f12->GetParameter(1), f12->GetParameter(2), f12->GetParameter(3), f12->GetParameter(4), f12->GetParameter(5), f12->GetParameter(6),
-			f12->GetParameter(7) );
-			yield  = f11->Integral(2.8,3.4)/h->GetBinWidth(1);
-      			yieldE = TMath::Sqrt(yield);
-      			fitted = 1; 
-    		} else {
-    			h->Draw();
-   			int ib = h->FindBin(3.1); 
-      			yield  = h->Integral(ib - 0.2*h->GetNbinsX(),  ib + 0.2*h->GetNbinsX()); 
-      			yield  -=h->Integral(h->GetNbinsX() - 0.2*h->GetNbinsX(), h->GetNbinsX()); 
-      			yield  -=h->Integral(1, 0.2*h->GetNbinsX()); 
-     			if (yield < 0) yield = 1.; 
-
-      			yieldE =TMath::Sqrt(yield); 
-      			fitted = 0; 
-    		}
-
-    		cout << " --> " << fitted << " " << h->GetSumOfWeights() << " .. " << yield << "  " 
-		 << h->GetName() << "  " << yield << "+/-" << yieldE << endl;
-		if (PRINT) tl->DrawLatex(PRINTX, 0.85, Form("%4.1f", yield)); 
-
-	        getBinCenters(h->GetName(), eta, pt, Q); 
-		nbin = fS1YieldPos->FindBin(eta, pt); 
-    	        fS1YieldPos->SetBinContent(nbin, yield); 
-   		fS1YieldPos->SetBinError(nbin, yieldE); 
-
-    		c1->cd(2);  shrinkPad(0.15, 0.26); 
-    		h = &(fS2VectorPos[i]);
-    		h->SetMinimum(0.); setTitles(h, "m_{#mu t} [GeV]", "Entries/Bin", 0.08, 0.9, 1.8, 0.07);
-    		setFunctionParameters(h, f12, 4); 
-   		if (h->GetSumOfWeights() > MINFIT) {
-      		h->Fit(f12, fopt.c_str());
-		cout << gMinuit->fCstatu.Data() << endl;
-		Status = gMinuit->fCstatu.Data();
-		cout << Status[0] << endl;
-		if ( Status[0] == 'S' || Status[0] == 'P' ){
-	   	   	status = 1;
-	      	} else  if ( Status[0] == 'F' ){ 
-	      		status = -1;
-			}
-		cout << status << endl;
-		hChisq_mt->Fill(status*(f12->GetChisquare()/f12->GetNDF()));
-		f11->SetParameters( f12->GetParameter(0), f12->GetParameter(1), f12->GetParameter(2), f12->GetParameter(3), f12->GetParameter(4), f12->GetParameter(5), f12->GetParameter(6),
-		f12->GetParameter(7) );
-		yield  = f11->Integral(2.8,3.4)/h->GetBinWidth(1);
-      		yieldE = TMath::Sqrt(yield);
-      		width  = f12->GetParameter(1); 
-      		widthE = f12->GetParError(1); 
-      		fitted = 1; 
-    		} else {
-      		int ib = h->FindBin(3.1); 
-      		h->Draw();
-      		yield  = h->Integral(ib - 0.2*h->GetNbinsX(),  ib + 0.2*h->GetNbinsX()); 
-      		yieldE =TMath::Sqrt(yield); 
-      		yield  -=h->Integral(h->GetNbinsX() - 0.2*h->GetNbinsX(), h->GetNbinsX()); 
-      		yield  -=h->Integral(1, 0.2*h->GetNbinsX()); 
-      		if (yield < 0) yield = 1.; 
-      		width  = 0.030; 
-      		width  = 0.010; 
-      		fitted = 0; 
-    		}	
+    int PRINT(1); 
+    double PRINTX(0.5);
+    TH1D *h; 
+    string fopt("LLE"); 
+    double pt, eta; 
+    double yield_1S(0.), yieldE_1S(0.);
+    double yield_2S(0.), yieldE_2S(0.);
+    double yield_3S(0.), yieldE_3S(0.);
+    double alpha(0.), n(0.), alphaE(0.), nE(0.), sig1(0.), sigE1(0.), sig2(0.), sigE2(0.);
+    double scale(1.033);
     
-    		cout << " --> " << fitted << " " << h->GetSumOfWeights() << " .. " << yield << "  " 
-		 << h->GetName() << "  " << yield << "+/-" << yieldE << endl;
-	  	if (PRINT) tl->DrawLatex(PRINTX, 0.85, Form("%4.1f", yield)); 
-
-    		getBinCenters(h->GetName(), eta, pt, Q); 
-    		nbin = fS2YieldPos->FindBin(eta, pt); 
-    		fS2YieldPos->SetBinContent(nbin, yield); 
-    		fS2YieldPos->SetBinError(nbin, yieldE); 
+    int    nbin;
+    int fitted(0);
+    int status(0);
+    const char* Status;
+    
+    gStyle->SetOptStat(0000000000000); 
+    gStyle->SetOptFit(00000000000000);
+    gStyle->SetOptFit(111111111);
+    makeCanvas(1); 
+    c1->Clear();
+    
+    TFile *f = new TFile("FitParametersMC_1D_PtInt.root", "RECREATE");
+    TH1D *hSigma1S = new TH1D("hSigma1S","hSigma1S", 7, -0.4, 2.4); 
+    TH1D *hSigma2S = new TH1D("hSigma2S","hSigma2S", 7, -0.4, 2.4);
+    
+    for (unsigned int i = 0; i < fS12Vector.size(); ++i) {
+      
+      c1->cd(1); shrinkPad(0.15, 0.26); 
+      h = &(fS12Vector[i]);
+      h->SetMinimum(0.); setTitles(h, "Mass_{#mu #mu} [GeV]", "Entries/Bin", 0.08, 0.9, 1.8, 0.07);
+      if (h->GetSumOfWeights() > 10.) {
+	setFunctionParameters(h, f13, 6., 0);
+	h->Fit(f13, fopt.c_str());
+	status = 0;
+	cout << gMinuit->fCstatu.Data() << endl;
+	Status = gMinuit->fCstatu.Data();
+	cout << Status[0] << endl;
+	if ( Status[0] == 'S' || Status[0] == 'P' ){
+	  status = 1;
+	} else if ( Status[0] == 'F' ){ 
+	  status = -1;
+	}
+	cout << status << endl;
+	///////////////
+	if ( status == -1 || status == 0 ){
+	  f13->SetParameters( f13->GetParameter(0), f13->GetParameter(1), f13->GetParameter(2), f13->GetParameter(3), f13->GetParameter(4) , f13->GetParameter(5), f13->GetParameter(6), f13->GetParameter(7), f13->GetParameter(8), f13->GetParameter(9), f13->GetParameter(10));
+	  h->Fit(f13, fopt.c_str());
+	}
 	
-    		c1->cd(3);  shrinkPad(0.15, 0.26); 
-    		h = &(fS3VectorPos[i]);
-    		h->SetMinimum(0.); setTitles(h, "m_{#mu #bar{#mu} } [GeV]", "Entries/Bin", 0.08, 0.9, 1.8, 0.07);
-    		setFunctionParameters(h, f12, 4); 
-    		if (h->GetSumOfWeights() > MINFIT) {
-      		h->Fit(f12, fopt.c_str());
-		cout << gMinuit->fCstatu.Data() << endl;
-		Status = gMinuit->fCstatu.Data();
-		cout << Status[0] << endl;
-		if ( Status[0] == 'S' || Status[0] == 'P' ){
-	   	   	status = 1;
-	      	} else  if ( Status[0] == 'F' ){ 
-	      		status = -1;
-			}
-		cout << status << endl;
-		hChisq_mmbar->Fill(status*(f12->GetChisquare()/f12->GetNDF()));
-		f11->SetParameters( f12->GetParameter(0), f12->GetParameter(1), f12->GetParameter(2), f12->GetParameter(3), f12->GetParameter(4), f12->GetParameter(5), f12->GetParameter(6),
-		f12->GetParameter(7) );
-		yield  = f11->Integral(2.8,3.4)/h->GetBinWidth(1);
-      		yieldE = TMath::Sqrt(yield);		
-      		fitted = 1; 
-    		} else {
-    	 	h->Draw();
-      		int ib = h->FindBin(3.1); 
-      		yield  = h->Integral(ib - 0.2*h->GetNbinsX(),  ib + 0.2*h->GetNbinsX()); 
-      		yield  -=h->Integral(h->GetNbinsX() - 0.2*h->GetNbinsX(), h->GetNbinsX()); 
-      		yield  -=h->Integral(1, 0.2*h->GetNbinsX()); 
-      		if (yield < 0) yield = 1.; 
-      		yieldE =TMath::Sqrt(yield); 
-      		fitted = 0; 
-    		}	
-
-    		cout << " --> " << fitted << " " << h->GetSumOfWeights() << " .. " << yield << "  " 
-	 	<< h->GetName() << "  " << yield << "+/-" << yieldE << endl;
-    		if (PRINT) tl->DrawLatex(PRINTX, 0.85, Form("%4.1f", yield)); 
-
-    		getBinCenters(h->GetName(), eta, pt, Q); 
-    		nbin = fS3YieldPos->FindBin(eta, pt); 
-    		double mm = fS1YieldPos->GetBinContent(nbin); 
-    		double mmE= fS1YieldPos->GetBinError(nbin); 
-    		fS3YieldPos->SetBinContent(nbin, yield+mm); 
-    		fS3YieldPos->SetBinError(nbin, TMath::Sqrt(yieldE*yieldE + mmE*mmE)); 
-
-    		c1->Update();
-    		c1->Draw();
-
-    		TString frag(h->GetName()); 
-    		frag.ReplaceAll("s3:mmbar,", ""); 
-    		frag.ReplaceAll(",Q1", ""); 
-    		frag.ReplaceAll(".", ":"); 
+	cout << gMinuit->fCstatu.Data() << endl;
+	Status = gMinuit->fCstatu.Data();
+	cout << Status[0] << endl;
 	
-    		c1->SaveAs(Form("%s/massfits-pos-%s-%s.eps", fPtDirectory.c_str(), fSample.c_str(), frag.Data())); 
-  		}
-
-
-  		c1->Clear();
-  		c1->Divide(3,1); 
-  		// -- negative charge
-  		for (unsigned int i = 0; i < fS1VectorNeg.size(); ++i) {
-    		c1->cd(1);  shrinkPad(0.15, 0.26); 
-    		h = &(fS1VectorNeg[i]);
-    		h->SetMinimum(0.); setTitles(h, "m_{#mu #mu} [GeV]", "Entries/Bin", 0.08, 0.9, 1.8, 0.07);
-    		setFunctionParameters(h, f12, 4); 
-    		if (h->GetSumOfWeights() > MINFIT) {
-    		h->Fit(f12, fopt.c_str());		
-		cout << gMinuit->fCstatu.Data() << endl;
-		Status = gMinuit->fCstatu.Data();
-		cout << Status[0] << endl;
-		if ( Status[0] == 'S' || Status[0] == 'P' ){
-	   	   	status = 1;
-	      	} else  if ( Status[0] == 'F' ){ 
-	      		status = -1;
-			}
-		cout << status << endl;
-		hChisq_mm->Fill(status*(f12->GetChisquare()/f12->GetNDF()));
-		f11->SetParameters( f12->GetParameter(0), f12->GetParameter(1), f12->GetParameter(2), f12->GetParameter(3), f12->GetParameter(4), f12->GetParameter(5), f12->GetParameter(6),
-		f12->GetParameter(7) );
-		yield  = f11->Integral(2.8,3.4)/h->GetBinWidth(1);
-      		yieldE = TMath::Sqrt(yield);		
-    		} else {
-      		h->Draw();
-      		int ib = h->FindBin(3.1); 
-      		yield  = h->Integral(ib - 0.2*h->GetNbinsX(),  ib + 0.2*h->GetNbinsX()); 
-      		yield  -=h->Integral(h->GetNbinsX() - 0.2*h->GetNbinsX(), h->GetNbinsX()); 
-      		yield  -=h->Integral(1, 0.2*h->GetNbinsX()); 
-      		if (yield < 0) yield = 1.; 
-      		yieldE =TMath::Sqrt(yield); 
-    		}
-    		cout << " --> " << fitted << " " << h->GetSumOfWeights() << " .. " << yield << "  " 
-	 	<< h->GetName() << "  " << yield << "+/-" << yieldE << endl;
-    		if (PRINT) tl->DrawLatex(PRINTX, 0.85, Form("%4.1f", yield)); 
-
-    		getBinCenters(h->GetName(), eta, pt, Q); 
-    		nbin = fS1YieldNeg->FindBin(eta, pt); 
-    		fS1YieldNeg->SetBinContent(nbin, yield); 
-    		fS1YieldNeg->SetBinError(nbin, yieldE); 
-
-    		c1->cd(2);  shrinkPad(0.15, 0.26); 
-    		h = &(fS2VectorNeg[i]);
-    		h->SetMinimum(0.); setTitles(h, "m_{#mu t} [GeV]", "Entries/Bin", 0.08, 0.9, 1.8, 0.07);
-    		setFunctionParameters(h, f12, 4); 
-    		if (h->GetSumOfWeights() > MINFIT) {
-    		h->Fit(f12, fopt.c_str());
-		cout << gMinuit->fCstatu.Data() << endl;
-		Status = gMinuit->fCstatu.Data();
-		cout << Status[0] << endl;
-		if ( Status[0] == 'S' || Status[0] == 'P' ){
-	   	   	status = 1;
-	      	} else  if ( Status[0] == 'F' ){ 
-	      		status = -1;
-			}
-		cout << status << endl;
-		hChisq_mt->Fill(status*(f12->GetChisquare()/f12->GetNDF()));
-		f11->SetParameters( f12->GetParameter(0), f12->GetParameter(1), f12->GetParameter(2), f12->GetParameter(3), f12->GetParameter(4) , f12->GetParameter(5), f12->GetParameter(6),
-		f12->GetParameter(7) );
-		yield  = f11->Integral(2.8,3.4)/h->GetBinWidth(1);
-      		yieldE = TMath::Sqrt(yield);		
-      		width  = f12->GetParameter(1); 
-      		widthE = f12->GetParError(1); 
-    		} else {
-      		h->Draw();
-      		int ib = h->FindBin(3.1); 
-      		yield  = h->Integral(ib - 0.2*h->GetNbinsX(),  ib + 0.2*h->GetNbinsX()); 
-      		yield  -=h->Integral(h->GetNbinsX() - 0.2*h->GetNbinsX(), h->GetNbinsX()); 
-      		yield  -=h->Integral(1, 0.2*h->GetNbinsX()); 
-      		if (yield < 0) yield = 1.; 
-      		yieldE =TMath::Sqrt(yield); 
-      		width  = 0.030; 
-      		widthE = 0.010; 
-    		}
-
-    		cout << " --> " << fitted << " " << h->GetSumOfWeights() << " .. " << yield << "  " 
-		 << h->GetName() << "  " << yield << "+/-" << yieldE << endl;
-    		if (PRINT) tl->DrawLatex(PRINTX, 0.85, Form("%4.1f", yield)); 
-
-    		getBinCenters(h->GetName(), eta, pt, Q); 
-    		nbin = fS2YieldNeg->FindBin(eta, pt); 
-    		fS2YieldNeg->SetBinContent(nbin, yield); 
-    		fS2YieldNeg->SetBinError(nbin, yieldE); 
-
-    		c1->cd(3);  shrinkPad(0.15, 0.2); 
-    		h = &(fS3VectorNeg[i]);
-    		h->SetMinimum(0.); setTitles(h, "m_{#mu #bar{#mu} } [GeV]", "Entries/Bin", 0.08, 0.9, 1.8, 0.07);
-    		setFunctionParameters(h, f12, 4); 
-    		if (h->GetSumOfWeights() > MINFIT) {
-      		h->Fit(f12, fopt.c_str());
-		cout << gMinuit->fCstatu.Data() << endl;
-		Status = gMinuit->fCstatu.Data();
-		cout << Status[0] << endl;
-		if ( Status[0] == 'S' || Status[0] == 'P' ){
-	   	   	status = 1;
-	      	} else  if ( Status[0] == 'F' ){ 
-	      		status = -1;
-			}
-		cout << status << endl;
-		hChisq_mmbar->Fill(status*(f12->GetChisquare()/f12->GetNDF()));
-		f11->SetParameters( f12->GetParameter(0), f12->GetParameter(1), f12->GetParameter(2), f12->GetParameter(3), f12->GetParameter(4), f12->GetParameter(5), f12->GetParameter(6),
-		f12->GetParameter(7) );
-		yield  = f11->Integral(2.8,3.4)/h->GetBinWidth(1);
-      		yieldE = TMath::Sqrt(yield);		
-      		fitted = 1; 
-    		} else {
-      		h->Draw();
-      		int ib = h->FindBin(3.1); 
-      		yield  = h->Integral(ib - 0.2*h->GetNbinsX(),  ib + 0.2*h->GetNbinsX()); 
-      		yield  -=h->Integral(h->GetNbinsX() - 0.2*h->GetNbinsX(), h->GetNbinsX()); 
-      		yield  -=h->Integral(1, 0.2*h->GetNbinsX()); 
-     		if (yield < 0) yield = 1.; 
-     		yieldE =TMath::Sqrt(yield); 
-     		fitted = 0; 
-    		}
-
-    		cout << " --> " << fitted << " " << h->GetSumOfWeights() << " .. " << yield << "  " 
-	 	<< h->GetName() << "  " << yield << "+/-" << yieldE << endl;
-    		if (PRINT) tl->DrawLatex(PRINTX, 0.85, Form("%4.1f", yield)); 
-
-    		getBinCenters(h->GetName(), eta, pt, Q); 
-    		nbin = fS3YieldNeg->FindBin(eta, pt); 
-    		double mm = fS1YieldNeg->GetBinContent(nbin); 
-    		double mmE= fS1YieldNeg->GetBinError(nbin); 
-    		fS3YieldNeg->SetBinContent(nbin, yield+mm); 
-    		fS3YieldNeg->SetBinError(nbin, TMath::Sqrt(yieldE*yieldE + mmE*mmE)); 
-
-    		c1->Update();
-    		c1->Draw();
+	if ( Status[0] == 'S' || Status[0] == 'P' ){
+	  status = 1;
+	} else if ( Status[0] == 'F' ){ 
+	  status = -1;
+	}
+	///////////////
+	cout << status << endl;
 	
-    		TString frag(h->GetName()); 
-    		frag.ReplaceAll("s3:mmbar,", ""); 
-    		frag.ReplaceAll(",Q-1", ""); 
-    		frag.ReplaceAll(".", ":"); 
-
-    		c1->SaveAs(Form("%s/massfits-neg-%s-%s.eps", fPtDirectory.c_str(), fSample.c_str(), frag.Data()));
-		 
-	        TCanvas *c2 = new TCanvas("c2", "c2");
-  	        c2->Clear();
-  	        c2->Divide(3,1);
-	        gStyle->SetOptStat(1111111111);
-	        c2->cd(1);  shrinkPad(0.1, 0.2);
-	        hChisq_mm->Draw();
-	        c2->cd(2);  shrinkPad(0.1, 0.2);
-	        hChisq_mt->Draw();
-	        c2->cd(3);  shrinkPad(0.1, 0.2);	    
-	        hChisq_mmbar->Draw();
-	        c2->SaveAs(Form("chi2_polCBGauss.eps", fPtDirectory.c_str(), fSample.c_str(), frag.Data()));
+	///////////////
+	if ( status == -1 || status == 0 ){
+	  f13->SetParameters( f13->GetParameter(0), f13->GetParameter(1), f13->GetParameter(2), f13->GetParameter(3), f13->GetParameter(4) , f13->GetParameter(5), f13->GetParameter(6), f13->GetParameter(7), f13->GetParameter(8), f13->GetParameter(9), f13->GetParameter(10));
+	  h->Fit(f13, fopt.c_str());
+	}
+	
+	cout << gMinuit->fCstatu.Data() << endl;
+	Status = gMinuit->fCstatu.Data();
+	cout << Status[0] << endl;
+	
+	if ( Status[0] == 'S' || Status[0] == 'P' ){
+	  status = 1;
+	} else if ( Status[0] == 'F' ){ 
+	  status = -1;
+	}
+	///////////////
+	cout << status << endl;	
 		
-  		}
-
-  		c0->Clear(); 
-
-  		c0->Divide(2,2);
-  		c0->cd(1);
-  		fS1YieldPos->Draw("colz");
-  		c0->cd(2);
-  		fS2YieldPos->Draw("colz");
+	if ( status == -1 || status == 0 ){
+	  f13->SetParameters( f13->GetParameter(0), f13->GetParameter(1), f13->GetParameter(2), f13->GetParameter(3), f13->GetParameter(4) , f13->GetParameter(5), f13->GetParameter(6), f13->GetParameter(7), f13->GetParameter(8), f13->GetParameter(9), f13->GetParameter(10));
+	  h->Fit(f13, fopt.c_str());
+	}
 	
-  		c0->cd(3);
-  		fS1YieldNeg->Draw("colz");
-  		c0->cd(4);
-  		fS2YieldNeg->Draw("colz");
+	cout << gMinuit->fCstatu.Data() << endl;
+	Status = gMinuit->fCstatu.Data();
+	cout << Status[0] << endl;
 	
-  
+	if ( Status[0] == 'S' || Status[0] == 'P' ){
+	  status = 1;
+	} else if ( Status[0] == 'F' ){ 
+	  status = -1;
+	}	
+	///////////////
+	cout << status << endl;	
+	
+	// Ups 1S
+	f10->SetParameters( f13->GetParameter(0), f13->GetParameter(1), f13->GetParameter(2), f13->GetParameter(3), f13->GetParameter(4) );
+	yield_1S  = f10->Integral(8.7,11.2)/h->GetBinWidth(1);
+	f10->SetParameters( f13->GetParameter(0), f13->GetParameter(1), f13->GetParameter(2), f13->GetParameter(3), f13->GetParameter(4)+f13->GetParError(4) );
+	double yield_1S_e  = f10->Integral(8.7,11.2)/h->GetBinWidth(1);
+	yieldE_1S = yield_1S - yield_1S_e;
+	if ( f13->GetParameter(4) > f13->GetParError(4) ) yieldE_1S = TMath::Abs(yieldE_1S);
+	if ( f13->GetParameter(4) < f13->GetParError(4) ) yieldE_1S = TMath::Sqrt(yield_1S);
+	cout << " Ups(1S) yield =  " << yield_1S << "+/-" << yieldE_1S  << endl;
+	alpha = f13->GetParameter(2);
+	alphaE = f13->GetParError(2);
+	n = f13->GetParameter(3);
+	nE = f13->GetParError(3);
+	sig1 = f13->GetParameter(1);
+	sigE1 = f13->GetParError(1);
+		
+	// Ups 2S
+	f10->SetParameters( f13->GetParameter(5), f13->GetParameter(6), f13->GetParameter(2), f13->GetParameter(3), f13->GetParameter(7) );
+	yield_2S  = f10->Integral(8.7,11.2)/h->GetBinWidth(1);
+	f10->SetParameters( f13->GetParameter(5), f13->GetParameter(6), f13->GetParameter(2), f13->GetParameter(3), f13->GetParameter(7)+f13->GetParError(7) );
+	double yield_2S_e  = f10->Integral(8.7,11.2)/h->GetBinWidth(1);
+	yieldE_2S = yield_2S - yield_2S_e;
+	if ( f13->GetParameter(7) > f13->GetParError(7) ) yieldE_2S = TMath::Abs(yieldE_2S);
+	if ( f13->GetParameter(7) < f13->GetParError(7) ) yieldE_2S = TMath::Sqrt(yield_2S);
+	cout << " Ups(2S) yield =  " << yield_2S << "+/-" << yieldE_2S  << endl;
+	sig2 = f13->GetParameter(6);
+	sigE2 = f13->GetParError(6);	
+		
+	// Ups 3S
+	f10->SetParameters( scale*f13->GetParameter(5), scale*f13->GetParameter(6), f13->GetParameter(2), f13->GetParameter(3), f13->GetParameter(8) );
+	yield_3S  = f10->Integral(8.7,11.2)/h->GetBinWidth(1);
+	f10->SetParameters( f13->GetParameter(5), f13->GetParameter(6), f13->GetParameter(2), f13->GetParameter(3), f13->GetParameter(8)+f13->GetParError(8) );
+	double yield_3S_e  = f10->Integral(8.7,11.2)/h->GetBinWidth(1);
+	yieldE_3S = yield_3S - yield_3S_e;
+	if ( f13->GetParameter(8) > f13->GetParError(8) ) yieldE_3S = TMath::Abs(yieldE_3S);
+	if ( f13->GetParameter(8) < f13->GetParError(8) ) yieldE_3S = TMath::Sqrt(yield_3S);
+	cout << " Ups(3S) yield =  " << yield_3S << "+/-" << yieldE_3S  << endl;
+	
+	///
+	fitted = 1;
+      } else {
+	h->Draw();
+	yield_1S  = h->GetSumOfWeights();
+	yieldE_1S = TMath::Sqrt(h->GetSumOfWeights());
+	fitted = 0;
+      }
+      if (PRINT) tl->DrawLatex(PRINTX, 0.40, Form("Ups(1S) Yield = %4.1f +/- %4.1f", yield_1S,yieldE_1S)); 
+      if (PRINT) tl->DrawLatex(PRINTX, 0.33, Form("Ups(2S) Yield = %4.1f +/- %4.1f", yield_2S,yieldE_2S));
+      if (PRINT) tl->DrawLatex(PRINTX, 0.26, Form("Ups(3S) Yield = %4.1f +/- %4.1f", yield_3S,yieldE_3S));
+      cout << " --> " << h->GetName() << ", Ups(1S) Yield = " << yield_1S << "+/-" << yieldE_1S << endl;
+      cout << " --> " << h->GetName() << ", Ups(2S) Yield = " << yield_2S << "+/-" << yieldE_2S << endl;
+      cout << " --> " << h->GetName() << ", Ups(3S) Yield = " << yield_3S << "+/-" << yieldE_3S << endl;
+      
+      if ( i > 0 ){ // to skip Integrated Mass Fit
+	falpha_1D_ptInt->SetBinContent(i, alpha);
+	falpha_1D_ptInt->SetBinError(i, alphaE);
+	fn_1D_ptInt->SetBinContent(i, n);
+	fn_1D_ptInt->SetBinError(i, nE);
+      }
+      
+      c1->Modified();
+      c1->Update();
+      
+      TString frag(h->GetName()); 
+      frag.ReplaceAll("s3:mmbar,", ""); 
+      frag.ReplaceAll(",Q1", ""); 
+      frag.ReplaceAll(".", "_");
+      frag.ReplaceAll(",", "_");
+      frag.ReplaceAll(":", "_");
+      
+      c1->SaveAs(Form("%s/massfits_%s_%s.eps", fPtDirectory.c_str(), fSample.c_str(), frag.Data())); 
+    }
+    
+    falpha_1D_ptInt->Write();
+    fn_1D_ptInt->Write();
+    //c1->Clear();
+  }
+
+  if ( mode == 6 ){
+    
+    int PRINT(1); 
+    double PRINTX(0.5);
+    TH1D *h; 
+    string fopt("LLE"); 
+    double pt, eta; 
+    double yield_1S(0.), yieldE_1S(0.);
+    double yield_2S(0.), yieldE_2S(0.);
+    double yield_3S(0.), yieldE_3S(0.);
+    double alpha(0.), n(0.), alphaE(0.), nE(0.);
+    double scale(1.033);
+    
+    int    nbin;
+    int fitted(0);
+    int status(0);
+    const char* Status;
+    
+    gStyle->SetOptStat(0000000000000); 
+    gStyle->SetOptFit(00000000000000);
+    gStyle->SetOptFit(111111111);
+    makeCanvas(1); 
+    c1->Clear();
+    
+    TFile *f = new TFile("FitParametersMC_1D_RapInt.root", "RECREATE");
+    
+    for (unsigned int i = 0; i < fS13Vector.size(); ++i) {
+      
+      c1->cd(1); shrinkPad(0.15, 0.26); 
+      h = &(fS13Vector[i]);
+      h->SetMinimum(0.); setTitles(h, "Mass_{#mu #mu} [GeV]", "Entries/Bin", 0.08, 0.9, 1.8, 0.07);
+      if (h->GetSumOfWeights() > 10.) {
+	setFunctionParameters(h, f13, 6, 0);
+	h->Fit(f13, fopt.c_str());
+	status = 0;
+	cout << gMinuit->fCstatu.Data() << endl;
+	Status = gMinuit->fCstatu.Data();
+	cout << Status[0] << endl;
+	if ( Status[0] == 'S' || Status[0] == 'P' ){
+	  status = 1;
+	} else if ( Status[0] == 'F' ){ 
+	  status = -1;
+	}
+	cout << status << endl;
+	///////////////
+	if ( status == -1 || status == 0 ){
+	  f13->SetParameters( f13->GetParameter(0), f13->GetParameter(1), f13->GetParameter(2), f13->GetParameter(3), f13->GetParameter(4) , f13->GetParameter(5), f13->GetParameter(6), f13->GetParameter(7), f13->GetParameter(8), f13->GetParameter(9), f13->GetParameter(10));
+	  h->Fit(f13, fopt.c_str());
+	}
+	
+	cout << gMinuit->fCstatu.Data() << endl;
+	Status = gMinuit->fCstatu.Data();
+	cout << Status[0] << endl;
+	
+	if ( Status[0] == 'S' || Status[0] == 'P' ){
+	  status = 1;
+	} else if ( Status[0] == 'F' ){ 
+	  status = -1;
+	}
+	///////////////
+	cout << status << endl;
+	
+	///////////////
+	if ( status == -1 || status == 0 ){
+	  f13->SetParameters( f13->GetParameter(0), f13->GetParameter(1), f13->GetParameter(2), f13->GetParameter(3), f13->GetParameter(4) , f13->GetParameter(5), f13->GetParameter(6), f13->GetParameter(7), f13->GetParameter(8), f13->GetParameter(9), f13->GetParameter(10));
+	  h->Fit(f13, fopt.c_str());
+	}
+	
+	cout << gMinuit->fCstatu.Data() << endl;
+	Status = gMinuit->fCstatu.Data();
+	cout << Status[0] << endl;
+	
+	if ( Status[0] == 'S' || Status[0] == 'P' ){
+	  status = 1;
+	} else if ( Status[0] == 'F' ){ 
+	  status = -1;
+	}
+	///////////////
+	cout << status << endl;	
+		
+	if ( status == -1 || status == 0 ){
+	  f13->SetParameters( f13->GetParameter(0), f13->GetParameter(1), f13->GetParameter(2), f13->GetParameter(3), f13->GetParameter(4) , f13->GetParameter(5), f13->GetParameter(6), f13->GetParameter(7), f13->GetParameter(8), f13->GetParameter(9), f13->GetParameter(10));
+	  h->Fit(f13, fopt.c_str());
+	}
+	
+	cout << gMinuit->fCstatu.Data() << endl;
+	Status = gMinuit->fCstatu.Data();
+	cout << Status[0] << endl;
+	
+	if ( Status[0] == 'S' || Status[0] == 'P' ){
+	  status = 1;
+	} else if ( Status[0] == 'F' ){ 
+	  status = -1;
+	}	
+	///////////////
+	cout << status << endl;	
+	
+	// Ups 1S
+	f10->SetParameters( f13->GetParameter(0), f13->GetParameter(1), f13->GetParameter(2), f13->GetParameter(3), f13->GetParameter(4) );
+	yield_1S  = f10->Integral(8.7,11.2)/h->GetBinWidth(1);
+	f10->SetParameters( f13->GetParameter(0), f13->GetParameter(1), f13->GetParameter(2), f13->GetParameter(3), f13->GetParameter(4)+f13->GetParError(4) );
+	double yield_1S_e  = f10->Integral(8.7,11.2)/h->GetBinWidth(1);
+	yieldE_1S = yield_1S - yield_1S_e;
+	if ( f13->GetParameter(4) > f13->GetParError(4) ) yieldE_1S = TMath::Abs(yieldE_1S);
+	if ( f13->GetParameter(4) < f13->GetParError(4) ) yieldE_1S = TMath::Sqrt(yield_1S);
+	cout << " Ups(1S) yield =  " << yield_1S << "+/-" << yieldE_1S  << endl;
+	alpha = f13->GetParameter(2);
+	alphaE = f13->GetParError(2);
+	n = f13->GetParameter(3);
+	nE = f13->GetParError(3);
+		
+	// Ups 2S
+	f10->SetParameters( f13->GetParameter(5), f13->GetParameter(6), f13->GetParameter(2), f13->GetParameter(3), f13->GetParameter(7) );
+	yield_2S  = f10->Integral(8.7,11.2)/h->GetBinWidth(1);
+	f10->SetParameters( f13->GetParameter(5), f13->GetParameter(6), f13->GetParameter(2), f13->GetParameter(3), f13->GetParameter(7)+f13->GetParError(7) );
+	double yield_2S_e  = f10->Integral(8.7,11.2)/h->GetBinWidth(1);
+	yieldE_2S = yield_2S - yield_2S_e;
+	if ( f13->GetParameter(7) > f13->GetParError(7) ) yieldE_2S = TMath::Abs(yieldE_2S);
+	if ( f13->GetParameter(7) < f13->GetParError(7) ) yieldE_2S = TMath::Sqrt(yield_2S);
+	cout << " Ups(2S) yield =  " << yield_2S << "+/-" << yieldE_2S  << endl;
+	
+	// Ups 3S
+	f10->SetParameters( scale*f13->GetParameter(5), scale*f13->GetParameter(6), f13->GetParameter(2), f13->GetParameter(3), f13->GetParameter(8) );
+	yield_3S  = f10->Integral(8.7,11.2)/h->GetBinWidth(1);
+	f10->SetParameters( f13->GetParameter(5), f13->GetParameter(6), f13->GetParameter(2), f13->GetParameter(3), f13->GetParameter(8)+f13->GetParError(8) );
+	double yield_3S_e  = f10->Integral(8.7,11.2)/h->GetBinWidth(1);
+	yieldE_3S = yield_3S - yield_3S_e;
+	if ( f13->GetParameter(8) > f13->GetParError(8) ) yieldE_3S = TMath::Abs(yieldE_3S);
+	if ( f13->GetParameter(8) < f13->GetParError(8) ) yieldE_3S = TMath::Sqrt(yield_3S);
+	cout << " Ups(3S) yield =  " << yield_3S << "+/-" << yieldE_3S  << endl;
+	
+	///
+	fitted = 1;
+      } else {
+	h->Draw();
+	yield_1S  = h->GetSumOfWeights();
+	yieldE_1S = TMath::Sqrt(h->GetSumOfWeights());
+	fitted = 0;
+      }
+      if (PRINT) tl->DrawLatex(PRINTX, 0.40, Form("Ups(1S) Yield = %4.1f +/- %4.1f", yield_1S,yieldE_1S)); 
+      if (PRINT) tl->DrawLatex(PRINTX, 0.33, Form("Ups(2S) Yield = %4.1f +/- %4.1f", yield_2S,yieldE_2S));
+      if (PRINT) tl->DrawLatex(PRINTX, 0.26, Form("Ups(3S) Yield = %4.1f +/- %4.1f", yield_3S,yieldE_3S));
+      cout << " --> " << h->GetName() << ", Ups(1S) Yield = " << yield_1S << "+/-" << yieldE_1S << endl;
+      cout << " --> " << h->GetName() << ", Ups(2S) Yield = " << yield_2S << "+/-" << yieldE_2S << endl;
+      cout << " --> " << h->GetName() << ", Ups(3S) Yield = " << yield_3S << "+/-" << yieldE_3S << endl;
+      
+      if ( i > 0 ){ // to skip Integrated Mass Fit
+	falpha_1D_RapInt->SetBinContent(i, alpha);
+	falpha_1D_RapInt->SetBinError(i, alphaE);
+	fn_1D_RapInt->SetBinContent(i, n);
+	fn_1D_RapInt->SetBinError(i, nE);
+      }
+      
+      c1->Modified();
+      c1->Update();
+      
+      TString frag(h->GetName()); 
+      frag.ReplaceAll("s3:mmbar,", ""); 
+      frag.ReplaceAll(",Q1", ""); 
+      frag.ReplaceAll(".", "_");
+      frag.ReplaceAll(",", "_");
+      frag.ReplaceAll(":", "_");
+      
+      c1->SaveAs(Form("%s/massfits_%s_%s.eps", fPtDirectory.c_str(), fSample.c_str(), frag.Data())); 
+    }
+    
+    falpha_1D_RapInt->Write();
+    fn_1D_RapInt->Write();
+    //c1->Clear();
   }
   
-  	
+    if ( mode == 7 ){
+    
+    int PRINT(1); 
+    double PRINTX(0.5);
+    
+    
+    
+    TH1D *h; 
+    
+    //  string fopt("LLIEMQ"); 
+    string fopt("LLE"); 
+    
+    double pt, eta; 
+    
+    double yield_1S(0.), yieldE_1S(0.);
+    double yield_2S(0.), yieldE_2S(0.);
+    double yield_3S(0.), yieldE_3S(0.);
+    double alpha(0.), n(0.), alphaE(0.), nE(0.);
+    double scale(1.033);
+    
+    int    nbin;
+    int fitted(0);
+    
+    int status(0);
+    const char* Status;
+    
+    gStyle->SetOptStat(0000000000000); 
+    gStyle->SetOptFit(00000000000000);
+    //gStyle->SetOptStat(111111111);
+    gStyle->SetOptFit(111111111);
+    makeCanvas(1); 
+    c1->Clear();
+    
+    TFile *f = new TFile("FitParametersMC.root", "RECREATE");
+    
+    for (unsigned int i = 0; i < fS1Vector.size(); ++i) {
+      
+      // -- positive charge
+      c1->cd(1); shrinkPad(0.15, 0.26); 
+      h = &(fS1Vector[i]);
+      h->SetMinimum(0.); setTitles(h, "Mass_{#mu #mu} [GeV]", "Entries/Bin", 0.08, 0.9, 1.8, 0.07);
+      if (h->GetSumOfWeights() > 10.) {
+	setFunctionParameters(h, f13, 6, 0);
+	h->Fit(f13, fopt.c_str());
+	status = 0;
+	cout << gMinuit->fCstatu.Data() << endl;
+	Status = gMinuit->fCstatu.Data();
+	cout << Status[0] << endl;
+	if ( Status[0] == 'S' || Status[0] == 'P' ){
+	  status = 1;
+	} else if ( Status[0] == 'F' ){ 
+	  status = -1;
+	}
+	cout << status << endl;
+	///////////////
+	if ( status == -1 || status == 0 ){
+	  f13->SetParameters( f13->GetParameter(0), f13->GetParameter(1), f13->GetParameter(2), f13->GetParameter(3), f13->GetParameter(4) , f13->GetParameter(5), f13->GetParameter(6), f13->GetParameter(7), f13->GetParameter(8), f13->GetParameter(9), f13->GetParameter(10));
+	  h->Fit(f13, fopt.c_str());
+	}
+	
+	cout << gMinuit->fCstatu.Data() << endl;
+	Status = gMinuit->fCstatu.Data();
+	cout << Status[0] << endl;
+	
+	if ( Status[0] == 'S' || Status[0] == 'P' ){
+	  status = 1;
+	} else if ( Status[0] == 'F' ){ 
+	  status = -1;
+	}
+	///////////////
+	cout << status << endl;
+	
+	///////////////
+	if ( status == -1 || status == 0 ){
+	  f13->SetParameters( f13->GetParameter(0), f13->GetParameter(1), f13->GetParameter(2), f13->GetParameter(3), f13->GetParameter(4) , f13->GetParameter(5), f13->GetParameter(6), f13->GetParameter(7), f13->GetParameter(8), f13->GetParameter(9), f13->GetParameter(10));
+	  h->Fit(f13, fopt.c_str());
+	}
+	
+	cout << gMinuit->fCstatu.Data() << endl;
+	Status = gMinuit->fCstatu.Data();
+	cout << Status[0] << endl;
+	
+	if ( Status[0] == 'S' || Status[0] == 'P' ){
+	  status = 1;
+	} else if ( Status[0] == 'F' ){ 
+	  status = -1;
+	}
+	///////////////
+	cout << status << endl;	
+		
+	if ( status == -1 || status == 0 ){
+	  f13->SetParameters( f13->GetParameter(0), f13->GetParameter(1), f13->GetParameter(2), f13->GetParameter(3), f13->GetParameter(4) , f13->GetParameter(5), f13->GetParameter(6), f13->GetParameter(7), f13->GetParameter(8), f13->GetParameter(9), f13->GetParameter(10));
+	  h->Fit(f13, fopt.c_str());
+	}
+	
+	cout << gMinuit->fCstatu.Data() << endl;
+	Status = gMinuit->fCstatu.Data();
+	cout << Status[0] << endl;
+	
+	if ( Status[0] == 'S' || Status[0] == 'P' ){
+	  status = 1;
+	} else if ( Status[0] == 'F' ){ 
+	  status = -1;
+	}	
+	///////////////
+	cout << status << endl;	
+	
+	// Ups 1S
+	f10->SetParameters( f13->GetParameter(0), f13->GetParameter(1), f13->GetParameter(2), f13->GetParameter(3), f13->GetParameter(4) );
+	yield_1S  = f10->Integral(8.7,11.2)/h->GetBinWidth(1);
+	f10->SetParameters( f13->GetParameter(0), f13->GetParameter(1), f13->GetParameter(2), f13->GetParameter(3), f13->GetParameter(4)+f13->GetParError(4) );
+	double yield_1S_e  = f10->Integral(8.7,11.2)/h->GetBinWidth(1);
+	yieldE_1S = yield_1S - yield_1S_e;
+	if ( f13->GetParameter(4) > f13->GetParError(4) ) yieldE_1S = TMath::Abs(yieldE_1S);
+	if ( f13->GetParameter(4) < f13->GetParError(4) ) yieldE_1S = TMath::Sqrt(yield_1S);
+	cout << " Ups(1S) yield =  " << yield_1S << "+/-" << yieldE_1S  << endl;
+	alpha = f13->GetParameter(2);
+	alphaE = f13->GetParError(2);
+	n = f13->GetParameter(3);
+	nE = f13->GetParError(3);
+	
+	// Ups 2S
+	f10->SetParameters( f13->GetParameter(5), f13->GetParameter(6), f13->GetParameter(2), f13->GetParameter(3), f13->GetParameter(7) );
+	yield_2S  = f10->Integral(8.7,11.2)/h->GetBinWidth(1);
+	f10->SetParameters( f13->GetParameter(5), f13->GetParameter(6), f13->GetParameter(2), f13->GetParameter(3), f13->GetParameter(7)+f13->GetParError(7) );
+	double yield_2S_e  = f10->Integral(8.7,11.2)/h->GetBinWidth(1);
+	yieldE_2S = yield_2S - yield_2S_e;
+	if ( f13->GetParameter(7) > f13->GetParError(7) ) yieldE_2S = TMath::Abs(yieldE_2S);
+	if ( f13->GetParameter(7) < f13->GetParError(7) ) yieldE_2S = TMath::Sqrt(yield_2S);
+	cout << " Ups(2S) yield =  " << yield_2S << "+/-" << yieldE_2S  << endl;
+	// Ups 3S
+	
+	f10->SetParameters( scale*f13->GetParameter(5), scale*f13->GetParameter(6), f13->GetParameter(2), f13->GetParameter(3), f13->GetParameter(8) );
+	yield_3S  = f10->Integral(8.7,11.2)/h->GetBinWidth(1);
+	f10->SetParameters( f13->GetParameter(5), f13->GetParameter(6), f13->GetParameter(2), f13->GetParameter(3), f13->GetParameter(8)+f13->GetParError(8) );
+	double yield_3S_e  = f10->Integral(8.7,11.2)/h->GetBinWidth(1);
+	yieldE_3S = yield_3S - yield_3S_e;
+	if ( f13->GetParameter(8) > f13->GetParError(8) ) yieldE_3S = TMath::Abs(yieldE_3S);
+	if ( f13->GetParameter(8) < f13->GetParError(8) ) yieldE_3S = TMath::Sqrt(yield_3S);
+	cout << " Ups(3S) yield =  " << yield_3S << "+/-" << yieldE_3S  << endl;
+	
+		
+	///
+	fitted = 1;
+      } else {
+	h->Draw();
+	yield_1S  = h->GetSumOfWeights();
+	yieldE_1S = TMath::Sqrt(h->GetSumOfWeights());
+	fitted = 0;
+      }
+      if (PRINT) tl->DrawLatex(PRINTX, 0.40, Form("Ups(1S) Yield = %4.1f +/- %4.1f", yield_1S,yieldE_1S)); 
+      if (PRINT) tl->DrawLatex(PRINTX, 0.33, Form("Ups(2S) Yield = %4.1f +/- %4.1f", yield_2S,yieldE_2S));
+      if (PRINT) tl->DrawLatex(PRINTX, 0.26, Form("Ups(3S) Yield = %4.1f +/- %4.1f", yield_3S,yieldE_3S));
+      cout << " --> " << h->GetName() << ", Ups(1S) Yield = " << yield_1S << "+/-" << yieldE_1S << endl;
+      cout << " --> " << h->GetName() << ", Ups(2S) Yield = " << yield_2S << "+/-" << yieldE_2S << endl;
+      cout << " --> " << h->GetName() << ", Ups(3S) Yield = " << yield_3S << "+/-" << yieldE_3S << endl;
+      GetBinCenters(h->GetName(), eta, pt); 
+      cout << "/////" << endl;
+      cout << eta << "  " << pt << endl;
+      nbin = fS1Yield->FindBin(eta, pt); 
+      cout << nbin  << endl;
+      fS1Yield->SetBinContent(nbin, yield_1S); 
+      fS1Yield->SetBinError(nbin, yieldE_1S);
+      fS2Yield->SetBinContent(nbin, yield_2S); 
+      fS2Yield->SetBinError(nbin, yieldE_2S);
+      fS3Yield->SetBinContent(nbin, yield_3S); 
+      fS3Yield->SetBinError(nbin, yieldE_3S);
+      
+      falpha->SetBinContent(nbin, alpha);
+      falpha->SetBinError(nbin, alphaE);
+      fn->SetBinContent(nbin, n);
+      fn->SetBinError(nbin, nE);
+      cout << "/////" << endl;
+      c1->Modified();
+      c1->Update();
+      
+      
+      TString frag(h->GetName()); 
+      frag.ReplaceAll("s3:mmbar,", ""); 
+      frag.ReplaceAll(",Q1", ""); 
+      frag.ReplaceAll(".", "_");
+      frag.ReplaceAll(",", "_");
+      frag.ReplaceAll(":", "_");
+      
+      c1->SaveAs(Form("%s/massfits_%s_%s.eps", fPtDirectory.c_str(), fSample.c_str(), frag.Data())); 
+    }
+    
+    fS1Yield->Write();
+    fS2Yield->Write();
+    fS3Yield->Write();
+    falpha->Write();
+    fn->Write();
+    c1->Clear();
+  }
+
 }
+
+
+
+
 
 
 // ----------------------------------------------------------------------
@@ -8366,14 +6189,15 @@ bool anaXS::getBinCenters(string hname, double &eta, double &pT, int &Q) {
 
 
 // ----------------------------------------------------------------------
-void anaXS::setFunctionParameters(TH1D *h, TF1 *f, int mode) {
+void anaXS::setFunctionParameters(TH1D *h, TF1 *f, int mode, int par) {
   const int EDG(4), NB(EDG+1); 
   double p0(0.), p1(0.), g0(0.), g1(0.), g2(0.), g3(0.), g4(0.), g5(0.), g6(0.);
   double c0(0.), c1(0.), c2(0.), c3(0.), c4(0.), c5(0.), c6(0.), c7(0.), c8(0.), c9(0.), c10(0.); 
   double lo(0.), hi(0.), dx(0.);
   double lo_2(0.), hi_2(0.);
   double p0E(0.), p1E(0.); 
-
+  double alpha1(-99.), n1(-99);
+  
   // -- (background) pol1 parameters from end points
   lo = h->Integral(1, 1+EDG); 
   hi = h->Integral(h->GetNbinsX()-EDG, h->GetNbinsX());
@@ -8546,14 +6370,15 @@ void anaXS::setFunctionParameters(TH1D *h, TF1 *f, int mode) {
   if (6 == mode) {
     c0 = 9.46;
     c1 = 0.07; // 0.06 -> 0.08
-    c2 = 1.9;
-    c3 = 1.6;
+    c2 = 1.5;
+    c3 = 5.;
+    alpha1 = 1.16; n1 = 12.72;
     lo = h->GetMaximumBin()-2.*c1/h->GetBinWidth(1); 
     hi = h->GetMaximumBin()+2.*c1/h->GetBinWidth(1);
     c4 = (h->Integral(lo, hi) - f0->Integral(lo, hi))/h->GetBinWidth(1);    //  * -> /
     if (c4 < 0) c4 = h->Integral(lo, hi)*h->GetBinWidth(1);
     c5 = 10.02;
-    c6 = 0.09;
+    c6 = 0.08;
     h->GetXaxis()->SetRangeUser(9.8,10.2);
     lo_2 = h->GetMaximumBin()-2.*c6/h->GetBinWidth(1); 
     hi_2 = h->GetMaximumBin()+2.*c6/h->GetBinWidth(1);
@@ -8571,17 +6396,98 @@ void anaXS::setFunctionParameters(TH1D *h, TF1 *f, int mode) {
     f->ReleaseParameter(8);
     f->ReleaseParameter(9); 
     f->ReleaseParameter(10);         
-
+    
+    if ( par == 1 ){
+      TFile *f1 = new TFile("FitParametersMC_1D_PtInt.root");
+      TH1D *falpha_1D_ptInt;
+      falpha_1D_ptInt = (TH1D*)gFile->Get("falpha_1D_ptInt");
+      TH1D *fn_1D_ptInt;
+      fn_1D_ptInt = (TH1D*)gFile->Get("fn_1D_ptInt");      
+      float etamin, etamax, ptmin, ptmax; 
+      int  n; int bin; 
+      char searchString12[2000];
+      char sp[] = "%"; 
+      char sf[] = "f";
+      sprintf(searchString12, "%s,rapidity%s%s_%s%s", "s12:Pt_IntegratedMass", sp, sf, sp, sf); 
+      cout << "searchString12: " << searchString12 << endl;
+      cout << h->GetName() << endl;
+      n = sscanf(h->GetName(), searchString12, &etamin, &etamax);
+      if (n > 0) {
+	cout << "etamin = "<< etamin << "etamax = " << etamax << endl;
+	bin = falpha_1D_ptInt->FindBin((etamax+etamin)/2);
+	cout << "bin = " << bin << endl;
+	alpha1 = falpha_1D_ptInt->GetBinContent(bin);
+	n1 = fn_1D_ptInt->GetBinContent(bin);
+	cout << " n1 = " << n1 << endl;
+      } 
+    }
+    
+    if ( par == 2 ){
+      TFile *f1 = new TFile("FitParametersMC_1D_RapInt.root");
+      TH1D *falpha_1D_RapInt;
+      falpha_1D_RapInt = (TH1D*)gFile->Get("falpha_1D_RapInt");
+      TH1D *fn_1D_RapInt;
+      fn_1D_RapInt = (TH1D*)gFile->Get("fn_1D_RapInt");      
+      float etamin, etamax, ptmin, ptmax; 
+      int  n; int bin; 
+      char searchString12[2000];
+      char sp[] = "%"; 
+      char sf[] = "f";
+      sprintf(searchString12, "%s,pt%s%s_%s%s", "s13:Rapidity_IntegratedMass", sp, sf, sp, sf); 
+      cout << "searchString12: " << searchString12 << endl;
+      cout << h->GetName() << endl;
+      n = sscanf(h->GetName(), searchString12, &ptmin, &ptmax);
+      if (n > 0) {
+	cout << "ptmin = "<< ptmin << "ptmax = " << ptmax << endl;
+	bin = falpha_1D_RapInt->FindBin((ptmax+ptmin)/2);
+	cout << "bin = " << bin << endl;
+	alpha1 = falpha_1D_RapInt->GetBinContent(bin);
+	n1 = fn_1D_RapInt->GetBinContent(bin);
+	cout << " n1 = " << n1 << endl;
+      } 
+    }    
+    
+    if ( par == 3 ){
+      TFile *f1 = new TFile("FitParametersMC.root");
+      TH1D *falpha;
+      falpha = (TH1D*)gFile->Get("falpha");
+      TH1D *fn;
+      fn = (TH1D*)gFile->Get("fn");      
+      float etamin, etamax, ptmin, ptmax; 
+      double eta, pt; 
+      int  n; int bin; 
+      char searchString12[2000];
+      char sp[] = "%"; 
+      char sf[] = "f";
+      sprintf(searchString12, "%s,rapidity%s%s_%s%s,pt%s%s_%s%s", "s1:UpsilonMass", sp, sf, sp, sf, sp, sf, sp, sf);
+      cout << "searchString12: " << searchString12 << endl;
+      cout << h->GetName() << endl;
+      n = sscanf(h->GetName(), searchString12, &etamin, &etamax, &ptmin, &ptmax);
+      if (n > 0) {
+	cout << "ptmin = "<< ptmin << "ptmax = " << ptmax << endl;
+	cout << "etamin = "<< etamin << "etamax = " << etamax << endl;
+	GetBinCenters(h->GetName(), eta, pt); 
+	bin = falpha->FindBin(eta, pt);
+	cout << "bin = " << bin << endl;
+	alpha1 = falpha->GetBinContent(bin);
+	n1 = fn->GetBinContent(bin);
+	cout << " n1 = " << n1 << endl;
+      } 
+    }    
+    
+    
     f->SetParameters(c0, c1, c2, c3, c4, c5, c6, c7, c8, p0, p1);     
     f->SetParLimits(0, 9.410, 9.510); 
     f->SetParLimits(1, 0.04, 0.22);
-    f->FixParameter(2, 1.9);
-    //f->SetParLimits(2, 1.6, 2.2);
-    f->FixParameter(3, 1.6);
-    //f->SetParLimits(3, 1., 2.2);
+    f->SetParLimits(2, 1., 1.8);
+    f->SetParLimits(3, 1., 150.);
+    if ( par > 0 ) {
+      f->FixParameter(2, alpha1);
+      f->FixParameter(3, n1);
+    } 
     f->SetParLimits(4, 0, 10000000);
-    f->FixParameter(5, f->GetParameter(0) + 0.56);
-    //f->SetParLimits(5, 9.9, 10.1);
+    //f->FixParameter(5, f->GetParameter(0) + 0.56);
+    f->SetParLimits(5, 9.9, 10.1);
     f->SetParLimits(6, 0.06, 0.26);
     f->SetParLimits(7, 0, 10000000);
     f->SetParLimits(8, 0, 10000000);
