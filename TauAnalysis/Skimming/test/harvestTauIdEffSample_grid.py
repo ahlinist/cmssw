@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-from TauAnalysis.Configuration.recoSampleDefinitionsZtoMuTau_7TeV_grid_cfi import recoSampleDefinitionsZtoMuTau_7TeV
+from TauAnalysis.TauIdEfficiency.recoSampleDefinitionsTauIdEfficiency_7TeV_grid_cfi import recoSampleDefinitionsTauIdEfficiency_7TeV
 from TauAnalysis.Configuration.harvestAnalysisResults_grid import harvestAnalysisResults
 from TauAnalysis.Configuration.userRegistry import getAnalysisFilePath, getHarvestingFilePath, getJobId, getTmpFilePath
 
@@ -17,12 +17,11 @@ jobId = getJobId(channel)
 tmpFilePath = getTmpFilePath(channel)
 
 SAMPLES_TO_ANALYZE = [
-    'data_Mu_Run2010A_Nov4ReReco',
-    'data_Mu_Run2010B_Nov4ReReco',
-    'Ztautau_powheg',
-    'ZtautauPU156bx',
-    'Zmumu_powheg',
-    'PPmuXptGt20Mu10', 'PPmuXptGt20Mu15',
+    'data_SingleMu_Run2011A_May10ReReco_v1',
+    'data_SingleMu_Run2011A_PromptReco_v4',
+    'Ztautau_pythia',
+    'Zmumu_pythia',
+    'PPmuXptGt20Mu15',
     'WplusJets_madgraph',
     'TTplusJets_madgraph'
 ]
@@ -89,6 +88,6 @@ def harvestTauIdEffSamples(channel = None, samples = None, inputFilePath = None,
 
     print "Makefile built. In order to start harvesting, execute 'make -f %s -j 8 -k'" % skim_MakefileName
 
-harvestTauIdEffSamples(channel = channel, samples = recoSampleDefinitionsZtoMuTau_7TeV,
+harvestTauIdEffSamples(channel = channel, samples = recoSampleDefinitionsTauIdEfficiency_7TeV,
                        inputFilePath = analysisFilePath, outputFilePath = harvestingFilePath, jobId = jobId,
                        tmpFilePath = tmpFilePath)
