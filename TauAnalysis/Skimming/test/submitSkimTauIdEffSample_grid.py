@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-from TauAnalysis.Configuration.recoSampleDefinitionsZtoMuTau_7TeV_grid_cfi import recoSampleDefinitionsZtoMuTau_7TeV
+from TauAnalysis.TauIdEfficiency.recoSampleDefinitionsTauIdEfficiency_7TeV_grid_cfi import recoSampleDefinitionsTauIdEfficiency_7TeV
 from TauAnalysis.Configuration.submitAnalysisToGrid import submitAnalysisToGrid
 from TauAnalysis.Configuration.userRegistry import getJobId
 
@@ -41,17 +41,17 @@ def customizeConfigFile(sampleName, cfgFileName_original, cfgFileName_modified =
 
     cfg_modified = cfg_original.replace("#__", "")
     isMC = "False"
-    if recoSampleDefinitionsZtoMuTau_7TeV['RECO_SAMPLES'][sampleName]['type'] != 'Data':
+    if recoSampleDefinitionsTauIdEfficiency_7TeV['RECO_SAMPLES'][sampleName]['type'] != 'Data':
         isMC = "True"
     cfg_modified = cfg_modified.replace("#isMC#", isMC)
     HLTprocessName = 'HLT'
-    if 'hlt' in recoSampleDefinitionsZtoMuTau_7TeV['RECO_SAMPLES'][sampleName].keys():
-        HLTprocessName = recoSampleDefinitionsZtoMuTau_7TeV['RECO_SAMPLES'][sampleName]['hlt'].getProcessName()
+    if 'hlt' in recoSampleDefinitionsTauIdEfficiency_7TeV['RECO_SAMPLES'][sampleName].keys():
+        HLTprocessName = recoSampleDefinitionsTauIdEfficiency_7TeV['RECO_SAMPLES'][sampleName]['hlt'].getProcessName()
     cfg_modified = cfg_modified.replace("#HLTprocessName#", "'%s'" % HLTprocessName)
     cfg_modified = cfg_modified.replace("#pfCandidateCollection#", "'%s'" % pfCandidateCollection)
     applyZrecoilCorrection = "False"
-    if 'applyZrecoilCorrection' in recoSampleDefinitionsZtoMuTau_7TeV['RECO_SAMPLES'][sampleName].keys() and \
-      recoSampleDefinitionsZtoMuTau_7TeV['RECO_SAMPLES'][sampleName]['applyZrecoilCorrection']:
+    if 'applyZrecoilCorrection' in recoSampleDefinitionsTauIdEfficiency_7TeV['RECO_SAMPLES'][sampleName].keys() and \
+      recoSampleDefinitionsTauIdEfficiency_7TeV['RECO_SAMPLES'][sampleName]['applyZrecoilCorrection']:
         applyZrecoilCorrection = "True"                
     cfg_modified = cfg_modified.replace("#applyZrecoilCorrection#", "%s" % applyZrecoilCorrection)
 
@@ -64,7 +64,7 @@ def customizeConfigFile(sampleName, cfgFileName_original, cfgFileName_modified =
     return cfgFileName_modified
 
 if len(samplesToAnalyze) == 0:
-    samplesToAnalyze = recoSampleDefinitionsZtoMuTau_7TeV['SAMPLES_TO_ANALYZE']
+    samplesToAnalyze = recoSampleDefinitionsTauIdEfficiency_7TeV['SAMPLES_TO_ANALYZE']
 
 for sampleToAnalyze in samplesToAnalyze:
 
@@ -73,7 +73,7 @@ for sampleToAnalyze in samplesToAnalyze:
 
     # apply further modifications and submit job to lxbatch
     submitAnalysisToGrid(configFile = configFile_customized, channel = channel, jobId = jobId,
-                         samples = recoSampleDefinitionsZtoMuTau_7TeV,
+                         samples = recoSampleDefinitionsTauIdEfficiency_7TeV,
                          samplesToAnalyze = [ sampleToAnalyze ],
                          disableFactorization = True, disableSysUncertainties = True, disableZrecoilCorrections = True,
                          outputFilePath = outputFilePath, outputFileMap = output_mapper)
