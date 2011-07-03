@@ -3,7 +3,7 @@
 *
 *
 *
-*\version  $Id: SingleTopSystematicsTreesDumper.cc,v 1.7 2011/06/21 17:18:51 oiorio Exp $ 
+*\version  $Id: SingleTopSystematicsTreesDumper.cc,v 1.8 2011/06/30 15:45:41 oiorio Exp $ 
 */
 // This analyzer dumps the histograms for all systematics listed in the cfg file 
 //
@@ -26,7 +26,7 @@
 #include <Math/VectorUtil.h>
 //#include "CommonTools/CandUtils/interface/Booster.h"
 #include <sstream> //libreria per usare stringstream
-
+//#include "PhysicsTools/Utilities/interface/LumiReWeighting.h"
 #include "DataFormats/Math/interface/deltaR.h"
 
 #include "CondFormats/JetMETObjects/interface/JetCorrectionUncertainty.h"
@@ -47,6 +47,7 @@ SingleTopSystematicsTreesDumper::SingleTopSystematicsTreesDumper(const edm::Para
   finalLumi = channelInfo.getUntrackedParameter<double>("finalLumi");
   MTWCut = channelInfo.getUntrackedParameter<double>("MTWCut",50);
 
+
   RelIsoCut = channelInfo.getUntrackedParameter<double>("RelIsoCut",0.1);
   loosePtCut = channelInfo.getUntrackedParameter<double>("loosePtCut",30); 
 
@@ -58,7 +59,7 @@ SingleTopSystematicsTreesDumper::SingleTopSystematicsTreesDumper(const edm::Para
   leptonsEnergy_ =  iConfig.getParameter< edm::InputTag >("leptonsEnergy");
   leptonsCharge_ =  iConfig.getParameter< edm::InputTag >("leptonsCharge");
   leptonsRelIso_ =  iConfig.getParameter< edm::InputTag >("leptonsRelIso");
-  
+  leptonsDB_ =  iConfig.getParameter< edm::InputTag >("leptonsDB");
   leptonsID_ =  iConfig.getParameter< edm::InputTag >("leptonsID");
 
   leptonsFlavour_ =  iConfig.getUntrackedParameter< std::string >("leptonsFlavour");

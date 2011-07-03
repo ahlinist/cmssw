@@ -10,6 +10,10 @@ process.options = cms.untracked.PSet(
     FailPath = cms.untracked.vstring('ProductNotFound','Type Mismatch')
     )
 
+#process.MessageLogger.cerr.FwkReport.reportEvery = 1000
+
+#from PhysicsTools.PatAlgos.tools.cmsswVersionTools import run36xOn35xInput
+
 
 # conditions ------------------------------------------------------------------
 
@@ -29,6 +33,9 @@ process.load("TopQuarkAnalysis.SingleTop.SingleTopSequences_cff")
 process.load("SelectionCuts_Skim_cff");
 
 
+from PhysicsTools.PatAlgos.tools.cmsswVersionTools import *
+run42xOn3yzMcInput(process)
+run36xOn35xInput(process)
 
 
 # Get a list of good primary vertices, in 42x, these are DAF vertices
@@ -65,8 +72,6 @@ from HLTrigger.HLTfilters.hltHighLevel_cfi import *
 #    getattr(process,"pfNoElectron"+postfix)*process.kt6PFJets 
 
                                  
-from PhysicsTools.PatAlgos.tools.cmsswVersionTools import *
-run42xOn3yzMcInput(process)
 
 # set the dB to the beamspot
 process.patMuons.usePV = cms.bool(False)
@@ -149,28 +154,14 @@ duplicateCheckMode = cms.untracked.string('noDuplicateCheck')
 )
 
 
-process.demo = cms.EDAnalyzer('SimpleEventDumper',                              
-                              verticesSource = cms.InputTag("PVFilterProducer"),
-                              electronSource = cms.InputTag("cleanPatElectrons"),
-                              muonSource     = cms.InputTag("patMuons"),
-                              patmetSource = cms.InputTag("patMETs"),
-                              calometSource = cms.InputTag("met"), #uncorrected
-                              pfmetSource = cms.InputTag("pfMet"),
-                              tcmetSource = cms.InputTag("tcMet"),
-                              patjetSource = cms.InputTag("patJets"),
-                              pfjetSource = cms.InputTag("ak5PFJets"), #uncorrected
-                              pfpatjetSource = cms.InputTag("patJetsAK5PF"), #corrected, and possibility to access b-tagging for it
-                              jptjetSource = cms.InputTag("patJetsAK5JPT"),
-                              lep_pt_min = cms.double(10),
-                              mt_min = cms.double(20),
-                              jet_pt_min = cms.double(20),
-                              useL5corr = cms.bool(False),
-                              useL5corr_including_gluons = cms.bool(False),#
+ChannelName = "TChannel";
 
-                              imgSolStrategy = cms.int32(1), #0: ignore Img part; 1: adjust MT to MW (as TOP-09-005)
-                             )
+#process.TFileService = cms.Service("TFileService", fileName = cms.string("/tmp/oiorio/"+ChannelName+"_pt_bmode.root"))
+process.TFileService = cms.Service("TFileService", fileName = cms.string("pileupdistr_"+ChannelName+".root"))
 
-
+process.pileUpDumper = cms.EDAnalyzer("SingleTopPileUpDumper",
+                                      channel = cms.string(ChannelName),
+                                      )
 
 process.WLightFilter = process.flavorHistoryFilter.clone(pathToSelect = cms.int32(11))
 process.WccFlter = process.flavorHistoryFilter.clone(pathToSelect = cms.int32(6))
@@ -186,6 +177,7 @@ process.hltFilter.HLTPaths = mytrigs
 
 
 process.baseLeptonSequence = cms.Path(
+    process.pileUpDumper +
     process.basePath 
     )
 
@@ -222,22 +214,16 @@ savePatTupleSkimLoose = cms.untracked.vstring(
 ## Output module configuration
 process.singleTopNTuple = cms.OutputModule("PoolOutputModule",
 #                                fileName = cms.untracked.string('rfio:/CST/cern.ch/user/o/oiorio/SingleTop/SubSkims/WControlSamples1.root'),
-<<<<<<< SingleTopMC_PF2PAT_cfg.py
-#                   fileName = cms.untracked.string('/tmp/oiorio/edmntuple_tchannel_big.root'),
-                   fileName = cms.untracked.string('edmntuple_HT-40To100.root'),
-                                           
-=======
 #                   fileName = cms.untracked.Bstring('/tmp/oiorio/edmntuple_tchannel_big.root'),
-                   fileName = cms.untracked.string('edmntuple_WJets.root'),
+                   fileName = cms.untracked.string('edmntuple_'+ChannelName+'.root'),
                                              
->>>>>>> 1.11
                    SelectEvents   = cms.untracked.PSet( SelectEvents = cms.vstring('selection')),
                    outputCommands = saveNTuplesSkimLoose,
 )
 
 process.singleTopPatTuple = cms.OutputModule("PoolOutputModule",
 #                                fileName = cms.untracked.string('rfio:/CST/cern.ch/user/o/oiorio/SingleTop/SubSkims/WControlSamples1.root'),
-                   fileName = cms.untracked.string('/tmp/oiorio/pattuple_tchannel.root'),
+                   fileName = cms.untracked.string('pattuple_'+ChannelName+'.root'),
 
 
                    SelectEvents   = cms.untracked.PSet( SelectEvents = cms.vstring('selection')),
@@ -246,7 +232,7 @@ process.singleTopPatTuple = cms.OutputModule("PoolOutputModule",
 process.singleTopNTuple.dropMetaData = cms.untracked.string("ALL")
 
 process.outpath = cms.EndPath(
-    process.singleTopNTuple # +
+    process.singleTopNTuple# +
 #    process.singleTopPatTuple 
     )
 

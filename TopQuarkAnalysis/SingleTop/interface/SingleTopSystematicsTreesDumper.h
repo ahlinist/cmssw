@@ -6,7 +6,7 @@
  * \Authors A. Orso M. Iorio
  * 
  * Produces systematics histograms out of a standard Single Top n-tuple 
- * \ version $Id: SingleTopSystematicsTreesDumper.h,v 1.6 2011/06/21 17:18:51 oiorio Exp $
+ * \ version $Id: SingleTopSystematicsTreesDumper.h,v 1.7 2011/06/30 15:45:40 oiorio Exp $
  */
 
 
@@ -43,6 +43,7 @@
 #include "FWCore/Framework/interface/ESHandle.h"
 #include "CondFormats/JetMETObjects/interface/JetCorrectionUncertainty.h"
 
+#include "CondFormats/JetMETObjects/interface/JetCorrectionUncertainty.h"
 
 
 
@@ -79,6 +80,8 @@
 #include "RecoBTag/Records/interface/BTagPerformanceRecord.h"
 #include "CondFormats/PhysicsToolsObjects/interface/BinningPointByMap.h"
 #include "RecoBTag/PerformanceDB/interface/BtagPerformance.h"
+
+//#include "PhysicsTools/Utilities/interface/LumiReWeighting.h"
 
 using namespace std;
 using namespace edm;
@@ -133,6 +136,7 @@ class SingleTopSystematicsTreesDumper : public edm::EDAnalyzer {
     leptonsCharge_,
     leptonsRelIso_,
     leptonsID_,
+    leptonsDB_,
     looseElectronsRelIso_,
     looseMuonsRelIso_,
     jetsPt_,
@@ -212,6 +216,8 @@ class SingleTopSystematicsTreesDumper : public edm::EDAnalyzer {
     b_weight_antitag_algo2,
     b_discriminator_value_tag_algo1,
     b_discriminator_value_antitag_algo2;
+
+  //  edm::LumiReWeighting LumiWeights_;
 
   //Variables to use as trees references
   double etaTree,etaTree2,cosTree,topMassTree,weightTree,mtwMassTree,lowBTagTree,highBTagTree,maxPtTree,minPtTree;
