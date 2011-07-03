@@ -18,7 +18,9 @@ jobId = reg.getJobId(channel)
 tmpFilePath = reg.getBatchHarvestLocation(channel)
 
 SAMPLES_TO_ANALYZE = [
-    # modify in case you want to submit jobs for some of the samples only...
+    'Ztautau_pythia',
+    'Zmumu_pythia',
+    'PPmuXptGt20Mu15'
 ]
 
 print analysisFilePath
@@ -37,10 +39,10 @@ def matches_either(files):
     for file in files:
         #print " unmatched file: %s" % file['path']
         if len(SAMPLES_TO_ANALYZE) > 0:
-	  isFound = FALSE
+	  isFound = False
           for sample in SAMPLES_TO_ANALYZE:
-              if file.find(sample) != -1:
-                  isFound = TRUE
+              if file["file"].find(sample) != -1:
+                  isFound = True
           if not isFound:
 	    continue
         if plot_matcher.match(file['file']) or skim_matcher.match(file['file']):
