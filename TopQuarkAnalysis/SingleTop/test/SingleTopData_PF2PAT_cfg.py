@@ -80,6 +80,7 @@ process.pfPileUp.checkClosestZVertex = cms.bool(False)
 process.pfPileUp.Vertices = cms.InputTag('goodOfflinePrimaryVertices')
 process.pfJets.doAreaFastjet = True
 process.pfJets.doRhoFastjet = False
+process.pfJets.Rho_EtaMax =  cms.double(4.5)
 
 
 # Compute the mean pt per unit area (rho) from the
@@ -90,7 +91,8 @@ process.kt6PFJets = kt4PFJets.clone(
     src = cms.InputTag('pfNoElectron'+postfix),
     doAreaFastjet = cms.bool(True),
     doRhoFastjet = cms.bool(True),
-    voronoiRfact = cms.double(0.9)
+    voronoiRfact = cms.double(0.9),
+    Rho_EtaMax =  cms.double(4.5)
     )
 process.patJetCorrFactors.rho = cms.InputTag("kt6PFJets", "rho")
 
