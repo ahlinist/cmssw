@@ -4,7 +4,8 @@ from TauAnalysis.Configuration.analyzeWtoTauNu_cfi import *
 from TauAnalysis.CandidateTools.sysErrDefinitions_cfi import *
 sysUncertaintyService = cms.Service("SysUncertaintyService",
                                    weights = getSysUncertaintyParameterSets(
-    []
+   # [ theorySystematics ]
+    [ ]
     ),
        sources = cms.PSet(
        isRecWtoTauNu = cms.vstring(
@@ -19,7 +20,7 @@ analyzeWtoTauNuEvents = cms.EDAnalyzer("GenericAnalyzer",
                             
     filters = cms.VPSet(
     #trigger selection
-    evtSelTrigger,
+    evtSelTrigger2,
     
     #vertex selection
     evtSelPrimaryEventVertex,
@@ -42,7 +43,9 @@ analyzeWtoTauNuEvents = cms.EDAnalyzer("GenericAnalyzer",
     evtSelTauEcalCrackVeto,
     evtSelPFMetPt,
     evtSelHtRatio,
-    evtSelMetTopology
+
+    evtSelTrigger
+#    evtSelMetTopology
     ),
   
     analyzers = cms.VPSet(
@@ -56,11 +59,15 @@ analyzeWtoTauNuEvents = cms.EDAnalyzer("GenericAnalyzer",
         tauNuCandidateHistManager,
         muonHistManager,
         electronHistManager,
-        dataBinner
+        dataBinner,
+        modelBinnerForWTauNuGenTauNuPairAcc,
+        modelBinnerForWTauNuWrtGenTauNuPairAcc
     ),
 
     analyzers_systematic = cms.VPSet(
-        sysUncertaintyBinnerForWTauNuEff
+        sysUncertaintyBinnerForWTauNuAcc,
+        sysUncertaintyBinnerForWTauNuEff,
+        sysUncertaintyHistManagerForWTauNu
     ),
     eventDumps = cms.VPSet(
         wTauNuEventDump
@@ -73,7 +80,11 @@ analyzeWtoTauNuEvents = cms.EDAnalyzer("GenericAnalyzer",
               [ tauSystematics,
                 jetSystematics,
                 metSystematicsForWtoTauNu,
-                htRatioSystematics ]
+                htRatioSystematics,
+                tauNuPairSystematics,
+                metTopologySystematics,
+#                theorySystematics
+                ]
               )
        )
                                        ) 
