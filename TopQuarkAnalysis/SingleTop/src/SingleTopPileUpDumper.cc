@@ -3,7 +3,7 @@
 *
 *
 *
-*\version  $Id: SingleTopPileUpDumper.cc,v 1.8 2011/06/30 15:45:41 oiorio Exp $ 
+*\version  $Id: SingleTopPileUpDumper.cc,v 1.1 2011/07/03 20:01:52 oiorio Exp $ 
 */
 // This analyzer dumps the histograms for all systematics listed in the cfg file 
 //
@@ -37,7 +37,7 @@ SingleTopPileUpDumper::SingleTopPileUpDumper(const edm::ParameterSet& iConfig)
   channel = iConfig.getParameter<std::string >("channel"); 
   
   Service<TFileService> fs;
-  hPileUp = fs->make<TH1F>(("PileUp"+channel).c_str(),("PileUp"+channel).c_str(),25,-0.5,24.5);
+  hPileUp = fs->make<TH1F>(("PileUp"+channel).c_str(),("PileUp"+channel).c_str(),51,-0.5,50.5);
 }
 
 void SingleTopPileUpDumper::analyze(const Event& iEvent, const EventSetup& iSetup)
@@ -46,7 +46,7 @@ void SingleTopPileUpDumper::analyze(const Event& iEvent, const EventSetup& iSetu
   iEvent.getByLabel(edm::InputTag("addPileupInfo"), pileUpInfo);
   
   // cout << " test pupinfo size " << pileUpInfo->size()<< endl;
-
+  
   std::vector<PileupSummaryInfo>::const_iterator PVI;
   
   int npv = -1;

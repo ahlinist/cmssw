@@ -1,4 +1,5 @@
 <use   name="FWCore/Framework"/>
+<use   name="PhysicsTools/Utilities"/>
 <use   name="FWCore/Utilities"/>
 <use   name="RecoBTag/PerformanceDB"/>
 <use   name="RecoBTag/Records"/>

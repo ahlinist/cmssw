@@ -34,6 +34,9 @@ UnclusteredMETPF = cms.EDProducer("SingleTopUnclusteredMETProducer",
                                   muonsSource = cms.InputTag("selectedPatMuons"),
                                   )
 
+#UnclusteredMET
+NVertices = cms.EDProducer("SingleTopPileUpProducer")
+
 #PDF Info
 PDFInfo = cms.EDProducer("PDFInfoDumper",
                          )

@@ -35,6 +35,7 @@ leptonsPhi = cms.InputTag("nTupleElectrons","tightElectronsPhi"),
 leptonsEnergy = cms.InputTag("nTupleElectrons","tightElectronsE"),  
 leptonsCharge = cms.InputTag("nTupleElectrons","tightElectronsCharge"),  
 leptonsRelIso = cms.InputTag("nTupleElectrons","tightElectronsRelIso"),  
+leptonsDB = cms.InputTag("nTupleElectrons","tightElectronsRelIso"),  
 
 looseElectronsRelIso = cms.InputTag("nTupleLooseElectrons","looseElectronsRelIso"),  
 looseMuonsRelIso = cms.InputTag("nTupleLooseMuons","looseMuonsRelIso"),  
@@ -55,6 +56,7 @@ jetsCorrTotal = cms.InputTag("nTupleTopJetsPF","topJetsPFJetCorrTotal"),
 METPhi = cms.InputTag("nTuplePatMETsPF","patMETsPFPhi"),
 METPt = cms.InputTag("nTuplePatMETsPF","patMETsPFPt"),
 
+nvertices = cms.InputTag("NVertices","PileUpSync"),
 UnclusteredMETPx = cms.InputTag("UnclusteredMETPF","UnclusteredMETPx"),
 UnclusteredMETPy = cms.InputTag("UnclusteredMETPF","UnclusteredMETPy"),
 
@@ -77,6 +79,7 @@ TreesMu = TreesEle.clone(
     leptonsEnergy = cms.InputTag("nTupleMuons","tightMuonsE"),  
     leptonsCharge = cms.InputTag("nTupleMuons","tightMuonsCharge"),  
     leptonsRelIso = cms.InputTag("nTupleMuons","tightMuonsRelIso"),  
+    leptonsDB = cms.InputTag("nTupleMuons","tightMuonsRelIso"),  
     leptonsID = cms.InputTag("nTupleElectrons","tightElectronsSimpleEleId70cIso"),  
     leptonsFlavour = cms.untracked.string("muon"),
 

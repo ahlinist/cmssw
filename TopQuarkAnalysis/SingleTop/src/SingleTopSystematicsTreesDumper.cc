@@ -3,7 +3,7 @@
 *
 *
 *
-*\version  $Id: SingleTopSystematicsTreesDumper.cc,v 1.8 2011/06/30 15:45:41 oiorio Exp $ 
+*\version  $Id: SingleTopSystematicsTreesDumper.cc,v 1.9 2011/07/03 20:01:27 oiorio Exp $ 
 */
 // This analyzer dumps the histograms for all systematics listed in the cfg file 
 //
@@ -32,6 +32,7 @@
 #include "CondFormats/JetMETObjects/interface/JetCorrectionUncertainty.h"
 #include "TopQuarkAnalysis/SingleTop/interface/EquationSolver.h"
 
+
 SingleTopSystematicsTreesDumper::SingleTopSystematicsTreesDumper(const edm::ParameterSet& iConfig)
 {
   //MCLightQuarkProducer   = iConfig.getParameter<InputTag>("MCLightQuarkProducer");
@@ -53,6 +54,9 @@ SingleTopSystematicsTreesDumper::SingleTopSystematicsTreesDumper(const edm::Para
 
   maxPtCut = iConfig.getUntrackedParameter<double>("maxPtCut",30);
 
+  dataPUFile_ =  iConfig.getUntrackedParameter< std::string >("dataPUFile","pileUpDistr.root");
+  mcPUFile_ =  iConfig.getUntrackedParameter< std::string >("mcPUFile","pileupdistr_TChannel.root");
+  
   leptonsPt_ =  iConfig.getParameter< edm::InputTag >("leptonsPt");
   leptonsPhi_ =  iConfig.getParameter< edm::InputTag >("leptonsPhi");
   leptonsEta_ =  iConfig.getParameter< edm::InputTag >("leptonsEta");
@@ -91,6 +95,7 @@ SingleTopSystematicsTreesDumper::SingleTopSystematicsTreesDumper(const edm::Para
   //  jetsPF_ =  iConfig.getParameter< edm::InputTag >("patJets");
 
   mode_ =  iConfig.getUntrackedParameter<std::string >("mode",""); 
+  npv_ = iConfig.getParameter< edm::InputTag >("nvertices");//,"PileUpSync"); 
   
   systematics.push_back("noSyst");
   
@@ -368,11 +373,21 @@ SingleTopSystematicsTreesDumper::SingleTopSystematicsTreesDumper(const edm::Para
   JES_b_cut = 0.02;
   JES_b_overCut = 0.03;
   
+  std::string puhistoname = "pileUpDumper/PileUp"+channel;
+
+  LumiWeights_ = edm::LumiReWeighting(
+				      mcPUFile_,
+				      dataPUFile_,
+				      puhistoname,
+				      std::string("pileup")  );
+
   //  cout<< "I work for now but I do nothing. But again, if you gotta do nothing, you better do it right. To prove my good will I will provide you with somse numbers later."<<endl;
 }
 
 void SingleTopSystematicsTreesDumper::analyze(const Event& iEvent, const EventSetup& iSetup)
 {
+
+
   iEvent.getByLabel(jetsEta_,jetsEta);
   iEvent.getByLabel(jetsPt_,jetsPt);
   iEvent.getByLabel(jetsPhi_,jetsPhi);
@@ -427,7 +442,20 @@ void SingleTopSystematicsTreesDumper::analyze(const Event& iEvent, const EventSe
   double RelIsoQCDCut = 0.1;
   
   float ptCut = 30;  
-//  float maxPtCut = maxPtCut_;
+  //  float maxPtCut = maxPtCut_;
+
+  double myWeight = 1.;
+
+  if(channel != "Data"){
+    iEvent.getByLabel(npv_,npv);
+    myWeight = LumiWeights_.weight(*npv);
+  }
+
+  //edm::EventBase* const iEventB = dynamic_cast<edm::EventBase*>(&iEvent);
+  //double MyWeight = LumiWeights_.weight( (*iEventB) );
+  
+  //double w = LumiWeights_.weight(iEvent);
+  
   if(channel=="Data")WeightLumi=1;
   
   for(size_t s = 0; s < systematics.size();++s){
@@ -437,6 +465,7 @@ void SingleTopSystematicsTreesDumper::analyze(const Event& iEvent, const EventSe
     //to normalize the sample to the luminosity 
     //required in the cfg
     Weight = WeightLumi;
+    Weight *= myWeight;
     BTagWeight = 1;
     BTagWeightWSample = 1;
     BTagWeightTTSample = 1;

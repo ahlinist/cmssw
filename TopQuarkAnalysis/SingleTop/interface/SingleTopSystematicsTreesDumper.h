@@ -6,7 +6,7 @@
  * \Authors A. Orso M. Iorio
  * 
  * Produces systematics histograms out of a standard Single Top n-tuple 
- * \ version $Id: SingleTopSystematicsTreesDumper.h,v 1.7 2011/06/30 15:45:40 oiorio Exp $
+ * \ version $Id: SingleTopSystematicsTreesDumper.h,v 1.8 2011/07/03 20:01:27 oiorio Exp $
  */
 
 
@@ -81,7 +81,7 @@
 #include "CondFormats/PhysicsToolsObjects/interface/BinningPointByMap.h"
 #include "RecoBTag/PerformanceDB/interface/BtagPerformance.h"
 
-//#include "PhysicsTools/Utilities/interface/LumiReWeighting.h"
+#include "PhysicsTools/Utilities/interface/LumiReWeighting.h"
 
 using namespace std;
 using namespace edm;
@@ -150,7 +150,9 @@ class SingleTopSystematicsTreesDumper : public edm::EDAnalyzer {
     METPhi_,
     jetsFlavour_,
     UnclMETPx_,
-    UnclMETPy_;
+    UnclMETPy_,
+    npv_;
+
 
   // Handles
   edm::Handle<std::vector<float> > leptonsPt,
@@ -172,6 +174,8 @@ class SingleTopSystematicsTreesDumper : public edm::EDAnalyzer {
    jetsCorrTotal,
    METPhi,
    METPt;
+ 
+  edm::Handle<int > npv;
   
   //Unclustered MET to take from the event
   edm::Handle< double > UnclMETPx,UnclMETPy;
@@ -217,7 +221,7 @@ class SingleTopSystematicsTreesDumper : public edm::EDAnalyzer {
     b_discriminator_value_tag_algo1,
     b_discriminator_value_antitag_algo2;
 
-  //  edm::LumiReWeighting LumiWeights_;
+  edm::LumiReWeighting LumiWeights_;
 
   //Variables to use as trees references
   double etaTree,etaTree2,cosTree,topMassTree,weightTree,mtwMassTree,lowBTagTree,highBTagTree,maxPtTree,minPtTree;
@@ -227,7 +231,7 @@ class SingleTopSystematicsTreesDumper : public edm::EDAnalyzer {
   
   //Not used anymore:
   double loosePtCut ;
-  string rootFileName;
+  string rootFileName, dataPUFile_,mcPUFile_;
   
   
  

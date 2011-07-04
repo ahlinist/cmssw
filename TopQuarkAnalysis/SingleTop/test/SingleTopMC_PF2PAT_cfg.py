@@ -33,9 +33,9 @@ process.load("TopQuarkAnalysis.SingleTop.SingleTopSequences_cff")
 process.load("SelectionCuts_Skim_cff");
 
 
-from PhysicsTools.PatAlgos.tools.cmsswVersionTools import *
-run42xOn3yzMcInput(process)
-run36xOn35xInput(process)
+#from PhysicsTools.PatAlgos.tools.cmsswVersionTools import *
+#run42xOn3yzMcInput(process)
+#run36xOn35xInput(process)
 
 
 # Get a list of good primary vertices, in 42x, these are DAF vertices
