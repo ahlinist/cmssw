@@ -948,7 +948,7 @@ void lambdaReader::doHLTstuff()
     fHLTqrk = false;
     fHLTDMu0 = fHLTDMu3jp = false;
     fHLTMu0TkMu0jp = false;
-    fHLTMu0jp = false;
+    fHLTMu0jp = fHLTDMu0Jp = false;
     fHLTDMu6p5BarJp = fHLTDMu6p5JpDis = fHLTDMu6p5Jp = fHLTMu5L2Mu2Jpsi = fHLTMu5Tr2Jpsi = fHLTMu5Tr7Jpsi = false;
     fHLTpreDMu6p5BarJp = fHLTpreDMu6p5JpDis = fHLTpreDMu6p5Jp = fHLTpreMu5L2Mu2Jpsi = fHLTpreMu5Tr2Jpsi = fHLTpreMu5Tr7Jpsi = 0;
     fHLTDMu10BarJp = fHLTDMu7JpDis = false;
@@ -1443,6 +1443,7 @@ void lambdaReader::bookReducedTree()
     fTree->Branch("HLTDMu3jp", &fHLTDMu3jp, "HLTDMu3jp/O");
     fTree->Branch("HLTMu0TkMu0jp",   &fHLTMu0TkMu0jp,   "HLTMu0TkMu0jp/O");
     fTree->Branch("HLTMu0jp", &fHLTMu0jp, "HLTMu0jp/O");
+    fTree->Branch("HLTDMu0Jp", &fHLTDMu0Jp, "HLTDMu0Jp/O");
 
     fTree->Branch("HLTDMu6p5BarJp", &fHLTDMu6p5BarJp, "HLTDMu6p5BarJp/O"); // Dimuon6p5_Barrel_Jpsi_v1
     fTree->Branch("HLTDMu6p5JpDis", &fHLTDMu6p5JpDis, "HLTDMu6p5JpDis/O"); // Dimuon6p5_Jpsi_Displaced_v1
