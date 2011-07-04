@@ -74,7 +74,7 @@ process.load('CommonTools/RecoAlgos/HBHENoiseFilterResultProducer_cfi')
 process.runMETCleaning = cms.Path(process.HBHENoiseFilterResultProducer)
 
 process.TTEffAnalysis = cms.EDAnalyzer("TTEffAnalyzer",
-	DoOfflineVariablesOnly  = cms.bool(True), #if true: no trigger info is saved
+	DoOfflineVariablesOnly  = cms.bool(False), #if true: no trigger info is saved
         DoMCTauEfficiency       = cms.bool(False), #if true: per MCTau cand; default is false: per offline tau cand
         LoopingOver	        = cms.InputTag("TTEffPFTausSelected"),
         PFTauIsoCollection      = cms.InputTag("TTEffPFTauDiscriminationByIsolation"),
