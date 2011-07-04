@@ -31,10 +31,10 @@ process.load("Configuration.StandardSequences.Geometry_cff")
 process.load("Configuration.StandardSequences.FrontierConditions_GlobalTag_cff")
 process.load("Configuration.StandardSequences.MagneticField_AutoFromDBCurrent_cff") ### real data
 
-#process.GlobalTag.globaltag = cms.string('GR_R_311_V2::All')
+process.GlobalTag.globaltag = cms.string('START42_V12::All')
 
-from Configuration.PyReleaseValidation.autoCond import autoCond
-process.GlobalTag.globaltag = autoCond['startup']
+#from Configuration.PyReleaseValidation.autoCond import autoCond
+#process.GlobalTag.globaltag = autoCond['startup']
 process.load("TopQuarkAnalysis.SingleTop.SingleTopSequences_cff") 
 process.load("SelectionCuts_Skim_cff");
 
@@ -80,7 +80,7 @@ process.pfPileUp.checkClosestZVertex = cms.bool(False)
 process.pfPileUp.Vertices = cms.InputTag('goodOfflinePrimaryVertices')
 process.pfJets.doAreaFastjet = True
 process.pfJets.doRhoFastjet = False
-process.pfJets.Rho_EtaMax =  cms.double(4.5)
+process.pfJets.Rho_EtaMax =  cms.double(2.5)
 
 
 # Compute the mean pt per unit area (rho) from the
@@ -92,7 +92,7 @@ process.kt6PFJets = kt4PFJets.clone(
     doAreaFastjet = cms.bool(True),
     doRhoFastjet = cms.bool(True),
     voronoiRfact = cms.double(0.9),
-    Rho_EtaMax =  cms.double(4.5)
+    Rho_EtaMax =  cms.double(2.5)
     )
 process.patJetCorrFactors.rho = cms.InputTag("kt6PFJets", "rho")
 
