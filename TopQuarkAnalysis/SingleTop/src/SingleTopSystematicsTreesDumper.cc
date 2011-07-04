@@ -3,7 +3,7 @@
 *
 *
 *
-*\version  $Id: SingleTopSystematicsTreesDumper.cc,v 1.10 2011/07/04 00:56:22 oiorio Exp $ 
+*\version  $Id: SingleTopSystematicsTreesDumper.cc,v 1.11 2011/07/04 18:11:28 oiorio Exp $ 
 */
 // This analyzer dumps the histograms for all systematics listed in the cfg file 
 //
@@ -373,14 +373,14 @@ SingleTopSystematicsTreesDumper::SingleTopSystematicsTreesDumper(const edm::Para
   JES_b_cut = 0.02;
   JES_b_overCut = 0.03;
   
-  std::string puhistoname = "pileUpDumper/PileUp"+channel;
 
-  LumiWeights_ = edm::LumiReWeighting(
+  /*  LumiWeights_ = edm::LumiReWeighting(
 				      mcPUFile_,
 				      dataPUFile_,
 				      puhistoname,
 				      std::string("pileup")  );
-
+  */
+  
   //  cout<< "I work for now but I do nothing. But again, if you gotta do nothing, you better do it right. To prove my good will I will provide you with somse numbers later."<<endl;
 }
 
@@ -446,10 +446,10 @@ void SingleTopSystematicsTreesDumper::analyze(const Event& iEvent, const EventSe
 
   double myWeight = 1.;
 
-  if(channel != "Data"){
+  /*  if(channel != "Data"){
     iEvent.getByLabel(npv_,npv);
     myWeight = LumiWeights_.weight(*npv);
-  }
+  }*/
 
   //edm::EventBase* const iEventB = dynamic_cast<edm::EventBase*>(&iEvent);
   //double MyWeight = LumiWeights_.weight( (*iEventB) );
@@ -1024,14 +1024,14 @@ void SingleTopSystematicsTreesDumper::analyze(const Event& iEvent, const EventSe
      MTWValue =  sqrt((leptons.at(0).pt()+metPt)*(leptons.at(0).pt()+metPt)  -(leptons.at(0).px()+metPx)*(leptons.at(0).px()+metPx) -(leptons.at(0).py()+metPy)*(leptons.at(0).py()+metPy));
      
      if( (leptons.size() == 1 && (looseMuonsRelIso->size( )+ looseElectronsRelIso->size())>1))   continue;//Loose muons size always >=1 due to presence of tight muon 
-    
-    //Signal sample
-    if( jets.size()!=2)continue;
-    
-    if( bjets.size()==1 && antibjets.size()==1){
-      
-      math::PtEtaPhiELorentzVector top = top4Momentum(leptons.at(0),bjets.at(0),metPx,metPy);
-      float fCosThetaLJ =  cosThetaLJ(leptons.at(0), antibjets.at(0), top);
+     
+     //Signal sample
+     if( jets.size()!=2)continue;
+     
+     if( bjets.size()==1 && antibjets.size()==1){
+       
+       math::PtEtaPhiELorentzVector top = top4Momentum(leptons.at(0),bjets.at(0),metPx,metPy);
+       float fCosThetaLJ =  cosThetaLJ(leptons.at(0), antibjets.at(0), top);
       
       //cout << " Signal Sample QCD; antib  algo 2 weight size "<< b_weight_antitag_algo2.size()<< " b algo 1 weight size "<< b_weight_tag_algo1.size()<< endl;
       runTree = iEvent.eventAuxiliary().run();
