@@ -10,12 +10,12 @@ cfgTrigger = cms.PSet(
     src = cms.InputTag('patTriggerEvent'),
     hltAcceptPaths = cms.vstring('HLT_SingleIsoTau20_Trk15_MET25_v3','HLT_SingleIsoTau20_Trk15_MET25_v4')
     )
-#cfgTrigger = cms.PSet(
-#    pluginName = cms.string('PseudoTrigger'),
-#    pluginType = cms.string('VertexMinEventSelector'),
-#    src = cms.InputTag('offlinePrimaryVerticesWithBS'),
-#    minNumber = cms.uint32(1)        
-#    )
+cfgTrigger2 = cms.PSet(
+    pluginName = cms.string('PseudoTrigger'),
+    pluginType = cms.string('VertexMinEventSelector'),
+    src = cms.InputTag('offlinePrimaryVerticesWithBS'),
+    minNumber = cms.uint32(1)        
+    )
 
 # vertex selection
 cfgPrimaryEventVertex = cms.PSet(
@@ -66,7 +66,6 @@ cfgHtRatioCut = cms.PSet(
 cfgPFMetPt = cms.PSet(
     pluginName = cms.string('PFmetPtCut'),
     pluginType = cms.string('PATCandViewMinEventSelector'),
-#    src = cms.InputTag('selectedPatPFMETsPt45'),
     src = cms.InputTag('selectedPatPFMETsPt30Cumulative'),
     systematics = cms.vstring(metSystematicsForWtoTauNu.keys()),
     minNumber = cms.uint32(1)
@@ -149,7 +148,7 @@ cfgTauChargeCut = cms.PSet(
     pluginName = cms.string('tauChargeCut'),
     pluginType = cms.string('PATCandViewMinEventSelector'),
     src_cumulative = cms.InputTag('selectedPatTausForWTauNuChargeCumulative'),
-    src_individual = cms.InputTag('selectedPatTausForWTauNuChargeIndividual'),
+    src_individual = cms.InputTag('selectedPatTausForWTauNuChargeIndividual'), # 
     systematics = cms.vstring(tauSystematics.keys()),
     minNumber = cms.uint32(1)
 )
@@ -171,17 +170,18 @@ cfgMuonVeto = cms.PSet(
 )
 
 # MET topology cut
-cfgMetTopologyCut = cms.PSet(
-    pluginName = cms.string('metTopologyCut'),
-    pluginType = cms.string('MEtTopologyMinEventSelector'),
-    src = cms.InputTag('selectedMEtTopology05'),
-    minNumber = cms.uint32(1)
-    )
+#cfgMetTopologyCut = cms.PSet(
+#    pluginName = cms.string('metTopologyCut'),
+#    pluginType = cms.string('MEtTopologyMinEventSelector'),
+#    src = cms.InputTag('selectedMEtTopology05Cumulative'),
+#    systematics = cms.vstring(metTopologySystematics.keys()),
+#    minNumber = cms.uint32(1)
+#    )
 
 
 wToTauNuEventSelConfigurator = eventSelFlagProdConfigurator(
     [ 
-    cfgTrigger,
+    cfgTrigger2,
     cfgPrimaryEventVertex,
     cfgPrimaryEventVertexQuality,
     cfgPrimaryEventVertexPosition,
@@ -200,7 +200,8 @@ wToTauNuEventSelConfigurator = eventSelFlagProdConfigurator(
     cfgTauEcalCrackVeto,
     cfgPFMetPt,
     cfgHtRatioCut,
-    cfgMetTopologyCut
+    cfgTrigger
+#    cfgMetTopologyCut
     ],
     boolEventSelFlagProducer = "BoolEventSelFlagProducer",
     pyModuleName = __name__
@@ -213,10 +214,11 @@ isRecWtoTauNu = cms.EDProducer("BoolEventSelFlagProducer",
                                pluginType = cms.string('MultiBoolEventSelFlagSelector'),
                                flags = cms.VInputTag(
     cms.InputTag('Trigger'),
+#    cms.InputTag('PseudoTrigger'),
     cms.InputTag('primaryEventVertex'),
     cms.InputTag('primaryEventVertexQuality'),
     cms.InputTag('primaryEventVertexPosition'),
-#    cms.InputTag('tauLeadTrkPtCut', 'cumulative')
+    cms.InputTag('tauLeadTrkPtCut', 'cumulative'),
     cms.InputTag('tauEcalCrackVeto','cumulative'),
     cms.InputTag('muonVeto'),
     cms.InputTag('electronVeto'),
