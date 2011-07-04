@@ -306,7 +306,6 @@ b0Reader::CheckedB0Cand b0Reader::getCheckedB0Cand(const TAnaCand *tac)
     CheckedB0Cand ret;
     ret.isOk = false;
     ret.B0 = tac->fIndex;
-    cout << "getCheckedB0Cand fMass: " << tac->fMass << endl;
     // check if daughters point to something
     if (tac->fDau1 < 0 || tac->fDau2 < 0)
     {
@@ -576,7 +575,6 @@ bool b0Reader::doCandFitStuff(const CheckedB0Cand &clc)
 
     // candidate data from fit
     fmB0=tacCur->fMass;
-    cout << fmB0 << endl; //FRANK
     fptB0=tacCur->fPlab.Perp();
     fpB0=tacCur->fPlab.Mag();
     fetaB0=tlvB0.Eta();
@@ -676,8 +674,8 @@ bool b0Reader::doCandFitStuff(const CheckedB0Cand &clc)
 
     // Armenteros variables
     {
-	const TVector3 p1 = tatRecPi2->fQ > 0 ? tatRecPi2->fPlab : tatRecPi2->fPlab;
-	const TVector3 p2 = tatRecPi2->fQ > 0 ? tatRecPi2->fPlab : tatRecPi2->fPlab;
+	const TVector3 p1 = tatRecPi1->fQ > 0 ? tatRecPi1->fPlab : tatRecPi2->fPlab;
+	const TVector3 p2 = tatRecPi1->fQ > 0 ? tatRecPi2->fPlab : tatRecPi1->fPlab;
 	const TVector3 p = p1+p2;
 	farmQt = (p1.Cross(p2)).Mag()/p.Mag();
 	farmAl = (p1.Mag2()-p2.Mag2())/p.Mag2();
@@ -1073,13 +1071,6 @@ void b0Reader::doTriggerMatching()
 // ----------------------------------------------------------------------
 bool b0Reader::checkCuts()
 {
-    cout << (frpt1m > CUTptmuMin) << (frpt2m > CUTptmuMin)
-	<< (fmjp > MJPSI-CUTmjpWindow) << (fmjp < MJPSI+CUTmjpWindow)
-	<< (fptjp > CUTptjpMin)
-	<< (fmKs > MKSHORT-CUTmKsWindow) << (fmKs < MKSHORT+CUTmKsWindow)
-	<< (fptKs > CUTptKsMin)
-	<< (frptpi1 > CUTptpiMin)
-	<< (frptpi2 > CUTptpiMin) << endl;
     return ( (frpt1m > CUTptmuMin) && (frpt2m > CUTptmuMin)
 	&& (fmjp > MJPSI-CUTmjpWindow) && (fmjp < MJPSI+CUTmjpWindow)
 	&& (fptjp > CUTptjpMin)
