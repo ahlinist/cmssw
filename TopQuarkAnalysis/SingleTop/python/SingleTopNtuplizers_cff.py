@@ -499,6 +499,21 @@ singleTopMCNeutrinos = cms.EDProducer(
 
 )
 
+
+singleTopMCNeutrinos = cms.EDProducer(
+    "CandViewNtpProducer",
+    src = cms.InputTag("MCTruthParticles","topNeutrinos"),
+    prefix = cms.untracked.string("mcNeutrinos"),
+
+    variables = cms.VPSet(
+
+    cms.PSet(
+    tag = cms.untracked.string("PdgId"),
+    quantity = cms.untracked.string("pdgId")
+    ),
+    ),
+)
+
 singleTopMCLeptons = singleTopMCNeutrinos.clone( src = cms.InputTag("MCTruthParticles","topLeptons"), prefix = cms.untracked.string("mcLeptons"))
 
 singleTopMCRecoilQuark = singleTopMCNeutrinos.clone( src = cms.InputTag("MCTruthParticles","singleTopRecoilQuark"), prefix = cms.untracked.string("mcRecoilQuark"))
@@ -531,6 +546,7 @@ saveNTuplesSkim = cms.untracked.vstring(
     'keep floats_nTuplePatMETsPF_*_*',
     'keep floats_nTupleTopJetsPF_*_*',
     'keep *_UnclusteredMETPF_*_*',
+    'keep *_NVertices_*_*',
     )
 
 
