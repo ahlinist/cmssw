@@ -30,7 +30,8 @@ process.MessageLogger.cerr.TTEffAnalyzer = cms.untracked.PSet(limit = cms.untrac
 
 process.options = cms.untracked.PSet(
 #    wantSummary = cms.untracked.bool(True)
-    wantSummary = cms.untracked.bool(False)
+    wantSummary = cms.untracked.bool(False),
+    SkipEvent = cms.untracked.vstring("TrajectoryState") # FIXME: problem with cmssw42X TSGFromL2Muon
 )
 
 #Mike needs Calo Geometry
@@ -58,10 +59,10 @@ process.load("ElectroWeakAnalysis.TauTriggerEfficiency.TTEffPFTau_cff")
 
 process.load('Configuration/StandardSequences/FrontierConditions_GlobalTag_cff')
 if (isData):
-    process.GlobalTag.globaltag = 'GR_H_V17::All'
+    process.GlobalTag.globaltag = 'GR_H_V20::All'
 #    process.GlobalTag.globaltag = 'TESTL1_GR_P::All'
 else:
-    process.GlobalTag.globaltag = 'START41_V0::All'
+    process.GlobalTag.globaltag = 'START42_V12::All'
     #process.GlobalTag.globaltag = 'MC_38Y_V14::All'
 process.GlobalTag.connect   = 'frontier://FrontierProd/CMS_COND_31X_GLOBALTAG'
 process.GlobalTag.pfnPrefix = cms.untracked.string('frontier://FrontierProd/')
@@ -159,7 +160,7 @@ process.TTEffAnalysisHLTPFTau.HLTPFTau = cms.bool(True)
 process.TTEffAnalysisHLTPFTauTight = process.TTEffAnalysis.clone()
 process.TTEffAnalysisHLTPFTauTight.outputFileName = cms.string("tteffAnalysis-hltpftautight-pftau.root");
 process.TTEffAnalysisHLTPFTauTight.l25JetSource = cms.InputTag("hltPFTauTagInfo")
-process.TTEffAnalysisHLTPFTauTight.l25PtCutSource = cms.InputTag("hltPFTausTightCone")
+process.TTEffAnalysisHLTPFTauTight.l25PtCutSource = cms.InputTag("hltPFTausTightIso")
 process.TTEffAnalysisHLTPFTauTight.HLTPFTau = cms.bool(True)
 
 
@@ -185,7 +186,7 @@ process.TTEffAnalysisHLTCaloTauHPS.HLTPFTau = cms.bool(False)
 process.TTEffAnalysisHLTPFTauTightHPS = process.TTEffAnalysisHLTCaloTauHPS.clone()
 process.TTEffAnalysisHLTPFTauTightHPS.outputFileName = cms.string("tteffAnalysis-hltpftautight-hpspftau.root");                               
 process.TTEffAnalysisHLTPFTauTightHPS.l25JetSource = cms.InputTag("hltPFTauTagInfo")                                                          
-process.TTEffAnalysisHLTPFTauTightHPS.l25PtCutSource = cms.InputTag("hltPFTausTightCone")                                                     
+process.TTEffAnalysisHLTPFTauTightHPS.l25PtCutSource = cms.InputTag("hltPFTausTightIso")                                                     
 process.TTEffAnalysisHLTPFTauTightHPS.HLTPFTau = cms.bool(True)
 
 process.TTEffAnalysisHLTPFTauHPS = process.TTEffAnalysisHLTCaloTauHPS.clone()
@@ -234,7 +235,7 @@ process.runTTEffAna += process.TTEffAnalysisHLTPFTauHPS
 #)
 #process.outpath = cms.EndPath(process.o1)
 
-process.HLTPFTauSequence+= process.hltPFTausTightCone
+process.HLTPFTauSequence+= process.hltPFTausTightIso
 process.schedule = cms.Schedule(process.DoHLTJets,
 #				process.DoHltMuon,
 				process.DoHLTPhoton,
