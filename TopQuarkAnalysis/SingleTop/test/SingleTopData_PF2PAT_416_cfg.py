@@ -31,7 +31,7 @@ process.load("Configuration.StandardSequences.Geometry_cff")
 process.load("Configuration.StandardSequences.FrontierConditions_GlobalTag_cff")
 process.load("Configuration.StandardSequences.MagneticField_AutoFromDBCurrent_cff") ### real data
 
-process.GlobalTag.globaltag = cms.string('START42_V12::All')
+process.GlobalTag.globaltag = cms.string('GR_R_41_V0::All')
 
 #from Configuration.PyReleaseValidation.autoCond import autoCond
 #process.GlobalTag.globaltag = autoCond['startup']
@@ -111,13 +111,19 @@ applyPostfix(process,"isoValElectronWithPhotons",postfix).deposits[0].deltaR = c
 applyPostfix(process,"pfIsolatedMuons",postfix).combinedIsolationCut = cms.double(0.2)
 applyPostfix(process,"pfIsolatedElectrons",postfix).combinedIsolationCut = cms.double(0.2)
 
+
+
 # Add the PV selector and KT6 producer to the sequence
 getattr(process,"patPF2PATSequence"+postfix).replace(
     getattr(process,"pfNoElectron"+postfix),
     getattr(process,"pfNoElectron"+postfix)*process.kt6PFJets )
 
+process.load("RecoVertex.PrimaryVertexProducer.OfflinePrimaryVertices_cfi")
+process.load("RecoVertex.PrimaryVertexProducer.OfflinePrimaryVerticesWithBS_cfi")
+
 process.pathPreselection = cms.Path(
-#    process.patElectronIDs +
+    process.offlinePrimaryVertices +
+    process.offlinePrimaryVerticesWithBS +
     process.goodOfflinePrimaryVertices *
     process.patElectronIDs *
     getattr(process,"patPF2PATSequence"+postfix)
@@ -133,7 +139,8 @@ process.pathPreselection = cms.Path(
 process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(-1) )
 process.source = cms.Source ("PoolSource",
                              fileNames = cms.untracked.vstring (
-'file:/tmp/oiorio/401AE9B7-F8A1-E011-93CB-003048F1C832.root',
+'file:/tmp/oiorio/FAAFC2CB-4077-E011-879F-003048F1BF66.root'
+#'file:/tmp/oiorio/401AE9B7-F8A1-E011-93CB-003048F1C832.root',
 #'file:/tmp/oiorio/F81B1889-AF4B-DF11-85D3-001A64789DF4.root'
 #'file:/tmp/oiorio/EC0EE286-FA55-E011-B99B-003048F024F6.root'
 #'file:/tmp/oiorio/D0B32FD9-6D87-E011-8572-003048678098.root'

@@ -127,8 +127,12 @@ getattr(process,"patPF2PATSequence"+postfix).replace(
     getattr(process,"pfNoElectron"+postfix),
     getattr(process,"pfNoElectron"+postfix)*process.kt6PFJets )
 
+process.load("RecoVertex.PrimaryVertexProducer.OfflinePrimaryVertices_cfi")
+process.load("RecoVertex.PrimaryVertexProducer.OfflinePrimaryVerticesWithBS_cfi")
+
 process.pathPreselection = cms.Path(
-#    process.patElectronIDs +
+    process.offlinePrimaryVertices +
+    process.offlinePrimaryVerticesWithBS +
     process.goodOfflinePrimaryVertices *
     process.patElectronIDs *
     getattr(process,"patPF2PATSequence"+postfix)
