@@ -1,7 +1,7 @@
 // Class:      L25and3TauEfficiencyAnalyzer
 // Original Author:  Eduardo Luiggi, modified by Sho Maruyama
 //         Created:  Fri Apr  4 16:37:44 CDT 2008
-// $Id: L25and3TauEfficiencyAnalyzer.cc,v 1.12 2011/06/01 21:51:42 slehti Exp $
+// $Id: L25and3TauEfficiencyAnalyzer.cc,v 1.13 2011/06/21 08:14:35 slehti Exp $
 #include "ElectroWeakAnalysis/TauTriggerEfficiency/interface/L25and3TauEfficiencyAnalyzer.h"
 #include "FWCore/MessageLogger/interface/MessageLogger.h"
 #include "DataFormats/VertexReco/interface/Vertex.h"
@@ -53,7 +53,8 @@ void L25and3TauEfficiencyAnalyzer::Setup(const edm::ParameterSet& iConfig,TTree*
   l25tree->Branch("l25IsoTrkPt",&l25IsoTrkPt,"l25IsoTrkPt/F");
   l25tree->Branch("l25TrkIsoPtSum",&l25TrkIsoPtSum,"l25TrkIsoPtSum/F");
   l25tree->Branch("l25EcalIsoEtSum",&l25EcalIsoEtSum,"l25EcalIsoEtSum/F");
-  l25tree->Branch("l25NTrksIso",&l25NTrksIso,"l25NTrksIso/F");
+  l25tree->Branch("l25NTrksIso",&l25NTrksIso,"l25NTrksIso/I");
+  l25tree->Branch("l25NGammaIso",&l25NGammaIso,"l25NGammaIso/I"); 
   NMatchedToL2 = 0;
   NJetsWithTracks = 0;
 }
@@ -91,6 +92,7 @@ void L25and3TauEfficiencyAnalyzer::fill(const edm::Event& iEvent, const LorentzV
   l25IsoPtSum = 0;
   l25EcalIsoEtSum = 0;
   l25NTrksIso = 0;
+  l25NGammaIso = 0;
   matchedToL2Jet = false;
   foundTracksInJet = false;
   matchedToHLTPFTau = false;
@@ -174,6 +176,7 @@ void L25and3TauEfficiencyAnalyzer::fill(const edm::Event& iEvent, const LorentzV
         l25IsoPtSum = theMatchedHLTPFtau.isolationPFChargedHadrCandsPtSum();
         l25EcalIsoEtSum = theMatchedHLTPFtau.isolationPFGammaCandsEtSum();
 	l25NTrksIso = theMatchedHLTPFtau.isolationPFChargedHadrCands().size();
+        l25NGammaIso = theMatchedHLTPFtau.isolationPFGammaCands().size();
       }
       
       else{
