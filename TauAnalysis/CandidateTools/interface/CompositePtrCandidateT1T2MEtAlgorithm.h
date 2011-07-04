@@ -429,10 +429,10 @@ class CompositePtrCandidateT1T2MEtAlgorithm
   {
     double px = leg1.px() + leg2.px() + metPx;
     double py = leg1.py() + leg2.py() + metPy;
-    double et = leg1.Et() + leg2.Et() + TMath::Sqrt(metPx*metPx + metPy*metPy);
+    double et = TMath::Max(leg1.Et(), leg1.pt()) + TMath::Max(leg2.Et(), leg2.pt()) + TMath::Sqrt(metPx*metPx + metPy*metPy);
     double mt2 = et*et - (px*px + py*py);
     if ( mt2 < 0 ) {
-      edm::LogWarning ("compMt") << " mt2 = " << mt2 << " must not be negative !!";
+      edm::LogWarning ("compMt(3-body)") << " mt2 = " << mt2 << " must not be negative !!";
       return 0.;
     }
     return TMath::Sqrt(mt2);
@@ -442,10 +442,10 @@ class CompositePtrCandidateT1T2MEtAlgorithm
   {
     double px = visParticle.px() + metPx;
     double py = visParticle.py() + metPy;
-    double et = visParticle.Et() + TMath::Sqrt(metPx*metPx + metPy*metPy);
+    double et = TMath::Max(visParticle.Et(), visParticle.pt()) + TMath::Sqrt(metPx*metPx + metPy*metPy);
     double mt2 = et*et - (px*px + py*py);
     if ( mt2 < 0 ) {
-      edm::LogWarning ("compMt") << " mt2 = " << mt2 << " must not be negative !!";
+      edm::LogWarning ("compMt(2-body)") << " mt2 = " << mt2 << " must not be negative !!";
       return 0.;
     }
     return TMath::Sqrt(mt2);
