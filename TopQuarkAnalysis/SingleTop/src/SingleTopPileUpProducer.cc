@@ -2,7 +2,7 @@
  *\Author: A. Orso M. Iorio 
  *
  *
- *\version  $Id: SingleTopPileUpProducer.cc,v 1.1 2011/03/24 15:58:07 oiorio Exp $ 
+ *\version  $Id: SingleTopPileUpProducer.cc,v 1.1 2011/07/04 00:56:22 oiorio Exp $ 
  */
 
 // Single Top producer: produces a top candidate made out of a Lepton, a B jet and a MET
@@ -33,22 +33,22 @@ SingleTopPileUpProducer::SingleTopPileUpProducer(const edm::ParameterSet& iConfi
 
 void SingleTopPileUpProducer::produce(edm::Event & iEvent, const edm::EventSetup & iEventSetup){
   
-  edm::Handle<std::vector< PileupSummaryInfo > >  PupInfo;
+  edm::Handle< PileupSummaryInfo >  PupInfo;
   iEvent.getByLabel(edm::InputTag("addPileupInfo"), PupInfo); 
   
-  std::vector<PileupSummaryInfo>::const_iterator PVI;
+  //std::vector<PileupSummaryInfo>::const_iterator PVI;
   
-  int npv = -1;
-  for(PVI = PupInfo->begin(); PVI != PupInfo->end(); ++PVI) {
+    int npv = -1;
+    // for(PVI = PupInfo->begin(); PVI != PupInfo->end(); ++PVI) {
     
-    int BX = PVI->getBunchCrossing();
+    //    int BX = PVI->getBunchCrossing();
     
-    if(BX == 0) { 
-      npv = PVI->getPU_NumInteractions();
-      continue;
-    }
-  }
-  
+    //    if(BX == 0) { 
+      npv = PupInfo->getPU_NumInteractions();
+      //  continue;
+      // }
+      // }
+
   std::auto_ptr< int > n(new int( npv) );
   iEvent.put(n,"PileUpSync");
 }

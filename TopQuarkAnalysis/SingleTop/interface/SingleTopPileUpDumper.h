@@ -6,7 +6,7 @@
  * \Authors A. Orso M. Iorio
  * 
  * Produces systematics histograms out of a standard Single Top n-tuple 
- * \ version $Id: SingleTopPileUpDumper.h,v 1.7 2011/06/30 15:45:40 oiorio Exp $
+ * \ version $Id: SingleTopPileUpDumper.h,v 1.1 2011/07/03 20:01:52 oiorio Exp $
  */
 
 
@@ -100,7 +100,7 @@ class SingleTopPileUpDumper : public edm::EDAnalyzer {
   // Handles
 
   edm::InputTag pileUpInfo_;
-  edm::Handle<std::vector< PileupSummaryInfo > >  pileUpInfo;
+  edm::Handle< PileupSummaryInfo >  pileUpInfo;
   string channel;
   TH1F *hPileUp;  
  
