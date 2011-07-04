@@ -25,11 +25,11 @@ process.GlobalTag.globaltag = autoCond['startup']
 
 
 process.skimwall = cms.OutputModule("PoolOutputModule",
-                                    fileName = cms.untracked.string('TChannelMerged.root'),
+                                    fileName = cms.untracked.string('TChannelSpring11Small.root'),
                                     outputCommands = cms.untracked.vstring(    'keep *',   )
 )
 #process.source.fileNames = TChannel_ntuple
-process.skimwall.fileName = "/tmp/oiorio/TChannelMerged.root"
+#process.skimwall.fileName = "/tmp/oiorio/TChannelMerged.root"
 #process.skimwall.fileName = "/castor/cern.ch/user/o/oiorio/SingleTop/2011/MC2011/NewNtuples/Merged/TChannelMerged.root"
 
 #Save the skims

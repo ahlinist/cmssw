@@ -83,7 +83,7 @@ basePathData = cms.Sequence(
    zVetoElectrons +
    topJetsPF +
    UnclusteredMETPF +
-   NVertices +
+#   NVertices +
    tightMuons +
    tightElectrons 
 #  SingleTopMCProducer +

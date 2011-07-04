@@ -34,7 +34,6 @@ PVFilterProducer = cms.EDFilter(
     filter = cms.bool(False)
     )
 
-
 ######### Part of selection: Particle counting ##########
 countElectrons = cms.EDFilter("PATCandViewCountFilter",
                               src = cms.InputTag("tightElectrons"),

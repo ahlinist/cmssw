@@ -15,6 +15,21 @@
   <use   name="PhysicsTools/CandUtils"/>
   <use   name="DataFormats/PatCandidates"/>
 </bin>
+<bin   name="Subtractor" file="Subtractor.cpp">
+  <use   name="FWCore/Framework"/>
+  <use   name="FWCore/Utilities"/>
+  <use   name="FWCore/FWLite"/>
+  <use   name="DataFormats/FWLite"/>
+  <use   name="DataFormats/Common"/>
+  <use   name="FWCore/ParameterSet"/>
+  <use   name="root"/>
+  <use   name="rootrflx"/>
+  <use   name="hepmc"/>
+  <use   name="PhysicsTools/UtilAlgos"/>
+  <use   name="CommonTools/UtilAlgos"/>
+  <use   name="PhysicsTools/CandUtils"/>
+  <use   name="DataFormats/PatCandidates"/>
+</bin>
 <bin   name="fitsPlots2DMassDataDriven" file="fitsPlots2DMassDataDriven.cpp">
   <use   name="FWCore/Framework"/>
   <use   name="FWCore/Utilities"/>
