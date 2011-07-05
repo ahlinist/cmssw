@@ -10,7 +10,7 @@ import subprocess
 channel = 'ZtoMuTau_tauIdEff'
 configFile = 'skimTauIdEffSample_cfg.py'
 #jobId = getJobId(channel)
-jobId = '2011Jul04'
+jobId = '2011Jul04v2'
 
 #outputFilePath = '/castor/cern.ch/user/m/mverzett/tagprobe/skims/TauIdEffMeas_2011May13/'
 outputFilePath = '/castor/cern.ch/user/v/veelken/CMSSW_4_2_x/skims/TauIdEffMeas/'
