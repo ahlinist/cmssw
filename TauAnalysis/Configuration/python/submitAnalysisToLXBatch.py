@@ -21,7 +21,8 @@ def submitAnalysisToLXBatch(configFile = None, channel = None, samples = None,
                             enableFakeRates = False,
                             processName = None,
                             changeTauId = None,
-                            saveFinalEvents = False):
+                            saveFinalEvents = False,
+                            jobExtention = ''):
 
     """
     Submit analysis job (event selection, filling of histogram)
@@ -188,7 +189,7 @@ def submitAnalysisToLXBatch(configFile = None, channel = None, samples = None,
 
                 bsub_script_file = os.path.join(
                     script_directory, "_".join([
-                        'analyze', sample, 'job',
+                        'analyze'+jobExtention, sample, 'job',
                         str(job), input_file_hash]) + '.sh')
                 with open(bsub_script_file, 'w') as bsub_script:
                     bsub_script.write(script)
