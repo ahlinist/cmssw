@@ -12,28 +12,29 @@ SAMPLES_TO_ANALYZE = [
 	'Wenu',
 	'Wmunu',
 	'Ztautau',
-	'QCD'
+##	'QCD'
 	]
 
 SAMPLES_TO_PLOT = [
 	'data',
 	'Wmunu',
 	'Wenu',
-	'Ztautau',
-	'QCD',
+#	'Ztautau',
+#	'QCD',
         'Wtaunu'
 ]
 
 SAMPLES_TO_PRINT = copy.copy(SAMPLES_TO_PLOT)
-#SAMPLES_TO_PRINT.append('bgSum')
+#SAMPLES_TO_PRINT.append('smSum')
+#SAMPLES_TO_PRINT.append('ewkSum')
 
 SAMPLE_DEFAULTS = {
 #    'dbs_url' : "http://cmsdbsprod.cern.ch/cms_dbs_ph_analysis_02/servlet/DBSServlet",
     'dbs_url' : "http://cmsdbsprod.cern.ch/cms_dbs_prod_global/servlet/DBSServlet",
-    'conditions' : 'START38_V14::All',
+    'conditions' : 'START39_V8::All',
     'genPhaseSpaceCut' : '',
     'factorize' : False,
-    'enableSysUncertainties' : False,
+    'enableSysUncertainties' : True,
     'lumi_mask' : '',
     'runselection' : '',
     'hlt_paths' :  [ 'HLT_SingleIsoTau20_Trk15_MET25_v3','HLT_SingleIsoTau20_Trk15_MET25_v4' ],
@@ -134,17 +135,29 @@ RECO_SAMPLES = {
 
 #Define samples that get merged together
 MERGE_SAMPLES = {
-	'bgSum' : {
+	'ewkSum' : {
 		'samples' : [
 			'Wenu',
-			'Wmunu'
-			'Ztautau',
-			'QCD'
+			'Wmunu',
+			'Ztautau'
+			'Wtaunu'
 			],
-		'legendEntry' : 'sum-Bg',
+		'legendEntry' : 'ewk-Bg',
 		'type' : 'smMC',
-		'drawIption' : styles.drawOption_QCD
-		}
+		'drawOption' : styles.drawOption_Wtaunu
+		},
+	'smSum' : {
+	        'samples' : [
+	              'Wtaunu',
+	              'Wenu',
+		      'Wmunu',
+		      'Ztautau',
+		      'QCD'
+	        ],
+		'legendEntry' : 'SM',
+		'type' : 'smSumMC',
+		'drawOption' : styles.drawOption_QCD
+	}
 }
 
 #List of all subsamples used in any plot job.
@@ -168,14 +181,14 @@ for sample in RECO_SAMPLES.keys():
         ALL_SAMPLES.update(MERGE_SAMPLES)
         ALL_SAMPLES.update(RECO_SAMPLES)
         
-        recoSampleDefinitionsWtoTauNu_grid = {
-            'SAMPLES_TO_ANALYZE' : SAMPLES_TO_ANALYZE,
-	    'SAMPLES_TO_PLOT' : SAMPLES_TO_PLOT,
-	    'SAMPLES_TO_PRINT' : SAMPLES_TO_PRINT,
-	    'SAMPLE_DEFAULTS' : SAMPLE_DEFAULTS,
-            'TARGET_LUMI' : TARGET_LUMI,
-            'RECO_SAMPLES' : RECO_SAMPLES,
-	    'MERGE_SAMPLES' : MERGE_SAMPLES,
-	    'FLATTENED_SAMPLES_TO_PLOT' : FLATTENED_SAMPLES_TO_PLOT,
-            'ALL_SAMPLES' : ALL_SAMPLES
-            }
+recoSampleDefinitionsWtoTauNu_grid = {
+	'SAMPLES_TO_ANALYZE' : SAMPLES_TO_ANALYZE,
+	'SAMPLES_TO_PLOT' : SAMPLES_TO_PLOT,
+	'SAMPLES_TO_PRINT' : SAMPLES_TO_PRINT,
+	'SAMPLE_DEFAULTS' : SAMPLE_DEFAULTS,
+	'TARGET_LUMI' : TARGET_LUMI,
+	'RECO_SAMPLES' : RECO_SAMPLES,
+	'MERGE_SAMPLES' : MERGE_SAMPLES,
+	'FLATTENED_SAMPLES_TO_PLOT' : FLATTENED_SAMPLES_TO_PLOT,
+	'ALL_SAMPLES' : ALL_SAMPLES
+	}
