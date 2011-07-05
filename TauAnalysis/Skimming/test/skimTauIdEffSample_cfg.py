@@ -226,8 +226,38 @@ for patPFTauSelectorForTauIdEff in patPFTauSelectorsForTauIdEff:
     patPFTauSelectorModule.pfIsolation.neutralHadronIso.dRisoCone = cms.double(0.)
     patPFTauSelectorModule.pfIsolation.photonIso.dRisoCone = cms.double(0.4)
     
+#--------------------------------------------------------------------------------
+
 #--------------------------------------------------------------------------------  
- 
+#
+# CV: keep Z --> tau+ tau- --> muon + tau-jet events
+#     passing Pt and eta cuts on generator level
+#    (for studying preselection efficiencies)
+#
+process.load('TauAnalysis.GenSimTools.gen_decaysFromZs_cfi')
+
+process.genMuonWithinAccFilter = cms.EDFilter("PATCandViewCountFilter",
+    src = cms.InputTag('genMuonsFromZtautauDecaysWithinAcceptance'),
+    minNumber = cms.uint32(1),
+    maxNumber = cms.uint32(1000)
+)
+
+process.genHadTauWithinAccFilter = cms.EDFilter("PATCandViewCountFilter",
+    src = cms.InputTag('genHadronsFromZtautauDecaysWithinAcceptance'),
+    minNumber = cms.uint32(1),
+    maxNumber = cms.uint32(1000)
+)
+
+process.genZtoMuTauWithinAccSkimPath = cms.Path(
+    process.produceGenDecayProductsFromZs
+   + process.genMuonWithinAccFilter + process.genHadTauWithinAccFilter
+)
+
+extSkimPaths = process.skimOutputModule.SelectEvents.SelectEvents.value()
+extSkimPaths.append('genZtoMuTauWithinAccSkimPath')
+process.skimOutputModule.SelectEvents.SelectEvents = cms.vstring(extSkimPaths)
+#-------------------------------------------------------------------------------- 
+
 # define order in which different paths are run
 process.schedule = cms.Schedule(
     process.counterPath,
@@ -236,6 +266,8 @@ process.schedule = cms.Schedule(
     process.muonPFTauShrinkingConeSkimPath,
     process.muonPFTauHPSskimPath,
     process.muonPFTauHPSpTaNCskimPath,
+    process.muonPFTauHPSpTaNCskimPath,
+    process.genZtoMuTauWithinAccSkimPath,
     process.o
 )
 
