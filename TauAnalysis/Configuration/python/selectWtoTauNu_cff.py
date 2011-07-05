@@ -213,8 +213,7 @@ isRecWtoTauNu = cms.EDProducer("BoolEventSelFlagProducer",
                                pluginName = cms.string('isRecWtoTauNu'),
                                pluginType = cms.string('MultiBoolEventSelFlagSelector'),
                                flags = cms.VInputTag(
-    cms.InputTag('Trigger'),
-#    cms.InputTag('PseudoTrigger'),
+    cms.InputTag('PseudoTrigger'),
     cms.InputTag('primaryEventVertex'),
     cms.InputTag('primaryEventVertexQuality'),
     cms.InputTag('primaryEventVertexPosition'),
@@ -223,7 +222,8 @@ isRecWtoTauNu = cms.EDProducer("BoolEventSelFlagProducer",
     cms.InputTag('muonVeto'),
     cms.InputTag('electronVeto'),
     cms.InputTag('PFmetPtCut'),
-    cms.InputTag('htRatio')
+    cms.InputTag('htRatio'),
+    cms.InputTag('Trigger')
 #    cms.InputTag('metTopologyCut')
     )
                                )
