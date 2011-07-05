@@ -57,9 +57,9 @@ dqmDirectories_processes = {
     }
 
 dqmDirectory_analysis = 'wTauNuAnalyzer/afterEvtSelHtRatio_beforeEvtSelMetTopology/'
-#dqmDirectory_analysis = 'wTauNuAnalyzer/afterEvtSelPFMetPt_beforeEvtSelHtRatio/'
 
 dqmDirectories_control = {
+    'MCTemplates'  : dqmDirectory_analysis,
     'QCDEnriched'  : 'BgEstTemplateAnalyzer_QCDEnriched/afterSingleTauCutBgEstQCDEnriched/'
 }
 
@@ -84,16 +84,16 @@ xAxes = {
     'metTopology' : 'unlabeled'
 }
 
-
 rebinning_control = {
+    'MCTemplates' : {
+#        'Mt'          : 3,
+#        'MtSVfit'     : 3,
+        'metTopology' : 6
+    },
     'QCDEnriched' : {
-        'Mt'          : 1,
-        'MtSVfit'     : 1,
-        'pfMEt'       : 1,
-        'tauPt'       : 1,
-        'tauEta'      : 1,
-        'htRatio'     : 1,
-        'metTopology' : 1
+#        'Mt'          : 3,
+ #       'MtSVfit'     : 3,
+        'metTopology' : 6
         }
     }
 
@@ -125,6 +125,8 @@ for processName in dqmDirectories_processes.keys():
     for selectionName in dqmDirectories_control.keys():
         meNameMapping[processName][selectionName] = {}
         for selectionType in [ "analysis", "template" ]:
+            if selectionName == 'MCTemplates' and selectionType != 'analysis' :
+                continue
             meNameMapping[processName][selectionName][selectionType] = {}
             for distName in meNames.keys(): 
                 # check if histogram exists;
@@ -162,7 +164,7 @@ print(meNameMapping)
 process.loadTemplateHistWtoTauNu = cms.EDAnalyzer("DQMFileLoader",
                                                   templateHist = cms.PSet(
     inputFileNames = cms.vstring(
-    '/afs/cern.ch/user/l/liis/bgEst_2010_ht045/plotsWtoTauNu_bgEstTemplate_all.root'
+    '/afs/cern.ch/user/l/liis/bgEst_2010_ht065_MET35/plotsWtoTauNu_bgEstTemplate_all.root'
     ),
     scaleFactor = cms.double(1.),
     dqmDirectory_store = cms.string('/template')
@@ -444,20 +446,10 @@ process.saveBgEstTemplateHistWtoTauNu = cms.EDAnalyzer("DQMSimpleFileSaver",
          'bgEstTemplateHistWtoTauNu.root'
     ),
     outputCommands = cms.vstring(
-#        'drop *',
-#        'keep /analysis/harvested/*/zMuTauAnalyzerOS/afterEvtSelDiTauCandidateForMuTauZeroCharge/*',
-#        'keep /analysis/harvested/ZtoMuTau_from_ZmumuEmbedding/*',                                      
-#        'keep /template/harvested/ZtautauSum/*',
-#        'keep /template/harvested/Ztautau_from_ZmumuEmbedding/*',
-#        'keep /template/harvested/Zmumu/*',
-#        'keep /template/harvested/Zmumu_powheg/*',
-#        'keep /template/harvested/qcdSum/*',
-#        'keep /template/harvested/WplusJets_madgraph/*',
-#        'keep /template/harvested/WplusJetsSum/*',
-#        'keep /template/harvested/TTplusJets/*',
-#        'keep /template/harvested/TTplusJets_madgraph/*',
-#        'keep /template/harvested/VVsum/*',
-#        'keep /template/harvested/data/*'
+        'drop *',
+        'keep /template/harvested/*/BgEstTemplateAnalyzer_QCDEnriched/afterSingleTauCutBgEstQCDEnriched/MEtTopologyQuantities',
+        'keep /analysis/harvested/*/wTauNuAnalyzer/afterEvtSelHtRatio_beforeEvtSelMetTopology/MEtTopologyQuantities/*'
+        
     )
 )
 
@@ -468,13 +460,13 @@ process.p = cms.Path(
     +process.loadAnalysisHistWtoTauNu
     +process.rebinHistWtoTauNu
     +process.normalizeHistWtoTauNu
-    +process.integrateHistWtoTauNu
+#    +process.integrateHistWtoTauNu
 #    +process.compKolmogorovProbWtoTauNu    
 ##    +process.dumpDQMStore
-    +process.plotTemplateHistWtoTauNu
+#    +process.plotTemplateHistWtoTauNu
 #    +process.plotTemplateHistWtoTauNuIntegrated
-    +process.plotAnalysisHistWtoTauNuData
-    +process.plotAnalysisHistWtoTauNuMC
-    +process.plotAnalysisHistWtoTauNuStacked
+#    +process.plotAnalysisHistWtoTauNuData
+#    +process.plotAnalysisHistWtoTauNuMC
+#    +process.plotAnalysisHistWtoTauNuStacked
     +process.saveBgEstTemplateHistWtoTauNu
     )
