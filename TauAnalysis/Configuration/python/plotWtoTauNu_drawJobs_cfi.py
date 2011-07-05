@@ -78,99 +78,135 @@ drawJobConfigurator_WtoTauNu.add(
        )    
     )
 
+drawJobConfigurator_WtoTauNu.add(
+    afterCut = evtSelHtRatio,
+#    beforeCut = evtSelMetTopology,
+    plots = [
+    drawJobConfigEntry(
+    meName = 'TauQuantities/TauMatchingGenParticlePdgId',
+                title = "Matching gen-particle Pdg-Id (after HT-ratio)",
+                xAxis = 'unlabeled',
+                name = "cutFlowControlPlots_jetPt_afterHtRatio"
+    ),
+    drawJobConfigEntry(
+    meName = 'MEtTopologyQuantities/Vratio',
+               title = "MET topology (after HT-ratio)",
+               xAxis = 'prob',
+               name = "cutFlowControlPlots_METtopology_afterHtRatio"
+    ),
+            drawJobConfigEntry(
+               meName = 'HtRatioQuantities/Ratio',
+                          title = "HT-ratio (after Ht-ratio)",
+                          xAxis = 'prob',
+                          name = "cutFlowControlPlots_HtRatio_afterHtRatio"
+                          ),
+            drawJobConfigEntry(
+                meName = 'TauNuCandidateQuantities/NuTauCandidateMt',
+                            title = "m_{T} (tau + nu) (after HT-ratio)",
+                            xAxis = 'Mt',
+                            name = "cutFlowControlPlots_NuTauCandidateMt_afterHtRatio"
+                            ),
+    drawJobConfigEntry(
+                meName = 'TauNuCandidateQuantities/NuTauCandidateMtSVfit',
+                            title = "m_{T} (tau + nu) SV-fit (after HT-ratio)",
+                            xAxis = 'Mt',
+                            name = "cutFlowControlPlots_NuTauCandidateMtSVfit_afterHtRatio"
+                            ) 
+    ]
+    )
 #--------------------------------------------------------------------------------
 # define distributions to be plotted
 # for events passing all event selection criteria
 #--------------------------------------------------------------------------------
-drawJobConfigurator_WtoTauNu.add(
-    afterCut = evtSelMetTopology,
-    plots =  [
-        drawJobConfigEntry(
-            meName = 'TauQuantities/TauMatchingGenParticlePdgId',
-            title = "Matching gen-particle Pdg-Id (after MET-topology)",
-            xAxis = 'unlabeled',
-            name = "cutFlowControlPlots_jetPt_afterMetTopology"
-            ), 
-        drawJobConfigEntry(
-            meName = 'TauQuantities/Tau#PAR#',
-            PAR = [ 'Pt', 'Eta', 'Phi' ],
-            title = "Tau (after MET-topology)",
-            xAxis = '#PAR#',
-            name = "cutFlowControlPlots_tau_afterMetTopology"
-            ),
-        drawJobConfigEntry(
-            meName = 'TauQuantities/TauNumTracksSignalCone',
-            title = "Tau prong (after MET-topology)",
-            xAxis = 'unlabeled',
-            name = "cutFlowControlPlots_tauNumTracksSignalCone_afterMetTopology"
-            ),
-        drawJobConfigEntry(
-            meName = 'TauQuantities/TauLeadTrkPt',
-            title = "Tau lead. Track (after MET-topology)",
-            xAxis = 'Pt',
-            name = "cutFlowControlPlots_tauLeadTrkPt_afterMetTopology"
-            ),
-        drawJobConfigEntry(
-            meName = 'PFMEtQuantities/MEtPt',
-            title = "PF-MET (after MET-topology)",
-            xAxis = 'Pt',
-            name = "cutFlowControlPlots_PFMET_afterMetTopology"
-            ),           
-        drawJobConfigEntry(
-            meName = 'TauRecoilEnergyFromCaloTowersQuantities/EtSum',
-            title = "Recoil energy from Calo Towers (after MET-topology)",
-            xAxis = 'Pt',
-            name = "cutFlowControlPlots_recoilEnergyFromCaloTowers_afterMetTopology"
-            ),
-        drawJobConfigEntry(
-            meName = 'MEtTopologyQuantities/Vratio',
-            title = "MET topology (after MET-topology)",
-            xAxis = 'prob',
-            name = "cutFlowControlPlots_METtopology_afterMetTopology"
-            ),
-        drawJobConfigEntry(
-           meName = 'HtRatioQuantities/Ratio',
-           title = "HT-ratio (after MET-topology)",
-           xAxis = 'prob',
-           name = "cutFlowControlPlots_HtRatio_afterMetTopology"
-           ),
-        drawJobConfigEntry(
-            meName = 'TauNuCandidateQuantities/NuTauCandidateMt',
-            title = "m_{T} (tau + nu) (after MET-topology)",
-            xAxis = 'Mt',
-            name = "cutFlowControlPlots_NuTauCandidateMt_afterMetTopology"
-            ),
-        drawJobConfigEntry(
-            meName = 'TauNuCandidateQuantities/NuTauCandidateMtSVfit',
-            title = "m_{T} (tau + nu) SV-fit (after MET-topology)",
-            xAxis = 'Mt',
-            name = "cutFlowControlPlots_NuTauCandidateMtSVfit_afterMetTopology"
-            ),
-        drawJobConfigEntry(
-            meName = 'TauNuCandidateQuantities/NuTauCandidateDPhi',
-            title = "#Delta #Phi (after MET-topology)",
-            xAxis = 'Phi',
-            name = "cutFlowControlPlots_NuTauCandidateDPhi_afterMetTopology"
-            ),
-        drawJobConfigEntry(
-            meName = 'TauQuantities/TauLeadTrkNumPixelHits',
-            title = "Tau lead. Track num. pixel hits (after MET-topology)",
-            xAxis = 'unlabeled',
-            name = "cutFlowControlPlots_tauLeadTrkNumPixelHits_afterMetTopology"
-            ),
-    drawJobConfigEntry(
-            meName = 'TauQuantities/TauLeadTrkNumStripHits',
-            title = "Tau lead. Track num. strip hits (after MET-topology)",
-            xAxis = 'unlabeled',
-            name = "cutFlowControlPlots_tauLeadTrkNumStripHits_afterMetTopology"
-            ),
-    drawJobConfigEntry(
-            meName = 'TauQuantities/TauEmFraction',
-            title = "EM-fraction (after MET-topology)",
-            xAxis = 'prob',
-            name = "cutFlowControlPlots_tauEmFraction_afterMetTopology"     
-            )
+#drawJobConfigurator_WtoTauNu.add(
+#    afterCut = evtSelMetTopology,
+#    plots =  [
+#        drawJobConfigEntry(
+#            meName = 'TauQuantities/TauMatchingGenParticlePdgId',
+#            title = "Matching gen-particle Pdg-Id (after MET-topology)",
+#            xAxis = 'unlabeled',
+#            name = "cutFlowControlPlots_jetPt_afterMetTopology"
+#            ), 
+#        drawJobConfigEntry(
+#            meName = 'TauQuantities/Tau#PAR#',
+#            PAR = [ 'Pt', 'Eta', 'Phi' ],
+#            title = "Tau (after MET-topology)",
+#            xAxis = '#PAR#',
+#            name = "cutFlowControlPlots_tau_afterMetTopology"
+#            ),
+#        drawJobConfigEntry(
+#            meName = 'TauQuantities/TauNumTracksSignalCone',
+#            title = "Tau prong (after MET-topology)",
+#            xAxis = 'unlabeled',
+#            name = "cutFlowControlPlots_tauNumTracksSignalCone_afterMetTopology"
+#            ),
+#        drawJobConfigEntry(
+#            meName = 'TauQuantities/TauLeadTrkPt',
+#            title = "Tau lead. Track (after MET-topology)",
+#            xAxis = 'Pt',
+#            name = "cutFlowControlPlots_tauLeadTrkPt_afterMetTopology"
+#            ),
+ #       drawJobConfigEntry(
+#            meName = 'PFMEtQuantities/MEtPt',
+#            title = "PF-MET (after MET-topology)",
+ #           xAxis = 'Pt',
+#            name = "cutFlowControlPlots_PFMET_afterMetTopology"
+#            ),           
+#        drawJobConfigEntry(
+#            meName = 'TauRecoilEnergyFromCaloTowersQuantities/EtSum',
+#            title = "Recoil energy from Calo Towers (after MET-topology)",
+#            xAxis = 'Pt',
+#            name = "cutFlowControlPlots_recoilEnergyFromCaloTowers_afterMetTopology"
+#            ),
+#        drawJobConfigEntry(
+#            meName = 'MEtTopologyQuantities/Vratio',
+#            title = "MET topology (after MET-topology)",
+#            xAxis = 'prob',
+#            name = "cutFlowControlPlots_METtopology_afterMetTopology"
+#            ),
+#        drawJobConfigEntry(
+#           meName = 'HtRatioQuantities/Ratio',
+#           title = "HT-ratio (after MET-topology)",
+#           xAxis = 'prob',
+#           name = "cutFlowControlPlots_HtRatio_afterMetTopology"
+#           ),
+#        drawJobConfigEntry(
+#            meName = 'TauNuCandidateQuantities/NuTauCandidateMt',
+#            title = "m_{T} (tau + nu) (after MET-topology)",
+#            xAxis = 'Mt',
+#            name = "cutFlowControlPlots_NuTauCandidateMt_afterMetTopology"
+#            ),
+#        drawJobConfigEntry(
+#            meName = 'TauNuCandidateQuantities/NuTauCandidateMtSVfit',
+#            title = "m_{T} (tau + nu) SV-fit (after MET-topology)",
+#            xAxis = 'Mt',
+#            name = "cutFlowControlPlots_NuTauCandidateMtSVfit_afterMetTopology"
+#            ),
+#        drawJobConfigEntry(
+#            meName = 'TauNuCandidateQuantities/NuTauCandidateDPhi',
+#            title = "#Delta #Phi (after MET-topology)",
+#            xAxis = 'Phi',
+#            name = "cutFlowControlPlots_NuTauCandidateDPhi_afterMetTopology"
+#            ),
+#        drawJobConfigEntry(
+#            meName = 'TauQuantities/TauLeadTrkNumPixelHits',
+#            title = "Tau lead. Track num. pixel hits (after MET-topology)",
+#            xAxis = 'unlabeled',
+#            name = "cutFlowControlPlots_tauLeadTrkNumPixelHits_afterMetTopology"
+#            ),
+#    drawJobConfigEntry(
+#            meName = 'TauQuantities/TauLeadTrkNumStripHits',
+#            title = "Tau lead. Track num. strip hits (after MET-topology)",
+#            xAxis = 'unlabeled',
+#            name = "cutFlowControlPlots_tauLeadTrkNumStripHits_afterMetTopology"
+#            ),
+#    drawJobConfigEntry(
+#            meName = 'TauQuantities/TauEmFraction',
+#            title = "EM-fraction (after MET-topology)",
+#            xAxis = 'prob',
+#            name = "cutFlowControlPlots_tauEmFraction_afterMetTopology"     
+#            )
     
-        ]    
-    )
+ #       ]    
+ #   )
 
