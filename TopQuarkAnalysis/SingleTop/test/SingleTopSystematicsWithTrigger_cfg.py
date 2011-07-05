@@ -47,7 +47,7 @@ process.source.fileNames = cms.untracked.vstring("file:/tmp/oiorio/TChannelMerge
 
 #Output
 
-process.TFileService = cms.Service("TFileService", fileName = cms.string("/tmp/oiorio/TChannel_pt_bmode.root"))
+process.TFileService = cms.Service("TFileService", fileName = cms.string("/tmp/oiorio/TChannel.root"))
 
 process.load("SingleTopAnalyzers_cfi")
 process.load("SingleTopRootPlizer_cfi")

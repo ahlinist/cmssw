@@ -18,7 +18,7 @@ process.MessageLogger.cerr.FwkReport.reportEvery = 1000
 from PhysicsTools.SelectorUtils.pvSelector_cfi import pvSelector
 process.goodOfflinePrimaryVertices = cms.EDFilter(
     "PrimaryVertexObjectFilter",
-    filterParams = pvSelector.clone( minNdof = cms.double(7.0), maxZ = cms.double(24.0) ),
+    filterParams = pvSelector.clone( minNdof = cms.double(4.0), maxZ = cms.double(24.0) ),
     src=cms.InputTag('offlinePrimaryVertices')
     )
 
@@ -80,7 +80,7 @@ process.pfPileUp.checkClosestZVertex = cms.bool(False)
 process.pfPileUp.Vertices = cms.InputTag('goodOfflinePrimaryVertices')
 process.pfJets.doAreaFastjet = True
 process.pfJets.doRhoFastjet = False
-process.pfJets.Rho_EtaMax =  cms.double(2.5)
+process.pfJets.Rho_EtaMax =  cms.double(4.4)
 
 
 # Compute the mean pt per unit area (rho) from the
@@ -92,7 +92,7 @@ process.kt6PFJets = kt4PFJets.clone(
     doAreaFastjet = cms.bool(True),
     doRhoFastjet = cms.bool(True),
     voronoiRfact = cms.double(0.9),
-    Rho_EtaMax =  cms.double(2.5)
+    Rho_EtaMax =  cms.double(4.4)
     )
 process.patJetCorrFactors.rho = cms.InputTag("kt6PFJets", "rho")
 
