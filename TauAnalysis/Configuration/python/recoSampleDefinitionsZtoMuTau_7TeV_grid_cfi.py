@@ -56,7 +56,7 @@ SAMPLE_DEFAULTS = {
     'runselection' : '',
     'hlt_paths' : [ 'HLT_Mu9' ],
     'SE_white_list' : '',
-    'SE_black_list' : 'T2_US_Purdue',
+    'SE_black_list' : '',
     'disableDuplicateCheck' : False,
     'enableFakeRates' : False,
     'disableDuplicateCheck' : False,
@@ -157,7 +157,8 @@ RECO_SAMPLES = {
         'applyMuonTriggerEfficiencyCorrection' : True,
         'applyMuonIsolationEfficiencyCorrection' : True,
 	'applyVertexMultiplicityReweighting' : True,
-        'hlt' : cms.InputTag("TriggerResults", "", "*")
+        'hlt' : cms.InputTag("TriggerResults", "", "HLT"),
+        'SE_black_list' : 'T2_US_Purdue'
     },
     'Ztautau_powheg' : {
         'datasetpath' : "/DYToTauTau_M-20_CT10_TuneZ2_7TeV-powheg-pythia-tauola/Spring11-PU_S1_START311_V1G1-v2/AODSIM",
@@ -173,7 +174,7 @@ RECO_SAMPLES = {
         'applyMuonTriggerEfficiencyCorrection' : True,
         'applyMuonIsolationEfficiencyCorrection' : True,
 	'applyVertexMultiplicityReweighting' : True,
-        'hlt' : cms.InputTag("TriggerResults", "", "*")
+        'hlt' : cms.InputTag("TriggerResults", "", "HLT")
     },
     'qqZll' : {
         'datasetpath' : "/VQQJetsToLL_TuneD6T_7TeV-madgraph-tauola/Spring11-PU_S1_START311_V1G1-v1/AODSIM",
@@ -188,7 +189,7 @@ RECO_SAMPLES = {
         'enableFakeRates' : True,
         'applyMuonTriggerEfficiencyCorrection' : True,
         'applyMuonIsolationEfficiencyCorrection' : True,
-        'hlt' : cms.InputTag("TriggerResults", "", "*")
+        'hlt' : cms.InputTag("TriggerResults", "", "HLT")
     },
     'Zmumu_pythia' : {
         'datasetpath' : "/DYToMuMu_M-10To20_TuneZ2_7TeV-pythia6/Summer11-PU_S3_START42_V11-v2/AODSIM",
@@ -204,7 +205,7 @@ RECO_SAMPLES = {
         'applyMuonIsolationEfficiencyCorrection' : True,
         'applyVertexMultiplicityReweighting' : True,
         'enableFakeRates' : True,
-        'hlt' : cms.InputTag("TriggerResults", "", "*")
+        'hlt' : cms.InputTag("TriggerResults", "", "HLT")
     },
     'Zmumu_powheg' : {
         'datasetpath' : "/DYToMuMu_M-20_CT10_TuneZ2_7TeV-powheg-pythia/Spring11-PU_S1_START311_V1G1-v1/AODSIM",
@@ -220,7 +221,7 @@ RECO_SAMPLES = {
         'applyMuonIsolationEfficiencyCorrection' : True,
         'applyVertexMultiplicityReweighting' : True,
         'enableFakeRates' : True,
-        'hlt' : cms.InputTag("TriggerResults", "", "*")
+        'hlt' : cms.InputTag("TriggerResults", "", "HLT")
     },
     'PPmuXptGt20Mu15' : {
         'datasetpath' : "/QCD_Pt-20_MuEnrichedPt-15_TuneZ2_7TeV-pythia6/Summer11-PU_S4_START42_V11-v1/AODSIM",
@@ -237,7 +238,7 @@ RECO_SAMPLES = {
         'applyVertexMultiplicityReweighting' : True,
         'enableFakeRates' : True,
         'factorize' : True,
-        'hlt' : cms.InputTag("TriggerResults", "", "*")
+        'hlt' : cms.InputTag("TriggerResults", "", "HLT")
     },
     'WplusJets_madgraph' : {
         'datasetpath' : "/WJetsToLNu_TuneZ2_7TeV-madgraph-tauola/Summer11-PU_S4_START42_V11-v1/AODSIM",
@@ -254,7 +255,8 @@ RECO_SAMPLES = {
         'applyMuonIsolationEfficiencyCorrection' : True,
         'applyVertexMultiplicityReweighting' : True,
         'enableFakeRates' : True,
-        'hlt' : cms.InputTag("TriggerResults", "", "*")
+        'hlt' : cms.InputTag("TriggerResults", "", "HLT"),
+        'SE_black_list' : 'T2_BR_SPRACE'
     },
     'WW' : {
         'datasetpath' : "/WWtoAnything_TuneZ2_7TeV-pythia6-tauola/Spring11-PU_S1_START311_V1G1-v1/AODSIM",
@@ -269,7 +271,7 @@ RECO_SAMPLES = {
         'applyMuonTriggerEfficiencyCorrection' : True,
         'applyMuonIsolationEfficiencyCorrection' : True,
         'applyVertexMultiplicityReweighting' : True,
-        'hlt' : cms.InputTag("TriggerResults", "", "*")
+        'hlt' : cms.InputTag("TriggerResults", "", "HLT")
     },
     'WZ' : {
         'datasetpath' : "/WZtoAnything_TuneZ2_7TeV-pythia6-tauola/Spring11-PU_S1_START311_V1G1-v1/AODSIM",
@@ -284,7 +286,7 @@ RECO_SAMPLES = {
         'applyMuonTriggerEfficiencyCorrection' : True,
         'applyMuonIsolationEfficiencyCorrection' : True,
         'applyVertexMultiplicityReweighting' : True,
-        'hlt' : cms.InputTag("TriggerResults", "", "*")
+        'hlt' : cms.InputTag("TriggerResults", "", "HLT")
     },
     'ZZ' : {
         'datasetpath' : "/ZZtoAnything_TuneZ2_7TeV-pythia6-tauola/Spring11-PU_S1_START311_V1G1-v1/AODSIM",
@@ -299,7 +301,7 @@ RECO_SAMPLES = {
         'applyMuonTriggerEfficiencyCorrection' : True,
         'applyMuonIsolationEfficiencyCorrection' : True,
         'applyVertexMultiplicityReweighting' : True,
-        'hlt' : cms.InputTag("TriggerResults", "", "*")
+        'hlt' : cms.InputTag("TriggerResults", "", "HLT")
     },
     'TTplusJets_madgraph' : {
         'datasetpath' : "/TTJets_TuneZ2_7TeV-madgraph-tauola/Summer11-PU_S4_START42_V11-v1/AODSIM",
@@ -314,7 +316,9 @@ RECO_SAMPLES = {
         'applyMuonIsolationEfficiencyCorrection' : True,
         'applyVertexMultiplicityReweighting' : True,
         'enableFakeRates' : True,
-        'hlt' : cms.InputTag("TriggerResults", "", "*")
+        'hlt' : cms.InputTag("TriggerResults", "", "HLT"),
+        'SE_black_list' : 'T2_BE_UCL'
+        
     }
 }
 
