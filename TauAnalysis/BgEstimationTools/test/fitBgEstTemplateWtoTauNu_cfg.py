@@ -29,11 +29,14 @@ process.source = cms.Source("EmptySource")
 
 dqmDirectoriesProcess = {
     'ewkSum'     : 'ewkSum',
+    'Ztautau'    : 'Ztautau',
+    'Wmunu'      : 'Wmunu',
+    'Wenu'       : 'Wenu',
+    'Wtaunu'     : 'Wtaunu',
     'Data'       : 'data'
     }
 
 dqmDirectoryAnalysis = 'wTauNuAnalyzer/afterEvtSelHtRatio_beforeEvtSelMetTopology/'
-#dqmDirectoryAnalysis = 'wTauNuAnalyzer/afterEvtSelPFMetPt_beforeEvtSelHtRatio/'
 
 dqmDirectoriesBgEnrichedSelections = {
     'QCDEnriched'  : 'BgEstTemplateAnalyzer_QCDEnriched/afterSingleTauCutBgEstQCDEnriched/'
@@ -62,7 +65,28 @@ process.loadAnalysisResultsWtoTauNu = cms.EDAnalyzer("DQMFileLoader",
         scaleFactor = cms.double(1.),
         dqmDirectory_store = cms.string('/')
         )
-)
+                                                     )
+
+process.subHist = cms.EDAnalyzer("DQMHistSubtractor",
+                                 config = cms.VPSet(
+    cms.PSet(
+    meName_minuend = cms.string('/analysis/harvested/data/wTauNuAnalyzer/afterEvtSelHtRatio_beforeEvtSelMetTopology/MEtTopologyQuantities/VratioRebinned_QCDEnriched'),
+    meName_subtrahend = cms.string('/analysis/harvested/smSum/wTauNuAnalyzer/afterEvtSelHtRatio_beforeEvtSelMetTopology/MEtTopologyQuantities/VratioRebinned_QCDEnriched'),
+    meName_difference = cms.string('/template/harvested/data/BgEstTemplateAnalyzer_QCDEnriched/afterSingleTauCutBgEstQCDEnriched/MEtTopologyQuantities/VratoQCD')
+    )
+    )
+                                 )
+
+process.normHist = cms.EDAnalyzer("DQMHistNormalizer",
+                                  config = cms.VPSet(
+    cms.PSet(
+    meName_input = cms.string('/template/harvested/data/BgEstTemplateAnalyzer_QCDEnriched/afterSingleTauCutBgEstQCDEnriched/MEtTopologyQuantities/VratoQCD'),
+    meName_output = cms.string('/template/harvested/data/BgEstTemplateAnalyzer_QCDEnriched/afterSingleTauCutBgEstQCDEnriched/MEtTopologyQuantities/VratoQCDnorm')
+    )
+    ),
+                                  norm = cms.double(1.)
+                                  )
+
 
 #--------------------------------------------------------------------------------
 #  Landau distribution convoluted with Gaussian
@@ -104,65 +128,106 @@ transMass_smoothing = cms.PSet(
 
 process.fitWtoTauNu = cms.EDAnalyzer("TemplateHistFitter",
                                      processes = cms.PSet(
-        ewkSum = cms.PSet(
+        Wtaunu = cms.PSet(
             templates = cms.PSet(
                 Mt = cms.PSet(
                     meName = cms.string(
-                        '/analysis/harvested/'+ dqmDirectoriesProcess['ewkSum'] + '/' + dqmDirectoryAnalysis + meNames['Mt']
-                        )
-                    #fitSimultaneously = cms.bool(False),
-                    #smoothing = transMass_smoothing.clone(
-                    #    pluginName = cms.string("transMassSmoothingEwkSum"),
-                    #    xMax = cms.double(150.)
-                    #   )
-                    ),
-                MtSVfit = cms.PSet(
-                    meName = cms.string(
-                        '/analysis/harvested/'+ dqmDirectoriesProcess['ewkSum'] + '/' + dqmDirectoryAnalysis + meNames['MtSVfit']
+                        '/analysis/harvested/'+ '/' + dqmDirectoriesProcess['Wtaunu'] + '/' + dqmDirectoryAnalysis + meNames['Mt'] + 'Shape' + '_' + 'MCTemplates'
                         )
                     ),
                 MEtTopology = cms.PSet(
                     meName = cms.string(
-                        '/analysis/harvested/' + dqmDirectoriesProcess['ewkSum'] + '/' + dqmDirectoryAnalysis + meNames['MEtTopology']
+                       '/analysis/harvested'+ '/' + dqmDirectoriesProcess['Wtaunu'] + '/' + dqmDirectoryAnalysis + meNames['MEtTopology'] + 'Shape' + '_' + 'MCTemplates'
+                       )
+                    )
+                ),
+            norm = cms.PSet(
+                initial = cms.double(175.)
+                ),
+            drawOptions = copy.deepcopy(drawOption_Wtaunu_separate)
+            ),
+        Ztautau = cms.PSet(
+            templates = cms.PSet(
+                Mt = cms.PSet(
+                    meName = cms.string(
+                        '/analysis/harvested/' + dqmDirectoriesProcess['Ztautau'] + '/' + dqmDirectoryAnalysis + meNames['Mt'] + 'Shape' + '_' + 'MCTemplates'
+                        )
+                    ),
+                MEtTopology = cms.PSet(
+                    meName = cms.string(
+                        '/analysis/harvested/' + dqmDirectoriesProcess['Ztautau'] + '/' + dqmDirectoryAnalysis + meNames['MEtTopology'] + 'Shape' + '_' + 'MCTemplates'
                         )
                     )
                 ),
             norm = cms.PSet(
-                initial = cms.double(5.)
+                initial = cms.double(10.)
                 ),
-            drawOptions = copy.deepcopy(drawOption_Wtaunu_separate)
+            drawOptions = copy.deepcopy(drawOption_Ztautau_separate)
             ),
+        Wenu = cms.PSet(
+            templates = cms.PSet(
+                Mt = cms.PSet(
+                    meName = cms.string(
+                        '/analysis/harvested/'+ '/' + dqmDirectoriesProcess['Wenu'] + '/' + dqmDirectoryAnalysis + meNames['Mt'] + 'Shape' + '_' + 'MCTemplates'
+                        )
+                    ),
+                MEtTopology = cms.PSet(
+                    meName = cms.string(
+                        '/analysis/harvested'+ '/' + dqmDirectoriesProcess['Wenu'] + '/' + dqmDirectoryAnalysis + meNames['MEtTopology'] + 'Shape' + '_' + 'MCTemplates'
+                       )
+                    )
+                ),
+            norm = cms.PSet(
+                initial = cms.double(4.)
+                ),
+            drawOptions = copy.deepcopy(drawOption_Wenu_separate)
+            ),   
+         Wmunu = cms.PSet(
+            templates = cms.PSet(
+                Mt = cms.PSet(
+                    meName = cms.string(
+                        '/analysis/harvested/'+ '/' + dqmDirectoriesProcess['Wmunu'] + '/' + dqmDirectoryAnalysis + meNames['Mt'] + 'Shape' + '_' + 'MCTemplates'
+                        )
+                    ),
+                MEtTopology = cms.PSet(
+                    meName = cms.string(
+                        '/analysis/harvested'+ '/' + dqmDirectoriesProcess['Wmunu'] + '/' + dqmDirectoryAnalysis + meNames['MEtTopology'] + 'Shape' + '_' + 'MCTemplates'
+                       )
+                    )
+                ),
+            norm = cms.PSet(
+                initial = cms.double(4.)
+                ),
+            drawOptions = copy.deepcopy(drawOption_Wmunu_separate)
+            ),   
         QCD = cms.PSet(
             templates = cms.PSet(
                 Mt = cms.PSet( 
                     meName = cms.string(
                         '/template/harvested/' + dqmDirectoriesProcess['Data'] + '/' \
-                            + dqmDirectoriesBgEnrichedSelections['QCDEnriched'] \
-                            + meNames['Mt'] + 'Shape' + '_' + 'QCDEnriched'
-                        )
-                    #fitSimultaneously = cms.bool(False),
-                    #smoothing = transMass_smoothing.clone(
-                    #    pluginName = cms.string("transMassSmoothingQCD"),
-                    #    xMax = cms.double(150.)
-                    #    )
-                    ),
-                MtSVfit = cms.PSet(
-                    meName = cms.string(
-                        '/template/harvested/' + dqmDirectoriesProcess['Data'] + '/' \
-                            + dqmDirectoriesBgEnrichedSelections['QCDEnriched'] \
-                            + meNames['MtSVfit'] + 'Shape' + '_' + 'QCDEnriched'
+                        + dqmDirectoriesBgEnrichedSelections['QCDEnriched'] \
+                        + meNames['Mt'] + 'Shape' + '_' + 'QCDEnriched'
                         )
                     ),
+#                MtSVfit = cms.PSet(
+#                    meName = cms.string(
+#                        '/template/harvested/' + dqmDirectoriesProcess['Data'] + '/' \
+#                            + dqmDirectoriesBgEnrichedSelections['QCDEnriched'] \
+#                            + meNames['MtSVfit'] + 'Shape' + '_' + 'QCDEnriched'
+#                        )
+#                    ),
                 MEtTopology = cms.PSet(
                     meName = cms.string(
-                        '/template/harvested/' + dqmDirectoriesProcess['Data'] + '/' \
-                            +dqmDirectoriesBgEnrichedSelections['QCDEnriched'] \
-                            +meNames['MEtTopology'] + 'Shape' + '_' + 'QCDEnriched'
+    '/template/harvested/data/BgEstTemplateAnalyzer_QCDEnriched/afterSingleTauCutBgEstQCDEnriched/MEtTopologyQuantities/VratoQCDnorm'
+#                        '/template/harvested/' + dqmDirectoriesProcess['Data'] + '/' \
+#                        + dqmDirectoriesBgEnrichedSelections['QCDEnriched'] \
+#                        + meNames['MEtTopology'] + 'Shape' + '_' + 'QCDEnriched'
+#                        + meNames['MEtTopology'] + 'QCD' + '_' + 'norm'
                         )
                     )
                 ),
             norm = cms.PSet(
-                initial = cms.double(75.)
+                initial = cms.double(100.)
                 ),
             drawOptions = copy.deepcopy(drawOption_QCD_separate)
             )
@@ -173,19 +238,19 @@ process.fitWtoTauNu = cms.EDAnalyzer("TemplateHistFitter",
             Mt = cms.PSet(
                 meName = cms.string(
                     '/analysis/harvested/' + dqmDirectoriesProcess['Data'] + '/' + dqmDirectoryAnalysis \
-                        + meNames['Mt'] 
+                        + meNames['Mt'] + 'Rebinned' + '_' + 'MCTemplates'
                     )
                 ),
             MtSVfit = cms.PSet(
                 meName = cms.string(
                     '/analysis/harvested/' + dqmDirectoriesProcess['Data'] + '/' + dqmDirectoryAnalysis \
-                        + meNames['MtSVfit'] 
+                        + meNames['MtSVfit'] + 'Rebinned' + '_' + 'MCTemplates'
                     )
                 ),
             MEtTopology = cms.PSet(
                 meName = cms.string(
                     '/analysis/harvested/' + dqmDirectoriesProcess['Data'] + '/' + dqmDirectoryAnalysis \
-                        + meNames['MEtTopology']
+                        + meNames['MEtTopology'] + 'Rebinned' + '_' + 'MCTemplates'
                     )
                 )
             )
@@ -200,7 +265,7 @@ process.fitWtoTauNu = cms.EDAnalyzer("TemplateHistFitter",
 #            Mt = cms.PSet(
 #                name = cms.string("Mt"),
 #                title = cms.string("M_{T}(Tau + Nu)"),
-#                min = cms.double(20.),
+#                min = cms.double(40.),
 #                max = cms.double(200.)
 #                )
 #            MtSVfit = cms.PSet(
@@ -214,6 +279,26 @@ process.fitWtoTauNu = cms.EDAnalyzer("TemplateHistFitter",
                 title = cms.string("MET-topology"),
                 min = cms.double(0.),
                 max = cms.double(1.)
+                )
+            ),
+        constraints = cms.PSet(
+            Ztautau = cms.PSet(
+                norm = cms.PSet(
+                    value = cms.double(1.*10.),
+                    uncertainty = cms.double(1.*10)
+                    )
+                ),
+            Wenu = cms.PSet(
+                norm = cms.PSet(
+                    value = cms.double(1.*4.),
+                    uncertainty = cms.double(1.*4.)
+                    )                
+                ),
+            Wmunu = cms.PSet(
+                norm = cms.PSet(
+                    value = cms.double(1.*1.5),
+                    uncertainty = cms.double(1.*1.5)
+                    )
                 )
             ),
         cutUnfittedRegion = cms.bool(False),
@@ -235,7 +320,7 @@ process.fitWtoTauNu = cms.EDAnalyzer("TemplateHistFitter",
         fluctuations = cms.PSet(
             ),
         numSamplings = cms.int32(0),
-        chi2redMax = cms.double(10),
+        chi2redMax = cms.double(1000),
         verbosity = cms.PSet(
             printLevel = cms.int32(-1),
             printWarnings = cms.bool(False)
@@ -265,6 +350,8 @@ process.saveFitResultsWtoTauNu = cms.EDAnalyzer("DQMSimpleFileSaver",
 
 process.p = cms.Path(
     process.loadAnalysisResultsWtoTauNu
+    +process.subHist
+    +process.normHist
     +process.fitWtoTauNu
     +process.saveFitResultsWtoTauNu
 )
