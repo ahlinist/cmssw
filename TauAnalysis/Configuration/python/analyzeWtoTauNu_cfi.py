@@ -16,6 +16,9 @@ from TauAnalysis.Core.tauNuCandidateHistManager_cfi import*
 from TauAnalysis.Core.electronHistManager_cfi import *
 from TauAnalysis.Core.muonHistManager_cfi import *
 
+from TauAnalysis.Core.particleMultiplicityHistManager_cfi import *
+from TauAnalysis.Core.eventWeightHistManager_cfi import *
+
 from TauAnalysis.Core.dataBinner_cfi import *
 
 # import config for binning results used to estimate systematic uncertainties
@@ -27,7 +30,11 @@ sysUncertaintyNames.extend(
     [tauSystematics,
      jetSystematics,
      metSystematicsForWtoTauNu,
-     htRatioSystematics]
+     htRatioSystematics,
+     tauNuPairSystematics,
+     metTopologySystematics
+     #theorySystematics
+     ]
     )
     )
 
@@ -37,26 +44,100 @@ sysUncertaintyBinnerForWTauNuEff = sysUncertaintyBinner.clone(
          dataBinner
     ),
     systematics = cms.vstring(sysUncertaintyNames)
-)
+    )
 
-#sysUncertaintyBinnerForWTauNuAcc = sysUncertaintyBinner.clone(
-#    pluginName = cms.string('sysUncertaintyBinnerForWTauNuAcc'),
-#    binnerPlugins = cms.VPSet(
-#    ),
-#    systematics = cms.vstring(sysUncertaintyNames)
-#    )
+# import config for binning results used to estimate acceptance of event selection
+from TauAnalysis.Core.modelBinner_cfi import *
+modelBinnerForWTauNuGenTauNuPairAcc = copy.deepcopy(modelBinner)
+modelBinnerForWTauNuGenTauNuPairAcc.pluginName = cms.string('modelBinnerForWTauNuGenTauNuPairAcc')
+modelBinnerForWTauNuGenTauNuPairAcc.srcGenFlag = cms.InputTag("isGenWtoTauNu")
+modelBinnerForWTauNuGenTauNuPairAcc.srcRecFlag = cms.InputTag("isGenWtoTauNuWithinAcceptance")
+modelBinnerForWTauNuGenTauNuPairAcc.dqmDirectory_store = cms.string('modelBinnerForWTauNuGenTauNuPairAcc')
+
+modelBinnerForWTauNuWrtGenTauNuPairAcc = copy.deepcopy(modelBinnerForWTauNuGenTauNuPairAcc)
+modelBinnerForWTauNuWrtGenTauNuPairAcc.pluginName = cms.string('modelBinnerForWTauNuWrtGenTauNuPairAcc')
+modelBinnerForWTauNuWrtGenTauNuPairAcc.srcGenFlag = cms.InputTag("isGenWtoTauNuWithinAcceptance")
+modelBinnerForWTauNuWrtGenTauNuPairAcc.srcRecFlag = cms.InputTag("isRecWtoTauNu")
+modelBinnerForWTauNuWrtGenTauNuPairAcc.dqmDirectory_store = cms.string('modelBinnerForWTauNuWrtGenTauNuPairAcc')
+
+sysUncertaintyBinnerForWTauNuAcc = sysUncertaintyBinner.clone(
+    pluginName = cms.string('sysUncertaintyBinnerForWTauNuAcc'),
+    binnerPlugins = cms.VPSet(
+       modelBinnerForWTauNuGenTauNuPairAcc,
+       modelBinnerForWTauNuWrtGenTauNuPairAcc
+    ),
+    systematics = cms.vstring(sysUncertaintyNames)
+    )
+
+sysUncertaintyHistManagerForWTauNu = cms.PSet(
+    pluginName = cms.string('sysUncertaintyHistManagerForWTauNu'),
+    pluginType = cms.string('SysUncertaintyHistManager'),
+    histManagers = cms.VPSet(
+       cms.PSet(
+         config = tauNuCandidateHistManager,
+         systematics = cms.PSet(
+            tauNuCandidateSource = getSysUncertaintyParameterSets(
+               [ tauNuPairSystematics ]
+            )
+          )
+        ),
+       cms.PSet(
+         config = htRatioHistManager,
+         systematics = cms.PSet(
+           htRatioSource = getSysUncertaintyParameterSets(
+             [ htRatioSystematics]
+           )
+         )
+       ),
+       cms.PSet(
+         config = pfMEtHistManager,
+         systematics = cms.PSet(
+           metSource = getSysUncertaintyParameterSets(
+            [metSystematicsForWtoTauNu]
+           )
+         )
+       ),
+       cms.PSet(
+         config = tauHistManager,
+         systematics = cms.PSet(
+          tauSource = getSysUncertaintyParameterSets(
+             [tauSystematics]
+           )
+         )
+       ),
+       cms.PSet(
+        config = jetHistManager,
+        systematics = cms.PSet(
+          jetSource = getSysUncertaintyParameterSets(
+            [ jetSystematics ]
+          )
+         )
+       ),
+       cms.PSet(
+        config = metTopologyHistManager,
+        systematics = cms.PSet(
+          metTopologySource = getSysUncertaintyParameterSets(
+            [ metTopologySystematics ]
+         )
+        )
+       )
+    ),
+    dqmDirectory_store = cms.string('sysUncertaintyHistManagerResults')
+ )
 
 wTauNuHistManagers = cms.vstring(
     'tauHistManager',
     'pfMEtHistManager',
     'jetHistManager',
-    'vertexHistManager',
-    'tauRecoilEnergyFromCaloTowersHistManager',
+#    'vertexHistManager',
+#    'tauRecoilEnergyFromCaloTowersHistManager',
     'metTopologyHistManager',
     'htRatioHistManager',
     'tauNuCandidateHistManager',
-    'muonHistManager',
-    'electronHistManager'
+    'sysUncertaintyHistManagerForWTauNu',
+    'sysUncertaintyBinnerForWTauNuEff'
+    #'muonHistManager',
+    #'electronHistManager'
 )
 
 
@@ -68,8 +149,14 @@ wTauNuHistManagers = cms.vstring(
 evtSelTrigger = cms.PSet(
     pluginName = cms.string('evtSelTrigger'),
     pluginType = cms.string('BoolEventSelector'),
-    src = cms.InputTag('Trigger')
-    #src = cms.InputTag('PseudoTrigger')
+    src = cms.InputTag('Trigger'),
+    failSilent = cms.bool(False)
+    )
+
+evtSelTrigger2 = cms.PSet(
+    pluginName = cms.string('evtSelTrigger2'),
+    pluginType = cms.string('BoolEventSelector'),
+    src = cms.InputTag('PseudoTrigger')
     )
 
 # vertex selection
@@ -204,11 +291,12 @@ evtSelHtRatio = cms.PSet(
     )
 
 
-evtSelMetTopology = cms.PSet(
-    pluginName = cms.string('evtSelMetTopology'),
-    pluginType = cms.string('BoolEventSelector'),
-    src = cms.InputTag('metTopologyCut')
-    )
+#evtSelMetTopology = cms.PSet(
+#    pluginName = cms.string('evtSelMetTopology'),
+#    pluginType = cms.string('BoolEventSelector'),
+#    src = cms.InputTag('metTopologyCut'),
+#    systematics = cms.vstring(metTopologySystematics.keys())
+#    )
 
 #--------------------------------------------------------------------------------
 # define event print-out
@@ -232,7 +320,7 @@ wTauNuEventDump = cms.PSet(
     pfGammaSource = cms.InputTag('pfAllPhotons'),
     pfNeutralHadronSource = cms.InputTag('pfAllNeutralHadrons'),    
     output = cms.string("wTauNuEventDump.txt"),
-    triggerConditions = cms.vstring("evtSelMetTopology : passed_cumulative")
+    triggerConditions = cms.vstring("evtSelHtRatio : passed_cumulative")
 )
 
 #replace met with pfmet for met-plots and event dump
@@ -247,16 +335,24 @@ wTauNuEventDump = cms.PSet(
 wTauNuAnalysisSequence = cms.VPSet(
     # fill histograms for full event sample
     cms.PSet(
-        analyzers = wTauNuHistManagers
-    ),
+        analyzers = cms.vstring('vertexHistManager',
+                                'pfMEtHistManager',
+                                'modelBinnerForWTauNuGenTauNuPairAcc',
+                                'modelBinnerForWTauNuWrtGenTauNuPairAcc',
+                                'sysUncertaintyBinnerForWTauNuAcc'
+                                )
+        ),
     # trigger selection
     cms.PSet(
-       filter = cms.string('evtSelTrigger'),
+       filter = cms.string('evtSelTrigger2'),
        title = cms.string('Tau+MET Trigger'),
        saveRunLumiSectionEventNumbers = cms.vstring('')
        ),
     cms.PSet(
-       analyzers = wTauNuHistManagers
+       analyzers = cms.vstring('pfMEtHistManager',
+                               'sysUncertaintyBinnerForWTauNuEff'
+              
+            )
        ),
     #vertex selection
     cms.PSet(
@@ -273,9 +369,6 @@ wTauNuAnalysisSequence = cms.VPSet(
         saveRunLumiSectionEventNumbers = cms.vstring('')
     ),
     cms.PSet(
-        analyzers = wTauNuHistManagers
-    ),
-    cms.PSet(
         filter = cms.string('evtSelPrimaryEventVertexPosition'),
         title = cms.string('Vertex position'),
         saveRunLumiSectionEventNumbers = cms.vstring('')
@@ -283,7 +376,6 @@ wTauNuAnalysisSequence = cms.VPSet(
     cms.PSet(
         analyzers = wTauNuHistManagers
     ),
-
     #primary tau selection
     cms.PSet(
         filter = cms.string('evtSelTauEta'),
@@ -308,10 +400,10 @@ wTauNuAnalysisSequence = cms.VPSet(
         title = cms.string('with leadtrk'),
         saveRunLumiSectionEventNumbers = cms.vstring('')
 	),
-    cms.PSet(
-        analyzers = wTauNuHistManagers,
-        replace = cms.vstring('tauHistManager.tauSource = selectedPatTausForWTauNuLeadTrkCumulative')
-	), 
+    #cms.PSet(
+    #    analyzers = wTauNuHistManagers,
+    #    replace = cms.vstring('tauHistManager.tauSource = selectedPatTausForWTauNuLeadTrkCumulative')
+#	), 
     cms.PSet(
         filter = cms.string('evtSelTauLeadTrkPt'),
         title = cms.string('leadtrk pt > 15 GeV'),
@@ -401,7 +493,16 @@ wTauNuAnalysisSequence = cms.VPSet(
         saveRunLumiSectionEventNumbers = cms.vstring('')
         ),
     cms.PSet(
-        analyzers = wTauNuHistManagers,
+        analyzers = cms.vstring(
+             'tauHistManager',
+             'pfMEtHistManager',
+             'jetHistManager',
+             'htRatioHistManager',
+             'metTopologyHistManager',
+             'tauNuCandidateHistManager',
+             'sysUncertaintyHistManagerForWTauNu',
+             'sysUncertaintyBinnerForWTauNuEff'             
+             ),
         replace = cms.vstring('tauHistManager.tauSource = selectedPatTausForWTauNuEcalCrackVetoCumulative',
                               'jetHistManager.jetSource = selectedPatJetsEt15ForWTauNuCumulative',
                               'tauNuCandidateHistManager.tauNuCandidateSource = allTauNuPairs')	
@@ -412,7 +513,7 @@ wTauNuAnalysisSequence = cms.VPSet(
         saveRunLumiSectionEventNumbers = cms.vstring('')
         ),
     cms.PSet(
-       analyzers = wTauNuHistManagers,
+       analyzers = wTauNuHistManagers,        
        replace = cms.vstring('jetHistManager.jetSource = selectedPatJetsEt15ForWTauNuCumulative',
                              'tauRecoilEnergyFromCaloTowersHistManager.leptonRecoilEnergySource = tauRecoilEnergyFromCaloTowers',
                              'tauNuCandidateHistManager.tauNuCandidateSource = allTauNuPairs')
@@ -429,26 +530,51 @@ wTauNuAnalysisSequence = cms.VPSet(
                'tauNuCandidateHistManager',
                'htRatioHistManager',
                'metTopologyHistManager',
+               'pfMEtHistManager',
+               'sysUncertaintyHistManagerForWTauNu',
                'dataBinner',
-               'sysUncertaintyBinnerForWTauNuEff'
+               'sysUncertaintyBinnerForWTauNuEff',
+               'vertexHistManager'
        ),
        replace = cms.vstring('tauHistManager.tauSource = selectedPatTausForWTauNuEcalCrackVetoCumulative',
                              'jetHistManager.jetSource = selectedPatJetsEt15ForWTauNuCumulative'
                              )
        ),
     cms.PSet(
-       filter = cms.string('evtSelMetTopology'),
-       title = cms.string('MET-topology < 0.4'),
-       saveRunLumiSectionEventNumbers = cms.vstring('passed_cumulative')
+       filter = cms.string('evtSelTrigger'),
+       title = cms.string('trigger'),
+       saveRumLumiSectionEventNumbers = cms.vstring('passed_cumulative')
        ),
     cms.PSet(
-       analyzers = wTauNuHistManagers,
-       replace = cms.vstring('jetHistManager.jetSource = selectedPatJetsEt15ForWTauNuCumulative',
-                             'tauRecoilEnergyFromCaloTowersHistManager.leptonRecoilEnergySource = tauRecoilEnergyFromCaloTowers',
-                             'tauNuCandidateHistManager.tauNuCandidateSource = allTauNuPairs',
-                             'electronHistManager.electronSource = selectedPatElectronsPt15Cumulative',
-                             'muonHistManager.muonSource = selectedPatMuonsPFRelIsoCumulative'
-                             )
-       )
+      analyzers = cms.vstring(
+              'tauHistManager',
+              'jetHistManager',
+              'tauNuCandidateHistManager',
+              'htRatioHistManager',
+              'metTopologyHistManager',
+              'pfMEtHistManager',
+              'sysUncertaintyHistManagerForWTauNu',
+              'dataBinner',
+              'sysUncertaintyBinnerForWTauNuEff',
+              'vertexHistManager'
+              ),
+      replace = cms.vstring('tauHistManager.tauSource = selectedPatTausForWTauNuEcalCrackVetoCumulative',
+                          'jetHistManager.jetSource = selectedPatJetsEt15ForWTauNuCumulative'
+                          )
+    )
+#    cms.PSet(
+#       filter = cms.string('evtSelMetTopology'),
+#       title = cms.string('MET-topology < 0.4'),
+#       saveRunLumiSectionEventNumbers = cms.vstring('passed_cumulative')
+#       ),
+#    cms.PSet(
+#       analyzers = wTauNuHistManagers,
+#       replace = cms.vstring('jetHistManager.jetSource = selectedPatJetsEt15ForWTauNuCumulative',
+#                             'tauRecoilEnergyFromCaloTowersHistManager.leptonRecoilEnergySource = tauRecoilEnergyFromCaloTowers',
+#                             'tauNuCandidateHistManager.tauNuCandidateSource = allTauNuPairs',
+#                             'electronHistManager.electronSource = selectedPatElectronsPt15Cumulative',
+#                             'muonHistManager.muonSource = selectedPatMuonsPFRelIsoCumulative'
+#                             )
+#       )
       )
 
