@@ -497,33 +497,33 @@ void TauHistManager::fillHistogramsImp(const edm::Event& evt, const edm::EventSe
     }
 
     // get PDG IDs of matching generator particles
-    int matchingGenParticlePdgId = -1;
-    int matchingFinalStateGenParticlePdgId = -1;
+    int matchingGenParticlePdgId = 0;
+    int matchingFinalStateGenParticlePdgId = 0;
     if ( genParticles.isValid() ) {
       matchingGenParticlePdgId = getMatchingGenParticlePdgId(patTau->p4(), *genParticles, &skipPdgIdsGenParticleMatch_, true);
       matchingFinalStateGenParticlePdgId = getMatchingGenParticlePdgId(patTau->p4(), *genParticles, &skipPdgIdsGenParticleMatch_, false);
     }
 
-    if ( matchingGenParticlePdgId == -1 ) {
+    if ( matchingGenParticlePdgId == 0 ) {
       hTauMatchingGenParticlePdgId_->Fill(-1, weight);
     } else if ( abs(matchingGenParticlePdgId) > 22 ) {
       hTauMatchingGenParticlePdgId_->Fill(24, weight);
     } else {
-      hTauMatchingGenParticlePdgId_->Fill(abs(matchingGenParticlePdgId), weight);
+      hTauMatchingGenParticlePdgId_->Fill(TMath::Abs(matchingGenParticlePdgId), weight);
     }
 
-    if ( matchingFinalStateGenParticlePdgId == -1 ) {
+    if ( matchingFinalStateGenParticlePdgId == 0 ) {
       hTauMatchingFinalStateGenParticlePdgId_->Fill(-1, weight);
     } else if ( abs(matchingFinalStateGenParticlePdgId) > 22 ) {
       hTauMatchingFinalStateGenParticlePdgId_->Fill(24, weight);
     } else {
-      hTauMatchingFinalStateGenParticlePdgId_->Fill(abs(matchingFinalStateGenParticlePdgId), weight);
+      hTauMatchingFinalStateGenParticlePdgId_->Fill(TMath::Abs(matchingFinalStateGenParticlePdgId), weight);
     }
 
     std::string genTauDecayMode = "";
     if ( patTau->genJet() != 0 ) {
       genTauDecayMode = JetMCTagUtils::genTauDecayMode(*patTau->genJet());
-    } else if ( matchingGenParticlePdgId == 15 ) { // special handling of tau --> electron/muon decays
+    } else if ( TMath::Abs(matchingGenParticlePdgId) == 15 ) { // special handling of tau --> electron/muon decays
       if      ( TMath::Abs(matchingFinalStateGenParticlePdgId) == 11 ) genTauDecayMode = "electron";
       else if ( TMath::Abs(matchingFinalStateGenParticlePdgId) == 13 ) genTauDecayMode = "muon";
     }
