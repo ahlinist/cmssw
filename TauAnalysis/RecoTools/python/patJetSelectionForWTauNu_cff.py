@@ -10,11 +10,11 @@ from TauAnalysis.CandidateTools.tools.objSelConfigurator import *
 # on how to use the cut-string parser
 
 # Select jets for W->tau nu analysis
-#selectedPatJetsAntiOverlapWithTausVetoForWTauNu = cms.EDFilter("PATJetAntiOverlapSelector",
-#                                                                  srcNotToBeFiltered = cms.VInputTag("selectedPatTausForWTauNuEcalCrackVetoCumulative"),
-#                                                                  dRmin = cms.double(0.7),
-#                                                                  filter = cms.bool(False)
-#                                                                  )
+selectedPatJetsAntiOverlapWithTausVetoForWTauNu = cms.EDFilter("PATJetAntiOverlapSelector",
+                                                                  srcNotToBeFiltered = cms.VInputTag("selectedPatTausForWTauNuEcalCrackVetoCumulative"),
+                                                                  dRmin = cms.double(0.7),
+                                                                  filter = cms.bool(False)
+                                                                  )
 
 selectedPatJetsEtaForWTauNu = cms.EDFilter("PATJetSelector",
                                                 cut = cms.string('abs(eta) < 3.0'),
@@ -31,30 +31,32 @@ selectedPatJetsEt20ForWTauNu = cms.EDFilter("PATJetSelector",
                                                filter = cms.bool(False)
                                                )
 
-selectedPatJetsEtL20ForWTauNu = cms.EDFilter("PATJetSelector",
-                                             cut = cms.string('et < 20'),
+selectedPatJetsEt20ForWTauNuE = cms.EDFilter("PATJetSelector",
+                                             cut = cms.string('et > 20'),
                                              filter = cms.bool(False)
                                              )
+
+
 
 patJetSelConfiguratorForWTauNu = objSelConfigurator(
     [ #selectedPatJetsAntiOverlapWithTausVetoForWTauNu,
       selectedPatJetsEtaForWTauNu,
       selectedPatJetsEt15ForWTauNu,
       selectedPatJetsEt20ForWTauNu ],
-    src = "cleanPatJets",
+#    src = "cleanPatJets",
+    src = "patJets",
     pyModuleName = __name__,
     doSelIndividual = False
     )
 
 patJetSelConfiguratorForWTauNu2 = objSelConfigurator(
-        [ #selectedPatJetsAntiOverlapWithTausVetoForWTauNu,
-                selectedPatJetsEtaForWTauNu,
-                selectedPatJetsEt15ForWTauNu,
-                selectedPatJetsEtL20ForWTauNu ],
-            src = "cleanPatJets",
-            pyModuleName = __name__,
-            doSelIndividual = False
-            )
+    [ selectedPatJetsAntiOverlapWithTausVetoForWTauNu,
+      selectedPatJetsEt20ForWTauNuE ],
+#    src = "cleanPatJets",
+    src = "patJets",
+    pyModuleName = __name__,
+    doSelIndividual = False
+    )
 
 selectPatJetsForWTauNu = patJetSelConfiguratorForWTauNu.configure(pyNameSpace = locals())
 selectPatJetsForWTauNu2 = patJetSelConfiguratorForWTauNu2.configure(pyNameSpace = locals())
