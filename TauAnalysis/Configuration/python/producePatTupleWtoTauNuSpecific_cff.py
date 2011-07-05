@@ -25,18 +25,19 @@ from TauAnalysis.CandidateTools.metTopology_cfi import *
 from TauAnalysis.CandidateTools.htRatio_cfi import *
 
 producePatTupleWtoTauNuSpecific = cms.Sequence(
-    selectPatTausForWTauNu
+    selectPatTaus
+    +selectPatTausForWTauNu
+    +patMuonsMuScleFitCorrectedMomentum
+    +selectPatMuons
+    +selectPatElectrons    
+    +selectPatJets
     +selectPatSelJetsForWTauNu
     +selectPatPFMETs
     +produceTauNuPairs
     +selectTauNuPairs
     +produceTauRecoilEnergy
+    +produceMEtTopology
     +selectMEtTopology
-    +patMuonsMuScleFitCorrectedMomentum 
-    +selectPatMuons
-    +selectPatElectrons    
-    +selectPatTaus
-    +selectPatJets
     +produceHtRatio
     +selectHtRatio
 )
