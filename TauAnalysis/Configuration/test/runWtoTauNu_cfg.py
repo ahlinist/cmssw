@@ -1,4 +1,3 @@
-
 import FWCore.ParameterSet.Config as cms
 import copy
 
@@ -6,14 +5,13 @@ process = cms.Process('runWtoTauNu')
 
 process.load('Configuration/StandardSequences/Services_cff')
 process.load('FWCore/MessageService/MessageLogger_cfi')
-process.MessageLogger.cerr.FwkReport.reportEvery = 2000
+process.MessageLogger.cerr.FwkReport.reportEvery = 1000
 
 #load geometry
 process.load('Configuration/StandardSequences/GeometryIdeal_cff')
 process.load('Configuration/StandardSequences/MagneticField_cff')
 process.load('Configuration/StandardSequences/Reconstruction_cff')
 process.load('Configuration/StandardSequences/FrontierConditions_GlobalTag_cff')
-#process.GlobalTag.globaltag = cms.string('START38_V14::All')
 process.GlobalTag.globaltag = cms.string('START39_V8::All')
 
 # import particle data table, needed for print-out of generator level information
@@ -59,26 +57,17 @@ process.saveWtoTauNuPlots = cms.EDAnalyzer("DQMSimpleFileSaver",
 )
 
 process.maxEvents = cms.untracked.PSet(            
-    input = cms.untracked.int32(5000)    
+    input = cms.untracked.int32(-1)    
 )
 
 process.source = cms.Source("PoolSource",
     fileNames = cms.untracked.vstring(
-       #'rfio:/castor/cern.ch/user/c/cerati/SkimDataZtautau/tauAnalysisElecMu_skim_TTbar_1_1.root'
-#       '/store/relval/CMSSW_3_6_1/RelValZTT/GEN-SIM-RECO/START36_V7-v1/0021/F405BC9A-525D-DF11-AB96-002618943811.root'
-       #'rfio:/castor/cern.ch/user/l/liis/wTauNuPatTuples/spring10/shrinkingcone/patTupleWtoTauNu_Wtaunu_7TeV_part01.root'
-
-
-#    'file:final_events_WtoTauNu_data_BTau_Run2010B_Nov4ReReco_RunPileup_79_1_AZq.root'
-#       'file:final_events_WtoTauNu_data_BTau_Run2010B_Nov4ReReco_RunPileup_78_1_4t7.root' # 
-#       'file:final_events_WtoTauNu_data_BTau_Run2010B_Nov4ReReco_RunPileup_126_1_DMx.root'
 #       'file:final_events_WtoTauNu_data_BTau_Run2010B_Nov4ReReco_RunPileup_127_1_nPN.root'
 #       'rfio:/castor/cern.ch/user/l/liis/CMSSW_38X/Histograms/Pileup/run6/final_events_WtoTauNu_Wtaunu_RunPileup_168_1_AXy.root'
-#       'rfio:/castor/cern.ch/user/l/liis/CMSSW_38X/Histograms/Pileup/run6/final_events_WtoTauNu_Wtaunu_RunPileup_105_1_ome.root'
-#       'rfio:/castor/cern.ch/user/l/liis/CMSSW_38X/Histograms/Pileup/run6/final_events_WtoTauNu_Wtaunu_RunPileup_9_1_hsf.root'    
-
-#       'rfio:/castor/cern.ch/user/l/liis/CMSSW_39X/PreselEvents/final_events_WtoTauNu_Wtaunu_Run02_144_1_oCQ.root'
-       'rfio:/castor/cern.ch/user/l/liis/CMSSW_39X/TestAOD/aodSkim_1_1_LYl.root'
+       ##       'rfio:/castor/cern.ch/user/l/liis/CMSSW_39X/PreselEvents/final_events_WtoTauNu_Wtaunu_Run02_144_1_oCQ.root'
+#       'rfio:/castor/cern.ch/user/l/liis/CMSSW_39X/TestAOD/aodSkim_1_1_LYl.root'
+       'rfio:/castor/cern.ch/user/l/liis/CMSSW_39X/TestAOD/aodSkim_Wtaunu_1_1_oVY.root'
+#       'rfio:/castor/cern.ch/user/l/liis/CMSSW_39X/TestAOD/aodSkim_Wtaunu_4_1_pLp.root'
        )
     #skipBadFiles = cms.untracked.bool(True)
 )
@@ -134,18 +123,18 @@ from TauAnalysis.Configuration.tools.changeCut import changeCut
 #tau selection
 changeCut(process,"selectedPatTausForWTauNuEta21","abs(eta) < 2.3")
 changeCut(process,"selectedPatTausForWTauNuPt20","pt() > 30")
-changeCut(process,"selectedPatTausForWTauNuLeadTrk","pt > 30")#"tauID('decayModeFinding') > 0.5")
+changeCut(process,"selectedPatTausForWTauNuLeadTrk","tauID('decayModeFinding') > 0.5")
+changeCut(process,"selectedPatTausForWTauNuLeadTrkPt","leadPFChargedHadrCand().isNonnull() & leadPFChargedHadrCand().pt() > 15.")
 
-changeCut(process,"selectedPatTausForWTauNuLeadTrkPt","pt > 30")#leadPFChargedHadrCand().isNonnull() & leadPFChargedHadrCand().pt() > 15.")
-changeCut(process,"selectedPatTausForWTauNuElectronVeto","tauID('againstElectronTight') > -0.5")
+changeCut(process,"selectedPatTausForWTauNuElectronVeto","tauID('againstElectronTight') > 0.5")
 changeCut(process,"selectedPatTausForWTauNuMuonVeto","tauID('againstMuonTight') > 0.5")
-changeCut(process,"selectedPatTausForWTauNuEmFraction","emFraction < 1.9")
+changeCut(process,"selectedPatTausForWTauNuEmFraction","emFraction < 0.9")
 changeCut(process,"selectedPatTausForWTauNuIso","tauID('byHPSmedium') > 0.5")
 
 #electron selection
 changeCut(process,"selectedPatElectronsTightId","electronID('eidLoose') > 0.5")
 changeCut(process,"selectedPatElectronsEta21","abs(eta) < 2.4")
-changeCut(process,"selectedPatElectronsPt15","pt > 45")
+changeCut(process,"selectedPatElectronsPt15","pt > 15")
 
 #muon selection
 changeCut(process,"selectedPatMuonsEta21","abs(eta) < 2.4")
@@ -174,7 +163,7 @@ process.p = cms.Path(
     +process.selectWtoTauNuEvents
     +process.analyzeWtoTauNuEvents
     +process.saveWtoTauNuPlots 
-    +process.filterFinalEvents
+#    +process.filterFinalEvents
 )
 
 
@@ -198,19 +187,19 @@ from TauAnalysis.Configuration.tools.factorizationTools import enableFactorizati
 #__#factorization#
 #--------------------------------------------------------------------------------
 # import utility function for estimation of systematic uncertainties
-from TauAnalysis.Configuration.tools.sysUncertaintyTools import disableSysUncertainties_runWtoTauNu
+from TauAnalysis.Configuration.tools.sysUncertaintyTools import enableSysUncertainties_runWtoTauNu
 #
 # define "hook" for keeping enabled/disabling estimation of systematic uncertainties
 # in case running jobs on the CERN batch system
 # (needs to be done after process.p has been defined)
 #__#systematics#
 if not hasattr(process, "isBatchMode"):
-       disableSysUncertainties_runWtoTauNu(process)
+       enableSysUncertainties_runWtoTauNu(process)
 
 #--------------------------------------------------------------------------------
 # disable event-dump output in order to reduce size of log-files
-if hasattr(process, "disableEventDump"):
-    process.analyzeWtoTauNuEvents.eventDumps = cms.VPSet()
+#if hasattr(process, "disableEventDump"):
+#    process.analyzeWtoTauNuEvents.eventDumps = cms.VPSet()
 #--------------------------------------------------------------------------------
 # disable accessing generator level information if running on data
 from TauAnalysis.Configuration.tools.switchToData import switchToData
