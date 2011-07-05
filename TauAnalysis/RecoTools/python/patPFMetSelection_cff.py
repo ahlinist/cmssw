@@ -31,7 +31,7 @@ patPFMETSelConfigurator = objSelConfigurator(
     [ selectedPatPFMETsPt25,
       selectedPatPFMETsPt30,
       selectedPatPFMETsPt45 ],
-    src = 'patMETs',
+    src = 'patPFMETs',
     pyModuleName = __name__,
     doSelIndividual = False
     )
