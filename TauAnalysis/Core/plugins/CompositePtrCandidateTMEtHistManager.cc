@@ -68,7 +68,7 @@ void CompositePtrCandidateTMEtHistManager<T>::bookHistogramsImp()
   hNuTauCandidateDPhi_ = book1D("NuTauCandidateDPhi", "#Delta#phi_{T,MET}", 36, -epsilon, TMath::Pi() + epsilon);
   hNuTauCandidateMt_ = book1D("NuTauCandidateMt", "Mass_{T,MET}", 40, 0., 200.);
   
-  hMEtVsTauPt_ = book2D("MEtVsTauPt", "P_{T}^{T} - MET", 20, 0., 100., 20, 0., 100.);
+  hMEtVsTauPt_ = book2D("MEtVsTauPt", "P_{T}^{T} - MET", 130, 20., 150., 130, 20., 150.);
 }
 
 template<typename T>
