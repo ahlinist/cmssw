@@ -128,6 +128,8 @@ def submitAnalysisToLXBatch(configFile = None, channel = None, samples = None,
                 jobCustomizations = []
                 jobCustomizations.append("if hasattr(process, 'ntupleOutputModule'):")
                 jobCustomizations.append("    process.ntupleOutputModule.fileName = '%s'" % os.path.basename(output_file))
+                jobCustomizations.append("if hasattr(process, 'patTupleOutputModule'):")
+                jobCustomizations.append("    process.patTupleOutputModule.fileName = '%s'" % os.path.basename(output_file))
                 jobCustomizations.append("if hasattr(process, 'skimOutputModule'):")
                 jobCustomizations.append("    process.skimOutputModule.fileName = '%s'" % os.path.basename(output_file))
                 HLTprocessName = 'HLT'
