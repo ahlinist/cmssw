@@ -18,7 +18,7 @@ from TauAnalysis.RecoTools.patLeptonSelection_cff import *
 tausBgEstQCDEnrichedLeadTrk = copy.deepcopy(selectedPatTausForWTauNuLeadTrk)
 tausBgEstQCDEnrichedLeadTrk.cut = cms.string('pt() > 30') 
 tausBgEstQCDEnrichedLeadTrkPt = copy.deepcopy(selectedPatTausForWTauNuLeadTrkPt)
-tausBgEstQCDEnrichedLeadTrkPt.cut = cms.string('pt() > 30') #'leadPFChargedHadrCand().isNonnull() & leadPFChargedHadrCand().pt() > 15.')
+tausBgEstQCDEnrichedLeadTrkPt.cut = cms.string('leadPFChargedHadrCand().isNonnull() & leadPFChargedHadrCand().pt() > 15.')
 tausBgEstQCDEnrichedIso = copy.deepcopy(selectedPatTausForWTauNuIso)
 tausBgEstQCDEnrichedIso.cut = cms.string('tauID("byHPSmedium") < 0.5')
 tausBgEstQCDEnrichedProng = copy.deepcopy(selectedPatTausForWTauNuProng)
@@ -79,7 +79,7 @@ htRatioBgEstQCDEnriched = cms.EDProducer("HtRatioProducer",
 
 selHtRatioBgEstQCDEnriched = cms.EDFilter("HtRatioSelector",
     src = cms.InputTag('htRatioBgEstQCDEnriched'),
-    cut = cms.string('Ratio() > 0.45'),
+    cut = cms.string('Ratio() > 0.65'),
     filter = cms.bool(False)
 )
 
@@ -113,6 +113,7 @@ cfgHtRatioCutBgEstQCDEnriched = cms.PSet(
     )
 
 cfgPFMetPtBgEstQCDEnriched = copy.deepcopy(cfgPFMetPt)
+cfgPFMetPtBgEstQCDEnriched.systematics = cms.vstring()
 
 cfgMetTopologyCutBgEstQCDEnriched = cms.PSet(
     pluginName = cms.string('metTopologyCutBgEstQCDEnriched'),
@@ -131,42 +132,52 @@ cfgSingleTauCutBgEstQCDEnriched = cms.PSet(
 #tau selection
 cfgTauEtaCutBgEstQCDEnriched = copy.deepcopy(cfgTauEtaCut)
 cfgTauPtCutBgEstQCDEnriched = copy.deepcopy(cfgTauPtCut)
+cfgTauPtCutBgEstQCDEnriched.systematics = cms.vstring()
 
 cfgTauLeadTrkCutBgEstQCDEnriched = copy.deepcopy(cfgTauLeadTrk)
 cfgTauLeadTrkCutBgEstQCDEnriched.pluginName = cms.string('tauLeadTrkCutBgEstQCDEnriched')
 cfgTauLeadTrkCutBgEstQCDEnriched.src_cumulative = cms.InputTag('tausBgEstQCDEnrichedLeadTrkCumulative')
+cfgTauLeadTrkCutBgEstQCDEnriched.systematics = cms.vstring()
 
 cfgTauLeadTrkPtCutBgEstQCDEnriched = copy.deepcopy(cfgTauLeadTrkPt)
 cfgTauLeadTrkPtCutBgEstQCDEnriched.pluginName = cms.string('tauLeadTrkPtCutBgEstQCDEnriched')
 cfgTauLeadTrkPtCutBgEstQCDEnriched.src_cumulative = cms.InputTag('tausBgEstQCDEnrichedLeadTrkPtCumulative')
+cfgTauLeadTrkPtCutBgEstQCDEnriched.systematics = cms.vstring()
 
 cfgTauMuonVetoBgEstQCDEnriched = copy.deepcopy(cfgTauMuonVeto)
 cfgTauMuonVetoBgEstQCDEnriched.pluginName = cms.string('tauMuonVetoBgEstQCDEnriched')
 cfgTauMuonVetoBgEstQCDEnriched.src_cumulative = cms.InputTag('tausBgEstQCDEnrichedMuonVetoCumulative')
+cfgTauMuonVetoBgEstQCDEnriched.systematics = cms.vstring()
 
 cfgTauElectronVetoBgEstQCDEnriched = copy.deepcopy(cfgTauElectronVeto)
 cfgTauElectronVetoBgEstQCDEnriched.pluginName = cms.string('tauElectronVetoBgEstQCDEnriched')
 cfgTauElectronVetoBgEstQCDEnriched.src_cumulative = cms.InputTag('tausBgEstQCDEnrichedElectronVetoCumulative')
+cfgTauElectronVetoBgEstQCDEnriched.systematics = cms.vstring()
 
 cfgTauEmFractionBgEstQCDEnriched = copy.deepcopy(cfgTauEmFraction)
 cfgTauEmFractionBgEstQCDEnriched.pluginName = cms.string('tauEmFractionBgEstQCDEnriched')
 cfgTauEmFractionBgEstQCDEnriched.src_cumulative = cms.InputTag('tausBgEstQCDEnrichedEmFractionCumulative')
+cfgTauEmFractionBgEstQCDEnriched.systematics = cms.vstring()
 
 cfgTauIsoBgEstQCDEnriched = copy.deepcopy(cfgTauIso)
 cfgTauIsoBgEstQCDEnriched.pluginName = cms.string('tauIsoBgEstQCDEnriched')
 cfgTauIsoBgEstQCDEnriched.src_cumulative = cms.InputTag('tausBgEstQCDEnrichedIsoCumulative')
+cfgTauIsoBgEstQCDEnriched.systematics = cms.vstring()
 
 cfgTauProngBgEstQCDEnriched = copy.deepcopy(cfgTauProngCut)
 cfgTauProngBgEstQCDEnriched.pluginName = cms.string('tauProngBgEstQCDEnriched')
 cfgTauProngBgEstQCDEnriched.src_cumulative = cms.InputTag('tausBgEstQCDEnrichedProngCumulative')
+cfgTauProngBgEstQCDEnriched.systematics = cms.vstring()
 
 cfgTauChargeBgEstQCDEnriched = copy.deepcopy(cfgTauChargeCut)
 cfgTauChargeBgEstQCDEnriched.pluginName = cms.string('tauChargeBgEstQCDEnriched')
 cfgTauChargeBgEstQCDEnriched.src_cumulative = cms.InputTag('tausBgEstQCDEnrichedChargeCumulative')
+cfgTauChargeBgEstQCDEnriched.systematics = cms.vstring()
 
 cfgTauEcalCrackVetoBgEstQCDEnriched = copy.deepcopy(cfgTauEcalCrackVeto)
 cfgTauEcalCrackVetoBgEstQCDEnriched.pluginName = cms.string('tauEcalCrackVetoBgEstQCDEnriched')
 cfgTauEcalCrackVetoBgEstQCDEnriched.src_cumulative = cms.InputTag('tausBgEstQCDEnrichedEcalCrackVetoCumulative')
+cfgTauEcalCrackVetoBgEstQCDEnriched.systematics = cms.vstring()
 
 evtSelConfiguratorBgEstQCDEnriched = eventSelFlagProdConfigurator(
     [ cfgTriggerBgEst,
