@@ -16,7 +16,7 @@ $Id$
 #include <list>
 
 namespace edm {
-  class WrapperHolder;
+  class WrapperOwningHolder;
   class ModuleDescription;
   class ProductRegistry;
   class ProductRegistryHelper {
