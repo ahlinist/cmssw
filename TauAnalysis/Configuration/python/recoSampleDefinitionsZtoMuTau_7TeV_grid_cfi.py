@@ -126,8 +126,8 @@ RECO_SAMPLES = {
     'data_TauPlusX_Run2011A_PromptReco_v4' : {
         'datasetpath' : "/TauPlusX/Run2011A-PromptReco-v4/AOD",
         'dbs_url' :  "http://cmsdbsprod.cern.ch/cms_dbs_prod_global/servlet/DBSServlet",
-        'lumi_mask' : "/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions11/7TeV/Prompt/Cert_160404-167784_7TeV_PromptReco_Collisions11_JSON.txt",
-        'runselection' : "165071-167784",
+        'lumi_mask' : "/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions11/7TeV/Prompt/Cert_160404-167913_7TeV_PromptReco_Collisions11_JSON.txt",
+        'runselection' : "165071-167913",
         'number_of_jobs' : 1000,
         'conditions' : 'GR_R_42_V14::All',
         'events_processed' : -1,
@@ -137,7 +137,7 @@ RECO_SAMPLES = {
         'hlt_paths' : {
             'HLT_IsoMu15_LooseIsoPFTau15_v2' : '165088:MIN-165633:MAX',  # period D
             'HLT_IsoMu15_LooseIsoPFTau20_v2' : '163269:MIN-163869:MAX',  # period E
-            'HLT_IsoMu15_LooseIsoPFTau20_v4' : '167078:MIN-167784:MAX'   # period F
+            'HLT_IsoMu15_LooseIsoPFTau20_v4' : '167078:MIN-167913:MAX'   # period F
         },
         'enableSysUncertainties' : False,
         'enableFakeRates' : True,
