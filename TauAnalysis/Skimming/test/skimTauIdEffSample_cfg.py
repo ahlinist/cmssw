@@ -272,6 +272,8 @@ process.saveZtoMuTau_tauIdEffPlots = cms.EDAnalyzer("DQMSimpleFileSaver",
     outputFileName = cms.string('plotsZtoMuTau_tauIdEff.root')
 )
 
+process.p = cms.Path(process.countEventsProcessed)
+
 process.o = cms.EndPath(process.skimOutputModule + process.saveZtoMuTau_tauIdEffPlots)
 
 #--------------------------------------------------------------------------------
