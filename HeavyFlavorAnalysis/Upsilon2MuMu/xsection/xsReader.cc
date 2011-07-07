@@ -35,11 +35,18 @@ xsReader::xsReader(TChain *tree, TString evtClassName): treeReaderXS(tree, evtCl
   //fYbin[21] = 2.1; fYbin[22] = 2.2; fYbin[23] = 2.3; fYbin[24] = 2.4;
   
   //// Ups(1S) Binning
-  fPTbin[0] = 0.; fPTbin[1] = 0.5; fPTbin[2] = 1.; fPTbin[3] = 1.5; fPTbin[4] = 2.; fPTbin[5] = 3.; fPTbin[6] = 4.;
-  fPTbin[7] = 5.; fPTbin[8] = 6.; fPTbin[9] = 7.; fPTbin[10] = 8.; fPTbin[11] = 9.; fPTbin[12] = 10.; fPTbin[13] = 11.;
-  fPTbin[14] = 12.; fPTbin[15] = 13.; fPTbin[16] = 14.; fPTbin[17] = 15.; fPTbin[18] = 16.; fPTbin[19] = 18.; 
-  fPTbin[20] = 20.; fPTbin[21] = 22.; fPTbin[22] = 25.; fPTbin[23] = 30.; fPTbin[24] = 50.; 
-  fYbin[0] = 0.; fYbin[1] = 0.4; fYbin[2] = 0.8; fYbin[3] = 1.2; fYbin[4] = 1.6; fYbin[5] = 2.; fYbin[6] = 2.4;
+  //fPTbin[0] = 0.; fPTbin[1] = 0.5; fPTbin[2] = 1.; fPTbin[3] = 1.5; fPTbin[4] = 2.; fPTbin[5] = 3.; fPTbin[6] = 4.;
+  //fPTbin[7] = 5.; fPTbin[8] = 6.; fPTbin[9] = 7.; fPTbin[10] = 8.; fPTbin[11] = 9.; fPTbin[12] = 10.; fPTbin[13] = 11.;
+  //fPTbin[14] = 12.; fPTbin[15] = 13.; fPTbin[16] = 14.; fPTbin[17] = 15.; fPTbin[18] = 16.; fPTbin[19] = 18.; 
+  //fPTbin[20] = 20.; fPTbin[21] = 22.; fPTbin[22] = 25.; fPTbin[23] = 30.; fPTbin[24] = 50.; 
+  //fYbin[0] = 0.; fYbin[1] = 0.4; fYbin[2] = 0.8; fYbin[3] = 1.2; fYbin[4] = 1.6; fYbin[5] = 2.; fYbin[6] = 2.4;
+  
+  //// NEW Ups(1S) Binning
+  fPTbin[0] = 0.; fPTbin[1] = 1; fPTbin[2] = 2.; fPTbin[3] = 3.; fPTbin[4] = 4.; fPTbin[5] = 5.; fPTbin[6] = 6.;
+  fPTbin[7] = 7.; fPTbin[8] = 8.; fPTbin[9] = 9.; fPTbin[10] = 10.; fPTbin[11] = 11.; fPTbin[12] = 12.; fPTbin[13] = 13.;
+  fPTbin[14] = 14.; fPTbin[15] = 17.; fPTbin[16] = 20.; fPTbin[17] = 25.; fPTbin[18] = 50.; 
+  fYbin[0] = 0.; fYbin[1] = 0.4; fYbin[2] = 0.8; fYbin[3] = 1.2; fYbin[4] = 1.6; fYbin[5] = 2.; fYbin[6] = 2.4;  
+  
   
   //// Ups(2S) Binning
   //fPTbin[0] = 0.; fPTbin[1] = 1.; fPTbin[2] = 2.; fPTbin[3] = 4.; fPTbin[4] = 6.; fPTbin[5] = 7.; fPTbin[6] = 8.;
@@ -57,10 +64,10 @@ xsReader::xsReader(TChain *tree, TString evtClassName): treeReaderXS(tree, evtCl
   fPidTableTrckEff = new PidTable("PidTables/DATA/Upsilon/PtTrackEff.dat");
   
   ///// PidTables MC -- TrackerMuonArbitrated 
-  //fPidTableMuIDPos = new PidTable("../tnp/PidTables/MC/Jpsi/MuID/CowboyVeto/TrackerMuonArbitrated/PtMmbPos-jpsi.tma.nb.dat");
-  //fPidTableMuIDNeg = new PidTable("../tnp/PidTables/MC/Jpsi/MuID/CowboyVeto/TrackerMuonArbitrated/PtMmbNeg-jpsi.tma.nb.dat");
-  //fPidTableTrigPos = new PidTable("../tnp/PidTables/MC/Jpsi/Trig/CowboyVeto/PtMmbPos-jpsi.tma.nb.dat");    
-  //fPidTableTrigNeg = new PidTable("../tnp/PidTables/MC/Jpsi/Trig/CowboyVeto/PtMmbNeg-jpsi.tma.nb.dat"); 
+  fPidTableMuIDPos = new PidTable("../tnp/PidTables/MC/Jpsi/MuID/CowboyVeto/TrackerMuonArbitrated/PtMmbPos-jpsi.tma.nb.dat");
+  fPidTableMuIDNeg = new PidTable("../tnp/PidTables/MC/Jpsi/MuID/CowboyVeto/TrackerMuonArbitrated/PtMmbNeg-jpsi.tma.nb.dat");
+  fPidTableTrigPos = new PidTable("../tnp/PidTables/MC/Jpsi/Trig/CowboyVeto/PtMmbPos-jpsi.tma.nb.dat");    
+  fPidTableTrigNeg = new PidTable("../tnp/PidTables/MC/Jpsi/Trig/CowboyVeto/PtMmbNeg-jpsi.tma.nb.dat"); 
   /// Trig Eff with Ups(1S)
   //fPidTableTrigPos = new PidTable("../tnp/PidTables/MC/Upsilon/Trig/PtMmbPos-upsilon.tma.nb.dat");    
   //fPidTableTrigNeg = new PidTable("../tnp/PidTables/MC/Upsilon/Trig/PtMmbNeg-upsilon.tma.nb.dat");  
@@ -74,10 +81,10 @@ xsReader::xsReader(TChain *tree, TString evtClassName): treeReaderXS(tree, evtCl
   
   
   ///// PidTables DATA -- TrackerMuonArbitrated 
-  fPidTableMuIDPos = new PidTable("../tnp/PidTables/DATA/Jpsi/MuID/CowboyVeto/TrackerMuonArbitrated/PtMmbPos-jpsi.tma.nb.dat");
-  fPidTableMuIDNeg = new PidTable("../tnp/PidTables/DATA/Jpsi/MuID/CowboyVeto/TrackerMuonArbitrated/PtMmbNeg-jpsi.tma.nb.dat");
-  fPidTableTrigPos = new PidTable("../tnp/PidTables/DATA/Jpsi/Trig/MuOnia/CowboyVeto/PtMmbPos-jpsi.tma.nb.dat");    
-  fPidTableTrigNeg = new PidTable("../tnp/PidTables/DATA/Jpsi/Trig/MuOnia/CowboyVeto/PtMmbNeg-jpsi.tma.nb.dat"); 
+  //fPidTableMuIDPos = new PidTable("../tnp/PidTables/DATA/Jpsi/MuID/CowboyVeto/TrackerMuonArbitrated/PtMmbPos-jpsi.tma.nb.dat");
+  //fPidTableMuIDNeg = new PidTable("../tnp/PidTables/DATA/Jpsi/MuID/CowboyVeto/TrackerMuonArbitrated/PtMmbNeg-jpsi.tma.nb.dat");
+  //fPidTableTrigPos = new PidTable("../tnp/PidTables/DATA/Jpsi/Trig/MuOnia/CowboyVeto/PtMmbPos-jpsi.tma.nb.dat");    
+  //fPidTableTrigNeg = new PidTable("../tnp/PidTables/DATA/Jpsi/Trig/MuOnia/CowboyVeto/PtMmbNeg-jpsi.tma.nb.dat"); 
   
   ///// PidTables DATA -- Global and Tracker 
   //fPidTableMuIDPos = new PidTable("../tnp/PidTables/DATA/Jpsi/MuID/CowboyVeto/PtMmbPos-jpsi.dat");

@@ -104,7 +104,7 @@ public:
   PidTable    *fPidTableTrckEff;
   
   double      fWeight;
-  static const int  fNpt = 24;
+  static const int  fNpt = 18;
   static const int  fNy = 6;
   double      fPTbin[fNpt+1], fYbin[fNy+1];
   int fBin;
