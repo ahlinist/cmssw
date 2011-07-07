@@ -35,18 +35,11 @@ xsReader::xsReader(TChain *tree, TString evtClassName): treeReaderXS(tree, evtCl
   //fYbin[21] = 2.1; fYbin[22] = 2.2; fYbin[23] = 2.3; fYbin[24] = 2.4;
   
   //// Ups(1S) Binning
-  //fPTbin[0] = 0.; fPTbin[1] = 0.5; fPTbin[2] = 1.; fPTbin[3] = 1.5; fPTbin[4] = 2.; fPTbin[5] = 3.; fPTbin[6] = 4.;
-  //fPTbin[7] = 5.; fPTbin[8] = 6.; fPTbin[9] = 7.; fPTbin[10] = 8.; fPTbin[11] = 9.; fPTbin[12] = 10.; fPTbin[13] = 11.;
-  //fPTbin[14] = 12.; fPTbin[15] = 13.; fPTbin[16] = 14.; fPTbin[17] = 15.; fPTbin[18] = 16.; fPTbin[19] = 18.; 
-  //fPTbin[20] = 20.; fPTbin[21] = 22.; fPTbin[22] = 25.; fPTbin[23] = 30.; fPTbin[24] = 50.; 
-  //fYbin[0] = 0.; fYbin[1] = 0.4; fYbin[2] = 0.8; fYbin[3] = 1.2; fYbin[4] = 1.6; fYbin[5] = 2.; fYbin[6] = 2.4;
-  
-  //// NEW Ups(1S) Binning
-  fPTbin[0] = 0.; fPTbin[1] = 1; fPTbin[2] = 2.; fPTbin[3] = 3.; fPTbin[4] = 4.; fPTbin[5] = 5.; fPTbin[6] = 6.;
-  fPTbin[7] = 7.; fPTbin[8] = 8.; fPTbin[9] = 9.; fPTbin[10] = 10.; fPTbin[11] = 11.; fPTbin[12] = 12.; fPTbin[13] = 13.;
-  fPTbin[14] = 14.; fPTbin[15] = 17.; fPTbin[16] = 20.; fPTbin[17] = 25.; fPTbin[18] = 50.; 
-  fYbin[0] = 0.; fYbin[1] = 0.4; fYbin[2] = 0.8; fYbin[3] = 1.2; fYbin[4] = 1.6; fYbin[5] = 2.; fYbin[6] = 2.4;  
-  
+  fPTbin[0] = 0.; fPTbin[1] = 0.5; fPTbin[2] = 1.; fPTbin[3] = 1.5; fPTbin[4] = 2.; fPTbin[5] = 3.; fPTbin[6] = 4.;
+  fPTbin[7] = 5.; fPTbin[8] = 6.; fPTbin[9] = 7.; fPTbin[10] = 8.; fPTbin[11] = 9.; fPTbin[12] = 10.; fPTbin[13] = 11.;
+  fPTbin[14] = 12.; fPTbin[15] = 13.; fPTbin[16] = 14.; fPTbin[17] = 15.; fPTbin[18] = 16.; fPTbin[19] = 18.; 
+  fPTbin[20] = 20.; fPTbin[21] = 22.; fPTbin[22] = 25.; fPTbin[23] = 30.; fPTbin[24] = 50.; 
+  fYbin[0] = 0.; fYbin[1] = 0.4; fYbin[2] = 0.8; fYbin[3] = 1.2; fYbin[4] = 1.6; fYbin[5] = 2.; fYbin[6] = 2.4;
   
   //// Ups(2S) Binning
   //fPTbin[0] = 0.; fPTbin[1] = 1.; fPTbin[2] = 2.; fPTbin[3] = 4.; fPTbin[4] = 6.; fPTbin[5] = 7.; fPTbin[6] = 8.;
@@ -131,6 +124,7 @@ void xsReader::eventProcessing() {
     preSelEff();
   }
   
+  MomentumCorrection();
   if ( !MuIDCheck() ) goto end;
   if ( isPathPreScaled(HLTPATH) ) goto end;
   if ( !isPathFired_Match(HLTPATH,HLTLABEL) ) goto end;
@@ -168,6 +162,28 @@ void xsReader::freePointers(){
       Cands_TM.erase(Cands_TM.begin());
     }  
   
+}
+
+bool xsReader::MomentumCorrection(){
+  TAnaCand *pCand(0);
+  TAnaTrack *pl1(0); TAnaTrack *pl2(0);
+  double a(0.00038); double aE(0.00019);
+  double b(0.00030); double bE(0.00007);
+  double corrPt1(0.); double corrPt2(0.);
+  for (int iC = 0; iC < fpEvt->nCands(); ++iC) {
+    pCand = fpEvt->getCand(iC);
+    pl1 = fpEvt->getSigTrack(pCand->fSig1); 
+    pl2 = fpEvt->getSigTrack(pCand->fSig2);
+    //cout << "pl1->fPlab.Perp() = " << pl1->fPlab.Perp() << " pl1->fPlab.Eta() = " << pl1->fPlab.Eta() << endl;
+    //cout << "pl2->fPlab.Perp() = " << pl2->fPlab.Perp() << " pl2->fPlab.Eta() = " << pl2->fPlab.Eta() << endl;
+    corrPt1 = pl1->fPlab.Perp()*(a+(b*TMath::Abs(pl1->fPlab.Eta())));
+    corrPt2 = pl2->fPlab.Perp()*(a+(b*TMath::Abs(pl2->fPlab.Eta())));
+    pl1->fPlab.SetPerp(corrPt1+pl1->fPlab.Perp());
+    pl2->fPlab.SetPerp(corrPt2+pl2->fPlab.Perp());
+    //cout << "After Correction " << endl;
+    //cout << "pl1->fPlab.Perp() = " << pl1->fPlab.Perp() << " pl1->fPlab.Eta() = " << pl1->fPlab.Eta() << endl;
+    //cout << "pl2->fPlab.Perp() = " << pl2->fPlab.Perp() << " pl2->fPlab.Eta() = " << pl2->fPlab.Eta() << endl;
+  }
 }
 
 void xsReader::Detectability(){
