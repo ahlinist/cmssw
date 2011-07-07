@@ -35,6 +35,7 @@ class NSVfitSingleParticleHypothesisBase
     stream << "<NSVfitSingleParticleHypothesisBase::print>:" << std::endl;
     stream << " name = " << name_ << std::endl;
     stream << " barcode = " << barcode_ << std::endl;
+    stream << " particle(id:key) = " << particle_.id() << ":" << particle_.key() << std::endl;
   }
 
  protected:

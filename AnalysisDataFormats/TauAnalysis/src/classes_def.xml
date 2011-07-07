@@ -39,9 +39,13 @@
   <class name="NSVfitEventHypothesisBase"/>
   <class name="NSVfitEventHypothesis"/>
   <class name="NSVfitResonanceHypothesisBase"/>
-  <class name="NSVfitResonanceHypothesis"/>
+  <class name="NSVfitResonanceHypothesis">
+    <field name="eventHyp_" transient="true"/>
+  </class> 
   <class name="NSVfitSingleParticleHypothesisBase"/>
-  <class name="NSVfitSingleParticleHypothesis"/>
+  <class name="NSVfitSingleParticleHypothesis">
+    <field name="mother_" transient="true"/>
+  </class>  
   <class name="NSVfitTauDecayHypothesisBase"/>
   <class name="NSVfitTauDecayHypothesis">
     <field name="tracks_" transient="true"/>

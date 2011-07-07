@@ -13,7 +13,9 @@ class NSVfitEventHypothesis;
 class NSVfitResonanceHypothesis : public NSVfitResonanceHypothesisBase
 {
  public:
-  NSVfitResonanceHypothesis() {}
+  NSVfitResonanceHypothesis()
+    : eventHyp_(NULL)
+  {}
   NSVfitResonanceHypothesis(const NSVfitResonanceHypothesis&);
   virtual ~NSVfitResonanceHypothesis() {}
 
@@ -64,6 +66,7 @@ class NSVfitResonanceHypothesis : public NSVfitResonanceHypothesisBase
 
   friend class NSVfitResonanceBuilderBase;
   friend class NSVfitAlgorithmByLikelihoodMaximization;
+  template<typename T1, typename T2> friend class CompositePtrCandidateT1T2MEt;
 
  private:
 

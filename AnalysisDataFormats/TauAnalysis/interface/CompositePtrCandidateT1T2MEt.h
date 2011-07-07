@@ -12,9 +12,9 @@
  *          Michal Bluj,
  *          Christian Veelken
  *
- * \version $Revision: 1.28 $
+ * \version $Revision: 1.29 $
  *
- * $Id: CompositePtrCandidateT1T2MEt.h,v 1.28 2011/05/29 17:54:35 veelken Exp $
+ * $Id: CompositePtrCandidateT1T2MEt.h,v 1.29 2011/06/08 10:13:08 veelken Exp $
  *
  */
 
@@ -29,6 +29,8 @@
 #include "DataFormats/Common/interface/OwnVector.h"
 
 #include "AnalysisDataFormats/TauAnalysis/interface/NSVfitEventHypothesisBase.h"
+#include "AnalysisDataFormats/TauAnalysis/interface/NSVfitResonanceHypothesis.h"
+#include "AnalysisDataFormats/TauAnalysis/interface/NSVfitSingleParticleHypothesis.h"
 #include "AnalysisDataFormats/TauAnalysis/interface/tauAnalysisAuxFunctions.h"
 
 #include <TMatrixD.h>
@@ -322,6 +324,23 @@ class CompositePtrCandidateT1T2MEt : public reco::LeafCandidate
   void addNSVfitSolution(std::auto_ptr<NSVfitEventHypothesisBase> solution)
   {
     nSVfitSolutions_.push_back(solution);
+
+    // CV: need to reset pointers to event/resonance hypothesis objects,
+    //     otherwise ROOT streamer will cause segmentation violation
+    //     when nSVfit solutions are written into .root file (?!)
+    //edm::OwnVector<NSVfitEventHypothesisBase>::iterator nSVfitSolution = nSVfitSolutions_.end();
+    //size_t numResonances = nSVfitSolution->numResonances();
+    //for ( size_t iResonance = 0; iResonance < numResonances; ++iResonance ) {
+    //  if ( dynamic_cast<NSVfitResonanceHypothesis*>(nSVfitSolution->resonance(iResonance)) ) {
+    //	NSVfitResonanceHypothesis* resonance = 
+    //	  dynamic_cast<NSVfitResonanceHypothesis*>(nSVfitSolution->resonance(iResonance));
+    //	resonance->eventHyp_ = 0;
+    //	size_t numDaughters = resonance->numDaughters();
+    //	for ( size_t iDaughter = 0; iDaughter < numDaughters; ++iDaughter ) {
+    //	  resonance->daughter(iDaughter)->mother_ = 0;
+    //	}
+    //  }
+    //}
   }
 
   /// references/pointers to decay products

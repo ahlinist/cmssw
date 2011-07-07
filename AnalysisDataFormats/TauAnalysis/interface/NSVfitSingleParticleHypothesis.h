@@ -17,7 +17,9 @@ class NSVfitSingleParticleHypothesis : virtual public NSVfitSingleParticleHypoth
 {
  public:
 
-  NSVfitSingleParticleHypothesis() {}
+  NSVfitSingleParticleHypothesis() 
+    : mother_(NULL)
+  {}
   NSVfitSingleParticleHypothesis(const std::string& name, int barcode)
     : NSVfitSingleParticleHypothesisBase(name, barcode),
       mother_(NULL)
@@ -49,12 +51,16 @@ class NSVfitSingleParticleHypothesis : virtual public NSVfitSingleParticleHypoth
     stream << "<NSVfitSingleParticleHypothesis::print>:" << std::endl;
     stream << " name = " << name_ << std::endl;
     stream << " barcode = " << barcode_ << std::endl;
+    stream << " particle(id:key) = " << particle_.id() << ":" << particle_.key() << std::endl;
     stream << " p4: Pt = " << p4_.pt() << ","
 	   << " eta = " << p4_.eta() << ", phi = " << p4_.phi() << std::endl;
     stream << " p4_fitted: Pt = " << p4_fitted().pt() << ","
 	   << " eta = " << p4_fitted().eta() << ", phi = " << p4_fitted().phi() << std::endl;
     stream << "(x = " << (p4_.energy()/p4_fitted().energy()) << ")" << std::endl;
   }
+
+  friend class NSVfitAlgorithmByLikelihoodMaximization;
+  template<typename T1, typename T2> friend class CompositePtrCandidateT1T2MEt;
 
  protected:
 
