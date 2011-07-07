@@ -278,8 +278,8 @@ void anaXS::loadFiles(const char *dir, int i) {
       ufile = fDirectory + string("/upsilon/101201.fl10.mm.COMBINED.xsReader_1SBin.default.root");
       afile = fDirectory + string("/upsilon/Acc_All_0_50.xsReader_1Sbin.default.root");
       //ufile = fDirectory + string("/upsilon/101201.fl10.mm.COMBINED.xsReader_1Sbin.tma.default.root");
-      jfile = fDirectory + string("/upsilon/130211.nov4rereco_v2.dimuons.xsReader_Data_1SBin.default.root");
-      //jfile = fDirectory + string("/upsilon/130211.nov4rereco_v2.dimuons.xsReader_Data_new1SBin.default.root");
+      //jfile = fDirectory + string("/upsilon/130211.nov4rereco_v2.dimuons.xsReader_Data_1SBin.default.root");
+      jfile = fDirectory + string("/upsilon/130211.nov4rereco_v2.dimuons.xsReader_Data_v2.default.root");
       //jfile = fDirectory + string("/upsilon/130211.nov4rereco_v2.dimuons.xsReader_1Sbin.tma.default.root");
      
     } else {
@@ -1032,14 +1032,14 @@ void anaXS::makeAllDATA(int channel) {
     
     //table(fS1YieldPt, "anan");
     
-    FITUpsilon(3); //3 for PtIntegrated plots, 4 for RapidityIntegrated plots
-    //GetAnaEff();
-    //GetPreSelEff();
-    //GetTrackEff();
-    //GetMuIDEff(2);
-    //GetTrigEff(2);
-    //CorrectedYields(2);   // 1- FOR MC, 2 FOR DATA
-    //PlotProjections(2);   // 1- FOR MC, 2 FOR DATA
+    FITUpsilon(1); //3 for PtIntegrated plots, 4 for RapidityIntegrated plots
+    GetAnaEff();
+    GetPreSelEff();
+    GetTrackEff();
+    GetMuIDEff(2);
+    GetTrigEff(2);
+    CorrectedYields(2);   // 1- FOR MC, 2 FOR DATA
+    PlotProjections(2);   // 1- FOR MC, 2 FOR DATA
     
   }
 
@@ -5221,7 +5221,7 @@ void anaXS::FITUpsilon(int mode){
       c1->SaveAs(Form("%s/massfits_%s_%s.eps", fPtDirectory.c_str(), fSample.c_str(), frag.Data())); 
     }
     
-    TFile *f = new TFile("SigmaDATA.root", "RECREATE");
+    TFile *f = new TFile("SigmaDATA_PtInt.root", "RECREATE");
     hSigma1S->Write();
     hSigma2S->Write();
     hMean1S->Write();
@@ -6598,7 +6598,7 @@ void anaXS::setFunctionParameters(TH1D *h, TF1 *f, int mode, int par) {
 	cout << " n1 = " << n1 << endl;
       }
       
-      TFile *f2 = new TFile("SigmaDATA.root");
+      TFile *f2 = new TFile("SigmaDATA_PtInt.root");
       TH1D *hSigma1S;
       hSigma1S = (TH1D*)gFile->Get("hSigma1S");
       TH1D *hSigma2S;
