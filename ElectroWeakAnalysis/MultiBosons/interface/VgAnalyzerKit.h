@@ -177,7 +177,7 @@ protected:
   Float_t  pfMETSig_;
   // Electron
   Int_t    nEle_;
-  Int_t    eleTrg_[maxP][29];
+  Int_t    eleTrg_[maxP][31];
   Int_t    eleID_[maxP][30];
   Float_t  eleIDLH_[maxP];
   Int_t    eleClass_[maxP];
@@ -244,7 +244,8 @@ protected:
   Float_t  elePV3D_[maxP];
   Float_t  eleBS2D_[maxP];
   Float_t  eleBS3D_[maxP];
-
+  Float_t  elePVD0_[maxP];
+  Float_t  elePVDz_[maxP];
   // Photon
   Int_t    nPho_;
   Int_t    phoTrg_[maxP][8];
@@ -339,6 +340,7 @@ protected:
   Float_t  muPV3D_[maxP];
   Float_t  muBS2D_[maxP];
   Float_t  muBS3D_[maxP];
+  Float_t  muVtx_[maxP][3];
 
   // Jet
   Int_t    nJet_;
@@ -363,6 +365,7 @@ protected:
   Float_t  jetChargedEmEnergyFraction_[maxP];
   Float_t  jetChargedHadronEnergy_[maxP];
   Float_t  jetChargedHadronEnergyFraction_[maxP];
+  Int_t    jetChargedHadronMultiplicity_[maxP];
   Float_t  jetChargedMuEnergy_[maxP];
   Float_t  jetChargedMuEnergyFraction_[maxP];
   Float_t  jetmaxEInEmTowers_[maxP];

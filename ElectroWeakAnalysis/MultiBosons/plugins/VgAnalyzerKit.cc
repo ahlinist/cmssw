@@ -101,7 +101,7 @@ VgAnalyzerKit::VgAnalyzerKit(const edm::ParameterSet& ps) : verbosity_(0), helpe
   tree_->Branch("ttbit0", &ttbit0_, "ttbit0/I");
   tree_->Branch("nHLT", &nHLT_, "nHLT/I");
   tree_->Branch("HLT", HLT_, "HLT[nHLT]/I");
-  tree_->Branch("HLTIndex", HLTIndex_, "HLTIndex[193]/I");
+  tree_->Branch("HLTIndex", HLTIndex_, "HLTIndex[205]/I");
   tree_->Branch("HLTprescale", HLTprescale_, "HLTprescale[nHLT]/I");
   tree_->Branch("nHFTowersP", &nHFTowersP_, "nHFTowersP/I");
   tree_->Branch("nHFTowersN", &nHFTowersN_, "nHFTowersN/I");
@@ -178,7 +178,7 @@ VgAnalyzerKit::VgAnalyzerKit(const edm::ParameterSet& ps) : verbosity_(0), helpe
   tree_->Branch("pfMETSig", &pfMETSig_, "pfMETSig/F");
   // Electron
   tree_->Branch("nEle", &nEle_, "nEle/I");
-  tree_->Branch("eleTrg", eleTrg_, "eleTrg[nEle][29]/I");
+  tree_->Branch("eleTrg", eleTrg_, "eleTrg[nEle][31]/I");
   tree_->Branch("eleID", eleID_, "eleID[nEle][30]/I");
   tree_->Branch("eleIDLH", eleIDLH_, "eleIDLH[nEle]/F");
   tree_->Branch("eleClass", eleClass_, "eleClass[nEle]/I");
@@ -244,6 +244,8 @@ VgAnalyzerKit::VgAnalyzerKit(const edm::ParameterSet& ps) : verbosity_(0), helpe
   tree_->Branch("elePV3D", elePV3D_, "elePV3D[nEle]/F");
   tree_->Branch("eleBS2D", eleBS2D_, "eleBS2D[nEle]/F");
   tree_->Branch("eleBS3D", eleBS3D_, "eleBS3D[nEle]/F");
+  tree_->Branch("elePVD0", elePVD0_, "elePVD0[nEle]/F");
+  tree_->Branch("elePVDz", elePVDz_, "elePVDz[nEle]/F");
   // Photon
   tree_->Branch("nPho", &nPho_, "nPho/I");
   tree_->Branch("phoTrg", phoTrg_, "phoTrg[nPho][8]/I");
@@ -344,6 +346,7 @@ VgAnalyzerKit::VgAnalyzerKit(const edm::ParameterSet& ps) : verbosity_(0), helpe
   tree_->Branch("muPV3D", muPV3D_, "muPV3D[nMu]/F");
   tree_->Branch("muBS2D", muBS2D_, "muBS2D[nMu]/F");
   tree_->Branch("muBS3D", muBS3D_, "muBS3D[nMu]/F");
+  tree_->Branch("muVtx", muVtx_, "muVtx[nMu][3]/F");
   // Jet
   if (doStoreJets_) {
     tree_->Branch("nJet", &nJet_, "nJet/I");
@@ -367,6 +370,7 @@ VgAnalyzerKit::VgAnalyzerKit(const edm::ParameterSet& ps) : verbosity_(0), helpe
     tree_->Branch("jetChargedEmEnergyFraction", jetChargedEmEnergyFraction_, "jetChargedEmEnergyFraction[nJet]/F");
     tree_->Branch("jetChargedHadronEnergy", jetChargedHadronEnergy_, "jetChargedHadronEnergy[nJet]/F");
     tree_->Branch("jetChargedHadronEnergyFraction", jetChargedHadronEnergyFraction_, "jetChargedHadronEnergyFraction[nJet]/F");
+    tree_->Branch("jetChargedHadronMultiplicity", jetChargedHadronMultiplicity_, "jetChargedHadronMultiplicity[nJet]/I");
     tree_->Branch("jetChargedMuEnergy", jetChargedMuEnergy_, "jetChargedMuEnergy[nJet]/F");
     tree_->Branch("jetChargedMuEnergyFraction", jetChargedMuEnergyFraction_, "jetChargedMuEnergyFraction[nJet]/F");
     if (doGenParticles_) {
@@ -707,7 +711,7 @@ fabs(ip->pdgId())<=14) || ip->pdgId()==22))) {
   // cout << "VgAnalyzerKit: produce: HLT ... " << endl;
   // Indicate the index of interesting HLT bits. Even CMS has different HLT table for different runs, we can still use the correct HLT bit
 
-  for (int a=0; a<193; a++)
+  for (int a=0; a<205; a++)
     HLTIndex_[a] = -1;
  
   nHLT_ = 0;
@@ -914,6 +918,18 @@ fabs(ip->pdgId())<=14) || ip->pdgId()==22))) {
     else if (hlNames[i] == "HLT_Ele27_WP80_PFMT50_v1")					HLTIndex_[190] = i;
     else if (hlNames[i] == "HLT_Ele32_WP70_PFMT50_v1")					HLTIndex_[191] = i;
     else if (hlNames[i] == "HLT_Ele17_CaloIdL_CaloIsoVL_Ele8_CaloIdL_CaloIsoVL_v6")	HLTIndex_[192] = i;
+    else if (hlNames[i] == "HLT_Ele8_CaloIdL_CaloIsoVL_v1")				HLTIndex_[193] = i;
+    else if (hlNames[i] == "HLT_Ele8_CaloIdL_CaloIsoVL_v2")				HLTIndex_[194] = i;
+    else if (hlNames[i] == "HLT_Ele8_CaloIdL_CaloIsoVL_v3")				HLTIndex_[195] = i;
+    else if (hlNames[i] == "HLT_Ele8_CaloIdL_CaloIsoVL_v4")				HLTIndex_[196] = i;
+    else if (hlNames[i] == "HLT_Ele8_CaloIdL_CaloIsoVL_v5")				HLTIndex_[197] = i;
+    else if (hlNames[i] == "HLT_Ele8_CaloIdL_CaloIsoVL_v6")				HLTIndex_[198] = i;
+    else if (hlNames[i] == "HLT_Ele17_CaloIdL_CaloIsoVL_v1")				HLTIndex_[199] = i;
+    else if (hlNames[i] == "HLT_Ele17_CaloIdL_CaloIsoVL_v2")				HLTIndex_[200] = i;
+    else if (hlNames[i] == "HLT_Ele17_CaloIdL_CaloIsoVL_v3")				HLTIndex_[201] = i;
+    else if (hlNames[i] == "HLT_Ele17_CaloIdL_CaloIsoVL_v4")				HLTIndex_[202] = i;
+    else if (hlNames[i] == "HLT_Ele17_CaloIdL_CaloIsoVL_v5")				HLTIndex_[203] = i;
+    else if (hlNames[i] == "HLT_Ele17_CaloIdL_CaloIsoVL_v6")				HLTIndex_[204] = i;
   }
 
   // Gen & PAT MET (caloMET)
@@ -1014,6 +1030,8 @@ fabs(ip->pdgId())<=14) || ip->pdgId()==22))) {
   const TriggerObjectMatch *eleTriggerMatch27(triggerEvent->triggerObjectMatchResult("electronTriggerMatchHLTEle27WP80PFMT50v1"));
   const TriggerObjectMatch *eleTriggerMatch28(triggerEvent->triggerObjectMatchResult("electronTriggerMatchHLTEle32WP70PFMT50v1"));
   const TriggerObjectMatch *eleTriggerMatch29(triggerEvent->triggerObjectMatchResult("electronTriggerMatchHLTEle17CaloIdLCaloIsoVLEle8CaloIdLCaloIsoVLv6"));
+  const TriggerObjectMatch *eleTriggerMatch30(triggerEvent->triggerObjectMatchResult("electronTriggerMatchHLTEle8CaloIdLCaloIsoVL"));
+  const TriggerObjectMatch *eleTriggerMatch31(triggerEvent->triggerObjectMatchResult("electronTriggerMatchHLTEle17CaloIdLCaloIsoVL"));
 
   int nElePassCut = 0;
   nEle_ = 0;
@@ -1054,6 +1072,8 @@ fabs(ip->pdgId())<=14) || ip->pdgId()==22))) {
       const TriggerObjectRef eleTrigRef27( matchHelper.triggerMatchObject( eleBaseRef, eleTriggerMatch27, e, *triggerEvent ) );
       const TriggerObjectRef eleTrigRef28( matchHelper.triggerMatchObject( eleBaseRef, eleTriggerMatch28, e, *triggerEvent ) );
       const TriggerObjectRef eleTrigRef29( matchHelper.triggerMatchObject( eleBaseRef, eleTriggerMatch29, e, *triggerEvent ) );
+      const TriggerObjectRef eleTrigRef30( matchHelper.triggerMatchObject( eleBaseRef, eleTriggerMatch30, e, *triggerEvent ) );
+      const TriggerObjectRef eleTrigRef31( matchHelper.triggerMatchObject( eleBaseRef, eleTriggerMatch31, e, *triggerEvent ) );
       eleTrg_[nEle_][0]  = (eleTrigRef1.isAvailable())  ? 1 : -99;
       eleTrg_[nEle_][1]  = (eleTrigRef2.isAvailable())  ? 1 : -99;
       eleTrg_[nEle_][2]  = (eleTrigRef3.isAvailable())  ? 1 : -99;
@@ -1083,6 +1103,8 @@ fabs(ip->pdgId())<=14) || ip->pdgId()==22))) {
       eleTrg_[nEle_][26]  = (eleTrigRef27.isAvailable()) ? 1 : -99;
       eleTrg_[nEle_][27]  = (eleTrigRef28.isAvailable()) ? 1 : -99;
       eleTrg_[nEle_][28]  = (eleTrigRef29.isAvailable()) ? 1 : -99;
+      eleTrg_[nEle_][29]  = (eleTrigRef30.isAvailable()) ? 1 : -99;
+      eleTrg_[nEle_][30]  = (eleTrigRef31.isAvailable()) ? 1 : -99;
 
       //        new eID with correct isolations and conversion rejection
       //	https://twiki.cern.ch/twiki/bin/viewauth/CMS/SimpleCutBasedEleID
@@ -1284,6 +1306,8 @@ fabs(ip->pdgId())<=14) || ip->pdgId()==22))) {
       elePV3D_[nEle_] = iEle->dB(pat::Electron::PV3D);
       eleBS2D_[nEle_] = iEle->dB(pat::Electron::BS2D);
       eleBS3D_[nEle_] = iEle->dB(pat::Electron::BS3D);
+      elePVD0_[nEle_] = iEle->gsfTrack()->dxy((*recVtxs)[0].position());
+      elePVDz_[nEle_] = iEle->gsfTrack()->dz((*recVtxs)[0].position());
 
       nEle_++;
     }
@@ -1667,6 +1691,10 @@ fabs(ip->pdgId())<=14) || ip->pdgId()==22))) {
       muPV3D_[nMu_] = iMu->dB(pat::Muon::PV3D);
       muBS2D_[nMu_] = iMu->dB(pat::Muon::BS2D);
       muBS3D_[nMu_] = iMu->dB(pat::Muon::BS3D);
+
+      muVtx_[nMu_][0] = iMu->vertex().x();
+      muVtx_[nMu_][1] = iMu->vertex().y();
+      muVtx_[nMu_][2] = iMu->vertex().z();
 
       if (iMu->track().isNull())
         muTrkdPt_[nMu_] = -99;
@@ -2178,6 +2206,7 @@ fabs(ip->pdgId())<=14) || ip->pdgId()==22))) {
 	jetChargedEmEnergyFraction_[nJet_] = iJet->chargedEmEnergyFraction();
 	jetChargedHadronEnergy_[nJet_]     = iJet->chargedHadronEnergy();
 	jetChargedHadronEnergyFraction_[nJet_] = iJet->chargedHadronEnergyFraction();
+        jetChargedHadronMultiplicity_[nJet_]  = iJet->chargedHadronMultiplicity();
 	jetChargedMuEnergy_[nJet_]	   = iJet->chargedMuEnergy();
 	jetChargedMuEnergyFraction_[nJet_] = iJet->chargedMuEnergyFraction();
 	
