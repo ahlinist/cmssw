@@ -36,103 +36,93 @@ void ana::Loop()
 // METHOD2: replace line
 //    fChain->GetEntry(jentry);       //read all branches
 //by  b_branchname->GetEntry(ientry); //read only this branch
-   FILE *Table = fopen("Input_table", "r");
-   char filename[200];
-   char tmp[100];
-   int flag = 1;
-   int nfile(0);
-   double weight[20];
-   double nevt[20];
-   double luminosity = 100.;
-   while (flag != -1){
-      flag=fscanf(Table, "%s", filename);
-      if (flag == -1) continue;
-      flag=fscanf(Table, "%s", tmp);
-      double cross=atof(tmp);
-      flag=fscanf(Table, "%s", tmp);
-      double evt=atof(tmp);
-      flag=fscanf(Table, "%s", tmp);
-      double skim_evt=atof(tmp);
+   float Pi = 3.14159265;
 
-      weight[nfile] = 0;
-      weight[nfile] = cross*luminosity/evt;
-      if (nfile == 0) nevt[nfile] = skim_evt;
-      else nevt[nfile] = skim_evt + nevt[nfile-1];
-      cout<<nfile<<"     "<<filename<<"     "<<cross<<"     "<<evt<<"     "<<weight[nfile]<<"     "<<skim_evt<<"     "<<nevt[nfile]<<endl;
-
-      nfile += 1;
-   }
-
-   int file_Index(-1);
-   double total_evt[20];
-   double HLT_evt[20];
-   double HLT_Ele_evt[20];
-   double HLT_EleID_evt[20];
-   double HLT_EleID_W_evt[20];
-   double HLT_EleID_W_Pho_evt[20];
-   double HLT_EleID_W_PhoID_evt[20];
-   double HLT_EleID_W_PhoID_dR_evt[20];
-   double FSR[20], ISR[20], Fake[20], Unknown[20], EleFake[20];
-   for (int a=0; a<20; a++) {
-     total_evt[a] = 0;
-     HLT_evt[a] = 0;
-     HLT_Ele_evt[a] = 0;
-     HLT_EleID_evt[a] = 0;
-     HLT_EleID_W_evt[a] = 0;
-     HLT_EleID_W_Pho_evt[a] = 0;
-     HLT_EleID_W_PhoID_evt[a] = 0;
-     HLT_EleID_W_PhoID_dR_evt[a] = 0;
-
-     FSR[a] = 0;
-     ISR[a] = 0;
-     Fake[a] = 0;
-     EleFake[a] = 0;
-     Unknown[a] = 0;
-   }
-
-   int   ele_num(0);
-   float ele_Pt(10);
-   int   pho_num(0);
+   bool HLT_pass(false);
+   int Wgamma_candidates(0);
+   int Wgamma_MT3_candidates(0);
+   int W_Index(-1);
+   float ele_Pt(30);
+   int ele_num(0);
+   float CTM[3];
+   int pho_Index(-1);
    float pho_Pt(10);
-   int   MCele_Index(-1), ele_Index(-1), pho_Index(-1);
-   float dPhi(0), dEta(0);
-   int   W_Index(-1);
-   double W_Mt(0), dPhi_MET(0);
+   float dR(999);
+   for (int a=0; a<3; a++) 
+     CTM[a] = 0;
 
-   TH1F *h2[20];
-   TH1F *h4[20][3];
-   TH1F *h5[20][3];
-   TH2F *h6[20][3];
-   TH2F *h7[20][3];
-   TH1F *h8[20][3];
-   TH2F *h9[20][3];
-   for (int a=0; a<20; a++) {
-     h2[a] = new TH1F(Form("deltaR_%d", a), "", 70, 0, 7);
+   float dEta(0), dPhi(0);
 
-     h4[a][0] = new TH1F(Form("calo_MET_%d", a), "", 200, 0, 200);
-     h4[a][1] = new TH1F(Form("tc_MET_%d", a), "", 200, 0, 200);
-     h4[a][2] = new TH1F(Form("pf_MET_%d", a), "", 200, 0, 200);
+   TH1F *h1 = new TH1F("ElePt_EB_EleCuts", "", 300, 0, 300);
+   TH1F *h2 = new TH1F("ElePt_EE_EleCuts", "", 300, 0, 300);
+   TH1F *h3 = new TH1F("EleEta_EleCuts", "", 60, -3, 3);
+   TH1F *h4 = new TH1F("ElePhi_EB_EleCuts", "", 80, -4, 4);
+   TH1F *h5 = new TH1F("ElePhi_EE_EleCuts", "", 80, -4, 4);
+   TH1F *h6 = new TH1F("tcMET_EleCuts", "", 300, 0, 300);
+   TH1F *h7 = new TH1F("pfMET_EleCuts", "", 300, 0, 300);
+   TH1F *h8 = new TH1F("tcMT_EleCuts", "", 300, 0, 300);
+   TH1F *h9 = new TH1F("pfMT_EleCuts", "", 300, 0, 300);
+   TH1F *h10 = new TH1F("nVtx_EleCuts", "", 50, 0, 50);
 
-     h5[a][0] = new TH1F(Form("MtMET_%d", a), "", 200, 0, 200);
-     h5[a][1] = new TH1F(Form("MttcMET_%d", a), "", 200, 0, 200);
-     h5[a][2] = new TH1F(Form("MtpfMET_%d", a), "", 200, 0, 200);
+   TH1F *h11 = new TH1F("ElePt_EB_AllCuts", "", 2000, 0, 2000);
+   TH1F *h12 = new TH1F("ElePt_EE_AllCuts", "", 2000, 0, 2000);
+   TH1F *h13 = new TH1F("EleEta_AllCuts", "", 60, -3, 3);
+   TH1F *h14 = new TH1F("ElePhi_EB_AllCuts", "", 80, -4, 4);
+   TH1F *h15 = new TH1F("ElePhi_EE_AllCuts", "", 80, -4, 4);
+   TH1F *h16 = new TH1F("tcMET_AllCuts", "", 2000, 0, 2000);
+   TH1F *h17 = new TH1F("pfMET_AllCuts", "", 2000, 0, 2000);
+   TH1F *h18 = new TH1F("tcMT_AllCuts", "", 2000, 0, 2000);
+   TH1F *h19 = new TH1F("pfMT_AllCuts", "", 2000, 0, 2000);
+   TH1F *h20 = new TH1F("PhoPt_EB_AllCuts", "", 2000, 0, 2000);
+   TH1F *h21 = new TH1F("PhoPt_EE_AllCuts", "", 2000, 0, 2000);
+   TH1F *h22 = new TH1F("PhoEta_AllCuts", "", 60, -3, 3);
+   TH1F *h23 = new TH1F("PhoPhi_EB_AllCuts", "", 80, -4, 4);
+   TH1F *h24 = new TH1F("PhoPhi_EE_AllCuts", "", 80, -4, 4);
+   TH2F *h25 = new TH2F("tcMT_CTM_AllCuts", "", 2000, 0, 2000, 2000, 0, 2000);
+   TH2F *h26 = new TH2F("pfMT_CTM_AllCuts", "", 2000, 0, 2000, 2000, 0, 2000);
+   TH1F *h27 = new TH1F("ElePhoMass_EB_AllCuts", "", 200, 0, 200);
+   TH1F *h28 = new TH1F("ElePhoMass_EE_AllCuts", "", 200, 0, 200);
+   TH1F *h29 = new TH1F("nVtx_AllCuts", "", 50, 0, 50);
+   TH1F *h30 = new TH1F("dR_AllCuts", "", 100, 0, 10);
+   TH1F *h65 = new TH1F("MWG1_AllCuts", "", 1000, 0, 1000);
+   TH1F *h66 = new TH1F("MWG2_AllCuts", "", 1000, 0, 1000);
+   TH1F *h67 = new TH1F("MWG3_AllCuts", "", 1000, 0, 1000);
+   TH1F *h68 = new TH1F("MWG4_AllCuts", "", 1000, 0, 1000);
 
-     h6[a][0] = new TH2F(Form("Mt_caloMET_%d", a), "", 200, 0, 200, 200, 0, 200);
-     h6[a][1] = new TH2F(Form("Mt_tcMET_%d", a), "", 200, 0, 200, 200, 0, 200);
-     h6[a][2] = new TH2F(Form("Mt_pfMET_%d", a), "", 200, 0, 200, 200, 0, 200);
+   TH1F *h31 = new TH1F("ElePt_EB_MT3Cuts", "", 2000, 0, 2000);
+   TH1F *h32 = new TH1F("ElePt_EE_MT3Cuts", "", 2000, 0, 2000);
+   TH1F *h33 = new TH1F("EleEta_MT3Cuts", "", 60, -3, 3);
+   TH1F *h34 = new TH1F("ElePhi_EB_MT3Cuts", "", 80, -4, 4);
+   TH1F *h35 = new TH1F("ElePhi_EE_MT3Cuts", "", 80, -4, 4);
+   TH1F *h36 = new TH1F("tcMET_MT3Cuts", "", 2000, 0, 2000);
+   TH1F *h37 = new TH1F("pfMET_MT3Cuts", "", 2000, 0, 2000);
+   TH1F *h38 = new TH1F("tcMT_MT3Cuts", "", 2000, 0, 2000);
+   TH1F *h39 = new TH1F("pfMT_MT3Cuts", "", 2000, 0, 2000);
+   TH1F *h40 = new TH1F("PhoPt_EB_MT3Cuts", "", 2000, 0, 2000);
+   TH1F *h41 = new TH1F("PhoPt_EE_MT3Cuts", "", 2000, 0, 2000);
+   TH1F *h42 = new TH1F("PhoEta_MT3Cuts", "", 60, -3, 3);
+   TH1F *h43 = new TH1F("PhoPhi_EB_MT3Cuts", "", 80, -4, 4);
+   TH1F *h44 = new TH1F("PhoPhi_EE_MT3Cuts", "", 80, -4, 4);
+   TH1F *h45 = new TH1F("ElePhoMass_EB_MT3Cuts", "", 200, 0, 200);
+   TH1F *h46 = new TH1F("ElePhoMass_EE_MT3Cuts", "", 200, 0, 200);
+   TH1F *h47 = new TH1F("RAZ_EB_MT3Cuts", "", 100, -5, 5);
+   TH1F *h48 = new TH1F("RAZ_EE_MT3Cuts", "", 100, -5, 5);
+   TH1F *h49 = new TH1F("RAZ_MT3Cuts", "", 100, -5, 5);
+   TH1F *h52 = new TH1F("nVtx_MT3Cuts", "", 50, 0, 50);
+   TH1F *h53 = new TH1F("dR_MT3Cuts", "", 100, 0, 10);
+   TH1F *h75 = new TH1F("MWG1_MT3Cuts", "", 2000, 0, 2000);
+   TH1F *h76 = new TH1F("MWG2_MT3Cuts", "", 2000, 0, 2000);
+   TH1F *h77 = new TH1F("MWG3_MT3Cuts", "", 2000, 0, 2000);
+   TH1F *h78 = new TH1F("MWG4_MT3Cuts", "", 2000, 0, 2000);
 
-     h7[a][0] = new TH2F(Form("Mt_M_caloMET_%d", a), "", 200, 0, 200, 200, 0, 200);
-     h7[a][1] = new TH2F(Form("Mt_M_tcMET_%d", a), "", 200, 0, 200, 200, 0, 200);
-     h7[a][2] = new TH2F(Form("Mt_M_pfMET_%d", a), "", 200, 0, 200, 200, 0, 200);
+   TH1F *h50 = new TH1F("PhoSeedTiming_Barrel", "", 500, -50, 50);
+   TH1F *h51 = new TH1F("PhoSeedTiming_Endcap", "", 500, -50, 50);
 
-     h8[a][0] = new TH1F(Form("PhoPt_EB_%d", a), "", 200, 0, 200);
-     h8[a][1] = new TH1F(Form("PhoPt_EE_%d", a), "", 200, 0, 200);
-     h8[a][2] = new TH1F(Form("PhoPt_All_%d", a), "", 200, 0, 200);
+   TH2F *g1 = new TH2F("PhoPtSigmaIEtaIEta_Barrel", "", 500, 0, 500, 9000, 0.0005, 0.0905);
+   TH2F *g2 = new TH2F("PhoPtSigmaIEtaIEta_Endcap", "", 500, 0, 500, 9000, 0.0005, 0.0905);
 
-     h9[a][0] = new TH2F(Form("MT2_MT3_caloMET_%d", a), "", 200, 0, 200, 200, 0, 200);
-     h9[a][1] = new TH2F(Form("MT2_MT3_tcMET_%d", a), "", 200, 0, 200, 200, 0, 200);
-     h9[a][2] = new TH2F(Form("MT2_MT3_pfMET_%d", a), "", 200, 0, 200, 200, 0, 200);
-   }
+   TH2F *g3 = new TH2F("Run_selection", "", 70000, 130000, 200000, 300, 0, 300);
+   TH1F *g4 = new TH1F("Num_Pho", "", 10, 0, 10);
 
    if (fChain == 0) return;
 
@@ -144,206 +134,509 @@ void ana::Loop()
       if (ientry < 0) break;
       nb = fChain->GetEntry(jentry);   nbytes += nb;
       // if (Cut(ientry) < 0) continue;
- 
-      file_Index = 0;
-      for (int a=0; a<nfile; a++) {
-        if (jentry >= nevt[a]) file_Index = a+1;
+
+      HLT_pass = false;
+      // HLT_Ele27_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_v1
+      if (run <= 161176 && HLTIndex[111] != -1 && HLT[HLTIndex[111]] == 1) HLT_pass = true; 
+      // HLT_Ele27_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_v2
+      else if (run >= 161217 && run <= 163261 && HLTIndex[112] != -1 && HLT[HLTIndex[112]] == 1) HLT_pass = true; 
+      // HLT_Ele27_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_v3
+      else if (run >= 163270 && run <= 163869 && HLTIndex[113] != -1 && HLT[HLTIndex[113]] == 1) HLT_pass = true;
+      //HLT_Ele32_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_v3
+      else if (run >= 165088 && run <= 165633 && HLTIndex[116] != -1 && HLT[HLTIndex[116]] == 1) HLT_pass = true; 
+      //HLT_Ele32_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_v4
+      else if (run >= 165970 && run <= 166967 && HLTIndex[117] != -1 && HLT[HLTIndex[117]] == 1) HLT_pass = true; 
+      //HLT_Ele32_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_v5
+      //else if (run >= 167039 && run <= 167151 && HLTIndex[189] != -1 && HLT[HLTIndex[189]] == 1) HLT_pass = true; 
+      if (HLT_pass == false) continue;
+      
+      if (nGoodVtx == 0) continue;
+      if (IsTracksGood == 0) continue;
+
+      // Energy scale
+      for (int a=0; a<nEle; a++) {
+        if (run >= 160431 && run <= 163869 && fabs(eleSCEta[a]) < 1.4442 && eleE3x3[a]/eleSCRawEn[a] > 0.94)
+	  elePt[a] = elePt[a]*(1-0.0047);
+        if (run >= 165071 && run <= 165970 && fabs(eleSCEta[a]) < 1.4442 && eleE3x3[a]/eleSCRawEn[a] > 0.94)
+	  elePt[a] = elePt[a]*(1-0.0007);
+        if (run >= 165971 && run <= 166502 && fabs(eleSCEta[a]) < 1.4442 && eleE3x3[a]/eleSCRawEn[a] > 0.94)
+	  elePt[a] = elePt[a]*(1+0.0003);
+        if (run >= 166503 && run <= 166861 && fabs(eleSCEta[a]) < 1.4442 && eleE3x3[a]/eleSCRawEn[a] > 0.94)
+	  elePt[a] = elePt[a]*(1+0.0011);
+
+        if (run >= 160431 && run <= 163869 && fabs(eleSCEta[a]) < 1.4442 && eleE3x3[a]/eleSCRawEn[a] < 0.94)
+	  elePt[a] = elePt[a]*(1+0.0025);
+        if (run >= 165071 && run <= 165970 && fabs(eleSCEta[a]) < 1.4442 && eleE3x3[a]/eleSCRawEn[a] < 0.94)
+	  elePt[a] = elePt[a]*(1+0.0049);
+        if (run >= 165971 && run <= 166502 && fabs(eleSCEta[a]) < 1.4442 && eleE3x3[a]/eleSCRawEn[a] < 0.94)
+	  elePt[a] = elePt[a]*(1+0.0067);
+        if (run >= 166503 && run <= 166861 && fabs(eleSCEta[a]) < 1.4442 && eleE3x3[a]/eleSCRawEn[a] < 0.94)
+	  elePt[a] = elePt[a]*(1+0.0063);
+
+        if (run >= 160431 && run <= 163869 && fabs(eleSCEta[a]) > 1.566 && eleE3x3[a]/eleSCRawEn[a] > 0.94)
+	  elePt[a] = elePt[a]*(1+0.0058);
+        if (run >= 165071 && run <= 165970 && fabs(eleSCEta[a]) > 1.566 && eleE3x3[a]/eleSCRawEn[a] > 0.94)
+	  elePt[a] = elePt[a]*(1+0.0249);
+        if (run >= 165971 && run <= 166502 && fabs(eleSCEta[a]) > 1.566 && eleE3x3[a]/eleSCRawEn[a] > 0.94)
+	  elePt[a] = elePt[a]*(1+0.0376);
+        if (run >= 166503 && run <= 166861 && fabs(eleSCEta[a]) > 1.566 && eleE3x3[a]/eleSCRawEn[a] > 0.94)
+	  elePt[a] = elePt[a]*(1+0.0450);
+
+        if (run >= 160431 && run <= 163869 && fabs(eleSCEta[a]) > 1.566 && eleE3x3[a]/eleSCRawEn[a] < 0.94)
+	  elePt[a] = elePt[a]*(1-0.0010);
+        if (run >= 165071 && run <= 165970 && fabs(eleSCEta[a]) > 1.566 && eleE3x3[a]/eleSCRawEn[a] < 0.94)
+	  elePt[a] = elePt[a]*(1+0.0062);
+        if (run >= 165971 && run <= 166502 && fabs(eleSCEta[a]) > 1.566 && eleE3x3[a]/eleSCRawEn[a] < 0.94)
+	  elePt[a] = elePt[a]*(1+0.0133);
+        if (run >= 166503 && run <= 166861 && fabs(eleSCEta[a]) > 1.566 && eleE3x3[a]/eleSCRawEn[a] < 0.94)
+	  elePt[a] = elePt[a]*(1+0.0178);
       }
 
-      int wg_enug(0);
-      if (file_Index == 0) {
-        for (int a=0; a<nMC; a++) {
-          if (mcDecayType[a] == 2) wg_enug += 1;
-        }
+      W_Index = -1;
+      ele_Pt = 35;
+      for (int a=0; a<nWenu; a++) {
+	// Kinematic cut
+	if (elePt[WenuEleIndex[a]] < ele_Pt) continue;
+        if (fabs(eleSCEta[WenuEleIndex[a]]) > 2.5) continue;
+        if (fabs(eleSCEta[WenuEleIndex[a]]) > 1.4442 && fabs(eleSCEta[WenuEleIndex[a]]) < 1.566) continue;
+	if (fabs(eleSCEta[WenuEleIndex[a]]) < 1.4442 && eleSigmaIEtaIEta[WenuEleIndex[a]] < 0.001) continue;
+
+	// Spike clean: kTime || kWeird || kBad
+	if (eleSeverity[WenuEleIndex[a]] == 3 || eleSeverity[WenuEleIndex[a]] == 4 || eleSeverity[WenuEleIndex[a]] == 5) continue;
+
+	// conversion
+        if (eleConvMissinghit[WenuEleIndex[a]] != 0) continue;
+        if (fabs(eleConvDist[WenuEleIndex[a]]) < 0.02 && fabs(eleConvDcot[WenuEleIndex[a]]) < 0.02) continue;
+
+        // H2WW WP80 for barrel
+        if (fabs(eleSCEta[WenuEleIndex[a]]) < 1.4442 &&
+            (max((float)0., eleIsoEcalDR03[WenuEleIndex[a]] - 1) + eleIsoHcalSolidDR03[WenuEleIndex[a]] + eleIsoTrkDR03[WenuEleIndex[a]] - rho*Pi*0.3*0.3)/elePt[WenuEleIndex[a]] > 0.04) continue;
+        if (fabs(eleSCEta[WenuEleIndex[a]]) < 1.4442 && eleSigmaIEtaIEta[WenuEleIndex[a]] > 0.01) continue;
+        if (fabs(eleSCEta[WenuEleIndex[a]]) < 1.4442 && fabs(eledPhiAtVtx[WenuEleIndex[a]]) > 0.027) continue;
+        if (fabs(eleSCEta[WenuEleIndex[a]]) < 1.4442 && fabs(eledEtaAtVtx[WenuEleIndex[a]]) > 0.005) continue;
+        // H2WW WP80 for endcap
+        if (fabs(eleSCEta[WenuEleIndex[a]]) > 1.566 &&
+            (eleIsoEcalDR03[WenuEleIndex[a]] + eleIsoHcalSolidDR03[WenuEleIndex[a]] + eleIsoTrkDR03[WenuEleIndex[a]] - rho*Pi*0.3*0.3)/elePt[WenuEleIndex[a]] > 0.033) continue;
+        if (fabs(eleSCEta[WenuEleIndex[a]]) > 1.566 && eleSigmaIEtaIEta[WenuEleIndex[a]] > 0.031) continue;
+        if (fabs(eleSCEta[WenuEleIndex[a]]) > 1.566 && fabs(eledPhiAtVtx[WenuEleIndex[a]]) > 0.021) continue;
+        if (fabs(eleSCEta[WenuEleIndex[a]]) > 1.566 && fabs(eledEtaAtVtx[WenuEleIndex[a]]) > 0.006) continue;
+
+        if (run <= 161176 && eleTrg[WenuEleIndex[a]][10] != 1) continue;
+        if (run >= 161217 && run <= 163261 && eleTrg[WenuEleIndex[a]][11] != 1) continue;
+        if (run >= 163270 && run <= 163869 && eleTrg[WenuEleIndex[a]][12] != 1) continue;
+        if (run >= 165088 && run <= 165633 && eleTrg[WenuEleIndex[a]][15] != 1) continue;
+        if (run >= 165970 && run <= 166967 && eleTrg[WenuEleIndex[a]][16] != 1) continue;
+        if (run >= 167039 && run <= 167151 && eleTrg[WenuEleIndex[a]][25] != 1) continue;
+
+  	W_Index = a;
+        ele_Pt = elePt[WenuEleIndex[a]];
       }
-      if (file_Index == 0 && wg_enug == 0) continue;
-      total_evt[file_Index] += weight[file_Index];
-
-      // HLT selection
-      if (HLT[65] == 0) continue;
-      HLT_evt[file_Index] += weight[file_Index];
-
-      // Electron selection
-      ele_Index = -1;
-      ele_Pt = 20;
+      if (W_Index == -1) continue;
+    
       ele_num = 0;
       for (int a=0; a<nEle; a++) {
-        if (elePt[a] < ele_Pt) continue;
+        if (a == WenuEleIndex[W_Index]) continue;
+        if (elePt[a] < 20) continue;
         if (fabs(eleSCEta[a]) > 2.5) continue;
-        if (fabs(eleSCEta[a]) > 1.4442 && fabs(eleSCEta[a]) < 1.56) continue;
-        ele_num += 1;
+        if (fabs(eleSCEta[a]) > 1.4442 && fabs(eleSCEta[a]) < 1.566) continue;
+	if (fabs(eleSCEta[a]) < 1.4442 && eleSigmaIEtaIEta[a] < 0.001) continue;
 
-        if (eleID[a][8] != 7) continue;
+	// Spike clean: kTime || kWeird || kBad
+	if (eleSeverity[a] == 3 || eleSeverity[a] == 4 || eleSeverity[a] == 5) continue;
 
-        ele_Pt = elePt[a];
-        ele_Index = a;
+	// conversion
+        if (eleConvMissinghit[a] != 0) continue;
+
+        // H2WW WP95 for barrel
+        if (fabs(eleSCEta[a]) < 1.4442 &&
+            (max((float)0., eleIsoEcalDR03[a] - 1) + eleIsoHcalSolidDR03[a] + eleIsoTrkDR03[a] - rho*Pi*0.3*0.3)/elePt[a] > 0.15) continue;
+        if (fabs(eleSCEta[a]) < 1.4442 && eleSigmaIEtaIEta[a] > 0.012) continue;
+        if (fabs(eleSCEta[a]) < 1.4442 && fabs(eledPhiAtVtx[a]) > 0.8) continue;
+        if (fabs(eleSCEta[a]) < 1.4442 && fabs(eledEtaAtVtx[a]) > 0.007) continue;
+        // H2WW WP95 for endcap
+        if (fabs(eleSCEta[a]) > 1.566 &&
+            (eleIsoEcalDR03[a] + eleIsoHcalSolidDR03[a] + eleIsoTrkDR03[a] - rho*Pi*0.3*0.3)/elePt[a] > 0.1) continue;
+        if (fabs(eleSCEta[a]) > 1.566 && eleSigmaIEtaIEta[a] > 0.031) continue;
+        if (fabs(eleSCEta[a]) > 1.566 && fabs(eledPhiAtVtx[a]) > 0.7) continue;
+        if (fabs(eleSCEta[a]) > 1.566 && fabs(eledEtaAtVtx[a]) > 0.011) continue;
+
+ 	ele_num += 1;
       }
-      if (ele_num == 0) continue;
-      HLT_Ele_evt[file_Index] += weight[file_Index];
-      if (ele_Index == -1) continue;
-      if (ele_num > 1) continue;
-      HLT_EleID_evt[file_Index] += weight[file_Index];
-	
-      // Make the plots of MET and W transverse mass
-      h4[file_Index][0]->Fill(MET, weight[file_Index]);
-      h4[file_Index][1]->Fill(tcMET, weight[file_Index]);
-      h4[file_Index][2]->Fill(pfMET, weight[file_Index]);
-      W_Index = -1;
-      for (int a=0; a<nWenu; a++) {
-	if (WenuEleIndex[a] != ele_Index) continue;
+      if (ele_num != 0) continue;
 
-        h5[file_Index][0]->Fill(WenuMassTCaloMET[a], weight[file_Index]);
-        h6[file_Index][0]->Fill(WenuMassTCaloMET[a], MET, weight[file_Index]);
+      if (fabs(eleSCEta[WenuEleIndex[W_Index]]) < 1.4442) 
+	h1->Fill(elePt[WenuEleIndex[W_Index]]);
+      else 
+	h2->Fill(elePt[WenuEleIndex[W_Index]]);
+      h3->Fill(eleEta[WenuEleIndex[W_Index]]);
+      if (fabs(eleSCEta[WenuEleIndex[W_Index]]) < 1.4442) 
+	h4->Fill(elePhi[WenuEleIndex[W_Index]]);
+      else
+	h5->Fill(elePhi[WenuEleIndex[W_Index]]);
+      h6->Fill(tcMET);
+      h7->Fill(pfMET);
+      h8->Fill(WenuMassTTcMET[W_Index]);
+      h9->Fill(WenuMassTPfMET[W_Index]);
+      h10->Fill(nGoodVtx);
 
-        h5[file_Index][1]->Fill(WenuMassTTcMET[a], weight[file_Index]);
-        h6[file_Index][1]->Fill(WenuMassTTcMET[a], tcMET, weight[file_Index]);
-
-        h5[file_Index][2]->Fill(WenuMassTPfMET[a], weight[file_Index]);
-        h6[file_Index][2]->Fill(WenuMassTPfMET[a], pfMET, weight[file_Index]);
-	W_Index = a;
-      }
-      
-      // MET selection
       if (pfMET < 25) continue;
-      HLT_EleID_W_evt[file_Index] += weight[file_Index];
 
-      // Photon selection
-      pho_Pt = 10;
       pho_Index = -1;
-      pho_num = 0;
+      pho_Pt = 15.;
+      int phonum(0);
       for (int a=0; a<nPho; a++) {
-        if (phoOverlap[a] == 1) continue;
-        if (phohasPixelSeed[a] == 1) continue;
-        if (phoEt[a] < pho_Pt) continue;
+	// Energy scale
+        if (run >= 160431 && run <= 163869 && fabs(phoSCEta[a]) < 1.4442 && phoR9[a] > 0.94)
+	  phoEt[a] = phoEt[a]*(1-0.0047);
+        if (run >= 165071 && run <= 165970 && fabs(phoSCEta[a]) < 1.4442 && phoR9[a] > 0.94)
+	  phoEt[a] = phoEt[a]*(1-0.0007);
+        if (run >= 165971 && run <= 166502 && fabs(phoSCEta[a]) < 1.4442 && phoR9[a] > 0.94)
+	  phoEt[a] = phoEt[a]*(1+0.0003);
+        if (run >= 166503 && run <= 166861 && fabs(phoSCEta[a]) < 1.4442 && phoR9[a] > 0.94)
+	  phoEt[a] = phoEt[a]*(1+0.0011);
+
+        if (run >= 160431 && run <= 163869 && fabs(phoSCEta[a]) < 1.4442 && phoR9[a] < 0.94)
+	  phoEt[a] = phoEt[a]*(1+0.0025);
+        if (run >= 165071 && run <= 165970 && fabs(phoSCEta[a]) < 1.4442 && phoR9[a] < 0.94)
+	  phoEt[a] = phoEt[a]*(1+0.0049);
+        if (run >= 165971 && run <= 166502 && fabs(phoSCEta[a]) < 1.4442 && phoR9[a] < 0.94)
+	  phoEt[a] = phoEt[a]*(1+0.0067);
+        if (run >= 166503 && run <= 166861 && fabs(phoSCEta[a]) < 1.4442 && phoR9[a] < 0.94)
+	  phoEt[a] = phoEt[a]*(1+0.0063);
+
+	if (run >= 160431 && run <= 163869 && fabs(phoSCEta[a]) > 1.4442 && phoR9[a] > 0.94)
+          phoEt[a] = phoEt[a]*(1+0.0058);
+        if (run >= 165071 && run <= 165970 && fabs(phoSCEta[a]) > 1.4442 && phoR9[a] > 0.94)
+          phoEt[a] = phoEt[a]*(1+0.0249);
+        if (run >= 165971 && run <= 166502 && fabs(phoSCEta[a]) > 1.4442 && phoR9[a] > 0.94)
+          phoEt[a] = phoEt[a]*(1+0.0376);
+        if (run >= 166503 && run <= 166861 && fabs(phoSCEta[a]) > 1.4442 && phoR9[a] > 0.94)
+          phoEt[a] = phoEt[a]*(1+0.0450);
+
+        if (run >= 160431 && run <= 163869 && fabs(phoSCEta[a]) > 1.4442 && phoR9[a] < 0.94)
+          phoEt[a] = phoEt[a]*(1-0.0010);
+        if (run >= 165071 && run <= 165970 && fabs(phoSCEta[a]) > 1.4442 && phoR9[a] < 0.94)
+          phoEt[a] = phoEt[a]*(1+0.0062);
+        if (run >= 165971 && run <= 166502 && fabs(phoSCEta[a]) > 1.4442 && phoR9[a] < 0.94)
+          phoEt[a] = phoEt[a]*(1+0.0133);
+        if (run >= 166503 && run <= 166861 && fabs(phoSCEta[a]) > 1.4442 && phoR9[a] < 0.94)
+          phoEt[a] = phoEt[a]*(1+0.0178);
+
+	if (phoEt[a] < pho_Pt) continue;
         if (fabs(phoSCEta[a]) > 2.5) continue;
-        if (fabs(phoSCEta[a]) > 1.4442 && fabs(phoSCEta[a]) < 1.56) continue;
-        if (file_Index == 5 && fabs(phoGenMomPID[a]) <= 22) continue;
-        if (file_Index == 6 && fabs(phoGenMomPID[a]) <= 22) continue;
-        pho_num += 1;
+        if (fabs(phoSCEta[a]) > 1.4442 && fabs(phoSCEta[a]) < 1.566) continue;
+	if (fabs(phoSCEta[a]) < 1.4442 && phoSigmaIEtaIEta[a] < 0.001) continue;
+        if (phoHoverE[a] > 0.5) continue;
 
-        if (fabs(phoSCEta[a]) < 1.4442 && (phoEcalIsoDR04[a]-0.004*phoEt[a]) > 2.6) continue;
-        if (fabs(phoSCEta[a]) < 1.4442 && (phoHcalIsoDR04[a]-0.001*phoEt[a]) > 50) continue;
-        if (fabs(phoSCEta[a]) < 1.4442 && (phoTrkIsoHollowDR04[a]-0.001*phoEt[a]) > 1.6) continue;
-        if (fabs(phoSCEta[a]) < 1.4442 && phoHoverE[a] > 0.04) continue;
-        if (fabs(phoSCEta[a]) < 1.4442 && phoSigmaIEtaIEta[a] > 0.012) continue;
+	// Spike clean: kTime || kWeird || kBad
+	if (phoSeverity[a] == 3 || phoSeverity[a] == 4 || phoSeverity[a] == 5) continue;
 
-        if (fabs(phoSCEta[a]) > 1.56 && (phoEcalIsoDR04[a]-0.004*phoEt[a]) > 50) continue;
-        if (fabs(phoSCEta[a]) > 1.56 && (phoHcalIsoDR04[a]-0.001*phoEt[a]) > 1.4) continue;
-        if (fabs(phoSCEta[a]) > 1.56 && (phoTrkIsoHollowDR04[a]-0.001*phoEt[a]) > 1.2) continue;
-        if (fabs(phoSCEta[a]) > 1.56 && phoHoverE[a] > 0.045) continue;
-        if (fabs(phoSCEta[a]) > 1.56 && phoSigmaIEtaIEta[a] > 0.038) continue;
+	dEta = phoEta[a] - eleEta[WenuEleIndex[W_Index]];
+	dPhi = phoPhi[a] - elePhi[WenuEleIndex[W_Index]];
+	if (dPhi >  3.1415927) dPhi -= 2*3.1415927;
+	if (dPhi < -3.1415927) dPhi += 2*3.1415927;
+	if (sqrt(pow(dEta,2)+pow(dPhi,2)) < 0.7) continue;
 
-        pho_Pt = phoEt[a];
+        // Require photon selection, satisfying isTight
+        if (phohasPixelSeed[a] == 1) continue;
+	if (fabs(phoSCEta[a]) < 1.4442 && (phoEcalIsoDR04[a]-0.006*phoEt[a]-0.183*rho) > 4.2) continue;
+        if (fabs(phoSCEta[a]) < 1.4442 && (phoHcalIsoDR04[a]-0.0025*phoEt[a]-0.062*rho) > 2.2) continue;
+        if (fabs(phoSCEta[a]) < 1.4442 && (phoTrkIsoHollowDR04[a]-0.001*phoEt[a]-0.167*rho) > 2) continue;
+        if (fabs(phoSCEta[a]) > 1.566 && (phoEcalIsoDR04[a]-0.006*phoEt[a]-0.090*rho) > 4.2) continue;
+        if (fabs(phoSCEta[a]) > 1.566 && (phoHcalIsoDR04[a]-0.0025*phoEt[a]-0.180*rho) > 2.2) continue;
+        if (fabs(phoSCEta[a]) > 1.566 && (phoTrkIsoHollowDR04[a]-0.001*phoEt[a]-0.032*rho) > 2) continue;
+        if (phoHoverE[a] > 0.05) continue;
+        if (fabs(phoSCEta[a]) < 1.4442 && phoSigmaIEtaIEta[a] > 0.013) continue;
+        if (fabs(phoSCEta[a]) > 1.566 && phoSigmaIEtaIEta[a] > 0.03) continue;
+
+	phonum += 1;
+
         pho_Index = a;
+        pho_Pt = phoEt[a];
       }
-      if (pho_num == 0) continue;
-      HLT_EleID_W_Pho_evt[file_Index] += weight[file_Index];
       if (pho_Index == -1) continue;
-      HLT_EleID_W_PhoID_evt[file_Index] += weight[file_Index];
 
-      // deltaR between electron and photon
-      dEta = phoEta[pho_Index] - eleEta[ele_Index];
-      dPhi = phoPhi[pho_Index] - elePhi[ele_Index];
+      dEta = phoEta[pho_Index] - eleEta[WenuEleIndex[W_Index]];
+      dPhi = phoPhi[pho_Index] - elePhi[WenuEleIndex[W_Index]];
       if (dPhi >  3.1415927) dPhi -= 2*3.1415927;
       if (dPhi < -3.1415927) dPhi += 2*3.1415927;
-      h2[file_Index]->Fill(sqrt(pow(dEta,2)+pow(dPhi,2)), weight[file_Index]);
-      if (sqrt(pow(dEta,2)+pow(dPhi,2)) < 0.7) continue;
-      HLT_EleID_W_PhoID_dR_evt[file_Index] += weight[file_Index];
+      dR = sqrt(pow(dEta,2)+pow(dPhi,2));
+      Wgamma_candidates += 1;
 
-      // Make the plot of W transverse mass versus cluster transverse mass
+      if (run <= 161176)
+        g3->Fill(run, HLTprescale[HLTIndex[111]]);
+      else if (run >= 161217 && run <= 163261)
+        g3->Fill(run, HLTprescale[HLTIndex[112]]);
+      else if (run >= 163270 && run <= 163869)
+        g3->Fill(run, HLTprescale[HLTIndex[113]]);
+      else if (run >= 165088 && run <= 165633)
+        g3->Fill(run, HLTprescale[HLTIndex[116]]);
+      else if (run >= 165970 && run <= 166967)
+        g3->Fill(run, HLTprescale[HLTIndex[117]]);
+      else if (run >= 167039 && run <= 167151)
+        g3->Fill(run, HLTprescale[HLTIndex[189]]);
+
+      g4->Fill(phonum);
+
       TLorentzVector LEle,LPho;
       TLorentzVector LZep;
       LPho.SetPxPyPzE(phoEt[pho_Index]*cos(phoPhi[pho_Index]),phoEt[pho_Index]*sin(phoPhi[pho_Index]),phoPz[pho_Index],phoE[pho_Index]);
-      LEle.SetPxPyPzE(elePt[ele_Index]*cos(elePhi[ele_Index]),elePt[ele_Index]*sin(elePhi[ele_Index]),elePz[ele_Index],eleEn[ele_Index]);
+      LEle.SetPxPyPzE(elePt[WenuEleIndex[W_Index]]*cos(elePhi[WenuEleIndex[W_Index]]),elePt[WenuEleIndex[W_Index]]*sin(elePhi[WenuEleIndex[W_Index]]),elePz[WenuEleIndex[W_Index]],eleEn[WenuEleIndex[W_Index]]);
       LZep = LPho + LEle;
-      float M3(0);
+
+      // Calculate neutrino Pz and then Wgamma mass
+      double MW = 80.4;
+      double Y = pow(MW,2) + 2.*elePt[WenuEleIndex[W_Index]]*pfMET*cos(pfMETPhi - elePhi[WenuEleIndex[W_Index]]);
+      double A = 4.*pow(elePt[WenuEleIndex[W_Index]], 2);
+      double B = 4.*fabs(elePz[WenuEleIndex[W_Index]])*Y;
+      double C = 4.*(pow(elePt[WenuEleIndex[W_Index]], 2) + pow(elePz[WenuEleIndex[W_Index]], 2))*pow(pfMET, 2) - pow(Y, 2);
+      double BAC = sqrt(B*B - 4.*A*C);
+
+      // Ez_nu is in the oposite direction to Pz_mu
+      double Ez_nu_1 = (-B + BAC)/(2.*A);
+      double Ez_nu_2 = (-B - BAC)/(2.*A);
+      // Ez_nu is in the same direction to Pz_mu
+      double Ez_nu_3 = (B + BAC)/(2.*A);
+      double Ez_nu_4 = (B - BAC)/(2.*A);
+
+      double E_nu_1 = sqrt(pfMETx*pfMETx + pfMETy*pfMETy + Ez_nu_1*Ez_nu_1);
+      double E_nu_2 = sqrt(pfMETx*pfMETx + pfMETy*pfMETy + Ez_nu_2*Ez_nu_2);
+      double E_nu_3 = sqrt(pfMETx*pfMETx + pfMETy*pfMETy + Ez_nu_3*Ez_nu_3);
+      double E_nu_4 = sqrt(pfMETx*pfMETx + pfMETy*pfMETy + Ez_nu_4*Ez_nu_4);
+
+      double sign = 0;
+      if (elePz[WenuEleIndex[W_Index]] <=0)
+        sign = -1;
+      else
+        sign = 1;
+
+      TLorentzVector LNu_1, LNu_2, LNu_3, LNu_4;
+      LNu_1.SetPxPyPzE(pfMETx, pfMETy, -Ez_nu_1*sign, E_nu_1);
+      LNu_2.SetPxPyPzE(pfMETx, pfMETy, -Ez_nu_2*sign, E_nu_2);
+      LNu_3.SetPxPyPzE(pfMETx, pfMETy, Ez_nu_3*sign, E_nu_3);
+      LNu_4.SetPxPyPzE(pfMETx, pfMETy, Ez_nu_4*sign, E_nu_4);
+
+      TLorentzVector LW_1, LW_2, LW_3, LW_4;
+      LW_1 = LEle + LNu_1;
+      LW_2 = LEle + LNu_2;
+      LW_3 = LEle + LNu_3;
+      LW_4 = LEle + LNu_4;
+
+      TLorentzVector LWG_1, LWG_2, LWG_3, LWG_4;
+      LWG_1 = LW_1 + LPho;
+      LWG_2 = LW_2 + LPho;
+      LWG_3 = LW_3 + LPho;
+      LWG_4 = LW_4 + LPho;
+      h65->Fill(LWG_1.M());
+      h66->Fill(LWG_2.M());
+      h67->Fill(LWG_3.M());
+      h68->Fill(LWG_4.M());
+
       float first(0);
       float second(0);
-      first = pow((sqrt(pow(LZep.M(), 2) + pow(phoEt[pho_Index]*cos(phoPhi[pho_Index]) + elePt[ele_Index]*cos(elePhi[ele_Index]) ,2) + pow(phoEt[pho_Index]*sin(phoPhi[pho_Index]) + elePt[ele_Index]*sin(elePhi[ele_Index]), 2)) + MET), 2);
-      second = pow(phoEt[pho_Index]*cos(phoPhi[pho_Index]) + elePt[ele_Index]*cos(elePhi[ele_Index]) + METx, 2) + pow(phoEt[pho_Index]*sin(phoPhi[pho_Index]) + elePt[ele_Index]*sin(elePhi[ele_Index]) + METy, 2);
-      M3 = sqrt(first - second);
-      h9[file_Index][0]->Fill(WenuMassTCaloMET[W_Index], M3, weight[file_Index]);
+
+      first = pow((sqrt(pow(LZep.M(), 2) + pow(phoEt[pho_Index]*cos(phoPhi[pho_Index]) + elePt[WenuEleIndex[W_Index]]*cos(elePhi[WenuEleIndex[W_Index]]) ,2) + pow(phoEt[pho_Index]*sin(phoPhi[pho_Index]) + elePt[WenuEleIndex[W_Index]]*sin(elePhi[WenuEleIndex[W_Index]]), 2)) + tcMET), 2);
+      second = pow(phoEt[pho_Index]*cos(phoPhi[pho_Index]) + elePt[WenuEleIndex[W_Index]]*cos(elePhi[WenuEleIndex[W_Index]]) + tcMETx, 2) + pow(phoEt[pho_Index]*sin(phoPhi[pho_Index]) + elePt[WenuEleIndex[W_Index]]*sin(elePhi[WenuEleIndex[W_Index]]) + tcMETy, 2);
+      CTM[0] = sqrt(first - second);
 
       first = 0;
       second = 0;
-      first = pow((sqrt(pow(LZep.M(), 2) + pow(phoEt[pho_Index]*cos(phoPhi[pho_Index]) + elePt[ele_Index]*cos(elePhi[ele_Index]) ,2) + pow(phoEt[pho_Index]*sin(phoPhi[pho_Index]) + elePt[ele_Index]*sin(elePhi[ele_Index]), 2)) + tcMET), 2);
-      second = pow(phoEt[pho_Index]*cos(phoPhi[pho_Index]) + elePt[ele_Index]*cos(elePhi[ele_Index]) + tcMETx, 2) + pow(phoEt[pho_Index]*sin(phoPhi[pho_Index]) + elePt[ele_Index]*sin(elePhi[ele_Index]) + tcMETy, 2);
-      M3 = sqrt(first - second);
-      h9[file_Index][1]->Fill(WenuMassTTcMET[W_Index], M3, weight[file_Index]);
+      first = pow((sqrt(pow(LZep.M(), 2) + pow(phoEt[pho_Index]*cos(phoPhi[pho_Index]) + elePt[WenuEleIndex[W_Index]]*cos(elePhi[WenuEleIndex[W_Index]]) ,2) + pow(phoEt[pho_Index]*sin(phoPhi[pho_Index]) + elePt[WenuEleIndex[W_Index]]*sin(elePhi[WenuEleIndex[W_Index]]), 2)) + pfMET), 2);
+      second = pow(phoEt[pho_Index]*cos(phoPhi[pho_Index]) + elePt[WenuEleIndex[W_Index]]*cos(elePhi[WenuEleIndex[W_Index]]) + pfMETx, 2) + pow(phoEt[pho_Index]*sin(phoPhi[pho_Index]) + elePt[WenuEleIndex[W_Index]]*sin(elePhi[WenuEleIndex[W_Index]]) + pfMETy, 2);
+      CTM[1] = sqrt(first - second);
 
-      first = 0;
-      second = 0;
-      first = pow((sqrt(pow(LZep.M(), 2) + pow(phoEt[pho_Index]*cos(phoPhi[pho_Index]) + elePt[ele_Index]*cos(elePhi[ele_Index]) ,2) + pow(phoEt[pho_Index]*sin(phoPhi[pho_Index]) + elePt[ele_Index]*sin(elePhi[ele_Index]), 2)) + pfMET), 2);
-      second = pow(phoEt[pho_Index]*cos(phoPhi[pho_Index]) + elePt[ele_Index]*cos(elePhi[ele_Index]) + pfMETx, 2) + pow(phoEt[pho_Index]*sin(phoPhi[pho_Index]) + elePt[ele_Index]*sin(elePhi[ele_Index]) + pfMETy, 2);
-      M3 = sqrt(first - second);
-      h9[file_Index][2]->Fill(WenuMassTPfMET[W_Index], M3, weight[file_Index]);
+      if (fabs(eleSCEta[WenuEleIndex[W_Index]]) < 1.4442)
+	h11->Fill(elePt[WenuEleIndex[W_Index]]);
+      else 
+	h12->Fill(elePt[WenuEleIndex[W_Index]]);
+      h13->Fill(eleEta[WenuEleIndex[W_Index]]);
+      if (fabs(eleSCEta[WenuEleIndex[W_Index]]) < 1.4442)
+	h14->Fill(elePhi[WenuEleIndex[W_Index]]);
+      else 
+	h15->Fill(elePhi[WenuEleIndex[W_Index]]);
+      h16->Fill(tcMET);
+      h17->Fill(pfMET);
+      h18->Fill(WenuMassTTcMET[W_Index]);
+      h19->Fill(WenuMassTPfMET[W_Index]);
 
-      // Make the plost of photon pt spectrum
-      if (fabs(phoSCEta[pho_Index]) < 1.4442) h8[file_Index][0]->Fill(phoEt[pho_Index], weight[file_Index]);
-      else h8[file_Index][1]->Fill(phoEt[pho_Index], weight[file_Index]);
-      h8[file_Index][2]->Fill(phoEt[pho_Index], weight[file_Index]);
+      if (fabs(phoSCEta[pho_Index]) < 1.4442)
+	h20->Fill(phoEt[pho_Index]);
+      else 
+	h21->Fill(phoEt[pho_Index]);
+      h22->Fill(phoEta[pho_Index]);
+      if (fabs(phoSCEta[pho_Index]) < 1.4442)
+	h23->Fill(phoPhi[pho_Index]);
+      else
+	h24->Fill(phoPhi[pho_Index]);
+      h25->Fill(WenuMassTTcMET[W_Index], CTM[0]);
+      h26->Fill(WenuMassTPfMET[W_Index], CTM[1]);
+      if (fabs(phoSCEta[pho_Index]) < 1.4442)
+	h27->Fill(LZep.M());
+      else
+	h28->Fill(LZep.M());
+      h29->Fill(nGoodVtx);
+      h30->Fill(dR);
 
-      // Count ISR, FSR, Fake photons and photon from electron misidentification
-      MCele_Index = -1;
-      for (int a=0; a<nMC; a++) {
-        dEta = phoEta[pho_Index] - mcEta[a];
-        dPhi = phoPhi[pho_Index] - mcPhi[a];
-        if (dPhi >  3.1415927) dPhi -= 2*3.1415927;
-        if (dPhi < -3.1415927) dPhi += 2*3.1415927;
-        if (sqrt(pow(dEta,2)+pow(dPhi,2)) < 0.2 && fabs(mcPID[a]) == 11) MCele_Index = a;
+      if (fabs(phoSCEta[pho_Index]) < 1.4442)
+        h50->Fill(phoSeedTime[pho_Index]);
+      else
+        h51->Fill(phoSeedTime[pho_Index]);
+
+      if (CTM[1] > 90) {
+	Wgamma_MT3_candidates += 1;
+
+	if (fabs(eleSCEta[WenuEleIndex[W_Index]]) < 1.4442)
+          h31->Fill(elePt[WenuEleIndex[W_Index]]);
+        else
+          h32->Fill(elePt[WenuEleIndex[W_Index]]);
+        h33->Fill(eleEta[WenuEleIndex[W_Index]]);
+        if (fabs(eleSCEta[WenuEleIndex[W_Index]]) < 1.4442)
+          h34->Fill(elePhi[WenuEleIndex[W_Index]]);
+        else
+          h35->Fill(elePhi[WenuEleIndex[W_Index]]);
+        h36->Fill(tcMET);
+        h37->Fill(pfMET);
+        h38->Fill(WenuMassTTcMET[W_Index]);
+        h39->Fill(WenuMassTPfMET[W_Index]);
+  
+	if (fabs(phoSCEta[pho_Index]) < 1.4442)
+          h40->Fill(phoEt[pho_Index]);
+        else
+          h41->Fill(phoEt[pho_Index]);
+        h42->Fill(phoEta[pho_Index]);
+        if (fabs(phoSCEta[pho_Index]) < 1.4442)
+          h43->Fill(phoPhi[pho_Index]);
+        else
+          h44->Fill(phoPhi[pho_Index]);
+        if (fabs(phoSCEta[pho_Index]) < 1.4442)
+          h45->Fill(LZep.M());
+        else
+          h46->Fill(LZep.M());
+
+        if (fabs(phoSCEta[pho_Index]) < 1.4442)
+	  h47->Fill(eleCharge[WenuEleIndex[W_Index]]*(phoEta[pho_Index] - eleEta[WenuEleIndex[W_Index]]));
+	else
+	  h48->Fill(eleCharge[WenuEleIndex[W_Index]]*(phoEta[pho_Index] - eleEta[WenuEleIndex[W_Index]]));
+	h49->Fill(eleCharge[WenuEleIndex[W_Index]]*(phoEta[pho_Index] - eleEta[WenuEleIndex[W_Index]]));
+        h52->Fill(nGoodVtx);
+	h53->Fill(dR);
+	h75->Fill(LWG_1.M());
+	h76->Fill(LWG_2.M());
+	h77->Fill(LWG_3.M());
+	h78->Fill(LWG_4.M());
       }
 
-      if (fabs(phoGenMomPID[pho_Index]) == 11 || fabs(phoGenMomPID[pho_Index]) == 13 || fabs(phoGenMomPID[pho_Index]) == 15) FSR[file_Index] += weight[file_Index];
-      else if (fabs(phoGenMomPID[pho_Index]) < 7 || fabs(phoGenMomPID[pho_Index]) == 22 || fabs(phoGenMomPID[pho_Index]) == 21) ISR[file_Index] += weight[file_Index];
-      else if (fabs(phoGenMomPID[pho_Index]) != 999) Fake[file_Index] += weight[file_Index];
-      else if (fabs(phoGenMomPID[pho_Index]) == 999 && MCele_Index != -1) EleFake[file_Index] += weight[file_Index];
-      else if (fabs(phoGenMomPID[pho_Index]) == 999) Unknown[file_Index] += weight[file_Index];
+      if (fabs(phoSCEta[pho_Index]) < 1.4442)
+	g1->Fill(phoEt[pho_Index], phoSigmaIEtaIEta[pho_Index]);
+      else
+	g2->Fill(phoEt[pho_Index], phoSigmaIEtaIEta[pho_Index]);
+      
+      char text[200];
+      sprintf(text, "Run = %d; Event = %d; Lumis = %d; WGamma Candidate = %d; MT3 > 90 GeV = %d", run, event, lumis, Wgamma_candidates, Wgamma_MT3_candidates);
+      cout<<text<<endl;
+ 
+      cout<<"   Triger info: "<<endl;
+      if (HLTIndex[111] != -1 && HLT[HLTIndex[111]] == 1) cout<<"      HLT info: HLT_Ele27_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_v1; Prescale = "<<HLTprescale[HLTIndex[111]]<<endl;
+      if (HLTIndex[112] != -1 && HLT[HLTIndex[112]] == 1) cout<<"      HLT info: HLT_Ele27_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_v2; Prescale = "<<HLTprescale[HLTIndex[112]]<<endl;
+      if (HLTIndex[113] != -1 && HLT[HLTIndex[113]] == 1) cout<<"      HLT info: HLT_Ele27_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_v3; Prescale = "<<HLTprescale[HLTIndex[113]]<<endl;
+      if (HLTIndex[114] != -1 && HLT[HLTIndex[114]] == 1) cout<<"      HLT info: HLT_Ele32_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_v1; Prescale = "<<HLTprescale[HLTIndex[114]]<<endl;
+      if (HLTIndex[115] != -1 && HLT[HLTIndex[115]] == 1) cout<<"      HLT info: HLT_Ele32_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_v2; Prescale = "<<HLTprescale[HLTIndex[115]]<<endl;
+      if (HLTIndex[116] != -1 && HLT[HLTIndex[116]] == 1) cout<<"      HLT info: HLT_Ele32_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_v3; Prescale = "<<HLTprescale[HLTIndex[116]]<<endl;
+      if (HLTIndex[117] != -1 && HLT[HLTIndex[117]] == 1) cout<<"      HLT info: HLT_Ele32_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_v4; Prescale = "<<HLTprescale[HLTIndex[117]]<<endl;
+      if (HLTIndex[189] != -1 && HLT[HLTIndex[189]] == 1) cout<<"      HLT info: HLT_Ele32_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_v5; Prescale = "<<HLTprescale[HLTIndex[189]]<<endl;
+
+      cout<<"   MET info: "<<endl;
+      sprintf(text, "      tcMET = %5.1f; pfMET = %5.1f", tcMET, pfMET);
+      cout<<text<<endl;
+      cout<<"   W info: "<<endl;
+      sprintf(text, "      tcMT = %5.2f; pfMT = %5.2f", WenuMassTTcMET[W_Index], WenuMassTPfMET[W_Index]);
+      cout<<text<<endl;
+      sprintf(text, "      tcCTM = %5.2f; pfCTM = %5.2f", CTM[0], CTM[1]);
+      cout<<text<<endl;
+      cout<<"   Ele info: "<<endl;
+      sprintf(text, "      Pt = %5.2f; Eta = %5.2f; Phi = %5.2f; SCEta = %5.2f", elePt[WenuEleIndex[W_Index]], eleEta[WenuEleIndex[W_Index]], elePhi[WenuEleIndex[W_Index]], eleSCEta[WenuEleIndex[W_Index]]);
+      cout<<text<<endl;
+      sprintf(text, "      EIso = %5.2f; HIso = %5.2f; TIso = %5.2f", eleIsoEcalDR03[WenuEleIndex[W_Index]], eleIsoHcalSolidDR03[WenuEleIndex[W_Index]], eleIsoTrkDR03[WenuEleIndex[W_Index]]);
+      cout<<text<<endl;
+      sprintf(text, "      dEta = %5.3f; dPhi = %5.3f; SigmaIEtaIEta = %5.3f", eledEtaAtVtx[WenuEleIndex[W_Index]], eledPhiAtVtx[WenuEleIndex[W_Index]], eleSigmaIEtaIEta[WenuEleIndex[W_Index]]);
+      cout<<text<<endl;
+
+      cout<<"   Pho info: "<<endl;
+      sprintf(text, "      Pt = %5.2f; Eta = %5.2f; Phi = %5.2f; SCEta = %5.2f", phoEt[pho_Index], phoEta[pho_Index], phoPhi[pho_Index], phoSCEta[pho_Index]);
+      cout<<text<<endl;
+      sprintf(text, "      EIso = %5.2f; HIso = %5.2f; TIso(Hollow) = %5.2f; TIso(Solid) = %5.2f", phoEcalIsoDR04[pho_Index], phoHcalIsoDR04[pho_Index], phoTrkIsoHollowDR04[pho_Index], phoTrkIsoSolidDR04[pho_Index]);
+      cout<<text<<endl;
+      sprintf(text, "      SigmaIEtaIEta = %5.3f; HoverE = %5.3f; deltaR = %5.3f; R9 = %5.2f", phoSigmaIEtaIEta[pho_Index], phoHoverE[pho_Index], dR, phoR9[pho_Index]);
+      cout<<text<<endl;
+      cout<<"      Seed Timing = "<<phoSeedTime[pho_Index]<<endl;
+      cout<<" ------------------------------------------------ "<<endl;
    }
 
-   double total_FSR(0), total_ISR(0), total_Fake(0), total_Unknown(0), total_bg(0), total_EleFake(0);
-   for (int a=0; a<nfile; a++) {
-     cout<<" Entry = "<<a<<endl;
-     cout<<" Total              = "<<total_evt[a]<<endl;
-     cout<<"     -> HLT         = "<<HLT_evt[a]<<endl;
-     cout<<"     -> Ele Pt      = "<<HLT_Ele_evt[a]<<endl;
-     cout<<"     -> Ele ID      = "<<HLT_EleID_evt[a]<<endl;
-     cout<<"     -> W Selection = "<<HLT_EleID_W_evt[a]<<endl;
-     cout<<"     -> Pho Pt      = "<<HLT_EleID_W_Pho_evt[a]<<endl;
-     cout<<"     -> Pho ID      = "<<HLT_EleID_W_PhoID_evt[a]<<endl;
-     cout<<"     -> dR          = "<<HLT_EleID_W_PhoID_dR_evt[a]<<endl;
-     cout<<" FSR = "<<FSR[a]<<endl;
-     cout<<" ISR = "<<ISR[a]<<endl;
-     cout<<" Fake = "<<Fake[a]<<endl;
-     cout<<" EleFake = "<<EleFake[a]<<endl;
-     cout<<" Unknown = "<<Unknown[a]<<endl;
-     cout<<" ===================================== "<<endl;
-     if (a == 0) continue;
-     total_bg += HLT_EleID_W_PhoID_dR_evt[a];
-     total_FSR += FSR[a];
-     total_ISR += ISR[a];
-     total_Fake += Fake[a];
-     total_EleFake += EleFake[a];
-     total_Unknown += Unknown[a];
-   }
-   cout<<"        "<<endl;
-   cout<<" Total BG = "<<total_bg<<endl;
-   cout<<" Total FSR = "<<total_FSR<<endl;
-   cout<<" Total ISR = "<<total_ISR<<endl;
-   cout<<" Total Fake = "<<total_Fake<<endl;
-   cout<<" Total EleFake = "<<total_EleFake<<endl;
-   cout<<" Total Unknown = "<<total_Unknown<<endl;
-
-   TFile *file = new TFile("Distribution.root", "UPDATE");
-   for (int a=0; a<nfile; a++) {
-     h2[a]->Write();
-     for (int b=0; b<3; b++) {
-       h4[a][b]->Write();
-       h5[a][b]->Write();
-       h6[a][b]->Write();
-       h7[a][b]->Write();
-       h8[a][b]->Write();
-       h9[a][b]->Write();
-     }
-   }
+   TFile *file = new TFile("Data_2011A.root", "UPDATE");
+   h1->Write();
+   h2->Write();
+   h3->Write();
+   h4->Write();
+   h5->Write();
+   h6->Write();
+   h7->Write();
+   h8->Write();
+   h9->Write();
+   h10->Write();
+   h11->Write();
+   h12->Write();
+   h13->Write();
+   h14->Write();
+   h15->Write();
+   h16->Write();
+   h17->Write();
+   h18->Write();
+   h19->Write();
+   h20->Write();
+   h21->Write();
+   h22->Write();
+   h23->Write();
+   h24->Write();
+   h25->Write();
+   h26->Write();
+   h27->Write();
+   h28->Write();
+   h29->Write();
+   h30->Write();
+   h65->Write();
+   h66->Write();
+   h67->Write();
+   h68->Write();
+   h31->Write();
+   h32->Write();
+   h33->Write();
+   h34->Write();
+   h35->Write();
+   h36->Write();
+   h37->Write();
+   h38->Write();
+   h39->Write();
+   h40->Write();
+   h41->Write();
+   h42->Write();
+   h43->Write();
+   h44->Write();
+   h45->Write();
+   h46->Write();
+   h47->Write();
+   h48->Write();
+   h49->Write();
+   h50->Write();
+   h51->Write();
+   h52->Write();
+   h53->Write();
+   h75->Write();
+   h76->Write();
+   h77->Write();
+   h78->Write();
+   g1->Write();
+   g2->Write();
+   g3->Write();
+   g4->Write();
    file->Close();
 }
