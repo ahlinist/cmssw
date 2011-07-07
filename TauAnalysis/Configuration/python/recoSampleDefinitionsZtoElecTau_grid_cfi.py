@@ -210,7 +210,7 @@ RECO_SAMPLES = {
         'dbs_url' :  "https://cmsdbsprod.cern.ch:8443/cms_dbs_ph_analysis_01_writer/servlet/DBSServlet",
         'number_of_jobs' : 40,
         'events_processed' : 2032536,
-        'skim_eff' : 1.0,
+        'skim_eff' : 1.0, # CV: FIXED SYNTAX ERROR --> MAY NEED UPDATE
         'x_sec' : 1666*_picobarns,
         'legendEntry' : plotter.process_Ztautau.config_dqmHistPlotter.legendEntry.value(),
         'type' : plotter.process_Ztautau.config_dqmHistPlotter.type.value(),
@@ -270,7 +270,7 @@ RECO_SAMPLES = {
         'dbs_url' :  "https://cmsdbsprod.cern.ch:8443/cms_dbs_ph_analysis_01_writer/servlet/DBSServlet",
         'number_of_jobs' : 40,
         'events_processed' : 54895290,
-        'skim_eff' : ./54895290,
+        'skim_eff' : 1.0, # CV: FIXED SYNTAX ERROR --> MAY NEED UPDATE
         'x_sec' : 31314*_picobarns,
         'legendEntry' : plotter.process_WplusJets.config_dqmHistPlotter.legendEntry.value(),
         'type' : plotter.process_WplusJets.config_dqmHistPlotter.type.value(),
