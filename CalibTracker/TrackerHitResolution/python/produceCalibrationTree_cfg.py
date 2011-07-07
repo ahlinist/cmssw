@@ -10,7 +10,7 @@ process.load('Configuration.StandardSequences.FrontierConditions_GlobalTag_cff')
 process.load("Configuration.StandardSequences.Reconstruction_cff")
 process.load("RecoLocalTracker.Configuration.RecoLocalTracker_cff")
 
-process.GlobalTag.globaltag = 'GR_P_V14::All'
+process.GlobalTag.globaltag = 'GR_P_V20::All'
 
 process.load('FWCore.MessageService.MessageLogger_cfi')
 process.load('Configuration.StandardSequences.Services_cff')
@@ -21,7 +21,7 @@ process.add_( cms.Service( "TFileService",
 process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(1000) )
 process.source = cms.Source (
     "PoolSource",
-    fileNames = cms.untracked.vstring('/store/data/Run2011A/MinimumBias/ALCARECO/SiStripCalMinBias-v1/000/160/578/D43B9324-4651-E011-8035-003048F118C4.root')
+    fileNames = cms.untracked.vstring('/store/data/Run2011A/MinimumBias/ALCARECO/SiStripCalMinBias-v4/000/166/863/66A57C37-3B96-E011-BAF8-003048F024C2.root')
     )
 
 # Definition of the track collection module label
