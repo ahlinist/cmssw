@@ -275,10 +275,10 @@ void anaXS::loadFiles(const char *dir, int i) {
       ufile = fDirectory + string("/upsilon/UpsTagandprobe_10TeV_nocut.root");
       jfile = fDirectory + string("/jpsi/JpsiTagandprobe_10TeV_nocut.root");  
     } else if (40 == i) {
-      ufile = fDirectory + string("/upsilon/101201.fl10.mm.COMBINED.xsReader_old1SBin.default.root");
+      ufile = fDirectory + string("/upsilon/101201.fl10.mm.COMBINED.xsReader_1SBin.default.root");
       afile = fDirectory + string("/upsilon/Acc_All_0_50.xsReader_1Sbin.default.root");
       //ufile = fDirectory + string("/upsilon/101201.fl10.mm.COMBINED.xsReader_1Sbin.tma.default.root");
-      jfile = fDirectory + string("/upsilon/130211.nov4rereco_v2.dimuons.xsReader_Data_v2.default.root");
+      jfile = fDirectory + string("/upsilon/130211.nov4rereco_v2.dimuons.xsReader_Data_1SBin.default.root");
       //jfile = fDirectory + string("/upsilon/130211.nov4rereco_v2.dimuons.xsReader_Data_new1SBin.default.root");
       //jfile = fDirectory + string("/upsilon/130211.nov4rereco_v2.dimuons.xsReader_1Sbin.tma.default.root");
      
@@ -984,13 +984,13 @@ void anaXS::makeAllMC(int channel) {
     ReadHistograms(fM[0], "UpsilonMass", "AnaEff_1S", "AnaEff_2S", "AnaEff_3S", "MuIDEff_1S", "MuIDEff_2S", "MuIDEff_3S", "TrigEff_1S", "TrigEff_2S", "TrigEff_3S", "Pt_IntegratedMass", "Rapidity_IntegratedMass", "mt,pt-eta");
     
     // -- add backgrounds
-    addBackground(fS1Vector, 0.3);
+    //addBackground(fS1Vector, 0.3);
     //addBackground_PtInt(fS12Vector, 0.3);
-    //addBackground_RapInt(fS13Vector, 0.3);
+    addBackground_RapInt(fS13Vector, 0.3);
     
     //Pull(1);
     
-    FITUpsilon(7); //5 for PtIntegrated plots, 6 for RapidityIntegrated plots
+    FITUpsilon(6); //5 for PtIntegrated plots, 6 for RapidityIntegrated plots
     //GetAnaEff();
     //GetPreSelEff();
     //GetMuIDEff(1);
@@ -1032,14 +1032,14 @@ void anaXS::makeAllDATA(int channel) {
     
     //table(fS1YieldPt, "anan");
     
-    FITUpsilon(1); //3 for PtIntegrated plots, 4 for RapidityIntegrated plots
-    GetAnaEff();
-    GetPreSelEff();
-    GetTrackEff();
-    GetMuIDEff(2);
-    GetTrigEff(2);
-    CorrectedYields(2);   // 1- FOR MC, 2 FOR DATA
-    PlotProjections(2);   // 1- FOR MC, 2 FOR DATA
+    FITUpsilon(3); //3 for PtIntegrated plots, 4 for RapidityIntegrated plots
+    //GetAnaEff();
+    //GetPreSelEff();
+    //GetTrackEff();
+    //GetMuIDEff(2);
+    //GetTrigEff(2);
+    //CorrectedYields(2);   // 1- FOR MC, 2 FOR DATA
+    //PlotProjections(2);   // 1- FOR MC, 2 FOR DATA
     
   }
 
@@ -5149,8 +5149,10 @@ void anaXS::FITUpsilon(int mode){
 	sig1 = f13->GetParameter(1);
 	sigE1 = f13->GetParError(1);
 	
-	if ( i > 0 ) YieldTot += yield_1S;
-	
+	if ( i > 0 ) {
+	  YieldTot += yield_1S;
+	  YieldTotE += (yieldE_1S*yieldE_1S);
+	}
 	// Ups 2S
 	f10->SetParameters( f13->GetParameter(5), f13->GetParameter(6), f13->GetParameter(2), f13->GetParameter(3), f13->GetParameter(7) );
 	yield_2S  = f10->Integral(8.7,11.2)/h->GetBinWidth(1);
@@ -5164,7 +5166,11 @@ void anaXS::FITUpsilon(int mode){
 	meanE2 = f13->GetParError(5);		
 	sig2 = f13->GetParameter(6);
 	sigE2 = f13->GetParError(6);	
-		
+	if ( i > 0 ) {
+	  YieldTot2S += yield_2S;
+	  YieldTot2SE += (yieldE_2S*yieldE_2S);
+	}
+	
 	// Ups 3S
 	f10->SetParameters( scale*f13->GetParameter(5), scale*f13->GetParameter(6), f13->GetParameter(2), f13->GetParameter(3), f13->GetParameter(8) );
 	yield_3S  = f10->Integral(8.7,11.2)/h->GetBinWidth(1);
@@ -5174,6 +5180,10 @@ void anaXS::FITUpsilon(int mode){
 	if ( f13->GetParameter(8) > f13->GetParError(8) ) yieldE_3S = TMath::Abs(yieldE_3S);
 	if ( f13->GetParameter(8) < f13->GetParError(8) ) yieldE_3S = TMath::Sqrt(yield_3S);
 	cout << " Ups(3S) yield =  " << yield_3S << "+/-" << yieldE_3S  << endl;
+	if ( i > 0 ) {
+	  YieldTot3S += yield_3S;
+	  YieldTot3SE += (yieldE_3S*yieldE_3S);
+	}
 	
 	///
 	fitted = 1;
@@ -5216,7 +5226,9 @@ void anaXS::FITUpsilon(int mode){
     hSigma2S->Write();
     hMean1S->Write();
     hMean2S->Write();    
-    cout << "YieldTot = " << YieldTot << endl;
+    cout << "YieldTot = " << YieldTot << "+/-" << TMath::Sqrt(YieldTotE) << endl;
+    cout << "YieldTot2S = " << YieldTot2S << "+/-" << TMath::Sqrt(YieldTot2SE) << endl;
+    cout << "YieldTot3S = " << YieldTot3S << "+/-" << TMath::Sqrt(YieldTot3SE) << endl;
     //c1->Clear();
   }
 
@@ -5230,7 +5242,9 @@ void anaXS::FITUpsilon(int mode){
     double yield_1S(0.), yieldE_1S(0.);
     double yield_2S(0.), yieldE_2S(0.);
     double yield_3S(0.), yieldE_3S(0.);
-    double alpha(0.), n(0.), sig1(0.), sigE1(0.), sig2(0.), sigE2(0.), YieldTot(0.);
+    double alpha(0.), n(0.), sig1(0.), sigE1(0.), sig2(0.), sigE2(0.);
+    double YieldTot(0.), YieldTot2S(0.), YieldTot3S(0.);
+    double YieldTotE(0.), YieldTot2SE(0.), YieldTot3SE(0.);
     double mean1(0.), meanE1(0.), mean2(0.), meanE2(0.);
     double scale(1.033);
         
@@ -5339,6 +5353,7 @@ void anaXS::FITUpsilon(int mode){
 	  sig1 = f13->GetParameter(1);
 	  sigE1 = f13->GetParError(1);
 	  YieldTot += yield_1S;
+	  YieldTotE += (yieldE_1S*yieldE_1S);
 	}
 	
 	// Ups 2S
@@ -5351,10 +5366,12 @@ void anaXS::FITUpsilon(int mode){
 	if ( f13->GetParameter(7) < f13->GetParError(7) ) yieldE_2S = TMath::Sqrt(yield_2S);
 	cout << " Ups(2S) yield =  " << yield_2S << "+/-" << yieldE_2S  << endl;
 	if ( i > 0 ) {
-	mean2 = f13->GetParameter(5);
-	meanE2 = f13->GetParError(5);		
-	sig2 = f13->GetParameter(6);
-	sigE2 = f13->GetParError(6);
+	  mean2 = f13->GetParameter(5);
+	  meanE2 = f13->GetParError(5);		
+	  sig2 = f13->GetParameter(6);
+	  sigE2 = f13->GetParError(6);
+	  YieldTot2S += yield_2S;
+	  YieldTot2SE += (yieldE_2S*yieldE_2S);
 	}
 	
 	// Ups 3S
@@ -5366,6 +5383,10 @@ void anaXS::FITUpsilon(int mode){
 	if ( f13->GetParameter(8) > f13->GetParError(8) ) yieldE_3S = TMath::Abs(yieldE_3S);
 	if ( f13->GetParameter(8) < f13->GetParError(8) ) yieldE_3S = TMath::Sqrt(yield_3S);
 	cout << " Ups(3S) yield =  " << yield_3S << "+/-" << yieldE_3S  << endl;
+	if ( i > 0 ) { 
+	  YieldTot3S += yield_3S;
+	  YieldTot3SE += (yieldE_3S*yieldE_3S);
+	}	
 	
 	///
 	fitted = 1;
@@ -5406,8 +5427,10 @@ void anaXS::FITUpsilon(int mode){
     hSigma1S->Write();
     hSigma2S->Write();
     hMean1S->Write();
-    hMean2S->Write();  
-    cout << "YieldTot = " << YieldTot << endl;
+    hMean2S->Write();
+    cout << "YieldTot = " << YieldTot << "+/-" << TMath::Sqrt(YieldTotE) << endl;
+    cout << "YieldTot2S = " << YieldTot2S << "+/-" << TMath::Sqrt(YieldTot2SE) << endl;
+    cout << "YieldTot3S = " << YieldTot3S << "+/-" << TMath::Sqrt(YieldTot3SE) << endl;
     //c1->Clear();
   }
   
@@ -6547,8 +6570,7 @@ void anaXS::setFunctionParameters(TH1D *h, TF1 *f, int mode, int par) {
     }    
     
     if ( par == 3 ){
-      //TFile *f1 = new TFile("FitParametersMC_1SBin.root");
-      TFile *f1 = new TFile("FitParametersMC.root");
+      TFile *f1 = new TFile("FitParametersMC_1SBin.root");
       TH1D *falpha;
       falpha = (TH1D*)gFile->Get("falpha");
       TH1D *fn;
