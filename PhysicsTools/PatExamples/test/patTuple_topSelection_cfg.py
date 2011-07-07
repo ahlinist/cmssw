@@ -15,9 +15,7 @@ removeSpecificPATObjects(process,
 removeCleaning(process,
                outputInProcess=False)
 
-process.patJetCorrFactors.corrSample = "Spring10"
-process.patJetCorrFactors.sampleType = "ttbar"
-
+process.patJetCorrFactors.useRho = False
 process.patMuons.usePV = False
 
 #-------------------------------------------------
@@ -25,7 +23,7 @@ process.patMuons.usePV = False
 #-------------------------------------------------
 
 from HLTrigger.HLTfilters.hltHighLevel_cfi import *
-process.step1 = hltHighLevel.clone(TriggerResultsTag = "TriggerResults::HLT", HLTPaths = ["HLT_Mu9"])
+process.step1 = hltHighLevel.clone(TriggerResultsTag = "TriggerResults::HLT", HLTPaths = ["HLT_Mu15"])
 
 #-------------------------------------------------
 # selection step 2: vertex filter

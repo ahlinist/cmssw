@@ -37,6 +37,7 @@ mytrigs = ['*']
 # Jet energy corrections to use:
 #inputJetCorrLabel = ('AK5PF', ['L1Offset', 'L2Relative', 'L3Absolute', 'L2L3Residual'])
 inputJetCorrLabel = ('AK5PF', ['L1Offset', 'L2Relative', 'L3Absolute'])
+process.patJetCorrFactors.useRho=False
 
 # add pf met
 from PhysicsTools.PatAlgos.tools.metTools import *

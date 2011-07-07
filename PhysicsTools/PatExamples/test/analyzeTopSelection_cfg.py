@@ -57,7 +57,7 @@ process.topObjectProduction = cms.Path(
 
 ## Trigger bit (HLT_mu9)
 from HLTrigger.HLTfilters.hltHighLevel_cfi import *
-process.step1  = hltHighLevel.clone(TriggerResultsTag = "TriggerResults::HLT", HLTPaths = ["HLT_Mu9"])
+##process.step1  = hltHighLevel.clone(TriggerResultsTag = "TriggerResults::HLT", HLTPaths = ["HLT_Mu15"])
 ## Vertex requirement
 process.step2  = cms.EDFilter("VertexSelector", src = cms.InputTag("offlinePrimaryVertices"), cut = cms.string("!isFake && ndof > 4 && abs(z) < 15 && position.Rho < 2"), filter = cms.bool(True))
 ## Exact one tight muon
@@ -111,7 +111,7 @@ process.options   = cms.untracked.PSet( wantSummary = cms.untracked.bool(True) )
 
 ## Define loose event selection path
 process.looseEventSelection = cms.Path(
-    process.step1      *
+   #process.step1      *
     process.step2      *
     process.step3b     *
     process.step4      *
@@ -124,8 +124,8 @@ process.looseEventSelection = cms.Path(
 ## Define tight event selection path
 process.tightEventSelection = cms.Path(
     process.monStart   *
-    process.step1      *
-    process.monStep1   *
+   #process.step1      *
+   #process.monStep1   *
     process.step2      *
     process.monStep2   *
     process.step3a     *
