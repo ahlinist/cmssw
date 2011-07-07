@@ -83,7 +83,7 @@ RECO_SAMPLES = {
     'data_TauPlusX_Run2011A_May10ReReco_v1' : {
         'datasetpath' : "/TauPlusX/Run2011A-May10ReReco-v1/AOD",
         'dbs_url' :  "http://cmsdbsprod.cern.ch/cms_dbs_prod_global/servlet/DBSServlet",
-        'lumi_mask' : "/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions11/7TeV/Reprocessing/Cert_160404-163869_7TeV_May10ReReco_Collisions11_JSON.txt",
+        'lumi_mask' : "/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions11/7TeV/Reprocessing/Cert_160404-163869_7TeV_May10ReReco_Collisions11_JSON_v2.txt",
         'runselection' : "160329-163869",
         'number_of_jobs' : 500,
         'conditions' : 'GR_R_42_V14::All',
@@ -107,7 +107,7 @@ RECO_SAMPLES = {
     'data_SingleMu_Run2011A_May10ReReco_v1ex' : {
         'datasetpath' : '/SingleMu/Run2011A-May10ReReco-v1/AOD',
         'dbs_url' :  "http://cmsdbsprod.cern.ch/cms_dbs_prod_global/servlet/DBSServlet",
-        'lumi_mask' : "/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions11/7TeV/Reprocessing/Cert_160404-163869_7TeV_May10ReReco_Collisions11_JSON.txt",
+        'lumi_mask' : "/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions11/7TeV/Reprocessing/Cert_160404-163869_7TeV_May10ReReco_Collisions11_JSON_v2.txt",
         'runselection' : "162718-163261",
         'number_of_jobs' : 500,
         'conditions' : 'GR_R_42_V14::All',
@@ -174,6 +174,38 @@ RECO_SAMPLES = {
         'applyMuonTriggerEfficiencyCorrection' : True,
         'applyMuonIsolationEfficiencyCorrection' : True,
 	'applyVertexMultiplicityReweighting' : True,
+        'hlt' : cms.InputTag("TriggerResults", "", "HLT")
+    },
+    'Ztautau_embedded_part1' : {
+        'datasetpath' : "/SingleMu/fruboes-20110703_embed_goldenMuMuSkim_42_TauPlusX_Run2011A_PromptReco_v4-3d3970b15f2245948e2e9363d6dd6994/USER",
+        'dbs_url' : "http://cmsdbsprod.cern.ch/cms_dbs_ph_analysis_01/servlet/DBSServlet",
+        'events_processed' : 347175,
+        'skim_eff' : 1.0,
+        'x_sec' : 1666*_picobarns,
+        'legendEntry' : plotter.process_Ztautau.config_dqmHistPlotter.legendEntry.value(),
+        'type' : 'Data', # CV: simulated Ztautau events embedded in Zmumu data are still "Data" as far as crab is concerned
+        'drawOption' : styles.drawOption_Ztautau,
+        'applyZrecoilCorrection' : False,
+        'enableFakeRates' : True,
+        'applyMuonTriggerEfficiencyCorrection' : True,
+        'applyMuonIsolationEfficiencyCorrection' : False,
+	'applyVertexMultiplicityReweighting' : False,
+        'hlt' : cms.InputTag("TriggerResults", "", "HLT")
+    },
+    'Ztautau_embedded_part2' : {
+        'datasetpath' : "/SingleMu/fruboes-20110703_embed_goldenMuMuSkim_42_muEra_SingleMu_Run2011A_May10ReReco_v1ex-3d3970b15f2245948e2e9363d6dd6994/USER",
+        'dbs_url' : "http://cmsdbsprod.cern.ch/cms_dbs_ph_analysis_01/servlet/DBSServlet",
+        'events_processed' : 9990,
+        'skim_eff' : 1.0,
+        'x_sec' : 1666*_picobarns,
+        'legendEntry' : plotter.process_Ztautau.config_dqmHistPlotter.legendEntry.value(),
+        'type' : 'Data', # CV: simulated Ztautau events embedded in Zmumu data are still "Data" as far as crab is concerned
+        'drawOption' : styles.drawOption_Ztautau,
+        'applyZrecoilCorrection' : False,
+        'enableFakeRates' : True,
+        'applyMuonTriggerEfficiencyCorrection' : True,
+        'applyMuonIsolationEfficiencyCorrection' : False,
+	'applyVertexMultiplicityReweighting' : False,
         'hlt' : cms.InputTag("TriggerResults", "", "HLT")
     },
     'qqZll' : {
