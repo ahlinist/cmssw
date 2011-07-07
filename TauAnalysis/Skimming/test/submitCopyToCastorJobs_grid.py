@@ -10,44 +10,28 @@ print("<submitCopyToCastorJobs_grid>:")
 samples = {
     ##'data2011A_tauPlusX_AOD'    : {
     ##    'dbsName' : "/TauPlusX/Run2011A-PromptReco-v1/AOD",
+    ##    'dbsURL'  : "http://cmsdbsprod.cern.ch/cms_dbs_prod_global/servlet/DBSServlet",
     ##    'type'    : "Data"
     ##},
     ##'data2011A_tauPlusX_RECO'   : {
     ##    'dbsName' : "/TauPlusX/Run2011A-PromptReco-v1/RECO",
+    ##    'dbsURL'  : "http://cmsdbsprod.cern.ch/cms_dbs_prod_global/servlet/DBSServlet",
     ##    'type'    : "Data"
     ##},
-    ##'DYtautau_spring11_powhegZ2' : {
-    ##    'dbsName' : "/DYToTauTau_M-20_CT10_TuneZ2_7TeV-powheg-pythia-tauola/Spring11-PU_S1_START311_V1G1-v1/GEN-SIM-RECO",
-    ##    'type'    : "MC"
-    ##},
-    ##'DYtautau_spring11_pythiaZ2debug' : {
-    ##    'dbsName' : "/DYToTauTau_M-20_TuneZ2_7TeV-pythia6-tauola/Spring11-PU_S1_START311_V1G1-v1/GEN-SIM-RECODEBUG",
-    ##    'type'    : "MC"
-    ##},
-    ##'DYtautau_spring11flatPU10_pythiaZ2debug' : {
-    ##    'dbsName' : "/DYToTauTau_M-20_TuneZ2_7TeV-pythia6-tauola/Spring11-E7TeV_FlatDist10_2011EarlyData_50ns_START311_V1G1-v1/GEN-SIM-RECODEBUG",
-    ##    'type'    : "MC"
-    ##}
-    ##'DYtautau_powhegZ2_aodsim' : {
-    ##    'dbsName' : "/DYToTauTau_M-10To20_CT10_TuneZ2_7TeV-powheg-pythia-tauola/Spring11-PU_S1_START311_V1G1-v2/AODSIM",
-    ##    'type'    : "MC"
-    ##},
-    ##'WplusJets_madgraph_aodsim' : {
-    ##    'dbsName' : "/WJetsToLNu_TuneZ2_7TeV-madgraph-tauola/Spring11-PU_S1_START311_V1G1-v1/AODSIM",
-    ##    'type'    : "MC"
-    ##},
-    ##'PPmuXptGt20Mu15_aodsim' : {
-    ##    'dbsName' : "/QCD_Pt-20_MuEnrichedPt-15_TuneZ2_7TeV-pythia6/Spring11-PU_S1_START311_V1G1-v1/AODSIM",
-    ##    'type'    : "MC"
-    ##}
-    'Ztautau_winter10'  : {
-        'dbsName' : "/DYToTauTau_M-20_TuneZ2_7TeV-pythia6-tauola/Winter10-E7TeV_ProbDist_2010Data_BX156_START39_V8-v1/AODSIM",
-        'type'    : "MC"
+    'Ztautau_embedded_part1'   : {
+        'dbsName' : "/SingleMu/fruboes-20110703_embed_goldenMuMuSkim_42_TauPlusX_Run2011A_PromptReco_v4-3d3970b15f2245948e2e9363d6dd6994/USER",
+        'dbsURL'  :  "http://cmsdbsprod.cern.ch/cms_dbs_ph_analysis_01/servlet/DBSServlet",
+        'type'    : "Data"
+    },
+    'Ztautau_embedded_part2'   : {
+        'dbsName' : "/SingleMu/fruboes-20110703_embed_goldenMuMuSkim_42_muEra_SingleMu_Run2011A_May10ReReco_v1ex-3d3970b15f2245948e2e9363d6dd6994/USER",
+        'dbsURL'  :  "http://cmsdbsprod.cern.ch/cms_dbs_ph_analysis_01/servlet/DBSServlet",
+        'type'    : "Data"
     }
 }
 
-castorFilePath = "/castor/cern.ch/user/v/veelken/CMSSW_4_1_x/skims/ZtoMuTau/"
-crabFilePath = "/afs/cern.ch/user/v/veelken/scratch0/CMSSW_4_1_3/src/TauAnalysis/Skimming/test/crab/"
+castorFilePath = "/castor/cern.ch/user/v/veelken/CMSSW_4_2_x/skims/ZtoMuTau/"
+crabFilePath = "/afs/cern.ch/user/v/veelken/scratch0/CMSSW_4_2_4_patch1/src/TauAnalysis/Skimming/test/crab/"
 
 cfg_template = """
 import FWCore.ParameterSet.Config as cms
@@ -65,7 +49,7 @@ process.MessageLogger.cerr.FwkReport.reportEvery = 5000
 process.load('Configuration/StandardSequences/GeometryIdeal_cff')
 process.load('Configuration/StandardSequences/MagneticField_cff')
 process.load('Configuration/StandardSequences/FrontierConditions_GlobalTag_cff')
-process.GlobalTag.globaltag = cms.string('START311_V2::All')
+process.GlobalTag.globaltag = cms.string('START42_V12::All')
 
 process.maxEvents = cms.untracked.PSet(
     input = cms.untracked.int32(-1)
@@ -73,7 +57,7 @@ process.maxEvents = cms.untracked.PSet(
 
 process.source = cms.Source("PoolSource",
     fileNames = cms.untracked.vstring(
-        'rfio:/castor/cern.ch/user/v/veelken/CMSSW_3_6_x/skims/ZtoMuTau/test/Ztautau_1_1_sXK.root'
+        'file:/data2/friis/CMSSW_4_2_X/skims/06-27-MatthewsZTTEvents/crab_0_110627_082505/ZTTCands_merged_v1.root'
     )                          
 )
 
@@ -104,6 +88,7 @@ use_server = 1
 [CMSSW]
 
 datasetpath = DATASETPATH
+dbs_url = DBS_URL
 pset = PSET
 output_file = OUTPUT_FILE
 JOB_SPLIT_METHOD
@@ -138,6 +123,7 @@ for sampleName, sampleOptions in samples.items():
    crabFileName = (crabFilePath + "crab_%s.cfg") % sampleName
    crabConfig = str(crab_template)
    crabConfig = crabConfig.replace("DATASETPATH", sampleOptions['dbsName'])
+   crabConfig = crabConfig.replace("DBS_URL", sampleOptions['dbsURL'])
    crabConfig = crabConfig.replace("PSET", cfgFileName)
    if sampleOptions['type'] == "Data":
        crabConfig = crabConfig.replace("JOB_SPLIT_METHOD", "lumis_per_job = 5")
