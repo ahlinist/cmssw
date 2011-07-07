@@ -16,18 +16,18 @@ process.maxEvents = cms.untracked.PSet(
 
 from PhysicsTools.PatExamples.samplesCERN_cff import *
 ##process.source.fileNames = muonSKIM        ## ATTENTION these samples are NOT available on castor
-##process.source.fileNames = simulationQCD
-process.source.fileNames = simulationWjets
+##process.source.fileNames = simulationQCD   ## ATTENTION these samples are NOT available on castor
+##process.source.fileNames = simulationWjets
 ##process.source.fileNames = simulationZjets
 ##process.source.fileNames = simulationTtbar
 
 ## Define the TFileService
 process.TFileService = cms.Service("TFileService",
-##fileName = cms.string('analyzePatTopSelection.root')
+fileName = cms.string('analyzePatTopSelection.root')
 ##fileName = cms.string('analyzePatTopSelection_qcd.root')
 ##fileName = cms.string('analyzePatTopSelection_wjets.root')
 ##fileName = cms.string('analyzePatTopSelection_zjets.root')
-fileName = cms.string('analyzePatTopSelection_ttbar.root')
+##fileName = cms.string('analyzePatTopSelection_ttbar.root')
 )
 
 ## ----------------------------------------------------------------
@@ -57,7 +57,7 @@ process.topObjectProduction = cms.Path(
 
 ## Trigger bit (HLT_mu9)
 from HLTrigger.HLTfilters.hltHighLevel_cfi import *
-##process.step1  = hltHighLevel.clone(TriggerResultsTag = "TriggerResults::HLT", HLTPaths = ["HLT_Mu15"])
+process.step1  = hltHighLevel.clone(TriggerResultsTag = "TriggerResults::HLT", HLTPaths = ["HLT_Mu9"])
 ## Vertex requirement
 process.step2  = cms.EDFilter("VertexSelector", src = cms.InputTag("offlinePrimaryVertices"), cut = cms.string("!isFake && ndof > 4 && abs(z) < 15 && position.Rho < 2"), filter = cms.bool(True))
 ## Exact one tight muon
