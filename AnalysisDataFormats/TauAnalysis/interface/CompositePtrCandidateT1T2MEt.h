@@ -12,9 +12,9 @@
  *          Michal Bluj,
  *          Christian Veelken
  *
- * \version $Revision: 1.29 $
+ * \version $Revision: 1.30 $
  *
- * $Id: CompositePtrCandidateT1T2MEt.h,v 1.29 2011/06/08 10:13:08 veelken Exp $
+ * $Id: CompositePtrCandidateT1T2MEt.h,v 1.30 2011/07/07 18:05:11 veelken Exp $
  *
  */
 
@@ -31,6 +31,7 @@
 #include "AnalysisDataFormats/TauAnalysis/interface/NSVfitEventHypothesisBase.h"
 #include "AnalysisDataFormats/TauAnalysis/interface/NSVfitResonanceHypothesis.h"
 #include "AnalysisDataFormats/TauAnalysis/interface/NSVfitSingleParticleHypothesis.h"
+#include "AnalysisDataFormats/TauAnalysis/interface/NSVfitTauDecayHypothesis.h"
 #include "AnalysisDataFormats/TauAnalysis/interface/tauAnalysisAuxFunctions.h"
 
 #include <TMatrixD.h>
@@ -324,23 +325,30 @@ class CompositePtrCandidateT1T2MEt : public reco::LeafCandidate
   void addNSVfitSolution(std::auto_ptr<NSVfitEventHypothesisBase> solution)
   {
     nSVfitSolutions_.push_back(solution);
-
+std::cout << "break-point 1 reached" << std::endl;
     // CV: need to reset pointers to event/resonance hypothesis objects,
     //     otherwise ROOT streamer will cause segmentation violation
     //     when nSVfit solutions are written into .root file (?!)
-    //edm::OwnVector<NSVfitEventHypothesisBase>::iterator nSVfitSolution = nSVfitSolutions_.end();
-    //size_t numResonances = nSVfitSolution->numResonances();
-    //for ( size_t iResonance = 0; iResonance < numResonances; ++iResonance ) {
-    //  if ( dynamic_cast<NSVfitResonanceHypothesis*>(nSVfitSolution->resonance(iResonance)) ) {
-    //	NSVfitResonanceHypothesis* resonance = 
-    //	  dynamic_cast<NSVfitResonanceHypothesis*>(nSVfitSolution->resonance(iResonance));
-    //	resonance->eventHyp_ = 0;
-    //	size_t numDaughters = resonance->numDaughters();
-    //	for ( size_t iDaughter = 0; iDaughter < numDaughters; ++iDaughter ) {
-    //	  resonance->daughter(iDaughter)->mother_ = 0;
-    //	}
-    //  }
-    //}
+    NSVfitEventHypothesisBase& nSVfitSolution = nSVfitSolutions_.back();
+    size_t numResonances = nSVfitSolution.numResonances();
+    for ( size_t iResonance = 0; iResonance < numResonances; ++iResonance ) {
+std::cout << "break-point 2 reached" << std::endl;      
+      if ( dynamic_cast<NSVfitResonanceHypothesis*>(nSVfitSolution.resonance(iResonance)) ) {
+    	NSVfitResonanceHypothesis* resonance = 
+    	  dynamic_cast<NSVfitResonanceHypothesis*>(nSVfitSolution.resonance(iResonance));
+    	resonance->eventHyp_ = 0;
+    	size_t numDaughters = resonance->numDaughters();
+    	for ( size_t iDaughter = 0; iDaughter < numDaughters; ++iDaughter ) {
+std::cout << "break-point 3 reached" << std::endl;
+    	  resonance->daughter(iDaughter)->mother_ = 0;
+	  if ( dynamic_cast<NSVfitTauDecayHypothesis*>(resonance->daughter(iDaughter)) ) {
+	    NSVfitTauDecayHypothesis* daughter = dynamic_cast<NSVfitTauDecayHypothesis*>(resonance->daughter(iDaughter));
+	    std::cout << "--> clearing tracks..." << std::endl;
+	    daughter->tracks_.clear();
+	  }
+    	}
+      }
+    }
   }
 
   /// references/pointers to decay products
