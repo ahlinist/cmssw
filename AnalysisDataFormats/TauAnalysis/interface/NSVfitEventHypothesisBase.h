@@ -64,6 +64,7 @@ class NSVfitEventHypothesisBase
     stream << "<NSVfitEventHypothesisBase::print>:" << std::endl;
     stream << " name = " << name_ << std::endl;
     stream << " barcode = " << barcode_ << std::endl;
+    stream << " met(id:key) = " << met_.id() << ":" << met_.key() << std::endl;
     for ( edm::OwnVector<NSVfitResonanceHypothesisBase>::const_iterator resonance = resonances_.begin();
           resonance != resonances_.end(); ++resonance ) {
       resonance->print(stream);
