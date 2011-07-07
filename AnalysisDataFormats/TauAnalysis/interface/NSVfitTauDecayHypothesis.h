@@ -57,6 +57,7 @@ class NSVfitTauDecayHypothesis : public NSVfitSingleParticleHypothesis, public N
   double polarization() const { return polarization_; }
 
   friend class NSVfitTauDecayBuilder;
+  template<typename T1, typename T2> friend class CompositePtrCandidateT1T2MEt;
 
  protected:
 
