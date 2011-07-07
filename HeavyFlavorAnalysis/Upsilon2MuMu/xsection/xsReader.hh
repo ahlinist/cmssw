@@ -52,6 +52,7 @@ public:
   bool        isPathFired(TString path);
   void        preSelEff();
   bool        MuIDCheck();
+  bool        MomentumCorrection();
   void        getBinCenters(TGenCand *gCand, double &pt, double &rapidity);
   void        GetBinCenters(TAnaCand *pCand, double &pt, double &rapidity);
   void        GetBINCenters(TLorentzVector Cand, double &pt, double &rapidity);
@@ -104,7 +105,7 @@ public:
   PidTable    *fPidTableTrckEff;
   
   double      fWeight;
-  static const int  fNpt = 18;
+  static const int  fNpt = 24;
   static const int  fNy = 6;
   double      fPTbin[fNpt+1], fYbin[fNy+1];
   int fBin;
