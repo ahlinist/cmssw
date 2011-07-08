@@ -124,6 +124,7 @@ void anaXS::init(const char *dir, int i) {
   fS4Vector.clear();
   fS12Vector.clear();
   fS13Vector.clear();
+  fS100Vector.clear();
   if (fS1Yield) fS1Yield->Reset();
   if (fS2Yield) fS2Yield->Reset();
   if (fS3Yield) fS3Yield->Reset();
@@ -278,8 +279,8 @@ void anaXS::loadFiles(const char *dir, int i) {
       ufile = fDirectory + string("/upsilon/101201.fl10.mm.COMBINED.xsReader_1SBin.default.root");
       afile = fDirectory + string("/upsilon/Acc_All_0_50.xsReader_1Sbin.default.root");
       //ufile = fDirectory + string("/upsilon/101201.fl10.mm.COMBINED.xsReader_1Sbin.tma.default.root");
-      //jfile = fDirectory + string("/upsilon/130211.nov4rereco_v2.dimuons.xsReader_Data_1SBin.default.root");
-      jfile = fDirectory + string("/upsilon/130211.nov4rereco_v2.dimuons.xsReader_Data_v2.default.root");
+      jfile = fDirectory + string("/upsilon/130211.nov4rereco_v2.dimuons.xsReader_Data_1SBin.default.root");
+      //jfile = fDirectory + string("/upsilon/130211.nov4rereco_v2.dimuons.xsReader_Data_v2.default.root");
       //jfile = fDirectory + string("/upsilon/130211.nov4rereco_v2.dimuons.xsReader_1Sbin.tma.default.root");
      
     } else {
@@ -1031,15 +1032,17 @@ void anaXS::makeAllDATA(int channel) {
     //addBackground(fS1Vector, 0.3);
     
     //table(fS1YieldPt, "anan");
+    plot_RapInt();
     
-    FITUpsilon(1); //3 for PtIntegrated plots, 4 for RapidityIntegrated plots
-    GetAnaEff();
-    GetPreSelEff();
-    GetTrackEff();
-    GetMuIDEff(2);
-    GetTrigEff(2);
-    CorrectedYields(2);   // 1- FOR MC, 2 FOR DATA
-    PlotProjections(2);   // 1- FOR MC, 2 FOR DATA
+    
+    //FITUpsilon(4); //3 for PtIntegrated plots, 4 for RapidityIntegrated plots
+    //GetAnaEff();
+    //GetPreSelEff();
+    //GetTrackEff();
+    //GetMuIDEff(2);
+    //GetTrigEff(2);
+    //CorrectedYields(2);   // 1- FOR MC, 2 FOR DATA
+    //PlotProjections(2);   // 1- FOR MC, 2 FOR DATA
     
   }
 
@@ -1220,6 +1223,42 @@ void anaXS::table(TH1D *H, int ups){
   OUT.close();
   
 }
+
+void anaXS::plot_RapInt(){
+  
+  TH1D *h;
+  int   n; 
+  char searchString13[2000];
+  float ptmin, ptmax;
+  gStyle->SetOptStat(0000000000000); 
+  gStyle->SetOptFit(00000000000000);
+  TCanvas *c100 = new TCanvas("c100", "c100", 600, 800);
+  c100->Divide(4,6);
+  for (unsigned int i = 1; i < fS13Vector.size(); ++i) {
+    c100->cd(i);
+    h = &(fS13Vector[i]);
+    n = sscanf(h->GetName(), "s13:Rapidity_IntegratedMass,pt%f_%f", &ptmin, &ptmax);
+    h->SetMinimum(0.);
+    h->GetXaxis()->SetTitle("#mu^{+}#mu^{-} mass [GeV/c^{2}]");
+    h->GetXaxis()->SetTitleSize(0.04);
+    h->GetYaxis()->SetTitle("Entries/0.05  [GeV/c^{2}]   ");
+    h->GetYaxis()->SetTitleSize(0.04);
+    h->GetYaxis()->SetTitleOffset(1.25);
+    h->SetTitle("");
+    //if( n > 0 )  h->SetTitle(Form("|y^{#Upsilon}| < 2.4,  %.1f < p_{T}^{#Upsilon} < %.1f",ptmin , ptmax));
+    setFunctionParameters(h, f13, 6, 2);
+    h->Fit(f13);
+    legg = new TLegend(0.25,0.85,0.9,1.05);
+    legg->SetFillStyle(0); legg->SetBorderSize(0); legg->SetTextSize(0.05); legg->SetTextFont(62); 
+    if( n > 0 ) {
+      legg->SetHeader(Form("|y^{#Upsilon}| < 2.4,  %.1f < p_{T}^{#Upsilon} < %.1f",ptmin , ptmax));
+      legg->Draw();
+    }
+  }
+  c100->SaveAs("Rap_IntMassFits.pdf");
+  
+}
+
 
 void anaXS::plotAcceptance(){
   
@@ -5263,8 +5302,10 @@ void anaXS::FITUpsilon(int mode){
     TH1D *hSigma2S = new TH1D("hSigma2S","hSigma2S", fHbinning->GetNbinsX(), fHbinning->GetXaxis()->GetXbins()->GetArray());
     TH1D *hMean1S = new TH1D("hMean1S","hMean1S", fHbinning->GetNbinsX(), fHbinning->GetXaxis()->GetXbins()->GetArray()); 
     TH1D *hMean2S = new TH1D("hMean2S","hMean2S", fHbinning->GetNbinsX(), fHbinning->GetXaxis()->GetXbins()->GetArray());    
-
-        
+    TH1D *hYield1S = new TH1D("hYield1S","hYield1S", fHbinning->GetNbinsX(), fHbinning->GetXaxis()->GetXbins()->GetArray());    
+    TH1D *hYield2S = new TH1D("hYield2S","hYield2S", fHbinning->GetNbinsX(), fHbinning->GetXaxis()->GetXbins()->GetArray()); 
+    TH1D *hYield3S = new TH1D("hYield3S","hYield3S", fHbinning->GetNbinsX(), fHbinning->GetXaxis()->GetXbins()->GetArray()); 
+    
     for (unsigned int i = 0; i < fS13Vector.size(); ++i) {
       
       c1->cd(1); shrinkPad(0.15, 0.26); 
@@ -5402,14 +5443,21 @@ void anaXS::FITUpsilon(int mode){
       cout << " --> " << h->GetName() << ", Ups(1S) Yield = " << yield_1S << "+/-" << yieldE_1S << endl;
       cout << " --> " << h->GetName() << ", Ups(2S) Yield = " << yield_2S << "+/-" << yieldE_2S << endl;
       cout << " --> " << h->GetName() << ", Ups(3S) Yield = " << yield_3S << "+/-" << yieldE_3S << endl;
-      hSigma1S->SetBinContent(i+1, sig1);
-      hSigma1S->SetBinError(i+1, sigE1);
-      hSigma2S->SetBinContent(i+1, sig2);
-      hSigma2S->SetBinError(i+1, sigE2);
-      hMean1S->SetBinContent(i+1, mean1);
-      hMean1S->SetBinError(i+1, meanE1);
-      hMean2S->SetBinContent(i+1, mean2);
-      hMean2S->SetBinError(i+1, meanE2);  
+      hSigma1S->SetBinContent(i, sig1);
+      hSigma1S->SetBinError(i, sigE1);
+      hSigma2S->SetBinContent(i, sig2);
+      hSigma2S->SetBinError(i, sigE2);
+      hMean1S->SetBinContent(i, mean1);
+      hMean1S->SetBinError(i, meanE1);
+      hMean2S->SetBinContent(i, mean2);
+      hMean2S->SetBinError(i, meanE2);
+      hYield1S->SetBinContent(i, yield_1S);
+      hYield1S->SetBinError(i, TMath::Sqrt(yieldE_1S));
+      hYield2S->SetBinContent(i, yield_2S);
+      hYield2S->SetBinError(i, TMath::Sqrt(yieldE_2S));
+      hYield3S->SetBinContent(i, yield_3S);
+      hYield3S->SetBinError(i, TMath::Sqrt(yieldE_3S));
+      
       c1->Modified();
       c1->Update();
       
@@ -5428,6 +5476,9 @@ void anaXS::FITUpsilon(int mode){
     hSigma2S->Write();
     hMean1S->Write();
     hMean2S->Write();
+    hYield1S->Write();
+    hYield2S->Write();
+    hYield3S->Write();
     cout << "YieldTot = " << YieldTot << "+/-" << TMath::Sqrt(YieldTotE) << endl;
     cout << "YieldTot2S = " << YieldTot2S << "+/-" << TMath::Sqrt(YieldTot2SE) << endl;
     cout << "YieldTot3S = " << YieldTot3S << "+/-" << TMath::Sqrt(YieldTot3SE) << endl;
