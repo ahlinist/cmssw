@@ -67,6 +67,7 @@ protected:
   Bool_t saveHistograms_;
   Bool_t doGenParticles_;
   Bool_t doStoreJets_;
+  Bool_t doJetHLTMatch_;
   Bool_t doSkim_;
 
   InputTag vtxlabel_;
