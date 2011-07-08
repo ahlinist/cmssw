@@ -10,7 +10,8 @@ from TauAnalysis.Configuration.tools.harvesting import castor_source, clean_by_c
 
 channel = 'ZtoMuTau_tauIdEff'
 
-#reg.overrideJobId(channel, '2011Jun10')
+#reg.overrideJobId(channel, '2011Jul06_mauro')
+reg.overrideJobId(channel, '2011Jul06v2')
 
 analysisFilePath = reg.getAnalysisFilePath(channel)
 harvestingFilePath = reg.getHarvestingFilePath(channel)
@@ -18,13 +19,14 @@ jobId = reg.getJobId(channel)
 tmpFilePath = reg.getBatchHarvestLocation(channel)
 
 SAMPLES_TO_ANALYZE = [
-    'Ztautau_pythia',
-    'Zmumu_pythia',
-    'PPmuXptGt20Mu15'
+    # modify in case you want to submit jobs for some of the samples only...
 ]
 
 print analysisFilePath
 print tmpFilePath
+
+#reg.overrideJobId(channel, '2011Jul06') # CV: need to overwrite this in order to match Mauro's filenames
+#jobId = reg.getJobId(channel)
 
 plot_regex = r"dont match anything"
 skim_regex = r"tauIdEffSample_(?P<sample>\w+?)_%s_RECO_(?P<gridJob>\d*)(_(?P<gridTry>\d*))*_(?P<hash>[a-zA-Z0-9]*).root" % (jobId)

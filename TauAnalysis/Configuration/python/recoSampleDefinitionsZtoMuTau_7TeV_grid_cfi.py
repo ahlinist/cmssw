@@ -12,6 +12,8 @@ SAMPLES_TO_ANALYZE = [
     #'DYtautauM10to20_powheg',
     'Ztautau_pythia',
     #'Ztautau_powheg',
+    'Ztautau_embedded_part1',
+    'Ztautau_embedded_part2'
     #'qqZll',
     #'DYmumuM10to20_pythia',
     'Zmumu_pythia',

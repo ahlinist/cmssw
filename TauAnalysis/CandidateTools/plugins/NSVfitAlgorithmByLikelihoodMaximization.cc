@@ -71,8 +71,8 @@ void NSVfitAlgorithmByLikelihoodMaximization::fitImp() const
     if ( fitParameterType == nSVfit_namespace::kTau_phi_lab   ||
 	 fitParameterType == nSVfit_namespace::kTauVM_phi_a1r ||
 	 fitParameterType == nSVfit_namespace::kNu_phi_lab    ) {
-      double limit_disabled = std::numeric_limits<float>::quiet_NaN(); // CMSSSW_4_1_x version
-      //double limit_disabled = TMath::QuietNaN();                     // CMSSSW_4_2_x version
+      double limit_disabled = std::numeric_limits<float>::quiet_NaN(); // CMSSSW_4_2_x version
+      //double limit_disabled = TMath::QuietNaN();                     // CMSSSW_4_4_x version
       fitParameter->setLowerLimit(limit_disabled);
       fitParameter->setUpperLimit(limit_disabled);
       idxFitParametersPhi_.push_back(fitParameter->index());

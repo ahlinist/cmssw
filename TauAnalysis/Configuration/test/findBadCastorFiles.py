@@ -7,7 +7,7 @@ import threading
 import Queue
 import time
 
-from TauAnalysis.Configuration.userRegistry import getAnalysisFilePath, getJobId
+import TauAnalysis.Configuration.userRegistry as reg
 
 # Find all files on castor which have zero size or
 # cause an error when opened by ROOT
@@ -100,12 +100,13 @@ results_thread = threading.Thread(target = lambda: write_fileNames(results_queue
 results_thread.daemon = True
 results_thread.start()
 
-castorFilePath = '/castor/cern.ch/' + getAnalysisFilePath(channel)
+castorFilePath = '/castor/cern.ch/' + reg.getAnalysisFilePath(channel)
 castorFilePath = castorFilePath.replace('//', '/')
 castorFilePath = castorFilePath.replace('/castor/cern.ch/castor/cern.ch/', '/castor/cern.ch/')
 print(" castorFilePath = %s" % castorFilePath)
 
-jobId = getJobId(channel)
+reg.overrideJobId(channel, '2011Jul06') # CV: need to overwrite this in order to match Mauro's filenames
+jobId = reg.getJobId(channel)
 print(" jobId = %s" % jobId)
 
 commandLine = 'nsls %s' % castorFilePath
@@ -114,6 +115,7 @@ retval = subprocess.Popen(args, stdout = subprocess.PIPE)
 #retval.wait()
 
 files = retval.stdout.read().split('\n')
+#print(" files = %s" % files)
 
 for file in files:
     # skip files from different submissions

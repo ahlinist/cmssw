@@ -87,10 +87,10 @@ NSVfitTauDecayBuilder::applyFitParameter(NSVfitSingleParticleHypothesis* hypothe
   // If we are not using track likelihoods, the tau direction is just a unit vector.
   if ( idxFitParameter_deltaR_ == -1 || tracks.size() == 0 ) {
     tauFlight = SVfit_namespace::tauDirection(p3Vis_unit, angleVis_lab, phi_lab);
-    if (this->verbosity_)
+    if ( this->verbosity_ )
       std::cout << " Build non-track based vertex @ " << tauFlight << std::endl;
   } else {
-    if (this->verbosity_)
+    if ( this->verbosity_ )
       std::cout << "Finding decay vertex with tracks" << std::endl;
 
     /*************************************************
@@ -103,7 +103,7 @@ NSVfitTauDecayBuilder::applyFitParameter(NSVfitSingleParticleHypothesis* hypothe
     const NSVfitEventHypothesis* eventHyp = mother->eventHypothesis();
     assert(eventHyp);
 
-    if (!eventHyp->eventVertexSVrefittedIsValid())
+    if ( !eventHyp->eventVertexSVrefittedIsValid() )
       throw cms::Exception("NSVfitTauDecayBuilderBase::NoEventPV") <<
         "Couldn't get the refitted primary vertex!" << std::endl;
 

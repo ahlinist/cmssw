@@ -32,6 +32,7 @@ def castor_source(directory):
     print "<castor_source>", directory
     # First sort by time
     files = list(castor.nslsl(directory))
+    #print files
     # Sort by time
     files.sort(key = lambda x: x['time'])
     for file_info in files:
