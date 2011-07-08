@@ -4,13 +4,19 @@
 #include "AnalysisDataFormats/TauAnalysis/interface/NSVfitEventHypothesisBase.h"
 #include "AnalysisDataFormats/TauAnalysis/interface/NSVfitResonanceHypothesisByIntegration.h"
 
+#include "DataFormats/Common/interface/OwnVector.h"
+#include "DataFormats/Common/interface/ClonePolicy.h"
+
 #include <TH1.h>
 
 #include <string>
 
+struct TH1ClonePolicy;
+
 class NSVfitEventHypothesisByIntegration : public NSVfitEventHypothesisBase
 {
  public:
+
   NSVfitEventHypothesisByIntegration() {}
   NSVfitEventHypothesisByIntegration(const edm::Ptr<reco::Candidate>& met) 
     : NSVfitEventHypothesisBase(met)

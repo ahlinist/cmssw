@@ -10,6 +10,7 @@ class NSVfitEventHypothesis;
 class NSVfitResonanceHypothesisByIntegration : public NSVfitResonanceHypothesisBase
 {
  public:
+
   NSVfitResonanceHypothesisByIntegration() {}
   NSVfitResonanceHypothesisByIntegration(const NSVfitResonanceHypothesisByIntegration&);
   NSVfitResonanceHypothesisByIntegration(const NSVfitResonanceHypothesisBase&);

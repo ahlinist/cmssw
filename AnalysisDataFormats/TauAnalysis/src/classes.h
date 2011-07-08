@@ -7,6 +7,7 @@
 
 #include "AnalysisDataFormats/TauAnalysis/interface/NSVfitEventHypothesisBase.h"
 #include "AnalysisDataFormats/TauAnalysis/interface/NSVfitEventHypothesis.h"
+#include "AnalysisDataFormats/TauAnalysis/interface/NSVfitEventHypothesisByIntegration.h"
 #include "AnalysisDataFormats/TauAnalysis/interface/NSVfitResonanceHypothesisBase.h"
 #include "AnalysisDataFormats/TauAnalysis/interface/NSVfitResonanceHypothesis.h"
 #include "AnalysisDataFormats/TauAnalysis/interface/NSVfitSingleParticleHypothesisBase.h"
@@ -90,8 +91,10 @@ namespace {
     /// create dictionaries for NSVfit solution data-formats
     NSVfitEventHypothesisBase dummyNSVfitEventHypothesisBase;
     NSVfitEventHypothesis dummyNSVfitEventHypothesis;
+    NSVfitEventHypothesisByIntegration dummyNSVfitEventHypothesisByIntegration;
     NSVfitResonanceHypothesisBase dummyNSVfitResonanceHypothesisBase;
     NSVfitResonanceHypothesis dummyNSVfitResonanceHypothesis;
+    NSVfitResonanceHypothesisByIntegration dummyNSVfitResonanceHypothesisByIntegration;
     NSVfitTauToElecHypothesisBase dummyNSVfitTauToElecHypothesisBase;
     NSVfitTauToElecHypothesis dummyNSVfitTauToElecHypothesis;
     NSVfitTauToMuHypothesisBase dummyNSVfitTauToMuHypothesisBase;
@@ -100,8 +103,10 @@ namespace {
     NSVfitTauToHadHypothesis dummyNSVfitTauToHadHypothesis;
     std::vector<NSVfitEventHypothesisBase> dummyNSVfitEventHypothesisBaseCollection;
     std::vector<NSVfitEventHypothesis> dummyNSVfitEventHypothesisCollection;
+    std::vector<NSVfitEventHypothesisByIntegration> dummyNSVfitEventHypothesisByIntegrationCollection;
     edm::Wrapper<std::vector<NSVfitEventHypothesisBase> > dummyNSVfitEventHypothesisBaseCollectionWrapper;
     edm::Wrapper<std::vector<NSVfitEventHypothesis> > dummyNSVfitEventHypothesisCollectionWrapper;
+    edm::Wrapper<std::vector<NSVfitEventHypothesisByIntegration> > dummyNSVfitEventHypothesisByIntegrationCollectionWrapper;
     std::vector<NSVfitEventHypothesisBase*> dummyNSVfitEventHypothesisBasePtrCollection;
     edm::OwnVector<NSVfitEventHypothesisBase, edm::ClonePolicy<NSVfitEventHypothesisBase> > dummyNSVfitEventHypothesisBaseOwnVector;
     std::vector<NSVfitResonanceHypothesisBase*> dummyNSVfitResonanceHypothesisBasePtrCollection;

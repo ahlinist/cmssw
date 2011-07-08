@@ -11,6 +11,7 @@
 class NSVfitEventHypothesis : public NSVfitEventHypothesisBase
 {
  public:
+
   NSVfitEventHypothesis() {}
   NSVfitEventHypothesis(const edm::Ptr<reco::Candidate>& met) 
     : NSVfitEventHypothesisBase(met),

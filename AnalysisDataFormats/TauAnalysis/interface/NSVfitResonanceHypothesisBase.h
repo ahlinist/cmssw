@@ -10,6 +10,7 @@
 class NSVfitResonanceHypothesisBase
 {
  public:
+
   NSVfitResonanceHypothesisBase() {}
   NSVfitResonanceHypothesisBase(const NSVfitResonanceHypothesisBase&);
   virtual ~NSVfitResonanceHypothesisBase() {}
