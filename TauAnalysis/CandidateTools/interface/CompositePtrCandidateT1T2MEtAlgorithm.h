@@ -186,7 +186,9 @@ class CompositePtrCandidateT1T2MEtAlgorithm
 	    inputParticles.insert(std::pair<std::string, CandidatePtr>("leg2", leg2));
 	    inputParticles.insert(std::pair<std::string, CandidatePtr>("met",  met));
 	    std::auto_ptr<NSVfitEventHypothesisBase> nSVfitHypothesis(nSVfitAlgorithm->second->fit(inputParticles, pv));
+	    //std::string nSVfitHypothesisName = nSVfitHypothesis->name();
 	    compositePtrCandidate.addNSVfitSolution(nSVfitHypothesis);
+	    //compositePtrCandidate.nSVfitSolution(nSVfitHypothesisName)->print(std::cout);
 	    //std::cout << " done." << std::endl;
 	  }
 	}

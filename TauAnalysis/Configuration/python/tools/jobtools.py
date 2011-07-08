@@ -17,7 +17,7 @@ Author: Evan K. Friis, UC Davis
 bsub_template = string.Template(
 '''#!/bin/csh
 #BSUB -J $jobName
-#BSUB -q 8nh
+#BSUB -q 1nd
 #BSUB -o $logFile
 $dependencies
 
