@@ -13,6 +13,7 @@ class NSVfitEventHypothesis;
 class NSVfitResonanceHypothesis : public NSVfitResonanceHypothesisBase
 {
  public:
+
   NSVfitResonanceHypothesis()
     : eventHyp_(NULL)
   {}

@@ -38,10 +38,14 @@
   <!-- create dictionaries for NSVfit solution data-formats -->
   <class name="NSVfitEventHypothesisBase"/>
   <class name="NSVfitEventHypothesis"/>
+  <class name="NSVfitEventHypothesisByIntegration">
+    <field name="histMassResults_" transient="true"/>
+  </class>
   <class name="NSVfitResonanceHypothesisBase"/>
   <class name="NSVfitResonanceHypothesis">
     <field name="eventHyp_" transient="true"/>
   </class>
+  <class name="NSVfitResonanceHypothesisByIntegration"/>
   <class name="NSVfitSingleParticleHypothesisBase"/>
   <class name="NSVfitSingleParticleHypothesis">
     <field name="mother_" transient="true"/>
@@ -58,8 +62,10 @@
   <class name="NSVfitTauToHadHypothesis"/>
   <class name="std::vector<NSVfitEventHypothesisBase>"/>
   <class name="std::vector<NSVfitEventHypothesis>"/>
+  <class name="std::vector<NSVfitEventHypothesisByIntegration>"/>
   <class name="edm::Wrapper<std::vector<NSVfitEventHypothesisBase> >"/>
   <class name="edm::Wrapper<std::vector<NSVfitEventHypothesis> >"/>
+  <class name="edm::Wrapper<std::vector<NSVfitEventHypothesisByIntegration> >"/>
   <class name="std::vector<NSVfitEventHypothesisBase*>"/>
   <class name="edm::OwnVector<NSVfitEventHypothesisBase, edm::ClonePolicy<NSVfitEventHypothesisBase> >"/>
   <class name="std::vector<NSVfitResonanceHypothesisBase*>"/>
