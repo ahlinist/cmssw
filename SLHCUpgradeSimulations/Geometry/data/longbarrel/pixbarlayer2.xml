@@ -2,12 +2,13 @@
 <DDDefinition xmlns="http://www.cern.ch/cms/DDL" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.cern.ch/cms/DDL ../../../DetectorDescription/Schema/DDLSchema.xsd">
 
 <ConstantsSection label="pixbarlayer2.xml" eval="true">
- <Constant name="Ladders"           value="46"/>
+ <Constant name="Ladders"           value="44"/>
  <Constant name="CoolDist"          value="10.9*cm"/>
  <Constant name="CoolWidth"         value="0.3283*cm"/>
+ <Constant name="OuterFirst"        value="1"/>
 </ConstantsSection>
 
-<Algorithm name="track:DDPixBarLayerAlgo">
+<Algorithm name="track:DDPixBarLayerUpgradeAlgo">
   <rParent name="pixbarlayer2:PixelBarrelLayer2"/>
   <String name="GeneralMaterial"   value="materials:Air"/>
   <Numeric name="Ladders"          value="[pixbarlayer2:Ladders]"/>
@@ -20,15 +21,11 @@
   <Numeric name="CoolDist"         value="[pixbarlayer2:CoolDist]"/>
   <String name="CoolMaterial"      value="materials:CO2_Upgrade"/>
   <String name="CoolTubeMaterial"  value="materials:Steel_Upgrade"/>
-  <Vector name="LadderName" type="string" nEntries="2">
-    pixbarladderfull:PixelBarrelLadderFull, 
-    pixbarladderhalf:PixelBarrelLadderHalf</Vector>
-  <Vector name="LadderWidth" type="numeric" nEntries="2">
-    [pixbarladderfull:LadderWidth], [pixbarladderhalf:LadderWidth]
-  </Vector>
-  <Vector name="LadderThick" type="numeric" nEntries="2">
-    [pixbarladderfull:LadderThick], [pixbarladderhalf:LadderThick]
-  </Vector>
+  <String name="LadderName"        value="pixbarladderfull2:PixelBarrelLadderFull2"/>
+  <Numeric name="LadderWidth"      value="[pixbarladderfull2:LadderWidth]"/>
+  <Numeric name="LadderThick"      value="[pixbarladderfull2:LadderThick]"/>
+  <Numeric name="OuterFirst"       value="[pixbarlayer2:OuterFirst]"/>
+
 </Algorithm>
 
 </DDDefinition>

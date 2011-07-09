@@ -1,6 +1,12 @@
 <?xml version="1.0"?>
 <DDDefinition xmlns="http://www.cern.ch/cms/DDL" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.cern.ch/cms/DDL ../../../DetectorDescription/Schema/DDLSchema.xsd">
-  
+<!--
+Modified for Phase 1 Pixel Forward Geometry
+
+Pratima Jindal, Purdue University Calumet
+July 2009
+
+-->  
 <SpecParSection label="trackerProdCuts.xml" eval="true">
   <SpecPar name="tracker-dead">
     <PartSelector path="//Tracker" />
@@ -21,7 +27,7 @@
     <PartSelector path="//TOBActiveRphi0" />
     <PartSelector path="//TOBActiveSter0" />
     <PartSelector path="//TOBActiveRphi2" />
-    <PartSelector path="//TOBActiveRphi4" />  
+    <PartSelector path="//TOBActiveRphi4" />
     <PartSelector path="//TECModule0RphiActive" />
     <PartSelector path="//TECModule0StereoActive" />
     <PartSelector path="//TECModule1RphiActive" />
@@ -61,8 +67,7 @@
   </SpecPar>
   <SpecPar name="tracker-dead-pixel">
     <PartSelector path="//PixelBarrel" />
-    <PartSelector path="//PixelForwardZPlus" />
-    <PartSelector path="//PixelForwardZMinus" />
+    <PartSelector path="//PixelForward" />
     <Parameter name="CMSCutsRegion" value="TrackerPixelDeadRegion" eval="false"/>
     <Parameter name="ProdCutsForElectrons" value="1*mm"/>
     <Parameter name="ProdCutsForPositrons" value="1*mm"/>
@@ -70,8 +75,10 @@
   </SpecPar>
 
   <SpecPar name="tracker-sens-pixel">
-    <PartSelector path="//PixelBarrelActiveFull" />
-    <PartSelector path="//PixelBarrelActiveHalf" />
+    <PartSelector path="//PixelBarrelActiveFull0" />
+    <PartSelector path="//PixelBarrelActiveFull1" />
+    <PartSelector path="//PixelBarrelActiveFull2" />
+    <PartSelector path="//PixelBarrelActiveFull3" />
     <PartSelector path="//PixelBarrelActiveStack0" />
     <PartSelector path="//PixelBarrelActiveStack1" />
     <PartSelector path="//PixelBarrelActiveStack2" />
@@ -82,11 +89,9 @@
     <PartSelector path="//PixelBarrelActiveStack7" />
     <PartSelector path="//PixelBarrelActiveStack8" />
     <PartSelector path="//PixelBarrelActiveStack9" />
-    <PartSelector path="//PixelForwardActive1x2" />
-    <PartSelector path="//PixelForwardActive1x5" />
-    <PartSelector path="//PixelForwardActive2x3" />
-    <PartSelector path="//PixelForwardActive2x4" />
-    <PartSelector path="//PixelForwardActive2x5" />
+    <PartSelector path="//PixelForwardSensor1" />
+    <PartSelector path="//PixelForwardSensor2" />
+    <PartSelector path="//PixelForwardSensor3" />
     <Parameter name="CMSCutsRegion" value="TrackerPixelSensRegion" eval="false"/>
     <Parameter name="ProdCutsForElectrons" value="0.01*mm"/>
     <Parameter name="ProdCutsForPositrons" value="0.01*mm"/>
