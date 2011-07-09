@@ -1032,8 +1032,8 @@ void anaXS::makeAllDATA(int channel) {
     //addBackground(fS1Vector, 0.3);
     
     //table(fS1YieldPt, "anan");
-    plot_RapInt();
-    
+    //plot_RapInt();
+    plot_PtInt();
     
     //FITUpsilon(4); //3 for PtIntegrated plots, 4 for RapidityIntegrated plots
     //GetAnaEff();
@@ -1258,6 +1258,52 @@ void anaXS::plot_RapInt(){
   c100->SaveAs("Rap_IntMassFits.pdf");
   
 }
+
+void anaXS::plot_PtInt(){
+  
+  TH1D *h, *h1;
+  int   n; 
+  char searchString12[2000];
+  float etamin, etamax;
+  gStyle->SetOptStat(0000000000000); 
+  gStyle->SetOptFit(00000000000000);
+  TCanvas *c101 = new TCanvas("c101", "c101", 800, 600);
+  h = &(fS12Vector[0]);
+  h->SetMinimum(0.);
+  h->GetXaxis()->SetTitle("#mu^{+}#mu^{-} mass [GeV/c^{2}]");
+  h->GetXaxis()->SetTitleSize(0.04);
+  h->GetYaxis()->SetTitle("Entries/0.05  [GeV/c^{2}]   ");
+  h->GetYaxis()->SetTitleSize(0.04);
+  h->GetYaxis()->SetTitleOffset(1.375);
+  h->SetTitle("");
+  setFunctionParameters(h, f13, 6, 0);
+  h->Fit(f13);
+  legg = new TLegend(0.6,0.8,0.6,0.8);
+  legg->SetFillStyle(0); legg->SetBorderSize(0); legg->SetTextSize(0.05); legg->SetTextFont(62); 
+  legg->SetHeader(Form("|y^{#Upsilon}| < 2.4",etamin , etamax));
+  legg->Draw();
+  c101->SaveAs("MassFit.pdf");
+  
+  TCanvas *c102 = new TCanvas("c102", "c102", 800, 600);
+  h1 = &(fS12Vector[1]);
+  h1->SetMinimum(0.);
+  h1->GetXaxis()->SetTitle("#mu^{+}#mu^{-} mass [GeV/c^{2}]");
+  h1->GetXaxis()->SetTitleSize(0.04);
+  h1->GetYaxis()->SetTitle("Entries/0.05  [GeV/c^{2}]   ");
+  h1->GetYaxis()->SetTitleSize(0.04);
+  h1->GetYaxis()->SetTitleOffset(1.25);
+  h1->SetTitle("");
+  setFunctionParameters(h, f13, 6, 0);
+  h1->Fit(f13);
+  legg = new TLegend(0.6,0.8,0.6,0.8);
+  legg->SetFillStyle(0); legg->SetBorderSize(0); legg->SetTextSize(0.05); legg->SetTextFont(62); 
+  legg->SetHeader(Form("|y^{#Upsilon}| < 0.4",etamin , etamax));
+  legg->Draw();
+  c102->SaveAs("0_0.4_MassFit.pdf");  
+  
+}
+
+
 
 
 void anaXS::plotAcceptance(){
@@ -5183,15 +5229,15 @@ void anaXS::FITUpsilon(int mode){
 	cout << " Ups(1S) yield =  " << yield_1S << "+/-" << yieldE_1S  << endl;
 	//alpha = f13->GetParameter(2);
 	//n = f13->GetParameter(3);
-	mean1 = f13->GetParameter(0);
-	meanE1 = f13->GetParError(0);	
-	sig1 = f13->GetParameter(1);
-	sigE1 = f13->GetParError(1);
-	
 	if ( i > 0 ) {
+	  mean1 = f13->GetParameter(0);
+	  meanE1 = f13->GetParError(0);	
+	  sig1 = f13->GetParameter(1);
+	  sigE1 = f13->GetParError(1);
 	  YieldTot += yield_1S;
 	  YieldTotE += (yieldE_1S*yieldE_1S);
 	}
+	
 	// Ups 2S
 	f10->SetParameters( f13->GetParameter(5), f13->GetParameter(6), f13->GetParameter(2), f13->GetParameter(3), f13->GetParameter(7) );
 	yield_2S  = f10->Integral(8.7,11.2)/h->GetBinWidth(1);
@@ -5201,11 +5247,11 @@ void anaXS::FITUpsilon(int mode){
 	if ( f13->GetParameter(7) > f13->GetParError(7) ) yieldE_2S = TMath::Abs(yieldE_2S);
 	if ( f13->GetParameter(7) < f13->GetParError(7) ) yieldE_2S = TMath::Sqrt(yield_2S);
 	cout << " Ups(2S) yield =  " << yield_2S << "+/-" << yieldE_2S  << endl;
-	mean2 = f13->GetParameter(5);
-	meanE2 = f13->GetParError(5);		
-	sig2 = f13->GetParameter(6);
-	sigE2 = f13->GetParError(6);	
 	if ( i > 0 ) {
+	  mean2 = f13->GetParameter(5);
+	  meanE2 = f13->GetParError(5);		
+	  sig2 = f13->GetParameter(6);
+	  sigE2 = f13->GetParError(6);	
 	  YieldTot2S += yield_2S;
 	  YieldTot2SE += (yieldE_2S*yieldE_2S);
 	}
@@ -5239,14 +5285,14 @@ void anaXS::FITUpsilon(int mode){
       cout << " --> " << h->GetName() << ", Ups(2S) Yield = " << yield_2S << "+/-" << yieldE_2S << endl;
       cout << " --> " << h->GetName() << ", Ups(3S) Yield = " << yield_3S << "+/-" << yieldE_3S << endl;
 
-      hSigma1S->SetBinContent(i+1, sig1);
-      hSigma1S->SetBinError(i+1, sigE1);
-      hSigma2S->SetBinContent(i+1, sig2);
-      hSigma2S->SetBinError(i+1, sigE2);
-      hMean1S->SetBinContent(i+1, mean1);
-      hMean1S->SetBinError(i+1, meanE1);
-      hMean2S->SetBinContent(i+1, mean2);
-      hMean2S->SetBinError(i+1, meanE2);      
+      hSigma1S->SetBinContent(i, sig1);
+      hSigma1S->SetBinError(i, sigE1);
+      hSigma2S->SetBinContent(i, sig2);
+      hSigma2S->SetBinError(i, sigE2);
+      hMean1S->SetBinContent(i, mean1);
+      hMean1S->SetBinError(i, meanE1);
+      hMean2S->SetBinContent(i, mean2);
+      hMean2S->SetBinError(i, meanE2);      
       c1->Modified();
       c1->Update();
       
@@ -5452,11 +5498,11 @@ void anaXS::FITUpsilon(int mode){
       hMean2S->SetBinContent(i, mean2);
       hMean2S->SetBinError(i, meanE2);
       hYield1S->SetBinContent(i, yield_1S);
-      hYield1S->SetBinError(i, TMath::Sqrt(yieldE_1S));
+      hYield1S->SetBinError(i, yieldE_1S);
       hYield2S->SetBinContent(i, yield_2S);
-      hYield2S->SetBinError(i, TMath::Sqrt(yieldE_2S));
+      hYield2S->SetBinError(i, yieldE_2S);
       hYield3S->SetBinContent(i, yield_3S);
-      hYield3S->SetBinError(i, TMath::Sqrt(yieldE_3S));
+      hYield3S->SetBinError(i, yieldE_3S);
       
       c1->Modified();
       c1->Update();

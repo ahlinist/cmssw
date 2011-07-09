@@ -90,6 +90,7 @@ public:
   void validation();
   void projections();
   void plot_RapInt();
+  void plot_PtInt();
   void PlotProjections(int mode); // 1 - MC, 2 - DATA
   void allDifferences(int jpsiOnly = 0); 
   void ptDifference(const char* a, const char* b, double MIN, double MAX, const char *fname = "ptDifference.pdf"); 
