@@ -1,12 +1,12 @@
-// $Id: EERenderPlugin.cc,v 1.165 2010/10/04 11:04:03 dellaric Exp $
+// $Id: EERenderPlugin.cc,v 1.166 2011/05/28 09:49:03 emanuele Exp $
 
 /*!
   \file EERenderPlugin
   \brief Display Plugin for Quality Histograms
   \author G. Della Ricca
   \author B. Gobbo
-  \version $Revision: 1.165 $
-  \date $Date: 2010/10/04 11:04:03 $
+  \version $Revision: 1.166 $
+  \date $Date: 2011/05/28 09:49:03 $
 */
 
 #include "VisMonitoring/DQMServer/interface/DQMRenderPlugin.h"
@@ -685,6 +685,14 @@ private:
         return;
       }
 
+      if( name.find( "laser amplitude summary" ) != std::string::npos )
+	{
+	  obj->SetMinimum(0.00001);
+	  gStyle->SetPalette(1);
+	  if( r.drawOptions.size() == 0 ) r.drawOptions = "colz";
+	  return;
+	}
+
       if( nbx == 50 && nby == 50 )
       {
         obj->GetXaxis()->SetNdivisions(10);
@@ -935,6 +943,7 @@ private:
         if( r.drawOptions.size() == 0 ) r.drawOptions = "colz";
         return;
       }
+
     }
 
   void preDrawTH1( TCanvas *, const VisDQMObject &o, VisDQMRenderInfo & )
@@ -1365,12 +1374,7 @@ private:
       {
         if( (ixSectorsEE[i]!=0 || iySectorsEE[i]!=0) && (ixSectorsEE[i+1]!=0 || iySectorsEE[i+1]!=0) )
         {
-          if( name.find( "reportSummaryMap") != std::string::npos && nbx == 40 && nby == 20 )
-          {
-            l.DrawLine(0.2*ixSectorsEE[i], 0.2*iySectorsEE[i], 0.2*ixSectorsEE[i+1], 0.2*iySectorsEE[i+1]);
-            l.DrawLine(20+0.2*ixSectorsEE[i], 0.2*iySectorsEE[i], 20+0.2*ixSectorsEE[i+1], 0.2*iySectorsEE[i+1]);
-          }
-          else if( (name.find( "reportSummaryMap") != std::string::npos && nbx == 200 && nby == 100) ||
+	  if( name.find( "reportSummaryMap") != std::string::npos ||
                    name.find( "DAQSummaryMap") != std::string::npos ||
                    name.find( "DCSSummaryMap") != std::string::npos ||
                    name.find( "CertificationSummaryMap") != std::string::npos )
@@ -1802,19 +1806,7 @@ private:
         return;
       }
 
-      if( name.find( "reportSummaryMap" ) != std::string::npos && nbx == 40 && nby == 20 )
-      {
-        int x1 = text10->GetXaxis()->FindFixBin(obj->GetXaxis()->GetXmin());
-        int x2 = text10->GetXaxis()->FindFixBin(obj->GetXaxis()->GetXmax());
-        int y1 = text10->GetYaxis()->FindFixBin(obj->GetYaxis()->GetXmin());
-        int y2 = text10->GetYaxis()->FindFixBin(obj->GetYaxis()->GetXmax());
-        text10->GetXaxis()->SetRange(x1, x2);
-        text10->GetYaxis()->SetRange(y1, y2);
-        text10->Draw("text,same");
-        return;
-      }
-
-      if( (name.find( "reportSummaryMap" ) != std::string::npos && nbx == 200 && nby == 100) ||
+      if( name.find( "reportSummaryMap" ) != std::string::npos ||
           name.find( "DAQSummaryMap" ) != std::string::npos ||
           name.find( "DCSSummaryMap" ) != std::string::npos ||
           name.find( "CertificationSummaryMap" ) != std::string::npos )
