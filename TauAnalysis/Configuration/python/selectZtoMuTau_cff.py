@@ -143,8 +143,8 @@ cfgTauChargeCut = cms.PSet(
 cfgTauMuonVeto = cms.PSet(
     pluginName = cms.string('tauMuonVeto'),
     pluginType = cms.string('PATCandViewMinEventSelector'),
-    src_cumulative = cms.InputTag('selectedPatTausForMuTauCaloMuonVetoCumulative'),
-    src_individual = cms.InputTag('selectedPatTausForMuTauCaloMuonVetoIndividual'),
+    src_cumulative = cms.InputTag('selectedPatTausForMuTauMuonVetoCumulative'),
+    src_individual = cms.InputTag('selectedPatTausForMuTauMuonVetoIndividual'),
     systematics = cms.vstring(tauSystematics.keys()),
     minNumber = cms.uint32(1)
 )
