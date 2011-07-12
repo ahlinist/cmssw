@@ -51,13 +51,15 @@ void compNumbers(double numEventsObserved, double numEventsBgr, double errBgrUp,
    + square(numEvents_Xp*errTauIdEff/square(tauIdEff))
    - 2*(numEvents_Xp/square(tauIdEff))*cov_numEventsSigC1_tauIdEff
    + square(errEventsSigC1))/square(intLumiData*br*accSig*effEvtSelExclTauId)
-   + square(Xsection)*(square(errAccSig/accSig) + square(errEffExclTauIdSig/effEvtSelExclTauId));
+   + square(Xsection)*(square(errAccSig/accSig) + square(errEffExclTauIdSig/effEvtSelExclTauId)
+   - square(errEventsSigC1/numEventsSigC1));
   double errXsectionDown2 = 
     (square(TMath::Sqrt(errBgrUp_Xp2)/tauIdEff)
    + square(numEvents_Xp*errTauIdEff/square(tauIdEff))
    - 2*(numEvents_Xp/square(tauIdEff))*cov_numEventsSigC1_tauIdEff
    + square(errEventsSigC1))/square(intLumiData*br*accSig*effEvtSelExclTauId)
-   + square(Xsection)*(square(errAccSig/accSig) + square(errEffExclTauIdSig/effEvtSelExclTauId));
+   + square(Xsection)*(square(errAccSig/accSig) + square(errEffExclTauIdSig/effEvtSelExclTauId)
+   - square(errEventsSigC1/numEventsSigC1)); 
 
   std::cout << "Xsection = " << Xsection 
 	    << " +/- " << Xsection*TMath::Sqrt(numEventsObserved)/(numEventsObserved - numEventsBgr) << " (stat.)"
@@ -71,14 +73,19 @@ void compNumbers(double numEventsObserved, double numEventsBgr, double errBgrUp,
   double sysUncertaintyExclTauIdUp2 = 
     square(errAccSig) 
    + square(errEffExclTauIdSig)
-   + square(errBgrDown/(numEventsObserved - numEventsBgr));
+   + square(errBgrDown/(numEventsObserved - numEventsBgr))
+   + square(errIntLumiData);
+  std::cout << "sysUncertaintyExclTauIdUp = " << TMath::Sqrt(sysUncertaintyExclTauIdUp2) << std::endl;
   double sysUncertaintyExclTauIdDown2 = 
     square(errAccSig) 
    + square(errEffExclTauIdSig)
-   + square(errBgrUp/(numEventsObserved - numEventsBgr));	    
+   + square(errBgrUp/(numEventsObserved - numEventsBgr))
+   + square(errIntLumiData);
+  std::cout << "sysUncertaintyExclTauIdDown = " << TMath::Sqrt(sysUncertaintyExclTauIdDown2) << std::endl;
 
-  std::cout << "rel. effect of tau id. eff. uncertainty:" << std::endl; 
+  std::cout << "rel. effect of tau id. eff. uncertainterrIntLumiDatay:" << std::endl; 
   std::cout << " uncorrelated: " << errTauIdEff/tauIdEff << std::endl;
+  //std::cout << " uncorrelated: " << TMath::Sqrt(errXsectionUp2/square(Xsection)) << std::endl;
   std::cout << " correlated:" 
 	    << " +" << TMath::Sqrt(errXsectionUp2/square(Xsection) - sysUncertaintyExclTauIdUp2)
 	    << " -" << TMath::Sqrt(errXsectionDown2/square(Xsection) - sysUncertaintyExclTauIdDown2) << std::endl;
@@ -90,8 +97,9 @@ void compZtautauXsectionNumbers_wCorrelation()
 // define numbers common to TaNC loose and HPS loose
 //-------------------------------------------------------------------------------
 
-  double intLumiData       = 36.1;
-  double errIntLumiData    =  0.1100; // relative uncertainty 
+  double intLumiData2010   =  36.1;
+  double intLumiData2011   = 879.6;
+  double errIntLumiData    =   0.06; // relative uncertainty 
   
   double mcAcceptance_Sig  =  0.0681;
   double errAcceptance_Sig =  0.0896*mcAcceptance_Sig;
@@ -102,36 +110,39 @@ void compZtautauXsectionNumbers_wCorrelation()
 // define numbers specific to TaNC loose
 //-------------------------------------------------------------------------------
 
-  double numEventsObserved_TaNCloose                = 556;
-  double numEventsBgr_TaNCloose                     = 229.5;
-  double errBgrUp_TaNCloose                         =  19.5;
-  double errBgrDown_TaNCloose                       =  29.6;
+  double scaleFactor2010to2011 = intLumiData2011/intLumiData2010;
+  std::cout << " scaleFactor2010to2011 = " << scaleFactor2010to2011 << std::endl;
+
+  double numEventsObserved_TaNCloose                = 556*scaleFactor2010to2011;
+  double numEventsBgr_TaNCloose                     = 229.5*scaleFactor2010to2011;
+  double errBgrUp_TaNCloose                         =  19.5*scaleFactor2010to2011;
+  double errBgrDown_TaNCloose                       =  29.6*scaleFactor2010to2011;
 
   double mcEfficiency_Sig_TaNCloose                 =   0.9650*0.3613;
   double errEfficiencyEvtSelExclTauId_Sig_TaNCloose =   0.0508*mcEfficiency_Sig_TaNCloose;
 
-  double numEventsSigC1_TaNCloose                   = 280.39;
-  double errEventsSigC1_TaNCloose                   =  66.16;
+  double numEventsSigC1_TaNCloose                   = 280.39*scaleFactor2010to2011;
+  double errEventsSigC1_TaNCloose                   =  66.16*TMath::Sqrt(scaleFactor2010to2011);
   double tauIdEff_TaNCloose                         =   0.437;  
-  double errTauIdEff_TaNCloose                      =   0.101;
-  double cov_numEventsSigC1_tauIdEff_TaNCloose      =  -6.92;
+  double errTauIdEff_TaNCloose                      =   0.06*tauIdEff_TaNCloose;
+  double cov_numEventsSigC1_tauIdEff_TaNCloose      =  -4.5;
 
 //-------------------------------------------------------------------------------
 // define numbers specific to HPS loose
 //-------------------------------------------------------------------------------
 
-  double numEventsObserved_HPSloose                 = 518;
-  double numEventsBgr_HPSloose                      = 245.0;
-  double errBgr_HPSloose                            =  22.0;
+  double numEventsObserved_HPSloose                 = 518*scaleFactor2010to2011;
+  double numEventsBgr_HPSloose                      = 245.0*scaleFactor2010to2011;
+  double errBgr_HPSloose                            =  22.0*scaleFactor2010to2011;
   
   double mcEfficiency_Sig_HPSloose                  =   0.997*0.0221/mcAcceptance_Sig;
   double errEfficiencyEvtSelExclTauId_Sig_HPSloose  =   0.064*mcEfficiency_Sig_HPSloose;
 
-  double numEventsSigC1_HPSloose                    = 279.74;
-  double errEventsSigC1_HPSloose                    =  64.27;
+  double numEventsSigC1_HPSloose                    = 279.74*scaleFactor2010to2011;
+  double errEventsSigC1_HPSloose                    =  64.27*TMath::Sqrt(scaleFactor2010to2011);
   double tauIdEff_HPSloose                          =   0.428;  
-  double errTauIdEff_HPSloose                       =   0.099;
-  double cov_numEventsSigC1_tauIdEff_HPSloose       =  -6.13;
+  double errTauIdEff_HPSloose                       =   0.06*tauIdEff_HPSloose;
+  double cov_numEventsSigC1_tauIdEff_HPSloose       =  -4.5;
 
 //-------------------------------------------------------------------------------
 // compute cross-sections for TaNC loose and HPS loose
@@ -139,7 +150,7 @@ void compZtautauXsectionNumbers_wCorrelation()
 
   std::cout << "TaNC loose:" << std::endl;
   compNumbers(numEventsObserved_TaNCloose, numEventsBgr_TaNCloose, errBgrUp_TaNCloose, errBgrDown_TaNCloose,
-	      intLumiData, errIntLumiData, 
+	      intLumiData2011, errIntLumiData, 
 	      brToMuTau_Sig, mcAcceptance_Sig, errAcceptance_Sig, mcEfficiency_Sig_TaNCloose, errEfficiencyEvtSelExclTauId_Sig_TaNCloose,
 	      numEventsSigC1_TaNCloose, errEventsSigC1_TaNCloose, 
 	      tauIdEff_TaNCloose, errTauIdEff_TaNCloose, cov_numEventsSigC1_tauIdEff_TaNCloose);
@@ -147,7 +158,7 @@ void compZtautauXsectionNumbers_wCorrelation()
 
   std::cout << "HPS loose:" << std::endl;
   compNumbers(numEventsObserved_HPSloose, numEventsBgr_HPSloose, errBgr_HPSloose, errBgr_HPSloose,
-	      intLumiData, errIntLumiData, 
+	      intLumiData2011, errIntLumiData, 
 	      brToMuTau_Sig, mcAcceptance_Sig, errAcceptance_Sig, mcEfficiency_Sig_HPSloose, errEfficiencyEvtSelExclTauId_Sig_HPSloose,
 	      numEventsSigC1_HPSloose, errEventsSigC1_HPSloose, 
 	      tauIdEff_HPSloose, errTauIdEff_HPSloose, cov_numEventsSigC1_tauIdEff_HPSloose);
