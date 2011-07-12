@@ -17,6 +17,7 @@ SAMPLES_TO_ANALYZE = [
     #'qqZll',
     #'DYmumuM10to20_pythia',
     'Zmumu_pythia',
+    'Zmumu_powheg',
     #'Zmumu_powheg',
     'PPmuXptGt20Mu15',
     'WplusJets_madgraph',
@@ -180,12 +181,13 @@ RECO_SAMPLES = {
     },
     'Ztautau_embedded_part1' : {
         'datasetpath' : "/SingleMu/fruboes-20110703_embed_goldenMuMuSkim_42_TauPlusX_Run2011A_PromptReco_v4-3d3970b15f2245948e2e9363d6dd6994/USER",
-        'dbs_url' : "http://cmsdbsprod.cern.ch/cms_dbs_ph_analysis_01/servlet/DBSServlet",
+        'dbs_url' : "http://cmsdbsprod.cern.ch/cms_dbs_ph_analysis_01/servlet/DBSServlet",        
         'events_processed' : 347175,
+        'number_of_jobs' : 35,
         'skim_eff' : 1.0,
         'x_sec' : 1666*_picobarns,
         'legendEntry' : plotter.process_Ztautau.config_dqmHistPlotter.legendEntry.value(),
-        'type' : 'Data', # CV: simulated Ztautau events embedded in Zmumu data are still "Data" as far as crab is concerned
+        'type' : 'embeddedData', # CV: simulated Ztautau events embedded in Zmumu data are still "Data" as far as crab is concerned
         'drawOption' : styles.drawOption_Ztautau,
         'applyZrecoilCorrection' : False,
         'enableFakeRates' : True,
@@ -198,10 +200,11 @@ RECO_SAMPLES = {
         'datasetpath' : "/SingleMu/fruboes-20110703_embed_goldenMuMuSkim_42_muEra_SingleMu_Run2011A_May10ReReco_v1ex-3d3970b15f2245948e2e9363d6dd6994/USER",
         'dbs_url' : "http://cmsdbsprod.cern.ch/cms_dbs_ph_analysis_01/servlet/DBSServlet",
         'events_processed' : 9990,
+        'number_of_jobs' : 1,
         'skim_eff' : 1.0,
         'x_sec' : 1666*_picobarns,
         'legendEntry' : plotter.process_Ztautau.config_dqmHistPlotter.legendEntry.value(),
-        'type' : 'Data', # CV: simulated Ztautau events embedded in Zmumu data are still "Data" as far as crab is concerned
+        'type' : 'embeddedData', # CV: simulated Ztautau events embedded in Zmumu data are still "Data" as far as crab is concerned
         'drawOption' : styles.drawOption_Ztautau,
         'applyZrecoilCorrection' : False,
         'enableFakeRates' : True,
@@ -242,9 +245,9 @@ RECO_SAMPLES = {
         'hlt' : cms.InputTag("TriggerResults", "", "HLT")
     },
     'Zmumu_powheg' : {
-        'datasetpath' : "/DYToMuMu_M-20_CT10_TuneZ2_7TeV-powheg-pythia/Spring11-PU_S1_START311_V1G1-v1/AODSIM",
+        'datasetpath' : "/DYToMuMu_M-20_CT10_TuneZ2_7TeV-powheg-pythia/Summer11-PU_S4_START42_V11-v1/AODSIM",
         'dbs_url' :  "http://cmsdbsprod.cern.ch/cms_dbs_prod_global/servlet/DBSServlet",
-        'events_processed' : 1984154,
+        'events_processed' : 29743564,
         'skim_eff' : 1.0,
         'x_sec' : 1666*_picobarns,
         'legendEntry' : plotter.process_Zmumu.config_dqmHistPlotter.legendEntry.value(),
@@ -373,6 +376,15 @@ MERGE_SAMPLES = {
             'Ztautau_pythia',
             #'Ztautau_powheg',
             #'qqZll'
+        ],
+        'legendEntry' : plotter.process_Ztautau.config_dqmHistPlotter.legendEntry.value(),
+        'type' : plotter.process_Ztautau.config_dqmHistPlotter.type.value(),
+        'drawOption' : styles.drawOption_Ztautau
+    },
+    'Ztautau_embedded' : {
+        'samples' : [
+            'Ztautau_embedded_part1',
+            'Ztautau_embedded_part2'
         ],
         'legendEntry' : plotter.process_Ztautau.config_dqmHistPlotter.legendEntry.value(),
         'type' : plotter.process_Ztautau.config_dqmHistPlotter.type.value(),
