@@ -36,16 +36,154 @@ void ana::Loop()
 // METHOD2: replace line
 //    fChain->GetEntry(jentry);       //read all branches
 //by  b_branchname->GetEntry(ientry); //read only this branch
+   Int_t ele_Index(-1);
+   Int_t W_Index(-1);
+
+   TFile *file = new TFile("Data_2011A.root", "UPDATE");
+   TTree *tree = new TTree("DataTree", "Data");
+   tree->Branch("run", &run, "run/I");
+   tree->Branch("event", &event, "event/I");
+   tree->Branch("nHLT", &nHLT, "nHLT/I");
+   tree->Branch("HLT", HLT, "HLT[nHLT]/I");
+   tree->Branch("HLTIndex", HLTIndex, "HLTIndex[205]/I");
+   tree->Branch("HLTprescale", HLTprescale, "HLTprescale[nHLT]/I");
+   tree->Branch("nHFTowersP", &nHFTowersP, "nHFTowersP/I");
+   tree->Branch("nHFTowersN", &nHFTowersN, "nHFTowersN/I");
+   tree->Branch("nVtx", &nVtx, "nVtx/I");
+   tree->Branch("vtx", vtx, "vtx[nVtx][3]/F");
+   tree->Branch("vtxNTrk", vtxNTrk, "vtxNTrk[nVtx]/I");
+   tree->Branch("vtxNDF", vtxNDF, "vtxNDF[nVtx]/I");
+   tree->Branch("vtxD0", vtxD0, "vtxD0[nVtx]/F");
+   tree->Branch("nGoodVtx", &nGoodVtx, "nGoodVtx/I");
+   tree->Branch("rho", &rho, "rho/F");
+   tree->Branch("pfMET", &pfMET, "pfMET/F");
+   tree->Branch("pfMETx", &pfMETx, "pfMETx/F");
+   tree->Branch("pfMETy", &pfMETy, "pfMETy/F");
+   tree->Branch("pfMETPhi", &pfMETPhi, "pfMETPhi/F");
+   tree->Branch("pfMETsumEt", &pfMETsumEt, "pfMETsumEt/F");
+   tree->Branch("pfMETmEtSig", &pfMETmEtSig, "pfMETmEtSig/F");
+   tree->Branch("pfMETSig", &pfMETSig, "pfMETSig/F");
+   tree->Branch("nEle", &nEle, "nEle/I");
+   tree->Branch("eleTrg", eleTrg, "eleTrg[nEle][31]/I");
+   tree->Branch("eleID", eleID, "eleID[nEle][30]/I");
+   tree->Branch("eleClass", eleClass, "eleClass[nEle]/I");
+   tree->Branch("eleCharge", eleCharge, "eleCharge[nEle]/I");
+   tree->Branch("eleEn", eleEn, "eleEn[nEle]/F");
+   tree->Branch("eleSCRawEn", eleSCRawEn, "eleSCRawEn[nEle]/F");
+   tree->Branch("elePt", elePt, "elePt[nEle]/F");
+   tree->Branch("elePz", elePz, "elePz[nEle]/F");
+   tree->Branch("eleEta", eleEta, "eleEta[nEle]/F");
+   tree->Branch("elePhi", elePhi, "elePhi[nEle]/F");
+   tree->Branch("eleSCEta", eleSCEta, "eleSCEta[nEle]/F");
+   tree->Branch("eleSCPhi", eleSCPhi, "eleSCPhi[nEle]/F");
+   tree->Branch("eleVtx", eleVtx, "eleVtx[nEle][3]/F");
+   tree->Branch("eleHoverE", eleHoverE, "eleHoverE[nEle]/F");
+   tree->Branch("elePin", elePin, "elePin[nEle]/F");
+   tree->Branch("elePout", elePout, "elePout[nEle]/F");
+   tree->Branch("eleBrem", eleBrem, "eleBrem[nEle]/F");
+   tree->Branch("elenBrem", elenBrem, "elenBrem[nEle]/I");
+   tree->Branch("eledEtaAtVtx", eledEtaAtVtx, "eledEtaAtVtx[nEle]/F");
+   tree->Branch("eledPhiAtVtx", eledPhiAtVtx, "eledPhiAtVtx[nEle]/F");
+   tree->Branch("eleSigmaIEtaIEta", eleSigmaIEtaIEta, "eleSigmaIEtaIEta[nEle]/F");
+   tree->Branch("eleSigmaIEtaIPhi", eleSigmaIEtaIPhi, "eleSigmaIEtaIPhi[nEle]/F");
+   tree->Branch("eleSigmaIPhiIPhi", eleSigmaIPhiIPhi, "eleSigmaIPhiIPhi[nEle]/F");
+   tree->Branch("eleE3x3", eleE3x3, "eleE3x3[nEle]/F");
+   tree->Branch("eleSeedTime", eleSeedTime, "eleSeedTime[nEle]/F");
+   tree->Branch("eleIsoTrkDR03", eleIsoTrkDR03, "eleIsoTrkDR03[nEle]/F");
+   tree->Branch("eleIsoEcalDR03", eleIsoEcalDR03, "eleIsoEcalDR03[nEle]/F");
+   tree->Branch("eleIsoHcalDR03", eleIsoHcalDR03, "eleIsoHcalDR03[nEle]/F");
+   tree->Branch("eleIsoHcalSolidDR03", eleIsoHcalSolidDR03, "eleIsoHcalSolidDR03[nEle]/F");
+   tree->Branch("eleIsoTrkDR04", eleIsoTrkDR04, "eleIsoTrkDR04[nEle]/F");
+   tree->Branch("eleIsoEcalDR04", eleIsoEcalDR04, "eleIsoEcalDR04[nEle]/F");
+   tree->Branch("eleIsoHcalDR04", eleIsoHcalDR04, "eleIsoHcalDR04[nEle]/F");
+   tree->Branch("eleIsoHcalSolidDR04", eleIsoHcalSolidDR04, "eleIsoHcalSolidDR04[nEle]/F");
+   tree->Branch("eleConvDist", eleConvDist, "eleConvDist[nEle]/F");
+   tree->Branch("eleConvDcot", eleConvDcot, "eleConvDcot[nEle]/F");
+   tree->Branch("eleConvRadius", eleConvRadius, "eleConvRadius[nEle]/F");
+   tree->Branch("eleConvFlag", eleConvFlag, "eleConvFlag[nEle]/I");
+   tree->Branch("eleConvMissinghit", eleConvMissinghit, "eleConvMissinghit[nEle]/I");
+   tree->Branch("elePVD0", elePVD0, "elePVD0[nEle]/F");
+   tree->Branch("elePVDz", elePVDz, "elePVDz[nEle]/F");
+   tree->Branch("nPho", &nPho, "nPho/I");
+   tree->Branch("phoE", phoE, "phoE[nPho]/F");
+   tree->Branch("phoEt", phoEt, "phoEt[nPho]/F");
+   tree->Branch("phoPz", phoPz, "phoPz[nPho]/F");
+   tree->Branch("phoEta", phoEta, "phoEta[nPho]/F");
+   tree->Branch("phoPhi", phoPhi, "phoPhi[nPho]/F");
+   tree->Branch("phoR9", phoR9, "phoR9[nPho]/F");
+   tree->Branch("phoTrkIsoSolidDR03", phoTrkIsoSolidDR03, "phoTrkIsoSolidDR03[nPho]/F");
+   tree->Branch("phoTrkIsoHollowDR03", phoTrkIsoHollowDR03, "phoTrkIsoHollowDR03[nPho]/F");
+   tree->Branch("phoNTrkSolidDR03", phoNTrkSolidDR03, "phoNTrkSolidDR03[nPho]/I");
+   tree->Branch("phoNTrkHollowDR03", phoNTrkHollowDR03, "phoNTrkHollowDR03[nPho]/I");
+   tree->Branch("phoEcalIsoDR03", phoEcalIsoDR03, "phoEcalIsoDR03[nPho]/F");
+   tree->Branch("phoHcalIsoDR03", phoHcalIsoDR03, "phoHcalIsoDR03[nPho]/F");
+   tree->Branch("phoHcalIsoSolidDR03", phoHcalIsoSolidDR03, "phoHcalIsoSolidDR03[nPho]/F");
+   tree->Branch("phoTrkIsoSolidDR04", phoTrkIsoSolidDR04, "phoTrkIsoSolidDR04[nPho]/F");
+   tree->Branch("phoTrkIsoHollowDR04", phoTrkIsoHollowDR04, "phoTrkIsoHollowDR04[nPho]/F");
+   tree->Branch("phoNTrkSolidDR04", phoNTrkSolidDR04, "phoNTrkSolidDR04[nPho]/I");
+   tree->Branch("phoNTrkHollowDR04", phoNTrkHollowDR04, "phoNTrkHollowDR04[nPho]/I");
+   tree->Branch("phoEcalIsoDR04", phoEcalIsoDR04, "phoEcalIsoDR04[nPho]/F");
+   tree->Branch("phoHcalIsoDR04", phoHcalIsoDR04, "phoHcalIsoDR04[nPho]/F");
+   tree->Branch("phoHcalIsoSolidDR04", phoHcalIsoSolidDR04, "phoHcalIsoSolidDR04[nPho]/F");
+   tree->Branch("phoHoverE", phoHoverE, "phoHoverE[nPho]/F");
+   tree->Branch("phoSigmaIEtaIEta", phoSigmaIEtaIEta, "phoSigmaIEtaIEta[nPho]/F");
+   tree->Branch("phoSigmaIEtaIPhi", phoSigmaIEtaIPhi, "phoSigmaIEtaIPhi[nPho]/F");
+   tree->Branch("phoSigmaIPhiIPhi", phoSigmaIPhiIPhi, "phoSigmaIPhiIPhi[nPho]/F");
+   tree->Branch("phoE3x3", phoE3x3, "phoE3x3[nPho]/F");
+   tree->Branch("phoSeedTime", phoSeedTime, "phoSeedTime[nPho]/F");
+   tree->Branch("phoSCE", phoSCE, "phoSCE[nPho]/F");
+   tree->Branch("phoSCEt", phoSCEt, "phoSCEt[nPho]/F");
+   tree->Branch("phoSCEta", phoSCEta, "phoSCEta[nPho]/F");
+   tree->Branch("phoSCPhi", phoSCPhi, "phoSCPhi[nPho]/F");
+   tree->Branch("phoOverlap", phoOverlap, "phoOverlap[nPho]/I");
+   tree->Branch("phohasPixelSeed", phohasPixelSeed, "phohasPixelSeed[nPho]/I");  
+   tree->Branch("nJet", &nJet, "nJet/I");
+   tree->Branch("jetTrg", jetTrg, "jetTrg[nJet][58]/I");
+   tree->Branch("jetEn", jetEn, "jetEn[nJet]/F");
+   tree->Branch("jetPt", jetPt, "jetPt[nJet]/F");
+   tree->Branch("jetEta", jetEta, "jetEta[nJet]/F");
+   tree->Branch("jetPhi", jetPhi, "jetPhi[nJet]/F");
+   tree->Branch("jetMass", jetMass, "jetMass[nJet]/F");
+   tree->Branch("jetEt", jetEt, "jetEt[nJet]/F");
+   tree->Branch("jetpartonFlavour", jetpartonFlavour, "jetpartonFlavour[nJet]/I");
+   tree->Branch("jetRawPt", jetRawPt, "jetRawPt[nJet]/F");
+   tree->Branch("jetRawEn", jetRawEn, "jetRawEn[nJet]/F");
+   tree->Branch("jetCharge", jetCharge, "jetCharge[nJet]/F");
+   tree->Branch("jetNeutralEmEnergy", jetNeutralEmEnergy, "jetNeutralEmEnergy[nJet]/F");
+   tree->Branch("jetNeutralEmEnergyFraction", jetNeutralEmEnergyFraction, "jetNeutralEmEnergyFraction[nJet]/F");
+   tree->Branch("jetNeutralHadronEnergy", jetNeutralHadronEnergy, "jetNeutralHadronEnergy[nJet]/F");
+   tree->Branch("jetNeutralHadronEnergyFraction", jetNeutralHadronEnergyFraction, "jetNeutralHadronEnergyFraction[nJet]/F");
+   tree->Branch("jetNConstituents", jetNConstituents, "jetNConstituents[nJet]/I");
+   tree->Branch("jetChargedEmEnergy", jetChargedEmEnergy, "jetChargedEmEnergy[nJet]/F");
+   tree->Branch("jetChargedEmEnergyFraction", jetChargedEmEnergyFraction, "jetChargedEmEnergyFraction[nJet]/F");
+   tree->Branch("jetChargedHadronEnergy", jetChargedHadronEnergy, "jetChargedHadronEnergy[nJet]/F");
+   tree->Branch("jetChargedHadronEnergyFraction", jetChargedHadronEnergyFraction, "jetChargedHadronEnergyFraction[nJet]/F");
+   tree->Branch("jetChargedHadronMultiplicity", jetChargedHadronMultiplicity, "jetChargedHadronMultiplicity[nJet]/I");
+   tree->Branch("jetChargedMuEnergy", jetChargedMuEnergy, "jetChargedMuEnergy[nJet]/F");
+   tree->Branch("jetChargedMuEnergyFraction", jetChargedMuEnergyFraction, "jetChargedMuEnergyFraction[nJet]/F");
+   tree->Branch("nWenu", &nWenu, "nWenu/I");
+   tree->Branch("WenuMassTCaloMET", WenuMassTCaloMET, "WenuMassTCaloMET[nWenu]/F");
+   tree->Branch("WenuEtCaloMET", WenuEtCaloMET, "WenuEtCaloMET[nWenu]/F");
+   tree->Branch("WenuACopCaloMET", WenuACopCaloMET, "WenuACopCaloMET[nWenu]/F");
+   tree->Branch("WenuMassTTcMET", WenuMassTTcMET, "WenuMassTTcMET[nWenu]/F");
+   tree->Branch("WenuEtTcMET", WenuEtTcMET, "WenuEtTcMET[nWenu]/F");
+   tree->Branch("WenuACopTcMET", WenuACopTcMET, "WenuACopTcMET[nWenu]/F");
+   tree->Branch("WenuMassTPfMET", WenuMassTPfMET, "WenuMassTPfMET[nWenu]/F");
+   tree->Branch("WenuEtPfMET", WenuEtPfMET, "WenuEtPfMET[nWenu]/F");
+   tree->Branch("WenuACopPfMET", WenuACopPfMET, "WenuACopPfMET[nWenu]/F");
+   tree->Branch("WenuEleIndex", WenuEleIndex, "WenuEleIndex[nWenu]/I");
+   tree->Branch("ele_Index", &ele_Index, "ele_Index/I");
+   tree->Branch("W_Index", &W_Index, "W_Index/I");
+
    float Pi = 3.14159265;
 
-   bool HLT_pass(false);
-   int Wgamma_candidates(0);
-   int Wgamma_MT3_candidates(0);
-   int W_Index(-1);
+   bool  HLT_pass(false);
+   int   Wgamma_candidates(0);
+   int   Wgamma_MT3_candidates(0);
    float ele_Pt(30);
-   int ele_num(0);
+   int   ele_num(0);
    float CTM[3];
-   int pho_Index(-1);
+   int   pho_Index(-1);
    float pho_Pt(10);
    float dR(999);
    for (int a=0; a<3; a++) 
@@ -118,8 +256,8 @@ void ana::Loop()
    TH1F *h50 = new TH1F("PhoSeedTiming_Barrel", "", 500, -50, 50);
    TH1F *h51 = new TH1F("PhoSeedTiming_Endcap", "", 500, -50, 50);
 
-   TH2F *g1 = new TH2F("PhoPtSigmaIEtaIEta_Barrel", "", 500, 0, 500, 9000, 0.0005, 0.0905);
-   TH2F *g2 = new TH2F("PhoPtSigmaIEtaIEta_Endcap", "", 500, 0, 500, 9000, 0.0005, 0.0905);
+   TH2F *g1 = new TH2F("PhoPtSigmaIEtaIEta_Barrel", "", 100, 0, 500, 9000, 0.0005, 0.0905);
+   TH2F *g2 = new TH2F("PhoPtSigmaIEtaIEta_Endcap", "", 100, 0, 500, 9000, 0.0005, 0.0905);
 
    TH2F *g3 = new TH2F("Run_selection", "", 70000, 130000, 200000, 300, 0, 300);
    TH1F *g4 = new TH1F("Num_Pho", "", 10, 0, 10);
@@ -145,124 +283,128 @@ void ana::Loop()
       //HLT_Ele32_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_v3
       else if (run >= 165088 && run <= 165633 && HLTIndex[116] != -1 && HLT[HLTIndex[116]] == 1) HLT_pass = true; 
       //HLT_Ele32_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_v4
-      else if (run >= 165970 && run <= 166967 && HLTIndex[117] != -1 && HLT[HLTIndex[117]] == 1) HLT_pass = true; 
-      //HLT_Ele32_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_v5
-      //else if (run >= 167039 && run <= 167151 && HLTIndex[189] != -1 && HLT[HLTIndex[189]] == 1) HLT_pass = true; 
+      else if (run >= 165970 && run <= 166861 && HLTIndex[117] != -1 && HLT[HLTIndex[117]] == 1) HLT_pass = true; 
       if (HLT_pass == false) continue;
-      
+
       if (nGoodVtx == 0) continue;
       if (IsTracksGood == 0) continue;
 
       // Energy scale
       for (int a=0; a<nEle; a++) {
         if (run >= 160431 && run <= 163869 && fabs(eleSCEta[a]) < 1.4442 && eleE3x3[a]/eleSCRawEn[a] > 0.94)
-	  elePt[a] = elePt[a]*(1-0.0047);
+          elePt[a] = elePt[a]*(1-0.0047);
         if (run >= 165071 && run <= 165970 && fabs(eleSCEta[a]) < 1.4442 && eleE3x3[a]/eleSCRawEn[a] > 0.94)
-	  elePt[a] = elePt[a]*(1-0.0007);
+          elePt[a] = elePt[a]*(1-0.0007);
         if (run >= 165971 && run <= 166502 && fabs(eleSCEta[a]) < 1.4442 && eleE3x3[a]/eleSCRawEn[a] > 0.94)
-	  elePt[a] = elePt[a]*(1+0.0003);
+          elePt[a] = elePt[a]*(1+0.0003);
         if (run >= 166503 && run <= 166861 && fabs(eleSCEta[a]) < 1.4442 && eleE3x3[a]/eleSCRawEn[a] > 0.94)
-	  elePt[a] = elePt[a]*(1+0.0011);
+          elePt[a] = elePt[a]*(1+0.0011);
 
         if (run >= 160431 && run <= 163869 && fabs(eleSCEta[a]) < 1.4442 && eleE3x3[a]/eleSCRawEn[a] < 0.94)
-	  elePt[a] = elePt[a]*(1+0.0025);
+          elePt[a] = elePt[a]*(1+0.0025);
         if (run >= 165071 && run <= 165970 && fabs(eleSCEta[a]) < 1.4442 && eleE3x3[a]/eleSCRawEn[a] < 0.94)
-	  elePt[a] = elePt[a]*(1+0.0049);
+          elePt[a] = elePt[a]*(1+0.0049);
         if (run >= 165971 && run <= 166502 && fabs(eleSCEta[a]) < 1.4442 && eleE3x3[a]/eleSCRawEn[a] < 0.94)
-	  elePt[a] = elePt[a]*(1+0.0067);
+          elePt[a] = elePt[a]*(1+0.0067);
         if (run >= 166503 && run <= 166861 && fabs(eleSCEta[a]) < 1.4442 && eleE3x3[a]/eleSCRawEn[a] < 0.94)
-	  elePt[a] = elePt[a]*(1+0.0063);
+          elePt[a] = elePt[a]*(1+0.0063);
 
         if (run >= 160431 && run <= 163869 && fabs(eleSCEta[a]) > 1.566 && eleE3x3[a]/eleSCRawEn[a] > 0.94)
-	  elePt[a] = elePt[a]*(1+0.0058);
+          elePt[a] = elePt[a]*(1+0.0058);
         if (run >= 165071 && run <= 165970 && fabs(eleSCEta[a]) > 1.566 && eleE3x3[a]/eleSCRawEn[a] > 0.94)
-	  elePt[a] = elePt[a]*(1+0.0249);
+          elePt[a] = elePt[a]*(1+0.0249);
         if (run >= 165971 && run <= 166502 && fabs(eleSCEta[a]) > 1.566 && eleE3x3[a]/eleSCRawEn[a] > 0.94)
-	  elePt[a] = elePt[a]*(1+0.0376);
+          elePt[a] = elePt[a]*(1+0.0376);
         if (run >= 166503 && run <= 166861 && fabs(eleSCEta[a]) > 1.566 && eleE3x3[a]/eleSCRawEn[a] > 0.94)
-	  elePt[a] = elePt[a]*(1+0.0450);
+          elePt[a] = elePt[a]*(1+0.0450);
 
         if (run >= 160431 && run <= 163869 && fabs(eleSCEta[a]) > 1.566 && eleE3x3[a]/eleSCRawEn[a] < 0.94)
-	  elePt[a] = elePt[a]*(1-0.0010);
+          elePt[a] = elePt[a]*(1-0.0010);
         if (run >= 165071 && run <= 165970 && fabs(eleSCEta[a]) > 1.566 && eleE3x3[a]/eleSCRawEn[a] < 0.94)
-	  elePt[a] = elePt[a]*(1+0.0062);
+          elePt[a] = elePt[a]*(1+0.0062);
         if (run >= 165971 && run <= 166502 && fabs(eleSCEta[a]) > 1.566 && eleE3x3[a]/eleSCRawEn[a] < 0.94)
-	  elePt[a] = elePt[a]*(1+0.0133);
+          elePt[a] = elePt[a]*(1+0.0133);
         if (run >= 166503 && run <= 166861 && fabs(eleSCEta[a]) > 1.566 && eleE3x3[a]/eleSCRawEn[a] < 0.94)
-	  elePt[a] = elePt[a]*(1+0.0178);
+          elePt[a] = elePt[a]*(1+0.0178);
       }
 
+      ele_Index = -1;
       W_Index = -1;
       ele_Pt = 35;
       for (int a=0; a<nWenu; a++) {
-	// Kinematic cut
-	if (elePt[WenuEleIndex[a]] < ele_Pt) continue;
+        if (elePt[WenuEleIndex[a]] < ele_Pt) continue;
         if (fabs(eleSCEta[WenuEleIndex[a]]) > 2.5) continue;
-        if (fabs(eleSCEta[WenuEleIndex[a]]) > 1.4442 && fabs(eleSCEta[WenuEleIndex[a]]) < 1.566) continue;
+	if (fabs(eleSCEta[WenuEleIndex[a]]) > 1.4442 && fabs(eleSCEta[WenuEleIndex[a]]) < 1.566) continue;
 	if (fabs(eleSCEta[WenuEleIndex[a]]) < 1.4442 && eleSigmaIEtaIEta[WenuEleIndex[a]] < 0.001) continue;
 
 	// Spike clean: kTime || kWeird || kBad
 	if (eleSeverity[WenuEleIndex[a]] == 3 || eleSeverity[WenuEleIndex[a]] == 4 || eleSeverity[WenuEleIndex[a]] == 5) continue;
 
+	// dZ and d0 cut
+	if (fabs(elePVD0[WenuEleIndex[a]]) > 0.02) continue;
+	if (fabs(elePVDz[WenuEleIndex[a]]) > 0.1) continue;
+
 	// conversion
-        if (eleConvMissinghit[WenuEleIndex[a]] != 0) continue;
-        if (fabs(eleConvDist[WenuEleIndex[a]]) < 0.02 && fabs(eleConvDcot[WenuEleIndex[a]]) < 0.02) continue;
+	if (eleConvMissinghit[WenuEleIndex[a]] != 0) continue;
+	if (fabs(eleConvDist[WenuEleIndex[a]]) < 0.02 && fabs(eleConvDcot[WenuEleIndex[a]]) < 0.02) continue;
 
-        // H2WW WP80 for barrel
-        if (fabs(eleSCEta[WenuEleIndex[a]]) < 1.4442 &&
-            (max((float)0., eleIsoEcalDR03[WenuEleIndex[a]] - 1) + eleIsoHcalSolidDR03[WenuEleIndex[a]] + eleIsoTrkDR03[WenuEleIndex[a]] - rho*Pi*0.3*0.3)/elePt[WenuEleIndex[a]] > 0.04) continue;
-        if (fabs(eleSCEta[WenuEleIndex[a]]) < 1.4442 && eleSigmaIEtaIEta[WenuEleIndex[a]] > 0.01) continue;
-        if (fabs(eleSCEta[WenuEleIndex[a]]) < 1.4442 && fabs(eledPhiAtVtx[WenuEleIndex[a]]) > 0.027) continue;
-        if (fabs(eleSCEta[WenuEleIndex[a]]) < 1.4442 && fabs(eledEtaAtVtx[WenuEleIndex[a]]) > 0.005) continue;
-        // H2WW WP80 for endcap
-        if (fabs(eleSCEta[WenuEleIndex[a]]) > 1.566 &&
-            (eleIsoEcalDR03[WenuEleIndex[a]] + eleIsoHcalSolidDR03[WenuEleIndex[a]] + eleIsoTrkDR03[WenuEleIndex[a]] - rho*Pi*0.3*0.3)/elePt[WenuEleIndex[a]] > 0.033) continue;
-        if (fabs(eleSCEta[WenuEleIndex[a]]) > 1.566 && eleSigmaIEtaIEta[WenuEleIndex[a]] > 0.031) continue;
-        if (fabs(eleSCEta[WenuEleIndex[a]]) > 1.566 && fabs(eledPhiAtVtx[WenuEleIndex[a]]) > 0.021) continue;
-        if (fabs(eleSCEta[WenuEleIndex[a]]) > 1.566 && fabs(eledEtaAtVtx[WenuEleIndex[a]]) > 0.006) continue;
+	// H2WW WP80 for barrel
+	if (fabs(eleSCEta[WenuEleIndex[a]]) < 1.4442 &&
+	    (max((float)0., eleIsoEcalDR03[WenuEleIndex[a]] - 1) + eleIsoHcalSolidDR03[WenuEleIndex[a]] + eleIsoTrkDR03[WenuEleIndex[a]] - rho*Pi*0.3*0.3)/elePt[WenuEleIndex[a]] > 0.04) continue;
+	if (fabs(eleSCEta[WenuEleIndex[a]]) < 1.4442 && eleSigmaIEtaIEta[WenuEleIndex[a]] > 0.01) continue;
+	if (fabs(eleSCEta[WenuEleIndex[a]]) < 1.4442 && fabs(eledPhiAtVtx[WenuEleIndex[a]]) > 0.027) continue;
+	if (fabs(eleSCEta[WenuEleIndex[a]]) < 1.4442 && fabs(eledEtaAtVtx[WenuEleIndex[a]]) > 0.005) continue;
+	// H2WW WP80 for endcap
+	if (fabs(eleSCEta[WenuEleIndex[a]]) > 1.566 &&
+	    (eleIsoEcalDR03[WenuEleIndex[a]] + eleIsoHcalSolidDR03[WenuEleIndex[a]] + eleIsoTrkDR03[WenuEleIndex[a]] - rho*Pi*0.3*0.3)/elePt[WenuEleIndex[a]] > 0.033) continue;
+	if (fabs(eleSCEta[WenuEleIndex[a]]) > 1.566 && eleSigmaIEtaIEta[WenuEleIndex[a]] > 0.031) continue;
+	if (fabs(eleSCEta[WenuEleIndex[a]]) > 1.566 && fabs(eledPhiAtVtx[WenuEleIndex[a]]) > 0.021) continue;
+	if (fabs(eleSCEta[WenuEleIndex[a]]) > 1.566 && fabs(eledEtaAtVtx[WenuEleIndex[a]]) > 0.006) continue;
 
-        if (run <= 161176 && eleTrg[WenuEleIndex[a]][10] != 1) continue;
-        if (run >= 161217 && run <= 163261 && eleTrg[WenuEleIndex[a]][11] != 1) continue;
-        if (run >= 163270 && run <= 163869 && eleTrg[WenuEleIndex[a]][12] != 1) continue;
-        if (run >= 165088 && run <= 165633 && eleTrg[WenuEleIndex[a]][15] != 1) continue;
-        if (run >= 165970 && run <= 166967 && eleTrg[WenuEleIndex[a]][16] != 1) continue;
-        if (run >= 167039 && run <= 167151 && eleTrg[WenuEleIndex[a]][25] != 1) continue;
+	if (run <= 161176 && eleTrg[WenuEleIndex[a]][10] != 1) continue;
+	if (run >= 161217 && run <= 163261 && eleTrg[WenuEleIndex[a]][11] != 1) continue;
+	if (run >= 163270 && run <= 163869 && eleTrg[WenuEleIndex[a]][12] != 1) continue;
+	if (run >= 165088 && run <= 165633 && eleTrg[WenuEleIndex[a]][15] != 1) continue;
+	if (run >= 165970 && run <= 166861 && eleTrg[WenuEleIndex[a]][16] != 1) continue;
 
-  	W_Index = a;
-        ele_Pt = elePt[WenuEleIndex[a]];
+	W_Index = a;
+	ele_Pt = elePt[WenuEleIndex[a]];
       }
       if (W_Index == -1) continue;
-    
+      ele_Index = WenuEleIndex[W_Index];
+
       ele_num = 0;
       for (int a=0; a<nEle; a++) {
         if (a == WenuEleIndex[W_Index]) continue;
         if (elePt[a] < 20) continue;
-        if (fabs(eleSCEta[a]) > 2.5) continue;
-        if (fabs(eleSCEta[a]) > 1.4442 && fabs(eleSCEta[a]) < 1.566) continue;
+	if (fabs(eleSCEta[a]) > 2.5) continue;
+	if (fabs(eleSCEta[a]) > 1.4442 && fabs(eleSCEta[a]) < 1.566) continue;
 	if (fabs(eleSCEta[a]) < 1.4442 && eleSigmaIEtaIEta[a] < 0.001) continue;
 
 	// Spike clean: kTime || kWeird || kBad
 	if (eleSeverity[a] == 3 || eleSeverity[a] == 4 || eleSeverity[a] == 5) continue;
 
 	// conversion
-        if (eleConvMissinghit[a] != 0) continue;
+	if (eleConvMissinghit[a] != 0) continue;
 
-        // H2WW WP95 for barrel
-        if (fabs(eleSCEta[a]) < 1.4442 &&
-            (max((float)0., eleIsoEcalDR03[a] - 1) + eleIsoHcalSolidDR03[a] + eleIsoTrkDR03[a] - rho*Pi*0.3*0.3)/elePt[a] > 0.15) continue;
-        if (fabs(eleSCEta[a]) < 1.4442 && eleSigmaIEtaIEta[a] > 0.012) continue;
-        if (fabs(eleSCEta[a]) < 1.4442 && fabs(eledPhiAtVtx[a]) > 0.8) continue;
-        if (fabs(eleSCEta[a]) < 1.4442 && fabs(eledEtaAtVtx[a]) > 0.007) continue;
-        // H2WW WP95 for endcap
-        if (fabs(eleSCEta[a]) > 1.566 &&
-            (eleIsoEcalDR03[a] + eleIsoHcalSolidDR03[a] + eleIsoTrkDR03[a] - rho*Pi*0.3*0.3)/elePt[a] > 0.1) continue;
-        if (fabs(eleSCEta[a]) > 1.566 && eleSigmaIEtaIEta[a] > 0.031) continue;
+	// H2WW WP95 for barrel
+	if (fabs(eleSCEta[a]) < 1.4442 &&
+	    (max((float)0., eleIsoEcalDR03[a] - 1) + eleIsoHcalSolidDR03[a] + eleIsoTrkDR03[a] - rho*Pi*0.3*0.3)/elePt[a] > 0.15) continue;
+	if (fabs(eleSCEta[a]) < 1.4442 && eleSigmaIEtaIEta[a] > 0.012) continue;
+	if (fabs(eleSCEta[a]) < 1.4442 && fabs(eledPhiAtVtx[a]) > 0.8) continue;
+	if (fabs(eleSCEta[a]) < 1.4442 && fabs(eledEtaAtVtx[a]) > 0.007) continue;
+	// H2WW WP95 for endcap
+	if (fabs(eleSCEta[a]) > 1.566 &&
+	    (eleIsoEcalDR03[a] + eleIsoHcalSolidDR03[a] + eleIsoTrkDR03[a] - rho*Pi*0.3*0.3)/elePt[a] > 0.1) continue;
+	if (fabs(eleSCEta[a]) > 1.566 && eleSigmaIEtaIEta[a] > 0.031) continue;
         if (fabs(eleSCEta[a]) > 1.566 && fabs(eledPhiAtVtx[a]) > 0.7) continue;
         if (fabs(eleSCEta[a]) > 1.566 && fabs(eledEtaAtVtx[a]) > 0.011) continue;
 
  	ele_num += 1;
       }
       if (ele_num != 0) continue;
+
+      tree->Fill();
 
       if (fabs(eleSCEta[WenuEleIndex[W_Index]]) < 1.4442) 
 	h1->Fill(elePt[WenuEleIndex[W_Index]]);
@@ -285,24 +427,24 @@ void ana::Loop()
       pho_Pt = 15.;
       int phonum(0);
       for (int a=0; a<nPho; a++) {
-	// Energy scale
+        // Energy scale
         if (run >= 160431 && run <= 163869 && fabs(phoSCEta[a]) < 1.4442 && phoR9[a] > 0.94)
-	  phoEt[a] = phoEt[a]*(1-0.0047);
+          phoEt[a] = phoEt[a]*(1-0.0047);
         if (run >= 165071 && run <= 165970 && fabs(phoSCEta[a]) < 1.4442 && phoR9[a] > 0.94)
-	  phoEt[a] = phoEt[a]*(1-0.0007);
+          phoEt[a] = phoEt[a]*(1-0.0007);
         if (run >= 165971 && run <= 166502 && fabs(phoSCEta[a]) < 1.4442 && phoR9[a] > 0.94)
-	  phoEt[a] = phoEt[a]*(1+0.0003);
+          phoEt[a] = phoEt[a]*(1+0.0003);
         if (run >= 166503 && run <= 166861 && fabs(phoSCEta[a]) < 1.4442 && phoR9[a] > 0.94)
-	  phoEt[a] = phoEt[a]*(1+0.0011);
+          phoEt[a] = phoEt[a]*(1+0.0011);
 
         if (run >= 160431 && run <= 163869 && fabs(phoSCEta[a]) < 1.4442 && phoR9[a] < 0.94)
-	  phoEt[a] = phoEt[a]*(1+0.0025);
+          phoEt[a] = phoEt[a]*(1+0.0025);
         if (run >= 165071 && run <= 165970 && fabs(phoSCEta[a]) < 1.4442 && phoR9[a] < 0.94)
-	  phoEt[a] = phoEt[a]*(1+0.0049);
+          phoEt[a] = phoEt[a]*(1+0.0049);
         if (run >= 165971 && run <= 166502 && fabs(phoSCEta[a]) < 1.4442 && phoR9[a] < 0.94)
-	  phoEt[a] = phoEt[a]*(1+0.0067);
+          phoEt[a] = phoEt[a]*(1+0.0067);
         if (run >= 166503 && run <= 166861 && fabs(phoSCEta[a]) < 1.4442 && phoR9[a] < 0.94)
-	  phoEt[a] = phoEt[a]*(1+0.0063);
+          phoEt[a] = phoEt[a]*(1+0.0063);
 
 	if (run >= 160431 && run <= 163869 && fabs(phoSCEta[a]) > 1.4442 && phoR9[a] > 0.94)
           phoEt[a] = phoEt[a]*(1+0.0058);
@@ -326,7 +468,9 @@ void ana::Loop()
         if (fabs(phoSCEta[a]) > 2.5) continue;
         if (fabs(phoSCEta[a]) > 1.4442 && fabs(phoSCEta[a]) < 1.566) continue;
 	if (fabs(phoSCEta[a]) < 1.4442 && phoSigmaIEtaIEta[a] < 0.001) continue;
+
         if (phoHoverE[a] > 0.5) continue;
+        if (phohasPixelSeed[a] == 1) continue;
 
 	// Spike clean: kTime || kWeird || kBad
 	if (phoSeverity[a] == 3 || phoSeverity[a] == 4 || phoSeverity[a] == 5) continue;
@@ -338,7 +482,6 @@ void ana::Loop()
 	if (sqrt(pow(dEta,2)+pow(dPhi,2)) < 0.7) continue;
 
         // Require photon selection, satisfying isTight
-        if (phohasPixelSeed[a] == 1) continue;
 	if (fabs(phoSCEta[a]) < 1.4442 && (phoEcalIsoDR04[a]-0.006*phoEt[a]-0.183*rho) > 4.2) continue;
         if (fabs(phoSCEta[a]) < 1.4442 && (phoHcalIsoDR04[a]-0.0025*phoEt[a]-0.062*rho) > 2.2) continue;
         if (fabs(phoSCEta[a]) < 1.4442 && (phoTrkIsoHollowDR04[a]-0.001*phoEt[a]-0.167*rho) > 2) continue;
@@ -346,7 +489,7 @@ void ana::Loop()
         if (fabs(phoSCEta[a]) > 1.566 && (phoHcalIsoDR04[a]-0.0025*phoEt[a]-0.180*rho) > 2.2) continue;
         if (fabs(phoSCEta[a]) > 1.566 && (phoTrkIsoHollowDR04[a]-0.001*phoEt[a]-0.032*rho) > 2) continue;
         if (phoHoverE[a] > 0.05) continue;
-        if (fabs(phoSCEta[a]) < 1.4442 && phoSigmaIEtaIEta[a] > 0.013) continue;
+        if (fabs(phoSCEta[a]) < 1.4442 && phoSigmaIEtaIEta[a] > 0.011) continue;
         if (fabs(phoSCEta[a]) > 1.566 && phoSigmaIEtaIEta[a] > 0.03) continue;
 
 	phonum += 1;
@@ -374,7 +517,7 @@ void ana::Loop()
       else if (run >= 165970 && run <= 166967)
         g3->Fill(run, HLTprescale[HLTIndex[117]]);
       else if (run >= 167039 && run <= 167151)
-        g3->Fill(run, HLTprescale[HLTIndex[189]]);
+        g3->Fill(run, HLTprescale[HLTIndex[190]]);
 
       g4->Fill(phonum);
 
@@ -482,7 +625,7 @@ void ana::Loop()
       else
         h51->Fill(phoSeedTime[pho_Index]);
 
-      if (CTM[1] > 90) {
+      if (CTM[1] > 110) {
 	Wgamma_MT3_candidates += 1;
 
 	if (fabs(eleSCEta[WenuEleIndex[W_Index]]) < 1.4442)
@@ -544,6 +687,7 @@ void ana::Loop()
       if (HLTIndex[116] != -1 && HLT[HLTIndex[116]] == 1) cout<<"      HLT info: HLT_Ele32_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_v3; Prescale = "<<HLTprescale[HLTIndex[116]]<<endl;
       if (HLTIndex[117] != -1 && HLT[HLTIndex[117]] == 1) cout<<"      HLT info: HLT_Ele32_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_v4; Prescale = "<<HLTprescale[HLTIndex[117]]<<endl;
       if (HLTIndex[189] != -1 && HLT[HLTIndex[189]] == 1) cout<<"      HLT info: HLT_Ele32_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_v5; Prescale = "<<HLTprescale[HLTIndex[189]]<<endl;
+      if (HLTIndex[190] != -1 && HLT[HLTIndex[190]] == 1) cout<<"      HLT info: HLT_Ele27_WP80_PFMT50_v1; Prescale = "<<HLTprescale[HLTIndex[190]]<<endl;
 
       cout<<"   MET info: "<<endl;
       sprintf(text, "      tcMET = %5.1f; pfMET = %5.1f", tcMET, pfMET);
@@ -572,71 +716,6 @@ void ana::Loop()
       cout<<" ------------------------------------------------ "<<endl;
    }
 
-   TFile *file = new TFile("Data_2011A.root", "UPDATE");
-   h1->Write();
-   h2->Write();
-   h3->Write();
-   h4->Write();
-   h5->Write();
-   h6->Write();
-   h7->Write();
-   h8->Write();
-   h9->Write();
-   h10->Write();
-   h11->Write();
-   h12->Write();
-   h13->Write();
-   h14->Write();
-   h15->Write();
-   h16->Write();
-   h17->Write();
-   h18->Write();
-   h19->Write();
-   h20->Write();
-   h21->Write();
-   h22->Write();
-   h23->Write();
-   h24->Write();
-   h25->Write();
-   h26->Write();
-   h27->Write();
-   h28->Write();
-   h29->Write();
-   h30->Write();
-   h65->Write();
-   h66->Write();
-   h67->Write();
-   h68->Write();
-   h31->Write();
-   h32->Write();
-   h33->Write();
-   h34->Write();
-   h35->Write();
-   h36->Write();
-   h37->Write();
-   h38->Write();
-   h39->Write();
-   h40->Write();
-   h41->Write();
-   h42->Write();
-   h43->Write();
-   h44->Write();
-   h45->Write();
-   h46->Write();
-   h47->Write();
-   h48->Write();
-   h49->Write();
-   h50->Write();
-   h51->Write();
-   h52->Write();
-   h53->Write();
-   h75->Write();
-   h76->Write();
-   h77->Write();
-   h78->Write();
-   g1->Write();
-   g2->Write();
-   g3->Write();
-   g4->Write();
+   file->Write();
    file->Close();
 }
