@@ -599,21 +599,22 @@ void setBranches(TTree* chain, EcalTimeTreeContent& treeVars)
 
 
     // xtal variables inside a cluster // strange: MAXXTALINC needs be replaced by explicit "9"; not understood gf
-    chain -> Branch("xtalInBCHashedIndex",  treeVars.xtalInBCHashedIndex,  "xtalInBCHashedIndex[nClusters][MAXXTALINC]/I");
-    chain -> Branch("xtalInBCIEta",         treeVars.xtalInBCIEta,         "xtalInBCIEta[nClusters][MAXXTALINC]/I");
-    chain -> Branch("xtalInBCIPhi",         treeVars.xtalInBCIPhi,         "xtalInBCIPhi[nClusters][MAXXTALINC]/I");
-    chain -> Branch("xtalInBCEta",          treeVars.xtalInBCEta,          "xtalInBCEta[nClusters][MAXXTALINC]/F");
-    chain -> Branch("xtalInBCPhi",          treeVars.xtalInBCPhi,          "xtalInBCPhi[nClusters][MAXXTALINC]/F");
-    chain -> Branch("xtalInBCIx",           treeVars.xtalInBCIx,           "xtalInBCIx[nClusters][MAXXTALINC]/I");
-    chain -> Branch("xtalInBCIy",           treeVars.xtalInBCIy,           "xtalInBCIy[nClusters][MAXXTALINC]/I");
-    chain -> Branch("xtalInBCFlag",         treeVars.xtalInBCFlag,         "xtalInBCFlag[nClusters][MAXXTALINC]/I");
-    chain -> Branch("xtalInBCEnergy",       treeVars.xtalInBCEnergy,       "xtalInBCEnergy[nClusters][MAXXTALINC]/F");
-    chain -> Branch("xtalInBCTime",         treeVars.xtalInBCTime,         "xtalInBCTime[nClusters][MAXXTALINC]/F");
-    chain -> Branch("xtalInBCTimeErr",      treeVars.xtalInBCTimeErr,      "xtalInBCTimeErr[nClusters][MAXXTALINC]/F");
-    chain -> Branch("xtalInBCAmplitudeADC", treeVars.xtalInBCAmplitudeADC, "xtalInBCAmplitudeADC[nClusters][MAXXTALINC]/F");
-    chain -> Branch("xtalInBCChi2", treeVars.xtalInBCChi2, "xtalInBCChi2[nClusters][MAXXTALINC]/F");
-    chain -> Branch("xtalInBCOutOfTimeChi2", treeVars.xtalInBCOutOfTimeChi2, "xtalInBCOutOfTimeChi2[nClusters][MAXXTALINC]/F");
-    chain -> Branch("xtalInBCSwissCross", treeVars.xtalInBCSwissCross, "xtalInBCSwissCross[nClusters][MAXXTALINC]/F");
+    // using MAXXTALINC, compilation is sucesful BUT the concerned branches don't get filled (Wed Jul 13 20:42:37 CEST 2011)  
+    chain -> Branch("xtalInBCHashedIndex",  treeVars.xtalInBCHashedIndex,  "xtalInBCHashedIndex[nClusters][25]/I");
+    chain -> Branch("xtalInBCIEta",         treeVars.xtalInBCIEta,         "xtalInBCIEta[nClusters][25]/I");
+    chain -> Branch("xtalInBCIPhi",         treeVars.xtalInBCIPhi,         "xtalInBCIPhi[nClusters][25]/I");
+    chain -> Branch("xtalInBCEta",          treeVars.xtalInBCEta,          "xtalInBCEta[nClusters][25]/F");
+    chain -> Branch("xtalInBCPhi",          treeVars.xtalInBCPhi,          "xtalInBCPhi[nClusters][25]/F");
+    chain -> Branch("xtalInBCIx",           treeVars.xtalInBCIx,           "xtalInBCIx[nClusters][25]/I");
+    chain -> Branch("xtalInBCIy",           treeVars.xtalInBCIy,           "xtalInBCIy[nClusters][25]/I");
+    chain -> Branch("xtalInBCFlag",         treeVars.xtalInBCFlag,         "xtalInBCFlag[nClusters][25]/I");
+    chain -> Branch("xtalInBCEnergy",       treeVars.xtalInBCEnergy,       "xtalInBCEnergy[nClusters][25]/F");
+    chain -> Branch("xtalInBCTime",         treeVars.xtalInBCTime,         "xtalInBCTime[nClusters][25]/F");
+    chain -> Branch("xtalInBCTimeErr",      treeVars.xtalInBCTimeErr,      "xtalInBCTimeErr[nClusters][25]/F");
+    chain -> Branch("xtalInBCAmplitudeADC", treeVars.xtalInBCAmplitudeADC, "xtalInBCAmplitudeADC[nClusters][25]/F");
+    chain -> Branch("xtalInBCChi2", treeVars.xtalInBCChi2, "xtalInBCChi2[nClusters][25]/F");
+    chain -> Branch("xtalInBCOutOfTimeChi2", treeVars.xtalInBCOutOfTimeChi2, "xtalInBCOutOfTimeChi2[nClusters][25]/F");
+    chain -> Branch("xtalInBCSwissCross", treeVars.xtalInBCSwissCross, "xtalInBCSwissCross[nClusters][25]/F");
 
   } // ECAL VARIABLES  
   //*/  
