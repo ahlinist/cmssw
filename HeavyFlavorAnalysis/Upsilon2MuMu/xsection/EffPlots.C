@@ -41,24 +41,30 @@ void MuID_Pos(){
       }
       
       if ( j == 1 ){
-	EffData2->SetBinContent(i+1,effData);
-	EffData2->SetBinError(i+1,effDataErr);
-	EffMC2->SetBinContent(i+1,effMC);
-	EffMC2->SetBinError(i+1,effMCErr);	
+	if ( i > 0 ){
+	  EffData2->SetBinContent(i+1,effData);
+	  EffData2->SetBinError(i+1,effDataErr);
+	  EffMC2->SetBinContent(i+1,effMC);
+	  EffMC2->SetBinError(i+1,effMCErr);	
+	}
       }
       
       if ( j == 2 ){
-	EffData3->SetBinContent(i+1,effData);
-	EffData3->SetBinError(i+1,effDataErr);
-	EffMC3->SetBinContent(i+1,effMC);
-	EffMC3->SetBinError(i+1,effMCErr);	
-      }      
+	if ( i > 0 ){
+	  EffData3->SetBinContent(i+1,effData);
+	  EffData3->SetBinError(i+1,effDataErr);
+	  EffMC3->SetBinContent(i+1,effMC);
+	  EffMC3->SetBinError(i+1,effMCErr);	
+	}      
+      }
       
       if ( j == 3 ){
-	EffData4->SetBinContent(i+1,effData);
-	EffData4->SetBinError(i+1,effDataErr);
-	EffMC4->SetBinContent(i+1,effMC);
-	EffMC4->SetBinError(i+1,effMCErr);	
+	if ( i > 0 ){
+	  EffData4->SetBinContent(i+1,effData);
+	  EffData4->SetBinError(i+1,effDataErr);
+	  EffMC4->SetBinContent(i+1,effMC);
+	  EffMC4->SetBinError(i+1,effMCErr);	
+	}
       }
       
       if ( j == 4 ){
@@ -196,24 +202,30 @@ void MuID_Neg(){
       }
       
       if ( j == 1 ){
-	EffData2->SetBinContent(i+1,effData);
-	EffData2->SetBinError(i+1,effDataErr);
-	EffMC2->SetBinContent(i+1,effMC);
-	EffMC2->SetBinError(i+1,effMCErr);	
+	if ( i > 0 ){
+	  EffData2->SetBinContent(i+1,effData);
+	  EffData2->SetBinError(i+1,effDataErr);
+	  EffMC2->SetBinContent(i+1,effMC);
+	  EffMC2->SetBinError(i+1,effMCErr);	
+	}
       }
       
       if ( j == 2 ){
-	EffData3->SetBinContent(i+1,effData);
-	EffData3->SetBinError(i+1,effDataErr);
-	EffMC3->SetBinContent(i+1,effMC);
-	EffMC3->SetBinError(i+1,effMCErr);	
-      }      
+	if ( i > 0 ){
+	  EffData3->SetBinContent(i+1,effData);
+	  EffData3->SetBinError(i+1,effDataErr);
+	  EffMC3->SetBinContent(i+1,effMC);
+	  EffMC3->SetBinError(i+1,effMCErr);	
+	}      
+      }
       
       if ( j == 3 ){
-	EffData4->SetBinContent(i+1,effData);
-	EffData4->SetBinError(i+1,effDataErr);
-	EffMC4->SetBinContent(i+1,effMC);
-	EffMC4->SetBinError(i+1,effMCErr);	
+	if ( i > 0 ){
+	  EffData4->SetBinContent(i+1,effData);
+	  EffData4->SetBinError(i+1,effDataErr);
+	  EffMC4->SetBinContent(i+1,effMC);
+	  EffMC4->SetBinError(i+1,effMCErr);	
+	}
       }
       
       if ( j == 4 ){
@@ -350,24 +362,30 @@ void Trig_Pos(){
       }
       
       if ( j == 1 ){
-	EffData2->SetBinContent(i+1,effData);
-	EffData2->SetBinError(i+1,effDataErr);
-	EffMC2->SetBinContent(i+1,effMC);
-	EffMC2->SetBinError(i+1,effMCErr);	
+	if ( i > 0 ){
+	  EffData2->SetBinContent(i+1,effData);
+	  EffData2->SetBinError(i+1,effDataErr);
+	  EffMC2->SetBinContent(i+1,effMC);
+	  EffMC2->SetBinError(i+1,effMCErr);
+	}	
       }
       
       if ( j == 2 ){
-	EffData3->SetBinContent(i+1,effData);
-	EffData3->SetBinError(i+1,effDataErr);
-	EffMC3->SetBinContent(i+1,effMC);
-	EffMC3->SetBinError(i+1,effMCErr);	
+	if ( i > 0 ){
+	  EffData3->SetBinContent(i+1,effData);
+	  EffData3->SetBinError(i+1,effDataErr);
+	  EffMC3->SetBinContent(i+1,effMC);
+	  EffMC3->SetBinError(i+1,effMCErr);
+	}	
       }      
       
       if ( j == 3 ){
-	EffData4->SetBinContent(i+1,effData);
-	EffData4->SetBinError(i+1,effDataErr);
-	EffMC4->SetBinContent(i+1,effMC);
-	EffMC4->SetBinError(i+1,effMCErr);	
+	if ( i > 0 ){
+	  EffData4->SetBinContent(i+1,effData);
+	  EffData4->SetBinError(i+1,effDataErr);
+	  EffMC4->SetBinContent(i+1,effMC);
+	  EffMC4->SetBinError(i+1,effMCErr);
+	}
       }
       
       if ( j == 4 ){
@@ -504,24 +522,30 @@ void Trig_Neg(){
       }
       
       if ( j == 1 ){
-	EffData2->SetBinContent(i+1,effData);
-	EffData2->SetBinError(i+1,effDataErr);
-	EffMC2->SetBinContent(i+1,effMC);
-	EffMC2->SetBinError(i+1,effMCErr);	
+	if ( i > 0 ){
+	  EffData2->SetBinContent(i+1,effData);
+	  EffData2->SetBinError(i+1,effDataErr);
+	  EffMC2->SetBinContent(i+1,effMC);
+	  EffMC2->SetBinError(i+1,effMCErr);	
+	}
       }
       
       if ( j == 2 ){
-	EffData3->SetBinContent(i+1,effData);
-	EffData3->SetBinError(i+1,effDataErr);
-	EffMC3->SetBinContent(i+1,effMC);
-	EffMC3->SetBinError(i+1,effMCErr);	
-      }      
+	if ( i > 0 ){
+	  EffData3->SetBinContent(i+1,effData);
+	  EffData3->SetBinError(i+1,effDataErr);
+	  EffMC3->SetBinContent(i+1,effMC);
+	  EffMC3->SetBinError(i+1,effMCErr);	
+	}      
+      }
       
       if ( j == 3 ){
-	EffData4->SetBinContent(i+1,effData);
-	EffData4->SetBinError(i+1,effDataErr);
-	EffMC4->SetBinContent(i+1,effMC);
-	EffMC4->SetBinError(i+1,effMCErr);	
+	if ( i > 0 ){
+	  EffData4->SetBinContent(i+1,effData);
+	  EffData4->SetBinError(i+1,effDataErr);
+	  EffMC4->SetBinContent(i+1,effMC);
+	  EffMC4->SetBinError(i+1,effMCErr);	
+	}
       }
       
       if ( j == 4 ){
