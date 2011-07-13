@@ -52,9 +52,13 @@ bool HTEventSelector::select(const edm::Event& event) const {
                 loose = jetIDLooseCalo(*iJet, ret);
             }
             else if ( iJet->isPFJet() ){
+	      /*
                 pat::strbitset ret = jetIDLoosePF.getBitTemplate();
                 ret.set(false);
                 loose = jetIDLoosePF(*iJet, ret);
+	      */
+	      if(iJet->neutralHadronEnergyFraction() > 0.95 || iJet->photonEnergyFraction() > 0.95)
+		loose = false;
             }
         }
 
