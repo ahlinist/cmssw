@@ -1,8 +1,8 @@
 //////////////////////////////////////////////////////////
 // This class has been automatically generated on
-// Sat Jun  4 15:51:11 2011 by ROOT version 5.27/06b
+// Mon Jul 11 10:18:59 2011 by ROOT version 5.27/06b
 // from TTree EventTree/Event data
-// found on file: /data3/ncuhep/data/423_vgamma_42x_v5/SingleElectron_Run2011A_May10ReRecov1/SingleElectron_Run2011A_May10ReRecov1.root
+// found on file: /data3/ncuhep/data/425_vgamma_42x_v8/SingleElectron_Run2011A_May10ReRecov1/SingleElectron_Run2011A_May10ReRecov1.root
 //////////////////////////////////////////////////////////
 
 #ifndef ana_h
@@ -28,7 +28,7 @@ public :
    Int_t           ttbit0;
    Int_t           nHLT;
    Int_t           HLT[353];   //[nHLT]
-   Int_t           HLTIndex[272];
+   Int_t           HLTIndex[305];
    Int_t           HLTprescale[353];   //[nHLT]
    Int_t           nHFTowersP;
    Int_t           nHFTowersN;
@@ -67,148 +67,116 @@ public :
    Float_t         pfMETmEtSig;
    Float_t         pfMETSig;
    Int_t           nEle;
-   Int_t           eleTrg[50][35];   //[nEle]
-   Int_t           eleID[50][30];   //[nEle]
-   Float_t         eleIDLH[50];   //[nEle]
-   Int_t           eleClass[50];   //[nEle]
-   Int_t           eleCharge[50];   //[nEle]
-   Float_t         eleEn[50];   //[nEle]
-   Float_t         eleSCRawEn[50];   //[nEle]
-   Float_t         eleESEn[50];   //[nEle]
-   Float_t         eleSCEn[50];   //[nEle]
-   Float_t         elePt[50];   //[nEle]
-   Float_t         elePz[50];   //[nEle]
-   Float_t         eleEta[50];   //[nEle]
-   Float_t         elePhi[50];   //[nEle]
-   Float_t         eleSCEta[50];   //[nEle]
-   Float_t         eleSCPhi[50];   //[nEle]
-   Float_t         eleSCEtaWidth[50];   //[nEle]
-   Float_t         eleSCPhiWidth[50];   //[nEle]
-   Float_t         eleVtx[50][3];   //[nEle]
-   Float_t         eleCaloPos[50][3];   //[nEle]
-   Float_t         eleSCPos[50][3];   //[nEle]
-   Float_t         eleHoverE[50];   //[nEle]
-   Float_t         eleEoverP[50];   //[nEle]
-   Float_t         elePin[50];   //[nEle]
-   Float_t         elePout[50];   //[nEle]
-   Float_t         eleBrem[50];   //[nEle]
-   Int_t           elenBrem[50];   //[nEle]
-   Float_t         eledEtaAtVtx[50];   //[nEle]
-   Float_t         eledPhiAtVtx[50];   //[nEle]
-   Float_t         eleSigmaEtaEta[50];   //[nEle]
-   Float_t         eleSigmaIEtaIEta[50];   //[nEle]
-   Float_t         eleSigmaIEtaIPhi[50];   //[nEle]
-   Float_t         eleSigmaIPhiIPhi[50];   //[nEle]
-   Float_t         eleE2overE9[50];   //[nEle]
-   Float_t         eleE3x3[50];   //[nEle]
-   Float_t         eleSeedTime[50];   //[nEle]
-   Int_t           eleRecoFlag[50];   //[nEle]
-   Int_t           eleSeverity[50];   //[nEle]
-   Float_t         eleIsoTrkDR03[50];   //[nEle]
-   Float_t         eleIsoEcalDR03[50];   //[nEle]
-   Float_t         eleIsoHcalDR03[50];   //[nEle]
-   Float_t         eleIsoHcalSolidDR03[50];   //[nEle]
-   Float_t         eleIsoTrkDR04[50];   //[nEle]
-   Float_t         eleIsoEcalDR04[50];   //[nEle]
-   Float_t         eleIsoHcalDR04[50];   //[nEle]
-   Float_t         eleIsoHcalSolidDR04[50];   //[nEle]
-   Float_t         eleConvDist[50];   //[nEle]
-   Float_t         eleConvDcot[50];   //[nEle]
-   Float_t         eleConvRadius[50];   //[nEle]
-   Int_t           eleConvFlag[50];   //[nEle]
-   Int_t           eleConvMissinghit[50];   //[nEle]
-   Float_t         eleESRatio[50];   //[nEle]
-   Float_t         eleESProfileFront[50][123];   //[nEle]
-   Float_t         eleESProfileRear[50][123];   //[nEle]
-   Float_t         elePV2D[50];   //[nEle]
-   Float_t         elePV3D[50];   //[nEle]
-   Float_t         eleBS2D[50];   //[nEle]
-   Float_t         eleBS3D[50];   //[nEle]
+   Int_t           eleTrg[100][31];   //[nEle]
+   Int_t           eleID[100][30];   //[nEle]
+   Float_t         eleIDLH[100];   //[nEle]
+   Int_t           eleClass[100];   //[nEle]
+   Int_t           eleCharge[100];   //[nEle]
+   Float_t         eleEn[100];   //[nEle]
+   Float_t         eleSCRawEn[100];   //[nEle]
+   Float_t         eleESEn[100];   //[nEle]
+   Float_t         eleSCEn[100];   //[nEle]
+   Float_t         elePt[100];   //[nEle]
+   Float_t         elePz[100];   //[nEle]
+   Float_t         eleEta[100];   //[nEle]
+   Float_t         elePhi[100];   //[nEle]
+   Float_t         eleSCEta[100];   //[nEle]
+   Float_t         eleSCPhi[100];   //[nEle]
+   Float_t         eleSCEtaWidth[100];   //[nEle]
+   Float_t         eleSCPhiWidth[100];   //[nEle]
+   Float_t         eleVtx[100][3];   //[nEle]
+   Float_t         eleCaloPos[100][3];   //[nEle]
+   Float_t         eleSCPos[100][3];   //[nEle]
+   Float_t         eleHoverE[100];   //[nEle]
+   Float_t         eleEoverP[100];   //[nEle]
+   Float_t         elePin[100];   //[nEle]
+   Float_t         elePout[100];   //[nEle]
+   Float_t         eleBrem[100];   //[nEle]
+   Int_t           elenBrem[100];   //[nEle]
+   Float_t         eledEtaAtVtx[100];   //[nEle]
+   Float_t         eledPhiAtVtx[100];   //[nEle]
+   Float_t         eleSigmaEtaEta[100];   //[nEle]
+   Float_t         eleSigmaIEtaIEta[100];   //[nEle]
+   Float_t         eleSigmaIEtaIPhi[100];   //[nEle]
+   Float_t         eleSigmaIPhiIPhi[100];   //[nEle]
+   Float_t         eleE2overE9[100];   //[nEle]
+   Float_t         eleE3x3[100];   //[nEle]
+   Float_t         eleSeedTime[100];   //[nEle]
+   Int_t           eleRecoFlag[100];   //[nEle]
+   Int_t           eleSeverity[100];   //[nEle]
+   Float_t         eleIsoTrkDR03[100];   //[nEle]
+   Float_t         eleIsoEcalDR03[100];   //[nEle]
+   Float_t         eleIsoHcalDR03[100];   //[nEle]
+   Float_t         eleIsoHcalSolidDR03[100];   //[nEle]
+   Float_t         eleIsoTrkDR04[100];   //[nEle]
+   Float_t         eleIsoEcalDR04[100];   //[nEle]
+   Float_t         eleIsoHcalDR04[100];   //[nEle]
+   Float_t         eleIsoHcalSolidDR04[100];   //[nEle]
+   Float_t         eleConvDist[100];   //[nEle]
+   Float_t         eleConvDcot[100];   //[nEle]
+   Float_t         eleConvRadius[100];   //[nEle]
+   Int_t           eleConvFlag[100];   //[nEle]
+   Int_t           eleConvMissinghit[100];   //[nEle]
+   Float_t         eleESRatio[100];   //[nEle]
+   Float_t         eleESProfileFront[100][123];   //[nEle]
+   Float_t         eleESProfileRear[100][123];   //[nEle]
+   Float_t         elePV2D[100];   //[nEle]
+   Float_t         elePV3D[100];   //[nEle]
+   Float_t         eleBS2D[100];   //[nEle]
+   Float_t         eleBS3D[100];   //[nEle]
+   Float_t         elePVD0[100];   //[nEle]
+   Float_t         elePVDz[100];   //[nEle]
    Int_t           nPho;
-   Int_t           phoTrg[50][8];   //[nPho]
-   Bool_t          phoIsPhoton[50];   //[nPho]
-   Float_t         phoE[50];   //[nPho]
-   Float_t         phoEt[50];   //[nPho]
-   Float_t         phoPz[50];   //[nPho]
-   Float_t         phoEta[50];   //[nPho]
-   Float_t         phoPhi[50];   //[nPho]
-   Float_t         phoR9[50];   //[nPho]
-   Float_t         phoTrkIsoSolidDR03[50];   //[nPho]
-   Float_t         phoTrkIsoHollowDR03[50];   //[nPho]
-   Int_t           phoNTrkSolidDR03[50];   //[nPho]
-   Int_t           phoNTrkHollowDR03[50];   //[nPho]
-   Float_t         phoEcalIsoDR03[50];   //[nPho]
-   Float_t         phoHcalIsoDR03[50];   //[nPho]
-   Float_t         phoHcalIsoSolidDR03[50];   //[nPho]
-   Float_t         phoTrkIsoSolidDR04[50];   //[nPho]
-   Float_t         phoTrkIsoHollowDR04[50];   //[nPho]
-   Int_t           phoNTrkSolidDR04[50];   //[nPho]
-   Int_t           phoNTrkHollowDR04[50];   //[nPho]
-   Float_t         phoEcalIsoDR04[50];   //[nPho]
-   Float_t         phoHcalIsoDR04[50];   //[nPho]
-   Float_t         phoHcalIsoSolidDR04[50];   //[nPho]
-   Float_t         phoHoverE[50];   //[nPho]
-   Float_t         phoSigmaEtaEta[50];   //[nPho]
-   Float_t         phoSigmaIEtaIEta[50];   //[nPho]
-   Float_t         phoSigmaIEtaIPhi[50];   //[nPho]
-   Float_t         phoSigmaIPhiIPhi[50];   //[nPho]
-   Float_t         phoE2overE9[50];   //[nPho]
-   Float_t         phoE3x3[50];   //[nPho]
-   Float_t         phoSeedTime[50];   //[nPho]
-   Int_t           phoRecoFlag[50];   //[nPho]
-   Int_t           phoSeverity[50];   //[nPho]
-   Int_t           phoPos[50];   //[nPho]
-   Float_t         phoRoundness[50];   //[nPho]
-   Float_t         phoAngle[50];   //[nPho]
-   Float_t         phoSCE[50];   //[nPho]
-   Float_t         phoSCEt[50];   //[nPho]
-   Float_t         phoSCEta[50];   //[nPho]
-   Float_t         phoSCPhi[50];   //[nPho]
-   Float_t         phoSCEtaWidth[50];   //[nPho]
-   Float_t         phoSCPhiWidth[50];   //[nPho]
-   Int_t           phoOverlap[50];   //[nPho]
-   Int_t           phohasPixelSeed[50];   //[nPho]
-   Int_t           phoIsConv[50];   //[nPho]
-   Float_t         phoPi0Disc[50];   //[nPho]
-   Float_t         phoESRatio[50];   //[nPho]
-   Float_t         phoESProfileFront[50][123];   //[nPho]
-   Float_t         phoESProfileRear[50][123];   //[nPho]
-   Int_t           nMu;
-   Int_t           muTrg[100][52];   //[nMu]
-   Float_t         muEta[100];   //[nMu]
-   Float_t         muPhi[100];   //[nMu]
-   Int_t           muCharge[100];   //[nMu]
-   Float_t         muPt[100];   //[nMu]
-   Float_t         muPz[100];   //[nMu]
-   Float_t         muIsoTrk[100];   //[nMu]
-   Float_t         muIsoCalo[100];   //[nMu]
-   Float_t         muIsoEcal[100];   //[nMu]
-   Float_t         muIsoHcal[100];   //[nMu]
-   Float_t         muChi2NDF[100];   //[nMu]
-   Float_t         muEmVeto[100];   //[nMu]
-   Float_t         muHadVeto[100];   //[nMu]
-   Int_t           muType[100];   //[nMu]
-   Bool_t          muID[100][6];   //[nMu]
-   Float_t         muD0[100];   //[nMu]
-   Float_t         muDz[100];   //[nMu]
-   Float_t         muPVD0[100];   //[nMu]
-   Float_t         muPVDz[100];   //[nMu]
-   Float_t         muValidFraction[100];   //[nMu]
-   Float_t         muTrkdPt[100];   //[nMu]
-   Int_t           muNumberOfHits[100];   //[nMu]
-   Int_t           muNumberOfValidHits[100];   //[nMu]
-   Int_t           muNumberOfInactiveHits[100];   //[nMu]
-   Int_t           muNumberOfValidTrkHits[100];   //[nMu]
-   Int_t           muNumberOfValidPixelHits[100];   //[nMu]
-   Int_t           muNumberOfValidMuonHits[100];   //[nMu]
-   Int_t           muStations[100];   //[nMu]
-   Int_t           muChambers[100];   //[nMu]
-   Float_t         muPV2D[100];   //[nMu]
-   Float_t         muPV3D[100];   //[nMu]
-   Float_t         muBS2D[100];   //[nMu]
-   Float_t         muBS3D[100];   //[nMu]
+   Int_t           phoTrg[100][8];   //[nPho]
+   Bool_t          phoIsPhoton[100];   //[nPho]
+   Float_t         phoE[100];   //[nPho]
+   Float_t         phoEt[100];   //[nPho]
+   Float_t         phoPz[100];   //[nPho]
+   Float_t         phoEta[100];   //[nPho]
+   Float_t         phoPhi[100];   //[nPho]
+   Float_t         phoR9[100];   //[nPho]
+   Float_t         phoTrkIsoSolidDR03[100];   //[nPho]
+   Float_t         phoTrkIsoHollowDR03[100];   //[nPho]
+   Int_t           phoNTrkSolidDR03[100];   //[nPho]
+   Int_t           phoNTrkHollowDR03[100];   //[nPho]
+   Float_t         phoEcalIsoDR03[100];   //[nPho]
+   Float_t         phoHcalIsoDR03[100];   //[nPho]
+   Float_t         phoHcalIsoSolidDR03[100];   //[nPho]
+   Float_t         phoTrkIsoSolidDR04[100];   //[nPho]
+   Float_t         phoTrkIsoHollowDR04[100];   //[nPho]
+   Int_t           phoNTrkSolidDR04[100];   //[nPho]
+   Int_t           phoNTrkHollowDR04[100];   //[nPho]
+   Float_t         phoEcalIsoDR04[100];   //[nPho]
+   Float_t         phoHcalIsoDR04[100];   //[nPho]
+   Float_t         phoHcalIsoSolidDR04[100];   //[nPho]
+   Float_t         phoHoverE[100];   //[nPho]
+   Float_t         phoSigmaEtaEta[100];   //[nPho]
+   Float_t         phoSigmaIEtaIEta[100];   //[nPho]
+   Float_t         phoSigmaIEtaIPhi[100];   //[nPho]
+   Float_t         phoSigmaIPhiIPhi[100];   //[nPho]
+   Float_t         phoE2overE9[100];   //[nPho]
+   Float_t         phoE3x3[100];   //[nPho]
+   Float_t         phoSeedTime[100];   //[nPho]
+   Int_t           phoRecoFlag[100];   //[nPho]
+   Int_t           phoSeverity[100];   //[nPho]
+   Int_t           phoPos[100];   //[nPho]
+   Float_t         phoRoundness[100];   //[nPho]
+   Float_t         phoAngle[100];   //[nPho]
+   Float_t         phoSCE[100];   //[nPho]
+   Float_t         phoSCEt[100];   //[nPho]
+   Float_t         phoSCEta[100];   //[nPho]
+   Float_t         phoSCPhi[100];   //[nPho]
+   Float_t         phoSCEtaWidth[100];   //[nPho]
+   Float_t         phoSCPhiWidth[100];   //[nPho]
+   Int_t           phoOverlap[100];   //[nPho]
+   Int_t           phohasPixelSeed[100];   //[nPho]
+   Int_t           phoIsConv[100];   //[nPho]
+   Float_t         phoPi0Disc[100];   //[nPho]
+   Float_t         phoESRatio[100];   //[nPho]
+   Float_t         phoESProfileFront[100][123];   //[nPho]
+   Float_t         phoESProfileRear[100][123];   //[nPho]
    Int_t           nJet;
-   Int_t           jetTrg[100][100];   //[nJet]
+   Int_t           jetTrg[100][58];   //[nJet]
    Float_t         jetEn[100];   //[nJet]
    Float_t         jetPt[100];   //[nJet]
    Float_t         jetEta[100];   //[nJet]
@@ -228,44 +196,20 @@ public :
    Float_t         jetChargedEmEnergyFraction[100];   //[nJet]
    Float_t         jetChargedHadronEnergy[100];   //[nJet]
    Float_t         jetChargedHadronEnergyFraction[100];   //[nJet]
+   Int_t           jetChargedHadronMultiplicity[100];   //[nJet]
    Float_t         jetChargedMuEnergy[100];   //[nJet]
    Float_t         jetChargedMuEnergyFraction[100];   //[nJet]
-   Int_t           nZee;
-   Float_t         ZeeMass[236];   //[nZee]
-   Float_t         ZeePt[236];   //[nZee]
-   Float_t         ZeeEta[236];   //[nZee]
-   Float_t         ZeePhi[236];   //[nZee]
-   Int_t           ZeeLeg1Index[236];   //[nZee]
-   Int_t           ZeeLeg2Index[236];   //[nZee]
-   Int_t           nZmumu;
-   Float_t         ZmumuMass[4];   //[nZmumu]
-   Float_t         ZmumuPt[4];   //[nZmumu]
-   Float_t         ZmumuEta[4];   //[nZmumu]
-   Float_t         ZmumuPhi[4];   //[nZmumu]
-   Int_t           ZmumuLeg1Index[4];   //[nZmumu]
-   Int_t           ZmumuLeg2Index[4];   //[nZmumu]
    Int_t           nWenu;
-   Float_t         WenuMassTCaloMET[50];   //[nWenu]
-   Float_t         WenuEtCaloMET[50];   //[nWenu]
-   Float_t         WenuACopCaloMET[50];   //[nWenu]
-   Float_t         WenuMassTTcMET[50];   //[nWenu]
-   Float_t         WenuEtTcMET[50];   //[nWenu]
-   Float_t         WenuACopTcMET[50];   //[nWenu]
-   Float_t         WenuMassTPfMET[50];   //[nWenu]
-   Float_t         WenuEtPfMET[50];   //[nWenu]
-   Float_t         WenuACopPfMET[50];   //[nWenu]
-   Int_t           WenuEleIndex[50];   //[nWenu]
-   Int_t           nWmunu;
-   Float_t         WmunuMassTCaloMET[50];   //[nWmunu]
-   Float_t         WmunuEtCaloMET[50];   //[nWmunu]
-   Float_t         WmunuACopCaloMET[50];   //[nWmunu]
-   Float_t         WmunuMassTTcMET[50];   //[nWmunu]
-   Float_t         WmunuEtTcMET[50];   //[nWmunu]
-   Float_t         WmunuACopTcMET[50];   //[nWmunu]
-   Float_t         WmunuMassTPfMET[50];   //[nWmunu]
-   Float_t         WmunuEtPfMET[50];   //[nWmunu]
-   Float_t         WmunuACopPfMET[50];   //[nWmunu]
-   Int_t           WmunuMuIndex[50];   //[nWmunu]
+   Float_t         WenuMassTCaloMET[100];   //[nWenu]
+   Float_t         WenuEtCaloMET[100];   //[nWenu]
+   Float_t         WenuACopCaloMET[100];   //[nWenu]
+   Float_t         WenuMassTTcMET[100];   //[nWenu]
+   Float_t         WenuEtTcMET[100];   //[nWenu]
+   Float_t         WenuACopTcMET[100];   //[nWenu]
+   Float_t         WenuMassTPfMET[100];   //[nWenu]
+   Float_t         WenuEtPfMET[100];   //[nWenu]
+   Float_t         WenuACopPfMET[100];   //[nWenu]
+   Int_t           WenuEleIndex[100];   //[nWenu]
 
    // List of branches
    TBranch        *b_run;   //!
@@ -373,6 +317,8 @@ public :
    TBranch        *b_elePV3D;   //!
    TBranch        *b_eleBS2D;   //!
    TBranch        *b_eleBS3D;   //!
+   TBranch        *b_elePVD0;   //!
+   TBranch        *b_elePVDz;   //!
    TBranch        *b_nPho;   //!
    TBranch        *b_phoTrg;   //!
    TBranch        *b_phoIsPhoton;   //!
@@ -422,40 +368,6 @@ public :
    TBranch        *b_phoESRatio;   //!
    TBranch        *b_phoESProfileFront;   //!
    TBranch        *b_phoESProfileRear;   //!
-   TBranch        *b_nMu;   //!
-   TBranch        *b_muTrg;   //!
-   TBranch        *b_muEta;   //!
-   TBranch        *b_muPhi;   //!
-   TBranch        *b_muCharge;   //!
-   TBranch        *b_muPt;   //!
-   TBranch        *b_muPz;   //!
-   TBranch        *b_muIsoTrk;   //!
-   TBranch        *b_muIsoCalo;   //!
-   TBranch        *b_muIsoEcal;   //!
-   TBranch        *b_muIsoHcal;   //!
-   TBranch        *b_muChi2NDF;   //!
-   TBranch        *b_muEmVeto;   //!
-   TBranch        *b_muHadVeto;   //!
-   TBranch        *b_muType;   //!
-   TBranch        *b_muID;   //!
-   TBranch        *b_muD0;   //!
-   TBranch        *b_muDz;   //!
-   TBranch        *b_muPVD0;   //!
-   TBranch        *b_muPVDz;   //!
-   TBranch        *b_muValidFraction;   //!
-   TBranch        *b_muTrkdPt;   //!
-   TBranch        *b_muNumberOfHits;   //!
-   TBranch        *b_muNumberOfValidHits;   //!
-   TBranch        *b_muNumberOfInactiveHits;   //!
-   TBranch        *b_muNumberOfValidTrkHits;   //!
-   TBranch        *b_muNumberOfValidPixelHits;   //!
-   TBranch        *b_muNumberOfValidMuonHits;   //!
-   TBranch        *b_muStations;   //!
-   TBranch        *b_muChambers;   //!
-   TBranch        *b_muPV2D;   //!
-   TBranch        *b_muPV3D;   //!
-   TBranch        *b_muBS2D;   //!
-   TBranch        *b_muBS3D;   //!
    TBranch        *b_nJet;   //!
    TBranch        *b_jetTrg;   //!
    TBranch        *b_jetEn;   //!
@@ -477,22 +389,9 @@ public :
    TBranch        *b_jetChargedEmEnergyFraction;   //!
    TBranch        *b_jetChargedHadronEnergy;   //!
    TBranch        *b_jetChargedHadronEnergyFraction;   //!
+   TBranch        *b_jetChargedHadronMultiplicity;   //!
    TBranch        *b_jetChargedMuEnergy;   //!
    TBranch        *b_jetChargedMuEnergyFraction;   //!
-   TBranch        *b_nZee;   //!
-   TBranch        *b_ZeeMass;   //!
-   TBranch        *b_ZeePt;   //!
-   TBranch        *b_ZeeEta;   //!
-   TBranch        *b_ZeePhi;   //!
-   TBranch        *b_ZeeLeg1Index;   //!
-   TBranch        *b_ZeeLeg2Index;   //!
-   TBranch        *b_nZmumu;   //!
-   TBranch        *b_ZmumuMass;   //!
-   TBranch        *b_ZmumuPt;   //!
-   TBranch        *b_ZmumuEta;   //!
-   TBranch        *b_ZmumuPhi;   //!
-   TBranch        *b_ZmumuLeg1Index;   //!
-   TBranch        *b_ZmumuLeg2Index;   //!
    TBranch        *b_nWenu;   //!
    TBranch        *b_WenuMassTCaloMET;   //!
    TBranch        *b_WenuEtCaloMET;   //!
@@ -504,17 +403,6 @@ public :
    TBranch        *b_WenuEtPfMET;   //!
    TBranch        *b_WenuACopPfMET;   //!
    TBranch        *b_WenuEleIndex;   //!
-   TBranch        *b_nWmunu;   //!
-   TBranch        *b_WmunuMassTCaloMET;   //!
-   TBranch        *b_WmunuEtCaloMET;   //!
-   TBranch        *b_WmunuACopCaloMET;   //!
-   TBranch        *b_WmunuMassTTcMET;   //!
-   TBranch        *b_WmunuEtTcMET;   //!
-   TBranch        *b_WmunuACopTcMET;   //!
-   TBranch        *b_WmunuMassTPfMET;   //!
-   TBranch        *b_WmunuEtPfMET;   //!
-   TBranch        *b_WmunuACopPfMET;   //!
-   TBranch        *b_WmunuMuIndex;   //!
 
    ana(TTree *tree=0);
    virtual ~ana();
@@ -535,9 +423,8 @@ ana::ana(TTree *tree)
 // if parameter tree is not specified (or zero), connect the file
 // used to generate this class and read the Tree.
    TChain *Chain = new TChain("VgAnalyzerKit/EventTree","");
-   Chain->Add("/data3/ncuhep/data/423_vgamma_42x_v5_NewRho/SingleElectron_Run2011A_May10ReRecov1/SingleElectron_Run2011A_May10ReRecov1.root");
-   Chain->Add("/data3/ncuhep/data/423_vgamma_42x_v5_NewRho/SingleElectron_Run2011A_PromptRecov4_Run165088to166861/SingleElectron_Run2011A_PromptRecov4_Run165088to166861.root");
-   //Chain->Add("/data3/ncuhep/data/423_vgamma_42x_v6_NewRho/SingleElectron_Run2011A_PromptRecov4_Run166864to167151/SingleElectron_Run2011A_PromptRecov4_Run166864to167151.root");
+   Chain->Add("/data3/ncuhep/data/425_vgamma_42x_v8/SingleElectron_Run2011A_May10ReRecov1/SingleElectron_Run2011A_May10ReRecov1.root");
+   Chain->Add("/data3/ncuhep/data/425_vgamma_42x_v8/SingleElectron_Run2011A_PromptRecov4_Run165088to167913/SingleElectron_Run2011A_PromptRecov4_Run165088to167913.root");
    Init(Chain);
 }
 
@@ -689,6 +576,8 @@ void ana::Init(TTree *tree)
    fChain->SetBranchAddress("elePV3D", elePV3D, &b_elePV3D);
    fChain->SetBranchAddress("eleBS2D", eleBS2D, &b_eleBS2D);
    fChain->SetBranchAddress("eleBS3D", eleBS3D, &b_eleBS3D);
+   fChain->SetBranchAddress("elePVD0", elePVD0, &b_elePVD0);
+   fChain->SetBranchAddress("elePVDz", elePVDz, &b_elePVDz);
    fChain->SetBranchAddress("nPho", &nPho, &b_nPho);
    fChain->SetBranchAddress("phoTrg", phoTrg, &b_phoTrg);
    fChain->SetBranchAddress("phoIsPhoton", phoIsPhoton, &b_phoIsPhoton);
@@ -738,40 +627,6 @@ void ana::Init(TTree *tree)
    fChain->SetBranchAddress("phoESRatio", phoESRatio, &b_phoESRatio);
    fChain->SetBranchAddress("phoESProfileFront", phoESProfileFront, &b_phoESProfileFront);
    fChain->SetBranchAddress("phoESProfileRear", phoESProfileRear, &b_phoESProfileRear);
-   fChain->SetBranchAddress("nMu", &nMu, &b_nMu);
-   fChain->SetBranchAddress("muTrg", muTrg, &b_muTrg);
-   fChain->SetBranchAddress("muEta", muEta, &b_muEta);
-   fChain->SetBranchAddress("muPhi", muPhi, &b_muPhi);
-   fChain->SetBranchAddress("muCharge", muCharge, &b_muCharge);
-   fChain->SetBranchAddress("muPt", muPt, &b_muPt);
-   fChain->SetBranchAddress("muPz", muPz, &b_muPz);
-   fChain->SetBranchAddress("muIsoTrk", muIsoTrk, &b_muIsoTrk);
-   fChain->SetBranchAddress("muIsoCalo", muIsoCalo, &b_muIsoCalo);
-   fChain->SetBranchAddress("muIsoEcal", muIsoEcal, &b_muIsoEcal);
-   fChain->SetBranchAddress("muIsoHcal", muIsoHcal, &b_muIsoHcal);
-   fChain->SetBranchAddress("muChi2NDF", muChi2NDF, &b_muChi2NDF);
-   fChain->SetBranchAddress("muEmVeto", muEmVeto, &b_muEmVeto);
-   fChain->SetBranchAddress("muHadVeto", muHadVeto, &b_muHadVeto);
-   fChain->SetBranchAddress("muType", muType, &b_muType);
-   fChain->SetBranchAddress("muID", muID, &b_muID);
-   fChain->SetBranchAddress("muD0", muD0, &b_muD0);
-   fChain->SetBranchAddress("muDz", muDz, &b_muDz);
-   fChain->SetBranchAddress("muPVD0", muPVD0, &b_muPVD0);
-   fChain->SetBranchAddress("muPVDz", muPVDz, &b_muPVDz);
-   fChain->SetBranchAddress("muValidFraction", muValidFraction, &b_muValidFraction);
-   fChain->SetBranchAddress("muTrkdPt", muTrkdPt, &b_muTrkdPt);
-   fChain->SetBranchAddress("muNumberOfHits", muNumberOfHits, &b_muNumberOfHits);
-   fChain->SetBranchAddress("muNumberOfValidHits", muNumberOfValidHits, &b_muNumberOfValidHits);
-   fChain->SetBranchAddress("muNumberOfInactiveHits", muNumberOfInactiveHits, &b_muNumberOfInactiveHits);
-   fChain->SetBranchAddress("muNumberOfValidTrkHits", muNumberOfValidTrkHits, &b_muNumberOfValidTrkHits);
-   fChain->SetBranchAddress("muNumberOfValidPixelHits", muNumberOfValidPixelHits, &b_muNumberOfValidPixelHits);
-   fChain->SetBranchAddress("muNumberOfValidMuonHits", muNumberOfValidMuonHits, &b_muNumberOfValidMuonHits);
-   fChain->SetBranchAddress("muStations", muStations, &b_muStations);
-   fChain->SetBranchAddress("muChambers", muChambers, &b_muChambers);
-   fChain->SetBranchAddress("muPV2D", muPV2D, &b_muPV2D);
-   fChain->SetBranchAddress("muPV3D", muPV3D, &b_muPV3D);
-   fChain->SetBranchAddress("muBS2D", muBS2D, &b_muBS2D);
-   fChain->SetBranchAddress("muBS3D", muBS3D, &b_muBS3D);
    fChain->SetBranchAddress("nJet", &nJet, &b_nJet);
    fChain->SetBranchAddress("jetTrg", jetTrg, &b_jetTrg);
    fChain->SetBranchAddress("jetEn", jetEn, &b_jetEn);
@@ -793,22 +648,9 @@ void ana::Init(TTree *tree)
    fChain->SetBranchAddress("jetChargedEmEnergyFraction", jetChargedEmEnergyFraction, &b_jetChargedEmEnergyFraction);
    fChain->SetBranchAddress("jetChargedHadronEnergy", jetChargedHadronEnergy, &b_jetChargedHadronEnergy);
    fChain->SetBranchAddress("jetChargedHadronEnergyFraction", jetChargedHadronEnergyFraction, &b_jetChargedHadronEnergyFraction);
+   fChain->SetBranchAddress("jetChargedHadronMultiplicity", jetChargedHadronMultiplicity, &b_jetChargedHadronMultiplicity);
    fChain->SetBranchAddress("jetChargedMuEnergy", jetChargedMuEnergy, &b_jetChargedMuEnergy);
    fChain->SetBranchAddress("jetChargedMuEnergyFraction", jetChargedMuEnergyFraction, &b_jetChargedMuEnergyFraction);
-   fChain->SetBranchAddress("nZee", &nZee, &b_nZee);
-   fChain->SetBranchAddress("ZeeMass", ZeeMass, &b_ZeeMass);
-   fChain->SetBranchAddress("ZeePt", ZeePt, &b_ZeePt);
-   fChain->SetBranchAddress("ZeeEta", ZeeEta, &b_ZeeEta);
-   fChain->SetBranchAddress("ZeePhi", ZeePhi, &b_ZeePhi);
-   fChain->SetBranchAddress("ZeeLeg1Index", ZeeLeg1Index, &b_ZeeLeg1Index);
-   fChain->SetBranchAddress("ZeeLeg2Index", ZeeLeg2Index, &b_ZeeLeg2Index);
-   fChain->SetBranchAddress("nZmumu", &nZmumu, &b_nZmumu);
-   fChain->SetBranchAddress("ZmumuMass", ZmumuMass, &b_ZmumuMass);
-   fChain->SetBranchAddress("ZmumuPt", ZmumuPt, &b_ZmumuPt);
-   fChain->SetBranchAddress("ZmumuEta", ZmumuEta, &b_ZmumuEta);
-   fChain->SetBranchAddress("ZmumuPhi", ZmumuPhi, &b_ZmumuPhi);
-   fChain->SetBranchAddress("ZmumuLeg1Index", ZmumuLeg1Index, &b_ZmumuLeg1Index);
-   fChain->SetBranchAddress("ZmumuLeg2Index", ZmumuLeg2Index, &b_ZmumuLeg2Index);
    fChain->SetBranchAddress("nWenu", &nWenu, &b_nWenu);
    fChain->SetBranchAddress("WenuMassTCaloMET", WenuMassTCaloMET, &b_WenuMassTCaloMET);
    fChain->SetBranchAddress("WenuEtCaloMET", WenuEtCaloMET, &b_WenuEtCaloMET);
@@ -820,17 +662,6 @@ void ana::Init(TTree *tree)
    fChain->SetBranchAddress("WenuEtPfMET", WenuEtPfMET, &b_WenuEtPfMET);
    fChain->SetBranchAddress("WenuACopPfMET", WenuACopPfMET, &b_WenuACopPfMET);
    fChain->SetBranchAddress("WenuEleIndex", WenuEleIndex, &b_WenuEleIndex);
-   fChain->SetBranchAddress("nWmunu", &nWmunu, &b_nWmunu);
-   fChain->SetBranchAddress("WmunuMassTCaloMET", WmunuMassTCaloMET, &b_WmunuMassTCaloMET);
-   fChain->SetBranchAddress("WmunuEtCaloMET", WmunuEtCaloMET, &b_WmunuEtCaloMET);
-   fChain->SetBranchAddress("WmunuACopCaloMET", WmunuACopCaloMET, &b_WmunuACopCaloMET);
-   fChain->SetBranchAddress("WmunuMassTTcMET", WmunuMassTTcMET, &b_WmunuMassTTcMET);
-   fChain->SetBranchAddress("WmunuEtTcMET", WmunuEtTcMET, &b_WmunuEtTcMET);
-   fChain->SetBranchAddress("WmunuACopTcMET", WmunuACopTcMET, &b_WmunuACopTcMET);
-   fChain->SetBranchAddress("WmunuMassTPfMET", WmunuMassTPfMET, &b_WmunuMassTPfMET);
-   fChain->SetBranchAddress("WmunuEtPfMET", WmunuEtPfMET, &b_WmunuEtPfMET);
-   fChain->SetBranchAddress("WmunuACopPfMET", WmunuACopPfMET, &b_WmunuACopPfMET);
-   fChain->SetBranchAddress("WmunuMuIndex", WmunuMuIndex, &b_WmunuMuIndex);
    Notify();
 }
 
