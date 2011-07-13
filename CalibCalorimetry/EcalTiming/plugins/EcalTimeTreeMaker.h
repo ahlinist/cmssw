@@ -17,7 +17,7 @@ Implementation:
 // Skeleton Derived from an example by:  F. DE GUIO C. DOGLIONI P. MERIDIANI
 // Authors:                              Seth Cooper, Giovanni Franzoni (UMN)
 //         Created:  Mo Jul 14 5:46:22 CEST 2008
-// $Id: EcalTimeTreeMaker.h,v 1.1 2010/10/14 23:43:56 franzoni Exp $
+// $Id: EcalTimeTreeMaker.h,v 1.2 2011/07/13 17:51:21 franzoni Exp $
 //
 //
 
@@ -173,9 +173,6 @@ class EcalTimeTreeMaker : public edm::EDAnalyzer
       TrackAssociatorParameters trackParameters_ ;
 
       EcalTimeTreeContent myTreeVariables_ ;
-  
-//    double *ttEtaBins ;
-//    double *modEtaBins ;
 
       TFile* file_ ;
       TTree* tree_ ;

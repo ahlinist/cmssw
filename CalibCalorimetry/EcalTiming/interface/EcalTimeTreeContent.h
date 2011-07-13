@@ -5,8 +5,8 @@
 
 #define MAXSC 50
 #define MAXC 200
-//#define MAXXTAL 250   // - obsolete
-#define MAXXTALINC 25
+#define MAXXTALINC 25 // CAUTION: 
+                      // if you change this, you need to change by hand the hard-coded '25' which is in "chain -> Branch("xtalInBCHashedIndex",..." in EcalTimeTreeContent.cc
 #define MAXVTX 40
 #define MAXHCALRECHITS 100
 #define MAXCALOTOWERS 100
@@ -58,9 +58,7 @@ struct EcalTimeTreeContent
   int nSuperClusters;
   int nBarrelSuperClusters;
   int nEndcapSuperClusters;
-  //  int superClusterType[MAXSC];
   float superClusterRawEnergy[MAXSC];
-  //  float superClusterEnergySum[MAXSC]; // not using intercalibration constants
   float superClusterPhiWidth[MAXSC];
   float superClusterEtaWidth[MAXSC];
   float superClusterPhi[MAXSC];
@@ -73,11 +71,8 @@ struct EcalTimeTreeContent
   float superClusterVertexZ[MAXSC];
 
   int nClustersInSuperCluster[MAXSC];  
-  //  int clusterIndexInSuperCluster[MAXSC];
-  //  int nXtalsInSuperCluster[MAXSC];
   int xtalIndexInSuperCluster[MAXSC];
-  
-  
+    
   // basic cluster variables	
   int nClusters;
   float clusterEnergy[MAXC];
@@ -93,7 +88,6 @@ struct EcalTimeTreeContent
   unsigned int cluster2ndId[MAXC];
   
   int nXtalsInCluster[MAXC];    
-  //int xtalIndexInCluster[MAXC];
   
   
   // clustershape variables for basic clusters
@@ -133,16 +127,6 @@ struct EcalTimeTreeContent
   float xtalInBCOutOfTimeChi2[MAXC][MAXXTALINC];
   float xtalInBCSwissCross[MAXC][MAXXTALINC];
     
-  //GF fatcorize out these variables in a block, so to remove them
-  // crystal variables
-//  int nXtals;
-//  int xtalHashedIndex[MAXXTAL];
-//  float xtalEnergy[MAXXTAL];
-//  float xtalTime[MAXXTAL];
-//  float xtalTkLength[MAXXTAL];
-//  float xtalTkLengthCurved[MAXXTAL];
-//  float xtalAmplitudeADC[MAXXTAL];
-  
   // vertex variables
   int   nVertices;
   bool  vtxIsFake[MAXVTX];
@@ -271,11 +255,6 @@ struct EcalTimeTreeContent
   float muonTkLengthInEcalDetailCurved[MAXMU];
   float muonTkLengthInEcalDetailCurved_high[MAXMU];
   float muonTkLengthInEcalDetailCurved_low[MAXMU];
-
-  //float muonNecklaceSize[MAXMU];
-  //float muonNecklaceX[MAXMU][5000];
-  //float muonNecklaceY[MAXMU][5000];
-  //float muonNecklaceZ[MAXMU][5000];
   
   float muonTkInternalPointInEcalX[MAXMU];
   float muonTkInternalPointInEcalY[MAXMU];
