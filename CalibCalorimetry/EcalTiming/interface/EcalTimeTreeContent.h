@@ -3,9 +3,9 @@
 
 #include "TChain.h" 
 
-#define MAXSC 100
-#define MAXC 100
-#define MAXXTAL 250
+#define MAXSC 50
+#define MAXC 200
+//#define MAXXTAL 250   // - obsolete
 #define MAXXTALINC 25
 #define MAXVTX 40
 #define MAXHCALRECHITS 100
@@ -58,9 +58,9 @@ struct EcalTimeTreeContent
   int nSuperClusters;
   int nBarrelSuperClusters;
   int nEndcapSuperClusters;
-  int superClusterType[MAXSC];
+  //  int superClusterType[MAXSC];
   float superClusterRawEnergy[MAXSC];
-  float superClusterEnergySum[MAXSC]; // not using intercalibration constants
+  //  float superClusterEnergySum[MAXSC]; // not using intercalibration constants
   float superClusterPhiWidth[MAXSC];
   float superClusterEtaWidth[MAXSC];
   float superClusterPhi[MAXSC];
@@ -73,8 +73,8 @@ struct EcalTimeTreeContent
   float superClusterVertexZ[MAXSC];
 
   int nClustersInSuperCluster[MAXSC];  
-  int clusterIndexInSuperCluster[MAXSC];
-  int nXtalsInSuperCluster[MAXSC];
+  //  int clusterIndexInSuperCluster[MAXSC];
+  //  int nXtalsInSuperCluster[MAXSC];
   int xtalIndexInSuperCluster[MAXSC];
   
   
@@ -92,8 +92,8 @@ struct EcalTimeTreeContent
   unsigned int clusterMaxId[MAXC];
   unsigned int cluster2ndId[MAXC];
   
-  int nXtalsInCluster[MAXC];
-  int xtalIndexInCluster[MAXC];
+  int nXtalsInCluster[MAXC];    
+  //int xtalIndexInCluster[MAXC];
   
   
   // clustershape variables for basic clusters
@@ -133,14 +133,15 @@ struct EcalTimeTreeContent
   float xtalInBCOutOfTimeChi2[MAXC][MAXXTALINC];
   float xtalInBCSwissCross[MAXC][MAXXTALINC];
     
+  //GF fatcorize out these variables in a block, so to remove them
   // crystal variables
-  int nXtals;
-  int xtalHashedIndex[MAXXTAL];
-  float xtalEnergy[MAXXTAL];
-  float xtalTime[MAXXTAL];
-  float xtalTkLength[MAXXTAL];
-  float xtalTkLengthCurved[MAXXTAL];
-  float xtalAmplitudeADC[MAXXTAL];
+//  int nXtals;
+//  int xtalHashedIndex[MAXXTAL];
+//  float xtalEnergy[MAXXTAL];
+//  float xtalTime[MAXXTAL];
+//  float xtalTkLength[MAXXTAL];
+//  float xtalTkLengthCurved[MAXXTAL];
+//  float xtalAmplitudeADC[MAXXTAL];
   
   // vertex variables
   int   nVertices;
