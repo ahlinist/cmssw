@@ -11,10 +11,9 @@ Implementation:
 <Notes on implementation>
  */
 //
-// Skeleton Derived from an example by:  F. DE GUIO C. DOGLIONI P. MERIDIANI
 // Authors:                              Seth Cooper, Giovanni Franzoni (UMN)
 //         Created:  Mo Jul 14 5:46:22 CEST 2008
-// $Id: EcalTimeTreeMaker.cc,v 1.4 2011/02/16 16:53:45 scooper Exp $
+// $Id: EcalTimeTreeMaker.cc,v 1.5 2011/03/21 10:03:32 franzoni Exp $
 //
 //
 
@@ -39,8 +38,6 @@ Implementation:
 
 #include "MagneticField/Engine/interface/MagneticField.h"
 #include "MagneticField/Records/interface/IdealMagneticFieldRecord.h"
-
-//#include "CaloOnlineTools/EcalTools/interface/calcEcalDeposits.h"
 
 #include "DataFormats/HcalRecHit/interface/HcalRecHitCollections.h"
 #include "DataFormats/CaloTowers/interface/CaloTowerCollection.h"
@@ -208,7 +205,6 @@ void EcalTimeTreeMaker::analyze (const edm::Event& iEvent, const edm::EventSetup
  
   // ClusterShapes
   EcalClusterLazyTools* lazyTools = new EcalClusterLazyTools(iEvent, iSetup, barrelEcalRecHitCollection_, endcapEcalRecHitCollection_);
-
 
   // Xtal - TkLength map
   std::map<int,float> XtalMap ;
