@@ -442,7 +442,8 @@ RooWorkspace * CL95Calc::makeWorkspace(Double_t ilum, Double_t slum,
   ws->factory( "prod::nsig(lumi,xsec,efficiency, nsig_nuis)" );
 
   // estimated background yield
-  ws->factory( "bkg_est[0]" );
+  ws->factory( "bkg_est[1.0]" );
+  ws->factory( "lbkg_est[0]" ); // for special case of lognormal prior
 
   // nuisance parameter: factor 1 with background relative uncertainty
   //ws->factory( "nbkg_nuis[1.0]" ); // will adjust range below
@@ -484,6 +485,8 @@ RooWorkspace * CL95Calc::makeWorkspace(Double_t ilum, Double_t slum,
     ws->var("nbkg_sigma")->setConstant(kTRUE);
   }
   else if (_nuisance_model == 1){// Lognormal model for nuisance parameters
+    // this is the "old" implementation of the lognormal model, better use
+    // the new one, nuisance_model=3
 
     std::cout << "[roostats_cl95]: Lognormal PDFs for nuisance parameters" << endl;
 
@@ -500,6 +503,30 @@ RooWorkspace * CL95Calc::makeWorkspace(Double_t ilum, Double_t slum,
     ws->var("nsig_global")->setConstant(kTRUE);
     ws->var("nsig_kappa")->setConstant(kTRUE);
     ws->var("nbkg_kappa")->setConstant(kTRUE);
+  }
+  else if (_nuisance_model == 3){
+    //
+    // Lognormal nuisance model implemented as Gaussian of
+    // a log of the parameter. The corresponding global observable
+    // is the log of the estimate for the parameter.
+    //
+
+    std::cout << "[roostats_cl95]: Lognormal PDFs for nuisance parameters" << endl;
+
+    // cumulative signal uncertainty
+    ws->factory( "lnsig_sigma[0.1]" );
+    ws->factory( "nsig_global[0.0,-0.5,0.5]" ); // log of mean of the nsig nuisance par
+    //ws->factory( "Gaussian::syst_nsig(cexpr::lnsig('log(nsig_nuis)', nsig_nuis), nsig_global, lnsig_sigma)" );
+    ws->factory( "Gaussian::syst_nsig(cexpr::lnsig('nsig_nuis-1.0', nsig_nuis), nsig_global, lnsig_sigma)" );
+    // background uncertainty
+    ws->factory( "lnbkg_sigma[0.1]" );
+    ws->factory( "Gaussian::syst_nbkg(cexpr::lnbkg('log(nbkg)',nbkg), lbkg_est, lnbkg_sigma)" );
+
+    ws->var("lnsig_sigma")->setVal(nsig_rel_err);
+    ws->var("lnbkg_sigma")->setVal(nbkg_rel_err);
+    ws->var("nsig_global")->setConstant(kTRUE);
+    ws->var("lnsig_sigma")->setConstant(kTRUE);
+    ws->var("lnbkg_sigma")->setConstant(kTRUE);
   }
   else if (_nuisance_model == 2){ // Gamma model for nuisance parameters
 
@@ -543,6 +570,7 @@ RooWorkspace * CL95Calc::makeWorkspace(Double_t ilum, Double_t slum,
   ws->var("lumi")      ->setVal(ilum);
   ws->var("efficiency")->setVal(eff);
   ws->var("bkg_est")   ->setVal(bck);
+  ws->var("lbkg_est")   ->setVal(TMath::Log(bck));
   ws->var("xsec")      ->setVal(0.0);
   ws->var("nsig_nuis") ->setVal(1.0);
   ws->var("nbkg")      ->setVal(bck);
@@ -551,6 +579,7 @@ RooWorkspace * CL95Calc::makeWorkspace(Double_t ilum, Double_t slum,
   ws->var("lumi")      ->setConstant(kTRUE);
   ws->var("efficiency")->setConstant(kTRUE);
   ws->var("bkg_est")   ->setConstant(kTRUE);
+  ws->var("lbkg_est")   ->setConstant(kTRUE);
   ws->var("n")         ->setConstant(kFALSE); // observable
   ws->var("xsec")      ->setConstant(kFALSE); // parameter of interest
   ws->var("nsig_nuis") ->setConstant(kFALSE); // nuisance
@@ -563,6 +592,8 @@ RooWorkspace * CL95Calc::makeWorkspace(Double_t ilum, Double_t slum,
   ws->var("nsig_nuis")->setRange( std::max(0.0, 1.0 - 5.0*nsig_rel_err), 1.0 + 5.0*nsig_rel_err);
   ws->var("nbkg")     ->setRange( std::max(0.0, bck - 5.0*sbck), bck + 5.0*sbck);
   ws->var("bkg_est")  ->setRange( std::max(0.0, bck - 5.0*sbck), bck + 5.0*sbck);
+  // FIXME: check for zeros in the log
+  ws->var("lbkg_est")  ->setRange( TMath::Log(ws->var("bkg_est")->getMin()), TMath::Log(ws->var("bkg_est")->getMin()));
   
   // Definition of observables and parameters of interest
 
@@ -571,7 +602,14 @@ RooWorkspace * CL95Calc::makeWorkspace(Double_t ilum, Double_t slum,
   //ws->defineSet("obsSet","n");
 
   // global observables
-  RooArgSet globalObs(*ws->var("nsig_global"), *ws->var("bkg_est"), "global_obs");
+  //RooArgSet globalObs(*ws->var("nsig_global"), *ws->var("bkg_est"), "global_obs");
+  RooArgSet globalObs(*ws->var("nsig_global"), "global_obs");
+  if (_nuisance_model == 3){
+    globalObs.add( *ws->var("lbkg_est") );
+  }
+  else{
+    globalObs.add( *ws->var("bkg_est") );
+  }
 
   // parameters of interest
   RooArgSet poi(*ws->var("xsec"), "poi");
