@@ -599,7 +599,6 @@ RooWorkspace * CL95Calc::makeWorkspace(Double_t ilum, Double_t slum,
 
   // observables
   RooArgSet obs(*ws->var("n"), "obs");
-  //ws->defineSet("obsSet","n");
 
   // global observables
   //RooArgSet globalObs(*ws->var("nsig_global"), *ws->var("bkg_est"), "global_obs");
@@ -613,12 +612,22 @@ RooWorkspace * CL95Calc::makeWorkspace(Double_t ilum, Double_t slum,
 
   // parameters of interest
   RooArgSet poi(*ws->var("xsec"), "poi");
-  //ws->defineSet("poiSet","xsec");
 
   // nuisance parameters
   RooArgSet nuis(*ws->var("nsig_nuis"), *ws->var("nbkg"), "nuis");
-  //RooArgSet nuis(*ws->var("lumi"), *pWs->var("eff_a"), *pWs->var("eff_b"), *pWs->var("tau"), "nuis");
-  //ws->defineSet("nuisanceSet","nsig_nuis,nbkg");
+  // FIXME: do we really need to add everything to nuisances?
+  //RooArgSet nuis(*ws->var("nsig_nuis"), *ws->var("nbkg"),
+  //		 *ws->var("lumi"), *ws->var("bkg_est"), *ws->var("efficiency"),
+  //		 "nuis");
+  //if (_nuisance_model == 0){ // gaussian model for nuisance parameters
+  //  nuis.add(*ws->var("nsig_sigma"));
+  //  nuis.add(*ws->var("nbkg_sigma"));
+  //}
+  //else if (_nuisance_model == 1){ // gaussian model for nuisance parameters
+  //  nuis.add(*ws->var("nsig_kappa"));
+  //  nuis.add(*ws->var("nbkg_kappa"));
+  //}
+
 
   // setup the S+B model
   SbModel.SetWorkspace(*ws);
@@ -833,7 +842,7 @@ Double_t CL95Calc::cl95( std::string method, LimitResult * result ){
   RooFit::MsgLevel msglevel = RooMsgService::instance().globalKillBelow();
   // get ugly RooFit print out of the way
   // FIXME: uncomment
-  //RooMsgService::instance().setGlobalKillBelow(RooFit::FATAL);
+  RooMsgService::instance().setGlobalKillBelow(RooFit::FATAL);
 
   Int_t _attempt = 0; // allow several attempts for limit calculation, stop after that
   while(1){
