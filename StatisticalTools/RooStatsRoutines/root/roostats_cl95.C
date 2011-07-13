@@ -901,7 +901,7 @@ Double_t CL95Calc::cl95( std::string method, LimitResult * result ){
 		      "SbModel",
 		      "BModel",
 		      "observed_data",
-		      0, // calculator type, 0-freq, 1-hybrid
+		      1, // calculator type, 0-freq, 1-hybrid
 		      2, // test statistic, 0-lep, 1-tevatron, 2-PL, 3-PL 1-sided
 		      true, // useCls
 		      10, // npoints in the scan
