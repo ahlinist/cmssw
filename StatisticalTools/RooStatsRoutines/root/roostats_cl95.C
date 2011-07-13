@@ -517,7 +517,7 @@ RooWorkspace * CL95Calc::makeWorkspace(Double_t ilum, Double_t slum,
     ws->factory( "lnsig_sigma[0.1]" );
     ws->factory( "nsig_global[0.0,-0.5,0.5]" ); // log of mean of the nsig nuisance par
     //ws->factory( "Gaussian::syst_nsig(cexpr::lnsig('log(nsig_nuis)', nsig_nuis), nsig_global, lnsig_sigma)" );
-    ws->factory( "Gaussian::syst_nsig(cexpr::lnsig('nsig_nuis-1.0', nsig_nuis), nsig_global, lnsig_sigma)" );
+    ws->factory( "Gaussian::syst_nsig(cexpr::lnsig('log(nsig_nuis)', nsig_nuis), nsig_global, lnsig_sigma)" );
     // background uncertainty
     ws->factory( "lnbkg_sigma[0.1]" );
     ws->factory( "Gaussian::syst_nbkg(cexpr::lnbkg('log(nbkg)',nbkg), lbkg_est, lnbkg_sigma)" );
