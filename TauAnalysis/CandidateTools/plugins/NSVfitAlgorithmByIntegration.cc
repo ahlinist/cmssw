@@ -326,7 +326,7 @@ void NSVfitAlgorithmByIntegration::fitImp() const
   }
 
   NSVfitEventHypothesisByIntegration* persistentEventHypothesis = new NSVfitEventHypothesisByIntegration(*currentEventHypothesis_);
-  persistentEventHypothesis->histMassResults_ = std::auto_ptr<TH1>(histResults);
+  persistentEventHypothesis->histMassResults_.reset(histResults);
 
 //--- set central values and uncertainties on reconstructed masses
   for ( unsigned iMassParameter = 0; iMassParameter < numMassParameters_; ++iMassParameter ) {  
