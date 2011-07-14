@@ -34,16 +34,22 @@ def fix_file_name(file):
         return 'rfio:' + file
     return 'file:' + file
 
-process.source = cms.Source (
-    "PoolSource",
+process.source = cms.Source ("PoolSource",
     fileNames = cms.untracked.vstring (map(fix_file_name, inputFileNames)),
     noEventSort = cms.untracked.bool(True),
     duplicateCheckMode = cms.untracked.string("noDuplicateCheck"),
-    skipBadFiles = cms.untracked.bool(False),
+    skipBadFiles = cms.untracked.bool(False)
 )
 
 process.Out = cms.OutputModule("PoolOutputModule",
-        fileName = cms.untracked.string (outputFileName)
+    cms.PSet(
+        outputCommands = cms.untracked.vstring(
+            'keep *',
+            'drop GenFilterInfo_*_*_*' # CV: drop GenFilterInfo objects,
+                                       #     because they cause segmentation violation of merge jobs run in CMSSW_4_2_x (2011/07/10)
+        )
+    ),
+    fileName = cms.untracked.string (outputFileName)                           
 )
 
 process.end = cms.EndPath(process.Out)
