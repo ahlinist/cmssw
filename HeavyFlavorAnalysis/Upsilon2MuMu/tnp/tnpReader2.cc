@@ -17,7 +17,8 @@ const int  tnpReader2::fNq;
 tnpReader2::tnpReader2(TChain *tree, TString evtClassName): treeReaderTNP(tree, evtClassName) {
   cout << "--> tnpReader2> This is the start ..." << endl;
   //fpJSON = new JSON("/shome/bora/root/json/json_147196_149442");  // Run2010B
-  fpJSON = new JSON("/shome/bora/root/json/json_133446_147116");    // Run2010A
+  //fpJSON = new JSON("/shome/bora/root/json/json_140042_144114");  // Run2010A
+  fpJSON = new JSON("/shome/bora/root/json/json_146240_147116");  // Run2010B HLTDoubleMu0
   fPTbin[0] = 3.; fPTbin[1] = 4.; fPTbin[2] = 5.; fPTbin[3] = 6.; fPTbin[4] = 8.; fPTbin[5] = 50.; 
   fEtabin[0] = -2.4; fEtabin[1] = -1.2; fEtabin[2] = -0.4; fEtabin[3] = 0.4; fEtabin[4] = 1.2; fEtabin[5] = 2.4;
   fQ[0] = -1;  fQ[1] = 1;
@@ -290,7 +291,7 @@ bool tnpReader2::isPathFired( TString Path ){
 }
 
 void tnpReader2::TagSelection(){
-  
+    
   TAnaCand *pCand(0);  TAnaTrack *pTag(0); TAnaTrack *pTrack(0);
   for (int i = 0; i < fpEvt->nCands(); ++i) {
     pCand = fpEvt->getCand(i);
@@ -505,6 +506,7 @@ bool tnpReader2::isRecTrackMatchedToTrig(TAnaTrack *pTrack, TString Label){
 	 if ( ( tag_dPhi < DPHI ) && ( tag_dEta < DETA )) {
 	   HLTlabel = true;				
 	   ((TH1D*)fpHistFile->Get("Tag_trig_dR_aftercuts"))->Fill(tag_dR);
+	   //cout << " Tag matched to Single mu T.O.  " << endl;
 	   fCandTT.push_back(pCand);
 	   break;
 	 }
