@@ -28,14 +28,13 @@ class TauVarParsing(VarParsing.VarParsing):
     >>> parse.myLabel
     'pippo'
     >>> parse.myFlag
-    False
+    0
     >>> # The default global tag is automatically configured
     >>> 'MC_' in parse.globalTag
     True
     '''
     type_map = {
         str : VarParsing.VarParsing.varType.string,
-        bool : VarParsing.VarParsing.varType.int,
         int : VarParsing.VarParsing.varType.int,
         float : VarParsing.VarParsing.varType.float
     }
@@ -48,6 +47,11 @@ class TauVarParsing(VarParsing.VarParsing):
                       self.multiplicity.singleton,
                       self.varType.string,
                       "Global Tag Conditions")
+        self.register('isMC',
+                      0, # Default value
+                      self.multiplicity.singleton,
+                      self.varType.int,
+                      "Flag to indicate job uses MC")
         self.register('hltProcess',
                       'HLT',
                       self.multiplicity.singleton,
@@ -71,6 +75,9 @@ class TauVarParsing(VarParsing.VarParsing):
 
         # Get extra options w/ their defaults
         for key, value in kwargs.iteritems():
+            # We use ints for bools
+            if type(value) is bool:
+                value = int(value)
             self.register(key,
                           value,
                           self.multiplicity.singleton,
