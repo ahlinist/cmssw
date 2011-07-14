@@ -190,7 +190,7 @@ def _setInputFileType(process, filetype, **kwargs):
     if filetype == 'PATTuple':
         switchToAOD.switchToAOD(process)
 
-@_requires(inputs=['Data', 'smMC', 'smSumMC', 'bsmMC',])
+@_requires(inputs=['Data', 'embeddedData', 'smMC', 'smSumMC', 'bsmMC',])
 def _setIsData(process, type, **kwargs):
     if type.lower().find('mc') == -1:
         switchToData.switchToData(process)

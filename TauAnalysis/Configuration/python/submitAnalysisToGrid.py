@@ -167,7 +167,7 @@ def submitAnalysisToGrid(configFile = None, channel = None, samples = None,
             'user_remote_dir' : outputFilePath,
             'output_file' : ", ".join(output_files),
             # Default MC info
-            'split_type' : (sample_info['type'] == 'Data') and 'lumis' or 'events',
+            'split_type' : (sample_info['type'] == 'Data' or sample_info['type'] == 'embeddedData') and 'lumis' or 'events',
             'lumi_mask' : sample_info['lumi_mask'],
             'runselection' : sample_info['runselection'],
             'SE_white_list' : sample_info['SE_white_list'],
