@@ -23,8 +23,9 @@ samplesToAnalyze = [
     #'data_SingleMu_Run2011A_PromptReco_v4',
     #'Ztautau_pythia',
     'Ztautau_embedded_part1',
-    'Ztautau_embedded_part2'
+    'Ztautau_embedded_part2',
     #'Zmumu_pythia',
+    #'Zmumu_powheg'
     #'PPmuXptGt20Mu15',
     #'WplusJets_madgraph',
     #'TTplusJets_madgraph'
@@ -43,9 +44,14 @@ def customizeConfigFile(sampleName, cfgFileName_original, cfgFileName_modified =
 
     cfg_modified = cfg_original.replace("#__", "")
     isMC = "False"
-    if recoSampleDefinitionsTauIdEfficiency_7TeV['RECO_SAMPLES'][sampleName]['type'] != 'Data':
+    if recoSampleDefinitionsTauIdEfficiency_7TeV['RECO_SAMPLES'][sampleName]['type'] != 'Data' and \
+       recoSampleDefinitionsTauIdEfficiency_7TeV['RECO_SAMPLES'][sampleName]['type'] != 'embeddedData':
         isMC = "True"
     cfg_modified = cfg_modified.replace("#isMC#", isMC)
+    isEmbedded = "False"
+    if recoSampleDefinitionsTauIdEfficiency_7TeV['RECO_SAMPLES'][sampleName]['type'] == 'embeddedData':
+        isEmbedded = "True"
+    cfg_modified = cfg_modified.replace("#isEmbedded#", isEmbedded)
     HLTprocessName = 'HLT'
     if 'hlt' in recoSampleDefinitionsTauIdEfficiency_7TeV['RECO_SAMPLES'][sampleName].keys():
         HLTprocessName = recoSampleDefinitionsTauIdEfficiency_7TeV['RECO_SAMPLES'][sampleName]['hlt'].getProcessName()

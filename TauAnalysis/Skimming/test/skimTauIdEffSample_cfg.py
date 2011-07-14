@@ -31,12 +31,19 @@ process.maxEvents = cms.untracked.PSet(
     input = cms.untracked.int32(-1)
 )
 
+#--------------------------------------------------------------------------------
+# define configuration parameter default values
+
 ##isMC = True # use for MC
 isMC = False # use for Data
-#HLTprocessName = "HLT" # use for 2011 Data
+isEmbedded = False # use for everything except for Ztautau samples produced via MCEmbedding technique
+#isEmbedded = True # use for Ztautau samples produced via MCEmbedding technique
+##HLTprocessName = "HLT" # use for 2011 Data
 HLTprocessName = "HLT" # use for Summer'11 MC
 pfCandidateCollection = "particleFlow" # pile-up removal disabled
 ##pfCandidateCollection = "pfNoPileUp" # pile-up removal enabled
+applyZrecoilCorrection = False
+#applyZrecoilCorrection = True
 #--------------------------------------------------------------------------------
 
 #--------------------------------------------------------------------------------
@@ -44,6 +51,7 @@ pfCandidateCollection = "particleFlow" # pile-up removal disabled
 # in case running jobs on the CERN batch system/grid
 #
 #__isMC = #isMC#
+#__isEmbedded = #isEmbedded#
 #__HLTprocessName = #HLTprocessName#
 #__pfCandidateCollection = #pfCandidateCollection#
 #__applyZrecoilCorrection = #applyZrecoilCorrection#
@@ -79,7 +87,7 @@ process.hltMu = cms.EDFilter("EventSelPluginFilter",
     )
 )
 
-if isMC:
+if isMC or isEmbedded:
     process.dataQualityFilters.remove(process.hltPhysicsDeclared)
     process.dataQualityFilters.remove(process.dcsstatus)
 #--------------------------------------------------------------------------------
