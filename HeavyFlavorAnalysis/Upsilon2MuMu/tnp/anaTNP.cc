@@ -151,13 +151,13 @@ void anaTNP::loadFiles(const char *dir, int i) {
 
   // -- Upsilon merging
   if (0 == i) {
-    string ufile = fDirectory + string("/") + string("upsilon/100804.sp10.mt.1s.tnpReaderTrig_MC.default.root");    
+    string ufile = fDirectory + string("/") + string("upsilon/101201.fl10.mm.ups1s.tnpReaderTrig_MC_1S.default.root");    
 
     fM[0] = new TFile(ufile.c_str()); lM[0] =  1.;
-    ufile = fDirectory + string("/") + string("upsilon/100804.sp10.mt.2s.tnpReaderTrig_MC.default.root");
-    fM[1] = new TFile(ufile.c_str()); lM[1] =  1.04; 
-    ufile = fDirectory + string("/") + string("upsilon/100804.sp10.mt.3s.tnpReaderTrig_MC.default.root");
-    fM[2] = new TFile(ufile.c_str()); lM[2] =  1.81; 
+    ufile = fDirectory + string("/") + string("upsilon/101201.fl10.mm.ups2s.tnpReaderTrig_MC_2S.default.root");
+    fM[1] = new TFile(ufile.c_str()); lM[1] =  1.66; 
+    ufile = fDirectory + string("/") + string("upsilon/101201.fl10.mm.ups3s.tnpReaderTrig_MC_3S.default.root");
+    fM[2] = new TFile(ufile.c_str()); lM[2] =  3.43; 
     cout << "Merged" << endl;
   }
 
@@ -207,10 +207,11 @@ void anaTNP::loadFiles(const char *dir, int i) {
       ufile = fDirectory + string("/upsilon/UpsTagandprobe_10TeV_nocut.root");
       jfile = fDirectory + string("/jpsi/JpsiTagandprobe_10TeV_nocut.root");  
     } else if (40 == i) {
-      ufile = fDirectory + string("/upsilon/111112.data.MuOnia.mt.HT160.NoVeto.tnpReaderTrig_DATA.default.root");
+      ufile = fDirectory + string("/upsilon/101201.fl10.mm.COMBINED.tnpReaderTrig_MC_All.default.root");
      //ufile = fDirectory + string("/upsilon/UpsTagAndProbe_7TeV.root"); 
-     jfile = fDirectory + string("/jpsi/160311.data.mt.tnpReaderTrig_DATA.tma.default.root");
-     //jfile = fDirectory + string("/jpsi/101130.fl10.mt.jpsi.tnpReaderTrig_MC.tma.default.root");  
+     jfile = fDirectory + string("/jpsi/160311.Run2010Bp1.data.mt.tnpReaderTrig_DATA.tma.nb.default.root");
+     //jfile = fDirectory + string("/jpsi/190311.Run2010A.nov4rereco.dimuons.tnpReaderTrig_DATA.default.root");
+     
     } else {
       cout << "Don't know which J/psi file to open for i = " << i << ". Specify this in anaTNP::loadfiles()" << endl;
       return;
@@ -225,7 +226,7 @@ void anaTNP::loadFiles(const char *dir, int i) {
 // ----------------------------------------------------------------------
 void anaTNP::combineUpsilons() {
   
-  string ufile = fDirectory + string("/upsilon/100804.sp10.mt.COMBINED.tnpReaderTrig_MC.default.root");
+  string ufile = fDirectory + string("/upsilon/101201.fl10.mm.COMBINED.tnpReaderTrig_MC_All.default.root");
   TFile *f = new TFile(ufile.c_str(), "RECREATE"); 
 
   fM[0]->cd();
@@ -2394,8 +2395,8 @@ void anaTNP::fitUpsilon(int mode) {
   	int status(0);
 	const char* Status;
 	
-	int Npt = 6;
-	double PTbin[] = {0., 2., 3., 4., 5., 6., 20.};				
+	int Npt = 5;
+	double PTbin[] = {3., 4., 5., 6., 8., 50.};				
 								
 	int Neta = 5;					
 	double Etabin[] = {-2.4, -1.2, -0.4, 0.4, 1.2, 2.4};
