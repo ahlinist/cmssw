@@ -47,6 +47,7 @@ userSettings = {
         'current' : {
             'ZtoMuTau'          : '2011Jun12',
             'ZtoMuTau_tauIdEff' : '2011Jul06_mauro'
+            #'ZtoMuTau_tauIdEff' : '2011Jul06v2'
         },
         'jobs' : {
             '2011Jul06_mauro' : {
