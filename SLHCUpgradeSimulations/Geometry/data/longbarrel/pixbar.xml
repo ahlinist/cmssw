@@ -177,7 +177,7 @@
  <Constant name="Zv2"               value="71.60*cm"/>
  <Constant name="Zv3"               value="270.0*cm"/>
  <Constant name="Zv4"               value="282.0*cm"/>
- <Constant name="ZvSupTubCab"       value="248.0*cm"/>
+ <Constant name="ZvSupTubCab"       value="272.0*cm"/>
  <Constant name="SupportL"          value="221.0*cm"/>
  <Constant name="SupportRin"        value="21.65*cm"/>
  <Constant name="SupportRout"       value="21.80*cm"/>
