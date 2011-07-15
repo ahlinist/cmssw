@@ -13,7 +13,7 @@ Implementation:
 //
 // Authors:                              Seth Cooper (Minnesota)
 //         Created:  Tu Apr 26  10:46:22 CEST 2011
-// $Id: EcalCreateTimeCalibrations.cc,v 1.12 2011/05/20 14:00:24 scooper Exp $
+// $Id: EcalCreateTimeCalibrations.cc,v 1.13 2011/06/29 09:31:00 scooper Exp $
 //
 //
 
@@ -711,9 +711,21 @@ EcalCreateTimeCalibrations::analyze(edm::Event const& evt, edm::EventSetup const
   EcalTimeCalibErrorsXMLTranslator::writeXML(timeCalibErrFile,header,timeCalibErrors);
   EcalTimeOffsetXMLTranslator::writeXML(timeOffsetFile,header,timeOffsetConstant);
 
-  //Move empty bins out of the way
-  int nxbins = calibMapEEM_->GetNbinsX();
-  int nybins = calibMapEEM_->GetNbinsY();
+  //Move empty bins out of the way -- EB
+  int nxbins = calibMapEB_->GetNbinsX();
+  int nybins = calibMapEB_->GetNbinsY();
+  for(int i=0;i<=(nxbins+2)*(nybins+2); ++i)
+  {
+    double binentsM = calibMapEB_->GetBinContent(i);
+    if(binentsM==0)
+    {
+      calibMapEB_->SetBinContent(i,-1000);
+    }
+  }
+
+  //Move empty bins out of the way -- EE
+  nxbins = calibMapEEM_->GetNbinsX();
+  nybins = calibMapEEM_->GetNbinsY();
   for(int i=0;i<=(nxbins+2)*(nybins+2); ++i)
   {
     double binentsM = calibMapEEM_->GetBinContent(i);
@@ -763,8 +775,8 @@ void EcalCreateTimeCalibrations::initEBHists(edm::Service<TFileService>& fileSer
   errorOnMeanVsNumEvtsHist_ = fileService_->make<TH2F>("errorOnMeanVsNumEvts","Error_on_mean vs. number of events",50,0,50,200,0,2);
   errorOnMeanVsNumEvtsHist_->Sumw2();
   hitsPerCryHistEB_ = fileService_->make<TH1F>("hitsPerCryEB","Hits used in each crystal;hashedIndex",61200,0,61200);
-  hitsPerCryMapEB_ = fileService_->make<TH2F>("hitsPerCryMapEB","Hits used in each crystal;i#phi;i#eta",360,1.,361.,172,-86,86);
-  ampProfileMapEB_ = fileService_->make<TProfile2D>("ampProfileMapEB","amp profile map [ADC];i#phi;i#eta",360,1.,361.,172,-86,86);
+  hitsPerCryMapEB_ = fileService_->make<TH2F>("hitsPerCryMapEB","Hits used in each crystal;i#phi;i#eta",360,1.,361.,171,-85,86);
+  ampProfileMapEB_ = fileService_->make<TProfile2D>("ampProfileMapEB","amp profile map [ADC];i#phi;i#eta",360,1.,361.,171,-85,86);
   ampProfileEB_ = fileService_->make<TProfile>("ampProfileEB","Average amplitude in cry [ADC];hashedIndex",61200,0,61200);
   sigmaHistEB_ = fileService_->make<TH1F>("sigmaCalibsEB"," Sigma of calib distributions EB [ns]",100,0,1);
   //=============Special Bins for TT and Modules borders=============================
@@ -790,11 +802,11 @@ void EcalCreateTimeCalibrations::initEBHists(edm::Service<TFileService>& fileSer
       }
     }
   } 
-  calibMapEB_ = fileService_->make<TH2F>("calibDiffMapEB","time calib diff map EB [ns];i#phi;i#eta",360,1.,361.,172,-86,86);
-  calibAfterSubtractionMapEB_ = fileService_->make<TH2F>("calibMapAfterSubtractionEB","time calib map EB (after subtraction) (after subtraction) (after subtraction) (after subtraction) (after subtraction) (after subtraction) (after subtraction) (after subtraction) (after subtraction) [ns];i#phi;i#eta",360,1.,361.,172,-86,86);
+  calibMapEB_ = fileService_->make<TH2F>("calibDiffMapEB","time calib diff map EB [ns];i#phi;i#eta",360,1.,361.,171,-85,86);
+  calibAfterSubtractionMapEB_ = fileService_->make<TH2F>("calibMapAfterSubtractionEB","time calib map EB (after subtraction) (after subtraction) (after subtraction) (after subtraction) (after subtraction) (after subtraction) (after subtraction) (after subtraction) (after subtraction) [ns];i#phi;i#eta",360,1.,361.,171,-85,86);
   calibMapEB_->Sumw2();
-  sigmaMapEB_ = fileService_->make<TH2F>("sigmaDiffMapEB","Sigma of time calib diff map EB [ns];i#phi;i#eta",360,1.,361.,172,-86,86);
-  calibErrorMapEB_ = fileService_->make<TH2F>("calibDiffErrorMapEB","Error of time calib diff map EB [ns];i#phi;i#eta",360,1.,361.,172,-86,86);
+  sigmaMapEB_ = fileService_->make<TH2F>("sigmaDiffMapEB","Sigma of time calib diff map EB [ns];i#phi;i#eta",360,1.,361.,171,-85,86);
+  calibErrorMapEB_ = fileService_->make<TH2F>("calibDiffErrorMapEB","Error of time calib diff map EB [ns];i#phi;i#eta",360,1.,361.,171,-85,86);
   calibTTMapEB_ = fileService_->make<TProfile2D>("calibDiffTTMapEB","time calib diff map EB (TT) [ns];i#phi;i#eta",360/5,ttPhiBins,35, ttEtaBins);
   TFileDirectory cryDirEB = fileService_->mkdir("crystalTimingHistsEB");
   EBDetId det;
