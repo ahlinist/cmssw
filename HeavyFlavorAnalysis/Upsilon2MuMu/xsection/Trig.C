@@ -5,7 +5,7 @@
 
 void TrigCheckVsfTrigmmb(){
 
-  TFile *f = new TFile("101201.fl10.mm.ups1s.tnpMCtruth.xsReader.default.root");
+  TFile *f = new TFile("101201.fl10.mm.ups1s.xsReader_1SBin_MomCorr.default.root");
   TH2D *MuIDCheck_Numa_1S;
   MuIDCheck_Numa_1S = (TH2D*)gFile->Get("MuIDCheck_Numa_1S");
   TH2D *TrigCheck_Numa_1S;
@@ -36,7 +36,7 @@ void TrigCheckVsfTrigmmb(){
     }
   }
   
-  TFile *f1 = new TFile("Trig_MC.root");
+  TFile *f1 = new TFile("Trig.root");
   TH2D *fTrigEff;
   fTrigEff = (TH2D*)gFile->Get("fTrigEff");
   
