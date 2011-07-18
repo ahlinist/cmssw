@@ -7,15 +7,15 @@ process.load('Configuration.StandardSequences.GeometryExtended_cff')
 process.load("Configuration.StandardSequences.MagneticField_cff")
 process.load("Configuration.StandardSequences.Reconstruction_cff")
 process.load("Configuration.StandardSequences.FrontierConditions_GlobalTag_cff")
-process.GlobalTag.globaltag = "GR_R_42_V14::All"
+#process.GlobalTag.globaltag = "GR_R_42_V14::All"
+#process.GlobalTag.globaltag = "FT_R_42_V13A::All"
+process.GlobalTag.globaltag = "GR_P_V20::All"
 
 process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(-1) )
 
 process.source = cms.Source("PoolSource",
     duplicateCheckMode = cms.untracked.string('noDuplicateCheck'),
-    fileNames = cms.untracked.vstring(
-                 "file:onia2MuMuPAT.root"
-   )
+    fileNames = cms.untracked.vstring("file:onia2MuMuPAT.root")
 )
 
 process.hltMuF = cms.EDFilter("HLTHighLevel",
@@ -44,10 +44,10 @@ process.demo = cms.EDAnalyzer('JPsiAnalyzerPAT',
     srcWithCaloMuons = cms.InputTag("onia2MuMuPatGlbCal"),
 
     writeTree = cms.bool(True),
-    treeFileName = cms.string("testTree.root"),
+    treeFileName = cms.string("onia2MuMu_tree.root"),
 
     writeDataSet = cms.bool(True),                 
-    dataSetName = cms.string("testDataSet.root"),
+    dataSetName = cms.string("dataSet.root"),
     triggersForDataset = cms.vstring("HLT_DoubleMu3_Jpsi_v1"),
 
     massMin = cms.double(2.6),
@@ -58,11 +58,11 @@ process.demo = cms.EDAnalyzer('JPsiAnalyzerPAT',
     applyCuts = cms.bool(True),
     applyExpHitCuts = cms.untracked.bool(False),
     applyDiMuonCuts = cms.untracked.bool(True),                          
-    useBeamSpot = cms.bool(True),
+    useBeamSpot = cms.bool(False),
     useCaloMuons = cms.untracked.bool(False),
     removeSignalEvents = cms.untracked.bool(False),
     removeTrueMuons = cms.untracked.bool(False),
-    storeWrongSign = cms.untracked.bool(True),
+    storeWrongSign = cms.untracked.bool(False),
     writeOutCandidates = cms.untracked.bool(False),
     massCorrectionMode = cms.int32(3),    # mode 0 no correction,
                                           # mode 1 constant corr,
@@ -70,7 +70,7 @@ process.demo = cms.EDAnalyzer('JPsiAnalyzerPAT',
                                           # mode 3 pt and eta dependent corr
     oniaPDG = cms.int32(443),
     genParticles = cms.InputTag("genMuons"),
-    isMC = cms.untracked.bool(True),
+    isMC = cms.untracked.bool(False),
     storeAllMCEvents = cms.untracked.bool(True),
     isPromptMC = cms.untracked.bool(True),
                               
@@ -104,32 +104,136 @@ process.demo = cms.EDAnalyzer('JPsiAnalyzerPAT',
                                        "HLT_Dimuon6p5_Barrel_Jpsi_v1", #5E32, v8.1-v8.3
                                        "HLT_DoubleMu3_Quarkonium_v1", #5E32, v4.2-v5.3
                                        "HLT_DoubleMu3_Quarkonium_v2", #5E32, v6.1-v6.2
-                                       "HLT_Dimuon6p5_Barrel_PsiPrime_v1", #5E32, v8.1-v8.3
-                                       "HLT_DoubleMu3_Upsilon_v1", #5E32, v6.1-v6.2
-                                       "HLT_Dimuon0_Barrel_Upsilon_v1"), #5E32, v8.1-v8.3
-    # ONE FILTER NAME PER PATH    
-    HLTLastFilterNames_DoubleMu = cms.vstring("hltDoubleMu3JpsiL3Filtered",
-                                              "hltDoubleMu3JpsiL3Filtered",		      
-                                              "hltDimuon6p5JpsiL3Filtered",		      
-                                              "hltDimuon6p5JpsiDisplacedL3Filtered",
-                                              "hltDimuon6p5BarrelJpsiL3Filtered",  
-                                              "hltDoubleMu3QuarkoniumL3Filtered",	      
-                                              "hltDoubleMu3QuarkoniumL3Filtered",  
-                                              "hltDimuon6p5BarrelPsiPrimeL3Filtered",	      
-                                              "hltDoubleMu3UpsilonL3Filtered",	      
-                                              "hltDimuon0BarrelUpsilonL3Filtered"),
+                                       "HLT_DoubleMu3_LowMass_v1", #5E32, v6.1-v6.2
+                                       "HLT_Dimuon6p5_LowMass_v1", #5E32, v8.1-v8.3
+                                       "HLT_Dimuon6p5_LowMass_Displaced_v1", #5E32, v8.1-v8.3
+                                       "HLT_DoubleMu3_Bs_v1", #5E32, v4.2-v5.3
+                                       "HLT_DoubleMu2_Bs_v1", #5E32, v6.1-v6.2
+                                       "HLT_DoubleMu2_Bs_v2", #5E32, v8.1-v8.3
+                                       "HLT_DoubleMu2_Bs_v3", #1E33, v1.2-v2.4
+                                       "HLT_DoubleMu2_Bs_v4", #1E33, v2.5-
+                                       "HLT_DoubleMu2_Bs_v5", #1.4E33, v1.2-
+                                       "HLT_Dimuon0_Jpsi_v1", #1E33, v1.2-v2.4
+                                       "HLT_Dimuon0_Jpsi_v2", #1E33, v2.5-
+                                       "HLT_Dimuon0_Jpsi_v3", #1.4E33, v1.2- 
+                                       "HLT_Dimuon0_Upsilon_v1", #1E33, v1.2-v2.4
+                                       "HLT_Dimuon0_Upsilon_v2",#1E33, v2.5-
+                                       "HLT_Dimuon0_Upsilon_v3",#1.4E33, v1.2-
+                                       "HLT_Dimuon4_Bs_Barrel_v2",#1E33, v1.2-v1.3
+                                       "HLT_Dimuon4_Bs_Barrel_v3", #1E33, v2.2-v2.4
+                                       "HLT_Dimuon4_Bs_Barrel_v4", #1E33, v2.5-
+                                       "HLT_Dimuon4_Bs_Barrel_v5",#1.4E33, v1.2-
+                                       "HLT_Dimuon5_Upsilon_Barrel_v1", #1E33, v1.2-v2.4
+                                       "HLT_Dimuon5_Upsilon_Barrel_v2",#1E33, v2.5-
+                                       "HLT_Dimuon5_Upsilon_Barrel_v3",#1.4E33, v1.2-
+                                       "HLT_Dimuon6_Bs_v1",#1E33, v1.2-v1.3
+                                       "HLT_Dimuon6_Bs_v2",#1E33, v2.2-v2.4
+                                       "HLT_Dimuon6_Bs_v3",#1E33, v2.5-
+                                       "HLT_Dimuon6_Bs_v4",#1.4E33, v1.2-
+                                       "HLT_Dimuon7_LowMass_Displaced_v1",#1E33, v1.2-v1.3
+                                       "HLT_Dimuon7_LowMass_Displaced_v2", #1E33, v2.2-v2.4
+                                       "HLT_Dimuon7_LowMass_Displaced_v3",#1E33, v2.5-
+                                       "HLT_Dimuon7_LowMass_Displaced_v4",#1.4E33, v1.2-
+                                       "HLT_Dimuon7_Jpsi_Displaced_v1", #1E33, v1.2-v2.4
+                                       "HLT_Dimuon7_Jpsi_Displaced_v2",#1E33, v2.5-
+                                       "HLT_Dimuon7_Jpsi_Displaced_v3",#1.4E33, v1.2-
+                                       "HLT_Dimuon7_Jpsi_X_Barrel_v1", #1E33, v1.2-v2.4
+                                       "HLT_Dimuon7_Jpsi_X_Barrel_v2",#1E33, v2.5-
+                                       "HLT_Dimuon7_Jpsi_X_Barrel_v3",#1.4E33, v1.2-
+                                       "HLT_Dimuon7_PsiPrime_v1", #1E33, v1.2-v2.4
+                                       "HLT_Dimuon7_PsiPrime_v2",#1E33, v2.5-
+                                       "HLT_Dimuon7_PsiPrime_v3",#1.4E33, v1.2-
+                                       "HLT_Dimuon10_Jpsi_Barrel_v1", #1E33, v1.2-v2.4
+                                       "HLT_Dimuon10_Jpsi_Barrel_v2",#1E33, v2.5-
+                                       "HLT_Dimuon10_Jpsi_Barrel_v3",#1.4E33, v1.2-
+                                       "HLT_Dimuon0_Jpsi_Muon_v1", #1E33, v1.2-v1.3
+                                       "HLT_Dimuon0_Jpsi_Muon_v2", #1E33, v2.2-v2.4
+                                       "HLT_Dimuon0_Jpsi_Muon_v3",#1E33, v2.5-
+                                       "HLT_Dimuon0_Jpsi_Muon_v4",#1.4E33, v1.2-
+                                       "HLT_Dimuon0_Upsilon_Muon_v1",#1E33, v1.2-v1.3
+                                       "HLT_Dimuon0_Upsilon_Muon_v2", #1E33, v2.2-v2.4
+                                       "HLT_Dimuon0_Upsilon_Muon_v3",#1E33, v2.5-
+                                       "HLT_Dimuon0_Upsilon_Muon_v4",#1.4E33, v1.2-
+                                       ),
+   # ONE FILTER NAME PER PATH    
+   HLTLastFilterNames_DoubleMu = cms.vstring("hltDoubleMu3JpsiL3Filtered",
+                                             "hltDoubleMu3JpsiL3Filtered",		      
+                                             "hltDimuon6p5JpsiL3Filtered",		      
+                                             "hltDimuon6p5JpsiDisplacedL3Filtered",
+                                             "hltDimuon6p5BarrelJpsiL3Filtered",  
+                                             "hltDoubleMu3QuarkoniumL3Filtered",	      
+                                             "hltDoubleMu3QuarkoniumL3Filtered",  
+                                             "hltDoubleMu3LowMassL3Filtered",
+                                             "hltDimuon6p5LowMassL3Filtered",
+                                             "hltDimuon6p5LowMassL3FilteredDisplaced",
+                                             "hltDoubleMu3BsL3Filtered",
+                                             "hltDoubleMu2BsL3Filtered",
+                                             "hltDoubleMu2BsL3Filtered",
+                                             "hltDoubleMu2BsL3Filtered",
+                                             "hltDoubleMu2BsL3Filtered",
+                                             "hltDoubleMu2BsL3Filtered",
+                                             "hltJpsiL3Filtered",
+                                             "hltJpsiL3Filtered",
+                                             "hltJpsiL3Filtered",
+                                             "hltUpsilonL3Filtered",
+                                             "hltUpsilonL3Filtered",
+                                             "hltUpsilonL3Filtered",
+                                             "hltDoubleMu2BarrelBsL3Filtered",
+                                             "hltDoubleMu2BarrelBsL3Filtered",
+                                             "hltDoubleMu2BarrelBsL3Filtered",
+                                             "hltDoubleMu2BarrelBsL3Filtered",
+                                             "hltBarrelUpsilonL3Filtered",
+                                             "hltBarrelUpsilonL3Filtered",
+                                             "hltBarrelUpsilonL3Filtered",
+                                             "hltDoubleMu2Dimuon6BsL3Filtered",
+                                             "hltDoubleMu2Dimuon6BsL3Filtered",
+                                             "hltDoubleMu2Dimuon6BsL3Filtered",
+                                             "hltDoubleMu2Dimuon6BsL3Filtered",
+                                             "hltLowMassDisplacedL3Filtered",
+                                             "hltLowMassDisplacedL3Filtered",
+                                             "hltLowMassDisplacedL3Filtered",
+                                             "hltLowMassDisplacedL3Filtered",
+                                             "hltJpsiDisplacedL3Filtered",
+                                             "hltJpsiDisplacedL3Filtered",
+                                             "hltJpsiDisplacedL3Filtered",
+                                             "hltJpsiXBarrelL3Filtered",
+                                             "hltJpsiXBarrelL3Filtered",
+                                             "hltJpsiXBarrelL3Filtered",
+                                             "hltPsiPrimeL3Filtered",
+                                             "hltPsiPrimeL3Filtered",
+                                             "hltPsiPrimeL3Filtered",
+                                             "hltBarrelJpsiL3Filtered",
+                                             "hltBarrelJpsiL3Filtered",
+                                             "hltBarrelJpsiL3Filtered",
+                                             "hltJpsiMuonL3Filtered",
+                                             "hltJpsiMuonL3Filtered",
+                                             "hltJpsiMuonL3Filtered",
+                                             "hltJpsiMuonL3Filtered",
+                                             "hltUpsilonMuonL3Filtered",
+                                             "hltUpsilonMuonL3Filtered",
+                                             "hltUpsilonMuonL3Filtered",
+                                             "hltUpsilonMuonL3Filtered",
+                                                                       ),
 
     HLTBitNames_MuL2Mu = cms.vstring("HLT_Mu5_L2Mu2_v1", #5E32, v4.2-v5.3
                                      "HLT_Mu5_L2Mu2_Jpsi_v1", #5E32, v4.2-v5.3
                                      "HLT_Mu5_L2Mu2_v2", #5E32, v6.1-v6.2
                                      "HLT_Mu5_L2Mu2_Jpsi_v2", #5E32, v6.1-v6.2
-                                     "HLT_Mu5_L2Mu2_Jpsi_v3"), #5E32, v8.1-v8.3
+                                     "HLT_Mu5_L2Mu2_Jpsi_v3",#5E32, v8.1-v8.3
+                                     "HLT_Mu5_L2Mu2_Jpsi_v4",##1E33, v1.2-v2.4
+                                     "HLT_Mu5_L2Mu2_Jpsi_v5",#1E33, v2.5-
+                                     "HLT_Mu5_L2Mu2_Jpsi_v6",#1.4E33, v1.2-
+																		 ),
     # TWO FILTER NAMES PER PATH (FIRST is L3, SECOND is L2)                           
     HLTLastFilterNames_MuL2Mu = cms.vstring("hltMu5L2Mu0L3Filtered5","hltMu5L2Mu2L2PreFiltered0",
-                                     "hltMu5L2Mu2JpsiTrackMassFiltered","hltMu5L2Mu2L2PreFiltered0", 
-                                     "hltMu5L2Mu0L3Filtered5","hltMu5L2Mu2L2PreFiltered0",
-                                     "hltMu5L2Mu2JpsiTrackMassFiltered","hltMu5L2Mu2L2PreFiltered0",
-                                     "hltMu5L2Mu2JpsiTrackMassFiltered","hltMu5L2Mu2L2PreFiltered0"),
+                                            "hltMu5L2Mu2JpsiTrackMassFiltered","hltMu5L2Mu2L2PreFiltered0", 
+                                            "hltMu5L2Mu0L3Filtered5","hltMu5L2Mu2L2PreFiltered0",
+                                            "hltMu5L2Mu2JpsiTrackMassFiltered","hltMu5L2Mu2L2PreFiltered0",
+                                            "hltMu5L2Mu2JpsiTrackMassFiltered","hltMu5L2Mu2L2PreFiltered0",
+                                            "hltMu5L2Mu2JpsiTrackMassFiltered","hltMu5L2Mu2L2PreFiltered0",
+                                            "hltMu5L2Mu2JpsiTrackMassFiltered","hltMu5L2Mu2L2PreFiltered0",
+                                            "hltMu5L2Mu2JpsiTrackMassFiltered","hltMu5L2Mu2L2PreFiltered0",
+                                            ),
 
     HLTBitNames_MuTrack = cms.vstring("HLT_Mu3_Track3_Jpsi_v4", #5E32, v4.2-v5.3
                                       "HLT_Mu7_Track5_Jpsi_v1", #5E32, v4.2-v5.3
@@ -139,7 +243,14 @@ process.demo = cms.EDAnalyzer('JPsiAnalyzerPAT',
                                       "HLT_Mu7_Track5_Jpsi_v2", #5E32, v6.1-v6.2
                                       "HLT_Mu7_Track7_Jpsi_v2", #5E32, v6.1-v6.2                             
                                       "HLT_Mu5_Track2_Jpsi_v2", #5E32, v8.1-v8.3
-                                      "HLT_Mu7_Track7_Jpsi_v3"), #5E32, v8.1-v8.3
+                                      "HLT_Mu7_Track7_Jpsi_v3", #5E32, v8.1-v8.3
+                                      "HLT_Mu5_Track2_Jpsi_v4", #1E33, v1.2-v2.4
+                                      "HLT_Mu7_Track7_Jpsi_v5", #1E33, v1.2-v2.4
+                                      "HLT_Mu5_Track2_Jpsi_v5", #1E33, v2.5-
+                                      "HLT_Mu7_Track7_Jpsi_v6", #1E33, v2.5-
+                                      "HLT_Mu5_Track2_Jpsi_v6", #1.4E33, v1.2-
+                                      "HLT_Mu7_Track7_Jpsi_v7", #1.4E33, v1.2-
+                                      ), 
     # ONE FILTER NAME PER PATH
     HLTLastFilterNames_MuTrack = cms.vstring("hltMu3Track3JpsiTrackMassFiltered",
                                              "hltMu7Track5JpsiTrackMassFiltered",
@@ -149,7 +260,14 @@ process.demo = cms.EDAnalyzer('JPsiAnalyzerPAT',
                                              "hltMu7Track5JpsiTrackMassFiltered",
                                              "hltMu7Track7JpsiTrackMassFiltered",
                                              "hltMu5Track2JpsiTrackMassFiltered",
-                                             "hltMu7Track7JpsiTrackMassFiltered"),
+                                             "hltMu7Track7JpsiTrackMassFiltered",
+                                             "hltMu5Track2JpsiTrackMassFiltered",
+                                             "hltMu7Track7JpsiTrackMassFiltered",
+                                             "hltMu5Track2JpsiTrackMassFiltered",
+                                             "hltMu7Track7JpsiTrackMassFiltered",
+                                             "hltMu5Track2JpsiTrackMassFiltered",
+                                             "hltMu7Track7JpsiTrackMassFiltered",
+                                             ),
                               
     HLTBitNames_MuTkMu = cms.vstring(),
     # ONE FILTER NAME PER PATH
@@ -245,5 +363,11 @@ process.demo = cms.EDAnalyzer('JPsiAnalyzerPAT',
 ## filter on vertex
 process.p = cms.Path(process.primaryVertexFilter*process.demo)
 
+import PhysicsTools.PythonAnalysis.LumiList as LumiList
+import FWCore.ParameterSet.Types as CfgTypes
+#myLumis = LumiList.LumiList(filename = 'Cert_160404-163869_7TeV_May10ReReco_Collisions11_JSON_MuonPhys.txt').getCMSSWString().split(',')
+myLumis = LumiList.LumiList(filename = 'Cert_160404-167913_7TeV_PromptReco_Collisions11_JSON_MuonPhys.txt').getCMSSWString().split(',')
+process.source.lumisToProcess = CfgTypes.untracked(CfgTypes.VLuminosityBlockRange())
+process.source.lumisToProcess.extend(myLumis)
 ## filter on vertex and HLT
 # process.p = cms.Path(process.primaryVertexFilter*process.hltMuF*process.demo)
