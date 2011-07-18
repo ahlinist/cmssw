@@ -20,6 +20,8 @@
 #include "TVector3.h"
 #include "HeavyFlavorAnalysis/Onia2MuMu/interface/VertexReProducer.h"
 
+#include "MagneticField/Records/interface/IdealMagneticFieldRecord.h"
+#include "TrackingTools/PatternTools/interface/TwoTrackMinimumDistance.h"
 
 Onia2MuMuPAT::Onia2MuMuPAT(const edm::ParameterSet& iConfig):
   muons_(iConfig.getParameter<edm::InputTag>("muons")),
@@ -64,6 +66,9 @@ Onia2MuMuPAT::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
   Vertex thePrimaryV;
   Vertex theBeamSpotV; 
 
+  ESHandle<MagneticField> magneticField;
+  iSetup.get<IdealMagneticFieldRecord>().get(magneticField);
+
   Handle<BeamSpot> theBeamSpot;
   iEvent.getByLabel(thebeamspot_,theBeamSpot);
   BeamSpot bs = *theBeamSpot;
@@ -84,6 +89,7 @@ Onia2MuMuPAT::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
   edm::ESHandle<TransientTrackBuilder> theTTBuilder;
   iSetup.get<TransientTrackRecord>().get("TransientTrackBuilder",theTTBuilder);
   KalmanVertexFitter vtxFitter;
+  TrackCollection muonLess;
 
   // JPsi candidates only from muons
   for(View<pat::Muon>::const_iterator it = muons->begin(), itend = muons->end(); it != itend; ++it){
@@ -113,37 +119,7 @@ Onia2MuMuPAT::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
       // ---- fit vertex using Tracker tracks (if they have tracks) ----
       if (it->track().isNonnull() && it2->track().isNonnull()) {
 
-	// Make a PV with everything else
-	if (addMuonlessPrimaryVertex_) {
-	  VertexReProducer revertex(priVtxs, iEvent);
-	  Handle<TrackCollection> pvtracks;   
-	  iEvent.getByLabel(revertex.inputTracks(),   pvtracks);
-	  Handle<BeamSpot>        pvbeamspot; 
-	  iEvent.getByLabel(revertex.inputBeamSpot(), pvbeamspot);
-	  if (pvbeamspot.id() != theBeamSpot.id()) edm::LogWarning("Inconsistency") << "The BeamSpot used for PV reco is not the same used in this analyzer.";
-	  // I need to go back to the reco::Muon object, as the TrackRef in the pat::Muon can be an embedded ref.
-	  const reco::Muon *rmu1 = dynamic_cast<const reco::Muon *>(it->originalObject());
-	  const reco::Muon *rmu2 = dynamic_cast<const reco::Muon *>(it2->originalObject());
-	  // check that muons are truly from reco::Muons (and not, e.g., from PF Muons)
-	  // also check that the tracks really come from the track collection used for the BS
-	  if (rmu1 != 0 && rmu2 != 0 && rmu1->track().id() == pvtracks.id() && rmu2->track().id() == pvtracks.id()) { 
-	    // Prepare the collection of tracks without the two muon tracks
-	    TrackCollection muonLess;
-	    muonLess.reserve(pvtracks->size());
-	    for (size_t i = 0, n = pvtracks->size(); i < n; ++i) {
-	      if (i == rmu1->track().key()) continue;
-	      if (i == rmu2->track().key()) continue;
-	      muonLess.push_back((*pvtracks)[i]);
-	    }
-	    pvs = revertex.makeVertices(muonLess, *pvbeamspot, iSetup) ;
-	    if (!pvs.empty()) {
-	      Vertex muonLessPV = Vertex(pvs.front());
-	      // myCand.addUserData("muonlessPV",muonLessPV);
-              thePrimaryV = muonLessPV;
-	    }
-	  }
-	}
-	
+	//build the dimuon secondary vertex
 	vector<TransientTrack> t_tks;
 	t_tks.push_back(theTTBuilder->build(*it->track()));  // pass the reco::Track, not  the reco::TrackRef (which can be transient)
 	t_tks.push_back(theTTBuilder->build(*it2->track())); // otherwise the vertex will have transient refs inside.
@@ -168,43 +144,120 @@ Onia2MuMuPAT::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
 	  vpperp[2] = 0.;
 
 	  if (resolveAmbiguity_) {
+
             float minDz = 999999.;
-	    if (!addMuonlessPrimaryVertex_) {
+	    TwoTrackMinimumDistance ttmd;
+	    bool status = ttmd.calculate( GlobalTrajectoryParameters(
+                                                                     GlobalPoint(myVertex.position().x(), myVertex.position().y(), myVertex.position().z()),
+                                                                     GlobalVector(myCand.px(),myCand.py(),myCand.pz()),TrackCharge(0),&(*magneticField)),
+					  GlobalTrajectoryParameters(
+								     GlobalPoint(bs.position().x(), bs.position().y(), bs.position().z()), 
+								     GlobalVector(bs.dxdz(), bs.dydz(), 1.),TrackCharge(0),&(*magneticField)));
+	    float extrapZ=-9E20;
+	    if (status) extrapZ=ttmd.points().first.z();
+
 	      for(VertexCollection::const_iterator itv = priVtxs->begin(), itvend = priVtxs->end(); itv != itvend; ++itv){
-		float deltaZ = fabs(myVertex.position().z() - itv->position().z()) ;
+		float deltaZ = fabs(extrapZ - itv->position().z()) ;
 		if ( deltaZ < minDz ) {
 		  minDz = deltaZ;    
 		  thePrimaryV = Vertex(*itv);
 		}
 	      }
-	    } else {
-	      for(vector<TransientVertex>::iterator itv2 = pvs.begin(), itvend2 = pvs.end(); itv2 != itvend2; ++itv2){
-		float deltaZ = fabs(myVertex.position().z() - itv2->position().z()) ;
-		if ( deltaZ < minDz ) {
-		  minDz = deltaZ;    
-		  Vertex muonLessPV = Vertex(*itv2); 
-		  thePrimaryV = muonLessPV;
-		}
-	      }
-	    }
-	  } 
-         
-          if (addMuonlessPrimaryVertex_) {
-            myCand.addUserData("muonlessPV",Vertex(thePrimaryV));
-	  } else {
-	    myCand.addUserData("PVwithmuons",thePrimaryV);
 	  }
 
+	  Vertex theOriginalPV = thePrimaryV;
+
+	  muonLess.clear();
+	  muonLess.reserve(thePrimaryV.tracksSize());
+	  if( addMuonlessPrimaryVertex_ ) {
+	    // Primary vertex matched to the dimuon, now refit it removing the two muons
+	    VertexReProducer revertex(priVtxs, iEvent);
+	    Handle<TrackCollection> pvtracks;   
+	    iEvent.getByLabel(revertex.inputTracks(),   pvtracks);
+	    Handle<BeamSpot>        pvbeamspot; 
+	    iEvent.getByLabel(revertex.inputBeamSpot(), pvbeamspot);
+	    if (pvbeamspot.id() != theBeamSpot.id()) edm::LogWarning("Inconsistency") << "The BeamSpot used for PV reco is not the same used in this analyzer.";
+	    // I need to go back to the reco::Muon object, as the TrackRef in the pat::Muon can be an embedded ref.
+	    const reco::Muon *rmu1 = dynamic_cast<const reco::Muon *>(it->originalObject());
+	    const reco::Muon *rmu2 = dynamic_cast<const reco::Muon *>(it2->originalObject());
+	    // check that muons are truly from reco::Muons (and not, e.g., from PF Muons)
+	    // also check that the tracks really come from the track collection used for the BS
+	    if (rmu1 != 0 && rmu2 != 0 && rmu1->track().id() == pvtracks.id() && rmu2->track().id() == pvtracks.id()) { 
+	      // Save the keys of the tracks in the primary vertex
+	      // std::vector<size_t> vertexTracksKeys;
+	      // vertexTracksKeys.reserve(thePrimaryV.tracksSize());
+	      if( thePrimaryV.hasRefittedTracks() ) {
+		// Need to go back to the original tracks before taking the key
+		std::vector<reco::Track>::const_iterator itRefittedTrack = thePrimaryV.refittedTracks().begin();
+		std::vector<reco::Track>::const_iterator refittedTracksEnd = thePrimaryV.refittedTracks().end();
+		for( ; itRefittedTrack != refittedTracksEnd; ++itRefittedTrack ) {
+		  if( thePrimaryV.originalTrack(*itRefittedTrack).key() == rmu1->track().key() ) continue;
+		  if( thePrimaryV.originalTrack(*itRefittedTrack).key() == rmu2->track().key() ) continue;
+		  // vertexTracksKeys.push_back(thePrimaryV.originalTrack(*itRefittedTrack).key());
+		  muonLess.push_back(*(thePrimaryV.originalTrack(*itRefittedTrack)));
+		}
+	      }
+	      else {
+		std::vector<reco::TrackBaseRef>::const_iterator itPVtrack = thePrimaryV.tracks_begin();
+		for( ; itPVtrack != thePrimaryV.tracks_end(); ++itPVtrack ) {
+		  if( itPVtrack->key() == rmu1->track().key() ) continue;
+		  if( itPVtrack->key() == rmu2->track().key() ) continue;
+		  // vertexTracksKeys.push_back(itPVtrack->key());
+		  muonLess.push_back(**itPVtrack);
+		}
+	      }
+	      
+	      pvs = revertex.makeVertices(muonLess, *pvbeamspot, iSetup) ;
+	      if (!pvs.empty()) {
+		Vertex muonLessPV = Vertex(pvs.front());
+		thePrimaryV = muonLessPV;
+	      }
+	    }
+	  }
+	  
+	  // count the number of high Purity tracks with pT > 900 MeV attached to the chosen vertex
+	  double vertexWeight = -1., sumPTPV = -1.;
+	  int countTksOfPV = -1;
+	  const reco::Muon *rmu1 = dynamic_cast<const reco::Muon *>(it->originalObject());
+	  const reco::Muon *rmu2 = dynamic_cast<const reco::Muon *>(it2->originalObject());
+	  for(reco::Vertex::trackRef_iterator itVtx = theOriginalPV.tracks_begin(); itVtx != theOriginalPV.tracks_end(); itVtx++){
+	    const reco::Track& track = **itVtx;
+	    if(!track.quality(reco::TrackBase::highPurity)) continue;
+	    if(track.pt() < 0.9) continue; //reject all rejects from counting if less than 900 MeV
+
+ 	    // do not count the two muons
+ 	    if (rmu1 != 0 && rmu1->innerTrack().key() == itVtx->key())
+ 	      continue;
+	    if (rmu2 != 0 && rmu2->innerTrack().key() == itVtx->key())
+	      continue;
+
+	    vertexWeight += theOriginalPV.trackWeight(*itVtx);
+	    if(theOriginalPV.trackWeight(*itVtx) > 0.5){
+	      countTksOfPV++;
+	      sumPTPV += track.pt();
+	    }
+	  }
+	  myCand.addUserInt("countTksOfPV", countTksOfPV);
+	  myCand.addUserFloat("vertexWeight", (float) vertexWeight);
+	  myCand.addUserFloat("sumPTPV", (float) sumPTPV);
+	  
+          if (addMuonlessPrimaryVertex_)
+            myCand.addUserData("muonlessPV",Vertex(thePrimaryV));
+	  else
+	    myCand.addUserData("PVwithmuons",thePrimaryV);
+	  
 	  // lifetime using PV
           pvtx.SetXYZ(thePrimaryV.position().x(),thePrimaryV.position().y(),0);
 	  TVector3 vdiff = vtx - pvtx;
 	  double cosAlpha = vdiff.Dot(pperp)/(vdiff.Perp()*pperp.Perp());
 	  Measurement1D distXY = vdistXY.distance(Vertex(myVertex), thePrimaryV);
-	  double ctauPV = distXY.value()*cosAlpha*3.09688/pperp.Perp();
+	  //double ctauPV = distXY.value()*cosAlpha*3.09688/pperp.Perp();
+	  double ctauPV = distXY.value()*cosAlpha * myCand.mass()/pperp.Perp();
 	  GlobalError v1e = (Vertex(myVertex)).error();
 	  GlobalError v2e = thePrimaryV.error();
           AlgebraicSymMatrix vXYe = v1e.matrix()+ v2e.matrix();
-	  double ctauErrPV = sqrt(vXYe.similarity(vpperp))*3.09688/(pperp.Perp2());
+	  //double ctauErrPV = sqrt(vXYe.similarity(vpperp))*3.09688/(pperp.Perp2());
+	  double ctauErrPV = sqrt(vXYe.similarity(vpperp))*myCand.mass()/(pperp.Perp2());
 	  
 	  myCand.addUserFloat("ppdlPV",ctauPV);
           myCand.addUserFloat("ppdlErrPV",ctauErrPV);
@@ -215,11 +268,13 @@ Onia2MuMuPAT::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
 	  vdiff = vtx - pvtx;
 	  cosAlpha = vdiff.Dot(pperp)/(vdiff.Perp()*pperp.Perp());
 	  distXY = vdistXY.distance(Vertex(myVertex), theBeamSpotV);
-	  double ctauBS = distXY.value()*cosAlpha*3.09688/pperp.Perp();
+	  //double ctauBS = distXY.value()*cosAlpha*3.09688/pperp.Perp();
+	  double ctauBS = distXY.value()*cosAlpha*myCand.mass()/pperp.Perp();
 	  GlobalError v1eB = (Vertex(myVertex)).error();
 	  GlobalError v2eB = theBeamSpotV.error();
           AlgebraicSymMatrix vXYeB = v1eB.matrix()+ v2eB.matrix();
-	  double ctauErrBS = sqrt(vXYeB.similarity(vpperp))*3.09688/(pperp.Perp2());
+	  //double ctauErrBS = sqrt(vXYeB.similarity(vpperp))*3.09688/(pperp.Perp2());
+	  double ctauErrBS = sqrt(vXYeB.similarity(vpperp))*myCand.mass()/(pperp.Perp2());
 	  
 	  myCand.addUserFloat("ppdlBS",ctauBS);
           myCand.addUserFloat("ppdlErrBS",ctauErrBS);
@@ -243,11 +298,9 @@ Onia2MuMuPAT::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
 	  } else {
 	    myCand.addUserData("PVwithmuons",Vertex());
 	  }
-
-	}
-	
+	}	
       }
- 
+
       // ---- MC Truth, if enabled ----
       if (addMCTruth_) {
 	
@@ -352,7 +405,8 @@ Onia2MuMuPAT::findJpsiMCInfo(reco::GenParticleRef genJpsi) {
   } 
 
   TVector3 vdiff = trueVtx - trueVtxMom;
-  trueLife = vdiff.Perp()*3.09688/trueP.Perp();
+  //trueLife = vdiff.Perp()*3.09688/trueP.Perp();
+  trueLife = vdiff.Perp()*genJpsi->mass()/trueP.Perp();
 
   std::pair<int, float> result = std::make_pair(momJpsiID, trueLife);
   return result;
