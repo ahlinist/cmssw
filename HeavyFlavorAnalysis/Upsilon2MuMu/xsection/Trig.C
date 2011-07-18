@@ -51,7 +51,7 @@ void TrigCheckVsfTrigmmb(){
       cout << " "  << i << " " << j << endl;
       cout << "ratio = " << trigcheck/trigeff << endl;
       cout << "diff = " << diff << endl;
-      Diff->SetCellContent(i,j,diff);
+      Diff->SetCellContent(i,j,trigcheck/trigeff);
       trigcheck=0;
       trigeff=0;
       diff=0;
@@ -66,6 +66,29 @@ void TrigCheckVsfTrigmmb(){
   fTrigEff->Draw("colz");
   c1->cd(3);
   Diff->Draw("colz");
+  
+  gStyle->SetOptStat(00000000000);
+  TCanvas *c2 = new TCanvas("c2","c2",900,600);
+  fTrigEff->SetTitle("Di-muon Efficiency with Tag and Probe Method");
+  fTrigEff->GetYaxis()->SetTitle("p_{T}^{#Upsilon} [GeV/c]");
+  fTrigEff->GetXaxis()->SetTitle("|y^{#Upsilon}|");
+  fTrigEff->Draw("colz");
+  c2->SaveAs("TrigTNP.pdf");
+  
+  TCanvas *c3 = new TCanvas("c3","c3",900,600);
+  Ratio->SetTitle("Di-muon Efficiency with MC Simulation");
+  Ratio->GetYaxis()->SetTitle("p_{T}^{#Upsilon} [GeV/c]");
+  Ratio->GetXaxis()->SetTitle("|y^{#Upsilon}|");
+  Ratio->Draw("colz"); 
+  c3->SaveAs("TrigMCSim.pdf");
+  
+  TCanvas *c4 = new TCanvas("c4","c4",900,600);
+  Diff->SetTitle("Ratio: #rho^{T&P}");
+  Diff->GetYaxis()->SetTitle("p_{T}^{#Upsilon} [GeV/c]");
+  Diff->GetXaxis()->SetTitle("|y^{#Upsilon}|");
+  Diff->Draw("colz"); 
+  c4->SaveAs("Trigrho.pdf");
+  
 }
 
 void TrigCheckVsfTrig_DATA(){
