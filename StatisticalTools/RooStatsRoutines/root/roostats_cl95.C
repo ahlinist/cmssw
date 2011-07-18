@@ -1,7 +1,7 @@
 static const char* desc =
 "=====================================================================\n"
 "|                                                                    \n"
-"|\033[1m        roostats_cl95.C  version 1.12                 \033[0m\n"
+"|\033[1m        roostats_cl95.C  version 1.13                 \033[0m\n"
 "|                                                                    \n"
 "| Standard c++ routine for 95% C.L. limit calculation                \n"
 "| for cross section in a 'counting experiment'                       \n"
@@ -11,12 +11,14 @@ static const char* desc =
 "|                                                                    \n"
 "|\033[1m Gena Kukartsev, Stefan Schmitz, Gregory Schott       \033[0m\n"
 "|\033[1m Lorenzo Moneta (CLs core)                            \033[0m\n"
+"|\033[1m Michael Segala                                       \033[0m\n"
 "|                                                                    \n"
 "| July  2010: first version                                          \n"
 "| March 2011: restructuring, interface change, expected limits       \n"
 "| May 2011:   added expected limit median,                           \n"
 "|             68%, 95% quantile bands and actual coverage            \n"
 "| July 2011:  added CLs observed and expected limits                 \n"
+"|             added option to run using Feldman Cousins              \n"
 "|                                                                    \n"
 "=====================================================================\n"
 "                                                                     \n"
@@ -76,6 +78,8 @@ static const char* desc =
 "                       \"cls\"       - CLs observed limit. We suggest\n"
 "                                       using the dedicated interface \n"
 "                                       roostats_cls() instead        \n"
+"                       \"fc\"        - Feldman Cousins with numeric  \n"
+"                                     integration,                    \n"
 "                       \"workspace\" - only create workspace and save\n"
 "                                     to file, no interval calculation\n"
 "       plotFileName  - file name for the control plot to be created  \n"
@@ -134,6 +138,9 @@ static const char* desc =
 #include "RooStats/MCMCCalculator.h"
 #include "RooStats/MCMCInterval.h"
 #include "RooStats/MCMCIntervalPlot.h"
+#include "RooStats/FeldmanCousins.h"
+#include "RooStats/PointSetInterval.h"
+#include "RooStats/ConfidenceBelt.h"
 #include "RooStats/ProposalHelper.h"
 #include "RooStats/HybridCalculator.h"
 #include "RooStats/FrequentistCalculator.h"
@@ -275,6 +282,8 @@ public:
   int makePlot( std::string method,
 		std::string plotFileName = "plot_cl95.pdf" );
 
+  Double_t FC_calc(int Nbins, float conf_int, float ULprecision, bool UseAdaptiveSampling = true, bool CreateConfidenceBelt = true);
+
 private:
 
   void init( UInt_t seed ); //  to be called by constructor
@@ -306,6 +315,9 @@ private:
 
   // for Bayesian MCMC calculation
   MCMCInterval * mcInt;
+  
+  // for Feldman-Cousins Calculator
+  FeldmanCousins * fcCalc;
 
   // random numbers
   TRandom3 r;
@@ -356,6 +368,7 @@ void CL95Calc::init(UInt_t seed){
   sInt = 0;
   bcalc = 0;
   mcInt = 0;
+  fcCalc = 0;
   SbModel.SetName("SbModel");
   SbModel.SetTitle("ModelConfig for roostats_cl95");
 
@@ -395,6 +408,7 @@ CL95Calc::~CL95Calc(){
   delete sInt;
   delete bcalc;
   delete mcInt;
+  delete fcCalc;
 }
 
 
@@ -825,6 +839,107 @@ double CL95Calc::printMcmcUpperLimit( std::string filename ){
 }
 
 
+
+Double_t CL95Calc::FC_calc(int Nbins, float conf_int, float ULprecision, bool UseAdaptiveSampling, bool CreateConfidenceBelt){
+
+
+  Double_t upper_limit = 0;
+  int cnt = 0;
+  bool verbose = true; //Set to true to see the output of each FC step
+
+  std::cout << "[roostats_cl95]: FC calculation is still experimental in this context!!!" << std::endl;
+      
+  std::cout << "[roostats_cl95]: Range of allowed cross section values: [" 
+	    << ws->var("xsec")->getMin() << ", " 
+	    << ws->var("xsec")->getMax() << "]" << std::endl;
+
+
+  //prepare Feldman-Cousins Calulator
+
+  delete fcCalc;
+  fcCalc = new FeldmanCousins(*data,SbModel);
+      
+  fcCalc->SetConfidenceLevel(conf_int); // confidence interval
+  //fcCalc->AdditionalNToysFactor(0.1); // to speed up the result 
+  fcCalc->UseAdaptiveSampling(UseAdaptiveSampling); // speed it up a bit
+  fcCalc->SetNBins(Nbins); // set how many points per parameter of interest to scan
+  fcCalc->CreateConfBelt(CreateConfidenceBelt); // save the information in the belt for plotting
+
+      
+  if(!SbModel.GetPdf()->canBeExtended()){
+    if(data->numEntries()==1)     
+      fcCalc->FluctuateNumDataEntries(false);
+    else
+      cout <<"Not sure what to do about this model" <<endl;
+  }
+
+  RooRealVar* firstPOI = (RooRealVar*) SbModel.GetParametersOfInterest()->first();
+  
+  double max = firstPOI->getMax();
+  double min = firstPOI->getMin();
+  double med = (max + min)/2.0;
+      
+  double maxPerm = firstPOI->getMax();
+  double minPerm = firstPOI->getMin();
+    
+  double UpperLimit = 0;
+  
+  PointSetInterval* interval = 0;
+
+  while ( 1 ){
+    
+    ++cnt;
+    firstPOI->setMax( max );
+    firstPOI->setMin( min );
+    
+    if ( verbose ) std::cout << "[FeldmanCousins]: Setting max/min/med to = " << max << " / " << min << " / " << med <<  std::endl;
+	
+    interval = fcCalc->GetInterval();
+    interval -> Delete();
+	
+    UpperLimit = interval -> UpperLimit(*firstPOI);
+    if ( verbose ) std::cout <<"[FeldmanCousins]: Updating Upper Limt to = "<< UpperLimit << std::endl;
+
+    if ( UpperLimit > 0.000001 ){
+
+      min = med;
+      med = (max + min)/2.0;
+      
+    }
+    else{
+      
+      max = med;
+      med = (max + min)/2.0;
+      
+    }
+    
+    if (  ( UpperLimit > 0.000001 ) && ( (max - min) < ULprecision)  ) {
+      upper_limit = UpperLimit;
+      std::cout <<"[FeldmanCousins]: In "<< cnt << " steps Upper Limt converged to " << upper_limit << std::endl;
+      break; 
+    }
+    
+    if ( cnt > 50 ) {
+      upper_limit = -1;
+      std::cout << std::endl;
+      std::cout <<"[FeldmanCousins     WARNING!!!!!!!!!!!!       ]: Calculator could not converge in under 50 steps. Returning Upper Limit of -1." << std::endl;
+      std::cout << std::endl;
+      break;
+    }
+
+  }
+      
+  ws->var("xsec")->setMax( maxPerm );
+  ws->var("xsec")->setMin( minPerm );
+
+  return upper_limit;
+
+}
+
+
+
+
+
 Double_t CL95Calc::cl95( std::string method, LimitResult * result ){
   //
   // Compute the observed limit
@@ -937,6 +1052,18 @@ Double_t CL95Calc::cl95( std::string method, LimitResult * result ){
       upper_limit = lim[0];
 
     } // end of the CLs block
+    else if (method.find("fc") != std::string::npos){
+
+      int Nbins = 1;
+      float conf_int = 0.95;
+      float ULprecision = 0.1;
+      bool UseAdaptiveSampling = true;
+      bool CreateConfidenceBelt = true;
+      
+      
+      upper_limit = FC_calc(Nbins, conf_int, ULprecision, UseAdaptiveSampling, CreateConfidenceBelt);
+	
+    } // end of the FC block
     else{
 
       std::cout << "[roostats_cl95]: method " << method 
@@ -950,6 +1077,7 @@ Double_t CL95Calc::cl95( std::string method, LimitResult * result ){
     Double_t _poi_max_range = ws->var("xsec")->getMax();
 
     if (method.find("cls")!=std::string::npos) break;
+    if (method.find("fc") != std::string::npos ) break;
     // range too wide
     else if (upper_limit < _poi_max_range/10.0){
       std::cout << "[roostats_cl95]: POI range is too wide, will narrow the range and rerun" << std::endl;
@@ -1283,6 +1411,9 @@ Double_t roostats_cl95(Double_t ilum, Double_t slum,
   }
   else if (method.find("cls") != std::string::npos){
     std::cout << "[roostats_cl95]: using CLs calculation" << endl;
+  }
+  else if (method.find("fc") != std::string::npos){
+    std::cout << "[roostats_cl95]: using Bayesian calculation via numeric integration" << endl;
   }
   else if (method.find("workspace") != std::string::npos){
     std::cout << "[roostats_cl95]: no interval calculation, only create and save workspace" << endl;
