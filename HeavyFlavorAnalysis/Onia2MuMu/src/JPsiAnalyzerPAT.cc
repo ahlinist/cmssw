@@ -13,7 +13,7 @@
 //
 // Original Author: Roberto Covarelli 
 //         Created:  Fri Oct  9 04:59:40 PDT 2009
-// $Id: JPsiAnalyzerPAT.cc,v 1.50 2011/04/01 16:11:02 covarell Exp $
+// $Id: JPsiAnalyzerPAT.cc,v 1.51 2011/06/22 09:46:21 covarell Exp $
 //
 // based on: Onia2MuMu package V00-11-00
 // changes done by: FT-HW
@@ -148,6 +148,8 @@ class JPsiAnalyzerPAT : public edm::EDAnalyzer {
 
       //5.) Event related variables
       unsigned int eventNb, runNb, lumiBlock, nPriVtx;
+      int countTksOfPV;
+      double vertexWeight, sumPTPV;
 
       //6.) POL variables
       // std::vector<std::string> polVarNames_;
@@ -393,6 +395,9 @@ JPsiAnalyzerPAT::beginJob()
     tree_->Branch("runNb",               &runNb,               "runNb/I");
     tree_->Branch("lumiBlock",           &lumiBlock,           "lumiBlock/I");
     tree_->Branch("nPriVtx",             &nPriVtx,             "nPriVtx/I");
+    tree_->Branch("vertexWeight",         &vertexWeight,         "vertexWeight/D");
+    tree_->Branch("sumPTPV",             &sumPTPV,             "sumPTPV/D");
+    tree_->Branch("countTksOfPV",        &countTksOfPV,        "countTksOfPV/I");
 
     // Jpsi Variables
     tree_->Branch("JpsiType",   &JpsiType,  "JpsiType/I");
@@ -771,6 +776,14 @@ JPsiAnalyzerPAT::fillTreeAndDS(unsigned int theCat, const pat::CompositeCandidat
   passedTriggerMatch_++;
     
   // JpsiMass=theMass;
+
+  //store the number of tracks attached to the primary vertex selected by the dimuon:
+  if(aCand->hasUserFloat("vertexWeight"))
+    vertexWeight = aCand->userFloat("vertexWeight");
+  if(aCand->hasUserFloat("sumPTPV"))
+    sumPTPV = aCand->userFloat("sumPTPV");
+  if(aCand->hasUserInt("countTksOfPV"))
+     countTksOfPV = aCand->userInt("countTksOfPV");
 
   if (_writeOutCands) *theTextFile << iEvent.id().run() << "\t" << iEvent.luminosityBlock() << "\t" << iEvent.id().event() << "\t" << theMass << "\n";
 
@@ -1188,6 +1201,9 @@ JPsiAnalyzerPAT::resetDSVariables(){
     runNb= 0 ;
     nPriVtx= 0 ;
     lumiBlock= 0 ;
+    vertexWeight = -999.;
+    sumPTPV = -999.;
+    countTksOfPV = -999;
 
     //reset Trigger Variables
     for(std::map< std::string, int >::iterator clearIt= mapTriggerNameToIntFired_.begin(); clearIt != mapTriggerNameToIntFired_.end(); clearIt++){
