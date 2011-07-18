@@ -51,7 +51,7 @@ void MuIDCheckVsfMuIDmmb(){
       cout << " "  << i << " " << j << endl;
       cout << "ratio = " << muidcheck/muideff << endl;
       cout << "diff = " << diff << endl;
-      Diff->SetCellContent(i,j,diff);
+      Diff->SetCellContent(i,j,muidcheck/muideff);
       muidcheck=0;
       muideff=0;
       diff=0;
@@ -66,6 +66,29 @@ void MuIDCheckVsfMuIDmmb(){
   fMuIDEff->Draw("colz");
   c1->cd(3);
   Diff->Draw("colz");
+  
+  gStyle->SetOptStat(00000000000);
+  TCanvas *c2 = new TCanvas("c2","c2",900,600);
+  fMuIDEff->SetTitle("Di-muon Efficiency with Tag and Probe Method");
+  fMuIDEff->GetYaxis()->SetTitle("p_{T}^{#Upsilon} [GeV/c]");
+  fMuIDEff->GetXaxis()->SetTitle("|y^{#Upsilon}|");
+  fMuIDEff->Draw("colz");
+  c2->SaveAs("MuidTNP.pdf");
+  
+  TCanvas *c3 = new TCanvas("c3","c3",900,600);
+  Ratio->SetTitle("Di-muon Efficiency with MC Simulation");
+  Ratio->GetYaxis()->SetTitle("p_{T}^{#Upsilon} [GeV/c]");
+  Ratio->GetXaxis()->SetTitle("|y^{#Upsilon}|");
+  Ratio->Draw("colz"); 
+  c3->SaveAs("MuidMCSim.pdf");
+  
+  TCanvas *c4 = new TCanvas("c4","c4",900,600);
+  Diff->SetTitle("Ratio: #rho^{T&P}");
+  Diff->GetYaxis()->SetTitle("p_{T}^{#Upsilon} [GeV/c]");
+  Diff->GetXaxis()->SetTitle("|y^{#Upsilon}|");
+  Diff->Draw("colz"); 
+  c4->SaveAs("Muidrho.pdf");
+  
 }
 
 
