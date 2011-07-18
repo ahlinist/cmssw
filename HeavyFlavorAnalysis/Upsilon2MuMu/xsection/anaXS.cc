@@ -186,6 +186,8 @@ void anaXS::init(const char *dir, int i) {
   //fPtMuidCorr = new PidTable("PidTables/DATA/Upsilon/PtMuidCorr.dat");
   fPtTrigCorr = new PidTable("PidTables/DATA/Upsilon/PtTrigCorr_1Sbin.tma.dat");
   fPtMuidCorr = new PidTable("PidTables/DATA/Upsilon/PtMuidCorr_1Sbin.tma.dat");
+  //fPtTrigCorr = new PidTable("PidTables/DATA/Upsilon/PtTrigCorr_1Sbin.tma.MomCor.dat");
+  //fPtMuidCorr = new PidTable("PidTables/DATA/Upsilon/PtMuidCorr_1Sbin.tma.MomCor.dat");  
   //fPtTrigCorr = new PidTable("PidTables/DATA/Upsilon/PtTrigCorr_1Sbin.gltr.dat");
   //fPtMuidCorr = new PidTable("PidTables/DATA/Upsilon/PtMuidCorr_1Sbin.gltr.dat");
   //fPtTrigCorr = new PidTable("PidTables/DATA/Upsilon/PtTrigCorr_2Sbin.tma.dat");
@@ -219,12 +221,12 @@ void anaXS::loadFiles(const char *dir, int i) {
   
   // -- Upsilon merging
   if (0 == i) {
-    string ufile = fDirectory + string("/") + string("upsilon/101201.fl10.mm.ups1s.xsReader_new1SBin.default.root");    
+    string ufile = fDirectory + string("/") + string("upsilon/101201.fl10.mm.ups1s.xsReader_1SBin_MomCorr.default.root");    
 
     fM[0] = new TFile(ufile.c_str()); lM[0] = 1.;
-    ufile = fDirectory + string("/") + string("upsilon/101201.fl10.mm.ups2s.xsReader_new1SBin.default.root");
+    ufile = fDirectory + string("/") + string("upsilon/101201.fl10.mm.ups2s.xsReader_1SBin_MomCorr.default.root");
     fM[1] = new TFile(ufile.c_str()); lM[1] = 1.66; 
-    ufile = fDirectory + string("/") + string("upsilon/101201.fl10.mm.ups3s.xsReader_new1SBin.default.root");
+    ufile = fDirectory + string("/") + string("upsilon/101201.fl10.mm.ups3s.xsReader_1SBin_MomCorr.default.root");
     fM[2] = new TFile(ufile.c_str()); lM[2] = 3.43; 
     cout << "Got the Files for Merging" << endl;
   }
@@ -276,11 +278,11 @@ void anaXS::loadFiles(const char *dir, int i) {
       ufile = fDirectory + string("/upsilon/UpsTagandprobe_10TeV_nocut.root");
       jfile = fDirectory + string("/jpsi/JpsiTagandprobe_10TeV_nocut.root");  
     } else if (40 == i) {
-      ufile = fDirectory + string("/upsilon/101201.fl10.mm.COMBINED.xsReader_1SBin.default.root");
+      //ufile = fDirectory + string("/upsilon/101201.fl10.mm.COMBINED.xsReader_1SBin.default.root");
       afile = fDirectory + string("/upsilon/Acc_All_0_50.xsReader_1Sbin.default.root");
-      //ufile = fDirectory + string("/upsilon/101201.fl10.mm.COMBINED.xsReader_1Sbin.tma.default.root");
+      ufile = fDirectory + string("/upsilon/101201.fl10.mm.COMBINED.xsReader_1SBin_MomCorr.default.root");
       jfile = fDirectory + string("/upsilon/130211.nov4rereco_v2.dimuons.xsReader_Data_1SBin.default.root");
-      //jfile = fDirectory + string("/upsilon/130211.nov4rereco_v2.dimuons.xsReader_Data_v2.default.root");
+      //jfile = fDirectory + string("/upsilon/130211.nov4rereco_v2.dimuons.xsReader_Data_1SBin_runbp1eff.default.root");
       //jfile = fDirectory + string("/upsilon/130211.nov4rereco_v2.dimuons.xsReader_1Sbin.tma.default.root");
      
     } else {
@@ -657,7 +659,7 @@ void anaXS::combineAcceptanceFiles() {
 // ----------------------------------------------------------------------
 void anaXS::combineUpsilons() {
   
-  string ufile = fDirectory + string("/upsilon/101201.fl10.mm.COMBINED.xsReader_new1SBin.default.root");
+  string ufile = fDirectory + string("/upsilon/101201.fl10.mm.COMBINED.xsReader_1SBin_MomCorr.default.root");
   TFile *f = new TFile(ufile.c_str(), "RECREATE"); 
 
   fM[0]->cd();
@@ -985,17 +987,17 @@ void anaXS::makeAllMC(int channel) {
     ReadHistograms(fM[0], "UpsilonMass", "AnaEff_1S", "AnaEff_2S", "AnaEff_3S", "MuIDEff_1S", "MuIDEff_2S", "MuIDEff_3S", "TrigEff_1S", "TrigEff_2S", "TrigEff_3S", "Pt_IntegratedMass", "Rapidity_IntegratedMass", "mt,pt-eta");
     
     // -- add backgrounds
-    //addBackground(fS1Vector, 0.3);
+    addBackground(fS1Vector, 0.3);
     //addBackground_PtInt(fS12Vector, 0.3);
-    addBackground_RapInt(fS13Vector, 0.3);
+    //addBackground_RapInt(fS13Vector, 0.3);
     
     //Pull(1);
     
-    FITUpsilon(6); //5 for PtIntegrated plots, 6 for RapidityIntegrated plots
+    //FITUpsilon(6); //5 for PtIntegrated plots, 6 for RapidityIntegrated plots
     //GetAnaEff();
     //GetPreSelEff();
     //GetMuIDEff(1);
-    //GetTrigEff(1);
+    GetTrigEff(1);
     //CorrectedYields(1);   // 1- FOR MC, 2 FOR DATA
     //PlotProjections(1);   // 1- FOR MC, 2 FOR DATA
         
@@ -1033,11 +1035,11 @@ void anaXS::makeAllDATA(int channel) {
     
     //table(fS1YieldPt, "anan");
     //plot_RapInt();
-    plot_PtInt();
+    //plot_PtInt();
     
-    //FITUpsilon(4); //3 for PtIntegrated plots, 4 for RapidityIntegrated plots
+    //FITUpsilon(1); //3 for PtIntegrated plots, 4 for RapidityIntegrated plots
     //GetAnaEff();
-    //GetPreSelEff();
+    GetPreSelEff();
     //GetTrackEff();
     //GetMuIDEff(2);
     //GetTrigEff(2);
@@ -3992,6 +3994,9 @@ void anaXS::GetAnaEff(){
   double yield, yieldE;
   double errN, errD, D;
   int    nbin;
+  //////////////////
+  //TFile *f = new TFile("AnaEff.root", "RECREATE");
+  //////////////////
   // AnaEff_1S
   for (unsigned int i = 0; i < fS2Vector.size(); ++i) {
     
@@ -4058,7 +4063,10 @@ void anaXS::GetAnaEff(){
   fAnaEff_2S->Draw("colz");  
   c1->cd(3);
   fAnaEff_3S->Draw("colz"); 
- 
+  
+  //fAnaEff->Write();
+  //fAnaEff_2S->Write();
+  //fAnaEff_3S->Write();
 }
 
 void anaXS::GetTrackEff(){
@@ -4188,7 +4196,7 @@ void anaXS::GetMuIDEff(int mode){
   
   
   ////////////
-  //fMuIDEff_3->Write();
+  //fMuIDEff->Write();
   ////////////
 }
 
@@ -4296,7 +4304,10 @@ void anaXS::GetTrigEff(int mode){
 void anaXS::GetPreSelEff(){
   double deno(-1.); double numa(-1.); double eff(-1);
   
-
+  ///////////////////////
+  //TFile *f = new TFile("preSelEff.root", "RECREATE");
+  ///////////////////////
+  
   // Ups(1S) 
   for ( int iy = 1; iy <= fPreSelEff->GetNbinsX(); ++iy ){
     for ( int ipt = 1; ipt <= fPreSelEff->GetNbinsY(); ++ipt ){
@@ -4347,6 +4358,11 @@ void anaXS::GetPreSelEff(){
   fPreSelEff_2S->Draw("colz");
   c1->cd(3);
   fPreSelEff_3S->Draw("colz");  
+  
+  //fPreSelEff->Write();
+  //fPreSelEff_2S->Write();
+  //fPreSelEff_3S->Write();
+  
 }
 
 
