@@ -11,7 +11,7 @@ SAMPLES_TO_ANALYZE = [
         'data_TauPlusX_Run2011A_PR_v4',
         'Ztautau_powheg_T3',
         'DYtautauM10to20_powheg_T3',
-        'qqZll',
+        #'qqZll',  ## no Summer11 sample
         'Zee_powheg_T3',
         'DYeeM10to20_pythia_T3',
         'PhotonPlusJets_Pt15to30_T3','PhotonPlusJets_Pt30to50_T3','PhotonPlusJets_Pt50to80_T3',
@@ -124,7 +124,6 @@ RECO_SAMPLES = {
         'skim_eff' : 1407306./12485249.,
         'conditions' : 'GR_R_42_V14::All',
         'number_of_jobs' : 50,
-        'factorize' : True,
         'type' : 'Data',
         'legendEntry' : 'QCD',
         'drawOption' : styles.drawOption_QCD,
@@ -285,16 +284,15 @@ RECO_SAMPLES = {
         'drawOption' : styles.drawOption_VV,
     },
     'WW_T3' : {
-        'datasetpath' : "",
+        'datasetpath' : "/WW_TuneZ2_7TeV_pythia6_tauola/jkolb-skimElecTau_423_v1-2453a4eaae124a4a3fe9f365dc31e11f/USER",
         'dbs_url' :  "https://cmsdbsprod.cern.ch:8443/cms_dbs_ph_analysis_01_writer/servlet/DBSServlet",
         'number_of_jobs' : 20,
         'events_processed' : 4225916,
-        'skim_eff' : 0./4225916,
+        'skim_eff' : 512235./4225916,
         'x_sec' : 27.83*_picobarns, 
         'legendEntry' : plotter.process_VV.config_dqmHistPlotter.legendEntry.value(),
         'type' : plotter.process_VV.config_dqmHistPlotter.type.value(),
         'drawOption' : styles.drawOption_VV,
-        'hlt' : cms.InputTag("TriggerResults", "", "REDIGI311X")
     },
     'WZ' : {
         'datasetpath' : "/WZ_TuneZ2_7TeV_pythia6_tauola/Summer11-PU_S4_START42_V11-v1/AODSIM",
@@ -305,32 +303,31 @@ RECO_SAMPLES = {
         'drawOption' : styles.drawOption_VV,
     },
     'WZ_T3' : {
-        'datasetpath' : "",
+        'datasetpath' : "/WZ_TuneZ2_7TeV_pythia6_tauola/jkolb-skimElecTau_423_v1-2453a4eaae124a4a3fe9f365dc31e11f/USER",
         'dbs_url' :  "https://cmsdbsprod.cern.ch:8443/cms_dbs_ph_analysis_01_writer/servlet/DBSServlet",
         'number_of_jobs' : 20,
-        'events_processed' : 2108416,
-        'skim_eff' : 0./2108416,
+        'events_processed' : 4265243,
+        'skim_eff' : 357637./4265243,
         'x_sec' : 10.5*_picobarns, 
         'legendEntry' : plotter.process_VV.config_dqmHistPlotter.legendEntry.value(),
         'type' : plotter.process_VV.config_dqmHistPlotter.type.value(),
         'drawOption' : styles.drawOption_VV,
-        'hlt' : cms.InputTag("TriggerResults", "", "REDIGI311X")
     },
-    'ZZ' : {
+    'ZZ' : {  ##  no datset yet for Summer11
         'datasetpath' : "",
-        'events_processed' : 2108608,
-        'x_sec' : 5.9*_picobarns, # NLO cross-section from https://twiki.cern.ch/twiki/bin/viewauth/CMS/StandardModelCrossSections
+        'events_processed' : 4,
+        'x_sec' : 5.9*_picobarns,
         'legendEntry' : plotter.process_VV.config_dqmHistPlotter.legendEntry.value(),
         'type' : plotter.process_VV.config_dqmHistPlotter.type.value(),
         'drawOption' : styles.drawOption_VV,
     },
     'ZZ_T3' : {
-        'datasetpath' : "/ZZtoAnything_TuneZ2_7TeV-pythia6-tauola/jkolb-skimElecTau_413_v1-eae887ba91c6c27e2f0c00f8aee7bf0a/USER",
+        'datasetpath' : "",
         'dbs_url' :  "https://cmsdbsprod.cern.ch:8443/cms_dbs_ph_analysis_01_writer/servlet/DBSServlet",
         'number_of_jobs' : 20,
-        'events_processed' : 2108608,
-        'skim_eff' : 151802./2108608,
-        'x_sec' : 5.9*_picobarns, # NLO cross-section from https://twiki.cern.ch/twiki/bin/viewauth/CMS/StandardModelCrossSections
+        'events_processed' : 4191045,
+        'skim_eff' : 151802./4191045,
+        'x_sec' : 5.9*_picobarns, 
         'legendEntry' : plotter.process_VV.config_dqmHistPlotter.legendEntry.value(),
         'type' : plotter.process_VV.config_dqmHistPlotter.type.value(),
         'drawOption' : styles.drawOption_VV,
@@ -343,18 +340,16 @@ RECO_SAMPLES = {
         'legendEntry' : plotter.process_TTplusJets.config_dqmHistPlotter.legendEntry.value(),
         'type' : plotter.process_TTplusJets.config_dqmHistPlotter.type.value(),
         'drawOption' : styles.drawOption_TTplusJets,
-        'hlt' : cms.InputTag("TriggerResults", "", "REDIGI311X")
     },
     'TTplusJets_madgraph_T3' : {
         'datasetpath' : "/TTJets_TuneZ2_7TeV-madgraph-tauola/jkolb-skimElecTau_423_v2-2453a4eaae124a4a3fe9f365dc31e11f/USER",
         'dbs_url' :  "https://cmsdbsprod.cern.ch:8443/cms_dbs_ph_analysis_01_writer/servlet/DBSServlet",
         'number_of_jobs' : 20,
         'events_processed' : 3701947,
-        'skim_eff' : 445095./3701947,
+        'skim_eff' : 725953./3701947,
         'x_sec' : 157.5*_picobarns, # NLO cross-section from https://twiki.cern.ch/twiki/bin/viewauth/CMS/StandardModelCrossSections
         'legendEntry' : plotter.process_TTplusJets.config_dqmHistPlotter.legendEntry.value(),
         'type' : plotter.process_TTplusJets.config_dqmHistPlotter.type.value(),
-        'hlt' : cms.InputTag("TriggerResults", "", "REDIGI311X")
     },
     'PhotonPlusJets_Pt15to30' : {
         'datasetpath' : "/G_Pt-15to30_TuneZ2_7TeV_pythia6/Summer11-PU_S3_START42_V11-v2/AODSIM",
@@ -366,7 +361,7 @@ RECO_SAMPLES = {
         'type' : plotter.process_gammaPlusJets.config_dqmHistPlotter.type.value(),
         'drawOption' : styles.drawOption_gammaPlusJets,
     },
-    'PhotonPlusJets_Pt15to30_T3' : {  ## jobs not done
+    'PhotonPlusJets_Pt15to30_T3' : {  ## jobs mostly done
         'datasetpath' : "/G_Pt-15to30_TuneZ2_7TeV_pythia6/jkolb-skimElecTau_423_v1-8e1616e5e84b94400800aa9b2edac84c/USER",
         'dbs_url' :  "https://cmsdbsprod.cern.ch:8443/cms_dbs_ph_analysis_01_writer/servlet/DBSServlet",
         'number_of_jobs' : 20,
@@ -388,7 +383,7 @@ RECO_SAMPLES = {
         'type' : plotter.process_gammaPlusJets.config_dqmHistPlotter.type.value(),
         'drawOption' : styles.drawOption_gammaPlusJets,
     },
-    'PhotonPlusJets_Pt30to50_T3' : { ## jobs not done
+    'PhotonPlusJets_Pt30to50_T3' : { ## jobs mostly done
         'datasetpath' : "/G_Pt-30to50_TuneZ2_7TeV_pythia6/jkolb-skimElecTau_423_v1-8e1616e5e84b94400800aa9b2edac84c/USER",
         'dbs_url' :  "https://cmsdbsprod.cern.ch:8443/cms_dbs_ph_analysis_01_writer/servlet/DBSServlet",
         'number_of_jobs' : 30,
@@ -410,7 +405,7 @@ RECO_SAMPLES = {
         'type' : plotter.process_gammaPlusJets.config_dqmHistPlotter.type.value(),
         'drawOption' : styles.drawOption_gammaPlusJets,
     },
-    'PhotonPlusJets_Pt50to80_T3' : {  ## jobs not done
+    'PhotonPlusJets_Pt50to80_T3' : {  ## jobs mostly done
         'datasetpath' : "/G_Pt-50to80_TuneZ2_7TeV_pythia6/jkolb-skimElecTau_423_v1-8e1616e5e84b94400800aa9b2edac84c/USER",
         'dbs_url' :  "https://cmsdbsprod.cern.ch:8443/cms_dbs_ph_analysis_01_writer/servlet/DBSServlet",
         'number_of_jobs' : 30,
@@ -454,7 +449,7 @@ RECO_SAMPLES = {
         'type' : plotter.process_QCD_BCtoE_Pt30to80.config_dqmHistPlotter.type.value(),
         'drawOption' : styles.drawOption_QCD,
     },
-    'QCD_BCtoE_Pt30to80_T3' : {  ## some skim jobs not finished
+    'QCD_BCtoE_Pt30to80_T3' : {  ## 5/201 skim jobs not finished
         'datasetpath' : "/QCD_Pt-30to80_BCtoE_TuneZ2_7TeV-pythia6/jkolb-skimElecTau_423_v1-8e1616e5e84b94400800aa9b2edac84c/USER",
         'dbs_url' :  "https://cmsdbsprod.cern.ch:8443/cms_dbs_ph_analysis_01_writer/servlet/DBSServlet",
         'number_of_jobs' : 50,
@@ -498,7 +493,7 @@ RECO_SAMPLES = {
         'type' : plotter.process_QCD_EMenriched_Pt20to30.config_dqmHistPlotter.type.value(),
         'drawOption' : styles.drawOption_QCD,
     },
-    'QCD_EM_Pt20to30_T3' : { # jobs not done
+    'QCD_EM_Pt20to30_T3' : { # 62/408 jobs not done
         'datasetpath' : "/QCD_Pt-20to30_EMEnriched_TuneZ2_7TeV-pythia6/jkolb-skimElecTau_423_v1-8e1616e5e84b94400800aa9b2edac84c/USER",
         'dbs_url' :  "https://cmsdbsprod.cern.ch:8443/cms_dbs_ph_analysis_01_writer/servlet/DBSServlet",
         'number_of_jobs' : 30,
@@ -511,28 +506,26 @@ RECO_SAMPLES = {
         'drawOption' : styles.drawOption_QCD,
     },
     'QCD_EM_Pt30to80' : {
-        'datasetpath' : "/QCD_Pt-30to80_EMEnriched_TuneZ2_7TeV-pythia6/Spring11-PU_S1_START311_V1G1-v1/AODSIM",
-        'events_processed' : 70708892,
+        'datasetpath' : "/QCD_Pt-30to80_EMEnriched_TuneZ2_7TeV-pythia/Summer11-PU_S4_START42_V11-v1/AODSIM",
+        'events_processed' : 70392060,
         'skim_eff' : 1.0,
         'factorize' : True,
         'x_sec' : 59480000*0.065*_picobarns, 
         'legendEntry' : plotter.process_QCD_EMenriched_Pt30to80.config_dqmHistPlotter.legendEntry.value(),
         'type' : plotter.process_QCD_EMenriched_Pt30to80.config_dqmHistPlotter.type.value(),
         'drawOption' : styles.drawOption_QCD,
-        'hlt' : cms.InputTag("TriggerResults", "", "REDIGI311X")
     },
     'QCD_EM_Pt30to80_T3' : {
-        'datasetpath' : "/QCD_Pt-30to80_EMEnriched_TuneZ2_7TeV-pythia6/jkolb-skimElecTau_413_v1-eae887ba91c6c27e2f0c00f8aee7bf0a/USER",
+        'datasetpath' : "/QCD_Pt-30to80_EMEnriched_TuneZ2_7TeV-pythia/jkolb-skimElecTau_423_v2-2453a4eaae124a4a3fe9f365dc31e11f/USER",
         'dbs_url' :  "https://cmsdbsprod.cern.ch:8443/cms_dbs_ph_analysis_01_writer/servlet/DBSServlet",
         'number_of_jobs' : 80,
-        'events_processed' : 70708892,
-        'skim_eff' : 736277./70708892,
+        'events_processed' : 70392060,
+        'skim_eff' : 1097558./70392060,
         'factorize' : True,
         'x_sec' : 59480000*0.065*_picobarns, 
         'legendEntry' : plotter.process_QCD_EMenriched_Pt30to80.config_dqmHistPlotter.legendEntry.value(),
         'type' : plotter.process_QCD_EMenriched_Pt30to80.config_dqmHistPlotter.type.value(),
         'drawOption' : styles.drawOption_QCD,
-        'hlt' : cms.InputTag("TriggerResults", "", "REDIGI311X")
     },
     'QCD_EM_Pt80to170' : {
         'datasetpath' : "/QCD_Pt-80to170_EMEnriched_TuneZ2_7TeV-pythia6/Summer11-PU_S4_START42_V11-v1/AODSIM",
@@ -562,10 +555,9 @@ RECO_SAMPLES = {
 MERGE_SAMPLES = {
     'data' : {
         'samples' : [
-               'data_TauPlusElec_Run2011A_PR_Pat'
-##             'data_TauPlusX_Run2011A_PR_v1',
-##             'data_TauPlusX_Run2011A_PR_v2',
-##             'data_TauPlusX_Run2011A_PR_nonGolden'
+            'data_TauPlusX_Run2011A_May10ReReco_T3',
+            'data_TauPlusX_Run2011A_May10ReReco_T3_qcdBgEst',
+            'data_TauPlusX_Run2011A_PR_v4'
         ],
         'legendEntry' : 'DATA',
         'type' : 'Data',
@@ -573,12 +565,12 @@ MERGE_SAMPLES = {
     },
     'qcdSum' : {
         'samples' : [
-			'QCD_BCtoE_Pt20to30_Pat',
-			'QCD_BCtoE_Pt30to80_Pat',
-			'QCD_BCtoE_Pt80to170_Pat',
-			'QCD_EM_Pt20to30_Pat',
-			'QCD_EM_Pt30to80_Pat',
-			'QCD_EM_Pt80to170_Pat'
+			'QCD_BCtoE_Pt20to30_T3',
+			'QCD_BCtoE_Pt30to80_T3',
+			'QCD_BCtoE_Pt80to170_T3',
+			'QCD_EM_Pt20to30_T3',
+			'QCD_EM_Pt30to80_T3',
+			'QCD_EM_Pt80to170_T3'
         ],
         'legendEntry' : 'QCD',
         'type' : 'smMC', 
@@ -586,9 +578,9 @@ MERGE_SAMPLES = {
     },
     'photonPlusJetsSum' : {
         'samples' : [
-                        'PhotonPlusJets_Pt15to30_Pat',
-			'PhotonPlusJets_Pt30to50_Pat',
-			'PhotonPlusJets_Pt50to80_Pat'
+            'PhotonPlusJets_Pt15to30_T3',
+			'PhotonPlusJets_Pt30to50_T3',
+			'PhotonPlusJets_Pt50to80_T3'
         ],
         'legendEntry' : plotter.process_gammaPlusJets.config_dqmHistPlotter.legendEntry.value(),
         'type' : 'smMC', 
@@ -596,8 +588,8 @@ MERGE_SAMPLES = {
     },
     'ZeeSum' : {
         'samples' : [
-            'DYeeM10to20_pythia_Pat',
-            'Zee_powheg_Pat'
+            'DYeeM10to20_pythia_T3',
+            'Zee_powheg_T3'
         ],
         'legendEntry' : plotter.process_Zee.config_dqmHistPlotter.legendEntry.value(),
         'type' : 'smMC', 
@@ -605,8 +597,8 @@ MERGE_SAMPLES = {
     },
     'ZtautauSum' : {
         'samples' : [
-            'DYtautauM10to20_powheg_Pat',
-            'Ztautau_powheg_Pat',
+            'DYtautauM10to20_powheg_T3',
+            'Ztautau_powheg_T3',
             #'qqZll'
         ],
         'legendEntry' : plotter.process_Ztautau.config_dqmHistPlotter.legendEntry.value(),
@@ -617,7 +609,7 @@ MERGE_SAMPLES = {
         'samples' : [
             'WW_T3',
             'WZ_T3',
-            'ZZ_T3'
+            #'ZZ_T3'
         ],
         'legendEntry' : 'WW/WZ/ZZ',
         'type' : 'smMC',
