@@ -19,18 +19,22 @@ def write_comment_header(file_to_write, text):
     file_to_write.write("###########################################\n")
 
 def make_harvest_scripts(plot_regex, skim_regex,
-                         channel = None,
+                         channel = "",
+                         sample = None,
+                         job_id = None,
                          # An iterable that gives the input files
                          input_source = None,
                          # Where to put the output
                          castor_output_directory = None,
-                         script_directory=None,
-                         merge_script_name = 'submit_merge.sh',
+                         script_directory = None,
+                         merge_script_name = None,
                          local_copy_mapper = None,
-                         chunk_size = 250e6):
+                         chunk_size = 1e9, # 1 GB
+                         verbosity = 1):
 
     # Get the jobId from the user registry
-    job_id = reg.getJobId(channel)
+    if job_id is None:
+        job_id = reg.getJobId(channel)
 
     if script_directory is None:
         script_directory = reg.getHarvestScriptLocation()
@@ -73,7 +77,8 @@ def make_harvest_scripts(plot_regex, skim_regex,
         match = plot_matcher.match(file['file'])
         if match:
             full_file = file['path']
-            sample = match.group('sample')
+            if sample is None:
+                sample = match.group('sample')
             plot_file_map[sample].append(full_file)
             plot_source_hashes[sample].update(full_file)
 
@@ -221,7 +226,8 @@ def make_harvest_scripts(plot_regex, skim_regex,
         if match:
             full_file = file['path']
             # Parse the sample from the regex
-            sample = match.group('sample')
+            if sample is None:
+                sample = match.group('sample')
             # For the skims, keep track of the file size well, since we use it
             # to group the jobs.
             skim_file_map[sample].append(
@@ -234,7 +240,8 @@ def make_harvest_scripts(plot_regex, skim_regex,
         " Generate a nice name for an output skim "
         return "_".join(["skim", sample, "chunk", str(chunk), hash]) + ".root"
 
-    merge_script_name = "_".join(['submit', job_id, 'merge']) + '.sh'
+    if merge_script_name is None:
+        merge_script_name = "_".join(['submit', job_id, 'merge']) + '.sh'
     with open(merge_script_name, 'w') as merge_script:
         merge_jobs_counter = 0
         bsub_file_access_counter = 0
@@ -324,21 +331,29 @@ def make_harvest_scripts(plot_regex, skim_regex,
                 full_path = os.path.join(castor_output_directory, file)
                 garbage_file.write(full_path + '\n')
 
-    print "To harvest plots, run %s" % harvest_script_name
-    print "To merge skims, run %s" % merge_script_name
-
     local_copy_script = 'copy_harvest_local_%s.sh' % job_id
     with open(local_copy_script, 'w') as copy_script:
         for sample, file in final_harvest_files:
             copy_script.write('rfcp %s %s &\n' % (
                 file, local_copy_mapper(sample)))
         copy_script.write('wait\n')
-    print "After harvesting is done, run %s to copy files locally" % local_copy_script
+
+        if verbosity > 0:
+            print "To harvest plots, run %s" % harvest_script_name
+            print "To merge skims, run %s" % merge_script_name 
+            print "After harvesting is done, run %s to copy files locally" % local_copy_script
 
     # Make all our stuff executable
     os.chmod(local_copy_script, 0755)
     os.chmod(harvest_script_name, 0755)
     os.chmod(merge_script_name, 0755)
+
+    # Return name of scripts
+    retVal = {}
+    retVal['harvest_script_name'] = harvest_script_name
+    retVal['merge_script_name']   = merge_script_name
+    retVal['local_copy_script']   = local_copy_script
+    return retVal
 
 if __name__ == "__main__":
     #regex = r"plots_AHtoMuTau_(?P<sample>\w+?)_Run32_(?P<gridJob>\d*)_(?P<gridTry>\d*)_(?P<gridId>[a-zA-Z0-9]*).root"

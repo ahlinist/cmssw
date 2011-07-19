@@ -51,47 +51,53 @@ _CRAB_DEFAULTS = {
     'runselection' : ''
 }
 
-def submitToGrid(configFile, jobInfo, crabOptions,
+def submitToGrid(configFile, jobInfo, crabOptions, crabFileName = None, ui_working_dir = None,
                  create = True, submit = True, cfgdir='crab'):
 
-    # Update the default crab options with our options
-    fullCrabOptions = copy.copy(_CRAB_DEFAULTS)
-    # Point crab to our PSET
-    fullCrabOptions['pset'] = configFile
-    workingDirectory = os.getcwd()
-    submissionDirectory = os.path.join(workingDirectory, cfgdir)
-    jobName = configFile
-    if jobName.rfind('/') != -1:
-        jobName = jobName[jobName.rfind('/') + 1:]
-    jobName = jobName.replace('@Grid_cfg.py', '')
-    #print("jobName = %s" % jobName)
-    ui_working_dir = os.path.join(
-        submissionDirectory, 'crabdir_%s' % jobName)
-    fullCrabOptions['ui_working_dir'] = ui_working_dir
-    fullCrabOptions.update(crabOptions)
+    # CV: if crabFileName has been passed as function argument
+    #     assume crab config file already exists,
+    #     else create it
+    if not crabFileName:
+        # Update the default crab options with our options
+        fullCrabOptions = copy.copy(_CRAB_DEFAULTS)
+        # Point crab to our PSET
+        fullCrabOptions['pset'] = configFile
+        workingDirectory = os.getcwd()
+        submissionDirectory = os.path.join(workingDirectory, cfgdir)
+        jobName = configFile
+        if jobName.rfind('/') != -1:
+            jobName = jobName[jobName.rfind('/') + 1:]
+        jobName = jobName.replace('@Grid_cfg.py', '')
+        #print("jobName = %s" % jobName)
+        ui_working_dir = os.path.join(
+            submissionDirectory, 'crabdir_%s' % jobName)
+        fullCrabOptions['ui_working_dir'] = ui_working_dir
+        fullCrabOptions.update(crabOptions)
 
-    # For these cases we need some additional processing
-    if fullCrabOptions['lumi_mask']:
-        fullCrabOptions['lumi_mask'] = (
-            'lumi_mask = ' + fullCrabOptions['lumi_mask'])
-    if fullCrabOptions['runselection']:
-        fullCrabOptions['runselection'] = (
-            'runselection = ' + fullCrabOptions['runselection'])
+        # For these cases we need some additional processing
+        if fullCrabOptions['lumi_mask']:
+            fullCrabOptions['lumi_mask'] = (
+                'lumi_mask = ' + fullCrabOptions['lumi_mask'])
+        if fullCrabOptions['runselection']:
+            fullCrabOptions['runselection'] = (
+                'runselection = ' + fullCrabOptions['runselection'])
 
-    # Add SE_white_list/SE_back_list commands if specified
-    if fullCrabOptions['SE_white_list'] and fullCrabOptions['SE_white_list'] != '':
-        fullCrabOptions['SE_white_list'] = (
-            'SE_white_list = ' + fullCrabOptions['SE_white_list'])
-    elif fullCrabOptions['SE_black_list'] and fullCrabOptions['SE_black_list'] != '':
-        fullCrabOptions['SE_black_list'] = (
-            'SE_black_list = ' + fullCrabOptions['SE_black_list'])
+        # Add SE_white_list/SE_back_list commands if specified
+        if fullCrabOptions['SE_white_list'] and fullCrabOptions['SE_white_list'] != '':
+            fullCrabOptions['SE_white_list'] = (
+                'SE_white_list = ' + fullCrabOptions['SE_white_list'])
+        elif fullCrabOptions['SE_black_list'] and fullCrabOptions['SE_black_list'] != '':
+            fullCrabOptions['SE_black_list'] = (
+                'SE_black_list = ' + fullCrabOptions['SE_black_list'])
 
-    # Create the crab file
-    crabFileName = "crab_" + jobName + ".cfg"
-    crabFilePath = os.path.join( submissionDirectory, crabFileName)
-    crabFile = open(crabFilePath, 'w')
-    crabFile.write(_CRAB_TEMPLATE.substitute(fullCrabOptions))
-    crabFile.close()
+        # Create the crab file
+        crabFileName = "crab_" + jobName + ".cfg"
+        crabFilePath = os.path.join(submissionDirectory, crabFileName)
+        crabFile = open(crabFilePath, 'w')
+        crabFile.write(_CRAB_TEMPLATE.substitute(fullCrabOptions))
+        crabFile.close()
+    elif ui_working_dir is None:
+        raise ValueError('Undefined ui_working_dir !!')
 
     numJobsCreated = None
 
