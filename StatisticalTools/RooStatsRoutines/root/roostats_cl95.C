@@ -313,6 +313,10 @@ private:
   double nbkg_rel_err;
   Int_t _nuisance_model;
 
+  // attributes
+  bool hasSigErr;
+  bool hasBgErr;
+
   // for Bayesian MCMC calculation
   MCMCInterval * mcInt;
   
@@ -399,6 +403,10 @@ void CL95Calc::init(UInt_t seed){
 
   // default Gaussian nuisance model
   _nuisance_model = 0;
+
+  // set default attributes
+  hasSigErr = false;
+  hasBgErr = false;
 }
 
 
@@ -480,6 +488,9 @@ RooWorkspace * CL95Calc::makeWorkspace(Double_t ilum, Double_t slum,
   // systematic uncertainties
   nsig_rel_err = sqrt(slum*slum/ilum/ilum+seff*seff/eff/eff);
   nbkg_rel_err = sbck/bck;
+  if (nsig_rel_err > 1.0e-10) hasSigErr = true;
+  if (nbkg_rel_err > 1.0e-10) hasBgErr = true;
+
   if (_nuisance_model == 0){ // gaussian model for nuisance parameters
 
     std::cout << "[roostats_cl95]: Gaussian PDFs for nuisance parameters" << endl;
@@ -487,10 +498,12 @@ RooWorkspace * CL95Calc::makeWorkspace(Double_t ilum, Double_t slum,
     // cumulative signal uncertainty
     ws->factory( "nsig_sigma[0.1]" );
     ws->factory( "nsig_global[1.0,0.1,10.0]" ); // mean of the nsig nuisance par
-    ws->factory( "Gaussian::syst_nsig(nsig_nuis, nsig_global, nsig_sigma)" );
+    if (hasSigErr) 
+      ws->factory( "Gaussian::syst_nsig(nsig_nuis, nsig_global, nsig_sigma)" );
     // background uncertainty
     ws->factory( "nbkg_sigma[0.1]" );
-    ws->factory( "Gaussian::syst_nbkg(nbkg, bkg_est, nbkg_sigma)" );
+    if (hasBgErr) 
+      ws->factory( "Gaussian::syst_nbkg(nbkg, bkg_est, nbkg_sigma)" );
 
     ws->var("nsig_sigma")->setVal(nsig_rel_err);
     ws->var("nbkg_sigma")->setVal(sbck);
@@ -507,10 +520,12 @@ RooWorkspace * CL95Calc::makeWorkspace(Double_t ilum, Double_t slum,
     // cumulative signal uncertainty
     ws->factory( "nsig_kappa[1.1]" );
     ws->factory( "nsig_global[1.0,0.1,10.0]" ); // mean of the nsig nuisance par
-    ws->factory( "Lognormal::syst_nsig(nsig_nuis, nsig_global, nsig_kappa)" );
+    if (hasSigErr) 
+      ws->factory( "Lognormal::syst_nsig(nsig_nuis, nsig_global, nsig_kappa)" );
     // background uncertainty
     ws->factory( "nbkg_kappa[1.1]" );
-    ws->factory( "Lognormal::syst_nbkg(nbkg, bkg_est, nbkg_kappa)" );
+    if (hasBgErr) 
+      ws->factory( "Lognormal::syst_nbkg(nbkg, bkg_est, nbkg_kappa)" );
 
     ws->var("nsig_kappa")->setVal(1.0 + nsig_rel_err);
     ws->var("nbkg_kappa")->setVal(1.0 + nbkg_rel_err);
@@ -531,10 +546,12 @@ RooWorkspace * CL95Calc::makeWorkspace(Double_t ilum, Double_t slum,
     ws->factory( "lnsig_sigma[0.1]" );
     ws->factory( "nsig_global[0.0,-0.5,0.5]" ); // log of mean of the nsig nuisance par
     //ws->factory( "Gaussian::syst_nsig(cexpr::lnsig('log(nsig_nuis)', nsig_nuis), nsig_global, lnsig_sigma)" );
-    ws->factory( "Gaussian::syst_nsig(cexpr::lnsig('log(nsig_nuis)', nsig_nuis), nsig_global, lnsig_sigma)" );
+    if (hasSigErr) 
+      ws->factory( "Gaussian::syst_nsig(cexpr::lnsig('log(nsig_nuis)', nsig_nuis), nsig_global, lnsig_sigma)" );
     // background uncertainty
     ws->factory( "lnbkg_sigma[0.1]" );
-    ws->factory( "Gaussian::syst_nbkg(cexpr::lnbkg('log(nbkg)',nbkg), lbkg_est, lnbkg_sigma)" );
+    if (hasBgErr) 
+      ws->factory( "Gaussian::syst_nbkg(cexpr::lnbkg('log(nbkg)',nbkg), lbkg_est, lnbkg_sigma)" );
 
     ws->var("lnsig_sigma")->setVal(nsig_rel_err);
     ws->var("lnbkg_sigma")->setVal(nbkg_rel_err);
@@ -552,7 +569,8 @@ RooWorkspace * CL95Calc::makeWorkspace(Double_t ilum, Double_t slum,
     ws->factory( "expr::nsig_beta('nsig_rel_err*nsig_rel_err/nsig_global',nsig_rel_err,nsig_global)" );
     ws->factory( "expr::nsig_gamma('nsig_global*nsig_global/nsig_rel_err/nsig_rel_err+1.0',nsig_global,nsig_rel_err)" );
     ws->var("nsig_rel_err") ->setVal(nsig_rel_err);
-    ws->factory( "Gamma::syst_nsig(nsig_nuis, nsig_gamma, nsig_beta, 0.0)" );
+    if (hasSigErr) 
+      ws->factory( "Gamma::syst_nsig(nsig_nuis, nsig_gamma, nsig_beta, 0.0)" );
 
     // background uncertainty
     //ws->factory( "nbkg_global[1.0]" ); // mean of the nbkg nuisance par
@@ -561,7 +579,8 @@ RooWorkspace * CL95Calc::makeWorkspace(Double_t ilum, Double_t slum,
     ws->factory( "expr::nbkg_gamma('bkg_est*bkg_est/nbkg_rel_err/nbkg_rel_err+1.0',bkg_est,nbkg_rel_err)" );
     //ws->var("nbkg_global") ->setVal( bck );
     ws->var("nbkg_rel_err")->setVal(nbkg_rel_err);
-    ws->factory( "Gamma::syst_nbkg(nbkg, nbkg_gamma, nbkg_beta, 0.0)" );
+    if (hasBgErr) 
+      ws->factory( "Gamma::syst_nbkg(nbkg, nbkg_gamma, nbkg_beta, 0.0)" );
 
     ws->var("nsig_rel_err")->setConstant(kTRUE);
     ws->var("nsig_global")->setConstant(kTRUE);
@@ -574,7 +593,26 @@ RooWorkspace * CL95Calc::makeWorkspace(Double_t ilum, Double_t slum,
   }
 
   // model with systematics
-  ws->factory( "PROD::model(model_core, syst_nsig, syst_nbkg)" );
+  if (hasSigErr && hasBgErr){
+    ws->factory( "PROD::model(model_core, syst_nsig, syst_nbkg)" );
+    ws->var("nsig_nuis") ->setConstant(kFALSE); // nuisance
+    ws->var("nbkg")      ->setConstant(kFALSE); // nuisance
+  }
+  if (hasSigErr && !hasBgErr){
+    ws->factory( "PROD::model(model_core, syst_nsig)" );
+    ws->var("nsig_nuis") ->setConstant(kFALSE); // nuisance
+    ws->var("nbkg")      ->setConstant(kTRUE); // nuisance
+  }
+  if (!hasSigErr && hasBgErr){
+    ws->factory( "PROD::model(model_core, syst_nbkg)" );
+    ws->var("nsig_nuis") ->setConstant(kTRUE); // nuisance
+    ws->var("nbkg")      ->setConstant(kFALSE); // nuisance
+  }
+  else{
+    ws->factory( "PROD::model(model_core)" );
+    ws->var("nsig_nuis") ->setConstant(kTRUE); // nuisance
+    ws->var("nbkg")      ->setConstant(kTRUE); // nuisance
+  }
 
   // flat prior for the parameter of interest
   ws->factory( "Uniform::prior(xsec)" );  
@@ -596,8 +634,8 @@ RooWorkspace * CL95Calc::makeWorkspace(Double_t ilum, Double_t slum,
   ws->var("lbkg_est")   ->setConstant(kTRUE);
   ws->var("n")         ->setConstant(kFALSE); // observable
   ws->var("xsec")      ->setConstant(kFALSE); // parameter of interest
-  ws->var("nsig_nuis") ->setConstant(kFALSE); // nuisance
-  ws->var("nbkg")      ->setConstant(kFALSE); // nuisance
+  //ws->var("nsig_nuis") ->setConstant(kFALSE); // nuisance
+  //ws->var("nbkg")      ->setConstant(kFALSE); // nuisance
 
   // floating parameters ranges
   // crude estimates! Need to know data to do better
@@ -616,32 +654,26 @@ RooWorkspace * CL95Calc::makeWorkspace(Double_t ilum, Double_t slum,
 
   // global observables
   //RooArgSet globalObs(*ws->var("nsig_global"), *ws->var("bkg_est"), "global_obs");
-  RooArgSet globalObs(*ws->var("nsig_global"), "global_obs");
-  if (_nuisance_model == 3){
-    globalObs.add( *ws->var("lbkg_est") );
-  }
-  else{
-    globalObs.add( *ws->var("bkg_est") );
+  //RooArgSet globalObs(*ws->var("nsig_global"), "global_obs");
+  RooArgSet globalObs("global_obs");
+  if (hasSigErr) globalObs.add( *ws->var("nsig_global") );
+  if (hasBgErr){
+    if (_nuisance_model == 3){
+      globalObs.add( *ws->var("lbkg_est") );
+    }
+    else{
+      globalObs.add( *ws->var("bkg_est") );
+    }
   }
 
   // parameters of interest
   RooArgSet poi(*ws->var("xsec"), "poi");
 
   // nuisance parameters
-  RooArgSet nuis(*ws->var("nsig_nuis"), *ws->var("nbkg"), "nuis");
-  // FIXME: do we really need to add everything to nuisances?
-  //RooArgSet nuis(*ws->var("nsig_nuis"), *ws->var("nbkg"),
-  //		 *ws->var("lumi"), *ws->var("bkg_est"), *ws->var("efficiency"),
-  //		 "nuis");
-  //if (_nuisance_model == 0){ // gaussian model for nuisance parameters
-  //  nuis.add(*ws->var("nsig_sigma"));
-  //  nuis.add(*ws->var("nbkg_sigma"));
-  //}
-  //else if (_nuisance_model == 1){ // gaussian model for nuisance parameters
-  //  nuis.add(*ws->var("nsig_kappa"));
-  //  nuis.add(*ws->var("nbkg_kappa"));
-  //}
-
+  //RooArgSet nuis(*ws->var("nsig_nuis"), *ws->var("nbkg"), "nuis");
+  RooArgSet nuis("nuis");
+  if (hasSigErr) nuis.add( *ws->var("nsig_nuis") );
+  if (hasBgErr) nuis.add( *ws->var("nbkg") );
 
   // setup the S+B model
   SbModel.SetWorkspace(*ws);
@@ -983,6 +1015,7 @@ Double_t CL95Calc::cl95( std::string method, LimitResult * result ){
       bcalc->SetName(namestring);
       bcalc->SetConfidenceLevel(0.95);
       bcalc->SetLeftSideTailFraction(0.0);
+      //bcalc->SetIntegrationType("ROOFIT");
       
       delete sInt;
       sInt = bcalc->GetInterval();
