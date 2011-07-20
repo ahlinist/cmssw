@@ -11,6 +11,7 @@
 <use   name="RecoEcal/EgammaCoreTools"/>
 <use   name="Geometry/EcalMapping"/>
 <use   name="Geometry/CaloGeometry"/>
+<use   name="DataFormats/PatCandidates"/>
 <use   name="root"/>
 <lib   name="Minuit"/>
 <use   name="clhep"/>
