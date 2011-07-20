@@ -19,13 +19,30 @@ ecalTimeEleTree = cms.EDAnalyzer("EcalTimeEleTreeMaker",
     endcapClusterShapeAssociationCollection = cms.InputTag("multi5x5BasicClusters","multi5x5EndcapShapeAssoc"),
 
     vertexCollection  = cms.InputTag("offlinePrimaryVertices",""),
-                               
-    muonCollection = cms.InputTag("GLBMuons"),
-    hbTreshold = cms.double(1.),                               
+                                 
+    patElectrons      = cms.InputTag("patElectrons",""),
+    eleWorkingPoint   = cms.string('simpleEleId85relIso'),
+    elePtCut          = cms.double(10),
+    eleIdCuts         = cms.vint32(5,7),
+
+#   eleIdCuts should be set according to: https://twiki.cern.ch/twiki/bin/viewauth/CMS/SimpleCutBasedEleID#Electron_ID_Implementation_in_Re
+#   0: fails
+#   1: passes electron ID only
+#   2: passes electron Isolation only
+#   3: passes electron ID and Isolation only
+#   4: passes conversion rejection
+#   5: passes conversion rejection and ID
+#   6: passes conversion rejection and Isolation
+#   7: passes the whole selection
+
+# use a higher Pt treshold for superclusters which are beyond |eta|>2.5   
+    scHighEtaEEPtCut =  cms.double(30.),
+
+    hbTreshold = cms.double(1.),
     l1GlobalReadoutRecord = cms.string('gtDigis'),
-    GTRecordCollection = cms.untracked.string('gtDigis'),
-    runNum = cms.untracked.int32(-1),
-    fileName = cms.untracked.string('EcalTimeTree'),
+    GTRecordCollection = cms.string('gtDigis'),
+    runNum = cms.int32(-1),
+    fileName = cms.string('EcalTimeTree'),
     TrackAssociatorParameters = cms.PSet(
         muonMaxDistanceSigmaX = cms.double(0.0),
         muonMaxDistanceSigmaY = cms.double(0.0),

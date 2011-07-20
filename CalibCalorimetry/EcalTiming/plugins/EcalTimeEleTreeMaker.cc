@@ -14,7 +14,7 @@ Implementation:
 // Skeleton Derived from an example by:  
 // Authors:                              Giovanni Franzoni (UMN)
 //         Created:  Mo Apr 18 5:46:22 CEST 2008
-// $Id: EcalTimeEleTreeMaker.cc,v 1.4 2011/07/13 19:33:34 franzoni Exp $
+// $Id: EcalTimeEleTreeMaker.cc,v 1.5 2011/07/20 15:15:00 franzoni Exp $
 //
 //
 
@@ -25,6 +25,7 @@ Implementation:
 // http://cmssw.cvs.cern.ch/cgi-bin/cmssw.cgi/CMSSW/DPGAnalysis/Skims/python/WZinterestingEventFilter_cfi.py?revision=1.1&view=markup
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
+#include <algorithm>
 
 #include "CalibCalorimetry/EcalTiming/plugins/EcalTimeEleTreeMaker.h"
 
@@ -54,6 +55,7 @@ Implementation:
 #include "CondFormats/EcalObjects/interface/EcalADCToGeVConstant.h"
 #include "CondFormats/DataRecord/interface/EcalADCToGeVConstantRcd.h"
 
+
 // vertex stuff
 #include <DataFormats/VertexReco/interface/VertexFwd.h>
 #include "RecoVertex/VertexPrimitives/interface/TransientVertex.h"
@@ -69,6 +71,8 @@ using namespace std ;
 
 #define FILL_SHAPE_VARS 0
 
+ 
+
 
 EcalTimeEleTreeMaker::EcalTimeEleTreeMaker (const edm::ParameterSet& iConfig) :
   barrelEcalRecHitCollection_              (iConfig.getParameter<edm::InputTag> ("barrelEcalRecHitCollection")),
@@ -77,14 +81,17 @@ EcalTimeEleTreeMaker::EcalTimeEleTreeMaker (const edm::ParameterSet& iConfig) :
   endcapBasicClusterCollection_            (iConfig.getParameter<edm::InputTag> ("endcapBasicClusterCollection")),
   barrelSuperClusterCollection_            (iConfig.getParameter<edm::InputTag> ("barrelSuperClusterCollection")),
   endcapSuperClusterCollection_            (iConfig.getParameter<edm::InputTag> ("endcapSuperClusterCollection")),
-  muonCollection_                          (iConfig.getParameter<edm::InputTag> ("muonCollection")),
+  patElectrons_                            (iConfig.getParameter<edm::InputTag> ("patElectrons")),
   vertexCollection_                        (iConfig.getParameter<edm::InputTag> ("vertexCollection")),
-  l1GMTReadoutRecTag_   (iConfig.getUntrackedParameter<std::string> ("L1GlobalReadoutRecord","gtDigis")),
-  gtRecordCollectionTag_ (iConfig.getUntrackedParameter<std::string> ("GTRecordCollection","")),
-  runNum_               (iConfig.getUntrackedParameter<int> ("runNum")),
-  fileName_             (iConfig.getUntrackedParameter<std::string> ("fileName", std::string ("EcalTimeEleTreeMaker"))),
+  l1GMTReadoutRecTag_                      (iConfig.getParameter<std::string> ("l1GlobalReadoutRecord")),
+  gtRecordCollectionTag_                   (iConfig.getParameter<std::string> ("GTRecordCollection")),
+  runNum_                                  (iConfig.getParameter<int> ("runNum")),
+  eleIdCuts_                               (iConfig.getParameter< std::vector<int> > ("eleIdCuts")),
+  elePtCut_                                (iConfig.getParameter<double> ("elePtCut")),
+  scHighEtaEEPtCut_                        (iConfig.getParameter<double> ("scHighEtaEEPtCut")),
+  fileName_                                (iConfig.getParameter<std::string> ("fileName")),
+  workingPoint_                            (iConfig.getParameter<std::string> ("eleWorkingPoint")),
   naiveId_ (0)              
-
 {
   // TrackAssociator parameters // gfwork: can we remove this? 
   edm::ParameterSet trkParameters = iConfig.getParameter<edm::ParameterSet> ("TrackAssociatorParameters") ;
@@ -160,6 +167,18 @@ void EcalTimeEleTreeMaker::analyze (const edm::Event& iEvent, const edm::EventSe
     }
   
 
+  // Endcap SuperClusters
+  edm::Handle<reco::SuperClusterCollection> pEndcapSuperClusters ;
+  iEvent.getByLabel (endcapSuperClusterCollection_, pEndcapSuperClusters) ;
+  const reco::SuperClusterCollection* theEndcapSuperClusters = pEndcapSuperClusters.product () ;
+    if (! (pEndcapSuperClusters.isValid ()) )
+    {
+      LogWarning ("EcalTimeTreeMaker") << endcapSuperClusterCollection_ 
+                                     << " not available" ;
+      return ;
+    }
+
+
   // ClusterShapes
   EcalClusterLazyTools* lazyTools = new EcalClusterLazyTools(iEvent, iSetup, barrelEcalRecHitCollection_, endcapEcalRecHitCollection_);
 
@@ -192,8 +211,17 @@ void EcalTimeEleTreeMaker::analyze (const edm::Event& iEvent, const edm::EventSe
   } else{
     // std::cerr << "BRAVO! GoT the product ElectronCollection. " << std::endl;
   }
-  const reco::GsfElectronCollection* pElecs =  gsfElectrons.product();
+
+
+  // get collection of pat electrons
+  edm::Handle<pat::ElectronCollection> patElectrons;
+  iEvent.getByLabel(patElectrons_, patElectrons);
+  if ( ! patElectrons.isValid()) {      
+    std::cout << "[EcalTimeEleTreeMaker] No electrons found in this event with tag "  << patElectrons << std::endl;     return ; }
+  else {      if( 0 ) std::cout  << "[EcalTimeEleTreeMaker] got electrons collection with tag: " << patElectrons_ << "\t"<< patElectrons << std::endl; }
+  const pat::ElectronCollection& patElecs = *(patElectrons.product());
   
+
 
   // RECO vertices
   Handle<reco::VertexCollection> recVtxs;
@@ -205,11 +233,12 @@ void EcalTimeEleTreeMaker::analyze (const edm::Event& iEvent, const edm::EventSe
   dump3Ginfo(iEvent, iSetup, myTreeVariables_) ;
   
   dumpBarrelClusterInfo(theGeometry, theCaloTopology,
-			pElecs,
+			patElecs,
 			theBarrelEcalRecHits, 
 			lazyTools, XtalMap, XtalMapCurved, myTreeVariables_) ;
   dumpEndcapClusterInfo(theGeometry, theCaloTopology,
-			pElecs,
+			patElecs,
+			theEndcapSuperClusters,
 			theEndcapEcalRecHits, 
 			lazyTools, 
 			XtalMap, XtalMapCurved, myTreeVariables_) ;
@@ -267,7 +296,7 @@ std::string EcalTimeEleTreeMaker::intToString (int num)
 
 void EcalTimeEleTreeMaker::dumpBarrelClusterInfo (const CaloGeometry * theGeometry,
 						  const CaloTopology * theCaloTopology,
-						  const reco::GsfElectronCollection* theElectrons,
+						  const pat::ElectronCollection& patElecs,
 						  const EcalRecHitCollection* theBarrelEcalRecHits,
 						  EcalClusterLazyTools* lazyTools,
 						  const std::map<int,float> & XtalMap, //GFdoc unclear
@@ -277,55 +306,67 @@ void EcalTimeEleTreeMaker::dumpBarrelClusterInfo (const CaloGeometry * theGeomet
   // get number of of objects already present in the tree (none if dumpBarrelClusterInfo is called first)
   int numberOfSuperClusters = myTreeVariables_.nSuperClusters;
   int numberOfClusters      = myTreeVariables_.nClusters ;
-  //  int numberOfXtals         = myTreeVariables_.nXtals ;
 
   const EcalIntercalibConstantMap& icalMap = ical->getMap();
   float adcToGeV = float(agc->getEBValue());
-  
-  /////////////////////////////////////////////////////////////////////////////////////////////
-  //  loop on electrons in event and extract SC from it
-  for(reco::GsfElectronCollection::const_iterator eleIt = theElectrons->begin();
-      eleIt != theElectrons->end();
-      eleIt++     )
-    {
-      //std::cout << "ele : " << (eleIt-theElectrons->begin()) << " pt: " << eleIt->pt()  << std::endl;
-      if (eleIt->pt() < 10) continue;   // make this threshold configurable
-      
-      const reco::SuperCluster & sclus = *(eleIt->superCluster()) ;
-      //number of superClusters in event (collection = vector!)
-      myTreeVariables_.nSuperClusters       +=1;
-      myTreeVariables_.nBarrelSuperClusters +=1;
 
-      if(!eleIt->isEB()) {
-	continue;
-      } else {
-      }
+  // loop over the pat electrons
+  pat::ElectronCollection::const_iterator eleIt;
+  for (eleIt=patElecs.begin(); eleIt!=patElecs.end() && numberOfSuperClusters<MAXSC; eleIt++) {
+    
+    reco::SuperClusterRef sclusRef=eleIt->superCluster();
+    if (sclusRef.isNull()) {        std::cout  << "[EcalTimeEleTreeMaker] reference to superlcuster is NULL: we have a problem" << std::endl;        continue; }
+    
+    reco::SuperClusterRef sclus=eleIt->superCluster();
+    
+    double eta_det=sclus.get()->eta();
+    if( 0 ) std::cout  << "[EcalTimeEleTreeMaker] BEF got ONE pat electron with SC-pt: " 
+    		       << eleIt->pt() << " eta: " << eta_det << " and with ID : " <<  eleIt->electronID( workingPoint_.c_str()  ) 
+		       << std::endl; 
 
-      
-      myTreeVariables_.nClustersInSuperCluster[numberOfSuperClusters] = sclus. clustersSize () ;
-      
-      myTreeVariables_.superClusterEta[numberOfSuperClusters] = sclus. position ().eta () ;
-      myTreeVariables_.superClusterPhi[numberOfSuperClusters] = sclus. position ().phi () ;
-      myTreeVariables_.superClusterX[numberOfSuperClusters] = sclus. position ().x () ;
-      myTreeVariables_.superClusterY[numberOfSuperClusters] = sclus. position ().y () ;
-      myTreeVariables_.superClusterZ[numberOfSuperClusters] = sclus. position ().z () ;
+    // remove electrons which are too soft
+    if (eleIt->pt() < elePtCut_) continue;
+    
+    // remove electrons that don't pass the desired selections
+    vector<int>::iterator itEleId = find ( eleIdCuts_.begin(), eleIdCuts_.end(), eleIt->electronID( workingPoint_.c_str()) ) ;
+    if( itEleId == eleIdCuts_.end()) continue;
+
+    if( 0 ) std::cout  << "[EcalTimeEleTreeMaker] AFT got ONE pat electron with SC-pt: " 
+    		       << eleIt->pt() << " eta: " << eta_det << " and with ID : " <<  eleIt->electronID( workingPoint_.c_str()  ) 
+		       << "\n"<< std::endl; 
+        
+        
+    myTreeVariables_.nSuperClusters       +=1;
+    myTreeVariables_.nBarrelSuperClusters +=1;
+    
+    if(!eleIt->isEB()) {
+      continue;
+    } else {
+    }
+    
+      myTreeVariables_.nClustersInSuperCluster[numberOfSuperClusters] = sclus.get()-> clustersSize () ;
+      myTreeVariables_.superClusterEta[numberOfSuperClusters] = sclus.get()-> position ().eta () ;
+      myTreeVariables_.superClusterPhi[numberOfSuperClusters] = sclus.get()-> position ().phi () ;
+      myTreeVariables_.superClusterX[numberOfSuperClusters] = sclus.get()-> position ().x () ;
+      myTreeVariables_.superClusterY[numberOfSuperClusters] = sclus.get()-> position ().y () ;
+      myTreeVariables_.superClusterZ[numberOfSuperClusters] = sclus.get()-> position ().z () ;
       myTreeVariables_.superClusterVertexX[numberOfSuperClusters] = eleIt->trackPositionAtVtx().x() ;
       myTreeVariables_.superClusterVertexY[numberOfSuperClusters] = eleIt->trackPositionAtVtx().y() ;
       myTreeVariables_.superClusterVertexZ[numberOfSuperClusters] = eleIt->trackPositionAtVtx().z() ;
-      myTreeVariables_.superClusterRawEnergy[numberOfSuperClusters] = sclus. rawEnergy () ;
-      myTreeVariables_.superClusterPhiWidth[numberOfSuperClusters] = sclus. phiWidth () ;
-      myTreeVariables_.superClusterEtaWidth[numberOfSuperClusters] = sclus. etaWidth () ;
+      myTreeVariables_.superClusterRawEnergy[numberOfSuperClusters] = sclus.get()-> rawEnergy () ;
+      myTreeVariables_.superClusterPhiWidth[numberOfSuperClusters] = sclus.get()-> phiWidth () ;
+      myTreeVariables_.superClusterEtaWidth[numberOfSuperClusters] = sclus.get()-> etaWidth () ;
 
       numberOfSuperClusters++ ;
      
       
       ///////////////////////////////////////////////////////////////////////////////////////
       // loop on barrel basic clusters which are inside SC from an electron
-      for ( reco::CaloCluster_iterator  bClus =  sclus.clustersBegin()  ; 
-	    bClus != sclus.clustersEnd()  && numberOfClusters<MAXC;  
+      for ( reco::CaloCluster_iterator  bClus =  sclus.get()->clustersBegin()  ; 
+	    bClus != sclus.get()->clustersEnd()  && numberOfClusters<MAXC;  
 	    ++bClus) // loop on barrel Bclusters
 	{        
-	  // std::cout << "bc number: " << (bClus-sclus.clustersBegin()) << std::endl;
+	  // std::cout << "bc number: " << (bClus-sclus.get()->clustersBegin()) << std::endl;
 	  
 	  double energy = (*bClus)->energy () ;
 	  double phi    = (*bClus)->phi () ;
@@ -500,7 +541,8 @@ void EcalTimeEleTreeMaker::dumpBarrelClusterInfo (const CaloGeometry * theGeomet
 
 void EcalTimeEleTreeMaker::dumpEndcapClusterInfo (const CaloGeometry * theGeometry,
 						  const CaloTopology * theCaloTopology,
-						  const reco::GsfElectronCollection * theElectrons ,
+						  const pat::ElectronCollection& patElecs,
+						  const reco::SuperClusterCollection* theEndcapSuperClusters,
 						  const EcalRecHitCollection* theEndcapEcalRecHits,
 						  EcalClusterLazyTools* lazyTools,
 						  const std::map<int,float> & XtalMap,
@@ -510,54 +552,72 @@ void EcalTimeEleTreeMaker::dumpEndcapClusterInfo (const CaloGeometry * theGeomet
   // counters come from the ntuple are to account for what was added in dumpBarrelClusterInf
   int numberOfSuperClusters = myTreeVariables_.nSuperClusters;
   int numberOfClusters      = myTreeVariables_.nClusters;
-  //  int numberOfXtals         = myTreeVariables_.nXtals ; // this is number of crystals associated to any cluster
 
   const EcalIntercalibConstantMap& icalMap = ical->getMap();
   float adcToGeV = float(agc->getEEValue());
 
-  /////////////////////////////////////////////////////////////////////////////////////////////
-  //  loop on electrons in event and extract SC from it
-  for(reco::GsfElectronCollection::const_iterator eleIt = theElectrons->begin();
-      eleIt != theElectrons->end();
-      eleIt++     )
-    {
-      //std::cout << "ele : " << (eleIt-theElectrons->begin()) << " pt: " << eleIt->pt()  << std::endl;
-      if (eleIt->pt() < 10) continue;   // make this threshold configurable
+
+  //loop on all endcap superclusters in event
+  for (reco::SuperClusterCollection::const_iterator sclus = theEndcapSuperClusters->begin () ; 
+       sclus != theEndcapSuperClusters->end ()  && numberOfSuperClusters<MAXSC; 
+       ++sclus) 
+    {//loop on SC's
       
-      const reco::SuperCluster & sclus = *(eleIt->superCluster()) ;
+      bool acceptScInHighEta(false);
+      //////////////////////////////////////////////////////////////////////////////////////////////////
+      // if supercluster in the forward region of EE and softer than scHighEtaEEPtCut, don't consider it 
+      if( fabs(sclus->position().eta()) > 2.5   &&   ( sclus->energy()/cosh(sclus->position().eta()) ) > scHighEtaEEPtCut_ ) {
+	acceptScInHighEta=true;
+      }
+
+      //////////////////////////////////////////////////////////////////////////////////////////////////
+      // look for matching electron which fulfills requirements
+      bool foundMatcgingElectron(false);
+      pat::ElectronCollection::const_iterator eleIt;
+      pat::ElectronCollection::const_iterator It;
+      for (It=patElecs.begin(); It!=patElecs.end(); It++) 
+	{ 
+	  // remove electrons which are too soft
+	  if (It->pt() < elePtCut_)     continue;
+
+	  // remove electrons that don't pass the desired selections
+	  vector<int>::iterator itEleId = find ( eleIdCuts_.begin(), eleIdCuts_.end(), It->electronID( workingPoint_.c_str()) ) ;
+	  if( itEleId == eleIdCuts_.end()) continue;
+	  //std::cout <<  "position difference is: " << sqrt( ( sclus->position() - It->superCluster()->position() ).Mag2() )   << std::endl;
+	  // do matching by position, 1 cm
+	  if ( 	      sqrt( ( sclus->position() - It->superCluster()->position() ).Mag2() ) < 1  	      ) 
+	    {
+	      foundMatcgingElectron = true;
+	      myTreeVariables_.superClusterVertexX[numberOfSuperClusters] = It->trackPositionAtVtx().x() ;
+	      myTreeVariables_.superClusterVertexY[numberOfSuperClusters] = It->trackPositionAtVtx().y() ;
+	      myTreeVariables_.superClusterVertexZ[numberOfSuperClusters] = It->trackPositionAtVtx().z() ;
+	      break;
+	    }
+	}// end loop over electrons
+      
+      if( (!foundMatcgingElectron) && (!acceptScInHighEta)) continue;
+      
 
       myTreeVariables_.nSuperClusters       +=1;
       myTreeVariables_.nEndcapSuperClusters +=1;
       
+      myTreeVariables_.nClustersInSuperCluster[numberOfSuperClusters] = sclus-> clustersSize () ;
       
-      if(!eleIt->isEE()) {
-	//std::cout << "this ele is NOT in EE " << std::endl;
-	continue;
-      } else {
-	//std::cout << "this ele IS in EE " << std::endl;
-      }
-      //      int numberOfXtalsInSuperCluster = 0 ;//counter for all xtals in supercluster 
-      
-      myTreeVariables_.nClustersInSuperCluster[numberOfSuperClusters] = sclus. clustersSize () ;
-      
-      myTreeVariables_.superClusterEta[numberOfSuperClusters] = sclus. position ().eta () ;
-      myTreeVariables_.superClusterPhi[numberOfSuperClusters] = sclus. position ().phi () ;
-      myTreeVariables_.superClusterX[numberOfSuperClusters] = sclus. position ().x () ;
-      myTreeVariables_.superClusterY[numberOfSuperClusters] = sclus. position ().y () ;
-      myTreeVariables_.superClusterZ[numberOfSuperClusters] = sclus. position ().z () ;
-      myTreeVariables_.superClusterVertexX[numberOfSuperClusters] = eleIt->trackPositionAtVtx().x() ;
-      myTreeVariables_.superClusterVertexY[numberOfSuperClusters] = eleIt->trackPositionAtVtx().y() ;
-      myTreeVariables_.superClusterVertexZ[numberOfSuperClusters] = eleIt->trackPositionAtVtx().z() ;
-      myTreeVariables_.superClusterRawEnergy[numberOfSuperClusters] = sclus. energy () ;
-      myTreeVariables_.superClusterPhiWidth[numberOfSuperClusters] = sclus. phiWidth () ;
-      myTreeVariables_.superClusterEtaWidth[numberOfSuperClusters] = sclus. etaWidth () ;
+      myTreeVariables_.superClusterEta[numberOfSuperClusters] = sclus-> position ().eta () ;
+      myTreeVariables_.superClusterPhi[numberOfSuperClusters] = sclus-> position ().phi () ;
+      myTreeVariables_.superClusterX[numberOfSuperClusters] = sclus-> position ().x () ;
+      myTreeVariables_.superClusterY[numberOfSuperClusters] = sclus-> position ().y () ;
+      myTreeVariables_.superClusterZ[numberOfSuperClusters] = sclus-> position ().z () ;
+      myTreeVariables_.superClusterRawEnergy[numberOfSuperClusters] = sclus-> energy () ;
+      myTreeVariables_.superClusterPhiWidth[numberOfSuperClusters] = sclus-> phiWidth () ;
+      myTreeVariables_.superClusterEtaWidth[numberOfSuperClusters] = sclus-> etaWidth () ;
 
       numberOfSuperClusters++ ;
   
       ///////////////////////////////////////////////////////////////////////////////////////
       // loop on barrel basic clusters which are inside SC from an electron
-      for ( reco::CaloCluster_iterator  bClus =  sclus.clustersBegin()  ; 
-	    bClus != sclus.clustersEnd()  && numberOfClusters<MAXC;  
+      for ( reco::CaloCluster_iterator  bClus =  sclus->clustersBegin()  ; 
+	    bClus != sclus->clustersEnd()  && numberOfClusters<MAXC;  
 	    ++bClus) // loop on barrel Bclusters
 	{        
          double energy = (*bClus)->energy () ;
@@ -581,22 +641,13 @@ void EcalTimeEleTreeMaker::dumpEndcapClusterInfo (const CaloGeometry * theGeomet
               detitr != clusterDetIds.end () && numberOfXtalsInCluster<MAXXTALINC;// && numberOfXtals<MAXXTAL ; 
               ++detitr)// loop on rechits of endcap basic clusters
            {
-             //Here I use the "find" on a digi collection... I have been warned...
              if ( (detitr -> first).det () != DetId::Ecal) 
-               { 
-                 //std::cout << " det is " << (detitr -> first).det () << std::endl ;
-                 continue ;
-               }
+               {                   continue ;                }
              if ( (detitr -> first).subdetId () != EcalEndcap) 
-               {
-                 //std::cout << " subdet is " << (detitr -> first).subdetId () << std::endl ; 
-                 continue ; 
-               }
+               {                  continue ;                 }
              EcalRecHitCollection::const_iterator thishit = theEndcapEcalRecHits->find ( (detitr -> first) ) ;
              if (thishit == theEndcapEcalRecHits->end ()) 
-               {
-                 continue ;
-               }
+               {                  continue ;                }
              //The checking above should no longer be needed...... 
              //as only those in the cluster would already have rechits..
              

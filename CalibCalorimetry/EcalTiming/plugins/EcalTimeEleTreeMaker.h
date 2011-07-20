@@ -16,7 +16,7 @@ Implementation:
 //
 // Authors:                              Giovanni Franzoni (UMN)
 //         Created:  Mo Apr 16  5:46:22 CEST 2011
-// $Id: EcalTimeEleTreeMaker.h,v 1.1 2011/04/16 23:43:56 franzoni Exp $
+// $Id: EcalTimeEleTreeMaker.h,v 1.1 2011/04/18 21:38:57 franzoni Exp $
 //
 //
 
@@ -58,6 +58,8 @@ Implementation:
 #include "DataFormats/EgammaCandidates/interface/GsfElectronFwd.h"
 #include "DataFormats/EgammaCandidates/interface/GsfElectronCoreFwd.h"
 #include "DataFormats/EgammaCandidates/interface/GsfElectronCore.h"
+
+#include "DataFormats/PatCandidates/interface/Electron.h"
 
 #include "Geometry/EcalMapping/interface/EcalElectronicsMapping.h"
 
@@ -124,10 +126,8 @@ class EcalTimeEleTreeMaker : public edm::EDAnalyzer
       //! has to run after dumpMUinfo, to have the XtalMap already filled
       void dumpBarrelClusterInfo(const CaloGeometry * theGeometry,
 				 const CaloTopology * theCaloTopology,
-				 const reco::GsfElectronCollection * theElectrons,
+				 const pat::ElectronCollection& patElecs,
 				 const EcalRecHitCollection* theBarrelEcalRecHits,
-				 //const reco::BasicClusterCollection* theBarrelBasicClusters,
-				 //const reco::SuperClusterCollection* theBarrelSuperClusters,
 				 EcalClusterLazyTools* lazyTools,
 				 const std::map<int,float> & XtalMap,
 				 const std::map<int,float> & XtalMapCurved,
@@ -135,10 +135,9 @@ class EcalTimeEleTreeMaker : public edm::EDAnalyzer
 
       void dumpEndcapClusterInfo(const CaloGeometry * theGeometry,
 				 const CaloTopology * theCaloTopology,
-				 const reco::GsfElectronCollection * theElectrons,
+				 const pat::ElectronCollection& patElecs,
+				 const reco::SuperClusterCollection* theEndcapSuperClusters,
 				 const EcalRecHitCollection* theEndcapEcalRecHits,
-				 //const reco::BasicClusterCollection* theEndcapBasicClusters,
-				 //const reco::SuperClusterCollection* theEndcapSuperClusters,
 				 EcalClusterLazyTools* lazyTools,
 				 const std::map<int,float> & XtalMap,
 				 const std::map<int,float> & XtalMapCurved,
@@ -165,13 +164,18 @@ class EcalTimeEleTreeMaker : public edm::EDAnalyzer
       edm::InputTag endcapBasicClusterCollection_ ;
       edm::InputTag barrelSuperClusterCollection_ ;
       edm::InputTag endcapSuperClusterCollection_ ;
+      edm::InputTag patElectrons_ ;
       edm::InputTag muonCollection_ ;
       edm::InputTag vertexCollection_ ;
       edm::InputTag l1GMTReadoutRecTag_ ;
       edm::InputTag gtRecordCollectionTag_ ;
-      int runNum_ ;
-      std::string fileName_ ;
-      int  naiveId_ ; 
+      int runNum_;
+      std::vector<int> eleIdCuts_;
+      double elePtCut_;
+      double scHighEtaEEPtCut_;
+      std::string fileName_;
+      std::string workingPoint_;
+      int  naiveId_; 
 
       TrackDetectorAssociator trackAssociator_ ;
       TrackAssociatorParameters trackParameters_ ;
