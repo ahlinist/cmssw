@@ -1,7 +1,7 @@
 static const char* desc =
 "=====================================================================\n"
 "|                                                                    \n"
-"|\033[1m        roostats_cl95.C  version 1.13                 \033[0m\n"
+"|\033[1m        roostats_cl95.C  version 1.14                 \033[0m\n"
 "|                                                                    \n"
 "| Standard c++ routine for 95% C.L. limit calculation                \n"
 "| for cross section in a 'counting experiment'                       \n"
@@ -11,7 +11,7 @@ static const char* desc =
 "|                                                                    \n"
 "|\033[1m Gena Kukartsev, Stefan Schmitz, Gregory Schott       \033[0m\n"
 "|\033[1m Lorenzo Moneta (CLs core)                            \033[0m\n"
-"|\033[1m Michael Segala                                       \033[0m\n"
+"|\033[1m Michael Segala (Feldman-Cousins)                     \033[0m\n"
 "|                                                                    \n"
 "| July  2010: first version                                          \n"
 "| March 2011: restructuring, interface change, expected limits       \n"
@@ -597,16 +597,19 @@ RooWorkspace * CL95Calc::makeWorkspace(Double_t ilum, Double_t slum,
     ws->factory( "PROD::model(model_core, syst_nsig, syst_nbkg)" );
     ws->var("nsig_nuis") ->setConstant(kFALSE); // nuisance
     ws->var("nbkg")      ->setConstant(kFALSE); // nuisance
+    ws->factory( "PROD::nuis_prior(syst_nsig,syst_nbkg)" );  
   }
   if (hasSigErr && !hasBgErr){
     ws->factory( "PROD::model(model_core, syst_nsig)" );
     ws->var("nsig_nuis") ->setConstant(kFALSE); // nuisance
     ws->var("nbkg")      ->setConstant(kTRUE); // nuisance
+    ws->factory( "PROD::nuis_prior(syst_nsig)" );  
   }
   if (!hasSigErr && hasBgErr){
     ws->factory( "PROD::model(model_core, syst_nbkg)" );
     ws->var("nsig_nuis") ->setConstant(kTRUE); // nuisance
     ws->var("nbkg")      ->setConstant(kFALSE); // nuisance
+    ws->factory( "PROD::nuis_prior(syst_nbkg)" );  
   }
   else{
     ws->factory( "PROD::model(model_core)" );
@@ -1051,6 +1054,18 @@ Double_t CL95Calc::cl95( std::string method, LimitResult * result ){
       TStopwatch t;
       t.Start();
 
+      // load parameter point with the best fit to data
+      SbModel.LoadSnapshot();
+      RooRealVar * pPoi = (RooRealVar *)(SbModel.GetParametersOfInterest()->first());
+      // get POI upper error from the fit
+      Double_t poi_err = pPoi->getErrorHi();
+      // get POI upper range boundary
+      Double_t poi_upper_range = pPoi->getMax();
+      // get the upper range boundary for CLs as min of poi range and 5*error
+      Double_t upper_range = std::min(5.0*poi_err,poi_upper_range);
+      // debug output
+      //std::cout << "range, error, new range " << poi_upper_range << ", "<< poi_err << ", " << upper_range << std::endl;
+
       RooMsgService::instance().setGlobalKillBelow(RooFit::PROGRESS);
 
       std::vector<Double_t> lim = 
@@ -1058,12 +1073,12 @@ Double_t CL95Calc::cl95( std::string method, LimitResult * result ){
 		      "SbModel",
 		      "BModel",
 		      "observed_data",
-		      1, // calculator type, 0-freq, 1-hybrid
-		      2, // test statistic, 0-lep, 1-tevatron, 2-PL, 3-PL 1-sided
+		      0, // calculator type, 0-freq, 1-hybrid
+		      3, // test statistic, 0-lep, 1-tevatron, 2-PL, 3-PL 1-sided
 		      true, // useCls
 		      10, // npoints in the scan
 		      0, // poimin: use default is poimin >= poimax
-		      ws->var("xsec")->getMax(), // poimax
+		      upper_range,
 		      1000,// ntoys
 		      "test" );
       
@@ -1446,7 +1461,7 @@ Double_t roostats_cl95(Double_t ilum, Double_t slum,
     std::cout << "[roostats_cl95]: using CLs calculation" << endl;
   }
   else if (method.find("fc") != std::string::npos){
-    std::cout << "[roostats_cl95]: using Bayesian calculation via numeric integration" << endl;
+    std::cout << "[roostats_cl95]: using Feldman-Cousins approach" << endl;
   }
   else if (method.find("workspace") != std::string::npos){
     std::cout << "[roostats_cl95]: no interval calculation, only create and save workspace" << endl;
@@ -1565,7 +1580,13 @@ Double_t roostats_cla(Double_t ilum, Double_t slum,
     std::cout << "[roostats_cla]: using Bayesian calculation via numeric integration" << endl;
   }
   else if (method.find("mcmc") != std::string::npos){
-    std::cout << "[roostats_cla]: using Bayesian calculation via numeric integration" << endl;
+    std::cout << "[roostats_cl95]: using Bayesian calculation via numeric integration" << endl;
+  }
+  else if (method.find("cls") != std::string::npos){
+    std::cout << "[roostats_cl95]: using CLs calculation" << endl;
+  }
+  else if (method.find("fc") != std::string::npos){
+    std::cout << "[roostats_cl95]: using Feldman-Cousins approach" << endl;
   }
   else{
     std::cout << "[roostats_cla]: method " << method 
@@ -1601,9 +1622,18 @@ LimitResult roostats_clm(Double_t ilum, Double_t slum,
   
   LimitResult limit;
 
-  std::cout << "[roostats_clm]: estimating average 95% C.L. upper limit" << endl;
+  std::cout << "[roostats_clm]: estimating expected 95% C.L. upper limit" << endl;
   if (method.find("bayesian") != std::string::npos){
     std::cout << "[roostats_clm]: using Bayesian calculation via numeric integration" << endl;
+  }
+  else if (method.find("mcmc") != std::string::npos){
+    std::cout << "[roostats_cl95]: using Bayesian calculation via numeric integration" << endl;
+  }
+  else if (method.find("cls") != std::string::npos){
+    std::cout << "[roostats_cl95]: using CLs calculation" << endl;
+  }
+  else if (method.find("fc") != std::string::npos){
+    std::cout << "[roostats_cl95]: using Feldman-Cousins approach" << endl;
   }
   else{
     std::cout << "[roostats_clm]: method " << method 
@@ -1627,6 +1657,7 @@ LimitResult roostats_clm(Double_t ilum, Double_t slum,
 /////////////////////////////////////////////////////////////////////////
 //
 // CLs helper methods from Lorenzo Moneta
+// This is the core of the CLs calculation
 //
 
 bool plotHypoTestResult = false; 
@@ -1925,9 +1956,14 @@ HypoTestInverterResult *  RunInverter(RooWorkspace * w, const char * modelSBName
       hhc->SetToys(ntoys,ntoys); 
 
       // check for nuisance prior pdf 
-      if (bModel->GetPriorPdf() && sbModel->GetPriorPdf() ) {
-         hhc->ForcePriorNuisanceAlt(*bModel->GetPriorPdf());
-         hhc->ForcePriorNuisanceNull(*sbModel->GetPriorPdf());
+      //if (bModel->GetPriorPdf() && sbModel->GetPriorPdf() ) {
+      //   hhc->ForcePriorNuisanceAlt(*bModel->GetPriorPdf());
+      //   hhc->ForcePriorNuisanceNull(*sbModel->GetPriorPdf());
+      //}
+      RooAbsPdf * nuis_prior =  w->pdf("nuis_prior");
+      if (nuis_prior ) {
+         hhc->ForcePriorNuisanceAlt(*nuis_prior);
+         hhc->ForcePriorNuisanceNull(*nuis_prior);
       }
       else {
          if (bModel->GetNuisanceParameters() || sbModel->GetNuisanceParameters() ) {
