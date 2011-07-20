@@ -3,6 +3,7 @@
 bool EcalTimeTreeContent::trgVariables = false;
 bool EcalTimeTreeContent::muonVariables = false;
 bool EcalTimeTreeContent::ecalVariables = true;
+bool EcalTimeTreeContent::ecalShapeVariables = true;
 bool EcalTimeTreeContent::hcalVariables = false;
 bool EcalTimeTreeContent::tkAssVariables = false;
 bool EcalTimeTreeContent::tpgVariables = false;
@@ -83,25 +84,6 @@ void setBranchAddresses(TTree* chain, EcalTimeTreeContent& treeVars)
     chain -> SetBranchAddress("cluster2ndId",            treeVars.cluster2ndId);
     chain -> SetBranchAddress("nXtalsInCluster",    treeVars.nXtalsInCluster);
   
-    // clustershape variables  
-    chain -> SetBranchAddress("clusterE2x2",       treeVars.clusterE2x2);
-    chain -> SetBranchAddress("clusterE3x2",       treeVars.clusterE3x2);
-    chain -> SetBranchAddress("clusterE3x3",       treeVars.clusterE3x3);
-    chain -> SetBranchAddress("clusterE4x4",       treeVars.clusterE4x4);
-    chain -> SetBranchAddress("clusterE5x5",       treeVars.clusterE5x5);
-    chain -> SetBranchAddress("clusterE2x5Right",  treeVars.clusterE2x5Right);
-    chain -> SetBranchAddress("clusterE2x5Left",   treeVars.clusterE2x5Left);
-    chain -> SetBranchAddress("clusterE2x5Top",    treeVars.clusterE2x5Top);
-    chain -> SetBranchAddress("clusterE2x5Bottom", treeVars.clusterE2x5Bottom);
-    chain -> SetBranchAddress("clusterE3x2Ratio",  treeVars.clusterE3x2Ratio);
-    chain -> SetBranchAddress("clusterCovPhiPhi",  treeVars.clusterCovPhiPhi);
-    chain -> SetBranchAddress("clusterCovEtaEta",  treeVars.clusterCovEtaEta);
-    chain -> SetBranchAddress("clusterCovEtaPhi",  treeVars.clusterCovEtaPhi);
-    chain -> SetBranchAddress("clusterLat",        treeVars.clusterLat);
-    chain -> SetBranchAddress("clusterPhiLat",     treeVars.clusterPhiLat);
-    chain -> SetBranchAddress("clusterEtaLat",     treeVars.clusterEtaLat);
-    chain -> SetBranchAddress("clusterZernike20",  treeVars.clusterZernike20);
-    chain -> SetBranchAddress("clusterZernike42",  treeVars.clusterZernike42);
   
     // vertex variables
     chain -> SetBranchAddress("nVertices",         &treeVars.nVertices);
@@ -114,6 +96,7 @@ void setBranchAddresses(TTree* chain, EcalTimeTreeContent& treeVars)
     chain -> SetBranchAddress("vtxDy",            treeVars.vtxDy);
     chain -> SetBranchAddress("vtxZ",             treeVars.vtxZ);
     chain -> SetBranchAddress("vtxDz",            treeVars.vtxDz);
+
 
     // xtal variables inside a cluster
     chain -> SetBranchAddress("xtalInBCHashedIndex", treeVars.xtalInBCHashedIndex);
@@ -135,6 +118,33 @@ void setBranchAddresses(TTree* chain, EcalTimeTreeContent& treeVars)
   } // ECAL VARIABLES
   //*/  
   
+
+  ///*
+  // ECAL VARIABLES  
+  if(EcalTimeTreeContent::ecalShapeVariables)
+  {    
+    // clustershape variables  
+    chain -> SetBranchAddress("clusterE2x2",       treeVars.clusterE2x2);
+    chain -> SetBranchAddress("clusterE3x2",       treeVars.clusterE3x2);
+    chain -> SetBranchAddress("clusterE3x3",       treeVars.clusterE3x3);
+    chain -> SetBranchAddress("clusterE4x4",       treeVars.clusterE4x4);
+    chain -> SetBranchAddress("clusterE5x5",       treeVars.clusterE5x5);
+    chain -> SetBranchAddress("clusterE2x5Right",  treeVars.clusterE2x5Right);
+    chain -> SetBranchAddress("clusterE2x5Left",   treeVars.clusterE2x5Left);
+    chain -> SetBranchAddress("clusterE2x5Top",    treeVars.clusterE2x5Top);
+    chain -> SetBranchAddress("clusterE2x5Bottom", treeVars.clusterE2x5Bottom);
+    chain -> SetBranchAddress("clusterE3x2Ratio",  treeVars.clusterE3x2Ratio);
+    chain -> SetBranchAddress("clusterCovPhiPhi",  treeVars.clusterCovPhiPhi);
+    chain -> SetBranchAddress("clusterCovEtaEta",  treeVars.clusterCovEtaEta);
+    chain -> SetBranchAddress("clusterCovEtaPhi",  treeVars.clusterCovEtaPhi);
+    chain -> SetBranchAddress("clusterLat",        treeVars.clusterLat);
+    chain -> SetBranchAddress("clusterPhiLat",     treeVars.clusterPhiLat);
+    chain -> SetBranchAddress("clusterEtaLat",     treeVars.clusterEtaLat);
+    chain -> SetBranchAddress("clusterZernike20",  treeVars.clusterZernike20);
+    chain -> SetBranchAddress("clusterZernike42",  treeVars.clusterZernike42);
+  } // ECAL VARIABLES
+  //*/  
+
 
 
   ///*

@@ -20,6 +20,7 @@ struct EcalTimeTreeContent
   // Flags
   static bool trgVariables;
   static bool ecalVariables;
+  static bool ecalShapeVariables;
   static bool hcalVariables;
   static bool muonVariables;
   static bool tkAssVariables;
