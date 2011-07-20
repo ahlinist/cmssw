@@ -9,7 +9,7 @@ SAMPLES_TO_ANALYZE = [
         'data_TauPlusX_Run2011A_May10ReReco_T3',
         'data_TauPlusX_Run2011A_May10ReReco_T3_qcdBgEst',
         'data_TauPlusX_Run2011A_PR_v4',
-        'Ztautau_powheg_T3',
+        'Ztautau_pythia_T3',
         'DYtautauM10to20_powheg_T3',
         #'qqZll',  ## no Summer11 sample
         'Zee_powheg_T3',
@@ -142,7 +142,7 @@ RECO_SAMPLES = {
         'datasetpath' : '/TauPlusX/Run2011A-PromptReco-v4/AOD', 
         'lumi_mask' : '/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification//Collisions11/7TeV/Prompt/Cert_160404-167913_7TeV_PromptReco_Collisions11_JSON.txt',
         'conditions' : 'GR_P_V20::All',
-        'number_of_jobs' : 400,
+        'number_of_jobs' : 800,
         'type' : 'Data',
         'drawOption' : styles.drawOption_Data,
         'enableSysUncertainties' : False,
@@ -160,8 +160,7 @@ RECO_SAMPLES = {
         'datasetpath' : '/TauPlusX/jkolb-skimElecTau_423_v1-48310d22b2ce244ac277cf431005fadd/USER', 
         'lumi_mask' : '/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification//Collisions11/7TeV/Prompt/Cert_160404-167913_7TeV_PromptReco_Collisions11_JSON.txt',
         'conditions' : 'GR_P_V20::All',
-        ##'skim_eff' : '4817397./11868838.',
-        'number_of_jobs' : 100,
+        'number_of_jobs' : 200,
         'type' : 'Data',
         'drawOption' : styles.drawOption_Data,
         'enableSysUncertainties' : False,
@@ -196,6 +195,26 @@ RECO_SAMPLES = {
         'drawOption' : styles.drawOption_Ztautau,
     },
     'Ztautau_powheg' : {
+        'datasetpath' : "/DYToTauTau_M-20_CT10_TuneZ2_7TeV-powheg-pythia-tauola/Summer11-PU_S4_START42_V11-v1/AODSIM",
+        'events_processed' : 19937479,
+        'skim_eff' : 1.0,
+        'x_sec' : 1666*_picobarns,
+        'legendEntry' : plotter.process_Ztautau.config_dqmHistPlotter.legendEntry.value(),
+        'type' : plotter.process_Ztautau.config_dqmHistPlotter.type.value(),
+        'drawOption' : styles.drawOption_Ztautau,
+    },
+    'Ztautau_powheg_T3' : {
+        'datasetpath' : "",
+        'dbs_url' :  "https://cmsdbsprod.cern.ch:8443/cms_dbs_ph_analysis_01_writer/servlet/DBSServlet",
+        'number_of_jobs' : 150,
+        'events_processed' : 19937479,
+        'skim_eff' : 1./19937479,
+        'x_sec' : 1666*_picobarns,
+        'legendEntry' : plotter.process_Ztautau.config_dqmHistPlotter.legendEntry.value(),
+        'type' : plotter.process_Ztautau.config_dqmHistPlotter.type.value(),
+        'drawOption' : styles.drawOption_Ztautau,
+    },
+    'Ztautau_pythia' : {
         'datasetpath' : "/DYToTauTau_M-20_TuneZ2_7TeV-pythia6-tauola/Summer11-PU_S3_START42_V11-v2/AODSIM",
         'events_processed' : 2032536,
         'skim_eff' : 1.0,
@@ -204,7 +223,7 @@ RECO_SAMPLES = {
         'type' : plotter.process_Ztautau.config_dqmHistPlotter.type.value(),
         'drawOption' : styles.drawOption_Ztautau,
     },
-    'Ztautau_powheg_T3' : {  ## 3 jobs not finished
+    'Ztautau_pythia_T3' : {  ## 3 jobs not finished
         'datasetpath' : "/DYToTauTau_M-20_TuneZ2_7TeV-pythia6-tauola/jkolb-skimElecTau_423_v1-2453a4eaae124a4a3fe9f365dc31e11f/USER",
         'dbs_url' :  "https://cmsdbsprod.cern.ch:8443/cms_dbs_ph_analysis_01_writer/servlet/DBSServlet",
         'number_of_jobs' : 40,
@@ -598,7 +617,7 @@ MERGE_SAMPLES = {
     'ZtautauSum' : {
         'samples' : [
             'DYtautauM10to20_powheg_T3',
-            'Ztautau_powheg_T3',
+            'Ztautau_pythia_T3',
             #'qqZll'
         ],
         'legendEntry' : plotter.process_Ztautau.config_dqmHistPlotter.legendEntry.value(),
@@ -615,26 +634,26 @@ MERGE_SAMPLES = {
         'type' : 'smMC',
         'drawOption' : styles.drawOption_VV
     },
-##     'smBgSum' : {
-##         'samples' : [
-##             'ZeeSum',
-##             'qcdSum',
-##             'photonPlusJetsSum',
-##             'WplusJets_madgraph_Pat',
-##         ],
-##         'legendEntry' : 'SM',
-##         'type' : 'smMC',
-##         'drawOption' : styles.drawOption_QCD
-##     },
-##     'smSum' : {
-##         'samples' : [
-##             'ZtautauSum',
-##             'smBgSum'
-##         ],
-##         'legendEntry' : 'SM',
-##         'type' : 'smSumMC',
-##         'drawOption' : styles.drawOption_QCD
-##     }
+    'smBgSum' : {
+         'samples' : [
+             'ZeeSum',
+             'qcdSum',
+             'photonPlusJetsSum',
+             'WplusJets_madgraph_Pat',
+         ],
+         'legendEntry' : 'SM',
+         'type' : 'smMC',
+         'drawOption' : styles.drawOption_QCD
+    },
+    'smSum' : {
+         'samples' : [
+             'ZtautauSum',
+             'smBgSum'
+         ],
+         'legendEntry' : 'SM',
+         'type' : 'smSumMC',
+         'drawOption' : styles.drawOption_QCD
+    },
     'smBgSum' : {
         'samples' : [
             'DYeeM10to20_pythia_Pat',
