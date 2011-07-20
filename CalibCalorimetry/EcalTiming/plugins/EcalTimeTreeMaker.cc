@@ -13,7 +13,7 @@ Implementation:
 //
 // Authors:                              Seth Cooper, Giovanni Franzoni (UMN)
 //         Created:  Mo Jul 14 5:46:22 CEST 2008
-// $Id: EcalTimeTreeMaker.cc,v 1.7 2011/07/13 17:51:21 franzoni Exp $
+// $Id: EcalTimeTreeMaker.cc,v 1.8 2011/07/13 19:33:16 franzoni Exp $
 //
 //
 
@@ -59,7 +59,7 @@ using namespace cms ;
 using namespace edm ;
 using namespace std ;
 
-
+#define FILL_SHAPE_VARS 0
 
 EcalTimeTreeMaker::EcalTimeTreeMaker (const edm::ParameterSet& iConfig) :
   barrelEcalRecHitCollection_              (iConfig.getParameter<edm::InputTag> ("barrelEcalRecHitCollection")),
@@ -479,29 +479,31 @@ void EcalTimeTreeMaker::dumpBarrelClusterInfo (const CaloGeometry * theGeometry,
        myTreeVariables_.clusterMaxId[numberOfClusters] =  secDet.rawId () ;
        myTreeVariables_.nXtalsInCluster[numberOfClusters]= numberOfXtalsInCluster ;    
        
+
        // (basic) cluster shapes for barrel
-       myTreeVariables_.clusterE2x2[numberOfClusters] = lazyTools -> e2x2(*(clus));
-       myTreeVariables_.clusterE3x2[numberOfClusters] = lazyTools -> e3x2(*(clus));
-       myTreeVariables_.clusterE3x3[numberOfClusters] = lazyTools -> e3x3(*(clus));
-       myTreeVariables_.clusterE4x4[numberOfClusters] = lazyTools -> e4x4(*(clus));
-       myTreeVariables_.clusterE5x5[numberOfClusters] = lazyTools -> e5x5(*(clus));
-       
-       myTreeVariables_.clusterE2x5Right[numberOfClusters]  = lazyTools -> e2x5Right(*(clus));
-       myTreeVariables_.clusterE2x5Left[numberOfClusters]   = lazyTools -> e2x5Left(*(clus));
-       myTreeVariables_.clusterE2x5Top[numberOfClusters]    = lazyTools -> e2x5Top(*(clus));
-       myTreeVariables_.clusterE2x5Bottom[numberOfClusters] = lazyTools -> e2x5Bottom(*(clus));
-       
-       myTreeVariables_.clusterCovEtaEta[numberOfClusters] = (lazyTools -> covariances(*(clus)))[0];
-       myTreeVariables_.clusterCovPhiPhi[numberOfClusters] = (lazyTools -> covariances(*(clus)))[2];
-       myTreeVariables_.clusterCovEtaPhi[numberOfClusters] = (lazyTools -> covariances(*(clus)))[1];
-       
-       myTreeVariables_.clusterLat[numberOfClusters] = (lazyTools -> lat(*(clus)))[2];
-       myTreeVariables_.clusterEtaLat[numberOfClusters] = (lazyTools -> lat(*(clus)))[0];
-       myTreeVariables_.clusterPhiLat[numberOfClusters] = (lazyTools -> lat(*(clus)))[1];
-       
-       myTreeVariables_.clusterZernike20[numberOfClusters] = lazyTools -> zernike20(*(clus));
-       myTreeVariables_.clusterZernike42[numberOfClusters] = lazyTools -> zernike42(*(clus));
-       
+       if(FILL_SHAPE_VARS) {
+	 myTreeVariables_.clusterE2x2[numberOfClusters] = lazyTools -> e2x2(*(clus));
+	 myTreeVariables_.clusterE3x2[numberOfClusters] = lazyTools -> e3x2(*(clus));
+	 myTreeVariables_.clusterE3x3[numberOfClusters] = lazyTools -> e3x3(*(clus));
+	 myTreeVariables_.clusterE4x4[numberOfClusters] = lazyTools -> e4x4(*(clus));
+	 myTreeVariables_.clusterE5x5[numberOfClusters] = lazyTools -> e5x5(*(clus));
+	 
+	 myTreeVariables_.clusterE2x5Right[numberOfClusters]  = lazyTools -> e2x5Right(*(clus));
+	 myTreeVariables_.clusterE2x5Left[numberOfClusters]   = lazyTools -> e2x5Left(*(clus));
+	 myTreeVariables_.clusterE2x5Top[numberOfClusters]    = lazyTools -> e2x5Top(*(clus));
+	 myTreeVariables_.clusterE2x5Bottom[numberOfClusters] = lazyTools -> e2x5Bottom(*(clus));
+	 
+	 myTreeVariables_.clusterCovEtaEta[numberOfClusters] = (lazyTools -> covariances(*(clus)))[0];
+	 myTreeVariables_.clusterCovPhiPhi[numberOfClusters] = (lazyTools -> covariances(*(clus)))[2];
+	 myTreeVariables_.clusterCovEtaPhi[numberOfClusters] = (lazyTools -> covariances(*(clus)))[1];
+	 
+	 myTreeVariables_.clusterLat[numberOfClusters] = (lazyTools -> lat(*(clus)))[2];
+	 myTreeVariables_.clusterEtaLat[numberOfClusters] = (lazyTools -> lat(*(clus)))[0];
+	 myTreeVariables_.clusterPhiLat[numberOfClusters] = (lazyTools -> lat(*(clus)))[1];
+	 
+	 myTreeVariables_.clusterZernike20[numberOfClusters] = lazyTools -> zernike20(*(clus));
+	 myTreeVariables_.clusterZernike42[numberOfClusters] = lazyTools -> zernike42(*(clus));
+       }
        
        numberOfClusters++ ;
        
@@ -554,7 +556,7 @@ void EcalTimeTreeMaker::dumpEndcapClusterInfo (const CaloGeometry * theGeometry,
       myTreeVariables_.superClusterX[numberOfSuperClusters] = sclus -> position ().x () ;
       myTreeVariables_.superClusterY[numberOfSuperClusters] = sclus -> position ().y () ;
       myTreeVariables_.superClusterZ[numberOfSuperClusters] = sclus -> position ().z () ;
-      myTreeVariables_.superClusterRawEnergy[numberOfSuperClusters] = sclus -> rawEnergy () ;
+      myTreeVariables_.superClusterRawEnergy[numberOfSuperClusters] = sclus -> energy () ;
       myTreeVariables_.superClusterPhiWidth[numberOfSuperClusters] = sclus -> phiWidth () ;
       myTreeVariables_.superClusterEtaWidth[numberOfSuperClusters] = sclus -> etaWidth () ;
 

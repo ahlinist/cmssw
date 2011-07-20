@@ -14,7 +14,7 @@ Implementation:
 // Skeleton Derived from an example by:  
 // Authors:                              Giovanni Franzoni (UMN)
 //         Created:  Mo Apr 18 5:46:22 CEST 2008
-// $Id: EcalTimeEleTreeMaker.cc,v 1.3 2011/07/13 17:51:21 franzoni Exp $
+// $Id: EcalTimeEleTreeMaker.cc,v 1.4 2011/07/13 19:33:34 franzoni Exp $
 //
 //
 
@@ -67,6 +67,7 @@ using namespace cms ;
 using namespace edm ;
 using namespace std ;
 
+#define FILL_SHAPE_VARS 0
 
 
 EcalTimeEleTreeMaker::EcalTimeEleTreeMaker (const edm::ParameterSet& iConfig) :
@@ -459,28 +460,29 @@ void EcalTimeEleTreeMaker::dumpBarrelClusterInfo (const CaloGeometry * theGeomet
 	  myTreeVariables_.nXtalsInCluster[numberOfClusters]= numberOfXtalsInCluster ;    
 	  
 	  // (basic) cluster shapes for barrel
-	  myTreeVariables_.clusterE2x2[numberOfClusters] = lazyTools -> e2x2(*(*bClus));
-	  myTreeVariables_.clusterE3x2[numberOfClusters] = lazyTools -> e3x2(*(*bClus));
-	  myTreeVariables_.clusterE3x3[numberOfClusters] = lazyTools -> e3x3(*(*bClus));
-	  myTreeVariables_.clusterE4x4[numberOfClusters] = lazyTools -> e4x4(*(*bClus));
-	  myTreeVariables_.clusterE5x5[numberOfClusters] = lazyTools -> e5x5(*(*bClus));
-	  
-	  myTreeVariables_.clusterE2x5Right[numberOfClusters] = lazyTools -> e2x5Right(*(*bClus));
-	  myTreeVariables_.clusterE2x5Left[numberOfClusters] = lazyTools -> e2x5Left(*(*bClus));
-	  myTreeVariables_.clusterE2x5Top[numberOfClusters] = lazyTools -> e2x5Top(*(*bClus));
-	  myTreeVariables_.clusterE2x5Bottom[numberOfClusters] = lazyTools -> e2x5Bottom(*(*bClus));
-	  
-	  myTreeVariables_.clusterCovEtaEta[numberOfClusters] = (lazyTools -> covariances(*(*bClus)))[0];
-	  myTreeVariables_.clusterCovPhiPhi[numberOfClusters] = (lazyTools -> covariances(*(*bClus)))[2];
-	  myTreeVariables_.clusterCovEtaPhi[numberOfClusters] = (lazyTools -> covariances(*(*bClus)))[1];
-	  
-	  myTreeVariables_.clusterLat[numberOfClusters] = (lazyTools -> lat(*(*bClus)))[2];
-	  myTreeVariables_.clusterEtaLat[numberOfClusters] = (lazyTools -> lat(*(*bClus)))[0];
-	  myTreeVariables_.clusterPhiLat[numberOfClusters] = (lazyTools -> lat(*(*bClus)))[1];
-	  
-	  myTreeVariables_.clusterZernike20[numberOfClusters] = lazyTools -> zernike20(*(*bClus));
-	  myTreeVariables_.clusterZernike42[numberOfClusters] = lazyTools -> zernike42(*(*bClus));
-	  
+	  if(FILL_SHAPE_VARS) {
+	    myTreeVariables_.clusterE2x2[numberOfClusters] = lazyTools -> e2x2(*(*bClus));
+	    myTreeVariables_.clusterE3x2[numberOfClusters] = lazyTools -> e3x2(*(*bClus));
+	    myTreeVariables_.clusterE3x3[numberOfClusters] = lazyTools -> e3x3(*(*bClus));
+	    myTreeVariables_.clusterE4x4[numberOfClusters] = lazyTools -> e4x4(*(*bClus));
+	    myTreeVariables_.clusterE5x5[numberOfClusters] = lazyTools -> e5x5(*(*bClus));
+	    
+	    myTreeVariables_.clusterE2x5Right[numberOfClusters] = lazyTools -> e2x5Right(*(*bClus));
+	    myTreeVariables_.clusterE2x5Left[numberOfClusters] = lazyTools -> e2x5Left(*(*bClus));
+	    myTreeVariables_.clusterE2x5Top[numberOfClusters] = lazyTools -> e2x5Top(*(*bClus));
+	    myTreeVariables_.clusterE2x5Bottom[numberOfClusters] = lazyTools -> e2x5Bottom(*(*bClus));
+	    
+	    myTreeVariables_.clusterCovEtaEta[numberOfClusters] = (lazyTools -> covariances(*(*bClus)))[0];
+	    myTreeVariables_.clusterCovPhiPhi[numberOfClusters] = (lazyTools -> covariances(*(*bClus)))[2];
+	    myTreeVariables_.clusterCovEtaPhi[numberOfClusters] = (lazyTools -> covariances(*(*bClus)))[1];
+	    
+	    myTreeVariables_.clusterLat[numberOfClusters] = (lazyTools -> lat(*(*bClus)))[2];
+	    myTreeVariables_.clusterEtaLat[numberOfClusters] = (lazyTools -> lat(*(*bClus)))[0];
+	    myTreeVariables_.clusterPhiLat[numberOfClusters] = (lazyTools -> lat(*(*bClus)))[1];
+	    
+	    myTreeVariables_.clusterZernike20[numberOfClusters] = lazyTools -> zernike20(*(*bClus));
+	    myTreeVariables_.clusterZernike42[numberOfClusters] = lazyTools -> zernike42(*(*bClus));
+	  }
 	  
 	  numberOfClusters++ ;
 	  
@@ -546,7 +548,7 @@ void EcalTimeEleTreeMaker::dumpEndcapClusterInfo (const CaloGeometry * theGeomet
       myTreeVariables_.superClusterVertexX[numberOfSuperClusters] = eleIt->trackPositionAtVtx().x() ;
       myTreeVariables_.superClusterVertexY[numberOfSuperClusters] = eleIt->trackPositionAtVtx().y() ;
       myTreeVariables_.superClusterVertexZ[numberOfSuperClusters] = eleIt->trackPositionAtVtx().z() ;
-      myTreeVariables_.superClusterRawEnergy[numberOfSuperClusters] = sclus. rawEnergy () ;
+      myTreeVariables_.superClusterRawEnergy[numberOfSuperClusters] = sclus. energy () ;
       myTreeVariables_.superClusterPhiWidth[numberOfSuperClusters] = sclus. phiWidth () ;
       myTreeVariables_.superClusterEtaWidth[numberOfSuperClusters] = sclus. etaWidth () ;
 
