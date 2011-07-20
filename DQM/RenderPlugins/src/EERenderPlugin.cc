@@ -1,15 +1,15 @@
-// $Id: EERenderPlugin.cc,v 1.166 2011/05/28 09:49:03 emanuele Exp $
+// $Id: EERenderPlugin.cc,v 1.167 2011/07/12 15:15:50 yiiyama Exp $
 
 /*!
   \file EERenderPlugin
   \brief Display Plugin for Quality Histograms
   \author G. Della Ricca
   \author B. Gobbo
-  \version $Revision: 1.166 $
-  \date $Date: 2011/05/28 09:49:03 $
+  \version $Revision: 1.167 $
+  \date $Date: 2011/07/12 15:15:50 $
 */
 
-#include "VisMonitoring/DQMServer/interface/DQMRenderPlugin.h"
+#include "DQM/DQMRenderPlugin.h"
 #include "utils.h"
 
 #include "TH1F.h"
