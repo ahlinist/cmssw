@@ -6,7 +6,7 @@
 
 void Yield1S(){
   
-  TFile *f = new TFile("SigmaDATA_RapInt.root");
+  TFile *f = new TFile("SigmaDATA_RapInt_1SBin.root");
   TH1D *H;
   H = (TH1D*)gFile->Get("hYield1S");
   double tot(0.); double totE(0.); 
