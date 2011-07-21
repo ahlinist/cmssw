@@ -13,7 +13,7 @@ Implementation:
 //
 // Authors:                              Seth Cooper, Giovanni Franzoni (UMN)
 //         Created:  Mo Jul 14 5:46:22 CEST 2008
-// $Id: EcalTimeTreeMaker.cc,v 1.8 2011/07/13 19:33:16 franzoni Exp $
+// $Id: EcalTimeTreeMaker.cc,v 1.9 2011/07/20 15:15:00 franzoni Exp $
 //
 //
 
@@ -73,8 +73,8 @@ EcalTimeTreeMaker::EcalTimeTreeMaker (const edm::ParameterSet& iConfig) :
   l1GMTReadoutRecTag_   (iConfig.getUntrackedParameter<std::string> ("L1GlobalReadoutRecord","gtDigis")),
   gtRecordCollectionTag_ (iConfig.getUntrackedParameter<std::string> ("GTRecordCollection","")),
   runNum_               (iConfig.getParameter<int> ("runNum")),
-  minEneEB_               (iConfig.getParameter<double> ("minEneEB")),
-  minEneEE_               (iConfig.getParameter<double> ("minEneEE")),
+  minEtEB_              (iConfig.getParameter<double> ("minEtEB")),
+  minEtEE_              (iConfig.getParameter<double> ("minEtEE")),
   fileName_             (iConfig.getUntrackedParameter<std::string> ("fileName", std::string ("EcalTimeTreeMaker"))),
   naiveId_ (0)              
 
@@ -345,9 +345,9 @@ void EcalTimeTreeMaker::dumpBarrelClusterInfo (const CaloGeometry * theGeometry,
 	++clus) // loop on barrel Bclusters
      {        
        double energy = (clus)->energy () ;
-       if (energy<minEneEB_) continue;
        double phi    = (clus)->phi () ;
        double eta    = (clus)->eta () ;
+       if  ( energy/cosh(eta) <minEtEB_ ) continue;
        double sinTheta         = fabs( sin( 2 *atan( exp(-1*(clus)->eta()) ) ) );
        double transverseEnergy = (clus)->energy () * sinTheta;
        double time = -1000.0 ; // gfdoc: work on this to provide a combination of crystals?
@@ -405,6 +405,20 @@ void EcalTimeTreeMaker::dumpBarrelClusterInfo (const CaloGeometry * theGeometry,
 	   double thistime = myhit.time ();
 	   double thisChi2 = myhit.chi2 ();
 	   double thisOutOfTimeChi2 = myhit.outOfTimeChi2 ();
+
+	   
+	   EcalIntercalibConstantMap::const_iterator icalit = icalMap.find(detitr->first);
+	   EcalIntercalibConstant icalconst = 1;
+	   if( icalit!=icalMap.end() ) {
+	     icalconst = (*icalit);
+	   } else {
+	     edm::LogError("EcalTimeTreeMaker") << "No intercalib const found for xtal "
+						<< (detitr->first).rawId();
+	   }
+	   
+	   // discard rechits with A/sigma < 12
+	   if ( thisamp/(icalconst*adcToGeV) < (1.1*12) ) continue;
+
 	   if (thisamp > 0.027) //cut on energy->number of crystals in cluster above 3sigma noise; gf: desirable?
 	     { 
 	       numXtalsinCluster++ ; 
@@ -422,15 +436,6 @@ void EcalTimeTreeMaker::dumpBarrelClusterInfo (const CaloGeometry * theGeometry,
 	       std::swap (maxDet, secDet) ;
 	     }
 
-	   EcalIntercalibConstantMap::const_iterator icalit = icalMap.find(detitr->first);
-	   
-	   EcalIntercalibConstant icalconst = 1;
-	   if( icalit!=icalMap.end() ) {
-	     icalconst = (*icalit);
-	   } else {
-	     edm::LogError("EcalTimeTreeMaker") << "No intercalib const found for xtal "
-					      << (detitr->first).rawId();
-	   }
 	   
 	   if(myhit.isTimeErrorValid())
              myTreeVariables_.xtalInBCTimeErr[numberOfClusters][numberOfXtalsInCluster]= myhit.timeError();
@@ -575,9 +580,9 @@ void EcalTimeTreeMaker::dumpEndcapClusterInfo (const CaloGeometry * theGeometry,
     {        
 
          double energy = (clus)->energy () ;
-	 if (energy<minEneEE_) continue;
          double phi    = (clus)->phi () ;
          double eta    = (clus)->eta () ;
+	 if  ( energy/cosh(eta) <minEtEE_ ) continue;
 	 double sinTheta         = fabs( sin( 2 *atan( exp(-1*(clus)->eta()) ) ) );
 	 double transverseEnergy = (clus)->energy () * sinTheta;
          double time = -1000.0 ;  // gfdoc: work on this to provide a combination of crystals?
@@ -629,6 +634,19 @@ void EcalTimeTreeMaker::dumpEndcapClusterInfo (const CaloGeometry * theGeometry,
 	     double thisChi2 = myhit.chi2 ();
 	     double thisOutOfTimeChi2 = myhit.outOfTimeChi2 ();
 
+	     
+             EcalIntercalibConstantMap::const_iterator icalit = icalMap.find(detitr->first);
+             EcalIntercalibConstant icalconst = 1;
+             if( icalit!=icalMap.end() ) {
+               icalconst = (*icalit);
+             } else {
+               edm::LogError("EcalTimeTreeMaker") << "No intercalib const found for xtal "
+						  << (detitr->first).rawId();
+             }
+	     // don't store rechits with A/sigma < 12
+	     if ( thisamp/(icalconst*adcToGeV) < (2.2*12) ) continue;
+	     
+	     
              if (thisamp > 0.027) //cut on energy->number of crystals in cluster above 3sigma noise
                { 
                  numXtalsinCluster++ ; //xtals in cluster above 3sigma noise  
@@ -648,14 +666,6 @@ void EcalTimeTreeMaker::dumpEndcapClusterInfo (const CaloGeometry * theGeometry,
                  std::swap (maxDet, secDet) ;
                }
 
-             EcalIntercalibConstantMap::const_iterator icalit = icalMap.find(detitr->first);
-             EcalIntercalibConstant icalconst = 1;
-             if( icalit!=icalMap.end() ) {
-               icalconst = (*icalit);
-             } else {
-               edm::LogError("EcalTimeTreeMaker") << "No intercalib const found for xtal "
-                 << (detitr->first).rawId();
-             }
 
 	     // xtal variables inside an endcap basic cluster 
 	      myTreeVariables_.xtalInBCEnergy[numberOfClusters][numberOfXtalsInCluster]=      (float) thisamp;

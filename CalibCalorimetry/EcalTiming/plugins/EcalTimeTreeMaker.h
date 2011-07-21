@@ -17,7 +17,7 @@ Implementation:
 // Skeleton Derived from an example by:  F. DE GUIO C. DOGLIONI P. MERIDIANI
 // Authors:                              Seth Cooper, Giovanni Franzoni (UMN)
 //         Created:  Mo Jul 14 5:46:22 CEST 2008
-// $Id: EcalTimeTreeMaker.h,v 1.2 2011/07/13 17:51:21 franzoni Exp $
+// $Id: EcalTimeTreeMaker.h,v 1.3 2011/07/13 19:33:19 franzoni Exp $
 //
 //
 
@@ -164,8 +164,8 @@ class EcalTimeTreeMaker : public edm::EDAnalyzer
       edm::InputTag l1GMTReadoutRecTag_ ;
       edm::InputTag gtRecordCollectionTag_ ;
       int runNum_ ;
-      double minEneEB_;
-      double minEneEE_;
+      double minEtEB_;
+      double minEtEE_;
       std::string fileName_ ;
       int  naiveId_ ; 
 
