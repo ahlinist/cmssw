@@ -44,18 +44,19 @@ class SampleData:
     pass
 
 sampleData = {}
+order = []
 
 for label, datasets in samples.items():
     for dataset in datasets:
         data = SampleData()
         data.label   = label
-        data.shortLabel = data.label.replace('_data', '')
         data.dataset = dataset
         data.primaryName, \
             data.processedName, \
             data.tier =   dataset.split("/")[1:]
         data.label += "_" + tierAndSourceMap[data.tier]
-        data.isRealData = label[-4:] == "data"
+        data.shortLabel = data.label.replace('_data', '')
+        data.isRealData = data.label[-4:] == "data"
 
         name = '%s_%s_%s' % ( data.shortLabel,
                               data.primaryName,
@@ -68,15 +69,17 @@ for label, datasets in samples.items():
             )
         else:
             sampleData[name] = data
+        order.append(name)
 
-for name, data in sampleData.items():
+for name in order:
+    data = sampleData[name]
     print """
 ###############################################################################
 [{NAME}]
 CMSSW.datasetpath = {DATASET}
 CMSSW.pycfg_params = options_load=options_{LABEL}.cfg
 USER.additional_input_files = options_{LABEL}.cfg
-USER.publish_data_name = {PROCESSED_NAME}_{SCHEDULER}_{SHORT_LABEL}-42X-v4"""\
+USER.publish_data_name = {PROCESSED_NAME}_{SCHEDULER}_{SHORT_LABEL}-42X-v9"""\
     .format( NAME = name,
              DATASET = data.dataset,
              LABEL = data.label,
