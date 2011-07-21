@@ -7,6 +7,7 @@
 #include "DataFormats/Math/interface/normalizedPhi.h"
 
 #include "AnalysisDataFormats/TauAnalysis/interface/CompositePtrCandidateT1T2MEt.h"
+#include "AnalysisDataFormats/TauAnalysis/interface/NSVfitResonanceHypothesisSummary.h"
 #include "TrackingTools/TransientTrack/interface/TransientTrackBuilder.h"
 
 #include "DataFormats/Candidate/interface/CandidateFwd.h"
@@ -185,10 +186,13 @@ class CompositePtrCandidateT1T2MEtAlgorithm
 	    inputParticles.insert(std::pair<std::string, CandidatePtr>("leg1", leg1));
 	    inputParticles.insert(std::pair<std::string, CandidatePtr>("leg2", leg2));
 	    inputParticles.insert(std::pair<std::string, CandidatePtr>("met",  met));
-	    std::auto_ptr<NSVfitEventHypothesisBase> nSVfitHypothesis(nSVfitAlgorithm->second->fit(inputParticles, pv));
-	    //std::string nSVfitHypothesisName = nSVfitHypothesis->name();
-	    compositePtrCandidate.addNSVfitSolution(nSVfitHypothesis);
-	    //compositePtrCandidate.nSVfitSolution(nSVfitHypothesisName)->print(std::cout);
+	    std::auto_ptr<NSVfitEventHypothesisBase> nSVfitHypothesis(nSVfitAlgorithm->second->fit(inputParticles, pv));	    
+	    //nSVfitHypothesis->print(std::cout);
+	    assert(nSVfitHypothesis->numResonances() == 1);
+	    NSVfitResonanceHypothesisSummary nSVfitHypothesisSummary(*nSVfitHypothesis->resonance(0));
+	    nSVfitHypothesisSummary.setName(nSVfitAlgorithm->first);
+	    compositePtrCandidate.addNSVfitSolution(nSVfitHypothesisSummary);
+	    //compositePtrCandidate.nSVfitSolution(nSVfitAlgorithm->first)->print(std::cout);
 	    //std::cout << " done." << std::endl;
 	  }
 	}
