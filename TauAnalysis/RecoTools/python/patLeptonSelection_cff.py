@@ -428,7 +428,12 @@ selectPatTausForDiTau = cms.Sequence(selectPatTausForDiTau1st * selectPatTausFor
 # define collections of pat::(PF)Taus used in W->tau-jet + nu channel
 selectedPatTausForWTauNuEta21.cut = selectedPatTausEta23.cut
 selectedPatTausForWTauNuPt20.cut = cms.string("pt > 30.")
-selectedPatTausForWTauNuLeadTrk.cut = selectedPatTausLeadTrk.cut
+selectedPatTausForWTauNuTrkMatchVertex = cms.EDFilter("PATTauDzSelector",
+                                                      vertexSource = cms.InputTag('selectedPrimaryVertexHighestPtTrackSum'),
+                                                      dzMax = cms.double(0.2),
+                                                      filter = cms.bool(False)
+                                                      )
+selectedPatTausForWTauNuLeadTrk.cut = cms.string('leadTrack().isNonnull')
 selectedPatTausForWTauNuLeadTrkPt.cut = cms.string('leadTrack().isNonnull() & leadTrack().pt() > 15.')
 selectedPatTausForWTauNuIso.cut = cms.string("tauID('byHPSmedium') > 0.5")
 selectedPatTausForWTauNuProng.cut = selectedPatTausProng.cut
@@ -436,16 +441,12 @@ selectedPatTausForWTauNuCharge.cut = selectedPatTausCharge.cut
 selectedPatTausForWTauNuMuonVeto.cut = selectedPatTausMuonVeto.cut
 selectedPatTausForWTauNuElectronVeto.cut = selectedPatTausElectronVeto.cut
 selectedPatTausForWTauNuEmFraction.cut = cms.string("emFraction < 0.90")
-
 selectedPatTausForWTauNuEcalCrackVeto.cut = selectedPatTausEcalCrackVeto.cut
-
-
-
-
 
 patTauSelConfiguratorForWTauNu = objSelConfigurator(
     [ selectedPatTausForWTauNuEta21,
       selectedPatTausForWTauNuPt20,
+      selectedPatTausForWTauNuTrkMatchVertex,
       selectedPatTausForWTauNuLeadTrk,
       selectedPatTausForWTauNuLeadTrkPt,
       selectedPatTausForWTauNuMuonVeto,
