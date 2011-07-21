@@ -10,7 +10,7 @@ NSVfitResonanceHypothesisBase::NSVfitResonanceHypothesisBase(const NSVfitResonan
     isValidSolution_(bluePrint.isValidSolution_)
 {}
 
-NSVfitResonanceHypothesisBase& NSVfitResonanceHypothesisBase::operator =(const NSVfitResonanceHypothesisBase& bluePrint)
+NSVfitResonanceHypothesisBase& NSVfitResonanceHypothesisBase::operator=(const NSVfitResonanceHypothesisBase& bluePrint)
 {  
   name_ = bluePrint.name_;
   barcode_ = bluePrint.barcode_;

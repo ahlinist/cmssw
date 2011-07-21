@@ -12,9 +12,9 @@
  *          Michal Bluj,
  *          Christian Veelken
  *
- * \version $Revision: 1.31 $
+ * \version $Revision: 1.32 $
  *
- * $Id: CompositePtrCandidateT1T2MEt.h,v 1.31 2011/07/07 19:20:18 veelken Exp $
+ * $Id: CompositePtrCandidateT1T2MEt.h,v 1.32 2011/07/07 19:21:22 veelken Exp $
  *
  */
 
@@ -28,7 +28,7 @@
 #include "DataFormats/Common/interface/Ptr.h"
 #include "DataFormats/Common/interface/OwnVector.h"
 
-#include "AnalysisDataFormats/TauAnalysis/interface/NSVfitEventHypothesisBase.h"
+#include "AnalysisDataFormats/TauAnalysis/interface/NSVfitResonanceHypothesisSummary.h"
 #include "AnalysisDataFormats/TauAnalysis/interface/tauAnalysisAuxFunctions.h"
 
 #include <TMatrixD.h>
@@ -213,10 +213,10 @@ class CompositePtrCandidateT1T2MEt : public reco::LeafCandidate
 
   /// get Mtautau solutions reconstructed by NSVfit algorithm
   bool hasNSVFitSolutions() const { return (nSVfitSolutions_.begin() != nSVfitSolutions_.end()); }
-  const NSVfitEventHypothesisBase* nSVfitSolution(const std::string& algorithm, int* errorFlag = 0) const
+  const NSVfitResonanceHypothesisSummary* nSVfitSolution(const std::string& algorithm, int* errorFlag = 0) const
   {
-    const NSVfitEventHypothesisBase* retVal = 0;
-    for ( edm::OwnVector<NSVfitEventHypothesisBase>::const_iterator nSVfitSolution = nSVfitSolutions_.begin();
+    const NSVfitResonanceHypothesisSummary* retVal = 0;
+    for ( std::vector<NSVfitResonanceHypothesisSummary>::const_iterator nSVfitSolution = nSVfitSolutions_.begin();
 	  nSVfitSolution != nSVfitSolutions_.end(); ++nSVfitSolution ) {
       if ( nSVfitSolution->name() == algorithm ) {
 	retVal = &(*nSVfitSolution);
@@ -232,7 +232,7 @@ class CompositePtrCandidateT1T2MEt : public reco::LeafCandidate
 	  << " No nSVfit solution defined for algorithm = " << algorithm << " !!";
 	std::cout << "available = { " << std::endl;
 	bool isFirst = true;
-	for ( edm::OwnVector<NSVfitEventHypothesisBase>::const_iterator nSVfitSolution = nSVfitSolutions_.begin();
+	for ( std::vector<NSVfitResonanceHypothesisSummary>::const_iterator nSVfitSolution = nSVfitSolutions_.begin();
 	      nSVfitSolution != nSVfitSolutions_.end(); ++nSVfitSolution ) {
 	  if ( !isFirst ) std::cout << ", ";
 	  std::cout << nSVfitSolution->name();
@@ -319,7 +319,7 @@ class CompositePtrCandidateT1T2MEt : public reco::LeafCandidate
   void setPzeta(double pZeta) { pZeta_ = pZeta; }
   void setPzetaVis(double pZetaVis) { pZetaVis_ = pZetaVis; }
 
-  void addNSVfitSolution(std::auto_ptr<NSVfitEventHypothesisBase> solution)
+  void addNSVfitSolution(const NSVfitResonanceHypothesisSummary& solution)
   {
     nSVfitSolutions_.push_back(solution);
   }
@@ -392,7 +392,7 @@ class CompositePtrCandidateT1T2MEt : public reco::LeafCandidate
   double pZetaVis_;
 
   /// Mtautau solutions reconstructed by NSVfit algorithm
-  edm::OwnVector<NSVfitEventHypothesisBase> nSVfitSolutions_;
+  std::vector<NSVfitResonanceHypothesisSummary> nSVfitSolutions_;
 };
 
 #include "DataFormats/PatCandidates/interface/Electron.h"

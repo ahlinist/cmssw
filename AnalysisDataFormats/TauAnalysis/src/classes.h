@@ -10,6 +10,8 @@
 #include "AnalysisDataFormats/TauAnalysis/interface/NSVfitEventHypothesisByIntegration.h"
 #include "AnalysisDataFormats/TauAnalysis/interface/NSVfitResonanceHypothesisBase.h"
 #include "AnalysisDataFormats/TauAnalysis/interface/NSVfitResonanceHypothesis.h"
+#include "AnalysisDataFormats/TauAnalysis/interface/NSVfitResonanceHypothesisByIntegration.h"
+#include "AnalysisDataFormats/TauAnalysis/interface/NSVfitResonanceHypothesisSummary.h"
 #include "AnalysisDataFormats/TauAnalysis/interface/NSVfitSingleParticleHypothesisBase.h"
 #include "AnalysisDataFormats/TauAnalysis/interface/NSVfitTauToLepHypothesis.h"
 #include "AnalysisDataFormats/TauAnalysis/interface/NSVfitTauToHadHypothesisBase.h"
@@ -95,6 +97,7 @@ namespace {
     NSVfitResonanceHypothesisBase dummyNSVfitResonanceHypothesisBase;
     NSVfitResonanceHypothesis dummyNSVfitResonanceHypothesis;
     NSVfitResonanceHypothesisByIntegration dummyNSVfitResonanceHypothesisByIntegration;
+    NSVfitResonanceHypothesisSummary dummyNSVfitResonanceHypothesisSummary;
     NSVfitTauToElecHypothesisBase dummyNSVfitTauToElecHypothesisBase;
     NSVfitTauToElecHypothesis dummyNSVfitTauToElecHypothesis;
     NSVfitTauToMuHypothesisBase dummyNSVfitTauToMuHypothesisBase;
@@ -111,6 +114,7 @@ namespace {
     edm::OwnVector<NSVfitEventHypothesisBase, edm::ClonePolicy<NSVfitEventHypothesisBase> > dummyNSVfitEventHypothesisBaseOwnVector;
     std::vector<NSVfitResonanceHypothesisBase*> dummyNSVfitResonanceHypothesisBasePtrCollection;
     edm::OwnVector<NSVfitResonanceHypothesisBase, edm::ClonePolicy<NSVfitResonanceHypothesisBase> > dummyNSVfitResonanceHypothesisBaseOwnVector;
+    std::vector<NSVfitResonanceHypothesisSummary> dummyNSVfitResonanceHypothesisSummaryCollection;
     std::auto_ptr<TH1> dummyTH1Ptr;
     std::vector<NSVfitSingleParticleHypothesisBase*> dummyNSVfitSingleParticleHypothesisBasePtrCollection;
     edm::OwnVector<NSVfitSingleParticleHypothesisBase, edm::ClonePolicy<NSVfitSingleParticleHypothesisBase> >  dummyNSVfitSingleParticleHypothesisBaseOwnVector;

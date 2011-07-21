@@ -41,11 +41,15 @@
   <class name="NSVfitEventHypothesisByIntegration">
     <field name="histMassResults_" transient="true"/>
   </class>
-  <class name="NSVfitResonanceHypothesisBase"/>
+  <class name="NSVfitResonanceHypothesisBase">
+    <!-- made transient only for testing !!! -->
+    <field name="daughters_" transient="true"/>
+  </class>
   <class name="NSVfitResonanceHypothesis">
     <field name="eventHyp_" transient="true"/>
   </class>
   <class name="NSVfitResonanceHypothesisByIntegration"/>
+  <class name="NSVfitResonanceHypothesisSummary"/>
   <class name="NSVfitSingleParticleHypothesisBase"/>
   <class name="NSVfitSingleParticleHypothesis">
     <field name="mother_" transient="true"/>
@@ -70,6 +74,7 @@
   <class name="edm::OwnVector<NSVfitEventHypothesisBase, edm::ClonePolicy<NSVfitEventHypothesisBase> >"/>
   <class name="std::vector<NSVfitResonanceHypothesisBase*>"/>
   <class name="edm::OwnVector<NSVfitResonanceHypothesisBase, edm::ClonePolicy<NSVfitResonanceHypothesisBase> >"/>
+  <class name="std::vector<NSVfitResonanceHypothesisSummary>"/>
   <class name="std::auto_ptr<TH1>"/>
   <class name="std::vector<NSVfitSingleParticleHypothesisBase*>"/>
   <class name="edm::OwnVector<NSVfitSingleParticleHypothesisBase, edm::ClonePolicy<NSVfitSingleParticleHypothesisBase> >"/>
