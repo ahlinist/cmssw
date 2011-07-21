@@ -47,7 +47,7 @@ void XS_AvsB(){
 
 void XS_B(){
 
-  TFile *f = new TFile("XSection_rB_s.root");
+  TFile *f = new TFile("XSection_3SBinRBp1.root");
   TH1D *Pt_rA;
   Pt_rA = (TH1D*)gFile->Get("S1YieldPt");
   TH1D *Eta_rA;
@@ -56,7 +56,7 @@ void XS_B(){
   Pt_rA->SetLineColor(4); Eta_rA->SetLineColor(4);
   
   
-  TFile *f1 = new TFile("XSection_rB.root");
+  TFile *f1 = new TFile("XSection_3SBinRBp2.root");
   TH1D *Pt_rB;
   Pt_rB = (TH1D*)gFile->Get("S1YieldPt");
   TH1D *Eta_rB;
