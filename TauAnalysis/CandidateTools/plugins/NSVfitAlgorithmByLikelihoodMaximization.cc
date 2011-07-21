@@ -118,7 +118,18 @@ void NSVfitAlgorithmByLikelihoodMaximization::fitImp() const
 
   int fitStatus = minimizer_->Status();
   //std::cout << " fitStatus = " << fitStatus << std::endl;
-  bool isValidSolution = (fitStatus == 0);
+
+//--- evaluate Minuit status code:
+//    0: error matrix not calculated at all
+//    1: diagonal approximation only, not accurate
+//    2: full matrix, but forced positive-definite
+//    3: full accurate covariance matrix 
+//      (after MIGRAD, this is the indication of normal convergence.)
+//
+//   NOTE: meaning of error codes taken from http://lmu.web.psi.ch/facilities/software/minuit_doc.html
+//
+  bool isValidSolution = (fitStatus == 2 || fitStatus == 3);
+
   size_t numResonances = currentEventHypothesis_->numResonances();
   for ( size_t iResonance = 0; iResonance < numResonances; ++iResonance ) {
     NSVfitResonanceHypothesis* resonance = 
