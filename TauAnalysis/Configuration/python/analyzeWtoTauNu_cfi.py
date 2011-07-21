@@ -32,8 +32,8 @@ sysUncertaintyNames.extend(
      metSystematicsForWtoTauNu,
      htRatioSystematics,
      tauNuPairSystematics,
-     metTopologySystematics
-     #theorySystematics
+     metTopologySystematics,
+     theorySystematics
      ]
     )
     )
@@ -180,7 +180,7 @@ evtSelPrimaryEventVertexPosition = cms.PSet(
 evtSelTauEta = cms.PSet(
     pluginName = cms.string('evtSelTauEta'),
     pluginType = cms.string('BoolEventSelector'),
-    src_cumulative = cms.InputTag('tauEtaCut', 'cumulative'),#from selectWtoTauNu
+    src_cumulative = cms.InputTag('tauEtaCut', 'cumulative'),
     src_individual = cms.InputTag('tauEtaCut', 'individual'),
     systematics = cms.vstring(tauSystematics.keys())
 )
@@ -191,6 +191,14 @@ evtSelTauPt = cms.PSet(
     src_individual = cms.InputTag('tauPtCut', 'individual'),
     systematics = cms.vstring(tauSystematics.keys())
 )
+
+evtSelTrkVertex = cms.PSet(
+    pluginName = cms.string('evtSelTrkVertex'),
+    pluginType = cms.string('BoolEventSelector'),
+    src_cumulative = cms.InputTag('tauTrkVertex','cumulative'),
+    src_individual = cms.InputTag('tauTrkVertex','individual'),
+    systematics = cms.vstring(tauSystematics.keys())
+    )
 
 evtSelPFMetPt = cms.PSet(
     pluginName = cms.string('evtSelPFMetPt'),
@@ -344,7 +352,7 @@ wTauNuAnalysisSequence = cms.VPSet(
         ),
     # trigger selection
     cms.PSet(
-       filter = cms.string('evtSelTrigger2'),
+       filter = cms.string('evtSelTrigger'),
        title = cms.string('Tau+MET Trigger'),
        saveRunLumiSectionEventNumbers = cms.vstring('')
        ),
@@ -394,7 +402,12 @@ wTauNuAnalysisSequence = cms.VPSet(
     cms.PSet(
         analyzers = wTauNuHistManagers,
         replace = cms.vstring('tauHistManager.tauSource = selectedPatTausForWTauNuPt20Cumulative')
-	), 
+	),
+    cms.PSet(
+        filter = cms.string('evtSelTrkVertex'),
+        title = cms.string('Track matching vertex'),
+        saveRunLumiSectionEventNumbers = cms.vstring('')
+    ),
     cms.PSet(
         filter = cms.string('evtSelTauLeadTrk'),
         title = cms.string('with leadtrk'),
@@ -541,7 +554,7 @@ wTauNuAnalysisSequence = cms.VPSet(
                              )
        ),
     cms.PSet(
-       filter = cms.string('evtSelTrigger'),
+       filter = cms.string('evtSelTrigger2'),
        title = cms.string('trigger'),
        saveRumLumiSectionEventNumbers = cms.vstring('passed_cumulative')
        ),
