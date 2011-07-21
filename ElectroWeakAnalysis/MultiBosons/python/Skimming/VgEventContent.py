@@ -63,7 +63,7 @@ vgCandsEventContent = [
 extraSkimEventContent = vgCandsEventContent[:] + \
     extraConversionEventContent[:] + [
         "keep *_gsfElectronCores_*_*",
-        "keep *_offlinePrimaryVertices_*_*",
+        "keep *_offlinePrimaryVertices*_*_*",
         "keep *_offlineBeamSpot_*_*",
         "keep *_TriggerResults_*_PAT",
         ## keep lightweight generator content
