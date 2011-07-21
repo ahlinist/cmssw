@@ -87,7 +87,7 @@ def embedTriggerMatches(process, hltPaths):
     for path in hltPaths[target]:
       ## Get the module name, e.g. "cleanPatMuonsTriggerMatchHLTMu9"
       ##+ for target = "cleanPatMuons" and path = "HLT_Mu9"
-      ## L. Gray 27.4.2011 add in change to deal with versioned triggers      
+      ## L. Gray 27.4.2011 add in change to deal with versioned triggers
       moduleLabel = baseName.lower() + "TriggerMatch" + path.replace("_", "").replace("v*","")
       setattr(process,
         moduleLabel,
@@ -110,25 +110,51 @@ def embedTriggerMatches(process, hltPaths):
     else:
       process.patTriggerMatchEmbedder += targetTriggerMatch
   # for target in hltPaths.keys(): <-------------------------------------------
-  process.patTriggerSequence = cms.Sequence(
-    process.patTrigger *
-    process.patTriggerMatcher *
-    process.patTriggerEvent *
-    process.patTriggerMatchEmbedder
-  )
+  process.patDefaultSequence.replace(
+      process.patTrigger,
+      cms.Sequence( process.patTrigger * process.patTriggerMatcher )
+      )
+  process.patDefaultSequence.replace(
+      process.patTriggerEvent,
+      cms.Sequence( process.patTriggerEvent * process.patTriggerMatchEmbedder )
+      )
+#   process.patTriggerDefaultSequence = cms.Sequence(
+#       process.patTrigger *
+#       process.patTriggerMatcher *
+#       process.patTriggerEvent *
+#       process.patTriggerMatchEmbedder
+#   )
 # def embedTriggerMatches(process, hltPaths): <--------------------------------
 
 ###############################################################################
-def addPhotonReReco(process):
+def addPhotonReReco(process, isAOD=False):
     """Include the photon re-reco sequence in the patDefaultSequence
     See https://hypernews.cern.ch/HyperNews/CMS/get/egamma/960.html
     and
     https://hypernews.cern.ch/HyperNews/CMS/get/egamma/958/1/1/1/1/1/1/1/1/1/1/1.html
     """
-    process.photonReReco = cms.Sequence(process.ckfTracksFromConversions *
-                                        process.conversionSequence *
-                                        process.photonSequence *
-                                        process.photonIDSequence)
+    if isAOD:
+        process.photons.barrelEcalHits = cms.InputTag("reducedEcalRecHitsEB")
+        process.photons.endcapEcalHits = cms.InputTag("reducedEcalRecHitsEE")
+
+        from RecoEgamma.PhotonIdentification.isolationCalculator_cfi \
+            import isolationSumsCalculator as isc
+
+        isc.barrelEcalRecHitProducer = cms.string('reducedEcalRecHitsEB')
+        isc.endcapEcalRecHitProducer = cms.string('reducedEcalRecHitsEE')
+        isc.barrelEcalRecHitCollection = cms.InputTag('reducedEcalRecHitsEB')
+        isc.endcapEcalRecHitCollection = cms.InputTag('reducedEcalRecHitsEE')
+
+        process.photons.isolationSumsCalculatorSet = isc
+
+        process.photonReReco = cms.Sequence( process.photonSequence *
+                                             process.photonIDSequence )
+
+    else:
+        process.photonReReco = cms.Sequence( process.ckfTracksFromConversions *
+                                             process.conversionSequence *
+                                             process.photonSequence *
+                                             process.photonIDSequence )
 
     # Edit the pat sequence to do the rereco
     process.patDefaultSequence = cms.Sequence(process.photonReReco*
@@ -138,16 +164,23 @@ def addPhotonReReco(process):
 
 ###############################################################################
 def addRhoFromFastJet(process, after):
-    """Add rho from FastJet for pile-up corrected isolation"""
+    """
+    Add rho from FastJet for pile-up corrected isolation
+    https://twiki.cern.ch/twiki/bin/view/CMSPublic/WorkBookJetEnergyCorrections#JetEnCor2011V2
+    """
 
-    ## Load and configure the producer
-    process.load('RecoJets.JetProducers.kt4PFJets_cfi')
-    process.kt6PFJets = process.kt4PFJets.clone( rParam = 0.6,
-                                                 doRhoFastjet = True )
-    process.kt6PFJets.Rho_EtaMax = cms.double(2.5)
+    ## Import the JEC services
+    process.load('JetMETCorrections.Configuration.DefaultJEC_cff')
+    ## Import the Jet RECO modules
+    process.load('RecoJets.Configuration.RecoPFJets_cff')
+    ## Turn-on the FastJet density rho calculation within |eta| < 2.5
+    process.kt6PFJets.doRhoFastjet = True
+    process.kt6PFJets.Rho_EtaMax = 2.5
+    ## Add the rho calculation within |eta| < 4.4 (default)
+    process.kt6PFJetsEtaMax4p4 = process.kt6PFJets.clone(Rho_EtaMax = 4.4)
 
     ## Append it to the processing sequence after the sequence `after'
-    after *= process.kt6PFJets
+    after *= cms.Sequence( process.kt6PFJets * process.kt6PFJetsEtaMax4p4 )
 
     ## Add ot the the output
     process.out.outputCommands.append( "keep *_*_rho_*" )
@@ -160,18 +193,18 @@ def switchOnDAVertices(process, after):
 
     ## Load and configure the producer
     process.load('RecoVertex.PrimaryVertexProducer.OfflinePrimaryVerticesDA_cfi')
-    process.offlinePrimaryVertices = process.offlinePrimaryVerticesDA.clone()
-    process.offlinePrimaryVertices.TkClusParameters.TkDAClusParameters.Tmin = cms.double(4.)
-    process.offlinePrimaryVertices.TkClusParameters.vertexSize = cms.double(0.01)
-    after *= process.offlinePrimaryVertices
+    # process.offlinePrimaryVertices = process.offlinePrimaryVerticesDA.clone()
+    process.offlinePrimaryVerticesDA.TkClusParameters.TkDAClusParameters.Tmin = cms.double(4.)
+    process.offlinePrimaryVerticesDA.TkClusParameters.vertexSize = cms.double(0.01)
+    after *= process.offlinePrimaryVerticesDA
 # def switchOnDAVertices(process, after): <------------------------------------
 
 ###############################################################################
 def switchOnPileupReweighting(process, after):
     """Calculate the pile-up reweighting factor from data"""
-    
+
     ## Load and configure the producer
-    process.load('ElectroWeakAnalysis.MultiBosons.Skimming.PUWeightProducer_cff')    
+    process.load('ElectroWeakAnalysis.MultiBosons.Skimming.PUWeightProducer_cff')
     after *= process.pileupweight
 # def switchOnPileupReweighting(process, after): <------------------------------------
 
@@ -181,7 +214,7 @@ def addIsoForPU(process):
     """Calculate isolation with proper criteria given that we have pileup."""
 
     #properly setup pat Electron Isolation
-    process.eleIsoDepositTkPU = process.eleIsoDepositTk.clone()    
+    process.eleIsoDepositTkPU = process.eleIsoDepositTk.clone()
     # use per-vertex track isolation for the electrons, from HGG isolation
     from ElectroWeakAnalysis.MultiBosons.Skimming.eleTrackExtractorBlocks_cfi import EleIsoTrackExtractorBlock
     process.eleIsoDepositTkPU.ExtractorPSet = EleIsoTrackExtractorBlock
@@ -194,7 +227,7 @@ def addIsoForPU(process):
                                                                                    'Threshold(0.7)'), #this matches what is done is standard iso
                                                                skipDefaultVeto = cms.bool(True),
                                                                mode = cms.string('sum'))
-                                                      )    
+                                                      )
     process.eleIsoFromDepsTkPU04 = process.eleIsoFromDepsTkPU03.clone()
     process.eleIsoFromDepsTkPU04.deposits  = cms.VPSet(cms.PSet(src = cms.InputTag("eleIsoDepositTkPU"),
                                                                 deltaR = cms.double(0.4),
@@ -203,7 +236,7 @@ def addIsoForPU(process):
                                                                                     'Threshold(0.7)'),
                                                                 skipDefaultVeto = cms.bool(True),
                                                                 mode = cms.string('sum'))
-                                                       )    
+                                                       )
     #remove veto region from electron HCAL isolation
     process.eleIsoFromDepsHcalFromTowersPU = process.eleIsoFromDepsHcalFromTowers.clone()
     process.eleIsoFromDepsHcalFromTowersPU.deposits = cms.VPSet(cms.PSet(src = cms.InputTag("eleIsoDepositHcalFromTowers"),
@@ -240,9 +273,9 @@ def addIsoForPU(process):
     process.patElectrons.userData.userFloats.src.append( cms.InputTag('eleTrackIsoPUDR04') )
     process.patElectrons.userData.userFloats.src.append( cms.InputTag('eleHcalTowerIsoPUDR04') )
     process.patDefaultSequence.replace(process.patElectrons,cms.Sequence(process.patElectronIsolation+process.patElectrons))
-    
+
     #change default patPhoton Isolation
-    process.gamIsoDepositTkPU = process.gamIsoDepositTk.clone()    
+    process.gamIsoDepositTkPU = process.gamIsoDepositTk.clone()
     # use per-vertex track isolation for the electrons, from HGG isolation
     from ElectroWeakAnalysis.MultiBosons.Skimming.gamTrackExtractorBlocks_cfi import GamIsoTrackExtractorBlock
     process.gamIsoDepositTkPU.ExtractorPSet = GamIsoTrackExtractorBlock
@@ -256,7 +289,7 @@ def addIsoForPU(process):
                                                                skipDefaultVeto = cms.bool(True),
                                                                mode = cms.string('sum'))
                                                                  )
-    process.gamIsoFromDepsTkPU04 = process.gamIsoFromDepsTkPU03.clone()    
+    process.gamIsoFromDepsTkPU04 = process.gamIsoFromDepsTkPU03.clone()
     process.gamIsoFromDepsTkPU04.deposits = cms.VPSet(cms.PSet(src = cms.InputTag("gamIsoDepositTkPU"),
                                                                deltaR = cms.double(0.4),
                                                                weight = cms.string('1'),
@@ -297,7 +330,7 @@ def addIsoForPU(process):
                                                      process.gamIsoFromDepsHcalFromTowersPU +
                                                      process.gamHcalTowerIsoPUDR04) )
 
-    #add new isolations as user floats to the corresponding pat object    
+    #add new isolations as user floats to the corresponding pat object
     process.patPhotons.userData.userFloats.src.append( cms.InputTag('gamTrackIsoPUDR03') )
     process.patPhotons.userData.userFloats.src.append( cms.InputTag('gamTrackIsoPUDR04') )
     process.patPhotons.userData.userFloats.src.append( cms.InputTag('gamHcalTowerIsoPUDR04') )
