@@ -14,7 +14,7 @@ Implementation:
 // Skeleton Derived from an example by:  
 // Authors:                              Giovanni Franzoni (UMN)
 //         Created:  Mo Apr 18 5:46:22 CEST 2008
-// $Id: EcalTimeEleTreeMaker.cc,v 1.5 2011/07/20 15:15:00 franzoni Exp $
+// $Id: EcalTimeEleTreeMaker.cc,v 1.6 2011/07/20 23:22:07 franzoni Exp $
 //
 //
 
@@ -740,29 +740,31 @@ void EcalTimeEleTreeMaker::dumpEndcapClusterInfo (const CaloGeometry * theGeomet
 
 
 	 // (basic) cluster shapes for endcap
-         myTreeVariables_.clusterE2x2[numberOfClusters] = lazyTools -> e2x2(*(*bClus));
-         //myTreeVariables_.clusterE2x2[numberOfClusters] = lazyTools -> e2x2(*(*bClus));
-         myTreeVariables_.clusterE3x2[numberOfClusters] = lazyTools -> e3x2(*(*bClus));
-         myTreeVariables_.clusterE3x3[numberOfClusters] = lazyTools -> e3x3(*(*bClus));
-         myTreeVariables_.clusterE4x4[numberOfClusters] = lazyTools -> e4x4(*(*bClus));
-         myTreeVariables_.clusterE5x5[numberOfClusters] = lazyTools -> e5x5(*(*bClus));
+	 if(FILL_SHAPE_VARS) {
+	   myTreeVariables_.clusterE2x2[numberOfClusters] = lazyTools -> e2x2(*(*bClus));
+	   //myTreeVariables_.clusterE2x2[numberOfClusters] = lazyTools -> e2x2(*(*bClus));
+	   myTreeVariables_.clusterE3x2[numberOfClusters] = lazyTools -> e3x2(*(*bClus));
+	   myTreeVariables_.clusterE3x3[numberOfClusters] = lazyTools -> e3x3(*(*bClus));
+	   myTreeVariables_.clusterE4x4[numberOfClusters] = lazyTools -> e4x4(*(*bClus));
+	   myTreeVariables_.clusterE5x5[numberOfClusters] = lazyTools -> e5x5(*(*bClus));
+	   
+	   myTreeVariables_.clusterE2x5Right[numberOfClusters] = lazyTools -> e2x5Right(*(*bClus));
+	   myTreeVariables_.clusterE2x5Left[numberOfClusters] = lazyTools -> e2x5Left(*(*bClus));
+	   myTreeVariables_.clusterE2x5Top[numberOfClusters] = lazyTools -> e2x5Top(*(*bClus));
+	   myTreeVariables_.clusterE2x5Bottom[numberOfClusters] = lazyTools -> e2x5Bottom(*(*bClus));
+	   
+	   myTreeVariables_.clusterCovEtaEta[numberOfClusters] = (lazyTools -> covariances(*(*bClus)))[0];
+	   myTreeVariables_.clusterCovPhiPhi[numberOfClusters] = (lazyTools -> covariances(*(*bClus)))[2];
+	   myTreeVariables_.clusterCovEtaPhi[numberOfClusters] = (lazyTools -> covariances(*(*bClus)))[1];
+	   
+	   myTreeVariables_.clusterLat[numberOfClusters] = (lazyTools -> lat(*(*bClus)))[2];
+	   myTreeVariables_.clusterEtaLat[numberOfClusters] = (lazyTools -> lat(*(*bClus)))[0];
+	   myTreeVariables_.clusterPhiLat[numberOfClusters] = (lazyTools -> lat(*(*bClus)))[1];
+	   
+	   myTreeVariables_.clusterZernike20[numberOfClusters] = lazyTools -> zernike20(*(*bClus));
+	   myTreeVariables_.clusterZernike42[numberOfClusters] = lazyTools -> zernike42(*(*bClus));
+	 }
 
-         myTreeVariables_.clusterE2x5Right[numberOfClusters] = lazyTools -> e2x5Right(*(*bClus));
-         myTreeVariables_.clusterE2x5Left[numberOfClusters] = lazyTools -> e2x5Left(*(*bClus));
-         myTreeVariables_.clusterE2x5Top[numberOfClusters] = lazyTools -> e2x5Top(*(*bClus));
-         myTreeVariables_.clusterE2x5Bottom[numberOfClusters] = lazyTools -> e2x5Bottom(*(*bClus));
-
-         myTreeVariables_.clusterCovEtaEta[numberOfClusters] = (lazyTools -> covariances(*(*bClus)))[0];
-         myTreeVariables_.clusterCovPhiPhi[numberOfClusters] = (lazyTools -> covariances(*(*bClus)))[2];
-         myTreeVariables_.clusterCovEtaPhi[numberOfClusters] = (lazyTools -> covariances(*(*bClus)))[1];
-
-         myTreeVariables_.clusterLat[numberOfClusters] = (lazyTools -> lat(*(*bClus)))[2];
-         myTreeVariables_.clusterEtaLat[numberOfClusters] = (lazyTools -> lat(*(*bClus)))[0];
-         myTreeVariables_.clusterPhiLat[numberOfClusters] = (lazyTools -> lat(*(*bClus)))[1];
-
-         myTreeVariables_.clusterZernike20[numberOfClusters] = lazyTools -> zernike20(*(*bClus));
-         myTreeVariables_.clusterZernike42[numberOfClusters] = lazyTools -> zernike42(*(*bClus));
-    
          numberOfClusters++ ;
 
 	}//end endcap basic cluster loop belonging to a SC
