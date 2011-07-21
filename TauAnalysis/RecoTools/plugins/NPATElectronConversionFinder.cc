@@ -1,6 +1,6 @@
 //
 // Implement photon conversion veto for electron identification
-// $Id: NPATElectronConversionFinder.cc,v 1.1 2011/06/14 15:21:50 jkolb Exp $
+// $Id: NPATElectronConversionFinder.cc,v 1.2 2011/06/15 15:36:22 jkolb Exp $
 //
 //
 #include "RecoEgamma/EgammaTools/interface/ConversionTools.h"
@@ -48,9 +48,9 @@ void NPATElectronConversionFinderImp::select(const edm::Handle<collection>& elec
 
     edm::Handle<reco::ConversionCollection> hConversions;
     // for CMSSW 4_1_X
-    event.getByLabel("trackerOnlyConversions", hConversions);
+    //event.getByLabel("trackerOnlyConversions", hConversions);
     // for CMSSW 4_2_X
-    //event.getByLabel("allConversions", hConversions);
+    event.getByLabel("allConversions", hConversions);
 
     // iterate over PAT electrons in event
     for( std::vector<pat::Electron>::const_iterator elec = electrons->begin(); elec != electrons->end(); ++elec)
