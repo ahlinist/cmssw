@@ -213,7 +213,7 @@ process.patElectrons.electronIDSources = cms.PSet(
     eidHyperTight1      = cms.InputTag("eidHyperTight1"),
     eidHyperTight2      = cms.InputTag("eidHyperTight2"),
     eidHyperTight3      = cms.InputTag("eidHyperTight3"),
-    eidHyperTight4      = cms.InputTag("eidHyperTight4"),    
+    eidHyperTight4      = cms.InputTag("eidHyperTight4"),
     #CiC MC tuning
     eidVeryLooseMC      = cms.InputTag("eidVeryLooseMC"),
     eidLooseMC          = cms.InputTag("eidLooseMC"),
@@ -292,15 +292,14 @@ elif options.skimType == "Dimuon":
         process.load(basePath + "dimuonSkimFilterSequence_cff")
         process.skimFilterSequence += process.dimuonSkimFilterSequence
 
-    if not options.isAOD:
-        ## Add the photon re-reco.
-        addPhotonReReco(process)
-        ## Now change the photon reco to much looser settings.
-        process.photonCore.minSCEt = 2.0
-        process.photons.minSCEtBarrel = 2.0
-        process.photons.minSCEtEndcap = 2.0
-        process.photons.maxHoverEBarrel = 10.0
-        process.photons.maxHoverEEndcap = 10.0
+    ## Add the photon re-reco.
+    addPhotonReReco(process, options.isAOD)
+    ## Now change the photon reco to much looser settings.
+    process.photonCore.minSCEt = 4.0
+    process.photons.minSCEtBarrel = 4.0
+    process.photons.minSCEtEndcap = 4.0
+    process.photons.maxHoverEBarrel = 1.0
+    process.photons.maxHoverEEndcap = 1.0
 
     ## Remove the pi0 discriminator
     ## (currently doesn't work with extremely loose photons)
@@ -309,7 +308,12 @@ elif options.skimType == "Dimuon":
                    process.piZeroDiscriminators,
                    process.pi0Discriminator]:
         process.patDefaultSequence.remove( module )
-    
+
+    ## Hack to remove empty string in process.patPhotons.userData.userFloats.src
+    for inputTag in process.patPhotons.userData.userFloats.src:
+        if type(inputTag) != type( cms.InputTag("dummy") ):
+            process.patPhotons.userData.userFloats.src.remove(inputTag)
+
     while cms.InputTag("pi0Discriminator") in process.patPhotons.userData.userFloats.src:
         process.patPhotons.userData.userFloats.src.remove(
             cms.InputTag("pi0Discriminator")
@@ -348,6 +352,21 @@ elif options.skimType == "Jet":
     #edit the pat sequence to do the rereco
     process.patDefaultSequence = cms.Sequence(process.photonReReco*process.patDefaultSequence)
 
+elif options.skimType == "Diphoton":
+    #removeTriggerPathsForAllBut(matchHltPaths, ["cleanPatMuons"])
+    ## Don't require any triggers.
+    process.skimFilterSequence.remove(process.hltFilter)
+    if not options.ignoreSkimFilter:
+        process.load(basePath + "diphotonSkimFilterSequence_cff")
+        process.skimFilterSequence += process.diphotonSkimFilterSequence
+
+    ## Add the photon re-reco.
+    addPhotonReReco(process, options.isAOD)
+    ## Now change the photon reco to much looser settings.
+    process.photonCore.minSCEt = 4.0
+    process.photons.minSCEtBarrel = 4.0
+    process.photons.minSCEtEndcap = 4.0
+
 elif options.skimType == "Inclusive":
     ## Remove all skimming filters
     process.skimFilterSequence = cms.Sequence()
@@ -359,7 +378,7 @@ embedTriggerMatches(process, matchHltPaths)
 
 process.load(basePath + "VGammaSkimSequences_cff")
 
-if options.isRealData:    
+if options.isRealData:
     process.defaultSequence = cms.Sequence(
         process.skimFilterSequence *
         process.patDefaultSequence
@@ -386,7 +405,7 @@ else:
         process.skimFilterSequence *
         process.prunedGenParticles *
         process.patDefaultSequence )
-    
+
     #add in gen level photon user data
     process.photonGenMatch = cms.EDProducer("PhotonGenMatchUserDataProducer",
         src = cms.InputTag("photons"),
@@ -409,8 +428,8 @@ else:
     process.tauMatch.matched = cms.InputTag("prunedGenParticles")
     process.photonMatch.matched = cms.InputTag("prunedGenParticles")
     process.patJetPartons.src = cms.InputTag("prunedGenParticles")
-    process.patJetPartonMatch.matched = cms.InputTag("prunedGenParticles")    
-    
+    process.patJetPartonMatch.matched = cms.InputTag("prunedGenParticles")
+
     ## Add parton shower related filters (prevent ISR/FSR double-counting)
     ##+ "POWHEG parton shower" means actually Pythia parton shower in Pythia
     ##+ hadronization run on top of POWHEG.
