@@ -4,8 +4,7 @@ from TauAnalysis.Configuration.analyzeWtoTauNu_cfi import *
 from TauAnalysis.CandidateTools.sysErrDefinitions_cfi import *
 sysUncertaintyService = cms.Service("SysUncertaintyService",
                                    weights = getSysUncertaintyParameterSets(
-   # [ theorySystematics ]
-    [ ]
+    [ theorySystematics ]
     ),
        sources = cms.PSet(
        isRecWtoTauNu = cms.vstring(
@@ -20,7 +19,7 @@ analyzeWtoTauNuEvents = cms.EDAnalyzer("GenericAnalyzer",
                             
     filters = cms.VPSet(
     #trigger selection
-    evtSelTrigger2,
+    evtSelTrigger,
     
     #vertex selection
     evtSelPrimaryEventVertex,
@@ -30,6 +29,7 @@ analyzeWtoTauNuEvents = cms.EDAnalyzer("GenericAnalyzer",
     #wtaunu specific selection  
     evtSelTauEta,
     evtSelTauPt,
+    evtSelTrkVertex,
     evtSelTauLeadTrk,
     evtSelTauLeadTrkPt,
     evtSelTauMuonVeto,
@@ -44,7 +44,7 @@ analyzeWtoTauNuEvents = cms.EDAnalyzer("GenericAnalyzer",
     evtSelPFMetPt,
     evtSelHtRatio,
 
-    evtSelTrigger
+    evtSelTrigger2
 #    evtSelMetTopology
     ),
   
@@ -83,7 +83,7 @@ analyzeWtoTauNuEvents = cms.EDAnalyzer("GenericAnalyzer",
                 htRatioSystematics,
                 tauNuPairSystematics,
                 metTopologySystematics,
-#                theorySystematics
+                theorySystematics
                 ]
               )
        )
