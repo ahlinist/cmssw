@@ -41,10 +41,7 @@
   <class name="NSVfitEventHypothesisByIntegration">
     <field name="histMassResults_" transient="true"/>
   </class>
-  <class name="NSVfitResonanceHypothesisBase">
-    <!-- made transient only for testing !!! -->
-    <field name="daughters_" transient="true"/>
-  </class>
+  <class name="NSVfitResonanceHypothesisBase"/>
   <class name="NSVfitResonanceHypothesis">
     <field name="eventHyp_" transient="true"/>
   </class>
@@ -54,15 +51,15 @@
   <class name="NSVfitSingleParticleHypothesis">
     <field name="mother_" transient="true"/>
   </class>
-  <class name="NSVfitTauDecayHypothesisBase"/>
+  <class name="NSVfitTauDecayHypothesisBaseT<NSVfitSingleParticleHypothesisBase>"/>
   <class name="NSVfitTauDecayHypothesis">
     <field name="tracks_" transient="true"/>
   </class>
-  <class name="NSVfitTauToLepHypothesisBase<pat::Electron>"/>
-  <class name="NSVfitTauToLepHypothesis<pat::Electron>"/>
-  <class name="NSVfitTauToLepHypothesisBase<pat::Muon>"/>
-  <class name="NSVfitTauToLepHypothesis<pat::Muon>"/>
-  <class name="NSVfitTauToHadHypothesisBase"/>
+  <class name="NSVfitTauToDaughtersHypothesisBaseT1T2<NSVfitTauDecayHypothesisBase, pat::Electron>"/>
+  <class name="NSVfitTauToDaughtersHypothesisBaseT1T2<NSVfitTauDecayHypothesisBase, pat::Muon>"/>
+  <class name="NSVfitTauToDaughtersHypothesisBaseT1T2<NSVfitTauDecayHypothesisBase, pat::Tau>"/>
+  <class name="NSVfitTauToDaughtersHypothesisBaseT1T2<NSVfitTauDecayHypothesis, pat::Electron>"/>
+  <class name="NSVfitTauToDaughtersHypothesisBaseT1T2<NSVfitTauDecayHypothesis, pat::Muon>"/>
   <class name="NSVfitTauToHadHypothesis"/>
   <class name="std::vector<NSVfitEventHypothesisBase>"/>
   <class name="std::vector<NSVfitEventHypothesis>"/>

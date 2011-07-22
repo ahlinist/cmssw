@@ -13,16 +13,49 @@ class NSVfitSingleParticleHypothesisBase
 {
  public:
 
-  NSVfitSingleParticleHypothesisBase();
-  NSVfitSingleParticleHypothesisBase(const std::string&, int);
-  NSVfitSingleParticleHypothesisBase(const edm::Ptr<reco::Candidate>&, const std::string&, int);
-  NSVfitSingleParticleHypothesisBase(const NSVfitSingleParticleHypothesisBase&);
+  NSVfitSingleParticleHypothesisBase()
+  {
+    //std::cout << "<NSVfitSingleParticleHypothesisBase::NSVfitSingleParticleHypothesisBase>:" << std::endl;
+    //std::cout << " default constructor" << std::endl;
+  }
+  NSVfitSingleParticleHypothesisBase(const std::string& name, int barcode)
+    : name_(name),
+      barcode_(barcode)
+  {
+    //std::cout << "<NSVfitSingleParticleHypothesisBase::NSVfitSingleParticleHypothesisBase>:" << std::endl;
+    //std::cout << " constructor(std::string, int)" << std::endl;
+  }  
+  NSVfitSingleParticleHypothesisBase(const edm::Ptr<reco::Candidate>& particle, const std::string& name, int barcode)
+    : name_(name),
+      barcode_(barcode),
+      particle_(particle)
+  {
+    //std::cout << "<NSVfitSingleParticleHypothesisBase::NSVfitSingleParticleHypothesisBase>:" << std::endl;
+    //std::cout << " constructor(const edm::Ptr<reco::Candidate>&, std::string, int)" << std::endl;
+    //assert(particle_.get() != 0);
+  }
+  NSVfitSingleParticleHypothesisBase(const NSVfitSingleParticleHypothesisBase& bluePrint)
+    : name_(bluePrint.name_),
+      barcode_(bluePrint.barcode_),
+      particle_(bluePrint.particle_)
+  {
+    //std::cout << "<NSVfitSingleParticleHypothesisBase::NSVfitSingleParticleHypothesisBase>:" << std::endl;
+    //std::cout << " copy constructor" << std::endl;
+    //assert(particle_.get() != 0);
+  }
   virtual ~NSVfitSingleParticleHypothesisBase() {}
 
   virtual NSVfitSingleParticleHypothesisBase* clone() const = 0;
   virtual NSVfitSingleParticleHypothesisBase* reduceToBase() const = 0;
 
-  virtual NSVfitSingleParticleHypothesisBase& operator=(const NSVfitSingleParticleHypothesisBase&);
+  virtual NSVfitSingleParticleHypothesisBase& operator=(const NSVfitSingleParticleHypothesisBase& bluePrint)
+  {
+    name_ = bluePrint.name_;
+    barcode_ = bluePrint.barcode_;
+    particle_ = bluePrint.particle_;
+    //assert(particle_.get() != 0);
+    return (*this);
+  }
 
   const std::string& name() const { return name_; }
   int barcode() const { return barcode_; }

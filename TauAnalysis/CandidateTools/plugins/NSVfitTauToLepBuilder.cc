@@ -1,8 +1,3 @@
-#include "TauAnalysis/CandidateTools/interface/NSVfitTauDecayBuilder.h"
-#include "TauAnalysis/CandidateTools/interface/NSVfitSingleParticleTrackExtractor.h"
-#include "AnalysisDataFormats/TauAnalysis/interface/NSVfitTauToLepHypothesis.h"
-#include "TauAnalysis/CandidateTools/interface/NSVfitParameter.h"
-#include "DataFormats/TauReco/interface/PFTauDecayMode.h"
 
 /** \class NSVfitTauToLepBuilder
  *
@@ -12,11 +7,19 @@
  *
  * \author Evan Friis, Christian Veelken; UC Davis
  *
- * \version $Revision: 1.16 $
+ * \version $Revision: 1.17 $
  *
- * $Id: NSVfitTauToLepBuilder.cc,v 1.16 2011/05/30 15:19:41 veelken Exp $
+ * $Id: NSVfitTauToLepBuilder.cc,v 1.17 2011/06/25 10:19:07 veelken Exp $
  *
  */
+
+#include "DataFormats/TauReco/interface/PFTauDecayMode.h"
+
+#include "TauAnalysis/CandidateTools/interface/NSVfitTauDecayBuilder.h"
+#include "TauAnalysis/CandidateTools/interface/NSVfitSingleParticleTrackExtractor.h"
+#include "TauAnalysis/CandidateTools/interface/NSVfitParameter.h"
+
+#include "AnalysisDataFormats/TauAnalysis/interface/NSVfitTauToDaughtersHypothesisBaseT1T2.h"
 
 template<typename T>
 class NSVfitTauToLepBuilder : public NSVfitTauDecayBuilder 
@@ -42,8 +45,8 @@ class NSVfitTauToLepBuilder : public NSVfitTauDecayBuilder
     inputParticleMap::const_iterator particlePtr = inputParticles.find(prodParticleLabel_);
     assert(particlePtr != inputParticles.end());
 
-    NSVfitTauToLepHypothesis<T>* hypothesis = 
-      new NSVfitTauToLepHypothesis<T>(particlePtr->second, prodParticleLabel_, barcodeCounter_);
+    NSVfitTauToDaughtersHypothesisBaseT1T2<NSVfitTauDecayHypothesis, T>* hypothesis = 
+      new NSVfitTauToDaughtersHypothesisBaseT1T2<NSVfitTauDecayHypothesis, T>(particlePtr->second, prodParticleLabel_, barcodeCounter_);
     ++barcodeCounter_;
 
     NSVfitTauDecayBuilder::initialize(hypothesis, particlePtr->second.get());
