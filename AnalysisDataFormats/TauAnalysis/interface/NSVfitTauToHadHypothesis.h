@@ -1,8 +1,22 @@
 #ifndef AnalysisDataFormats_TauAnalysis_NSVfitTauToHadHypothesis_h
 #define AnalysisDataFormats_TauAnalysis_NSVfitTauToHadHypothesis_h
 
+/*
+ * NSVfitTauToHadHypothesis
+ *
+ * Class to store information about tau lepton decay into hadrons.
+ *
+ * NOTE: this class is used to make persistent solutions of NSVfitAlgorithmByLikelihoodMaximization;
+ *       solutions of NSVfitAlgorithmByIntegration are of type NSVfitTauDecayHypothesis
+ *
+ * Authors: Evan K. Friis, Christian Veelken, UC Davis
+ *
+ */
+
+#include "DataFormats/Candidate/interface/Candidate.h"
+#include "DataFormats/Common/interface/Ptr.h"
+
 #include "AnalysisDataFormats/TauAnalysis/interface/NSVfitTauDecayHypothesis.h"
-#include "AnalysisDataFormats/TauAnalysis/interface/NSVfitTauToHadHypothesisBase.h"
 
 class NSVfitTauToHadHypothesis : public NSVfitTauDecayHypothesis
 {
@@ -10,13 +24,14 @@ class NSVfitTauToHadHypothesis : public NSVfitTauDecayHypothesis
 
   NSVfitTauToHadHypothesis() {}
   NSVfitTauToHadHypothesis(const edm::Ptr<reco::Candidate>& particle, const std::string& name, int barcode)
-    : NSVfitSingleParticleHypothesisBase(particle, name, barcode)
+    : NSVfitTauDecayHypothesis(particle, name, barcode)
   {
+    //std::cout << "<NSVfitTauToHadHypothesis::NSVfitTauToHadHypothesis>:" << std::endl;
+    //std::cout << " constructor(const edm::Ptr<reco::Candidate>&, std::string, int)" << std::endl;
     p4_ = particle->p4();
   }
   NSVfitTauToHadHypothesis(const NSVfitTauToHadHypothesis& bluePrint)
-    : NSVfitSingleParticleHypothesisBase(bluePrint),
-      NSVfitTauDecayHypothesis(bluePrint),
+    : NSVfitTauDecayHypothesis(bluePrint),
       decay_angle_VMrho_(bluePrint.decay_angle_VMrho_),
       mass2_VMrho_(bluePrint.mass2_VMrho_),
       decay_angle_VMa1_(bluePrint.decay_angle_VMa1_),
@@ -27,9 +42,9 @@ class NSVfitTauToHadHypothesis : public NSVfitTauDecayHypothesis
   {}
   ~NSVfitTauToHadHypothesis() {}
 
-  NSVfitSingleParticleHypothesisBase* clone() const { return new NSVfitTauToHadHypothesis(*this); }
+  NSVfitTauToHadHypothesis* clone() const { return new NSVfitTauToHadHypothesis(*this); }
   NSVfitSingleParticleHypothesisBase* reduceToBase() const { 
-    return new NSVfitTauToHadHypothesisBase(this->particle_, this->name_, this->barcode_);
+    return new NSVfitTauToHadHypothesis(this->particle_, this->name_, this->barcode_);
   }
 
   NSVfitTauToHadHypothesis& operator=(const NSVfitTauToHadHypothesis& bluePrint)

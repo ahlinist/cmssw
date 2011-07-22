@@ -4,30 +4,64 @@
 /*
  * NSVfitTauDecayHypothesis
  *
- * Class which holds a representation of a decay of a tau lepton.
+ * Base class representing tau lepton decay to electrons, muons or into hadrons.
+ *
+ * NOTE: this base-class is used to make persistent solutions of NSVfitAlgorithmByLikelihoodMaximization;
+ *       solutions of NSVfitAlgorithmByIntegration are of type NSVfitTauDecayHypothesisBase
  *
  * Authors: Evan K. Friis, Christian Veelken, UC Davis
  *
  */
 
-#include "AnalysisDataFormats/TauAnalysis/interface/NSVfitSingleParticleHypothesis.h"
-#include "AnalysisDataFormats/TauAnalysis/interface/NSVfitTauDecayHypothesisBase.h"
+#include "DataFormats/Candidate/interface/Candidate.h"
+#include "DataFormats/Common/interface/Ptr.h"
 
-class NSVfitTauDecayHypothesis : public NSVfitSingleParticleHypothesis, public NSVfitTauDecayHypothesisBase
+#include "AnalysisDataFormats/TauAnalysis/interface/NSVfitTauDecayHypothesisBaseT.h"
+#include "AnalysisDataFormats/TauAnalysis/interface/NSVfitSingleParticleHypothesisBase.h"
+
+class NSVfitTauDecayHypothesis : public NSVfitTauDecayHypothesisBaseT<NSVfitSingleParticleHypothesis>
 {
  public:
 
   NSVfitTauDecayHypothesis() {}
-  NSVfitTauDecayHypothesis(const edm::Ptr<reco::Candidate>& particle,
-      const std::string& name, int barcode)
-    : NSVfitSingleParticleHypothesisBase(particle, name, barcode)
+  NSVfitTauDecayHypothesis(const edm::Ptr<reco::Candidate>& particle, const std::string& name, int barcode)
+    : NSVfitTauDecayHypothesisBaseT<NSVfitSingleParticleHypothesis>(particle, name, barcode)
   {
     p4_ = particle->p4();
   }
+  NSVfitTauDecayHypothesis(const NSVfitTauDecayHypothesis& bluePrint)
+    : NSVfitTauDecayHypothesisBaseT<NSVfitSingleParticleHypothesis>(bluePrint),
+      tracks_(bluePrint.tracks_),
+      p4invis_rf_(bluePrint.p4invis_rf_),
+      p4vis_rf_(bluePrint.p4vis_rf_),
+      p3Vis_unit_(bluePrint.p3Vis_unit_),
+      visMass_(bluePrint.visMass_),
+      visEnFracX_(bluePrint.visEnFracX_),
+      decay_angle_rf_(bluePrint.decay_angle_rf_),
+      decayVertexPos_(bluePrint.decayVertexPos_),
+      flightPath_(bluePrint.flightPath_),
+      decayDistance_(bluePrint.decayDistance_),
+      polarization_(bluePrint.polarization_)
+  {}
+
   ~NSVfitTauDecayHypothesis() {}
-  // Copy constructors
-  NSVfitTauDecayHypothesis(const NSVfitTauDecayHypothesis&);
-  virtual NSVfitTauDecayHypothesis& operator=(const NSVfitTauDecayHypothesis&);
+
+  virtual NSVfitTauDecayHypothesis& operator=(const NSVfitTauDecayHypothesis& bluePrint)
+  {
+    NSVfitTauDecayHypothesisBaseT<NSVfitSingleParticleHypothesis>::operator=(bluePrint);
+    tracks_ = bluePrint.tracks_;
+    p4invis_rf_ = bluePrint.p4invis_rf_;
+    p4vis_rf_ = bluePrint.p4vis_rf_;
+    p3Vis_unit_ = bluePrint.p3Vis_unit_;
+    visMass_ = bluePrint.visMass_;
+    visEnFracX_ = bluePrint.visEnFracX_;
+    decay_angle_rf_ = bluePrint.decay_angle_rf_;
+    decayVertexPos_ = bluePrint.decayVertexPos_;
+    flightPath_ = bluePrint.flightPath_;
+    decayDistance_ = bluePrint.decayDistance_;
+    polarization_ = bluePrint.polarization_;
+    return (*this);
+  }
 
   /// collection of tracks associated to reco::Candidate
   virtual const std::vector<const reco::Track*>& tracks() const { return tracks_; }

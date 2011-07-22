@@ -129,7 +129,7 @@ TMatrixD PFMEtSignInterface::operator()(const std::list<const reco::Candidate*>&
 
   std::list<const reco::PFCandidate*> pfCandidateList_hypothesis = pfCandidateList_;
   removePFCandidateOverlaps(pfCandidateList_hypothesis, patLeptonList, dRoverlapPFCandidate_);
- 
+
   std::vector<metsig::SigInputObj> pfMEtSignObjects;
   addPFMEtSignObjects(pfMEtSignObjects, patLeptonList);
   addPFMEtSignObjects(pfMEtSignObjects, pfJetList_hypothesis);

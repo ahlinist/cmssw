@@ -1,7 +1,3 @@
-#include "TauAnalysis/CandidateTools/interface/NSVfitTauDecayBuilder.h"
-#include "TauAnalysis/CandidateTools/interface/NSVfitSingleParticleTrackExtractor.h"
-#include "AnalysisDataFormats/TauAnalysis/interface/NSVfitTauToHadHypothesis.h"
-#include "TauAnalysis/CandidateTools/interface/NSVfitParameter.h"
 
 /** \class NSVfitTauToHadBuilder
  *
@@ -11,9 +7,9 @@
  *
  * \author Evan Friis, Christian Veelken; UC Davis
  *
- * \version $Revision: 1.20 $
+ * \version $Revision: 1.21 $
  *
- * $Id: NSVfitTauToHadBuilder.cc,v 1.20 2011/05/29 17:58:22 veelken Exp $
+ * $Id: NSVfitTauToHadBuilder.cc,v 1.21 2011/06/25 10:19:07 veelken Exp $
  *
  */
 
@@ -22,6 +18,12 @@
 
 #include "RecoVertex/KalmanVertexFit/interface/KalmanVertexFitter.h"
 #include "RecoVertex/VertexPrimitives/interface/TransientVertex.h"
+
+#include "TauAnalysis/CandidateTools/interface/NSVfitTauDecayBuilder.h"
+#include "TauAnalysis/CandidateTools/interface/NSVfitSingleParticleTrackExtractor.h"
+#include "TauAnalysis/CandidateTools/interface/NSVfitParameter.h"
+
+#include "AnalysisDataFormats/TauAnalysis/interface/NSVfitTauToHadHypothesis.h"
 
 using namespace nSVfit_namespace;
 

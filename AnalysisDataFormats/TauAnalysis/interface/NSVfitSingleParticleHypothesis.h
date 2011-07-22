@@ -13,7 +13,7 @@
 
 class NSVfitResonanceHypothesis;
 
-class NSVfitSingleParticleHypothesis : virtual public NSVfitSingleParticleHypothesisBase
+class NSVfitSingleParticleHypothesis : public NSVfitSingleParticleHypothesisBase
 {
  public:
 
@@ -28,11 +28,29 @@ class NSVfitSingleParticleHypothesis : virtual public NSVfitSingleParticleHypoth
     : NSVfitSingleParticleHypothesisBase(particle, name, barcode),
       mother_(NULL),
       p4_(particle->p4())
+  {
+    //std::cout << "<NSVfitSingleParticleHypothesis::NSVfitSingleParticleHypothesis>:" << std::endl;
+    //std::cout << " constructor(const edm::Ptr<reco::Candidate>&, std::string, int)" << std::endl;
+  }
+  NSVfitSingleParticleHypothesis(const NSVfitSingleParticleHypothesis& bluePrint)
+    : NSVfitSingleParticleHypothesisBase(bluePrint),
+      mother_(bluePrint.mother_),
+      p4_(bluePrint.p4_),
+      p4_fitted_(bluePrint.p4_fitted_),
+      dp4_(bluePrint.dp4_)
   {}
-  NSVfitSingleParticleHypothesis(const NSVfitSingleParticleHypothesis&);
-  ~NSVfitSingleParticleHypothesis() {}
 
-  NSVfitSingleParticleHypothesis& operator=(const NSVfitSingleParticleHypothesis&);
+  NSVfitSingleParticleHypothesis& operator=(const NSVfitSingleParticleHypothesis& bluePrint)  
+  {  
+    NSVfitSingleParticleHypothesisBase::operator=(bluePrint);
+    mother_ = bluePrint.mother_;
+    p4_ = bluePrint.p4_;
+    p4_fitted_ = bluePrint.p4_fitted_;
+    dp4_ = bluePrint.dp4_;
+    return (*this);
+  }
+
+  ~NSVfitSingleParticleHypothesis() {}
 
   const NSVfitResonanceHypothesis* mother() const { return mother_; }
   void setMother(const NSVfitResonanceHypothesis* mother) 
