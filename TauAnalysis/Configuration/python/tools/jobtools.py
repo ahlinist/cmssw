@@ -124,8 +124,6 @@ def make_bsub_script(output_file, input_jobs_and_files,
         arch = arch,
     ))
 
-
-
 def split(input_files, threshold, function):
     current_value = 0
     current_list = []

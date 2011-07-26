@@ -41,7 +41,7 @@ def group(iterator, count):
         yield tuple([itr.next() for i in xrange(count)])
 
 __author__  = "Sebastien Binet <binet@cern.ch>"
-__version__ = "$Revision: 1.6 $"
+__version__ = "$Revision: 1.7 $"
 __doc__ = """A set of simple helper methods to handle simple tasks with CASTOR.
 """
 
@@ -65,6 +65,11 @@ def nslsl(path):
         size (in bytes)
     '''
     # Get path
+
+    # CV: add trailing '/'
+    if not path.endswith('/'):
+        path += '/'
+    
     directory = os.path.dirname(path)
     basename = os.path.basename(path)
 
@@ -106,7 +111,7 @@ def nslsl(path):
             #print path, output['file']
             # Check the filename matches our pattern
             if not basename or fnmatch.fnmatch(output['file'], basename):
-                #print "match!"
+                #print "yielding output = %s" % output
                 yield output
 
 def nsls(path):

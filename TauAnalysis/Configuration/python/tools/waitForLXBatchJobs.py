@@ -36,6 +36,8 @@ regExpr = re.compile("Job <(?P<sample>\w+?)> is not found")
 waitTime = 0
 
 numJobs = len(bjobNames)
+#print "numJobs = %i" % numJobs
+
 while numJobs >= 1:
     iJob = 0
     while iJob < numJobs:
@@ -62,10 +64,10 @@ while numJobs >= 1:
             del bjobNames[iJob]
             numJobs = len(bjobNames)
             
-        ++iJob
-            
+        iJob = iJob + 1
+
     if numJobs >= 1:  
-        ++waitTime
+        waitTime = waitTime + 1
         print "%s: have waited %i minutes" % (sys.argv[0], waitTime)
         time.sleep(60)
         
