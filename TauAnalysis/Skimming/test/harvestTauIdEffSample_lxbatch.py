@@ -11,7 +11,7 @@ from TauAnalysis.Configuration.tools.harvesting import castor_source, clean_by_c
 channel = 'ZtoMuTau_tauIdEff'
 
 #reg.overrideJobId(channel, '2011Jul06_mauro')
-reg.overrideJobId(channel, '2011Jul06v2')
+reg.overrideJobId(channel, '2011Jul23')
 
 analysisFilePath = reg.getAnalysisFilePath(channel)
 harvestingFilePath = reg.getHarvestingFilePath(channel)
@@ -20,8 +20,6 @@ tmpFilePath = reg.getBatchHarvestLocation(channel)
 
 SAMPLES_TO_ANALYZE = [
     # modify in case you want to submit jobs for some of the samples only...
-    'Ztautau_embedded_part1',
-    'Ztautau_embedded_part2',
 ]
 
 print analysisFilePath
@@ -62,10 +60,10 @@ def local_copy_mapper(sample):
 make_harvest_scripts(
     plot_regex,
     skim_regex,
-    channel,
-    #clean_by_crab_id(matches_either(castor_source(analysisFilePath))),
-    matches_either(castor_source(analysisFilePath)),
-    tmpFilePath,
+    channel = channel,
+    #input_source = clean_by_crab_id(matches_either(castor_source(analysisFilePath))),
+    input_source = matches_either(castor_source(analysisFilePath)),
+    castor_output_directory = tmpFilePath,
     local_copy_mapper = local_copy_mapper,
-    chunk_size = 2.e+9, # 3 GB
+    chunk_size = 2.e+9, # 2 GB
 )

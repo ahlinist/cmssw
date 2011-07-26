@@ -10,7 +10,7 @@ import subprocess
 channel = 'ZtoMuTau_tauIdEff'
 configFile = 'skimTauIdEffSample_cfg.py'
 #jobId = getJobId(channel)
-jobId = '2011Jul06v2'
+jobId = '2011Jul23'
 
 #outputFilePath = '/castor/cern.ch/user/m/mverzett/tagprobe/skims/TauIdEffMeas_2011May13/'
 outputFilePath = '/castor/cern.ch/user/v/veelken/CMSSW_4_2_x/skims/TauIdEffMeas/'
@@ -19,16 +19,17 @@ pfCandidateCollection = "particleFlow" # pile-up removal disabled
 #pfCandidateCollection = "pfNoPileUp"   # pile-up removal enabled
 
 samplesToAnalyze = [
-    #'data_SingleMu_Run2011A_May10ReReco_v1',
-    #'data_SingleMu_Run2011A_PromptReco_v4',
+    'data_SingleMu_Run2011A_May10ReReco_v1',
+    'data_SingleMu_Run2011A_PromptReco_v4',
     #'Ztautau_pythia',
+    'Ztautau_powheg',
     'Ztautau_embedded_part1',
     'Ztautau_embedded_part2',
     #'Zmumu_pythia',
-    #'Zmumu_powheg'
-    #'PPmuXptGt20Mu15',
-    #'WplusJets_madgraph',
-    #'TTplusJets_madgraph'
+    'Zmumu_powheg',
+    'PPmuXptGt20Mu15',
+    'WplusJets_madgraph',
+    'TTplusJets_madgraph'
 ]
 
 # Define what output file name a skimmed sample will have
@@ -79,7 +80,7 @@ for sampleToAnalyze in samplesToAnalyze:
     # prepare customized config file as basis for further modifications by "TauAnalysis machinery"...
     configFile_customized = customizeConfigFile(sampleToAnalyze, configFile)
 
-    # apply further modifications and submit job to lxbatch
+    # apply further modifications and submit job to grid
     submitAnalysisToGrid(configFile = configFile_customized, channel = channel, jobId = jobId,
                          samples = recoSampleDefinitionsTauIdEfficiency_7TeV,
                          samplesToAnalyze = [ sampleToAnalyze ],

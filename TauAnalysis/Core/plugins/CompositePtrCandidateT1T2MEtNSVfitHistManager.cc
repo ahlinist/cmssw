@@ -306,42 +306,38 @@ void CompositePtrCandidateT1T2MEtNSVfitHistManager<T1,T2>::fillHistogramsImp(con
     for ( typename std::vector<massHypothesisEntryType*>::iterator massHypothesisEntry = massHypothesisEntries_.begin();
 	  massHypothesisEntry != massHypothesisEntries_.end(); ++massHypothesisEntry ) {
 
-      const NSVfitEventHypothesisBase* matchedEventHypothesis = 0;
-      if ( (*massHypothesisEntry)->nSVfitEventHypothesisName_ != "" ) {
-	matchedEventHypothesis = diTauCandidate->nSVfitSolution((*massHypothesisEntry)->nSVfitEventHypothesisName_);
-      } else if ( (*massHypothesisEntry)->nSVfitEventHypothesisSrc_.label() != "" ) {
-	edm::Handle<NSVfitEventHypothesisBaseCollection> nSVfitEventHypotheses;
-	evt.getByLabel((*massHypothesisEntry)->nSVfitEventHypothesisSrc_, nSVfitEventHypotheses);
+      edm::Handle<NSVfitEventHypothesisBaseCollection> nSVfitEventHypotheses;
+      evt.getByLabel((*massHypothesisEntry)->nSVfitEventHypothesisSrc_, nSVfitEventHypotheses);
 	
-	for ( NSVfitEventHypothesisBaseCollection::const_iterator nSVfitEventHypothesis = nSVfitEventHypotheses->begin();
-	      nSVfitEventHypothesis != nSVfitEventHypotheses->end(); ++nSVfitEventHypothesis ) {
+      const NSVfitEventHypothesisBase* matchedEventHypothesis = 0;
+      for ( NSVfitEventHypothesisBaseCollection::const_iterator nSVfitEventHypothesis = nSVfitEventHypotheses->begin();
+	    nSVfitEventHypothesis != nSVfitEventHypotheses->end(); ++nSVfitEventHypothesis ) {
 	  
-	  size_t numResonances = nSVfitEventHypothesis->numResonances();   
-	  assert(numResonances == 1);
-	  const NSVfitResonanceHypothesisBase* resonance = nSVfitEventHypothesis->resonance(0);
-	  
-	  if ( !resonance->isValidSolution() ) continue;
-	  
-	  size_t numDaughters = resonance->numDaughters();   
-	  assert(numDaughters == 2);
-	  const NSVfitSingleParticleHypothesisBase* daughter1 = resonance->daughter(0);
-	  const NSVfitSingleParticleHypothesisBase* daughter2 = resonance->daughter(1);
-	  
-	  const reco::Candidate::LorentzVector& p4Daughter1 = daughter1->particle()->p4();
-          const reco::Candidate::LorentzVector& p4Daughter2 = daughter2->particle()->p4();
-
-	  //std::cout << "nSVfit leg1: Pt = " << p4Daughter1.pt() << "," 
-	  //	      << " eta = " << p4Daughter1.eta() << ", phi = " << p4Daughter1.phi() << std::endl;
-	  //std::cout << "nSVfit leg1: Pt = " << p4Daughter2.pt() << "," 
-	  //	      << " eta = " << p4Daughter2.eta() << ", phi = " << p4Daughter2.phi() << std::endl;
-	  
-	  if ( (deltaR(diTauCandidate->leg1()->p4(), p4Daughter1) < epsilon &&
-		deltaR(diTauCandidate->leg2()->p4(), p4Daughter2) < epsilon) ||
-	       (deltaR(diTauCandidate->leg1()->p4(), p4Daughter2) < epsilon &&
-		deltaR(diTauCandidate->leg2()->p4(), p4Daughter1) < epsilon) ) {
-	    matchedEventHypothesis = &(*nSVfitEventHypothesis);
-	    break;
-	  }
+	size_t numResonances = nSVfitEventHypothesis->numResonances();   
+	assert(numResonances == 1);
+	const NSVfitResonanceHypothesisBase* resonance = nSVfitEventHypothesis->resonance(0);
+	
+	if ( !resonance->isValidSolution() ) continue;
+	
+	size_t numDaughters = resonance->numDaughters();   
+	assert(numDaughters == 2);
+	const NSVfitSingleParticleHypothesisBase* daughter1 = resonance->daughter(0);
+	const NSVfitSingleParticleHypothesisBase* daughter2 = resonance->daughter(1);
+	
+	const reco::Candidate::LorentzVector& p4Daughter1 = daughter1->particle()->p4();
+	const reco::Candidate::LorentzVector& p4Daughter2 = daughter2->particle()->p4();
+	
+	//std::cout << "nSVfit leg1: Pt = " << p4Daughter1.pt() << "," 
+	//	      << " eta = " << p4Daughter1.eta() << ", phi = " << p4Daughter1.phi() << std::endl;
+	//std::cout << "nSVfit leg1: Pt = " << p4Daughter2.pt() << "," 
+	//	      << " eta = " << p4Daughter2.eta() << ", phi = " << p4Daughter2.phi() << std::endl;
+	
+	if ( (deltaR(diTauCandidate->leg1()->p4(), p4Daughter1) < epsilon &&
+	      deltaR(diTauCandidate->leg2()->p4(), p4Daughter2) < epsilon) ||
+	     (deltaR(diTauCandidate->leg1()->p4(), p4Daughter2) < epsilon &&
+	      deltaR(diTauCandidate->leg2()->p4(), p4Daughter1) < epsilon) ) {
+	  matchedEventHypothesis = &(*nSVfitEventHypothesis);
+	  break;
 	}
       }
 

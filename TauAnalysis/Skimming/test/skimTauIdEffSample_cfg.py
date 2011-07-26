@@ -22,8 +22,8 @@ process.DQMStore = cms.Service("DQMStore")
 #--------------------------------------------------------------------------------
 process.source = cms.Source("PoolSource",
     fileNames = cms.untracked.vstring(
-        #'file:/data2/friis/CMSSW_4_2_X/skims/06-27-MatthewsZTTEvents/crab_0_110627_082505/ZTTCands_merged_v1.root'
-        'file:/data1/veelken/tmp/tauIdEffSample_data_SingleMu_Run2011A_PromptReco_v4_2011Jul04v2_RECO_79_1_qIw.root'
+        'file:/data2/friis/CMSSW_4_2_X/skims/06-27-MatthewsZTTEvents/crab_0_110627_082505/ZTTCands_merged_v1.root'
+        #'file:/data1/veelken/tmp/tauIdEffSample_data_SingleMu_Run2011A_PromptReco_v4_2011Jul04v2_RECO_79_1_qIw.root'
     )
 )
 
@@ -34,8 +34,8 @@ process.maxEvents = cms.untracked.PSet(
 #--------------------------------------------------------------------------------
 # define configuration parameter default values
 
-##isMC = True # use for MC
-isMC = False # use for Data
+isMC = True # use for MC
+##isMC = False # use for Data
 isEmbedded = False # use for everything except for Ztautau samples produced via MCEmbedding technique
 #isEmbedded = True # use for Ztautau samples produced via MCEmbedding technique
 ##HLTprocessName = "HLT" # use for 2011 Data
@@ -152,7 +152,7 @@ process.commonSkimSequence = cms.Sequence(
    + process.dataQualityFilters
    + process.goodMuons
    + process.pfNoPileUpSequence
-   #+ process.PFTau
+   + process.PFTau
    + process.patMuons   
 )
 #
@@ -181,8 +181,6 @@ patPFTauProducers = [
 ]
 for patPFTauProducer in patPFTauProducers:
     patPFTauProducerModule = getattr(process, patPFTauProducer)
-    patPFTauProducerModule.tauIDSources = cms.PSet()
-    patPFTauProducerModule.addTauID = cms.bool(False)
     patPFTauProducerModule.addGenJetMatch = cms.bool(False)
     patPFTauProducerModule.embedGenJetMatch = cms.bool(False)
     patPFTauProducerModule.embedLeadTrack = cms.bool(False)
@@ -195,7 +193,6 @@ for patPFTauProducer in patPFTauProducers:
     patPFTauProducerModule.addEfficiencies = cms.bool(False)
     patPFTauProducerModule.embedSignalTracks = cms.bool(False)
     patPFTauProducerModule.embedIsolationPFNeutralHadrCands = cms.bool(False)
-    patPFTauProducerModule.addTauID = cms.bool(False)
     patPFTauProducerModule.addGenMatch = cms.bool(False)
     patPFTauProducerModule.addResolutions = cms.bool(False)
     patPFTauProducerModule.embedIsolationPFChargedHadrCands = cms.bool(False)
@@ -233,17 +230,57 @@ process.countEventsPassed = cms.EDAnalyzer("DQMEventCounter",
     meName = cms.string('numEventsPassed')                                         
 )
 
-process.skimPathHPS = cms.Path(
+process.skimPathTauIdEffHPS = cms.Path(
     process.countEventsProcessed
    + process.commonSkimSequence
    + process.patPFTausHPS + process.selectedPatPFTausHPSforTauIdEff
    + process.countEventsPassed
 )
 
-process.skimPathHPSpTaNC = cms.Path(
+process.skimPathTauIdEffHPSpTaNC = cms.Path(
     process.countEventsProcessed
    + process.commonSkimSequence
    + process.patPFTausHPSpTaNC + process.selectedPatPFTausHPSpTaNCforTauIdEff
+   + process.countEventsPassed
+)
+
+process.selectedPatPFTausHPSforTauChargeMisId = cms.EDFilter("PATTauSelector",
+    src = cms.InputTag('patPFTausHPS'),                                                               
+    cut = cms.string(
+        "pt > 15.0 & abs(eta) < 2.5 & "
+        "tauID('decayModeFinding') > 0.5 & "
+        "(tauID('byLooseIsolation') > 0.5 |"
+        " tauID('byLooseIsolationDeltaBetaCorr') > 0.5 |"
+        " tauID('byLooseCombinedIsolationDeltaBetaCorr') > 0.5) & "
+        "tauID('againstElectronLoose') > 0.5 & "
+        "tauID('againstMuonTight') > 0.5"
+    ),
+    filter = cms.bool(True)                                 
+)
+
+process.skimPathTauChargeMisIdHPS = cms.Path(
+    process.countEventsProcessed
+   + process.commonSkimSequence
+   + process.patPFTausHPS + process.selectedPatPFTausHPSforTauChargeMisId
+   + process.countEventsPassed
+)
+
+process.selectedPatPFTausHPSpTaNCforTauChargeMisId = cms.EDFilter("PATTauSelector",
+    src = cms.InputTag('patPFTausHPSpTaNC'),                                                               
+    cut = cms.string(
+        "pt > 15.0 & abs(eta) < 2.5 & "
+        "tauID('leadingTrackFinding') > 0.5 & "
+        "tauID('byTaNCloose') > 0.5 & "
+        "tauID('againstElectronLoose') > 0.5 & "
+        "tauID('againstMuonTight') > 0.5"
+    ),    
+    filter = cms.bool(True)                                 
+)
+
+process.skimPathTauChargeMisIdHPSpTaNC = cms.Path(
+    process.countEventsProcessed
+   + process.commonSkimSequence
+   + process.patPFTausHPSpTaNC + process.selectedPatPFTausHPSpTaNCforTauChargeMisId
    + process.countEventsPassed
 )
 
@@ -265,8 +302,10 @@ process.skimOutputModule = cms.OutputModule("PoolOutputModule",
     process.origFEVTSIMEventContent,
     SelectEvents = cms.untracked.PSet(
         SelectEvents = cms.vstring(
-            'skimPathHPS',
-            'skimPathHPSpTaNC'                                        
+            'skimPathTauIdEffHPS',
+            'skimPathTauIdEffHPSpTaNC',
+            'skimPathTauChargeMisIdHPS',
+            'skimPathTauChargeMisIdHPSpTaNC'                                        
         )
     ),
     fileName = cms.untracked.string("tauIdEffSample_RECO.root")
@@ -329,16 +368,20 @@ if isMC:
 if isMC:
     process.schedule = cms.Schedule(
         process.eventCounterPath,
-        process.skimPathHPS,
-        process.skimPathHPSpTaNC,
+        process.skimPathTauIdEffHPS,
+        process.skimPathTauIdEffHPSpTaNC,
+        process.skimPathTauChargeMisIdHPS,
+        process.skimPathTauChargeMisIdHPSpTaNC,
         process.genZtoMuTauWithinAccSkimPath,
         process.o
     )
 else:
     process.schedule = cms.Schedule(
         process.eventCounterPath,
-        process.skimPathHPS,
-        process.skimPathHPSpTaNC,
+        process.skimPathTauIdEffHPS,
+        process.skimPathTauIdEffHPSpTaNC,
+        process.skimPathTauChargeMisIdHPS,
+        process.skimPathTauChargeMisIdHPSpTaNC,
         process.o
     )
 
