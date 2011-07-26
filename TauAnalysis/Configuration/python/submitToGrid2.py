@@ -51,13 +51,13 @@ _CRAB_DEFAULTS = {
     'runselection' : ''
 }
 
-def submitToGrid(configFile, jobInfo, crabOptions, crabFileName = None, ui_working_dir = None,
+def submitToGrid(configFile, jobInfo, crabOptions, crabFileName_full = None, ui_working_dir = None,
                  create = True, submit = True, cfgdir='crab'):
 
     # CV: if crabFileName has been passed as function argument
     #     assume crab config file already exists,
     #     else create it
-    if not crabFileName:
+    if not crabFileName_full:
         # Update the default crab options with our options
         fullCrabOptions = copy.copy(_CRAB_DEFAULTS)
         # Point crab to our PSET
@@ -92,8 +92,8 @@ def submitToGrid(configFile, jobInfo, crabOptions, crabFileName = None, ui_worki
 
         # Create the crab file
         crabFileName = "crab_" + jobName + ".cfg"
-        crabFilePath = os.path.join(submissionDirectory, crabFileName)
-        crabFile = open(crabFilePath, 'w')
+        crabFileName_full = os.path.join(submissionDirectory, crabFileName)
+        crabFile = open(crabFileName_full, 'w')
         crabFile.write(_CRAB_TEMPLATE.substitute(fullCrabOptions))
         crabFile.close()
     elif ui_working_dir is None:
@@ -102,7 +102,7 @@ def submitToGrid(configFile, jobInfo, crabOptions, crabFileName = None, ui_worki
     numJobsCreated = None
 
     if create:
-        crabCreateCommand = "crab -create -cfg " + crabFilePath
+        crabCreateCommand = "crab -create -cfg " + crabFileName_full
         print crabCreateCommand
         subprocess.call(crabCreateCommand, shell = True)        
         crabStatusCommand = "crab -status -c %s" % ui_working_dir
