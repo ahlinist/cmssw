@@ -14,20 +14,25 @@ samples = {
     ##    'type'    : "Data"
     ##},
     ##'data2011A_tauPlusX_RECO'   : {
-    ##    'dbsName' : "/TauPlusX/Run2011A-PromptReco-v1/RECO",
+    ##    'dbsName' : "/TauPlusX/Run2011A-PromptReco-v4/RECO",
     ##    'dbsURL'  : "http://cmsdbsprod.cern.ch/cms_dbs_prod_global/servlet/DBSServlet",
     ##    'type'    : "Data"
     ##},
-    'Ztautau_embedded_part1'   : {
-        'dbsName' : "/SingleMu/fruboes-20110703_embed_goldenMuMuSkim_42_TauPlusX_Run2011A_PromptReco_v4-3d3970b15f2245948e2e9363d6dd6994/USER",
-        'dbsURL'  :  "http://cmsdbsprod.cern.ch/cms_dbs_ph_analysis_01/servlet/DBSServlet",
-        'type'    : "Data"
-    },
-    'Ztautau_embedded_part2'   : {
-        'dbsName' : "/SingleMu/fruboes-20110703_embed_goldenMuMuSkim_42_muEra_SingleMu_Run2011A_May10ReReco_v1ex-3d3970b15f2245948e2e9363d6dd6994/USER",
-        'dbsURL'  :  "http://cmsdbsprod.cern.ch/cms_dbs_ph_analysis_01/servlet/DBSServlet",
+    'data_SingleMu_Run2011A_May10ReReco_v1' : {
+        'dbsName' : "/SingleMu/Run2011A-May10ReReco-v1/AOD",
+        'dbsURL'  : "http://cmsdbsprod.cern.ch/cms_dbs_prod_global/servlet/DBSServlet",
         'type'    : "Data"
     }
+    ##'Ztautau_embedded_part1'   : {
+    ##    'dbsName' : "/SingleMu/fruboes-20110703_embed_goldenMuMuSkim_42_TauPlusX_Run2011A_PromptReco_v4-3d3970b15f2245948e2e9363d6dd6994/USER",
+    ##    'dbsURL'  :  "http://cmsdbsprod.cern.ch/cms_dbs_ph_analysis_01/servlet/DBSServlet",
+    ##    'type'    : "Data"
+    ##},
+    ##'Ztautau_embedded_part2'   : {
+    ##    'dbsName' : "/SingleMu/fruboes-20110703_embed_goldenMuMuSkim_42_muEra_SingleMu_Run2011A_May10ReReco_v1ex-3d3970b15f2245948e2e9363d6dd6994/USER",
+    ##    'dbsURL'  :  "http://cmsdbsprod.cern.ch/cms_dbs_ph_analysis_01/servlet/DBSServlet",
+    ##    'type'    : "Data"
+    ##}
 }
 
 castorFilePath = "/castor/cern.ch/user/v/veelken/CMSSW_4_2_x/skims/ZtoMuTau/"
