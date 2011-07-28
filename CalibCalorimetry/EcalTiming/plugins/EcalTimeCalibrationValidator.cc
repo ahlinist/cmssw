@@ -19,7 +19,8 @@ EcalTimeCalibrationValidator::EcalTimeCalibrationValidator(const edm::ParameterS
   outputTreeFileName_ (ps.getParameter<std::string>("OutputFileName")),
   calibConstantFileName_ (ps.getParameter<std::string>("CalibConstantXMLFileName")),
   maxEntries_ (ps.getUntrackedParameter<int>("MaxTreeEntriesToProcess",-1)),
-  startingEntry_ (ps.getUntrackedParameter<int>("StartingTreeEntry",0))
+  startingEntry_ (ps.getUntrackedParameter<int>("StartingTreeEntry",0)),
+  inRuns_ (ps.getParameter<std::string>("RunIncludeExclude"))
 {
   // Tree construction
   myInputTree_ = new TChain ("EcalTimeAnalysis") ;
@@ -44,6 +45,8 @@ EcalTimeCalibrationValidator::EcalTimeCalibrationValidator(const edm::ParameterS
     produce_ = false;
     return;
   }
+
+  genIncludeExcludeVectors(inRuns_,runIncludeVector,runExcludeVector);
 
   produce_ = true;
 }
@@ -100,6 +103,10 @@ EcalTimeCalibrationValidator::analyze(edm::Event const& evt, edm::EventSetup con
       edm::LogInfo("EcalTimeCalibrationValidator") << "Processing tree entry: " << entry;
 
     myInputTree_->GetEntry(entry);
+
+    if(!includeEvent(ttreeMembersInput_.runId,runIncludeVector,runExcludeVector))
+      continue;
+
     ttreeMembersOutput = ttreeMembersInput_;
     // loop over all crys, apply time shifts
     for(int bCluster=0; bCluster < ttreeMembersInput_.nClusters; bCluster++)
@@ -189,3 +196,72 @@ void EcalTimeCalibrationValidator::endJob()
   outputTreeFile_->Close();
 }
 
+bool EcalTimeCalibrationValidator::includeEvent(double eventParameter,
+    std::vector<std::vector<double> > includeVector,
+    std::vector<std::vector<double> > excludeVector)
+{
+  bool keepEvent = false;
+  if(includeVector.size()==0) keepEvent = true;
+  for(uint i=0; i!=includeVector.size();++i){
+    if(includeVector[i].size()==1 && eventParameter==includeVector[i][0])
+      keepEvent=true;
+    else if(includeVector[i].size()==2 && (eventParameter>=includeVector[i][0] && eventParameter<=includeVector[i][1]))
+      keepEvent=true;
+  }
+  if(!keepEvent) // if it's not in our include list, skip it
+    return false;
+
+  keepEvent = true;
+  for(uint i=0; i!=excludeVector.size();++i){
+    if(excludeVector[i].size()==1 && eventParameter==excludeVector[i][0])
+      keepEvent=false;
+    else if(excludeVector[i].size()==2 && (eventParameter>=excludeVector[i][0] && eventParameter<=excludeVector[i][1]))
+      keepEvent=false;
+  }
+
+  return keepEvent; // if someone includes and excludes, exclusion will overrule
+
+}
+
+//
+std::vector<std::string> EcalTimeCalibrationValidator::split(std::string msg, std::string separator)
+{
+  boost::char_separator<char> sep(separator.c_str());
+  boost::tokenizer<boost::char_separator<char> > tok(msg, sep );
+  std::vector<std::string> token ;
+  for ( boost::tokenizer<boost::char_separator<char> >::const_iterator i = tok.begin(); i != tok.end(); ++i ) {
+    token.push_back(std::string(*i)) ;
+  }
+  return token ;
+}
+
+//
+void EcalTimeCalibrationValidator::genIncludeExcludeVectors(std::string optionString,
+    std::vector<std::vector<double> >& includeVector,
+    std::vector<std::vector<double> >& excludeVector)
+{
+  std::vector<std::string> rangeStringVector;
+  std::vector<double> rangeIntVector;
+
+  if(optionString != "-1"){
+    std::vector<std::string> stringVector = split(optionString,",") ;
+
+    for (uint i=0 ; i<stringVector.size() ; i++) {
+      bool exclude = false;
+
+      if(stringVector[i].at(0)=='x'){
+        exclude = true;
+        stringVector[i].erase(0,1);
+      }
+      rangeStringVector = split(stringVector[i],"-") ;
+
+      rangeIntVector.clear();
+      for(uint j=0; j<rangeStringVector.size();j++) {
+        rangeIntVector.push_back(atof(rangeStringVector[j].c_str()));
+      }
+      if(exclude) excludeVector.push_back(rangeIntVector);
+      else includeVector.push_back(rangeIntVector);
+
+    }
+  }
+}

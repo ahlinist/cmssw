@@ -4,7 +4,8 @@ process = cms.Process("EcalTimeCalibrationValidator")
 
 # Global Tag -- for original timing calibrations
 process.load("Configuration.StandardSequences.FrontierConditions_GlobalTag_cff")
-process.GlobalTag.globaltag = 'GR_R_43_V3::All'
+#process.GlobalTag.globaltag = 'GR_R_43_V3::All'
+process.GlobalTag.globaltag = 'GR_R_42_V19::All'
 
 # shaping our Message logger to suit our needs
 process.MessageLogger = cms.Service("MessageLogger",
@@ -20,13 +21,15 @@ process.expressValidator = cms.EDAnalyzer("EcalTimeCalibrationValidator",
     ),
   OutputFileName = cms.string("file:converted1.root"),
   CalibConstantXMLFileName = cms.string("EcalTimeCalibs.xml"),
-  MaxTreeEntriesToProcess = cms.untracked.int32(-1)
+  MaxTreeEntriesToProcess = cms.untracked.int32(-1),
+  RunIncludeExclude = cms.string("-1")
 )
 
 process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(1) )
 process.source = cms.Source("EmptySource",
        numberEventsInRun = cms.untracked.uint32(1),
-       firstRun = cms.untracked.uint32(888888) # Use last IOV
+       firstRun = cms.untracked.uint32(888888), # Use last IOV
+
 )
 
 

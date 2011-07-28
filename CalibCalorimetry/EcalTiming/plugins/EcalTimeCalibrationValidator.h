@@ -19,6 +19,8 @@
 
 #include <vector>
 
+#include <boost/tokenizer.hpp>
+
 class EcalTimeCalibrationValidator : public edm::EDAnalyzer {
 
         public:
@@ -32,6 +34,14 @@ class EcalTimeCalibrationValidator : public edm::EDAnalyzer {
                 void set(edm::EventSetup const&);
 
         private:
+                bool includeEvent(double eventParameter,
+                    std::vector<std::vector<double> > includeVector,
+                    std::vector<std::vector<double> > excludeVector);
+                void genIncludeExcludeVectors(std::string optionString,
+                    std::vector<std::vector<double> >& includeVector,
+                    std::vector<std::vector<double> >& excludeVector);
+                std::vector<std::string> split(std::string msg, std::string separator);
+
                 edm::ESHandle<EcalTimeCalibConstants> origTimeCalibConstHandle;
                 std::vector<std::string> inputFiles_;
                 std::string outputTreeFileName_; // file name of output ttree
@@ -43,6 +53,10 @@ class EcalTimeCalibrationValidator : public edm::EDAnalyzer {
                 int maxEntries_;
                 int startingEntry_;
                 EcalTimeTreeContent ttreeMembersInput_;
+                std::string inRuns_;
+
+                std::vector<std::vector<double> > runIncludeVector;
+                std::vector<std::vector<double> > runExcludeVector;
 
 };
 #endif
