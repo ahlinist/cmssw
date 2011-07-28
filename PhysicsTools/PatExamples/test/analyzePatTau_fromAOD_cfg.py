@@ -10,7 +10,7 @@ process.MessageLogger.cerr.FwkReport.reportEvery = 100
 process.load('Configuration.StandardSequences.Geometry_cff')
 process.load('Configuration.StandardSequences.MagneticField_cff')
 process.load('Configuration.StandardSequences.FrontierConditions_GlobalTag_cff')
-process.GlobalTag.globaltag = cms.string('STARTUP31X_V1::All')
+process.GlobalTag.globaltag = cms.string('START42_V12::All')
 
 process.load('PhysicsTools.PatAlgos.patSequences_cff')
 
@@ -19,8 +19,17 @@ process.maxEvents = cms.untracked.PSet(
 )
 
 process.source = cms.Source("PoolSource",
+    fileNames = cms.untracked.vstring()
+)
+
+from PhysicsTools.PatAlgos.tools.cmsswVersionTools import pickRelValInputFiles
+process.source = cms.Source("PoolSource",
     fileNames = cms.untracked.vstring(
-        '/store/relval/CMSSW_3_3_6/RelValZTT/GEN-SIM-RECO/STARTUP3X_V8H-v1/0009/24052BB1-9EE4-DE11-87C2-002618943957.root'
+    pickRelValInputFiles( cmsswVersion  = 'CMSSW_4_2_0_pre8'
+                        , relVal        = 'RelValTTbar'
+                        , globalTag     = 'START42_V7'
+                        , numberOfFiles = 1
+                        )
     )
 )
 
@@ -28,17 +37,21 @@ process.maxEvents = cms.untracked.PSet(
     input = cms.untracked.int32(-1)    
 )
 
+# switch to HPS + TaNC combined tau id. algorithm
+from PhysicsTools.PatAlgos.tools.tauTools import *
+switchToPFTauHPSpTaNC(process)
+
 process.analyzePatTau = cms.EDAnalyzer("PatTauAnalyzer",
-    src = cms.InputTag('cleanLayer1Taus'),
+    src = cms.InputTag('cleanPatTaus'),
     requireGenTauMatch = cms.bool(True),
     discrByLeadTrack = cms.string("leadingTrackPtCut"),
-    discrByIso = cms.string("byIsolation"),
-    discrByTaNC = cms.string("byTaNCfrHalfPercent")
+    discrByIso = cms.string("byHPSloose"),
+    discrByTaNC = cms.string("byTaNCmedium")
 )
 
 # disable preselection on pat::Tau objects
 # (neccessary in order to make efficiency plots)
-process.cleanLayer1Taus.preselection = cms.string('')
+process.cleanPatTaus.preselection = cms.string('')
 
 process.TFileService = cms.Service("TFileService", 
     fileName = cms.string('patTau_Histograms.root')
