@@ -62,6 +62,7 @@ process.source = cms.Source("PoolSource",
                             fileNames = cms.untracked.vstring(
        #'file:data.root'
        'file:/tmp/liis/RunData42Xv4/skim_WtoTauNu_data_RunData42Xv4.root'
+       #'file:/data1/veelken/CMSSW_4_2_x/skims/skim_WtoTauNu_data_RunData42Xv4.root'
        )
                             #skipBadFiles = cms.untracked.bool(True)
                             )
@@ -188,19 +189,7 @@ process.filterFinalEvents = cms.EDFilter("BoolEventFilter",
 
 process.o = cms.Path(process.filterFirstEvent + process.printEventContent)
 
-##process.addJetCorr = cms.Sequence(
-##    process.kt6PFJets
-##   + process.patJetCorrFactorsAK5PF
-##   + process.patJetPartonMatchAK5PF
-##   + process.patJetGenJetMatchAK5PF
-##   + process.patJetPartons
-##   + process.patJetPartonAssociationAK5PF
-##   + process.patJetFlavourAssociationAK5PF
-##   + process.patJetsAK5PF
-##)
-
 process.p = cms.Path( 
-##process.addJetCorr+
     process.producePatTupleWtoTauNuSpecific
 #    +process.printGenParticleList # print-out of generator level particles
 #    +process.printEventContent    # dump of event content after PAT-tuple production
