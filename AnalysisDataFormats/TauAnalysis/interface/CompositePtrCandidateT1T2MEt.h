@@ -12,9 +12,9 @@
  *          Michal Bluj,
  *          Christian Veelken
  *
- * \version $Revision: 1.32 $
+ * \version $Revision: 1.33 $
  *
- * $Id: CompositePtrCandidateT1T2MEt.h,v 1.32 2011/07/07 19:21:22 veelken Exp $
+ * $Id: CompositePtrCandidateT1T2MEt.h,v 1.33 2011/07/21 16:40:51 veelken Exp $
  *
  */
 
@@ -202,6 +202,15 @@ class CompositePtrCandidateT1T2MEt : public reco::LeafCandidate
   ///  with the hypothesis of originating from tau neutrinos)
   double pZeta() const { return pZeta_; }
   double pZetaVis() const { return pZetaVis_; }
+  double pZetaSig() const { return pZetaSig_; }
+
+  /// get lower bound on Mtautau,
+  /// reconstructed by algorithm described in:
+  ///   "Speedy Higgs boson discovery in decays to tau lepton pairs: h --> tau tau"
+  ///   by Alan J. Barr, Sky T. French, James A. Frost, Christopher G. Lester,
+  ///   arXiv: 1106.2322v1 [hep-ph]
+  double mTauTauMin() const { return mTauTauMin_; }
+  bool mTauTauMin_isValid() const { return mTauTauMinIsValid_; }
 
   /// clone  object
   CompositePtrCandidateT1T2MEt<T1,T2>* clone() const { return new CompositePtrCandidateT1T2MEt<T1,T2>(*this); }
@@ -318,6 +327,11 @@ class CompositePtrCandidateT1T2MEt : public reco::LeafCandidate
   /// set values of CDF-"zeta" variables
   void setPzeta(double pZeta) { pZeta_ = pZeta; }
   void setPzetaVis(double pZetaVis) { pZetaVis_ = pZetaVis; }
+  void setPzetaSig(double pZetaSig) { pZetaSig_ = pZetaSig; }
+
+  /// set lower bound on Mtautau
+  void setTauPairMassMin(double mTauTauMin) { mTauTauMin_ = mTauTauMin; }
+  void setTauPairMassMin_isValid(bool mTauTauMin_isValid) { mTauTauMinIsValid_ = mTauTauMin_isValid; }
 
   void addNSVfitSolution(const NSVfitResonanceHypothesisSummary& solution)
   {
@@ -390,6 +404,11 @@ class CompositePtrCandidateT1T2MEt : public reco::LeafCandidate
   /// CDF-"zeta" variables
   double pZeta_;
   double pZetaVis_;
+  double pZetaSig_;
+
+  /// lower bound on Mtautau
+  double mTauTauMin_;
+  bool mTauTauMinIsValid_;
 
   /// Mtautau solutions reconstructed by NSVfit algorithm
   std::vector<NSVfitResonanceHypothesisSummary> nSVfitSolutions_;
