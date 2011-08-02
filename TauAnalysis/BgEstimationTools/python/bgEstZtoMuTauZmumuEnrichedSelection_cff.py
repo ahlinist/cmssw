@@ -47,6 +47,56 @@ tausBgEstZmumuMuonMisIdEnrichedAntiMuonVeto = cms.EDFilter("PATTauSelector",
 selectTausBgEstZmumuEnriched = cms.Sequence(selectTausBgEstZmumuJetMisIdEnriched + tausBgEstZmumuMuonMisIdEnrichedAntiMuonVeto)
 
 #--------------------------------------------------------------------------------  
+# produce collection of vertices compatible with background-enriched lepton collections
+#--------------------------------------------------------------------------------
+
+from TauAnalysis.RecoTools.recoVertexSelectionForMuTau_cff import *
+
+selectedPrimaryVertexForMuTauBgEstZmumuJetMisIdEnriched = selectedPrimaryVertexForMuTau.clone(
+    srcParticles = cms.VInputTag(
+        'selectedPatMuonsPFRelIsoCumulative',
+        'tausBgEstZmumuJetMisIdEnrichedMuonVetoCumulative'
+    )
+)
+selectedPrimaryVertexQualityForMuTauBgEstZmumuJetMisIdEnriched = selectedPrimaryVertexQualityForMuTau.clone(
+    src = cms.InputTag('selectedPrimaryVertexForMuTauBgEstZmumuJetMisIdEnriched')
+)
+selectedPrimaryVertexPositionForMuTauBgEstZmumuJetMisIdEnriched = selectedPrimaryVertexPositionForMuTau.clone(
+    src = cms.InputTag('selectedPrimaryVertexQualityForMuTauBgEstZmumuJetMisIdEnriched')
+)
+selectedPrimaryVertexHighestPtTrackSumForMuTauBgEstZmumuJetMisIdEnriched = selectedPrimaryVertexHighestPtTrackSumForMuTau.clone(
+    src = cms.InputTag('selectedPrimaryVertexPositionForMuTauBgEstZmumuJetMisIdEnriched')
+)
+
+selectedPrimaryVertexForMuTauBgEstZmumuMuonMisIdEnriched = selectedPrimaryVertexForMuTau.clone(
+    srcParticles = cms.VInputTag(
+        'selectedPatMuonsPFRelIsoCumulative',
+        'tausBgEstZmumuMuonMisIdEnrichedAntiMuonVeto'
+    )
+)
+selectedPrimaryVertexQualityForMuTauBgEstZmumuMuonMisIdEnriched = selectedPrimaryVertexQualityForMuTau.clone(
+    src = cms.InputTag('selectedPrimaryVertexForMuTauBgEstZmumuMuonMisIdEnriched')
+)
+selectedPrimaryVertexPositionForMuTauBgEstZmumuMuonMisIdEnriched = selectedPrimaryVertexPositionForMuTau.clone(
+    src = cms.InputTag('selectedPrimaryVertexQualityForMuTauBgEstZmumuMuonMisIdEnriched')
+)
+selectedPrimaryVertexHighestPtTrackSumForMuTauBgEstZmumuMuonMisIdEnriched = selectedPrimaryVertexHighestPtTrackSumForMuTau.clone(
+    src = cms.InputTag('selectedPrimaryVertexPositionForMuTauBgEstZmumuMuonMisIdEnriched')
+)
+
+selectPrimaryVertexForMuTauBgEstZmumuEnriched = cms.Sequence(
+    selectedPrimaryVertexForMuTauBgEstZmumuJetMisIdEnriched
+    * selectedPrimaryVertexQualityForMuTauBgEstZmumuJetMisIdEnriched
+    * selectedPrimaryVertexPositionForMuTauBgEstZmumuJetMisIdEnriched
+    * selectedPrimaryVertexHighestPtTrackSumForMuTauBgEstZmumuJetMisIdEnriched
+    * selectedPrimaryVertexForMuTauBgEstZmumuMuonMisIdEnriched
+    * selectedPrimaryVertexQualityForMuTauBgEstZmumuMuonMisIdEnriched
+    * selectedPrimaryVertexPositionForMuTauBgEstZmumuMuonMisIdEnriched
+    * selectedPrimaryVertexHighestPtTrackSumForMuTauBgEstZmumuMuonMisIdEnriched
+)
+
+
+#--------------------------------------------------------------------------------  
 # produce collection of muon + tau-jet combinations
 #--------------------------------------------------------------------------------
 
@@ -200,6 +250,24 @@ cfgDiMuonPairInvMassBgEstZmumuJetMisIdEnriched = cms.PSet(
     src = cms.InputTag('diMuonPairsInvMassBgEstZmumuJetMisIdEnriched'),
     minNumber = cms.uint32(1)
 )
+cfgVertexForMuTauBgEstZmumuJetMisIdEnriched = cms.PSet(
+    pluginName = cms.string('vertexBgEstZmumuJetMisIdEnriched'),
+    pluginType = cms.string('VertexMinEventSelector'),
+    src = cms.InputTag('selectedPrimaryVertexForMuTauBgEstZmumuJetMisIdEnriched'),
+    minNumber = cms.uint32(1)
+)
+cfgVertexQualityForMuTauBgEstZmumuJetMisIdEnriched = cms.PSet(
+    pluginName = cms.string('vertexQualityBgEstZmumuJetMisIdEnriched'),
+    pluginType = cms.string('VertexMinEventSelector'),
+    src = cms.InputTag('selectedPrimaryVertexQualityForMuTauBgEstZmumuJetMisIdEnriched'),
+    minNumber = cms.uint32(1)
+)
+cfgVertexPositionForMuTauBgEstZmumuJetMisIdEnriched = cms.PSet(
+    pluginName = cms.string('vertexPositionBgEstZmumuJetMisIdEnriched'),
+    pluginType = cms.string('VertexMinEventSelector'),
+    src = cms.InputTag('selectedPrimaryVertexPositionForMuTauBgEstZmumuJetMisIdEnriched'),
+    minNumber = cms.uint32(1)
+)
 
 #--------------------------------------------------------------------------------
 
@@ -273,12 +341,32 @@ cfgDiMuonPairBgEstZmumuMuonMisIdEnriched = cms.PSet(
     src = cms.InputTag('diMuonPairsBgEstZmumuMuonMisIdEnriched'),
     minNumber = cms.uint32(1)
 )
-
+cfgVertexForMuTauBgEstZmumuMuonMisIdEnriched = cms.PSet(
+    pluginName = cms.string('vertexBgEstZmumuMuonMisIdEnriched'),
+    pluginType = cms.string('VertexMinEventSelector'),
+    src = cms.InputTag('selectedPrimaryVertexForMuTauBgEstZmumuMuonMisIdEnriched'),
+    minNumber = cms.uint32(1)
+)
+cfgVertexQualityForMuTauBgEstZmumuMuonMisIdEnriched = cms.PSet(
+    pluginName = cms.string('vertexQualityBgEstZmumuMuonMisIdEnriched'),
+    pluginType = cms.string('VertexMinEventSelector'),
+    src = cms.InputTag('selectedPrimaryVertexQualityForMuTauBgEstZmumuMuonMisIdEnriched'),
+    minNumber = cms.uint32(1)
+)
+cfgVertexPositionForMuTauBgEstZmumuMuonMisIdEnriched = cms.PSet(
+    pluginName = cms.string('vertexPositionBgEstZmumuMuonMisIdEnriched'),
+    pluginType = cms.string('VertexMinEventSelector'),
+    src = cms.InputTag('selectedPrimaryVertexPositionForMuTauBgEstZmumuMuonMisIdEnriched'),
+    minNumber = cms.uint32(1)
+)
 #--------------------------------------------------------------------------------
 
 evtSelConfiguratorBgEstZmumuEnriched = eventSelFlagProdConfigurator(
     [ cfgTauTaNCdiscrBgEstZmumuJetMisIdEnriched,
       cfgTauMuonVetoBgEstZmumuJetMisIdEnriched,
+      cfgVertexForMuTauBgEstZmumuJetMisIdEnriched,
+      cfgVertexQualityForMuTauBgEstZmumuJetMisIdEnriched,
+      cfgVertexPositionForMuTauBgEstZmumuJetMisIdEnriched,
       cfgMuTauPairBgEstZmumuJetMisIdEnriched,
       cfgMuTauPairMt1METbgEstZmumuJetMisIdEnriched,
       cfgMuTauPairPzetaDiffBgEstZmumuJetMisIdEnriched,
@@ -294,6 +382,9 @@ evtSelConfiguratorBgEstZmumuEnriched = eventSelFlagProdConfigurator(
       cfgTauProngBgEstZmumuMuonMisIdEnriched,
       cfgTauChargeBgEstZmumuMuonMisIdEnriched,
       cfgTauAntiMuonVetoBgEstZmumuMuonMisIdEnriched,      
+      cfgVertexForMuTauBgEstZmumuMuonMisIdEnriched,
+      cfgVertexQualityForMuTauBgEstZmumuMuonMisIdEnriched,
+      cfgVertexPositionForMuTauBgEstZmumuMuonMisIdEnriched,
       cfgMuTauPairBgEstZmumuMuonMisIdEnriched,
       cfgMuTauPairZeroChargeBgEstZmumuMuonMisIdEnriched,
       cfgDiMuonPairBgEstZmumuMuonMisIdEnriched ],
@@ -308,7 +399,7 @@ selectEventsBgEstZmumuEnriched = evtSelConfiguratorBgEstZmumuEnriched.configure(
 #--------------------------------------------------------------------------------
 
 from TauAnalysis.Configuration.analyzeZtoMuTau_cfi import *
-from TauAnalysis.BgEstimationTools.selectZtoMuTauEventVertex_cff import *
+#from TauAnalysis.BgEstimationTools.selectZtoMuTauEventVertex_cff import *
 from TauAnalysis.BgEstimationTools.tauIdEffZtoMuTauHistManager_cfi import *
 
 muonHistManagerBgEstZmumuEnriched = copy.deepcopy(muonHistManager)
@@ -357,9 +448,6 @@ analyzeEventsBgEstZmumuJetMisIdEnriched = cms.EDAnalyzer("GenericAnalyzer",
         evtSelGenPhaseSpace,
         evtSelTrigger,
         evtSelDataQuality,
-        evtSelPrimaryEventVertex,
-        evtSelPrimaryEventVertexQuality,
-        evtSelPrimaryEventVertexPosition,
         evtSelGlobalMuon,
         evtSelMuonEta,
         evtSelMuonPt,
@@ -379,6 +467,21 @@ analyzeEventsBgEstZmumuJetMisIdEnriched = cms.EDAnalyzer("GenericAnalyzer",
             pluginName = cms.string('tauMuonVetoBgEstZmumuJetMisIdEnriched'),
             pluginType = cms.string('BoolEventSelector'),
             src = cms.InputTag('tauMuonVetoBgEstZmumuJetMisIdEnriched', 'cumulative')
+        ),
+        cms.PSet(
+            pluginName = cms.string('vertexBgEstZmumuJetMisIdEnriched'),
+            pluginType = cms.string('BoolEventSelector'),
+            src = cms.InputTag('vertexBgEstZmumuJetMisIdEnriched')
+        ),
+        cms.PSet(
+            pluginName = cms.string('vertexQualityBgEstZmumuJetMisIdEnriched'),
+            pluginType = cms.string('BoolEventSelector'),
+            src = cms.InputTag('vertexQualityBgEstZmumuJetMisIdEnriched')
+        ),
+        cms.PSet(
+            pluginName = cms.string('vertexPositionBgEstZmumuJetMisIdEnriched'),
+            pluginType = cms.string('BoolEventSelector'),
+            src = cms.InputTag('vertexPositionBgEstZmumuJetMisIdEnriched')
         ),
         cms.PSet(
             pluginName = cms.string('muTauPairBgEstZmumuJetMisIdEnriched'),
@@ -419,7 +522,7 @@ analyzeEventsBgEstZmumuJetMisIdEnriched = cms.EDAnalyzer("GenericAnalyzer",
         diTauCandidateNSVfitHistManagerBgEstZmumuJetMisIdEnriched,
 	caloMEtHistManagerBgEstZmumuJetMisIdEnriched,
 	pfMEtHistManagerBgEstZmumuJetMisIdEnriched,
-        tauIdEffHistManagerBgEstZmumuJetMisIdEnriched,
+    #tauIdEffHistManagerBgEstZmumuJetMisIdEnriched,
         dataBinnerBgEstZmumuEnriched
     ),
 
@@ -444,18 +547,6 @@ analyzeEventsBgEstZmumuJetMisIdEnriched = cms.EDAnalyzer("GenericAnalyzer",
         cms.PSet(
             filter = cms.string('evtSelDataQuality'),
             title = cms.string('Data quality')
-        ),
-        cms.PSet(
-            filter = cms.string('evtSelPrimaryEventVertex'),
-            title = cms.string('Vertex')
-        ),
-        cms.PSet(
-            filter = cms.string('evtSelPrimaryEventVertexQuality'),
-            title = cms.string('Vertex quality')
-        ),
-        cms.PSet(
-            filter = cms.string('evtSelPrimaryEventVertexPosition'),
-            title = cms.string('Vertex position')
         ),
         cms.PSet(
             filter = cms.string('evtSelGlobalMuon'),
@@ -505,6 +596,18 @@ analyzeEventsBgEstZmumuJetMisIdEnriched = cms.EDAnalyzer("GenericAnalyzer",
             filter = cms.string('tauMuonVetoBgEstZmumuJetMisIdEnriched'),
             title = cms.string('Tau mu-Veto')
         ),
+         cms.PSet(
+            filter = cms.string('vertexBgEstZmumuJetMisIdEnriched'),
+            title = cms.string('Vertex')
+        ),
+        cms.PSet(
+            filter = cms.string('vertexQualityBgEstZmumuJetMisIdEnriched'),
+            title = cms.string('Vertex quality')
+        ),
+        cms.PSet(
+            filter = cms.string('vertexPositionBgEstZmumuJetMisIdEnriched'),
+            title = cms.string('Vertex position')
+        ),
         cms.PSet(
             filter = cms.string('muTauPairBgEstZmumuJetMisIdEnriched'),
             title = cms.string('dR(Muon-Tau) > 0.7')
@@ -545,7 +648,7 @@ analyzeEventsBgEstZmumuJetMisIdEnriched = cms.EDAnalyzer("GenericAnalyzer",
                 'diTauCandidateNSVfitHistManagerBgEstZmumuJetMisIdEnriched',
                 'caloMEtHistManagerBgEstZmumuJetMisIdEnriched',
 	        'pfMEtHistManagerBgEstZmumuJetMisIdEnriched',
-                'tauIdEffHistManagerBgEstZmumuJetMisIdEnriched',
+            #'tauIdEffHistManagerBgEstZmumuJetMisIdEnriched',
                 'dataBinnerBgEstZmumuEnriched'
             )
         )
@@ -593,9 +696,6 @@ analyzeEventsBgEstZmumuMuonMisIdEnriched = cms.EDAnalyzer("GenericAnalyzer",
         evtSelGenPhaseSpace,
         evtSelTrigger,
         evtSelDataQuality,
-        evtSelPrimaryEventVertex,
-        evtSelPrimaryEventVertexQuality,
-        evtSelPrimaryEventVertexPosition,
         cms.PSet(
             pluginName = cms.string('muonStandaloneZmumuMuonMisIdEnriched'),
             pluginType = cms.string('BoolEventSelector'),
@@ -647,6 +747,21 @@ analyzeEventsBgEstZmumuMuonMisIdEnriched = cms.EDAnalyzer("GenericAnalyzer",
             src = cms.InputTag('tauAntiMuonVetoBgEstZmumuMuonMisIdEnriched', 'cumulative')
         ),
         cms.PSet(
+            pluginName = cms.string('vertexBgEstZmumuMuonMisIdEnriched'),
+            pluginType = cms.string('BoolEventSelector'),
+            src = cms.InputTag('vertexBgEstZmumuMuonMisIdEnriched')
+        ),
+        cms.PSet(
+            pluginName = cms.string('vertexQualityBgEstZmumuMuonMisIdEnriched'),
+            pluginType = cms.string('BoolEventSelector'),
+            src = cms.InputTag('vertexQualityBgEstZmumuMuonMisIdEnriched')
+        ),
+        cms.PSet(
+            pluginName = cms.string('vertexPositionBgEstZmumuMuonMisIdEnriched'),
+            pluginType = cms.string('BoolEventSelector'),
+            src = cms.InputTag('vertexPositionBgEstZmumuMuonMisIdEnriched')
+        ),
+        cms.PSet(
             pluginName = cms.string('muTauPairBgEstZmumuMuonMisIdEnriched'),
             pluginType = cms.string('BoolEventSelector'),
             src = cms.InputTag('muTauPairBgEstZmumuMuonMisIdEnriched')
@@ -670,7 +785,7 @@ analyzeEventsBgEstZmumuMuonMisIdEnriched = cms.EDAnalyzer("GenericAnalyzer",
         diTauCandidateNSVfitHistManagerBgEstZmumuMuonMisIdEnriched,
         caloMEtHistManagerBgEstZmumuMuonMisIdEnriched,
 	pfMEtHistManagerBgEstZmumuMuonMisIdEnriched,
-        tauIdEffHistManagerBgEstZmumuMuonMisIdEnriched,
+        #tauIdEffHistManagerBgEstZmumuMuonMisIdEnriched,
         dataBinnerBgEstZmumuEnriched
     ),
 
@@ -695,18 +810,6 @@ analyzeEventsBgEstZmumuMuonMisIdEnriched = cms.EDAnalyzer("GenericAnalyzer",
         cms.PSet(
             filter = cms.string('evtSelDataQuality'),
             title = cms.string('Data quality')
-        ),
-        cms.PSet(
-            filter = cms.string('evtSelPrimaryEventVertex'),
-            title = cms.string('Vertex')
-        ),
-        cms.PSet(
-            filter = cms.string('evtSelPrimaryEventVertexQuality'),
-            title = cms.string('Vertex quality')
-        ),
-        cms.PSet(
-            filter = cms.string('evtSelPrimaryEventVertexPosition'),
-            title = cms.string('Vertex position')
         ),
         cms.PSet(
             filter = cms.string('muonStandaloneZmumuMuonMisIdEnriched'),
@@ -765,6 +868,19 @@ analyzeEventsBgEstZmumuMuonMisIdEnriched = cms.EDAnalyzer("GenericAnalyzer",
             title = cms.string('Tau anti-mu-Veto')
         ),
         cms.PSet(
+            filter = cms.string('vertexBgEstZmumuMuonMisIdEnriched'),
+            title = cms.string('Vertex')
+        ),
+        cms.PSet(
+            filter = cms.string('vertexQualityBgEstZmumuMuonMisIdEnriched'),
+            title = cms.string('Vertex quality')
+        ),
+        cms.PSet(
+            filter = cms.string('vertexPositionBgEstZmumuMuonMisIdEnriched'),
+            title = cms.string('Vertex position')
+        ),
+
+        cms.PSet(
             filter = cms.string('muTauPairBgEstZmumuMuonMisIdEnriched'),
             title = cms.string('dR(Muon-Tau) > 0.7')
         ),
@@ -783,8 +899,8 @@ analyzeEventsBgEstZmumuMuonMisIdEnriched = cms.EDAnalyzer("GenericAnalyzer",
                 'diTauCandidateHistManagerBgEstZmumuMuonMisIdEnriched',
                 'diTauCandidateNSVfitHistManagerBgEstZmumuMuonMisIdEnriched',
                 'caloMEtHistManagerBgEstZmumuMuonMisIdEnriched',
-	        'pfMEtHistManagerBgEstZmumuMuonMisIdEnriched',
-                'tauIdEffHistManagerBgEstZmumuMuonMisIdEnriched',
+	            'pfMEtHistManagerBgEstZmumuMuonMisIdEnriched',
+                #'tauIdEffHistManagerBgEstZmumuMuonMisIdEnriched',
                 'dataBinnerBgEstZmumuEnriched'
             )
         )
@@ -800,6 +916,7 @@ analysisSequenceBgEstZmumuMuonMisIdEnriched = cms.Sequence(analyzeEventsBgEstZmu
 bgEstZmumuEnrichedAnalysisSequence = cms.Sequence(
     selectMuonsBgEstZmumuEnriched
    + selectTausBgEstZmumuEnriched
+   + selectPrimaryVertexForMuTauBgEstZmumuEnriched
    + produceMuTauPairsBgEstZmumuJetMisIdEnriched + selectMuTauPairsBgEstZmumuJetMisIdEnriched
    + produceMuTauPairsBgEstZmumuMuonMisIdEnriched + selectMuTauPairsBgEstZmumuMuonMisIdEnriched
    + produceDiMuonPairsBgEstZmumuJetMisIdEnriched + selectDiMuonPairsBgEstZmumuJetMisIdEnriched

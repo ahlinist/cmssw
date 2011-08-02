@@ -70,6 +70,35 @@ tauSelConfiguratorBgEstWplusJetsEnriched = objSelConfigurator(
 selectTausBgEstWplusJetsEnriched = tauSelConfiguratorBgEstWplusJetsEnriched.configure(pyNameSpace = locals())
 
 #--------------------------------------------------------------------------------  
+# produce collection of vertices compatible with background-enriched lepton collections
+#--------------------------------------------------------------------------------
+
+from TauAnalysis.RecoTools.recoVertexSelectionForMuTau_cff import *
+
+selectedPrimaryVertexForMuTauBgEstWplusJetsEnriched = selectedPrimaryVertexForMuTau.clone(
+    srcParticles = cms.VInputTag(
+        'muonsBgEstWplusJetsEnrichedPFRelIsoCumulative',
+        'tausBgEstWplusJetsEnrichedMuonVetoCumulative'
+    )
+)
+selectedPrimaryVertexQualityForMuTauBgEstWplusJetsEnriched = selectedPrimaryVertexQualityForMuTau.clone(
+    src = cms.InputTag('selectedPrimaryVertexForMuTauBgEstWplusJetsEnriched')
+)
+selectedPrimaryVertexPositionForMuTauBgEstWplusJetsEnriched = selectedPrimaryVertexPositionForMuTau.clone(
+    src = cms.InputTag('selectedPrimaryVertexQualityForMuTauBgEstWplusJetsEnriched')
+)
+selectedPrimaryVertexHighestPtTrackSumForMuTauBgEstWplusJetsEnriched = selectedPrimaryVertexHighestPtTrackSumForMuTau.clone(
+    src = cms.InputTag('selectedPrimaryVertexPositionForMuTauBgEstWplusJetsEnriched')
+)
+selectPrimaryVertexForMuTauBgEstWplusJetsEnriched = cms.Sequence(
+    selectedPrimaryVertexForMuTauBgEstWplusJetsEnriched
+    * selectedPrimaryVertexQualityForMuTauBgEstWplusJetsEnriched
+    * selectedPrimaryVertexPositionForMuTauBgEstWplusJetsEnriched
+    * selectedPrimaryVertexHighestPtTrackSumForMuTauBgEstWplusJetsEnriched
+)
+
+
+#--------------------------------------------------------------------------------  
 # produce collection of muon + tau-jet combinations
 #--------------------------------------------------------------------------------
 
@@ -176,12 +205,35 @@ cfgDiMuonVetoBgEstWplusJetsEnriched = cms.PSet(
     maxNumber = cms.uint32(1)
 )
 
+cfgVertexForMuTauBgEstWplusJetsEnriched = cms.PSet(
+    pluginName = cms.string('vertexBgEstWplusJetsEnriched'),
+    pluginType = cms.string('VertexMinEventSelector'),
+    src = cms.InputTag('selectedPrimaryVertexForMuTauBgEstWplusJetsEnriched'),
+    minNumber = cms.uint32(1)
+)
+cfgVertexQualityForMuTauBgEstWplusJetsEnriched = cms.PSet(
+    pluginName = cms.string('vertexQualityBgEstWplusJetsEnriched'),
+    pluginType = cms.string('VertexMinEventSelector'),
+    src = cms.InputTag('selectedPrimaryVertexQualityForMuTauBgEstWplusJetsEnriched'),
+    minNumber = cms.uint32(1)
+)
+cfgVertexPositionForMuTauBgEstWplusJetsEnriched = cms.PSet(
+    pluginName = cms.string('vertexPositionBgEstWplusJetsEnriched'),
+    pluginType = cms.string('VertexMinEventSelector'),
+    src = cms.InputTag('selectedPrimaryVertexPositionForMuTauBgEstWplusJetsEnriched'),
+    minNumber = cms.uint32(1)
+)
+
+
 evtSelConfiguratorBgEstWplusJetsEnriched = eventSelFlagProdConfigurator(
     [ cfgMuonPtCutBgEstWplusJetsEnriched,
       cfgMuonVbTfIdCutBgEstWplusJetsEnriched,      
       cfgMuonPFRelIsoCutBgEstWplusJetsEnriched,
       cfgTauTaNCdiscrCutBgEstWplusJetsEnriched,
       cfgTauMuonVetoBgEstWplusJetsEnriched,
+      cfgVertexForMuTauBgEstWplusJetsEnriched,
+      cfgVertexQualityForMuTauBgEstWplusJetsEnriched,
+      cfgVertexPositionForMuTauBgEstWplusJetsEnriched,
       cfgMuTauPairBgEstWplusJetsEnriched,
       cfgMuTauPairMt1MEtBgEstWplusJetsEnriched,
       cfgCentralJetVetoBgEstWplusJetsEnriched,
@@ -197,7 +249,7 @@ selectEventsBgEstWplusJetsEnriched = evtSelConfiguratorBgEstWplusJetsEnriched.co
 #--------------------------------------------------------------------------------
 
 from TauAnalysis.Configuration.analyzeZtoMuTau_cfi import *
-from TauAnalysis.BgEstimationTools.selectZtoMuTauEventVertex_cff import *
+#from TauAnalysis.BgEstimationTools.selectZtoMuTauEventVertex_cff import *
 
 muonHistManagerBgEstWplusJetsEnriched = copy.deepcopy(muonHistManager)
 muonHistManagerBgEstWplusJetsEnriched.pluginName = cms.string('muonHistManagerBgEstWplusJetsEnriched')
@@ -248,9 +300,6 @@ analyzeEventsBgEstWplusJetsEnriched = cms.EDAnalyzer("GenericAnalyzer",
         evtSelGenPhaseSpace,
         evtSelTrigger,
         evtSelDataQuality,
-        evtSelPrimaryEventVertex,
-        evtSelPrimaryEventVertexQuality,
-        evtSelPrimaryEventVertexPosition,
         evtSelGlobalMuon,
         evtSelMuonEta,
         cms.PSet(
@@ -284,6 +333,21 @@ analyzeEventsBgEstWplusJetsEnriched = cms.EDAnalyzer("GenericAnalyzer",
             src = cms.InputTag('tauMuonVetoBgEstWplusJetsEnriched', 'cumulative')
         ),      
         cms.PSet(
+            pluginName = cms.string('vertexBgEstWplusJetsEnriched'),
+            pluginType = cms.string('BoolEventSelector'),
+            src = cms.InputTag('vertexBgEstWplusJetsEnriched')
+        ),
+        cms.PSet(
+            pluginName = cms.string('vertexQualityBgEstWplusJetsEnriched'),
+            pluginType = cms.string('BoolEventSelector'),
+            src = cms.InputTag('vertexQualityBgEstWplusJetsEnriched')
+        ),
+        cms.PSet(
+            pluginName = cms.string('vertexPositionBgEstWplusJetsEnriched'),
+            pluginType = cms.string('BoolEventSelector'),
+            src = cms.InputTag('vertexPositionBgEstWplusJetsEnriched')
+        ),
+        cms.PSet(
             pluginName = cms.string('muTauPairBgEstWplusJetsEnriched'),
             pluginType = cms.string('BoolEventSelector'),
             src = cms.InputTag('muTauPairBgEstWplusJetsEnriched')
@@ -313,7 +377,7 @@ analyzeEventsBgEstWplusJetsEnriched = cms.EDAnalyzer("GenericAnalyzer",
         caloMEtHistManagerBgEstWplusJetsEnriched,
 	pfMEtHistManagerBgEstWplusJetsEnriched,
         jetHistManagerBgEstWplusJetsEnriched,
-        tauIdEffHistManagerBgEstWplusJetsEnriched,
+        #tauIdEffHistManagerBgEstWplusJetsEnriched,
         dataBinnerBgEstWplusJetsEnriched
     ),
 
@@ -338,18 +402,6 @@ analyzeEventsBgEstWplusJetsEnriched = cms.EDAnalyzer("GenericAnalyzer",
         cms.PSet(
             filter = cms.string('evtSelDataQuality'),
             title = cms.string('Data quality')
-        ),
-        cms.PSet(
-            filter = cms.string('evtSelPrimaryEventVertex'),
-            title = cms.string('Vertex')
-        ),
-        cms.PSet(
-            filter = cms.string('evtSelPrimaryEventVertexQuality'),
-            title = cms.string('Vertex quality')
-        ),
-        cms.PSet(
-            filter = cms.string('evtSelPrimaryEventVertexPosition'),
-            title = cms.string('Vertex position')
         ),
         cms.PSet(
             filter = cms.string('evtSelGlobalMuon'),
@@ -398,6 +450,18 @@ analyzeEventsBgEstWplusJetsEnriched = cms.EDAnalyzer("GenericAnalyzer",
         cms.PSet(
             filter = cms.string('tauMuonVetoBgEstWplusJetsEnriched'),
             title = cms.string('Tau mu-Veto')
+        ),
+        cms.PSet(
+            filter = cms.string('vertexBgEstWplusJetsEnriched'),
+            title = cms.string('Vertex')
+        ),
+        cms.PSet(
+            filter = cms.string('vertexQualityBgEstWplusJetsEnriched'),
+            title = cms.string('Vertex quality')
+        ),
+        cms.PSet(
+            filter = cms.string('vertexPositionBgEstWplusJetsEnriched'),
+            title = cms.string('Vertex position')
         ),
         cms.PSet(
             filter = cms.string('muTauPairBgEstWplusJetsEnriched'),
@@ -451,7 +515,7 @@ analyzeEventsBgEstWplusJetsEnriched = cms.EDAnalyzer("GenericAnalyzer",
                 'pfMEtHistManagerBgEstWplusJetsEnriched',
                 'caloMEtHistManagerBgEstWplusJetsEnriched',
                 'jetHistManagerBgEstWplusJetsEnriched',
-                'tauIdEffHistManagerBgEstWplusJetsEnriched',
+                #'tauIdEffHistManagerBgEstWplusJetsEnriched',
                 'dataBinnerBgEstWplusJetsEnriched'
             )
         )
@@ -467,6 +531,7 @@ analysisSequenceBgEstWplusJetsEnriched = cms.Sequence(analyzeEventsBgEstWplusJet
 bgEstWplusJetsEnrichedAnalysisSequence = cms.Sequence(
     selectMuonsBgEstWplusJetsEnriched
    + selectTausBgEstWplusJetsEnriched
+   + selectPrimaryVertexForMuTauBgEstWplusJetsEnriched
    + produceMuTauPairsBgEstWplusJetsEnriched + selectMuTauPairsBgEstWplusJetsEnriched
    + selectJetsBgEstWplusJetsEnriched 
    + selectEventsBgEstWplusJetsEnriched

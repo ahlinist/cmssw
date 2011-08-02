@@ -281,7 +281,7 @@ plotZtoMuTauStacked_template = plots_ZtoMuTau.clone(
     stack = cms.vstring(
         'TTplusJets',
         'diBoson',
-	'Zmumu',
+	    'Zmumu',
         'WplusJets',
         'QCD',
         'Ztautau'
@@ -297,8 +297,8 @@ plotHistZtoMuTauStacked = dqmHistPlotter_template.clone(
         ),
         Zmumu = cms.PSet(
             dqmDirectory = cms.string(''),
-            legendEntry = cms.string(recoSampleDefinitionsZtoMuTau_7TeV['ALL_SAMPLES']['Zmumu_powheg']['legendEntry']),
-            type = cms.string(recoSampleDefinitionsZtoMuTau_7TeV['ALL_SAMPLES']['Zmumu_powheg']['type'])
+            legendEntry = cms.string(recoSampleDefinitionsZtoMuTau_7TeV['ALL_SAMPLES']['ZmumuSum']['legendEntry']),
+            type = cms.string(recoSampleDefinitionsZtoMuTau_7TeV['ALL_SAMPLES']['ZmumuSum']['type'])
         ),
         WplusJets = cms.PSet(
             dqmDirectory = cms.string(''),
@@ -344,7 +344,7 @@ plotHistZtoMuTauStacked = dqmHistPlotter_template.clone(
             textAlign = cms.int32(12),
             text = cms.vstring(
                 'CMS Preliminary', 
-                'L = 36.2pb^{-1}',
+                'L = ' + str(recoSampleDefinitionsZtoMuTau_7TeV['TARGET_LUMI']) + 'pb^{-1}',
                 '#sqrt{s}=7TeV'
             )
         )
@@ -352,7 +352,7 @@ plotHistZtoMuTauStacked = dqmHistPlotter_template.clone(
     drawOptionSets = cms.PSet(
         default = cms.PSet(
             Ztautau = recoSampleDefinitionsZtoMuTau_7TeV['ALL_SAMPLES']['ZtautauSum']['drawOption'],
-            Zmumu = recoSampleDefinitionsZtoMuTau_7TeV['ALL_SAMPLES']['Zmumu_powheg']['drawOption'],
+            Zmumu = recoSampleDefinitionsZtoMuTau_7TeV['ALL_SAMPLES']['ZmumuSum']['drawOption'],
             WplusJets = recoSampleDefinitionsZtoMuTau_7TeV['ALL_SAMPLES']['WplusJets_madgraph']['drawOption'],
             TTplusJets = recoSampleDefinitionsZtoMuTau_7TeV['ALL_SAMPLES']['TTplusJets_madgraph']['drawOption'],
             diBoson = recoSampleDefinitionsZtoMuTau_7TeV['ALL_SAMPLES']['VVsum']['drawOption'],
@@ -484,7 +484,7 @@ plotHistZtoElecTauStacked = dqmHistPlotter_template.clone(
             textAlign = cms.int32(12),
             text = cms.vstring(
                 'CMS Preliminary', 
-                'L = 36.2pb^{-1}',
+                'L = ' + str(recoSampleDefinitionsZtoMuTau_7TeV['TARGET_LUMI']) + 'pb^{-1}',
                 '#sqrt{s}=7TeV'
             )
         )
@@ -673,8 +673,8 @@ plotHistWtoTauNuStacked = dqmHistPlotter_template.clone(
                             textSize = cms.double(0.035),
                             textAlign = cms.int32(12),
                             text = cms.vstring(
-                    'CMS Preliminary',
-                                    'L = 36.2pb^{-1}',
+                                    'CMS Preliminary',
+                                    'L = ' + str(recoSampleDefinitionsZtoMuTau_7TeV['TARGET_LUMI']) + 'pb^{-1}',
                                     '#sqrt{s}=7TeV'
                                 )
                         )
