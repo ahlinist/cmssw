@@ -9,6 +9,7 @@ HTEventSelector::HTEventSelector(const edm::ParameterSet& pset) :
         SusyEventSelector(pset),
         jetTag_(pset.getParameter<edm::InputTag> ("jetTag")),
         minHT_(pset.getParameter<double> ("minHT")),
+        maxHT_(pset.getParameter<double> ("maxHT")),
         minPt_(pset.getParameter<double> ("minPt")),
         maxEta_(pset.getParameter<double> ("maxEta")),
         useJetID_(pset.getParameter<bool> ("useJetID")),
@@ -73,7 +74,10 @@ bool HTEventSelector::select(const edm::Event& event) const {
     //std::cout << myHT << std::endl;
     setVariable("HT", myHT);
 
-    return (myHT > minHT_ && !(rejectEvtJetID_ && badJet));
+    bool result_max = true;
+    if (maxHT_ > 0)
+        result_max = (myHT < maxHT_);
+    return (myHT > minHT_ && result_max && !(rejectEvtJetID_ && badJet));
 
 }
 
