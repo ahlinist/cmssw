@@ -18,11 +18,15 @@
 
 #include "TauAnalysis/CandidateTools/interface/PFMEtSignInterface.h"
 #include "TauAnalysis/CandidateTools/interface/NSVfitAlgorithmBase.h"
+#include "TauAnalysis/CandidateTools/interface/mTauTauMinAlgo.h"
 #include "TauAnalysis/CandidateTools/interface/candidateAuxFunctions.h"
 #include "TauAnalysis/CandidateTools/interface/generalAuxFunctions.h"
+#include "TauAnalysis/CandidateTools/interface/svFitAuxFunctions.h"
 
 #include "TMath.h"
 #include "TF1.h"
+#include "TMatrixD.h"
+#include "TVectorD.h"
 
 #include <string>
 #include <vector>
@@ -37,7 +41,9 @@ class CompositePtrCandidateT1T2MEtAlgorithm
  public:
 
   CompositePtrCandidateT1T2MEtAlgorithm(const edm::ParameterSet& cfg)
-    : pfMEtSign_(0)
+    : pfMEtSign_(0),
+      pfMEtCov_(2, 2),
+      pfMEtCovInverse_(2, 2)
   {
     //std::cout << "<CompositePtrCandidateT1T2MEtAlgorithm::CompositePtrCandidateT1T2MEtAlgorithm>:" << std::endl;
 
@@ -163,8 +169,24 @@ class CompositePtrCandidateT1T2MEtAlgorithm
       compositePtrCandidate.setMt2MET(compMt(leg2->p4(), met->px(), met->py()));
       compositePtrCandidate.setDPhi1MET(TMath::Abs(normalizedPhi(leg1->phi() - met->phi())));
       compositePtrCandidate.setDPhi2MET(TMath::Abs(normalizedPhi(leg2->phi() - met->phi())));
-
-      compZeta(compositePtrCandidate, leg1->p4(), leg2->p4(), met->px(), met->py());
+      
+//--- compute lower bound on tau-pair mass,
+//    using the algorithm described in:
+//      "Speedy Higgs boson discovery in decays to tau lepton pairs: h --> tau tau"
+//      by Alan J. Barr, Sky T. French, James A. Frost, Christopher G. Lester,
+//       arXiv: 1106.2322v1 [hep-ph]
+      double mTauTauMin_value = 
+	mTauTauMin(leg1->energy(), leg1->px(), leg1->py(), leg1->pz(),
+		   leg2->energy(), leg2->px(), leg2->py(), leg2->pz(),
+		   met->px(), met->py(),
+		   SVfit_namespace::tauLeptonMass);
+      if ( mTauTauMin_value > 0. ) {
+	compositePtrCandidate.setTauPairMassMin(mTauTauMin_value);
+	compositePtrCandidate.setTauPairMassMin_isValid(true);
+      } else {
+	compositePtrCandidate.setTauPairMassMin(-1.);
+	compositePtrCandidate.setTauPairMassMin_isValid(false);
+      }
 
 //--- compute (PF)MEt significance matrix
       if ( doPFMEtSign && pfMEtSign_ ) {
@@ -173,6 +195,8 @@ class CompositePtrCandidateT1T2MEtAlgorithm
 	daughterHypothesesList.push_back(leg2.get());
 	compositePtrCandidate.setMEtSignMatrix((*pfMEtSign_)(daughterHypothesesList));
       }
+
+      compZeta(compositePtrCandidate, leg1->p4(), leg2->p4(), met->px(), met->py());
 
 //--- SV method computation (if we have the PV and beamspot)
       if ( doSVreco ) {
@@ -409,14 +433,89 @@ class CompositePtrCandidateT1T2MEtAlgorithm
 
     //std::cout << " metPhi = " << normalizedPhi(atan2(metPy, metPx))*180./TMath::Pi() << std::endl;
 
+//--- if MET significance algorithm has been run, compute "Pzeta significance" 
+//   (distance of reconstructed MET to area between visible decay products)
+    double pZetaSig = 0.;
+    if ( compositePtrCandidate.hasMEtSignMatrix() && compositePtrCandidate.metSignMatrix().Determinant() != 0. ) {
+
+      //std::cout << "vis1: px = " << leg1.px() << ", py = " << leg1.py() << std::endl;
+      //std::cout << "vis2: px = " << leg2.px() << ", py = " << leg2.py() << std::endl;
+      //std::cout << "met:  px = " << metPx     << ", py = " << metPy     << std::endl;
+
+      pfMEtCov_ = compositePtrCandidate.metSignMatrix();
+      //std::cout << "pfMEtCov:" << std::endl;
+      //pfMEtCov_.Print();
+      //TMatrixD eigenVectors(2, 2);
+      //TVectorD eigenValues(2);
+      //eigenVectors = pfMEtCov_.EigenVectors(eigenValues);
+      //std::cout << "1st eigen-vector: x = " << eigenVectors(0, 0) << ", y = " << eigenVectors(1, 0) << "," 
+      //	  << " eigen-value = " << eigenValues(0) << std::endl;
+      //std::cout << "2nd eigen-vector: x = " << eigenVectors(0, 1) << ", y = " << eigenVectors(1, 1) << "," 
+      //	  << " eigen-value = " << eigenValues(1) << std::endl;
+
+      double Vxx = SVfit_namespace::square(pfMEtCov_(0, 0));
+      double Vxy = SVfit_namespace::square(pfMEtCov_(1, 0));
+      double Vyy = SVfit_namespace::square(pfMEtCov_(1, 1));
+            
+      pfMEtCovInverse_ = pfMEtCov_;
+      pfMEtCovInverse_.Invert();
+
+      double pfMEtCovInverse00 = pfMEtCovInverse_(0, 0);
+      double pfMEtCovInverse01 = pfMEtCovInverse_(0, 1);
+      double pfMEtCovInverse10 = pfMEtCovInverse_(1, 0);
+      double pfMEtCovInverse11 = pfMEtCovInverse_(1, 1);
+      //std::cout << "pfMEtCovInverse:" << std::endl;
+      //pfMEtCovInverse_.Print();
+     
+      double alpha1 = (metPy*leg1y*Vxx - leg1x*metPy*Vxy - metPx*leg1y*Vxy + metPx*leg1x*Vyy)/
+	              (SVfit_namespace::square(leg1y)*Vxx - 2*leg1x*leg1y*Vxy + SVfit_namespace::square(leg1x)*Vyy);
+      double res1x = metPx;
+      double res1y = metPy;
+      if ( alpha1 > 0. ) {
+	res1x -= alpha1*leg1x;
+	res1y -= alpha1*leg1y;
+      }
+      //std::cout << "res1: x = " << res1x << ", y = " << res1y <<  std::endl;
+
+      double sig1 = res1x*(pfMEtCovInverse00*res1x + pfMEtCovInverse01*res1y)
+                   + res1y*(pfMEtCovInverse10*res1x + pfMEtCovInverse11*res1y);
+      //std::cout << "--> sig1 = " << sig1 << std::endl;
+
+      double alpha2 = (metPy*leg2y*Vxx - metPy*leg2x*Vxy - metPx*leg2y*Vxy + metPx*leg2x*Vyy)/
+	              (SVfit_namespace::square(leg2y)*Vxx - 2*leg2x*leg2y*Vxy + SVfit_namespace::square(leg2x)*Vyy);
+      double res2x = metPx;
+      double res2y = metPy;
+      if ( alpha2 > 0. ) {
+	res2x -= alpha2*leg2x;
+	res2y -= alpha2*leg2y;
+      }
+      //std::cout << "res2: x = " << res2x << ", y = " << res2y <<  std::endl;
+
+      double sig2 = res2x*(pfMEtCovInverse00*res2x + pfMEtCovInverse01*res2y)
+                   + res2y*(pfMEtCovInverse10*res2x + pfMEtCovInverse11*res2y);
+      //std::cout << "--> sig2 = " << sig2 << std::endl;
+
+      pZetaSig = TMath::Min(sig1, sig2);
+      if ( pZetaSig < 0. ) pZetaSig = 0.;
+      pZetaSig = TMath::Sqrt(pZetaSig);
+
+      //std::cout << " metPx*leg1x + metPy*leg1y = " << (metPx*leg1x + metPy*leg1y) << std::endl;
+      //std::cout << " metPx*leg2x + metPy*leg2y = " << (metPx*leg2x + metPy*leg2y) << std::endl;
+
+      if ( !((metPx*leg1x + metPy*leg1y) > 0. && 
+	     (metPx*leg2x + metPy*leg2y) > 0.) ) pZetaSig *= -1.;
+    }
+
     if ( verbosity_ ) {
       std::cout << "<CompositePtrCandidateT1T2MEtAlgorithm::compZeta>:" << std::endl;
       std::cout << " pZetaVis = " << pZetaVis << std::endl;
       std::cout << " pZeta = " << pZeta << std::endl;
+      std::cout << " pZetaSig = " << pZetaSig << std::endl;
     }
 
     compositePtrCandidate.setPzeta(pZeta);
     compositePtrCandidate.setPzetaVis(pZetaVis);
+    compositePtrCandidate.setPzetaSig(pZetaSig);
   }
   reco::Candidate::LorentzVector compP4CDFmethod(const reco::Candidate::LorentzVector& leg1,
 						 const reco::Candidate::LorentzVector& leg2,
@@ -460,6 +559,8 @@ class CompositePtrCandidateT1T2MEtAlgorithm
   int verbosity_;
   std::string scaleFuncImprovedCollinearApprox_;
   PFMEtSignInterface* pfMEtSign_;
+  TMatrixD pfMEtCov_;
+  TMatrixD pfMEtCovInverse_;
   std::map<std::string, NSVfitAlgorithmBase*> nSVfitAlgorithms_;
   TF1* scaleFunc_;
   typedef std::vector<int> vint;
