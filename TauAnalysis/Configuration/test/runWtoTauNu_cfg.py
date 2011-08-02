@@ -188,20 +188,20 @@ process.filterFinalEvents = cms.EDFilter("BoolEventFilter",
 
 process.o = cms.Path(process.filterFirstEvent + process.printEventContent)
 
-process.addJetCorr = cms.Sequence(
-    process.kt6PFJets
-   + process.patJetCorrFactorsAK5PF
-   + process.patJetPartonMatchAK5PF
-   + process.patJetGenJetMatchAK5PF
-   + process.patJetPartons
-   + process.patJetPartonAssociationAK5PF
-   + process.patJetFlavourAssociationAK5PF
-   + process.patJetsAK5PF
-)
+##process.addJetCorr = cms.Sequence(
+##    process.kt6PFJets
+##   + process.patJetCorrFactorsAK5PF
+##   + process.patJetPartonMatchAK5PF
+##   + process.patJetGenJetMatchAK5PF
+##   + process.patJetPartons
+##   + process.patJetPartonAssociationAK5PF
+##   + process.patJetFlavourAssociationAK5PF
+##   + process.patJetsAK5PF
+##)
 
 process.p = cms.Path( 
-    process.addJetCorr
-   + process.producePatTupleWtoTauNuSpecific
+##process.addJetCorr+
+    process.producePatTupleWtoTauNuSpecific
 #    +process.printGenParticleList # print-out of generator level particles
 #    +process.printEventContent    # dump of event content after PAT-tuple production
    + process.selectWtoTauNuEvents
