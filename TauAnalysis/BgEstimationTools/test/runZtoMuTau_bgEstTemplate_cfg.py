@@ -104,7 +104,7 @@ from PhysicsTools.PatAlgos.tools.tauTools import *
 #switchToPFTauFixedCone(process)
 
 # comment-out to take new HPS + TaNC combined tau id. algorithm
-#switchToPFTauHPSpTaNC(process)
+##switchToPFTauHPSpTaNC(process)
 switchToPFTauHPS(process)
 
 # disable preselection on of pat::Taus
@@ -113,7 +113,7 @@ switchToPFTauHPS(process)
 process.cleanPatTaus.preselection = cms.string('')
 
 # add "ewkTauId" flag
-setattr(process.patTaus.tauIDSources, "ewkTauId", cms.InputTag('ewkTauId'))
+#setattr(process.patTaus.tauIDSources, "ewkTauId", cms.InputTag('ewkTauId'))
 #--------------------------------------------------------------------------------
 
 #--------------------------------------------------------------------------------
@@ -150,7 +150,6 @@ removeAnalyzer(process.analyzeZtoMuTauEventsOS.analysisSequence, 'eventWeightHis
 removeAnalyzer(process.analyzeZtoMuTauEventsOS.analysisSequence, 'muonHistManager')
 removeAnalyzer(process.analyzeZtoMuTauEventsOS.analysisSequence, 'tauHistManager')
 removeAnalyzer(process.analyzeZtoMuTauEventsOS.analysisSequence, 'diTauCandidateHistManagerForMuTau')
-removeAnalyzer(process.analyzeZtoMuTauEventsOS.analysisSequence, 'diTauCandidateSVfitHistManagerForMuTau')
 removeAnalyzer(process.analyzeZtoMuTauEventsOS.analysisSequence, 'diTauCandidateZmumuHypothesisHistManagerForMuTau')
 removeAnalyzer(process.analyzeZtoMuTauEventsOS.analysisSequence, 'muPairHistManagerByLooseIsolation')
 removeAnalyzer(process.analyzeZtoMuTauEventsOS.analysisSequence, 'jetHistManager')
@@ -220,26 +219,20 @@ from TauAnalysis.Configuration.tools.changeCut import changeCut
 changeCut(process, "selectedPatMuonsTrkIP", 0.2, attribute = "IpMax")
 
 # switch between TaNC and HPS tau id. discriminators
-changeCut(process, "selectedPatTausLeadTrk", "tauID('leadingTrackPtCut') > 0.5")
-changeCut(process, "selectedPatTausLeadTrkPt", "tauID('decayModeFinding') > 0.5")
-changeCut(process, "selectedPatTausForMuTauLeadTrk", "tauID('leadingTrackPtCut') > 0.5")
-changeCut(process, "selectedPatTausForMuTauLeadTrkPt", "tauID('decayModeFinding') > 0.5")
-#changeCut(process, "selectedPatTausTaNCdiscr", "tauID('byTaNCloose') > 0.5")
-#changeCut(process, "selectedPatTausForMuTauTaNCdiscr", "tauID('byTaNCloose') > 0.5")
-#changeCut(process, "tausBgEstQCDenrichedTaNCdiscr", "tauID('byTaNCvloose') > 0.5 & tauID('byTaNCmedium') < 0.5")
-#changeCut(process, "tausBgEstWplusJetsEnrichedTaNCdiscr", "tauID('byTaNCvloose') > 0.5 & tauID('byTaNCmedium') < 0.5")
-#changeCut(process, "tausBgEstWplusJetsEnrichedFRweightedTaNCdiscrNotApplied", "tauID('byTaNCvloose') > -1000. & tauID('byTaNCmedium') < +1000.")
-#changeCut(process, "tausBgEstZmumuJetMisIdEnrichedTaNCdiscr", "tauID('byTaNCvloose') > 0.5 & tauID('byTaNCmedium') < 0.5")
-changeCut(process, "selectedPatTausTaNCdiscr", "tauID('byLooseCombinedIsolationDeltaBetaCorr') > 0.5")                  
-changeCut(process, "selectedPatTausForMuTauTaNCdiscr", "tauID('byLooseCombinedIsolationDeltaBetaCorr') > 0.5")                         ##  <<<<--------------- TAU ID
-changeCut(process, "tausBgEstQCDenrichedTaNCdiscr", "tauID('byVLooseIsolationDeltaBetaCorr') > 0.5 & tauID('byMediumIsolationDeltaBetaCorr') < 0.5")
-changeCut(process, "tausBgEstWplusJetsEnrichedTaNCdiscr", "tauID('byVLooseIsolationDeltaBetaCorr') > 0.5 & tauID('byMediumIsolationDeltaBetaCorr') < 0.5")
+changeCut(process, "selectedPatTausLeadTrk", 'tauID("decayModeFinding") > 0.5')
+changeCut(process, "selectedPatTausLeadTrkPt", 'tauID("decayModeFinding") > 0.5')
+changeCut(process, "selectedPatTausForMuTauLeadTrk", 'tauID("decayModeFinding") > 0.5')
+changeCut(process, "selectedPatTausForMuTauLeadTrkPt", 'tauID("decayModeFinding") > 0.5')
+changeCut(process, "selectedPatTausTaNCdiscr", 'tauID("byLooseIsolation") > 0.5')
+changeCut(process, "selectedPatTausForMuTauTaNCdiscr", 'tauID("byLooseIsolation") > 0.5')                         ##  <<<<--------------- TAU ID
+changeCut(process, "tausBgEstQCDenrichedTaNCdiscr", 'tauID("byVLooseIsolation") > 0.5 & tauID("byMediumIsolation") < 0.5')
+changeCut(process, "tausBgEstWplusJetsEnrichedTaNCdiscr", 'tauID("byVLooseIsolation") > 0.5 & tauID("byMediumIsolation") < 0.5')
 #changeCut(process, "tausBgEstWplusJetsEnrichedFRweightedTaNCdiscrNotApplied", "tauID('byHPSvloose') > -1000. & tauID('byHPSmedium') < +1000.")
-changeCut(process, "tausBgEstZmumuJetMisIdEnrichedTaNCdiscr", "tauID('byVLooseIsolationDeltaBetaCorr') > 0.5 & tauID('byMediumIsolationDeltaBetaCorr') < 0.5")
+changeCut(process, "tausBgEstZmumuJetMisIdEnrichedTaNCdiscr", 'tauID("byVLooseIsolation") > 0.5 & tauID("byMediumIsolation") < 0.5')
 
 # correct muon veto
-changeCut(process, "selectedPatTausForMuTauCaloMuonVeto", "tauID('againstMuonTight') > -1.")
-changeCut(process, "selectedPatTausForMuTauMuonVeto", "tauID('againstMuonTight') > 0.5.")
+changeCut(process, "selectedPatTausForMuTauCaloMuonVeto", 'tauID("againstMuonTight") > -1.')
+changeCut(process, "selectedPatTausForMuTauMuonVeto", 'tauID("againstMuonTight") > 0.5')
 
 # change lower limit on separation required between muon and tau-jet to dR > 0.5
 changeCut(process, "selectedMuTauPairsAntiOverlapVeto", "dR12 > 0.5")
