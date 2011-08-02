@@ -68,20 +68,22 @@ process.maxEvents = cms.untracked.PSet(
 )
 
 process.source = cms.Source("PoolSource",
-    fileNames = cms.untracked.vstring()
+    fileNames = cms.untracked.vstring(
+        'file:/data1/veelken/CMSSW_4_2_x/skims/AHtoMuTau_negSVfitMass_lorenzo.root'                         
+    )
     #skipBadFiles = cms.untracked.bool(True)
 )
 
-from PhysicsTools.PatAlgos.tools.cmsswVersionTools import pickRelValInputFiles
-process.source = cms.Source("PoolSource",
-    fileNames = cms.untracked.vstring(
-    pickRelValInputFiles( cmsswVersion  = 'CMSSW_4_2_0_pre8'
-                        , relVal        = 'RelValTTbar'
-                        , globalTag     = 'START42_V7'
-                        , numberOfFiles = 1
-                        )
-    )
-)
+##from PhysicsTools.PatAlgos.tools.cmsswVersionTools import pickRelValInputFiles
+##process.source = cms.Source("PoolSource",
+##    fileNames = cms.untracked.vstring(
+##    pickRelValInputFiles( cmsswVersion  = 'CMSSW_4_2_0_pre8'
+##                        , relVal        = 'RelValTTbar'
+##                        , globalTag     = 'START42_V7'
+##                        , numberOfFiles = 1
+##                        )
+##    )
+##)
 
 #--------------------------------------------------------------------------------
 # import utility function for configuring PAT trigger matching
@@ -149,8 +151,8 @@ changeCut(process, "selectedPatMuonsTrkIP", 0.2, attribute = "IpMax")
 #changeCut(process, "selectedPatTausForMuTauTaNCdiscr", "tauID('byTaNCloose') > 0.5")
 changeCut(process, "selectedPatTausLeadTrkPt", "tauID('decayModeFinding') > 0.5")
 changeCut(process, "selectedPatTausForMuTauLeadTrkPt", "tauID('decayModeFinding') > 0.5")
-changeCut(process, "selectedPatTausTaNCdiscr", "tauID('byHPSloose') > 0.5")
-changeCut(process, "selectedPatTausForMuTauTaNCdiscr", "tauID('byHPSloose') > 0.5")
+changeCut(process, "selectedPatTausTaNCdiscr", "tauID('byLooseCombinedIsolationDeltaBetaCorr') > 0.5")
+changeCut(process, "selectedPatTausForMuTauTaNCdiscr", "tauID('byLooseCombinedIsolationDeltaBetaCorr') > 0.5")
 
 # disable calorimeter muon veto for now...
 changeCut(process, "selectedPatTausForMuTauCaloMuonVeto", "tauID('againstMuonTight') > -1.")
@@ -243,8 +245,8 @@ if hasattr(process, "disableEventDump"):
 #--------------------------------------------------------------------------------
 # disable accessing generator level information
 # if running on data
-#from TauAnalysis.Configuration.tools.switchToData import switchToData
-#switchToData(process)
+##from TauAnalysis.Configuration.tools.switchToData import switchToData
+##switchToData(process)
 #--------------------------------------------------------------------------------
 
 #--------------------------------------------------------------------------------
@@ -277,8 +279,8 @@ changeCut(process, "selectedPatTausLeadTrk", "tauID('decayModeFinding') > 0.5")
 changeCut(process, "selectedPatTausForMuTauLeadTrk", "tauID('decayModeFinding') > 0.5")
 changeCut(process, "selectedPatTausLeadTrkPt", "tauID('decayModeFinding') > 0.5")
 changeCut(process, "selectedPatTausForMuTauLeadTrkPt", "tauID('decayModeFinding') > 0.5")
-changeCut(process, "selectedPatTausTaNCdiscr", "tauID('byLooseIsolation') > 0.5")
-changeCut(process, "selectedPatTausForMuTauTaNCdiscr", "tauID('byLooseIsolation') > 0.5")
+changeCut(process, "selectedPatTausTaNCdiscr", "tauID('byLooseCombinedIsolationDeltaBetaCorr') > 0.5")
+changeCut(process, "selectedPatTausForMuTauTaNCdiscr", "tauID('byLooseCombinedIsolationDeltaBetaCorr') > 0.5")
 changeCut(process, "selectedPatTausForMuTauCaloMuonVeto", "tauID('againstMuonTight') > -1.")
 
 process.ewkTauId.PFTauProducer = cms.InputTag("hpsPFTauProducer")

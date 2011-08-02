@@ -35,9 +35,11 @@ def make_harvest_scripts(plot_regex, skim_regex,
                          merge_script_name = None,
                          local_copy_mapper = None,
                          chunk_size = 1e9, # 1 GB
+                         max_input_files_per_chunk = 50,
                          run_harvesting = True,
                          run_merging = True,
                          check_old_files = True,
+                         max_bsub_concurrent_file_access = 2000,
                          verbosity = 1):
 
     # Get the jobId from the user registry
@@ -74,8 +76,17 @@ def make_harvest_scripts(plot_regex, skim_regex,
     # set of files.
     relevant_tmp_files = set([])
 
+    # Keep track of the final harvested output
+    final_harvest_files = []
+
+    harvest_script_name = "_".join(['submit', job_id, 'harvest']) + '.sh'
+        
+    harvest_log = open('_'.join(('harvest', job_id, 'log')) + '.txt', 'a')
+
+    # Keep track of the names of lxbatch jobs
+    bsub_job_names = []
+
     if run_harvesting:
-        harvest_log = open('_'.join(('harvest', job_id, 'log')) + '.txt', 'a')
         # Select those that match our given regex for a sample
         plot_file_map = defaultdict(list)
         # Keep track of a hash of
@@ -100,13 +111,6 @@ def make_harvest_scripts(plot_regex, skim_regex,
                 " ".join([job_id, sample, '<harvest>' 'input[%s]' %
                           plot_source_hashes[sample].hexdigest()])+'\n')
 
-        # Keep track of the names of lxbatch jobs
-        bsub_job_names = []
-
-        # Keep track of the final harvested output
-        final_harvest_files = []
-    
-        harvest_script_name = "_".join(['submit', job_id, 'harvest']) + '.sh'
         submit_file = open(harvest_script_name, 'w')
         # Make the bsub scripts
         submit_file.write("#!/bin/bash\n")
@@ -221,7 +225,7 @@ def make_harvest_scripts(plot_regex, skim_regex,
                     submit_file.write("bsub < %s\n" % script_file)
                     # Keep track of how many files we access
                     bsub_file_access_counter += split
-                    if bsub_file_access_counter > 2000:
+                    if bsub_file_access_counter > max_bsub_concurrent_file_access:
                         bsub_file_access_counter = 0
                         submit_file.write("# thwart rate limit\n")
                         submit_file.write(
@@ -247,15 +251,15 @@ def make_harvest_scripts(plot_regex, skim_regex,
                 # Parse the sample from the regex
                 sample = None
                 if sampleToAnalyze is not None:
-                    sample = sampleToAnalyze
+                    sample = sampleToAnalyze                    
                 else:
                     sample = match.group('sample')
-                    # For the skims, keep track of the file size well, since we use it
-                    # to group the jobs.
-                    skim_file_map[sample].append(
-                        (file['time'], file['size'], full_file))
-                    # Keep track of the hash of all input files so we know what went
-                    # into our output
+                # For the skims, keep track of the file size well, since we use it
+                # to group the jobs.
+                skim_file_map[sample].append(
+                    (file['time'], file['size'], full_file))
+                # Keep track of the hash of all input files so we know what went
+                # into our output
                 skim_fileinhash_map[sample].update(full_file)
 
         def make_skim_name(sample, chunk, hash):
@@ -271,10 +275,10 @@ def make_harvest_scripts(plot_regex, skim_regex,
                 write_comment_header(merge_script, " Merging " + sample)
                 print "Merging %s" % sample,
                 files = skim_file_map[sample]
-                num_files =len(files)
+                num_files = len(files)
                 total_file_size =  sum(map(lambda x: x[1], files))/1e6
-                # Divide the job up into chunks that are about 200 MB in size
-                chunks = list(jobtools.split(files, chunk_size, lambda x: x[1]))
+                # Divide the job up into chunks that are about 1 GB each in size
+                chunks = list(jobtools.split(files, chunk_size, max_input_files_per_chunk, lambda x: x[1]))
                 print " Total sample size: %i files, %i MB - splitting into %i chunks" % (
                     num_files, total_file_size, len(chunks)),
                 # Keep track of jobs we are actually running
@@ -321,7 +325,7 @@ def make_harvest_scripts(plot_regex, skim_regex,
                     merge_script.write("bsub < %s\n" % script_file)
                     merge_jobs_counter += 1
                     bsub_file_access_counter += len(input_files)
-                    if bsub_file_access_counter > 2000:
+                    if bsub_file_access_counter > max_bsub_concurrent_file_access:
                         bsub_file_access_counter = 0
                         merge_script.write("# thwart rate limit\n")
                         merge_script.write(

@@ -124,15 +124,18 @@ def make_bsub_script(output_file, input_jobs_and_files,
         arch = arch,
     ))
 
-def split(input_files, threshold, function):
+def split(input_files, threshold, max_input_files_per_chunk, function):
     current_value = 0
+    num_input_files_per_chunk = 0
     current_list = []
     while input_files:
         current_list.append(input_files.pop(0))
         current_value += function(current_list[-1])
-        if current_value > threshold or not input_files:
+        num_input_files_per_chunk += 1
+        if current_value > threshold or num_input_files_per_chunk > max_input_files_per_chunk or not input_files:
             yield current_list
             current_value = 0
+            num_input_files_per_chunk = 0
             current_list = []
 
 

@@ -45,6 +45,8 @@ process.Out = cms.OutputModule("PoolOutputModule",
     cms.PSet(
         outputCommands = cms.untracked.vstring(
             'keep *',
+            'drop *_patMuonPFTauPairsHPS_*_*',      # CV: temporarily drop diTau objects, because diTau data-format changes
+            'drop *_patMuonPFTauPairsHPSpTaNC_*_*',                           
             'drop GenFilterInfo_*_*_*' # CV: drop GenFilterInfo objects,
                                        #     because they cause segmentation violation of merge jobs run in CMSSW_4_2_x (2011/07/10)
         )
