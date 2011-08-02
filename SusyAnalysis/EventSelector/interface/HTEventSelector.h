@@ -6,7 +6,7 @@
 ///   and cuts on it. HT is defined as scalar sum of the
 ///   the transverse jet energies.
 ///
-/// $Id: HTEventSelector.h,v 1.9 2010/11/02 09:36:01 csander Exp $
+/// $Id: HTEventSelector.h,v 1.10 2010/11/05 09:13:53 nowak Exp $
 
 // system include files
 #include <memory>
@@ -31,6 +31,7 @@ class HTEventSelector: public SusyEventSelector {
    private:
       edm::InputTag jetTag_; ///< tag for input collection
       float minHT_; ///< lower HT cut
+      float maxHT_; ///< max HT cut
       float minPt_; ///< minimum Pt of jets taken into account
       float maxEta_; ///< maximum Eta of jets taken into account
       bool useJetID_;
