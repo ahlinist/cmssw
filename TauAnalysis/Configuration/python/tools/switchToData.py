@@ -18,7 +18,7 @@ def switchToData(process):
 
 	#------------------------------------------------------------------------
 	# CV: temporary work-around for W --> tau nu channel
-	if hasattr(process, 'patJetPartonMatchAK5PF'):
+	if hasattr(process, "patJetPartonMatchAK5PF"):
 		process.patDefaultSequence.remove(process.patJetPartonMatchAK5PF)
 	#------------------------------------------------------------------------
 
@@ -42,6 +42,13 @@ def switchToData(process):
 		process.producePrePat.remove(process.genParticlesForJets)
 		process.producePrePat.remove(process.ak5GenJets)
 
+	# remove modules from PAT-tuple production sequence running on genParticles
+	if hasattr(process, "producePatTuple"):
+		if hasattr(process, "genParticlesForJets"):
+			process.producePatTuple.remove(process.genParticlesForJets)
+		if hasattr(process, "ak5GenJets"):
+			process.producePatTuple.remove(process.ak5GenJets)
+			
 	# remove modules from post-PAT production running on genParticles
 	if hasattr(process, "producePostPat"):
 		process.producePostPat.remove(process.produceGenObjects)
