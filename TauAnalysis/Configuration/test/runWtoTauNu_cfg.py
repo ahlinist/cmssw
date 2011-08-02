@@ -101,29 +101,42 @@ process.cleanPatTaus.preselection = cms.string('')
 #------------------------------------------------------------------------------
 # import utility function for managing pat::Jets
 from PhysicsTools.PatAlgos.tools.jetTools import *
-
-isMC = "False"
-jec = [ 'L1Offset', 'L2Relative', 'L3Absolute']
-if not isMC:
-    jec.extend([ 'L2L3Residual' ])
-
-addJetCollection(process, cms.InputTag('ak5PFJets'),
-                                  'AK5', 'PF',
-                                  doJTA            = False,
-                                  doBTagging       = False,
-                                  jetCorrLabel     = ('AK5PF', cms.vstring(jec)),
-                                  doType1MET       = False,
-                                  genJetCollection = cms.InputTag("ak5GenJets"),
-                                  doJetID          = True,
-                                  jetIdLabel       = "ak5",
-                                  outputModule     = ''
-                                  )
+addJetCollection(process, cms.InputTag('ak5PFJets'), 'AK5', 'PF',
+    doJTA            = False,
+    doBTagging       = False,
+    jetCorrLabel     = ('AK5PF', cms.vstring('L1FastJet', 'L2Relative', 'L3Absolute')),
+    doType1MET       = False,
+    genJetCollection = cms.InputTag("ak5GenJets"),
+    doJetID          = True,
+    jetIdLabel       = "ak5",
+    outputModule     = ''
+)
 
 process.load('JetMETCorrections.Configuration.DefaultJEC_cff')
 process.load('RecoJets.Configuration.RecoPFJets_cff')
 
-# Turn-on the FastJet density calculation -----------------------
-#### FastJet corrections
+from TauAnalysis.RecoTools.patJetSelectionForWTauNu_cff import *
+patJetSelConfiguratorForWTauNu = objSelConfigurator(
+    [ #selectedPatJetsAntiOverlapWithTausVetoForWTauNu,
+      selectedPatJetsEtaForWTauNu,
+      selectedPatJetsEt15ForWTauNu,
+      selectedPatJetsEt20ForWTauNu ],
+    src = "patJetsAK5PF",
+    pyModuleName = __name__,
+    doSelIndividual = False
+)
+process.selectPatJetsForWTauNu = patJetSelConfiguratorForWTauNu.configure(process = process)
+patJetSelConfiguratorForWTauNu2 = objSelConfigurator(
+    [ selectedPatJetsAntiOverlapWithTausVetoForWTauNu,
+      selectedPatJetsEt20ForWTauNuE ],
+    src = "patJetsAK5PF",
+    pyModuleName = __name__,
+    doSelIndividual = False
+)
+process.selectPatJetsForWTauNu2 = patJetSelConfiguratorForWTauNu2.configure(process = process)
+process.selectPatSelJetsForWTauNu._seq = process.selectPatJetsForWTauNu*process.selectPatJetsForWTauNu2
+
+# enable FastJet energy density calculation
 from RecoJets.JetProducers.kt4PFJets_cfi import *
 import RecoJets.JetProducers.kt4PFJets_cfi
 process.kt6PFJets = RecoJets.JetProducers.kt4PFJets_cfi.kt4PFJets.clone()
