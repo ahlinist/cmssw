@@ -174,6 +174,13 @@ void CompositePtrCandidateT1T2MEtHistManager<T1,T2>::bookHistogramsImp()
   hVisMassGenLeg2Jet_ = book1D("VisMassGenLeg2Jet", "Visible Mass (rec. Tau matching gen. quark/gluon Jet)", 50, 0., 250.);
   hVisMassZllCombinedHypothesis_ = ( visMassHypothesisSrc_.label() != "" ) ?
     book1D("VisMassZllCombinedHypothesis", "Visible Mass (combined Value of different Event Hypotheses)", 40, 0., 200.) : 0;
+
+  hVisMassDPhiGt175_ = book1D("VisMassDPhiGt175", "VisMassDPhiGt175", 100, 0., 500.);
+  hVisMassDPhi170to175_ = book1D("VisMassDPhi170to175", "VisMassDPhi170to175", 100, 0., 500.);
+  hVisMassDPhi160to170_ = book1D("VisMassDPhi160to170", "VisMassDPhi160to170", 100, 0., 500.);
+  hVisMassDPhi140to160_ = book1D("VisMassDPhi140to160", "VisMassDPhi140to160", 100, 0., 500.);
+  hVisMassDPhi120to140_ = book1D("VisMassDPhi120to140", "VisMassDPhi120to140", 100, 0., 500.);
+  hVisMassDPhiLt120_ = book1D("VisMassDPhiLt120", "VisMassDPhiLt120", 100, 0., 500.);
   
   hCollinearApproxEta_ = book1D("CollinearApproxEta", "Collinear Approximation #eta", 100, -5., +5.);
   hCollinearApproxMass_ = book1D("CollinearApproxMass", "Collinear Approximation Mass", 50, 0., 250.);
@@ -181,6 +188,17 @@ void CompositePtrCandidateT1T2MEtHistManager<T1,T2>::bookHistogramsImp()
   hCollinearApproxX2_ = book1D("CollinearApproxX2", "Collinear Approximation X_{2}", 100, -2.5, +2.5);
 
   hCDFmethodMass_ = book1D("CDFmethodMass", "CDF Method Mass", 50, 0., 250.);
+
+  hTauPairMassMin_ = book1D("TauPairMassMin", "TauPairMassMin", 50, 0., 250.);
+  hTauPairMassMinL_ = book1D("TauPairMassMinL", "TauPairMassMinL", 100, 0., 500.);
+  hTauPairMassMinXL_ = book1D("TauPairMassMinXL", "TauPairMassMinXL", 150, 0., 750.);
+
+  hTauPairMassMinDPhiGt175_ = book1D("TauPairMassMinDPhiGt175", "TauPairMassMinDPhiGt175", 100, 0., 500.);
+  hTauPairMassMinDPhi170to175_ = book1D("TauPairMassMinDPhi170to175", "TauPairMassMinDPhi170to175", 100, 0., 500.);
+  hTauPairMassMinDPhi160to170_ = book1D("TauPairMassMinDPhi160to170", "TauPairMassMinDPhi160to170", 100, 0., 500.);
+  hTauPairMassMinDPhi140to160_ = book1D("TauPairMassMinDPhi140to160", "TauPairMassMinDPhi140to160", 100, 0., 500.);
+  hTauPairMassMinDPhi120to140_ = book1D("TauPairMassMinDPhi120to140", "TauPairMassMinDPhi120to140", 100, 0., 500.);
+  hTauPairMassMinDPhiLt120_ = book1D("TauPairMassMinDPhiLt120", "TauPairMassMinDPhiLt120", 100, 0., 500.);
 
   hEvMETresParGenDiTau_ = book1D("EvMETresParGenDiTau", "MET resolution parallel gen. diTau", 100, -50., 50.);
   hEvMETresPerpGenDiTau_ = book1D("EvMETresPerpGenDiTau", "MET resolution perp. gen. diTau", 50, -0.01, 50.);
@@ -212,7 +230,7 @@ void CompositePtrCandidateT1T2MEtHistManager<T1,T2>::bookHistogramsImp()
   hPzetaDiff_ = book1D("PzetaDiff", "P_{#zeta} - 1.5*P_{#zeta}^{vis}", 40, -100., +100.);
 
   hPzetaDiffMEtSignRatio_ = book1D("PzetaDiffMEtSignRatio", "(P_{#zeta} - 1.5*P_{#zeta}^{vis}) / MET sign.", 100, -5.01, +5.01);
-
+  
   hMEtSignProb_ = book1D("MEtSignProb", "Probability of (gen. MET - rec. MET)/sigmaMET", 102., -0.01, 1.01);
   hMEtSignEigenValue1_ = book1D("MEtSignEigenValue1", "MET Sign. 1st Eigenvalue", 100., -0.01, 50.);
   hMEtSignEigenValue2_ = book1D("MEtSignEigenValue2", "MEt Sign. 2nd Eigenvalue", 100., -0.01, 50.);
@@ -495,6 +513,14 @@ void CompositePtrCandidateT1T2MEtHistManager<T1,T2>::fillHistogramsImp(const edm
       }
     }
 
+    double dPhi = diTauCandidate->dPhi12()*180./TMath::Pi();
+    if      ( dPhi > 175. ) hVisMassDPhiGt175_->Fill(visMass, weight);
+    else if ( dPhi > 170. ) hVisMassDPhi170to175_->Fill(visMass, weight);
+    else if ( dPhi > 160. ) hVisMassDPhi160to170_->Fill(visMass, weight);
+    else if ( dPhi > 140. ) hVisMassDPhi140to160_->Fill(visMass, weight);
+    else if ( dPhi > 120. ) hVisMassDPhi120to140_->Fill(visMass, weight);
+    else                    hVisMassDPhiLt120_->Fill(visMass, weight);
+    
     if ( diTauCandidate->collinearApproxIsValid() ) {  
       hCollinearApproxEta_->Fill(diTauCandidate->p4CollinearApprox().eta(), weight);
       hCollinearApproxMass_->Fill(diTauCandidate->p4CollinearApprox().mass(), weight);
@@ -503,6 +529,20 @@ void CompositePtrCandidateT1T2MEtHistManager<T1,T2>::fillHistogramsImp(const edm
     }
 
     hCDFmethodMass_->Fill(diTauCandidate->p4CDFmethod().mass(), weight);
+
+    if ( diTauCandidate->mTauTauMin_isValid() ) {
+      double mTauTauMin = diTauCandidate->mTauTauMin();      
+      hTauPairMassMin_->Fill(mTauTauMin, weight);
+      hTauPairMassMinL_->Fill(mTauTauMin, weight);
+      hTauPairMassMinXL_->Fill(mTauTauMin, weight);
+      
+      if      ( dPhi > 175. ) hTauPairMassMinDPhiGt175_->Fill(mTauTauMin, weight);
+      else if ( dPhi > 170. ) hTauPairMassMinDPhi170to175_->Fill(mTauTauMin, weight);
+      else if ( dPhi > 160. ) hTauPairMassMinDPhi160to170_->Fill(mTauTauMin, weight);
+      else if ( dPhi > 140. ) hTauPairMassMinDPhi140to160_->Fill(mTauTauMin, weight);
+      else if ( dPhi > 120. ) hTauPairMassMinDPhi120to140_->Fill(mTauTauMin, weight);
+      else                    hTauPairMassMinDPhiLt120_->Fill(mTauTauMin, weight);
+    }
 
     hMt12MET_->Fill(diTauCandidate->mt12MET(), weight);
 

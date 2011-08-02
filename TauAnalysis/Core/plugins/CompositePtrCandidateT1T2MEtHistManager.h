@@ -133,12 +133,30 @@ class CompositePtrCandidateT1T2MEtHistManager : public HistManagerBase
   MonitorElement* hVisMassGenLeg2Jet_;
   MonitorElement* hVisMassZllCombinedHypothesis_;
 
+  MonitorElement* hVisMassDPhiGt175_;
+  MonitorElement* hVisMassDPhi170to175_;
+  MonitorElement* hVisMassDPhi160to170_;
+  MonitorElement* hVisMassDPhi140to160_;
+  MonitorElement* hVisMassDPhi120to140_;
+  MonitorElement* hVisMassDPhiLt120_;
+
   MonitorElement* hCollinearApproxEta_;
   MonitorElement* hCollinearApproxMass_;
   MonitorElement* hCollinearApproxX1_;
   MonitorElement* hCollinearApproxX2_;
 
   MonitorElement* hCDFmethodMass_;
+
+  MonitorElement* hTauPairMassMin_;
+  MonitorElement* hTauPairMassMinL_;
+  MonitorElement* hTauPairMassMinXL_;
+  
+  MonitorElement* hTauPairMassMinDPhiGt175_;
+  MonitorElement* hTauPairMassMinDPhi170to175_;
+  MonitorElement* hTauPairMassMinDPhi160to170_;
+  MonitorElement* hTauPairMassMinDPhi140to160_;
+  MonitorElement* hTauPairMassMinDPhi120to140_;
+  MonitorElement* hTauPairMassMinDPhiLt120_;
 
   MonitorElement* hMt12MET_;
 
