@@ -44,10 +44,10 @@ def configureDQMDumpFilterStatisticsTable(dqmDirectoriesProcess, dqmDirectoryFil
 
 dqmDirectoriesProcess = {
     'Ztautau'    : 'ZtautauSum',
-    'Zmumu'      : 'Zmumu_powheg',
-    'WplusJets'  : 'WplusJets_madgraph',
+    'Zmumu'      : 'ZmumuSum',
+    'WplusJets'  : 'WplusJets_madgraph_T3',
     'QCD'        : 'qcdSum',
-    'TTplusJets' : 'TTplusJets_madgraph',
+    'TTplusJets' : 'TTplusJets_madgraph_T3',
     'diBoson'    : 'VVsum',
     'smSum'      : 'smSum',
     'Data'       : 'data'
@@ -67,8 +67,8 @@ process.dumpZtoMuTau_bgEstQCDenriched = configureDQMDumpFilterStatisticsTable(dq
 process.dumpDQMStore = cms.EDAnalyzer("DQMStoreDump")
 
 process.dumpZtoMuTauBgEstTemplates = cms.Sequence(
-    process.dumpDQMStore
-   + process.dumpZtoMuTau_bgEstZmumuJetMisIdEnriched + process.dumpZtoMuTau_bgEstZmumuMuonMisIdEnriched
+    #process.dumpDQMStore
+    process.dumpZtoMuTau_bgEstZmumuJetMisIdEnriched + process.dumpZtoMuTau_bgEstZmumuMuonMisIdEnriched
    + process.dumpZtoMuTau_bgEstWplusJetsEnriched
    + process.dumpZtoMuTau_bgEstTTplusJetsEnriched
    + process.dumpZtoMuTau_bgEstQCDenriched

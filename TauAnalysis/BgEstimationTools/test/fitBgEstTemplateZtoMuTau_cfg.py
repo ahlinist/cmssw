@@ -15,7 +15,9 @@ from TauAnalysis.BgEstimationTools.templateHistDefinitions_cfi import \
   drawJobTemplateHist, drawJobAnalysisHistData, drawJobAnalysisHistMC, \
   plotBgEstData, plotBgEstMC_pure, plotBgEstMC_smSum, plotAnalysisMC_pure
 from TauAnalysis.BgEstimationTools.tools.drawTemplateHistConfigurator import drawTemplateHistConfigurator
-from TauAnalysis.Configuration.userRegistry import getHarvestingFilePath, getJobId
+import TauAnalysis.Configuration.userRegistry as reg 
+
+reg.overrideJobId('ZtoMuTau_bgEstTemplate','Run28')
 
 process = cms.Process('fitBgEstTemplateZtoMuTau')
 
@@ -29,7 +31,7 @@ process.source = cms.Source("EmptySource")
 
 dqmDirectoriesProcess = {
     'Ztautau'    : 'ZtautauSum',
-    'Zmumu'      : 'Zmumu_powheg',
+    'Zmumu'      : 'ZmumuSum',
     'WplusJets'  : 'WplusJets_madgraph',
     'QCD'        : 'qcdSum',
     'TTplusJets' : 'TTplusJets_madgraph',
@@ -68,8 +70,7 @@ meNames = {
 process.loadAnalysisResultsZtoMuTau = cms.EDAnalyzer("DQMFileLoader",
     Ztautau = cms.PSet(
         inputFileNames = cms.vstring(
-            ##getHarvestingFilePath('ZtoMuTau_bgEstTemplate') + '/' + 'bgEstTemplateHistZtoMuTau_skimmed.root'
-            '/data1/veelken/CMSSW_3_8_x/plots/ZtoMuTau_bgEstTemplate/2011Feb01_HPSloose/bgEstTemplateHistZtoMuTau_skimmed.root'
+            reg.getHarvestingFilePath('ZtoMuTau_bgEstTemplate') + '/' + 'bgEstTemplateHistZtoMuTau_skimmed.root'
         ),
         scaleFactor = cms.double(1.),
         dqmDirectory_store = cms.string('/')
@@ -367,114 +368,117 @@ process.fitZtoMuTau = cms.EDAnalyzer("TemplateHistFitter",
             templates = cms.PSet(
                 visMass = cms.PSet(
                     meName = cms.string(
-                         '/analysis/harvested/' + dqmDirectoriesProcess['Ztautau'] + '/' + dqmDirectoryAnalysis \
+                        ## '/analysis/harvested/' + dqmDirectoriesProcess['Ztautau'] + '/' + dqmDirectoryAnalysis \
+                        ##+ meNames['visMass']
+                        '/analysis/harvested/ZtoMuTau_from_ZmumuEmbedding' + '/' + dqmDirectoryAnalysis \
                         + meNames['visMass']
-                        ## '/analysis/harvested/ZtoMuTau_from_ZmumuEmbedding' + '/' + dqmDirectoryAnalysis \
                         ##+ meNames['visMass'] + 'Shape' + '_' + 'ZmumuEmbedding'
+                        ##+ 'DiTauCandidateQuantities/Mass'
+                        ##+ meNames['visMass']
                     ),
-                    fitSimultaneously = cms.bool(False),                                 
-                    smoothing = cms.PSet(
-                        pluginName = cms.string("visMassSmoothingZtautau"),
-                        pluginType = cms.string("SmoothGenericPdfWrapper"),
-                        # fit Z --> tau+ tau- peak with sum of log-normal and skewed Gaussian distribution
-                        formula = cms.string(
-                            "par1*TMath::LogNormal(@x, par4, par2, par3)" \
-                           + " + (1 - par1)*TMath::Gaus(@x, par5, par6)*(1 + TMath::Erf(par7*@x))"
-                        ),
-                        xMin = cms.double(20.),
-                        xMax = cms.double(120.),
-                        parameter = cms.PSet(
-                            par1 = cms.PSet(
-                                initial = cms.double(0.75),
-                                min = cms.double(0.),
-                                max = cms.double(1.)
-                            ),
-                            par2 = cms.PSet(
-                                initial = cms.double(0.5),
-                                min = cms.double(0.),
-                                max = cms.double(10.)
-                            ),
-                            par3 = cms.PSet(
-                                initial = cms.double(40.),
-                                min = cms.double(0.),
-                                max = cms.double(100.)
-                            ),
-                            par4 = cms.PSet(
-                                initial = cms.double(10.),
-                                min = cms.double(0.),
-                                max = cms.double(100.)
-                            ),
-                            par5 = cms.PSet(
-                                initial = cms.double(55.),
-                                min = cms.double(0.),
-                                max = cms.double(100.)
-                            ),
-                            par6 = cms.PSet(
-                                initial = cms.double(10.),
-                                min = cms.double(0.),
-                                max = cms.double(100.)
-                            ),
-                            par7 = cms.PSet(
-                                initial = cms.double(0.0001),
-                                min = cms.double(0.),
-                                max = cms.double(1.)
-                            )
-                        )
-                    )
+                    fitSimultaneously = cms.bool(False)
+##                    smoothing = cms.PSet(
+##                        pluginName = cms.string("visMassSmoothingZtautau"),
+##                        pluginType = cms.string("SmoothGenericPdfWrapper"),
+##                        # fit Z --> tau+ tau- peak with sum of log-normal and skewed Gaussian distribution
+##                        formula = cms.string(
+##                            "par1*TMath::LogNormal(@x, par4, par2, par3)" \
+##                           + " + (1 - par1)*TMath::Gaus(@x, par5, par6)*(1 + TMath::Erf(par7*@x))"
+##                        ),
+##                        xMin = cms.double(20.),
+##                        xMax = cms.double(120.),
+##                        parameter = cms.PSet(
+##                            par1 = cms.PSet(
+##                                initial = cms.double(0.75),
+##                                min = cms.double(0.),
+##                                max = cms.double(1.)
+##                            ),
+##                            par2 = cms.PSet(
+##                                initial = cms.double(0.5),
+##                                min = cms.double(0.),
+##                                max = cms.double(10.)
+##                            ),
+##                            par3 = cms.PSet(
+##                                initial = cms.double(40.),
+##                                min = cms.double(0.),
+##                                max = cms.double(100.)
+##                            ),
+##                            par4 = cms.PSet(
+##                                initial = cms.double(10.),
+##                                min = cms.double(0.),
+##                                max = cms.double(100.)
+##                            ),
+##                            par5 = cms.PSet(
+##                                initial = cms.double(55.),
+##                                min = cms.double(0.),
+##                                max = cms.double(100.)
+##                            ),
+##                            par6 = cms.PSet(
+##                                initial = cms.double(10.),
+##                                min = cms.double(0.),
+##                                max = cms.double(100.)
+##                            ),
+##                            par7 = cms.PSet(
+##                                initial = cms.double(0.0001),
+##                                min = cms.double(0.),
+##                                max = cms.double(1.)
+##                            )
+##                        )
+##                    )
                 ),
                 SVfitMass = cms.PSet(
                     meName = cms.string(
-                        '/analysis/harvested/' + dqmDirectoriesProcess['Ztautau'] + '/' + dqmDirectoryAnalysis \
-                       + meNames['SVfitMass'] + 'Shape'
-                       ## '/analysis/harvested/ZtoMuTau_from_ZmumuEmbedding' + '/' + dqmDirectoryAnalysis \
-                       ##+ meNames['SVfitMass'] + 'Shape' + '_' + 'ZmumuEmbedding'                              
+                        ## '/analysis/harvested/' + dqmDirectoriesProcess['Ztautau'] + '/' + dqmDirectoryAnalysis \
+                        ##+ meNames['SVfitMass'] + 'Shape'
+                        '/analysis/harvested/ZtoMuTau_from_ZmumuEmbedding' + '/' + dqmDirectoryAnalysis \
+                        + meNames['SVfitMass'] + 'Shape' + '_' + 'ZmumuEmbedding'                              
                     )
                 )
             ),    
             norm = cms.PSet(
-                initial = cms.double(225.)
+                initial = cms.double(1300.)
             ),
             drawOptions = copy.deepcopy(drawOption_Ztautau_separate)
         ),
-        ZmumuJetMisId = cms.PSet(
-            templates = cms.PSet(
-                visMass = cms.PSet(
-                    meName = cms.string(
-                        '/template/harvested/' + dqmDirectoriesProcess['Data'] + '/' \
-                       + dqmDirectoriesBgEnrichedSelections['ZmumuJetMisIdEnriched'] \
-                       + meNames['visMass'] + 'Shape' + '_' + 'ZmumuJetMisIdEnriched'
-                    ),
-                    fitSimultaneously = cms.bool(False),                                    
-                    smoothing = visMass_smoothing.clone(
-                        pluginName = cms.string("visMassSmoothingZmumuJetMisId"),
-                        ##excludeBinsX = cms.vdouble(82.5, 87.5, 92.5, 97.5), # bins to exclude in case no rebinning is used
-                        excludeBinsX = cms.vdouble(85., 95.),                 # bins to exclude in case two bins are combined into one
-                        parameter = visMass_smoothing.parameter.clone(
-                            width = visMass_smoothing.parameter.width.clone(
-                                initial = cms.double(20.)
-                            ),
-                            mp = visMass_smoothing.parameter.mp.clone(
-                                initial = cms.double(65.)
-                            ),
-                            gsigma = visMass_smoothing.parameter.gsigma.clone(
-                                initial = cms.double(5.)
-                            )
-                        )
-                    )
-                ),
-                SVfitMass = cms.PSet(
-                    meName = cms.string(
-                        '/template/harvested/' + dqmDirectoriesProcess['Data'] + '/' \
-                       + dqmDirectoriesBgEnrichedSelections['ZmumuJetMisIdEnriched'] \
-                       + meNames['SVfitMass'] + 'Shape' + '_' + 'ZmumuJetMisIdEnriched'
-                    )
-                )
-            ),    
-            norm = cms.PSet(
-                initial = cms.double(5.)
-            ),
-            drawOptions = copy.deepcopy(drawOption_Zmumu_separate)
-        ),
+#        ZmumuJetMisId = cms.PSet(
+#            templates = cms.PSet(
+#                visMass = cms.PSet(
+#                    meName = cms.string(
+#                        '/template/harvested/' + dqmDirectoriesProcess['Data'] + '/' \
+        #                       + dqmDirectoriesBgEnrichedSelections['ZmumuJetMisIdEnriched'] \
+        #               + meNames['visMass'] + 'Shape' + '_' + 'ZmumuJetMisIdEnriched'
+#                    ),
+#                    fitSimultaneously = cms.bool(False)
+                    #smoothing = visMass_smoothing.clone(
+                    #    pluginName = cms.string("visMassSmoothingZmumuJetMisId"),
+                    ##    ##excludeBinsX = cms.vdouble(82.5, 87.5, 92.5, 97.5), # bins to exclude in case no rebinning is used
+                    #    excludeBinsX = cms.vdouble(85., 95.),                 # bins to exclude in case two bins are combined into one
+                    #    parameter = visMass_smoothing.parameter.clone(
+                    #        width = visMass_smoothing.parameter.width.clone(
+                    #            initial = cms.double(20.)
+                    #        ),
+                    #        mp = visMass_smoothing.parameter.mp.clone(
+                    #            initial = cms.double(65.)
+                    #        ),
+                    #        gsigma = visMass_smoothing.parameter.gsigma.clone(
+                    #            initial = cms.double(5.)
+                    #        )
+                    #    )
+                    #)
+#                ),
+#                SVfitMass = cms.PSet(
+#                    meName = cms.string(
+#                        '/template/harvested/' + dqmDirectoriesProcess['Data'] + '/' \
+        #                       + dqmDirectoriesBgEnrichedSelections['ZmumuJetMisIdEnriched'] \
+        #               + meNames['SVfitMass'] + 'Shape' + '_' + 'ZmumuJetMisIdEnriched'
+#                    )
+#                )
+#            ),    
+#            norm = cms.PSet(
+#                initial = cms.double(35.)
+#            ),
+#            drawOptions = copy.deepcopy(drawOption_Zmumu_separate)
+#        ),
         ZmumuMuonMisId = cms.PSet(
             templates = cms.PSet(
                 visMass = cms.PSet(
@@ -482,34 +486,35 @@ process.fitZtoMuTau = cms.EDAnalyzer("TemplateHistFitter",
                         '/template/harvested/' + dqmDirectoriesProcess['Data'] + '/' \
                        + dqmDirectoriesBgEnrichedSelections['ZmumuMuonMisIdEnriched'] \
                        + meNames['visMass'] + 'Shape' + '_' + 'ZmumuMuonMisIdEnriched'
+                       ##+ meNames['visMass']
                     ),
-                    fitSimultaneously = cms.bool(False),                                   
-                    smoothing = cms.PSet(
-                        pluginName = cms.string("visMassSmoothingZmumuMuonMisId"),
-                        pluginType = cms.string("SmoothGenericPdfWrapper"),
-                        # fit Z --> mu+ mu- peak with Voigt function,
-                        # the convolution of a Breit-Wigner profile with a Gaussian (smearing)
-                        formula = cms.string("TMath::Voigt(@x - x0, gsigma, gamma)"),
-                        xMin = cms.double(70.),
-                        xMax = cms.double(110.),                        
-                        parameter = cms.PSet(
-                            x0 = cms.PSet(
-                                initial = cms.double(90.),
-                                min = cms.double(80.),
-                                max = cms.double(100.)
-                            ),
-                            gsigma = cms.PSet(
-                                initial = cms.double(0.1),
-                                min = cms.double(0.),
-                                max = cms.double(5.)
-                            ),
-                            gamma = cms.PSet(
-                                initial = cms.double(2.5),
-                                min = cms.double(0.),
-                                max = cms.double(5.)
-                            )
-                        )
-                    )
+                    fitSimultaneously = cms.bool(False)
+                    #smoothing = cms.PSet(
+                    #    pluginName = cms.string("visMassSmoothingZmumuMuonMisId"),
+                    #    pluginType = cms.string("SmoothGenericPdfWrapper"),
+                    #    # fit Z --> mu+ mu- peak with Voigt function,
+                    #    # the convolution of a Breit-Wigner profile with a Gaussian (smearing)
+                    #    formula = cms.string("TMath::Voigt(@x - x0, gsigma, gamma)"),
+                    #    xMin = cms.double(70.),
+                    #    xMax = cms.double(110.),                        
+                    #    parameter = cms.PSet(
+                    #        x0 = cms.PSet(
+                    #            initial = cms.double(90.),
+                    #            min = cms.double(80.),
+                    #            max = cms.double(100.)
+                    #        ),
+                    #        gsigma = cms.PSet(
+                    #            initial = cms.double(0.1),
+                    #            min = cms.double(0.),
+                    #            max = cms.double(5.)
+                    #        ),
+                    #        gamma = cms.PSet(
+                    #            initial = cms.double(2.5),
+                    #            min = cms.double(0.),
+                    #            max = cms.double(5.)
+                    #        )
+                    #    )
+                    #)
                 ),
                 SVfitMass = cms.PSet(
                     meName = cms.string(
@@ -520,7 +525,7 @@ process.fitZtoMuTau = cms.EDAnalyzer("TemplateHistFitter",
                 )
             ),    
             norm = cms.PSet(
-                initial = cms.double(5.)
+                initial = cms.double(35.)
             ),
             drawOptions = copy.deepcopy(drawOption_Zmumu_separate)
         ),
@@ -534,10 +539,10 @@ process.fitZtoMuTau = cms.EDAnalyzer("TemplateHistFitter",
                        + dqmDirectoriesBgEnrichedSelections['WplusJetsEnriched'] \
                        + meNames['visMass'] + 'CorrectedShape'
                     ),
-                    fitSimultaneously = cms.bool(False),                                   
-                    smoothing = visMass_smoothing.clone(
-                        pluginName = cms.string("visMassSmoothingWplusJets")
-                    )
+                    fitSimultaneously = cms.bool(False)
+                    #smoothing = visMass_smoothing.clone(
+                    #    pluginName = cms.string("visMassSmoothingWplusJets")
+                    #)
                 ),
                 SVfitMass = cms.PSet(
                     meName = cms.string(
@@ -550,7 +555,7 @@ process.fitZtoMuTau = cms.EDAnalyzer("TemplateHistFitter",
                 )    
             ),    
             norm = cms.PSet(
-                initial = cms.double(25.)
+                initial = cms.double(150.)
             ),
             drawOptions = drawOption_WplusJets_separate 
         ),
@@ -558,23 +563,25 @@ process.fitZtoMuTau = cms.EDAnalyzer("TemplateHistFitter",
             templates = cms.PSet(
                 visMass = cms.PSet(
                     meName = cms.string(
+                        ##'/template/harvested/' + dqmDirectoriesProcess['TTplusJets'] + '/' + dqmDirectoryAnalysis \
                         '/analysis/harvested/' + dqmDirectoriesProcess['TTplusJets'] + '/' + dqmDirectoryAnalysis \
-                       + meNames['visMass'] + 'Shape' + '_' + 'QCDenriched' 
+                        + meNames['visMass'] + 'Shape' + '_' + 'QCDenriched' 
+                       ##'/template/harvested/data/BgEstTemplateAnalyzer_TTplusJetsEnriched/afterJetEt60BgEstTTplusJetsEnriched/DiTauCandidateQuantities/VisMass'
                     ),
-                    fitSimultaneously = cms.bool(False),                                   
-                    smoothing = visMass_smoothing.clone(
-                        pluginName = cms.string("visMassSmoothingTTplusJets")
-                    )
+                    fitSimultaneously = cms.bool(False)
+                    #smoothing = visMass_smoothing.clone(
+                    #    pluginName = cms.string("visMassSmoothingTTplusJets")
+                    #)
                 ),
                 SVfitMass = cms.PSet(
                     meName = cms.string(
-                        '/analysis/harvested/' + dqmDirectoriesProcess['TTplusJets'] + '/' + dqmDirectoryAnalysis \
+                        '/template/harvested/' + dqmDirectoriesProcess['TTplusJets'] + '/' + dqmDirectoryAnalysis \
                        + meNames['visMass'] + 'Shape' + '_' + 'QCDenriched' 
                     )
                 )
             ),    
             norm = cms.PSet(
-                initial = cms.double(5.)
+                initial = cms.double(10.)
             ),
             drawOptions = copy.deepcopy(drawOption_TTplusJets_separate)
         ),
@@ -586,11 +593,11 @@ process.fitZtoMuTau = cms.EDAnalyzer("TemplateHistFitter",
                        + dqmDirectoriesBgEnrichedSelections['QCDenriched'] \
                        + meNames['visMass'] + 'Shape' + '_' + 'QCDenriched'
                     ),
-                    fitSimultaneously = cms.bool(False),                                    
-                    smoothing = visMass_smoothing.clone(
-                        pluginName = cms.string("visMassSmoothingQCD"),
-                        xMax = cms.double(150.)
-                    )
+                    fitSimultaneously = cms.bool(False)                                    
+                    #smoothing = visMass_smoothing.clone(
+                    #    pluginName = cms.string("visMassSmoothingQCD"),
+                    #    xMax = cms.double(150.)
+                    #)
                 ),
                 SVfitMass = cms.PSet(
                     meName = cms.string(
@@ -601,24 +608,24 @@ process.fitZtoMuTau = cms.EDAnalyzer("TemplateHistFitter",
                 )
             ),    
             norm = cms.PSet(
-                initial = cms.double(75.)
+                initial = cms.double(410.)
             ),
             drawOptions = copy.deepcopy(drawOption_QCD_separate)
         )
     ),
 
-    # use "pseudo" data-samples consisting of all Monte Carlo processes for testing                      
     data = cms.PSet(
         distributions = cms.PSet(
             visMass = cms.PSet(
                 meName = cms.string(
                     '/analysis/harvested/' + dqmDirectoriesProcess['Data'] + '/' + dqmDirectoryAnalysis \
-                   + meNames['visMass'] + 'Rebinned' + '_' + 'QCDenriched' 
+                    + meNames['visMass'] + 'Rebinned' + '_' + 'QCDenriched' 
+
                 )
             ),
             SVfitMass = cms.PSet(
                 meName = cms.string(
-                    '/analysis/harvested/' + dqmDirectoriesProcess['Data'] + '/' + dqmDirectoryAnalysis \
+                    '/analysis/harvested/' + dqmDirectoriesProcess['Data'] + '/' + 'BgEstTemplateAnalyzer_Ztautau' + '/' + dqmDirectoryAnalysis \
                    + meNames['SVfitMass'] + 'Rebinned' + '_' + 'QCDenriched' 
                 )
             )
@@ -649,38 +656,38 @@ process.fitZtoMuTau = cms.EDAnalyzer("TemplateHistFitter",
         # to Monte Carlo expectation multiplied by "k-factors" determined
         # in background enriched samples
         constraints = cms.PSet(
-            ZmumuJetMisId = cms.PSet(
-                norm = cms.PSet(
-                    value = cms.double(1.*6.),
-                    uncertainty = cms.double(1.0*6.)
-                )
-            ),
+            #ZmumuJetMisId = cms.PSet(
+            #    norm = cms.PSet(
+            #        value = cms.double(1.*30.),
+            #        uncertainty = cms.double(1.0*30.)
+            #    )
+            #),
             ZmumuMuonMisId = cms.PSet(
                 norm = cms.PSet(
-                    value = cms.double(1.*7.),
-                    uncertainty = cms.double(1.0*7.)
+                    value = cms.double(1.*30.),
+                    uncertainty = cms.double(1.0*30.)
                 )
             ),
             WplusJets = cms.PSet(
                 norm = cms.PSet(
                     ##value = cms.double(1.*50.),       # for TaNC loose
                     ##uncertainty = cms.double(0.5*50.) # for TaNC loose
-                    value = cms.double(1.*60.),       # for HPS loose
-                    uncertainty = cms.double(0.5*60.) # for HPS loose                                 
+                    value = cms.double(1.*150.),       # for HPS loose
+                    uncertainty = cms.double(0.5*150.) # for HPS loose                                 
                 )
             ),
             TTplusJets = cms.PSet(
                 norm = cms.PSet(
-                    value = cms.double(1.*7.),
-                    uncertainty = cms.double(1.0*7.)
+                    value = cms.double(1.*10.),
+                    uncertainty = cms.double(1.0*20.)
                 )
             ),
             QCD = cms.PSet(
                 norm = cms.PSet(
                     ##value = cms.double(1.*165.),       # for TaNC loose
                     ##uncertainty = cms.double(0.5*165.) # for TaNC loose
-                    value = cms.double(1.*110.),       # for HPS loose 
-                    uncertainty = cms.double(0.5*110.) # for HPS loose                                 
+                    value = cms.double(1.*410.),       # for HPS loose 
+                    uncertainty = cms.double(0.5*410.) # for HPS loose                                 
                 )
             )
         ),
@@ -778,7 +785,7 @@ process.fitZtoMuTau = cms.EDAnalyzer("TemplateHistFitter",
 
     output = cms.PSet(
         controlPlots = cms.PSet(
-            fileName = cms.string("./plots/fitBgEstTemplateZtoMuTau_#PLOT#.pdf")
+            fileName = cms.string("./plots/fitBgEstTemplateZtoMuTau_#PLOT#.png")
         ),
         fitResults = cms.PSet(
             dqmDirectory = cms.string('/fitResults')
@@ -799,7 +806,9 @@ process.fitZtoMuTau = cms.EDAnalyzer("TemplateHistFitter",
 ##  cms.string("./plots/fitBgEstTemplateZtoMuTau_#PLOT#_sysTauEnDown.pdf")
 
 process.saveFitResultsZtoMuTau = cms.EDAnalyzer("DQMSimpleFileSaver",
-    outputFileName = cms.string('fitBgEstTemplateZtoMuTau_results.root'),
+    outputFileName = cms.string(
+        reg.getHarvestingFilePath('ZtoMuTau_bgEstTemplate') + '/' + 'fitBgEstTemplateZtoMuTau_results.root'
+    ),
     outputCommands = cms.vstring(
         'drop /harvested/*',
         'keep /template/*',
@@ -812,11 +821,11 @@ process.dumpDQMStore = cms.EDAnalyzer("DQMStoreDump")
 
 process.p = cms.Path(
     process.loadAnalysisResultsZtoMuTau
-   ##+ process.dumpDQMStore 
-   #+ process.prodSysBiasHistZtoMuTau
-   #+ process.prodSysBgEnrichedSamplePurityHistZtoMuTau
-   #+ process.scaleSysHistZtoMuTau
-   #+ process.dumpSysHistZtoMuTau
+    #+ process.dumpDQMStore 
+    #+ process.prodSysBiasHistZtoMuTau
+    #+ process.prodSysBgEnrichedSamplePurityHistZtoMuTau
+    #+ process.scaleSysHistZtoMuTau
+    #+ process.dumpSysHistZtoMuTau
    + process.fitZtoMuTau
    #+ process.fitZtoMuTauSysTauEnUp + process.fitZtoMuTauSysTauEnDown 
    + process.saveFitResultsZtoMuTau
