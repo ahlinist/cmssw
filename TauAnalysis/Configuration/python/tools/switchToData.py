@@ -30,6 +30,8 @@ def switchToData(process):
 	for moduleToRemove in modulesToRemove:
 		if hasattr(process, moduleToRemove):
   		        process.patDefaultSequence.remove(getattr(process, moduleToRemove))
+	if hasattr(process, "patJetCorrFactorsAK5PF"):
+		process.patJetCorrFactorsAK5PF.levels.append("L2L3Residual")
 	#------------------------------------------------------------------------
 
 	# add data-quality cuts which work on "real" data only
