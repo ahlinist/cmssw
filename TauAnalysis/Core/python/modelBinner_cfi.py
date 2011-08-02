@@ -47,7 +47,7 @@ modelBinner3mZbins = cms.PSet(
                 extractor = cms.PSet(
                     pluginType = cms.string("PATMuTauPairValExtractor"),
                     src = cms.InputTag(''),
-                    value = cms.string("nSVfitSolution('psKine_MEt_logM_fit').resonance(0).mass()")
+                    value = cms.string("nSVfitSolution('psKine_MEt_logM_fit').mass()")
                 ),
                 binning = cms.PSet(
                     boundaries = cms.vdouble(20., 60., 120.),

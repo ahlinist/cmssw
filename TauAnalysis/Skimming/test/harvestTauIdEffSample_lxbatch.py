@@ -20,6 +20,8 @@ tmpFilePath = reg.getBatchHarvestLocation(channel)
 
 SAMPLES_TO_ANALYZE = [
     # modify in case you want to submit jobs for some of the samples only...
+    'Ztautau_embedded_part1',
+    'Ztautau_embedded_part2'
 ]
 
 print analysisFilePath

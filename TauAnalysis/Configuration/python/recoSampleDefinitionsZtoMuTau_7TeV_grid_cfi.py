@@ -13,7 +13,7 @@ SAMPLES_TO_ANALYZE = [
     'Ztautau_pythia',
     #'Ztautau_powheg',
     'Ztautau_embedded_part1',
-    'Ztautau_embedded_part2'
+    'Ztautau_embedded_part2',
     #'qqZll',
     #'DYmumuM10to20_pythia',
     'Zmumu_pythia',
