@@ -16,6 +16,12 @@ def switchToData(process):
 	removeMCMatching(process, ["All"], outputInProcess = False)
 	process.patDefaultSequence.remove(process.patJetPartonMatch)
 
+	#------------------------------------------------------------------------
+	# CV: temporary work-around for W --> tau nu channel
+	if hasattr(process, 'patJetPartonMatchAK5PF'):
+		process.patDefaultSequence.remove(process.patJetPartonMatchAK5PF)
+	#------------------------------------------------------------------------
+
 	# add data-quality cuts which work on "real" data only
 	if hasattr(process, "dataQualityFilters"):
 		process.dataQualityFilters._seq = process.dataQualityFilters._seq * process.hltPhysicsDeclared
