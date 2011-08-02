@@ -10,7 +10,6 @@ process.MessageLogger.cerr.FwkReport.reportEvery = 1
 #load geometry
 process.load('Configuration/StandardSequences/GeometryIdeal_cff')
 process.load('Configuration/StandardSequences/MagneticField_cff')
-process.load('Configuration/StandardSequences/Reconstruction_cff')
 process.load('Configuration/StandardSequences/FrontierConditions_GlobalTag_cff')
 #process.GlobalTag.globaltag = cms.string('START42_V12::All')
 process.GlobalTag.globaltag = cms.string('GR_R_42_V18::All')
@@ -184,32 +183,31 @@ process.filterFirstEvent = cms.EDFilter("EventCountFilter",
 # Define a generic end path that filters the final events that a pool
 # output module can be hooked into if desired.
 process.filterFinalEvents = cms.EDFilter("BoolEventFilter",
-                                         src = cms.InputTag("isRecWtoTauNu")
-                                         )
+    src = cms.InputTag("isRecWtoTauNu")
+)
 
 process.o = cms.Path(process.filterFirstEvent + process.printEventContent)
 
 process.addJetCorr = cms.Sequence(
-        process.kt6PFJets
-        +process.patJetCorrFactorsAK5PF
-            +process.patJetPartonMatchAK5PF
-            +process.patJetGenJetMatchAK5PF
-            +process.patJetPartons
-             +process.patJetPartonAssociationAK5PF
-             +process.patJetFlavourAssociationAK5PF
-             +process.patJetsAK5PF
- #       
-        )
+    process.kt6PFJets
+   + process.patJetCorrFactorsAK5PF
+   + process.patJetPartonMatchAK5PF
+   + process.patJetGenJetMatchAK5PF
+   + process.patJetPartons
+   + process.patJetPartonAssociationAK5PF
+   + process.patJetFlavourAssociationAK5PF
+   + process.patJetsAK5PF
+)
 
 process.p = cms.Path( 
     process.addJetCorr
-    +process.producePatTupleWtoTauNuSpecific
+   + process.producePatTupleWtoTauNuSpecific
 #    +process.printGenParticleList # print-out of generator level particles
 #    +process.printEventContent    # dump of event content after PAT-tuple production
-    +process.selectWtoTauNuEvents
-    +process.analyzeWtoTauNuEvents
-    +process.saveWtoTauNuPlots 
-    +process.filterFinalEvents
+   + process.selectWtoTauNuEvents
+   + process.analyzeWtoTauNuEvents
+   + process.saveWtoTauNuPlots 
+   + process.filterFinalEvents
 )
 
 
@@ -219,10 +217,10 @@ process.dummy = cms.EDProducer("DummyModule")
 process.endtasks = cms.EndPath(process.dummy)
 
 process.schedule = cms.Schedule(
-#       process.o,
-       process.p,
-       process.endtasks
-       )
+    #process.o,
+    process.p,
+    process.endtasks
+)
 #--------------------------------------------------------------------------------
 # import utility function for factorization
 from TauAnalysis.Configuration.tools.factorizationTools import enableFactorization_runWtoTauNu
@@ -260,10 +258,11 @@ process.producePatTupleAll = cms.Sequence(process.producePatTuple + process.prod
 if not hasattr(process, "isBatchMode"):   
     process.p.replace(process.producePatTupleWtoTauNuSpecific, process.producePatTuple+process.producePatTupleWtoTauNuSpecific)
 #--------------------------------------------------------------------------------
-##replace reco->aod.
+# replace reco->aod.
 from TauAnalysis.Configuration.tools.switchToAOD import *
 switchToAOD(process)
-##--------------------------------------------------------------------------------  
+#--------------------------------------------------------------------------------  
 
-# print-out all python configuration parameter information
-#print process.dumpPython()
+processDumpFile = open('runWtoTauNu.dump' , 'w')
+print >> processDumpFile, process.dumpPython()
+
