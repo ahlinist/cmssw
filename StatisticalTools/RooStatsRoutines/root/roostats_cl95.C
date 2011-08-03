@@ -1,7 +1,7 @@
 static const char* desc =
 "=====================================================================\n"
 "|                                                                    \n"
-"|\033[1m        roostats_cl95.C  version 1.14                 \033[0m\n"
+"|\033[1m        roostats_cl95.C  version 1.15                 \033[0m\n"
 "|                                                                    \n"
 "| Standard c++ routine for 95% C.L. limit calculation                \n"
 "| for cross section in a 'counting experiment'                       \n"
@@ -429,6 +429,7 @@ RooWorkspace * CL95Calc::makeWorkspace(Double_t ilum, Double_t slum,
   if ( bck>0.0 && (sbck/bck)<5.0 ){
     // check that bck is not too close to zero,
     // so lognormal and gamma modls still make sense
+    std::cout << "[CL95Calc]: checking background expectation and its uncertainty - ok" << std::endl;
     _nuisance_model = nuisanceModel;
   }
   else{
@@ -477,10 +478,12 @@ RooWorkspace * CL95Calc::makeWorkspace(Double_t ilum, Double_t slum,
   ws->factory("sum::yield(nsig,nbkg)");
   if (gauss){
     // Poisson probability with mean signal+bkg
+    std::cout << "[CL95Calc]: creating Gaussian probability as core model..." << std::endl;
     ws->factory( "Gaussian::model_core(n,yield,expr('sqrt(yield)',yield))" );
   }
   else{
     // Poisson probability with mean signal+bkg
+    std::cout << "[CL95Calc]: creating Poisson probability as core model..." << std::endl;
     ws->factory( "Poisson::model_core(n,yield)" );
   }
 
@@ -498,12 +501,20 @@ RooWorkspace * CL95Calc::makeWorkspace(Double_t ilum, Double_t slum,
     // cumulative signal uncertainty
     ws->factory( "nsig_sigma[0.1]" );
     ws->factory( "nsig_global[1.0,0.1,10.0]" ); // mean of the nsig nuisance par
-    if (hasSigErr) 
+    if (hasSigErr){
+      // non-zero overall signal sensitivity systematics: need to create
+      // the corresponding constraint term for the likelihood
+      std::cout << "[roostats_cl95]: non-zero systematics on overall signal sensitivity, creating constraint term" << endl;
       ws->factory( "Gaussian::syst_nsig(nsig_nuis, nsig_global, nsig_sigma)" );
+    }
     // background uncertainty
     ws->factory( "nbkg_sigma[0.1]" );
-    if (hasBgErr) 
+    if (hasBgErr){
+      // non-zero background systematics: need to create
+      // the corresponding constraint term for the likelihood
+      std::cout << "[roostats_cl95]: non-zero background systematics, creating constraint term" << endl;
       ws->factory( "Gaussian::syst_nbkg(nbkg, bkg_est, nbkg_sigma)" );
+    }
 
     ws->var("nsig_sigma")->setVal(nsig_rel_err);
     ws->var("nbkg_sigma")->setVal(sbck);
@@ -520,12 +531,22 @@ RooWorkspace * CL95Calc::makeWorkspace(Double_t ilum, Double_t slum,
     // cumulative signal uncertainty
     ws->factory( "nsig_kappa[1.1]" );
     ws->factory( "nsig_global[1.0,0.1,10.0]" ); // mean of the nsig nuisance par
-    if (hasSigErr) 
+
+    if (hasSigErr){
+      // non-zero overall signal sensitivity systematics: need to create
+      // the corresponding constraint term for the likelihood
+      std::cout << "[roostats_cl95]: non-zero systematics on overall signal sensitivity, creating constraint term" << endl;
       ws->factory( "Lognormal::syst_nsig(nsig_nuis, nsig_global, nsig_kappa)" );
+    }
+
     // background uncertainty
     ws->factory( "nbkg_kappa[1.1]" );
-    if (hasBgErr) 
+    if (hasBgErr){
+      // non-zero background systematics: need to create
+      // the corresponding constraint term for the likelihood
+      std::cout << "[roostats_cl95]: non-zero background systematics, creating constraint term" << endl;
       ws->factory( "Lognormal::syst_nbkg(nbkg, bkg_est, nbkg_kappa)" );
+    }
 
     ws->var("nsig_kappa")->setVal(1.0 + nsig_rel_err);
     ws->var("nbkg_kappa")->setVal(1.0 + nbkg_rel_err);
@@ -546,12 +567,21 @@ RooWorkspace * CL95Calc::makeWorkspace(Double_t ilum, Double_t slum,
     ws->factory( "lnsig_sigma[0.1]" );
     ws->factory( "nsig_global[0.0,-0.5,0.5]" ); // log of mean of the nsig nuisance par
     //ws->factory( "Gaussian::syst_nsig(cexpr::lnsig('log(nsig_nuis)', nsig_nuis), nsig_global, lnsig_sigma)" );
-    if (hasSigErr) 
+    if (hasSigErr){
+      // non-zero overall signal sensitivity systematics: need to create
+      // the corresponding constraint term for the likelihood
+      std::cout << "[roostats_cl95]: non-zero systematics on overall signal sensitivity, creating constraint term" << endl;
       ws->factory( "Gaussian::syst_nsig(cexpr::lnsig('log(nsig_nuis)', nsig_nuis), nsig_global, lnsig_sigma)" );
+    }
+
     // background uncertainty
     ws->factory( "lnbkg_sigma[0.1]" );
-    if (hasBgErr) 
+    if (hasBgErr){
+      // non-zero background systematics: need to create
+      // the corresponding constraint term for the likelihood
+      std::cout << "[roostats_cl95]: non-zero background systematics, creating constraint term" << endl;
       ws->factory( "Gaussian::syst_nbkg(cexpr::lnbkg('log(nbkg)',nbkg), lbkg_est, lnbkg_sigma)" );
+    }
 
     ws->var("lnsig_sigma")->setVal(nsig_rel_err);
     ws->var("lnbkg_sigma")->setVal(nbkg_rel_err);
@@ -569,8 +599,12 @@ RooWorkspace * CL95Calc::makeWorkspace(Double_t ilum, Double_t slum,
     ws->factory( "expr::nsig_beta('nsig_rel_err*nsig_rel_err/nsig_global',nsig_rel_err,nsig_global)" );
     ws->factory( "expr::nsig_gamma('nsig_global*nsig_global/nsig_rel_err/nsig_rel_err+1.0',nsig_global,nsig_rel_err)" );
     ws->var("nsig_rel_err") ->setVal(nsig_rel_err);
-    if (hasSigErr) 
+    if (hasSigErr){
+      // non-zero overall signal sensitivity systematics: need to create
+      // the corresponding constraint term for the likelihood
+      std::cout << "[roostats_cl95]: non-zero systematics on overall signal sensitivity, creating constraint term" << endl;
       ws->factory( "Gamma::syst_nsig(nsig_nuis, nsig_gamma, nsig_beta, 0.0)" );
+    }
 
     // background uncertainty
     //ws->factory( "nbkg_global[1.0]" ); // mean of the nbkg nuisance par
@@ -579,8 +613,12 @@ RooWorkspace * CL95Calc::makeWorkspace(Double_t ilum, Double_t slum,
     ws->factory( "expr::nbkg_gamma('bkg_est*bkg_est/nbkg_rel_err/nbkg_rel_err+1.0',bkg_est,nbkg_rel_err)" );
     //ws->var("nbkg_global") ->setVal( bck );
     ws->var("nbkg_rel_err")->setVal(nbkg_rel_err);
-    if (hasBgErr) 
+    if (hasBgErr){
+      // non-zero background systematics: need to create
+      // the corresponding constraint term for the likelihood
+      std::cout << "[roostats_cl95]: non-zero background systematics, creating constraint term" << endl;
       ws->factory( "Gamma::syst_nbkg(nbkg, nbkg_gamma, nbkg_beta, 0.0)" );
+    }
 
     ws->var("nsig_rel_err")->setConstant(kTRUE);
     ws->var("nsig_global")->setConstant(kTRUE);
@@ -594,18 +632,21 @@ RooWorkspace * CL95Calc::makeWorkspace(Double_t ilum, Double_t slum,
 
   // model with systematics
   if (hasSigErr && hasBgErr){
+    std::cout << "[roostats_cl95]: factoring in signal sensitivity and background rate systematics constraint terms" << endl;
     ws->factory( "PROD::model(model_core, syst_nsig, syst_nbkg)" );
     ws->var("nsig_nuis") ->setConstant(kFALSE); // nuisance
     ws->var("nbkg")      ->setConstant(kFALSE); // nuisance
     ws->factory( "PROD::nuis_prior(syst_nsig,syst_nbkg)" );  
   }
-  if (hasSigErr && !hasBgErr){
+  else if (hasSigErr && !hasBgErr){
+    std::cout << "[roostats_cl95]: factoring in signal sensitivity systematics constraint term" << endl;
     ws->factory( "PROD::model(model_core, syst_nsig)" );
     ws->var("nsig_nuis") ->setConstant(kFALSE); // nuisance
     ws->var("nbkg")      ->setConstant(kTRUE); // nuisance
     ws->factory( "PROD::nuis_prior(syst_nsig)" );  
   }
-  if (!hasSigErr && hasBgErr){
+  else if (!hasSigErr && hasBgErr){
+    std::cout << "[roostats_cl95]: factoring in background rate systematics constraint term" << endl;
     ws->factory( "PROD::model(model_core, syst_nbkg)" );
     ws->var("nsig_nuis") ->setConstant(kTRUE); // nuisance
     ws->var("nbkg")      ->setConstant(kFALSE); // nuisance
@@ -619,7 +660,6 @@ RooWorkspace * CL95Calc::makeWorkspace(Double_t ilum, Double_t slum,
 
   // flat prior for the parameter of interest
   ws->factory( "Uniform::prior(xsec)" );  
-
 
   // parameter values
   ws->var("lumi")      ->setVal(ilum);
@@ -1499,6 +1539,7 @@ Double_t roostats_cl95(Double_t ilum, Double_t slum,
 					     bck, sbck,
 					     gauss,
 					     nuisanceModel );
+
   RooDataSet * data = (RooDataSet *)( theCalc.makeData( n )->Clone() );
   data->SetName("observed_data");
   ws->import(*data);
