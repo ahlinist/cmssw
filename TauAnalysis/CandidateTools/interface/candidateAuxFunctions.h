@@ -9,6 +9,8 @@
 #include "DataFormats/ParticleFlowCandidate/interface/PFCandidateFwd.h"
 #include "DataFormats/VertexReco/interface/Vertex.h"
 #include "DataFormats/VertexReco/interface/VertexFwd.h"
+#include "DataFormats/PatCandidates/interface/Tau.h"
+#include "DataFormats/JetReco/interface/GenJet.h"
 
 #include <TVector2.h>
 
