@@ -221,13 +221,13 @@ void anaXS::loadFiles(const char *dir, int i) {
   
   // -- Upsilon merging
   if (0 == i) {
-    string ufile = fDirectory + string("/") + string("upsilon/101201.fl10.mm.ups1s.xsReader_1SBin_MomCorr.default.root");    
+    string ufile = fDirectory + string("/") + string("upsilon/101201.fl10.mm.ups1s.xsReader_3SBin.default.root");    
 
     fM[0] = new TFile(ufile.c_str()); lM[0] = 1.;
-    ufile = fDirectory + string("/") + string("upsilon/101201.fl10.mm.ups2s.xsReader_1SBin_MomCorr.default.root");
-    fM[1] = new TFile(ufile.c_str()); lM[1] = 1.66; 
-    ufile = fDirectory + string("/") + string("upsilon/101201.fl10.mm.ups3s.xsReader_1SBin_MomCorr.default.root");
-    fM[2] = new TFile(ufile.c_str()); lM[2] = 3.43; 
+    ufile = fDirectory + string("/") + string("upsilon/101201.fl10.mm.ups2s.xsReader_3SBin.default.root");
+    fM[1] = new TFile(ufile.c_str()); lM[1] = 1.17; 
+    ufile = fDirectory + string("/") + string("upsilon/101201.fl10.mm.ups3s.xsReader_3SBin.default.root");
+    fM[2] = new TFile(ufile.c_str()); lM[2] = 3.48; 
     cout << "Got the Files for Merging" << endl;
   }
 
@@ -280,17 +280,18 @@ void anaXS::loadFiles(const char *dir, int i) {
     } else if (40 == i) {
       //ufile = fDirectory + string("/upsilon/101201.fl10.mm.COMBINED.xsReader_1SBin.default.root");
       afile = fDirectory + string("/upsilon/Acc_All_0_50.xsReader_1Sbin.default.root");
-      ufile = fDirectory + string("/upsilon/101201.fl10.mm.COMBINED.xsReader_1SBin_MomCorr.default.root");
-      jfile = fDirectory + string("/upsilon/130211.nov4rereco_v2.dimuons.xsReader_Data_1SBin.default.root");
-      //jfile = fDirectory + string("/upsilon/130211.nov4rereco_v2.dimuons.xsReader_Data_1SBin_runbp1eff.default.root");
+      ufile = fDirectory + string("/upsilon/101201.fl10.mm.COMBINED.xsReader_1SBin.default.root");
+      //jfile = fDirectory + string("/upsilon/130211.nov4rereco_v2.dimuons.xsReader_Data_3SBin.default.root");
+      //jfile = fDirectory + string("/upsilon/130211.nov4rereco_v2.dimuons.xsReader_Data_3SBin_Run2010Bp1.default.root");
+      jfile = fDirectory + string("/upsilon/130211.nov4rereco_v2.dimuons.xsReader_Data_1SBin_AllRun2010B.default.root");
       //jfile = fDirectory + string("/upsilon/130211.nov4rereco_v2.dimuons.xsReader_1Sbin.tma.default.root");
      
     } else {
       cout << "Don't know which J/psi file to open for i = " << i << ". Specify this in anaXS::loadfiles()" << endl;
       return;
     }
-    fM[0] = new TFile(ufile.c_str());  lM[0] = 1.0; lM[2] = 3.43;
-    fM[1] = new TFile(jfile.c_str());  lM[1] = 1.66;
+    fM[0] = new TFile(ufile.c_str());  lM[0] = 1.0; lM[2] = 3.48;
+    fM[1] = new TFile(jfile.c_str());  lM[1] = 1.17;
     fM[2] = new TFile(afile.c_str());
   }
 
@@ -659,7 +660,7 @@ void anaXS::combineAcceptanceFiles() {
 // ----------------------------------------------------------------------
 void anaXS::combineUpsilons() {
   
-  string ufile = fDirectory + string("/upsilon/101201.fl10.mm.COMBINED.xsReader_1SBin_MomCorr.default.root");
+  string ufile = fDirectory + string("/upsilon/101201.fl10.mm.COMBINED.xsReader_3SBin.default.root");
   TFile *f = new TFile(ufile.c_str(), "RECREATE"); 
 
   fM[0]->cd();
@@ -987,17 +988,17 @@ void anaXS::makeAllMC(int channel) {
     ReadHistograms(fM[0], "UpsilonMass", "AnaEff_1S", "AnaEff_2S", "AnaEff_3S", "MuIDEff_1S", "MuIDEff_2S", "MuIDEff_3S", "TrigEff_1S", "TrigEff_2S", "TrigEff_3S", "Pt_IntegratedMass", "Rapidity_IntegratedMass", "mt,pt-eta");
     
     // -- add backgrounds
-    addBackground(fS1Vector, 0.3);
+    //addBackground(fS1Vector, 0.3);
     //addBackground_PtInt(fS12Vector, 0.3);
-    //addBackground_RapInt(fS13Vector, 0.3);
+    addBackground_RapInt(fS13Vector, 0.3);
     
     //Pull(1);
     
-    //FITUpsilon(6); //5 for PtIntegrated plots, 6 for RapidityIntegrated plots
+    FITUpsilon(6); //5 for PtIntegrated plots, 6 for RapidityIntegrated plots
     //GetAnaEff();
     //GetPreSelEff();
     //GetMuIDEff(1);
-    GetTrigEff(1);
+    //GetTrigEff(1);
     //CorrectedYields(1);   // 1- FOR MC, 2 FOR DATA
     //PlotProjections(1);   // 1- FOR MC, 2 FOR DATA
         
@@ -1037,14 +1038,14 @@ void anaXS::makeAllDATA(int channel) {
     //plot_RapInt();
     //plot_PtInt();
     
-    //FITUpsilon(1); //3 for PtIntegrated plots, 4 for RapidityIntegrated plots
-    //GetAnaEff();
+    FITUpsilon(1); //3 for PtIntegrated plots, 4 for RapidityIntegrated plots
+    GetAnaEff();
     GetPreSelEff();
-    //GetTrackEff();
-    //GetMuIDEff(2);
-    //GetTrigEff(2);
-    //CorrectedYields(2);   // 1- FOR MC, 2 FOR DATA
-    //PlotProjections(2);   // 1- FOR MC, 2 FOR DATA
+    GetTrackEff();
+    GetMuIDEff(2);
+    GetTrigEff(2);
+    CorrectedYields(2);   // 1- FOR MC, 2 FOR DATA
+    PlotProjections(2);   // 1- FOR MC, 2 FOR DATA
     
   }
 
@@ -2083,9 +2084,10 @@ void anaXS::PlotProjections(int mode) {
     TH1D *hICHEP; TH1D *hICHEP_ETA;
     double bin_contentAll(0); double bin_contentReco(0); double bin_ratioA(0);
     double bin_contentYield(0); double bin_ratio(0);
-    double lumi(31339);  // For HLTDoubleMu0_Qv1 in Run2010B
+    //double lumi(31339);  // For HLTDoubleMu0_Qv1 in Run2010B
     //double lumi(3155);  // For HLTDoubleMu0 in Run2010A
     //double lumi(5399);  // For HLTDoubleMu0 in Run2010B
+    double lumi(36738); // All Run2010B 
     double xsection(0);
     double bin_contentYieldErr(0); double xsectionErr(0);
     hICHEP = new TH1D("hICHEP", "hICHEP", 
@@ -5158,10 +5160,10 @@ void anaXS::FITUpsilon(int mode){
     makeCanvas(1); 
     c1->Clear();
     
-    TH1D *hSigma1S = new TH1D("hSigma1S","hSigma1S", 7, -0.4, 2.4); 
-    TH1D *hSigma2S = new TH1D("hSigma2S","hSigma2S", 7, -0.4, 2.4);
-    TH1D *hMean1S = new TH1D("hMean1S","hMean1S", 7, -0.4, 2.4); 
-    TH1D *hMean2S = new TH1D("hMean2S","hMean2S", 7, -0.4, 2.4);    
+    TH1D *hSigma1S = new TH1D("hSigma1S","hSigma1S", 6, 0., 2.4); 
+    TH1D *hSigma2S = new TH1D("hSigma2S","hSigma2S", 6, 0., 2.4);
+    TH1D *hMean1S = new TH1D("hMean1S","hMean1S", 6, 0., 2.4); 
+    TH1D *hMean2S = new TH1D("hMean2S","hMean2S", 6, 0., 2.4);    
     
     for (unsigned int i = 0; i < fS12Vector.size(); ++i) {
       
@@ -5659,6 +5661,12 @@ void anaXS::FITUpsilon(int mode){
 	alphaE = f13->GetParError(2);
 	n = f13->GetParameter(3);
 	nE = f13->GetParError(3);
+	if ( !(f13->GetParError(2) > 0)  ){
+	  alphaE = 1.0;
+	}
+	if ( !(f13->GetParError(3) > 0)  ){
+	  nE = 100.0;
+	}
 	sig1 = f13->GetParameter(1);
 	sigE1 = f13->GetParError(1);
 		
@@ -5834,7 +5842,14 @@ void anaXS::FITUpsilon(int mode){
 	alphaE = f13->GetParError(2);
 	n = f13->GetParameter(3);
 	nE = f13->GetParError(3);
-		
+	if ( !(f13->GetParError(2) > 0)  ){
+	  alphaE = 1.0;
+	}
+	if ( !(f13->GetParError(3) > 0)  ){
+	  nE = 100.0;
+	}
+	cout<<"alpha = "<<alpha<<"alphaE = " <<alphaE <<"n = " <<n<<"nE = "<<nE<<endl;
+	
 	// Ups 2S
 	f10->SetParameters( f13->GetParameter(5), f13->GetParameter(6), f13->GetParameter(2), f13->GetParameter(3), f13->GetParameter(7) );
 	yield_2S  = f10->Integral(8.7,11.2)/h->GetBinWidth(1);
@@ -6015,6 +6030,12 @@ void anaXS::FITUpsilon(int mode){
 	alphaE = f13->GetParError(2);
 	n = f13->GetParameter(3);
 	nE = f13->GetParError(3);
+	if ( !(f13->GetParError(2) > 0)  ){
+	  alphaE = 1.0;
+	}
+	if ( !(f13->GetParError(3) > 0)  ){
+	  nE = 100.0;
+	}
 	
 	// Ups 2S
 	f10->SetParameters( f13->GetParameter(5), f13->GetParameter(6), f13->GetParameter(2), f13->GetParameter(3), f13->GetParameter(7) );
@@ -6739,7 +6760,7 @@ void anaXS::setFunctionParameters(TH1D *h, TF1 *f, int mode, int par) {
     
     f->SetParameters(c0, c1, c2, c3, c4, c5, c6, c7, c8, p0, p1);     
     f->SetParLimits(0, 9.410, 9.510); 
-    f->SetParLimits(1, 0.04, 0.18); // 0.16 ->0.22
+    f->SetParLimits(1, 0.035, 0.14); // 0.16 ->0.22
     f->SetParLimits(2, 1., 2.8);
     f->SetParLimits(3, 1., 200.);
     //f->FixParameter(2, 1.9);
@@ -6748,12 +6769,12 @@ void anaXS::setFunctionParameters(TH1D *h, TF1 *f, int mode, int par) {
       f->FixParameter(2, alpha1);
       f->FixParameter(3, n1);
     } 
-    f->SetParLimits(4, 0, 10000000);
+    f->SetParLimits(4, 3, 10000000);
     //f->FixParameter(5, f->GetParameter(0) + 0.56);
     f->SetParLimits(5, 9.9, 10.1);
-    f->SetParLimits(6, 0.06, 0.22); // 0.22-> 0.26
-    f->SetParLimits(7, 0, 10000000);
-    f->SetParLimits(8, 0, 10000000);
+    f->SetParLimits(6, 0.07, 0.18); // 0.22-> 0.26
+    f->SetParLimits(7, 3, 10000000);
+    f->SetParLimits(8, 3, 10000000);
     //f->FixParameter(9, 0.);
     //f->FixParameter(10, 0.);
      
