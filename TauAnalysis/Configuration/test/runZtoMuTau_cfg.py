@@ -245,8 +245,8 @@ if hasattr(process, "disableEventDump"):
 #--------------------------------------------------------------------------------
 # disable accessing generator level information
 # if running on data
-##from TauAnalysis.Configuration.tools.switchToData import switchToData
-##switchToData(process)
+from TauAnalysis.Configuration.tools.switchToData import switchToData
+switchToData(process)
 #--------------------------------------------------------------------------------
 
 #--------------------------------------------------------------------------------
@@ -294,5 +294,7 @@ process.ewkTauId.Prediscriminants.againstElectron.Producer = cms.InputTag('hpsPF
 process.patMuonsMuScleFitCorrectedMomentum.doApplyCorrection = cms.bool(False)
 #--------------------------------------------------------------------------------
 
-# print-out all python configuration parameter information
-#print process.dumpPython()
+processDumpFile = open('runZtoMuTau.dump' , 'w')
+print >> processDumpFile, process.dumpPython()
+
+

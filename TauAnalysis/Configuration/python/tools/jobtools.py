@@ -34,19 +34,20 @@ pwd
 echo "Copying input files"
 $copy_command
 echo "Checking copies succeeded"
-ls $inputFileList
-if ( "$$status" != 0 ) then
-    echo "Failed to copy input files to local area!"
-    echo "Expected:"
-    echo $inputFileCommand
-    echo "Local are:"
-    ls -l *.root
-    exit 100
+set expectedFiles = ( $inputFileList )
+set existingFiles
+foreach inputFile ( $$expectedFiles )
+ls $$inputFile
+if ( "$$status" == 0 ) then
+    set existingFiles = ( $$existingFiles $$inputFile )
+else    
+    echo "Failed to copy $$inputFile to local area!"
+    $exit_command
 endif
 echo "Current time:"
 date
 echo "Running script"
-$merger_comand $outputFileCommand $inputFileCommand
+$merger_comand $outputFileCommand $$existingFiles
 setenv result $$status
 echo Job finished with exit code: $$result
 if ( "$$result" == 0 ) then
@@ -67,12 +68,12 @@ def hash_files(files, add_time=True):
     return hash.hexdigest()[:4]
 
 def make_bsub_script(output_file, input_jobs_and_files,
-                     log_file_maker, merge_method, pass_io_files=True):
+                     log_file_maker, merge_method, pass_io_files = True, abort_on_rfcp_error = True, label = ""):
     # Create a unique job name for our output file.  We leave the add_time
     # option set to true so that lxbatch jobs always have a unique name.
     # Otherwise when we add dependencies LXB gets confused if there were
     # previous (finished/failed) jobs with the same name.
-    job_name = hash_files([output_file])
+    job_name = "_".join([label, hash_files([output_file])])
     job_dependencies = [ jobname for jobname, file in input_jobs_and_files
                         if jobname is not None ]
     dependencies = ''
@@ -94,6 +95,10 @@ def make_bsub_script(output_file, input_jobs_and_files,
     #print input_files
     copy_command = '\n'.join('prfcp.py %s . &' % file for file in input_files)
     copy_command += "\n wait\n"
+
+    exit_command = ""
+    if abort_on_rfcp_error:
+        exit_command = "exit 100"
 
     outputFileName = os.path.basename(output_file)
 
@@ -120,6 +125,7 @@ def make_bsub_script(output_file, input_jobs_and_files,
         outputFileCommand = outputFileCommand,
         outputFileName = outputFileName,
         copy_command = copy_command,
+        exit_command = exit_command,
         merger_comand = merge_method,
         arch = arch,
     ))

@@ -20,7 +20,7 @@ def write_comment_header(file_to_write, text):
 
 def make_harvest_scripts(plot_regex, skim_regex,
                          channel = "",
-                         sampleToAnalyze = None,
+                         sampleToAnalyze = "",
                          job_id = None,
                          # An iterable that gives the input files
                          input_source = None,
@@ -29,6 +29,8 @@ def make_harvest_scripts(plot_regex, skim_regex,
                          input_files_info = None,
                          # Allow to switch between 'genericHarvester.py' and 'hadd'
                          harvester_command = _HARVESTER_CMD,
+                         # Abort harvesting/merging scripts in case input files fail to get copied
+                         abort_on_rfcp_error = True,
                          # Where to put the output
                          castor_output_directory = None,
                          script_directory = None,
@@ -79,9 +81,9 @@ def make_harvest_scripts(plot_regex, skim_regex,
     # Keep track of the final harvested output
     final_harvest_files = []
 
-    harvest_script_name = "_".join(['submit', job_id, 'harvest']) + '.sh'
+    harvest_script_name = "_".join(['submit', channel, sampleToAnalyze, job_id, 'harvest']) + '.sh'
         
-    harvest_log = open('_'.join(('harvest', job_id, 'log')) + '.txt', 'a')
+    harvest_log = open('_'.join(('harvest', channel, sampleToAnalyze, job_id, 'log')) + '.txt', 'a')
 
     # Keep track of the names of lxbatch jobs
     bsub_job_names = []
@@ -108,7 +110,7 @@ def make_harvest_scripts(plot_regex, skim_regex,
         for sample in sorted(plot_source_hashes.keys()):
             # Write down the hash of the input files
             harvest_log.write(
-                " ".join([job_id, sample, '<harvest>' 'input[%s]' %
+                " ".join([channel, sample, job_id, '<harvest>' 'input[%s]' %
                           plot_source_hashes[sample].hexdigest()])+'\n')
 
         submit_file = open(harvest_script_name, 'w')
@@ -122,8 +124,8 @@ def make_harvest_scripts(plot_regex, skim_regex,
             #if sample.find('NoPU') == -1:
             #    continue
             # Add helpful comments
-            write_comment_header(submit_file, "Harvesting" + sample)
-            print " Building harvesting for sample %s" % sample
+            write_comment_header(submit_file, "Harvesting channel %s, sample %s" % (channel, sample))
+            print " Building harvesting for channel %s, sample %s" % (channel, sample)
             print " -- Found %i files to harvest" % len(plot_file_map[sample])
             # Build merge tree.  We add the source has to the sample name.
             split = 6
@@ -131,8 +133,8 @@ def make_harvest_scripts(plot_regex, skim_regex,
                 print "High yield sample %s detected, setting split to 4" % sample
                 split = 4
             merge_jobs = jobtools.make_merge_dependency_tree(
-                sample, plot_file_map[sample],
-                castor_output_directory, split=split)
+                "_".join([channel, sample, job_id]), plot_file_map[sample],
+                castor_output_directory, split = split)
             # Only do work that hasn't been done before.  We can check and see
             # if the output of a given merge layer is already in the temp
             # directory.  As the filenames contain a suffix with the hash of the
@@ -183,8 +185,8 @@ def make_harvest_scripts(plot_regex, skim_regex,
 
             for ilayer, layer in enumerate(merge_jobs_needed):
                 write_comment_header(submit_file, "Layer %i" % ilayer)
-                submit_file.write("echo Submitting layer %i of sample: %s\n"
-                                  % (ilayer, sample))
+                submit_file.write("echo Submitting layer %i of channel %s, sample %s\n"
+                                  % (ilayer, channel, sample))
                 for ijob, (output_file, input_files) in enumerate(layer):
                     # Get the job name (if it exists) and file name for the
                     # input files.
@@ -200,27 +202,33 @@ def make_harvest_scripts(plot_regex, skim_regex,
                     def log_file_maker(job_hash):
                         return os.path.join(
                             'lxbatch_log', "_".join(
-                                ['harvest', channel, sample, job_id,
-                                 'layer_%i' % ilayer, job_hash]) + '.log')
+                                ['harvest', job_hash, 'layer_%i' % ilayer]) + '.log')
 
-                    # Build the script
+                    # Build the script                    
                     job_name, script = jobtools.make_bsub_script(
                         output_file, input_files_and_jobs,
                         log_file_maker,
-                        harvester_command)
-                    #print "job_name = %s" % job_name
+                        harvester_command,
+                        abort_on_rfcp_error = abort_on_rfcp_error,
+                        label = "_".join([
+                            "harvest",
+                            channel, sample,
+                            "layer", str(ilayer),
+                            "job", str(ijob)]))
+                    print "job_name = %s" % job_name
                     bsub_job_names.append(job_name)
                     
                     # Register our job
+                    print "--> registering channel %s, sample %s, jobId %s" % (channel, sample, job_id)
+                    print " script_directory = %s" % script_directory
                     job_registry[output_file] = job_name
+                    print " job_registry[%s] = %s" % (output_file, job_registry[output_file])
                     script_file = os.path.join(
                         script_directory, "_".join([
-                            sample,
-                            "layer",
-                            str(ilayer),
-                            "job",
-                            str(ijob),
-                            job_name]
+                            "harvest",
+                            channel, sample, job_id,
+                            "layer", str(ilayer),
+                            "job", str(ijob)]
                         ) + ".sh")
                     submit_file.write("bsub < %s\n" % script_file)
                     # Keep track of how many files we access
@@ -267,13 +275,13 @@ def make_harvest_scripts(plot_regex, skim_regex,
             return "_".join(["skim", sample, "chunk", str(chunk), hash]) + ".root"
 
         if merge_script_name is None:
-            merge_script_name = "_".join(['submit', job_id, 'merge']) + '.sh'
+            merge_script_name = "_".join(['submit', channel, sampleToAnalyze, job_id, 'merge']) + '.sh'
         with open(merge_script_name, 'w') as merge_script:
             merge_jobs_counter = 0
             bsub_file_access_counter = 0
             for sample in skim_file_map.keys():
                 write_comment_header(merge_script, " Merging " + sample)
-                print "Merging %s" % sample,
+                print "Merging channel %s, sample %s" % (channel, sample)
                 files = skim_file_map[sample]
                 num_files = len(files)
                 total_file_size =  sum(map(lambda x: x[1], files))/1e6
@@ -289,7 +297,7 @@ def make_harvest_scripts(plot_regex, skim_regex,
                     # job dependencies.
                     just_the_files = [x[2] for x in input_files]
                     output_file = make_skim_name(
-                        sample, ichunk, jobtools.hash_files(
+                        "_".join([channel, sample, job_id]), ichunk, jobtools.hash_files(
                             just_the_files, add_time=False))
                     skim_fileouthash_map[sample].update(output_file)
 
@@ -312,15 +320,25 @@ def make_harvest_scripts(plot_regex, skim_regex,
                     def merge_log_file_maker(job_hash):
                         return os.path.join(
                             'lxbatch_log', "_".join(
-                                ['merge', channel, sample, job_id,
-                                 'job_%i' % ijob, job_hash]) + '.log')
+                                ['merge', job_hash, 'job_%i' % ijob]) + '.log')
                     # Generate script contents
                     job_name, script = jobtools.make_bsub_script(
-                        output_file, input_files, merge_log_file_maker, _MERGER_CMD)
+                        output_file,
+                        input_files,
+                        merge_log_file_maker,
+                        _MERGER_CMD,
+                        abort_on_rfcp_error = abort_on_rfcp_error,
+                        label = "_".join([
+                            "merge",
+                            channel, sample, 
+                            "chunk", str(ijob)]))
                     script_file = os.path.join(
                         script_directory, "_".join([
-                            'merge', sample,
-                            "chunk", str(ijob), job_name]) + ".sh")
+                            "merge",
+                            channel, sample, job_id,
+                            "chunk", str(ijob)])
+                        + ".sh")
+                    
                     # Add our bsub command
                     merge_script.write("bsub < %s\n" % script_file)
                     merge_jobs_counter += 1
