@@ -1,7 +1,7 @@
 #ifndef TauAnalysis_CandidateTools_candidateAuxFunctions_h
 #define TauAnalysis_CandidateTools_candidateAuxFunctions_h
 
-#include "DataFormats/Candidate/interface/Candidate.h" 
+#include "DataFormats/Candidate/interface/Candidate.h"
 
 #include "DataFormats/HepMCCandidate/interface/GenParticleFwd.h"
 #include "DataFormats/HepMCCandidate/interface/GenParticle.h"
@@ -10,18 +10,16 @@
 #include "DataFormats/VertexReco/interface/Vertex.h"
 #include "DataFormats/VertexReco/interface/VertexFwd.h"
 
-#include "AnalysisDataFormats/TauAnalysis/interface/CompositePtrCandidateT1T2MEt.h"
-
 #include <TVector2.h>
 
 #include <vector>
 
-/// Find the best match to the input four vector out of the GenParticleCollection 
-/// If pdgIds is non null (and pdgIdStrict is true), look for specific pdgIds.  If 
+/// Find the best match to the input four vector out of the GenParticleCollection
+/// If pdgIds is non null (and pdgIdStrict is true), look for specific pdgIds.  If
 /// pdgIdStrict is false, take the best candidate, but always prefer those which match
 /// the pdgId list
-const reco::GenParticle* findGenParticle(const reco::Candidate::LorentzVector& toMatch, 
-					 const reco::GenParticleCollection& genParticles, 
+const reco::GenParticle* findGenParticle(const reco::Candidate::LorentzVector& toMatch,
+					 const reco::GenParticleCollection& genParticles,
                                          double dRMax = 0.5, int status = -1,
 					 const std::vector<int>* pdgIds = 0, bool pdgIdStrict = true);
 
@@ -44,7 +42,7 @@ reco::Candidate::LorentzVector boostToRestFrame(const reco::Candidate::LorentzVe
 
 std::string getGenTauDecayMode(const reco::GenParticle*);
 
-TVector2 getDiTauBisectorDirection(const reco::Candidate::LorentzVector& leg1P4, const reco::Candidate::LorentzVector& leg2P4); 
+TVector2 getDiTauBisectorDirection(const reco::Candidate::LorentzVector& leg1P4, const reco::Candidate::LorentzVector& leg2P4);
 
 std::string getTauDecayModeName(int);
 
