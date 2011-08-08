@@ -478,7 +478,7 @@ void UG_Acceptance_ProPt(){
   Ratio_1S_1D = new TH1D("Acceptance", "Acceptance", 
 			 UG_RecoGenRes_1S->GetNbinsY(), UG_RecoGenRes_1S->GetYaxis()->GetXbins()->GetArray()
 			 );
-  double bin_contentBefore(0); double bin_contentAfter(0); double bin_ratio(0.);
+  double bin_contentBefore(0); double bin_contentAfter(0); double bin_ratio(0.); double bin_ratioErr(0.);
   for (int j = 1; j <= UG_RecoGenRes_1S->GetNbinsY(); ++j) {
     for (int i = 1; i <= UG_RecoGenRes_1S->GetNbinsX(); ++i){	
       bin_contentBefore += UG_AllGenRes_1S->GetCellContent(i,j);
@@ -489,7 +489,10 @@ void UG_Acceptance_ProPt(){
     if ( bin_contentBefore == 0 ) bin_ratio=0;
     if ( bin_contentBefore > 0 ) bin_ratio = bin_contentAfter / bin_contentBefore;
     cout << "bin_ratio = " << bin_ratio << endl;
+    bin_ratioErr = bin_ratio*(TMath::Abs(TMath::Sqrt(1/bin_contentAfter)-TMath::Sqrt(1/bin_contentBefore)));
     Ratio_1S_1D->SetBinContent(j,bin_ratio);
+    //Ratio_1S_1D->SetBinError(j,bin_ratioErr);
+    //cout << "bin_ratioErr = " << bin_ratioErr << endl;
     bin_contentBefore=0;
     bin_contentAfter=0;
     bin_ratio=0;
