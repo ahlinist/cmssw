@@ -1035,17 +1035,17 @@ void anaXS::makeAllDATA(int channel) {
     //addBackground(fS1Vector, 0.3);
     
     //table(fS1YieldPt, "anan");
-    //plot_RapInt();
+    plot_RapInt();
     //plot_PtInt();
     
-    FITUpsilon(1); //3 for PtIntegrated plots, 4 for RapidityIntegrated plots
-    GetAnaEff();
-    GetPreSelEff();
-    GetTrackEff();
-    GetMuIDEff(2);
-    GetTrigEff(2);
-    CorrectedYields(2);   // 1- FOR MC, 2 FOR DATA
-    PlotProjections(2);   // 1- FOR MC, 2 FOR DATA
+    //FITUpsilon(1); //3 for PtIntegrated plots, 4 for RapidityIntegrated plots
+    //GetAnaEff();
+    //GetPreSelEff();
+    //GetTrackEff();
+    //GetMuIDEff(2);
+    //GetTrigEff(2);
+    //CorrectedYields(2);   // 1- FOR MC, 2 FOR DATA
+    //PlotProjections(2);   // 1- FOR MC, 2 FOR DATA
     
   }
 
@@ -1243,16 +1243,17 @@ void anaXS::plot_RapInt(){
     n = sscanf(h->GetName(), "s13:Rapidity_IntegratedMass,pt%f_%f", &ptmin, &ptmax);
     h->SetMinimum(0.);
     h->GetXaxis()->SetTitle("#mu^{+}#mu^{-} mass [GeV/c^{2}]");
-    h->GetXaxis()->SetTitleSize(0.04);
+    h->GetXaxis()->SetTitleSize(0.06);
+    h->GetXaxis()->SetTitleOffset(0.75);
     h->GetYaxis()->SetTitle("Entries/0.05  [GeV/c^{2}]   ");
-    h->GetYaxis()->SetTitleSize(0.04);
-    h->GetYaxis()->SetTitleOffset(1.25);
+    h->GetYaxis()->SetTitleSize(0.05);
+    h->GetYaxis()->SetTitleOffset(1.);
     h->SetTitle("");
     //if( n > 0 )  h->SetTitle(Form("|y^{#Upsilon}| < 2.4,  %.1f < p_{T}^{#Upsilon} < %.1f",ptmin , ptmax));
     setFunctionParameters(h, f13, 6, 2);
     h->Fit(f13);
-    legg = new TLegend(0.25,0.85,0.9,1.05);
-    legg->SetFillStyle(0); legg->SetBorderSize(0); legg->SetTextSize(0.05); legg->SetTextFont(62); 
+    legg = new TLegend(0.12,0.85,0.77,1.05);
+    legg->SetFillStyle(0); legg->SetBorderSize(0); legg->SetTextSize(0.08); legg->SetTextFont(62); 
     if( n > 0 ) {
       legg->SetHeader(Form("|y^{#Upsilon}| < 2.4,  %.1f < p_{T}^{#Upsilon} < %.1f",ptmin , ptmax));
       legg->Draw();
@@ -6654,7 +6655,7 @@ void anaXS::setFunctionParameters(TH1D *h, TF1 *f, int mode, int par) {
     f->ReleaseParameter(10);         
     
     if ( par == 1 ){
-      TFile *f1 = new TFile("FitParametersMC_1D_PtInt_1SBin.root");
+      TFile *f1 = new TFile("FitParametersMC_1D_PtInt_3SBin.root");
       TH1D *falpha_1D_ptInt;
       falpha_1D_ptInt = (TH1D*)gFile->Get("falpha_1D_ptInt");
       TH1D *fn_1D_ptInt;
@@ -6679,7 +6680,7 @@ void anaXS::setFunctionParameters(TH1D *h, TF1 *f, int mode, int par) {
     }
     
     if ( par == 2 ){
-      TFile *f1 = new TFile("FitParametersMC_1D_RapInt_1SBin.root");
+      TFile *f1 = new TFile("FitParametersMC_1D_RapInt_3SBin.root");
       TH1D *falpha_1D_RapInt;
       falpha_1D_RapInt = (TH1D*)gFile->Get("falpha_1D_RapInt");
       TH1D *fn_1D_RapInt;
@@ -6704,7 +6705,7 @@ void anaXS::setFunctionParameters(TH1D *h, TF1 *f, int mode, int par) {
     }    
     
     if ( par == 3 ){
-      TFile *f1 = new TFile("FitParametersMC_1SBin.root");
+      TFile *f1 = new TFile("FitParametersMC_3SBin.root");
       TH1D *falpha;
       falpha = (TH1D*)gFile->Get("falpha");
       TH1D *fn;
