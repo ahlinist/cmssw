@@ -617,7 +617,7 @@ void UG_Acceptance_ProPt(){
   Ratio_1S_1D_CSPl->SetMarkerColor(4);
   Ratio_1S_1D_CSPl->SetLineColor(4);
   Ratio_1S_1D_CSPl->Draw("psame");  
-  Ratio_1S_1D_CSMi->SetMarkerStyle(33);
+  Ratio_1S_1D_CSMi->SetMarkerStyle(22);
   Ratio_1S_1D_CSMi->SetMarkerColor(6);
   Ratio_1S_1D_CSMi->SetLineColor(6);
   Ratio_1S_1D_CSMi->Draw("psame");
@@ -812,7 +812,7 @@ void UG_Acceptance_ProPt_2S(){
   Ratio_1S_1D_CSPl->SetMarkerColor(4);
   Ratio_1S_1D_CSPl->SetLineColor(4);
   Ratio_1S_1D_CSPl->Draw("psame");  
-  Ratio_1S_1D_CSMi->SetMarkerStyle(33);
+  Ratio_1S_1D_CSMi->SetMarkerStyle(22);
   Ratio_1S_1D_CSMi->SetMarkerColor(6);
   Ratio_1S_1D_CSMi->SetLineColor(6);
   Ratio_1S_1D_CSMi->Draw("psame");
@@ -1007,7 +1007,7 @@ void UG_Acceptance_ProPt_3S(){
   Ratio_1S_1D_CSPl->SetMarkerColor(4);
   Ratio_1S_1D_CSPl->SetLineColor(4);
   Ratio_1S_1D_CSPl->Draw("psame");  
-  Ratio_1S_1D_CSMi->SetMarkerStyle(33);
+  Ratio_1S_1D_CSMi->SetMarkerStyle(22);
   Ratio_1S_1D_CSMi->SetMarkerColor(6);
   Ratio_1S_1D_CSMi->SetLineColor(6);
   Ratio_1S_1D_CSMi->Draw("psame");
@@ -1187,7 +1187,7 @@ void UG_Acceptance_ProRap(){
   Ratio_1S_1D->SetMarkerColor(1);
   Ratio_1S_1D->SetLineColor(1);
   Ratio_1S_1D->SetTitle("");
-  Ratio_1S_1D->GetXaxis()->SetTitle("y^{#Upsilon(1S)}");
+  Ratio_1S_1D->GetXaxis()->SetTitle("|y^{#Upsilon(1S)}|");
   Ratio_1S_1D->GetYaxis()->SetTitle("A^{#Upsilon(1S)}");
   Ratio_1S_1D->Draw("p");
   Ratio_1S_1D_HelPl->SetMarkerStyle(23);
@@ -1202,7 +1202,7 @@ void UG_Acceptance_ProRap(){
   Ratio_1S_1D_CSPl->SetMarkerColor(4);
   Ratio_1S_1D_CSPl->SetLineColor(4);
   Ratio_1S_1D_CSPl->Draw("psame");  
-  Ratio_1S_1D_CSMi->SetMarkerStyle(33);
+  Ratio_1S_1D_CSMi->SetMarkerStyle(22);
   Ratio_1S_1D_CSMi->SetMarkerColor(6);
   Ratio_1S_1D_CSMi->SetLineColor(6);
   Ratio_1S_1D_CSMi->Draw("psame");
