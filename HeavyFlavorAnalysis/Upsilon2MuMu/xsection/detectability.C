@@ -6,7 +6,7 @@
 
 void Yield(){
   gStyle->SetOptStat(00000000000);
-  TFile *f = new TFile("101201.fl10.mm.ups1s.xsReader_1S.default.root");
+  TFile *f = new TFile("101201.fl10.mm.ups1s.xsReader_1SBin.default.root");
   TH2D *RecoMuonYield_pt;
   RecoMuonYield_pt = (TH2D*)gFile->Get("RecoMuonYield_pt");
   TH2D *RecoMuonYield_p;
@@ -18,11 +18,17 @@ void Yield(){
    
   TCanvas *c1 = new TCanvas("c1","c1",800,600);
   RecoMuonYield_p->SetTitle("Reconstructed Arbitrated Tracker Muons from #Upsilon(1S)");
+  RecoMuonYield_p->GetXaxis()->SetTitle("#eta^{#mu}");
+  RecoMuonYield_p->GetXaxis()->SetTitleSize(0.06);
+  RecoMuonYield_p->GetXaxis()->SetTitleOffset(0.5);
   RecoMuonYield_p->Draw("colz");
   c1->SaveAs("RecoMu_p.pdf");
   
   TCanvas *c2 = new TCanvas("c2","c2",800,600); 
   RecoMuonYield_pt->SetTitle("Reconstructed Arbitrated Tracker Muons from #Upsilon(1S)");
+  RecoMuonYield_pt->GetXaxis()->SetTitle("#eta^{#mu}");
+  RecoMuonYield_pt->GetXaxis()->SetTitleSize(0.06);
+  RecoMuonYield_pt->GetXaxis()->SetTitleOffset(0.5);  
   RecoMuonYield_pt->Draw("colz");
   c2->SaveAs("RecoMu_pt.pdf");
   
@@ -40,7 +46,7 @@ void Yield(){
 
 void Eff(){
   gStyle->SetOptStat(00000000000);
-  TFile *f = new TFile("101201.fl10.mm.ups1s.xsReader_1S.default.root");
+  TFile *f = new TFile("101201.fl10.mm.ups1s.xsReader_1SBin.default.root");
   TH2D *RecoMuonYield_pt;
   RecoMuonYield_pt = (TH2D*)gFile->Get("RecoMuonYield_pt");
   TH2D *RecoMuonYield_p;
@@ -83,9 +89,15 @@ void Eff(){
 
   TCanvas *c11 = new TCanvas("c11","c11", 800,600);
   Ratio_p->Draw("colz");
+  Ratio_p->GetXaxis()->SetTitleSize(0.06);
+  Ratio_p->GetXaxis()->SetTitleOffset(0.5);
   c11->SaveAs("Eff_p.pdf");
   
   TCanvas *c12 = new TCanvas("c12","c12", 800,600);
-  Ratio_pt->Draw("colz");  
+  Ratio_pt->Draw("colz");
+  Ratio_pt->GetXaxis()->SetTitleSize(0.06);
+  Ratio_pt->GetXaxis()->SetTitleOffset(0.5);  
   c12->SaveAs("Eff_pt.pdf");  
 }
+
+
