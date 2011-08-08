@@ -13,27 +13,19 @@ selectedTauNuPairsDPhiMetTau = cms.EDFilter("PATTauNuPairSelector",
 )
 
 
+selectedTauNuPairsMt40 = cms.EDFilter("PATTauNuPairSelector",
+                                      cut = cms.string('mt() > 40'),
+                                      filter = cms.bool(False)
+                                      )
+
 patTauNuPairSelConfigurator = objSelConfigurator(
-    [ selectedTauNuPairsDPhiMetTau
+    [
+    #selectedTauNuPairsDPhiMetTau
+    selectedTauNuPairsMt40
       ],
     src = "allTauNuPairs",
     pyModuleName = __name__,
-    doSelIndividual = True
+    doSelIndividual = False
 )
 
 selectTauNuPairs = patTauNuPairSelConfigurator.configure(pyNameSpace = locals())
-
-selectedTauNuPairsDPhiMetTauLooseIsolation = cms.EDFilter("PATTauNuPairSelector",
-      cut = cms.string('dPhi() > 0.3'),
-      filter = cms.bool(False)
-)
-
-patTauNuPairSelConfiguratorLooseIsolation = objSelConfigurator(
-    [ selectedTauNuPairsDPhiMetTauLooseIsolation
-      ],
-    src = "allTauNuPairsLooseIsolation",
-    pyModuleName = __name__,
-    doSelIndividual = True
-)
-
-selectTauNuPairsLooseIsolation = patTauNuPairSelConfiguratorLooseIsolation.configure(pyNameSpace = locals())
