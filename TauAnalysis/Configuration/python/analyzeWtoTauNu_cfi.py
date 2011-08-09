@@ -298,7 +298,12 @@ evtSelHtRatio = cms.PSet(
     systematics = cms.vstring(htRatioSystematics.keys())
     )
 
-
+evtSelMtCut = cms.PSet(
+    pluginName = cms.string('evtSelMtCut'),
+    pluginType = cms.string('BoolEventSelector'),
+    src = cms.InputTag('mtCut'),
+    systematics = cms.vstring(tauNuPairSystematics.keys())
+    )
 #evtSelMetTopology = cms.PSet(
 #    pluginName = cms.string('evtSelMetTopology'),
 #    pluginType = cms.string('BoolEventSelector'),
@@ -552,7 +557,28 @@ wTauNuAnalysisSequence = cms.VPSet(
        replace = cms.vstring('tauHistManager.tauSource = selectedPatTausForWTauNuEcalCrackVetoCumulative',
                              'jetHistManager.jetSource = selectedPatJetsEt15ForWTauNuCumulative'
                              )
-       ),
+       ),    cms.PSet(
+    filter = cms.string('evtSelMtCut'),
+                  title = cms.string('mt > 40'),
+                  saveRunLumiSectionEventNumbers = cms.vstring('passed_cumulative')
+                  ),
+    cms.PSet(
+        analyzers = cms.vstring(
+                   'tauHistManager',
+                   'jetHistManager',
+                   'tauNuCandidateHistManager',
+                   'htRatioHistManager',
+                   'metTopologyHistManager',
+                   'pfMEtHistManager',
+                   'sysUncertaintyHistManagerForWTauNu',
+                   'dataBinner',
+                   'sysUncertaintyBinnerForWTauNuEff',
+                   'vertexHistManager'
+                   ),
+        replace = cms.vstring('tauHistManager.tauSource = selectedPatTausForWTauNuEcalCrackVetoCumulative',
+                              'jetHistManager.jetSource = selectedPatJetsEt15ForWTauNuCumulative'
+                              )
+        ),
     cms.PSet(
        filter = cms.string('evtSelTrigger2'),
        title = cms.string('trigger'),

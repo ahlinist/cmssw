@@ -43,7 +43,7 @@ analyzeWtoTauNuEvents = cms.EDAnalyzer("GenericAnalyzer",
     evtSelTauEcalCrackVeto,
     evtSelPFMetPt,
     evtSelHtRatio,
-
+    evtSelMtCut,
     evtSelTrigger2
 #    evtSelMetTopology
     ),
