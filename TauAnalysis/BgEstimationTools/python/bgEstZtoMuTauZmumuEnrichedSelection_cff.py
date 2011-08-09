@@ -420,9 +420,9 @@ diTauCandidateHistManagerBgEstZmumuJetMisIdEnriched.pluginName = cms.string('diT
 diTauCandidateHistManagerBgEstZmumuJetMisIdEnriched.diTauCandidateSource = cms.InputTag('muTauPairsBgEstZmumuJetMisIdEnrichedPzetaDiffCumulative')
 diTauCandidateHistManagerBgEstZmumuJetMisIdEnriched.visMassHypothesisSource = cms.InputTag('')
 
-diTauCandidateNSVfitHistManagerBgEstZmumuJetMisIdEnriched = copy.deepcopy(diTauCandidateNSVfitHistManagerForMuTau)
-diTauCandidateNSVfitHistManagerBgEstZmumuJetMisIdEnriched.pluginName = cms.string('diTauCandidateNSVfitHistManagerBgEstZmumuJetMisIdEnriched')
-diTauCandidateNSVfitHistManagerBgEstZmumuJetMisIdEnriched.diTauCandidateSource = diTauCandidateHistManagerBgEstZmumuJetMisIdEnriched.diTauCandidateSource
+#diTauCandidateNSVfitHistManagerBgEstZmumuJetMisIdEnriched = copy.deepcopy(diTauCandidateNSVfitHistManagerForMuTau)
+#diTauCandidateNSVfitHistManagerBgEstZmumuJetMisIdEnriched.pluginName = cms.string('diTauCandidateNSVfitHistManagerBgEstZmumuJetMisIdEnriched')
+#diTauCandidateNSVfitHistManagerBgEstZmumuJetMisIdEnriched.diTauCandidateSource = diTauCandidateHistManagerBgEstZmumuJetMisIdEnriched.diTauCandidateSource
 
 caloMEtHistManagerBgEstZmumuJetMisIdEnriched = copy.deepcopy(caloMEtHistManager)
 caloMEtHistManagerBgEstZmumuJetMisIdEnriched.pluginName = cms.string('caloMEtHistManagerBgEstZmumuJetMisIdEnriched')
@@ -519,10 +519,10 @@ analyzeEventsBgEstZmumuJetMisIdEnriched = cms.EDAnalyzer("GenericAnalyzer",
         muonHistManagerBgEstZmumuEnriched,
         tauHistManagerBgEstZmumuJetMisIdEnriched,
         diTauCandidateHistManagerBgEstZmumuJetMisIdEnriched,
-        diTauCandidateNSVfitHistManagerBgEstZmumuJetMisIdEnriched,
-	caloMEtHistManagerBgEstZmumuJetMisIdEnriched,
-	pfMEtHistManagerBgEstZmumuJetMisIdEnriched,
-    #tauIdEffHistManagerBgEstZmumuJetMisIdEnriched,
+		#diTauCandidateNSVfitHistManagerBgEstZmumuJetMisIdEnriched,
+		caloMEtHistManagerBgEstZmumuJetMisIdEnriched,
+		pfMEtHistManagerBgEstZmumuJetMisIdEnriched,
+    	#tauIdEffHistManagerBgEstZmumuJetMisIdEnriched,
         dataBinnerBgEstZmumuEnriched
     ),
 
@@ -632,8 +632,8 @@ analyzeEventsBgEstZmumuJetMisIdEnriched = cms.EDAnalyzer("GenericAnalyzer",
             analyzers = cms.vstring(
                 'muonHistManagerBgEstZmumuEnriched',
                 'tauHistManagerBgEstZmumuJetMisIdEnriched',
-                'diTauCandidateHistManagerBgEstZmumuJetMisIdEnriched',
-                'diTauCandidateNSVfitHistManagerBgEstZmumuJetMisIdEnriched'
+                'diTauCandidateHistManagerBgEstZmumuJetMisIdEnriched'
+				#'diTauCandidateNSVfitHistManagerBgEstZmumuJetMisIdEnriched'
             )
         ),
         cms.PSet(
@@ -645,10 +645,10 @@ analyzeEventsBgEstZmumuJetMisIdEnriched = cms.EDAnalyzer("GenericAnalyzer",
                 'muonHistManagerBgEstZmumuEnriched',
                 'tauHistManagerBgEstZmumuJetMisIdEnriched',
                 'diTauCandidateHistManagerBgEstZmumuJetMisIdEnriched',
-                'diTauCandidateNSVfitHistManagerBgEstZmumuJetMisIdEnriched',
+				#'diTauCandidateNSVfitHistManagerBgEstZmumuJetMisIdEnriched',
                 'caloMEtHistManagerBgEstZmumuJetMisIdEnriched',
-	        'pfMEtHistManagerBgEstZmumuJetMisIdEnriched',
-            #'tauIdEffHistManagerBgEstZmumuJetMisIdEnriched',
+	        	'pfMEtHistManagerBgEstZmumuJetMisIdEnriched',
+            	#'tauIdEffHistManagerBgEstZmumuJetMisIdEnriched',
                 'dataBinnerBgEstZmumuEnriched'
             )
         )
@@ -668,9 +668,9 @@ diTauCandidateHistManagerBgEstZmumuMuonMisIdEnriched.pluginName = cms.string('di
 diTauCandidateHistManagerBgEstZmumuMuonMisIdEnriched.diTauCandidateSource = cms.InputTag('muTauPairsBgEstZmumuMuonMisIdEnrichedZeroCharge')
 diTauCandidateHistManagerBgEstZmumuMuonMisIdEnriched.visMassHypothesisSource = cms.InputTag('')
 
-diTauCandidateNSVfitHistManagerBgEstZmumuMuonMisIdEnriched = copy.deepcopy(diTauCandidateNSVfitHistManagerForMuTau)
-diTauCandidateNSVfitHistManagerBgEstZmumuMuonMisIdEnriched.pluginName = cms.string('diTauCandidateNSVfitHistManagerBgEstZmumuMuonMisIdEnriched')
-diTauCandidateNSVfitHistManagerBgEstZmumuMuonMisIdEnriched.diTauCandidateSource = diTauCandidateHistManagerBgEstZmumuMuonMisIdEnriched.diTauCandidateSource
+#diTauCandidateNSVfitHistManagerBgEstZmumuMuonMisIdEnriched = copy.deepcopy(diTauCandidateNSVfitHistManagerForMuTau)
+#diTauCandidateNSVfitHistManagerBgEstZmumuMuonMisIdEnriched.pluginName = cms.string('diTauCandidateNSVfitHistManagerBgEstZmumuMuonMisIdEnriched')
+#diTauCandidateNSVfitHistManagerBgEstZmumuMuonMisIdEnriched.diTauCandidateSource = diTauCandidateHistManagerBgEstZmumuMuonMisIdEnriched.diTauCandidateSource
 
 caloMEtHistManagerBgEstZmumuMuonMisIdEnriched = copy.deepcopy(caloMEtHistManager)
 caloMEtHistManagerBgEstZmumuMuonMisIdEnriched.pluginName = cms.string('caloMEtHistManagerBgEstZmumuMuonMisIdEnriched')
@@ -782,9 +782,9 @@ analyzeEventsBgEstZmumuMuonMisIdEnriched = cms.EDAnalyzer("GenericAnalyzer",
         muonHistManagerBgEstZmumuEnriched,
         tauHistManagerBgEstZmumuMuonMisIdEnriched,
         diTauCandidateHistManagerBgEstZmumuMuonMisIdEnriched,
-        diTauCandidateNSVfitHistManagerBgEstZmumuMuonMisIdEnriched,
+		#diTauCandidateNSVfitHistManagerBgEstZmumuMuonMisIdEnriched,
         caloMEtHistManagerBgEstZmumuMuonMisIdEnriched,
-	pfMEtHistManagerBgEstZmumuMuonMisIdEnriched,
+		pfMEtHistManagerBgEstZmumuMuonMisIdEnriched,
         #tauIdEffHistManagerBgEstZmumuMuonMisIdEnriched,
         dataBinnerBgEstZmumuEnriched
     ),
@@ -897,7 +897,7 @@ analyzeEventsBgEstZmumuMuonMisIdEnriched = cms.EDAnalyzer("GenericAnalyzer",
                 'muonHistManagerBgEstZmumuEnriched',
                 'tauHistManagerBgEstZmumuMuonMisIdEnriched',
                 'diTauCandidateHistManagerBgEstZmumuMuonMisIdEnriched',
-                'diTauCandidateNSVfitHistManagerBgEstZmumuMuonMisIdEnriched',
+				#'diTauCandidateNSVfitHistManagerBgEstZmumuMuonMisIdEnriched',
                 'caloMEtHistManagerBgEstZmumuMuonMisIdEnriched',
 	            'pfMEtHistManagerBgEstZmumuMuonMisIdEnriched',
                 #'tauIdEffHistManagerBgEstZmumuMuonMisIdEnriched',

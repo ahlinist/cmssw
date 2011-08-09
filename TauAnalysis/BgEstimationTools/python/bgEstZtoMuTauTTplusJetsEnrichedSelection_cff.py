@@ -240,9 +240,9 @@ diTauCandidateHistManagerBgEstTTplusJetsEnriched.pluginName = cms.string('diTauC
 diTauCandidateHistManagerBgEstTTplusJetsEnriched.diTauCandidateSource = cms.InputTag('muTauPairsBgEstTTplusJetsEnrichedZeroCharge')
 diTauCandidateHistManagerBgEstTTplusJetsEnriched.visMassHypothesisSource = cms.InputTag('')
 
-diTauCandidateNSVfitHistManagerBgEstTTplusJetsEnriched = copy.deepcopy(diTauCandidateNSVfitHistManagerForMuTau)
-diTauCandidateNSVfitHistManagerBgEstTTplusJetsEnriched.pluginName = cms.string('diTauCandidateNSVfitHistManagerBgEstTTplusJetsEnriched')
-diTauCandidateNSVfitHistManagerBgEstTTplusJetsEnriched.diTauCandidateSource = diTauCandidateHistManagerBgEstTTplusJetsEnriched.diTauCandidateSource
+#diTauCandidateNSVfitHistManagerBgEstTTplusJetsEnriched = copy.deepcopy(diTauCandidateNSVfitHistManagerForMuTau)
+#diTauCandidateNSVfitHistManagerBgEstTTplusJetsEnriched.pluginName = cms.string('diTauCandidateNSVfitHistManagerBgEstTTplusJetsEnriched')
+#diTauCandidateNSVfitHistManagerBgEstTTplusJetsEnriched.diTauCandidateSource = diTauCandidateHistManagerBgEstTTplusJetsEnriched.diTauCandidateSource
 
 jetHistManagerBgEstTTplusJetsEnriched = copy.deepcopy(jetHistManager)
 jetHistManagerBgEstTTplusJetsEnriched.pluginName = cms.string('jetHistManagerBgEstTTplusJetsEnriched')
@@ -335,7 +335,7 @@ analyzeEventsBgEstTTplusJetsEnriched = cms.EDAnalyzer("GenericAnalyzer",
         muonHistManagerBgEstTTplusJetsEnriched,
         tauHistManagerBgEstTTplusJetsEnriched,
         diTauCandidateHistManagerBgEstTTplusJetsEnriched,
-        diTauCandidateNSVfitHistManagerBgEstTTplusJetsEnriched,
+		#diTauCandidateNSVfitHistManagerBgEstTTplusJetsEnriched,
         caloMEtHistManagerBgEstTTplusJetsEnriched,
 	pfMEtHistManagerBgEstTTplusJetsEnriched,
         jetHistManagerBgEstTTplusJetsEnriched,
@@ -458,9 +458,9 @@ analyzeEventsBgEstTTplusJetsEnriched = cms.EDAnalyzer("GenericAnalyzer",
                 'muonHistManagerBgEstTTplusJetsEnriched',
                 'tauHistManagerBgEstTTplusJetsEnriched',
                 'diTauCandidateHistManagerBgEstTTplusJetsEnriched',
-                'diTauCandidateNSVfitHistManagerBgEstTTplusJetsEnriched',
+				#'diTauCandidateNSVfitHistManagerBgEstTTplusJetsEnriched',
                 'caloMEtHistManagerBgEstTTplusJetsEnriched',
-		'pfMEtHistManagerBgEstTTplusJetsEnriched',
+				'pfMEtHistManagerBgEstTTplusJetsEnriched',
                 'jetHistManagerBgEstTTplusJetsEnriched',
                 #'tauIdEffHistManagerBgEstTTplusJetsEnriched',
                 'dataBinnerBgEstTTplusJetsEnriched'

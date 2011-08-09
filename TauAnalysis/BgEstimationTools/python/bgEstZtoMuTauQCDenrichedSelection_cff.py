@@ -221,9 +221,9 @@ diTauCandidateHistManagerBgEstQCDenriched.pluginName = cms.string('diTauCandidat
 diTauCandidateHistManagerBgEstQCDenriched.diTauCandidateSource = cms.InputTag('muTauPairsBgEstQCDenrichedPzetaDiffCumulative')
 diTauCandidateHistManagerBgEstQCDenriched.visMassHypothesisSource = cms.InputTag('')
 
-diTauCandidateNSVfitHistManagerBgEstQCDenriched = copy.deepcopy(diTauCandidateNSVfitHistManagerForMuTau)
-diTauCandidateNSVfitHistManagerBgEstQCDenriched.pluginName = cms.string('diTauCandidateNSVfitHistManagerBgEstQCDenriched')
-diTauCandidateNSVfitHistManagerBgEstQCDenriched.diTauCandidateSource = diTauCandidateHistManagerBgEstQCDenriched.diTauCandidateSource
+#diTauCandidateNSVfitHistManagerBgEstQCDenriched = copy.deepcopy(diTauCandidateNSVfitHistManagerForMuTau)
+#diTauCandidateNSVfitHistManagerBgEstQCDenriched.pluginName = cms.string('diTauCandidateNSVfitHistManagerBgEstQCDenriched')
+#diTauCandidateNSVfitHistManagerBgEstQCDenriched.diTauCandidateSource = diTauCandidateHistManagerBgEstQCDenriched.diTauCandidateSource
 
 caloMEtHistManagerBgEstQCDenriched = copy.deepcopy(caloMEtHistManager)
 caloMEtHistManagerBgEstQCDenriched.pluginName = cms.string('caloMEtHistManagerBgEstQCDenriched')
@@ -317,7 +317,7 @@ analyzeEventsBgEstQCDenriched = cms.EDAnalyzer("GenericAnalyzer",
         muonHistManagerBgEstQCDenriched,
         tauHistManagerBgEstQCDenriched,
         diTauCandidateHistManagerBgEstQCDenriched,
-        diTauCandidateNSVfitHistManagerBgEstQCDenriched,
+		#diTauCandidateNSVfitHistManagerBgEstQCDenriched,
         pfMEtHistManagerBgEstQCDenriched,
         caloMEtHistManagerBgEstQCDenriched,
         #tauIdEffHistManagerBgEstQCDenriched,
@@ -423,7 +423,7 @@ analyzeEventsBgEstQCDenriched = cms.EDAnalyzer("GenericAnalyzer",
                 'muonHistManagerBgEstQCDenriched',
                 'tauHistManagerBgEstQCDenriched',
                 'diTauCandidateHistManagerBgEstQCDenriched',
-                'diTauCandidateNSVfitHistManagerBgEstQCDenriched',
+				#'diTauCandidateNSVfitHistManagerBgEstQCDenriched',
                 'pfMEtHistManagerBgEstQCDenriched',
                 'caloMEtHistManagerBgEstQCDenriched',
                 #'tauIdEffHistManagerBgEstQCDenriched',
