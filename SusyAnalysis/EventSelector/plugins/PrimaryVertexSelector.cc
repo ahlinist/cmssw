@@ -5,36 +5,38 @@
 
 //________________________________________________________________________________________
 PrimaryVertexEventSelector::PrimaryVertexEventSelector(const edm::ParameterSet& pset) :
-   SusyEventSelector(pset), vertexTag_(pset.getParameter<edm::InputTag> ("vertexTag")) {
+        SusyEventSelector(pset), vertexTag_(pset.getParameter<edm::InputTag> ("vertexTag")),
+minVertices_(pset.getParameter<int> ("minVertices")), maxVertices_(pset.getParameter<int> ("maxVertices")) {
 
-   defineVariable("numberOfVertices");
+    defineVariable("numberOfVertices");
 
 }
 
 //________________________________________________________________________________________
 bool PrimaryVertexEventSelector::select(const edm::Event& event) const {
-   // reset cached variables
-   resetVariables();
-   // Get the vertices
-   edm::Handle<edm::View<reco::Vertex> > vertexHandle;
-   event.getByLabel(vertexTag_, vertexHandle);
-   if (!vertexHandle.isValid()) {
-      edm::LogWarning("PrimaryVertexEventSelector") << "No Vertex results for InputTag " << vertexTag_;
-      return false;
-   }
+    // reset cached variables
+    resetVariables();
+    // Get the vertices
+    edm::Handle<edm::View<reco::Vertex> > vertexHandle;
+    event.getByLabel(vertexTag_, vertexHandle);
+    if (!vertexHandle.isValid()) {
+        edm::LogWarning("PrimaryVertexEventSelector") << "No Vertex results for InputTag " << vertexTag_;
+        return false;
+    }
 
-   int noVertices = 0;
+    int noVertices = 0;
 
-   for (edm::View<reco::Vertex>::const_iterator iv = (*vertexHandle).begin(); iv != (*vertexHandle).end(); ++iv) {
+    for (edm::View<reco::Vertex>::const_iterator iv = (*vertexHandle).begin(); iv != (*vertexHandle).end(); ++iv) {
 
-     if(!iv->isFake() && iv->ndof() > 4 && fabs(iv->z()) <= 24 && iv->position().rho() < 2) noVertices ++;
-   }
+        if(!iv->isFake() && iv->ndof() > 4 && fabs(iv->z()) <= 24 && iv->position().rho() < 2) noVertices ++;
+    }
 
-   setVariable("numberOfVertices", noVertices);
-   //   setVariable("numberOfVertices", (*vertexHandle).size());
+    setVariable("numberOfVertices", noVertices);
+    //setVariable("numberOfVertices", (*vertexHandle).size());
+    //std::cout << noVertices << std::endl;
 
-   //   return (*vertexHandle).size() >= 1;
-   return noVertices >= 1;
+    //return (*vertexHandle).size() >= 1;
+    return (noVertices >= minVertices_ && (noVertices <= maxVertices_ || maxVertices_ < 0 ));
 
 }
 

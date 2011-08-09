@@ -30,6 +30,7 @@ rejectEvtJetID_(pset.getParameter<bool> ("rejectEvtJetID")) {
     defineVariable("dPhiJet1MHT");
     defineVariable("dPhiJet2MHT");
     defineVariable("dPhiJet3MHT");
+    defineVariable("dPhiJet4MHT");
     defineVariable("R1");
     defineVariable("R2");
 
@@ -92,6 +93,7 @@ bool MHTJetEventSelector::select(const edm::Event& event) const {
     double _dPhiJet1MHT = 999.;
     double _dPhiJet2MHT = 999.;
     double _dPhiJet3MHT = 999.;
+    double _dPhiJet4MHT = 999.;
 
     for (unsigned i = 0; i < goodJets.size(); i++) {
 
@@ -103,6 +105,8 @@ bool MHTJetEventSelector::select(const edm::Event& event) const {
             _dPhiJet2MHT = fabs(reco::deltaPhi(goodJets[i], mhtvec));
         if( i == 2 )
             _dPhiJet3MHT = fabs(reco::deltaPhi(goodJets[i], mhtvec));
+        if( i == 3 )
+            _dPhiJet4MHT = fabs(reco::deltaPhi(goodJets[i], mhtvec));
 
     }
 
@@ -115,6 +119,7 @@ bool MHTJetEventSelector::select(const edm::Event& event) const {
     setVariable("dPhiJet1MHT", _dPhiJet1MHT);
     setVariable("dPhiJet2MHT", _dPhiJet2MHT);
     setVariable("dPhiJet3MHT", _dPhiJet3MHT);
+    setVariable("dPhiJet4MHT", _dPhiJet4MHT);
 
     // R1 & R2
     float R1 = sqrt(TMath::Power(_dPhiJet2MHT, 2) + TMath::Power(_dPhiJet1MHT - TMath::Pi(), 2));
