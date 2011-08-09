@@ -5,7 +5,7 @@
 ///
 /// Just checks that there is (at least) one primary vertex.
 ///
-/// $Id: PrimaryVertexEventSelector.h,v 1.3 2010/05/28 08:01:48 csander Exp $
+/// $Id: PrimaryVertexEventSelector.h,v 1.4 2010/08/31 09:51:27 thomsen Exp $
 
 // system include files
 #include <memory>
@@ -20,12 +20,14 @@
 
 class PrimaryVertexEventSelector: public SusyEventSelector {
 public:
-   PrimaryVertexEventSelector(const edm::ParameterSet&);
-   virtual bool select(const edm::Event&) const;
-   virtual ~PrimaryVertexEventSelector() {
-   }
+    PrimaryVertexEventSelector(const edm::ParameterSet&);
+    virtual bool select(const edm::Event&) const;
+    virtual ~PrimaryVertexEventSelector() {
+    }
 private:
-   edm::InputTag vertexTag_; ///< tag for input collection
+    edm::InputTag vertexTag_; ///< tag for input collection
+    int  minVertices_;
+    int  maxVertices_;
 };
 
 #endif
