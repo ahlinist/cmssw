@@ -178,6 +178,15 @@ cfgMuonVeto = cms.PSet(
     maxNumber = cms.uint32(0)
 )
 
+#cut mt > 40
+cfgMtCut = cms.PSet(
+    pluginName = cms.string('mtCut'),
+    pluginType = cms.string('PATCandViewMinEventSelector'),
+    src = cms.InputTag('selectedTauNuPairsMt40Cumulative'),
+    systematics = cms.vstring(tauNuPairSystematics.keys()),
+    minNumber = cms.uint32(1)
+    )
+
 # MET topology cut
 #cfgMetTopologyCut = cms.PSet(
 #    pluginName = cms.string('metTopologyCut'),
@@ -210,6 +219,7 @@ wToTauNuEventSelConfigurator = eventSelFlagProdConfigurator(
     cfgTauEcalCrackVeto,
     cfgPFMetPt,
     cfgHtRatioCut,
+    cfgMtCut,
     cfgTrigger2
 #    cfgMetTopologyCut
     ],
@@ -233,6 +243,7 @@ isRecWtoTauNu = cms.EDProducer("BoolEventSelFlagProducer",
     cms.InputTag('electronVeto'),
     cms.InputTag('PFmetPtCut'),
     cms.InputTag('htRatio'),
+    cms.InputTag('mtCut'),
     cms.InputTag('PseudoTrigger')
 #    cms.InputTag('metTopologyCut')
     )
