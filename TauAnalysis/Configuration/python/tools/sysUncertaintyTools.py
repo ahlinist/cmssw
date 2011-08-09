@@ -36,7 +36,7 @@ from TauAnalysis.CandidateTools.elecTauPairSelectionForAHtoElecTau_cff import \
      patElecTauPairSelConfiguratorForAHtoElecTauOS, patElecTauPairSelConfiguratorForAHtoElecTauLooseElectronIsolationOS, \
      patElecTauPairSelConfiguratorForAHtoElecTauSS, patElecTauPairSelConfiguratorForAHtoElecTauLooseElectronIsolationSS
 from TauAnalysis.CandidateTools.htRatio_cfi import htRatioProdConfigurator, htRatioSelConfigurator
-from TauAnalysis.CandidateTools.metTopology_cfi import * #metTopologyProdConfigurator
+from TauAnalysis.CandidateTools.metTopology_cfi import * 
 
 from TauAnalysis.Configuration.selectZtoMuTau_cff import \
      zToMuTauEventSelConfiguratorOS, zToMuTauEventSelConfiguratorSS
@@ -1063,7 +1063,6 @@ def enableSysUncertainties_runWtoTauNu(process):
 
     pyNameSpace = None
 
-##enable when estimating theory uncertainties
 #    process.produceGenObjects += process.produceSysErrGenEventReweights
 
     process.produceEventSelFlagsWtoTauNu = wToTauNuEventSelConfigurator.configure(process = process, estimateSysUncertainties = True)
@@ -1121,7 +1120,7 @@ def enableSysUncertainties_runWtoTauNu(process):
                    * process.selectedPatJetsForMEtTypeIISysJetEnUp * process.selectedPatJetsForMEtTypeIISysJetEnDown
                 )
     
-    process.producePatTupleWtoTauNuSpecific.replace(process.selectPatSelJetsForWTauNu, process.selectPatSelJetsForWTauNu + process.producePatJetsForMEt)
+    process.producePatTupleWtoTauNuSpecific.replace(process.selectedPatJetsAntiOverlapWithTausVetoForWTauNuCumulative, process.selectedPatJetsAntiOverlapWithTausVetoForWTauNuCumulative + process.producePatJetsForMEt)
 
     smearMEtUnclustedEnergyResolution = cms.double(0.10)
         
@@ -1185,6 +1184,10 @@ def enableSysUncertainties_runWtoTauNu(process):
 
     process.produceTauNuPairs = tauNuPairProdConfigurator.configure(process = process)
 
+    setattr(patTauNuPairSelConfigurator, "systematics", tauNuPairSystematics)
+    process.selectTauNuPairs = patTauNuPairSelConfigurator.configure(process = process)
+    process.producePatTupleWtoTauNuSpecific.replace(process.selectedTauNuPairsMt40Cumulative, process.selectTauNuPairs)
+
 ### define smeared HT ratio 
     setattr(htRatioProdConfigurator, "systematics", {
         "sysTauJetEnUp" : {
@@ -1204,14 +1207,15 @@ def enableSysUncertainties_runWtoTauNu(process):
 
     setattr(htRatioSelConfigurator, "systematics", htRatioSystematics)
     process.selectHtRatio = htRatioSelConfigurator.configure(process = process)
+#    process.producePatTupleWtoTauNuSpecific.replace(process.selectHtRatio, process.selectHtRatio)    
 
 ## Smeared MET-topology
     
-    metTopologies.srcEnergyDeposits = cms.VInputTag(
-        'selectedPatJetsForMEtTypeI',
-        'selectedPatJetsForMEtTypeII',
-        'selectedPatTausForWTauNuEcalCrackVetoCumulative'
-        )
+#    metTopologies.srcEnergyDeposits = cms.VInputTag(
+#        'selectedPatJetsForMEtTypeI',
+#        'selectedPatJetsForMEtTypeII',
+#        'selectedPatTausForWTauNuEcalCrackVetoCumulative'
+#        )
     setattr(metTopologyProdConfigurator, "systematics",{
         "sysTauJetEnUp" : {
         "srcEnergyDeposits" : cms.VInputTag('selectedPatJetsForMEtTypeI',
