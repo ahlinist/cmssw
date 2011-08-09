@@ -72,6 +72,9 @@ def lfns_stdout(crab_dir):
     for file in os.listdir(res_dir):
         if "stdout" not in file:
             continue
+        data = open(res_dir+file).read()
+        if "JobExitCode=0" not in data:
+            continue
         for line in open(res_dir+file):
             if "output" in line:
                 continue
@@ -80,6 +83,8 @@ def lfns_stdout(crab_dir):
             if "-rw-r--r--" in line:
                 continue
             if "tarring" in line:
+                continue
+            if "->" in line:
                 continue
             if "plots" in line:
                 #print line.rstrip('\n')
