@@ -92,8 +92,8 @@ void MuID_Pos(){
   legg = new TLegend(0.6,0.2,0.8,0.4);
   legg->SetFillStyle(0); legg->SetBorderSize(0); legg->SetTextSize(0.05); legg->SetTextFont(132); 
   legg->SetHeader("  -2.4 < #eta^{#mu} < -1.2");
-  legge = legg->AddEntry(EffData1,  "J/#psi T&P Data","p"); legge->SetTextColor(kRed);
-  legge = legg->AddEntry(EffMC1,  "J/#psi T&P MC","p"); legge->SetTextColor(kGreen);
+  legge = legg->AddEntry(EffData1,  "J/#psi TNP Data","p"); legge->SetTextColor(kRed);
+  legge = legg->AddEntry(EffMC1,  "J/#psi TNP MC","p"); legge->SetTextColor(kGreen);
   legg->Draw();
   c1->cd(2);
   EffData2->SetMinimum(0.2);
@@ -109,8 +109,8 @@ void MuID_Pos(){
   legg = new TLegend(0.6,0.2,0.8,0.4);
   legg->SetFillStyle(0); legg->SetBorderSize(0); legg->SetTextSize(0.05); legg->SetTextFont(132); 
   legg->SetHeader("  -1.2 < #eta^{#mu} < -0.4");
-  legge = legg->AddEntry(EffData2,  "J/#psi T&P Data","p"); legge->SetTextColor(kRed);
-  legge = legg->AddEntry(EffMC2,  "J/#psi T&P MC","p"); legge->SetTextColor(kGreen);
+  legge = legg->AddEntry(EffData2,  "J/#psi TNP Data","p"); legge->SetTextColor(kRed);
+  legge = legg->AddEntry(EffMC2,  "J/#psi TNP MC","p"); legge->SetTextColor(kGreen);
   legg->Draw();  
   c1->cd(3);
   EffData3->SetMinimum(0.2);
@@ -126,8 +126,8 @@ void MuID_Pos(){
   legg = new TLegend(0.6,0.2,0.8,0.4);
   legg->SetFillStyle(0); legg->SetBorderSize(0); legg->SetTextSize(0.05); legg->SetTextFont(132); 
   legg->SetHeader("  -0.4 < #eta^{#mu} < 0.4");
-  legge = legg->AddEntry(EffData3,  "J/#psi T&P Data","p"); legge->SetTextColor(kRed);
-  legge = legg->AddEntry(EffMC3,  "J/#psi T&P MC","p"); legge->SetTextColor(kGreen);
+  legge = legg->AddEntry(EffData3,  "J/#psi TNP Data","p"); legge->SetTextColor(kRed);
+  legge = legg->AddEntry(EffMC3,  "J/#psi TNP MC","p"); legge->SetTextColor(kGreen);
   legg->Draw();   
   c1->cd(4);
   EffData4->SetMinimum(0.2);
@@ -143,8 +143,8 @@ void MuID_Pos(){
   legg = new TLegend(0.6,0.2,0.8,0.4);
   legg->SetFillStyle(0); legg->SetBorderSize(0); legg->SetTextSize(0.05); legg->SetTextFont(132); 
   legg->SetHeader("  0.4 < #eta^{#mu} < 1.2");
-  legge = legg->AddEntry(EffData4,  "J/#psi T&P Data","p"); legge->SetTextColor(kRed);
-  legge = legg->AddEntry(EffMC4,  "J/#psi T&P MC","p"); legge->SetTextColor(kGreen);
+  legge = legg->AddEntry(EffData4,  "J/#psi TNP Data","p"); legge->SetTextColor(kRed);
+  legge = legg->AddEntry(EffMC4,  "J/#psi TNP MC","p"); legge->SetTextColor(kGreen);
   legg->Draw();   
   c1->cd(5);
   EffData5->SetMinimum(0.2);
@@ -160,8 +160,8 @@ void MuID_Pos(){
   legg = new TLegend(0.6,0.2,0.8,0.4);
   legg->SetFillStyle(0); legg->SetBorderSize(0); legg->SetTextSize(0.05); legg->SetTextFont(132); 
   legg->SetHeader("  1.2 < #eta^{#mu} < 2.4");
-  legge = legg->AddEntry(EffData5,  "J/#psi T&P Data","p"); legge->SetTextColor(kRed);
-  legge = legg->AddEntry(EffMC5,  "J/#psi T&P MC","p"); legge->SetTextColor(kGreen);
+  legge = legg->AddEntry(EffData5,  "J/#psi TNP Data","p"); legge->SetTextColor(kRed);
+  legge = legg->AddEntry(EffMC5,  "J/#psi TNP MC","p"); legge->SetTextColor(kGreen);
   legg->Draw();     
   
   TCanvas *c101 = new TCanvas("c101","c101",800,600); 
@@ -181,8 +181,8 @@ void MuID_Pos(){
   legg = new TLegend(0.6,0.2,0.8,0.4);
   legg->SetFillStyle(0); legg->SetBorderSize(0); legg->SetTextSize(0.05); legg->SetTextFont(132); 
   legg->SetHeader("  -2.4 < #eta^{#mu} < -1.2");
-  legge = legg->AddEntry(EffData1,  "J/#psi T&P Data","p"); legge->SetTextColor(kRed);
-  legge = legg->AddEntry(EffMC1,  "J/#psi T&P MC","p"); legge->SetTextColor(kGreen);
+  legge = legg->AddEntry(EffData1,  "J/#psi TNP Data","p"); legge->SetTextColor(kRed);
+  legge = legg->AddEntry(EffMC1,  "J/#psi TNP MC","p"); legge->SetTextColor(kGreen);
   legg->Draw();
   c101->SaveAs("MuIDPos1.pdf");
   
@@ -203,8 +203,8 @@ void MuID_Pos(){
   legg = new TLegend(0.6,0.2,0.8,0.4);
   legg->SetFillStyle(0); legg->SetBorderSize(0); legg->SetTextSize(0.05); legg->SetTextFont(132); 
   legg->SetHeader("  -1.2 < #eta^{#mu} < -0.4");
-  legge = legg->AddEntry(EffData1,  "J/#psi T&P Data","p"); legge->SetTextColor(kRed);
-  legge = legg->AddEntry(EffMC1,  "J/#psi T&P MC","p"); legge->SetTextColor(kGreen);
+  legge = legg->AddEntry(EffData1,  "J/#psi TNP Data","p"); legge->SetTextColor(kRed);
+  legge = legg->AddEntry(EffMC1,  "J/#psi TNP MC","p"); legge->SetTextColor(kGreen);
   legg->Draw();
   c102->SaveAs("MuIDPos2.pdf");
   
@@ -225,8 +225,8 @@ void MuID_Pos(){
   legg = new TLegend(0.6,0.2,0.8,0.4);
   legg->SetFillStyle(0); legg->SetBorderSize(0); legg->SetTextSize(0.05); legg->SetTextFont(132); 
   legg->SetHeader("  -0.4 < #eta^{#mu} < 0.4");
-  legge = legg->AddEntry(EffData1,  "J/#psi T&P Data","p"); legge->SetTextColor(kRed);
-  legge = legg->AddEntry(EffMC1,  "J/#psi T&P MC","p"); legge->SetTextColor(kGreen);
+  legge = legg->AddEntry(EffData1,  "J/#psi TNP Data","p"); legge->SetTextColor(kRed);
+  legge = legg->AddEntry(EffMC1,  "J/#psi TNP MC","p"); legge->SetTextColor(kGreen);
   legg->Draw();
   c103->SaveAs("MuIDPos3.pdf");
   
@@ -247,8 +247,8 @@ void MuID_Pos(){
   legg = new TLegend(0.6,0.2,0.8,0.4);
   legg->SetFillStyle(0); legg->SetBorderSize(0); legg->SetTextSize(0.05); legg->SetTextFont(132); 
   legg->SetHeader("  0.4 < #eta^{#mu} < 1.2");
-  legge = legg->AddEntry(EffData1,  "J/#psi T&P Data","p"); legge->SetTextColor(kRed);
-  legge = legg->AddEntry(EffMC1,  "J/#psi T&P MC","p"); legge->SetTextColor(kGreen);
+  legge = legg->AddEntry(EffData1,  "J/#psi TNP Data","p"); legge->SetTextColor(kRed);
+  legge = legg->AddEntry(EffMC1,  "J/#psi TNP MC","p"); legge->SetTextColor(kGreen);
   legg->Draw();
   c104->SaveAs("MuIDPos4.pdf");
   
@@ -269,8 +269,8 @@ void MuID_Pos(){
   legg = new TLegend(0.6,0.2,0.8,0.4);
   legg->SetFillStyle(0); legg->SetBorderSize(0); legg->SetTextSize(0.05); legg->SetTextFont(132); 
   legg->SetHeader("  1.2 < #eta^{#mu} < 2.4");
-  legge = legg->AddEntry(EffData1,  "J/#psi T&P Data","p"); legge->SetTextColor(kRed);
-  legge = legg->AddEntry(EffMC1,  "J/#psi T&P MC","p"); legge->SetTextColor(kGreen);
+  legge = legg->AddEntry(EffData1,  "J/#psi TNP Data","p"); legge->SetTextColor(kRed);
+  legge = legg->AddEntry(EffMC1,  "J/#psi TNP MC","p"); legge->SetTextColor(kGreen);
   legg->Draw();
   c105->SaveAs("MuIDPos5.pdf");
   
@@ -364,8 +364,8 @@ void MuID_Neg(){
   legg = new TLegend(0.6,0.2,0.8,0.4);
   legg->SetFillStyle(0); legg->SetBorderSize(0); legg->SetTextSize(0.05); legg->SetTextFont(132); 
   legg->SetHeader("  -2.4 < #eta^{#mu} < -1.2");
-  legge = legg->AddEntry(EffData1,  "J/#psi T&P Data","p"); legge->SetTextColor(kRed);
-  legge = legg->AddEntry(EffMC1,  "J/#psi T&P MC","p"); legge->SetTextColor(kGreen);
+  legge = legg->AddEntry(EffData1,  "J/#psi TNP Data","p"); legge->SetTextColor(kRed);
+  legge = legg->AddEntry(EffMC1,  "J/#psi TNP MC","p"); legge->SetTextColor(kGreen);
   legg->Draw();
   c2->cd(2);
   EffData2->SetMinimum(0.2);
@@ -381,8 +381,8 @@ void MuID_Neg(){
   legg = new TLegend(0.6,0.2,0.8,0.4);
   legg->SetFillStyle(0); legg->SetBorderSize(0); legg->SetTextSize(0.05); legg->SetTextFont(132); 
   legg->SetHeader("  -1.2 < #eta^{#mu} < -0.4");
-  legge = legg->AddEntry(EffData2,  "J/#psi T&P Data","p"); legge->SetTextColor(kRed);
-  legge = legg->AddEntry(EffMC2,  "J/#psi T&P MC","p"); legge->SetTextColor(kGreen);
+  legge = legg->AddEntry(EffData2,  "J/#psi TNP Data","p"); legge->SetTextColor(kRed);
+  legge = legg->AddEntry(EffMC2,  "J/#psi TNP MC","p"); legge->SetTextColor(kGreen);
   legg->Draw();  
   c2->cd(3);
   EffData3->SetMinimum(0.2);
@@ -415,8 +415,8 @@ void MuID_Neg(){
   legg = new TLegend(0.6,0.2,0.8,0.4);
   legg->SetFillStyle(0); legg->SetBorderSize(0); legg->SetTextSize(0.05); legg->SetTextFont(132); 
   legg->SetHeader("  0.4 < #eta^{#mu} < 1.2");
-  legge = legg->AddEntry(EffData4,  "J/#psi T&P Data","p"); legge->SetTextColor(kRed);
-  legge = legg->AddEntry(EffMC4,  "J/#psi T&P MC","p"); legge->SetTextColor(kGreen);
+  legge = legg->AddEntry(EffData4,  "J/#psi TNP Data","p"); legge->SetTextColor(kRed);
+  legge = legg->AddEntry(EffMC4,  "J/#psi TNP MC","p"); legge->SetTextColor(kGreen);
   legg->Draw();   
   c2->cd(5);
   EffData5->SetMinimum(0.2);
@@ -432,8 +432,8 @@ void MuID_Neg(){
   legg = new TLegend(0.6,0.2,0.8,0.4);
   legg->SetFillStyle(0); legg->SetBorderSize(0); legg->SetTextSize(0.05); legg->SetTextFont(132); 
   legg->SetHeader("  1.2 < #eta^{#mu} < 2.4");
-  legge = legg->AddEntry(EffData5,  "J/#psi T&P Data","p"); legge->SetTextColor(kRed);
-  legge = legg->AddEntry(EffMC5,  "J/#psi T&P MC","p"); legge->SetTextColor(kGreen);
+  legge = legg->AddEntry(EffData5,  "J/#psi TNP Data","p"); legge->SetTextColor(kRed);
+  legge = legg->AddEntry(EffMC5,  "J/#psi TNP MC","p"); legge->SetTextColor(kGreen);
   legg->Draw();     
   
   
@@ -454,8 +454,8 @@ void MuID_Neg(){
   legg = new TLegend(0.6,0.2,0.8,0.4);
   legg->SetFillStyle(0); legg->SetBorderSize(0); legg->SetTextSize(0.05); legg->SetTextFont(132); 
   legg->SetHeader("  -2.4 < #eta^{#mu} < -1.2");
-  legge = legg->AddEntry(EffData1,  "J/#psi T&P Data","p"); legge->SetTextColor(kRed);
-  legge = legg->AddEntry(EffMC1,  "J/#psi T&P MC","p"); legge->SetTextColor(kGreen);
+  legge = legg->AddEntry(EffData1,  "J/#psi TNP Data","p"); legge->SetTextColor(kRed);
+  legge = legg->AddEntry(EffMC1,  "J/#psi TNP MC","p"); legge->SetTextColor(kGreen);
   legg->Draw();
   c201->SaveAs("MuIDNeg1.pdf");
   
@@ -476,8 +476,8 @@ void MuID_Neg(){
   legg = new TLegend(0.6,0.2,0.8,0.4);
   legg->SetFillStyle(0); legg->SetBorderSize(0); legg->SetTextSize(0.05); legg->SetTextFont(132); 
   legg->SetHeader("  -1.2 < #eta^{#mu} < -0.4");
-  legge = legg->AddEntry(EffData1,  "J/#psi T&P Data","p"); legge->SetTextColor(kRed);
-  legge = legg->AddEntry(EffMC1,  "J/#psi T&P MC","p"); legge->SetTextColor(kGreen);
+  legge = legg->AddEntry(EffData1,  "J/#psi TNP Data","p"); legge->SetTextColor(kRed);
+  legge = legg->AddEntry(EffMC1,  "J/#psi TNP MC","p"); legge->SetTextColor(kGreen);
   legg->Draw();
   c202->SaveAs("MuIDNeg2.pdf");
   
@@ -498,8 +498,8 @@ void MuID_Neg(){
   legg = new TLegend(0.6,0.2,0.8,0.4);
   legg->SetFillStyle(0); legg->SetBorderSize(0); legg->SetTextSize(0.05); legg->SetTextFont(132); 
   legg->SetHeader("  -0.4 < #eta^{#mu} < 0.4");
-  legge = legg->AddEntry(EffData1,  "J/#psi T&P Data","p"); legge->SetTextColor(kRed);
-  legge = legg->AddEntry(EffMC1,  "J/#psi T&P MC","p"); legge->SetTextColor(kGreen);
+  legge = legg->AddEntry(EffData1,  "J/#psi TNP Data","p"); legge->SetTextColor(kRed);
+  legge = legg->AddEntry(EffMC1,  "J/#psi TNP MC","p"); legge->SetTextColor(kGreen);
   legg->Draw();
   c203->SaveAs("MuIDNeg3.pdf");
   
@@ -520,8 +520,8 @@ void MuID_Neg(){
   legg = new TLegend(0.6,0.2,0.8,0.4);
   legg->SetFillStyle(0); legg->SetBorderSize(0); legg->SetTextSize(0.05); legg->SetTextFont(132); 
   legg->SetHeader("  0.4 < #eta^{#mu} < 1.2");
-  legge = legg->AddEntry(EffData1,  "J/#psi T&P Data","p"); legge->SetTextColor(kRed);
-  legge = legg->AddEntry(EffMC1,  "J/#psi T&P MC","p"); legge->SetTextColor(kGreen);
+  legge = legg->AddEntry(EffData1,  "J/#psi TNP Data","p"); legge->SetTextColor(kRed);
+  legge = legg->AddEntry(EffMC1,  "J/#psi TNP MC","p"); legge->SetTextColor(kGreen);
   legg->Draw();
   c204->SaveAs("MuIDNeg4.pdf");
   
@@ -542,8 +542,8 @@ void MuID_Neg(){
   legg = new TLegend(0.6,0.2,0.8,0.4);
   legg->SetFillStyle(0); legg->SetBorderSize(0); legg->SetTextSize(0.05); legg->SetTextFont(132); 
   legg->SetHeader("  1.2 < #eta^{#mu} < 2.4");
-  legge = legg->AddEntry(EffData1,  "J/#psi T&P Data","p"); legge->SetTextColor(kRed);
-  legge = legg->AddEntry(EffMC1,  "J/#psi T&P MC","p"); legge->SetTextColor(kGreen);
+  legge = legg->AddEntry(EffData1,  "J/#psi TNP Data","p"); legge->SetTextColor(kRed);
+  legge = legg->AddEntry(EffMC1,  "J/#psi TNP MC","p"); legge->SetTextColor(kGreen);
   legg->Draw();
   c205->SaveAs("MuIDNeg5.pdf");
   
@@ -636,8 +636,8 @@ void Trig_Pos(){
   legg = new TLegend(0.6,0.2,0.8,0.4);
   legg->SetFillStyle(0); legg->SetBorderSize(0); legg->SetTextSize(0.05); legg->SetTextFont(132); 
   legg->SetHeader("  -2.4 < #eta^{#mu} < -1.2");
-  legge = legg->AddEntry(EffData1,  "J/#psi T&P Data","p"); legge->SetTextColor(kRed);
-  legge = legg->AddEntry(EffMC1,  "J/#psi T&P MC","p"); legge->SetTextColor(kGreen);
+  legge = legg->AddEntry(EffData1,  "J/#psi TNP Data","p"); legge->SetTextColor(kRed);
+  legge = legg->AddEntry(EffMC1,  "J/#psi TNP MC","p"); legge->SetTextColor(kGreen);
   legg->Draw();
   c3->cd(2);
   EffData2->SetMinimum(0.2);
@@ -653,8 +653,8 @@ void Trig_Pos(){
   legg = new TLegend(0.6,0.2,0.8,0.4);
   legg->SetFillStyle(0); legg->SetBorderSize(0); legg->SetTextSize(0.05); legg->SetTextFont(132); 
   legg->SetHeader("  -1.2 < #eta^{#mu} < -0.4");
-  legge = legg->AddEntry(EffData2,  "J/#psi T&P Data","p"); legge->SetTextColor(kRed);
-  legge = legg->AddEntry(EffMC2,  "J/#psi T&P MC","p"); legge->SetTextColor(kGreen);
+  legge = legg->AddEntry(EffData2,  "J/#psi TNP Data","p"); legge->SetTextColor(kRed);
+  legge = legg->AddEntry(EffMC2,  "J/#psi TNP MC","p"); legge->SetTextColor(kGreen);
   legg->Draw();  
   c3->cd(3);
   EffData3->SetMinimum(0.2);
@@ -670,8 +670,8 @@ void Trig_Pos(){
   legg = new TLegend(0.6,0.2,0.8,0.4);
   legg->SetFillStyle(0); legg->SetBorderSize(0); legg->SetTextSize(0.05); legg->SetTextFont(132); 
   legg->SetHeader("  -0.4 < #eta^{#mu} < 0.4");
-  legge = legg->AddEntry(EffData3,  "J/#psi T&P Data","p"); legge->SetTextColor(kRed);
-  legge = legg->AddEntry(EffMC3,  "J/#psi T&P MC","p"); legge->SetTextColor(kGreen);
+  legge = legg->AddEntry(EffData3,  "J/#psi TNP Data","p"); legge->SetTextColor(kRed);
+  legge = legg->AddEntry(EffMC3,  "J/#psi TNP MC","p"); legge->SetTextColor(kGreen);
   legg->Draw();   
   c3->cd(4);
   EffData4->SetMinimum(0.2);
@@ -687,8 +687,8 @@ void Trig_Pos(){
   legg = new TLegend(0.6,0.2,0.8,0.4);
   legg->SetFillStyle(0); legg->SetBorderSize(0); legg->SetTextSize(0.05); legg->SetTextFont(132); 
   legg->SetHeader("  0.4 < #eta^{#mu} < 1.2");
-  legge = legg->AddEntry(EffData4,  "J/#psi T&P Data","p"); legge->SetTextColor(kRed);
-  legge = legg->AddEntry(EffMC4,  "J/#psi T&P MC","p"); legge->SetTextColor(kGreen);
+  legge = legg->AddEntry(EffData4,  "J/#psi TNP Data","p"); legge->SetTextColor(kRed);
+  legge = legg->AddEntry(EffMC4,  "J/#psi TNP MC","p"); legge->SetTextColor(kGreen);
   legg->Draw();   
   c3->cd(5);
   EffData5->SetMinimum(0.2);
@@ -704,8 +704,8 @@ void Trig_Pos(){
   legg = new TLegend(0.6,0.2,0.8,0.4);
   legg->SetFillStyle(0); legg->SetBorderSize(0); legg->SetTextSize(0.05); legg->SetTextFont(132); 
   legg->SetHeader("  1.2 < #eta^{#mu} < 2.4");
-  legge = legg->AddEntry(EffData5,  "J/#psi T&P Data","p"); legge->SetTextColor(kRed);
-  legge = legg->AddEntry(EffMC5,  "J/#psi T&P MC","p"); legge->SetTextColor(kGreen);
+  legge = legg->AddEntry(EffData5,  "J/#psi TNP Data","p"); legge->SetTextColor(kRed);
+  legge = legg->AddEntry(EffMC5,  "J/#psi TNP MC","p"); legge->SetTextColor(kGreen);
   legg->Draw();     
   
   
@@ -726,8 +726,8 @@ void Trig_Pos(){
   legg = new TLegend(0.6,0.2,0.8,0.4);
   legg->SetFillStyle(0); legg->SetBorderSize(0); legg->SetTextSize(0.05); legg->SetTextFont(132); 
   legg->SetHeader("  -2.4 < #eta^{#mu} < -1.2");
-  legge = legg->AddEntry(EffData1,  "J/#psi T&P Data","p"); legge->SetTextColor(kRed);
-  legge = legg->AddEntry(EffMC1,  "J/#psi T&P MC","p"); legge->SetTextColor(kGreen);
+  legge = legg->AddEntry(EffData1,  "J/#psi TNP Data","p"); legge->SetTextColor(kRed);
+  legge = legg->AddEntry(EffMC1,  "J/#psi TNP MC","p"); legge->SetTextColor(kGreen);
   legg->Draw();
   c301->SaveAs("TrigPos1.pdf");
   
@@ -748,8 +748,8 @@ void Trig_Pos(){
   legg = new TLegend(0.6,0.2,0.8,0.4);
   legg->SetFillStyle(0); legg->SetBorderSize(0); legg->SetTextSize(0.05); legg->SetTextFont(132); 
   legg->SetHeader("  -1.2 < #eta^{#mu} < -0.4");
-  legge = legg->AddEntry(EffData1,  "J/#psi T&P Data","p"); legge->SetTextColor(kRed);
-  legge = legg->AddEntry(EffMC1,  "J/#psi T&P MC","p"); legge->SetTextColor(kGreen);
+  legge = legg->AddEntry(EffData1,  "J/#psi TNP Data","p"); legge->SetTextColor(kRed);
+  legge = legg->AddEntry(EffMC1,  "J/#psi TNP MC","p"); legge->SetTextColor(kGreen);
   legg->Draw();
   c302->SaveAs("TrigPos2.pdf");
   
@@ -770,8 +770,8 @@ void Trig_Pos(){
   legg = new TLegend(0.6,0.2,0.8,0.4);
   legg->SetFillStyle(0); legg->SetBorderSize(0); legg->SetTextSize(0.05); legg->SetTextFont(132); 
   legg->SetHeader("  -0.4 < #eta^{#mu} < 0.4");
-  legge = legg->AddEntry(EffData1,  "J/#psi T&P Data","p"); legge->SetTextColor(kRed);
-  legge = legg->AddEntry(EffMC1,  "J/#psi T&P MC","p"); legge->SetTextColor(kGreen);
+  legge = legg->AddEntry(EffData1,  "J/#psi TNP Data","p"); legge->SetTextColor(kRed);
+  legge = legg->AddEntry(EffMC1,  "J/#psi TNP MC","p"); legge->SetTextColor(kGreen);
   legg->Draw();
   c303->SaveAs("TrigPos3.pdf");
   
@@ -792,8 +792,8 @@ void Trig_Pos(){
   legg = new TLegend(0.6,0.2,0.8,0.4);
   legg->SetFillStyle(0); legg->SetBorderSize(0); legg->SetTextSize(0.05); legg->SetTextFont(132); 
   legg->SetHeader("  0.4 < #eta^{#mu} < 1.2");
-  legge = legg->AddEntry(EffData1,  "J/#psi T&P Data","p"); legge->SetTextColor(kRed);
-  legge = legg->AddEntry(EffMC1,  "J/#psi T&P MC","p"); legge->SetTextColor(kGreen);
+  legge = legg->AddEntry(EffData1,  "J/#psi TNP Data","p"); legge->SetTextColor(kRed);
+  legge = legg->AddEntry(EffMC1,  "J/#psi TNP MC","p"); legge->SetTextColor(kGreen);
   legg->Draw();
   c304->SaveAs("TrigPos4.pdf");
   
@@ -814,8 +814,8 @@ void Trig_Pos(){
   legg = new TLegend(0.6,0.2,0.8,0.4);
   legg->SetFillStyle(0); legg->SetBorderSize(0); legg->SetTextSize(0.05); legg->SetTextFont(132); 
   legg->SetHeader("  1.2 < #eta^{#mu} < 2.4");
-  legge = legg->AddEntry(EffData1,  "J/#psi T&P Data","p"); legge->SetTextColor(kRed);
-  legge = legg->AddEntry(EffMC1,  "J/#psi T&P MC","p"); legge->SetTextColor(kGreen);
+  legge = legg->AddEntry(EffData1,  "J/#psi TNP Data","p"); legge->SetTextColor(kRed);
+  legge = legg->AddEntry(EffMC1,  "J/#psi TNP MC","p"); legge->SetTextColor(kGreen);
   legg->Draw();
   c305->SaveAs("TrigPos5.pdf");
   
@@ -908,8 +908,8 @@ void Trig_Neg(){
   legg = new TLegend(0.6,0.2,0.8,0.4);
   legg->SetFillStyle(0); legg->SetBorderSize(0); legg->SetTextSize(0.05); legg->SetTextFont(132); 
   legg->SetHeader("  -2.4 < #eta^{#mu} < -1.2");
-  legge = legg->AddEntry(EffData1,  "J/#psi T&P Data","p"); legge->SetTextColor(kRed);
-  legge = legg->AddEntry(EffMC1,  "J/#psi T&P MC","p"); legge->SetTextColor(kGreen);
+  legge = legg->AddEntry(EffData1,  "J/#psi TNP Data","p"); legge->SetTextColor(kRed);
+  legge = legg->AddEntry(EffMC1,  "J/#psi TNP MC","p"); legge->SetTextColor(kGreen);
   legg->Draw();
   c4->cd(2);
   EffData2->SetMinimum(0.2);
@@ -925,8 +925,8 @@ void Trig_Neg(){
   legg = new TLegend(0.6,0.2,0.8,0.4);
   legg->SetFillStyle(0); legg->SetBorderSize(0); legg->SetTextSize(0.05); legg->SetTextFont(132); 
   legg->SetHeader("  -1.2 < #eta^{#mu} < -0.4");
-  legge = legg->AddEntry(EffData2,  "J/#psi T&P Data","p"); legge->SetTextColor(kRed);
-  legge = legg->AddEntry(EffMC2,  "J/#psi T&P MC","p"); legge->SetTextColor(kGreen);
+  legge = legg->AddEntry(EffData2,  "J/#psi TNP Data","p"); legge->SetTextColor(kRed);
+  legge = legg->AddEntry(EffMC2,  "J/#psi TNP MC","p"); legge->SetTextColor(kGreen);
   legg->Draw();  
   c4->cd(3);
   EffData3->SetMinimum(0.2);
@@ -942,8 +942,8 @@ void Trig_Neg(){
   legg = new TLegend(0.6,0.2,0.8,0.4);
   legg->SetFillStyle(0); legg->SetBorderSize(0); legg->SetTextSize(0.05); legg->SetTextFont(132); 
   legg->SetHeader("  -0.4 < #eta^{#mu} < 0.4");
-  legge = legg->AddEntry(EffData3,  "J/#psi T&P Data","p"); legge->SetTextColor(kRed);
-  legge = legg->AddEntry(EffMC3,  "J/#psi T&P MC","p"); legge->SetTextColor(kGreen);
+  legge = legg->AddEntry(EffData3,  "J/#psi TNP Data","p"); legge->SetTextColor(kRed);
+  legge = legg->AddEntry(EffMC3,  "J/#psi TNP MC","p"); legge->SetTextColor(kGreen);
   legg->Draw();   
   c4->cd(4);
   EffData4->SetMinimum(0.2);
@@ -959,8 +959,8 @@ void Trig_Neg(){
   legg = new TLegend(0.6,0.2,0.8,0.4);
   legg->SetFillStyle(0); legg->SetBorderSize(0); legg->SetTextSize(0.05); legg->SetTextFont(132); 
   legg->SetHeader("  0.4 < #eta^{#mu} < 1.2");
-  legge = legg->AddEntry(EffData4,  "J/#psi T&P Data","p"); legge->SetTextColor(kRed);
-  legge = legg->AddEntry(EffMC4,  "J/#psi T&P MC","p"); legge->SetTextColor(kGreen);
+  legge = legg->AddEntry(EffData4,  "J/#psi TNP Data","p"); legge->SetTextColor(kRed);
+  legge = legg->AddEntry(EffMC4,  "J/#psi TNP MC","p"); legge->SetTextColor(kGreen);
   legg->Draw();   
   c4->cd(5);
   EffData5->SetMinimum(0.2);
@@ -976,8 +976,8 @@ void Trig_Neg(){
   legg = new TLegend(0.6,0.2,0.8,0.4);
   legg->SetFillStyle(0); legg->SetBorderSize(0); legg->SetTextSize(0.05); legg->SetTextFont(132); 
   legg->SetHeader("  1.2 < #eta^{#mu} < 2.4");
-  legge = legg->AddEntry(EffData5,  "J/#psi T&P Data","p"); legge->SetTextColor(kRed);
-  legge = legg->AddEntry(EffMC5,  "J/#psi T&P MC","p"); legge->SetTextColor(kGreen);
+  legge = legg->AddEntry(EffData5,  "J/#psi TNP Data","p"); legge->SetTextColor(kRed);
+  legge = legg->AddEntry(EffMC5,  "J/#psi TNP MC","p"); legge->SetTextColor(kGreen);
   legg->Draw();     
   
   
@@ -998,8 +998,8 @@ void Trig_Neg(){
   legg = new TLegend(0.6,0.2,0.8,0.4);
   legg->SetFillStyle(0); legg->SetBorderSize(0); legg->SetTextSize(0.05); legg->SetTextFont(132); 
   legg->SetHeader("  -2.4 < #eta^{#mu} < -1.2");
-  legge = legg->AddEntry(EffData1,  "J/#psi T&P Data","p"); legge->SetTextColor(kRed);
-  legge = legg->AddEntry(EffMC1,  "J/#psi T&P MC","p"); legge->SetTextColor(kGreen);
+  legge = legg->AddEntry(EffData1,  "J/#psi TNP Data","p"); legge->SetTextColor(kRed);
+  legge = legg->AddEntry(EffMC1,  "J/#psi TNP MC","p"); legge->SetTextColor(kGreen);
   legg->Draw();
   c401->SaveAs("TrigNeg1.pdf");
   
@@ -1020,8 +1020,8 @@ void Trig_Neg(){
   legg = new TLegend(0.6,0.2,0.8,0.4);
   legg->SetFillStyle(0); legg->SetBorderSize(0); legg->SetTextSize(0.05); legg->SetTextFont(132); 
   legg->SetHeader("  -1.2 < #eta^{#mu} < -0.4");
-  legge = legg->AddEntry(EffData1,  "J/#psi T&P Data","p"); legge->SetTextColor(kRed);
-  legge = legg->AddEntry(EffMC1,  "J/#psi T&P MC","p"); legge->SetTextColor(kGreen);
+  legge = legg->AddEntry(EffData1,  "J/#psi TNP Data","p"); legge->SetTextColor(kRed);
+  legge = legg->AddEntry(EffMC1,  "J/#psi TNP MC","p"); legge->SetTextColor(kGreen);
   legg->Draw();
   c402->SaveAs("TrigNeg2.pdf");
   
@@ -1042,8 +1042,8 @@ void Trig_Neg(){
   legg = new TLegend(0.6,0.2,0.8,0.4);
   legg->SetFillStyle(0); legg->SetBorderSize(0); legg->SetTextSize(0.05); legg->SetTextFont(132); 
   legg->SetHeader("  -0.4 < #eta^{#mu} < 0.4");
-  legge = legg->AddEntry(EffData1,  "J/#psi T&P Data","p"); legge->SetTextColor(kRed);
-  legge = legg->AddEntry(EffMC1,  "J/#psi T&P MC","p"); legge->SetTextColor(kGreen);
+  legge = legg->AddEntry(EffData1,  "J/#psi TNP Data","p"); legge->SetTextColor(kRed);
+  legge = legg->AddEntry(EffMC1,  "J/#psi TNP MC","p"); legge->SetTextColor(kGreen);
   legg->Draw();
   c403->SaveAs("TrigNeg3.pdf");
   
@@ -1064,8 +1064,8 @@ void Trig_Neg(){
   legg = new TLegend(0.6,0.2,0.8,0.4);
   legg->SetFillStyle(0); legg->SetBorderSize(0); legg->SetTextSize(0.05); legg->SetTextFont(132); 
   legg->SetHeader("  0.4 < #eta^{#mu} < 1.2");
-  legge = legg->AddEntry(EffData1,  "J/#psi T&P Data","p"); legge->SetTextColor(kRed);
-  legge = legg->AddEntry(EffMC1,  "J/#psi T&P MC","p"); legge->SetTextColor(kGreen);
+  legge = legg->AddEntry(EffData1,  "J/#psi TNP Data","p"); legge->SetTextColor(kRed);
+  legge = legg->AddEntry(EffMC1,  "J/#psi TNP MC","p"); legge->SetTextColor(kGreen);
   legg->Draw();
   c404->SaveAs("TrigNeg4.pdf");
   
@@ -1086,8 +1086,8 @@ void Trig_Neg(){
   legg = new TLegend(0.6,0.2,0.8,0.4);
   legg->SetFillStyle(0); legg->SetBorderSize(0); legg->SetTextSize(0.05); legg->SetTextFont(132); 
   legg->SetHeader("  1.2 < #eta^{#mu} < 2.4");
-  legge = legg->AddEntry(EffData1,  "J/#psi T&P Data","p"); legge->SetTextColor(kRed);
-  legge = legg->AddEntry(EffMC1,  "J/#psi T&P MC","p"); legge->SetTextColor(kGreen);
+  legge = legg->AddEntry(EffData1,  "J/#psi TNP Data","p"); legge->SetTextColor(kRed);
+  legge = legg->AddEntry(EffMC1,  "J/#psi TNP MC","p"); legge->SetTextColor(kGreen);
   legg->Draw();
   c405->SaveAs("TrigNeg5.pdf");
   
