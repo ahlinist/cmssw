@@ -83,7 +83,7 @@ void TrigCheckVsfTrigmmb(){
   c3->SaveAs("TrigMCSim.pdf");
   
   TCanvas *c4 = new TCanvas("c4","c4",900,600);
-  Diff->SetTitle("Ratio: #rho^{T&P}");
+  Diff->SetTitle("Ratio: #rho^{TNP}");
   Diff->GetYaxis()->SetTitle("p_{T}^{#Upsilon} [GeV/c]");
   Diff->GetXaxis()->SetTitle("|y^{#Upsilon}|");
   Diff->Draw("colz"); 

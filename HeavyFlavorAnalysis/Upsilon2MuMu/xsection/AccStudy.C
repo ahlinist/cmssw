@@ -265,7 +265,7 @@ void UG_Acceptance(){
   }
   
   Ratio_1S->SetTitle("");
-  Ratio_1S->GetXaxis()->SetTitle("y^{#Upsilon(1S)}");
+  Ratio_1S->GetXaxis()->SetTitle("|y^{#Upsilon(1S)}|");
   Ratio_1S->GetYaxis()->SetTitle("p_{T}^{#Upsilon(1S)} [GeV/c]");
   
   Ratio_1S_1D->SetTitle("");
@@ -441,25 +441,25 @@ void UG_Acceptance_Pol(){
   gStyle->SetOptStat(00000000000);
   TCanvas *c10 = new TCanvas("c10","c10",800,600);   
   Ratio_HelPl->SetTitle("");
-  Ratio_HelPl->GetXaxis()->SetTitle("y^{#Upsilon(1S)}");
+  Ratio_HelPl->GetXaxis()->SetTitle("|y^{#Upsilon(1S)}|");
   Ratio_HelPl->GetYaxis()->SetTitle("p_{T}^{#Upsilon(1S)} [GeV/c]");
   Ratio_HelPl->Draw("colz");
   c10->SaveAs("HelTr.pdf");
   TCanvas *c11 = new TCanvas("c11","c11",800,600);   
   Ratio_HelMi->SetTitle("");
-  Ratio_HelMi->GetXaxis()->SetTitle("y^{#Upsilon(1S)}");
+  Ratio_HelMi->GetXaxis()->SetTitle("|y^{#Upsilon(1S)}|");
   Ratio_HelMi->GetYaxis()->SetTitle("p_{T}^{#Upsilon(1S)} [GeV/c]");
   Ratio_HelMi->Draw("colz");  
   c11->SaveAs("HelLon.pdf");
   TCanvas *c12 = new TCanvas("c12","c12",800,600);   
   Ratio_CSPl->SetTitle("");
-  Ratio_CSPl->GetXaxis()->SetTitle("y^{#Upsilon(1S)}");
+  Ratio_CSPl->GetXaxis()->SetTitle("|y^{#Upsilon(1S)}|");
   Ratio_CSPl->GetYaxis()->SetTitle("p_{T}^{#Upsilon(1S)} [GeV/c]");
   Ratio_CSPl->Draw("colz");
   c12->SaveAs("CSTr.pdf");
   TCanvas *c13 = new TCanvas("c13","c13",800,600);   
   Ratio_CSMi->SetTitle("");
-  Ratio_CSMi->GetXaxis()->SetTitle("y^{#Upsilon(1S)}");
+  Ratio_CSMi->GetXaxis()->SetTitle("|y^{#Upsilon(1S)}|");
   Ratio_CSMi->GetYaxis()->SetTitle("p_{T}^{#Upsilon(1S)} [GeV/c]");
   Ratio_CSMi->Draw("colz");  
   c13->SaveAs("CSLon.pdf");

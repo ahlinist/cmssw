@@ -5,7 +5,7 @@
 
 void MuIDCheckVsfMuIDmmb(){
 
-  TFile *f = new TFile("101201.fl10.mm.ups1s.xsReader_1SBin_MomCorr.default.root");
+  TFile *f = new TFile("101201.fl10.mm.ups1s.xsReader_1SBin.default.root");
   TH2D *MuIDCheck_Deno_1S;
   MuIDCheck_Deno_1S = (TH2D*)gFile->Get("MuIDCheck_Deno_1S");
   TH2D *MuIDCheck_Numa_1S;
@@ -83,7 +83,7 @@ void MuIDCheckVsfMuIDmmb(){
   c3->SaveAs("MuidMCSim.pdf");
   
   TCanvas *c4 = new TCanvas("c4","c4",900,600);
-  Diff->SetTitle("Ratio: #rho^{T&P}");
+  Diff->SetTitle("Ratio: #rho^{TNP}");
   Diff->GetYaxis()->SetTitle("p_{T}^{#Upsilon} [GeV/c]");
   Diff->GetXaxis()->SetTitle("|y^{#Upsilon}|");
   Diff->Draw("colz"); 
