@@ -89,7 +89,7 @@ void MuID_Pos(){
   EffMC1->SetMarkerColor(3);
   EffMC1->SetLineColor(3);
   EffMC1->Draw("pesame");  
-  legg = new TLegend(0.6,0.4,0.8,0.7);
+  legg = new TLegend(0.6,0.2,0.8,0.4);
   legg->SetFillStyle(0); legg->SetBorderSize(0); legg->SetTextSize(0.05); legg->SetTextFont(132); 
   legg->SetHeader("  -2.4 < #eta^{#mu} < -1.2");
   legge = legg->AddEntry(EffData1,  "J/#psi T&P Data","p"); legge->SetTextColor(kRed);
@@ -106,7 +106,7 @@ void MuID_Pos(){
   EffMC2->SetMarkerColor(3);
   EffMC2->SetLineColor(3);
   EffMC2->Draw("pesame");  
-  legg = new TLegend(0.6,0.4,0.8,0.7);
+  legg = new TLegend(0.6,0.2,0.8,0.4);
   legg->SetFillStyle(0); legg->SetBorderSize(0); legg->SetTextSize(0.05); legg->SetTextFont(132); 
   legg->SetHeader("  -1.2 < #eta^{#mu} < -0.4");
   legge = legg->AddEntry(EffData2,  "J/#psi T&P Data","p"); legge->SetTextColor(kRed);
@@ -123,7 +123,7 @@ void MuID_Pos(){
   EffMC3->SetMarkerColor(3);
   EffMC3->SetLineColor(3);
   EffMC3->Draw("pesame");  
-  legg = new TLegend(0.6,0.4,0.8,0.7);
+  legg = new TLegend(0.6,0.2,0.8,0.4);
   legg->SetFillStyle(0); legg->SetBorderSize(0); legg->SetTextSize(0.05); legg->SetTextFont(132); 
   legg->SetHeader("  -0.4 < #eta^{#mu} < 0.4");
   legge = legg->AddEntry(EffData3,  "J/#psi T&P Data","p"); legge->SetTextColor(kRed);
@@ -140,7 +140,7 @@ void MuID_Pos(){
   EffMC4->SetMarkerColor(3);
   EffMC4->SetLineColor(3);
   EffMC4->Draw("pesame");  
-  legg = new TLegend(0.6,0.4,0.8,0.7);
+  legg = new TLegend(0.6,0.2,0.8,0.4);
   legg->SetFillStyle(0); legg->SetBorderSize(0); legg->SetTextSize(0.05); legg->SetTextFont(132); 
   legg->SetHeader("  0.4 < #eta^{#mu} < 1.2");
   legge = legg->AddEntry(EffData4,  "J/#psi T&P Data","p"); legge->SetTextColor(kRed);
@@ -157,7 +157,7 @@ void MuID_Pos(){
   EffMC5->SetMarkerColor(3);
   EffMC5->SetLineColor(3);
   EffMC5->Draw("pesame");  
-  legg = new TLegend(0.6,0.4,0.8,0.7);
+  legg = new TLegend(0.6,0.2,0.8,0.4);
   legg->SetFillStyle(0); legg->SetBorderSize(0); legg->SetTextSize(0.05); legg->SetTextFont(132); 
   legg->SetHeader("  1.2 < #eta^{#mu} < 2.4");
   legge = legg->AddEntry(EffData5,  "J/#psi T&P Data","p"); legge->SetTextColor(kRed);
@@ -168,7 +168,7 @@ void MuID_Pos(){
   EffData1->SetTitle("");
   EffData1->GetXaxis()->SetTitle("Probe p_{T} [GeV/c]");
   EffData1->GetYaxis()->SetTitle("Efficieny");
-  EffData1->SetMinimum(0.);
+  EffData1->SetMinimum(0.75);
   EffData1->SetMaximum(1.05);
   EffData1->SetMarkerStyle(22);
   EffData1->SetMarkerColor(2);
@@ -178,7 +178,7 @@ void MuID_Pos(){
   EffMC1->SetMarkerColor(3);
   EffMC1->SetLineColor(3);
   EffMC1->Draw("pesame");  
-  legg = new TLegend(0.6,0.4,0.8,0.7);
+  legg = new TLegend(0.6,0.2,0.8,0.4);
   legg->SetFillStyle(0); legg->SetBorderSize(0); legg->SetTextSize(0.05); legg->SetTextFont(132); 
   legg->SetHeader("  -2.4 < #eta^{#mu} < -1.2");
   legge = legg->AddEntry(EffData1,  "J/#psi T&P Data","p"); legge->SetTextColor(kRed);
@@ -190,7 +190,7 @@ void MuID_Pos(){
   EffData2->SetTitle("");
   EffData2->GetXaxis()->SetTitle("Probe p_{T} [GeV/c]");
   EffData2->GetYaxis()->SetTitle("Efficieny");
-  EffData2->SetMinimum(0.);
+  EffData2->SetMinimum(0.75);
   EffData2->SetMaximum(1.05);
   EffData2->SetMarkerStyle(22);
   EffData2->SetMarkerColor(2);
@@ -200,7 +200,7 @@ void MuID_Pos(){
   EffMC2->SetMarkerColor(3);
   EffMC2->SetLineColor(3);
   EffMC2->Draw("pesame");  
-  legg = new TLegend(0.6,0.4,0.8,0.7);
+  legg = new TLegend(0.6,0.2,0.8,0.4);
   legg->SetFillStyle(0); legg->SetBorderSize(0); legg->SetTextSize(0.05); legg->SetTextFont(132); 
   legg->SetHeader("  -1.2 < #eta^{#mu} < -0.4");
   legge = legg->AddEntry(EffData1,  "J/#psi T&P Data","p"); legge->SetTextColor(kRed);
@@ -212,7 +212,7 @@ void MuID_Pos(){
   EffData3->SetTitle("");
   EffData3->GetXaxis()->SetTitle("Probe p_{T} [GeV/c]");
   EffData3->GetYaxis()->SetTitle("Efficieny");
-  EffData3->SetMinimum(0.);
+  EffData3->SetMinimum(0.75);
   EffData3->SetMaximum(1.05);
   EffData3->SetMarkerStyle(22);
   EffData3->SetMarkerColor(2);
@@ -222,7 +222,7 @@ void MuID_Pos(){
   EffMC3->SetMarkerColor(3);
   EffMC3->SetLineColor(3);
   EffMC3->Draw("pesame");  
-  legg = new TLegend(0.6,0.4,0.8,0.7);
+  legg = new TLegend(0.6,0.2,0.8,0.4);
   legg->SetFillStyle(0); legg->SetBorderSize(0); legg->SetTextSize(0.05); legg->SetTextFont(132); 
   legg->SetHeader("  -0.4 < #eta^{#mu} < 0.4");
   legge = legg->AddEntry(EffData1,  "J/#psi T&P Data","p"); legge->SetTextColor(kRed);
@@ -234,7 +234,7 @@ void MuID_Pos(){
   EffData4->SetTitle("");
   EffData4->GetXaxis()->SetTitle("Probe p_{T} [GeV/c]");
   EffData4->GetYaxis()->SetTitle("Efficieny");
-  EffData4->SetMinimum(0.);
+  EffData4->SetMinimum(0.75);
   EffData4->SetMaximum(1.05);
   EffData4->SetMarkerStyle(22);
   EffData4->SetMarkerColor(2);
@@ -244,7 +244,7 @@ void MuID_Pos(){
   EffMC4->SetMarkerColor(3);
   EffMC4->SetLineColor(3);
   EffMC4->Draw("pesame");  
-  legg = new TLegend(0.6,0.4,0.8,0.7);
+  legg = new TLegend(0.6,0.2,0.8,0.4);
   legg->SetFillStyle(0); legg->SetBorderSize(0); legg->SetTextSize(0.05); legg->SetTextFont(132); 
   legg->SetHeader("  0.4 < #eta^{#mu} < 1.2");
   legge = legg->AddEntry(EffData1,  "J/#psi T&P Data","p"); legge->SetTextColor(kRed);
@@ -256,7 +256,7 @@ void MuID_Pos(){
   EffData5->SetTitle("");
   EffData5->GetXaxis()->SetTitle("Probe p_{T} [GeV/c]");
   EffData5->GetYaxis()->SetTitle("Efficieny");
-  EffData5->SetMinimum(0.);
+  EffData5->SetMinimum(0.75);
   EffData5->SetMaximum(1.05);
   EffData5->SetMarkerStyle(22);
   EffData5->SetMarkerColor(2);
@@ -266,7 +266,7 @@ void MuID_Pos(){
   EffMC5->SetMarkerColor(3);
   EffMC5->SetLineColor(3);
   EffMC5->Draw("pesame");  
-  legg = new TLegend(0.6,0.4,0.8,0.7);
+  legg = new TLegend(0.6,0.2,0.8,0.4);
   legg->SetFillStyle(0); legg->SetBorderSize(0); legg->SetTextSize(0.05); legg->SetTextFont(132); 
   legg->SetHeader("  1.2 < #eta^{#mu} < 2.4");
   legge = legg->AddEntry(EffData1,  "J/#psi T&P Data","p"); legge->SetTextColor(kRed);
@@ -361,7 +361,7 @@ void MuID_Neg(){
   EffMC1->SetMarkerColor(3);
   EffMC1->SetLineColor(3);
   EffMC1->Draw("pesame");  
-  legg = new TLegend(0.6,0.4,0.8,0.7);
+  legg = new TLegend(0.6,0.2,0.8,0.4);
   legg->SetFillStyle(0); legg->SetBorderSize(0); legg->SetTextSize(0.05); legg->SetTextFont(132); 
   legg->SetHeader("  -2.4 < #eta^{#mu} < -1.2");
   legge = legg->AddEntry(EffData1,  "J/#psi T&P Data","p"); legge->SetTextColor(kRed);
@@ -378,7 +378,7 @@ void MuID_Neg(){
   EffMC2->SetMarkerColor(3);
   EffMC2->SetLineColor(3);
   EffMC2->Draw("pesame");  
-  legg = new TLegend(0.6,0.4,0.8,0.7);
+  legg = new TLegend(0.6,0.2,0.8,0.4);
   legg->SetFillStyle(0); legg->SetBorderSize(0); legg->SetTextSize(0.05); legg->SetTextFont(132); 
   legg->SetHeader("  -1.2 < #eta^{#mu} < -0.4");
   legge = legg->AddEntry(EffData2,  "J/#psi T&P Data","p"); legge->SetTextColor(kRed);
@@ -395,7 +395,7 @@ void MuID_Neg(){
   EffMC3->SetMarkerColor(3);
   EffMC3->SetLineColor(3);
   EffMC3->Draw("pesame");  
-  legg = new TLegend(0.6,0.4,0.8,0.7);
+  legg = new TLegend(0.6,0.2,0.8,0.4);
   legg->SetFillStyle(0); legg->SetBorderSize(0); legg->SetTextSize(0.05); legg->SetTextFont(132); 
   legg->SetHeader("  -0.4 < #eta^{#mu} < 0.4");
   legge = legg->AddEntry(EffData3,  "J/#psi T&P Data","p"); legge->SetTextColor(kRed);
@@ -412,7 +412,7 @@ void MuID_Neg(){
   EffMC4->SetMarkerColor(3);
   EffMC4->SetLineColor(3);
   EffMC4->Draw("pesame");  
-  legg = new TLegend(0.6,0.4,0.8,0.7);
+  legg = new TLegend(0.6,0.2,0.8,0.4);
   legg->SetFillStyle(0); legg->SetBorderSize(0); legg->SetTextSize(0.05); legg->SetTextFont(132); 
   legg->SetHeader("  0.4 < #eta^{#mu} < 1.2");
   legge = legg->AddEntry(EffData4,  "J/#psi T&P Data","p"); legge->SetTextColor(kRed);
@@ -429,7 +429,7 @@ void MuID_Neg(){
   EffMC5->SetMarkerColor(3);
   EffMC5->SetLineColor(3);
   EffMC5->Draw("pesame");  
-  legg = new TLegend(0.6,0.4,0.8,0.7);
+  legg = new TLegend(0.6,0.2,0.8,0.4);
   legg->SetFillStyle(0); legg->SetBorderSize(0); legg->SetTextSize(0.05); legg->SetTextFont(132); 
   legg->SetHeader("  1.2 < #eta^{#mu} < 2.4");
   legge = legg->AddEntry(EffData5,  "J/#psi T&P Data","p"); legge->SetTextColor(kRed);
@@ -441,7 +441,7 @@ void MuID_Neg(){
   EffData1->SetTitle("");
   EffData1->GetXaxis()->SetTitle("Probe p_{T} [GeV/c]");
   EffData1->GetYaxis()->SetTitle("Efficieny");
-  EffData1->SetMinimum(0.);
+  EffData1->SetMinimum(0.75);
   EffData1->SetMaximum(1.05);
   EffData1->SetMarkerStyle(22);
   EffData1->SetMarkerColor(2);
@@ -451,7 +451,7 @@ void MuID_Neg(){
   EffMC1->SetMarkerColor(3);
   EffMC1->SetLineColor(3);
   EffMC1->Draw("pesame");  
-  legg = new TLegend(0.6,0.4,0.8,0.7);
+  legg = new TLegend(0.6,0.2,0.8,0.4);
   legg->SetFillStyle(0); legg->SetBorderSize(0); legg->SetTextSize(0.05); legg->SetTextFont(132); 
   legg->SetHeader("  -2.4 < #eta^{#mu} < -1.2");
   legge = legg->AddEntry(EffData1,  "J/#psi T&P Data","p"); legge->SetTextColor(kRed);
@@ -463,7 +463,7 @@ void MuID_Neg(){
   EffData2->SetTitle("");
   EffData2->GetXaxis()->SetTitle("Probe p_{T} [GeV/c]");
   EffData2->GetYaxis()->SetTitle("Efficieny");
-  EffData2->SetMinimum(0.);
+  EffData2->SetMinimum(0.75);
   EffData2->SetMaximum(1.05);
   EffData2->SetMarkerStyle(22);
   EffData2->SetMarkerColor(2);
@@ -473,7 +473,7 @@ void MuID_Neg(){
   EffMC2->SetMarkerColor(3);
   EffMC2->SetLineColor(3);
   EffMC2->Draw("pesame");  
-  legg = new TLegend(0.6,0.4,0.8,0.7);
+  legg = new TLegend(0.6,0.2,0.8,0.4);
   legg->SetFillStyle(0); legg->SetBorderSize(0); legg->SetTextSize(0.05); legg->SetTextFont(132); 
   legg->SetHeader("  -1.2 < #eta^{#mu} < -0.4");
   legge = legg->AddEntry(EffData1,  "J/#psi T&P Data","p"); legge->SetTextColor(kRed);
@@ -485,7 +485,7 @@ void MuID_Neg(){
   EffData3->SetTitle("");
   EffData3->GetXaxis()->SetTitle("Probe p_{T} [GeV/c]");
   EffData3->GetYaxis()->SetTitle("Efficieny");
-  EffData3->SetMinimum(0.);
+  EffData3->SetMinimum(0.75);
   EffData3->SetMaximum(1.05);
   EffData3->SetMarkerStyle(22);
   EffData3->SetMarkerColor(2);
@@ -495,7 +495,7 @@ void MuID_Neg(){
   EffMC3->SetMarkerColor(3);
   EffMC3->SetLineColor(3);
   EffMC3->Draw("pesame");  
-  legg = new TLegend(0.6,0.4,0.8,0.7);
+  legg = new TLegend(0.6,0.2,0.8,0.4);
   legg->SetFillStyle(0); legg->SetBorderSize(0); legg->SetTextSize(0.05); legg->SetTextFont(132); 
   legg->SetHeader("  -0.4 < #eta^{#mu} < 0.4");
   legge = legg->AddEntry(EffData1,  "J/#psi T&P Data","p"); legge->SetTextColor(kRed);
@@ -507,7 +507,7 @@ void MuID_Neg(){
   EffData4->SetTitle("");
   EffData4->GetXaxis()->SetTitle("Probe p_{T} [GeV/c]");
   EffData4->GetYaxis()->SetTitle("Efficieny");
-  EffData4->SetMinimum(0.);
+  EffData4->SetMinimum(0.75);
   EffData4->SetMaximum(1.05);
   EffData4->SetMarkerStyle(22);
   EffData4->SetMarkerColor(2);
@@ -517,7 +517,7 @@ void MuID_Neg(){
   EffMC4->SetMarkerColor(3);
   EffMC4->SetLineColor(3);
   EffMC4->Draw("pesame");  
-  legg = new TLegend(0.6,0.4,0.8,0.7);
+  legg = new TLegend(0.6,0.2,0.8,0.4);
   legg->SetFillStyle(0); legg->SetBorderSize(0); legg->SetTextSize(0.05); legg->SetTextFont(132); 
   legg->SetHeader("  0.4 < #eta^{#mu} < 1.2");
   legge = legg->AddEntry(EffData1,  "J/#psi T&P Data","p"); legge->SetTextColor(kRed);
@@ -529,7 +529,7 @@ void MuID_Neg(){
   EffData5->SetTitle("");
   EffData5->GetXaxis()->SetTitle("Probe p_{T} [GeV/c]");
   EffData5->GetYaxis()->SetTitle("Efficieny");
-  EffData5->SetMinimum(0.);
+  EffData5->SetMinimum(0.75);
   EffData5->SetMaximum(1.05);
   EffData5->SetMarkerStyle(22);
   EffData5->SetMarkerColor(2);
@@ -539,7 +539,7 @@ void MuID_Neg(){
   EffMC5->SetMarkerColor(3);
   EffMC5->SetLineColor(3);
   EffMC5->Draw("pesame");  
-  legg = new TLegend(0.6,0.4,0.8,0.7);
+  legg = new TLegend(0.6,0.2,0.8,0.4);
   legg->SetFillStyle(0); legg->SetBorderSize(0); legg->SetTextSize(0.05); legg->SetTextFont(132); 
   legg->SetHeader("  1.2 < #eta^{#mu} < 2.4");
   legge = legg->AddEntry(EffData1,  "J/#psi T&P Data","p"); legge->SetTextColor(kRed);
@@ -633,7 +633,7 @@ void Trig_Pos(){
   EffMC1->SetMarkerColor(3);
   EffMC1->SetLineColor(3);
   EffMC1->Draw("pesame");  
-  legg = new TLegend(0.6,0.4,0.8,0.7);
+  legg = new TLegend(0.6,0.2,0.8,0.4);
   legg->SetFillStyle(0); legg->SetBorderSize(0); legg->SetTextSize(0.05); legg->SetTextFont(132); 
   legg->SetHeader("  -2.4 < #eta^{#mu} < -1.2");
   legge = legg->AddEntry(EffData1,  "J/#psi T&P Data","p"); legge->SetTextColor(kRed);
@@ -650,7 +650,7 @@ void Trig_Pos(){
   EffMC2->SetMarkerColor(3);
   EffMC2->SetLineColor(3);
   EffMC2->Draw("pesame");  
-  legg = new TLegend(0.6,0.4,0.8,0.7);
+  legg = new TLegend(0.6,0.2,0.8,0.4);
   legg->SetFillStyle(0); legg->SetBorderSize(0); legg->SetTextSize(0.05); legg->SetTextFont(132); 
   legg->SetHeader("  -1.2 < #eta^{#mu} < -0.4");
   legge = legg->AddEntry(EffData2,  "J/#psi T&P Data","p"); legge->SetTextColor(kRed);
@@ -667,7 +667,7 @@ void Trig_Pos(){
   EffMC3->SetMarkerColor(3);
   EffMC3->SetLineColor(3);
   EffMC3->Draw("pesame");  
-  legg = new TLegend(0.6,0.4,0.8,0.7);
+  legg = new TLegend(0.6,0.2,0.8,0.4);
   legg->SetFillStyle(0); legg->SetBorderSize(0); legg->SetTextSize(0.05); legg->SetTextFont(132); 
   legg->SetHeader("  -0.4 < #eta^{#mu} < 0.4");
   legge = legg->AddEntry(EffData3,  "J/#psi T&P Data","p"); legge->SetTextColor(kRed);
@@ -684,7 +684,7 @@ void Trig_Pos(){
   EffMC4->SetMarkerColor(3);
   EffMC4->SetLineColor(3);
   EffMC4->Draw("pesame");  
-  legg = new TLegend(0.6,0.4,0.8,0.7);
+  legg = new TLegend(0.6,0.2,0.8,0.4);
   legg->SetFillStyle(0); legg->SetBorderSize(0); legg->SetTextSize(0.05); legg->SetTextFont(132); 
   legg->SetHeader("  0.4 < #eta^{#mu} < 1.2");
   legge = legg->AddEntry(EffData4,  "J/#psi T&P Data","p"); legge->SetTextColor(kRed);
@@ -701,7 +701,7 @@ void Trig_Pos(){
   EffMC5->SetMarkerColor(3);
   EffMC5->SetLineColor(3);
   EffMC5->Draw("pesame");  
-  legg = new TLegend(0.6,0.4,0.8,0.7);
+  legg = new TLegend(0.6,0.2,0.8,0.4);
   legg->SetFillStyle(0); legg->SetBorderSize(0); legg->SetTextSize(0.05); legg->SetTextFont(132); 
   legg->SetHeader("  1.2 < #eta^{#mu} < 2.4");
   legge = legg->AddEntry(EffData5,  "J/#psi T&P Data","p"); legge->SetTextColor(kRed);
@@ -713,7 +713,7 @@ void Trig_Pos(){
   EffData1->SetTitle("");
   EffData1->GetXaxis()->SetTitle("Probe p_{T} [GeV/c]");
   EffData1->GetYaxis()->SetTitle("Efficieny");
-  EffData1->SetMinimum(0.);
+  EffData1->SetMinimum(0.65);
   EffData1->SetMaximum(1.05);
   EffData1->SetMarkerStyle(22);
   EffData1->SetMarkerColor(2);
@@ -723,7 +723,7 @@ void Trig_Pos(){
   EffMC1->SetMarkerColor(3);
   EffMC1->SetLineColor(3);
   EffMC1->Draw("pesame");  
-  legg = new TLegend(0.6,0.4,0.8,0.7);
+  legg = new TLegend(0.6,0.2,0.8,0.4);
   legg->SetFillStyle(0); legg->SetBorderSize(0); legg->SetTextSize(0.05); legg->SetTextFont(132); 
   legg->SetHeader("  -2.4 < #eta^{#mu} < -1.2");
   legge = legg->AddEntry(EffData1,  "J/#psi T&P Data","p"); legge->SetTextColor(kRed);
@@ -735,7 +735,7 @@ void Trig_Pos(){
   EffData2->SetTitle("");
   EffData2->GetXaxis()->SetTitle("Probe p_{T} [GeV/c]");
   EffData2->GetYaxis()->SetTitle("Efficieny");
-  EffData2->SetMinimum(0.);
+  EffData2->SetMinimum(0.65);
   EffData2->SetMaximum(1.05);
   EffData2->SetMarkerStyle(22);
   EffData2->SetMarkerColor(2);
@@ -745,7 +745,7 @@ void Trig_Pos(){
   EffMC2->SetMarkerColor(3);
   EffMC2->SetLineColor(3);
   EffMC2->Draw("pesame");  
-  legg = new TLegend(0.6,0.4,0.8,0.7);
+  legg = new TLegend(0.6,0.2,0.8,0.4);
   legg->SetFillStyle(0); legg->SetBorderSize(0); legg->SetTextSize(0.05); legg->SetTextFont(132); 
   legg->SetHeader("  -1.2 < #eta^{#mu} < -0.4");
   legge = legg->AddEntry(EffData1,  "J/#psi T&P Data","p"); legge->SetTextColor(kRed);
@@ -757,7 +757,7 @@ void Trig_Pos(){
   EffData3->SetTitle("");
   EffData3->GetXaxis()->SetTitle("Probe p_{T} [GeV/c]");
   EffData3->GetYaxis()->SetTitle("Efficieny");
-  EffData3->SetMinimum(0.);
+  EffData3->SetMinimum(0.65);
   EffData3->SetMaximum(1.05);
   EffData3->SetMarkerStyle(22);
   EffData3->SetMarkerColor(2);
@@ -767,7 +767,7 @@ void Trig_Pos(){
   EffMC3->SetMarkerColor(3);
   EffMC3->SetLineColor(3);
   EffMC3->Draw("pesame");  
-  legg = new TLegend(0.6,0.4,0.8,0.7);
+  legg = new TLegend(0.6,0.2,0.8,0.4);
   legg->SetFillStyle(0); legg->SetBorderSize(0); legg->SetTextSize(0.05); legg->SetTextFont(132); 
   legg->SetHeader("  -0.4 < #eta^{#mu} < 0.4");
   legge = legg->AddEntry(EffData1,  "J/#psi T&P Data","p"); legge->SetTextColor(kRed);
@@ -779,7 +779,7 @@ void Trig_Pos(){
   EffData4->SetTitle("");
   EffData4->GetXaxis()->SetTitle("Probe p_{T} [GeV/c]");
   EffData4->GetYaxis()->SetTitle("Efficieny");
-  EffData4->SetMinimum(0.);
+  EffData4->SetMinimum(0.65);
   EffData4->SetMaximum(1.05);
   EffData4->SetMarkerStyle(22);
   EffData4->SetMarkerColor(2);
@@ -789,7 +789,7 @@ void Trig_Pos(){
   EffMC4->SetMarkerColor(3);
   EffMC4->SetLineColor(3);
   EffMC4->Draw("pesame");  
-  legg = new TLegend(0.6,0.4,0.8,0.7);
+  legg = new TLegend(0.6,0.2,0.8,0.4);
   legg->SetFillStyle(0); legg->SetBorderSize(0); legg->SetTextSize(0.05); legg->SetTextFont(132); 
   legg->SetHeader("  0.4 < #eta^{#mu} < 1.2");
   legge = legg->AddEntry(EffData1,  "J/#psi T&P Data","p"); legge->SetTextColor(kRed);
@@ -801,7 +801,7 @@ void Trig_Pos(){
   EffData5->SetTitle("");
   EffData5->GetXaxis()->SetTitle("Probe p_{T} [GeV/c]");
   EffData5->GetYaxis()->SetTitle("Efficieny");
-  EffData5->SetMinimum(0.);
+  EffData5->SetMinimum(0.65);
   EffData5->SetMaximum(1.05);
   EffData5->SetMarkerStyle(22);
   EffData5->SetMarkerColor(2);
@@ -811,7 +811,7 @@ void Trig_Pos(){
   EffMC5->SetMarkerColor(3);
   EffMC5->SetLineColor(3);
   EffMC5->Draw("pesame");  
-  legg = new TLegend(0.6,0.4,0.8,0.7);
+  legg = new TLegend(0.6,0.2,0.8,0.4);
   legg->SetFillStyle(0); legg->SetBorderSize(0); legg->SetTextSize(0.05); legg->SetTextFont(132); 
   legg->SetHeader("  1.2 < #eta^{#mu} < 2.4");
   legge = legg->AddEntry(EffData1,  "J/#psi T&P Data","p"); legge->SetTextColor(kRed);
@@ -905,7 +905,7 @@ void Trig_Neg(){
   EffMC1->SetMarkerColor(3);
   EffMC1->SetLineColor(3);
   EffMC1->Draw("pesame");  
-  legg = new TLegend(0.6,0.4,0.8,0.7);
+  legg = new TLegend(0.6,0.2,0.8,0.4);
   legg->SetFillStyle(0); legg->SetBorderSize(0); legg->SetTextSize(0.05); legg->SetTextFont(132); 
   legg->SetHeader("  -2.4 < #eta^{#mu} < -1.2");
   legge = legg->AddEntry(EffData1,  "J/#psi T&P Data","p"); legge->SetTextColor(kRed);
@@ -922,7 +922,7 @@ void Trig_Neg(){
   EffMC2->SetMarkerColor(3);
   EffMC2->SetLineColor(3);
   EffMC2->Draw("pesame");  
-  legg = new TLegend(0.6,0.4,0.8,0.7);
+  legg = new TLegend(0.6,0.2,0.8,0.4);
   legg->SetFillStyle(0); legg->SetBorderSize(0); legg->SetTextSize(0.05); legg->SetTextFont(132); 
   legg->SetHeader("  -1.2 < #eta^{#mu} < -0.4");
   legge = legg->AddEntry(EffData2,  "J/#psi T&P Data","p"); legge->SetTextColor(kRed);
@@ -939,7 +939,7 @@ void Trig_Neg(){
   EffMC3->SetMarkerColor(3);
   EffMC3->SetLineColor(3);
   EffMC3->Draw("pesame");  
-  legg = new TLegend(0.6,0.4,0.8,0.7);
+  legg = new TLegend(0.6,0.2,0.8,0.4);
   legg->SetFillStyle(0); legg->SetBorderSize(0); legg->SetTextSize(0.05); legg->SetTextFont(132); 
   legg->SetHeader("  -0.4 < #eta^{#mu} < 0.4");
   legge = legg->AddEntry(EffData3,  "J/#psi T&P Data","p"); legge->SetTextColor(kRed);
@@ -956,7 +956,7 @@ void Trig_Neg(){
   EffMC4->SetMarkerColor(3);
   EffMC4->SetLineColor(3);
   EffMC4->Draw("pesame");  
-  legg = new TLegend(0.6,0.4,0.8,0.7);
+  legg = new TLegend(0.6,0.2,0.8,0.4);
   legg->SetFillStyle(0); legg->SetBorderSize(0); legg->SetTextSize(0.05); legg->SetTextFont(132); 
   legg->SetHeader("  0.4 < #eta^{#mu} < 1.2");
   legge = legg->AddEntry(EffData4,  "J/#psi T&P Data","p"); legge->SetTextColor(kRed);
@@ -973,7 +973,7 @@ void Trig_Neg(){
   EffMC5->SetMarkerColor(3);
   EffMC5->SetLineColor(3);
   EffMC5->Draw("pesame");  
-  legg = new TLegend(0.6,0.4,0.8,0.7);
+  legg = new TLegend(0.6,0.2,0.8,0.4);
   legg->SetFillStyle(0); legg->SetBorderSize(0); legg->SetTextSize(0.05); legg->SetTextFont(132); 
   legg->SetHeader("  1.2 < #eta^{#mu} < 2.4");
   legge = legg->AddEntry(EffData5,  "J/#psi T&P Data","p"); legge->SetTextColor(kRed);
@@ -985,7 +985,7 @@ void Trig_Neg(){
   EffData1->SetTitle("");
   EffData1->GetXaxis()->SetTitle("Probe p_{T} [GeV/c]");
   EffData1->GetYaxis()->SetTitle("Efficieny");
-  EffData1->SetMinimum(0.);
+  EffData1->SetMinimum(0.65);
   EffData1->SetMaximum(1.05);
   EffData1->SetMarkerStyle(22);
   EffData1->SetMarkerColor(2);
@@ -995,7 +995,7 @@ void Trig_Neg(){
   EffMC1->SetMarkerColor(3);
   EffMC1->SetLineColor(3);
   EffMC1->Draw("pesame");  
-  legg = new TLegend(0.6,0.4,0.8,0.7);
+  legg = new TLegend(0.6,0.2,0.8,0.4);
   legg->SetFillStyle(0); legg->SetBorderSize(0); legg->SetTextSize(0.05); legg->SetTextFont(132); 
   legg->SetHeader("  -2.4 < #eta^{#mu} < -1.2");
   legge = legg->AddEntry(EffData1,  "J/#psi T&P Data","p"); legge->SetTextColor(kRed);
@@ -1007,7 +1007,7 @@ void Trig_Neg(){
   EffData2->SetTitle("");
   EffData2->GetXaxis()->SetTitle("Probe p_{T} [GeV/c]");
   EffData2->GetYaxis()->SetTitle("Efficieny");
-  EffData2->SetMinimum(0.);
+  EffData2->SetMinimum(0.65);
   EffData2->SetMaximum(1.05);
   EffData2->SetMarkerStyle(22);
   EffData2->SetMarkerColor(2);
@@ -1017,7 +1017,7 @@ void Trig_Neg(){
   EffMC2->SetMarkerColor(3);
   EffMC2->SetLineColor(3);
   EffMC2->Draw("pesame");  
-  legg = new TLegend(0.6,0.4,0.8,0.7);
+  legg = new TLegend(0.6,0.2,0.8,0.4);
   legg->SetFillStyle(0); legg->SetBorderSize(0); legg->SetTextSize(0.05); legg->SetTextFont(132); 
   legg->SetHeader("  -1.2 < #eta^{#mu} < -0.4");
   legge = legg->AddEntry(EffData1,  "J/#psi T&P Data","p"); legge->SetTextColor(kRed);
@@ -1029,7 +1029,7 @@ void Trig_Neg(){
   EffData3->SetTitle("");
   EffData3->GetXaxis()->SetTitle("Probe p_{T} [GeV/c]");
   EffData3->GetYaxis()->SetTitle("Efficieny");
-  EffData3->SetMinimum(0.);
+  EffData3->SetMinimum(0.65);
   EffData3->SetMaximum(1.05);
   EffData3->SetMarkerStyle(22);
   EffData3->SetMarkerColor(2);
@@ -1039,7 +1039,7 @@ void Trig_Neg(){
   EffMC3->SetMarkerColor(3);
   EffMC3->SetLineColor(3);
   EffMC3->Draw("pesame");  
-  legg = new TLegend(0.6,0.4,0.8,0.7);
+  legg = new TLegend(0.6,0.2,0.8,0.4);
   legg->SetFillStyle(0); legg->SetBorderSize(0); legg->SetTextSize(0.05); legg->SetTextFont(132); 
   legg->SetHeader("  -0.4 < #eta^{#mu} < 0.4");
   legge = legg->AddEntry(EffData1,  "J/#psi T&P Data","p"); legge->SetTextColor(kRed);
@@ -1051,7 +1051,7 @@ void Trig_Neg(){
   EffData4->SetTitle("");
   EffData4->GetXaxis()->SetTitle("Probe p_{T} [GeV/c]");
   EffData4->GetYaxis()->SetTitle("Efficieny");
-  EffData4->SetMinimum(0.);
+  EffData4->SetMinimum(0.65);
   EffData4->SetMaximum(1.05);
   EffData4->SetMarkerStyle(22);
   EffData4->SetMarkerColor(2);
@@ -1061,7 +1061,7 @@ void Trig_Neg(){
   EffMC4->SetMarkerColor(3);
   EffMC4->SetLineColor(3);
   EffMC4->Draw("pesame");  
-  legg = new TLegend(0.6,0.4,0.8,0.7);
+  legg = new TLegend(0.6,0.2,0.8,0.4);
   legg->SetFillStyle(0); legg->SetBorderSize(0); legg->SetTextSize(0.05); legg->SetTextFont(132); 
   legg->SetHeader("  0.4 < #eta^{#mu} < 1.2");
   legge = legg->AddEntry(EffData1,  "J/#psi T&P Data","p"); legge->SetTextColor(kRed);
@@ -1073,7 +1073,7 @@ void Trig_Neg(){
   EffData5->SetTitle("");
   EffData5->GetXaxis()->SetTitle("Probe p_{T} [GeV/c]");
   EffData5->GetYaxis()->SetTitle("Efficieny");
-  EffData5->SetMinimum(0.);
+  EffData5->SetMinimum(0.65);
   EffData5->SetMaximum(1.05);
   EffData5->SetMarkerStyle(22);
   EffData5->SetMarkerColor(2);
@@ -1083,7 +1083,7 @@ void Trig_Neg(){
   EffMC5->SetMarkerColor(3);
   EffMC5->SetLineColor(3);
   EffMC5->Draw("pesame");  
-  legg = new TLegend(0.6,0.4,0.8,0.7);
+  legg = new TLegend(0.6,0.2,0.8,0.4);
   legg->SetFillStyle(0); legg->SetBorderSize(0); legg->SetTextSize(0.05); legg->SetTextFont(132); 
   legg->SetHeader("  1.2 < #eta^{#mu} < 2.4");
   legge = legg->AddEntry(EffData1,  "J/#psi T&P Data","p"); legge->SetTextColor(kRed);
@@ -1177,7 +1177,7 @@ void TrigCompare_Pos(){
   EffMC1->SetMarkerColor(4);
   EffMC1->SetLineColor(4);
   EffMC1->Draw("pesame");  
-  legg = new TLegend(0.25,0.4,0.8,0.7);
+  legg = new TLegend(0.25,0.2,0.8,0.4);
   legg->SetFillStyle(0); legg->SetBorderSize(0); legg->SetTextSize(0.04); legg->SetTextFont(132); 
   legg->SetHeader("  -2.4 < #eta^{#mu} < -1.2");
   legge = legg->AddEntry(EffData1,  "J/#psi->#mu#mu HLT_DoubleMu0_Quarkonium_v1","p"); legge->SetTextColor(kRed);
@@ -1194,7 +1194,7 @@ void TrigCompare_Pos(){
   EffMC2->SetMarkerColor(4);
   EffMC2->SetLineColor(4);
   EffMC2->Draw("pesame");  
-  legg = new TLegend(0.25,0.4,0.8,0.7);
+  legg = new TLegend(0.25,0.2,0.8,0.4);
   legg->SetFillStyle(0); legg->SetBorderSize(0); legg->SetTextSize(0.04); legg->SetTextFont(132); 
   legg->SetHeader("  -1.2 < #eta^{#mu} < -0.4");
   legge = legg->AddEntry(EffData2,  "J/#psi->#mu#mu HLT_DoubleMu0_Quarkonium_v1","p"); legge->SetTextColor(kRed);
@@ -1211,7 +1211,7 @@ void TrigCompare_Pos(){
   EffMC3->SetMarkerColor(4);
   EffMC3->SetLineColor(4);
   EffMC3->Draw("pesame");  
-  legg = new TLegend(0.25,0.4,0.8,0.7);
+  legg = new TLegend(0.25,0.2,0.8,0.4);
   legg->SetFillStyle(0); legg->SetBorderSize(0); legg->SetTextSize(0.04); legg->SetTextFont(132); 
   legg->SetHeader("  -0.4 < #eta^{#mu} < 0.4");
   legge = legg->AddEntry(EffData3,  "J/#psi->#mu#mu HLT_DoubleMu0_Quarkonium_v1","p"); legge->SetTextColor(kRed);
@@ -1228,7 +1228,7 @@ void TrigCompare_Pos(){
   EffMC4->SetMarkerColor(4);
   EffMC4->SetLineColor(4);
   EffMC4->Draw("pesame");  
-  legg = new TLegend(0.25,0.4,0.8,0.7);
+  legg = new TLegend(0.25,0.2,0.8,0.4);
   legg->SetFillStyle(0); legg->SetBorderSize(0); legg->SetTextSize(0.04); legg->SetTextFont(132); 
   legg->SetHeader("  0.4 < #eta^{#mu} < 1.2");
   legge = legg->AddEntry(EffData4,  "J/#psi->#mu#mu HLT_DoubleMu0_Quarkonium_v1","p"); legge->SetTextColor(kRed);
@@ -1245,7 +1245,7 @@ void TrigCompare_Pos(){
   EffMC5->SetMarkerColor(4);
   EffMC5->SetLineColor(4);
   EffMC5->Draw("pesame");  
-  legg = new TLegend(0.25,0.4,0.8,0.7);
+  legg = new TLegend(0.25,0.2,0.8,0.4);
   legg->SetFillStyle(0); legg->SetBorderSize(0); legg->SetTextSize(0.04); legg->SetTextFont(132); 
   legg->SetHeader("  1.2 < #eta^{#mu} < 2.4");
   legge = legg->AddEntry(EffData5,  "J/#psi->#mu#mu HLT_DoubleMu0_Quarkonium_v1","p"); legge->SetTextColor(kRed);
@@ -1257,7 +1257,7 @@ void TrigCompare_Pos(){
   EffData1->SetTitle("");
   EffData1->GetXaxis()->SetTitle("Probe p_{T} [GeV/c]");
   EffData1->GetYaxis()->SetTitle("Efficieny");
-  EffData1->SetMinimum(0.);
+  EffData1->SetMinimum(0.6);
   EffData1->SetMaximum(1.05);
   EffData1->SetMarkerStyle(22);
   EffData1->SetMarkerColor(2);
@@ -1267,7 +1267,7 @@ void TrigCompare_Pos(){
   EffMC1->SetMarkerColor(4);
   EffMC1->SetLineColor(4);
   EffMC1->Draw("pesame");  
-  legg = new TLegend(0.25,0.4,0.8,0.7);
+  legg = new TLegend(0.25,0.2,0.8,0.4);
   legg->SetFillStyle(0); legg->SetBorderSize(0); legg->SetTextSize(0.04); legg->SetTextFont(132); 
   legg->SetHeader("  -2.4 < #eta^{#mu} < -1.2");
   legge = legg->AddEntry(EffData1,  "J/#psi->#mu#mu HLT_DoubleMu0_Quarkonium_v1","p"); legge->SetTextColor(kRed);
@@ -1279,7 +1279,7 @@ void TrigCompare_Pos(){
   EffData2->SetTitle("");
   EffData2->GetXaxis()->SetTitle("Probe p_{T} [GeV/c]");
   EffData2->GetYaxis()->SetTitle("Efficieny");
-  EffData2->SetMinimum(0.);
+  EffData2->SetMinimum(0.6);
   EffData2->SetMaximum(1.05);
   EffData2->SetMarkerStyle(22);
   EffData2->SetMarkerColor(2);
@@ -1289,7 +1289,7 @@ void TrigCompare_Pos(){
   EffMC2->SetMarkerColor(4);
   EffMC2->SetLineColor(4);
   EffMC2->Draw("pesame");  
-  legg = new TLegend(0.25,0.4,0.8,0.7);
+  legg = new TLegend(0.25,0.2,0.8,0.4);
   legg->SetFillStyle(0); legg->SetBorderSize(0); legg->SetTextSize(0.04); legg->SetTextFont(132); 
   legg->SetHeader("  -1.2 < #eta^{#mu} < -0.4");
   legge = legg->AddEntry(EffData1,  "J/#psi->#mu#mu HLT_DoubleMu0_Quarkonium_v1","p"); legge->SetTextColor(kRed);
@@ -1301,7 +1301,7 @@ void TrigCompare_Pos(){
   EffData3->SetTitle("");
   EffData3->GetXaxis()->SetTitle("Probe p_{T} [GeV/c]");
   EffData3->GetYaxis()->SetTitle("Efficieny");
-  EffData3->SetMinimum(0.);
+  EffData3->SetMinimum(0.6);
   EffData3->SetMaximum(1.05);
   EffData3->SetMarkerStyle(22);
   EffData3->SetMarkerColor(2);
@@ -1311,7 +1311,7 @@ void TrigCompare_Pos(){
   EffMC3->SetMarkerColor(4);
   EffMC3->SetLineColor(4);
   EffMC3->Draw("pesame");  
-  legg = new TLegend(0.25,0.4,0.8,0.7);
+  legg = new TLegend(0.25,0.2,0.8,0.4);
   legg->SetFillStyle(0); legg->SetBorderSize(0); legg->SetTextSize(0.04); legg->SetTextFont(132); 
   legg->SetHeader("  -0.4 < #eta^{#mu} < 0.4");
   legge = legg->AddEntry(EffData1,  "J/#psi->#mu#mu HLT_DoubleMu0_Quarkonium_v1","p"); legge->SetTextColor(kRed);
@@ -1323,7 +1323,7 @@ void TrigCompare_Pos(){
   EffData4->SetTitle("");
   EffData4->GetXaxis()->SetTitle("Probe p_{T} [GeV/c]");
   EffData4->GetYaxis()->SetTitle("Efficieny");
-  EffData4->SetMinimum(0.);
+  EffData4->SetMinimum(0.6);
   EffData4->SetMaximum(1.05);
   EffData4->SetMarkerStyle(22);
   EffData4->SetMarkerColor(2);
@@ -1333,7 +1333,7 @@ void TrigCompare_Pos(){
   EffMC4->SetMarkerColor(4);
   EffMC4->SetLineColor(4);
   EffMC4->Draw("pesame");  
-  legg = new TLegend(0.25,0.4,0.8,0.7);
+  legg = new TLegend(0.25,0.2,0.8,0.4);
   legg->SetFillStyle(0); legg->SetBorderSize(0); legg->SetTextSize(0.04); legg->SetTextFont(132); 
   legg->SetHeader("  0.4 < #eta^{#mu} < 1.2");
   legge = legg->AddEntry(EffData1,  "J/#psi->#mu#mu HLT_DoubleMu0_Quarkonium_v1","p"); legge->SetTextColor(kRed);
@@ -1345,7 +1345,7 @@ void TrigCompare_Pos(){
   EffData5->SetTitle("");
   EffData5->GetXaxis()->SetTitle("Probe p_{T} [GeV/c]");
   EffData5->GetYaxis()->SetTitle("Efficieny");
-  EffData5->SetMinimum(0.);
+  EffData5->SetMinimum(0.6);
   EffData5->SetMaximum(1.05);
   EffData5->SetMarkerStyle(22);
   EffData5->SetMarkerColor(2);
@@ -1355,7 +1355,7 @@ void TrigCompare_Pos(){
   EffMC5->SetMarkerColor(4);
   EffMC5->SetLineColor(4);
   EffMC5->Draw("pesame");  
-  legg = new TLegend(0.25,0.4,0.8,0.7);
+  legg = new TLegend(0.25,0.2,0.8,0.4);
   legg->SetFillStyle(0); legg->SetBorderSize(0); legg->SetTextSize(0.04); legg->SetTextFont(132); 
   legg->SetHeader("  1.2 < #eta^{#mu} < 2.4");
   legge = legg->AddEntry(EffData1,  "J/#psi->#mu#mu HLT_DoubleMu0_Quarkonium_v1","p"); legge->SetTextColor(kRed);
@@ -1449,7 +1449,7 @@ void TrigCompare_Neg(){
   EffMC1->SetMarkerColor(4);
   EffMC1->SetLineColor(4);
   EffMC1->Draw("pesame");  
-  legg = new TLegend(0.25,0.4,0.8,0.7);
+  legg = new TLegend(0.25,0.2,0.8,0.4);
   legg->SetFillStyle(0); legg->SetBorderSize(0); legg->SetTextSize(0.04); legg->SetTextFont(132); 
   legg->SetHeader("  -2.4 < #eta^{#mu} < -1.2");
   legge = legg->AddEntry(EffData1,  "J/#psi->#mu#mu HLT_DoubleMu0_Quarkonium_v1","p"); legge->SetTextColor(kRed);
@@ -1466,7 +1466,7 @@ void TrigCompare_Neg(){
   EffMC2->SetMarkerColor(4);
   EffMC2->SetLineColor(4);
   EffMC2->Draw("pesame");  
-  legg = new TLegend(0.25,0.4,0.8,0.7);
+  legg = new TLegend(0.25,0.2,0.8,0.4);
   legg->SetFillStyle(0); legg->SetBorderSize(0); legg->SetTextSize(0.04); legg->SetTextFont(132); 
   legg->SetHeader("  -1.2 < #eta^{#mu} < -0.4");
   legge = legg->AddEntry(EffData2,  "J/#psi->#mu#mu HLT_DoubleMu0_Quarkonium_v1","p"); legge->SetTextColor(kRed);
@@ -1483,7 +1483,7 @@ void TrigCompare_Neg(){
   EffMC3->SetMarkerColor(4);
   EffMC3->SetLineColor(4);
   EffMC3->Draw("pesame");  
-  legg = new TLegend(0.25,0.4,0.8,0.7);
+  legg = new TLegend(0.25,0.2,0.8,0.4);
   legg->SetFillStyle(0); legg->SetBorderSize(0); legg->SetTextSize(0.04); legg->SetTextFont(132); 
   legg->SetHeader("  -0.4 < #eta^{#mu} < 0.4");
   legge = legg->AddEntry(EffData3,  "J/#psi->#mu#mu HLT_DoubleMu0_Quarkonium_v1","p"); legge->SetTextColor(kRed);
@@ -1500,7 +1500,7 @@ void TrigCompare_Neg(){
   EffMC4->SetMarkerColor(4);
   EffMC4->SetLineColor(4);
   EffMC4->Draw("pesame");  
-  legg = new TLegend(0.25,0.4,0.8,0.7);
+  legg = new TLegend(0.25,0.2,0.8,0.4);
   legg->SetFillStyle(0); legg->SetBorderSize(0); legg->SetTextSize(0.04); legg->SetTextFont(132); 
   legg->SetHeader("  0.4 < #eta^{#mu} < 1.2");
   legge = legg->AddEntry(EffData4,  "J/#psi->#mu#mu HLT_DoubleMu0_Quarkonium_v1","p"); legge->SetTextColor(kRed);
@@ -1517,7 +1517,7 @@ void TrigCompare_Neg(){
   EffMC5->SetMarkerColor(4);
   EffMC5->SetLineColor(4);
   EffMC5->Draw("pesame");  
-  legg = new TLegend(0.25,0.4,0.8,0.7);
+  legg = new TLegend(0.25,0.2,0.8,0.4);
   legg->SetFillStyle(0); legg->SetBorderSize(0); legg->SetTextSize(0.04); legg->SetTextFont(132); 
   legg->SetHeader("  1.2 < #eta^{#mu} < 2.4");
   legge = legg->AddEntry(EffData5,  "J/#psi->#mu#mu HLT_DoubleMu0_Quarkonium_v1","p"); legge->SetTextColor(kRed);
@@ -1529,7 +1529,7 @@ void TrigCompare_Neg(){
   EffData1->SetTitle("");
   EffData1->GetXaxis()->SetTitle("Probe p_{T} [GeV/c]");
   EffData1->GetYaxis()->SetTitle("Efficieny");
-  EffData1->SetMinimum(0.);
+  EffData1->SetMinimum(0.6);
   EffData1->SetMaximum(1.05);
   EffData1->SetMarkerStyle(22);
   EffData1->SetMarkerColor(2);
@@ -1539,7 +1539,7 @@ void TrigCompare_Neg(){
   EffMC1->SetMarkerColor(4);
   EffMC1->SetLineColor(4);
   EffMC1->Draw("pesame");  
-  legg = new TLegend(0.25,0.4,0.8,0.7);
+  legg = new TLegend(0.25,0.2,0.8,0.4);
   legg->SetFillStyle(0); legg->SetBorderSize(0); legg->SetTextSize(0.04); legg->SetTextFont(132); 
   legg->SetHeader("  -2.4 < #eta^{#mu} < -1.2");
   legge = legg->AddEntry(EffData1,  "J/#psi->#mu#mu HLT_DoubleMu0_Quarkonium_v1","p"); legge->SetTextColor(kRed);
@@ -1551,7 +1551,7 @@ void TrigCompare_Neg(){
   EffData2->SetTitle("");
   EffData2->GetXaxis()->SetTitle("Probe p_{T} [GeV/c]");
   EffData2->GetYaxis()->SetTitle("Efficieny");
-  EffData2->SetMinimum(0.);
+  EffData2->SetMinimum(0.6);
   EffData2->SetMaximum(1.05);
   EffData2->SetMarkerStyle(22);
   EffData2->SetMarkerColor(2);
@@ -1561,7 +1561,7 @@ void TrigCompare_Neg(){
   EffMC2->SetMarkerColor(4);
   EffMC2->SetLineColor(4);
   EffMC2->Draw("pesame");  
-  legg = new TLegend(0.25,0.4,0.8,0.7);
+  legg = new TLegend(0.25,0.2,0.8,0.4);
   legg->SetFillStyle(0); legg->SetBorderSize(0); legg->SetTextSize(0.04); legg->SetTextFont(132); 
   legg->SetHeader("  -1.2 < #eta^{#mu} < -0.4");
   legge = legg->AddEntry(EffData1,  "J/#psi->#mu#mu HLT_DoubleMu0_Quarkonium_v1","p"); legge->SetTextColor(kRed);
@@ -1573,7 +1573,7 @@ void TrigCompare_Neg(){
   EffData3->SetTitle("");
   EffData3->GetXaxis()->SetTitle("Probe p_{T} [GeV/c]");
   EffData3->GetYaxis()->SetTitle("Efficieny");
-  EffData3->SetMinimum(0.);
+  EffData3->SetMinimum(0.6);
   EffData3->SetMaximum(1.05);
   EffData3->SetMarkerStyle(22);
   EffData3->SetMarkerColor(2);
@@ -1583,7 +1583,7 @@ void TrigCompare_Neg(){
   EffMC3->SetMarkerColor(4);
   EffMC3->SetLineColor(4);
   EffMC3->Draw("pesame");  
-  legg = new TLegend(0.25,0.4,0.8,0.7);
+  legg = new TLegend(0.25,0.2,0.8,0.4);
   legg->SetFillStyle(0); legg->SetBorderSize(0); legg->SetTextSize(0.04); legg->SetTextFont(132); 
   legg->SetHeader("  -0.4 < #eta^{#mu} < 0.4");
   legge = legg->AddEntry(EffData1,  "J/#psi->#mu#mu HLT_DoubleMu0_Quarkonium_v1","p"); legge->SetTextColor(kRed);
@@ -1595,7 +1595,7 @@ void TrigCompare_Neg(){
   EffData4->SetTitle("");
   EffData4->GetXaxis()->SetTitle("Probe p_{T} [GeV/c]");
   EffData4->GetYaxis()->SetTitle("Efficieny");
-  EffData4->SetMinimum(0.);
+  EffData4->SetMinimum(0.6);
   EffData4->SetMaximum(1.05);
   EffData4->SetMarkerStyle(22);
   EffData4->SetMarkerColor(2);
@@ -1605,7 +1605,7 @@ void TrigCompare_Neg(){
   EffMC4->SetMarkerColor(4);
   EffMC4->SetLineColor(4);
   EffMC4->Draw("pesame");  
-  legg = new TLegend(0.25,0.4,0.8,0.7);
+  legg = new TLegend(0.25,0.2,0.8,0.4);
   legg->SetFillStyle(0); legg->SetBorderSize(0); legg->SetTextSize(0.04); legg->SetTextFont(132); 
   legg->SetHeader("  0.4 < #eta^{#mu} < 1.2");
   legge = legg->AddEntry(EffData1,  "J/#psi->#mu#mu HLT_DoubleMu0_Quarkonium_v1","p"); legge->SetTextColor(kRed);
@@ -1617,7 +1617,7 @@ void TrigCompare_Neg(){
   EffData5->SetTitle("");
   EffData5->GetXaxis()->SetTitle("Probe p_{T} [GeV/c]");
   EffData5->GetYaxis()->SetTitle("Efficieny");
-  EffData5->SetMinimum(0.);
+  EffData5->SetMinimum(0.6);
   EffData5->SetMaximum(1.05);
   EffData5->SetMarkerStyle(22);
   EffData5->SetMarkerColor(2);
@@ -1627,7 +1627,7 @@ void TrigCompare_Neg(){
   EffMC5->SetMarkerColor(4);
   EffMC5->SetLineColor(4);
   EffMC5->Draw("pesame");  
-  legg = new TLegend(0.25,0.4,0.8,0.7);
+  legg = new TLegend(0.25,0.2,0.8,0.4);
   legg->SetFillStyle(0); legg->SetBorderSize(0); legg->SetTextSize(0.04); legg->SetTextFont(132); 
   legg->SetHeader("  1.2 < #eta^{#mu} < 2.4");
   legge = legg->AddEntry(EffData1,  "J/#psi->#mu#mu HLT_DoubleMu0_Quarkonium_v1","p"); legge->SetTextColor(kRed);
