@@ -109,15 +109,104 @@ userSettings = {
         }
     },
     'jkolb': {
-        'current' : 'Run25',
+        'current' : 'Run31',
         'jobs' : {
+            # Summer 42X MC + 42X ReReco and PR data: HPS tau ID eff: byLooseCombinedIsolationDeltaBetaCorr --> running at T3
+            'Run32' : {
+                'ZtoMuTau_bgEstTemplate' : {
+                    'analysisFilePath' : "/afs/crc.nd.edu/user/j/jkolb/CMSSW_4_2_4_patch1/src/TauAnalysis/BgEstimationTools/test/",
+                    'harvestingFilePath' : "/pscratch/ndcms/bestman/jkolb/TauResults",
+                    'tmpFilePath' : "/pscratch/ndcms/bestman/jkolb/TauResults/tmp"
+                },
+               	'ZtoMuTau' : {
+                    'analysisFilePath' : "/afs/crc.nd.edu/user/j/jkolb/CMSSW_4_2_4_patch1/src/TauAnalysis/Configuration/test/",
+                    'harvestingFilePath' : "/pscratch/ndcms/bestman/jkolb/TauResults",
+                    'tmpFilePath' : "/pscratch/ndcms/bestman/jkolb/TauResults/tmp"
+                }
+			},
+            # Spring11 PR v1/2 data + MC: HPS tau ID eff: byLooseCombinedIsolationDeltaBetaCorr --> running at T3
+            'Run31' : {
+                'ZtoMuTau_bgEstTemplate' : {
+                    'analysisFilePath' : "/afs/crc.nd.edu/user/j/jkolb/CMSSW_4_1_3/src/TauAnalysis/BgEstimationTools/test/",
+                    'harvestingFilePath' : "/pscratch/ndcms/bestman/jkolb/TauResults",
+                    'tmpFilePath' : "/pscratch/ndcms/bestman/jkolb/TauResults/tmp"
+                },
+               	'ZtoMuTau' : {
+                    'analysisFilePath' : "/afs/crc.nd.edu/user/j/jkolb/CMSSW_4_1_3/src/TauAnalysis/Configuration/test/",
+                    'harvestingFilePath' : "/pscratch/ndcms/bestman/jkolb/TauResults",
+                    'tmpFilePath' : "/pscratch/ndcms/bestman/jkolb/TauResults/tmp"
+                }
+			},
+            # Spring11 PR v1/2 data + MC: HPS tau ID eff: byLooseIsolation --> running at T3
+            'Run30' : {
+                'ZtoMuTau_bgEstTemplate' : {
+                    'analysisFilePath' : "/afs/crc.nd.edu/user/j/jkolb/CMSSW_4_1_3/src/TauAnalysis/BgEstimationTools/test/",
+                    'harvestingFilePath' : "/pscratch/ndcms/bestman/jkolb/TauResults",
+                    'tmpFilePath' : "/pscratch/ndcms/bestman/jkolb/TauResults/tmp"
+                },
+               	'ZtoMuTau' : {
+                    'analysisFilePath' : "/afs/crc.nd.edu/user/j/jkolb/CMSSW_4_1_3/src/TauAnalysis/Configuration/test/",
+                    'harvestingFilePath' : "/pscratch/ndcms/bestman/jkolb/TauResults",
+                    'tmpFilePath' : "/pscratch/ndcms/bestman/jkolb/TauResults/tmp"
+                }
+			},
+            # Spring11 PR v1/2 data + MC: HPS tau ID eff: byLooseIsolation
+            'Run29' : {
+                'ZtoMuTau_bgEstTemplate' : {
+                    'analysisFilePath' : "/user/j/jkolb/TauResults/Run29/",
+                    'harvestingFilePath' : "/data/ndpc0/c/jkolb/TauResults",
+                    'tmpFilePath' : "/data/ndpc0/c/jkolb/TauResults/tmp/"
+                },
+                'ZtoMuTau' : {
+                    'analysisFilePath' : "/user/j/jkolb/TauResults/Run29/",
+                    'harvestingFilePath' : "/data/ndpc0/c/jkolb/TauResults",
+                    'tmpFilePath' : "/data/ndpc0/c/jkolb/TauResults/tmp/"
+                }
+            },
+            # (retry) Spring11 PR v1/2 data + MC: HPS tau ID eff: byLooseCombinedIsolationDeltaBetaCorr
+            'Run28' : {
+                'ZtoMuTau_bgEstTemplate' : {
+                    'analysisFilePath' : "/user/j/jkolb/TauResults/Run28/",
+                    'harvestingFilePath' : "/data/ndpc0/c/jkolb/TauResults",
+                    'tmpFilePath' : "/data/ndpc0/c/jkolb/TauResults/tmp/"
+                },
+                'ZtoMuTau' : {
+                    'analysisFilePath' : "/user/j/jkolb/TauResults/Run28/",
+                    'harvestingFilePath' : "/data/ndpc0/c/jkolb/TauResults",
+                    'tmpFilePath' : "/data/ndpc0/c/jkolb/TauResults/tmp/"
+                }
+            },
+            # Spring11 PR v1/2 data + MC: HPS tau ID eff: byLooseCombinedIsolationDeltaBetaCorr
+            'Run27' : {
+                'ZtoMuTau_bgEstTemplate' : {
+                    'analysisFilePath' : "/user/j/jkolb/TauResults/Run27/",
+                    'harvestingFilePath' : "/data/ndpc0/c/jkolb/TauResults",
+                    'tmpFilePath' : "/data/ndpc0/c/jkolb/TauResults/tmp/"
+                },
+                'ZtoMuTau' : {
+                    'analysisFilePath' : "/user/j/jkolb/TauResults/Run27/",
+                    'harvestingFilePath' : "/data/ndpc0/c/jkolb/TauResults",
+                    'tmpFilePath' : "/data/ndpc0/c/jkolb/TauResults/tmp/"
+                }
+            },
             # Spring11 data + MC: may10 rereco + PR -- move to 4_2_X
             'Run25' : {
                 'AHtoElecTau' : {
                     'analysisFilePath' : "/user/j/jkolb/TauResults/Run25/",
                     'harvestingFilePath' : "/data/ndpc0/c/jkolb/TauResults",
                     'tmpFilePath' : "/data/ndpc0/c/jkolb/TauResults/tmp/"
-                }
+                },
+                'ZtoMuTau' : {
+                    'analysisFilePath' : "/user/j/jkolb/TauResults/Run25/",
+                    'harvestingFilePath' : "/data/ndpc0/c/jkolb/TauResults",
+                    'tmpFilePath' : "/data/ndpc0/c/jkolb/TauResults/tmp/"
+                },
+                'ZtoMuTau_bgEstTemplate' : {
+                    'analysisFilePath' : "/user/j/jkolb/TauResults/Run25/",
+                    'harvestingFilePath' : "/data/ndpc0/c/jkolb/TauResults",
+                    'tmpFilePath' : "/data/ndpc0/c/jkolb/TauResults/tmp/"
+                },
+
             },
             # Spring11 data + MC: 165/pb  -- electron pt cut to 18 GeV
             'Run24' : {
@@ -131,119 +220,6 @@ userSettings = {
             'Run23' : {
                 'AHtoElecTau' : {
                     'analysisFilePath' : "/user/j/jkolb/TauResults/Run23/AHtoElecTau/",
-                    'harvestingFilePath' : "/data/ndpc0/c/jkolb/TauResults",
-                    'tmpFilePath' : "/data/ndpc0/c/jkolb/TauResults/tmp/"
-                }
-            },
-            # Spring11 data + MC: xx/pb  -- run mu+tau for tau ID
-            'Run22' : {
-                'AHtoMuTau' : {
-                    'analysisFilePath' : "/user/j/jkolb/elecTauAnalysis/spring11/AHtoMuTau/Run22/",
-                    'harvestingFilePath' : "/data/ndpc0/c/jkolb/TauResults",
-                    'tmpFilePath' : "/data/ndpc0/c/jkolb/TauResults/tmp2/"
-                },
-                'ZtoMuTau' : {
-                    'analysisFilePath' : "/user/j/jkolb/ZtoMuTau/Run22/",
-                    'harvestingFilePath' : "/data/ndpc0/c/jkolb/TauResults",
-                    'tmpFilePath' : "/data/ndpc2/b/jkolb/harvestMuTau/"
-                }
-            },
-            # Spring11 data + MC: 55/pb  -- turned off vertex multiplicity re-weighting
-            'Run21' : {
-                'AHtoElecTau' : {
-                    'analysisFilePath' : "/user/j/jkolb/elecTauAnalysis/spring11/AHtoElecTau/Run21/",
-                    'harvestingFilePath' : "/data/ndpc0/c/jkolb/TauResults",
-                    'tmpFilePath' : "/data/ndpc0/c/jkolb/TauResults/tmp/"
-                }
-            },
-            # Spring11 data + MC: 21/pb  -- poor data/MC aggreement
-            'Run20' : {
-                'AHtoElecTau' : {
-                    'analysisFilePath' : "/user/j/jkolb/elecTauAnalysis/spring11/AHtoElecTau/Run20/",
-                    'harvestingFilePath' : "/data/ndpc0/c/jkolb/TauResults",
-                    'tmpFilePath' : "/data/ndpc0/c/jkolb/TauResults/tmp/"
-                }
-            },
-			# spring11 3_11 Z MC; study for tau electron rejection
-            'Run19' : {
-                'ZtoElecTau' : {
-                    'analysisFilePath' : "/user/j/jkolb/elecTauAnalysis/spring11/ZtoElecTau/Run19/",
-                    'harvestingFilePath' : "/data/ndpc0/c/jkolb/TauResults",
-                    'tmpFilePath' : "/data/ndpc0/c/jkolb/TauResults/tmp/"
-                }
-            },
-			# fall10 MC with 156 BX PU, 2010 dataset (36/pb); study for tau electron rejection
-            'Run18' : {
-                'ZtoElecTau' : {
-                    'analysisFilePath' : "/user/j/jkolb/elecTauAnalysis/fall10/ZtoElecTau/Run18/",
-                    'harvestingFilePath' : "/data/ndpc0/c/jkolb/TauResults",
-                    'tmpFilePath' : "/data/ndpc0/c/jkolb/TauResults/tmp/"
-                }
-            },
-			# first run of 2011 data and MC
-            'Run17' : {
-                'AHtoElecTau' : {
-                    'analysisFilePath' : "/user/j/jkolb/elecTauAnalysis/spring11/AHtoElecTau/Run17/",
-                    'harvestingFilePath' : "/data/ndpc0/c/jkolb/TauResults",
-                    'tmpFilePath' : "/data/ndpc0/c/jkolb/TauResults/tmp/"
-                }
-            },
-			# fall10 MC with 156 BX PU, 2010 dataset (36/pb); no electron PF iso, for PF study
-            'Run16' : {
-                'ZtoElecTau' : {
-                    'analysisFilePath' : "/user/j/jkolb/elecTauAnalysis/fall10/ZtoElecTau/Run16/",
-                    'harvestingFilePath' : "/data/ndpc0/c/jkolb/TauResults",
-                    'tmpFilePath' : "/data/ndpc0/c/jkolb/TauResults/tmp/"
-                }
-            },
-			# fall10 MC with 156 BX PU, 2010 dataset (36/pb);  re-run data sample for match with Wisconsin
-            'Run15' : {
-                'ZtoElecTau' : {
-                    'analysisFilePath' : "/user/j/jkolb/elecTauAnalysis/fall10/ZtoElecTau/Run15/",
-                    'harvestingFilePath' : "/data/ndpc0/c/jkolb/TauResults",
-                    'tmpFilePath' : "/data/ndpc0/c/jkolb/TauResults/tmp/"
-                }
-            },
-			# fall10 MC with 156 BX PU, 2010 dataset (36/pb);  no Mt(e+MET) cut
-            'Run14' : {
-                'AHtoElecTau' : {
-                    'analysisFilePath' : "/user/j/jkolb/elecTauAnalysis/fall10/AHtoElecTau/Run14/",
-                    'harvestingFilePath' : "/data/ndpc0/c/jkolb/TauResults",
-                    'tmpFilePath' : "/data/ndpc0/c/jkolb/TauResults/tmp/"
-                }
-            },
-			# fall10 MC with PU, 2010 dataset (36/pb); same as Run12, but with systematics
-            'Run13' : {
-                'AHtoElecTau' : {
-                    'analysisFilePath' : "/user/j/jkolb/elecTauAnalysis/fall10/AHtoElecTau/Run13/",
-					'harvestingFilePath' : "/data/ndpc0/c/jkolb/TauResults/",
-                    'tmpFilePath' : "/data/ndpc0/c/jkolb/TauResults/tmp/"
-                },
-                'ZtoElecTau' : {
-                    'analysisFilePath' : "/user/j/jkolb/elecTauAnalysis/fall10/ZtoElecTau/Run13/",
-                    'harvestingFilePath' : "/data/ndpc0/c/jkolb/TauResults",
-                    'tmpFilePath' : "/data/ndpc0/c/jkolb/TauResults/tmp/"
-                },
-                'ZtoElecTau_bgEstTemplate' : {
-                    'analysisFilePath' : "/user/j/jkolb/elecTauAnalysis/fall10/ZtoElecTau/Run13/",
-                    'harvestingFilePath' : "/data/ndpc0/c/jkolb/TauResults",
-                    'tmpFilePath' : "/data/ndpc0/c/jkolb/TauResults/tmp/"
-                }
-            },
-			# fall10 MC with PU, 2010 dataset (36/pb); now using HPS loose
-            'Run12' : {
-                'AHtoElecTau' : {
-                    'analysisFilePath' : "/user/j/jkolb/elecTauAnalysis/fall10/AHtoElecTau/Run12/",
-					'harvestingFilePath' : "/data/ndpc0/c/jkolb/TauResults/",
-                    'tmpFilePath' : "/data/ndpc0/c/jkolb/TauResults/tmp/"
-                },
-                'ZtoElecTau' : {
-                    'analysisFilePath' : "/user/j/jkolb/elecTauAnalysis/fall10/ZtoElecTau/Run12/",
-                    'harvestingFilePath' : "/data/ndpc0/c/jkolb/TauResults",
-                    'tmpFilePath' : "/data/ndpc0/c/jkolb/TauResults/tmp/"
-                },
-                'ZtoElecTau_bgEstTemplate' : {
-                    'analysisFilePath' : "/user/j/jkolb/elecTauAnalysis/fall10/ZtoElecTau/Run12/",
                     'harvestingFilePath' : "/data/ndpc0/c/jkolb/TauResults",
                     'tmpFilePath' : "/data/ndpc0/c/jkolb/TauResults/tmp/"
                 }
