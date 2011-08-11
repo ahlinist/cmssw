@@ -1,16 +1,18 @@
-// $Id: EBRenderPlugin.cc,v 1.142 2011/05/28 09:49:02 emanuele Exp $
+// $Id: EBRenderPlugin.cc,v 1.143 2011/07/20 20:46:20 yiiyama Exp $
 
 /*!
   \file EBRenderPlugin
   \brief Display Plugin for Quality Histograms
   \author G. Della Ricca
   \author B. Gobbo
-  \version $Revision: 1.142 $
-  \date $Date: 2011/05/28 09:49:02 $
+  \version $Revision: 1.143 $
+  \date $Date: 2011/07/20 20:46:20 $
 */
 
 #include "DQM/DQMRenderPlugin.h"
 #include "utils.h"
+
+#include "TClass.h"
 
 #include "TH1F.h"
 #include "TH1D.h"
@@ -52,6 +54,8 @@ class EBRenderPlugin : public DQMRenderPlugin
   int pCol6[7];
 
   TGaxis* timingAxis;
+
+  static float TMTProf2DShift;
 
 public:
   virtual void initialise( int, char ** )
@@ -195,7 +199,7 @@ public:
       if( o.name.find( "EcalBarrel/Run summary/EventInfo" ) != std::string::npos )
         return true;
 
-      return false;
+       return false;
     }
 
   virtual void preDraw( TCanvas *c, const VisDQMObject &o, const VisDQMImgInfo &, VisDQMRenderInfo &r )
@@ -223,48 +227,27 @@ public:
 
       gROOT->ForceStyle();
 
-      if( dynamic_cast<TProfile2D*>( o.object ) )
-      {
-        preDrawTProfile2D( c, o, r );
-      }
-      else if( dynamic_cast<TProfile*>( o.object ) )
-      {
-        preDrawTProfile( c, o, r );
-      }
-      else if( dynamic_cast<TH3F*>( o.object ) )
-      {
-        preDrawTH3F( c, o, r );
-      }
-      else if( dynamic_cast<TH2F*>( o.object ) || dynamic_cast<TH2D*>( o.object ) )
-      {
-        preDrawTH2( c, o, r );
-      }
-      else if( dynamic_cast<TH1F*>( o.object ) || dynamic_cast<TH1D*>( o.object ) )
-      {
-        preDrawTH1( c, o, r );
-      }
+      TClass *cl = o.object->IsA();
+
+      if( cl == TClass::GetClass("TProfile2D") ) preDrawTProfile2D( c, o, r );
+      else if( cl == TClass::GetClass("TProfile") )preDrawTProfile( c, o, r );
+      else if( cl == TClass::GetClass("TH3F") ) preDrawTH3F( c, o, r );
+      else if( cl == TClass::GetClass("TH2F") || cl == TClass::GetClass("TH2D") ) preDrawTH2( c, o, r );
+      else if( cl == TClass::GetClass("TH1F") || cl == TClass::GetClass("TH1D") ) preDrawTH1( c, o, r );
+
     }
 
   virtual void postDraw( TCanvas *c, const VisDQMObject &o, const VisDQMImgInfo & )
     {
       c->cd();
 
-      if( dynamic_cast<TProfile2D*>( o.object ) )
-      {
-        postDrawTProfile2D( c, o );
-      }
-      else if( dynamic_cast<TH3F*>( o.object ) )
-      {
-        postDrawTH3F( c, o );
-      }
-      else if( dynamic_cast<TH2F*>( o.object ) || dynamic_cast<TH2D*>( o.object ) )
-      {
-        postDrawTH2( c, o );
-      }
-      else if( dynamic_cast<TH1F*>( o.object ) || dynamic_cast<TH1D*>( o.object ) )
-      {
-        postDrawTH1( c, o );
-      }
+      TClass *cl = o.object->IsA();
+
+      if( cl == TClass::GetClass("TProfile2D") ) postDrawTProfile2D( c, o );
+      else if( cl == TClass::GetClass("TH3F") ) postDrawTH3F( c, o );
+      else if( cl == TClass::GetClass("TH2F") || cl == TClass::GetClass("TH2D") ) postDrawTH2( c, o );
+      else if( cl == TClass::GetClass("TH1F") || cl == TClass::GetClass("TH1D") ) postDrawTH1( c, o );
+
     }
 
 private:
@@ -348,8 +331,8 @@ private:
           obj->GetXaxis()->SetNdivisions(17);
           obj->GetYaxis()->SetNdivisions(4);
         }
-        obj->SetMinimum(45.);
-        obj->SetMaximum(55.);
+        obj->SetMinimum(TMTProf2DShift - 5.);
+        obj->SetMaximum(TMTProf2DShift + 5.);
 
         gStyle->SetPalette(1);
         obj->SetContour(255);
@@ -432,12 +415,17 @@ private:
       }
 
       if( name.find( "EBTMT timing" ) != std::string::npos )
-      {
-        gPad->SetBottomMargin(0.2);
-        obj->GetXaxis()->LabelsOption("v");
-        obj->SetMinimum(-25.);
-        obj->SetMaximum(25.);
-      }
+	{
+	  gPad->SetBottomMargin(0.2);
+	  //	  obj->GetXaxis()->LabelsOption("v");
+	  if(name.find( "rms" ) != std::string::npos ){
+	    obj->SetMinimum(0.);
+	    obj->SetMaximum(2.);
+	  }else{
+	    obj->SetMinimum(-2.);
+	    obj->SetMaximum(2.);
+	  }
+	}
     }
 
   void preDrawTH3F( TCanvas *, const VisDQMObject &o, VisDQMRenderInfo & )
@@ -551,6 +539,7 @@ private:
         obj->SetMinimum(0.0);
         gStyle->SetPalette(1);
         gPad->SetRightMargin(0.15);
+	gPad->SetLogx(kTRUE);
         if( r.drawOptions.size() == 0 ) r.drawOptions = "colz";
         return;
       }
@@ -783,7 +772,7 @@ private:
       obj->SetStats(kTRUE);
       gPad->SetLogy(kFALSE);
 
-      if( obj->GetMaximum() > 0. ) gPad->SetLogy(kTRUE);
+      if( obj->GetBinContent(obj->GetMaximumBin()) > 0. ) gPad->SetLogy(kTRUE);
 
       if( name.find( "timing" ) != std::string::npos ||
           name.find( "rec hit thr" ) != std::string::npos ||
@@ -793,7 +782,6 @@ private:
       {
         gPad->SetLogy(kFALSE);
         gStyle->SetOptStat("e");
-        return;
       }
 
       if( name.find( "EVTTYPE" ) != std::string::npos )
@@ -857,6 +845,22 @@ private:
         gPad->SetBottomMargin(0.2);
         obj->GetXaxis()->LabelsOption("v");
       }
+
+      if( name.find( "EBTMT" ) != std::string::npos )
+	{
+	  if( obj->GetBinContent(obj->GetMaximumBin()) > 0. &&
+	      (name.find( "timing mean" ) != std::string::npos || 
+	       name.find( "timing rms" ) != std::string::npos ||
+	       name.find( "timing 1D" ) != std::string::npos) )
+	    {
+	      gPad->SetLogy(kTRUE);
+	    }
+	  else
+	    {
+	      obj->SetMaximum(10.);
+	      obj->SetMinimum(-10.);
+	    }
+	}
     }
 
   void postDrawTProfile2D( TCanvas *c, const VisDQMObject &o )
@@ -921,8 +925,8 @@ private:
           float ymin = c->PadtoY(c->GetUymin());
           float ymax = c->PadtoY(c->GetUymax());
           timingAxis = new TGaxis(xmax, ymin, xmax, ymax,
-                                  obj->GetMinimum()-50.,
-                                  obj->GetMaximum()-50., 10, "+LB");
+                                  obj->GetMinimum()-TMTProf2DShift,
+                                  obj->GetMaximum()-TMTProf2DShift, 10, "+LB");
           timingAxis->Draw();
         }
       }
@@ -976,6 +980,8 @@ private:
 
       int nbx = obj->GetNbinsX();
       int nby = obj->GetNbinsY();
+
+      if( name.find( "EBTMT timing vs amplitude" ) != std::string::npos ) return;
 
       if( name.find( "EBCLT" ) != std::string::npos && 
           name.find( "seed" ) == std::string::npos )
@@ -1149,7 +1155,8 @@ private:
 
       if( nbx == 72 && nby == 34 ) 
         {
-          if( name.find( "seed" ) != std::string::npos )
+          if( name.find( "seed" ) != std::string::npos ||
+	      name.find( "EBTMT timing quality summary" ) != std::string::npos )
             {
               int x1 = text6->GetXaxis()->FindFixBin(obj->GetXaxis()->GetXmin());
               int x2 = text6->GetXaxis()->FindFixBin(obj->GetXaxis()->GetXmax());
@@ -1214,5 +1221,7 @@ private:
     }
 
 };
+
+float EBRenderPlugin::TMTProf2DShift = 50.;
 
 static EBRenderPlugin instance;
