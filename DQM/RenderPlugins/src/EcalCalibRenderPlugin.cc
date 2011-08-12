@@ -1,11 +1,11 @@
-// $Id: EcalCalibRenderPlugin.cc,v 1.1 2011/08/11 18:33:05 yiiyama Exp $
+// $Id: EcalCalibRenderPlugin.cc,v 1.2 2011/08/12 01:10:11 yiiyama Exp $
 
 /*!
   \file EcalCalibRenderPlugin
   \brief Display Plugin for Quality Histograms
   \author Y. Iiyama
-  \version $Revision: 1.1 $
-  \date $Date: 2011/08/11 18:33:05 $
+  \version $Revision: 1.2 $
+  \date $Date: 2011/08/12 01:10:11 $
 */
 
 #include "DQM/DQMRenderPlugin.h"
@@ -81,6 +81,8 @@ public:
 
       TObject *obj = o.object;
 
+      if( !obj ) return;
+
       if( obj->IsA() == TClass::GetClass("TProfile2D") )
       {
         preDrawTProfile2D( c, o, r );
@@ -108,6 +110,8 @@ public:
       c->cd();
 
       TObject *obj = o.object;
+
+      if( !obj ) return;
 
       if( obj->IsA() == TClass::GetClass("TProfile2D") )
       {
