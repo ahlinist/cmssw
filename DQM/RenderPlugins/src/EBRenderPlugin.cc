@@ -1,12 +1,12 @@
-// $Id: EBRenderPlugin.cc,v 1.144 2011/08/11 18:33:05 yiiyama Exp $
+// $Id: EBRenderPlugin.cc,v 1.145 2011/08/12 13:25:47 yiiyama Exp $
 
 /*!
   \file EBRenderPlugin
   \brief Display Plugin for Quality Histograms
   \author G. Della Ricca
   \author B. Gobbo
-  \version $Revision: 1.144 $
-  \date $Date: 2011/08/11 18:33:05 $
+  \version $Revision: 1.145 $
+  \date $Date: 2011/08/12 13:25:47 $
 */
 
 #include "DQM/DQMRenderPlugin.h"
@@ -227,6 +227,8 @@ public:
 
       gROOT->ForceStyle();
 
+      if( !o.object ) return;
+
       TClass *cl = o.object->IsA();
 
       if( cl == TClass::GetClass("TProfile2D") ) preDrawTProfile2D( c, o, r );
@@ -240,6 +242,8 @@ public:
   virtual void postDraw( TCanvas *c, const VisDQMObject &o, const VisDQMImgInfo & )
     {
       c->cd();
+
+      if( !o.object ) return;
 
       TClass *cl = o.object->IsA();
 
