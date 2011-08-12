@@ -1,11 +1,11 @@
-// $Id: EcalCalibRenderPlugin.cc,v 1.000 2011/07/06 17:03:52 yiiyama Exp $
+// $Id: EcalCalibRenderPlugin.cc,v 1.1 2011/08/11 18:33:05 yiiyama Exp $
 
 /*!
   \file EcalCalibRenderPlugin
   \brief Display Plugin for Quality Histograms
   \author Y. Iiyama
-  \version $Revision: 1.000 $
-  \date $Date: 2011/07/06 17:03:52 $
+  \version $Revision: 1.1 $
+  \date $Date: 2011/08/11 18:33:05 $
 */
 
 #include "DQM/DQMRenderPlugin.h"
@@ -256,31 +256,32 @@ private:
       if( name.find("EcalLaser") != std::string::npos ){
 
 	float xmin = obj->GetXaxis()->GetXmin();
+	float xmax = obj->GetXaxis()->GetXmax();
 
 	l1.SetLineStyle(1), l2.SetLineStyle(1), l3.SetLineStyle(1);
 	l1.SetLineColor(kRed), l2.SetLineColor(kOrange), l3.SetLineColor(kGreen);
 
 	if( name.find("L1 (blue) amplitude trend") != std::string::npos ){
-	  l1.DrawLine(xmin,100,0,100);
-	  l2.DrawLine(xmin,200,0,200);
+	  l1.DrawLine(xmin,100,xmax,100);
+	  l2.DrawLine(xmin,200,xmax,200);
 	}else if( name.find("L4 (red) amplitude trend") != std::string::npos ){
-	  l1.DrawLine(xmin,200,0,200);
-	  l2.DrawLine(xmin,400,0,400);
+	  l1.DrawLine(xmin,200,xmax,200);
+	  l2.DrawLine(xmin,400,xmax,400);
 	}else if( name.find("amplitude RMS trend") != std::string::npos ){
-	  l1.DrawLine(xmin,15,0,15);
-	  l2.DrawLine(xmin,5,0,5);
+	  l1.DrawLine(xmin,15,xmax,15);
+	  l2.DrawLine(xmin,5,xmax,5);
 	}else if( name.find("jitter trend") != std::string::npos ){
-	  l1.DrawLine(xmin,15,0,15);
-	  l2.DrawLine(xmin,10,0,10);
+	  l1.DrawLine(xmin,15,xmax,15);
+	  l2.DrawLine(xmin,10,xmax,10);
 	}else if( name.find("FWHM trend") != std::string::npos ){
-	  l1.DrawLine(xmin,75,0,75);
-	  l2.DrawLine(xmin,50,0,50);
+	  l1.DrawLine(xmin,75,xmax,75);
+	  l2.DrawLine(xmin,50,xmax,50);
 	}else if( name.find("timing trend") != std::string::npos ){
-	  l1.DrawLine(xmin,1515,0,1515);
-	  l1.DrawLine(xmin,1415,0,1415);
-	  l2.DrawLine(xmin,1490,0,1490);
-	  l2.DrawLine(xmin,1440,0,1440);
-	  l3.DrawLine(xmin,1465,0,1465);
+	  l1.DrawLine(xmin,1515,xmax,1515);
+	  l1.DrawLine(xmin,1415,xmax,1415);
+	  l2.DrawLine(xmin,1490,xmax,1490);
+	  l2.DrawLine(xmin,1440,xmax,1440);
+	  l3.DrawLine(xmin,1465,xmax,1465);
 	}
 
 	return;
