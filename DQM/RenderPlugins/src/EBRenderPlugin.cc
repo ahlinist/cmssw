@@ -1,12 +1,12 @@
-// $Id: EBRenderPlugin.cc,v 1.143 2011/07/20 20:46:20 yiiyama Exp $
+// $Id: EBRenderPlugin.cc,v 1.144 2011/08/11 18:33:05 yiiyama Exp $
 
 /*!
   \file EBRenderPlugin
   \brief Display Plugin for Quality Histograms
   \author G. Della Ricca
   \author B. Gobbo
-  \version $Revision: 1.143 $
-  \date $Date: 2011/07/20 20:46:20 $
+  \version $Revision: 1.144 $
+  \date $Date: 2011/08/11 18:33:05 $
 */
 
 #include "DQM/DQMRenderPlugin.h"
@@ -933,7 +933,19 @@ private:
 
       if( nbx == 72 && nby == 34 )
       {
-        if( name.find( "EBTMT" ) == std::string::npos )
+        if( name.find( "EBTMT" ) != std::string::npos ||
+	    name.find( "EBLT amplitude map" ) != std::string::npos )
+        {
+          int x1 = text6->GetXaxis()->FindFixBin(obj->GetXaxis()->GetXmin());
+          int x2 = text6->GetXaxis()->FindFixBin(obj->GetXaxis()->GetXmax());
+          int y1 = text6->GetYaxis()->FindFixBin(obj->GetYaxis()->GetXmin());
+          int y2 = text6->GetYaxis()->FindFixBin(obj->GetYaxis()->GetXmax());
+          text6->GetXaxis()->SetRange(x1, x2);
+          text6->GetYaxis()->SetRange(y1, y2);
+          text6->Draw("text,same");
+          return;          
+        }
+        else
         {
           int x1 = text8->GetXaxis()->FindFixBin(obj->GetXaxis()->GetXmin());
           int x2 = text8->GetXaxis()->FindFixBin(obj->GetXaxis()->GetXmax());
@@ -943,18 +955,6 @@ private:
           text8->GetYaxis()->SetRange(y1, y2);
           text8->Draw("text,same");
           return;
-        }
-        else
-        {
-          int x1 = text6->GetXaxis()->FindFixBin(obj->GetXaxis()->GetXmin());
-          int x2 = text6->GetXaxis()->FindFixBin(obj->GetXaxis()->GetXmax());
-          int y1 = text6->GetYaxis()->FindFixBin(obj->GetYaxis()->GetXmin());
-          int y2 = text6->GetYaxis()->FindFixBin(obj->GetYaxis()->GetXmax());
-          text6->GetXaxis()->SetRange(x1, x2);
-          text6->GetYaxis()->SetRange(y1, y2);
-          text6->Draw("text,same");
-
-          return;          
         }
       }
 

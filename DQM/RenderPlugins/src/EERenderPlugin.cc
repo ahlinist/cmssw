@@ -1,12 +1,12 @@
-// $Id: EERenderPlugin.cc,v 1.168 2011/07/20 20:46:20 yiiyama Exp $
+// $Id: EERenderPlugin.cc,v 1.169 2011/08/11 18:33:05 yiiyama Exp $
 
 /*!
   \file EERenderPlugin
   \brief Display Plugin for Quality Histograms
   \author G. Della Ricca
   \author B. Gobbo
-  \version $Revision: 1.168 $
-  \date $Date: 2011/07/20 20:46:20 $
+  \version $Revision: 1.169 $
+  \date $Date: 2011/08/11 18:33:05 $
 */
 
 #include "DQM/DQMRenderPlugin.h"
@@ -1345,7 +1345,9 @@ private:
         }
       }
 
-      if( nbx == 20 && nby == 20 && name.find( "EETMT" ) != std::string::npos )
+      if( nbx == 20 && nby == 20 && 
+	  ( name.find( "EETMT" ) != std::string::npos || 
+	    name.find( "EELT amplitude map" ) != std::string::npos ) )
       {
         if( name.find( "EE -" ) != std::string::npos )
         {
