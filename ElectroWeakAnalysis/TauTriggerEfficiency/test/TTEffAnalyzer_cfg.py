@@ -68,6 +68,8 @@ process.GlobalTag.connect   = 'frontier://FrontierProd/CMS_COND_31X_GLOBALTAG'
 process.GlobalTag.pfnPrefix = cms.untracked.string('frontier://FrontierProd/')
 print process.GlobalTag.globaltag
 
+# Tighten selection
+process.load("ElectroWeakAnalysis.TauTriggerEfficiency.ZtoMuTauFilter_cfi")
 
 #MET cleaning flag
 process.load('CommonTools/RecoAlgos/HBHENoiseFilterResultProducer_cfi')
@@ -85,9 +87,10 @@ process.TTEffAnalysis = cms.EDAnalyzer("TTEffAnalyzer",
                                                 cms.InputTag("TTEffSkimCounterSavedEvents")
                                                 ),
 
-	MuonSource		= cms.InputTag("muons"),
+	MuonSource		= cms.InputTag("selectedMuons"),
 	MuonPtMin		= cms.double(0.),
 	MuonEtaMax		= cms.double(5.),
+        MuonTauPairSource       = cms.InputTag("muTauPairs"),
 
 	HLTMETSource		= cms.InputTag("hltMet"),
 	METSource		= cms.InputTag("pfMet"),
@@ -217,7 +220,8 @@ else:
     process.runTTEffAna = cms.Path(
         process.hltPhysicsDeclared+
 	process.TauMCProducer
-    ) 
+    )
+process.runTTEffAna += process.muTauFilterSequence
 #process.runTTEffAna += process.TTEffPFTau
 process.runTTEffAna += process.TTEffHPSPFTau
 #process.runTTEffAna += process.TTEffAnalysis
