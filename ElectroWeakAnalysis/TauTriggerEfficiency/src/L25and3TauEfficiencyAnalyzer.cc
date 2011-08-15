@@ -1,7 +1,7 @@
 // Class:      L25and3TauEfficiencyAnalyzer
 // Original Author:  Eduardo Luiggi, modified by Sho Maruyama
 //         Created:  Fri Apr  4 16:37:44 CDT 2008
-// $Id: L25and3TauEfficiencyAnalyzer.cc,v 1.13 2011/06/21 08:14:35 slehti Exp $
+// $Id: L25and3TauEfficiencyAnalyzer.cc,v 1.14 2011/07/04 13:26:07 slehti Exp $
 #include "ElectroWeakAnalysis/TauTriggerEfficiency/interface/L25and3TauEfficiencyAnalyzer.h"
 #include "FWCore/MessageLogger/interface/MessageLogger.h"
 #include "DataFormats/VertexReco/interface/Vertex.h"
@@ -53,6 +53,8 @@ void L25and3TauEfficiencyAnalyzer::Setup(const edm::ParameterSet& iConfig,TTree*
   l25tree->Branch("l25IsoTrkPt",&l25IsoTrkPt,"l25IsoTrkPt/F");
   l25tree->Branch("l25TrkIsoPtSum",&l25TrkIsoPtSum,"l25TrkIsoPtSum/F");
   l25tree->Branch("l25EcalIsoEtSum",&l25EcalIsoEtSum,"l25EcalIsoEtSum/F");
+  l25tree->Branch("l25TrkIsoPtMax",&l25TrkIsoPtMax,"l25TrkIsoPtMax/F");
+  l25tree->Branch("l25EcalIsoEtMax",&l25EcalIsoEtMax,"l25EcalIsoEtMax/F");
   l25tree->Branch("l25NTrksIso",&l25NTrksIso,"l25NTrksIso/I");
   l25tree->Branch("l25NGammaIso",&l25NGammaIso,"l25NGammaIso/I"); 
   NMatchedToL2 = 0;
@@ -91,6 +93,8 @@ void L25and3TauEfficiencyAnalyzer::fill(const edm::Event& iEvent, const LorentzV
  
   l25IsoPtSum = 0;
   l25EcalIsoEtSum = 0;
+  l25TrkIsoPtMax = 0;
+  l25EcalIsoEtMax = 0;
   l25NTrksIso = 0;
   l25NGammaIso = 0;
   matchedToL2Jet = false;
@@ -177,6 +181,14 @@ void L25and3TauEfficiencyAnalyzer::fill(const edm::Event& iEvent, const LorentzV
         l25EcalIsoEtSum = theMatchedHLTPFtau.isolationPFGammaCandsEtSum();
 	l25NTrksIso = theMatchedHLTPFtau.isolationPFChargedHadrCands().size();
         l25NGammaIso = theMatchedHLTPFtau.isolationPFGammaCands().size();
+
+        for(size_t i=0; i<theMatchedHLTPFtau.isolationPFChargedHadrCands().size(); ++i) {
+          l25TrkIsoPtMax = std::max(l25TrkIsoPtMax, static_cast<float>(theMatchedHLTPFtau.isolationPFChargedHadrCands()[i]->pt()));
+        }
+        for(size_t i=0; i<theMatchedHLTPFtau.isolationPFGammaCands().size(); ++i) {
+          l25EcalIsoEtMax = std::max(l25EcalIsoEtMax, static_cast<float>(theMatchedHLTPFtau.isolationPFGammaCands()[i]->et()));
+        }
+
       }
       
       else{
