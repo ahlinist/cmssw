@@ -8,13 +8,13 @@ process = cms.Process("TTEffSKIM")
 process.load('Configuration.EventContent.EventContent_cff')
 
 process.load("FWCore/MessageService/MessageLogger_cfi")
-process.MessageLogger.destinations = cms.untracked.vstring("cout")
-process.MessageLogger.cout = cms.untracked.PSet(
-    threshold = cms.untracked.string("INFO")     # print LogInfos and above
-    )
+#process.MessageLogger.destinations = cms.untracked.vstring("cout")
+#process.MessageLogger.cout = cms.untracked.PSet(
+#    threshold = cms.untracked.string("INFO")     # print LogInfos and above
+#    )
 # This is also neede for printing debugs
-process.options   = cms.untracked.PSet( wantSummary = cms.untracked.bool(True) )
-process.MessageLogger.debugModules = cms.untracked.vstring("IdentifiedTaus","IdentifiedTauFilter")
+#process.options   = cms.untracked.PSet( wantSummary = cms.untracked.bool(True) )
+#process.MessageLogger.debugModules = cms.untracked.vstring("IdentifiedTaus","IdentifiedTauFilter")
 
 process.load('Configuration/StandardSequences/GeometryIdeal_cff')
 process.load('Configuration/StandardSequences/MagneticField_cff')
