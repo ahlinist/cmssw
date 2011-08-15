@@ -13,6 +13,8 @@ import copy
 # Depending on whether the muons pass the isolation cut or not, the two muons are marked as "tag" and "probe".
 #--------------------------------------------------------------------------------
 
+from TrackingTools.TransientTrack.TransientTrackBuilder_cfi import TransientTrackBuilderESProducer
+
 from CommonTools.ParticleFlow.pfNoPileUp_cff import *
 
 from PhysicsTools.PatAlgos.producersLayer1.muonProducer_cfi import patMuons
@@ -24,7 +26,14 @@ patMuons.usePV = cms.bool(False) # compute transverse impact parameter wrt. beam
 import HLTrigger.HLTfilters.hltHighLevel_cfi
 zmmHLTFilter = HLTrigger.HLTfilters.hltHighLevel_cfi.hltHighLevel.clone()
 zmmHLTFilter.TriggerResultsTag = cms.InputTag("TriggerResults", "", "HLT")
-zmmHLTFilter.HLTPaths = [ 'HLT_Mu15_v1', 'HLT_Mu15_v2', 'HLT_IsoMu15_v5', 'HLT_IsoMu17_v5', 'HLT_Mu24_v2' ]
+zmmHLTFilter.HLTPaths = [
+    'HLT_IsoMu17_v5',
+    'HLT_IsoMu17_v6'
+    'HLT_IsoMu17_v8',
+    'HLT_IsoMu17_v9'
+    'HLT_IsoMu17_v10',
+    'HLT_IsoMu17_v11'
+]
 zmmHLTFilter.throw = cms.bool(False)
 
 # Vertex selection
@@ -55,9 +64,9 @@ goodIsoMuons = cms.EDFilter("PATMuonPFIsolationSelector",
     src = cms.InputTag("goodMuons"),                          
     filter = cms.bool(False)
 )
-goodIsoMuons.chargedHadronIso.dRisoCone = cms.double(0.6)
-goodIsoMuons.neutralHadronIso.dRisoCone = cms.double(0.6)
-goodIsoMuons.photonIso.dRisoCone = cms.double(0.6)
+goodIsoMuons.chargedHadronIso.dRisoCone = cms.double(0.4)
+goodIsoMuons.neutralHadronIso.dRisoCone = cms.double(0.4)
+goodIsoMuons.photonIso.dRisoCone = cms.double(0.4)
 
 # Produce combinations of good
 #  o muon+ + muon-

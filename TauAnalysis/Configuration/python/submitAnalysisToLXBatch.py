@@ -137,8 +137,10 @@ def submitAnalysisToLXBatch(configFile = None, channel = None, samples = None,
                     HLTprocessName = samples['RECO_SAMPLES'][sample]['hlt'].getProcessName()
                     jobCustomizations.append("if hasattr(process, 'hltMu'):")
                     jobCustomizations.append("    process.hltMu.selector.src = cms.InputTag('TriggerResults::%s')" % HLTprocessName)
-                    jobCustomizations.append("process.patTrigger.processName = '%s'" % HLTprocessName)
-                    jobCustomizations.append("process.patTriggerEvent.processName = '%s'" % HLTprocessName)
+                    jobCustomizations.append("if hasattr(process, 'patTrigger'):")
+                    jobCustomizations.append("    process.patTrigger.processName = '%s'" % HLTprocessName)
+                    jobCustomizations.append("if hasattr(process, 'patTriggerEvent'):")
+                    jobCustomizations.append("    process.patTriggerEvent.processName = '%s'" % HLTprocessName)
                 if samples['RECO_SAMPLES'][sample]['type'] == 'Data':
                     jobCustomizations.append("if hasattr(process, 'prePatProductionSequence')"
                                             + " and hasattr(process, 'prePatProductionSequenceGen'):")

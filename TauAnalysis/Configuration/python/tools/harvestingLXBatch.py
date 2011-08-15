@@ -219,10 +219,10 @@ def make_harvest_scripts(plot_regex, skim_regex,
                     bsub_job_names.append(job_name)
                     
                     # Register our job
-                    print "--> registering channel %s, sample %s, jobId %s" % (channel, sample, job_id)
-                    print " script_directory = %s" % script_directory
+                    #print "--> registering channel %s, sample %s, jobId %s" % (channel, sample, job_id)
+                    #print " script_directory = %s" % script_directory
                     job_registry[output_file] = job_name
-                    print " job_registry[%s] = %s" % (output_file, job_registry[output_file])
+                    #print " job_registry[%s] = %s" % (output_file, job_registry[output_file])
                     script_file = os.path.join(
                         script_directory, "_".join([
                             "harvest",

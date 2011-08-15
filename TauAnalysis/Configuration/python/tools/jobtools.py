@@ -55,6 +55,7 @@ if ( "$$result" == 0 ) then
     rfrm $outputFile
     echo "Copying output"
     rfcp $outputFileName $outputFile
+$rfcp_add_output_files
 endif
 exit 0
 ''')
@@ -68,7 +69,8 @@ def hash_files(files, add_time=True):
     return hash.hexdigest()[:4]
 
 def make_bsub_script(output_file, input_jobs_and_files,
-                     log_file_maker, merge_method, pass_io_files = True, abort_on_rfcp_error = True, label = ""):
+                     log_file_maker, merge_method, pass_io_files = True, abort_on_rfcp_error = True, label = "",
+                     add_output_files = []):
     # Create a unique job name for our output file.  We leave the add_time
     # option set to true so that lxbatch jobs always have a unique name.
     # Otherwise when we add dependencies LXB gets confused if there were
@@ -112,6 +114,12 @@ def make_bsub_script(output_file, input_jobs_and_files,
         inputFileCommand = ""
         outputFileCommand = ""
 
+    # Copy additional output files
+    rfcp_add_output_files = ""
+    for add_output_file in add_output_files:
+        rfcp_add_output_files += "    rfrm %s\n" % os.path.join(os.path.dirname(output_file), add_output_file)
+        rfcp_add_output_files += "    rfcp %s %s\n" % (add_output_file, os.path.join(os.path.dirname(output_file), add_output_file))
+
     # Return a tuple containing the output job name and the text of the script
     # file
     return (job_name, bsub_template.substitute(
@@ -124,6 +132,7 @@ def make_bsub_script(output_file, input_jobs_and_files,
         inputFileList = inputFileList,
         outputFileCommand = outputFileCommand,
         outputFileName = outputFileName,
+        rfcp_add_output_files = rfcp_add_output_files,
         copy_command = copy_command,
         exit_command = exit_command,
         merger_comand = merge_method,
