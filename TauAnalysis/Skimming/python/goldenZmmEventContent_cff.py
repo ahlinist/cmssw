@@ -1,9 +1,9 @@
 import FWCore.ParameterSet.Config as cms
 
-# import definition of FEVT (RAW + RECO) event content
+# import definition of FEVTSIM (RAW + RECO + Gen/Sim) event content
 from Configuration.EventContent.EventContent_cff import *
 
-goldenZmumuEventContent = FEVTEventContent.clone()
+goldenZmumuEventContent = FEVTSIMEventContent.clone()
 
 # keep extras
 keepExtras = cms.PSet(

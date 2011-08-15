@@ -64,12 +64,14 @@ process.saveZtoMuTauPlots = cms.EDAnalyzer("DQMSimpleFileSaver",
 )
 
 process.maxEvents = cms.untracked.PSet(
-    input = cms.untracked.int32(-1)
+    input = cms.untracked.int32(100)
 )
 
 process.source = cms.Source("PoolSource",
     fileNames = cms.untracked.vstring(
-        'file:/data1/veelken/CMSSW_4_2_x/skims/AHtoMuTau_negSVfitMass_lorenzo.root'                         
+        ##'file:/data1/veelken/CMSSW_4_2_x/skims/AHtoMuTau_negSVfitMass_lorenzo.root'
+        ##'file:/data1/veelken/CMSSW_4_2_x/skims/skimGenZtoMuTauWithinAcc_Ztautau_2011Jun30v2_AOD.root'
+        'rfio:/castor/cern.ch/user/v/veelken/CMSSW_4_2_x/skims/TauIdEffMeas/tauIdEffSample_TTplusJets_madgraph_2011Jul23_RECO_86_1_0MB.root'                         
     )
     #skipBadFiles = cms.untracked.bool(True)
 )

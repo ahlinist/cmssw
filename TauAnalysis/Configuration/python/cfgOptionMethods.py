@@ -215,8 +215,10 @@ def _setTriggerProcess(process, triggerTag, **kwargs):
 			patutils.massSearchReplaceAnyInputTag(processAttr, cms.InputTag("TriggerResults::HLT"), triggerTag)
 
 	# update InputTag for PAT trigger tools
-	process.patTrigger.processName = triggerTag.getProcessName()
-	process.patTriggerEvent.processName = triggerTag.getProcessName()
+        if hasattr("process", "patTrigger"):
+            process.patTrigger.processName = triggerTag.getProcessName()
+        if hasattr("process", "patTriggerEvent"):    
+            process.patTriggerEvent.processName = triggerTag.getProcessName()
 
 	# update InputTag for all histogram managers,
 	# binner and event-dump plugins of GenericAnalyzer module
