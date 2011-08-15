@@ -12,4 +12,28 @@
   <use   name="TauAnalysis/CandidateTools"/>
   <use   name="root"/>
 </bin>
-
+<bin   file="FWLiteZllRecoilCorrectionAnalyzer.cc" name="FWLiteZllRecoilCorrectionAnalyzer">
+  <use   name="DataFormats/Candidate"/>
+  <use   name="DataFormats/Common"/>
+  <use   name="DataFormats/FWLite"/>
+  <use   name="DataFormats/PatCandidates"/>
+  <use   name="DataFormats/VertexReco"/>
+  <use   name="FWCore/FWLite"/>
+  <use   name="FWCore/ParameterSet"/>
+  <use   name="FWCore/PythonParameterSet"/>
+  <use   name="FWCore/Utilities"/>
+  <use   name="PhysicsTools/FWLite"/>
+  <use   name="TauAnalysis/CandidateTools"/>
+  <use   name="TauAnalysis/RecoTools"/>
+  <use   name="root"/>
+</bin>
+<bin   file="fitZllRecoilCorrection.cc" name="fitZllRecoilCorrection">
+  <use   name="FWCore/FWLite"/>
+  <use   name="FWCore/ParameterSet"/>
+  <use   name="FWCore/PythonParameterSet"/>
+  <use   name="FWCore/Utilities"/>
+  <use   name="PhysicsTools/FWLite"/>
+  <use   name="TauAnalysis/RecoTools"/>
+  <use   name="root"/>
+  <use   name="roofit"/>
+</bin>

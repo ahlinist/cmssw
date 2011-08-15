@@ -1,9 +1,13 @@
 <use   name="FWCore/Framework"/>
 <use   name="FWCore/MessageLogger"/>
+<use   name="CommonTools/Utils"/>
 <use   name="DataFormats/BeamSpot"/>
+<use   name="DataFormats/Candidate"/>
 <use   name="DataFormats/ParticleFlowCandidate"/>
+<use   name="DataFormats/PatCandidates"/>
 <use   name="DataFormats/TrackReco"/>
 <use   name="DataFormats/VertexReco"/>
+<use   name="TauAnalysis/CandidateTools"/>
 <use   name="root"/>
 <export>
   <lib   name="1"/>

@@ -81,6 +81,7 @@ else:
 
 from JetMETCorrections.Type1MET.MetType1Corrections_cff import metJESCorAK5PFJet
 process.pfMETtypeIcorrected = metJESCorAK5PFJet.clone(
+    inputUncorJetsLabel = cms.string('ak5PFJets'),
     jetPTthreshold = cms.double(10.0),
     useTypeII = cms.bool(False),
     corrector = cms.string(pfMEtCorrector)
@@ -135,13 +136,20 @@ process.pfNeutralCands = cms.EDFilter("PdgIdPFCandidateSelector",
      pdgId = cms.vint32(pfNeutralCandPdgIds)
 )
 
+process.prePatProductionSequence += process.pfNeutralCands
+
 from RecoJets.JetProducers.kt4PFJets_cfi import kt4PFJets
-process.kt6PFNeutralJets = kt4PFJets.clone(
-    src = cms.InputTag('pfNeutralCands'),
+process.kt6PFJets = kt4PFJets.clone(
+    src = cms.InputTag('particleFlow'),
     rParam = cms.double(0.6),
     doRhoFastjet = cms.bool(True),
     Rho_EtaMax = cms.double(2.5)
 )    
+process.kt6PFNeutralJets = process.kt6PFJets.clone(
+    src = cms.InputTag('pfNeutralCands')
+)
+process.prePatProductionSequence += process.kt6PFJets
+process.prePatProductionSequence += process.kt6PFNeutralJets
 #--------------------------------------------------------------------------------
 
 #--------------------------------------------------------------------------------
@@ -168,14 +176,26 @@ switchJetCollection(
     outputModule = ''
 )
 process.patTupleProductionSequence = cms.Sequence()
+process.patTupleProductionSequence += process.jetTracksAssociatorAtVertex
+process.patTupleProductionSequence += process.patJetCharge
 process.patTupleProductionSequence += process.patJetCorrFactors
 process.patTupleProductionSequence += process.patJets
 
+# select pat::Jets not overlapping with muons
+process.selectedPatJetsAntiOverlapWithMuonsVeto = cms.EDFilter("PATJetAntiOverlapSelector",
+    src = cms.InputTag('patJets'),                                                       
+    srcNotToBeFiltered = cms.VInputTag('goodMuons'),
+    dRmin = cms.double(0.7)
+)
+
+process.patTupleProductionSequence += process.selectedPatJetsAntiOverlapWithMuonsVeto
+
 # configure pat::MET production
 process.patPFMETs = process.patMETs.clone(
-    metSource = cms.InputTag('pfMET'),
+    metSource = cms.InputTag('pfMet'),
     addMuonCorrections = cms.bool(False),
-    genMETSource = cms.InputTag('genMetTrue')
+    genMETSource = cms.InputTag('genMetTrue'),
+    addGenMET = cms.bool(True)
 )
 process.patPFMETsTypeIcorrected = process.patPFMETs.clone(
     metSource = cms.InputTag('pfMETtypeIcorrected')
@@ -186,6 +206,11 @@ process.patPFMETsTypeIpIIcorrected = process.patPFMETs.clone(
 process.patTupleProductionSequence += process.patPFMETs
 process.patTupleProductionSequence += process.patPFMETsTypeIcorrected
 process.patTupleProductionSequence += process.patPFMETsTypeIpIIcorrected
+
+if not isMC:
+    process.patPFMETs.addGenMET = cms.bool(False)
+    process.patPFMETsTypeIcorrected.addGenMET = cms.bool(False)
+    process.patPFMETsTypeIpIIcorrected.addGenMET = cms.bool(False)
 #--------------------------------------------------------------------------------    
 
 #--------------------------------------------------------------------------------
@@ -205,7 +230,7 @@ process.patTupleOutputModule = cms.OutputModule("PoolOutputModule",
             'keep LumiSummary_*_*_*',                       
             'keep edmMergeableCounter_*_*_*',
             'keep *_goodMuons_*_*',
-            'keep *_goodIsoMuons_*_*'                                            
+            'keep *_goodIsoMuons_*_*',                                            
             'keep *_goldenZmumuCandidatesGe0IsoMuons_*_*',
             'keep *_goldenZmumuCandidatesGe1IsoMuons_*_*',
             'keep *_goldenZmumuCandidatesGe2IsoMuons_*_*',                                                        
@@ -215,10 +240,12 @@ process.patTupleOutputModule = cms.OutputModule("PoolOutputModule",
             'keep *_selectedPrimaryVertexHighestPtTrackSum_*_*',
             'keep *_selectedPrimaryVerticesTrackPtSumGt5_*_*',
             'keep *_selectedPrimaryVerticesTrackPtSumGt10_*_*',                                            
-            'keep *_patJets_*_*',                                            
+            'keep *_patJets_*_*',
+            'keep *_selectedPatJetsAntiOverlapWithMuonsVeto_*_*',                              
             'keep *_patPFMETs_*_*',
-            'keep *_patPFMETsTypeIcorrected_*_*',                                         
+            'keep *_patPFMETsTypeIcorrected_*_*',
             'keep *_patPFMETsTypeIpIIcorrected_*_*',
+            'keep *_pfMETtypeIpIIcorrected_*_*',                                 
             'keep *_kt6PFNeutralJets_rho_*'
         )
     ),

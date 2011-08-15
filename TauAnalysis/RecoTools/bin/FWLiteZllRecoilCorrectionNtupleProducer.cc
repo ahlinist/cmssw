@@ -1,13 +1,13 @@
 
-/** \executable FWLiteZllRecoilCorrectionNtupleProducer.cc
+/** \executable FWLiteZllRecoilCorrectionNtupleProducer
  *
  * Produce "plain" ROOT Ntuple for fitting Z-recoil correction parameters
  *
  * \author Christian Veelken, UC Davis
  *
- * \version $Revision: 1.3 $
+ * \version $Revision: 1.1 $
  *
- * $Id: FWLiteZllRecoilCorrectionNtupleProducer.cc,v 1.3 2011/08/08 16:58:01 veelken Exp $
+ * $Id: FWLiteZllRecoilCorrectionNtupleProducer.cc,v 1.1 2011/08/13 12:50:28 veelken Exp $
  *
  */
 
@@ -179,19 +179,19 @@ int main(int argc, char* argv[])
       edm::Handle<reco::CandidateView> ZllCandidates;
       evt.getByLabel(srcZllCandidates, ZllCandidates);
 
-      reco::Candidate::LorentzVector p4ZllCandidate;
+      const reco::Candidate* bestZllCandidate = 0;
       const double nominalZmass = 91.19;
       double minMassDiff = -1.;
       for ( reco::CandidateView::const_iterator ZllCandidate = ZllCandidates->begin();
 	    ZllCandidate != ZllCandidates->end(); ++ZllCandidate ) {
 	double massDiff = TMath::Abs(ZllCandidate->mass() - nominalZmass);
 	if ( minMassDiff == -1. || massDiff < minMassDiff ) {
-	  p4ZllCandidate = ZllCandidate->p4();
+	  bestZllCandidate = &(*ZllCandidate);
 	  minMassDiff = massDiff;
 	}
       }
 	    
-      if ( minMassDiff == -1. ) continue;
+      if ( !bestZllCandidate ) continue;
 
       edm::Handle<std::vector<pat::MET> > met;
       evt.getByLabel(srcMEt, met);
@@ -202,10 +202,10 @@ int main(int argc, char* argv[])
   
       const pat::MET& theEventMEt = (*met->begin());
 
-      qT = p4ZllCandidate.pt();
+      qT = bestZllCandidate->pt();
 
       int errorFlag = 0;
-      std::pair<double, double> uT = compMEtProjU(p4ZllCandidate, theEventMEt.px(), theEventMEt.py(), errorFlag);
+      std::pair<double, double> uT = compMEtProjU(bestZllCandidate->p4(), theEventMEt.px(), theEventMEt.py(), errorFlag);
       if ( errorFlag ) continue;
       
       u1 = uT.first;
