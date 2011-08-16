@@ -169,7 +169,7 @@ Onia2MuMuPAT::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
 
 	  muonLess.clear();
 	  muonLess.reserve(thePrimaryV.tracksSize());
-	  if( addMuonlessPrimaryVertex_ ) {
+	  if( addMuonlessPrimaryVertex_  && thePrimaryV.tracksSize()>2) {
 	    // Primary vertex matched to the dimuon, now refit it removing the two muons
 	    VertexReProducer revertex(priVtxs, iEvent);
 	    Handle<TrackCollection> pvtracks;   
@@ -303,27 +303,48 @@ Onia2MuMuPAT::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
 
       // ---- MC Truth, if enabled ----
       if (addMCTruth_) {
-	
 	reco::GenParticleRef genMu1 = it->genParticleRef();
 	reco::GenParticleRef genMu2 = it2->genParticleRef();
 	if (genMu1.isNonnull() && genMu2.isNonnull()) {
-	  reco::GenParticleRef mom1 = genMu1->motherRef();
-	  reco::GenParticleRef mom2 = genMu2->motherRef();
-	  if (mom1.isNonnull() && (mom1 == mom2)) {
-	    myCand.setGenParticleRef(mom1); // set
-	    myCand.embedGenParticle();      // and embed
-	    std::pair<int, float> MCinfo = findJpsiMCInfo(mom1);
-	    myCand.addUserInt("momPDGId",MCinfo.first);
-	    myCand.addUserFloat("ppdlTrue",MCinfo.second);
+	  if (genMu1->numberOfMothers()>0 && genMu2->numberOfMothers()>0){
+	    reco::GenParticleRef mom1 = genMu1->motherRef();
+	    reco::GenParticleRef mom2 = genMu2->motherRef();
+	    if (mom1.isNonnull() && (mom1 == mom2)) {
+	      myCand.setGenParticleRef(mom1); // set
+	      myCand.embedGenParticle();      // and embed
+	      std::pair<int, float> MCinfo = findJpsiMCInfo(mom1);
+	      myCand.addUserInt("momPDGId",MCinfo.first);
+	      myCand.addUserFloat("ppdlTrue",MCinfo.second);
+	    } else {
+	      myCand.addUserInt("momPDGId",0);
+	      myCand.addUserFloat("ppdlTrue",-99.);
+	    }
 	  } else {
-	    myCand.addUserInt("momPDGId",0);
-	    myCand.addUserFloat("ppdlTrue",-99.);
+	    Handle<GenParticleCollection>theGenParticles;
+	    iEvent.getByLabel("genParticles", theGenParticles);
+	    if (theGenParticles.isValid()){
+	      for(size_t iGenParticle=0; iGenParticle<theGenParticles->size();++iGenParticle) {
+		const Candidate & genCand = (*theGenParticles)[iGenParticle];
+		if (genCand.pdgId()==443 || genCand.pdgId()==100443 || 
+		    genCand.pdgId()==553 || genCand.pdgId()==100553 || genCand.pdgId()==200553) {
+		  reco::GenParticleRef mom1(theGenParticles,iGenParticle);
+		  myCand.setGenParticleRef(mom1);
+		  myCand.embedGenParticle();
+		  std::pair<int, float> MCinfo = findJpsiMCInfo(mom1);
+		  myCand.addUserInt("momPDGId",MCinfo.first);
+		  myCand.addUserFloat("ppdlTrue",MCinfo.second);
+		}
+	      }
+	    }
 	  }
 	} else {
 	  myCand.addUserInt("momPDGId",0);
 	  myCand.addUserFloat("ppdlTrue",-99.);
 	}
       }
+
+
+
 
       // ---- Push back output ----  
       oniaOutput->push_back(myCand);
@@ -362,52 +383,54 @@ Onia2MuMuPAT::findJpsiMCInfo(reco::GenParticleRef genJpsi) {
   int momJpsiID = 0;
   float trueLife = -99.;
 
-  TVector3 trueVtx(0.0,0.0,0.0);
-  TVector3 trueP(0.0,0.0,0.0);
-  TVector3 trueVtxMom(0.0,0.0,0.0);
+  if (genJpsi->numberOfMothers()>0) {
 
-  trueVtx.SetXYZ(genJpsi->vertex().x(),genJpsi->vertex().y(),genJpsi->vertex().z());
-  trueP.SetXYZ(genJpsi->momentum().x(),genJpsi->momentum().y(),genJpsi->momentum().z());
+    TVector3 trueVtx(0.0,0.0,0.0);
+    TVector3 trueP(0.0,0.0,0.0);
+    TVector3 trueVtxMom(0.0,0.0,0.0);
+
+    trueVtx.SetXYZ(genJpsi->vertex().x(),genJpsi->vertex().y(),genJpsi->vertex().z());
+    trueP.SetXYZ(genJpsi->momentum().x(),genJpsi->momentum().y(),genJpsi->momentum().z());
 	    
-  bool aBhadron = false;
-  reco::GenParticleRef Jpsimom = genJpsi->motherRef();       // find mothers
-  if (Jpsimom.isNull()) {
-    std::pair<int, float> result = std::make_pair(momJpsiID, trueLife);
-    return result;
-  } else {
-    reco::GenParticleRef Jpsigrandmom = Jpsimom->motherRef();
-    if (isAbHadron(Jpsimom->pdgId())) {
-      if (Jpsigrandmom.isNonnull() && isAMixedbHadron(Jpsimom->pdgId(),Jpsigrandmom->pdgId())) {
-	momJpsiID = Jpsigrandmom->pdgId();
-	trueVtxMom.SetXYZ(Jpsigrandmom->vertex().x(),Jpsigrandmom->vertex().y(),Jpsigrandmom->vertex().z());
-      } else {
-	momJpsiID = Jpsimom->pdgId();
-	trueVtxMom.SetXYZ(Jpsimom->vertex().x(),Jpsimom->vertex().y(),Jpsimom->vertex().z());
-      }
-      aBhadron = true;
+    bool aBhadron = false;
+    reco::GenParticleRef Jpsimom = genJpsi->motherRef();       // find mothers
+    if (Jpsimom.isNull()) {
+      std::pair<int, float> result = std::make_pair(momJpsiID, trueLife);
+      return result;
     } else {
-      if (Jpsigrandmom.isNonnull() && isAbHadron(Jpsigrandmom->pdgId())) {
-	reco::GenParticleRef JpsiGrandgrandmom = Jpsigrandmom->motherRef();
-	if (JpsiGrandgrandmom.isNonnull() && isAMixedbHadron(Jpsigrandmom->pdgId(),JpsiGrandgrandmom->pdgId())) {
-	  momJpsiID = JpsiGrandgrandmom->pdgId();
-	  trueVtxMom.SetXYZ(JpsiGrandgrandmom->vertex().x(),JpsiGrandgrandmom->vertex().y(),JpsiGrandgrandmom->vertex().z());
-	} else {
+      reco::GenParticleRef Jpsigrandmom = Jpsimom->motherRef();
+      if (isAbHadron(Jpsimom->pdgId())) {
+	if (Jpsigrandmom.isNonnull() && isAMixedbHadron(Jpsimom->pdgId(),Jpsigrandmom->pdgId())) {
 	  momJpsiID = Jpsigrandmom->pdgId();
 	  trueVtxMom.SetXYZ(Jpsigrandmom->vertex().x(),Jpsigrandmom->vertex().y(),Jpsigrandmom->vertex().z());
+	} else {
+	  momJpsiID = Jpsimom->pdgId();
+	  trueVtxMom.SetXYZ(Jpsimom->vertex().x(),Jpsimom->vertex().y(),Jpsimom->vertex().z());
 	}
 	aBhadron = true;
+      } else {
+	if (Jpsigrandmom.isNonnull() && isAbHadron(Jpsigrandmom->pdgId())) {
+	  reco::GenParticleRef JpsiGrandgrandmom = Jpsigrandmom->motherRef();
+	  if (JpsiGrandgrandmom.isNonnull() && isAMixedbHadron(Jpsigrandmom->pdgId(),JpsiGrandgrandmom->pdgId())) {
+	    momJpsiID = JpsiGrandgrandmom->pdgId();
+	    trueVtxMom.SetXYZ(JpsiGrandgrandmom->vertex().x(),JpsiGrandgrandmom->vertex().y(),JpsiGrandgrandmom->vertex().z());
+	  } else {
+	    momJpsiID = Jpsigrandmom->pdgId();
+	    trueVtxMom.SetXYZ(Jpsigrandmom->vertex().x(),Jpsigrandmom->vertex().y(),Jpsigrandmom->vertex().z());
+	  }
+	  aBhadron = true;
+	}
       }
-    }
-    if (!aBhadron) {
-      momJpsiID = Jpsimom->pdgId();
-      trueVtxMom.SetXYZ(Jpsimom->vertex().x(),Jpsimom->vertex().y(),Jpsimom->vertex().z()); 
-    }
-  } 
-
-  TVector3 vdiff = trueVtx - trueVtxMom;
-  //trueLife = vdiff.Perp()*3.09688/trueP.Perp();
-  trueLife = vdiff.Perp()*genJpsi->mass()/trueP.Perp();
-
+      if (!aBhadron) {
+	momJpsiID = Jpsimom->pdgId();
+	trueVtxMom.SetXYZ(Jpsimom->vertex().x(),Jpsimom->vertex().y(),Jpsimom->vertex().z()); 
+      }
+    } 
+    
+    TVector3 vdiff = trueVtx - trueVtxMom;
+    //trueLife = vdiff.Perp()*3.09688/trueP.Perp();
+    trueLife = vdiff.Perp()*genJpsi->mass()/trueP.Perp();
+  }
   std::pair<int, float> result = std::make_pair(momJpsiID, trueLife);
   return result;
 
