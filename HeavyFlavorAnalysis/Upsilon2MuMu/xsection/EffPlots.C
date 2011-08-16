@@ -4,6 +4,282 @@
 #include "TH1.h"
 #include "../../../AnalysisDataFormats/HeavyFlavorObjects/rootio/PidTable.hh"
 
+void PosVsNeg_MuID(){
+  
+  // Data -> Pos
+  // MC -> Neg
+  
+  gStyle->SetOptStat(00000000000);
+  int Npt(5); int Neta(5);
+  double effData(-99); double effMC(-99); double effDataErr(-99); double effMCErr(-99); 
+  fPidTableData = new PidTable("../tnp/PidTables/DATA/Jpsi/MuID/CowboyVeto/TrackerMuonArbitrated/PtMmbPos-jpsi.tma.nb.dat");
+  fPidTableMC = new PidTable("../tnp/PidTables/DATA/Jpsi/MuID/CowboyVeto/TrackerMuonArbitrated/PtMmbNeg-jpsi.tma.nb.dat");
+  
+  double pt[6] = {3., 4., 5., 6., 8., 50.};
+  double eta[6] = {-2.4, -1.2, -0.4, 0.4, 1.2, 2.4};
+
+  TH1D *EffData1; TH1D *EffMC1; TH1D *EffData2; TH1D *EffMC2; TH1D *EffData3; TH1D *EffMC3; 
+  TH1D *EffData4; TH1D *EffMC4; TH1D *EffData5; TH1D *EffMC5;
+  EffData1 = new TH1D("MuID Efficiency", "MuID Efficiency", 5, pt); EffMC1 = new TH1D("MuIDEfficiency", "MuIDEfficiency", 5, pt); 
+  EffData2 = new TH1D("MuID Efficiency", "MuID Efficiency", 5, pt); EffMC2 = new TH1D("MuIDEfficiency", "MuIDEfficiency", 5, pt); 
+  EffData3 = new TH1D("MuID Efficiency", "MuID Efficiency", 5, pt); EffMC3 = new TH1D("MuIDEfficiency", "MuIDEfficiency", 5, pt);
+  EffData4 = new TH1D("MuID Efficiency", "MuID Efficiency", 5, pt); EffMC4 = new TH1D("MuIDEfficiency", "MuIDEfficiency", 5, pt); 
+  EffData5 = new TH1D("MuID Efficiency", "MuID Efficiency", 5, pt); EffMC5 = new TH1D("MuIDEfficiency", "MuIDEfficiency", 5, pt);  
+  
+  for ( int i = 0; i < 5 ; i++){
+    for ( int j = 0; j < 5 ; j++){
+      
+      effData = fPidTableData->effD(pt[i]+0.1, eta[j]+0.1, 0.);
+      effDataErr = fPidTableData->errD(pt[i]+0.1, eta[j]+0.1, 0.);
+      effMC = fPidTableMC->effD(pt[i]+0.1, eta[j]+0.1, 0.);
+      effMCErr = fPidTableMC->errD(pt[i]+0.1, eta[j]+0.1, 0.);
+      cout<< pt[i] << "-" << pt[i+1] << " " << eta[j] << "-" << eta[j+1] <<  "effData = " << effData << "effMC = " << effMC << endl;
+      
+      if ( j == 0 ){
+	EffData1->SetBinContent(i+1,effData);
+	EffData1->SetBinError(i+1,effDataErr);
+	EffMC1->SetBinContent(i+1,effMC);
+	EffMC1->SetBinError(i+1,effMCErr);	
+      }
+      
+      if ( j == 1 ){
+	if ( i > 0 ){
+	  EffData2->SetBinContent(i+1,effData);
+	  EffData2->SetBinError(i+1,effDataErr);
+	  EffMC2->SetBinContent(i+1,effMC);
+	  EffMC2->SetBinError(i+1,effMCErr);	
+	}
+      }
+      
+      if ( j == 2 ){
+	if ( i > 0 ){
+	  EffData3->SetBinContent(i+1,effData);
+	  EffData3->SetBinError(i+1,effDataErr);
+	  EffMC3->SetBinContent(i+1,effMC);
+	  EffMC3->SetBinError(i+1,effMCErr);	
+	}      
+      }
+      
+      if ( j == 3 ){
+	if ( i > 0 ){
+	  EffData4->SetBinContent(i+1,effData);
+	  EffData4->SetBinError(i+1,effDataErr);
+	  EffMC4->SetBinContent(i+1,effMC);
+	  EffMC4->SetBinError(i+1,effMCErr);	
+	}
+      }
+      
+      if ( j == 4 ){
+	EffData5->SetBinContent(i+1,effData);
+	EffData5->SetBinError(i+1,effDataErr);
+	EffMC5->SetBinContent(i+1,effMC);
+	EffMC5->SetBinError(i+1,effMCErr);	
+      }        
+      
+    }
+  }
+  TCanvas *c9 = new TCanvas("c9","c9",1200,600); 
+  c9->Divide(3,2);
+  c9->cd(1);
+  EffData1->SetMinimum(0.2);
+  EffData1->SetMaximum(1.05);
+  EffData1->SetMarkerStyle(22);
+  EffData1->SetMarkerColor(1);
+  EffData1->SetLineColor(1);
+  EffData1->Draw("pe");
+  EffMC1->SetMarkerStyle(23);
+  EffMC1->SetMarkerColor(2);
+  EffMC1->SetLineColor(2);
+  EffMC1->Draw("pesame");  
+  legg = new TLegend(0.5,0.2,0.7,0.4);
+  legg->SetFillStyle(0); legg->SetBorderSize(0); legg->SetTextSize(0.05); legg->SetTextFont(132); 
+  legg->SetHeader("  -2.4 < #eta^{#mu} < -1.2");
+  legge = legg->AddEntry(EffData1,  "J/#psi TNP Data Pos","p"); legge->SetTextColor(kBlack);
+  legge = legg->AddEntry(EffMC1,  "J/#psi TNP Data Neg","p"); legge->SetTextColor(kRed);
+  legg->Draw();
+  c9->cd(2);
+  EffData2->SetMinimum(0.2);
+  EffData2->SetMaximum(1.05);
+  EffData2->SetMarkerStyle(22);
+  EffData2->SetMarkerColor(1);
+  EffData2->SetLineColor(1);
+  EffData2->Draw("pe");
+  EffMC2->SetMarkerStyle(23);
+  EffMC2->SetMarkerColor(2);
+  EffMC2->SetLineColor(2);
+  EffMC2->Draw("pesame");  
+  legg = new TLegend(0.5,0.2,0.7,0.4);
+  legg->SetFillStyle(0); legg->SetBorderSize(0); legg->SetTextSize(0.05); legg->SetTextFont(132); 
+  legg->SetHeader("  -1.2 < #eta^{#mu} < -0.4");
+  legge = legg->AddEntry(EffData2,  "J/#psi TNP Data Pos","p"); legge->SetTextColor(kBlack);
+  legge = legg->AddEntry(EffMC2,  "J/#psi TNP Data Neg","p"); legge->SetTextColor(kRed);
+  legg->Draw();  
+  c9->cd(3);
+  EffData3->SetMinimum(0.2);
+  EffData3->SetMaximum(1.05);
+  EffData3->SetMarkerStyle(22);
+  EffData3->SetMarkerColor(1);
+  EffData3->SetLineColor(1);
+  EffData3->Draw("pe");
+  EffMC3->SetMarkerStyle(23);
+  EffMC3->SetMarkerColor(2);
+  EffMC3->SetLineColor(2);
+  EffMC3->Draw("pesame");  
+  legg = new TLegend(0.5,0.2,0.7,0.4);
+  legg->SetFillStyle(0); legg->SetBorderSize(0); legg->SetTextSize(0.05); legg->SetTextFont(132); 
+  legg->SetHeader("  -0.4 < #eta^{#mu} < 0.4");
+  legge = legg->AddEntry(EffData3,  "J/#psi TNP Data Pos","p"); legge->SetTextColor(kBlack);
+  legge = legg->AddEntry(EffMC3,  "J/#psi TNP Data Neg","p"); legge->SetTextColor(kRed);
+  legg->Draw();   
+  c9->cd(4);
+  EffData4->SetMinimum(0.2);
+  EffData4->SetMaximum(1.05);
+  EffData4->SetMarkerStyle(22);
+  EffData4->SetMarkerColor(1);
+  EffData4->SetLineColor(1);
+  EffData4->Draw("pe");
+  EffMC4->SetMarkerStyle(23);
+  EffMC4->SetMarkerColor(2);
+  EffMC4->SetLineColor(2);
+  EffMC4->Draw("pesame");  
+  legg = new TLegend(0.5,0.2,0.7,0.4);
+  legg->SetFillStyle(0); legg->SetBorderSize(0); legg->SetTextSize(0.05); legg->SetTextFont(132); 
+  legg->SetHeader("  0.4 < #eta^{#mu} < 1.2");
+  legge = legg->AddEntry(EffData4,  "J/#psi TNP Data Pos","p"); legge->SetTextColor(kBlack);
+  legge = legg->AddEntry(EffMC4,  "J/#psi TNP Data Neg","p"); legge->SetTextColor(kRed);
+  legg->Draw();   
+  c9->cd(5);
+  EffData5->SetMinimum(0.2);
+  EffData5->SetMaximum(1.05);
+  EffData5->SetMarkerStyle(22);
+  EffData5->SetMarkerColor(1);
+  EffData5->SetLineColor(1);
+  EffData5->Draw("pe");
+  EffMC5->SetMarkerStyle(23);
+  EffMC5->SetMarkerColor(2);
+  EffMC5->SetLineColor(2);
+  EffMC5->Draw("pesame");  
+  legg = new TLegend(0.5,0.2,0.7,0.4);
+  legg->SetFillStyle(0); legg->SetBorderSize(0); legg->SetTextSize(0.05); legg->SetTextFont(132); 
+  legg->SetHeader("  1.2 < #eta^{#mu} < 2.4");
+  legge = legg->AddEntry(EffData5,  "J/#psi TNP Data Pos","p"); legge->SetTextColor(kBlack);
+  legge = legg->AddEntry(EffMC5,  "J/#psi TNP Data Neg","p"); legge->SetTextColor(kRed);
+  legg->Draw();     
+  
+  TCanvas *c901 = new TCanvas("c901","c901",800,600); 
+  EffData1->SetTitle("");
+  EffData1->GetXaxis()->SetTitle("Probe p_{T} [GeV/c]");
+  EffData1->GetYaxis()->SetTitle("Efficieny");
+  EffData1->SetMinimum(0.75);
+  EffData1->SetMaximum(1.05);
+  EffData1->SetMarkerStyle(22);
+  EffData1->SetMarkerColor(1);
+  EffData1->SetLineColor(1);
+  EffData1->Draw("pe");
+  EffMC1->SetMarkerStyle(23);
+  EffMC1->SetMarkerColor(2);
+  EffMC1->SetLineColor(2);
+  EffMC1->Draw("pesame");  
+  legg = new TLegend(0.5,0.2,0.7,0.4);
+  legg->SetFillStyle(0); legg->SetBorderSize(0); legg->SetTextSize(0.05); legg->SetTextFont(132); 
+  legg->SetHeader("  -2.4 < #eta^{#mu} < -1.2");
+  legge = legg->AddEntry(EffData1,  "J/#psi TNP Data Pos","p"); legge->SetTextColor(kBlack);
+  legge = legg->AddEntry(EffMC1,  "J/#psi TNP Data Neg","p"); legge->SetTextColor(kRed);
+  legg->Draw();
+  c901->SaveAs("PosVsNeg_MuID1.pdf");
+  
+  TCanvas *c902 = new TCanvas("c902","c902",800,600); 
+  EffData2->SetTitle("");
+  EffData2->GetXaxis()->SetTitle("Probe p_{T} [GeV/c]");
+  EffData2->GetYaxis()->SetTitle("Efficieny");
+  EffData2->SetMinimum(0.75);
+  EffData2->SetMaximum(1.05);
+  EffData2->SetMarkerStyle(22);
+  EffData2->SetMarkerColor(1);
+  EffData2->SetLineColor(1);
+  EffData2->Draw("pe");
+  EffMC2->SetMarkerStyle(23);
+  EffMC2->SetMarkerColor(2);
+  EffMC2->SetLineColor(2);
+  EffMC2->Draw("pesame");  
+  legg = new TLegend(0.5,0.2,0.7,0.4);
+  legg->SetFillStyle(0); legg->SetBorderSize(0); legg->SetTextSize(0.05); legg->SetTextFont(132); 
+  legg->SetHeader("  -1.2 < #eta^{#mu} < -0.4");
+  legge = legg->AddEntry(EffData1,  "J/#psi TNP Data Pos","p"); legge->SetTextColor(kBlack);
+  legge = legg->AddEntry(EffMC1,  "J/#psi TNP Data Neg","p"); legge->SetTextColor(kRed);
+  legg->Draw();
+  c902->SaveAs("PosVsNeg_MuID2.pdf");
+  
+  TCanvas *c903 = new TCanvas("c903","c903",800,600); 
+  EffData3->SetTitle("");
+  EffData3->GetXaxis()->SetTitle("Probe p_{T} [GeV/c]");
+  EffData3->GetYaxis()->SetTitle("Efficieny");
+  EffData3->SetMinimum(0.75);
+  EffData3->SetMaximum(1.05);
+  EffData3->SetMarkerStyle(22);
+  EffData3->SetMarkerColor(1);
+  EffData3->SetLineColor(1);
+  EffData3->Draw("pe");
+  EffMC3->SetMarkerStyle(23);
+  EffMC3->SetMarkerColor(2);
+  EffMC3->SetLineColor(2);
+  EffMC3->Draw("pesame");  
+  legg = new TLegend(0.5,0.2,0.7,0.4);
+  legg->SetFillStyle(0); legg->SetBorderSize(0); legg->SetTextSize(0.05); legg->SetTextFont(132); 
+  legg->SetHeader("  -0.4 < #eta^{#mu} < 0.4");
+  legge = legg->AddEntry(EffData1,  "J/#psi TNP Data Pos","p"); legge->SetTextColor(kBlack);
+  legge = legg->AddEntry(EffMC1,  "J/#psi TNP Data Neg","p"); legge->SetTextColor(kRed);
+  legg->Draw();
+  c903->SaveAs("PosVsNeg_MuID3.pdf");
+  
+  TCanvas *c904 = new TCanvas("c904","c904",800,600); 
+  EffData4->SetTitle("");
+  EffData4->GetXaxis()->SetTitle("Probe p_{T} [GeV/c]");
+  EffData4->GetYaxis()->SetTitle("Efficieny");
+  EffData4->SetMinimum(0.75);
+  EffData4->SetMaximum(1.05);
+  EffData4->SetMarkerStyle(22);
+  EffData4->SetMarkerColor(1);
+  EffData4->SetLineColor(1);
+  EffData4->Draw("pe");
+  EffMC4->SetMarkerStyle(23);
+  EffMC4->SetMarkerColor(2);
+  EffMC4->SetLineColor(2);
+  EffMC4->Draw("pesame");  
+  legg = new TLegend(0.5,0.2,0.7,0.4);
+  legg->SetFillStyle(0); legg->SetBorderSize(0); legg->SetTextSize(0.05); legg->SetTextFont(132); 
+  legg->SetHeader("  0.4 < #eta^{#mu} < 1.2");
+  legge = legg->AddEntry(EffData1,  "J/#psi TNP Data Pos","p"); legge->SetTextColor(kBlack);
+  legge = legg->AddEntry(EffMC1,  "J/#psi TNP Data Neg","p"); legge->SetTextColor(kRed);
+  legg->Draw();
+  c904->SaveAs("PosVsNeg_MuID4.pdf");
+  
+  TCanvas *c905 = new TCanvas("c905","c905",800,600); 
+  EffData5->SetTitle("");
+  EffData5->GetXaxis()->SetTitle("Probe p_{T} [GeV/c]");
+  EffData5->GetYaxis()->SetTitle("Efficieny");
+  EffData5->SetMinimum(0.75);
+  EffData5->SetMaximum(1.05);
+  EffData5->SetMarkerStyle(22);
+  EffData5->SetMarkerColor(1);
+  EffData5->SetLineColor(1);
+  EffData5->Draw("pe");
+  EffMC5->SetMarkerStyle(23);
+  EffMC5->SetMarkerColor(2);
+  EffMC5->SetLineColor(2);
+  EffMC5->Draw("pesame");  
+  legg = new TLegend(0.5,0.2,0.7,0.4);
+  legg->SetFillStyle(0); legg->SetBorderSize(0); legg->SetTextSize(0.05); legg->SetTextFont(132); 
+  legg->SetHeader("  1.2 < #eta^{#mu} < 2.4");
+  legge = legg->AddEntry(EffData1,  "J/#psi TNP Data Pos","p"); legge->SetTextColor(kBlack);
+  legge = legg->AddEntry(EffMC1,  "J/#psi TNP Data Neg","p"); legge->SetTextColor(kRed);
+  legg->Draw();
+  c905->SaveAs("PosVsNeg_MuID5.pdf");
+  
+}
+
+
+
 
 void MuID_Pos(){
   gStyle->SetOptStat(00000000000);
