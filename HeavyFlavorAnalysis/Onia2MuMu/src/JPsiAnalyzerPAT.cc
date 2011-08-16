@@ -13,7 +13,7 @@
 //
 // Original Author: Roberto Covarelli 
 //         Created:  Fri Oct  9 04:59:40 PDT 2009
-// $Id: JPsiAnalyzerPAT.cc,v 1.51 2011/06/22 09:46:21 covarell Exp $
+// $Id: JPsiAnalyzerPAT.cc,v 1.52 2011/07/18 21:05:49 hwoehri Exp $
 //
 // based on: Onia2MuMu package V00-11-00
 // changes done by: FT-HW
@@ -1210,7 +1210,7 @@ JPsiAnalyzerPAT::resetDSVariables(){
         clearIt->second=0;
     }
     for(std::map< std::string, int >::iterator clearIt= mapTriggerNameToPrescaleFac_.begin(); clearIt != mapTriggerNameToPrescaleFac_.end(); clearIt++){
-        clearIt->second=1;
+        clearIt->second=-1;
     }
 
     JpsiP->SetPtEtaPhiM(-999.,-999.,-999., 999.);
