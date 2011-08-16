@@ -209,7 +209,8 @@ void anaTNP::loadFiles(const char *dir, int i) {
     } else if (40 == i) {
       ufile = fDirectory + string("/upsilon/101201.fl10.mm.COMBINED.tnpReaderTrig_MC_All.default.root");
      //ufile = fDirectory + string("/upsilon/UpsTagAndProbe_7TeV.root"); 
-     jfile = fDirectory + string("/jpsi/160311.Run2010Bp1.data.mt.tnpReaderTrig_DATA.tma.nb.default.root");
+      jfile = fDirectory + string("/jpsi/160311.data.mt.tnpReaderMuID_DATA.tma.nb.default.root");
+      //jfile = fDirectory + string("/jpsi/160311.Run2010Bp1.data.mt.tnpReaderTrig_DATA.tma.nb.default.root");
      //jfile = fDirectory + string("/jpsi/190311.Run2010A.nov4rereco.dimuons.tnpReaderTrig_DATA.default.root");
      
     } else {
@@ -298,6 +299,7 @@ void anaTNP::combineUpsilons() {
 // ----------------------------------------------------------------------
 void anaTNP::makeAllDATA(int channel) {
 
+  
   // -- Upsilon
   if (channel & 1) {
     init(fDirectory.c_str(), fMode);
@@ -320,14 +322,16 @@ void anaTNP::makeAllDATA(int channel) {
     fSample = string("jpsi");
     readHistogramsDATA(fM[1], "mm", "mt", "mmbar", "mt,pt-eta");
     
-    // -- add backgrounds
-    //addBackground(fS1VectorPos, 0.3);
+    examplefit();
     
-    fitJpsi(1);
-    fillPidTables(0); // 0 - DATA, 1 - MC
-    //validation();
-    projections(0);  // 0 - DATA, 1 - MC  
-    allDifferencesDATA(2); 
+    // -- add backgrounds
+    ////addBackground(fS1VectorPos, 0.3);
+    
+    //fitJpsi(1);
+    //fillPidTables(0); // 0 - DATA, 1 - MC
+    /////validation();
+    //projections(0);  // 0 - DATA, 1 - MC  
+    //allDifferencesDATA(2); 
   }
   
   if ((channel&1) && (channel&2)) allDifferencesDATA(3); 
@@ -447,8 +451,44 @@ void anaTNP::makeAllMC(int channel) {
 
 }
 
-
-
+void anaTNP::examplefit(){
+  
+  TH1D *h; TH1D *k; 
+  int   n(0); 
+  gStyle->SetOptStat(0000000000000); 
+  gStyle->SetOptFit(00000000000000);
+  TCanvas *c100 = new TCanvas("c100", "c100", 1200, 600);
+  c100->Divide(2,1);
+  for (unsigned int i = 1; i < fS1VectorNeg.size(); ++i) {
+    h = &(fS1VectorNeg[i]);
+    n = strcmp(h->GetName(), "s1:mm,eta-0.4_0.4,pt3.0_4.0,Q-1");
+    if ( n == 0 ){
+      c100->cd(1);
+      cout << h->GetName() << endl;
+      h->SetTitle("Passing Probes, -0.4 < #eta^{#mu} < 0.4 && 3 GeV/c < p_{T}^{#mu} < 4 GeV/c");
+      h->GetXaxis()->SetTitle("#mu^{+}#mu^{-} mass [GeV/c^{2}]");
+      h->GetYaxis()->SetTitle("Entries/0.02  [GeV/c^{2}]   ");
+      setFunctionParameters(h, f6, 3); 
+      h->Fit(f6);
+    }
+  }
+  
+  for (unsigned int i = 1; i < fS3VectorNeg.size(); ++i) {
+    k = &(fS3VectorNeg[i]);
+    n = strcmp(k->GetName(), "s3:mmbar,eta-0.4_0.4,pt3.0_4.0,Q-1");
+    if ( n == 0 ){
+      c100->cd(2);
+      cout << k->GetName() << endl;
+      k->SetTitle("Failing Probes, -0.4 < #eta^{#mu} < 0.4 && 3 GeV/c < p_{T}^{#mu} < 4 GeV/c");
+      k->GetXaxis()->SetTitle("#mu^{+}#mu^{-} mass [GeV/c^{2}]");
+      k->GetYaxis()->SetTitle("Entries/0.02  [GeV/c^{2}]   ");
+      setFunctionParameters(k, f6, 3); 
+      k->Fit(f6);      
+    }
+  }
+  
+  c100->SaveAs("TNPFit.pdf");
+}
 
 // ----------------------------------------------------------------------
 void anaTNP::fillPidTables(int mode) {
