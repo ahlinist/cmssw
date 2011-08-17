@@ -43,7 +43,7 @@ void ZllRecoilCorrectionParameterSet::print(std::ostream& stream) const
 void ZllRecoilCorrectionParameterSet::writePythonConfig(const std::string& fileName) const
 {
   std::ofstream* file = new std::ofstream(fileName.data());
-  (*file) << "recoZllRecoilCorrectionParameterSet = cms.PSet(" << std::endl;
+  (*file) << "recoZllRecoilCorrectionParameters = cms.PSet(" << std::endl;
   d_.writePythonConfig(*file);
   k_.writePythonConfig(*file);
   sigma1_.writePythonConfig(*file);
@@ -52,6 +52,7 @@ void ZllRecoilCorrectionParameterSet::writePythonConfig(const std::string& fileN
   sigma2_.writePythonConfig(*file);
   b2_.writePythonConfig(*file);
   c2_.writePythonConfig(*file);
+  (*file) << ")" << std::endl;
   delete file;
 }
 

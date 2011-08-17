@@ -7,7 +7,7 @@
  *
  * \version $Revision: 1.1 $
  *
- * $Id: FWLiteZllRecoilCorrectionAnalyzer.cc,v 1.1 2011/08/13 12:50:28 veelken Exp $
+ * $Id: FWLiteZllRecoilCorrectionAnalyzer.cc,v 1.1 2011/08/15 17:10:31 veelken Exp $
  *
  */
 
@@ -107,7 +107,7 @@ int main(int argc, char* argv[])
   double maxPUreweight = cfgZllRecoilCorrectionAnalyzer.getParameter<double>("maxPUreweight");
 
   edm::ParameterSet cfgZllRecoilCorrectionAlgorithm = 
-    cfgZllRecoilCorrectionAnalyzer.getParameter<edm::ParameterSet>("recoZllRecoilCorrectionParameter");
+    cfgZllRecoilCorrectionAnalyzer.getParameter<edm::ParameterSet>("recoZllRecoilCorrectionParameters");
   ZllRecoilCorrectionAlgorithm corrAlgorithm(cfgZllRecoilCorrectionAlgorithm);
 
   std::string directory = cfgZllRecoilCorrectionAnalyzer.getParameter<std::string>("directory");
@@ -186,6 +186,10 @@ int main(int argc, char* argv[])
 
 //--- check if new luminosity section has started;
 //    if so, retrieve number of events contained in this luminosity section before skimming
+/*
+      CV: EventCounters missing in skimming outout/PAT-tuples
+         --> disable Mauro's "self babysitting" technology for now...
+
       if ( !(evt.id().run() == lastLumiBlock_run && evt.luminosityBlock() == lastLumiBlock_ls) ) {
 	const fwlite::LuminosityBlock& ls = evt.getLuminosityBlock();
 	edm::Handle<edm::MergeableCounter> numEvents_skimmed;
@@ -194,7 +198,7 @@ int main(int argc, char* argv[])
 	lastLumiBlock_run = evt.id().run();
 	lastLumiBlock_ls = evt.luminosityBlock();
       }
-
+ */
 //--- fill "dummy" histogram counting number of processed events
       histogramEventCounter->Fill(2);
 
@@ -267,7 +271,7 @@ int main(int argc, char* argv[])
       pat::MET theEventMEt_ZllRecoilCorrected = corrAlgorithm.buildZllCorrectedMEt(
         theEventMEt, theEventMEt.genMET()->p4(), bestZllCandidate->p4());
 
-      histogramsBeforeZllRecoilCorr->fillHistograms(
+      histogramsAfterZllRecoilCorr->fillHistograms(
 	*bestZllCandidate, theEventMEt_ZllRecoilCorrected, vtxMultiplicity, pfNeutralRho, genPUreweight*addPUreweight);
     }
 
