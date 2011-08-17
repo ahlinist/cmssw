@@ -8,7 +8,7 @@
  *
  * \version $Revision: 1.1 $
  *
- * $Id: fitZllRecoilCorrection.cc,v 1.1 2011/08/13 12:50:28 veelken Exp $
+ * $Id: fitZllRecoilCorrection.cc,v 1.1 2011/08/15 17:10:31 veelken Exp $
  *
  */
 
@@ -89,9 +89,11 @@ void showControlPlot(TCanvas* canvas,
 
   canvas->Update();
 
-  std::string outputFileName_plot = std::string(outputFileName, 0, outputFileName.find_last_of('.'));
+  size_t idx = outputFileName.find_last_of('.');
+  std::string outputFileName_plot = std::string(outputFileName, 0, idx);
   outputFileName_plot.append("_").append(outputFileLabel);
-  outputFileName_plot.append(".png");
+  if ( idx != std::string::npos ) outputFileName_plot.append(std::string(outputFileName, idx));
+  else                            outputFileName_plot.append(".png");
   canvas->Print(outputFileName_plot.data());
 }
 
