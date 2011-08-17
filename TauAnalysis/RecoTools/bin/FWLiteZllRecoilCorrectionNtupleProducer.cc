@@ -5,9 +5,9 @@
  *
  * \author Christian Veelken, UC Davis
  *
- * \version $Revision: 1.2 $
+ * \version $Revision: 1.3 $
  *
- * $Id: FWLiteZllRecoilCorrectionNtupleProducer.cc,v 1.2 2011/08/15 17:10:31 veelken Exp $
+ * $Id: FWLiteZllRecoilCorrectionNtupleProducer.cc,v 1.3 2011/08/17 12:27:14 veelken Exp $
  *
  */
 
@@ -89,9 +89,9 @@ int main(int argc, char* argv[])
   edm::FileInPath addPUreweightFileName = cfgAddPUreweight.getParameter<edm::FileInPath>("inputFileName");
   std::string addPUreweightName = cfgAddPUreweight.getParameter<std::string>("meName");
   TH1* addPUreweightHistogram = 0;
-  if ( addPUreweightFileName != "" && addPUreweightName != "" ) {
+  if ( addPUreweightFileName.relativePath() != "" && addPUreweightName != "" ) {
     if ( !addPUreweightFileName.isLocal() ) 
-      throw cms::Exception("VertexMultiplicityReweightExtractor") 
+      throw cms::Exception("FWLiteZllRecoilCorrectionNtupleProducer") 
 	<< " Failed to find File = " << addPUreweightFileName << " !!\n";
     TFile* addPUreweightFile = new TFile(addPUreweightFileName.fullPath().data());
     TH1* addPUreweightHistogram_object = dynamic_cast<TH1*>(addPUreweightFile->Get(addPUreweightName.data()));

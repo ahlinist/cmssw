@@ -137,16 +137,35 @@ for metOptionName in metOptions.keys():
 #
 # build config files for making final plots
 #
+sampleNameData = None
+sampleNameMC   = None
+for sampleName in samplesToAnalyze.keys():
+    if samplesToAnalyze[sampleName]['isMC']:
+        if sampleNameMC is not None:
+            raise ValueError("'MC' sample must be defined only once !!")
+        sampleNameMC = sampleName
+    else:
+        if sampleNameData is not None:
+            raise ValueError("'Data' sample must be defined only once !!")
+        sampleNameData = sampleName
+        
+corrLevelsMC = [
+    'beforeGenPUreweight',
+    'beforeAddPUreweight',
+    'beforeZllRecoilCorr',
+    'afterZllRecoilCorr'
+]
+
 fileNames_makeZllRecoilCorrectionFinalPlots = {}
 for metOptionName in metOptions.keys():
-    ##retVal_makeZllRecoilCorrectionFinalPlots = \
-    ##    buildConfigFile_makeZllRecoilCorrectionFinalPlots(stuff...)
-    ##
-    ##fileNames_makeZllRecoilCorrectionFinalPlots[metOptionName] = retVal_makeZllRecoilCorrectionFinalPlots
     fileNames_makeZllRecoilCorrectionFinalPlots[metOptionName] = {}
-    fileNames_makeZllRecoilCorrectionFinalPlots[metOptionName]['configFileName'] = 'dummy_%s_cfg.py' % metOptionName
-    fileNames_makeZllRecoilCorrectionFinalPlots[metOptionName]['outputFileName'] = 'dummy_%s.png' % metOptionName
-    fileNames_makeZllRecoilCorrectionFinalPlots[metOptionName]['logFileName'] = 'dummy_%s.log' % metOptionName
+    for corrLevelMC in corrLevelsMC:
+        retVal_makeZllRecoilCorrectionFinalPlots = \
+          buildConfigFile_makeZllRecoilCorrectionFinalPlots(
+            sampleNameData, sampleNameMC, metOptionName,
+            fileNames_hadd[metOptionName]['outputFileName'], outputFilePath, corrLevelMC)
+            
+        fileNames_makeZllRecoilCorrectionFinalPlots[metOptionName][corrLevelMC] = retVal_makeZllRecoilCorrectionFinalPlots
 #--------------------------------------------------------------------------------
 
 def make_MakeFile_vstring(list_of_strings):
@@ -163,7 +182,9 @@ makeFile = open(makeFileName, "w")
 makeFile.write("\n")
 outputFileNames_makeZllRecoilCorrectionFinalPlots = []
 for metOptionName in metOptions.keys():
-    outputFileNames_makeZllRecoilCorrectionFinalPlots.append(fileNames_makeZllRecoilCorrectionFinalPlots[metOptionName]['outputFileName'])
+    for corrLevelMC in corrLevelsMC:
+        outputFileNames_makeZllRecoilCorrectionFinalPlots.append(
+          fileNames_makeZllRecoilCorrectionFinalPlots[metOptionName][corrLevelMC]['outputFileName'])
 makeFile.write("all: %s\n" % make_MakeFile_vstring(outputFileNames_makeZllRecoilCorrectionFinalPlots))
 makeFile.write("\techo 'Finished running ZllRecoilCorrectionAnalysis.'\n")
 makeFile.write("\n")
@@ -240,14 +261,15 @@ for metOptionName in metOptions.keys():
            fileNames_hadd[metOptionName]['logFileName']))
 makeFile.write("\n")
 for metOptionName in metOptions.keys():
-    makeFile.write("%s: %s %s\n" %
-      (fileNames_makeZllRecoilCorrectionFinalPlots[metOptionName]['outputFileName'],
-       fileNames_hadd[metOptionName]['outputFileName'],
-       executable_makeZllRecoilCorrectionFinalPlots))
-    makeFile.write("\t%s %s &> %s\n" %
-      (executable_makeZllRecoilCorrectionFinalPlots,
-       fileNames_makeZllRecoilCorrectionFinalPlots[metOptionName]['configFileName'],
-       fileNames_makeZllRecoilCorrectionFinalPlots[metOptionName]['logFileName']))
+    for corrLevelMC in corrLevelsMC:
+        makeFile.write("%s: %s %s\n" %
+          (fileNames_makeZllRecoilCorrectionFinalPlots[metOptionName][corrLevelMC]['outputFileName'],
+           fileNames_hadd[metOptionName]['outputFileName'],
+           executable_makeZllRecoilCorrectionFinalPlots))
+        makeFile.write("\t%s %s &> %s\n" %
+          (executable_makeZllRecoilCorrectionFinalPlots,
+           fileNames_makeZllRecoilCorrectionFinalPlots[metOptionName][corrLevelMC]['configFileName'],
+           fileNames_makeZllRecoilCorrectionFinalPlots[metOptionName][corrLevelMC]['logFileName']))
 makeFile.write("\n")
 makeFile.write(".PHONY: clean\n")
 makeFile.write("clean:\n")
@@ -279,8 +301,9 @@ for metOptionName in metOptions.keys():
 makeFile.write("\trm -f %s\n" % make_MakeFile_vstring(outputFileNames_hadd))
 outputFileNames_makeZllRecoilCorrectionFinalPlots = []
 for metOptionName in metOptions.keys():
-    outputFileNames_makeZllRecoilCorrectionFinalPlots.append(
-      fileNames_makeZllRecoilCorrectionFinalPlots[metOptionName]['outputFileName'])
+    for corrLevelMC in corrLevelsMC:
+        outputFileNames_makeZllRecoilCorrectionFinalPlots.append(
+          fileNames_makeZllRecoilCorrectionFinalPlots[metOptionName][corrLevelMC]['outputFileName'])
 makeFile.write("\trm -f %s\n" % make_MakeFile_vstring(outputFileNames_makeZllRecoilCorrectionFinalPlots))
 makeFile.write("\techo 'Finished deleting old files.'\n")
 makeFile.write("\n")

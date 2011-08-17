@@ -301,7 +301,101 @@ process.ZllRecoilCorrectionAnalyzer = cms.PSet(
 
     return retVal
 
+def buildConfigFile_makeZllRecoilCorrectionFinalPlots(sampleNameData, sampleNameMC, metOptionName, inputFileName, outputFilePath,
+                                                      corrLevelMC):
 
-##buildConfigFile_makeZllRecoilCorrectionFinalPlots(stuff...)
+    """Build cfg.py file to run makeZllRecoilCorrectionFinalPlots macro
+       and make final control plots of MET in Data compared to Monte Carlo simulation with Z-recoil corrections applied"""
+
+    print "<buildConfigFile_makeZllRecoilCorrectionFinalPlots>:"
+    print " processing combination of sampleData %s, sampleMC %s" % (sampleNameData, sampleNameMC)
+
+    print(" building config file...")
+
+    corrLevelData = "beforeGenPUreweight"
+    
+    directoryData = "/".join([ sampleNameData, corrLevelData ])
+    directoryMC   = "/".join([ sampleNameData, corrLevelMC   ])
+
+    outputFileName = "plotZllRecoilCorrection_%s_%s.png" % (metOptionName, corrLevelMC)
+    outputFilePath_plots = os.path.join(outputFilePath, "plots")
+    if not os.path.exists(outputFilePath_plots):
+        os.mkdir(outputFilePath_plots)    
+    outputFileName_full = os.path.join(outputFilePath_plots, outputFileName)
+
+    config = \
+"""
+import FWCore.ParameterSet.Config as cms
+
+process = cms.PSet()
+
+process.fwliteInput = cms.PSet(
+    fileNames = cms.vstring('%s'),
+    
+    maxEvents = cms.int32(-1),
+    
+    outputEvery = cms.uint32(1000)
+)
+
+process.makeZllRecoilCorrectionFinalPlots = cms.PSet(
+
+    directoryData = cms.string('%s'),
+    directoryMC   = cms.string('%s'),
+
+    variables = cms.VPSet(
+        cms.PSet(
+            meName = cms.string('lPlusPt'),
+            xAxisTitle = cms.string('GeV')
+        ),
+        cms.PSet(
+            meName = cms.string('lMinusPt'),
+            xAxisTitle = cms.string('GeV')
+        ),
+        cms.PSet(
+            meName = cms.string('ZllCandMass'),
+            xAxisTitle = cms.string('GeV')
+        ),
+        cms.PSet(
+            meName = cms.string('met'),
+            xAxisTitle = cms.string('GeV')
+        ),
+        cms.PSet(
+            meName = cms.string('metProjParlZ'),
+            xAxisTitle = cms.string('GeV')
+        ),
+        cms.PSet(
+            meName = cms.string('metProjPerpZ'),
+            xAxisTitle = cms.string('GeV')
+        ),
+        cms.PSet(
+            meName = cms.string('numVertices'),
+            xAxisTitle = cms.string('')
+        ),
+        cms.PSet(
+            meName = cms.string('rho'),
+            xAxisTitle = cms.string('GeV')
+        )
+    ),
+
+    outputFileName = cms.string('%s')
+)
+""" % (inputFileName,
+       directoryData, directoryMC, outputFileName_full)
+
+    configFileName = "makeZllRecoilCorrectionFinalPlots_%s_%s_cfg.py" % (metOptionName, corrLevelMC)
+    configFileName_full = os.path.join(outputFilePath, configFileName)    
+    configFile = open(configFileName_full, "w")
+    configFile.write(config)
+    configFile.close()
+
+    logFileName = configFileName.replace('_cfg.py', '.log')
+    logFileName_full = os.path.join(outputFilePath, logFileName)
+
+    retVal = {}
+    retVal['configFileName'] = configFileName_full
+    retVal['outputFileName'] = outputFileName_full
+    retVal['logFileName']    = logFileName_full
+
+    return retVal
 
 

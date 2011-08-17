@@ -5,9 +5,9 @@
  *
  * \author Christian Veelken, UC Davis
  *
- * \version $Revision: 1.1 $
+ * \version $Revision: 1.2 $
  *
- * $Id: FWLiteZllRecoilCorrectionAnalyzer.cc,v 1.1 2011/08/15 17:10:31 veelken Exp $
+ * $Id: FWLiteZllRecoilCorrectionAnalyzer.cc,v 1.2 2011/08/17 12:27:14 veelken Exp $
  *
  */
 
@@ -90,21 +90,24 @@ int main(int argc, char* argv[])
   edm::InputTag srcEventCounter = cfgZllRecoilCorrectionAnalyzer.getParameter<edm::InputTag>("srcEventCounter");
 
   edm::ParameterSet cfgAddPUreweight = cfgZllRecoilCorrectionAnalyzer.getParameter<edm::ParameterSet>("addPUreweight");
-  std::string addPUreweightFileName = cfgAddPUreweight.getParameter<std::string>("inputFileName");
+  edm::FileInPath addPUreweightFileName = cfgAddPUreweight.getParameter<edm::FileInPath>("inputFileName");
   std::string addPUreweightName = cfgAddPUreweight.getParameter<std::string>("meName");
   TH1* addPUreweightHistogram = 0;
-  if ( addPUreweightFileName != "" && addPUreweightName != "" ) {
-    TFile* addPUreweightFile = TFile::Open(addPUreweightFileName.data());
+  if ( addPUreweightFileName.relativePath() != "" && addPUreweightName != "" ) {
+    if ( !addPUreweightFileName.isLocal() ) 
+      throw cms::Exception("FWLiteZllRecoilCorrectionAnalyzer") 
+	<< " Failed to find File = " << addPUreweightFileName << " !!\n";
+    TFile* addPUreweightFile = new TFile(addPUreweightFileName.fullPath().data());
     TH1* addPUreweightHistogram_object = dynamic_cast<TH1*>(addPUreweightFile->Get(addPUreweightName.data()));
     if ( !addPUreweightHistogram_object )
-      throw cms::Exception("FWLiteZllRecoilCorrectionNtupleProducer") 
+      throw cms::Exception("FWLiteZllRecoilCorrectionAnalyzer") 
 	<< "Failed to find histogram = " << addPUreweightName << " in file = " << addPUreweightFileName << " !!\n";
     std::string addPUreweightHistogramName = std::string(addPUreweightHistogram_object->GetName()).append("_cloned");
     addPUreweightHistogram = (TH1*)addPUreweightHistogram_object->Clone(addPUreweightHistogramName.data());
     delete addPUreweightFile;
   }
-  double minPUreweight = cfgZllRecoilCorrectionAnalyzer.getParameter<double>("minPUreweight");
-  double maxPUreweight = cfgZllRecoilCorrectionAnalyzer.getParameter<double>("maxPUreweight");
+  double minPUreweight = cfgAddPUreweight.getParameter<double>("minPUreweight");
+  double maxPUreweight = cfgAddPUreweight.getParameter<double>("maxPUreweight");
 
   edm::ParameterSet cfgZllRecoilCorrectionAlgorithm = 
     cfgZllRecoilCorrectionAnalyzer.getParameter<edm::ParameterSet>("recoZllRecoilCorrectionParameters");
