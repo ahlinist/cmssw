@@ -3,17 +3,21 @@ import FWCore.ParameterSet.Config as cms
 import copy
 
 #--------------------------------------------------------------------------------
-# Selection of "golden" Z --> mu+ mu- candidate events passing VTBF selection
-# documented in CMS AN-10-264
-#
-# Selection criteria are based on ElectroWeakAnalysis/Utilities/python/goldenZmmSelectionVBTF_cfi.py
-# with the exception that muon isolation cuts are applied for only one of the two muons
-# (in order not to bias the tau id. efficiency measurement via "embedding technique")
-#
-# Depending on whether the muons pass the isolation cut or not, the two muons are marked as "tag" and "probe".
+# Selection of Z --> mu+ mu- candidate events for use with tau embedding.
+# The selection is choosen to be very loose to cover the full phase space
+# required by tautau analyses. The cuts can still be tightened off-line
+# depending on the needs of a specific analysis.
+# 
+# The following requirements are made:
+# 
+# * 2 global muons fulfilling VBTF quality criteria
+# * pt > 20 GeV for leading muon; pt > 10 GeV for subleading muon
+# * |eta| < 2.5
+# * rel. comb. isolation:
+#     SumPt + emEt + hadEt < 0.15*pt in a cone of DeltaR=0.3
 #--------------------------------------------------------------------------------
 
-#from PhysicsTools.PFCandProducer.pfNoPileUp_cff import *
+from CommonTools.ParticleFlow.pfNoPileUp_cff import *
 
 from PhysicsTools.PatAlgos.producersLayer1.muonProducer_cfi import patMuons
 patMuons.addGenMatch = cms.bool(False)
@@ -21,17 +25,24 @@ patMuons.embedHighLevelSelection = cms.bool(True)
 patMuons.usePV = cms.bool(False) # compute transverse impact parameter wrt. beamspot (not event vertex)
 
 # Trigger requirements
-import HLTrigger.HLTfilters.hltHighLevel_cfi
-zmmHLTFilter = HLTrigger.HLTfilters.hltHighLevel_cfi.hltHighLevel.clone()
-zmmHLTFilter.TriggerResultsTag = cms.InputTag("TriggerResults", "", "HLT")
-zmmHLTFilter.HLTPaths = [ "HLT_Mu9", "HLT_Mu15_v1", "HLT_Mu15_v2", "HLT_IsoMu17_v5", "HLT_IsoMu17_v7", "HLT_DoubleMu7_v1", "HLT_DoubleMu7_v2", "HLT_Mu13_Mu8_v2", "HLT_Mu17_Mu8_v2" ]
-zmmHLTFilter.throw = cms.bool(False)
+#import HLTrigger.HLTfilters.hltHighLevel_cfi
+#zmmHLTFilter = HLTrigger.HLTfilters.hltHighLevel_cfi.hltHighLevel.clone()
+#zmmHLTFilter.TriggerResultsTag = cms.InputTag("TriggerResults", "", "HLT")
+#zmmHLTFilter.HLTPaths = [ "HLT_Mu9", "HLT_Mu15_v1", "HLT_Mu15_v2", "HLT_IsoMu17_v5", "HLT_IsoMu17_v6", "HLT_IsoMu17_v7", "HLT_IsoMu17_v8", "HLT_IsoMu20_eta2p1_v1", "HLT_IsoMu24_v5", "HLT_IsoMu24_v6", "HLT_IsoMu24_v7", "HLT_DoubleMu7_v1", "HLT_DoubleMu7_v2", "HLT_Mu13_Mu8_v2", "HLT_Mu17_Mu8_v2", "HLT_Mu13_Mu8_v4", "HLT_Mu17_Mu8_v4", "HLT_Mu8_v1", "HLT_Mu8_v2", "HLT_Mu8_v3", "HLT_Mu8_v4" ]
+#zmmHLTFilter.throw = cms.bool(False)
 
-# Cuts for both muons, no isolation cuts applied
+# Vertex selection
+goodVertex = cms.EDFilter("VertexSelector",
+    src = cms.InputTag("offlinePrimaryVertices"),
+    cut = cms.string("(!isFake) & ndof > 3 & abs(z) < 15 & position.Rho < 2"),
+    filter = cms.bool(True)
+)
+
+# Cuts for subleading muon, no isolation cut applied
 goodMuons = cms.EDFilter("PATMuonSelector",
   src = cms.InputTag("patMuons"),
      cut = cms.string(
-           'pt > 20 & abs(eta) < 2.5 & isGlobalMuon & isTrackerMuon ' \
+           'pt > 10 & abs(eta) < 2.5 & isGlobalMuon & isTrackerMuon ' \
                  + ' & innerTrack.hitPattern.numberOfValidTrackerHits > 10 & innerTrack.hitPattern.numberOfValidPixelHits > 0' \
                  + ' & abs(dB)<0.2 & globalTrack.normalizedChi2 < 10' \
                  + ' & globalTrack.hitPattern.numberOfValidMuonHits > 0 & numberOfMatches > 1'
@@ -46,58 +57,54 @@ goodIsoMuons = cms.EDFilter("PATMuonSelector",
     filter = cms.bool(False),
 )
 
-# Produce combinations of good
+# Produce combinations of good muon pairs
 #  o muon+ + muon-
-#  o muon+ + iso. muon- || iso. muon+ + muon-
-#  o iso. muon+ + iso. muon-
-# with a di-muon invariant mass within the Z mass-window
-goldenZmumuCandidatesGe0IsoMuons = cms.EDProducer("CandViewShallowCloneCombiner",
+goldenZmumuCandidatesGe0IsoMuons = cms.EDProducer("CandViewCombiner", # cannot be CandViewShallowCloneCombiner because otherwise isolationR03 is inaccessible in cut property in goldenZmumuCandidatesGe1IsoMuons
     checkCharge = cms.bool(True),
-#    cut = cms.string('mass > 60. & mass < 120. & charge = 0'),
-    cut = cms.string('charge = 0'),
+    # require one of the muons with pT > 20
+    cut = cms.string('charge = 0 & max(daughter(0).pt,daughter(1).pt)>20'),
     decay = cms.string("goodMuons@+ goodMuons@-")
 )
 
+#  o muon+ + iso. muon- || iso. muon+ + muon-
 goldenZmumuCandidatesGe1IsoMuons = goldenZmumuCandidatesGe0IsoMuons.clone(
-    decay = cms.string("goodMuons@+ goodIsoMuons@-") # charge conjugate decays included,
-                                                     # cf. https://twiki.cern.ch/twiki/bin/view/CMS/SWGuideCandCombiner
+    # Require one of the muons with pT > 20 and also one of the muons to be isolated:
+    cut = cms.string('charge = 0 & max(daughter(0).pt,daughter(1).pt)>20 & min((daughter(0).isolationR03().sumPt + daughter(0).isolationR03().emEt + daughter(0).isolationR03().hadEt)/daughter(0).pt, (daughter(1).isolationR03().sumPt + daughter(1).isolationR03().emEt + daughter(1).isolationR03().hadEt)/daughter(1).pt) < 0.15'),
+    decay = cms.string("goodMuons@+ goodMuons@-")
+
+    # This does not work because it creates duplicate entries:
+    #decay = cms.string("goodMuons@+ goodIsoMuons@-") # charge conjugate decays included,
+    #                                                 # cf. https://twiki.cern.ch/twiki/bin/view/CMS/SWGuideCandCombiner
 )
 
+#  o iso. muon+ + iso. muon-
 goldenZmumuCandidatesGe2IsoMuons = goldenZmumuCandidatesGe0IsoMuons.clone(
+    # Require both of the muons to be isolated
     decay = cms.string("goodIsoMuons@+ goodIsoMuons@-")
 )
 
-goodMuonFilter = cms.EDFilter("CandViewCountFilter",
-    src = cms.InputTag("goodMuons"),
-    minNumber = cms.uint32(2),                            
-    maxNumber = cms.uint32(2)
-)
+#goodMuonFilter = cms.EDFilter("CandViewCountFilter",
+#    src = cms.InputTag("goodMuons"),
+#    minNumber = cms.uint32(2),
+#    maxNumber = cms.uint32(2)
+#)
 
+# Discard all events that do not have at least an unisolated muon pair
 goldenZmumuFilter = cms.EDFilter("CandViewCountFilter",
     src = cms.InputTag("goldenZmumuCandidatesGe0IsoMuons"), # loose selection 
     #src = cms.InputTag("goldenZmumuCandidatesGe1IsoMuons"),  # tight selection                            
     minNumber = cms.uint32(1)
 )
 
-# mark muons as "tag" and "probe", depending on if the muons are isolated or not:
-#  o if only one of the two muons produced in the Z decay is isolated,
-#    the isolated muon is marked as "tag" and the non-isolated muon is marked as "probe"
-#  o if both muons are isolated, **both** muons are marked as "tag" **and** as "probe"
-goodMuonIsolationTagAndProbeProducer = cms.EDProducer("MuonIsolationTagAndProbeProducer",
-    srcAllMuons = cms.InputTag("muons"),
-    srcGoodMuons = cms.InputTag("goodMuons"),                                                  
-    srcGoodIsoMuons = cms.InputTag("goodIsoMuons")                                    
-)
 
-# Selection sequence
 goldenZmumuSelectionSequence = cms.Sequence(
-     zmmHLTFilter
-    #* goodVertex
+    # zmmHLTFilter
+    goodVertex
     #* pfNoPileUpSequence
     * patMuons * goodMuons * goodIsoMuons
     * goldenZmumuCandidatesGe0IsoMuons * goldenZmumuCandidatesGe1IsoMuons * goldenZmumuCandidatesGe2IsoMuons
-    * goodMuonFilter * goldenZmumuFilter
-    * goodMuonIsolationTagAndProbeProducer
+    #* goodMuonFilter
+    * goldenZmumuFilter
 )
 
 
