@@ -159,7 +159,7 @@ void XS_Total(){
     s1 += S1->GetBinContent(i);
     s2 += S2->GetBinContent(i);
     s3 += S3->GetBinContent(i);
-    
+  
   }
   
   cout << " Y(1S) Xsection = "  << s1 << endl;
@@ -196,17 +196,21 @@ void XS_Totalv2(){
   S3 = (TH1D*)gFile->Get("S3YieldPt");
     
   double s1(0.), s2(0.), s3(0.);
+  double e1(0.), e2(0.), e3(0.);
   for (int i = 1; i <= S1->GetNbinsX(); ++i) {
     
     s1 += S1->GetBinContent(i)*S1->GetBinWidth(i);
+    e1 += (S1->GetBinError(i)*S1->GetBinWidth(i))*(S1->GetBinError(i)*S1->GetBinWidth(i));
     s2 += S2->GetBinContent(i)*S2->GetBinWidth(i);
-    s3 += S3->GetBinContent(i)*S2->GetBinWidth(i);
+    e2 += (S2->GetBinError(i)*S2->GetBinWidth(i))*(S2->GetBinError(i)*S2->GetBinWidth(i));
+    s3 += S3->GetBinContent(i)*S3->GetBinWidth(i);
+    e3 += (S3->GetBinError(i)*S3->GetBinWidth(i))*(S3->GetBinError(i)*S3->GetBinWidth(i));
     
   }
   
-  cout << " Y(1S) Xsection = "  << s1 << endl;
-  cout << " Y(2S) Xsection = "  << s2 << endl;
-  cout << " Y(3S) Xsection = "  << s3 << endl;
+  cout << " Y(1S) Xsection = "  << s1 << "+/-" << TMath::Sqrt(e1) << endl;
+  cout << " Y(2S) Xsection = "  << s2 << "+/-" << TMath::Sqrt(e2) << endl;
+  cout << " Y(3S) Xsection = "  << s3 << "+/-" << TMath::Sqrt(e3) << endl;
   
   S1->SetMarkerColor(3); S2->SetMarkerColor(4); S3->SetMarkerColor(5); 
   S1->SetLineColor(3); S2->SetLineColor(4); S3->SetLineColor(5);

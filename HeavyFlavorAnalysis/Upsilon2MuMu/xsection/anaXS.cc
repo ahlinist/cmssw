@@ -184,8 +184,8 @@ void anaXS::init(const char *dir, int i) {
   
   //fPtTrigCorr = new PidTable("PidTables/DATA/Upsilon/PtTrigCorr.dat");
   //fPtMuidCorr = new PidTable("PidTables/DATA/Upsilon/PtMuidCorr.dat");
-  fPtTrigCorr = new PidTable("PidTables/DATA/Upsilon/PtTrigCorr_1Sbin.tma.dat");
-  fPtMuidCorr = new PidTable("PidTables/DATA/Upsilon/PtMuidCorr_1Sbin.tma.dat");
+  //fPtTrigCorr = new PidTable("PidTables/DATA/Upsilon/PtTrigCorr_1Sbin.tma.dat");
+  //fPtMuidCorr = new PidTable("PidTables/DATA/Upsilon/PtMuidCorr_1Sbin.tma.dat");
   //fPtTrigCorr = new PidTable("PidTables/DATA/Upsilon/PtTrigCorr_1Sbin.tma.MomCor.dat");
   //fPtMuidCorr = new PidTable("PidTables/DATA/Upsilon/PtMuidCorr_1Sbin.tma.MomCor.dat");  
   //fPtTrigCorr = new PidTable("PidTables/DATA/Upsilon/PtTrigCorr_1Sbin.gltr.dat");
@@ -196,8 +196,8 @@ void anaXS::init(const char *dir, int i) {
   //fPtMuidCorr = new PidTable("PidTables/DATA/Upsilon/PtMuidCorr_2Sbin.dat");  
   //fPtTrigCorr = new PidTable("PidTables/DATA/Upsilon/PtTrigCorr_3Sbin.dat");
   //fPtMuidCorr = new PidTable("PidTables/DATA/Upsilon/PtMuidCorr_3Sbin.dat");
-  //fPtTrigCorr = new PidTable("PidTables/DATA/Upsilon/PtTrigCorr_3Sbin.tma.dat");
-  //fPtMuidCorr = new PidTable("PidTables/DATA/Upsilon/PtMuidCorr_3Sbin.tma.dat");
+  fPtTrigCorr = new PidTable("PidTables/DATA/Upsilon/PtTrigCorr_3Sbin.tma.dat");
+  fPtMuidCorr = new PidTable("PidTables/DATA/Upsilon/PtMuidCorr_3Sbin.tma.dat");
   
 }
 
@@ -279,11 +279,11 @@ void anaXS::loadFiles(const char *dir, int i) {
       jfile = fDirectory + string("/jpsi/JpsiTagandprobe_10TeV_nocut.root");  
     } else if (40 == i) {
       //ufile = fDirectory + string("/upsilon/101201.fl10.mm.COMBINED.xsReader_1SBin.default.root");
-      afile = fDirectory + string("/upsilon/Acc_All_0_50.xsReader_1Sbin.default.root");
-      ufile = fDirectory + string("/upsilon/101201.fl10.mm.COMBINED.xsReader_1SBin.default.root");
+      afile = fDirectory + string("/upsilon/Acc_All_0_50.xsReader_3Sbin.default.root");
+      ufile = fDirectory + string("/upsilon/101201.fl10.mm.COMBINED.xsReader_3SBin.default.root");
       //jfile = fDirectory + string("/upsilon/130211.nov4rereco_v2.dimuons.xsReader_Data_3SBin.default.root");
       //jfile = fDirectory + string("/upsilon/130211.nov4rereco_v2.dimuons.xsReader_Data_3SBin_Run2010Bp1.default.root");
-      jfile = fDirectory + string("/upsilon/130211.nov4rereco_v2.dimuons.xsReader_Data_1SBin_AllRun2010B.default.root");
+      jfile = fDirectory + string("/upsilon/130211.nov4rereco_v2.dimuons.xsReader_Data_3SBin_AllRun2010B.default.root");
       //jfile = fDirectory + string("/upsilon/130211.nov4rereco_v2.dimuons.xsReader_1Sbin.tma.default.root");
      
     } else {
@@ -1035,17 +1035,17 @@ void anaXS::makeAllDATA(int channel) {
     //addBackground(fS1Vector, 0.3);
     
     //table(fS1YieldPt, "anan");
-    plot_RapInt();
+    //plot_RapInt();
     //plot_PtInt();
     
-    //FITUpsilon(1); //3 for PtIntegrated plots, 4 for RapidityIntegrated plots
-    //GetAnaEff();
-    //GetPreSelEff();
-    //GetTrackEff();
-    //GetMuIDEff(2);
-    //GetTrigEff(2);
-    //CorrectedYields(2);   // 1- FOR MC, 2 FOR DATA
-    //PlotProjections(2);   // 1- FOR MC, 2 FOR DATA
+    FITUpsilon(1); //3 for PtIntegrated plots, 4 for RapidityIntegrated plots
+    GetAnaEff();
+    GetPreSelEff();
+    GetTrackEff();
+    GetMuIDEff(2);
+    GetTrigEff(2);
+    CorrectedYields(2);   // 1- FOR MC, 2 FOR DATA
+    PlotProjections(2);   // 1- FOR MC, 2 FOR DATA
     
   }
 
@@ -1244,7 +1244,7 @@ void anaXS::plot_RapInt(){
     h->SetMinimum(0.);
     h->GetXaxis()->SetTitle("#mu^{+}#mu^{-} mass [GeV/c^{2}]");
     h->GetXaxis()->SetTitleSize(0.06);
-    h->GetXaxis()->SetTitleOffset(0.75);
+    h->GetXaxis()->SetTitleOffset(0.65);
     h->GetYaxis()->SetTitle("Entries/0.05  [GeV/c^{2}]   ");
     h->GetYaxis()->SetTitleSize(0.05);
     h->GetYaxis()->SetTitleOffset(1.);
@@ -1313,13 +1313,23 @@ void anaXS::plot_PtInt(){
 void anaXS::plotAcceptance(){
   
   double deno(-1.); double numa(-1.); double acceptance(-1);
+  double denoE(-1.); double numaE(-1.); double acceptanceE(-1);
   
   for ( int iy = 1; iy <= fAllGenRes->GetNbinsX(); ++iy ){
     for ( int ipt = 1; ipt <= fAllGenRes->GetNbinsY(); ++ipt ){
       deno = fAllGenRes->GetBinContent(iy,ipt);
       numa = fRecoGenRes->GetBinContent(iy,ipt);
       acceptance = numa/deno;
+      
+      denoE = TMath::Sqrt(fAllGenRes->GetBinContent(iy,ipt));
+      numaE = TMath::Sqrt(fRecoGenRes->GetBinContent(iy,ipt));
+      acceptanceE = TMath::Sqrt(((numaE*numaE)/(deno*deno)) + (numaE*numaE*denoE*denoE)/(deno*deno*deno*deno));
+      
       fAcceptance->SetBinContent(iy,ipt,acceptance);
+      fAcceptance->SetBinError(iy,ipt,acceptanceE);
+      
+      cout << " Acceptance Ups(1S) =  "  << acceptance << "+/-" << acceptanceE << endl;
+      
     }
   }
   
@@ -1328,7 +1338,16 @@ void anaXS::plotAcceptance(){
       deno = fAllGenRes_2S->GetBinContent(iy,ipt);
       numa = fRecoGenRes_2S->GetBinContent(iy,ipt);
       acceptance = numa/deno;
+      
+      denoE = TMath::Sqrt(fAllGenRes_2S->GetBinContent(iy,ipt));
+      numaE = TMath::Sqrt(fRecoGenRes_2S->GetBinContent(iy,ipt));
+      acceptanceE = TMath::Sqrt(((numaE*numaE)/(deno*deno)) + (numaE*numaE*denoE*denoE)/(deno*deno*deno*deno));
+      
       fAcceptance_2S->SetBinContent(iy,ipt,acceptance);
+      fAcceptance_2S->SetBinError(iy,ipt,acceptanceE);
+      
+      cout << " Acceptance Ups(2S) =  "  << acceptance << "+/-" << acceptanceE << endl;
+      
     }
   }  
   
@@ -1337,7 +1356,16 @@ void anaXS::plotAcceptance(){
       deno = fAllGenRes_3S->GetBinContent(iy,ipt);
       numa = fRecoGenRes_3S->GetBinContent(iy,ipt);
       acceptance = numa/deno;
+      
+      denoE = TMath::Sqrt(fAllGenRes_3S->GetBinContent(iy,ipt));
+      numaE = TMath::Sqrt(fRecoGenRes_3S->GetBinContent(iy,ipt));
+      acceptanceE = TMath::Sqrt(((numaE*numaE)/(deno*deno)) + (numaE*numaE*denoE*denoE)/(deno*deno*deno*deno));      
+      
       fAcceptance_3S->SetBinContent(iy,ipt,acceptance);
+      fAcceptance_3S->SetBinError(iy,ipt,acceptanceE);
+      
+      cout << " Acceptance Ups(3S) =  "  << acceptance << "+/-" << acceptanceE << endl;     
+      
     }
   }  
   
@@ -1482,6 +1510,21 @@ void anaXS::CorrectedYields(int mode){
 	cout << "fPreSelEff->GetBinContent(iy,ipt) = "<< fPreSelEff->GetBinContent(iy,ipt) << endl;
 	cout << "fS1Yield->GetBinContent(iy,ipt) = "<< fS1Yield->GetBinContent(iy,ipt) <<endl;
 	cout << "fS1YieldCoreected->GetBinContent(iy,ipt) = "<< fS1YieldCorrected->GetBinContent(iy,ipt) <<endl;
+	cout << "fS1YieldCoreected->GetBinError(iy,ipt) = "<< fS1YieldCorrected->GetBinError(iy,ipt) <<endl;
+	
+	double yieldTerm = (fS1Yield->GetBinError(iy,ipt)/fS1Yield->GetBinContent(iy,ipt))*(fS1Yield->GetBinError(iy,ipt)/fS1Yield->GetBinContent(iy,ipt));
+	double anaTerm = (fAnaEff->GetBinError(iy,ipt)/fAnaEff->GetBinContent(iy,ipt))*(fAnaEff->GetBinError(iy,ipt)/fAnaEff->GetBinContent(iy,ipt));
+	double trackTerm = (fTrackEff->GetBinError(iy,ipt)/fTrackEff->GetBinContent(iy,ipt))*(fTrackEff->GetBinError(iy,ipt)/fTrackEff->GetBinContent(iy,ipt));
+	double muidTerm = (fMuIDEff->GetBinError(iy,ipt)/fMuIDEff->GetBinContent(iy,ipt))*(fMuIDEff->GetBinError(iy,ipt)/fMuIDEff->GetBinContent(iy,ipt));
+	double trigTerm = (fTrigEff->GetBinError(iy,ipt)/fTrigEff->GetBinContent(iy,ipt))*(fTrigEff->GetBinError(iy,ipt)/fTrigEff->GetBinContent(iy,ipt));
+	double accTerm = (fAcceptance->GetBinError(iy,ipt)/fAcceptance->GetBinContent(iy,ipt))*(fAcceptance->GetBinError(iy,ipt)/fAcceptance->GetBinContent(iy,ipt));
+	double preselTerm = (fPreSelEff->GetBinError(iy,ipt)/fPreSelEff->GetBinContent(iy,ipt))*(fPreSelEff->GetBinError(iy,ipt)/fPreSelEff->GetBinContent(iy,ipt));
+	
+	//yieldTerm = 0; anaTerm = 0; trackTerm = 0; muidTerm = 0; trigTerm = 0; accTerm = 0; preselTerm = 0;
+	binErr = bin * TMath::Sqrt( yieldTerm + anaTerm + trackTerm + muidTerm + trigTerm + accTerm + preselTerm );
+	cout << "binErr = " << binErr << endl;
+	fS1YieldCorrected->SetBinError(iy,ipt,binErr);
+	
       }
     }
     
@@ -1499,6 +1542,21 @@ void anaXS::CorrectedYields(int mode){
 	cout << "fPreSelEff_2S->GetBinContent(iy,ipt) = "<< fPreSelEff_2S->GetBinContent(iy,ipt) << endl;
 	cout << "fS2Yield->GetBinContent(iy,ipt) = "<< fS2Yield->GetBinContent(iy,ipt) <<endl;
 	cout << "fS2YieldCoreected->GetBinContent(iy,ipt) = "<< fS2YieldCorrected->GetBinContent(iy,ipt) <<endl;
+	cout << "fS2YieldCoreected->GetBinError(iy,ipt) = "<< fS2YieldCorrected->GetBinError(iy,ipt) <<endl;
+	
+	double yieldTerm = (fS2Yield->GetBinError(iy,ipt)/fS2Yield->GetBinContent(iy,ipt))*(fS2Yield->GetBinError(iy,ipt)/fS2Yield->GetBinContent(iy,ipt));
+	double anaTerm = (fAnaEff_2S->GetBinError(iy,ipt)/fAnaEff_2S->GetBinContent(iy,ipt))*(fAnaEff_2S->GetBinError(iy,ipt)/fAnaEff_2S->GetBinContent(iy,ipt));
+	double trackTerm = (fTrackEff->GetBinError(iy,ipt)/fTrackEff->GetBinContent(iy,ipt))*(fTrackEff->GetBinError(iy,ipt)/fTrackEff->GetBinContent(iy,ipt));
+	double muidTerm = (fMuIDEff->GetBinError(iy,ipt)/fMuIDEff->GetBinContent(iy,ipt))*(fMuIDEff->GetBinError(iy,ipt)/fMuIDEff->GetBinContent(iy,ipt));
+	double trigTerm = (fTrigEff->GetBinError(iy,ipt)/fTrigEff->GetBinContent(iy,ipt))*(fTrigEff->GetBinError(iy,ipt)/fTrigEff->GetBinContent(iy,ipt));
+	double accTerm = (fAcceptance_2S->GetBinError(iy,ipt)/fAcceptance_2S->GetBinContent(iy,ipt))*(fAcceptance_2S->GetBinError(iy,ipt)/fAcceptance_2S->GetBinContent(iy,ipt));
+	double preselTerm = (fPreSelEff_2S->GetBinError(iy,ipt)/fPreSelEff_2S->GetBinContent(iy,ipt))*(fPreSelEff_2S->GetBinError(iy,ipt)/fPreSelEff_2S->GetBinContent(iy,ipt));
+	
+	//yieldTerm = 0; anaTerm = 0; trackTerm = 0; muidTerm = 0; trigTerm = 0; accTerm = 0; preselTerm = 0;
+	binErr = bin * TMath::Sqrt( yieldTerm + anaTerm + trackTerm + muidTerm + trigTerm + accTerm + preselTerm );
+	cout << "binErr = " << binErr << endl;
+	fS2YieldCorrected->SetBinError(iy,ipt,binErr);
+		
       }
     }
     
@@ -1516,6 +1574,21 @@ void anaXS::CorrectedYields(int mode){
 	cout << "fPreSelEff_3S->GetBinContent(iy,ipt) = "<< fPreSelEff_3S->GetBinContent(iy,ipt) << endl;
 	cout << "fS3Yield->GetBinContent(iy,ipt) = "<< fS3Yield->GetBinContent(iy,ipt) <<endl;
 	cout << "fS3YieldCoreected->GetBinContent(iy,ipt) = "<< fS3YieldCorrected->GetBinContent(iy,ipt) <<endl;
+	cout << "fS3YieldCoreected->GetBinError(iy,ipt) = "<< fS3YieldCorrected->GetBinError(iy,ipt) <<endl;
+	
+	double yieldTerm = (fS3Yield->GetBinError(iy,ipt)/fS3Yield->GetBinContent(iy,ipt))*(fS3Yield->GetBinError(iy,ipt)/fS3Yield->GetBinContent(iy,ipt));
+	double anaTerm = (fAnaEff_3S->GetBinError(iy,ipt)/fAnaEff_3S->GetBinContent(iy,ipt))*(fAnaEff_3S->GetBinError(iy,ipt)/fAnaEff_3S->GetBinContent(iy,ipt));
+	double trackTerm = (fTrackEff->GetBinError(iy,ipt)/fTrackEff->GetBinContent(iy,ipt))*(fTrackEff->GetBinError(iy,ipt)/fTrackEff->GetBinContent(iy,ipt));
+	double muidTerm = (fMuIDEff->GetBinError(iy,ipt)/fMuIDEff->GetBinContent(iy,ipt))*(fMuIDEff->GetBinError(iy,ipt)/fMuIDEff->GetBinContent(iy,ipt));
+	double trigTerm = (fTrigEff->GetBinError(iy,ipt)/fTrigEff->GetBinContent(iy,ipt))*(fTrigEff->GetBinError(iy,ipt)/fTrigEff->GetBinContent(iy,ipt));
+	double accTerm = (fAcceptance_3S->GetBinError(iy,ipt)/fAcceptance_3S->GetBinContent(iy,ipt))*(fAcceptance_3S->GetBinError(iy,ipt)/fAcceptance_3S->GetBinContent(iy,ipt));
+	double preselTerm = (fPreSelEff_3S->GetBinError(iy,ipt)/fPreSelEff_3S->GetBinContent(iy,ipt))*(fPreSelEff_3S->GetBinError(iy,ipt)/fPreSelEff_3S->GetBinContent(iy,ipt));
+	
+	//yieldTerm = 0; anaTerm = 0; trackTerm = 0; muidTerm = 0; trigTerm = 0; accTerm = 0; preselTerm = 0;
+	binErr = bin * TMath::Sqrt( yieldTerm + anaTerm + trackTerm + muidTerm + trigTerm + accTerm + preselTerm );
+	cout << "binErr = " << binErr << endl;
+	fS3YieldCorrected->SetBinError(iy,ipt,binErr);
+	
       }
     }
    
@@ -2099,7 +2172,7 @@ void anaXS::PlotProjections(int mode) {
 		      fHbinning->GetNbinsY(), fHbinning->GetYaxis()->GetXbins()->GetArray()
 		      );    
     
-    plotAcceptance();
+    //plotAcceptance();
     for (int j = 1; j <= fAcceptance->GetNbinsY(); ++j){
       for (int i = 1; i <= fAcceptance->GetNbinsX(); ++i) {
 	bin_contentAll += fAllGenRes->GetCellContent(i,j);
@@ -3995,7 +4068,7 @@ void anaXS::GetAnaEff(){
   TH1D *h;
   double pt, eta; 
   double yield, yieldE;
-  double errN, errD, D;
+  double errN, errD, D, N;
   int    nbin;
   //////////////////
   //TFile *f = new TFile("AnaEff.root", "RECREATE");
@@ -4007,9 +4080,11 @@ void anaXS::GetAnaEff(){
     cout << h->GetName()  << endl;
     cout << h->GetBinContent(8)  << " "  << h->GetBinContent(2) << endl;
     yield = h->GetBinContent(8)/h->GetBinContent(2);
+    N = h->GetBinContent(8);
     D = h->GetBinContent(2);
     errN = TMath::Sqrt(h->GetBinContent(8));
     errD = TMath::Sqrt(h->GetBinContent(2));
+    //yieldE = (N/D)*TMath::Abs((errN/N)-(errD/D));
     yieldE = TMath::Sqrt(((errN*errN)/(D*D)) + (errN*errN*errD*errD)/(D*D*D*D));
     cout << " AnaEff Ups(1S) =  "  << yield << "+/-" << yieldE << endl;
     GetBinCenters(h->GetName(), eta, pt);
@@ -4026,9 +4101,11 @@ void anaXS::GetAnaEff(){
     cout << h->GetName()  << endl;
     cout << h->GetBinContent(8)  << " "  << h->GetBinContent(2) << endl;
     yield = h->GetBinContent(8)/h->GetBinContent(2);
+    N = h->GetBinContent(8);
     D = h->GetBinContent(2);
     errN = TMath::Sqrt(h->GetBinContent(8));
     errD = TMath::Sqrt(h->GetBinContent(2));
+    //yieldE = (N/D)*TMath::Abs((errN/N)-(errD/D));
     yieldE = TMath::Sqrt(((errN*errN)/(D*D)) + (errN*errN*errD*errD)/(D*D*D*D));
     cout << " AnaEff Ups(2S) =  "  << yield << "+/-" << yieldE << endl;
     GetBinCenters(h->GetName(), eta, pt);
@@ -4045,9 +4122,11 @@ void anaXS::GetAnaEff(){
     cout << h->GetName()  << endl;
     cout << h->GetBinContent(8)  << " "  << h->GetBinContent(2) << endl;
     yield = h->GetBinContent(8)/h->GetBinContent(2);
+    N = h->GetBinContent(8);
     D = h->GetBinContent(2);
     errN = TMath::Sqrt(h->GetBinContent(8));
     errD = TMath::Sqrt(h->GetBinContent(2));
+    //yieldE = (N/D)*TMath::Abs((errN/N)-(errD/D));
     yieldE = TMath::Sqrt(((errN*errN)/(D*D)) + (errN*errN*errD*errD)/(D*D*D*D));
     cout << " AnaEff  Ups(3S) =  "  << yield << "+/-" << yieldE << endl;
     GetBinCenters(h->GetName(), eta, pt);
@@ -4306,11 +4385,13 @@ void anaXS::GetTrigEff(int mode){
 
 void anaXS::GetPreSelEff(){
   double deno(-1.); double numa(-1.); double eff(-1);
+  double denoE(-1.); double numaE(-1.); double effE(-1);
   
   ///////////////////////
   //TFile *f = new TFile("preSelEff.root", "RECREATE");
   ///////////////////////
   
+    
   // Ups(1S) 
   for ( int iy = 1; iy <= fPreSelEff->GetNbinsX(); ++iy ){
     for ( int ipt = 1; ipt <= fPreSelEff->GetNbinsY(); ++ipt ){
@@ -4321,7 +4402,15 @@ void anaXS::GetPreSelEff(){
 	cout << " !!! PreSelEff for UPS(1S) is higer than 1 !!! with " << eff  << endl;
 	eff = 1;
       }
+      denoE = TMath::Sqrt(fPreSelBefore->GetBinContent(iy,ipt));
+      numaE = TMath::Sqrt(fPreSelAfter->GetBinContent(iy,ipt));
+      effE = TMath::Sqrt(((numaE*numaE)/(deno*deno)) + (numaE*numaE*denoE*denoE)/(deno*deno*deno*deno));
+      
       fPreSelEff->SetBinContent(iy,ipt,eff);
+      fPreSelEff->SetBinError(iy,ipt,effE);
+      
+      cout << " PreSelEff Ups(1S) =  "  << eff << "+/-" << effE << endl;
+      
     }
   }
   
@@ -4335,7 +4424,15 @@ void anaXS::GetPreSelEff(){
 	cout << " !!! PreSelEff for UPS(2S) is higer than 1 !!! with " << eff  << endl;
 	eff = 1;
       }
+      denoE = TMath::Sqrt(fPreSelBefore_2S->GetBinContent(iy,ipt));
+      numaE = TMath::Sqrt(fPreSelAfter_2S->GetBinContent(iy,ipt));
+      effE = TMath::Sqrt(((numaE*numaE)/(deno*deno)) + (numaE*numaE*denoE*denoE)/(deno*deno*deno*deno));
+      
       fPreSelEff_2S->SetBinContent(iy,ipt,eff);
+      fPreSelEff_2S->SetBinError(iy,ipt,effE);
+      
+      cout << " PreSelEff Ups(2S) =  "  << eff << "+/-" << effE << endl;
+      
     }
   }  
 
@@ -4349,7 +4446,15 @@ void anaXS::GetPreSelEff(){
 	cout << " !!! PreSelEff for UPS(3S) is higer than 1 !!! with " << eff  << endl;
 	eff = 1;
       }
+      denoE = TMath::Sqrt(fPreSelBefore_3S->GetBinContent(iy,ipt));
+      numaE = TMath::Sqrt(fPreSelAfter_3S->GetBinContent(iy,ipt));
+      effE = TMath::Sqrt(((numaE*numaE)/(deno*deno)) + (numaE*numaE*denoE*denoE)/(deno*deno*deno*deno));      
+            
       fPreSelEff_3S->SetBinContent(iy,ipt,eff);
+      fPreSelEff_3S->SetBinError(iy,ipt,effE);
+      
+      cout << " PreSelEff Ups(3S) =  "  << eff << "+/-" << effE << endl;
+      
     }
   }  
   
