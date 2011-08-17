@@ -179,6 +179,10 @@ process.patTupleProductionSequence = cms.Sequence()
 process.patTupleProductionSequence += process.jetTracksAssociatorAtVertex
 process.patTupleProductionSequence += process.patJetCharge
 process.patTupleProductionSequence += process.patJetCorrFactors
+if isMC:
+    process.patTupleProductionSequence += process.patJetFlavourId
+    process.patTupleProductionSequence += process.patJetPartonMatch
+    process.patTupleProductionSequence += process.patJetGenJetMatch
 process.patTupleProductionSequence += process.patJets
 
 # select pat::Jets not overlapping with muons

@@ -36,8 +36,8 @@ samples = {
 lxbatch_queue = '1nw'
 
 samplesToAnalyze = [
-    'Data_runs160329to163869',
-    'Data_runs165071to167913',
+    #'Data_runs160329to163869',
+    #'Data_runs165071to167913',
     'simDYtoMuMu'
 ]
 
@@ -100,7 +100,8 @@ def customizeConfigFile(sampleName, jobId, version, inputFileNames, cfgFileName_
     cfg_modified = cfg_modified.replace("#HLTprocessName#", "'%s'" % HLTprocessName)
 
     cfg_modified += "\n"
-    cfg_modified += "process.source.fileNames = cms.untracked.vstring(%s)\n" % inputFileNames
+    cfg_modified += "process.source.fileNames = cms.untracked.vstring(%s)\n" % \
+                      [ "".join([ "file:", inputFileName ]) for inputFileName in inputFileNames ]
     cfg_modified += "process.patTupleOutputModule.fileName = cms.untracked.string('%s')\n" % \
                       output_mapper(sampleName, jobId, version)
     cfg_modified += "process.savePUreweightHistograms.outputFileName = cms.string('%s')\n" % \
@@ -136,7 +137,7 @@ for sampleToAnalyze in samplesToAnalyze:
     inputFileNames = [ file_info['path'] for file_info in castor.nslsl(inputFilePath) ]
     #print " inputFileNames = %s" % inputFileNames
     
-    inputFileNames_matched = [ input_file for input_file in input_mapper(inputFileNames) ]
+    inputFileNames_matched = [ os.path.basename(input_file) for input_file in input_mapper(inputFileNames) ]
     #print "inputFileNames_matched = %s" % inputFileNames_matched
     print "--> found %i inputFiles" % len(inputFileNames_matched)
     

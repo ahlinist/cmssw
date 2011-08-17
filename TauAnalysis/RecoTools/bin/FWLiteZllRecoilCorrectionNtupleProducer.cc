@@ -5,9 +5,9 @@
  *
  * \author Christian Veelken, UC Davis
  *
- * \version $Revision: 1.1 $
+ * \version $Revision: 1.2 $
  *
- * $Id: FWLiteZllRecoilCorrectionNtupleProducer.cc,v 1.1 2011/08/13 12:50:28 veelken Exp $
+ * $Id: FWLiteZllRecoilCorrectionNtupleProducer.cc,v 1.2 2011/08/15 17:10:31 veelken Exp $
  *
  */
 
@@ -18,6 +18,7 @@
 #include "DataFormats/FWLite/interface/Run.h"
 
 #include "FWCore/ParameterSet/interface/ParameterSet.h"
+#include "FWCore/ParameterSet/interface/FileInPath.h"
 #include "FWCore/PythonParameterSet/interface/MakeParameterSets.h"
 #include "FWCore/Utilities/interface/InputTag.h"
 
@@ -85,11 +86,14 @@ int main(int argc, char* argv[])
   edm::InputTag srcPFNeutralRho = cfgZllRecoilCorrectionNtupleProducer.getParameter<edm::InputTag>("srcPFNeutralRho");
 
   edm::ParameterSet cfgAddPUreweight = cfgZllRecoilCorrectionNtupleProducer.getParameter<edm::ParameterSet>("addPUreweight");
-  std::string addPUreweightFileName = cfgAddPUreweight.getParameter<std::string>("inputFileName");
+  edm::FileInPath addPUreweightFileName = cfgAddPUreweight.getParameter<edm::FileInPath>("inputFileName");
   std::string addPUreweightName = cfgAddPUreweight.getParameter<std::string>("meName");
   TH1* addPUreweightHistogram = 0;
   if ( addPUreweightFileName != "" && addPUreweightName != "" ) {
-    TFile* addPUreweightFile = TFile::Open(addPUreweightFileName.data());
+    if ( !addPUreweightFileName.isLocal() ) 
+      throw cms::Exception("VertexMultiplicityReweightExtractor") 
+	<< " Failed to find File = " << addPUreweightFileName << " !!\n";
+    TFile* addPUreweightFile = new TFile(addPUreweightFileName.fullPath().data());
     TH1* addPUreweightHistogram_object = dynamic_cast<TH1*>(addPUreweightFile->Get(addPUreweightName.data()));
     if ( !addPUreweightHistogram_object )
       throw cms::Exception("FWLiteZllRecoilCorrectionNtupleProducer") 
@@ -98,8 +102,8 @@ int main(int argc, char* argv[])
     addPUreweightHistogram = (TH1*)addPUreweightHistogram_object->Clone(addPUreweightHistogramName.data());
     delete addPUreweightFile;
   }
-  double minPUreweight = cfgZllRecoilCorrectionNtupleProducer.getParameter<double>("minPUreweight");
-  double maxPUreweight = cfgZllRecoilCorrectionNtupleProducer.getParameter<double>("maxPUreweight");
+  double minPUreweight = cfgAddPUreweight.getParameter<double>("minPUreweight");
+  double maxPUreweight = cfgAddPUreweight.getParameter<double>("maxPUreweight");
 
   std::string directory = cfgZllRecoilCorrectionNtupleProducer.getParameter<std::string>("directory");
 
