@@ -47,8 +47,9 @@ executable_produceZllRecoilNtuples           = execDir + 'FWLiteZllRecoilCorrect
 executable_fitZllRecoilNtuples               = execDir + 'fitZllRecoilCorrection'
 executable_FWLiteZllRecoilCorrectionAnalyzer = execDir + 'FWLiteZllRecoilCorrectionAnalyzer'
 executable_hadd                              = 'hadd -f'
-executable_makeZllRecoilCorrectionFinalPlots = execDir + 'ZllRecoilCorrectionFinalPlots'
+executable_makeZllRecoilCorrectionFinalPlots = execDir + 'makeZllRecoilCorrectionFinalPlots'
 executable_shell                             = '/bin/csh'
+executable_python                            = 'python'
 
 if not os.path.exists(outputFilePath):
     os.mkdir(outputFilePath)
@@ -82,7 +83,8 @@ for metOptionName in metOptions.keys():
     for sampleName in samplesToAnalyze.keys():
         retVal_fitZllRecoilNtuples = \
           buildConfigFile_fitZllRecoilNtuples(
-            sampleName, metOptionName, inputFilePath, outputFilePath, samplesToAnalyze)
+            sampleName, metOptionName,
+            fileNames_produceZllRecoilNtuples[metOptionName][sampleName]['outputFileName'], outputFilePath, samplesToAnalyze)
 
         if retVal_fitZllRecoilNtuples is None:
             continue
@@ -228,23 +230,28 @@ samplesToAnalyze = %s
 
 metOptions = %s
 
-buildConfigFile_FWLiteZllRecoilCorrectionAnalyzer('%s', '%s', '%s', '%s', samplesToAnalyze, metOptions, '%s', %i)
+buildConfigFile_FWLiteZllRecoilCorrectionAnalyzer(
+  '%s', '%s', '%s', '%s', samplesToAnalyze, metOptions, { 'data' : '%s', 'mc' : '%s' }, %i)
 """ % (str(samplesToAnalyze),
        str(metOptions),
        sampleName, metOptionName, inputFilePath, outputFilePath,
-       fileNames_fitZllRecoilNtuples[metOptionName][sampleName]['outputFileName'], intLumiData)      
+       fileNames_fitZllRecoilNtuples[metOptionName][sampleNameData]['outputFileName'],
+       fileNames_fitZllRecoilNtuples[metOptionName][sampleNameMC]['outputFileName'],
+       intLumiData)      
             tmpConfigFileName = "makeTMPconfigFile_%s_%s.py" % (sampleName, metOptionName)
             tmpConfigFileName_full = os.path.join(outputFilePath, tmpConfigFileName)    
             tmpConfigFile = open(tmpConfigFileName_full, "w")
             tmpConfigFile.write(tmpConfig)
             tmpConfigFile.close()
-            makeFile.write("%s:\n" % fileNames_FWLiteZllRecoilCorrectionAnalyzer[metOptionName][sampleName]['configFileName'])
-            makeFile.write("\t%s %s\n" % (executable_shell, tmpConfigFileName_full))
+            #makeFile.write(".PHONY: %s\n" % fileNames_FWLiteZllRecoilCorrectionAnalyzer[metOptionName][sampleName]['configFileName'])
+            #makeFile.write("%s:\n" % fileNames_FWLiteZllRecoilCorrectionAnalyzer[metOptionName][sampleName]['configFileName'])
+            #makeFile.write("\t%s %s\n" % (executable_python, tmpConfigFileName_full))
             makeFile.write("%s: %s %s %s\n" %
               (fileNames_FWLiteZllRecoilCorrectionAnalyzer[metOptionName][sampleName]['outputFileName'],
                fileNames_fitZllRecoilNtuples[metOptionName][sampleName]['outputFileName'],
-               fileNames_FWLiteZllRecoilCorrectionAnalyzer[metOptionName][sampleName]['configFileName'],
+               #fileNames_FWLiteZllRecoilCorrectionAnalyzer[metOptionName][sampleName]['configFileName'],
                executable_FWLiteZllRecoilCorrectionAnalyzer))
+            makeFile.write("\t%s %s\n" % (executable_python, tmpConfigFileName_full))
             makeFile.write("\t%s %s &> %s\n" %
               (executable_FWLiteZllRecoilCorrectionAnalyzer,
                fileNames_FWLiteZllRecoilCorrectionAnalyzer[metOptionName][sampleName]['configFileName'],
@@ -254,7 +261,7 @@ for metOptionName in metOptions.keys():
     if len(fileNames_hadd[metOptionName]['inputFileNames']) > 0:
         makeFile.write("%s: %s\n" %
           (fileNames_hadd[metOptionName]['outputFileName'],
-           fileNames_FWLiteZllRecoilCorrectionAnalyzer[metOptionName][sampleName]['outputFileName']))
+           make_MakeFile_vstring(fileNames_hadd[metOptionName]['inputFileNames'])))
         makeFile.write("\t%s %s &> %s\n" %
           (executable_shell,
            fileNames_hadd[metOptionName]['shellFileName'],
