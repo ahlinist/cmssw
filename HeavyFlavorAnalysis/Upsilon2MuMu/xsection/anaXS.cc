@@ -2442,38 +2442,58 @@ void anaXS::PlotProjections(int mode) {
       for (int j = 1; j <= fAcceptance->GetNbinsY(); ++j){
 	
 	bin_contentYield += fS1YieldCorrected->GetCellContent(i,j);
-	
+	bin_contentYieldErr += fS1YieldCorrected->GetCellError(i,j)*fS1YieldCorrected->GetCellError(i,j);
       }
       
-      fS1YieldEta->SetBinContent(i,bin_contentYield/lumi);
-      bin_contentAll=0;
-      bin_contentYield=0;
-      
+      //fS1YieldEta->SetBinContent(i,bin_contentYield/lumi);
+      xsection = bin_contentYield/lumi;
+      fS1YieldEta->SetBinContent(i,xsection/fS1YieldEta->GetBinWidth(i));
+      xsectionErr = TMath::Sqrt(bin_contentYieldErr)/lumi;
+      fS1YieldEta->SetBinError(i,xsectionErr/fS1YieldEta->GetBinWidth(i));
+      cout << " Ups(1S) Results "  << endl;
+      cout << "xsection = " << fS1YieldPt->GetBinContent(i) << "+/-" << fS1YieldPt->GetBinError(i) << "(%" << (fS1YieldPt->GetBinError(i)/fS1YieldPt->GetBinContent(i))*100  << ")"<< endl;     
+      bin_ratio=0;bin_contentAll=0;bin_contentReco=0;
+      bin_contentYield=0;xsection=0;xsectionErr=0;bin_contentYieldErr=0;
+            
     }
     
     for (int i = 1; i <= fAcceptance_2S->GetNbinsX(); ++i) {
       for (int j = 1; j <= fAcceptance_2S->GetNbinsY(); ++j){
 	
 	bin_contentYield += fS2YieldCorrected->GetCellContent(i,j);
+	bin_contentYieldErr += fS2YieldCorrected->GetCellError(i,j)*fS2YieldCorrected->GetCellError(i,j);
 	
       }
       
-      fS2YieldEta->SetBinContent(i,bin_contentYield/lumi);
-      bin_contentAll=0;
-      bin_contentYield=0;
-      
+      //fS2YieldEta->SetBinContent(i,bin_contentYield/lumi);
+      xsection = bin_contentYield/lumi;
+      fS2YieldEta->SetBinContent(i,xsection/fS2YieldEta->GetBinWidth(i));
+      xsectionErr = TMath::Sqrt(bin_contentYieldErr)/lumi;
+      fS2YieldEta->SetBinError(i,xsectionErr/fS2YieldEta->GetBinWidth(i));
+      cout << " Ups(2S) Results "  << endl;
+      cout << "xsection = " << fS2YieldPt->GetBinContent(i) << "+/-" << fS2YieldPt->GetBinError(i) << "(%" << (fS2YieldPt->GetBinError(i)/fS2YieldPt->GetBinContent(i))*100  << ")"<< endl;     
+      bin_ratio=0;bin_contentAll=0;bin_contentReco=0;
+      bin_contentYield=0;xsection=0;xsectionErr=0;bin_contentYieldErr=0;
+     
     }
     
     for (int i = 1; i <= fAcceptance_3S->GetNbinsX(); ++i) {
       for (int j = 1; j <= fAcceptance_3S->GetNbinsY(); ++j){
 	
 	bin_contentYield += fS3YieldCorrected->GetCellContent(i,j);
+	bin_contentYieldErr += fS3YieldCorrected->GetCellError(i,j)*fS3YieldCorrected->GetCellError(i,j);
 	
       }
       
-      fS3YieldEta->SetBinContent(i,bin_contentYield/lumi);
-      bin_contentAll=0;
-      bin_contentYield=0;
+      //fS3YieldEta->SetBinContent(i,bin_contentYield/lumi);
+      xsection = bin_contentYield/lumi;
+      fS3YieldEta->SetBinContent(i,xsection/fS3YieldEta->GetBinWidth(i));
+      xsectionErr = TMath::Sqrt(bin_contentYieldErr)/lumi;
+      fS3YieldEta->SetBinError(i,xsectionErr/fS3YieldEta->GetBinWidth(i));
+      cout << " Ups(3S) Results "  << endl;
+      cout << "xsection = " << fS3YieldPt->GetBinContent(i) << "+/-" << fS3YieldPt->GetBinError(i) << "(%" << (fS3YieldPt->GetBinError(i)/fS3YieldPt->GetBinContent(i))*100  << ")"<< endl;     
+      bin_ratio=0;bin_contentAll=0;bin_contentReco=0;
+      bin_contentYield=0;xsection=0;xsectionErr=0;bin_contentYieldErr=0;
       
     }    
     
