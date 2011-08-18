@@ -174,6 +174,10 @@ EcalTimeCalibrationValidator::analyze(edm::Event const& evt, edm::EventSetup con
       myOutputTree_->FlushBaskets();
     }
   }
+  
+  outputTreeFile_->cd();
+  myOutputTree_->Write();
+  outputTreeFile_->Close();
 }
 
 void EcalTimeCalibrationValidator::set(edm::EventSetup const& eventSetup)
@@ -191,9 +195,10 @@ void EcalTimeCalibrationValidator::beginJob()
 
 void EcalTimeCalibrationValidator::endJob()
 {
-  outputTreeFile_->cd();
-  myOutputTree_->Write();
-  outputTreeFile_->Close();
+  //outputTreeFile_->cd();
+  //myOutputTree_->Write();
+  //outputTreeFile_->Close();
+
 }
 
 bool EcalTimeCalibrationValidator::includeEvent(double eventParameter,

@@ -4,15 +4,8 @@ process = cms.Process("EcalCreateTimeCalibrations")
 
 # Global Tag -- for original timing calibrations
 process.load("Configuration.StandardSequences.FrontierConditions_GlobalTag_cff")
+process.load("Configuration.StandardSequences.Geometry_cff")
 process.GlobalTag.globaltag = 'GR_R_43_V3::All'
-
-# Take Offset record from 43X DB -- no longer needed (it's included in the above)
-#process.GlobalTag.toGet = cms.VPSet(
-#  cms.PSet(record = cms.string("EcalTimeOffsetConstantRcd"),
-#           tag = cms.string("EcalTimeOffsetConstant_v01_offline"),
-#           connect = cms.untracked.string("frontier://FrontierProd/CMS_COND_43X_ECAL")
-#          )
-#)
 
 
 process.MessageLogger = cms.Service("MessageLogger",
@@ -28,8 +21,10 @@ process.TFileService = cms.Service("TFileService",
 
 
 process.createTimeCalibs = cms.EDAnalyzer("EcalCreateTimeCalibrations",
+  OutputFileName = cms.string("file:converted1.root"),##Not Used
+  OutputTimeCalibFileName = cms.string("EcalTimeCalibConstants.xml"),##Name of output xml file with new constants
   FileNameStart = cms.string("ecalCreateTimeCalibs"),
-  ZeroGlobalOffset = cms.bool(False),
+  ZeroGlobalOffset = cms.bool(True),
   SubtractDBcalibs = cms.bool(True),
   BxIncludeExclude = cms.string("-1"),
   OrbitIncludeExclude = cms.string("-1"),
@@ -37,25 +32,20 @@ process.createTimeCalibs = cms.EDAnalyzer("EcalCreateTimeCalibrations",
   TechTriggerBitIncludeExclude = cms.string("-1"),
   LumiIncludeExclude = cms.string("-1"),
   RunIncludeExclude = cms.string("-1"),
-  AvgTimeMin = cms.double(-1),
-  AvgTimeMax = cms.double(1),
-  MinHitAmpEB = cms.double(15),
-  MinHitAmpEE = cms.double(15),
+  AvgTimeMin = cms.double(-5),
+  AvgTimeMax = cms.double(5),
+  MinHitAmpEB = cms.double(26),  
+  MinHitAmpEE = cms.double(47), 
   MaxSwissCross = cms.double(0.95),
   MaxHitTimeEB = cms.double(5),
   MinHitTimeEB = cms.double(-5),
-  MaxHitTimeEE = cms.double(5),
-  MinHitTimeEE = cms.double(-5),
-  InputFileNames = cms.vstring(
-         'file:/data/franzoni/data/Ecaltime/skimming-jun17/rhQuinq-SingleEletron-Run2011A-WElectron-PromptSkim-jun16_HADDED.root'
-    )
+  MaxHitTimeEE = cms.double(7),
+  MinHitTimeEE = cms.double(-7),
+  InputFileNames = cms.vstring('file:/data/jared/data/EcalTiming/DoubleElectron_Run2011A-ZElectron-PromptSkim-v4_RAW-RECO/rh-DoubleElectron_Run2011A-ZElectron-PromptSkim-v4_RAW-RECO-jul15.HADDED.root')
 )
-
 process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(1) )
 process.source = cms.Source("EmptySource",
        numberEventsInRun = cms.untracked.uint32(1),
-       firstRun = cms.untracked.uint32(888888) # Use last IOV
+       firstRun = cms.untracked.uint32(888888)
 )
-
-
 process.p = cms.Path(process.createTimeCalibs)

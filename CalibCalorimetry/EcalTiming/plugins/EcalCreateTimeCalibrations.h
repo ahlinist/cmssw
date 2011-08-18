@@ -16,7 +16,7 @@ Implementation:
 //
 // Authors:                              Seth Cooper (Minnesota)
 //         Created:  Tu Apr 26  10:46:22 CEST 2011
-// $Id: EcalCreateTimeCalibrations.h,v 1.4 2011/05/09 13:23:15 scooper Exp $
+// $Id: EcalCreateTimeCalibrations.h,v 1.5 2011/05/19 14:15:16 scooper Exp $
 //
 //
 
@@ -38,6 +38,7 @@ Implementation:
 
 #include "DataFormats/EcalDetId/interface/EBDetId.h"
 #include "DataFormats/EcalDetId/interface/EEDetId.h"
+#include "DQM/EcalCommon/interface/Numbers.h"
 
 #include "TTree.h"
 #include "TFile.h"
@@ -45,6 +46,7 @@ Implementation:
 #include "TH1F.h"
 #include "TH2F.h"
 #include "TProfile2D.h"
+#include "TGraph.h"
 
 #include <vector>
 #include <string>
@@ -83,7 +85,8 @@ class EcalCreateTimeCalibrations : public edm::EDAnalyzer {
                 edm::ESHandle<EcalTimeCalibConstants> origTimeCalibConstHandle;
                 edm::ESHandle<EcalTimeOffsetConstant> origTimeOffsetConstHandle;
                 std::vector<std::string> inputFiles_;
-                std::string fileName_; // beginning of file name of XML calib constants, txt output, etc.
+                std::string fileName_; // beginning of file name of txt output, etc.
+		std::string timeCalibFileName_; 
                 TChain* myInputTree_;
                 bool produce_;
                 EcalTimeTreeContent treeVars_;
@@ -131,6 +134,8 @@ class EcalCreateTimeCalibrations : public edm::EDAnalyzer {
                 TH2F* calibErrorMapEB_;
                 TProfile2D* calibTTMapEB_;
                 TH1F* cryTimingHistsEB_[61200];
+                TH1F* superModuleTimingHistsEB_[36]; 
+                TH1F* triggerTowerTimingHistsEB_[2488];
                 // hists EE
                 TH1F* calibHistEE_;
                 TH1F* calibAfterSubtractionHistEE_;
@@ -185,7 +190,8 @@ class EcalCreateTimeCalibrations : public edm::EDAnalyzer {
                 TH2F* calibErrorMapEEP_;
                 TH1F* cryTimingHistsEEP_[100][100]; // [0][0] = ix 1, iy 1
                 TH1F* cryTimingHistsEEM_[100][100]; // [0][0] = ix 1, iy 1
-
+                TH1F* superModuleTimingHistsEEM_[9];
+                TH1F* superModuleTimingHistsEEP_[9];
 };
 #endif
 

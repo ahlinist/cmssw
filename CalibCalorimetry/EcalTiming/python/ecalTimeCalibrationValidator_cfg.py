@@ -4,8 +4,7 @@ process = cms.Process("EcalTimeCalibrationValidator")
 
 # Global Tag -- for original timing calibrations
 process.load("Configuration.StandardSequences.FrontierConditions_GlobalTag_cff")
-#process.GlobalTag.globaltag = 'GR_R_43_V3::All'
-process.GlobalTag.globaltag = 'GR_R_42_V19::All'
+process.GlobalTag.globaltag = 'GR_R_43_V3::All'
 
 # shaping our Message logger to suit our needs
 process.MessageLogger = cms.Service("MessageLogger",
