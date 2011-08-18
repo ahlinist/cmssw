@@ -218,6 +218,10 @@ for metOptionName in metOptions.keys():
     for sampleName in samplesToAnalyze.keys():
         if fileNames_fitZllRecoilNtuples[metOptionName].has_key(sampleName) and \
            fileNames_FWLiteZllRecoilCorrectionAnalyzer[metOptionName].has_key(sampleName):
+            makeFile.write("%s: %s %s %s\n" %
+              (fileNames_FWLiteZllRecoilCorrectionAnalyzer[metOptionName][sampleName]['outputFileName'],
+               fileNames_fitZllRecoilNtuples[metOptionName][sampleName]['outputFileName'],
+               executable_FWLiteZllRecoilCorrectionAnalyzer))
             # rebuild config file to run FWLiteZllRecoilCorrectionAnalyzer macro
             # using actual Z-recoil correction parameter values determind by fit
             tmpConfig = \
@@ -242,15 +246,7 @@ buildConfigFile_FWLiteZllRecoilCorrectionAnalyzer(
             tmpConfigFileName_full = os.path.join(outputFilePath, tmpConfigFileName)    
             tmpConfigFile = open(tmpConfigFileName_full, "w")
             tmpConfigFile.write(tmpConfig)
-            tmpConfigFile.close()
-            #makeFile.write(".PHONY: %s\n" % fileNames_FWLiteZllRecoilCorrectionAnalyzer[metOptionName][sampleName]['configFileName'])
-            #makeFile.write("%s:\n" % fileNames_FWLiteZllRecoilCorrectionAnalyzer[metOptionName][sampleName]['configFileName'])
-            #makeFile.write("\t%s %s\n" % (executable_python, tmpConfigFileName_full))
-            makeFile.write("%s: %s %s %s\n" %
-              (fileNames_FWLiteZllRecoilCorrectionAnalyzer[metOptionName][sampleName]['outputFileName'],
-               fileNames_fitZllRecoilNtuples[metOptionName][sampleName]['outputFileName'],
-               #fileNames_FWLiteZllRecoilCorrectionAnalyzer[metOptionName][sampleName]['configFileName'],
-               executable_FWLiteZllRecoilCorrectionAnalyzer))
+            tmpConfigFile.close()            
             makeFile.write("\t%s %s\n" % (executable_python, tmpConfigFileName_full))
             makeFile.write("\t%s %s &> %s\n" %
               (executable_FWLiteZllRecoilCorrectionAnalyzer,
