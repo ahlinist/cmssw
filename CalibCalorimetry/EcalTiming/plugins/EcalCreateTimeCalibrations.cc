@@ -13,7 +13,7 @@ Implementation:
 //
 // Authors:                              Seth Cooper (Minnesota)
 //         Created:  Tu Apr 26  10:46:22 CEST 2011
-// $Id: EcalCreateTimeCalibrations.cc,v 1.13 2011/06/29 09:31:00 scooper Exp $
+// $Id: EcalCreateTimeCalibrations.cc,v 1.14 2011/07/15 13:54:38 scooper Exp $
 //
 //
 
@@ -37,6 +37,7 @@ Implementation:
 #include "DataFormats/DetId/interface/DetId.h"
 #include "DataFormats/EcalDetId/interface/EBDetId.h"
 #include "DataFormats/EcalDetId/interface/EEDetId.h"
+#include "DQM/EcalCommon/interface/Numbers.h"
 
 #include <fstream>
 
@@ -44,6 +45,7 @@ Implementation:
 EcalCreateTimeCalibrations::EcalCreateTimeCalibrations(const edm::ParameterSet& ps) :
   inputFiles_ (ps.getParameter<std::vector<std::string> >("InputFileNames")),
   fileName_ (ps.getParameter<std::string>("FileNameStart")),
+  timeCalibFileName_ (ps.getParameter<std::string>("OutputTimeCalibFileName")),  
   numTotalCrys_ (EBDetId::kSizeForDenseIndexing+EEDetId::kSizeForDenseIndexing),
   disableGlobalShift_ (ps.getParameter<bool>("ZeroGlobalOffset")),
   subtractDBcalibs_ (ps.getParameter<bool>("SubtractDBcalibs")),
@@ -113,7 +115,8 @@ EcalCreateTimeCalibrations::analyze(edm::Event const& evt, edm::EventSetup const
 {
   if(!produce_)
     return;
-
+  
+  Numbers::initGeometry(es,true);
   EcalCrystalTimingCalibration* ebCryCalibs[EBDetId::kSizeForDenseIndexing];
   //XXX: Making calibs with weighted/unweighted mean
   for(int i=0; i < EBDetId::kSizeForDenseIndexing; ++i)
@@ -132,7 +135,6 @@ EcalCreateTimeCalibrations::analyze(edm::Event const& evt, edm::EventSetup const
   for(int entry = 0; entry < nEntries; ++entry)
   {
     myInputTree_->GetEntry(entry);
-
     // Loop once to calculate average event time -- use all crys in EB+EE clusters
     float sumTime = 0;
     int numCrys = 0;
@@ -191,7 +193,6 @@ EcalCreateTimeCalibrations::analyze(edm::Event const& evt, edm::EventSetup const
 
           int ieta = det.ieta();
           int iphi = det.iphi();
-
           // RecHit cuts
           bool keepHit = cryAmp >= minHitAmpEB_
             && crySwissCrossNoise < maxSwissCrossNoise_
@@ -227,7 +228,6 @@ EcalCreateTimeCalibrations::analyze(edm::Event const& evt, edm::EventSetup const
 
           int ix = det.ix();
           int iy = det.iy();
-
           //XXX: RecHit cuts
           bool keepHit = cryAmp >= minHitAmpEE_
             && cryTime > minHitTimeEE_
@@ -306,6 +306,8 @@ EcalCreateTimeCalibrations::analyze(edm::Event const& evt, edm::EventSetup const
     int iphi = 0;
     int x = 0;
     int y = 0;
+    int iEB = 0;
+    int iEE = 0;
     int zside = 0;
     bool isEB = true;
     if(hashedIndex >= EBDetId::kSizeForDenseIndexing)
@@ -318,6 +320,7 @@ EcalCreateTimeCalibrations::analyze(edm::Event const& evt, edm::EventSetup const
         continue;
       ieta = det.ieta();
       iphi = det.iphi();
+      iEB = Numbers::iEB(Numbers::iSM(det));
       cryCalib = ebCryCalibs[hashedIndex];
     }
     else
@@ -328,18 +331,19 @@ EcalCreateTimeCalibrations::analyze(edm::Event const& evt, edm::EventSetup const
       x = det.ix();
       y = det.iy();
       zside = det.zside();
+      iEE = Numbers::iEE(Numbers::iSM(det));
       cryCalib = eeCryCalibs[hashedIndex-EBDetId::kSizeForDenseIndexing];
     }
 
     //XXX: Filter events at default 0.5*meanE threshold
-    cryCalib->filterOutliers();
+//    cryCalib->filterOutliers(); //commented out August 5th 2011
     
     //numPointsErasedHist_->Fill(numPointsErased);
     //chiSquaredTotalHist_->Fill(cryCalib.totalChi2);
     double p1 = cryCalib->mean;
     double p1err = cryCalib->meanE;
     
-    //Write cryTimingHists
+    //Fill cryTimingHists
     std::vector<EcalTimingEvent> times = cryCalib->timingEvents;
     for(std::vector<EcalTimingEvent>::const_iterator timeItr = times.begin();
         timeItr != times.end(); ++timeItr)
@@ -348,8 +352,15 @@ EcalCreateTimeCalibrations::analyze(edm::Event const& evt, edm::EventSetup const
       if(isEB)
       {
         cryTimingHistsEB_[hashedIndex]->Fill(timeItr->time,weight);
-
-        //expectedStatPresHistEB_->Fill(sqrt(1/expectedPresSumEB));
+	if(iEB < 0)
+	{
+          superModuleTimingHistsEB_[iEB+18]->Fill(timeItr->time,weight);
+	}
+	else
+        {
+          superModuleTimingHistsEB_[iEB+17]->Fill(timeItr->time,weight);
+        }
+	//expectedStatPresHistEB_->Fill(sqrt(1/expectedPresSumEB));
         //expectedStatPresVsObservedMeanErrHistEB_->Fill(sigmaM,sqrt(1/expectedPresSumEB));
       }
       else
@@ -358,11 +369,13 @@ EcalCreateTimeCalibrations::analyze(edm::Event const& evt, edm::EventSetup const
         {
           float weight = 1/((timeItr->sigmaTime)*(timeItr->sigmaTime));
           cryTimingHistsEEM_[x-1][y-1]->Fill(timeItr->time,weight);
+          superModuleTimingHistsEEM_[-1*iEE - 1]->Fill(timeItr->time,weight);
         }
         else
         {
           float weight = 1/((timeItr->sigmaTime)*(timeItr->sigmaTime));
           cryTimingHistsEEP_[x-1][y-1]->Fill(timeItr->time,weight);
+          superModuleTimingHistsEEP_[iEE - 1]->Fill(timeItr->time,weight);
         }
       }
     }
@@ -370,7 +383,7 @@ EcalCreateTimeCalibrations::analyze(edm::Event const& evt, edm::EventSetup const
     if(isEB)
     {
       //cryDirEB->cd();
-      cryTimingHistsEB_[hashedIndex]->Write();
+      //cryTimingHistsEB_[hashedIndex]->Write();
       hitsPerCryHistEB_->SetBinContent(hashedIndex+1,cryCalib->timingEvents.size());
       hitsPerCryMapEB_->Fill(iphi,ieta,cryCalib->timingEvents.size());
     }
@@ -379,14 +392,14 @@ EcalCreateTimeCalibrations::analyze(edm::Event const& evt, edm::EventSetup const
       if(zside < 0)
       {
         //cryDirEEM->cd();
-        cryTimingHistsEEM_[x-1][y-1]->Write();
+        //cryTimingHistsEEM_[x-1][y-1]->Write();
         hitsPerCryHistEEM_->SetBinContent(hashedIndex-EBDetId::kSizeForDenseIndexing+1,cryCalib->timingEvents.size());
         hitsPerCryMapEEM_->Fill(x,y,cryCalib->timingEvents.size());
       }
       else
       {
         //cryDirEEP->cd();
-        cryTimingHistsEEP_[x-1][y-1]->Write();
+        //cryTimingHistsEEP_[x-1][y-1]->Write();
         hitsPerCryHistEEP_->SetBinContent(hashedIndex-EBDetId::kSizeForDenseIndexing+1,cryCalib->timingEvents.size());
         hitsPerCryMapEEP_->Fill(x,y,cryCalib->timingEvents.size());
       }
@@ -399,7 +412,6 @@ EcalCreateTimeCalibrations::analyze(edm::Event const& evt, edm::EventSetup const
       if(isEB)
       {
         hashesToCalibrateNormallyEB.push_back(hashedIndex);
-
         calibHistEB_->Fill(p1);
         //calibMapEEMFlip_->Fill(y-85,x+1,p1);
         calibMapEB_->Fill(iphi,ieta,p1);
@@ -696,7 +708,6 @@ EcalCreateTimeCalibrations::analyze(edm::Event const& evt, edm::EventSetup const
   header.since_=123;
   header.tag_="testtag";
   header.date_="Mar 24 1973";
-  std::string timeCalibFile = "EcalTimeCalibs.xml";
   std::string timeCalibErrFile = "EcalTimeCalibErrors.xml";
   std::string timeOffsetFile = "EcalTimeOffset.xml";
   //NOTE: Hack should now be unnecessary...
@@ -707,39 +718,44 @@ EcalCreateTimeCalibrations::analyze(edm::Event const& evt, edm::EventSetup const
   //timeCalibConstants[rawId] = tcConstant;
   //timeCalibErrors[rawId] = tcError;
   // End hack
-  EcalTimeCalibConstantsXMLTranslator::writeXML(timeCalibFile,header,timeCalibConstants);
+  EcalTimeCalibConstantsXMLTranslator::writeXML(timeCalibFileName_,header,timeCalibConstants);
   EcalTimeCalibErrorsXMLTranslator::writeXML(timeCalibErrFile,header,timeCalibErrors);
   EcalTimeOffsetXMLTranslator::writeXML(timeOffsetFile,header,timeOffsetConstant);
 
   //Move empty bins out of the way -- EB
   int nxbins = calibMapEB_->GetNbinsX();
   int nybins = calibMapEB_->GetNbinsY();
-  for(int i=0;i<=(nxbins+2)*(nybins+2); ++i)
+  for (int x=1;x<=nxbins;++x)
   {
-    double binentsM = calibMapEB_->GetBinContent(i);
-    if(binentsM==0)
+    for (int y=1;y<=nybins;++y)
     {
-      calibMapEB_->SetBinContent(i,-1000);
+      double binentsM = calibMapEB_->GetBinContent(x,y);
+      if(binentsM==0)
+      {
+        calibMapEB_->SetBinContent(x,y,-1000);
+      }
     }
   }
 
   //Move empty bins out of the way -- EE
   nxbins = calibMapEEM_->GetNbinsX();
   nybins = calibMapEEM_->GetNbinsY();
-  for(int i=0;i<=(nxbins+2)*(nybins+2); ++i)
+  for (int x=1;x<=nxbins;++x)
   {
-    double binentsM = calibMapEEM_->GetBinContent(i);
-    if(binentsM==0)
+    for (int y=1;y<=nybins;++y)
     {
-      calibMapEEM_->SetBinContent(i,-1000);
-    }
-    double binentsP = calibMapEEP_->GetBinContent(i);
-    if(binentsP==0)
-    {
-      calibMapEEP_->SetBinContent(i,-1000);
+      double binentsM = calibMapEEM_->GetBinContent(x,y);
+      if(binentsM==0)
+      {
+        calibMapEEM_->SetBinContent(x,y,-1000);
+      }
+      double binentsP = calibMapEEP_->GetBinContent(x,y);
+      if(binentsP==0)
+      {
+        calibMapEEP_->SetBinContent(x,y,-1000);
+      }
     }
   }
-
 }
 
 void EcalCreateTimeCalibrations::set(edm::EventSetup const& eventSetup)
@@ -762,7 +778,7 @@ void EcalCreateTimeCalibrations::endJob()
 
 void EcalCreateTimeCalibrations::initEBHists(edm::Service<TFileService>& fileService_)
 {
-  calibHistEB_ = fileService_->make<TH1F>("timingCalibDiffEB","timingCalib diff EB [ns]",2000,-100,100);
+  calibHistEB_ = fileService_->make<TH1F>("timingCalibDiffEB","timingCalib diff EB [ns]",400,-10,10);
   calibAfterSubtractionHistEB_ = fileService_->make<TH1F>("timingCalibsAfterSubtractionEB","timingCalib EB (after subtraction) [ns]",2000,-100,100);
   calibErrorHistEB_ = fileService_->make<TH1F>("calibDiffErrorEB","timingCalibDiffError EB [ns]",500,0,5);
   calibHistEB_->Sumw2();
@@ -778,7 +794,7 @@ void EcalCreateTimeCalibrations::initEBHists(edm::Service<TFileService>& fileSer
   hitsPerCryMapEB_ = fileService_->make<TH2F>("hitsPerCryMapEB","Hits used in each crystal;i#phi;i#eta",360,1.,361.,171,-85,86);
   ampProfileMapEB_ = fileService_->make<TProfile2D>("ampProfileMapEB","amp profile map [ADC];i#phi;i#eta",360,1.,361.,171,-85,86);
   ampProfileEB_ = fileService_->make<TProfile>("ampProfileEB","Average amplitude in cry [ADC];hashedIndex",61200,0,61200);
-  sigmaHistEB_ = fileService_->make<TH1F>("sigmaCalibsEB"," Sigma of calib distributions EB [ns]",100,0,1);
+  sigmaHistEB_ = fileService_->make<TH1F>("sigmaCalibsEB"," Sigma of calib distributions EB [ns]",300,0,3);
   //=============Special Bins for TT and Modules borders=============================
   double ttEtaBins[36] = {-85, -80, -75, -70, -65, -60, -55, -50, -45, -40, -35, -30, -25, -20, -15, -10, -5, 0, 1, 6, 11, 16, 21, 26, 31, 36, 41, 46, 51, 56, 61, 66, 71, 76, 81, 86 };
   // double modEtaBins[10]={-85, -65, -45, -25, 0, 1, 26, 46, 66, 86};
@@ -822,6 +838,31 @@ void EcalCreateTimeCalibrations::initEBHists(edm::Service<TFileService>& fileSer
     cryTimingHistsEB_[hi] = cryDirEB.make<TH1F>(histname.c_str(),histname.c_str(),200,-10,10);
     cryTimingHistsEB_[hi]->Sumw2();
   }
+  TFileDirectory superModuleDirEB = fileService_->mkdir("superModuleTimingHistsEB");
+  for(int iEB=0; iEB <= 35; ++iEB)
+  {
+    std::string histname = "EB_Timing_SM";
+    if(iEB < 18)
+    {
+      histname+=intToString(iEB-18);
+    }
+    else
+    {
+      histname+=intToString(iEB-17);
+    }
+    superModuleTimingHistsEB_[iEB] = superModuleDirEB.make<TH1F>(histname.c_str(),histname.c_str(),200,-10,10);
+    superModuleTimingHistsEB_[iEB]->Sumw2();
+  }
+/*  TFileDirectory triggerTowerDirEB = fileService_->mkdir("triggerTowerTimingHistsEB");
+  for(int iEBTT=-18; iEBTT <= 18; ++iEBTT)
+  {
+    if(iEBTT==0)
+      continue;
+    std::string histname = "EB_Timing_SM";
+    histname+=intToString(iEBTT);
+    triggerTowerTimingHistsEB_[iEBTT] = triggerTowerDirEB.make<TH1F>(histname.c_str(),histname.c_str(),200,-10,10);
+    triggerTowerTimingHistsEB_[iEBTT]->Sumw2();
+  }*/
 }
 
 void EcalCreateTimeCalibrations::initEEHists(edm::Service<TFileService>& fileService_)
@@ -850,7 +891,7 @@ void EcalCreateTimeCalibrations::initEEHists(edm::Service<TFileService>& fileSer
   ampProfileMapEEM_ = new TProfile2D("ampProfileMapEEM","Amp profile EEM;ix;iy",100,1,101,100,1,101);
   //eventsEEHist_ = fileService_->make<TH1F>("numEventsEE","Number of events, EE",100,0,100);
   //calibSigmaHist_ = fileService_->make<TH1F>("timingSpreadEE","Crystal timing spread [ns]",1000,-5,5);
-  sigmaHistEE_ = fileService_->make<TH1F>("sigmaCalibDiffsEE"," Sigma of calib diff distributions EE [ns]",100,0,1);
+  sigmaHistEE_ = fileService_->make<TH1F>("sigmaCalibDiffsEE"," Sigma of calib diff distributions EE [ns]",300,0,3);
   //chiSquaredEachEventHist_ = fileService_->make<TH1F>("chi2eachEvent","Chi2 of each event",500,0,500);
   //chiSquaredVsAmpEachEventHist_ = fileService_->make<TH2F>("chi2VsAmpEachEvent","Chi2 vs. amplitude of each event",500,0,500,750,0,750);
   //chiSquaredHighMap_ = fileService_->make<TH2F>("chi2HighMap","Channels with event #Chi^{2} > 100",360,1,361,170,-86,86);
@@ -868,8 +909,8 @@ void EcalCreateTimeCalibrations::initEEHists(edm::Service<TFileService>& fileSer
   expectedStatPresEachEventHistEEP_ = fileService_->make<TH1F>("expectedStatPresSingleEventEEP","Expected stat. pres. each event EEP [ns]",200,0,2);
   errorOnMeanVsNumEvtsHist_ = fileService_->make<TH2F>("errorOnMeanVsNumEvts","Error_on_mean vs. number of events",50,0,50,200,0,2);
   errorOnMeanVsNumEvtsHist_->Sumw2();
-  calibHistEEM_ = fileService_->make<TH1F>("timingCalibDiffsEEM","timingCalibDiffs EEM [ns]",500,-25,25);
-  calibHistEEP_ = fileService_->make<TH1F>("timingCalibDiffsEEP","timingCalibDiffs EEP [ns]",500,-25,25);
+  calibHistEEM_ = fileService_->make<TH1F>("timingCalibDiffsEEM","timingCalibDiffs EEM [ns]",400,-10,10);
+  calibHistEEP_ = fileService_->make<TH1F>("timingCalibDiffsEEP","timingCalibDiffs EEP [ns]",400,-10,10);
   calibAfterSubtractionHistEEM_ = fileService_->make<TH1F>("timingCalibsAfterSubtractionEEM","timingCalibs EEM (after subtraction) [ns]",500,-25,25);
   calibAfterSubtractionHistEEP_ = fileService_->make<TH1F>("timingCalibsAfterSubtractionEEP","timingCalibs EEP (after subtraction) [ns]",500,-25,25);
   calibErrorHistEEM_ = fileService_->make<TH1F>("calibDiffErrorEEM","timingCalibDiffError EEM [ns]",250,0,5);
@@ -888,21 +929,22 @@ void EcalCreateTimeCalibrations::initEEHists(edm::Service<TFileService>& fileSer
   sigmaMapEEP_ = fileService_->make<TH2F>("sigmaMapEEP","Sigma of time calib diff map EEP [ns];ix;iy",100,1.,101.,100,1,101);
   calibErrorMapEEM_ = fileService_->make<TH2F>("calibErrorMapEEM","Error of time calib diff map EEM [ns];ix;iy",100,1.,101.,100,1,101);
   calibErrorMapEEP_ = fileService_->make<TH2F>("calibErrorMapEEP","Error of time calib diff map EEP [ns];ix;iy",100,1.,101.,100,1,101);
-
-  TFileDirectory cryDirEEP = fileService_->mkdir("crystalTimingHistsEEP");
-  for(int x=0; x < 100; ++x)
+//  superModuleTimingMeanEB_ = fileService_->make<TGraph>("superModuleTimingMeanEB","Mean Time of EB SM [ns] ",36);
+  TFileDirectory superModuleDirEEM = fileService_->mkdir("superModuleTimingHistsEEM");
+  for(int iEEM=0; iEEM <= 8; ++iEEM)
   {
-    for(int y=0; y < 100; ++y)
-    {
-      if(!EEDetId::validDetId(x+1,y+1,1))
-        continue;
-      std::string histname = "EEP_cryTiming_ix";
-      histname+=intToString(x+1);
-      histname+="_iy";
-      histname+=intToString(y+1);
-      cryTimingHistsEEP_[x][y] = cryDirEEP.make<TH1F>(histname.c_str(),histname.c_str(),200,-10,10);
-      cryTimingHistsEEP_[x][y]->Sumw2();
-    }
+    std::string histname = "EEM_Timing_SM";
+    histname+=intToString(iEEM+1);
+    superModuleTimingHistsEEM_[iEEM] = superModuleDirEEM.make<TH1F>(histname.c_str(),histname.c_str(),200,-10,10);
+    superModuleTimingHistsEEM_[iEEM]->Sumw2();
+  }
+  TFileDirectory superModuleDirEEP = fileService_->mkdir("superModuleTimingHistsEEP");
+  for(int iEEP=0; iEEP <= 8; ++iEEP)
+  {
+    std::string histname = "EEP_Timing_SM";
+    histname+=intToString(iEEP+1);
+    superModuleTimingHistsEEP_[iEEP] = superModuleDirEEP.make<TH1F>(histname.c_str(),histname.c_str(),200,-10,10);
+    superModuleTimingHistsEEP_[iEEP]->Sumw2();
   }
   TFileDirectory cryDirEEM = fileService_->mkdir("crystalTimingHistsEEM");
   for(int x=0; x < 100; ++x)
@@ -917,6 +959,21 @@ void EcalCreateTimeCalibrations::initEEHists(edm::Service<TFileService>& fileSer
       histname+=intToString(y+1);
       cryTimingHistsEEM_[x][y] = cryDirEEM.make<TH1F>(histname.c_str(),histname.c_str(),200,-10,10);
       cryTimingHistsEEM_[x][y]->Sumw2();
+    }
+  }
+  TFileDirectory cryDirEEP = fileService_->mkdir("crystalTimingHistsEEP");
+  for(int x=0; x < 100; ++x)
+  {
+    for(int y=0; y < 100; ++y)
+    {
+      if(!EEDetId::validDetId(x+1,y+1,1))
+        continue;
+      std::string histname = "EEP_cryTiming_ix";
+      histname+=intToString(x+1);
+      histname+="_iy";
+      histname+=intToString(y+1);
+      cryTimingHistsEEP_[x][y] = cryDirEEP.make<TH1F>(histname.c_str(),histname.c_str(),200,-10,10);
+      cryTimingHistsEEP_[x][y]->Sumw2();
     }
   }
 }
