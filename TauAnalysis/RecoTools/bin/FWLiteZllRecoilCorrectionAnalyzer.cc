@@ -5,9 +5,9 @@
  *
  * \author Christian Veelken, UC Davis
  *
- * \version $Revision: 1.2 $
+ * \version $Revision: 1.3 $
  *
- * $Id: FWLiteZllRecoilCorrectionAnalyzer.cc,v 1.2 2011/08/17 12:27:14 veelken Exp $
+ * $Id: FWLiteZllRecoilCorrectionAnalyzer.cc,v 1.3 2011/08/17 13:55:56 veelken Exp $
  *
  */
 
@@ -89,29 +89,27 @@ int main(int argc, char* argv[])
 
   edm::InputTag srcEventCounter = cfgZllRecoilCorrectionAnalyzer.getParameter<edm::InputTag>("srcEventCounter");
 
-  edm::ParameterSet cfgAddPUreweight = cfgZllRecoilCorrectionAnalyzer.getParameter<edm::ParameterSet>("addPUreweight");
-  edm::FileInPath addPUreweightFileName = cfgAddPUreweight.getParameter<edm::FileInPath>("inputFileName");
-  std::string addPUreweightName = cfgAddPUreweight.getParameter<std::string>("meName");
-  TH1* addPUreweightHistogram = 0;
-  if ( addPUreweightFileName.relativePath() != "" && addPUreweightName != "" ) {
-    if ( !addPUreweightFileName.isLocal() ) 
-      throw cms::Exception("FWLiteZllRecoilCorrectionAnalyzer") 
-	<< " Failed to find File = " << addPUreweightFileName << " !!\n";
-    TFile* addPUreweightFile = new TFile(addPUreweightFileName.fullPath().data());
-    TH1* addPUreweightHistogram_object = dynamic_cast<TH1*>(addPUreweightFile->Get(addPUreweightName.data()));
-    if ( !addPUreweightHistogram_object )
-      throw cms::Exception("FWLiteZllRecoilCorrectionAnalyzer") 
-	<< "Failed to find histogram = " << addPUreweightName << " in file = " << addPUreweightFileName << " !!\n";
-    std::string addPUreweightHistogramName = std::string(addPUreweightHistogram_object->GetName()).append("_cloned");
-    addPUreweightHistogram = (TH1*)addPUreweightHistogram_object->Clone(addPUreweightHistogramName.data());
-    delete addPUreweightFile;
+  TFile* addPUreweightFile = 0;
+  TH1* addPUreweightHistogram = 0;  
+  double minPUreweight = 1.0;
+  double maxPUreweight = 1.0;
+  if ( cfgZllRecoilCorrectionAnalyzer.exists("addPUreweight") ) {
+    edm::ParameterSet cfgAddPUreweight = cfgZllRecoilCorrectionAnalyzer.getParameter<edm::ParameterSet>("addPUreweight");
+    edm::FileInPath addPUreweightFileName = cfgAddPUreweight.getParameter<edm::FileInPath>("inputFileName");
+    std::string addPUreweightName = cfgAddPUreweight.getParameter<std::string>("meName");
+    if ( addPUreweightFileName.relativePath() != "" && addPUreweightName != "" ) {
+      if ( !addPUreweightFileName.isLocal() ) 
+	throw cms::Exception("FWLiteZllRecoilCorrectionAnalyzer") 
+	  << " Failed to find File = " << addPUreweightFileName << " !!\n";
+      addPUreweightFile = new TFile(addPUreweightFileName.fullPath().data());
+      addPUreweightHistogram = dynamic_cast<TH1*>(addPUreweightFile->Get(addPUreweightName.data()));
+      if ( !addPUreweightHistogram )
+	throw cms::Exception("FWLiteZllRecoilCorrectionAnalyzer") 
+	  << "Failed to find histogram = " << addPUreweightName << " in file = " << addPUreweightFileName << " !!\n";
+    }
+    minPUreweight = cfgAddPUreweight.getParameter<double>("minPUreweight");
+    maxPUreweight = cfgAddPUreweight.getParameter<double>("maxPUreweight");
   }
-  double minPUreweight = cfgAddPUreweight.getParameter<double>("minPUreweight");
-  double maxPUreweight = cfgAddPUreweight.getParameter<double>("maxPUreweight");
-
-  edm::ParameterSet cfgZllRecoilCorrectionAlgorithm = 
-    cfgZllRecoilCorrectionAnalyzer.getParameter<edm::ParameterSet>("recoZllRecoilCorrectionParameters");
-  ZllRecoilCorrectionAlgorithm corrAlgorithm(cfgZllRecoilCorrectionAlgorithm);
 
   std::string directory = cfgZllRecoilCorrectionAnalyzer.getParameter<std::string>("directory");
 
@@ -124,6 +122,13 @@ int main(int argc, char* argv[])
   std::string processType = cfgZllRecoilCorrectionAnalyzer.getParameter<std::string>("type");
   std::cout << " type = " << processType << std::endl;
   bool isData = (processType == "Data");
+
+  ZllRecoilCorrectionAlgorithm* corrAlgorithm = 0;
+  if ( !isData ) {
+    edm::ParameterSet cfgZllRecoilCorrectionAlgorithm = 
+      cfgZllRecoilCorrectionAnalyzer.getParameter<edm::ParameterSet>("algorithm");
+    corrAlgorithm = new ZllRecoilCorrectionAlgorithm(cfgZllRecoilCorrectionAlgorithm);
+  }
 
 //--- book "dummy" histogram counting number of processed events
   TH1* histogramEventCounter = fs.make<TH1F>("numEventsProcessed", "Number of processed Events", 3, -0.5, +2.5);
@@ -232,13 +237,13 @@ int main(int argc, char* argv[])
       }
 
 //--- find Z --> mu+ mu- candidate closest to nominal Z0 mass
-      edm::Handle<reco::CompositeCandidateView> ZllCandidates;
+      edm::Handle<reco::CompositeCandidateCollection> ZllCandidates;
       evt.getByLabel(srcZllCandidates, ZllCandidates);
 
       const reco::CompositeCandidate* bestZllCandidate = 0;
       const double nominalZmass = 91.19;
       double minMassDiff = -1.;
-      for ( reco::CompositeCandidateView::const_iterator ZllCandidate = ZllCandidates->begin();
+      for ( reco::CompositeCandidateCollection::const_iterator ZllCandidate = ZllCandidates->begin();
 	    ZllCandidate != ZllCandidates->end(); ++ZllCandidate ) {
 	double massDiff = TMath::Abs(ZllCandidate->mass() - nominalZmass);
 	if ( minMassDiff == -1. || massDiff < minMassDiff ) {
@@ -271,7 +276,7 @@ int main(int argc, char* argv[])
 	throw cms::Exception("FWLiteTauFakeRateAnalyzer") 
 	  << "Failed to find generator level MET object !!\n";
 
-      pat::MET theEventMEt_ZllRecoilCorrected = corrAlgorithm.buildZllCorrectedMEt(
+      pat::MET theEventMEt_ZllRecoilCorrected = corrAlgorithm->buildZllCorrectedMEt(
         theEventMEt, theEventMEt.genMET()->p4(), bestZllCandidate->p4());
 
       histogramsAfterZllRecoilCorr->fillHistograms(
@@ -281,6 +286,9 @@ int main(int argc, char* argv[])
 //--- close input file
     delete inputFile;
   }
+
+  delete addPUreweightFile;
+  delete corrAlgorithm;
 
   std::cout << "<FWLiteZllRecoilCorrectionAnalyzer>:" << std::endl;
   std::cout << " numEvents_processed: " << numEvents_processed << std::endl;

@@ -98,7 +98,7 @@ process.ZllRecoilCorrectionNtupleProducer = cms.PSet(
     srcZllCandidates = cms.InputTag('goldenZmumuCandidatesGe1IsoMuons'),
     srcMEt = cms.InputTag('%s'),
 
-    srcWeights = cms.VInputTag('%s'),
+    srcWeights = cms.VInputTag(%s),
 
     srcVertices = cms.InputTag('selectedPrimaryVertexPosition'),
     srcPFNeutralRho = cms.InputTag('kt6PFNeutralJets', 'rho'),
@@ -163,7 +163,7 @@ process.fitZllRecoilCorrection = cms.PSet(
 
     directory = cms.string('%s'),
 
-    processType = cms.string('%s'),
+    type = cms.string('%s'),
 
     outputFileName = cms.string('%s')
 )
@@ -187,7 +187,7 @@ process.fitZllRecoilCorrection = cms.PSet(
     return retVal
 
 def buildConfigFile_FWLiteZllRecoilCorrectionAnalyzer(sampleName, metOptionName, inputFilePath, outputFilePath,
-                                                      samplesToAnalyze, metOptions, ZllRecoilCorrectionParameterFileName, intLumiData):
+                                                      samplesToAnalyze, metOptions, ZllRecoilCorrectionParameterFileNames, intLumiData):
 
     """Build cfg.py file to run FWLiteZllRecoilCorrectionAnalyzer macro on PAT-tuples,
        and fill control plots of MET in Data compared to Monte Carlo simulation with Z-recoil corrections applied"""
@@ -216,10 +216,22 @@ def buildConfigFile_FWLiteZllRecoilCorrectionAnalyzer(sampleName, metOptionName,
         processType = 'Data'
 
     recoZllRecoilCorrectionParameters_string = ""
-    if ZllRecoilCorrectionParameterFileName is not None:
-        ZllRecoilCorrectionParameterFile = open(ZllRecoilCorrectionParameterFileName, 'r')
-        recoZllRecoilCorrectionParameters_string = ZllRecoilCorrectionParameterFile.read()
-        ZllRecoilCorrectionParameterFile.close()
+    if ZllRecoilCorrectionParameterFileNames is not None:
+        recoZllRecoilCorrectionParameters_string = "    algorithm = cms.PSet(\n"
+        recoZllRecoilCorrectionParameters_string += "        parameter = cms.PSet(\n"
+        for parameterSetName in [ 'data', 'mc' ]: 
+            ZllRecoilCorrectionParameterFile = open(ZllRecoilCorrectionParameterFileNames[parameterSetName], 'r')
+            lines = ZllRecoilCorrectionParameterFile.readlines()
+            for lineNumber, line in enumerate(lines):
+                #print "%i: %s" % (lineNumber, line)
+                if lineNumber == 0:
+                    recoZllRecoilCorrectionParameters_string += "            %s = cms.PSet(\n" % parameterSetName
+                elif lineNumber < (len(lines) - 1):
+                    recoZllRecoilCorrectionParameters_string += "            %s" % line
+            recoZllRecoilCorrectionParameters_string += "            ),\n"
+            ZllRecoilCorrectionParameterFile.close()
+        recoZllRecoilCorrectionParameters_string += "        )\n"
+        recoZllRecoilCorrectionParameters_string += "    ),\n"
 
     srcMEt = metOptions[metOptionName]['srcMEt']
     
@@ -261,14 +273,14 @@ process.ZllRecoilCorrectionAnalyzer = cms.PSet(
 
     directory = cms.string('%s'),
 
-    processType = cms.string('%s'),
+    type = cms.string('%s'),
 
-%s,
+%s
 
     srcZllCandidates = cms.InputTag('goldenZmumuCandidatesGe1IsoMuons'),
     srcMEt = cms.InputTag('%s'),
 
-    srcWeights = cms.VInputTag('%s'),
+    srcWeights = cms.VInputTag(%s),
 
     srcVertices = cms.InputTag('selectedPrimaryVertexPosition'),
     srcPFNeutralRho = cms.InputTag('kt6PFNeutralJets', 'rho'),    
@@ -315,9 +327,9 @@ def buildConfigFile_makeZllRecoilCorrectionFinalPlots(sampleNameData, sampleName
     corrLevelData = "beforeGenPUreweight"
     
     directoryData = "/".join([ sampleNameData, corrLevelData ])
-    directoryMC   = "/".join([ sampleNameData, corrLevelMC   ])
+    directoryMC   = "/".join([ sampleNameMC,   corrLevelMC   ])
 
-    outputFileName = "plotZllRecoilCorrection_%s_%s.png" % (metOptionName, corrLevelMC)
+    outputFileName = "plotZllRecoilCorrection_%s_%s.eps" % (metOptionName, corrLevelMC)
     outputFilePath_plots = os.path.join(outputFilePath, "plots")
     if not os.path.exists(outputFilePath_plots):
         os.mkdir(outputFilePath_plots)    

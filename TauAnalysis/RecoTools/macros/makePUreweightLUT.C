@@ -1,4 +1,4 @@
-TH1* getHistogram(const TString& histogramName, const TString& histogramLabel, TObjArray inputFileNames)
+TH1* getHistogram(const TString& histogramName, const TString& histogramLabel, const TString& inputFilePath, TObjArray inputFileNames)
 {
   TH1* retVal = 0;
 
@@ -6,7 +6,9 @@ TH1* getHistogram(const TString& histogramName, const TString& histogramLabel, T
     TObjString* inputFileName = dynamic_cast<TObjString*>(inputFileNames.At(iInputFile));
     assert(inputFileName);
 
-    TFile* inputFile = TFile::Open(inputFileName->GetString());
+    TString inputFileName_full = TString(inputFilePath).Append(inputFileName->GetString());
+
+    TFile* inputFile = TFile::Open(inputFileName_full.Data());
     if ( !inputFile ) {
       std::cerr << "Failed to open inputFile = " << inputFileName->GetString() 
 		<< " --> skipping !!" << std::endl;
@@ -26,8 +28,6 @@ TH1* getHistogram(const TString& histogramName, const TString& histogramLabel, T
     } else {
       retVal->Add(histogram);
     }
-
-    delete inputFile;
   }
 
   return retVal;
@@ -36,15 +36,15 @@ TH1* getHistogram(const TString& histogramName, const TString& histogramLabel, T
 TH1* makePUreweightHistogram(const TString& histogramReweightName, TH1* histogramData, TH1* histogramMC, 
 			     double minReweight = 1.e-1, double maxReweight = 1.e+1)
 {
-  assert(histoData->GetDimension() == histoMC->GetDimension() &&
-	 histoData->GetNbinsX()    == histoMC->GetNbinsX()    &&
-	 histoData->GetNbinsY()    == histoMC->GetNbinsY()    );
+  assert(histogramData->GetDimension() == histogramMC->GetDimension() &&
+	 histogramData->GetNbinsX()    == histogramMC->GetNbinsX()    &&
+	 histogramData->GetNbinsY()    == histogramMC->GetNbinsY()    );
 
   TH1* retVal = histogramData->Clone(histogramReweightName.Data());
   retVal->Reset();
 
-  TAxis* xAxis = histoData->GetXaxis();
-  TAxis* yAxis = histoData->GetYaxis();
+  TAxis* xAxis = histogramData->GetXaxis();
+  TAxis* yAxis = histogramData->GetYaxis();
 
   int numBinsX = xAxis->GetNbins();
   for ( int iBinX = 1; iBinX <= numBinsX; ++iBinX ) {
@@ -76,22 +76,24 @@ TH1* makePUreweightHistogram(const TString& histogramReweightName, TH1* histogra
 
 makePUreweightLUT()
 {
-  TString histoLUTname = "";
+  TString inputFilePath = "rfio:/castor/cern.ch/user/v/veelken/CMSSW_4_2_x/PATtuples/ZllRecoilCorrection/";
+
+  TString histoLUTname = "DQMData/producePUreweightHistograms/PFNeutralRhoVsVtxMultiplicity";
 
   TObjArray inputFileNamesData;
-  inputFileNamesData.Add(new TObjString(""));
-  inputFileNamesData.Add(new TObjString(""));
-  TH1* histoData = getHistogram(histoLUTname, "Data", inputFileNamesData); 
+  inputFileNamesData.Add(new TObjString("ZllRecoilCorrection_Data_runs160329to163869_v1_layer_2_job_0_30a.root"));
+  inputFileNamesData.Add(new TObjString("ZllRecoilCorrection_Data_runs165071to167913_v1_layer_2_job_0_d39.root"));
+  TH1* histogramData = getHistogram(histoLUTname, "Data", inputFilePath, inputFileNamesData); 
 
   TObjArray inputFileNamesMC;
-  inputFileNamesMC.Add(new TObjString(""));
-  TH1* histoMC = getHistogram(histoLUTname, "MC", inputFileNamesData); 
+  inputFileNamesMC.Add(new TObjString("ZllRecoilCorrection_simDYtoMuMu_v1_layer_2_job_0_cf4.root"));
+  TH1* histogramMC = getHistogram(histoLUTname, "MC", inputFilePath, inputFileNamesMC); 
 
-  TH1* histoPUreweight = makePUreweightHistogram("histoReweight", histoData, histoMC, 1.e-1, 1.e+1);
+  TH1* histogramPUreweight = makePUreweightHistogram("histoReweight", histogramData, histogramMC, 1.e-1, 1.e+1);
 
   TFile* outputFile = new TFile("../data/vertexMultiplicityVsRhoPFNeutralReweight.root", "RECREATE");
-  histoData->Write();
-  histoMC->Write();
-  histoPUreweight->Write();
+  histogramData->Write();
+  histogramMC->Write();
+  histogramPUreweight->Write();
   delete outputFile;
 }
