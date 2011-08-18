@@ -218,7 +218,7 @@ for metOptionName in metOptions.keys():
     for sampleName in samplesToAnalyze.keys():
         if fileNames_fitZllRecoilNtuples[metOptionName].has_key(sampleName) and \
            fileNames_FWLiteZllRecoilCorrectionAnalyzer[metOptionName].has_key(sampleName):
-            makeFile.write("%s: %s %s %s\n" %
+            makeFile.write("%s: %s %s\n" %
               (fileNames_FWLiteZllRecoilCorrectionAnalyzer[metOptionName][sampleName]['outputFileName'],
                fileNames_fitZllRecoilNtuples[metOptionName][sampleName]['outputFileName'],
                executable_FWLiteZllRecoilCorrectionAnalyzer))

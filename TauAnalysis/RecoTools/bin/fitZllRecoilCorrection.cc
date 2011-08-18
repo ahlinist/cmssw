@@ -6,9 +6,9 @@
  *
  * \author Christian Veelken, UC Davis
  *
- * \version $Revision: 1.1 $
+ * \version $Revision: 1.2 $
  *
- * $Id: fitZllRecoilCorrection.cc,v 1.1 2011/08/15 17:10:31 veelken Exp $
+ * $Id: fitZllRecoilCorrection.cc,v 1.2 2011/08/17 13:55:56 veelken Exp $
  *
  */
 
@@ -25,13 +25,6 @@
 
 #include "TauAnalysis/RecoTools/interface/ZllRecoilCorrectionParameterSet.h"
 
-#include "RooRealVar.h"
-#include "RooDataSet.h"
-#include "RooFormulaVar.h"
-#include "RooGaussian.h"
-#include "RooLinkedList.h"
-#include "RooCmdArg.h"
-
 #include <TFile.h>
 #include <TChain.h>
 #include <TTree.h>
@@ -43,7 +36,8 @@
 #include <TH1.h>
 #include <TH2.h>
 #include <TGraph.h>
-#include <TGraphAsymmErrors.h>
+#include <TGraphErrors.h>
+#include <TF1.h>
 #include <TLegend.h>
 
 #include <vector>
@@ -52,31 +46,38 @@
 typedef std::vector<std::string> vstring;
 
 void showControlPlot(TCanvas* canvas, 
-		     TH1* histogram, const std::string& histogramLegendEntry, TGraph* graph_fit, TGraphAsymmErrors* graph_fitErr,    
-		     const std::string& yAxisLabel,
+		     TH1* histogram, const std::string& histogramLegendEntry, TGraph* graph_fit, TGraphErrors* graph_fitErr,    
+		     const std::string& yAxisLabel, double yMin, double yMax, 
 		     const std::string& outputFileName, const std::string& outputFileLabel)
 {
   canvas->Clear();
 
-  TAxis* xAxis = graph_fitErr->GetXaxis();
+  TAxis* xAxis = histogram->GetXaxis();
   xAxis->SetTitle("q_{T} / GeV");
   xAxis->SetTitleOffset(1.20);
 
-  TAxis* yAxis = graph_fitErr->GetYaxis();
+  TAxis* yAxis = histogram->GetYaxis();
   yAxis->SetTitle(yAxisLabel.data());
   yAxis->SetTitleOffset(1.20);
 
+  histogram->SetTitle("");
+  histogram->SetStats(false);
+  histogram->SetMaximum(yMax);
+  histogram->SetMinimum(yMin);
+  histogram->SetMarkerColor(1);
+  histogram->SetMarkerStyle(20);
+  histogram->Draw("e1p");
+
+  graph_fitErr->SetLineColor(46);
+  graph_fitErr->SetLineWidth(1);
   graph_fitErr->SetFillColor(46);
   graph_fitErr->SetFillStyle(3002);
-  graph_fitErr->Draw("a3");
+  graph_fitErr->Draw("3");
 
   graph_fit->SetLineColor(2);
   graph_fit->SetLineWidth(2);
   graph_fit->Draw("L");
 
-  histogram->SetStats(false);
-  histogram->SetMarkerColor(1);
-  histogram->SetMarkerStyle(20);
   histogram->Draw("e1psame");
 
   TLegend legend(0.64, 0.64, 0.89, 0.89, "", "brNDC"); 
@@ -84,7 +85,7 @@ void showControlPlot(TCanvas* canvas,
   legend.SetFillColor(0);
   legend.AddEntry(histogram,    histogramLegendEntry.data(), "p");
   legend.AddEntry(graph_fit,    "Fit",                       "l");
-  legend.AddEntry(graph_fitErr, "Fit Uncertainty",           "a");
+  legend.AddEntry(graph_fitErr, "Fit Uncertainty",           "f");
   legend.Draw();
 
   canvas->Update();
@@ -92,8 +93,7 @@ void showControlPlot(TCanvas* canvas,
   size_t idx = outputFileName.find_last_of('.');
   std::string outputFileName_plot = std::string(outputFileName, 0, idx);
   outputFileName_plot.append("_").append(outputFileLabel);
-  if ( idx != std::string::npos ) outputFileName_plot.append(std::string(outputFileName, idx));
-  else                            outputFileName_plot.append(".png");
+  outputFileName_plot.append(".eps");
   canvas->Print(outputFileName_plot.data());
 }
 
@@ -102,52 +102,13 @@ double square(double x)
   return x*x;
 }
 
-void makeControlPlots(TTree* tree, bool isData, 
-		      const ZllRecoilCorrectionParameterSet& fitResultsfitResults, const std::string& outputFileName)
+void makeControlPlots(TH1* histogram_u1_mean, TH1* histogram_u1_rms, TH1* histogram_u2_mean, TH1* histogram_u2_rms, 
+		      const ZllRecoilCorrectionParameterSet& fitResultsfitResults, bool isData, const std::string& outputFileName)
 {
-  Float_t qT, u1, u2, evtWeight;
-  tree->SetBranchAddress("qT", &qT);
-  tree->SetBranchAddress("u1", &u1);
-  tree->SetBranchAddress("u2", &u2);
-  tree->SetBranchAddress("evtWeight", &evtWeight);
+  TAxis* xAxis = histogram_u1_mean->GetXaxis();
 
-  const int numBins = 10;
-  double binning[numBins + 1] = { 0., 5., 10., 15., 20., 30., 40., 60., 80., 100., 150. };
- 
-  TH2* histogram_u1_diff = new TH2D("histogram_u1_diff", "histogram_u1_diff", numBins, binning, 200, -50., +50.);
-  TH2* histogram_u2_diff = new TH2D("histogram_u2_diff", "histogram_u2_diff", numBins, binning, 200, -50., +50.);
-
-  int numEntries = tree->GetEntries();
-  for ( int iEntry = 0; iEntry < numEntries; ++iEntry ) {
-    tree->GetEntry(iEntry);
-
-    double u1_fit = fitResultsfitResults.d() + fitResultsfitResults.k()*qT;
-    histogram_u1_diff->Fill(qT, u1 - u1_fit, evtWeight);
-
-    double u2_fit = 0.;
-    histogram_u2_diff->Fill(qT, u2 - u2_fit, evtWeight);
-  }
-
-  TH1* histogram_u1     = new TH1D("histogram_u1",     "<u_{1}> as function of q_{T}",                  numBins, binning);
-  TH1* histogram_u1_rms = new TH1D("histogram_u1_rms", "rms(u_{1} - d + k*q_{T}) as function of q_{T}", numBins, binning);
-  TH1* histogram_u2     = new TH1D("histogram_u2",     "<u_{2}> as function of q_{T}",                  numBins, binning);
-  TH1* histogram_u2_rms = new TH1D("histogram_u2_rms", "rms(u_{2}) as function of q_{T}",               numBins, binning);
-
-  for ( int iBin = 1; iBin <= numBins; ++iBin ) {
-    TString histogramName_u1_proj = Form("%s_py_%i", histogram_u1_diff->GetName(), iBin);
-    TH1D* histogram_u1_proj = histogram_u1_diff->ProjectionY(histogramName_u1_proj.Data(), iBin, iBin, "e");
-    histogram_u1->SetBinContent(iBin, histogram_u1_proj->GetMean());
-    histogram_u1->SetBinError(iBin, histogram_u1_proj->GetMeanError());
-    histogram_u1_rms->SetBinContent(iBin, histogram_u1_proj->GetRMS());
-    histogram_u1_rms->SetBinError(iBin, histogram_u1_proj->GetRMSError());
-
-    TString histogramName_u2_proj = Form("%s_py_%i", histogram_u2_diff->GetName(), iBin);
-    TH1D* histogram_u2_proj = histogram_u2_diff->ProjectionY(histogramName_u2_proj.Data(), iBin, iBin, "e");
-    histogram_u2->SetBinContent(iBin, histogram_u2_proj->GetMean());
-    histogram_u2->SetBinError(iBin, histogram_u2_proj->GetMeanError());
-    histogram_u2_rms->SetBinContent(iBin, histogram_u2_proj->GetRMS());
-    histogram_u2_rms->SetBinError(iBin, histogram_u2_proj->GetRMSError());
-  }
+  int numBins = xAxis->GetNbins();
+  const Double_t* binning = xAxis->GetXbins()->GetArray();
 
   double xStepSize = 1.;
   double xMin = binning[0] + 0.5*xStepSize;
@@ -155,15 +116,15 @@ void makeControlPlots(TTree* tree, bool isData,
 
   int numPoints = TMath::FloorNint((xMax - xMin)/xStepSize);
 
-  TGraph*            graph_u1Fit        = new TGraph(numPoints);
-  TGraphAsymmErrors* graph_u1FitErr     = new TGraphAsymmErrors(numPoints);
-  TGraph*            graph_u1_rmsFit    = new TGraph(numPoints);
-  TGraphAsymmErrors* graph_u1_rmsFitErr = new TGraphAsymmErrors(numPoints);
+  TGraph*       graph_u1Fit        = new TGraph(numPoints);
+  TGraphErrors* graph_u1FitErr     = new TGraphErrors(numPoints);
+  TGraph*       graph_u1_rmsFit    = new TGraph(numPoints);
+  TGraphErrors* graph_u1_rmsFitErr = new TGraphErrors(numPoints);
 
-  TGraph*            graph_u2Fit        = new TGraph(numPoints);
-  TGraphAsymmErrors* graph_u2FitErr     = new TGraphAsymmErrors(numPoints);
-  TGraph*            graph_u2_rmsFit    = new TGraph(numPoints);
-  TGraphAsymmErrors* graph_u2_rmsFitErr = new TGraphAsymmErrors(numPoints);
+  TGraph*       graph_u2Fit        = new TGraph(numPoints);
+  TGraphErrors* graph_u2FitErr     = new TGraphErrors(numPoints);
+  TGraph*       graph_u2_rmsFit    = new TGraph(numPoints);
+  TGraphErrors* graph_u2_rmsFitErr = new TGraphErrors(numPoints);
 
   for ( int iPoint = 0; iPoint < numPoints; ++iPoint ) {
     double x = xMin + iPoint*xStepSize;
@@ -175,11 +136,11 @@ void makeControlPlots(TTree* tree, bool isData,
     double u1_kDown          = fitResultsfitResults.d() + (fitResultsfitResults.k() - fitResultsfitResults.kErr())*x;
     
     double u1ErrUp           = u1_av + TMath::Sqrt(square(u1_dUp   - u1_av) + square(u1_kUp   - u1_av));
-    double u1ErrDown         = u1_av + TMath::Sqrt(square(u1_dDown - u1_av) + square(u1_kDown - u1_av));
+    double u1ErrDown         = u1_av - TMath::Sqrt(square(u1_dDown - u1_av) + square(u1_kDown - u1_av));
 
     graph_u1Fit->SetPoint(iPoint, x, u1_av);
-    graph_u1FitErr->SetPoint(iPoint, x, u1_av);
-    graph_u1FitErr->SetPointError(iPoint, x, x, u1ErrUp, u1ErrDown);
+    graph_u1FitErr->SetPoint(iPoint, x, 0.5*(u1ErrUp + u1ErrDown));
+    graph_u1FitErr->SetPointError(iPoint, 0., 0.5*TMath::Abs(u1ErrUp - u1ErrDown));
 
     double u1_rms_av         = fitResultsfitResults.sigma1()*(1. + fitResultsfitResults.b1()*x + fitResultsfitResults.c1()*x*x);
     double u1_rms_sigma1Up   = (fitResultsfitResults.sigma1() + fitResultsfitResults.sigma1Err())
@@ -198,17 +159,17 @@ void makeControlPlots(TTree* tree, bool isData,
     double u1_rmsErrUp       = u1_rms_av + TMath::Sqrt(square(u1_rms_sigma1Up   - u1_rms_av) 
                                                      + square(TMath::Max(u1_rms_b1Up, u1_rms_b1Down) - u1_rms_av) 
                                                      + square(TMath::Max(u1_rms_c1Up, u1_rms_c1Down) - u1_rms_av));
-    double u1_rmsErrDown     = u1_rms_av + TMath::Sqrt(square(u1_rms_sigma1Down - u1_rms_av) 
+    double u1_rmsErrDown     = u1_rms_av - TMath::Sqrt(square(u1_rms_sigma1Down - u1_rms_av) 
                                                      + square(TMath::Min(u1_rms_b1Up, u1_rms_b1Down) - u1_rms_av) 
                                                      + square(TMath::Min(u1_rms_c1Up, u1_rms_c1Down) - u1_rms_av));
     
     graph_u1_rmsFit->SetPoint(iPoint, x, u1_rms_av);
-    graph_u1_rmsFitErr->SetPoint(iPoint, x, u1_rms_av);
-    graph_u1_rmsFitErr->SetPointError(iPoint, x, x, u1_rmsErrUp, u1_rmsErrDown);
+    graph_u1_rmsFitErr->SetPoint(iPoint, x, 0.5*(u1_rmsErrUp + u1_rmsErrDown));
+    graph_u1_rmsFitErr->SetPointError(iPoint, 0., 0.5*TMath::Abs(u1_rmsErrUp - u1_rmsErrDown));
     
     graph_u2Fit->SetPoint(iPoint, x, 0.);
     graph_u2FitErr->SetPoint(iPoint, x, 0.);
-    graph_u2FitErr->SetPointError(iPoint, x, x, +1.e+1, -1.e+1);
+    graph_u2FitErr->SetPointError(iPoint, 0., 1.e0);
 
     double u2_rms_av         = fitResultsfitResults.sigma2()*(1. + fitResultsfitResults.b2()*x + fitResultsfitResults.c2()*x*x);
     double u2_rms_sigma2Up   = (fitResultsfitResults.sigma2() + fitResultsfitResults.sigma2Err())
@@ -227,13 +188,13 @@ void makeControlPlots(TTree* tree, bool isData,
     double u2_rmsErrUp       = u2_rms_av + TMath::Sqrt(square(u2_rms_sigma2Up   - u2_rms_av) 
                                                      + square(TMath::Max(u2_rms_b2Up, u2_rms_b2Down) - u2_rms_av) 
                                                      + square(TMath::Max(u2_rms_c2Up, u2_rms_c2Down) - u2_rms_av));
-    double u2_rmsErrDown     = u2_rms_av + TMath::Sqrt(square(u2_rms_sigma2Down - u2_rms_av) 
+    double u2_rmsErrDown     = u2_rms_av - TMath::Sqrt(square(u2_rms_sigma2Down - u2_rms_av) 
                                                      + square(TMath::Min(u2_rms_b2Up, u2_rms_b2Down) - u2_rms_av) 
                                                      + square(TMath::Min(u2_rms_c2Up, u2_rms_c2Down) - u2_rms_av));
     
     graph_u2_rmsFit->SetPoint(iPoint, x, u2_rms_av);
-    graph_u2_rmsFitErr->SetPoint(iPoint, x, u2_rms_av);
-    graph_u2_rmsFitErr->SetPointError(iPoint, x, x, u2_rmsErrUp, u2_rmsErrDown);
+    graph_u2_rmsFitErr->SetPoint(iPoint, x, 0.5*(u2_rmsErrUp + u2_rmsErrDown));
+    graph_u2_rmsFitErr->SetPointError(iPoint, 0., 0.5*TMath::Abs(u2_rmsErrUp - u2_rmsErrDown));
   }
 
   TCanvas* canvas = new TCanvas();
@@ -246,20 +207,20 @@ void makeControlPlots(TTree* tree, bool isData,
   std::string histogramLegendEntry = ( isData ) ? "Data" : "Simulation";
 
   showControlPlot(canvas, 
-		  histogram_u1, histogramLegendEntry, graph_u1Fit, graph_u1FitErr,     
-		  "u_{1} / GeV", 
-		  outputFileName, "u1");
+		  histogram_u1_mean, histogramLegendEntry, graph_u1Fit, graph_u1FitErr,     
+		  "u_{1} / GeV", -200., +50.,
+		  outputFileName, "u1_mean");
   showControlPlot(canvas, 
 		  histogram_u1_rms, histogramLegendEntry, graph_u1_rmsFit, graph_u1_rmsFitErr, 
-		  "rms(u_{1}) / GeV", 
+		  "rms(u_{1}) / GeV", 0., 25.,
 		  outputFileName, "u1_rms");
   showControlPlot(canvas, 
-		  histogram_u2, histogramLegendEntry, graph_u2Fit, graph_u2FitErr,     
-		  "u_{2} / GeV", 
-		  outputFileName, "u2");
+		  histogram_u2_mean, histogramLegendEntry, graph_u2Fit, graph_u2FitErr,     
+		  "u_{2} / GeV", -25., +25.,
+		  outputFileName, "u2_mean");
   showControlPlot(canvas, 
 		  histogram_u2_rms, histogramLegendEntry, graph_u2_rmsFit, graph_u2_rmsFitErr, 
-		  "rms(u_{2}) / GeV",
+		  "rms(u_{2}) / GeV", 0., 25.,
 		  outputFileName, "u2_rms");
   
   delete canvas;
@@ -311,65 +272,87 @@ int main(int argc, char* argv[])
 
   //tree->Scan("qT:u1:u2:evtWeight");
 
-  RooRealVar qT("qT", "qT", 0.,    0.,  150.);
-  RooRealVar u1("u1", "u1", 0., -100., +100.);
-  RooRealVar u2("u2", "u2", 0.,  -50.,  +50.);
-  RooRealVar evtWeight("evtWeight", "evtWeight", 1.);
+  Double_t qT_value, u1_value, u2_value, evtWeight_value;
+  tree->SetBranchAddress("qT", &qT_value);
+  tree->SetBranchAddress("u1", &u1_value);
+  tree->SetBranchAddress("u2", &u2_value);
+  tree->SetBranchAddress("evtWeight", &evtWeight_value);
 
-  //-----------------------------------------------------------------------------
-  // define variables and pdfs for u1 fit
-  RooRealVar d("d", "d",  0., -5., +5.);
-  d.setConstant(true);
-  RooRealVar k("k", "k", -1., -2.,  0.);
+  const int numBins = 22;
+  double binning[numBins + 1] = { 
+    0., 2.5, 5., 7.5, 10., 12.5, 15., 17.5, 20., 22.5, 25., 27.5, 30., 35., 40., 45., 50., 60., 70., 80., 100., 120., 150. 
+  };
+ 
+  TH2* histogram_u1 = new TH2D("histogram_u1", "histogram_u1", numBins, binning, 2000, -500., +500.);
+  TH2* histogram_u2 = new TH2D("histogram_u2", "histogram_u2", numBins, binning, 2000, -500., +500.);
 
-  RooRealVar sigma1("sigma1", "sigma1", 5., 0., 25.);
-  RooRealVar b1("b1", "b1", +1.e-2, -1.e-1, +1.e-1);
-  RooRealVar c1("c1", "c1", -1.e-4, -1.e-2, +1.e-2);
+  int numEntries = tree->GetEntries();
+  for ( int iEntry = 0; iEntry < numEntries; ++iEntry ) {
+    tree->GetEntry(iEntry);
 
-  RooFormulaVar u1_slope("u1_slope", "d + k*qT", RooArgList(d, k, qT));
-  RooFormulaVar u1_rms("u1_rms", "sigma1*(1 + b1*qT + c1*qT*qT)", RooArgList(sigma1, b1, c1, qT));
+    histogram_u1->Fill(qT_value, u1_value, evtWeight_value);
+    histogram_u2->Fill(qT_value, u2_value, evtWeight_value);
+  }
 
-  RooGaussian u1_pdf("u1_pdf", "u1_pdf", u1, u1_slope, u1_rms);
-  //-----------------------------------------------------------------------------
+  TH1* histogram_u1_mean = new TH1D("histogram_u1_mean", "<u_{1}> as function of q_{T}",                  numBins, binning);
+  TH1* histogram_u1_rms  = new TH1D("histogram_u1_rms",  "rms(u_{1} - d + k*q_{T}) as function of q_{T}", numBins, binning);
+  TH1* histogram_u2_mean = new TH1D("histogram_u2_mean", "<u_{2}> as function of q_{T}",                  numBins, binning);
+  TH1* histogram_u2_rms  = new TH1D("histogram_u2_rms",  "rms(u_{2}) as function of q_{T}",               numBins, binning);
 
-  //-----------------------------------------------------------------------------
-  // define variables and pdfs for u2 fit
-  RooRealVar sigma2("sigma2", "sigma2", 5., 0., 25.);
-  RooRealVar b2("b2", "b2", +1.e-2, -1.e-1, +1.e-1);
-  RooRealVar c2("c2", "c2", -1.e-4, -1.e-2, +1.e-2);
+  for ( int iBin = 1; iBin <= numBins; ++iBin ) {
+    TString histogramName_u1_proj = Form("%s_py_%i", histogram_u1->GetName(), iBin);
+    TH1D* histogram_u1_proj = histogram_u1->ProjectionY(histogramName_u1_proj.Data(), iBin, iBin, "e");
+    histogram_u1_mean->SetBinContent(iBin, histogram_u1_proj->GetMean());
+    histogram_u1_mean->SetBinError(iBin, histogram_u1_proj->GetMeanError());
+    histogram_u1_rms->SetBinContent(iBin, histogram_u1_proj->GetRMS());
+    histogram_u1_rms->SetBinError(iBin, histogram_u1_proj->GetRMSError());
 
-  RooRealVar u2_mean("u2_mean", "u2_mean", 0.,  -10., +10.);
-  u2_mean.setConstant(true);
-  RooFormulaVar u2_rms("u2_rms", "sigma2*(1 + b2*qT + c2*qT*qT)", RooArgList(sigma2, b2, c2, qT));
-
-  RooGaussian u2_pdf("u2_pdf", "u2_pdf", u2, u2_mean, u2_rms);
-  //-----------------------------------------------------------------------------
-  
-  RooDataSet dataset("dataset", "dataset", RooArgSet(qT, u1, u2, evtWeight), RooFit::Import(*tree), RooFit::WeightVar(evtWeight));
-
-  RooLinkedList options;
-  options.Add(new RooCmdArg(RooFit::PrintLevel(-1)));
-  options.Add(new RooCmdArg(RooFit::PrintEvalErrors(-1)));
-  options.Add(new RooCmdArg(RooFit::Warnings(-1)));
+    TString histogramName_u2_proj = Form("%s_py_%i", histogram_u2->GetName(), iBin);
+    TH1D* histogram_u2_proj = histogram_u2->ProjectionY(histogramName_u2_proj.Data(), iBin, iBin, "e");
+    histogram_u2_mean->SetBinContent(iBin, histogram_u2_proj->GetMean());
+    histogram_u2_mean->SetBinError(iBin, histogram_u2_proj->GetMeanError());
+    histogram_u2_rms->SetBinContent(iBin, histogram_u2_proj->GetRMS());
+    histogram_u2_rms->SetBinError(iBin, histogram_u2_proj->GetRMSError());
+  }
 
   std::cout << "starting u1 fit..." << std::endl;
-  u1_pdf.fitTo(dataset, options);
+  TF1* f_u1_mean = new TF1("f_u1_mean", "[0]*x", 0., 150.);
+  f_u1_mean->SetLineWidth(0);
+  f_u1_mean->SetParameter(0, -0.9);
+  histogram_u1_mean->Fit(f_u1_mean, "E");
+
+  TF1* f_u1_rms = new TF1("f_u1_rms", "[0]*(1.0 + [1]*x + [2]*x*x)", 0., 150.);
+  f_u1_rms->SetLineWidth(0);
+  f_u1_rms->SetParameter(0, 10.);
+  f_u1_rms->SetParameter(0,  5.e-2);
+  f_u1_rms->SetParameter(0,  0.);
+  histogram_u1_rms->Fit(f_u1_rms, "E");
 
   std::cout << "starting u2 fit..." << std::endl;
-  u2_pdf.fitTo(dataset, options);
+  TF1* f_u2_rms = new TF1("f_u2_rms", "[0]*(1.0 + [1]*x + [2]*x*x)", 0., 150.);
+  f_u2_rms->SetLineWidth(0);
+  f_u2_rms->SetParameter(0, 10.);
+  f_u2_rms->SetParameter(0,  5.e-2);
+  f_u2_rms->SetParameter(0,  0.);
+  histogram_u2_rms->Fit(f_u2_rms, "E");
 
   std::cout << "done." << std::endl;
 
   ZllRecoilCorrectionParameterSet fitResults(
-    d.getVal(), d.getError(), k.getVal(), k.getError(), 
-    sigma1.getVal(), sigma1.getError(), b1.getVal(), b1.getError(), c1.getVal(), c1.getError(), 
-    sigma2.getVal(), sigma2.getError(), b2.getVal(), b2.getError(), c2.getVal(), c2.getError());
+    0., 0., 
+    f_u1_mean->GetParameter(0), f_u1_mean->GetParError(0), 
+    f_u1_rms->GetParameter(0), f_u1_rms->GetParError(0), 
+    f_u1_rms->GetParameter(1), f_u1_rms->GetParError(1), 
+    f_u1_rms->GetParameter(2), f_u1_rms->GetParError(2),
+    f_u2_rms->GetParameter(0), f_u2_rms->GetParError(0), 
+    f_u2_rms->GetParameter(1), f_u2_rms->GetParError(1), 
+    f_u2_rms->GetParameter(2), f_u2_rms->GetParError(2));
 
   fitResults.print(std::cout);
 
   fitResults.writePythonConfig(outputFileName);
 
-  makeControlPlots(tree, isData, fitResults, outputFileName);
+  makeControlPlots(histogram_u1_mean, histogram_u1_rms, histogram_u2_mean, histogram_u2_rms, fitResults, isData, outputFileName);
 
   int numEvents_processed = tree->GetEntries();
 

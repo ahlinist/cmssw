@@ -5,9 +5,9 @@
  *
  * \author Christian Veelken, UC Davis
  *
- * \version $Revision: 1.3 $
+ * \version $Revision: 1.4 $
  *
- * $Id: FWLiteZllRecoilCorrectionNtupleProducer.cc,v 1.3 2011/08/17 12:27:14 veelken Exp $
+ * $Id: FWLiteZllRecoilCorrectionNtupleProducer.cc,v 1.4 2011/08/17 13:55:56 veelken Exp $
  *
  */
 
@@ -85,25 +85,27 @@ int main(int argc, char* argv[])
   edm::InputTag srcVertices = cfgZllRecoilCorrectionNtupleProducer.getParameter<edm::InputTag>("srcVertices");
   edm::InputTag srcPFNeutralRho = cfgZllRecoilCorrectionNtupleProducer.getParameter<edm::InputTag>("srcPFNeutralRho");
 
-  edm::ParameterSet cfgAddPUreweight = cfgZllRecoilCorrectionNtupleProducer.getParameter<edm::ParameterSet>("addPUreweight");
-  edm::FileInPath addPUreweightFileName = cfgAddPUreweight.getParameter<edm::FileInPath>("inputFileName");
-  std::string addPUreweightName = cfgAddPUreweight.getParameter<std::string>("meName");
-  TH1* addPUreweightHistogram = 0;
-  if ( addPUreweightFileName.relativePath() != "" && addPUreweightName != "" ) {
-    if ( !addPUreweightFileName.isLocal() ) 
-      throw cms::Exception("FWLiteZllRecoilCorrectionNtupleProducer") 
-	<< " Failed to find File = " << addPUreweightFileName << " !!\n";
-    TFile* addPUreweightFile = new TFile(addPUreweightFileName.fullPath().data());
-    TH1* addPUreweightHistogram_object = dynamic_cast<TH1*>(addPUreweightFile->Get(addPUreweightName.data()));
-    if ( !addPUreweightHistogram_object )
-      throw cms::Exception("FWLiteZllRecoilCorrectionNtupleProducer") 
-	<< "Failed to find histogram = " << addPUreweightName << " in file = " << addPUreweightFileName << " !!\n";
-    std::string addPUreweightHistogramName = std::string(addPUreweightHistogram_object->GetName()).append("_cloned");
-    addPUreweightHistogram = (TH1*)addPUreweightHistogram_object->Clone(addPUreweightHistogramName.data());
-    delete addPUreweightFile;
+  TFile* addPUreweightFile = 0;
+  TH1* addPUreweightHistogram = 0;  
+  double minPUreweight = 1.0;
+  double maxPUreweight = 1.0;
+  if ( cfgZllRecoilCorrectionNtupleProducer.exists("addPUreweight") ) {
+    edm::ParameterSet cfgAddPUreweight = cfgZllRecoilCorrectionNtupleProducer.getParameter<edm::ParameterSet>("addPUreweight");
+    edm::FileInPath addPUreweightFileName = cfgAddPUreweight.getParameter<edm::FileInPath>("inputFileName");
+    std::string addPUreweightName = cfgAddPUreweight.getParameter<std::string>("meName");
+    if ( addPUreweightFileName.relativePath() != "" && addPUreweightName != "" ) {
+      if ( !addPUreweightFileName.isLocal() ) 
+	throw cms::Exception("FWLiteZllRecoilCorrectionNtupleProducer") 
+	  << " Failed to find File = " << addPUreweightFileName << " !!\n";
+      addPUreweightFile = new TFile(addPUreweightFileName.fullPath().data());
+      addPUreweightHistogram = dynamic_cast<TH1*>(addPUreweightFile->Get(addPUreweightName.data()));
+      if ( !addPUreweightHistogram )
+	throw cms::Exception("FWLiteZllRecoilCorrectionNtupleProducer") 
+	  << "Failed to find histogram = " << addPUreweightName << " in file = " << addPUreweightFileName << " !!\n";
+    }
+    minPUreweight = cfgAddPUreweight.getParameter<double>("minPUreweight");
+    maxPUreweight = cfgAddPUreweight.getParameter<double>("maxPUreweight");
   }
-  double minPUreweight = cfgAddPUreweight.getParameter<double>("minPUreweight");
-  double maxPUreweight = cfgAddPUreweight.getParameter<double>("maxPUreweight");
 
   std::string directory = cfgZllRecoilCorrectionNtupleProducer.getParameter<std::string>("directory");
 
@@ -115,13 +117,13 @@ int main(int argc, char* argv[])
 
 //--- create "plain" ROOT Ntuple
   TFileDirectory dir = ( directory != "" ) ? fs.mkdir(directory) : fs;
-  TTree* tree = dir.make<TTree>("ZllRecoilCorrectionNtuple", "ZllRecoilCorrectionNtuple");
+  TTree* outputTree = dir.make<TTree>("ZllRecoilCorrectionNtuple", "ZllRecoilCorrectionNtuple");
   const int defaultBranchBufferSize = 64000;
-  Float_t qT, u1, u2, evtWeight;  
-  tree->Branch("qT",        &qT,        "qT/F",        defaultBranchBufferSize);
-  tree->Branch("u1",        &u1,        "u1/F",        defaultBranchBufferSize);
-  tree->Branch("u2",        &u2,        "u2/F",        defaultBranchBufferSize);
-  tree->Branch("evtWeight", &evtWeight, "evtWeight/F", defaultBranchBufferSize);
+  Double_t qT, u1, u2, evtWeight;  
+  outputTree->Branch("qT",        &qT,        "qT/D",        defaultBranchBufferSize);
+  outputTree->Branch("u1",        &u1,        "u1/D",        defaultBranchBufferSize);
+  outputTree->Branch("u2",        &u2,        "u2/D",        defaultBranchBufferSize);
+  outputTree->Branch("evtWeight", &evtWeight, "evtWeight/D", defaultBranchBufferSize);
 
   int    numEvents_processed         = 0; 
   double numEventsWeighted_processed = 0.;
@@ -137,8 +139,8 @@ int main(int argc, char* argv[])
 	<< "Failed to open inputFile = " << (*inputFileName) << " !!\n";
 
     std::cout << "opening inputFile = " << (*inputFileName);
-    TTree* tree = dynamic_cast<TTree*>(inputFile->Get("Events"));
-    if ( tree ) std::cout << " (" << tree->GetEntries() << " Events)";
+    TTree* inputTree = dynamic_cast<TTree*>(inputFile->Get("Events"));
+    if ( inputTree ) std::cout << " (" << inputTree->GetEntries() << " Events)";
     std::cout << std::endl;
 
     fwlite::Event evt(inputFile);
@@ -154,7 +156,7 @@ int main(int argc, char* argv[])
 
 //--- compute event weight
 //   (reweighting for in-time and out-of-time pile-up, Data/MC correction factors,...)
-      double evtWeight = 1.0;
+      evtWeight = 1.0;
       for ( vInputTag::const_iterator srcWeight = srcWeights.begin();
 	    srcWeight != srcWeights.end(); ++srcWeight ) {
 	edm::Handle<double> weight;
@@ -180,13 +182,13 @@ int main(int argc, char* argv[])
       }
 
 //--- find Z --> mu+ mu- candidate closest to nominal Z0 mass
-      edm::Handle<reco::CandidateView> ZllCandidates;
+      edm::Handle<reco::CompositeCandidateCollection> ZllCandidates;
       evt.getByLabel(srcZllCandidates, ZllCandidates);
 
       const reco::Candidate* bestZllCandidate = 0;
       const double nominalZmass = 91.19;
       double minMassDiff = -1.;
-      for ( reco::CandidateView::const_iterator ZllCandidate = ZllCandidates->begin();
+      for ( reco::CompositeCandidateCollection::const_iterator ZllCandidate = ZllCandidates->begin();
 	    ZllCandidate != ZllCandidates->end(); ++ZllCandidate ) {
 	double massDiff = TMath::Abs(ZllCandidate->mass() - nominalZmass);
 	if ( minMassDiff == -1. || massDiff < minMassDiff ) {
@@ -215,12 +217,14 @@ int main(int argc, char* argv[])
       u1 = uT.first;
       u2 = uT.second;
 
-      tree->Fill();
+      outputTree->Fill();
     }
 
 //--- close input file
     delete inputFile;
   }
+
+  delete addPUreweightFile;
 
   std::cout << "<FWLiteZllRecoilCorrectionNtupleProducer>:" << std::endl;
   std::cout << " numEvents_processed: " << numEvents_processed 

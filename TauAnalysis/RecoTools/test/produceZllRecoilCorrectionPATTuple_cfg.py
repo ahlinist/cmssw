@@ -14,13 +14,13 @@ process.load('Configuration/StandardSequences/FrontierConditions_GlobalTag_cff')
 #--------------------------------------------------------------------------------
 process.source = cms.Source("PoolSource",
     fileNames = cms.untracked.vstring(
-        'file:/data2/friis/CMSSW_4_2_X/skims/06-27-MatthewsZTTEvents/crab_0_110627_082505/ZTTCands_merged_v1.root'
+        'file:/data1/veelken/CMSSW_4_2_x/skims/goldenZmumuEvents_simDYtoMuMu_AOD_9_1_T1A.root'
     ),
     skipEvents = cms.untracked.uint32(0)            
 )
 
 process.maxEvents = cms.untracked.PSet(
-    input = cms.untracked.int32(1000)
+    input = cms.untracked.int32(-1)
 )
 
 #--------------------------------------------------------------------------------
@@ -79,17 +79,37 @@ if isMC:
 else:
     pfMEtCorrector = "ak5PFL2L3Residual"
 
+from CommonTools.ParticleFlow.TopProjectors.pfNoJet_cfi import pfNoJet
+process.pfCandsNotInJet = pfNoJet.clone(
+    topCollection = cms.InputTag('ak5PFJets'),
+    bottomCollection = cms.InputTag('particleFlow')
+)    
+
+# produce collection of "unclustered" PFCandidates
+# (particles not included in jets)
 from JetMETCorrections.Type1MET.MetType1Corrections_cff import metJESCorAK5PFJet
 process.pfMETtypeIcorrected = metJESCorAK5PFJet.clone(
     inputUncorJetsLabel = cms.string('ak5PFJets'),
     jetPTthreshold = cms.double(10.0),
     useTypeII = cms.bool(False),
+    inputUncorUnlusteredLabel = cms.untracked.InputTag('pfCandsNotInJet'),
     corrector = cms.string(pfMEtCorrector)
 )
+
 process.pfMETtypeIpIIcorrected = process.pfMETtypeIcorrected.clone(
     useTypeII = cms.bool(True)
 )
+if isMC:
+    process.pfMETtypeIpIIcorrected.UscaleA = cms.double(1.5)
+    process.pfMETtypeIpIIcorrected.UscaleB = cms.double(0.)
+    process.pfMETtypeIpIIcorrected.UscaleC = cms.double(0.)
+else:
+    process.pfMETtypeIpIIcorrected.UscaleA = cms.double(1.4)
+    process.pfMETtypeIpIIcorrected.UscaleB = cms.double(0.)
+    process.pfMETtypeIpIIcorrected.UscaleC = cms.double(0.)
+
 process.prePatProductionSequence = cms.Sequence()
+process.prePatProductionSequence += process.pfCandsNotInJet
 process.prePatProductionSequence += process.pfMETtypeIcorrected
 process.prePatProductionSequence += process.pfMETtypeIpIIcorrected
 #--------------------------------------------------------------------------------
@@ -245,11 +265,11 @@ process.patTupleOutputModule = cms.OutputModule("PoolOutputModule",
             'keep *_selectedPrimaryVerticesTrackPtSumGt5_*_*',
             'keep *_selectedPrimaryVerticesTrackPtSumGt10_*_*',                                            
             'keep *_patJets_*_*',
-            'keep *_selectedPatJetsAntiOverlapWithMuonsVeto_*_*',                              
+            'keep *_selectedPatJetsAntiOverlapWithMuonsVeto_*_*',
+            'keep *_ak5PFJets_*_*',                             
             'keep *_patPFMETs_*_*',
             'keep *_patPFMETsTypeIcorrected_*_*',
             'keep *_patPFMETsTypeIpIIcorrected_*_*',
-            'keep *_pfMETtypeIpIIcorrected_*_*',                                 
             'keep *_kt6PFNeutralJets_rho_*'
         )
     ),

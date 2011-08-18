@@ -111,12 +111,14 @@ int main(int argc, const char* argv[])
     throw cms::Exception("makeZllRecoilCorrectionFinalPlots") 
       << "Failed to open inputFile = " << inputFileName << " !!\n";
 
-  TCanvas* canvas = new TCanvas("canvas", "canvas", 800, 800);
+  TCanvas* canvas = new TCanvas("canvas", "canvas", 800, 600);
   canvas->SetFillColor(10);
   canvas->SetBorderSize(2);
 
   canvas->SetLeftMargin(0.12);
   canvas->SetBottomMargin(0.12);
+
+  canvas->SetLogy();
 
   for ( std::vector<variableEntryType>::const_iterator variable = variables.begin();
 	variable != variables.end(); ++variable ) {
@@ -133,16 +135,19 @@ int main(int argc, const char* argv[])
 
     meMC->SetStats(false);
     meMC->SetMaximum(1.2*TMath::Max(meData->GetMaximum(), meMC->GetMaximum()));
+    meMC->SetMinimum(1.e-1);
 
     meMC->GetXaxis()->SetTitle(variable->xAxisTitle_.data());
     meMC->GetXaxis()->SetTitleOffset(1.2);
     meMC->GetYaxis()->SetTitle("Events");
-    meMC->GetYaxis()->SetTitleOffset(1.2);
+    meMC->GetYaxis()->SetTitleOffset(1.4);
     
     meMC->Draw("hist");
     meData->Draw("e1psame");
 
-    TLegend legend(0.60, 0.64, 0.89, 0.89, "", "brNDC"); 
+    TLegend legend(0.60, 0.71, 0.89, 0.89, "", "brNDC"); 
+    legend.SetBorderSize(0);
+    legend.SetFillColor(0);
     legend.AddEntry(meData, "Data",       "p");
     legend.AddEntry(meMC,   "Simulation", "l");
     legend.Draw();
@@ -155,6 +160,31 @@ int main(int argc, const char* argv[])
     if ( idx != std::string::npos ) outputFileName_plot.append(std::string(outputFileName, idx));
     else                            outputFileName_plot.append(".png");
     canvas->Print(outputFileName_plot.data());
+
+    canvas->Clear();
+
+    if ( !meData->GetSumw2N() ) meData->Sumw2();
+    meData->Scale(1./meData->Integral());
+    if ( !meMC->GetSumw2N()   ) meMC->Sumw2();
+    meMC->Scale(1./meMC->Integral());
+    
+    meMC->SetMaximum(1.2*TMath::Max(meData->GetMaximum(), meMC->GetMaximum()));
+    meMC->SetMinimum(1.e-4);
+
+    meMC->GetYaxis()->SetTitle("a.u.");
+
+    meMC->Draw("hist");
+    meData->Draw("e1psame");
+
+    legend.Draw();
+
+    canvas->Update();
+
+    std::string outputFileName_plot_scaled = std::string(outputFileName, 0, idx);
+    outputFileName_plot_scaled.append("_").append(variable->meName_).append("_scaled");
+    if ( idx != std::string::npos ) outputFileName_plot_scaled.append(std::string(outputFileName, idx));
+    else                            outputFileName_plot_scaled.append(".png");
+    canvas->Print(outputFileName_plot_scaled.data());
   }
 
   delete canvas;

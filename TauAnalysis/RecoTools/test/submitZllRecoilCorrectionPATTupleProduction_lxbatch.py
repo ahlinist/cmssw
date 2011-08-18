@@ -10,7 +10,7 @@ import time
 
 configFile = 'produceZllRecoilCorrectionPATTuple_cfg.py'
 
-version = 'v1'
+version = 'v2'
 
 samples = {
     'Data_runs160329to163869' : {
@@ -36,15 +36,15 @@ samples = {
 lxbatch_queue = '1nw'
 
 samplesToAnalyze = [
-    #'Data_runs160329to163869',
-    #'Data_runs165071to167913',
+    'Data_runs160329to163869',
+    'Data_runs165071to167913',
     'simDYtoMuMu'
 ]
 
 skipPATtupleProduction = False
 #skipPATtupleProduction = True
 
-outputFilePath = "/castor/cern.ch/user/v/veelken/CMSSW_4_2_x/PATtuples/ZllRecoilCorrection"
+outputFilePath = "/castor/cern.ch/user/v/veelken/CMSSW_4_2_x/PATtuples/ZllRecoilCorrection/%s" % version
 
 executable_bsub = 'bsub'
 executable_bsub = 'bsub'
