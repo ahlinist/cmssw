@@ -2,12 +2,11 @@ import FWCore.ParameterSet.Config as cms
 
 from PhysicsTools.PatAlgos.tools.helpers import *
 
-def addPFMet(process,correct=False):    
+def addPFMet(process, correct = False):    
     process.load("JetMETCorrections.Type1MET.MetType1Corrections_cff")    
     process.metJESCorAK5PFJet.jetPTthreshold = cms.double(10.0)
     process.metJESCorAK5PFJet.useTypeII = cms.bool(True)
 
-    process.load("CommonTools.ParticleFlow.pfType1MET_cff")
     process.patPFMETs = process.patMETs.clone()
     process.patPFMETs.addMuonCorrections = False
     process.patPFMETs.genMETSource = cms.InputTag('genMetTrue')
@@ -16,9 +15,8 @@ def addPFMet(process,correct=False):
         process.patPFMETs.metSource = cms.InputTag('metJESCorAK5PFJet')
         process.makePatPFMETs = cms.Sequence(process.metJESCorAK5PFJet * process.patPFMETs)
     else:
-        process.pfMET.jets = cms.InputTag("ak5PFJets")
-        process.patPFMETs.metSource = cms.InputTag('pfMET')
-        process.makePatPFMETs = cms.Sequence(process.pfMET * process.patPFMETs)
+        process.patPFMETs.metSource = cms.InputTag('pfMet')
+        process.makePatPFMETs = cms.Sequence(process.patPFMETs)
 
     process.makePatMETs += process.makePatPFMETs
 
@@ -45,6 +43,6 @@ def replaceMETforMet(process,
                      oldMet = cms.InputTag('Layer1METs'),
                      newMet = cms.InputTag('patPFMETs')):
     massSearchReplaceParam(process.selectLayer1METs,
-                           'src',oldMet,newMet)
+                           'src', oldMet ,newMet)
 
 
