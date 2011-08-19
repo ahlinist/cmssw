@@ -329,7 +329,7 @@ def buildConfigFile_makeZllRecoilCorrectionFinalPlots(sampleNameData, sampleName
     directoryData = "/".join([ sampleNameData, corrLevelData ])
     directoryMC   = "/".join([ sampleNameMC,   corrLevelMC   ])
 
-    outputFileName = "plotZllRecoilCorrection_%s_%s.eps" % (metOptionName, corrLevelMC)
+    outputFileName = "plotZllRecoilCorrection_%s_%s.png" % (metOptionName, corrLevelMC)
     outputFilePath_plots = os.path.join(outputFilePath, "plots")
     if not os.path.exists(outputFilePath_plots):
         os.mkdir(outputFilePath_plots)    

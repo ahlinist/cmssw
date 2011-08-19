@@ -18,6 +18,7 @@
 #include <TH1.h>
 #include <TCanvas.h>
 #include <TLegend.h>
+#include <TPaveText.h>
 #include <TString.h>
 #include <TMath.h>
 
@@ -134,8 +135,8 @@ int main(int argc, const char* argv[])
     canvas->Clear();
 
     meMC->SetStats(false);
-    meMC->SetMaximum(1.2*TMath::Max(meData->GetMaximum(), meMC->GetMaximum()));
-    meMC->SetMinimum(1.e-1);
+    meMC->SetMaximum(3.e1*TMath::Max(meData->GetMaximum(), meMC->GetMaximum()));
+    meMC->SetMinimum(5.e-1);
 
     meMC->GetXaxis()->SetTitle(variable->xAxisTitle_.data());
     meMC->GetXaxis()->SetTitleOffset(1.2);
@@ -145,12 +146,30 @@ int main(int argc, const char* argv[])
     meMC->Draw("hist");
     meData->Draw("e1psame");
 
-    TLegend legend(0.60, 0.71, 0.89, 0.89, "", "brNDC"); 
+    TLegend legend(0.14, 0.74, 0.49, 0.89, "", "brNDC"); 
     legend.SetBorderSize(0);
     legend.SetFillColor(0);
     legend.AddEntry(meData, "Data",       "p");
     legend.AddEntry(meMC,   "Simulation", "l");
     legend.Draw();
+
+    TPaveText statsData(0.64, 0.79, 0.89, 0.89, "brNDC"); 
+    statsData.SetBorderSize(0);
+    statsData.SetFillColor(0);
+    statsData.AddText(Form("Mean = %2.2f", meData->GetMean()));
+    statsData.AddText(Form("RMS  = %2.2f", meData->GetRMS()));
+    statsData.SetTextColor(1);
+    statsData.SetTextSize(0.045);
+    statsData.Draw();
+
+    TPaveText statsMC(0.64, 0.69, 0.89, 0.79, "brNDC"); 
+    statsMC.SetBorderSize(0);
+    statsMC.SetFillColor(0);
+    statsMC.AddText(Form("Mean = %2.2f", meMC->GetMean()));
+    statsMC.AddText(Form("RMS  = %2.2f", meMC->GetRMS()));
+    statsMC.SetTextColor(2);
+    statsMC.SetTextSize(0.045);
+    statsMC.Draw();
 
     canvas->Update();
 
@@ -168,8 +187,8 @@ int main(int argc, const char* argv[])
     if ( !meMC->GetSumw2N()   ) meMC->Sumw2();
     meMC->Scale(1./meMC->Integral());
     
-    meMC->SetMaximum(1.2*TMath::Max(meData->GetMaximum(), meMC->GetMaximum()));
-    meMC->SetMinimum(1.e-4);
+    meMC->SetMaximum(3.e1*TMath::Max(meData->GetMaximum(), meMC->GetMaximum()));
+    meMC->SetMinimum(1.e-5);
 
     meMC->GetYaxis()->SetTitle("a.u.");
 
@@ -177,6 +196,9 @@ int main(int argc, const char* argv[])
     meData->Draw("e1psame");
 
     legend.Draw();
+
+    statsData.Draw();
+    statsMC.Draw();
 
     canvas->Update();
 

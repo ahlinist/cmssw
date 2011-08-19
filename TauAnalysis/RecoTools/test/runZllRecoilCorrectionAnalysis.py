@@ -5,11 +5,11 @@ from TauAnalysis.RecoTools.tools.buildConfigFilesZllRecoilCorrectionAnalysis imp
 
 import os
 
-version = 'v1'
+version = 'v2'
 
 inputFilePath = '/data2/veelken/CMSSW_4_2_x/PATtuples/ZllRecoilCorrection/%s/' % version \
-               + 'user/v/veelken/CMSSW_4_2_x/PATtuples/ZllRecoilCorrection/'
-outputFilePath = '/data1/veelken/tmp/ZllRecoilCorrection'
+               + 'user/v/veelken/CMSSW_4_2_x/PATtuples/ZllRecoilCorrection/%s/' % version
+outputFilePath = '/data1/veelken/tmp/ZllRecoilCorrection/%s' % version
 
 samplesToAnalyze = {
     'Data' : {

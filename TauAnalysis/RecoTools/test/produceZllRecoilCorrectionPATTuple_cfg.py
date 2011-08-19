@@ -141,35 +141,14 @@ if isMC:
 
 #--------------------------------------------------------------------------------
 # compute neutral particle density for out-of-time pile-up reweighting
-#process.pfNeutralCands = cms.EDFilter("GenericPFCandidateSelector",
-#    src = cms.InputTag('particleFlow'),
-#    cut = cms.string('abs(charge) < 0.5')
-#)
-from CommonTools.ParticleFlow.ParticleSelectors.pfAllNeutralHadrons_cfi import pfAllNeutralHadrons
-from CommonTools.ParticleFlow.ParticleSelectors.pfAllPhotons_cfi import pfAllPhotons
-pfNeutralCandPdgIds = []
-pfNeutralCandPdgIds.extend(pfAllNeutralHadrons.pdgId.value())
-pfNeutralCandPdgIds.extend(pfAllPhotons.pdgId.value())
-  
-process.pfNeutralCands = cms.EDFilter("PdgIdPFCandidateSelector",
-     src = cms.InputTag('particleFlow'),
-     pdgId = cms.vint32(pfNeutralCandPdgIds)
-)
-
-process.prePatProductionSequence += process.pfNeutralCands
-
 from RecoJets.JetProducers.kt4PFJets_cfi import kt4PFJets
 process.kt6PFJets = kt4PFJets.clone(
-    src = cms.InputTag('particleFlow'),
+    src = cms.InputTag('pfNoPileUp'),
     rParam = cms.double(0.6),
     doRhoFastjet = cms.bool(True),
     Rho_EtaMax = cms.double(2.5)
-)    
-process.kt6PFNeutralJets = process.kt6PFJets.clone(
-    src = cms.InputTag('pfNeutralCands')
 )
 process.prePatProductionSequence += process.kt6PFJets
-process.prePatProductionSequence += process.kt6PFNeutralJets
 #--------------------------------------------------------------------------------
 
 #--------------------------------------------------------------------------------
@@ -270,7 +249,7 @@ process.patTupleOutputModule = cms.OutputModule("PoolOutputModule",
             'keep *_patPFMETs_*_*',
             'keep *_patPFMETsTypeIcorrected_*_*',
             'keep *_patPFMETsTypeIpIIcorrected_*_*',
-            'keep *_kt6PFNeutralJets_rho_*'
+            'keep *_kt6PFJets_rho_*'
         )
     ),
     fileName = cms.untracked.string("ZllRecoilCorrectionPATtuple.root")
@@ -293,7 +272,7 @@ process.DQMStore = cms.Service("DQMStore")
 
 process.producePUreweightHistograms = cms.EDAnalyzer("PUreweightHistogramProducer",
     srcVertices = cms.InputTag('selectedPrimaryVertexPosition'),                                                 
-    srcPFNeutralRho = cms.InputTag('kt6PFNeutralJets', 'rho')
+    srcPFNeutralRho = cms.InputTag('kt6PFJets', 'rho')
 )
 process.producePUreweightHistogramsTrackPtSumGt5 = process.producePUreweightHistograms.clone(
     srcVertices = cms.InputTag('selectedPrimaryVerticesTrackPtSumGt5')
