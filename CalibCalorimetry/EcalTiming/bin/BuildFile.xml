@@ -58,3 +58,11 @@
   <use   name="CondTools/Ecal"/>
   <use   name="DataFormats/EcalDetId"/>
 </bin>
+<bin   file="MakeEcalTimingTreePlots.cpp">
+  <use   name="root"/>
+  <use   name="DataFormats/EcalDetId"/>
+  <use   name="CalibCalorimetry/EcalTiming"/>
+  <use   name="rootcore"/>
+  <use   name="rootinteractive"/>
+  <use   name="rootgraphics"/>
+</bin>
