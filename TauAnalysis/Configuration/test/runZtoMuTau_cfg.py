@@ -296,6 +296,9 @@ process.ewkTauId.Prediscriminants.againstElectron.Producer = cms.InputTag('hpsPF
 process.patMuonsMuScleFitCorrectedMomentum.doApplyCorrection = cms.bool(False)
 #--------------------------------------------------------------------------------
 
+process.load("TauAnalysis/RecoTools/vertexMultiplicityVsRhoPFNeutralReweight_cfi")
+process.producePatTupleAll += process.vertexMultiplicityVsRhoPFNeutralReweight
+
 processDumpFile = open('runZtoMuTau.dump' , 'w')
 print >> processDumpFile, process.dumpPython()
 
