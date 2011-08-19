@@ -52,6 +52,10 @@ process.goldenZmumuSkimPath = cms.Path(
    + process.goldenZmumuSelectionSequence
 )
 
+# add event counter for Mauro's "self baby-sitting" technology
+process.totalEventsProcessed = cms.EDProducer("EventCountProducer")
+process.eventCounterPath = cms.Path(process.totalEventsProcessed)
+
 #--------------------------------------------------------------------------------
 # save events passing "golden" VTBF Z --> mu+ mu- selection
 #--------------------------------------------------------------------------------

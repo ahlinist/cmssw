@@ -10,10 +10,10 @@ import subprocess
 channel = 'ZtoMuTau_tauIdEff'
 configFile = 'skimTauIdEffSample_cfg.py'
 #jobId = getJobId(channel)
-jobId = '2011Jul23'
+jobId = '2011Aug18'
 
 #outputFilePath = '/castor/cern.ch/user/m/mverzett/tagprobe/skims/TauIdEffMeas_2011May13/'
-outputFilePath = '/castor/cern.ch/user/v/veelken/CMSSW_4_2_x/skims/TauIdEffMeas/'
+outputFilePath = '/castor/cern.ch/user/v/veelken/CMSSW_4_2_x/skims/TauIdEffMeas/2011Aug18/'
 
 pfCandidateCollection = "particleFlow" # pile-up removal disabled
 #pfCandidateCollection = "pfNoPileUp"   # pile-up removal enabled

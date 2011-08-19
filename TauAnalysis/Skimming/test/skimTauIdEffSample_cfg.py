@@ -61,9 +61,9 @@ applyZrecoilCorrection = False
 #--------------------------------------------------------------------------------
 # define GlobalTag to be used for event reconstruction
 if isMC:
-    process.GlobalTag.globaltag = cms.string('START42_V12::All')
+    process.GlobalTag.globaltag = cms.string('START42_V13::All')
 else:
-    process.GlobalTag.globaltag = cms.string('GR_R_42_V14::All')
+    process.GlobalTag.globaltag = cms.string('GR_R_42_V20::All')
 #--------------------------------------------------------------------------------
 
 #--------------------------------------------------------------------------------
@@ -78,6 +78,12 @@ process.hltMu = cms.EDFilter("EventSelPluginFilter",
         pluginType = cms.string('TriggerResultEventSelector'),
         src = cms.InputTag('TriggerResults::%s' % HLTprocessName),
         triggerPaths = cms.vstring(
+            'HLT_Mu15_v1',
+            'HLT_Mu15_v2',
+            'HLT_Mu15_v3',
+            'HLT_Mu15_v4',
+            'HLT_Mu15_v5',
+            'HLT_Mu15_v6',
             'HLT_IsoMu17_v5',
             'HLT_IsoMu17_v6',
             'HLT_IsoMu17_v8',
