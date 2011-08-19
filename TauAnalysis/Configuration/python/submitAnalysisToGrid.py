@@ -182,6 +182,6 @@ def submitAnalysisToGrid(configFile = None, channel = None, samples = None,
             crabOptions['return_data'] = 1
             crabOptions['copy_data'] = 0        
 
-        ##submitToGrid(newConfigFile, jobInfo, crabOptions,
-        ##             create=create, submit=submit, cfgdir=cfgdir)
-        submitToGrid(newConfigFile, jobInfo, crabOptions, create=False, submit=False, cfgdir=cfgdir) # CV: only for testing
+        submitToGrid(newConfigFile, jobInfo, crabOptions,
+                     create=create, submit=submit, cfgdir=cfgdir)
+        ##submitToGrid(newConfigFile, jobInfo, crabOptions, create=False, submit=False, cfgdir=cfgdir) # CV: only for testing
