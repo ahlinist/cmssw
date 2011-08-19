@@ -45,58 +45,23 @@ userSettings = {
     },
     'veelken': {
         'current' : {
-            'ZtoMuTau'          : '2011Jun12',
-            'ZtoMuTau_tauIdEff' : '2011Jul23'
-            #'ZtoMuTau_tauIdEff' : '2011Jul06_mauro'
+            'ZtoMuTau_tauIdEff' : '2011Aug18'
         },
         'jobs' : {
+            '2011Aug18' : {
+                'ZtoMuTau_tauIdEff' : {
+                    'analysisFilePath' : "/castor/cern.ch/user/v/veelken/CMSSW_4_2_x/skims/TauIdEffMeas/",
+                    'harvestingFilePath' : "/data2/veelken/CMSSW_4_2_x/skims/ZtoMuTau_tauIdEff/",
+                    'tmpFilePath' : "/data1/veelken/tmp/ZtoMuTau_tauIdEff/",
+                    'batchHarvest' : "/castor/cern.ch/user/v/veelken/CMSSW_4_2_x/harvesting/ZtoMuTau_tauIdEff/2011Aug18/"
+                }
+            },
             '2011Jul23' : {
                 'ZtoMuTau_tauIdEff' : {
                     'analysisFilePath' : "/castor/cern.ch/user/v/veelken/CMSSW_4_2_x/skims/TauIdEffMeas/",
                     'harvestingFilePath' : "/data2/veelken/CMSSW_4_2_x/skims/ZtoMuTau_tauIdEff/",
                     'tmpFilePath' : "/data1/veelken/tmp/ZtoMuTau_tauIdEff/",
                     'batchHarvest' : "/castor/cern.ch/user/v/veelken/CMSSW_4_2_x/harvesting/ZtoMuTau_tauIdEff/2011Jul23/"
-                }
-            },
-            '2011Jul06_mauro' : {
-                'ZtoMuTau_tauIdEff' : {
-                    'analysisFilePath' : "/castor/cern.ch/user/m/mverzett/tagprobe/skims/cms42x/TauIdEffMeas_2011Jul06/",
-                    'harvestingFilePath' : "/data2/veelken/CMSSW_4_2_x/skims/ZtoMuTau_tauIdEff/",
-                    'tmpFilePath' : "/data1/veelken/tmp/ZtoMuTau_tauIdEff/",
-                    'batchHarvest' : "/castor/cern.ch/user/v/veelken/CMSSW_4_2_x/harvesting/ZtoMuTau_tauIdEff/2011Jul06_mauro/"
-                }
-            },
-            '2011Jul06v2' : {
-                'ZtoMuTau_tauIdEff' : {
-                    'analysisFilePath' : "/castor/cern.ch/user/v/veelken/CMSSW_4_2_x/skims/TauIdEffMeas/",
-                    'harvestingFilePath' : "/data2/veelken/CMSSW_4_2_x/skims/ZtoMuTau_tauIdEff/",
-                    'tmpFilePath' : "/data1/veelken/tmp/ZtoMuTau_tauIdEff/",
-                    'batchHarvest' : "/castor/cern.ch/user/v/veelken/CMSSW_4_2_x/harvesting/ZtoMuTau_tauIdEff/2011Jul06v2/"
-                }
-            },
-            '2011Jul01_mauro' : {
-                'ZtoMuTau_tauIdEff' : {
-                    'analysisFilePath' : "/castor/cern.ch/user/m/mverzett/tagprobe/skims/cms42x/TauIdEffMeas_2011Jul01_v2",
-                    'harvestingFilePath' : "/data2/veelken/CMSSW_4_2_x/skims/ZtoMuTau_tauIdEff/",
-                    'tmpFilePath' : "/data1/veelken/tmp/ZtoMuTau_tauIdEff/",
-                    'batchHarvest' : "/castor/cern.ch/user/m/mverzett/tagprobe/skims/cms42x/TauIdEffMeas_Harvest_2011Jul01_v2",
-                }
-            },
-            '2011Jun25' : {
-                'ZtoMuTau_tauIdEff' : {
-                    'analysisFilePath' : "/castor/cern.ch/user/v/veelken/CMSSW_4_1_x/skims/TauIdEffMeas/",
-                    'harvestingFilePath' : "/data2/veelken/CMSSW_4_1_x/skims/ZtoMuTau_tauIdEff/",
-                    'tmpFilePath' : "/data1/veelken/tmp/ZtoMuTau_tauIdEff/",
-                    'batchHarvest' : "/castor/cern.ch/user/m/mverzett/tagprobe/skims/TauIdEffMeas_Harvested_Jun06/"
-                }
-            }, 
-            '2011Jun12' : {
-                'ZtoMuTau' : {
-                    'analysisFilePath' : "/castor/cern.ch/user/v/veelken/CMSSW_4_1_x/plots/ZtoMuTau/",
-                    'harvestingFilePath' : "/data1/veelken/CMSSW_4_1_x/plots/ZtoMuTau/",
-                    'tmpFilePath' : "/data2/veelken/tmp/ZtoMuTau/",
-                    'jobId' : "2011Jun12",
-                    'batchHarvest' : "/castor/cern.ch/user/v/veelken/CMSSW_4_1_x/harvesting/ZtoMuTau/2011Jun12/"
                 }
             }
         },

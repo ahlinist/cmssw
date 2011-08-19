@@ -135,7 +135,7 @@ def submitToGrid(configFile, jobInfo, crabOptions, crabFileName_full = None, ui_
             if regExprMatch is not None:
                 numJobsCreated = int(regExprMatch.group('numJobsCreated'))
         print "numJobsCreated = %i" % numJobsCreated
-        if not numJobsCreated:
+        if numJobsCreated is None:
             raise ValueError('Failed to determine number of crab jobs created !!')
         
         # Submit crab jobs in groups of 500 jobs
