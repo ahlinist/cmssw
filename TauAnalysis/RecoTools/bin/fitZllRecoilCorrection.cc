@@ -6,9 +6,9 @@
  *
  * \author Christian Veelken, UC Davis
  *
- * \version $Revision: 1.2 $
+ * \version $Revision: 1.3 $
  *
- * $Id: fitZllRecoilCorrection.cc,v 1.2 2011/08/17 13:55:56 veelken Exp $
+ * $Id: fitZllRecoilCorrection.cc,v 1.3 2011/08/18 17:51:30 veelken Exp $
  *
  */
 
@@ -46,8 +46,8 @@
 typedef std::vector<std::string> vstring;
 
 void showControlPlot(TCanvas* canvas, 
-		     TH1* histogram, const std::string& histogramLegendEntry, TGraph* graph_fit, TGraphErrors* graph_fitErr,    
-		     const std::string& yAxisLabel, double yMin, double yMax, 
+		     TH1* histogram, const std::string& histogramLegendEntry, TGraph* graph_fit, TGraphErrors* graph_fitErr, 
+		     bool showIdGraph, const std::string& yAxisLabel, double yMin, double yMax, 
 		     const std::string& outputFileName, const std::string& outputFileLabel)
 {
   canvas->Clear();
@@ -78,6 +78,19 @@ void showControlPlot(TCanvas* canvas,
   graph_fit->SetLineWidth(2);
   graph_fit->Draw("L");
 
+  if ( showIdGraph ) {
+    int numPoints = graph_fit->GetN();
+    TGraph* graph_id = new TGraph(numPoints);
+    for ( int iPoint = 0; iPoint < numPoints; ++iPoint ) {
+      Double_t x, y;
+      graph_fit->GetPoint(iPoint, x, y);
+      graph_id->SetPoint(iPoint, x, -x);
+    }
+    graph_id->SetLineColor(8);
+    graph_id->SetLineWidth(1);
+    graph_id->Draw("L");
+  }
+
   histogram->Draw("e1psame");
 
   TLegend legend(0.64, 0.64, 0.89, 0.89, "", "brNDC"); 
@@ -90,10 +103,10 @@ void showControlPlot(TCanvas* canvas,
 
   canvas->Update();
 
-  size_t idx = outputFileName.find_last_of('.');
+  size_t idx = outputFileName.find_last_of("_cfi.py");
   std::string outputFileName_plot = std::string(outputFileName, 0, idx);
   outputFileName_plot.append("_").append(outputFileLabel);
-  outputFileName_plot.append(".eps");
+  outputFileName_plot.append(".png");
   canvas->Print(outputFileName_plot.data());
 }
 
@@ -208,19 +221,19 @@ void makeControlPlots(TH1* histogram_u1_mean, TH1* histogram_u1_rms, TH1* histog
 
   showControlPlot(canvas, 
 		  histogram_u1_mean, histogramLegendEntry, graph_u1Fit, graph_u1FitErr,     
-		  "u_{1} / GeV", -200., +50.,
+		  true, "u_{1} / GeV", -200., +50.,
 		  outputFileName, "u1_mean");
   showControlPlot(canvas, 
 		  histogram_u1_rms, histogramLegendEntry, graph_u1_rmsFit, graph_u1_rmsFitErr, 
-		  "rms(u_{1}) / GeV", 0., 25.,
+		  false, "rms(u_{1}) / GeV", 0., 25.,
 		  outputFileName, "u1_rms");
   showControlPlot(canvas, 
 		  histogram_u2_mean, histogramLegendEntry, graph_u2Fit, graph_u2FitErr,     
-		  "u_{2} / GeV", -25., +25.,
+		  true, "u_{2} / GeV", -25., +25.,
 		  outputFileName, "u2_mean");
   showControlPlot(canvas, 
 		  histogram_u2_rms, histogramLegendEntry, graph_u2_rmsFit, graph_u2_rmsFitErr, 
-		  "rms(u_{2}) / GeV", 0., 25.,
+		  false, "rms(u_{2}) / GeV", 0., 25.,
 		  outputFileName, "u2_rms");
   
   delete canvas;
