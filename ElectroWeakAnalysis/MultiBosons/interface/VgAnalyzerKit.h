@@ -178,7 +178,7 @@ protected:
   Float_t  pfMETSig_;
   // Electron
   Int_t    nEle_;
-  Int_t    eleTrg_[maxP][31];
+  Int_t    eleTrg_[maxP][33];
   Int_t    eleID_[maxP][30];
   Float_t  eleIDLH_[maxP];
   Int_t    eleClass_[maxP];

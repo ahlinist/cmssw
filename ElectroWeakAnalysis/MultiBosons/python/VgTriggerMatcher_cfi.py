@@ -144,11 +144,11 @@ muonTriggerMatchHLTMu30v3 = cms.EDProducer("PATTriggerMatcherDRLessByR",
                                       resolveByMatchQuality = cms.bool( True )
                                       )
 
-# matches to HLT_Mu30_v5
-muonTriggerMatchHLTMu30v5 = cms.EDProducer("PATTriggerMatcherDRLessByR",
+# matches to HLT_Mu30_v*
+muonTriggerMatchHLTMu30 = cms.EDProducer("PATTriggerMatcherDRLessByR",
                                       src     = cms.InputTag( "cleanPatMuons" ),
                                       matched = cms.InputTag( "patTrigger" ),
-                                      matchedCuts = cms.string( 'path( "HLT_Mu30_v5", 1, 0 )' ),
+                                      matchedCuts = cms.string( 'path( "HLT_Mu30_v*", 1, 0 )' ),
                                       maxDPtRel = cms.double( 0.5 ),
                                       maxDeltaR = cms.double( 0.3 ),
                                       resolveAmbiguities    = cms.bool( True ),
@@ -276,11 +276,11 @@ muonTriggerMatchHLTIsoMu24v5 = cms.EDProducer("PATTriggerMatcherDRLessByR",
                                       resolveByMatchQuality = cms.bool( True )
                                       )
 
-# matches to HLT_IsoMu24_v7
-muonTriggerMatchHLTIsoMu24v7 = cms.EDProducer("PATTriggerMatcherDRLessByR",
+# matches to HLT_IsoMu24_v*
+muonTriggerMatchHLTIsoMu24 = cms.EDProducer("PATTriggerMatcherDRLessByR",
                                       src     = cms.InputTag( "cleanPatMuons" ),
                                       matched = cms.InputTag( "patTrigger" ),
-                                      matchedCuts = cms.string( 'path( "HLT_IsoMu24_v7", 1, 0 )' ),
+                                      matchedCuts = cms.string( 'path( "HLT_IsoMu24_v*", 1, 0 )' ),
                                       maxDPtRel = cms.double( 0.5 ),
                                       maxDeltaR = cms.double( 0.3 ),
                                       resolveAmbiguities    = cms.bool( True ),
@@ -331,11 +331,11 @@ muonTriggerMatchHLTIsoMu30v5 = cms.EDProducer("PATTriggerMatcherDRLessByR",
                                       resolveByMatchQuality = cms.bool( True )
                                       )
 
-# matches to HLT_IsoMu30_v7
-muonTriggerMatchHLTIsoMu30v7 = cms.EDProducer("PATTriggerMatcherDRLessByR",
+# matches to HLT_IsoMu30_v*
+muonTriggerMatchHLTIsoMu30 = cms.EDProducer("PATTriggerMatcherDRLessByR",
                                       src     = cms.InputTag( "cleanPatMuons" ),
                                       matched = cms.InputTag( "patTrigger" ),
-                                      matchedCuts = cms.string( 'path( "HLT_IsoMu30_v7", 1, 0 )' ),
+                                      matchedCuts = cms.string( 'path( "HLT_IsoMu30_v*", 1, 0 )' ),
                                       maxDPtRel = cms.double( 0.5 ),
                                       maxDeltaR = cms.double( 0.3 ),
                                       resolveAmbiguities    = cms.bool( True ),
@@ -419,33 +419,33 @@ muonTriggerMatchHLTMu13Mu8v2 = cms.EDProducer("PATTriggerMatcherDRLessByR",
                                       resolveByMatchQuality = cms.bool( True )
                                       )
 
-# matches to HLT_Mu13_Mu8_v4
-muonTriggerMatchHLTMu13Mu8v4 = cms.EDProducer("PATTriggerMatcherDRLessByR",
+# matches to HLT_Mu13_Mu8_v*
+muonTriggerMatchHLTMu13Mu8 = cms.EDProducer("PATTriggerMatcherDRLessByR",
                                       src     = cms.InputTag( "cleanPatMuons" ),
                                       matched = cms.InputTag( "patTrigger" ),
-                                      matchedCuts = cms.string( 'path( "HLT_Mu13_Mu8_v4", 1, 0 )' ),
+                                      matchedCuts = cms.string( 'path( "HLT_Mu13_Mu8_v*", 1, 0 )' ),
                                       maxDPtRel = cms.double( 0.5 ),
                                       maxDeltaR = cms.double( 0.3 ),
                                       resolveAmbiguities    = cms.bool( True ),
                                       resolveByMatchQuality = cms.bool( True )
                                       )
 
-# matches to HLT_Mu17_Mu8_v2
-muonTriggerMatchHLTMu17Mu8v2 = cms.EDProducer("PATTriggerMatcherDRLessByR",
+# matches to HLT_Mu17_Mu8_v*
+muonTriggerMatchHLTMu17Mu8 = cms.EDProducer("PATTriggerMatcherDRLessByR",
                                       src     = cms.InputTag( "cleanPatMuons" ),
                                       matched = cms.InputTag( "patTrigger" ),
-                                      matchedCuts = cms.string( 'path( "HLT_Mu17_Mu8_v2", 1, 0 )' ),
+                                      matchedCuts = cms.string( 'path( "HLT_Mu17_Mu8_v*", 1, 0 )' ),
                                       maxDPtRel = cms.double( 0.5 ),
                                       maxDeltaR = cms.double( 0.3 ),
                                       resolveAmbiguities    = cms.bool( True ),
                                       resolveByMatchQuality = cms.bool( True )
                                       )
 
-# matches to HLT_Mu17_Mu8_v4
-muonTriggerMatchHLTMu17Mu8v4 = cms.EDProducer("PATTriggerMatcherDRLessByR",
+# matches to HLT_IsoMu30_eta2p1_v*
+muonTriggerMatchHLTIsoMu30eta2p1 = cms.EDProducer("PATTriggerMatcherDRLessByR",
                                       src     = cms.InputTag( "cleanPatMuons" ),
                                       matched = cms.InputTag( "patTrigger" ),
-                                      matchedCuts = cms.string( 'path( "HLT_Mu17_Mu8_v4", 1, 0 )' ),
+                                      matchedCuts = cms.string( 'path( "HLT_IsoMu30_eta2p1_v*", 1, 0 )' ),
                                       maxDPtRel = cms.double( 0.5 ),
                                       maxDeltaR = cms.double( 0.3 ),
                                       resolveAmbiguities    = cms.bool( True ),
@@ -457,6 +457,17 @@ electronTriggerMatchHLTEle8CaloIdLCaloIsoVL = cms.EDProducer( "PATTriggerMatcher
                                                   src     = cms.InputTag( "cleanPatElectrons" ),
                                                   matched = cms.InputTag( "patTrigger" ),
                                                   matchedCuts = cms.string( 'path( "HLT_Ele8_CaloIdL_CaloIsoVL_v*", 0, 0 )' ),
+                                                  maxDPtRel = cms.double( 0.5 ),
+                                                  maxDeltaR = cms.double( 0.3 ),
+                                                  resolveAmbiguities    = cms.bool( True ),
+                                                  resolveByMatchQuality = cms.bool( True )
+                                                  )
+
+# matches to HLT_Ele8_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_v*
+electronTriggerMatchHLTEle8CaloIdTCaloIsoVLTrkIdVLTrkIsoVL = cms.EDProducer( "PATTriggerMatcherDRLessByR",
+                                                  src     = cms.InputTag( "cleanPatElectrons" ),
+                                                  matched = cms.InputTag( "patTrigger" ),
+                                                  matchedCuts = cms.string( 'path( "HLT_Ele8_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_v*", 0, 0 )' ),
                                                   maxDPtRel = cms.double( 0.5 ),
                                                   maxDeltaR = cms.double( 0.3 ),
                                                   resolveAmbiguities    = cms.bool( True ),
@@ -694,11 +705,11 @@ electronTriggerMatchHLTEle32CaloIdVTCaloIsoTTrkIdTTrkIsoTv4    = cms.EDProducer(
                                                            resolveByMatchQuality = cms.bool( True )
                                                            )
 
-# matches to HLT_Ele32_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_v5
-electronTriggerMatchHLTEle32CaloIdVTCaloIsoTTrkIdTTrkIsoTv5    = cms.EDProducer( "PATTriggerMatcherDRLessByR",
+# matches to HLT_Ele32_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_v*
+electronTriggerMatchHLTEle32CaloIdVTCaloIsoTTrkIdTTrkIsoT    = cms.EDProducer( "PATTriggerMatcherDRLessByR",
                                                            src     = cms.InputTag( "cleanPatElectrons" ),
                                                            matched = cms.InputTag( "patTrigger" ),
-                                                           matchedCuts = cms.string( 'path( "HLT_Ele32_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_v5", 1, 0 )' ),
+                                                           matchedCuts = cms.string( 'path( "HLT_Ele32_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_v*", 1, 0 )' ),
                                                            maxDPtRel = cms.double( 0.5 ),
                                                            maxDeltaR = cms.double( 0.3 ),
                                                            resolveAmbiguities    = cms.bool( True ),
@@ -727,22 +738,22 @@ electronTriggerMatchHLTEle25WP80PFMT40v1    = cms.EDProducer( "PATTriggerMatcher
                                                            resolveByMatchQuality = cms.bool( True )
                                                            )
 
-# matches to HLT_Ele27_WP80_PFMT50_v1
-electronTriggerMatchHLTEle27WP80PFMT50v1    = cms.EDProducer( "PATTriggerMatcherDRLessByR",
+# matches to HLT_Ele27_WP80_PFMT50_v*
+electronTriggerMatchHLTEle27WP80PFMT50    = cms.EDProducer( "PATTriggerMatcherDRLessByR",
                                                            src     = cms.InputTag( "cleanPatElectrons" ),
                                                            matched = cms.InputTag( "patTrigger" ),
-                                                           matchedCuts = cms.string( 'path( "HLT_Ele27_WP80_PFMT50_v1", 1, 0 )' ),
+                                                           matchedCuts = cms.string( 'path( "HLT_Ele27_WP80_PFMT50_v*", 0, 0 )' ),
                                                            maxDPtRel = cms.double( 0.5 ),
                                                            maxDeltaR = cms.double( 0.3 ),
                                                            resolveAmbiguities    = cms.bool( True ),
                                                            resolveByMatchQuality = cms.bool( True )
                                                            )
 
-# matches to HLT_Ele32_WP70_PFMT50_v1
-electronTriggerMatchHLTEle32WP70PFMT50v1    = cms.EDProducer( "PATTriggerMatcherDRLessByR",
+# matches to HLT_Ele32_WP70_PFMT50_v*
+electronTriggerMatchHLTEle32WP70PFMT50    = cms.EDProducer( "PATTriggerMatcherDRLessByR",
                                                            src     = cms.InputTag( "cleanPatElectrons" ),
                                                            matched = cms.InputTag( "patTrigger" ),
-                                                           matchedCuts = cms.string( 'path( "HLT_Ele32_WP70_PFMT50_v1", 1, 0 )' ),
+                                                           matchedCuts = cms.string( 'path( "HLT_Ele32_WP70_PFMT50_v*", 0, 0 )' ),
                                                            maxDPtRel = cms.double( 0.5 ),
                                                            maxDeltaR = cms.double( 0.3 ),
                                                            resolveAmbiguities    = cms.bool( True ),
@@ -815,11 +826,22 @@ electronTriggerMatchHLTEle17CaloIdLCaloIsoVLEle8CaloIdLCaloIsoVLv5    = cms.EDPr
                                                            resolveByMatchQuality = cms.bool( True )
                                                            )
 
-# matches to HLT_Ele17_CaloIdL_CaloIsoVL_Ele8_CaloIdL_CaloIsoVL_v6
-electronTriggerMatchHLTEle17CaloIdLCaloIsoVLEle8CaloIdLCaloIsoVLv6    = cms.EDProducer( "PATTriggerMatcherDRLessByR",
+# matches to HLT_Ele17_CaloIdL_CaloIsoVL_Ele8_CaloIdL_CaloIsoVL_v*
+electronTriggerMatchHLTEle17CaloIdLCaloIsoVLEle8CaloIdLCaloIsoVL    = cms.EDProducer( "PATTriggerMatcherDRLessByR",
                                                            src     = cms.InputTag( "cleanPatElectrons" ),
                                                            matched = cms.InputTag( "patTrigger" ),
-                                                           matchedCuts = cms.string( 'path( "HLT_Ele17_CaloIdL_CaloIsoVL_Ele8_CaloIdL_CaloIsoVL_v6", 1, 0 )' ),
+                                                           matchedCuts = cms.string( 'path( "HLT_Ele17_CaloIdL_CaloIsoVL_Ele8_CaloIdL_CaloIsoVL_v*", 1, 0 )' ),
+                                                           maxDPtRel = cms.double( 0.5 ),
+                                                           maxDeltaR = cms.double( 0.3 ),
+                                                           resolveAmbiguities    = cms.bool( True ),
+                                                           resolveByMatchQuality = cms.bool( True )
+                                                           )
+
+# matches to HLT_Ele17_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_Ele8_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_v*
+electronTriggerMatchHLTEle17CaloIdTCaloIsoVLTrkIdVLTrkIsoVLEle8CaloIdTCaloIsoVLTrkIdVLTrkIsoVL    = cms.EDProducer( "PATTriggerMatcherDRLessByR",
+                                                           src     = cms.InputTag( "cleanPatElectrons" ),
+                                                           matched = cms.InputTag( "patTrigger" ),
+                                                           matchedCuts = cms.string( 'path( "HLT_Ele17_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_Ele8_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_v*", 1, 0 )' ),
                                                            maxDPtRel = cms.double( 0.5 ),
                                                            maxDeltaR = cms.double( 0.3 ),
                                                            resolveAmbiguities    = cms.bool( True ),
@@ -1560,6 +1582,7 @@ jetTriggerMatchHLTJet370v6   = cms.EDProducer( "PATTriggerMatcherDRLessByR",
 
 vgTriggerMatcherElectron = cms.Sequence(
         electronTriggerMatchHLTEle8CaloIdLCaloIsoVL +
+        electronTriggerMatchHLTEle8CaloIdTCaloIsoVLTrkIdVLTrkIsoVL + 
         electronTriggerMatchHLTEle17CaloIdLCaloIsoVL +
         electronTriggerMatchHLTEle15LWL1R +
         electronTriggerMatchHLTEle15SWL1R +
@@ -1581,18 +1604,19 @@ vgTriggerMatcherElectron = cms.Sequence(
         electronTriggerMatchHLTEle32CaloIdVTCaloIsoTTrkIdTTrkIsoTv2 +
         electronTriggerMatchHLTEle32CaloIdVTCaloIsoTTrkIdTTrkIsoTv3 +
         electronTriggerMatchHLTEle32CaloIdVTCaloIsoTTrkIdTTrkIsoTv4 +
-        electronTriggerMatchHLTEle32CaloIdVTCaloIsoTTrkIdTTrkIsoTv5 +
+        electronTriggerMatchHLTEle32CaloIdVTCaloIsoTTrkIdTTrkIsoT +
         electronTriggerMatchHLTEle42CaloIdVTCaloIsoTTrkIdTTrkIsoTv1 +
 	electronTriggerMatchHLTEle25WP80PFMT40v1 +
-	electronTriggerMatchHLTEle27WP80PFMT50v1 +
-	electronTriggerMatchHLTEle32WP70PFMT50v1 +
+	electronTriggerMatchHLTEle27WP80PFMT50 +
+	electronTriggerMatchHLTEle32WP70PFMT50 +
 	electronTriggerMatchHLTEle27WP70PFMT40PFMHT20v1 +
 	electronTriggerMatchHLTEle17CaloIdLCaloIsoVLEle8CaloIdLCaloIsoVLv1 +
 	electronTriggerMatchHLTEle17CaloIdLCaloIsoVLEle8CaloIdLCaloIsoVLv2 +
 	electronTriggerMatchHLTEle17CaloIdLCaloIsoVLEle8CaloIdLCaloIsoVLv3 +
 	electronTriggerMatchHLTEle17CaloIdLCaloIsoVLEle8CaloIdLCaloIsoVLv4 +
 	electronTriggerMatchHLTEle17CaloIdLCaloIsoVLEle8CaloIdLCaloIsoVLv5 +
-	electronTriggerMatchHLTEle17CaloIdLCaloIsoVLEle8CaloIdLCaloIsoVLv6
+	electronTriggerMatchHLTEle17CaloIdLCaloIsoVLEle8CaloIdLCaloIsoVL   +
+	electronTriggerMatchHLTEle17CaloIdTCaloIsoVLTrkIdVLTrkIsoVLEle8CaloIdTCaloIsoVLTrkIdVLTrkIsoVL
         )
 
 vgTriggerMatcherPhoton = cms.Sequence(
@@ -1640,13 +1664,13 @@ vgTriggerMatcherMuon = cms.Sequence(
     muonTriggerMatchHLTDoubleMu7v3 + 
     muonTriggerMatchHLTMu13Mu8v2 +
     muonTriggerMatchHLTMu24v5 +
-    muonTriggerMatchHLTMu30v5 +
+    muonTriggerMatchHLTMu30 +
     muonTriggerMatchHLTIsoMu17v11 +
-    muonTriggerMatchHLTIsoMu24v7 +
-    muonTriggerMatchHLTIsoMu30v7 +
-    muonTriggerMatchHLTMu13Mu8v4 +
-    muonTriggerMatchHLTMu17Mu8v2 +
-    muonTriggerMatchHLTMu17Mu8v4
+    muonTriggerMatchHLTIsoMu24 +
+    muonTriggerMatchHLTIsoMu30 +
+    muonTriggerMatchHLTMu13Mu8 +
+    muonTriggerMatchHLTMu17Mu8 +
+    muonTriggerMatchHLTIsoMu30eta2p1
     )
 
 vgTriggerMatcherJet = cms.Sequence(
