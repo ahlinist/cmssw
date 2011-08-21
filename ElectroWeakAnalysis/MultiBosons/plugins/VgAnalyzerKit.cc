@@ -102,7 +102,7 @@ VgAnalyzerKit::VgAnalyzerKit(const edm::ParameterSet& ps) : verbosity_(0), helpe
   tree_->Branch("ttbit0", &ttbit0_, "ttbit0/I");
   tree_->Branch("nHLT", &nHLT_, "nHLT/I");
   tree_->Branch("HLT", HLT_, "HLT[nHLT]/I");
-  tree_->Branch("HLTIndex", HLTIndex_, "HLTIndex[205]/I");
+  tree_->Branch("HLTIndex", HLTIndex_, "HLTIndex[226]/I");
   tree_->Branch("HLTprescale", HLTprescale_, "HLTprescale[nHLT]/I");
   tree_->Branch("nHFTowersP", &nHFTowersP_, "nHFTowersP/I");
   tree_->Branch("nHFTowersN", &nHFTowersN_, "nHFTowersN/I");
@@ -179,7 +179,7 @@ VgAnalyzerKit::VgAnalyzerKit(const edm::ParameterSet& ps) : verbosity_(0), helpe
   tree_->Branch("pfMETSig", &pfMETSig_, "pfMETSig/F");
   // Electron
   tree_->Branch("nEle", &nEle_, "nEle/I");
-  tree_->Branch("eleTrg", eleTrg_, "eleTrg[nEle][31]/I");
+  tree_->Branch("eleTrg", eleTrg_, "eleTrg[nEle][33]/I");
   tree_->Branch("eleID", eleID_, "eleID[nEle][30]/I");
   tree_->Branch("eleIDLH", eleIDLH_, "eleIDLH[nEle]/F");
   tree_->Branch("eleClass", eleClass_, "eleClass[nEle]/I");
@@ -712,7 +712,7 @@ fabs(ip->pdgId())<=14) || ip->pdgId()==22))) {
   // cout << "VgAnalyzerKit: produce: HLT ... " << endl;
   // Indicate the index of interesting HLT bits. Even CMS has different HLT table for different runs, we can still use the correct HLT bit
 
-  for (int a=0; a<205; a++)
+  for (int a=0; a<226; a++)
     HLTIndex_[a] = -1;
  
   nHLT_ = 0;
@@ -931,6 +931,27 @@ fabs(ip->pdgId())<=14) || ip->pdgId()==22))) {
     else if (hlNames[i] == "HLT_Ele17_CaloIdL_CaloIsoVL_v4")				HLTIndex_[202] = i;
     else if (hlNames[i] == "HLT_Ele17_CaloIdL_CaloIsoVL_v5")				HLTIndex_[203] = i;
     else if (hlNames[i] == "HLT_Ele17_CaloIdL_CaloIsoVL_v6")				HLTIndex_[204] = i;
+    else if (hlNames[i] == "HLT_Mu30_v7")       	HLTIndex_[205] = i;
+    else if (hlNames[i] == "HLT_Mu30_v8")       	HLTIndex_[206] = i;
+    else if (hlNames[i] == "HLT_IsoMu24_v8")    	HLTIndex_[207] = i;
+    else if (hlNames[i] == "HLT_IsoMu24_v9")    	HLTIndex_[208] = i;
+    else if (hlNames[i] == "HLT_IsoMu30_v8")    	HLTIndex_[209] = i;
+    else if (hlNames[i] == "HLT_IsoMu30_eta2p1_v3")     HLTIndex_[210] = i;
+    else if (hlNames[i] == "HLT_Mu13_Mu8_v6")   	HLTIndex_[211] = i;
+    else if (hlNames[i] == "HLT_Mu13_Mu8_v7")   	HLTIndex_[212] = i;
+    else if (hlNames[i] == "HLT_Mu17_Mu8_v6")   	HLTIndex_[213] = i;
+    else if (hlNames[i] == "HLT_Mu17_Mu8_v7")   	HLTIndex_[214] = i;
+    else if (hlNames[i] == "HLT_Ele32_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_v6")             HLTIndex_[215] = i;
+    else if (hlNames[i] == "HLT_Ele32_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_v7")             HLTIndex_[216] = i;
+    else if (hlNames[i] == "HLT_Ele27_WP80_PFMT50_v3")                                  HLTIndex_[217] = i;
+    else if (hlNames[i] == "HLT_Ele27_WP80_PFMT50_v4")                                  HLTIndex_[218] = i;
+    else if (hlNames[i] == "HLT_Ele32_WP70_PFMT50_v3")                                  HLTIndex_[219] = i;
+    else if (hlNames[i] == "HLT_Ele32_WP70_PFMT50_v4")                                  HLTIndex_[220] = i;
+    else if (hlNames[i] == "HLT_Ele17_CaloIdL_CaloIsoVL_Ele8_CaloIdL_CaloIsoVL_v8")	HLTIndex_[221] = i;
+    else if (hlNames[i] == "HLT_Ele17_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_Ele8_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_v7")	HLTIndex_[222] = i;
+    else if (hlNames[i] == "HLT_Ele17_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_Ele8_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_v8")	HLTIndex_[223] = i;
+    else if (hlNames[i] == "HLT_Ele8_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_v5") 		HLTIndex_[224] = i;
+    else if (hlNames[i] == "HLT_Ele8_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_v6") 		HLTIndex_[225] = i;
   }
 
   // Gen & PAT MET (caloMET)
@@ -1027,12 +1048,14 @@ fabs(ip->pdgId())<=14) || ip->pdgId()==22))) {
   const TriggerObjectMatch *eleTriggerMatch23(triggerEvent->triggerObjectMatchResult("electronTriggerMatchHLTEle17CaloIdLCaloIsoVLEle8CaloIdLCaloIsoVLv3"));
   const TriggerObjectMatch *eleTriggerMatch24(triggerEvent->triggerObjectMatchResult("electronTriggerMatchHLTEle17CaloIdLCaloIsoVLEle8CaloIdLCaloIsoVLv4"));
   const TriggerObjectMatch *eleTriggerMatch25(triggerEvent->triggerObjectMatchResult("electronTriggerMatchHLTEle17CaloIdLCaloIsoVLEle8CaloIdLCaloIsoVLv5"));
-  const TriggerObjectMatch *eleTriggerMatch26(triggerEvent->triggerObjectMatchResult("electronTriggerMatchHLTEle32CaloIdVTCaloIsoTTrkIdTTrkIsoTv5"));
-  const TriggerObjectMatch *eleTriggerMatch27(triggerEvent->triggerObjectMatchResult("electronTriggerMatchHLTEle27WP80PFMT50v1"));
-  const TriggerObjectMatch *eleTriggerMatch28(triggerEvent->triggerObjectMatchResult("electronTriggerMatchHLTEle32WP70PFMT50v1"));
-  const TriggerObjectMatch *eleTriggerMatch29(triggerEvent->triggerObjectMatchResult("electronTriggerMatchHLTEle17CaloIdLCaloIsoVLEle8CaloIdLCaloIsoVLv6"));
+  const TriggerObjectMatch *eleTriggerMatch26(triggerEvent->triggerObjectMatchResult("electronTriggerMatchHLTEle32CaloIdVTCaloIsoTTrkIdTTrkIsoT"));
+  const TriggerObjectMatch *eleTriggerMatch27(triggerEvent->triggerObjectMatchResult("electronTriggerMatchHLTEle27WP80PFMT50"));
+  const TriggerObjectMatch *eleTriggerMatch28(triggerEvent->triggerObjectMatchResult("electronTriggerMatchHLTEle32WP70PFMT50"));
+  const TriggerObjectMatch *eleTriggerMatch29(triggerEvent->triggerObjectMatchResult("electronTriggerMatchHLTEle17CaloIdLCaloIsoVLEle8CaloIdLCaloIsoVL"));
   const TriggerObjectMatch *eleTriggerMatch30(triggerEvent->triggerObjectMatchResult("electronTriggerMatchHLTEle8CaloIdLCaloIsoVL"));
   const TriggerObjectMatch *eleTriggerMatch31(triggerEvent->triggerObjectMatchResult("electronTriggerMatchHLTEle17CaloIdLCaloIsoVL"));
+  const TriggerObjectMatch *eleTriggerMatch32(triggerEvent->triggerObjectMatchResult("electronTriggerMatchHLTEle17CaloIdTCaloIsoVLTrkIdVLTrkIsoVLEle8CaloIdTCaloIsoVLTrkIdVLTrkIsoVL"));
+  const TriggerObjectMatch *eleTriggerMatch33(triggerEvent->triggerObjectMatchResult("electronTriggerMatchHLTEle8CaloIdTCaloIsoVLTrkIdVLTrkIsoVL"));
 
   int nElePassCut = 0;
   nEle_ = 0;
@@ -1075,6 +1098,8 @@ fabs(ip->pdgId())<=14) || ip->pdgId()==22))) {
       const TriggerObjectRef eleTrigRef29( matchHelper.triggerMatchObject( eleBaseRef, eleTriggerMatch29, e, *triggerEvent ) );
       const TriggerObjectRef eleTrigRef30( matchHelper.triggerMatchObject( eleBaseRef, eleTriggerMatch30, e, *triggerEvent ) );
       const TriggerObjectRef eleTrigRef31( matchHelper.triggerMatchObject( eleBaseRef, eleTriggerMatch31, e, *triggerEvent ) );
+      const TriggerObjectRef eleTrigRef32( matchHelper.triggerMatchObject( eleBaseRef, eleTriggerMatch32, e, *triggerEvent ) );
+      const TriggerObjectRef eleTrigRef33( matchHelper.triggerMatchObject( eleBaseRef, eleTriggerMatch33, e, *triggerEvent ) );
       eleTrg_[nEle_][0]  = (eleTrigRef1.isAvailable())  ? 1 : -99;
       eleTrg_[nEle_][1]  = (eleTrigRef2.isAvailable())  ? 1 : -99;
       eleTrg_[nEle_][2]  = (eleTrigRef3.isAvailable())  ? 1 : -99;
@@ -1106,6 +1131,8 @@ fabs(ip->pdgId())<=14) || ip->pdgId()==22))) {
       eleTrg_[nEle_][28]  = (eleTrigRef29.isAvailable()) ? 1 : -99;
       eleTrg_[nEle_][29]  = (eleTrigRef30.isAvailable()) ? 1 : -99;
       eleTrg_[nEle_][30]  = (eleTrigRef31.isAvailable()) ? 1 : -99;
+      eleTrg_[nEle_][31]  = (eleTrigRef32.isAvailable()) ? 1 : -99;
+      eleTrg_[nEle_][32]  = (eleTrigRef33.isAvailable()) ? 1 : -99;
 
       //        new eID with correct isolations and conversion rejection
       //	https://twiki.cern.ch/twiki/bin/viewauth/CMS/SimpleCutBasedEleID
@@ -1544,13 +1571,13 @@ fabs(ip->pdgId())<=14) || ip->pdgId()==22))) {
   const TriggerObjectMatch * muTriggerMatch31( triggerEvent->triggerObjectMatchResult( "muonTriggerMatchHLTDoubleMu7v3" ) );
   const TriggerObjectMatch * muTriggerMatch32( triggerEvent->triggerObjectMatchResult( "muonTriggerMatchHLTMu13Mu8v2" ) );
   const TriggerObjectMatch * muTriggerMatch33( triggerEvent->triggerObjectMatchResult( "muonTriggerMatchHLTMu24v5" ) );
-  const TriggerObjectMatch * muTriggerMatch34( triggerEvent->triggerObjectMatchResult( "muonTriggerMatchHLTMu30v5" ) );
+  const TriggerObjectMatch * muTriggerMatch34( triggerEvent->triggerObjectMatchResult( "muonTriggerMatchHLTMu30" ) );
   const TriggerObjectMatch * muTriggerMatch35( triggerEvent->triggerObjectMatchResult( "muonTriggerMatchHLTIsoMu17v11" ) );
-  const TriggerObjectMatch * muTriggerMatch36( triggerEvent->triggerObjectMatchResult( "muonTriggerMatchHLTIsoMu24v7" ) );
-  const TriggerObjectMatch * muTriggerMatch37( triggerEvent->triggerObjectMatchResult( "muonTriggerMatchHLTIsoMu30v7" ) );
-  const TriggerObjectMatch * muTriggerMatch38( triggerEvent->triggerObjectMatchResult( "muonTriggerMatchHLTMu13Mu8v4" ) );
-  const TriggerObjectMatch * muTriggerMatch39( triggerEvent->triggerObjectMatchResult( "muonTriggerMatchHLTMu17Mu8v2" ) );
-  const TriggerObjectMatch * muTriggerMatch40( triggerEvent->triggerObjectMatchResult( "muonTriggerMatchHLTMu17Mu8v4" ) );
+  const TriggerObjectMatch * muTriggerMatch36( triggerEvent->triggerObjectMatchResult( "muonTriggerMatchHLTIsoMu24" ) );
+  const TriggerObjectMatch * muTriggerMatch37( triggerEvent->triggerObjectMatchResult( "muonTriggerMatchHLTIsoMu30" ) );
+  const TriggerObjectMatch * muTriggerMatch38( triggerEvent->triggerObjectMatchResult( "muonTriggerMatchHLTMu13Mu8" ) );
+  const TriggerObjectMatch * muTriggerMatch39( triggerEvent->triggerObjectMatchResult( "muonTriggerMatchHLTMu17Mu8" ) );
+  const TriggerObjectMatch * muTriggerMatch40( triggerEvent->triggerObjectMatchResult( "muonTriggerMatchHLTIsoMu30eta2p1" ) );
 
   // Muon
   int nMuPassCut = 0;
