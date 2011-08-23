@@ -13,7 +13,7 @@
 //
 // Original Author:  Sudhir_Malik
 //         Created:  Fri Mar 13 09:52:17 CDT 2009
-// $Id: PATValidation_Photon.cc,v 1.10 2010/08/09 09:32:28 kfjack Exp $
+// $Id: PATValidation_Photon.cc,v 1.11 2011/04/15 11:39:57 kfjack Exp $
 //
 //
 
@@ -43,7 +43,8 @@
 #include "DataFormats/EgammaCandidates/interface/ConversionFwd.h"
 #include "DataFormats/EgammaCandidates/interface/Photon.h"
 #include "DataFormats/EgammaCandidates/interface/PhotonFwd.h"
-#include "DQMOffline/EGamma/interface/PhotonAnalyzer.h"
+//#include "DQMOffline/EGamma/interface/PhotonAnalyzer.h"
+#include "DQMOffline/EGamma/interface/ElectronDqmAnalyzerBase.h"
 
 #include "FWCore/ServiceRegistry/interface/Service.h"
 #include "CommonTools/UtilAlgos/interface/TFileService.h"   
