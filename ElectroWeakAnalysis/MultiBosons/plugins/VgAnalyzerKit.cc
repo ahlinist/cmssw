@@ -2076,15 +2076,15 @@ fabs(ip->pdgId())<=14) || ip->pdgId()==22))) {
   const TriggerObjectMatch *jetTriggerMatch47(triggerEvent->triggerObjectMatchResult("jetTriggerMatchHLTJet370v2"));
   const TriggerObjectMatch *jetTriggerMatch48(triggerEvent->triggerObjectMatchResult("jetTriggerMatchHLTJet370v3"));
   const TriggerObjectMatch *jetTriggerMatch49(triggerEvent->triggerObjectMatchResult("jetTriggerMatchHLTJet370v4"));
-  const TriggerObjectMatch *jetTriggerMatch50(triggerEvent->triggerObjectMatchResult("jetTriggerMatchHLTJet30v6"));
-  const TriggerObjectMatch *jetTriggerMatch51(triggerEvent->triggerObjectMatchResult("jetTriggerMatchHLTJet60v6"));
-  const TriggerObjectMatch *jetTriggerMatch52(triggerEvent->triggerObjectMatchResult("jetTriggerMatchHLTJet80v6"));
-  const TriggerObjectMatch *jetTriggerMatch53(triggerEvent->triggerObjectMatchResult("jetTriggerMatchHLTJet110v6"));
-  const TriggerObjectMatch *jetTriggerMatch54(triggerEvent->triggerObjectMatchResult("jetTriggerMatchHLTJet150v6"));
-  const TriggerObjectMatch *jetTriggerMatch55(triggerEvent->triggerObjectMatchResult("jetTriggerMatchHLTJet190v6"));
-  const TriggerObjectMatch *jetTriggerMatch56(triggerEvent->triggerObjectMatchResult("jetTriggerMatchHLTJet240v6"));
-  const TriggerObjectMatch *jetTriggerMatch57(triggerEvent->triggerObjectMatchResult("jetTriggerMatchHLTJet300v5"));
-  const TriggerObjectMatch *jetTriggerMatch58(triggerEvent->triggerObjectMatchResult("jetTriggerMatchHLTJet370v6"));
+  const TriggerObjectMatch *jetTriggerMatch50(triggerEvent->triggerObjectMatchResult("jetTriggerMatchHLTJet30"));
+  const TriggerObjectMatch *jetTriggerMatch51(triggerEvent->triggerObjectMatchResult("jetTriggerMatchHLTJet60"));
+  const TriggerObjectMatch *jetTriggerMatch52(triggerEvent->triggerObjectMatchResult("jetTriggerMatchHLTJet80"));
+  const TriggerObjectMatch *jetTriggerMatch53(triggerEvent->triggerObjectMatchResult("jetTriggerMatchHLTJet110"));
+  const TriggerObjectMatch *jetTriggerMatch54(triggerEvent->triggerObjectMatchResult("jetTriggerMatchHLTJet150"));
+  const TriggerObjectMatch *jetTriggerMatch55(triggerEvent->triggerObjectMatchResult("jetTriggerMatchHLTJet190"));
+  const TriggerObjectMatch *jetTriggerMatch56(triggerEvent->triggerObjectMatchResult("jetTriggerMatchHLTJet240"));
+  const TriggerObjectMatch *jetTriggerMatch57(triggerEvent->triggerObjectMatchResult("jetTriggerMatchHLTJet300"));
+  const TriggerObjectMatch *jetTriggerMatch58(triggerEvent->triggerObjectMatchResult("jetTriggerMatchHLTJet370"));
 
   if (doStoreJets_) {
     nJet_ = 0;
