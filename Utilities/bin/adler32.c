@@ -12,9 +12,7 @@
 
 */
 
-
 #define _LARGEFILE64_SOURCE
-
 #include <sys/stat.h>
 #include <fcntl.h>
 #include <unistd.h>
@@ -22,6 +20,10 @@
 #include <stdio.h>
 #include <zlib.h>
 #include <libgen.h>
+#ifdef __APPLE__
+typedef off_t off64_t;
+#define O_LARGEFILE 0
+#endif
 
 #define EDMFILEUTILADLERBUFSIZE 10*1024*1024 // 10MB buffer
 
