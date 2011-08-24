@@ -161,7 +161,11 @@ CacheParser::write(const CategoryToInfos& iInfos, std::ostream& oOut)
         it2 != it->second.end();
         ++it2) {
       //remove any directory specification
-      std::string loadable(it2->loadable_.leaf());
+#if (BOOST_VERSION / 100000) >= 1 && ((BOOST_VERSION / 100) % 1000) >= 47
+      std::string loadable(it2->loadable_.filename().string());
+#else
+      std::string loadable(it2->loadable_.filename());
+#endif
       std::string name(it2->name_);
       ordered[loadable].push_back(NameAndType(name,type));
     }

@@ -35,9 +35,9 @@ namespace edmplugin {
   library_(0),
   path_(iName)
 {
-    std::auto_ptr<Reflex::SharedLibrary> lib(new Reflex::SharedLibrary(iName.native_file_string()));
+    std::auto_ptr<Reflex::SharedLibrary> lib(new Reflex::SharedLibrary(iName.string()));
     if( !lib->Load() ) {
-      throw cms::Exception("PluginLibraryLoadError")<<"unable to load "<<iName.native_file_string()<<" because "<<lib->Error();
+      throw cms::Exception("PluginLibraryLoadError")<<"unable to load "<<iName.string()<<" because "<<lib->Error();
     }
     library_ = lib.release();
 }

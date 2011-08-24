@@ -79,7 +79,7 @@ PluginFactoryBase::findPMaker(const std::string& iName) const
   //do we already have it?
   Plugins::const_iterator itFound = m_plugins.find(iName);
   if(itFound == m_plugins.end()) {
-    std::string lib = PluginManager::get()->load(this->category(),iName).path().native_file_string();
+    std::string lib = PluginManager::get()->load(this->category(),iName).path().string();
     itFound = m_plugins.find(iName);
     if(itFound == m_plugins.end()) {
       throw cms::Exception("PluginCacheError")<<"The plugin '"<<iName<<"' should have been in loadable\n '"
@@ -100,7 +100,7 @@ PluginFactoryBase::tryToFindPMaker(const std::string& iName) const
   if(itFound == m_plugins.end()) {
     const SharedLibrary* slib = PluginManager::get()->tryToLoad(this->category(),iName);
     if(0!=slib) {
-      std::string lib = slib->path().native_file_string();
+      std::string lib = slib->path().string();
       itFound = m_plugins.find(iName);
       if(itFound == m_plugins.end()) {
         throw cms::Exception("PluginCacheError")<<"The plugin '"<<iName<<"' should have been in loadable\n '"
@@ -144,9 +144,9 @@ PluginFactoryBase::checkProperLoadable(const std::string& iName, const std::stri
   // was not statically linked
   if (iLoadedFrom != PluginManager::staticallyLinkedLoadingFileName() &&
       PluginManager::isAvailable()) {
-    if( iLoadedFrom != PluginManager::get()->loadableFor(category(),iName).native_file_string() ) {
+    if( iLoadedFrom != PluginManager::get()->loadableFor(category(),iName).string() ) {
       throw cms::Exception("WrongPluginLoaded")<<"The plugin '"<<iName<<"' should have been loaded from\n '"
-      <<PluginManager::get()->loadableFor(category(),iName).native_file_string()
+      <<PluginManager::get()->loadableFor(category(),iName).string()
       <<"'\n but instead it was already loaded from\n '"
       <<iLoadedFrom<<"'\n because some other plugin was loaded from the latter loadables.\n"
       "To work around the problem the plugin '"<<iName<<"' should only be defined in one of these loadables.";

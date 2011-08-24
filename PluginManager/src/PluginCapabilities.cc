@@ -96,14 +96,14 @@ PluginCapabilities::load(const std::string& iName)
     //read the items from the 'capabilities' symbol
     if(not tryToFind(lib) ) {
       throw cms::Exception("PluginNotFound")<<"The dictionary for class '"<<iName <<"' is supposed to be in file\n '"
-      <<lib.path().native_file_string()<<"'\n but no dictionaries are in that file.\n"
-      "It appears like the cache is wrong.  Please do 'EdmPluginRefresh "<<lib.path().native_file_string()<<"'.";
+      <<lib.path().string()<<"'\n but no dictionaries are in that file.\n"
+      "It appears like the cache is wrong.  Please do 'EdmPluginRefresh "<<lib.path().string()<<"'.";
     }
     
     if(classToLoadable_.end() == classToLoadable_.find(iName)) {
       throw cms::Exception("PluginNotFound")<<"The dictionary for class '"<<iName<<"' is supposed to be in file\n '"
-      <<lib.path().native_file_string()<<"'\n but was not found.\n"
-      "It appears like the cache is wrong.  Please do 'EdmPluginRefresh "<<lib.path().native_file_string()<<"'.";
+      <<lib.path().string()<<"'\n but was not found.\n"
+      "It appears like the cache is wrong.  Please do 'EdmPluginRefresh "<<lib.path().string()<<"'.";
     }
   }
 }
@@ -120,14 +120,14 @@ PluginCapabilities::tryToLoad(const std::string& iName)
     //read the items from the 'capabilities' symbol
     if(not tryToFind(*lib) ) {
       throw cms::Exception("PluginNotFound")<<"The dictionary for class '"<<iName <<"' is supposed to be in file\n '"
-      <<lib->path().native_file_string()<<"'\n but no dictionaries are in that file.\n"
-      "It appears like the cache is wrong.  Please do 'EdmPluginRefresh "<<lib->path().native_file_string()<<"'.";
+      <<lib->path().string()<<"'\n but no dictionaries are in that file.\n"
+      "It appears like the cache is wrong.  Please do 'EdmPluginRefresh "<<lib->path().string()<<"'.";
     }
     
     if(classToLoadable_.end() == classToLoadable_.find(iName)) {
       throw cms::Exception("PluginNotFound")<<"The dictionary for class '"<<iName<<"' is supposed to be in file\n '"
-      <<lib->path().native_file_string()<<"'\n but was not found.\n"
-      "It appears like the cache is wrong.  Please do 'EdmPluginRefresh "<<lib->path().native_file_string()<<"'.";
+      <<lib->path().string()<<"'\n but was not found.\n"
+      "It appears like the cache is wrong.  Please do 'EdmPluginRefresh "<<lib->path().string()<<"'.";
     }
   }
   return true;
