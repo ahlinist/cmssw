@@ -120,7 +120,7 @@ void PrintLoadingPlugins::askedToLoad(const std::string& iCategory,
 	 
 	 const boost::filesystem::path& loadable = range.first->loadable_;
 	 
-	 libname = loadable.native_file_string();
+	 libname = loadable.string();
 	 
       }
       
@@ -133,7 +133,7 @@ void PrintLoadingPlugins::askedToLoad(const std::string& iCategory,
 void PrintLoadingPlugins::goingToLoad(const boost::filesystem::path& Loadable_)
 
 {
-  edm::LogAbsolute("LoadLib")<<"Loading> "<<Loadable_.native_file_string()<< std::endl;
+  edm::LogAbsolute("LoadLib")<<"Loading> "<<Loadable_.string()<< std::endl;
 }
 
 
