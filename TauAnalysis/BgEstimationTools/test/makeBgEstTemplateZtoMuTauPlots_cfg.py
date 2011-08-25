@@ -34,22 +34,22 @@ dqmDirectories_processes = {
         'analysis' : 'ZmumuSum'
     },
     'WplusJets' : {
-        'template' : 'WplusJets_madgraph',
-        'analysis' : 'WplusJets_madgraph'
+        'template' : 'WplusJets_madgraph_skim',
+        'analysis' : 'WplusJets_madgraph_skim'
     },
     'QCD' : {
         'template' : 'qcdSum',
         'analysis' : 'qcdSum'
     },
     'TTplusJets' : {
-        'template' : 'TTplusJets_madgraph',
-        'analysis' : 'TTplusJets_madgraph'
+        'template' : 'TTplusJets_madgraph_skim',
+        'analysis' : 'TTplusJets_madgraph_skim'
     },
-    'diBoson' : {
-        'template' : 'VVsum',
-        'analysis' : 'VVsum'
-    },
-    'smSum' : {
+	'diBoson' : {
+	    'template' : 'VVsum',
+	    'analysis' : 'VVsum'
+	},
+	'smSum' : {
         'template' : 'smSum',
         'analysis' : 'smSum'
     },
@@ -256,7 +256,7 @@ for processName, meNameMapping_process in meNameMapping.items():
 process.loadTemplateHistZtoMuTau_Ztautau = cms.EDAnalyzer("DQMFileLoader",
     Ztautau = cms.PSet(
         inputFileNames = cms.vstring(
-            'file:/data/ndpc0/c/jkolb/visMass_fromEmbedding_v0.root'
+			'file:/afs/crc.nd.edu/group/NDCMS/data02/jkolb/TauResults/' + getJobId("ZtoMuTau_bgEstTemplate") + '/visMass_fromEmbedding_' + getJobId("ZtoMuTau_bgEstTemplate") + '.root'
         ),
         scaleFactor = cms.double(1.),
         dqmDirectory_store = cms.string(
@@ -274,7 +274,7 @@ process.loadTemplateHistZtoMuTau_Ztautau = cms.EDAnalyzer("DQMFileLoader",
 process.loadTemplateHistZtoMuTau = cms.EDAnalyzer("DQMFileLoader",
     Ztautau = cms.PSet(
         inputFileNames = cms.vstring(
-            getHarvestingFilePath('ZtoMuTau_bgEstTemplate') + '/' + 'plotsZtoMuTau_bgEstTemplate_all.root'
+            getHarvestingFilePath('ZtoMuTau_bgEstTemplate') + 'plotsZtoMuTau_bgEstTemplate_all.root'
             ##'/data1/veelken/CMSSW_3_8_x/plots/ZtoMuTau_bgEstTemplate/2011Jan21_HPSloose/plotsZtoMuTau_bgEstTemplate_all.root'
         ),
         scaleFactor = cms.double(1.),
@@ -608,9 +608,9 @@ for selectionName, meNameMapping_selectionName_data in meNameMapping_data.items(
                 TTplusJets = plotHistZtoMuTauStacked.processes.TTplusJets.clone(
                     dqmDirectory = cms.string('/template/harvested/' + dqmDirectories_processes['TTplusJets']['template'])
                 ),
-                diBoson = plotHistZtoMuTauStacked.processes.diBoson.clone(
-                    dqmDirectory = cms.string('/template/harvested/' + dqmDirectories_processes['diBoson']['template'])
-                ),
+				diBoson = plotHistZtoMuTauStacked.processes.diBoson.clone(
+				    dqmDirectory = cms.string('/template/harvested/' + dqmDirectories_processes['diBoson']['template'])
+				),
                 QCD = plotHistZtoMuTauStacked.processes.QCD.clone(
                     dqmDirectory = cms.string('/template/harvested/' + dqmDirectories_processes['QCD']['template'])
                 ),

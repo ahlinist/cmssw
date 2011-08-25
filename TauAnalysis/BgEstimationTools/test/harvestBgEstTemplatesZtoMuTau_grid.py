@@ -6,7 +6,7 @@ import TauAnalysis.Configuration.userRegistry as reg
 
 
 channel = 'ZtoMuTau_bgEstTemplate'
-reg.overrideJobId(channel,'Run29')
+reg.overrideJobId(channel,'Run32')
 analysisFilePath = reg.getAnalysisFilePath(channel)
 harvestingFilePath = reg.getHarvestingFilePath(channel)
 jobId = reg.getJobId(channel)
@@ -15,5 +15,5 @@ tmpFilePath = reg.getTmpFilePath(channel)
 harvestAnalysisResults(channel = channel, 
                         samples = recoSampleDefinitionsZtoMuTau_7TeV,
                        inputFilePath = analysisFilePath, outputFilePath = harvestingFilePath, jobId = jobId,
-                       tmpFilePath = tmpFilePath, use_job_report = True)
-# crab_channel = "BgEstTemplateProductionZtoMuTau")
+                       tmpFilePath = tmpFilePath, use_job_report = True,
+					   useCastor = False)
