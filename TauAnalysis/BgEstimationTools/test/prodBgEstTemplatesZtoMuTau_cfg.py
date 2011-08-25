@@ -45,10 +45,10 @@ def configureDQMDumpFilterStatisticsTable(dqmDirectoriesProcess, dqmDirectoryFil
 dqmDirectoriesProcess = {
     'Ztautau'    : 'ZtautauSum',
     'Zmumu'      : 'ZmumuSum',
-    'WplusJets'  : 'WplusJets_madgraph_T3',
+    'WplusJets'  : 'WplusJets_madgraph_skim',
     'QCD'        : 'qcdSum',
-    'TTplusJets' : 'TTplusJets_madgraph_T3',
-    'diBoson'    : 'VVsum',
+    'TTplusJets' : 'TTplusJets_madgraph_skim',
+    #'diBoson'    : 'VVsum',
     'smSum'      : 'smSum',
     'Data'       : 'data'
 }    

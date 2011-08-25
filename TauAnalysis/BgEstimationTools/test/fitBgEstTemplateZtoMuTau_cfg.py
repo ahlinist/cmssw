@@ -17,7 +17,7 @@ from TauAnalysis.BgEstimationTools.templateHistDefinitions_cfi import \
 from TauAnalysis.BgEstimationTools.tools.drawTemplateHistConfigurator import drawTemplateHistConfigurator
 import TauAnalysis.Configuration.userRegistry as reg 
 
-reg.overrideJobId('ZtoMuTau_bgEstTemplate','Run28')
+reg.overrideJobId('ZtoMuTau_bgEstTemplate','Run32')
 
 process = cms.Process('fitBgEstTemplateZtoMuTau')
 
@@ -32,9 +32,9 @@ process.source = cms.Source("EmptySource")
 dqmDirectoriesProcess = {
     'Ztautau'    : 'ZtautauSum',
     'Zmumu'      : 'ZmumuSum',
-    'WplusJets'  : 'WplusJets_madgraph',
+    'WplusJets'  : 'WplusJets_madgraph_skim',
     'QCD'        : 'qcdSum',
-    'TTplusJets' : 'TTplusJets_madgraph',
+    'TTplusJets' : 'TTplusJets_madgraph_skim',
     'smSum'      : 'smSum',
     'Data'       : 'data'
 }
@@ -58,8 +58,8 @@ pureProcessBgEnrichedSelections = {
 }
 
 meNames = {
-    'visMass'   : 'DiTauCandidateQuantities/VisMass',
-    'SVfitMass' : 'DiTauCandidateSVfitQuantities/psKine_MEt_ptBalance/Mass'
+    'visMass'   : 'DiTauCandidateQuantities/VisMass'
+    #'SVfitMass' : 'DiTauCandidateSVfitQuantities/psKine_MEt_ptBalance/Mass'
 }
 
 #--------------------------------------------------------------------------------
@@ -103,34 +103,21 @@ for bgEnrichedSelectionName, dqmDirectoryBgEnrichedSelection in dqmDirectoriesBg
     dqmDirectoryData = dqmDirectoriesProcess['Data']
     dqmDirectoryAnalysisMC_pure = dqmDirectoriesProcess[pureProcessBgEnrichedSelections[bgEnrichedSelectionName]]
 
-    jobsSysBiasHist.append(cms.PSet(
-        meName_minuend = cms.string(
-            '/analysis/harvested/' + dqmDirectoryAnalysisMC_pure + '/' + dqmDirectoryAnalysis \
-           + meNames['visMass'] + 'Shape' + '_' + 'QCDenriched'
-        ),
-        meName_subtrahend = cms.string(
-            '/template/harvested/' + dqmDirectoryData + '/' + dqmDirectoryBgEnrichedSelection \
-           + meNames['visMass'] + 'Shape' + '_' + bgEnrichedSelectionName
-        ),
-        meName_difference = cms.string(
-            'systematics/bias/' + dqmDirectoryAnalysisMC_pure + '/' + dqmDirectoryBgEnrichedSelection \
-           + meNames['visMass'] + 'Shape' + '_' + bgEnrichedSelectionName
-        )
-    ))
-    jobsSysBiasHist.append(cms.PSet(
-        meName_minuend = cms.string(
-            '/analysis/harvested/' + dqmDirectoryAnalysisMC_pure + '/' + dqmDirectoryAnalysis \
-           + meNames['SVfitMass'] + 'Shape' + '_' + 'QCDenriched'
-        ),
-        meName_subtrahend = cms.string(
-            '/template/harvested/' + dqmDirectoryData + '/' + dqmDirectoryBgEnrichedSelection \
-           + meNames['SVfitMass'] + 'Shape' + '_' + bgEnrichedSelectionName
-        ),
-        meName_difference = cms.string(
-            'systematics/bias/' + dqmDirectoryAnalysisMC_pure + '/' + dqmDirectoryBgEnrichedSelection \
-           + meNames['SVfitMass'] + 'Shape' + '_' + bgEnrichedSelectionName
-        )
-    ))
+    for meName, mePath in meNames.items():
+        jobsSysBiasHist.append(cms.PSet(
+            meName_minuend = cms.string(
+                '/analysis/harvested/' + dqmDirectoryAnalysisMC_pure + '/' + dqmDirectoryAnalysis \
+                + meName + 'Shape' + '_' + 'QCDenriched'
+            ),
+            meName_subtrahend = cms.string(
+                '/template/harvested/' + dqmDirectoryData + '/' + dqmDirectoryBgEnrichedSelection \
+                + meName + 'Shape' + '_' + bgEnrichedSelectionName
+            ),
+            meName_difference = cms.string(
+                'systematics/bias/' + dqmDirectoryAnalysisMC_pure + '/' + dqmDirectoryBgEnrichedSelection \
+                + meName + 'Shape' + '_' + bgEnrichedSelectionName
+            )
+        ))
 
 process.prodSysBiasHistZtoMuTau = cms.EDAnalyzer("DQMHistSubtractor",
     config = cms.VPSet(jobsSysBiasHist)
@@ -148,34 +135,21 @@ for bgEnrichedSelectionName, dqmDirectoryBgEnrichedSelection in dqmDirectoriesBg
     dqmDirectoryBgEstMC_pure = dqmDirectoriesProcess[pureProcessBgEnrichedSelections[bgEnrichedSelectionName]]
     dqmDirectoryBgEstMC_smSum = dqmDirectoriesProcess['smSum']
 
-    jobsSysBgEnrichedSamplePurityHist.append(cms.PSet(
-        meName_minuend = cms.string(
-            '/template/harvested/' + dqmDirectoryBgEstMC_smSum + '/' + dqmDirectoryBgEnrichedSelection \
-           + meNames['visMass'] + 'Shape' + '_' + bgEnrichedSelectionName
-        ),
-        meName_subtrahend = cms.string(
-            '/template/harvested/' + dqmDirectoryBgEstMC_pure + '/' + dqmDirectoryBgEnrichedSelection \
-           + meNames['visMass'] + 'Shape' + '_' + bgEnrichedSelectionName
-        ),
-        meName_difference = cms.string(
-            'systematics/bgEnrichedSamplePurity/' + dqmDirectoryBgEstMC_pure + '/' + dqmDirectoryBgEnrichedSelection \
-           + meNames['visMass'] + 'Shape' + '_' + bgEnrichedSelectionName
-        )
-    ))
-    jobsSysBgEnrichedSamplePurityHist.append(cms.PSet(                                             
-        meName_minuend = cms.string(
-            '/template/harvested/' + dqmDirectoryBgEstMC_smSum + '/' + dqmDirectoryBgEnrichedSelection \
-           + meNames['SVfitMass'] + 'Shape' + '_' + bgEnrichedSelectionName
-        ),
-        meName_subtrahend = cms.string(
-            '/template/harvested/' + dqmDirectoryBgEstMC_pure + '/' + dqmDirectoryBgEnrichedSelection \
-           + meNames['SVfitMass'] + 'Shape' + '_' + bgEnrichedSelectionName
-        ),
-        meName_difference = cms.string(
-            'systematics/bgEnrichedSamplePurity/' + dqmDirectoryBgEstMC_pure + '/' + dqmDirectoryBgEnrichedSelection \
-           + meNames['SVfitMass'] + 'Shape' + '_' + bgEnrichedSelectionName
-        )
-    ))
+    for meName, mePath in meNames.items():
+        jobsSysBgEnrichedSamplePurityHist.append(cms.PSet(
+            meName_minuend = cms.string(
+                '/template/harvested/' + dqmDirectoryBgEstMC_smSum + '/' + dqmDirectoryBgEnrichedSelection \
+                + meName + 'Shape' + '_' + bgEnrichedSelectionName
+            ),
+            meName_subtrahend = cms.string(
+                '/template/harvested/' + dqmDirectoryBgEstMC_pure + '/' + dqmDirectoryBgEnrichedSelection \
+                + meName + 'Shape' + '_' + bgEnrichedSelectionName
+            ),
+            meName_difference = cms.string(
+                'systematics/bgEnrichedSamplePurity/' + dqmDirectoryBgEstMC_pure + '/' + dqmDirectoryBgEnrichedSelection \
+                + meName + 'Shape' + '_' + bgEnrichedSelectionName
+            )
+        ))
 
 process.prodSysBgEnrichedSamplePurityHistZtoMuTau = cms.EDAnalyzer("DQMHistSubtractor",
     config = cms.VPSet(jobsSysBgEnrichedSamplePurityHist)
@@ -190,67 +164,37 @@ process.prodSysBgEnrichedSamplePurityHistZtoMuTau = cms.EDAnalyzer("DQMHistSubtr
 jobsScaleSysHist = []
 
 for bgEnrichedSelectionName, dqmDirectoryBgEnrichedSelection in dqmDirectoriesBgEnrichedSelections.items():
-    jobsScaleSysHist.append(cms.PSet(
-        meName_input = cms.string(
-            'systematics/bias/' + dqmDirectoryBgEstMC_pure + '/' + dqmDirectoryBgEnrichedSelection \
-           + meNames['visMass'] + 'Shape' + '_' + bgEnrichedSelectionName
-        ),
-        meName_output = cms.string(
-            'systematics/bias/' + dqmDirectoryBgEstMC_pure + '/' + dqmDirectoryBgEnrichedSelection \
-           + meNames['visMass'] + '_' + bgEnrichedSelectionName
-        ),
-        meName_scaleFactor = cms.string(
-            '/template/harvested/' + dqmDirectoryData + '/' + dqmDirectoryBgEnrichedSelection \
-           + meNames['visMass'] + '_' + bgEnrichedSelectionName
-        ),
-        meType = cms.string("hist")
-    ))
-    jobsScaleSysHist.append(cms.PSet(
-        meName_input = cms.string(
-            'systematics/bias/' + dqmDirectoryBgEstMC_pure + '/' + dqmDirectoryBgEnrichedSelection \
-           + meNames['SVfitMass'] + 'Shape' + '_' + bgEnrichedSelectionName
-        ),
-        meName_output = cms.string(
-            'systematics/bias/' + dqmDirectoryBgEstMC_pure + '/' + dqmDirectoryBgEnrichedSelection \
-           + meNames['SVfitMass'] + '_' + bgEnrichedSelectionName
-        ),
-        meName_scaleFactor = cms.string(
-            '/template/harvested/' + dqmDirectoryData + '/' + dqmDirectoryBgEnrichedSelection \
-           + meNames['SVfitMass'] + '_' + bgEnrichedSelectionName
-        ),
-        meType = cms.string("hist")
-    ))
-
-    jobsScaleSysHist.append(cms.PSet(
-        meName_input = cms.string(
-            'systematics/bgEnrichedSamplePurity/' + dqmDirectoryBgEstMC_pure + '/' + dqmDirectoryBgEnrichedSelection \
-           + meNames['visMass'] + 'Shape' + '_' + bgEnrichedSelectionName
-        ),
-        meName_output = cms.string(
-            'systematics/bgEnrichedSamplePurity/' + dqmDirectoryBgEstMC_pure + '/' + dqmDirectoryBgEnrichedSelection \
-           + meNames['visMass'] + '_' + bgEnrichedSelectionName
-        ),
-        meName_scaleFactor = cms.string(
-            '/template/harvested/' + dqmDirectoryData + '/' + dqmDirectoryBgEnrichedSelection \
-           + meNames['visMass'] + '_' + bgEnrichedSelectionName
-        ),
-        meType = cms.string("hist")
-    ))
-    jobsScaleSysHist.append(cms.PSet(
-        meName_input = cms.string(
-            'systematics/bgEnrichedSamplePurity/' + dqmDirectoryBgEstMC_pure + '/' + dqmDirectoryBgEnrichedSelection \
-           + meNames['SVfitMass'] + 'Shape' + '_' + bgEnrichedSelectionName
-        ),
-        meName_output = cms.string(
-            'systematics/bgEnrichedSamplePurity/' + dqmDirectoryBgEstMC_pure + '/' + dqmDirectoryBgEnrichedSelection \
-           + meNames['SVfitMass'] + '_' + bgEnrichedSelectionName
-        ),
-        meName_scaleFactor = cms.string(
-            '/template/harvested/' + dqmDirectoryData + '/' + dqmDirectoryBgEnrichedSelection \
-           + meNames['SVfitMass'] + '_' + bgEnrichedSelectionName
-        ),
-        meType = cms.string("hist")
-    ))
+    for meName, mePath in meNames.items():
+        jobsScaleSysHist.append(cms.PSet(
+            meName_input = cms.string(
+                'systematics/bias/' + dqmDirectoryBgEstMC_pure + '/' + dqmDirectoryBgEnrichedSelection \
+                + meName + 'Shape' + '_' + bgEnrichedSelectionName
+            ),
+            meName_output = cms.string(
+                'systematics/bias/' + dqmDirectoryBgEstMC_pure + '/' + dqmDirectoryBgEnrichedSelection \
+                + meName + '_' + bgEnrichedSelectionName
+            ),
+            meName_scaleFactor = cms.string(
+                '/template/harvested/' + dqmDirectoryData + '/' + dqmDirectoryBgEnrichedSelection \
+                + meName + '_' + bgEnrichedSelectionName
+            ),
+            meType = cms.string("hist")
+        ))
+        jobsScaleSysHist.append(cms.PSet(
+            meName_input = cms.string(
+                'systematics/bgEnrichedSamplePurity/' + dqmDirectoryBgEstMC_pure + '/' + dqmDirectoryBgEnrichedSelection \
+                + meName + 'Shape' + '_' + bgEnrichedSelectionName
+            ),
+            meName_output = cms.string(
+                'systematics/bgEnrichedSamplePurity/' + dqmDirectoryBgEstMC_pure + '/' + dqmDirectoryBgEnrichedSelection \
+                + meName + '_' + bgEnrichedSelectionName
+            ),
+            meName_scaleFactor = cms.string(
+                '/template/harvested/' + dqmDirectoryData + '/' + dqmDirectoryBgEnrichedSelection \
+                + meName + '_' + bgEnrichedSelectionName
+            ),
+            meType = cms.string("hist")
+        ))
 
 process.scaleSysHistZtoMuTau = cms.EDAnalyzer("DQMHistScaler",
     config = cms.VPSet(jobsScaleSysHist)
@@ -266,55 +210,32 @@ for bgEnrichedSelectionName, dqmDirectoryBgEnrichedSelection in dqmDirectoriesBg
     dqmDirectoryData = dqmDirectoriesProcess['Data']
     dqmDirectoryBgEstMC_pure = dqmDirectoriesProcess[pureProcessBgEnrichedSelections[bgEnrichedSelectionName]]
     dqmDirectoryAnalysisMC_pure = dqmDirectoriesProcess[pureProcessBgEnrichedSelections[bgEnrichedSelectionName]]
-    
-    dumpSysHistMonitorElements.append(
-        '/analysis/harvested/' + dqmDirectoryAnalysisMC_pure + '/' + dqmDirectoryAnalysis \
-       + meNames['visMass'] + 'Shape' + '_' + 'QCDenriched'
-    )
-    dumpSysHistMonitorElements.append(
-        '/template/harvested/' + dqmDirectoryData + '/' + dqmDirectoryBgEnrichedSelection \
-       + meNames['visMass'] + 'Shape' + '_' + bgEnrichedSelectionName
-    )
-    dumpSysHistMonitorElements.append(
-        'systematics/bias/' + dqmDirectoryBgEstMC_pure + '/' + dqmDirectoryBgEnrichedSelection \
-       + meNames['visMass'] + 'Shape' + '_' + bgEnrichedSelectionName
-    )
-    dumpSysHistMonitorElements.append(
-        'systematics/bias/' + dqmDirectoryBgEstMC_pure + '/' + dqmDirectoryBgEnrichedSelection \
-       + meNames['visMass'] + '_' + bgEnrichedSelectionName
-    )
-    dumpSysHistMonitorElements.append(
-        'systematics/bgEnrichedSamplePurity/' + dqmDirectoryBgEstMC_pure + '/' + dqmDirectoryBgEnrichedSelection \
-       + meNames['visMass'] + 'Shape' + '_' + bgEnrichedSelectionName
-    )
-    dumpSysHistMonitorElements.append(
-        'systematics/bgEnrichedSamplePurity/' + dqmDirectoryBgEstMC_pure + '/' + dqmDirectoryBgEnrichedSelection \
-       + meNames['visMass'] + '_' + bgEnrichedSelectionName
-    )
-    dumpSysHistMonitorElements.append(
-        '/analysis/harvested/' + dqmDirectoryAnalysisMC_pure + '/' + dqmDirectoryAnalysis \
-       + meNames['SVfitMass'] + 'Shape' + '_' + 'QCDenriched'
-    )
-    dumpSysHistMonitorElements.append(
-        '/template/harvested/' + dqmDirectoryData + '/' + dqmDirectoryBgEnrichedSelection \
-       + meNames['SVfitMass'] + 'Shape' + '_' + bgEnrichedSelectionName
-    )
-    dumpSysHistMonitorElements.append(
-        'systematics/bias/' + dqmDirectoryBgEstMC_pure + '/' + dqmDirectoryBgEnrichedSelection \
-       + meNames['SVfitMass'] + 'Shape' + '_' + bgEnrichedSelectionName
-    )
-    dumpSysHistMonitorElements.append(
-        'systematics/bias/' + dqmDirectoryBgEstMC_pure + '/' + dqmDirectoryBgEnrichedSelection \
-       + meNames['SVfitMass'] + '_' + bgEnrichedSelectionName
-    )
-    dumpSysHistMonitorElements.append(
-        'systematics/bgEnrichedSamplePurity/' + dqmDirectoryBgEstMC_pure + '/' + dqmDirectoryBgEnrichedSelection \
-       + meNames['SVfitMass'] + 'Shape' + '_' + bgEnrichedSelectionName
-    )
-    dumpSysHistMonitorElements.append(
-        'systematics/bgEnrichedSamplePurity/' + dqmDirectoryBgEstMC_pure + '/' + dqmDirectoryBgEnrichedSelection \
-       + meNames['SVfitMass'] + '_' + bgEnrichedSelectionName
-    )
+
+    for meName, mePath in meNames.items():
+        dumpSysHistMonitorElements.append(
+            '/analysis/harvested/' + dqmDirectoryAnalysisMC_pure + '/' + dqmDirectoryAnalysis \
+            + meName + 'Shape' + '_' + 'QCDenriched'
+        )
+        dumpSysHistMonitorElements.append(
+            '/template/harvested/' + dqmDirectoryData + '/' + dqmDirectoryBgEnrichedSelection \
+            + meName + 'Shape' + '_' + bgEnrichedSelectionName
+        )
+        dumpSysHistMonitorElements.append(
+            'systematics/bias/' + dqmDirectoryBgEstMC_pure + '/' + dqmDirectoryBgEnrichedSelection \
+            + meName + 'Shape' + '_' + bgEnrichedSelectionName
+        )
+        dumpSysHistMonitorElements.append(
+            'systematics/bias/' + dqmDirectoryBgEstMC_pure + '/' + dqmDirectoryBgEnrichedSelection \
+            + meName + '_' + bgEnrichedSelectionName
+        )
+        dumpSysHistMonitorElements.append(
+            'systematics/bgEnrichedSamplePurity/' + dqmDirectoryBgEstMC_pure + '/' + dqmDirectoryBgEnrichedSelection \
+            + meName + 'Shape' + '_' + bgEnrichedSelectionName
+        )
+        dumpSysHistMonitorElements.append(
+            'systematics/bgEnrichedSamplePurity/' + dqmDirectoryBgEstMC_pure + '/' + dqmDirectoryBgEnrichedSelection \
+            + meName + '_' + bgEnrichedSelectionName
+        )
 
 process.dumpSysHistZtoMuTau = cms.EDAnalyzer("DQMDumpHistogram",
     meNames = cms.vstring(dumpSysHistMonitorElements)
@@ -425,15 +346,15 @@ process.fitZtoMuTau = cms.EDAnalyzer("TemplateHistFitter",
 ##                            )
 ##                        )
 ##                    )
-                ),
-                SVfitMass = cms.PSet(
-                    meName = cms.string(
-                        ## '/analysis/harvested/' + dqmDirectoriesProcess['Ztautau'] + '/' + dqmDirectoryAnalysis \
-                        ##+ meNames['SVfitMass'] + 'Shape'
-                        '/analysis/harvested/ZtoMuTau_from_ZmumuEmbedding' + '/' + dqmDirectoryAnalysis \
-                        + meNames['SVfitMass'] + 'Shape' + '_' + 'ZmumuEmbedding'                              
-                    )
                 )
+                #SVfitMass = cms.PSet(
+                #    meName = cms.string(
+                #        ## '/analysis/harvested/' + dqmDirectoriesProcess['Ztautau'] + '/' + dqmDirectoryAnalysis \
+                        #        ##+ meNames['SVfitMass'] + 'Shape'
+                #        '/analysis/harvested/ZtoMuTau_from_ZmumuEmbedding' + '/' + dqmDirectoryAnalysis \
+                        #        + meNames['SVfitMass'] + 'Shape' + '_' + 'ZmumuEmbedding'                              
+                #    )
+                #)
             ),    
             norm = cms.PSet(
                 initial = cms.double(1300.)
@@ -515,14 +436,14 @@ process.fitZtoMuTau = cms.EDAnalyzer("TemplateHistFitter",
                     #        )
                     #    )
                     #)
-                ),
-                SVfitMass = cms.PSet(
-                    meName = cms.string(
-                        '/template/harvested/' + dqmDirectoriesProcess['Data'] + '/' \
-                       + dqmDirectoriesBgEnrichedSelections['ZmumuMuonMisIdEnriched'] \
-                       + meNames['SVfitMass'] + 'Shape' + '_' + 'ZmumuMuonMisIdEnriched'
-                    )
                 )
+                #SVfitMass = cms.PSet(
+                #    meName = cms.string(
+                #        '/template/harvested/' + dqmDirectoriesProcess['Data'] + '/' \
+                #       + dqmDirectoriesBgEnrichedSelections['ZmumuMuonMisIdEnriched'] \
+                #       + meNames['SVfitMass'] + 'Shape' + '_' + 'ZmumuMuonMisIdEnriched'
+                #    )
+                #)
             ),    
             norm = cms.PSet(
                 initial = cms.double(35.)
@@ -543,16 +464,16 @@ process.fitZtoMuTau = cms.EDAnalyzer("TemplateHistFitter",
                     #smoothing = visMass_smoothing.clone(
                     #    pluginName = cms.string("visMassSmoothingWplusJets")
                     #)
-                ),
-                SVfitMass = cms.PSet(
-                    meName = cms.string(
-                        ## '/analysis/harvested/' + dqmDirectoriesProcess['WplusJets'] + '/' + dqmDirectoryAnalysis \
-                        ##+ meNames['SVfitMass'] + 'Shape' + '_' + 'QCDenriched'
-                        '/template/harvested/' + dqmDirectoriesProcess['Data'] + '/' \
-                       + dqmDirectoriesBgEnrichedSelections['WplusJetsEnriched'] \
-                       + meNames['SVfitMass'] + 'CorrectedShape'                                 
-                    )
-                )    
+                )
+                #SVfitMass = cms.PSet(
+                #    meName = cms.string(
+                #        ## '/analysis/harvested/' + dqmDirectoriesProcess['WplusJets'] + '/' + dqmDirectoryAnalysis \
+                #        ##+ meNames['SVfitMass'] + 'Shape' + '_' + 'QCDenriched'
+                #        '/template/harvested/' + dqmDirectoriesProcess['Data'] + '/' \
+                #       + dqmDirectoriesBgEnrichedSelections['WplusJetsEnriched'] \
+                #       + meNames['SVfitMass'] + 'CorrectedShape'                                 
+                #    )
+                #)    
             ),    
             norm = cms.PSet(
                 initial = cms.double(150.)
@@ -572,13 +493,13 @@ process.fitZtoMuTau = cms.EDAnalyzer("TemplateHistFitter",
                     #smoothing = visMass_smoothing.clone(
                     #    pluginName = cms.string("visMassSmoothingTTplusJets")
                     #)
-                ),
-                SVfitMass = cms.PSet(
-                    meName = cms.string(
-                        '/template/harvested/' + dqmDirectoriesProcess['TTplusJets'] + '/' + dqmDirectoryAnalysis \
-                       + meNames['visMass'] + 'Shape' + '_' + 'QCDenriched' 
-                    )
                 )
+                #SVfitMass = cms.PSet(
+                #    meName = cms.string(
+                #        '/template/harvested/' + dqmDirectoriesProcess['TTplusJets'] + '/' + dqmDirectoryAnalysis \
+                #       + meNames['visMass'] + 'Shape' + '_' + 'QCDenriched' 
+                #    )
+                #)
             ),    
             norm = cms.PSet(
                 initial = cms.double(10.)
@@ -598,14 +519,14 @@ process.fitZtoMuTau = cms.EDAnalyzer("TemplateHistFitter",
                     #    pluginName = cms.string("visMassSmoothingQCD"),
                     #    xMax = cms.double(150.)
                     #)
-                ),
-                SVfitMass = cms.PSet(
-                    meName = cms.string(
-                        '/template/harvested/' + dqmDirectoriesProcess['Data'] + '/' \
-                       + dqmDirectoriesBgEnrichedSelections['QCDenriched'] \
-                       + meNames['SVfitMass'] + 'Shape' + '_' + 'QCDenriched'
-                    )
                 )
+                #SVfitMass = cms.PSet(
+                #    meName = cms.string(
+                #        '/template/harvested/' + dqmDirectoriesProcess['Data'] + '/' \
+                #       + dqmDirectoriesBgEnrichedSelections['QCDenriched'] \
+                #       + meNames['SVfitMass'] + 'Shape' + '_' + 'QCDenriched'
+                #    )
+                #)
             ),    
             norm = cms.PSet(
                 initial = cms.double(410.)
@@ -622,13 +543,13 @@ process.fitZtoMuTau = cms.EDAnalyzer("TemplateHistFitter",
                     + meNames['visMass'] + 'Rebinned' + '_' + 'QCDenriched' 
 
                 )
-            ),
-            SVfitMass = cms.PSet(
-                meName = cms.string(
-                    '/analysis/harvested/' + dqmDirectoriesProcess['Data'] + '/' + 'BgEstTemplateAnalyzer_Ztautau' + '/' + dqmDirectoryAnalysis \
-                   + meNames['SVfitMass'] + 'Rebinned' + '_' + 'QCDenriched' 
-                )
             )
+            #SVfitMass = cms.PSet(
+            #    meName = cms.string(
+            #        '/analysis/harvested/' + dqmDirectoriesProcess['Data'] + '/' + 'BgEstTemplateAnalyzer_Ztautau' + '/' + dqmDirectoryAnalysis \
+            #       + meNames['SVfitMass'] + 'Rebinned' + '_' + 'QCDenriched' 
+            #    )
+            #)
         )
     ),
 
