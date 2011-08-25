@@ -64,7 +64,8 @@ process.source = cms.Source("PoolSource",
         #'file:/data1/veelken/CMSSW_3_6_x/skims/Ztautau_1_1_sXK.root'
         #'file:/data1/veelken/CMSSW_3_8_x/skims/AHtoMuTau/selEvents_AHtoMuTau_woBtag_runs145762to148058_RECO.root'
         #'file:/data1/veelken/CMSSW_3_8_x/skims/test/mcDYttPU156bx_GEN_SIM_RECO_1_1_1VV.root'
-        '/store/relval/CMSSW_4_1_3/RelValZTT/GEN-SIM-RECO/START311_V2-v1/0037/286D4A6C-C651-E011-B6AC-001A92971BBA.root'
+        #'/store/relval/CMSSW_4_1_3/RelValZTT/GEN-SIM-RECO/START311_V2-v1/0037/286D4A6C-C651-E011-B6AC-001A92971BBA.root'
+		'/store/user/jkolb/DYToTauTau_M-20_CT10_TuneZ2_7TeV-powheg-pythia-tauola/skimMuTau_413_v1/83296e62d56aa89124dd9002fb3604c1/muTauSkim_11_1_c8K.root'
     )
     #skipBadFiles = cms.untracked.bool(True) 
 )
@@ -137,6 +138,10 @@ process.load("TauAnalysis.CandidateTools.diTauPairProductionAllKinds_cff")
 replaceMETforDiTaus(process, cms.InputTag('patMETs'), cms.InputTag('patPFMETs'))
 #--------------------------------------------------------------------------------
 
+process.allMuTauPairs.doSVreco = cms.bool(False)
+process.allMuTauPairsPFtype1MET.doSVreco = cms.bool(False)
+process.allMuTauPairsLooseMuonIsolation.doSVreco = cms.bool(False)
+
 #--------------------------------------------------------------------------------
 # define analysis sequences for background enriched selections
 process.load("TauAnalysis.Configuration.analyzeZtoMuTau_cff")
@@ -159,13 +164,18 @@ removeAnalyzer(process.analyzeZtoMuTauEventsOS.analysisSequence, 'particleMultip
 removeAnalyzer(process.analyzeZtoMuTauEventsOS.analysisSequence, 'vertexHistManager')
 removeAnalyzer(process.analyzeZtoMuTauEventsOS.analysisSequence, 'triggerHistManagerForMuTau')
 removeAnalyzer(process.analyzeZtoMuTauEventsOS.analysisSequence, 'dataBinner')
+removeAnalyzer(process.analyzeZtoMuTauEventsOS.analysisSequence, 'diTauCandidateNSVfitHistManagerForMuTau')
+removeAnalyzer(process.analyzeZtoMuTauEventsOS.analysisSequence, 'diTauCandidateNSVfitVtxMultiplicityBinGridHistManager')
+removeAnalyzer(process.analyzeZtoMuTauEventsOS.analysisSequence, 'diTauCandidateNSVfitHistManagerForMuTauPFtype1MET')
+removeAnalyzer(process.analyzeZtoMuTauEventsOS.analysisSequence, 'modelBinnerForMuTauGenTauLeptonPairAcc3mZbins')
+removeAnalyzer(process.analyzeZtoMuTauEventsOS.analysisSequence, 'modelBinnerForMuTauWrtGenTauLeptonPairAcc3mZbins')
 process.diTauCandidateHistManagerForMuTau.diTauCandidateSource = cms.InputTag('selectedMuTauPairsPzetaDiffCumulative')
 process.diTauCandidateHistManagerForMuTau.visMassHypothesisSource = cms.InputTag('')
 addAnalyzer(process.analyzeZtoMuTauEventsOS, process.diTauCandidateHistManagerForMuTau, 'evtSelDiMuPairZmumuHypothesisVeto')
-process.diTauCandidateNSVfitHistManager.diTauCandidateSource = cms.InputTag('selectedMuTauPairsPzetaDiffCumulative')
-process.diTauCandidateNSVfitHistManager.nSVfitEventHypotheses = cms.PSet(
-    psKine_MEt_logM_fit = cms.string('psKine_MEt_logM_fit')
-)
+#process.diTauCandidateNSVfitHistManager.diTauCandidateSource = cms.InputTag('selectedMuTauPairsPzetaDiffCumulative')
+#process.diTauCandidateNSVfitHistManager.nSVfitEventHypotheses = cms.PSet(
+#    psKine_MEt_logM_fit = cms.string('psKine_MEt_logM_fit')
+#)
 
 process.sysUncertaintyHistManager = cms.PSet(
     pluginName = cms.string('sysUncertaintyHistManager'),
@@ -223,8 +233,8 @@ changeCut(process, "selectedPatTausLeadTrk", 'tauID("decayModeFinding") > 0.5')
 changeCut(process, "selectedPatTausLeadTrkPt", 'tauID("decayModeFinding") > 0.5')
 changeCut(process, "selectedPatTausForMuTauLeadTrk", 'tauID("decayModeFinding") > 0.5')
 changeCut(process, "selectedPatTausForMuTauLeadTrkPt", 'tauID("decayModeFinding") > 0.5')
-changeCut(process, "selectedPatTausTaNCdiscr", 'tauID("byLooseIsolation") > 0.5')
-changeCut(process, "selectedPatTausForMuTauTaNCdiscr", 'tauID("byLooseIsolation") > 0.5')                         ##  <<<<--------------- TAU ID
+changeCut(process, "selectedPatTausTaNCdiscr", 'tauID("byLooseCombinedIsolationDeltaBetaCorr") > 0.5')
+changeCut(process, "selectedPatTausForMuTauTaNCdiscr", 'tauID("byLooseCombinedIsolationDeltaBetaCorr") > 0.5')                         ##  <<<<--------------- TAU ID
 changeCut(process, "tausBgEstQCDenrichedTaNCdiscr", 'tauID("byVLooseIsolation") > 0.5 & tauID("byMediumIsolation") < 0.5')
 changeCut(process, "tausBgEstWplusJetsEnrichedTaNCdiscr", 'tauID("byVLooseIsolation") > 0.5 & tauID("byMediumIsolation") < 0.5')
 #changeCut(process, "tausBgEstWplusJetsEnrichedFRweightedTaNCdiscrNotApplied", "tauID('byHPSvloose') > -1000. & tauID('byHPSmedium') < +1000.")
@@ -276,6 +286,10 @@ process.p = cms.Path(
 process.q = cms.Path(process.dataQualityFilters)
 
 process.schedule = cms.Schedule(process.q, process.p)
+
+process.options = cms.untracked.PSet(
+   wantSummary = cms.untracked.bool(True)
+)
 
 #--------------------------------------------------------------------------------
 # import utility function for applyting Z-recoil corrections to MET
