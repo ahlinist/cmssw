@@ -39,8 +39,10 @@ process.ecalTimeTree.fileName = 'EcalTimeTree'
 process.ecalTimeTree.barrelEcalRecHitCollection = cms.InputTag("reducedEcalRecHitsEB","")
 process.ecalTimeTree.endcapEcalRecHitCollection = cms.InputTag("reducedEcalRecHitsEE","")
 process.ecalTimeTree.barrelBasicClusterCollection = cms.InputTag("hybridSuperClusters","hybridBarrelBasicClusters")
+# if you want cleaned EB BC use this: process.ecalTimeTree.barrelBasicClusterCollection = cms.InputTag("hybridSuperClusters","uncleanOnlyHybridBarrelBasicClusters")
 process.ecalTimeTree.endcapBasicClusterCollection = cms.InputTag("multi5x5BasicClusters","multi5x5EndcapBasicClusters")
 process.ecalTimeTree.barrelSuperClusterCollection = cms.InputTag("correctedHybridSuperClusters","")
+#  if you want cleaned EB SC use this: process.ecalTimeTree.barrelSuperClusterCollection = cms.InputTag("hybridSuperClusters","uncleanOnlyHybridSuperClusters")
 process.ecalTimeTree.endcapSuperClusterCollection = cms.InputTag("correctedMulti5x5SuperClustersWithPreshower","")
 process.ecalTimeTree.muonCollection = cms.InputTag("muons")
 process.ecalTimeTree.runNum = 999999
@@ -48,7 +50,7 @@ process.ecalTimeTree.runNum = 999999
 
 process.dumpEvContent = cms.EDAnalyzer("EventContentAnalyzer")
 
-process.maxEvents = cms.untracked.PSet(input = cms.untracked.int32(1000))
+process.maxEvents = cms.untracked.PSet(input = cms.untracked.int32(100))
 
 process.p = cms.Path(
     # process.dumpEvContent  *
