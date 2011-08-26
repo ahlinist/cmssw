@@ -34,6 +34,38 @@ void Sigma(){
   
 }
 
+void SigmaDATAvsMC(){
+  gStyle->SetOptStat(00000000000);
+  TFile *f = new TFile("SigmaDATA_PtInt.root");
+  TH1D *hSigma1S;
+  hSigma1S = (TH1D*)gFile->Get("hSigma1S");
+  
+  TFile *f1 = new TFile("FitParametersMC_1D_PtInt.root");
+  TH1D *hSigma1S_mc;
+  hSigma1S_mc = (TH1D*)gFile->Get("hSigma1S"); 
+  
+  TCanvas *c5 = new TCanvas("c5","c5",800,600);
+  hSigma1S->SetTitle("");
+  hSigma1S->GetYaxis()->SetTitleOffset(1.2);
+  hSigma1S->GetYaxis()->SetTitle("Mass Resolution [MeV/c^{2}]");
+  hSigma1S->GetXaxis()->SetTitle("|y^{#Upsilon}|");
+  hSigma1S->SetMinimum(0.);
+  hSigma1S->SetMarkerStyle(8);
+  hSigma1S_mc->SetMarkerColor(2);
+  hSigma1S_mc->SetMarkerStyle(8);
+  hSigma1S->Draw("e");
+  hSigma1S_mc->Draw("samee");
+  legg = new TLegend(0.6,0.2,0.8,0.4);
+  legg->SetFillStyle(0); legg->SetBorderSize(0); legg->SetTextSize(0.08); legg->SetTextFont(132);
+  legge = legg->AddEntry(hSigma1S,  "Data ","p"); legge->SetTextColor(kBlack);
+  legge = legg->AddEntry(hSigma1S_mc,  "MC ","p"); legge->SetTextColor(kRed);
+  legg->Draw();
+  //c5->SaveAs("sigma1S_DATAvsMC.pdf");
+  
+}
+
+
+
 void SigmaPt(){
   gStyle->SetOptStat(00000000000);
   TFile *f = new TFile("SigmaDATA_RapInt_1SBin.root");
@@ -64,4 +96,34 @@ void SigmaPt(){
   
 }
 
+void SigmaPtDATAvsMC(){
+  gStyle->SetOptStat(00000000000);
+  TFile *f = new TFile("SigmaDATA_RapInt_1SBin.root");
+  TH1D *hSigma1S;
+  hSigma1S = (TH1D*)gFile->Get("hSigma1S");
+  
+  TFile *f1 = new TFile("FitParametersMC_1D_RapInt.root");
+  TH1D *hSigma1S_mc;
+  hSigma1S_mc = (TH1D*)gFile->Get("hSigma1S"); 
+  
+  TCanvas *c6 = new TCanvas("c6","c6",800,600);
+  hSigma1S->SetTitle("");
+  hSigma1S->GetYaxis()->SetTitleOffset(1.2);
+  hSigma1S->GetYaxis()->SetTitle("Mass Resolution [MeV/c^{2}]");
+  hSigma1S->GetXaxis()->SetTitle("p_{T}^{#Upsilon}");
+  hSigma1S->SetMinimum(0.);
+  hSigma1S->SetMarkerStyle(8);
+  hSigma1S_mc->SetMarkerColor(2);
+  hSigma1S_mc->SetMarkerStyle(8);
+  hSigma1S_mc->SetBinError(24,0.002);
+  hSigma1S->Draw("e");
+  hSigma1S_mc->Draw("samee");
+  legg = new TLegend(0.6,0.2,0.8,0.4);
+  legg->SetFillStyle(0); legg->SetBorderSize(0); legg->SetTextSize(0.08); legg->SetTextFont(132);
+  legge = legg->AddEntry(hSigma1S,  "Data ","p"); legge->SetTextColor(kBlack);
+  legge = legg->AddEntry(hSigma1S_mc,  "MC ","p"); legge->SetTextColor(kRed);
+  legg->Draw();
+  //c6->SaveAs("sigma1S_ptDATAvsMC.pdf");
+  
+}
 
