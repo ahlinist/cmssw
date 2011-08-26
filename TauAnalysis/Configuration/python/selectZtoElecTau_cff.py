@@ -21,10 +21,8 @@ cfgTrigger = cms.PSet(
     pluginType = cms.string('PATTriggerEventSelector'),
     src = cms.InputTag('patTriggerEvent'),
 	hltAcceptPaths = cms.vstring(
-        'HLT_Ele10_SW_L1R',
-        'HLT_Ele10_SW_L1R_v2',
-        'HLT_Ele12_SW_TightEleIdIsol_L1R',
-        'HLT_Ele12_SW_TighterEleId_L1R_v2'
+    'HLT_Ele15_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_LooseIsoPFTau20_v2'
+
     )
 )
 
