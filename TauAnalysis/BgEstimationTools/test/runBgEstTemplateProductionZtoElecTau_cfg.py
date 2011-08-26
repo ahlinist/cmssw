@@ -11,7 +11,7 @@ process.load('FWCore/MessageService/MessageLogger_cfi')
 #process.MessageLogger.cerr.FwkReport.reportEvery = 100
 process.MessageLogger.cerr.FwkReport.reportEvery = 1
 #process.MessageLogger.cerr.threshold = cms.untracked.string('INFO')
-#process.MessageLogger.suppressInfo = cms.untracked.vstring()
+process.MessageLogger.suppressInfo = cms.untracked.vstring()
 process.MessageLogger.suppressWarning = cms.untracked.vstring("PATTriggerProducer",)
 process.load('Configuration/StandardSequences/GeometryIdeal_cff')
 process.load('Configuration/StandardSequences/MagneticField_cff')
@@ -29,9 +29,9 @@ process.load("TauAnalysis.Configuration.selectZtoElecTau_cff")
 process.load("TauAnalysis.RecoTools.filterDataQuality_cfi")
 
 process.load("FWCore.MessageLogger.MessageLogger_cfi")
-process.options = cms.untracked.PSet(
- wantSummary = cms.untracked.bool( True )
-)
+#process.options = cms.untracked.PSet(
+# wantSummary = cms.untracked.bool( True )
+#)
 #process.Timing = cms.Service("Timing")
 
 
@@ -43,16 +43,16 @@ process.saveZtoElecTauPlots = cms.EDAnalyzer("DQMSimpleFileSaver",
 
 process.maxEvents = cms.untracked.PSet(
     #input = cms.untracked.int32(-1) 
-    input = cms.untracked.int32(1000)    
+    input = cms.untracked.int32(500)    
 )
 
 process.source = cms.Source("PoolSource",
-                          fileNames = cms.untracked.vstring()
+                          fileNames = cms.untracked.vstring("file:patTuple.root")
     #skipEvents=cms.untracked.uint32(1421)
     #skipBadFiles = cms.untracked.bool(True) 
 )
 
-process.options = cms.untracked.PSet( SkipEvent = cms.untracked.vstring('ProductNotFound') )
+#process.options = cms.untracked.PSet( SkipEvent = cms.untracked.vstring('ProductNotFound') )
 
 #--------------------------------------------------------------------------------
 #  directories pointing to different input samples stored at the ND Tier 3
@@ -62,16 +62,16 @@ process.options = cms.untracked.PSet( SkipEvent = cms.untracked.vstring('Product
 #dir = "/pscratch/ndcms/bestman/storage/cms/store/user/lantonel/DYToTauTau_M-20_CT10_TuneZ2_7TeV-powheg-pythia-tauola/patSkim_413_v3/c9dbc6c7165a3d4f1d089077c1253e67/"
 #dir = "/pscratch/ndcms/bestman/storage/cms/store/user/lantonel/DYToTauTau_M-20_CT10_TuneZ2_7TeV-powheg-pythia-tauola/patSkim_416_v1/bb744712881680cf83750ebaff93c394/"
 #dir = "/pscratch/ndcms/bestman/storage/cms/store/user/jkolb/TauPlusX/skimElecTau_413_v1/eae887ba91c6c27e2f0c00f8aee7bf0a/"
-dir = "/pscratch/ndcms/bestman/storage/cms/store/user/jkolb/DYToTauTau_M-20_CT10_TuneZ2_7TeV-powheg-pythia-tauola/skimElecTau_413_v2/eae887ba91c6c27e2f0c00f8aee7bf0a/"
+#dir = "/pscratch/ndcms/bestman/storage/cms/store/user/jkolb/DYToTauTau_M-20_CT10_TuneZ2_7TeV-powheg-pythia-tauola/skimElecTau_413_v2/eae887ba91c6c27e2f0c00f8aee7bf0a/"
+#dir = "/pscratch/ndcms/bestman/storage/cms/store/user/jkolb/TauPlusX/skimElecTau_423_May10ReReco_v3/2da1106465614f2b4aae43c293e2ca66/"
+dir = "/pscratch/ndcms/bestman/storage/cms/store/user/jkolb/DYToTauTau_M-20_TuneZ2_7TeV-pythia6-tauola/skimElecTau_423_v1/2453a4eaae124a4a3fe9f365dc31e11f/"
+
 
 #--------------------------------------------------------------------------------
 
 
-for file in os.listdir(dir):
-    process.source.fileNames.extend(cms.untracked.vstring('file:' + dir + file))
-#process.source.fileNames = cms.untracked.vstring(
-#    'file:/data2/veelken/CMSSW_4_1_x/skims/ZtoMuTau/DYtautau_spring11_powhegZ2_1_1_XvY.root'
-#)
+#for file in os.listdir(dir):
+#    process.source.fileNames.extend(cms.untracked.vstring('file:' + dir + file))
 
 process.load("TauAnalysis.RecoTools.recoVertexSelectionForElecTau_cff")
 
@@ -105,8 +105,8 @@ replaceMETforDiTaus(process, cms.InputTag('patMETs'), cms.InputTag('patPFMETs'))
 #--------------------------------------------------------------------------------
 #choose type of Taus
 from PhysicsTools.PatAlgos.tools.tauTools import *
-#switchToPFTauHPS(process)
-switchToPFTauHPSpTaNC(process)
+switchToPFTauHPS(process)
+#switchToPFTauHPSpTaNC(process)
 
 process.cleanPatTaus.preselection = cms.string('')
 
@@ -115,8 +115,8 @@ process.cleanPatTaus.preselection = cms.string('')
 process.patJetCorrections.remove(process.patJetCorrFactors)
 process.patJets.jetCorrFactorsSource = cms.VInputTag()
 process.patJets.addJetCorrFactors = cms.bool(False)
-#process.producePatTupleZtoElecTauSpecific.remove(process.pfMEtType1and2corrected)
-#process.producePatTupleZtoElecTauSpecific.remove(process.patPFtype1METs)
+process.producePatTupleZtoElecTauSpecific.remove(process.pfMEtType1and2corrected)
+process.producePatTupleZtoElecTauSpecific.remove(process.patPFtype1METs)
 
 #--------------------------------------------------------------------------------
 
@@ -134,8 +134,8 @@ process.eleIsoDepositEcalFromHits.ExtractorPSet.barrelEcalHits = cms.InputTag("r
 
 #--------------------------------------------------------------------------------
 
-from PhysicsTools.PatAlgos.tools.trigTools import switchOnTrigger
-switchOnTrigger(process, hltProcess = 'REDIGI311X', outputModule = '')
+#from PhysicsTools.PatAlgos.tools.trigTools import switchOnTrigger
+#switchOnTrigger(process, hltProcess = 'REDIGI311X', outputModule = '')
 
 #--------------------------------------------------------------------------------
 
@@ -164,14 +164,14 @@ process.selectPatMuons = patMuonSelConfigurator.configure(process = process)
 
 
 process.p = cms.Path(
-    process.producePatTuple
-    + process.producePatTupleZtoElecTauSpecific
-    + process.selectPrimaryVertexForElecTau
-    + process.bgEstZtautauEnrichedAnalysisSequence
-    + process.bgEstWplusJetsEnrichedAnalysisSequence
-    + process.bgEstZeeElectronMisIdEnrichedAnalysisSequence
-    + process.bgEstQCDenrichedAnalysisSequence
-    + process.saveZtoElecTauPlots
+##    process.producePatTuple
+     process.producePatTupleZtoElecTauSpecific
+     + process.selectPrimaryVertexForElecTau
+     + process.bgEstZtautauEnrichedAnalysisSequence
+     + process.bgEstWplusJetsEnrichedAnalysisSequence
+     + process.bgEstZeeElectronMisIdEnrichedAnalysisSequence
+     + process.bgEstQCDenrichedAnalysisSequence
+     + process.saveZtoElecTauPlots
 )
 
 #process.q = cms.Path(process.dataQualityFilters)
@@ -184,3 +184,7 @@ process.p = cms.Path(
 # print-out all python configuration parameter information
 #print process.dumpPython()
 
+## from TauAnalysis.Configuration.cfgOptionMethods import _setTriggerBits
+## _setTriggerBits(process,{'HLT_Ele15_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_LooseIsoPFTau15_v1':'160431:MIN-161016:MAX',
+##                          'HLT_Ele15_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_LooseIsoPFTau15_v2':'161217:MIN-163261:MAX',
+##                          'HLT_Ele15_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_LooseIsoPFTau15_v4':'163269:MIN-163757:MAX'})

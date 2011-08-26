@@ -41,7 +41,7 @@ process.maxEvents = cms.untracked.PSet(
 )
 
 process.source = cms.Source("PoolSource",
-    fileNames = cms.untracked.vstring("file:/pscratch/ndcms/bestman/storage/cms/store/user/jkolb/DYToEE_M-20_CT10_TuneZ2_7TeV-powheg-pythia/skimElecTau_413_v1/eae887ba91c6c27e2f0c00f8aee7bf0a/elecTauSkim_1_1_MiG.root"),
+    fileNames = cms.untracked.vstring(),
 
     #skipEvents=cms.untracked.uint32(1421)
 
@@ -49,7 +49,7 @@ process.source = cms.Source("PoolSource",
     #skipBadFiles = cms.untracked.bool(True) 
 )
 
-process.options = cms.untracked.PSet( SkipEvent = cms.untracked.vstring('ProductNotFound') )
+#process.options = cms.untracked.PSet( SkipEvent = cms.untracked.vstring('ProductNotFound') )
 
 #--------------------------------------------------------------------------------
 #  directories pointing to different input samples stored at the ND Tier 3
@@ -59,7 +59,8 @@ process.options = cms.untracked.PSet( SkipEvent = cms.untracked.vstring('Product
 #dir = "/pscratch/ndcms/bestman/storage/cms/store/user/jkolb/DYToTauTau_M-20_CT10_TuneZ2_7TeV-powheg-pythia-tauola/skimElecTau_413_v2/eae887ba91c6c27e2f0c00f8aee7bf0a/"
 
 #dir = "/pscratch/ndcms/bestman/storage/cms/store/user/jkolb/DYToEE_M-10To20_TuneZ2_7TeV-pythia6/skimElecTau_413_v1/eae887ba91c6c27e2f0c00f8aee7bf0a/"
-dir = "/pscratch/ndcms/bestman/storage/cms/store/user/jkolb/DYToEE_M-20_CT10_TuneZ2_7TeV-powheg-pythia/skimElecTau_413_v1/eae887ba91c6c27e2f0c00f8aee7bf0a/"
+#dir = "/pscratch/ndcms/bestman/storage/cms/store/user/jkolb/DYToEE_M-20_CT10_TuneZ2_7TeV-powheg-pythia/skimElecTau_413_v1/eae887ba91c6c27e2f0c00f8aee7bf0a/"
+dir = "/pscratch/ndcms/bestman/storage/cms/store/user/jkolb/DYToTauTau_M-20_TuneZ2_7TeV-pythia6-tauola/skimElecTau_423_v1/2453a4eaae124a4a3fe9f365dc31e11f/"
 
 
 
@@ -69,8 +70,8 @@ dir = "/pscratch/ndcms/bestman/storage/cms/store/user/jkolb/DYToEE_M-20_CT10_Tun
 #--------------------------------------------------------------------------------
 
 
-#for file in os.listdir(dir):
-#    process.source.fileNames.extend(cms.untracked.vstring('file:' + dir + file))
+for file in os.listdir(dir):
+    process.source.fileNames.extend(cms.untracked.vstring('file:' + dir + file))
  
 
 from TauAnalysis.RecoTools.recoVertexSelection_cff import *
@@ -97,13 +98,15 @@ from TauAnalysis.Configuration.tools.metTools import *
 # set Boolean swich to true in order to apply type-1 corrections
 addPFMet(process, correct = False)
 
+process.load("TauAnalysis.CandidateTools.diTauPairProductionAllKinds_cff")
+replaceMETforDiTaus(process, cms.InputTag('patMETs'), cms.InputTag('patPFMETs'))
 
 
 #--------------------------------------------------------------------------------
 #choose type of Taus
 from PhysicsTools.PatAlgos.tools.tauTools import *
-#switchToPFTauHPS(process)
-switchToPFTauHPSpTaNC(process)
+switchToPFTauHPS(process)
+#switchToPFTauHPSpTaNC(process)
 
 
 process.cleanPatTaus.preselection = cms.string('')
@@ -113,6 +116,7 @@ process.cleanPatTaus.preselection = cms.string('')
 process.patJetCorrections.remove(process.patJetCorrFactors)
 process.patJets.jetCorrFactorsSource = cms.VInputTag()
 process.patJets.addJetCorrFactors = cms.bool(False)
+
 #--------------------------------------------------------------------------------
 
 
@@ -123,8 +127,8 @@ process.eleIsoDepositEcalFromHits.ExtractorPSet.barrelEcalHits = cms.InputTag("r
 
 #--------------------------------------------------------------------------------
 
-from PhysicsTools.PatAlgos.tools.trigTools import switchOnTrigger
-switchOnTrigger(process, hltProcess = 'REDIGI311X', outputModule = '')
+#from PhysicsTools.PatAlgos.tools.trigTools import switchOnTrigger
+#switchOnTrigger(process, hltProcess = 'REDIGI311X', outputModule = '')
 
 #--------------------------------------------------------------------------------
 
@@ -132,12 +136,14 @@ switchOnTrigger(process, hltProcess = 'REDIGI311X', outputModule = '')
 #switchToData(process)
 
 
+process.load("TauAnalysis.RecoTools.recoVertexSelectionForElecTau_cff")
 
 
 
 process.p = cms.Path(
-    process.selectPrimaryVertex
-    + process.producePatTuple
+    process.producePatTuple
+    #+ process.selectPrimaryVertexForElecTau
+
     #+ process.producePatTupleZtoElecTauSpecific
     #+ process.savePatTuple
 )
@@ -150,5 +156,5 @@ process.end = cms.EndPath(process.savePatTuple)
 
 
 # print-out all python configuration parameter information
-print process.dumpPython()
+#print process.dumpPython()
 
