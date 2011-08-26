@@ -24,10 +24,6 @@ dqmDirectories_processes = {
     'Ztautau' : {
 	'template' : 'ZtautauSum',
         'analysis' : 'ZtautauSum'    },
-    'Ztautau_from_ZeeEmbedding' : {
-	'template' : 'ZtautauSum',
-        'analysis' : 'ZtautauSum'
-    },    
     'Zee' : {
 	'template' : 'ZeeSum',
         'analysis' : 'ZeeSum'
@@ -40,15 +36,15 @@ dqmDirectories_processes = {
 	'template' : 'qcdSum',
         'analysis' : 'qcdSum'
     },
-    'PhotonPlusJets' : {
-	'template' : 'photonPlusJetsSum',
-	'analysis' : 'photonPlusJetsSum'
-    },
+##     'PhotonPlusJets' : {
+## 	'template' : 'photonPlusJetsSum',
+## 	'analysis' : 'photonPlusJetsSum'
+##     },
     
-    'smSum' : {
-	'template' : 'smSum',
-         'analysis' : 'smSum'
-    },
+##     'smSum' : {
+## 	'template' : 'smSum',
+##          'analysis' : 'smSum'
+##     },
     'Data' : {
 	'template' : 'data',
         'analysis' : 'data'
@@ -63,13 +59,14 @@ dqmDirectories_control = {
 	'ZeeElectronMisIdEnriched' : 'BgEstTemplateAnalyzer_ZeeElectronMisIdEnriched/afterDiTauCandidateZeeHypothesisVetoBgEstZeeElectronMisIdEnriched/',
 	'WplusJetsEnriched'        : 'BgEstTemplateAnalyzer_WplusJetsEnriched/afterDiTauCandidateZeeHypothesisVetoBgEstWplusJetsEnriched/',
 	#'TTplusJetsEnriched'      : 'BgEstTemplateAnalyzer_TTplusJetsEnriched/afterDiTauCandidateZeeHypothesisVetoBgEstTTplusJetsEnriched/',
-	'PhotonPlusJetsEnriched'   : 'BgEstTemplateAnalyzer_PhotonPlusJetsEnriched/afterDiTauCandidateZeeHypothesisVetoBgEstPhotonPlusJetsEnriched/',
+	#'PhotonPlusJetsEnriched'   : 'BgEstTemplateAnalyzer_PhotonPlusJetsEnriched/afterDiTauCandidateZeeHypothesisVetoBgEstPhotonPlusJetsEnriched/',
 	'QCDenriched'              : 'BgEstTemplateAnalyzer_QCDenriched/afterDiTauCandidateZeeHypothesisVetoBgEstQCDenriched/'
 }
 
 plotTitles = {
     'visMass'   : "M_{vis}(Electron + Tau)",
-    'SVfitMass' : "M(Electron + Tau), SVfit method",
+    'NSVfitMassInt' : "M(Electron + Tau), NSVfit (int) method",
+    'NSVfitMassFit' : "M(Electron + Tau), NSVfit (fit) method",
     'pfMEt'     : "Particle-Flow MEt",
     'visPt'     : "P_{T}(Electron + Tau)",
     'electronPt'    : "Electron P_{T}", 
@@ -82,7 +79,8 @@ plotTitles = {
 
 xAxes = {
     'visMass'   : 'Mass',
-    'SVfitMass' : 'Mass',
+    'NSVfitMassInt' : 'Mass',
+    'NSVfitMassFit' : 'Mass',    
     'pfMEt'     : 'Pt',
     'visPt'     : 'Pt',
     'electronPt'    : 'Pt',
@@ -95,24 +93,26 @@ xAxes = {
 
 rebinning_control = {
     'ZtautauEnriched' : {
-	'visMass'   : 1,
-#        'SVfitMass' : 1
+	'visMass'   : 2,
+        'NSVfitMassInt' : 2,
+        'NSVfitMassFit' : 2	
     }, 
-    'ZeeJetMisIdEnriched' : {
-        'visMass'   : 1,
-        #'SVfitMass' : 5,
-        #'pfMEt'     : 3,
-	#'visPt'     : 2,
-        #'electronPt'    : 3, 
-        #'electronEta'   : 3, 
-        #'electronPhi'   : 3, 
-        #'tauPt'     : 3, 
-        #'tauEta'    : 3, 
-        #'tauPhi'    : 3
-    },
+##     'ZeeJetMisIdEnriched' : {
+##         'visMass'   : 2,
+##         #'NSVfitMass' : 5,
+##         #'pfMEt'     : 3,
+## 	#'visPt'     : 2,
+##         #'electronPt'    : 3, 
+##         #'electronEta'   : 3, 
+##         #'electronPhi'   : 3, 
+##         #'tauPt'     : 3, 
+##         #'tauEta'    : 3, 
+##         #'tauPhi'    : 3
+##     },
     'ZeeElectronMisIdEnriched' : {
-        'visMass'   : 1,
-#        'SVfitMass' : 1,
+        'visMass'   : 2,
+        'NSVfitMassInt' : 2,
+        'NSVfitMassFit' : 2	
 ##         'pfMEt'     : 3,
 ## 	'visPt'     : 2,
 ##         'electronPt'    : 3, 
@@ -123,8 +123,9 @@ rebinning_control = {
 ##         'tauPhi'    : 3
     },
     'WplusJetsEnriched' : {
-        'visMass'   : 1,
-#        'SVfitMass' : 2,
+        'visMass'   : 2,
+        'NSVfitMassInt' : 2,
+        'NSVfitMassFit' : 2	
 ##         'pfMEt'     : 3,
 ## 	'visPt'     : 2,
 ##         'electronPt'    : 3, 
@@ -136,7 +137,7 @@ rebinning_control = {
     },
 ##     'TTplusJetsEnriched' : {
 ##         'visMass'   : 5,
-##         'SVfitMass' : 5,
+##         'NSVfitMass' : 5,
 ##         'pfMEt'     : 5,
 ##     	'visPt'     : 5,
 ##         'electronPt'    : 3, 
@@ -147,8 +148,9 @@ rebinning_control = {
 ##         'tauPhi'    : 3	
 ##     },
     'QCDenriched'   : {
-        'visMass'   : 1,
-#        'SVfitMass' : 2,
+        'visMass'   : 2,
+        'NSVfitMassInt' : 2,
+        'NSVfitMassFit' : 2	
 ##         'pfMEt'     : 3,
 ## 	'visPt'     : 2,
 ##         'electronPt'    : 3, 
@@ -158,31 +160,36 @@ rebinning_control = {
 ##         'tauEta'    : 3, 
 ##         'tauPhi'    : 3
     },
-    'PhotonPlusJetsEnriched'   : {
-        'visMass'   : 1,
-#        'SVfitMass' : 2,
-##         'pfMEt'     : 3,
-## 	'visPt'     : 2,
-##         'electronPt'    : 3, 
-##         'electronEta'   : 3, 
-##         'electronPhi'   : 3, 
-##         'tauPt'     : 3, 
-##         'tauEta'    : 3, 
-##         'tauPhi'    : 3
-    }    
+##     'PhotonPlusJetsEnriched'   : {
+##         'visMass'   : 2,
+## #        'NSVfitMass' : 2,
+## ##         'pfMEt'     : 3,
+## ## 	'visPt'     : 2,
+## ##         'electronPt'    : 3, 
+## ##         'electronEta'   : 3, 
+## ##         'electronPhi'   : 3, 
+## ##         'tauPt'     : 3, 
+## ##         'tauEta'    : 3, 
+## ##         'tauPhi'    : 3
+##     }  
+    
 }    
 
 pureProcessBgEnrichedSelections = {
 	#'ZeeJetMisIdEnriched'  : 'Zee',
     'ZeeElectronMisIdEnriched' : 'Zee',
     'WplusJetsEnriched'        : 'WplusJets',
-    'PhotonPlusJetsEnriched'   : 'PhotonPlusJets',
-    'QCDenriched'              : 'QCD'
+#    'PhotonPlusJetsEnriched'   : 'PhotonPlusJets',
+    'QCDenriched'              : 'QCD',
+    'ZtautauEnriched' : 'Ztautau',
+    
 }
 
 meNames = {
     'visMass'   : 'DiTauCandidateQuantities/VisMass',
-#    'SVfitMass' : 'DiTauCandidateSVfitQuantities/psKine_MEt_ptBalance/Mass',
+    'NSVfitMassInt' : 'DiTauCandidateNSVfitQuantities/psKine_MEt_logM_int/Mass',
+    'NSVfitMassFit' : 'DiTauCandidateNSVfitQuantities/psKine_MEt_logM_fit/Mass',
+    
 ##     'pfMEt'     : 'PFMEtQuantities/MEtPt',
 ##     'visPt'     : 'DiTauCandidateQuantities/VisPt',
 ##     'electronPt'    : 'ElectronQuantities/ElectronPt',
@@ -201,22 +208,22 @@ meNames = {
 meNameMapping = {}
 
 for processName in dqmDirectories_processes.keys():
-	#print "processName: ",processName
+	print "processName: ",processName
 	meNameMapping[processName] = {}
 	for selectionName in dqmDirectories_control.keys():
-		#print "\tselectionName: ",selectionName
-		if processName == 'Ztautau_from_ZeeEmbedding' and selectionName != 'ZtautauEnriched':
-			continue
+		print "\tselectionName: ",selectionName
+## 		if processName == 'Ztautau_from_ZeeEmbedding' and selectionName != 'ZtautauEnriched':
+## 			continue
 		meNameMapping[processName][selectionName] = {}
 		for selectionType in [ "analysis", "template" ]:
-			#print "\t\tselectionType: ",selectionType
-			if selectionName == 'ZtautauEnriched' and selectionType != 'analysis':
-				continue
-			if processName == 'diBoson' and selectionType == 'analysis':
-				continue
+			print "\t\tselectionType: ",selectionType
+## 			if selectionName == 'ZtautauEnriched' and selectionType != 'analysis':
+## 				continue
+## 			if processName == 'diBoson' and selectionType == 'analysis':
+## 				continue
 			meNameMapping[processName][selectionName][selectionType] = {}
 			for distName in meNames.keys():
-				#print "\t\t\tdistName: ",distName
+				print "\t\t\tdistName: ",distName
 				# check if histogram exists;
 				# CV: a histogram is assumed to exist it has an entry in the rebinning options dictionary
 				if rebinning_control[selectionName].get(distName) is not None:
@@ -224,15 +231,15 @@ for processName in dqmDirectories_processes.keys():
 					meName_distribution = None
 					if selectionType == 'analysis':
 						meName_distribution = \
-								'/analysis/harvested/' + dqmDirectories_processes[processName]['analysis'] \
+								'/harvested/' + dqmDirectories_processes[processName]['analysis'] \
 								+ '/' + dqmDirectory_analysis + meNames[distName]
 					else:
 						meName_distribution = \
-								'/template/harvested/' + dqmDirectories_processes[processName]['template'] \
+								'/harvested/' + dqmDirectories_processes[processName]['template'] \
 								+ '/' + dqmDirectories_control[selectionName] + meNames[distName]
 					meNameMapping[processName][selectionName][selectionType][distName]['distribution'] = meName_distribution
 
-					#print "\t\t\t\tmeName_distribution: ", meName_distribution
+					print "\t\t\t\tmeName_distribution: ", meName_distribution
            
 # overwrite meNames for mass distributions in ZeeJetMisIdEnriched and ZeeElectronMisIdEnriched selections
 # (require generator level matching to quark/gluon jets and electrons on analysis level)
@@ -242,12 +249,12 @@ for processName in dqmDirectories_processes.keys():
 ## meNameMapping['Zee']['ZeeElectronMisIdEnriched']['analysis']['visMass']['distribution'] = \
 ##   '/analysis/DQMData/harvested/' + dqmDirectories_processes['Zee']['analysis'] \
 ##  + '/' + dqmDirectory_analysis + 'DiTauCandidateQuantities/VisMassGenLeg2Electron'
-##meNameMapping['Zmumu']['ZmumuJetMisIdEnriched']['analysis']['SVfitMass']['distribution'] = \
+##meNameMapping['Zmumu']['ZmumuJetMisIdEnriched']['analysis']['NSVfitMass']['distribution'] = \
 ##  '/analysis/DQMData/harvested/' + dqmDirectories_processes['Zmumu']['analysis'] \
-## + '/' + dqmDirectory_analysis + 'DiTauCandidateSVfitQuantities/psKine_MEt_ptBalance/MassGenLeg2Jet'
-##meNameMapping['Zmumu']['ZmumuElectronMisIdEnriched']['analysis']['SVfitMass']['distribution'] = \
+## + '/' + dqmDirectory_analysis + 'DiTauCandidateNSVfitQuantities/psKine_MEt_ptBalance/MassGenLeg2Jet'
+##meNameMapping['Zmumu']['ZmumuElectronMisIdEnriched']['analysis']['NSVfitMass']['distribution'] = \
 ##  '/analysis/DQMData/harvested/' + dqmDirectories_processes['Zmumu']['analysis'] \
-## + '/' + dqmDirectory_analysis + 'DiTauCandidateSVfitQuantities/psKine_MEt_ptBalance/MassGenLeg2Electron'
+## + '/' + dqmDirectory_analysis + 'DiTauCandidateNSVfitQuantities/psKine_MEt_ptBalance/MassGenLeg2Electron'
 
 for processName, meNameMapping_process in meNameMapping.items():
 	for selectionName, meNameMapping_selectionName in meNameMapping_process.items():
@@ -269,7 +276,7 @@ for processName, meNameMapping_process in meNameMapping.items():
 process.loadTemplateHistZtoElecTau_Ztautau = cms.EDAnalyzer("DQMFileLoader",
     Ztautau = cms.PSet(
         inputFileNames = cms.vstring(
-            'file:/afs/crc.nd.edu/user/l/lantonel/CMSSW_4_1_3/src/TauAnalysis/BgEstimationTools/test/Run01/plotsZtoElecTau_bgEstTemplate_all.root'
+            'file:/afs/crc.nd.edu/user/l/lantonel/CMSSW_4_2_4_patch1/src/TauAnalysis/BgEstimationTools/test/Run01/plotsZtoElecTau_bgEstTemplate_all.root'
         ),
         scaleFactor = cms.double(1.),
         dqmDirectory_store = cms.string(
@@ -287,10 +294,12 @@ process.loadTemplateHistZtoElecTau_Ztautau = cms.EDAnalyzer("DQMFileLoader",
 process.loadTemplateHistZtoElecTau = cms.EDAnalyzer("DQMFileLoader",
     Ztautau = cms.PSet(
         inputFileNames = cms.vstring(
-	     'file:/afs/crc.nd.edu/user/l/lantonel/CMSSW_4_1_3/src/TauAnalysis/BgEstimationTools/test/Run01/plotsZtoElecTau_bgEstTemplate_all.root'
+	     'file:/afs/crc.nd.edu/user/l/lantonel/CMSSW_4_2_4_patch1/src/TauAnalysis/BgEstimationTools/test/Run01/plotsZtoElecTau_bgEstTemplate_all.root'
         ),
         scaleFactor = cms.double(1.),
-        dqmDirectory_store = cms.string('/template')
+#        dqmDirectory_store = cms.string('/template')
+        dqmDirectory_store = cms.string('')
+	
     )
 )
 
@@ -299,15 +308,16 @@ process.loadTemplateHistZtoElecTau = cms.EDAnalyzer("DQMFileLoader",
 # and observed in (pseudo)data in events passing final analysis selection criteria
 #--------------------------------------------------------------------------------
 
-process.loadAnalysisHistZtoElecTau = cms.EDAnalyzer("DQMFileLoader",
-    data = cms.PSet(
-        inputFileNames = cms.vstring(
-	     'file:/afs/crc.nd.edu/user/l/lantonel/CMSSW_4_1_3/src/TauAnalysis/BgEstimationTools/test/Run01/plotsZtoElecTau_bgEstTemplate_all.root'
-        ),
-        scaleFactor = cms.double(1.),
-        dqmDirectory_store = cms.string('/analysis')
-    )
-)
+## process.loadAnalysisHistZtoElecTau = cms.EDAnalyzer("DQMFileLoader",
+##     data = cms.PSet(
+##         inputFileNames = cms.vstring(
+## 	     'file:/afs/crc.nd.edu/user/l/lantonel/CMSSW_4_2_4_patch1/src/TauAnalysis/BgEstimationTools/test/Run01/plotsZtoElecTau_bgEstTemplate_all.root'
+##         ),
+##         scaleFactor = cms.double(1.),
+##         dqmDirectory_store = cms.string('/analysis')
+##     )
+## )
+
 
 #--------------------------------------------------------------------------------
 # combine two bins into one,
@@ -354,27 +364,61 @@ for selectionName, jobsHistRebinning_selectionName in jobsHistRebinning.items():
 # (cf. CMS AN-2010/088)
 #--------------------------------------------------------------------------------
 
-#meNameMapping['Data']['WplusJetsEnriched']['template']['visMass']['corrDistribution'] = \
-#  meNameMapping['Data']['WplusJetsEnriched']['template']['visMass']['distribution'] + "Corrected"
-#meNameMapping['Data']['WplusJetsEnriched']['template']['SVfitMass']['corrDistribution'] = \
-#  meNameMapping['Data']['WplusJetsEnriched']['template']['SVfitMass']['distribution'] + "Corrected"
+meNameMapping['Data']['WplusJetsEnriched']['template']['visMass']['corrDistribution'] = \
+  meNameMapping['Data']['WplusJetsEnriched']['template']['visMass']['distribution'] + "Corrected"
+meNameMapping['Data']['WplusJetsEnriched']['template']['NSVfitMassInt']['corrDistribution'] = \
+  meNameMapping['Data']['WplusJetsEnriched']['template']['NSVfitMassInt']['distribution'] + "Corrected"
+meNameMapping['Data']['WplusJetsEnriched']['template']['NSVfitMassFit']['corrDistribution'] = \
+  meNameMapping['Data']['WplusJetsEnriched']['template']['NSVfitMassFit']['distribution'] + "Corrected"
 
-## process.correctTemplateHistZtoElecTau = cms.EDAnalyzer("DQMHistBiasCorrection",
-##     config = cms.VPSet(
-##         cms.PSet(
-##             meName_uncorrected = cms.string(meNameMapping['Data']['WplusJetsEnriched']['template']['visMass']['rebinned']),
-##             meName_corrected = cms.string(meNameMapping['Data']['WplusJetsEnriched']['template']['visMass']['corrDistribution']),
-##             meName_corrNumerator = cms.string(meNameMapping['WplusJets']['WplusJetsEnriched']['analysis']['visMass']['rebinned']),
-##             meName_corrDenominator = cms.string(meNameMapping['WplusJets']['WplusJetsEnriched']['template']['visMass']['rebinned'])
-##         ),
-##         cms.PSet(
-##             meName_uncorrected = cms.string(meNameMapping['Data']['WplusJetsEnriched']['template']['SVfitMass']['rebinned']),
-##             meName_corrected = cms.string(meNameMapping['Data']['WplusJetsEnriched']['template']['SVfitMass']['corrDistribution']),
-##             meName_corrNumerator = cms.string(meNameMapping['WplusJets']['WplusJetsEnriched']['analysis']['SVfitMass']['rebinned']),
-##             meName_corrDenominator = cms.string(meNameMapping['WplusJets']['WplusJetsEnriched']['template']['SVfitMass']['rebinned'])
-##         )
-##     )
-## ) 
+meNameMapping['Data']['ZeeElectronMisIdEnriched']['template']['visMass']['corrDistribution'] = \
+  meNameMapping['Data']['ZeeElectronMisIdEnriched']['template']['visMass']['distribution'] + "Corrected"
+meNameMapping['Data']['ZeeElectronMisIdEnriched']['template']['NSVfitMassInt']['corrDistribution'] = \
+  meNameMapping['Data']['ZeeElectronMisIdEnriched']['template']['NSVfitMassInt']['distribution'] + "Corrected"
+meNameMapping['Data']['ZeeElectronMisIdEnriched']['template']['NSVfitMassFit']['corrDistribution'] = \
+  meNameMapping['Data']['ZeeElectronMisIdEnriched']['template']['NSVfitMassFit']['distribution'] + "Corrected"
+
+
+process.correctTemplateHistZtoElecTau = cms.EDAnalyzer("DQMHistBiasCorrection",
+    config = cms.VPSet(
+        cms.PSet(
+            meName_uncorrected = cms.string(meNameMapping['Data']['WplusJetsEnriched']['template']['visMass']['rebinned']),
+            meName_corrected = cms.string(meNameMapping['Data']['WplusJetsEnriched']['template']['visMass']['corrDistribution']),
+            meName_corrNumerator = cms.string(meNameMapping['WplusJets']['ZtautauEnriched']['analysis']['visMass']['rebinned']),
+            meName_corrDenominator = cms.string(meNameMapping['WplusJets']['WplusJetsEnriched']['template']['visMass']['rebinned'])
+        ),
+        cms.PSet(
+            meName_uncorrected = cms.string(meNameMapping['Data']['WplusJetsEnriched']['template']['NSVfitMassInt']['rebinned']),
+            meName_corrected = cms.string(meNameMapping['Data']['WplusJetsEnriched']['template']['NSVfitMassInt']['corrDistribution']),
+            meName_corrNumerator = cms.string(meNameMapping['WplusJets']['WplusJetsEnriched']['analysis']['NSVfitMassInt']['rebinned']),
+            meName_corrDenominator = cms.string(meNameMapping['WplusJets']['WplusJetsEnriched']['template']['NSVfitMassInt']['rebinned'])
+        ),
+        cms.PSet(
+            meName_uncorrected = cms.string(meNameMapping['Data']['WplusJetsEnriched']['template']['NSVfitMassFit']['rebinned']),
+            meName_corrected = cms.string(meNameMapping['Data']['WplusJetsEnriched']['template']['NSVfitMassFit']['corrDistribution']),
+            meName_corrNumerator = cms.string(meNameMapping['WplusJets']['WplusJetsEnriched']['analysis']['NSVfitMassFit']['rebinned']),
+            meName_corrDenominator = cms.string(meNameMapping['WplusJets']['WplusJetsEnriched']['template']['NSVfitMassFit']['rebinned'])
+        ),
+        cms.PSet(
+            meName_uncorrected = cms.string(meNameMapping['Data']['ZeeElectronMisIdEnriched']['template']['visMass']['rebinned']),
+            meName_corrected = cms.string(meNameMapping['Data']['ZeeElectronMisIdEnriched']['template']['visMass']['corrDistribution']),
+            meName_corrNumerator = cms.string(meNameMapping['Zee']['ZtautauEnriched']['analysis']['visMass']['rebinned']),
+            meName_corrDenominator = cms.string(meNameMapping['Zee']['ZeeElectronMisIdEnriched']['template']['visMass']['rebinned'])
+        ),
+        cms.PSet(
+            meName_uncorrected = cms.string(meNameMapping['Data']['ZeeElectronMisIdEnriched']['template']['NSVfitMassInt']['rebinned']),
+            meName_corrected = cms.string(meNameMapping['Data']['ZeeElectronMisIdEnriched']['template']['NSVfitMassInt']['corrDistribution']),
+            meName_corrNumerator = cms.string(meNameMapping['Zee']['ZeeElectronMisIdEnriched']['analysis']['NSVfitMassInt']['rebinned']),
+            meName_corrDenominator = cms.string(meNameMapping['Zee']['ZeeElectronMisIdEnriched']['template']['NSVfitMassInt']['rebinned'])
+        ),
+        cms.PSet(
+            meName_uncorrected = cms.string(meNameMapping['Data']['ZeeElectronMisIdEnriched']['template']['NSVfitMassFit']['rebinned']),
+            meName_corrected = cms.string(meNameMapping['Data']['ZeeElectronMisIdEnriched']['template']['NSVfitMassFit']['corrDistribution']),
+            meName_corrNumerator = cms.string(meNameMapping['Zee']['ZeeElectronMisIdEnriched']['analysis']['NSVfitMassFit']['rebinned']),
+            meName_corrDenominator = cms.string(meNameMapping['Zee']['ZeeElectronMisIdEnriched']['template']['NSVfitMassFit']['rebinned'])
+        )	
+    )
+) 
 
 
 #--------------------------------------------------------------------------------
@@ -382,10 +426,20 @@ for selectionName, jobsHistRebinning_selectionName in jobsHistRebinning.items():
 # and different types of background events
 #--------------------------------------------------------------------------------
 
-## meNameMapping['Data']['WplusJetsEnriched']['template']['visMass']['corrTemplate'] = \
-##   meNameMapping['Data']['WplusJetsEnriched']['template']['visMass']['distribution'] + "CorrectedShape"
-## meNameMapping['Data']['WplusJetsEnriched']['template']['SVfitMass']['corrTemplate'] = \
-##   meNameMapping['Data']['WplusJetsEnriched']['template']['SVfitMass']['distribution'] + "CorrectedShape"
+meNameMapping['Data']['WplusJetsEnriched']['template']['visMass']['corrTemplate'] = \
+  meNameMapping['Data']['WplusJetsEnriched']['template']['visMass']['distribution'] + "CorrectedShape"
+meNameMapping['Data']['WplusJetsEnriched']['template']['NSVfitMassInt']['corrTemplate'] = \
+  meNameMapping['Data']['WplusJetsEnriched']['template']['NSVfitMassInt']['distribution'] + "CorrectedShape"
+meNameMapping['Data']['WplusJetsEnriched']['template']['NSVfitMassFit']['corrTemplate'] = \
+  meNameMapping['Data']['WplusJetsEnriched']['template']['NSVfitMassFit']['distribution'] + "CorrectedShape"
+
+meNameMapping['Data']['ZeeElectronMisIdEnriched']['template']['visMass']['corrTemplate'] = \
+  meNameMapping['Data']['ZeeElectronMisIdEnriched']['template']['visMass']['distribution'] + "CorrectedShape"
+meNameMapping['Data']['ZeeElectronMisIdEnriched']['template']['NSVfitMassInt']['corrTemplate'] = \
+  meNameMapping['Data']['ZeeElectronMisIdEnriched']['template']['NSVfitMassInt']['distribution'] + "CorrectedShape"
+meNameMapping['Data']['ZeeElectronMisIdEnriched']['template']['NSVfitMassFit']['corrTemplate'] = \
+  meNameMapping['Data']['ZeeElectronMisIdEnriched']['template']['NSVfitMassFit']['distribution'] + "CorrectedShape"
+
 
 jobsHistNormalization = []
 
@@ -398,11 +452,25 @@ for processName, meNameMapping_process in meNameMapping.items():
                     meName_output = cms.string(meNameMapping_distName['template'])
                 ))
 
-## for distName in [ "visMass", "SVfitMass"]:
-##     jobsHistNormalization.append(cms.PSet(
-##         meName_input = cms.string(meNameMapping['Data']['WplusJetsEnriched']['template'][distName]['corrDistribution']),
-##         meName_output = cms.string(meNameMapping['Data']['WplusJetsEnriched']['template'][distName]['corrTemplate'])
-##     ))
+for distName in [ "visMass", "NSVfitMassInt", "NSVfitMassFit"]:
+    jobsHistNormalization.append(cms.PSet(
+        meName_input = cms.string(meNameMapping['Data']['WplusJetsEnriched']['template'][distName]['corrDistribution']),
+        meName_output = cms.string(meNameMapping['Data']['WplusJetsEnriched']['template'][distName]['corrTemplate'])
+    ))
+
+for distName in [ "visMass", "NSVfitMassInt", "NSVfitMassFit"]:
+    jobsHistNormalization.append(cms.PSet(
+        meName_input = cms.string(meNameMapping['Data']['ZeeElectronMisIdEnriched']['template'][distName]['corrDistribution']),
+        meName_output = cms.string(meNameMapping['Data']['ZeeElectronMisIdEnriched']['template'][distName]['corrTemplate'])
+    ))    
+
+    
+## jobsHistNormalization.append(
+##     cms.PSet(
+##         meName_input = cms.string(meNameMapping['Data']['WplusJetsEnriched']['template']["visMass"]['corrDistribution']),
+##         meName_output = cms.string(meNameMapping['Data']['WplusJetsEnriched']['template']["visMass"]['corrTemplate'])
+##     )
+## )
     
 process.normalizeHistZtoElecTau = cms.EDAnalyzer("DQMHistNormalizer",
     config = cms.VPSet(jobsHistNormalization),
@@ -442,7 +510,7 @@ process.integrateHistZtoElecTau = cms.EDAnalyzer("DQMHistIntegrator",
 ##     selectionType = 'template'
 ##     if meNameMapping_selectionName_data.get(selectionType) is not None:
 ##         meNameMapping_selectionType_data = meNameMapping_selectionName_data[selectionType]
-##         for distName in [ "visMass", "SVfitMass", "pfMEt" ]:
+##         for distName in [ "visMass", "NSVfitMass", "pfMEt" ]:
 ##             if meNameMapping_selectionType_data.get(distName) is not None:
 ##                 meNameMapping_distName_data = meNameMapping_selectionType_data[distName]
                    
@@ -483,7 +551,7 @@ drawAnalysisHistConfiguratorZtoElecTauZmumuEmbedding = drawTemplateHistConfigura
 
 process.plotTemplateHistZtoElecTauIntegrated = cms.Sequence()
 
-meNameMapping_mcSMsum = meNameMapping['smSum']
+#meNameMapping_mcSMsum = meNameMapping['smSum']
 meNameMapping_data = meNameMapping['Data']
 for selectionName, meNameMapping_selectionName_data in meNameMapping_data.items():
     print "selectionName: ",selectionName
@@ -501,7 +569,7 @@ for selectionName, meNameMapping_selectionName_data in meNameMapping_data.items(
 		#print meNameMapping_distName_data['template']
                 drawTemplateHistConfiguratorZtoElecTau.add(
                     meNames = [
-                        meNameMapping_mcSMsum[selectionName][selectionType][distName]['template'],
+#                        meNameMapping_mcSMsum[selectionName][selectionType][distName]['template'],
                         meNameMapping_mcPureProcess[selectionName][selectionType][distName]['template'],
                         meNameMapping_distName_data['template']
                     ],
@@ -512,7 +580,7 @@ for selectionName, meNameMapping_selectionName_data in meNameMapping_data.items(
                 if meNameMapping_distName_data.get('compatibility') is not None:
                     plotHistZtoElecTauIntegrated = configurePlotZtoElecTauIntegrated(
     	                meNameMapping_distName_data['template'],
-    	                meNameMapping_mcSMsum[selectionName][selectionType][distName]['template'],
+#    	                meNameMapping_mcSMsum[selectionName][selectionType][distName]['template'],
                         meNameMapping_distName_data['compatibility'],
                         "%s_%s" % (selectionName, distName),
 	                "%s: %s" % (selectionName, plotTitles[distName]),
@@ -522,12 +590,13 @@ for selectionName, meNameMapping_selectionName_data in meNameMapping_data.items(
                     setattr(process, plotHistZtoElecTauIntegratedName, plotHistZtoElecTauIntegrated)
 	            process.plotTemplateHistZtoElecTauIntegrated += plotHistZtoElecTauIntegrated
 
-                # configure histograms for Data|bgEst vs. MC(pure|analysis) comparisson
+                # configure histograms for Data|bgEst vs. MC(pure|analysis) comparison
                 # (showing possible bias on mass shape caused by event selection criteria applied in analysis)
                 drawAnalysisHistConfiguratorZtoElecTauData.add(
                     meNames = [
                         meNameMapping_distName_data['template'],
-                        meNameMapping_mcPureProcess[selectionName]['analysis'][distName]['template']
+                        meNameMapping_mcPureProcess[selectionName]['analysis'][distName]['template'],
+			
                     ],
                     name = ("%s_%s" % (selectionName, distName)),
                     title = ("%s: %s" % (selectionName, plotTitles[distName]))
@@ -537,22 +606,45 @@ for selectionName, meNameMapping_selectionName_data in meNameMapping_data.items(
                 # (showing effect of impurities in background enriched control regions)
                 drawAnalysisHistConfiguratorZtoElecTauMC.add(
                     meNames = [
-                        meNameMapping_mcSMsum[selectionName][selectionType][distName]['template'],
+#                        meNameMapping_mcSMsum[selectionName][selectionType][distName]['template'],
+			                        meNameMapping_distName_data['template'],
+                        meNameMapping_mcPureProcess[selectionName]['template'][distName]['template'],			
                         meNameMapping_mcPureProcess[selectionName]['analysis'][distName]['template']
+			
                     ],
                     name = ("%s_%s" % (selectionName, distName)),
                     title = ("%s: %s" % (selectionName, plotTitles[distName]))
                 )
 
-## for distName in [ "visMass", "SVfitMass"]:
-##     drawAnalysisHistConfiguratorZtoElecTauData.add(
-##         meNames = [
-##             meNameMapping_data['WplusJetsEnriched']['template'][distName]['corrTemplate'],
-##             meNameMapping['WplusJets']['WplusJetsEnriched']['analysis'][distName]['template']
+for distName in [ "visMass", "NSVfitMassInt", "NSVfitMassFit" ]:
+    drawAnalysisHistConfiguratorZtoElecTauData.add(
+        meNames = [
+            meNameMapping_data['WplusJetsEnriched']['template'][distName]['corrTemplate'],
+            meNameMapping['WplusJets']['WplusJetsEnriched']['analysis'][distName]['template']
+        ],
+        name = ("WplusJetsEnriched_%s_corrected" % distName),
+        title = ("WplusJetsEnriched: %s, corrected" % plotTitles[distName])
+    )
+
+for distName in [ "visMass", "NSVfitMassInt", "NSVfitMassFit" ]:
+    drawAnalysisHistConfiguratorZtoElecTauData.add(
+        meNames = [
+            meNameMapping_data['ZeeElectronMisIdEnriched']['template'][distName]['corrTemplate'],
+            meNameMapping['Zee']['ZeeElectronMisIdEnriched']['analysis'][distName]['template']
+        ],
+        name = ("ZeeElectronMisIdEnriched_%s_corrected" % distName),
+        title = ("ZeeElectronMisIdEnriched: %s, corrected" % plotTitles[distName])
+    )    
+
+## drawAnalysisHistConfiguratorZtoElecTauData.add(
+## 	meNames = [
+##             meNameMapping_data['WplusJetsEnriched']['template']["visMass"]['corrTemplate'],
+##             meNameMapping['WplusJets']['WplusJetsEnriched']['analysis']["visMass"]['template']
 ##         ],
-##         name = ("WplusJetsEnriched_%s_corrected" % distName),
-##         title = ("WplusJetsEnriched: %s, corrected" % plotTitles[distName])
-##     )
+##         name = ("WplusJetsEnriched_visMass_corrected"),
+##         title = ("WplusJetsEnriched: M_{vis}(Electron + Tau), corrected")
+## )
+		
 
 	#drawAnalysisHistConfiguratorZtoElecTauZmumuEmbedding.add(
 	#    meNames = [
@@ -628,9 +720,9 @@ for selectionName, meNameMapping_selectionName_data in meNameMapping_data.items(
                 QCD = plotHistZtoElecTauStacked.processes.QCD.clone(
                     dqmDirectory = cms.string('/template/harvested/' + dqmDirectories_processes['QCD']['template'])
                 ),
-		PhotonPlusJets = plotHistZtoElecTauStacked.processes.PhotonPlusJets.clone(
-		    dqmDirectory = cms.string('/template/harvested/' + dqmDirectories_processes['PhotonPlusJets']['template'])
-		),
+## 		PhotonPlusJets = plotHistZtoElecTauStacked.processes.PhotonPlusJets.clone(
+## 		    dqmDirectory = cms.string('/template/harvested/' + dqmDirectories_processes['PhotonPlusJets']['template'])
+## 		),
                 Data = plotHistZtoElecTauStacked.processes.Data.clone(
                     dqmDirectory = cms.string('/template/harvested/' + dqmDirectories_processes['Data']['template'])
                 )
@@ -643,6 +735,7 @@ for selectionName, meNameMapping_selectionName_data in meNameMapping_data.items(
 
         process.plotAnalysisHistZtoElecTauStacked += dqmHistPlotterModule
     
+
 process.saveBgEstTemplateHistZtoElecTau = cms.EDAnalyzer("DQMSimpleFileSaver",
     outputFileName = cms.string(
         getHarvestingFilePath('ZtoElecTau_bgEstTemplate') + '/' + 'bgEstTemplateHistZtoElecTau_skimmed.root'
@@ -650,22 +743,23 @@ process.saveBgEstTemplateHistZtoElecTau = cms.EDAnalyzer("DQMSimpleFileSaver",
 	#'skim.root'
     ),
     outputCommands = cms.vstring(
-#        'drop *',
-        'keep *',
+        'drop *',
+#        'keep *',
 	
 ##         'keep /analysis/harvested/*/zElecTauAnalyzerOS/afterEvtSelDiTauCandidateForElecTauZeroCharge/*',
 ##         'keep /analysis/harvested/ZtoElecTau_from_ZmumuEmbedding/*',                                      
-##         'keep /template/harvested/ZtautauSum/*',
+         'keep *ZtautauSum/*',
+         'keep *ZeeSum/*',	
 ##         'keep /template/harvested/Ztautau_from_ZmumuEmbedding/*',
 ##         'keep /template/harvested/Zmumu/*',
 ##         'keep /template/harvested/Zmumu_powheg/*',
-##         'keep /template/harvested/qcdSum/*',
+         'keep *qcdSum/*',
 ##         'keep /template/harvested/WplusJets_madgraph/*',
-##         'keep /template/harvested/WplusJetsSum/*',
+         'keep *WplusJets_*',
 ##         'keep /template/harvested/TTplusJets/*',
 ##         'keep /template/harvested/TTplusJets_madgraph/*',
 ##         'keep /template/harvested/VVsum/*',
-##         'keep /template/harvested/data/*'
+         'keep */data/*'
     )
 )
 
@@ -674,21 +768,21 @@ process.dumpDQMStore = cms.EDAnalyzer("DQMStoreDump")
 process.p = cms.Path(
 	#process.loadTemplateHistZtoElecTau_Ztautau
 	process.loadTemplateHistZtoElecTau
-	+ process.loadAnalysisHistZtoElecTau
+	#+ process.loadAnalysisHistZtoElecTau
    #+ process.dumpDQMStore
    + process.rebinHistZtoElecTau
-   #+ process.correctTemplateHistZtoElecTau
+   + process.correctTemplateHistZtoElecTau
    + process.normalizeHistZtoElecTau
    + process.integrateHistZtoElecTau 
    #+ process.compKolmogorovProbZtoElecTau
    ##+ process.dumpDQMStore 
-    + process.plotTemplateHistZtoElecTau
+   # + process.plotTemplateHistZtoElecTau
    #+ process.plotTemplateHistZtoElecTauIntegrated
-   + process.plotAnalysisHistZtoElecTauData
+   #+ process.plotAnalysisHistZtoElecTauData
    + process.plotAnalysisHistZtoElecTauMC
    #+ process.plotAnalysisHistZtoElecTauZmumuEmbedding    
-   + process.plotAnalysisHistZtoElecTauStacked
-   + process.saveBgEstTemplateHistZtoElecTau 
+   #+ process.plotAnalysisHistZtoElecTauStacked
+   #+ process.saveBgEstTemplateHistZtoElecTau 
 )
 
 # print-out all python configuration parameter information
