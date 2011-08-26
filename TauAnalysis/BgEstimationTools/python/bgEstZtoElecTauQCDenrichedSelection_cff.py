@@ -30,8 +30,8 @@ electronsBgEstQCDenrichedPt = copy.deepcopy(electronsBgEstZtautauEnrichedPt)
 electronsBgEstQCDenrichedIso = copy.deepcopy(electronsBgEstZtautauEnrichedIso)
 electronsBgEstQCDenrichedIso.sumPtMinEB = cms.double(0.15)
 electronsBgEstQCDenrichedIso.sumPtMaxEB = cms.double(0.30)
-electronsBgEstQCDenrichedIso.sumPtMinEE = cms.double(0.15)
-electronsBgEstQCDenrichedIso.sumPtMaxEE = cms.double(0.30)
+electronsBgEstQCDenrichedIso.sumPtMinEE = cms.double(0.08)
+electronsBgEstQCDenrichedIso.sumPtMaxEE = cms.double(0.18)
 
 
 # require electron to not be from a photon conversion 
@@ -80,7 +80,7 @@ tausBgEstQCDenrichedLeadTrkPt = copy.deepcopy(tausBgEstZtautauEnrichedLeadTrkPt)
 
 # require tau candidate to pass TaNC discriminator
 tausBgEstQCDenrichedIso = copy.deepcopy(tausBgEstZtautauEnrichedIso)
-tausBgEstQCDenrichedIso.cut = cms.string('tauID("byHPSvloose") > 0.5 & tauID("byHPSmedium") < 0.5')
+tausBgEstQCDenrichedIso.cut = cms.string('tauID("byVLooseCombinedIsolationDeltaBetaCorr") > 0.5 & tauID("byMediumCombinedIsolationDeltaBetaCorr") < 0.5')
 
 # require tau candidate to pass electron veto
 tausBgEstQCDenrichedElectronVeto = copy.deepcopy(tausBgEstZtautauEnrichedElectronVeto)
@@ -553,7 +553,7 @@ analyzeEventsBgEstQCDenriched = cms.EDAnalyzer("GenericAnalyzer",
         cms.PSet(
             filter = cms.string('tauIsoCutBgEstQCDenriched'),
 #            title = cms.string('Tau TaNC by 1%'),
-            title = cms.string('Tau TaNC by Very Loose Isolation'),            
+            title = cms.string('Tau Iso by Very Loose Isolation'),            
         ),
         cms.PSet(
             analyzers = cms.vstring('electronHistManagerForElecTauBgEstQCDenriched',
