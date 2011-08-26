@@ -8,6 +8,6 @@ namespace reco {
 
     typedef TrackFullCloneSelectorBase< ::TrackAssociatedWithPVSelector > TrackAssociatedWithPVSelector;
 
-    DEFINE_FWK_MODULE(TrackAssociatedWithPVSelector);
+    //DEFINE_FWK_MODULE(TrackAssociatedWithPVSelector);
   }
 }
