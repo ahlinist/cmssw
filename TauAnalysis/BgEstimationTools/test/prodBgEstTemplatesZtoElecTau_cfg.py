@@ -1,6 +1,7 @@
 import FWCore.ParameterSet.Config as cms
 
 from TauAnalysis.Configuration.recoSampleDefinitionsZtoElecTau_grid_cfi import recoSampleDefinitionsZtoElecTau
+from TauAnalysis.Configuration.recoSampleDefinitionsAHtoElecTau_grid_cfi import recoSampleDefinitionsAHtoElecTau
 from TauAnalysis.Configuration.makePlots2_grid import makePlots
 from TauAnalysis.Configuration.userRegistry import getHarvestingFilePath, getJobId
 
@@ -20,7 +21,7 @@ inputFilePath = getHarvestingFilePath(channel)
 jobId = getJobId(channel)
 #jobId = 1
 
-makePlots(process, channel = channel, samples = recoSampleDefinitionsZtoElecTau,
+makePlots(process, channel = channel, samples = recoSampleDefinitionsAHtoElecTau,
           inputFilePath = inputFilePath, jobId = jobId,
           analyzer_drawJobConfigurator_indOutputFileName_sets = [
 ##                [ 'BgEstTemplateAnalyzer_ZeeJetMisIdEnriched' ],
@@ -60,7 +61,7 @@ def configureDQMDumpFilterStatisticsTable(dqmDirectoriesProcess, dqmDirectoryFil
 dqmDirectoriesProcess = {
     'Ztautau'        : 'ZtautauSum',
     'Zee'            : 'ZeeSum',
-    'WplusJets'      : 'WplusJets_madgraph_T3',
+    'WplusJets'      : 'WplusJets_madgraph_Pat',
     'QCD'            : 'qcdSum',
     'PhotonPlusJets' : 'photonPlusJetsSum',
     'Data'           : 'data'
@@ -85,9 +86,10 @@ process.dumpDQMStore = cms.EDAnalyzer("DQMStoreDump")
 process.dumpZtoElecTauBgEstTemplates = cms.Sequence(
     #process.dumpDQMStore
     process.dumpZtoElecTau_bgEstZtautauEnriched
-    + process.dumpZtoElecTau_bgEstZeeJetMisIdEnriched + process.dumpZtoElecTau_bgEstZeeElectronMisIdEnriched
+#    + process.dumpZtoElecTau_bgEstZeeJetMisIdEnriched
+    + process.dumpZtoElecTau_bgEstZeeElectronMisIdEnriched
     + process.dumpZtoElecTau_bgEstWplusJetsEnriched
-    + process.dumpZtoElecTau_bgEstPhotonPlusJetsEnriched
+#    + process.dumpZtoElecTau_bgEstPhotonPlusJetsEnriched
     + process.dumpZtoElecTau_bgEstQCDenriched
 )    
 #--------------------------------------------------------------------------------
