@@ -76,7 +76,7 @@ tausBgEstWplusJetsEnrichedLeadTrkPt = copy.deepcopy(tausBgEstZtautauEnrichedLead
 
 # require tau candidate to pass TaNC discriminator
 tausBgEstWplusJetsEnrichedIso = copy.deepcopy(tausBgEstZtautauEnrichedIso)
-tausBgEstWplusJetsEnrichedIso.cut = cms.string('tauID("byHPSvloose") > 0.5 & tauID("byHPSmedium") < 0.5')
+tausBgEstWplusJetsEnrichedIso.cut = cms.string('tauID("byVLooseCombinedIsolationDeltaBetaCorr") > 0.5 & tauID("byMediumCombinedIsolationDeltaBetaCorr") < 0.5')
 
 
 # require tau candidate to pass electron veto
