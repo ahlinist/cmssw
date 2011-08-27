@@ -185,26 +185,34 @@ void tnpReader2::MCTruth(int mode){
       pTrack = fpEvt->getRecTrack(it);
       
       if ( pTrack->fMCID == 13 ){
-	if ( (pTrack->fPlab.Perp() <= 20.) && (pTrack->fPlab.Perp() >= 3.) && (pTrack->fPlab.Eta() <= 2.4) && (pTrack->fPlab.Eta() >= -2.4)){
+	if ( (pTrack->fPlab.Perp() <= 50.) && (pTrack->fPlab.Perp() >= 3.) && (pTrack->fPlab.Eta() <= 2.4) && (pTrack->fPlab.Eta() >= -2.4)){
+	  if ( ((TMath::Abs(pTrack->fPlab.Eta()) <= 1.2) && (pTrack->fPlab.Perp() > 4.)) || ((TMath::Abs(pTrack->fPlab.Eta()) >= 1.2) && (pTrack->fPlab.Perp() > 3.))){
 	  ((TH2D*)fpHistFile->Get("tEtaPt_neg"))->Fill(pTrack->fPlab.Eta() , pTrack->fPlab.Perp());
+	  }
 	}
 	
 	if ( (pTrack->fMuID & 0x1<< MUTYPE1) && (pTrack->fMuID & 0x1<< MUTYPE2)){
 	//if ( (pTrack->fMuID & 6) == 6){
-	  if ( (pTrack->fPlab.Perp() <= 20.) && (pTrack->fPlab.Perp() >= 3.) && (pTrack->fPlab.Eta() <= 2.4) && (pTrack->fPlab.Eta() >= -2.4)){
-	    ((TH2D*)fpHistFile->Get("mEtaPt_neg"))->Fill(pTrack->fPlab.Eta() , pTrack->fPlab.Perp());
+	  if ( (pTrack->fPlab.Perp() <= 50.) && (pTrack->fPlab.Perp() >= 3.) && (pTrack->fPlab.Eta() <= 2.4) && (pTrack->fPlab.Eta() >= -2.4)){
+	    if ( ((TMath::Abs(pTrack->fPlab.Eta()) <= 1.2) && (pTrack->fPlab.Perp() > 4.)) || ((TMath::Abs(pTrack->fPlab.Eta()) >= 1.2) && (pTrack->fPlab.Perp() > 3.))){
+	      ((TH2D*)fpHistFile->Get("mEtaPt_neg"))->Fill(pTrack->fPlab.Eta() , pTrack->fPlab.Perp());
+	    }
 	  }
 	}
       }     
       
       if ( pTrack->fMCID == -13 ){
-	if ( (pTrack->fPlab.Perp() <= 20.) && (pTrack->fPlab.Perp() >= 3.) && (pTrack->fPlab.Eta() <= 2.4) && (pTrack->fPlab.Eta() >= -2.4)){
-	  ((TH2D*)fpHistFile->Get("tEtaPt_pos"))->Fill(pTrack->fPlab.Eta() , pTrack->fPlab.Perp());
+	if ( (pTrack->fPlab.Perp() <= 50.) && (pTrack->fPlab.Perp() >= 3.) && (pTrack->fPlab.Eta() <= 2.4) && (pTrack->fPlab.Eta() >= -2.4)){
+	  if ( ((TMath::Abs(pTrack->fPlab.Eta()) <= 1.2) && (pTrack->fPlab.Perp() > 4.)) || ((TMath::Abs(pTrack->fPlab.Eta()) >= 1.2) && (pTrack->fPlab.Perp() > 3.))){
+	    ((TH2D*)fpHistFile->Get("tEtaPt_pos"))->Fill(pTrack->fPlab.Eta() , pTrack->fPlab.Perp());
+	  }
 	}
 	
 	if ( (pTrack->fMuID & 0x1<< MUTYPE1) && (pTrack->fMuID & 0x1<< MUTYPE2) ){
-	  if ( (pTrack->fPlab.Perp() <= 20.) && (pTrack->fPlab.Perp() >= 3.) && (pTrack->fPlab.Eta() <= 2.4) && (pTrack->fPlab.Eta() >= -2.4)){
-	    ((TH2D*)fpHistFile->Get("mEtaPt_pos"))->Fill(pTrack->fPlab.Eta() , pTrack->fPlab.Perp());
+	  if ( (pTrack->fPlab.Perp() <= 50.) && (pTrack->fPlab.Perp() >= 3.) && (pTrack->fPlab.Eta() <= 2.4) && (pTrack->fPlab.Eta() >= -2.4)){
+	    if ( ((TMath::Abs(pTrack->fPlab.Eta()) <= 1.2) && (pTrack->fPlab.Perp() > 4.)) || ((TMath::Abs(pTrack->fPlab.Eta()) >= 1.2) && (pTrack->fPlab.Perp() > 3.))){
+	      ((TH2D*)fpHistFile->Get("mEtaPt_pos"))->Fill(pTrack->fPlab.Eta() , pTrack->fPlab.Perp());
+	    }
 	  }
 	}
       } 
@@ -214,27 +222,36 @@ void tnpReader2::MCTruth(int mode){
   if ( mode == 2 ){ // For Trigger
     for (int it = 0; it < fpEvt->nRecTracks(); ++it) {
       pTrack = fpEvt->getRecTrack(it);
+      if ( !isPathFired(HLTPATH_PROBE) ) continue;
       if ( (pTrack->fMuID & 0x1<< MUTYPE1) && (pTrack->fMuID & 0x1<< MUTYPE2) ){
 	if ( pTrack->fMCID == 13 ){
-	  if ( (pTrack->fPlab.Perp() <= 20.) && (pTrack->fPlab.Perp() >= 3.) && (pTrack->fPlab.Eta() <= 2.4) && (pTrack->fPlab.Eta() >= -2.4)){
-	    ((TH2D*)fpHistFile->Get("tEtaPt_neg"))->Fill(pTrack->fPlab.Eta() , pTrack->fPlab.Perp());
+	  if ( (pTrack->fPlab.Perp() <= 50.) && (pTrack->fPlab.Perp() >= 3.) && (pTrack->fPlab.Eta() <= 2.4) && (pTrack->fPlab.Eta() >= -2.4)){
+	    if ( ((TMath::Abs(pTrack->fPlab.Eta()) <= 1.2) && (pTrack->fPlab.Perp() > 4.)) || ((TMath::Abs(pTrack->fPlab.Eta()) >= 1.2) && (pTrack->fPlab.Perp() > 3.))){
+	      ((TH2D*)fpHistFile->Get("tEtaPt_neg"))->Fill(pTrack->fPlab.Eta() , pTrack->fPlab.Perp());
+	    }
 	  }
 	
 	  if ( isRecTrackMatchedToTrig(pTrack, HLTLABEL_PROBE)  ){ 
-	    if ( (pTrack->fPlab.Perp() <= 20.) && (pTrack->fPlab.Perp() >= 3.) && (pTrack->fPlab.Eta() <= 2.4) && (pTrack->fPlab.Eta() >= -2.4)){
-	      ((TH2D*)fpHistFile->Get("mEtaPt_neg"))->Fill(pTrack->fPlab.Eta() , pTrack->fPlab.Perp());
+	    if ( (pTrack->fPlab.Perp() <= 50.) && (pTrack->fPlab.Perp() >= 3.) && (pTrack->fPlab.Eta() <= 2.4) && (pTrack->fPlab.Eta() >= -2.4)){
+	      if ( ((TMath::Abs(pTrack->fPlab.Eta()) <= 1.2) && (pTrack->fPlab.Perp() > 4.)) || ((TMath::Abs(pTrack->fPlab.Eta()) >= 1.2) && (pTrack->fPlab.Perp() > 3.))){
+		((TH2D*)fpHistFile->Get("mEtaPt_neg"))->Fill(pTrack->fPlab.Eta() , pTrack->fPlab.Perp());
+	      }
 	    }
 	  }
 	}     
       
 	if ( pTrack->fMCID == -13 ){
-	  if ( (pTrack->fPlab.Perp() <= 20.) && (pTrack->fPlab.Perp() >= 3.) && (pTrack->fPlab.Eta() <= 2.4) && (pTrack->fPlab.Eta() >= -2.4)){
-	    ((TH2D*)fpHistFile->Get("tEtaPt_pos"))->Fill(pTrack->fPlab.Eta() , pTrack->fPlab.Perp());
+	  if ( (pTrack->fPlab.Perp() <= 50.) && (pTrack->fPlab.Perp() >= 3.) && (pTrack->fPlab.Eta() <= 2.4) && (pTrack->fPlab.Eta() >= -2.4)){
+	    if ( ((TMath::Abs(pTrack->fPlab.Eta()) <= 1.2) && (pTrack->fPlab.Perp() > 4.)) || ((TMath::Abs(pTrack->fPlab.Eta()) >= 1.2) && (pTrack->fPlab.Perp() > 3.))){
+	      ((TH2D*)fpHistFile->Get("tEtaPt_pos"))->Fill(pTrack->fPlab.Eta() , pTrack->fPlab.Perp());
+	    }
 	  }
 	  
 	  if ( isRecTrackMatchedToTrig(pTrack, HLTLABEL_PROBE)  ){ 
-	    if ( (pTrack->fPlab.Perp() <= 20.) && (pTrack->fPlab.Perp() >= 3.) && (pTrack->fPlab.Eta() <= 2.4) && (pTrack->fPlab.Eta() >= -2.4)){
-	      ((TH2D*)fpHistFile->Get("mEtaPt_pos"))->Fill(pTrack->fPlab.Eta() , pTrack->fPlab.Perp());
+	    if ( (pTrack->fPlab.Perp() <= 50.) && (pTrack->fPlab.Perp() >= 3.) && (pTrack->fPlab.Eta() <= 2.4) && (pTrack->fPlab.Eta() >= -2.4)){
+	      if ( ((TMath::Abs(pTrack->fPlab.Eta()) <= 1.2) && (pTrack->fPlab.Perp() > 4.)) || ((TMath::Abs(pTrack->fPlab.Eta()) >= 1.2) && (pTrack->fPlab.Perp() > 3.))){
+		((TH2D*)fpHistFile->Get("mEtaPt_pos"))->Fill(pTrack->fPlab.Eta() , pTrack->fPlab.Perp());
+	      }
 	    }
 	  }
 	}
@@ -405,7 +422,7 @@ bool tnpReader2::isRecTrackMatchedToTrig(TAnaTrack *pTrack, TString Label){
        double track_dPhi = TMath::Abs(pTrack->fPlab.Phi() - pTrig->fP.Phi());
        if ( ( track_dPhi < DPHI ) && ( track_dEta < DETA )) {
 	 Matched = true;				
-	   //cout << " Trigger Matched to Track " << endl;
+	 //cout << " Trigger Matched to Track " << endl;
 	 break;
 	 }
      }
