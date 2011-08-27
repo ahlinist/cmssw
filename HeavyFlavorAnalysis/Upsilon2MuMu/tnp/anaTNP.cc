@@ -209,7 +209,7 @@ void anaTNP::loadFiles(const char *dir, int i) {
     } else if (40 == i) {
       ufile = fDirectory + string("/upsilon/101201.fl10.mm.COMBINED.tnpReaderTrig_MC_All.default.root");
      //ufile = fDirectory + string("/upsilon/UpsTagAndProbe_7TeV.root"); 
-      jfile = fDirectory + string("/jpsi/160311.data.mt.tnpReaderMuID_DATA.tma.nb.default.root");
+      jfile = fDirectory + string("/jpsi/101130.fl10.mt.jpsi.tnpReaderTrig_MC.MCTruth.root");
       //jfile = fDirectory + string("/jpsi/160311.Run2010Bp1.data.mt.tnpReaderTrig_DATA.tma.nb.default.root");
      //jfile = fDirectory + string("/jpsi/190311.Run2010A.nov4rereco.dimuons.tnpReaderTrig_DATA.default.root");
      
