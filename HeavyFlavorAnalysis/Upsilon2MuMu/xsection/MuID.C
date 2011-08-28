@@ -40,6 +40,8 @@ void MuIDCheckVsfMuIDmmb(){
   TH2D *fMuIDEff;
   fMuIDEff = (TH2D*)gFile->Get("fMuIDEff");
   
+  TH1D *Diff_1D = new TH1D("Diff_1D","Ratio:#rho^{TNP}", 50,0.9,1.1); 
+  
   double muidcheck(-99); double muideff(-99); double diff(-99);
   for (int i = 1; i <= Ratio->GetNbinsX(); ++i) {
     for (int j = 1; j <= Ratio->GetNbinsY(); ++j){	
@@ -52,6 +54,7 @@ void MuIDCheckVsfMuIDmmb(){
       cout << "ratio = " << muidcheck/muideff << endl;
       cout << "diff = " << diff << endl;
       Diff->SetCellContent(i,j,muidcheck/muideff);
+      Diff_1D->Fill(muidcheck/muideff);
       muidcheck=0;
       muideff=0;
       diff=0;
@@ -88,6 +91,14 @@ void MuIDCheckVsfMuIDmmb(){
   Diff->GetXaxis()->SetTitle("|y^{#Upsilon}|");
   Diff->Draw("colz"); 
   c4->SaveAs("Muidrho.pdf");
+  
+  TCanvas *c5 = new TCanvas("c5","c5",900,600);
+  Diff_1D->SetTitle("Ratio:#rho^{TNP}");
+  Diff_1D->GetXaxis()->SetTitle("Ratio: #rho^{TNP}");
+  gStyle->SetOptStat(1111111111);
+  Diff_1D->Draw(); 
+  c5->SaveAs("Muidrho_1D.pdf");  
+  
   
 }
 

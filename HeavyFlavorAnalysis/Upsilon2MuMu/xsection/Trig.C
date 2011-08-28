@@ -5,7 +5,7 @@
 
 void TrigCheckVsfTrigmmb(){
 
-  TFile *f = new TFile("101201.fl10.mm.ups1s.xsReader_1SBin_MomCorr.default.root");
+  TFile *f = new TFile("101201.fl10.mm.ups1s.xsReader_1SBin.default.root");
   TH2D *MuIDCheck_Numa_1S;
   MuIDCheck_Numa_1S = (TH2D*)gFile->Get("MuIDCheck_Numa_1S");
   TH2D *TrigCheck_Numa_1S;
@@ -40,6 +40,8 @@ void TrigCheckVsfTrigmmb(){
   TH2D *fTrigEff;
   fTrigEff = (TH2D*)gFile->Get("fTrigEff");
   
+  TH1D *Diff_1D = new TH1D("Diff_1D","Ratio:#rho^{TNP}", 50,0.9,1.1);
+  
   double trigcheck(-99); double trigeff(-99); double diff(-99);
   for (int i = 1; i <= Ratio->GetNbinsX(); ++i) {
     for (int j = 1; j <= Ratio->GetNbinsY(); ++j){	
@@ -52,6 +54,7 @@ void TrigCheckVsfTrigmmb(){
       cout << "ratio = " << trigcheck/trigeff << endl;
       cout << "diff = " << diff << endl;
       Diff->SetCellContent(i,j,trigcheck/trigeff);
+      Diff_1D->Fill(trigcheck/trigeff);
       trigcheck=0;
       trigeff=0;
       diff=0;
@@ -88,6 +91,13 @@ void TrigCheckVsfTrigmmb(){
   Diff->GetXaxis()->SetTitle("|y^{#Upsilon}|");
   Diff->Draw("colz"); 
   c4->SaveAs("Trigrho.pdf");
+  
+  TCanvas *c5 = new TCanvas("c5","c5",900,600);
+  Diff_1D->SetTitle("Ratio:#rho^{TNP}");
+  Diff_1D->GetXaxis()->SetTitle("Ratio: #rho^{TNP}");
+  gStyle->SetOptStat(1111111111);
+  Diff_1D->Draw(); 
+  c5->SaveAs("Muidrho_1D.pdf"); 
   
 }
 
