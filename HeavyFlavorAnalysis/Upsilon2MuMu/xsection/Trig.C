@@ -40,7 +40,7 @@ void TrigCheckVsfTrigmmb(){
   TH2D *fTrigEff;
   fTrigEff = (TH2D*)gFile->Get("fTrigEff");
   
-  TH1D *Diff_1D = new TH1D("Diff_1D","Ratio:#rho^{TNP}", 50,0.9,1.1);
+  TH1D *Diff_1D = new TH1D("Diff_1D","Ratio:#rho^{TNP}", 75,0.9,1.2);
   
   double trigcheck(-99); double trigeff(-99); double diff(-99);
   for (int i = 1; i <= Ratio->GetNbinsX(); ++i) {
