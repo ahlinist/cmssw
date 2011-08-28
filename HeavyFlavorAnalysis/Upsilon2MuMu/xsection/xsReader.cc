@@ -50,9 +50,8 @@ xsReader::xsReader(TChain *tree, TString evtClassName): treeReaderXS(tree, evtCl
   //// Ups(3S) Binning
   //fPTbin[0] = 0.; fPTbin[1] = 2.; fPTbin[2] = 4.; fPTbin[3] = 8.; fPTbin[4] = 10.; fPTbin[5] = 13.; fPTbin[6] = 16.;
   //fPTbin[7] = 20.; fPTbin[8] = 25.; fPTbin[9] = 30.; fPTbin[10] = 50.; 
-  //fYbin[0] = 0.; fYbin[1] = 0.2; fYbin[2] = 0.4; fYbin[3] = 0.6; fYbin[4] = 0.8; fYbin[5] = 1.; fYbin[6] = 1.2;
-  //fYbin[7] = 1.4; fYbin[8] = 1.6; fYbin[9] = 1.8; fYbin[10] = 2.; fYbin[11] = 2.2; fYbin[12] = 2.4;
-  
+  //fYbin[0] = 0.; fYbin[1] = 0.4; fYbin[2] = 0.8; fYbin[3] = 1.2; fYbin[4] = 1.6; fYbin[5] = 2.; fYbin[6] = 2.4;
+    
   ///// PidTable Tracking Efficiency for DATA
   fPidTableTrckEff = new PidTable("PidTables/DATA/Upsilon/PtTrackEff.dat");
   
@@ -72,15 +71,21 @@ xsReader::xsReader(TChain *tree, TString evtClassName): treeReaderXS(tree, evtCl
   //fPidTableTrigPos = new PidTable("../tnp/PidTables/MC/Jpsi/Trig/CowboyVeto/PtMmbPos-jpsi.dat");    
   //fPidTableTrigNeg = new PidTable("../tnp/PidTables/MC/Jpsi/Trig/CowboyVeto/PtMmbNeg-jpsi.dat");   
   
+  ///// PidTables MC -- TrackerMuonArbitrated -- MCTruth
+  fPidTableMuIDPos = new PidTable("../tnp/PidTables/MC/Jpsi/MuID/MCTruth/PtMctPos-jpsi.dat");
+  fPidTableMuIDNeg = new PidTable("../tnp/PidTables/MC/Jpsi/MuID/MCTruth/PtMctNeg-jpsi.dat");
+  fPidTableTrigPos = new PidTable("../tnp/PidTables/MC/Jpsi/Trig/MCTruth/PtMctPos-jpsi.dat");
+  fPidTableTrigNeg = new PidTable("../tnp/PidTables/MC/Jpsi/Trig/MCTruth/PtMctNeg-jpsi.dat");
+  
   
   ///// PidTables DATA -- TrackerMuonArbitrated 
-  fPidTableMuIDPos = new PidTable("../tnp/PidTables/DATA/Jpsi/MuID/CowboyVeto/TrackerMuonArbitrated/PtMmbPos-jpsi.tma.nb.dat");
-  fPidTableMuIDNeg = new PidTable("../tnp/PidTables/DATA/Jpsi/MuID/CowboyVeto/TrackerMuonArbitrated/PtMmbNeg-jpsi.tma.nb.dat");
+  //fPidTableMuIDPos = new PidTable("../tnp/PidTables/DATA/Jpsi/MuID/CowboyVeto/TrackerMuonArbitrated/PtMmbPos-jpsi.tma.nb.dat");
+  //fPidTableMuIDNeg = new PidTable("../tnp/PidTables/DATA/Jpsi/MuID/CowboyVeto/TrackerMuonArbitrated/PtMmbNeg-jpsi.tma.nb.dat");
   //fPidTableTrigPos = new PidTable("../tnp/PidTables/DATA/Jpsi/Trig/MuOnia/CowboyVeto/PtMmbPos-jpsi.tma.nb.dat");    
   //fPidTableTrigNeg = new PidTable("../tnp/PidTables/DATA/Jpsi/Trig/MuOnia/CowboyVeto/PtMmbNeg-jpsi.tma.nb.dat"); 
-  fPidTableTrigPos = new PidTable("../tnp/PidTables/DATA/Jpsi/Trig/MuOnia/CowboyVeto/PtMmbPos-jpsi.runbp1.tma.nb.dat");    
-  fPidTableTrigNeg = new PidTable("../tnp/PidTables/DATA/Jpsi/Trig/MuOnia/CowboyVeto/PtMmbNeg-jpsi.runbp1.tma.nb.dat");   
   
+  //fPidTableTrigPos = new PidTable("../tnp/PidTables/DATA/Jpsi/Trig/MuOnia/CowboyVeto/PtMmbPos-jpsi.runbp1.tma.nb.dat");    
+  //fPidTableTrigNeg = new PidTable("../tnp/PidTables/DATA/Jpsi/Trig/MuOnia/CowboyVeto/PtMmbNeg-jpsi.runbp1.tma.nb.dat");   
   
   ///// PidTables DATA -- Global and Tracker 
   //fPidTableMuIDPos = new PidTable("../tnp/PidTables/DATA/Jpsi/MuID/CowboyVeto/PtMmbPos-jpsi.dat");
@@ -138,7 +143,7 @@ void xsReader::eventProcessing() {
     fillCandHist(2); 
   }
   
-  if ( 0 != fgCand && MODE == 1 ) MCstudy(); 
+  if ( (0 != fgCand) && (0 != fpCand) && (MODE == 1) ) MCstudy(); 
   fpHistFile->cd();
   
   end:
@@ -166,6 +171,19 @@ void xsReader::freePointers(){
     }  
   
 }
+
+bool xsReader::CowboyVeto(TAnaCand *pCand){
+  bool veto =false;
+  TAnaTrack *pl1(0); TAnaTrack *pl2(0);
+  pl1 = fpEvt->getSigTrack(pCand->fSig1); 
+  pl2 = fpEvt->getSigTrack(pCand->fSig2);
+  
+  if ( (pl1->fQ*( pl1->fPlab.Phi() - pl2->fPlab.Phi() )) > 0 ) veto=true;
+ 
+  return veto;
+}
+
+
 
 bool xsReader::MomentumCorrection(){
   TAnaCand *pCand(0);
@@ -1275,6 +1293,7 @@ bool xsReader::MuIDCheck(){
     pCand = fpEvt->getCand(iC);
     //for (int iC = 0; iC < Cands.size() ; ++iC) {
     //pCand = Cands[iC];
+    ///////////////////if ( CowboyVeto(pCand) ) continue;
     Cand.SetPtEtaPhiM(pCand->fPlab.Perp(),pCand->fPlab.Eta(),pCand->fPlab.Phi(),pCand->fMass);
     if ( Cand.Rapidity() < -RAPCAND ) continue;
     if ( Cand.Rapidity() > RAPCAND ) continue;
@@ -1594,40 +1613,80 @@ void xsReader::fillCandHist(int mode) {
 // ----------------------------------------------------------------------
 void xsReader::MCstudy(){
   
+  if ( fGenCandY < 0 ) fGenCandY*=-1;
+  
+  
+  if (  (TMath::Abs(fMuon1Pt - fGenMuon1Pt) > 0.5) || (TMath::Abs(fMuon2Pt - fGenMuon2Pt) > 0.5)  ){
+    //cout << endl;
+    //cout << "fGenMuon1Pt = " << fGenMuon1Pt << "fMuon1Pt = "<< fMuon1Pt << endl; 
+    //cout << "fGenMuon2Pt = " << fGenMuon2Pt << "fMuon2Pt = "<< fMuon2Pt << endl;    
+    //cout << "fGenMuon1Eta = " << fGenMuon1Eta << "fMuon1Eta = "<< fMuon1Eta << endl; 
+    //cout << "fGenMuon2Eta = " << fGenMuon2Eta << "fMuon2Eta = "<< fMuon2Eta  << endl; 
+    //cout << "fGenCandPt = "<< fGenCandPt << "fCandPt = " << fCandPt  << endl;
+    //cout << "fGenCandY = "<< fGenCandY << "fCandY = " << fCandY  << endl;
+  }
+  
+  ((TH1D*)fpHistFile->Get("GenPt_Cand"))->Fill(fGenCandPt);
+  for ( int ipt = 0; ipt < fNpt; ++ipt ){
+    if ( ( fGenCandPt >= fPTbin[ipt] ) && ( fGenCandPt < fPTbin[ipt+1] ) ){
+      if ( ( fCandPt >= fPTbin[ipt] ) && ( fCandPt < fPTbin[ipt+1] ) ) ((TH1D*)fpHistFile->Get("RecoPtinSameBin_Cand"))->Fill(fGenCandPt);
+    }
+  }
+    
   double deltaPtCand(-99), deltaYCand(-99), deltaPtMuon1(-99), deltaEtaMuon1(-99), deltaPtMuon2(-99), deltaEtaMuon2(-99);
   ((TH2D*)fpHistFile->Get("PtResolution_Cand"))->Fill(fGenCandPt,fCandPt);
   ((TH2D*)fpHistFile->Get("PtResolution_Cand"))->GetXaxis()->SetTitle(Form("P_{T}^{GenCand}"));
   ((TH2D*)fpHistFile->Get("PtResolution_Cand"))->GetYaxis()->SetTitle(Form("P_{T}^{RecoCand}"));
   
-  deltaPtCand = (fCandPt - fGenCandPt)/fGenCandPt;
+  deltaPtCand = (fCandPt - fGenCandPt);
   ((TH1D*)fpHistFile->Get("DeltaPtoverPt_Cand"))->Fill(deltaPtCand);
+  ((TH2D*)fpHistFile->Get("DeltaPtvsPt_Cand"))->Fill(fGenCandPt,deltaPtCand);
+  ((TH2D*)fpHistFile->Get("DeltaPtvsPt_Cand"))->GetXaxis()->SetTitle(Form("P_{T}^{GenCand}"));
+  ((TH2D*)fpHistFile->Get("DeltaPtvsPt_Cand"))->GetYaxis()->SetTitle(Form("#Delta P_{T}"));
+  
+  ((TH2D*)fpHistFile->Get("DeltaPtvsPt_Cand_1SBin"))->Fill(fGenCandPt,deltaPtCand);
+  ((TH2D*)fpHistFile->Get("DeltaPtvsPt_Cand_1SBin"))->GetXaxis()->SetTitle(Form("P_{T}^{GenCand}"));
+  ((TH2D*)fpHistFile->Get("DeltaPtvsPt_Cand_1SBin"))->GetYaxis()->SetTitle(Form("#Delta P_{T}"));
   
   ((TH2D*)fpHistFile->Get("YResolution_Cand"))->Fill(fGenCandY,fCandY);
   ((TH2D*)fpHistFile->Get("YResolution_Cand"))->GetXaxis()->SetTitle(Form("Y^{GenCand}"));
   ((TH2D*)fpHistFile->Get("YResolution_Cand"))->GetYaxis()->SetTitle(Form("Y^{RecoCand}")); 
   
-  deltaYCand = (fCandY - fGenCandY)/fGenCandY;
-  ((TH1D*)fpHistFile->Get("DeltaYoverY_Cand"))->Fill(deltaYCand);  
+  deltaYCand = (fCandY - fGenCandY);
+  ((TH1D*)fpHistFile->Get("DeltaYoverY_Cand"))->Fill(deltaYCand);
+  ((TH2D*)fpHistFile->Get("DeltaYvsY_Cand"))->Fill(fGenCandY,deltaYCand);
+  ((TH2D*)fpHistFile->Get("DeltaYvsY_Cand"))->GetXaxis()->SetTitle(Form("Y^{GenCand}"));
+  ((TH2D*)fpHistFile->Get("DeltaYvsY_Cand"))->GetYaxis()->SetTitle(Form("#Delta Y"));
   
   ((TH2D*)fpHistFile->Get("PtResolution_Muon"))->Fill(fGenMuon1Pt,fMuon1Pt);
   ((TH2D*)fpHistFile->Get("PtResolution_Muon"))->Fill(fGenMuon2Pt,fMuon2Pt);
   ((TH2D*)fpHistFile->Get("PtResolution_Muon"))->GetXaxis()->SetTitle(Form("P_{T}^{GenMuon}"));
   ((TH2D*)fpHistFile->Get("PtResolution_Muon"))->GetYaxis()->SetTitle(Form("P_{T}^{Recomuon}"));
   
-  deltaPtMuon1 = (fMuon1Pt - fGenMuon1Pt)/fGenMuon1Pt;
-  deltaPtMuon2 = (fMuon2Pt - fGenMuon2Pt)/fGenMuon2Pt;
+  deltaPtMuon1 = (fMuon1Pt - fGenMuon1Pt);
+  deltaPtMuon2 = (fMuon2Pt - fGenMuon2Pt);
   ((TH1D*)fpHistFile->Get("DeltaPtoverPt_Muon"))->Fill(deltaPtMuon1);
   ((TH1D*)fpHistFile->Get("DeltaPtoverPt_Muon"))->Fill(deltaPtMuon2);
+  ((TH2D*)fpHistFile->Get("DeltaPtvsPt_Muon"))->Fill(fGenMuon1Pt,deltaPtMuon1);
+  ((TH2D*)fpHistFile->Get("DeltaPtvsPt_Muon"))->Fill(fGenMuon2Pt,deltaPtMuon1);
+  ((TH2D*)fpHistFile->Get("DeltaPtvsPt_Muon"))->GetXaxis()->SetTitle(Form("P_{T}^{GenMuon}"));
+  ((TH2D*)fpHistFile->Get("DeltaPtvsPt_Muon"))->GetYaxis()->SetTitle(Form("#Delta P_{T}"));  
+  
   
   ((TH2D*)fpHistFile->Get("#etaResolution_Muon"))->Fill(fGenMuon1Eta,fMuon1Eta);
   ((TH2D*)fpHistFile->Get("#etaResolution_Muon"))->Fill(fGenMuon2Eta,fMuon2Eta);
   ((TH2D*)fpHistFile->Get("#etaResolution_Muon"))->GetXaxis()->SetTitle(Form("#eta^{GenMuon}"));
   ((TH2D*)fpHistFile->Get("#etaResolution_Muon"))->GetYaxis()->SetTitle(Form("#eta^{Recomuon}"));
   
-  deltaEtaMuon1 = (fMuon1Eta - fGenMuon1Eta)/fGenMuon1Eta;
-  deltaEtaMuon2 = (fMuon2Eta - fGenMuon2Eta)/fGenMuon2Eta;
+  deltaEtaMuon1 = (fMuon1Eta - fGenMuon1Eta);
+  deltaEtaMuon2 = (fMuon2Eta - fGenMuon2Eta);
   ((TH1D*)fpHistFile->Get("DeltaEtaoverEta_Muon"))->Fill(deltaEtaMuon1);
   ((TH1D*)fpHistFile->Get("DeltaEtaoverEta_Muon"))->Fill(deltaEtaMuon2);
+  ((TH2D*)fpHistFile->Get("DeltaEtavsEta_Muon"))->Fill(fGenMuon1Eta,deltaEtaMuon1);
+  ((TH2D*)fpHistFile->Get("DeltaEtavsEta_Muon"))->Fill(fGenMuon2Eta,deltaEtaMuon2);
+  ((TH2D*)fpHistFile->Get("DeltaEtavsEta_Muon"))->GetXaxis()->SetTitle(Form("#eta^{GenMuon}"));
+  ((TH2D*)fpHistFile->Get("DeltaEtavsEta_Muon"))->GetYaxis()->SetTitle(Form("#Delta #eta"));
+  
   
   ((TH1D*)fpHistFile->Get("MaxDoca_Cand"))->Fill(fpCand->fMaxDoca);
   
@@ -1901,15 +1960,21 @@ void xsReader::bookHist() {
   
   // fillCandHist() histograms
   h = new TH1D("CandMass", "CandMass", 44, 1, 12.);
-  h = new TH1D("CandPt", "CandPt", 80, 0, 40.);
-  h = new TH1D("CandRapidity", "CandRapidity", 80, -4, 4.);
-  h = new TH1D("CandEta", "CandEta", 80, -4, 4.);
+  h = new TH1D("CandPt", "CandPt", 50, 0, 50.);
+  h = new TH1D("CandRapidity", "CandRapidity", 60, 0, 3.);
+  h = new TH1D("CandEta", "CandEta", 100, -5, 5.);
   h = new TH1D("UpsilonMass", "UpsilonMass", BIN, fMassLow, fMassHigh); 
   ((TH1D*)fpHistFile->Get("UpsilonMass"))->Sumw2(); 
-  h = new TH1D("SigMuEta", "SigMuEta", 80, -4, 4.);
-  h = new TH1D("SigMuPt", "SigMuPt", 80, 0, 40.);
-  k = new TH2D("SigMuEtaPt", "SigMuEtaPt", 48, -2.4, 2.4, 40, 0, 20);
-  k = new TH2D("CandMuPt", "CandMuPt", 40, 0, 40., 40, 0., 40.);
+  //((TH1D*)fpHistFile->Get("CandMass"))->Sumw2();
+  //((TH1D*)fpHistFile->Get("CandPt"))->Sumw2();
+  //((TH1D*)fpHistFile->Get("CandEta"))->Sumw2();
+  //((TH1D*)fpHistFile->Get("CandRapidity"))->Sumw2();
+  h = new TH1D("SigMuEta", "SigMuEta", 60, -3, 3.);
+  h = new TH1D("SigMuPt", "SigMuPt", 100, 0, 50.);
+  //((TH1D*)fpHistFile->Get("SigMuPt"))->Sumw2();
+  //((TH1D*)fpHistFile->Get("SigMuEta"))->Sumw2();
+  k = new TH2D("SigMuEtaPt", "SigMuEtaPt", 48, -2.4, 2.4, 50, 0, 50);
+  k = new TH2D("CandMuPt", "CandMuPt", 50, 0, 50., 50, 0., 50.);
   
   for ( int iy = 0; iy < fNy; ++iy ){
     h = new TH1D(Form("Pt_IntegratedMass,rapidity%.1f_%.1f", fYbin[iy], fYbin[iy+1]), 
@@ -1931,14 +1996,21 @@ void xsReader::bookHist() {
   
   // MCstudy() histograms
   k = new TH2D("PtResolution_Cand", "PtResolution_Cand", 100, 0, 50, 100, 0, 50);
-  k = new TH2D("YResolution_Cand", "YResolution_Cand", 100, -5, 5, 100, -5, 5);
+  k = new TH2D("DeltaPtvsPt_Cand", "DeltaPtvsPt_Cand", 100, 0, 50, 100, -2, 2);
+  k = new TH2D("DeltaPtvsPt_Cand_1SBin", "DeltaPtvsPt_Cand_1SBin", fNpt, fPTbin, 100, -2, 2);
+  k = new TH2D("YResolution_Cand", "YResolution_Cand", 100, 0, 2.5, 100, 0, 2.5);
+  k = new TH2D("DeltaYvsY_Cand", "DeltaYvsY_Cand", 100, 0, 2.5, 100, -0.4, 0.4);
   k = new TH2D("PtResolution_Muon", "PtResolution_Muon", 100, 0, 50, 100, 0, 50);
-  k = new TH2D("#etaResolution_Muon", "#etaResolution_Muon", 80, -4, 4, 80, -4, 4);
-  h = new TH1D("DeltaPtoverPt_Cand", "DeltaPtoverPt_Cand", 50, -0.1, 0.1);
-  h = new TH1D("DeltaYoverY_Cand", "DeltaYoverY_Cand", 50, -0.05, 0.05);
-  h = new TH1D("DeltaPtoverPt_Muon", "DeltaPtoverPt_Muon", 50, -0.1, 0.1);
-  h = new TH1D("DeltaEtaoverEta_Muon", "DeltaEtaoverEta_Muon", 50, -0.05, 0.05); 
+  k = new TH2D("DeltaPtvsPt_Muon", "DeltaPtvsPt_Muon", 100, 0, 50, 100, -0.5, 0.5);
+  k = new TH2D("#etaResolution_Muon", "#etaResolution_Muon", 100, -2.5, 2.5, 100, -2.5, 2.5);
+  k = new TH2D("DeltaEtavsEta_Muon", "DeltaEtavsEta_Muon", 100, -2.5, 2.5, 80, -0.2, 0.2);
+  h = new TH1D("DeltaPtoverPt_Cand", "DeltaPtoverPt_Cand", 50, -2., 2.);
+  h = new TH1D("DeltaYoverY_Cand", "DeltaYoverY_Cand", 50, -0.4, 0.4);
+  h = new TH1D("DeltaPtoverPt_Muon", "DeltaPtoverPt_Muon", 50, -0.5, 0.5);
+  h = new TH1D("DeltaEtaoverEta_Muon", "DeltaEtaoverEta_Muon", 50, -0.2, 0.2); 
   h = new TH1D("MaxDoca_Cand", "MaxDoca_Cand", 60, 0., 0.03); 
+  h = new TH1D("GenPt_Cand","GenPt_Cand", fNpt, fPTbin);
+  h = new TH1D("RecoPtinSameBin_Cand","RecoPtinSameBin_Cand", fNpt, fPTbin);
   
   
   // Detectability() histograms
