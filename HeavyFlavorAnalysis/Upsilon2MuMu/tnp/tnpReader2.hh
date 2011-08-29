@@ -70,6 +70,7 @@ public:
   TString HLTPATH_PROBE;
   TString HLTLABEL_TAG;
   TString HLTLABEL_PROBE;
+  TString HLTLABEL_PROBEv2;
   int MUTYPE1;
   int MUTYPE2;
   double PT_TAG;

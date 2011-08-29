@@ -220,9 +220,20 @@ void tnpReader2::MCTruth(int mode){
   }
   
   if ( mode == 2 ){ // For Trigger
+    int muon(0); 
     for (int it = 0; it < fpEvt->nRecTracks(); ++it) {
       pTrack = fpEvt->getRecTrack(it);
-      if ( !isPathFired(HLTPATH_PROBE) ) continue;
+      if ( (pTrack->fMuID & 0x1<< MUTYPE1) && (pTrack->fMuID & 0x1<< MUTYPE2) ){
+	if ( TMath::Abs(pTrack->fMCID) == 13 ){
+	  muon += 1;
+	}
+      }
+    }
+    
+    //if ( muon < 2 ) return; 
+    
+    for (int it = 0; it < fpEvt->nRecTracks(); ++it) {
+      pTrack = fpEvt->getRecTrack(it);
       if ( (pTrack->fMuID & 0x1<< MUTYPE1) && (pTrack->fMuID & 0x1<< MUTYPE2) ){
 	if ( pTrack->fMCID == 13 ){
 	  if ( (pTrack->fPlab.Perp() <= 50.) && (pTrack->fPlab.Perp() >= 3.) && (pTrack->fPlab.Eta() <= 2.4) && (pTrack->fPlab.Eta() >= -2.4)){
@@ -231,7 +242,7 @@ void tnpReader2::MCTruth(int mode){
 	    }
 	  }
 	
-	  if ( isRecTrackMatchedToTrig(pTrack, HLTLABEL_PROBE)  ){ 
+	  if ( isRecTrackMatchedToTrig(pTrack, HLTLABEL_PROBEv2)  ){ 
 	    if ( (pTrack->fPlab.Perp() <= 50.) && (pTrack->fPlab.Perp() >= 3.) && (pTrack->fPlab.Eta() <= 2.4) && (pTrack->fPlab.Eta() >= -2.4)){
 	      if ( ((TMath::Abs(pTrack->fPlab.Eta()) <= 1.2) && (pTrack->fPlab.Perp() > 4.)) || ((TMath::Abs(pTrack->fPlab.Eta()) >= 1.2) && (pTrack->fPlab.Perp() > 3.))){
 		((TH2D*)fpHistFile->Get("mEtaPt_neg"))->Fill(pTrack->fPlab.Eta() , pTrack->fPlab.Perp());
@@ -247,7 +258,7 @@ void tnpReader2::MCTruth(int mode){
 	    }
 	  }
 	  
-	  if ( isRecTrackMatchedToTrig(pTrack, HLTLABEL_PROBE)  ){ 
+	  if ( isRecTrackMatchedToTrig(pTrack, HLTLABEL_PROBEv2)  ){ 
 	    if ( (pTrack->fPlab.Perp() <= 50.) && (pTrack->fPlab.Perp() >= 3.) && (pTrack->fPlab.Eta() <= 2.4) && (pTrack->fPlab.Eta() >= -2.4)){
 	      if ( ((TMath::Abs(pTrack->fPlab.Eta()) <= 1.2) && (pTrack->fPlab.Perp() > 4.)) || ((TMath::Abs(pTrack->fPlab.Eta()) >= 1.2) && (pTrack->fPlab.Perp() > 3.))){
 		((TH2D*)fpHistFile->Get("mEtaPt_pos"))->Fill(pTrack->fPlab.Eta() , pTrack->fPlab.Perp());
@@ -410,13 +421,15 @@ void tnpReader2::ProbeSelection(){
 bool tnpReader2::isRecTrackMatchedToTrig(TAnaTrack *pTrack, TString Label){
    bool Matched = false;
    TTrgObj *pTrig(0);
-   
+   //cout << " new event " << endl;
    TLorentzVector track;
    track.SetPtEtaPhiM(pTrack->fPlab.Pt(), pTrack->fPlab.Eta(), pTrack->fPlab.Phi(), MMUON);
    for (int s = 0; s < fpEvt->nTrgObj() ; ++s) {
      pTrig = fpEvt->getTrgObj(s);
+     //cout << "For Track: pTrig->fLabel is " << pTrig->fLabel << endl;
      if ( !(Label.CompareTo(pTrig->fLabel)) ) {
-       //cout << "For Track: pTrig->fLabel is " << pTrig->fLabel << endl;;
+       //cout << endl;
+       //cout << "For Track: pTrig->fLabel is " << pTrig->fLabel << endl;
        double track_dR = track.DeltaR(pTrig->fP);
        double track_dEta = TMath::Abs(pTrack->fPlab.Eta() - pTrig->fP.Eta());
        double track_dPhi = TMath::Abs(pTrack->fPlab.Phi() - pTrig->fP.Phi());
@@ -1219,6 +1232,11 @@ void tnpReader2::readCuts(TString filename, int dump) {
       HLTLABEL_PROBE = SetName; ok = 1;
       if (dump) cout << "HLTLABEL_PROBE:   " << HLTLABEL_PROBE  << endl;
     } 
+    
+    if (!strcmp(CutName, "HLTLABEL_PROBEv2")) {
+      HLTLABEL_PROBEv2 = SetName; ok = 1;
+      if (dump) cout << "HLTLABEL_PROBEv2:   " << HLTLABEL_PROBEv2  << endl;
+    }     
     
     if (!ok) cout << "==> ERROR: Don't know about variable " << CutName << endl;
   }
