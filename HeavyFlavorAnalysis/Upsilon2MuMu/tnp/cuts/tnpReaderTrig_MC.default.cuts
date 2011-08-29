@@ -13,6 +13,7 @@ ETALO_TAG  -2.4
 ETAHI_TAG   2.4
 HLTLABEL_TAG     11  hltSingleMu11L3Filtered11:HLT::
 HLTLABEL_PROBE   0   hltDiMuonL3PreFiltered0:HLT::
+HLTLABEL_PROBEv2 3   hltSingleMu3L3Filtered3:HLT::
 PT_PROBE    3.
 MASSLO     2.8
 MASSHI     3.4
