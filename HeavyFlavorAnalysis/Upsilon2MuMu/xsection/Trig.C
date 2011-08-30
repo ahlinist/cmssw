@@ -97,7 +97,7 @@ void TrigCheckVsfTrigmmb(){
   Diff_1D->GetXaxis()->SetTitle("Ratio: #rho^{TNP}");
   gStyle->SetOptStat(1111111111);
   Diff_1D->Draw(); 
-  c5->SaveAs("Muidrho_1D.pdf"); 
+  c5->SaveAs("Trigrho_1D.pdf"); 
   
 }
 
