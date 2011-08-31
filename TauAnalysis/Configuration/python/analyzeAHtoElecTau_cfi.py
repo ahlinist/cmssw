@@ -27,7 +27,7 @@ electronHistManager.src = cms.InputTag("selectedPatElectronsForElecTauTrkIPcumul
 # import config for tau histogram manager
 from TauAnalysis.Core.pftauHistManager_cfi import *
 tauHistManager.src = cms.InputTag('selectedPatTausForElecTauElectronVetoCumulative')
-tauHistManager.useHPSpTaNCalgorithm = cms.bool(True)
+tauHistManager.useHPSclassicAlgorithm = cms.bool(True)
 
 # import config for di-tau histogram manager
 from TauAnalysis.Core.diTauCandidateHistManager_cfi import *
@@ -41,10 +41,11 @@ from TauAnalysis.Core.diTauCandidateNSVfitHistManager_cfi import *
 diTauCandidateNSVfitHistManagerForElecTau = copy.deepcopy(diTauCandidateNSVfitHistManager)
 diTauCandidateNSVfitHistManagerForElecTau.pluginName = cms.string('diTauCandidateNSVfitHistManagerForElecTau')
 diTauCandidateNSVfitHistManagerForElecTau.pluginType = cms.string('PATElecTauPairNSVfitHistManager')
-diTauCandidateNSVfitHistManagerForElecTau.diTauCandidateSource = cms.InputTag('selectedElecTauPairsForAHtoElecTauZeroChargeCumulative')
+#diTauCandidateNSVfitHistManagerForElecTau.diTauCandidateSource = cms.InputTag('selectedElecTauPairsForAHtoElecTauZeroChargeCumulative')
+diTauCandidateNSVfitHistManagerForElecTau.diTauCandidateSource = cms.InputTag('allElecTauPairs')
 diTauCandidateNSVfitHistManagerForElecTau.nSVfitEventHypotheses = cms.PSet(
-    psKine_MEt_logM_fit = cms.string('psKine_MEt_logM_fit'),
-    psKine_MEt_logM_int = cms.string('psKine_MEt_logM_int')
+    psKine_MEt_logM_fit = cms.string('psKine_MEt_logM_fit')
+    #    psKine_MEt_logM_int = cms.string('psKine_MEt_logM_int')
 )
 
 from TauAnalysis.Core.diTauCandidateZllHypothesisHistManager_cfi import *
@@ -78,7 +79,7 @@ from TauAnalysis.Core.particleMultiplicityHistManager_cfi import *
 
 # import config for primary event vertex histogram manager
 from TauAnalysis.Core.vertexHistManager_cfi import *
-vertexHistManager.vertexSource = cms.InputTag('offlinePrimaryVerticesDA')
+vertexHistManager.vertexSource = cms.InputTag('offlinePrimaryVerticesWithBS')
 
 # import config for L1 & HLT histogram manager
 from TauAnalysis.Core.triggerHistManager_cfi import *
@@ -97,13 +98,13 @@ triggerHistManagerForElecTau.l1Bits = cms.vstring(
     'L1_SingleIsoEG15'
 )
 
-triggerHistManagerForElecTau.hltPaths = cms.vstring(    
-	'HLT_Ele15_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_LooseIsoPFTau15_v1',
-	'HLT_Ele15_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_LooseIsoPFTau15_v2',
-	'HLT_Ele15_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_LooseIsoPFTau15_v4',
-    'HLT_IsoEle12_PFTau15_v3',
-    'HLT_Ele12_SW_TighterEleId_L1R_v2'
-)
+#triggerHistManagerForElecTau.hltPaths = cms.vstring(    
+#	'HLT_Ele15_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_LooseIsoPFTau15_v1',
+#	'HLT_Ele15_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_LooseIsoPFTau15_v2',
+#	'HLT_Ele15_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_LooseIsoPFTau15_v4',
+#    'HLT_IsoEle12_PFTau15_v3',
+#    'HLT_Ele12_SW_TighterEleId_L1R_v2'
+#)
 
 # import config for binning results
 # used for keeping track of number of events passing all selection criteria
@@ -551,8 +552,8 @@ elecTauAnalysisSequenceOS_woBtag = cms.VPSet(
             'tauHistManager',
 			'diTauCandidateHistManagerForElecTau',
             #'caloMEtHistManager',
-            'pfMEtHistManager'
-            'vertexHistManager',
+            'pfMEtHistManager',
+            'vertexHistManager'
             #'triggerHistManagerForElecTau'
         ),
         replace = cms.vstring('electronHistManager.electronSource = selectedPatElectronsForElecTauTrkIPcumulative',
@@ -640,14 +641,14 @@ elecTauAnalysisSequenceOS_woBtag = cms.VPSet(
             'electronHistManager',
             'tauHistManager',
             'diTauCandidateHistManagerForElecTau',
-			'diTauCandidateNSVfitHistManagerForElecTau',
+            #'diTauCandidateNSVfitHistManagerForElecTau',
             'elecPairHistManagerByLooseIsolation'
         ),
 		replace = cms.vstring(
 			'electronHistManager.electronSource = selectedPatElectronsForElecTauTrkIPcumulative',
 			'tauHistManager.tauSource = selectedPatTausForElecTauMuonVetoCumulative',
 			'diTauCandidateHistManagerForElecTau.diTauCandidateSource = selectedElecTauPairsForAHtoElecTauPzetaDiffCumulative',
-			'diTauCandidateNSVfitHistManagerForElecTau.diTauCandidateSource = selectedElecTauPairsForAHtoElecTauPzetaDiffCumulative',
+            'diTauCandidateNSVfitHistManagerForElecTau.diTauCandidateSource = selectedElecTauPairsForAHtoElecTauPzetaDiffCumulative',
 			'elecPairHistManagerByLooseIsolation.diTauCandidateSource = allDiElecPairZeeHypothesesByLooseIsolation'
 		)
     ),
@@ -663,7 +664,7 @@ elecTauAnalysisSequenceOS_woBtag = cms.VPSet(
             'electronHistManager',
             'tauHistManager',
             'diTauCandidateHistManagerForElecTau',
-            'diTauCandidateNSVfitHistManagerForElecTau',
+            #'diTauCandidateNSVfitHistManagerForElecTau',
             'diTauCandidateZeeHypothesisHistManagerForElecTau',
             'elecPairHistManagerByLooseIsolation',
             'jetHistManager'
@@ -673,7 +674,7 @@ elecTauAnalysisSequenceOS_woBtag = cms.VPSet(
 			'tauHistManager.tauSource = selectedPatTausForElecTauMuonVetoCumulative',
 			'jetHistManager.jetSource = selectedPatJetsForAHtoElecTauAntiOverlapWithLeptonsVetoCumulative',
 			'diTauCandidateHistManagerForElecTau.diTauCandidateSource = selectedElecTauPairsForAHtoElecTauPzetaDiffCumulative',
-			'diTauCandidateNSVfitHistManagerForElecTau.diTauCandidateSource = selectedElecTauPairsForAHtoElecTauPzetaDiffCumulative',
+            #'diTauCandidateNSVfitHistManagerForElecTau.diTauCandidateSource = selectedElecTauPairsForAHtoElecTauPzetaDiffCumulative',
 			'elecPairHistManagerByLooseIsolation.diTauCandidateSource = selectedDiElecPairZeeHypothesesByLooseIsolation'
 			#'diTauCandidateZeeHypothesisHistManagerForElecTau.ZllHypothesisSource = selectedElecTauPairZeeHypotheses'
 		)
@@ -690,7 +691,7 @@ elecTauAnalysisSequenceOS_woBtag = cms.VPSet(
 			'electronHistManager',
 			'tauHistManager',
 			'diTauCandidateHistManagerForElecTau',
-			'diTauCandidateNSVfitHistManagerForElecTau',
+            #'diTauCandidateNSVfitHistManagerForElecTau',
 			'jetHistManager'
 		),
 		replace = cms.vstring(
@@ -699,7 +700,7 @@ elecTauAnalysisSequenceOS_woBtag = cms.VPSet(
 			'jetHistManager.jetSource = selectedPatJetsForAHtoElecTauAntiOverlapWithLeptonsVetoCumulative',
 			'diTauCandidateHistManagerForElecTau.diTauCandidateSource = selectedElecTauPairsForAHtoElecTauPzetaDiffCumulative',
 			'diTauCandidateHistManagerForElecTau.visMassHypothesisSource = elecTauPairVisMassHypothesesForAHtoElecTau',
-			'diTauCandidateNSVfitHistManagerForElecTau.diTauCandidateSource = selectedElecTauPairsForAHtoElecTauPzetaDiffCumulative',
+            #'diTauCandidateNSVfitHistManagerForElecTau.diTauCandidateSource = selectedElecTauPairsForAHtoElecTauPzetaDiffCumulative',
 			'jetHistManager.jetSource = selectedPatJetsForAHtoElecTauAntiOverlapWithLeptonsVetoCumulative'
 		)
 	),
@@ -714,7 +715,7 @@ elecTauAnalysisSequenceOS_woBtag = cms.VPSet(
             'electronHistManager',
             'tauHistManager',
             'diTauCandidateHistManagerForElecTau',
-            'diTauCandidateNSVfitHistManagerForElecTau',
+            #'diTauCandidateNSVfitHistManagerForElecTau',
             'diTauCandidateZeeHypothesisHistManagerForElecTau',
             #'diTauLeg1ChargeBinGridHistManager', breaks 4_2_X
 			'jetHistManager',
@@ -731,8 +732,9 @@ elecTauAnalysisSequenceOS_woBtag = cms.VPSet(
 			'electronHistManager.electronSource = selectedPatElectronsForElecTauTrkIPcumulative',
 			'tauHistManager.tauSource = selectedPatTausForElecTauMuonVetoCumulative',
 			'jetHistManager.jetSource = selectedPatJetsForAHtoElecTauAntiOverlapWithLeptonsVetoCumulative',
+            'vertexHistManager.vertexSource = selectedPrimaryVertexHighestPtTrackSumForElecTau',
             'diTauCandidateZeeHypothesisHistManagerForElecTau.ZllHypothesisSource = elecTauPairZeeHypothesesForAHtoElecTau',
-			'diTauCandidateNSVfitHistManagerForElecTau.diTauCandidateSource = selectedElecTauPairsForAHtoElecTauZeroChargeCumulative',
+            'diTauCandidateNSVfitHistManagerForElecTau.diTauCandidateSource = selectedElecTauPairsForAHtoElecTauZeroChargeCumulative',
 			'diTauCandidateHistManagerForElecTau.visMassHypothesisSource = elecTauPairVisMassHypothesesForAHtoElecTau',
 			'diTauCandidateHistManagerForElecTau.diTauCandidateSource = selectedElecTauPairsForAHtoElecTauZeroChargeCumulative'
 		)
@@ -1141,7 +1143,7 @@ elecTauAnalysisSequenceOS_wBtag = cms.VPSet(
 			'electronHistManager.electronSource = selectedPatElectronsForElecTauTrkIPcumulative',
 			'tauHistManager.tauSource = selectedPatTausForElecTauMuonVetoCumulative',
 			'diTauCandidateHistManagerForElecTau.diTauCandidateSource = selectedElecTauPairsForAHtoElecTauPzetaDiffCumulative',
-			'diTauCandidateNSVfitHistManagerForElecTau.diTauCandidateSource = selectedElecTauPairsForAHtoElecTauPzetaDiffCumulative',
+            #'diTauCandidateNSVfitHistManagerForElecTau.diTauCandidateSource = selectedElecTauPairsForAHtoElecTauPzetaDiffCumulative',
 			'elecPairHistManagerByLooseIsolation.diTauCandidateSource = allDiElecPairZeeHypothesesByLooseIsolation'
 		)
     ),
@@ -1157,7 +1159,7 @@ elecTauAnalysisSequenceOS_wBtag = cms.VPSet(
             'electronHistManager',
             'tauHistManager',
             'diTauCandidateHistManagerForElecTau',
-            'diTauCandidateNSVfitHistManagerForElecTau',
+            #'diTauCandidateNSVfitHistManagerForElecTau',
             'diTauCandidateZeeHypothesisHistManagerForElecTau',
             'elecPairHistManagerByLooseIsolation',
             'jetHistManager'
@@ -1167,7 +1169,7 @@ elecTauAnalysisSequenceOS_wBtag = cms.VPSet(
 			'tauHistManager.tauSource = selectedPatTausForElecTauMuonVetoCumulative',
 			'jetHistManager.jetSource = selectedPatJetsForAHtoElecTauAntiOverlapWithLeptonsVetoCumulative',
 			'diTauCandidateHistManagerForElecTau.diTauCandidateSource = selectedElecTauPairsForAHtoElecTauPzetaDiffCumulative',
-			'diTauCandidateNSVfitHistManagerForElecTau.diTauCandidateSource = selectedElecTauPairsForAHtoElecTauPzetaDiffCumulative',
+            #'diTauCandidateNSVfitHistManagerForElecTau.diTauCandidateSource = selectedElecTauPairsForAHtoElecTauPzetaDiffCumulative',
 			'elecPairHistManagerByLooseIsolation.diTauCandidateSource = selectedDiElecPairZeeHypothesesByLooseIsolation'
 		)
     ),
@@ -1202,7 +1204,7 @@ elecTauAnalysisSequenceOS_wBtag = cms.VPSet(
 			'electronHistManager',
 			'tauHistManager',
 			'diTauCandidateHistManagerForElecTau',
-			'diTauCandidateNSVfitHistManagerForElecTau',
+            #'diTauCandidateNSVfitHistManagerForElecTau',
 			'jetHistManager'
 			),
 		replace = cms.vstring(
@@ -1210,7 +1212,7 @@ elecTauAnalysisSequenceOS_wBtag = cms.VPSet(
 			'tauHistManager.tauSource = selectedPatTausForElecTauElectronVetoCumulative',
 			'diTauCandidateHistManagerForElecTau.diTauCandidateSource = selectedElecTauPairsForAHtoElecTauPzetaDiffCumulative',
 			'diTauCandidateHistManagerForElecTau.visMassHypothesisSource = elecTauPairVisMassHypothesesForAHtoElecTau',
-			'diTauCandidateNSVfitHistManagerForElecTau.diTauCandidateSource = selectedElecTauPairsForAHtoElecTauPzetaDiffCumulative',
+            #'diTauCandidateNSVfitHistManagerForElecTau.diTauCandidateSource = selectedElecTauPairsForAHtoElecTauPzetaDiffCumulative',
 			'jetHistManager.jetSource = selectedPatJetsForAHtoElecTauBtagCumulative'
 		)
 	),
@@ -1226,7 +1228,7 @@ elecTauAnalysisSequenceOS_wBtag = cms.VPSet(
             'electronHistManager',
             'tauHistManager',
             'diTauCandidateHistManagerForElecTau',
-            'diTauCandidateNSVfitHistManagerForElecTau',
+            #'diTauCandidateNSVfitHistManagerForElecTau',
             'diTauCandidateZeeHypothesisHistManagerForElecTau',
             #'diTauLeg1ChargeBinGridHistManager',  breaks 4_2_X
 			'jetHistManager',
@@ -1243,8 +1245,9 @@ elecTauAnalysisSequenceOS_wBtag = cms.VPSet(
 			'electronHistManager.electronSource = selectedPatElectronsForElecTauTrkIPcumulative',
 			'tauHistManager.tauSource = selectedPatTausForElecTauMuonVetoCumulative',
 			'jetHistManager.jetSource = selectedPatJetsForAHtoElecTauBtagCumulative',
+            'vertexHistManager.vertexSource = selectedPrimaryVertexHighestPtTrackSumForElecTau',
             'diTauCandidateZeeHypothesisHistManagerForElecTau.ZllHypothesisSource = elecTauPairZeeHypothesesForAHtoElecTau',
-			'diTauCandidateNSVfitHistManagerForElecTau.diTauCandidateSource = selectedElecTauPairsForAHtoElecTauZeroChargeCumulative',
+            #'diTauCandidateNSVfitHistManagerForElecTau.diTauCandidateSource = selectedElecTauPairsForAHtoElecTauZeroChargeCumulative',
 			'diTauCandidateHistManagerForElecTau.visMassHypothesisSource = elecTauPairVisMassHypothesesForAHtoElecTau',
 			'diTauCandidateHistManagerForElecTau.diTauCandidateSource = selectedElecTauPairsForAHtoElecTauZeroChargeCumulative'
 		)
@@ -1396,7 +1399,7 @@ elecTauAnalysisSequenceSS_woBtag = cms.VPSet(
             'electronHistManager',
             'tauHistManager',
             'diTauCandidateHistManagerForElecTau',
-            'diTauCandidateNSVfitHistManagerForElecTau',
+            #'diTauCandidateNSVfitHistManagerForElecTau',
             'diTauCandidateZeeHypothesisHistManagerForElecTau',
             'jetHistManager',
             'caloMEtHistManager',
@@ -1407,9 +1410,10 @@ elecTauAnalysisSequenceSS_woBtag = cms.VPSet(
         replace = cms.vstring(
             'electronHistManager.electronSource = selectedPatElectronsForElecTauTrkIPcumulative',
             'tauHistManager.tauSource = selectedPatTausForElecTauElectronVetoCumulative',
+            'vertexHistManager.vertexSource = selectedPrimaryVertexHighestPtTrackSumForElecTau',
             'diTauCandidateHistManagerForElecTau.diTauCandidateSource = selectedElecTauPairsForAHtoElecTauNonZeroChargeCumulative',
             'diTauCandidateHistManagerForElecTau.visMassHypothesisSource = elecTauPairVisMassHypothesesForAHtoElecTau',
-            'diTauCandidateNSVfitHistManagerForElecTau.diTauCandidateSource = selectedElecTauPairsForAHtoElecTauNonZeroChargeCumulative',
+            #'diTauCandidateNSVfitHistManagerForElecTau.diTauCandidateSource = selectedElecTauPairsForAHtoElecTauNonZeroChargeCumulative',
             'diTauCandidateZeeHypothesisHistManagerForElecTau.ZllHypothesisSource = elecTauPairZeeHypothesesForAHtoElecTau',
 			'jetHistManager.jetSource = selectedPatJetsForAHtoElecTauAntiOverlapWithLeptonsVetoCumulative'
         )
@@ -1567,7 +1571,7 @@ elecTauAnalysisSequenceSS_wBtag = cms.VPSet(
             'electronHistManager',
             'tauHistManager',
             'diTauCandidateHistManagerForElecTau',
-            'diTauCandidateNSVfitHistManagerForElecTau',
+            #'diTauCandidateNSVfitHistManagerForElecTau',
             'diTauCandidateZeeHypothesisHistManagerForElecTau',
             'jetHistManager',
             'caloMEtHistManager',
@@ -1578,9 +1582,10 @@ elecTauAnalysisSequenceSS_wBtag = cms.VPSet(
         replace = cms.vstring(
             'electronHistManager.electronSource = selectedPatElectronsForElecTauTrkIPcumulative',
             'tauHistManager.tauSource = selectedPatTausForElecTauElectronVetoCumulative',
+            'vertexHistManager.vertexSource = selectedPrimaryVertexHighestPtTrackSumForElecTau',
             'diTauCandidateHistManagerForElecTau.diTauCandidateSource = selectedElecTauPairsForAHtoElecTauNonZeroChargeCumulative',
             'diTauCandidateHistManagerForElecTau.visMassHypothesisSource = elecTauPairVisMassHypothesesForAHtoElecTau',
-            'diTauCandidateNSVfitHistManagerForElecTau.diTauCandidateSource = selectedElecTauPairsForAHtoElecTauNonZeroChargeCumulative',
+            #'diTauCandidateNSVfitHistManagerForElecTau.diTauCandidateSource = selectedElecTauPairsForAHtoElecTauNonZeroChargeCumulative',
             'diTauCandidateZeeHypothesisHistManagerForElecTau.ZllHypothesisSource = elecTauPairZeeHypothesesForAHtoElecTau',
             'jetHistManager.jetSource = selectedPatJetsForAHtoElecTauBtagCumulative'
         )
