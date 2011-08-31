@@ -36,8 +36,8 @@ samples = {
 lxbatch_queue = '1nw'
 
 samplesToAnalyze = [
-    'Data_runs160329to163869',
-    'Data_runs165071to167913',
+    #'Data_runs160329to163869',
+    #'Data_runs165071to167913',
     'simDYtoMuMu'
 ]
 
