@@ -13,7 +13,7 @@ from TauAnalysis.Core.muonHistManager_cfi import *
 # import config for tau-jet histogram manager
 from TauAnalysis.Core.genTauHistManager_cfi import *
 from TauAnalysis.Core.pftauHistManager_cfi import *
-tauHistManager.useHPSpTaNCalgorithm = cms.bool(True)
+tauHistManager.useHPSclassicAlgorithm = cms.bool(True)
 
 # import config for di-tau histogram manager
 from TauAnalysis.Core.diTauCandidateHistManager_cfi import *
@@ -477,10 +477,10 @@ muTauEventDump = cms.PSet(
     tauSource = cms.InputTag('selectedPatTausPt20Cumulative'),
     printTauIdEfficiencies = cms.bool(False),
     diTauCandidateSource = cms.InputTag('allMuTauPairs'),
-    nSVfitAlgorithms = cms.vstring(
-        'psKine_MEt_logM_fit',
-        'psKine_MEt_logM_int'
-    ),
+	nSVfitAlgorithms = cms.vstring(
+	    'psKine_MEt_logM_fit',
+	    'psKine_MEt_logM_int'
+	),
     muTauZmumuHypothesisSource = cms.InputTag('muTauPairZmumuHypotheses'),
     diMuZmumuHypothesisSource = cms.InputTag('allDiMuPairZmumuHypothesesByLooseIsolation'),
     pfCandidateSource = cms.InputTag('particleFlow'),
@@ -545,8 +545,8 @@ muTauAnalysisSequenceOS = cms.VPSet(
             'cutFlowHistManagerRecMultiplicity',
             'modelBinnerForMuTauGenTauLeptonPairAcc',
             'modelBinnerForMuTauWrtGenTauLeptonPairAcc',
-            'modelBinnerForMuTauGenTauLeptonPairAcc3mZbins',
-            'modelBinnerForMuTauWrtGenTauLeptonPairAcc3mZbins',
+			#'modelBinnerForMuTauGenTauLeptonPairAcc3mZbins',
+			#'modelBinnerForMuTauWrtGenTauLeptonPairAcc3mZbins',
             'sysUncertaintyBinnerForMuTauAcc'
         )
     ),
