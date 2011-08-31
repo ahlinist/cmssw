@@ -1062,13 +1062,13 @@ void Trig_Pos(){
   EffMCTruth1->SetMarkerStyle(24);
   EffMCTruth1->SetMarkerColor(4);
   EffMCTruth1->SetLineColor(4);
-  EffMCTruth1->Draw("pesame");  
+  //EffMCTruth1->Draw("pesame");  
   legg = new TLegend(0.6,0.2,0.8,0.4);
   legg->SetFillStyle(0); legg->SetBorderSize(0); legg->SetTextSize(0.05); legg->SetTextFont(132); 
   legg->SetHeader("  -2.4 < #eta^{#mu} < -1.2");
   legge = legg->AddEntry(EffData1,  "J/#psi TNP Data","p"); legge->SetTextColor(kRed);
   legge = legg->AddEntry(EffMC1,  "J/#psi TNP MC","p"); legge->SetTextColor(kBlack);
-  legge = legg->AddEntry(EffMCTruth1,  "J/#psi MCTruth","p"); legge->SetTextColor(kBlue);
+  //legge = legg->AddEntry(EffMCTruth1,  "J/#psi MCTruth","p"); legge->SetTextColor(kBlue);
   legg->Draw();
   c3->cd(2);
   EffData2->SetMinimum(0.2);
@@ -1084,13 +1084,13 @@ void Trig_Pos(){
   EffMCTruth2->SetMarkerStyle(24);
   EffMCTruth2->SetMarkerColor(4);
   EffMCTruth2->SetLineColor(4);
-  EffMCTruth2->Draw("pesame");  
+  //EffMCTruth2->Draw("pesame");  
   legg = new TLegend(0.6,0.2,0.8,0.4);
   legg->SetFillStyle(0); legg->SetBorderSize(0); legg->SetTextSize(0.05); legg->SetTextFont(132); 
   legg->SetHeader("  -1.2 < #eta^{#mu} < -0.4");
   legge = legg->AddEntry(EffData2,  "J/#psi TNP Data","p"); legge->SetTextColor(kRed);
   legge = legg->AddEntry(EffMC2,  "J/#psi TNP MC","p"); legge->SetTextColor(kBlack);
-  legge = legg->AddEntry(EffMCTruth2,  "J/#psi MCTruth","p"); legge->SetTextColor(kBlue);
+  //legge = legg->AddEntry(EffMCTruth2,  "J/#psi MCTruth","p"); legge->SetTextColor(kBlue);
   legg->Draw();  
   c3->cd(3);
   EffData3->SetMinimum(0.2);
@@ -1106,13 +1106,13 @@ void Trig_Pos(){
   EffMCTruth3->SetMarkerStyle(24);
   EffMCTruth3->SetMarkerColor(4);
   EffMCTruth3->SetLineColor(4);
-  EffMCTruth3->Draw("pesame");  
+  //EffMCTruth3->Draw("pesame");  
   legg = new TLegend(0.6,0.2,0.8,0.4);
   legg->SetFillStyle(0); legg->SetBorderSize(0); legg->SetTextSize(0.05); legg->SetTextFont(132); 
   legg->SetHeader("  -0.4 < #eta^{#mu} < 0.4");
   legge = legg->AddEntry(EffData3,  "J/#psi TNP Data","p"); legge->SetTextColor(kRed);
   legge = legg->AddEntry(EffMC3,  "J/#psi TNP MC","p"); legge->SetTextColor(kBlack);
-  legge = legg->AddEntry(EffMCTruth3,  "J/#psi MCTruth","p"); legge->SetTextColor(kBlue);
+  //legge = legg->AddEntry(EffMCTruth3,  "J/#psi MCTruth","p"); legge->SetTextColor(kBlue);
   legg->Draw();   
   c3->cd(4);
   EffData4->SetMinimum(0.2);
@@ -1128,13 +1128,13 @@ void Trig_Pos(){
   EffMCTruth4->SetMarkerStyle(24);
   EffMCTruth4->SetMarkerColor(4);
   EffMCTruth4->SetLineColor(4);
-  EffMCTruth4->Draw("pesame");   
+  //EffMCTruth4->Draw("pesame");   
   legg = new TLegend(0.6,0.2,0.8,0.4);
   legg->SetFillStyle(0); legg->SetBorderSize(0); legg->SetTextSize(0.05); legg->SetTextFont(132); 
   legg->SetHeader("  0.4 < #eta^{#mu} < 1.2");
   legge = legg->AddEntry(EffData4,  "J/#psi TNP Data","p"); legge->SetTextColor(kRed);
   legge = legg->AddEntry(EffMC4,  "J/#psi TNP MC","p"); legge->SetTextColor(kBlack);
-  legge = legg->AddEntry(EffMCTruth4,  "J/#psi MCTruth","p"); legge->SetTextColor(kBlue);
+  //legge = legg->AddEntry(EffMCTruth4,  "J/#psi MCTruth","p"); legge->SetTextColor(kBlue);
   legg->Draw();   
   c3->cd(5);
   EffData5->SetMinimum(0.2);
@@ -1150,20 +1150,20 @@ void Trig_Pos(){
   EffMCTruth5->SetMarkerStyle(24);
   EffMCTruth5->SetMarkerColor(4);
   EffMCTruth5->SetLineColor(4);
-  EffMCTruth5->Draw("pesame");   
+  //EffMCTruth5->Draw("pesame");   
   legg = new TLegend(0.6,0.2,0.8,0.4);
   legg->SetFillStyle(0); legg->SetBorderSize(0); legg->SetTextSize(0.05); legg->SetTextFont(132); 
   legg->SetHeader("  1.2 < #eta^{#mu} < 2.4");
   legge = legg->AddEntry(EffData5,  "J/#psi TNP Data","p"); legge->SetTextColor(kRed);
   legge = legg->AddEntry(EffMC5,  "J/#psi TNP MC","p"); legge->SetTextColor(kBlack);
-  legge = legg->AddEntry(EffMCTruth5,  "J/#psi MCTruth","p"); legge->SetTextColor(kBlue);
+  //legge = legg->AddEntry(EffMCTruth5,  "J/#psi MCTruth","p"); legge->SetTextColor(kBlue);
   legg->Draw();     
   
   TCanvas *c301 = new TCanvas("c301","c301",800,600); 
   EffData1->SetTitle("");
   EffData1->GetXaxis()->SetTitle("Probe p_{T} [GeV/c]");
   EffData1->GetYaxis()->SetTitle("Efficieny");
-  EffData1->SetMinimum(0.75);
+  EffData1->SetMinimum(0.65);
   EffData1->SetMaximum(1.05);
   EffData1->SetMarkerStyle(22);
   EffData1->SetMarkerColor(2);
@@ -1176,13 +1176,13 @@ void Trig_Pos(){
   EffMCTruth1->SetMarkerStyle(24);
   EffMCTruth1->SetMarkerColor(4);
   EffMCTruth1->SetLineColor(4);
-  EffMCTruth1->Draw("pesame"); 
+  //EffMCTruth1->Draw("pesame"); 
   legg = new TLegend(0.6,0.2,0.8,0.4);
   legg->SetFillStyle(0); legg->SetBorderSize(0); legg->SetTextSize(0.05); legg->SetTextFont(132); 
   legg->SetHeader("  -2.4 < #eta^{#mu} < -1.2");
   legge = legg->AddEntry(EffData1,  "J/#psi TNP Data","p"); legge->SetTextColor(kRed);
   legge = legg->AddEntry(EffMC1,  "J/#psi TNP MC","p"); legge->SetTextColor(kBlack);
-  legge = legg->AddEntry(EffMCTruth1,  "J/#psi MCTruth","p"); legge->SetTextColor(kBlue);
+  //legge = legg->AddEntry(EffMCTruth1,  "J/#psi MCTruth","p"); legge->SetTextColor(kBlue);
   legg->Draw();
   c301->SaveAs("TrigPos1.pdf");
   
@@ -1190,7 +1190,7 @@ void Trig_Pos(){
   EffData2->SetTitle("");
   EffData2->GetXaxis()->SetTitle("Probe p_{T} [GeV/c]");
   EffData2->GetYaxis()->SetTitle("Efficieny");
-  EffData2->SetMinimum(0.75);
+  EffData2->SetMinimum(0.65);
   EffData2->SetMaximum(1.05);
   EffData2->SetMarkerStyle(22);
   EffData2->SetMarkerColor(2);
@@ -1203,13 +1203,13 @@ void Trig_Pos(){
   EffMCTruth2->SetMarkerStyle(24);
   EffMCTruth2->SetMarkerColor(4);
   EffMCTruth2->SetLineColor(4);
-  EffMCTruth2->Draw("pesame");  
+  //EffMCTruth2->Draw("pesame");  
   legg = new TLegend(0.6,0.2,0.8,0.4);
   legg->SetFillStyle(0); legg->SetBorderSize(0); legg->SetTextSize(0.05); legg->SetTextFont(132); 
   legg->SetHeader("  -1.2 < #eta^{#mu} < -0.4");
   legge = legg->AddEntry(EffData2,  "J/#psi TNP Data","p"); legge->SetTextColor(kRed);
   legge = legg->AddEntry(EffMC2,  "J/#psi TNP MC","p"); legge->SetTextColor(kBlack);
-  legge = legg->AddEntry(EffMCTruth2,  "J/#psi MCTruth","p"); legge->SetTextColor(kBlue);
+  //legge = legg->AddEntry(EffMCTruth2,  "J/#psi MCTruth","p"); legge->SetTextColor(kBlue);
   legg->Draw();
   c302->SaveAs("TrigPos2.pdf");
   
@@ -1217,7 +1217,7 @@ void Trig_Pos(){
   EffData3->SetTitle("");
   EffData3->GetXaxis()->SetTitle("Probe p_{T} [GeV/c]");
   EffData3->GetYaxis()->SetTitle("Efficieny");
-  EffData3->SetMinimum(0.75);
+  EffData3->SetMinimum(0.65);
   EffData3->SetMaximum(1.05);
   EffData3->SetMarkerStyle(22);
   EffData3->SetMarkerColor(2);
@@ -1230,13 +1230,13 @@ void Trig_Pos(){
   EffMCTruth3->SetMarkerStyle(24);
   EffMCTruth3->SetMarkerColor(4);
   EffMCTruth3->SetLineColor(4);
-  EffMCTruth3->Draw("pesame");  
+  //EffMCTruth3->Draw("pesame");  
   legg = new TLegend(0.6,0.2,0.8,0.4);
   legg->SetFillStyle(0); legg->SetBorderSize(0); legg->SetTextSize(0.05); legg->SetTextFont(132); 
   legg->SetHeader("  -0.4 < #eta^{#mu} < 0.4");
   legge = legg->AddEntry(EffData3,  "J/#psi TNP Data","p"); legge->SetTextColor(kRed);
   legge = legg->AddEntry(EffMC3,  "J/#psi TNP MC","p"); legge->SetTextColor(kBlack);
-  legge = legg->AddEntry(EffMCTruth3,  "J/#psi MCTruth","p"); legge->SetTextColor(kBlue);
+  //legge = legg->AddEntry(EffMCTruth3,  "J/#psi MCTruth","p"); legge->SetTextColor(kBlue);
   legg->Draw();
   c303->SaveAs("TrigPos3.pdf");
   
@@ -1244,7 +1244,7 @@ void Trig_Pos(){
   EffData4->SetTitle("");
   EffData4->GetXaxis()->SetTitle("Probe p_{T} [GeV/c]");
   EffData4->GetYaxis()->SetTitle("Efficieny");
-  EffData4->SetMinimum(0.75);
+  EffData4->SetMinimum(0.65);
   EffData4->SetMaximum(1.05);
   EffData4->SetMarkerStyle(22);
   EffData4->SetMarkerColor(2);
@@ -1257,13 +1257,13 @@ void Trig_Pos(){
   EffMCTruth4->SetMarkerStyle(24);
   EffMCTruth4->SetMarkerColor(4);
   EffMCTruth4->SetLineColor(4);
-  EffMCTruth4->Draw("pesame");  
+  //EffMCTruth4->Draw("pesame");  
   legg = new TLegend(0.6,0.2,0.8,0.4);
   legg->SetFillStyle(0); legg->SetBorderSize(0); legg->SetTextSize(0.05); legg->SetTextFont(132); 
   legg->SetHeader("  0.4 < #eta^{#mu} < 1.2");
   legge = legg->AddEntry(EffData4,  "J/#psi TNP Data","p"); legge->SetTextColor(kRed);
   legge = legg->AddEntry(EffMC4,  "J/#psi TNP MC","p"); legge->SetTextColor(kBlack);
-  legge = legg->AddEntry(EffMCTruth4,  "J/#psi MCTruth","p"); legge->SetTextColor(kBlue); 
+  //legge = legg->AddEntry(EffMCTruth4,  "J/#psi MCTruth","p"); legge->SetTextColor(kBlue); 
   legg->Draw();
   c304->SaveAs("TrigPos4.pdf");
   
@@ -1271,7 +1271,7 @@ void Trig_Pos(){
   EffData5->SetTitle("");
   EffData5->GetXaxis()->SetTitle("Probe p_{T} [GeV/c]");
   EffData5->GetYaxis()->SetTitle("Efficieny");
-  EffData5->SetMinimum(0.75);
+  EffData5->SetMinimum(0.65);
   EffData5->SetMaximum(1.05);
   EffData5->SetMarkerStyle(22);
   EffData5->SetMarkerColor(2);
@@ -1284,13 +1284,13 @@ void Trig_Pos(){
   EffMCTruth5->SetMarkerStyle(24);
   EffMCTruth5->SetMarkerColor(4);
   EffMCTruth5->SetLineColor(4);
-  EffMCTruth5->Draw("pesame");
+  //EffMCTruth5->Draw("pesame");
   legg = new TLegend(0.6,0.2,0.8,0.4);
   legg->SetFillStyle(0); legg->SetBorderSize(0); legg->SetTextSize(0.05); legg->SetTextFont(132); 
   legg->SetHeader("  1.2 < #eta^{#mu} < 2.4");
   legge = legg->AddEntry(EffData1,  "J/#psi TNP Data","p"); legge->SetTextColor(kRed);
   legge = legg->AddEntry(EffMC1,  "J/#psi TNP MC","p"); legge->SetTextColor(kBlack);
-  legge = legg->AddEntry(EffMCTruth4,  "J/#psi MCTruth","p"); legge->SetTextColor(kBlue); 
+  //legge = legg->AddEntry(EffMCTruth4,  "J/#psi MCTruth","p"); legge->SetTextColor(kBlue); 
   legg->Draw();
   c305->SaveAs("TrigPos5.pdf");
   
@@ -1399,13 +1399,13 @@ void Trig_Neg(){
   EffMCTruth1->SetMarkerStyle(24);
   EffMCTruth1->SetMarkerColor(4);
   EffMCTruth1->SetLineColor(4);
-  EffMCTruth1->Draw("pesame");
+  //EffMCTruth1->Draw("pesame");
   legg = new TLegend(0.6,0.2,0.8,0.4);
   legg->SetFillStyle(0); legg->SetBorderSize(0); legg->SetTextSize(0.05); legg->SetTextFont(132); 
   legg->SetHeader("  -2.4 < #eta^{#mu} < -1.2");
   legge = legg->AddEntry(EffData1,  "J/#psi TNP Data","p"); legge->SetTextColor(kRed);
   legge = legg->AddEntry(EffMC1,  "J/#psi TNP MC","p"); legge->SetTextColor(kBlack);
-  legge = legg->AddEntry(EffMCTruth1,  "J/#psi MCTruth","p"); legge->SetTextColor(kBlue);
+  //legge = legg->AddEntry(EffMCTruth1,  "J/#psi MCTruth","p"); legge->SetTextColor(kBlue);
   legg->Draw();
   c4->cd(2);
   EffData2->SetMinimum(0.2);
@@ -1421,13 +1421,13 @@ void Trig_Neg(){
   EffMCTruth2->SetMarkerStyle(24);
   EffMCTruth2->SetMarkerColor(4);
   EffMCTruth2->SetLineColor(4);
-  EffMCTruth2->Draw("pesame");
+  //EffMCTruth2->Draw("pesame");
   legg = new TLegend(0.6,0.2,0.8,0.4);
   legg->SetFillStyle(0); legg->SetBorderSize(0); legg->SetTextSize(0.05); legg->SetTextFont(132); 
   legg->SetHeader("  -1.2 < #eta^{#mu} < -0.4");
   legge = legg->AddEntry(EffData2,  "J/#psi TNP Data","p"); legge->SetTextColor(kRed);
   legge = legg->AddEntry(EffMC2,  "J/#psi TNP MC","p"); legge->SetTextColor(kBlack);
-  legge = legg->AddEntry(EffMCTruth2,  "J/#psi MCTruth","p"); legge->SetTextColor(kBlue);
+  //legge = legg->AddEntry(EffMCTruth2,  "J/#psi MCTruth","p"); legge->SetTextColor(kBlue);
   legg->Draw();  
   c4->cd(3);
   EffData3->SetMinimum(0.2);
@@ -1443,13 +1443,13 @@ void Trig_Neg(){
   EffMCTruth3->SetMarkerStyle(24);
   EffMCTruth3->SetMarkerColor(4);
   EffMCTruth3->SetLineColor(4);
-  EffMCTruth3->Draw("pesame"); 
+  //EffMCTruth3->Draw("pesame"); 
   legg = new TLegend(0.6,0.2,0.8,0.4);
   legg->SetFillStyle(0); legg->SetBorderSize(0); legg->SetTextSize(0.05); legg->SetTextFont(132); 
   legg->SetHeader("  -0.4 < #eta^{#mu} < 0.4");
   legge = legg->AddEntry(EffData3,  "J/#psi T&P Data","p"); legge->SetTextColor(kRed);
   legge = legg->AddEntry(EffMC3,  "J/#psi T&P MC","p"); legge->SetTextColor(kBlack);
-  legge = legg->AddEntry(EffMCTruth3,  "J/#psi MCTruth","p"); legge->SetTextColor(kBlue);
+  //legge = legg->AddEntry(EffMCTruth3,  "J/#psi MCTruth","p"); legge->SetTextColor(kBlue);
   legg->Draw();   
   c4->cd(4);
   EffData4->SetMinimum(0.2);
@@ -1465,13 +1465,13 @@ void Trig_Neg(){
   EffMCTruth4->SetMarkerStyle(24);
   EffMCTruth4->SetMarkerColor(4);
   EffMCTruth4->SetLineColor(4);
-  EffMCTruth4->Draw("pesame");   
+  //EffMCTruth4->Draw("pesame");   
   legg = new TLegend(0.6,0.2,0.8,0.4);
   legg->SetFillStyle(0); legg->SetBorderSize(0); legg->SetTextSize(0.05); legg->SetTextFont(132); 
   legg->SetHeader("  0.4 < #eta^{#mu} < 1.2");
   legge = legg->AddEntry(EffData4,  "J/#psi TNP Data","p"); legge->SetTextColor(kRed);
   legge = legg->AddEntry(EffMC4,  "J/#psi TNP MC","p"); legge->SetTextColor(kBlack);
-  legge = legg->AddEntry(EffMCTruth4,  "J/#psi MCTruth","p"); legge->SetTextColor(kBlue);
+  //legge = legg->AddEntry(EffMCTruth4,  "J/#psi MCTruth","p"); legge->SetTextColor(kBlue);
   legg->Draw();   
   c4->cd(5);
   EffData5->SetMinimum(0.2);
@@ -1487,13 +1487,13 @@ void Trig_Neg(){
   EffMCTruth5->SetMarkerStyle(24);
   EffMCTruth5->SetMarkerColor(4);
   EffMCTruth5->SetLineColor(4);
-  EffMCTruth5->Draw("pesame"); 
+  //EffMCTruth5->Draw("pesame"); 
   legg = new TLegend(0.6,0.2,0.8,0.4);
   legg->SetFillStyle(0); legg->SetBorderSize(0); legg->SetTextSize(0.05); legg->SetTextFont(132); 
   legg->SetHeader("  1.2 < #eta^{#mu} < 2.4");
   legge = legg->AddEntry(EffData5,  "J/#psi TNP Data","p"); legge->SetTextColor(kRed);
   legge = legg->AddEntry(EffMC5,  "J/#psi TNP MC","p"); legge->SetTextColor(kBlack);
-  legge = legg->AddEntry(EffMCTruth5,  "J/#psi MCTruth","p"); legge->SetTextColor(kBlue);
+  //legge = legg->AddEntry(EffMCTruth5,  "J/#psi MCTruth","p"); legge->SetTextColor(kBlue);
   legg->Draw();     
   
   
@@ -1501,7 +1501,7 @@ void Trig_Neg(){
   EffData1->SetTitle("");
   EffData1->GetXaxis()->SetTitle("Probe p_{T} [GeV/c]");
   EffData1->GetYaxis()->SetTitle("Efficieny");
-  EffData1->SetMinimum(0.75);
+  EffData1->SetMinimum(0.65);
   EffData1->SetMaximum(1.05);
   EffData1->SetMarkerStyle(22);
   EffData1->SetMarkerColor(2);
@@ -1514,13 +1514,13 @@ void Trig_Neg(){
   EffMCTruth1->SetMarkerStyle(24);
   EffMCTruth1->SetMarkerColor(4);
   EffMCTruth1->SetLineColor(4);
-  EffMCTruth1->Draw("pesame"); 
+  //EffMCTruth1->Draw("pesame"); 
   legg = new TLegend(0.6,0.2,0.8,0.4);
   legg->SetFillStyle(0); legg->SetBorderSize(0); legg->SetTextSize(0.05); legg->SetTextFont(132); 
   legg->SetHeader("  -2.4 < #eta^{#mu} < -1.2");
   legge = legg->AddEntry(EffData1,  "J/#psi TNP Data","p"); legge->SetTextColor(kRed);
   legge = legg->AddEntry(EffMC1,  "J/#psi TNP MC","p"); legge->SetTextColor(kBlack);
-  legge = legg->AddEntry(EffMCTruth1,  "J/#psi MCTruth","p"); legge->SetTextColor(kBlue);
+  //legge = legg->AddEntry(EffMCTruth1,  "J/#psi MCTruth","p"); legge->SetTextColor(kBlue);
   legg->Draw();
   c401->SaveAs("TrigNeg1.pdf");
   
@@ -1528,7 +1528,7 @@ void Trig_Neg(){
   EffData2->SetTitle("");
   EffData2->GetXaxis()->SetTitle("Probe p_{T} [GeV/c]");
   EffData2->GetYaxis()->SetTitle("Efficieny");
-  EffData2->SetMinimum(0.75);
+  EffData2->SetMinimum(0.65);
   EffData2->SetMaximum(1.05);
   EffData2->SetMarkerStyle(22);
   EffData2->SetMarkerColor(2);
@@ -1541,13 +1541,13 @@ void Trig_Neg(){
   EffMCTruth2->SetMarkerStyle(24);
   EffMCTruth2->SetMarkerColor(4);
   EffMCTruth2->SetLineColor(4);
-  EffMCTruth2->Draw("pesame");  
+  //EffMCTruth2->Draw("pesame");  
   legg = new TLegend(0.6,0.2,0.8,0.4);
   legg->SetFillStyle(0); legg->SetBorderSize(0); legg->SetTextSize(0.05); legg->SetTextFont(132); 
   legg->SetHeader("  -1.2 < #eta^{#mu} < -0.4");
   legge = legg->AddEntry(EffData1,  "J/#psi TNP Data","p"); legge->SetTextColor(kRed);
   legge = legg->AddEntry(EffMC1,  "J/#psi TNP MC","p"); legge->SetTextColor(kBlack);
-  legge = legg->AddEntry(EffMCTruth2,  "J/#psi MCTruth","p"); legge->SetTextColor(kBlue);
+  //legge = legg->AddEntry(EffMCTruth2,  "J/#psi MCTruth","p"); legge->SetTextColor(kBlue);
   legg->Draw();
   c402->SaveAs("TrigNeg2.pdf");
   
@@ -1555,7 +1555,7 @@ void Trig_Neg(){
   EffData3->SetTitle("");
   EffData3->GetXaxis()->SetTitle("Probe p_{T} [GeV/c]");
   EffData3->GetYaxis()->SetTitle("Efficieny");
-  EffData3->SetMinimum(0.75);
+  EffData3->SetMinimum(0.65);
   EffData3->SetMaximum(1.05);
   EffData3->SetMarkerStyle(22);
   EffData3->SetMarkerColor(2);
@@ -1568,13 +1568,13 @@ void Trig_Neg(){
   EffMCTruth3->SetMarkerStyle(24);
   EffMCTruth3->SetMarkerColor(4);
   EffMCTruth3->SetLineColor(4);
-  EffMCTruth3->Draw("pesame");  
+  //EffMCTruth3->Draw("pesame");  
   legg = new TLegend(0.6,0.2,0.8,0.4);
   legg->SetFillStyle(0); legg->SetBorderSize(0); legg->SetTextSize(0.05); legg->SetTextFont(132); 
   legg->SetHeader("  -0.4 < #eta^{#mu} < 0.4");
   legge = legg->AddEntry(EffData1,  "J/#psi TNP Data","p"); legge->SetTextColor(kRed);
   legge = legg->AddEntry(EffMC1,  "J/#psi TNP MC","p"); legge->SetTextColor(kBlack);
-  legge = legg->AddEntry(EffMCTruth3,  "J/#psi MCTruth","p"); legge->SetTextColor(kBlue);
+  //legge = legg->AddEntry(EffMCTruth3,  "J/#psi MCTruth","p"); legge->SetTextColor(kBlue);
   legg->Draw();
   c403->SaveAs("TrigNeg3.pdf");
   
@@ -1582,7 +1582,7 @@ void Trig_Neg(){
   EffData4->SetTitle("");
   EffData4->GetXaxis()->SetTitle("Probe p_{T} [GeV/c]");
   EffData4->GetYaxis()->SetTitle("Efficieny");
-  EffData4->SetMinimum(0.75);
+  EffData4->SetMinimum(0.65);
   EffData4->SetMaximum(1.05);
   EffData4->SetMarkerStyle(22);
   EffData4->SetMarkerColor(2);
@@ -1595,13 +1595,13 @@ void Trig_Neg(){
   EffMCTruth4->SetMarkerStyle(24);
   EffMCTruth4->SetMarkerColor(4);
   EffMCTruth4->SetLineColor(4);
-  EffMCTruth4->Draw("pesame"); 
+  //EffMCTruth4->Draw("pesame"); 
   legg = new TLegend(0.6,0.2,0.8,0.4);
   legg->SetFillStyle(0); legg->SetBorderSize(0); legg->SetTextSize(0.05); legg->SetTextFont(132); 
   legg->SetHeader("  0.4 < #eta^{#mu} < 1.2");
   legge = legg->AddEntry(EffData1,  "J/#psi TNP Data","p"); legge->SetTextColor(kRed);
   legge = legg->AddEntry(EffMC1,  "J/#psi TNP MC","p"); legge->SetTextColor(kBlack);
-  legge = legg->AddEntry(EffMCTruth4,  "J/#psi MCTruth","p"); legge->SetTextColor(kBlue);
+  //legge = legg->AddEntry(EffMCTruth4,  "J/#psi MCTruth","p"); legge->SetTextColor(kBlue);
   legg->Draw();
   c404->SaveAs("TrigNeg4.pdf");
   
@@ -1609,7 +1609,7 @@ void Trig_Neg(){
   EffData5->SetTitle("");
   EffData5->GetXaxis()->SetTitle("Probe p_{T} [GeV/c]");
   EffData5->GetYaxis()->SetTitle("Efficieny");
-  EffData5->SetMinimum(0.75);
+  EffData5->SetMinimum(0.65);
   EffData5->SetMaximum(1.05);
   EffData5->SetMarkerStyle(22);
   EffData5->SetMarkerColor(2);
@@ -1622,13 +1622,13 @@ void Trig_Neg(){
   EffMCTruth5->SetMarkerStyle(24);
   EffMCTruth5->SetMarkerColor(4);
   EffMCTruth5->SetLineColor(4);
-  EffMCTruth5->Draw("pesame");
+  //EffMCTruth5->Draw("pesame");
   legg = new TLegend(0.6,0.2,0.8,0.4);
   legg->SetFillStyle(0); legg->SetBorderSize(0); legg->SetTextSize(0.05); legg->SetTextFont(132); 
   legg->SetHeader("  1.2 < #eta^{#mu} < 2.4");
   legge = legg->AddEntry(EffData1,  "J/#psi TNP Data","p"); legge->SetTextColor(kRed);
   legge = legg->AddEntry(EffMC1,  "J/#psi TNP MC","p"); legge->SetTextColor(kBlack);
-  legge = legg->AddEntry(EffMCTruth4,  "J/#psi MCTruth","p"); legge->SetTextColor(kBlue); 
+  //legge = legg->AddEntry(EffMCTruth4,  "J/#psi MCTruth","p"); legge->SetTextColor(kBlue); 
   legg->Draw();
   c405->SaveAs("TrigNeg5.pdf");
   
