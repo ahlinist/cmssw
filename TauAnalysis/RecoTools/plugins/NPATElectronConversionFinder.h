@@ -8,7 +8,7 @@
 //
 //  This module selects electrons with the following logic:
 //    (minMissingInnerHits <= missingInnerHits <= maxMissingInnerHits ) &&
-//    (invertConversionVeto*NOT( minRxy <= Rxy && minFitProb <= fitProb && maxHitsBeforeVertex < hitsBeforeVertex ) )
+//    (invertConversionVeto*NOT( minRxy <= Rxy && minFitProb <= fitProb && maxHitsBeforeVertex >= hitsBeforeVertex ) )
 //
 //  python configuration parameters:
 //   1) maxMissingInnerHits 
@@ -32,7 +32,7 @@
 //      - default is false
 //
 //  Using the default values for all parameters will reject electrons from conversion 
-//  according to the EGamma POG recommendations
+//  according to the EGamma POG recommendations as of Spring 2011
 //
 //-------------------------------------------------------------------------------------------
 
