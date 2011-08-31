@@ -53,6 +53,8 @@ public:
   void        preSelEff();
   bool        MuIDCheck();
   bool        MomentumCorrection();
+  bool        CowboyVeto(TAnaCand *pCand);
+  bool        CowboyVeto_gen(TGenCand *genCand);
   void        getBinCenters(TGenCand *gCand, double &pt, double &rapidity);
   void        GetBinCenters(TAnaCand *pCand, double &pt, double &rapidity);
   void        GetBINCenters(TLorentzVector Cand, double &pt, double &rapidity);

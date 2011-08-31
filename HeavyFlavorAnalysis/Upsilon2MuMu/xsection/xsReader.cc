@@ -183,6 +183,36 @@ bool xsReader::CowboyVeto(TAnaCand *pCand){
   return veto;
 }
 
+bool xsReader::CowboyVeto_gen(TGenCand *gCand){
+  bool veto =false;
+  TGenCand *pl1(0); TGenCand *pl2(0); TGenCand *g2Cand(0); 
+  bool l1(false); bool l2(false);
+  pl1 = fpEvt->getGenCand(gCand->fDau1);
+  pl2 = fpEvt->getGenCand(gCand->fDau2);
+  for (int i = gCand->fDau1; i <= gCand->fDau2; ++i) {
+    g2Cand = fpEvt->getGenCand(i);
+    //cout << "g2Cand  =  " << g2Cand->fID << endl;
+    if (13 == TMath::Abs(g2Cand->fID)){
+      if ( !l1 && !l2 ) {
+	pl1 = fpEvt->getGenCand(i);
+	l1 = true; 
+	//cout << "pl1  =  " << g2Cand->fID << endl;
+	continue;
+      }
+      if ( l1 && !l2  )
+	pl2 = fpEvt->getGenCand(i);
+	l2 = true; 
+	//cout << "pl2  =  " << g2Cand->fID << endl;
+	continue;
+    }
+  }
+  
+  if ( l1 && l2 ){
+    if ( (pl1->fQ*( pl1->fP.Phi() - pl2->fP.Phi() )) > 0 ) veto=true;
+  }
+  
+  return veto;
+}
 
 
 bool xsReader::MomentumCorrection(){
@@ -279,6 +309,7 @@ void xsReader::GenStudy(){
       if ( (gCand->fP.Perp() <= PTCAND) && (fabs(genCand.Rapidity()) <= RAPCAND) ){
 	gDau1 = fpEvt->getGenCand(gCand->fDau1);
 	gDau2 = fpEvt->getGenCand(gCand->fDau2);
+	//if ( CowboyVeto_gen(gCand) ) continue;
 	for (int i = gCand->fDau1; i <= gCand->fDau2; ++i) {
 	  g2Cand = fpEvt->getGenCand(i);
 	  if (13 == TMath::Abs(g2Cand->fID)) {
