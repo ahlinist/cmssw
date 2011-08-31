@@ -50,6 +50,7 @@ class TauHistManager : public HistManagerBase
   bool requireGenTauMatch_;
 
   bool useHPSpTaNCalgorithm_;
+  bool useHPSclassicAlgorithm_;
 
   bool makeIsoPtCtrlHistograms_;
   bool makeIsoPtConeSizeDepHistograms_;
@@ -172,15 +173,29 @@ class TauHistManager : public HistManagerBase
   MonitorElement* hTauDiscriminatorTaNCfrQuarterPercent_;
   MonitorElement* hTauDiscriminatorTaNCfrTenthPercent_;
 
-  MonitorElement* hTauDiscriminatorTaNCvloose_;
-  MonitorElement* hTauDiscriminatorTaNCloose_;
-  MonitorElement* hTauDiscriminatorTaNCmedium_;
-  MonitorElement* hTauDiscriminatorTaNCtight_;
+  MonitorElement* hTauDiscriminatorCombinedTaNCvloose_;
+  MonitorElement* hTauDiscriminatorCombinedTaNCloose_;
+  MonitorElement* hTauDiscriminatorCombinedTaNCmedium_;
+  MonitorElement* hTauDiscriminatorCombinedTaNCtight_;
 
+  MonitorElement* hTauDiscriminatorCombinedHPSvloose_;
+  MonitorElement* hTauDiscriminatorCombinedHPSloose_;
+  MonitorElement* hTauDiscriminatorCombinedHPSmedium_;
+  MonitorElement* hTauDiscriminatorCombinedHPStight_;
+
+  MonitorElement* hTauDiscriminatorHPSvloose_;
   MonitorElement* hTauDiscriminatorHPSloose_;
   MonitorElement* hTauDiscriminatorHPSmedium_;
   MonitorElement* hTauDiscriminatorHPStight_;
-
+  MonitorElement* hTauDiscriminatorHPSvlooseDeltaB_;
+  MonitorElement* hTauDiscriminatorHPSlooseDeltaB_;
+  MonitorElement* hTauDiscriminatorHPSmediumDeltaB_;
+  MonitorElement* hTauDiscriminatorHPStightDeltaB_;
+  MonitorElement* hTauDiscriminatorHPSvlooseCombDeltaB_;
+  MonitorElement* hTauDiscriminatorHPSlooseCombDeltaB_;
+  MonitorElement* hTauDiscriminatorHPSmediumCombDeltaB_;
+  MonitorElement* hTauDiscriminatorHPStightCombDeltaB_;
+  
   MonitorElement* hTauTrkIsoPt_;
   MonitorElement* hTauEcalIsoPt_;
   MonitorElement* hTauHcalIsoPt_;
