@@ -41,7 +41,7 @@ selectedPatElectronsForZeeHypothesesPt = cms.EDFilter("PATElectronSelector",
 
 selectedPatElectronsForZeeHypothesesLoosePFRelIso = cms.EDFilter("PATElectronPFIsolationSelector",
     patElectronPFIsolationSelector.clone(
-        sumPtMax = cms.double(0.15),
+        sumPtMax = cms.double(0.30),
 		pfCandidateSource = cms.InputTag("pfNoPileUp")  # we no longer use the IP-selected PF candidates
     ),
     src = cms.InputTag("selectedPatElectronsForZeeHypothesesPt"),  
