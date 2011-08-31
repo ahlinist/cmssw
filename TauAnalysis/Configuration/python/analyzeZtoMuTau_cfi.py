@@ -545,8 +545,8 @@ muTauAnalysisSequenceOS = cms.VPSet(
             'cutFlowHistManagerRecMultiplicity',
             'modelBinnerForMuTauGenTauLeptonPairAcc',
             'modelBinnerForMuTauWrtGenTauLeptonPairAcc',
-			#'modelBinnerForMuTauGenTauLeptonPairAcc3mZbins',
-			#'modelBinnerForMuTauWrtGenTauLeptonPairAcc3mZbins',
+			'modelBinnerForMuTauGenTauLeptonPairAcc3mZbins',
+			'modelBinnerForMuTauWrtGenTauLeptonPairAcc3mZbins',
             'sysUncertaintyBinnerForMuTauAcc'
         )
     ),
