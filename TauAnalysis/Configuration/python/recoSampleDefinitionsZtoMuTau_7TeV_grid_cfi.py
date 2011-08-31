@@ -6,32 +6,25 @@ import TauAnalysis.DQMTools.plotterStyleDefinitions_cfi as styles
 
 # List of samples to run in the analysis
 SAMPLES_TO_ANALYZE = [
-    #'data_SingleMu_Run2011A_May10ReReco_v1ex',
+    'data_SingleMu_Run2011A_May10ReReco_v1ex',
     #'data_TauPlusX_Run2011A_May10ReReco_v1',
-    'data_SingleMu_Run2011A_May10ReReco_skim',
-    #'data_TauPlusX_Run2011A_PromptReco_v4',
-    'DYtautauM10to20_pythia',
-    #'Ztautau_pythia',
+    'data_TauPlusX_Run2011A_PromptReco_v4',
+    #'DYtautauM10to20_powheg',
+    'Ztautau_pythia',
     #'Ztautau_powheg',
-    'Ztautau_powheg_skim',
-    #'Ztautau_embedded_part1',
-    #'Ztautau_embedded_part2',
-    #'Ztautau_embedded_part1_skim',
-    #'Ztautau_embedded_part2_skim',
+    'Ztautau_embedded_part1',
+    'Ztautau_embedded_part2',
     #'qqZll',
-    'DYmumuM10to20_powheg',
-    #'Zmumu_pythia',
+    #'DYmumuM10to20_pythia',
+    'Zmumu_pythia',
+    'Zmumu_powheg',
     #'Zmumu_powheg',
-    'Zmumu_powheg_skim',
-    #'PPmuXptGt20Mu15',
-    'PPmuXptGt20Mu15_skim',
-    #'WplusJets_madgraph',
-    'WplusJets_madgraph_skim',
+    'PPmuXptGt20Mu15',
+    'WplusJets_madgraph',
     #'WW',
     #'WZ',
     #'ZZ',
-    #'TTplusJets_madgraph',
-    'TTplusJets_madgraph_skim'
+    'TTplusJets_madgraph'
 ]
 
 # List of samples to include in the final level plots.  May include selections
@@ -39,9 +32,9 @@ SAMPLES_TO_ANALYZE = [
 SAMPLES_TO_PLOT = [
     'data',
     #'VVsum',
-    'TTplusJets_madgraph_skim',
+    'TTplusJets_madgraph',
     'ZmumuSum',
-    'WplusJets_madgraph_skim',
+    'WplusJets_madgraph',
     'qcdSum',
     'ZtautauSum'
 ]
@@ -64,7 +57,7 @@ SAMPLE_DEFAULTS = {
     'enableSysUncertainties' : True,
     'lumi_mask' : '',
     'runselection' : '',
-    'hlt_paths' : [ 'HLT_Mu15_v2' ],
+    'hlt_paths' : [ 'HLT_Mu9' ],
     'SE_white_list' : '',
     'SE_black_list' : '',
     'disableDuplicateCheck' : False,
@@ -133,25 +126,6 @@ RECO_SAMPLES = {
         'enableFakeRates' : True,
         'hlt' : cms.InputTag("TriggerResults", "", "HLT")
     },
-    'data_SingleMu_Run2011A_May10ReReco_skim' : { # 10/ jobs not done
-        'datasetpath' : "/SingleMu/jkolb-skimMuTau_424_v2-31160cd7b0956e3b1093af66e5b00536/USER",
-        'dbs_url' : "http://cmsdbsprod.cern.ch/cms_dbs_ph_analysis_01/servlet/DBSServlet",        
-        'lumi_mask' : "/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions11/7TeV/Reprocessing/Cert_160404-163869_7TeV_May10ReReco_Collisions11_JSON_v2.txt",
-        'runselection' : "162718-163261",
-        'number_of_jobs' : 500,
-        'conditions' : 'GR_R_42_V14::All',
-        'events_processed' : -1,
-        'skim_eff' : 1.0,
-        'type' : 'Data',
-        'drawOption' : styles.drawOption_Data,
-        'hlt_paths' : {
-            'HLT_IsoMu17_v5' : '160431:MIN-163261:MAX',
-            'HLT_IsoMu17_v6' : '163270:MIN-163869:MAX'
-        },
-        'enableSysUncertainties' : False,
-        'enableFakeRates' : False,
-        'hlt' : cms.InputTag("TriggerResults", "", "HLT")
-    },
     'data_TauPlusX_Run2011A_PromptReco_v4' : {
         'datasetpath' : "/TauPlusX/Run2011A-PromptReco-v4/AOD",
         'dbs_url' :  "http://cmsdbsprod.cern.ch/cms_dbs_prod_global/servlet/DBSServlet",
@@ -185,7 +159,7 @@ RECO_SAMPLES = {
         'enableFakeRates' : True,
         'applyMuonTriggerEfficiencyCorrection' : True,
         'applyMuonIsolationEfficiencyCorrection' : True,
-	    'applyVertexMultiplicityReweighting' : True,
+	'applyVertexMultiplicityReweighting' : True,
         'hlt' : cms.InputTag("TriggerResults", "", "HLT"),
         'SE_black_list' : 'T2_US_Purdue'
     },
@@ -205,23 +179,6 @@ RECO_SAMPLES = {
 	'applyVertexMultiplicityReweighting' : True,
         'hlt' : cms.InputTag("TriggerResults", "", "HLT")
     },
-    'Ztautau_powheg_skim' : { # all jobs done
-        'datasetpath' : "/DYToTauTau_M-20_CT10_TuneZ2_7TeV-powheg-pythia-tauola/jkolb-skimMuTau_424_v1-31160cd7b0956e3b1093af66e5b00536/USER",
-        'dbs_url' : "http://cmsdbsprod.cern.ch/cms_dbs_ph_analysis_01/servlet/DBSServlet",        
-        'events_processed' : 19937479,
-        'skim_eff' : 934177./19937479,
-        'number_of_jobs' : 300,
-        'x_sec' : 1666*_picobarns,
-        'legendEntry' : plotter.process_Ztautau.config_dqmHistPlotter.legendEntry.value(),
-        'type' : plotter.process_Ztautau.config_dqmHistPlotter.type.value(),
-        'drawOption' : styles.drawOption_Ztautau,
-        'applyZrecoilCorrection' : False,
-        'enableFakeRates' : True,
-        'applyMuonTriggerEfficiencyCorrection' : True,
-        'applyMuonIsolationEfficiencyCorrection' : True,
-        'applyVertexMultiplicityReweighting' : True,
-        'hlt' : cms.InputTag("TriggerResults", "", "HLT")
-    },
     'Ztautau_embedded_part1' : {
         'datasetpath' : "/SingleMu/fruboes-20110703_embed_goldenMuMuSkim_42_TauPlusX_Run2011A_PromptReco_v4-3d3970b15f2245948e2e9363d6dd6994/USER",
         'dbs_url' : "http://cmsdbsprod.cern.ch/cms_dbs_ph_analysis_01/servlet/DBSServlet",        
@@ -239,46 +196,12 @@ RECO_SAMPLES = {
 	'applyVertexMultiplicityReweighting' : False,
         'hlt' : cms.InputTag("TriggerResults", "", "HLT")
     },
-    'Ztautau_embedded_part1_skim' : { # all jobs done
-        'datasetpath' : "/SingleMu/jkolb-skimMuTau_424_embed_p1_v1-31160cd7b0956e3b1093af66e5b00536/USER",
-        'dbs_url' : "http://cmsdbsprod.cern.ch/cms_dbs_ph_analysis_01/servlet/DBSServlet",        
-        'events_processed' : 347175,
-        'number_of_jobs' : 10,
-        'skim_eff' : 41652./347175,
-        'x_sec' : 1666*_picobarns,
-        'legendEntry' : plotter.process_Ztautau.config_dqmHistPlotter.legendEntry.value(),
-        'type' : 'embeddedData', # CV: simulated Ztautau events embedded in Zmumu data are still "Data" as far as crab is concerned
-        'drawOption' : styles.drawOption_Ztautau,
-        'applyZrecoilCorrection' : False,
-        'enableFakeRates' : True,
-        'applyMuonTriggerEfficiencyCorrection' : True,
-        'applyMuonIsolationEfficiencyCorrection' : False,
-	'applyVertexMultiplicityReweighting' : False,
-        'hlt' : cms.InputTag("TriggerResults", "", "HLT")
-    },
     'Ztautau_embedded_part2' : {
         'datasetpath' : "/SingleMu/fruboes-20110703_embed_goldenMuMuSkim_42_muEra_SingleMu_Run2011A_May10ReReco_v1ex-3d3970b15f2245948e2e9363d6dd6994/USER",
         'dbs_url' : "http://cmsdbsprod.cern.ch/cms_dbs_ph_analysis_01/servlet/DBSServlet",
         'events_processed' : 9990,
         'number_of_jobs' : 1,
         'skim_eff' : 1.0,
-        'x_sec' : 1666*_picobarns,
-        'legendEntry' : plotter.process_Ztautau.config_dqmHistPlotter.legendEntry.value(),
-        'type' : 'embeddedData', # CV: simulated Ztautau events embedded in Zmumu data are still "Data" as far as crab is concerned
-        'drawOption' : styles.drawOption_Ztautau,
-        'applyZrecoilCorrection' : False,
-        'enableFakeRates' : True,
-        'applyMuonTriggerEfficiencyCorrection' : True,
-        'applyMuonIsolationEfficiencyCorrection' : False,
-	'applyVertexMultiplicityReweighting' : False,
-        'hlt' : cms.InputTag("TriggerResults", "", "HLT")
-    },
-    'Ztautau_embedded_part2_skim' : { # all jobs done
-        'datasetpath' : "/SingleMu/jkolb-skimMuTau_424_p2-31160cd7b0956e3b1093af66e5b00536/USER",
-        'dbs_url' : "http://cmsdbsprod.cern.ch/cms_dbs_ph_analysis_01/servlet/DBSServlet",
-        'events_processed' : 9990,
-        'number_of_jobs' : 1,
-        'skim_eff' : 1351./9990.,
         'x_sec' : 1666*_picobarns,
         'legendEntry' : plotter.process_Ztautau.config_dqmHistPlotter.legendEntry.value(),
         'type' : 'embeddedData', # CV: simulated Ztautau events embedded in Zmumu data are still "Data" as far as crab is concerned
@@ -337,78 +260,12 @@ RECO_SAMPLES = {
         'enableFakeRates' : True,
         'hlt' : cms.InputTag("TriggerResults", "", "HLT")
     },
-    'Zmumu_powheg_skim' : { # all jobs done 
-        'datasetpath' : "/DYToMuMu_M-20_CT10_TuneZ2_7TeV-powheg-pythia/jkolb-skimMuTau_424_v1-31160cd7b0956e3b1093af66e5b00536/USER",
-        'dbs_url' :  "http://cmsdbsprod.cern.ch/cms_dbs_ph_analysis_01/servlet/DBSServlet",
-        'events_processed' : 29743564,
-        'skim_eff' : 14162722./29743564,
-        'number_of_jobs' : 1000,
-        'x_sec' : 1666*_picobarns,
-        'legendEntry' : plotter.process_Zmumu.config_dqmHistPlotter.legendEntry.value(),
-        'type' : plotter.process_Zmumu.config_dqmHistPlotter.type.value(),
-        'drawOption' : styles.drawOption_Zmumu,
-        'applyZrecoilCorrection' : False,
-        'applyMuonTriggerEfficiencyCorrection' : True,
-        'applyMuonIsolationEfficiencyCorrection' : True,
-        'applyVertexMultiplicityReweighting' : True,
-        'enableFakeRates' : True,
-        'hlt' : cms.InputTag("TriggerResults", "", "HLT")
-    },
-    'DYtautauM10to20_pythia' : {
-        'datasetpath' : "/DYToTauTau_M-10To20_TuneZ2_7TeV-pythia6-tauola/Summer11-PU_S3_START42_V11-v2/AODSIM",
-        'dbs_url' :  "http://cmsdbsprod.cern.ch/cms_dbs_prod_global/servlet/DBSServlet",
-        'events_processed' : 2200000,
-        'skim_eff' : 1.0,
-        'x_sec' : 1666*_picobarns,
-        'legendEntry' : plotter.process_Ztautau.config_dqmHistPlotter.legendEntry.value(),
-        'type' : plotter.process_Ztautau.config_dqmHistPlotter.type.value(),
-        'drawOption' : styles.drawOption_Ztautau,
-        'applyZrecoilCorrection' : False,
-        'enableFakeRates' : False,
-        'applyMuonTriggerEfficiencyCorrection' : True,
-        'applyMuonIsolationEfficiencyCorrection' : True,
-        'applyVertexMultiplicityReweighting' : True,
-        'hlt' : cms.InputTag("TriggerResults", "", "HLT")
-    },
-    'DYmumuM10to20_powheg' : {
-        'datasetpath' : "/DYToMuMu_M-10To20_CT10_TuneZ2_7TeV-powheg-pythia/Summer11-PU_S4_START42_V11-v1/AODSIM",
-        'dbs_url' :  "http://cmsdbsprod.cern.ch/cms_dbs_prod_global/servlet/DBSServlet",
-        'events_processed' : 9780633,
-        'skim_eff' : 1.0,
-        'x_sec' : 1.282*2659*_picobarns, # Z + jets correction factor for NLO/LO cross-sections = 1.282 (k-factor for mMuMu > 20 GeV)
-        'legendEntry' : plotter.process_Zmumu.config_dqmHistPlotter.legendEntry.value(),
-        'type' : plotter.process_Zmumu.config_dqmHistPlotter.type.value(),
-        'drawOption' : styles.drawOption_Zmumu,
-        'applyZrecoilCorrection' : False,
-        'applyMuonTriggerEfficiencyCorrection' : True,
-        'applyMuonIsolationEfficiencyCorrection' : True,
-        'enableFakeRates' : False,
-        'applyVertexMultiplicityReweighting' : True,
-        'hlt' : cms.InputTag("TriggerResults", "", "HLT")
-    },
     'PPmuXptGt20Mu15' : {
         'datasetpath' : "/QCD_Pt-20_MuEnrichedPt-15_TuneZ2_7TeV-pythia6/Summer11-PU_S4_START42_V11-v1/AODSIM",
         'dbs_url' :  "http://cmsdbsprod.cern.ch/cms_dbs_prod_global/servlet/DBSServlet",
-        'events_processed' : 25080241,
+        'events_processed' : 20416038,
         'number_of_jobs' : 2500,
         'skim_eff' : 1.0,
-        'x_sec' : 0.2966*_millibarns*2.855e-4, # x-sec * gen filter efficiency
-        'legendEntry' : plotter.process_PPmuXptGt20.config_dqmHistPlotter.legendEntry.value(),
-        'type' : plotter.process_PPmuXptGt20.config_dqmHistPlotter.type.value(),
-        'drawOption' : styles.drawOption_QCD,
-        'applyMuonTriggerEfficiencyCorrection' : True,
-        'applyMuonIsolationEfficiencyCorrection' : True,
-        'applyVertexMultiplicityReweighting' : True,
-        'enableFakeRates' : True,
-        'factorize' : True,
-        'hlt' : cms.InputTag("TriggerResults", "", "HLT")
-    },
-    'PPmuXptGt20Mu15_skim' : { #605/609 jobs done
-        'datasetpath' : "/QCD_Pt-20_MuEnrichedPt-15_TuneZ2_7TeV-pythia6/jkolb-skimMuTau_424_v1-31160cd7b0956e3b1093af66e5b00536/USER",
-        'dbs_url' :  "http://cmsdbsprod.cern.ch/cms_dbs_ph_analysis_01/servlet/DBSServlet",
-        'events_processed' : 25080241,
-        'number_of_jobs' : 1000,
-        'skim_eff' : 16036710./25080241,
         'x_sec' : 0.2966*_millibarns*2.855e-4, # x-sec * gen filter efficiency
         'legendEntry' : plotter.process_PPmuXptGt20.config_dqmHistPlotter.legendEntry.value(),
         'type' : plotter.process_PPmuXptGt20.config_dqmHistPlotter.type.value(),
@@ -423,7 +280,7 @@ RECO_SAMPLES = {
     'WplusJets_madgraph' : {
         'datasetpath' : "/WJetsToLNu_TuneZ2_7TeV-madgraph-tauola/Summer11-PU_S4_START42_V11-v1/AODSIM",
         'dbs_url' :  "http://cmsdbsprod.cern.ch/cms_dbs_prod_global/servlet/DBSServlet",
-        'events_processed' : 81352581,
+        'events_processed' : 49527177,
         'number_of_jobs' : 2500,
         'skim_eff' : 1.0,
         'x_sec' : 31314*_picobarns,
@@ -437,23 +294,6 @@ RECO_SAMPLES = {
         'enableFakeRates' : True,
         'hlt' : cms.InputTag("TriggerResults", "", "HLT"),
         'SE_black_list' : 'T2_BR_SPRACE'
-    },
-    'WplusJets_madgraph_skim' : { # all jobs done
-        'datasetpath' : "/WJetsToLNu_TuneZ2_7TeV-madgraph-tauola/jkolb-skimMuTau_424_v2-31160cd7b0956e3b1093af66e5b00536/USER",
-        'dbs_url' :  "http://cmsdbsprod.cern.ch/cms_dbs_ph_analysis_01/servlet/DBSServlet",
-        'events_processed' : 81352581,
-        'number_of_jobs' : 1000,
-        'skim_eff' : 8514745./81352581,
-        'x_sec' : 31314*_picobarns,
-        'legendEntry' : plotter.process_WplusJets.config_dqmHistPlotter.legendEntry.value(),
-        'type' : plotter.process_WplusJets.config_dqmHistPlotter.type.value(),
-        'drawOption' : styles.drawOption_WplusJets,
-        'applyZrecoilCorrection' : False,
-        'applyMuonTriggerEfficiencyCorrection' : True,
-        'applyMuonIsolationEfficiencyCorrection' : True,
-        'applyVertexMultiplicityReweighting' : True,
-        'enableFakeRates' : True,
-        'hlt' : cms.InputTag("TriggerResults", "", "HLT")
     },
     'WW' : {
         'datasetpath' : "/WWtoAnything_TuneZ2_7TeV-pythia6-tauola/Spring11-PU_S1_START311_V1G1-v1/AODSIM",
@@ -516,23 +356,6 @@ RECO_SAMPLES = {
         'hlt' : cms.InputTag("TriggerResults", "", "HLT"),
         'SE_black_list' : 'T2_BE_UCL'
         
-    },
-    'TTplusJets_madgraph_skim' : { # all jobs done
-        'datasetpath' : "/TTJets_TuneZ2_7TeV-madgraph-tauola/jkolb-skimMuTau_424_v1-31160cd7b0956e3b1093af66e5b00536/USER",
-        'dbs_url' :  "http://cmsdbsprod.cern.ch/cms_dbs_ph_analysis_01/servlet/DBSServlet",
-        'number_of_jobs' : 200,
-        'events_processed' : 3701947,
-        'skim_eff' : 1032670./3701947,
-        'x_sec' : 157.5*_picobarns, # NLO cross-section from https://twiki.cern.ch/twiki/bin/viewauth/CMS/StandardModelCrossSections
-        'legendEntry' : plotter.process_TTplusJets.config_dqmHistPlotter.legendEntry.value(),
-        'type' : plotter.process_TTplusJets.config_dqmHistPlotter.type.value(),
-        'drawOption' : styles.drawOption_TTplusJets,
-        'applyMuonTriggerEfficiencyCorrection' : True,
-        'applyMuonIsolationEfficiencyCorrection' : True,
-        'applyVertexMultiplicityReweighting' : True,
-        'enableFakeRates' : True,
-        'hlt' : cms.InputTag("TriggerResults", "", "HLT")
-        
     }
 }
 
@@ -540,10 +363,9 @@ RECO_SAMPLES = {
 MERGE_SAMPLES = {
     'data' : {
         'samples' : [
-            #'data_SingleMu_Run2011A_May10ReReco_v1ex',
-            'data_SingleMu_Run2011A_May10ReReco_skim'
-            #'data_TauPlusX_Run2011A_May10ReReco_v1_skim',
-            #'data_TauPlusX_Run2011A_PromptReco_v4'
+            'data_SingleMu_Run2011A_May10ReReco_v1ex',
+            'data_TauPlusX_Run2011A_May10ReReco_v1',
+            'data_TauPlusX_Run2011A_PromptReco_v4'
         ],
         'legendEntry' : 'DATA',
         'type' : 'Data',
@@ -551,8 +373,8 @@ MERGE_SAMPLES = {
     },
     'ZtautauSum' : {
         'samples' : [
-            'Ztautau_powheg_skim',
-            'DYtautauM10to20_pythia'
+            'Ztautau_pythia',
+            #'Ztautau_powheg',
             #'qqZll'
         ],
         'legendEntry' : plotter.process_Ztautau.config_dqmHistPlotter.legendEntry.value(),
@@ -561,8 +383,8 @@ MERGE_SAMPLES = {
     },
     'Ztautau_embedded' : {
         'samples' : [
-            'Ztautau_embedded_part1_skim',
-            'Ztautau_embedded_part2_skim'
+            'Ztautau_embedded_part1',
+            'Ztautau_embedded_part2'
         ],
         'legendEntry' : plotter.process_Ztautau.config_dqmHistPlotter.legendEntry.value(),
         'type' : plotter.process_Ztautau.config_dqmHistPlotter.type.value(),
@@ -570,8 +392,8 @@ MERGE_SAMPLES = {
     },
     'ZmumuSum' : {
         'samples' : [
-            'Zmumu_powheg_skim',
-            'DYmumuM10to20_powheg'
+            'Zmumu_pythia'
+            #'Zmumu_powheg'
         ],
         'legendEntry' : plotter.process_Zmumu.config_dqmHistPlotter.legendEntry.value(),
         'type' : plotter.process_Zmumu.config_dqmHistPlotter.type.value(),
@@ -579,7 +401,7 @@ MERGE_SAMPLES = {
     },
     'qcdSum' : {
         'samples' : [
-            'PPmuXptGt20Mu15_skim'
+            'PPmuXptGt20Mu15'
         ],
         'legendEntry' : 'QCD',
         'type' : plotter.process_PPmuXptGt20.config_dqmHistPlotter.type.value(),
@@ -599,9 +421,9 @@ MERGE_SAMPLES = {
         'samples' : [
             'ZmumuSum',
             'qcdSum',
-            'WplusJetsSum_madgraph_skim',
+            'WplusJetsSum_madgraph',
             #'VVsum',
-            'TTplusJets_madgraph_skim'
+            'TTplusJets_madgraph'
         ],
         'legendEntry' : 'SM',
         'type' : 'smMC',
