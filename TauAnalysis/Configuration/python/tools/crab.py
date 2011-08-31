@@ -67,9 +67,12 @@ def lfns(crab_dir):
 
 
 #jamie - function to get the names of the files to be merged from the stdout file instead of the job report
+#jeff - added sorting by modification time: slower but avoids re-harvesting everything when new output is added
 def lfns_stdout(crab_dir):
     res_dir = crab_dir+"/res/"
-    for file in os.listdir(res_dir):
+    output_files = [(os.path.getmtime(res_dir + file), file) for file in os.listdir(res_dir)]
+    output_files.sort()
+    for time, file in output_files:
         if "stdout" not in file:
             continue
         data = open(res_dir+file).read()
@@ -78,17 +81,22 @@ def lfns_stdout(crab_dir):
         for line in open(res_dir+file):
             if "output" in line:
                 continue
-            if "lrwxrwxrwx" in line:
+            if " cms " in line:
                 continue
-            if "-rw-r--r--" in line:
+            if " campus " in line:
+                continue
+            if "gplcms" in line:
+                continue
+            if "user" in line:
+                continue
+            if "absolute" in line:
                 continue
             if "tarring" in line:
-                continue
-            if "->" in line:
                 continue
             if "plots" in line:
                 #print line.rstrip('\n')
                 yield res_dir+line.rstrip('\n')
+                break
      
 
 def map_lfn_to_castor(lfn):
