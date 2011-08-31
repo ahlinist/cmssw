@@ -74,19 +74,27 @@ userSettings = {
         }
     },
     'jkolb': {
-        'current' : 'Run31',
+        'current' : 'Run33',
         'jobs' : {
+            # Summer 42X MC + 42X ReReco and PR data: standard e+tau analysis --> first run at T3
+            'Run33' : {
+               	'AHtoElecTau' : {
+                    'analysisFilePath' : "/afs/crc.nd.edu/user/j/jkolb/CMSSW_4_2_4_patch1/src/TauAnalysis/Configuration/test/",
+                    'harvestingFilePath' : "/afs/crc.nd.edu/group/NDCMS/data02/jkolb/TauResults",
+                    'tmpFilePath' : "/afs/crc.nd.edu/group/NDCMS/data02/jkolb/TauResults/tmp"
+                }
+			},
             # Summer 42X MC + 42X ReReco and PR data: HPS tau ID eff: byLooseCombinedIsolationDeltaBetaCorr --> running at T3
             'Run32' : {
                 'ZtoMuTau_bgEstTemplate' : {
                     'analysisFilePath' : "/afs/crc.nd.edu/user/j/jkolb/CMSSW_4_2_4_patch1/src/TauAnalysis/BgEstimationTools/test/",
-                    'harvestingFilePath' : "/pscratch/ndcms/bestman/jkolb/TauResults",
-                    'tmpFilePath' : "/pscratch/ndcms/bestman/jkolb/TauResults/tmp"
+                    'harvestingFilePath' : "/afs/crc.nd.edu/group/NDCMS/data02/jkolb/TauResults",
+                    'tmpFilePath' : "/afs/crc.nd.edu/group/NDCMS/data02/jkolb/TauResults/tmp"
                 },
                	'ZtoMuTau' : {
                     'analysisFilePath' : "/afs/crc.nd.edu/user/j/jkolb/CMSSW_4_2_4_patch1/src/TauAnalysis/Configuration/test/",
-                    'harvestingFilePath' : "/pscratch/ndcms/bestman/jkolb/TauResults",
-                    'tmpFilePath' : "/pscratch/ndcms/bestman/jkolb/TauResults/tmp"
+                    'harvestingFilePath' : "/afs/crc.nd.edu/group/NDCMS/data02/jkolb/TauResults",
+                    'tmpFilePath' : "/afs/crc.nd.edu/group/NDCMS/data02/jkolb/TauResults/tmp"
                 }
 			},
             # Spring11 PR v1/2 data + MC: HPS tau ID eff: byLooseCombinedIsolationDeltaBetaCorr --> running at T3
