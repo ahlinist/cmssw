@@ -12,7 +12,7 @@ from TauAnalysis.Core.electronHistManager_cfi import *
 
 # import config for tau histogram manager
 from TauAnalysis.Core.pftauHistManager_cfi import *
-tauHistManager.useHPSpTaNCalgorithm = cms.bool(True)
+tauHistManager.useHPSclassicAlgorithm = cms.bool(True)
 
 # import config for di-tau histogram manager
 from TauAnalysis.Core.diTauCandidateHistManager_cfi import *
