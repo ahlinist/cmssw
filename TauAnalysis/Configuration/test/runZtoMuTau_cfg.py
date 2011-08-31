@@ -68,24 +68,21 @@ process.maxEvents = cms.untracked.PSet(
 )
 
 process.source = cms.Source("PoolSource",
-    fileNames = cms.untracked.vstring(
-        ##'file:/data1/veelken/CMSSW_4_2_x/skims/AHtoMuTau_negSVfitMass_lorenzo.root'
-        ##'file:/data1/veelken/CMSSW_4_2_x/skims/skimGenZtoMuTauWithinAcc_Ztautau_2011Jun30v2_AOD.root'
-        'rfio:/castor/cern.ch/user/v/veelken/CMSSW_4_2_x/skims/TauIdEffMeas/tauIdEffSample_TTplusJets_madgraph_2011Jul23_RECO_86_1_0MB.root'                         
-    )
+    fileNames = cms.untracked.vstring()
     #skipBadFiles = cms.untracked.bool(True)
 )
 
-##from PhysicsTools.PatAlgos.tools.cmsswVersionTools import pickRelValInputFiles
-##process.source = cms.Source("PoolSource",
-##    fileNames = cms.untracked.vstring(
-##    pickRelValInputFiles( cmsswVersion  = 'CMSSW_4_2_0_pre8'
-##                        , relVal        = 'RelValTTbar'
-##                        , globalTag     = 'START42_V7'
-##                        , numberOfFiles = 1
-##                        )
-##    )
-##)
+from PhysicsTools.PatAlgos.tools.cmsswVersionTools import pickRelValInputFiles
+process.source = cms.Source("PoolSource",
+    fileNames = cms.untracked.vstring(
+        'file:/pscratch/ndcms/bestman/storage/cms/store/user/jkolb/DYToMuMu_M-20_CT10_TuneZ2_7TeV-powheg-pythia/skimMuTau_424_v1/31160cd7b0956e3b1093af66e5b00536/muTauSkim_100_0_j03.root'
+		#    pickRelValInputFiles( cmsswVersion  = 'CMSSW_4_1_3'
+		#                        , relVal        = 'RelValZTT'
+		#                        , globalTag     = 'START311_V2'
+		#                        , numberOfFiles = 1
+		#                        )
+    )
+)
 
 #--------------------------------------------------------------------------------
 # import utility function for configuring PAT trigger matching
@@ -111,6 +108,7 @@ from PhysicsTools.PatAlgos.tools.tauTools import *
 
 # comment-out to take new HPS + TaNC combined tau id. algorithm
 #switchToPFTauHPSpTaNC(process)
+switchToPFTauHPS(process)
 
 # disable preselection on of pat::Taus
 # (disabled also in TauAnalysis/RecoTools/python/patPFTauConfig_cfi.py ,
@@ -147,17 +145,16 @@ from TauAnalysis.Configuration.tools.changeCut import changeCut
 changeCut(process, "selectedPatMuonsTrkIP", 0.2, attribute = "IpMax")
 
 # switch between TaNC and HPS tau id. discriminators
-#changeCut(process, "selectedPatTausLeadTrkPt", "tauID('leadingTrackPtCut') > 0.5")
-#changeCut(process, "selectedPatTausForMuTauLeadTrkPt", "tauID('leadingTrackPtCut') > 0.5")
-#changeCut(process, "selectedPatTausTaNCdiscr", "tauID('byTaNCloose') > 0.5")
-#changeCut(process, "selectedPatTausForMuTauTaNCdiscr", "tauID('byTaNCloose') > 0.5")
-changeCut(process, "selectedPatTausLeadTrkPt", "tauID('decayModeFinding') > 0.5")
-changeCut(process, "selectedPatTausForMuTauLeadTrkPt", "tauID('decayModeFinding') > 0.5")
-changeCut(process, "selectedPatTausTaNCdiscr", "tauID('byLooseCombinedIsolationDeltaBetaCorr') > 0.5")
-changeCut(process, "selectedPatTausForMuTauTaNCdiscr", "tauID('byLooseCombinedIsolationDeltaBetaCorr') > 0.5")
+changeCut(process, "selectedPatTausLeadTrk", 'tauID("decayModeFinding") > 0.5')
+changeCut(process, "selectedPatTausForMuTauLeadTrk", 'tauID("decayModeFinding") > 0.5')
+changeCut(process, "selectedPatTausLeadTrkPt", 'tauID("decayModeFinding") > 0.5')
+changeCut(process, "selectedPatTausForMuTauLeadTrkPt", 'tauID("decayModeFinding") > 0.5')
+changeCut(process, "selectedPatTausTaNCdiscr", 'tauID("byLooseCombinedIsolationDeltaBetaCorr") > 0.5')
+changeCut(process, "selectedPatTausForMuTauTaNCdiscr", 'tauID("byLooseCombinedIsolationDeltaBetaCorr") > 0.5')
 
 # disable calorimeter muon veto for now...
-changeCut(process, "selectedPatTausForMuTauCaloMuonVeto", "tauID('againstMuonTight') > -1.")
+changeCut(process, "selectedPatTausForMuTauCaloMuonVeto", 'tauID("againstMuonTight") > -1.')
+changeCut(process, "selectedPatTausForMuTauMuonVeto", 'tauID("againstMuonTight") > 0.5')
 
 # change lower limit on separation required between muon and tau-jet to dR > 0.5
 changeCut(process, "selectedMuTauPairsAntiOverlapVeto", "dR12 > 0.5")
@@ -177,6 +174,25 @@ changeCut(process, "selectedMuTauPairsPzetaDiffLooseMuonIsolation", "(pZeta - 1.
 
 # change isolation treshold for second muon used in di-muon veto to 0.30 * muon Pt
 changeCut(process, "selectedPatMuonsForZmumuHypothesesLoosePFRelIso", 0.30, "sumPtMax")
+#--------------------------------------------------------------------------------
+
+# turn off NSV fit
+process.allMuTauPairs.doSVreco = cms.bool(False)
+process.allMuTauPairsPFtype1MET.doSVreco = cms.bool(False)
+process.allMuTauPairsLooseMuonIsolation.doSVreco = cms.bool(False)
+
+from TauAnalysis.Configuration.tools.analysisSequenceTools import removeAnalyzer
+removeAnalyzer(process.analyzeZtoMuTauEventsOS.analysisSequence, 'diTauCandidateNSVfitHistManagerForMuTau')
+removeAnalyzer(process.analyzeZtoMuTauEventsOS.analysisSequence, 'diTauCandidateNSVfitVtxMultiplicityBinGridHistManager')
+removeAnalyzer(process.analyzeZtoMuTauEventsOS.analysisSequence, 'diTauCandidateNSVfitHistManagerForMuTauPFtype1MET')
+removeAnalyzer(process.analyzeZtoMuTauEventsOS.analysisSequence, 'modelBinnerForMuTauGenTauLeptonPairAcc3mZbins')
+removeAnalyzer(process.analyzeZtoMuTauEventsOS.analysisSequence, 'modelBinnerForMuTauWrtGenTauLeptonPairAcc3mZbins')
+
+removeAnalyzer(process.analyzeZtoMuTauEventsSS.analysisSequence, 'diTauCandidateNSVfitHistManagerForMuTau')
+removeAnalyzer(process.analyzeZtoMuTauEventsSS.analysisSequence, 'diTauCandidateNSVfitVtxMultiplicityBinGridHistManager')
+removeAnalyzer(process.analyzeZtoMuTauEventsSS.analysisSequence, 'diTauCandidateNSVfitHistManagerForMuTauPFtype1MET')
+removeAnalyzer(process.analyzeZtoMuTauEventsSS.analysisSequence, 'modelBinnerForMuTauGenTauLeptonPairAcc3mZbins')
+removeAnalyzer(process.analyzeZtoMuTauEventsSS.analysisSequence, 'modelBinnerForMuTauWrtGenTauLeptonPairAcc3mZbins')
 #--------------------------------------------------------------------------------
 
 # before starting to process 1st event, print event content
@@ -200,6 +216,9 @@ process.q = cms.Path(process.dataQualityFilters)
 
 process.schedule = cms.Schedule(process.o, process.q, process.p)
 
+process.options = cms.untracked.PSet(
+	wantSummary = cms.untracked.bool(True)
+)
 #--------------------------------------------------------------------------------
 # import utility function for switching HLT InputTags when processing
 # RECO/AOD files produced by MCEmbeddingTool
@@ -247,8 +266,8 @@ if hasattr(process, "disableEventDump"):
 #--------------------------------------------------------------------------------
 # disable accessing generator level information
 # if running on data
-from TauAnalysis.Configuration.tools.switchToData import switchToData
-switchToData(process)
+#from TauAnalysis.Configuration.tools.switchToData import switchToData
+#switchToData(process)
 #--------------------------------------------------------------------------------
 
 #--------------------------------------------------------------------------------
@@ -263,43 +282,5 @@ if not hasattr(process, "isBatchMode"):
     process.p.replace(process.producePatTupleZtoMuTauSpecific, process.producePatTuple + process.producePatTupleZtoMuTauSpecific)
 #--------------------------------------------------------------------------------
 
-#--------------------------------------------------------------------------------
-# CV: provisional switch to "old" HPS tau reconstruction (01/26/2011)
-#     as it is included in CMSSW_3_8_x release series
-#
-#    --> remove hpsPFTauProducer from reco::PFTau sequence
-#    --> switch pat::Tau input to HPS tau collection
-#
-print("CV: switching to **old** HPS !!")
-
-#while process.p.remove(process.PFTau): pass
-
-switchToPFTauHPS(process)
-process.cleanPatTaus.preselection = cms.string('')
-
-changeCut(process, "selectedPatTausLeadTrk", "tauID('decayModeFinding') > 0.5")
-changeCut(process, "selectedPatTausForMuTauLeadTrk", "tauID('decayModeFinding') > 0.5")
-changeCut(process, "selectedPatTausLeadTrkPt", "tauID('decayModeFinding') > 0.5")
-changeCut(process, "selectedPatTausForMuTauLeadTrkPt", "tauID('decayModeFinding') > 0.5")
-changeCut(process, "selectedPatTausTaNCdiscr", "tauID('byLooseCombinedIsolationDeltaBetaCorr') > 0.5")
-changeCut(process, "selectedPatTausForMuTauTaNCdiscr", "tauID('byLooseCombinedIsolationDeltaBetaCorr') > 0.5")
-changeCut(process, "selectedPatTausForMuTauCaloMuonVeto", "tauID('againstMuonTight') > -1.")
-
-process.ewkTauId.PFTauProducer = cms.InputTag("hpsPFTauProducer")
-process.ewkTauId.Prediscriminants.leadTrack.Producer       = cms.InputTag('hpsPFTauDiscriminationByDecayModeFinding')
-process.ewkTauId.Prediscriminants.leadTrackPt.Producer     = cms.InputTag('hpsPFTauDiscriminationByDecayModeFinding')
-process.ewkTauId.Prediscriminants.TaNCloose.Producer       = cms.InputTag('hpsPFTauDiscriminationByLooseIsolation')
-process.ewkTauId.Prediscriminants.againstMuon.Producer     = cms.InputTag('hpsPFTauDiscriminationByTightMuonRejection')
-process.ewkTauId.Prediscriminants.againstElectron.Producer = cms.InputTag('hpsPFTauDiscriminationByLooseElectronRejection')
-
-# disable muon momentum scale corrections
-process.patMuonsMuScleFitCorrectedMomentum.doApplyCorrection = cms.bool(False)
-#--------------------------------------------------------------------------------
-
-process.load("TauAnalysis/RecoTools/vertexMultiplicityVsRhoPFNeutralReweight_cfi")
-process.producePatTupleAll += process.vertexMultiplicityVsRhoPFNeutralReweight
-
-processDumpFile = open('runZtoMuTau.dump' , 'w')
-print >> processDumpFile, process.dumpPython()
-
-
+# print-out all python configuration parameter information
+#print process.dumpPython()
