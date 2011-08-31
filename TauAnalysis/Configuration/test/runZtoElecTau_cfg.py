@@ -97,9 +97,8 @@ from PhysicsTools.PatAlgos.tools.tauTools import *
 #switchToPFTauFixedCone(process)
 
 # comment-out to take new HPS + TaNC combined tau id. algorithm
-switchToPFTauHPSpTaNC(process)
-
-#switchToPFTauHPS(process)
+#switchToPFTauHPSpTaNC(process)
+switchToPFTauHPS(process)
 
 # disable preselection on of pat::Taus
 # (disabled also in TauAnalysis/RecoTools/python/patPFTauConfig_cfi.py ,
@@ -184,14 +183,8 @@ changeCut(process,"selectedPatTausForElecTauLeadTrk",'tauID("decayModeFinding") 
 changeCut(process,"selectedPatTausForElecTauLeadTrkPt",'tauID("decayModeFinding") > 0.5')
 
 # change tau ID to HPS loose
-changeCut(process,"selectedPatTausTaNCdiscr","tauID('byHPSloose') > 0.5")
-changeCut(process,"selectedPatTausForElecTauTaNCdiscr","tauID('byHPSloose') > 0.5")
-
-#  1/3-prong track cut for taus
-changeCut(process,"selectedPatTausForElecTauProng","signalPFChargedHadrCands.size() = 1 | signalPFChargedHadrCands.size() = 3")
-
-#  charge = +/-1 cut for taus
-changeCut(process,"selectedPatTausForElecTauCharge","abs(charge) > 0.5 & abs(charge) < 1.5")
+changeCut(process,"selectedPatTausTaNCdiscr","tauID('byLooseCombinedIsolationDeltaBetaCorr') > 0.5")
+changeCut(process,"selectedPatTausForElecTauTaNCdiscr","tauID('byLooseCombinedIsolationDeltaBetaCorr') > 0.5")
 
 #  electron veto for taus
 changeCut(process,"selectedPatTausForElecTauElectronVeto","tauID('againstElectronTight') > 0.5")

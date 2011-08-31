@@ -24,7 +24,7 @@ process.load('Configuration/StandardSequences/GeometryIdeal_cff')
 process.load('Configuration/StandardSequences/MagneticField_cff')
 process.load('Configuration/StandardSequences/Reconstruction_cff')
 process.load('Configuration/StandardSequences/FrontierConditions_GlobalTag_cff')
-process.GlobalTag.globaltag = cms.string('START311_V2::All')
+process.GlobalTag.globaltag = cms.string('START42_V11::All')
 
 #--------------------------------------------------------------------------------
 # import sequences for PAT-tuple production
@@ -74,8 +74,7 @@ process.maxEvents = cms.untracked.PSet(
 
 process.source = cms.Source("PoolSource",
     fileNames = cms.untracked.vstring(
-        '/store/relval/CMSSW_4_2_3/RelValZTT/GEN-SIM-RECO/START42_V12-v2/0062/4CEA9C47-287B-E011-BAB7-00261894396B.root',
-        '/store/relval/CMSSW_4_2_3/RelValZTT/GEN-SIM-RECO/START42_V12-v2/0066/B6B51325-DA7B-E011-9E95-0018F3D096C6.root'
+        'file:/store/user/jkolb/DYToTauTau_M-20_CT10_TuneZ2_7TeV-powheg-pythia-tauola/skimElecTau_423_v2/2453a4eaae124a4a3fe9f365dc31e11f/elecTauSkim_1_1_mhN.root'
 	)
     #skipBadFiles = cms.untracked.bool(True)    
 )
@@ -97,8 +96,8 @@ from PhysicsTools.PatAlgos.tools.tauTools import *
 # as input for pat::Tau production
 #switchToPFTauShrinkingCone(process)
 #switchToPFTauFixedCone(process)
-switchToPFTauHPSpTaNC(process)
-#switchToPFTauHPS(process)
+#switchToPFTauHPSpTaNC(process)
+switchToPFTauHPS(process)
 
 # disable preselection on of pat::Taus
 # (disabled also in TauAnalysis/RecoTools/python/patPFTauConfig_cfi.py ,
@@ -179,8 +178,8 @@ changeCut(process,"selectedPatElectronsForElecTauEta","abs(eta) < 2.1")
 changeCut(process,"selectedPatElectronsForElecTauPt","pt > 15")
 
 #  PF relative iso
-changeCut(process,"selectedPatElectronsForElecTauIso",cms.double(0.013),"sumPtMaxEB")
-changeCut(process,"selectedPatElectronsForElecTauIso",cms.double(0.09),"sumPtMaxEE")
+changeCut(process,"selectedPatElectronsForElecTauIso",cms.double(0.1),"sumPtMaxEB")
+changeCut(process,"selectedPatElectronsForElecTauIso",cms.double(0.1),"sumPtMaxEE")
 changeCut(process,"selectedPatElectronsForElecTauIsoLooseIsolation",cms.double(0.3),"sumPtMax")
 
 #  electron conversion veto
@@ -189,8 +188,8 @@ changeCut(process,"selectedPatElectronsForElecTauConversionVetoLooseIsolation",c
 changeCut(process,"selectedPatElectronsForElecTauConversionVetoLooseIsolation",cms.bool(True), attribute = "invertConversionVeto")
 
 #  electron track IP_xy cut
-changeCut(process,"selectedPatElectronsForElecTauTrkIP",cms.double(0.045),"IpMax")
-changeCut(process, "selectedPatElectronsForElecTauTrkIPlooseIsolation", 0.045, attribute = "IpMax")
+changeCut(process,"selectedPatElectronsForElecTauTrkIP",cms.double(0.02),"IpMax")
+changeCut(process, "selectedPatElectronsForElecTauTrkIPlooseIsolation", 0.02, attribute = "IpMax")
 
 #
 # hadronic tau decay selection
@@ -207,17 +206,15 @@ changeCut(process,"selectedPatTausLeadTrk",'tauID("decayModeFinding") > 0.5')
 changeCut(process,"selectedPatTausForElecTauDecayModeFinding",'tauID("decayModeFinding") > 0.5')
 
 # decay mode finding
-changeCut(process,"selectedPatTausLeadTrkPt",'tauID("leadingTrackPtCut") > 0.5')
-changeCut(process,"selectedPatTausForElecTauLeadTrkPt",'tauID("leadingTrackPtCut") > 0.5')
+changeCut(process,"selectedPatTausLeadTrkPt",'tauID("decayModeFinding") > 0.5')
+changeCut(process,"selectedPatTausForElecTauLeadTrkPt",'tauID("decayModeFinding") > 0.5')
 
 #  put tau ID at HPS loose
-changeCut(process,"selectedPatTausTaNCdiscr",'tauID("byHPSloose") > 0.5')
-changeCut(process,"selectedPatTausForElecTauTaNCdiscr",'tauID("byHPSloose") > 0.5')
+changeCut(process,"selectedPatTausTaNCdiscr",'tauID("byLooseCombinedIsolationDeltaBetaCorr") > 0.5')
+changeCut(process,"selectedPatTausForElecTauTaNCdiscr",'tauID("byLooseCombinedIsolationDeltaBetaCorr") > 0.5')
 
 #  electron veto for taus
 changeCut(process,"selectedPatTausForElecTauElectronVeto",'tauID("againstElectronTight")')
-process.hpsPFTauDiscriminationByTightElectronRejection.ApplyCut_EcalCrackCut = cms.bool(False)
-process.hpsPFTauDiscriminationByTightElectronRejection.BremCombined_HOP = cms.double(0.08)
 
 # ECAl crack veto for taus 
 changeCut(process,"selectedPatTausForElecTauEcalCrackVeto",'abs(eta) < 1.460 | abs(eta) > 1.558')
