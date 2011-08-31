@@ -30,11 +30,11 @@ void PUreweightHistogramProducer::beginJob()
     dqmStore.book1D("VtxMultiplicity", "VtxMultiplicity", 20, -0.5, +19.5);
   meVtxMultiplicity_->getTH1()->Sumw2();
   mePFNeutralRho_ = 
-    dqmStore.book1D("PFNeutralRho", "PFNeutralRho", 50, 0., 10.);
+    dqmStore.book1D("PFNeutralRho", "PFNeutralRho", 100, 0., 20.);
   mePFNeutralRho_->getTH1()->Sumw2();
 
   mePFNeutralRhoVsVtxMultiplicity_ = 
-    dqmStore.book2D("PFNeutralRhoVsVtxMultiplicity", "PFNeutralRhoVsVtxMultiplicity", 20, -0.5, +19.5, 50, 0., 10.);
+    dqmStore.book2D("PFNeutralRhoVsVtxMultiplicity", "PFNeutralRhoVsVtxMultiplicity", 20, -0.5, +19.5, 100, 0., 20.);
   mePFNeutralRhoVsVtxMultiplicity_->getTH1()->Sumw2();
 }
 

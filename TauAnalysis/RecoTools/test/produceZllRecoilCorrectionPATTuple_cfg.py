@@ -120,22 +120,15 @@ process.load("TauAnalysis/RecoTools/recoVertexSelection_cff")
 
 process.prePatProductionSequence += process.selectPrimaryVertex
 
-process.selectedPrimaryVerticesTrackPtSumGt5 = cms.EDFilter("VertexByTrackPtSumSelector",
-    src = cms.InputTag('selectedPrimaryVertexPosition'),
+process.load("TauAnalysis/RecoTools/vertexMultiplicityReweight_cfi")
+process.selectedPrimaryVerticesTrackPtSumGt5 = process.selectedPrimaryVerticesTrackPtSumGt10.clone(
     trackPtSumMin = cms.double(5.)
-)
-process.selectedPrimaryVerticesTrackPtSumGt10 = process.selectedPrimaryVerticesTrackPtSumGt5.clone(
-    trackPtSumMin = cms.double(10.)
 )
 process.prePatProductionSequence += process.selectedPrimaryVerticesTrackPtSumGt5
 process.prePatProductionSequence += process.selectedPrimaryVerticesTrackPtSumGt10
-#--------------------------------------------------------------------------------
 
-#--------------------------------------------------------------------------------
 # produce in-time pile-up reweighting factors
 if isMC:
-    process.load("TauAnalysis/RecoTools/vertexMultiplicityReweight_cfi")
-
     process.prePatProductionSequence += process.vertexMultiplicityReweight
 #--------------------------------------------------------------------------------
 

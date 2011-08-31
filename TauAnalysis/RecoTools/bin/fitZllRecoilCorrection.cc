@@ -6,9 +6,9 @@
  *
  * \author Christian Veelken, UC Davis
  *
- * \version $Revision: 1.3 $
+ * \version $Revision: 1.4 $
  *
- * $Id: fitZllRecoilCorrection.cc,v 1.3 2011/08/18 17:51:30 veelken Exp $
+ * $Id: fitZllRecoilCorrection.cc,v 1.4 2011/08/19 14:10:39 veelken Exp $
  *
  */
 
@@ -104,7 +104,7 @@ void showControlPlot(TCanvas* canvas,
   canvas->Update();
 
   size_t idx = outputFileName.find_last_of("_cfi.py");
-  std::string outputFileName_plot = std::string(outputFileName, 0, idx);
+  std::string outputFileName_plot = std::string(outputFileName, 0, idx - (strlen("_cfi.py") - 1));
   outputFileName_plot.append("_").append(outputFileLabel);
   outputFileName_plot.append(".png");
   canvas->Print(outputFileName_plot.data());
@@ -229,7 +229,7 @@ void makeControlPlots(TH1* histogram_u1_mean, TH1* histogram_u1_rms, TH1* histog
 		  outputFileName, "u1_rms");
   showControlPlot(canvas, 
 		  histogram_u2_mean, histogramLegendEntry, graph_u2Fit, graph_u2FitErr,     
-		  true, "u_{2} / GeV", -25., +25.,
+		  false, "u_{2} / GeV", -25., +25.,
 		  outputFileName, "u2_mean");
   showControlPlot(canvas, 
 		  histogram_u2_rms, histogramLegendEntry, graph_u2_rmsFit, graph_u2_rmsFitErr, 
