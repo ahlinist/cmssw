@@ -210,7 +210,7 @@ def _setTriggerProcess(process, triggerTag, **kwargs):
 	for processAttrName in dir(process):
 		processAttr = getattr(process, processAttrName)
 		if isinstance(processAttr, cms.Sequence):
-			#print "--> Resetting HLT input tag for sequence:", processAttrName
+            #print "--> Resetting HLT input tag for sequence:", processAttrName
 			patutils.massSearchReplaceAnyInputTag(processAttr, cms.InputTag("TriggerResults", "", "HLT"), triggerTag)
 			patutils.massSearchReplaceAnyInputTag(processAttr, cms.InputTag("TriggerResults::HLT"), triggerTag)
 
@@ -265,6 +265,19 @@ def _setTriggerBits(process, triggerSelect, **kwargs):
             print "Changed HLT selection from %s --> %s" % (old_select, triggerSelect)
         else:
             raise ValueError("Parameter 'triggerSelect' is of invalid Type = %s !!" % type(triggerSelect))
+    # change trigger paths to print in eventdump(s) and trigger histogram manager
+    for processAttrName in dir(process):
+		processAttr = getattr(process, processAttrName)
+		if isinstance(processAttr, cms.EDAnalyzer):
+			if processAttr.type_() == "GenericAnalyzer":
+				if hasattr(processAttr, "analyzers"):
+					analyzerPlugins = getattr(processAttr, "analyzers")
+					for analyzerPlugin in analyzerPlugins:
+						_setattr_ifexists(analyzerPlugin, "hltPaths", cms.vstring(triggerSelect))
+				if hasattr(processAttr, "eventDumps"):
+					eventDumps = getattr(processAttr, "eventDumps")
+					for eventDump in eventDumps:
+						_setattr_ifexists(eventDump, "hltPathsToPrint", cms.vstring(triggerSelect))
 
 def _setInputFiles(process, files, **kwargs):
     ''' Set the files used in the input source of the cfg file '''
