@@ -12,9 +12,9 @@
  *
  * \author Christian Veelken, UC Davis
  *
- * \version $Revision: 1.13 $
+ * \version $Revision: 1.14 $
  *
- * $Id: ParticlePFIsolationSelector.h,v 1.13 2011/05/26 19:25:53 lantonel Exp $
+ * $Id: ParticlePFIsolationSelector.h,v 1.14 2011/06/29 18:13:44 veelken Exp $
  *
  */
 
@@ -67,32 +67,47 @@ class ParticlePFIsolationSelector
 	<< "Invalid Configuration parameter direction = " << direction_string << "!!\n";
     }
 
-    sumPtMaxEB_ = -1;
-    sumPtMaxEE_ = -1;
+    sumPtMaxEB_ = 1000;
+    sumPtMaxEE_ = 1000;
     sumPtMinEB_ = -1;
     sumPtMinEE_ = -1;
 
-    if( cfg.exists("sumPtMinEB") && cfg.exists("sumPtMinEE") ) {
-      sumPtMinEB_ = cfg.getParameter<double>("sumPtMinEB");
-      sumPtMinEE_ = cfg.getParameter<double>("sumPtMinEE");
+    if( cfg.exists("sumPtMinEB") && 
+        cfg.exists("sumPtMinEE") &&
+        cfg.exists("sumPtMin") ) {
+      edm::LogWarning("ParticlePFIsolationSelector")
+	    << " Configuration specifies sumPtMinEB AND sumPtMinEE AND sumPtMin " << std::endl
+        << "  --> using sumPtMin, IGNORING sumPtMinEB and sumPtMinEE";
     } 
-    else if (cfg.exists("sumPtMin")) {
+    
+    if( cfg.exists("sumPtMaxEB") && 
+        cfg.exists("sumPtMaxEE") &&
+        cfg.exists("sumPtMax") ) {
+      edm::LogWarning("ParticlePFIsolationSelector")
+	    << " Configuration specifies sumPtMaxEB AND sumPtMaxEE AND sumPtMax " << std::endl
+        << "  --> using sumPtMax, IGNORING sumPtMaxEB and sumPtMaxEE";
+    } 
+    
+    if ( cfg.exists("sumPtMinEB") ) {
+      sumPtMinEB_ = cfg.getParameter<double>("sumPtMinEB");
+    }
+    if ( cfg.exists("sumPtMinEE") ) {
+      sumPtMinEE_ = cfg.getParameter<double>("sumPtMinEE");
+    }
+    if (cfg.exists("sumPtMin") ) {
       sumPtMinEB_ = cfg.getParameter<double>("sumPtMin");
       sumPtMinEE_ = cfg.getParameter<double>("sumPtMin");
     }
 
-    if( cfg.exists("sumPtMaxEB") && cfg.exists("sumPtMaxEE") ) {
+    if ( cfg.exists("sumPtMaxEB") ) {
       sumPtMaxEB_ = cfg.getParameter<double>("sumPtMaxEB");
+    }
+    if ( cfg.exists("sumPtMaxEE") ) {
       sumPtMaxEE_ = cfg.getParameter<double>("sumPtMaxEE");
-    } 
-    else if (cfg.exists("sumPtMax")) {
+    }
+    if (cfg.exists("sumPtMax") ) {
       sumPtMaxEB_ = cfg.getParameter<double>("sumPtMax");
       sumPtMaxEE_ = cfg.getParameter<double>("sumPtMax");
-    }
-    else {
-      edm::LogError("ParticlePFIsolationSelector")
-	<< " Configuration must specify ( sumPtMaxEB AND sumPtMaxEE ) OR sumPtMax ";
-      cfgError_ = 1;
     }
     
     if ( cfg.exists("sumPtMethod") ) {
