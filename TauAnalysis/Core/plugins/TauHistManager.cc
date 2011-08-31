@@ -91,6 +91,11 @@ TauHistManager::TauHistManager(const edm::ParameterSet& cfg)
   skipPdgIdsGenParticleMatch_ = cfg.getParameter<vint>("skipPdgIdsGenParticleMatch");
 
   useHPSpTaNCalgorithm_ = cfg.getParameter<bool>("useHPSpTaNCalgorithm");
+  useHPSclassicAlgorithm_ = cfg.getParameter<bool>("useHPSclassicAlgorithm");
+  if(useHPSpTaNCalgorithm_ && useHPSclassicAlgorithm_ )
+      std::cout << "TauHistManager::TauHistManager --> must NOT set both 'useHPSpTaNCalgorithm' and 'useHPSclassicAlgorithm' true" << std::endl
+          << " Using 'useHPSpTaNCalgorithm'! " << std::endl;
+    
 
   std::string normalization_string = cfg.getParameter<std::string>("normalization");
   normMethod_ = getNormMethod(normalization_string, "taus");
@@ -249,22 +254,51 @@ void TauHistManager::bookHistogramsImp()
   hTauDiscriminatorTaNCfrTenthPercent_ = book1D("TauDiscriminatorTaNCfrTenthPercent",
 						"TauDiscriminatorTaNCfrTenthPercent", 2, -0.5, 1.5);
 
-  hTauDiscriminatorTaNCvloose_ = book1D("TauDiscriminatorTaNCvloose",
-					"TauDiscriminatorTaNCvloose", 2, -0.5, 1.5);
-  hTauDiscriminatorTaNCloose_ = book1D("TauDiscriminatorTaNCloose",
-				       "TauDiscriminatorTaNCloose", 2, -0.5, 1.5);
-  hTauDiscriminatorTaNCmedium_ = book1D("TauDiscriminatorTaNCmedium",
-					"TauDiscriminatorTaNCmedium", 2, -0.5, 1.5);
-  hTauDiscriminatorTaNCtight_ = book1D("TauDiscriminatorTaNCtight",
-				       "TauDiscriminatorTaNCtight", 2, -0.5, 1.5);
+  hTauDiscriminatorCombinedTaNCvloose_ = book1D("TauDiscriminatorHPSpTaNCwTaNCvloose",
+					"TauDiscriminatorHPS+TaNC: TaNCvloose", 2, -0.5, 1.5);
+  hTauDiscriminatorCombinedTaNCloose_ = book1D("TauDiscriminatorHPSpTaNCwTaNCloose",
+				       "TauDiscriminatorHPS+TaNC: TaNCloose", 2, -0.5, 1.5);
+  hTauDiscriminatorCombinedTaNCmedium_ = book1D("TauDiscriminatorHPSpTaNCwTaNCmedium",
+					"TauDiscriminatorHPS+TaNC: TaNCmedium", 2, -0.5, 1.5);
+  hTauDiscriminatorCombinedTaNCtight_ = book1D("TauDiscriminatorHPSpTaNCwTaNCtight",
+				       "TauDiscriminatorHPS+TaNC: TaNCtight", 2, -0.5, 1.5);
 
+  hTauDiscriminatorCombinedHPSvloose_ = book1D("TauDiscriminatorHPSpTaNCwHPSvloose",
+				      "TauDiscriminatorHPS+TaNC:HPSvloose", 2, -0.5, 1.5);
+  hTauDiscriminatorCombinedHPSloose_ = book1D("TauDiscriminatorHPSpTaNCwHPSloose",
+				      "TauDiscriminatorHPS+TaNC:HPSloose", 2, -0.5, 1.5);
+  hTauDiscriminatorCombinedHPSmedium_ = book1D("TauDiscriminatorHPSpTaNCwHPSmedium",
+				       "TauDiscriminatorHPS+TaNC:HPSmedium", 2, -0.5, 1.5);
+  hTauDiscriminatorCombinedHPStight_ = book1D("TauDiscriminatorHPSpTaNCwHPStight",
+				      "TauDiscriminatorHPS+TaNC:HPStight", 2, -0.5, 1.5);
+
+  hTauDiscriminatorHPSvloose_ = book1D("TauDiscriminatorHPSvloose",
+				      "TauDiscriminatorHPS: vloose", 2, -0.5, 1.5);
   hTauDiscriminatorHPSloose_ = book1D("TauDiscriminatorHPSloose",
-				      "TauDiscriminatorHPSloose", 2, -0.5, 1.5);
+				      "TauDiscriminatorHPS: loose", 2, -0.5, 1.5);
   hTauDiscriminatorHPSmedium_ = book1D("TauDiscriminatorHPSmedium",
-				       "TauDiscriminatorHPSmedium", 2, -0.5, 1.5);
+				       "TauDiscriminatorHPS: medium", 2, -0.5, 1.5);
   hTauDiscriminatorHPStight_ = book1D("TauDiscriminatorHPStight",
-				      "TauDiscriminatorHPStight", 2, -0.5, 1.5);
+				      "TauDiscriminatorHPS: tight", 2, -0.5, 1.5);
 
+  hTauDiscriminatorHPSvlooseDeltaB_ = book1D("TauDiscriminatorHPSvlooseDeltaBeta",
+				      "TauDiscriminatorHPSdeltaBeta corr.: vloose", 2, -0.5, 1.5);
+  hTauDiscriminatorHPSlooseDeltaB_ = book1D("TauDiscriminatorHPSlooseDeltaBeta",
+				      "TauDiscriminatorHPSdeltaBeta corr.: loose", 2, -0.5, 1.5);
+  hTauDiscriminatorHPSmediumDeltaB_ = book1D("TauDiscriminatorHPSmediumDeltaBeta",
+				       "TauDiscriminatorHPSdeltaBeta corr.: medium", 2, -0.5, 1.5);
+  hTauDiscriminatorHPStightDeltaB_ = book1D("TauDiscriminatorHPStightDeltaBeta",
+				      "TauDiscriminatorHPSdeltaBeta corr.: tight", 2, -0.5, 1.5);
+  
+  hTauDiscriminatorHPSvlooseCombDeltaB_ = book1D("TauDiscriminatorHPSvlooseCombDeltaBeta",
+				      "TauDiscriminatorHPScombDeltaBeta corr.: vloose", 2, -0.5, 1.5);
+  hTauDiscriminatorHPSlooseCombDeltaB_ = book1D("TauDiscriminatorHPSlooseCombDeltaBeta",
+				      "TauDiscriminatorHPScombDeltaBeta corr.: loose", 2, -0.5, 1.5);
+  hTauDiscriminatorHPSmediumCombDeltaB_ = book1D("TauDiscriminatorHPSmediumCombDeltaBeta",
+				       "TauDiscriminatorHPScombDeltaBeta corr.: medium", 2, -0.5, 1.5);
+  hTauDiscriminatorHPStightCombDeltaB_ = book1D("TauDiscriminatorHPStightCombDeltaBeta",
+				      "TauDiscriminatorHPScombDeltaBeta corr.: tight", 2, -0.5, 1.5);
+  
   hTauTrkIsoPt_ = book1D("TauTrkIsoPt", "Track Isolation P_{T}", 100, 0., 10.);
   hTauEcalIsoPt_ = book1D("TauEcalIsoPt", "ECAL Isolation P_{T}", 100, 0., 10.);
   hTauHcalIsoPt_ = book1D("TauHcalIsoPt", "HCAL Isolation P_{T}", 100, 0., 10.);
@@ -564,7 +598,7 @@ void TauHistManager::fillHistogramsImp(const edm::Event& evt, const edm::EventSe
 
     static std::map<std::string, bool> discrAvailability_hasBeenChecked;
 
-    if ( !useHPSpTaNCalgorithm_ ) {
+    if ( !useHPSpTaNCalgorithm_ && !useHPSclassicAlgorithm_ ) {
       fillTauDiscriminatorHistogram(hTauDiscriminatorByIsolation_, *patTau, "byIsolation",
 				    discrAvailability_hasBeenChecked, weight);
       fillTauDiscriminatorHistogram(hTauDiscriminatorByTrackIsolation_, *patTau, "trackIsolation",
@@ -609,21 +643,50 @@ void TauHistManager::fillHistogramsImp(const edm::Event& evt, const edm::EventSe
       fillTauDiscriminatorHistogram(hTauTaNCoutputTransform_, *patTau, "byTaNCtransform",
 				    discrAvailability_hasBeenChecked, weight);
 
-      fillTauDiscriminatorHistogram(hTauDiscriminatorTaNCvloose_, *patTau, "byTaNCvloose",
+      fillTauDiscriminatorHistogram(hTauDiscriminatorCombinedTaNCvloose_, *patTau, "byTaNCvloose",
 				    discrAvailability_hasBeenChecked, weight);
-      fillTauDiscriminatorHistogram(hTauDiscriminatorTaNCloose_, *patTau, "byTaNCloose",
+      fillTauDiscriminatorHistogram(hTauDiscriminatorCombinedTaNCloose_, *patTau, "byTaNCloose",
 				    discrAvailability_hasBeenChecked, weight);
-      fillTauDiscriminatorHistogram(hTauDiscriminatorTaNCmedium_, *patTau, "byTaNCmedium",
+      fillTauDiscriminatorHistogram(hTauDiscriminatorCombinedTaNCmedium_, *patTau, "byTaNCmedium",
 				    discrAvailability_hasBeenChecked, weight);
-      fillTauDiscriminatorHistogram(hTauDiscriminatorTaNCtight_, *patTau, "byTaNCtight",
+      fillTauDiscriminatorHistogram(hTauDiscriminatorCombinedTaNCtight_, *patTau, "byTaNCtight",
 				    discrAvailability_hasBeenChecked, weight);
 
-      fillTauDiscriminatorHistogram(hTauDiscriminatorHPSloose_, *patTau, "byHPSloose",
+      fillTauDiscriminatorHistogram(hTauDiscriminatorCombinedHPSvloose_, *patTau, "byHPSvloose",
 				    discrAvailability_hasBeenChecked, weight);
-      fillTauDiscriminatorHistogram(hTauDiscriminatorHPSmedium_, *patTau, "byHPSmedium",
+      fillTauDiscriminatorHistogram(hTauDiscriminatorCombinedHPSloose_, *patTau, "byHPSloose",
 				    discrAvailability_hasBeenChecked, weight);
-      fillTauDiscriminatorHistogram(hTauDiscriminatorHPStight_, *patTau, "byHPStight",
+      fillTauDiscriminatorHistogram(hTauDiscriminatorCombinedHPSmedium_, *patTau, "byHPSmedium",
 				    discrAvailability_hasBeenChecked, weight);
+      fillTauDiscriminatorHistogram(hTauDiscriminatorCombinedHPStight_, *patTau, "byHPStight",
+				    discrAvailability_hasBeenChecked, weight);
+    
+    } else if (useHPSclassicAlgorithm_) {
+      fillTauDiscriminatorHistogram(hTauDiscriminatorHPSvloose_, *patTau, "byVLooseIsolation",
+				    discrAvailability_hasBeenChecked, weight);
+      fillTauDiscriminatorHistogram(hTauDiscriminatorHPSloose_, *patTau, "byLooseIsolation",
+				    discrAvailability_hasBeenChecked, weight);
+      fillTauDiscriminatorHistogram(hTauDiscriminatorHPSmedium_, *patTau, "byMediumIsolation",
+				    discrAvailability_hasBeenChecked, weight);
+      fillTauDiscriminatorHistogram(hTauDiscriminatorHPStight_, *patTau, "byTightIsolation",
+				    discrAvailability_hasBeenChecked, weight);
+      fillTauDiscriminatorHistogram(hTauDiscriminatorHPSvlooseDeltaB_, *patTau, "byVLooseIsolationDeltaBetaCorr",
+				    discrAvailability_hasBeenChecked, weight);
+      fillTauDiscriminatorHistogram(hTauDiscriminatorHPSlooseDeltaB_, *patTau, "byLooseIsolationDeltaBetaCorr",
+				    discrAvailability_hasBeenChecked, weight);
+      fillTauDiscriminatorHistogram(hTauDiscriminatorHPSmediumDeltaB_, *patTau, "byMediumIsolationDeltaBetaCorr",
+				    discrAvailability_hasBeenChecked, weight);
+      fillTauDiscriminatorHistogram(hTauDiscriminatorHPStightDeltaB_, *patTau, "byTightIsolationDeltaBetaCorr",
+				    discrAvailability_hasBeenChecked, weight);
+      fillTauDiscriminatorHistogram(hTauDiscriminatorHPSvlooseCombDeltaB_, *patTau, "byVLooseCombinedIsolationDeltaBetaCorr",
+				    discrAvailability_hasBeenChecked, weight);
+      fillTauDiscriminatorHistogram(hTauDiscriminatorHPSlooseCombDeltaB_, *patTau, "byLooseCombinedIsolationDeltaBetaCorr",
+				    discrAvailability_hasBeenChecked, weight);
+      fillTauDiscriminatorHistogram(hTauDiscriminatorHPSmediumCombDeltaB_, *patTau, "byMediumCombinedIsolationDeltaBetaCorr",
+				    discrAvailability_hasBeenChecked, weight);
+      fillTauDiscriminatorHistogram(hTauDiscriminatorHPStightCombDeltaB_, *patTau, "byTightCombinedIsolationDeltaBetaCorr",
+				    discrAvailability_hasBeenChecked, weight);
+    
     } else {
       fillTauDiscriminatorHistogram(hTauDiscriminatorTaNCfrOnePercent_, *patTau, "byTaNCfrOnePercent",
 				    discrAvailability_hasBeenChecked, weight);
