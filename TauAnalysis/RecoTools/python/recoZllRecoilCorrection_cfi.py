@@ -3,46 +3,72 @@ import FWCore.ParameterSet.Config as cms
 recoZllRecoilCorrectionParameter = cms.PSet(
     parameter = cms.PSet(
         data = cms.PSet(
-            d = cms.double(0.),
-            k = cms.double(-0.943492),
-            sigma1 = cms.double(10.0368),
-            b1 = cms.double(-1.6628e-2),
-            c1 = cms.double(+1.12634e-4),
-            sigma2 = cms.double(8.17098),
-            b2 = cms.double(-1.08149e-2),
-            c2 = cms.double(+3.32754e-05)
+            d = cms.PSet(
+                value = cms.double(0),
+                uncertainty = cms.double(0)
+            ),
+            k = cms.PSet(
+                value = cms.double(-0.869397),
+                uncertainty = cms.double(0.00147881)
+            ),
+            sigma1 = cms.PSet(
+                value = cms.double(8.7954),
+                uncertainty = cms.double(0.0356848)
+            ),
+            b1 = cms.PSet(
+                value = cms.double(0.00870004),
+                uncertainty = cms.double(0.000376955)
+            ),
+            c1 = cms.PSet(
+                value = cms.double(2.00108e-05),
+                uncertainty = cms.double(4.42684e-06)
+            ),
+            sigma2 = cms.PSet(
+                value = cms.double(8.81514),
+                uncertainty = cms.double(0.0343841)
+            ),
+            b2 = cms.PSet(
+                value = cms.double(0.00632672),
+                uncertainty = cms.double(0.00033543)
+            ),
+            c2 = cms.PSet(
+                value = cms.double(2.01774e-06),
+                uncertainty = cms.double(3.76993e-06)
+            )
         ),
         mc = cms.PSet(
-            d = cms.double(0.),
-            k = cms.double(-0.947483),
-            sigma1 = cms.double(9.32262),
-            b1 = cms.double(-1.33763e-2),
-            c1 = cms.double(+6.50963e-5),
-            sigma2 = cms.double(7.44516),
-            b2 = cms.double(-1.01039e-2),
-            c2 = cms.double(+2.11601e-05)
-        )
-    ),
-    uncertainties = cms.PSet(
-        data = cms.PSet(
-            d = cms.double(0.),
-            k = cms.double(0.003905),
-            sigma1 = cms.double(0.2019),
-            b1 = cms.double(0.0419e-2),
-            c1 = cms.double(0.04284e-4),
-            sigma2 = cms.double(0.15132),
-            b2 = cms.double(0.02622e-2),
-            c2 = cms.double(0.19576e-5)
-        ),
-        mc = cms.PSet(
-            d = cms.double(0.),
-            k = cms.double(0.002881),
-            sigma1 = cms.double(0.16254),
-            b1 = cms.double(0.04032e-2),
-            c1 = cms.double(0.40988e-5),
-            sigma2 = cms.double(0.10048),
-            b2 = cms.double(0.01746e-2),
-            c2 = cms.double(0.13773e-5)
+            d = cms.PSet(
+                value = cms.double(0),
+                uncertainty = cms.double(0)
+            ),
+            k = cms.PSet(
+                value = cms.double(-0.913219),
+                uncertainty = cms.double(0.000259489)
+            ),
+            sigma1 = cms.PSet(
+                value = cms.double(9.57377),
+                uncertainty = cms.double(0.00743434)
+            ),
+            b1 = cms.PSet(
+                value = cms.double(0.00373926),
+                uncertainty = cms.double(6.39034e-05)
+            ),
+            c1 = cms.PSet(
+                value = cms.double(1.95287e-05),
+                uncertainty = cms.double(7.46333e-07)
+            ),
+            sigma2 = cms.PSet(
+                value = cms.double(9.62499),
+                uncertainty = cms.double(0.00705773)
+            ),
+            b2 = cms.PSet(
+                value = cms.double(0.00163067),
+                uncertainty = cms.double(5.40255e-05)
+            ),
+            c2 = cms.PSet(
+                value = cms.double(-4.36799e-06),
+                uncertainty = cms.double(5.81473e-07)
+            )
         )
     ),
     shiftByUncertainty = cms.double(0.),
