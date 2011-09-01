@@ -597,12 +597,12 @@ def applyElectronIsolationEfficiencyCorrection_runZtoElecTau_bgEstTemplate(proce
 
 def applyVertexMultiplicityReweighting_runZtoElecTau(process):
 
-    process.load("TauAnalysis.RecoTools.vertexMultiplicityReweight_cfi")
+    process.load("TauAnalysis.RecoTools.vertexMultiplicityVsRhoPFNeutralReweight_cfi")
     if hasattr(process, "producePatTupleZtoElecTauSpecific"):
         process.producePatTupleZtoElecTauSpecific._seq = process.producePatTupleZtoElecTauSpecific._seq \
-          * process.selectedPrimaryVerticesTrackPtSumGt10 * process.vertexMultiplicityReweight
+          * process.selectedPrimaryVerticesTrackPtSumGt10 * process.vertexMultiplicityVsRhoPFNeutralReweight
 
-    _addEventWeightZtoElecTau(process, "vertexMultiplicityReweight")
+    _addEventWeightZtoElecTau(process, "vertexMultiplicityVsRhoPFNeutralReweight")
 
 def applyVertexMultiplicityReweighting_runZtoElecTau_bgEstTemplate(process):
 
@@ -649,10 +649,10 @@ def applyElectronIsolationEfficiencyCorrection_runAHtoElecTau(process):
 
 def applyVertexMultiplicityReweighting_runAHtoElecTau(process):
 
-    process.load("TauAnalysis.RecoTools.vertexMultiplicityReweight_cfi")
+    process.load("TauAnalysis.RecoTools.vertexMultiplicityVsRhoPFNeutralReweight_cfi")
     if hasattr(process, "producePatTupleAHtoElecTauSpecific"):
         process.producePatTupleAHtoElecTauSpecific._seq = process.producePatTupleAHtoElecTauSpecific._seq \
-          * process.selectedPrimaryVerticesTrackPtSumGt10 * process.vertexMultiplicityReweight
+          * process.selectedPrimaryVerticesTrackPtSumGt10 * process.vertexMultiplicityVsRhoPFNeutralReweight
 
-    _addEventWeighAHtoElecTau(process, "vertexMultiplicityReweight")
+    _addEventWeighAHtoElecTau(process, "vertexMultiplicityVsRhoPFNeutralReweight")
 
