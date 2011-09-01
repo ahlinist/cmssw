@@ -10,18 +10,18 @@ SAMPLES_TO_ANALYZE = [
         'data_TauPlusX_Run2011A_PR_v4_skim',
         'data_TauPlusX_Run2011A_05AugReReco_skim',
         'data_TauPlusX_Run2011A_PR_v6_skim',
-        'data_TauPlusX_Run2011A_May10ReReco_skim_qcdBgEst',
+        #'data_TauPlusX_Run2011A_May10ReReco_skim_qcdBgEst',
         'Ztautau_powheg_skim',
         'DYtautauM10to20_powheg_skim',
         #'qqZll',  ## no Summer11 sample
         'Zee_powheg_skim',
         'DYeeM10to20_pythia_skim',
-        'PhotonPlusJets_Pt15to30_skim','PhotonPlusJets_Pt30to50_skim','PhotonPlusJets_Pt50to80_skim',
+        #'PhotonPlusJets_Pt15to30_skim','PhotonPlusJets_Pt30to50_skim','PhotonPlusJets_Pt50to80_skim',
         'QCD_BCtoE_Pt20to30_skim','QCD_BCtoE_Pt30to80_skim','QCD_BCtoE_Pt80to170_skim',
         'QCD_EM_Pt20to30_skim','QCD_EM_Pt30to80_skim','QCD_EM_Pt80to170_skim',
         'TTplusJets_madgraph_skim',
         'WplusJets_madgraph_skim',
-        'WW_skim','WZ_skim','ZZ_skim',
+        #'WW_skim','WZ_skim','ZZ_skim',
 ] 
 
 # List of samples to include in the final level plots.  May include selections
@@ -56,8 +56,8 @@ SAMPLE_DEFAULTS = {
     'SE_black_list' : '',
     'disableDuplicateCheck' : False,
     'applyZrecoilCorrection' : True,
-    'applyElectronTriggerEfficiencyCorrection' : False,
-    'applyElectronIsolationEfficiencyCorrection' : False,
+    'applyElectronTriggerEfficiencyCorrection' : True,
+    'applyElectronIsolationEfficiencyCorrection' : True,
     'applyMuonTriggerEfficiencyCorrection' : False,
     'applyVertexMultiplicityReweighting' : True,
     'hlt' : cms.InputTag("TriggerResults", "", "HLT")
@@ -144,6 +144,7 @@ RECO_SAMPLES = {
     'data_TauPlusX_Run2011A_PR_v4_skim' : {  # 887.2/pb, runs 165071-168437, 5942864 events
         'datasetpath' : '/TauPlusX/jkolb-skimElecTau_424_v1-982c87f3521a6471fb16318d08f703d0/USER', 
         'lumi_mask' : '/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification//Collisions11/7TeV/Prompt/Cert_160404-173244_7TeV_PromptReco_Collisions11_JSON.txt',
+        'dbs_url' :  "https://cmsdbsprod.cern.ch:8443/cms_dbs_ph_analysis_01_writer/servlet/DBSServlet",
         'conditions' : 'GR_P_V22::All',
         'number_of_jobs' : 200,
         'type' : 'Data',
@@ -162,6 +163,7 @@ RECO_SAMPLES = {
     'data_TauPlusX_Run2011A_PR_v6_skim' : {  # 440.2/pb, runs 172620-173243, 793923 events
         'datasetpath' : '/TauPlusX/jkolb-Run2011A-PromptReco-v6_skimElecTau_v1-982c87f3521a6471fb16318d08f703d0/USER', 
         'lumi_mask' : '/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification//Collisions11/7TeV/Prompt/Cert_160404-173244_7TeV_PromptReco_Collisions11_JSON.txt',
+        'dbs_url' :  "https://cmsdbsprod.cern.ch:8443/cms_dbs_ph_analysis_01_writer/servlet/DBSServlet",
         'conditions' : 'GR_P_V22::All',
         'number_of_jobs' : 200,
         'type' : 'Data',
