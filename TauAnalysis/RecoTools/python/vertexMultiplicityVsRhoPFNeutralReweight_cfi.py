@@ -5,7 +5,7 @@ vertexMultiplicityVsRhoPFNeutralReweight = cms.EDProducer("VertexMultiplicityVsR
     srcRhoPFNeutral = cms.InputTag('kt6PFJets', 'rho'),
                                                           
     inputFileName = cms.FileInPath('TauAnalysis/RecoTools/data/vertexMultiplicityVsRhoPFNeutralReweight.root'),
-    meName = cms.string('histoReweight'),
+    lutName = cms.string('histoReweight'),
                                                           
     minPUreweight = cms.double(1.e-1),
     maxPUreweight = cms.double(1.e+1)
