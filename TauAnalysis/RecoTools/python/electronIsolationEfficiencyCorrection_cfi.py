@@ -4,7 +4,7 @@ electronIsolationEfficiencyCorrection = cms.EDProducer("PATElectronEfficiencyCor
     inputFileName = cms.FileInPath("TauAnalysis/RecoTools/data/electronIsolationEfficiencyCorrection.root"),
     lutName = cms.string('electronIsolationEfficiencyCorrection'),
     parametrization = cms.PSet(
-        srcLeptons = cms.VInputTag(
+        src = cms.VInputTag(
             'selectedPatElectronsForElecTauTrkIPcumulative', # collection to be checked first
             'selectedPatElectronsForElecTauTrkIPlooseIsolationCumulative',
 			'cleanPatElectrons'   # ("fall-back") collection to be checked last
@@ -13,6 +13,6 @@ electronIsolationEfficiencyCorrection = cms.EDProducer("PATElectronEfficiencyCor
         x = cms.string("eta"),
         y = cms.string("pt")
     ),
-    noLeptonSubstituteValue = cms.double(0.) # weight returned in case all 'srcLeptons' collections do not contain any entries
+    noObjectSubstituteValue = cms.double(0.) # weight returned in case all 'src' collections do not contain any entries
 )
 
