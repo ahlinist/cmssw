@@ -138,10 +138,7 @@ Onia2MuMuPAT::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
 
 	  vtx.SetXYZ(myVertex.position().x(),myVertex.position().y(),0);
 	  TVector3 pperp(jpsi.px(), jpsi.py(), 0);
-	  AlgebraicVector vpperp(3);
-	  vpperp[0] = pperp.x();
-	  vpperp[1] = pperp.y();
-	  vpperp[2] = 0.;
+	  AlgebraicVector3 vpperp(pperp.x(),pperp.y(),0.);
 
 	  if (resolveAmbiguity_) {
 
@@ -255,9 +252,9 @@ Onia2MuMuPAT::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
 	  double ctauPV = distXY.value()*cosAlpha * myCand.mass()/pperp.Perp();
 	  GlobalError v1e = (Vertex(myVertex)).error();
 	  GlobalError v2e = thePrimaryV.error();
-          AlgebraicSymMatrix vXYe = v1e.matrix()+ v2e.matrix();
+          AlgebraicSymMatrix33 vXYe = v1e.matrix()+ v2e.matrix();
 	  //double ctauErrPV = sqrt(vXYe.similarity(vpperp))*3.09688/(pperp.Perp2());
-	  double ctauErrPV = sqrt(vXYe.similarity(vpperp))*myCand.mass()/(pperp.Perp2());
+	  double ctauErrPV = sqrt(ROOT::Math::Similarity(vpperp,vXYe))*myCand.mass()/(pperp.Perp2());
 	  
 	  myCand.addUserFloat("ppdlPV",ctauPV);
           myCand.addUserFloat("ppdlErrPV",ctauErrPV);
@@ -272,9 +269,9 @@ Onia2MuMuPAT::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
 	  double ctauBS = distXY.value()*cosAlpha*myCand.mass()/pperp.Perp();
 	  GlobalError v1eB = (Vertex(myVertex)).error();
 	  GlobalError v2eB = theBeamSpotV.error();
-          AlgebraicSymMatrix vXYeB = v1eB.matrix()+ v2eB.matrix();
+          AlgebraicSymMatrix33 vXYeB = v1eB.matrix()+ v2eB.matrix();
 	  //double ctauErrBS = sqrt(vXYeB.similarity(vpperp))*3.09688/(pperp.Perp2());
-	  double ctauErrBS = sqrt(vXYeB.similarity(vpperp))*myCand.mass()/(pperp.Perp2());
+	  double ctauErrBS = sqrt(ROOT::Math::Similarity(vpperp,vXYeB))*myCand.mass()/(pperp.Perp2());
 	  
 	  myCand.addUserFloat("ppdlBS",ctauBS);
           myCand.addUserFloat("ppdlErrBS",ctauErrBS);

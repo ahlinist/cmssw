@@ -36,7 +36,3 @@
 <use   name="PhysicsTools/Utilities"/>
 <use   name="MuonAnalysis/MuonAssociators"/>
 <flags EDM_PLUGIN="1"/>
-<export>
-   <lib   name="1"/>
-   <flags EDM_PLUGIN="1"/>		
-</export>
