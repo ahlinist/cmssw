@@ -140,8 +140,8 @@ void compWtaunuXsectionNumbers()
   // compute error estimation on cross section
   //-------------------------------------------------------------------------------
    
-   double errSysJetpTauJetUp2 = square(errTauEnScaleUp) + square(errJetEnScaleDown);	
-   double errSysJetpTauJetDown2 = square(errTauEnScaleDown) + square(errJetEnScaleUp);
+   double errSysJetpTauJetUp2    = square(errTauEnScaleUp) + square(errJetEnScaleDown);	
+   double errSysJetpTauJetDown2  = square(errTauEnScaleDown) + square(errJetEnScaleUp);
    std::cout << "Sys. error from tau+jet energy scale = " 
 	     << " + " << TMath::Sqrt(errSysJetpTauJetUp2) << " - " << TMath::Sqrt(errSysJetpTauJetDown2) << std::endl;
 
