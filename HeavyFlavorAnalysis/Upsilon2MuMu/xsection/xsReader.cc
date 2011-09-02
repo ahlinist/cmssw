@@ -56,10 +56,10 @@ xsReader::xsReader(TChain *tree, TString evtClassName): treeReaderXS(tree, evtCl
   fPidTableTrckEff = new PidTable("PidTables/DATA/Upsilon/PtTrackEff.dat");
   
   ///// PidTables MC -- TrackerMuonArbitrated 
-  //fPidTableMuIDPos = new PidTable("../tnp/PidTables/MC/Jpsi/MuID/CowboyVeto/TrackerMuonArbitrated/PtMmbPos-jpsi.tma.nb.dat");
-  //fPidTableMuIDNeg = new PidTable("../tnp/PidTables/MC/Jpsi/MuID/CowboyVeto/TrackerMuonArbitrated/PtMmbNeg-jpsi.tma.nb.dat");
-  //fPidTableTrigPos = new PidTable("../tnp/PidTables/MC/Jpsi/Trig/CowboyVeto/PtMmbPos-jpsi.tma.nb.dat");    
-  //fPidTableTrigNeg = new PidTable("../tnp/PidTables/MC/Jpsi/Trig/CowboyVeto/PtMmbNeg-jpsi.tma.nb.dat"); 
+  fPidTableMuIDPos = new PidTable("../tnp/PidTables/MC/Jpsi/MuID/CowboyVeto/TrackerMuonArbitrated/PtMmbPos-jpsi.tma.nb.dat");
+  fPidTableMuIDNeg = new PidTable("../tnp/PidTables/MC/Jpsi/MuID/CowboyVeto/TrackerMuonArbitrated/PtMmbNeg-jpsi.tma.nb.dat");
+  fPidTableTrigPos = new PidTable("../tnp/PidTables/MC/Jpsi/Trig/CowboyVeto/PtMmbPos-jpsi.tma.nb.dat");    
+  fPidTableTrigNeg = new PidTable("../tnp/PidTables/MC/Jpsi/Trig/CowboyVeto/PtMmbNeg-jpsi.tma.nb.dat"); 
   /// Trig Eff with Ups(1S)
   //fPidTableTrigPos = new PidTable("../tnp/PidTables/MC/Upsilon/Trig/PtMmbPos-upsilon.tma.nb.dat");    
   //fPidTableTrigNeg = new PidTable("../tnp/PidTables/MC/Upsilon/Trig/PtMmbNeg-upsilon.tma.nb.dat");  
@@ -72,10 +72,10 @@ xsReader::xsReader(TChain *tree, TString evtClassName): treeReaderXS(tree, evtCl
   //fPidTableTrigNeg = new PidTable("../tnp/PidTables/MC/Jpsi/Trig/CowboyVeto/PtMmbNeg-jpsi.dat");   
   
   ///// PidTables MC -- TrackerMuonArbitrated -- MCTruth
-  fPidTableMuIDPos = new PidTable("../tnp/PidTables/MC/Jpsi/MuID/MCTruth/PtMctPos-jpsi.dat");
-  fPidTableMuIDNeg = new PidTable("../tnp/PidTables/MC/Jpsi/MuID/MCTruth/PtMctNeg-jpsi.dat");
-  fPidTableTrigPos = new PidTable("../tnp/PidTables/MC/Jpsi/Trig/MCTruth/PtMctPos-jpsi.dat");
-  fPidTableTrigNeg = new PidTable("../tnp/PidTables/MC/Jpsi/Trig/MCTruth/PtMctNeg-jpsi.dat");
+  //fPidTableMuIDPos = new PidTable("../tnp/PidTables/MC/Jpsi/MuID/MCTruth/PtMctPos-jpsi.dat");
+  //fPidTableMuIDNeg = new PidTable("../tnp/PidTables/MC/Jpsi/MuID/MCTruth/PtMctNeg-jpsi.dat");
+  //fPidTableTrigPos = new PidTable("../tnp/PidTables/MC/Jpsi/Trig/MCTruth/PtMctPos-jpsi.dat");
+  //fPidTableTrigNeg = new PidTable("../tnp/PidTables/MC/Jpsi/Trig/MCTruth/PtMctNeg-jpsi.dat");
   
   
   ///// PidTables DATA -- TrackerMuonArbitrated 
@@ -191,18 +191,18 @@ bool xsReader::CowboyVeto_gen(TGenCand *gCand){
   pl2 = fpEvt->getGenCand(gCand->fDau2);
   for (int i = gCand->fDau1; i <= gCand->fDau2; ++i) {
     g2Cand = fpEvt->getGenCand(i);
-    //cout << "g2Cand  =  " << g2Cand->fID << endl;
+    cout << "g2Cand  =  " << g2Cand->fID << " i = "  << i << endl;
     if (13 == TMath::Abs(g2Cand->fID)){
       if ( !l1 && !l2 ) {
 	pl1 = fpEvt->getGenCand(i);
 	l1 = true; 
-	//cout << "pl1  =  " << g2Cand->fID << endl;
+	cout << "pl1  =  " << g2Cand->fID  << " i = "  << i << endl;
 	continue;
       }
       if ( l1 && !l2  )
 	pl2 = fpEvt->getGenCand(i);
 	l2 = true; 
-	//cout << "pl2  =  " << g2Cand->fID << endl;
+	cout << "pl2  =  " << g2Cand->fID  << " i = "  << i << endl;
 	continue;
     }
   }
@@ -302,6 +302,7 @@ void xsReader::GenStudy(){
   bool Leg1 = false; bool Leg2 = false;
   int index1(-99), index2(-99);
   double pt1(-9), pt2(-9), eta1(-9), eta2(-9);
+  double phi1(-9), phi2(-9), q1(-9);
   for (int iG = 0; iG < fpEvt->nGenCands(); ++iG) {
     gCand = fpEvt->getGenCand(iG);
     if ( gCand->fID == RESTYPE && gCand->fStatus == 2 ){
@@ -309,7 +310,7 @@ void xsReader::GenStudy(){
       if ( (gCand->fP.Perp() <= PTCAND) && (fabs(genCand.Rapidity()) <= RAPCAND) ){
 	gDau1 = fpEvt->getGenCand(gCand->fDau1);
 	gDau2 = fpEvt->getGenCand(gCand->fDau2);
-	//if ( CowboyVeto_gen(gCand) ) continue;
+	//////if ( CowboyVeto_gen(gCand) ) continue;
 	for (int i = gCand->fDau1; i <= gCand->fDau2; ++i) {
 	  g2Cand = fpEvt->getGenCand(i);
 	  if (13 == TMath::Abs(g2Cand->fID)) {
@@ -318,6 +319,8 @@ void xsReader::GenStudy(){
 	      if ( pTrack->fGenIndex == g2Cand->fNumber && !(match1) ) {
 		pt1 = pTrack->fPlab.Perp();
 		eta1 = pTrack->fPlab.Eta();
+		phi1 = pTrack->fPlab.Phi();
+		q1 = pTrack->fQ;
 		index1 = iR;
 		//cout << "    g2Cand->fNumber = " << g2Cand->fNumber << endl;
 		match1 = true;
@@ -328,6 +331,7 @@ void xsReader::GenStudy(){
 	      if ( pTrack->fGenIndex == g2Cand->fNumber  ) {
 		pt2 = pTrack->fPlab.Perp();
 		eta2 = pTrack->fPlab.Eta();
+		phi2 = pTrack->fPlab.Phi();
 		index2 = iR;
 		//cout << "g2Cand->fNumber = " << g2Cand->fNumber << endl;
 	        match2 = true;
@@ -340,6 +344,7 @@ void xsReader::GenStudy(){
     	} 
 	
 	if ( match1 && match2 ){
+	  /////////////if ( q1*(phi1 -phi2) > 0 ) continue;
 	  if ((pt1 >= PTLO) && (pt2 >= PTLO) && (eta1 >= ETALO) && (eta2 >= ETALO) && (eta1 <= ETAHI) && (eta2 <= ETAHI) && (pt1 <= PTHI) && (pt2 <= PTHI) ){
 	    ////////
 	    if ( ((TMath::Abs(eta1) <= ETABARREL) && (pt1 < PTBARREL)) || ((TMath::Abs(eta2) <= ETABARREL) && (pt2 < PTBARREL)) ){
@@ -1646,16 +1651,59 @@ void xsReader::MCstudy(){
   
   if ( fGenCandY < 0 ) fGenCandY*=-1;
   
-  
-  if (  (TMath::Abs(fMuon1Pt - fGenMuon1Pt) > 0.5) || (TMath::Abs(fMuon2Pt - fGenMuon2Pt) > 0.5)  ){
-    //cout << endl;
-    //cout << "fGenMuon1Pt = " << fGenMuon1Pt << "fMuon1Pt = "<< fMuon1Pt << endl; 
-    //cout << "fGenMuon2Pt = " << fGenMuon2Pt << "fMuon2Pt = "<< fMuon2Pt << endl;    
-    //cout << "fGenMuon1Eta = " << fGenMuon1Eta << "fMuon1Eta = "<< fMuon1Eta << endl; 
-    //cout << "fGenMuon2Eta = " << fGenMuon2Eta << "fMuon2Eta = "<< fMuon2Eta  << endl; 
-    //cout << "fGenCandPt = "<< fGenCandPt << "fCandPt = " << fCandPt  << endl;
-    //cout << "fGenCandY = "<< fGenCandY << "fCandY = " << fCandY  << endl;
+  if ( (fGenCandY <= 2.4) && (fGenCandY >= 2.) ){
+    if ( fGenCandPt <= 10  ){
+      ((TH1D*)fpHistFile->Get("ForGenCand10_MuonPt"))->Fill(fGenMuon1Pt);
+      ((TH1D*)fpHistFile->Get("ForGenCand10_MuonPt"))->Fill(fGenMuon2Pt);
+      ((TH1D*)fpHistFile->Get("ForGenCand10_MuonEta"))->Fill(fGenMuon1Eta);
+      ((TH1D*)fpHistFile->Get("ForGenCand10_MuonEta"))->Fill(fGenMuon2Eta);
+    }
+    if ( (fGenCandPt > 10) && (fGenCandPt <= 20)  ){
+      ((TH1D*)fpHistFile->Get("ForGenCand10_20_MuonPt"))->Fill(fGenMuon1Pt);
+      ((TH1D*)fpHistFile->Get("ForGenCand10_20_MuonPt"))->Fill(fGenMuon2Pt);
+      ((TH1D*)fpHistFile->Get("ForGenCand10_20_MuonEta"))->Fill(fGenMuon1Eta);
+      ((TH1D*)fpHistFile->Get("ForGenCand10_20_MuonEta"))->Fill(fGenMuon2Eta);
+    }    
+    if ( fGenCandPt > 20 ){
+      ((TH1D*)fpHistFile->Get("ForGenCand20_MuonPt"))->Fill(fGenMuon1Pt);
+      ((TH1D*)fpHistFile->Get("ForGenCand20_MuonPt"))->Fill(fGenMuon2Pt);
+      ((TH1D*)fpHistFile->Get("ForGenCand20_MuonEta"))->Fill(fGenMuon1Eta);
+      ((TH1D*)fpHistFile->Get("ForGenCand20_MuonEta"))->Fill(fGenMuon2Eta);
+    }    
   }
+  
+  if ( fGenCandY <= 0.4 ){
+    if ( fGenCandPt > 30 ){
+      ((TH1D*)fpHistFile->Get("BarrGenCand30_MuonPt"))->Fill(fGenMuon1Pt);
+      ((TH1D*)fpHistFile->Get("BarrGenCand30_MuonPt"))->Fill(fGenMuon2Pt);
+      ((TH1D*)fpHistFile->Get("BarrGenCand30_MuonEta"))->Fill(fGenMuon1Eta);
+      ((TH1D*)fpHistFile->Get("BarrGenCand30_MuonEta"))->Fill(fGenMuon2Eta);
+    }    
+  }
+  
+  if ( (2. <= fCandY) && ( fCandY <= 2.4) ){
+    if ( fCandPt <= 10  ){
+      ((TH1D*)fpHistFile->Get("ForRecoCand10_MuonPt"))->Fill(fMuon1Pt);
+      ((TH1D*)fpHistFile->Get("ForRecoCand10_MuonPt"))->Fill(fMuon2Pt);
+      ((TH1D*)fpHistFile->Get("ForRecoCand10_MuonEta"))->Fill(fMuon1Eta);
+      ((TH1D*)fpHistFile->Get("ForRecoCand10_MuonEta"))->Fill(fMuon2Eta);
+    }
+    
+    if ( (fCandPt > 10 ) && (fCandPt <= 20)  ){
+      ((TH1D*)fpHistFile->Get("ForRecoCand10_20_MuonPt"))->Fill(fMuon1Pt);
+      ((TH1D*)fpHistFile->Get("ForRecoCand10_20_MuonPt"))->Fill(fMuon2Pt);
+      ((TH1D*)fpHistFile->Get("ForRecoCand10_20_MuonEta"))->Fill(fMuon1Eta);
+      ((TH1D*)fpHistFile->Get("ForRecoCand10_20_MuonEta"))->Fill(fMuon2Eta);
+    }
+	 
+    if ( fCandPt > 20  ){
+      ((TH1D*)fpHistFile->Get("ForRecoCand20_MuonPt"))->Fill(fMuon1Pt);
+      ((TH1D*)fpHistFile->Get("ForRecoCand20_MuonPt"))->Fill(fMuon2Pt);
+      ((TH1D*)fpHistFile->Get("ForRecoCand20_MuonEta"))->Fill(fMuon1Eta);
+      ((TH1D*)fpHistFile->Get("ForRecoCand20_MuonEta"))->Fill(fMuon2Eta);
+    }
+  }
+  
   
   ((TH1D*)fpHistFile->Get("GenPt_Cand"))->Fill(fGenCandPt);
   for ( int ipt = 0; ipt < fNpt; ++ipt ){
@@ -2042,6 +2090,24 @@ void xsReader::bookHist() {
   h = new TH1D("MaxDoca_Cand", "MaxDoca_Cand", 60, 0., 0.03); 
   h = new TH1D("GenPt_Cand","GenPt_Cand", fNpt, fPTbin);
   h = new TH1D("RecoPtinSameBin_Cand","RecoPtinSameBin_Cand", fNpt, fPTbin);
+  
+  h = new TH1D("ForRecoCand10_MuonPt", "ForRecoCand10_MuonPt", 50, 0., 50.);
+  h = new TH1D("ForRecoCand10_20_MuonPt", "ForRecoCand10_20_MuonPt", 50, 0., 50.);
+  h = new TH1D("ForRecoCand20_MuonPt", "ForRecoCand20_MuonPt", 50, 0., 50.);
+  h = new TH1D("ForRecoCand10_MuonEta", "ForRecoCand10_MuonEta", 50, -2.5, 2.5);
+  h = new TH1D("ForRecoCand10_20_MuonEta", "ForRecoCand10_20_MuonEta", 50, -2.5, 2.5);
+  h = new TH1D("ForRecoCand20_MuonEta", "ForRecoCand20_MuonEta", 50, -2.5, 2.5);
+  h = new TH1D("ForGenCand10_MuonPt", "ForGenCand10_MuonPt", 50, 0., 50.);
+  h = new TH1D("ForGenCand10_20_MuonPt", "ForGenCand10_20_MuonPt", 50, 0., 50.);
+  h = new TH1D("ForGenCand20_MuonPt", "ForGenCand20_MuonPt", 50, 0., 50.);
+  h = new TH1D("ForGenCand10_MuonEta", "ForGenCand10_MuonEta", 50, -2.5, 2.5);
+  h = new TH1D("ForGenCand10_20_MuonEta", "ForGenCand10_20_MuonEta", 50, -2.5, 2.5);
+  h = new TH1D("ForGenCand20_MuonEta", "ForGenCand20_MuonEta", 50, -2.5, 2.5);
+  h = new TH1D("BarrGenCand30_MuonPt", "BarrGenCand30_MuonPt", 50, 0., 50.);
+  h = new TH1D("BarrGenCand30_MuonEta", "BarrGenCand30_MuonEta", 50, -2.5, 2.5);
+
+  
+
   
   
   // Detectability() histograms
