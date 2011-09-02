@@ -49,6 +49,10 @@ options.parseArguments()
 ## define the process
 process = cms.Process("ESCALE")
 
+## Load standard sequence for crack corrections
+# process.load('CalibCalorimetry.EcalTrivialCondModules.EcalTrivialCondRetriever_cfi')
+# process.load('Configuration.StandardSequences.Geometry_cff')
+
 ## Message logger
 process.load("FWCore.MessageLogger.MessageLogger_cfi")
 process.options = cms.untracked.PSet( wantSummary = cms.untracked.bool(False) )
@@ -61,11 +65,13 @@ process.MessageLogger.cerr.INFO.limit = 100
 #process.MessageLogger.debugModules = ["tree"]
 #process.MessageLogger.cerr.threshold = "DEBUG"
 
-### Geometry, Detector Conditions and Pythia Decay Tables (needed for the vertexing)
-#process.load("Configuration.StandardSequences.Geometry_cff")
-#process.load("Configuration.StandardSequences.FrontierConditions_GlobalTag_cff")
-#process.GlobalTag.globaltag = options.globalTag
-#process.load("Configuration.StandardSequences.MagneticField_cff")
+## Geometry, Detector Conditions and Pythia Decay Tables (needed for the vertexing)
+process.load('Configuration.StandardSequences.Services_cff')
+process.load('Configuration.StandardSequences.MagneticField_38T_cff')
+process.load('Configuration.StandardSequences.Geometry_cff')
+process.load('Configuration.StandardSequences.Reconstruction_cff')
+process.load('Configuration.StandardSequences.FrontierConditions_GlobalTag_cff')
+process.GlobalTag.globaltag = options.globalTag
 #process.load("SimGeneral.HepPDTESSource.pythiapdt_cfi")
 
 process.source = cms.Source("PoolSource",
@@ -183,38 +189,71 @@ process.selectionSequence = cms.Sequence(
     #isMC        = cms.untracked.bool(False),
     #)
 
-process.load("ElectroWeakAnalysis.MultiBosons.FsrAnalysis.PmvTreeMaker_cfi")
+#process.load("ElectroWeakAnalysis.MultiBosons.FsrAnalysis.energyScaleTree_cfi")
 
-process.pmvTree.isMC = options.isMC
+process.load("ElectroWeakAnalysis.MultiBosons.FsrAnalysis.PmvTreeMaker_cfi")
+process.tree = process.pmvTree.clone()
+process.tree.isMC = options.isMC
+
 
 ## Pileup
 if options.isMC:
-    process.pmvTree.pileupInfoSrc = cms.untracked.InputTag("addPileupInfo")
-    process.pmvTree.lumiReWeighting = cms.untracked.PSet(
+    process.tree.pileupInfoSrc = cms.untracked.InputTag("addPileupInfo")
+    process.tree.lumiReWeighting = cms.untracked.PSet(
         mcDistribution   = cms.vdouble(
             ## from the gamma+jet sample (no filter)
             ## 21 numbers
-            257141., 295755., 263008., 286909., 282291., 281067.,
-            295777., 297075., 250569., 299795., 256528., 248686.,
-            203484., 137833., 117686., 76877., 62815., 35462.,
-            8381., 10012., 4233.
+#             257141., 295755., 263008., 286909., 282291., 281067.,
+#             295777., 297075., 250569., 299795., 256528., 248686.,
+#             203484., 137833., 117686., 76877., 62815., 35462.,
+#             8381., 10012., 4233.
+
+            ## from the S4 gamma + jet sample (no filter)
+            ## 51 numbers, use only first 42
+            1.15148e+06, 582849, 629204, 642292, 658930, 666227,
+            668263, 649863, 623035, 588189, 528601, 478063,
+            412804, 351588, 285862, 231776, 181493, 139729,
+            104007, 77262, 55684, 39053, 27132, 18393,
+            12278, 8039, 5393, 3301, 2152, 1321,
+            875, 482, 317, 195, 98, 75,
+            44, 22, 15, 5, 7, 2,
         ),
         dataDistribution = cms.vdouble(
             ## the length has to be exactly the same as for the MC!
+
             ## from estimatePileupD.py for golden JSON up to run 165970
-            5.42138e+06, 9.26849e+06, 2.10364e+07, 3.47247e+07, 4.546e+07, 4.98579e+07,
-            4.74552e+07, 4.01812e+07, 3.08212e+07, 2.17147e+07, 1.42032e+07, 8.69835e+06,
-            5.02211e+06, 2.74918e+06, 1.43373e+06, 715277., 342608., 158070.,
-            70454.9, 30421.1, 12757.2
+            #5.42138e+06, 9.26849e+06, 2.10364e+07, 3.47247e+07, 4.546e+07, 4.98579e+07,
+            #4.74552e+07, 4.01812e+07, 3.08212e+07, 2.17147e+07, 1.42032e+07, 8.69835e+06,
+            #5.02211e+06, 2.74918e+06, 1.43373e+06, 715277., 342608., 158070.,
+            #70454.9, 30421.1, 12757.2
+
+            ## from estimatePileupD.py for golden JSON up to run 166861
+#             1.00826e+07, 1.9655e+07, 4.58762e+07, 7.63478e+07, 9.9728e+07, 1.0842e+08,
+#             1.01847e+08, 8.48512e+07, 6.39051e+07, 4.41459e+07, 2.82916e+07, 1.69742e+07,
+#             9.60532e+06, 5.15841e+06, 2.64284e+06, 1.29755e+06, 612859, 279413,
+#             123331, 52841.1, 22026.7
+
+            ## from estimatePileupD.py for golden JSON up to run 173244
+            2.66037e+07, 6.20837e+07, 1.28931e+08, 2.00545e+08, 2.5334e+08, 2.73133e+08,
+            2.5988e+08, 2.23527e+08, 1.76897e+08, 1.30515e+08, 9.06582e+07, 5.972e+07,
+            3.75081e+07, 2.2549e+07, 1.30131e+07, 7.2248e+06, 3.86533e+06, 1.99552e+06,
+            995277, 480084, 224189, 101452, 44532.8, 18979.4,
+            7860.96, 3167.1, 1242.31, 474.86, 177.025, 64.4158,
+            22.8974, 7.95686, 2.70506, 0.900305, 0.293541, 0.0938176,
+            0.02941, 0.0090478, 0.00273311, 0.000811054, 0.000236549, 6.78354e-05,
+
         )
     )
 
 process.p = cms.Path(
     process.selectionSequence *
-    process.pmvTree
+    process.tree
 )
 
 process.options.wantSummary = True
+
+## Turn off the delta R cut
+# process.selectedZMuMuGammas.maxDeltaRNear = 99
 
 if __name__ == "__main__": import user
 
