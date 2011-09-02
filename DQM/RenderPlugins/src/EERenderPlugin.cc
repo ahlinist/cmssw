@@ -1,12 +1,12 @@
-// $Id: EERenderPlugin.cc,v 1.169 2011/08/11 18:33:05 yiiyama Exp $
+// $Id: EERenderPlugin.cc,v 1.170 2011/08/12 13:25:48 yiiyama Exp $
 
 /*!
   \file EERenderPlugin
   \brief Display Plugin for Quality Histograms
   \author G. Della Ricca
   \author B. Gobbo
-  \version $Revision: 1.169 $
-  \date $Date: 2011/08/11 18:33:05 $
+  \version $Revision: 1.170 $
+  \date $Date: 2011/08/12 13:25:48 $
 */
 
 #include "DQM/DQMRenderPlugin.h"
@@ -577,7 +577,7 @@ private:
 	//        obj->GetXaxis()->LabelsOption("v");
 	if( name.find("rms") != std::string::npos ){
 	  obj->SetMinimum(0.);
-	  obj->SetMaximum(2.);
+	  obj->SetMaximum(10.);
 	}else{
 	  obj->SetMinimum(-2.);
 	  obj->SetMaximum(2.);
