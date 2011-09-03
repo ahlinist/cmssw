@@ -141,6 +141,14 @@ def _setApplyElectronTriggerEfficiencyCorrection(process, enable, **kwargs):
         enabler(process)
 
 @_requires(args=['channel'])
+def _setApplyTauMetTriggerEfficiencyCorrection(process, enable, **kwargs):
+    channel = kwargs['channel']
+    if enable:
+        print "Applying Tau+MET trigger efficiency correction"
+        enabler = getattr(mcToDataCorrectionTools, "applyTauMetTriggerEfficiencyCorrection_run%s" % channel)
+        enabler(process)
+
+@_requires(args=['channel'])
 def _setApplyMuonIsolationEfficiencyCorrection(process, enable, **kwargs):
     channel = kwargs['channel']
     if enable:
@@ -373,6 +381,7 @@ _METHOD_MAP = {
     'applyZrecoilCorrection' : _setApplyZrecoilCorrection,
     'applyMuonTriggerEfficiencyCorrection' : _setApplyMuonTriggerEfficiencyCorrection,
     'applyElectronTriggerEfficiencyCorrection' : _setApplyElectronTriggerEfficiencyCorrection,
+    'applyTauMetTriggerEfficiencyCorrection' : _setApplyTauMetTriggerEfficiencyCorrection,
     'applyMuonIsolationEfficiencyCorrection' : _setApplyMuonIsolationEfficiencyCorrection,
     'applyElectronIsolationEfficiencyCorrection' : _setApplyElectronIsolationEfficiencyCorrection,
     'applyVertexMultiplicityReweighting' : _setApplyVertexMultiplicityReweighting,
