@@ -114,8 +114,8 @@ void compWtaunuXsectionNumbers()
 
   double errTauEnScaleUp   = 0.151;
   double errTauEnScaleDown = 0.142;
-  double errJetEnScaleUp   = 0.095;
-  double errJetEnScaleDown = 0.106;
+  double errJetEnScaleUp   = 0.106;
+  double errJetEnScaleDown = 0.095;
 
   double errIntLumiData    = 0.04;
   
