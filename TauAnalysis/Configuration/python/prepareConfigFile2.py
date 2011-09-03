@@ -145,6 +145,10 @@ def prepareConfigFile(configFile = None, jobInfo = None, newConfigFile = None,
     jobOptions.append(('applyElectronTriggerEfficiencyCorrection',
                        sample_info['applyElectronTriggerEfficiencyCorrection']))
 
+    # Apply tau + met trigger efficiency correction if requested
+    jobOptions.append(('applyTauMetTriggerEfficiencyCorrection',
+                       sample_info['applyTauMetTriggerEfficiencyCorrection']))
+        
     # Apply electron isolation efficiency correction if requested
     jobOptions.append(('applyElectronIsolationEfficiencyCorrection',
                        sample_info['applyElectronIsolationEfficiencyCorrection']))
