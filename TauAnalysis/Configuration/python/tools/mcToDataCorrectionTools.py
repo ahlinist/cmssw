@@ -656,3 +656,47 @@ def applyVertexMultiplicityReweighting_runAHtoElecTau(process):
 
     _addEventWeighAHtoElecTau(process, "vertexMultiplicityVsRhoPFNeutralReweight")
 
+#--------------------------------------------------------------------------------
+# W --> tau nu channel
+#--------------------------------------------------------------------------------
+
+def _addEventWeightWtoTauNu(process, srcEventWeight, applyAfterFilterName = "*"):
+
+    _addEventWeight(
+        process, ["analyzeWtoTauNuEvents"],
+        srcEventWeight, applyAfterFilterName)
+    
+def _addEventWeightWtoTauNu_bgEstTemplate(process, srcEventWeight, applyAfterFilterName = "*"):
+
+    _addEventWeight(
+        process, [ "analyzeEventsBgEstQCDEnriched" ],
+        srcEventWeight, applyAfterFilterName)        
+
+def applyVertexMultiplicityReweighting_runWtoTauNu(process):
+
+    process.load("TauAnalysis.RecoTools.vertexMultiplicityReweight_cfi")
+    if hasattr(process, "producePatTupleWtoTauNuSpecific"):
+        process.producePatTupleWtoTauNuSpecific._seq = process.producePatTupleWtoTauNuSpecific._seq * process.selectedPrimaryVerticesTrackPtSumGt10 * process.vertexMultiplicityReweight
+        
+    _addEventWeightWtoTauNu(process, "vertexMultiplicityReweight")
+                        
+
+def applyVertexMultiplicityReweighting_runWtoTauNu_bgEstTemplate(process):
+
+    applyVertexMultiplicityReweighting_runWtoTauNu(process)
+    
+    _addEventWeightWtoTauNu_bgEstTemplate(process, "vertexMultiplicityReweight")
+
+def applyTauMetTriggerEfficiencyCorrection_runWtoTauNu(process):
+    process.load("TauAnalysis.RecoTools.tauMetTriggerEfficiencyCorrection_cfi")
+    if hasattr(process, "producePatTupleWtoTauNuSpecific"):
+        process.producePatTupleWtoTauNuSpecific._seq = process.producePatTupleWtoTauNuSpecific._seq * process.tauMetTriggerEfficiencyCorrection
+
+    _addEventWeightWtoTauNu(process,"tauMetTriggerEfficiencyCorrection", applyAfterFilterName = "evtSelTrigger")
+    
+def applyElectronTriggerEfficiencyCorrection_runWtoTauNu(process):
+    process.load("TauAnalysis.RecoTools.electronTriggerEfficiencyCorrection_cfi")
+    if hasattr(process,"producePatTupleWtoTauNuSpecific"):
+        process.producePatTupleWtoTauNuSpecific._seq = process.producePatTupleWtoTauNuSpecific._seq * process.electronTriggerEfficiencyCorrection
+
+    _addEventWeightWtoTauNu(process,"electronTriggerEfficiencyCorrection", applyAfterFilterName = "evtSelTrigger")
