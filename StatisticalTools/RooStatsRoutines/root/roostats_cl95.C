@@ -1,7 +1,7 @@
 static const char* desc =
 "=====================================================================\n"
 "|                                                                    \n"
-"|\033[1m        roostats_cl95.C  version 1.15                 \033[0m\n"
+"|\033[1m        roostats_cl95.C                               \033[0m\n"
 "|                                                                    \n"
 "| Standard c++ routine for 95% C.L. limit calculation                \n"
 "| for cross section in a 'counting experiment'                       \n"
@@ -77,7 +77,7 @@ static const char* desc =
 "                                       only!                         \n"
 "                       \"cls\"       - CLs observed limit. We suggest\n"
 "                                       using the dedicated interface \n"
-"                                       roostats_cls() instead        \n"
+"                                       roostats_limit() instead        \n"
 "                       \"fc\"        - Feldman Cousins with numeric  \n"
 "                                     integration,                    \n"
 "                       \"workspace\" - only create workspace and save\n"
