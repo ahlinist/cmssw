@@ -22,19 +22,20 @@ selectedPFTaus = cms.EDFilter("PFTauSelector",
 
 selectedMuons = cms.EDFilter("MuonSelector",
   src = cms.InputTag('muons'),
-  cut = cms.string("isGlobalMuon & pt > 15 & abs(eta) < 2.5 "
+  cut = cms.string("isGlobalMuon() && isTrackerMuon()"
+                   "pt() > 15 & abs(eta()) < 2.5 "
                    "&& innerTrack().numberOfValidHits() > 10"
                    "&& innerTrack().hitPattern().pixelLayersWithMeasurement() >= 1"
                    "&& numberOfMatches() > 1"
-                   " && (isolationR03().sumPt + isolationR03().emEt + isolationR03().hadEt)/pt() < 0.15"
+                   "&& globalTrack().normalizedChi2() < 10.0"
+                   "&& globalTrack().hitPattern().numberOfValidMuonHits() > 0"
                    ),
   filter = cms.bool(True)
 )
-selectedMuonFilter = cms.EDFilter("PATCandViewCountFilter",
-                                  src = cms.InputTag("selectedMuons"),
-                                  minNumber = cms.uint32(1),
-                                  maxNumber = cms.uint32(1)
-                                  )
+selectedMuonFilter = cms.EDFilter("CandViewCountFilter",
+    src = cms.InputTag("selectedMuons"),
+    minNumber = cms.uint32(1),
+)
 
 muTauPairs = cms.EDProducer("DeltaRMinCandCombiner",
   decay = cms.string('selectedPFTaus@+ selectedMuons@-'),
@@ -44,10 +45,9 @@ muTauPairs = cms.EDProducer("DeltaRMinCandCombiner",
   deltaRMin = cms.double(0.7)
 )
 
-selectedMuTauPairs = cms.EDFilter("PATCandViewCountFilter",
+selectedMuTauPairs = cms.EDFilter("CandViewCountFilter",
   src = cms.InputTag('muTauPairs'),
   minNumber = cms.uint32(1),
-  maxNumber = cms.uint32(1),
 )
 
 #muTauSkimSequence = cms.Sequence(
