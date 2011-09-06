@@ -13,7 +13,7 @@
 //
 // Original Author:  Chi Nhan Nguyen
 //         Created:  Wed Oct  1 13:04:54 CEST 2008
-// $Id: TTEffAnalyzer.cc,v 1.62 2011/06/27 13:03:23 slehti Exp $
+// $Id: TTEffAnalyzer.cc,v 1.63 2011/06/28 12:30:47 slehti Exp $
 //
 //
 
@@ -542,10 +542,8 @@ void TTEffAnalyzer::endLuminosityBlock(const edm::LuminosityBlock & lumi, const 
    	// Counters
 	edm::Handle<edm::MergeableCounter> count;
 
-	std::cout << "Counters " << std::endl;
 	for(size_t i = 0; i < Counters_.size(); ++i){
 		lumi.getByLabel(Counters_[i], count);
-		std::cout << "    " << Counters_[i].label() << " " << count->value << std::endl;
 		int value = count->value;
 		if(h_counters->GetEntries()) value += h_counters->GetBinContent(i+1);
 		h_counters->SetBinContent(i+1,value);
