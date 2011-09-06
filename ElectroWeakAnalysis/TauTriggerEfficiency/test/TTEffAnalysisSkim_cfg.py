@@ -20,9 +20,9 @@ process.load('Configuration/StandardSequences/GeometryIdeal_cff')
 process.load('Configuration/StandardSequences/MagneticField_cff')
 process.load('Configuration/StandardSequences/FrontierConditions_GlobalTag_cff')
 if (isData):
-    process.GlobalTag.globaltag = 'GR_R_311_V4::All'
+    process.GlobalTag.globaltag = 'GR_R_42_V20::All'
 else:
-    process.GlobalTag.globaltag = 'START41_V0::All'
+    process.GlobalTag.globaltag = 'START42_V13::All'
 
 process.maxEvents = cms.untracked.PSet(
         input = cms.untracked.int32(100)
