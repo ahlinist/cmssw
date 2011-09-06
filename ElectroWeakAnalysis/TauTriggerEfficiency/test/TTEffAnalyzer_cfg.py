@@ -40,8 +40,8 @@ process.load('Configuration/StandardSequences/GeometryPilot2_cff')
 
 if(isData):
     process.source = cms.Source("PoolSource",
-	fileNames = cms.untracked.vstring(
-	"file:TTEffSkim.root"
+        fileNames = cms.untracked.vstring(
+        "file:TTEffSkim.root"
 #	"/store/user/luiggi/MinimumBias/TTEffSkimRun2011A_GoldenPlusESIgnoredJSON/a6b050dc4acb87f74e46528e006dff64/TTEffSkim_1_1_Zd8.root",
 #	"/store/user/luiggi/MinimumBias/TTEffSkimRun2011A_GoldenPlusESIgnoredJSON/a6b050dc4acb87f74e46528e006dff64/TTEffSkim_2_1_IA6.root",
 #	"/store/user/luiggi/MinimumBias/TTEffSkimRun2011A_GoldenPlusESIgnoredJSON/a6b050dc4acb87f74e46528e006dff64/TTEffSkim_3_1_I9j.root"
@@ -59,17 +59,14 @@ process.load("ElectroWeakAnalysis.TauTriggerEfficiency.TTEffPFTau_cff")
 
 process.load('Configuration/StandardSequences/FrontierConditions_GlobalTag_cff')
 if (isData):
-    process.GlobalTag.globaltag = 'GR_H_V20::All'
+    process.GlobalTag.globaltag = 'GR_H_V22::All'
 #    process.GlobalTag.globaltag = 'TESTL1_GR_P::All'
 else:
-    process.GlobalTag.globaltag = 'START42_V12::All'
+    process.GlobalTag.globaltag = 'START42_V13::All'
     #process.GlobalTag.globaltag = 'MC_38Y_V14::All'
 process.GlobalTag.connect   = 'frontier://FrontierProd/CMS_COND_31X_GLOBALTAG'
 process.GlobalTag.pfnPrefix = cms.untracked.string('frontier://FrontierProd/')
 print process.GlobalTag.globaltag
-
-# Tighten selection
-process.load("ElectroWeakAnalysis.TauTriggerEfficiency.ZtoMuTauFilter_cfi")
 
 #MET cleaning flag
 process.load('CommonTools/RecoAlgos/HBHENoiseFilterResultProducer_cfi')
@@ -221,7 +218,6 @@ else:
         process.hltPhysicsDeclared+
 	process.TauMCProducer
     )
-process.runTTEffAna += process.muTauFilterSequence
 #process.runTTEffAna += process.TTEffPFTau
 process.runTTEffAna += process.TTEffHPSPFTau
 #process.runTTEffAna += process.TTEffAnalysis
