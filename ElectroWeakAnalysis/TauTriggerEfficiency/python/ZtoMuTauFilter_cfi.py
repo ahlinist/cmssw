@@ -23,7 +23,7 @@ selectedPFTaus = cms.EDFilter("PFTauSelector",
 selectedMuons = cms.EDFilter("MuonSelector",
   src = cms.InputTag('muons'),
   cut = cms.string("isGlobalMuon() && isTrackerMuon()"
-                   "pt() > 15 & abs(eta()) < 2.5 "
+                   "&& pt() > 15 & abs(eta()) < 2.5 "
                    "&& innerTrack().numberOfValidHits() > 10"
                    "&& innerTrack().hitPattern().pixelLayersWithMeasurement() >= 1"
                    "&& numberOfMatches() > 1"
