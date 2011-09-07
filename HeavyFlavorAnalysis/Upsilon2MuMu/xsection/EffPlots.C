@@ -281,33 +281,35 @@ void PosVsNeg_MuID(){
 
 double f_Turnon(double *x, double *par) {
   
-  Double_t fitval =  (par[0]*x[0])/(par[1]-x[0]);
+  Double_t fitval = par[0] + par[1]*((TMath::Exp(2*(par[2]*x[0]-par[3]))-1)/(TMath::Exp(2*(par[2]*x[0]-par[3]))+1));
   return fitval;
     
 }
 
-void Trig_MC_Fit(){
+
+
+void Trig_DATA_Fit(){
   
   gStyle->SetOptStat(00000000000);
   int Npt(5); int Neta(5);
   double effMC(-99); double effMCErr(-99);  
   //fPidTableMC = new PidTable("../tnp/PidTables/MC/Jpsi/Trig/CowboyVeto/PtMmbPos-jpsi.tma.nb.dat");
-  fPidTableMC = new PidTable("PtMmbPos-jpsi.7ptbin.MC.dat");
+  fPidTableMC = new PidTable("PtMmbPos-jpsi.7ptbin.DATA.dat");
   //double pt[6] = {3., 4., 5., 6., 8., 50.};
   double pt[8] = {3., 4., 5., 6., 8., 10., 20., 50};
   double eta[6] = {-2.4, -1.2, -0.4, 0.4, 1.2, 2.4};
   
   TH1D *EffMC1; TH1D *EffMC2;  TH1D *EffMC3; TH1D *EffMC4;  TH1D *EffMC5; 
-  EffMC1 = new TH1D("TrigEfficiencyPos1", "TrigEfficiencyPos1", 7, pt); 
-  EffMC2 = new TH1D("TrigEfficiencyPos2", "TrigEfficiencyPos2", 7, pt); 
-  EffMC3 = new TH1D("TrigEfficiencyPos3", "TrigEfficiencyPos3", 7, pt); 
-  EffMC4 = new TH1D("TrigEfficiencyPos4", "TrigEfficiencyPos4", 7, pt); 
-  EffMC5 = new TH1D("TrigEfficiencyPos5", "TrigEfficiencyPos5", 7, pt);  
+  EffMC1 = new TH1D("TrigEfficiencyPos1", "TrigEfficiencyPos1", 6, pt); 
+  EffMC2 = new TH1D("TrigEfficiencyPos2", "TrigEfficiencyPos2", 6, pt); 
+  EffMC3 = new TH1D("TrigEfficiencyPos3", "TrigEfficiencyPos3", 6, pt); 
+  EffMC4 = new TH1D("TrigEfficiencyPos4", "TrigEfficiencyPos4", 6, pt); 
+  EffMC5 = new TH1D("TrigEfficiencyPos5", "TrigEfficiencyPos5", 6, pt);  
   
-  f0 = new TF1("f0", f_Turnon, 3., 50., 2);
+  f0 = new TF1("f0", f_Turnon, 3., 20., 4);
     
-  for ( int i = 0; i < 7 ; i++){
-    for ( int j = 0; j < 7 ; j++){
+  for ( int i = 0; i < 6 ; i++){
+    for ( int j = 0; j < 5 ; j++){
       
       effMC = fPidTableMC->effD(pt[i]+0.1, eta[j]+0.1, 0.);
       effMCErr = fPidTableMC->errD(pt[i]+0.1, eta[j]+0.1, 0.);
@@ -345,18 +347,50 @@ void Trig_MC_Fit(){
       
     }
   }
-  
+  const char* Status; int status(0);
   f0->ReleaseParameter(0); 
   f0->ReleaseParameter(1); 
-  f0->SetParameters(-1.2, -0.2);
+  f0->ReleaseParameter(2); 
+  f0->ReleaseParameter(3);   
+  f0->SetParameters(0.5, 0.5, 0.1, 0.1);
   //f0->SetParLimits(0, -2, -1.);
-  f0->FixParameter(0, -1.);
-  f0->SetParLimits(1, -20., 0.);
+  //f0->FixParameter(0, 0.5);
+  //f0->FixParameter(1, 0.5);
+  f0->SetParLimits(0, -10., 10.);
+  f0->SetParLimits(1, 0.1, 2.5);
+  f0->SetParLimits(2, 0., 5.);
+  f0->SetParLimits(3, 0., 2.);
   EffMC1->Fit(f0);
+  Status = gMinuit->fCstatu.Data();
+  if ( Status[0] == 'F' || (Status[0] == 'C' && Status[1] == 'A')){ 
+    f0->SetParameters( f0->GetParameter(0), f0->GetParameter(1), f0->GetParameter(2), f0->GetParameter(3));
+    EffMC1->Fit(f0);
+  }
   EffMC2->Fit(f0);
+  Status = gMinuit->fCstatu.Data();
+  if ( Status[0] == 'F' || (Status[0] == 'C' && Status[1] == 'A')){ 
+    f0->SetParameters( f0->GetParameter(0), f0->GetParameter(1), f0->GetParameter(2), f0->GetParameter(3));
+    EffMC2->Fit(f0);
+  }  
   EffMC3->Fit(f0);
+  Status = gMinuit->fCstatu.Data();
+  if ( Status[0] == 'F' || (Status[0] == 'C' && Status[1] == 'A')){ 
+    f0->SetParameters( f0->GetParameter(0), f0->GetParameter(1), f0->GetParameter(2), f0->GetParameter(3));
+    EffMC3->Fit(f0);
+  }
   EffMC4->Fit(f0);
+    Status = gMinuit->fCstatu.Data();
+  if ( Status[0] == 'F' || (Status[0] == 'C' && Status[1] == 'A')){ 
+    f0->SetParameters( f0->GetParameter(0), f0->GetParameter(1), f0->GetParameter(2), f0->GetParameter(3));
+    EffMC4->Fit(f0);
+  }
   EffMC5->Fit(f0);
+  Status = gMinuit->fCstatu.Data();
+  if ( Status[0] == 'F' || (Status[0] == 'C' && Status[1] == 'A')){ 
+    f0->SetParameters( f0->GetParameter(0), f0->GetParameter(1), f0->GetParameter(2), f0->GetParameter(3));
+    EffMC5->Fit(f0);
+  }
+  
   
   TCanvas *c8 = new TCanvas("c8","c8",1200,600); 
   c8->Divide(3,2);
@@ -512,6 +546,270 @@ void Trig_MC_Fit(){
   */  
   
 }
+
+
+
+void Trig_MC_Fit(){
+  
+  gStyle->SetOptStat(00000000000);
+  int Npt(5); int Neta(5);
+  double effMC(-99); double effMCErr(-99);  
+  //fPidTableMC = new PidTable("../tnp/PidTables/MC/Jpsi/Trig/CowboyVeto/PtMmbPos-jpsi.tma.nb.dat");
+  fPidTableMC = new PidTable("PtMmbPos-jpsi.7ptbin.MC.dat");
+  //double pt[6] = {3., 4., 5., 6., 8., 50.};
+  double pt[8] = {3., 4., 5., 6., 8., 10., 20., 50};
+  double eta[6] = {-2.4, -1.2, -0.4, 0.4, 1.2, 2.4};
+  
+  TH1D *EffMC1; TH1D *EffMC2;  TH1D *EffMC3; TH1D *EffMC4;  TH1D *EffMC5; 
+  EffMC1 = new TH1D("TrigEfficiencyPos1", "TrigEfficiencyPos1", 6, pt); 
+  EffMC2 = new TH1D("TrigEfficiencyPos2", "TrigEfficiencyPos2", 6, pt); 
+  EffMC3 = new TH1D("TrigEfficiencyPos3", "TrigEfficiencyPos3", 6, pt); 
+  EffMC4 = new TH1D("TrigEfficiencyPos4", "TrigEfficiencyPos4", 6, pt); 
+  EffMC5 = new TH1D("TrigEfficiencyPos5", "TrigEfficiencyPos5", 6, pt);  
+  
+  f0 = new TF1("f0", f_Turnon, 3., 20., 4);
+    
+  for ( int i = 0; i < 6 ; i++){
+    for ( int j = 0; j < 5 ; j++){
+      
+      effMC = fPidTableMC->effD(pt[i]+0.1, eta[j]+0.1, 0.);
+      effMCErr = fPidTableMC->errD(pt[i]+0.1, eta[j]+0.1, 0.);
+            
+      if ( j == 0 ){
+	EffMC1->SetBinContent(i+1,effMC);
+	EffMC1->SetBinError(i+1,effMCErr);
+      }
+      
+      if ( j == 1 ){
+	if ( i > 0 ){
+	  EffMC2->SetBinContent(i+1,effMC);
+	  EffMC2->SetBinError(i+1,effMCErr);
+	}
+      }
+      
+      if ( j == 2 ){
+	if ( i > 0 ){
+	  EffMC3->SetBinContent(i+1,effMC);
+	  EffMC3->SetBinError(i+1,effMCErr);
+	}      
+      }
+      
+      if ( j == 3 ){
+	if ( i > 0 ){
+	  EffMC4->SetBinContent(i+1,effMC);
+	  EffMC4->SetBinError(i+1,effMCErr);
+	}
+      }
+      
+      if ( j == 4 ){
+	EffMC5->SetBinContent(i+1,effMC);
+	EffMC5->SetBinError(i+1,effMCErr);
+      }        
+      
+    }
+  }
+  const char* Status; int status(0);
+  f0->ReleaseParameter(0); 
+  f0->ReleaseParameter(1); 
+  f0->ReleaseParameter(2); 
+  f0->ReleaseParameter(3);   
+  f0->SetParameters(0.5, 0.5, 0.1, 0.1);
+  //f0->SetParLimits(0, -2, -1.);
+  //f0->FixParameter(0, 0.5);
+  //f0->FixParameter(1, 0.5);
+  f0->SetParLimits(0, -10., 10.);
+  f0->SetParLimits(1, 0.1, 2.5);
+  f0->SetParLimits(2, 0., 5.);
+  f0->SetParLimits(3, 0., 2.);
+  EffMC1->Fit(f0);
+  Status = gMinuit->fCstatu.Data();
+  if ( Status[0] == 'F' || (Status[0] == 'C' && Status[1] == 'A')){ 
+    f0->SetParameters( f0->GetParameter(0), f0->GetParameter(1), f0->GetParameter(2), f0->GetParameter(3));
+    EffMC1->Fit(f0);
+  }
+  EffMC2->Fit(f0);
+  Status = gMinuit->fCstatu.Data();
+  if ( Status[0] == 'F' || (Status[0] == 'C' && Status[1] == 'A')){ 
+    f0->SetParameters( f0->GetParameter(0), f0->GetParameter(1), f0->GetParameter(2), f0->GetParameter(3));
+    EffMC2->Fit(f0);
+  }  
+  EffMC3->Fit(f0);
+  Status = gMinuit->fCstatu.Data();
+  if ( Status[0] == 'F' || (Status[0] == 'C' && Status[1] == 'A')){ 
+    f0->SetParameters( f0->GetParameter(0), f0->GetParameter(1), f0->GetParameter(2), f0->GetParameter(3));
+    EffMC3->Fit(f0);
+  }
+  EffMC4->Fit(f0);
+    Status = gMinuit->fCstatu.Data();
+  if ( Status[0] == 'F' || (Status[0] == 'C' && Status[1] == 'A')){ 
+    f0->SetParameters( f0->GetParameter(0), f0->GetParameter(1), f0->GetParameter(2), f0->GetParameter(3));
+    EffMC4->Fit(f0);
+  }
+  EffMC5->Fit(f0);
+  Status = gMinuit->fCstatu.Data();
+  if ( Status[0] == 'F' || (Status[0] == 'C' && Status[1] == 'A')){ 
+    f0->SetParameters( f0->GetParameter(0), f0->GetParameter(1), f0->GetParameter(2), f0->GetParameter(3));
+    EffMC5->Fit(f0);
+  }
+  
+  
+  TCanvas *c8 = new TCanvas("c8","c8",1200,600); 
+  c8->Divide(3,2);
+  c8->cd(1);
+  EffMC1->SetMinimum(0.2);
+  EffMC1->SetMaximum(1.05);
+  EffMC1->SetMarkerStyle(23);
+  EffMC1->SetMarkerColor(1);
+  EffMC1->SetLineColor(1);
+  EffMC1->Draw("pe");
+  legg = new TLegend(0.6,0.2,0.8,0.4);
+  legg->SetFillStyle(0); legg->SetBorderSize(0); legg->SetTextSize(0.05); legg->SetTextFont(132); 
+  legg->SetHeader("  -2.4 < #eta^{#mu} < -1.2");
+  legge = legg->AddEntry(EffMC1,  "J/#psi TNP MC","p"); legge->SetTextColor(kBlack);
+  legg->Draw();
+  c8->cd(2);
+  EffMC2->SetMinimum(0.2);
+  EffMC2->SetMaximum(1.05);
+  EffMC2->SetMarkerStyle(23);
+  EffMC2->SetMarkerColor(1);
+  EffMC2->SetLineColor(1);
+  EffMC2->Draw("pe"); 
+  legg = new TLegend(0.6,0.2,0.8,0.4);
+  legg->SetFillStyle(0); legg->SetBorderSize(0); legg->SetTextSize(0.05); legg->SetTextFont(132); 
+  legg->SetHeader("  -1.2 < #eta^{#mu} < -0.4");
+  legge = legg->AddEntry(EffMC2,  "J/#psi TNP MC","p"); legge->SetTextColor(kBlack);
+  legg->Draw();  
+  c8->cd(3);
+  EffMC3->SetMinimum(0.2);
+  EffMC3->SetMaximum(1.05);
+  EffMC3->SetMarkerStyle(23);
+  EffMC3->SetMarkerColor(1);
+  EffMC3->SetLineColor(1);
+  EffMC3->Draw("pe");    
+  legg = new TLegend(0.6,0.2,0.8,0.4);
+  legg->SetFillStyle(0); legg->SetBorderSize(0); legg->SetTextSize(0.05); legg->SetTextFont(132); 
+  legg->SetHeader("  -0.4 < #eta^{#mu} < 0.4");
+  legge = legg->AddEntry(EffMC3,  "J/#psi TNP MC","p"); legge->SetTextColor(kBlack);
+  legg->Draw();   
+  c8->cd(4);
+  EffMC4->SetMinimum(0.2);
+  EffMC4->SetMaximum(1.05);
+  EffMC4->SetMarkerStyle(23);
+  EffMC4->SetMarkerColor(1);
+  EffMC4->SetLineColor(1);
+  EffMC4->Draw("pe"); 
+  legg = new TLegend(0.6,0.2,0.8,0.4);
+  legg->SetFillStyle(0); legg->SetBorderSize(0); legg->SetTextSize(0.05); legg->SetTextFont(132); 
+  legg->SetHeader("  0.4 < #eta^{#mu} < 1.2");
+  legge = legg->AddEntry(EffMC4,  "J/#psi TNP MC","p"); legge->SetTextColor(kBlack);
+  legg->Draw();   
+  c8->cd(5);
+  EffMC5->SetMinimum(0.2);
+  EffMC5->SetMaximum(1.05);
+  EffMC5->SetMarkerStyle(23);
+  EffMC5->SetMarkerColor(1);
+  EffMC5->SetLineColor(1);
+  EffMC5->Draw("pe");
+  legg = new TLegend(0.6,0.2,0.8,0.4);
+  legg->SetFillStyle(0); legg->SetBorderSize(0); legg->SetTextSize(0.05); legg->SetTextFont(132); 
+  legg->SetHeader("  1.2 < #eta^{#mu} < 2.4");
+  legge = legg->AddEntry(EffMC5,  "J/#psi TNP MC","p"); legge->SetTextColor(kBlack);
+  legg->Draw();     
+  
+  
+  /*TCanvas *c801 = new TCanvas("c801","c801",800,600); 
+  EffMC1->SetTitle("");
+  EffMC1->GetXaxis()->SetTitle("Probe p_{T} [GeV/c]");
+  EffMC1->GetYaxis()->SetTitle("Efficieny");
+  EffMC1->SetMinimum(0.65);
+  EffMC1->SetMaximum(1.05);
+  EffMC1->SetMarkerStyle(23);
+  EffMC1->SetMarkerColor(1);
+  EffMC1->SetLineColor(1);
+  EffMC1->Draw("pe");  
+  legg = new TLegend(0.6,0.2,0.8,0.4);
+  legg->SetFillStyle(0); legg->SetBorderSize(0); legg->SetTextSize(0.05); legg->SetTextFont(132); 
+  legg->SetHeader("  -2.4 < #eta^{#mu} < -1.2");
+  legge = legg->AddEntry(EffMC1,  "J/#psi TNP MC","p"); legge->SetTextColor(kBlack);
+  legg->Draw();
+  f0->SetParameters(-1.2, -0.2);
+  EffMC1->Fit(f0);
+  c801->SaveAs("TrigPos1FIT.pdf");
+  
+  TCanvas *c802 = new TCanvas("c802","c802",800,600); 
+  EffMC2->SetTitle("");
+  EffMC2->GetXaxis()->SetTitle("Probe p_{T} [GeV/c]");
+  EffMC2->GetYaxis()->SetTitle("Efficieny");
+  EffMC2->SetMinimum(0.65);
+  EffMC2->SetMaximum(1.05);
+  EffMC2->SetMarkerStyle(23);
+  EffMC2->SetMarkerColor(1);
+  EffMC2->SetLineColor(1);
+  EffMC2->Draw("pe");  
+  legg = new TLegend(0.6,0.2,0.8,0.4);
+  legg->SetFillStyle(0); legg->SetBorderSize(0); legg->SetTextSize(0.05); legg->SetTextFont(132); 
+  legg->SetHeader("  -1.2 < #eta^{#mu} < -0.4");
+  legge = legg->AddEntry(EffMC2,  "J/#psi TNP MC","p"); legge->SetTextColor(kBlack);
+  legg->Draw();
+  c802->SaveAs("TrigPos2FIT.pdf");
+  
+  TCanvas *c803 = new TCanvas("c803","c803",800,600); 
+  EffMC3->SetTitle("");
+  EffMC3->GetXaxis()->SetTitle("Probe p_{T} [GeV/c]");
+  EffMC3->GetYaxis()->SetTitle("Efficieny");
+  EffMC3->SetMinimum(0.65);
+  EffMC3->SetMaximum(1.05);
+  EffMC3->SetMarkerStyle(23);
+  EffMC3->SetMarkerColor(1);
+  EffMC3->SetLineColor(1);
+  EffMC3->Draw("pe");  
+  legg = new TLegend(0.6,0.2,0.8,0.4);
+  legg->SetFillStyle(0); legg->SetBorderSize(0); legg->SetTextSize(0.05); legg->SetTextFont(132); 
+  legg->SetHeader("  -0.4 < #eta^{#mu} < 0.4");
+  legge = legg->AddEntry(EffMC3,  "J/#psi TNP MC","p"); legge->SetTextColor(kBlack);
+  legg->Draw();
+  c803->SaveAs("TrigPos3FIT.pdf");
+  
+  TCanvas *c804 = new TCanvas("c804","c804",800,600); 
+  EffMC4->SetTitle("");
+  EffMC4->GetXaxis()->SetTitle("Probe p_{T} [GeV/c]");
+  EffMC4->GetYaxis()->SetTitle("Efficieny");
+  EffMC4->SetMinimum(0.65);
+  EffMC4->SetMaximum(1.05);
+  EffMC4->SetMarkerStyle(23);
+  EffMC4->SetMarkerColor(1);
+  EffMC4->SetLineColor(1);
+  EffMC4->Draw("pe"); 
+  legg = new TLegend(0.6,0.2,0.8,0.4);
+  legg->SetFillStyle(0); legg->SetBorderSize(0); legg->SetTextSize(0.05); legg->SetTextFont(132); 
+  legg->SetHeader("  0.4 < #eta^{#mu} < 1.2");
+  legge = legg->AddEntry(EffMC4,  "J/#psi TNP MC","p"); legge->SetTextColor(kBlack);
+  legg->Draw();
+  c804->SaveAs("TrigPos4FIT.pdf");
+  
+  TCanvas *c805 = new TCanvas("c805","c805",800,600); 
+  EffMC5->SetTitle("");
+  EffMC5->GetXaxis()->SetTitle("Probe p_{T} [GeV/c]");
+  EffMC5->GetYaxis()->SetTitle("Efficieny");
+  EffMC5->SetMinimum(0.65);
+  EffMC5->SetMaximum(1.05);
+  EffMC5->SetMarkerStyle(23);
+  EffMC5->SetMarkerColor(1);
+  EffMC5->SetLineColor(1);
+  EffMC5->Draw("pe");  
+  legg = new TLegend(0.6,0.2,0.8,0.4);
+  legg->SetFillStyle(0); legg->SetBorderSize(0); legg->SetTextSize(0.05); legg->SetTextFont(132); 
+  legg->SetHeader("  1.2 < #eta^{#mu} < 2.4");
+  legge = legg->AddEntry(EffMC5,  "J/#psi TNP MC","p"); legge->SetTextColor(kBlack);
+  legg->Draw();
+  c805->SaveAs("TrigPos5FIT.pdf");
+
+  */  
+  
+}
+
+
+
 void MuID_Pos(){
   gStyle->SetOptStat(00000000000);
   int Npt(5); int Neta(5);
