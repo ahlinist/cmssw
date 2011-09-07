@@ -6,7 +6,7 @@ selectedPFTaus = cms.EDFilter("PFTauSelector",
       cms.PSet( discriminator=cms.InputTag("hpsPFTauDiscriminationByDecayModeFinding"), 	     
   		selectionCut=cms.double(0.5)							     
       ),											     
-      cms.PSet( discriminator=cms.InputTag("hpsPFTauDiscriminationByVLooseIsolation"),  	     
+      cms.PSet( discriminator=cms.InputTag("hpsPFTauDiscriminationByLooseIsolation"),  	     
   		selectionCut=cms.double(0.5)							     
       ),											     
       cms.PSet( discriminator=cms.InputTag("hpsPFTauDiscriminationByLooseElectronRejection"),	     
