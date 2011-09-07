@@ -72,6 +72,10 @@ print process.GlobalTag.globaltag
 process.load('CommonTools/RecoAlgos/HBHENoiseFilterResultProducer_cfi')
 process.runMETCleaning = cms.Path(process.HBHENoiseFilterResultProducer)
 
+# Calculate PF isolation of the muon
+import ElectroWeakAnalysis.TauTriggerEfficiency.MuonPFIsolation as MuonPFIsolation
+process.muonPFIsolationSequence = MuonPFIsolation.addMuonPFIsolation(process, "selectedMuons")
+
 process.TTEffAnalysis = cms.EDAnalyzer("TTEffAnalyzer",
 	DoOfflineVariablesOnly  = cms.bool(False), #if true: no trigger info is saved
         DoMCTauEfficiency       = cms.bool(False), #if true: per MCTau cand; default is false: per offline tau cand
@@ -88,6 +92,9 @@ process.TTEffAnalysis = cms.EDAnalyzer("TTEffAnalyzer",
 	MuonPtMin		= cms.double(0.),
 	MuonEtaMax		= cms.double(5.),
         MuonTauPairSource       = cms.InputTag("muTauPairs"),
+        MuonPFIsoValueCharged   = cms.InputTag("muPFIsoValueCharged"),
+        MuonPFIsoValueNeutral   = cms.InputTag("muPFIsoValueNeutral"),
+        MuonPFIsoValueGamma     = cms.InputTag("muPFIsoValueGamma"),
 
 	HLTMETSource		= cms.InputTag("hltMet"),
 	METSource		= cms.InputTag("pfMet"),
@@ -218,6 +225,7 @@ else:
         process.hltPhysicsDeclared+
 	process.TauMCProducer
     )
+process.runTTEffAna += process.muonPFIsolationSequence
 #process.runTTEffAna += process.TTEffPFTau
 process.runTTEffAna += process.TTEffHPSPFTau
 #process.runTTEffAna += process.TTEffAnalysis

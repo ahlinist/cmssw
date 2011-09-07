@@ -30,6 +30,9 @@ class MuonAnalyzer {
         // Input parameters
 	edm::InputTag MuonSource;
         edm::InputTag muTauPairSource;
+        edm::InputTag pfIsoChargedSrc;
+        edm::InputTag pfIsoNeutralSrc;
+        edm::InputTag pfIsoGammaSrc;
 	double ptMin,etaMax;
 
         // Output tree and related variables
@@ -37,6 +40,7 @@ class MuonAnalyzer {
 
 	float muonPt,muonEta,muonPhi;
         float muonIso03SumPt, muonIso03EmEt, muonIso03HadEt;
+        float muonPFIsoCharged, muonPFIsoNeutral, muonPFIsoGamma;
         float muTauInvMass;
 	int nMuons;
 };
