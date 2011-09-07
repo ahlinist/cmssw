@@ -263,20 +263,26 @@ void XS_pt(){
   cout << " Y(2S) Xsection = "  << s2 << "+/-" << TMath::Sqrt(e2) << endl;
   cout << " Y(3S) Xsection = "  << s3 << "+/-" << TMath::Sqrt(e3) << endl;
   
-  S1->SetMarkerColor(3); S2->SetMarkerColor(4); S3->SetMarkerColor(5); 
-  S1->SetLineColor(3); S2->SetLineColor(4); S3->SetLineColor(5);
+  S1->SetMarkerColor(1); S2->SetMarkerColor(2); S3->SetMarkerColor(4); 
+  S1->SetLineColor(1); S2->SetLineColor(2); S3->SetLineColor(4);
   
+  gStyle->SetOptStat(00000000000);
   TCanvas *c1 = new TCanvas("c1","c1",1200,600); 
   //S1->SetMinimum(0.);
+  S1->SetTitle("");
+  S1->GetYaxis()->SetTitle("d#sigma/dp_{T} #times Br");
   S1->Draw("pE");
   S2->Draw("psameE");
   S3->Draw("psameE");
-  legg = new TLegend(0.3,0.6,0.7,0.9);
-  legg->SetHeader("XSection Vs Pt  For Ups(nS)");
+  legg = new TLegend(0.5,0.5,0.7,0.7);
+  legg->SetFillStyle(0); legg->SetBorderSize(0); legg->SetTextSize(0.05); legg->SetTextFont(132);
+  //legg->SetHeader("XSection Vs Pt  For Ups(nS)");
   legge = legg->AddEntry(S1, "Y(1S)","p"); legge->SetTextColor(kBlack);
-  legge = legg->AddEntry(S2, "Y(2S)","p"); legge->SetTextColor(kBlack);
-  legge = legg->AddEntry(S3, "Y(3S)","p"); legge->SetTextColor(kBlack);
+  legge = legg->AddEntry(S2, "Y(2S)","p"); legge->SetTextColor(kRed);
+  legge = legg->AddEntry(S3, "Y(3S)","p"); legge->SetTextColor(kBlue);
   legg->Draw();
-
+  c1->SaveAs("difxs.eps");
+  c1->SetLogy();
+  c1->SaveAs("difxslog.eps");
   
 }
