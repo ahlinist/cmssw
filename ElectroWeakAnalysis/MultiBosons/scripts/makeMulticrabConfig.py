@@ -5,21 +5,34 @@ scheduler = 'glite'
 
 samples = {
     "Dimuon": """
-        /DoubleMu/Run2011A-ZMu-05Jul2011ReReco-ECAL-v1/RAW-RECO
+        /DoubleMu/Run2011A-May10ReReco-v1/RECO
+        /DoubleMu/Run2011A-May10ReReco-v1/AOD
+        /DoubleMu/Run2011A-PromptReco-v4/RECO
+        /DoubleMu/Run2011A-PromptReco-v4/AOD
         /DoubleMu/Run2011A-05Jul2011ReReco-ECAL-v1/RECO
-        /DYJetsToLL_TuneZ2_M-50_7TeV-madgraph-tauola/Summer11-PU_S4_START42_V11-v1/GEN-SIM-RECO   
-        /DYJetsToLL_TuneZ2_M-50_7TeV-madgraph-tauola/Summer11-PU_S4_START42_V11-v1/AODSIM         
-        /DYToMuMu_M-20_CT10_TuneZ2_7TeV-powheg-pythia/Summer11-PU_S4_START42_V11-v1/AODSIM        
+        /DoubleMu/Run2011A-05Jul2011ReReco-ECAL-v1/AOD
+        /DoubleMu/Run2011A-05Aug2011-v1/RECO
+        /DoubleMu/Run2011A-05Aug2011-v1/AOD
+        /DoubleMu/Run2011A-PromptReco-v6/RECO
+        /DoubleMu/Run2011A-PromptReco-v6/AOD
+        /DoubleMu/Run2011A-ZMu-May10ReReco-v1/RAW-RECO
+        /DoubleMu/Run2011A-ZMu-PromptSkim-v4/RAW-RECO
+        /DoubleMu/Run2011A-ZMu-05Jul2011ReReco-ECAL-v1/RAW-RECO
+        /DoubleMu/Run2011A-ZMu-05Aug2011-v1/RAW-RECO
+        /DoubleMu/Run2011A-ZMu-PromptSkim-v6/RAW-RECO
+        /DYJetsToLL_TuneZ2_M-50_7TeV-madgraph-tauola/Summer11-PU_S4_START42_V11-v1/GEN-SIM-RECO
+        /DYJetsToLL_TuneZ2_M-50_7TeV-madgraph-tauola/Summer11-PU_S4_START42_V11-v1/AODSIM
+        /DYToMuMu_M-20_CT10_TuneZ2_7TeV-powheg-pythia/Summer11-PU_S4_START42_V11-v1/AODSIM
         /DYToMuMu_M-20_TuneZ2_7TeV-pythia6/Summer11-HCal_PU_S4_START42_V11-v1/GEN-SIM-RECO
-        /DYToMuMu_M-20_TuneZ2_7TeV-pythia6/Summer11-HCal_PU_S4_START42_V11-v1/AODSIM      
-        /TTJets_TuneZ2_7TeV-madgraph-tauola/Summer11-PU_S4_START42_V11-v2/GEN-SIM-RECO            
-        /TTJets_TuneZ2_7TeV-madgraph-tauola/Summer11-PU_S4_START42_V11-v2/AODSIM                  
-        /TT_TuneZ2_7TeV-pythia6-tauola/Summer11-HCal_PU_S4_START42_V11-v1/GEN-SIM-RECO    
-        /TT_TuneZ2_7TeV-pythia6-tauola/Summer11-HCal_PU_S4_START42_V11-v1/AODSIM          
-        /WJetsToLNu_TuneZ2_7TeV-madgraph-tauola/Summer11-PU_S4_START42_V11-v1/GEN-SIM-RECO        
-        /WJetsToLNu_TuneZ2_7TeV-madgraph-tauola/Summer11-PU_S4_START42_V11-v1/AODSIM              
-        /QCD_Pt-20_MuEnrichedPt-15_TuneZ2_7TeV-pythia6/Summer11-PU_S4_START42_V11-v1/GEN-SIM-RECO 
-        /QCD_Pt-20_MuEnrichedPt-15_TuneZ2_7TeV-pythia6/Summer11-PU_S4_START42_V11-v1/AODSIM       
+        /DYToMuMu_M-20_TuneZ2_7TeV-pythia6/Summer11-HCal_PU_S4_START42_V11-v1/AODSIM
+        /TTJets_TuneZ2_7TeV-madgraph-tauola/Summer11-PU_S4_START42_V11-v2/GEN-SIM-RECO
+        /TTJets_TuneZ2_7TeV-madgraph-tauola/Summer11-PU_S4_START42_V11-v2/AODSIM
+        /TT_TuneZ2_7TeV-pythia6-tauola/Summer11-HCal_PU_S4_START42_V11-v1/GEN-SIM-RECO
+        /TT_TuneZ2_7TeV-pythia6-tauola/Summer11-HCal_PU_S4_START42_V11-v1/AODSIM
+        /WJetsToLNu_TuneZ2_7TeV-madgraph-tauola/Summer11-PU_S4_START42_V11-v1/GEN-SIM-RECO
+        /WJetsToLNu_TuneZ2_7TeV-madgraph-tauola/Summer11-PU_S4_START42_V11-v1/AODSIM
+        /QCD_Pt-20_MuEnrichedPt-15_TuneZ2_7TeV-pythia6/Summer11-PU_S4_START42_V11-v1/GEN-SIM-RECO
+        /QCD_Pt-20_MuEnrichedPt-15_TuneZ2_7TeV-pythia6/Summer11-PU_S4_START42_V11-v1/AODSIM
         /DYToMuMu_M-20_FSRFilter_Pt-50_TuneZ2_7TeV-pythia6/Summer11-X0Min_PU_S4_START42_V11-v1/AODSIM
         /DYToMuMu_M-20_FSRFilter_Pt-50_TuneZ2_7TeV-pythia6/Summer11-X0Max_PU_S4_START42_V11-v1/AODSIM
         /DYToMuMu_M-20_FSRFilter_Pt-50_TuneZ2_7TeV-pythia6/Summer11-PU_S4_START42_V11-v2/AODSIM
@@ -50,11 +63,11 @@ samples = {
         /Photon/Run2011A-ZElectron-05Jul2011ReReco-ECAL-v1/RAW-RECO
         /DoubleElectron/Run2011A-ZElectron-05Jul2011ReReco-ECAL-v1/RAW-RECO
         /DYJetsToLL_TuneZ2_M-50_7TeV-madgraph-tauola/Summer11-PU_S4_START42_V11-v1/AODSIM
-        /TTJets_TuneZ2_7TeV-madgraph-tauola/Summer11-PU_S4_START42_V11-v2/GEN-SIM-RECO    
-        /TTJets_TuneZ2_7TeV-madgraph-tauola/Summer11-PU_S4_START42_V11-v2/AODSIM          
+        /TTJets_TuneZ2_7TeV-madgraph-tauola/Summer11-PU_S4_START42_V11-v2/GEN-SIM-RECO
+        /TTJets_TuneZ2_7TeV-madgraph-tauola/Summer11-PU_S4_START42_V11-v2/AODSIM
         /WJetsToLNu_TuneZ2_7TeV-madgraph-tauola/Summer11-PU_S4_START42_V11-v1/GEN-SIM-RECO
-        /WJetsToLNu_TuneZ2_7TeV-madgraph-tauola/Summer11-PU_S4_START42_V11-v1/AODSIM      
-        /DYToEE_M-20_CT10_TuneZ2_7TeV-powheg-pythia/Summer11-PU_S4_START42_V11-v1/AODSIM  
+        /WJetsToLNu_TuneZ2_7TeV-madgraph-tauola/Summer11-PU_S4_START42_V11-v1/AODSIM
+        /DYToEE_M-20_CT10_TuneZ2_7TeV-powheg-pythia/Summer11-PU_S4_START42_V11-v1/AODSIM
         /DYToEE_M-20_CT10_TuneZ2_7TeV-powheg-pythia/Summer11-PU_S4_START42_V11-v1/GEN-SIM-RECO
         """.split(),
     "Inclusive": """
