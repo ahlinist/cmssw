@@ -38,7 +38,8 @@ else:
   process.source = cms.Source("PoolSource",
     fileNames = cms.untracked.vstring(
 #	'/store/mc/Fall10/DYToTauTau_M-20_TuneZ2_7TeV-pythia6-tauola/GEN-SIM-RECO/START38_V12-v1/0004/E6D9BDE2-86C8-DF11-9827-00215E221782.root'
-	'file:/tmp/slehti/Fall10_DYToTauTau_M-20_TuneZ2_7TeV-pythia6-tauola_GEN-SIM-RAW_START38_V12-v1_0000_8037FA24-3EC8-DF11-9725-00215E221B48.root'
+#        'file:/tmp/slehti/Fall10_DYToTauTau_M-20_TuneZ2_7TeV-pythia6-tauola_GEN-SIM-RAW_START38_V12-v1_0000_8037FA24-3EC8-DF11-9725-00215E221B48.root'
+          "file:/tmp/mkortela/FCA4CF79-A5A6-E011-AA99-E0CB4E55366A.root"
     )
   )
 
@@ -68,34 +69,45 @@ process.TTEffSkimFilter = cms.Path(
 	process.TTEffSkimCounterAllEvents *
         process.primaryVertexFilter * 
 	process.scrapping *
-	process.PFTau *
 	process.PFTauSkimmed *
 	process.TTEffSkimCounterSavedEvents
 )
 
+# Produce the rho for L1FastJet
+process.load('RecoJets.Configuration.RecoPFJets_cff')
+process.kt6PFJets.doRhoFastjet = True
+process.ak5PFJets.doAreaFastjet = True
+process.ak5PFJetSequence = cms.Sequence(process.kt6PFJets*process.ak5PFJets)
+
 # Output definition
-process.FEVTEventContent.outputCommands.append('drop *_*_*_TTEffSKIM')
-process.FEVTEventContent.outputCommands.append('drop *_*_*_RECO')
-process.FEVTEventContent.outputCommands.append('keep edmHepMCProduct_*_*_*')
-process.FEVTEventContent.outputCommands.append('keep recoGenParticles_*_*_*')
-process.FEVTEventContent.outputCommands.append('keep recoPFTaus_*_*_TTEffSKIM')
-process.FEVTEventContent.outputCommands.append('keep recoPFTauDiscriminator_*_*_TTEffSKIM')
-process.FEVTEventContent.outputCommands.append('keep *_offlinePrimaryVertices_*_*')
-process.FEVTEventContent.outputCommands.append('keep *_elecpreid_*_*')
-process.FEVTEventContent.outputCommands.append('keep *_particleFlow_*_*')
-process.FEVTEventContent.outputCommands.append('keep *_ak5PFJets_*_*')
-process.FEVTEventContent.outputCommands.append('keep *_generalTracks_*_*')
-process.FEVTEventContent.outputCommands.append('keep *_hltHbhereco_*_*')
-process.FEVTEventContent.outputCommands.append('keep recoMuons_*_*_*')
-process.FEVTEventContent.outputCommands.append('keep recoPFBlocks_*_*_*')
-process.FEVTEventContent.outputCommands.append('keep L1GctJetCands_*_*_*')
-process.FEVTEventContent.outputCommands.append('keep HcalNoiseSummary_*_*_*')
-process.FEVTEventContent.outputCommands.append('keep recoPFMETs_*_*_*')
-process.FEVTEventContent.outputCommands.append('keep recoCaloMETs_*_*_*')
-process.FEVTEventContent.outputCommands.append('keep *_l1extraParticles_*_*')
-process.FEVTEventContent.outputCommands.append('keep L1GlobalTriggerReadoutRecord_*_*_*')
-process.FEVTEventContent.outputCommands.append('keep recoBeamSpot_*_*_*')
-process.FEVTEventContent.outputCommands.append('keep edmMergeableCounter_*_*_*')
+process.FEVTEventContent.outputCommands.extend([
+        'drop *_*_*_TTEffSKIM',
+        'drop *_*_*_RECO',
+        'keep edmHepMCProduct_*_*_*',
+        'keep recoGenParticles_*_*_*',
+        'keep recoPFTaus_*_*_TTEffSKIM',
+        'keep recoPFTauDiscriminator_*_*_TTEffSKIM',
+        'keep *_offlinePrimaryVertices_*_*',
+        'keep *_elecpreid_*_*',
+        'keep *_particleFlow_*_*',
+        'keep *_kt6PFJets_rho*_*',
+        'keep *_ak5PFJets_*_*',
+        'keep recoTracks_*_*_*',
+        'keep recoTrackExtras_*_*_*',
+        'keep recoGsfTracks_*_*_*',
+        'keep *_hltHbhereco_*_*',
+        'keep recoMuons_*_*_*',
+        'keep recoMuonMETCorrectionDataedmValueMap_*_*_*',
+        'keep recoPFBlocks_*_*_*',
+        'keep L1GctJetCands_*_*_*',
+        'keep HcalNoiseSummary_*_*_*',
+        'keep recoPFMETs_*_*_*',
+        'keep recoCaloMETs_*_*_*',
+        'keep *_l1extraParticles_*_*',
+        'keep L1GlobalTriggerReadoutRecord_*_*_*',
+        'keep recoBeamSpot_*_*_*',
+        'keep edmMergeableCounter_*_*_*',
+])
 #process.FEVTEventContent.outputCommands.append('keep *')
 
 process.output = cms.OutputModule("PoolOutputModule",
@@ -123,6 +135,9 @@ process.endjob_step = cms.Path(process.endOfProcess)
 process.out_step = cms.EndPath(process.output)
 process.PFTau_step = cms.Path(process.PFTau)
 
-process.schedule = cms.Schedule(process.PFTau_step,process.TTEffSkimFilter,process.endjob_step,process.out_step)
 if(doRECO):
     process.schedule = cms.Schedule(process.raw2digi_step,process.L1Reco_step,process.reconstruction_step,process.TTEffSkimFilter,process.endjob_step,process.out_step)
+    process.recoPFJets.replace(process.ak5PFJets, process.ak5PFJetSequence)
+else:
+    process.schedule = cms.Schedule(process.PFTau_step,process.TTEffSkimFilter,process.endjob_step,process.out_step)
+    process.TTEffSkimFilter += process.ak5PFJetSequence
