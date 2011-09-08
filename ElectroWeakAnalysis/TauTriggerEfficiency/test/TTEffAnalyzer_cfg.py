@@ -91,63 +91,16 @@ if not isData:
 	process.TauMCProducer
     )
 
-# Some PFTau stuff
-doShrinkingConePFTau=False
-if doShrinkingConePFTau:
+# Do the (old) TTEff shrinking cone PFTau
+doTTEffShrinkingConePFTau=False
+if doTTEffShrinkingConePFTau:
     process.load("ElectroWeakAnalysis.TauTriggerEfficiency.TTEffPFTau_cff")
     process.runTTEffAna += process.TTEffPFTau
 
-# PAT
-process.load("PhysicsTools.PatAlgos.patSequences_cff")
-import PhysicsTools.PatAlgos.tools.coreTools as coreTools
-import PhysicsTools.PatAlgos.tools.tauTools as tauTools
-import PhysicsTools.PatAlgos.tools.jetTools as jetTools
-jetCorr = ["L1FastJet", "L2Relative", "L3Absolute"]
-coreTools.removeMCMatching(process, ["All"], outputInProcess=False)
-if isData:
-    jetCorr.append("L2L3Residual")
-coreTools.removeCleaning(process, False)
-coreTools.removeSpecificPATObjects(process, ["Electrons", "Photons", "METs"], False)
-tauTools.addTauCollection(process, cms.InputTag('hpsPFTauProducer'),
-                          algoLabel = "hps", typeLabel = "PFTau")
-jetTools.switchJetCollection(process, cms.InputTag('ak5PFJets'),   
-                             doJTA            = True,            
-                             doBTagging       = True,            
-                             jetCorrLabel     = ('AK5PF', jetCorr),
-                             doType1MET       = False,            
-                             genJetCollection = cms.InputTag("ak5GenJets"),
-                             doJetID      = False,
-                             jetIdLabel   = "ak5",
-                             outputModule = "",
-)
-
-if doShrinkingConePFTau:
-    process.patTaus.tauSource = "TTEffShrinkingConePFTauProducer"
-    for module in [process.tauIsoDepositPFCandidates, process.tauIsoDepositPFChargedHadrons, process.tauIsoDepositPFGammas, process.tauIsoDepositPFNeutralHadrons]:
-        module.src = "TTEffShrinkingConePFTauProducer"
-        module.ExtractorPSet.tauSource = "TTEffShrinkingConePFTauProducer"
-    process.tauMatch.src = "TTEffShrinkingConePFTauProducer"
-    process.patTaus.tauIDSources.leadingPionPtCut = "TTEffPFTauDiscriminationByLeadingPionPtCut"
-    process.patTaus.tauIDSources.byIsolationUsingLeadingPion = "TTEffPFTauDiscriminationByIsolationUsingLeadingPion"
-    process.patTaus.tauIDSources.leadingTrackFinding = "TTEffPFTauDiscriminationByLeadingTrackFinding"
-    process.patTaus.tauIDSources.againstMuon = "TTEffPFTauDiscriminationAgainstMuon"
-    process.patTaus.tauIDSources.againstElectron = "TTEffPFTauDiscriminationAgainstElectron"
-    process.selectedPatTaus.cut = "pt() > 15 && abs(eta()) < 2.5 && tauID('leadingPionPtCut')"
-process.selectedPatTausHpsPFTau.cut = "pt() > 15 && abs(eta()) < 2.5 && tauID('byLooseIsolation') > 0.5"
-
-# Calculate PF isolation of the muon
-import ElectroWeakAnalysis.TauTriggerEfficiency.MuonPFIsolation as MuonPFIsolation
-process.muonPFIsolationSequence = MuonPFIsolation.addMuonPFIsolation(process, "muons", process.patMuons)
-import ElectroWeakAnalysis.TauTriggerEfficiency.ZtoMuTauFilter_cfi as zmutau
-process.selectedPatMuons.cut = zmutau.selectedMuons.cut
-process.runTTEffAna += process.muonPFIsolationSequence
-process.runTTEffAna += process.patDefaultSequence
-
-# Redo the mu+tau pairs in terms of PAT objects
-process.muTauPairs = zmutau.muTauPairs.clone(
-    decay = "selectedPatMuons@+ selectedPatTaus@-"
-)
-
+# Run PAT
+import ElectroWeakAnalysis.TauTriggerEfficiency.Pat as pat
+process.patSequence = pat.addPat(process, isData, doTTEffShrinkingConePFTau)
+process.runTTEffAna += process.patSequence
 
 process.TTEffAnalysis = cms.EDAnalyzer("TTEffAnalyzer",
 	DoOfflineVariablesOnly  = cms.bool(False), #if true: no trigger info is saved
