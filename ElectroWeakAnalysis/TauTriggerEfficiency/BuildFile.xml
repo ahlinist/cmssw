@@ -22,6 +22,7 @@
 <use   name="DataFormats/Math"/>
 <use   name="DataFormats/MuonReco"/>
 <use   name="DataFormats/TrackReco"/>
+<use   name="DataFormats/PatCandidates"/>
 <use   name="DataFormats/VertexReco"/>
 <use   name="CondFormats/L1TObjects"/>
 <use   name="CondFormats/DataRecord"/>
