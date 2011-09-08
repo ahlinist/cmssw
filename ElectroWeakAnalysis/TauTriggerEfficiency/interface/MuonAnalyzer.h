@@ -13,31 +13,33 @@
 #include "FWCore/Framework/interface/Frameworkfwd.h"
 #include "FWCore/Framework/interface/EDAnalyzer.h"
 #include "FWCore/Utilities/interface/InputTag.h"
+#include "DataFormats/Math/interface/LorentzVector.h"
+
+namespace reco {
+  class Candidate;
+}
 
 class TTree;
 
 class MuonAnalyzer {
 
     public:
+	typedef math::XYZTLorentzVector LorentzVector;
+
         MuonAnalyzer();
         ~MuonAnalyzer();
 
         void Setup(const edm::ParameterSet&,TTree *l1tree);
-        void fill(const edm::Event&, const edm::EventSetup&);
+        void fill(const edm::Event&, const edm::EventSetup&, const LorentzVector& tau);
+        void fill(const edm::Event&, const edm::EventSetup&, const reco::Candidate& tau);
 
    private:
 
         // Input parameters
 	edm::InputTag MuonSource;
         edm::InputTag muTauPairSource;
-        edm::InputTag pfIsoChargedSrc;
-        edm::InputTag pfIsoNeutralSrc;
-        edm::InputTag pfIsoGammaSrc;
-	double ptMin,etaMax;
 
-        // Output tree and related variables
-        TTree *muontree;
-
+        // Output variables
 	float muonPt,muonEta,muonPhi;
         float muonIso03SumPt, muonIso03EmEt, muonIso03HadEt;
         float muonPFIsoCharged, muonPFIsoNeutral, muonPFIsoGamma;

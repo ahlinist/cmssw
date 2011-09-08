@@ -1,7 +1,7 @@
 import FWCore.ParameterSet.Config as cms
 import CommonTools.ParticleFlow.Isolation.tools_cfi as tools
 
-def addMuonPFIsolation(process, muonSrc):
+def addMuonPFIsolation(process, muonSrc, patMuons):
     sequence = cms.Sequence()
 
     process.load("CommonTools.ParticleFlow.pfNoPileUp_cff")
@@ -50,6 +50,20 @@ def addMuonPFIsolation(process, muonSrc):
     process.muPFIsoValueCharged.deposits[0].vetos = ['ConeVeto(0.0001)','Threshold(1.0)']
     process.muPFIsoValueNeutral.deposits[0].vetos = ['ConeVeto(0.01)','Threshold(1.0)']
     process.muPFIsoValueGamma.deposits[0].vetos = ['ConeVeto(0.01)','Threshold(1.0)']
+
+    patMuons.isoDeposits = cms.PSet(
+        particle         = cms.InputTag("muPFIsoDepositAll"),
+        pfChargedHadrons = cms.InputTag("muPFIsoDepositCharged"),
+        pfNeutralHadrons = cms.InputTag("muPFIsoDepositNeutral"),
+        pfPhotons        = cms.InputTag("muPFIsoDepositGamma")
+    )
+
+    patMuons.isolationValues = cms.PSet(
+        particle         = cms.InputTag("muPFIsoValueAll"),
+        pfChargedHadrons = cms.InputTag("muPFIsoValueCharged"),
+        pfNeutralHadrons = cms.InputTag("muPFIsoValueNeutral"),
+        pfPhotons        = cms.InputTag("muPFIsoValueGamma"),
+    )
 
     return sequence
 

@@ -1,7 +1,7 @@
 import FWCore.ParameterSet.Config as cms
 import copy
 
-isData = True
+isData = False
 #pftau = 0
 hltType = "HLT"
 #hltType = "REDIGI38X"
@@ -55,8 +55,6 @@ else:
 	)
     )
 
-process.load("ElectroWeakAnalysis.TauTriggerEfficiency.TTEffPFTau_cff")
-
 process.load('Configuration/StandardSequences/FrontierConditions_GlobalTag_cff')
 if (isData):
     process.GlobalTag.globaltag = 'GR_H_V22::All'
@@ -72,29 +70,99 @@ print process.GlobalTag.globaltag
 process.load('CommonTools/RecoAlgos/HBHENoiseFilterResultProducer_cfi')
 process.runMETCleaning = cms.Path(process.HBHENoiseFilterResultProducer)
 
+
+#Physics bit ON
+process.load('HLTrigger.special.hltPhysicsDeclared_cfi')
+process.hltPhysicsDeclared.L1GtReadoutRecordTag = 'gtDigis'
+
+process.runTTEffAna = cms.Path()
+if not isData:
+    process.TauMCProducer = cms.EDProducer("HLTTauMCProducer",
+        GenParticles  = cms.untracked.InputTag("genParticles"),
+        ptMinTau      = cms.untracked.double(3),
+        ptMinMuon     = cms.untracked.double(3),
+        ptMinElectron = cms.untracked.double(3),
+        BosonID       = cms.untracked.vint32(23),
+        EtaMax         = cms.untracked.double(2.5)
+    )
+
+    process.runTTEffAna += (
+        process.hltPhysicsDeclared+
+	process.TauMCProducer
+    )
+
+# Some PFTau stuff
+doShrinkingConePFTau=False
+if doShrinkingConePFTau:
+    process.load("ElectroWeakAnalysis.TauTriggerEfficiency.TTEffPFTau_cff")
+    process.runTTEffAna += process.TTEffPFTau
+
+# PAT
+process.load("PhysicsTools.PatAlgos.patSequences_cff")
+import PhysicsTools.PatAlgos.tools.coreTools as coreTools
+import PhysicsTools.PatAlgos.tools.tauTools as tauTools
+import PhysicsTools.PatAlgos.tools.jetTools as jetTools
+jetCorr = ["L1FastJet", "L2Relative", "L3Absolute"]
+coreTools.removeMCMatching(process, ["All"], outputInProcess=False)
+if isData:
+    jetCorr.append("L2L3Residual")
+coreTools.removeCleaning(process, False)
+coreTools.removeSpecificPATObjects(process, ["Electrons", "Photons", "METs"], False)
+tauTools.addTauCollection(process, cms.InputTag('hpsPFTauProducer'),
+                          algoLabel = "hps", typeLabel = "PFTau")
+jetTools.switchJetCollection(process, cms.InputTag('ak5PFJets'),   
+                             doJTA            = True,            
+                             doBTagging       = True,            
+                             jetCorrLabel     = ('AK5PF', jetCorr),
+                             doType1MET       = False,            
+                             genJetCollection = cms.InputTag("ak5GenJets"),
+                             doJetID      = False,
+                             jetIdLabel   = "ak5",
+                             outputModule = "",
+)
+
+if doShrinkingConePFTau:
+    process.patTaus.tauSource = "TTEffShrinkingConePFTauProducer"
+    for module in [process.tauIsoDepositPFCandidates, process.tauIsoDepositPFChargedHadrons, process.tauIsoDepositPFGammas, process.tauIsoDepositPFNeutralHadrons]:
+        module.src = "TTEffShrinkingConePFTauProducer"
+        module.ExtractorPSet.tauSource = "TTEffShrinkingConePFTauProducer"
+    process.tauMatch.src = "TTEffShrinkingConePFTauProducer"
+    process.patTaus.tauIDSources.leadingPionPtCut = "TTEffPFTauDiscriminationByLeadingPionPtCut"
+    process.patTaus.tauIDSources.byIsolationUsingLeadingPion = "TTEffPFTauDiscriminationByIsolationUsingLeadingPion"
+    process.patTaus.tauIDSources.leadingTrackFinding = "TTEffPFTauDiscriminationByLeadingTrackFinding"
+    process.patTaus.tauIDSources.againstMuon = "TTEffPFTauDiscriminationAgainstMuon"
+    process.patTaus.tauIDSources.againstElectron = "TTEffPFTauDiscriminationAgainstElectron"
+    process.selectedPatTaus.cut = "pt() > 15 && abs(eta()) < 2.5 && tauID('leadingPionPtCut')"
+process.selectedPatTausHpsPFTau.cut = "pt() > 15 && abs(eta()) < 2.5 && tauID('byLooseIsolation') > 0.5"
+
 # Calculate PF isolation of the muon
 import ElectroWeakAnalysis.TauTriggerEfficiency.MuonPFIsolation as MuonPFIsolation
-process.muonPFIsolationSequence = MuonPFIsolation.addMuonPFIsolation(process, "selectedMuons")
+process.muonPFIsolationSequence = MuonPFIsolation.addMuonPFIsolation(process, "muons", process.patMuons)
+import ElectroWeakAnalysis.TauTriggerEfficiency.ZtoMuTauFilter_cfi as zmutau
+process.selectedPatMuons.cut = zmutau.selectedMuons.cut
+process.runTTEffAna += process.muonPFIsolationSequence
+process.runTTEffAna += process.patDefaultSequence
+
+# Redo the mu+tau pairs in terms of PAT objects
+process.muTauPairs = zmutau.muTauPairs.clone(
+    decay = "selectedPatMuons@+ selectedPatTaus@-"
+)
+
 
 process.TTEffAnalysis = cms.EDAnalyzer("TTEffAnalyzer",
 	DoOfflineVariablesOnly  = cms.bool(False), #if true: no trigger info is saved
         DoMCTauEfficiency       = cms.bool(False), #if true: per MCTau cand; default is false: per offline tau cand
-        LoopingOver	        = cms.InputTag("TTEffPFTausSelected"),
-        PFTauIsoCollection      = cms.InputTag("TTEffPFTauDiscriminationByIsolation"),
-        PFTauMuonRejectionCollection     = cms.InputTag("TTEffPFTauDiscriminationAgainstMuon"),
-	PFTauElectronRejectionCollection = cms.InputTag("TTEffPFTauDiscriminationAgainstElectron"),
-	PFTauDiscriminators     = cms.VInputTag(),
+        LoopingOver	        = cms.InputTag("selectedPatTausHpsPFTau"),
+        PFTauIsoDiscriminator      = cms.string("byLooseIsolation"),
+        PFTauMuonRejectionDiscriminator     = cms.string("againstMuonTight"),
+	PFTauElectronRejectionDiscriminator = cms.string("againstElectronMedium"),
+	PFTauDiscriminators     = cms.vstring(),
         Counters                = cms.VInputTag(cms.InputTag("TTEffSkimCounterAllEvents"),
                                                 cms.InputTag("TTEffSkimCounterSavedEvents")
                                                 ),
 
-	MuonSource		= cms.InputTag("selectedMuons"),
-	MuonPtMin		= cms.double(0.),
-	MuonEtaMax		= cms.double(5.),
+	MuonSource		= cms.InputTag("selectedPatMuons"),
         MuonTauPairSource       = cms.InputTag("muTauPairs"),
-        MuonPFIsoValueCharged   = cms.InputTag("muPFIsoValueCharged"),
-        MuonPFIsoValueNeutral   = cms.InputTag("muPFIsoValueNeutral"),
-        MuonPFIsoValueGamma     = cms.InputTag("muPFIsoValueGamma"),
 
 	HLTMETSource		= cms.InputTag("hltMet"),
 	METSource		= cms.InputTag("pfMet"),
@@ -173,19 +241,19 @@ process.TTEffAnalysisHLTPFTauTight.HLTPFTau = cms.bool(True)
 
 process.TTEffAnalysisHLTCaloTauHPS = process.TTEffAnalysis.clone()                                                                         
 process.TTEffAnalysisHLTCaloTauHPS.LoopingOver = cms.InputTag("selectedhpsPFTauProducer")                                                          
-process.TTEffAnalysisHLTCaloTauHPS.PFTauIsoCollection = cms.InputTag("selectedhpsPFTauDiscriminationByVLooseIsolation")                            
-process.TTEffAnalysisHLTCaloTauHPS.PFTauMuonRejectionCollection = cms.InputTag("selectedhpsPFTauDiscriminationByTightMuonRejection")               
-process.TTEffAnalysisHLTCaloTauHPS.PFTauElectronRejectionCollection = cms.InputTag("selectedhpsPFTauDiscriminationByMediumElectronRejection")      
-process.TTEffAnalysisHLTCaloTauHPS.PFTauDiscriminators = cms.VInputTag(
-    cms.InputTag("selectedhpsPFTauDiscriminationByLooseMuonRejection"),                                                                    
-    cms.InputTag("selectedhpsPFTauDiscriminationByTightMuonRejection"),
-    cms.InputTag("selectedhpsPFTauDiscriminationByLooseElectronRejection"),
-    cms.InputTag("selectedhpsPFTauDiscriminationByMediumElectronRejection"),
-    cms.InputTag("selectedhpsPFTauDiscriminationByTightElectronRejection"),
-    cms.InputTag("selectedhpsPFTauDiscriminationByTightIsolation"),                                                                                   
-    cms.InputTag("selectedhpsPFTauDiscriminationByMediumIsolation"),                                                                                  
-    cms.InputTag("selectedhpsPFTauDiscriminationByLooseIsolation"),                                                                                   
-    cms.InputTag("selectedhpsPFTauDiscriminationByVLooseIsolation")                                                                                   
+process.TTEffAnalysisHLTCaloTauHPS.PFTauIsoDiscriminator = "selectedhpsPFTauDiscriminationByVLooseIsolation"
+process.TTEffAnalysisHLTCaloTauHPS.PFTauMuonRejectionDiscriminator = "selectedhpsPFTauDiscriminationByTightMuonRejection"
+process.TTEffAnalysisHLTCaloTauHPS.PFTauElectronRejectionDiscriminator = "selectedhpsPFTauDiscriminationByMediumElectronRejection"
+process.TTEffAnalysisHLTCaloTauHPS.PFTauDiscriminators = cms.vstring(
+    "selectedhpsPFTauDiscriminationByLooseMuonRejection",                                                                    
+    "selectedhpsPFTauDiscriminationByTightMuonRejection",
+    "selectedhpsPFTauDiscriminationByLooseElectronRejection",
+    "selectedhpsPFTauDiscriminationByMediumElectronRejection",
+    "selectedhpsPFTauDiscriminationByTightElectronRejection",
+    "selectedhpsPFTauDiscriminationByTightIsolation",
+    "selectedhpsPFTauDiscriminationByMediumIsolation",
+    "selectedhpsPFTauDiscriminationByLooseIsolation",
+    "selectedhpsPFTauDiscriminationByVLooseIsolation"
 )                                                                                                                                             
 process.TTEffAnalysisHLTCaloTauHPS.outputFileName = cms.string("tteffAnalysis-hltcalotau-hpspftau.root");                               
 process.TTEffAnalysisHLTCaloTauHPS.HLTPFTau = cms.bool(False)
@@ -202,40 +270,14 @@ process.TTEffAnalysisHLTPFTauTightHPS.l25JetSource = cms.InputTag("hltPFTauTagIn
 process.TTEffAnalysisHLTPFTauTightHPS.l25PtCutSource = cms.InputTag("hltPFTaus")
 process.TTEffAnalysisHLTPFTauTightHPS.HLTPFTau = cms.bool(True)
 
-process.TauMCProducer = cms.EDProducer("HLTTauMCProducer",
-GenParticles  = cms.untracked.InputTag("genParticles"),
-       ptMinTau      = cms.untracked.double(3),
-       ptMinMuon     = cms.untracked.double(3),
-       ptMinElectron = cms.untracked.double(3),
-       BosonID       = cms.untracked.vint32(23),
-       EtaMax         = cms.untracked.double(2.5)
-)
-
-#Physics bit ON
-process.load('HLTrigger.special.hltPhysicsDeclared_cfi')
-process.hltPhysicsDeclared.L1GtReadoutRecordTag = 'gtDigis'
-
-process.load("ElectroWeakAnalysis.TauTriggerEfficiency.TTEffPFTau_cff")
-
-if(isData):
-    process.runTTEffAna = cms.Path(
-    )
-else:
-    process.runTTEffAna = cms.Path(
-        process.hltPhysicsDeclared+
-	process.TauMCProducer
-    )
-process.runTTEffAna += process.muonPFIsolationSequence
-#process.runTTEffAna += process.TTEffPFTau
-process.runTTEffAna += process.TTEffHPSPFTau
-#process.runTTEffAna += process.TTEffAnalysis
+process.runTTEffAna += process.TTEffAnalysis
 #process.runTTEffAna += process.TTEffAnalysisL1Tau
 #process.runTTEffAna += process.TTEffAnalysisL1Cen
 #process.runTTEffAna += process.TTEffAnalysisHLTPFTau
 #process.runTTEffAna += process.TTEffAnalysisHLTPFTauTight
-process.runTTEffAna += process.TTEffAnalysisHLTPFTauTightHPS
-process.runTTEffAna += process.TTEffAnalysisHLTCaloTauHPS
-process.runTTEffAna += process.TTEffAnalysisHLTPFTauHPS
+#process.runTTEffAna += process.TTEffAnalysisHLTPFTauTightHPS
+#process.runTTEffAna += process.TTEffAnalysisHLTCaloTauHPS
+#process.runTTEffAna += process.TTEffAnalysisHLTPFTauHPS
 
 #process.o1 = cms.OutputModule("PoolOutputModule",
 #    outputCommands = cms.untracked.vstring("keep *"),

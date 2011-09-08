@@ -13,13 +13,14 @@
 //
 // Original Author:  Chi Nhan Nguyen
 //         Created:  Wed Oct  1 13:04:54 CEST 2008
-// $Id: TTEffAnalyzer.h,v 1.46 2011/06/23 13:17:22 slehti Exp $
+// $Id: TTEffAnalyzer.h,v 1.47 2011/06/27 10:37:11 slehti Exp $
 //
 //
 
 
 // system include files
 #include <memory>
+#include <vector>
 
 // user include files
 #include "FWCore/Framework/interface/Frameworkfwd.h"
@@ -30,7 +31,8 @@
 
 #include "FWCore/ParameterSet/interface/ParameterSet.h"
 
-#include "DataFormats/TauReco/interface/PFTau.h"
+#include "DataFormats/Common/interface/View.h"
+#include "DataFormats/PatCandidates/interface/Tau.h"
 #include "DataFormats/Math/interface/LorentzVector.h"
 #include "DataFormats/Math/interface/LorentzVectorFwd.h"
 #include "DataFormats/TauReco/interface/PFTauDiscriminator.h"
@@ -72,17 +74,17 @@ class TTEffAnalyzer : public edm::EDAnalyzer {
 
       template <class T> void loop(const edm::Event& iEvent,const edm::EventSetup& iSetup, const T& collection);
 
-      virtual void fillLV(const LorentzVector&,unsigned int i = 0); // was fill() before, but was confusing
-      virtual void fill(const reco::PFTau&,unsigned int i = 0); 
-      virtual void fill(const LorentzVector&,unsigned int i = 0); // this one is for the loop per MCtau
-      virtual void fill(const reco::Candidate&,unsigned int i = 0);
+      virtual void fillLV(const LorentzVector&); // was fill() before, but was confusing
+      virtual void fill(const pat::Tau&); 
+      virtual void fill(const LorentzVector&); // this one is for the loop per MCtau
+      virtual void fill(const reco::Candidate&);
       virtual void fillHLTinfo(const edm::Event&);
 
 
       //Helper function :RMS of the PF Candidates
       std::vector<double> clusterSeparation(const reco::PFCandidateRefVector& ,const reco::PFCandidateRefVector& );
   
-      void clusterShape(const reco::PFTau& tau, std::vector<double>& rms) const;
+      void clusterShape(const pat::Tau& tau, std::vector<double>& rms) const;
       void clusterShape(const math::XYZTLorentzVectorCollection& clusters, std::vector<double>& rms) const;
       void getPFClusters(const PFCandidateRefVector& pfCands, math::XYZTLorentzVectorCollection& clusters) const;
       bool checkPos(const std::vector<math::XYZPoint>& CalPos, const math::XYZPoint& CandPos) const;
@@ -91,25 +93,23 @@ class TTEffAnalyzer : public edm::EDAnalyzer {
       bool DoOfflineVariablesOnly_,DoMCTauEfficiency_;
       edm::InputTag HLTResultsSource;
       edm::TriggerNames _triggerNames;
-      edm::InputTag  PFTaus_,PFTauIso_,MCTaus_,MCParticles_,PFTauMuonRej_,PFTauElectronRej_; //Path to analyze
+      edm::InputTag  PFTaus_,MCTaus_,MCParticles_;
+      std::string PFTauIso_, PFTauMuonRej_, PFTauElectronRej_;
       std::string rootFile_;
-      std::vector<edm::InputTag> PFTauDiscriminators_;
+      std::vector<std::string> PFTauDiscriminators_;
       std::vector<edm::InputTag> Counters_;
 
       int _HltEvtCnt;
       bool *_hltFlag;
 
-      edm::Handle<PFTauCollection> PFTaus;
-      edm::Handle<PFTauDiscriminator> thePFTauDiscriminatorByIsolation;
-      edm::Handle<PFTauDiscriminator> thePFTauDiscriminatorAgainstMuon;
-      edm::Handle<PFTauDiscriminator> thePFTauDiscriminatorAgainstElectron;
-      std::vector<edm::Handle<PFTauDiscriminator> > thePFTauDiscriminators;
+       edm::Handle<edm::View<pat::Tau> > PFTaus;
       edm::Handle<std::vector<LorentzVector> > mcTaus;
       edm::Handle<reco::GenParticleCollection> mcParticles;
 
       // PF Variables
       uint32_t b_event, b_run, b_lumi;
-      int NEGCandsInAnnulus,NHadCandsInAnnulus,MCMatch,PFTauMatch,PFMuonMatch,PFElectronMatch;
+      int NEGCandsInAnnulus,NHadCandsInAnnulus,MCMatch,PFTauMatch;
+      bool PFMuonMatch,PFElectronMatch;
       float MCTauE,MCTauEt,MCTauEta,MCTauPhi;
       float PFPt,PFInvPt,PFEt,PFEta,PFPhi,PFProng,PFIso,PFIsoSum,PFEnergy;
       float PFClusterEtaRMS, PFClusterPhiRMS, PFClusterDrRMS;
@@ -117,7 +117,7 @@ class TTEffAnalyzer : public edm::EDAnalyzer {
       float pfJetNeutralEmEnergy, pfJetNeutralEmEnergyFraction, pfJetNeutralHadronEnergy, pfJetNeutralHadronEnergyFraction;
       float PFSignalSumPt,PFIsoNTrks,PFIsoTrkNHits,PFIsoTrkChi2,PFIsoTrkPt;
       double MCMatchingCone;
-      int* discriminators;
+      std::vector<float> discriminators;
       L1TauEfficiencyAnalyzer* _L1analyzer;
       L2TauEfficiencyAnalyzer* _L2analyzer;
       L25and3TauEfficiencyAnalyzer* _L25and3analyzer;

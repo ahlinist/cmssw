@@ -25,7 +25,7 @@ else:
     process.GlobalTag.globaltag = 'START42_V13::All'
 
 process.maxEvents = cms.untracked.PSet(
-        input = cms.untracked.int32(100)
+        input = cms.untracked.int32(500)
 )
 
 if(isData):

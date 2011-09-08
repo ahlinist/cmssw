@@ -13,7 +13,7 @@
 //
 // Original Author:  Chi Nhan Nguyen
 //         Created:  Wed Oct  1 13:04:54 CEST 2008
-// $Id: TTEffAnalyzer.cc,v 1.63 2011/06/28 12:30:47 slehti Exp $
+// $Id: TTEffAnalyzer.cc,v 1.64 2011/09/06 12:59:29 mkortela Exp $
 //
 //
 
@@ -23,7 +23,6 @@
 #include "DataFormats/ParticleFlowReco/interface/PFBlock.h"
 #include "DataFormats/ParticleFlowReco/interface/PFBlockElement.h"
 #include "DataFormats/ParticleFlowReco/interface/PFCluster.h"
-#include "DataFormats/Common/interface/View.h"
 
 #include "DataFormats/Common/interface/TriggerResults.h"
 
@@ -36,13 +35,13 @@ TTEffAnalyzer::TTEffAnalyzer(const edm::ParameterSet& iConfig):
   DoMCTauEfficiency_(iConfig.getParameter<bool>("DoMCTauEfficiency")),
   HLTResultsSource(iConfig.getParameter<edm::InputTag>("HltResults")),
   PFTaus_(iConfig.getParameter<edm::InputTag>("LoopingOver")),
-  PFTauIso_(iConfig.getParameter<edm::InputTag>("PFTauIsoCollection")),
   MCTaus_(iConfig.getParameter<edm::InputTag>("MCTauCollection")),
   MCParticles_(iConfig.getParameter<edm::InputTag>("GenParticleCollection")),
-  PFTauMuonRej_(iConfig.getParameter<edm::InputTag>("PFTauMuonRejectionCollection")),
-  PFTauElectronRej_(iConfig.getParameter<edm::InputTag>("PFTauElectronRejectionCollection")),
+  PFTauIso_(iConfig.getParameter<std::string>("PFTauIsoDiscriminator")),
+  PFTauMuonRej_(iConfig.getParameter<std::string>("PFTauMuonRejectionDiscriminator")),
+  PFTauElectronRej_(iConfig.getParameter<std::string>("PFTauElectronRejectionDiscriminator")),
   rootFile_(iConfig.getParameter<std::string>("outputFileName")),
-  PFTauDiscriminators_(iConfig.getParameter<std::vector<edm::InputTag> >("PFTauDiscriminators")),
+  PFTauDiscriminators_(iConfig.getParameter<std::vector<std::string> >("PFTauDiscriminators")),
   Counters_(iConfig.getParameter<std::vector<edm::InputTag> >("Counters")),
   _hltFlag(new bool[512]),
   MCMatchingCone(iConfig.getParameter<double>("MCMatchingCone"))
@@ -95,30 +94,30 @@ TTEffAnalyzer::TTEffAnalyzer(const edm::ParameterSet& iConfig):
   _TTEffTree->Branch("run", &b_run);
   _TTEffTree->Branch("lumi", &b_lumi);
 
-  _TTEffTree->Branch("PFTauPt", &PFPt, "PFTauPt/F");
-  _TTEffTree->Branch("PFTauInvPt", &PFInvPt, "PFTauInvPt/F");
-  _TTEffTree->Branch("PFTauEt",&PFEt,"PFTauEt/F");
-  _TTEffTree->Branch("PFTauEta", &PFEta, "PFTauEta/F");
-  _TTEffTree->Branch("PFTauPhi", &PFPhi, "PFTauPhi/F");
-  _TTEffTree->Branch("PFTauProng", &PFProng, "PFTauProng/F");
-  _TTEffTree->Branch("PFTauSignalCandsPtSum", &PFSignalSumPt, "PFTauSignalCandsPtSum/F");
-  _TTEffTree->Branch("PFTauIso", &PFIso, "PFTauIso/F");
-  _TTEffTree->Branch("PFTauIsoSum", &PFIsoSum, "PFTauIsoSum/F");
-  _TTEffTree->Branch("PFIsoNTrks", &PFIsoNTrks, "PFIsoNTrks/I");
-  _TTEffTree->Branch("PFIsoTrkNHits", &PFIsoTrkNHits, "PFIsoTrkNHits/I");
-  _TTEffTree->Branch("PFIsoTrkChi2", &PFIsoTrkChi2, "PFIsoTrkChi2/F");
-  _TTEffTree->Branch("PFIsoTrkPt", &PFIsoTrkPt, "PFIsoTrkPt/F");
-  _TTEffTree->Branch("PFTauEnergy", &PFEnergy, "PFTauEnergy/F");
-  _TTEffTree->Branch("PFClusterEtaRMS", &PFClusterEtaRMS, "PFClusterEtaRMS/F");
-  _TTEffTree->Branch("PFClusterPhiRMS", &PFClusterPhiRMS, "PFClusterPhiRMS/F");
-  _TTEffTree->Branch("PFClusterDrRMS", &PFClusterDrRMS, "PFClusterDrRMS/F");
-  _TTEffTree->Branch("PFTauMatch", &PFTauMatch, "PFTauMatch/I");
-  _TTEffTree->Branch("PFMuonMatch", &PFMuonMatch, "PFMuonMatch/I");  
-  _TTEffTree->Branch("PFElectronMatch", &PFElectronMatch, "PFElectronMatch/I");
+  _TTEffTree->Branch("PFTauPt", &PFPt);
+  _TTEffTree->Branch("PFTauInvPt", &PFInvPt);
+  _TTEffTree->Branch("PFTauEt",&PFEt);
+  _TTEffTree->Branch("PFTauEta", &PFEta);
+  _TTEffTree->Branch("PFTauPhi", &PFPhi);
+  _TTEffTree->Branch("PFTauProng", &PFProng);
+  _TTEffTree->Branch("PFTauSignalCandsPtSum", &PFSignalSumPt);
+  _TTEffTree->Branch("PFTauIso", &PFIso);
+  _TTEffTree->Branch("PFTauIsoSum", &PFIsoSum);
+  _TTEffTree->Branch("PFIsoNTrks", &PFIsoNTrks);
+  _TTEffTree->Branch("PFIsoTrkNHits", &PFIsoTrkNHits);
+  _TTEffTree->Branch("PFIsoTrkChi2", &PFIsoTrkChi2);
+  _TTEffTree->Branch("PFIsoTrkPt", &PFIsoTrkPt);
+  _TTEffTree->Branch("PFTauEnergy", &PFEnergy);
+  _TTEffTree->Branch("PFClusterEtaRMS", &PFClusterEtaRMS);
+  _TTEffTree->Branch("PFClusterPhiRMS", &PFClusterPhiRMS);
+  _TTEffTree->Branch("PFClusterDrRMS", &PFClusterDrRMS);
+  _TTEffTree->Branch("PFTauMatch", &PFTauMatch);
+  _TTEffTree->Branch("PFMuonMatch", &PFMuonMatch);  
+  _TTEffTree->Branch("PFElectronMatch", &PFElectronMatch);
 
-  discriminators = new int[PFTauDiscriminators_.size()];                                                                                  
-  for(size_t i = 0; i < PFTauDiscriminators_.size(); ++i) {                                                                               
-    _TTEffTree->Branch(PFTauDiscriminators_[i].label().c_str(), &discriminators[i], (PFTauDiscriminators_[i].label()+"/I").c_str());      
+  discriminators.resize(PFTauDiscriminators_.size());
+  for(size_t i = 0; i < PFTauDiscriminators_.size(); ++i) {
+    _TTEffTree->Branch(PFTauDiscriminators_[i].c_str(), &discriminators[i]);
   }
 
   _TTEffTree->Branch("PFJetChargedEmEnergy",             &pfJetChargedEmEnergy);
@@ -130,11 +129,11 @@ TTEffAnalyzer::TTEffAnalyzer(const edm::ParameterSet& iConfig):
   _TTEffTree->Branch("PFJetNeutralHadronEnergy",         &pfJetNeutralHadronEnergy);
   _TTEffTree->Branch("PFJetNeutralHadronEnergyFraction", &pfJetNeutralHadronEnergyFraction);
 
-  _TTEffTree->Branch("MCMatch", &MCMatch, "MCMatch/I");
-  _TTEffTree->Branch("MCTauEt", &MCTauEt, "MCTauEt/F");
-  _TTEffTree->Branch("MCTauE", &MCTauE, "MCTauE/F");
-  _TTEffTree->Branch("MCTauEta", &MCTauEta, "MCTauEta/F");
-  _TTEffTree->Branch("MCTauPhi", &MCTauPhi, "MCTauPhi/F");
+  _TTEffTree->Branch("MCMatch", &MCMatch);
+  _TTEffTree->Branch("MCTauEt", &MCTauEt);
+  _TTEffTree->Branch("MCTauE", &MCTauE);
+  _TTEffTree->Branch("MCTauEta", &MCTauEta);
+  _TTEffTree->Branch("MCTauPhi", &MCTauPhi);
 
   if(!DoOfflineVariablesOnly_){
     _L1analyzer = new L1TauEfficiencyAnalyzer();
@@ -192,31 +191,6 @@ TTEffAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
    } 
    else {
      if(iEvent.getByLabel(PFTaus_, PFTaus)) {
-       iEvent.getByLabel(PFTauIso_,thePFTauDiscriminatorByIsolation);
-       if(!thePFTauDiscriminatorByIsolation.isValid()) {
-         edm::LogWarning("TTEffAnalyzer")<<"No DiscriminatorByIsolation with label "<<PFTauIso_<<" found!"<<endl;
-       }
-       iEvent.getByLabel(PFTauMuonRej_,thePFTauDiscriminatorAgainstMuon);
-       if(!thePFTauDiscriminatorAgainstMuon.isValid()) {
-         edm::LogWarning("TTEffAnalyzer")<<"No DiscriminatorAgainstMuon with label "<<PFTauMuonRej_<<" found!"<<endl;
-       }
-       iEvent.getByLabel(PFTauElectronRej_,thePFTauDiscriminatorAgainstElectron);
-       if(!thePFTauDiscriminatorAgainstElectron.isValid()) {
-         edm::LogWarning("TTEffAnalyzer")<<"No DiscriminatorAgainstElectron with label "<<PFTauElectronRej_<<" found!"<<endl;
-       }
-/*       
-       iEvent.getByLabel(PFTauElectronRej_,thePFTauDiscriminatorAgainstElectron);
-       if(!thePFTauDiscriminatorAgainstElectron.isValid()) {
-         edm::LogWarning("TTEffAnalyzer")<<"No DiscriminatorAgainstElectron with label "<<PFTauElectronRej_<<" found!"<<endl;
-       }
-*/
-       thePFTauDiscriminators.clear();                                                                                                    
-       for(size_t i = 0; i < PFTauDiscriminators_.size(); ++i){                                                                           
-                edm::Handle<PFTauDiscriminator> thePFTauDiscriminator;                                                                    
-                iEvent.getByLabel(PFTauDiscriminators_[i],thePFTauDiscriminator);                                                         
-                thePFTauDiscriminators.push_back(thePFTauDiscriminator);                                                                  
-       }
-	 
        iEvent.getByLabel(MCTaus_, mcTaus);
        iEvent.getByLabel(MCParticles_, mcParticles);
        loop(iEvent,iSetup,*PFTaus);
@@ -236,8 +210,7 @@ template <class T>
 void TTEffAnalyzer::loop(const edm::Event& iEvent,const edm::EventSetup& iSetup, const T& collection) {
   for(typename T::const_iterator particle = collection.begin(); particle != collection.end(); ++particle) {
     // Fill common variables
-    unsigned int i = particle - collection.begin();
-    fill(*particle,i);
+    fill(*particle);
     if(!DoOfflineVariablesOnly_){
       fillHLTinfo(iEvent);
     }
@@ -251,7 +224,7 @@ void TTEffAnalyzer::loop(const edm::Event& iEvent,const edm::EventSetup& iSetup,
       _PFMHTanalyzer->fill(iEvent,iSetup);
     }
     _METanalyzer->fill(iEvent,iSetup);
-    _MuonAnalyzer->fill(iEvent,iSetup);
+    _MuonAnalyzer->fill(iEvent,iSetup, *particle);
 
     // Finally, fill the entry to tree
     _TTEffTree->Fill();
@@ -296,19 +269,19 @@ void TTEffAnalyzer::fillHLTinfo(const edm::Event& iEvent){
   }
 }
 
-void TTEffAnalyzer::fillLV(const LorentzVector& tau,unsigned int i) {
+void TTEffAnalyzer::fillLV(const LorentzVector& tau) {
   PFPt = tau.Pt();
   PFEt = tau.Et();
   PFEta = tau.Eta();
   PFPhi = tau.Phi();
 }
 
-void TTEffAnalyzer::fill(const reco::Candidate& tau,unsigned int i) {
+void TTEffAnalyzer::fill(const reco::Candidate& tau) {
   fillLV(tau.p4());
 }
 
 void
-TTEffAnalyzer::fill(const reco::PFTau& tau,unsigned int i) {
+TTEffAnalyzer::fill(const pat::Tau& tau) {
 using namespace reco;
   PFInvPt = 0.;
   PFIso = 0;
@@ -323,50 +296,19 @@ using namespace reco;
   pfJetNeutralHadronEnergyFraction = 0.;
 
 
-// Here is workaround, though not beautiful, to access PFIso info with PFRef
-// While keeping the generic structure of loop method
-  const PFTauRef thisTauRef(PFTaus,i);
-  if(thePFTauDiscriminatorByIsolation.isValid()){
-	const PFTauDiscriminator & ds = *(thePFTauDiscriminatorByIsolation.product());
-	PFIso = ds[thisTauRef];// it should crash if CMSSW cannot find a match between TauRef and Iso collection
-                            // Then check configuration files to make sure a correct pair is being fed into TTEFF
-  }
-  if(thePFTauDiscriminatorAgainstMuon.isValid()){
-    const PFTauDiscriminator & ds = *(thePFTauDiscriminatorAgainstMuon.product());
-    if (ds[thisTauRef]>0.5) {
-      PFMuonMatch = 1;
-    } else {
-      PFMuonMatch = 0;
-    }
-  }
-  if(thePFTauDiscriminatorAgainstElectron.isValid()){
-    const PFTauDiscriminator & ds = *(thePFTauDiscriminatorAgainstElectron.product());
-    if (ds[thisTauRef]>0.5) {
-      PFElectronMatch = 1;
-    } else {
-      PFElectronMatch = 0;
-    }
-  }
+  PFIso = tau.tauID(PFTauIso_);
+  PFMuonMatch = tau.tauID(PFTauMuonRej_) > 0.5;
+  PFElectronMatch = tau.tauID(PFTauElectronRej_) > 0.5;
 
   for(size_t iDiscr = 0; iDiscr < PFTauDiscriminators_.size(); ++iDiscr) {
-	const PFTauDiscriminator & ds = *(thePFTauDiscriminators[iDiscr].product());
-	discriminators[iDiscr] = ds[thisTauRef];
+	discriminators[iDiscr] = tau.tauID(PFTauDiscriminators_[iDiscr]);
   }
-/*   
-  if(thePFTauDiscriminatorAgainstElectron.isValid()){
-    const PFTauDiscriminator & ds = *(thePFTauDiscriminatorAgainstElectron.product());
-    if (ds[thisTauRef]>0.5) {
-      PFElectronMatch = 1;
-    } else {
-      PFElectronMatch = 0;
-    }
-  }
-*/
+
   MCMatch = 0;
   if(mcTaus.isValid()){
     for(unsigned int k = 0 ; k < mcTaus->size(); k++){
       //Mike B: Changed this to ROOT ::Math since it was confused which deltaR to use
-      if( ROOT::Math::VectorUtil::DeltaR(PFTaus->at(i).p4(),mcTaus->at(k)) < MCMatchingCone ){ // match within 0.2 cone
+      if( ROOT::Math::VectorUtil::DeltaR(tau.p4(),mcTaus->at(k)) < MCMatchingCone ){ // match within 0.2 cone
          MCMatch = 1;
 	 MCTauE = mcTaus->at(k).energy();
 	 MCTauEt = mcTaus->at(k).Et();
@@ -379,25 +321,25 @@ using namespace reco;
   if(mcParticles.isValid()){
     for(unsigned int k = 0 ; k < mcParticles->size(); k++){
       if(abs(mcParticles->at(k).pdgId()) != 11 && abs(mcParticles->at(k).pdgId()) != 13) continue;
-      if( ROOT::Math::VectorUtil::DeltaR(PFTaus->at(i).p4(),mcParticles->at(k).p4()) < MCMatchingCone ) {
+      if( ROOT::Math::VectorUtil::DeltaR(tau.p4(),mcParticles->at(k).p4()) < MCMatchingCone ) {
 	if(abs(mcParticles->at(k).pdgId()) == 11 ) MCMatch = 11;
 	if(abs(mcParticles->at(k).pdgId()) == 13 ) MCMatch = 13;
       }
     }
   }
-  if(thisTauRef->leadPFChargedHadrCand().isNonnull()) PFInvPt = 1./thisTauRef->leadPFChargedHadrCand()->pt();
+  if(tau.leadPFChargedHadrCand().isNonnull()) PFInvPt = 1./tau.leadPFChargedHadrCand()->pt();
   // Fill common variables
-  fillLV(PFTaus->at(i).p4());
+  fillLV(tau.p4());
 
   // Fill #signal tracks, and PtSum in isolation annulus 
-  PFProng  = PFTaus->at(i).signalPFChargedHadrCands().size(); // check config file
-  PFIsoSum = PFTaus->at(i).isolationPFChargedHadrCandsPtSum();
-  PFIsoNTrks = PFTaus->at(i).isolationPFChargedHadrCands().size();
-  PFEnergy = PFTaus->at(i).energy();
+  PFProng  = tau.signalPFChargedHadrCands().size(); // check config file
+  PFIsoSum = tau.isolationPFChargedHadrCandsPtSum();
+  PFIsoNTrks = tau.isolationPFChargedHadrCands().size();
+  PFEnergy = tau.energy();
   
   // get the parameters of the tracks in the isolation region...
   
-  const PFCandidateRefVector& theIsoCands = PFTaus->at(i).isolationPFChargedHadrCands();
+  const PFCandidateRefVector& theIsoCands = tau.isolationPFChargedHadrCands();
   for(PFCandidateRefVector::const_iterator vIt = theIsoCands.begin(); vIt != theIsoCands.end(); ++vIt){
     const TrackRef theTrkRef = (*vIt)->trackRef();
     if(theTrkRef.isNonnull()){
@@ -408,9 +350,9 @@ using namespace reco;
   }
   
   PFSignalSumPt = 0;
-  const PFCandidateRefVector& theSignalCands = PFTaus->at(i).signalPFChargedHadrCands();
+  const PFCandidateRefVector& theSignalCands = tau.signalPFChargedHadrCands();
   for(PFCandidateRefVector::const_iterator vIt = theSignalCands.begin(); vIt != theSignalCands.end(); ++vIt){
-     if((*vIt) == thisTauRef->leadPFChargedHadrCand()) continue;
+     if((*vIt) == tau.leadPFChargedHadrCand()) continue;
      PFSignalSumPt += (*vIt)->pt();
   }
 
@@ -434,7 +376,7 @@ using namespace reco;
   // HCAL+ECAL energies and fractions
 ////  const reco::PFTauTagInfoRef& tauTagInfo = thisTauRef->pfTauTagInfoRef();
 ////  const reco::PFJetRef& tauJet = tauTagInfo->pfjetRef();
-  const reco::PFJetRef& tauJet = thisTauRef->jetRef();
+  const reco::PFJetRef& tauJet = tau.pfJetRef();
   pfJetChargedEmEnergy             = tauJet->chargedEmEnergy();
   pfJetChargedEmEnergyFraction     = tauJet->chargedEmEnergyFraction();
   pfJetChargedHadronEnergy         = tauJet->chargedHadronEnergy();
@@ -447,16 +389,14 @@ using namespace reco;
 
 }
 
-void TTEffAnalyzer::fill(const LorentzVector& tau,unsigned int i) {
+void TTEffAnalyzer::fill(const LorentzVector& mcTau) {
 using namespace reco;
 
   MCMatch = 0;
-  if(mcTaus.isValid()){
-    MCTauE = mcTaus->at(i).energy();
-    MCTauEt = mcTaus->at(i).Et();
-    MCTauEta = mcTaus->at(i).Eta();
-    MCTauPhi = mcTaus->at(i).Phi();
-  }
+  MCTauE = mcTau.energy();
+  MCTauEt = mcTau.Et();
+  MCTauEta = mcTau.Eta();
+  MCTauPhi = mcTau.Phi();
 
   
   PFInvPt = 0.;
@@ -464,51 +404,25 @@ using namespace reco;
   PFTauMatch = 0;
   if(PFTaus.isValid()){
     for(unsigned int k = 0 ; k < PFTaus->size(); k++){
-      if( ROOT::Math::VectorUtil::DeltaR(PFTaus->at(k).p4(),mcTaus->at(i)) < MCMatchingCone ){
+      if( ROOT::Math::VectorUtil::DeltaR(PFTaus->at(k).p4(),mcTau) < MCMatchingCone ){
 
 	PFTauMatch = 1;
-	const PFTauRef thisTauRef(PFTaus,k);
-	if(thePFTauDiscriminatorByIsolation.isValid()){
-	  const PFTauDiscriminator & ds = *(thePFTauDiscriminatorByIsolation.product());
-	  PFIso = ds[thisTauRef];
-	}
-	if(thePFTauDiscriminatorAgainstMuon.isValid()){
-	  const PFTauDiscriminator & ds = *(thePFTauDiscriminatorAgainstMuon.product());
-	  if (ds[thisTauRef]>0.5) {
-	    PFMuonMatch = 1;
-	  } else {
-	    PFMuonMatch = 0;
-	  }
-	}
-        if(thePFTauDiscriminatorAgainstElectron.isValid()){
-          const PFTauDiscriminator & ds = *(thePFTauDiscriminatorAgainstElectron.product());
-          if (ds[thisTauRef]>0.5) {
-            PFElectronMatch = 1;
-          } else {
-            PFElectronMatch = 0;
-          }
-        }
-/*
-  	if(thePFTauDiscriminatorAgainstElectron.isValid()){
-  	  const PFTauDiscriminator & ds = *(thePFTauDiscriminatorAgainstElectron.product());
-  	  if (ds[thisTauRef]>0.5) {
-  	    PFElectronMatch = 1;
-  	  } else {
-  	    PFElectronMatch = 0;
-  	  }
-  	}
-*/	
-	if(thisTauRef->leadPFChargedHadrCand().isNonnull()) PFInvPt = 1./thisTauRef->leadPFChargedHadrCand()->pt();
+        const pat::Tau& tau = PFTaus->at(k);
+        PFIso = tau.tauID(PFTauIso_);
+        PFMuonMatch = tau.tauID(PFTauMuonRej_) > 0.5;
+        PFElectronMatch = tau.tauID(PFTauElectronRej_) > 0.5;
+
+	if(tau.leadPFChargedHadrCand().isNonnull()) PFInvPt = 1./tau.leadPFChargedHadrCand()->pt();
 	// Fill common variables
-	fillLV(PFTaus->at(k).p4());
+	fillLV(tau.p4());
 
 	// Fill #signal tracks, and PtSum in isolation annulus 
-	PFProng  = PFTaus->at(k).signalPFChargedHadrCands().size(); // check config file
-	PFIsoSum = PFTaus->at(k).isolationPFChargedHadrCandsPtSum();
-	PFEnergy = PFTaus->at(k).energy();
+	PFProng  = tau.signalPFChargedHadrCands().size(); // check config file
+	PFIsoSum = tau.isolationPFChargedHadrCandsPtSum();
+	PFEnergy = tau.energy();
 	
 	std::vector<double> rms;
-	clusterShape(PFTaus->at(k), rms);
+	clusterShape(tau, rms);
 	PFClusterEtaRMS = rms[0];
 	PFClusterPhiRMS = rms[1];
 	PFClusterDrRMS = rms[2];
@@ -608,7 +522,7 @@ struct RecHitPtComparator {
   }
 };
 
-void TTEffAnalyzer::clusterShape(const reco::PFTau& tau, std::vector<double>& rms) const {
+void TTEffAnalyzer::clusterShape(const pat::Tau& tau, std::vector<double>& rms) const {
   // Get PFCandidates
   math::XYZTLorentzVectorCollection clusters;
   getPFClusters(tau.signalPFCands(), clusters);
