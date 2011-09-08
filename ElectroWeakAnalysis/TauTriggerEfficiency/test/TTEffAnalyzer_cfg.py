@@ -75,7 +75,7 @@ process.runMETCleaning = cms.Path(process.HBHENoiseFilterResultProducer)
 process.load('HLTrigger.special.hltPhysicsDeclared_cfi')
 process.hltPhysicsDeclared.L1GtReadoutRecordTag = 'gtDigis'
 
-process.runTTEffAna = cms.Path()
+process.commonSequence = cms.Sequence()
 if not isData:
     process.TauMCProducer = cms.EDProducer("HLTTauMCProducer",
         GenParticles  = cms.untracked.InputTag("genParticles"),
@@ -86,7 +86,7 @@ if not isData:
         EtaMax         = cms.untracked.double(2.5)
     )
 
-    process.runTTEffAna += (
+    process.commonSequence += (
         process.hltPhysicsDeclared+
 	process.TauMCProducer
     )
@@ -95,21 +95,31 @@ if not isData:
 doTTEffShrinkingConePFTau=False
 if doTTEffShrinkingConePFTau:
     process.load("ElectroWeakAnalysis.TauTriggerEfficiency.TTEffPFTau_cff")
-    process.runTTEffAna += process.TTEffPFTau
+    process.commonSequence += process.TTEffPFTau
 
 # Run PAT
 import ElectroWeakAnalysis.TauTriggerEfficiency.Pat as pat
 process.patSequence = pat.addPat(process, isData, doTTEffShrinkingConePFTau)
-process.runTTEffAna += process.patSequence
+process.commonSequence += process.patSequence
 
-process.TTEffAnalysis = cms.EDAnalyzer("TTEffAnalyzer",
+process.TTEffAnalysisHLTPFTauHPS = cms.EDAnalyzer("TTEffAnalyzer",
 	DoOfflineVariablesOnly  = cms.bool(False), #if true: no trigger info is saved
         DoMCTauEfficiency       = cms.bool(False), #if true: per MCTau cand; default is false: per offline tau cand
         LoopingOver	        = cms.InputTag("selectedPatTausHpsPFTau"),
         PFTauIsoDiscriminator      = cms.string("byLooseIsolation"),
         PFTauMuonRejectionDiscriminator     = cms.string("againstMuonTight"),
 	PFTauElectronRejectionDiscriminator = cms.string("againstElectronMedium"),
-	PFTauDiscriminators     = cms.vstring(),
+	PFTauDiscriminators     = cms.vstring(
+            "againstMuonLoose",
+            "againstMuonTight",
+            "againstElectronLoose",
+            "againstElectronMedium",
+            "againstElectronTight",
+            "byVLooseIsolation",
+            "byLooseIsolation",
+            "byMediumIsolation",
+            "byTightIsolation",
+        ),
         Counters                = cms.VInputTag(cms.InputTag("TTEffSkimCounterAllEvents"),
                                                 cms.InputTag("TTEffSkimCounterSavedEvents")
                                                 ),
@@ -158,79 +168,90 @@ process.TTEffAnalysis = cms.EDAnalyzer("TTEffAnalyzer",
         crystalThresholdEB      		= cms.untracked.double(0.15),
         crystalThresholdEE      		= cms.untracked.double(0.45),
         L2matchingDeltaR        		= cms.double(0.2),
-        l25JetSource        			= cms.InputTag("openhltL25TauConeIsolation"),
-        l25PtCutSource      			= cms.InputTag("hltL25TauLeadingTrackPtCutSelector"),
+        l25JetSource        			= cms.InputTag("hltPFTauTagInfo"),
+        l25PtCutSource      			= cms.InputTag("hltPFTaus"),
         l3IsoSource             		= cms.InputTag("hltL3TauIsolationSelector"), #obsolet: L25/L3 merged?
         l25MatchingCone         		= cms.double(0.3),
         MCMatchingCone         			= cms.double(0.2),
-        HLTPFTau                		= cms.bool(False),
+        HLTPFTau                		= cms.bool(True),
         MCTauCollection         		= cms.InputTag("TauMCProducer:HadronicTauOneAndThreeProng"),
 	GenParticleCollection			= cms.InputTag("genParticles"),
-        outputFileName          		= cms.string("tteffAnalysis-hltcalotau-pftau.root")
+        outputFileName          		= cms.string("tteffAnalysis-hltpftau-hpspftau.root")
 )
 
 # One way for running multiple TTEffAnalyzers in one job such that
 # each analyzer loops over different collection and produces a
 # different output file
-process.TTEffAnalysisL1Tau = process.TTEffAnalysis.clone()
-process.TTEffAnalysisL1Tau.LoopingOver = cms.InputTag("l1extraParticles", "Tau")
-process.TTEffAnalysisL1Tau.outputFileName = cms.string("tteffAnalysis-l1tau.root");
-process.TTEffAnalysisL1Cen = process.TTEffAnalysis.clone()
-process.TTEffAnalysisL1Cen.LoopingOver = cms.InputTag("l1extraParticles", "Central")
-process.TTEffAnalysisL1Cen.outputFileName = cms.string("tteffAnalysis-l1cen.root");
+#process.TTEffAnalysisL1Tau = process.TTEffAnalysis.clone()
+#process.TTEffAnalysisL1Tau.LoopingOver = cms.InputTag("l1extraParticles", "Tau")
+#process.TTEffAnalysisL1Tau.outputFileName = cms.string("tteffAnalysis-l1tau.root")
+#process.TTEffAnalysisL1Cen = process.TTEffAnalysis.clone()
+#process.TTEffAnalysisL1Cen.LoopingOver = cms.InputTag("l1extraParticles", "Central")
+#process.TTEffAnalysisL1Cen.outputFileName = cms.string("tteffAnalysis-l1cen.root");
 
-process.TTEffAnalysisHLTPFTau = process.TTEffAnalysis.clone()
-process.TTEffAnalysisHLTPFTau.outputFileName = cms.string("tteffAnalysis-hltpftau-pftau.root");
-process.TTEffAnalysisHLTPFTau.l25JetSource = cms.InputTag("hltPFTauTagInfo")
-process.TTEffAnalysisHLTPFTau.l25PtCutSource = cms.InputTag("hltPFTaus")
-process.TTEffAnalysisHLTPFTau.HLTPFTau = cms.bool(True)
+def setReferenceToTTEffShrinkingCone(module):
+    module.LoopingOver = "selectedPatTaus"
+    module.PFTauIsoDiscriminator = "byIsolationUsingLeadingPion"
+    module.PFTauMuonRejectionDiscriminator = "againstMuon"
+    module.PFTauElectronRejectionDiscriminator = "againstElectron"
+    module.PFTauDiscriminators = []
+def setHltToCalo(module):
+    module.HLTPFTau = False
+    module.l25JetSource = "openhltL25TauConeIsolation"
+    module.l25PtCutSource = "hltL25TauLeadingTrackPtCutSelector"
 
-process.TTEffAnalysisHLTPFTauTight = process.TTEffAnalysis.clone()
-process.TTEffAnalysisHLTPFTauTight.outputFileName = cms.string("tteffAnalysis-hltpftautight-pftau.root");
-process.TTEffAnalysisHLTPFTauTight.l25JetSource = cms.InputTag("hltPFTauTagInfo")
-process.TTEffAnalysisHLTPFTauTight.l25PtCutSource = cms.InputTag("hltPFTausTightIso")
-process.TTEffAnalysisHLTPFTauTight.HLTPFTau = cms.bool(True)
+# Reference is HPS tau
+process.TTEffAnalysisHLTCaloTauHPS = process.TTEffAnalysisHLTPFTauHPS.clone(
+    outputFileName = "tteffAnalysis-hltcalotau-hpspftau.root",
+)
+setHltToCalo(process.TTEffAnalysisHLTCaloTauHPS)
 
+process.TTEffAnalysisHLTPFTauTightHPS = process.TTEffAnalysisHLTPFTauHPS.clone(
+    l25PtCutSource = "hltPFTausTightIso",
+    outputFileName = "tteffAnalysis-hltpftautight-hpspftau.root",
+)
 
-process.TTEffAnalysisHLTCaloTauHPS = process.TTEffAnalysis.clone()                                                                         
-process.TTEffAnalysisHLTCaloTauHPS.LoopingOver = cms.InputTag("selectedhpsPFTauProducer")                                                          
-process.TTEffAnalysisHLTCaloTauHPS.PFTauIsoDiscriminator = "selectedhpsPFTauDiscriminationByVLooseIsolation"
-process.TTEffAnalysisHLTCaloTauHPS.PFTauMuonRejectionDiscriminator = "selectedhpsPFTauDiscriminationByTightMuonRejection"
-process.TTEffAnalysisHLTCaloTauHPS.PFTauElectronRejectionDiscriminator = "selectedhpsPFTauDiscriminationByMediumElectronRejection"
-process.TTEffAnalysisHLTCaloTauHPS.PFTauDiscriminators = cms.vstring(
-    "selectedhpsPFTauDiscriminationByLooseMuonRejection",                                                                    
-    "selectedhpsPFTauDiscriminationByTightMuonRejection",
-    "selectedhpsPFTauDiscriminationByLooseElectronRejection",
-    "selectedhpsPFTauDiscriminationByMediumElectronRejection",
-    "selectedhpsPFTauDiscriminationByTightElectronRejection",
-    "selectedhpsPFTauDiscriminationByTightIsolation",
-    "selectedhpsPFTauDiscriminationByMediumIsolation",
-    "selectedhpsPFTauDiscriminationByLooseIsolation",
-    "selectedhpsPFTauDiscriminationByVLooseIsolation"
-)                                                                                                                                             
-process.TTEffAnalysisHLTCaloTauHPS.outputFileName = cms.string("tteffAnalysis-hltcalotau-hpspftau.root");                               
-process.TTEffAnalysisHLTCaloTauHPS.HLTPFTau = cms.bool(False)
+# Reference is TTEff shrinking cone
+process.TTEffAnalysisHLTCaloTau = process.TTEffAnalysisHLTPFTauHPS.clone(
+    outputFileName = "tteffAnalysis-hltcalotau-pftau.root"
+)
+setReferenceToTTEffShrinkingCone(process.TTEffAnalysisHLTCaloTau)
+setHltToCalo(process.TTEffAnalysisHLTCaloTau)
 
-process.TTEffAnalysisHLTPFTauTightHPS = process.TTEffAnalysisHLTCaloTauHPS.clone()
-process.TTEffAnalysisHLTPFTauTightHPS.outputFileName = cms.string("tteffAnalysis-hltpftautight-hpspftau.root");                               
-process.TTEffAnalysisHLTPFTauTightHPS.l25JetSource = cms.InputTag("hltPFTauTagInfo")                                                          
-process.TTEffAnalysisHLTPFTauTightHPS.l25PtCutSource = cms.InputTag("hltPFTausTightIso")                                                     
-process.TTEffAnalysisHLTPFTauTightHPS.HLTPFTau = cms.bool(True)
+process.TTEffAnalysisHLTPFTau = process.TTEffAnalysisHLTPFTauHPS.clone(
+    outputFileName = "teffAnalysis-hltpftau-pftau.root",
+)
+setReferenceToTTEffShrinkingCone(process.TTEffAnalysisHLTPFTau)
 
-process.TTEffAnalysisHLTPFTauHPS = process.TTEffAnalysisHLTCaloTauHPS.clone()
-process.TTEffAnalysisHLTPFTauHPS.outputFileName = cms.string("tteffAnalysis-hltpftau-hpspftau.root");
-process.TTEffAnalysisHLTPFTauTightHPS.l25JetSource = cms.InputTag("hltPFTauTagInfo")
-process.TTEffAnalysisHLTPFTauTightHPS.l25PtCutSource = cms.InputTag("hltPFTaus")
-process.TTEffAnalysisHLTPFTauTightHPS.HLTPFTau = cms.bool(True)
+process.TTEffAnalysisHLTPFTauTight = process.TTEffAnalysisHLTPFTau.clone(
+    l25PtCutSource = "hltPFTausTightIso",
+    outputFileName = "tteffAnalysis-hltpftautight-pftau.root",
+)
 
-process.runTTEffAna += process.TTEffAnalysis
+process.runTTEffAna = cms.Path(process.commonSequence)
+process.runTTEffAna += process.TTEffAnalysisHLTPFTauHPS
+process.runTTEffAna += process.TTEffAnalysisHLTCaloTauHPS
+process.runTTEffAna += process.TTEffAnalysisHLTPFTauTightHPS
+if doTTEffShrinkingConePFTau:
+    process.runTTEffAna += process.TTEffAnalysisHLTCaloTau
+    process.runTTEffAna += process.TTEffAnalysisHLTPFTau
+    process.runTTEffAna += process.TTEffAnalysisHLTPFTauTight
 #process.runTTEffAna += process.TTEffAnalysisL1Tau
 #process.runTTEffAna += process.TTEffAnalysisL1Cen
-#process.runTTEffAna += process.TTEffAnalysisHLTPFTau
-#process.runTTEffAna += process.TTEffAnalysisHLTPFTauTight
-#process.runTTEffAna += process.TTEffAnalysisHLTPFTauTightHPS
-#process.runTTEffAna += process.TTEffAnalysisHLTCaloTauHPS
-#process.runTTEffAna += process.TTEffAnalysisHLTPFTauHPS
+
+# The high purity selection (mainly for H+)
+process.load("ElectroWeakAnalysis.TauTriggerEfficiency.HighPuritySelection_cff")
+process.TTEffAnalysisHLTPFTauTightHPSHighPurity = process.TTEffAnalysisHLTPFTauTightHPS.clone(
+    LoopingOver = "selectedPatTausHpsPFTauHighPurity",
+    MuonSource = "selectedPatMuonsHighPurity",
+    MuonTauPairSource = "muTauPairsHighPurity",
+    outputFileName = "tteffAnalysis-hltpftau-hpspftautight-highpurity.root"
+)
+process.runTTEffAnaHighPurity = cms.Path(
+    process.commonSequence +
+    process.highPuritySequence +
+    process.TTEffAnalysisHLTPFTauTightHPSHighPurity
+)
 
 #process.o1 = cms.OutputModule("PoolOutputModule",
 #    outputCommands = cms.untracked.vstring("keep *"),
@@ -246,7 +267,8 @@ process.schedule = cms.Schedule(process.DoHLTJets,
 				process.DoHLTTau,
 				process.DoHLTMinBiasPixelTracks,
 				process.runMETCleaning,
-				process.runTTEffAna
+				process.runTTEffAna,
+                                process.runTTEffAnaHighPurity
 #				,process.outpath
 )
 
