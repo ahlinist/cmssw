@@ -7,19 +7,19 @@ scheduler               = glite
 
 [CMSSW]
 
-#datasetpath             = /MinimumBias/pflow-tau-TauTriggerEff_MinimumBias_BeamCommissioning09_SD_AllMinBias_Dec19thSkim_336p3_v1_RAW_RECO_Skim_HLT_run5-94221530a20769b99a891101c0b08cf7/USER
-#datasetpath		= /MinimumBias/pflow-tau-TauTriggerEff_BeamCommissioning09_SD_AllMinBias_Feb9Skim_v1_RAW_RECO_Skim_run1-816fe9826634866d3a805f8ca1ac2dd3/USER
-datasetpath		= /DYToTauTau_M-20_TuneZ2_7TeV-pythia6-tauola/eluiggi-TTEffSkimPFTauRedone_DYToTauTauM20TuneZ2PythiaTAUOLAFall10-6ae57ea479aaa82fec50f30fe27138fa/USER
+datasetpath		= /SingleMu/pflow-tau-TauTriggerEff_SingleMu_Run2011A_Tau_May10ReReco_v1_RAW_RECO_TTEffSkim_v428_V00_08_07_v1-05180297a6b3f0f63356c9e8352c8a27/USER
 
 pset                    = TTEffAnalyzer_cfg.py
-total_number_of_events  = -1
-events_per_job          = 1000
+#total_number_of_events  = -1
+#events_per_job          = 1000
+total_number_of_lumis   = -1
+lumis_per_job           = 1
 #output_file             = tteffAnalysis.root
 
 # Example for multiple output file retrieval, this probably doesn't
 # work if output is going to SE
 #output_file             = tteffAnalysis-hltcalotau-pftau.root, tteffAnalysis-hltpftau-pftau.root, tteffAnalysis-hltpftautight-pftau.root, tteffAnalysis-l1tau.root, tteffAnalysis-l1cen.root
-output_file		= tteffAnalysis-hltcalotau-hpspftau.root, tteffAnalysis-hltpftautight-hpspftau.root, tteffAnalysis-hltpftau-hpspftau.root
+output_file		= tteffAnalysis-hltcalotau-hpspftau.root, tteffAnalysis-hltpftautight-hpspftau.root, tteffAnalysis-hltpftau-hpspftau.root, tteffAnalysis-hltpftau-hpspftautight-highpurity.root
 
 dbs_url 		= https://cmsdbsprod.cern.ch:8443/cms_dbs_ph_analysis_02_writer/servlet/DBSServlet
 
