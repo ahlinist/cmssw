@@ -1,4 +1,18 @@
+//===============================================================>
+//
+// roostats_ltd_demo.C
+//
+// Demo for using roostats_ltd.C for computing CLs limits
+//
+// Usage:
+//        .L roostats_ltd.C+
+//        .x roostats_ltd_demo.C
+//
+// 2011 Gena Kukartsev
+//
+//===============================================================>
 {
+
   // load the library
   gSystem->Load("roostats_ltd_C.so");
 
@@ -7,22 +21,14 @@
 
   // load workspace
   calc.LoadWorkspace("ws_cl95.root", "ws");
-  calc.GetWorkspace()->Print();
-
+  //calc.GetWorkspace()->Print();
   calc.LoadData("observed_data");
+  //calc.SetTestStatType(2);
 
-  LimitResult limitResult = calc.ComputeInverterLimit(true,
-						      5,
-						      0,
-						      0.5,
-						      1000);
+  calc.SetFirstPoiMin(0.0);
+  calc.SetFirstPoiMax(0.5);
 
-  std::cout << " observed limit: " << limitResult.GetExpectedLimit() << std::endl;
-  std::cout << " expected limit (median): " << limitResult.GetExpectedLimit() << std::endl;
-  std::cout << " expected limit (-1 sig): " << limitResult.GetOneSigmaLowRange() << std::endl;
-  std::cout << " expected limit (+1 sig): " << limitResult.GetOneSigmaHighRange() << std::endl;
-  std::cout << " expected limit (-2 sig): " << limitResult.GetTwoSigmaLowRange() << std::endl;
-  std::cout << " expected limit (+2 sig): " << limitResult.GetTwoSigmaHighRange() << std::endl;
+  LimitResult limitResult = calc.GetClsLimit(0, 1000, true);
 
   // all done
   std::cout << "[roostats_ltd_demo]: done." << std::endl;

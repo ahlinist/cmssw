@@ -136,6 +136,18 @@ public:
   Double_t GetTwoSigmaHighRange(){return _high95;};
   Double_t GetTwoSigmaCoverage(){return _cover95;};
 
+  void Clear( void ){
+    _observed_limit = 0;
+    _observed_limit_error = 0;
+    _expected_limit = 0;
+    _low68 = 0;
+    _high68 = 0;
+    _low95 = 0;
+    _high95 = 0;
+    _cover68 = 0;
+    _cover95 = 0;
+  }
+  
 private:
   Double_t _observed_limit;
   Double_t _observed_limit_error;
@@ -165,26 +177,35 @@ public:
   LimitCalc( UInt_t randomSeed );
   ~LimitCalc();
 
+  LimitResult       GetClsLimit( int nPoiScanPoints,
+				 int nToys,
+				 bool printResult = true );
+
+  RooWorkspace *    GetWorkspace(){ return mpWs;}
+  RooAbsData *      GetData( void ){return mpData;};
+  const RooArgSet * GetPoiSet( void );
+  RooRealVar *      GetFirstPoi( void );
+
+  RooAbsData *            LoadData( std::string datasetName );
   RooStats::ModelConfig * LoadModelConfig( std::string mcName );
+  RooWorkspace *          LoadWorkspace( std::string wsFileName,
+					 std::string wsName );
+
+  void SetInverterCalcType(int type){mInverterCalcType=type;};
+  void SetTestStatType(int type){mTestStatType=type;};
   void SetSbModelConfig( RooStats::ModelConfig * pSbModelConfig );
   void SetBModelConfig( RooStats::ModelConfig * pBModelConfig );
-
-  RooWorkspace * LoadWorkspace( std::string wsFileName,
-				std::string wsName );
-  RooWorkspace * GetWorkspace(){ return mpWs;}
-
-  RooAbsData * GetData( std::string datasetName){return mpData;};
   void SetData( RooAbsData * data );
-  RooAbsData * LoadData( std::string datasetName );
+  void SetWorkspace( RooWorkspace * data );
+  void SetPlot(bool doPlot){mDoPlotHypoTestResult=doPlot;};
+  void SetUseProof(bool useProof){mUseProof=useProof;};
+  void SetOptimize(bool optimize){mOptimize=optimize;};
+  void SetWriteResult(bool writeResult){mWriteResult=writeResult;};
+  void SetNProofWorkers(int nProofWorkers){mNProofWorkers=nProofWorkers;};
+  bool SetFirstPoiValue( double value );
+  bool SetFirstPoiMax( double value );
+  bool SetFirstPoiMin( double value );
 
-  // compute limits with HypoTestInverter
-  // uses: workspace, sbmodel, bmodel,
-  //       calc type, test stat type
-  LimitResult ComputeInverterLimit( bool useCls,
-				    int nPoints,
-				    double poiMin,  // use default is poimin >= poimax
-				    double poiMax,
-				    int nToys );
 private:
 
   void init( UInt_t seed ); //  to be called by constructor
@@ -192,6 +213,12 @@ private:
   Double_t GetRandom( std::string pdfName, std::string varName );
   Long64_t FindLowBoundary(std::vector<Double_t> * pCdf, Double_t value);
   Long64_t FindHighBoundary(std::vector<Double_t> * pCdf, Double_t value);
+
+  LimitResult ComputeInverterLimit( bool useCls,
+				    int nPoints,
+				    double poiMin,  // use default is poimin >= poimax
+				    double poiMax,
+				    int nToys );
 
   // internal routine to run the inverter
   // uses: workspace, mpData, sbmodel, bmodel, 
@@ -213,9 +240,13 @@ private:
 
   Double_t RoundUpperBound(Double_t bound);
 
+
   // attributes
   int mInverterCalcType;
   int mTestStatType;
+
+  // toy mc parameters
+  int mNEventsPerToy; // ignored if S+B model PDF is extended
 
   // pointers whose objects we do not own
   RooStats::ModelConfig * mpSbModel;
@@ -237,11 +268,11 @@ private:
   TRandom3 mRandom;
 
   // HypoTestInverter attributes (CLs, FC...)
-  bool doPlotHypoTestResult;
-  bool useProof;
-  bool optimize;
-  bool writeResult;
-  int nProofWorkers;
+  bool mDoPlotHypoTestResult;
+  bool mUseProof;
+  bool mOptimize;
+  bool mWriteResult;
+  int mNProofWorkers;
 
 };
 
@@ -260,14 +291,17 @@ LimitCalc::LimitCalc(UInt_t randomSeed){
 
 void LimitCalc::init(UInt_t randomSeed){
 
+  // toy MC settings
+  mNEventsPerToy = 0;
+
   // 0 - freq, 1 - hybrid
   mInverterCalcType = 0;
 
   // 0 - SimpleLikelihood (LEP), 
   // 1 - Profile likelihood ratio (Tevatron),
-  // 2 - One-sided profile likelihood,
-  // 3 - Two-sided profile likelihood
-  mTestStatType = 2;
+  // 2 - Two-sided profile likelihood,
+  // 3 - One-sided profile likelihood
+  mTestStatType = 3;
 
   // workspace-related
   mpWs = 0;
@@ -306,11 +340,11 @@ void LimitCalc::init(UInt_t randomSeed){
   }
 
   // HypoTestInverter attributes (CLs, FC...)
-  doPlotHypoTestResult =  false; 
-  useProof =  false;
-  optimize =  false;
-  writeResult =  false;
-  nProofWorkers =  1;
+  mDoPlotHypoTestResult =  false; 
+  mUseProof =  false;
+  mOptimize =  false;
+  mWriteResult =  false;
+  mNProofWorkers =  1;
 
 }
 
@@ -322,6 +356,237 @@ LimitCalc::~LimitCalc(){
   delete mpSimpleInterval;
   delete mpMcmcInterval;
   delete mpFcCalc;
+}
+
+
+
+const RooArgSet * LimitCalc::GetPoiSet( void ){
+  //
+  // Return a pointer to the set of parameters of interest
+  // No ownership is transferred
+  // Return null pinter if failed
+  //
+  if (!mpSbModel){
+    return 0;
+  }
+  
+  return mpSbModel->GetParametersOfInterest();
+}
+
+
+
+RooRealVar * LimitCalc::GetFirstPoi( void ){
+  //
+  // Return a pointer to the first parameters of interest
+  // (often we only have one POI)
+  // No ownership is transferred
+  // Return null pinter if failed
+  //
+
+  const RooArgSet * p_poi_set = GetPoiSet();
+
+  if (!p_poi_set){
+    return 0;
+  }
+
+  RooAbsArg * first_poi = p_poi_set->first();
+
+  return (RooRealVar *)first_poi;
+}
+
+
+
+bool LimitCalc::SetFirstPoiValue( double value ){
+  //
+  // Set value of the first POI
+  // Return false if fail, true if success
+  //
+  RooRealVar * poi = GetFirstPoi();
+
+  if (!poi) return false;
+
+  poi->setVal(value);
+
+  return true;
+}
+
+
+
+bool LimitCalc::SetFirstPoiMax( double value ){
+  //
+  // Set upper boundary of the range for the first POI
+  // Return false if fail, true if success
+  //
+  RooRealVar * poi = GetFirstPoi();
+
+  if (!poi) return false;
+
+  poi->setMax(value);
+
+  return true;
+}
+
+
+
+bool LimitCalc::SetFirstPoiMin( double value ){
+  //
+  // Set lower boundary of the range for the first POI
+  // Return false if fail, true if success
+  //
+  RooRealVar * poi = GetFirstPoi();
+
+  if (!poi) return false;
+
+  poi->setMin(value);
+
+  return true;
+}
+
+
+
+LimitResult LimitCalc::GetClsLimit( int nPoiScanPoints,
+				    int nToys,
+				    bool printResult ){
+  //
+  // Compute CLs limit
+  //
+
+  std::string _legend = "[LimitCalc::GetClsLimit]: ";
+
+  LimitResult result;
+
+  // check necessary components
+
+  // check workspace
+  if (!mpWs){
+    std::cout << _legend 
+	      << "workspace not found, no model config loaded, can't continue"
+	      << std::endl;
+    return result;
+  }
+  else{
+    std::cout << _legend 
+	      << "workspace found..."
+	      << std::endl;
+  }
+
+  // check data
+  if (!mpData){
+    std::cout << _legend 
+	      << "dataset not loaded, can't continue"
+	      << std::endl;
+    return result;
+  }
+  else{
+    std::cout << _legend 
+	      << "data found..."
+	      << std::endl;
+  }
+
+  // check S+B model config
+  if (!mpSbModel){
+    std::cout << _legend 
+	      << "S+B ModelConfig not loaded, can't continue"
+	      << std::endl;
+    return result;
+  }
+  else{
+    std::cout << _legend 
+	      << "S+B ModelConfig found..."
+	      << std::endl;
+  }
+
+  // check S+B snapshot
+  const RooArgSet * _ss = mpSbModel->GetSnapshot();
+  if (!_ss){
+    std::cout << _legend 
+	      << "found no snapshot for " 
+	      << "S+B ModelConfig, can't continue" << std::endl;
+    return result;
+  }
+  else{
+    std::cout << _legend 
+	      << "S+B snapshot found..."
+	      << std::endl;
+  }
+  delete _ss;
+
+  // check B-only model config
+  if (!mpBModel){
+    std::cout << _legend 
+	      << "B-only ModelConfig not loaded, can't continue"
+	      << std::endl;
+    return result;
+  }
+  else{
+    std::cout << _legend 
+	      << "B-only ModelConfig found..."
+	      << std::endl;
+  }
+
+  // check B-only snapshot
+  _ss = mpBModel->GetSnapshot();
+  if (!_ss){
+    std::cout << _legend 
+	      << "found no snapshot for " 
+	      << "B-only ModelConfig, can't continue" << std::endl;
+  }
+  else{
+    std::cout << _legend 
+	      << "B-only snapshot found..."
+	      << std::endl;
+  }
+  delete _ss;
+
+
+  /*
+    bool useCls,
+    int nPoints,
+    double poiMin,  // use default is poimin >= poimax
+    double poiMax,
+    int nToys );
+  */
+
+  // default values define automatic adaptive scan (max<min)
+  double poi_min = 0.0;
+  double poi_max = -1.0;
+
+  RooRealVar * poi = GetFirstPoi();
+
+  if (!poi){
+    std::cout << _legend 
+	      << "no parameter of interest found, can't continue " 
+	      << std::endl;
+  }
+
+  if (nPoiScanPoints > 0){
+    poi_min = poi->getMin();
+    poi_max = poi->getMax();
+  }
+  else{
+    std::cout << _legend 
+	      << "Non-positive number of scan points requested - will attempt an adaptive scan instead" 
+	      << std::endl;
+  }
+
+  // run CLs calculation
+  result=ComputeInverterLimit( true,
+			       nPoiScanPoints,
+			       poi_min,
+			       poi_max,
+			       nToys );
+
+  if (printResult){
+    std::cout << " observed limit: " << result.GetObservedLimit() << std::endl;
+    std::cout << " observed limit uncertainty: " << result.GetObservedLimitError() << std::endl;
+    std::cout << " expected limit (median): " << result.GetExpectedLimit() << std::endl;
+    std::cout << " expected limit (-1 sig): " << result.GetOneSigmaLowRange() << std::endl;
+    std::cout << " expected limit (+1 sig): " << result.GetOneSigmaHighRange() << std::endl;
+    std::cout << " expected limit (-2 sig): " << result.GetTwoSigmaLowRange() << std::endl;
+    std::cout << " expected limit (+2 sig): " << result.GetTwoSigmaHighRange() << std::endl;
+  }
+
+  return result;
 }
 
 
@@ -477,18 +742,61 @@ LimitCalc::SetData( RooAbsData * data ){
 
   std::string _legend = "[LimitCalc::SetData]: ";
 
+  if (!data){
+    std::cout << _legend 
+	      << "dataset not found!"
+	      << std::endl;
+    return;
+  }
+
+  RooAbsData * _data = (RooAbsData *)data->Clone();
+
+  if (!_data){
+    std::cout << _legend 
+	      << "failed to copy dataset!"
+	      << std::endl;
+    return;
+  }
+
   // delete current dataset (or null)
   delete mpData;
 
-  mpData = (RooAbsData *)data->Clone();
+  mpData = _data;
 
-  if (!mpData){
+  return;
+}
+
+
+
+void
+LimitCalc::SetWorkspace( RooWorkspace * ws ){
+  //
+  // Copy workspace object and point mpWs to it.
+  // The class takes ownership of the new object.
+  //
+
+  std::string _legend = "[LimitCalc::SetWorkspace]: ";
+
+  if (!ws){
     std::cout << _legend 
-	      << "no dataset found!"
+	      << "workspace not found!"
 	      << std::endl;
-
-    mpData = 0;
+    return;
   }
+
+  RooWorkspace * _ws = (RooWorkspace *)ws->Clone();
+
+  if (!_ws){
+    std::cout << _legend 
+	      << "failed to copy workspace!"
+	      << std::endl;
+    return;
+  }
+
+  // delete current workspace, if any
+  delete mpWs;
+
+  mpWs = _ws;
 
   return;
 }
@@ -713,31 +1021,9 @@ LimitCalc::ComputeInverterLimit( bool useCls,
 				 double poiMin,  // use default is poimin >= poimax
 				 double poiMax,
 				 int nToys )
-//std::vector<Double_t>
-//GetClsLimits(RooWorkspace * pWs,
-//	     const char * modelSBName,
-//	     const char * modelBName,
-//	     const char * dataName,
-//	     int calculatorType,  // calculator type
-//	     int testStatType, // test stat type
-//	     bool useCls,
-//	     int npoints,
-//	     double poimin,  // use default is poimin >= poimax
-//	     double poimax,
-//	     int ntoys,
-//	     std::string suffix)
 {
 
-  //
-  // Return a vector of numbers (terrible design, I know) ordered as
-  //  - observed limit
-  //  - observed limit error
-  //  - expected limit median
-  //  - expected limit -1 sigma
-  //  - expected limit +1 sigma
-  //  - expected limit -2 sigma
-  //  - expected limit +2 sigma
-  //
+  std::string _legend = "[LimitCalc::ComputeInverterLimit]: ";
 
 /*
 
@@ -763,9 +1049,9 @@ LimitCalc::ComputeInverterLimit( bool useCls,
 
     extra options are available as global paramters of the macro. They are: 
 
-    plotHypoTestResult   plot result of tests at each point (TS distributions) 
-    useProof = true;
-    writeResult = true;
+    mPlotHypoTestResult   plot result of tests at each point (TS distributions) 
+    mUseProof = true;
+    mWriteResult = true;
     nworkers = 4;
 
 
@@ -810,19 +1096,11 @@ LimitCalc::ComputeInverterLimit( bool useCls,
 
    double upperLimit = r->UpperLimit();
    double ulError = r->UpperLimitEstimatedError();
-   //result.push_back(upperLimit);
-   //result.push_back(ulError);
    result.SetObservedLimit(upperLimit);
    result.SetObservedLimitError(ulError);
 
-
-   //std::cout << "The computed upper limit is: " << upperLimit << " +/- " << ulError << std::endl;
- 
-   //   const int nEntries = r->ArraySize();
-
    const char *  limitType = (useCls) ? "CLs" : "Cls+b";
    const char * scanType = (nPoints < 0) ? "auto" : "grid";
-
    const char *  typeName = (mInverterCalcType == 0) ? "Frequentist" : "Hybrid";
    const char * resultName = (mpWs) ? mpWs->GetName() : r->GetName();
    TString plotTitle = TString::Format("%s CL Scan for workspace %s",typeName,resultName);
@@ -837,7 +1115,7 @@ LimitCalc::ComputeInverterLimit( bool useCls,
    resultFileName += ".pdf";
    c1.SaveAs(resultFileName);
 
-   if (plotHypoTestResult) { 
+   if (mPlotHypoTestResult) { 
       TCanvas * c2 = new TCanvas();
       c2->Divide( 2, TMath::Ceil(nEntries/2));
       for (int i=0; i<nEntries; i++) {
@@ -855,11 +1133,6 @@ LimitCalc::ComputeInverterLimit( bool useCls,
    q[2] = r->GetExpectedUpperLimit(1);
    q[3] = r->GetExpectedUpperLimit(-2);
    q[4] = r->GetExpectedUpperLimit(2);
-   //std::cout << " expected limit (median) " << q[0] << std::endl;
-   //std::cout << " expected limit (-1 sig) " << q[1] << std::endl;
-   //std::cout << " expected limit (+1 sig) " << q[2] << std::endl;
-   //std::cout << " expected limit (-2 sig) " << q[3] << std::endl;
-   //std::cout << " expected limit (+2 sig) " << q[4] << std::endl;
    result.SetExpectedLimit(q[0]);
    result.SetOneSigmaLowRange(q[1]);
    result.SetOneSigmaHighRange(q[2]);
@@ -867,7 +1140,7 @@ LimitCalc::ComputeInverterLimit( bool useCls,
    result.SetTwoSigmaHighRange(q[4]);
 
 
-   if (mpWs != NULL && writeResult) {
+   if (mpWs != NULL && mWriteResult) {
 
       // write to a file the results
       const char *  calcType = (mInverterCalcType == 0) ? "Freq" : "Hybr";
@@ -883,6 +1156,14 @@ LimitCalc::ComputeInverterLimit( bool useCls,
       fileOut->Close();                                                                     
    }   
 
+   // FIXME: get adaptive result out in some way
+   if (nPoints <= 0 || poiMin >= poiMax){
+     result.Clear();
+     std::cout << _legend 
+	       << "can't return the adaptive scan result yet, returning empty for now"
+	       << std::endl;
+   }
+
    return result;
 }
 
@@ -892,42 +1173,40 @@ LimitCalc::ComputeInverterLimit( bool useCls,
 RooStats::HypoTestInverterResult * 
 LimitCalc::RunInverter( int npoints, double poimin, double poimax, 
 			int ntoys, bool useCls ){
-//HypoTestInverterResult *  RunInverter(RooWorkspace * w, const char * modelSBName, const char * modelBName, 
-//                                  const char * dataName, int type,  int mTestStatType, 
-//                                  int npoints, double poimin, double poimax, 
-//                                  int ntoys, bool useCls ) 
-//{
 
-  //std::cout << "Running HypoTestInverter on the workspace " << mpWs->GetName() << std::endl;
+  std::string _legend = "[LimitCalc::RunInverter]: ";
 
-   //mpWs->Print();
-
-
+  // check data
    if (!mpData) { 
      Error("LimitCalc::RunInverter","dataset not found");
      return 0;
    }
-
    
+   // check model config
    if (!mpSbModel) {
      Error("LimitCalc::RunInverter","S+B ModelConfig does not exist...");
      return 0;
    }
-   // check the model 
+
+   // check model pdf
    if (!mpSbModel->GetPdf()) { 
      Error("LimitCalc::RunInverter","S+B model has no pdf...");
      return 0;
    }
+
+   // check POI
    if (!mpSbModel->GetParametersOfInterest()) {
      Error("LimitCalc::RunInverter","S+B model has no POI...");
      return 0;
    }
+
+   // check S+B snapshot
    if (!mpSbModel->GetSnapshot() ) { 
       Info("LimitCalc::RunInverter","S+B model has no snapshot  - make one using model POI");
       mpSbModel->SetSnapshot( *mpSbModel->GetParametersOfInterest() );
    }
 
-
+   // check B-only model config
    if (!mpBModel || mpBModel == mpSbModel) {
       Info("LimitCalc::RunInverter","The background model does not exist...");
       Info("LimitCalc::RunInverter","Copy it from S+B ModelConfig and set POI to zero");
@@ -941,6 +1220,7 @@ LimitCalc::RunInverter( int npoints, double poimin, double poimax,
       var->setVal(oldval);
    }
    else { 
+     // check B-only snapshot
      if (!mpBModel->GetSnapshot() ) { 
        Info("LimitCalc::RunInverter","B-only model has no snapshot  - make one using model poi and 0 values ");
        RooRealVar * var = dynamic_cast<RooRealVar*>(mpBModel->GetParametersOfInterest()->first());
@@ -969,7 +1249,7 @@ LimitCalc::RunInverter( int npoints, double poimin, double poimax,
    
    RooStats::ProfileLikelihoodTestStat profll(*mpSbModel->GetPdf());
    if (mTestStatType == 3) profll.SetOneSided(1);
-   if (optimize) profll.SetReuseNLL(true);
+   if (mOptimize) profll.SetReuseNLL(true);
 
    RooStats::TestStatistic * testStat = &slrts;
    if (mTestStatType == 1) testStat = &ropl;
@@ -980,11 +1260,46 @@ LimitCalc::RunInverter( int npoints, double poimin, double poimax,
    if (mInverterCalcType == 0) hc = new RooStats::FrequentistCalculator(*mpData, *mpBModel, *mpSbModel);
    else hc = new RooStats::HybridCalculator(*mpData, *mpBModel, *mpSbModel);
 
-   RooStats::ToyMCSampler *toymcs = (RooStats::ToyMCSampler*)hc->GetTestStatSampler();
-   // FIXME:
-   toymcs->SetNEventsPerToy(1);
+   RooStats::ToyMCSampler * toymcs = (RooStats::ToyMCSampler*)hc->GetTestStatSampler();
+   if(mpSbModel->GetPdf()->canBeExtended()){
+     // if the PDF is extended, number of events per toy
+     // will be taken from the PDF normalization
+     std::cout << _legend
+	       << "will take number of entries per toy from S+B model PDF"
+	       << std::endl;
+   }
+   else{
+     // PDF is not extended
+
+     if(mNEventsPerToy > 0){
+       // number of event per toy was specified
+       toymcs->SetNEventsPerToy(mNEventsPerToy);
+       std::cout << _legend
+		 << "number of entries per toy explicitely set to "
+		 << mNEventsPerToy
+		 << std::endl;
+     }
+     else if(mpData->numEntries()==1){
+       toymcs->SetNEventsPerToy(1);
+       std::cout << _legend
+		 << "guessing that this must be a counting experiment, "
+		 << std::endl
+		 << _legend
+		 << "number of entries per toy explicitely set to 1"
+		 << std::endl
+		 << _legend
+		 << "if you wish otherwise, set it with SetNEventsPerToy()"
+		 << std::endl;
+     }
+     else{
+       std::cout << _legend
+		 << "number of entries per toy is undefined"
+		 << std::endl;
+     }
+   }
+
    toymcs->SetTestStatistic(testStat);
-   if (optimize) toymcs->SetUseMultiGen(true);
+   if (mOptimize) toymcs->SetUseMultiGen(true);
 
 
    if (mInverterCalcType == 1) { 
@@ -1037,8 +1352,8 @@ LimitCalc::RunInverter( int npoints, double poimin, double poimax,
 
 
    // can speed up using proof-lite
-   if (useProof && nProofWorkers > 1) { 
-     RooStats::ProofConfig pc(*mpWs, nProofWorkers, "", kFALSE);
+   if (mUseProof && mNProofWorkers > 1) { 
+     RooStats::ProofConfig pc(*mpWs, mNProofWorkers, "", kFALSE);
      toymcs->SetProofConfig(&pc);    // enable proof
    }
 
@@ -1049,12 +1364,12 @@ LimitCalc::RunInverter( int npoints, double poimin, double poimax,
          poimin = int(poihat);
          poimax = int(poihat +  4 * poi->getError());
       }
-      //std::cout << "Doing a fixed scan in interval : " << poimin << " , " << poimax << std::endl;
+      std::cout << "Doing a fixed scan in interval : " << poimin << " , " << poimax << std::endl;
       calc.SetFixedScan(npoints,poimin,poimax);
    }
    else { 
-      //poi->setMax(10*int( (poihat+ 10 *poi->getError() )/10 ) );
-     //std::cout << "Doing an  automatic scan in interval : " << poi->getMin() << " , " << poi->getMax() << std::endl;
+     //poi->setMax(10*int( (poihat+ 10 *poi->getError() )/10 ) );
+     std::cout << "Doing an  automatic scan in interval : " << poi->getMin() << " , " << poi->getMax() << std::endl;
    }
 
    RooStats::HypoTestInverterResult * r = calc.GetInterval();
