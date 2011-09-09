@@ -10,7 +10,7 @@ import time
 
 configFile = 'produceZllRecoilCorrectionPATTuple_cfg.py'
 
-version = 'v2_1'
+version = 'v3_1'
 
 samples = {
     'Data_runs160329to163869' : {
@@ -36,13 +36,12 @@ samples = {
 lxbatch_queue = '1nw'
 
 samplesToAnalyze = [
-    #'Data_runs160329to163869',
-    #'Data_runs165071to167913',
+    'Data_runs160329to163869',
+    'Data_runs165071to167913',
     'simDYtoMuMu'
 ]
 
-skipPATtupleProduction = False
-#skipPATtupleProduction = True
+skipExistingPATtuples = True
 
 outputFilePath = "/castor/cern.ch/user/v/veelken/CMSSW_4_2_x/PATtuples/ZllRecoilCorrection/%s" % version
 
@@ -261,37 +260,42 @@ makeFileName = "Makefile_ZllRecoilCorrectionPATTupleProduction"
 makeFile = open(makeFileName, "w")
 makeFile.write("\n")
 jobsZllRecoilCorrectionPATtupleProduction = []
+existingOutputFiles = [ file_info['file'] for file_info in castor.nslsl(outputFilePath) ]
 for sampleToAnalyze in samplesToAnalyze:
-    if not skipPATtupleProduction:
-        for jobId in bsubScriptFileNames[sampleToAnalyze].keys():
+    for jobId in bsubScriptFileNames[sampleToAnalyze].keys():
+        outputFilesExist = True
+        for outputFileName in bsubFileNames[sampleToAnalyze][jobId]:
+            if not outputFileName in existingOutputFiles:
+                outputFilesExist = False
+        if skipExistingPATtuples and outputFilesExist:
+            print "Output files for sample = %s, jobId = %s exist --> skipping !!" % (sampleToAnalyze, jobId)
+        else:
             jobsZllRecoilCorrectionPATtupleProduction.append(bsubJobNames[sampleToAnalyze][jobId])
     jobsZllRecoilCorrectionPATtupleProduction.append(bsubJobNames_harvesting[sampleToAnalyze])        
 makeFile.write("all: %s\n" % make_MakeFile_vstring(jobsZllRecoilCorrectionPATtupleProduction))
 makeFile.write("\techo 'Finished running ZllRecoilCorrectionPATTupleProduction.'\n")
 makeFile.write("\n")
-if not skipPATtupleProduction:
-    for sampleToAnalyze in samplesToAnalyze:
-        for jobId in bsubScriptFileNames[sampleToAnalyze].keys():
+for sampleToAnalyze in samplesToAnalyze:
+    for jobId in bsubScriptFileNames[sampleToAnalyze].keys():
+        if bsubJobNames[sampleToAnalyze][jobId] in jobsZllRecoilCorrectionPATtupleProduction:
             makeFile.write("%s:\n" % bsubJobNames[sampleToAnalyze][jobId])
             makeFile.write("\t%s -q %s -J %s < %s\n" %
               (executable_bsub,
                lxbatch_queue,
                bsubJobNames[sampleToAnalyze][jobId],
                bsubScriptFileNames[sampleToAnalyze][jobId]))
-        makeFile.write("\n")
+    makeFile.write("\n")
 for sampleToAnalyze in samplesToAnalyze:
     bsubJobNames_sample = []
     for jobId in bsubScriptFileNames[sampleToAnalyze].keys():
-        bsubJobNames_sample.append(bsubJobNames[sampleToAnalyze][jobId])
-    if skipPATtupleProduction:
-        makeFile.write("%s:\n" % bsubJobNames_harvesting[sampleToAnalyze])
-    else:
-        makeFile.write("%s: %s\n" %
-          (bsubJobNames_harvesting[sampleToAnalyze],
-           make_MakeFile_vstring(bsubJobNames_sample)))
-        makeFile.write("\t%s %s\n" %
-          (executable_waitForLXBatchJobs,
-           bjobListFileNames_harvesting[sampleToAnalyze]))
+        if bsubJobNames[sampleToAnalyze][jobId] in jobsZllRecoilCorrectionPATtupleProduction:
+            bsubJobNames_sample.append(bsubJobNames[sampleToAnalyze][jobId])
+    makeFile.write("%s: %s\n" %
+      (bsubJobNames_harvesting[sampleToAnalyze],
+       make_MakeFile_vstring(bsubJobNames_sample)))
+    makeFile.write("\t%s %s\n" %
+      (executable_waitForLXBatchJobs,
+       bjobListFileNames_harvesting[sampleToAnalyze]))
     makeFile.write("\t%s %s\n" %
       (executable_shell,
        bsubFileNames_harvesting[sampleToAnalyze]['harvest_script_name']))

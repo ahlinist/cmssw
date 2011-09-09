@@ -2,6 +2,8 @@
 
 #include "DataFormats/Candidate/interface/Candidate.h"
 
+#include "TauAnalysis/CandidateTools/interface/candidateAuxFunctions.h"
+
 #include <TMath.h>
 
 ZllRecoilCorrectionHistManager::ZllRecoilCorrectionHistManager(const edm::ParameterSet& cfg)
@@ -9,30 +11,52 @@ ZllRecoilCorrectionHistManager::ZllRecoilCorrectionHistManager(const edm::Parame
 
 ZllRecoilCorrectionHistManager::~ZllRecoilCorrectionHistManager()
 {
-// nothing to be done yet...
+  for ( std::vector<histogramsUvsQtNumVtxType*>::iterator it = histogramsUvsQtNumVtxBinned_.begin();
+	it != histogramsUvsQtNumVtxBinned_.end(); ++it ) {
+    delete (*it);
+  }
 }
 
 void ZllRecoilCorrectionHistManager::bookHistograms(TFileDirectory& dir)
 {
-  histogramLepPlusPt_       = book1D(dir, "lPlusPt",            "P_{T}^{l+}",                            40,          0. ,         100.);
-  histogramLepPlusEta_      = book1D(dir, "lPlusEta",           "#eta_{l+}",                             50,         -2.5,         +2.5);
-  histogramLepPlusPhi_      = book1D(dir, "lPlusPhi",           "#phi_{l+}",                             36, -TMath::Pi(), +TMath::Pi());
+  histogramLepPlusPt_        = book1D(dir, "lPlusPt",            "P_{T}^{l+}",                            40,          0. ,         100.);
+  histogramLepPlusEta_       = book1D(dir, "lPlusEta",           "#eta_{l+}",                             50,         -2.5,         +2.5);
+  histogramLepPlusPhi_       = book1D(dir, "lPlusPhi",           "#phi_{l+}",                             36, -TMath::Pi(), +TMath::Pi());
 
-  histogramLepMinusPt_      = book1D(dir, "lMinusPt",           "P_{T}^{l-}",                            40,          0. ,         100.);
-  histogramLepMinusEta_     = book1D(dir, "lMinusEta",          "#eta_{l-}",                             50,         -2.5,         +2.5);
-  histogramLepMinusPhi_     = book1D(dir, "lMinusPhi",          "#phi_{l-}",                             36, -TMath::Pi(), +TMath::Pi());
+  histogramLepMinusPt_       = book1D(dir, "lMinusPt",           "P_{T}^{l-}",                            40,          0. ,         100.);
+  histogramLepMinusEta_      = book1D(dir, "lMinusEta",          "#eta_{l-}",                             50,         -2.5,         +2.5);
+  histogramLepMinusPhi_      = book1D(dir, "lMinusPhi",          "#phi_{l-}",                             36, -TMath::Pi(), +TMath::Pi());
 
-  histogramZllCandPt_       = book1D(dir, "ZllCandPt",          "P_{T}^{Z}",                             40,          0. ,         100.);
-  histogramZllCandEta_      = book1D(dir, "ZllCandEta",         "#eta_{Z}",                              50,         -2.5,         +2.5);
-  histogramZllCandPhi_      = book1D(dir, "ZllCandPhi",         "#phi_{Z}",                              36, -TMath::Pi(), +TMath::Pi());
-  histogramZllCandMass_     = book1D(dir, "ZllCandMass",        "M(l+ l-)",                              60,         60. ,         120.);
+  histogramZllCandPt_        = book1D(dir, "ZllCandPt",          "P_{T}^{Z}",                             40,          0. ,         100.);
+  histogramZllCandEta_       = book1D(dir, "ZllCandEta",         "#eta_{Z}",                              50,         -2.5,         +2.5);
+  histogramZllCandPhi_       = book1D(dir, "ZllCandPhi",         "#phi_{Z}",                              36, -TMath::Pi(), +TMath::Pi());
+  histogramZllCandMass_      = book1D(dir, "ZllCandMass",        "M(l+ l-)",                              60,         60. ,         120.);
   
-  histogramMEt_             = book1D(dir, "met",                "E_{T}^{miss}",                          50,          0.0,        100.0);
-  histogramMEtProjParlZ_    = book1D(dir, "metProjParlZ",       "E_{T}^{miss} Proj. parallel Z",         50,        -50.0,        +50.0);
-  histogramMEtProjPerpZ_    = book1D(dir, "metProjPerpZ",       "E_{T}^{miss} Proj. perp. Z",            50,        -50.0,        +50.0);
+  histogramMEt_              = book1D(dir, "met",                "E_{T}^{miss}",                          50,          0.0,        100.0);
+  histogramMEtProjParlZ_     = book1D(dir, "metProjParlZ",       "E_{T}^{miss} Proj. parallel Z",         50,        -50.0,        +50.0);
+  histogramMEtProjPerpZ_     = book1D(dir, "metProjPerpZ",       "E_{T}^{miss} Proj. perp. Z",            50,        -50.0,        +50.0);
 
-  histogramVtxMultiplicity_ = book1D(dir, "numVertices",        "Num. Vertices",                         20,         -0.5,         19.5);
-  histogramRho_             = book1D(dir, "rho",                "#rho_{neutral}",                        50,          0. ,          20.);
+  const int qTnumBins = 22;
+  double qTbinning[qTnumBins + 1] = { 
+    0., 2.5, 5., 7.5, 10., 12.5, 15., 17.5, 20., 22.5, 25., 27.5, 30., 35., 40., 45., 50., 60., 70., 80., 100., 120., 150. 
+  };
+  histogramUparlDivQtVsQt_ = book2D(dir, "uParlDivQtVsQt", "u_{#parallel}/q_{T} vs q_{T}",                           
+				    qTnumBins, qTbinning, 400,  -5.0,   +5.0);
+  histogramUparlVsQt_      = book2D(dir, "uParlVsQt",      "u_{#parallel} vs q_{T}",                           
+				    qTnumBins, qTbinning, 120, -50.0, +250.0);
+  histogramUperpDivQtVsQt_ = book2D(dir, "uPerpDivQtVsQt", "u_{#perp}/q_{T} vs q_{T}",                           
+				    qTnumBins, qTbinning, 400,  -5.0,   +5.0);
+  histogramUperpVsQt_      = book2D(dir, "uPerpVsQt",      "u_{#perp} vs q_{T}",                           
+				    qTnumBins, qTbinning,  40, -50.0,  +50.0);
+  
+  histogramsUvsQtNumVtxBinned_.push_back(new histogramsUvsQtNumVtxType(this, dir, qTnumBins, qTbinning, -1,  2));
+  histogramsUvsQtNumVtxBinned_.push_back(new histogramsUvsQtNumVtxType(this, dir, qTnumBins, qTbinning,  3,  5));
+  histogramsUvsQtNumVtxBinned_.push_back(new histogramsUvsQtNumVtxType(this, dir, qTnumBins, qTbinning,  6,  8));
+  histogramsUvsQtNumVtxBinned_.push_back(new histogramsUvsQtNumVtxType(this, dir, qTnumBins, qTbinning,  9, 11));
+  histogramsUvsQtNumVtxBinned_.push_back(new histogramsUvsQtNumVtxType(this, dir, qTnumBins, qTbinning, 12, -1));
+
+  histogramVtxMultiplicity_  = book1D(dir, "numVertices",        "Num. Vertices",                         20,         -0.5,         19.5);
+  histogramRho_              = book1D(dir, "rho",                "#rho_{neutral}",                        50,          0. ,          20.);
 }
 
 void ZllRecoilCorrectionHistManager::fillHistograms(
@@ -78,6 +102,28 @@ void ZllRecoilCorrectionHistManager::fillHistograms(
     
     histogramMEtProjParlZ_->Fill(metProjParlZ, evtWeight);
     histogramMEtProjPerpZ_->Fill(metProjPerpZ, evtWeight);
+
+    int errorFlag = 0;
+    std::pair<double, double> uT = compMEtProjU(ZllCand.p4(), met.px(), met.py(), errorFlag);
+    if ( !errorFlag ) {
+      double uParl = uT.first;
+      double uPerp = uT.second;
+      if ( qT > 0. ) histogramUparlDivQtVsQt_->Fill(qT, uParl/qT);
+      histogramUparlVsQt_->Fill(qT, uParl);
+      if ( qT > 0. ) histogramUperpDivQtVsQt_->Fill(qT, uPerp/qT);
+      histogramUperpVsQt_->Fill(qT, uPerp);
+
+      for ( std::vector<histogramsUvsQtNumVtxType*>::iterator it = histogramsUvsQtNumVtxBinned_.begin();
+	    it != histogramsUvsQtNumVtxBinned_.end(); ++it ) {
+	if ( ((*it)->numVtxMin_ == -1 || (int)vtxMultiplicity >= (*it)->numVtxMin_) &&
+	     ((*it)->numVtxMax_ == -1 || (int)vtxMultiplicity <= (*it)->numVtxMax_) ) {
+	  if ( qT > 0. ) (*it)->histogramUparlDivQtVsQt_->Fill(qT, uParl/qT);
+	  (*it)->histogramUparlVsQt_->Fill(qT, uParl);
+	  if ( qT > 0. ) (*it)->histogramUperpDivQtVsQt_->Fill(qT, uPerp/qT);
+	  (*it)->histogramUperpVsQt_->Fill(qT, uPerp);
+	}
+      }
+    }
   }
 
   histogramVtxMultiplicity_->Fill(vtxMultiplicity, evtWeight);
@@ -97,6 +143,24 @@ TH1* ZllRecoilCorrectionHistManager::book1D(
        TFileDirectory& dir, const std::string& distribution, const std::string& title, int numBins, double min, double max)
 {
   TH1* retVal = dir.make<TH1D>(distribution.data(), title.data(), numBins, min, max);
+  histograms_.push_back(retVal);
+  return retVal;
+}
+
+TH2* ZllRecoilCorrectionHistManager::book2D(
+       TFileDirectory& dir, const std::string& distribution, const std::string& title, 
+       int numBinsX, double xMin, double xMax, int numBinsY, double yMin, double yMax)				 
+{
+  TH2* retVal = dir.make<TH2D>(distribution.data(), title.data(), numBinsX, xMin, xMax, numBinsY, yMin, yMax);
+  histograms_.push_back(retVal);
+  return retVal;
+}
+
+TH2* ZllRecoilCorrectionHistManager::book2D(
+       TFileDirectory& dir, const std::string& distribution, const std::string& title, 
+       int numBinsX, double* xBinning, int numBinsY, double yMin, double yMax)				 
+{
+  TH2* retVal = dir.make<TH2D>(distribution.data(), title.data(), numBinsX, xBinning, numBinsY, yMin, yMax);
   histograms_.push_back(retVal);
   return retVal;
 }

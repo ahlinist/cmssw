@@ -67,11 +67,11 @@ def buildConfigFile_produceZllRecoilNtuples(sampleName, metOptionName, inputFile
 """
     addPUreweight = cms.PSet(
         inputFileName = cms.FileInPath('TauAnalysis/RecoTools/data/vertexMultiplicityVsRhoPFNeutralReweight.root'),
-        meName = cms.string('histoReweight'),
+        meName = cms.string('histoReweight_fitted'),
         minPUreweight = cms.double(1.e-1),
         maxPUreweight = cms.double(1.e+1)
     )
-"""    
+"""
 
     config = \
 """
@@ -97,12 +97,14 @@ process.ZllRecoilCorrectionNtupleProducer = cms.PSet(
 
     srcZllCandidates = cms.InputTag('goldenZmumuCandidatesGe1IsoMuons'),
     srcMEt = cms.InputTag('%s'),
+    srcJets = cms.InputTag('patJets'),
+    srcUnclPFCands = cms.InputTag('pfCandsNotInJet'),
 
     srcWeights = cms.VInputTag(%s),
 
     srcVertices = cms.InputTag('selectedPrimaryVertexPosition'),
     srcPFNeutralRho = cms.InputTag('kt6PFNeutralJets', 'rho'),
-%s    
+%s
 )
 """ % (inputFileNames_string, outputFileName_full,
        directory, srcMEt, srcWeights, addPUreweight_string)
@@ -123,7 +125,8 @@ process.ZllRecoilCorrectionNtupleProducer = cms.PSet(
 
     return retVal
 
-def buildConfigFile_fitZllRecoilNtuples(sampleName, metOptionName, inputFileName, outputFilePath, samplesToAnalyze):
+def buildConfigFile_fitZllRecoilNtuples(sampleName, metOptionName, inputFileName, outputFilePath, samplesToAnalyze,
+                                        refBranchName = "qT", projParlBranchName = "uParl", projPerpBranchName = "uPerp"):
 
     """Build cfg.py file to run fitZllRecoilCorrection macro to run on 'plain' ROOT Ntuples
        and fit Z-recoil correction parameters"""
@@ -142,7 +145,7 @@ def buildConfigFile_fitZllRecoilNtuples(sampleName, metOptionName, inputFileName
     else:
         processType = 'Data'
 
-    outputFileName = "fittedZllRecoilCorrectionParameters_%s_%s_cfi.py" % (sampleName, metOptionName)
+    outputFileName = "fittedZllRecoilCorrectionParameters_%s_%s_%s_cfi.py" % (sampleName, metOptionName, refBranchName)
     outputFileName_full = os.path.join(outputFilePath, outputFileName)
 
     config = \
@@ -165,10 +168,14 @@ process.fitZllRecoilCorrection = cms.PSet(
 
     type = cms.string('%s'),
 
+    refBranchName = cms.string('%s'),
+    projParlBranchName = cms.string('%s'),
+    projPerpBranchName = cms.string('%s'),
+
     outputFileName = cms.string('%s')
 )
 """ % (inputFileName,
-       directory, processType, outputFileName_full)
+       directory, processType, refBranchName, projParlBranchName, projPerpBranchName, outputFileName_full)
 
     configFileName = "fitZllRecoilCorrectionNtuple_%s_%s_cfg.py" % (sampleName, metOptionName)
     configFileName_full = os.path.join(outputFilePath, configFileName)    
@@ -245,11 +252,13 @@ def buildConfigFile_FWLiteZllRecoilCorrectionAnalyzer(sampleName, metOptionName,
 """
     addPUreweight = cms.PSet(
         inputFileName = cms.FileInPath('TauAnalysis/RecoTools/data/vertexMultiplicityVsRhoPFNeutralReweight.root'),
-        meName = cms.string('histoReweight'),
+        meName = cms.string('histoReweight_fitted'),
         minPUreweight = cms.double(1.e-1),
         maxPUreweight = cms.double(1.e+1)
     ),
 """
+
+    selEventsFileName = 'selEvents_metGt40_%s_%s.txt' % (sampleName, metOptionName)
         
     config = \
 """
@@ -283,8 +292,10 @@ process.ZllRecoilCorrectionAnalyzer = cms.PSet(
     srcWeights = cms.VInputTag(%s),
 
     srcVertices = cms.InputTag('selectedPrimaryVertexPosition'),
-    srcPFNeutralRho = cms.InputTag('kt6PFNeutralJets', 'rho'),    
+    srcPFNeutralRho = cms.InputTag('kt6PFJets', 'rho'),    
 %s
+
+    selEventsFileName = cms.string('%s'),
 
     # CV: 'srcEventCounter' is defined in TauAnalysis/Skimming/test/skimTauIdEffSample_cfg.py
     srcEventCounter = cms.InputTag('totalEventsProcessed'),
@@ -295,7 +306,8 @@ process.ZllRecoilCorrectionAnalyzer = cms.PSet(
     intLumiData = cms.double(%f)
 )
 """ % (inputFileNames_string, outputFileName_full,
-       directory, processType, recoZllRecoilCorrectionParameters_string, srcMEt, srcWeights, addPUreweight_string, intLumiData)
+       directory, processType, recoZllRecoilCorrectionParameters_string, srcMEt, srcWeights, addPUreweight_string,
+       os.path.join(outputFilePath, selEventsFileName), intLumiData)
 
     configFileName = "analyzeZllRecoilCorrectionPATtuple_%s_%s_cfg.py" % (sampleName, metOptionName)
     configFileName_full = os.path.join(outputFilePath, configFileName)    

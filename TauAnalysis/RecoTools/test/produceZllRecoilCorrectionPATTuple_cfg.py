@@ -44,40 +44,44 @@ HLTprocessName = "HLT" # use for Summer'11 MC
 #--------------------------------------------------------------------------------
 # define GlobalTag to be used for event reconstruction
 if isMC:
-    process.GlobalTag.globaltag = cms.string('START42_V12::All')
+    process.GlobalTag.globaltag = cms.string('START42_V13::All')
 else:
-    process.GlobalTag.globaltag = cms.string('GR_R_42_V14::All')
+    process.GlobalTag.globaltag = cms.string('GR_R_42_V20::All')
 #--------------------------------------------------------------------------------    
 
 #--------------------------------------------------------------------------------
-# define jet energy correction parameters
-process.load("CondCore.DBCommon.CondDBCommon_cfi")
-process.jec = cms.ESSource("PoolDBESSource",
-    DBParameters = cms.PSet(
-        messageLevel = cms.untracked.int32(0)
-    ),
-    timetype = cms.string('runnumber'),
-    toGet = cms.VPSet(
-        cms.PSet(
-            record = cms.string('JetCorrectionsRecord'),
-            tag    = cms.string('JetCorrectorParametersCollection_Jec11V2_AK5PF'),
-            label  = cms.untracked.string('AK5PF')
-        )
-    ),
-    connect = cms.string('sqlite_fip:TauAnalysis/Configuration/data/Jec11V2.db')
+# compute neutral particle density for L1FastJet corrections and out-of-time pile-up reweighting
+process.load("CommonTools/ParticleFlow/pfNoPileUp_cff")
+
+from RecoJets.JetProducers.kt4PFJets_cfi import kt4PFJets
+process.kt6PFJets = kt4PFJets.clone(
+    src = cms.InputTag('pfNoPileUp'),
+    rParam = cms.double(0.6),
+    doRhoFastjet = cms.bool(True),
+    Rho_EtaMax = cms.double(2.5)
 )
-process.es_prefer_jec = cms.ESPrefer('PoolDBESSource', 'jec')
+
+process.prePatProductionSequence = cms.Sequence()
+process.prePatProductionSequence += process.pfNoPileUpSequence
+process.prePatProductionSequence += process.kt6PFJets
+
+process.load("TauAnalysis/RecoTools/vertexMultiplicityVsRhoPFNeutralReweight_cfi")
+process.prePatProductionSequence += process.pfNeutralCands
+process.prePatProductionSequence += process.kt6PFNeutralJets
 #--------------------------------------------------------------------------------
 
 #--------------------------------------------------------------------------------
 # apply type I/type I + II PFMEt corrections
 
 process.load("JetMETCorrections/Configuration/JetCorrectionServices_cff")
-pfMEtCorrector = None
+pfMEtCorrectorL2L3 = None
+pfMEtCorrectorL1FastJetL2L3wrtL1FastJet = None
 if isMC:
-    pfMEtCorrector = "ak5PFL2L3"
+    pfMEtCorrectorL2L3 = "ak5PFL2L3"
+    pfMEtCorrectorL1FastJetL2L3wrtL1FastJet = "ak5PFL1FastL2L3"
 else:
-    pfMEtCorrector = "ak5PFL2L3Residual"
+    pfMEtCorrectorL2L3 = "ak5PFL2L3Residual"
+    pfMEtCorrectorL1FastJetL2L3wrtL1FastJet = "ak5PFL1FastL2L3Residual"
 
 from CommonTools.ParticleFlow.TopProjectors.pfNoJet_cfi import pfNoJet
 process.pfCandsNotInJet = pfNoJet.clone(
@@ -88,30 +92,41 @@ process.pfCandsNotInJet = pfNoJet.clone(
 # produce collection of "unclustered" PFCandidates
 # (particles not included in jets)
 from JetMETCorrections.Type1MET.MetType1Corrections_cff import metJESCorAK5PFJet
-process.pfMETtypeIcorrected = metJESCorAK5PFJet.clone(
+process.pfMETtypeIcorrectedL2L3 = metJESCorAK5PFJet.clone(
     inputUncorJetsLabel = cms.string('ak5PFJets'),
     jetPTthreshold = cms.double(10.0),
     useTypeII = cms.bool(False),
     inputUncorUnlusteredLabel = cms.untracked.InputTag('pfCandsNotInJet'),
-    corrector = cms.string(pfMEtCorrector)
+    corrector = cms.string(pfMEtCorrectorL2L3)
 )
 
-process.pfMETtypeIpIIcorrected = process.pfMETtypeIcorrected.clone(
+process.pfMETtypeIpIIcorrectedL2L3 = process.pfMETtypeIcorrectedL2L3.clone(
     useTypeII = cms.bool(True)
 )
-if isMC:
-    process.pfMETtypeIpIIcorrected.UscaleA = cms.double(1.5)
-    process.pfMETtypeIpIIcorrected.UscaleB = cms.double(0.)
-    process.pfMETtypeIpIIcorrected.UscaleC = cms.double(0.)
-else:
-    process.pfMETtypeIpIIcorrected.UscaleA = cms.double(1.4)
-    process.pfMETtypeIpIIcorrected.UscaleB = cms.double(0.)
-    process.pfMETtypeIpIIcorrected.UscaleC = cms.double(0.)
 
-process.prePatProductionSequence = cms.Sequence()
+if isMC:
+    process.pfMETtypeIpIIcorrectedL2L3.UscaleA = cms.double(1.5)
+    process.pfMETtypeIpIIcorrectedL2L3.UscaleB = cms.double(0.)
+    process.pfMETtypeIpIIcorrectedL2L3.UscaleC = cms.double(0.)
+else:
+    process.pfMETtypeIpIIcorrectedL2L3.UscaleA = cms.double(1.4)
+    process.pfMETtypeIpIIcorrectedL2L3.UscaleB = cms.double(0.)
+    process.pfMETtypeIpIIcorrectedL2L3.UscaleC = cms.double(0.)
+
+process.pfMETtypeIcorrectedL1FastJetL2L3wrtL1FastJet = process.pfMETtypeIcorrectedL2L3.clone(
+    corrector = cms.string(pfMEtCorrectorL1FastJetL2L3wrtL1FastJet),
+    subtractL1Fast = cms.bool(True)
+)
+
+process.pfMETtypeIpIIcorrectedL1FastJetL2L3wrtL1FastJet = process.pfMETtypeIcorrectedL1FastJetL2L3wrtL1FastJet.clone(
+    useTypeII = cms.bool(True)
+)
+
 process.prePatProductionSequence += process.pfCandsNotInJet
-process.prePatProductionSequence += process.pfMETtypeIcorrected
-process.prePatProductionSequence += process.pfMETtypeIpIIcorrected
+process.prePatProductionSequence += process.pfMETtypeIcorrectedL2L3
+process.prePatProductionSequence += process.pfMETtypeIcorrectedL1FastJetL2L3wrtL1FastJet
+process.prePatProductionSequence += process.pfMETtypeIpIIcorrectedL2L3
+process.prePatProductionSequence += process.pfMETtypeIpIIcorrectedL1FastJetL2L3wrtL1FastJet
 #--------------------------------------------------------------------------------
 
 #--------------------------------------------------------------------------------
@@ -133,25 +148,12 @@ if isMC:
 #--------------------------------------------------------------------------------
 
 #--------------------------------------------------------------------------------
-# compute neutral particle density for out-of-time pile-up reweighting
-from RecoJets.JetProducers.kt4PFJets_cfi import kt4PFJets
-process.kt6PFJets = kt4PFJets.clone(
-    src = cms.InputTag('pfNoPileUp'),
-    rParam = cms.double(0.6),
-    doRhoFastjet = cms.bool(True),
-    Rho_EtaMax = cms.double(2.5)
-)
-process.prePatProductionSequence += process.kt6PFJets
-#--------------------------------------------------------------------------------
-
-#--------------------------------------------------------------------------------
 # produce PAT objects
 process.load("PhysicsTools/PatAlgos/patSequences_cff")
 
 # configure pat::Jet production
 # (enable L2L3Residual corrections in case running on Data)
-#jetCorrections = [ 'L1FastJet', 'L2Relative', 'L3Absolute' ]
-jetCorrections = [ 'L2Relative', 'L3Absolute' ]
+jetCorrections = [ 'L1FastJet', 'L2Relative', 'L3Absolute' ]
 if not isMC:
     jetCorrections.append('L2L3Residual')
 
@@ -193,20 +195,35 @@ process.patPFMETs = process.patMETs.clone(
     genMETSource = cms.InputTag('genMetTrue'),
     addGenMET = cms.bool(True)
 )
-process.patPFMETsTypeIcorrected = process.patPFMETs.clone(
-    metSource = cms.InputTag('pfMETtypeIcorrected')
+
+process.patPFMETsTypeIcorrectedL2L3 = process.patPFMETs.clone(
+    metSource = cms.InputTag('pfMETtypeIcorrectedL2L3')
 )
-process.patPFMETsTypeIpIIcorrected = process.patPFMETs.clone(
-    metSource = cms.InputTag('pfMETtypeIpIIcorrected'),
+
+process.patPFMETsTypeIpIIcorrectedL2L3 = process.patPFMETs.clone(
+    metSource = cms.InputTag('pfMETtypeIpIIcorrectedL2L3'),
 )
-process.patTupleProductionSequence += process.patPFMETs
-process.patTupleProductionSequence += process.patPFMETsTypeIcorrected
-process.patTupleProductionSequence += process.patPFMETsTypeIpIIcorrected
+
+process.patPFMETsTypeIcorrectedL1FastJetL2L3wrtL1FastJet = process.patPFMETs.clone(
+    metSource = cms.InputTag('pfMETtypeIcorrectedL1FastJetL2L3wrtL1FastJet')
+)
+
+process.patPFMETsTypeIpIIcorrectedL1FastJetL2L3wrtL1FastJet = process.patPFMETs.clone(
+    metSource = cms.InputTag('pfMETtypeIpIIcorrectedL1FastJetL2L3wrtL1FastJet'),
+)
 
 if not isMC:
     process.patPFMETs.addGenMET = cms.bool(False)
-    process.patPFMETsTypeIcorrected.addGenMET = cms.bool(False)
-    process.patPFMETsTypeIpIIcorrected.addGenMET = cms.bool(False)
+    process.patPFMETsTypeIcorrectedL2L3.addGenMET = cms.bool(False)
+    process.patPFMETsTypeIcorrectedL1FastJetL2L3wrtL1FastJet.addGenMET = cms.bool(False)
+    process.patPFMETsTypeIpIIcorrectedL2L3.addGenMET = cms.bool(False)
+    process.patPFMETsTypeIpIIcorrectedL1FastJetL2L3wrtL1FastJet.addGenMET = cms.bool(False)
+
+process.patTupleProductionSequence += process.patPFMETs
+process.patTupleProductionSequence += process.patPFMETsTypeIcorrectedL2L3
+process.patTupleProductionSequence += process.patPFMETsTypeIcorrectedL1FastJetL2L3wrtL1FastJet
+process.patTupleProductionSequence += process.patPFMETsTypeIpIIcorrectedL2L3
+process.patTupleProductionSequence += process.patPFMETsTypeIpIIcorrectedL1FastJetL2L3wrtL1FastJet
 #--------------------------------------------------------------------------------    
 
 #--------------------------------------------------------------------------------
@@ -238,11 +255,15 @@ process.patTupleOutputModule = cms.OutputModule("PoolOutputModule",
             'keep *_selectedPrimaryVerticesTrackPtSumGt10_*_*',                                            
             'keep *_patJets_*_*',
             'keep *_selectedPatJetsAntiOverlapWithMuonsVeto_*_*',
+            'keep *_pfCandsNotInJet_*_*',                              
             'keep *_ak5PFJets_*_*',                             
             'keep *_patPFMETs_*_*',
-            'keep *_patPFMETsTypeIcorrected_*_*',
-            'keep *_patPFMETsTypeIpIIcorrected_*_*',
-            'keep *_kt6PFJets_rho_*'
+            'keep *_patPFMETsTypeIcorrectedL2L3_*_*',
+            'keep *_patPFMETsTypeIcorrectedL1FastJetL2L3wrtL1FastJet_*_*',             
+            'keep *_patPFMETsTypeIpIIcorrectedL2L3_*_*',
+            'keep *_patPFMETsTypeIpIIcorrectedL1FastJetL2L3wrtL1FastJet_*_*',                                            
+            'keep *_kt6PFJets_rho_*',
+            'keep *_kt6PFNeutralJets_rho_*'                                     
         )
     ),
     fileName = cms.untracked.string("ZllRecoilCorrectionPATtuple.root")
@@ -263,25 +284,45 @@ if isMC:
 
 process.DQMStore = cms.Service("DQMStore")
 
-process.producePUreweightHistograms = cms.EDAnalyzer("PUreweightHistogramProducer",
+process.producePUreweightHistogramsKt6PFJets = cms.EDAnalyzer("PUreweightHistogramProducer",
     srcVertices = cms.InputTag('selectedPrimaryVertexPosition'),                                                 
-    srcPFNeutralRho = cms.InputTag('kt6PFJets', 'rho')
+    srcPFNeutralRho = cms.InputTag('kt6PFJets', 'rho'),
+    rhoMax = cms.double(20.)                                                                
 )
-process.producePUreweightHistogramsTrackPtSumGt5 = process.producePUreweightHistograms.clone(
+process.producePUreweightHistogramsTrackPtSumGt5Kt6PFJets = process.producePUreweightHistogramsKt6PFJets.clone(
     srcVertices = cms.InputTag('selectedPrimaryVerticesTrackPtSumGt5')
 )
-process.producePUreweightHistogramsTrackPtSumGt10 = process.producePUreweightHistograms.clone(
+process.producePUreweightHistogramsTrackPtSumGt10Kt6PFJets = process.producePUreweightHistogramsKt6PFJets.clone(
     srcVertices = cms.InputTag('selectedPrimaryVerticesTrackPtSumGt10')
 )
-process.produceAndSavePUreweightHistograms = cms.Sequence()
-process.produceAndSavePUreweightHistograms += process.producePUreweightHistograms
-process.produceAndSavePUreweightHistograms += process.producePUreweightHistogramsTrackPtSumGt5
-process.produceAndSavePUreweightHistograms += process.producePUreweightHistogramsTrackPtSumGt10
+
+process.producePUreweightHistogramsKt6PFNeutralJets = cms.EDAnalyzer("PUreweightHistogramProducer",
+    srcVertices = cms.InputTag('selectedPrimaryVertexPosition'),                                                 
+    srcPFNeutralRho = cms.InputTag('kt6PFNeutralJets', 'rho'),
+    rhoMax = cms.double(10.)                            
+)
+process.producePUreweightHistogramsTrackPtSumGt5Kt6PFNeutralJets = process.producePUreweightHistogramsKt6PFNeutralJets.clone(
+    srcVertices = cms.InputTag('selectedPrimaryVerticesTrackPtSumGt5')
+)
+process.producePUreweightHistogramsTrackPtSumGt10Kt6PFNeutralJets = process.producePUreweightHistogramsKt6PFNeutralJets.clone(
+    srcVertices = cms.InputTag('selectedPrimaryVerticesTrackPtSumGt10')
+)
 
 if isMC:
-    process.producePUreweightHistograms.srcWeight = cms.InputTag('vertexMultiplicityReweight')
-    process.producePUreweightHistogramsTrackPtSumGt5.srcWeight = cms.InputTag('vertexMultiplicityReweight')
-    process.producePUreweightHistogramsTrackPtSumGt10.srcWeight = cms.InputTag('vertexMultiplicityReweight')
+    setattr(process.producePUreweightHistogramsKt6PFJets,                      "srcWeight", cms.InputTag('vertexMultiplicityReweight'))
+    setattr(process.producePUreweightHistogramsTrackPtSumGt5Kt6PFJets,         "srcWeight", cms.InputTag('vertexMultiplicityReweight'))
+    setattr(process.producePUreweightHistogramsTrackPtSumGt10Kt6PFJets,        "srcWeight", cms.InputTag('vertexMultiplicityReweight'))
+    setattr(process.producePUreweightHistogramsKt6PFNeutralJets,               "srcWeight", cms.InputTag('vertexMultiplicityReweight'))
+    setattr(process.producePUreweightHistogramsTrackPtSumGt5Kt6PFNeutralJets,  "srcWeight", cms.InputTag('vertexMultiplicityReweight'))
+    setattr(process.producePUreweightHistogramsTrackPtSumGt10Kt6PFNeutralJets, "srcWeight", cms.InputTag('vertexMultiplicityReweight'))
+
+process.produceAndSavePUreweightHistograms = cms.Sequence()
+process.produceAndSavePUreweightHistograms += process.producePUreweightHistogramsKt6PFJets
+process.produceAndSavePUreweightHistograms += process.producePUreweightHistogramsTrackPtSumGt5Kt6PFJets     
+process.produceAndSavePUreweightHistograms += process.producePUreweightHistogramsTrackPtSumGt10Kt6PFJets
+process.produceAndSavePUreweightHistograms += process.producePUreweightHistogramsKt6PFNeutralJets
+process.produceAndSavePUreweightHistograms += process.producePUreweightHistogramsTrackPtSumGt5Kt6PFNeutralJets     
+process.produceAndSavePUreweightHistograms += process.producePUreweightHistogramsTrackPtSumGt10Kt6PFNeutralJets
 
 process.savePUreweightHistograms = cms.EDAnalyzer("DQMSimpleFileSaver",
     outputFileName = cms.string('ZllRecoilCorrectionPUreweightHistograms.root')

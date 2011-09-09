@@ -13,7 +13,9 @@ PUreweightHistogramProducer::PUreweightHistogramProducer(const edm::ParameterSet
 {
   srcVertices_ = cfg.getParameter<edm::InputTag>("srcVertices");
   srcPFNeutralRho_ = cfg.getParameter<edm::InputTag>("srcPFNeutralRho");
-  
+
+  rhoMax_ = cfg.getParameter<double>("rhoMax");
+
   if ( cfg.exists("srcWeight") ) srcWeight_ = cfg.getParameter<edm::InputTag>("srcWeight");
 }
 
@@ -30,11 +32,11 @@ void PUreweightHistogramProducer::beginJob()
     dqmStore.book1D("VtxMultiplicity", "VtxMultiplicity", 20, -0.5, +19.5);
   meVtxMultiplicity_->getTH1()->Sumw2();
   mePFNeutralRho_ = 
-    dqmStore.book1D("PFNeutralRho", "PFNeutralRho", 100, 0., 20.);
+    dqmStore.book1D("PFNeutralRho", "PFNeutralRho", 100, -1.e-3, rhoMax_);
   mePFNeutralRho_->getTH1()->Sumw2();
 
   mePFNeutralRhoVsVtxMultiplicity_ = 
-    dqmStore.book2D("PFNeutralRhoVsVtxMultiplicity", "PFNeutralRhoVsVtxMultiplicity", 20, -0.5, +19.5, 100, 0., 20.);
+    dqmStore.book2D("PFNeutralRhoVsVtxMultiplicity", "PFNeutralRhoVsVtxMultiplicity", 20, -0.5, +19.5, 100, -1.e-3, rhoMax_);
   mePFNeutralRhoVsVtxMultiplicity_->getTH1()->Sumw2();
 }
 
@@ -54,6 +56,7 @@ void PUreweightHistogramProducer::analyze(const edm::Event& evt, const edm::Even
     evt.getByLabel(srcWeight_, evtWeight_handle);
     evtWeight = (*evtWeight_handle);
   }
+  //std::cout << "evtWeight = " << evtWeight << std::endl;
 
   meVtxMultiplicity_->Fill(vtxMultiplicity, evtWeight);
   mePFNeutralRho_->Fill(pfNeutralRho, evtWeight);
