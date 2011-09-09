@@ -5,9 +5,9 @@
  *
  * \author Christian Veelken, UC Davis
  *
- * \version $Revision: 1.3 $
+ * \version $Revision: 1.4 $
  *
- * $Id: FWLiteZllRecoilCorrectionAnalyzer.cc,v 1.3 2011/08/17 13:55:56 veelken Exp $
+ * $Id: FWLiteZllRecoilCorrectionAnalyzer.cc,v 1.4 2011/08/18 17:51:30 veelken Exp $
  *
  */
 
@@ -48,6 +48,7 @@
 
 #include <vector>
 #include <string>
+#include <fstream>
 
 typedef std::vector<edm::InputTag> vInputTag;
 typedef std::vector<std::string> vstring;
@@ -113,6 +114,8 @@ int main(int argc, char* argv[])
 
   std::string directory = cfgZllRecoilCorrectionAnalyzer.getParameter<std::string>("directory");
 
+  std::string selEventsFileName = cfgZllRecoilCorrectionAnalyzer.getParameter<std::string>("selEventsFileName");
+
   fwlite::InputSource inputFiles(cfg); 
   int maxEvents = inputFiles.maxEvents();
 
@@ -162,6 +165,8 @@ int main(int argc, char* argv[])
   TFileDirectory subdirAfterZllRecoilCorr  = dir.mkdir("afterZllRecoilCorr");
   histogramsAfterZllRecoilCorr->bookHistograms(subdirAfterZllRecoilCorr);
   
+  std::ofstream* selEventsFile = new std::ofstream(selEventsFileName.data(), std::ios::out);
+
   int numEvents_processed = 0; 
 
   edm::RunNumber_t lastLumiBlock_run = -1;
@@ -195,7 +200,7 @@ int main(int argc, char* argv[])
 //--- check if new luminosity section has started;
 //    if so, retrieve number of events contained in this luminosity section before skimming
 /*
-      CV: EventCounters missing in skimming outout/PAT-tuples
+      CV: EventCounters missing in skimming output/PAT-tuples
          --> disable Mauro's "self babysitting" technology for now...
 
       if ( !(evt.id().run() == lastLumiBlock_run && evt.luminosityBlock() == lastLumiBlock_ls) ) {
@@ -246,7 +251,7 @@ int main(int argc, char* argv[])
       for ( reco::CompositeCandidateCollection::const_iterator ZllCandidate = ZllCandidates->begin();
 	    ZllCandidate != ZllCandidates->end(); ++ZllCandidate ) {
 	double massDiff = TMath::Abs(ZllCandidate->mass() - nominalZmass);
-	if ( minMassDiff == -1. || massDiff < minMassDiff ) {
+	if ( bestZllCandidate == 0 || massDiff < minMassDiff ) {
 	  bestZllCandidate = &(*ZllCandidate);
 	  minMassDiff = massDiff;
 	}
@@ -270,6 +275,13 @@ int main(int argc, char* argv[])
       histogramsBeforeZllRecoilCorr->fillHistograms(
         *bestZllCandidate, theEventMEt, vtxMultiplicity, pfNeutralRho, genPUreweight*addPUreweight);
 
+      if ( theEventMEt.pt() > 40. ) {
+	std::cout << "run = " << evt.id().run() << "," 
+		  << " ls = " << evt.luminosityBlock() << ", event = " << evt.id().event() << ":" << std::endl;
+	      
+	(*selEventsFile) << evt.id().run() << ":" << evt.luminosityBlock() << ":" << evt.id().event() << std::endl;
+      }
+
       if ( isData ) continue;
 
       if ( !theEventMEt.genMET() )
@@ -289,6 +301,11 @@ int main(int argc, char* argv[])
 
   delete addPUreweightFile;
   delete corrAlgorithm;
+
+//--- close ASCII file containing 
+//     run:lumi-section:event 
+//    numbers of events with MET > 40 GeV
+  delete selEventsFile;
 
   std::cout << "<FWLiteZllRecoilCorrectionAnalyzer>:" << std::endl;
   std::cout << " numEvents_processed: " << numEvents_processed << std::endl;

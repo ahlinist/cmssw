@@ -5,9 +5,9 @@
  *
  * \author Christian Veelken, UC Davis
  *
- * \version $Revision: 1.4 $
+ * \version $Revision: 1.5 $
  *
- * $Id: FWLiteZllRecoilCorrectionNtupleProducer.cc,v 1.4 2011/08/17 13:55:56 veelken Exp $
+ * $Id: FWLiteZllRecoilCorrectionNtupleProducer.cc,v 1.5 2011/08/18 17:51:30 veelken Exp $
  *
  */
 
@@ -32,9 +32,14 @@
 #include "DataFormats/Candidate/interface/CompositeCandidate.h"
 #include "DataFormats/Candidate/interface/CompositeCandidateFwd.h"
 #include "DataFormats/PatCandidates/interface/MET.h"
+#include "DataFormats/PatCandidates/interface/Jet.h"
+#include "DataFormats/ParticleFlowCandidate/interface/PFCandidate.h"
+#include "DataFormats/ParticleFlowCandidate/interface/PFCandidateFwd.h"
 #include "DataFormats/VertexReco/interface/Vertex.h"
 #include "DataFormats/VertexReco/interface/VertexFwd.h"
 #include "DataFormats/Common/interface/Handle.h"
+
+#include "DataFormats/Math/interface/deltaR.h"
 
 #include "TauAnalysis/CandidateTools/interface/candidateAuxFunctions.h"
 
@@ -79,6 +84,8 @@ int main(int argc, char* argv[])
 
   edm::InputTag srcZllCandidates = cfgZllRecoilCorrectionNtupleProducer.getParameter<edm::InputTag>("srcZllCandidates");
   edm::InputTag srcMEt = cfgZllRecoilCorrectionNtupleProducer.getParameter<edm::InputTag>("srcMEt");
+  edm::InputTag srcJets = cfgZllRecoilCorrectionNtupleProducer.getParameter<edm::InputTag>("srcJets");
+  edm::InputTag srcUnclPFCands = cfgZllRecoilCorrectionNtupleProducer.getParameter<edm::InputTag>("srcUnclPFCands");
 
   vInputTag srcWeights = cfgZllRecoilCorrectionNtupleProducer.getParameter<vInputTag>("srcWeights");
 
@@ -119,10 +126,16 @@ int main(int argc, char* argv[])
   TFileDirectory dir = ( directory != "" ) ? fs.mkdir(directory) : fs;
   TTree* outputTree = dir.make<TTree>("ZllRecoilCorrectionNtuple", "ZllRecoilCorrectionNtuple");
   const int defaultBranchBufferSize = 64000;
-  Double_t qT, u1, u2, evtWeight;  
+  Double_t qT, uParl, uPerp;          // variables for "regular" Z-recoil corrections
   outputTree->Branch("qT",        &qT,        "qT/D",        defaultBranchBufferSize);
-  outputTree->Branch("u1",        &u1,        "u1/D",        defaultBranchBufferSize);
-  outputTree->Branch("u2",        &u2,        "u2/D",        defaultBranchBufferSize);
+  outputTree->Branch("uParl",     &uParl,     "uParl/D",     defaultBranchBufferSize);
+  outputTree->Branch("uPerp",     &uPerp,     "uPerp/D",     defaultBranchBufferSize);
+  Double_t rT_ii, vParl_ii, vPerp_ii; // variables for determining type-II MEt corrections/calibrating "unclustered energy"
+                                      // (PFJets of Pt < 10 GeV plus PFCandidates not in jets)
+  outputTree->Branch("rT_ii",     &rT_ii,     "rT_ii/D",     defaultBranchBufferSize);
+  outputTree->Branch("vParl_ii",  &vParl_ii,  "vParl_ii/D",  defaultBranchBufferSize);
+  outputTree->Branch("vPerp_ii",  &vPerp_ii,  "vPerp_ii/D",  defaultBranchBufferSize);
+  Double_t evtWeight; 
   outputTree->Branch("evtWeight", &evtWeight, "evtWeight/D", defaultBranchBufferSize);
 
   int    numEvents_processed         = 0; 
@@ -191,7 +204,7 @@ int main(int argc, char* argv[])
       for ( reco::CompositeCandidateCollection::const_iterator ZllCandidate = ZllCandidates->begin();
 	    ZllCandidate != ZllCandidates->end(); ++ZllCandidate ) {
 	double massDiff = TMath::Abs(ZllCandidate->mass() - nominalZmass);
-	if ( minMassDiff == -1. || massDiff < minMassDiff ) {
+	if ( bestZllCandidate == 0 || massDiff < minMassDiff ) {
 	  bestZllCandidate = &(*ZllCandidate);
 	  minMassDiff = massDiff;
 	}
@@ -199,7 +212,7 @@ int main(int argc, char* argv[])
 	    
       if ( !bestZllCandidate ) continue;
 
-      edm::Handle<std::vector<pat::MET> > met;
+      edm::Handle<pat::METCollection> met;
       evt.getByLabel(srcMEt, met);
   
       if ( met->size() != 1 ) 
@@ -214,8 +227,38 @@ int main(int argc, char* argv[])
       std::pair<double, double> uT = compMEtProjU(bestZllCandidate->p4(), theEventMEt.px(), theEventMEt.py(), errorFlag);
       if ( errorFlag ) continue;
       
-      u1 = uT.first;
-      u2 = uT.second;
+      uParl = uT.first;
+      uPerp = uT.second;
+
+      reco::Candidate::LorentzVector r_ii = bestZllCandidate->p4();
+      reco::Candidate::LorentzVector v_ii;
+
+      edm::Handle<pat::JetCollection> calibJets;
+      evt.getByLabel(srcJets, calibJets);
+      for ( pat::JetCollection::const_iterator calibJet = calibJets->begin();
+	    calibJet != calibJets->end(); ++calibJet ) {
+	if ( calibJet->pt() > 10. ) r_ii += calibJet->p4();
+	else                        v_ii += calibJet->p4();
+      }
+
+      edm::Handle<reco::PFCandidateCollection> unclPFCands;
+      evt.getByLabel(srcUnclPFCands, unclPFCands);
+      for ( reco::PFCandidateCollection::const_iterator unclPFCand = unclPFCands->begin();
+	    unclPFCand != unclPFCands->end(); ++unclPFCand ) {
+	assert(bestZllCandidate->numberOfDaughters() == 2);
+	if ( reco::deltaR(unclPFCand->p4(), bestZllCandidate->daughter(0)->p4()) < 0.3 ||
+	     reco::deltaR(unclPFCand->p4(), bestZllCandidate->daughter(1)->p4()) < 0.3 ) {
+	  std::cout << "Warning: unclustered PFCandidate close to Muon, pt = " << unclPFCand->pt() << std::endl;
+	}
+	v_ii += unclPFCand->p4();
+      }
+
+      int errorFlag_ii = 0;
+      std::pair<double, double> vT_ii = compMEtProjU(r_ii, -(r_ii.px() + v_ii.px()), -(r_ii.py() + v_ii.py()), errorFlag_ii);
+      if ( errorFlag_ii ) continue;
+      
+      vParl_ii = vT_ii.first;
+      vPerp_ii = vT_ii.second;
 
       outputTree->Fill();
     }

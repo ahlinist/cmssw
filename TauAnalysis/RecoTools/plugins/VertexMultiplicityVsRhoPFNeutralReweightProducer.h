@@ -3,16 +3,12 @@
 
 /** \class VertexMultiplicityVsRhoPFNeutralReweightProducer
  *
- * Reweight simulated Monte Carlo events simulated to match the in-time and out-of-time
+ * Reweight  Monte Carlo simulated events to match the in-time and out-of-time
  * pile-up distribution observed in data.
- * Monte Carlo simulated events are reweighted
-
-For this purpose 
-
- analyzed data sample
-
-with pile-up to match the
- * vertex multiplicity distribution observed in the analyzed data sample
+ *
+ * The method is described in the presentation:
+ *
+ *   https://indico.cern.ch/getFile.py/access?contribId=47&sessionId=1&resId=0&materialId=slides&confId=142201
  *
  * NOTE:
  *      o weight > 1: fraction of events which given vertex multiplicity && neutral particle energy density higher
@@ -25,9 +21,9 @@ with pile-up to match the
  * \authors Alexei Raspereza, DESY
  *          Christian Veelken, LLR
  *
- * \version $Revision: 1.2 $
+ * \version $Revision: 1.1 $
  *
- * $Id: VertexMultiplicityVsRhoPFNeutralReweightProducer.h,v 1.2 2011/04/13 17:05:13 veelken Exp $
+ * $Id: VertexMultiplicityVsRhoPFNeutralReweightProducer.h,v 1.1 2011/08/19 14:11:40 veelken Exp $
  *
  */
 

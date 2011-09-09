@@ -5,7 +5,7 @@ from TauAnalysis.RecoTools.tools.buildConfigFilesZllRecoilCorrectionAnalysis imp
 
 import os
 
-version = 'v2'
+version = 'v3_1'
 
 inputFilePath = '/data2/veelken/CMSSW_4_2_x/PATtuples/ZllRecoilCorrection/%s/' % version \
                + 'user/v/veelken/CMSSW_4_2_x/PATtuples/ZllRecoilCorrection/%s/' % version
@@ -31,11 +31,17 @@ metOptions = {
     'pfMEt' : {
         'srcMEt' : 'patPFMETs'
     },
-    'pfMEtTypeIcorrected' : {
-        'srcMEt' : 'patPFMETsTypeIcorrected'
+    'pfMEtTypeIcorrectedL2L3' : {
+        'srcMEt' : 'patPFMETsTypeIcorrectedL2L3'
     },
-    'pfMEtTypeIpIIcorrected' : {
-        'srcMEt' : 'patPFMETsTypeIpIIcorrected'
+    'pfMEtTypeIcorrectedL1FastJetL2L3wrtL1FastJet' : {
+        'srcMEt' : 'patPFMETsTypeIcorrectedL1FastJetL2L3wrtL1FastJet'
+    },
+    'pfMEtTypeIpIIcorrectedL2L3' : {
+        'srcMEt' : 'patPFMETsTypeIpIIcorrectedL2L3'
+    },
+    'pfMEtTypeIpIIcorrectedL1FastJetL2L3wrtL1FastJet' : {
+        'srcMEt' : 'patPFMETsTypeIpIIcorrectedL1FastJetL2L3wrtL1FastJet'
     }
 }
 
@@ -77,19 +83,35 @@ for metOptionName in metOptions.keys():
 #
 # build config files for fitting Z-recoil correction parameters 
 #
-fileNames_fitZllRecoilNtuples = {}
+fileNames_fitZllRecoilNtuples_qT_vs_uParl_uPerp    = {}
 for metOptionName in metOptions.keys():
-    fileNames_fitZllRecoilNtuples[metOptionName] = {}
+    fileNames_fitZllRecoilNtuples_qT_vs_uParl_uPerp[metOptionName] = {}
     for sampleName in samplesToAnalyze.keys():
         retVal_fitZllRecoilNtuples = \
           buildConfigFile_fitZllRecoilNtuples(
             sampleName, metOptionName,
-            fileNames_produceZllRecoilNtuples[metOptionName][sampleName]['outputFileName'], outputFilePath, samplesToAnalyze)
+            fileNames_produceZllRecoilNtuples[metOptionName][sampleName]['outputFileName'], outputFilePath, samplesToAnalyze,
+            "qT", "uParl", "uPerp")
 
         if retVal_fitZllRecoilNtuples is None:
             continue
 
-        fileNames_fitZllRecoilNtuples[metOptionName][sampleName] = retVal_fitZllRecoilNtuples
+        fileNames_fitZllRecoilNtuples_qT_vs_uParl_uPerp[metOptionName][sampleName] = retVal_fitZllRecoilNtuples
+
+fileNames_fitZllRecoilNtuples_rT_vs_vParl_vPerp_ii = {}
+for metOptionName in metOptions.keys():
+    fileNames_fitZllRecoilNtuples_rT_vs_vParl_vPerp_ii[metOptionName] = {}
+    for sampleName in samplesToAnalyze.keys():
+        retVal_fitZllRecoilNtuples = \
+          buildConfigFile_fitZllRecoilNtuples(
+            sampleName, metOptionName,
+            fileNames_produceZllRecoilNtuples[metOptionName][sampleName]['outputFileName'], outputFilePath, samplesToAnalyze,
+            "rT_ii", "vParl_ii", "vPerp_ii")
+
+        if retVal_fitZllRecoilNtuples is None:
+            continue
+
+        fileNames_fitZllRecoilNtuples_rT_vs_vParl_vPerp_ii[metOptionName][sampleName] = retVal_fitZllRecoilNtuples
 #--------------------------------------------------------------------------------
 
 #--------------------------------------------------------------------------------
@@ -203,25 +225,35 @@ for metOptionName in metOptions.keys():
 makeFile.write("\n")
 for metOptionName in metOptions.keys():
     for sampleName in samplesToAnalyze.keys():
-        if fileNames_fitZllRecoilNtuples[metOptionName].has_key(sampleName) and \
+        if fileNames_fitZllRecoilNtuples_qT_vs_uParl_uPerp[metOptionName].has_key(sampleName) and \
            fileNames_produceZllRecoilNtuples[metOptionName].has_key(sampleName):
             makeFile.write("%s: %s %s\n" %
-              (fileNames_fitZllRecoilNtuples[metOptionName][sampleName]['outputFileName'],
+              (fileNames_fitZllRecoilNtuples_qT_vs_uParl_uPerp[metOptionName][sampleName]['outputFileName'],
                fileNames_produceZllRecoilNtuples[metOptionName][sampleName]['outputFileName'],
                executable_fitZllRecoilNtuples))
             makeFile.write("\t%s %s &> %s\n" %
               (executable_fitZllRecoilNtuples,
-               fileNames_fitZllRecoilNtuples[metOptionName][sampleName]['configFileName'],
-               fileNames_fitZllRecoilNtuples[metOptionName][sampleName]['logFileName']))
+               fileNames_fitZllRecoilNtuples_qT_vs_uParl_uPerp[metOptionName][sampleName]['configFileName'],
+               fileNames_fitZllRecoilNtuples_qT_vs_uParl_uPerp[metOptionName][sampleName]['logFileName']))
+        if fileNames_fitZllRecoilNtuples_rT_vs_vParl_vPerp_ii[metOptionName].has_key(sampleName) and \
+           fileNames_produceZllRecoilNtuples[metOptionName].has_key(sampleName):
+            makeFile.write("%s: %s %s\n" %
+              (fileNames_fitZllRecoilNtuples_rT_vs_vParl_vPerp_ii[metOptionName][sampleName]['outputFileName'],
+               fileNames_produceZllRecoilNtuples[metOptionName][sampleName]['outputFileName'],
+               executable_fitZllRecoilNtuples))
+            makeFile.write("\t%s %s &> %s\n" %
+              (executable_fitZllRecoilNtuples,
+               fileNames_fitZllRecoilNtuples_rT_vs_vParl_vPerp_ii[metOptionName][sampleName]['configFileName'],
+               fileNames_fitZllRecoilNtuples_rT_vs_vParl_vPerp_ii[metOptionName][sampleName]['logFileName']))
 makeFile.write("\n")
 for metOptionName in metOptions.keys():
     for sampleName in samplesToAnalyze.keys():
-        if fileNames_fitZllRecoilNtuples[metOptionName].has_key(sampleName) and \
+        if fileNames_fitZllRecoilNtuples_qT_vs_uParl_uPerp[metOptionName].has_key(sampleName) and \
            fileNames_FWLiteZllRecoilCorrectionAnalyzer[metOptionName].has_key(sampleName):
             makeFile.write("%s: %s %s %s\n" %
               (fileNames_FWLiteZllRecoilCorrectionAnalyzer[metOptionName][sampleName]['outputFileName'],
-               fileNames_fitZllRecoilNtuples[metOptionName][sampleNameData]['outputFileName'],
-               fileNames_fitZllRecoilNtuples[metOptionName][sampleNameMC]['outputFileName'],
+               fileNames_fitZllRecoilNtuples_qT_vs_uParl_uPerp[metOptionName][sampleNameData]['outputFileName'],
+               fileNames_fitZllRecoilNtuples_qT_vs_uParl_uPerp[metOptionName][sampleNameMC]['outputFileName'],
                executable_FWLiteZllRecoilCorrectionAnalyzer))
             # rebuild config file to run FWLiteZllRecoilCorrectionAnalyzer macro
             # using actual Z-recoil correction parameter values determind by fit
@@ -240,8 +272,8 @@ buildConfigFile_FWLiteZllRecoilCorrectionAnalyzer(
 """ % (str(samplesToAnalyze),
        str(metOptions),
        sampleName, metOptionName, inputFilePath, outputFilePath,
-       fileNames_fitZllRecoilNtuples[metOptionName][sampleNameData]['outputFileName'],
-       fileNames_fitZllRecoilNtuples[metOptionName][sampleNameMC]['outputFileName'],
+       fileNames_fitZllRecoilNtuples_qT_vs_uParl_uPerp[metOptionName][sampleNameData]['outputFileName'],
+       fileNames_fitZllRecoilNtuples_qT_vs_uParl_uPerp[metOptionName][sampleNameMC]['outputFileName'],
        intLumiData)      
             tmpConfigFileName = "makeTMPconfigFile_%s_%s.py" % (sampleName, metOptionName)
             tmpConfigFileName_full = os.path.join(outputFilePath, tmpConfigFileName)    
@@ -287,9 +319,12 @@ makeFile.write("\trm -f %s\n" % make_MakeFile_vstring(outputFileNames_produceZll
 outputFileNames_fitZllRecoilNtuples = []
 for metOptionName in metOptions.keys():
     for sampleName in samplesToAnalyze.keys():
-        if fileNames_fitZllRecoilNtuples[metOptionName].has_key(sampleName):
+        if fileNames_fitZllRecoilNtuples_qT_vs_uParl_uPerp[metOptionName].has_key(sampleName):
             outputFileNames_fitZllRecoilNtuples.append(
-              fileNames_fitZllRecoilNtuples[metOptionName][sampleName]['outputFileName'])
+              fileNames_fitZllRecoilNtuples_qT_vs_uParl_uPerp[metOptionName][sampleName]['outputFileName'])
+        if fileNames_fitZllRecoilNtuples_rT_vs_vParl_vPerp_ii[metOptionName].has_key(sampleName):
+            outputFileNames_fitZllRecoilNtuples.append(
+              fileNames_fitZllRecoilNtuples_rT_vs_vParl_vPerp_ii[metOptionName][sampleName]['outputFileName'])    
 makeFile.write("\trm -f %s\n" % make_MakeFile_vstring(outputFileNames_fitZllRecoilNtuples))
 outputFileNames_FWLiteZllRecoilCorrectionAnalyzer = []
 for metOptionName in metOptions.keys():

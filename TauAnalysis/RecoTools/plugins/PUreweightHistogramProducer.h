@@ -10,9 +10,9 @@
  * 
  * \author Christian Veelken, UC Davis
  *
- * \version $Revision: 1.10 $
+ * \version $Revision: 1.1 $
  *
- * $Id: HistManagerBase.h,v 1.10 2011/03/09 18:25:19 veelken Exp $
+ * $Id: PUreweightHistogramProducer.h,v 1.1 2011/08/13 07:47:49 veelken Exp $
  *
  */
 
@@ -43,6 +43,8 @@ class PUreweightHistogramProducer : public edm::EDAnalyzer
 
   edm::InputTag srcVertices_;
   edm::InputTag srcPFNeutralRho_;
+
+  double rhoMax_;
 
   edm::InputTag srcWeight_;
 
