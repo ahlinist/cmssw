@@ -170,12 +170,19 @@ private:
 };
 
 
+
 class LimitCalc{
 
 public:
-  LimitCalc();
-  LimitCalc( UInt_t randomSeed );
+
+  // no public constructors - this is a singleton class
+  // use static method LimitCalc::GetInstance() to get the instance
   ~LimitCalc();
+
+  static LimitCalc * GetInstance(void){
+    if (!mpInstance) mpInstance = new LimitCalc();
+    return mpInstance;
+  }
 
   LimitResult       GetClsLimit( int nPoiScanPoints,
 				 int nToys,
@@ -191,6 +198,7 @@ public:
   RooWorkspace *          LoadWorkspace( std::string wsFileName,
 					 std::string wsName );
 
+  void SetSeed(UInt_t seed);
   void SetInverterCalcType(int type){mInverterCalcType=type;};
   void SetTestStatType(int type){mTestStatType=type;};
   void SetSbModelConfig( RooStats::ModelConfig * pSbModelConfig );
@@ -207,6 +215,9 @@ public:
   bool SetFirstPoiMin( double value );
 
 private:
+
+  LimitCalc();
+  LimitCalc(const LimitCalc &); // stop default
 
   void init( UInt_t seed ); //  to be called by constructor
 
@@ -274,19 +285,21 @@ private:
   bool mWriteResult;
   int mNProofWorkers;
 
+  // pointer to class instance
+  static LimitCalc * mpInstance;
 };
+
+
+
+LimitCalc * LimitCalc::mpInstance = 0;
 
 
 
 // default constructor
 LimitCalc::LimitCalc(){
-  init(0);
+  init(12345);
 }
 
-
-LimitCalc::LimitCalc(UInt_t randomSeed){
-  init(randomSeed);
-}
 
 
 void LimitCalc::init(UInt_t randomSeed){
@@ -318,26 +331,7 @@ void LimitCalc::init(UInt_t randomSeed){
   mpFcCalc = 0;
 
   // set random seed
-  if (randomSeed == 0){
-    mRandom.SetSeed();
-    UInt_t _seed = mRandom.GetSeed();
-    UInt_t _pid = gSystem->GetPid();
-    std::cout << "[LimitCalc]: random seed: " << _seed << std::endl;
-    std::cout << "[LimitCalc]: process ID: " << _pid << std::endl;
-    _seed = 31*_seed+_pid;
-    std::cout << "[LimitCalc]: new random seed (31*seed+pid): " << _seed << std::endl;
-    mRandom.SetSeed(_seed);
-    
-    // set RooFit random seed (it has a private copy)
-    RooRandom::randomGenerator()->SetSeed(_seed);
-  }
-  else{
-    std::cout << "[LimitCalc]: random seed: " << randomSeed << std::endl;
-    mRandom.SetSeed(randomSeed);
-    
-    // set RooFit random seed (it has a private copy)
-    RooRandom::randomGenerator()->SetSeed(randomSeed);
-  }
+  SetSeed(randomSeed);
 
   // HypoTestInverter attributes (CLs, FC...)
   mDoPlotHypoTestResult =  false; 
@@ -356,6 +350,40 @@ LimitCalc::~LimitCalc(){
   delete mpSimpleInterval;
   delete mpMcmcInterval;
   delete mpFcCalc;
+}
+
+
+
+void LimitCalc::SetSeed( UInt_t seed ){
+  //
+  // Set random seed. If 0, set unique random.
+  //
+  std::string _legend = "[LimitCalc::SetSeed]: ";
+
+  if (seed == 0){
+    mRandom.SetSeed();
+    UInt_t _seed = mRandom.GetSeed();
+    UInt_t _pid = gSystem->GetPid();
+    std::cout << _legend << "random seed: " << _seed << std::endl;
+    std::cout << _legend << "process ID: " << _pid << std::endl;
+    _seed = 31*_seed+_pid;
+    std::cout << _legend << "new random seed (31*seed+pid): " << _seed << std::endl;
+    mRandom.SetSeed(_seed);
+    
+    // set RooFit random seed (it has a private copy)
+    RooRandom::randomGenerator()->SetSeed(_seed);
+  }
+  else{
+    std::cout << _legend 
+	      << "random seed: " << seed 
+	      << std::endl;
+    mRandom.SetSeed(seed);
+    
+    // set RooFit random seed (it has a private copy)
+    RooRandom::randomGenerator()->SetSeed(seed);
+  }
+
+  return;
 }
 
 
