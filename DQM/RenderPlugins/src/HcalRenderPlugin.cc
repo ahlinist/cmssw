@@ -2,8 +2,8 @@
   \file HcalRenderPlugin.cc
   \brief Display Plugin for Hcal DQM Histograms
   \author J. Temple
-  \version $Revision: 1.49 $
-  \date $Date: 2010/11/24 18:58:24 $
+  \version $Revision: 1.50 $
+  \date $Date: 2011/04/28 13:11:44 $
   \\
   \\ Code shamelessly borrowed from S. Dutta's SiStripRenderPlugin.cc code,
   \\ G. Della Ricca and B. Gobbo's EBRenderPlugin.cc, and other existing
@@ -14,7 +14,7 @@
   // DQMNet::CoreObject replaced by VisDQMObject in Lassi's Oct. 31 revision 
   */
 
-#include "VisMonitoring/DQMServer/interface/DQMRenderPlugin.h"
+#include "DQM/DQMRenderPlugin.h"
 #include "utils.h"
 
 #include "TROOT.h"

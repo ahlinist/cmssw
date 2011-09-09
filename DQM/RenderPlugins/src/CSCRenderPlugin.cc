@@ -16,7 +16,7 @@
  * =====================================================================================
  */
 
-#include "VisMonitoring/DQMServer/interface/DQMRenderPlugin.h"
+#include "DQM/DQMRenderPlugin.h"
 #include "CSCRenderPlugin_ChamberMap.h"
 #include "CSCRenderPlugin_SummaryMap.h"
 #include "CSCRenderPlugin_EventDisplay.h"

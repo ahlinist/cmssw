@@ -1,14 +1,14 @@
-// $Id: L1TdeRCTRenderPlugin.cc,v 1.17 2009/11/18 10:26:24 asavin Exp $
+// $Id: L1TdeRCTRenderPlugin.cc,v 1.18 2010/10/28 09:51:02 asavin Exp $
 
 /*!
   \file L1TdeRCTRenderPlugin
   \brief Display Plugin for Quality Histograms
   \author A.Savin
-  \version $Revision: 1.17 $
-  \date $Date: 2009/11/18 10:26:24 $
+  \version $Revision: 1.18 $
+  \date $Date: 2010/10/28 09:51:02 $
 */
 
-#include "VisMonitoring/DQMServer/interface/DQMRenderPlugin.h"
+#include "DQM/DQMRenderPlugin.h"
 #include "TH1F.h"
 #include "TH2F.h"
 #include "TH3F.h"

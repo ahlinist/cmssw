@@ -8,11 +8,11 @@
 //
 // Original Author:
 //         Created:  Sat Apr 19 20:02:57 CEST 2008
-// $Id: HLXRenderPlugin.cc,v 1.19 2009/11/24 17:00:32 neadam Exp $
+// $Id: HLXRenderPlugin.cc,v 1.20 2009/12/04 17:55:24 neadam Exp $
 //
 
 // user include files
-#include "VisMonitoring/DQMServer/interface/DQMRenderPlugin.h"
+#include "DQM/DQMRenderPlugin.h"
 #include "utils.h"
 
 #include "TH1F.h"

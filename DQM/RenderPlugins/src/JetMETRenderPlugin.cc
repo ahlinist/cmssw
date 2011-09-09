@@ -10,7 +10,7 @@
   \\ or TH2, and call a private method appropriate for the histogram type
 */
 
-#include "VisMonitoring/DQMServer/interface/DQMRenderPlugin.h"
+#include "DQM/DQMRenderPlugin.h"
 #include "utils.h"
 
 #include "TProfile2D.h"

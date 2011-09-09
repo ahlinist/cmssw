@@ -1,4 +1,4 @@
-#include "VisMonitoring/DQMServer/interface/DQMRenderPlugin.h"
+#include "DQM/DQMRenderPlugin.h"
 #include "utils.h"
 #include "TLegend.h"
 #include "TH2F.h"

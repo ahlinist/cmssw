@@ -2,11 +2,11 @@
   \file SiPixelRenderPlugin
   \brief Display Plugin for Pixel DQM Histograms
   \author P.Merkel
-  \version $Revision: 1.46 $
-  \date $Date: 2011/05/18 05:50:19 $
+  \version $Revision: 1.47 $
+  \date $Date: 2011/09/08 12:28:49 $
 */
 
-#include "VisMonitoring/DQMServer/interface/DQMRenderPlugin.h"
+#include "DQM/DQMRenderPlugin.h"
 #include "utils.h"
 
 #include "TProfile2D.h"

@@ -2,11 +2,11 @@
   \file SiStripRenderPlugin
   \brief Display Plugin for SiStrip DQM Histograms
   \author S. Dutta
-  \version $Revision: 1.38 $
-  \date $Date: 2011/03/15 16:06:45 $
+  \version $Revision: 1.39 $
+  \date $Date: 2011/05/23 15:22:58 $
 */
 
-#include "VisMonitoring/DQMServer/interface/DQMRenderPlugin.h"
+#include "DQM/DQMRenderPlugin.h"
 #include "utils.h"
 
 #include "TProfile2D.h"
