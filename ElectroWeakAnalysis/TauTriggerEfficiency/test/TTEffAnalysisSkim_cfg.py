@@ -19,19 +19,27 @@ process.load("FWCore/MessageService/MessageLogger_cfi")
 process.load('Configuration/StandardSequences/GeometryIdeal_cff')
 process.load('Configuration/StandardSequences/MagneticField_cff')
 process.load('Configuration/StandardSequences/FrontierConditions_GlobalTag_cff')
+if isData:
+  process.load('Configuration.StandardSequences.RawToDigi_Data_cff')
+else:
+  process.load('Configuration.StandardSequences.RawToDigi_cff')
+process.load('Configuration.StandardSequences.L1Reco_cff')
+process.load('Configuration.StandardSequences.Reconstruction_cff')
+process.load('Configuration.StandardSequences.EndOfProcess_cff')
+
 if (isData):
     process.GlobalTag.globaltag = 'GR_R_42_V20::All'
 else:
     process.GlobalTag.globaltag = 'START42_V13::All'
 
 process.maxEvents = cms.untracked.PSet(
-        input = cms.untracked.int32(500)
+        input = cms.untracked.int32(100)
 )
 
 if(isData):
   process.source = cms.Source("PoolSource",
     fileNames = cms.untracked.vstring(
-        'file:/tmp/slehti/muTau_HLT-AOD.root'
+          'file:/tmp/slehti/muTau_HLT-AOD.root'
     )
   )
 else:
@@ -59,8 +67,13 @@ process.scrapping = cms.EDFilter("FilterOutScraping",
 )
 process.load("RecoTauTag.Configuration.RecoPFTauTag_cff")
 
-process.load("ElectroWeakAnalysis.TauTriggerEfficiency.ZtoMuTauFilter_cfi")
-process.PFTauSkimmed = process.muTauFilterSequence
+# Produce PAT
+import ElectroWeakAnalysis.TauTriggerEfficiency.Pat as pat
+process.patSequence = pat.addPat(process, isData, False)
+
+
+import ElectroWeakAnalysis.TauTriggerEfficiency.ZtoMuTauFilter_cfi as zmutau
+process.PFTauSkimmed = zmutau.addSelection(process)
 
 process.TTEffSkimCounterAllEvents   = cms.EDProducer("EventCountProducer")
 process.TTEffSkimCounterSavedEvents = cms.EDProducer("EventCountProducer")
@@ -69,12 +82,13 @@ process.TTEffSkimFilter = cms.Path(
 	process.TTEffSkimCounterAllEvents *
         process.primaryVertexFilter * 
 	process.scrapping *
+        process.patSequence *
 	process.PFTauSkimmed *
 	process.TTEffSkimCounterSavedEvents
 )
 
 # Produce the rho for L1FastJet
-process.load('RecoJets.Configuration.RecoPFJets_cff')
+#process.load('RecoJets.Configuration.RecoPFJets_cff')
 process.kt6PFJets.doRhoFastjet = True
 process.ak5PFJets.doAreaFastjet = True
 process.ak5PFJetSequence = cms.Sequence(process.kt6PFJets*process.ak5PFJets)
@@ -90,7 +104,6 @@ process.FEVTEventContent.outputCommands.extend([
         'keep *_offlinePrimaryVertices_*_*',
         'keep *_elecpreid_*_*',
         'keep *_particleFlow_*_*',
-        'keep *_kt6PFJets_rho*_*',
         'keep *_ak5PFJets_*_*',
         'keep recoTracks_*_*_*',
         'keep recoTrackExtras_*_*_*',
@@ -107,6 +120,11 @@ process.FEVTEventContent.outputCommands.extend([
         'keep L1GlobalTriggerReadoutRecord_*_*_*',
         'keep recoBeamSpot_*_*_*',
         'keep edmMergeableCounter_*_*_*',
+        'keep *_patTaus*_*_*',
+        'keep *_patMuons_*_*',
+        'keep *_selectedPatTaus*_*_*',
+        'keep *_selectedPatMuons_*_*',
+        'keep *_selectedPatJets*_*_*',
 ])
 #process.FEVTEventContent.outputCommands.append('keep *')
 
@@ -117,15 +135,6 @@ process.output = cms.OutputModule("PoolOutputModule",
         SelectEvents = cms.vstring('TTEffSkimFilter')
     )
 )
-
-if(isData):
-  process.load('Configuration.StandardSequences.RawToDigi_Data_cff')
-else:
-  process.load('Configuration.StandardSequences.RawToDigi_cff')
-process.load('Configuration.StandardSequences.L1Reco_cff')
-process.load('Configuration.StandardSequences.Reconstruction_cff')
-process.load('Configuration.StandardSequences.EndOfProcess_cff')
-
 
 # Path and EndPath definitions
 process.raw2digi_step = cms.Path(process.RawToDigi)

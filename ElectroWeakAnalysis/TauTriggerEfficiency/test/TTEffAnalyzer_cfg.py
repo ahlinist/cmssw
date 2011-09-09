@@ -92,16 +92,12 @@ if not isData:
     )
 
 # Do the (old) TTEff shrinking cone PFTau
-doTTEffShrinkingConePFTau=False
-if doTTEffShrinkingConePFTau:
-    process.load("ElectroWeakAnalysis.TauTriggerEfficiency.TTEffPFTau_cff")
-    process.commonSequence += process.TTEffPFTau
+#doTTEffShrinkingConePFTau=False
+#if doTTEffShrinkingConePFTau:
+#    process.load("ElectroWeakAnalysis.TauTriggerEfficiency.TTEffPFTau_cff")
+#    process.commonSequence += process.TTEffPFTau
 
-# Run PAT
-import ElectroWeakAnalysis.TauTriggerEfficiency.Pat as pat
-process.patSequence = pat.addPat(process, isData, doTTEffShrinkingConePFTau)
-process.commonSequence += process.patSequence
-
+# Analyzer definition
 process.TTEffAnalysisHLTPFTauHPS = cms.EDAnalyzer("TTEffAnalyzer",
 	DoOfflineVariablesOnly  = cms.bool(False), #if true: no trigger info is saved
         DoMCTauEfficiency       = cms.bool(False), #if true: per MCTau cand; default is false: per offline tau cand
@@ -212,30 +208,30 @@ process.TTEffAnalysisHLTPFTauTightHPS = process.TTEffAnalysisHLTPFTauHPS.clone(
 )
 
 # Reference is TTEff shrinking cone
-process.TTEffAnalysisHLTCaloTau = process.TTEffAnalysisHLTPFTauHPS.clone(
-    outputFileName = "tteffAnalysis-hltcalotau-pftau.root"
-)
-setReferenceToTTEffShrinkingCone(process.TTEffAnalysisHLTCaloTau)
-setHltToCalo(process.TTEffAnalysisHLTCaloTau)
+#process.TTEffAnalysisHLTCaloTau = process.TTEffAnalysisHLTPFTauHPS.clone(
+#    outputFileName = "tteffAnalysis-hltcalotau-pftau.root"
+#)
+#setReferenceToTTEffShrinkingCone(process.TTEffAnalysisHLTCaloTau)
+#setHltToCalo(process.TTEffAnalysisHLTCaloTau)
 
-process.TTEffAnalysisHLTPFTau = process.TTEffAnalysisHLTPFTauHPS.clone(
-    outputFileName = "teffAnalysis-hltpftau-pftau.root",
-)
-setReferenceToTTEffShrinkingCone(process.TTEffAnalysisHLTPFTau)
+#process.TTEffAnalysisHLTPFTau = process.TTEffAnalysisHLTPFTauHPS.clone(
+#    outputFileName = "teffAnalysis-hltpftau-pftau.root",
+#)
+#setReferenceToTTEffShrinkingCone(process.TTEffAnalysisHLTPFTau)
 
-process.TTEffAnalysisHLTPFTauTight = process.TTEffAnalysisHLTPFTau.clone(
-    l25PtCutSource = "hltPFTausTightIso",
-    outputFileName = "tteffAnalysis-hltpftautight-pftau.root",
-)
+#process.TTEffAnalysisHLTPFTauTight = process.TTEffAnalysisHLTPFTau.clone(
+#    l25PtCutSource = "hltPFTausTightIso",
+#    outputFileName = "tteffAnalysis-hltpftautight-pftau.root",
+#)
 
 process.runTTEffAna = cms.Path(process.commonSequence)
 process.runTTEffAna += process.TTEffAnalysisHLTPFTauHPS
 process.runTTEffAna += process.TTEffAnalysisHLTCaloTauHPS
 process.runTTEffAna += process.TTEffAnalysisHLTPFTauTightHPS
-if doTTEffShrinkingConePFTau:
-    process.runTTEffAna += process.TTEffAnalysisHLTCaloTau
-    process.runTTEffAna += process.TTEffAnalysisHLTPFTau
-    process.runTTEffAna += process.TTEffAnalysisHLTPFTauTight
+#if doTTEffShrinkingConePFTau:
+#    process.runTTEffAna += process.TTEffAnalysisHLTCaloTau
+#    process.runTTEffAna += process.TTEffAnalysisHLTPFTau
+#    process.runTTEffAna += process.TTEffAnalysisHLTPFTauTight
 #process.runTTEffAna += process.TTEffAnalysisL1Tau
 #process.runTTEffAna += process.TTEffAnalysisL1Cen
 
@@ -245,7 +241,7 @@ process.TTEffAnalysisHLTPFTauTightHPSHighPurity = process.TTEffAnalysisHLTPFTauT
     LoopingOver = "selectedPatTausHpsPFTauHighPurity",
     MuonSource = "selectedPatMuonsHighPurity",
     MuonTauPairSource = "muTauPairsHighPurity",
-    outputFileName = "tteffAnalysis-hltpftau-hpspftautight-highpurity.root"
+    outputFileName = "tteffAnalysis-hltpftautight-hpspftau-highpurity.root"
 )
 process.runTTEffAnaHighPurity = cms.Path(
     process.commonSequence +

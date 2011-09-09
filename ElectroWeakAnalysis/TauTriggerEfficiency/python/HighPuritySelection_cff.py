@@ -28,7 +28,7 @@ selectedPatTausHpsPFTauHighPurity = cms.EDFilter("PATTauSelector",
     src = cms.InputTag("selectedPatTausHpsPFTau"),
     cut = cms.string("leadPFChargedHadrCand().isNonnull() && leadPFChargedHadrCand().pt() > 20"
                      " && tauID('againstElectronMedium') && tauID('againstMuonTight')"
-                     " && tauID('byTightIsolation')"
+                     " && tauID('decayModeFinding') && tauID('byTightIsolation')"
                      " && signalPFChargedHadrCands().size() == 1"
                      )
 )
@@ -43,6 +43,11 @@ import ZtoMuTauFilter_cfi as zmutau
 muTauPairsHighPurity = zmutau.muTauPairs.clone(
     decay = "selectedPatMuonsHighPurity@+ selectedPatTausHpsPFTauHighPurity@-"
 )
+muTauPairsHighPurityFilter = cms.EDFilter("PATCandViewCountFilter",
+    src = cms.InputTag("muTauPairsHighPurity"),
+    minNumber = cms.uint32(1),
+    maxNumber = cms.uint32(1)
+)
 
 highPuritySequence = cms.Sequence(
     selectedPatMuonsHighPurity *
@@ -51,5 +56,6 @@ highPuritySequence = cms.Sequence(
     vetoPatMuonsHighPurityFilter *
     selectedPatTausHpsPFTauHighPurity *
     selectedPatTausHpsPFTauHighPurityFilter *
-    muTauPairsHighPurity
+    muTauPairsHighPurity *
+    muTauPairsHighPurityFilter
 )
