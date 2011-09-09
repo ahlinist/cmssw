@@ -14,8 +14,8 @@
  *      New render plugin for report summary map
  *
  *
- * $Date: 2011/03/09 14:54:42 $
- * $Revision: 1.10 $
+ * $Date: 2011/03/11 11:05:44 $
+ * $Revision: 1.11 $
  *
  */
 
@@ -25,7 +25,7 @@
 // user include files
 
 //    base class
-#include "VisMonitoring/DQMServer/interface/DQMRenderPlugin.h"
+#include "DQM/DQMRenderPlugin.h"
 
 #include "TProfile2D.h"
 #include "TH1F.h"

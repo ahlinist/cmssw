@@ -6,7 +6,7 @@
   \date $ Date: 2010/30/03 08:11:00 $
 */
 
-#include "VisMonitoring/DQMServer/interface/DQMRenderPlugin.h"
+#include "DQM/DQMRenderPlugin.h"
 #include "utils.h"
 
 #include "TROOT.h"

@@ -2,11 +2,11 @@
   \file DQMMessageLoggerRenderPlugin
   \brief Display Plugin for Quality Histograms
   \author E. Nesvold
-  \version $Revision: 1.3 $
-  \date $Date: 2009/12/14 16:22:56 $
+  \version $Revision: 1.4 $
+  \date $Date: 2010/02/03 20:45:50 $
 */
 
-#include "VisMonitoring/DQMServer/interface/DQMRenderPlugin.h"
+#include "DQM/DQMRenderPlugin.h"
 #include "utils.h"
 #include "TCanvas.h"
 #include "TH1F.h"

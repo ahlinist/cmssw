@@ -2,11 +2,11 @@
   \File BeamRenderPlugin
   \Display Plugin for BeamSpot DQM Histograms
   \author 
-  \version $Revision: 1.10 $
-  \date $Date: 2010/06/05 14:36:58 $
+  \version $Revision: 1.11 $
+  \date $Date: 2010/07/12 13:35:41 $
 */
 
-#include "VisMonitoring/DQMServer/interface/DQMRenderPlugin.h"
+#include "DQM/DQMRenderPlugin.h"
 #include "utils.h"
 
 #include "TProfile2D.h"

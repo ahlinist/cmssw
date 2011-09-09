@@ -1,14 +1,14 @@
-// $Id: DTRenderPlugin.cc,v 1.59 2010/03/17 16:22:25 battilan Exp $
+// $Id: DTRenderPlugin.cc,v 1.61 2011/06/14 14:39:35 branca Exp $
 
 /*!
   \file EBRenderPlugin
   \brief Display Plugin for Quality Histograms
   \author G. Masetti
-  \version $Revision: 1.59 $
-  \date $Date: 2010/03/17 16:22:25 $
+  \version $Revision: 1.61 $
+  \date $Date: 2011/06/14 14:39:35 $
 */
 
-#include "VisMonitoring/DQMServer/interface/DQMRenderPlugin.h"
+#include "DQM/DQMRenderPlugin.h"
 #include "utils.h"
 
 #include "TProfile2D.h"

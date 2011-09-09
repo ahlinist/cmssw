@@ -24,12 +24,12 @@
 #include "TColor.h"
 #include "TROOT.h"
 
-# include "DQMServices/Core/interface/DQMDefinitions.h"
+# include "DQM/DQMDefinitions.h"
 
 void dqm::QualityTestStatusRenderPlugin::reportSummaryMapPalette(TH2* obj) {
 
     /**
-     DQMServices/Core/interface/DQMDefinitions.h
+     DQM/DQMDefinitions.h
 
      Numeric constants for quality test results.  The smaller the
      number, the less severe the message.

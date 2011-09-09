@@ -7,7 +7,7 @@
   \\ and B. Gobbo's EBRenderPlugin.cc, and other existing subdetector plugins
 */
 
-#include "VisMonitoring/DQMServer/interface/DQMRenderPlugin.h"
+#include "DQM/DQMRenderPlugin.h"
 #include "utils.h"
 
 #include "TProfile2D.h"

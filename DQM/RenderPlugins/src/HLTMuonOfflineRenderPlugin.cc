@@ -5,8 +5,11 @@
   \\
 
 
-  $Id: HLTMuonOfflineRenderPlugin.cc,v 1.5 2009/10/31 23:18:54 lat Exp $
+  $Id: HLTMuonOfflineRenderPlugin.cc,v 1.6 2011/03/24 20:13:38 klukas Exp $
   $Log: HLTMuonOfflineRenderPlugin.cc,v $
+  Revision 1.6  2011/03/24 20:13:38  klukas
+  Updated to fit new offline DQM plots; changed efficiency plot styles
+
   Revision 1.5  2009/10/31 23:18:54  lat
   Update for DQM GUI 5.1.0
 
@@ -36,7 +39,7 @@
   middle of a run
 */
 
-#include "VisMonitoring/DQMServer/interface/DQMRenderPlugin.h"
+#include "DQM/DQMRenderPlugin.h"
 #include "utils.h"
 
 #include "TProfile.h"

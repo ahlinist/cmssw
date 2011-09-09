@@ -7,8 +7,11 @@
   \\ subdetector plugins
   \\ preDraw and postDraw methods now check whether histogram was a TH1
   \\ or TH2, and call a private method appropriate for the histogram type
-  $Id: HLTRenderPlugin.cc,v 1.20 2010/07/26 10:45:32 rekovic Exp $
+  $Id: HLTRenderPlugin.cc,v 1.21 2011/02/15 18:16:43 rekovic Exp $
   $Log: HLTRenderPlugin.cc,v $
+  Revision 1.21  2011/02/15 18:16:43  rekovic
+  Move up the bottom margin from 0.16 to 0.3 for FourVector Filters histograms so that the names of filters can be seen
+
   Revision 1.20  2010/07/26 10:45:32  rekovic
   Extend the Renders from folder FourVector/PathsSummary to folder PathsSummary
 
@@ -59,7 +62,7 @@
   middle of a run
 */
 
-#include "VisMonitoring/DQMServer/interface/DQMRenderPlugin.h"
+#include "DQM/DQMRenderPlugin.h"
 #include "utils.h"
 
 #include "TProfile2D.h"
