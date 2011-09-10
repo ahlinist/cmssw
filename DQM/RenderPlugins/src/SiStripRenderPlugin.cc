@@ -2,8 +2,8 @@
   \file SiStripRenderPlugin
   \brief Display Plugin for SiStrip DQM Histograms
   \author S. Dutta
-  \version $Revision: 1.39 $
-  \date $Date: 2011/05/23 15:22:58 $
+  \version $Revision: 1.40 $
+  \date $Date: 2011/09/09 11:53:43 $
 */
 
 #include "DQM/DQMRenderPlugin.h"
@@ -208,28 +208,28 @@ private:
       if( o.name.find( "Summary_MeanNumberOfDigis" )  != std::string::npos)
       {
         obj->SetStats( kFALSE );
-        obj->SetMaximum(12.0);
+        obj->SetMaximum(20.0);
         obj->SetMinimum(-0.1);
         return;
       }
       if( o.name.find( "Summary_MeanNumberOfDigis__TOB" )  != std::string::npos)
       {
         obj->SetStats( kFALSE );
-        obj->SetMaximum(5.0);
+        obj->SetMaximum(15.0);
         obj->SetMinimum(-0.1);
         return;
       }
       if( o.name.find( "Summary_MeanNumberOfClusters" )  != std::string::npos)
       {
         obj->SetStats( kFALSE );
-        obj->SetMaximum(5.0);
+        obj->SetMaximum(10.0);
         obj->SetMinimum(-0.001);
         return;
       }
-      if( o.name.find( "Summary_MeanNumberOfClusters_TOB" )  != std::string::npos)
+      if( o.name.find( "Summary_MeanNumberOfClusters__TOB" )  != std::string::npos)
       {
         obj->SetStats( kFALSE );
-        obj->SetMaximum(3.0);
+        obj->SetMaximum(5.0);
         obj->SetMinimum(-0.001);
         return;
       }
