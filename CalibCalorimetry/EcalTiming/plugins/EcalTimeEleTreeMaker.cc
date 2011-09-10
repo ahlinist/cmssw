@@ -14,7 +14,7 @@ Implementation:
 // Skeleton Derived from an example by:  
 // Authors:                              Giovanni Franzoni (UMN)
 //         Created:  Mo Apr 18 5:46:22 CEST 2008
-// $Id: EcalTimeEleTreeMaker.cc,v 1.6 2011/07/20 23:22:07 franzoni Exp $
+// $Id: EcalTimeEleTreeMaker.cc,v 1.7 2011/07/21 06:30:58 franzoni Exp $
 //
 //
 
@@ -48,13 +48,9 @@ Implementation:
 #include "MagneticField/Engine/interface/MagneticField.h"
 #include "MagneticField/Records/interface/IdealMagneticFieldRecord.h"
 
-#include "DataFormats/HcalRecHit/interface/HcalRecHitCollections.h"
-#include "DataFormats/CaloTowers/interface/CaloTowerCollection.h"
-#include "DataFormats/CaloTowers/interface/CaloTower.h"
-
 #include "CondFormats/EcalObjects/interface/EcalADCToGeVConstant.h"
 #include "CondFormats/DataRecord/interface/EcalADCToGeVConstantRcd.h"
-
+#include "CalibCalorimetry/EcalLaserCorrection/interface/EcalLaserDbRecord.h"
 
 // vertex stuff
 #include <DataFormats/VertexReco/interface/VertexFwd.h>
@@ -232,11 +228,11 @@ void EcalTimeEleTreeMaker::analyze (const edm::Event& iEvent, const edm::EventSe
   // GFdoc GT information 
   dump3Ginfo(iEvent, iSetup, myTreeVariables_) ;
   
-  dumpBarrelClusterInfo(theGeometry, theCaloTopology,
+  dumpBarrelClusterInfo(iEvent,theGeometry, theCaloTopology,
 			patElecs,
 			theBarrelEcalRecHits, 
 			lazyTools, XtalMap, XtalMapCurved, myTreeVariables_) ;
-  dumpEndcapClusterInfo(theGeometry, theCaloTopology,
+  dumpEndcapClusterInfo(iEvent,theGeometry, theCaloTopology,
 			patElecs,
 			theEndcapSuperClusters,
 			theEndcapEcalRecHits, 
@@ -273,6 +269,8 @@ void EcalTimeEleTreeMaker::beginRun(edm::Run const &, edm::EventSetup const & ev
   eventSetup.get<EcalIntercalibConstantsRcd>().get(ical);
   // ADCtoGeV
   eventSetup.get<EcalADCToGeVConstantRcd>().get(agc);
+  // transp corrections
+  eventSetup.get<EcalLaserDbRecord>().get(laser);
 }
 
 
@@ -294,7 +292,8 @@ std::string EcalTimeEleTreeMaker::intToString (int num)
 
 // -----------------------------------------------------------------------------------------
 
-void EcalTimeEleTreeMaker::dumpBarrelClusterInfo (const CaloGeometry * theGeometry,
+void EcalTimeEleTreeMaker::dumpBarrelClusterInfo (const edm::Event& iEvent,
+						  const CaloGeometry * theGeometry,
 						  const CaloTopology * theCaloTopology,
 						  const pat::ElectronCollection& patElecs,
 						  const EcalRecHitCollection* theBarrelEcalRecHits,
@@ -425,9 +424,25 @@ void EcalTimeEleTreeMaker::dumpBarrelClusterInfo (const CaloGeometry * theGeomet
 	      
 	      // thisamp is the EB amplitude of the current rechit
 	      double thisamp  = myhit.energy () ;
-	      //	      double thistime = myhit.time ();
 	      double thisChi2 = myhit.chi2 ();
 	      double thisOutOfTimeChi2 = myhit.outOfTimeChi2 ();
+	      
+	      EcalIntercalibConstantMap::const_iterator icalit = icalMap.find(detitr->first);
+	      
+	      EcalIntercalibConstant icalconst = 1;
+	      if( icalit!=icalMap.end() ) {
+		icalconst = (*icalit);
+	      } else {
+		edm::LogError("EcalTimeEleTreeMaker") << "No intercalib const found for xtal "
+						      << (detitr->first).rawId();
+	      }
+	      // get laser coefficient
+	      float lasercalib = 1.;
+	      lasercalib = laser->getLaserCorrection( detitr->first, iEvent.time());
+	      //std::cout << "GF EE debug: " << lasercalib << std::endl;
+	      // discard rechits with A/sigma < 12
+	      if ( thisamp/(icalconst*lasercalib*adcToGeV) < (1.1*12) ) continue;
+	      
 	      if (thisamp > 0.027) //cut on energy->number of crystals in cluster above 3sigma noise; gf: desirable?
 		{ 
 		  numXtalsinCluster++ ; 
@@ -444,17 +459,8 @@ void EcalTimeEleTreeMaker::dumpBarrelClusterInfo (const CaloGeometry * theGeomet
 		  std::swap (time, secondTime) ; 
 		  std::swap (maxDet, secDet) ;
 		}
-	      
-	      EcalIntercalibConstantMap::const_iterator icalit = icalMap.find(detitr->first);
-	      
-	      EcalIntercalibConstant icalconst = 1;
-	      if( icalit!=icalMap.end() ) {
-		icalconst = (*icalit);
-	      } else {
-		edm::LogError("EcalTimeEleTreeMaker") << "No intercalib const found for xtal "
-						      << (detitr->first).rawId();
-	      }
-	      
+
+      
 	      if(myhit.isTimeErrorValid())
 		myTreeVariables_.xtalInBCTimeErr[numberOfClusters][numberOfXtalsInCluster]= myhit.timeError();
 	      else
@@ -469,7 +475,7 @@ void EcalTimeEleTreeMaker::dumpBarrelClusterInfo (const CaloGeometry * theGeomet
 	      myTreeVariables_.xtalInBCIx[numberOfClusters][numberOfXtalsInCluster]=           -999999; 
 	      myTreeVariables_.xtalInBCIy[numberOfClusters][numberOfXtalsInCluster]=           -999999; 
 	      myTreeVariables_.xtalInBCFlag[numberOfClusters][numberOfXtalsInCluster]=         myhit.recoFlag(); 
-	      myTreeVariables_.xtalInBCAmplitudeADC[numberOfClusters][numberOfXtalsInCluster]= (float) thisamp/(icalconst*adcToGeV);
+	      myTreeVariables_.xtalInBCAmplitudeADC[numberOfClusters][numberOfXtalsInCluster]= (float) thisamp/(icalconst*lasercalib*adcToGeV);
 	      myTreeVariables_.xtalInBCChi2[numberOfClusters][numberOfXtalsInCluster]=         thisChi2;
 	      myTreeVariables_.xtalInBCOutOfTimeChi2[numberOfClusters][numberOfXtalsInCluster]=thisOutOfTimeChi2;
 	      // note: SwissCross = 1 - E4/E1   
@@ -539,7 +545,8 @@ void EcalTimeEleTreeMaker::dumpBarrelClusterInfo (const CaloGeometry * theGeomet
 
 // -----------------------------------------------------------------------------------------
 
-void EcalTimeEleTreeMaker::dumpEndcapClusterInfo (const CaloGeometry * theGeometry,
+void EcalTimeEleTreeMaker::dumpEndcapClusterInfo (const edm::Event& iEvent,
+						  const CaloGeometry * theGeometry,
 						  const CaloTopology * theCaloTopology,
 						  const pat::ElectronCollection& patElecs,
 						  const reco::SuperClusterCollection* theEndcapSuperClusters,
@@ -665,6 +672,22 @@ void EcalTimeEleTreeMaker::dumpEndcapClusterInfo (const CaloGeometry * theGeomet
 	     double thisChi2 = myhit.chi2 ();
 	     double thisOutOfTimeChi2 = myhit.outOfTimeChi2 ();
 
+    
+             EcalIntercalibConstantMap::const_iterator icalit = icalMap.find(detitr->first);
+             EcalIntercalibConstant icalconst = 1;
+             if( icalit!=icalMap.end() ) {
+               icalconst = (*icalit);
+             } else {
+               edm::LogError("EcalTimeEleTreeMaker") << "No intercalib const found for xtal "
+                 << (detitr->first).rawId();
+             }
+	     // get laser coefficient
+	     float lasercalib = 1.;
+	     lasercalib = laser->getLaserCorrection( detitr->first, iEvent.time());
+	     //std::cout << "GF EB debug: " << lasercalib << std::endl;
+	     // don't store rechits with A/sigma < 12
+	     if ( thisamp/(icalconst*lasercalib*adcToGeV) < (2.2*12) ) continue;
+
              if (thisamp > 0.027) //cut on energy->number of crystals in cluster above 3sigma noise
                { 
                  numXtalsinCluster++ ; //xtals in cluster above 3sigma noise  
@@ -683,15 +706,7 @@ void EcalTimeEleTreeMaker::dumpEndcapClusterInfo (const CaloGeometry * theGeomet
                  std::swap (time, secondTime) ; 
                  std::swap (maxDet, secDet) ;
                }
-    
-             EcalIntercalibConstantMap::const_iterator icalit = icalMap.find(detitr->first);
-             EcalIntercalibConstant icalconst = 1;
-             if( icalit!=icalMap.end() ) {
-               icalconst = (*icalit);
-             } else {
-               edm::LogError("EcalTimeEleTreeMaker") << "No intercalib const found for xtal "
-                 << (detitr->first).rawId();
-             }
+
 
              if(myhit.isTimeErrorValid())
                myTreeVariables_.xtalInBCTimeErr[numberOfClusters][numberOfXtalsInCluster]= myhit.timeError();
@@ -707,7 +722,7 @@ void EcalTimeEleTreeMaker::dumpEndcapClusterInfo (const CaloGeometry * theGeomet
 	      myTreeVariables_.xtalInBCIx[numberOfClusters][numberOfXtalsInCluster]=          EEDetId((detitr -> first)).ix();
 	      myTreeVariables_.xtalInBCIy[numberOfClusters][numberOfXtalsInCluster]=          EEDetId((detitr -> first)).iy();
 	      myTreeVariables_.xtalInBCFlag[numberOfClusters][numberOfXtalsInCluster]=         myhit.recoFlag(); 
-	      myTreeVariables_.xtalInBCAmplitudeADC[numberOfClusters][numberOfXtalsInCluster]=      (float) thisamp/(icalconst*adcToGeV);
+	      myTreeVariables_.xtalInBCAmplitudeADC[numberOfClusters][numberOfXtalsInCluster]=      (float) thisamp/(icalconst*lasercalib*adcToGeV);
               myTreeVariables_.xtalInBCChi2[numberOfClusters][numberOfXtalsInCluster]=         thisChi2;
               myTreeVariables_.xtalInBCOutOfTimeChi2[numberOfClusters][numberOfXtalsInCluster]=thisOutOfTimeChi2;
               myTreeVariables_.xtalInBCSwissCross[numberOfClusters][numberOfXtalsInCluster] =
