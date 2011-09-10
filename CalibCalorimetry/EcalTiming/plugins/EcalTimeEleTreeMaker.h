@@ -16,7 +16,7 @@ Implementation:
 //
 // Authors:                              Giovanni Franzoni (UMN)
 //         Created:  Mo Apr 16  5:46:22 CEST 2011
-// $Id: EcalTimeEleTreeMaker.h,v 1.1 2011/04/18 21:38:57 franzoni Exp $
+// $Id: EcalTimeEleTreeMaker.h,v 1.2 2011/07/20 23:22:48 franzoni Exp $
 //
 //
 
@@ -65,6 +65,7 @@ Implementation:
 
 #include "CondFormats/EcalObjects/interface/EcalIntercalibConstants.h"
 #include "CondFormats/EcalObjects/interface/EcalADCToGeVConstant.h"
+#include "CalibCalorimetry/EcalLaserCorrection/interface/EcalLaserDbService.h"
 
 #include "TFile.h"
 #include "TH1F.h"
@@ -124,7 +125,8 @@ class EcalTimeEleTreeMaker : public edm::EDAnalyzer
 
       //! dump Cluster information
       //! has to run after dumpMUinfo, to have the XtalMap already filled
-      void dumpBarrelClusterInfo(const CaloGeometry * theGeometry,
+      void dumpBarrelClusterInfo(const edm::Event& iEvent,
+				 const CaloGeometry * theGeometry,
 				 const CaloTopology * theCaloTopology,
 				 const pat::ElectronCollection& patElecs,
 				 const EcalRecHitCollection* theBarrelEcalRecHits,
@@ -133,7 +135,8 @@ class EcalTimeEleTreeMaker : public edm::EDAnalyzer
 				 const std::map<int,float> & XtalMapCurved,
 				 EcalTimeTreeContent & myTreeVariables_) ;
 
-      void dumpEndcapClusterInfo(const CaloGeometry * theGeometry,
+      void dumpEndcapClusterInfo(const edm::Event& iEvent,
+				 const CaloGeometry * theGeometry,
 				 const CaloTopology * theCaloTopology,
 				 const pat::ElectronCollection& patElecs,
 				 const reco::SuperClusterCollection* theEndcapSuperClusters,
@@ -194,6 +197,7 @@ class EcalTimeEleTreeMaker : public edm::EDAnalyzer
       double hbTreshold_;
       edm::ESHandle<EcalIntercalibConstants> ical;
       edm::ESHandle<EcalADCToGeVConstant> agc;
+      edm::ESHandle<EcalLaserDbService> laser;
 
 } ;
 

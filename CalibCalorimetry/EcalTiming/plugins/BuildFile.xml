@@ -15,6 +15,7 @@
 <use   name="Geometry/EcalMapping"/>
 <use   name="Geometry/CaloGeometry"/>
 <use   name="TrackingTools/TrackAssociator"/>
+<use   name="CalibCalorimetry/EcalLaserCorrection"/>
 <use   name="clhep"/>
 <use   name="root"/>
 <use   name="xerces-c"/>

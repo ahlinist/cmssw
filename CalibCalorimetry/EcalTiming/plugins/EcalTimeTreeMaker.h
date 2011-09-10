@@ -17,7 +17,7 @@ Implementation:
 // Skeleton Derived from an example by:  F. DE GUIO C. DOGLIONI P. MERIDIANI
 // Authors:                              Seth Cooper, Giovanni Franzoni (UMN)
 //         Created:  Mo Jul 14 5:46:22 CEST 2008
-// $Id: EcalTimeTreeMaker.h,v 1.3 2011/07/13 19:33:19 franzoni Exp $
+// $Id: EcalTimeTreeMaker.h,v 1.4 2011/07/21 14:15:10 franzoni Exp $
 //
 //
 
@@ -59,6 +59,7 @@ Implementation:
 
 #include "CondFormats/EcalObjects/interface/EcalIntercalibConstants.h"
 #include "CondFormats/EcalObjects/interface/EcalADCToGeVConstant.h"
+#include "CalibCalorimetry/EcalLaserCorrection/interface/EcalLaserDbService.h"
 
 #include "TFile.h"
 #include "TH1F.h"
@@ -118,7 +119,8 @@ class EcalTimeTreeMaker : public edm::EDAnalyzer
 
       //! dump Cluster information
       //! has to run after dumpMUinfo, to have the XtalMap already filled
-      void dumpBarrelClusterInfo(const CaloGeometry * theGeometry,
+      void dumpBarrelClusterInfo(const edm::Event& iEvent,
+				 const CaloGeometry * theGeometry,
 				 const CaloTopology * theCaloTopology,
 				 const EcalRecHitCollection* theBarrelEcalRecHits,
 				 const reco::BasicClusterCollection* theBarrelBasicClusters,
@@ -128,7 +130,8 @@ class EcalTimeTreeMaker : public edm::EDAnalyzer
 				 const std::map<int,float> & XtalMapCurved,
 				 EcalTimeTreeContent & myTreeVariables_) ;
 
-      void dumpEndcapClusterInfo(const CaloGeometry * theGeometry,
+      void dumpEndcapClusterInfo(const edm::Event& iEvent,
+				 const CaloGeometry * theGeometry,
 				 const CaloTopology * theCaloTopology,
 				 const EcalRecHitCollection* theEndcapEcalRecHits,
 				 const reco::BasicClusterCollection* theEndcapBasicClusters,
@@ -183,6 +186,7 @@ class EcalTimeTreeMaker : public edm::EDAnalyzer
       double hbTreshold_;
       edm::ESHandle<EcalIntercalibConstants> ical;
       edm::ESHandle<EcalADCToGeVConstant> agc;
+      edm::ESHandle<EcalLaserDbService> laser;
 
 } ;
 
