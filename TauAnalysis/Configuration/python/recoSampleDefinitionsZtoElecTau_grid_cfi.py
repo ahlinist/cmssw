@@ -25,25 +25,26 @@ SAMPLES_TO_ANALYZE_SKIM = [
 ] 
 
 SAMPLES_TO_ANALYZE_PAT = [
-        'data_TauPlusX_Run2011A_May10ReReco_pat',
-        'data_TauPlusX_Run2011A_PR_v4_pat',
-        'data_TauPlusX_Run2011A_05AugReReco_pat',
-        'data_TauPlusX_Run2011A_PR_v6_pat',
-        'Ztautau_powheg_pat',
+        #'data_TauPlusX_Run2011A_May10ReReco_pat',
+        #'data_TauPlusX_Run2011A_PR_v4_pat',
+        #'data_TauPlusX_Run2011A_05AugReReco_pat',
+        #'Ztautau_powheg_pat',
         'DYtautauM10to20_powheg_pat',
-        'Zee_powheg_pat',
+        #'Zee_powheg_pat',
         'DYeeM10to20_pythia_pat',
-        #'PhotonPlusJets_Pt15to30_pat','PhotonPlusJets_Pt30to50_pat','PhotonPlusJets_Pt50to80_pat',
-        #'QCD_BCtoE_Pt20to30_pat','QCD_BCtoE_Pt30to80_pat','QCD_BCtoE_Pt80to170_pat',
-        #'QCD_EM_Pt20to30_pat','QCD_EM_Pt30to80_pat','QCD_EM_Pt80to170_pat',
-        'TTplusJets_madgraph_pat',
+        'PhotonPlusJets_Pt15to30_pat','PhotonPlusJets_Pt30to50_pat','PhotonPlusJets_Pt50to80_pat',
+        'QCD_BCtoE_Pt20to30_pat','QCD_BCtoE_Pt30to80_pat','QCD_BCtoE_Pt80to170_pat',
+        'QCD_EM_Pt20to30_pat',
+        #'QCD_EM_Pt30to80_pat',
+        'QCD_EM_Pt80to170_pat',
+        #'TTplusJets_madgraph_pat',
         'WplusJets_madgraph_pat',
         #'WW_pat','WZ_pat',
         #'ZZ_pat', # no Summer11 sample
 ] 
 
 # set final analysis samples here
-SAMPLES_TO_ANALYZE = SAMPLES_TO_ANALYZE_SKIM
+SAMPLES_TO_ANALYZE = SAMPLES_TO_ANALYZE_PAT
 
 
 # List of samples to include in the final level plots.  May include selections
@@ -171,7 +172,7 @@ RECO_SAMPLES = {
         'lumi_mask' : '/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions11/7TeV/Reprocessing/Cert_170249-172619_7TeV_ReReco5Aug_Collisions11_JSON.txt',
         'skim_eff' : 728380./3727491,
         'conditions' : 'GR_R_42_V20::All',
-        'number_of_jobs' : 999999,
+        'number_of_jobs' : 300,
         'type' : 'Data',
         'drawOption' : styles.drawOption_Data,
         'enableSysUncertainties' : False,
@@ -204,7 +205,7 @@ RECO_SAMPLES = {
             'HLT_Ele15_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_LooseIsoPFTau20_v9'     : '167039:MIN-167913:MAX'
         }
     },
-    'data_TauPlusX_Run2011A_PR_v4_pat' : {
+    'data_TauPlusX_Run2011A_PR_v4_pat' : {# contains v4 and v6 files!!! (use run 1-168437 to just get v4)
         'datasetpath' : '/TauPlusX/lantonel-patSkim_428_v1-29084cbe8cc714ba398f31eea7600eda/USER', 
         'lumi_mask' : '/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification//Collisions11/7TeV/Prompt/Cert_160404-173244_7TeV_PromptReco_Collisions11_JSON.txt',
         'dbs_url' :  "https://cmsdbsprod.cern.ch:8443/cms_dbs_ph_analysis_01_writer/servlet/DBSServlet",
@@ -242,24 +243,6 @@ RECO_SAMPLES = {
             'HLT_Ele18_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_MediumIsoPFTau20_v1'    : '173236:MIN-999999:MAX'
         }
     },
-    'data_TauPlusX_Run2011A_PR_v6_pat' : { 
-        'datasetpath' : '', 
-        'lumi_mask' : '/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification//Collisions11/7TeV/Prompt/Cert_160404-173692_7TeV_PromptReco_Collisions11_JSON.txt',
-        'dbs_url' :  "https://cmsdbsprod.cern.ch:8443/cms_dbs_ph_analysis_01_writer/servlet/DBSServlet",
-        'conditions' : 'GR_P_V22::All',
-        'number_of_jobs' : 200,
-        'type' : 'Data',
-        'drawOption' : styles.drawOption_Data,
-        'enableSysUncertainties' : False,
-	    'applyVertexMultiplicityReweighting' : False,
-        'applyElectronTriggerEfficiencyCorrection' : False,
-        'applyElectronIsolationEfficiencyCorrection' : False,
-        'applyZrecoilCorrection' : False,
-        'hlt_paths' : {
-            'HLT_Ele15_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_TightIsoPFTau20_v2'     : '170826:MIN-173198:MAX',
-            'HLT_Ele18_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_MediumIsoPFTau20_v1'    : '173236:MIN-999999:MAX'
-        }
-    },    
     'DYtautauM10to20_powheg_skim' : {
         'datasetpath' : "/DYToTauTau_M-10To20_TuneZ2_7TeV-pythia6-tauola/jkolb-skimElecTau_423_v1-8e1616e5e84b94400800aa9b2edac84c/USER",
         'dbs_url' :  "https://cmsdbsprod.cern.ch:8443/cms_dbs_ph_analysis_01_writer/servlet/DBSServlet",
@@ -372,6 +355,17 @@ RECO_SAMPLES = {
         'type' : plotter.process_WplusJets.config_dqmHistPlotter.type.value(),
         'drawOption' : styles.drawOption_WplusJets,
     },
+    'WplusJets_madgraph_pat' : {
+        'datasetpath' : "/WJetsToLNu_TuneZ2_7TeV-madgraph-tauola/lantonel-patSkim_428_v1-0fa068f9514ddfc0e3f25d602948dee0/USER",
+        'dbs_url' :  "https://cmsdbsprod.cern.ch:8443/cms_dbs_ph_analysis_01_writer/servlet/DBSServlet",
+        'number_of_jobs' : 500,
+        'events_processed' : 54895290,
+        'skim_eff' : 1537734./54895290,
+        'x_sec' : 31314*_picobarns,
+        'legendEntry' : plotter.process_WplusJets.config_dqmHistPlotter.legendEntry.value(),
+        'type' : plotter.process_WplusJets.config_dqmHistPlotter.type.value(),
+        'drawOption' : styles.drawOption_WplusJets,
+    },     
     'WW_skim' : {
         'datasetpath' : "/WW_TuneZ2_7TeV_pythia6_tauola/jkolb-skimElecTau_423_v1-2453a4eaae124a4a3fe9f365dc31e11f/USER",
         'dbs_url' :  "https://cmsdbsprod.cern.ch:8443/cms_dbs_ph_analysis_01_writer/servlet/DBSServlet",
@@ -383,6 +377,17 @@ RECO_SAMPLES = {
         'type' : plotter.process_VV.config_dqmHistPlotter.type.value(),
         'drawOption' : styles.drawOption_VV,
     },
+    'WW_pat' : {
+        'datasetpath' : "/WW_TuneZ2_7TeV_pythia6_tauola/lantonel-patSkim_428_v1-0fa068f9514ddfc0e3f25d602948dee0/USER",
+        'dbs_url' :  "https://cmsdbsprod.cern.ch:8443/cms_dbs_ph_analysis_01_writer/servlet/DBSServlet",
+        'number_of_jobs' : 20,
+        'events_processed' : 4225916,
+        'skim_eff' : 512235./4225916,
+        'x_sec' : 27.83*_picobarns, 
+        'legendEntry' : plotter.process_VV.config_dqmHistPlotter.legendEntry.value(),
+        'type' : plotter.process_VV.config_dqmHistPlotter.type.value(),
+        'drawOption' : styles.drawOption_VV,
+    },     
     'WZ_skim' : {
         'datasetpath' : "/WZ_TuneZ2_7TeV_pythia6_tauola/jkolb-skimElecTau_423_v1-2453a4eaae124a4a3fe9f365dc31e11f/USER",
         'dbs_url' :  "https://cmsdbsprod.cern.ch:8443/cms_dbs_ph_analysis_01_writer/servlet/DBSServlet",
@@ -394,6 +399,17 @@ RECO_SAMPLES = {
         'type' : plotter.process_VV.config_dqmHistPlotter.type.value(),
         'drawOption' : styles.drawOption_VV,
     },
+    'WZ_pat' : {
+        'datasetpath' : "/WZ_TuneZ2_7TeV_pythia6_tauola/lantonel-patSkim_428_v1-0fa068f9514ddfc0e3f25d602948dee0/USER",
+        'dbs_url' :  "https://cmsdbsprod.cern.ch:8443/cms_dbs_ph_analysis_01_writer/servlet/DBSServlet",
+        'number_of_jobs' : 20,
+        'events_processed' : 4265243,
+        'skim_eff' : 357637./4265243,
+        'x_sec' : 10.5*_picobarns, 
+        'legendEntry' : plotter.process_VV.config_dqmHistPlotter.legendEntry.value(),
+        'type' : plotter.process_VV.config_dqmHistPlotter.type.value(),
+        'drawOption' : styles.drawOption_VV,
+    },     
     'ZZ' : {  ##  no datset yet for Summer11
         'datasetpath' : "",
         'events_processed' : 4,
@@ -425,6 +441,16 @@ RECO_SAMPLES = {
         'type' : plotter.process_TTplusJets.config_dqmHistPlotter.type.value(),
         'drawOption' : styles.drawOption_TTplusJets,
     },
+    'TTplusJets_madgraph_pat' : {
+        'datasetpath' : "/TTJets_TuneZ2_7TeV-madgraph-tauola/lantonel-patSkim_428_v1-0fa068f9514ddfc0e3f25d602948dee0/USER",
+        'dbs_url' :  "https://cmsdbsprod.cern.ch:8443/cms_dbs_ph_analysis_01_writer/servlet/DBSServlet",
+        'number_of_jobs' : 100,
+        'events_processed' : 3701947,
+        'skim_eff' : 725953./3701947,
+        'x_sec' : 157.5*_picobarns, # NLO cross-section from https://twiki.cern.ch/twiki/bin/viewauth/CMS/StandardModelCrossSections
+        'legendEntry' : plotter.process_TTplusJets.config_dqmHistPlotter.legendEntry.value(),
+        'type' : plotter.process_TTplusJets.config_dqmHistPlotter.type.value(),
+    },     
     'PhotonPlusJets_Pt15to30_skim' : {  ## jobs mostly done
         'datasetpath' : "/G_Pt-15to30_TuneZ2_7TeV_pythia6/jkolb-skimElecTau_423_v1-8e1616e5e84b94400800aa9b2edac84c/USER",
         'dbs_url' :  "https://cmsdbsprod.cern.ch:8443/cms_dbs_ph_analysis_01_writer/servlet/DBSServlet",
