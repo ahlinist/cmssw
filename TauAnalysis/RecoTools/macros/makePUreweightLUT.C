@@ -268,7 +268,8 @@ void makePUreweightLUT()
   TString inputFilePath = "rfio:/castor/cern.ch/user/v/veelken/CMSSW_4_2_x/PATtuples/ZllRecoilCorrection/v3_1/";
   //TString inputFilePath = "/afs/cern.ch/user/v/veelken/scratch0/CMSSW_4_2_4_patch1/src/TauAnalysis/RecoTools/macros/";
 
-  TString histoLUTname = "DQMData/producePUreweightHistogramsKt6PFNeutralJets/PFNeutralRhoVsVtxMultiplicity";
+  //TString histoLUTname = "DQMData/producePUreweightHistogramsKt6PFNeutralJets/PFNeutralRhoVsVtxMultiplicity";
+  TString histoLUTname = "DQMData/producePUreweightHistogramsKt6PFJets/PFNeutralRhoVsVtxMultiplicity";
 
   TObjArray inputFileNamesData;
   inputFileNamesData.Add(new TObjString("ZllRecoilCorrection_Data_runs160329to163869_v3_1_layer_2_job_0_fe7.root"));

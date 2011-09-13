@@ -37,13 +37,14 @@ echo "Checking copies succeeded"
 set expectedFiles = ( $inputFileList )
 set existingFiles
 foreach inputFile ( $$expectedFiles )
-ls $$inputFile
-if ( "$$status" == 0 ) then
-    set existingFiles = ( $$existingFiles $$inputFile )
-else    
-    echo "Failed to copy $$inputFile to local area!"
-    $exit_command
-endif
+    ls $$inputFile
+    if ( "$$status" == 0 ) then
+        set existingFiles = ( $$existingFiles $$inputFile )
+    else    
+        echo "Failed to copy $$inputFile to local area!"
+        $exit_command
+    endif
+end
 echo "Current time:"
 date
 echo "Running script"
@@ -95,7 +96,7 @@ def make_bsub_script(output_file, input_jobs_and_files,
 
     # Copy all the files locally
     #print input_files
-    copy_command = '\n'.join('prfcp.py %s . &' % file for file in input_files)
+    copy_command = '\n'.join('prfcp.py %s .' % file for file in input_files)
     copy_command += "\n wait\n"
 
     exit_command = ""

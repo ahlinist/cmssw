@@ -219,6 +219,15 @@ def applyVertexMultiplicityReweighting_runZtoMuTau(process):
 
     _addEventWeightZtoMuTau(process, "vertexMultiplicityReweight")
 
+def applyRhoNeutralReweighting_runZtoMuTau(process):
+
+    process.load("TauAnalysis.RecoTools.vertexMultiplicityVsRhoPFNeutralReweight_cfi")
+    if hasattr(process, "producePatTupleZtoMuTauSpecific"):
+        process.producePatTupleZtoMuTauSpecific._seq = process.producePatTupleZtoMuTauSpecific._seq \
+          * process.produceVertexMultiplicityVsRhoPFNeutralReweights
+
+    _addEventWeightZtoMuTau(process, "vertexMultiplicityVsRhoPFNeutralReweight")
+
 def _addEventWeightZtoMuTau_bgEstTemplate(process, srcEventWeight, applyAfterFilterName = "*"):
 
     _addEventWeight(process,
@@ -297,6 +306,12 @@ def applyVertexMultiplicityReweighting_runZtoMuTau_tauIdEff(process):
     applyVertexMultiplicityReweighting_runZtoMuTau(process)
 
     _addEventWeightZtoMuTau_tauIdEff(process, "vertexMultiplicityReweight")
+
+def applyRhoNeutralReweighting_runZtoMuTau_tauIdEff(process):
+
+    applyRhoNeutralReweighting_runZtoMuTau(process)
+
+    _addEventWeightZtoMuTau_tauIdEff(process, "vertexMultiplicityVsRhoPFNeutralReweight")
 
 def _addEventWeighAHtoMuTau(process, srcEventWeight, applyAfterFilterName = "*"):
 

@@ -4,8 +4,8 @@
 
 prfcp
 
-Python command wrapper about rfcp, that keeps trying event if it gets a
-scheduler error.
+Python command wrapper about rfcp,
+that keeps trying even if it gets a scheduler error.
 
 From 'man rfcp'
 
@@ -19,7 +19,6 @@ RETURN CODES
        196  Request killed.
        198  Stager not active.
        200  Bad checksum.
-
 
 '''
 

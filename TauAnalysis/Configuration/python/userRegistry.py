@@ -45,12 +45,21 @@ userSettings = {
     },
     'veelken': {
         'current' : {
+            'ZtoMuTau'          : '2011Sep09', 
             'ZtoMuTau_tauIdEff' : '2011Aug18'
         },
         'jobs' : {
+            '2011Sep09' : {
+                'ZtoMuTau' : {
+                    'analysisFilePath' : "/castor/cern.ch/user/v/veelken/CMSSW_4_2_x/skims/ZtoMuTau/2011Sep09/",
+                    'harvestingFilePath' : "/data2/veelken/CMSSW_4_2_x/skims/ZtoMuTau/",
+                    'tmpFilePath' : "/data1/veelken/tmp/ZtoMuTau/",
+                    'batchHarvest' : "/castor/cern.ch/user/v/veelken/CMSSW_4_2_x/harvesting/ZtoMuTau/2011Sep09/"
+                }
+            },
             '2011Aug18' : {
                 'ZtoMuTau_tauIdEff' : {
-                    'analysisFilePath' : "/castor/cern.ch/user/v/veelken/CMSSW_4_2_x/skims/TauIdEffMeas/",
+                    'analysisFilePath' : "/castor/cern.ch/user/v/veelken/CMSSW_4_2_x/skims/TauIdEffMeas/2011Aug18/",
                     'harvestingFilePath' : "/data2/veelken/CMSSW_4_2_x/skims/ZtoMuTau_tauIdEff/",
                     'tmpFilePath' : "/data1/veelken/tmp/ZtoMuTau_tauIdEff/",
                     'batchHarvest' : "/castor/cern.ch/user/v/veelken/CMSSW_4_2_x/harvesting/ZtoMuTau_tauIdEff/2011Aug18/"

@@ -54,6 +54,7 @@ SAMPLE_DEFAULTS = {
     'applyMuonTriggerEfficiencyCorrection' : False,   # to be used for MC only
     'applyMuonIsolationEfficiencyCorrection' : False, # to be used for MC only
     'applyVertexMultiplicityReweighting' : False,     # to be used for MC with pile-up only
+    'applyRhoNeutralReweighting' : False,     # to be used for MC with pile-up only
     'enableSysUncertainties' : True,
     'lumi_mask' : '',
     'runselection' : '',
@@ -155,11 +156,12 @@ RECO_SAMPLES = {
         'legendEntry' : plotter.process_Ztautau.config_dqmHistPlotter.legendEntry.value(),
         'type' : plotter.process_Ztautau.config_dqmHistPlotter.type.value(),
         'drawOption' : styles.drawOption_Ztautau,
-        'applyZrecoilCorrection' : False,
+        'applyZrecoilCorrection' : True,
         'enableFakeRates' : True,
         'applyMuonTriggerEfficiencyCorrection' : True,
         'applyMuonIsolationEfficiencyCorrection' : True,
 	'applyVertexMultiplicityReweighting' : True,
+        'applyRhoNeutralReweighting' : True,
         'hlt' : cms.InputTag("TriggerResults", "", "HLT"),
         'SE_black_list' : 'T2_US_Purdue'
     },
@@ -172,11 +174,12 @@ RECO_SAMPLES = {
         'legendEntry' : plotter.process_Ztautau.config_dqmHistPlotter.legendEntry.value(),
         'type' : plotter.process_Ztautau.config_dqmHistPlotter.type.value(),
         'drawOption' : styles.drawOption_Ztautau,
-        'applyZrecoilCorrection' : False,
+        'applyZrecoilCorrection' : True,
         'enableFakeRates' : True,
         'applyMuonTriggerEfficiencyCorrection' : True,
         'applyMuonIsolationEfficiencyCorrection' : True,
 	'applyVertexMultiplicityReweighting' : True,
+        'applyRhoNeutralReweighting' : True,
         'hlt' : cms.InputTag("TriggerResults", "", "HLT")
     },
     'Ztautau_embedded_part1' : {
@@ -194,6 +197,7 @@ RECO_SAMPLES = {
         'applyMuonTriggerEfficiencyCorrection' : True,
         'applyMuonIsolationEfficiencyCorrection' : False,
 	'applyVertexMultiplicityReweighting' : False,
+        'applyRhoNeutralReweighting' : False,
         'hlt' : cms.InputTag("TriggerResults", "", "HLT")
     },
     'Ztautau_embedded_part2' : {
@@ -211,6 +215,7 @@ RECO_SAMPLES = {
         'applyMuonTriggerEfficiencyCorrection' : True,
         'applyMuonIsolationEfficiencyCorrection' : False,
 	'applyVertexMultiplicityReweighting' : False,
+        'applyRhoNeutralReweighting' : False,
         'hlt' : cms.InputTag("TriggerResults", "", "HLT")
     },
     'qqZll' : {
@@ -222,10 +227,11 @@ RECO_SAMPLES = {
         'legendEntry' : plotter.process_Ztautau.config_dqmHistPlotter.legendEntry.value(),
         'type' : plotter.process_Ztautau.config_dqmHistPlotter.type.value(),
         'drawOption' : styles.drawOption_Ztautau,
-        'applyZrecoilCorrection' : False,
+        'applyZrecoilCorrection' : True,
         'enableFakeRates' : True,
         'applyMuonTriggerEfficiencyCorrection' : True,
         'applyMuonIsolationEfficiencyCorrection' : True,
+        'applyRhoNeutralReweighting' : True,
         'hlt' : cms.InputTag("TriggerResults", "", "HLT")
     },
     'Zmumu_pythia' : {
@@ -237,10 +243,11 @@ RECO_SAMPLES = {
         'legendEntry' : plotter.process_Zmumu.config_dqmHistPlotter.legendEntry.value(),
         'type' : plotter.process_Zmumu.config_dqmHistPlotter.type.value(),
         'drawOption' : styles.drawOption_Zmumu,
-        'applyZrecoilCorrection' : False,
+        'applyZrecoilCorrection' : True,
         'applyMuonTriggerEfficiencyCorrection' : True,
         'applyMuonIsolationEfficiencyCorrection' : True,
         'applyVertexMultiplicityReweighting' : True,
+        'applyRhoNeutralReweighting' : True,
         'enableFakeRates' : True,
         'hlt' : cms.InputTag("TriggerResults", "", "HLT")
     },
@@ -253,10 +260,11 @@ RECO_SAMPLES = {
         'legendEntry' : plotter.process_Zmumu.config_dqmHistPlotter.legendEntry.value(),
         'type' : plotter.process_Zmumu.config_dqmHistPlotter.type.value(),
         'drawOption' : styles.drawOption_Zmumu,
-        'applyZrecoilCorrection' : False,
+        'applyZrecoilCorrection' : True,
         'applyMuonTriggerEfficiencyCorrection' : True,
         'applyMuonIsolationEfficiencyCorrection' : True,
         'applyVertexMultiplicityReweighting' : True,
+        'applyRhoNeutralReweighting' : True,
         'enableFakeRates' : True,
         'hlt' : cms.InputTag("TriggerResults", "", "HLT")
     },
@@ -273,6 +281,7 @@ RECO_SAMPLES = {
         'applyMuonTriggerEfficiencyCorrection' : True,
         'applyMuonIsolationEfficiencyCorrection' : True,
         'applyVertexMultiplicityReweighting' : True,
+        'applyRhoNeutralReweighting' : True,
         'enableFakeRates' : True,
         'factorize' : True,
         'hlt' : cms.InputTag("TriggerResults", "", "HLT")
@@ -287,10 +296,11 @@ RECO_SAMPLES = {
         'legendEntry' : plotter.process_WplusJets.config_dqmHistPlotter.legendEntry.value(),
         'type' : plotter.process_WplusJets.config_dqmHistPlotter.type.value(),
         'drawOption' : styles.drawOption_WplusJets,
-        'applyZrecoilCorrection' : False,
+        'applyZrecoilCorrection' : True,
         'applyMuonTriggerEfficiencyCorrection' : True,
         'applyMuonIsolationEfficiencyCorrection' : True,
         'applyVertexMultiplicityReweighting' : True,
+        'applyRhoNeutralReweighting' : True,
         'enableFakeRates' : True,
         'hlt' : cms.InputTag("TriggerResults", "", "HLT"),
         'SE_black_list' : 'T2_BR_SPRACE'
@@ -308,6 +318,7 @@ RECO_SAMPLES = {
         'applyMuonTriggerEfficiencyCorrection' : True,
         'applyMuonIsolationEfficiencyCorrection' : True,
         'applyVertexMultiplicityReweighting' : True,
+        'applyRhoNeutralReweighting' : True,
         'hlt' : cms.InputTag("TriggerResults", "", "HLT")
     },
     'WZ' : {
@@ -323,6 +334,7 @@ RECO_SAMPLES = {
         'applyMuonTriggerEfficiencyCorrection' : True,
         'applyMuonIsolationEfficiencyCorrection' : True,
         'applyVertexMultiplicityReweighting' : True,
+        'applyRhoNeutralReweighting' : True,
         'hlt' : cms.InputTag("TriggerResults", "", "HLT")
     },
     'ZZ' : {
@@ -338,6 +350,7 @@ RECO_SAMPLES = {
         'applyMuonTriggerEfficiencyCorrection' : True,
         'applyMuonIsolationEfficiencyCorrection' : True,
         'applyVertexMultiplicityReweighting' : True,
+        'applyRhoNeutralReweighting' : True,
         'hlt' : cms.InputTag("TriggerResults", "", "HLT")
     },
     'TTplusJets_madgraph' : {
@@ -352,10 +365,10 @@ RECO_SAMPLES = {
         'applyMuonTriggerEfficiencyCorrection' : True,
         'applyMuonIsolationEfficiencyCorrection' : True,
         'applyVertexMultiplicityReweighting' : True,
+        'applyRhoNeutralReweighting' : True,
         'enableFakeRates' : True,
         'hlt' : cms.InputTag("TriggerResults", "", "HLT"),
-        'SE_black_list' : 'T2_BE_UCL'
-        
+        'SE_black_list' : 'T2_BE_UCL'        
     }
 }
 

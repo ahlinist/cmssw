@@ -173,6 +173,14 @@ def _setApplyVertexMultiplicityReweighting(process, enable, **kwargs):
         enabler(process)
 
 @_requires(args=['channel'])
+def _setApplyRhoNeutralReweighting(process, enable, **kwargs):
+    channel = kwargs['channel']
+    if enable:
+        print "Applying rho-Neutral reweighting"
+        enabler = getattr(mcToDataCorrectionTools, "applyRhoNeutralReweighting_run%s" % channel)
+        enabler(process)        
+
+@_requires(args=['channel'])
 def _setEnableSystematics(process, enable, **kwargs):
     channel = kwargs['channel']
     if enable:
@@ -385,6 +393,7 @@ _METHOD_MAP = {
     'applyMuonIsolationEfficiencyCorrection' : _setApplyMuonIsolationEfficiencyCorrection,
     'applyElectronIsolationEfficiencyCorrection' : _setApplyElectronIsolationEfficiencyCorrection,
     'applyVertexMultiplicityReweighting' : _setApplyVertexMultiplicityReweighting,
+    'applyRhoNeutralReweighting' : _setApplyRhoNeutralReweighting,
     'enableSysUncertainties' : _setEnableSystematics,
     'inputFileType' : _setInputFileType,
     'eventList' : _setEventList,
