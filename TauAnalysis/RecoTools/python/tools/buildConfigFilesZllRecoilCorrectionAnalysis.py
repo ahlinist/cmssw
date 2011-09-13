@@ -177,7 +177,7 @@ process.fitZllRecoilCorrection = cms.PSet(
 """ % (inputFileName,
        directory, processType, refBranchName, projParlBranchName, projPerpBranchName, outputFileName_full)
 
-    configFileName = "fitZllRecoilCorrectionNtuple_%s_%s_cfg.py" % (sampleName, metOptionName)
+    configFileName = "fitZllRecoilCorrectionNtuple_%s_%s_%s_cfg.py" % (sampleName, metOptionName, refBranchName)
     configFileName_full = os.path.join(outputFilePath, configFileName)    
     configFile = open(configFileName_full, "w")
     configFile.write(config)
@@ -292,7 +292,7 @@ process.ZllRecoilCorrectionAnalyzer = cms.PSet(
     srcWeights = cms.VInputTag(%s),
 
     srcVertices = cms.InputTag('selectedPrimaryVertexPosition'),
-    srcPFNeutralRho = cms.InputTag('kt6PFJets', 'rho'),    
+    srcPFNeutralRho = cms.InputTag('kt6PFNeutralJets', 'rho'),    
 %s
 
     selEventsFileName = cms.string('%s'),

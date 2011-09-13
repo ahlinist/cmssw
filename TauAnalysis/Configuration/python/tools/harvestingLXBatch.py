@@ -99,7 +99,7 @@ def make_harvest_scripts(plot_regex, skim_regex,
             if match:
                 full_file = file['path']
                 sample = None
-                if sampleToAnalyze is not None:
+                if sampleToAnalyze != "":
                     sample = sampleToAnalyze
                 else:
                     sample = match.group('sample')
@@ -258,7 +258,7 @@ def make_harvest_scripts(plot_regex, skim_regex,
                 full_file = file['path']
                 # Parse the sample from the regex
                 sample = None
-                if sampleToAnalyze is not None:
+                if sampleToAnalyze != "":
                     sample = sampleToAnalyze                    
                 else:
                     sample = match.group('sample')

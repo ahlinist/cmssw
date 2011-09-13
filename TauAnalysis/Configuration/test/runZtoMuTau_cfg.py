@@ -297,7 +297,7 @@ process.patMuonsMuScleFitCorrectedMomentum.doApplyCorrection = cms.bool(False)
 #--------------------------------------------------------------------------------
 
 process.load("TauAnalysis/RecoTools/vertexMultiplicityVsRhoPFNeutralReweight_cfi")
-process.producePatTupleAll += process.vertexMultiplicityVsRhoPFNeutralReweight
+process.producePatTupleAll += process.produceVertexMultiplicityVsRhoPFNeutralReweights
 
 processDumpFile = open('runZtoMuTau.dump' , 'w')
 print >> processDumpFile, process.dumpPython()

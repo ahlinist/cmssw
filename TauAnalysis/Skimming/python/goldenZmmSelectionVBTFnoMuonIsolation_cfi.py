@@ -28,9 +28,9 @@ zmmHLTFilter = HLTrigger.HLTfilters.hltHighLevel_cfi.hltHighLevel.clone()
 zmmHLTFilter.TriggerResultsTag = cms.InputTag("TriggerResults", "", "HLT")
 zmmHLTFilter.HLTPaths = [
     'HLT_IsoMu17_v5',
-    'HLT_IsoMu17_v6'
+    'HLT_IsoMu17_v6',
     'HLT_IsoMu17_v8',
-    'HLT_IsoMu17_v9'
+    'HLT_IsoMu17_v9',
     'HLT_IsoMu17_v10',
     'HLT_IsoMu17_v11'
 ]
@@ -59,7 +59,7 @@ goodMuons = cms.EDFilter("PATMuonSelector",
 from TauAnalysis.RecoTools.patLeptonPFIsolationSelector_cfi import patMuonPFIsolationSelector
 goodIsoMuons = cms.EDFilter("PATMuonPFIsolationSelector",
     patMuonPFIsolationSelector.clone(
-        sumPtMax = cms.double(0.06),
+        sumPtMax = cms.double(0.06)
     ),
     src = cms.InputTag("goodMuons"),                          
     filter = cms.bool(False)
@@ -90,8 +90,7 @@ goldenZmumuCandidatesGe2IsoMuons = goldenZmumuCandidatesGe0IsoMuons.clone(
 
 goodMuonFilter = cms.EDFilter("CandViewCountFilter",
     src = cms.InputTag("goodMuons"),
-    minNumber = cms.uint32(2),                            
-    maxNumber = cms.uint32(2)
+    minNumber = cms.uint32(2)
 )
 
 goldenZmumuFilter = cms.EDFilter("CandViewCountFilter",
