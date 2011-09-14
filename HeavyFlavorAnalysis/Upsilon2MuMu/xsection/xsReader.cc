@@ -15,9 +15,9 @@ const int  xsReader::fNy;
 // ----------------------------------------------------------------------
 xsReader::xsReader(TChain *tree, TString evtClassName): treeReaderXS(tree, evtClassName) {
   cout << "--> xsReader> This is the start ..." << endl;
-  fpJSON = new JSON("/shome/bora/root/json/json_147196_149442");  // Run2010B
+  //fpJSON = new JSON("/shome/bora/root/json/json_147196_149442");  // Run2010B
   //fpJSON = new JSON("/shome/bora/root/json/json_140042_144114");  // Run2010A
-  //fpJSON = new JSON("/shome/bora/root/json/json_146240_147116");  // Run2010B HLTDoubleMu0
+  fpJSON = new JSON("/shome/bora/root/json/json_146240_147116");  // Run2010B HLTDoubleMu0
 
   //// Acceptance Binning
   //fPTbin[0] = 0.; fPTbin[1] = 1.; fPTbin[2] = 2.; fPTbin[3] = 3.; fPTbin[4] = 4.; fPTbin[5] = 5.; fPTbin[6] = 6.;
@@ -56,10 +56,13 @@ xsReader::xsReader(TChain *tree, TString evtClassName): treeReaderXS(tree, evtCl
   fPidTableTrckEff = new PidTable("PidTables/DATA/Upsilon/PtTrackEff.dat");
   
   ///// PidTables MC -- TrackerMuonArbitrated 
-  fPidTableMuIDPos = new PidTable("../tnp/PidTables/MC/Jpsi/MuID/CowboyVeto/TrackerMuonArbitrated/PtMmbPos-jpsi.tma.nb.dat");
-  fPidTableMuIDNeg = new PidTable("../tnp/PidTables/MC/Jpsi/MuID/CowboyVeto/TrackerMuonArbitrated/PtMmbNeg-jpsi.tma.nb.dat");
-  fPidTableTrigPos = new PidTable("../tnp/PidTables/MC/Jpsi/Trig/CowboyVeto/PtMmbPos-jpsi.tma.nb.dat");    
-  fPidTableTrigNeg = new PidTable("../tnp/PidTables/MC/Jpsi/Trig/CowboyVeto/PtMmbNeg-jpsi.tma.nb.dat"); 
+  ////fPidTableMuIDPos = new PidTable("../tnp/PidTables/MC/Jpsi/MuID/CowboyVeto/TrackerMuonArbitrated/PtMmbPos-jpsi.tma.nb.dat");
+  ////fPidTableMuIDNeg = new PidTable("../tnp/PidTables/MC/Jpsi/MuID/CowboyVeto/TrackerMuonArbitrated/PtMmbNeg-jpsi.tma.nb.dat");
+  ////fPidTableTrigPos = new PidTable("../tnp/PidTables/MC/Jpsi/Trig/CowboyVeto/PtMmbPos-jpsi.tma.nb.dat");    
+  ///fPidTableTrigNeg = new PidTable("../tnp/PidTables/MC/Jpsi/Trig/CowboyVeto/PtMmbNeg-jpsi.tma.nb.dat"); 
+  //fPidTableTrigFit = new PidTable("PtTrigFit-jpsi.8ptbin.MC.dat");
+  //fPidTableMuidFit = new PidTable("PtMuidFit-jpsi.8ptbin.MC.dat");
+  
   /// Trig Eff with Ups(1S)
   //fPidTableTrigPos = new PidTable("../tnp/PidTables/MC/Upsilon/Trig/PtMmbPos-upsilon.tma.nb.dat");    
   //fPidTableTrigNeg = new PidTable("../tnp/PidTables/MC/Upsilon/Trig/PtMmbNeg-upsilon.tma.nb.dat");  
@@ -83,6 +86,10 @@ xsReader::xsReader(TChain *tree, TString evtClassName): treeReaderXS(tree, evtCl
   //fPidTableMuIDNeg = new PidTable("../tnp/PidTables/DATA/Jpsi/MuID/CowboyVeto/TrackerMuonArbitrated/PtMmbNeg-jpsi.tma.nb.dat");
   //fPidTableTrigPos = new PidTable("../tnp/PidTables/DATA/Jpsi/Trig/MuOnia/CowboyVeto/PtMmbPos-jpsi.tma.nb.dat");    
   //fPidTableTrigNeg = new PidTable("../tnp/PidTables/DATA/Jpsi/Trig/MuOnia/CowboyVeto/PtMmbNeg-jpsi.tma.nb.dat"); 
+  
+  fPidTableTrigFit = new PidTable("PtTrigFit-jpsi.8ptbin.DATA.dat");
+  //fPidTableMuidFit = new PidTable("PtMuidFit-jpsi.8ptbin.DATA.dat");
+  fPidTableMuidFit = new PidTable("PtMuidFit-jpsi.8ptbin.DATAv2.dat");
   
   //fPidTableTrigPos = new PidTable("../tnp/PidTables/DATA/Jpsi/Trig/MuOnia/CowboyVeto/PtMmbPos-jpsi.runbp1.tma.nb.dat");    
   //fPidTableTrigNeg = new PidTable("../tnp/PidTables/DATA/Jpsi/Trig/MuOnia/CowboyVeto/PtMmbNeg-jpsi.runbp1.tma.nb.dat");   
@@ -139,7 +146,7 @@ void xsReader::eventProcessing() {
   candidateSelection(2);
   
   if ( 0 != fpCand  ){
-    calculateWeights(0); 
+    calculateWeights(1); 
     fillCandHist(2); 
   }
   
@@ -1777,6 +1784,7 @@ void xsReader::calculateWeights(int mode){
   double effTR1(-99); double effTR2(-99);
   double effTrck1(-99); double effTrck2(-99);
   double MuIdWeight(-99); double TrigWeight(-99); double TrackWeight(-99); 
+  double par1(-99); double par2(-99); double par3(-99); double par4(-99); 
   TAnaCand *pCand;
   TLorentzVector Cand;
   
@@ -1843,6 +1851,102 @@ void xsReader::calculateWeights(int mode){
 	
       }
     }  
+  }
+  
+  if ( mode == 1 ){
+    TAnaTrack *pl1 = fpEvt->getSigTrack(fpCand->fSig1); 
+    TAnaTrack *pl2 = fpEvt->getSigTrack(fpCand->fSig2);
+    if ( pl1->fQ > 0 ){
+      //effID1 = fPidTableMuIDPos->effD(pl1->fPlab.Perp(), pl1->fPlab.Eta(), 0.);
+      effTrck1 = fPidTableTrckEff->effD(pl1->fPlab.Perp(), pl1->fPlab.Eta(), 0.);
+      
+    } else if ( pl1->fQ < 0 ){
+      //effID1 = fPidTableMuIDNeg->effD(pl1->fPlab.Perp(), pl1->fPlab.Eta(), 0.);
+      effTrck1 = fPidTableTrckEff->effD(pl1->fPlab.Perp(), pl1->fPlab.Eta(), 0.);
+    }
+    
+    if ( pl2->fQ > 0 ){
+      //effID2 = fPidTableMuIDPos->effD(pl2->fPlab.Perp(), pl2->fPlab.Eta(), 0.);
+      effTrck2 = fPidTableTrckEff->effD(pl2->fPlab.Perp(), pl2->fPlab.Eta(), 0.);
+      
+    }  else if ( pl2->fQ < 0 ){
+      //effID2 = fPidTableMuIDNeg->effD(pl2->fPlab.Perp(), pl2->fPlab.Eta(), 0.);
+      effTrck2 = fPidTableTrckEff->effD(pl2->fPlab.Perp(), pl2->fPlab.Eta(), 0.);
+    }
+    
+    par1 = fPidTableMuidFit->effD(1, pl1->fPlab.Eta(), 0.); par2 = fPidTableMuidFit->effD(2, pl1->fPlab.Eta(), 0.);
+    par3 = fPidTableMuidFit->effD(3, pl1->fPlab.Eta(), 0.); par4 = fPidTableMuidFit->effD(4, pl1->fPlab.Eta(), 0.);
+    
+    //cout << " par1 = " << par1 << " par2 = " << par2 << " par3 = " << par3 << " par4 = " << par4 << endl;
+    
+    effID1 = par1 + par2*((TMath::Exp(2*(par3*pl1->fPlab.Perp()-par4))-1)/(TMath::Exp(2*(par3*pl1->fPlab.Perp()-par4))+1));
+    
+    par1 = fPidTableMuidFit->effD(1, pl2->fPlab.Eta(), 0.); par2 = fPidTableMuidFit->effD(2, pl2->fPlab.Eta(), 0.);
+    par3 = fPidTableMuidFit->effD(3, pl2->fPlab.Eta(), 0.); par4 = fPidTableMuidFit->effD(4, pl2->fPlab.Eta(), 0.);
+    
+    //cout << " par1 = " << par1 << " par2 = " << par2 << " par3 = " << par3 << " par4 = " << par4 << endl;
+    
+    effID2 = par1 + par2*((TMath::Exp(2*(par3*pl2->fPlab.Perp()-par4))-1)/(TMath::Exp(2*(par3*pl2->fPlab.Perp()-par4))+1));
+    
+    //cout << " eta1 = " << pl1->fPlab.Eta()  << " eta2 = " << pl2->fPlab.Eta() << endl;
+    //cout << " pt1 = " << pl1->fPlab.Perp()  << " pt2 = " << pl2->fPlab.Perp() << " effID1 = "<< effID1 <<" effID2 = "<< effID2 << endl;
+    
+        
+    par1 = fPidTableTrigFit->effD(1, pl1->fPlab.Eta(), 0.); par2 = fPidTableTrigFit->effD(2, pl1->fPlab.Eta(), 0.);
+    par3 = fPidTableTrigFit->effD(3, pl1->fPlab.Eta(), 0.); par4 = fPidTableTrigFit->effD(4, pl1->fPlab.Eta(), 0.);
+    
+    //cout << " par1 = " << par1 << " par2 = " << par2 << " par3 = " << par3 << " par4 = " << par4 << endl;
+    
+    effTR1 = par1 + par2*((TMath::Exp(2*(par3*pl1->fPlab.Perp()-par4))-1)/(TMath::Exp(2*(par3*pl1->fPlab.Perp()-par4))+1));
+    
+    par1 = fPidTableTrigFit->effD(1, pl2->fPlab.Eta(), 0.); par2 = fPidTableTrigFit->effD(2, pl2->fPlab.Eta(), 0.);
+    par3 = fPidTableTrigFit->effD(3, pl2->fPlab.Eta(), 0.); par4 = fPidTableTrigFit->effD(4, pl2->fPlab.Eta(), 0.);
+    
+    //cout << " par1 = " << par1 << " par2 = " << par2 << " par3 = " << par3 << " par4 = " << par4 << endl;
+    
+    effTR2 = par1 + par2*((TMath::Exp(2*(par3*pl2->fPlab.Perp()-par4))-1)/(TMath::Exp(2*(par3*pl2->fPlab.Perp()-par4))+1));
+    
+    //cout << " eta1 = " << pl1->fPlab.Eta()  << " eta2 = " << pl2->fPlab.Eta() << endl;
+    //cout << " pt1 = " << pl1->fPlab.Perp()  << " pt2 = " << pl2->fPlab.Perp() << " effTR1 = "<< effTR1 <<" effTR2 = "<< effTR2 << endl;
+    
+    fWeight = 1;
+    
+    MuIdWeight = effID1*effID2;
+    TrigWeight = effTR1*effTR2;
+    TrackWeight = effTrck1*effTrck2;
+    
+    ((TH1D*)fpHistFile->Get(Form("MuIDEff_%.1dS,OverAll", UPSTYPE)))->Fill(MuIdWeight,1./MuIdWeight);
+    ((TH1D*)fpHistFile->Get(Form("TrigEff_%.1dS,OverAll", UPSTYPE)))->Fill(TrigWeight,1./TrigWeight);
+    ((TH1D*)fpHistFile->Get(Form("TrackEff_%.1dS,OverAll", UPSTYPE)))->Fill(TrackWeight,1./TrackWeight);
+    
+    for ( int iy = 0; iy < fNy; ++iy ){
+      for ( int ipt = 0; ipt < fNpt; ++ipt ){
+	
+	if ( fCandY >= 0 ){
+	  if ( ( fCandY >= fYbin[iy] ) && ( fCandY < fYbin[iy+1] ) ){
+	    if ( ( fCandPt >= fPTbin[ipt] ) && ( fCandPt < fPTbin[ipt+1] ) ){
+	      ((TH1D*)fpHistFile->Get(Form("MuIDEff_%.1dS,rapidity%.1f_%.1f,pt%.1f_%.1f",UPSTYPE, fYbin[iy], fYbin[iy+1], fPTbin[ipt], fPTbin[ipt+1])))->Fill(MuIdWeight,1./MuIdWeight);
+	      ((TH1D*)fpHistFile->Get(Form("TrigEff_%.1dS,rapidity%.1f_%.1f,pt%.1f_%.1f",UPSTYPE, fYbin[iy], fYbin[iy+1], fPTbin[ipt], fPTbin[ipt+1])))->Fill(TrigWeight,1./TrigWeight);
+	      ((TH1D*)fpHistFile->Get(Form("TrackEff_%.1dS,rapidity%.1f_%.1f,pt%.1f_%.1f",UPSTYPE, fYbin[iy], fYbin[iy+1], fPTbin[ipt], fPTbin[ipt+1])))->Fill(TrackWeight,1./TrackWeight);
+	    }
+	  }
+	}
+	
+	if ( fCandY < 0 ){
+	  fCandY*=-1;
+	  if ( ( fCandY >= fYbin[iy] ) && ( fCandY < fYbin[iy+1] ) ){
+	    if ( ( fCandPt >= fPTbin[ipt] ) && ( fCandPt < fPTbin[ipt+1] ) ){
+	      ((TH1D*)fpHistFile->Get(Form("MuIDEff_%.1dS,rapidity%.1f_%.1f,pt%.1f_%.1f",UPSTYPE, fYbin[iy], fYbin[iy+1], fPTbin[ipt], fPTbin[ipt+1])))->Fill(MuIdWeight,1./MuIdWeight);
+	      ((TH1D*)fpHistFile->Get(Form("TrigEff_%.1dS,rapidity%.1f_%.1f,pt%.1f_%.1f",UPSTYPE, fYbin[iy], fYbin[iy+1], fPTbin[ipt], fPTbin[ipt+1])))->Fill(TrigWeight,1./TrigWeight);
+	      ((TH1D*)fpHistFile->Get(Form("TrackEff_%.1dS,rapidity%.1f_%.1f,pt%.1f_%.1f",UPSTYPE, fYbin[iy], fYbin[iy+1], fPTbin[ipt], fPTbin[ipt+1])))->Fill(TrackWeight,1./TrackWeight);
+	    }
+	  }
+	}	
+	
+      }
+    }     
+    
+    
   }
   
   

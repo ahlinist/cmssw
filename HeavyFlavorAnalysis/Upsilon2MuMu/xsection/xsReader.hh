@@ -105,6 +105,7 @@ public:
   PidTable    *fPidTableMuIDPos, *fPidTableMuIDNeg; 
   PidTable    *fPidTableTrigPos, *fPidTableTrigNeg;
   PidTable    *fPidTableTrckEff;
+  PidTable    *fPidTableTrigFit, *fPidTableMuidFit;
   
   double      fWeight;
   static const int  fNpt = 24;
