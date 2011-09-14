@@ -184,8 +184,10 @@ void anaXS::init(const char *dir, int i) {
   
   //fPtTrigCorr = new PidTable("PidTables/DATA/Upsilon/PtTrigCorr.dat");
   //fPtMuidCorr = new PidTable("PidTables/DATA/Upsilon/PtMuidCorr.dat");
-  //fPtTrigCorr = new PidTable("PidTables/DATA/Upsilon/PtTrigCorr_1Sbin.tma.dat");
+  ///fPtTrigCorr = new PidTable("PidTables/DATA/Upsilon/PtTrigCorr_1Sbin.tma.dat");
+  fPtTrigCorr = new PidTable("PidTables/DATA/Upsilon/PtTrigCorrWithFit_1Sbin.tma.dat");
   //fPtMuidCorr = new PidTable("PidTables/DATA/Upsilon/PtMuidCorr_1Sbin.tma.dat");
+  fPtMuidCorr = new PidTable("PidTables/DATA/Upsilon/PtMuidCorrWithFit_1Sbin.tma.dat");
   //fPtTrigCorr = new PidTable("PidTables/DATA/Upsilon/PtTrigCorr_1Sbin.tma.MomCor.dat");
   //fPtMuidCorr = new PidTable("PidTables/DATA/Upsilon/PtMuidCorr_1Sbin.tma.MomCor.dat");  
   //fPtTrigCorr = new PidTable("PidTables/DATA/Upsilon/PtTrigCorr_1Sbin.gltr.dat");
@@ -196,8 +198,8 @@ void anaXS::init(const char *dir, int i) {
   //fPtMuidCorr = new PidTable("PidTables/DATA/Upsilon/PtMuidCorr_2Sbin.dat");  
   //fPtTrigCorr = new PidTable("PidTables/DATA/Upsilon/PtTrigCorr_3Sbin.dat");
   //fPtMuidCorr = new PidTable("PidTables/DATA/Upsilon/PtMuidCorr_3Sbin.dat");
-  fPtTrigCorr = new PidTable("PidTables/DATA/Upsilon/PtTrigCorr_3Sbin.tma.dat");
-  fPtMuidCorr = new PidTable("PidTables/DATA/Upsilon/PtMuidCorr_3Sbin.tma.dat");
+  //fPtTrigCorr = new PidTable("PidTables/DATA/Upsilon/PtTrigCorr_3Sbin.tma.dat");
+  //fPtMuidCorr = new PidTable("PidTables/DATA/Upsilon/PtMuidCorr_3Sbin.tma.dat");
   
 }
 
@@ -279,11 +281,12 @@ void anaXS::loadFiles(const char *dir, int i) {
       jfile = fDirectory + string("/jpsi/JpsiTagandprobe_10TeV_nocut.root");  
     } else if (40 == i) {
       //ufile = fDirectory + string("/upsilon/101201.fl10.mm.COMBINED.xsReader_1SBin.default.root");
-      afile = fDirectory + string("/upsilon/Acc_All_0_50.xsReader_3Sbin.default.root");
-      ufile = fDirectory + string("/upsilon/101201.fl10.mm.COMBINED.xsReader_3SBin.default.root");
+      afile = fDirectory + string("/upsilon/Acc_All_0_50.xsReader_1Sbin.default.root");
+      //ufile = fDirectory + string("/upsilon/101201.fl10.mm.COMBINED.xsReader_1SBin.default.root");
+      ufile = fDirectory + string("/upsilon/101201.fl10.mm.ups1s.xsReader_1S.MuIDTrigFit.root");
       //jfile = fDirectory + string("/upsilon/130211.nov4rereco_v2.dimuons.xsReader_Data_3SBin.default.root");
       //jfile = fDirectory + string("/upsilon/130211.nov4rereco_v2.dimuons.xsReader_Data_3SBin_Run2010Bp1.default.root");
-      jfile = fDirectory + string("/upsilon/130211.nov4rereco_v2.dimuons.xsReader_Data_3SBin_AllRun2010B.default.root");
+      jfile = fDirectory + string("/upsilon/130211.nov4rereco_v2.dimuons.xsReader_Data.Run2010Ballv2.root");
       //jfile = fDirectory + string("/upsilon/130211.nov4rereco_v2.dimuons.xsReader_1Sbin.tma.default.root");
      
     } else {
@@ -988,16 +991,16 @@ void anaXS::makeAllMC(int channel) {
     ReadHistograms(fM[0], "UpsilonMass", "AnaEff_1S", "AnaEff_2S", "AnaEff_3S", "MuIDEff_1S", "MuIDEff_2S", "MuIDEff_3S", "TrigEff_1S", "TrigEff_2S", "TrigEff_3S", "Pt_IntegratedMass", "Rapidity_IntegratedMass", "mt,pt-eta");
     
     // -- add backgrounds
-    //addBackground(fS1Vector, 0.3);
+    addBackground(fS1Vector, 0.3);
     //addBackground_PtInt(fS12Vector, 0.3);
-    addBackground_RapInt(fS13Vector, 0.3);
+    //addBackground_RapInt(fS13Vector, 0.3);
     
     //Pull(1);
     
-    FITUpsilon(6); //5 for PtIntegrated plots, 6 for RapidityIntegrated plots
+    //FITUpsilon(6); //5 for PtIntegrated plots, 6 for RapidityIntegrated plots
     //GetAnaEff();
     //GetPreSelEff();
-    //GetMuIDEff(1);
+    GetMuIDEff(1);
     //GetTrigEff(1);
     //CorrectedYields(1);   // 1- FOR MC, 2 FOR DATA
     //PlotProjections(1);   // 1- FOR MC, 2 FOR DATA
@@ -4305,7 +4308,7 @@ void anaXS::GetMuIDEff(int mode){
 void anaXS::GetTrigEff(int mode){
   
   ////////////////
-  //TFile *f = new TFile("Trig.root", "RECREATE");
+  TFile *f = new TFile("Trig.root", "RECREATE");
   ////////////////
   TH1D *h;
   double pt, eta; 
@@ -4399,7 +4402,7 @@ void anaXS::GetTrigEff(int mode){
   }
   
   ///////////
-  //fTrigEff->Write();
+  fTrigEff->Write();
   ////////////
 }
 
@@ -5700,8 +5703,8 @@ void anaXS::FITUpsilon(int mode){
     c1->Clear();
     
     TFile *f = new TFile("FitParametersMC_1D_PtInt.root", "RECREATE");
-    TH1D *hSigma1S = new TH1D("hSigma1S","hSigma1S", 7, -0.4, 2.4); 
-    TH1D *hSigma2S = new TH1D("hSigma2S","hSigma2S", 7, -0.4, 2.4);
+    TH1D *hSigma1S = new TH1D("hSigma1S","hSigma1S", 6, 0., 2.4); 
+    TH1D *hSigma2S = new TH1D("hSigma2S","hSigma2S", 6, 0., 2.4);
     
     for (unsigned int i = 0; i < fS12Vector.size(); ++i) {
       
@@ -5838,6 +5841,10 @@ void anaXS::FITUpsilon(int mode){
 	falpha_1D_ptInt->SetBinError(i, alphaE);
 	fn_1D_ptInt->SetBinContent(i, n);
 	fn_1D_ptInt->SetBinError(i, nE);
+	hSigma1S->SetBinContent(i, sig1);
+	hSigma1S->SetBinError(i, sigE1);
+	hSigma2S->SetBinContent(i, sig2);
+	hSigma2S->SetBinError(i, sigE2);
       }
       
       c1->Modified();
@@ -5853,6 +5860,8 @@ void anaXS::FITUpsilon(int mode){
       c1->SaveAs(Form("%s/massfits_%s_%s.eps", fPtDirectory.c_str(), fSample.c_str(), frag.Data())); 
     }
     
+    hSigma1S->Write();
+    hSigma2S->Write();
     falpha_1D_ptInt->Write();
     fn_1D_ptInt->Write();
     //c1->Clear();
@@ -5868,7 +5877,7 @@ void anaXS::FITUpsilon(int mode){
     double yield_1S(0.), yieldE_1S(0.);
     double yield_2S(0.), yieldE_2S(0.);
     double yield_3S(0.), yieldE_3S(0.);
-    double alpha(0.), n(0.), alphaE(0.), nE(0.);
+    double alpha(0.), n(0.), alphaE(0.), nE(0.), sig1(0.), sigE1(0.), sig2(0.), sigE2(0.);
     double scale(1.033);
     
     int    nbin;
@@ -5883,6 +5892,9 @@ void anaXS::FITUpsilon(int mode){
     c1->Clear();
     
     TFile *f = new TFile("FitParametersMC_1D_RapInt.root", "RECREATE");
+    TH1D *hSigma1S = new TH1D("hSigma1S","hSigma1S", fHbinning->GetNbinsX(), fHbinning->GetXaxis()->GetXbins()->GetArray());
+    TH1D *hSigma2S = new TH1D("hSigma2S","hSigma2S", fHbinning->GetNbinsX(), fHbinning->GetXaxis()->GetXbins()->GetArray());
+    
     
     for (unsigned int i = 0; i < fS13Vector.size(); ++i) {
       
@@ -5975,6 +5987,9 @@ void anaXS::FITUpsilon(int mode){
 	  nE = 100.0;
 	}
 	cout<<"alpha = "<<alpha<<"alphaE = " <<alphaE <<"n = " <<n<<"nE = "<<nE<<endl;
+	sig1 = f13->GetParameter(1);
+	sigE1 = f13->GetParError(1);
+	
 	
 	// Ups 2S
 	f10->SetParameters( f13->GetParameter(5), f13->GetParameter(6), f13->GetParameter(2), f13->GetParameter(3), f13->GetParameter(7) );
@@ -5985,6 +6000,8 @@ void anaXS::FITUpsilon(int mode){
 	if ( f13->GetParameter(7) > f13->GetParError(7) ) yieldE_2S = TMath::Abs(yieldE_2S);
 	if ( f13->GetParameter(7) < f13->GetParError(7) ) yieldE_2S = TMath::Sqrt(yield_2S);
 	cout << " Ups(2S) yield =  " << yield_2S << "+/-" << yieldE_2S  << endl;
+	sig2 = f13->GetParameter(6);
+	sigE2 = f13->GetParError(6);
 	
 	// Ups 3S
 	f10->SetParameters( scale*f13->GetParameter(5), scale*f13->GetParameter(6), f13->GetParameter(2), f13->GetParameter(3), f13->GetParameter(8) );
@@ -6016,6 +6033,10 @@ void anaXS::FITUpsilon(int mode){
 	falpha_1D_RapInt->SetBinError(i, alphaE);
 	fn_1D_RapInt->SetBinContent(i, n);
 	fn_1D_RapInt->SetBinError(i, nE);
+	hSigma1S->SetBinContent(i, sig1);
+	hSigma1S->SetBinError(i, sigE1);
+	hSigma2S->SetBinContent(i, sig2);
+	hSigma2S->SetBinError(i, sigE2);
       }
       
       c1->Modified();
@@ -6031,6 +6052,8 @@ void anaXS::FITUpsilon(int mode){
       c1->SaveAs(Form("%s/massfits_%s_%s.eps", fPtDirectory.c_str(), fSample.c_str(), frag.Data())); 
     }
     
+    hSigma1S->Write();
+    hSigma2S->Write();
     falpha_1D_RapInt->Write();
     fn_1D_RapInt->Write();
     //c1->Clear();
@@ -6780,7 +6803,7 @@ void anaXS::setFunctionParameters(TH1D *h, TF1 *f, int mode, int par) {
     f->ReleaseParameter(10);         
     
     if ( par == 1 ){
-      TFile *f1 = new TFile("FitParametersMC_1D_PtInt_3SBin.root");
+      TFile *f1 = new TFile("FitParametersMC_1D_PtInt_1SBin.root");
       TH1D *falpha_1D_ptInt;
       falpha_1D_ptInt = (TH1D*)gFile->Get("falpha_1D_ptInt");
       TH1D *fn_1D_ptInt;
@@ -6805,7 +6828,7 @@ void anaXS::setFunctionParameters(TH1D *h, TF1 *f, int mode, int par) {
     }
     
     if ( par == 2 ){
-      TFile *f1 = new TFile("FitParametersMC_1D_RapInt_3SBin.root");
+      TFile *f1 = new TFile("FitParametersMC_1D_RapInt_1SBin.root");
       TH1D *falpha_1D_RapInt;
       falpha_1D_RapInt = (TH1D*)gFile->Get("falpha_1D_RapInt");
       TH1D *fn_1D_RapInt;
@@ -6830,7 +6853,7 @@ void anaXS::setFunctionParameters(TH1D *h, TF1 *f, int mode, int par) {
     }    
     
     if ( par == 3 ){
-      TFile *f1 = new TFile("FitParametersMC_3SBin.root");
+      TFile *f1 = new TFile("FitParametersMC_1SBin.root");
       TH1D *falpha;
       falpha = (TH1D*)gFile->Get("falpha");
       TH1D *fn;
@@ -6886,7 +6909,7 @@ void anaXS::setFunctionParameters(TH1D *h, TF1 *f, int mode, int par) {
     
     f->SetParameters(c0, c1, c2, c3, c4, c5, c6, c7, c8, p0, p1);     
     f->SetParLimits(0, 9.410, 9.510); 
-    f->SetParLimits(1, 0.035, 0.14); // 0.16 ->0.22
+    f->SetParLimits(1, 0.045, 0.14); // 0.16 ->0.22
     f->SetParLimits(2, 1., 2.8);
     f->SetParLimits(3, 1., 200.);
     //f->FixParameter(2, 1.9);
