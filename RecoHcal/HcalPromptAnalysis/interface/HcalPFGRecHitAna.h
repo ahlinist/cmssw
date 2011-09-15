@@ -23,15 +23,36 @@ private:
   edm::Service<TFileService> fs;
                                                                                                                                                                 
 
-  TH1F *HEposEne;
-  TH1F *HEnegEne;
-  TH1F *HEposTime;
-  TH1F *HEnegTime;
+  TH1F *HEPEne;
+  TH1F *HEMEne;
+  TH1F *HEPTime;
+  TH1F *HEMTime;
 
-  TH1F *HBposEne;
-  TH1F *HBnegEne;
-  TH1F *HBposTime;
-  TH1F *HBnegTime;
+  TH1F *HBPEne;
+  TH1F *HBMEne;
+  TH1F *HBPTime;
+  TH1F *HBMTime;
+
+  TH1F* HEM15BEne   ;  
+  TH1F* HEM15BTime  ;  
+  TH1F* HEM15AEne   ;  
+  TH1F* HEM15ATime  ;  
+  TH1F* HEMOtherEne ;  
+  TH1F* HEMOtherTime;  
+
+  TH1F* HBP14BEne   ;  
+  TH1F* HBP14BTime  ;  
+  TH1F* HBP14AEne   ;  
+  TH1F* HBP14ATime  ;  
+  TH1F* HBPOtherEne ;  
+  TH1F* HBPOtherTime;
+
+  TH2F* HEM15BEneVTime  ;
+  TH2F* HEM15AEneVTime  ;
+  TH2F* HEMOtherEneVTime;
+  TH2F* HBP14BEneVTime  ;
+  TH2F* HBP14AEneVTime  ;
+  TH2F* HBPOtherEneVTime;
 
   TH1F *HFLongEne;
   TH1F *HFShortEne;

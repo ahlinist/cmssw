@@ -46,32 +46,53 @@ void HcalPFGRecHitAna::beginJob( ) {
   
   edm::Service<TFileService> fs;
 
-  HEposEne     = fs->make<TH1F>( "HEposEne" , "HEposEne" , 12000, -20, 100 );
-  HEposTime    = fs->make<TH1F>( "HEposTime", "HEposTime", 200, -200, 200 );
-  HEnegEne     = fs->make<TH1F>( "HEnegEne" , "HEnegEne" , 12000, -20, 100 );
-  HEnegTime    = fs->make<TH1F>( "HEnegTime", "HEnegTime", 200, -200, 200 );
+  HEPEne     = fs->make<TH1F>( "HEPEne" , "HEPEne" , 12000, -20 , 500 );
+  HEPTime    = fs->make<TH1F>( "HEPTime", "HEPTime", 200  , -200, 200 );
+  HEMEne     = fs->make<TH1F>( "HEMEne" , "HEMEne" , 12000, -20 , 500 );
+  HEMTime    = fs->make<TH1F>( "HEMTime", "HEMTime", 200  , -200, 200 );
 
-  HBposEne     = fs->make<TH1F>( "HBposEne" , "HBposEne" , 12000, -20, 100 );
-  HBposTime    = fs->make<TH1F>( "HBposTime", "HBposTime", 200, -200, 200 );
-  HBnegEne     = fs->make<TH1F>( "HBnegEne" , "HBnegEne" , 12000, -20, 100 );
-  HBnegTime    = fs->make<TH1F>( "HBnegTime", "HBnegTime", 200, -200, 200 );
+  HEM15BEne     = fs->make<TH1F>( "HEM15BEne"   , "HEM15BEne"    , 12000, -20 , 500 );
+  HEM15BTime    = fs->make<TH1F>( "HEM15BTime"  , "HEM15BTime"   , 200  , -200, 200 );
+  HEM15AEne     = fs->make<TH1F>( "HEM15AEne"   , "HEM15AEne"    , 12000, -20 , 500 );
+  HEM15ATime    = fs->make<TH1F>( "HEM15ATime"  , "HEM15ATime"   , 200  , -200, 200 );
+  HEMOtherEne   = fs->make<TH1F>( "HEMOtherEne" , "HEMOtherEne"  , 12000, -20 , 500 );
+  HEMOtherTime  = fs->make<TH1F>( "HEMOtherTime", "HEMOtherTime" , 200  , -200, 200 );
 
-  HFLongEne    = fs->make<TH1F>( "HFLongEne"  , "HFLongEne"  , 12000, -20, 100 );
+  HBP14BEne     = fs->make<TH1F>( "HBP14BEne"   , "HBP14BEne"    , 12000, -20 , 500 );
+  HBP14BTime    = fs->make<TH1F>( "HBP14BTime"  , "HBP14BTime"   , 200  , -200, 200 );
+  HBP14AEne     = fs->make<TH1F>( "HBP14AEne"   , "HBP14AEne"    , 12000, -20 , 500 );
+  HBP14ATime    = fs->make<TH1F>( "HBP14ATime"  , "HBP14ATime"   , 200  , -200, 200 );
+  HBPOtherEne   = fs->make<TH1F>( "HBPOtherEne" , "HBPOtherEne"  , 12000, -20 , 500 );
+  HBPOtherTime  = fs->make<TH1F>( "HBPOtherTime", "HBPOtherTime" , 200  , -200, 200 );
+
+  HEM15BEneVTime     = fs->make<TH2F>( "HEM15BEneVTime"   , "HEM15BEneVTime"   , 12000, -20 , 500, 200, -200, 200 );
+  HEM15AEneVTime     = fs->make<TH2F>( "HEM15AEneVTime"   , "HEM15AEneVTime"   , 12000, -20 , 500, 200, -200, 200 );
+  HEMOtherEneVTime   = fs->make<TH2F>( "HEMOtherEneVTime" , "HEMOtherEneVTime" , 12000, -20 , 500, 200, -200, 200 );
+  HBP14BEneVTime     = fs->make<TH2F>( "HBP14BEneVTime"   , "HBP14BEneVTime"   , 12000, -20 , 500, 200, -200, 200 );
+  HBP14AEneVTime     = fs->make<TH2F>( "HBP14AEneVTime"   , "HBP14AEneVTime"   , 12000, -20 , 500, 200, -200, 200 );
+  HBPOtherEneVTime   = fs->make<TH2F>( "HBPOtherEneVTime" , "HBPOtherEneVTime" , 12000, -20 , 500, 200, -200, 200 );
+
+  HBPEne     = fs->make<TH1F>( "HBPEne" , "HBPEne" , 12000, -20, 500 );
+  HBPTime    = fs->make<TH1F>( "HBPTime", "HBPTime", 200, -200, 200 );
+  HBMEne     = fs->make<TH1F>( "HBMEne" , "HBMEne" , 12000, -20, 500 );
+  HBMTime    = fs->make<TH1F>( "HBMTime", "HBMTime", 200, -200, 200 );
+
+  HFLongEne    = fs->make<TH1F>( "HFLongEne"  , "HFLongEne"  , 12000, -20, 500 );
   HFLongTime   = fs->make<TH1F>( "HFLongTime" , "HFLongTime" , 200, -200, 200 );
-  HFShortEne   = fs->make<TH1F>( "HFShortEne" , "HFShortEne" , 12000, -20, 100 );
+  HFShortEne   = fs->make<TH1F>( "HFShortEne" , "HFShortEne" , 12000, -20, 500 );
   HFShortTime  = fs->make<TH1F>( "HFShortTime", "HFShortTime", 200, -200, 200 );
 
-  HOrm0Ene     = fs->make<TH1F>( "HOrm0Ene" , "HOrm0Ene" , 12000, -20, 100 );
+  HOrm0Ene     = fs->make<TH1F>( "HOrm0Ene" , "HOrm0Ene" , 12000, -20, 500 );
   HOrm0Time    = fs->make<TH1F>( "HOrm0Time", "HOrm0Time", 200, -200, 200 );
-  HOrp0Ene     = fs->make<TH1F>( "HOrp0Ene" , "HOrp0Ene" , 12000, -20, 100 );
+  HOrp0Ene     = fs->make<TH1F>( "HOrp0Ene" , "HOrp0Ene" , 12000, -20, 500 );
   HOrp0Time    = fs->make<TH1F>( "HOrp0Time", "HOrp0Time", 200, -200, 200 );
 
-  HOrm1Ene     = fs->make<TH1F>( "HOrm1Ene" , "HOrm1Ene" , 12000, -20, 100 );
+  HOrm1Ene     = fs->make<TH1F>( "HOrm1Ene" , "HOrm1Ene" , 12000, -20, 500 );
   HOrm1Time    = fs->make<TH1F>( "HOrm1Time", "HOrm1Time", 200, -200, 200 );
-  HOrp1Ene     = fs->make<TH1F>( "HOrp1Ene" , "HOrp1Ene" , 12000, -20, 100 );
+  HOrp1Ene     = fs->make<TH1F>( "HOrp1Ene" , "HOrp1Ene" , 12000, -20, 500 );
   HOrp1Time    = fs->make<TH1F>( "HOrp1Time", "HOrp1Time", 200, -200, 200 );
 
-  HOsipmEne    = fs->make<TH1F>( "HOsipmEne" , "HOsipmEne" , 12000, -20, 100 );
+  HOsipmEne    = fs->make<TH1F>( "HOsipmEne" , "HOsipmEne" , 12000, -20, 500 );
   HOsipmTime   = fs->make<TH1F>( "HOsipmTime", "HOsipmTime", 200, -200, 200 );
 }
 
@@ -89,11 +110,43 @@ void HcalPFGRecHitAna::analyze( const edm::Event& evt, const edm::EventSetup& es
       for (HBHERecHitCollection::const_iterator j=(*i)->begin(); j!=(*i)->end(); j++) {
         if (j->id().subdet() == HcalEndcap) {
 	  if (j->id().ieta()<0) {
-	    HEnegEne->Fill(j->energy()); 
-	    HEnegTime->Fill(j->time()); 
+	    HEMEne ->Fill(j->energy()); 
+	    HEMTime->Fill(j->time()); 
+
+	    // Make plots for HEM15 for RecHits w/ E>10GeV:
+	    bool inHEM15B(0);
+	    bool inHEM15A(0);
+
+	    if ( j->id().iphi()==55 || j->id().iphi()==56) inHEM15B = 1;
+	    else if ( j->id().iphi()==57 || j->id().iphi()==58) inHEM15A = 1;
+
+	    if (inHEM15B)
+	    {
+	      HEM15BEne     ->Fill(j->energy());
+	      HEM15BEneVTime->Fill(j->energy() , j->time());
+	      if (j->energy()>10.){
+		HEM15BTime    ->Fill(j->time());
+	      }
+	    }
+	    else if (inHEM15A) 
+	    {
+	      HEM15AEne ->Fill(j->energy());
+	      HEM15AEneVTime->Fill(j->energy() , j->time());
+	      if (j->energy()>10.){
+		HEM15ATime->Fill(j->time());
+	      }
+	    }
+	    else
+	    {
+	      HEMOtherEne ->Fill(j->energy());
+	      HEMOtherEneVTime->Fill(j->energy() , j->time());
+	      if (j->energy()>10.){
+		HEMOtherTime->Fill(j->time()); 
+	      } 
+	    }
 	  } else {
-	    HEposEne->Fill(j->energy()); 
-	    HEposTime->Fill(j->time()); 
+	    HEPEne->Fill(j->energy()); 
+	    HEPTime->Fill(j->time()); 
 	  }
         }
 	else
@@ -101,18 +154,49 @@ void HcalPFGRecHitAna::analyze( const edm::Event& evt, const edm::EventSetup& es
 	  
 	  // Check whether rechits are being made for a channel that we 
 	  // know should be masked.
-	  if(j->id().ieta()==14 && j->id().iphi()==31 && j->id().depth()==1 )
-	  {
-	    std::cout << "PROBLEM :: RecHit Made for 14, 31, 1" << std::endl;
-	  }
+	  // 	  if(j->id().ieta()==14 && j->id().iphi()==31 && j->id().depth()==1 )
+	  // 	  {
+	  // 	    std::cout << "PROBLEM :: RecHit Made for 14, 31, 1" << std::endl;
+	  // 	  }
 	  
 
 	  if (j->id().ieta()<0) {
-	    HBnegEne->Fill(j->energy()); 
-	    HBnegTime->Fill(j->time()); 
+	    HBMEne->Fill(j->energy()); 
+	    HBMTime->Fill(j->time()); 
 	  } else {
-	    HBposEne->Fill(j->energy()); 
-	    HBposTime->Fill(j->time()); 
+	    HBPEne->Fill(j->energy()); 
+	    HBPTime->Fill(j->time()); 
+
+	    bool inHBP14B(0);
+	    bool inHBP14A(0);
+	    
+	    if ( j->id().iphi()==51 || j->id().iphi()==52) inHBP14B = 1;
+	    else if ( j->id().iphi()==53 || j->id().iphi()==54) inHBP14A = 1;
+
+	    if (inHBP14B)
+	    {
+	      HBP14BEne ->Fill(j->energy());
+	      HBP14BEneVTime->Fill(j->energy() , j->time());
+	      if (j->energy()>10.){
+		HBP14BTime->Fill(j->time());
+	      }
+	    }
+	    else if (inHBP14A) 
+	    {
+	      HBP14AEne ->Fill(j->energy());
+	      HBP14AEneVTime->Fill(j->energy() , j->time());
+	      if (j->energy()>10.){
+		HBP14ATime->Fill(j->time()); 
+	      }
+	    }
+	    else
+	    {
+	      HBPOtherEne ->Fill(j->energy());
+	      HBPOtherEneVTime->Fill(j->energy() , j->time());
+	      if (j->energy()>10.){
+		HBPOtherTime->Fill(j->time()); 
+	      }
+	    }
 	  }
 	}
       }
@@ -188,6 +272,20 @@ void HcalPFGRecHitAna::analyze( const edm::Event& evt, const edm::EventSetup& es
   } catch (...) {
     cout << "No HO RecHits." << endl;
   }
+
+  //   try {
+  //     std::vector<edm::Handle<CaloJetCollection> > colls;
+  //     evt.getByLabel("ak5CaloJets",colls);
+  //     std::vector<edm::Handle<CaloJetCollection> >::iterator i;
+  //     for (i=colls.begin(); i!=colls.end(); i++) {
+  //       for (CaloJetCollection::const_iterator j=(*i)->begin(); j!=(*i)->end(); j++) {
+  
+  //       }
+  //     }
+  //   } catch (...) {
+  //     cout << "No CaloJets." << endl;
+  //  }
+  
 }
 
 // ***********************************
