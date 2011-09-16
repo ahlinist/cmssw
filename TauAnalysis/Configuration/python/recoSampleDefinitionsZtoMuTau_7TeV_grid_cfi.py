@@ -51,6 +51,7 @@ SAMPLE_DEFAULTS = {
     'applyZrecoilCorrection' : False,
     'applyElectronTriggerEfficiencyCorrection' : False, # not be used in mu + tau-jet channel
     'applyElectronIsolationEfficiencyCorrection' : False, # not be used in mu + tau-jet channel
+    'applyTauMetTriggerEfficiencyCorrection' : False, # not be used in mu + tau-jet channel
     'applyMuonTriggerEfficiencyCorrection' : False,   # to be used for MC only
     'applyMuonIsolationEfficiencyCorrection' : False, # to be used for MC only
     'applyVertexMultiplicityReweighting' : False,     # to be used for MC with pile-up only
@@ -306,9 +307,9 @@ RECO_SAMPLES = {
         'SE_black_list' : 'T2_BR_SPRACE'
     },
     'WW' : {
-        'datasetpath' : "/WWtoAnything_TuneZ2_7TeV-pythia6-tauola/Spring11-PU_S1_START311_V1G1-v1/AODSIM",
+        'datasetpath' : "/WW_TuneZ2_7TeV_pythia6_tauola/Summer11-PU_S4_START42_V11-v1/AODSIM",
         'dbs_url' :  "http://cmsdbsprod.cern.ch/cms_dbs_prod_global/servlet/DBSServlet",
-        'events_processed' : 2061760,
+        'events_processed' : 4225916,
         'skim_eff' : 1.0,
         'x_sec' : 43.0*_picobarns, # NLO cross-section from https://twiki.cern.ch/twiki/bin/viewauth/CMS/StandardModelCrossSections
         'legendEntry' : plotter.process_VV.config_dqmHistPlotter.legendEntry.value(),
@@ -322,9 +323,9 @@ RECO_SAMPLES = {
         'hlt' : cms.InputTag("TriggerResults", "", "HLT")
     },
     'WZ' : {
-        'datasetpath' : "/WZtoAnything_TuneZ2_7TeV-pythia6-tauola/Spring11-PU_S1_START311_V1G1-v1/AODSIM",
+        'datasetpath' : "/WZ_TuneZ2_7TeV_pythia6_tauola/Summer11-PU_S4_START42_V11-v1/AODSIM",
         'dbs_url' :  "http://cmsdbsprod.cern.ch/cms_dbs_prod_global/servlet/DBSServlet",
-        'events_processed' : 2108416,
+        'events_processed' : 4265243,
         'skim_eff' : 1.0,
         'x_sec' : 18.2*_picobarns, # NLO cross-section from https://twiki.cern.ch/twiki/bin/viewauth/CMS/StandardModelCrossSections
         'legendEntry' : plotter.process_VV.config_dqmHistPlotter.legendEntry.value(),
@@ -338,9 +339,9 @@ RECO_SAMPLES = {
         'hlt' : cms.InputTag("TriggerResults", "", "HLT")
     },
     'ZZ' : {
-        'datasetpath' : "/ZZtoAnything_TuneZ2_7TeV-pythia6-tauola/Spring11-PU_S1_START311_V1G1-v1/AODSIM",
+        'datasetpath' : "/ZZ_TuneZ2_7TeV_pythia6_tauola/Summer11-PU_S4_START42_V11-v1/AODSIM",
         'dbs_url' :  "http://cmsdbsprod.cern.ch/cms_dbs_prod_global/servlet/DBSServlet",
-        'events_processed' : 2108608,
+        'events_processed' : 4187885,
         'skim_eff' : 1.0,
         'x_sec' : 5.9*_picobarns, # NLO cross-section from https://twiki.cern.ch/twiki/bin/viewauth/CMS/StandardModelCrossSections
         'legendEntry' : plotter.process_VV.config_dqmHistPlotter.legendEntry.value(),
