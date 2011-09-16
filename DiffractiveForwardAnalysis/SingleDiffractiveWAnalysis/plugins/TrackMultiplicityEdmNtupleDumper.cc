@@ -56,5 +56,5 @@ void TrackMultiplicityEdmNtupleDumper::produce(edm::Event& event, const edm::Eve
 	event.put(trackMultiplicityEtaMinus,"trackMultiplicityEtaMinus");
 }
 
-DEFINE_FWK_MODULE(TrackMultiplicityEdmNtupleDumper);
+//DEFINE_FWK_MODULE(TrackMultiplicityEdmNtupleDumper);
  
