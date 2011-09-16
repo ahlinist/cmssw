@@ -91,6 +91,11 @@ if not isData:
 	process.TauMCProducer
     )
 
+# Reproduce the mu-tau pair objects, as they are not kept in the skim at the moment
+import ElectroWeakAnalysis.TauTriggerEfficiency.ZtoMuTauFilter_cfi as zmutau
+process.muTauPairs = zmutau.muTauPairs.clone()
+process.commonSequence *= process.muTauPairs
+
 # Do the (old) TTEff shrinking cone PFTau
 #doTTEffShrinkingConePFTau=False
 #if doTTEffShrinkingConePFTau:
