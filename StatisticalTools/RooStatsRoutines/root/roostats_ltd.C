@@ -90,6 +90,9 @@ static const char* desc =
 
 class LimitResult; // container class for limit results
 
+LimitResult cls_limit(const char * inFileName,
+		      const char * workspaceName,
+		      const char * datasetName);
 
 // ---> implementation below --------------------------------------------
 
@@ -180,8 +183,8 @@ public:
   ~LimitCalc();
 
   static LimitCalc * GetInstance(void){
-    if (!mpInstance) mpInstance = new LimitCalc();
-    return mpInstance;
+    if (!mspInstance) mspInstance = new LimitCalc();
+    return mspInstance;
   }
 
   LimitResult       GetClsLimit( int nPoiScanPoints,
@@ -286,12 +289,12 @@ private:
   int mNProofWorkers;
 
   // pointer to class instance
-  static LimitCalc * mpInstance;
+  static LimitCalc * mspInstance;
 };
 
 
 
-LimitCalc * LimitCalc::mpInstance = 0;
+LimitCalc * LimitCalc::mspInstance = 0;
 
 
 
@@ -1403,4 +1406,30 @@ LimitCalc::RunInverter( int npoints, double poimin, double poimax,
    RooStats::HypoTestInverterResult * r = calc.GetInterval();
 
    return r; 
+}
+
+
+
+//--------> global functions --------------------------------------
+LimitResult cls_limit(const char * inFileName,
+		      const char * workspaceName,
+		      const char * datasetName){
+  //
+  // Do the prepackaged CLs limit calculation
+  //
+
+  // instantiate calculator
+  LimitCalc * pCalc = LimitCalc::GetInstance();
+
+  // load workspace
+  pCalc->LoadWorkspace("ws_cl95.root", "ws");
+
+  pCalc->LoadData("observed_data");
+
+  //calc->SetFirstPoiMin(0.0);
+  //calc->SetFirstPoiMax(0.5);
+
+  LimitResult limitResult = pCalc->GetClsLimit(0, 1000, true);
+
+  return limitResult;
 }
