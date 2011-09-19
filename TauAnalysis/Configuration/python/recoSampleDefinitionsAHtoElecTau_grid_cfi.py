@@ -13,20 +13,20 @@ TAN_BETA = 30
 # List of samples to run in the analysis
 SAMPLES_TO_ANALYZE = copy.deepcopy(ZtoElecTau.SAMPLES_TO_ANALYZE)
 SAMPLES_TO_ANALYZE.extend([
-    'A90_skim',  'bbA90_skim',
-    'A100_skim', 'bbA100_skim',
+    #'A90_skim',  'bbA90_skim',
+    #'A100_skim', 'bbA100_skim',
     'A120_skim', 'bbA120_skim',
     'A130_skim', 'bbA130_skim',
     'A140_skim', 'bbA140_skim',
     'A160_skim', 'bbA160_skim',
     'A180_skim', 'bbA180_skim',
     'A200_skim', 'bbA200_skim',
-    'A250_skim', 'bbA250_skim',
-    'A300_skim', 'bbA300_skim',
-    'A350_skim', 'bbA350_skim',
-    'A400_skim', 'bbA400_skim',
-    'A450_skim', 'bbA450_skim',
-    'A500_skim', 'bbA500_skim',
+    #'A250_skim', 'bbA250_skim',
+    #'A300_skim', 'bbA300_skim',
+    #'A350_skim', 'bbA350_skim',
+    #'A400_skim', 'bbA400_skim',
+    #'A450_skim', 'bbA450_skim',
+    #'A500_skim', 'bbA500_skim',
 ])
 
 # List of samples to include in the final level plots.  May include selections
@@ -37,15 +37,15 @@ SAMPLES_TO_PLOT = [
     #'A100Sum',
     #'A120Sum',
     #'A130Sum',
-    #'A140Sum',
+    'A140Sum',
     #'A160Sum',
 	#'A180Sum',
     #'A200Sum',
     #'A300Sum',
-    'qcdSum',
-    'VVsum',
-    'photonPlusJetsSum',
-    'TTplusJets_madgraph',
+    #'qcdSum',
+    #'VVsum',
+    #'photonPlusJetsSum',
+    'TTplusJets_madgraph_skim',
     'WplusJets_madgraph_skim',
     'ZeeSum',
     'ZtautauSum'
@@ -58,11 +58,12 @@ SAMPLES_TO_PRINT = copy.copy(SAMPLES_TO_PLOT)
 #SAMPLES_TO_PRINT.append('qqZtautau')
 #SAMPLES_TO_PRINT.append('A90Sum')
 #SAMPLES_TO_PRINT.append('A100Sum')
-#SAMPLES_TO_PRINT.append('A120Sum')
-#SAMPLES_TO_PRINT.append('A140Sum')
-#SAMPLES_TO_PRINT.append('A160Sum')
-#SAMPLES_TO_PRINT.append('A180Sum')
-#SAMPLES_TO_PRINT.append('A200Sum')
+SAMPLES_TO_PRINT.append('A120Sum')
+SAMPLES_TO_PRINT.append('A130Sum')
+SAMPLES_TO_PRINT.append('A140Sum')
+SAMPLES_TO_PRINT.append('A160Sum')
+SAMPLES_TO_PRINT.append('A180Sum')
+SAMPLES_TO_PRINT.append('A200Sum')
 #SAMPLES_TO_PRINT.append('A250Sum')
 #SAMPLES_TO_PRINT.append('A250Sum')
 #SAMPLES_TO_PRINT.append('A300Sum')
@@ -259,7 +260,7 @@ AHtoElecTauSpecific_RECO_SAMPLES = {
     },
     'A160_skim' : {
         'datasetpath' : "/GluGluToHToTauTau_M-160_7TeV-powheg-pythia6/jkolb-skimElecTau_423_v1-2453a4eaae124a4a3fe9f365dc31e11f/USER",
-        'dbs_url' :  "http://cmsdbsprod.cern.ch/cms_dbs_prod_global/servlet/DBSServlet",
+        'dbs_url' :  "https://cmsdbsprod.cern.ch:8443/cms_dbs_ph_analysis_01_writer/servlet/DBSServlet",
         'events_processed' : 199983,
         'number_of_jobs' : 25,
         'skim_eff' : 38111./199983.,
@@ -303,8 +304,8 @@ AHtoElecTauSpecific_RECO_SAMPLES = {
         'datasetpath' : "/SUSYBBHToTauTau_M-180_7TeV-pythia6-tauola/jkolb-skimElecTau_423_v1-2453a4eaae124a4a3fe9f365dc31e11f/USER",
         'dbs_url' : "https://cmsdbsprod.cern.ch:8443/cms_dbs_ph_analysis_01_writer/servlet/DBSServlet",
         'events_processed' : 220000,
-        'number_of_jobs' : 45614./220000,
-        'skim_eff' : 1.0,
+        'number_of_jobs' : 10,
+        'skim_eff' : 45614./220000,
         'x_sec' : (
               32261.*_femtobarns*0.133061 # (bb -> A0)*(A0->tautau)
            +  32063.*_femtobarns*0.133826 # (bb -> H0)*(H0->tautau)
