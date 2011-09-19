@@ -1,11 +1,11 @@
-// $Id: EcalCalibRenderPlugin.cc,v 1.3 2011/08/12 17:10:32 yiiyama Exp $
+// $Id: EcalCalibRenderPlugin.cc,v 1.4 2011/09/02 20:27:19 yiiyama Exp $
 
 /*!
   \file EcalCalibRenderPlugin
   \brief Display Plugin for Quality Histograms
   \author Y. Iiyama
-  \version $Revision: 1.3 $
-  \date $Date: 2011/08/12 17:10:32 $
+  \version $Revision: 1.4 $
+  \date $Date: 2011/09/02 20:27:19 $
 */
 
 #include "DQM/DQMRenderPlugin.h"
@@ -198,6 +198,14 @@ private:
     int nbx = obj->GetNbinsX();
     int nby = obj->GetNbinsY();
 
+    if( name.find("EcalLaser") != std::string::npos && name.find("quality summary") != std::string::npos ){
+      dqm::utils::reportSummaryMapPalette(obj);
+      gPad->SetGridx();
+      gStyle->SetPaintTextFormat("+g");
+      obj->GetYaxis()->SetNdivisions(1);
+      return;
+    }
+
     if( ( nbx == 85 && nby == 20 ) && name.find( "EB" ) != std::string::npos ){
       gPad->SetGridx();
       gPad->SetGridy();
@@ -244,12 +252,9 @@ private:
 
     if( name.find("EcalLaser") != std::string::npos ){
 
-      if( name.find("L1 (blue) amplitude trend") != std::string::npos ){
+      if( name.find("amplitude trend") != std::string::npos ){
 	obj->SetMinimum(0.);
 	obj->SetMaximum(1000.);
-      }else if( name.find("L4 (red) amplitude trend") != std::string::npos ){
-	obj->SetMinimum(0.);
-	obj->SetMaximum(2000.);
       }else if( name.find("amplitude RMS trend") != std::string::npos ){
 	obj->SetMinimum(0.);
 	obj->SetMaximum(20.);
@@ -444,12 +449,9 @@ private:
       l1.SetLineStyle(1), l2.SetLineStyle(1), l3.SetLineStyle(1);
       l1.SetLineColor(kRed), l2.SetLineColor(kOrange), l3.SetLineColor(kGreen);
 
-      if( name.find("L1 (blue) amplitude trend") != std::string::npos ){
+      if( name.find("L1 amplitude trend") != std::string::npos ){
 	l1.DrawLine(xmin,100,xmax,100);
 	l2.DrawLine(xmin,200,xmax,200);
-      }else if( name.find("L4 (red) amplitude trend") != std::string::npos ){
-	l1.DrawLine(xmin,200,xmax,200);
-	l2.DrawLine(xmin,400,xmax,400);
       }else if( name.find("amplitude RMS trend") != std::string::npos ){
 	l1.DrawLine(xmin,15,xmax,15);
 	l2.DrawLine(xmin,5,xmax,5);
