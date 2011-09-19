@@ -16,9 +16,10 @@
   // load the library
   gSystem->Load("roostats_ltd_C.so");
 
-  LimitResult limitResult = cls_limit("ws_cl95.root",
-				      "ws",
-				      "observed_data");
+  LimitResult limitResult = limit( "cls",
+				   "ws_cl95.root",
+				   "ws",
+				   "observed_data" );
 
   // all done
   std::cout << "[roostats_ltd_demo]: done." << std::endl;

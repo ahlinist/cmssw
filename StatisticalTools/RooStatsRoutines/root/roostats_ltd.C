@@ -90,9 +90,10 @@ static const char* desc =
 
 class LimitResult; // container class for limit results
 
-LimitResult cls_limit(const char * inFileName,
-		      const char * workspaceName,
-		      const char * datasetName);
+LimitResult limit( const char * method = "plr",
+		   const char * inFileName = 0,
+		   const char * workspaceName = 0,
+		   const char * datasetName = 0 );
 
 // ---> implementation below --------------------------------------------
 
@@ -256,6 +257,7 @@ private:
 
 
   // attributes
+  bool mTestMode;
   int mInverterCalcType;
   int mTestStatType;
 
@@ -306,6 +308,9 @@ LimitCalc::LimitCalc(){
 
 
 void LimitCalc::init(UInt_t randomSeed){
+
+  // set test mode
+  mTestMode = true;
 
   // toy MC settings
   mNEventsPerToy = 0;
@@ -738,6 +743,11 @@ LimitCalc::LoadWorkspace( std::string wsFileName,
 	      << std::endl;
     return 0;
   }
+  else{
+    std::cout << _legend 
+	      << "file " << wsFileName << " open"
+	      << std::endl;
+  }
 
   RooWorkspace * _ws = (RooWorkspace *)p_infile->Get(wsName.c_str());
   if (!_ws){
@@ -745,6 +755,11 @@ LimitCalc::LoadWorkspace( std::string wsFileName,
 	      << "no workspace " << wsName << " found!"
 	      << std::endl;
     return 0;
+  }
+  else{
+    std::cout << _legend 
+	      << "workspace " << wsName << " loaded"
+	      << std::endl;
   }
 
   // delete current workspace or null
@@ -1411,25 +1426,53 @@ LimitCalc::RunInverter( int npoints, double poimin, double poimax,
 
 
 //--------> global functions --------------------------------------
-LimitResult cls_limit(const char * inFileName,
-		      const char * workspaceName,
-		      const char * datasetName){
+//
+LimitResult limit( const char * method,
+		   const char * inFileName,
+		   const char * workspaceName,
+		   const char * datasetName ){
   //
-  // Do the prepackaged CLs limit calculation
+  // Do one of the prepackaged limit calculations
   //
+  std::string _legend = "[limit]: ";
 
   // instantiate calculator
   LimitCalc * pCalc = LimitCalc::GetInstance();
 
   // load workspace
-  pCalc->LoadWorkspace("ws_cl95.root", "ws");
+  if (inFileName && workspaceName){
+    pCalc->LoadWorkspace(inFileName, workspaceName);
+  }
 
-  pCalc->LoadData("observed_data");
+  // load dataset
+  if (datasetName){
+    pCalc->LoadData("observed_data");
+  }
 
-  //calc->SetFirstPoiMin(0.0);
-  //calc->SetFirstPoiMax(0.5);
-
-  LimitResult limitResult = pCalc->GetClsLimit(0, 1000, true);
+  LimitResult limitResult;
+  if (!method || std::string(method).find("no_limit") != std::string::npos){
+    std::cout << _legend
+	      << "no limit calculation requested, doing nothing"
+	      << std::endl;
+  }
+  else if (std::string(method).find("cls") != std::string::npos){
+    limitResult = pCalc->GetClsLimit(0, 1000, true);
+  }
+  else if (std::string(method).find("plr") != std::string::npos){
+    //limitResult = pCalc->GetPlrLimit(0, 1000, true);
+    std::cout << _legend
+	      << "profile likelihood ratio"
+	      << std::endl;
+  }
+  else{
+    std::cout << _legend
+	      << "method " << method << "is unknown, exiting"
+	      << std::endl;
+    std::exit(-1);
+  }
 
   return limitResult;
 }
+
+
+
