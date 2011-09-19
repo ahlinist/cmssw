@@ -14,6 +14,7 @@
 // system include files
 #include <algorithm>
 #include <limits>
+#include "boost/version.hpp"
 
 // user include files
 #include "FWCore/PluginManager/interface/CacheParser.h"
