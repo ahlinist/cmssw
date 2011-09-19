@@ -16,19 +16,9 @@
   // load the library
   gSystem->Load("roostats_ltd_C.so");
 
-  // instantiate calculator
-  LimitCalc * calc = LimitCalc::GetInstance();
-
-  // load workspace
-  calc->LoadWorkspace("ws_cl95.root", "ws");
-  //calc->GetWorkspace()->Print();
-  calc->LoadData("observed_data");
-  //calc->SetTestStatType(2);
-
-  calc->SetFirstPoiMin(0.0);
-  calc->SetFirstPoiMax(0.5);
-
-  LimitResult limitResult = calc->GetClsLimit(0, 1000, true);
+  LimitResult limitResult = cls_limit("ws_cl95.root",
+				      "ws",
+				      "observed_data");
 
   // all done
   std::cout << "[roostats_ltd_demo]: done." << std::endl;
