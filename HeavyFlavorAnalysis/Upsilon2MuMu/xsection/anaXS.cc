@@ -182,24 +182,25 @@ void anaXS::init(const char *dir, int i) {
   fPtMmbNeg = new PidTable(1); 
   fPtMmbPos = new PidTable(1); 
   
-  //fPtTrigCorr = new PidTable("PidTables/DATA/Upsilon/PtTrigCorr.dat");
-  //fPtMuidCorr = new PidTable("PidTables/DATA/Upsilon/PtMuidCorr.dat");
-  ///fPtTrigCorr = new PidTable("PidTables/DATA/Upsilon/PtTrigCorr_1Sbin.tma.dat");
-  fPtTrigCorr = new PidTable("PidTables/DATA/Upsilon/PtTrigCorrWithFit_1Sbin.tma.dat");
-  //fPtMuidCorr = new PidTable("PidTables/DATA/Upsilon/PtMuidCorr_1Sbin.tma.dat");
-  fPtMuidCorr = new PidTable("PidTables/DATA/Upsilon/PtMuidCorrWithFit_1Sbin.tma.dat");
-  //fPtTrigCorr = new PidTable("PidTables/DATA/Upsilon/PtTrigCorr_1Sbin.tma.MomCor.dat");
-  //fPtMuidCorr = new PidTable("PidTables/DATA/Upsilon/PtMuidCorr_1Sbin.tma.MomCor.dat");  
-  //fPtTrigCorr = new PidTable("PidTables/DATA/Upsilon/PtTrigCorr_1Sbin.gltr.dat");
-  //fPtMuidCorr = new PidTable("PidTables/DATA/Upsilon/PtMuidCorr_1Sbin.gltr.dat");
-  //fPtTrigCorr = new PidTable("PidTables/DATA/Upsilon/PtTrigCorr_2Sbin.tma.dat");
-  //fPtMuidCorr = new PidTable("PidTables/DATA/Upsilon/PtMuidCorr_2Sbin.tma.dat");  
-  //fPtTrigCorr = new PidTable("PidTables/DATA/Upsilon/PtTrigCorr_2Sbin.dat");
-  //fPtMuidCorr = new PidTable("PidTables/DATA/Upsilon/PtMuidCorr_2Sbin.dat");  
-  //fPtTrigCorr = new PidTable("PidTables/DATA/Upsilon/PtTrigCorr_3Sbin.dat");
-  //fPtMuidCorr = new PidTable("PidTables/DATA/Upsilon/PtMuidCorr_3Sbin.dat");
-  //fPtTrigCorr = new PidTable("PidTables/DATA/Upsilon/PtTrigCorr_3Sbin.tma.dat");
-  //fPtMuidCorr = new PidTable("PidTables/DATA/Upsilon/PtMuidCorr_3Sbin.tma.dat");
+  
+  fPtTrigCorr = new PidTable("PidTables/DATA/Upsilon/PtTrigCorrWithFit_24ptbins_1S.tma.dat");
+  //fPtTrigCorr = new PidTable("PidTables/DATA/Upsilon/PtTrigCorrWithFit_24ptbins_2S.tma.dat");
+  //fPtTrigCorr = new PidTable("PidTables/DATA/Upsilon/PtTrigCorrWithFit_24ptbins_3S.tma.dat");
+  fPtMuidCorr = new PidTable("PidTables/DATA/Upsilon/PtMuidCorrWithFit_24ptbins_1S.tma.dat");
+  //fPtMuidCorr = new PidTable("PidTables/DATA/Upsilon/PtMuidCorrWithFit_24ptbins_2S.tma.dat");
+  //fPtMuidCorr = new PidTable("PidTables/DATA/Upsilon/PtMuidCorrWithFit_24ptbins_3S.tma.dat");
+  //fPtTrigCorr = new PidTable("PidTables/DATA/Upsilon/PtTrigCorrWithFit_18ptbins_1S.tma.dat");
+  //fPtTrigCorr = new PidTable("PidTables/DATA/Upsilon/PtTrigCorrWithFit_18ptbins_2S.tma.dat");
+  //fPtTrigCorr = new PidTable("PidTables/DATA/Upsilon/PtTrigCorrWithFit_18ptbins_3S.tma.dat");
+  //fPtMuidCorr = new PidTable("PidTables/DATA/Upsilon/PtMuidCorrWithFit_18ptbins_1S.tma.dat");
+  //fPtMuidCorr = new PidTable("PidTables/DATA/Upsilon/PtMuidCorrWithFit_18ptbins_2S.tma.dat");
+  //fPtMuidCorr = new PidTable("PidTables/DATA/Upsilon/PtMuidCorrWithFit_18ptbins_3S.tma.dat");  
+  //fPtTrigCorr = new PidTable("PidTables/DATA/Upsilon/PtTrigCorrWithFit_10ptbins_1S.tma.dat");
+  //fPtTrigCorr = new PidTable("PidTables/DATA/Upsilon/PtTrigCorrWithFit_10ptbins_2S.tma.dat");
+  //fPtTrigCorr = new PidTable("PidTables/DATA/Upsilon/PtTrigCorrWithFit_10ptbins_3S.tma.dat");
+  //fPtMuidCorr = new PidTable("PidTables/DATA/Upsilon/PtMuidCorrWithFit_10ptbins_1S.tma.dat");
+  //fPtMuidCorr = new PidTable("PidTables/DATA/Upsilon/PtMuidCorrWithFit_10ptbins_2S.tma.dat");
+  //fPtMuidCorr = new PidTable("PidTables/DATA/Upsilon/PtMuidCorrWithFit_10ptbins_3S.tma.dat");
   
 }
 
@@ -282,11 +283,11 @@ void anaXS::loadFiles(const char *dir, int i) {
     } else if (40 == i) {
       //ufile = fDirectory + string("/upsilon/101201.fl10.mm.COMBINED.xsReader_1SBin.default.root");
       afile = fDirectory + string("/upsilon/Acc_All_0_50.xsReader_1Sbin.default.root");
-      //ufile = fDirectory + string("/upsilon/101201.fl10.mm.COMBINED.xsReader_1SBin.default.root");
-      ufile = fDirectory + string("/upsilon/101201.fl10.mm.ups1s.xsReader_1S.MuIDTrigFit.root");
+      ufile = fDirectory + string("/upsilon/101201.fl10.mm.COMBINED.xsReader_1SBin.default.root");
+      //ufile = fDirectory + string("/upsilon/101201.fl10.mm.ups3s.xsReader_3S.24ptbins.root");
       //jfile = fDirectory + string("/upsilon/130211.nov4rereco_v2.dimuons.xsReader_Data_3SBin.default.root");
       //jfile = fDirectory + string("/upsilon/130211.nov4rereco_v2.dimuons.xsReader_Data_3SBin_Run2010Bp1.default.root");
-      jfile = fDirectory + string("/upsilon/130211.nov4rereco_v2.dimuons.xsReader_Data.Run2010Ballv2.root");
+      jfile = fDirectory + string("/upsilon/130211.nov4rereco_v2.dimuons.xsReader_Data.Run2010Ball_24ptbins.root");
       //jfile = fDirectory + string("/upsilon/130211.nov4rereco_v2.dimuons.xsReader_1Sbin.tma.default.root");
      
     } else {
@@ -1001,7 +1002,7 @@ void anaXS::makeAllMC(int channel) {
     //GetAnaEff();
     //GetPreSelEff();
     GetMuIDEff(1);
-    //GetTrigEff(1);
+    GetTrigEff(1);
     //CorrectedYields(1);   // 1- FOR MC, 2 FOR DATA
     //PlotProjections(1);   // 1- FOR MC, 2 FOR DATA
         
@@ -4308,7 +4309,7 @@ void anaXS::GetMuIDEff(int mode){
 void anaXS::GetTrigEff(int mode){
   
   ////////////////
-  TFile *f = new TFile("Trig.root", "RECREATE");
+  //TFile *f = new TFile("Trig.root", "RECREATE");
   ////////////////
   TH1D *h;
   double pt, eta; 
@@ -4402,7 +4403,7 @@ void anaXS::GetTrigEff(int mode){
   }
   
   ///////////
-  fTrigEff->Write();
+  //fTrigEff->Write();
   ////////////
 }
 
@@ -4947,7 +4948,7 @@ void anaXS::FITUpsilon(int mode){
       c1->cd(1); shrinkPad(0.15, 0.26); 
       h = &(fS1Vector[i]);
       h->SetMinimum(0.); setTitles(h, "Mass_{#mu #mu} [GeV]", "Entries/Bin", 0.08, 0.9, 1.8, 0.07);
-      if (h->GetSumOfWeights() > 100.) {
+      if (h->GetSumOfWeights() > 50.) {
 	setFunctionParameters(h, f13, 6, 3);
 	h->Fit(f13, fopt.c_str());
 	status = 0;
@@ -5069,11 +5070,13 @@ void anaXS::FITUpsilon(int mode){
 	cout << "h->GetBinLowEdge(1) = " << h->GetBinLowEdge(1) << "h->GetBinLowEdge(7) = " << h->GetBinLowEdge(7) << "h->GetBinLowEdge(54) = " << h->GetBinLowEdge(54)  << "h->GetBinLowEdge(60) = " << h->GetBinLowEdge(60) << endl;
 	cout << "(h->Integral(1,7) + h->Integral(54,60)) = "<< (h->Integral(1,7) + h->Integral(54,60)) << endl;
 	yield_1S  = h->Integral(11,21) - 0.83*(h->Integral(1,7) + h->Integral(54,60));
-	//yieldE_1S = TMath::Sqrt(h->GetSumOfWeights());
+	if ( yield_1S < 0 ) yield_1S = 1.;
 	yieldE_1S = TMath::Sqrt(h->Integral(11,21));
 	yield_2S  = h->Integral(23,31) - 0.66*(h->Integral(1,7) + h->Integral(54,60));
+	if ( yield_2S < 0 ) yield_2S = 1.;
 	yieldE_2S = TMath::Sqrt(h->Integral(23,31));
 	yield_3S  = h->Integral(32,38) - 0.5*(h->Integral(1,7) + h->Integral(54,60));
+	if ( yield_3S < 0 ) yield_3S = 1.;
 	yieldE_3S = TMath::Sqrt(h->Integral(32,38));
 	YieldTot += yield_1S;
 	YieldTotE += (yieldE_1S*yieldE_1S);
