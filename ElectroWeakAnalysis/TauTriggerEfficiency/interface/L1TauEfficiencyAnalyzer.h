@@ -82,8 +82,13 @@ class L1TauEfficiencyAnalyzer {
 	float met;
 	float mht;
 
-	int _L1EvtCnt;
-	bool *_l1Flag;
+  struct TriggerBit {
+    TriggerBit(const std::string& n): name(n), value(false) {}
+    std::string name;
+    bool value;
+  };
+  std::vector<TriggerBit> l1Bits;
+        
 
         bool selectNearest;
 };

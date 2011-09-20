@@ -13,12 +13,13 @@
 //
 // Original Author:  Chi Nhan Nguyen
 //         Created:  Wed Oct  1 13:04:54 CEST 2008
-// $Id: TTEffAnalyzer.cc,v 1.64 2011/09/06 12:59:29 mkortela Exp $
+// $Id: TTEffAnalyzer.cc,v 1.65 2011/09/08 06:43:27 mkortela Exp $
 //
 //
 
 #include "ElectroWeakAnalysis/TauTriggerEfficiency/interface/TTEffAnalyzer.h"
 #include "FWCore/MessageLogger/interface/MessageLogger.h"
+#include "FWCore/Common/interface/TriggerNames.h"
 #include "Math/GenVector/VectorUtil.h"
 #include "DataFormats/ParticleFlowReco/interface/PFBlock.h"
 #include "DataFormats/ParticleFlowReco/interface/PFBlockElement.h"
@@ -43,7 +44,6 @@ TTEffAnalyzer::TTEffAnalyzer(const edm::ParameterSet& iConfig):
   rootFile_(iConfig.getParameter<std::string>("outputFileName")),
   PFTauDiscriminators_(iConfig.getParameter<std::vector<std::string> >("PFTauDiscriminators")),
   Counters_(iConfig.getParameter<std::vector<edm::InputTag> >("Counters")),
-  _hltFlag(new bool[512]),
   MCMatchingCone(iConfig.getParameter<double>("MCMatchingCone"))
 {
   // File setup
@@ -78,8 +78,6 @@ TTEffAnalyzer::TTEffAnalyzer(const edm::ParameterSet& iConfig):
   MCTauE = -1.;
   MCTauEta = -999.;
   MCTauPhi = -999.;
-
-  _HltEvtCnt = 0;
 
   pfJetChargedEmEnergy = 0.;
   pfJetChargedEmEnergyFraction = 0.;
@@ -135,6 +133,13 @@ TTEffAnalyzer::TTEffAnalyzer(const edm::ParameterSet& iConfig):
   _TTEffTree->Branch("MCTauEta", &MCTauEta);
   _TTEffTree->Branch("MCTauPhi", &MCTauPhi);
 
+  std::vector<std::string> triggerNames = iConfig.getParameter<std::vector<std::string> >("HltPaths");
+  hltBits.reserve(triggerNames.size());
+  for(size_t i=0; i<triggerNames.size(); ++i)
+    hltBits.push_back(TriggerBit(triggerNames[i]));
+  for(size_t i=0; i<hltBits.size(); ++i)
+    _TTEffTree->Branch(hltBits[i].name.c_str(), &(hltBits[i].value));
+
   if(!DoOfflineVariablesOnly_){
     _L1analyzer = new L1TauEfficiencyAnalyzer();
     _L2analyzer = new L2TauEfficiencyAnalyzer();
@@ -158,9 +163,6 @@ TTEffAnalyzer::TTEffAnalyzer(const edm::ParameterSet& iConfig):
 
 TTEffAnalyzer::~TTEffAnalyzer()
 {
-   // do anything here that needs to be done at desctruction time
-   // (e.g. close files, deallocate resources etc.)
-   delete[] _hltFlag;
 }
 
 
@@ -241,30 +243,16 @@ void TTEffAnalyzer::fillHLTinfo(const edm::Event& iEvent){
     return;
   }
   else {
-    int ntrigs = hltresults->size();
-    //_triggerNames.init(* hltresults);
-    _triggerNames = iEvent.triggerNames(*hltresults);
+    size_t ntrigs = hltresults->size();
+    const edm::TriggerNames& triggerNames = iEvent.triggerNames(*hltresults);
 
-    // 1st event : Book as many branches as trigger paths provided in the input...
-    if (_HltEvtCnt==0){
-      edm::TriggerResults tr = *hltresults;
-      //bool fromPSetRegistry;
-      //Service<service::TriggerNamesService> tns;
-      //tns->getTrigPaths(tr, _triggerNames, fromPSetRegistry);
-      for (int itrig = 0; itrig != ntrigs; ++itrig) {
-        TString trigName = _triggerNames.triggerName(itrig);
-        //TString trigName = _triggerNames[itrig];
-        _TTEffTree->Branch(trigName, _hltFlag+itrig);
+    for(size_t i=0; i<hltBits.size(); ++i) {
+      size_t itrig = triggerNames.triggerIndex(hltBits[i].name);
+      if(itrig == triggerNames.size()) {
+        hltBits[i].value = false;
+        continue;
       }
-      _HltEvtCnt++;
-    }
-    // ...Fill the corresponding accepts in branch-variables
-    for (int itrig = 0; itrig != ntrigs; ++itrig){
-      string trigName=_triggerNames.triggerName(itrig);
-      //string trigName=_triggerNames[itrig];
-      bool accept = hltresults->accept(itrig);
-
-      _hltFlag[itrig] = accept;
+      hltBits[i].value = hltresults->accept(itrig);
     }
   }
 }
