@@ -93,13 +93,11 @@ using namespace std;
 // Default constructor
 L1TauEfficiencyAnalyzer::L1TauEfficiencyAnalyzer():
   l1tree(0),
-  l1CaloRegions(9, -1),
-  _l1Flag(new bool[128])
+  l1CaloRegions(9, -1)
 {}
 
 
 L1TauEfficiencyAnalyzer::~L1TauEfficiencyAnalyzer(){
-  delete[] _l1Flag;
   /*
 	cout << endl;
 	cout << "Events analyzed " << nEvents << endl;
@@ -141,6 +139,10 @@ void L1TauEfficiencyAnalyzer::Setup(const edm::ParameterSet& iConfig,TTree *trig
   else
     throw cms::Exception("Configuration") << "L1JetMatchingMode should be 'nearestDR' or 'highestEt', was '" << matchMode << "'" << std::endl;
 
+  std::vector<std::string> triggerNames = iConfig.getParameter<std::vector<std::string> >("L1Paths");
+  l1Bits.reserve(triggerNames.size());
+  for(size_t i=0; i<triggerNames.size(); ++i)
+    l1Bits.push_back(TriggerBit(triggerNames[i]));
 
   l1tree = trigtree;
 
@@ -172,8 +174,8 @@ void L1TauEfficiencyAnalyzer::Setup(const edm::ParameterSet& iConfig,TTree *trig
   l1tree->Branch("hasTriggeredAndMatchedL1TauJet", &hasTriggeredL1TauJet);
   l1tree->Branch("hasTriggeredAndMatchedL1CenJet", &hasTriggeredL1CenJet);
 
-
-  _L1EvtCnt = 0;
+  for(size_t i=0; i<l1Bits.size(); ++i)
+    l1tree->Branch(l1Bits[i].name.c_str(), &(l1Bits[i].value));
 }
 
 void L1TauEfficiencyAnalyzer::fill(const edm::Event& iEvent, const edm::EventSetup& iSetup, const reco::Candidate& tau) {
@@ -366,30 +368,22 @@ void L1TauEfficiencyAnalyzer::fill(const edm::Event& iEvent, const edm::EventSet
 
   // 1st event : Book as many branches as trigger paths provided in the input...
   if (l1GTRR.isValid() and l1GTOMRec.isValid()) {  
-    DecisionWord gtDecisionWord = l1GTRR->decisionWord();
+    const DecisionWord& gtDecisionWord = l1GTRR->decisionWord();
     const unsigned int numberTriggerBits(gtDecisionWord.size());
-    if (_L1EvtCnt==0){
-      // get ObjectMaps from ObjectMapRecord
-      const std::vector<L1GlobalTriggerObjectMap>& objMapVec =  l1GTOMRec->gtObjectMap();
-      // 1st event : Book as many branches as trigger paths provided in the input...
+
+    const std::vector<L1GlobalTriggerObjectMap>& objMapVec =  l1GTOMRec->gtObjectMap();
+    for(size_t i=0; i<l1Bits.size(); ++i) {
+      l1Bits[i].value = false;
+
       for (std::vector<L1GlobalTriggerObjectMap>::const_iterator itMap = objMapVec.begin();
            itMap != objMapVec.end(); ++itMap) {
-        // Get trigger bits
-        int itrig = (*itMap).algoBitNumber();
-        // Get trigger names
-        TString algoBitToName( (*itMap).algoName() );
-        
-        l1tree->Branch(algoBitToName, _l1Flag+itrig);
+        if(itMap->algoName() == l1Bits[i].name) {
+          l1Bits[i].value = gtDecisionWord[itMap->algoBitNumber()];
+          break;
+        }
       }
-      _L1EvtCnt++;
-    }
-    for (unsigned int iBit = 0; iBit < numberTriggerBits; ++iBit) {     
-      // ...Fill the corresponding accepts in branch-variables
-      _l1Flag[iBit] = (bool)gtDecisionWord[iBit];
-      //std::cout << "L1 TD: "<<iBit<<" "<<algoBitToName[iBit]<<" "<<gtDecisionWord[iBit]<< std::endl;
     }
   }
-
 
   // Find fired L1 trigger objects
   std::vector<l1extra::L1JetParticleRef> tauCandRefVec;

@@ -13,7 +13,7 @@
 //
 // Original Author:  Chi Nhan Nguyen
 //         Created:  Wed Oct  1 13:04:54 CEST 2008
-// $Id: TTEffAnalyzer.h,v 1.47 2011/06/27 10:37:11 slehti Exp $
+// $Id: TTEffAnalyzer.h,v 1.48 2011/09/08 06:43:27 mkortela Exp $
 //
 //
 
@@ -36,8 +36,6 @@
 #include "DataFormats/Math/interface/LorentzVector.h"
 #include "DataFormats/Math/interface/LorentzVectorFwd.h"
 #include "DataFormats/TauReco/interface/PFTauDiscriminator.h"
-
-#include "FWCore/Common/interface/TriggerNames.h"
 
 #include "ElectroWeakAnalysis/TauTriggerEfficiency/interface/L1TauEfficiencyAnalyzer.h"
 #include "ElectroWeakAnalysis/TauTriggerEfficiency/interface/L25and3TauEfficiencyAnalyzer.h"
@@ -92,19 +90,23 @@ class TTEffAnalyzer : public edm::EDAnalyzer {
       // ----------member data ---------------------------
       bool DoOfflineVariablesOnly_,DoMCTauEfficiency_;
       edm::InputTag HLTResultsSource;
-      edm::TriggerNames _triggerNames;
       edm::InputTag  PFTaus_,MCTaus_,MCParticles_;
       std::string PFTauIso_, PFTauMuonRej_, PFTauElectronRej_;
       std::string rootFile_;
       std::vector<std::string> PFTauDiscriminators_;
       std::vector<edm::InputTag> Counters_;
 
-      int _HltEvtCnt;
-      bool *_hltFlag;
-
        edm::Handle<edm::View<pat::Tau> > PFTaus;
       edm::Handle<std::vector<LorentzVector> > mcTaus;
       edm::Handle<reco::GenParticleCollection> mcParticles;
+
+  struct TriggerBit {
+    TriggerBit(const std::string& n): name(n), value(false) {}
+    std::string name;
+    bool value;
+  };
+
+  std::vector<TriggerBit> hltBits;
 
       // PF Variables
       uint32_t b_event, b_run, b_lumi;
