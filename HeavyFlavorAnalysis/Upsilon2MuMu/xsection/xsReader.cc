@@ -15,9 +15,9 @@ const int  xsReader::fNy;
 // ----------------------------------------------------------------------
 xsReader::xsReader(TChain *tree, TString evtClassName): treeReaderXS(tree, evtClassName) {
   cout << "--> xsReader> This is the start ..." << endl;
-  //fpJSON = new JSON("/shome/bora/root/json/json_147196_149442");  // Run2010B
+  fpJSON = new JSON("/shome/bora/root/json/json_147196_149442");  // Run2010B
   //fpJSON = new JSON("/shome/bora/root/json/json_140042_144114");  // Run2010A
-  fpJSON = new JSON("/shome/bora/root/json/json_146240_147116");  // Run2010B HLTDoubleMu0
+  //fpJSON = new JSON("/shome/bora/root/json/json_146240_147116");  // Run2010B HLTDoubleMu0
 
   //// Acceptance Binning
   //fPTbin[0] = 0.; fPTbin[1] = 1.; fPTbin[2] = 2.; fPTbin[3] = 3.; fPTbin[4] = 4.; fPTbin[5] = 5.; fPTbin[6] = 6.;
@@ -35,12 +35,12 @@ xsReader::xsReader(TChain *tree, TString evtClassName): treeReaderXS(tree, evtCl
   //fYbin[21] = 2.1; fYbin[22] = 2.2; fYbin[23] = 2.3; fYbin[24] = 2.4;
   
   //// Ups(1S) Binning
-  fPTbin[0] = 0.; fPTbin[1] = 0.5; fPTbin[2] = 1.; fPTbin[3] = 1.5; fPTbin[4] = 2.; fPTbin[5] = 3.; fPTbin[6] = 4.;
-  fPTbin[7] = 5.; fPTbin[8] = 6.; fPTbin[9] = 7.; fPTbin[10] = 8.; fPTbin[11] = 9.; fPTbin[12] = 10.; fPTbin[13] = 11.;
-  fPTbin[14] = 12.; fPTbin[15] = 13.; fPTbin[16] = 14.; fPTbin[17] = 15.; fPTbin[18] = 16.; fPTbin[19] = 18.; 
-  fPTbin[20] = 20.; fPTbin[21] = 22.; fPTbin[22] = 25.; fPTbin[23] = 30.; fPTbin[24] = 50.; 
-  fYbin[0] = 0.; fYbin[1] = 0.4; fYbin[2] = 0.8; fYbin[3] = 1.2; fYbin[4] = 1.6; fYbin[5] = 2.; fYbin[6] = 2.4;
-  
+  //fPTbin[0] = 0.; fPTbin[1] = 0.5; fPTbin[2] = 1.; fPTbin[3] = 1.5; fPTbin[4] = 2.; fPTbin[5] = 3.; fPTbin[6] = 4.;
+  //fPTbin[7] = 5.; fPTbin[8] = 6.; fPTbin[9] = 7.; fPTbin[10] = 8.; fPTbin[11] = 9.; fPTbin[12] = 10.; fPTbin[13] = 11.;
+  //fPTbin[14] = 12.; fPTbin[15] = 13.; fPTbin[16] = 14.; fPTbin[17] = 15.; fPTbin[18] = 16.; fPTbin[19] = 18.; 
+  //fPTbin[20] = 20.; fPTbin[21] = 22.; fPTbin[22] = 25.; fPTbin[23] = 30.; fPTbin[24] = 50.; 
+  //fYbin[0] = 0.; fYbin[1] = 0.4; fYbin[2] = 0.8; fYbin[3] = 1.2; fYbin[4] = 1.6; fYbin[5] = 2.; fYbin[6] = 2.4;
+ 
   //// Ups(2S) Binning
   //fPTbin[0] = 0.; fPTbin[1] = 1.; fPTbin[2] = 2.; fPTbin[3] = 4.; fPTbin[4] = 6.; fPTbin[5] = 7.; fPTbin[6] = 8.;
   //fPTbin[7] = 10.; fPTbin[8] = 12.; fPTbin[9] = 13.; fPTbin[10] = 14.; fPTbin[11] = 16.; fPTbin[12] = 18.; fPTbin[13] = 20.;
@@ -48,9 +48,9 @@ xsReader::xsReader(TChain *tree, TString evtClassName): treeReaderXS(tree, evtCl
   //fYbin[0] = 0.; fYbin[1] = 0.4; fYbin[2] = 0.8; fYbin[3] = 1.2; fYbin[4] = 1.6; fYbin[5] = 2.; fYbin[6] = 2.4;
   
   //// Ups(3S) Binning
-  //fPTbin[0] = 0.; fPTbin[1] = 2.; fPTbin[2] = 4.; fPTbin[3] = 8.; fPTbin[4] = 10.; fPTbin[5] = 13.; fPTbin[6] = 16.;
-  //fPTbin[7] = 20.; fPTbin[8] = 25.; fPTbin[9] = 30.; fPTbin[10] = 50.; 
-  //fYbin[0] = 0.; fYbin[1] = 0.4; fYbin[2] = 0.8; fYbin[3] = 1.2; fYbin[4] = 1.6; fYbin[5] = 2.; fYbin[6] = 2.4;
+  fPTbin[0] = 0.; fPTbin[1] = 2.; fPTbin[2] = 4.; fPTbin[3] = 8.; fPTbin[4] = 10.; fPTbin[5] = 13.; fPTbin[6] = 16.;
+  fPTbin[7] = 20.; fPTbin[8] = 25.; fPTbin[9] = 30.; fPTbin[10] = 50.; 
+  fYbin[0] = 0.; fYbin[1] = 0.4; fYbin[2] = 0.8; fYbin[3] = 1.2; fYbin[4] = 1.6; fYbin[5] = 2.; fYbin[6] = 2.4;
     
   ///// PidTable Tracking Efficiency for DATA
   fPidTableTrckEff = new PidTable("PidTables/DATA/Upsilon/PtTrackEff.dat");
@@ -60,8 +60,8 @@ xsReader::xsReader(TChain *tree, TString evtClassName): treeReaderXS(tree, evtCl
   ////fPidTableMuIDNeg = new PidTable("../tnp/PidTables/MC/Jpsi/MuID/CowboyVeto/TrackerMuonArbitrated/PtMmbNeg-jpsi.tma.nb.dat");
   ////fPidTableTrigPos = new PidTable("../tnp/PidTables/MC/Jpsi/Trig/CowboyVeto/PtMmbPos-jpsi.tma.nb.dat");    
   ///fPidTableTrigNeg = new PidTable("../tnp/PidTables/MC/Jpsi/Trig/CowboyVeto/PtMmbNeg-jpsi.tma.nb.dat"); 
-  //fPidTableTrigFit = new PidTable("PtTrigFit-jpsi.8ptbin.MC.dat");
-  //fPidTableMuidFit = new PidTable("PtMuidFit-jpsi.8ptbin.MC.dat");
+  fPidTableTrigFit = new PidTable("PtTrigFit-jpsi.8ptbin.MC.dat");
+  fPidTableMuidFit = new PidTable("PtMuidFit-jpsi.8ptbin.MC.dat");
   
   /// Trig Eff with Ups(1S)
   //fPidTableTrigPos = new PidTable("../tnp/PidTables/MC/Upsilon/Trig/PtMmbPos-upsilon.tma.nb.dat");    
@@ -87,10 +87,9 @@ xsReader::xsReader(TChain *tree, TString evtClassName): treeReaderXS(tree, evtCl
   //fPidTableTrigPos = new PidTable("../tnp/PidTables/DATA/Jpsi/Trig/MuOnia/CowboyVeto/PtMmbPos-jpsi.tma.nb.dat");    
   //fPidTableTrigNeg = new PidTable("../tnp/PidTables/DATA/Jpsi/Trig/MuOnia/CowboyVeto/PtMmbNeg-jpsi.tma.nb.dat"); 
   
-  fPidTableTrigFit = new PidTable("PtTrigFit-jpsi.8ptbin.DATA.dat");
-  //fPidTableMuidFit = new PidTable("PtMuidFit-jpsi.8ptbin.DATA.dat");
-  fPidTableMuidFit = new PidTable("PtMuidFit-jpsi.8ptbin.DATAv2.dat");
-  
+  //fPidTableTrigFit = new PidTable("PtTrigFit-jpsi.8ptbin.DATAv2.dat");
+  //fPidTableMuidFit = new PidTable("PtMuidFit-jpsi.8ptbin.DATAv2.dat");
+    
   //fPidTableTrigPos = new PidTable("../tnp/PidTables/DATA/Jpsi/Trig/MuOnia/CowboyVeto/PtMmbPos-jpsi.runbp1.tma.nb.dat");    
   //fPidTableTrigNeg = new PidTable("../tnp/PidTables/DATA/Jpsi/Trig/MuOnia/CowboyVeto/PtMmbNeg-jpsi.runbp1.tma.nb.dat");   
   
@@ -1713,12 +1712,25 @@ void xsReader::MCstudy(){
   
   
   ((TH1D*)fpHistFile->Get("GenPt_Cand"))->Fill(fGenCandPt);
+  ((TH1D*)fpHistFile->Get("RecoPt_Cand"))->Fill(fCandPt);
   for ( int ipt = 0; ipt < fNpt; ++ipt ){
-    if ( ( fGenCandPt >= fPTbin[ipt] ) && ( fGenCandPt < fPTbin[ipt+1] ) ){
-      if ( ( fCandPt >= fPTbin[ipt] ) && ( fCandPt < fPTbin[ipt+1] ) ) ((TH1D*)fpHistFile->Get("RecoPtinSameBin_Cand"))->Fill(fGenCandPt);
-    }
-  }
     
+    if ( ( fGenCandPt >= fPTbin[ipt] ) && ( fGenCandPt < fPTbin[ipt+1] ) ){
+      if ( ( fCandPt >= fPTbin[ipt] ) && ( fCandPt < fPTbin[ipt+1] ) ) {
+	((TH1D*)fpHistFile->Get("RecoPtinSameBin_Cand"))->Fill(fGenCandPt);
+	((TH1D*)fpHistFile->Get("RecoPtinSameBin_Candv2"))->Fill(fCandPt);
+      }
+    }
+    
+    if ( !((fGenCandPt >= fPTbin[ipt]) && (fGenCandPt < fPTbin[ipt+1]))  ){
+      if ( ( fCandPt >= fPTbin[ipt] ) && ( fCandPt < fPTbin[ipt+1] ) ) {
+	((TH1D*)fpHistFile->Get("RecoPtinDiffBin_Cand"))->Fill(fGenCandPt);
+	((TH1D*)fpHistFile->Get("RecoPtinDiffBin_Candv2"))->Fill(fCandPt);
+      }
+    }
+    
+  }
+  
   double deltaPtCand(-99), deltaYCand(-99), deltaPtMuon1(-99), deltaEtaMuon1(-99), deltaPtMuon2(-99), deltaEtaMuon2(-99);
   ((TH2D*)fpHistFile->Get("PtResolution_Cand"))->Fill(fGenCandPt,fCandPt);
   ((TH2D*)fpHistFile->Get("PtResolution_Cand"))->GetXaxis()->SetTitle(Form("P_{T}^{GenCand}"));
@@ -2193,7 +2205,11 @@ void xsReader::bookHist() {
   h = new TH1D("DeltaEtaoverEta_Muon", "DeltaEtaoverEta_Muon", 50, -0.2, 0.2); 
   h = new TH1D("MaxDoca_Cand", "MaxDoca_Cand", 60, 0., 0.03); 
   h = new TH1D("GenPt_Cand","GenPt_Cand", fNpt, fPTbin);
+  h = new TH1D("RecoPt_Cand","RecoPt_Cand", fNpt, fPTbin);
   h = new TH1D("RecoPtinSameBin_Cand","RecoPtinSameBin_Cand", fNpt, fPTbin);
+  h = new TH1D("RecoPtinDiffBin_Cand","RecoPtinDiffBin_Cand", fNpt, fPTbin);
+  h = new TH1D("RecoPtinSameBin_Candv2","RecoPtinSameBin_Candv2", fNpt, fPTbin);
+  h = new TH1D("RecoPtinDiffBin_Candv2","RecoPtinDiffBin_Candv2", fNpt, fPTbin);  
   
   h = new TH1D("ForRecoCand10_MuonPt", "ForRecoCand10_MuonPt", 50, 0., 50.);
   h = new TH1D("ForRecoCand10_20_MuonPt", "ForRecoCand10_20_MuonPt", 50, 0., 50.);
