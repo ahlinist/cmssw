@@ -127,7 +127,7 @@ public:
   std::vector<TH1D> fS1Vector, fS2Vector, fS3Vector, fS4Vector, fS5Vector, fS6Vector, fS7Vector, fS8Vector, fS9Vector, fS10Vector , fS11Vector, fS12Vector, fS13Vector, fS100Vector;
   
   //-- 2d histograms for the (fitted) event yields
-  TH2D *fS1Yield, *fS2Yield, *fS3Yield, *fAllGenRes, *fRecoGenRes,  *fPreSelBefore, *fPreSelAfter, *fAllGenRes_2S, *fRecoGenRes_2S,  *fPreSelBefore_2S, *fPreSelAfter_2S, *fAllGenRes_3S, *fRecoGenRes_3S,  *fPreSelBefore_3S, *fPreSelAfter_3S, *fAnaEff, *fAnaEff_2S, *fAnaEff_3S, *fS1YieldCorrected, *fS2YieldCorrected, *fS3YieldCorrected, *fS1YieldComparison, *fS2YieldComparison, *fS3YieldComparison, *fAcceptance, *fAcceptance_2S, *fAcceptance_3S,  *fMuIDEff, *fMuIDEff_2, *fMuIDEff_3, *fTrigEff, *fTrigEff_2, *fTrigEff_3, *fPreSelEff, *fPreSelEff_2S, *fPreSelEff_3S, *falpha,  *fn, *fTrueYield_1S, *fTrueYield_2S, *fTrueYield_3S, *fTrackEff;
+  TH2D *fS1Yield, *fS2Yield, *fS3Yield, *fAllGenRes, *fRecoGenRes,  *fPreSelBefore, *fPreSelAfter, *fAllGenRes_2S, *fRecoGenRes_2S,  *fPreSelBefore_2S, *fPreSelAfter_2S, *fAllGenRes_3S, *fRecoGenRes_3S,  *fPreSelBefore_3S, *fPreSelAfter_3S, *fAnaEff, *fAnaEff_2S, *fAnaEff_3S, *fS1YieldCorrected, *fS2YieldCorrected, *fS3YieldCorrected, *fS1YieldComparison, *fS2YieldComparison, *fS3YieldComparison, *fAcceptance, *fAcceptance_2S, *fAcceptance_3S,  *fMuIDEff, *fMuIDEff_2, *fMuIDEff_3, *fTrigEff, *fTrigEff_2, *fTrigEff_3, *fPreSelEff, *fPreSelEff_2S, *fPreSelEff_3S, *falpha,  *fn, *fTrueYield_1S, *fTrueYield_2S, *fTrueYield_3S, *fTrackEff, *fXS, *fXS_2S, *fXS_3S;
   
   TH1D *falpha_1D_ptInt, *fn_1D_ptInt, *falpha_1D_RapInt, *fn_1D_RapInt;
   

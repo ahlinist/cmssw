@@ -183,10 +183,10 @@ void anaXS::init(const char *dir, int i) {
   fPtMmbPos = new PidTable(1); 
   
   
-  fPtTrigCorr = new PidTable("PidTables/DATA/Upsilon/PtTrigCorrWithFit_24ptbins_1S.tma.dat");
+  //fPtTrigCorr = new PidTable("PidTables/DATA/Upsilon/PtTrigCorrWithFit_24ptbins_1S.tma.dat");
   //fPtTrigCorr = new PidTable("PidTables/DATA/Upsilon/PtTrigCorrWithFit_24ptbins_2S.tma.dat");
   //fPtTrigCorr = new PidTable("PidTables/DATA/Upsilon/PtTrigCorrWithFit_24ptbins_3S.tma.dat");
-  fPtMuidCorr = new PidTable("PidTables/DATA/Upsilon/PtMuidCorrWithFit_24ptbins_1S.tma.dat");
+  //fPtMuidCorr = new PidTable("PidTables/DATA/Upsilon/PtMuidCorrWithFit_24ptbins_1S.tma.dat");
   //fPtMuidCorr = new PidTable("PidTables/DATA/Upsilon/PtMuidCorrWithFit_24ptbins_2S.tma.dat");
   //fPtMuidCorr = new PidTable("PidTables/DATA/Upsilon/PtMuidCorrWithFit_24ptbins_3S.tma.dat");
   //fPtTrigCorr = new PidTable("PidTables/DATA/Upsilon/PtTrigCorrWithFit_18ptbins_1S.tma.dat");
@@ -195,10 +195,10 @@ void anaXS::init(const char *dir, int i) {
   //fPtMuidCorr = new PidTable("PidTables/DATA/Upsilon/PtMuidCorrWithFit_18ptbins_1S.tma.dat");
   //fPtMuidCorr = new PidTable("PidTables/DATA/Upsilon/PtMuidCorrWithFit_18ptbins_2S.tma.dat");
   //fPtMuidCorr = new PidTable("PidTables/DATA/Upsilon/PtMuidCorrWithFit_18ptbins_3S.tma.dat");  
-  //fPtTrigCorr = new PidTable("PidTables/DATA/Upsilon/PtTrigCorrWithFit_10ptbins_1S.tma.dat");
+  fPtTrigCorr = new PidTable("PidTables/DATA/Upsilon/PtTrigCorrWithFit_10ptbins_1S.tma.dat");
   //fPtTrigCorr = new PidTable("PidTables/DATA/Upsilon/PtTrigCorrWithFit_10ptbins_2S.tma.dat");
   //fPtTrigCorr = new PidTable("PidTables/DATA/Upsilon/PtTrigCorrWithFit_10ptbins_3S.tma.dat");
-  //fPtMuidCorr = new PidTable("PidTables/DATA/Upsilon/PtMuidCorrWithFit_10ptbins_1S.tma.dat");
+  fPtMuidCorr = new PidTable("PidTables/DATA/Upsilon/PtMuidCorrWithFit_10ptbins_1S.tma.dat");
   //fPtMuidCorr = new PidTable("PidTables/DATA/Upsilon/PtMuidCorrWithFit_10ptbins_2S.tma.dat");
   //fPtMuidCorr = new PidTable("PidTables/DATA/Upsilon/PtMuidCorrWithFit_10ptbins_3S.tma.dat");
   
@@ -282,12 +282,12 @@ void anaXS::loadFiles(const char *dir, int i) {
       jfile = fDirectory + string("/jpsi/JpsiTagandprobe_10TeV_nocut.root");  
     } else if (40 == i) {
       //ufile = fDirectory + string("/upsilon/101201.fl10.mm.COMBINED.xsReader_1SBin.default.root");
-      afile = fDirectory + string("/upsilon/Acc_All_0_50.xsReader_1Sbin.default.root");
-      ufile = fDirectory + string("/upsilon/101201.fl10.mm.COMBINED.xsReader_1SBin.default.root");
+      afile = fDirectory + string("/upsilon/Acc_All_0_50.xsReader_3Sbin.default.root");
+      ufile = fDirectory + string("/upsilon/101201.fl10.mm.COMBINED.xsReader_3SBin.default.root");
       //ufile = fDirectory + string("/upsilon/101201.fl10.mm.ups3s.xsReader_3S.24ptbins.root");
       //jfile = fDirectory + string("/upsilon/130211.nov4rereco_v2.dimuons.xsReader_Data_3SBin.default.root");
       //jfile = fDirectory + string("/upsilon/130211.nov4rereco_v2.dimuons.xsReader_Data_3SBin_Run2010Bp1.default.root");
-      jfile = fDirectory + string("/upsilon/130211.nov4rereco_v2.dimuons.xsReader_Data.Run2010Ball_24ptbins.root");
+      jfile = fDirectory + string("/upsilon/130211.nov4rereco_v2.dimuons.xsReader_Data.Run2010Ball_10ptbins.root");
       //jfile = fDirectory + string("/upsilon/130211.nov4rereco_v2.dimuons.xsReader_1Sbin.tma.default.root");
      
     } else {
@@ -1499,6 +1499,9 @@ void anaXS::CorrectedYields(int mode){
   if ( mode == 2 ){
     double binErr(0);
     double bin(0.); double bin_ratio(-1);
+    double lumi(36738);
+    
+    TFile *f = new TFile("Upsilon_2D.root", "RECREATE");
     
     for ( int iy = 1; iy <= fS1Yield->GetNbinsX(); ++iy ){
       for ( int ipt = 1; ipt <= fS1Yield->GetNbinsY(); ++ipt ){
@@ -1528,9 +1531,14 @@ void anaXS::CorrectedYields(int mode){
 	binErr = bin * TMath::Sqrt( yieldTerm + anaTerm + trackTerm + muidTerm + trigTerm + accTerm + preselTerm );
 	cout << "binErr = " << binErr << endl;
 	fS1YieldCorrected->SetBinError(iy,ipt,binErr);
+	fXS->SetBinContent(iy,ipt,bin/lumi);
 	
       }
     }
+    
+    fTrackEff->Write(); fMuIDEff->Write(); fTrigEff->Write(); fXS->Write();
+    fPreSelEff->Write(); fS1Yield->Write(); fS1YieldCorrected->Write(); fAnaEff->Write(); fAcceptance->Write(); 
+    
     
     for ( int iy = 1; iy <= fS2Yield->GetNbinsX(); ++iy ){
       for ( int ipt = 1; ipt <= fS2Yield->GetNbinsY(); ++ipt ){
@@ -1560,9 +1568,12 @@ void anaXS::CorrectedYields(int mode){
 	binErr = bin * TMath::Sqrt( yieldTerm + anaTerm + trackTerm + muidTerm + trigTerm + accTerm + preselTerm );
 	cout << "binErr = " << binErr << endl;
 	fS2YieldCorrected->SetBinError(iy,ipt,binErr);
-		
+	fXS_2S->SetBinContent(iy,ipt,bin/lumi);	
       }
     }
+    
+    fPreSelEff_2S->Write(); fS2Yield->Write(); fS2YieldCorrected->Write(); 
+    fAnaEff_2S->Write(); fAcceptance_2S->Write(); fXS_2S->Write();
     
     for ( int iy = 1; iy <= fS3Yield->GetNbinsX(); ++iy ){
       for ( int ipt = 1; ipt <= fS3Yield->GetNbinsY(); ++ipt ){
@@ -1592,10 +1603,12 @@ void anaXS::CorrectedYields(int mode){
 	binErr = bin * TMath::Sqrt( yieldTerm + anaTerm + trackTerm + muidTerm + trigTerm + accTerm + preselTerm );
 	cout << "binErr = " << binErr << endl;
 	fS3YieldCorrected->SetBinError(iy,ipt,binErr);
-	
+	fXS_3S->SetBinContent(iy,ipt,bin/lumi);	
       }
     }
    
+    fPreSelEff_3S->Write(); fS3Yield->Write(); fS3YieldCorrected->Write(); 
+    fXS_3S->Write(); fAnaEff_3S->Write(); fAcceptance_3S->Write();
     
     makeCanvas(1);
     c1->Divide(3,1);
@@ -3177,6 +3190,21 @@ void anaXS::ReadHistogramsDATA1(TFile *f, const char *s1, const char *s12, const
     
   }
   
+  fXS = new TH2D("fXS", "fXS", 
+		      fHbinning->GetNbinsY(), fHbinning->GetYaxis()->GetXbins()->GetArray(),
+		      fHbinning->GetNbinsX(), fHbinning->GetXaxis()->GetXbins()->GetArray()
+		      );
+
+  fXS_2S = new TH2D("fXS_2S", "fXS_2S", 
+		      fHbinning->GetNbinsY(), fHbinning->GetYaxis()->GetXbins()->GetArray(),
+		      fHbinning->GetNbinsX(), fHbinning->GetXaxis()->GetXbins()->GetArray()
+		      );
+
+  fXS_3S = new TH2D("fXS_3S", "fXS_3S", 
+		      fHbinning->GetNbinsY(), fHbinning->GetYaxis()->GetXbins()->GetArray(),
+		      fHbinning->GetNbinsX(), fHbinning->GetXaxis()->GetXbins()->GetArray()
+		      );
+  
   fS1Yield = new TH2D("fS1Yield", 
 		      Form("%s fS1Yield", s1), 
 		      fHbinning->GetNbinsY(), fHbinning->GetYaxis()->GetXbins()->GetArray(),
@@ -4219,7 +4247,7 @@ void anaXS::GetMuIDEff(int mode){
   double pt, eta; 
   double yield, yieldE;
   int    nbin;
-  double corr(-1);
+  double corr(-1); double corrE(-1); 
   
   if ( mode == 1 ){
     for (unsigned int i = 0; i < fS5Vector.size(); ++i) {
@@ -4290,8 +4318,11 @@ void anaXS::GetMuIDEff(int mode){
       GetBinCenters(h->GetName(), eta, pt);
       nbin = fMuIDEff->FindBin(eta, pt); 
       corr = fPtMuidCorr->effD(pt, eta, 0.);
+      corrE = fPtMuidCorr->errD(pt, eta, 0.);
+      cout << corrE  << endl;
       cout << nbin  << endl;
       yield*=corr;
+      yieldE=yield*TMath::Sqrt( ((yieldE/yield)*(yieldE/yield)) + ((corrE/corr)*(corrE/corr)) );
       cout << " MuIDEff Ups " << yield << " +/- " << yieldE << endl;
       fMuIDEff->SetBinContent(nbin, yield); 
       fMuIDEff->SetBinError(nbin, yieldE); 
@@ -4315,7 +4346,7 @@ void anaXS::GetTrigEff(int mode){
   double pt, eta; 
   double yield, yieldE;
   int    nbin;
-  double corr(-1);
+  double corr(-1); double corrE(-1); 
   
   if ( mode == 1 ){
     for (unsigned int i = 0; i < fS8Vector.size(); ++i) {
@@ -4389,8 +4420,10 @@ void anaXS::GetTrigEff(int mode){
       GetBinCenters(h->GetName(), eta, pt);
       nbin = fTrigEff->FindBin(eta, pt);
       corr = fPtTrigCorr->effD(pt, eta, 0.);
+      corrE = fPtTrigCorr->errD(pt, eta, 0.);
       cout << nbin  << endl;
       yield*=corr;
+      yieldE=yield*TMath::Sqrt( ((yieldE/yield)*(yieldE/yield)) + ((corrE/corr)*(corrE/corr)) );
       cout << " TrigEff Ups " << yield << " +/- " << yieldE << endl;
       fTrigEff->SetBinContent(nbin, yield); 
       fTrigEff->SetBinError(nbin, yieldE); 
@@ -6856,7 +6889,7 @@ void anaXS::setFunctionParameters(TH1D *h, TF1 *f, int mode, int par) {
     }    
     
     if ( par == 3 ){
-      TFile *f1 = new TFile("FitParametersMC_1SBin.root");
+      TFile *f1 = new TFile("FitParametersMC_3SBin.root");
       TH1D *falpha;
       falpha = (TH1D*)gFile->Get("falpha");
       TH1D *fn;
@@ -6912,7 +6945,7 @@ void anaXS::setFunctionParameters(TH1D *h, TF1 *f, int mode, int par) {
     
     f->SetParameters(c0, c1, c2, c3, c4, c5, c6, c7, c8, p0, p1);     
     f->SetParLimits(0, 9.410, 9.510); 
-    f->SetParLimits(1, 0.045, 0.14); // 0.16 ->0.22
+    f->SetParLimits(1, 0.06, 0.14); // 0.16 ->0.22
     f->SetParLimits(2, 1., 2.8);
     f->SetParLimits(3, 1., 200.);
     //f->FixParameter(2, 1.9);
