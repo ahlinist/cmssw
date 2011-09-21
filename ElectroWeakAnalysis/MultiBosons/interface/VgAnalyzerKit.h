@@ -25,6 +25,7 @@
 #include "TH1F.h"
 #include "TH2F.h"
 #include "TString.h"
+#include <TRegexp.h>
 
 using namespace edm;
 using namespace std;
@@ -63,6 +64,7 @@ protected:
   Float_t getESRatio(View<pat::Photon>::const_iterator photon, const edm::Event&, const edm::EventSetup&);
   std::vector<float> getESProfileFront(View<pat::Photon>::const_iterator photon, const edm::Event&, const edm::EventSetup&);
   std::vector<float> getESProfileRear(View<pat::Photon>::const_iterator photon, const edm::Event&, const edm::EventSetup&);
+  Float_t getTrkIso(edm::Handle<reco::TrackCollection> Tracks, math::XYZPoint vtx, Double_t phoEta, Double_t phoPhi, Double_t phoVz, Double_t outerCone, Double_t innerCone, Double_t etaSlice, Double_t dzCut, Double_t d0Cut, Double_t ptCut, Int_t option);
 
   Bool_t saveHistograms_;
   Bool_t doGenParticles_;
@@ -96,7 +98,7 @@ protected:
   TH1F  *hEvents_; 
 
   Int_t    run_;
-  Int_t    event_;
+  Long64_t event_;
   Int_t    orbit_;
   Int_t    bx_;
   Int_t    lumis_;
@@ -119,7 +121,7 @@ protected:
   Int_t    nVtx_;
   Float_t  vtx_[150][3];
   Int_t    vtxNTrk_[150];
-  Int_t    vtxNDF_[150];
+  Float_t  vtxNDF_[150];
   Float_t  vtxD0_[150];
   Int_t    nGoodVtx_;
   Int_t    IsVtxGood_;
@@ -129,6 +131,7 @@ protected:
   // genParticle
   Int_t    nMC_;
   Int_t    mcPID[maxP];
+  Float_t  mcVtx[maxP][3];
   Float_t  mcPt[maxP];
   Float_t  mcMass[maxP];
   Float_t  mcEta[maxP];
@@ -178,7 +181,7 @@ protected:
   Float_t  pfMETSig_;
   // Electron
   Int_t    nEle_;
-  Int_t    eleTrg_[maxP][33];
+  Int_t    eleTrg_[maxP][30];
   Int_t    eleID_[maxP][30];
   Float_t  eleIDLH_[maxP];
   Int_t    eleClass_[maxP];
@@ -213,6 +216,7 @@ protected:
   Float_t  eleE2overE9_[maxP];
   Float_t  eleE3x3_[maxP];
   Float_t  eleSeedTime_[maxP];
+  Float_t  eleSeedEnergy_[maxP];
   Int_t    eleRecoFlag_[maxP];
   Int_t    eleSeverity_[maxP];
   Int_t    eleGenIndex_[maxP];
@@ -249,7 +253,7 @@ protected:
   Float_t  elePVDz_[maxP];
   // Photon
   Int_t    nPho_;
-  Int_t    phoTrg_[maxP][8];
+  Int_t    phoTrg_[maxP][43];
   Bool_t   phoIsPhoton_[maxP];
   Float_t  phoE_[maxP];
   Float_t  phoEt_[maxP];
@@ -271,6 +275,15 @@ protected:
   Float_t  phoEcalIsoDR04_[maxP];
   Float_t  phoHcalIsoDR04_[maxP];
   Float_t  phoHcalIsoSolidDR04_[maxP];
+  Float_t  phoEVtx_[maxP][100];
+  Float_t  phoEtVtx_[maxP][100];
+  Float_t  phoPzVtx_[maxP][100];
+  Float_t  phoEtaVtx_[maxP][100];
+  Float_t  phoPhiVtx_[maxP][100];
+  Float_t  phoTrkIsoSolidDR03Vtx_[maxP][100];
+  Float_t  phoTrkIsoHollowDR03Vtx_[maxP][100];
+  Float_t  phoTrkIsoSolidDR04Vtx_[maxP][100];
+  Float_t  phoTrkIsoHollowDR04Vtx_[maxP][100];
   Float_t  phoHoverE_[maxP];
   Float_t  phoSigmaEtaEta_[maxP];
   Float_t  phoSigmaIEtaIEta_[maxP];
@@ -279,11 +292,10 @@ protected:
   Float_t  phoE2overE9_[maxP];
   Float_t  phoE3x3_[maxP];
   Float_t  phoSeedTime_[maxP];
+  Float_t  phoSeedEnergy_[maxP];
   Int_t    phoRecoFlag_[maxP];
   Int_t    phoSeverity_[maxP];
   Int_t    phoPos_[maxP];
-  Float_t  phoRoundness_[maxP];
-  Float_t  phoAngle_[maxP];
   Int_t    phoGenIndex_[maxP];
   Int_t    phoGenGMomPID[maxP];
   Int_t    phoGenMomPID[maxP];
@@ -294,17 +306,49 @@ protected:
   Float_t  phoSCPhi_[maxP];
   Float_t  phoSCEtaWidth_[maxP];
   Float_t  phoSCPhiWidth_[maxP];
+  Float_t  phoVtx_[maxP][3];
+  Float_t  phoVtxD0_[maxP];
   Int_t    phoOverlap_[maxP];
   Int_t    phohasPixelSeed_[maxP];
   Int_t    phoIsConv_[maxP];
-  Float_t  phoPi0Disc_[maxP];
   Float_t  phoESRatio_[maxP];
   Float_t  phoESProfileFront_[maxP][123];
   Float_t  phoESProfileRear_[maxP][123];
+  Int_t    phoNTracks_[maxP];
+  Float_t  phoConvPairInvariantMass_[maxP];
+  Float_t  phoConvPairCotThetaSeparation_[maxP];
+  Float_t  phoConvPairMomentumEta_[maxP];
+  Float_t  phoConvPairMomentumPhi_[maxP];
+  Float_t  phoConvPairMomentumX_[maxP];
+  Float_t  phoConvPairMomentumY_[maxP];
+  Float_t  phoConvPairMomentumZ_[maxP];
+  Float_t  phoConvDistOfMinimumApproach_[maxP];
+  Float_t  phoConvDPhiTracksAtVtx_[maxP];
+  Float_t  phoConvDPhiTracksAtEcal_[maxP];
+  Float_t  phoConvDEtaTracksAtEcal_[maxP];
+  Float_t  phoConvVtxValid_[maxP];
+  Float_t  phoConvVtxEta_[maxP];
+  Float_t  phoConvVtxPhi_[maxP];
+  Float_t  phoConvVtxR_[maxP];
+  Float_t  phoConvVtxX_[maxP];
+  Float_t  phoConvVtxY_[maxP];
+  Float_t  phoConvVtxZ_[maxP];
+  Float_t  phoConvVtxChi2_[maxP];
+  Float_t  phoConvVtxNdof_[maxP];
+  Float_t  phoConvChi2Prob_[maxP];
+  Float_t  phoConvEoverP_[maxP];
+  Int_t    phoNxtal_[maxP];
+  Float_t  phoXtalTime_[maxP][200];
+  Float_t  phoXtalEnergy_[maxP][200];
+  Int_t    phoXtalZ_[maxP][200];
+  Int_t    phoXtalX_[maxP][200];
+  Int_t    phoXtalY_[maxP][200];
+  Int_t    phoXtalEta_[maxP][200];
+  Int_t    phoXtalPhi_[maxP][200];
 
   // Muon
   Int_t    nMu_;
-  Int_t    muTrg_[maxP][40];
+  Int_t    muTrg_[maxP][16];
   Float_t  muEta_[maxP];
   Float_t  muPhi_[maxP];
   Int_t    muCharge_[maxP];
@@ -345,7 +389,7 @@ protected:
 
   // Jet
   Int_t    nJet_;
-  Int_t    jetTrg_[maxP][58];
+  Int_t    jetTrg_[maxP][23];
   Int_t    jetAlgo_[maxP];
   Float_t  jetEn_[maxP];
   Float_t  jetPt_[maxP];
