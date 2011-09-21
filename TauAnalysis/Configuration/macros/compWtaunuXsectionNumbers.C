@@ -18,7 +18,7 @@ void compWtaunuXsectionNumbers()
   // define number of observed events
   //-------------------------------------------------------------------------------
 
-  double numEventsObserved = 412;
+  double numEventsObserved = 793;
 
   std::cout << "Nr Events observed in Data = " << numEventsObserved << std::endl;
 
@@ -26,14 +26,14 @@ void compWtaunuXsectionNumbers()
   // Estimate the number of QCD events as an average of ABCD and template methods
   //-------------------------------------------------------------------------------
 
-  double numEventsExpected_qcd_template = 122; //Nr of bg events predicted by the template fit
-  double errEventsExpected_qcd_template =  22; //Error of bg events predicted by the template fit
+  double numEventsExpected_qcd_template = 158; //Nr of bg events predicted by the template fit
+  double errEventsExpected_qcd_template =  30; //Error of bg events predicted by the template fit
   // CV: subtract statistical component of uncertainty on QCD background estimate
   //     returned by RooFit/template fit
   errEventsExpected_qcd_template = TMath::Sqrt(square(errEventsExpected_qcd_template) - numEventsExpected_qcd_template);
   
-  double numEventsExpected_qcd_ABCD     = 126; //ABCD method
-  double errEventsExpected_qcd_ABCD     =  20;
+  double numEventsExpected_qcd_ABCD     = 203; //ABCD method
+  double errEventsExpected_qcd_ABCD     =  26;
 
   double weight_qcd_template            = 1./square(errEventsExpected_qcd_template);
   double weight_qcd_ABCD                = 1./square(errEventsExpected_qcd_ABCD);
@@ -48,16 +48,14 @@ void compWtaunuXsectionNumbers()
   // assign 40% uncertainty on EWK backgrounds
   //----------------------------------------------------------------------------
 
-  double numEventsExpected_Wenu    = 27.2;
-  double errEventsExpected_Wenu    = 10.8;
-  double numEventsExpected_Wmunu   =  3.9;
-  double errEventsExpected_Wmunu   =  1.4;
-  double numEventsExpected_Ztautau = 29.4;
-  double errEventsExpected_Ztautau = 11.8;
+  double numEventsExpected_Wenu    = 50.1; //update to NNLO
+  double numEventsExpected_Wmunu   =  4.9; //update to NNLO
+  double numEventsExpected_Ztautau = 54.2; //update to average of D6T and Z2T
+
 
   double numEventsExpected_ewk     = numEventsExpected_Wenu + numEventsExpected_Wmunu + numEventsExpected_Ztautau;
-  double errEventsExpected_ewk     = 
-    TMath::Sqrt(square(errEventsExpected_Wenu) + square(errEventsExpected_Wmunu) + square(errEventsExpected_Ztautau));
+  double errEventsExpected_ewk     = 0.4*numEventsExpected_ewk;
+	//    TMath::Sqrt(square(errEventsExpected_Wenu) + square(errEventsExpected_Wmunu) + square(errEventsExpected_Ztautau));
 
   //----------------------------------------------------------------------------
   // Sum Bgr = ewk + qcd
@@ -96,10 +94,10 @@ void compWtaunuXsectionNumbers()
   // define signal efficiency and acceptance
   //-------------------------------------------------------------------------------
 
-  double intLumiData       = 17.8; // pb^-1
+  double intLumiData       = 32.35; // pb^-1
   
   double mcAcceptance_Sig  = 0.0789;
-  double mcEfficiency_Sig  = 0.0325;
+  double mcEfficiency_Sig  = 0.03347;
   double brToHadTau_Sig    = 0.648;
   
   //-------------------------------------------------------------------------------
@@ -108,7 +106,7 @@ void compWtaunuXsectionNumbers()
   // NOTE: all uncertainties are **relative** to central value
   //-------------------------------------------------------------------------------
 
-  double errTriggerEff     = 0.12;
+  double errTriggerEff     = 0.15;
 
   double errTauIdEff       = 0.07;
 
@@ -128,7 +126,8 @@ void compWtaunuXsectionNumbers()
   // CV: convert luminosity from pb^-1 to nb^-1 
   //    (--> cross-section from pb to nb)
   double denominator = (intLumiData*1.e+3*brToHadTau_Sig*mcAcceptance_Sig*mcEfficiency_Sig);
-
+  cout<<"Signal efficiency tot = "<<brToHadTau_Sig*mcAcceptance_Sig*mcEfficiency_Sig<<endl;
+ 
   double Xsection = numSignal/denominator;
   std::cout << "measured Xsection = " << Xsection << " nb" << std::endl;
 
