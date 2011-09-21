@@ -1,5 +1,5 @@
 #
-# $Id: dump_DATA_DiPhotonSkim_42X.py,v 1.1 2011/05/21 16:13:53 rahatlou Exp $
+# $Id: dump_DATA_42X.py,v 1.2 2011/05/22 12:57:08 meridian Exp $
 #
 #  configuration to dump ntuples in data
 #   the only diff should be for jetmet corrections
@@ -42,7 +42,7 @@ options.register(
 options.diPhotonSkim=0
 options.diPhotonSkim2010=0
 #default GT for 42 reprocessing
-options.GlobalTag='GR_R_42_V12::All'
+options.GlobalTag='GR_R_42_V19::All'
 
 options.parseArguments()
 
@@ -75,14 +75,14 @@ process.maxEvents = cms.untracked.PSet(
 process.GlobalTag.globaltag = cms.string(options.GlobalTag)
 
 ##  apply only L2 and L3 jet corrections in MC
-process.metMuonJESCorAK5.corrector = "ak5CaloL2L3"
+process.metMuonJESCorAK5.corrector = "ak5CaloL2L3Residual"
 
-process.myanalysis.JetCorrectionService_akt5 = cms.string('ak5CaloL1L2L3')
-process.myanalysis.JetCorrectionService_akt7 = cms.string('ak7CaloL1L2L3')
-process.myanalysis.JetCorrectionService_jptak5 = cms.string('ak5JPTL1L2L3')
-process.myanalysis.JetCorrectionService_jptak7 = cms.string('ak7JPTL1L2L3')
-process.myanalysis.JetCorrectionService_pfakt5 = cms.string('ak5PFL1FastL2L3')
-process.myanalysis.JetCorrectionService_pfakt7 = cms.string('ak7PFL1FastL2L3')
+process.myanalysis.JetCorrectionService_akt5 = cms.string('ak5CaloL1L2L3Residual')
+process.myanalysis.JetCorrectionService_akt7 = cms.string('ak7CaloL1L2L3Residual')
+process.myanalysis.JetCorrectionService_jptak5 = cms.string('ak5JPTL1L2L3Residual')
+process.myanalysis.JetCorrectionService_jptak7 = cms.string('ak7JPTL1L2L3Residual')
+process.myanalysis.JetCorrectionService_pfakt5 = cms.string('ak5PFL1FastL2L3Residual')
+process.myanalysis.JetCorrectionService_pfakt7 = cms.string('ak7PFL1FastL2L3Residual')
 
 
 #print process.dumpPython()
