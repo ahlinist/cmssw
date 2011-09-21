@@ -1532,6 +1532,7 @@ void anaXS::CorrectedYields(int mode){
 	cout << "binErr = " << binErr << endl;
 	fS1YieldCorrected->SetBinError(iy,ipt,binErr);
 	fXS->SetBinContent(iy,ipt,bin/lumi);
+	fXS->SetBinError(iy,ipt,binErr/lumi);
 	
       }
     }
@@ -1569,6 +1570,7 @@ void anaXS::CorrectedYields(int mode){
 	cout << "binErr = " << binErr << endl;
 	fS2YieldCorrected->SetBinError(iy,ipt,binErr);
 	fXS_2S->SetBinContent(iy,ipt,bin/lumi);	
+	fXS_2S->SetBinError(iy,ipt,binErr/lumi);
       }
     }
     
@@ -1604,6 +1606,7 @@ void anaXS::CorrectedYields(int mode){
 	cout << "binErr = " << binErr << endl;
 	fS3YieldCorrected->SetBinError(iy,ipt,binErr);
 	fXS_3S->SetBinContent(iy,ipt,bin/lumi);	
+	fXS_3S->SetBinError(iy,ipt,binErr/lumi);
       }
     }
    
