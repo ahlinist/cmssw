@@ -50,6 +50,11 @@
 
 // Isolation
 #include "RecoEgamma/EgammaIsolationAlgos/plugins/EgammaTowerIsolationProducer.h"
+#include "RecoEgamma/EgammaIsolationAlgos/interface/PhotonTkIsolation.h"
+
+#include "DataFormats/EgammaCandidates/interface/Conversion.h"
+#include "CommonTools/Statistics/interface/ChiSquaredProbability.h"
+//#include "DataFormats/EgammaCandidates/interface/Photon.h"
 
 using namespace std;
 using namespace pat;
@@ -102,14 +107,14 @@ VgAnalyzerKit::VgAnalyzerKit(const edm::ParameterSet& ps) : verbosity_(0), helpe
   tree_->Branch("ttbit0", &ttbit0_, "ttbit0/I");
   tree_->Branch("nHLT", &nHLT_, "nHLT/I");
   tree_->Branch("HLT", HLT_, "HLT[nHLT]/I");
-  tree_->Branch("HLTIndex", HLTIndex_, "HLTIndex[226]/I");
+  tree_->Branch("HLTIndex", HLTIndex_, "HLTIndex[124]/I");
   tree_->Branch("HLTprescale", HLTprescale_, "HLTprescale[nHLT]/I");
   tree_->Branch("nHFTowersP", &nHFTowersP_, "nHFTowersP/I");
   tree_->Branch("nHFTowersN", &nHFTowersN_, "nHFTowersN/I");
   tree_->Branch("nVtx", &nVtx_, "nVtx/I");
   tree_->Branch("vtx", vtx_, "vtx[nVtx][3]/F");
   tree_->Branch("vtxNTrk", vtxNTrk_, "vtxNTrk[nVtx]/I");
-  tree_->Branch("vtxNDF", vtxNDF_, "vtxNDF[nVtx]/I");
+  tree_->Branch("vtxNDF", vtxNDF_, "vtxNDF[nVtx]/F");
   tree_->Branch("vtxD0", vtxD0_, "vtxD0[nVtx]/F");
   tree_->Branch("nGoodVtx", &nGoodVtx_, "nGoodVtx/I");
   tree_->Branch("IsVtxGood", &IsVtxGood_, "IsVtxGood/I");
@@ -128,6 +133,7 @@ VgAnalyzerKit::VgAnalyzerKit(const edm::ParameterSet& ps) : verbosity_(0), helpe
     // genParticle
     tree_->Branch("nMC", &nMC_, "nMC/I");
     tree_->Branch("mcPID", mcPID, "mcPID[nMC]/I");
+    tree_->Branch("mcVtx", mcVtx, "mcVtx[nMC][3]/F");
     tree_->Branch("mcPt", mcPt, "mcPt[nMC]/F");
     tree_->Branch("mcMass", mcMass, "mcMass[nMC]/F");
     tree_->Branch("mcEta", mcEta, "mcEta[nMC]/F");
@@ -179,7 +185,7 @@ VgAnalyzerKit::VgAnalyzerKit(const edm::ParameterSet& ps) : verbosity_(0), helpe
   tree_->Branch("pfMETSig", &pfMETSig_, "pfMETSig/F");
   // Electron
   tree_->Branch("nEle", &nEle_, "nEle/I");
-  tree_->Branch("eleTrg", eleTrg_, "eleTrg[nEle][33]/I");
+  tree_->Branch("eleTrg", eleTrg_, "eleTrg[nEle][30]/I");
   tree_->Branch("eleID", eleID_, "eleID[nEle][30]/I");
   tree_->Branch("eleIDLH", eleIDLH_, "eleIDLH[nEle]/F");
   tree_->Branch("eleClass", eleClass_, "eleClass[nEle]/I");
@@ -214,6 +220,7 @@ VgAnalyzerKit::VgAnalyzerKit(const edm::ParameterSet& ps) : verbosity_(0), helpe
   tree_->Branch("eleE2overE9", eleE2overE9_, "eleE2overE9[nEle]/F");
   tree_->Branch("eleE3x3", eleE3x3_, "eleE3x3[nEle]/F");
   tree_->Branch("eleSeedTime", eleSeedTime_, "eleSeedTime[nEle]/F");
+  tree_->Branch("eleSeedEnergy", eleSeedEnergy_, "eleSeedEnergy[nEle]/F");
   // If Flag == 2, it means that rechit is out of time
   // https://twiki.cern.ch/twiki/bin/viewauth/CMS/EcalFirstBeam09Anomalous#Spike_identification_in_collisio
   tree_->Branch("eleRecoFlag", eleRecoFlag_, "eleRecoFlag[nEle]/I");
@@ -249,7 +256,7 @@ VgAnalyzerKit::VgAnalyzerKit(const edm::ParameterSet& ps) : verbosity_(0), helpe
   tree_->Branch("elePVDz", elePVDz_, "elePVDz[nEle]/F");
   // Photon
   tree_->Branch("nPho", &nPho_, "nPho/I");
-  tree_->Branch("phoTrg", phoTrg_, "phoTrg[nPho][8]/I");
+  tree_->Branch("phoTrg", phoTrg_, "phoTrg[nPho][43]/I");
   tree_->Branch("phoIsPhoton", phoIsPhoton_, "phoIsPhoton[nPho]/O");
   tree_->Branch("phoE", phoE_, "phoE[nPho]/F");
   tree_->Branch("phoEt", phoEt_, "phoEt[nPho]/F");
@@ -271,6 +278,15 @@ VgAnalyzerKit::VgAnalyzerKit(const edm::ParameterSet& ps) : verbosity_(0), helpe
   tree_->Branch("phoEcalIsoDR04", phoEcalIsoDR04_, "phoEcalIsoDR04[nPho]/F");
   tree_->Branch("phoHcalIsoDR04", phoHcalIsoDR04_, "phoHcalIsoDR04[nPho]/F");
   tree_->Branch("phoHcalIsoSolidDR04", phoHcalIsoSolidDR04_, "phoHcalIsoSolidDR04[nPho]/F");
+  tree_->Branch("phoEVtx", phoEVtx_, "phoEVtx[nPho][100]/F");
+  tree_->Branch("phoEtVtx", phoEtVtx_, "phoEtVtx[nPho][100]/F");
+  tree_->Branch("phoPzVtx", phoPzVtx_, "phoPzVtx[nPho][100]/F");
+  tree_->Branch("phoEtaVtx", phoEtaVtx_, "phoEtaVtx[nPho][100]/F");
+  tree_->Branch("phoPhiVtx", phoPhiVtx_, "phoPhiVtx[nPho][100]/F");
+  tree_->Branch("phoTrkIsoSolidDR03Vtx", phoTrkIsoSolidDR03Vtx_, "phoTrkIsoSolidDR03Vtx[nPho][100]/F");
+  tree_->Branch("phoTrkIsoHollowDR03Vtx", phoTrkIsoHollowDR03Vtx_, "phoTrkIsoHollowDR03Vtx[nPho][100]/F");
+  tree_->Branch("phoTrkIsoSolidDR04Vtx", phoTrkIsoSolidDR04Vtx_, "phoTrkIsoSolidDR04Vtx[nPho][100]/F");
+  tree_->Branch("phoTrkIsoHollowDR04Vtx", phoTrkIsoHollowDR04Vtx_, "phoTrkIsoHollowDR04Vtx[nPho][100]/F");
   tree_->Branch("phoHoverE", phoHoverE_, "phoHoverE[nPho]/F");
   tree_->Branch("phoSigmaEtaEta", phoSigmaEtaEta_, "phoSigmaEtaEta[nPho]/F");
   tree_->Branch("phoSigmaIEtaIEta", phoSigmaIEtaIEta_, "phoSigmaIEtaIEta[nPho]/F");
@@ -279,13 +295,12 @@ VgAnalyzerKit::VgAnalyzerKit(const edm::ParameterSet& ps) : verbosity_(0), helpe
   tree_->Branch("phoE2overE9", phoE2overE9_, "phoE2overE9[nPho]/F");
   tree_->Branch("phoE3x3", phoE3x3_, "phoE3x3[nPho]/F");
   tree_->Branch("phoSeedTime", phoSeedTime_, "phoSeedTime[nPho]/F");
+  tree_->Branch("phoSeedEnergy", phoSeedEnergy_, "phoSeedEnergy[nPho]/F");
   // If Flag == 2, it means that rechit is out of time
   tree_->Branch("phoRecoFlag", phoRecoFlag_, "phoRecoFlag[nPho]/I");
   // If Severity == 3, it is spike. If Severity == 4, it is bad, not sutiable to be used in reconstruction.
   tree_->Branch("phoSeverity", phoSeverity_, "phoSeverity[nPho]/I");
   tree_->Branch("phoPos", phoPos_, "phoPos[nPho]/I");
-  tree_->Branch("phoRoundness", phoRoundness_, "phoRoundness[nPho]/F");
-  tree_->Branch("phoAngle", phoAngle_, "phoAngle[nPho]/F");
   if (doGenParticles_) {
     tree_->Branch("phoGenIndex", phoGenIndex_, "phoGenIndex[nPho]/I");
     tree_->Branch("phoGenGMomPID", phoGenGMomPID, "phoGenGMomPID[nPho]/I");
@@ -298,16 +313,49 @@ VgAnalyzerKit::VgAnalyzerKit(const edm::ParameterSet& ps) : verbosity_(0), helpe
   tree_->Branch("phoSCPhi", phoSCPhi_, "phoSCPhi[nPho]/F");
   tree_->Branch("phoSCEtaWidth", phoSCEtaWidth_, "phoSCEtaWidth[nPho]/F");
   tree_->Branch("phoSCPhiWidth", phoSCPhiWidth_, "phoSCPhiWidth[nPho]/F");
+  tree_->Branch("phoVtx", phoVtx_, "phoVtx[nPho][3]/F");
+  tree_->Branch("phoVtxD0", phoVtxD0_, "phoVtxD0[nPho]/F");
   tree_->Branch("phoOverlap", phoOverlap_, "phoOverlap[nPho]/I");
   tree_->Branch("phohasPixelSeed", phohasPixelSeed_, "phohasPixelSeed[nPho]/I");
   tree_->Branch("phoIsConv", phoIsConv_, "phoIsConv[nPho]/I");
-  tree_->Branch("phoPi0Disc",phoPi0Disc_ , "phoPi0Disc[nPho]/F");
   tree_->Branch("phoESRatio", phoESRatio_, "phoESRatio[nPho]/F");
   tree_->Branch("phoESProfileFront", phoESProfileFront_, "phoESProfileFront[nPho][123]/F");
   tree_->Branch("phoESProfileRear", phoESProfileRear_, "phoESProfileRear[nPho][123]/F");
+  tree_->Branch("phoNTracks", phoNTracks_, "phoNTracks[nPho]/I");
+  tree_->Branch("phoConvPairInvariantMass", phoConvPairInvariantMass_, "phoConvPairInvariantMass[nPho]/F");
+  tree_->Branch("phoConvPairCotThetaSeparation", phoConvPairCotThetaSeparation_, "phoConvPairCotThetaSeparation[nPho]/F");
+  tree_->Branch("phoConvPairMomentumEta", phoConvPairMomentumEta_, "phoConvPairMomentumEta[nPho]/F");
+  tree_->Branch("phoConvPairMomentumPhi", phoConvPairMomentumPhi_, "phoConvPairMomentumPhi[nPho]/F");
+  tree_->Branch("phoConvPairMomentumX", phoConvPairMomentumX_, "phoConvPairMomentumX[nPho]/F");
+  tree_->Branch("phoConvPairMomentumY", phoConvPairMomentumY_, "phoConvPairMomentumY[nPho]/F");
+  tree_->Branch("phoConvPairMomentumZ", phoConvPairMomentumZ_, "phoConvPairMomentumZ[nPho]/F");
+  tree_->Branch("phoConvDistOfMinimumApproach", phoConvDistOfMinimumApproach_, "phoConvDistOfMinimumApproach[nPho]/F");
+  tree_->Branch("phoConvDPhiTracksAtVtx", phoConvDPhiTracksAtVtx_, "phoConvDPhiTracksAtVtx[nPho]/F");
+  tree_->Branch("phoConvDPhiTracksAtEcal", phoConvDPhiTracksAtEcal_, "phoConvDPhiTracksAtEcal[nPho]/F");
+  tree_->Branch("phoConvDEtaTracksAtEcal", phoConvDEtaTracksAtEcal_, "phoConvDEtaTracksAtEcal[nPho]/F");
+  tree_->Branch("phoConvVtxValid", phoConvVtxValid_, "phoConvVtxValid[nPho]/F");
+  tree_->Branch("phoConvVtxEta", phoConvVtxEta_, "phoConvVtxEta[nPho]/F");
+  tree_->Branch("phoConvVtxPhi", phoConvVtxPhi_, "phoConvVtxPhi[nPho]/F");
+  tree_->Branch("phoConvVtxR", phoConvVtxR_, "phoConvVtxR[nPho]/F");
+  tree_->Branch("phoConvVtxX", phoConvVtxX_, "phoConvVtxX[nPho]/F");
+  tree_->Branch("phoConvVtxY", phoConvVtxY_, "phoConvVtxY[nPho]/F");
+  tree_->Branch("phoConvVtxZ", phoConvVtxZ_, "phoConvVtxZ[nPho]/F");
+  tree_->Branch("phoConvVtxChi2", phoConvVtxChi2_, "phoConvVtxChi2[nPho]/F");
+  tree_->Branch("phoConvVtxNdof", phoConvVtxNdof_, "phoConvVtxNdof[nPho]/F");
+  tree_->Branch("phoConvChi2Prob", phoConvChi2Prob_, "phoConvChi2Prob[nPho]/F");
+  tree_->Branch("phoConvEoverP", phoConvEoverP_, "phoConvEoverP[nPho]/F");
+  tree_->Branch("phoNxtal", phoNxtal_, "phoNxtal[nPho]/I");
+  tree_->Branch("phoXtalTime", phoXtalTime_, "phoXtalTime_[nPho][200]/F");
+  tree_->Branch("phoXtalEnergy", phoXtalEnergy_, "phoXtalEnergy[nPho][200]/F");
+  tree_->Branch("phoXtalZ", phoXtalZ_, "phoXtalZ[nPho][200]/I");
+  tree_->Branch("phoXtalX", phoXtalX_, "phoXtalX[nPho][200]/I");
+  tree_->Branch("phoXtalY", phoXtalY_, "phoXtalY[nPho][200]/I");
+  tree_->Branch("phoXtalEta", phoXtalEta_, "phoXtalEta[nPho][200]/I");
+  tree_->Branch("phoXtalPhi", phoXtalPhi_, "phoXtalPhi[nPho][200]/I");
+
   // Muon
   tree_->Branch("nMu", &nMu_, "nMu/I");
-  tree_->Branch("muTrg", muTrg_, "muTrg[nMu][40]/I");
+  tree_->Branch("muTrg", muTrg_, "muTrg[nMu][16]/I");
   tree_->Branch("muEta", muEta_, "muEta[nMu]/F");
   tree_->Branch("muPhi", muPhi_, "muPhi[nMu]/F");
   tree_->Branch("muCharge", muCharge_, "muCharge[nMu]/I");
@@ -351,7 +399,7 @@ VgAnalyzerKit::VgAnalyzerKit(const edm::ParameterSet& ps) : verbosity_(0), helpe
   // Jet
   if (doStoreJets_) {
     tree_->Branch("nJet", &nJet_, "nJet/I");
-    tree_->Branch("jetTrg", jetTrg_, "jetTrg[nJet][58]/I");
+    tree_->Branch("jetTrg", jetTrg_, "jetTrg[nJet][23]/I");
     tree_->Branch("jetEn", jetEn_, "jetEn[nJet]/F");
     tree_->Branch("jetPt", jetPt_, "jetPt[nJet]/F");
     tree_->Branch("jetEta", jetEta_, "jetEta[nJet]/F");
@@ -463,8 +511,6 @@ void VgAnalyzerKit::produce(edm::Event & e, const edm::EventSetup & es) {
   Handle<EcalRecHitCollection> EEReducedRecHits;
   e.getByLabel(eeReducedRecHitCollection_, EEReducedRecHits);
   EcalClusterLazyTools lazyTool(e, es, ebReducedRecHitCollection_, eeReducedRecHitCollection_ );
-  Handle<EcalRecHitCollection> EBRecHits;
-  e.getByLabel("ecalRecHit","EcalRecHitsEB",EBRecHits);
 
   Handle<reco::BeamSpot> beamSpotHandle;
   e.getByLabel(beamSpotCollection_, beamSpotHandle);
@@ -535,7 +581,7 @@ void VgAnalyzerKit::produce(edm::Event & e, const edm::EventSetup & es) {
   Handle<VertexCollection> recVtxs;
   if (e.getByLabel(vtxlabel_, recVtxs)) {
 
-    for (size_t i=0; i<recVtxs->size(); ++i)
+    for (size_t i=0; i<recVtxs->size(); ++i) {
       if (!((*recVtxs)[i].isFake())) {
 	vtx_[nVtx_][0] = (*recVtxs)[i].x();
 	vtx_[nVtx_][1] = (*recVtxs)[i].y();
@@ -547,6 +593,7 @@ void VgAnalyzerKit::produce(edm::Event & e, const edm::EventSetup & es) {
 	if (vtxNDF_[nVtx_] > 4 && fabs(vtx_[nVtx_][2]) <= 24 && fabs(vtxD0_[nVtx_]) <= 2) nGoodVtx_++;
 	nVtx_++;
       }
+    }
   }
   if (nGoodVtx_ > 0) IsVtxGood_ = 1;
 
@@ -651,21 +698,24 @@ fabs(ip->pdgId())<=14) || ip->pdgId()==22))) {
 	if (!p->mother()) continue;
 
 	if (fabs(p->pdgId())==4 && fabs(p->mother()->pdgId())!=7) continue;
-	if ((genIndex-1)>60 && ip->pdgId()==22) continue;
+	if ((genIndex-1) > 100 && ip->pdgId()==22) continue;
 	if (fabs(p->pdgId())==12 && fabs(p->mother()->pdgId())>100) continue;
 	if (fabs(p->pdgId())==14 && fabs(p->mother()->pdgId())>100) continue;
 
-	mcPID[nMC_] = p->pdgId();
-	mcPt[nMC_] = p->pt();
-	mcMass[nMC_] = p->mass();
-	mcEta[nMC_] = p->eta();
-	mcPhi[nMC_] = p->phi();
+	mcPID[nMC_]     = p->pdgId();
+        mcVtx[nMC_][0]  = p->vx();
+        mcVtx[nMC_][1]  = p->vy();
+        mcVtx[nMC_][2]  = p->vz();
+	mcPt[nMC_]      = p->pt();
+	mcMass[nMC_]    = p->mass();
+	mcEta[nMC_]     = p->eta();
+	mcPhi[nMC_]     = p->phi();
 	mcGMomPID[nMC_] = -999;
-	mcMomPID[nMC_] = -999;
-	mcMomPt[nMC_] = -999;
+	mcMomPID[nMC_]  = -999;
+	mcMomPt[nMC_]   = -999;
 	mcMomMass[nMC_] = -999;
-	mcMomEta[nMC_] = -999;
-	mcMomPhi[nMC_] = -999;
+	mcMomEta[nMC_]  = -999;
+	mcMomPhi[nMC_]  = -999;
 	mcDecayType[nMC_] = -999;
 
 	for (size_t j=0; j<p->numberOfMothers(); ++j) {
@@ -711,8 +761,134 @@ fabs(ip->pdgId())<=14) || ip->pdgId()==22))) {
   // HLT
   // cout << "VgAnalyzerKit: produce: HLT ... " << endl;
   // Indicate the index of interesting HLT bits. Even CMS has different HLT table for different runs, we can still use the correct HLT bit
+  std::map<unsigned, std::string> HLTIndexPath;  
+  HLTIndexPath[0] = "HLT_Jet15U";
+  HLTIndexPath[1] = "HLT_Jet30U";
+  HLTIndexPath[2] = "HLT_Jet50U";
+  HLTIndexPath[3] = "HLT_Jet70U";
+  HLTIndexPath[4] = "HLT_Jet70U_v2";
+  HLTIndexPath[5] = "HLT_Jet100U";
+  HLTIndexPath[6] = "HLT_Jet100U_v2";
+  HLTIndexPath[7] = "HLT_Jet140U_v1";
+  HLTIndexPath[8] = "HLT_Mu9";
+  HLTIndexPath[9] = "HLT_Mu11";
+  HLTIndexPath[10] = "HLT_Mu13";
+  HLTIndexPath[11] = "HLT_Mu13_v";
+  HLTIndexPath[12] = "HLT_Mu15";
+  HLTIndexPath[13] = "HLT_Mu15_v";
+  HLTIndexPath[14] = "HLT_DoubleMu3";
+  HLTIndexPath[15] = "HLT_DoubleMu3_v2";
+  HLTIndexPath[16] = "HLT_DoubleMu5_v1";
+  HLTIndexPath[17] = "HLT_Ele15_LW_L1R";
+  HLTIndexPath[18] = "HLT_Ele20_LW_L1R";
+  HLTIndexPath[19] = "HLT_Ele15_SW_L1R";
+  HLTIndexPath[20] = "HLT_Ele20_SW_L1R";
+  HLTIndexPath[21] = "HLT_Ele15_SW_EleId_L1R";
+  HLTIndexPath[22] = "HLT_Ele20_SW_EleId_L1R";
+  HLTIndexPath[23] = "HLT_Ele15_SW_CaloEleId_L1R";
+  HLTIndexPath[24] = "HLT_Ele20_SW_CaloEleId_L1R";
+  HLTIndexPath[25] = "HLT_Ele17_SW_CaloEleId_L1R";
+  HLTIndexPath[26] = "HLT_Ele17_SW_TightEleId_L1R";
+  HLTIndexPath[27] = "HLT_Ele17_SW_TighterEleIdIsol_L1R";
+  HLTIndexPath[28] = "HLT_Ele17_SW_TighterEleIdIsol_L1R_v2";
+  HLTIndexPath[29] = "HLT_Ele22_SW_TighterEleId_L1R_v2";
+  HLTIndexPath[30] = "HLT_DoubleEle10_SW_L1R";
+  HLTIndexPath[31] = "HLT_DoubleEle17_SW_L1R_v1";
+  HLTIndexPath[32] = "HLT_Photon10_Cleaned_L1R";
+  HLTIndexPath[33] = "HLT_Photon15_Cleaned_L1R";
+  HLTIndexPath[34] = "HLT_Photon20_Cleaned_L1R";
+  HLTIndexPath[35] = "HLT_Photon30_Cleaned_L1R";
+  HLTIndexPath[36] = "HLT_Photon50_Cleaned_L1R_v1";
+  HLTIndexPath[37] = "HLT_Photon70_Cleaned_L1R_v1";
+  HLTIndexPath[38] = "HLT_Jet15U_v3";
+  HLTIndexPath[39] = "HLT_Jet30U_v3";
+  HLTIndexPath[40] = "HLT_Jet50U_v3";
+  HLTIndexPath[41] = "HLT_Jet70U_v3";
+  HLTIndexPath[42] = "HLT_Jet100U_v3";
+  HLTIndexPath[43] = "HLT_Jet140U_v3";
+  HLTIndexPath[44] = "HLT_Ele17_SW_TightCaloEleId_Ele8HE_L1R_v1";
+  HLTIndexPath[45] = "HLT_Ele17_SW_TightCaloEleId_Ele8HE_L1R_v2";
+  HLTIndexPath[46] = "HLT_Ele17_SW_TighterEleIdIsol_L1R_v3";
+  HLTIndexPath[47] = "HLT_DoubleEle15_SW_L1R_v1";
+  HLTIndexPath[48] = "HLT_DoublePhoton17_L1R";
+  HLTIndexPath[49] = "HLT_Photon10_L1R";
+  HLTIndexPath[50] = "HLT_IsoMu15_v";
+  HLTIndexPath[51] = "HLT_IsoMu17_v";
+  HLTIndexPath[52] = "HLT_IsoMu24_v";
+  HLTIndexPath[53] = "HLT_IsoMu30_v";
+  HLTIndexPath[54] = "HLT_Mu24_v";
+  HLTIndexPath[55] = "HLT_Mu30_v";
+  // HLT path for 2011A data
+  HLTIndexPath[56] = "HLT_Jet30_v";
+  HLTIndexPath[57] = "HLT_Jet60_v";
+  HLTIndexPath[58] = "HLT_Jet80_v";
+  HLTIndexPath[59] = "HLT_Jet110_v";
+  HLTIndexPath[60] = "HLT_Jet150_v";
+  HLTIndexPath[61] = "HLT_Jet190_v";
+  HLTIndexPath[62] = "HLT_Jet240_v";
+  HLTIndexPath[63] = "HLT_Jet300_v";
+  HLTIndexPath[64] = "HLT_Jet370_v";
+  HLTIndexPath[65] = "HLT_Mu30_v";
+  HLTIndexPath[66] = "HLT_IsoMu24_v";
+  HLTIndexPath[67] = "HLT_IsoMu30_v";
+  HLTIndexPath[68] = "HLT_IsoMu24_eta2p1_v";
+  HLTIndexPath[69] = "HLT_IsoMu30_eta2p1_v";
+  HLTIndexPath[70] = "HLT_IsoMu34_eta2p1_v";
+  HLTIndexPath[71] = "HLT_DoubleMu6_v";
+  HLTIndexPath[72] = "HLT_DoubleMu7_v";
+  HLTIndexPath[73] = "HLT_Mu13_Mu8_v";
+  HLTIndexPath[74] = "HLT_Mu17_Mu8_v";
+  HLTIndexPath[75] = "HLT_Ele27_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_v";
+  HLTIndexPath[76] = "HLT_Ele32_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_v";
+  HLTIndexPath[77] = "HLT_Ele42_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_v";
+  HLTIndexPath[78] = "HLT_Ele27_WP80_PFMT50_v";
+  HLTIndexPath[79] = "HLT_Ele32_WP70_PFMT50_v";
+  HLTIndexPath[80] = "HLT_Ele8_CaloIdL_CaloIsoVL_v";
+  HLTIndexPath[81] = "HLT_Ele17_CaloIdL_CaloIsoVL_v";
+  HLTIndexPath[82] = "HLT_Ele8_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_v";
+  HLTIndexPath[83] = "HLT_Ele17_CaloIdL_CaloIsoVL_Ele8_CaloIdL_CaloIsoVL_v";
+  HLTIndexPath[84] = "HLT_Ele17_CaloIdVT_CaloIsoVT_TrkIdT_TrkIsoVT_Ele8_Mass30_v";
+  HLTIndexPath[85] = "HLT_Ele17_CaloIdVT_CaloIsoVT_TrkIdT_TrkIsoVT_SC8_Mass30_v";
+  HLTIndexPath[86] = "HLT_Ele17_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_Ele8_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_v";
+  HLTIndexPath[87] = "HLT_Ele32_CaloIdT_CaloIsoT_TrkIdT_TrkIsoT_Ele17_v";
+  HLTIndexPath[88] = "HLT_Ele32_CaloIdT_CaloIsoT_TrkIdT_TrkIsoT_SC17_v";
+  HLTIndexPath[89] = "HLT_Photon20_CaloIdVL_IsoL_v";
+  HLTIndexPath[90] = "HLT_Photon20_R9Id_Photon18_R9Id_v";
+  HLTIndexPath[91] = "HLT_Photon26_Photon18_v";
+  HLTIndexPath[92] = "HLT_Photon26_IsoVL_Photon18_v";
+  HLTIndexPath[93] = "HLT_Photon26_IsoVL_Photon18_IsoVL_v";
+  HLTIndexPath[94] = "HLT_Photon26_CaloIdL_IsoVL_Photon18_v";
+  HLTIndexPath[95] = "HLT_Photon26_CaloIdL_IsoVL_Photon18_CaloIdL_IsoVL_v";
+  HLTIndexPath[96] = "HLT_Photon26_CaloIdL_IsoVL_Photon18_R9Id_v";
+  HLTIndexPath[97] = "HLT_Photon26_R9Id_Photon18_CaloIdL_IsoVL_v";
+  HLTIndexPath[98] = "HLT_Photon26_R9Id_Photon18_R9Id_v";
+  HLTIndexPath[99] = "HLT_Photon26_R9Id_Photon18_CaloIdXL_IsoXL_v";
+  HLTIndexPath[100]= "HLT_Photon26_CaloIdXL_IsoXL_Photon18_v";
+  HLTIndexPath[101]= "HLT_Photon26_CaloIdXL_IsoXL_Photon18_R9Id_v";
+  HLTIndexPath[102]= "HLT_Photon26_CaloIdXL_IsoXL_Photon18_CaloIdXL_IsoXL_v";
+  HLTIndexPath[103]= "HLT_Photon30_CaloIdVL_v";
+  HLTIndexPath[104]= "HLT_Photon30_CaloIdVL_IsoL_v";
+  HLTIndexPath[105]= "HLT_Photon32_CaloIdL_Photon26_CaloIdL_v";
+  HLTIndexPath[106]= "HLT_Photon36_CaloIdL_Photon22_CaloIdL_v";
+  HLTIndexPath[107]= "HLT_Photon36_CaloIdL_IsoVL_Photon22_v";
+  HLTIndexPath[108]= "HLT_Photon36_Photon22_v";
+  HLTIndexPath[109]= "HLT_Photon36_IsoVL_Photon22_v";
+  HLTIndexPath[110]= "HLT_Photon36_CaloId_IsoVL_Photon22_R9Id_v";
+  HLTIndexPath[111]= "HLT_Photon36_R9Id_Photon22_CaloIdL_IsoVL_v";
+  HLTIndexPath[112]= "HLT_Photon36_R9Id_Photon22_R9Id_v";
+  HLTIndexPath[113]= "HLT_Photon36_CaloIdL_IsoVL_Photon22_R9Id_v";
+  HLTIndexPath[114]= "HLT_Photon36_CaloIdVL_Photon22_CaloIdVL_v";
+  HLTIndexPath[115]= "HLT_Photon40_CaloIdL_Photon28_CaloIdL_v";
+  HLTIndexPath[116]= "HLT_Photon44_CaloIdL_Photon34_CaloIdL_v";
+  HLTIndexPath[117]= "HLT_Photon48_CaloIdL_Photon38_CaloIdL_v";
+  HLTIndexPath[118]= "HLT_Photon50_CaloIdVL_v";
+  HLTIndexPath[119]= "HLT_Photon50_CaloIdVL_IsoL_v";
+  HLTIndexPath[120]= "HLT_Photon75_CaloIdVL_v";
+  HLTIndexPath[121]= "HLT_Photon75_CaloIdVL_IsoL_v";
+  HLTIndexPath[122]= "HLT_Photon90_CaloIdVL_v";
+  HLTIndexPath[123]= "HLT_Photon90_CaloIdVL_IsoL_v";
 
-  for (int a=0; a<226; a++)
+  for (int a=0; a<124; a++)
     HLTIndex_[a] = -1;
  
   nHLT_ = 0;
@@ -725,233 +901,9 @@ fabs(ip->pdgId())<=14) || ip->pdgId()==22))) {
     HLT_[i] = (trgResultsHandle->accept(i) == true) ? 1:0;
     HLTprescale_[i] = hltConfig_.prescaleValue(e, es, hlNames[i]);
 
-    if (hlNames[i] == "HLT_Jet15U")                       HLTIndex_[0] = i;
-    else if (hlNames[i] == "HLT_Jet30U")                  HLTIndex_[1] = i;
-    else if (hlNames[i] == "HLT_Jet50U")                  HLTIndex_[2] = i;
-    else if (hlNames[i] == "HLT_Jet70U")                  HLTIndex_[3] = i;
-    else if (hlNames[i] == "HLT_Jet70U_v2")               HLTIndex_[4] = i;
-    else if (hlNames[i] == "HLT_Jet100U")                 HLTIndex_[5] = i;
-    else if (hlNames[i] == "HLT_Jet100U_v2")              HLTIndex_[6] = i;
-    else if (hlNames[i] == "HLT_Jet100U_v1")              HLTIndex_[7] = i;
-    else if (hlNames[i] == "HLT_Mu9")                     HLTIndex_[8] = i;
-    else if (hlNames[i] == "HLT_Mu11")                    HLTIndex_[9] = i;
-    else if (hlNames[i] == "HLT_Mu13")                    HLTIndex_[10] = i;
-    else if (hlNames[i] == "HLT_Mu13_v1")                 HLTIndex_[11] = i;
-    else if (hlNames[i] == "HLT_Mu15")                    HLTIndex_[12] = i;
-    else if (hlNames[i] == "HLT_Mu15_v1")                 HLTIndex_[13] = i;
-    else if (hlNames[i] == "HLT_DoubleMu3")               HLTIndex_[14] = i;
-    else if (hlNames[i] == "HLT_DoubleMu3_v2")            HLTIndex_[15] = i;
-    else if (hlNames[i] == "HLT_DoubleMu5_v1")            HLTIndex_[16] = i;
-    else if (hlNames[i] == "HLT_Ele15_LW_L1R")            HLTIndex_[17] = i;
-    else if (hlNames[i] == "HLT_Ele20_LW_L1R")            HLTIndex_[18] = i;
-    else if (hlNames[i] == "HLT_Ele15_SW_L1R")            HLTIndex_[19] = i;
-    else if (hlNames[i] == "HLT_Ele20_SW_L1R")            HLTIndex_[20] = i;
-    else if (hlNames[i] == "HLT_Ele15_SW_EleId_L1R")      HLTIndex_[21] = i;
-    else if (hlNames[i] == "HLT_Ele20_SW_EleId_L1R")      HLTIndex_[22] = i;
-    else if (hlNames[i] == "HLT_Ele15_SW_CaloEleId_L1R")  HLTIndex_[23] = i;
-    else if (hlNames[i] == "HLT_Ele20_SW_CaloEleId_L1R")  HLTIndex_[24] = i;
-    else if (hlNames[i] == "HLT_Ele17_SW_CaloEleId_L1R")  HLTIndex_[25] = i;
-    else if (hlNames[i] == "HLT_Ele17_SW_TightEleId_L1R") HLTIndex_[26] = i;
-    else if (hlNames[i] == "HLT_Ele17_SW_TighterEleIdIsol_L1R")         HLTIndex_[27] = i;
-    else if (hlNames[i] == "HLT_Ele17_SW_TighterEleIdIsol_L1R_v2")      HLTIndex_[28] = i;
-    else if (hlNames[i] == "HLT_Ele22_SW_TighterEleId_L1R_v2")          HLTIndex_[29] = i;
-    else if (hlNames[i] == "HLT_DoubleEle10_SW_L1R")      HLTIndex_[30] = i;
-    else if (hlNames[i] == "HLT_DoubleEle17_SW_L1R_v1")   HLTIndex_[31] = i;
-    else if (hlNames[i] == "HLT_Photon10_Cleaned_L1R")    HLTIndex_[32] = i;
-    else if (hlNames[i] == "HLT_Photon15_Cleaned_L1R")    HLTIndex_[33] = i;
-    else if (hlNames[i] == "HLT_Photon20_Cleaned_L1R")    HLTIndex_[34] = i;
-    else if (hlNames[i] == "HLT_Photon30_Cleaned_L1R")    HLTIndex_[35] = i;
-    else if (hlNames[i] == "HLT_Photon50_Cleaned_L1R_v1") HLTIndex_[36] = i;
-    else if (hlNames[i] == "HLT_Photon70_Cleaned_L1R_v1") HLTIndex_[37] = i;
-    else if (hlNames[i] == "HLT_Jet15U_v3") 		  HLTIndex_[38] = i;
-    else if (hlNames[i] == "HLT_Jet30U_v3") 		  HLTIndex_[39] = i;
-    else if (hlNames[i] == "HLT_Jet50U_v3") 		  HLTIndex_[40] = i;
-    else if (hlNames[i] == "HLT_Jet70U_v3") 		  HLTIndex_[41] = i;
-    else if (hlNames[i] == "HLT_Jet100U_v3") 		  HLTIndex_[42] = i;
-    else if (hlNames[i] == "HLT_Jet140U_v3") 		  HLTIndex_[43] = i;
-    else if (hlNames[i] == "HLT_Ele17_SW_TightCaloEleId_Ele8HE_L1R_v1") HLTIndex_[44] = i;
-    else if (hlNames[i] == "HLT_Ele17_SW_TightCaloEleId_Ele8HE_L1R_v2") HLTIndex_[45] = i;
-    else if (hlNames[i] == "HLT_Ele17_SW_TighterEleIdIsol_L1R_v3")      HLTIndex_[46] = i;
-    else if (hlNames[i] == "HLT_DoubleEle15_SW_L1R_v1")   HLTIndex_[47] = i;
-    else if (hlNames[i] == "HLT_DoublePhoton17_L1R") 	  HLTIndex_[48] = i;
-    else if (hlNames[i] == "HLT_Photon10_L1R")    	  HLTIndex_[49] = i;
-    // HLT path for 2011A data
-    else if (hlNames[i] == "HLT_Jet30_v1")	HLTIndex_[50] = i;
-    else if (hlNames[i] == "HLT_Jet30_v2")	HLTIndex_[51] = i;
-    else if (hlNames[i] == "HLT_Jet30_v3")	HLTIndex_[52] = i;
-    else if (hlNames[i] == "HLT_Jet30_v4")	HLTIndex_[53] = i;
-    else if (hlNames[i] == "HLT_Jet60_v1")	HLTIndex_[54] = i;
-    else if (hlNames[i] == "HLT_Jet60_v2")	HLTIndex_[55] = i;
-    else if (hlNames[i] == "HLT_Jet60_v3")	HLTIndex_[56] = i;
-    else if (hlNames[i] == "HLT_Jet60_v4")	HLTIndex_[57] = i;
-    else if (hlNames[i] == "HLT_Jet80_v1")	HLTIndex_[58] = i;
-    else if (hlNames[i] == "HLT_Jet80_v2")	HLTIndex_[59] = i;
-    else if (hlNames[i] == "HLT_Jet80_v3")	HLTIndex_[60] = i;
-    else if (hlNames[i] == "HLT_Jet80_v4")	HLTIndex_[61] = i;
-    else if (hlNames[i] == "HLT_Jet110_v1")	HLTIndex_[62] = i;
-    else if (hlNames[i] == "HLT_Jet110_v2")	HLTIndex_[63] = i;
-    else if (hlNames[i] == "HLT_Jet110_v3")	HLTIndex_[64] = i;
-    else if (hlNames[i] == "HLT_Jet110_v4")	HLTIndex_[65] = i;
-    else if (hlNames[i] == "HLT_Jet150_v1")	HLTIndex_[66] = i;
-    else if (hlNames[i] == "HLT_Jet150_v2")	HLTIndex_[67] = i;
-    else if (hlNames[i] == "HLT_Jet150_v3")	HLTIndex_[68] = i;
-    else if (hlNames[i] == "HLT_Jet150_v4")	HLTIndex_[69] = i;
-    else if (hlNames[i] == "HLT_Jet190_v1")	HLTIndex_[70] = i;
-    else if (hlNames[i] == "HLT_Jet190_v2")	HLTIndex_[71] = i;
-    else if (hlNames[i] == "HLT_Jet190_v3")	HLTIndex_[72] = i;
-    else if (hlNames[i] == "HLT_Jet190_v4")	HLTIndex_[73] = i;
-    else if (hlNames[i] == "HLT_Jet240_v1")	HLTIndex_[74] = i;
-    else if (hlNames[i] == "HLT_Jet240_v2")	HLTIndex_[75] = i;
-    else if (hlNames[i] == "HLT_Jet240_v3")	HLTIndex_[76] = i;
-    else if (hlNames[i] == "HLT_Jet240_v4")	HLTIndex_[77] = i;
-    else if (hlNames[i] == "HLT_Jet300_v1")     HLTIndex_[78] = i;
-    else if (hlNames[i] == "HLT_Jet300_v2")     HLTIndex_[79] = i;
-    else if (hlNames[i] == "HLT_Jet300_v3")     HLTIndex_[80] = i;
-    else if (hlNames[i] == "HLT_Jet370_v1")	HLTIndex_[81] = i;
-    else if (hlNames[i] == "HLT_Jet370_v2")	HLTIndex_[82] = i;
-    else if (hlNames[i] == "HLT_Jet370_v3")	HLTIndex_[83] = i;
-    else if (hlNames[i] == "HLT_Jet370_v4")	HLTIndex_[84] = i;
-    else if (hlNames[i] == "HLT_Mu24_v1")	HLTIndex_[85] = i;
-    else if (hlNames[i] == "HLT_Mu24_v2")	HLTIndex_[86] = i;
-    else if (hlNames[i] == "HLT_Mu24_v3")	HLTIndex_[87] = i;
-    else if (hlNames[i] == "HLT_Mu30_v1")	HLTIndex_[88] = i;
-    else if (hlNames[i] == "HLT_Mu30_v2")	HLTIndex_[89] = i;
-    else if (hlNames[i] == "HLT_Mu30_v3")	HLTIndex_[90] = i;
-    else if (hlNames[i] == "HLT_IsoMu17_v4")	HLTIndex_[91] = i;
-    else if (hlNames[i] == "HLT_IsoMu17_v5")	HLTIndex_[92] = i;
-    else if (hlNames[i] == "HLT_IsoMu17_v6")	HLTIndex_[93] = i;
-    else if (hlNames[i] == "HLT_IsoMu17_v8")	HLTIndex_[94] = i;
-    else if (hlNames[i] == "HLT_IsoMu17_v9")	HLTIndex_[95] = i;
-    else if (hlNames[i] == "HLT_IsoMu24_v1")	HLTIndex_[96] = i;
-    else if (hlNames[i] == "HLT_IsoMu24_v2")	HLTIndex_[97] = i;
-    else if (hlNames[i] == "HLT_IsoMu24_v4")	HLTIndex_[98] = i;
-    else if (hlNames[i] == "HLT_IsoMu24_v5")	HLTIndex_[99] = i;
-    else if (hlNames[i] == "HLT_IsoMu30_v1")	HLTIndex_[100] = i;
-    else if (hlNames[i] == "HLT_IsoMu30_v2")	HLTIndex_[101] = i;
-    else if (hlNames[i] == "HLT_IsoMu30_v4")	HLTIndex_[102] = i;
-    else if (hlNames[i] == "HLT_IsoMu30_v5")	HLTIndex_[103] = i;
-    else if (hlNames[i] == "HLT_DoubleMu6_v1")	HLTIndex_[104] = i;
-    else if (hlNames[i] == "HLT_DoubleMu6_v2")	HLTIndex_[105] = i;
-    else if (hlNames[i] == "HLT_DoubleMu6_v3")	HLTIndex_[106] = i;
-    else if (hlNames[i] == "HLT_DoubleMu7_v1")	HLTIndex_[107] = i;
-    else if (hlNames[i] == "HLT_DoubleMu7_v2")	HLTIndex_[108] = i;
-    else if (hlNames[i] == "HLT_DoubleMu7_v3")	HLTIndex_[109] = i;
-    else if (hlNames[i] == "HLT_Mu13_Mu8_v2")   HLTIndex_[110] = i;
-    else if (hlNames[i] == "HLT_Ele27_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_v1")		HLTIndex_[111] = i;
-    else if (hlNames[i] == "HLT_Ele27_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_v2")		HLTIndex_[112] = i;
-    else if (hlNames[i] == "HLT_Ele27_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_v3")		HLTIndex_[113] = i;
-    else if (hlNames[i] == "HLT_Ele32_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_v1")		HLTIndex_[114] = i;
-    else if (hlNames[i] == "HLT_Ele32_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_v2")		HLTIndex_[115] = i;
-    else if (hlNames[i] == "HLT_Ele32_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_v3")		HLTIndex_[116] = i;
-    else if (hlNames[i] == "HLT_Ele32_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_v4")		HLTIndex_[117] = i;
-    else if (hlNames[i] == "HLT_Ele42_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_v1")		HLTIndex_[118] = i;
-    else if (hlNames[i] == "HLT_Ele25_WP80_PFMT40_v1")					HLTIndex_[119] = i;
-    else if (hlNames[i] == "HLT_Ele27_WP70_PFMT40_PFMHT20_v1")				HLTIndex_[120] = i;
-    else if (hlNames[i] == "HLT_Ele17_CaloIdL_CaloIsoVL_Ele8_CaloIdL_CaloIsoVL_v1")	HLTIndex_[121] = i;
-    else if (hlNames[i] == "HLT_Ele17_CaloIdL_CaloIsoVL_Ele8_CaloIdL_CaloIsoVL_v2")	HLTIndex_[122] = i;
-    else if (hlNames[i] == "HLT_Ele17_CaloIdL_CaloIsoVL_Ele8_CaloIdL_CaloIsoVL_v3")	HLTIndex_[123] = i;
-    else if (hlNames[i] == "HLT_Ele17_CaloIdL_CaloIsoVL_Ele8_CaloIdL_CaloIsoVL_v4")	HLTIndex_[124] = i;
-    else if (hlNames[i] == "HLT_Ele17_CaloIdL_CaloIsoVL_Ele8_CaloIdL_CaloIsoVL_v5")	HLTIndex_[125] = i;
-    else if (hlNames[i] == "HLT_Photon30_CaloIdVL_v1")		HLTIndex_[126] = i;
-    else if (hlNames[i] == "HLT_Photon30_CaloIdVL_v2")		HLTIndex_[127] = i;
-    else if (hlNames[i] == "HLT_Photon30_CaloIdVL_v3")		HLTIndex_[128] = i;
-    else if (hlNames[i] == "HLT_Photon30_CaloIdVL_v4")		HLTIndex_[129] = i;
-    else if (hlNames[i] == "HLT_Photon30_CaloIdVL_v5")		HLTIndex_[130] = i;
-    else if (hlNames[i] == "HLT_Photon30_CaloIdVL_IsoL_v1")	HLTIndex_[131] = i;
-    else if (hlNames[i] == "HLT_Photon30_CaloIdVL_IsoL_v2")	HLTIndex_[132] = i;
-    else if (hlNames[i] == "HLT_Photon30_CaloIdVL_IsoL_v3")	HLTIndex_[133] = i;
-    else if (hlNames[i] == "HLT_Photon30_CaloIdVL_IsoL_v4")	HLTIndex_[134] = i;
-    else if (hlNames[i] == "HLT_Photon30_CaloIdVL_IsoL_v5")	HLTIndex_[135] = i;
-    else if (hlNames[i] == "HLT_Photon50_CaloIdVL_v1")		HLTIndex_[136] = i;
-    else if (hlNames[i] == "HLT_Photon50_CaloIdVL_v2")		HLTIndex_[137] = i;
-    else if (hlNames[i] == "HLT_Photon50_CaloIdVL_IsoL_v1")	HLTIndex_[138] = i;
-    else if (hlNames[i] == "HLT_Photon50_CaloIdVL_IsoL_v2")	HLTIndex_[139] = i;
-    else if (hlNames[i] == "HLT_Photon50_CaloIdVL_IsoL_v3")	HLTIndex_[140] = i;
-    else if (hlNames[i] == "HLT_Photon50_CaloIdVL_IsoL_v4")	HLTIndex_[141] = i;
-    else if (hlNames[i] == "HLT_Photon75_CaloIdVL_v1")		HLTIndex_[142] = i;
-    else if (hlNames[i] == "HLT_Photon75_CaloIdVL_v2")		HLTIndex_[143] = i;
-    else if (hlNames[i] == "HLT_Photon75_CaloIdVL_v3")		HLTIndex_[144] = i;
-    else if (hlNames[i] == "HLT_Photon75_CaloIdVL_v4")		HLTIndex_[145] = i;
-    else if (hlNames[i] == "HLT_Photon75_CaloIdVL_v5")		HLTIndex_[146] = i;
-    else if (hlNames[i] == "HLT_Photon75_CaloIdVL_IsoL_v1")	HLTIndex_[147] = i;
-    else if (hlNames[i] == "HLT_Photon75_CaloIdVL_IsoL_v2")	HLTIndex_[148] = i;
-    else if (hlNames[i] == "HLT_Photon75_CaloIdVL_IsoL_v3")	HLTIndex_[149] = i;
-    else if (hlNames[i] == "HLT_Photon75_CaloIdVL_IsoL_v4")	HLTIndex_[150] = i;
-    else if (hlNames[i] == "HLT_Photon75_CaloIdVL_IsoL_v5")	HLTIndex_[151] = i;
-    else if (hlNames[i] == "HLT_Photon20_R9Id_Photon18_R9Id_v1")			HLTIndex_[152] = i;
-    else if (hlNames[i] == "HLT_Photon20_R9Id_Photon18_R9Id_v2")			HLTIndex_[153] = i;
-    else if (hlNames[i] == "HLT_Photon20_R9Id_Photon18_R9Id_v3")			HLTIndex_[154] = i;
-    else if (hlNames[i] == "HLT_Photon20_R9Id_Photon18_R9Id_v4")			HLTIndex_[155] = i;
-    else if (hlNames[i] == "HLT_Photon20_R9Id_Photon18_R9Id_v5")			HLTIndex_[156] = i;
-    else if (hlNames[i] == "HLT_Photon26_IsoVL_Photon18_IsoVL_v1")			HLTIndex_[157] = i;
-    else if (hlNames[i] == "HLT_Photon26_IsoVL_Photon18_IsoVL_v2")			HLTIndex_[158] = i;
-    else if (hlNames[i] == "HLT_Photon26_IsoVL_Photon18_IsoVL_v3")			HLTIndex_[159] = i;
-    else if (hlNames[i] == "HLT_Photon26_IsoVL_Photon18_IsoVL_v4")			HLTIndex_[160] = i;
-    else if (hlNames[i] == "HLT_Photon26_IsoVL_Photon18_IsoVL_v5")			HLTIndex_[161] = i;
-    else if (hlNames[i] == "HLT_Photon26_CaloIdL_IsoVL_Photon18_v1")			HLTIndex_[162] = i;
-    else if (hlNames[i] == "HLT_Photon26_CaloIdL_IsoVL_Photon18_v2")			HLTIndex_[163] = i;
-    else if (hlNames[i] == "HLT_Photon26_CaloIdL_IsoVL_Photon18_v3")			HLTIndex_[164] = i;
-    else if (hlNames[i] == "HLT_Photon26_CaloIdL_IsoVL_Photon18_v4")			HLTIndex_[165] = i;
-    else if (hlNames[i] == "HLT_Photon26_CaloIdL_IsoVL_Photon18_v5")			HLTIndex_[166] = i;
-    else if (hlNames[i] == "HLT_Photon26_CaloIdL_IsoVL_Photon18_CaloIdL_IsoVL_v1")	HLTIndex_[167] = i;
-    else if (hlNames[i] == "HLT_Photon26_CaloIdL_IsoVL_Photon18_CaloIdL_IsoVL_v2")	HLTIndex_[168] = i;
-    else if (hlNames[i] == "HLT_Photon26_CaloIdL_IsoVL_Photon18_CaloIdL_IsoVL_v3")	HLTIndex_[169] = i;
-    else if (hlNames[i] == "HLT_Photon26_CaloIdL_IsoVL_Photon18_CaloIdL_IsoVL_v4")	HLTIndex_[170] = i;
-    else if (hlNames[i] == "HLT_Photon26_CaloIdL_IsoVL_Photon18_CaloIdL_IsoVL_v5")	HLTIndex_[171] = i;
-    else if (hlNames[i] == "HLT_Jet30_v6")	HLTIndex_[172] = i;
-    else if (hlNames[i] == "HLT_Jet60_v6")	HLTIndex_[173] = i;
-    else if (hlNames[i] == "HLT_Jet80_v6")	HLTIndex_[174] = i;
-    else if (hlNames[i] == "HLT_Jet110_v6")	HLTIndex_[175] = i;
-    else if (hlNames[i] == "HLT_Jet150_v6")	HLTIndex_[176] = i;
-    else if (hlNames[i] == "HLT_Jet190_v6")	HLTIndex_[177] = i;
-    else if (hlNames[i] == "HLT_Jet240_v6")	HLTIndex_[178] = i;
-    else if (hlNames[i] == "HLT_Jet300_v5")     HLTIndex_[179] = i;
-    else if (hlNames[i] == "HLT_Jet370_v6")	HLTIndex_[180] = i;
-    else if (hlNames[i] == "HLT_Mu24_v5")	HLTIndex_[181] = i;
-    else if (hlNames[i] == "HLT_Mu30_v5")	HLTIndex_[182] = i;
-    else if (hlNames[i] == "HLT_IsoMu17_v11")	HLTIndex_[183] = i;
-    else if (hlNames[i] == "HLT_IsoMu24_v7")	HLTIndex_[184] = i;
-    else if (hlNames[i] == "HLT_IsoMu30_v7")	HLTIndex_[185] = i;
-    else if (hlNames[i] == "HLT_Mu13_Mu8_v4")   HLTIndex_[186] = i;
-    else if (hlNames[i] == "HLT_Mu17_Mu8_v2")   HLTIndex_[187] = i;
-    else if (hlNames[i] == "HLT_Mu17_Mu8_v4")   HLTIndex_[188] = i;
-    else if (hlNames[i] == "HLT_Ele32_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_v5")		HLTIndex_[189] = i;
-    else if (hlNames[i] == "HLT_Ele27_WP80_PFMT50_v1")					HLTIndex_[190] = i;
-    else if (hlNames[i] == "HLT_Ele32_WP70_PFMT50_v1")					HLTIndex_[191] = i;
-    else if (hlNames[i] == "HLT_Ele17_CaloIdL_CaloIsoVL_Ele8_CaloIdL_CaloIsoVL_v6")	HLTIndex_[192] = i;
-    else if (hlNames[i] == "HLT_Ele8_CaloIdL_CaloIsoVL_v1")				HLTIndex_[193] = i;
-    else if (hlNames[i] == "HLT_Ele8_CaloIdL_CaloIsoVL_v2")				HLTIndex_[194] = i;
-    else if (hlNames[i] == "HLT_Ele8_CaloIdL_CaloIsoVL_v3")				HLTIndex_[195] = i;
-    else if (hlNames[i] == "HLT_Ele8_CaloIdL_CaloIsoVL_v4")				HLTIndex_[196] = i;
-    else if (hlNames[i] == "HLT_Ele8_CaloIdL_CaloIsoVL_v5")				HLTIndex_[197] = i;
-    else if (hlNames[i] == "HLT_Ele8_CaloIdL_CaloIsoVL_v6")				HLTIndex_[198] = i;
-    else if (hlNames[i] == "HLT_Ele17_CaloIdL_CaloIsoVL_v1")				HLTIndex_[199] = i;
-    else if (hlNames[i] == "HLT_Ele17_CaloIdL_CaloIsoVL_v2")				HLTIndex_[200] = i;
-    else if (hlNames[i] == "HLT_Ele17_CaloIdL_CaloIsoVL_v3")				HLTIndex_[201] = i;
-    else if (hlNames[i] == "HLT_Ele17_CaloIdL_CaloIsoVL_v4")				HLTIndex_[202] = i;
-    else if (hlNames[i] == "HLT_Ele17_CaloIdL_CaloIsoVL_v5")				HLTIndex_[203] = i;
-    else if (hlNames[i] == "HLT_Ele17_CaloIdL_CaloIsoVL_v6")				HLTIndex_[204] = i;
-    else if (hlNames[i] == "HLT_Mu30_v7")       	HLTIndex_[205] = i;
-    else if (hlNames[i] == "HLT_Mu30_v8")       	HLTIndex_[206] = i;
-    else if (hlNames[i] == "HLT_IsoMu24_v8")    	HLTIndex_[207] = i;
-    else if (hlNames[i] == "HLT_IsoMu24_v9")    	HLTIndex_[208] = i;
-    else if (hlNames[i] == "HLT_IsoMu30_v8")    	HLTIndex_[209] = i;
-    else if (hlNames[i] == "HLT_IsoMu30_eta2p1_v3")     HLTIndex_[210] = i;
-    else if (hlNames[i] == "HLT_Mu13_Mu8_v6")   	HLTIndex_[211] = i;
-    else if (hlNames[i] == "HLT_Mu13_Mu8_v7")   	HLTIndex_[212] = i;
-    else if (hlNames[i] == "HLT_Mu17_Mu8_v6")   	HLTIndex_[213] = i;
-    else if (hlNames[i] == "HLT_Mu17_Mu8_v7")   	HLTIndex_[214] = i;
-    else if (hlNames[i] == "HLT_Ele32_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_v6")             HLTIndex_[215] = i;
-    else if (hlNames[i] == "HLT_Ele32_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_v7")             HLTIndex_[216] = i;
-    else if (hlNames[i] == "HLT_Ele27_WP80_PFMT50_v3")                                  HLTIndex_[217] = i;
-    else if (hlNames[i] == "HLT_Ele27_WP80_PFMT50_v4")                                  HLTIndex_[218] = i;
-    else if (hlNames[i] == "HLT_Ele32_WP70_PFMT50_v3")                                  HLTIndex_[219] = i;
-    else if (hlNames[i] == "HLT_Ele32_WP70_PFMT50_v4")                                  HLTIndex_[220] = i;
-    else if (hlNames[i] == "HLT_Ele17_CaloIdL_CaloIsoVL_Ele8_CaloIdL_CaloIsoVL_v8")	HLTIndex_[221] = i;
-    else if (hlNames[i] == "HLT_Ele17_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_Ele8_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_v7")	HLTIndex_[222] = i;
-    else if (hlNames[i] == "HLT_Ele17_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_Ele8_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_v8")	HLTIndex_[223] = i;
-    else if (hlNames[i] == "HLT_Ele8_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_v5") 		HLTIndex_[224] = i;
-    else if (hlNames[i] == "HLT_Ele8_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_v6") 		HLTIndex_[225] = i;
+    for (size_t j=0; j<HLTIndexPath.size(); j++) {
+      if(TString(hlNames[i]).Contains(TRegexp(HLTIndexPath[j])) == 1) HLTIndex_[j] = i;
+    }
   }
 
   // Gen & PAT MET (caloMET)
@@ -1033,29 +985,26 @@ fabs(ip->pdgId())<=14) || ip->pdgId()==22))) {
   const TriggerObjectMatch *eleTriggerMatch8(triggerEvent->triggerObjectMatchResult("electronTriggerMatchHLTEle17SWTighterEleIdIsolL1R"));
   const TriggerObjectMatch *eleTriggerMatch9(triggerEvent->triggerObjectMatchResult("electronTriggerMatchHLTEle17SWTighterEleIdIsolL1Rv2"));
   const TriggerObjectMatch *eleTriggerMatch10(triggerEvent->triggerObjectMatchResult("electronTriggerMatchHLTEle17SWTighterEleIdIsolL1Rv3"));
-  const TriggerObjectMatch *eleTriggerMatch11(triggerEvent->triggerObjectMatchResult("electronTriggerMatchHLTEle27CaloIdVTCaloIsoTTrkIdTTrkIsoTv1"));
-  const TriggerObjectMatch *eleTriggerMatch12(triggerEvent->triggerObjectMatchResult("electronTriggerMatchHLTEle27CaloIdVTCaloIsoTTrkIdTTrkIsoTv2"));
-  const TriggerObjectMatch *eleTriggerMatch13(triggerEvent->triggerObjectMatchResult("electronTriggerMatchHLTEle27CaloIdVTCaloIsoTTrkIdTTrkIsoTv3"));
-  const TriggerObjectMatch *eleTriggerMatch14(triggerEvent->triggerObjectMatchResult("electronTriggerMatchHLTEle32CaloIdVTCaloIsoTTrkIdTTrkIsoTv1"));
-  const TriggerObjectMatch *eleTriggerMatch15(triggerEvent->triggerObjectMatchResult("electronTriggerMatchHLTEle32CaloIdVTCaloIsoTTrkIdTTrkIsoTv2"));
-  const TriggerObjectMatch *eleTriggerMatch16(triggerEvent->triggerObjectMatchResult("electronTriggerMatchHLTEle32CaloIdVTCaloIsoTTrkIdTTrkIsoTv3"));
-  const TriggerObjectMatch *eleTriggerMatch17(triggerEvent->triggerObjectMatchResult("electronTriggerMatchHLTEle32CaloIdVTCaloIsoTTrkIdTTrkIsoTv4"));
-  const TriggerObjectMatch *eleTriggerMatch18(triggerEvent->triggerObjectMatchResult("electronTriggerMatchHLTEle42CaloIdVTCaloIsoTTrkIdTTrkIsoTv1"));
-  const TriggerObjectMatch *eleTriggerMatch19(triggerEvent->triggerObjectMatchResult("electronTriggerMatchHLTEle25WP80PFMT40v1"));
-  const TriggerObjectMatch *eleTriggerMatch20(triggerEvent->triggerObjectMatchResult("electronTriggerMatchHLTEle27WP70PFMT40PFMHT20v1"));
-  const TriggerObjectMatch *eleTriggerMatch21(triggerEvent->triggerObjectMatchResult("electronTriggerMatchHLTEle17CaloIdLCaloIsoVLEle8CaloIdLCaloIsoVLv1"));
-  const TriggerObjectMatch *eleTriggerMatch22(triggerEvent->triggerObjectMatchResult("electronTriggerMatchHLTEle17CaloIdLCaloIsoVLEle8CaloIdLCaloIsoVLv2"));
-  const TriggerObjectMatch *eleTriggerMatch23(triggerEvent->triggerObjectMatchResult("electronTriggerMatchHLTEle17CaloIdLCaloIsoVLEle8CaloIdLCaloIsoVLv3"));
-  const TriggerObjectMatch *eleTriggerMatch24(triggerEvent->triggerObjectMatchResult("electronTriggerMatchHLTEle17CaloIdLCaloIsoVLEle8CaloIdLCaloIsoVLv4"));
-  const TriggerObjectMatch *eleTriggerMatch25(triggerEvent->triggerObjectMatchResult("electronTriggerMatchHLTEle17CaloIdLCaloIsoVLEle8CaloIdLCaloIsoVLv5"));
-  const TriggerObjectMatch *eleTriggerMatch26(triggerEvent->triggerObjectMatchResult("electronTriggerMatchHLTEle32CaloIdVTCaloIsoTTrkIdTTrkIsoT"));
-  const TriggerObjectMatch *eleTriggerMatch27(triggerEvent->triggerObjectMatchResult("electronTriggerMatchHLTEle27WP80PFMT50"));
-  const TriggerObjectMatch *eleTriggerMatch28(triggerEvent->triggerObjectMatchResult("electronTriggerMatchHLTEle32WP70PFMT50"));
-  const TriggerObjectMatch *eleTriggerMatch29(triggerEvent->triggerObjectMatchResult("electronTriggerMatchHLTEle17CaloIdLCaloIsoVLEle8CaloIdLCaloIsoVL"));
-  const TriggerObjectMatch *eleTriggerMatch30(triggerEvent->triggerObjectMatchResult("electronTriggerMatchHLTEle8CaloIdLCaloIsoVL"));
-  const TriggerObjectMatch *eleTriggerMatch31(triggerEvent->triggerObjectMatchResult("electronTriggerMatchHLTEle17CaloIdLCaloIsoVL"));
-  const TriggerObjectMatch *eleTriggerMatch32(triggerEvent->triggerObjectMatchResult("electronTriggerMatchHLTEle17CaloIdTCaloIsoVLTrkIdVLTrkIsoVLEle8CaloIdTCaloIsoVLTrkIdVLTrkIsoVL"));
-  const TriggerObjectMatch *eleTriggerMatch33(triggerEvent->triggerObjectMatchResult("electronTriggerMatchHLTEle8CaloIdTCaloIsoVLTrkIdVLTrkIsoVL"));
+  const TriggerObjectMatch *eleTriggerMatch11(triggerEvent->triggerObjectMatchResult("electronTriggerMatchHLTEle27CaloIdVTCaloIsoTTrkIdTTrkIsoT"));
+  const TriggerObjectMatch *eleTriggerMatch12(triggerEvent->triggerObjectMatchResult("electronTriggerMatchHLTEle32CaloIdVTCaloIsoTTrkIdTTrkIsoT"));
+  const TriggerObjectMatch *eleTriggerMatch13(triggerEvent->triggerObjectMatchResult("electronTriggerMatchHLTEle27WP80PFMT50"));
+  const TriggerObjectMatch *eleTriggerMatch14(triggerEvent->triggerObjectMatchResult("electronTriggerMatchHLTEle32WP70PFMT50"));
+  const TriggerObjectMatch *eleTriggerMatch15(triggerEvent->triggerObjectMatchResult("electronTriggerMatchHLTEle8CaloIdLCaloIsoVL"));
+  const TriggerObjectMatch *eleTriggerMatch16(triggerEvent->triggerObjectMatchResult("electronTriggerMatchHLTEle17CaloIdLCaloIsoVL"));
+  const TriggerObjectMatch *eleTriggerMatch17(triggerEvent->triggerObjectMatchResult("electronTriggerMatchHLTEle8CaloIdTCaloIsoVLTrkIdVLTrkIsoVL"));
+  const TriggerObjectMatch *eleTriggerMatch18(triggerEvent->triggerObjectMatchResult("electronTriggerMatchHLTEle17CaloIdLCaloIsoVLEle8CaloIdLCaloIsoVL"));
+  const TriggerObjectMatch *eleTriggerMatch19(triggerEvent->triggerObjectMatchResult("electronTriggerMatchHLTEle17CaloIdVTCaloIsoVTTrkIdTTrkIsoVTEle8Mass30"));
+  const TriggerObjectMatch *eleTriggerMatch20(triggerEvent->triggerObjectMatchResult("electronTriggerMatchHLTEle17CaloIdVTCaloIsoVTTrkIdTTrkIsoVTSC8Mass30"));
+  const TriggerObjectMatch *eleTriggerMatch21(triggerEvent->triggerObjectMatchResult("electronTriggerMatchHLTEle17CaloIdTCaloIsoVLTrkIdVLTrkIsoVLEle8CaloIdTCaloIsoVLTrkIdVLTrkIsoVL"));
+  const TriggerObjectMatch *eleTriggerMatch22(triggerEvent->triggerObjectMatchResult("electronTriggerMatchHLTEle32CaloIdTCaloIsoTTrkIdTTrkIsoTEle17"));
+  const TriggerObjectMatch *eleTriggerMatch23(triggerEvent->triggerObjectMatchResult("electronTriggerMatchHLTEle32CaloIdTCaloIsoTTrkIdTTrkIsoTSC17"));
+  const TriggerObjectMatch *eleTriggerMatch24(triggerEvent->triggerObjectMatchResult("electronTriggerMatchHLTEle32WP70"));
+  const TriggerObjectMatch *eleTriggerMatch25(triggerEvent->triggerObjectMatchResult("electronTriggerMatchHLTEle17CaloIdVTCaloIsoVTTrkIdTTrkIsoVT"));
+  const TriggerObjectMatch *eleTriggerMatch26(triggerEvent->triggerObjectMatchResult("electronTriggerMatchHLTEle8Mass30"));
+  const TriggerObjectMatch *eleTriggerMatch27(triggerEvent->triggerObjectMatchResult("electronTriggerMatchHLTSC8Mass30"));
+  const TriggerObjectMatch *eleTriggerMatch28(triggerEvent->triggerObjectMatchResult("electronTriggerMatchHLTEle32CaloIdTCaloIsoTTrkIdTTrkIsoT"));
+  const TriggerObjectMatch *eleTriggerMatch29(triggerEvent->triggerObjectMatchResult("electronTriggerMatchHLTSC17"));
+  const TriggerObjectMatch *eleTriggerMatch30(triggerEvent->triggerObjectMatchResult("electronTriggerMatchHLTEle17"));
 
   int nElePassCut = 0;
   nEle_ = 0;
@@ -1097,9 +1046,6 @@ fabs(ip->pdgId())<=14) || ip->pdgId()==22))) {
       const TriggerObjectRef eleTrigRef28( matchHelper.triggerMatchObject( eleBaseRef, eleTriggerMatch28, e, *triggerEvent ) );
       const TriggerObjectRef eleTrigRef29( matchHelper.triggerMatchObject( eleBaseRef, eleTriggerMatch29, e, *triggerEvent ) );
       const TriggerObjectRef eleTrigRef30( matchHelper.triggerMatchObject( eleBaseRef, eleTriggerMatch30, e, *triggerEvent ) );
-      const TriggerObjectRef eleTrigRef31( matchHelper.triggerMatchObject( eleBaseRef, eleTriggerMatch31, e, *triggerEvent ) );
-      const TriggerObjectRef eleTrigRef32( matchHelper.triggerMatchObject( eleBaseRef, eleTriggerMatch32, e, *triggerEvent ) );
-      const TriggerObjectRef eleTrigRef33( matchHelper.triggerMatchObject( eleBaseRef, eleTriggerMatch33, e, *triggerEvent ) );
       eleTrg_[nEle_][0]  = (eleTrigRef1.isAvailable())  ? 1 : -99;
       eleTrg_[nEle_][1]  = (eleTrigRef2.isAvailable())  ? 1 : -99;
       eleTrg_[nEle_][2]  = (eleTrigRef3.isAvailable())  ? 1 : -99;
@@ -1130,9 +1076,6 @@ fabs(ip->pdgId())<=14) || ip->pdgId()==22))) {
       eleTrg_[nEle_][27]  = (eleTrigRef28.isAvailable()) ? 1 : -99;
       eleTrg_[nEle_][28]  = (eleTrigRef29.isAvailable()) ? 1 : -99;
       eleTrg_[nEle_][29]  = (eleTrigRef30.isAvailable()) ? 1 : -99;
-      eleTrg_[nEle_][30]  = (eleTrigRef31.isAvailable()) ? 1 : -99;
-      eleTrg_[nEle_][31]  = (eleTrigRef32.isAvailable()) ? 1 : -99;
-      eleTrg_[nEle_][32]  = (eleTrigRef33.isAvailable()) ? 1 : -99;
 
       //        new eID with correct isolations and conversion rejection
       //	https://twiki.cern.ch/twiki/bin/viewauth/CMS/SimpleCutBasedEleID
@@ -1159,7 +1102,8 @@ fabs(ip->pdgId())<=14) || ip->pdgId()==22))) {
       //        Iso only -> ((eleID_[nEle_][] & 2) == 2)
       //        eID+ConversionRejection+IP -> ((eleID_[nEle_][] & 13) == 13)
 
-      for (int i=0; i<30; ++i) eleID_[nEle_][i] = -1;
+      for (int i=0; i<30; ++i) 
+	eleID_[nEle_][i] = -1;
 
       eleID_[nEle_][0] = int (iEle->electronID("simpleEleId60cIso"));
       eleID_[nEle_][1] = int (iEle->electronID("simpleEleId70cIso"));
@@ -1297,6 +1241,7 @@ fabs(ip->pdgId())<=14) || ip->pdgId()==22))) {
       eleE3x3_[nEle_] = lazyTool.e3x3(*eleSeed);
 
       eleSeedTime_[nEle_] = -999.;
+      eleSeedEnergy_[nEle_] = -999.;
       eleRecoFlag_[nEle_] = -999.;
       eleSeverity_[nEle_] = -999.;
 
@@ -1306,21 +1251,17 @@ fabs(ip->pdgId())<=14) || ip->pdgId()==22))) {
         EcalRecHitCollection::const_iterator eleebrhit = EBReducedRecHits->find(eleSeedDetId);
         if ( eleebrhit != EBReducedRecHits->end() ) { 
 	   eleSeedTime_[nEle_] = eleebrhit->time(); 
+	   eleSeedEnergy_[nEle_] = eleebrhit->energy(); 
            eleRecoFlag_[nEle_] = eleebrhit->recoFlag();
-	   //eleSeverity_[nEle_] = EcalSeverityLevelAlgo::severityLevel( eleSeedDetId, (*EBReducedRecHits), *chStatus );
-	   //eleE2overE9_[nEle_] = EcalSeverityLevelAlgo::E2overE9( eleSeedDetId, (*EBReducedRecHits));
            eleSeverity_[nEle_] = severityStatus->severityLevel( eleSeedDetId, (*EBReducedRecHits) );
-	   //eleE2overE9_[nEle_] = EcalSeverityLevelAlgo::E2overE9( eleSeedDetId, (*EBReducedRecHits));
 	}
       } else if ( EEReducedRecHits.isValid() ) {
         EcalRecHitCollection::const_iterator eleeerhit = EEReducedRecHits->find(eleSeedDetId);
         if ( eleeerhit != EEReducedRecHits->end() ) { 
 	   eleSeedTime_[nEle_] = eleeerhit->time(); 
+	   eleSeedEnergy_[nEle_] = eleeerhit->energy(); 
            eleRecoFlag_[nEle_] = eleeerhit->recoFlag();
-	   //eleSeverity_[nEle_] = EcalSeverityLevelAlgo::severityLevel( eleSeedDetId, (*EEReducedRecHits), *chStatus );
-	   //eleE2overE9_[nEle_] = EcalSeverityLevelAlgo::E2overE9( eleSeedDetId, (*EEReducedRecHits));
            eleSeverity_[nEle_] = severityStatus->severityLevel( eleSeedDetId, (*EEReducedRecHits) );
-	   //eleE2overE9_[nEle_] = EcalSeverityLevelAlgo::E2overE9( eleSeedDetId, (*EEReducedRecHits));
 	}
       }
 
@@ -1341,16 +1282,6 @@ fabs(ip->pdgId())<=14) || ip->pdgId()==22))) {
     }
 
   // Photon
-  // take the pi0 rejection info from RECO
-/*
-  Handle<reco::PhotonPi0DiscriminatorAssociationMap>  map;
-  e.getByLabel("piZeroDiscriminators","PhotonPi0DiscriminatorAssociationMap",  map);
-  reco::PhotonPi0DiscriminatorAssociationMap::const_iterator mapIter;
-
-  edm::Handle<reco::PhotonCollection> R_PhotonHandle;
-  e.getByLabel("photons", "", R_PhotonHandle);
-  const reco::PhotonCollection R_photons = *(R_PhotonHandle.product());   
-*/
 
   const Candidate *phomom = 0;
   int nPhoPassCut = 0;
@@ -1364,6 +1295,41 @@ fabs(ip->pdgId())<=14) || ip->pdgId()==22))) {
   const TriggerObjectMatch *phoTriggerMatch6(triggerEvent->triggerObjectMatchResult("photonTriggerMatchHLTPhoton70CleanedL1Rv1"));
   const TriggerObjectMatch *phoTriggerMatch7(triggerEvent->triggerObjectMatchResult("photonTriggerMatchHLTDoublePhoton17L1R"));
   const TriggerObjectMatch *phoTriggerMatch8(triggerEvent->triggerObjectMatchResult("photonTriggerMatchHLTPhoton10L1R"));
+  const TriggerObjectMatch *phoTriggerMatch9(triggerEvent->triggerObjectMatchResult("photonTriggerMatchHLTPhoton20CaloIdVLIsoL"));
+  const TriggerObjectMatch *phoTriggerMatch10(triggerEvent->triggerObjectMatchResult("photonTriggerMatchHLTPhoton20R9IdPhoton18R9Id"));
+  const TriggerObjectMatch *phoTriggerMatch11(triggerEvent->triggerObjectMatchResult("photonTriggerMatchHLTPhoton26Photon18"));
+  const TriggerObjectMatch *phoTriggerMatch12(triggerEvent->triggerObjectMatchResult("photonTriggerMatchHLTPhoton26IsoVLPhoton18"));
+  const TriggerObjectMatch *phoTriggerMatch13(triggerEvent->triggerObjectMatchResult("photonTriggerMatchHLTPhoton26IsoVLPhoton18IsoVL"));
+  const TriggerObjectMatch *phoTriggerMatch14(triggerEvent->triggerObjectMatchResult("photonTriggerMatchHLTPhoton26CaloIdLIsoVLPhoton18"));
+  const TriggerObjectMatch *phoTriggerMatch15(triggerEvent->triggerObjectMatchResult("photonTriggerMatchHLTPhoton26CaloIdLIsoVLPhoton18CaloIdLIsoVL"));
+  const TriggerObjectMatch *phoTriggerMatch16(triggerEvent->triggerObjectMatchResult("photonTriggerMatchHLTPhoton26CaloIdLIsoVLPhoton18R9Id"));
+  const TriggerObjectMatch *phoTriggerMatch17(triggerEvent->triggerObjectMatchResult("photonTriggerMatchHLTPhoton26R9IdPhoton18CaloIdLIsoVL"));
+  const TriggerObjectMatch *phoTriggerMatch18(triggerEvent->triggerObjectMatchResult("photonTriggerMatchHLTPhoton26R9IdPhoton18R9Id"));
+  const TriggerObjectMatch *phoTriggerMatch19(triggerEvent->triggerObjectMatchResult("photonTriggerMatchHLTPhoton26R9IdPhoton18CaloIdXLIsoXL"));
+  const TriggerObjectMatch *phoTriggerMatch20(triggerEvent->triggerObjectMatchResult("photonTriggerMatchHLTPhoton26CaloIdXLIsoXLPhoton18"));
+  const TriggerObjectMatch *phoTriggerMatch21(triggerEvent->triggerObjectMatchResult("photonTriggerMatchHLTPhoton26CaloIdXLIsoXLPhoton18R9Id"));
+  const TriggerObjectMatch *phoTriggerMatch22(triggerEvent->triggerObjectMatchResult("photonTriggerMatchHLTPhoton26CaloIdXLIsoXLPhoton18CaloIdXLIsoXL"));
+  const TriggerObjectMatch *phoTriggerMatch23(triggerEvent->triggerObjectMatchResult("photonTriggerMatchHLTPhoton30CaloIdVL"));
+  const TriggerObjectMatch *phoTriggerMatch24(triggerEvent->triggerObjectMatchResult("photonTriggerMatchHLTPhoton30CaloIdVLIsoL"));
+  const TriggerObjectMatch *phoTriggerMatch25(triggerEvent->triggerObjectMatchResult("photonTriggerMatchHLTPhoton32CaloIdLPhoton26CaloIdL"));
+  const TriggerObjectMatch *phoTriggerMatch26(triggerEvent->triggerObjectMatchResult("photonTriggerMatchHLTPhoton36CaloIdLPhoton22CaloIdL"));
+  const TriggerObjectMatch *phoTriggerMatch27(triggerEvent->triggerObjectMatchResult("photonTriggerMatchHLTPhoton36CaloIdLIsoVLPhoton22"));
+  const TriggerObjectMatch *phoTriggerMatch28(triggerEvent->triggerObjectMatchResult("photonTriggerMatchHLTPhoton36Photon22"));
+  const TriggerObjectMatch *phoTriggerMatch29(triggerEvent->triggerObjectMatchResult("photonTriggerMatchHLTPhoton36IsoVLPhoton22"));
+  const TriggerObjectMatch *phoTriggerMatch30(triggerEvent->triggerObjectMatchResult("photonTriggerMatchHLTPhoton36CaloIdIsoVLPhoton22R9Id"));
+  const TriggerObjectMatch *phoTriggerMatch31(triggerEvent->triggerObjectMatchResult("photonTriggerMatchHLTPhoton36R9IdPhoton22CaloIdLIsoVL"));
+  const TriggerObjectMatch *phoTriggerMatch32(triggerEvent->triggerObjectMatchResult("photonTriggerMatchHLTPhoton36R9IdPhoton22R9Id"));
+  const TriggerObjectMatch *phoTriggerMatch33(triggerEvent->triggerObjectMatchResult("photonTriggerMatchHLTPhoton36CaloIdLIsoVLPhoton22R9Id"));
+  const TriggerObjectMatch *phoTriggerMatch34(triggerEvent->triggerObjectMatchResult("photonTriggerMatchHLTPhoton36CaloIdVLPhoton22CaloIdVL"));
+  const TriggerObjectMatch *phoTriggerMatch35(triggerEvent->triggerObjectMatchResult("photonTriggerMatchHLTPhoton40CaloIdLPhoton28CaloIdL"));
+  const TriggerObjectMatch *phoTriggerMatch36(triggerEvent->triggerObjectMatchResult("photonTriggerMatchHLTPhoton44CaloIdLPhoton34CaloIdL"));
+  const TriggerObjectMatch *phoTriggerMatch37(triggerEvent->triggerObjectMatchResult("photonTriggerMatchHLTPhoton48CaloIdLPhoton38CaloIdL"));
+  const TriggerObjectMatch *phoTriggerMatch38(triggerEvent->triggerObjectMatchResult("photonTriggerMatchHLTPhoton50CaloIdVL"));
+  const TriggerObjectMatch *phoTriggerMatch39(triggerEvent->triggerObjectMatchResult("photonTriggerMatchHLTPhoton50CaloIdVLIsoL"));
+  const TriggerObjectMatch *phoTriggerMatch40(triggerEvent->triggerObjectMatchResult("photonTriggerMatchHLTPhoton75CaloIdVL"));
+  const TriggerObjectMatch *phoTriggerMatch41(triggerEvent->triggerObjectMatchResult("photonTriggerMatchHLTPhoton75CaloIdVLIsoL"));
+  const TriggerObjectMatch *phoTriggerMatch42(triggerEvent->triggerObjectMatchResult("photonTriggerMatchHLTPhoton90CaloIdVL"));
+  const TriggerObjectMatch *phoTriggerMatch43(triggerEvent->triggerObjectMatchResult("photonTriggerMatchHLTPhoton90CaloIdVLIsoL"));
 
   if ( photonHandle_.isValid() )
     for (View<pat::Photon>::const_iterator iPho = photonHandle_->begin(); iPho != photonHandle_->end(); ++iPho) {
@@ -1380,6 +1346,41 @@ fabs(ip->pdgId())<=14) || ip->pdgId()==22))) {
       const TriggerObjectRef phoTrigRef6( matchHelper.triggerMatchObject( phoBaseRef, phoTriggerMatch6, e, *triggerEvent ) );
       const TriggerObjectRef phoTrigRef7( matchHelper.triggerMatchObject( phoBaseRef, phoTriggerMatch7, e, *triggerEvent ) );
       const TriggerObjectRef phoTrigRef8( matchHelper.triggerMatchObject( phoBaseRef, phoTriggerMatch8, e, *triggerEvent ) );
+      const TriggerObjectRef phoTrigRef9( matchHelper.triggerMatchObject( phoBaseRef, phoTriggerMatch9, e, *triggerEvent ) );
+      const TriggerObjectRef phoTrigRef10( matchHelper.triggerMatchObject( phoBaseRef, phoTriggerMatch10, e, *triggerEvent ) );
+      const TriggerObjectRef phoTrigRef11( matchHelper.triggerMatchObject( phoBaseRef, phoTriggerMatch11, e, *triggerEvent ) );
+      const TriggerObjectRef phoTrigRef12( matchHelper.triggerMatchObject( phoBaseRef, phoTriggerMatch12, e, *triggerEvent ) );
+      const TriggerObjectRef phoTrigRef13( matchHelper.triggerMatchObject( phoBaseRef, phoTriggerMatch13, e, *triggerEvent ) );
+      const TriggerObjectRef phoTrigRef14( matchHelper.triggerMatchObject( phoBaseRef, phoTriggerMatch14, e, *triggerEvent ) );
+      const TriggerObjectRef phoTrigRef15( matchHelper.triggerMatchObject( phoBaseRef, phoTriggerMatch15, e, *triggerEvent ) );
+      const TriggerObjectRef phoTrigRef16( matchHelper.triggerMatchObject( phoBaseRef, phoTriggerMatch16, e, *triggerEvent ) );
+      const TriggerObjectRef phoTrigRef17( matchHelper.triggerMatchObject( phoBaseRef, phoTriggerMatch17, e, *triggerEvent ) );
+      const TriggerObjectRef phoTrigRef18( matchHelper.triggerMatchObject( phoBaseRef, phoTriggerMatch18, e, *triggerEvent ) );
+      const TriggerObjectRef phoTrigRef19( matchHelper.triggerMatchObject( phoBaseRef, phoTriggerMatch19, e, *triggerEvent ) );
+      const TriggerObjectRef phoTrigRef20( matchHelper.triggerMatchObject( phoBaseRef, phoTriggerMatch20, e, *triggerEvent ) );
+      const TriggerObjectRef phoTrigRef21( matchHelper.triggerMatchObject( phoBaseRef, phoTriggerMatch21, e, *triggerEvent ) );
+      const TriggerObjectRef phoTrigRef22( matchHelper.triggerMatchObject( phoBaseRef, phoTriggerMatch22, e, *triggerEvent ) );
+      const TriggerObjectRef phoTrigRef23( matchHelper.triggerMatchObject( phoBaseRef, phoTriggerMatch23, e, *triggerEvent ) );
+      const TriggerObjectRef phoTrigRef24( matchHelper.triggerMatchObject( phoBaseRef, phoTriggerMatch24, e, *triggerEvent ) );
+      const TriggerObjectRef phoTrigRef25( matchHelper.triggerMatchObject( phoBaseRef, phoTriggerMatch25, e, *triggerEvent ) );
+      const TriggerObjectRef phoTrigRef26( matchHelper.triggerMatchObject( phoBaseRef, phoTriggerMatch26, e, *triggerEvent ) );
+      const TriggerObjectRef phoTrigRef27( matchHelper.triggerMatchObject( phoBaseRef, phoTriggerMatch27, e, *triggerEvent ) );
+      const TriggerObjectRef phoTrigRef28( matchHelper.triggerMatchObject( phoBaseRef, phoTriggerMatch28, e, *triggerEvent ) );
+      const TriggerObjectRef phoTrigRef29( matchHelper.triggerMatchObject( phoBaseRef, phoTriggerMatch29, e, *triggerEvent ) );
+      const TriggerObjectRef phoTrigRef30( matchHelper.triggerMatchObject( phoBaseRef, phoTriggerMatch30, e, *triggerEvent ) );
+      const TriggerObjectRef phoTrigRef31( matchHelper.triggerMatchObject( phoBaseRef, phoTriggerMatch31, e, *triggerEvent ) );
+      const TriggerObjectRef phoTrigRef32( matchHelper.triggerMatchObject( phoBaseRef, phoTriggerMatch32, e, *triggerEvent ) );
+      const TriggerObjectRef phoTrigRef33( matchHelper.triggerMatchObject( phoBaseRef, phoTriggerMatch33, e, *triggerEvent ) );
+      const TriggerObjectRef phoTrigRef34( matchHelper.triggerMatchObject( phoBaseRef, phoTriggerMatch34, e, *triggerEvent ) );
+      const TriggerObjectRef phoTrigRef35( matchHelper.triggerMatchObject( phoBaseRef, phoTriggerMatch35, e, *triggerEvent ) );
+      const TriggerObjectRef phoTrigRef36( matchHelper.triggerMatchObject( phoBaseRef, phoTriggerMatch36, e, *triggerEvent ) );
+      const TriggerObjectRef phoTrigRef37( matchHelper.triggerMatchObject( phoBaseRef, phoTriggerMatch37, e, *triggerEvent ) );
+      const TriggerObjectRef phoTrigRef38( matchHelper.triggerMatchObject( phoBaseRef, phoTriggerMatch38, e, *triggerEvent ) );
+      const TriggerObjectRef phoTrigRef39( matchHelper.triggerMatchObject( phoBaseRef, phoTriggerMatch39, e, *triggerEvent ) );
+      const TriggerObjectRef phoTrigRef40( matchHelper.triggerMatchObject( phoBaseRef, phoTriggerMatch40, e, *triggerEvent ) );
+      const TriggerObjectRef phoTrigRef41( matchHelper.triggerMatchObject( phoBaseRef, phoTriggerMatch41, e, *triggerEvent ) );
+      const TriggerObjectRef phoTrigRef42( matchHelper.triggerMatchObject( phoBaseRef, phoTriggerMatch42, e, *triggerEvent ) );
+      const TriggerObjectRef phoTrigRef43( matchHelper.triggerMatchObject( phoBaseRef, phoTriggerMatch43, e, *triggerEvent ) );
       phoTrg_[nPho_][0] = (phoTrigRef1.isAvailable()) ? 1 : -99;
       phoTrg_[nPho_][1] = (phoTrigRef2.isAvailable()) ? 1 : -99;
       phoTrg_[nPho_][2] = (phoTrigRef3.isAvailable()) ? 1 : -99;
@@ -1388,6 +1389,41 @@ fabs(ip->pdgId())<=14) || ip->pdgId()==22))) {
       phoTrg_[nPho_][5] = (phoTrigRef6.isAvailable()) ? 1 : -99;
       phoTrg_[nPho_][6] = (phoTrigRef7.isAvailable()) ? 1 : -99;
       phoTrg_[nPho_][7] = (phoTrigRef8.isAvailable()) ? 1 : -99;
+      phoTrg_[nPho_][8] = (phoTrigRef9.isAvailable()) ? 1 : -99;
+      phoTrg_[nPho_][9] = (phoTrigRef10.isAvailable()) ? 1 : -99;
+      phoTrg_[nPho_][10] = (phoTrigRef11.isAvailable()) ? 1 : -99;
+      phoTrg_[nPho_][11] = (phoTrigRef12.isAvailable()) ? 1 : -99;
+      phoTrg_[nPho_][12] = (phoTrigRef13.isAvailable()) ? 1 : -99;
+      phoTrg_[nPho_][13] = (phoTrigRef14.isAvailable()) ? 1 : -99;
+      phoTrg_[nPho_][14] = (phoTrigRef15.isAvailable()) ? 1 : -99;
+      phoTrg_[nPho_][15] = (phoTrigRef16.isAvailable()) ? 1 : -99;
+      phoTrg_[nPho_][16] = (phoTrigRef17.isAvailable()) ? 1 : -99;
+      phoTrg_[nPho_][17] = (phoTrigRef18.isAvailable()) ? 1 : -99;
+      phoTrg_[nPho_][18] = (phoTrigRef19.isAvailable()) ? 1 : -99;
+      phoTrg_[nPho_][19] = (phoTrigRef20.isAvailable()) ? 1 : -99;
+      phoTrg_[nPho_][20] = (phoTrigRef21.isAvailable()) ? 1 : -99;
+      phoTrg_[nPho_][21] = (phoTrigRef22.isAvailable()) ? 1 : -99;
+      phoTrg_[nPho_][22] = (phoTrigRef23.isAvailable()) ? 1 : -99;
+      phoTrg_[nPho_][23] = (phoTrigRef24.isAvailable()) ? 1 : -99;
+      phoTrg_[nPho_][24] = (phoTrigRef25.isAvailable()) ? 1 : -99;
+      phoTrg_[nPho_][25] = (phoTrigRef26.isAvailable()) ? 1 : -99;
+      phoTrg_[nPho_][26] = (phoTrigRef27.isAvailable()) ? 1 : -99;
+      phoTrg_[nPho_][27] = (phoTrigRef28.isAvailable()) ? 1 : -99;
+      phoTrg_[nPho_][28] = (phoTrigRef29.isAvailable()) ? 1 : -99;
+      phoTrg_[nPho_][29] = (phoTrigRef30.isAvailable()) ? 1 : -99;
+      phoTrg_[nPho_][30] = (phoTrigRef31.isAvailable()) ? 1 : -99;
+      phoTrg_[nPho_][31] = (phoTrigRef32.isAvailable()) ? 1 : -99;
+      phoTrg_[nPho_][32] = (phoTrigRef33.isAvailable()) ? 1 : -99;
+      phoTrg_[nPho_][33] = (phoTrigRef34.isAvailable()) ? 1 : -99;
+      phoTrg_[nPho_][34] = (phoTrigRef35.isAvailable()) ? 1 : -99;
+      phoTrg_[nPho_][35] = (phoTrigRef36.isAvailable()) ? 1 : -99;
+      phoTrg_[nPho_][36] = (phoTrigRef37.isAvailable()) ? 1 : -99;
+      phoTrg_[nPho_][37] = (phoTrigRef38.isAvailable()) ? 1 : -99;
+      phoTrg_[nPho_][38] = (phoTrigRef39.isAvailable()) ? 1 : -99;
+      phoTrg_[nPho_][39] = (phoTrigRef40.isAvailable()) ? 1 : -99;
+      phoTrg_[nPho_][40] = (phoTrigRef41.isAvailable()) ? 1 : -99;
+      phoTrg_[nPho_][41] = (phoTrigRef42.isAvailable()) ? 1 : -99;
+      phoTrg_[nPho_][42] = (phoTrigRef43.isAvailable()) ? 1 : -99;
 
       phoIsPhoton_[nPho_] = iPho->isPhoton();
       phoE_[nPho_]   = iPho->energy();
@@ -1414,6 +1450,38 @@ fabs(ip->pdgId())<=14) || ip->pdgId()==22))) {
       phoHcalIsoDR04_[nPho_]      = iPho->hcalTowerSumEtConeDR04();
       phoHcalIsoSolidDR04_[nPho_] = myHcalIsoDR04.getTowerEtSum(phoSC);
 
+      for (int i=0; i<100; i++) {
+        phoEVtx_[nPho_][i]   = -999.;
+        phoEtVtx_[nPho_][i]  = -999.;
+        phoPzVtx_[nPho_][i]  = -999.;
+        phoEtaVtx_[nPho_][i] = -999.;
+        phoPhiVtx_[nPho_][i] = -999.;
+        phoTrkIsoSolidDR03Vtx_[nPho_][i]  = -999.;
+        phoTrkIsoHollowDR03Vtx_[nPho_][i] = -999.;
+        phoTrkIsoSolidDR04Vtx_[nPho_][i]  = -999.;
+        phoTrkIsoHollowDR04Vtx_[nPho_][i] = -999.;
+      }
+
+      for (size_t i=0; i<recVtxs->size(); ++i) {
+        if (!((*recVtxs)[i].isFake())) {
+
+          math::XYZPoint VTX = math::XYZPoint((*recVtxs)[i].x(), (*recVtxs)[i].y(), (*recVtxs)[i].z());
+          math::XYZVector direction = (*iPho).superCluster()->position() - VTX;
+          math::XYZVector momentum = direction.unit() * (*iPho).superCluster()->energy();
+	  const reco::Particle::LorentzVector newPho(momentum.x(), momentum.y(), momentum.z(), (*iPho).superCluster()->energy());
+
+	  phoEVtx_[nPho_][i]   = newPho.E();
+	  phoEtVtx_[nPho_][i]  = newPho.Pt();
+	  phoPzVtx_[nPho_][i]  = newPho.Pz();
+	  phoEtaVtx_[nPho_][i] = newPho.Eta();
+	  phoPhiVtx_[nPho_][i] = newPho.Phi();
+          phoTrkIsoSolidDR03Vtx_[nPho_][i]  = getTrkIso(Tracks, VTX, newPho.Eta(), newPho.Phi(), VTX.z(), 0.3, 0., 0.015, 0.2, 0.1, 0, 0);
+          phoTrkIsoHollowDR03Vtx_[nPho_][i] = getTrkIso(Tracks, VTX, newPho.Eta(), newPho.Phi(), VTX.z(), 0.3, 0.04, 0.015, 0.2, 0.1, 0, 0);
+          phoTrkIsoSolidDR04Vtx_[nPho_][i]  = getTrkIso(Tracks, VTX, newPho.Eta(), newPho.Phi(), VTX.z(), 0.4, 0., 0.015, 0.2, 0.1, 0, 0);
+          phoTrkIsoHollowDR04Vtx_[nPho_][i] = getTrkIso(Tracks, VTX, newPho.Eta(), newPho.Phi(), VTX.z(), 0.4, 0.04, 0.015, 0.2, 0.1, 0, 0);
+        }
+      }
+
       phoHoverE_[nPho_]        = iPho->hadronicOverEm();
       phoSigmaEtaEta_[nPho_]   = iPho->sigmaEtaEta();
       phoR9_[nPho_]            = iPho->r9();
@@ -1430,6 +1498,7 @@ fabs(ip->pdgId())<=14) || ip->pdgId()==22))) {
       if (iPho->isEBEEGap() == true) phoPos_[nPho_] = 4;
 
       phoSeedTime_[nPho_] = -999.;
+      phoSeedEnergy_[nPho_] = -999.;
       phoRecoFlag_[nPho_] = -999.;
       phoSeverity_[nPho_] = -999.;
       const reco::CaloClusterPtr phoSeed = (*iPho).superCluster()->seed();
@@ -1445,35 +1514,22 @@ fabs(ip->pdgId())<=14) || ip->pdgId()==22))) {
         EcalRecHitCollection::const_iterator ebrhit = EBReducedRecHits->find(phoSeedDetId);
         if ( ebrhit != EBReducedRecHits->end() ) { 
 	   phoSeedTime_[nPho_] = ebrhit->time();
+	   phoSeedEnergy_[nPho_] = ebrhit->energy();
            phoRecoFlag_[nPho_] = ebrhit->recoFlag();
-	   //phoSeverity_[nPho_] = EcalSeverityLevelAlgo::severityLevel( phoSeedDetId, (*EBReducedRecHits), *chStatus );
-	   //phoE2overE9_[nPho_] = EcalSeverityLevelAlgo::E2overE9( phoSeedDetId, (*EBReducedRecHits));
            phoSeverity_[nPho_] = severityStatus->severityLevel( phoSeedDetId, (*EBReducedRecHits));
-	   //phoE2overE9_[nPho_] = EcalSeverityLevelAlgo::E2overE9( phoSeedDetId, (*EBReducedRecHits));
         }
       } else if ( EEReducedRecHits.isValid() ) {
         EcalRecHitCollection::const_iterator eerhit = EEReducedRecHits->find(phoSeedDetId);
         if ( eerhit != EEReducedRecHits->end() ) { 
 	   phoSeedTime_[nPho_] = eerhit->time(); 
+	   phoSeedEnergy_[nPho_] = eerhit->energy();
            phoRecoFlag_[nPho_] = eerhit->recoFlag();
-	   //phoSeverity_[nPho_] = EcalSeverityLevelAlgo::severityLevel( phoSeedDetId, (*EEReducedRecHits), *chStatus );
-	   //phoE2overE9_[nPho_] = EcalSeverityLevelAlgo::E2overE9( phoSeedDetId, (*EEReducedRecHits));
            phoSeverity_[nPho_] = severityStatus->severityLevel( phoSeedDetId, (*EEReducedRecHits) );
-	   //phoE2overE9_[nPho_] = EcalSeverityLevelAlgo::E2overE9( phoSeedDetId, (*EEReducedRecHits));
 	}
       }
 
       phoE3x3_[nPho_] = lazyTool.e3x3(*phoSeed);
 
-      if (iPho->isEB()==true && EBRecHits.isValid()) {
-	std::vector<float> RoundAndAngle = EcalClusterTools::roundnessBarrelSuperClusters(*(iPho->superCluster()),*EBRecHits,0);
-	phoRoundness_[nPho_] = RoundAndAngle[0];
-	phoAngle_[nPho_] = RoundAndAngle[1];
-      } else {
-	phoRoundness_[nPho_] = -999;
-	phoAngle_[nPho_] = -999;
-      }
-      
       // Gen Particle
       // cout << "VgAnalyzerKit: produce: photon " << nPho_ << " gen match ..." << endl;
       phoGenIndex_[nPho_]  = -999;
@@ -1512,26 +1568,91 @@ fabs(ip->pdgId())<=14) || ip->pdgId()==22))) {
       phoSCEtaWidth_[nPho_] = (*iPho).superCluster()->etaWidth();
       phoSCPhiWidth_[nPho_] = (*iPho).superCluster()->phiWidth();
 
+      phoVtx_[nPho_][0] = iPho->vertex().x();
+      phoVtx_[nPho_][1] = iPho->vertex().y();
+      phoVtx_[nPho_][2] = iPho->vertex().z();
+      phoVtxD0_[nPho_]  = iPho->vertex().rho();
+
       phoIsConv_[nPho_] = iPho->hasConversionTracks();
 
-      phoPi0Disc_[nPho_] = -1;
+      phoNTracks_[nPho_] = -1;
+      if (iPho->conversions().size() > 0) {
+         phoNTracks_[nPho_] = iPho->conversions()[0]->nTracks();
 
-/*
-      int R_nphot = 0;
-      float nn = -1;
-      for( reco::PhotonCollection::const_iterator  R_phot_iter = R_photons.begin(); R_phot_iter != R_photons.end(); R_phot_iter++) { 
-        mapIter = map->find(edm::Ref<reco::PhotonCollection>(R_PhotonHandle,R_nphot));
-        if(mapIter!=map->end()) {
-          nn = mapIter->val;
-        }
-        if(iPho->p4() == R_phot_iter->p4()) phoPi0Disc_[nPho_] = nn;
-        R_nphot++;              
+	 if (phoNTracks_[nPho_] == 2) {
+           phoConvPairInvariantMass_[nPho_] 	 = iPho->conversions()[0]->pairInvariantMass();
+	   phoConvPairCotThetaSeparation_[nPho_] = iPho->conversions()[0]->pairCotThetaSeparation(); 
+	   phoConvPairMomentumEta_[nPho_]        = iPho->conversions()[0]->pairMomentum().eta(); 
+	   phoConvPairMomentumPhi_[nPho_]        = iPho->conversions()[0]->pairMomentum().phi(); 
+	   phoConvPairMomentumX_[nPho_]          = iPho->conversions()[0]->pairMomentum().x(); 
+	   phoConvPairMomentumY_[nPho_]          = iPho->conversions()[0]->pairMomentum().y(); 
+	   phoConvPairMomentumZ_[nPho_]          = iPho->conversions()[0]->pairMomentum().z();        
+	   phoConvDistOfMinimumApproach_[nPho_]  = iPho->conversions()[0]->distOfMinimumApproach(); 
+	   phoConvDPhiTracksAtVtx_[nPho_]        = iPho->conversions()[0]->dPhiTracksAtVtx(); 
+	   phoConvDPhiTracksAtEcal_[nPho_]       = iPho->conversions()[0]->dPhiTracksAtEcal(); 
+	   phoConvDEtaTracksAtEcal_[nPho_]       = iPho->conversions()[0]->dEtaTracksAtEcal(); 
+
+	   phoConvVtxValid_[nPho_]      = iPho->conversions()[0]->conversionVertex().isValid(); 
+	   phoConvVtxEta_[nPho_]        = iPho->conversions()[0]->conversionVertex().position().eta(); 
+	   phoConvVtxPhi_[nPho_]        = iPho->conversions()[0]->conversionVertex().position().phi(); 
+	   phoConvVtxR_[nPho_]          = iPho->conversions()[0]->conversionVertex().position().r(); 
+	   phoConvVtxX_[nPho_]          = iPho->conversions()[0]->conversionVertex().position().x(); 
+	   phoConvVtxY_[nPho_]          = iPho->conversions()[0]->conversionVertex().position().y(); 
+	   phoConvVtxZ_[nPho_]          = iPho->conversions()[0]->conversionVertex().position().z(); 
+	   phoConvVtxChi2_[nPho_]       = iPho->conversions()[0]->conversionVertex().chi2(); 
+	   phoConvVtxNdof_[nPho_]       = iPho->conversions()[0]->conversionVertex().ndof(); 
+	   phoConvChi2Prob_[nPho_]      = ChiSquaredProbability(iPho->conversions()[0]->conversionVertex().chi2(),iPho->conversions()[0]->conversionVertex().ndof());
+	   phoConvEoverP_[nPho_]      = iPho->conversions()[0]->EoverP();
+	 }
       }
-*/
+
       phoESRatio_[nPho_] = getESRatio(iPho, e, es);
       for (int a=0; a<123; a++) {
         phoESProfileFront_[nPho_][a] = getESProfileFront(iPho, e, es)[a];
         phoESProfileRear_[nPho_][a] = getESProfileRear(iPho, e, es)[a];
+      }
+
+      phoNxtal_[nPho_] = 0;
+      for (int a=0; a<200; a++) {
+	phoXtalTime_[nPho_][a]   = -999;
+	phoXtalEnergy_[nPho_][a] = -999;
+	phoXtalZ_[nPho_][a]      = -999;
+	phoXtalX_[nPho_][a]      = -999;
+	phoXtalY_[nPho_][a]      = -999;
+	phoXtalEta_[nPho_][a]    = -999;
+	phoXtalPhi_[nPho_][a]    = -999;
+      }
+
+      for (vector< pair<DetId, float> >::const_iterator phoRHIt = (*iPho).superCluster()->hitsAndFractions().begin(); phoRHIt != (*iPho).superCluster()->hitsAndFractions().end(); ++phoRHIt) {
+
+        if ( iPho->isEB() && EBReducedRecHits.isValid() ) {
+          EcalRecHitCollection::const_iterator ebrhit = EBReducedRecHits->find(phoRHIt->first);
+	  EBDetId phoSCEBid = EBDetId(phoRHIt->first);
+
+          if ( ebrhit != EBReducedRecHits->end() ) { 
+	    phoXtalTime_[nPho_][phoNxtal_[nPho_]]   = ebrhit->time();
+	    phoXtalEnergy_[nPho_][phoNxtal_[nPho_]] = ebrhit->energy();
+	    phoXtalZ_[nPho_][phoNxtal_[nPho_]]      = phoSCEBid.zside();
+	    phoXtalEta_[nPho_][phoNxtal_[nPho_]]    = phoSCEBid.ieta();
+	    phoXtalPhi_[nPho_][phoNxtal_[nPho_]]    = phoSCEBid.iphi();
+
+	    phoNxtal_[nPho_] += 1;
+          }
+	}
+	else if ( iPho->isEE() && EEReducedRecHits.isValid() ) {
+          EcalRecHitCollection::const_iterator eerhit = EEReducedRecHits->find(phoRHIt->first);
+	  EEDetId phoSCEEid = EEDetId(phoRHIt->first);
+
+          if ( eerhit != EEReducedRecHits->end() ) { 
+	    phoXtalTime_[nPho_][phoNxtal_[nPho_]]   = eerhit->time();
+	    phoXtalEnergy_[nPho_][phoNxtal_[nPho_]] = eerhit->energy();
+	    phoXtalZ_[nPho_][phoNxtal_[nPho_]]      = phoSCEEid.zside();
+	    phoXtalX_[nPho_][phoNxtal_[nPho_]]      = phoSCEEid.ix();
+	    phoXtalY_[nPho_][phoNxtal_[nPho_]]      = phoSCEEid.iy();
+
+	    phoNxtal_[nPho_] += 1;
+          } 
+	}
       }
 
       nPho_++;
@@ -1544,40 +1665,16 @@ fabs(ip->pdgId())<=14) || ip->pdgId()==22))) {
   const TriggerObjectMatch * muTriggerMatch4( triggerEvent->triggerObjectMatchResult( "muonTriggerMatchHLTMu13v1" ) );
   const TriggerObjectMatch * muTriggerMatch5( triggerEvent->triggerObjectMatchResult( "muonTriggerMatchHLTMu15" ) );
   const TriggerObjectMatch * muTriggerMatch6( triggerEvent->triggerObjectMatchResult( "muonTriggerMatchHLTMu15v1" ) );
-  const TriggerObjectMatch * muTriggerMatch7( triggerEvent->triggerObjectMatchResult( "muonTriggerMatchHLTMu24v1" ) );
-  const TriggerObjectMatch * muTriggerMatch8( triggerEvent->triggerObjectMatchResult( "muonTriggerMatchHLTMu24v2" ) );
-  const TriggerObjectMatch * muTriggerMatch9( triggerEvent->triggerObjectMatchResult( "muonTriggerMatchHLTMu24v3" ) );
-  const TriggerObjectMatch * muTriggerMatch10( triggerEvent->triggerObjectMatchResult( "muonTriggerMatchHLTMu30v1" ) );
-  const TriggerObjectMatch * muTriggerMatch11( triggerEvent->triggerObjectMatchResult( "muonTriggerMatchHLTMu30v2" ) );
-  const TriggerObjectMatch * muTriggerMatch12( triggerEvent->triggerObjectMatchResult( "muonTriggerMatchHLTMu30v3" ) );
-  const TriggerObjectMatch * muTriggerMatch13( triggerEvent->triggerObjectMatchResult( "muonTriggerMatchHLTIsoMu17v4" ) );
-  const TriggerObjectMatch * muTriggerMatch14( triggerEvent->triggerObjectMatchResult( "muonTriggerMatchHLTIsoMu17v5" ) );
-  const TriggerObjectMatch * muTriggerMatch15( triggerEvent->triggerObjectMatchResult( "muonTriggerMatchHLTIsoMu17v6" ) );
-  const TriggerObjectMatch * muTriggerMatch16( triggerEvent->triggerObjectMatchResult( "muonTriggerMatchHLTIsoMu17v8" ) );
-  const TriggerObjectMatch * muTriggerMatch17( triggerEvent->triggerObjectMatchResult( "muonTriggerMatchHLTIsoMu17v9" ) );
-  const TriggerObjectMatch * muTriggerMatch18( triggerEvent->triggerObjectMatchResult( "muonTriggerMatchHLTIsoMu24v1" ) );
-  const TriggerObjectMatch * muTriggerMatch19( triggerEvent->triggerObjectMatchResult( "muonTriggerMatchHLTIsoMu24v2" ) );
-  const TriggerObjectMatch * muTriggerMatch20( triggerEvent->triggerObjectMatchResult( "muonTriggerMatchHLTIsoMu24v4" ) );
-  const TriggerObjectMatch * muTriggerMatch21( triggerEvent->triggerObjectMatchResult( "muonTriggerMatchHLTIsoMu24v5" ) );
-  const TriggerObjectMatch * muTriggerMatch22( triggerEvent->triggerObjectMatchResult( "muonTriggerMatchHLTIsoMu30v1" ) );
-  const TriggerObjectMatch * muTriggerMatch23( triggerEvent->triggerObjectMatchResult( "muonTriggerMatchHLTIsoMu30v2" ) );
-  const TriggerObjectMatch * muTriggerMatch24( triggerEvent->triggerObjectMatchResult( "muonTriggerMatchHLTIsoMu30v4" ) );
-  const TriggerObjectMatch * muTriggerMatch25( triggerEvent->triggerObjectMatchResult( "muonTriggerMatchHLTIsoMu30v5" ) );
-  const TriggerObjectMatch * muTriggerMatch26( triggerEvent->triggerObjectMatchResult( "muonTriggerMatchHLTDoubleMu6v1" ) );
-  const TriggerObjectMatch * muTriggerMatch27( triggerEvent->triggerObjectMatchResult( "muonTriggerMatchHLTDoubleMu6v2" ) );
-  const TriggerObjectMatch * muTriggerMatch28( triggerEvent->triggerObjectMatchResult( "muonTriggerMatchHLTDoubleMu6v3" ) );
-  const TriggerObjectMatch * muTriggerMatch29( triggerEvent->triggerObjectMatchResult( "muonTriggerMatchHLTDoubleMu7v1" ) );
-  const TriggerObjectMatch * muTriggerMatch30( triggerEvent->triggerObjectMatchResult( "muonTriggerMatchHLTDoubleMu7v2" ) );
-  const TriggerObjectMatch * muTriggerMatch31( triggerEvent->triggerObjectMatchResult( "muonTriggerMatchHLTDoubleMu7v3" ) );
-  const TriggerObjectMatch * muTriggerMatch32( triggerEvent->triggerObjectMatchResult( "muonTriggerMatchHLTMu13Mu8v2" ) );
-  const TriggerObjectMatch * muTriggerMatch33( triggerEvent->triggerObjectMatchResult( "muonTriggerMatchHLTMu24v5" ) );
-  const TriggerObjectMatch * muTriggerMatch34( triggerEvent->triggerObjectMatchResult( "muonTriggerMatchHLTMu30" ) );
-  const TriggerObjectMatch * muTriggerMatch35( triggerEvent->triggerObjectMatchResult( "muonTriggerMatchHLTIsoMu17v11" ) );
-  const TriggerObjectMatch * muTriggerMatch36( triggerEvent->triggerObjectMatchResult( "muonTriggerMatchHLTIsoMu24" ) );
-  const TriggerObjectMatch * muTriggerMatch37( triggerEvent->triggerObjectMatchResult( "muonTriggerMatchHLTIsoMu30" ) );
-  const TriggerObjectMatch * muTriggerMatch38( triggerEvent->triggerObjectMatchResult( "muonTriggerMatchHLTMu13Mu8" ) );
-  const TriggerObjectMatch * muTriggerMatch39( triggerEvent->triggerObjectMatchResult( "muonTriggerMatchHLTMu17Mu8" ) );
-  const TriggerObjectMatch * muTriggerMatch40( triggerEvent->triggerObjectMatchResult( "muonTriggerMatchHLTIsoMu30eta2p1" ) );
+  const TriggerObjectMatch * muTriggerMatch7( triggerEvent->triggerObjectMatchResult( "muonTriggerMatchHLTMu30" ) );
+  const TriggerObjectMatch * muTriggerMatch8( triggerEvent->triggerObjectMatchResult( "muonTriggerMatchHLTIsoMu24" ) );
+  const TriggerObjectMatch * muTriggerMatch9( triggerEvent->triggerObjectMatchResult( "muonTriggerMatchHLTIsoMu30" ) );
+  const TriggerObjectMatch * muTriggerMatch10( triggerEvent->triggerObjectMatchResult( "muonTriggerMatchHLTIsoMu24eta2p1" ) );
+  const TriggerObjectMatch * muTriggerMatch11( triggerEvent->triggerObjectMatchResult( "muonTriggerMatchHLTIsoMu30eta2p1" ) );
+  const TriggerObjectMatch * muTriggerMatch12( triggerEvent->triggerObjectMatchResult( "muonTriggerMatchHLTIsoMu34eta2p1" ) );
+  const TriggerObjectMatch * muTriggerMatch13( triggerEvent->triggerObjectMatchResult( "muonTriggerMatchHLTDoubleMu6" ) );
+  const TriggerObjectMatch * muTriggerMatch14( triggerEvent->triggerObjectMatchResult( "muonTriggerMatchHLTDoubleMu7" ) );
+  const TriggerObjectMatch * muTriggerMatch15( triggerEvent->triggerObjectMatchResult( "muonTriggerMatchHLTMu13Mu8" ) );
+  const TriggerObjectMatch * muTriggerMatch16( triggerEvent->triggerObjectMatchResult( "muonTriggerMatchHLTMu17Mu8" ) );
 
   // Muon
   int nMuPassCut = 0;
@@ -1607,30 +1704,7 @@ fabs(ip->pdgId())<=14) || ip->pdgId()==22))) {
       const TriggerObjectRef muTrigRef14( matchHelper.triggerMatchObject( muBaseRef, muTriggerMatch14, e, *triggerEvent ) );
       const TriggerObjectRef muTrigRef15( matchHelper.triggerMatchObject( muBaseRef, muTriggerMatch15, e, *triggerEvent ) );
       const TriggerObjectRef muTrigRef16( matchHelper.triggerMatchObject( muBaseRef, muTriggerMatch16, e, *triggerEvent ) );
-      const TriggerObjectRef muTrigRef17( matchHelper.triggerMatchObject( muBaseRef, muTriggerMatch17, e, *triggerEvent ) );
-      const TriggerObjectRef muTrigRef18( matchHelper.triggerMatchObject( muBaseRef, muTriggerMatch18, e, *triggerEvent ) );
-      const TriggerObjectRef muTrigRef19( matchHelper.triggerMatchObject( muBaseRef, muTriggerMatch19, e, *triggerEvent ) );
-      const TriggerObjectRef muTrigRef20( matchHelper.triggerMatchObject( muBaseRef, muTriggerMatch20, e, *triggerEvent ) );
-      const TriggerObjectRef muTrigRef21( matchHelper.triggerMatchObject( muBaseRef, muTriggerMatch21, e, *triggerEvent ) );
-      const TriggerObjectRef muTrigRef22( matchHelper.triggerMatchObject( muBaseRef, muTriggerMatch22, e, *triggerEvent ) );
-      const TriggerObjectRef muTrigRef23( matchHelper.triggerMatchObject( muBaseRef, muTriggerMatch23, e, *triggerEvent ) );
-      const TriggerObjectRef muTrigRef24( matchHelper.triggerMatchObject( muBaseRef, muTriggerMatch24, e, *triggerEvent ) );
-      const TriggerObjectRef muTrigRef25( matchHelper.triggerMatchObject( muBaseRef, muTriggerMatch25, e, *triggerEvent ) );
-      const TriggerObjectRef muTrigRef26( matchHelper.triggerMatchObject( muBaseRef, muTriggerMatch26, e, *triggerEvent ) );
-      const TriggerObjectRef muTrigRef27( matchHelper.triggerMatchObject( muBaseRef, muTriggerMatch27, e, *triggerEvent ) );
-      const TriggerObjectRef muTrigRef28( matchHelper.triggerMatchObject( muBaseRef, muTriggerMatch28, e, *triggerEvent ) );
-      const TriggerObjectRef muTrigRef29( matchHelper.triggerMatchObject( muBaseRef, muTriggerMatch29, e, *triggerEvent ) );
-      const TriggerObjectRef muTrigRef30( matchHelper.triggerMatchObject( muBaseRef, muTriggerMatch30, e, *triggerEvent ) );
-      const TriggerObjectRef muTrigRef31( matchHelper.triggerMatchObject( muBaseRef, muTriggerMatch31, e, *triggerEvent ) );
-      const TriggerObjectRef muTrigRef32( matchHelper.triggerMatchObject( muBaseRef, muTriggerMatch32, e, *triggerEvent ) );
-      const TriggerObjectRef muTrigRef33( matchHelper.triggerMatchObject( muBaseRef, muTriggerMatch33, e, *triggerEvent ) );
-      const TriggerObjectRef muTrigRef34( matchHelper.triggerMatchObject( muBaseRef, muTriggerMatch34, e, *triggerEvent ) );
-      const TriggerObjectRef muTrigRef35( matchHelper.triggerMatchObject( muBaseRef, muTriggerMatch35, e, *triggerEvent ) );
-      const TriggerObjectRef muTrigRef36( matchHelper.triggerMatchObject( muBaseRef, muTriggerMatch36, e, *triggerEvent ) );
-      const TriggerObjectRef muTrigRef37( matchHelper.triggerMatchObject( muBaseRef, muTriggerMatch37, e, *triggerEvent ) );
-      const TriggerObjectRef muTrigRef38( matchHelper.triggerMatchObject( muBaseRef, muTriggerMatch38, e, *triggerEvent ) );
-      const TriggerObjectRef muTrigRef39( matchHelper.triggerMatchObject( muBaseRef, muTriggerMatch39, e, *triggerEvent ) );
-      const TriggerObjectRef muTrigRef40( matchHelper.triggerMatchObject( muBaseRef, muTriggerMatch40, e, *triggerEvent ) );
+
       muTrg_[nMu_][0] = (muTrigRef1.isAvailable()) ? 1 : -99;
       muTrg_[nMu_][1] = (muTrigRef2.isAvailable()) ? 1 : -99;
       muTrg_[nMu_][2] = (muTrigRef3.isAvailable()) ? 1 : -99;
@@ -1647,30 +1721,6 @@ fabs(ip->pdgId())<=14) || ip->pdgId()==22))) {
       muTrg_[nMu_][13] = (muTrigRef14.isAvailable()) ? 1 : -99;
       muTrg_[nMu_][14] = (muTrigRef15.isAvailable()) ? 1 : -99;
       muTrg_[nMu_][15] = (muTrigRef16.isAvailable()) ? 1 : -99;
-      muTrg_[nMu_][16] = (muTrigRef17.isAvailable()) ? 1 : -99;
-      muTrg_[nMu_][17] = (muTrigRef18.isAvailable()) ? 1 : -99;
-      muTrg_[nMu_][18] = (muTrigRef19.isAvailable()) ? 1 : -99;
-      muTrg_[nMu_][19] = (muTrigRef20.isAvailable()) ? 1 : -99;
-      muTrg_[nMu_][20] = (muTrigRef21.isAvailable()) ? 1 : -99;
-      muTrg_[nMu_][21] = (muTrigRef22.isAvailable()) ? 1 : -99;
-      muTrg_[nMu_][22] = (muTrigRef23.isAvailable()) ? 1 : -99;
-      muTrg_[nMu_][23] = (muTrigRef24.isAvailable()) ? 1 : -99;
-      muTrg_[nMu_][24] = (muTrigRef25.isAvailable()) ? 1 : -99;
-      muTrg_[nMu_][25] = (muTrigRef26.isAvailable()) ? 1 : -99;
-      muTrg_[nMu_][26] = (muTrigRef27.isAvailable()) ? 1 : -99;
-      muTrg_[nMu_][27] = (muTrigRef28.isAvailable()) ? 1 : -99;
-      muTrg_[nMu_][28] = (muTrigRef29.isAvailable()) ? 1 : -99;
-      muTrg_[nMu_][29] = (muTrigRef30.isAvailable()) ? 1 : -99;
-      muTrg_[nMu_][30] = (muTrigRef31.isAvailable()) ? 1 : -99;
-      muTrg_[nMu_][31] = (muTrigRef32.isAvailable()) ? 1 : -99;
-      muTrg_[nMu_][32] = (muTrigRef33.isAvailable()) ? 1 : -99;
-      muTrg_[nMu_][33] = (muTrigRef34.isAvailable()) ? 1 : -99;
-      muTrg_[nMu_][34] = (muTrigRef35.isAvailable()) ? 1 : -99;
-      muTrg_[nMu_][35] = (muTrigRef36.isAvailable()) ? 1 : -99;
-      muTrg_[nMu_][36] = (muTrigRef37.isAvailable()) ? 1 : -99;
-      muTrg_[nMu_][37] = (muTrigRef38.isAvailable()) ? 1 : -99;
-      muTrg_[nMu_][38] = (muTrigRef39.isAvailable()) ? 1 : -99;
-      muTrg_[nMu_][39] = (muTrigRef40.isAvailable()) ? 1 : -99;
 
       //       if (!iMu->isGlobalMuon()) continue;
       //       if (!iMu->isTrackerMuon()) continue;
@@ -2041,50 +2091,15 @@ fabs(ip->pdgId())<=14) || ip->pdgId()==22))) {
   const TriggerObjectMatch *jetTriggerMatch12(triggerEvent->triggerObjectMatchResult("jetTriggerMatchHLTJet70Uv3"));
   const TriggerObjectMatch *jetTriggerMatch13(triggerEvent->triggerObjectMatchResult("jetTriggerMatchHLTJet100Uv3"));
   const TriggerObjectMatch *jetTriggerMatch14(triggerEvent->triggerObjectMatchResult("jetTriggerMatchHLTJet140Uv3"));
-  const TriggerObjectMatch *jetTriggerMatch15(triggerEvent->triggerObjectMatchResult("jetTriggerMatchHLTJet30v1"));
-  const TriggerObjectMatch *jetTriggerMatch16(triggerEvent->triggerObjectMatchResult("jetTriggerMatchHLTJet30v2"));
-  const TriggerObjectMatch *jetTriggerMatch17(triggerEvent->triggerObjectMatchResult("jetTriggerMatchHLTJet30v3"));
-  const TriggerObjectMatch *jetTriggerMatch18(triggerEvent->triggerObjectMatchResult("jetTriggerMatchHLTJet30v4"));
-  const TriggerObjectMatch *jetTriggerMatch19(triggerEvent->triggerObjectMatchResult("jetTriggerMatchHLTJet60v1"));
-  const TriggerObjectMatch *jetTriggerMatch20(triggerEvent->triggerObjectMatchResult("jetTriggerMatchHLTJet60v2"));
-  const TriggerObjectMatch *jetTriggerMatch21(triggerEvent->triggerObjectMatchResult("jetTriggerMatchHLTJet60v3"));
-  const TriggerObjectMatch *jetTriggerMatch22(triggerEvent->triggerObjectMatchResult("jetTriggerMatchHLTJet60v4"));
-  const TriggerObjectMatch *jetTriggerMatch23(triggerEvent->triggerObjectMatchResult("jetTriggerMatchHLTJet80v1"));
-  const TriggerObjectMatch *jetTriggerMatch24(triggerEvent->triggerObjectMatchResult("jetTriggerMatchHLTJet80v2"));
-  const TriggerObjectMatch *jetTriggerMatch25(triggerEvent->triggerObjectMatchResult("jetTriggerMatchHLTJet80v3"));
-  const TriggerObjectMatch *jetTriggerMatch26(triggerEvent->triggerObjectMatchResult("jetTriggerMatchHLTJet80v4"));
-  const TriggerObjectMatch *jetTriggerMatch27(triggerEvent->triggerObjectMatchResult("jetTriggerMatchHLTJet110v1"));
-  const TriggerObjectMatch *jetTriggerMatch28(triggerEvent->triggerObjectMatchResult("jetTriggerMatchHLTJet110v2"));
-  const TriggerObjectMatch *jetTriggerMatch29(triggerEvent->triggerObjectMatchResult("jetTriggerMatchHLTJet110v3"));
-  const TriggerObjectMatch *jetTriggerMatch30(triggerEvent->triggerObjectMatchResult("jetTriggerMatchHLTJet110v4"));
-  const TriggerObjectMatch *jetTriggerMatch31(triggerEvent->triggerObjectMatchResult("jetTriggerMatchHLTJet150v1"));
-  const TriggerObjectMatch *jetTriggerMatch32(triggerEvent->triggerObjectMatchResult("jetTriggerMatchHLTJet150v2"));
-  const TriggerObjectMatch *jetTriggerMatch33(triggerEvent->triggerObjectMatchResult("jetTriggerMatchHLTJet150v3"));
-  const TriggerObjectMatch *jetTriggerMatch34(triggerEvent->triggerObjectMatchResult("jetTriggerMatchHLTJet150v4"));
-  const TriggerObjectMatch *jetTriggerMatch35(triggerEvent->triggerObjectMatchResult("jetTriggerMatchHLTJet190v1"));
-  const TriggerObjectMatch *jetTriggerMatch36(triggerEvent->triggerObjectMatchResult("jetTriggerMatchHLTJet190v2"));
-  const TriggerObjectMatch *jetTriggerMatch37(triggerEvent->triggerObjectMatchResult("jetTriggerMatchHLTJet190v3"));
-  const TriggerObjectMatch *jetTriggerMatch38(triggerEvent->triggerObjectMatchResult("jetTriggerMatchHLTJet190v4"));
-  const TriggerObjectMatch *jetTriggerMatch39(triggerEvent->triggerObjectMatchResult("jetTriggerMatchHLTJet240v1"));
-  const TriggerObjectMatch *jetTriggerMatch40(triggerEvent->triggerObjectMatchResult("jetTriggerMatchHLTJet240v2"));
-  const TriggerObjectMatch *jetTriggerMatch41(triggerEvent->triggerObjectMatchResult("jetTriggerMatchHLTJet240v3"));
-  const TriggerObjectMatch *jetTriggerMatch42(triggerEvent->triggerObjectMatchResult("jetTriggerMatchHLTJet240v4"));
-  const TriggerObjectMatch *jetTriggerMatch43(triggerEvent->triggerObjectMatchResult("jetTriggerMatchHLTJet300v1"));
-  const TriggerObjectMatch *jetTriggerMatch44(triggerEvent->triggerObjectMatchResult("jetTriggerMatchHLTJet300v2"));
-  const TriggerObjectMatch *jetTriggerMatch45(triggerEvent->triggerObjectMatchResult("jetTriggerMatchHLTJet300v3"));
-  const TriggerObjectMatch *jetTriggerMatch46(triggerEvent->triggerObjectMatchResult("jetTriggerMatchHLTJet370v1"));
-  const TriggerObjectMatch *jetTriggerMatch47(triggerEvent->triggerObjectMatchResult("jetTriggerMatchHLTJet370v2"));
-  const TriggerObjectMatch *jetTriggerMatch48(triggerEvent->triggerObjectMatchResult("jetTriggerMatchHLTJet370v3"));
-  const TriggerObjectMatch *jetTriggerMatch49(triggerEvent->triggerObjectMatchResult("jetTriggerMatchHLTJet370v4"));
-  const TriggerObjectMatch *jetTriggerMatch50(triggerEvent->triggerObjectMatchResult("jetTriggerMatchHLTJet30"));
-  const TriggerObjectMatch *jetTriggerMatch51(triggerEvent->triggerObjectMatchResult("jetTriggerMatchHLTJet60"));
-  const TriggerObjectMatch *jetTriggerMatch52(triggerEvent->triggerObjectMatchResult("jetTriggerMatchHLTJet80"));
-  const TriggerObjectMatch *jetTriggerMatch53(triggerEvent->triggerObjectMatchResult("jetTriggerMatchHLTJet110"));
-  const TriggerObjectMatch *jetTriggerMatch54(triggerEvent->triggerObjectMatchResult("jetTriggerMatchHLTJet150"));
-  const TriggerObjectMatch *jetTriggerMatch55(triggerEvent->triggerObjectMatchResult("jetTriggerMatchHLTJet190"));
-  const TriggerObjectMatch *jetTriggerMatch56(triggerEvent->triggerObjectMatchResult("jetTriggerMatchHLTJet240"));
-  const TriggerObjectMatch *jetTriggerMatch57(triggerEvent->triggerObjectMatchResult("jetTriggerMatchHLTJet300"));
-  const TriggerObjectMatch *jetTriggerMatch58(triggerEvent->triggerObjectMatchResult("jetTriggerMatchHLTJet370"));
+  const TriggerObjectMatch *jetTriggerMatch15(triggerEvent->triggerObjectMatchResult("jetTriggerMatchHLTJet30"));
+  const TriggerObjectMatch *jetTriggerMatch16(triggerEvent->triggerObjectMatchResult("jetTriggerMatchHLTJet60"));
+  const TriggerObjectMatch *jetTriggerMatch17(triggerEvent->triggerObjectMatchResult("jetTriggerMatchHLTJet80"));
+  const TriggerObjectMatch *jetTriggerMatch18(triggerEvent->triggerObjectMatchResult("jetTriggerMatchHLTJet110"));
+  const TriggerObjectMatch *jetTriggerMatch19(triggerEvent->triggerObjectMatchResult("jetTriggerMatchHLTJet150"));
+  const TriggerObjectMatch *jetTriggerMatch20(triggerEvent->triggerObjectMatchResult("jetTriggerMatchHLTJet190"));
+  const TriggerObjectMatch *jetTriggerMatch21(triggerEvent->triggerObjectMatchResult("jetTriggerMatchHLTJet240"));
+  const TriggerObjectMatch *jetTriggerMatch22(triggerEvent->triggerObjectMatchResult("jetTriggerMatchHLTJet300"));
+  const TriggerObjectMatch *jetTriggerMatch23(triggerEvent->triggerObjectMatchResult("jetTriggerMatchHLTJet370"));
 
   if (doStoreJets_) {
     nJet_ = 0;
@@ -2119,41 +2134,6 @@ fabs(ip->pdgId())<=14) || ip->pdgId()==22))) {
 	  const TriggerObjectRef jetTrigRef21( matchHelper.triggerMatchObject( jetBaseRef, jetTriggerMatch21, e, *triggerEvent ) );
 	  const TriggerObjectRef jetTrigRef22( matchHelper.triggerMatchObject( jetBaseRef, jetTriggerMatch22, e, *triggerEvent ) );
 	  const TriggerObjectRef jetTrigRef23( matchHelper.triggerMatchObject( jetBaseRef, jetTriggerMatch23, e, *triggerEvent ) );
-	  const TriggerObjectRef jetTrigRef24( matchHelper.triggerMatchObject( jetBaseRef, jetTriggerMatch24, e, *triggerEvent ) );
-	  const TriggerObjectRef jetTrigRef25( matchHelper.triggerMatchObject( jetBaseRef, jetTriggerMatch25, e, *triggerEvent ) );
-	  const TriggerObjectRef jetTrigRef26( matchHelper.triggerMatchObject( jetBaseRef, jetTriggerMatch26, e, *triggerEvent ) );
-	  const TriggerObjectRef jetTrigRef27( matchHelper.triggerMatchObject( jetBaseRef, jetTriggerMatch27, e, *triggerEvent ) );
-	  const TriggerObjectRef jetTrigRef28( matchHelper.triggerMatchObject( jetBaseRef, jetTriggerMatch28, e, *triggerEvent ) );
-	  const TriggerObjectRef jetTrigRef29( matchHelper.triggerMatchObject( jetBaseRef, jetTriggerMatch29, e, *triggerEvent ) );
-	  const TriggerObjectRef jetTrigRef30( matchHelper.triggerMatchObject( jetBaseRef, jetTriggerMatch30, e, *triggerEvent ) );
-	  const TriggerObjectRef jetTrigRef31( matchHelper.triggerMatchObject( jetBaseRef, jetTriggerMatch31, e, *triggerEvent ) );
-	  const TriggerObjectRef jetTrigRef32( matchHelper.triggerMatchObject( jetBaseRef, jetTriggerMatch32, e, *triggerEvent ) );
-	  const TriggerObjectRef jetTrigRef33( matchHelper.triggerMatchObject( jetBaseRef, jetTriggerMatch33, e, *triggerEvent ) );
-	  const TriggerObjectRef jetTrigRef34( matchHelper.triggerMatchObject( jetBaseRef, jetTriggerMatch34, e, *triggerEvent ) );
-	  const TriggerObjectRef jetTrigRef35( matchHelper.triggerMatchObject( jetBaseRef, jetTriggerMatch35, e, *triggerEvent ) );
-	  const TriggerObjectRef jetTrigRef36( matchHelper.triggerMatchObject( jetBaseRef, jetTriggerMatch36, e, *triggerEvent ) );
-	  const TriggerObjectRef jetTrigRef37( matchHelper.triggerMatchObject( jetBaseRef, jetTriggerMatch37, e, *triggerEvent ) );
-	  const TriggerObjectRef jetTrigRef38( matchHelper.triggerMatchObject( jetBaseRef, jetTriggerMatch38, e, *triggerEvent ) );
-	  const TriggerObjectRef jetTrigRef39( matchHelper.triggerMatchObject( jetBaseRef, jetTriggerMatch39, e, *triggerEvent ) );
-	  const TriggerObjectRef jetTrigRef40( matchHelper.triggerMatchObject( jetBaseRef, jetTriggerMatch40, e, *triggerEvent ) );
-	  const TriggerObjectRef jetTrigRef41( matchHelper.triggerMatchObject( jetBaseRef, jetTriggerMatch41, e, *triggerEvent ) );
-	  const TriggerObjectRef jetTrigRef42( matchHelper.triggerMatchObject( jetBaseRef, jetTriggerMatch42, e, *triggerEvent ) );
-	  const TriggerObjectRef jetTrigRef43( matchHelper.triggerMatchObject( jetBaseRef, jetTriggerMatch43, e, *triggerEvent ) );
-	  const TriggerObjectRef jetTrigRef44( matchHelper.triggerMatchObject( jetBaseRef, jetTriggerMatch44, e, *triggerEvent ) );
-	  const TriggerObjectRef jetTrigRef45( matchHelper.triggerMatchObject( jetBaseRef, jetTriggerMatch45, e, *triggerEvent ) );
-	  const TriggerObjectRef jetTrigRef46( matchHelper.triggerMatchObject( jetBaseRef, jetTriggerMatch46, e, *triggerEvent ) );
-	  const TriggerObjectRef jetTrigRef47( matchHelper.triggerMatchObject( jetBaseRef, jetTriggerMatch47, e, *triggerEvent ) );
-	  const TriggerObjectRef jetTrigRef48( matchHelper.triggerMatchObject( jetBaseRef, jetTriggerMatch48, e, *triggerEvent ) );
-	  const TriggerObjectRef jetTrigRef49( matchHelper.triggerMatchObject( jetBaseRef, jetTriggerMatch49, e, *triggerEvent ) );
-	  const TriggerObjectRef jetTrigRef50( matchHelper.triggerMatchObject( jetBaseRef, jetTriggerMatch50, e, *triggerEvent ) );
-	  const TriggerObjectRef jetTrigRef51( matchHelper.triggerMatchObject( jetBaseRef, jetTriggerMatch51, e, *triggerEvent ) );
-	  const TriggerObjectRef jetTrigRef52( matchHelper.triggerMatchObject( jetBaseRef, jetTriggerMatch52, e, *triggerEvent ) );
-	  const TriggerObjectRef jetTrigRef53( matchHelper.triggerMatchObject( jetBaseRef, jetTriggerMatch53, e, *triggerEvent ) );
-	  const TriggerObjectRef jetTrigRef54( matchHelper.triggerMatchObject( jetBaseRef, jetTriggerMatch54, e, *triggerEvent ) );
-	  const TriggerObjectRef jetTrigRef55( matchHelper.triggerMatchObject( jetBaseRef, jetTriggerMatch55, e, *triggerEvent ) );
-	  const TriggerObjectRef jetTrigRef56( matchHelper.triggerMatchObject( jetBaseRef, jetTriggerMatch56, e, *triggerEvent ) );
-	  const TriggerObjectRef jetTrigRef57( matchHelper.triggerMatchObject( jetBaseRef, jetTriggerMatch57, e, *triggerEvent ) );
-	  const TriggerObjectRef jetTrigRef58( matchHelper.triggerMatchObject( jetBaseRef, jetTriggerMatch58, e, *triggerEvent ) );
 
 	  jetTrg_[nJet_][0] = (jetTrigRef1.isAvailable()) ? 1 : -99;
 	  jetTrg_[nJet_][1] = (jetTrigRef2.isAvailable()) ? 1 : -99;
@@ -2178,41 +2158,6 @@ fabs(ip->pdgId())<=14) || ip->pdgId()==22))) {
 	  jetTrg_[nJet_][20] = (jetTrigRef21.isAvailable()) ? 1 : -99;
 	  jetTrg_[nJet_][21] = (jetTrigRef22.isAvailable()) ? 1 : -99;
 	  jetTrg_[nJet_][22] = (jetTrigRef23.isAvailable()) ? 1 : -99;
-	  jetTrg_[nJet_][23] = (jetTrigRef24.isAvailable()) ? 1 : -99;
-	  jetTrg_[nJet_][24] = (jetTrigRef25.isAvailable()) ? 1 : -99;
-	  jetTrg_[nJet_][25] = (jetTrigRef26.isAvailable()) ? 1 : -99;
-	  jetTrg_[nJet_][26] = (jetTrigRef27.isAvailable()) ? 1 : -99;
-	  jetTrg_[nJet_][27] = (jetTrigRef28.isAvailable()) ? 1 : -99;
-	  jetTrg_[nJet_][28] = (jetTrigRef29.isAvailable()) ? 1 : -99;
-	  jetTrg_[nJet_][29] = (jetTrigRef30.isAvailable()) ? 1 : -99;
-	  jetTrg_[nJet_][30] = (jetTrigRef31.isAvailable()) ? 1 : -99;
-	  jetTrg_[nJet_][31] = (jetTrigRef32.isAvailable()) ? 1 : -99;
-	  jetTrg_[nJet_][32] = (jetTrigRef33.isAvailable()) ? 1 : -99;
-	  jetTrg_[nJet_][33] = (jetTrigRef34.isAvailable()) ? 1 : -99;
-	  jetTrg_[nJet_][34] = (jetTrigRef35.isAvailable()) ? 1 : -99;
-	  jetTrg_[nJet_][35] = (jetTrigRef36.isAvailable()) ? 1 : -99;
-	  jetTrg_[nJet_][36] = (jetTrigRef37.isAvailable()) ? 1 : -99;
-	  jetTrg_[nJet_][37] = (jetTrigRef38.isAvailable()) ? 1 : -99;
-	  jetTrg_[nJet_][38] = (jetTrigRef39.isAvailable()) ? 1 : -99;
-	  jetTrg_[nJet_][39] = (jetTrigRef40.isAvailable()) ? 1 : -99;
-	  jetTrg_[nJet_][40] = (jetTrigRef41.isAvailable()) ? 1 : -99;
-	  jetTrg_[nJet_][41] = (jetTrigRef42.isAvailable()) ? 1 : -99;
-	  jetTrg_[nJet_][42] = (jetTrigRef43.isAvailable()) ? 1 : -99;
-	  jetTrg_[nJet_][43] = (jetTrigRef44.isAvailable()) ? 1 : -99;
-	  jetTrg_[nJet_][44] = (jetTrigRef45.isAvailable()) ? 1 : -99;
-	  jetTrg_[nJet_][45] = (jetTrigRef46.isAvailable()) ? 1 : -99;
-	  jetTrg_[nJet_][46] = (jetTrigRef47.isAvailable()) ? 1 : -99;
-	  jetTrg_[nJet_][47] = (jetTrigRef48.isAvailable()) ? 1 : -99;
-	  jetTrg_[nJet_][48] = (jetTrigRef49.isAvailable()) ? 1 : -99;
-	  jetTrg_[nJet_][49] = (jetTrigRef50.isAvailable()) ? 1 : -99;
-	  jetTrg_[nJet_][50] = (jetTrigRef51.isAvailable()) ? 1 : -99;
-	  jetTrg_[nJet_][51] = (jetTrigRef52.isAvailable()) ? 1 : -99;
-	  jetTrg_[nJet_][52] = (jetTrigRef53.isAvailable()) ? 1 : -99;
-	  jetTrg_[nJet_][53] = (jetTrigRef54.isAvailable()) ? 1 : -99;
-	  jetTrg_[nJet_][54] = (jetTrigRef55.isAvailable()) ? 1 : -99;
-	  jetTrg_[nJet_][55] = (jetTrigRef56.isAvailable()) ? 1 : -99;
-	  jetTrg_[nJet_][56] = (jetTrigRef57.isAvailable()) ? 1 : -99;
-	  jetTrg_[nJet_][57] = (jetTrigRef58.isAvailable()) ? 1 : -99;
 	}
 
 	jetEn_[nJet_]     = iJet->energy();
@@ -2452,7 +2397,8 @@ float VgAnalyzerKit::getESRatio(View<pat::Photon>::const_iterator photon, const 
 
   // Get ES rechits
   edm::Handle<EcalRecHitCollection> PreshowerRecHits;
-  e.getByLabel(InputTag("ecalPreshowerRecHit","EcalRecHitsES"), PreshowerRecHits);
+  //e.getByLabel(InputTag("ecalPreshowerRecHit","EcalRecHitsES"), PreshowerRecHits);
+  e.getByLabel(InputTag("reducedEcalRecHitsES"), PreshowerRecHits);
   if (PreshowerRecHits.isValid()) EcalRecHitCollection preshowerHits(*PreshowerRecHits);
   else return esratio;
 
@@ -2533,7 +2479,8 @@ float VgAnalyzerKit::getESRatio(View<pat::Electron>::const_iterator photon, cons
   Float_t esratio=1.;
   // Get ES rechits
   edm::Handle<EcalRecHitCollection> PreshowerRecHits;
-  e.getByLabel(InputTag("ecalPreshowerRecHit","EcalRecHitsES"), PreshowerRecHits);
+  //e.getByLabel(InputTag("ecalPreshowerRecHit","EcalRecHitsES"), PreshowerRecHits);
+  e.getByLabel(InputTag("reducedEcalRecHitsES"), PreshowerRecHits);
   if (PreshowerRecHits.isValid()) EcalRecHitCollection preshowerHits(*PreshowerRecHits);
   else return esratio;
 
@@ -2621,7 +2568,8 @@ std::vector<float> VgAnalyzerKit::getESProfileFront(View<pat::Photon>::const_ite
 
   // Get ES rechits
   edm::Handle<EcalRecHitCollection> PreshowerRecHits;
-  e.getByLabel(InputTag("ecalPreshowerRecHit","EcalRecHitsES"), PreshowerRecHits);
+  //e.getByLabel(InputTag("ecalPreshowerRecHit","EcalRecHitsES"), PreshowerRecHits);
+  e.getByLabel(InputTag("reducedEcalRecHitsES"), PreshowerRecHits);
   if (PreshowerRecHits.isValid()) EcalRecHitCollection preshowerHits(*PreshowerRecHits);
   else return esprofile;
 
@@ -2698,7 +2646,8 @@ std::vector<float> VgAnalyzerKit::getESProfileRear(View<pat::Photon>::const_iter
 
   // Get ES rechits
   edm::Handle<EcalRecHitCollection> PreshowerRecHits;
-  e.getByLabel(InputTag("ecalPreshowerRecHit","EcalRecHitsES"), PreshowerRecHits);
+  //e.getByLabel(InputTag("ecalPreshowerRecHit","EcalRecHitsES"), PreshowerRecHits);
+  e.getByLabel(InputTag("reducedEcalRecHitsES"), PreshowerRecHits);
   if (PreshowerRecHits.isValid()) EcalRecHitCollection preshowerHits(*PreshowerRecHits);
   else return esprofile;
 
@@ -2775,7 +2724,8 @@ std::vector<float> VgAnalyzerKit::getESProfileFront(View<pat::Electron>::const_i
 
   // Get ES rechits
   edm::Handle<EcalRecHitCollection> PreshowerRecHits;
-  e.getByLabel(InputTag("ecalPreshowerRecHit","EcalRecHitsES"), PreshowerRecHits);
+  //e.getByLabel(InputTag("ecalPreshowerRecHit","EcalRecHitsES"), PreshowerRecHits);
+  e.getByLabel(InputTag("reducedEcalRecHitsES"), PreshowerRecHits);
   if (PreshowerRecHits.isValid()) EcalRecHitCollection preshowerHits(*PreshowerRecHits);
   else return esprofile;
 
@@ -2852,7 +2802,8 @@ std::vector<float> VgAnalyzerKit::getESProfileRear(View<pat::Electron>::const_it
 
   // Get ES rechits
   edm::Handle<EcalRecHitCollection> PreshowerRecHits;
-  e.getByLabel(InputTag("ecalPreshowerRecHit","EcalRecHitsES"), PreshowerRecHits);
+  //e.getByLabel(InputTag("ecalPreshowerRecHit","EcalRecHitsES"), PreshowerRecHits);
+  e.getByLabel(InputTag("reducedEcalRecHitsES"), PreshowerRecHits);
   if (PreshowerRecHits.isValid()) EcalRecHitCollection preshowerHits(*PreshowerRecHits);
   else return esprofile;
 
@@ -2909,6 +2860,49 @@ std::vector<float> VgAnalyzerKit::getESProfileRear(View<pat::Electron>::const_it
   }
 
   return esprofile;
+}
+
+float VgAnalyzerKit::getTrkIso(edm::Handle<reco::TrackCollection> Tracks, 
+			       math::XYZPoint vtx, 
+			       double phoEta, 
+			       double phoPhi, 
+			       double phoVz, 
+			       double outerCone = 0.4, 
+			       double innerCone = 0.04, 
+			       double etaSlice = 0.015, 
+			       double dzCut = 0.2, 
+			       double d0Cut = 0.1,
+			       double ptCut = 0.,
+			       int    option = 0)
+{
+
+  float trkIso = 0;
+  double dz = 0;  
+  double d0 = 0;
+  double dR = 0;
+  double dEta = 0;
+
+  for (reco::TrackCollection::const_iterator aTrk = Tracks.product()->begin(); aTrk != Tracks.product()->end(); ++aTrk) {
+
+    if (option == 0) 
+      dz = fabs( (*aTrk).vz() - phoVz );
+    else if (option == 1)
+      dz = (*aTrk).dz(vtx);
+    if (fabs(dz) > dzCut) continue;
+
+    d0 = (*aTrk).dxy(vtx);
+    if (fabs(d0) > d0Cut) continue;
+
+    if ((*aTrk).pt() < ptCut) continue;
+
+    dR = deltaR(phoEta, phoPhi, (*aTrk).eta(), (*aTrk).phi());
+    dEta = (*aTrk).eta() - phoEta;
+
+    if (dR < outerCone && outerCone >= innerCone && fabs(dEta) >= etaSlice)
+      trkIso += (*aTrk).pt();
+  }
+
+  return trkIso;
 }
 
 DEFINE_FWK_MODULE(VgAnalyzerKit);

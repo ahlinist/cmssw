@@ -1,7 +1,6 @@
 import FWCore.ParameterSet.Config as cms
 
 # matches to HLT_Mu9
-#muonTriggerMatchHLTMu9 = cms.EDProducer("PATTriggerMatcherDRDPtLessByR",
 muonTriggerMatchHLTMu9 = cms.EDProducer("PATTriggerMatcherDRLessByR",
                                       src     = cms.InputTag( "cleanPatMuons" ),
                                       matched = cms.InputTag( "patTrigger" ),
@@ -100,176 +99,11 @@ muonTriggerMatchHLTMu24v3 = cms.EDProducer("PATTriggerMatcherDRLessByR",
                                       resolveByMatchQuality = cms.bool( True )
                                       )
 
-# matches to HLT_Mu24_v5
-muonTriggerMatchHLTMu24v5 = cms.EDProducer("PATTriggerMatcherDRLessByR",
-                                      src     = cms.InputTag( "cleanPatMuons" ),
-                                      matched = cms.InputTag( "patTrigger" ),
-                                      matchedCuts = cms.string( 'path( "HLT_Mu24_v5", 1, 0 )' ),
-                                      maxDPtRel = cms.double( 0.5 ),
-                                      maxDeltaR = cms.double( 0.3 ),
-                                      resolveAmbiguities    = cms.bool( True ),
-                                      resolveByMatchQuality = cms.bool( True )
-                                      )
-
-# matches to HLT_Mu30_v1
-muonTriggerMatchHLTMu30v1 = cms.EDProducer("PATTriggerMatcherDRLessByR",
-                                      src     = cms.InputTag( "cleanPatMuons" ),
-                                      matched = cms.InputTag( "patTrigger" ),
-                                      matchedCuts = cms.string( 'path( "HLT_Mu30_v1", 1, 0 )' ),
-                                      maxDPtRel = cms.double( 0.5 ),
-                                      maxDeltaR = cms.double( 0.3 ),
-                                      resolveAmbiguities    = cms.bool( True ),
-                                      resolveByMatchQuality = cms.bool( True )
-                                      )
-
-# matches to HLT_Mu30_v2
-muonTriggerMatchHLTMu30v2 = cms.EDProducer("PATTriggerMatcherDRLessByR",
-                                      src     = cms.InputTag( "cleanPatMuons" ),
-                                      matched = cms.InputTag( "patTrigger" ),
-                                      matchedCuts = cms.string( 'path( "HLT_Mu30_v2", 1, 0 )' ),
-                                      maxDPtRel = cms.double( 0.5 ),
-                                      maxDeltaR = cms.double( 0.3 ),
-                                      resolveAmbiguities    = cms.bool( True ),
-                                      resolveByMatchQuality = cms.bool( True )
-                                      )
-
-# matches to HLT_Mu30_v3
-muonTriggerMatchHLTMu30v3 = cms.EDProducer("PATTriggerMatcherDRLessByR",
-                                      src     = cms.InputTag( "cleanPatMuons" ),
-                                      matched = cms.InputTag( "patTrigger" ),
-                                      matchedCuts = cms.string( 'path( "HLT_Mu30_v3", 1, 0 )' ),
-                                      maxDPtRel = cms.double( 0.5 ),
-                                      maxDeltaR = cms.double( 0.3 ),
-                                      resolveAmbiguities    = cms.bool( True ),
-                                      resolveByMatchQuality = cms.bool( True )
-                                      )
-
 # matches to HLT_Mu30_v*
 muonTriggerMatchHLTMu30 = cms.EDProducer("PATTriggerMatcherDRLessByR",
                                       src     = cms.InputTag( "cleanPatMuons" ),
                                       matched = cms.InputTag( "patTrigger" ),
                                       matchedCuts = cms.string( 'path( "HLT_Mu30_v*", 1, 0 )' ),
-                                      maxDPtRel = cms.double( 0.5 ),
-                                      maxDeltaR = cms.double( 0.3 ),
-                                      resolveAmbiguities    = cms.bool( True ),
-                                      resolveByMatchQuality = cms.bool( True )
-                                      )
-
-# matches to HLT_Mu40_v1
-muonTriggerMatchHLTMu40v1 = cms.EDProducer("PATTriggerMatcherDRLessByR",
-                                      src     = cms.InputTag( "cleanPatMuons" ),
-                                      matched = cms.InputTag( "patTrigger" ),
-                                      matchedCuts = cms.string( 'path( "HLT_Mu40_v1", 1, 0 )' ),
-                                      maxDPtRel = cms.double( 0.5 ),
-                                      maxDeltaR = cms.double( 0.3 ),
-                                      resolveAmbiguities    = cms.bool( True ),
-                                      resolveByMatchQuality = cms.bool( True )
-                                      )
-
-# matches to HLT_IsoMu17_v4
-muonTriggerMatchHLTIsoMu17v4 = cms.EDProducer("PATTriggerMatcherDRLessByR",
-                                      src     = cms.InputTag( "cleanPatMuons" ),
-                                      matched = cms.InputTag( "patTrigger" ),
-                                      matchedCuts = cms.string( 'path( "HLT_IsoMu17_v4", 1, 0 )' ),
-                                      maxDPtRel = cms.double( 0.5 ),
-                                      maxDeltaR = cms.double( 0.3 ),
-                                      resolveAmbiguities    = cms.bool( True ),
-                                      resolveByMatchQuality = cms.bool( True )
-                                      )
-
-# matches to HLT_IsoMu17_v5
-muonTriggerMatchHLTIsoMu17v5 = cms.EDProducer("PATTriggerMatcherDRLessByR",
-                                      src     = cms.InputTag( "cleanPatMuons" ),
-                                      matched = cms.InputTag( "patTrigger" ),
-                                      matchedCuts = cms.string( 'path( "HLT_IsoMu17_v5", 1, 0 )' ),
-                                      maxDPtRel = cms.double( 0.5 ),
-                                      maxDeltaR = cms.double( 0.3 ),
-                                      resolveAmbiguities    = cms.bool( True ),
-                                      resolveByMatchQuality = cms.bool( True )
-                                      )
-
-# matches to HLT_IsoMu17_v6
-muonTriggerMatchHLTIsoMu17v6 = cms.EDProducer("PATTriggerMatcherDRLessByR",
-                                      src     = cms.InputTag( "cleanPatMuons" ),
-                                      matched = cms.InputTag( "patTrigger" ),
-                                      matchedCuts = cms.string( 'path( "HLT_IsoMu17_v6", 1, 0 )' ),
-                                      maxDPtRel = cms.double( 0.5 ),
-                                      maxDeltaR = cms.double( 0.3 ),
-                                      resolveAmbiguities    = cms.bool( True ),
-                                      resolveByMatchQuality = cms.bool( True )
-                                      )
-
-# matches to HLT_IsoMu17_v8
-muonTriggerMatchHLTIsoMu17v8 = cms.EDProducer("PATTriggerMatcherDRLessByR",
-                                      src     = cms.InputTag( "cleanPatMuons" ),
-                                      matched = cms.InputTag( "patTrigger" ),
-                                      matchedCuts = cms.string( 'path( "HLT_IsoMu17_v8", 1, 0 )' ),
-                                      maxDPtRel = cms.double( 0.5 ),
-                                      maxDeltaR = cms.double( 0.3 ),
-                                      resolveAmbiguities    = cms.bool( True ),
-                                      resolveByMatchQuality = cms.bool( True )
-                                      )
-
-# matches to HLT_IsoMu17_v9
-muonTriggerMatchHLTIsoMu17v9 = cms.EDProducer("PATTriggerMatcherDRLessByR",
-                                      src     = cms.InputTag( "cleanPatMuons" ),
-                                      matched = cms.InputTag( "patTrigger" ),
-                                      matchedCuts = cms.string( 'path( "HLT_IsoMu17_v9", 1, 0 )' ),
-                                      maxDPtRel = cms.double( 0.5 ),
-                                      maxDeltaR = cms.double( 0.3 ),
-                                      resolveAmbiguities    = cms.bool( True ),
-                                      resolveByMatchQuality = cms.bool( True )
-                                      )
-
-# matches to HLT_IsoMu17_v11
-muonTriggerMatchHLTIsoMu17v11 = cms.EDProducer("PATTriggerMatcherDRLessByR",
-                                      src     = cms.InputTag( "cleanPatMuons" ),
-                                      matched = cms.InputTag( "patTrigger" ),
-                                      matchedCuts = cms.string( 'path( "HLT_IsoMu17_v11", 1, 0 )' ),
-                                      maxDPtRel = cms.double( 0.5 ),
-                                      maxDeltaR = cms.double( 0.3 ),
-                                      resolveAmbiguities    = cms.bool( True ),
-                                      resolveByMatchQuality = cms.bool( True )
-                                      )
-
-# matches to HLT_IsoMu24_v1
-muonTriggerMatchHLTIsoMu24v1 = cms.EDProducer("PATTriggerMatcherDRLessByR",
-                                      src     = cms.InputTag( "cleanPatMuons" ),
-                                      matched = cms.InputTag( "patTrigger" ),
-                                      matchedCuts = cms.string( 'path( "HLT_IsoMu24_v1", 1, 0 )' ),
-                                      maxDPtRel = cms.double( 0.5 ),
-                                      maxDeltaR = cms.double( 0.3 ),
-                                      resolveAmbiguities    = cms.bool( True ),
-                                      resolveByMatchQuality = cms.bool( True )
-                                      )
-
-# matches to HLT_IsoMu24_v2
-muonTriggerMatchHLTIsoMu24v2 = cms.EDProducer("PATTriggerMatcherDRLessByR",
-                                      src     = cms.InputTag( "cleanPatMuons" ),
-                                      matched = cms.InputTag( "patTrigger" ),
-                                      matchedCuts = cms.string( 'path( "HLT_IsoMu24_v2", 1, 0 )' ),
-                                      maxDPtRel = cms.double( 0.5 ),
-                                      maxDeltaR = cms.double( 0.3 ),
-                                      resolveAmbiguities    = cms.bool( True ),
-                                      resolveByMatchQuality = cms.bool( True )
-                                      )
-
-# matches to HLT_IsoMu24_v4
-muonTriggerMatchHLTIsoMu24v4 = cms.EDProducer("PATTriggerMatcherDRLessByR",
-                                      src     = cms.InputTag( "cleanPatMuons" ),
-                                      matched = cms.InputTag( "patTrigger" ),
-                                      matchedCuts = cms.string( 'path( "HLT_IsoMu24_v4", 1, 0 )' ),
-                                      maxDPtRel = cms.double( 0.5 ),
-                                      maxDeltaR = cms.double( 0.3 ),
-                                      resolveAmbiguities    = cms.bool( True ),
-                                      resolveByMatchQuality = cms.bool( True )
-                                      )
-
-# matches to HLT_IsoMu24_v5
-muonTriggerMatchHLTIsoMu24v5 = cms.EDProducer("PATTriggerMatcherDRLessByR",
-                                      src     = cms.InputTag( "cleanPatMuons" ),
-                                      matched = cms.InputTag( "patTrigger" ),
-                                      matchedCuts = cms.string( 'path( "HLT_IsoMu24_v5", 1, 0 )' ),
                                       maxDPtRel = cms.double( 0.5 ),
                                       maxDeltaR = cms.double( 0.3 ),
                                       resolveAmbiguities    = cms.bool( True ),
@@ -287,50 +121,6 @@ muonTriggerMatchHLTIsoMu24 = cms.EDProducer("PATTriggerMatcherDRLessByR",
                                       resolveByMatchQuality = cms.bool( True )
                                       )
 
-# matches to HLT_IsoMu30_v1
-muonTriggerMatchHLTIsoMu30v1 = cms.EDProducer("PATTriggerMatcherDRLessByR",
-                                      src     = cms.InputTag( "cleanPatMuons" ),
-                                      matched = cms.InputTag( "patTrigger" ),
-                                      matchedCuts = cms.string( 'path( "HLT_IsoMu30_v1", 1, 0 )' ),
-                                      maxDPtRel = cms.double( 0.5 ),
-                                      maxDeltaR = cms.double( 0.3 ),
-                                      resolveAmbiguities    = cms.bool( True ),
-                                      resolveByMatchQuality = cms.bool( True )
-                                      )
-
-# matches to HLT_IsoMu30_v2
-muonTriggerMatchHLTIsoMu30v2 = cms.EDProducer("PATTriggerMatcherDRLessByR",
-                                      src     = cms.InputTag( "cleanPatMuons" ),
-                                      matched = cms.InputTag( "patTrigger" ),
-                                      matchedCuts = cms.string( 'path( "HLT_IsoMu30_v2", 1, 0 )' ),
-                                      maxDPtRel = cms.double( 0.5 ),
-                                      maxDeltaR = cms.double( 0.3 ),
-                                      resolveAmbiguities    = cms.bool( True ),
-                                      resolveByMatchQuality = cms.bool( True )
-                                      )
-
-# matches to HLT_IsoMu30_v4
-muonTriggerMatchHLTIsoMu30v4 = cms.EDProducer("PATTriggerMatcherDRLessByR",
-                                      src     = cms.InputTag( "cleanPatMuons" ),
-                                      matched = cms.InputTag( "patTrigger" ),
-                                      matchedCuts = cms.string( 'path( "HLT_IsoMu30_v4", 1, 0 )' ),
-                                      maxDPtRel = cms.double( 0.5 ),
-                                      maxDeltaR = cms.double( 0.3 ),
-                                      resolveAmbiguities    = cms.bool( True ),
-                                      resolveByMatchQuality = cms.bool( True )
-                                      )
-
-# matches to HLT_IsoMu30_v5
-muonTriggerMatchHLTIsoMu30v5 = cms.EDProducer("PATTriggerMatcherDRLessByR",
-                                      src     = cms.InputTag( "cleanPatMuons" ),
-                                      matched = cms.InputTag( "patTrigger" ),
-                                      matchedCuts = cms.string( 'path( "HLT_IsoMu30_v5", 1, 0 )' ),
-                                      maxDPtRel = cms.double( 0.5 ),
-                                      maxDeltaR = cms.double( 0.3 ),
-                                      resolveAmbiguities    = cms.bool( True ),
-                                      resolveByMatchQuality = cms.bool( True )
-                                      )
-
 # matches to HLT_IsoMu30_v*
 muonTriggerMatchHLTIsoMu30 = cms.EDProducer("PATTriggerMatcherDRLessByR",
                                       src     = cms.InputTag( "cleanPatMuons" ),
@@ -342,77 +132,22 @@ muonTriggerMatchHLTIsoMu30 = cms.EDProducer("PATTriggerMatcherDRLessByR",
                                       resolveByMatchQuality = cms.bool( True )
                                       )
 
-# matches to HLT_DoubleMu6_v1
-muonTriggerMatchHLTDoubleMu6v1 = cms.EDProducer("PATTriggerMatcherDRLessByR",
+# matches to HLT_DoubleMu6_v*
+muonTriggerMatchHLTDoubleMu6 = cms.EDProducer("PATTriggerMatcherDRLessByR",
                                       src     = cms.InputTag( "cleanPatMuons" ),
                                       matched = cms.InputTag( "patTrigger" ),
-                                      matchedCuts = cms.string( 'path( "HLT_DoubleMu6_v1", 1, 0 )' ),
+                                      matchedCuts = cms.string( 'path( "HLT_DoubleMu6_v*", 1, 0 )' ),
                                       maxDPtRel = cms.double( 0.5 ),
                                       maxDeltaR = cms.double( 0.3 ),
                                       resolveAmbiguities    = cms.bool( True ),
                                       resolveByMatchQuality = cms.bool( True )
                                       )
 
-# matches to HLT_DoubleMu6_v2
-muonTriggerMatchHLTDoubleMu6v2 = cms.EDProducer("PATTriggerMatcherDRLessByR",
+# matches to HLT_DoubleMu7_v*
+muonTriggerMatchHLTDoubleMu7 = cms.EDProducer("PATTriggerMatcherDRLessByR",
                                       src     = cms.InputTag( "cleanPatMuons" ),
                                       matched = cms.InputTag( "patTrigger" ),
-                                      matchedCuts = cms.string( 'path( "HLT_DoubleMu6_v2", 1, 0 )' ),
-                                      maxDPtRel = cms.double( 0.5 ),
-                                      maxDeltaR = cms.double( 0.3 ),
-                                      resolveAmbiguities    = cms.bool( True ),
-                                      resolveByMatchQuality = cms.bool( True )
-                                      )
-
-# matches to HLT_DoubleMu6_v3
-muonTriggerMatchHLTDoubleMu6v3 = cms.EDProducer("PATTriggerMatcherDRLessByR",
-                                      src     = cms.InputTag( "cleanPatMuons" ),
-                                      matched = cms.InputTag( "patTrigger" ),
-                                      matchedCuts = cms.string( 'path( "HLT_DoubleMu6_v3", 1, 0 )' ),
-                                      maxDPtRel = cms.double( 0.5 ),
-                                      maxDeltaR = cms.double( 0.3 ),
-                                      resolveAmbiguities    = cms.bool( True ),
-                                      resolveByMatchQuality = cms.bool( True )
-                                      )
-
-# matches to HLT_DoubleMu7_v1
-muonTriggerMatchHLTDoubleMu7v1 = cms.EDProducer("PATTriggerMatcherDRLessByR",
-                                      src     = cms.InputTag( "cleanPatMuons" ),
-                                      matched = cms.InputTag( "patTrigger" ),
-                                      matchedCuts = cms.string( 'path( "HLT_DoubleMu7_v1", 1, 0 )' ),
-                                      maxDPtRel = cms.double( 0.5 ),
-                                      maxDeltaR = cms.double( 0.3 ),
-                                      resolveAmbiguities    = cms.bool( True ),
-                                      resolveByMatchQuality = cms.bool( True )
-                                      )
-
-# matches to HLT_DoubleMu7_v2
-muonTriggerMatchHLTDoubleMu7v2 = cms.EDProducer("PATTriggerMatcherDRLessByR",
-                                      src     = cms.InputTag( "cleanPatMuons" ),
-                                      matched = cms.InputTag( "patTrigger" ),
-                                      matchedCuts = cms.string( 'path( "HLT_DoubleMu7_v2", 1, 0 )' ),
-                                      maxDPtRel = cms.double( 0.5 ),
-                                      maxDeltaR = cms.double( 0.3 ),
-                                      resolveAmbiguities    = cms.bool( True ),
-                                      resolveByMatchQuality = cms.bool( True )
-                                      )           
-
-# matches to HLT_DoubleMu7_v3
-muonTriggerMatchHLTDoubleMu7v3 = cms.EDProducer("PATTriggerMatcherDRLessByR",
-                                      src     = cms.InputTag( "cleanPatMuons" ),
-                                      matched = cms.InputTag( "patTrigger" ),
-                                      matchedCuts = cms.string( 'path( "HLT_DoubleMu7_v3", 1, 0 )' ),
-                                      maxDPtRel = cms.double( 0.5 ),
-                                      maxDeltaR = cms.double( 0.3 ),
-                                      resolveAmbiguities    = cms.bool( True ),
-                                      resolveByMatchQuality = cms.bool( True )
-                                      )           
-
-# matches to HLT_Mu13_Mu8_v2
-muonTriggerMatchHLTMu13Mu8v2 = cms.EDProducer("PATTriggerMatcherDRLessByR",
-                                      src     = cms.InputTag( "cleanPatMuons" ),
-                                      matched = cms.InputTag( "patTrigger" ),
-                                      matchedCuts = cms.string( 'path( "HLT_Mu13_Mu8_v2", 1, 0 )' ),
+                                      matchedCuts = cms.string( 'path( "HLT_DoubleMu7_v*", 1, 0 )' ),
                                       maxDPtRel = cms.double( 0.5 ),
                                       maxDeltaR = cms.double( 0.3 ),
                                       resolveAmbiguities    = cms.bool( True ),
@@ -441,11 +176,33 @@ muonTriggerMatchHLTMu17Mu8 = cms.EDProducer("PATTriggerMatcherDRLessByR",
                                       resolveByMatchQuality = cms.bool( True )
                                       )
 
+# matches to HLT_IsoMu24_eta2p1_v*
+muonTriggerMatchHLTIsoMu24eta2p1 = cms.EDProducer("PATTriggerMatcherDRLessByR",
+                                      src     = cms.InputTag( "cleanPatMuons" ),
+                                      matched = cms.InputTag( "patTrigger" ),
+                                      matchedCuts = cms.string( 'path( "HLT_IsoMu24_eta2p1_v*", 1, 0 )' ),
+                                      maxDPtRel = cms.double( 0.5 ),
+                                      maxDeltaR = cms.double( 0.3 ),
+                                      resolveAmbiguities    = cms.bool( True ),
+                                      resolveByMatchQuality = cms.bool( True )
+                                      )
+
 # matches to HLT_IsoMu30_eta2p1_v*
 muonTriggerMatchHLTIsoMu30eta2p1 = cms.EDProducer("PATTriggerMatcherDRLessByR",
                                       src     = cms.InputTag( "cleanPatMuons" ),
                                       matched = cms.InputTag( "patTrigger" ),
                                       matchedCuts = cms.string( 'path( "HLT_IsoMu30_eta2p1_v*", 1, 0 )' ),
+                                      maxDPtRel = cms.double( 0.5 ),
+                                      maxDeltaR = cms.double( 0.3 ),
+                                      resolveAmbiguities    = cms.bool( True ),
+                                      resolveByMatchQuality = cms.bool( True )
+                                      )
+
+# matches to HLT_IsoMu34_eta2p1_v*
+muonTriggerMatchHLTIsoMu34eta2p1 = cms.EDProducer("PATTriggerMatcherDRLessByR",
+                                      src     = cms.InputTag( "cleanPatMuons" ),
+                                      matched = cms.InputTag( "patTrigger" ),
+                                      matchedCuts = cms.string( 'path( "HLT_IsoMu34_eta2p1_v*", 1, 0 )' ),
                                       maxDPtRel = cms.double( 0.5 ),
                                       maxDeltaR = cms.double( 0.3 ),
                                       resolveAmbiguities    = cms.bool( True ),
@@ -507,28 +264,6 @@ electronTriggerMatchHLTEle15SWL1R = cms.EDProducer( "PATTriggerMatcherDRLessByR"
                                                   resolveByMatchQuality = cms.bool( True )
                                                   )
 
-# matches to HLT_Ele20_SW_L1R
-electronTriggerMatchHLTEle20SWL1R = cms.EDProducer( "PATTriggerMatcherDRLessByR",
-                                                  src     = cms.InputTag( "cleanPatElectrons" ),
-                                                  matched = cms.InputTag( "patTrigger" ),
-						  matchedCuts = cms.string( 'path( "HLT_Ele20_SW_L1R", 1, 0 )' ),
-                                                  maxDPtRel = cms.double( 0.5 ),
-                                                  maxDeltaR = cms.double( 0.3 ),
-                                                  resolveAmbiguities    = cms.bool( True ),
-                                                  resolveByMatchQuality = cms.bool( True )
-                                                  )
-
-# matches to HLT_Ele15_SW_EleId_L1R
-electronTriggerMatchHLTEle15SWEleIdL1R = cms.EDProducer( "PATTriggerMatcherDRLessByR",
-                                                  src     = cms.InputTag( "cleanPatElectrons" ),
-                                                  matched = cms.InputTag( "patTrigger" ),
-						  matchedCuts = cms.string( 'path( "HLT_Ele15_SW_EleId_L1R", 1, 0 )' ),
-                                                  maxDPtRel = cms.double( 0.5 ),
-                                                  maxDeltaR = cms.double( 0.3 ),
-                                                  resolveAmbiguities    = cms.bool( True ),
-                                                  resolveByMatchQuality = cms.bool( True )
-                                                  )
-
 # matches to HLT_Ele15_SW_CaloEleId_L1R
 electronTriggerMatchHLTEle15SWCaloEleIdL1R = cms.EDProducer( "PATTriggerMatcherDRLessByR",
                                                            src     = cms.InputTag( "cleanPatElectrons" ),
@@ -556,28 +291,6 @@ electronTriggerMatchHLTEle17SWTightEleIdL1R   = cms.EDProducer( "PATTriggerMatch
                                                            src     = cms.InputTag( "cleanPatElectrons" ),
                                                            matched = cms.InputTag( "patTrigger" ),
 							   matchedCuts = cms.string( 'path( "HLT_Ele17_SW_TightEleId_L1R", 1, 0 )' ),
-                                                           maxDPtRel = cms.double( 0.5 ),
-                                                           maxDeltaR = cms.double( 0.3 ),
-                                                           resolveAmbiguities    = cms.bool( True ),
-                                                           resolveByMatchQuality = cms.bool( True )
-                                                           )
-
-# matches to HLT_Ele17_SW_TightCaloEleId_Ele8HE_L1R_v1
-electronTriggerMatchHLTEle17SWTightCaloEleIdEle8HEL1Rv1   = cms.EDProducer( "PATTriggerMatcherDRLessByR",
-                                                           src     = cms.InputTag( "cleanPatElectrons" ),
-                                                           matched = cms.InputTag( "patTrigger" ),
-							   matchedCuts = cms.string( 'path( "HLT_Ele17_SW_TightCaloEleId_Ele8HE_L1R_v1", 1, 0 )' ),
-                                                           maxDPtRel = cms.double( 0.5 ),
-                                                           maxDeltaR = cms.double( 0.3 ),
-                                                           resolveAmbiguities    = cms.bool( True ),
-                                                           resolveByMatchQuality = cms.bool( True )
-                                                           )
-
-# matches to HLT_Ele17_SW_TightCaloEleId_Ele8HE_L1R_v2
-electronTriggerMatchHLTEle17SWTightCaloEleIdEle8HEL1Rv2   = cms.EDProducer( "PATTriggerMatcherDRLessByR",
-                                                           src     = cms.InputTag( "cleanPatElectrons" ),
-                                                           matched = cms.InputTag( "patTrigger" ),
-							   matchedCuts = cms.string( 'path( "HLT_Ele17_SW_TightCaloEleId_Ele8HE_L1R_v2", 1, 0 )' ),
                                                            maxDPtRel = cms.double( 0.5 ),
                                                            maxDeltaR = cms.double( 0.3 ),
                                                            resolveAmbiguities    = cms.bool( True ),
@@ -617,88 +330,11 @@ electronTriggerMatchHLTEle17SWTighterEleIdIsolL1Rv3    = cms.EDProducer( "PATTri
                                                            resolveByMatchQuality = cms.bool( True )
                                                            )
 
-# matches to HLT_Ele22_SW_TighterEleId_L1R_v2
-electronTriggerMatchHLTEle22SWTighterEleIdL1Rv2    = cms.EDProducer( "PATTriggerMatcherDRLessByR",
+# matches to HLT_Ele27_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_v*
+electronTriggerMatchHLTEle27CaloIdVTCaloIsoTTrkIdTTrkIsoT    = cms.EDProducer( "PATTriggerMatcherDRLessByR",
                                                            src     = cms.InputTag( "cleanPatElectrons" ),
                                                            matched = cms.InputTag( "patTrigger" ),
-							   matchedCuts = cms.string( 'path( "HLT_Ele22_SW_TighterEleId_L1R_v2", 1, 0 )' ),
-                                                           maxDPtRel = cms.double( 0.5 ),
-                                                           maxDeltaR = cms.double( 0.3 ),
-                                                           resolveAmbiguities    = cms.bool( True ),
-                                                           resolveByMatchQuality = cms.bool( True )
-                                                           )
-
-# matches to HLT_Ele27_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_v1
-electronTriggerMatchHLTEle27CaloIdVTCaloIsoTTrkIdTTrkIsoTv1    = cms.EDProducer( "PATTriggerMatcherDRLessByR",
-                                                           src     = cms.InputTag( "cleanPatElectrons" ),
-                                                           matched = cms.InputTag( "patTrigger" ),
-                                                           matchedCuts = cms.string( 'path( "HLT_Ele27_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_v1", 1, 0 )' ),
-                                                           maxDPtRel = cms.double( 0.5 ),
-                                                           maxDeltaR = cms.double( 0.3 ),
-                                                           resolveAmbiguities    = cms.bool( True ),
-                                                           resolveByMatchQuality = cms.bool( True )
-                                                           )
-
-# matches to HLT_Ele27_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_v2
-electronTriggerMatchHLTEle27CaloIdVTCaloIsoTTrkIdTTrkIsoTv2    = cms.EDProducer( "PATTriggerMatcherDRLessByR",
-                                                           src     = cms.InputTag( "cleanPatElectrons" ),
-                                                           matched = cms.InputTag( "patTrigger" ),
-                                                           matchedCuts = cms.string( 'path( "HLT_Ele27_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_v2", 1, 0 )' ),
-                                                           maxDPtRel = cms.double( 0.5 ),
-                                                           maxDeltaR = cms.double( 0.3 ),
-                                                           resolveAmbiguities    = cms.bool( True ),
-                                                           resolveByMatchQuality = cms.bool( True )
-                                                           )
-
-# matches to HLT_Ele27_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_v3
-electronTriggerMatchHLTEle27CaloIdVTCaloIsoTTrkIdTTrkIsoTv3    = cms.EDProducer( "PATTriggerMatcherDRLessByR",
-                                                           src     = cms.InputTag( "cleanPatElectrons" ),
-                                                           matched = cms.InputTag( "patTrigger" ),
-                                                           matchedCuts = cms.string( 'path( "HLT_Ele27_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_v3", 1, 0 )' ),
-                                                           maxDPtRel = cms.double( 0.5 ),
-                                                           maxDeltaR = cms.double( 0.3 ),
-                                                           resolveAmbiguities    = cms.bool( True ),
-                                                           resolveByMatchQuality = cms.bool( True )
-                                                           )
-
-# matches to HLT_Ele32_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_v1
-electronTriggerMatchHLTEle32CaloIdVTCaloIsoTTrkIdTTrkIsoTv1    = cms.EDProducer( "PATTriggerMatcherDRLessByR",
-							   src     = cms.InputTag( "cleanPatElectrons" ),
-                                                           matched = cms.InputTag( "patTrigger" ),
-                                                           matchedCuts = cms.string( 'path( "HLT_Ele32_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_v1", 1, 0 )' ),
-                                                           maxDPtRel = cms.double( 0.5 ),
-                                                           maxDeltaR = cms.double( 0.3 ),
-                                                           resolveAmbiguities    = cms.bool( True ),
-                                                           resolveByMatchQuality = cms.bool( True )
-                                                           )
-
-# matches to HLT_Ele32_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_v2
-electronTriggerMatchHLTEle32CaloIdVTCaloIsoTTrkIdTTrkIsoTv2    = cms.EDProducer( "PATTriggerMatcherDRLessByR",
-                                                           src     = cms.InputTag( "cleanPatElectrons" ),
-                                                           matched = cms.InputTag( "patTrigger" ),
-                                                           matchedCuts = cms.string( 'path( "HLT_Ele32_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_v2", 1, 0 )' ),
-                                                           maxDPtRel = cms.double( 0.5 ),
-                                                           maxDeltaR = cms.double( 0.3 ),
-                                                           resolveAmbiguities    = cms.bool( True ),
-                                                           resolveByMatchQuality = cms.bool( True )
-                                                           )
-
-# matches to HLT_Ele32_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_v3
-electronTriggerMatchHLTEle32CaloIdVTCaloIsoTTrkIdTTrkIsoTv3    = cms.EDProducer( "PATTriggerMatcherDRLessByR",
-                                                           src     = cms.InputTag( "cleanPatElectrons" ),
-                                                           matched = cms.InputTag( "patTrigger" ),
-                                                           matchedCuts = cms.string( 'path( "HLT_Ele32_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_v3", 1, 0 )' ),
-                                                           maxDPtRel = cms.double( 0.5 ),
-                                                           maxDeltaR = cms.double( 0.3 ),
-                                                           resolveAmbiguities    = cms.bool( True ),
-                                                           resolveByMatchQuality = cms.bool( True )
-                                                           )
-
-# matches to HLT_Ele32_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_v4
-electronTriggerMatchHLTEle32CaloIdVTCaloIsoTTrkIdTTrkIsoTv4    = cms.EDProducer( "PATTriggerMatcherDRLessByR",
-                                                           src     = cms.InputTag( "cleanPatElectrons" ),
-                                                           matched = cms.InputTag( "patTrigger" ),
-                                                           matchedCuts = cms.string( 'path( "HLT_Ele32_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_v4", 1, 0 )' ),
+                                                           matchedCuts = cms.string( 'path( "HLT_Ele27_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_v*", 1, 0 )' ),
                                                            maxDPtRel = cms.double( 0.5 ),
                                                            maxDeltaR = cms.double( 0.3 ),
                                                            resolveAmbiguities    = cms.bool( True ),
@@ -716,33 +352,11 @@ electronTriggerMatchHLTEle32CaloIdVTCaloIsoTTrkIdTTrkIsoT    = cms.EDProducer( "
                                                            resolveByMatchQuality = cms.bool( True )
                                                            )
 
-# matches to HLT_Ele42_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_v1
-electronTriggerMatchHLTEle42CaloIdVTCaloIsoTTrkIdTTrkIsoTv1    = cms.EDProducer( "PATTriggerMatcherDRLessByR",
-                                                           src     = cms.InputTag( "cleanPatElectrons" ),
-                                                           matched = cms.InputTag( "patTrigger" ),
-                                                           matchedCuts = cms.string( 'path( "HLT_Ele42_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_v1", 1, 0 )' ),
-                                                           maxDPtRel = cms.double( 0.5 ),
-                                                           maxDeltaR = cms.double( 0.3 ),
-                                                           resolveAmbiguities    = cms.bool( True ),
-                                                           resolveByMatchQuality = cms.bool( True )
-                                                           )
-
-# matches to HLT_Ele25_WP80_PFMT40_v1
-electronTriggerMatchHLTEle25WP80PFMT40v1    = cms.EDProducer( "PATTriggerMatcherDRLessByR",
-                                                           src     = cms.InputTag( "cleanPatElectrons" ),
-                                                           matched = cms.InputTag( "patTrigger" ),
-                                                           matchedCuts = cms.string( 'path( "HLT_Ele25_WP80_PFMT40_v1", 1, 0 )' ),
-                                                           maxDPtRel = cms.double( 0.5 ),
-                                                           maxDeltaR = cms.double( 0.3 ),
-                                                           resolveAmbiguities    = cms.bool( True ),
-                                                           resolveByMatchQuality = cms.bool( True )
-                                                           )
-
 # matches to HLT_Ele27_WP80_PFMT50_v*
 electronTriggerMatchHLTEle27WP80PFMT50    = cms.EDProducer( "PATTriggerMatcherDRLessByR",
                                                            src     = cms.InputTag( "cleanPatElectrons" ),
                                                            matched = cms.InputTag( "patTrigger" ),
-                                                           matchedCuts = cms.string( 'path( "HLT_Ele27_WP80_PFMT50_v*", 0, 0 )' ),
+                                                           matchedCuts = cms.string( 'path( "HLT_Ele27_WP80_PFMT50_v*", 0, 0 ) && filter("hltEle27WP80PFMT50PFMTFilter")' ),
                                                            maxDPtRel = cms.double( 0.5 ),
                                                            maxDeltaR = cms.double( 0.3 ),
                                                            resolveAmbiguities    = cms.bool( True ),
@@ -753,84 +367,40 @@ electronTriggerMatchHLTEle27WP80PFMT50    = cms.EDProducer( "PATTriggerMatcherDR
 electronTriggerMatchHLTEle32WP70PFMT50    = cms.EDProducer( "PATTriggerMatcherDRLessByR",
                                                            src     = cms.InputTag( "cleanPatElectrons" ),
                                                            matched = cms.InputTag( "patTrigger" ),
-                                                           matchedCuts = cms.string( 'path( "HLT_Ele32_WP70_PFMT50_v*", 0, 0 )' ),
+                                                           matchedCuts = cms.string( 'path( "HLT_Ele32_WP70_PFMT50_v*", 0, 0 ) && filter("hltEle32WP70PFMT50PFMTFilter")' ),
                                                            maxDPtRel = cms.double( 0.5 ),
                                                            maxDeltaR = cms.double( 0.3 ),
                                                            resolveAmbiguities    = cms.bool( True ),
                                                            resolveByMatchQuality = cms.bool( True )
                                                            )
 
-# matches to HLT_Ele27_WP70_PFMT40_PFMHT20_v1
-electronTriggerMatchHLTEle27WP70PFMT40PFMHT20v1    = cms.EDProducer( "PATTriggerMatcherDRLessByR",
-                                                           src     = cms.InputTag( "cleanPatElectrons" ),
-                                                           matched = cms.InputTag( "patTrigger" ),
-                                                           matchedCuts = cms.string( 'path( "HLT_Ele27_WP70_PFMT40_PFMHT20_v1", 1, 0 )' ),
-                                                           maxDPtRel = cms.double( 0.5 ),
-                                                           maxDeltaR = cms.double( 0.3 ),
-                                                           resolveAmbiguities    = cms.bool( True ),
-                                                           resolveByMatchQuality = cms.bool( True )
-                                                           )
-
-# matches to HLT_Ele17_CaloIdL_CaloIsoVL_Ele8_CaloIdL_CaloIsoVL_v1
-electronTriggerMatchHLTEle17CaloIdLCaloIsoVLEle8CaloIdLCaloIsoVLv1    = cms.EDProducer( "PATTriggerMatcherDRLessByR",
-                                                           src     = cms.InputTag( "cleanPatElectrons" ),
-                                                           matched = cms.InputTag( "patTrigger" ),
-                                                           matchedCuts = cms.string( 'path( "HLT_Ele17_CaloIdL_CaloIsoVL_Ele8_CaloIdL_CaloIsoVL_v1", 1, 0 )' ),
-                                                           maxDPtRel = cms.double( 0.5 ),
-                                                           maxDeltaR = cms.double( 0.3 ),
-                                                           resolveAmbiguities    = cms.bool( True ),
-                                                           resolveByMatchQuality = cms.bool( True )
-                                                           )
-
-# matches to HLT_Ele17_CaloIdL_CaloIsoVL_Ele8_CaloIdL_CaloIsoVL_v2
-electronTriggerMatchHLTEle17CaloIdLCaloIsoVLEle8CaloIdLCaloIsoVLv2    = cms.EDProducer( "PATTriggerMatcherDRLessByR",
-                                                           src     = cms.InputTag( "cleanPatElectrons" ),
-                                                           matched = cms.InputTag( "patTrigger" ),
-                                                           matchedCuts = cms.string( 'path( "HLT_Ele17_CaloIdL_CaloIsoVL_Ele8_CaloIdL_CaloIsoVL_v2", 1, 0 )' ),
-                                                           maxDPtRel = cms.double( 0.5 ),
-                                                           maxDeltaR = cms.double( 0.3 ),
-                                                           resolveAmbiguities    = cms.bool( True ),
-                                                           resolveByMatchQuality = cms.bool( True )
-                                                           )
-
-# matches to HLT_Ele17_CaloIdL_CaloIsoVL_Ele8_CaloIdL_CaloIsoVL_v3
-electronTriggerMatchHLTEle17CaloIdLCaloIsoVLEle8CaloIdLCaloIsoVLv3    = cms.EDProducer( "PATTriggerMatcherDRLessByR",
-                                                           src     = cms.InputTag( "cleanPatElectrons" ),
-                                                           matched = cms.InputTag( "patTrigger" ),
-                                                           matchedCuts = cms.string( 'path( "HLT_Ele17_CaloIdL_CaloIsoVL_Ele8_CaloIdL_CaloIsoVL_v3", 1, 0 )' ),
-                                                           maxDPtRel = cms.double( 0.5 ),
-                                                           maxDeltaR = cms.double( 0.3 ),
-                                                           resolveAmbiguities    = cms.bool( True ),
-                                                           resolveByMatchQuality = cms.bool( True )
-                                                           )
-
-# matches to HLT_Ele17_CaloIdL_CaloIsoVL_Ele8_CaloIdL_CaloIsoVL_v4
-electronTriggerMatchHLTEle17CaloIdLCaloIsoVLEle8CaloIdLCaloIsoVLv4    = cms.EDProducer( "PATTriggerMatcherDRLessByR",
-                                                           src     = cms.InputTag( "cleanPatElectrons" ),
-                                                           matched = cms.InputTag( "patTrigger" ),
-                                                           matchedCuts = cms.string( 'path( "HLT_Ele17_CaloIdL_CaloIsoVL_Ele8_CaloIdL_CaloIsoVL_v4", 1, 0 )' ),
-                                                           maxDPtRel = cms.double( 0.5 ),
-                                                           maxDeltaR = cms.double( 0.3 ),
-                                                           resolveAmbiguities    = cms.bool( True ),
-                                                           resolveByMatchQuality = cms.bool( True )
-                                                           )
-
-# matches to HLT_Ele17_CaloIdL_CaloIsoVL_Ele8_CaloIdL_CaloIsoVL_v5
-electronTriggerMatchHLTEle17CaloIdLCaloIsoVLEle8CaloIdLCaloIsoVLv5    = cms.EDProducer( "PATTriggerMatcherDRLessByR",
-                                                           src     = cms.InputTag( "cleanPatElectrons" ),
-                                                           matched = cms.InputTag( "patTrigger" ),
-                                                           matchedCuts = cms.string( 'path( "HLT_Ele17_CaloIdL_CaloIsoVL_Ele8_CaloIdL_CaloIsoVL_v5", 1, 0 )' ),
-                                                           maxDPtRel = cms.double( 0.5 ),
-                                                           maxDeltaR = cms.double( 0.3 ),
-                                                           resolveAmbiguities    = cms.bool( True ),
-                                                           resolveByMatchQuality = cms.bool( True )
-                                                           )
-
-# matches to HLT_Ele17_CaloIdL_CaloIsoVL_Ele8_CaloIdL_CaloIsoVL_v*
+# match to HLT_Ele17_CaloIdL_CaloIsoVL_Ele8_CaloIdL_CaloIsoVL_v*
 electronTriggerMatchHLTEle17CaloIdLCaloIsoVLEle8CaloIdLCaloIsoVL    = cms.EDProducer( "PATTriggerMatcherDRLessByR",
                                                            src     = cms.InputTag( "cleanPatElectrons" ),
                                                            matched = cms.InputTag( "patTrigger" ),
                                                            matchedCuts = cms.string( 'path( "HLT_Ele17_CaloIdL_CaloIsoVL_Ele8_CaloIdL_CaloIsoVL_v*", 1, 0 )' ),
+                                                           maxDPtRel = cms.double( 0.5 ),
+                                                           maxDeltaR = cms.double( 0.3 ),
+                                                           resolveAmbiguities    = cms.bool( True ),
+                                                           resolveByMatchQuality = cms.bool( True )
+                                                           )
+
+# matches to HLT_Ele17_CaloIdVT_CaloIsoVT_TrkIdT_TrkIsoVT_Ele8_Mass30_v*
+electronTriggerMatchHLTEle17CaloIdVTCaloIsoVTTrkIdTTrkIsoVTEle8Mass30    = cms.EDProducer( "PATTriggerMatcherDRLessByR",
+                                                           src     = cms.InputTag( "cleanPatElectrons" ),
+                                                           matched = cms.InputTag( "patTrigger" ),
+                                                           matchedCuts = cms.string( 'path( "HLT_Ele17_CaloIdVT_CaloIsoVT_TrkIdT_TrkIsoVT_Ele8_Mass30_v*", 1, 0 )' ),
+                                                           maxDPtRel = cms.double( 0.5 ),
+                                                           maxDeltaR = cms.double( 0.3 ),
+                                                           resolveAmbiguities    = cms.bool( True ),
+                                                           resolveByMatchQuality = cms.bool( True )
+                                                           )
+
+# matches to HLT_Ele17_CaloIdVT_CaloIsoVT_TrkIdT_TrkIsoVT_SC8_Mass30_v*
+electronTriggerMatchHLTEle17CaloIdVTCaloIsoVTTrkIdTTrkIsoVTSC8Mass30 = cms.EDProducer( "PATTriggerMatcherDRLessByR",
+                                                           src     = cms.InputTag( "cleanPatElectrons" ),
+                                                           matched = cms.InputTag( "patTrigger" ),
+                                                           matchedCuts = cms.string( 'path( "HLT_Ele17_CaloIdVT_CaloIsoVT_TrkIdT_TrkIsoVT_SC8_Mass30_v*", 1, 0 )' ),
                                                            maxDPtRel = cms.double( 0.5 ),
                                                            maxDeltaR = cms.double( 0.3 ),
                                                            resolveAmbiguities    = cms.bool( True ),
@@ -842,6 +412,105 @@ electronTriggerMatchHLTEle17CaloIdTCaloIsoVLTrkIdVLTrkIsoVLEle8CaloIdTCaloIsoVLT
                                                            src     = cms.InputTag( "cleanPatElectrons" ),
                                                            matched = cms.InputTag( "patTrigger" ),
                                                            matchedCuts = cms.string( 'path( "HLT_Ele17_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_Ele8_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_v*", 1, 0 )' ),
+                                                           maxDPtRel = cms.double( 0.5 ),
+                                                           maxDeltaR = cms.double( 0.3 ),
+                                                           resolveAmbiguities    = cms.bool( True ),
+                                                           resolveByMatchQuality = cms.bool( True )
+                                                           )
+
+# matches to HLT_Ele32_CaloIdT_CaloIsoT_TrkIdT_TrkIsoT_Ele17_v*
+electronTriggerMatchHLTEle32CaloIdTCaloIsoTTrkIdTTrkIsoTEle17    = cms.EDProducer( "PATTriggerMatcherDRLessByR",
+                                                           src     = cms.InputTag( "cleanPatElectrons" ),
+                                                           matched = cms.InputTag( "patTrigger" ),
+                                                           matchedCuts = cms.string( 'path( "HLT_Ele32_CaloIdT_CaloIsoT_TrkIdT_TrkIsoT_Ele17_v*", 0, 0 )' ),
+                                                           maxDPtRel = cms.double( 0.5 ),
+                                                           maxDeltaR = cms.double( 0.3 ),
+                                                           resolveAmbiguities    = cms.bool( True ),
+                                                           resolveByMatchQuality = cms.bool( True )
+                                                           )
+
+# matches to HLT_Ele32_CaloIdT_CaloIsoT_TrkIdT_TrkIsoT_SC17_v*
+electronTriggerMatchHLTEle32CaloIdTCaloIsoTTrkIdTTrkIsoTSC17    = cms.EDProducer( "PATTriggerMatcherDRLessByR",
+                                                           src     = cms.InputTag( "cleanPatElectrons" ),
+                                                           matched = cms.InputTag( "patTrigger" ),
+                                                           matchedCuts = cms.string( 'path( "HLT_Ele32_CaloIdT_CaloIsoT_TrkIdT_TrkIsoT_SC17_v*", 0, 0 )' ),
+                                                           maxDPtRel = cms.double( 0.5 ),
+                                                           maxDeltaR = cms.double( 0.3 ),
+                                                           resolveAmbiguities    = cms.bool( True ),
+                                                           resolveByMatchQuality = cms.bool( True )
+                                                           )
+
+# matches to HLT_Ele32_WP70_v*
+electronTriggerMatchHLTEle32WP70    = cms.EDProducer( "PATTriggerMatcherDRLessByR",
+                                                           src     = cms.InputTag( "cleanPatElectrons" ),
+                                                           matched = cms.InputTag( "patTrigger" ),
+                                                           matchedCuts = cms.string( 'filter("hltEle32WP70TrackIsoFilter")' ),
+                                                           maxDPtRel = cms.double( 0.5 ),
+                                                           maxDeltaR = cms.double( 0.3 ),
+                                                           resolveAmbiguities    = cms.bool( True ),
+                                                           resolveByMatchQuality = cms.bool( True )
+                                                           )
+
+# matche to HLT_Ele17_CaloIdVT_CaloIsoVT_TrkIdT_TrkIsoVT*
+electronTriggerMatchHLTEle17CaloIdVTCaloIsoVTTrkIdTTrkIsoVT = cms.EDProducer( "PATTriggerMatcherDRLessByR",
+                                                           src     = cms.InputTag( "cleanPatElectrons" ),
+                                                           matched = cms.InputTag( "patTrigger" ),
+                                                           matchedCuts = cms.string( 'filter("hltEle17CaloIdVTCaloIsoVTTrkIdTTrkIsoVTEle8TrackIsolFilter")' ),
+                                                           maxDPtRel = cms.double( 0.5 ),
+                                                           maxDeltaR = cms.double( 0.3 ),
+                                                           resolveAmbiguities    = cms.bool( True ),
+                                                           resolveByMatchQuality = cms.bool( True )
+                                                           )
+
+# matche to HLT_Ele8_Mass30*
+electronTriggerMatchHLTEle8Mass30 = cms.EDProducer( "PATTriggerMatcherDRLessByR",
+                                                           src     = cms.InputTag( "cleanPatElectrons" ),
+                                                           matched = cms.InputTag( "patTrigger" ),
+                                                           matchedCuts = cms.string( 'filter("hltEle17CaloIdVTCaloIsoVTTrkIdTTrkIsoVTEle8PMMassFilter")' ),
+                                                           maxDPtRel = cms.double( 0.5 ),
+                                                           maxDeltaR = cms.double( 0.3 ),
+                                                           resolveAmbiguities    = cms.bool( True ),
+                                                           resolveByMatchQuality = cms.bool( True )
+                                                           )
+
+# matche to HLT_SC8_Mass30*
+electronTriggerMatchHLTSC8Mass30 = cms.EDProducer( "PATTriggerMatcherDRLessByR",
+                                                           src     = cms.InputTag( "cleanPatElectrons" ),
+                                                           matched = cms.InputTag( "patTrigger" ),
+                                                           matchedCuts = cms.string( 'filter("hltEle17CaloIdVTCaloIsoVTTrkIdTTrkIsoVTSC8PMMassFilter")' ),
+                                                           maxDPtRel = cms.double( 0.5 ),
+                                                           maxDeltaR = cms.double( 0.3 ),
+                                                           resolveAmbiguities    = cms.bool( True ),
+                                                           resolveByMatchQuality = cms.bool( True )
+                                                           )
+
+# matche to HLT_Ele32_CaloIdT_CaloIsoT_TrkIdT_TrkIsoT*
+electronTriggerMatchHLTEle32CaloIdTCaloIsoTTrkIdTTrkIsoT = cms.EDProducer( "PATTriggerMatcherDRLessByR",
+                                                           src     = cms.InputTag( "cleanPatElectrons" ),
+                                                           matched = cms.InputTag( "patTrigger" ),
+                                                           matchedCuts = cms.string( 'filter("hltEle32CaloIdTCaloIsoTTrkIdTTrkIsoTSC17TrackIsolFilter")' ),
+                                                           maxDPtRel = cms.double( 0.5 ),
+                                                           maxDeltaR = cms.double( 0.3 ),
+                                                           resolveAmbiguities    = cms.bool( True ),
+                                                           resolveByMatchQuality = cms.bool( True )
+                                                           )
+
+# matche to HLT_SC17*
+electronTriggerMatchHLTSC17 = cms.EDProducer( "PATTriggerMatcherDRLessByR",
+                                                           src     = cms.InputTag( "cleanPatElectrons" ),
+                                                           matched = cms.InputTag( "patTrigger" ),
+                                                           matchedCuts = cms.string( 'filter("hltEle32CaloIdTCaloIsoTTrkIdTTrkIsoTSC17HEDoubleFilter")' ),
+                                                           maxDPtRel = cms.double( 0.5 ),
+                                                           maxDeltaR = cms.double( 0.3 ),
+                                                           resolveAmbiguities    = cms.bool( True ),
+                                                           resolveByMatchQuality = cms.bool( True )
+                                                           )
+
+# matche to HLT_Ele17*
+electronTriggerMatchHLTEle17 = cms.EDProducer( "PATTriggerMatcherDRLessByR",
+                                                           src     = cms.InputTag( "cleanPatElectrons" ),
+                                                           matched = cms.InputTag( "patTrigger" ),
+                                                           matchedCuts = cms.string( 'filter("hltEle32CaloIdTCaloIsoTTrkIdTTrkIsoTEle17PixelMatchDoubleFilter")' ),
                                                            maxDPtRel = cms.double( 0.5 ),
                                                            maxDeltaR = cms.double( 0.3 ),
                                                            resolveAmbiguities    = cms.bool( True ),
@@ -930,6 +599,391 @@ photonTriggerMatchHLTPhoton10L1R   = cms.EDProducer( "PATTriggerMatcherDRLessByR
                                                            src     = cms.InputTag( "cleanPatPhotons" ),
                                                            matched = cms.InputTag( "patTrigger" ),
 							   matchedCuts = cms.string( 'path( "HLT_Photon10_L1R", 1, 0 )' ),
+                                                           maxDPtRel = cms.double( 0.5 ),
+                                                           maxDeltaR = cms.double( 0.3 ),
+                                                           resolveAmbiguities    = cms.bool( True ),
+                                                           resolveByMatchQuality = cms.bool( True )
+                                                           )
+
+# matches HLT_Photon20_CaloIdVL_IsoL_v*
+photonTriggerMatchHLTPhoton20CaloIdVLIsoL = cms.EDProducer( "PATTriggerMatcherDRLessByR",
+                                                           src     = cms.InputTag( "cleanPatPhotons" ),
+                                                           matched = cms.InputTag( "patTrigger" ),
+							   matchedCuts = cms.string( 'path( "HLT_Photon20_CaloIdVL_IsoL_v*", 1, 0 )' ),
+                                                           maxDPtRel = cms.double( 0.5 ),
+                                                           maxDeltaR = cms.double( 0.3 ),
+                                                           resolveAmbiguities    = cms.bool( True ),
+                                                           resolveByMatchQuality = cms.bool( True )
+                                                           )
+
+# matched HLT_Photon20_R9Id_Photon18_R9Id_v*
+photonTriggerMatchHLTPhoton20R9IdPhoton18R9Id = cms.EDProducer( "PATTriggerMatcherDRLessByR",
+                                                           src     = cms.InputTag( "cleanPatPhotons" ),
+                                                           matched = cms.InputTag( "patTrigger" ),
+                                                           matchedCuts = cms.string( 'path( "HLT_Photon20_R9Id_Photon18_R9Id_v*", 1, 0 )' ),
+                                                           maxDPtRel = cms.double( 0.5 ),
+                                                           maxDeltaR = cms.double( 0.3 ),
+                                                           resolveAmbiguities    = cms.bool( True ),
+                                                           resolveByMatchQuality = cms.bool( True )
+                                                           )
+
+# matches HLT_Photon26_Photon18_v*
+photonTriggerMatchHLTPhoton26Photon18 = cms.EDProducer( "PATTriggerMatcherDRLessByR",
+                                                           src     = cms.InputTag( "cleanPatPhotons" ),
+                                                           matched = cms.InputTag( "patTrigger" ),
+                                                           matchedCuts = cms.string( 'path( "HLT_Photon26_Photon18_v*", 1, 0 )' ),
+                                                           maxDPtRel = cms.double( 0.5 ),
+                                                           maxDeltaR = cms.double( 0.3 ),
+                                                           resolveAmbiguities    = cms.bool( True ),
+                                                           resolveByMatchQuality = cms.bool( True )
+                                                           )
+
+# matched HLT_Photon26_IsoVL_Photon18_v*
+photonTriggerMatchHLTPhoton26IsoVLPhoton18 = cms.EDProducer( "PATTriggerMatcherDRLessByR",
+                                                           src     = cms.InputTag( "cleanPatPhotons" ),
+                                                           matched = cms.InputTag( "patTrigger" ),
+                                                           matchedCuts = cms.string( 'path( "HLT_Photon26_IsoVL_Photon18_v*", 1, 0 )' ),
+                                                           maxDPtRel = cms.double( 0.5 ),
+                                                           maxDeltaR = cms.double( 0.3 ),
+                                                           resolveAmbiguities    = cms.bool( True ),
+                                                           resolveByMatchQuality = cms.bool( True )
+                                                           )
+
+# matches HLT_Photon26_IsoVL_Photon18_IsoVL_v*
+photonTriggerMatchHLTPhoton26IsoVLPhoton18IsoVL = cms.EDProducer( "PATTriggerMatcherDRLessByR",
+                                                           src     = cms.InputTag( "cleanPatPhotons" ),
+                                                           matched = cms.InputTag( "patTrigger" ),
+                                                           matchedCuts = cms.string( 'path( "HLT_Photon26_IsoVL_Photon18_IsoVL_v*", 1, 0 )' ),
+                                                           maxDPtRel = cms.double( 0.5 ),
+                                                           maxDeltaR = cms.double( 0.3 ),
+                                                           resolveAmbiguities    = cms.bool( True ),
+                                                           resolveByMatchQuality = cms.bool( True )
+                                                           )
+
+# matches HLT_Photon26_CaloIdL_IsoVL_Photon18_v*
+photonTriggerMatchHLTPhoton26CaloIdLIsoVLPhoton18 = cms.EDProducer( "PATTriggerMatcherDRLessByR",
+                                                           src     = cms.InputTag( "cleanPatPhotons" ),
+                                                           matched = cms.InputTag( "patTrigger" ),
+                                                           matchedCuts = cms.string( 'path( "HLT_Photon26_CaloIdL_IsoVL_Photon18_v*", 1, 0 )' ),
+                                                           maxDPtRel = cms.double( 0.5 ),
+                                                           maxDeltaR = cms.double( 0.3 ),
+                                                           resolveAmbiguities    = cms.bool( True ),
+                                                           resolveByMatchQuality = cms.bool( True )
+                                                           )
+
+# matches HLT_Photon26_CaloIdL_IsoVL_Photon18_CaloIdL_IsoVL_v*
+photonTriggerMatchHLTPhoton26CaloIdLIsoVLPhoton18CaloIdLIsoVL = cms.EDProducer( "PATTriggerMatcherDRLessByR",
+                                                           src     = cms.InputTag( "cleanPatPhotons" ),
+                                                           matched = cms.InputTag( "patTrigger" ),
+                                                           matchedCuts = cms.string( 'path( "HLT_Photon26_CaloIdL_IsoVL_Photon18_CaloIdL_IsoVL_v*", 1, 0 )' ),
+                                                           maxDPtRel = cms.double( 0.5 ),
+                                                           maxDeltaR = cms.double( 0.3 ),
+                                                           resolveAmbiguities    = cms.bool( True ),
+                                                           resolveByMatchQuality = cms.bool( True )
+                                                           )
+
+# matches HLT_Photon26_CaloIdL_IsoVL_Photon18_R9Id_v*
+photonTriggerMatchHLTPhoton26CaloIdLIsoVLPhoton18R9Id = cms.EDProducer( "PATTriggerMatcherDRLessByR",
+                                                           src     = cms.InputTag( "cleanPatPhotons" ),
+                                                           matched = cms.InputTag( "patTrigger" ),
+                                                           matchedCuts = cms.string( 'path( "HLT_Photon26_CaloIdL_IsoVL_Photon18_R9Id_v*", 1, 0 )' ),
+                                                           maxDPtRel = cms.double( 0.5 ),
+                                                           maxDeltaR = cms.double( 0.3 ),
+                                                           resolveAmbiguities    = cms.bool( True ),
+                                                           resolveByMatchQuality = cms.bool( True )
+                                                           )
+
+# matches HLT_Photon26_R9Id_Photon18_CaloIdL_IsoVL_v*
+photonTriggerMatchHLTPhoton26R9IdPhoton18CaloIdLIsoVL = cms.EDProducer( "PATTriggerMatcherDRLessByR",
+                                                           src     = cms.InputTag( "cleanPatPhotons" ),
+                                                           matched = cms.InputTag( "patTrigger" ),
+                                                           matchedCuts = cms.string( 'path( "HLT_Photon26_R9Id_Photon18_CaloIdL_IsoVL_v*", 1, 0 )' ),
+                                                           maxDPtRel = cms.double( 0.5 ),
+                                                           maxDeltaR = cms.double( 0.3 ),
+                                                           resolveAmbiguities    = cms.bool( True ),
+                                                           resolveByMatchQuality = cms.bool( True )
+                                                           )
+
+# matches HLT_Photon26_R9Id_Photon18_R9Id_v*
+photonTriggerMatchHLTPhoton26R9IdPhoton18R9Id = cms.EDProducer( "PATTriggerMatcherDRLessByR",
+                                                           src     = cms.InputTag( "cleanPatPhotons" ),
+                                                           matched = cms.InputTag( "patTrigger" ),
+                                                           matchedCuts = cms.string( 'path( "HLT_Photon26_R9Id_Photon18_R9Id_v*", 1, 0 )' ),
+                                                           maxDPtRel = cms.double( 0.5 ),
+                                                           maxDeltaR = cms.double( 0.3 ),
+                                                           resolveAmbiguities    = cms.bool( True ),
+                                                           resolveByMatchQuality = cms.bool( True )
+                                                           )
+
+# matches HLT_Photon26_R9Id_Photon18_CaloIdXL_IsoXL_v*
+photonTriggerMatchHLTPhoton26R9IdPhoton18CaloIdXLIsoXL = cms.EDProducer( "PATTriggerMatcherDRLessByR",
+                                                           src     = cms.InputTag( "cleanPatPhotons" ),
+                                                           matched = cms.InputTag( "patTrigger" ),
+                                                           matchedCuts = cms.string( 'path( "HLT_Photon26_R9Id_Photon18_CaloIdXL_IsoXL_v*", 1, 0 )' ),
+                                                           maxDPtRel = cms.double( 0.5 ),
+                                                           maxDeltaR = cms.double( 0.3 ),
+                                                           resolveAmbiguities    = cms.bool( True ),
+                                                           resolveByMatchQuality = cms.bool( True )
+                                                           )
+
+# matches HLT_Photon26_CaloIdXL_IsoXL_Photon18_v*
+photonTriggerMatchHLTPhoton26CaloIdXLIsoXLPhoton18 = cms.EDProducer( "PATTriggerMatcherDRLessByR",
+                                                           src     = cms.InputTag( "cleanPatPhotons" ),
+                                                           matched = cms.InputTag( "patTrigger" ),
+                                                           matchedCuts = cms.string( 'path( "HLT_Photon26_CaloIdXL_IsoXL_Photon18_v*", 1, 0 )' ),
+                                                           maxDPtRel = cms.double( 0.5 ),
+                                                           maxDeltaR = cms.double( 0.3 ),
+                                                           resolveAmbiguities    = cms.bool( True ),
+                                                           resolveByMatchQuality = cms.bool( True )
+                                                           )
+
+# matches HLT_Photon26_CaloIdXL_IsoXL_Photon18_R9Id_v*
+photonTriggerMatchHLTPhoton26CaloIdXLIsoXLPhoton18R9Id = cms.EDProducer( "PATTriggerMatcherDRLessByR",
+                                                           src     = cms.InputTag( "cleanPatPhotons" ),
+                                                           matched = cms.InputTag( "patTrigger" ),
+                                                           matchedCuts = cms.string( 'path( "HLT_Photon26_CaloIdXL_IsoXL_Photon18_R9Id_v*", 1, 0 )' ),
+                                                           maxDPtRel = cms.double( 0.5 ),
+                                                           maxDeltaR = cms.double( 0.3 ),
+                                                           resolveAmbiguities    = cms.bool( True ),
+                                                           resolveByMatchQuality = cms.bool( True )
+                                                           )
+
+# matches HLT_Photon26_CaloIdXL_IsoXL_Photon18_CaloIdXL_IsoXL_v*
+photonTriggerMatchHLTPhoton26CaloIdXLIsoXLPhoton18CaloIdXLIsoXL = cms.EDProducer( "PATTriggerMatcherDRLessByR",
+                                                           src     = cms.InputTag( "cleanPatPhotons" ),
+                                                           matched = cms.InputTag( "patTrigger" ),
+                                                           matchedCuts = cms.string( 'path( "HLT_Photon26_CaloIdXL_IsoXL_Photon18_CaloIdXL_IsoXL_v*", 1, 0 )' ),
+                                                           maxDPtRel = cms.double( 0.5 ),
+                                                           maxDeltaR = cms.double( 0.3 ),
+                                                           resolveAmbiguities    = cms.bool( True ),
+                                                           resolveByMatchQuality = cms.bool( True )
+                                                           )
+
+# matches HLT_Photon30_CaloIdVL_v*
+photonTriggerMatchHLTPhoton30CaloIdVL = cms.EDProducer( "PATTriggerMatcherDRLessByR",
+                                                           src     = cms.InputTag( "cleanPatPhotons" ),
+                                                           matched = cms.InputTag( "patTrigger" ),
+                                                           matchedCuts = cms.string( 'path( "HLT_Photon30_CaloIdVL_v*", 1, 0 )' ),
+                                                           maxDPtRel = cms.double( 0.5 ),
+                                                           maxDeltaR = cms.double( 0.3 ),
+                                                           resolveAmbiguities    = cms.bool( True ),
+                                                           resolveByMatchQuality = cms.bool( True )
+                                                           )
+
+# matches HLT_Photon30_CaloIdVL_IsoL_v*
+photonTriggerMatchHLTPhoton30CaloIdVLIsoL = cms.EDProducer( "PATTriggerMatcherDRLessByR",
+                                                           src     = cms.InputTag( "cleanPatPhotons" ),
+                                                           matched = cms.InputTag( "patTrigger" ),
+                                                           matchedCuts = cms.string( 'path( "HLT_Photon30_CaloIdVL_IsoL_v*", 1, 0 )' ),
+                                                           maxDPtRel = cms.double( 0.5 ),
+                                                           maxDeltaR = cms.double( 0.3 ),
+                                                           resolveAmbiguities    = cms.bool( True ),
+                                                           resolveByMatchQuality = cms.bool( True )
+                                                           )
+
+# matches HLT_Photon32_CaloIdL_Photon26_CaloIdL_v*
+photonTriggerMatchHLTPhoton32CaloIdLPhoton26CaloIdL = cms.EDProducer( "PATTriggerMatcherDRLessByR",
+                                                           src     = cms.InputTag( "cleanPatPhotons" ),
+                                                           matched = cms.InputTag( "patTrigger" ),
+                                                           matchedCuts = cms.string( 'path( "HLT_Photon32_CaloIdL_Photon26_CaloIdL_v*", 1, 0 )' ),
+                                                           maxDPtRel = cms.double( 0.5 ),
+                                                           maxDeltaR = cms.double( 0.3 ),
+                                                           resolveAmbiguities    = cms.bool( True ),
+                                                           resolveByMatchQuality = cms.bool( True )
+                                                           )
+
+# matches HLT_Photon36_CaloIdL_Photon22_CaloIdL_v*
+photonTriggerMatchHLTPhoton36CaloIdLPhoton22CaloIdL = cms.EDProducer( "PATTriggerMatcherDRLessByR",
+                                                           src     = cms.InputTag( "cleanPatPhotons" ),
+                                                           matched = cms.InputTag( "patTrigger" ),
+                                                           matchedCuts = cms.string( 'path( "HLT_Photon36_CaloIdL_Photon22_CaloIdL_v*", 1, 0 )' ),
+                                                           maxDPtRel = cms.double( 0.5 ),
+                                                           maxDeltaR = cms.double( 0.3 ),
+                                                           resolveAmbiguities    = cms.bool( True ),
+                                                           resolveByMatchQuality = cms.bool( True )
+                                                           )
+
+# matches HLT_Photon36_CaloIdL_IsoVL_Photon22_v*
+photonTriggerMatchHLTPhoton36CaloIdLIsoVLPhoton22 = cms.EDProducer( "PATTriggerMatcherDRLessByR",
+                                                           src     = cms.InputTag( "cleanPatPhotons" ),
+                                                           matched = cms.InputTag( "patTrigger" ),
+                                                           matchedCuts = cms.string( 'path( "HLT_Photon36_CaloIdL_IsoVL_Photon22_v*", 1, 0 )' ),
+                                                           maxDPtRel = cms.double( 0.5 ),
+                                                           maxDeltaR = cms.double( 0.3 ),
+                                                           resolveAmbiguities    = cms.bool( True ),
+                                                           resolveByMatchQuality = cms.bool( True )
+                                                           )
+
+# matches HLT_Photon36_Photon22_v*
+photonTriggerMatchHLTPhoton36Photon22 = cms.EDProducer( "PATTriggerMatcherDRLessByR",
+                                                           src     = cms.InputTag( "cleanPatPhotons" ),
+                                                           matched = cms.InputTag( "patTrigger" ),
+                                                           matchedCuts = cms.string( 'path( "HLT_Photon36_Photon22_v*", 1, 0 )' ),
+                                                           maxDPtRel = cms.double( 0.5 ),
+                                                           maxDeltaR = cms.double( 0.3 ),
+                                                           resolveAmbiguities    = cms.bool( True ),
+                                                           resolveByMatchQuality = cms.bool( True )
+                                                           )
+
+# matches HLT_Photon36_IsoVL_Photon22_v*
+photonTriggerMatchHLTPhoton36IsoVLPhoton22 = cms.EDProducer( "PATTriggerMatcherDRLessByR",
+                                                           src     = cms.InputTag( "cleanPatPhotons" ),
+                                                           matched = cms.InputTag( "patTrigger" ),
+                                                           matchedCuts = cms.string( 'path( "HLT_Photon36_IsoVL_Photon22_v*", 1, 0 )' ),
+                                                           maxDPtRel = cms.double( 0.5 ),
+                                                           maxDeltaR = cms.double( 0.3 ),
+                                                           resolveAmbiguities    = cms.bool( True ),
+                                                           resolveByMatchQuality = cms.bool( True )
+                                                           )
+
+# matches HLT_Photon36_CaloId_IsoVL_Photon22_R9Id_v*
+photonTriggerMatchHLTPhoton36CaloIdIsoVLPhoton22R9Id = cms.EDProducer( "PATTriggerMatcherDRLessByR",
+                                                           src     = cms.InputTag( "cleanPatPhotons" ),
+                                                           matched = cms.InputTag( "patTrigger" ),
+                                                           matchedCuts = cms.string( 'path( "HLT_Photon36_CaloId_IsoVL_Photon22_R9Id_v*", 1, 0 )' ),
+                                                           maxDPtRel = cms.double( 0.5 ),
+                                                           maxDeltaR = cms.double( 0.3 ),
+                                                           resolveAmbiguities    = cms.bool( True ),
+                                                           resolveByMatchQuality = cms.bool( True )
+                                                           )
+
+# matches HLT_Photon36_R9Id_Photon22_CaloIdL_IsoVL_v*
+photonTriggerMatchHLTPhoton36R9IdPhoton22CaloIdLIsoVL = cms.EDProducer( "PATTriggerMatcherDRLessByR",
+                                                           src     = cms.InputTag( "cleanPatPhotons" ),
+                                                           matched = cms.InputTag( "patTrigger" ),
+                                                           matchedCuts = cms.string( 'path( "HLT_Photon36_R9Id_Photon22_CaloIdL_IsoVL_v*", 1, 0 )' ),
+                                                           maxDPtRel = cms.double( 0.5 ),
+                                                           maxDeltaR = cms.double( 0.3 ),
+                                                           resolveAmbiguities    = cms.bool( True ),
+                                                           resolveByMatchQuality = cms.bool( True )
+                                                           )
+
+# matches HLT_Photon36_R9Id_Photon22_R9Id_v*
+photonTriggerMatchHLTPhoton36R9IdPhoton22R9Id = cms.EDProducer( "PATTriggerMatcherDRLessByR",
+                                                           src     = cms.InputTag( "cleanPatPhotons" ),
+                                                           matched = cms.InputTag( "patTrigger" ),
+                                                           matchedCuts = cms.string( 'path( "HLT_Photon36_R9Id_Photon22_R9Id_v*", 1, 0 )' ),
+                                                           maxDPtRel = cms.double( 0.5 ),
+                                                           maxDeltaR = cms.double( 0.3 ),
+                                                           resolveAmbiguities    = cms.bool( True ),
+                                                           resolveByMatchQuality = cms.bool( True )
+                                                           )
+
+# matches HLT_Photon36_CaloIdL_IsoVL_Photon22_R9Id_v*
+photonTriggerMatchHLTPhoton36CaloIdLIsoVLPhoton22R9Id = cms.EDProducer( "PATTriggerMatcherDRLessByR",
+                                                           src     = cms.InputTag( "cleanPatPhotons" ),
+                                                           matched = cms.InputTag( "patTrigger" ),
+                                                           matchedCuts = cms.string( 'path( "HLT_Photon36_CaloIdL_IsoVL_Photon22_R9Id_v*", 1, 0 )' ),
+                                                           maxDPtRel = cms.double( 0.5 ),
+                                                           maxDeltaR = cms.double( 0.3 ),
+                                                           resolveAmbiguities    = cms.bool( True ),
+                                                           resolveByMatchQuality = cms.bool( True )
+                                                           )
+
+# matches HLT_Photon36_CaloIdVL_Photon22_CaloIdVL_v*
+photonTriggerMatchHLTPhoton36CaloIdVLPhoton22CaloIdVL = cms.EDProducer( "PATTriggerMatcherDRLessByR",
+                                                           src     = cms.InputTag( "cleanPatPhotons" ),
+                                                           matched = cms.InputTag( "patTrigger" ),
+                                                           matchedCuts = cms.string( 'path( "HLT_Photon36_CaloIdVL_Photon22_CaloIdVL_v*", 1, 0 )' ),
+                                                           maxDPtRel = cms.double( 0.5 ),
+                                                           maxDeltaR = cms.double( 0.3 ),
+                                                           resolveAmbiguities    = cms.bool( True ),
+                                                           resolveByMatchQuality = cms.bool( True )
+                                                           )
+
+# matches HLT_Photon40_CaloIdL_Photon28_CaloIdL_v*
+photonTriggerMatchHLTPhoton40CaloIdLPhoton28CaloIdL = cms.EDProducer( "PATTriggerMatcherDRLessByR",
+                                                           src     = cms.InputTag( "cleanPatPhotons" ),
+                                                           matched = cms.InputTag( "patTrigger" ),
+                                                           matchedCuts = cms.string( 'path( "HLT_Photon40_CaloIdL_Photon28_CaloIdL_v*", 1, 0 )' ),
+                                                           maxDPtRel = cms.double( 0.5 ),
+                                                           maxDeltaR = cms.double( 0.3 ),
+                                                           resolveAmbiguities    = cms.bool( True ),
+                                                           resolveByMatchQuality = cms.bool( True )
+                                                           )
+
+# matches HLT_Photon44_CaloIdL_Photon34_CaloIdL_v*
+photonTriggerMatchHLTPhoton44CaloIdLPhoton34CaloIdL = cms.EDProducer( "PATTriggerMatcherDRLessByR",
+                                                           src     = cms.InputTag( "cleanPatPhotons" ),
+                                                           matched = cms.InputTag( "patTrigger" ),
+                                                           matchedCuts = cms.string( 'path( "HLT_Photon44_CaloIdL_Photon34_CaloIdL_v*", 1, 0 )' ),
+                                                           maxDPtRel = cms.double( 0.5 ),
+                                                           maxDeltaR = cms.double( 0.3 ),
+                                                           resolveAmbiguities    = cms.bool( True ),
+                                                           resolveByMatchQuality = cms.bool( True )
+                                                           )
+
+# matches HLT_Photon48_CaloIdL_Photon38_CaloIdL_v*
+photonTriggerMatchHLTPhoton48CaloIdLPhoton38CaloIdL = cms.EDProducer( "PATTriggerMatcherDRLessByR",
+                                                           src     = cms.InputTag( "cleanPatPhotons" ),
+                                                           matched = cms.InputTag( "patTrigger" ),
+                                                           matchedCuts = cms.string( 'path( "HLT_Photon48_CaloIdL_Photon38_CaloIdL_v*", 1, 0 )' ),
+                                                           maxDPtRel = cms.double( 0.5 ),
+                                                           maxDeltaR = cms.double( 0.3 ),
+                                                           resolveAmbiguities    = cms.bool( True ),
+                                                           resolveByMatchQuality = cms.bool( True )
+                                                           )
+
+# matches HLT_Photon50_CaloIdVL_v*
+photonTriggerMatchHLTPhoton50CaloIdVL = cms.EDProducer( "PATTriggerMatcherDRLessByR",
+                                                           src     = cms.InputTag( "cleanPatPhotons" ),
+                                                           matched = cms.InputTag( "patTrigger" ),
+                                                           matchedCuts = cms.string( 'path( "HLT_Photon50_CaloIdVL_v*", 1, 0 )' ),
+                                                           maxDPtRel = cms.double( 0.5 ),
+                                                           maxDeltaR = cms.double( 0.3 ),
+                                                           resolveAmbiguities    = cms.bool( True ),
+                                                           resolveByMatchQuality = cms.bool( True )
+                                                           )
+
+# matches HLT_Photon50_CaloIdVL_IsoL_v*
+photonTriggerMatchHLTPhoton50CaloIdVLIsoL = cms.EDProducer( "PATTriggerMatcherDRLessByR",
+                                                           src     = cms.InputTag( "cleanPatPhotons" ),
+                                                           matched = cms.InputTag( "patTrigger" ),
+                                                           matchedCuts = cms.string( 'path( "HLT_Photon50_CaloIdVL_IsoL_v*", 1, 0 )' ),
+                                                           maxDPtRel = cms.double( 0.5 ),
+                                                           maxDeltaR = cms.double( 0.3 ),
+                                                           resolveAmbiguities    = cms.bool( True ),
+                                                           resolveByMatchQuality = cms.bool( True )
+                                                           )
+
+# matches HLT_Photon75_CaloIdVL_v*
+photonTriggerMatchHLTPhoton75CaloIdVL = cms.EDProducer( "PATTriggerMatcherDRLessByR",
+                                                           src     = cms.InputTag( "cleanPatPhotons" ),
+                                                           matched = cms.InputTag( "patTrigger" ),
+                                                           matchedCuts = cms.string( 'path( "HLT_Photon75_CaloIdVL_v*", 1, 0 )' ),
+                                                           maxDPtRel = cms.double( 0.5 ),
+                                                           maxDeltaR = cms.double( 0.3 ),
+                                                           resolveAmbiguities    = cms.bool( True ),
+                                                           resolveByMatchQuality = cms.bool( True )
+                                                           )
+
+# matches HLT_Photon75_CaloIdVL_IsoL_v*
+photonTriggerMatchHLTPhoton75CaloIdVLIsoL = cms.EDProducer( "PATTriggerMatcherDRLessByR",
+                                                           src     = cms.InputTag( "cleanPatPhotons" ),
+                                                           matched = cms.InputTag( "patTrigger" ),
+                                                           matchedCuts = cms.string( 'path( "HLT_Photon75_CaloIdVL_IsoL_v*", 1, 0 )' ),
+                                                           maxDPtRel = cms.double( 0.5 ),
+                                                           maxDeltaR = cms.double( 0.3 ),
+                                                           resolveAmbiguities    = cms.bool( True ),
+                                                           resolveByMatchQuality = cms.bool( True )
+                                                           )
+
+# matches HLT_Photon90_CaloIdVL_v*
+photonTriggerMatchHLTPhoton90CaloIdVL = cms.EDProducer( "PATTriggerMatcherDRLessByR",
+                                                           src     = cms.InputTag( "cleanPatPhotons" ),
+                                                           matched = cms.InputTag( "patTrigger" ),
+                                                           matchedCuts = cms.string( 'path( "HLT_Photon90_CaloIdVL_v*", 1, 0 )' ),
+                                                           maxDPtRel = cms.double( 0.5 ),
+                                                           maxDeltaR = cms.double( 0.3 ),
+                                                           resolveAmbiguities    = cms.bool( True ),
+                                                           resolveByMatchQuality = cms.bool( True )
+                                                           )
+
+# matches HLT_Photon90_CaloIdVL_IsoL_v*
+photonTriggerMatchHLTPhoton90CaloIdVLIsoL = cms.EDProducer( "PATTriggerMatcherDRLessByR",
+                                                           src     = cms.InputTag( "cleanPatPhotons" ),
+                                                           matched = cms.InputTag( "patTrigger" ),
+                                                           matchedCuts = cms.string( 'path( "HLT_Photon90_CaloIdVL_IsoL_v*", 1, 0 )' ),
                                                            maxDPtRel = cms.double( 0.5 ),
                                                            maxDeltaR = cms.double( 0.3 ),
                                                            resolveAmbiguities    = cms.bool( True ),
@@ -1096,99 +1150,11 @@ jetTriggerMatchHLTJet140Uv3   = cms.EDProducer( "PATTriggerMatcherDRLessByR",
                                                            resolveByMatchQuality = cms.bool( True )
                                                            )
 
-# matches to HLT_Jet30_v1
-jetTriggerMatchHLTJet30v1   = cms.EDProducer( "PATTriggerMatcherDRLessByR",
-                                                           src     = cms.InputTag( "cleanPatJets" ),
-                                                           matched = cms.InputTag( "patTrigger" ),
-                                                           matchedCuts = cms.string( 'path( "HLT_Jet30_v1", 1, 0 )' ),
-                                                           maxDPtRel = cms.double( 0.5 ),
-                                                           maxDeltaR = cms.double( 0.3 ),
-                                                           resolveAmbiguities    = cms.bool( True ),
-                                                           resolveByMatchQuality = cms.bool( True )
-                                                           )
-
-# matches to HLT_Jet30_v2
-jetTriggerMatchHLTJet30v2   = cms.EDProducer( "PATTriggerMatcherDRLessByR",
-                                                           src     = cms.InputTag( "cleanPatJets" ),
-                                                           matched = cms.InputTag( "patTrigger" ),
-                                                           matchedCuts = cms.string( 'path( "HLT_Jet30_v2", 1, 0 )' ),
-                                                           maxDPtRel = cms.double( 0.5 ),
-                                                           maxDeltaR = cms.double( 0.3 ),
-                                                           resolveAmbiguities    = cms.bool( True ),
-                                                           resolveByMatchQuality = cms.bool( True )
-                                                           )
-
-# matches to HLT_Jet30_v3
-jetTriggerMatchHLTJet30v3   = cms.EDProducer( "PATTriggerMatcherDRLessByR",
-                                                           src     = cms.InputTag( "cleanPatJets" ),
-                                                           matched = cms.InputTag( "patTrigger" ),
-                                                           matchedCuts = cms.string( 'path( "HLT_Jet30_v3", 1, 0 )' ),
-                                                           maxDPtRel = cms.double( 0.5 ),
-                                                           maxDeltaR = cms.double( 0.3 ),
-                                                           resolveAmbiguities    = cms.bool( True ),
-                                                           resolveByMatchQuality = cms.bool( True )
-                                                           )
-
-# matches to HLT_Jet30_v4
-jetTriggerMatchHLTJet30v4   = cms.EDProducer( "PATTriggerMatcherDRLessByR",
-                                                           src     = cms.InputTag( "cleanPatJets" ),
-                                                           matched = cms.InputTag( "patTrigger" ),
-                                                           matchedCuts = cms.string( 'path( "HLT_Jet30_v4", 1, 0 )' ),
-                                                           maxDPtRel = cms.double( 0.5 ),
-                                                           maxDeltaR = cms.double( 0.3 ),
-                                                           resolveAmbiguities    = cms.bool( True ),
-                                                           resolveByMatchQuality = cms.bool( True )
-                                                           )
-
 # matches to HLT_Jet30_v*
 jetTriggerMatchHLTJet30   = cms.EDProducer( "PATTriggerMatcherDRLessByR",
                                                            src     = cms.InputTag( "cleanPatJets" ),
                                                            matched = cms.InputTag( "patTrigger" ),
                                                            matchedCuts = cms.string( 'path( "HLT_Jet30_v*", 1, 0 )' ),
-                                                           maxDPtRel = cms.double( 0.5 ),
-                                                           maxDeltaR = cms.double( 0.3 ),
-                                                           resolveAmbiguities    = cms.bool( True ),
-                                                           resolveByMatchQuality = cms.bool( True )
-                                                           )
-
-# matches to HLT_Jet60_v1
-jetTriggerMatchHLTJet60v1   = cms.EDProducer( "PATTriggerMatcherDRLessByR",
-                                                           src     = cms.InputTag( "cleanPatJets" ),
-                                                           matched = cms.InputTag( "patTrigger" ),
-                                                           matchedCuts = cms.string( 'path( "HLT_Jet60_v1", 1, 0 )' ),
-                                                           maxDPtRel = cms.double( 0.5 ),
-                                                           maxDeltaR = cms.double( 0.3 ),
-                                                           resolveAmbiguities    = cms.bool( True ),
-                                                           resolveByMatchQuality = cms.bool( True )
-                                                           )
-
-# matches to HLT_Jet60_v2
-jetTriggerMatchHLTJet60v2   = cms.EDProducer( "PATTriggerMatcherDRLessByR",
-                                                           src     = cms.InputTag( "cleanPatJets" ),
-                                                           matched = cms.InputTag( "patTrigger" ),
-                                                           matchedCuts = cms.string( 'path( "HLT_Jet60_v2", 1, 0 )' ),
-                                                           maxDPtRel = cms.double( 0.5 ),
-                                                           maxDeltaR = cms.double( 0.3 ),
-                                                           resolveAmbiguities    = cms.bool( True ),
-                                                           resolveByMatchQuality = cms.bool( True )
-                                                           )
-
-# matches to HLT_Jet60_v3
-jetTriggerMatchHLTJet60v3   = cms.EDProducer( "PATTriggerMatcherDRLessByR",
-                                                           src     = cms.InputTag( "cleanPatJets" ),
-                                                           matched = cms.InputTag( "patTrigger" ),
-                                                           matchedCuts = cms.string( 'path( "HLT_Jet60_v3", 1, 0 )' ),
-                                                           maxDPtRel = cms.double( 0.5 ),
-                                                           maxDeltaR = cms.double( 0.3 ),
-                                                           resolveAmbiguities    = cms.bool( True ),
-                                                           resolveByMatchQuality = cms.bool( True )
-                                                           )
-
-# matches to HLT_Jet60_v4
-jetTriggerMatchHLTJet60v4   = cms.EDProducer( "PATTriggerMatcherDRLessByR",
-                                                           src     = cms.InputTag( "cleanPatJets" ),
-                                                           matched = cms.InputTag( "patTrigger" ),
-                                                           matchedCuts = cms.string( 'path( "HLT_Jet60_v4", 1, 0 )' ),
                                                            maxDPtRel = cms.double( 0.5 ),
                                                            maxDeltaR = cms.double( 0.3 ),
                                                            resolveAmbiguities    = cms.bool( True ),
@@ -1206,99 +1172,11 @@ jetTriggerMatchHLTJet60   = cms.EDProducer( "PATTriggerMatcherDRLessByR",
                                                            resolveByMatchQuality = cms.bool( True )
                                                            )
 
-# matches to HLT_Jet80_v1
-jetTriggerMatchHLTJet80v1   = cms.EDProducer( "PATTriggerMatcherDRLessByR",
-                                                           src     = cms.InputTag( "cleanPatJets" ),
-                                                           matched = cms.InputTag( "patTrigger" ),
-                                                           matchedCuts = cms.string( 'path( "HLT_Jet80_v1", 1, 0 )' ),
-                                                           maxDPtRel = cms.double( 0.5 ),
-                                                           maxDeltaR = cms.double( 0.3 ),
-                                                           resolveAmbiguities    = cms.bool( True ),
-                                                           resolveByMatchQuality = cms.bool( True )
-                                                           )
-
-# matches to HLT_Jet80_v2
-jetTriggerMatchHLTJet80v2   = cms.EDProducer( "PATTriggerMatcherDRLessByR",
-                                                           src     = cms.InputTag( "cleanPatJets" ),
-                                                           matched = cms.InputTag( "patTrigger" ),
-                                                           matchedCuts = cms.string( 'path( "HLT_Jet80_v2", 1, 0 )' ),
-                                                           maxDPtRel = cms.double( 0.5 ),
-                                                           maxDeltaR = cms.double( 0.3 ),
-                                                           resolveAmbiguities    = cms.bool( True ),
-                                                           resolveByMatchQuality = cms.bool( True )
-                                                           )
-
-# matches to HLT_Jet80_v3
-jetTriggerMatchHLTJet80v3   = cms.EDProducer( "PATTriggerMatcherDRLessByR",
-                                                           src     = cms.InputTag( "cleanPatJets" ),
-                                                           matched = cms.InputTag( "patTrigger" ),
-                                                           matchedCuts = cms.string( 'path( "HLT_Jet80_v3", 1, 0 )' ),
-                                                           maxDPtRel = cms.double( 0.5 ),
-                                                           maxDeltaR = cms.double( 0.3 ),
-                                                           resolveAmbiguities    = cms.bool( True ),
-                                                           resolveByMatchQuality = cms.bool( True )
-                                                           )
-
-# matches to HLT_Jet80_v4
-jetTriggerMatchHLTJet80v4   = cms.EDProducer( "PATTriggerMatcherDRLessByR",
-                                                           src     = cms.InputTag( "cleanPatJets" ),
-                                                           matched = cms.InputTag( "patTrigger" ),
-                                                           matchedCuts = cms.string( 'path( "HLT_Jet80_v4", 1, 0 )' ),
-                                                           maxDPtRel = cms.double( 0.5 ),
-                                                           maxDeltaR = cms.double( 0.3 ),
-                                                           resolveAmbiguities    = cms.bool( True ),
-                                                           resolveByMatchQuality = cms.bool( True )
-                                                           )
-
 # matches to HLT_Jet80_v*
 jetTriggerMatchHLTJet80   = cms.EDProducer( "PATTriggerMatcherDRLessByR",
                                                            src     = cms.InputTag( "cleanPatJets" ),
                                                            matched = cms.InputTag( "patTrigger" ),
                                                            matchedCuts = cms.string( 'path( "HLT_Jet80_v*", 1, 0 )' ),
-                                                           maxDPtRel = cms.double( 0.5 ),
-                                                           maxDeltaR = cms.double( 0.3 ),
-                                                           resolveAmbiguities    = cms.bool( True ),
-                                                           resolveByMatchQuality = cms.bool( True )
-                                                           )
-
-# matches to HLT_Jet110_v1
-jetTriggerMatchHLTJet110v1   = cms.EDProducer( "PATTriggerMatcherDRLessByR",
-                                                           src     = cms.InputTag( "cleanPatJets" ),
-                                                           matched = cms.InputTag( "patTrigger" ),
-                                                           matchedCuts = cms.string( 'path( "HLT_Jet110_v1", 1, 0 )' ),
-                                                           maxDPtRel = cms.double( 0.5 ),
-                                                           maxDeltaR = cms.double( 0.3 ),
-                                                           resolveAmbiguities    = cms.bool( True ),
-                                                           resolveByMatchQuality = cms.bool( True )
-                                                           )
-
-# matches to HLT_Jet110_v2
-jetTriggerMatchHLTJet110v2   = cms.EDProducer( "PATTriggerMatcherDRLessByR",
-                                                           src     = cms.InputTag( "cleanPatJets" ),
-                                                           matched = cms.InputTag( "patTrigger" ),
-                                                           matchedCuts = cms.string( 'path( "HLT_Jet110_v2", 1, 0 )' ),
-                                                           maxDPtRel = cms.double( 0.5 ),
-                                                           maxDeltaR = cms.double( 0.3 ),
-                                                           resolveAmbiguities    = cms.bool( True ),
-                                                           resolveByMatchQuality = cms.bool( True )
-                                                           )
-
-# matches to HLT_Jet110_v3
-jetTriggerMatchHLTJet110v3   = cms.EDProducer( "PATTriggerMatcherDRLessByR",
-                                                           src     = cms.InputTag( "cleanPatJets" ),
-                                                           matched = cms.InputTag( "patTrigger" ),
-                                                           matchedCuts = cms.string( 'path( "HLT_Jet110_v3", 1, 0 )' ),
-                                                           maxDPtRel = cms.double( 0.5 ),
-                                                           maxDeltaR = cms.double( 0.3 ),
-                                                           resolveAmbiguities    = cms.bool( True ),
-                                                           resolveByMatchQuality = cms.bool( True )
-                                                           )
-
-# matches to HLT_Jet110_v4
-jetTriggerMatchHLTJet110v4   = cms.EDProducer( "PATTriggerMatcherDRLessByR",
-                                                           src     = cms.InputTag( "cleanPatJets" ),
-                                                           matched = cms.InputTag( "patTrigger" ),
-                                                           matchedCuts = cms.string( 'path( "HLT_Jet110_v4", 1, 0 )' ),
                                                            maxDPtRel = cms.double( 0.5 ),
                                                            maxDeltaR = cms.double( 0.3 ),
                                                            resolveAmbiguities    = cms.bool( True ),
@@ -1316,99 +1194,11 @@ jetTriggerMatchHLTJet110   = cms.EDProducer( "PATTriggerMatcherDRLessByR",
                                                            resolveByMatchQuality = cms.bool( True )
                                                            )
 
-# matches to HLT_Jet150_v1
-jetTriggerMatchHLTJet150v1   = cms.EDProducer( "PATTriggerMatcherDRLessByR",
-                                                           src     = cms.InputTag( "cleanPatJets" ),
-                                                           matched = cms.InputTag( "patTrigger" ),
-                                                           matchedCuts = cms.string( 'path( "HLT_Jet150_v1", 1, 0 )' ),
-                                                           maxDPtRel = cms.double( 0.5 ),
-                                                           maxDeltaR = cms.double( 0.3 ),
-                                                           resolveAmbiguities    = cms.bool( True ),
-                                                           resolveByMatchQuality = cms.bool( True )
-                                                           )
-
-# matches to HLT_Jet150_v2
-jetTriggerMatchHLTJet150v2   = cms.EDProducer( "PATTriggerMatcherDRLessByR",
-                                                           src     = cms.InputTag( "cleanPatJets" ),
-                                                           matched = cms.InputTag( "patTrigger" ),
-                                                           matchedCuts = cms.string( 'path( "HLT_Jet150_v2", 1, 0 )' ),
-                                                           maxDPtRel = cms.double( 0.5 ),
-                                                           maxDeltaR = cms.double( 0.3 ),
-                                                           resolveAmbiguities    = cms.bool( True ),
-                                                           resolveByMatchQuality = cms.bool( True )
-                                                           )
-
-# matches to HLT_Jet150_v3
-jetTriggerMatchHLTJet150v3   = cms.EDProducer( "PATTriggerMatcherDRLessByR",
-                                                           src     = cms.InputTag( "cleanPatJets" ),
-                                                           matched = cms.InputTag( "patTrigger" ),
-                                                           matchedCuts = cms.string( 'path( "HLT_Jet150_v3", 1, 0 )' ),
-                                                           maxDPtRel = cms.double( 0.5 ),
-                                                           maxDeltaR = cms.double( 0.3 ),
-                                                           resolveAmbiguities    = cms.bool( True ),
-                                                           resolveByMatchQuality = cms.bool( True )
-                                                           )
-
-# matches to HLT_Jet150_v4
-jetTriggerMatchHLTJet150v4   = cms.EDProducer( "PATTriggerMatcherDRLessByR",
-                                                           src     = cms.InputTag( "cleanPatJets" ),
-                                                           matched = cms.InputTag( "patTrigger" ),
-                                                           matchedCuts = cms.string( 'path( "HLT_Jet150_v4", 1, 0 )' ),
-                                                           maxDPtRel = cms.double( 0.5 ),
-                                                           maxDeltaR = cms.double( 0.3 ),
-                                                           resolveAmbiguities    = cms.bool( True ),
-                                                           resolveByMatchQuality = cms.bool( True )
-                                                           )
-
 # matches to HLT_Jet150_v*
 jetTriggerMatchHLTJet150   = cms.EDProducer( "PATTriggerMatcherDRLessByR",
                                                            src     = cms.InputTag( "cleanPatJets" ),
                                                            matched = cms.InputTag( "patTrigger" ),
                                                            matchedCuts = cms.string( 'path( "HLT_Jet150_v*", 1, 0 )' ),
-                                                           maxDPtRel = cms.double( 0.5 ),
-                                                           maxDeltaR = cms.double( 0.3 ),
-                                                           resolveAmbiguities    = cms.bool( True ),
-                                                           resolveByMatchQuality = cms.bool( True )
-                                                           )
-
-# matches to HLT_Jet190_v1
-jetTriggerMatchHLTJet190v1   = cms.EDProducer( "PATTriggerMatcherDRLessByR",
-                                                           src     = cms.InputTag( "cleanPatJets" ),
-                                                           matched = cms.InputTag( "patTrigger" ),
-                                                           matchedCuts = cms.string( 'path( "HLT_Jet190_v1", 1, 0 )' ),
-                                                           maxDPtRel = cms.double( 0.5 ),
-                                                           maxDeltaR = cms.double( 0.3 ),
-                                                           resolveAmbiguities    = cms.bool( True ),
-                                                           resolveByMatchQuality = cms.bool( True )
-                                                           )
-
-# matches to HLT_Jet190_v2
-jetTriggerMatchHLTJet190v2   = cms.EDProducer( "PATTriggerMatcherDRLessByR",
-                                                           src     = cms.InputTag( "cleanPatJets" ),
-                                                           matched = cms.InputTag( "patTrigger" ),
-                                                           matchedCuts = cms.string( 'path( "HLT_Jet190_v2", 1, 0 )' ),
-                                                           maxDPtRel = cms.double( 0.5 ),
-                                                           maxDeltaR = cms.double( 0.3 ),
-                                                           resolveAmbiguities    = cms.bool( True ),
-                                                           resolveByMatchQuality = cms.bool( True )
-                                                           )
-
-# matches to HLT_Jet190_v3
-jetTriggerMatchHLTJet190v3   = cms.EDProducer( "PATTriggerMatcherDRLessByR",
-                                                           src     = cms.InputTag( "cleanPatJets" ),
-                                                           matched = cms.InputTag( "patTrigger" ),
-                                                           matchedCuts = cms.string( 'path( "HLT_Jet190_v3", 1, 0 )' ),
-                                                           maxDPtRel = cms.double( 0.5 ),
-                                                           maxDeltaR = cms.double( 0.3 ),
-                                                           resolveAmbiguities    = cms.bool( True ),
-                                                           resolveByMatchQuality = cms.bool( True )
-                                                           )
-
-# matches to HLT_Jet190_v4
-jetTriggerMatchHLTJet190v4   = cms.EDProducer( "PATTriggerMatcherDRLessByR",
-                                                           src     = cms.InputTag( "cleanPatJets" ),
-                                                           matched = cms.InputTag( "patTrigger" ),
-                                                           matchedCuts = cms.string( 'path( "HLT_Jet190_v4", 1, 0 )' ),
                                                            maxDPtRel = cms.double( 0.5 ),
                                                            maxDeltaR = cms.double( 0.3 ),
                                                            resolveAmbiguities    = cms.bool( True ),
@@ -1426,50 +1216,6 @@ jetTriggerMatchHLTJet190   = cms.EDProducer( "PATTriggerMatcherDRLessByR",
                                                            resolveByMatchQuality = cms.bool( True )
                                                            )
 
-# matches to HLT_Jet240_v1
-jetTriggerMatchHLTJet240v1   = cms.EDProducer( "PATTriggerMatcherDRLessByR",
-                                                           src     = cms.InputTag( "cleanPatJets" ),
-                                                           matched = cms.InputTag( "patTrigger" ),
-                                                           matchedCuts = cms.string( 'path( "HLT_Jet240_v1", 1, 0 )' ),
-                                                           maxDPtRel = cms.double( 0.5 ),
-                                                           maxDeltaR = cms.double( 0.3 ),
-                                                           resolveAmbiguities    = cms.bool( True ),
-                                                           resolveByMatchQuality = cms.bool( True )
-                                                           )
-
-# matches to HLT_Jet240_v2
-jetTriggerMatchHLTJet240v2   = cms.EDProducer( "PATTriggerMatcherDRLessByR",
-                                                           src     = cms.InputTag( "cleanPatJets" ),
-                                                           matched = cms.InputTag( "patTrigger" ),
-                                                           matchedCuts = cms.string( 'path( "HLT_Jet240_v2", 1, 0 )' ),
-                                                           maxDPtRel = cms.double( 0.5 ),
-                                                           maxDeltaR = cms.double( 0.3 ),
-                                                           resolveAmbiguities    = cms.bool( True ),
-                                                           resolveByMatchQuality = cms.bool( True )
-                                                           )
-
-# matches to HLT_Jet240_v3
-jetTriggerMatchHLTJet240v3   = cms.EDProducer( "PATTriggerMatcherDRLessByR",
-                                                           src     = cms.InputTag( "cleanPatJets" ),
-                                                           matched = cms.InputTag( "patTrigger" ),
-                                                           matchedCuts = cms.string( 'path( "HLT_Jet240_v3", 1, 0 )' ),
-                                                           maxDPtRel = cms.double( 0.5 ),
-                                                           maxDeltaR = cms.double( 0.3 ),
-                                                           resolveAmbiguities    = cms.bool( True ),
-                                                           resolveByMatchQuality = cms.bool( True )
-                                                           )
-
-# matches to HLT_Jet240_v4
-jetTriggerMatchHLTJet240v4   = cms.EDProducer( "PATTriggerMatcherDRLessByR",
-                                                           src     = cms.InputTag( "cleanPatJets" ),
-                                                           matched = cms.InputTag( "patTrigger" ),
-                                                           matchedCuts = cms.string( 'path( "HLT_Jet240_v4", 1, 0 )' ),
-                                                           maxDPtRel = cms.double( 0.5 ),
-                                                           maxDeltaR = cms.double( 0.3 ),
-                                                           resolveAmbiguities    = cms.bool( True ),
-                                                           resolveByMatchQuality = cms.bool( True )
-                                                           )
-
 # matches to HLT_Jet240_v*
 jetTriggerMatchHLTJet240   = cms.EDProducer( "PATTriggerMatcherDRLessByR",
                                                            src     = cms.InputTag( "cleanPatJets" ),
@@ -1481,88 +1227,11 @@ jetTriggerMatchHLTJet240   = cms.EDProducer( "PATTriggerMatcherDRLessByR",
                                                            resolveByMatchQuality = cms.bool( True )
                                                            )
 
-# matches to HLT_Jet300_v1
-jetTriggerMatchHLTJet300v1   = cms.EDProducer( "PATTriggerMatcherDRLessByR",
-                                                           src     = cms.InputTag( "cleanPatJets" ),
-                                                           matched = cms.InputTag( "patTrigger" ),
-                                                           matchedCuts = cms.string( 'path( "HLT_Jet300_v1", 1, 0 )' ),
-                                                           maxDPtRel = cms.double( 0.5 ),
-                                                           maxDeltaR = cms.double( 0.3 ),
-                                                           resolveAmbiguities    = cms.bool( True ),
-                                                           resolveByMatchQuality = cms.bool( True )
-                                                           )
-
-# matches to HLT_Jet300_v2
-jetTriggerMatchHLTJet300v2   = cms.EDProducer( "PATTriggerMatcherDRLessByR",
-                                                           src     = cms.InputTag( "cleanPatJets" ),
-                                                           matched = cms.InputTag( "patTrigger" ),
-                                                           matchedCuts = cms.string( 'path( "HLT_Jet300_v2", 1, 0 )' ),
-                                                           maxDPtRel = cms.double( 0.5 ),
-                                                           maxDeltaR = cms.double( 0.3 ),
-                                                           resolveAmbiguities    = cms.bool( True ),
-                                                           resolveByMatchQuality = cms.bool( True )
-                                                           )
-
-# matches to HLT_Jet300_v3
-jetTriggerMatchHLTJet300v3   = cms.EDProducer( "PATTriggerMatcherDRLessByR",
-                                                           src     = cms.InputTag( "cleanPatJets" ),
-                                                           matched = cms.InputTag( "patTrigger" ),
-                                                           matchedCuts = cms.string( 'path( "HLT_Jet300_v3", 1, 0 )' ),
-                                                           maxDPtRel = cms.double( 0.5 ),
-                                                           maxDeltaR = cms.double( 0.3 ),
-                                                           resolveAmbiguities    = cms.bool( True ),
-                                                           resolveByMatchQuality = cms.bool( True )
-                                                           )
-
 # matches to HLT_Jet300_v*
 jetTriggerMatchHLTJet300   = cms.EDProducer( "PATTriggerMatcherDRLessByR",
                                                            src     = cms.InputTag( "cleanPatJets" ),
                                                            matched = cms.InputTag( "patTrigger" ),
                                                            matchedCuts = cms.string( 'path( "HLT_Jet300_v*", 1, 0 )' ),
-                                                           maxDPtRel = cms.double( 0.5 ),
-                                                           maxDeltaR = cms.double( 0.3 ),
-                                                           resolveAmbiguities    = cms.bool( True ),
-                                                           resolveByMatchQuality = cms.bool( True )
-                                                           )
-
-# matches to HLT_Jet370_v1
-jetTriggerMatchHLTJet370v1   = cms.EDProducer( "PATTriggerMatcherDRLessByR",
-                                                           src     = cms.InputTag( "cleanPatJets" ),
-                                                           matched = cms.InputTag( "patTrigger" ),
-                                                           matchedCuts = cms.string( 'path( "HLT_Jet370_v1", 1, 0 )' ),
-                                                           maxDPtRel = cms.double( 0.5 ),
-                                                           maxDeltaR = cms.double( 0.3 ),
-                                                           resolveAmbiguities    = cms.bool( True ),
-                                                           resolveByMatchQuality = cms.bool( True )
-                                                           )
-
-# matches to HLT_Jet370_v2
-jetTriggerMatchHLTJet370v2   = cms.EDProducer( "PATTriggerMatcherDRLessByR",
-                                                           src     = cms.InputTag( "cleanPatJets" ),
-                                                           matched = cms.InputTag( "patTrigger" ),
-                                                           matchedCuts = cms.string( 'path( "HLT_Jet370_v2", 1, 0 )' ),
-                                                           maxDPtRel = cms.double( 0.5 ),
-                                                           maxDeltaR = cms.double( 0.3 ),
-                                                           resolveAmbiguities    = cms.bool( True ),
-                                                           resolveByMatchQuality = cms.bool( True )
-                                                           )
-
-# matches to HLT_Jet370_v3
-jetTriggerMatchHLTJet370v3   = cms.EDProducer( "PATTriggerMatcherDRLessByR",
-                                                           src     = cms.InputTag( "cleanPatJets" ),
-                                                           matched = cms.InputTag( "patTrigger" ),
-                                                           matchedCuts = cms.string( 'path( "HLT_Jet370_v3", 1, 0 )' ),
-                                                           maxDPtRel = cms.double( 0.5 ),
-                                                           maxDeltaR = cms.double( 0.3 ),
-                                                           resolveAmbiguities    = cms.bool( True ),
-                                                           resolveByMatchQuality = cms.bool( True )
-                                                           )
-
-# matches to HLT_Jet370_v4
-jetTriggerMatchHLTJet370v4   = cms.EDProducer( "PATTriggerMatcherDRLessByR",
-                                                           src     = cms.InputTag( "cleanPatJets" ),
-                                                           matched = cms.InputTag( "patTrigger" ),
-                                                           matchedCuts = cms.string( 'path( "HLT_Jet370_v4", 1, 0 )' ),
                                                            maxDPtRel = cms.double( 0.5 ),
                                                            maxDeltaR = cms.double( 0.3 ),
                                                            resolveAmbiguities    = cms.bool( True ),
@@ -1581,42 +1250,34 @@ jetTriggerMatchHLTJet370   = cms.EDProducer( "PATTriggerMatcherDRLessByR",
                                                            )
 
 vgTriggerMatcherElectron = cms.Sequence(
-        electronTriggerMatchHLTEle8CaloIdLCaloIsoVL +
-        electronTriggerMatchHLTEle8CaloIdTCaloIsoVLTrkIdVLTrkIsoVL + 
-        electronTriggerMatchHLTEle17CaloIdLCaloIsoVL +
         electronTriggerMatchHLTEle15LWL1R +
         electronTriggerMatchHLTEle15SWL1R +
-        electronTriggerMatchHLTEle20SWL1R +
-        electronTriggerMatchHLTEle15SWEleIdL1R +
         electronTriggerMatchHLTEle15SWCaloEleIdL1R +
         electronTriggerMatchHLTEle17SWCaloEleIdL1R +
         electronTriggerMatchHLTEle17SWTightEleIdL1R +
 	electronTriggerMatchHLTEle17SWTighterEleIdIsolL1R +
 	electronTriggerMatchHLTEle17SWTighterEleIdIsolL1Rv2 +
-	electronTriggerMatchHLTEle22SWTighterEleIdL1Rv2 +
-	electronTriggerMatchHLTEle17SWTightCaloEleIdEle8HEL1Rv1 +
-	electronTriggerMatchHLTEle17SWTightCaloEleIdEle8HEL1Rv2 +
 	electronTriggerMatchHLTEle17SWTighterEleIdIsolL1Rv3 +
-	electronTriggerMatchHLTEle27CaloIdVTCaloIsoTTrkIdTTrkIsoTv1 + 
-	electronTriggerMatchHLTEle27CaloIdVTCaloIsoTTrkIdTTrkIsoTv2 + 
-	electronTriggerMatchHLTEle27CaloIdVTCaloIsoTTrkIdTTrkIsoTv3 + 
-        electronTriggerMatchHLTEle32CaloIdVTCaloIsoTTrkIdTTrkIsoTv1 +
-        electronTriggerMatchHLTEle32CaloIdVTCaloIsoTTrkIdTTrkIsoTv2 +
-        electronTriggerMatchHLTEle32CaloIdVTCaloIsoTTrkIdTTrkIsoTv3 +
-        electronTriggerMatchHLTEle32CaloIdVTCaloIsoTTrkIdTTrkIsoTv4 +
+	electronTriggerMatchHLTEle27CaloIdVTCaloIsoTTrkIdTTrkIsoT + 
         electronTriggerMatchHLTEle32CaloIdVTCaloIsoTTrkIdTTrkIsoT +
-        electronTriggerMatchHLTEle42CaloIdVTCaloIsoTTrkIdTTrkIsoTv1 +
-	electronTriggerMatchHLTEle25WP80PFMT40v1 +
 	electronTriggerMatchHLTEle27WP80PFMT50 +
 	electronTriggerMatchHLTEle32WP70PFMT50 +
-	electronTriggerMatchHLTEle27WP70PFMT40PFMHT20v1 +
-	electronTriggerMatchHLTEle17CaloIdLCaloIsoVLEle8CaloIdLCaloIsoVLv1 +
-	electronTriggerMatchHLTEle17CaloIdLCaloIsoVLEle8CaloIdLCaloIsoVLv2 +
-	electronTriggerMatchHLTEle17CaloIdLCaloIsoVLEle8CaloIdLCaloIsoVLv3 +
-	electronTriggerMatchHLTEle17CaloIdLCaloIsoVLEle8CaloIdLCaloIsoVLv4 +
-	electronTriggerMatchHLTEle17CaloIdLCaloIsoVLEle8CaloIdLCaloIsoVLv5 +
-	electronTriggerMatchHLTEle17CaloIdLCaloIsoVLEle8CaloIdLCaloIsoVL   +
-	electronTriggerMatchHLTEle17CaloIdTCaloIsoVLTrkIdVLTrkIsoVLEle8CaloIdTCaloIsoVLTrkIdVLTrkIsoVL
+        electronTriggerMatchHLTEle8CaloIdLCaloIsoVL +
+        electronTriggerMatchHLTEle17CaloIdLCaloIsoVL +
+        electronTriggerMatchHLTEle8CaloIdTCaloIsoVLTrkIdVLTrkIsoVL + 
+	electronTriggerMatchHLTEle17CaloIdLCaloIsoVLEle8CaloIdLCaloIsoVL +
+        electronTriggerMatchHLTEle17CaloIdVTCaloIsoVTTrkIdTTrkIsoVTEle8Mass30 + 
+        electronTriggerMatchHLTEle17CaloIdVTCaloIsoVTTrkIdTTrkIsoVTSC8Mass30 + 
+	electronTriggerMatchHLTEle17CaloIdTCaloIsoVLTrkIdVLTrkIsoVLEle8CaloIdTCaloIsoVLTrkIdVLTrkIsoVL +
+        electronTriggerMatchHLTEle32CaloIdTCaloIsoTTrkIdTTrkIsoTEle17 +
+        electronTriggerMatchHLTEle32CaloIdTCaloIsoTTrkIdTTrkIsoTSC17 +
+	electronTriggerMatchHLTEle32WP70 +
+	electronTriggerMatchHLTEle17CaloIdVTCaloIsoVTTrkIdTTrkIsoVT +
+	electronTriggerMatchHLTEle8Mass30 +
+	electronTriggerMatchHLTSC8Mass30 +
+	electronTriggerMatchHLTEle32CaloIdTCaloIsoTTrkIdTTrkIsoT +
+	electronTriggerMatchHLTSC17 +
+	electronTriggerMatchHLTEle17
         )
 
 vgTriggerMatcherPhoton = cms.Sequence(
@@ -1627,7 +1288,42 @@ vgTriggerMatcherPhoton = cms.Sequence(
 	photonTriggerMatchHLTPhoton50CleanedL1Rv1 +
 	photonTriggerMatchHLTPhoton70CleanedL1Rv1 +
         photonTriggerMatchHLTDoublePhoton17L1R +
-	photonTriggerMatchHLTPhoton10L1R
+	photonTriggerMatchHLTPhoton10L1R +
+	photonTriggerMatchHLTPhoton20CaloIdVLIsoL +
+	photonTriggerMatchHLTPhoton20R9IdPhoton18R9Id +
+	photonTriggerMatchHLTPhoton26Photon18 +
+	photonTriggerMatchHLTPhoton26IsoVLPhoton18 +
+	photonTriggerMatchHLTPhoton26IsoVLPhoton18IsoVL +
+	photonTriggerMatchHLTPhoton26CaloIdLIsoVLPhoton18 +
+	photonTriggerMatchHLTPhoton26CaloIdLIsoVLPhoton18CaloIdLIsoVL +
+	photonTriggerMatchHLTPhoton26CaloIdLIsoVLPhoton18R9Id +
+	photonTriggerMatchHLTPhoton26R9IdPhoton18CaloIdLIsoVL +
+	photonTriggerMatchHLTPhoton26R9IdPhoton18R9Id +
+	photonTriggerMatchHLTPhoton26R9IdPhoton18CaloIdXLIsoXL +
+	photonTriggerMatchHLTPhoton26CaloIdXLIsoXLPhoton18 +
+	photonTriggerMatchHLTPhoton26CaloIdXLIsoXLPhoton18R9Id +
+	photonTriggerMatchHLTPhoton26CaloIdXLIsoXLPhoton18CaloIdXLIsoXL +
+	photonTriggerMatchHLTPhoton30CaloIdVL +
+	photonTriggerMatchHLTPhoton30CaloIdVLIsoL + 
+	photonTriggerMatchHLTPhoton32CaloIdLPhoton26CaloIdL +
+	photonTriggerMatchHLTPhoton36CaloIdLPhoton22CaloIdL +
+	photonTriggerMatchHLTPhoton36CaloIdLIsoVLPhoton22 +
+	photonTriggerMatchHLTPhoton36Photon22 +
+	photonTriggerMatchHLTPhoton36IsoVLPhoton22 +
+	photonTriggerMatchHLTPhoton36CaloIdIsoVLPhoton22R9Id +
+	photonTriggerMatchHLTPhoton36R9IdPhoton22CaloIdLIsoVL +
+	photonTriggerMatchHLTPhoton36R9IdPhoton22R9Id +
+	photonTriggerMatchHLTPhoton36CaloIdLIsoVLPhoton22R9Id +
+	photonTriggerMatchHLTPhoton36CaloIdVLPhoton22CaloIdVL +
+	photonTriggerMatchHLTPhoton40CaloIdLPhoton28CaloIdL +
+	photonTriggerMatchHLTPhoton44CaloIdLPhoton34CaloIdL +
+	photonTriggerMatchHLTPhoton48CaloIdLPhoton38CaloIdL +
+	photonTriggerMatchHLTPhoton50CaloIdVL +
+	photonTriggerMatchHLTPhoton50CaloIdVLIsoL +
+	photonTriggerMatchHLTPhoton75CaloIdVL +
+	photonTriggerMatchHLTPhoton75CaloIdVLIsoL +
+	photonTriggerMatchHLTPhoton90CaloIdVL +
+	photonTriggerMatchHLTPhoton90CaloIdVLIsoL
 	)
 
 vgTriggerMatcherMuon = cms.Sequence(
@@ -1637,40 +1333,16 @@ vgTriggerMatcherMuon = cms.Sequence(
     muonTriggerMatchHLTMu13v1 +
     muonTriggerMatchHLTMu15 +
     muonTriggerMatchHLTMu15v1 +
-    muonTriggerMatchHLTMu24v1 +
-    muonTriggerMatchHLTMu24v2 +
-    muonTriggerMatchHLTMu24v3 +
-    muonTriggerMatchHLTMu30v1 +
-    muonTriggerMatchHLTMu30v2 +
-    muonTriggerMatchHLTMu30v3 +
-    muonTriggerMatchHLTIsoMu17v4 +
-    muonTriggerMatchHLTIsoMu17v5 +
-    muonTriggerMatchHLTIsoMu17v6 +
-    muonTriggerMatchHLTIsoMu17v8 +
-    muonTriggerMatchHLTIsoMu17v9 +
-    muonTriggerMatchHLTIsoMu24v1 +
-    muonTriggerMatchHLTIsoMu24v2 +
-    muonTriggerMatchHLTIsoMu24v4 +
-    muonTriggerMatchHLTIsoMu24v5 +
-    muonTriggerMatchHLTIsoMu30v1 +
-    muonTriggerMatchHLTIsoMu30v2 +
-    muonTriggerMatchHLTIsoMu30v4 +
-    muonTriggerMatchHLTIsoMu30v5 +
-    muonTriggerMatchHLTDoubleMu6v1 +
-    muonTriggerMatchHLTDoubleMu6v2 +
-    muonTriggerMatchHLTDoubleMu6v3 +
-    muonTriggerMatchHLTDoubleMu7v1 + 
-    muonTriggerMatchHLTDoubleMu7v2 + 
-    muonTriggerMatchHLTDoubleMu7v3 + 
-    muonTriggerMatchHLTMu13Mu8v2 +
-    muonTriggerMatchHLTMu24v5 +
     muonTriggerMatchHLTMu30 +
-    muonTriggerMatchHLTIsoMu17v11 +
     muonTriggerMatchHLTIsoMu24 +
     muonTriggerMatchHLTIsoMu30 +
-    muonTriggerMatchHLTMu13Mu8 +
-    muonTriggerMatchHLTMu17Mu8 +
-    muonTriggerMatchHLTIsoMu30eta2p1
+    muonTriggerMatchHLTIsoMu24eta2p1 +
+    muonTriggerMatchHLTIsoMu30eta2p1 +
+    muonTriggerMatchHLTIsoMu34eta2p1 +
+    muonTriggerMatchHLTDoubleMu6 +
+    muonTriggerMatchHLTDoubleMu7 +
+    muonTriggerMatchHLTMu13Mu8 + 
+    muonTriggerMatchHLTMu17Mu8
     )
 
 vgTriggerMatcherJet = cms.Sequence(
@@ -1688,41 +1360,6 @@ vgTriggerMatcherJet = cms.Sequence(
 	jetTriggerMatchHLTJet70Uv3 +
 	jetTriggerMatchHLTJet100Uv3 +
 	jetTriggerMatchHLTJet140Uv3 +
-	jetTriggerMatchHLTJet30v1 +
-	jetTriggerMatchHLTJet30v2 +
-	jetTriggerMatchHLTJet30v3 +
-	jetTriggerMatchHLTJet30v4 +
-	jetTriggerMatchHLTJet60v1 +
-	jetTriggerMatchHLTJet60v2 +
-	jetTriggerMatchHLTJet60v3 +
-	jetTriggerMatchHLTJet60v4 +
-	jetTriggerMatchHLTJet80v1 +
-	jetTriggerMatchHLTJet80v2 +
-	jetTriggerMatchHLTJet80v3 +
-	jetTriggerMatchHLTJet80v4 +
-	jetTriggerMatchHLTJet110v1 +
-	jetTriggerMatchHLTJet110v2 +
-	jetTriggerMatchHLTJet110v3 +
-	jetTriggerMatchHLTJet110v4 +
-	jetTriggerMatchHLTJet150v1 +
-	jetTriggerMatchHLTJet150v2 +
-	jetTriggerMatchHLTJet150v3 +
-	jetTriggerMatchHLTJet150v4 +
-	jetTriggerMatchHLTJet190v1 +
-	jetTriggerMatchHLTJet190v2 +
-	jetTriggerMatchHLTJet190v3 +
-	jetTriggerMatchHLTJet190v4 +
-	jetTriggerMatchHLTJet240v1 +
-	jetTriggerMatchHLTJet240v2 +
-	jetTriggerMatchHLTJet240v3 +
-	jetTriggerMatchHLTJet240v4 +
-        jetTriggerMatchHLTJet300v1 +
-        jetTriggerMatchHLTJet300v2 +
-        jetTriggerMatchHLTJet300v3 +
-	jetTriggerMatchHLTJet370v1 +
-	jetTriggerMatchHLTJet370v2 +
-	jetTriggerMatchHLTJet370v3 +
-	jetTriggerMatchHLTJet370v4 +
 	jetTriggerMatchHLTJet30 +
 	jetTriggerMatchHLTJet60 +
 	jetTriggerMatchHLTJet80  +
