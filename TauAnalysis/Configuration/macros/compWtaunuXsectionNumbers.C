@@ -96,8 +96,8 @@ void compWtaunuXsectionNumbers()
 
   double intLumiData       = 32.35; // pb^-1
   
-  double mcAcceptance_Sig  = 0.0789;
-  double mcEfficiency_Sig  = 0.03347;
+  double mcAcceptance_Sig  = 0.0790;
+  double mcEfficiency_Sig  = 0.0334;
   double brToHadTau_Sig    = 0.648;
   
   //-------------------------------------------------------------------------------
@@ -110,10 +110,10 @@ void compWtaunuXsectionNumbers()
 
   double errTauIdEff       = 0.07;
 
-  double errTauEnScaleUp   = 0.151;
-  double errTauEnScaleDown = 0.142;
-  double errJetEnScaleUp   = 0.106;
-  double errJetEnScaleDown = 0.095;
+  double errTauEnScaleUp   = 0.160;
+  double errTauEnScaleDown = 0.148;
+  double errJetEnScaleUp   = 0.101;
+  double errJetEnScaleDown = 0.100;
 
   double errIntLumiData    = 0.04;
   
